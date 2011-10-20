@@ -27,14 +27,13 @@ namespace oz
   {
     VehicleClass* clazz = new VehicleClass();
 
-    clazz->flags = Object::DYNAMIC_BIT | Object::USE_FUNC_BIT | Object::UPDATE_FUNC_BIT |
-        Object::VEHICLE_BIT;
+    clazz->flags = Object::DYNAMIC_BIT | Object::VEHICLE_BIT | Object::USE_FUNC_BIT |
+        Object::UPDATE_FUNC_BIT | Object::CYLINDER_BIT;
 
     OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",    true  );
     OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.onDamage",     false );
     OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,       "flag.onHit",        false );
     OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",        true  );
-    OZ_CLASS_SET_FLAG( Object::CYLINDER_BIT,       "flag.cylinder",     true  );
     OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
 
@@ -132,7 +131,7 @@ namespace oz
     return clazz;
   }
 
-  Object* VehicleClass::create( int index, const Point3& pos ) const
+  Object* VehicleClass::create( int index, const Point3& pos, Heading ) const
   {
     Vehicle* obj = new Vehicle();
 
@@ -173,6 +172,7 @@ namespace oz
     obj->lift   = lift;
 
     obj->readFull( istream );
+
 
     return obj;
   }

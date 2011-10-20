@@ -32,8 +32,8 @@ namespace client
       {
         int   firstFrame;
         int   lastFrame;
-        float fps;
         int   repeat;
+        float fps;
       };
 
       struct AnimState

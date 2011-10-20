@@ -25,90 +25,71 @@ namespace client
 
   class MD3
   {
+    public:
+
+      enum Anim
+      {
+        BOTH_DEATH1,
+        BOTH_DEAD1,
+        BOTH_DEATH2,
+        BOTH_DEAD2,
+        BOTH_DEATH3,
+        BOTH_DEAD3,
+
+        TORSO_GESTURE,
+        TORSO_ATTACK,
+        TORSO_ATTACK2,
+        TORSO_DROP,
+        TORSO_RAISE,
+        TORSO_STAND,
+        TORSO_STAND2,
+
+        LEGS_WALKCR,
+        LEGS_WALK,
+        LEGS_RUN,
+        LEGS_BACK,
+        LEGS_SWIM,
+        LEGS_JUMP,
+        LEGS_LAND,
+        LEGS_JUMPB,
+        LEGS_LANDB,
+        LEGS_IDLE,
+        LEGS_IDLECR,
+        LEGS_TURN,
+
+        ANIM_MAX
+      };
+
+      struct AnimInfo
+      {
+        int   firstFrame;
+        int   lastFrame;
+        int   repeat;
+        float fps;
+      };
+
+      struct AnimState
+      {
+        Anim  type;
+        int   repeat;
+
+        int   startFrame;
+        int   endFrame;
+        int   currFrame;
+        int   nextFrame;
+
+        float fps;
+        float frameTime;
+        float currTime;
+      };
+
     private:
 
 #ifndef OZ_TOOLS
 
-//       struct Triangle
-//       {
-//         int indices[3];
-//       };
-//
-//       struct Vertex
-//       {
-//         Point3 p;
-//         Vec3   normal;
-//       };
-//
-//       struct Mesh
-//       {
-//         int  nVertices;  // number of vertices per frame, not all vertices
-//         uint texId;
-//
-//         DArray<Triangle> triangles;
-//         DArray<TexCoord> texCoords;
-//         DArray<Vertex>   vertices;
-//       };
-//
-//       struct Offset
-//       {
-//         Vec3 p;
-//         Quat rot;
-//       };
-//
-//       class Part
-//       {
-//         friend class MD3;
-//
-//         private:
-//
-//           DArray<Mesh> meshes;
-//           int          nFrames;
-//
-//         public:
-//
-//           explicit Part( MD3* parent, const String& dir, const char* fileName, MD3Tag** tags );
-//           ~Part();
-//
-//           void scale( float scale );
-//           void translate( const Vec3& t );
-//           void drawFrame( int frame ) const;
-//
-//       };
-//
-//       int            id;
-//
-//       Vector<uint>   textures;
-//
-//       Part*          head;
-//       Part*          upper;
-//       Part*          lower;
-//
-//       DArray<Offset> headOffsets;
-//       DArray<Offset> lowerOffsets;
-//       DArray<Offset> weaponOffsets;
-//
-//       void scale( float scale );
-//       void translate( const Vec3& t );
-//
-//     public:
-//
-//       uint list;
-//       bool isLoaded;
-//
-//       explicit MD3( int id );
-//       ~MD3();
-//
-//       void load();
-//
-//       void drawFrame( int frame ) const;
-//
-//       void genList();
-//       void deleteList() const;
-
-    private:
-
       int id;
+
+      AnimInfo animList[ANIM_MAX];
 
     public:
 
@@ -205,13 +186,12 @@ namespace client
       static String sPath;
       static Config config;
 
-      static bool   forceStatic;
       static float  scale;
       static Mat44  meshTransf;
-      static Vec3   jumpTransl;
-      static Mat44  weaponTransf;
+      static int    nTags;
+      static DArray<MD3Tag> tags;
 
-      static void buildMesh( const char* name, int frame, DArray<MD3Tag>* tags );
+      static void buildMesh( const char* name, int frame );
 
     public:
 

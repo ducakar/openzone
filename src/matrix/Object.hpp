@@ -147,21 +147,19 @@ namespace oz
        */
 
       // don't render object (it will be rendered via another path, e.g. bots in a vehicle)
-      static const int NO_DRAW_BIT        = 0x00000004;
+      static const int NO_DRAW_BIT        = 0x00000008;
 
       // wide frustum culling: object is represented some times larger to frustum culling
       // system than it really is;
       // how larger it is, is specified by Client::Render::WIDE_CULL_FACTOR
-      static const int WIDE_CULL_BIT      = 0x00000002;
-
-      // set pseudo-random heading to object's model on model creation; heading is calculated from
-      // object's position, so for static objects it's always the same direction (if model is
-      // recreated after object becomes visible again after some time)
-      static const int RANDOM_HEADING_BIT = 0x00000001;
+      static const int WIDE_CULL_BIT      = 0x00000004;
 
       /*
        * FLAG MASKS
        */
+
+      // masks Heading enum number
+      static const int HEADING_MASK       = 0x00000003;
 
       // those flags are cleared by Physics on each tick
       static const int TICK_CLEAR_MASK    = HIT_BIT | FRICTING_BIT;
@@ -225,6 +223,7 @@ namespace oz
       int                flags;
       int                oldFlags;
 
+      float              resistance;
       float              life;
 
       const ObjectClass* clazz;

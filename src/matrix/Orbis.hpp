@@ -104,8 +104,8 @@ namespace oz
       void unposition( Particle* part );
       void reposition( Particle* part );
 
-      int  addStruct( const char* name, const Point3& p, Struct::Rotation rot );
-      int  addObject( const char* name, const Point3& p );
+      int  addStruct( const char* name, const Point3& p, Heading heading );
+      int  addObject( const char* name, const Point3& p, Heading heading );
       int  addPart( const Point3& p, const Vec3& velocity, const Vec3& colour,
                     float restitution, float mass, float lifeTime );
 

@@ -25,10 +25,9 @@ namespace oz
 
   const float Cell::SIZE     = float( SIZEI );
   const float Cell::INV_SIZE = 1.0f / float( SIZEI );
+  const float Orbis::DIM     = Cell::SIZE * MAX / 2.0f;
 
 #ifndef OZ_TOOLS
-
-  const float Orbis::DIM     = Cell::SIZE * MAX / 2.0f;
 
   void Orbis::requestBSP( int id )
   {
@@ -51,8 +50,6 @@ namespace oz
 
   bool Orbis::position( Struct* str )
   {
-    str->setRotation( *str->bsp, str->rot );
-
     Span span = getInters( *str, EPSILON );
 
     for( int x = span.minX; x <= span.maxX; ++x ) {
@@ -198,7 +195,7 @@ namespace oz
     }
   }
 
-  int Orbis::addStruct( const char* name, const Point3& p, Struct::Rotation rot )
+  int Orbis::addStruct( const char* name, const Point3& p, Heading heading )
   {
     int index;
     int id = library.bspIndex( name );
@@ -207,17 +204,17 @@ namespace oz
 
     if( strAvailableIndices.isEmpty() ) {
       index = structs.length();
-      structs.add( library.createStruct( index, id, p, rot ) );
+      structs.add( library.createStruct( index, id, p, heading ) );
     }
     else {
       index = strAvailableIndices.popLast();
-      structs[index] = library.createStruct( index, id, p, rot );
+      structs[index] = library.createStruct( index, id, p, heading );
     }
     return index;
   }
 
   // has to be reentrant, can be called again from library.createObject
-  int Orbis::addObject( const char* name, const Point3& p )
+  int Orbis::addObject( const char* name, const Point3& p, Heading heading )
   {
     int index;
 
@@ -230,7 +227,7 @@ namespace oz
       index = objAvailableIndices.popLast();
     }
     // objects vector may relocate during createObject call, we must use this workaround
-    Object* obj = library.createObject( index, name, p );
+    Object* obj = library.createObject( index, name, p, heading );
     objects[index] = obj;
 
     if( objects[index]->flags & Object::LUA_BIT ) {

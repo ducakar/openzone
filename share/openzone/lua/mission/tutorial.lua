@@ -23,7 +23,7 @@ function onCreate()
   ozObjRemoveAllItems()
 
   local oX, oY, oZ = 80, -80, 69
-  ozOrbisAddStr( "tutorial_movement", oX, oY, oZ, OZ_STRUCT_R0 )
+  ozOrbisAddStr( "tutorial_movement", oX, oY, oZ, OZ_NORTH )
 
   local infoMove = ozOrbisAddObj( "datacube", oX - 2, oY - 9, oZ - 3 )
   local infoClimb = ozOrbisAddObj( "datacube", oX - 2.5, oY + 1, oZ - 2.5 )
@@ -52,7 +52,7 @@ function onCreate()
   )
 
   local oX, oY, oZ = 60, -92, 69
-  ozOrbisAddStr( "tutorial_carrying", oX, oY, oZ, OZ_STRUCT_R90 )
+  ozOrbisAddStr( "tutorial_carrying", oX, oY, oZ, OZ_WEST )
 
   ozOrbisAddObj( "metalCrate", oX + 3.2, oY - 4.5, oZ - 3 )
   ozObjRemoveAllItems()
@@ -80,7 +80,7 @@ function onCreate()
   )
 
   local oX, oY, oZ = 82, -55, 69.2
-  ozOrbisAddStr( "tutorial_items", oX, oY, oZ, OZ_STRUCT_R0 )
+  ozOrbisAddStr( "tutorial_items", oX, oY, oZ, OZ_NORTH )
 
   ozOrbisAddObj( "firstAid", oX - 4.5, oY - 3.2, oZ - 1.5 )
   ozOrbisAddObj( "firstAid", oX - 4.5, oY - 2.5, oZ - 1.5 )

@@ -271,28 +271,9 @@ namespace client
     vertex( v[0], v[1], v[2] );
   }
 
-  void Compiler::index( int i )
+  void Compiler::animVertex( int i )
   {
-    hard_assert( flags & MESH_BIT );
-    hard_assert( flags & PART_BIT );
-
-    bool doRestart = false;
-
-    if( mode == GL_QUADS && vertNum != 0 && vertNum % 4 == 0 ) {
-      doRestart = true;
-    }
-
-    if( doRestart ) {
-      part.indices.add( part.indices.last() );
-    }
-
-    part.indices.add( i );
-
-    if( doRestart ) {
-      part.indices.add( i );
-    }
-
-    ++vertNum;
+    vertex( float( i ), 0.0f, 0.0f );
   }
 
   void Compiler::getMeshData( MeshData* mesh ) const

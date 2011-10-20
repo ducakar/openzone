@@ -51,9 +51,9 @@ namespace oz
     orbis.unposition( obj );
   }
 
-  int Synapse::addStruct( const char* name, const Point3& p, Struct::Rotation rot )
+  int Synapse::addStruct( const char* name, const Point3& p, Heading heading )
   {
-    int index = orbis.addStruct( name, p, rot );
+    int index = orbis.addStruct( name, p, heading );
     Struct* str = orbis.structs[index];
 
     if( !orbis.position( str ) ) {
@@ -66,9 +66,9 @@ namespace oz
     return index;
   }
 
-  int Synapse::addObject( const char* name, const Point3& p )
+  int Synapse::addObject( const char* name, const Point3& p, Heading heading )
   {
-    int index = orbis.addObject( name, p );
+    int index = orbis.addObject( name, p, heading );
     Object* obj = orbis.objects[index];
     hard_assert( obj->cell == null );
 

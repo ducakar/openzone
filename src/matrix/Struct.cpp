@@ -264,10 +264,33 @@ namespace oz
     delete[] entities;
   }
 
-  Struct::Struct( int index_, int bspId, const Point3& p_, Rotation rot_ ) :
+  Struct::Struct( int index_, int bspId, const Point3& p_, Heading heading_ ) :
       p( p_ ), index( index_ ), id( bspId ), bsp( orbis.bsps[bspId] ),
-      rot( rot_ ), life( bsp->life )
+      heading( heading_ ), life( bsp->life )
   {
+    switch( heading ) {
+      case NORTH: {
+        mins = p + Vec3( +bsp->mins.x, +bsp->mins.y, +bsp->mins.z );
+        maxs = p + Vec3( +bsp->maxs.x, +bsp->maxs.y, +bsp->maxs.z );
+        break;
+      }
+      case WEST: {
+        mins = p + Vec3( -bsp->maxs.y, bsp->mins.x, bsp->mins.z );
+        maxs = p + Vec3( -bsp->mins.y, bsp->maxs.x, bsp->maxs.z );
+        break;
+      }
+      case SOUTH: {
+        mins = p + Vec3( -bsp->maxs.x, -bsp->maxs.y, +bsp->mins.z );
+        maxs = p + Vec3( -bsp->mins.x, -bsp->mins.y, +bsp->maxs.z );
+        break;
+      }
+      case EAST: {
+        mins = p + Vec3( bsp->mins.y, -bsp->maxs.x, bsp->mins.z );
+        maxs = p + Vec3( bsp->maxs.y, -bsp->mins.x, bsp->maxs.z );
+        break;
+      }
+    }
+
     nEntities = bsp->nModels;
     entities = nEntities == 0 ? null : new Entity[nEntities];
 
@@ -303,20 +326,20 @@ namespace oz
 
   Bounds Struct::toStructCS( const Bounds& bb ) const
   {
-    switch( rot ) {
-      case R0: {
+    switch( heading ) {
+      case NORTH: {
         return Bounds( Point3( +bb.mins.x - p.x, +bb.mins.y - p.y, +bb.mins.z - p.z ),
                        Point3( +bb.maxs.x - p.x, +bb.maxs.y - p.y, +bb.maxs.z - p.z ) );
       }
-      case R90: {
+      case WEST: {
         return Bounds( Point3( +bb.mins.y - p.y, -bb.maxs.x + p.x, +bb.mins.z - p.z ),
                        Point3( +bb.maxs.y - p.y, -bb.mins.x + p.x, +bb.maxs.z - p.z ) );
       }
-      case R180: {
+      case SOUTH: {
         return Bounds( Point3( -bb.maxs.x + p.x, -bb.maxs.y + p.y, +bb.mins.z - p.z ),
                        Point3( -bb.mins.x + p.x, -bb.mins.y + p.y, +bb.maxs.z - p.z ) );
       }
-      case R270: {
+      case EAST: {
         return Bounds( Point3( -bb.maxs.y + p.y, +bb.mins.x - p.x, +bb.mins.z - p.z ),
                        Point3( -bb.mins.y + p.y, +bb.maxs.x - p.x, +bb.maxs.z - p.z ) );
       }
@@ -325,72 +348,46 @@ namespace oz
 
   Bounds Struct::toAbsoluteCS( const Bounds& bb ) const
   {
-    switch( rot ) {
-      case R0: {
+    switch( heading ) {
+      case NORTH: {
         return Bounds( p + Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
                        p + Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
       }
-      case R90: {
+      case WEST: {
         return Bounds( p + Vec3( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
                        p + Vec3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
       }
-      case R180: {
+      case SOUTH: {
         return Bounds( p + Vec3( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
                        p + Vec3( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
       }
-      case R270: {
+      case EAST: {
         return Bounds( p + Vec3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
                        p + Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
       }
     }
   }
 
-  Bounds Struct::rotate( const Bounds& in, Rotation rot )
+  Bounds Struct::rotate( const Bounds& in, Heading heading )
   {
     Point3 p = in.mins + ( in.maxs - in.mins ) * 0.5f;
 
-    switch( rot ) {
-      case R0: {
+    switch( heading ) {
+      case NORTH: {
         return Bounds( p + Vec3( +in.mins.x, +in.mins.y, +in.mins.z ),
                        p + Vec3( +in.maxs.x, +in.maxs.y, +in.maxs.z ) );
       }
-      case R90: {
+      case WEST: {
         return Bounds( p + Vec3( -in.maxs.y, +in.mins.x, +in.mins.z ),
                        p + Vec3( -in.mins.y, +in.maxs.x, +in.maxs.z ) );
       }
-      case R180: {
+      case SOUTH: {
         return Bounds( p + Vec3( -in.maxs.x, -in.maxs.y, +in.mins.z ),
                        p + Vec3( -in.mins.x, -in.mins.y, +in.maxs.z ) );
       }
-      case R270: {
+      case EAST: {
         return Bounds( p + Vec3( +in.mins.y, -in.maxs.x, +in.mins.z ),
                        p + Vec3( +in.maxs.y, -in.mins.x, +in.maxs.z ) );
-      }
-    }
-  }
-
-  void Struct::setRotation( const Bounds& in, Rotation rot )
-  {
-    switch( rot ) {
-      case R0: {
-        mins = p + Vec3( +in.mins.x, +in.mins.y, +in.mins.z );
-        maxs = p + Vec3( +in.maxs.x, +in.maxs.y, +in.maxs.z );
-        break;
-      }
-      case R90: {
-        mins = p + Vec3( -in.maxs.y, in.mins.x, in.mins.z );
-        maxs = p + Vec3( -in.mins.y, in.maxs.x, in.maxs.z );
-        break;
-      }
-      case R180: {
-        mins = p + Vec3( -in.maxs.x, -in.maxs.y, +in.mins.z );
-        maxs = p + Vec3( -in.mins.x, -in.mins.y, +in.maxs.z );
-        break;
-      }
-      case R270: {
-        mins = p + Vec3( in.mins.y, -in.maxs.x, in.mins.z );
-        maxs = p + Vec3( in.maxs.y, -in.mins.x, in.maxs.z );
-        break;
       }
     }
   }
@@ -417,9 +414,11 @@ namespace oz
 
   void Struct::readFull( InputStream* istream )
   {
-    p    = istream->readPoint3();
-    rot  = Rotation( istream->readInt() );
-    life = istream->readFloat();
+    mins    = istream->readPoint3();
+    maxs    = istream->readPoint3();
+    p       = istream->readPoint3();
+    heading = Heading( istream->readInt() );
+    life    = istream->readFloat();
 
     for( int i = 0; i < nEntities; ++i ) {
       entities[i].offset = istream->readVec3();
@@ -431,13 +430,15 @@ namespace oz
 
   void Struct::writeFull( OutputStream* ostream )
   {
+    ostream->writePoint3( mins );
+    ostream->writePoint3( maxs );
     ostream->writePoint3( p );
-    ostream->writeInt( int( rot ) );
+    ostream->writeInt( heading );
     ostream->writeFloat( life );
 
     for( int i = 0; i < nEntities; ++i ) {
       ostream->writeVec3( entities[i].offset );
-      ostream->writeInt( int( entities[i].state ) );
+      ostream->writeInt( entities[i].state );
       ostream->writeFloat( entities[i].ratio );
       ostream->writeFloat( entities[i].time );
     }

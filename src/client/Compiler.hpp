@@ -87,7 +87,7 @@ namespace client
       void vertex( float x, float y, float z );
       void vertex( const float* v );
 
-      void index( int i );
+      void animVertex( int i );
 
       void getMeshData( MeshData* mesh ) const;
 

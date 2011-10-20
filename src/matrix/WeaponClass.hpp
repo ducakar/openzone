@@ -29,7 +29,7 @@ namespace oz
 
       static ObjectClass* init( const Config* config );
 
-      virtual Object* create( int index, const Point3& pos ) const;
+      virtual Object* create( int index, const Point3& pos, Heading heading ) const;
       virtual Object* create( int index, InputStream* istream ) const;
 
       void fillAllowedUsers();

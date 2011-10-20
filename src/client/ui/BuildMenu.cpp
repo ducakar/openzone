@@ -45,7 +45,7 @@ namespace ui
     AABB bb = AABB( p, ( *clazz )->dim );
 
     if( !collider.overlaps( bb ) ) {
-      synapse.addObject( button->className, p );
+      synapse.addObject( button->className, p, NORTH );
     }
   }
 

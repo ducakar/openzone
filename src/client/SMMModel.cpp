@@ -27,9 +27,6 @@ namespace client
     model->obj   = obj;
     model->clazz = obj->clazz;
     model->smm   = context.requestSMM( obj->clazz->modelIndex );
-    model->h     = obj->flags & Object::RANDOM_HEADING_BIT ?
-        Math::mod( ( obj->p.x + obj->p.y + obj->p.z ) * Math::E, Math::TAU ) :
-        0.0f;
 
     return model;
   }
@@ -45,7 +42,7 @@ namespace client
       return;
     }
 
-    tf.model.rotateZ( h );
+    tf.model.rotateZ( float( obj->flags & Object::HEADING_MASK ) * Math::TAU / 4.0f );
 
     smm->draw( mask );
   }

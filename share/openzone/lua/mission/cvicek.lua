@@ -146,7 +146,7 @@ function onCreate()
   oz_me = ozOrbisAddObj( "beast", 786.50, 999.60, 124.23 )
 
   -- outpost
-  ozOrbisAddStr( "bunker", 788.0, 1000.0, 124.5, OZ_STRUCT_R0 )
+  ozOrbisAddStr( "bunker", 788.0, 1000.0, 124.5, OZ_NORTH )
 
   ozOrbisAddObj( "metalCrate", 790.56, 1002.59, 123.83 )
   ozOrbisAddObj( "smallCrate", 789.65, 1002.89, 123.53 )
@@ -195,10 +195,10 @@ function onCreate()
   ozOrbisAddObj( "hoverTank", 815.22, 991.62, 124.76 )
 
   -- military base
-  ozOrbisAddStr( "tower", 2.0, -926.0, 145.0, OZ_STRUCT_R0 )
-  ozOrbisAddStr( "bunker", -35.0, -940.0, 138.5, OZ_STRUCT_R180 )
-  ozOrbisAddStr( "bunker", -20.0, -940.0, 138.5, OZ_STRUCT_R180 )
-  ozOrbisAddStr( "bunker", -20.0, -915.0, 138.0, OZ_STRUCT_R0 )
+  ozOrbisAddStr( "tower", 2.0, -926.0, 145.0, OZ_NORTH )
+  ozOrbisAddStr( "bunker", -35.0, -940.0, 138.5, OZ_SOUTH )
+  ozOrbisAddStr( "bunker", -20.0, -940.0, 138.5, OZ_SOUTH )
+  ozOrbisAddStr( "bunker", -20.0, -915.0, 138.0, OZ_NORTH )
 
   ozOrbisAddObj( "bigCrate", -33.32, -942.53, 137.83 )
   ozOrbisAddObj( "bigCrate", -34.59, -942.09, 137.83 )
@@ -349,8 +349,8 @@ function onCreate()
   ozVehicleEmbarkPilot( pilot )
 
   -- kmetija
-  ozOrbisAddStr( "house", 80.0, -20.0, 70.0, OZ_STRUCT_R0 )
-  ozOrbisAddStr( "house", 85.0, -30.0, 69.0, OZ_STRUCT_R90 )
+  ozOrbisAddStr( "house", 80.0, -20.0, 70.0, OZ_NORTH )
+  ozOrbisAddStr( "house", 85.0, -30.0, 69.0, OZ_WEST )
 
   ozOrbisAddObj( "goblin", 80.0, -20.0, 70.0 )
   ozBotSetMindFunc( "goblin_defend" )
@@ -367,9 +367,9 @@ function onCreate()
   ozBotSetH( 230 )
 
   -- lair
-  ozOrbisAddStr( "beast_bunker", -1014.0, 620.0, 52.0, OZ_STRUCT_R0 )
-  ozOrbisAddStr( "beast_bunker", -1029.0, 610.0, 51.5, OZ_STRUCT_R90 )
-  ozOrbisAddStr( "beast_bunker", -1010.0, 595.0, 52.3, OZ_STRUCT_R180 )
+  ozOrbisAddStr( "beast_bunker", -1014.0, 620.0, 52.0, OZ_NORTH )
+  ozOrbisAddStr( "beast_bunker", -1029.0, 610.0, 51.5, OZ_WEST )
+  ozOrbisAddStr( "beast_bunker", -1010.0, 595.0, 52.3, OZ_SOUTH )
 
   local musicPlayer1 = ozOrbisAddObj( "musicPlayer", 0, 0, 0 )
   local musicPlayer2 = ozOrbisAddObj( "musicPlayer", 0, 0, 0 )
