@@ -57,12 +57,20 @@ namespace oz
       throw Exception( "Invalid object lift. Should be >= 0." );
     }
 
-    clazz->dimCrouch.x = clazz->dim.x;
-    clazz->dimCrouch.y = clazz->dim.y;
-    clazz->dimCrouch.z = config->get( "dimCrouch.z", 0.80f );
+    clazz->crouchDim.x = clazz->dim.x;
+    clazz->crouchDim.y = clazz->dim.y;
+    clazz->crouchDim.z = config->get( "crouchDim.z", 0.80f );
 
-    if( clazz->dimCrouch.z < 0.0f ) {
+    if( clazz->crouchDim.z < 0.0f ) {
       throw Exception( "Invalid bot crouch dimensions. Should be >= 0." );
+    }
+
+    clazz->corpseDim.x = config->get( "corpseDim.x", 2.0f * clazz->dim.x );
+    clazz->corpseDim.y = config->get( "corpseDim.y", 2.0f * clazz->dim.y );
+    clazz->corpseDim.z = config->get( "corpseDim.z", 0.20f );
+
+    if( clazz->corpseDim.z < 0.0f || clazz->corpseDim.y < 0.0f || clazz->corpseDim.z < 0.0f ) {
+      throw Exception( "Invalid bot corpse dimensions. Should be >= 0." );
     }
 
     clazz->camZ              = config->get( "camZ", 0.79f );
@@ -134,22 +142,19 @@ namespace oz
 
     hard_assert( obj->index == -1 && obj->cell == null && obj->parent == -1 );
 
-    obj->p        = pos;
-    obj->index    = index;
-
-    obj->h        = 0.0f;
-    obj->v        = Math::TAU / 4.0f;
-
-    obj->mass     = mass;
-    obj->lift     = lift;
-
-    obj->camZ     = camZ;
-    obj->state    = state;
-    obj->oldState = state;
-    obj->stamina  = stamina;
-
-    obj->name     = namePool.genName( nameList );
-    obj->mindFunc = mindFunction;
+    obj->p          = pos;
+    obj->index      = index;
+    obj->resistance = resistance;
+    obj->mass       = mass;
+    obj->lift       = lift;
+    obj->h          = 0.0f;
+    obj->v          = Math::TAU / 4.0f;
+    obj->camZ       = camZ;
+    obj->state      = state;
+    obj->oldState   = state;
+    obj->stamina    = stamina;
+    obj->name       = namePool.genName( nameList );
+    obj->mindFunc   = mindFunction;
 
     fillCommonFields( obj );
 
@@ -177,15 +182,15 @@ namespace oz
   {
     Bot* obj = new Bot();
 
-    obj->index = index;
-    obj->clazz = this;
-
-    obj->mass  = mass;
-    obj->lift  = lift;
+    obj->index      = index;
+    obj->clazz      = this;
+    obj->resistance = resistance;
+    obj->mass       = mass;
+    obj->lift       = lift;
 
     obj->readFull( istream );
 
-    obj->camZ  = ( obj->state & Bot::CROUCHING_BIT ) ? crouchCamZ : camZ;
+    obj->camZ = ( obj->state & Bot::CROUCHING_BIT ) ? crouchCamZ : camZ;
 
     return obj;
   }

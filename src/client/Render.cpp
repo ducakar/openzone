@@ -479,8 +479,6 @@ namespace client
 
     OZ_GL_CHECK_ERROR();
 
-    shader.load();
-
     ui::ui.load();
 
     frustum.init();
@@ -518,7 +516,6 @@ namespace client
     waterStructs.dealloc();
 
     ui::ui.unload();
-    shader.unload();
 
     log.unindent();
     log.println( "}" );
@@ -846,6 +843,7 @@ namespace client
 
 #ifndef OZ_TOOLS
     shader.init();
+    shader.load();
     shape.load();
     camera.init();
     ui::ui.init();
@@ -883,6 +881,7 @@ namespace client
 #ifndef OZ_TOOLS
     ui::ui.free();
     shape.unload();
+    shader.unload();
     shader.free();
 #endif
 

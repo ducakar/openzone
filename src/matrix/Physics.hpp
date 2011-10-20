@@ -36,6 +36,9 @@ namespace oz
       static const float FLOOR_FRICTION;
       static const float SLICK_FRICTION;
 
+      static const float STRUCT_HIT_MAX_MASS;
+      static const float STRUCT_HIT_RATIO;
+
       static const float PART_HIT_VELOCITY2;
       static const float PART_DESTROY_VELOCITY2;
 

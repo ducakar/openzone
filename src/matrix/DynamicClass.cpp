@@ -55,11 +55,10 @@ namespace oz
 
     hard_assert( obj->index == -1 && obj->cell == null && obj->parent == -1 );
 
-    obj->p     = pos;
-    obj->index = index;
-
-    obj->mass  = mass;
-    obj->lift  = lift;
+    obj->p          = pos;
+    obj->index      = index;
+    obj->mass       = mass;
+    obj->lift       = lift;
 
     fillCommonFields( obj );
 
@@ -76,15 +75,14 @@ namespace oz
   {
     Dynamic* obj = new Dynamic();
 
-    obj->index = index;
-    obj->clazz = this;
-
-    obj->mass  = mass;
-    obj->lift  = lift;
+    obj->dim        = dim;
+    obj->index      = index;
+    obj->clazz      = this;
+    obj->resistance = resistance;
+    obj->mass       = mass;
+    obj->lift       = lift;
 
     obj->readFull( istream );
-
-    obj->dim   = dim;
 
     Heading heading = Heading( obj->flags & Object::HEADING_MASK );
     if( heading == WEST || heading == EAST ) {

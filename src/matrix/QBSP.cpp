@@ -20,6 +20,9 @@
 namespace oz
 {
 
+  const float QBSP::DEFAULT_LIFE       = 10000.0f;
+  const float QBSP::DEFAULT_RESISTANCE = 400.0f;
+
   inline bool QBSP::includes( const QBSP::Brush& brush, float maxDim ) const
   {
     for( int i = 0; i < brush.nSides; ++i ) {
@@ -483,7 +486,7 @@ namespace oz
     os.writePoint3( mins );
     os.writePoint3( maxs );
     os.writeFloat( life );
-    os.writeFloat( damageTreshold );
+    os.writeFloat( resistance );
 
     os.writeInt( nPlanes );
     os.writeInt( nNodes );
@@ -553,8 +556,8 @@ namespace oz
 
     float scale = bspConfig.get( "scale", 0.01f );
     float maxDim = bspConfig.get( "maxDim", Math::INF );
-    life = bspConfig.get( "life", 1000.0f );
-    damageTreshold = bspConfig.get( "damageTreshold", 400.0f );
+    life = bspConfig.get( "life", DEFAULT_LIFE );
+    resistance = bspConfig.get( "resistance", DEFAULT_RESISTANCE );
 
     mins = Point3( -maxDim, -maxDim, -maxDim );
     maxs = Point3( +maxDim, +maxDim, +maxDim );

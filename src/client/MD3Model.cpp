@@ -120,6 +120,8 @@ namespace client
         glEnable( GL_BLEND );
       }
 
+      tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->corpseDim.z ) );
+
 //       md3->advance( &anim, timer.frameTime );
 //       md3->draw( &anim );
       md3->drawFrame( 0 );
@@ -131,7 +133,7 @@ namespace client
     }
     else if( bot->index != camera.bot || camera.isExternal ) {
       if( bot->state & Bot::CROUCHING_BIT ) {
-        tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->dimCrouch.z ) );
+        tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->crouchDim.z ) );
       }
 
 //       md3->advance( &anim, timer.frameTime );

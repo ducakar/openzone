@@ -34,6 +34,9 @@ namespace oz
   const float Physics::FLOOR_FRICTION         =  0.40f;
   const float Physics::SLICK_FRICTION         =  0.02f;
 
+  const float Physics::STRUCT_HIT_MAX_MASS    =  1.0f;
+  const float Physics::STRUCT_HIT_RATIO       =  0.5f;
+
   const float Physics::PART_HIT_VELOCITY2     =  100.0f;
   const float Physics::PART_DESTROY_VELOCITY2 =  900.0f;
 
@@ -46,17 +49,29 @@ namespace oz
     float velocity2 = part->velocity * part->velocity;
     if( velocity2 >= PART_HIT_VELOCITY2 ) {
       if( velocity2 >= PART_DESTROY_VELOCITY2 ) {
-        part->lifeTime = 0.0f;
+        part->lifeTime = -Math::INF;
       }
 
-      if( collider.hit.obj != null && part->mass != 0.0f ) {
-        Object* sObj = const_cast<Object*>( collider.hit.obj );
-        float damage = velocity2 * part->mass;
+      if( part->mass != 0.0f ) {
+        if( collider.hit.obj != null ) {
+          Object* obj = const_cast<Object*>( collider.hit.obj );
+          float damage = velocity2 * part->mass;
 
-        if( damage > sObj->clazz->damageThreshold ) {
-          damage -= sObj->clazz->damageThreshold;
-          damage *= Math::rand();
-          sObj->damage( sObj->clazz->damageThreshold + damage );
+          if( damage > obj->resistance ) {
+            damage -= obj->resistance;
+            damage *= Math::rand();
+            obj->damage( obj->resistance + damage );
+          }
+        }
+        else if( collider.hit.str != null ) {
+          Struct* str = const_cast<Struct*>( collider.hit.str );
+          float damage = velocity2 * part->mass;
+
+          if( damage > str->resistance ) {
+            damage -= str->resistance;
+            damage *= Math::rand();
+            str->damage( str->resistance + damage );
+          }
         }
       }
     }
@@ -194,8 +209,8 @@ namespace oz
     if( hit.obj != null && ( hit.obj->flags & Object::DYNAMIC_BIT ) ) {
       Dynamic* sDyn = static_cast<Dynamic*>( const_cast<Object*>( hit.obj ) );
 
-      Vec3  momentum    = ( dyn->momentum * dyn->mass + sDyn->momentum * sDyn->mass ) /
-          ( dyn->mass + sDyn->mass );
+      float massSum     = dyn->mass + sDyn->mass;
+      Vec3  momentum    = ( dyn->momentum * dyn->mass + sDyn->momentum * sDyn->mass ) / massSum;
       float hitMomentum = ( dyn->momentum - sDyn->momentum ) * hit.normal;
       float hitVelocity = dyn->velocity * hit.normal;
 
@@ -259,12 +274,21 @@ namespace oz
       float hitVelocity = dyn->velocity * hit.normal;
 
       if( hitMomentum <= HIT_THRESHOLD && hitVelocity <= HIT_THRESHOLD ) {
-        dyn->hit( &hit, hitMomentum );
-
         if( hit.obj != null ) {
           Object* sObj = const_cast<Object*>( hit.obj );
 
+          dyn->hit( &hit, hitMomentum );
           sObj->hit( &hit, hitMomentum );
+        }
+        else {
+          dyn->hit( &hit, hitMomentum );
+
+          if( hit.str != null ) {
+            Struct* str = const_cast<Struct*>( hit.str );
+
+            float effectiveMass = min( dyn->mass, STRUCT_HIT_MAX_MASS );
+            str->damage( STRUCT_HIT_RATIO * hitMomentum*hitMomentum * effectiveMass );
+          }
         }
       }
 

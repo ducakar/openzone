@@ -32,9 +32,7 @@ namespace oz
   // should be smaller than abs( Physics::HIT_THRESHOLD )
   const float Bot::GRAB_MOM_MAX        = 1.0f;
   const float Bot::GRAB_MOM_MAX_SQ     = 1.0f;
-  const float Bot::DEAD_BODY_LIFT      = 100.0f;
-  // 100 s
-  const float Bot::BODY_FADE_FACTOR    = 0.5f / 100.0f * Timer::TICK_TIME;
+  const float Bot::CORPSE_FADE_FACTOR  = 0.5f / 100.0f * Timer::TICK_TIME;
 
   Pool<Bot, 1024> Bot::pool;
 
@@ -71,10 +69,10 @@ namespace oz
     if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
       hard_assert( hitMomentum <= 0.0f );
 
-      addEvent( EVENT_LAND, hitMomentum * MOMENTUM_INTENSITY_COEF );
+      addEvent( EVENT_LAND, 1.0f );
     }
     else if( hitMomentum < HIT_HARD_THRESHOLD ) {
-      addEvent( EVENT_HIT_HARD, hitMomentum * MOMENTUM_INTENSITY_COEF );
+      addEvent( EVENT_HIT_HARD, 1.0f );
     }
   }
 
@@ -111,7 +109,7 @@ namespace oz
           kill();
         }
         else {
-          life -= clazz->life * BODY_FADE_FACTOR;
+          life -= clazz->life * CORPSE_FADE_FACTOR;
           // we don't want Object::destroy() to be called when body dissolves (destroy() causes
           // sounds and particles to fly around), that's why we just remove the object
           if( life <= 0.0f ) {
@@ -254,7 +252,7 @@ namespace oz
       if( state & CROUCHING_BIT ) {
         float oldZ = p.z;
 
-        p.z = oldZ + clazz->dim.z - clazz->dimCrouch.z;
+        p.z = oldZ + clazz->dim.z - clazz->crouchDim.z;
         dim = clazz->dim;
 
         if( !collider.overlaps( this, this ) ) {
@@ -262,14 +260,14 @@ namespace oz
           state &= ~CROUCHING_BIT;
         }
         else {
-          p.z = oldZ - clazz->dim.z + clazz->dimCrouch.z;
+          p.z = oldZ - clazz->dim.z + clazz->crouchDim.z;
 
           if( !collider.overlaps( this, this ) ) {
             camZ  = clazz->camZ;
             state &= ~CROUCHING_BIT;
           }
           else {
-            dim = clazz->dimCrouch;
+            dim = clazz->crouchDim;
             p.z = oldZ;
           }
         }
@@ -279,8 +277,8 @@ namespace oz
         flags &= ~ON_FLOOR_BIT;
         lower =  -1;
 
-        p.z    += dim.z - clazz->dimCrouch.z;
-        dim.z  = clazz->dimCrouch.z;
+        p.z    += dim.z - clazz->crouchDim.z;
+        dim.z  = clazz->crouchDim.z;
         camZ   = clazz->crouchCamZ;
         state  |= CROUCHING_BIT;
       }
@@ -750,6 +748,10 @@ namespace oz
   void Bot::kill()
   {
     if( !Math::isInfFM( life ) ) {
+      const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+
+      p.z   -= dim.z - clazz->corpseDim.z - EPSILON;
+      dim   = clazz->corpseDim;
       flags |= WIDE_CULL_BIT;
       flags &= ~SOLID_BIT;
       life  = clazz->life / 2.0f - EPSILON;
@@ -802,6 +804,8 @@ namespace oz
 
   void Bot::readFull( InputStream* istream )
   {
+    const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+
     Dynamic::readFull( istream );
 
     h          = istream->readFloat();
@@ -824,8 +828,15 @@ namespace oz
     name       = istream->readString();
     mindFunc   = istream->readString();
 
-    const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
-    dim = ( state & CROUCHING_BIT ) ? clazz->dimCrouch : clazz->dim;
+    if( state & DEAD_BIT ) {
+      dim = clazz->corpseDim;
+    }
+    else if( state & CROUCHING_BIT ) {
+      dim = clazz->crouchDim;
+    }
+    else {
+      dim = clazz->dim;
+    }
   }
 
   void Bot::writeFull( OutputStream* ostream ) const
