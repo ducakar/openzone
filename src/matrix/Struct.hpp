@@ -55,14 +55,6 @@ namespace oz
 
       };
 
-      enum Rotation
-      {
-        R0,
-        R90,
-        R180,
-        R270
-      };
-
       static Pool<Struct> pool;
 
       static const Mat44 rotations[];
@@ -76,7 +68,7 @@ namespace oz
       int        index;
       int        id;
       const BSP* bsp;
-      Rotation   rot;
+      Heading    heading;
       float      life;
 
       int        nEntities;
@@ -92,7 +84,7 @@ namespace oz
 
     public:
 
-      explicit Struct( int index, int bspId, const Point3& p, Rotation rot );
+      explicit Struct( int index, int bspId, const Point3& p, Heading heading );
       explicit Struct( int index, int bpsId, InputStream* istream );
 
       /**
@@ -137,8 +129,7 @@ namespace oz
        */
       Bounds toAbsoluteCS( const Bounds& bb ) const;
 
-      static Bounds rotate( const Bounds& in, Rotation rot );
-      void setRotation( const Bounds& in, Rotation rot );
+      static Bounds rotate( const Bounds& in, Heading heading );
 
       void damage( float damage );
       void destroy();
@@ -153,22 +144,22 @@ namespace oz
 
   inline Vec3 Struct::toStructCS( const Vec3& v ) const
   {
-    return invRotations[ int( rot ) ] * v;
+    return invRotations[heading] * v;
   }
 
   inline Vec3 Struct::toAbsoluteCS( const Vec3& v ) const
   {
-    return rotations[ int( rot ) ] * v;
+    return rotations[heading] * v;
   }
 
   inline Point3 Struct::toStructCS( const Point3& point ) const
   {
-    return Point3::ORIGIN + invRotations[ int( rot ) ] * ( point - p );
+    return Point3::ORIGIN + invRotations[heading] * ( point - p );
   }
 
   inline Point3 Struct::toAbsoluteCS( const Point3& point ) const
   {
-    return p + rotations[ int( rot ) ] * ( point - Point3::ORIGIN );
+    return p + rotations[heading] * ( point - Point3::ORIGIN );
   }
 
   inline void Struct::damage( float damage )

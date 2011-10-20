@@ -125,10 +125,9 @@ namespace oz
 
 #ifndef OZ_TOOLS
 
-  Struct* Library::createStruct( int index, int id, const Point3& p,
-                                    Struct::Rotation rot ) const
+  Struct* Library::createStruct( int index, int id, const Point3& p, Heading heading ) const
   {
-    return new Struct( index, id, p, rot );
+    return new Struct( index, id, p, heading );
   }
 
   Struct* Library::createStruct( int index, int id, InputStream* istream ) const
@@ -136,11 +135,12 @@ namespace oz
     return new Struct( index, id, istream );
   }
 
-  Object* Library::createObject( int index, const char* name, const Point3& p ) const
+  Object* Library::createObject( int index, const char* name,
+                                 const Point3& p, Heading heading ) const
   {
     const ObjectClass* const* value = classes.find( name );
     if( value != null ) {
-      return ( *value )->create( index, p );
+      return ( *value )->create( index, p, heading );
     }
     else {
       throw Exception( "Invalid object class requested '" + String( name ) + "'" );

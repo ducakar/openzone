@@ -111,8 +111,7 @@ namespace oz
 
     public:
 
-      float      h;
-      float      v;
+      float      h, v;
       int        state, oldState;
       int        actions, oldActions;
 

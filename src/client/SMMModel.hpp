@@ -23,8 +23,7 @@ namespace client
   {
     protected:
 
-      SMM*  smm;
-      float h;
+      SMM* smm;
 
       virtual ~SMMModel();
 

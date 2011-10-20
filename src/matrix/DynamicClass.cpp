@@ -49,7 +49,7 @@ namespace oz
     return clazz;
   }
 
-  Object* DynamicClass::create( int index, const Point3& pos ) const
+  Object* DynamicClass::create( int index, const Point3& pos, Heading heading ) const
   {
     Dynamic* obj = new Dynamic();
 
@@ -63,14 +63,18 @@ namespace oz
 
     fillCommonFields( obj );
 
+    obj->flags |= heading;
+
+    if( heading == WEST || heading == EAST ) {
+      swap( obj->dim.x, obj->dim.y );
+    }
+
     return obj;
   }
 
   Object* DynamicClass::create( int index, InputStream* istream ) const
   {
     Dynamic* obj = new Dynamic();
-
-    obj->dim   = dim;
 
     obj->index = index;
     obj->clazz = this;
@@ -79,6 +83,13 @@ namespace oz
     obj->lift  = lift;
 
     obj->readFull( istream );
+
+    obj->dim   = dim;
+
+    Heading heading = Heading( obj->flags & Object::HEADING_MASK );
+    if( heading == WEST || heading == EAST ) {
+      swap( obj->dim.x, obj->dim.y );
+    }
 
     return obj;
   }

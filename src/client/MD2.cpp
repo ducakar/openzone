@@ -26,28 +26,28 @@ namespace client
 
   const MD2::AnimInfo MD2::ANIM_LIST[] =
   {
-    // first, last, fps, repeat
-    {   0,  39,  9.0f, 1 },   // STAND
-    {  40,  45, 10.0f, 1 },   // RUN
-    {  46,  53, 16.0f, 1 },   // ATTACK
-    {  54,  57,  7.0f, 1 },   // PAIN_A
-    {  58,  61,  7.0f, 1 },   // PAIN_B
-    {  62,  65,  7.0f, 1 },   // PAIN_C
-    {  67,  67,  9.0f, 0 },   // JUMP
-    {  72,  83,  7.0f, 1 },   // FLIP
-    {  84,  94,  7.0f, 1 },   // SALUTE
-    {  95, 111, 10.0f, 1 },   // FALLBACK
-    { 112, 122,  7.0f, 1 },   // WAVE
-    { 123, 134,  6.0f, 1 },   // POINT
-    { 135, 153, 10.0f, 1 },   // CROUCH_STAND
-    { 154, 159,  7.0f, 1 },   // CROUCH_WALK
-    { 160, 168, 18.0f, 1 },   // CROUCH_ATTACK
-    { 169, 172,  7.0f, 1 },   // CROUCH_PAIN
-    { 173, 177,  5.0f, 1 },   // CROUCH_DEATH
-    { 178, 183,  7.0f, 0 },   // DEATH_FALLBACK
-    { 184, 189,  7.0f, 0 },   // DEATH_FALLFORWARD
-    { 190, 197,  7.0f, 0 },   // DEATH_FALLBACKSLOW
-    {   0, 197,  7.0f, 1 }    // FULL
+    // first, last, repeat, fps
+    {   0,  39, 1,  9.0f },   // STAND
+    {  40,  45, 1, 10.0f },   // RUN
+    {  46,  53, 1, 16.0f },   // ATTACK
+    {  54,  57, 1,  7.0f },   // PAIN_A
+    {  58,  61, 1,  7.0f },   // PAIN_B
+    {  62,  65, 1,  7.0f },   // PAIN_C
+    {  67,  67, 0,  9.0f },   // JUMP
+    {  72,  83, 1,  7.0f },   // FLIP
+    {  84,  94, 1,  7.0f },   // SALUTE
+    {  95, 111, 1, 10.0f },   // FALLBACK
+    { 112, 122, 1,  7.0f },   // WAVE
+    { 123, 134, 1,  6.0f },   // POINT
+    { 135, 153, 1, 10.0f },   // CROUCH_STAND
+    { 154, 159, 1,  7.0f },   // CROUCH_WALK
+    { 160, 168, 1, 18.0f },   // CROUCH_ATTACK
+    { 169, 172, 1,  7.0f },   // CROUCH_PAIN
+    { 173, 177, 1,  5.0f },   // CROUCH_DEATH
+    { 178, 183, 0,  7.0f },   // DEATH_FALLBACK
+    { 184, 189, 0,  7.0f },   // DEATH_FALLFORWARD
+    { 190, 197, 0,  7.0f },   // DEATH_FALLBACKSLOW
+    {   0, 197, 1,  7.0f }    // FULL
   };
 
 #ifndef OZ_TOOLS
@@ -533,11 +533,38 @@ namespace client
 
     DArray<MD2TexCoord> texCoords( header.nTexCoords );
     DArray<MD2Triangle> triangles( header.nTriangles );
+    DArray<Vec3>        normals( header.nFrames * header.nFramePositions );
+    DArray<Point3>      vertices( header.nFrames * header.nFramePositions );
 
     char* frameData = new char[header.nFrames * header.frameSize];
 
     fseek( file, header.offFrames, SEEK_SET );
     fread( frameData, 1, size_t( header.nFrames * header.frameSize ), file );
+
+    for( int i = 0; i < header.nFrames; ++i ) {
+      MD2Frame& frame = *reinterpret_cast<MD2Frame*>( &frameData[i * header.frameSize] );
+
+      for( int j = 0; j < header.nFramePositions; ++j ) {
+        Vec3&   normal = normals[i * header.nFramePositions + j];
+        Point3& vertex = vertices[i * header.nFramePositions + j];
+
+        normal   = NORMALS[ frame.verts[j].normal ];
+
+        vertex.x = float( frame.verts[j].p[1] ) * -frame.scale[1] - frame.translate[1];
+        vertex.y = float( frame.verts[j].p[0] ) *  frame.scale[0] + frame.translate[0];
+        vertex.z = float( frame.verts[j].p[2] ) *  frame.scale[2] + frame.translate[2];
+
+        vertex.x = vertex.x * scale + translation.x;
+        vertex.y = vertex.y * scale + translation.y;
+        vertex.z = vertex.z * scale + translation.z;
+
+        if( ANIM_LIST[Anim::JUMP].firstFrame <= i && i <= ANIM_LIST[Anim::JUMP].lastFrame ) {
+          vertex += jumpTransl;
+        }
+      }
+    }
+
+    delete[] frameData;
 
     fseek( file, header.offTexCoords, SEEK_SET );
     fread( texCoords, 1, size_t( header.nTexCoords ) * sizeof( MD2TexCoord ), file );
@@ -561,13 +588,23 @@ namespace client
 
         compiler.texCoord( float( texCoord.s ) / float( header.skinWidth ),
                            float( header.skinHeight - texCoord.t ) / float( header.skinHeight ) );
-        // position index (to make it unique and) to replace it later by the actual coordinates
-        compiler.vertex( float( triangles[i].vertices[j] ), 0.0f, 0.0f );
+
+        if( header.nFrames == 1 ) {
+          compiler.normal( normals[ triangles[i].vertices[j] ] );
+          compiler.vertex( vertices[ triangles[i].vertices[j] ] );
+        }
+        else {
+          // vertex index in vertex animation buffer
+          compiler.animVertex( triangles[i].vertices[j] );
+        }
       }
     }
 
     compiler.end();
     compiler.endMesh();
+
+    triangles.dealloc();
+    texCoords.dealloc();
 
     MeshData mesh;
     compiler.getMeshData( &mesh );
@@ -577,8 +614,6 @@ namespace client
     library.shaderIndex( shaderName );
 
     if( nFrameVertices > MAX_VERTS ) {
-      delete[] frameData;
-
       throw Exception( "MD2 model has too many vertices" );
     }
 
@@ -588,27 +623,7 @@ namespace client
     os.writeString( shaderName );
 
     // generate vertex data for animated MD2s
-    if( header.nFrames == 1 ) {
-      // replace position indices by their actual coordinates if we have a static mesh
-      MD2Frame& frame = *reinterpret_cast<MD2Frame*>( &frameData[0] );
-
-      foreach( vertex, mesh.vertices.iter() ) {
-        int index = int( vertex->pos[0] + 0.5f );
-
-        vertex->pos[0] = float( frame.verts[index].p[1] ) * -frame.scale[1] - frame.translate[1];
-        vertex->pos[1] = float( frame.verts[index].p[0] ) *  frame.scale[0] + frame.translate[0];
-        vertex->pos[2] = float( frame.verts[index].p[2] ) *  frame.scale[2] + frame.translate[2];
-
-        vertex->pos[0] = vertex->pos[0] * scale + translation.x;
-        vertex->pos[1] = vertex->pos[1] * scale + translation.y;
-        vertex->pos[2] = vertex->pos[2] * scale + translation.z;
-
-        vertex->normal[0] = NORMALS[ frame.verts[index].normal ].x;
-        vertex->normal[1] = NORMALS[ frame.verts[index].normal ].y;
-        vertex->normal[2] = NORMALS[ frame.verts[index].normal ].z;
-      }
-    }
-    else {
+    if( header.nFrames != 1 ) {
       os.writeInt( header.nFrames );
       os.writeInt( nFrameVertices );
       os.writeInt( header.nFramePositions );
@@ -616,32 +631,14 @@ namespace client
 
       // write vertex positions for all frames
       for( int i = 0; i < header.nFrames; ++i ) {
-        MD2Frame& frame = *reinterpret_cast<MD2Frame*>( &frameData[i * header.frameSize] );
-
         for( int j = 0; j < header.nFramePositions; ++j ) {
-          Point3 p;
-
-          p.x = float( frame.verts[j].p[1] ) * -frame.scale[1] - frame.translate[1];
-          p.y = float( frame.verts[j].p[0] ) *  frame.scale[0] + frame.translate[0];
-          p.z = float( frame.verts[j].p[2] ) *  frame.scale[2] + frame.translate[2];
-
-          p.x = p.x * scale + translation.x;
-          p.y = p.y * scale + translation.y;
-          p.z = p.z * scale + translation.z;
-
-          if( ANIM_LIST[Anim::JUMP].firstFrame <= i && i <= ANIM_LIST[Anim::JUMP].lastFrame ) {
-            p += jumpTransl;
-          }
-
-          os.writePoint3( p );
+          os.writePoint3( vertices[i * header.nFramePositions + j] );
         }
       }
       // write vertex normals for all frames
       for( int i = 0; i < header.nFrames; ++i ) {
-        MD2Frame& frame = *reinterpret_cast<MD2Frame*>( &frameData[i * header.frameSize] );
-
         for( int j = 0; j < header.nFramePositions; ++j ) {
-          os.writeVec3( NORMALS[ frame.verts[j].normal ] );
+          os.writeVec3( normals[i * header.nFramePositions + j] );
         }
       }
 
@@ -653,6 +650,9 @@ namespace client
         vertex->pos[2] = 0.0f;
       }
     }
+
+    normals.dealloc();
+    vertices.dealloc();
 
     mesh.write( &os );
 
@@ -666,8 +666,6 @@ namespace client
       buffer.write( sPath + ".ozcSMM", os.length() );
       log.printEnd( " OK" );
     }
-
-    delete[] frameData;
 
     log.unindent();
     log.println( "}" );

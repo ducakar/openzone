@@ -57,7 +57,7 @@ namespace oz
     return clazz;
   }
 
-  Object* WeaponClass::create( int index, const Point3& pos ) const
+  Object* WeaponClass::create( int index, const Point3& pos, Heading heading ) const
   {
     Weapon* obj = new Weapon();
 
@@ -74,14 +74,18 @@ namespace oz
 
     fillCommonFields( obj );
 
+    obj->flags |= heading;
+
+    if( heading == WEST || heading == EAST ) {
+      swap( obj->dim.x, obj->dim.y );
+    }
+
     return obj;
   }
 
   Object* WeaponClass::create( int index, InputStream* istream ) const
   {
     Weapon* obj = new Weapon();
-
-    obj->dim   = dim;
 
     obj->index = index;
     obj->clazz = this;
@@ -90,6 +94,13 @@ namespace oz
     obj->lift  = lift;
 
     obj->readFull( istream );
+
+    obj->dim   = dim;
+
+    Heading heading = Heading( obj->flags & Object::HEADING_MASK );
+    if( heading == WEST || heading == EAST ) {
+      swap( obj->dim.x, obj->dim.y );
+    }
 
     return obj;
   }

@@ -35,21 +35,20 @@ namespace client
   {}
 
   void MD3::drawFrame( int frame ) const
-  {
-  }
+  {}
 
 #else
 
   String MD3::sPath;
   Config MD3::config;
 
-  bool   MD3::forceStatic;
   float  MD3::scale;
   Mat44  MD3::meshTransf;
-  Vec3   MD3::jumpTransl;
-  Mat44  MD3::weaponTransf;
+  int    MD3::nTags;
 
-  void MD3::buildMesh( const char* name, int frame, DArray<MD3Tag>* tags )
+  DArray<MD3::MD3Tag> MD3::tags;
+
+  void MD3::buildMesh( const char* name, int frame )
   {
     log.print( "Mesh '%s' ...", name );
 
@@ -72,20 +71,18 @@ namespace client
       throw Exception( "Invalid MD3 header counts" );
     }
 
-    if( forceStatic ) {
-      header.nFrames = 1;
-    }
+    nTags = header.nTags;
 
     if( header.nTags != 0 ) {
-      tags->alloc( header.nTags );
+      tags.alloc( header.nFrames * header.nTags );
 
       fseek( file, header.offTags, SEEK_SET );
-      fread( *tags, sizeof( MD3Tag ), size_t( header.nTags ), file );
+      fread( tags, sizeof( MD3Tag ), size_t( header.nFrames * header.nTags ), file );
     }
 
-    fseek( file, header.offSurfaces, SEEK_SET );
-
     int indexBase = 0;
+
+    fseek( file, header.offSurfaces, SEEK_SET );
 
     for( int i = 0; i < header.nSurfaces; ++i ) {
       long surfaceStart = ftell( file );
@@ -103,6 +100,8 @@ namespace client
       DArray<MD3Shader>   surfaceShaders( surface.nShaders );
       DArray<MD3TexCoord> surfaceTexCoords( surface.nVertices );
       DArray<MD3Vertex>   surfaceVertices( surface.nFrames * surface.nVertices );
+      DArray<Vec3>        normals( surfaceVertices.length() );
+      DArray<Point3>      vertices( surfaceVertices.length() );
 
       fseek( file, surfaceStart + surface.offTriangles, SEEK_SET );
       fread( surfaceTriangles, sizeof( MD3Triangle ), size_t( surfaceTriangles.length() ), file );
@@ -118,8 +117,22 @@ namespace client
 
       fseek( file, surfaceStart + surface.offEnd, SEEK_SET );
 
-      if( !forceStatic && surface.nFrames != header.nFrames ) {
+      if( surface.nFrames != header.nFrames ) {
         throw Exception( "Invalid MD3 surface # of frames" );
+      }
+
+      for( int i = 0; i < surfaceVertices.length(); ++i ) {
+        float h  = float( surfaceVertices[i].normal[0] ) / 255.0f * Math::TAU;
+        float v  = float( surfaceVertices[i].normal[1] ) / 255.0f * Math::TAU;
+        float xy = Math::sin( v );
+
+        normals[i].x = xy * Math::sin( -h );
+        normals[i].y = xy * Math::cos( +h );
+        normals[i].z = -Math::cos( v );
+
+        vertices[i].x = float( -surfaceVertices[i].pos[1] ) / 64.0f * scale;
+        vertices[i].y = float( +surfaceVertices[i].pos[0] ) / 64.0f * scale;
+        vertices[i].z = float( +surfaceVertices[i].pos[2] ) / 64.0f * scale;
       }
 
       const char* skinFile = max( String::findLast( surfaceShaders[0].name, '/' ),
@@ -143,21 +156,9 @@ namespace client
           if( frame != -1 ) {
             int l = frame * surface.nVertices + k;
 
-            float h  = float( surfaceVertices[l].normal[0] ) * Math::TAU / 255.0f;
-            float v  = float( surfaceVertices[l].normal[1] ) * Math::TAU / 255.0f;
-            float xy = Math::sin( v );
-
-            Vec3 normal = Vec3( xy * Math::sin( -h ), xy * Math::cos( +h ), Math::cos( v ) );
-
-            float x = float( -surfaceVertices[l].pos[1] ) / 64.0f;
-            float y = float( +surfaceVertices[l].pos[0] ) / 64.0f;
-            float z = float( +surfaceVertices[l].pos[2] ) / 64.0f;
-
-            Point3 position = Point3( x * scale, y * scale, z * scale );
-
             compiler.texCoord( surfaceTexCoords[k].s, 1.0f - surfaceTexCoords[k].t );
-            compiler.normal( meshTransf * normal );
-            compiler.vertex( meshTransf * position );
+            compiler.normal( meshTransf * normals[l] );
+            compiler.vertex( meshTransf * vertices[l] );
           }
         }
       }
@@ -182,17 +183,14 @@ namespace client
     Config config;
     config.load( configFile );
 
-    forceStatic  = config.get( "forceStatic", false );
+    int    frame      = config.get( "frame", -1 );
     // FIXME
-    forceStatic  = true;
-    String shaderName   = config.get( "shader", forceStatic ? "mesh" : "md3" );
-    float  specular     = config.get( "specular", 0.0f );
+    frame = 70;
+    String shaderName = config.get( "shader", frame == -1 ? "md3" : "mesh" );
 
-    scale        = config.get( "scale", 0.04f );
+    scale             = config.get( "scale", 0.04f );
 
-    Vec3 translation  = Vec3( config.get( "translate.x", +0.00f ),
-                              config.get( "translate.y", +0.00f ),
-                              config.get( "translate.z", -0.04f ) );
+    float  specular   = config.get( "specular", 0.0f );
 
     Vec3 weaponTransl = Vec3( config.get( "weaponTranslate.x", 0.00f ),
                               config.get( "weaponTranslate.y", 0.00f ),
@@ -202,9 +200,9 @@ namespace client
                               config.get( "weaponRotate.y", 0.00f ),
                               config.get( "weaponRotate.z", 0.00f ) );
 
-    meshTransf = Mat44::translation( translation );
+    meshTransf = Mat44::ID;
 
-    weaponTransf = Mat44::translation( weaponTransl );
+    Mat44 weaponTransf = Mat44::translation( weaponTransl );
     weaponTransf.rotateX( Math::rad( weaponRot.x ) );
     weaponTransf.rotateZ( Math::rad( weaponRot.z ) );
     weaponTransf.rotateY( Math::rad( weaponRot.y ) );
@@ -217,72 +215,100 @@ namespace client
     ostream.writeString( shaderName );
 
     if( !String::isEmpty( model ) ) {
+      if( frame == -1 ) {
+        throw Exception( "Cusom models can only be static. Must specify frame" );
+      }
+
       compiler.beginMesh();
 
       compiler.enable( CAP_UNIQUE );
       compiler.enable( CAP_CW );
       compiler.material( GL_SPECULAR, specular );
 
-      DArray<MD3Tag> tags;
-      buildMesh( model, 0, &tags );
+      buildMesh( model, frame );
 
       compiler.endMesh();
+
+      tags.dealloc();
 
       MeshData mesh;
       compiler.getMeshData( &mesh );
       mesh.write( &ostream );
     }
-    else if( forceStatic ) {
+    else if( frame != -1 ) {
       compiler.beginMesh();
 
       compiler.enable( CAP_UNIQUE );
       compiler.enable( CAP_CW );
       compiler.material( GL_SPECULAR, specular );
 
-      DArray<MD3Tag> tags;
+      buildMesh( "lower", frame );
 
-      buildMesh( "lower", 0, &tags );
+      for( int i = frame * nTags; i < ( frame + 1 ) * nTags; ++i ) {
+        MD3Tag& tag = tags[i];
 
-      foreach( tag, tags.citer() ) {
-        if( String::equals( tag->name, "tag_torso" ) ) {
-          Mat44 transf = Mat44( tag->rot[0], tag->rot[1], tag->rot[2], 0.0f,
-                                tag->rot[3], tag->rot[4], tag->rot[5], 0.0f,
-                                tag->rot[6], tag->rot[7], tag->rot[8], 0.0f,
-                                -tag->pos[1] * scale, +tag->pos[0] * scale, +tag->pos[2] * scale, 1.0f );
+        if( String::equals( tag.name, "tag_torso" ) ) {
+          Mat44 transf = Mat44( +tag.rot[4], -tag.rot[3], -tag.rot[5], 0.0f,
+                                -tag.rot[1], +tag.rot[0], +tag.rot[2], 0.0f,
+                                -tag.rot[7], +tag.rot[6], +tag.rot[8], 0.0f,
+                                -tag.pos[1] * scale, +tag.pos[0] * scale, +tag.pos[2] * scale, 1.0f );
 
           meshTransf = meshTransf * transf;
-
-          tags.dealloc();
           break;
         }
       }
+      tags.dealloc();
 
-      buildMesh( "upper", 0, &tags );
+      buildMesh( "upper", frame );
 
-      foreach( tag, tags.citer() ) {
-        if( String::equals( tag->name, "tag_head" ) ) {
-          Mat44 transf = Mat44( tag->rot[0], tag->rot[1], tag->rot[2], 0.0f,
-                                tag->rot[3], tag->rot[4], tag->rot[5], 0.0f,
-                                tag->rot[6], tag->rot[7], tag->rot[8], 0.0f,
-                                -tag->pos[1] * scale, +tag->pos[0] * scale, +tag->pos[2] * scale, 1.0f );
+      for( int i = frame * nTags; i < ( frame + 1 ) * nTags; ++i ) {
+        MD3Tag& tag = tags[i];
+
+        if( String::equals( tag.name, "tag_head" ) ) {
+          Mat44 transf = Mat44( +tag.rot[4], -tag.rot[3], -tag.rot[5], 0.0f,
+                                -tag.rot[1], +tag.rot[0], +tag.rot[2], 0.0f,
+                                -tag.rot[7], +tag.rot[6], +tag.rot[8], 0.0f,
+                                -tag.pos[1] * scale, +tag.pos[0] * scale, +tag.pos[2] * scale, 1.0f );
 
           meshTransf = meshTransf * transf;
-
-          tags.dealloc();
           break;
         }
       }
+      tags.dealloc();
 
-      buildMesh( "head", 0, &tags );
+      buildMesh( "head", 0 );
 
       compiler.endMesh();
+
+      tags.dealloc();
+
+      MeshData mesh;
+      compiler.getMeshData( &mesh );
+      mesh.write( &ostream );
+    }
+    else {
+      compiler.beginMesh();
+
+      compiler.enable( CAP_UNIQUE );
+      compiler.enable( CAP_CW );
+      compiler.material( GL_SPECULAR, specular );
+
+      buildMesh( "lower", -1 );
+
+      buildMesh( "upper", frame );
+
+      buildMesh( "head", 0 );
+
+      compiler.endMesh();
+
+      tags.dealloc();
 
       MeshData mesh;
       compiler.getMeshData( &mesh );
       mesh.write( &ostream );
     }
 
-    if( forceStatic ) {
+    if( frame != -1 ) {
       log.print( "Writing to '%s%s' ...", sPath.cstr(), ".ozcSMM" );
       buffer.write( sPath + ".ozcSMM", ostream.length() );
       log.printEnd( " OK" );

@@ -27,15 +27,14 @@ namespace oz
   {
     BotClass* clazz = new BotClass();
 
-    clazz->flags = Object::DYNAMIC_BIT | Object::HIT_FUNC_BIT |
-        Object::UPDATE_FUNC_BIT | Object::BOT_BIT;
+    clazz->flags = Object::DYNAMIC_BIT | Object::BOT_BIT | Object::HIT_FUNC_BIT |
+        Object::UPDATE_FUNC_BIT | Object::CYLINDER_BIT;
 
     OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",    true  );
     OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.onDamage",     false );
     OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.onUse",        false );
     OZ_CLASS_SET_FLAG( Object::ITEM_BIT,           "flag.item",         false );
     OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",        true  );
-    OZ_CLASS_SET_FLAG( Object::CYLINDER_BIT,       "flag.cylinder",     true  );
     OZ_CLASS_SET_FLAG( Object::CLIMBER_BIT,        "flag.climber",      true  );
     OZ_CLASS_SET_FLAG( Object::PUSHER_BIT,         "flag.pusher",       true  );
     OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
@@ -129,7 +128,7 @@ namespace oz
     return clazz;
   }
 
-  Object* BotClass::create( int index, const Point3& pos ) const
+  Object* BotClass::create( int index, const Point3& pos, Heading ) const
   {
     Bot* obj = new Bot();
 

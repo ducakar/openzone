@@ -296,7 +296,7 @@ namespace nirvana
     OZ_LUA_FUNC( ozStrGetBounds );
     OZ_LUA_FUNC( ozStrGetPos );
     OZ_LUA_FUNC( ozStrGetBSP );
-    OZ_LUA_FUNC( ozStrGetRotation );
+    OZ_LUA_FUNC( ozStrGetHeading );
     OZ_LUA_FUNC( ozStrGetLife );
 
     OZ_LUA_FUNC( ozStrVectorFromSelf );
@@ -342,6 +342,7 @@ namespace nirvana
     OZ_LUA_FUNC( ozObjGetDim );
     OZ_LUA_FUNC( ozObjGetFlags );
     OZ_LUA_FUNC( ozObjGetOldFlags );
+    OZ_LUA_FUNC( ozObjGetHeading );
     OZ_LUA_FUNC( ozObjGetClassName );
     OZ_LUA_FUNC( ozObjGetLife );
 
@@ -484,10 +485,10 @@ namespace nirvana
 
     OZ_LUA_CONST( "OZ_ORBIS_DIM",                   Orbis::DIM );
 
-    OZ_LUA_CONST( "OZ_STRUCT_R0",                   Struct::R0 );
-    OZ_LUA_CONST( "OZ_STRUCT_R90",                  Struct::R90 );
-    OZ_LUA_CONST( "OZ_STRUCT_R180",                 Struct::R180 );
-    OZ_LUA_CONST( "OZ_STRUCT_R270",                 Struct::R270 );
+    OZ_LUA_CONST( "OZ_NORTH",                       NORTH );
+    OZ_LUA_CONST( "OZ_WEST",                        WEST );
+    OZ_LUA_CONST( "OZ_SOUTH",                       SOUTH );
+    OZ_LUA_CONST( "OZ_EAST",                        EAST );
 
     OZ_LUA_CONST( "OZ_EVENT_CREATE",                Object::EVENT_CREATE );
     OZ_LUA_CONST( "OZ_EVENT_DESTROY",               Object::EVENT_DESTROY );
@@ -518,6 +519,8 @@ namespace nirvana
     OZ_LUA_CONST( "OZ_OBJECT_VEHICLE_BIT",          Object::VEHICLE_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_ITEM_BIT",             Object::ITEM_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_BROWSABLE_BIT",        Object::BROWSABLE_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_NO_DRAW_BIT",          Object::NO_DRAW_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_WIDE_CULL_BIT",        Object::WIDE_CULL_BIT );
 
     OZ_LUA_CONST( "OZ_OBJECT_LUA_BIT",              Object::LUA_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_DESTROY_FUNC_BIT",     Object::DESTROY_FUNC_BIT );
@@ -545,10 +548,6 @@ namespace nirvana
     OZ_LUA_CONST( "OZ_OBJECT_CYLINDER_BIT",         Object::CYLINDER_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_CLIMBER_BIT",          Object::CLIMBER_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_PUSHER_BIT",           Object::PUSHER_BIT );
-
-    OZ_LUA_CONST( "OZ_OBJECT_NO_DRAW_BIT",          Object::NO_DRAW_BIT );
-    OZ_LUA_CONST( "OZ_OBJECT_WIDE_CULL_BIT",        Object::WIDE_CULL_BIT );
-    OZ_LUA_CONST( "OZ_OBJECT_RANDOM_HEADING_BIT",   Object::RANDOM_HEADING_BIT );
 
     OZ_LUA_CONST( "OZ_BOT_DEAD_BIT",                Bot::DEAD_BIT );
     OZ_LUA_CONST( "OZ_BOT_MECHANICAL_BIT",          Bot::MECHANICAL_BIT );
@@ -825,12 +824,12 @@ namespace nirvana
     return 1;
   }
 
-  int Lua::ozStrGetRotation( lua_State* l )
+  int Lua::ozStrGetHeading( lua_State* l )
   {
     ARG( 0 );
     STR_NOT_NULL();
 
-    pushint( lua.str->rot );
+    pushint( lua.str->heading );
     return 1;
   }
 
@@ -1241,6 +1240,15 @@ namespace nirvana
 
     int mask = toint( 1 );
     pushbool( ( lua.obj->oldFlags & mask ) != 0 );
+    return 1;
+  }
+
+  int Lua::ozObjGetHeading( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+
+    pushint( lua.obj->flags & Object::HEADING_MASK );
     return 1;
   }
 

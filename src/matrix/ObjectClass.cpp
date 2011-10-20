@@ -245,7 +245,7 @@ namespace oz
     obj->life     = life;
 
     for( int i = 0; i < items.length(); ++i ) {
-      int index = synapse.addObject( items[i], Point3::ORIGIN );
+      int index = synapse.addObject( items[i], Point3::ORIGIN, NORTH );
       Dynamic* item = static_cast<Dynamic*>( orbis.objects[index] );
 
       hard_assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
@@ -274,14 +274,13 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::CYLINDER_BIT,       "flag.cylinder",      true  );
     OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",        false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",      false );
-    OZ_CLASS_SET_FLAG( Object::RANDOM_HEADING_BIT, "flag.randomHeading", false );
 
     clazz->fillCommonConfig( config );
 
     return clazz;
   }
 
-  Object* ObjectClass::create( int index, const Point3& pos ) const
+  Object* ObjectClass::create( int index, const Point3& pos, Heading heading ) const
   {
     Object* obj = new Object();
 
@@ -292,6 +291,12 @@ namespace oz
 
     fillCommonFields( obj );
 
+    obj->flags |= heading;
+
+    if( heading == WEST || heading == EAST ) {
+      swap( obj->dim.x, obj->dim.y );
+    }
+
     return obj;
   }
 
@@ -299,12 +304,17 @@ namespace oz
   {
     Object* obj = new Object();
 
-    obj->dim   = dim;
-
     obj->index = index;
     obj->clazz = this;
 
     obj->readFull( istream );
+
+    obj->dim   = dim;
+
+    Heading heading = Heading( obj->flags & Object::HEADING_MASK );
+    if( heading == WEST || heading == EAST ) {
+      swap( obj->dim.x, obj->dim.y );
+    }
 
     return obj;
   }

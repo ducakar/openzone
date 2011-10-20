@@ -58,7 +58,7 @@ namespace client
     bounds *= SPACING;
 
     if( !collider.overlapsOSO( bounds ) ) {
-      synapse.addObject( type, pos );
+      synapse.addObject( type, pos, Heading( Math::rand( 4 ) ) );
     }
   }
 
@@ -72,7 +72,7 @@ namespace client
     }
 
     if( !collider.overlapsOSO( bounds ) ) {
-      synapse.addObject( type, pos );
+      synapse.addObject( type, pos, Heading( Math::rand( 4 ) ) );
     }
   }
 

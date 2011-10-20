@@ -115,7 +115,7 @@ namespace nirvana
       OZ_LUA_API( ozStrGetBounds );
       OZ_LUA_API( ozStrGetPos );
       OZ_LUA_API( ozStrGetBSP );
-      OZ_LUA_API( ozStrGetRotation );
+      OZ_LUA_API( ozStrGetHeading );
       OZ_LUA_API( ozStrGetLife );
 
       OZ_LUA_API( ozStrVectorFromSelf );
@@ -161,6 +161,7 @@ namespace nirvana
       OZ_LUA_API( ozObjGetDim );
       OZ_LUA_API( ozObjGetFlags );
       OZ_LUA_API( ozObjGetOldFlags );
+      OZ_LUA_API( ozObjGetHeading );
       OZ_LUA_API( ozObjGetClassName );
       OZ_LUA_API( ozObjGetLife );
 

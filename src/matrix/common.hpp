@@ -26,6 +26,14 @@ namespace oz
 
   extern const float EPSILON;
 
+  enum Heading
+  {
+    NORTH = 0,
+    WEST  = 1,
+    SOUTH = 2,
+    EAST  = 3
+  };
+
   typedef int ( LuaAPI )( lua_State* );
 
   inline const char* gettext( const char* text )

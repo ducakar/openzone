@@ -206,7 +206,7 @@ namespace client
       const Struct* str = structs[i].str;
 
       tf.model = Mat44::translation( str->p - Point3::ORIGIN );
-      tf.model.rotateZ( float( str->rot ) * Math::TAU / 4.0f );
+      tf.model.rotateZ( float( str->heading ) * Math::TAU / 4.0f );
 
       context.drawBSP( str, Mesh::SOLID_BIT );
     }
@@ -298,7 +298,7 @@ namespace client
       const Struct* str = structs[i].str;
 
       tf.model = Mat44::translation( str->p - Point3::ORIGIN );
-      tf.model.rotateZ( float( str->rot ) * Math::TAU / 4.0f );
+      tf.model.rotateZ( float( str->heading ) * Math::TAU / 4.0f );
 
       context.drawBSP( str, Mesh::ALPHA_BIT );
     }

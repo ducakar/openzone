@@ -70,8 +70,8 @@ namespace oz
       void cut( Dynamic* obj );
 
       // create an object, schedule for addition in the world and return predicted world index
-      int  addStruct( const char* name, const Point3& p, Struct::Rotation rot );
-      int  addObject( const char* name, const Point3& p );
+      int  addStruct( const char* name, const Point3& p, Heading heading );
+      int  addObject( const char* name, const Point3& p, Heading heading );
       int  addPart( const Point3& p, const Vec3& velocity, const Vec3& colour,
                     float restitution, float mass, float lifeTime );
 
