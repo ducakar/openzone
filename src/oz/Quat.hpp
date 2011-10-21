@@ -239,25 +239,25 @@ namespace oz
 
       // quaternion multiplication
       OZ_ALWAYS_INLINE
-      Quat operator ^ ( const Quat& a ) const
+      Quat operator ^ ( const Quat& q ) const
       {
 
-        return Quat( w*a.x + x*a.w + y*a.z - z*a.y,
-                     w*a.y + y*a.w + z*a.x - x*a.z,
-                     w*a.z + z*a.w + x*a.y - y*a.x,
-                     w*a.w - x*a.x - y*a.y - z*a.z );
+        return Quat( w*q.x + x*q.w + y*q.z - z*q.y,
+                     w*q.y + y*q.w + z*q.x - x*q.z,
+                     w*q.z + z*q.w + x*q.y - y*q.x,
+                     w*q.w - x*q.x - y*q.y - z*q.z );
       }
 
       // quaternion multiplication
       OZ_ALWAYS_INLINE
-      Quat& operator ^= ( const Quat& a )
+      Quat& operator ^= ( const Quat& q )
       {
         float tx = x, ty = y, tz = z;
 
-        x = w*a.x + tx*a.w + ty*a.z - tz*a.y;
-        y = w*a.y + ty*a.w + tz*a.x - tx*a.z;
-        z = w*a.z + tz*a.w + tx*a.y - ty*a.x;
-        w = w*a.w - tx*a.x - ty*a.y - tz*a.z;
+        x = w*q.x + tx*q.w + ty*q.z - tz*q.y;
+        y = w*q.y + ty*q.w + tz*q.x - tx*q.z;
+        z = w*q.z + tz*q.w + tx*q.y - ty*q.x;
+        w = w*q.w - tx*q.x - ty*q.y - tz*q.z;
 
         return *this;
       }
@@ -312,6 +312,19 @@ namespace oz
                      cxsy * cz + sxcy * sz,
                      cxcy * sz + sxsy * cz,
                      cxcy * cz - sxsy * sz );
+      }
+
+      static Quat fastSlerp( float t, const Quat& a, const Quat& b )
+      {
+        Quat d = *a ^ b;
+        float k = d.w < 0.0f ? -t : t;
+
+        d.x *= k;
+        d.y *= k;
+        d.z *= k;
+        d.w = Math::fastSqrt( 1.0f - d.x*d.x - d.y*d.y - d.z*d.z );
+
+        return a ^ d;
       }
 
   };
