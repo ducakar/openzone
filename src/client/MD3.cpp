@@ -39,14 +39,52 @@ namespace client
 
 #else
 
-  String MD3::sPath;
-  Config MD3::config;
+  MD3::AnimInfo MD3::legsAnimList[LEGS_ANIM_MAX];
+  MD3::AnimInfo MD3::torsoAnimList[TORSO_ANIM_MAX];
+  MD3::Joint    MD3::joints[MAX_FRAMES][JOINTS_MAX];
 
-  float  MD3::scale;
-  Mat44  MD3::meshTransf;
-  int    MD3::nTags;
+  String        MD3::sPath;
+  Config        MD3::config;
+
+  float         MD3::scale;
+  Mat44         MD3::meshTransf;
+  int           MD3::nTags;
 
   DArray<MD3::MD3Tag> MD3::tags;
+
+  void MD3::readAnimData()
+  {
+    String animFile = sPath + "/animation.cfg";
+
+    FILE* file = fopen( animFile, "r" );
+    if( file == null ) {
+      throw Exception( "Reading animation data failed" );
+    }
+
+    char line[1024];
+
+    while( fgets( line, 1024, file ) != null ) {
+
+    }
+  }
+
+  MD3::Joint MD3::toJoint( const MD3Tag* tag )
+  {
+    Joint joint;
+
+    auto& rot = tag->rot;
+    auto& pos = tag->pos;
+
+    float w2 = Math::sqrt( 1.0f + rot[0]*rot[0] + rot[4]*rot[4] + rot[8]*rot[8] );
+    float x  = ( rot[5] - rot[7] ) / ( 2.0f * w2 );
+    float y  = ( rot[6] - rot[2] ) / ( 2.0f * w2 );
+    float z  = ( rot[1] - rot[3] ) / ( 2.0f * w2 );
+
+    joint.rot    = Quat( x, y, z, w2 / 2.0f );
+    joint.transl = Vec3( pos );
+
+    return joint;
+  }
 
   void MD3::buildMesh( const char* name, int frame )
   {
@@ -74,10 +112,29 @@ namespace client
     nTags = header.nTags;
 
     if( header.nTags != 0 ) {
-      tags.alloc( header.nFrames * header.nTags );
+      DArray<MD3Tag> tags( header.nFrames * header.nTags );
 
       fseek( file, header.offTags, SEEK_SET );
-      fread( tags, sizeof( MD3Tag ), size_t( header.nFrames * header.nTags ), file );
+      fread( tags, sizeof( MD3Tag ), size_t( tags.length() ), file );
+
+      if( String::equals( name, "lower" ) ) {
+        if( header.nTags != 1 ) {
+          throw Exception( "lower.md3 should only have one tag define (tag_torso)" );
+        }
+
+        for( int i = 0; i < header.nFrames; ++i ) {
+          joints[i][JOINT_HIP] = toJoint( &tags[i] );
+        }
+      }
+      else if( String::equals( name, "upper" ) ) {
+        for( int i = 0; i < header.nFrames; ++i ) {
+          for( int j = 0; j < header.nTags; ++j ) {
+            if( String::equals( tags[i * header.nTags + j].name, "tag_torso" ) ) {
+
+            }
+          }
+        }
+      }
     }
 
     int indexBase = 0;
@@ -185,7 +242,7 @@ namespace client
 
     int    frame      = config.get( "frame", -1 );
     // FIXME
-    frame = 70;
+    frame = 153;
     String shaderName = config.get( "shader", frame == -1 ? "md3" : "mesh" );
 
     scale             = config.get( "scale", 0.04f );
@@ -209,6 +266,8 @@ namespace client
 
     const char* model = config.get( "model", "" );
 
+
+
     Buffer buffer( 16 * 1024 * 1024 );
     OutputStream ostream = buffer.outputStream();
 
@@ -216,7 +275,7 @@ namespace client
 
     if( !String::isEmpty( model ) ) {
       if( frame == -1 ) {
-        throw Exception( "Cusom models can only be static. Must specify frame" );
+        throw Exception( "Custom models can only be static. Must specify frame" );
       }
 
       compiler.beginMesh();
@@ -293,15 +352,17 @@ namespace client
       compiler.enable( CAP_CW );
       compiler.material( GL_SPECULAR, specular );
 
-      buildMesh( "lower", -1 );
+      compiler.component( 0 );
+      buildMesh( "lower", frame );
 
+      compiler.component( 1 );
       buildMesh( "upper", frame );
 
+      compiler.component( 2 );
       buildMesh( "head", 0 );
+      tags.dealloc();
 
       compiler.endMesh();
-
-      tags.dealloc();
 
       MeshData mesh;
       compiler.getMeshData( &mesh );

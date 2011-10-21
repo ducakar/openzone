@@ -25,24 +25,20 @@ namespace client
 
   class MD3
   {
+    private:
+
+      static const int MAX_FRAMES = 256;
+
     public:
 
-      enum Anim
+      enum LegsAnim
       {
-        BOTH_DEATH1,
-        BOTH_DEAD1,
-        BOTH_DEATH2,
-        BOTH_DEAD2,
-        BOTH_DEATH3,
-        BOTH_DEAD3,
-
-        TORSO_GESTURE,
-        TORSO_ATTACK,
-        TORSO_ATTACK2,
-        TORSO_DROP,
-        TORSO_RAISE,
-        TORSO_STAND,
-        TORSO_STAND2,
+        LEGS_DEATH1,
+        LEGS_DEAD1,
+        LEGS_DEATH2,
+        LEGS_DEAD2,
+        LEGS_DEATH3,
+        LEGS_DEAD3,
 
         LEGS_WALKCR,
         LEGS_WALK,
@@ -57,7 +53,27 @@ namespace client
         LEGS_IDLECR,
         LEGS_TURN,
 
-        ANIM_MAX
+        LEGS_ANIM_MAX
+      };
+
+      enum TorsoAnim
+      {
+        TORSO_DEATH1,
+        TORSO_DEAD1,
+        TORSO_DEATH2,
+        TORSO_DEAD2,
+        TORSO_DEATH3,
+        TORSO_DEAD3,
+
+        TORSO_GESTURE,
+        TORSO_ATTACK,
+        TORSO_ATTACK2,
+        TORSO_DROP,
+        TORSO_RAISE,
+        TORSO_STAND,
+        TORSO_STAND2,
+
+        TORSO_ANIM_MAX
       };
 
       struct AnimInfo
@@ -70,7 +86,7 @@ namespace client
 
       struct AnimState
       {
-        Anim  type;
+        int   type;
         int   repeat;
 
         int   startFrame;
@@ -85,16 +101,34 @@ namespace client
 
     private:
 
+      enum JointType
+      {
+        JOINT_HIP,
+        JOINT_NECK,
+        JOINT_WEAPON,
+
+        JOINTS_MAX
+      };
+
+      struct Joint
+      {
+        Quat rot;
+        Vec3 transl;
+      };
+
 #ifndef OZ_TOOLS
+
+
+      AnimInfo legsAnimList[LEGS_ANIM_MAX];
+      AnimInfo torsoAnimList[TORSO_ANIM_MAX];
+      Joint    joints[MAX_FRAMES][JOINTS_MAX];
 
       int id;
 
-      AnimInfo animList[ANIM_MAX];
-
     public:
 
-      Mat44   weaponTransf;
-      bool    isLoaded;
+      Mat44    weaponTransf;
+      bool     isLoaded;
 
       explicit MD3( int id );
       ~MD3();
@@ -183,15 +217,22 @@ namespace client
         ubyte normal[2];
       };
 
-      static String sPath;
-      static Config config;
+      static AnimInfo legsAnimList[LEGS_ANIM_MAX];
+      static AnimInfo torsoAnimList[TORSO_ANIM_MAX];
+      static Joint    joints[MAX_FRAMES][JOINTS_MAX];
 
-      static float  scale;
-      static Mat44  meshTransf;
-      static int    nTags;
+      static String   sPath;
+      static Config   config;
+
+      static float    scale;
+      static Mat44    meshTransf;
+      static int      nTags;
+
       static DArray<MD3Tag> tags;
 
-      static void buildMesh( const char* name, int frame );
+      static void  readAnimData();
+      static Joint toJoint( const MD3Tag* tag );
+      static void  buildMesh( const char* name, int frame );
 
     public:
 

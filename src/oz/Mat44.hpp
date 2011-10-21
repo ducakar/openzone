@@ -327,7 +327,6 @@ namespace oz
       OZ_ALWAYS_INLINE
       static Mat44 rotation( const Quat& q )
       {
-        // this matrix is in column major format in implementation
         //
         // [ 1 - 2yy - 2zz    2xy - 2wz      2xz + 2wy    0 ]
         // [   2xy + 2wz    1 - 2xx - 2zz    2yz - 2wx    0 ]

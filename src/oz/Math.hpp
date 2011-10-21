@@ -186,7 +186,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       static float sgn( float x )
       {
-        return x < 0.0f ? -1.0f : ( x > 0.0f ? 1.0f : 0.0f );
+        return x < 0.0f ? -1.0f : 1.0f;
       }
 
       // deg-to-rad and rad-to-deg conversion

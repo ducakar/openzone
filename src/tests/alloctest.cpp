@@ -26,7 +26,7 @@ int main( int, char** )
 
   SDL_Init( 0 );
 
-  chdir( "data" );
+  chdir( "share/openzone" );
 
   library.init();
   matrix.init();
