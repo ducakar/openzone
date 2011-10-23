@@ -1,11 +1,12 @@
 /*
  *  Alloc.cpp
  *
- *  Overload default new and delete operators to provide allocation statistics and optionally
- *  check for leaks and mismatched new/delete (if OZ_TRACE_LEAKS is turned on).
- *
  *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
+ */
+
+/**
+ * @file Alloc.cpp
  */
 
 #include "Alloc.hpp"
@@ -21,113 +22,97 @@
 #endif
 
 #ifdef OZ_TRACE_LEAKS
-# ifndef OZ_MINGW
-#  include <pthread.h>
-# else
-#  include <windows.h>
-# endif
+# include <pthread.h>
 #endif
 
 namespace oz
 {
 
-  static_assert( ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
-                 "Alloc::ALIGNMENT should be power of two" );
+static_assert( ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
+               "Alloc::ALIGNMENT should be power of two" );
 
 #ifdef OZ_TRACE_LEAKS
 
-  struct TraceEntry
-  {
-    TraceEntry* next;
-    void*       address;
-    size_t      size;
-    int         nFrames;
-    char*       frames;
-  };
+struct TraceEntry
+{
+  TraceEntry* next;
+  void*       address;
+  size_t      size;
+  int         nFrames;
+  char*       frames;
+};
 
-  static TraceEntry* firstObjectTraceEntry = null;
-  static TraceEntry* firstArrayTraceEntry  = null;
+static TraceEntry* firstObjectTraceEntry = null;
+static TraceEntry* firstArrayTraceEntry  = null;
 
-  // if we deallocate from two different threads at once with OZ_TRACE_LEAKS, changing the list
-  // of allocated blocks while iterating it in another thread can result in a SIGSEGV.
-#ifndef OZ_MINGW
-  static pthread_mutex_t sectionMutex = PTHREAD_MUTEX_INITIALIZER;
-#else
-# define pthread_mutex_lock( mutex ) \
-  InitializeCriticalSection( mutex ); \
-  EnterCriticalSection( mutex )
-
-# define pthread_mutex_unlock( mutex ) \
-  LeaveCriticalSection( mutex ); \
-  DeleteCriticalSection( mutex )
-
-  static CRITICAL_SECTION sectionMutex;
-#endif
+// If we deallocate from two different threads at once with OZ_TRACE_LEAKS, changing the list
+// of allocated blocks while iterating it in another thread can result in a SIGSEGV.
+static pthread_mutex_t sectionMutex = PTHREAD_MUTEX_INITIALIZER;
 
 #endif
 
-  int    Alloc::count     = 0;
-  size_t Alloc::amount    = 0;
+int    Alloc::count     = 0;
+size_t Alloc::amount    = 0;
 
-  int    Alloc::sumCount  = 0;
-  size_t Alloc::sumAmount = 0;
+int    Alloc::sumCount  = 0;
+size_t Alloc::sumAmount = 0;
 
-  int    Alloc::maxCount  = 0;
-  size_t Alloc::maxAmount = 0;
+int    Alloc::maxCount  = 0;
+size_t Alloc::maxAmount = 0;
 
-  OZ_WEAK_SYMBOL
-  bool Alloc::isLocked  = false;
+OZ_WEAK_SYMBOL
+bool Alloc::isLocked = false;
 
-  void Alloc::printStatistics()
-  {
-    log.println( "Alloc statistics {" );
-    log.indent();
+void Alloc::printStatistics()
+{
+  log.println( "Alloc statistics {" );
+  log.indent();
 
-    log.println( "current chunks     %d", Alloc::count  );
-    log.println( "current amount     %.2f MiB (%d B)",
-                 float( Alloc::amount ) / ( 1024.0f*1024.0f ), Alloc::amount );
-    log.println( "maximum chunks     %d", Alloc::maxCount );
-    log.println( "maximum amount     %.2f MiB (%d B)",
-                 float( Alloc::maxAmount ) / ( 1024.0f*1024.0f ), Alloc::maxAmount );
-    log.println( "cumulative chunks  %d", Alloc::sumCount );
-    log.println( "cumulative amount  %.2f MiB (%d B)",
-                 float( Alloc::sumAmount ) / ( 1024.0f*1024.0f ), Alloc::sumAmount );
+  log.println( "current chunks     %d", count  );
+  log.println( "current amount     %.2f MiB (%d B)",
+               float( amount ) / ( 1024.0f*1024.0f ), amount );
+  log.println( "maximum chunks     %d", maxCount );
+  log.println( "maximum amount     %.2f MiB (%d B)",
+               float( maxAmount ) / ( 1024.0f*1024.0f ), maxAmount );
+  log.println( "cumulative chunks  %d", sumCount );
+  log.println( "cumulative amount  %.2f MiB (%d B)",
+               float( sumAmount ) / ( 1024.0f*1024.0f ), sumAmount );
 
-    log.unindent();
-    log.println( "}" );
-  }
+  log.unindent();
+  log.println( "}" );
+}
 
 #ifndef OZ_TRACE_LEAKS
 
-  void Alloc::printLeaks()
-  {}
+void Alloc::printLeaks()
+{}
 
 #else
 
-  void Alloc::printLeaks()
-  {
-    const TraceEntry* bt;
+void Alloc::printLeaks()
+{
+  const TraceEntry* bt;
 
-    bt = firstObjectTraceEntry;
-    while( bt != null ) {
-      log.println( "Leaked object at %p of size %d B allocated", bt->address, bt->size );
-      log.indent();
-      log.printTrace( bt->frames, bt->nFrames );
-      log.unindent();
+  bt = firstObjectTraceEntry;
+  while( bt != null ) {
+    log.println( "Leaked object at %p of size %d B allocated", bt->address, bt->size );
+    log.indent();
+    log.printTrace( bt->frames, bt->nFrames );
+    log.unindent();
 
-      bt = bt->next;
-    }
-
-    bt = firstArrayTraceEntry;
-    while( bt != null ) {
-      log.println( "Leaked array at %p of size %d B allocated", bt->address, bt->size );
-      log.indent();
-      log.printTrace( bt->frames, bt->nFrames );
-      log.unindent();
-
-      bt = bt->next;
-    }
+    bt = bt->next;
   }
+
+  bt = firstArrayTraceEntry;
+  while( bt != null ) {
+    log.println( "Leaked array at %p of size %d B allocated", bt->address, bt->size );
+    log.indent();
+    log.printTrace( bt->frames, bt->nFrames );
+    log.unindent();
+
+    bt = bt->next;
+  }
+}
 
 #endif
 
@@ -149,6 +134,9 @@ using oz::sectionMutex;
 
 #if defined( OZ_MINGW ) && defined( OZ_SIMD )
 
+/**
+ * Emulation of POSIX function posix_memalign.
+ */
 static int posix_memalign( void** ptr, size_t alignment, size_t size )
 {
   void** originalPtr = reinterpret_cast<void**>( malloc( sizeof( void* ) + size + alignment - 1 ) );
@@ -164,6 +152,9 @@ static int posix_memalign( void** ptr, size_t alignment, size_t size )
   return 0;
 }
 
+/**
+ * Free storage allocated by the fake posix_memalign function.
+ */
 static void posix_memalign_free( void* ptr )
 {
   void** beginPtr = reinterpret_cast<void**>( ptr );
@@ -173,6 +164,10 @@ static void posix_memalign_free( void* ptr )
 
 #endif
 
+/**
+ * <tt>operator new</tt> implementation with memory statistics and optionally memory alignment
+ * and memory leak tracking.
+ */
 void* operator new ( size_t size ) throw( std::bad_alloc )
 {
   hard_assert( !Alloc::isLocked );
@@ -224,6 +219,10 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
   return ptr;
 }
 
+/**
+ * <tt>operator new[]</tt> implementation with memory statistics and optionally memory alignment
+ * and memory leak tracking.
+ */
 void* operator new[] ( size_t size ) throw( std::bad_alloc )
 {
   hard_assert( !Alloc::isLocked );
@@ -275,6 +274,9 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
   return ptr;
 }
 
+/**
+ * <tt>operator delete</tt> implementation for the matching <tt>operator new</tt>.
+ */
 void operator delete ( void* ptr ) throw()
 {
   hard_assert( !Alloc::isLocked );
@@ -319,7 +321,6 @@ void operator delete ( void* ptr ) throw()
     prev = st;
     st = st->next;
   }
-  // loop fell through
   System::trap();
 
   st   = firstArrayTraceEntry;
@@ -336,7 +337,8 @@ void operator delete ( void* ptr ) throw()
 
   System::abort( "ALLOC: Trying to free object at %p that does not seem to be allocated", chunk );
 
-  backtraceFound:;
+backtraceFound:
+
   pthread_mutex_unlock( &sectionMutex );
 #endif
 
@@ -347,6 +349,9 @@ void operator delete ( void* ptr ) throw()
 #endif
 }
 
+/**
+ * <tt>operator delete[]</tt> implementation for the matching <tt>operator new[]</tt>.
+ */
 void operator delete[] ( void* ptr ) throw()
 {
   hard_assert( !Alloc::isLocked );
@@ -391,7 +396,6 @@ void operator delete[] ( void* ptr ) throw()
     prev = st;
     st = st->next;
   }
-  // loop fell through
   System::trap();
 
   st   = firstObjectTraceEntry;
@@ -407,7 +411,8 @@ void operator delete[] ( void* ptr ) throw()
 
   System::abort( "ALLOC: Trying to free array at %p that does not seem to be allocated", chunk );
 
-  backtraceFound:;
+backtraceFound:
+
   pthread_mutex_unlock( &sectionMutex );
 #endif
 

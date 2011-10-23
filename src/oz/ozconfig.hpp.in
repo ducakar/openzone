@@ -22,8 +22,7 @@
 # if __clang_major__ < 2 || ( __clang_major__ == 2 && __clang_minor__ < 9 )
 #  error GCC >= 4.5 and LLVM/Clang >= 2.9 are the only supported compilers
 # else
-// Clang 2.9 is not compatible with libstdc++'s C++11 support, but we don't need it anyway.
-#  undef __GXX_EXPERIMENTAL_CXX0X__
+namespace std { typedef decltype( nullptr ) nullptr_t; }
 # endif
 #elif defined( __GNUC__ )
 # if __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 5 )
@@ -40,6 +39,12 @@
 #ifndef __LINE__
 # define decltype typeof
 #endif
+
+// Disable C++11 stuff in standard headers, IDE parsers have problems with that, and we don't need
+// it anyway ...
+#undef __GXX_EXPERIMENTAL_CXX0X__
+// ... except for nullptr_t definition
+namespace std { typedef decltype( nullptr ) nullptr_t; }
 
 #ifdef __BIG_ENDIAN__
 # define OZ_BIG_ENDIAN_ARCH

@@ -1,8 +1,6 @@
 /*
  *  common.hpp
  *
- *  Common macros, types and templates
- *
  *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
@@ -10,60 +8,61 @@
 #pragma once
 
 /**
- * \file base/common.hpp
+ * @file common.hpp
  *
- * \brief Common types and templates
+ * Common types and templates.
  *
- * You may add <code>null</code>, <code>soft_assert</code>, <code>foreach</code>,
- * <code>onleave</code> and the types to your <code>~/.kde/share/apps/katepart/syntax/cpp.xml</code>
- * or global file <code>$KDEDIR/share/apps/katepart/syntax/cpp.xml</code> to look like reserved
- * words in Katepart (Kate/KWrite/KDevelop).
- * For Eclipse I use the same syntax highlighting for macro invocations and reserved words hence
- * the macro definitions like #define uint uint to highlight uint as the reserved word.
+ * You may want to add <tt>null</tt>, <tt>foreach</tt>, <tt>soft_assert</tt>,
+ * <tt>hard_assert</tt>, <tt>byte</tt>, <tt>ubyte</tt>, <tt>ushort</tt>,
+ * <tt>ulong</tt>, <tt>long64</tt> and <tt>ulong64</tt> to your
+ * <tt>~/.kde/share/apps/katepart/syntax/cpp.xml</tt> or global file
+ * <tt>/usr/share/apps/katepart/syntax/cpp.xml</tt> to look like reserved words in
+ * Katepart (Kate/KWrite/KDevelop).
+ *
+ * For Eclipse I use the same syntax highlighting for macro invocations and reserved words.
+ * Import etc/eclipse-defines.xml file to define custom reserver words as macros.
  */
 
 /*
- * Configuration
+ * Configuration.
  */
 #include "ozconfig.hpp"
 
 /*
- * The most essential C/C++ definitions (std::nullptr_t, size_t, ptrdiff_t, NULL and offsetof)
+ * The most essential C/C++ definitions (std::nullptr_t, size_t, ptrdiff_t, NULL and offsetof).
  */
 #include <cstddef>
 
 /*
- * Platform-independent argument reading for variable-argument functions
+ * Platform-independent argument reading for variable-argument functions.
  */
 #include <cstdarg>
 
 /*
- * Standard exception definitions (usually included via <new>, but just for sure)
+ * Standard exception definitions (usually included via <new>, but just for sure).
  */
 #include <exception>
 
 /*
- * Standard new/delete operator
+ * Standard new/delete operator.
  */
 #include <new>
 
+/**
+ * Core namespace.
+ */
 namespace oz
 {
 
-  //***********************************
-  //*          BASIC MACROS           *
-  //***********************************
+//***********************************
+//*          BASIC MACROS           *
+//***********************************
 
-  /**
-   * \def soft_assert
-   * Like assert, but doesn't abort, it only raises SIGTRAP, prints stack trace and resumes
-   * execution.
-   */
+/// @def soft_assert
+/// If condition fails, prints error to log raises SIGTRAP.
 
-  /**
-   * \def hard_assert
-   * Like assert, but also prints stack trace and waits for a debugger to attach.
-   */
+/// @def hard_assert
+/// If condition fails, prints error to log and aborts program.
 
 #ifdef NDEBUG
 
@@ -77,201 +76,187 @@ namespace oz
 
 # define hard_assert( cond ) \
   ( ( cond ) ? \
-      static_cast<void>( 0 ) : \
-      oz::_hardAssert( #cond, __FILE__, __LINE__, __PRETTY_FUNCTION__ ) )
+    static_cast<void>( 0 ) : \
+    oz::_hardAssert( #cond, __FILE__, __LINE__, __PRETTY_FUNCTION__ ) )
 
 # define soft_assert( cond ) \
   ( ( cond ) ? \
-      static_cast<void>( 0 ) : \
-      oz::_softAssert( #cond, __FILE__, __LINE__, __PRETTY_FUNCTION__ ) )
+    static_cast<void>( 0 ) : \
+    oz::_softAssert( #cond, __FILE__, __LINE__, __PRETTY_FUNCTION__ ) )
 
-  void _hardAssert( const char* message, const char* file, int line, const char* function );
-  void _softAssert( const char* message, const char* file, int line, const char* function );
+/**
+ * Helper function for <tt>soft_assert</tt>.
+ */
+void _hardAssert( const char* message, const char* file, int line, const char* function );
+
+/**
+ * Helper function for <tt>hard_assert</tt>.
+ */
+void _softAssert( const char* message, const char* file, int line, const char* function );
 
 #endif
 
-  //***********************************
-  //*             TYPES               *
-  //***********************************
+//***********************************
+//*             TYPES               *
+//***********************************
 
-  /**
-   * nullptr_t
-   */
-  typedef decltype( nullptr ) nullptr_t;
+using std::nullptr_t;
 
-  /**
-   * \def null
-   * Nicer alias for nullptr.
-   */
+/// @def null
+/// Nicer alias for nullptr.
 # define null nullptr
 
-  /**
-   * signed byte
-   * It should be used where char must be signed (char may be either signed or unsigned depending
-   * on the platform).
-   */
-  typedef signed char byte;
+/// Signed byte.
+typedef signed char byte;
 
-  /**
-   * unsigned byte
-   * It should be used where char must be unsigned (char may be either signed or unsigned depending
-   * on the platform).
-   */
-  typedef unsigned char ubyte;
+/// Unsigned byte.
+typedef unsigned char ubyte;
 
-  /**
-   * unsigned short integer
-   */
-  typedef unsigned short ushort;
+/// Unsigned short integer.
+typedef unsigned short ushort;
 
-  /**
-   * unsigned integer
-   */
-  typedef unsigned int uint;
+/// Unsigned integer.
+typedef unsigned int uint;
 
-  /**
-   * unsigned long integer
-   */
-  typedef unsigned long ulong;
+/// Unsigned long integer.
+typedef unsigned long ulong;
 
-  /**
-   * signed 64-bit integer
-   */
-  typedef long long long64;
+/// Signed 64-bit integer.
+typedef long long long64;
 
-  /**
-   * unsigned 64-bit integer
-   */
-  typedef unsigned long long ulong64;
+/// Unsigned 64-bit integer.
+typedef unsigned long long ulong64;
 
-  // some assumptions about types
-  static_assert( sizeof( short )  == 2, "sizeof( short ) should be 2" );
-  static_assert( sizeof( int )    == 4, "sizeof( int ) should be 4" );
-  static_assert( sizeof( long64 ) == 8, "sizeof( long64 ) should be 8" );
-  static_assert( sizeof( float )  == 4, "sizeof( float ) should be 4" );
-  static_assert( sizeof( double ) == 8, "sizeof( double ) should be 8" );
+// Some assumptions about types
+static_assert( sizeof( short )  == 2, "sizeof( short ) should be 2" );
+static_assert( sizeof( int )    == 4, "sizeof( int ) should be 4" );
+static_assert( sizeof( long64 ) == 8, "sizeof( long64 ) should be 8" );
+static_assert( sizeof( float )  == 4, "sizeof( float ) should be 4" );
+static_assert( sizeof( double ) == 8, "sizeof( double ) should be 8" );
 
 #ifdef OZ_SIMD
-  /*
-   * SIMD types
-   */
-  typedef int   __attribute__(( vector_size( 16 ) )) int4;
-  typedef uint  __attribute__(( vector_size( 16 ) )) uint4;
-  typedef float __attribute__(( vector_size( 16 ) )) float4;
 
+/// SIMD vector of four integers.
+typedef int   __attribute__(( vector_size( 16 ) )) int4;
+
+/// SIMD vector of four unsigned integers.
+typedef uint  __attribute__(( vector_size( 16 ) )) uint4;
+
+/// SIMD vector of four floats.
+typedef float __attribute__(( vector_size( 16 ) )) float4;
+
+/// @def int4
+/// "constructor" for <tt>int4</tt> type.
 # define   int4( x, y, z, w )   (int4) { x, y, z, w }
+
+/// @def uint4
+/// "constructor" for <tt>uint4</tt> type.
 # define  uint4( x, y, z, w )  (uint4) { x, y, z, w }
+
+/// @def float4
+/// "constructor" for <tt>float4</tt> type.
 # define float4( x, y, z, w ) (float4) { x, y, z, w }
 
-  /*
-   * SIMD register representation
-   */
-  struct Simd
+struct Simd
+{
+  union
   {
-    union
+    int4   i4;
+    int    i[4];
+
+    uint4  u4;
+    uint   u[4];
+
+    float4 f4;
+    float  f[4];
+
+    // vector members
+    struct
     {
-      int4   i4;
-      int    i[4];
-
-      uint4  u4;
-      uint   u[4];
-
-      float4 f4;
-      float  f[4];
-
-      // vector members
-      struct
-      {
-        float x;
-        float y;
-        float z;
-        float w;
-      };
-
-      // plane members
-      struct
-      {
-        float nx;
-        float ny;
-        float nz;
-        float d;
-      };
+      float x;
+      float y;
+      float z;
+      float w;
     };
 
-    OZ_ALWAYS_INLINE
-    Simd()
-    {}
-
-    OZ_ALWAYS_INLINE
-    Simd( int4 i4_ ) : i4( i4_ )
-    {}
-
-    OZ_ALWAYS_INLINE
-    Simd( uint4 u4_ ) : u4( u4_ )
-    {}
-
-    OZ_ALWAYS_INLINE
-    Simd( float4 f4_ ) : f4( f4_ )
-    {}
+    // plane members
+    struct
+    {
+      float nx;
+      float ny;
+      float nz;
+      float d;
+    };
   };
+
+  OZ_ALWAYS_INLINE
+  Simd()
+  {}
+
+  OZ_ALWAYS_INLINE
+  Simd( int4 i4_ ) : i4( i4_ )
+  {}
+
+  OZ_ALWAYS_INLINE
+  Simd( uint4 u4_ ) : u4( u4_ )
+  {}
+
+  OZ_ALWAYS_INLINE
+  Simd( float4 f4_ ) : f4( f4_ )
+  {}
+};
 #endif
 
-  //***********************************
-  //*        BASIC ALGORITHMS         *
-  //***********************************
+//***********************************
+//*        BASIC ALGORITHMS         *
+//***********************************
 
-  /**
-   * Swap values of a and b.
-   * @param a reference to the first variable
-   * @param b reference to the second variable
-   */
-  template <typename Type>
-  OZ_ALWAYS_INLINE
-  inline void swap( Type& a, Type& b )
-  {
-    Type t = a;
-    a = b;
-    b = t;
-  }
+/**
+ * Swap values of variables.
+ */
+template <typename Type>
+OZ_ALWAYS_INLINE
+inline void swap( Type& a, Type& b )
+{
+  Type t = a;
+  a = b;
+  b = t;
+}
 
-  /**
-   * Minimum.
-   * @param a
-   * @param b
-   * @return a if a <= b, b otherwise
-   */
-  template <typename Type>
-  OZ_ALWAYS_INLINE
-  inline const Type& min( const Type& a, const Type& b )
-  {
-    return b < a ? b : a;
-  }
+/**
+ * Minimum.
+ *
+ * @return a if a <= b, b otherwise.
+ */
+template <typename Type>
+OZ_ALWAYS_INLINE
+inline const Type& min( const Type& a, const Type& b )
+{
+  return b < a ? b : a;
+}
 
-  /**
-   * Maximum.
-   * @param a
-   * @param b
-   * @return a if a >= b, b otherwise
-   */
-  template <typename Type>
-  OZ_ALWAYS_INLINE
-  inline const Type& max( const Type& a, const Type& b )
-  {
-    return a < b ? b : a;
-  }
+/**
+ * Maximum.
+ *
+ * @return a if a >= b, b otherwise.
+ */
+template <typename Type>
+OZ_ALWAYS_INLINE
+inline const Type& max( const Type& a, const Type& b )
+{
+  return a < b ? b : a;
+}
 
-  /**
-   * Clamp c between a and b. Equals to max( a, min( b, c ) ).
-   * @param c
-   * @param a
-   * @param b
-   * @return c, if a <= c <= b, respective boundary otherwise
-   */
-  template <typename Type>
-  OZ_ALWAYS_INLINE
-  inline const Type& clamp( const Type& c, const Type& a, const Type& b )
-  {
-    return c < a ? a : ( b < c ? b : c );
-  }
+/**
+ * Clamp c between a and b.
+ *
+ * @return c, if a <= c <= b, respective boundary otherwise.
+ */
+template <typename Type>
+OZ_ALWAYS_INLINE
+inline const Type& clamp( const Type& c, const Type& a, const Type& b )
+{
+  return c < a ? a : ( b < c ? b : c );
+}
 
 }

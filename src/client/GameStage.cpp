@@ -516,11 +516,11 @@ namespace client
     nirvana.free();
     matrix.free();
 
-    stateFile.clear();
-    missionFile.clear();
+    stateFile.dealloc();
+    missionFile.dealloc();
 
-    AUTOSAVE_FILE.clear();
-    QUICKSAVE_FILE.clear();
+    AUTOSAVE_FILE.dealloc();
+    QUICKSAVE_FILE.dealloc();
 
     log.unindent();
     log.println( "}" );

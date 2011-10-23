@@ -229,43 +229,11 @@ namespace oz
     v.pushFirst( Test( 0 ) );
     hard_assert( iEquals( l.citer(), v.citer() ) );
 
-    struct
-    {
-      void operator () ( Test& t ) const
-      {
-        t = Test( 12 );
-      }
-    }
-    set12;
-
-    iMap( l.iter(), set12 );
-    hard_assert( !iEquals( v.citer(), l.citer() ) );
     iSet( v.iter(), Test( 12 ) );
-    hard_assert( iEquals( v.citer(), l.citer() ) );
+    hard_assert( !iEquals( v.citer(), l.citer() ) );
 
     iCopy( l.iter(), v.citer() );
     hard_assert( iEquals( l.citer(), v.citer() ) );
-
-    struct
-    {
-      void operator () ( Test& t ) const
-      {
-        t.value = 101;
-      }
-    }
-    set101;
-
-    struct
-    {
-      void operator () ( const Test& t ) const
-      {
-        hard_assert( t.value == 101 );
-      }
-    }
-    check101;
-
-    iMap( l.iter(), set101 );
-    iMap( l.citer(), check101 );
 
     Vector<Test*> pv;
     pv.add( new Test() );
@@ -334,20 +302,10 @@ namespace oz
     hard_assert( a[0] == Test( 3 ) && a[1] == Test( 3 ) );
     hard_assert( b[0] == Test( -1 ) && b[1] == Test( 3 ) && b[2] == Test( 4 ) && b[3] == Test( 3 ) );
 
-    struct
-    {
-      void operator () ( Test& t ) const
-      {
-        t = Test( 12 );
-      }
-    }
-    set12;
-
-    aMap( a, set12, 5 );
-    hard_assert( !aEquals( a, b, 5 ) );
+    aSet( a, Test( 12 ), 2 );
     aSet( b, Test( 12 ), 5 );
-    hard_assert( aEquals( b, a, 5 ) );
-    foreach( i, citer( a, 5 ) ) {
+    hard_assert( aEquals( b, a, 2 ) );
+    foreach( i, citer( b, 5 ) ) {
       hard_assert( *i == Test( 12 ) );
     }
 

@@ -1,79 +1,151 @@
 /*
  *  Buffer.hpp
  *
- *  [description]
- *
  *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
 
+/**
+ * @file Buffer.hpp
+ */
+
 #include "stream.hpp"
 
 namespace oz
 {
 
-  /**
-   * Memory buffer.
-   * It can be filled with data from a file or written to a file.
-   */
-  class Buffer
-  {
-    private:
+/**
+ * Memory buffer.
+ *
+ * It can be used as a generic memory buffer or to store contents read from a file.
+ */
+class Buffer
+{
+  private:
 
-      char* data;
-      int   count;
+    char* data;  ///< Storage.
+    int   count; ///< Data length in bytes.
 
-    public:
+  public:
 
-      Buffer();
-      ~Buffer();
-      Buffer( const Buffer& b );
-      Buffer& operator = ( const Buffer& b );
+    /**
+     * Create an empty buffer.
+     */
+    Buffer();
 
-      explicit Buffer( int size );
-      explicit Buffer( const char* file );
+    /**
+     * Destructor.
+     */
+    ~Buffer();
 
-      const char* begin() const
-      {
-        return data;
-      }
+    /**
+     * Copy constructor, copies data.
+     */
+    Buffer( const Buffer& b );
 
-      char* begin()
-      {
-        return data;
-      }
+    /**
+     * Copy operator, copies data.
+     *
+     * Reuse existing storage if it suffices.
+     */
+    Buffer& operator = ( const Buffer& b );
 
-      const char* end() const
-      {
-        return data + count;
-      }
+    /**
+     * Create a buffer of size <tt>size</tt>.
+     */
+    explicit Buffer( int size );
 
-      char* end()
-      {
-        return data + count;
-      }
+    /**
+     * Create a buffer from contents of the given file.
+     *
+     * Contents are read from the given file and copied into the buffer. Buffer size matches the
+     * file length.
+     */
+    explicit Buffer( const char* file );
 
-      int length() const
-      {
-        return count;
-      }
+    /**
+     * Constant pointer to the beginning of the buffer.
+     */
+    const char* begin() const
+    {
+      return data;
+    }
 
-      bool isEmpty() const
-      {
-        return count == 0;
-      }
+    /**
+     * Pointer to the beginning of the buffer.
+     */
+    char* begin()
+    {
+      return data;
+    }
 
-      void alloc( int size );
-      void dealloc();
+    /**
+     * Constant pointer to the end of the buffer.
+     */
+    const char* end() const
+    {
+      return data + count;
+    }
 
-      InputStream inputStream() const;
-      OutputStream outputStream() const;
+    /**
+     * Pointer to the end of the buffer.
+     */
+    char* end()
+    {
+      return data + count;
+    }
 
-      bool read( const char* path );
-      bool write( const char* path, int size );
+    /**
+     * Buffer size in bytes.
+     */
+    int length() const
+    {
+      return count;
+    }
 
-  };
+    /**
+     * True iff buffer size is 0 (and no resources allocated).
+     */
+    bool isEmpty() const
+    {
+      return count == 0;
+    }
+
+    /**
+     * For an empty buffer, allocate new storage of <tt>size</tt> bytes.
+     */
+    void alloc( int size );
+
+    /**
+     * Deallocate storage.
+     */
+    void dealloc();
+
+    /**
+     * Create an InputStream object for reading binary data from the buffer.
+     */
+    InputStream inputStream() const;
+
+    /**
+     * Create an OutputStream object for writing binary data into the buffer.
+     */
+    OutputStream outputStream() const;
+
+    /**
+     * Discard any existing data and fill the buffer with contents of the given file.
+     *
+     * Buffer storage is not freed and newly allocated if the existing storage is enough to store
+     * the file's contents.
+     */
+    bool read( const char* path );
+
+    /**
+     * Write buffer contents into a file.
+     */
+    bool write( const char* path, int size );
+
+};
 
 }

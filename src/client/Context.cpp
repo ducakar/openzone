@@ -522,16 +522,16 @@ namespace client
       auto src = i;
       ++i;
 
-      alDeleteSources( 1, &src->id );
-      removeBSPSource( src, src.key() );
+      alDeleteSources( 1, &src.value().id );
+      removeBSPSource( &src.value(), src.key() );
       OZ_AL_CHECK_ERROR();
     }
     for( auto i = objSources.iter(); i.isValid(); ) {
       auto src = i;
       ++i;
 
-      alDeleteSources( 1, &src->id );
-      removeObjSource( src, src.key() );
+      alDeleteSources( 1, &src.value().id );
+      removeObjSource( &src.value(), src.key() );
       OZ_AL_CHECK_ERROR();
     }
 

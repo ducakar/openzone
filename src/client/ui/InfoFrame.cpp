@@ -51,15 +51,17 @@ namespace ui
 
   void InfoFrame::onDraw()
   {
-    if( camera.state != Camera::BOT || camera.botObj == null || camera.tagged == -1 ||
-        !nirvana.devices.contains( camera.tagged ) )
-    {
+    if( camera.state != Camera::BOT || camera.botObj == null || camera.tagged == -1 ) {
+      return;
+    }
+
+    const Device* const* device = nirvana.devices.find( camera.tagged );
+    if( device == null ) {
       return;
     }
 
     if( lastId != camera.tagged || uint( timer.ticks - lastTicks ) >= uint( REFRESH_INTERVAL ) ) {
-      const Bot*    tagged = static_cast<const Bot*>( camera.taggedObj );
-      const Device* device = nirvana.devices.get( camera.tagged );
+      const Bot* tagged = static_cast<const Bot*>( camera.taggedObj );
 
       if( tagged->flags & Object::BOT_BIT ) {
         title.setText( "%s (%s)", tagged->name.cstr(), tagged->clazz->title.cstr() );
@@ -67,7 +69,7 @@ namespace ui
       else {
         title.setText( "%s", tagged->clazz->title.cstr() );
       }
-      text.setText( "%s", device->getMemo() );
+      text.setText( "%s", ( *device )->getMemo() );
 
       lastId = camera.tagged;
       lastTicks = timer.ticks;

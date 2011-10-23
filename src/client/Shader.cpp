@@ -269,22 +269,6 @@ namespace client
     caelumLight.diffuse = colour;
   }
 
-  int Shader::addLight( const Point3& pos, const Vec4& colour )
-  {
-    return lights.add( Light( pos, colour ) );
-  }
-
-  void Shader::removeLight( int id )
-  {
-    lights.remove( id );
-  }
-
-  void Shader::setLight( int id, const Point3& pos, const Vec4& colour )
-  {
-    lights[id].pos = pos;
-    lights[id].diffuse = colour;
-  }
-
   void Shader::updateLights()
   {
     glUniform3fv( param.oz_CaelumLight_dir,     1, caelumLight.dir );

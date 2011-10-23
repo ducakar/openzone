@@ -26,17 +26,6 @@ struct Elem
   explicit Elem( int value_ ) : value( value_ ) {}
 };
 
-struct SparseElem
-{
-  int value;
-
-  SparseElem()
-  {}
-
-  explicit SparseElem( int value_ ) : value( value_ )
-  {}
-};
-
 int main( int, char** )
 {
   Alloc::isLocked = false;
@@ -46,7 +35,6 @@ int main( int, char** )
   Array<int, 5> a;
   Vector<int> v;
   SVector<int, 5> sv;
-  Sparse<SparseElem> s;
   Map<int> m;
   HashIndex<int, 7> hi;
   HashString<int, 7> hs;
@@ -56,7 +44,6 @@ int main( int, char** )
   Array<int, 5> a1;
   Vector<int> v1;
   SVector<int, 5> sv1;
-  Sparse<SparseElem> s1;
   Map<int> m1;
   HashIndex<int, 7> hi1;
   HashString<int, 7> hs1;
@@ -67,7 +54,6 @@ int main( int, char** )
   a[0] = 1;
   v.add( 1 );
   sv.add( 1 );
-  s.add( SparseElem( 1 ) );
   m.include( 1 );
   hi.add( 101, 1 );
   hs.add( "101", 1 );
@@ -78,7 +64,6 @@ int main( int, char** )
   a[1] = 2;
   v.add( 2 );
   sv.add( 2 );
-  s.add( SparseElem( 2 ) );
   m.include( 2 );
   hi.add( 102, 2 );
   hs.add( "102", 2 );
@@ -89,7 +74,6 @@ int main( int, char** )
   a[2] = 4;
   v.add( 4 );
   sv.add( 4 );
-  s.add( SparseElem( 4 ) );
   m.include( 4 );
   hi.add( 104, 4 );
   hs.add( "104", 4 );
@@ -100,7 +84,6 @@ int main( int, char** )
   a[3] = 3;
   v.add( 3 );
   sv.add( 3 );
-  s.add( SparseElem( 3 ) );
   m.include( 3 );
   hi.add( 103, 3 );
   hs.add( "103", 3 );
@@ -111,7 +94,6 @@ int main( int, char** )
   a[4] = 5;
   v.add( 5 );
   sv.add( 5 );
-  s.add( SparseElem( 5 ) );
   m.include( 5 );
   hi.add( 105, 5 );
   hs.add( "105", 5 );
@@ -121,7 +103,6 @@ int main( int, char** )
   swap( a, a1 );
   swap( v, v1 );
   swap( sv, sv1 );
-  swap( s, s1 );
   swap( m, m1 );
   swap( hi, hi1 );
   swap( hs, hs1 );
@@ -131,13 +112,11 @@ int main( int, char** )
   swap( a, a1 );
   swap( v, v1 );
   swap( sv, sv1 );
-  swap( s, s1 );
   swap( m, m1 );
   swap( hi, hi1 );
   swap( hs, hs1 );
 
   v1.dealloc();
-  s1.dealloc();
   m1.dealloc();
   hi1.dealloc();
   hs1.dealloc();
@@ -167,11 +146,6 @@ int main( int, char** )
   }
   printf( "\n" );
 
-  foreach( i, s.citer() ) {
-    printf( "%d ", i->value );
-  }
-  printf( "\n" );
-
   foreach( i, m.citer() ) {
     printf( "%d ", i.key() );
   }
@@ -183,7 +157,7 @@ int main( int, char** )
   printf( "\n" );
 
   foreach( i, hs.citer() ) {
-    printf( "%d ", *i );
+    printf( "%d ", i.value() );
   }
   printf( "\n" );
 
@@ -191,8 +165,6 @@ int main( int, char** )
   dl.free();
   v.clear();
   v.dealloc();
-  s.clear();
-  s.dealloc();
   m.clear();
   m.dealloc();
   hi.clear();

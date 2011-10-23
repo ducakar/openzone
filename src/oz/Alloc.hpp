@@ -1,80 +1,119 @@
 /*
  *  Alloc.hpp
  *
- *  Overload default new and delete operators to provide allocation statistics and optionally
- *  check for leaks and mismatched new/delete (if OZ_TRACE_LEAKS is turned on).
- *
  *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
 
+/**
+ * @file Alloc.hpp
+ */
+
 #include "common.hpp"
 
 namespace oz
 {
 
-  class Alloc
-  {
-    public:
+/**
+ * Memory allocator.
+ *
+ * This class provides custom implementation for <tt>new</tt>/<tt>delete</tt> and
+ * <tt>new[]</tt>/<tt>delete[]</tt> operators that provides memory allocation
+ * statistics, specific alignment and optionally tracks memory leaks (if <tt>OZ_TRACE_LEAKS</tt>
+ * config option is turned on).
+ */
+class Alloc
+{
+  public:
 
+    /// Alignment of allocated storage returned by <tt>operator new</tt>.
 #ifdef OZ_SIMD
-      static const size_t ALIGNMENT            = 16;
+    static const size_t ALIGNMENT = 16;
 #else
-      static const size_t ALIGNMENT            = sizeof( size_t );
+    static const size_t ALIGNMENT = sizeof( size_t );
 #endif
-      static const int    BACKTRACE_SIZE       = 16;
-      static const int    DEMANGLE_BUFFER_SIZE = 1024;
 
-      static int    count;
-      static size_t amount;
+    static int    count;     ///< Current number of allocated memory chunks.
+    static size_t amount;    ///< Amount of currently allocated memory.
 
-      static int    sumCount;
-      static size_t sumAmount;
+    static int    sumCount;  ///< Number of all memory allocations.
+    static size_t sumAmount; ///< Cumulative amount of all memory allocations.
 
-      static int    maxCount;
-      static size_t maxAmount;
+    static int    maxCount;  ///< Top number to memory allocations.
+    static size_t maxAmount; ///< Top amount of allocated memory.
 
-      OZ_WEAK_SYMBOL
-      static bool isLocked;
+  private:
 
-    private:
+    /**
+     * Singleton.
+     */
+    Alloc();
 
-      // singleton
-      Alloc();
+  public:
 
-    public:
+    /**
+     * Enable/disable memory (de)allocation.
+     *
+     * Any attempt of memory (de)allocation via <tt>new</tt>/<tt>delete</tt> will throw
+     * a <code>std::bad_alloc</code> exception unless <code>oz::Alloc::isLocked == true</code>.<br/>
+     * Since it is a weak symbol you can override it with a custom definition, e.g.
+     * <code><pre>
+     *   bool oz::Alloc::isLocked = false;
+     * </pre></code>
+     */
+    OZ_WEAK_SYMBOL
+    static bool isLocked;
 
-      OZ_ALWAYS_INLINE
-      static size_t alignDown( size_t size )
-      {
-        return size & ~( ALIGNMENT - 1 );
-      }
+    /**
+     * Align to the previous boundary.
+     */
+    OZ_ALWAYS_INLINE
+    static size_t alignDown( size_t size )
+    {
+      return size & ~( ALIGNMENT - 1 );
+    }
 
-      OZ_ALWAYS_INLINE
-      static size_t alignUp( size_t size )
-      {
-        return ( ( size - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT;
-      }
+    /**
+     * Align to the next boundary.
+     */
+    OZ_ALWAYS_INLINE
+    static size_t alignUp( size_t size )
+    {
+      return ( ( size - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT;
+    }
 
-      template <typename Pointer>
-      OZ_ALWAYS_INLINE
-      static Pointer* alignDown( Pointer* p )
-      {
-        return reinterpret_cast<Pointer*>( size_t( p ) & ~( ALIGNMENT - 1 ) );
-      }
+    /**
+     * Align to the previous boundary.
+     */
+    template <typename Pointer>
+    OZ_ALWAYS_INLINE
+    static Pointer* alignDown( Pointer* p )
+    {
+      return reinterpret_cast<Pointer*>( size_t( p ) & ~( ALIGNMENT - 1 ) );
+    }
 
-      template <typename Pointer>
-      OZ_ALWAYS_INLINE
-      static Pointer* alignUp( Pointer* p )
-      {
-        return reinterpret_cast<Pointer*>( ( size_t( p - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT );
-      }
+    /**
+     * Align to the next boundary.
+     */
+    template <typename Pointer>
+    OZ_ALWAYS_INLINE
+    static Pointer* alignUp( Pointer* p )
+    {
+      return reinterpret_cast<Pointer*>( ( size_t( p - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT );
+    }
 
-      static void printStatistics();
-      static void printLeaks();
+    /**
+     * Print memory statistics into the global log.
+     */
+    static void printStatistics();
 
-  };
+    /**
+     * Print memory leaks into the global log.
+     */
+    static void printLeaks();
+
+};
 
 }

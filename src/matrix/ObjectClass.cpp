@@ -23,7 +23,7 @@ namespace oz
      * name
      */
 
-    name        = ( *config )["name"];
+    name        = config->get( "name", "" );
     title       = gettext( config->get( "title", name ) );
     description = gettext( config->get( "description", "" ) );
 

@@ -1,19 +1,11 @@
 if( OZ_BUILD_TESTS )
-  add_executable( alloctest alloctest.cpp )
-  add_dependencies( alloctest pch )
-  target_link_libraries( alloctest matrix oz ${libs} )
+#   add_executable( alloctest alloctest.cpp )
+#   add_dependencies( alloctest pch )
+#   target_link_libraries( alloctest matrix oz ${libs} )
 
   add_executable( foreach foreach.cpp )
   add_dependencies( foreach pch )
   target_link_libraries( foreach oz ${libs} )
-
-  add_executable( io io.cpp )
-  add_dependencies( io matrix pch )
-  target_link_libraries( io oz ${libs} )
-
-  add_executable( lua lua.cpp )
-  add_dependencies( lua pch )
-  target_link_libraries( lua oz ${libs} )
 
   add_executable( pool pool.cpp )
   add_dependencies( pool pch )
@@ -23,17 +15,9 @@ if( OZ_BUILD_TESTS )
   add_dependencies( quicksort pch )
   target_link_libraries( quicksort oz ${libs} )
 
-  add_executable( register register.cpp )
-  add_dependencies( register pch )
-  target_link_libraries( register oz ${libs} )
-
   add_executable( simd simd.cpp )
   add_dependencies( simd pch )
   target_link_libraries( simd oz ${libs} )
-
-  add_executable( sparse sparse.cpp )
-  add_dependencies( sparse pch )
-  target_link_libraries( sparse oz ${libs} )
 
   add_executable( unittest unittest.cpp )
   add_dependencies( unittest pch )

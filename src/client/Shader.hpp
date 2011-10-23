@@ -145,7 +145,6 @@ namespace client
 
       float           lightingDistance;
       CaelumLight     caelumLight;
-      Sparse<Light>   lights;
 
       void compileShader( uint id, const char* path, const char** sources, int* lengths ) const;
       void loadProgram( int id, const char** sources, int* lengths );
@@ -173,10 +172,6 @@ namespace client
       void setLightingDistance( float distance );
       void setAmbientLight( const Vec4& colour );
       void setCaelumLight( const Vec3& dir, const Vec4& colour );
-
-      int  addLight( const Point3& pos, const Vec4& colour );
-      void removeLight( int id );
-      void setLight( int id, const Point3& pos, const Vec4& colour );
 
       void updateLights();
 

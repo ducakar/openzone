@@ -1,565 +1,506 @@
 /*
  *  arrays.hpp
  *
- *  Array utility templates.
- *
  *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
 
+/**
+ * @file arrays.hpp
+ *
+ * Iterators and utility functions for arrays and array-like containers.
+ */
+
 #include "iterables.hpp"
 
 namespace oz
 {
 
-  /**
-   * Constant array iterator
-   */
-  template <typename Type>
-  class CIterator : public CIteratorBase<Type>
-  {
-    private:
+template <typename Elem>
+class CIterator;
 
-      typedef CIteratorBase<Type> B;
+template <typename Elem>
+CIterator<Elem> citer( const Elem* array, int count );
 
-    protected:
+/**
+ * Array iterator with constant access to elements.
+ */
+template <typename Elem>
+class CIterator : public CIteratorBase<Elem>
+{
+  friend CIterator citer<Elem>( const Elem* array, int count );
 
-      /**
-       * Successor of the last element.
-       * Is is used to determine when iterator becomes invalid.
-       * It's not declared const so we can have use copy operator on Iterator.
-       */
-      const Type* past;
+  private:
 
-    public:
+    /// Base class type, convenience definition to make code cleaner.
+    typedef CIteratorBase<Elem> B;
 
-      /**
-       * Default constructor returns an invalid iterator
-       */
-      OZ_ALWAYS_INLINE
-      CIterator() : B( null ), past( null )
-      {}
+  protected:
 
-      /**
-       * Returns true while the iterator has not passed all the elements in the container and thus
-       * points to a valid location.
-       * @return
-       */
-      OZ_ALWAYS_INLINE
-      bool isValid() const
-      {
-        return B::elem != past;
-      }
+    /// Successor of the last element, used to determine when the iterator becomes invalid.
+    const Elem* past;
 
-      /**
-       * @param start first element for forward iterator or successor of last element for backward
-       * iterator
-       * @param past_ successor of last element for forward iterator or predecessor of first element
-       * for backward iterator
-       */
-      OZ_ALWAYS_INLINE
-      explicit CIterator( const Type* start, const Type* past_ ) : B( start ), past( past_ )
-      {}
+    /**
+     * Iterator for an array.
+     *
+     * @param start the first array element.
+     * @param past_ successor of the last element in an array.
+     */
+    OZ_ALWAYS_INLINE
+    explicit CIterator( const Elem* start, const Elem* past_ ) : B( start ), past( past_ )
+    {}
 
-      /**
-       * Advance to next element.
-       * @return
-       */
-      OZ_ALWAYS_INLINE
-      CIterator& operator ++ ()
-      {
-        hard_assert( B::elem != past );
+  public:
 
-        ++B::elem;
-        return *this;
-      }
+    /**
+     * Default constructor, creates an invalid iterator.
+     */
+    OZ_ALWAYS_INLINE
+    CIterator() : B( null ), past( null )
+    {}
 
-  };
-
-  /**
-   * Array iterator
-   */
-  template <typename Type>
-  class Iterator : public IteratorBase<Type>
-  {
-    private:
-
-      typedef IteratorBase<Type> B;
-
-    protected:
-
-      /**
-       * Successor of the last element.
-       * Is is used to determine when iterator becomes invalid.
-       * It's not declared const so we can have use copy operator on Iterator.
-       */
-      const Type* past;
-
-    public:
-
-      /**
-       * Default constructor returns an invalid iterator
-       */
-      OZ_ALWAYS_INLINE
-      Iterator() : B( null ), past( null )
-      {}
-
-      /**
-       * @param start first element for forward iterator or successor of last element for backward
-       * iterator
-       * @param past_ successor of last element for forward iterator or predecessor of first element
-       * for backward iterator
-       */
-      OZ_ALWAYS_INLINE
-      explicit Iterator( Type* start, const Type* past_ ) : B( start ), past( past_ )
-      {}
-
-      /**
-       * Returns true while the iterator has not passed all the elements in the container and thus
-       * points to a valid location.
-       * @return
-       */
-      OZ_ALWAYS_INLINE
-      bool isValid() const
-      {
-        return B::elem != past;
-      }
-
-      /**
-       * Advance to next element.
-       * @return
-       */
-      OZ_ALWAYS_INLINE
-      Iterator& operator ++ ()
-      {
-        hard_assert( B::elem != past );
-
-        ++B::elem;
-        return *this;
-      }
-
-  };
-
-  /**
-   * Make constant array iterator
-   * Simplifies construction of array iterators.
-   * Instead of
-   * <code>CIterator&lt;int&gt;( array, array + 10 );</code>
-   * you write
-   * <code>citer( array, 10 );</code>
-   * @param array
-   * @param count
-   * @return
-   */
-  template <typename Type>
-  OZ_ALWAYS_INLINE
-  inline CIterator<Type> citer( const Type* array, int count )
-  {
-    return CIterator<Type>( array, array + count );
-  }
-
-  /**
-   * Make array iterator
-   * Simplifies construction of array iterators.
-   * Instead of
-   * <code>Iterator&lt;int&gt;( array, array + 10 );</code>
-   * you write
-   * <code>iter( array, 10 );</code>
-   * @param array
-   * @param count
-   * @return
-   */
-  template <typename Type>
-  OZ_ALWAYS_INLINE
-  inline Iterator<Type> iter( Type* array, int count )
-  {
-    return Iterator<Type>( array, array + count );
-  }
-
-  /**
-   * Copy array from first to last element (memcpy).
-   * In contrast with memcpy it calls copy operator on objects.
-   * @param aDest pointer to the first element in the destination array
-   * @param aSrc pointer to the first element in the source array
-   * @param count number of elements to be copied
-   */
-  template <typename Type>
-  inline void aCopy( Type* aDest, const Type* aSrc, int count )
-  {
-    hard_assert( count == 0 || aDest != aSrc );
-
-    for( int i = 0; i < count; ++i ) {
-      aDest[i] = aSrc[i];
+    /**
+     * True while iterator has not passed all array elements.
+     */
+    OZ_ALWAYS_INLINE
+    bool isValid() const
+    {
+      return B::elem != past;
     }
-  }
 
-  /**
-   * Copy array from last to first element.
-   * It may be used where you cannot use aCopy due to source and destination overlapping.
-   * @param aDest pointer to the first element in the destination array
-   * @param aSrc pointer to the first element in the source array
-   * @param count number of elements to be copied
-   */
-  template <typename Type>
-  inline void aReverseCopy( Type* aDest, const Type* aSrc, int count )
-  {
-    hard_assert( count == 0 || aDest != aSrc );
+    /**
+     * Advance to the next element.
+     */
+    OZ_ALWAYS_INLINE
+    CIterator& operator ++ ()
+    {
+      hard_assert( B::elem != past );
 
-    for( int i = count - 1; i >= 0; --i ) {
-      aDest[i] = aSrc[i];
+      ++B::elem;
+      return *this;
     }
-  }
 
-  /**
-   * Set array members to given value (memset).
-   * In contrast with memset it calls copy operator on objects.
-   * @param aDest pointer to the first element
-   * @param value value to be set
-   * @param count number of elements to be set
-   */
-  template <typename Type>
-  inline void aSet( Type* aDest, const Type& value, int count )
-  {
-    for( int i = 0; i < count; ++i ) {
-      aDest[i] = value;
+};
+
+template <typename Elem>
+class Iterator;
+
+template <typename Elem>
+Iterator<Elem> iter( Elem* array, int count );
+
+/**
+ * Array iterator with non-constant access to elements.
+ */
+template <typename Elem>
+class Iterator : public IteratorBase<Elem>
+{
+  friend Iterator iter<Elem>( Elem* array, int count );
+
+  private:
+
+    /// Base class type, convenience definition to make code cleaner.
+    typedef IteratorBase<Elem> B;
+
+  protected:
+
+    /// Successor of the last element, used to determine when the iterator becomes invalid.
+    const Elem* past;
+
+    /**
+     * Iterator for an array.
+     *
+     * @param start the first array element.
+     * @param past_ successor of the last element in an array.
+     */
+    OZ_ALWAYS_INLINE
+    explicit Iterator( Elem* start, const Elem* past_ ) : B( start ), past( past_ )
+    {}
+
+  public:
+
+    /**
+     * Default constructor, creates an invalid iterator.
+     */
+    OZ_ALWAYS_INLINE
+    Iterator() : B( null ), past( null )
+    {}
+
+    /**
+     * True while iterator has not passed all array elements.
+     */
+    OZ_ALWAYS_INLINE
+    bool isValid() const
+    {
+      return B::elem != past;
     }
-  }
 
-  /**
-   * Apply method on all array elements.
-   * @param aDest
-   * @param method
-   * @param count
-   */
-  template <typename Type, typename Method>
-  inline void aMap( Type* aDest, const Method& method, int count )
-  {
-    for( int i = 0; i < count; ++i ) {
-      method( aDest[i] );
+    /**
+     * Advance to the next element.
+     */
+    OZ_ALWAYS_INLINE
+    Iterator& operator ++ ()
+    {
+      hard_assert( B::elem != past );
+
+      ++B::elem;
+      return *this;
     }
-  }
 
-  /**
-   * Compare arrays (memcmp).
-   * In contrast to memcmp it calls != operator on objects.
-   * @param aSrcA pointer to the first element in the first array
-   * @param aSrcB pointer to the first element in the second array
-   * @param count number of elements to be compared
-   * @return
-   */
-  template <typename Type>
-  inline bool aEquals( const Type* aSrcA, const Type* aSrcB, int count )
-  {
-    int i = 0;
-    while( i < count && aSrcA[i] == aSrcB[i] ) {
+};
+
+/**
+ * Create array iterator with constant access to elements.
+ */
+template <typename Elem>
+OZ_ALWAYS_INLINE
+inline CIterator<Elem> citer( const Elem* array, int count )
+{
+  return CIterator<Elem>( array, array + count );
+}
+
+/**
+ * Create array iterator with non-constant access to elements.
+ */
+template <typename Elem>
+OZ_ALWAYS_INLINE
+inline Iterator<Elem> iter( Elem* array, int count )
+{
+  return Iterator<Elem>( array, array + count );
+}
+
+/**
+ * Copy array from the first to the last element.
+ */
+template <typename Elem>
+inline void aCopy( Elem* aDest, const Elem* aSrc, int count )
+{
+  hard_assert( count == 0 || aDest != aSrc );
+
+  for( int i = 0; i < count; ++i ) {
+    aDest[i] = aSrc[i];
+  }
+}
+
+/**
+ * Copy array from the last to the first element.
+ */
+template <typename Elem>
+inline void aReverseCopy( Elem* aDest, const Elem* aSrc, int count )
+{
+  hard_assert( count == 0 || aDest != aSrc );
+
+  for( int i = count - 1; i >= 0; --i ) {
+    aDest[i] = aSrc[i];
+  }
+}
+
+/**
+ * Set array elements to the given value.
+ */
+template <typename Elem>
+inline void aSet( Elem* aDest, const Elem& value, int count )
+{
+  for( int i = 0; i < count; ++i ) {
+    aDest[i] = value;
+  }
+}
+
+/**
+ * True iff respective elements are equal.
+ */
+template <typename Elem>
+inline bool aEquals( const Elem* aSrcA, const Elem* aSrcB, int count )
+{
+  int i = 0;
+  while( i < count && aSrcA[i] == aSrcB[i] ) {
+    ++i;
+  }
+  return i == count;
+}
+
+/**
+ * True iff the given value is found in the array.
+ */
+template <typename Elem>
+inline bool aContains( const Elem* aSrc, const Elem& value, int count )
+{
+  int i = 0;
+  while( i < count && !( aSrc[i] == value ) ) {
+    ++i;
+  }
+  return i != count;
+}
+
+/**
+ * Index of the first occurrence of the value or -1 if not found.
+ */
+template <typename Elem>
+inline int aIndex( const Elem* aSrc, const Elem& value, int count )
+{
+  int i = 0;
+  while( i < count && !( aSrc[i] == value ) ) {
+    ++i;
+  }
+  return i == count ? -1 : i;
+}
+
+/**
+ * Index of the last occurrence of the value or -1 if not found.
+ */
+template <typename Elem>
+inline int aLastIndex( const Elem* aSrc, const Elem& value, int count )
+{
+  int i = count - 1;
+  while( i >= 0 && !( aSrc[i] == value ) ) {
+    --i;
+  }
+  return i;
+}
+
+/**
+ * Delete objects referenced by elements and set all elements to <tt>null</tt>.
+ *
+ * If array elements are pointers to objects, delete all referenced objects and set all array
+ * elements to <tt>null</tt>.
+ */
+template <typename Elem>
+inline void aFree( Elem* aDest, int count )
+{
+  for( int i = 0; i < count; ++i ) {
+    delete aDest[i];
+    aDest[i] = null;
+  }
+}
+
+/**
+ * Length of a static array.
+ */
+template <typename Elem>
+inline int aLength( const Elem& aSrc )
+{
+  return int( sizeof( aSrc ) / sizeof( aSrc[0] ) );
+}
+
+/**
+ * Reallocate array.
+ *
+ * Allocate new array of <tt>newCount</tt> elements, copy first <tt>count</tt> elements
+ * of the source array <tt>aSrc</tt>to the newly created one and delete the source array.
+ *
+ * @return newly allocated array.
+ */
+template <typename Elem>
+inline Elem* aRealloc( const Elem* aSrc, int count, int newCount )
+{
+  Elem* aNew = new Elem[newCount];
+
+  for( int i = 0; i < count; ++i ) {
+    aNew[i] = aSrc[i];
+  }
+  delete[] aSrc;
+
+  return aNew;
+}
+
+/**
+ * Insert an element at the given index.
+ *
+ * The remaining elements are shifted to make a gap. The last element is lost.
+ *
+ * @param aDest pointer to the first element in the array.
+ * @param value value of to be inserted.
+ * @param index position where the element is to be inserted.
+ * @param count number of elements in the array.
+ */
+template <typename Elem, typename Value>
+inline void aInsert( Elem* aDest, const Value& value, int index, int count )
+{
+  hard_assert( uint( index ) < uint( count ) );
+
+  for( int i = count - 1; i > index; --i ) {
+    aDest[i] = aDest[i - 1];
+  }
+  aDest[index] = value;
+}
+
+/**
+ * Remove the element at the given index.
+ *
+ * The remaining elements are shifted to fill the gap.
+ *
+ * @param aDest pointer to the first element in the array.
+ * @param index position of the element to be removed.
+ * @param count number of elements in the array.
+ */
+template <typename Elem>
+inline void aRemove( Elem* aDest, int index, int count )
+{
+  hard_assert( uint( index ) < uint( count ) );
+
+  for( int i = index + 1; i < count; ++i ) {
+    aDest[i - 1] = aDest[i];
+  }
+}
+
+/**
+ * Reverse the order of array elements.
+ */
+template <typename Elem>
+inline void aReverse( Elem* aDest, int count )
+{
+  int bottom = 0;
+  int top    = count - 1;
+
+  while( bottom < top ) {
+    swap( aDest[bottom], aDest[top] );
+    ++bottom;
+    --top;
+  }
+}
+
+/**
+ * Utility function for aSort.
+ *
+ * Elem type must have <tt>operator \< ( const Elem\& )</tt> defined.
+ * Quicksort algorithm is used which takes last element in a partition as a pivot so sorting a
+ * sorted or nearly sorted array will take O(n^2) time instead of O(n log n) as in average case.
+ * When a partition has at most 8 elements, selection sort is used.
+ *
+ * @param first pointer to first element in the array to be sorted.
+ * @param last pointer to last element in the array.
+ */
+template <typename Elem>
+static void quicksort( Elem* first, Elem* last )
+{
+  // 8-14 seem as an optimal thresholds for switching to selection sort
+  if( last - first > 8 ) {
+    // quicksort
+    Elem* top = first;
+    Elem* bottom = last - 1;
+
+    do {
+      while( top <= bottom && !( *last < *top ) ) {
+        ++top;
+      }
+      while( top < bottom && *last < *bottom ) {
+        --bottom;
+      }
+      if( top >= bottom ) {
+        break;
+      }
+      swap( *top, *bottom );
+    }
+    while( true );
+
+    swap( *top, *last );
+
+    quicksort( first, top - 1 );
+    quicksort( top + 1, last );
+  }
+  else {
+    // selection sort
+    for( Elem* i = first; i < last; ) {
+      Elem* pivot = i;
+      Elem* min = i;
       ++i;
-    }
-    return i == count;
-  }
 
-  /**
-   * Return true if given value is found in the array.
-   * @param aSrc
-   * @param value
-   * @param count
-   * @return
-   */
-  template <typename Type>
-  inline bool aContains( const Type* aSrc, const Type& value, int count )
-  {
-    int i = 0;
-    while( i < count && !( aSrc[i] == value ) ) {
-      ++i;
-    }
-    return i != count;
-  }
-
-  /**
-   * Find the first occurrence of an element.
-   * @param aSrc pointer to the first element in the array
-   * @param value value we look for
-   * @param count number of elements to be looked upon
-   * @return index of the first occurrence, -1 if not found
-   */
-  template <typename Type>
-  inline int aIndex( const Type* aSrc, const Type& value, int count )
-  {
-    int i = 0;
-    while( i < count && !( aSrc[i] == value ) ) {
-      ++i;
-    }
-    return i == count ? -1 : i;
-  }
-
-  /**
-   * Find the last occurrence of an element.
-   * @param aSrc pointer to the first element in the array
-   * @param value value we look for
-   * @param count number of elements to be looked upon
-   * @return index of the first occurrence, -1 if not found
-   */
-  template <typename Type>
-  inline int aLastIndex( const Type* aSrc, const Type& value, int count )
-  {
-    int i = count - 1;
-    while( i >= 0 && !( aSrc[i] == value ) ) {
-      --i;
-    }
-    return i;
-  }
-
-  /**
-   * Call delete on each non-null element of an array of pointers and set all elements to null.
-   * @param aDest pointer to the first element in the array
-   * @param count number of elements
-   */
-  template <typename Type>
-  inline void aFree( Type* aDest, int count )
-  {
-    for( int i = 0; i < count; ++i ) {
-      if( aDest[i] != null ) {
-        delete aDest[i];
-        aDest[i] = null;
+      for( Elem* j = i; j <= last; ++j ) {
+        if( *j < *min ) {
+          min = j;
+        }
       }
+      swap( *pivot, *min );
     }
   }
+}
 
-  /**
-   * Length of a static array.
-   * This function does not work with pointers to array.
-   * @param array
-   * @return
-   */
-  template <typename Type>
-  inline int aLength( const Type& aSrc )
-  {
-    return int( sizeof( aSrc ) / sizeof( aSrc[0] ) );
+/**
+ * Sort array (uses quicksort algorithm).
+ */
+template <typename Elem>
+inline void aSort( Elem* aSrc, int count )
+{
+  quicksort( aSrc, aSrc + count - 1 );
+}
+
+/**
+ * Find an element using bisection.
+ *
+ * Elem type must have defined <tt>operator == ( const Key\&, const Elem\& )</tt> and
+ * <tt>operator \< ( const Key\&, const Elem\& )</tt>.
+ *
+ * @param aSrc
+ * @param key the key we are looking for.
+ * @param count
+ * @return index of the requested element or -1 if not found.
+ */
+template <typename Elem, typename Key>
+inline int aBisectFind( Elem* aSrc, const Key& key, int count )
+{
+  hard_assert( count >= 0 );
+
+  if( count == 0 ) {
+    return -1;
   }
 
-  /**
-   * Destruct elements of an array.
-   * Mainly to call destructors on arrays constructed via placement new operator.
-   * @param aDest
-   * @param count
-   */
-  template <typename Type>
-  inline void aDestruct( const Type* aSrc, int count )
-  {
-    for( int i = 0; i < count; ++i ) {
-      aSrc[i].~Type();
-    }
-  }
+  int a = 0;
+  int b = count;
 
-  /**
-   * Reallocate array (realloc).
-   * Allocates new block of size newSize * sizeof( Type ) and moves first "count" elements of
-   * source array. newCount should be equal to or greater than count.
-   * @param aDest pointer to the source array
-   * @param count number of elements to be copied
-   * @param newCount number of elements in the new array
-   * @return
-   */
-  template <typename Type>
-  inline Type* aRealloc( Type* aDest, int count, int newCount )
-  {
-    Type* aNew = new Type[newCount];
+  // The algorithm ensures that ( a == 0 or data[a] <= key ) and ( b == count or key < data[b] ),
+  // so the key may only lie on position a or nowhere.
+  while( b - a > 1 ) {
+    int c = ( a + b ) / 2;
 
-    for( int i = 0; i < count; ++i ) {
-      aNew[i] = aDest[i];
-    }
-    delete[] aDest;
-
-    return aNew;
-  }
-
-  /**
-   * Insert an element at the specified index. Shift the remaining elements to make a gap.
-   * The last element is lost.
-   * @param aDest pointer to the first element in the array
-   * @param index position where the element is to be inserted
-   * @param count number of elements in the array
-   */
-  template <typename Type, typename Value>
-  inline void aInsert( Type* aDest, const Value& value, int index, int count )
-  {
-    hard_assert( uint( index ) < uint( count ) );
-
-    for( int i = count - 1; i > index; --i ) {
-      aDest[i] = aDest[i - 1];
-    }
-    aDest[index] = value;
-  }
-
-  /**
-   * Remove the element at the specified index. Shift the remaining elements to fill the gap.
-   * The last element may become invalid because of move semantics.
-   * @param aDest pointer to the first element in the array
-   * @param index position of the element to be removed
-   * @param count number of elements in the array
-   */
-  template <typename Type>
-  inline void aRemove( Type* aDest, int index, int count )
-  {
-    hard_assert( uint( index ) < uint( count ) );
-
-    for( int i = index + 1; i < count; ++i ) {
-      aDest[i - 1] = aDest[i];
-    }
-  }
-
-  /**
-   * Reverses the order of array elements.
-   * @param aDest pointer to the first element in the array
-   * @param count number of elements in the array
-   */
-  template <typename Type>
-  inline void aReverse( Type* aDest, int count )
-  {
-    int bottom = 0;
-    int top    = count - 1;
-
-    while( bottom < top ) {
-      swap( aDest[bottom], aDest[top] );
-      ++bottom;
-      --top;
-    }
-  }
-
-  /**
-   * Utility function for aSort. It could also be called directly.
-   * Type must have operator &lt; defined.
-   * @param first pointer to first element in the array to be sorted
-   * @param last pointer to last element in the array
-   */
-  template <typename Type>
-  static void quicksort( Type* first, Type* last )
-  {
-    // 8-14 seem as an optimal thresholds for switching to selection sort
-    if( last - first > 8 ) {
-      // quicksort
-      Type* top = first;
-      Type* bottom = last - 1;
-
-      do {
-        while( top <= bottom && !( *last < *top ) ) {
-          ++top;
-        }
-        while( top < bottom && *last < *bottom ) {
-          --bottom;
-        }
-        if( top >= bottom ) {
-          break;
-        }
-        swap( *top, *bottom );
-      }
-      while( true );
-
-      swap( *top, *last );
-
-      quicksort( first, top - 1 );
-      quicksort( top + 1, last );
+    if( key < aSrc[c] ) {
+      b = c;
     }
     else {
-      // selection sort
-      for( Type* i = first; i < last; ) {
-        Type* pivot = i;
-        Type* min = i;
-        ++i;
-
-        for( Type* j = i; j <= last; ++j ) {
-          if( *j < *min ) {
-            min = j;
-          }
-        }
-        swap( *pivot, *min );
-      }
+      a = c;
     }
   }
 
-  /**
-   * Perform quicksort on the array. Recursive quicksort algorithm is used which takes first
-   * element in partition as a pivot so sorting a sorted or nearly sorted array will take O(n^2)
-   * time instead of O(n log n) as in general case.
-   * Type must have operator &lt; defined.
-   * @param array pointer to the first element in the array
-   * @param count number of elements to be sorted
-   */
-  template <typename Type>
-  inline void aSort( Type* aSrc, int count )
-  {
-    quicksort( aSrc, aSrc + count - 1 );
+  return key == aSrc[a] ? a : -1;
+}
+
+/**
+ * Find insert position for an element to be added using bisection.
+ *
+ * Returns an index such that
+ * <pre>
+ *   aSrc[index - 1] <= key && key < aSrc[index]
+ * </pre>
+ * If all elements are lesser, return <tt>count</tt> and if all elements are greater,
+ * return 0. Elem type must have defined <tt>operator \> ( const Key\&, const Elem\& )</tt>.
+ *
+ * @param aSrc
+ * @param key the key we are looking for.
+ * @param count
+ * @return index of least element greater than the key, or count if there's no such element.
+ */
+template <typename Elem, typename Key>
+inline int aBisectPosition( Elem* aSrc, const Key& key, int count )
+{
+  hard_assert( count >= 0 );
+
+  int a = -1;
+  int b = count;
+
+  // The algorithm ensures that ( a == -1 or data[a] <= key ) and ( b == count or key < data[b] ),
+  // so the key may only lie on position a or nowhere.
+  while( b - a > 1 ) {
+    int c = ( a + b ) / 2;
+
+    if( key < aSrc[c] ) {
+      b = c;
+    }
+    else {
+      a = c;
+    }
   }
 
-  /**
-   * Find an element using bisection.
-   * Type must have operators == and &lt; defined.
-   * @param aSrc non-empty array
-   * @param value the key we are looking for
-   * @param count
-   * @return index of requested element or -1 if not found
-   */
-  template <typename Type, typename Key>
-  inline int aBisectFind( Type* aSrc, const Key& key, int count )
-  {
-    hard_assert( count >= 0 );
-
-    if( count == 0 ) {
-      return -1;
-    }
-
-    int a = 0;
-    int b = count;
-
-    // The algorithm ensures that ( a == 0 or data[a] <= key ) and ( b == count or key < data[b] ),
-    // so the key may only lie on position a or nowhere.
-    while( b - a > 1 ) {
-      int c = ( a + b ) / 2;
-
-      if( key < aSrc[c] ) {
-        b = c;
-      }
-      else {
-        a = c;
-      }
-    }
-
-    return key == aSrc[a] ? a : -1;
-  }
-
-  /**
-   * Find insert position for an element to be added using bisection.
-   * Returns an index such that aSrc[index - 1] <= key && key < aSrc[index]. If all elements are
-   * lesser, return count, if all elements are greater, return 0.
-   * Type must have operators == and &lt; defined.
-   * @param aSrc
-   * @param value the key we are looking for
-   * @param count
-   * @return index of least element greater than the key, or count if there's no such element
-   */
-  template <typename Type, typename Key>
-  inline int aBisectPosition( Type* aSrc, const Key& key, int count )
-  {
-    hard_assert( count >= 0 );
-
-    int a = -1;
-    int b = count;
-
-    // The algorithm ensures that ( a == -1 or data[a] <= key ) and ( b == count or key < data[b] ),
-    // so the key may only lie on position a or nowhere.
-    while( b - a > 1 ) {
-      int c = ( a + b ) / 2;
-
-      if( key < aSrc[c] ) {
-        b = c;
-      }
-      else {
-        a = c;
-      }
-    }
-
-    return a + 1;
-  }
+  return a + 1;
+}
 
 }

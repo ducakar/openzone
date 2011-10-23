@@ -1,99 +1,129 @@
 /*
  *  System.hpp
  *
- *  Class for generating stack trace for the current function call.
- *
  *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
 
+/**
+ * @file System.hpp
+ */
+
 #include "common.hpp"
 
 namespace oz
 {
 
-  class System
-  {
-    private:
+/**
+ * Class for generating stack trace for the current function call.
+ */
+class System
+{
+  private:
 
-      static const int TRACE_SIZE         = 16;
-      static const int TRACE_BUFFER_SIZE  = 4096;
-      static const int STRING_BUFFER_SIZE = 1024;
+    /// Maximum number of stack frames to be recorded.
+    static const int TRACE_SIZE = 16;
 
-      static const char* const SIGNALS[][2];
+    /// Size of the <tt>output</tt> buffer.
+    static const int TRACE_BUFFER_SIZE = 4096;
 
-      static OZ_THREAD_LOCAL void* framePtrs[TRACE_SIZE + 1];
-      static OZ_THREAD_LOCAL char  output[TRACE_BUFFER_SIZE];
+    /// Size of buffer for demangling function name.
+    static const int STRING_BUFFER_SIZE = 1024;
 
-      static bool isHaltEnabled;
+    /// Table of signal names and descriptions.
+    static const char* const SIGNALS[][2];
 
-      static void signalHandler( int signum );
+    /// Internal buffer to store stack frames.
+    static OZ_THREAD_LOCAL void* framePtrs[System::TRACE_SIZE + 1];
 
-    private:
+    /// Internal buffer for generation of stack trace string.
+    static OZ_THREAD_LOCAL char output[TRACE_BUFFER_SIZE];
 
-      // singleton
-      System();
+    /// Whether to enable <code>halt()</code> to be called by <code>abort()</code>.
+    static bool isHaltEnabled;
 
-    public:
+    /**
+     * Signal handler, prints signal info and calls <code>abort()</code>.
+     */
+    static void signalHandler( int signum );
 
-      /**
-       * If turned on, the signal handler will halt the program on a fatal signal, write a
-       * notification to stderr and wait for another fatal signal (e.g. CTRL-C).
-       * This is intended to halt the program on a crash, so one can attach with debugger and
-       * inspect the program state.
-       * Default is off.
-       * @param value
-       */
-      static void enableHalt( bool value );
+  private:
 
-      /**
-       * Set signal handlers to catch critical signals, print information, stack trace and,
-       * optionally, wait for a debugger to attach.
-       * SIGINT, SIGQUIT, SIGILL, SIGABRT, SIGFPE, SIGSEGV and SIGTERM are caught.
-       */
-      static void catchSignals();
+    /**
+     * Singleton.
+     */
+    System();
 
-      /**
-       * Reset signal handlers to defaults.
-       */
-      static void resetSignals();
+  public:
 
-      /**
-       * Raise trap signal (to trigger breakpoint).
-       */
-      static void trap();
+    /**
+     * Enable halt on crash.
+     *
+     * If turned on, the signal handler will halt the program on a fatal signal, write a
+     * notification to stderr and wait for another fatal signal (e.g. CTRL-C).
+     * This is intended to halt the program on a crash, so one can attach with debugger and
+     * inspect the program state.
+     * Default is off.
+     */
+    static void enableHalt( bool value );
 
-      /**
-       * Halt. Print a message to stdout and wait for a key to continue.
-       */
-      static void halt();
+    /**
+     * Set signal handlers.
+     *
+     * Set signal handlers to catch critical signals. Handlers print information about signal,
+     * and then call <code>abort()</code>.
+     * SIGINT, SIGQUIT, SIGILL, SIGABRT, SIGFPE, SIGSEGV and SIGTERM should be caught. Some
+     * functions or errors may ruin signal catching.
+     */
+    static void catchSignals();
 
-      /**
-       * Print given error message.
-       * Everything is printed to stderr and log file, if log target is a file.
-       * @param msg
-       */
-      static void error( const char* msg, ... );
+    /**
+     * Reset signal handlers to defaults.
+     */
+    static void resetSignals();
 
-      /**
-       * Generates and demangles stack trace.
-       * On success it allocates a buffer via malloc where it stores null-byte-separated string
-       * of frame names. The caller should free buffer.
-       * On failure 0 is returned and bufferPtr is unchanged.
-       * @param bufferPtr where to save pointer to buffer
-       * @return number of frames
-       */
-      static int getStackTrace( char** bufferPtr );
+    /**
+     * Raise trap signal (to trigger a breakpoint).
+     */
+    static void trap();
 
-      /**
-       * Crash with given message, stack trace and wait for a debugger or fatal signal.
-       * Everything is printed to stderr and log file, if log target is a file.
-       * @param msg
-       */
-      static void abort( const char* msg, ... );
+    /**
+     * Wait for a key to continue or a fatal signal.
+     *
+     * This function is intended to halt program when something goes wrong, so one can attach
+     * a debugger.
+     */
+    static void halt();
 
-  };
+    /**
+     * Print error message.
+     *
+     * Everything is printed to stderr and log, unless log output is stdout.
+     */
+    static void error( const char* msg, ... );
+
+    /**
+     * Generates and demangles stack trace.
+     *
+     * On success it allocates a buffer via <tt>malloc</tt> where it stores null-byte-separated
+     * strings of frame names. The caller should free buffer.
+     * On failure 0 is returned and <tt>bufferPtr</tt> is unchanged.
+     *
+     * @param bufferPtr where to save pointer to the buffer.
+     * @return Number of frames.
+     */
+    static int getStackTrace( char** bufferPtr );
+
+    /**
+     * Abort program.
+     *
+     * Print the error message and stack trace, call <code>halt()</code> and terminate program with
+     * SIGABRT after that. Everything is printed to stderr and log, unless log output is stdout.
+     */
+    static void abort( const char* msg, ... );
+
+};
 
 }
