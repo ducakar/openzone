@@ -1,289 +1,273 @@
 /*
- *  Array.hpp
+ * Array.hpp
  *
- *  Static-size array.
- *  The advantage over C++ arrays it that is has bounds checking and an iterator.
- *
- *  Copyright (C) 2002-2011  Davorin Učakar
- *  This software is covered by GNU GPLv3. See COPYING file for details.
+ * Copyright (C) 2002-2011  Davorin Učakar
+ * This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
+
+/**
+ * @file Array.hpp
+ */
 
 #include "arrays.hpp"
 
 namespace oz
 {
 
-  template <typename Type, int SIZE>
-  class Array
-  {
-    static_assert( SIZE > 0, "Array size must be at least 1" );
+/**
+ * Static array.
+ *
+ * The advantage over C++ arrays is it that is has bounds checking and an iterator.
+ */
+template <typename Elem, int SIZE>
+class Array
+{
+  static_assert( SIZE > 0, "Array size must be at least 1" );
 
-    public:
+  public:
 
-      /**
-       * Constant Array iterator.
-       */
-      class CIterator : public oz::CIterator<Type>
-      {
-        private:
+    /**
+     * Iterator with constant access to container elements.
+     */
+    class CIterator : public oz::CIterator<Elem>
+    {
+      friend class Array;
 
-          typedef oz::CIterator<Type> B;
+      private:
 
-        public:
+        /// Base class type, convenience definition to make code cleaner.
+        typedef oz::CIterator<Elem> B;
 
-          /**
-           * Default constructor returns an invalid iterator
-           */
-          OZ_ALWAYS_INLINE
-          CIterator() : B( null, null )
-          {}
+        /**
+         * Iterator for the given container, points to its first element.
+         */
+        OZ_ALWAYS_INLINE
+        explicit CIterator( const Array& a ) : B( a.data, a.data + SIZE )
+        {}
 
-          /**
-           * Make iterator for given array. After creation it points to first element.
-           * @param v
-           */
-          OZ_ALWAYS_INLINE
-          explicit CIterator( const Array& a ) : B( a.data, a.data + SIZE )
-          {}
+      public:
 
-      };
+        /**
+         * Default constructor, creates an invalid iterator.
+         */
+        OZ_ALWAYS_INLINE
+        CIterator() : B( null, null )
+        {}
 
-      /**
-       * Array iterator.
-       */
-      class Iterator : public oz::Iterator<Type>
-      {
-        private:
+    };
 
-          typedef oz::Iterator<Type> B;
+    /**
+     * Iterator with non-constant access to container elements.
+     */
+    class Iterator : public oz::Iterator<Elem>
+    {
+      friend class Array;
 
-        public:
+      private:
 
-          /**
-           * Default constructor returns an invalid iterator
-           */
-          OZ_ALWAYS_INLINE
-          Iterator() : B( null, null )
-          {}
+        /// Base class type, convenience definition to make code cleaner.
+        typedef oz::Iterator<Elem> B;
 
-          /**
-           * Make iterator for given array. After creation it points to first element.
-           * @param v
-           */
-          OZ_ALWAYS_INLINE
-          explicit Iterator( Array& a ) : B( a.data, a.data + SIZE )
-          {}
+        /**
+         * Iterator for the given container, points to its first element.
+         */
+        OZ_ALWAYS_INLINE
+        explicit Iterator( Array& a ) : B( a.data, a.data + SIZE )
+        {}
 
-      };
+      public:
 
-    private:
+        /**
+         * Default constructor, creates an invalid iterator.
+         */
+        OZ_ALWAYS_INLINE
+        Iterator() : B( null, null )
+        {}
 
-      Type data[SIZE];
+    };
 
-    public:
+  private:
 
-      /**
-       * Default constructor.
-       */
-      OZ_ALWAYS_INLINE
-      Array()
-      {}
+    Elem data[SIZE]; ///< Array of elements.
 
-      /**
-       * Initialise from a C++ array.
-       * @param array
-       */
-      explicit Array( const Type* array )
-      {
-        aCopy( data, array, SIZE );
-      }
+  public:
 
-      /**
-       * Equality operator.
-       * @param a
-       * @return true if all elements in both arrays are equal
-       */
-      bool operator == ( const Array& a ) const
-      {
-        return aEquals( data, a.data, SIZE );
-      }
+    /**
+     * Create uninitialised array.
+     */
+    OZ_ALWAYS_INLINE
+    Array()
+    {}
 
-      /**
-       * Inequality operator.
-       * @param a
-       * @return false if all elements in both arrays are equal
-       */
-      bool operator != ( const Array& a ) const
-      {
-        return !aEquals( data, a.data, SIZE );
-      }
+    /**
+     * Initialise form a C++ array.
+     */
+    explicit Array( const Elem* array )
+    {
+      aCopy( data, array, SIZE );
+    }
 
-      /**
-       * @return iterator for this array
-       */
-      OZ_ALWAYS_INLINE
-      CIterator citer() const
-      {
-        return CIterator( *this );
-      }
+    /**
+     * True iff respective elements are equal.
+     */
+    bool operator == ( const Array& a ) const
+    {
+      return aEquals( data, a.data, SIZE );
+    }
 
-      /**
-       * @return iterator for this array
-       */
-      OZ_ALWAYS_INLINE
-      Iterator iter()
-      {
-        return Iterator( *this );
-      }
+    /**
+     * False iff respective elements are equal.
+     */
+    bool operator != ( const Array& a ) const
+    {
+      return !aEquals( data, a.data, SIZE );
+    }
 
-      /**
-       * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
-       * overflows if you don't check the size of <code>data</code> array.
-       * @return constant pointer to data array
-       */
-      OZ_ALWAYS_INLINE
-      operator const Type* () const
-      {
-        return data;
-      }
+    /**
+     * Iterator with constant access, initially points to the first element.
+     */
+    OZ_ALWAYS_INLINE
+    CIterator citer() const
+    {
+      return CIterator( *this );
+    }
 
-      /**
-       * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
-       * overflows if you don't check the size of <code>data</code> array.
-       * @return non-constant pointer to data array
-       */
-      OZ_ALWAYS_INLINE
-      operator Type* ()
-      {
-        return data;
-      }
+    /**
+     * Iterator with non-constant access, initially points to the first element.
+     */
+    OZ_ALWAYS_INLINE
+    Iterator iter()
+    {
+      return Iterator( *this );
+    }
 
-      /**
-       * @return number of elements in the array
-       */
-      OZ_ALWAYS_INLINE
-      int length() const
-      {
-        return SIZE;
-      }
+    /**
+     * Constant pointer to the first element.
+     */
+    OZ_ALWAYS_INLINE
+    operator const Elem* () const
+    {
+      return data;
+    }
 
-      /**
-       * @return true if vector has no elements
-       */
-      OZ_ALWAYS_INLINE
-      bool isEmpty() const
-      {
-        return SIZE == 0;
-      }
+    /**
+     * Pointer to the first element.
+     */
+    OZ_ALWAYS_INLINE
+    operator Elem* ()
+    {
+      return data;
+    }
 
-      /**
-       * @param e
-       * @return true if the element is found in the array
-       */
-      bool contains( const Type& e ) const
-      {
-        return aContains( data, e, SIZE );
-      }
+    /**
+     * Number of elements.
+     */
+    OZ_ALWAYS_INLINE
+    int length() const
+    {
+      return SIZE;
+    }
 
-      /**
-       * @param i
-       * @return constant reference i-th element
-       */
-      OZ_ALWAYS_INLINE
-      const Type& operator [] ( int i ) const
-      {
-        hard_assert( uint( i ) < uint( SIZE ) );
+    /**
+     * Constant reference to the i-th element.
+     */
+    OZ_ALWAYS_INLINE
+    const Elem& operator [] ( int i ) const
+    {
+      hard_assert( uint( i ) < uint( SIZE ) );
 
-        return data[i];
-      }
+      return data[i];
+    }
 
-      /**
-       * @param i
-       * @return reference i-th element
-       */
-      OZ_ALWAYS_INLINE
-      Type& operator [] ( int i )
-      {
-        hard_assert( uint( i ) < uint( SIZE ) );
+    /**
+     * Reference the i-th element.
+     */
+    OZ_ALWAYS_INLINE
+    Elem& operator [] ( int i )
+    {
+      hard_assert( uint( i ) < uint( SIZE ) );
 
-        return data[i];
-      }
+      return data[i];
+    }
 
-      /**
-       * @return constant reference to first element
-       */
-      OZ_ALWAYS_INLINE
-      const Type& first() const
-      {
-        return data[0];
-      }
+    /**
+     * Constant reference to the first element.
+     */
+    OZ_ALWAYS_INLINE
+    const Elem& first() const
+    {
+      return data[0];
+    }
 
-      /**
-       * @return reference to first element
-       */
-      OZ_ALWAYS_INLINE
-      Type& first()
-      {
-        return data[0];
-      }
+    /**
+     * Reference to the first element.
+     */
+    OZ_ALWAYS_INLINE
+    Elem& first()
+    {
+      return data[0];
+    }
 
-      /**
-       * @return constant reference to last element
-       */
-      OZ_ALWAYS_INLINE
-      const Type& last() const
-      {
-        return data[SIZE - 1];
-      }
+    /**
+     * Constant reference to the last element.
+     */
+    OZ_ALWAYS_INLINE
+    const Elem& last() const
+    {
+      return data[SIZE - 1];
+    }
 
-      /**
-       * @return reference to last element
-       */
-      OZ_ALWAYS_INLINE
-      Type& last()
-      {
-        return data[SIZE - 1];
-      }
+    /**
+     * Reference to the last element.
+     */
+    OZ_ALWAYS_INLINE
+    Elem& last()
+    {
+      return data[SIZE - 1];
+    }
 
-      /**
-       * Find the first occurrence of an element.
-       * @param e
-       * @return index of first occurrence, -1 if not found
-       */
-      int index( const Type& e ) const
-      {
-        return aIndex( data, e, SIZE );
-      }
+    /**
+     * True iff the given value is found in the array.
+     */
+    bool contains( const Elem& e ) const
+    {
+      return aContains( data, e, SIZE );
+    }
 
-      /**
-       * Find the last occurrence of an element.
-       * @param e
-       * @return index of last occurrence, -1 if not found
-       */
-      int lastIndex( const Type& e ) const
-      {
-        return aLastIndex( data, e, SIZE );
-      }
+    /**
+     * Index of the first occurrence of the value or -1 if not found.
+     */
+    int index( const Elem& e ) const
+    {
+      return aIndex( data, e, SIZE );
+    }
 
-      /**
-       * Sort elements with quicksort algorithm (last element as pivot).
-       */
-      void sort()
-      {
-        aSort( data, SIZE );
-      }
+    /**
+     * Index of the last occurrence of the value or -1 if not found.
+     */
+    int lastIndex( const Elem& e ) const
+    {
+      return aLastIndex( data, e, SIZE );
+    }
 
-      /**
-       * Empty the list and delete all elements - take care of memory management. Use this function
-       * only with array of pointer that you want to be deleted.
-       */
-      void free()
-      {
-        aFree( data, SIZE );
-      }
+    /**
+     * Sort elements with quicksort.
+     */
+    void sort()
+    {
+      aSort( data, SIZE );
+    }
 
-  };
+    /**
+     * Delete objects referenced by elements and set all elements to null.
+     */
+    void free()
+    {
+      aFree( data, SIZE );
+    }
+
+};
 
 }

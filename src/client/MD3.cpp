@@ -380,9 +380,9 @@ namespace client
       log.printEnd( " OK" );
     }
 
-    shaderName.clear();
+    shaderName.dealloc();
     config.clear();
-    sPath.clear();
+    sPath.dealloc();
 
     log.unindent();
     log.println( "}" );

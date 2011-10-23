@@ -59,7 +59,7 @@ namespace nirvana
   {
     int count = 0;
     foreach( i, minds.iter() ) {
-      Mind* mind = *i;
+      Mind* mind = i.value();
 
       const Bot* bot = static_cast<const Bot*>( orbis.objects[mind->bot] );
       hard_assert( bot != null && ( bot->flags & Object::BOT_BIT ) );

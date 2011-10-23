@@ -70,7 +70,7 @@ namespace oz
     for( int i = 0; i < nNodes; ++i ) {
       nodes[i].plane = is.readInt();
       nodes[i].front = is.readInt();
-      nodes[i].back = is.readInt();
+      nodes[i].back  = is.readInt();
     }
     data += nNodes * int( sizeof( Node ) );
 
@@ -79,7 +79,7 @@ namespace oz
     leaves = new( data ) Leaf[nLeaves];
     for( int i = 0; i < nLeaves; ++i ) {
       leaves[i].firstBrush = is.readInt();
-      leaves[i].nBrushes = is.readInt();
+      leaves[i].nBrushes   = is.readInt();
     }
     data += nLeaves * int( sizeof( Leaf ) );
 
@@ -96,8 +96,8 @@ namespace oz
     brushes = new( data ) Brush[nBrushes];
     for( int i = 0; i < nBrushes; ++i ) {
       brushes[i].firstSide = is.readInt();
-      brushes[i].nSides = is.readInt();
-      brushes[i].material = is.readInt();
+      brushes[i].nSides    = is.readInt();
+      brushes[i].material  = is.readInt();
     }
     data += nBrushes * int( sizeof( Brush ) );
 
@@ -113,17 +113,17 @@ namespace oz
 
     models = new( data ) Model[nModels];
     for( int i = 0; i < nModels; ++i ) {
-      models[i].mins = is.readPoint3();
-      models[i].maxs = is.readPoint3();
-      models[i].bsp = this;
+      models[i].mins       = is.readPoint3();
+      models[i].maxs       = is.readPoint3();
+      models[i].bsp        = this;
       models[i].firstBrush = is.readInt();
-      models[i].nBrushes = is.readInt();
-      models[i].move = is.readVec3();
-      models[i].ratioInc = is.readFloat();
-      models[i].flags = is.readInt();
-      models[i].type = Model::Type( is.readInt() );
-      models[i].margin = is.readFloat();
-      models[i].timeout = is.readFloat();
+      models[i].nBrushes   = is.readInt();
+      models[i].move       = is.readVec3();
+      models[i].ratioInc   = is.readFloat();
+      models[i].flags      = is.readInt();
+      models[i].type       = Model::Type( is.readInt() );
+      models[i].margin     = is.readFloat();
+      models[i].timeout    = is.readFloat();
     }
 
     return true;
@@ -134,14 +134,6 @@ namespace oz
     log.print( "Freeing BSP structure '%s' ...", library.bsps[id].name.cstr() );
 
     if( planes != null ) {
-      aDestruct( planes, nPlanes );
-      aDestruct( nodes, nNodes );
-      aDestruct( leaves, nLeaves );
-      aDestruct( leafBrushes, nLeafBrushes );
-      aDestruct( brushes, nBrushes );
-      aDestruct( brushSides, nBrushSides );
-      aDestruct( models, nModels );
-
       delete[] reinterpret_cast<char*>( planes );
 
       nPlanes      = 0;

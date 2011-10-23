@@ -123,8 +123,8 @@ namespace ui
 
   MainMenu::~MainMenu()
   {
-    autosaveFile.clear();;
-    quicksaveFile.clear();
+    autosaveFile.dealloc();;
+    quicksaveFile.dealloc();
   }
 
   void MainMenu::onDraw()

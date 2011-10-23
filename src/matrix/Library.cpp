@@ -521,14 +521,16 @@ namespace oz
         classConfig.clear();
         throw Exception( "Class description error" );
       }
-      if( !classConfig.contains( "base" ) ) {
+
+      String base = classConfig.get( "base", "" );
+      if( base.isEmpty() ) {
         log.println( "missing base variable" );
         classConfig.clear();
         throw Exception( "Class description error" );
       }
-      const ObjectClass::InitFunc* initFunc = baseClasses.find( classConfig["base"] );
+      const ObjectClass::InitFunc* initFunc = baseClasses.find( base );
       if( initFunc == null ) {
-        log.println( "invalid base %s", classConfig["base"].cstr() );
+        log.println( "invalid base %s", base.cstr() );
         classConfig.clear();
         throw Exception( "Class description error" );
       }
@@ -904,14 +906,16 @@ namespace oz
         classConfig.clear();
         throw Exception( "Class description error" );
       }
-      if( !classConfig.contains( "base" ) ) {
+
+      String base = classConfig.get( "base", "" );
+      if( base.isEmpty() ) {
         log.println( "missing base variable" );
         classConfig.clear();
         throw Exception( "Class description error" );
       }
-      const ObjectClass::InitFunc* initFunc = baseClasses.find( classConfig["base"] );
+      const ObjectClass::InitFunc* initFunc = baseClasses.find( base );
       if( initFunc == null ) {
-        log.println( "invalid base %s", classConfig["base"].cstr() );
+        log.println( "invalid base %s", base.cstr() );
         classConfig.clear();
         throw Exception( "Class description error" );
       }

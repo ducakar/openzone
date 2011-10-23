@@ -1,382 +1,370 @@
 /*
  *  DArray.hpp
  *
- *  Dynamic array.
- *  The advantage over C++ arrays is it has bounds checking, iterator and it frees allocated
- *  memory when destroyed.
- *
  *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
 
+/**
+ * @file DArray.hpp
+ */
+
 #include "arrays.hpp"
 
 namespace oz
 {
 
-  template <typename Type>
-  class DArray
-  {
-    public:
+/**
+ * Dynamic array.
+ *
+ * The advantage over C++ arrays is it has bounds checking, iterator and it frees allocated memory
+ * when destroyed.
+ */
+template <typename Elem>
+class DArray
+{
+  public:
 
-      /**
-       * Constant DArray iterator.
-       */
-      class CIterator : public oz::CIterator<Type>
-      {
-        private:
+    /**
+     * Iterator with constant access to container elements.
+     */
+    class CIterator : public oz::CIterator<Elem>
+    {
+      friend class DArray;
 
-          typedef oz::CIterator<Type> B;
+      private:
 
-        public:
+        /// Base class type, convenience definition to make code cleaner.
+        typedef oz::CIterator<Elem> B;
 
-          /**
-           * Default constructor returns an invalid iterator
-           */
-          OZ_ALWAYS_INLINE
-          CIterator() : B( null, null )
-          {}
+        /**
+         * Iterator for the given container, points to its first element.
+         */
+        OZ_ALWAYS_INLINE
+        explicit CIterator( const DArray& a ) : B( a.data, a.data + a.count )
+        {}
 
-          /**
-           * Make iterator for given array. After creation it points to first element.
-           * @param v
-           */
-          OZ_ALWAYS_INLINE
-          explicit CIterator( const DArray& a ) : B( a.data, a.data + a.count )
-          {}
+      public:
 
-      };
+        /**
+         * Default constructor, creates an invalid iterator.
+         */
+        OZ_ALWAYS_INLINE
+        CIterator() : B( null, null )
+        {}
 
-      /**
-       * DArray iterator.
-       */
-      class Iterator : public oz::Iterator<Type>
-      {
-        private:
+    };
 
-          typedef oz::Iterator<Type> B;
+    /**
+     * Iterator with non-constant access to container elements.
+     */
+    class Iterator : public oz::Iterator<Elem>
+    {
+      friend class DArray;
 
-        public:
+      private:
 
-          /**
-           * Default constructor returns an invalid iterator
-           */
-          OZ_ALWAYS_INLINE
-          Iterator() : B( null, null )
-          {}
+        /// Base class type, convenience definition to make code cleaner.
+        typedef oz::Iterator<Elem> B;
 
-          /**
-           * Make iterator for given array. After creation it points to first element.
-           * @param v
-           */
-          OZ_ALWAYS_INLINE
-          explicit Iterator( const DArray& a ) : B( a.data, a.data + a.count )
-          {}
+        /**
+         * Iterator for the given container, points to its first element.
+         */
+        OZ_ALWAYS_INLINE
+        explicit Iterator( const DArray& a ) : B( a.data, a.data + a.count )
+        {}
 
-      };
+      public:
 
-    private:
+        /**
+         * Default constructor, creates an invalid iterator.
+         */
+        OZ_ALWAYS_INLINE
+        Iterator() : B( null, null )
+        {}
 
-      Type* data;
-      int   count;
+    };
 
-    public:
+  private:
 
-      /**
-       * Create a null array.
-       */
-      DArray() : data( null ), count( 0 )
-      {}
+    Elem* data;  ///< Array of elements.
+    int   count; ///< Number of elements.
 
-      /**
-       * Destructor.
-       */
-      ~DArray()
-      {
-        delete[] data;
-      }
+  public:
 
-      /**
-       * Copy constructor.
-       * @param a
-       */
-      DArray( const DArray& a ) : data( a.count == 0 ? null : new Type[a.count] ), count( a.count )
-      {
-        aCopy( data, a.data, a.count );
-      }
+    /**
+     * Create an empty array.
+     */
+    DArray() : data( null ), count( 0 )
+    {}
 
-      /**
-       * Copy operator.
-       * @param a
-       * @return
-       */
-      DArray& operator = ( const DArray& a )
-      {
-        if( &a == this ) {
-          soft_assert( &a != this );
-          return *this;
-        }
+    /**
+     * Destructor.
+     */
+    ~DArray()
+    {
+      delete[] data;
+    }
 
-        if( count != a.count ) {
-          delete[] data;
+    /**
+     * Copy constructor, copies elements.
+     */
+    DArray( const DArray& a ) : data( a.count == 0 ? null : new Elem[a.count] ), count( a.count )
+    {
+      aCopy( data, a.data, a.count );
+    }
 
-          data  = a.count == 0 ? null : new Type[a.count];
-          count = a.count;
-        }
-
-        aCopy( data, a.data, a.count );
+    /**
+     * Copy operator, copies elements.
+     *
+     * Reuse existing storage only if it the size matches.
+     */
+    DArray& operator = ( const DArray& a )
+    {
+      if( &a == this ) {
+        soft_assert( &a != this );
         return *this;
       }
 
-      /**
-       * Create an array with the given size.
-       * @param size
-       */
-      explicit DArray( int size ) : data( size == 0 ? null : new Type[size] ), count( size )
-      {}
-
-      /**
-       * Initialise from a C++ array.
-       * @param array
-       * @param size
-       */
-      explicit DArray( const Type* array, int size ) : data( size == 0 ? null : new Type[size] ),
-          count( size )
-      {
-        aCopy( data, array, count );
-      }
-
-      /**
-       * Equality operator.
-       * @param a
-       * @return true if all elements in both arrays are equal
-       */
-      bool operator == ( const DArray& a ) const
-      {
-        return count == a.count && aEquals( data, a.data, count );
-      }
-
-      /**
-       * Inequality operator.
-       * @param a
-       * @return false if all elements in both arrays are equal
-       */
-      bool operator != ( const DArray& a ) const
-      {
-        return count != a.count || !aEquals( data, a.data, count );
-      }
-
-      /**
-       * @return constant iterator for this array
-       */
-      OZ_ALWAYS_INLINE
-      CIterator citer() const
-      {
-        return CIterator( *this );
-      }
-
-      /**
-       * @return iterator for this array
-       */
-      OZ_ALWAYS_INLINE
-      Iterator iter() const
-      {
-        return Iterator( *this );
-      }
-
-      /**
-       * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
-       * overflows if you don't check the size of <code>data</code> array.
-       * @return constant pointer to data array
-       */
-      OZ_ALWAYS_INLINE
-      operator const Type* () const
-      {
-        hard_assert( count > 0 );
-
-        return data;
-      }
-
-      /**
-       * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
-       * overflows if you don't check the size of <code>data</code> array.
-       * @return non-constant pointer to data array
-       */
-      OZ_ALWAYS_INLINE
-      operator Type* ()
-      {
-        hard_assert( count > 0 );
-
-        return data;
-      }
-
-      /**
-       * @return number of elements in the array
-       */
-      OZ_ALWAYS_INLINE
-      int length() const
-      {
-        return count;
-      }
-
-      /**
-       * @return true if memory is NOT allocated (i.e. count == 0)
-       */
-      OZ_ALWAYS_INLINE
-      bool isEmpty() const
-      {
-        return count == 0;
-      }
-
-      /**
-       * @param e
-       * @return true if the element is found in the array
-       */
-      bool contains( const Type& e ) const
-      {
-        hard_assert( count > 0 );
-
-        return aContains( data, e, count );
-      }
-
-      /**
-       * @param i
-       * @return constant reference i-th element
-       */
-      OZ_ALWAYS_INLINE
-      const Type& operator [] ( int i ) const
-      {
-        hard_assert( uint( i ) < uint( count ) );
-
-        return data[i];
-      }
-
-      /**
-       * @param i
-       * @return reference i-th element
-       */
-      OZ_ALWAYS_INLINE
-      Type& operator [] ( int i )
-      {
-        hard_assert( uint( i ) < uint( count ) );
-
-        return data[i];
-      }
-
-      /**
-       * @return constant reference to first element
-       */
-      OZ_ALWAYS_INLINE
-      const Type& first() const
-      {
-        hard_assert( count > 0 );
-
-        return data[0];
-      }
-
-      /**
-       * @return reference to first element
-       */
-      OZ_ALWAYS_INLINE
-      Type& first()
-      {
-        hard_assert( count > 0 );
-
-        return data[0];
-      }
-
-      /**
-       * @return constant reference to last element
-       */
-      OZ_ALWAYS_INLINE
-      const Type& last() const
-      {
-        hard_assert( count > 0 );
-
-        return data[count - 1];
-      }
-
-      /**
-       * @return reference to last element
-       */
-      OZ_ALWAYS_INLINE
-      Type& last()
-      {
-        hard_assert( count > 0 );
-
-        return data[count - 1];
-      }
-
-      /**
-       * Find the first occurrence of an element.
-       * @param e
-       * @return index of first occurrence, -1 if not found
-       */
-      int index( const Type& e ) const
-      {
-        hard_assert( count > 0 );
-
-        return aIndex( data, e, count );
-      }
-
-      /**
-       * Find the last occurrence of an element.
-       * @param e
-       * @return index of last occurrence, -1 if not found
-       */
-      int lastIndex( const Type& e ) const
-      {
-        hard_assert( count > 0 );
-
-        return aLastIndex( data, e, count );
-      }
-
-      /**
-       * Sort elements with quicksort algorithm (last element as pivot).
-       */
-      void sort()
-      {
-        hard_assert( count > 0 );
-
-        aSort( data, count );
-      }
-
-      /**
-       * Delete the array and delete all elements - take care of memory management. Use this
-       * function only with array of pointers that you want to be deleted.
-       */
-      void free()
-      {
-        aFree( data, count );
-      }
-
-      /**
-       * Allocates capacity for initSize elements. It analoguous to DArray( initSize ) constructor
-       * if one want to reserving size on construction cannot be done.
-       * DArray must be empty for this function to work.
-       * @param initSize
-       */
-      void alloc( int initSize )
-      {
-        hard_assert( count == 0 && initSize > 0 );
-
-        data = new Type[initSize];
-        count = initSize;
-      }
-
-      /**
-       * Deallocate resources.
-       */
-      void dealloc()
-      {
+      if( count != a.count ) {
         delete[] data;
 
-        data = null;
-        count = 0;
+        data  = a.count == 0 ? null : new Elem[a.count];
+        count = a.count;
       }
 
-  };
+      aCopy( data, a.data, a.count );
+
+      return *this;
+    }
+
+    /**
+     * Create an array with the given size.
+     */
+    explicit DArray( int size ) : data( size == 0 ? null : new Elem[size] ), count( size )
+    {}
+
+    /**
+     * Initialise from a C++ array.
+     */
+    explicit DArray( const Elem* array, int size ) : data( size == 0 ? null : new Elem[size] ),
+        count( size )
+    {
+      aCopy( data, array, count );
+    }
+
+    /**
+     * True iff the same size and respective elements are equal.
+     */
+    bool operator == ( const DArray& a ) const
+    {
+      return count == a.count && aEquals( data, a.data, count );
+    }
+
+    /**
+     * False iff the same size and respective elements are equal.
+     */
+    bool operator != ( const DArray& a ) const
+    {
+      return count != a.count || !aEquals( data, a.data, count );
+    }
+
+    /**
+     * Iterator with constant access, initially points to the first element.
+     */
+    OZ_ALWAYS_INLINE
+    CIterator citer() const
+    {
+      return CIterator( *this );
+    }
+
+    /**
+     * Iterator with non-constant access, initially points to the first element.
+     */
+    OZ_ALWAYS_INLINE
+    Iterator iter() const
+    {
+      return Iterator( *this );
+    }
+
+    /**
+     * Constant pointer to the first element.
+     */
+    OZ_ALWAYS_INLINE
+    operator const Elem* () const
+    {
+      hard_assert( count > 0 );
+
+      return data;
+    }
+
+    /**
+     * Pointer to the first element.
+     */
+    OZ_ALWAYS_INLINE
+    operator Elem* ()
+    {
+      hard_assert( count > 0 );
+
+      return data;
+    }
+
+    /**
+     * Number of elements.
+     */
+    OZ_ALWAYS_INLINE
+    int length() const
+    {
+      return count;
+    }
+
+    /**
+     * True iff empty (no storage is allocated).
+     */
+    OZ_ALWAYS_INLINE
+    bool isEmpty() const
+    {
+      return count == 0;
+    }
+
+    /**
+     * Constant reference to the i-th element.
+     */
+    OZ_ALWAYS_INLINE
+    const Elem& operator [] ( int i ) const
+    {
+      hard_assert( uint( i ) < uint( count ) );
+
+      return data[i];
+    }
+
+    /**
+     * Reference to the i-th element.
+     */
+    OZ_ALWAYS_INLINE
+    Elem& operator [] ( int i )
+    {
+      hard_assert( uint( i ) < uint( count ) );
+
+      return data[i];
+    }
+
+    /**
+     * Constant reference to the first element.
+     */
+    OZ_ALWAYS_INLINE
+    const Elem& first() const
+    {
+      hard_assert( count > 0 );
+
+      return data[0];
+    }
+
+    /**
+     * Reference to the first element.
+     */
+    OZ_ALWAYS_INLINE
+    Elem& first()
+    {
+      hard_assert( count > 0 );
+
+      return data[0];
+    }
+
+    /**
+     * Constant reference to the last element.
+     */
+    OZ_ALWAYS_INLINE
+    const Elem& last() const
+    {
+      hard_assert( count > 0 );
+
+      return data[count - 1];
+    }
+
+    /**
+     * Reference to the last element.
+     */
+    OZ_ALWAYS_INLINE
+    Elem& last()
+    {
+      hard_assert( count > 0 );
+
+      return data[count - 1];
+    }
+
+    /**
+     * True iff the given value is found in the array.
+     */
+    bool contains( const Elem& e ) const
+    {
+      hard_assert( count > 0 );
+
+      return aContains( data, e, count );
+    }
+
+    /**
+     * Index of the first occurrence of the value or -1 if not found.
+     */
+    int index( const Elem& e ) const
+    {
+      hard_assert( count > 0 );
+
+      return aIndex( data, e, count );
+    }
+
+    /**
+     * Index of the last occurrence of the value or -1 if not found.
+     */
+    int lastIndex( const Elem& e ) const
+    {
+      hard_assert( count > 0 );
+
+      return aLastIndex( data, e, count );
+    }
+
+    /**
+     * Sort elements with quicksort.
+     */
+    void sort()
+    {
+      hard_assert( count > 0 );
+
+      aSort( data, count );
+    }
+
+    /**
+     * Delete objects referenced by elements and set all elements to null.
+     */
+    void free()
+    {
+      aFree( data, count );
+    }
+
+    /**
+     * For an empty array, allocate <tt>initSize</tt> elements.
+     */
+    void alloc( int initSize )
+    {
+      hard_assert( count == 0 && initSize > 0 );
+
+      data  = new Elem[initSize];
+      count = initSize;
+    }
+
+    /**
+     * Deallocate data.
+     */
+    void dealloc()
+    {
+      delete[] data;
+
+      data  = null;
+      count = 0;
+    }
+
+};
 
 }

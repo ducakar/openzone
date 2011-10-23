@@ -127,12 +127,12 @@ namespace client
       auto src = i;
       ++i;
 
-      if( src->isUpdated ) {
-        src->isUpdated = false;
+      if( src.value().isUpdated ) {
+        src.value().isUpdated = false;
       }
       else {
-        alDeleteSources( 1, &src->id );
-        context.removeBSPSource( src, src.key() );
+        alDeleteSources( 1, &src.value().id );
+        context.removeBSPSource( &src.value(), src.key() );
       }
     }
 
@@ -140,12 +140,12 @@ namespace client
       auto src = i;
       ++i;
 
-      if( src->isUpdated ) {
-        src->isUpdated = false;
+      if( src.value().isUpdated ) {
+        src.value().isUpdated = false;
       }
       else {
-        alDeleteSources( 1, &src->id );
-        context.removeObjSource( src, src.key() );
+        alDeleteSources( 1, &src.value().id );
+        context.removeObjSource( &src.value(), src.key() );
       }
     }
 

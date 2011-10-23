@@ -38,7 +38,7 @@ int main( int, char** )
     float y = -Orbis::DIM + Math::rand() * 2.0f * Orbis::DIM;
     float z = -Orbis::DIM + Math::rand() * 2.0f * Orbis::DIM;
 
-    synapse.addObject( "Tree2", Point3( x, y, z ) );
+    synapse.addObject( "Tree2", Point3( x, y, z ), NORTH );
   }
 
   synapse.unload();

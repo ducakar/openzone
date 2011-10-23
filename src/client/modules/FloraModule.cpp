@@ -54,7 +54,12 @@ namespace client
       return;
     }
 
-    AABB bounds = AABB( pos, library.classes.get( type )->dim );
+    const ObjectClass* const* clazz = library.classes.find( type );
+    if( clazz == null ) {
+      throw Exception( "Object class '" + String( type ) + "' missing" );
+    }
+
+    AABB bounds = AABB( pos, ( *clazz )->dim );
     bounds *= SPACING;
 
     if( !collider.overlapsOSO( bounds ) ) {
@@ -64,8 +69,13 @@ namespace client
 
   void FloraModule::addPlant( const char* type, float x, float y )
   {
+    const ObjectClass* const* clazz = library.classes.find( type );
+    if( clazz == null ) {
+      throw Exception( "Object class '" + String( type ) + "' missing" );
+    }
+
     Point3 pos    = Point3( x, y, orbis.terra.height( x, y ) );
-    AABB   bounds = AABB( pos, library.classes.get( type )->dim );
+    AABB   bounds = AABB( pos, ( *clazz )->dim );
 
     if( pos.z < 0.0f || 40.0f < pos.z ) {
       return;

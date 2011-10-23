@@ -637,7 +637,7 @@ namespace client
 
     log.print( "Freeing Client Lua ..." );
 
-    missionFile.clear();
+    missionFile.dealloc();
 
     objects.clear();
     objects.dealloc();

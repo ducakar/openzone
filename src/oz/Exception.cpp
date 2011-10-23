@@ -1,10 +1,12 @@
 /*
  *  Exception.cpp
  *
- *  SIGTRAP signalling Exception constructor implementation.
- *
  *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
+ */
+
+/**
+ * @file Exception.cpp
  */
 
 #include "Exception.hpp"
@@ -18,23 +20,23 @@
 namespace oz
 {
 
-  Exception::Exception( const String& message_, const char* file_, int line_,
-                        const char* function_ ) throw() :
-      message( message_ ), file( file_ ), function( function_ ), line( line_ ),
-      nFrames( 0 ), frames( null )
-  {
-    System::trap();
-    nFrames = System::getStackTrace( &frames );
-  }
+Exception::Exception( const String& message_, const char* file_, int line_,
+                      const char* function_ ) throw() :
+    message( message_ ), file( file_ ), function( function_ ), line( line_ ),
+    nFrames( 0 ), frames( null )
+{
+  nFrames = System::getStackTrace( &frames );
+  System::trap();
+}
 
-  Exception::~Exception() throw()
-  {
-    free( frames );
-  }
+Exception::~Exception() throw()
+{
+  free( frames );
+}
 
-  const char* Exception::what() const throw()
-  {
-    return message;
-  }
+const char* Exception::what() const throw()
+{
+  return message;
+}
 
 }

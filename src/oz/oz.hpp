@@ -1,13 +1,17 @@
 /*
  *  oz.hpp
  *
- *  Common include file for the OpenZone library (liboz).
- *
  *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
+
+/**
+ * @file oz.hpp
+ *
+ * Common include file for liboz.
+ */
 
 /*
  * Base definitions and templates
@@ -41,12 +45,11 @@
 #include "Pool.hpp"
 
 /*
- * Advanced containers (HashString needs String defined)
+ * Advanced containers
  */
 #include "Vector.hpp"
 #include "SVector.hpp"
 #include "Map.hpp"
-#include "Sparse.hpp"
 #include "HashIndex.hpp"
 #include "HashString.hpp"
 
