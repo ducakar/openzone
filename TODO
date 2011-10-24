@@ -1,10 +1,37 @@
-- AnimMesh
-- refresh Lua API
-- animated textures
-- decals, new particles
+TODO 0.3
+- matrix
+  * BSP
+    + bound objects
+    + demolishing
+  * Vehicle
+    + turrets
+    + wheeled
+    + tracked
+    + mech warrior
+  * documentation
+- client
+  * specular masks
+  * particle model
+    + smoke, fire ...
+  * particle pools
+    + wood, metal, building debris, meat frags ...
+  * decals
+  * animated textures
+  * bloom effect
+  * documenation
+- lua
+  * API refresh
+- tools
+  * decouple prebuilding from runtime classes
 
 TODO 0.4
-- building structures, RTS interface
+- RTS interface
+- commanding units
+- building
+
+TODO 0.5
+- AI tasks
+- improve AI
 
 TODO 0.6
 - networking

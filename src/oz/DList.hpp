@@ -42,10 +42,10 @@ namespace oz
  * <tt>prev[INDEX]</tt> and <tt>next[INDEX]</tt> pointers are not cleared when element is
  * removed from the list, they may still point to elements in the list or to invalid locations!
  *
- * <tt>DList</tt> class doesn't take care of memory management except for the
+ * <tt>%DList</tt> class doesn't take care of memory management except for the
  * <code>free()</code> method.
  *
- * <tt>DList</tt> is not a real container but merely binds together already existing elements.
+ * <tt>%DList</tt> is not a real container but merely binds together already existing elements.
  * So, copy operator does not copy the elements, to make a copy of a list including its elements,
  * use <code>clone()</code> function.
  */
@@ -55,7 +55,7 @@ class DList
   public:
 
     /**
-     * Iterator with constant access to container elements.
+     * %Iterator with constant access to container elements.
      */
     class CIterator : public CIteratorBase<Elem>
     {
@@ -97,7 +97,7 @@ class DList
     };
 
     /**
-     * Iterator with non-constant access to container elements.
+     * %Iterator with non-constant access to container elements.
      */
     class Iterator : public IteratorBase<Elem>
     {
@@ -198,7 +198,7 @@ class DList
     }
 
     /**
-     * Iterator with constant access, initially points to the first element.
+     * %Iterator with constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
     CIterator citer() const
@@ -207,7 +207,7 @@ class DList
     }
 
     /**
-     * Iterator with non-constant access, initially points to the first element.
+     * %Iterator with non-constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
     Iterator iter() const

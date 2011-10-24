@@ -29,6 +29,7 @@
 
 // fix M$ crap from Windows headers
 #ifdef OZ_MINGW
+# undef ERROR
 # undef PLANES
 # undef near
 # undef far
@@ -69,6 +70,19 @@ namespace client
   extern PFNGLMAPBUFFERPROC               glMapBuffer;
   extern PFNGLUNMAPBUFFERPROC             glUnmapBuffer;
 
+  extern PFNGLGENRENDERBUFFERSPROC        glGenRenderbuffers;
+  extern PFNGLDELETERENDERBUFFERSPROC     glDeleteRenderbuffers;
+  extern PFNGLBINDRENDERBUFFERPROC        glBindRenderbuffer;
+  extern PFNGLRENDERBUFFERSTORAGEPROC     glRenderbufferStorage;
+  extern PFNGLGENFRAMEBUFFERSPROC         glGenFramebuffers;
+  extern PFNGLDELETEFRAMEBUFFERSPROC      glDeleteFramebuffers;
+  extern PFNGLBINDFRAMEBUFFERPROC         glBindFramebuffer;
+  extern PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
+  extern PFNGLFRAMEBUFFERTEXTURE2DPROC    glFramebufferTexture2D;
+  extern PFNGLCHECKFRAMEBUFFERSTATUSPROC  glCheckFramebufferStatus;
+  extern PFNGLBLITFRAMEBUFFERPROC         glBlitFramebuffer;
+  extern PFNGLDRAWBUFFERSPROC             glDrawBuffers;
+
   extern PFNGLCREATESHADERPROC            glCreateShader;
   extern PFNGLDELETESHADERPROC            glDeleteShader;
   extern PFNGLSHADERSOURCEPROC            glShaderSource;
@@ -106,6 +120,8 @@ namespace client
   void glCheckError( const char* file, int line, const char* function );
 
 #endif
+
+  void glInit();
 
 }
 }

@@ -57,8 +57,8 @@ class Alloc
      * Enable/disable memory (de)allocation.
      *
      * Any attempt of memory (de)allocation via <tt>new</tt>/<tt>delete</tt> will throw
-     * a <code>std::bad_alloc</code> exception unless <code>oz::Alloc::isLocked == true</code>.<br/>
-     * Since it is a weak symbol you can override it with a custom definition, e.g.
+     * a <code>std::bad_alloc</code> exception unless <tt>isLocked == true</tt>.<br/>
+     * Since it is a weak symbol you can override it in some other module with a custom definition
      * <code><pre>
      *   bool oz::Alloc::isLocked = false;
      * </pre></code>

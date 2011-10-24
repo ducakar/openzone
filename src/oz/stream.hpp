@@ -20,7 +20,7 @@ namespace oz
 {
 
 /**
- * Endian conversion.
+ * %Endian conversion.
  */
 class Endian
 {

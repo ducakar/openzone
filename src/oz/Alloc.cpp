@@ -118,19 +118,7 @@ void Alloc::printLeaks()
 
 }
 
-using oz::max;
-using oz::Alloc;
-using oz::System;
-
-#ifdef OZ_TRACE_LEAKS
-
-using oz::log;
-using oz::TraceEntry;
-using oz::firstObjectTraceEntry;
-using oz::firstArrayTraceEntry;
-using oz::sectionMutex;
-
-#endif
+using namespace oz;
 
 #if defined( OZ_MINGW ) && defined( OZ_SIMD )
 

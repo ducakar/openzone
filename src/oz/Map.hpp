@@ -17,9 +17,9 @@ namespace oz
 {
 
 /**
- * Map.
+ * %Map.
  *
- * Map is implemented as a sorted vector that supports binding values to its elements (keys).
+ * %Map is implemented as a sorted vector that supports binding values to its elements (keys).
  * Better worst case performance than hashtable and it can use an arbitrary type as a key. For
  * large maps HashIndex/HashString is preferred as it is much faster on average.
  * It can also be used as a set if one omits values.
@@ -78,7 +78,7 @@ class Map
   public:
 
     /**
-     * Iterator with constant access to container elements.
+     * %Iterator with constant access to container elements.
      *
      * Since <tt>Elem</tt> class is private, inherited cast and operator functions are invalid.
      */
@@ -92,7 +92,7 @@ class Map
         typedef oz::CIterator<Elem> B;
 
         /**
-         * Iterator for the given container, points to its first element.
+         * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
         explicit CIterator( const Map& m ) : B( m.data, m.data + m.count )
@@ -155,7 +155,7 @@ class Map
     };
 
     /**
-     * Iterator with non-constant access to container elements.
+     * %Iterator with non-constant access to container elements.
      *
      * Since <tt>Elem</tt> class is private, inherited cast and operator functions are invalid.
      */
@@ -169,7 +169,7 @@ class Map
         typedef oz::Iterator<Elem> B;
 
         /**
-         * Iterator for the given container, points to its first element.
+         * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
         explicit Iterator( const Map& m ) : B( m.data, m.data + m.count )
@@ -329,7 +329,7 @@ class Map
     }
 
     /**
-     * Iterator with constant access, initially points to the first element.
+     * %Iterator with constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
     CIterator citer() const
@@ -338,7 +338,7 @@ class Map
     }
 
     /**
-     * Iterator with non-constant access, initially points to the first element.
+     * %Iterator with non-constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
     Iterator iter() const

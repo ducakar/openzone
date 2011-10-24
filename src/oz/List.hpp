@@ -39,10 +39,10 @@ namespace oz
  * <tt>next[INDEX]</tt> pointer is not cleared when element is removed from the list,
  * it may still point to elements in the list or to invalid locations!
  *
- * <tt>List</tt> class doesn't take care of memory management except for the
+ * <tt>%List</tt> class doesn't take care of memory management except for the
  * <code>free()</code> method.
  *
- * <tt>List</tt> is not a real container but merely binds together already existing elements.
+ * <tt>%List</tt> is not a real container but merely binds together already existing elements.
  * So, copy operator does not copy the elements, to make a copy of a list including its elements,
  * use <code>clone()</code> function.
  */
@@ -52,7 +52,7 @@ class List
   public:
 
     /**
-     * Iterator with constant access to container elements.
+     * %Iterator with constant access to container elements.
      */
     class CIterator : public CIteratorBase<Elem>
     {
@@ -64,7 +64,7 @@ class List
         typedef CIteratorBase<Elem> B;
 
         /**
-         * Iterator for the given container, points to the first element.
+         * %Iterator for the given container, points to the first element.
          */
         OZ_ALWAYS_INLINE
         explicit CIterator( const List& l ) : B( l.firstElem )
@@ -94,7 +94,7 @@ class List
     };
 
     /**
-     * Iterator with non-constant access to container elements.
+     * %Iterator with non-constant access to container elements.
      */
     class Iterator : public IteratorBase<Elem>
     {
@@ -106,7 +106,7 @@ class List
         typedef IteratorBase<Elem> B;
 
         /**
-         * Iterator for the given container, points to the first element.
+         * %Iterator for the given container, points to the first element.
          */
         OZ_ALWAYS_INLINE
         explicit Iterator( const List& l ) : B( l.firstElem )
@@ -192,7 +192,7 @@ class List
     }
 
     /**
-     * Iterator with constant access, initially points to the first element.
+     * %Iterator with constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
     CIterator citer() const
@@ -201,7 +201,7 @@ class List
     }
 
     /**
-     * Iterator with non-constant access, initially points to the first element.
+     * %Iterator with non-constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
     Iterator iter() const

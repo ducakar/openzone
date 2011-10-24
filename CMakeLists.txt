@@ -6,6 +6,14 @@ endif()
 
 project( openzone C CXX )
 
+set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
+set( OZ_APPLICATION_VERSION "0.2.80" CACHE STRING "" FORCE )
+set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
+
+mark_as_advanced( OZ_APPLICATION_NAME )
+mark_as_advanced( OZ_APPLICATION_VERSION )
+mark_as_advanced( OZ_APPLICATION_TITLE )
+
 option( OZ_TRACE_LEAKS "Use overloads for default new and delete that saves stacktrace for each new call and trace memory leaks." OFF )
 option( OZ_POOL_ALLOC "Enable Pool and new/delete overloads that use it. Otherwise use a dummy class that calls generic new/delete." ON )
 option( OZ_SIMD "Enable generic SIMD code in linear algebra math classes." OFF )
@@ -24,14 +32,6 @@ option( OZ_INSTALL_ICONS "Install icons in Linux/Unix systems." OFF )
 option( OZ_INSTALL_DATA "Install prebuild data needed to run game." OFF )
 option( OZ_INSTALL_DATA_SRC "Install sources of prebuilt data (for content development)." OFF )
 option( OZ_INSTALL_STANDALONE "Install some support files if a standalone archive." OFF )
-
-set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
-set( OZ_APPLICATION_VERSION "0.2.1" CACHE STRING "" FORCE )
-set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
-
-mark_as_advanced( OZ_APPLICATION_NAME )
-mark_as_advanced( OZ_APPLICATION_VERSION )
-mark_as_advanced( OZ_APPLICATION_TITLE )
 
 if( NOT DEFINED OZ_RC_DIR )
   if( WIN32 )

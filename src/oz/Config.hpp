@@ -51,9 +51,9 @@ class Config
       }
     };
 
-    HashString<String, SIZE>            vars;     ///< List of variables.
+    HashString<String, SIZE>            vars;     ///< %List of variables.
 #ifndef NDEBUG
-    mutable HashString<nullptr_t, SIZE> usedVars; ///< List of accessed variables.
+    mutable HashString<nullptr_t, SIZE> usedVars; ///< %List of accessed variables.
 #endif
 
     /**

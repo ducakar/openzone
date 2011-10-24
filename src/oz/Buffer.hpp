@@ -98,7 +98,7 @@ class Buffer
     }
 
     /**
-     * Buffer size in bytes.
+     * %Buffer size in bytes.
      */
     int length() const
     {

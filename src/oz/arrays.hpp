@@ -25,7 +25,7 @@ template <typename Elem>
 CIterator<Elem> citer( const Elem* array, int count );
 
 /**
- * Array iterator with constant access to elements.
+ * %Array iterator with constant access to elements.
  */
 template <typename Elem>
 class CIterator : public CIteratorBase<Elem>
@@ -43,7 +43,7 @@ class CIterator : public CIteratorBase<Elem>
     const Elem* past;
 
     /**
-     * Iterator for an array.
+     * %Iterator for an array.
      *
      * @param start the first array element.
      * @param past_ successor of the last element in an array.
@@ -91,7 +91,7 @@ template <typename Elem>
 Iterator<Elem> iter( Elem* array, int count );
 
 /**
- * Array iterator with non-constant access to elements.
+ * %Array iterator with non-constant access to elements.
  */
 template <typename Elem>
 class Iterator : public IteratorBase<Elem>
@@ -109,7 +109,7 @@ class Iterator : public IteratorBase<Elem>
     const Elem* past;
 
     /**
-     * Iterator for an array.
+     * %Iterator for an array.
      *
      * @param start the first array element.
      * @param past_ successor of the last element in an array.

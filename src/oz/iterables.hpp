@@ -24,9 +24,11 @@ namespace oz
 /**
  * Base class for iterators with constant access to container elements.
  *
- * It should only be used as a base class. Following functions need to be implemented:<br>
- * <tt>bool isValid() const</tt> (if necessary)<br>
- * <tt>CIterator& operator ++ ()</tt><br>
+ * It should only be used as a base class. Following functions need to be implemented:
+ * <ul>
+ *   <li><tt>bool isValid() const</tt> (if necessary)</li>
+ *   <li><tt>CIterator& operator ++ ()</tt></li>
+ * </ul>
  * and constructors of course.
  */
 template <typename Elem>
@@ -100,9 +102,11 @@ class CIteratorBase
 /**
  * Base class for iterators with non-constant access to container elements.
  *
- * It should only be used as a base class. Following functions need to be implemented:<br>
- * <tt>bool isValid() const</tt> (if necessary)<br>
- * <tt>Iterator& operator ++ ()</tt><br>
+ * It should only be used as a base class. Following functions need to be implemented:
+ * <ul>
+ *   <li><tt>bool isValid() const</tt> (if necessary)</li>
+ *   <li><tt>Iterator& operator ++ ()</tt></li>
+ * </ul>
  * and a constructor of course.
  */
 template <typename Elem>
@@ -211,14 +215,14 @@ class IteratorBase
  *
  * Foreach loop.
  *
- * Foreach macro can be used as in following example:
+ * Foreach macro can be used as in the following example:
  * <pre>
- * Vector\<int\>; v;
+ * Vector\<int\> v;
  * foreach( i, v.citer() ) {
  *   printf( "%d ", *i );
  * }
  * </pre>
- * This replaces a longer piece of code, like:
+ * to replace a longer piece of code, like:
  * <pre>
  * Vector\<int\> v;
  * for( Vector\<int\>\::CIterator i = v.citer(); i.isValid(); ++i )
@@ -286,7 +290,7 @@ inline bool iContains( CIterator iSrc, const Value& value )
 }
 
 /**
- * Iterator to the first element with the given value or an invalid iterator if not found.
+ * %Iterator to the first element with the given value or an invalid iterator if not found.
  */
 template <class Iterator, typename Value>
 inline Iterator iFind( Iterator iSrc, const Value& value )
@@ -298,7 +302,7 @@ inline Iterator iFind( Iterator iSrc, const Value& value )
 }
 
 /**
- * Iterator to the last element with the given value or an invalid iterator if not found.
+ * %Iterator to the last element with the given value or an invalid iterator if not found.
  */
 template <class CIterator, typename Value>
 inline CIterator iFindLast( CIterator iSrc, const Value& value )

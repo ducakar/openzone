@@ -29,7 +29,7 @@ class Array
   public:
 
     /**
-     * Iterator with constant access to container elements.
+     * %Iterator with constant access to container elements.
      */
     class CIterator : public oz::CIterator<Elem>
     {
@@ -41,7 +41,7 @@ class Array
         typedef oz::CIterator<Elem> B;
 
         /**
-         * Iterator for the given container, points to its first element.
+         * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
         explicit CIterator( const Array& a ) : B( a.data, a.data + SIZE )
@@ -59,7 +59,7 @@ class Array
     };
 
     /**
-     * Iterator with non-constant access to container elements.
+     * %Iterator with non-constant access to container elements.
      */
     class Iterator : public oz::Iterator<Elem>
     {
@@ -71,7 +71,7 @@ class Array
         typedef oz::Iterator<Elem> B;
 
         /**
-         * Iterator for the given container, points to its first element.
+         * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
         explicit Iterator( Array& a ) : B( a.data, a.data + SIZE )
@@ -90,7 +90,7 @@ class Array
 
   private:
 
-    Elem data[SIZE]; ///< Array of elements.
+    Elem data[SIZE]; ///< %Array of elements.
 
   public:
 
@@ -126,7 +126,7 @@ class Array
     }
 
     /**
-     * Iterator with constant access, initially points to the first element.
+     * %Iterator with constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
     CIterator citer() const
@@ -135,7 +135,7 @@ class Array
     }
 
     /**
-     * Iterator with non-constant access, initially points to the first element.
+     * %Iterator with non-constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
     Iterator iter()

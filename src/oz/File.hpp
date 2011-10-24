@@ -25,7 +25,7 @@ class File
   public:
 
     /**
-     * File type classification.
+     * %File type classification.
      */
     enum Type
     {
@@ -38,7 +38,7 @@ class File
 
   private:
 
-    String filePath; ///< File path.
+    String filePath; ///< %File path.
     Type   type;     ///< Cached file type.
 
   public:
