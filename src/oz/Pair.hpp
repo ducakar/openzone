@@ -17,7 +17,7 @@ namespace oz
 {
 
 /**
- * Pair container.
+ * %Pair container.
  *
  * It holds two elements, not necessarily of the same type.
  */

@@ -72,7 +72,7 @@ class Pool
   private:
 
     /**
-     * Slot that occupies memory for an object.
+     * %Slot that occupies memory for an object.
      */
     union Slot
     {
@@ -83,7 +83,7 @@ class Pool
     /**
      * Memory block.
      *
-     * Block is an array that can hold up to <tt>BLOCK_SIZE</tt> elements. When we run out of
+     * %Block is an array that can hold up to <tt>BLOCK_SIZE</tt> elements. When we run out of
      * space we simply allocate another block. Once a block is allocated it cannot be freed any
      * more unless Pool is empty. That would be rarely possible due to fragmentation anyway.
      */

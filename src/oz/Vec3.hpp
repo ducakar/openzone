@@ -39,7 +39,7 @@ class Vec3
     /// Zero vector, [0, 0, 0] or [0, 0, 0, 0] for SIMD.
     static const Vec3 ZERO;
 
-    /// Vector of ones, [1, 1, 1] or [1, 1, 1, 0] for SIMD.
+    /// %Vector of ones, [1, 1, 1] or [1, 1, 1, 0] for SIMD.
     static const Vec3 ONE;
 
 #ifndef OZ_SIMD
@@ -58,10 +58,16 @@ class Vec3
 #ifdef OZ_SIMD
   protected:
 
+    /**
+     * Create from an uint SIMD vector.
+     */
     OZ_ALWAYS_INLINE
     explicit Vec3( uint4 u4 ) : Simd( u4 )
     {}
 
+    /**
+     * Create from a float SIMD vector.
+     */
     OZ_ALWAYS_INLINE
     explicit Vec3( float4 f4 ) : Simd( f4 )
     {}
@@ -154,7 +160,7 @@ class Vec3
     }
 
     /**
-     * Vector with absolute components.
+     * %Vector with absolute components.
      */
     OZ_ALWAYS_INLINE
     Vec3 abs() const
@@ -289,7 +295,7 @@ class Vec3
     }
 
     /**
-     * Vector multiplied by a scalar.
+     * %Vector multiplied by a scalar.
      */
     OZ_ALWAYS_INLINE
     Vec3 operator * ( float k ) const
@@ -302,7 +308,7 @@ class Vec3
     }
 
     /**
-     * Vector multiplied by a scalar.
+     * %Vector multiplied by a scalar.
      */
     OZ_ALWAYS_INLINE
     friend Vec3 operator * ( float k, const Vec3& v )
@@ -315,7 +321,7 @@ class Vec3
     }
 
     /**
-     * Vector divided by a scalar.
+     * %Vector divided by a scalar.
      */
     OZ_ALWAYS_INLINE
     Vec3 operator / ( float k ) const
@@ -407,7 +413,7 @@ class Vec3
     }
 
     /**
-     * Vector product.
+     * %Vector product.
      */
     OZ_ALWAYS_INLINE
     Vec3 operator ^ ( const Vec3& v ) const

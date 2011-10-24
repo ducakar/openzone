@@ -17,7 +17,7 @@ namespace oz
 {
 
 /**
- * Vector (array list).
+ * %Vector (array list).
  *
  * It can also be used as a stack or a small set.
  *
@@ -34,7 +34,7 @@ class Vector
   public:
 
     /**
-     * Iterator with constant access to container elements.
+     * %Iterator with constant access to container elements.
      */
     class CIterator : public oz::CIterator<Elem>
     {
@@ -46,7 +46,7 @@ class Vector
         typedef oz::CIterator<Elem> B;
 
         /**
-         * Iterator for the given container, points to its first element.
+         * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
         explicit CIterator( const Vector& v ) : B( v.data, v.data + v.count )
@@ -64,7 +64,7 @@ class Vector
     };
 
     /**
-     * Iterator with non-constant access to container elements.
+     * %Iterator with non-constant access to container elements.
      */
     class Iterator : public oz::Iterator<Elem>
     {
@@ -76,7 +76,7 @@ class Vector
         typedef oz::Iterator<Elem> B;
 
         /**
-         * Iterator for the given container, points to its first element.
+         * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
         explicit Iterator( const Vector& v ) : B( v.data, v.data + v.count )
@@ -194,7 +194,7 @@ class Vector
     }
 
     /**
-     * Iterator with constant access, initially points to the first element.
+     * %Iterator with constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
     CIterator citer() const
@@ -203,7 +203,7 @@ class Vector
     }
 
     /**
-     * Iterator with non-constant access, initially points to the first element.
+     * %Iterator with non-constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
     Iterator iter() const

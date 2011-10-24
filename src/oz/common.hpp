@@ -100,11 +100,11 @@ void _softAssert( const char* message, const char* file, int line, const char* f
 //*             TYPES               *
 //***********************************
 
+// Import nullptr type into oz namsepace.
 using std::nullptr_t;
 
-/// @def null
-/// Nicer alias for nullptr.
-# define null nullptr
+/// Null constant.
+const nullptr_t null = nullptr;
 
 /// Signed byte.
 typedef signed char byte;
@@ -137,70 +137,89 @@ static_assert( sizeof( double ) == 8, "sizeof( double ) should be 8" );
 #ifdef OZ_SIMD
 
 /// SIMD vector of four integers.
-typedef int   __attribute__(( vector_size( 16 ) )) int4;
+typedef int __attribute__(( vector_size( 16 ) )) int4;
 
 /// SIMD vector of four unsigned integers.
-typedef uint  __attribute__(( vector_size( 16 ) )) uint4;
+typedef uint __attribute__(( vector_size( 16 ) )) uint4;
 
 /// SIMD vector of four floats.
 typedef float __attribute__(( vector_size( 16 ) )) float4;
 
 /// @def int4
-/// "constructor" for <tt>int4</tt> type.
-# define   int4( x, y, z, w )   (int4) { x, y, z, w }
+/// "Constructor" for <tt>int4</tt> type.
+# define int4( x, y, z, w ) (int4) { x, y, z, w }
 
 /// @def uint4
-/// "constructor" for <tt>uint4</tt> type.
-# define  uint4( x, y, z, w )  (uint4) { x, y, z, w }
+/// "Constructor" for <tt>uint4</tt> type.
+# define uint4( x, y, z, w ) (uint4) { x, y, z, w }
 
 /// @def float4
-/// "constructor" for <tt>float4</tt> type.
+/// "Constructor" for <tt>float4</tt> type.
 # define float4( x, y, z, w ) (float4) { x, y, z, w }
 
+/**
+ * Base class for classes representing a SIMD register.
+ */
 struct Simd
 {
   union
   {
-    int4   i4;
-    int    i[4];
+    int4   i4;   ///< Integer SIMD vector.
+    int    i[4]; ///< Integer components of SIMD vector.
 
-    uint4  u4;
-    uint   u[4];
+    uint4  u4;   ///< Unsigned integer SIMD vector.
+    uint   u[4]; ///< Unsigned integer component of SIMD vector.
 
-    float4 f4;
-    float  f[4];
+    float4 f4;   ///< Float SIMD vector.
+    float  f[4]; ///< Float components of SIMD vector.
 
-    // vector members
+    /**
+     * %Vector components.
+     */
     struct
     {
-      float x;
-      float y;
-      float z;
-      float w;
+      float x;   ///< X component.
+      float y;   ///< Y component.
+      float z;   ///< Z component.
+      float w;   ///< W component.
     };
 
-    // plane members
+    /**
+     * Plane components.
+     */
     struct
     {
-      float nx;
-      float ny;
-      float nz;
-      float d;
+      float nx;  ///< X component of the normal.
+      float ny;  ///< Y component of the normal.
+      float nz;  ///< Z component of the normal.
+      float d;   ///< Distance from origin.
     };
   };
 
+  /**
+   * Create an uninitialised instance.
+   */
   OZ_ALWAYS_INLINE
   Simd()
   {}
 
+  /**
+   * Create from an int SIMD vector.
+   */
   OZ_ALWAYS_INLINE
   Simd( int4 i4_ ) : i4( i4_ )
   {}
 
+  /**
+   * Create from an uint SIMD vector.
+   */
   OZ_ALWAYS_INLINE
   Simd( uint4 u4_ ) : u4( u4_ )
   {}
 
+  /**
+   * Create from a float SIMD vector.
+   */
   OZ_ALWAYS_INLINE
   Simd( float4 f4_ ) : f4( f4_ )
   {}

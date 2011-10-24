@@ -46,10 +46,16 @@ class Point3
 #ifdef OZ_SIMD
   protected:
 
+    /**
+     * Create from an uint SIMD vector.
+     */
     OZ_ALWAYS_INLINE
     explicit Point3( uint4 u4 ) : Simd( u4 )
     {}
 
+    /**
+     * Create from a float SIMD vector.
+     */
     OZ_ALWAYS_INLINE
     explicit Point3( float4 f4 ) : Simd( f4 )
     {}

@@ -28,7 +28,7 @@ class DArray
   public:
 
     /**
-     * Iterator with constant access to container elements.
+     * %Iterator with constant access to container elements.
      */
     class CIterator : public oz::CIterator<Elem>
     {
@@ -40,7 +40,7 @@ class DArray
         typedef oz::CIterator<Elem> B;
 
         /**
-         * Iterator for the given container, points to its first element.
+         * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
         explicit CIterator( const DArray& a ) : B( a.data, a.data + a.count )
@@ -58,7 +58,7 @@ class DArray
     };
 
     /**
-     * Iterator with non-constant access to container elements.
+     * %Iterator with non-constant access to container elements.
      */
     class Iterator : public oz::Iterator<Elem>
     {
@@ -70,7 +70,7 @@ class DArray
         typedef oz::Iterator<Elem> B;
 
         /**
-         * Iterator for the given container, points to its first element.
+         * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
         explicit Iterator( const DArray& a ) : B( a.data, a.data + a.count )
@@ -89,7 +89,7 @@ class DArray
 
   private:
 
-    Elem* data;  ///< Array of elements.
+    Elem* data;  ///< %Array of elements.
     int   count; ///< Number of elements.
 
   public:
@@ -172,7 +172,7 @@ class DArray
     }
 
     /**
-     * Iterator with constant access, initially points to the first element.
+     * %Iterator with constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
     CIterator citer() const
@@ -181,7 +181,7 @@ class DArray
     }
 
     /**
-     * Iterator with non-constant access, initially points to the first element.
+     * %Iterator with non-constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
     Iterator iter() const

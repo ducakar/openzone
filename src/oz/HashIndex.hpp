@@ -54,7 +54,7 @@ class HashIndex
   public:
 
     /**
-     * Iterator with constant access to container elements.
+     * %Iterator with constant access to container elements.
      *
      * Since <tt>Elem</tt> class is private inherited cast and operator functions are useless.
      */
@@ -71,7 +71,7 @@ class HashIndex
         int                index; ///< Index of the current slot.
 
         /**
-         * Iterator for the given container, points to its first element.
+         * %Iterator for the given container, points to its first element.
          */
         explicit CIterator( const HashIndex& t ) : B( t.data[0] ), data( t.data ), index( 0 )
         {
@@ -153,7 +153,7 @@ class HashIndex
     };
 
     /**
-     * Iterator with non-constant access to container elements.
+     * %Iterator with non-constant access to container elements.
      *
      * Since <tt>Elem</tt> class is private inherited cast and operator functions are useless.
      */
@@ -170,7 +170,7 @@ class HashIndex
         int          index; ///< Index of the current slot.
 
         /**
-         * Iterator for the given container, points to its first element.
+         * %Iterator for the given container, points to its first element.
          */
         explicit Iterator( const HashIndex& t ) : B( t.data[0] ), data( t.data ), index( 0 )
         {
@@ -262,7 +262,7 @@ class HashIndex
 
   private:
 
-    Elem*            data[SIZE]; ///< Array of lists.
+    Elem*            data[SIZE]; ///< %Array of lists.
     Pool<Elem, SIZE> pool;       ///< Memory pool for elements.
     int              count;      ///< Number of elements.
 
@@ -408,7 +408,7 @@ class HashIndex
     }
 
     /**
-     * Iterator with constant access, initially points to the first element.
+     * %Iterator with constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
     CIterator citer() const
@@ -417,7 +417,7 @@ class HashIndex
     }
 
     /**
-     * Iterator with non-constant access, initially points to the first element.
+     * %Iterator with non-constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
     Iterator iter() const
@@ -518,7 +518,7 @@ class HashIndex
     }
 
     /**
-     * Add a new element. The key must not yet exist in this HashIndex.
+     * Add a new element. The key must not yet exist in this hashtable.
      *
      * @return pointer to the new entry's value.
      */

@@ -117,7 +117,7 @@ namespace client
       int                             maxObjSources;
 
       static Buffer                   buffer;
-      static bool                     enableS3TC;
+      static bool                     isS3TCSupported;
 
       void addSource( uint srcId, int sample );
       void addBSPSource( uint srcId, int sample, int key );

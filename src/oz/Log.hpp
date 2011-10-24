@@ -17,7 +17,7 @@ namespace oz
 {
 
 /**
- * Log writing utility.
+ * %Log writing utility.
  *
  * Logging service, can write to stdout or into a file. After each operation stream is flushed,
  * so no data is lost on a crash.
@@ -26,8 +26,8 @@ class Log
 {
   private:
 
-    void*  stream;    ///< File handle, but declared FILE* because we do not want to pollute
-                      ///< namespace with \<cstdio\>
+    void*  stream;    ///< %File handle, but declared FILE* because we do not want to pollute
+                      ///< namespace with \<cstdio\>.
     int    tabs;      ///< Indentation levels.
     String indentStr; ///< Indent string.
 
@@ -110,7 +110,6 @@ class Log
 
     /**
      * As println, but print the current time and date at the end.
-     * @param s
      */
     void printlnETD( const char* s, ... ) const;
 

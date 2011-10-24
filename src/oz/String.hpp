@@ -568,7 +568,7 @@ class String
     }
 
     /**
-     * String concatenation.
+     * %String concatenation.
      */
     String operator + ( const char* s ) const
     {
@@ -585,7 +585,7 @@ class String
     }
 
     /**
-     * String concatenation.
+     * %String concatenation.
      */
     String operator + ( const String& s ) const
     {
@@ -599,7 +599,7 @@ class String
     }
 
     /**
-     * String concatenation.
+     * %String concatenation.
      */
     friend String operator + ( const char* s, const String& t )
     {

@@ -1,14 +1,15 @@
 /*
- *  luamacros.h
- *
- *  Utility Lua macros for API functions. They don't include prefixes, so are not safe to be
- *  included in general.
+ *  luamacros.hpp
  *
  *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
+
+/**
+ * @file luamacros.hpp
+ */
 
 #include <lua.hpp>
 

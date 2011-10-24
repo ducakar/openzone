@@ -60,7 +60,7 @@ class HashString
   public:
 
     /**
-     * Iterator with constant access to container elements.
+     * %Iterator with constant access to container elements.
      *
      * Since <tt>Elem</tt> class is private inherited cast and operator functions are useless.
      */
@@ -77,7 +77,7 @@ class HashString
         int                index; ///< Index of the current slot.
 
         /**
-         * Iterator for the given container, points to its first element.
+         * %Iterator for the given container, points to its first element.
          */
         explicit CIterator( const HashString& t ) : B( t.data[0] ), data( t.data ), index( 0 )
         {
@@ -168,7 +168,7 @@ class HashString
     };
 
     /**
-     * Iterator with non-constant access to container elements.
+     * %Iterator with non-constant access to container elements.
      *
      * Since <tt>Elem</tt> class is private inherited cast and operator functions are useless.
      */
@@ -183,7 +183,7 @@ class HashString
         int          index; ///< Index of the current slot.
 
         /**
-         * Iterator for the given container, points to its first element.
+         * %Iterator for the given container, points to its first element.
          */
         explicit Iterator( const HashString& t ) : B( t.data[0] ), data( t.data ), index( 0 )
         {
@@ -431,7 +431,7 @@ class HashString
     }
 
     /**
-     * Iterator with constant access, initially points to the first element.
+     * %Iterator with constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
     CIterator citer() const
@@ -440,7 +440,7 @@ class HashString
     }
 
     /**
-     * Iterator with non-constant access, initially points to the first element.
+     * %Iterator with non-constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
     Iterator iter() const
@@ -541,7 +541,7 @@ class HashString
     }
 
     /**
-     * Add a new element. The key must not yet exist in this HashIndex.
+     * Add a new element. The key must not yet exist in this hashtable.
      *
      * @return pointer to the new entry's value.
      */

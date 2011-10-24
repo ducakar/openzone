@@ -52,7 +52,7 @@ namespace client
 
   Pool<Context::Source> Context::Source::pool;
   Buffer Context::buffer;
-  bool Context::enableS3TC = false;
+  bool Context::isS3TCSupported;
 
   void Context::addSource( uint srcId, int sample )
   {
@@ -145,7 +145,7 @@ namespace client
     bool usesS3TC = internalFormat == GL_COMPRESSED_RGB_S3TC_DXT1_EXT ||
         internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 
-    if( !enableS3TC && usesS3TC ) {
+    if( !isS3TCSupported && usesS3TC ) {
       throw Exception( "Texture uses S3 texture compression but texture compression disabled" );
     }
 
@@ -579,7 +579,7 @@ namespace client
     md2s     = null;
     md3s     = null;
 
-    enableS3TC = config.get( "context.enableS3TC", false );
+    isS3TCSupported = false;
 
     OZ_REGISTER_MODELCLASS( SMM );
     OZ_REGISTER_MODELCLASS( SMMVehicle );

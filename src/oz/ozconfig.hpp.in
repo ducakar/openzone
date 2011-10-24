@@ -38,6 +38,7 @@ namespace std { typedef decltype( nullptr ) nullptr_t; }
 // by KDevelop but never by any compiler).
 #ifndef __LINE__
 # define decltype typeof
+# define nullptr __null
 #endif
 
 // Disable C++11 stuff in standard headers, IDE parsers have problems with that, and we don't need

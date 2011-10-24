@@ -17,7 +17,7 @@ namespace oz
 {
 
 /**
- * Exception class.
+ * %Exception class.
  */
 class Exception : public std::exception
 {
@@ -25,7 +25,7 @@ class Exception : public std::exception
 
     String      message;  ///< Message.
 
-    const char* file;     ///< File.
+    const char* file;     ///< %File.
     const char* function; ///< Function name.
     int         line;     ///< Source file line.
 
@@ -33,9 +33,9 @@ class Exception : public std::exception
     char*       frames;   ///< Stack trace buffer.
 
     /**
-     * Exception constructor.
+     * %Exception constructor.
      *
-     * This constructor is usually not used directly, but via <tt>Exception</tt> macro.
+     * This constructor is usually not used directly, but via <tt>%Exception</tt> macro.
      * It generates SIGTRAP to signal debugger on exception.
      */
     explicit Exception( const String& message, const char* file, int line,

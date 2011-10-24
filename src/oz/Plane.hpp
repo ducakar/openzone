@@ -44,10 +44,16 @@ class Plane
 #ifdef OZ_SIMD
   protected:
 
+    /**
+     * Create from an uint SIMD vector.
+     */
     OZ_ALWAYS_INLINE
     explicit Plane( uint4 u4 ) : Simd( u4 )
     {}
 
+    /**
+     * Create from a float SIMD vector.
+     */
     OZ_ALWAYS_INLINE
     explicit Plane( float4 f4 ) : Simd( f4 )
     {}
@@ -167,7 +173,7 @@ class Plane
     }
 
     /**
-     * Plane with the same distance but normal that has absolute components.
+     * %Plane with the same distance but normal that has absolute components.
      */
     OZ_ALWAYS_INLINE
     Plane abs() const

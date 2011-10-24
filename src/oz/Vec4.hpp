@@ -26,7 +26,7 @@ class Vec4 : public Vec3
     /// Zero vector, [0, 0, 0, 0].
     static const Vec4 ZERO;
 
-    /// Vector of ones, [1, 1, 1, 1].
+    /// %Vector of ones, [1, 1, 1, 1].
     static const Vec4 ONE;
 
     /// Equivalent to origin point or identity quaternion, [0, 0, 0, 1].
@@ -46,10 +46,16 @@ class Vec4 : public Vec3
 #ifdef OZ_SIMD
   protected:
 
+    /**
+     * Create from an uint SIMD vector.
+     */
     OZ_ALWAYS_INLINE
     explicit Vec4( uint4 u4 ) : Vec3( u4 )
     {}
 
+    /**
+     * Create from a float SIMD vector.
+     */
     OZ_ALWAYS_INLINE
     explicit Vec4( float4 f4 ) : Vec3( f4 )
     {}
@@ -197,7 +203,7 @@ class Vec4 : public Vec3
     }
 
     /**
-     * Vector with absolute components.
+     * %Vector with absolute components.
      */
     OZ_ALWAYS_INLINE
     Vec4 abs() const
@@ -319,7 +325,7 @@ class Vec4 : public Vec3
     }
 
     /**
-     * Vector multiplied by a scalar.
+     * %Vector multiplied by a scalar.
      */
     OZ_ALWAYS_INLINE
     Vec4 operator * ( float k ) const
@@ -332,7 +338,7 @@ class Vec4 : public Vec3
     }
 
     /**
-     * Vector multiplied by a scalar.
+     * %Vector multiplied by a scalar.
      */
     OZ_ALWAYS_INLINE
     friend Vec4 operator * ( float k, const Vec4& v )
@@ -345,7 +351,7 @@ class Vec4 : public Vec3
     }
 
     /**
-     * Vector divided by a scalar.
+     * %Vector divided by a scalar.
      */
     OZ_ALWAYS_INLINE
     Vec4 operator / ( float k ) const

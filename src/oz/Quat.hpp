@@ -39,10 +39,16 @@ class Quat : public Vec4
 #ifdef OZ_SIMD
   protected:
 
+    /**
+     * Create from an uint SIMD vector.
+     */
     OZ_ALWAYS_INLINE
     explicit Quat( uint4 u4 ) : Vec4( u4 )
     {}
 
+    /**
+     * Create from a float SIMD vector.
+     */
     OZ_ALWAYS_INLINE
     explicit Quat( float4 f4 ) : Vec4( f4 )
     {}
