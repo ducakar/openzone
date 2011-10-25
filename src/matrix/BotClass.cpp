@@ -136,7 +136,7 @@ namespace oz
     return clazz;
   }
 
-  Object* BotClass::create( int index, const Point3& pos, Heading ) const
+  Object* BotClass::create( int index, const Point3& pos, Heading heading ) const
   {
     Bot* obj = new Bot();
 
@@ -147,7 +147,7 @@ namespace oz
     obj->resistance = resistance;
     obj->mass       = mass;
     obj->lift       = lift;
-    obj->h          = 0.0f;
+    obj->h          = float( heading ) * Math::TAU / 4.0f;
     obj->v          = Math::TAU / 4.0f;
     obj->camZ       = camZ;
     obj->state      = state;

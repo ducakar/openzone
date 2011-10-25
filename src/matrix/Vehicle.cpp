@@ -26,12 +26,17 @@ namespace oz
 
   Pool<Vehicle> Vehicle::pool;
 
-  void ( Vehicle::* Vehicle::handlers[4] )( const Mat44& rotMat ) = {
+  void ( Vehicle::* Vehicle::handlers[Vehicle::TYPE_MAX] )( const Mat44& rotMat ) = {
+    &Vehicle::staticHandler,
     &Vehicle::wheeledHandler,
     &Vehicle::trackedHandler,
+    &Vehicle::mechHandler,
     &Vehicle::hoverHandler,
     &Vehicle::airHandler
   };
+
+  void Vehicle::staticHandler( const Mat44& )
+  {}
 
   void Vehicle::wheeledHandler( const Mat44& )
   {}
@@ -39,12 +44,21 @@ namespace oz
   void Vehicle::trackedHandler( const Mat44& )
   {}
 
-  void Vehicle::hoverHandler( const Mat44& rotMat )
+  void Vehicle::mechHandler( const Mat44& )
+  {}
+
+  void Vehicle::hoverHandler( const Mat44& )
   {
     const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-    const Vec3& right = rotMat.x;
-    const Vec3& at    = rotMat.y;
+    // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+    float hvsc[6];
+
+    Math::sincos( h, &hvsc[0], &hvsc[1] );
+    Math::sincos( v, &hvsc[2], &hvsc[3] );
+
+    hvsc[4] = hvsc[2] * hvsc[0];
+    hvsc[5] = hvsc[2] * hvsc[1];
 
     // raycast for hover
     float ratio = clamp( p.z / ( dim.z + clazz->hoverHeight ), 0.0f, 1.0f );
@@ -63,20 +77,20 @@ namespace oz
     Vec3 move = Vec3::ZERO;
 
     if( actions & Bot::ACTION_FORWARD ) {
-      move.x += at.x;
-      move.y += at.y;
+      move.x -= hvsc[0];
+      move.y += hvsc[1];
     }
     if( actions & Bot::ACTION_BACKWARD ) {
-      move.x -= at.x;
-      move.y -= at.y;
+      move.x += hvsc[0];
+      move.y -= hvsc[1];
     }
     if( actions & Bot::ACTION_RIGHT ) {
-      move.x += right.x;
-      move.y += right.y;
+      move.x += hvsc[1];
+      move.y += hvsc[0];
     }
     if( actions & Bot::ACTION_LEFT ) {
-      move.x -= right.x;
-      move.y -= right.y;
+      move.x -= hvsc[1];
+      move.y -= hvsc[0];
     }
 
     momentum += move * clazz->moveMomentum;
@@ -312,15 +326,15 @@ namespace oz
   {
     Dynamic::readFull( istream );
 
-    h                 = istream->readFloat();
-    v                 = istream->readFloat();
-    rot               = istream->readQuat();
-    state             = istream->readInt();
-    oldState          = istream->readInt();
-    actions           = istream->readInt();
-    oldActions        = istream->readInt();
+    h          = istream->readFloat();
+    v          = istream->readFloat();
+    rot        = istream->readQuat();
+    state      = istream->readInt();
+    oldState   = istream->readInt();
+    actions    = istream->readInt();
+    oldActions = istream->readInt();
 
-    weapon            = istream->readInt();
+    weapon     = istream->readInt();
 
     for( int i = 0; i < WEAPONS_MAX; ++i ) {
       nRounds[i]  = istream->readInt();
@@ -356,10 +370,10 @@ namespace oz
   {
     Dynamic::readUpdate( istream );
 
-    rot             = istream->readQuat();
-    state           = istream->readInt();
+    rot    = istream->readQuat();
+    state  = istream->readInt();
 
-    weapon          = istream->readInt();
+    weapon = istream->readInt();
 
     for( int i = 0; i < WEAPONS_MAX; ++i ) {
       nRounds[i] = istream->readInt();

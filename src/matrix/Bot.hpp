@@ -96,6 +96,8 @@ namespace oz
       static const float GRAB_MOM_RATIO;
       static const float GRAB_MOM_MAX;
       static const float GRAB_MOM_MAX_SQ;
+      static const float STEP_MOVE_AHEAD;
+      static const float CLIMB_MOVE_AHEAD;
       static const float CORPSE_FADE_FACTOR;
 
       static Pool<Bot, 1024> pool;

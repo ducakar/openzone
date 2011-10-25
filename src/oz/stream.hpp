@@ -8,11 +8,10 @@
 #pragma once
 
 /**
- * @file stream.hpp
+ * @file oz/stream.hpp
  */
 
 #include "Exception.hpp"
-#include "String.hpp"
 #include "Plane.hpp"
 #include "Mat44.hpp"
 
@@ -21,6 +20,8 @@ namespace oz
 
 /**
  * %Endian conversion.
+ *
+ * @ingroup oz
  */
 class Endian
 {
@@ -76,6 +77,8 @@ class Endian
 
 /**
  * Read-only stream.
+ *
+ * @ingroup oz
  */
 class InputStream
 {
@@ -371,6 +374,8 @@ class InputStream
 
 /**
  * Write-only stream.
+ *
+ * @ingroup oz
  */
 class OutputStream
 {

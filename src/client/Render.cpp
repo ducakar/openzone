@@ -642,13 +642,7 @@ namespace client
     }
 
     if( hasS3TC ) {
-#ifndef OZ_TOOLS
       context.isS3TCSupported = true;
-#else
-      if( config.get( "context.useS3TC", false ) ) {
-        throw Exception( "S3 texture compression is not supported" );
-      }
-#endif
     }
 
 #ifndef OZ_GL_COMPATIBLE

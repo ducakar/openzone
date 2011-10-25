@@ -674,6 +674,7 @@ namespace client
 
 #else
 
+  bool Context::isS3TCSupported = false;
   bool Context::useS3TC = false;
 
   uint Context::buildTexture( const void* data, int width, int height, uint format,

@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file common.hpp
+ * @file oz/common.hpp
  *
  * Common types and templates.
  *
@@ -58,11 +58,19 @@ namespace oz
 //*          BASIC MACROS           *
 //***********************************
 
-/// @def soft_assert
-/// If condition fails, prints error to log raises SIGTRAP.
+/**
+ * @def soft_assert
+ * If condition fails, prints error to log raises SIGTRAP.
+ *
+ * @ingroup oz
+ */
 
-/// @def hard_assert
-/// If condition fails, prints error to log and aborts program.
+/**
+ * @def hard_assert
+ * If condition fails, prints error to log and aborts program.
+ *
+ * @ingroup oz
+ */
 
 #ifdef NDEBUG
 
@@ -86,11 +94,15 @@ namespace oz
 
 /**
  * Helper function for <tt>soft_assert</tt>.
+ *
+ * @ingroup oz
  */
 void _hardAssert( const char* message, const char* file, int line, const char* function );
 
 /**
  * Helper function for <tt>hard_assert</tt>.
+ *
+ * @ingroup oz
  */
 void _softAssert( const char* message, const char* file, int line, const char* function );
 
@@ -100,31 +112,63 @@ void _softAssert( const char* message, const char* file, int line, const char* f
 //*             TYPES               *
 //***********************************
 
-// Import nullptr type into oz namsepace.
+// Import nullptr_t type into oz namespace.
 using std::nullptr_t;
 
-/// Null constant.
+/**
+ * Null constant.
+ *
+ * @ingroup oz
+ */
 const nullptr_t null = nullptr;
 
-/// Signed byte.
+/**
+ * Signed byte.
+ *
+ * @ingroup oz
+ */
 typedef signed char byte;
 
-/// Unsigned byte.
+/**
+ * Unsigned byte.
+ *
+ * @ingroup oz
+ */
 typedef unsigned char ubyte;
 
-/// Unsigned short integer.
+/**
+ * Unsigned short integer.
+ *
+ * @ingroup oz
+ */
 typedef unsigned short ushort;
 
-/// Unsigned integer.
+/**
+ * Unsigned integer.
+ *
+ * @ingroup oz
+ */
 typedef unsigned int uint;
 
-/// Unsigned long integer.
+/**
+ * Unsigned long integer.
+ *
+ * @ingroup oz
+ */
 typedef unsigned long ulong;
 
-/// Signed 64-bit integer.
+/**
+ * Signed 64-bit integer.
+ *
+ * @ingroup oz
+ */
 typedef long long long64;
 
-/// Unsigned 64-bit integer.
+/**
+ * Unsigned 64-bit integer.
+ *
+ * @ingroup oz
+ */
 typedef unsigned long long ulong64;
 
 // Some assumptions about types
@@ -136,29 +180,55 @@ static_assert( sizeof( double ) == 8, "sizeof( double ) should be 8" );
 
 #ifdef OZ_SIMD
 
-/// SIMD vector of four integers.
+/**
+ * SIMD vector of four integers.
+ *
+ * @ingroup oz
+ */
 typedef int __attribute__(( vector_size( 16 ) )) int4;
 
-/// SIMD vector of four unsigned integers.
+/**
+ * SIMD vector of four unsigned integers.
+ *
+ * @ingroup oz
+ */
 typedef uint __attribute__(( vector_size( 16 ) )) uint4;
 
-/// SIMD vector of four floats.
+/**
+ * SIMD vector of four floats.
+ *
+ * @ingroup oz
+ */
 typedef float __attribute__(( vector_size( 16 ) )) float4;
 
-/// @def int4
-/// "Constructor" for <tt>int4</tt> type.
+/**
+ * @def int4
+ * "Constructor" for <tt>int4</tt> type.
+ *
+ * @ingroup oz
+ */
 # define int4( x, y, z, w ) (int4) { x, y, z, w }
 
-/// @def uint4
-/// "Constructor" for <tt>uint4</tt> type.
+/**
+ * @def uint4
+ * "Constructor" for <tt>uint4</tt> type.
+ *
+ * @ingroup oz
+ */
 # define uint4( x, y, z, w ) (uint4) { x, y, z, w }
 
-/// @def float4
-/// "Constructor" for <tt>float4</tt> type.
+/**
+ * @def float4
+ * "Constructor" for <tt>float4</tt> type.
+ *
+ * @ingroup oz
+ */
 # define float4( x, y, z, w ) (float4) { x, y, z, w }
 
 /**
  * Base class for classes representing a SIMD register.
+ *
+ * @ingroup oz
  */
 struct Simd
 {
@@ -232,6 +302,8 @@ struct Simd
 
 /**
  * Swap values of variables.
+ *
+ * @ingroup oz
  */
 template <typename Type>
 OZ_ALWAYS_INLINE
@@ -246,6 +318,8 @@ inline void swap( Type& a, Type& b )
  * Minimum.
  *
  * @return a if a <= b, b otherwise.
+ *
+ * @ingroup oz
  */
 template <typename Type>
 OZ_ALWAYS_INLINE
@@ -258,6 +332,8 @@ inline const Type& min( const Type& a, const Type& b )
  * Maximum.
  *
  * @return a if a >= b, b otherwise.
+ *
+ * @ingroup oz
  */
 template <typename Type>
 OZ_ALWAYS_INLINE
@@ -270,6 +346,8 @@ inline const Type& max( const Type& a, const Type& b )
  * Clamp c between a and b.
  *
  * @return c, if a <= c <= b, respective boundary otherwise.
+ *
+ * @ingroup oz
  */
 template <typename Type>
 OZ_ALWAYS_INLINE

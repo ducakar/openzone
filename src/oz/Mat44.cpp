@@ -6,7 +6,7 @@
  */
 
 /**
- * @file Mat44.cpp
+ * @file oz/Mat44.cpp
  */
 
 #include "Mat44.hpp"

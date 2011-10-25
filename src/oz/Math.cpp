@@ -6,7 +6,7 @@
  */
 
 /**
- * @file Math.cpp
+ * @file oz/Math.cpp
  */
 
 #include "Math.hpp"

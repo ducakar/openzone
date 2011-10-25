@@ -6,7 +6,7 @@
  */
 
 /**
- * @file Buffer.cpp
+ * @file oz/Buffer.cpp
  */
 
 #include "Buffer.hpp"

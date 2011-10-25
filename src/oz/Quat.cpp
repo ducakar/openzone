@@ -6,7 +6,7 @@
  */
 
 /**
- * @file Quat.cpp
+ * @file oz/Quat.cpp
  */
 
 #include "Quat.hpp"

@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file String.hpp
+ * @file oz/String.hpp
  */
 
 #include "DArray.hpp"
@@ -21,6 +21,8 @@ namespace oz
  *
  * Class has static storage of <tt>BUFFER_SIZE</tt> bytes, if string is larger it is stored in
  * a dynamically allocated storage.
+ *
+ * @ingroup oz
  */
 class String
 {

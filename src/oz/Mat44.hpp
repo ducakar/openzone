@@ -8,17 +8,18 @@
 #pragma once
 
 /**
- * @file Mat44.hpp
+ * @file oz/Mat44.hpp
  */
 
 #include "Quat.hpp"
-#include "Point3.hpp"
 
 namespace oz
 {
 
 /**
  * Column-major 4x4 matrix.
+ *
+ * @ingroup oz
  */
 class Mat44
 {

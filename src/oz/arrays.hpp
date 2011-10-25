@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file arrays.hpp
+ * @file oz/arrays.hpp
  *
  * Iterators and utility functions for arrays and array-like containers.
  */
@@ -26,6 +26,8 @@ CIterator<Elem> citer( const Elem* array, int count );
 
 /**
  * %Array iterator with constant access to elements.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 class CIterator : public CIteratorBase<Elem>
@@ -92,6 +94,8 @@ Iterator<Elem> iter( Elem* array, int count );
 
 /**
  * %Array iterator with non-constant access to elements.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 class Iterator : public IteratorBase<Elem>
@@ -152,6 +156,8 @@ class Iterator : public IteratorBase<Elem>
 
 /**
  * Create array iterator with constant access to elements.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 OZ_ALWAYS_INLINE
@@ -162,6 +168,8 @@ inline CIterator<Elem> citer( const Elem* array, int count )
 
 /**
  * Create array iterator with non-constant access to elements.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 OZ_ALWAYS_INLINE
@@ -172,6 +180,8 @@ inline Iterator<Elem> iter( Elem* array, int count )
 
 /**
  * Copy array from the first to the last element.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 inline void aCopy( Elem* aDest, const Elem* aSrc, int count )
@@ -185,6 +195,8 @@ inline void aCopy( Elem* aDest, const Elem* aSrc, int count )
 
 /**
  * Copy array from the last to the first element.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 inline void aReverseCopy( Elem* aDest, const Elem* aSrc, int count )
@@ -198,6 +210,8 @@ inline void aReverseCopy( Elem* aDest, const Elem* aSrc, int count )
 
 /**
  * Set array elements to the given value.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 inline void aSet( Elem* aDest, const Elem& value, int count )
@@ -209,6 +223,8 @@ inline void aSet( Elem* aDest, const Elem& value, int count )
 
 /**
  * True iff respective elements are equal.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 inline bool aEquals( const Elem* aSrcA, const Elem* aSrcB, int count )
@@ -222,6 +238,8 @@ inline bool aEquals( const Elem* aSrcA, const Elem* aSrcB, int count )
 
 /**
  * True iff the given value is found in the array.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 inline bool aContains( const Elem* aSrc, const Elem& value, int count )
@@ -235,6 +253,8 @@ inline bool aContains( const Elem* aSrc, const Elem& value, int count )
 
 /**
  * Index of the first occurrence of the value or -1 if not found.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 inline int aIndex( const Elem* aSrc, const Elem& value, int count )
@@ -248,6 +268,8 @@ inline int aIndex( const Elem* aSrc, const Elem& value, int count )
 
 /**
  * Index of the last occurrence of the value or -1 if not found.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 inline int aLastIndex( const Elem* aSrc, const Elem& value, int count )
@@ -264,6 +286,8 @@ inline int aLastIndex( const Elem* aSrc, const Elem& value, int count )
  *
  * If array elements are pointers to objects, delete all referenced objects and set all array
  * elements to <tt>null</tt>.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 inline void aFree( Elem* aDest, int count )
@@ -276,6 +300,8 @@ inline void aFree( Elem* aDest, int count )
 
 /**
  * Length of a static array.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 inline int aLength( const Elem& aSrc )
@@ -290,6 +316,8 @@ inline int aLength( const Elem& aSrc )
  * of the source array <tt>aSrc</tt>to the newly created one and delete the source array.
  *
  * @return newly allocated array.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 inline Elem* aRealloc( const Elem* aSrc, int count, int newCount )
@@ -313,6 +341,8 @@ inline Elem* aRealloc( const Elem* aSrc, int count, int newCount )
  * @param value value of to be inserted.
  * @param index position where the element is to be inserted.
  * @param count number of elements in the array.
+ *
+ * @ingroup oz
  */
 template <typename Elem, typename Value>
 inline void aInsert( Elem* aDest, const Value& value, int index, int count )
@@ -333,6 +363,8 @@ inline void aInsert( Elem* aDest, const Value& value, int index, int count )
  * @param aDest pointer to the first element in the array.
  * @param index position of the element to be removed.
  * @param count number of elements in the array.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 inline void aRemove( Elem* aDest, int index, int count )
@@ -346,6 +378,8 @@ inline void aRemove( Elem* aDest, int index, int count )
 
 /**
  * Reverse the order of array elements.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 inline void aReverse( Elem* aDest, int count )
@@ -370,6 +404,8 @@ inline void aReverse( Elem* aDest, int count )
  *
  * @param first pointer to first element in the array to be sorted.
  * @param last pointer to last element in the array.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 static void quicksort( Elem* first, Elem* last )
@@ -418,6 +454,8 @@ static void quicksort( Elem* first, Elem* last )
 
 /**
  * Sort array (uses quicksort algorithm).
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 inline void aSort( Elem* aSrc, int count )
@@ -435,6 +473,8 @@ inline void aSort( Elem* aSrc, int count )
  * @param key the key we are looking for.
  * @param count
  * @return index of the requested element or -1 if not found.
+ *
+ * @ingroup oz
  */
 template <typename Elem, typename Key>
 inline int aBisectFind( Elem* aSrc, const Key& key, int count )
@@ -478,6 +518,8 @@ inline int aBisectFind( Elem* aSrc, const Key& key, int count )
  * @param key the key we are looking for.
  * @param count
  * @return index of least element greater than the key, or count if there's no such element.
+ *
+ * @ingroup oz
  */
 template <typename Elem, typename Key>
 inline int aBisectPosition( Elem* aSrc, const Key& key, int count )

@@ -6,7 +6,7 @@
  */
 
 /**
- * @file Vec4.cpp
+ * @file oz/Vec4.cpp
  */
 
 #include "Vec4.hpp"

@@ -6,7 +6,7 @@
  */
 
 /**
- * @file Point3.cpp
+ * @file oz/Point3.cpp
  */
 
 #include "Point3.hpp"

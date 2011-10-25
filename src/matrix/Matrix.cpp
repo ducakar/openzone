@@ -40,14 +40,7 @@ namespace oz
         // We don't remove objects as they get destroyed but on the next update, so the destroy
         // sound and other effects can be played on an object's destruction.
         if( obj->flags & Object::DESTROYED_BIT ) {
-          if( obj->cell == null ) {
-            hard_assert( obj->flags & Object::DYNAMIC_BIT );
-
-            synapse.removeCut( static_cast<Dynamic*>( obj ) );
-          }
-          else {
-            synapse.remove( obj );
-          }
+          synapse.remove( obj );
         }
       }
     }
@@ -59,10 +52,11 @@ namespace oz
         continue;
       }
 
-      str->update();
-
       if( str->life <= 0.0f ) {
         str->destroy();
+      }
+      else {
+        str->update();
       }
     }
 
@@ -73,7 +67,7 @@ namespace oz
         continue;
       }
 
-      // clear inventory of dead references
+      // clear inventory of invalid references
       for( int j = 0; j < obj->items.length(); ) {
         if( orbis.objects[ obj->items[j] ] == null ) {
           obj->items.remove( j );
@@ -100,7 +94,7 @@ namespace oz
         if( dyn->cell == null ) {
           // remove if its container has been removed
           if( orbis.objects[dyn->parent] == null ) {
-            synapse.removeCut( dyn );
+            synapse.remove( dyn );
           }
         }
         else {
@@ -117,13 +111,16 @@ namespace oz
     for( int i = 0; i < orbis.parts.length(); ++i ) {
       Particle* part = orbis.parts[i];
 
-      if( part != null ) {
+      if( part == null ) {
+        continue;
+      }
+
+      if( part->lifeTime <= 0.0f || part->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
+        synapse.remove( part );
+      }
+      else {
         part->update();
         physics.updatePart( part );
-
-        if( part->lifeTime <= 0.0f || part->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
-          synapse.remove( part );
-        }
       }
     }
 

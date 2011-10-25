@@ -54,7 +54,6 @@ namespace client
     float radius = millis * obj->dim.z * 0.004f;
     float alpha  = 1.0f - 0.002f * millis;
 
-    glEnable( GL_BLEND );
     glDisable( GL_CULL_FACE );
 
     shader.colour = Vec4( 1.0f, 1.0f, 1.0f, alpha*alpha );
@@ -62,12 +61,11 @@ namespace client
     tf.model.scale( Vec3( radius, radius, radius ) );
     tf.apply();
 
-    smm->draw( mask );
+    smm->draw( Mesh::SOLID_BIT );
 
     shader.colour = Colours::WHITE;
 
     glEnable( GL_CULL_FACE );
-    glDisable( GL_BLEND );
   }
 
 }

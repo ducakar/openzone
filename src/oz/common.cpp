@@ -6,7 +6,7 @@
  */
 
 /**
- * @file common.cpp
+ * @file oz/common.cpp
  */
 
 #include "common.hpp"

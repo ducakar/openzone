@@ -32,6 +32,8 @@ namespace oz
   // should be smaller than abs( Physics::HIT_THRESHOLD )
   const float Bot::GRAB_MOM_MAX        = 1.0f;
   const float Bot::GRAB_MOM_MAX_SQ     = 1.0f;
+  const float Bot::STEP_MOVE_AHEAD     = 0.20f;
+  const float Bot::CLIMB_MOVE_AHEAD    = 0.50f;
   const float Bot::CORPSE_FADE_FACTOR  = 0.5f / 100.0f * Timer::TICK_TIME;
 
   Pool<Bot, 1024> Bot::pool;
@@ -54,7 +56,6 @@ namespace oz
   {
     // only play death sound when an alive bot is destroyed but not when a body is destroyed
     if( !( state & DEAD_BIT ) ) {
-      state |= DEAD_BIT;
       addEvent( EVENT_DEATH, 1.0f );
     }
     Object::onDestroy();
@@ -113,7 +114,7 @@ namespace oz
           // we don't want Object::destroy() to be called when body dissolves (destroy() causes
           // sounds and particles to fly around), that's why we just remove the object
           if( life <= 0.0f ) {
-            parent != -1 ? synapse.removeCut( this ) : synapse.remove( this );
+            synapse.remove( this );
           }
         }
       }
@@ -454,28 +455,27 @@ namespace oz
           stepRate <= clazz->stepRateLimit )
       {
         // check if bot's gonna hit a stair in the next frame
-        Vec3 desiredMove = momentum * Timer::TICK_TIME;
+        Vec3 desiredMove = STEP_MOVE_AHEAD * move;
 
         collider.mask = flags & SOLID_BIT;
         collider.translate( this, desiredMove );
 
         if( collider.hit.ratio != 1.0f && collider.hit.normal.z < Physics::FLOOR_NORMAL_Z ) {
+          Vec3  normal    = collider.hit.normal;
+          float startDist = 2.0f * EPSILON - ( desiredMove * collider.hit.ratio ) * normal;
           float originalZ = p.z;
-          Vec3  normal = collider.hit.normal;
-          float negStartDist = ( desiredMove * collider.hit.ratio ) * normal - EPSILON;
 
-          for( float raise = clazz->stepInc; raise <= clazz->stepMax; raise += clazz->stepInc ) {
-            collider.translate( this, Vec3( 0.0f, 0.0f, clazz->stepInc ) );
+          collider.translate( this, Vec3( 0.0f, 0.0f, clazz->stepMax + 2.0f * EPSILON ) );
 
-            if( collider.hit.ratio != 1.0f ) {
-              break;
-            }
+          float maxRaise = collider.hit.ratio * clazz->stepMax;
+
+          for( float raise = clazz->stepInc; raise <= maxRaise; raise += clazz->stepInc ) {
             p.z += clazz->stepInc;
             collider.translate( this, desiredMove );
 
             Vec3 move = desiredMove * collider.hit.ratio;
             move.z += raise;
-            float endDist = move * normal - negStartDist;
+            float endDist = startDist + move * normal;
 
             if( endDist < 0.0f ) {
               stepRate += raise*raise * clazz->stepRateCoeff;
@@ -496,20 +496,30 @@ namespace oz
       if( ( actions & ( ACTION_FORWARD | ACTION_JUMP ) ) == ( ACTION_FORWARD | ACTION_JUMP ) &&
           stamina > clazz->staminaClimbDrain )
       {
-        // check if bot's gonna hit a wall in the next frame
-        Vec3 desiredMove = momentum * Timer::TICK_TIME;
+        // check if bot's gonna hit a wall soon
+        Vec3 desiredMove = CLIMB_MOVE_AHEAD * move;
 
         collider.mask = flags & SOLID_BIT;
         collider.translate( this, desiredMove );
 
         if( collider.hit.ratio != 1.0f && collider.hit.normal.z < Physics::FLOOR_NORMAL_Z ) {
-          Point3 originalP = p;
+          Vec3  normal    = collider.hit.normal;
+          float startDist = 4.0f * EPSILON - ( desiredMove * collider.hit.ratio ) * normal;
+          float originalZ = p.z;
 
-          p += desiredMove;
-          p.z += clazz->climbInc;
+          collider.translate( this, Vec3( 0.0f, 0.0f, clazz->climbMax ) );
 
-          for( float raise = clazz->stepMax; raise <= clazz->climbMax; raise += clazz->climbInc ) {
-            if( !collider.overlaps( this, this ) ) {
+          float maxRaise = collider.hit.ratio * clazz->climbMax;
+
+          for( float raise = clazz->stepMax; raise <= maxRaise; raise += clazz->climbInc ) {
+            p.z += clazz->climbInc;
+            collider.translate( this, desiredMove );
+
+            Vec3 move = desiredMove * collider.hit.ratio;
+            move.z += raise;
+            float endDist = startDist + move * normal;
+
+            if( endDist < 0.0f ) {
               momentum.x    *= ( 1.0f - Physics::LADDER_FRICTION );
               momentum.y    *= ( 1.0f - Physics::LADDER_FRICTION );
               momentum.z    = max( momentum.z, clazz->climbMomentum );
@@ -521,11 +531,9 @@ namespace oz
 
               break;
             }
-
-            p.z += clazz->climbInc;
           }
 
-          p = originalP;
+          p.z = originalZ;
         }
 
         collider.mask = SOLID_BIT;

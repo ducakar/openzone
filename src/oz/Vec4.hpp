@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file Vec4.hpp
+ * @file oz/Vec4.hpp
  */
 
 #include "Point3.hpp"
@@ -18,6 +18,8 @@ namespace oz
 
 /**
  * Generic four-component vector.
+ *
+ * @ingroup oz
  */
 class Vec4 : public Vec3
 {

@@ -170,6 +170,7 @@ namespace client
 
     public:
 
+      static bool isS3TCSupported;
       static bool useS3TC;
 
     private:

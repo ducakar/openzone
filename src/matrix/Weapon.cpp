@@ -31,6 +31,11 @@ namespace oz
     if( ( flags & LUA_BIT ) && !clazz->onUpdate.isEmpty() ) {
       lua.objectCall( clazz->onUpdate, this );
     }
+
+    if( !( flags & Object::UPDATE_FUNC_BIT ) ) {
+      // actually a hack, if Lua handler disables update
+      shotTime = 0.0f;
+    }
   }
 
   bool Weapon::onUse( Bot* user )

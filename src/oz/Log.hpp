@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file Log.hpp
+ * @file oz/Log.hpp
  */
 
 #include "Exception.hpp"
@@ -21,6 +21,8 @@ namespace oz
  *
  * Logging service, can write to stdout or into a file. After each operation stream is flushed,
  * so no data is lost on a crash.
+ *
+ * @ingroup oz
  */
 class Log
 {
@@ -131,8 +133,12 @@ class Log
 
 };
 
-/// It is very convenient to have a globally defined log instance and also needed by some classes
-/// in liboz.
+/**
+ * It is very convenient to have a globally defined log instance and also needed by some classes
+ * in liboz.
+ *
+ * @ingroup oz
+ */
 extern Log log;
 
 }

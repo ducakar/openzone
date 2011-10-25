@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file Pair.hpp
+ * @file oz/Pair.hpp
  */
 
 #include "common.hpp"
@@ -20,6 +20,8 @@ namespace oz
  * %Pair container.
  *
  * It holds two elements, not necessarily of the same type.
+ *
+ * @ingroup oz
  */
 template <typename TypeX, typename TypeY = TypeX>
 class Pair

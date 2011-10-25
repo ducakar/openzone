@@ -6,7 +6,7 @@
  */
 
 /**
- * @file Alloc.cpp
+ * @file oz/Alloc.cpp
  */
 
 #include "Alloc.hpp"
@@ -124,6 +124,8 @@ using namespace oz;
 
 /**
  * Emulation of POSIX function posix_memalign.
+ *
+ * @ingroup oz
  */
 static int posix_memalign( void** ptr, size_t alignment, size_t size )
 {
@@ -142,6 +144,8 @@ static int posix_memalign( void** ptr, size_t alignment, size_t size )
 
 /**
  * Free storage allocated by the fake posix_memalign function.
+ *
+ * @ingroup oz
  */
 static void posix_memalign_free( void* ptr )
 {
@@ -154,7 +158,9 @@ static void posix_memalign_free( void* ptr )
 
 /**
  * <tt>operator new</tt> implementation with memory statistics and optionally memory alignment
- * and memory leak tracking.
+ * and leak tracing.
+ *
+ * @ingroup oz
  */
 void* operator new ( size_t size ) throw( std::bad_alloc )
 {
@@ -209,7 +215,9 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
 
 /**
  * <tt>operator new[]</tt> implementation with memory statistics and optionally memory alignment
- * and memory leak tracking.
+ * and leak tracing.
+ *
+ * @ingroup oz
  */
 void* operator new[] ( size_t size ) throw( std::bad_alloc )
 {
@@ -264,6 +272,8 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 
 /**
  * <tt>operator delete</tt> implementation for the matching <tt>operator new</tt>.
+ *
+ * @ingroup oz
  */
 void operator delete ( void* ptr ) throw()
 {
@@ -339,6 +349,8 @@ backtraceFound:
 
 /**
  * <tt>operator delete[]</tt> implementation for the matching <tt>operator new[]</tt>.
+ *
+ * @ingroup oz
  */
 void operator delete[] ( void* ptr ) throw()
 {

@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file List.hpp
+ * @file oz/List.hpp
  */
 
 #include "iterables.hpp"
@@ -45,6 +45,8 @@ namespace oz
  * <tt>%List</tt> is not a real container but merely binds together already existing elements.
  * So, copy operator does not copy the elements, to make a copy of a list including its elements,
  * use <code>clone()</code> function.
+ *
+ * @ingroup oz
  */
 template <class Elem, int INDEX = 0>
 class List

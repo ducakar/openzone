@@ -6,12 +6,11 @@
  */
 
 /**
- * @file Config.cpp
+ * @file oz/Config.cpp
  */
 
 #include "Config.hpp"
 
-#include "Exception.hpp"
 #include "Log.hpp"
 
 #include <cerrno>

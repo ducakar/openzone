@@ -6,7 +6,7 @@
  */
 
 /**
- * @file Log.cpp
+ * @file oz/Log.cpp
  */
 
 #include "Log.hpp"

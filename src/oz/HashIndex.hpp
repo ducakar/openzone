@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file HashIndex.hpp
+ * @file oz/HashIndex.hpp
  */
 
 #include "arrays.hpp"
@@ -23,6 +23,8 @@ namespace oz
  * A prime number is recommended as size unless key distribution is truly "random".
  *
  * Memory is allocated when the first element is added.
+ *
+ * @ingroup oz
  */
 template <typename Value = nullptr_t, int SIZE = 253>
 class HashIndex

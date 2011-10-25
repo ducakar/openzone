@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file SBitset.hpp
+ * @file oz/SBitset.hpp
  */
 
 #include "arrays.hpp"
@@ -21,6 +21,8 @@ namespace oz
  *
  * Bits are stored in an array of <tt>ulong</tt>s, so the its length in bits is always a
  * multiple of <tt>sizeof( ulong ) * 8</tt>.
+ *
+ * @ingroup oz
  */
 template <int BITSIZE>
 class SBitset
@@ -112,8 +114,6 @@ class SBitset
      */
     bool isSubset( const SBitset& b ) const
     {
-      SBitset r;
-
       for( int i = 0; i < SIZE; ++i ) {
         if( ( data[i] & ~b.data[i] ) != 0ul ) {
           return false;

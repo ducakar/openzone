@@ -55,12 +55,13 @@ namespace oz
 
       };
 
-      static Pool<Struct> pool;
-
       static const Mat44 rotations[];
-      static const Mat44 invRotations[];
 
+      static Pool<Struct> pool;
       static Vector<Object*> overlappingObjs;
+
+      Mat44      transf;
+      Mat44      invTransf;
 
     public:
 
@@ -89,13 +90,6 @@ namespace oz
       explicit Struct( int index, int bpsId, InputStream* istream );
 
       /**
-       * Rotate vector from absolute coordinate system to structure coordinate system.
-       * @param v
-       * @return
-       */
-      Vec3 toStructCS( const Vec3& v ) const;
-
-      /**
        * Rotate vector from structure coordinate system to absolute coordinate system.
        * @param v
        * @return
@@ -103,11 +97,11 @@ namespace oz
       Vec3 toAbsoluteCS( const Vec3& v ) const;
 
       /**
-       * Rotate point from absolute coordinate system to structure coordinate system.
-       * @param point
+       * Rotate vector from absolute coordinate system to structure coordinate system.
+       * @param v
        * @return
        */
-      Point3 toStructCS( const Point3& point ) const;
+      Vec3 toStructCS( const Vec3& v ) const;
 
       /**
        * Rotate point from structure coordinate system to absolute coordinate system.
@@ -117,11 +111,11 @@ namespace oz
       Point3 toAbsoluteCS( const Point3& point ) const;
 
       /**
-       * Rotate Bounds from absolute coordinate system to structure coordinate system.
-       * @param bb
+       * Rotate point from absolute coordinate system to structure coordinate system.
+       * @param point
        * @return
        */
-      Bounds toStructCS( const Bounds& bb ) const;
+      Point3 toStructCS( const Point3& point ) const;
 
       /**
        * Rotate Bounds from structure coordinate system to absolute coordinate system.
@@ -129,6 +123,13 @@ namespace oz
        * @return
        */
       Bounds toAbsoluteCS( const Bounds& bb ) const;
+
+      /**
+       * Rotate Bounds from absolute coordinate system to structure coordinate system.
+       * @param bb
+       * @return
+       */
+      Bounds toStructCS( const Bounds& bb ) const;
 
       static Bounds rotate( const Bounds& in, Heading heading );
 
@@ -144,27 +145,27 @@ namespace oz
   };
 
   OZ_ALWAYS_INLINE
-  inline Vec3 Struct::toStructCS( const Vec3& v ) const
-  {
-    return invRotations[heading] * v;
-  }
-
-  OZ_ALWAYS_INLINE
   inline Vec3 Struct::toAbsoluteCS( const Vec3& v ) const
   {
-    return rotations[heading] * v;
+    return transf * v;
   }
 
   OZ_ALWAYS_INLINE
-  inline Point3 Struct::toStructCS( const Point3& point ) const
+  inline Vec3 Struct::toStructCS( const Vec3& v ) const
   {
-    return Point3::ORIGIN + invRotations[heading] * ( point - p );
+    return invTransf * v;
   }
 
   OZ_ALWAYS_INLINE
   inline Point3 Struct::toAbsoluteCS( const Point3& point ) const
   {
-    return p + rotations[heading] * ( point - Point3::ORIGIN );
+    return transf * point;
+  }
+
+  OZ_ALWAYS_INLINE
+  inline Point3 Struct::toStructCS( const Point3& point ) const
+  {
+    return invTransf * point;
   }
 
   OZ_ALWAYS_INLINE
@@ -174,7 +175,6 @@ namespace oz
 
     if( damage > 0.0f ) {
       life -= damage;
-      printf( "%g\n", life );
     }
   }
 

@@ -6,7 +6,7 @@
  */
 
 /**
- * @file oz.cpp
+ * @file oz/oz.cpp
  *
  * Dummy module to ensure proper dependency resolution for the precompiled header.
  */

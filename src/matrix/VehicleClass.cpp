@@ -49,11 +49,17 @@ namespace oz
       throw Exception( "Invalid object lift. Should be >= 0." );
     }
 
-    String sType = config->get( "type", "AIR" );
-    if( sType.equals( "WHEELED" ) ) {
+    String sType = config->get( "type", "" );
+    if( sType.equals( "STATIC" ) ) {
+      clazz->type = Vehicle::WHEELED;
+    }
+    else if( sType.equals( "WHEELED" ) ) {
       clazz->type = Vehicle::WHEELED;
     }
     else if( sType.equals( "TRACKED" ) ) {
+      clazz->type = Vehicle::TRACKED;
+    }
+    else if( sType.equals( "MECH" ) ) {
       clazz->type = Vehicle::TRACKED;
     }
     else if( sType.equals( "HOVER" ) ) {
@@ -63,7 +69,8 @@ namespace oz
       clazz->type = Vehicle::AIR;
     }
     else {
-      throw Exception( "Invalid vehicle type, should be either WHEELED, TRACKED, HOVER or AIR" );
+      throw Exception( "Invalid vehicle type, should be either STATIC, WHEELED, TRACKED, MECH, "
+                       "HOVER or AIR" );
     }
 
     clazz->state = 0;

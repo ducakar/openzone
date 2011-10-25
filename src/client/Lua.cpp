@@ -1474,7 +1474,7 @@ namespace client
     Dynamic* dyn = static_cast<Dynamic*>( orbis.objects[index] );
 
     if( dyn != null ) {
-      synapse.removeCut( dyn );
+      synapse.remove( dyn );
       lua.obj->items.remove( item );
     }
     return 0;
@@ -1489,7 +1489,7 @@ namespace client
       Dynamic* dyn = static_cast<Dynamic*>( orbis.objects[*item] );
 
       if( dyn != null ) {
-        synapse.removeCut( dyn );
+        synapse.remove( dyn );
       }
     }
 
@@ -1548,7 +1548,7 @@ namespace client
 
       hard_assert( dyn->flags & Object::DYNAMIC_BIT );
 
-      synapse.removeCut( dyn );
+      synapse.remove( dyn );
     }
     else {
       synapse.remove( lua.obj );

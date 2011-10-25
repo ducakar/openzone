@@ -276,6 +276,7 @@ namespace client
     if( header.id[0] != 'I' || header.id[1] != 'B' || header.id[2] != 'S' || header.id[3] != 'P' ||
         header.version != 46 )
     {
+      fclose( file );
       throw Exception( "BSP file has invalid format/version figerprint" );
     }
 

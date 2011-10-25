@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file iterables.hpp
+ * @file oz/iterables.hpp
  *
  * Iterator base classes and utility functions for iterable containers.
  *
@@ -30,6 +30,8 @@ namespace oz
  *   <li><tt>CIterator& operator ++ ()</tt></li>
  * </ul>
  * and constructors of course.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 class CIteratorBase
@@ -108,6 +110,8 @@ class CIteratorBase
  *   <li><tt>Iterator& operator ++ ()</tt></li>
  * </ul>
  * and a constructor of course.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 class IteratorBase
@@ -212,7 +216,6 @@ class IteratorBase
 
 /**
  * @def foreach
- *
  * Foreach loop.
  *
  * Foreach macro can be used as in the following example:
@@ -229,12 +232,16 @@ class IteratorBase
  *   printf( "%d ", *i );
  * }
  * </pre>
+ *
+ * @ingroup oz
  */
 # define foreach( i, iterator ) \
   for( auto i = iterator; i.isValid(); ++i )
 
 /**
  * Copy elements.
+ *
+ * @ingroup oz
  */
 template <class IteratorA, class CIteratorB>
 inline void iCopy( IteratorA iDest, CIteratorB iSrc )
@@ -252,6 +259,8 @@ inline void iCopy( IteratorA iDest, CIteratorB iSrc )
 
 /**
  * Set elements to the given value.
+ *
+ * @ingroup oz
  */
 template <class Iterator, typename Value>
 inline void iSet( Iterator iDest, const Value& value )
@@ -264,6 +273,8 @@ inline void iSet( Iterator iDest, const Value& value )
 
 /**
  * True iff same length and respective elements are equal.
+ *
+ * @ingroup oz
  */
 template <class CIteratorA, class CIteratorB>
 inline bool iEquals( CIteratorA iSrcA, CIteratorB iSrcB )
@@ -279,6 +290,8 @@ inline bool iEquals( CIteratorA iSrcA, CIteratorB iSrcB )
 
 /**
  * True iff the given value is found in the container.
+ *
+ * @ingroup oz
  */
 template <class CIterator, typename Value>
 inline bool iContains( CIterator iSrc, const Value& value )
@@ -291,6 +304,8 @@ inline bool iContains( CIterator iSrc, const Value& value )
 
 /**
  * %Iterator to the first element with the given value or an invalid iterator if not found.
+ *
+ * @ingroup oz
  */
 template <class Iterator, typename Value>
 inline Iterator iFind( Iterator iSrc, const Value& value )
@@ -303,6 +318,8 @@ inline Iterator iFind( Iterator iSrc, const Value& value )
 
 /**
  * %Iterator to the last element with the given value or an invalid iterator if not found.
+ *
+ * @ingroup oz
  */
 template <class CIterator, typename Value>
 inline CIterator iFindLast( CIterator iSrc, const Value& value )
@@ -321,6 +338,8 @@ inline CIterator iFindLast( CIterator iSrc, const Value& value )
 
 /**
  * Index of the first occurrence of the value or -1 if not found.
+ *
+ * @ingroup oz
  */
 template <class CIterator, typename Value>
 inline int iIndex( CIterator iSrc, const Value& value )
@@ -336,6 +355,8 @@ inline int iIndex( CIterator iSrc, const Value& value )
 
 /**
  * Index of the last occurrence of the value or -1 if not found.
+ *
+ * @ingroup oz
  */
 template <class CIterator, typename Value>
 inline int iLastIndex( CIterator iSrc, const Value& value )
@@ -355,6 +376,8 @@ inline int iLastIndex( CIterator iSrc, const Value& value )
 
 /**
  * Delete objects referenced by elements and set all elements to <tt>null</tt>.
+ *
+ * @ingroup oz
  */
 template <class Iterator>
 inline void iFree( Iterator iDest )

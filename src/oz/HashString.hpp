@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file HashString.hpp
+ * @file oz/HashString.hpp
  */
 
 #include "String.hpp"
@@ -21,6 +21,8 @@ namespace oz
  * Chaining hashtable implementation with String key type.
  *
  * Memory is allocated when the first element is added.
+ *
+ * @ingroup oz
  */
 template <typename Value = nullptr_t, int SIZE = 256>
 class HashString

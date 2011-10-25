@@ -134,7 +134,7 @@ namespace client
   void Shape::draw( const Particle* part )
   {
     glUniform4f( param.oz_Colour, part->colour.x, part->colour.y, part->colour.z,
-                 min( 1.0f, part->lifeTime ) );
+                 clamp( part->lifeTime, 1.0f, 1.0f ) );
 
     tf.apply();
 
