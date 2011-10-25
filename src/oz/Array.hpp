@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file Array.hpp
+ * @file oz/Array.hpp
  */
 
 #include "arrays.hpp"
@@ -20,6 +20,8 @@ namespace oz
  * Static array.
  *
  * The advantage over C++ arrays is it that is has bounds checking and an iterator.
+ *
+ * @ingroup oz
  */
 template <typename Elem, int SIZE>
 class Array

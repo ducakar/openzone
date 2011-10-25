@@ -67,22 +67,22 @@ namespace client
 
     if( camera.allowReincarnation && ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
       if( ui::ui.strategicArea->tagged.length() == 1 ) {
-        Object* tagged = orbis.objects[ ui::ui.strategicArea->tagged.first() ];
-        Bot*    me = null;
+        const Object* tagged = orbis.objects[ ui::ui.strategicArea->tagged.first() ];
+        const Bot*    me = null;
 
         if( tagged->flags & Object::BOT_BIT ) {
-          me = const_cast<Bot*>( static_cast<const Bot*>( tagged ) );
+          me = static_cast<const Bot*>( tagged );
         }
         else if( tagged->flags & Object::VEHICLE_BIT ) {
-          Vehicle* veh = const_cast<Vehicle*>( static_cast<const Vehicle*>( tagged ) );
+          const Vehicle* veh = static_cast<const Vehicle*>( tagged );
 
           if( veh->pilot != -1 && orbis.objects[veh->pilot] != null ) {
-            me = const_cast<Bot*>( static_cast<const Bot*>( orbis.objects[veh->pilot] ) );
+            me = static_cast<const Bot*>( orbis.objects[veh->pilot] );
           }
         }
 
-        if( me != null ) {
-          camera.setBot( me );
+        if( me != null && !( me->state & Bot::DEAD_BIT ) ) {
+          camera.setBot( const_cast<Bot*>( me ) );
           camera.setState( Camera::BOT );
         }
       }

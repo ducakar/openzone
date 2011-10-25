@@ -22,10 +22,13 @@ namespace oz
 
       enum Type
       {
+        STATIC,
         WHEELED,
         TRACKED,
+        MECH,
         HOVER,
-        AIR
+        AIR,
+        TYPE_MAX
       };
 
       static const int   WEAPONS_MAX            = 8;
@@ -50,10 +53,12 @@ namespace oz
 
     protected:
 
-      static void ( Vehicle::* handlers[4] )( const Mat44& rotMat );
+      static void ( Vehicle::* handlers[TYPE_MAX] )( const Mat44& rotMat );
 
+      void staticHandler( const Mat44& rotMat );
       void wheeledHandler( const Mat44& rotMat );
       void trackedHandler( const Mat44& rotMat );
+      void mechHandler( const Mat44& rotMat );
       void hoverHandler( const Mat44& rotMat );
       void airHandler( const Mat44& rotMat );
 

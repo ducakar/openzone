@@ -92,73 +92,66 @@ namespace client
       return;
     }
 
-    if( bot->anim != anim.type ) {
-      setAnim( bot->anim );
-    }
+    if( mask & Mesh::ALPHA_BIT ) {
+      if( bot->state & Bot::DEAD_BIT ) {
+        if( bot->anim != anim.type ) {
+          setAnim( bot->anim );
+        }
 
-    if( parent == null ) {
-      if( !camera.isExternal ) {
-        h = bot->h;
-      }
-      else if( bot->h - h > Math::TAU / 2.0f ) {
-        h = bot->h + TURN_SMOOTHING_COEF * ( h + Math::TAU - bot->h );
-      }
-      else if( h - bot->h > Math::TAU / 2.0f ) {
-        h = bot->h + Math::TAU + TURN_SMOOTHING_COEF * ( h - bot->h - Math::TAU );
-      }
-      else {
-        h = bot->h + TURN_SMOOTHING_COEF * ( h - bot->h );
-      }
+        shader.colour.w = min( bot->life * 8.0f / clazz->life, 1.0f );
 
-      h = Math::mod( h + Math::TAU, Math::TAU );
-      tf.model.rotateZ( h );
-    }
+        tf.model.rotateZ( h );
+        tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->corpseDim.z ) );
 
-    if( bot->state & Bot::DEAD_BIT ) {
-      shader.colour.w = min( bot->life * 8.0f / clazz->life, 1.0f );
-      if( shader.colour.w != 1.0f ) {
-        glEnable( GL_BLEND );
-      }
-
-      tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->corpseDim.z ) );
-
-      if( mask & Mesh::SOLID_BIT ) {
         md2->advance( &anim, timer.frameTime );
-      }
-      md2->draw( &anim );
+        md2->draw( &anim );
 
-      if( shader.colour.w != 1.0f ) {
-        glDisable( GL_BLEND );
+        shader.colour.w = 1.0f;
       }
-      shader.colour.w = 1.0f;
     }
-    else if( bot->index != camera.bot || camera.isExternal ) {
-      if( bot->state & Bot::CROUCHING_BIT ) {
-        tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->crouchDim.z ) );
+    else if( ( mask & Mesh::SOLID_BIT ) && !( bot->state & Bot::DEAD_BIT ) ) {
+      if( bot->anim != anim.type ) {
+        setAnim( bot->anim );
       }
 
-      if( mask & Mesh::SOLID_BIT ) {
+      if( parent == null ) {
+        if( !camera.isExternal ) {
+          h = bot->h;
+        }
+        else if( bot->h - h > Math::TAU / 2.0f ) {
+          h = bot->h + TURN_SMOOTHING_COEF * ( h + Math::TAU - bot->h );
+        }
+        else if( h - bot->h > Math::TAU / 2.0f ) {
+          h = bot->h + Math::TAU + TURN_SMOOTHING_COEF * ( h - bot->h - Math::TAU );
+        }
+        else {
+          h = bot->h + TURN_SMOOTHING_COEF * ( h - bot->h );
+        }
+
+        h = Math::mod( h + Math::TAU, Math::TAU );
+        tf.model.rotateZ( h );
+      }
+
+      if( bot->index != camera.bot || camera.isExternal ) {
+        if( bot->state & Bot::CROUCHING_BIT ) {
+          tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->crouchDim.z ) );
+        }
+
         md2->advance( &anim, timer.frameTime );
-      }
-      md2->draw( &anim );
+        md2->draw( &anim );
 
-      if( parent == null && bot->weapon!= -1 && orbis.objects[bot->weapon] != null ) {
+        if( parent == null && bot->weapon!= -1 && orbis.objects[bot->weapon] != null ) {
+          context.drawModel( orbis.objects[bot->weapon], this, mask );
+        }
+      }
+      else if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
+        tf.model.translate( Vec3( 0.0f, 0.0f,  bot->camZ ) );
+        tf.model.rotateX( bot->v - Math::TAU / 4.0f );
+        tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );
+
+        md2->advance( &anim, timer.frameTime );
         context.drawModel( orbis.objects[bot->weapon], this, mask );
       }
-    }
-    else if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
-      tf.model.translate( Vec3( 0.0f, 0.0f,  bot->camZ ) );
-      tf.model.rotateX( bot->v - Math::TAU / 4.0f );
-      tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );
-
-      glDepthFunc( GL_ALWAYS );
-
-      if( mask & Mesh::SOLID_BIT ) {
-        md2->advance( &anim, timer.frameTime );
-      }
-      context.drawModel( orbis.objects[bot->weapon], this, mask );
-
-      glDepthFunc( GL_LESS );
     }
   }
 

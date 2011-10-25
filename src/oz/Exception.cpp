@@ -6,7 +6,7 @@
  */
 
 /**
- * @file Exception.cpp
+ * @file oz/Exception.cpp
  */
 
 #include "Exception.hpp"

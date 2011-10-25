@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file Quat.hpp
+ * @file oz/Quat.hpp
  */
 
 #include "Vec4.hpp"
@@ -18,6 +18,8 @@ namespace oz
 
 /**
  * Quaternion.
+ *
+ * @ingroup oz
  */
 class Quat : public Vec4
 {

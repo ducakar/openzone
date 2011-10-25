@@ -6,7 +6,7 @@
  */
 
 /**
- * @file File.cpp
+ * @file oz/File.cpp
  */
 
 #include "File.hpp"
@@ -170,6 +170,7 @@ bool File::ls( DArray<File>* array )
     }
   }
 
+  closedir( directory );
   return true;
 }
 

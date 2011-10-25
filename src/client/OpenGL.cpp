@@ -139,6 +139,8 @@ namespace client
     System::abort( "GL error `%s' at %s:%d: %s", message, file, line, function );
   }
 
+#endif
+
   void glInit()
   {
 #ifdef OZ_MINGW
@@ -213,8 +215,6 @@ namespace client
 # endif
 #endif
   }
-
-#endif
 
 }
 }

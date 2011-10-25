@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file DList.hpp
+ * @file oz/DList.hpp
  */
 
 #include "iterables.hpp"
@@ -48,6 +48,8 @@ namespace oz
  * <tt>%DList</tt> is not a real container but merely binds together already existing elements.
  * So, copy operator does not copy the elements, to make a copy of a list including its elements,
  * use <code>clone()</code> function.
+ *
+ * @ingroup oz
  */
 template <class Elem, int INDEX = 0>
 class DList

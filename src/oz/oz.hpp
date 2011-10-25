@@ -8,9 +8,11 @@
 #pragma once
 
 /**
- * @file oz.hpp
+ * @file oz/oz.hpp
  *
  * Common include file for liboz.
+ *
+ * @defgroup oz liboz - OpenZone core library
  */
 
 /*

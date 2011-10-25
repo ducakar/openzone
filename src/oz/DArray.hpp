@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file DArray.hpp
+ * @file oz/DArray.hpp
  */
 
 #include "arrays.hpp"
@@ -21,6 +21,8 @@ namespace oz
  *
  * The advantage over C++ arrays is it has bounds checking, iterator and it frees allocated memory
  * when destroyed.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 class DArray

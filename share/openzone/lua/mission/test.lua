@@ -19,20 +19,17 @@ function onCreate()
 
   ozCameraWarpTo( 141.0, -12.0, 84.75 )
 
-  local me = ozOrbisAddObj( "beast", 137, -6, 73 )
-  ozBotSetH( 180 )
+  local me = ozOrbisAddObj( "beast", 137, -6, 73, OZ_SOUTH )
   ozBotSetName( ozProfileGetPlayerName() )
   ozBotSetMindFunc( "" )
 
-  local lord = ozOrbisAddObj( "bauul", 138, -11, 73 )
-  ozBotSetH( 270 )
+  local lord = ozOrbisAddObj( "bauul", 138, -11, 73, OZ_EAST )
 
   local memo = ozOrbisAddObj( "datacube", 134, -6, 73 )
   ozNirvanaAddMemo( memo, "ds a sda dasd a dw eqfeqwikfp weiofhowue hfuh weuiwhfuw h" )
   ozNirvanaAddMemo( lord, "Buahahahaha" )
 
-  ozOrbisAddObj( "droid.OOM-9", 140, -11, 73 )
-  ozBotSetH( 90 )
+  ozOrbisAddObj( "droid.OOM-9", 140, -11, 73, OZ_WEST )
 
   ozOrbisAddObj( "reaper", 145, -15, 73 )
 

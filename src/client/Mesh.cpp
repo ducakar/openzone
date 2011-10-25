@@ -350,7 +350,7 @@ namespace client
         glBindTexture( GL_TEXTURE_2D, part->texture );
         glUniform1f( param.oz_Specular, part->specular );
         glUniform4f( param.oz_Colour, shader.colour.x, shader.colour.y, shader.colour.z,
-                     part->alpha );
+                     shader.colour.w * part->alpha );
         glDrawElements( part->mode, part->nIndices, GL_UNSIGNED_SHORT,
                         reinterpret_cast<const ushort*>( 0 ) + part->firstIndex );
       }
@@ -373,14 +373,12 @@ namespace client
     glBindVertexArray( vao );
 # endif
 
-    glUniform4fv( param.oz_Colour, 1, shader.colour );
-
     foreach( part, parts.citer() ) {
       if( part->flags & mask ) {
         glBindTexture( GL_TEXTURE_2D, part->texture );
         glUniform1f( param.oz_Specular, part->specular );
         glUniform4f( param.oz_Colour, shader.colour.x, shader.colour.y, shader.colour.z,
-                     part->alpha );
+                     shader.colour.w * part->alpha );
         glDrawElements( part->mode, part->nIndices, GL_UNSIGNED_SHORT,
                         reinterpret_cast<const ushort*>( 0 ) + part->firstIndex );
       }

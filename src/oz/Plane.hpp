@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file Plane.hpp
+ * @file oz/Plane.hpp
  */
 
 #include "Point3.hpp"
@@ -18,6 +18,8 @@ namespace oz
 
 /**
  * 3D plane.
+ *
+ * @ingroup oz
  */
 #ifdef OZ_SIMD
 class Plane : public Simd

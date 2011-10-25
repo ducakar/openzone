@@ -182,6 +182,7 @@ namespace oz
       static const int EVENT_FRICTING     = 5;
       static const int EVENT_USE          = 6;
 
+      static const float BASE_INTENSITY;
       static const float MOMENTUM_INTENSITY_COEF;
       static const float DAMAGE_INTENSITY_COEF;
 
@@ -293,8 +294,7 @@ namespace oz
 
         if( damage > 0.0f ) {
           life -= damage;
-//           addEvent( EVENT_DAMAGE, damage * DAMAGE_INTENSITY_COEF );
-          addEvent( EVENT_DAMAGE, 1.0f );
+          addEvent( EVENT_DAMAGE, BASE_INTENSITY + damage * DAMAGE_INTENSITY_COEF );
 
           if( flags & DAMAGE_FUNC_BIT ) {
             onDamage( damage );
@@ -311,8 +311,7 @@ namespace oz
       void hit( const Hit* hit, float hitMomentum )
       {
         flags |= HIT_BIT;
-//         addEvent( EVENT_HIT, hitMomentum * MOMENTUM_INTENSITY_COEF );
-        addEvent( EVENT_HIT, 1.0f );
+        addEvent( EVENT_HIT, BASE_INTENSITY + hitMomentum * MOMENTUM_INTENSITY_COEF );
         damage( hitMomentum * hitMomentum );
 
         if( flags & HIT_FUNC_BIT ) {
@@ -323,7 +322,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       void splash( float hitMomentum )
       {
-//         addEvent( EVENT_SPLASH, hitMomentum * MOMENTUM_INTENSITY_COEF );
+        addEvent( EVENT_SPLASH, BASE_INTENSITY + hitMomentum * MOMENTUM_INTENSITY_COEF );
         static_cast<void>( hitMomentum );
         addEvent( EVENT_SPLASH, 1.0f );
       }

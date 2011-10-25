@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file Point3.hpp
+ * @file oz/Point3.hpp
  */
 
 #include "Vec3.hpp"
@@ -18,6 +18,8 @@ namespace oz
 
 /**
  * 3D point.
+ *
+ * @ingroup oz
  */
 #ifdef OZ_SIMD
 class Point3 : public Simd

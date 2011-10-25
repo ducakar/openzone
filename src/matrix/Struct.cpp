@@ -25,24 +25,26 @@ namespace oz
     &Struct::Entity::updateAutoDoor
   };
 
-  Pool<Struct> Struct::pool;
-  Vector<Object*> Struct::overlappingObjs;
-
   const Mat44 Struct::rotations[] =
   {
     Mat44::ID,
-    Mat44::rotationZ(  Math::TAU / 4.0f ),
-    Mat44::rotationZ(  Math::TAU / 2.0f ),
-    Mat44::rotationZ( -Math::TAU / 4.0f )
+    Mat44(  0.0f,  1.0f,  0.0f,  0.0f,
+           -1.0f,  0.0f,  0.0f,  0.0f,
+            0.0f,  0.0f,  1.0f,  0.0f,
+            0.0f,  0.0f,  0.0f,  1.0f ),
+    Mat44( -1.0f,  0.0f,  0.0f,  0.0f,
+            0.0f, -1.0f,  0.0f,  0.0f,
+            0.0f,  0.0f,  1.0f,  0.0f,
+            0.0f,  0.0f,  0.0f,  1.0f ),
+    Mat44(  0.0f, -1.0f,  0.0f,  0.0f,
+            1.0f,  0.0f,  0.0f,  0.0f,
+            0.0f,  0.0f,  1.0f,  0.0f,
+            0.0f,  0.0f,  0.0f,  1.0f ),
+    Mat44::ID
   };
 
-  const Mat44 Struct::invRotations[] =
-  {
-    Mat44::ID,
-    Mat44::rotationZ( -Math::TAU / 4.0f ),
-    Mat44::rotationZ(  Math::TAU / 2.0f ),
-    Mat44::rotationZ(  Math::TAU / 4.0f )
-  };
+  Pool<Struct> Struct::pool;
+  Vector<Object*> Struct::overlappingObjs;
 
   void Struct::Entity::updateIgnoring()
   {
@@ -89,10 +91,6 @@ namespace oz
         }
 
         offset = ratio * model->move;
-        break;
-      }
-      default: {
-        hard_assert( false );
         break;
       }
     }
@@ -189,10 +187,6 @@ namespace oz
         }
         break;
       }
-      default: {
-        hard_assert( false );
-        break;
-      }
     }
   }
 
@@ -252,10 +246,6 @@ namespace oz
         }
         break;
       }
-      default: {
-        hard_assert( false );
-        break;
-      }
     }
   }
 
@@ -268,28 +258,15 @@ namespace oz
       p( p_ ), index( index_ ), id( bspId ), bsp( orbis.bsps[bspId] ),
       heading( heading_ ), life( bsp->life ), resistance( bsp->resistance )
   {
-    switch( heading ) {
-      case NORTH: {
-        mins = p + Vec3( +bsp->mins.x, +bsp->mins.y, +bsp->mins.z );
-        maxs = p + Vec3( +bsp->maxs.x, +bsp->maxs.y, +bsp->maxs.z );
-        break;
-      }
-      case WEST: {
-        mins = p + Vec3( -bsp->maxs.y, bsp->mins.x, bsp->mins.z );
-        maxs = p + Vec3( -bsp->mins.y, bsp->maxs.x, bsp->maxs.z );
-        break;
-      }
-      case SOUTH: {
-        mins = p + Vec3( -bsp->maxs.x, -bsp->maxs.y, +bsp->mins.z );
-        maxs = p + Vec3( -bsp->mins.x, -bsp->mins.y, +bsp->maxs.z );
-        break;
-      }
-      case EAST: {
-        mins = p + Vec3( bsp->mins.y, -bsp->maxs.x, bsp->mins.z );
-        maxs = p + Vec3( bsp->maxs.y, -bsp->mins.x, bsp->maxs.z );
-        break;
-      }
-    }
+    transf = rotations[heading];
+    transf.w = p;
+
+    invTransf = rotations[4 - heading];
+    invTransf.translate( Point3::ORIGIN - p );
+
+    Bounds bb = toAbsoluteCS( *bsp );
+    mins = bb.mins;
+    maxs = bb.maxs;
 
     nEntities = bsp->nModels;
     entities = nEntities == 0 ? null : new Entity[nEntities];
@@ -346,28 +323,6 @@ namespace oz
     }
   }
 
-  Bounds Struct::toAbsoluteCS( const Bounds& bb ) const
-  {
-    switch( heading ) {
-      case NORTH: {
-        return Bounds( p + Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
-                       p + Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
-      }
-      case WEST: {
-        return Bounds( p + Vec3( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
-                       p + Vec3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
-      }
-      case SOUTH: {
-        return Bounds( p + Vec3( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
-                       p + Vec3( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
-      }
-      case EAST: {
-        return Bounds( p + Vec3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
-                       p + Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
-      }
-    }
-  }
-
   Bounds Struct::rotate( const Bounds& in, Heading heading )
   {
     Point3 p = in.mins + ( in.maxs - in.mins ) * 0.5f;
@@ -388,6 +343,28 @@ namespace oz
       case EAST: {
         return Bounds( p + Vec3( +in.mins.y, -in.maxs.x, +in.mins.z ),
                        p + Vec3( +in.maxs.y, -in.mins.x, +in.maxs.z ) );
+      }
+    }
+  }
+
+  Bounds Struct::toAbsoluteCS( const Bounds& bb ) const
+  {
+    switch( heading ) {
+      case NORTH: {
+        return Bounds( p + Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
+                       p + Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
+      }
+      case WEST: {
+        return Bounds( p + Vec3( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
+                       p + Vec3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
+      }
+      case SOUTH: {
+        return Bounds( p + Vec3( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
+                       p + Vec3( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
+      }
+      case EAST: {
+        return Bounds( p + Vec3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
+                       p + Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
       }
     }
   }
@@ -414,11 +391,13 @@ namespace oz
 
   void Struct::readFull( InputStream* istream )
   {
-    mins    = istream->readPoint3();
-    maxs    = istream->readPoint3();
-    p       = istream->readPoint3();
-    heading = Heading( istream->readInt() );
-    life    = istream->readFloat();
+    mins      = istream->readPoint3();
+    maxs      = istream->readPoint3();
+    transf    = istream->readMat44();
+    invTransf = istream->readMat44();
+    p         = istream->readPoint3();
+    heading   = Heading( istream->readInt() );
+    life      = istream->readFloat();
 
     for( int i = 0; i < nEntities; ++i ) {
       entities[i].offset = istream->readVec3();
@@ -432,6 +411,8 @@ namespace oz
   {
     ostream->writePoint3( mins );
     ostream->writePoint3( maxs );
+    ostream->writeMat44( transf );
+    ostream->writeMat44( invTransf );
     ostream->writePoint3( p );
     ostream->writeInt( heading );
     ostream->writeFloat( life );

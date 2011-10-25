@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file Config.hpp
+ * @file oz/Config.hpp
  */
 
 #include "HashString.hpp"
@@ -20,6 +20,8 @@ namespace oz
  * Container for application variables.
  *
  * Variables are key-value pairs. They can be loaded from or saved to a .rc file.
+ *
+ * @ingroup oz
  */
 class Config
 {
@@ -178,7 +180,11 @@ class Config
 
 };
 
-/// It is usually very convenient to have a globally defined Config instance.
+/**
+ * It is usually very convenient to have a globally defined Config instance.
+ *
+ * @ingroup oz
+ */
 extern Config config;
 
 }

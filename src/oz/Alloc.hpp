@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file Alloc.hpp
+ * @file oz/Alloc.hpp
  */
 
 #include "common.hpp"
@@ -23,6 +23,8 @@ namespace oz
  * <tt>new[]</tt>/<tt>delete[]</tt> operators that provides memory allocation
  * statistics, specific alignment and optionally tracks memory leaks (if <tt>OZ_TRACE_LEAKS</tt>
  * config option is turned on).
+ *
+ * @ingroup oz
  */
 class Alloc
 {

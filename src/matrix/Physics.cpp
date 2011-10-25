@@ -97,10 +97,10 @@ namespace oz
       // collision response
       handlePartHit();
 
-      // we must check lifeTime <= 0.0f to prevent an already destroyed particle to bounce off a
+      // We must check lifeTime <= 0.0f to prevent an already destroyed particle to bounce off a
       // surface and hit something (e.g. if we shoot into something with a rifle, a bullet is not
       // destroyed immediately after it hits something, but bounces off and damages the shooter if
-      // he stays to close to the hit surface
+      // he stays too close to the hit surface.
       if( traceSplits >= 3 || part->lifeTime <= 0.0f ) {
         break;
       }

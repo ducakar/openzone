@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file Bitset.hpp
+ * @file oz/Bitset.hpp
  */
 
 #include "arrays.hpp"
@@ -21,6 +21,8 @@ namespace oz
  *
  * Bits are stored in an array of <tt>ulong</tt>s, so the its length in bits is always a
  * multiple of <tt>sizeof( ulong ) * 8</tt>.
+ *
+ * @ingroup oz
  */
 class Bitset
 {
@@ -188,8 +190,6 @@ class Bitset
     bool isSubset( const Bitset& b ) const
     {
       hard_assert( size == b.size );
-
-      Bitset r( size );
 
       for( int i = 0; i < size; ++i ) {
         if( ( data[i] & ~b.data[i] ) != 0ul ) {

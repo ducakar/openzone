@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file Pool.hpp
+ * @file oz/Pool.hpp
  */
 
 #include "common.hpp"
@@ -24,6 +24,8 @@
  *
  * If <tt>OZ_POOL_ALLOC</tt> is not defined, global <tt>new</tt> and <tt>delete</tt> operators
  * are used.
+ *
+ * @ingroup oz
  */
 #ifdef OZ_POOL_ALLOC
 
@@ -46,6 +48,8 @@
  *
  * The pool is given to new operator as an additional parameter. As delete cannot be provided,
  * object should be manually destructed and deallocated via <code>pool.dealloc( object )</code>.
+ *
+ * @ingroup oz
  */
 #define OZ_PLACEMENT_POOL_ALLOC( Type, SIZE ) \
   public: \
@@ -63,6 +67,8 @@ namespace oz
  *
  * Memory pool consists of a linked list of memory blocks, each an array of uninitialised elements
  * of the specified data type.
+ *
+ * @ingroup oz
  */
 template <class Type, int BLOCK_SIZE = 256>
 class Pool

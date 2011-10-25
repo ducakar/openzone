@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file Math.hpp
+ * @file oz/Math.hpp
  */
 
 #include "Pair.hpp"
@@ -18,6 +18,8 @@ namespace oz
 
 /**
  * Replacement for \<cmath\> plus some other utility functions.
+ *
+ * @ingroup oz
  */
 class Math
 {

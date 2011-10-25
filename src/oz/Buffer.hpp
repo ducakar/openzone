@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file Buffer.hpp
+ * @file oz/Buffer.hpp
  */
 
 #include "stream.hpp"
@@ -20,6 +20,8 @@ namespace oz
  * Memory buffer.
  *
  * It can be used as a generic memory buffer or to store contents read from a file.
+ *
+ * @ingroup oz
  */
 class Buffer
 {

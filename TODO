@@ -11,23 +11,32 @@ TODO 0.3
   * documentation
 - client
   * specular masks
-  * particle model
-    + smoke, fire ...
+  * particle model (smoke, fire ...)
   * particle pools
-    + wood, metal, building debris, meat frags ...
+    + wood
+    + metal
+    + building debris
+    + meat frags
+    + bullets
+  * MD3 animation
+  * BSP rendering per partes
   * decals
   * animated textures
   * bloom effect
-  * documenation
+  * documentation
+- ui
+  * onShow
 - lua
   * API refresh
 - tools
   * decouple prebuilding from runtime classes
+  * documentation
 
 TODO 0.4
 - RTS interface
 - commanding units
 - building
+- homepage
 
 TODO 0.5
 - AI tasks

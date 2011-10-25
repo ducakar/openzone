@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file SVector.hpp
+ * @file oz/SVector.hpp
  */
 
 #include "arrays.hpp"
@@ -20,6 +20,8 @@ namespace oz
  * Static vector (static array list).
  *
  * Fixed capacity vector with static storage.
+ *
+ * @ingroup oz
  */
 template <typename Elem, int SIZE>
 class SVector

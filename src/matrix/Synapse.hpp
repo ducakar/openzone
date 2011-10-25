@@ -22,6 +22,16 @@ namespace oz
   {
     public:
 
+      enum Mode
+      {
+        SINGLE, ///< No need to worry about synchronisation of object creation, deletion,
+                ///< interactions ...
+        SERVER, ///< Create notification about every object creation/deletion/put/cut/etc that can
+                ///< be later serialised and sent to clients.
+        CLIENT  ///< Do not create or delete any objects by yourself, every creation/deletion must
+                ///< be ordered by the server.
+      };
+
       struct Action
       {
         int user;
@@ -47,20 +57,11 @@ namespace oz
       Vector<int>    removedObjects;
       Vector<int>    removedParts;
 
-      // isSingle XOR isServer XOR isClient
-
-      // Singleplayer. No need to worry about object creation, deletion, synchronisation etc.
-      bool isSingle;
-      // If server, create notification about every object creation/deletion/put/cut/etc. That can
-      // be later serialised and sent to clients.
-      bool isServer;
-      // If client, do not create or delete any objects by yourself. Every creation/deletion must be
-      // ordered by server.
-      bool isClient;
+      Mode mode;
 
       Synapse();
 
-      // interactions
+
       void use( Bot* user, Object* target );
 
       // schedule for position in the world
@@ -79,9 +80,6 @@ namespace oz
       void remove( Struct* str );
       void remove( Object* obj );
       void remove( Particle* part );
-
-      // for removing inventory (cut) objects
-      void removeCut( Dynamic* obj );
 
       void genParts( int number, const Point3& p,
                      const Vec3& velocity, float velocitySpread,

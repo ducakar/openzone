@@ -20,7 +20,7 @@ namespace oz
 
   Synapse synapse;
 
-  Synapse::Synapse() : isSingle( true ), isServer( false ), isClient( false )
+  Synapse::Synapse() : mode( SINGLE )
   {}
 
   void Synapse::use( Bot* user, Object* target )
@@ -104,14 +104,19 @@ namespace oz
 
   void Synapse::remove( Object* obj )
   {
-    hard_assert( obj->index != -1 && obj->cell != null );
-
-    if( !( obj->flags & Object::DYNAMIC_BIT ) ) {
-      collider.touchOverlaps( *obj, 4.0f * EPSILON );
-    }
+    hard_assert( obj->index != -1 );
 
     removedObjects.add( obj->index );
-    orbis.unposition( obj );
+
+    if( obj->flags & Object::DYNAMIC_BIT ) {
+      if( obj->cell != null ) {
+        orbis.unposition( obj );
+      }
+    }
+    else {
+      collider.touchOverlaps( *obj, 4.0f * EPSILON );
+      orbis.unposition( obj );
+    }
     orbis.remove( obj );
   }
 
@@ -122,14 +127,6 @@ namespace oz
     removedParts.add( part->index );
     orbis.unposition( part );
     orbis.remove( part );
-  }
-
-  void Synapse::removeCut( Dynamic* obj )
-  {
-    hard_assert( obj->index != -1 && obj->cell == null );
-
-    removedObjects.add( obj->index );
-    orbis.remove( obj );
   }
 
   void Synapse::genParts( int number, const Point3& p,

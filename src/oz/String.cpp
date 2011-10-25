@@ -6,7 +6,7 @@
  */
 
 /**
- * @file String.cpp
+ * @file oz/String.cpp
  */
 
 #include "String.hpp"

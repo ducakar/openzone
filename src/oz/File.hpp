@@ -8,10 +8,9 @@
 #pragma once
 
 /**
- * @file File.hpp
+ * @file oz/File.hpp
  */
 
-#include "String.hpp"
 #include "Buffer.hpp"
 
 namespace oz
@@ -19,6 +18,8 @@ namespace oz
 
 /**
  * Simple class for obtaining file type, base name etc. and basic directory operations.
+ *
+ * @ingroup oz
  */
 class File
 {
@@ -69,12 +70,12 @@ class File
     Type getType();
 
     /**
-     * File path.
+     * %File path.
      */
     const char* path() const;
 
     /**
-     * File name.
+     * %File name.
      */
     const char* name() const;
 

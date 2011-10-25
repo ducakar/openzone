@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file Vector.hpp
+ * @file oz/Vector.hpp
  */
 
 #include "arrays.hpp"
@@ -22,6 +22,8 @@ namespace oz
  * It can also be used as a stack or a small set.
  *
  * Memory is allocated when the first element is added.
+ *
+ * @ingroup oz
  */
 template <typename Elem>
 class Vector

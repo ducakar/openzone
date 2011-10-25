@@ -6,12 +6,11 @@
  */
 
 /**
- * @file System.cpp
+ * @file oz/System.cpp
  */
 
 #include "System.hpp"
 
-#include "common.hpp"
 #include "Log.hpp"
 
 #include <csignal>

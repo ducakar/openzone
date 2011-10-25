@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file Vec3.hpp
+ * @file oz/Vec3.hpp
  */
 
 #include "Math.hpp"
@@ -23,6 +23,8 @@ class Plane;
 
 /**
  * 3D vector.
+ *
+ * @ingroup oz
  */
 #ifdef OZ_SIMD
 class Vec3 : public Simd

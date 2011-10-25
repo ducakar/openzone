@@ -577,8 +577,8 @@ int main( int argc, char** argv )
     client::render.init();
     SDL_WM_SetCaption( OZ_APPLICATION_TITLE " :: Prebuilding data ...", null );
 
-    if( !config.get( "context.enableS3TC", false ) && client::context.useS3TC ) {
-      throw Exception( "S3 texture compression enable but not supported" );
+    if( !client::context.isS3TCSupported && client::context.useS3TC ) {
+      throw Exception( "S3 texture compression enabled but not supported" );
     }
 
     createDirs();

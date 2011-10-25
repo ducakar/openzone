@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file Exception.hpp
+ * @file oz/Exception.hpp
  */
 
 #include "String.hpp"
@@ -18,6 +18,8 @@ namespace oz
 
 /**
  * %Exception class.
+ *
+ * @ingroup oz
  */
 class Exception : public std::exception
 {
@@ -56,6 +58,8 @@ class Exception : public std::exception
 /**
  * @def Exception
  * Exception constructor wrapper that provides the current file and line.
+ *
+ * @ingroup oz
  */
 # define Exception( message ) \
   oz::Exception( message, __FILE__, __LINE__, __PRETTY_FUNCTION__ )

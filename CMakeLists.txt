@@ -172,7 +172,7 @@ set( flags "-pipe -std=c++0x -ffast-math" )
 set( warnings "-Wall -Wextra -Wold-style-cast -Wcast-align -Wsign-promo -Wconversion" )
 set( warnings "${warnings} -Winvalid-pch -Wdisabled-optimization -Wmissing-declarations" )
 set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor -Wattributes" )
-set( arch_flags "-msse" )
+set( arch_flags "-msse3" )
 
 if( OZ_CLANG )
   set( warnings "${warnings} -Wno-invalid-offsetof -Wno-sign-conversion" )

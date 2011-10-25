@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @file System.hpp
+ * @file oz/System.hpp
  */
 
 #include "common.hpp"
@@ -18,6 +18,8 @@ namespace oz
 
 /**
  * Class for generating stack trace for the current function call.
+ *
+ * @ingroup oz
  */
 class System
 {

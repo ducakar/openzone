@@ -32,7 +32,7 @@ namespace client
       float radius;
 
       OZ_ALWAYS_INLINE
-      bool isVisible( const Point3& p, float radius = 0.0f )
+      bool isVisible( const Point3& p, float radius = 0.0f ) const
       {
         return
             p * left  > -radius &&
@@ -43,7 +43,7 @@ namespace client
       }
 
       OZ_ALWAYS_INLINE
-      bool isVisible( float x, float y, float radius )
+      bool isVisible( float x, float y, float radius ) const
       {
         Point3 mins = Point3( x, y, -Orbis::DIM );
         Point3 maxs = Point3( x, y,  Orbis::DIM );
