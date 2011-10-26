@@ -40,14 +40,10 @@ class Math
     /// Not a number.
     static const float NaN;
 
-  private:
-
     /**
      * Singleton.
      */
-    Math();
-
-  public:
+    Math() = delete;
 
     /**
      * Absolute value.

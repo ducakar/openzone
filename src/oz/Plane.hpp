@@ -39,9 +39,7 @@ class Plane
     /**
      * Create an uninitialised instance.
      */
-    OZ_ALWAYS_INLINE
-    Plane()
-    {}
+    Plane() = default;
 
 #ifdef OZ_SIMD
   protected:

@@ -37,6 +37,8 @@ class SVector
     {
       friend class SVector;
 
+      OZ_RANGE_ITERATOR( CIterator )
+
       private:
 
         /// Base class type, convenience definition to make code cleaner.
@@ -66,6 +68,8 @@ class SVector
     class Iterator : public oz::Iterator<Elem>
     {
       friend class SVector;
+
+      OZ_RANGE_ITERATOR( Iterator )
 
       private:
 
@@ -285,11 +289,12 @@ class SVector
     /**
      * Add an element to the end.
      */
-    void add( const Elem& e )
+    template <typename Elem_>
+    void add( Elem_&& e )
     {
       hard_assert( uint( count ) < uint( SIZE ) );
 
-      data[count] = e;
+      data[count] = static_cast<Elem_&&>( e );
       ++count;
     }
 
@@ -302,9 +307,7 @@ class SVector
 
       hard_assert( uint( newCount ) <= uint( SIZE ) );
 
-      for( int i = 0; i < arrayCount; ++i ) {
-        aCopy( data + count, array, arrayCount );
-      }
+      aCopy( data + count, array, arrayCount );
       count = newCount;
     }
 
@@ -313,14 +316,15 @@ class SVector
      *
      * @return position of the inserted or the existing equal element.
      */
-    int include( const Elem& e )
+    template <typename Elem_>
+    int include( Elem_&& e )
     {
       int i = aIndex( data, e, count );
 
       if( i == -1 ) {
         hard_assert( uint( count ) < uint( SIZE ) );
 
-        data[count] = e;
+        data[count] = static_cast<Elem_&&>( e );
         i = count;
         ++count;
       }
@@ -329,19 +333,17 @@ class SVector
 
     /**
      * Insert an element at the given position.
+     *
+     * All later elements are shifted to make the gap.
      */
-    void insert( int i, const Elem& e )
+    template <typename Elem_>
+    void insert( int i, Elem_&& e )
     {
       hard_assert( uint( i ) <= uint( count ) );
       hard_assert( uint( count ) < uint( SIZE ) );
 
-      if( i == count ) {
-        data[count] = e;
-      }
-      else {
-        aReverseCopy( data + i + 1, data + i, count - i );
-        data[i] = e;
-      }
+      aReverseMove( data + i + 1, data + i, count - i );
+      data[i] = static_cast<Elem_&&>( e );
       ++count;
     }
 
@@ -365,7 +367,7 @@ class SVector
       hard_assert( uint( i ) < uint( count ) );
 
       --count;
-      aCopy( data + i, data + i + 1, count - i );
+      aMove( data + i, data + i + 1, count - i );
     }
 
     /**
@@ -378,7 +380,7 @@ class SVector
       hard_assert( uint( i ) < uint( count ) );
 
       --count;
-      data[i] = data[count];
+      data[i] = static_cast<Elem&&>( data[count] );
     }
 
     /**
@@ -392,7 +394,7 @@ class SVector
 
       if( i != -1 ) {
         --count;
-        aCopy( data + i, data + i + 1, count - i );
+        aMove( data + i, data + i + 1, count - i );
       }
       return i;
     }
@@ -410,7 +412,7 @@ class SVector
 
       if( i != -1 ) {
         --count;
-        data[i] = data[count];
+        data[i] = static_cast<Elem&&>( data[count] );
       }
       return i;
     }
@@ -420,29 +422,25 @@ class SVector
      *
      * All elements are shifted to make a gap.
      */
-    void pushFirst( const Elem& e )
+    template <typename Elem_>
+    void pushFirst( Elem_&& e )
     {
       hard_assert( uint( count ) < uint( SIZE ) );
 
-      if( count == 0 ) {
-        data[0] = e;
-        ++count;
-      }
-      else {
-        aReverseCopy( data + 1, data, count );
-        data[0] = e;
-        ++count;
-      }
+      aReverseMove( data + 1, data, count );
+      data[0] = static_cast<Elem_&&>( e );
+      ++count;
     }
 
     /**
      * Add an element to the end.
      */
-    void pushLast( const Elem& e )
+    template <typename Elem_>
+    void pushLast( Elem_&& e )
     {
       hard_assert( uint( count ) < uint( SIZE ) );
 
-      data[count] = e;
+      data[count] = static_cast<Elem_&&>( e );
       ++count;
     }
 
@@ -455,10 +453,10 @@ class SVector
      */
     Elem popFirst()
     {
-      Elem e = data[0];
+      Elem e = static_cast<Elem&&>( data[0] );
 
       --count;
-      aCopy( data, data + 1, count );
+      aMove( data, data + 1, count );
 
       return e;
     }
@@ -473,9 +471,8 @@ class SVector
       hard_assert( count != 0 );
 
       --count;
-      Elem e = data[count];
 
-      return e;
+      return static_cast<Elem&&>( data[count] );
     }
 
     /**

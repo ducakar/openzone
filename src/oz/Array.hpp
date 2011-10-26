@@ -37,6 +37,8 @@ class Array
     {
       friend class Array;
 
+      OZ_RANGE_ITERATOR( CIterator )
+
       private:
 
         /// Base class type, convenience definition to make code cleaner.
@@ -66,6 +68,8 @@ class Array
     class Iterator : public oz::Iterator<Elem>
     {
       friend class Array;
+
+      OZ_RANGE_ITERATOR( Iterator )
 
       private:
 
@@ -99,9 +103,7 @@ class Array
     /**
      * Create uninitialised array.
      */
-    OZ_ALWAYS_INLINE
-    Array()
-    {}
+    Array() = default;
 
     /**
      * Initialise form a C++ array.

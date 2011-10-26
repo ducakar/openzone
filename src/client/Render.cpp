@@ -577,9 +577,8 @@ namespace client
     String vendor   = String::cstr( glGetString( GL_VENDOR ) );
     String renderer = String::cstr( glGetString( GL_RENDERER ) );
     String version  = String::cstr( glGetString( GL_VERSION ) );
-    DArray<String> extensions;
     String sExtensions = String::cstr( glGetString( GL_EXTENSIONS ) );
-    sExtensions.trim().split( ' ', &extensions );
+    DArray<String> extensions = sExtensions.trim().split( ' ' );
 
     log.println( "OpenGL vendor: %s", vendor.cstr() );
     log.println( "OpenGL renderer: %s", renderer.cstr() );

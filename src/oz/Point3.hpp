@@ -41,9 +41,7 @@ class Point3
     /**
      * Create an uninitialised instance.
      */
-    OZ_ALWAYS_INLINE
-    Point3()
-    {}
+    Point3() = default;
 
 #ifdef OZ_SIMD
   protected:

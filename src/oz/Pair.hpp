@@ -23,33 +23,33 @@ namespace oz
  *
  * @ingroup oz
  */
-template <typename TypeX, typename TypeY = TypeX>
+template <typename ValueX, typename ValueY = ValueX>
 class Pair
 {
   public:
 
-    TypeX x; ///< First element.
-    TypeY y; ///< Second element.
+    ValueX x; ///< First element.
+    ValueY y; ///< Second element.
 
     /**
      * Create an uninitialised instance.
      */
-    OZ_ALWAYS_INLINE
-    Pair()
-    {}
+    Pair() = default;
 
     /**
      * Create a pair with given members.
      */
+    template <typename ValueX_, typename ValueY_>
     OZ_ALWAYS_INLINE
-    explicit Pair( const TypeX& x_, const TypeY& y_ ) : x( x_ ), y( y_ )
+    explicit constexpr Pair( ValueX_&& x_, ValueY_&& y_ ) :
+        x( static_cast<ValueX_&&>( x_ ) ), y( static_cast<ValueY_&&>( y_ ) )
     {}
 
     /**
      * Per-member equality operator.
      */
     OZ_ALWAYS_INLINE
-    bool operator == ( const Pair& p ) const
+    constexpr bool operator == ( const Pair& p ) const
     {
       return x == p.x && y == p.y;
     }
@@ -58,7 +58,7 @@ class Pair
      * Per-member inequality operator.
      */
     OZ_ALWAYS_INLINE
-    bool operator != ( const Pair& p ) const
+    constexpr bool operator != ( const Pair& p ) const
     {
       return x != p.x || y != p.y;
     }

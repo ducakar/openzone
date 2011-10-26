@@ -21,9 +21,7 @@ namespace oz
     int maxX;
     int maxY;
 
-    OZ_ALWAYS_INLINE
-    Span()
-    {}
+    Span() = default;
 
     OZ_ALWAYS_INLINE
     explicit Span( int minX_, int minY_, int maxX_, int maxY_ ) :

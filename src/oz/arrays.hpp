@@ -34,6 +34,8 @@ class CIterator : public CIteratorBase<Elem>
 {
   friend CIterator citer<Elem>( const Elem* array, int count );
 
+  OZ_RANGE_ITERATOR( CIterator )
+
   private:
 
     /// Base class type, convenience definition to make code cleaner.
@@ -101,6 +103,8 @@ template <typename Elem>
 class Iterator : public IteratorBase<Elem>
 {
   friend Iterator iter<Elem>( Elem* array, int count );
+
+  OZ_RANGE_ITERATOR( Iterator )
 
   private:
 
@@ -179,7 +183,7 @@ inline Iterator<Elem> iter( Elem* array, int count )
 }
 
 /**
- * Copy array from the first to the last element.
+ * Copy array elements from the first to the last.
  *
  * @ingroup oz
  */
@@ -194,7 +198,7 @@ inline void aCopy( Elem* aDest, const Elem* aSrc, int count )
 }
 
 /**
- * Copy array from the last to the first element.
+ * Move array elements from the last to the first.
  *
  * @ingroup oz
  */
@@ -205,6 +209,36 @@ inline void aReverseCopy( Elem* aDest, const Elem* aSrc, int count )
 
   for( int i = count - 1; i >= 0; --i ) {
     aDest[i] = aSrc[i];
+  }
+}
+
+/**
+ * Move array elements from the first to the last.
+ *
+ * @ingroup oz
+ */
+template <typename Elem>
+inline void aMove( Elem* aDest, Elem* aSrc, int count )
+{
+  hard_assert( count == 0 || aDest != aSrc );
+
+  for( int i = 0; i < count; ++i ) {
+    aDest[i] = static_cast<Elem&&>( aSrc[i] );
+  }
+}
+
+/**
+ * Move array elements from the last to the first.
+ *
+ * @ingroup oz
+ */
+template <typename Elem>
+inline void aReverseMove( Elem* aDest, Elem* aSrc, int count )
+{
+  hard_assert( count == 0 || aDest != aSrc );
+
+  for( int i = count - 1; i >= 0; --i ) {
+    aDest[i] = static_cast<Elem&&>( aSrc[i] );
   }
 }
 
@@ -320,12 +354,12 @@ inline int aLength( const Elem& aSrc )
  * @ingroup oz
  */
 template <typename Elem>
-inline Elem* aRealloc( const Elem* aSrc, int count, int newCount )
+inline Elem* aRealloc( Elem* aSrc, int count, int newCount )
 {
   Elem* aNew = new Elem[newCount];
 
   for( int i = 0; i < count; ++i ) {
-    aNew[i] = aSrc[i];
+    aNew[i] = static_cast<Elem&&>( aSrc[i] );
   }
   delete[] aSrc;
 
@@ -344,15 +378,15 @@ inline Elem* aRealloc( const Elem* aSrc, int count, int newCount )
  *
  * @ingroup oz
  */
-template <typename Elem, typename Value>
-inline void aInsert( Elem* aDest, const Value& value, int index, int count )
+template <typename Elem, typename Elem_>
+inline void aInsert( Elem* aDest, Elem_&& value, int index, int count )
 {
   hard_assert( uint( index ) < uint( count ) );
 
   for( int i = count - 1; i > index; --i ) {
-    aDest[i] = aDest[i - 1];
+    aDest[i] = static_cast<Elem&&>( aDest[i - 1] );
   }
-  aDest[index] = value;
+  aDest[index] = static_cast<Elem_&&>( value );
 }
 
 /**
@@ -372,7 +406,7 @@ inline void aRemove( Elem* aDest, int index, int count )
   hard_assert( uint( index ) < uint( count ) );
 
   for( int i = index + 1; i < count; ++i ) {
-    aDest[i - 1] = aDest[i];
+    aDest[i - 1] = static_cast<Elem&&>( aDest[i] );
   }
 }
 

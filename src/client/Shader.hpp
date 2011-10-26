@@ -130,8 +130,7 @@ namespace client
         Point3 pos;
         Vec4   diffuse;
 
-        Light()
-        {}
+        Light() = default;
 
         explicit Light( const Point3& pos, const Vec4& diffuse );
       };

@@ -274,22 +274,6 @@ namespace client
     glUniform3fv( param.oz_CaelumLight_dir,     1, caelumLight.dir );
     glUniform4fv( param.oz_CaelumLight_diffuse, 1, caelumLight.diffuse );
     glUniform4fv( param.oz_CaelumLight_ambient, 1, caelumLight.ambient );
-
-//     Map<float, const Light*> localLights( lights.length() );
-
-//     Mat44 transf;
-//     glGetFloatv( GL_MODELVIEW_MATRIX, transf );
-
-//     foreach( light, lights.citer() ) {
-//       Point3 localPos = transf * Point3( light->pos );
-//       float  dist     = ( localPos - Point3::ORIGIN ).sqL();
-//
-//       if( dist < lightingDistance ) {
-//         localLights.add( dist, light );
-//       }
-//     }
-
-    // TODO
   }
 
   void Shader::load()

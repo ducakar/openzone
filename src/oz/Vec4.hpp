@@ -41,9 +41,7 @@ class Vec4 : public Vec3
     /**
      * Create an uninitialised instance.
      */
-    OZ_ALWAYS_INLINE
-    Vec4()
-    {}
+    Vec4() = default;
 
 #ifdef OZ_SIMD
   protected:

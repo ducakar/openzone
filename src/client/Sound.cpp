@@ -326,9 +326,8 @@ namespace client
     log.unindent();
     log.println( "}" );
 
-    DArray<String> extensions;
     String sExtensions = alGetString( AL_EXTENSIONS );
-    sExtensions.trim().split( ' ', &extensions );
+    DArray<String> extensions = sExtensions.trim().split( ' ' );
 
     log.println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );
     log.println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );

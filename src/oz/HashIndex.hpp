@@ -45,9 +45,10 @@ class HashIndex
       /**
        * Initialise a new element.
        */
+      template <typename Value_>
       OZ_ALWAYS_INLINE
-      explicit Elem( int key_, const Value& value_, Elem* next_ ) :
-          key( key_ ), value( value_ ), next( next_ )
+      explicit Elem( int key_, Value_&& value_, Elem* next_ ) :
+          key( key_ ), value( static_cast<Value_&&>( value_ ) ), next( next_ )
       {}
 
       OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
@@ -63,6 +64,8 @@ class HashIndex
     class CIterator : public CIteratorBase<Elem>
     {
       friend class HashIndex;
+
+      OZ_RANGE_ITERATOR( CIterator )
 
       private:
 
@@ -162,6 +165,8 @@ class HashIndex
     class Iterator : public IteratorBase<Elem>
     {
       friend class HashIndex;
+
+      OZ_RANGE_ITERATOR( Iterator )
 
       private:
 
@@ -349,7 +354,7 @@ class HashIndex
     }
 
     /**
-     * Copy constructor.
+     * Copy constructor, copies elements and storage.
      */
     HashIndex( const HashIndex& t ) : count( t.count )
     {
@@ -359,7 +364,19 @@ class HashIndex
     }
 
     /**
-     * Copy constructor, copies elements.
+     * Move constructor, moves storage.
+     */
+    HashIndex( HashIndex&& t ) :
+        pool( static_cast< Pool<Elem, SIZE>&& >( t.pool ) ), count( t.count )
+    {
+      aCopy( data, t.data, SIZE );
+
+      aSet<Elem*>( t.data, null, SIZE );
+      t.count = 0;
+    }
+
+    /**
+     * Copy operator, copies elements and storage.
      */
     HashIndex& operator = ( const HashIndex& t )
     {
@@ -373,6 +390,28 @@ class HashIndex
         data[i] = copyChain( t.data[i] );
       }
       count = t.count;
+
+      return *this;
+    }
+
+    /**
+     * Move operator, moves storage.
+     */
+    HashIndex& operator = ( HashIndex&& t )
+    {
+      if( &t == this ) {
+        soft_assert( &t != this );
+        return *this;
+      }
+
+      clear();
+
+      aCopy( data, t.data, SIZE );
+      pool  = static_cast< Pool<Elem, SIZE>&& >( t.pool );
+      count = t.count;
+
+      aSet<Elem*>( t.data, null, SIZE );
+      t.count = 0;
 
       return *this;
     }
@@ -522,21 +561,50 @@ class HashIndex
     /**
      * Add a new element. The key must not yet exist in this hashtable.
      *
-     * @return pointer to the new entry's value.
+     * @return pointer to the value of the inserted element.
      */
-    Value* add( int key, const Value& value = Value() )
+    template <typename Value_ = Value>
+    Value* add( int key, Value_&& value = Value() )
     {
       hard_assert( !contains( key ) );
 
-      uint  i    = uint( key ) % uint( SIZE );
-      Elem* elem = new( pool ) Elem( key, value, data[i] );
-
-      data[i] = elem;
+      uint i  = uint( key ) % uint( SIZE );
+      data[i] = new( pool ) Elem( key, static_cast<Value_&&>( value ), data[i] );
       ++count;
 
       soft_assert( loadFactor() < 0.75f );
 
-      return &elem->value;
+      return &data[i]->value;
+    }
+
+    /**
+     * Add a new element if the key do not exist in the hashtable.
+     *
+     * @return pointer to the value of the inserted or the existing element with the same key.
+     */
+    template <typename Value_ = Value>
+    Value* include( int key, Value_&& value = Value() )
+    {
+      hard_assert( !contains( key ) );
+
+      uint  i = uint( key ) % uint( SIZE );
+      Elem* p = data[i];
+
+      while( p != null ) {
+        if( p->key == key ) {
+          return &p->value;
+        }
+        else {
+          p = p->next;
+        }
+      }
+
+      data[i] = new( pool ) Elem( key, static_cast<Value_&&>( value ), data[i] );
+      ++count;
+
+      soft_assert( loadFactor() < 0.75f );
+
+      return &data[i]->value;
     }
 
     /**

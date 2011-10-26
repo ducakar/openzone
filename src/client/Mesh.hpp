@@ -31,9 +31,7 @@ namespace client
     float binormal[3];
 #endif
 
-    OZ_ALWAYS_INLINE
-    Vertex()
-    {}
+    Vertex() = default;
 
 #ifndef OZ_BUMPMAP
     explicit Vertex( const Point3& pos,

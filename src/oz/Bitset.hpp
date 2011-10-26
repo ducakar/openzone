@@ -59,6 +59,15 @@ class Bitset
     }
 
     /**
+     * Move constructor, moves storage.
+     */
+    Bitset( Bitset&& b ) : data( b.data ), size( b.size )
+    {
+      b.data = null;
+      b.size = 0;
+    }
+
+    /**
      * Copy operator, copies storage.
      *
      * Reuse existing storage only if it the size matches.
@@ -78,6 +87,27 @@ class Bitset
       }
 
       aCopy( data, b.data, b.size );
+
+      return *this;
+    }
+
+    /**
+     * Move operator, moves storage.
+     */
+    Bitset& operator = ( Bitset&& b )
+    {
+      if( &b == this ) {
+        soft_assert( &b != this );
+        return *this;
+      }
+
+      delete[] data;
+
+      data = b.data;
+      size = b.size;
+
+      b.data = null;
+      b.size = 0;
 
       return *this;
     }

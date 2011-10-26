@@ -28,7 +28,7 @@ class Buffer
   private:
 
     char* data;  ///< Storage.
-    int   count; ///< Data length in bytes.
+    int   size; ///< Data length in bytes.
 
   public:
 
@@ -48,6 +48,11 @@ class Buffer
     Buffer( const Buffer& b );
 
     /**
+     * Move constructor, moves data storage.
+     */
+    Buffer( Buffer&& b );
+
+    /**
      * Copy operator, copies data.
      *
      * Reuse existing storage if it suffices.
@@ -55,9 +60,14 @@ class Buffer
     Buffer& operator = ( const Buffer& b );
 
     /**
+     * Move operator, moves data storage.
+     */
+    Buffer& operator = ( Buffer&& b );
+
+    /**
      * Create a buffer of size <tt>size</tt>.
      */
-    explicit Buffer( int size );
+    explicit Buffer( int initSize );
 
     /**
      * Create a buffer from contents of the given file.
@@ -88,7 +98,7 @@ class Buffer
      */
     const char* end() const
     {
-      return data + count;
+      return data + size;
     }
 
     /**
@@ -96,7 +106,7 @@ class Buffer
      */
     char* end()
     {
-      return data + count;
+      return data + size;
     }
 
     /**
@@ -104,7 +114,7 @@ class Buffer
      */
     int length() const
     {
-      return count;
+      return size;
     }
 
     /**
@@ -112,13 +122,13 @@ class Buffer
      */
     bool isEmpty() const
     {
-      return count == 0;
+      return size == 0;
     }
 
     /**
      * For an empty buffer, allocate new storage of <tt>size</tt> bytes.
      */
-    void alloc( int size );
+    void alloc( int initSize );
 
     /**
      * Deallocate storage.
@@ -146,7 +156,7 @@ class Buffer
     /**
      * Write buffer contents into a file.
      */
-    bool write( const char* path, int size );
+    bool write( const char* path, int count );
 
 };
 

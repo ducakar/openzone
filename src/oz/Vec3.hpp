@@ -53,9 +53,7 @@ class Vec3
     /**
      * Create an uninitialised instance.
      */
-    OZ_ALWAYS_INLINE
-    Vec3()
-    {}
+    Vec3() = default;
 
 #ifdef OZ_SIMD
   protected:
