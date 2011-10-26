@@ -11,19 +11,51 @@
 
 using namespace oz;
 
-int main( int, char** )
+struct Foo
 {
-  File f( "/etc" );
-  DArray<File> list;
-
-  f.ls( &list );
-
-  foreach( file, list.citer() ) {
-    printf( "%s\n", file->path() );
+  Foo()
+  {
+    printf( "Foo()\n" );
   }
 
-  list.dealloc();
+  Foo( const Foo& )
+  {
+    printf( "Foo( const Foo& )\n" );
+  }
 
-  Alloc::printLeaks();
+  Foo( Foo&& )
+  {
+    printf( "Foo( Foo&& )\n" );
+  }
+
+  Foo& operator = ( const Foo& )
+  {
+    printf( "Foo& operator = ( const Foo& )\n" );
+    return *this;
+  }
+
+  Foo& operator = ( Foo&& )
+  {
+    printf( "Foo& operator = ( Foo&& )\n" );
+    return *this;
+  }
+};
+
+// DArray<Foo> bar()
+// {
+//   DArray<Foo> foos( 10 );
+//   return foos;
+// }
+
+int main( int, char** )
+{
+  Vector<Foo> v;
+  v.add( Foo() );
+  v.add( Foo() );
+
+//   for( decltype( v.citer() ) i : v.citer() ) {
+//   }
+
+//   Alloc::printLeaks();
   return 0;
 }

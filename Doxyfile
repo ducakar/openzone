@@ -45,7 +45,7 @@ PROJECT_BRIEF          =
 # exceed 55 pixels and the maximum width should not exceed 200 pixels.
 # Doxygen will copy the logo to the output directory.
 
-PROJECT_LOGO           = /home/davorin/Projects/openzone/share/pixmaps/openzone.png
+PROJECT_LOGO           =
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute)
 # base path where the generated documentation will be put.
@@ -440,7 +440,7 @@ SORT_MEMBER_DOCS       = YES
 # by member name. If set to NO (the default) the members will appear in
 # declaration order.
 
-SORT_BRIEF_DOCS        = YES
+SORT_BRIEF_DOCS        = NO
 
 # If the SORT_MEMBERS_CTORS_1ST tag is set to YES then doxygen
 # will sort the (brief and detailed) documentation of class members so that

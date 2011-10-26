@@ -39,6 +39,7 @@ namespace client
 
       const Object* obj;
       const ObjectClass* clazz;
+
       int flags;
 
       virtual ~Model()

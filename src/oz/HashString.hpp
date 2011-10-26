@@ -43,17 +43,11 @@ class HashString
       /**
        * Initialise a new element.
        */
+      template <typename Key_, typename Value_>
       OZ_ALWAYS_INLINE
-      explicit Elem( const String& key_, const Value& value_, Elem* next_ ) :
-          key( key_ ), value( value_ ), next( next_ )
-      {}
-
-      /**
-       * Initialise a new element.
-       */
-      OZ_ALWAYS_INLINE
-      explicit Elem( const char* key_, const Value& value_, Elem* next_ ) :
-          key( key_ ), value( value_ ), next( next_ )
+      explicit Elem( Key_&& key_, Value_&& value_, Elem* next_ ) :
+          key( static_cast<Key_&&>( key_ ) ), value( static_cast<Value_&&>( value_ ) ),
+          next( next_ )
       {}
 
       OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
@@ -69,6 +63,8 @@ class HashString
     class CIterator : public CIteratorBase<Elem>
     {
       friend class HashString;
+
+      OZ_RANGE_ITERATOR( CIterator )
 
       private:
 
@@ -176,6 +172,10 @@ class HashString
      */
     class Iterator : public IteratorBase<Elem>
     {
+      friend class HashString;
+
+      OZ_RANGE_ITERATOR( Iterator )
+
       private:
 
         /// Base class type, convenience definition to make code cleaner.
@@ -372,7 +372,7 @@ class HashString
     }
 
     /**
-     * Copy constructor.
+     * Copy constructor, copies elements and storage.
      */
     HashString( const HashString& t ) : count( t.count )
     {
@@ -382,7 +382,19 @@ class HashString
     }
 
     /**
-     * Copy constructor, copies elements.
+     * Move constructor, moves storage.
+     */
+    HashString( HashString&& t ) :
+        pool( static_cast< Pool<Elem, SIZE>&& >( t.pool ) ), count( t.count )
+    {
+      aCopy( data, t.data, SIZE );
+
+      aSet<Elem*>( t.data, null, SIZE );
+      t.count = 0;
+    }
+
+    /**
+     * Copy operator, copies elements and storage.
      */
     HashString& operator = ( const HashString& t )
     {
@@ -396,6 +408,28 @@ class HashString
         data[i] = copyChain( t.data[i] );
       }
       count = t.count;
+
+      return *this;
+    }
+
+    /**
+     * Move operator, moves storage.
+     */
+    HashString& operator = ( HashString&& t )
+    {
+      if( &t == this ) {
+        soft_assert( &t != this );
+        return *this;
+      }
+
+      clear();
+
+      aCopy( data, t.data, SIZE );
+      pool  = static_cast< Pool<Elem, SIZE>&& >( t.pool );
+      count = t.count;
+
+      aSet<Elem*>( t.data, null, SIZE );
+      t.count = 0;
 
       return *this;
     }
@@ -545,21 +579,48 @@ class HashString
     /**
      * Add a new element. The key must not yet exist in this hashtable.
      *
-     * @return pointer to the new entry's value.
+     * @return pointer to the value of the inserted element.
      */
-    Value* add( const char* key, const Value& value = Value() )
+    template <typename Value_ = Value>
+    Value* add( const char* key, Value_&& value = Value() )
     {
       hard_assert( !contains( key ) );
 
-      uint  i    = uint( String::hash( key ) ) % uint( SIZE );
-      Elem* elem = new( pool ) Elem( key, value, data[i] );
-
-      data[i] = elem;
+      uint i  = uint( String::hash( key ) ) % uint( SIZE );
+      data[i] = new( pool ) Elem( key, static_cast<Value_&&>( value ), data[i] );
       ++count;
 
       soft_assert( loadFactor() < 0.75f );
 
-      return &elem->value;
+      return &data[i]->value;
+    }
+
+    /**
+     * Add a new element if the key do not exist in the hashtable.
+     *
+     * @return pointer to the value of the inserted or the existing element with the same key.
+     */
+    template <typename Value_ = Value>
+    Value* include( const char* key, Value_&& value = Value() )
+    {
+      uint  i = uint( String::hash( key ) ) % uint( SIZE );
+      Elem* p = data[i];
+
+      while( p != null ) {
+        if( p->key.equals( key ) ) {
+          return &p->value;
+        }
+        else {
+          p = p->next;
+        }
+      }
+
+      data[i] = new( pool ) Elem( key, static_cast<Value_&&>( value ), data[i] );
+      ++count;
+
+      soft_assert( loadFactor() < 0.75f );
+
+      return &data[i]->value;
     }
 
     /**

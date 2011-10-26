@@ -47,15 +47,15 @@ class Map
       /**
        * Create an uninitialised instance.
        */
-      OZ_ALWAYS_INLINE
-      Elem()
-      {}
+      Elem() = default;
 
       /**
        * Initialise a new element.
        */
+      template <typename Key_, typename Value_>
       OZ_ALWAYS_INLINE
-      explicit Elem( const Key& key_, const Value& value_ ) : key( key_ ), value( value_ )
+      explicit Elem( Key_&& key_, Value_&& value_ ) :
+          key( static_cast<Key_&&>( key_ ) ), value( static_cast<Value_&&>( value_ ) )
       {}
 
       /**
@@ -87,6 +87,8 @@ class Map
     class CIterator : public oz::CIterator<Elem>
     {
       friend class Map;
+
+      OZ_RANGE_ITERATOR( CIterator )
 
       private:
 
@@ -164,6 +166,8 @@ class Map
     class Iterator : public oz::Iterator<Elem>
     {
       friend class Map;
+
+      OZ_RANGE_ITERATOR( Iterator )
 
       private:
 
@@ -283,6 +287,16 @@ class Map
     {}
 
     /**
+     * Move constructor, moves element storage.
+     */
+    Map( Map&& m ) : data( m.data ), size( m.size ), count( m.count )
+    {
+      m.data  = null;
+      m.size  = 0;
+      m.count = 0;
+    }
+
+    /**
      * Copy operator, copies elements.
      *
      * Reuse existing storage if it suffices.
@@ -303,6 +317,29 @@ class Map
 
       aCopy( data, m.data, m.count );
       count = m.count;
+
+      return *this;
+    }
+
+    /**
+     * Move operator, moves element storage.
+     */
+    Map& operator = ( Map&& m )
+    {
+      if( &m == this ) {
+        soft_assert( &m != this );
+        return *this;
+      }
+
+      delete[] data;
+
+      data  = m.data;
+      size  = m.size;
+      count = m.count;
+
+      m.data  = null;
+      m.size  = 0;
+      m.count = 0;
 
       return *this;
     }
@@ -380,17 +417,6 @@ class Map
      */
     OZ_ALWAYS_INLINE
     const Key& operator [] ( int i ) const
-    {
-      hard_assert( uint( i ) < uint( count ) );
-
-      return data[i].key;
-    }
-
-    /**
-     * Reference to the i-th element's key.
-     */
-    OZ_ALWAYS_INLINE
-    Key& operator [] ( int i )
     {
       hard_assert( uint( i ) < uint( count ) );
 
@@ -480,15 +506,16 @@ class Map
      *
      * @return position of the inserted or the existing element.
      */
-    int add( const Key& key, const Value& value = Value() )
+    template <typename Key_, typename Value_ = Value>
+    int add( Key_&& key, Value_&& value = Value() )
     {
       int i = aBisectPosition( data, key, count );
 
       if( i != 0 && data[i - 1].key == key ) {
-        data[i - 1].value = value;
+        data[i - 1].value = static_cast<Value_&&>( value );
       }
       else {
-        insert( i, key, value );
+        insert( i, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
       }
       return i;
     }
@@ -498,12 +525,13 @@ class Map
      *
      * @return position of the inserted or the existing element with the same key.
      */
-    int include( const Key& key, const Value& value = Value() )
+    template <typename Key_, typename Value_ = Value>
+    int include( Key_&& key, Value_&& value = Value() )
     {
       int i = aBisectPosition( data, key, count );
 
       if( i == 0 || !( data[i - 1].key == key ) ) {
-        insert( i, key, value );
+        insert( i, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
       }
       return i;
     }
@@ -512,17 +540,19 @@ class Map
      * Insert an element at the given position.
      *
      * All later elements are shifted to make a gap.
-     * Use only when you are sure you are inserting at the right position to keep the element order.
+     * Use only when you are sure you are inserting at the right position to preserve order of the
+     * element.
      */
-    void insert( int i, const Key& k, const Value& v = Value() )
+    template <typename Key_, typename Value_ = Value>
+    void insert( int i, Key_&& key, Value_&& value = Value() )
     {
       hard_assert( uint( i ) <= uint( count ) );
 
       ensureCapacity();
 
-      aReverseCopy( data + i + 1, data + i, count - i );
-      data[i].key   = k;
-      data[i].value = v;
+      aReverseMove( data + i + 1, data + i, count - i );
+      data[i].key   = static_cast<Key_&&>( key );
+      data[i].value = static_cast<Value_&&>( value );
 
       ++count;
     }
@@ -537,7 +567,7 @@ class Map
       hard_assert( uint( i ) < uint( count ) );
 
       --count;
-      aCopy( data + i, data + i + 1, count - i );
+      aMove( data + i, data + i + 1, count - i );
     }
 
     /**

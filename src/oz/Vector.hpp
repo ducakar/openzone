@@ -42,6 +42,8 @@ class Vector
     {
       friend class Vector;
 
+      OZ_RANGE_ITERATOR( CIterator )
+
       private:
 
         /// Base class type, convenience definition to make code cleaner.
@@ -71,6 +73,8 @@ class Vector
     class Iterator : public oz::Iterator<Elem>
     {
       friend class Vector;
+
+      OZ_RANGE_ITERATOR( Iterator )
 
       private:
 
@@ -148,6 +152,16 @@ class Vector
     {}
 
     /**
+     * Move constructor, moves element storage.
+     */
+    Vector( Vector&& v ) : data( v.data ), size( v.size ), count( v.count )
+    {
+      v.data  = null;
+      v.size  = 0;
+      v.count = 0;
+    }
+
+    /**
      * Copy operator, copies elements.
      *
      * Reuse existing storage if it suffices.
@@ -168,6 +182,29 @@ class Vector
 
       aCopy( data, v.data, v.count );
       count = v.count;
+
+      return *this;
+    }
+
+    /**
+     * Move operator, moves element storage.
+     */
+    Vector& operator = ( Vector&& v )
+    {
+      if( &v == this ) {
+        soft_assert( &v != this );
+        return *this;
+      }
+
+      delete[] data;
+
+      data  = v.data;
+      size  = v.size;
+      count = v.count;
+
+      v.data  = null;
+      v.size  = 0;
+      v.count = 0;
 
       return *this;
     }
@@ -361,11 +398,12 @@ class Vector
     /**
      * Add an element to the end.
      */
-    void add( const Elem& e )
+    template <typename Elem_>
+    void add( Elem_&& e )
     {
       ensureCapacity();
 
-      data[count] = e;
+      data[count] = static_cast<Elem_&&>( e );
       ++count;
     }
 
@@ -387,14 +425,15 @@ class Vector
      *
      * @return position of the inserted or the existing equal element.
      */
-    int include( const Elem& e )
+    template <typename Elem_>
+    int include( Elem_&& e )
     {
       int i = aIndex( data, e, count );
 
       if( i == -1 ) {
         ensureCapacity();
 
-        data[count] = e;
+        data[count] = static_cast<Elem_&&>( e );
         i = count;
         ++count;
       }
@@ -406,14 +445,15 @@ class Vector
      *
      * All later elements are shifted to make the gap.
      */
-    void insert( int i, const Elem& e )
+    template <typename Elem_>
+    void insert( int i, Elem_&& e )
     {
       hard_assert( uint( i ) <= uint( count ) );
 
       ensureCapacity();
 
-      aReverseCopy( data + i + 1, data + i, count - i );
-      data[i] = e;
+      aReverseMove( data + i + 1, data + i, count - i );
+      data[i] = static_cast<Elem_&&>( e );
       ++count;
     }
 
@@ -437,7 +477,7 @@ class Vector
       hard_assert( uint( i ) < uint( count ) );
 
       --count;
-      aCopy( data + i, data + i + 1, count - i );
+      aMove( data + i, data + i + 1, count - i );
     }
 
     /**
@@ -450,7 +490,7 @@ class Vector
       hard_assert( uint( i ) < uint( count ) );
 
       --count;
-      data[i] = data[count];
+      data[i] = static_cast<Elem&&>( data[count] );
     }
 
     /**
@@ -464,7 +504,7 @@ class Vector
 
       if( i != -1 ) {
         --count;
-        aCopy( data + i, data + i + 1, count - i );
+        aMove( data + i, data + i + 1, count - i );
       }
       return i;
     }
@@ -482,7 +522,7 @@ class Vector
 
       if( i != -1 ) {
         --count;
-        data[i] = data[count];
+        data[i] = static_cast<Elem&&>( data[count] );
       }
       return i;
     }
@@ -492,23 +532,25 @@ class Vector
      *
      * All elements are shifted to make a gap.
      */
-    void pushFirst( const Elem& e )
+    template <typename Elem_>
+    void pushFirst( Elem_&& e )
     {
       ensureCapacity();
 
-      aReverseCopy( data + 1, data, count );
-      data[0] = e;
+      aReverseMove( data + 1, data, count );
+      data[0] = static_cast<Elem_&&>( e );
       ++count;
     }
 
     /**
      * Add an element to the end.
      */
-    void pushLast( const Elem& e )
+    template <typename Elem_>
+    void pushLast( Elem_&& e )
     {
       ensureCapacity();
 
-      data[count] = e;
+      data[count] = static_cast<Elem_&&>( e );
       ++count;
     }
 
@@ -521,10 +563,10 @@ class Vector
      */
     Elem popFirst()
     {
-      Elem e = data[0];
+      Elem e = static_cast<Elem&&>( data[0] );
 
       --count;
-      aCopy( data, data + 1, count );
+      aMove( data, data + 1, count );
 
       return e;
     }
@@ -540,7 +582,7 @@ class Vector
 
       --count;
 
-      return data[count];
+      return static_cast<Elem&&>( data[count] );
     }
 
     /**

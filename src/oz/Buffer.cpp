@@ -17,7 +17,7 @@
 namespace oz
 {
 
-Buffer::Buffer() : data( null ), count( 0 )
+Buffer::Buffer() : data( null ), size( 0 )
 {}
 
 Buffer::~Buffer()
@@ -25,12 +25,18 @@ Buffer::~Buffer()
   dealloc();
 }
 
-Buffer::Buffer( const Buffer& b ) : data( null ), count( b.count )
+Buffer::Buffer( const Buffer& b ) : data( null ), size( b.size )
 {
-  if( b.count != 0 ) {
-    data = new char[count];
-    aCopy( data, b.data, count );
+  if( b.size != 0 ) {
+    data = new char[size];
+    aCopy( data, b.data, size );
   }
+}
+
+Buffer::Buffer( Buffer&& b ) : data( b.data ), size( b.size )
+{
+  b.data = null;
+  b.size = 0;
 }
 
 Buffer& Buffer::operator = ( const Buffer& b )
@@ -40,51 +46,69 @@ Buffer& Buffer::operator = ( const Buffer& b )
     return *this;
   }
 
-  if( count < b.count ) {
+  if( size < b.size ) {
     dealloc();
-    alloc( b.count );
+    alloc( b.size );
   }
 
-  aCopy( data, b.data, b.count );
+  aCopy( data, b.data, b.size );
   return *this;
 }
 
-Buffer::Buffer( int size ) : data( new char[size] ), count( size )
+Buffer& Buffer::operator = ( Buffer&& b )
+{
+  if( &b == this ) {
+    soft_assert( &b != this );
+    return *this;
+  }
+
+  delete[] data;
+
+  data = b.data;
+  size = b.size;
+
+  b.data = null;
+  b.size = 0;
+
+  return *this;
+}
+
+Buffer::Buffer( int initSize ) : data( new char[initSize] ), size( initSize )
 {}
 
-Buffer::Buffer( const char* file ) : data( null ), count( 0 )
+Buffer::Buffer( const char* file ) : data( null ), size( 0 )
 {
   read( file );
 }
 
-void Buffer::alloc( int size )
+void Buffer::alloc( int initSize )
 {
-  hard_assert( count == 0 && size > 0 );
+  hard_assert( size == 0 && initSize > 0 );
 
-  data  = new char[size];
-  count = size;
+  data = new char[initSize];
+  size = initSize;
 }
 
 void Buffer::dealloc()
 {
   delete[] data;
 
-  data  = null;
-  count = 0;
+  data = null;
+  size = 0;
 }
 
 InputStream Buffer::inputStream() const
 {
   hard_assert( data != null );
 
-  return InputStream( data, data + count );
+  return InputStream( data, data + size );
 }
 
 OutputStream Buffer::outputStream() const
 {
   hard_assert( data != null );
 
-  return OutputStream( data, data + count );
+  return OutputStream( data, data + size );
 }
 
 bool Buffer::read( const char* path )
@@ -99,7 +123,7 @@ bool Buffer::read( const char* path )
     return false;
   }
 
-  if( count < int( fileStat.st_size ) ) {
+  if( size < int( fileStat.st_size ) ) {
     dealloc();
     alloc( int( fileStat.st_size ) );
   }
@@ -113,16 +137,16 @@ bool Buffer::read( const char* path )
   return true;
 }
 
-bool Buffer::write( const char* path, int size )
+bool Buffer::write( const char* path, int count )
 {
-  hard_assert( data > 0 );
+  hard_assert( size >= count );
 
   FILE* handle = fopen( path, "wb" );
   if( handle == null ) {
     return false;
   }
 
-  size_t result = fwrite( data, size_t( size ), 1, handle );
+  size_t result = fwrite( data, size_t( count ), 1, handle );
   fclose( handle );
 
   return result == 1;

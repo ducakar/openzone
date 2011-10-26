@@ -34,9 +34,7 @@ class Quat : public Vec4
     /**
      * Create an uninitialised instance.
      */
-    OZ_ALWAYS_INLINE
-    Quat()
-    {}
+    Quat() = default;
 
 #ifdef OZ_SIMD
   protected:

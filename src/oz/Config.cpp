@@ -104,8 +104,8 @@ bool Config::saveConf( const char* file )
   DArray<Elem> sortedVars( size );
 
   int i = 0;
-  foreach( j, vars.citer() ) {
-    sortedVars[i].key = j.key().cstr();
+  for( auto j : vars.citer() ) {
+    sortedVars[i].key   = j.key().cstr();
     sortedVars[i].value = j.value().cstr();
     ++i;
   }
@@ -170,12 +170,12 @@ bool Config::contains( const char* key ) const
 
 bool Config::get( const char* key, bool defVal ) const
 {
-#ifdef OZ_VERBOSE_CONFIG
-  usedVars.include( key );
-#endif
-
   const String* value = vars.find( key );
   if( value != null ) {
+#ifndef NDEBUG
+    usedVars.include( key );
+#endif
+
     if( value->equals( "true" ) ) {
       return true;
     }
@@ -194,12 +194,12 @@ bool Config::get( const char* key, bool defVal ) const
 
 int Config::get( const char* key, int defVal ) const
 {
-#ifdef OZ_VERBOSE_CONFIG
-  usedVars.include( key );
-#endif
-
   const String* value = vars.find( key );
   if( value != null ) {
+#ifndef NDEBUG
+    usedVars.include( key );
+#endif
+
     errno = 0;
     char* end;
     int   num = int( strtol( *value, &end, 0 ) );
@@ -218,12 +218,12 @@ int Config::get( const char* key, int defVal ) const
 
 float Config::get( const char* key, float defVal ) const
 {
-#ifdef OZ_VERBOSE_CONFIG
-  usedVars.include( key );
-#endif
-
   const String* value = vars.find( key );
   if( value != null ) {
+#ifndef NDEBUG
+    usedVars.include( key );
+#endif
+
     errno = 0;
     char* end;
     float num = strtof( *value, &end );
@@ -242,12 +242,12 @@ float Config::get( const char* key, float defVal ) const
 
 const char* Config::get( const char* key, const char* defVal ) const
 {
-#ifdef OZ_VERBOSE_CONFIG
-  usedVars.include( key );
-#endif
-
   const String* value = vars.find( key );
   if( value != null ) {
+#ifndef NDEBUG
+    usedVars.include( key );
+#endif
+
     return *value;
   }
   else {
@@ -257,7 +257,7 @@ const char* Config::get( const char* key, const char* defVal ) const
 
 bool Config::getSet( const char* key, bool defVal )
 {
-#ifdef OZ_VERBOSE_CONFIG
+#ifndef NDEBUG
   usedVars.include( key );
 #endif
 
@@ -282,7 +282,7 @@ bool Config::getSet( const char* key, bool defVal )
 
 int Config::getSet( const char* key, int defVal )
 {
-#ifdef OZ_VERBOSE_CONFIG
+#ifndef NDEBUG
   usedVars.include( key );
 #endif
 
@@ -307,7 +307,7 @@ int Config::getSet( const char* key, int defVal )
 
 float Config::getSet( const char* key, float defVal )
 {
-#ifdef OZ_VERBOSE_CONFIG
+#ifndef NDEBUG
   usedVars.include( key );
 #endif
 
@@ -332,7 +332,7 @@ float Config::getSet( const char* key, float defVal )
 
 const char* Config::getSet( const char* key, const char* defVal )
 {
-#ifdef OZ_VERBOSE_CONFIG
+#ifndef NDEBUG
   usedVars.include( key );
 #endif
 
@@ -376,8 +376,8 @@ bool Config::save( const char* file )
 
 void Config::clear()
 {
-#ifdef OZ_VERBOSE_CONFIG
-  foreach( var, vars.citer() ) {
+#ifndef NDEBUG
+  for( auto var : vars.citer() ) {
     if( !usedVars.contains( var.key() ) ) {
       log.println( "config: unused variable '%s'", var.key().cstr() );
     }
@@ -398,7 +398,7 @@ String Config::toString( const String& indentString )
   DArray<Elem> sortedVars( size );
 
   int i = 0;
-  foreach( j, vars.citer() ) {
+  for( auto j : vars.citer() ) {
     sortedVars[i].key = j.key().cstr();
     sortedVars[i].value = j.value().cstr();
     ++i;

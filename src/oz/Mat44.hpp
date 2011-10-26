@@ -39,9 +39,7 @@ class Mat44
     /**
      * Create an uninitialised instance.
      */
-    OZ_ALWAYS_INLINE
-    Mat44()
-    {}
+    Mat44() = default;
 
     /**
      * Create matrix with the given columns.

@@ -22,6 +22,52 @@ namespace oz
 {
 
 /**
+ * @def OZ_RANGE_ITERATOR
+ * Define iterator wrapper for range-for loop.
+ *
+ * Note that in contrast with STL iterators, <tt>RangeIterator</tt> evaluates to the iterator that
+ * points to the current element rather than the current element itself. That means the roughly
+ * equivalent for STL code
+ * <pre>
+ * std\::vector\<int\> v;
+ * for( auto i : v ) {
+ *   printf( "%d\n", i );
+ * }
+ * </pre>
+ * is the following code
+ * <pre>
+ * Vector\<int\> v;
+ * for( auto i : v.citer() ) {
+ *   printf( "%d\n", *i );
+ * }
+ * </pre>
+ * It's a little more code, but we don't loose access to the original iterator, which can be very
+ * useful when handling with <tt>Map</tt>, <tt>HashIndex</tt> and <tt>HashString</tt>
+ * to access the current element's value. Furthermore, one also explicitly specifies whether access
+ * to the container elements is constant or non-constant.
+ *
+ * @ingroup oz
+ */
+#define OZ_RANGE_ITERATOR( Iterator ) \
+  public: \
+    class RangeIterator \
+    { \
+      friend RangeIterator begin<Iterator>( Iterator& iter ); \
+      friend RangeIterator end<Iterator>( Iterator& iter ); \
+      private: \
+        Iterator& iter; \
+        OZ_ALWAYS_INLINE \
+        explicit RangeIterator( Iterator& iter_ ) : iter( iter_ ) {} \
+      public: \
+        OZ_ALWAYS_INLINE \
+        bool operator != ( const RangeIterator& ) const { return iter.isValid(); } \
+        OZ_ALWAYS_INLINE \
+        Iterator& operator * () { return iter; } \
+        OZ_ALWAYS_INLINE \
+        RangeIterator& operator ++ () { ++iter; return *this; } \
+    };
+
+/**
  * Base class for iterators with constant access to container elements.
  *
  * It should only be used as a base class. Following functions need to be implemented:
@@ -89,15 +135,11 @@ class CIteratorBase
       return elem;
     }
 
-  private:
-
     /**
-     * Advance to the next element.
-     *
-     * Should be implemented in derived classes.
+     * Advance to the next element, should be implemented in derived classes.
      */
     OZ_ALWAYS_INLINE
-    CIteratorBase& operator ++ ();
+    CIteratorBase& operator ++ () = delete;
 
 };
 
@@ -202,17 +244,37 @@ class IteratorBase
       return elem;
     }
 
-  private:
-
     /**
-     * Advance to the next element.
-     *
-     * Should be implemented in derived classes.
+     * Advance to the next element, should be implemented in derived classes.
      */
     OZ_ALWAYS_INLINE
-    IteratorBase& operator ++ ();
+    IteratorBase& operator ++ () = delete;
 
 };
+
+/**
+ * <tt>begin()</tt> template for range-for.
+ *
+ * @ingroup oz
+ */
+template <class Iterator>
+OZ_ALWAYS_INLINE
+typename Iterator::RangeIterator begin( Iterator& iter )
+{
+  return typename Iterator::RangeIterator( iter );
+}
+
+/**
+ * <tt>end()</tt> template for range-for.
+ *
+ * @ingroup oz
+ */
+template <class Iterator>
+OZ_ALWAYS_INLINE
+typename Iterator::RangeIterator end( Iterator& iter )
+{
+  return typename Iterator::RangeIterator( iter );
+}
 
 /**
  * @def foreach
@@ -233,10 +295,12 @@ class IteratorBase
  * }
  * </pre>
  *
+ * FIXME Remove and replace with standard range-for when KDevelop gets better type deduction.
+ *
  * @ingroup oz
  */
 # define foreach( i, iterator ) \
-  for( auto i = iterator; i.isValid(); ++i )
+  for( decltype( iterator ) i = iterator; i.isValid(); ++i )
 
 /**
  * Copy elements.
@@ -252,6 +316,27 @@ inline void iCopy( IteratorA iDest, CIteratorB iSrc )
     hard_assert( iSrc.isValid() );
 
     *iDest = *iSrc;
+    ++iDest;
+    ++iSrc;
+  }
+}
+
+/**
+ * Move elements.
+ *
+ * @ingroup oz
+ */
+template <class IteratorA, class IteratorB>
+inline void iMove( IteratorA iDest, IteratorB iSrc )
+{
+  hard_assert( !iDest.isValid() || iDest != iSrc );
+
+  typedef typename IteratorB::ElemType ElemB;
+
+  while( iDest.isValid() ) {
+    hard_assert( iSrc.isValid() );
+
+    *iDest = static_cast<ElemB&&>( *iSrc );
     ++iDest;
     ++iSrc;
   }

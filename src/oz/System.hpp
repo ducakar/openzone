@@ -51,14 +51,12 @@ class System
      */
     static void signalHandler( int signum );
 
-  private:
+  public:
 
     /**
      * Singleton.
      */
-    System();
-
-  public:
+    System() = delete;
 
     /**
      * Enable halt on crash.

@@ -85,6 +85,26 @@ class String
     }
 
     /**
+     * Move constructor.
+     */
+    String( String&& s ) : count( s.count )
+    {
+      if( s.buffer != s.baseBuffer ) {
+        buffer = s.buffer;
+
+        s.buffer = s.baseBuffer;
+        s.count = 0;
+        s.baseBuffer[0] = '\0';
+      }
+      else {
+        buffer = baseBuffer;
+        aCopy( baseBuffer, s.baseBuffer, count + 1 );
+      }
+
+      hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+    }
+
+    /**
      * Copy operator.
      *
      * Reuse existing storage only if the size matches.
@@ -101,8 +121,42 @@ class String
       if( buffer != baseBuffer ) {
         delete[] buffer;
       }
+
       ensureCapacity();
       aCopy( buffer, s.buffer, count + 1 );
+
+      hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+
+      return *this;
+    }
+
+    /**
+     * Move operator.
+     */
+    String& operator = ( String&& s )
+    {
+      if( &s == this ) {
+        soft_assert( &s != this );
+        return *this;
+      }
+
+      count = s.count;
+
+      if( buffer != baseBuffer ) {
+        delete[] buffer;
+      }
+
+      if( s.buffer != s.baseBuffer ) {
+        buffer = s.buffer;
+
+        s.buffer = s.baseBuffer;
+        s.count = 0;
+        s.baseBuffer[0] = '\0';
+      }
+      else {
+        buffer = baseBuffer;
+        aCopy( baseBuffer, s.baseBuffer, count + 1 );
+      }
 
       hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
 
@@ -686,10 +740,8 @@ class String
     /**
      * Returns array of substrings between occurrences of the given character token.
      */
-    void split( char ch, DArray<String>* array ) const
+    DArray<String> split( char ch ) const
     {
-      hard_assert( array != null && array->isEmpty() );
-
       int p0    = 0;
       int p1    = index( ch );
       int i     = 0;
@@ -702,18 +754,20 @@ class String
         ++count;
       }
 
-      array->alloc( count );
+      DArray<String> array( count );
 
       p0 = 0;
       p1 = index( ch );
 
       while( p1 >= 0 ) {
-        ( *array )[i] = substring( p0, p1 );
+        array[i] = substring( p0, p1 );
         p0 = p1 + 1;
         p1 = index( ch, p0 );
         ++i;
       }
-      ( *array )[i] = substring( p0 );
+      array[i] = substring( p0 );
+
+      return array;
     }
 
     /**

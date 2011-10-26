@@ -60,6 +60,8 @@ class List
     {
       friend class List;
 
+      OZ_RANGE_ITERATOR( CIterator )
+
       private:
 
         /// Base class type, convenience definition to make code cleaner.
@@ -101,6 +103,8 @@ class List
     class Iterator : public IteratorBase<Elem>
     {
       friend class List;
+
+      OZ_RANGE_ITERATOR( Iterator )
 
       private:
 
@@ -284,14 +288,14 @@ class List
      */
     const Elem* before( const Elem* e ) const
     {
-      Elem* elem = firstElem;
-      Elem* beforeElem = null;
+      Elem* current = firstElem;
+      Elem* before = null;
 
-      while( last != e ) {
-        beforeElem = elem;
-        elem = elem->next[INDEX];
+      while( current != e ) {
+        before = current;
+        current = current->next[INDEX];
       }
-      return beforeElem;
+      return before;
     }
 
     /**
@@ -299,14 +303,14 @@ class List
      */
     Elem* before( const Elem* e )
     {
-      Elem* elem = firstElem;
-      Elem* beforeElem = null;
+      Elem* current = firstElem;
+      Elem* before = null;
 
-      while( last != e ) {
-        beforeElem = elem;
-        elem = elem->next[INDEX];
+      while( current != e ) {
+        before = current;
+        current = current->next[INDEX];
       }
-      return beforeElem;
+      return before;
     }
 
     /**

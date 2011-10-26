@@ -305,13 +305,13 @@ struct Simd
  *
  * @ingroup oz
  */
-template <typename Type>
+template <typename Value>
 OZ_ALWAYS_INLINE
-inline void swap( Type& a, Type& b )
+inline void swap( Value& a, Value& b )
 {
-  Type t = a;
-  a = b;
-  b = t;
+  Value t = static_cast<Value&&>( a );
+  a = static_cast<Value&&>( b );
+  b = static_cast<Value&&>( t );
 }
 
 /**
@@ -321,9 +321,9 @@ inline void swap( Type& a, Type& b )
  *
  * @ingroup oz
  */
-template <typename Type>
+template <typename Value>
 OZ_ALWAYS_INLINE
-inline const Type& min( const Type& a, const Type& b )
+inline constexpr const Value& min( const Value& a, const Value& b )
 {
   return b < a ? b : a;
 }
@@ -335,9 +335,9 @@ inline const Type& min( const Type& a, const Type& b )
  *
  * @ingroup oz
  */
-template <typename Type>
+template <typename Value>
 OZ_ALWAYS_INLINE
-inline const Type& max( const Type& a, const Type& b )
+inline constexpr const Value& max( const Value& a, const Value& b )
 {
   return a < b ? b : a;
 }
@@ -349,9 +349,9 @@ inline const Type& max( const Type& a, const Type& b )
  *
  * @ingroup oz
  */
-template <typename Type>
+template <typename Value>
 OZ_ALWAYS_INLINE
-inline const Type& clamp( const Type& c, const Type& a, const Type& b )
+inline constexpr const Value& clamp( const Value& c, const Value& a, const Value& b )
 {
   return c < a ? a : ( b < c ? b : c );
 }
