@@ -13,18 +13,16 @@
 
 #include <SDL/SDL_main.h>
 
-using namespace oz;
-
-bool Alloc::isLocked = true;
+bool oz::Alloc::isLocked = true;
 
 int main( int argc, char** argv )
 {
-  System::catchSignals();
+  oz::System::catchSignals();
 #ifndef NDEBUG
-  System::enableHalt( true );
+  oz::System::enableHalt( true );
 #endif
 
-  Alloc::isLocked = false;
+  oz::Alloc::isLocked = false;
 
   int exitCode = 0;
 
@@ -34,15 +32,15 @@ int main( int argc, char** argv )
       "under certain conditions; See COPYING file for details.\n\n" );
 
   try {
-    exitCode = client::client.main( argc, argv );
+    exitCode = oz::client::client.main( argc, argv );
   }
-  catch( const Exception& e ) {
-    log.resetIndent();
-    log.println();
-    log.printException( e );
-    log.println();
+  catch( const oz::Exception& e ) {
+    oz::log.resetIndent();
+    oz::log.println();
+    oz::log.printException( e );
+    oz::log.println();
 
-    if( log.isFile() ) {
+    if( oz::log.isFile() ) {
       fprintf( stderr, "\nEXCEPTION: %s\n", e.what() );
       fprintf( stderr, "  in %s\n\n", e.function );
       fprintf( stderr, "  at %s:%d\n\n", e.file, e.line );
@@ -51,20 +49,20 @@ int main( int argc, char** argv )
     exitCode = -1;
   }
   catch( const std::exception& e ) {
-    log.resetIndent();
-    log.println();
-    log.println();
-    log.println( "EXCEPTION: %s", e.what() );
-    log.println();
+    oz::log.resetIndent();
+    oz::log.println();
+    oz::log.println();
+    oz::log.println( "EXCEPTION: %s", e.what() );
+    oz::log.println();
 
-    if( log.isFile() ) {
+    if( oz::log.isFile() ) {
       fprintf( stderr, "\nEXCEPTION: %s\n\n", e.what() );
     }
 
     exitCode = -1;
   }
 
-  client::client.shutdown();
+  oz::client::client.shutdown();
 
 //   Alloc::isLocked = true;
 //   Alloc::printLeaks();

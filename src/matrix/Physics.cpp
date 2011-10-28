@@ -22,8 +22,9 @@ namespace oz
   const float Physics::HIT_THRESHOLD          = -3.0f;
   const float Physics::SPLASH_THRESHOLD       = -2.0f;
   const float Physics::FLOOR_NORMAL_Z         =  0.60f;
-  const float Physics::G_ACCEL                = -9.81f;
+  const float Physics::SIDE_PUSH_RATIO        =  0.5f;
   const float Physics::WEIGHT_FACTOR          =  0.1f;
+  const float Physics::G_ACCEL                = -9.81f;
 
   const float Physics::STICK_VELOCITY         =  0.015f;
   const float Physics::SLICK_STICK_VELOCITY   =  0.001f;
@@ -220,6 +221,7 @@ namespace oz
       }
 
       if( hit.normal.z == 0.0f ) {
+        float momProj     =       momentum.x * hit.normal.x +       momentum.y * hit.normal.y;
         float dynMomProj  =  dyn->momentum.x * hit.normal.x +  dyn->momentum.y * hit.normal.y;
         float sDynMomProj = sDyn->momentum.x * hit.normal.x + sDyn->momentum.y * hit.normal.y;
         float sDynVelProj = sDyn->velocity.x * hit.normal.x + sDyn->velocity.y * hit.normal.y;
@@ -230,17 +232,22 @@ namespace oz
         sDyn->flags &= ~Object::DISABLED_BIT;
 
         if( dyn->flags & Object::PUSHER_BIT ) {
-          // OK, since sDyn->momentum is (almost) always smaller by absolute value
-          sDyn->momentum.x = momentum.x;
-          sDyn->momentum.y = momentum.y;
+          float pushX       = momentum.x - sDyn->momentum.x;
+          float pushY       = momentum.y - sDyn->momentum.y;
+          float directPushX = ( momProj - sDynMomProj ) * hit.normal.x;
+          float directPushY = ( momProj - sDynMomProj ) * hit.normal.y;
 
-          if( dyn->flags & sDyn->flags & Object::IN_WATER_BIT ) {
-            sDyn->momentum.z = momentum.z;
+          sDyn->momentum.x += directPushX + SIDE_PUSH_RATIO * ( pushX - directPushX );
+          sDyn->momentum.y += directPushY + SIDE_PUSH_RATIO * ( pushY - directPushY );
+
+          // allow side-pushing downwards in water
+          if( ( dyn->flags & sDyn->flags & Object::IN_WATER_BIT ) && momentum.z < 0.0f ) {
+            sDyn->momentum.z += SIDE_PUSH_RATIO * ( momentum.z - sDyn->momentum.z );
           }
         }
         else {
-          sDyn->momentum.x += ( dynMomProj - sDynMomProj ) * hit.normal.x;
-          sDyn->momentum.y += ( dynMomProj - sDynMomProj ) * hit.normal.y;
+          sDyn->momentum.x += ( momProj - sDynMomProj ) * hit.normal.x;
+          sDyn->momentum.y += ( momProj - sDynMomProj ) * hit.normal.y;
         }
       }
       else if( hit.normal.z == -1.0f ) {

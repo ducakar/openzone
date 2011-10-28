@@ -37,7 +37,7 @@ class Pair
     Pair() = default;
 
     /**
-     * Create a pair with given members.
+     * Create a pair of given values.
      */
     template <typename ValueX_, typename ValueY_>
     OZ_ALWAYS_INLINE

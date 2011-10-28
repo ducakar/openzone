@@ -6,10 +6,8 @@ add_library( oz STATIC
 )
 
 if( OZ_INSTALL_LIBOZ )
-  install( FILES
-    \${CMAKE_BINARY_DIR}/src/oz/ozconfig.hpp
-`LC_COLLATE=C ls *.{hpp,cpp} | xargs printf '    %s\n'`
-    DESTINATION include/oz )
+  install( FILES \${CMAKE_BINARY_DIR}/src/oz/ozconfig.hpp DESTINATION include/oz )
+  install( DIRECTORY . FILES_MATCHING PATTERN "*.hpp" DESTINATION include/oz )
   install( TARGETS oz DESTINATION lib )
 endif()
 EOF

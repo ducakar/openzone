@@ -584,9 +584,19 @@ class HashString
     template <typename Value_ = Value>
     Value* add( const char* key, Value_&& value = Value() )
     {
-      hard_assert( !contains( key ) );
+      uint  i = uint( String::hash( key ) ) % uint( SIZE );
+      Elem* p = data[i];
 
-      uint i  = uint( String::hash( key ) ) % uint( SIZE );
+      while( p != null ) {
+        if( p->key.equals( key ) ) {
+          p->value = static_cast<Value_&&>( value );
+          return &p->value;
+        }
+        else {
+          p = p->next;
+        }
+      }
+
       data[i] = new( pool ) Elem( key, static_cast<Value_&&>( value ), data[i] );
       ++count;
 

@@ -47,8 +47,7 @@ class File
     /**
      * Create an uninitialised instance.
      */
-    File()
-    {}
+    File() = default;
 
     /**
      * Create instance for the given path.

@@ -83,10 +83,10 @@ namespace oz
       // if a the object has a device in nirvana
       static const int DEVICE_BIT         = 0x00080000;
 
-      // if the object has a model object in frontend
-      static const int MODEL_BIT          = 0x00040000;
+      // if the object has an Imago object in frontend
+      static const int IMAGO_BIT          = 0x00040000;
 
-      // if the object has an audio object in frontend
+      // if the object has an Audio object in frontend
       static const int AUDIO_BIT          = 0x00020000;
 
       /*
@@ -194,8 +194,8 @@ namespace oz
 
         static Pool<Event, 4096> pool;
 
-        // exactly events with negative IDs are ignored by BasicAudio, so if ID is nonzero we don't
-        // want to use this ctor as we need to set the intensity
+        // exactly events with negative IDs are ignored by BasicAudio, so if ID is nonnegative we
+        // don't want to use this ctor as we need to set the intensity
         explicit Event( int id_ ) : id( id_ )
         {
           hard_assert( id < 0 );
@@ -215,11 +215,11 @@ namespace oz
        * FIELDS
        */
 
-      Object*            prev[1];     // the previous object in cell.objects and list
-      Object*            next[1];     // the next object in cell.objects and list
+      Object*            prev[1];    // the previous object in cell.objects and list
+      Object*            next[1];    // the next object in cell.objects and list
 
-      Cell*              cell;        // parent cell, null if not positioned in the world
-      int                index;       // position in world.objects vector
+      Cell*              cell;       // parent cell, null if not positioned in the world
+      int                index;      // position in world.objects vector
 
       int                flags;
       int                oldFlags;
@@ -235,18 +235,14 @@ namespace oz
       // inventory of an object
       Vector<int>        items;
 
-    private:
-
-      // no copying
-      Object( const Object& );
-      Object& operator = ( const Object& );
-
-    public:
-
       Object() : cell( null ), index( -1 )
       {}
 
       virtual ~Object();
+
+      // no copying
+      Object( const Object& ) = delete;
+      Object& operator = ( const Object& ) = delete;
 
       /**
        * Add an event to the object. Events can be used for reporting collisions, sounds etc.

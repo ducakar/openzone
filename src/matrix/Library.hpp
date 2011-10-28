@@ -54,8 +54,7 @@ namespace oz
         String name;
         String path;
 
-        Resource()
-        {}
+        Resource() = default;
 
         explicit Resource( const String& name, const String& path );
       };
@@ -89,8 +88,8 @@ namespace oz
       Bitset usedTextures;
 #endif
 
-      HashString<const ObjectClass::InitFunc, 8> baseClasses;
-      HashString<const ObjectClass*, 128> classes;
+      HashString<ObjectClass::InitFunc, 8> baseClasses;
+      HashString<ObjectClass*, 128> classes;
 
       int textureIndex( const char* name ) const;
       int soundIndex( const char* name ) const;

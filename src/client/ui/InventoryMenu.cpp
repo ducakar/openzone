@@ -216,7 +216,7 @@ namespace ui
         taggedItem = item;
       }
 
-      context.drawModel( item, null, Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
+      context.drawImago( item, null, Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
 
       if( i == tagged ) {
         shader.colour = Colours::WHITE;

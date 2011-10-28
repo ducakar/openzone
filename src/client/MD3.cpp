@@ -34,7 +34,7 @@ namespace client
   void MD3::load()
   {}
 
-  void MD3::drawFrame( int frame ) const
+  void MD3::drawFrame( int ) const
   {}
 
 #else
@@ -112,14 +112,14 @@ namespace client
     nTags = header.nTags;
 
     if( header.nTags != 0 ) {
-      DArray<MD3Tag> tags( header.nFrames * header.nTags );
+      tags.alloc( header.nFrames * header.nTags );
 
       fseek( file, header.offTags, SEEK_SET );
       fread( tags, sizeof( MD3Tag ), size_t( tags.length() ), file );
 
       if( String::equals( name, "lower" ) ) {
         if( header.nTags != 1 ) {
-          throw Exception( "lower.md3 should only have one tag define (tag_torso)" );
+          throw Exception( "lower.md3 should only have one tag defined (tag_torso)" );
         }
 
         for( int i = 0; i < header.nFrames; ++i ) {
@@ -240,9 +240,8 @@ namespace client
     Config config;
     config.load( configFile );
 
-    int    frame      = config.get( "frame", -1 );
+    int    frame      = config.get( "frame", 153 );
     // FIXME
-    frame = 153;
     String shaderName = config.get( "shader", frame == -1 ? "md3" : "mesh" );
 
     scale             = config.get( "scale", 0.04f );
@@ -265,8 +264,6 @@ namespace client
     weaponTransf.rotateY( Math::rad( weaponRot.y ) );
 
     const char* model = config.get( "model", "" );
-
-
 
     Buffer buffer( 16 * 1024 * 1024 );
     OutputStream ostream = buffer.outputStream();

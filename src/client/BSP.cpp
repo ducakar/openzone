@@ -332,6 +332,7 @@ namespace client
 
     // to disable warnings
     bspConfig.get( "life", 0.0f );
+    bspConfig.get( "resistance", 0.0f );
 
     modelSamples.alloc( nModels );
     if( nModels != 1 ) {

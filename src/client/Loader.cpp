@@ -35,37 +35,37 @@ namespace client
   {
     OZ_GL_CHECK_ERROR();
 
-    // delete models of removed objects
-    for( auto i = context.models.citer(); i.isValid(); ) {
-      auto model = i;
+    // delete imagines of removed objects
+    for( auto i = context.imagines.citer(); i.isValid(); ) {
+      auto imago = i;
       ++i;
 
       // We can afford to do this as orbis.objects[key] will remain null at least one whole tick
       // after the object has been removed (because matrix also needs to clear references to this
       // object).
-      if( orbis.objects[ model.key() ] == null ) {
-        delete model.value();
-        context.models.exclude( model.key() );
+      if( orbis.objects[ imago.key() ] == null ) {
+        delete imago.value();
+        context.imagines.exclude( imago.key() );
       }
     }
 
-    if( tick % MODEL_CLEAR_INTERVAL == MODEL_CLEAR_LAG ) {
+    if( tick % IMAGO_CLEAR_INTERVAL == IMAGO_CLEAR_LAG ) {
       // remove unused models
-      for( auto i = context.models.citer(); i.isValid(); ) {
-        auto model = i;
+      for( auto i = context.imagines.citer(); i.isValid(); ) {
+        auto imago = i;
         ++i;
 
-        if( model.value()->flags & Model::UPDATED_BIT ) {
-          model.value()->flags &= ~Model::UPDATED_BIT;
+        if( imago.value()->flags & Imago::UPDATED_BIT ) {
+          imago.value()->flags &= ~Imago::UPDATED_BIT;
         }
         else {
-          delete model.value();
-          context.models.exclude( model.key() );
+          delete imago.value();
+          context.imagines.exclude( imago.key() );
         }
       }
     }
 
-    if( tick % MODELCLASS_CLEAR_INTERVAL == MODELCLASS_CLEAR_LAG ) {
+    if( tick % IMAGOCLASS_CLEAR_INTERVAL == IMAGOCLASS_CLEAR_LAG ) {
       for( int i = 0; i < library.models.length(); ++i ) {
         Context::Resource<SMM*>& smm = context.smms[i];
         Context::Resource<MD2*>& md2 = context.md2s[i];
@@ -108,7 +108,7 @@ namespace client
   {
     OZ_AL_CHECK_ERROR();
 
-    // remove audio models of removed objects
+    // remove sones of removed objects
     for( auto i = context.audios.citer(); i.isValid(); ) {
       auto audio = i;
       ++i;
@@ -122,7 +122,7 @@ namespace client
       }
     }
 
-    // remove continous sounds that are not played any more
+    // remove continuous sounds that are not played any more
     for( auto i = context.bspSources.iter(); i.isValid(); ) {
       auto src = i;
       ++i;

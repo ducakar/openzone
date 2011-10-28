@@ -566,9 +566,19 @@ class HashIndex
     template <typename Value_ = Value>
     Value* add( int key, Value_&& value = Value() )
     {
-      hard_assert( !contains( key ) );
+      uint  i = uint( key ) % uint( SIZE );
+      Elem* p = data[i];
 
-      uint i  = uint( key ) % uint( SIZE );
+      while( p != null ) {
+        if( p->key == key ) {
+          p->value = static_cast<Value_&&>( value );
+          return &p->value;
+        }
+        else {
+          p = p->next;
+        }
+      }
+
       data[i] = new( pool ) Elem( key, static_cast<Value_&&>( value ), data[i] );
       ++count;
 
@@ -585,8 +595,6 @@ class HashIndex
     template <typename Value_ = Value>
     Value* include( int key, Value_&& value = Value() )
     {
-      hard_assert( !contains( key ) );
-
       uint  i = uint( key ) % uint( SIZE );
       Elem* p = data[i];
 

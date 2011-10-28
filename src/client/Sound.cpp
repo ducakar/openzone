@@ -14,9 +14,6 @@
 #include "matrix/Collider.hpp"
 #include "client/Camera.hpp"
 
-#include "client/BasicAudio.hpp"
-#include "client/BotAudio.hpp"
-
 #include "client/OpenAL.hpp"
 
 namespace oz
@@ -348,7 +345,7 @@ namespace client
 
     alSourcei( musicSource, AL_SOURCE_RELATIVE, AL_TRUE );
 
-    setVolume( config.getSet( "sound.volume", 1.0f ) );
+    setVolume( config.getSet( "sound.volume", 0.5f ) );
     setMusicVolume( config.getSet( "sound.volume.music", 0.5f ) );
 
     log.unindent();

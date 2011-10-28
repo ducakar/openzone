@@ -159,19 +159,19 @@ namespace oz
     }
 
     /*
-     * model
+     * imago
      */
 
-    modelType = config->get( "modelType", "" );
+    imagoType = config->get( "imagoType", "" );
 
-    if( !modelType.isEmpty() ) {
-      flags |= Object::MODEL_BIT;
+    if( !imagoType.isEmpty() ) {
+      flags |= Object::IMAGO_BIT;
 
-      const char* modelName = config->get( "modelName", "" );
-      modelIndex = modelName[0] == '\0' ? -1 : library.modelIndex( modelName );
+      const char* modelName = config->get( "imagoModel", "" );
+      imagoModel = modelName[0] == '\0' ? -1 : library.modelIndex( modelName );
     }
     else {
-      modelIndex = -1;
+      imagoModel = -1;
     }
 
     /*

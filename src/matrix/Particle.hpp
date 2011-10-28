@@ -54,13 +54,9 @@ namespace oz
       Particle() : cell( null ), index( -1 )
       {}
 
-    private:
-
       // no copying
-      Particle( const Particle& );
-      Particle& operator = ( const Particle& );
-
-    public:
+      Particle( const Particle& ) = delete;
+      Particle& operator = ( const Particle& ) = delete;
 
       explicit Particle( int index, const Point3& p, const Vec3& velocity, const Vec3& colour,
                          float restitution, float mass, float lifeTime );

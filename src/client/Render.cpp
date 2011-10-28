@@ -23,11 +23,11 @@
 #include "client/Terra.hpp"
 #include "client/BSP.hpp"
 
-#include "client/SMMModel.hpp"
-#include "client/SMMVehicleModel.hpp"
-#include "client/ExplosionModel.hpp"
-#include "client/MD2Model.hpp"
-#include "client/MD2WeaponModel.hpp"
+#include "client/SMMImago.hpp"
+#include "client/SMMVehicleImago.hpp"
+#include "client/ExplosionImago.hpp"
+#include "client/MD2Imago.hpp"
+#include "client/MD2WeaponImago.hpp"
 
 #include "client/OpenGL.hpp"
 
@@ -225,7 +225,7 @@ namespace client
 
       tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
 
-      context.drawModel( obj, null, Mesh::SOLID_BIT );
+      context.drawImago( obj, null, Mesh::SOLID_BIT );
 
       if( obj->index == camera.tagged && camera.state != Camera::STRATEGIC ) {
         shader.colour = Colours::WHITE;
@@ -243,7 +243,7 @@ namespace client
 
       tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
 
-      context.drawModel( obj, null, Mesh::ALPHA_BIT );
+      context.drawImago( obj, null, Mesh::ALPHA_BIT );
 
       if( obj->index == camera.tagged && camera.state != Camera::STRATEGIC ) {
         shader.colour = Colours::WHITE;
@@ -525,21 +525,24 @@ namespace client
     int  screenX      = config.get( "screen.width", 0 );
     int  screenY      = config.get( "screen.height", 0 );
     int  screenBpp    = config.get( "screen.bpp", 0 );
+    bool hasBorder    = config.get( "screen.border", true );
     bool isFullscreen = config.getSet( "screen.full", true );
 
     log.print( "Creating OpenGL window %dx%d-%d %s ...",
                screenX, screenY, screenBpp, isFullscreen ? "fullscreen" : "windowed" );
 
     if( ( screenX != 0 || screenY != 0 || screenBpp != 0 ) &&
-        SDL_VideoModeOK( screenX, screenY, screenBpp,
-                         SDL_OPENGL | ( isFullscreen ? SDL_FULLSCREEN : 0 ) ) == 0 )
+        SDL_VideoModeOK( screenX, screenY, screenBpp, SDL_OPENGL |
+                         ( hasBorder ? 0 : SDL_NOFRAME ) |
+                         ( isFullscreen ? SDL_FULLSCREEN : 0 ) ) == 0 )
     {
       log.printEnd( " Mode not supported" );
       throw Exception( "Video mode not supported" );
     }
 
-    surface = SDL_SetVideoMode( screenX, screenY, screenBpp,
-                                SDL_OPENGL | ( isFullscreen ? SDL_FULLSCREEN : 0 ) );
+    surface = SDL_SetVideoMode( screenX, screenY, screenBpp, SDL_OPENGL |
+                                ( hasBorder ? 0 : SDL_NOFRAME ) |
+                                ( isFullscreen ? SDL_FULLSCREEN : 0 ) );
 
     if( surface == null ) {
       log.printEnd( " Failed" );

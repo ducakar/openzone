@@ -14,7 +14,6 @@
 #include "matrix/Span.hpp"
 #include "matrix/Bounds.hpp"
 #include "matrix/AABB.hpp"
-#include "matrix/Sphere.hpp"
 
 #define OZ_LUA_API( func ) \
   static LuaAPI func

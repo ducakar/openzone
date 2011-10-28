@@ -62,8 +62,8 @@ namespace oz
 
       String deviceType;
 
-      String modelType;
-      int    modelIndex;
+      String imagoType;
+      int    imagoModel;
 
       String audioType;
       int    audioSamples[AUDIO_SAMPLES];

@@ -18,7 +18,7 @@
 #include "client/BSP.hpp"
 #include "client/Terra.hpp"
 #include "client/MD2.hpp"
-#include "client/Model.hpp"
+#include "client/Imago.hpp"
 #include "client/Context.hpp"
 
 namespace oz
@@ -51,9 +51,7 @@ namespace client
           const Object* obj;
         };
 
-        OZ_ALWAYS_INLINE
-        ObjectEntry()
-        {}
+        ObjectEntry() = default;
 
         OZ_ALWAYS_INLINE
         explicit ObjectEntry( float dist2_, const Struct* str_ ) :

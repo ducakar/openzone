@@ -1,8 +1,6 @@
 /*
  *  AABB.hpp
  *
- *  [description]
- *
  *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
@@ -24,15 +22,11 @@ namespace oz
       static const float MAX_DIM;
       static const float REAL_MAX_DIM;
 
-      /**
-       * Position
-       */
+      /// Position.
       Point3 p;
 
-      /**
-       * Extents
-       */
-      Vec3   dim;
+      /// Extents.
+      Vec3 dim;
 
       AABB() = default;
 

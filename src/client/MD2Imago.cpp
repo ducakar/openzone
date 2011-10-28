@@ -1,5 +1,5 @@
 /*
- *  MD2Model.cpp
+ *  MD2Imago.cpp
  *
  *  [description]
  *
@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "client/MD2Model.hpp"
+#include "client/MD2Imago.hpp"
 
 #include "matrix/BotClass.hpp"
 
@@ -24,36 +24,36 @@ namespace oz
 namespace client
 {
 
-  const float MD2Model::TURN_SMOOTHING_COEF = 0.60f;
+  const float MD2Imago::TURN_SMOOTHING_COEF = 0.60f;
 
-  Pool<MD2Model> MD2Model::pool;
+  Pool<MD2Imago> MD2Imago::pool;
 
-  Model* MD2Model::create( const Object* obj )
+  Imago* MD2Imago::create( const Object* obj )
   {
     hard_assert( obj->flags & Object::BOT_BIT );
 
     const Bot* bot = static_cast<const Bot*>( obj );
-    MD2Model* model = new MD2Model();
+    MD2Imago* imago = new MD2Imago();
 
-    model->obj   = obj;
-    model->flags = Model::MD2MODEL_BIT;
-    model->clazz = obj->clazz;
-    model->md2   = context.requestMD2( obj->clazz->modelIndex );
-    model->h     = bot->h;
+    imago->obj   = obj;
+    imago->flags = Imago::MD2MODEL_BIT;
+    imago->clazz = obj->clazz;
+    imago->md2   = context.requestMD2( obj->clazz->imagoModel );
+    imago->h     = bot->h;
 
-    model->setAnim( bot->anim );
-    model->anim.nextFrame = model->anim.endFrame;
-    model->anim.currFrame = model->anim.endFrame;
+    imago->setAnim( bot->anim );
+    imago->anim.nextFrame = imago->anim.endFrame;
+    imago->anim.currFrame = imago->anim.endFrame;
 
-    return model;
+    return imago;
   }
 
-  MD2Model::~MD2Model()
+  MD2Imago::~MD2Imago()
   {
-    context.releaseMD2( clazz->modelIndex );
+    context.releaseMD2( clazz->imagoModel );
   }
 
-  void MD2Model::setAnim( Anim::Type type_ )
+  void MD2Imago::setAnim( Anim::Type type_ )
   {
     int type = int( type_ );
 
@@ -83,7 +83,7 @@ namespace client
     }
   }
 
-  void MD2Model::draw( const Model* parent, int mask )
+  void MD2Imago::draw( const Imago* parent, int mask )
   {
     const Bot* bot = static_cast<const Bot*>( obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
@@ -141,7 +141,7 @@ namespace client
         md2->draw( &anim );
 
         if( parent == null && bot->weapon!= -1 && orbis.objects[bot->weapon] != null ) {
-          context.drawModel( orbis.objects[bot->weapon], this, mask );
+          context.drawImago( orbis.objects[bot->weapon], this, mask );
         }
       }
       else if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
@@ -150,7 +150,7 @@ namespace client
         tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );
 
         md2->advance( &anim, timer.frameTime );
-        context.drawModel( orbis.objects[bot->weapon], this, mask );
+        context.drawImago( orbis.objects[bot->weapon], this, mask );
       }
     }
   }

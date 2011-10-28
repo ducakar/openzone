@@ -29,7 +29,7 @@
 #include "ozconfig.hpp"
 
 /*
- * The most essential C/C++ definitions (std::nullptr_t, size_t, ptrdiff_t, NULL and offsetof).
+ * The most essential C/C++ definitions (std::nullptr_t, size_t, ptrdiff_t and offsetof).
  */
 #include <cstddef>
 
@@ -39,12 +39,12 @@
 #include <cstdarg>
 
 /*
- * Standard exception definitions (usually included via <new>, but just for sure).
+ * Standard exception definitions (usually included via <new>, but just to be sure).
  */
 #include <exception>
 
 /*
- * Standard new/delete operator.
+ * Standard declarations of new/delete & overloads.
  */
 #include <new>
 
@@ -269,9 +269,7 @@ struct Simd
   /**
    * Create an uninitialised instance.
    */
-  OZ_ALWAYS_INLINE
-  Simd()
-  {}
+  Simd() = default;
 
   /**
    * Create from an int SIMD vector.
@@ -315,9 +313,7 @@ inline void swap( Value& a, Value& b )
 }
 
 /**
- * Minimum.
- *
- * @return a if a <= b, b otherwise.
+ * <tt>a</tt> if <tt>a <= b</tt>, <tt>b</tt> otherwise.
  *
  * @ingroup oz
  */
@@ -329,9 +325,7 @@ inline constexpr const Value& min( const Value& a, const Value& b )
 }
 
 /**
- * Maximum.
- *
- * @return a if a >= b, b otherwise.
+ * <tt>a</tt> if <tt>a >= b</tt>, <tt>b</tt> otherwise.
  *
  * @ingroup oz
  */
@@ -343,9 +337,7 @@ inline constexpr const Value& max( const Value& a, const Value& b )
 }
 
 /**
- * Clamp c between a and b.
- *
- * @return c, if a <= c <= b, respective boundary otherwise.
+ * <tt>c</tt> if <tt>a <= c <= b</tt>, respective boundary otherwise.
  *
  * @ingroup oz
  */

@@ -258,7 +258,7 @@ namespace client
     context.updateLoad();
 #endif
 
-    // clean up unused models, audios and audio sources
+    // clean up unused imagines, sones and sources
     loader.cleanup();
     // load scheduled resources
     loader.update();

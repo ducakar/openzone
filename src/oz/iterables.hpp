@@ -22,52 +22,6 @@ namespace oz
 {
 
 /**
- * @def OZ_RANGE_ITERATOR
- * Define iterator wrapper for range-for loop.
- *
- * Note that in contrast with STL iterators, <tt>RangeIterator</tt> evaluates to the iterator that
- * points to the current element rather than the current element itself. That means the roughly
- * equivalent for STL code
- * <pre>
- * std\::vector\<int\> v;
- * for( auto i : v ) {
- *   printf( "%d\n", i );
- * }
- * </pre>
- * is the following code
- * <pre>
- * Vector\<int\> v;
- * for( auto i : v.citer() ) {
- *   printf( "%d\n", *i );
- * }
- * </pre>
- * It's a little more code, but we don't loose access to the original iterator, which can be very
- * useful when handling with <tt>Map</tt>, <tt>HashIndex</tt> and <tt>HashString</tt>
- * to access the current element's value. Furthermore, one also explicitly specifies whether access
- * to the container elements is constant or non-constant.
- *
- * @ingroup oz
- */
-#define OZ_RANGE_ITERATOR( Iterator ) \
-  public: \
-    class RangeIterator \
-    { \
-      friend RangeIterator begin<Iterator>( Iterator& iter ); \
-      friend RangeIterator end<Iterator>( Iterator& iter ); \
-      private: \
-        Iterator& iter; \
-        OZ_ALWAYS_INLINE \
-        explicit RangeIterator( Iterator& iter_ ) : iter( iter_ ) {} \
-      public: \
-        OZ_ALWAYS_INLINE \
-        bool operator != ( const RangeIterator& ) const { return iter.isValid(); } \
-        OZ_ALWAYS_INLINE \
-        Iterator& operator * () { return iter; } \
-        OZ_ALWAYS_INLINE \
-        RangeIterator& operator ++ () { ++iter; return *this; } \
-    };
-
-/**
  * Base class for iterators with constant access to container elements.
  *
  * It should only be used as a base class. Following functions need to be implemented:
@@ -253,6 +207,52 @@ class IteratorBase
 };
 
 /**
+ * @def OZ_RANGE_ITERATOR
+ * Define wrapper for range-for loop inside an iterator class.
+ *
+ * Note that in contrast with STL iterators, <tt>RangeIterator</tt> evaluates to the iterator that
+ * points to the current element rather than the current element itself. That means that the rough
+ * equivalent for STL code
+ * <pre>
+ * std\::vector\<int\> v;
+ * for( auto i : v ) {
+ *   printf( "%d\n", i );
+ * }
+ * </pre>
+ * is the following code
+ * <pre>
+ * Vector\<int\> v;
+ * for( auto i : v.citer() ) {
+ *   printf( "%d\n", *i );
+ * }
+ * </pre>
+ * It's a little longer, but we don't loose access to the original iterator, which is very useful
+ * with <tt>Map</tt>, <tt>HashIndex</tt> and <tt>HashString</tt> to access the current element's
+ * value. Furthermore, one also explicitly specifies whether access to the container elements is
+ * constant or non-constant.
+ *
+ * @ingroup oz
+ */
+#define OZ_RANGE_ITERATOR( Iterator ) \
+  public: \
+    class RangeIterator \
+    { \
+      friend RangeIterator begin<Iterator>( Iterator& iter ); \
+      friend RangeIterator end<Iterator>( Iterator& iter ); \
+      private: \
+        Iterator& iter; \
+        OZ_ALWAYS_INLINE \
+        explicit RangeIterator( Iterator& iter_ ) : iter( iter_ ) {} \
+      public: \
+        OZ_ALWAYS_INLINE \
+        bool operator != ( const RangeIterator& ) const { return iter.isValid(); } \
+        OZ_ALWAYS_INLINE \
+        Iterator& operator * () { return iter; } \
+        OZ_ALWAYS_INLINE \
+        RangeIterator& operator ++ () { ++iter; return *this; } \
+    };
+
+/**
  * <tt>begin()</tt> template for range-for.
  *
  * @ingroup oz
@@ -280,27 +280,12 @@ typename Iterator::RangeIterator end( Iterator& iter )
  * @def foreach
  * Foreach loop.
  *
- * Foreach macro can be used as in the following example:
- * <pre>
- * Vector\<int\> v;
- * foreach( i, v.citer() ) {
- *   printf( "%d ", *i );
- * }
- * </pre>
- * to replace a longer piece of code, like:
- * <pre>
- * Vector\<int\> v;
- * for( Vector\<int\>\::CIterator i = v.citer(); i.isValid(); ++i )
- *   printf( "%d ", *i );
- * }
- * </pre>
- *
- * FIXME Remove and replace with standard range-for when KDevelop gets better type deduction.
+ * FIXME Remove and replace it with standard range-for when KDevelop gets better type deduction.
  *
  * @ingroup oz
  */
-# define foreach( i, iterator ) \
-  for( decltype( iterator ) i = iterator; i.isValid(); ++i )
+#define foreach( i, iterator ) \
+  for( decltype( iterator ) i : iterator )
 
 /**
  * Copy elements.

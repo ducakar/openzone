@@ -14,9 +14,8 @@
 #include "matrix/Library.hpp"
 
 #include "client/Shader.hpp"
-#include "client/Mesh.hpp"
 #include "client/BSP.hpp"
-#include "client/Model.hpp"
+#include "client/Imago.hpp"
 #include "client/Audio.hpp"
 
 namespace oz
@@ -30,11 +29,11 @@ namespace client
 
   class Context
   {
+    friend class Loader;
+    friend class BSP;
+    friend class Audio;
     friend class Render;
     friend class Sound;
-    friend class Audio;
-    friend class BSP;
-    friend class Loader;
 
     public:
 
@@ -90,8 +89,8 @@ namespace client
         {}
       };
 
-      HashString<const Model::CreateFunc, 16> modelClasses;
-      HashString<const Audio::CreateFunc, 8>  audioClasses;
+      HashString<Imago::CreateFunc, 16> imagoClasses;
+      HashString<Audio::CreateFunc, 8>  audioClasses;
 
       Resource<uint>*                 textures;
       Resource<uint>*                 sounds;
@@ -107,10 +106,10 @@ namespace client
       Resource<MD2*>*                 md2s;
       Resource<MD3*>*                 md3s;
 
-      HashIndex<Model*, 8191>         models;   // currently loaded models
+      HashIndex<Imago*, 8191>         imagines; // currently loaded graphics models
       HashIndex<Audio*, 2039>         audios;   // currently loaded audio models
 
-      int                             maxModels;
+      int                             maxImagines;
       int                             maxAudios;
       int                             maxSources;
       int                             maxBSPSources;
@@ -152,7 +151,7 @@ namespace client
       void drawBSP( const Struct* str, int mask );
       void playBSP( const Struct* str );
 
-      void drawModel( const Object* obj, const Model* parent, int mask );
+      void drawImago( const Object* obj, const Imago* parent, int mask );
       void playAudio( const Object* obj, const Audio* parent );
 
 # ifndef NDEBUG

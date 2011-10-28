@@ -1,25 +1,24 @@
 add_library( client STATIC
-  Audio.cpp
   BSP.cpp
   BasicAudio.cpp
-  BotAudio.cpp
   BotProxy.cpp
+  BotAudio.cpp
   Caelum.cpp
   Camera.cpp
   Client.cpp
   Colours.cpp
   Compiler.cpp
   Context.cpp
-  ExplosionModel.cpp
+  ExplosionImago.cpp
   Frustum.cpp
   GameStage.cpp
   Loader.cpp
   Lua.cpp
   MD2.cpp
-  MD2Model.cpp
-  MD2WeaponModel.cpp
+  MD2Imago.cpp
+  MD2WeaponImago.cpp
   MD3.cpp
-  MD3Model.cpp
+  MD3Imago.cpp
   MenuStage.cpp
   Mesh.cpp
   Module.cpp
@@ -29,10 +28,11 @@ add_library( client STATIC
   OpenGL.cpp
   Render.cpp
   SMM.cpp
-  SMMModel.cpp
-  SMMVehicleModel.cpp
+  SMMImago.cpp
+  SMMVehicleImago.cpp
   Shader.cpp
   Shape.cpp
+  Audio.cpp
   Sound.cpp
   SparkModel.cpp
   Stage.cpp
