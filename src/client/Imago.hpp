@@ -1,5 +1,5 @@
 /*
- *  Model.hpp
+ *  Imago.hpp
  *
  *  [description]
  *
@@ -20,11 +20,11 @@ namespace oz
 namespace client
 {
 
-  class Model
+  class Imago
   {
     public:
 
-      typedef Model* ( * CreateFunc )( const Object* object );
+      typedef Imago* ( * CreateFunc )( const Object* object );
 
       static const int UPDATED_BIT  = 0x00000001;
       static const int MD2MODEL_BIT = 0x00000002;
@@ -32,7 +32,7 @@ namespace client
 
     protected:
 
-      Model() : obj( null ), flags( 0 )
+      Imago() : obj( null ), flags( 0 )
       {}
 
     public:
@@ -42,10 +42,10 @@ namespace client
 
       int flags;
 
-      virtual ~Model()
+      virtual ~Imago()
       {}
 
-      virtual void draw( const Model* parent, int mask ) = 0;
+      virtual void draw( const Imago* parent, int mask ) = 0;
 
   };
 

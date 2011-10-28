@@ -13,7 +13,6 @@
 
 #include "matrix/Orbis.hpp"
 #include "matrix/Library.hpp"
-#include "client/Audio.hpp"
 #include "client/Context.hpp"
 
 #include <AL/alc.h>

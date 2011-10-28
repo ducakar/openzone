@@ -1,5 +1,5 @@
 /*
- *  MD2Model.hpp
+ *  MD2Imago.hpp
  *
  *  [description]
  *
@@ -11,7 +11,7 @@
 
 #include "stable.hpp"
 
-#include "client/Model.hpp"
+#include "client/Imago.hpp"
 #include "client/MD2.hpp"
 
 namespace oz
@@ -19,7 +19,7 @@ namespace oz
 namespace client
 {
 
-  class MD2Model : public Model
+  class MD2Imago : public Imago
   {
     public:
 
@@ -29,23 +29,23 @@ namespace client
       float          h;
       MD2::AnimState anim;
 
-      static Pool<MD2Model> pool;
+      static Pool<MD2Imago> pool;
 
     protected:
 
-      MD2Model()
+      MD2Imago()
       {
-        flags |= Model::MD2MODEL_BIT;
+        flags |= Imago::MD2MODEL_BIT;
       }
 
-      virtual ~MD2Model();
+      virtual ~MD2Imago();
 
     public:
 
-      static Model* create( const Object* obj );
+      static Imago* create( const Object* obj );
 
       void setAnim( Anim::Type anim );
-      virtual void draw( const Model* parent, int mask );
+      virtual void draw( const Imago* parent, int mask );
 
     OZ_STATIC_POOL_ALLOC( pool )
 

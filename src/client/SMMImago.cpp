@@ -1,5 +1,5 @@
 /*
- *  OBJModel.cpp
+ *  OBJImago.cpp
  *
  *  [description]
  *
@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "client/SMMModel.hpp"
+#include "client/SMMImago.hpp"
 
 #include "client/Context.hpp"
 
@@ -18,25 +18,25 @@ namespace oz
 namespace client
 {
 
-  Pool<SMMModel, 1024> SMMModel::pool;
+  Pool<SMMImago, 1024> SMMImago::pool;
 
-  Model* SMMModel::create( const Object* obj )
+  Imago* SMMImago::create( const Object* obj )
   {
-    SMMModel* model = new SMMModel();
+    SMMImago* imago = new SMMImago();
 
-    model->obj   = obj;
-    model->clazz = obj->clazz;
-    model->smm   = context.requestSMM( obj->clazz->modelIndex );
+    imago->obj   = obj;
+    imago->clazz = obj->clazz;
+    imago->smm   = context.requestSMM( obj->clazz->imagoModel );
 
-    return model;
+    return imago;
   }
 
-  SMMModel::~SMMModel()
+  SMMImago::~SMMImago()
   {
-    context.releaseSMM( clazz->modelIndex );
+    context.releaseSMM( clazz->imagoModel );
   }
 
-  void SMMModel::draw( const Model*, int mask )
+  void SMMImago::draw( const Imago*, int mask )
   {
     if( !smm->isLoaded ) {
       return;

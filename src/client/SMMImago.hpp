@@ -1,5 +1,5 @@
 /*
- *  SMMModel.hpp
+ *  SMMImago.hpp
  *
  *  [description]
  *
@@ -11,7 +11,7 @@
 
 #include "stable.hpp"
 
-#include "client/Model.hpp"
+#include "client/Imago.hpp"
 #include "client/SMM.hpp"
 
 namespace oz
@@ -19,21 +19,21 @@ namespace oz
 namespace client
 {
 
-  class SMMModel : public Model
+  class SMMImago : public Imago
   {
     protected:
 
       SMM* smm;
 
-      virtual ~SMMModel();
+      virtual ~SMMImago();
 
     public:
 
-      static Pool<SMMModel, 1024> pool;
+      static Pool<SMMImago, 1024> pool;
 
-      static Model* create( const Object* obj );
+      static Imago* create( const Object* obj );
 
-      virtual void draw( const Model* parent, int mask );
+      virtual void draw( const Imago* parent, int mask );
 
     OZ_STATIC_POOL_ALLOC( pool )
 

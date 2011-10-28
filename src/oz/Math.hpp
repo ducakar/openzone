@@ -376,7 +376,7 @@ class Math
     static int rand( int max );
 
     /**
-     * Random float number form [0, 1].
+     * Random float number from [0, 1].
      */
     static float rand();
 

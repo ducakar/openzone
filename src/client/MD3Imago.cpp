@@ -1,5 +1,5 @@
 /*
- *  MD2Model.cpp
+ *  MD2Imago.cpp
  *
  *  [description]
  *
@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "client/MD3Model.hpp"
+#include "client/MD3Imago.hpp"
 
 #include "matrix/BotClass.hpp"
 
@@ -24,36 +24,36 @@ namespace oz
 namespace client
 {
 
-  const float MD3Model::TURN_SMOOTHING_COEF = 0.60f;
+  const float MD3Imago::TURN_SMOOTHING_COEF = 0.60f;
 
-  Pool<MD3Model> MD3Model::pool;
+  Pool<MD3Imago> MD3Imago::pool;
 
-  Model* MD3Model::create( const Object* obj )
+  Imago* MD3Imago::create( const Object* obj )
   {
     hard_assert( obj->flags & Object::BOT_BIT );
 
     const Bot* bot = static_cast<const Bot*>( obj );
-    MD3Model* model = new MD3Model();
+    MD3Imago* imago = new MD3Imago();
 
-    model->obj   = obj;
-    model->flags = Model::MD3MODEL_BIT;
-    model->clazz = obj->clazz;
-    model->md3   = context.requestMD3( obj->clazz->modelIndex );
-    model->h     = bot->h;
+    imago->obj   = obj;
+    imago->flags = Imago::MD3MODEL_BIT;
+    imago->clazz = obj->clazz;
+    imago->md3   = context.requestMD3( obj->clazz->imagoModel );
+    imago->h     = bot->h;
 
-//     model->setAnim( bot->anim );
-//     model->anim.nextFrame = model->anim.endFrame;
-//     model->anim.currFrame = model->anim.endFrame;
+//     imago->setAnim( bot->anim );
+//     imago->anim.nextFrame = imago->anim.endFrame;
+//     imago->anim.currFrame = imago->anim.endFrame;
 
-    return model;
+    return imago;
   }
 
-  MD3Model::~MD3Model()
+  MD3Imago::~MD3Imago()
   {
-    context.releaseMD3( clazz->modelIndex );
+    context.releaseMD3( clazz->imagoModel );
   }
 
-//   void MD3Model::setAnim( Anim::Type type_ )
+//   void MD3Imago::setAnim( Anim::Type type_ )
 //   {
 //     int type = int( type_ );
 //
@@ -83,7 +83,7 @@ namespace client
 //     }
 //   }
 
-  void MD3Model::draw( const Model* parent, int mask )
+  void MD3Imago::draw( const Imago* parent, int mask )
   {
     const Bot* bot = static_cast<const Bot*>( obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
@@ -141,7 +141,7 @@ namespace client
       md3->drawFrame( 0 );
 
       if( parent == null && bot->weapon!= -1 && orbis.objects[bot->weapon] != null ) {
-        context.drawModel( orbis.objects[bot->weapon], this, mask );
+        context.drawImago( orbis.objects[bot->weapon], this, mask );
       }
     }
     else if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
@@ -152,7 +152,7 @@ namespace client
       glDepthFunc( GL_ALWAYS );
 
 //       md2->advance( &anim, timer.frameTime );
-      context.drawModel( orbis.objects[bot->weapon], this, mask );
+      context.drawImago( orbis.objects[bot->weapon], this, mask );
 
       glDepthFunc( GL_LESS );
     }

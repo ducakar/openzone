@@ -24,11 +24,11 @@ namespace client
 
       static const int TICK_PERIOD               = 180 * Timer::TICKS_PER_SEC;  // 2 min
 
-      static const int MODEL_CLEAR_INTERVAL      = 10  * Timer::TICKS_PER_SEC;  // 10 s (+ 3 s)
-      static const int MODEL_CLEAR_LAG           = 3   * Timer::TICKS_PER_SEC;
+      static const int IMAGO_CLEAR_INTERVAL      = 10  * Timer::TICKS_PER_SEC;  // 10 s (+ 3 s)
+      static const int IMAGO_CLEAR_LAG           = 3   * Timer::TICKS_PER_SEC;
 
-      static const int MODELCLASS_CLEAR_INTERVAL = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 0 min)
-      static const int MODELCLASS_CLEAR_LAG      = 0   * Timer::TICKS_PER_SEC;
+      static const int IMAGOCLASS_CLEAR_INTERVAL = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 0 min)
+      static const int IMAGOCLASS_CLEAR_LAG      = 0   * Timer::TICKS_PER_SEC;
 
       static const int BSP_CLEAR_INTERVAL        = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 1 min)
       static const int BSP_CLEAR_LAG             = 60  * Timer::TICKS_PER_SEC;
@@ -41,9 +41,9 @@ namespace client
 
       int tick;
 
-      // clean up unused models, handle screenshots
+      // clean unused imagines and handle screenshots
       void cleanupRender();
-      // stop playing stopped continuous sounds, clean up unused audio models
+      // stop playing stopped continuous sounds, clean up unused audios
       void cleanupSound();
 
   public:

@@ -30,9 +30,10 @@
 #include <sys/stat.h>
 #include <SDL/SDL_main.h>
 
-using namespace oz;
+bool oz::Alloc::isLocked = true;
 
-bool Alloc::isLocked = true;
+namespace oz
+{
 
 static const char* const CREATE_DIRS[] = {
   "bsp",
@@ -451,14 +452,188 @@ static void checkLua( const char* path )
   log.println( "}" );
 }
 
+static void shutdown()
+{
+  client::compiler.free();
+  client::render.free();
+  library.free();
+  config.clear();
+
+  SDL_Quit();
+
+  Alloc::printStatistics();
+  log.printlnETD( OZ_APPLICATION_TITLE " Prebuild finished at" );
+}
+
 int main( int argc, char** argv )
 {
-  System::catchSignals();
+  bool doUI      = false;
+  bool doTerrae  = false;
+  bool doCaela   = false;
+  bool doBSPs    = false;
+  bool doModels  = false;
+  bool doModules = false;
+  bool doLua     = false;
+
+  optind = 1;
+  int opt;
+  while( ( opt = getopt( argc, argv, "utcbmdlCA" ) ) != -1 ) {
+    switch( opt ) {
+      case 'u': {
+        doUI = true;
+        break;
+      }
+      case 't': {
+        doTerrae = true;
+        break;
+      }
+      case 'c': {
+        doCaela = true;
+        break;
+      }
+      case 'b': {
+        doBSPs = true;
+        break;
+      }
+      case 'm': {
+        doModels = true;
+        break;
+      }
+      case 'd': {
+        doModels = true;
+        break;
+      }
+      case 'l': {
+        doLua = true;
+        break;
+      }
+      case 'C': {
+        client::context.useS3TC = true;
+        break;
+      }
+      case 'A': {
+        doUI      = true;
+        doTerrae  = true;
+        doCaela   = true;
+        doBSPs    = true;
+        doModels  = true;
+        doModules = true;
+        doLua     = true;
+        break;
+      }
+      default: {
+        log.println();
+        printUsage();
+        return -1;
+      }
+    }
+  }
+
+  if( optind < argc ) {
+    config.add( "dir.prefix", argv[optind] );
+  }
+  else {
+    printUsage();
+    return -1;
+  }
+
+  log.printlnETD( OZ_APPLICATION_TITLE " Prebuild started at" );
+
+  log.println( "Build details {" );
+  log.indent();
+
+  log.println( "Date:            %s", Build::TIME );
+  log.println( "Host system:     %s", Build::HOST_SYSTEM );
+  log.println( "Target system:   %s", Build::TARGET_SYSTEM );
+  log.println( "Build type:      %s", Build::BUILD_TYPE );
+  log.println( "Compiler:        %s", Build::COMPILER );
+  log.println( "Compiler flags:  %s", Build::CXX_FLAGS );
+  log.println( "Linker flags:    %s", Build::EXE_LINKER_FLAGS );
+
+  log.unindent();
+  log.println( "}" );
+
+  String prefixDir = config.get( "dir.prefix", OZ_INSTALL_PREFIX );
+  String dataDir   = prefixDir + "/share/" OZ_APPLICATION_NAME;
+
+  log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
+  if( chdir( dataDir ) != 0 ) {
+    log.printEnd( " Failed" );
+    return -1;
+  }
+  log.printEnd( " OK" );
+
+  SDL_Init( SDL_INIT_VIDEO );
+
+  uint startTime = SDL_GetTicks();
+
+  library.init();
+
+  config.add( "screen.width", "400" );
+  config.add( "screen.height", "40" );
+  config.add( "screen.bpp", "32" );
+  config.add( "screen.full", "false" );
+  client::render.init();
+  SDL_WM_SetCaption( OZ_APPLICATION_TITLE " :: Prebuilding data ...", null );
+
+  if( !client::context.isS3TCSupported && client::context.useS3TC ) {
+    throw Exception( "S3 texture compression enabled but not supported" );
+  }
+
+  createDirs();
+
+  if( doUI ) {
+    client::ui::Mouse::prebuild();
+
+    prebuildTextures( "ui/icon", "ui/icon", true, GL_LINEAR, GL_LINEAR );
+    prebuildTextures( "ui/galileo", "ui/galileo", true, GL_LINEAR, GL_LINEAR );
+  }
+
+  if( doTerrae ) {
+    prebuildTerrae();
+  }
+
+  if( doBSPs ) {
+    compileBSPs();
+    prebuildBSPs();
+    prebuildBSPTextures();
+  }
+
+  if( doCaela ) {
+    prebuildCaela();
+  }
+
+  if( doModels ) {
+    prebuildModels();
+  }
+
+  if( doModules ) {
+    prebuildModules();
+  }
+
+  if( doLua ) {
+    checkLua( "lua/matrix" );
+    checkLua( "lua/nirvana" );
+    checkLua( "lua/mission" );
+  }
+
+  uint endTime = SDL_GetTicks();
+
+  log.println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
+
+  return 0;
+}
+
+}
+
+int main( int argc, char** argv )
+{
+  oz::System::catchSignals();
 #ifndef NDEBUG
-  System::enableHalt( true );
+  oz::System::enableHalt( true );
 #endif
 
-  Alloc::isLocked = false;
+  oz::Alloc::isLocked = false;
 
   int exitCode = 0;
 
@@ -468,169 +643,15 @@ int main( int argc, char** argv )
       "under certain conditions; See COPYING file for details.\n\n" );
 
   try {
-    bool doUI      = false;
-    bool doTerrae  = false;
-    bool doCaela   = false;
-    bool doBSPs    = false;
-    bool doModels  = false;
-    bool doModules = false;
-    bool doLua     = false;
-
-    optind = 1;
-    int opt;
-    while( ( opt = getopt( argc, argv, "utcbmdlCA" ) ) != -1 ) {
-      switch( opt ) {
-        case 'u': {
-          doUI = true;
-          break;
-        }
-        case 't': {
-          doTerrae = true;
-          break;
-        }
-        case 'c': {
-          doCaela = true;
-          break;
-        }
-        case 'b': {
-          doBSPs = true;
-          break;
-        }
-        case 'm': {
-          doModels = true;
-          break;
-        }
-        case 'd': {
-          doModels = true;
-          break;
-        }
-        case 'l': {
-          doLua = true;
-          break;
-        }
-        case 'C': {
-          client::context.useS3TC = true;
-          break;
-        }
-        case 'A': {
-          doUI      = true;
-          doTerrae  = true;
-          doCaela   = true;
-          doBSPs    = true;
-          doModels  = true;
-          doModules = true;
-          doLua     = true;
-          break;
-        }
-        default: {
-          log.println();
-          printUsage();
-          return -1;
-        }
-      }
-    }
-
-    if( optind < argc ) {
-      config.add( "dir.prefix", argv[optind] );
-    }
-    else {
-      printUsage();
-      return -1;
-    }
-
-    log.printlnETD( OZ_APPLICATION_TITLE " Prebuild started at" );
-
-    log.println( "Build details {" );
-    log.indent();
-
-    log.println( "Date:            %s", Build::TIME );
-    log.println( "Host system:     %s", Build::HOST_SYSTEM );
-    log.println( "Target system:   %s", Build::TARGET_SYSTEM );
-    log.println( "Build type:      %s", Build::BUILD_TYPE );
-    log.println( "Compiler:        %s", Build::COMPILER );
-    log.println( "Compiler flags:  %s", Build::CXX_FLAGS );
-    log.println( "Linker flags:    %s", Build::EXE_LINKER_FLAGS );
-
-    log.unindent();
-    log.println( "}" );
-
-    String prefixDir = config.get( "dir.prefix", OZ_INSTALL_PREFIX );
-    String dataDir   = prefixDir + "/share/" OZ_APPLICATION_NAME;
-
-    log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
-    if( chdir( dataDir ) != 0 ) {
-      log.printEnd( " Failed" );
-      return -1;
-    }
-    log.printEnd( " OK" );
-
-    SDL_Init( SDL_INIT_VIDEO );
-
-    uint startTime = SDL_GetTicks();
-
-    library.init();
-
-    config.add( "screen.width", "400" );
-    config.add( "screen.height", "40" );
-    config.add( "screen.bpp", "32" );
-    config.add( "screen.full", "false" );
-    client::render.init();
-    SDL_WM_SetCaption( OZ_APPLICATION_TITLE " :: Prebuilding data ...", null );
-
-    if( !client::context.isS3TCSupported && client::context.useS3TC ) {
-      throw Exception( "S3 texture compression enabled but not supported" );
-    }
-
-    createDirs();
-
-    if( doUI ) {
-      client::ui::Mouse::prebuild();
-
-      prebuildTextures( "ui/icon", "ui/icon", true, GL_LINEAR, GL_LINEAR );
-      prebuildTextures( "ui/galileo", "ui/galileo", true, GL_LINEAR, GL_LINEAR );
-    }
-
-    if( doTerrae ) {
-      prebuildTerrae();
-    }
-
-    if( doBSPs ) {
-      compileBSPs();
-      prebuildBSPs();
-      prebuildBSPTextures();
-    }
-
-    if( doCaela ) {
-      prebuildCaela();
-    }
-
-    if( doModels ) {
-      prebuildModels();
-    }
-
-    if( doModules ) {
-      prebuildModules();
-    }
-
-    if( doLua ) {
-      checkLua( "lua/matrix" );
-      checkLua( "lua/nirvana" );
-      checkLua( "lua/mission" );
-    }
-
-    uint endTime = SDL_GetTicks();
-
-    log.println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
-
-    SDL_Quit();
+    exitCode = oz::main( argc, argv );
   }
-  catch( const Exception& e ) {
-    log.resetIndent();
-    log.println();
-    log.printException( e );
-    log.println();
+  catch( const oz::Exception& e ) {
+    oz::log.resetIndent();
+    oz::log.println();
+    oz::log.printException( e );
+    oz::log.println();
 
-    if( log.isFile() ) {
+    if( oz::log.isFile() ) {
       fprintf( stderr, "\nEXCEPTION: %s\n", e.what() );
       fprintf( stderr, "  in %s\n\n", e.function );
       fprintf( stderr, "  at %s:%d\n\n", e.file, e.line );
@@ -639,25 +660,20 @@ int main( int argc, char** argv )
     exitCode = -1;
   }
   catch( const std::exception& e ) {
-    log.resetIndent();
-    log.println();
-    log.println( "EXCEPTION: %s", e.what() );
-    log.println();
+    oz::log.resetIndent();
+    oz::log.println();
+    oz::log.println();
+    oz::log.println( "EXCEPTION: %s", e.what() );
+    oz::log.println();
 
-    if( log.isFile() ) {
+    if( oz::log.isFile() ) {
       fprintf( stderr, "\nEXCEPTION: %s\n\n", e.what() );
     }
 
     exitCode = -1;
   }
 
-  client::compiler.free();
-  client::render.free();
-  library.free();
-  config.clear();
-
-  Alloc::printStatistics();
-  log.printlnETD( OZ_APPLICATION_TITLE " Prebuild finished at" );
+  oz::shutdown();
 
 //   Alloc::isLocked = true;
 //   Alloc::printLeaks();

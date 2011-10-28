@@ -1,5 +1,5 @@
 /*
- *  MD2WeaponModel.hpp
+ *  MD2WeaponImago.hpp
  *
  *  [description]
  *
@@ -11,22 +11,22 @@
 
 #include "stable.hpp"
 
-#include "client/MD2Model.hpp"
+#include "client/MD2Imago.hpp"
 
 namespace oz
 {
 namespace client
 {
 
-  class MD2WeaponModel : public MD2Model
+  class MD2WeaponImago : public MD2Imago
   {
     public:
 
-      static Pool<MD2WeaponModel> pool;
+      static Pool<MD2WeaponImago> pool;
 
-      static Model* create( const Object* obj );
+      static Imago* create( const Object* obj );
 
-      virtual void draw( const Model* parent, int mask );
+      virtual void draw( const Imago* parent, int mask );
 
     OZ_STATIC_POOL_ALLOC( pool )
 

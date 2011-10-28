@@ -1,5 +1,5 @@
 /*
- *  ExplosionModel.cpp
+ *  ExplosionImago.cpp
  *
  *  [description]
  *
@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "client/ExplosionModel.hpp"
+#include "client/ExplosionImago.hpp"
 
 #include "matrix/Timer.hpp"
 #include "client/Context.hpp"
@@ -22,29 +22,29 @@ namespace oz
 namespace client
 {
 
-  int ExplosionModel::modelId;
+  int ExplosionImago::modelId;
 
-  Pool<ExplosionModel> ExplosionModel::pool;
+  Pool<ExplosionImago> ExplosionImago::pool;
 
-  Model* ExplosionModel::create( const Object* obj )
+  Imago* ExplosionImago::create( const Object* obj )
   {
-    ExplosionModel* model = new ExplosionModel();
+    ExplosionImago* imago = new ExplosionImago();
 
     modelId = library.modelIndex( "explosion" );
 
-    model->obj = obj;
-    model->smm = context.requestSMM( modelId );
-    model->startMillis = timer.millis;
+    imago->obj = obj;
+    imago->smm = context.requestSMM( modelId );
+    imago->startMillis = timer.millis;
 
-    return model;
+    return imago;
   }
 
-  ExplosionModel::~ExplosionModel()
+  ExplosionImago::~ExplosionImago()
   {
     context.releaseSMM( modelId );
   }
 
-  void ExplosionModel::draw( const Model*, int mask )
+  void ExplosionImago::draw( const Imago*, int mask )
   {
     if( !smm->isLoaded || !( mask & Mesh::ALPHA_BIT ) ) {
       return;

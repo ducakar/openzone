@@ -228,6 +228,16 @@ class InputStream
     }
 
     /**
+     * Read 64-bit integer.
+     */
+    OZ_ALWAYS_INLINE
+    long64 readLong64()
+    {
+      const long64* data = reinterpret_cast<const long64*>( prepareRead( sizeof( long64 ) ) );
+      return Endian::shuffle64( *data );
+    }
+
+    /**
      * Read float.
      */
     OZ_ALWAYS_INLINE
@@ -520,6 +530,16 @@ class OutputStream
     {
       int* data = reinterpret_cast<int*>( prepareWrite( sizeof( int ) ) );
       *data = Endian::shuffle32( i );
+    }
+
+    /**
+     * Write 64-bit integer.
+     */
+    OZ_ALWAYS_INLINE
+    void writeLong64( long64 l )
+    {
+      long64* data = reinterpret_cast<long64*>( prepareWrite( sizeof( long64 ) ) );
+      *data = Endian::shuffle64( l );
     }
 
     /**

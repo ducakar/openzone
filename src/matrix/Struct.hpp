@@ -78,13 +78,9 @@ namespace oz
 
       ~Struct();
 
-    private:
-
       // no copying
-      Struct( const Struct& );
-      Struct& operator = ( const Struct& );
-
-    public:
+      Struct( const Struct& ) = delete;
+      Struct& operator = ( const Struct& ) = delete;
 
       explicit Struct( int index, int bspId, const Point3& p, Heading heading );
       explicit Struct( int index, int bpsId, InputStream* istream );

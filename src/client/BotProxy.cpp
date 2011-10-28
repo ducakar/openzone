@@ -62,6 +62,7 @@ namespace client
     const char* oldKeys = ui::keyboard.oldKeys;
 
     if( camera.allowReincarnation && keys[SDLK_i] && !oldKeys[SDLK_i] ) {
+      bot->actions = 0;
       camera.setBot( null );
       return;
     }

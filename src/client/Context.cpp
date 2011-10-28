@@ -14,12 +14,12 @@
 #include "client/MD2.hpp"
 #include "client/MD3.hpp"
 
-#include "client/SMMModel.hpp"
-#include "client/SMMVehicleModel.hpp"
-#include "client/ExplosionModel.hpp"
-#include "client/MD2Model.hpp"
-#include "client/MD2WeaponModel.hpp"
-#include "client/MD3Model.hpp"
+#include "client/SMMImago.hpp"
+#include "client/SMMVehicleImago.hpp"
+#include "client/ExplosionImago.hpp"
+#include "client/MD2Imago.hpp"
+#include "client/MD2WeaponImago.hpp"
+#include "client/MD3Imago.hpp"
 
 #include "client/BasicAudio.hpp"
 #include "client/BotAudio.hpp"
@@ -32,8 +32,8 @@
 # include <SDL_image.h>
 #endif
 
-#define OZ_REGISTER_MODELCLASS( name ) \
-  modelClasses.add( #name, &name##Model::create )
+#define OZ_REGISTER_IMAGOCLASS( name ) \
+  imagoClasses.add( #name, &name##Imago::create )
 
 #define OZ_REGISTER_AUDIOCLASS( name ) \
   audioClasses.add( #name, &name##Audio::create )
@@ -405,27 +405,25 @@ namespace client
     }
   }
 
-  void Context::drawModel( const Object* obj, const Model* parent, int mask )
+  void Context::drawImago( const Object* obj, const Imago* parent, int mask )
   {
-    hard_assert( obj->flags & Object::MODEL_BIT );
+    hard_assert( obj->flags & Object::IMAGO_BIT );
 
-    Model* const* value = models.find( obj->index );
+    Imago* const* value = imagines.find( obj->index );
 
     if( value == null ) {
-      hard_assert( !obj->clazz->modelType.isEmpty() );
-
-      const Model::CreateFunc* createFunc = modelClasses.find( obj->clazz->modelType );
+      const Imago::CreateFunc* createFunc = imagoClasses.find( obj->clazz->imagoType );
       if( createFunc == null ) {
-        throw Exception( "Invalid Model '" + obj->clazz->modelType + "'" );
+        throw Exception( "Invalid Imago '" + obj->clazz->imagoType + "'" );
       }
 
-      value = models.add( obj->index, ( *createFunc )( obj ) );
+      value = imagines.add( obj->index, ( *createFunc )( obj ) );
     }
 
-    Model* model = *value;
+    Imago* imago = *value;
 
-    model->flags |= Model::UPDATED_BIT;
-    model->draw( parent, mask );
+    imago->flags |= Imago::UPDATED_BIT;
+    imago->draw( parent, mask );
   }
 
   void Context::playAudio( const Object* obj, const Audio* parent )
@@ -435,8 +433,6 @@ namespace client
     Audio* const* value = audios.find( obj->index );
 
     if( value == null ) {
-      hard_assert( !obj->clazz->audioType.isEmpty() );
-
       const Audio::CreateFunc* createFunc = audioClasses.find( obj->clazz->audioType );
       if( createFunc == null ) {
         throw Exception( "Invalid Audio '" + obj->clazz->audioType + "'" );
@@ -454,7 +450,7 @@ namespace client
 # ifndef NDEBUG
   void Context::updateLoad()
   {
-    maxModels     = max( maxModels, models.length() );
+    maxImagines   = max( maxImagines, imagines.length() );
     maxAudios     = max( maxAudios, audios.length() );
     maxSources    = max( maxSources, sources.length() );
     maxBSPSources = max( maxBSPSources, bspSources.length() );
@@ -465,8 +461,8 @@ namespace client
   {
     log.println( "Context maximum load {" );
     log.indent();
-    log.println( "Models       %d (hashtable load %.2f)", maxModels,
-                 float( maxModels ) / float( models.capacity() ) );
+    log.println( "Imagines     %d (hashtable load %.2f)", maxImagines,
+                 float( maxImagines ) / float( imagines.capacity() ) );
     log.println( "Audios       %d (hashtable load %.2f)", maxAudios,
                  float( maxAudios ) / float( audios.capacity() ) );
     log.println( "Sources      %d", maxSources );
@@ -487,8 +483,8 @@ namespace client
     log.println( "Unloading Context {" );
     log.indent();
 
-    models.free();
-    models.dealloc();
+    imagines.free();
+    imagines.dealloc();
     audios.free();
     audios.dealloc();
 
@@ -553,12 +549,12 @@ namespace client
 
     Source::pool.free();
 
-    SMMModel::pool.free();
-    SMMVehicleModel::pool.free();
-    ExplosionModel::pool.free();
-    MD2Model::pool.free();
-    MD2WeaponModel::pool.free();
-    MD3Model::pool.free();
+    SMMImago::pool.free();
+    SMMVehicleImago::pool.free();
+    ExplosionImago::pool.free();
+    MD2Imago::pool.free();
+    MD2WeaponImago::pool.free();
+    MD3Imago::pool.free();
 
     BasicAudio::pool.free();
     BotAudio::pool.free();
@@ -581,12 +577,12 @@ namespace client
 
     isS3TCSupported = false;
 
-    OZ_REGISTER_MODELCLASS( SMM );
-    OZ_REGISTER_MODELCLASS( SMMVehicle );
-    OZ_REGISTER_MODELCLASS( Explosion );
-    OZ_REGISTER_MODELCLASS( MD2 );
-    OZ_REGISTER_MODELCLASS( MD2Weapon );
-    OZ_REGISTER_MODELCLASS( MD3 );
+    OZ_REGISTER_IMAGOCLASS( SMM );
+    OZ_REGISTER_IMAGOCLASS( SMMVehicle );
+    OZ_REGISTER_IMAGOCLASS( Explosion );
+    OZ_REGISTER_IMAGOCLASS( MD2 );
+    OZ_REGISTER_IMAGOCLASS( MD2Weapon );
+    OZ_REGISTER_IMAGOCLASS( MD3 );
 
     OZ_REGISTER_AUDIOCLASS( Basic );
     OZ_REGISTER_AUDIOCLASS( Bot );
@@ -635,7 +631,7 @@ namespace client
       md3s[i].nUsers = 0;
     }
 
-    maxModels     = 0;
+    maxImagines   = 0;
     maxAudios     = 0;
     maxSources    = 0;
     maxBSPSources = 0;
@@ -664,8 +660,8 @@ namespace client
     md2s     = null;
     md3s     = null;
 
-    modelClasses.clear();
-    modelClasses.dealloc();
+    imagoClasses.clear();
+    imagoClasses.dealloc();
     audioClasses.clear();
     audioClasses.dealloc();
 

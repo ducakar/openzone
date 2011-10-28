@@ -1,5 +1,5 @@
 /*
- *  MD3Model.hpp
+ *  MD3Imago.hpp
  *
  *  [description]
  *
@@ -11,7 +11,7 @@
 
 #include "stable.hpp"
 
-#include "client/Model.hpp"
+#include "client/Imago.hpp"
 #include "client/MD3.hpp"
 
 namespace oz
@@ -19,7 +19,7 @@ namespace oz
 namespace client
 {
 
-  class MD3Model : public Model
+  class MD3Imago : public Imago
   {
     public:
 
@@ -29,23 +29,23 @@ namespace client
       float          h;
 //       MD3::AnimState anim;
 
-      static Pool<MD3Model> pool;
+      static Pool<MD3Imago> pool;
 
     protected:
 
-      MD3Model()
+      MD3Imago()
       {
-        flags |= Model::MD2MODEL_BIT;
+        flags |= Imago::MD2MODEL_BIT;
       }
 
-      virtual ~MD3Model();
+      virtual ~MD3Imago();
 
     public:
 
-      static Model* create( const Object* obj );
+      static Imago* create( const Object* obj );
 
 //       void setAnim( Anim::Type anim );
-      virtual void draw( const Model* parent, int mask );
+      virtual void draw( const Imago* parent, int mask );
 
     OZ_STATIC_POOL_ALLOC( pool )
 

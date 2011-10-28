@@ -575,7 +575,7 @@ namespace oz
     OZ_LUA_CONST( "OZ_OBJECT_UPDATE_FUNC_BIT",      Object::UPDATE_FUNC_BIT );
 
     OZ_LUA_CONST( "OZ_OBJECT_DEVICE_BIT",           Object::DEVICE_BIT );
-    OZ_LUA_CONST( "OZ_OBJECT_MODEL_BIT",            Object::MODEL_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_IMAGO_BIT",            Object::IMAGO_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_AUDIO_BIT",            Object::AUDIO_BIT );
 
     OZ_LUA_CONST( "OZ_OBJECT_DESTROYED_BIT",        Object::DESTROYED_BIT );

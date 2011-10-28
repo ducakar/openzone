@@ -180,8 +180,8 @@ namespace client
     log.println( "\t<mission>.lua files." );
     log.println();
     log.println( "-t <num>" );
-    log.println( "\tExits after <num> seconds (can be a floating-point number)." );
-    log.println( "\tFor benchmarking purposes." );
+    log.println( "\tExit after <num> seconds (can be a floating-point number) and use 42 as" );
+    log.println( "\tthe random seed. For benchmarking purposes." );
     log.println();
     log.println( "-p <prefix>" );
     log.println( "\tSets data directory to <prefix>/share/openzone and locale directory to" );
@@ -222,6 +222,7 @@ namespace client
             return -1;
           }
 
+          config.add( "seed", "42" );
           isBenchmark = true;
           break;
         }
@@ -341,7 +342,7 @@ namespace client
     if( String::equals( config.getSet( "seed", "TIME" ), "TIME" ) ) {
       int seed = int( time( null ) );
       Math::seed( seed );
-      log.println( "Random generator seed set to current time: %d", seed );
+      log.println( "Random generator seed set to the current time: %d", seed );
     }
     else {
       int seed = config.get( "seed", 0 );

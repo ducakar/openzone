@@ -1,6 +1,3 @@
-Model -> Imago
-Audio -> Sonus
-
 TODO 0.3
 - matrix
   * BSP
@@ -8,12 +5,8 @@ TODO 0.3
     + demolishing
   * Vehicle
     + turrets
-    + wheeled
-    + tracked
-    + mech warrior
   * documentation
 - client
-  * specular masks
   * particle model (smoke, fire ...)
   * particle pools
     + wood
@@ -22,11 +15,6 @@ TODO 0.3
     + meat frags
     + bullets
   * MD3 animation
-  * BSP rendering per partes
-  * decals
-  * animated textures
-  * bloom effect
-  * documentation
 - ui
   * onShow
 - lua
@@ -34,16 +22,31 @@ TODO 0.3
 - tools
   * decouple prebuilding from runtime classes
   * documentation
+- PhysFS
 
 TODO 0.4
+- matrix
+  * Vehicle
+    + wheeled
+    + tracked
+    + mech warrior
+- client
+  * specular masks
+  * BSP rendering per partes
+  * decals
+  * animated textures
+  * bloom effect
+  * documentation
+
+TODO 0.5
 - RTS interface
 - commanding units
 - building
 - homepage
 
-TODO 0.5
+TODO 0.6
 - AI tasks
 - improve AI
 
-TODO 0.6
+TODO 0.7
 - networking

@@ -62,6 +62,11 @@
 #include "SBitset.hpp"
 
 /*
+ * Exception
+ */
+#include "Exception.hpp"
+
+/*
  * Math
  */
 #include "Math.hpp"
@@ -71,11 +76,6 @@
 #include "Plane.hpp"
 #include "Quat.hpp"
 #include "Mat44.hpp"
-
-/*
- * Exception
- */
-#include "Exception.hpp"
 
 /*
  * IO

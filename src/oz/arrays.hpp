@@ -545,8 +545,8 @@ inline int aBisectFind( Elem* aSrc, const Key& key, int count )
  * <pre>
  *   aSrc[index - 1] <= key && key < aSrc[index]
  * </pre>
- * If all elements are lesser, return <tt>count</tt> and if all elements are greater,
- * return 0. Elem type must have defined <tt>operator \> ( const Key\&, const Elem\& )</tt>.
+ * If all elements are lesser, return <tt>count</tt> and if all elements are greater, return 0.
+ * <tt>Elem</tt> type must have defined <tt>operator \< ( const Key\&, const Elem\& )</tt>.
  *
  * @param aSrc
  * @param key the key we are looking for.

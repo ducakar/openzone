@@ -61,7 +61,7 @@ namespace oz
 
       /*
        * Index reusing: when an entity is removed, there may still be references to it (from other
-       * models or from render or audio subsystems); that's why every cycle all references must
+       * models or from render or sound subsystems); that's why every cycle all references must
        * be checked if the slot they're pointing at (all references should be indices of a slot
        * in Orbis::structures/objects/particles vectors). If the target slot is null, the referenced
        * entity doesn't exist any more, so reference must be cleared. To make sure all references

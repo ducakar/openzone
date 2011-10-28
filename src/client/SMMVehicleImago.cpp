@@ -1,5 +1,5 @@
 /*
- *  SMMVehicleModel.cpp
+ *  SMMVehicleImago.cpp
  *
  *  [description]
  *
@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "client/SMMVehicleModel.hpp"
+#include "client/SMMVehicleImago.hpp"
 
 #include "matrix/Vehicle.hpp"
 #include "matrix/VehicleClass.hpp"
@@ -21,26 +21,26 @@ namespace oz
 namespace client
 {
 
-  Pool<SMMVehicleModel> SMMVehicleModel::pool;
+  Pool<SMMVehicleImago> SMMVehicleImago::pool;
 
-  Model* SMMVehicleModel::create( const Object* obj )
+  Imago* SMMVehicleImago::create( const Object* obj )
   {
     hard_assert( obj->flags & Object::VEHICLE_BIT );
 
-    SMMVehicleModel* model = new SMMVehicleModel();
+    SMMVehicleImago* imago = new SMMVehicleImago();
 
-    model->obj   = obj;
-    model->clazz = obj->clazz;
-    model->smm   = context.requestSMM( obj->clazz->modelIndex );
-    return model;
+    imago->obj   = obj;
+    imago->clazz = obj->clazz;
+    imago->smm   = context.requestSMM( obj->clazz->imagoModel );
+    return imago;
   }
 
-  SMMVehicleModel::~SMMVehicleModel()
+  SMMVehicleImago::~SMMVehicleImago()
   {
-    context.releaseSMM( clazz->modelIndex );
+    context.releaseSMM( clazz->imagoModel );
   }
 
-  void SMMVehicleModel::draw( const Model*, int mask )
+  void SMMVehicleImago::draw( const Imago*, int mask )
   {
     const Vehicle* veh = static_cast<const Vehicle*>( obj );
     const VehicleClass* clazz = static_cast<const VehicleClass*>( obj->clazz );
@@ -59,7 +59,7 @@ namespace client
           tf.push();
           tf.model.translate( clazz->pilotPos );
 
-          context.drawModel( bot, this, mask );
+          context.drawImago( bot, this, mask );
 
           tf.pop();
         }
