@@ -1,5 +1,4 @@
 add_library( matrix STATIC
-  AABB.cpp
   BSP.cpp
   Bot.cpp
   BotClass.cpp
@@ -16,15 +15,12 @@ add_library( matrix STATIC
   Orbis.cpp
   Particle.cpp
   Physics.cpp
-  QBSP.cpp
   Struct.cpp
   Synapse.cpp
   Terra.cpp
-  Timer.cpp
   Vehicle.cpp
   VehicleClass.cpp
   Weapon.cpp
   WeaponClass.cpp
-  common.cpp
 )
 add_dependencies( matrix pch )

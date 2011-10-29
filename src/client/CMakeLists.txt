@@ -1,8 +1,9 @@
 add_library( client STATIC
+  Audio.cpp
   BSP.cpp
   BasicAudio.cpp
-  BotProxy.cpp
   BotAudio.cpp
+  BotProxy.cpp
   Caelum.cpp
   Camera.cpp
   Client.cpp
@@ -32,7 +33,6 @@ add_library( client STATIC
   SMMVehicleImago.cpp
   Shader.cpp
   Shape.cpp
-  Audio.cpp
   Sound.cpp
   SparkModel.cpp
   Stage.cpp
@@ -71,7 +71,7 @@ add_dependencies( client pch )
 
 add_executable( openzone openzone/openzone.cpp )
 add_dependencies( openzone pch )
-target_link_libraries( openzone build client nirvana matrix build oz ${libs} )
+target_link_libraries( openzone client nirvana matrix common build oz ${libs} )
 
 if( OZ_INSTALL_OPENZONE )
   install( TARGETS openzone DESTINATION bin )

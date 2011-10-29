@@ -12,7 +12,6 @@
 #include "matrix/Weapon.hpp"
 
 #include "matrix/WeaponClass.hpp"
-#include "matrix/Timer.hpp"
 #include "matrix/Bot.hpp"
 #include "matrix/Lua.hpp"
 #include "matrix/Synapse.hpp"

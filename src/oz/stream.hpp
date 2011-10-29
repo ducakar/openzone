@@ -158,6 +158,21 @@ class InputStream
 
     /**
      * Skip <tt>count</tt> bytes.
+     */
+    OZ_ALWAYS_INLINE
+    void skip( int count )
+    {
+      pos += count;
+
+      if( pos > end ) {
+        pos -= count;
+        throw Exception( "Buffer overrun for " + String( int( ptrdiff_t( pos + count - end ) ) ) +
+                         " bytes during a read of " + String( count ) + " bytes" );
+      }
+    }
+
+    /**
+     * Skip <tt>count</tt> bytes.
      *
      * @return Constant pointer to the beginning of the skipped bytes.
      */
@@ -167,13 +182,11 @@ class InputStream
       const char* oldPos = pos;
       pos += count;
 
-#ifndef NDEBUG
       if( pos > end ) {
         pos -= count;
         throw Exception( "Buffer overrun for " + String( int( ptrdiff_t( pos + count - end ) ) ) +
                          " bytes during a read of " + String( count ) + " bytes" );
       }
-#endif
       return oldPos;
     }
 
@@ -461,6 +474,21 @@ class OutputStream
     void reset()
     {
       pos = start;
+    }
+
+    /**
+     * Move position pointer for <tt>count</tt> bytes forward.
+     */
+    OZ_ALWAYS_INLINE
+    void skip( int count )
+    {
+      pos += count;
+
+      if( pos > end ) {
+        pos -= count;
+        throw Exception( "Buffer overrun for " + String( int( ptrdiff_t( pos + count - end ) ) ) +
+                         " bytes during a write of " + String( count ) + " bytes" );
+      }
     }
 
     /**

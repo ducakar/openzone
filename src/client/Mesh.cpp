@@ -248,7 +248,7 @@ namespace client
 
     parts.alloc( nParts );
 
-    foreach( part, parts.iter() ) {
+    for( auto part : parts.iter() ) {
       part->flags      = stream->readInt();
       part->mode       = uint( stream->readInt() );
 
@@ -272,12 +272,12 @@ namespace client
   {
     if( vao != 0 ) {
       if( flags & EMBEDED_TEX_BIT ) {
-        foreach( part, parts.citer() ) {
+        for( auto part : parts.citer() ) {
           glDeleteTextures( 1, &part->texture );
         }
       }
       else {
-        foreach( id, texIds.citer() ) {
+        for( auto id : texIds.citer() ) {
           if( *id != -1 ) {
             context.releaseTexture( *id );
           }
@@ -337,7 +337,7 @@ namespace client
       return;
     }
 
-    foreach( part, parts.citer() ) {
+    for( auto part : parts.citer() ) {
       int component = part->flags & COMPONENT_MASK;
 
       if( component < id ) {
@@ -373,7 +373,7 @@ namespace client
     glBindVertexArray( vao );
 # endif
 
-    foreach( part, parts.citer() ) {
+    for( auto part : parts.citer() ) {
       if( part->flags & mask ) {
         glBindTexture( GL_TEXTURE_2D, part->texture );
         glUniform1f( param.oz_Specular, part->specular );
@@ -399,17 +399,17 @@ namespace client
     stream->writeInt( vertices.length() );
     stream->writeInt( indices.length() );
 
-    foreach( vertex, vertices.citer() ) {
+    for( auto vertex : vertices.citer() ) {
       vertex->write( stream );
     }
-    foreach( index, indices.citer() ) {
+    for( auto index : indices.citer() ) {
       stream->writeShort( short( *index ) );
     }
 
     Vector<String> textures;
     textures.add( "" );
 
-    foreach( part, parts.citer() ) {
+    for( auto part : parts.citer() ) {
       textures.include( part->texture );
     }
 
@@ -425,14 +425,14 @@ namespace client
     }
     else {
       stream->writeInt( textures.length() );
-      foreach( texture, textures.citer() ) {
+      for( auto texture : textures.citer() ) {
         stream->writeString( *texture );
       }
     }
 
     stream->writeInt( parts.length() );
 
-    foreach( part, parts.citer() ) {
+    for( auto part : parts.citer() ) {
       stream->writeInt( part->component );
       stream->writeInt( int( part->mode ) );
 

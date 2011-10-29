@@ -11,7 +11,6 @@
 
 #include "matrix/Struct.hpp"
 
-#include "matrix/Timer.hpp"
 #include "matrix/Synapse.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Physics.hpp"
@@ -121,7 +120,7 @@ namespace oz
           Vec3 move = ( model->ratioInc + 4.0f * EPSILON ) * model->move;
           move = str->toAbsoluteCS( move );
 
-          foreach( obj, overlappingObjs.iter() ) {
+          for( auto obj : overlappingObjs.iter() ) {
             Dynamic* dyn = static_cast<Dynamic*>( *obj );
 
             if( dyn->flags & Object::DYNAMIC_BIT ) {
@@ -165,7 +164,7 @@ namespace oz
           Vec3 move = ( model->ratioInc + 4.0f * EPSILON ) * -model->move;
           move = str->toAbsoluteCS( move );
 
-          foreach( obj, overlappingObjs.iter() ) {
+          for( auto obj : overlappingObjs.iter() ) {
             Dynamic* dyn = static_cast<Dynamic*>( *obj );
 
             if( dyn->flags & Object::DYNAMIC_BIT ) {

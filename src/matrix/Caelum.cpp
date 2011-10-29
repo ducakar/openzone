@@ -11,8 +11,6 @@
 
 #include "matrix/Caelum.hpp"
 
-#include "matrix/Timer.hpp"
-
 namespace oz
 {
 

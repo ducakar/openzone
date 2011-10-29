@@ -198,7 +198,7 @@ namespace oz
 
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.iter() ) {
+    for( auto file : dirList.iter() ) {
       if( file->getType() != File::DIRECTORY ) {
         continue;
       }
@@ -214,7 +214,7 @@ namespace oz
         throw Exception( "Library initialisation failure" );
       }
 
-      foreach( file, subDirList.citer() ) {
+      for( auto file : subDirList.citer() ) {
         if( !file->hasExtension( "ozcTex" ) ) {
           continue;
         }
@@ -244,7 +244,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.iter() ) {
+    for( auto file : dirList.iter() ) {
       if( file->getType() != File::DIRECTORY ) {
         continue;
       }
@@ -260,7 +260,7 @@ namespace oz
         throw Exception( "Library initialisation failure" );
       }
 
-      foreach( file, subDirList.citer() ) {
+      for( auto file : subDirList.citer() ) {
         if( !file->hasExtension( "wav" ) ) {
           continue;
         }
@@ -290,7 +290,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.citer() ) {
+    for( auto file : dirList.citer() ) {
       if( !file->hasExtension( "vert" ) ) {
         continue;
       }
@@ -318,7 +318,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.citer() ) {
+    for( auto file : dirList.citer() ) {
       if( !file->hasExtension( "ozTerra" ) ) {
         continue;
       }
@@ -346,7 +346,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.citer() ) {
+    for( auto file : dirList.citer() ) {
       if( !file->hasExtension( "ozcCaelum" ) ) {
         continue;
       }
@@ -376,7 +376,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.citer() ) {
+    for( auto file : dirList.citer() ) {
       if( !file->hasExtension( "ozBSP" ) ) {
         continue;
       }
@@ -418,7 +418,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.citer() ) {
+    for( auto file : dirList.citer() ) {
       if( !file->hasExtension( "ozcSMM" ) && !file->hasExtension( "ozcMD2" ) &&
           !file->hasExtension( "ozcMD3" ) )
       {
@@ -452,7 +452,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.citer() ) {
+    for( auto file : dirList.citer() ) {
       if( !file->hasExtension( "txt" ) ) {
         continue;
       }
@@ -480,7 +480,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.citer() ) {
+    for( auto file : dirList.citer() ) {
       if( !file->hasExtension( "oga" ) ) {
         continue;
       }
@@ -507,7 +507,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.citer() ) {
+    for( auto file : dirList.citer() ) {
       if( !file->hasExtension( "rc" ) ) {
         continue;
       }
@@ -546,7 +546,7 @@ namespace oz
     }
     dirList.dealloc();
 
-    foreach( clazz, classes.citer() ) {
+    for( auto clazz : classes.citer() ) {
       const WeaponClass* weaponClass = dynamic_cast<const WeaponClass*>( clazz.value() );
 
       if( weaponClass != null ) {
@@ -599,7 +599,7 @@ namespace oz
 
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.iter() ) {
+    for( auto file : dirList.iter() ) {
       if( file->getType() != File::DIRECTORY ) {
         continue;
       }
@@ -615,7 +615,7 @@ namespace oz
         throw Exception( "Library initialisation failure" );
       }
 
-      foreach( file, subDirList.citer() ) {
+      for( auto file : subDirList.citer() ) {
         if( !file->hasExtension( "png" ) && !file->hasExtension( "jpeg" ) &&
             !file->hasExtension( "jpg" ) )
         {
@@ -651,7 +651,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.iter() ) {
+    for( auto file : dirList.iter() ) {
       if( file->getType() != File::DIRECTORY ) {
         continue;
       }
@@ -667,7 +667,7 @@ namespace oz
         throw Exception( "Library initialisation failure" );
       }
 
-      foreach( file, subDirList.citer() ) {
+      for( auto file : subDirList.citer() ) {
         if( !file->hasExtension( "wav" ) ) {
           continue;
         }
@@ -697,7 +697,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.citer() ) {
+    for( auto file : dirList.citer() ) {
       if( !file->hasExtension( "vert" ) ) {
         continue;
       }
@@ -725,7 +725,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.citer() ) {
+    for( auto file : dirList.citer() ) {
       if( !file->hasExtension( "rc" ) ) {
         continue;
       }
@@ -753,7 +753,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.citer() ) {
+    for( auto file : dirList.citer() ) {
       if( !file->hasExtension( "rc" ) ) {
         continue;
       }
@@ -781,7 +781,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.citer() ) {
+    for( auto file : dirList.citer() ) {
       if( !file->hasExtension( "rc" ) ) {
         continue;
       }
@@ -809,7 +809,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.iter() ) {
+    for( auto file : dirList.iter() ) {
       if( file->getType() != File::DIRECTORY ) {
         continue;
       }
@@ -837,7 +837,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.citer() ) {
+    for( auto file : dirList.citer() ) {
       if( !file->hasExtension( "txt" ) ) {
         continue;
       }
@@ -865,7 +865,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.citer() ) {
+    for( auto file : dirList.citer() ) {
       if( !file->hasExtension( "oga" ) ) {
         continue;
       }
@@ -892,7 +892,7 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.citer() ) {
+    for( auto file : dirList.citer() ) {
       if( !file->hasExtension( "rc" ) ) {
         continue;
       }

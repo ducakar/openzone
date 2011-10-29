@@ -111,7 +111,7 @@ namespace oz
 
     String matchClass = name.substring( 0, underscore );
 
-    foreach( clazz, library.classes.citer() ) {
+    for( auto clazz : library.classes.citer() ) {
       String botClassBase = clazz.value()->name;
 
       int dot = botClassBase.index( '.' );

@@ -32,7 +32,7 @@ namespace nirvana
   void Nirvana::sync()
   {
     // remove devices and minds of removed objects
-    foreach( i, synapse.removedObjects.citer() ) {
+    for( auto i : synapse.removedObjects.citer() ) {
       const Device* const* device = devices.find( *i );
       const Mind* const* mind = minds.find( *i );
 
@@ -46,7 +46,7 @@ namespace nirvana
       }
     }
     // add minds for new bots
-    foreach( i, synapse.addedObjects.citer() ) {
+    for( auto i : synapse.addedObjects.citer() ) {
       const Object* obj = orbis.objects[*i];
 
       if( obj != null && ( obj->flags & Object::BOT_BIT ) ) {
@@ -58,7 +58,7 @@ namespace nirvana
   void Nirvana::update()
   {
     int count = 0;
-    foreach( i, minds.iter() ) {
+    for( auto i : minds.iter() ) {
       Mind* mind = i.value();
 
       const Bot* bot = static_cast<const Bot*>( orbis.objects[mind->bot] );
@@ -115,13 +115,13 @@ namespace nirvana
     ostream->writeInt( devices.length() );
     ostream->writeInt( minds.length() );
 
-    foreach( device, devices.citer() ) {
+    for( auto device : devices.citer() ) {
       ostream->writeInt( device.key() );
       ostream->writeString( device.value()->type() );
 
       device.value()->write( ostream );
     }
-    foreach( mind, minds.citer() ) {
+    for( auto mind : minds.citer() ) {
       ostream->writeInt( mind.value()->bot );
       mind.value()->write( ostream );
     }

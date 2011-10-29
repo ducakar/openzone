@@ -43,7 +43,7 @@ namespace ui
     if( mouse.doShow == isFreelook ) {
       isFreelook = !mouse.doShow;
 
-      foreach( area, root->children.iter() ) {
+      for( auto area : root->children.iter() ) {
         if( !( area->flags & Area::PINNED_BIT ) ) {
           area->show( mouse.doShow );
         }

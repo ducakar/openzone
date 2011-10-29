@@ -45,7 +45,7 @@ namespace client
     }
 
     // events
-    foreach( event, vehicle->events.citer() ) {
+    for( auto event : vehicle->events.citer() ) {
       hard_assert( event->id < ObjectClass::AUDIO_SAMPLES );
 
       if( event->id >= 0 && samples[event->id] != -1 ) {

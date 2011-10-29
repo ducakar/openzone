@@ -740,9 +740,9 @@ namespace oz
 
   void Bot::rearm()
   {
-    foreach( item, items.iter() ) {
-      if( *item != -1 ) {
-        Weapon* weaponObj = static_cast<Weapon*>( orbis.objects[*item] );
+    for( int i = 0; i < items.length(); ++i ) {
+      if( items[i] != -1 ) {
+        Weapon* weaponObj = static_cast<Weapon*>( orbis.objects[ items[i] ] );
 
         if( weaponObj != null && ( weaponObj->flags & Object::WEAPON_BIT ) ) {
           const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weaponObj->clazz );

@@ -302,8 +302,8 @@ namespace client
     mesh->indices.alloc( nIndices );
     ushort* currIndex = mesh->indices;
 
-    foreach( part, parts.citer() ) {
-      foreach( i, part->indices.citer() ) {
+    for( auto part : parts.citer() ) {
+      for( auto i : part->indices.citer() ) {
         *currIndex = ushort( *i );
         ++currIndex;
       }

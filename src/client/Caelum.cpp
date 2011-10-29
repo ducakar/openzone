@@ -11,9 +11,6 @@
 
 #include "client/Caelum.hpp"
 
-#include "matrix/Timer.hpp"
-#include "matrix/Orbis.hpp"
-
 #include "client/Context.hpp"
 #include "client/Camera.hpp"
 #include "client/Colours.hpp"

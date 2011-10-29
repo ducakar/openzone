@@ -259,7 +259,7 @@ namespace ui
 
     hovered = null;
 
-    foreach( objIndex, tagged.citer() ) {
+    for( auto objIndex : tagged.citer() ) {
       const Object* obj = orbis.objects[*objIndex];
 
       if( obj != null ) {

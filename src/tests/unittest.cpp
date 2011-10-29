@@ -305,12 +305,12 @@ namespace oz
     aSet( a, Test( 12 ), 2 );
     aSet( b, Test( 12 ), 5 );
     hard_assert( aEquals( b, a, 2 ) );
-    foreach( i, citer( b, 5 ) ) {
+    for( auto i : citer( b, 5 ) ) {
       hard_assert( *i == Test( 12 ) );
     }
 
     Test** c = new Test*[5];
-    foreach( i, iter( c, 5 ) ) {
+    for( auto i : iter( c, 5 ) ) {
       *i = new Test();
     }
     aFree( c, 5 );

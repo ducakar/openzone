@@ -11,13 +11,15 @@ include_directories( . )
 
 add_subdirectory( oz )
 
-add_pch( pch stable.hpp DEPENDS oz ${CMAKE_BINARY_DIR}/src/configuration.hpp )
+add_pch( pch stable.hpp DEPENDS common )
 
 add_library( build STATIC ${CMAKE_BINARY_DIR}/src/Build.cpp )
 
+add_subdirectory( common )
 add_subdirectory( matrix )
 add_subdirectory( nirvana )
 add_subdirectory( client )
 # add_subdirectory( server )
-add_subdirectory( tools )
+add_subdirectory( build )
+
 add_subdirectory( tests )

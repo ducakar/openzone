@@ -110,13 +110,13 @@ namespace oz
     ostream->writeFloat( life );
 
     ostream->writeInt( events.length() );
-    foreach( event, events.citer() ) {
+    for( auto event : events.citer() ) {
       ostream->writeInt( event->id );
       ostream->writeFloat( event->intensity );
     }
 
     ostream->writeInt( items.length() );
-    foreach( item, items.citer() ) {
+    for( auto item : items.citer() ) {
       ostream->writeInt( *item );
     }
   }
@@ -146,13 +146,13 @@ namespace oz
     ostream->writeFloat( life );
 
     ostream->writeInt( events.length() );
-    foreach( event, events.citer() ) {
+    for( auto event : events.citer() ) {
       ostream->writeInt( event->id );
       ostream->writeFloat( event->intensity );
     }
 
     ostream->writeInt( items.length() );
-    foreach( item, items.citer() ) {
+    for( auto item : items.citer() ) {
       ostream->writeInt( *item );
     }
   }

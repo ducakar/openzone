@@ -62,7 +62,7 @@ namespace client
     }
 
     // events
-    foreach( event, bot->events.citer() ) {
+    for( auto event : bot->events.citer() ) {
       hard_assert( event->id < ObjectClass::AUDIO_SAMPLES );
 
       if( event->id >= 0 && samples[event->id] != -1 ) {
@@ -77,7 +77,7 @@ namespace client
     }
 
     // inventory items' events
-    foreach( item, bot->items.citer() ) {
+    for( auto item : bot->items.citer() ) {
       const Object* obj = orbis.objects[*item];
 
       if( obj != null && ( obj->flags & Object::AUDIO_BIT ) ) {
