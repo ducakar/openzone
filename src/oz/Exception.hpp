@@ -41,17 +41,17 @@ class Exception : public std::exception
      * It generates SIGTRAP to signal debugger on exception.
      */
     explicit Exception( const String& message, const char* file, int line,
-                        const char* function ) throw();
+                        const char* function ) noexcept;
 
     /**
      * Destructor.
      */
-    virtual ~Exception() throw();
+    virtual ~Exception() noexcept;
 
     /**
      * Message string (no file, line number etc.).
      */
-    virtual const char* what() const throw();
+    virtual const char* what() const noexcept;
 
 };
 
@@ -61,7 +61,7 @@ class Exception : public std::exception
  *
  * @ingroup oz
  */
-# define Exception( message ) \
+#define Exception( message ) \
   oz::Exception( message, __FILE__, __LINE__, __PRETTY_FUNCTION__ )
 
 }

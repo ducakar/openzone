@@ -275,7 +275,7 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
  *
  * @ingroup oz
  */
-void operator delete ( void* ptr ) throw()
+void operator delete ( void* ptr ) noexcept
 {
   hard_assert( !Alloc::isLocked );
 
@@ -335,7 +335,7 @@ void operator delete ( void* ptr ) throw()
 
   System::abort( "ALLOC: Trying to free object at %p that does not seem to be allocated", chunk );
 
-backtraceFound:
+backtraceFound:;
 
   pthread_mutex_unlock( &sectionMutex );
 #endif
@@ -352,7 +352,7 @@ backtraceFound:
  *
  * @ingroup oz
  */
-void operator delete[] ( void* ptr ) throw()
+void operator delete[] ( void* ptr ) noexcept
 {
   hard_assert( !Alloc::isLocked );
 
@@ -411,7 +411,7 @@ void operator delete[] ( void* ptr ) throw()
 
   System::abort( "ALLOC: Trying to free array at %p that does not seem to be allocated", chunk );
 
-backtraceFound:
+backtraceFound:;
 
   pthread_mutex_unlock( &sectionMutex );
 #endif
@@ -422,3 +422,4 @@ backtraceFound:
   free( chunk );
 #endif
 }
+

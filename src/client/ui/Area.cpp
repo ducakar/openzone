@@ -74,7 +74,7 @@ namespace ui
     x = newX;
     y = newY;
 
-    foreach( child, children.iter() ) {
+    for( auto child : children.iter() ) {
       child->x += dx;
       child->y += dy;
     }
@@ -88,20 +88,20 @@ namespace ui
     x += moveX;
     y += moveY;
 
-    foreach( child, children.iter() ) {
+    for( auto child : children.iter() ) {
       child->move( moveX, moveY );
     }
   }
 
   bool Area::passMouseEvents()
   {
-    foreach( child, children.iter() ) {
+    for( auto child : children.iter() ) {
       if( child->flags & GRAB_BIT ) {
         child->onMouseEvent();
         return true;
       }
     }
-    foreach( child, children.iter() ) {
+    for( auto child : children.iter() ) {
       if( child->x <= mouse.x && mouse.x < child->x + child->width &&
           child->y <= mouse.y && mouse.y < child->y + child->height )
       {

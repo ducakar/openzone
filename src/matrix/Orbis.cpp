@@ -478,41 +478,41 @@ namespace oz
     }
 
     ostream->writeInt( strFreedIndices[freeing].length() );
-    foreach( i, strFreedIndices[freeing].citer() ) {
+    for( auto i : strFreedIndices[freeing].citer() ) {
       ostream->writeInt( *i );
     }
     ostream->writeInt( objFreedIndices[freeing].length() );
-    foreach( i, objFreedIndices[freeing].citer() ) {
+    for( auto i : objFreedIndices[freeing].citer() ) {
       ostream->writeInt( *i );
     }
     ostream->writeInt( partFreedIndices[freeing].length() );
-    foreach( i, partFreedIndices[freeing].citer() ) {
+    for( auto i : partFreedIndices[freeing].citer() ) {
       ostream->writeInt( *i );
     }
 
     ostream->writeInt( strFreedIndices[waiting].length() );
-    foreach( i, strFreedIndices[waiting].citer() ) {
+    for( auto i : strFreedIndices[waiting].citer() ) {
       ostream->writeInt( *i );
     }
     ostream->writeInt( objFreedIndices[waiting].length() );
-    foreach( i, objFreedIndices[waiting].citer() ) {
+    for( auto i : objFreedIndices[waiting].citer() ) {
       ostream->writeInt( *i );
     }
     ostream->writeInt( partFreedIndices[waiting].length() );
-    foreach( i, partFreedIndices[waiting].citer() ) {
+    for( auto i : partFreedIndices[waiting].citer() ) {
       ostream->writeInt( *i );
     }
 
     ostream->writeInt( strAvailableIndices.length() );
-    foreach( i, strAvailableIndices.citer() ) {
+    for( auto i : strAvailableIndices.citer() ) {
       ostream->writeInt( *i );
     }
     ostream->writeInt( objAvailableIndices.length() );
-    foreach( i, objAvailableIndices.citer() ) {
+    for( auto i : objAvailableIndices.citer() ) {
       ostream->writeInt( *i );
     }
     ostream->writeInt( partAvailableIndices.length() );
-    foreach( i, partAvailableIndices.citer() ) {
+    for( auto i : partAvailableIndices.citer() ) {
       ostream->writeInt( *i );
     }
 

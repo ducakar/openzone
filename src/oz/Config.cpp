@@ -82,7 +82,8 @@ bool Config::loadConf( const char* file )
       }
     }
 
-skipLine:
+  skipLine:;
+
     // find end of line/file
     while( ch != '\n' && ch != EOF ) {
       ch = char( fgetc( f ) );
@@ -412,3 +413,5 @@ String Config::toString( const String& indentString )
 }
 
 }
+
+

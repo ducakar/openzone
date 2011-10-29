@@ -12,7 +12,6 @@
 #include "stable.hpp"
 
 #include "matrix/common.hpp"
-#include "matrix/Timer.hpp"
 
 #include "client/common.hpp"
 

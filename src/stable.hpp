@@ -14,8 +14,7 @@
  * header, it will not work in GCC or VC++.
  */
 
-#include "oz/oz.hpp"
-#include "configuration.hpp"
+#include "common/common.hpp"
 
 // we want to use C++ wrapped C headers, not vanilla C ones that are included via SDL
 #include <cctype>

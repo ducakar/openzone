@@ -576,7 +576,7 @@ namespace nirvana
     File luaDir( "lua/nirvana" );
     luaDir.ls( &luaFiles );
 
-    foreach( file, luaFiles.citer() ) {
+    for( auto file : luaFiles.citer() ) {
       if( file->hasExtension( "lua" ) ) {
         log.print( "%s ...", file->name() );
 
@@ -1459,7 +1459,7 @@ namespace nirvana
     OBJ_NOT_NULL();
 
     lua.objects.clear();
-    foreach( item, lua.obj->items.citer() ) {
+    for( auto item : lua.obj->items.citer() ) {
       lua.objects.add( orbis.objects[*item] );
     }
     lua.objIndex = 0;
@@ -2166,7 +2166,7 @@ namespace nirvana
     ARG( 0 );
 
     lua.objects.clear();
-    foreach( item, lua.self->items.citer() ) {
+    for( auto item : lua.self->items.citer() ) {
       lua.objects.add( orbis.objects[*item] );
     }
     lua.objIndex = 0;

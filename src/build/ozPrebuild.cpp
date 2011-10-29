@@ -1,5 +1,5 @@
 /*
- *  ozPrebuildData.cpp
+ *  ozPrebuild.cpp
  *
  *  Prebuild data
  *
@@ -12,7 +12,6 @@
 #include "Build.hpp"
 
 #include "matrix/Library.hpp"
-#include "matrix/QBSP.hpp"
 
 #include "client/Context.hpp"
 #include "client/Compiler.hpp"
@@ -24,6 +23,8 @@
 #include "client/MD3.hpp"
 #include "client/Render.hpp"
 #include "client/Module.hpp"
+
+#include "build/BSP.hpp"
 
 #include <cerrno>
 #include <unistd.h>
@@ -138,7 +139,7 @@ static void prebuildTextures( const char* srcDir, const char* destDir,
   sSrcDir  = sSrcDir + "/";
   sDestDir = sDestDir + "/";
 
-  foreach( file, dirList.citer() ) {
+  for( auto file : dirList.citer() ) {
     if( !file->hasExtension( "png" ) && !file->hasExtension( "jpg" ) ) {
       continue;
     }
@@ -186,7 +187,7 @@ static void prebuildTerrae()
 
   srcDir = srcDir + "/";
 
-  foreach( file, dirList.citer() ) {
+  for( auto file : dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
       continue;
     }
@@ -216,7 +217,7 @@ static void prebuildCaela()
 
   srcDir = srcDir + "/";
 
-  foreach( file, dirList.citer() ) {
+  for( auto file : dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
       continue;
     }
@@ -245,7 +246,7 @@ static void compileBSPs()
 
   dirName = dirName + "/";
 
-  foreach( file, dirList.citer() ) {
+  for( auto file : dirList.citer() ) {
     if( !file->hasExtension( "map" ) ) {
       continue;
     }
@@ -291,15 +292,14 @@ static void prebuildBSPs()
   srcDir = srcDir + "/";
   destDir = destDir + "/";
 
-  foreach( file, dirList.citer() ) {
+  for( auto file : dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
       continue;
     }
 
     String name = file->baseName();
 
-    QBSP::prebuild( name );
-    client::BSP::prebuild( name );
+    build::BSP::prebuild( name );
   }
 
   log.unindent();
@@ -365,7 +365,7 @@ static void prebuildModels()
 
   dirName = dirName + "/";
 
-  foreach( file, dirList.citer() ) {
+  for( auto file : dirList.citer() ) {
     struct stat srcInfo0;
     struct stat srcInfo1;
     struct stat configInfo;
@@ -435,7 +435,7 @@ static void checkLua( const char* path )
 
   String sources;
 
-  foreach( file, dirList.citer() ) {
+  for( auto file : dirList.citer() ) {
     if( !file->hasExtension( "lua" ) ) {
       continue;
     }

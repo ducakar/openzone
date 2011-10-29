@@ -11,8 +11,6 @@
 
 #include "stable.hpp"
 
-#include "matrix/Timer.hpp"
-
 namespace oz
 {
 namespace client

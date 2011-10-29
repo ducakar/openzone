@@ -46,7 +46,9 @@ class CIteratorBase
     /// Pointer to the element iterator is currently pointing at.
     const Elem* elem;
 
-    /// Create an iterator that points to the given element.
+    /**
+     * Create an iterator that points to the given element.
+     */
     OZ_ALWAYS_INLINE
     explicit CIteratorBase( const Elem* start ) : elem( start )
     {}
@@ -127,7 +129,7 @@ class IteratorBase
     Elem* elem;
 
     /**
-     * @param start first element
+     * Create an iterator that points to the given element.
      */
     OZ_ALWAYS_INLINE
     explicit IteratorBase( Elem* start ) : elem( start )
@@ -275,17 +277,6 @@ typename Iterator::RangeIterator end( Iterator& iter )
 {
   return typename Iterator::RangeIterator( iter );
 }
-
-/**
- * @def foreach
- * Foreach loop.
- *
- * FIXME Remove and replace it with standard range-for when KDevelop gets better type deduction.
- *
- * @ingroup oz
- */
-#define foreach( i, iterator ) \
-  for( decltype( iterator ) i : iterator )
 
 /**
  * Copy elements.

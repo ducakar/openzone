@@ -620,7 +620,7 @@ namespace oz
     File luaDir( "lua/matrix" );
     luaDir.ls( &luaFiles );
 
-    foreach( file, luaFiles.citer() ) {
+    for( auto file : luaFiles.citer() ) {
       if( file->hasExtension( "lua" ) ) {
         log.print( "%s ...", file->name() );
 
@@ -1666,7 +1666,7 @@ namespace oz
     ARG( 0 );
     OBJ_NOT_NULL();
 
-    foreach( item, lua.obj->items.citer() ) {
+    for( auto item : lua.obj->items.citer() ) {
       Dynamic* dyn = static_cast<Dynamic*>( orbis.objects[*item] );
 
       if( dyn != null ) {
@@ -1931,7 +1931,7 @@ namespace oz
     OBJ_NOT_NULL();
 
     lua.objects.clear();
-    foreach( item, lua.obj->items.citer() ) {
+    for( auto item : lua.obj->items.citer() ) {
       lua.objects.add( orbis.objects[*item] );
     }
     lua.objIndex = 0;

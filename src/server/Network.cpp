@@ -55,7 +55,7 @@ namespace server
       log.println( "Client connected" );
     }
 
-    foreach( client, clients.iterator() ) {
+    for( auto client, clients.iterator() ) {
     }
   }
 

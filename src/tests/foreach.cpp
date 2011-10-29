@@ -121,42 +121,42 @@ int main( int, char** )
   hi1.dealloc();
   hs1.dealloc();
 
-  foreach( i, l.citer() ) {
+  for( auto i : l.citer() ) {
     printf( "%d ", i->value );
   }
   printf( "\n" );
 
-  foreach( i, dl.citer() ) {
+  for( auto i : dl.citer() ) {
     printf( "%d ", i->value );
   }
   printf( "\n" );
 
-  foreach( i, a.citer() ) {
+  for( auto i : a.citer() ) {
     printf( "%d ", *i );
   }
   printf( "\n" );
 
-  foreach( i, v.citer() ) {
+  for( auto i : v.citer() ) {
     printf( "%d ", *i );
   }
   printf( "\n" );
 
-  foreach( i, sv.citer() ) {
+  for( auto i : sv.citer() ) {
     printf( "%d ", *i );
   }
   printf( "\n" );
 
-  foreach( i, m.citer() ) {
+  for( auto i : m.citer() ) {
     printf( "%d ", i.key() );
   }
   printf( "\n" );
 
-  foreach( i, hi.citer() ) {
+  for( auto i : hi.citer() ) {
     printf( "%d ", *i );
   }
   printf( "\n" );
 
-  foreach( i, hs.citer() ) {
+  for( auto i : hs.citer() ) {
     printf( "%d ", i.value() );
   }
   printf( "\n" );

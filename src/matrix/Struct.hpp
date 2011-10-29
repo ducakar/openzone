@@ -83,7 +83,7 @@ namespace oz
       Struct& operator = ( const Struct& ) = delete;
 
       explicit Struct( int index, int bspId, const Point3& p, Heading heading );
-      explicit Struct( int index, int bpsId, InputStream* istream );
+      explicit Struct( int index, int bspId, InputStream* istream );
 
       /**
        * Rotate vector from structure coordinate system to absolute coordinate system.

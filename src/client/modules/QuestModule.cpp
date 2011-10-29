@@ -45,7 +45,7 @@ namespace client
   void QuestModule::write( OutputStream* ostream ) const
   {
     ostream->writeInt( quests.length() );
-    foreach( quest, quests.citer() ) {
+    for( auto quest : quests.citer() ) {
       ostream->writeString( quest->title );
       ostream->writeString( quest->description );
       ostream->writePoint3( quest->place );

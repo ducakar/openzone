@@ -11,7 +11,6 @@
 
 #include "client/ExplosionImago.hpp"
 
-#include "matrix/Timer.hpp"
 #include "client/Context.hpp"
 #include "client/Colours.hpp"
 

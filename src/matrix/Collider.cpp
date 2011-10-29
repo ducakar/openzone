@@ -162,7 +162,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        foreach( strIndex, cell.structs.citer() ) {
+        for( auto strIndex : cell.structs.citer() ) {
           str = orbis.structs[*strIndex];
 
           if( str != oldStr && str->overlaps( trace ) ) {
@@ -179,7 +179,7 @@ namespace oz
           }
         }
 
-        foreach( sObj, cell.objects.citer() ) {
+        for( auto sObj : cell.objects.citer() ) {
           if( sObj != exclObj && ( sObj->flags & mask ) && overlapsAABBObj( sObj ) ) {
             return true;
           }
@@ -200,7 +200,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        foreach( sObj, cell.objects.citer() ) {
+        for( auto sObj : cell.objects.citer() ) {
           if( sObj != exclObj && ( sObj->flags & mask ) && overlapsAABBObj( sObj ) ) {
             return true;
           }
@@ -223,7 +223,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        foreach( strIndex, cell.structs.citer() ) {
+        for( auto strIndex : cell.structs.citer() ) {
           str = orbis.structs[*strIndex];
 
           if( str != oldStr && str->overlaps( trace ) ) {
@@ -240,7 +240,7 @@ namespace oz
           }
         }
 
-        foreach( sObj, cell.objects.citer() ) {
+        for( auto sObj : cell.objects.citer() ) {
           if( sObj != exclObj && ( sObj->flags & mask ) && overlapsAABBObj( sObj ) ) {
             return true;
           }
@@ -261,7 +261,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        foreach( sObj, cell.objects.citer() ) {
+        for( auto sObj : cell.objects.citer() ) {
           if( sObj->overlaps( trace ) ) {
             startPos = str->toStructCS( sObj->p ) - entity->offset;
             aabb.dim = sObj->dim + Vec3( margin, margin, margin );
@@ -725,7 +725,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        foreach( strIndex, cell.structs.citer() ) {
+        for( auto strIndex : cell.structs.citer() ) {
           str = orbis.structs[*strIndex];
 
           // to prevent some of duplicated structure tests
@@ -747,7 +747,7 @@ namespace oz
         startPos = originalStartPos;
         endPos   = originalEndPos;
 
-        foreach( sObj, cell.objects.iter() ) {
+        for( auto sObj : cell.objects.iter() ) {
           if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( trace ) ) {
             trimAABBObj( sObj );
           }
@@ -780,7 +780,7 @@ namespace oz
         const Cell& cell = orbis.cells[x][y];
 
         if( structs != null ) {
-          foreach( strIndex, cell.structs.citer() ) {
+          for( auto strIndex : cell.structs.citer() ) {
             Struct* str = orbis.structs[*strIndex];
 
             if( str != oldStr && str->overlaps( trace ) && !structs->contains( str ) ) {
@@ -799,7 +799,7 @@ namespace oz
         }
 
         if( objects != null ) {
-          foreach( sObj, cell.objects.iter() ) {
+          for( auto sObj : cell.objects.iter() ) {
             if( ( sObj->flags & mask ) && sObj->overlaps( trace ) ) {
               objects->add( sObj );
             }
@@ -818,7 +818,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        foreach( sObj, cell.objects.iter() ) {
+        for( auto sObj : cell.objects.iter() ) {
           if( ( sObj->flags & mask ) && trace.includes( *sObj ) ) {
             objects->add( sObj );
           }
@@ -833,7 +833,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        foreach( sObj, cell.objects.iter() ) {
+        for( auto sObj : cell.objects.iter() ) {
           if( ( sObj->flags & Object::DYNAMIC_BIT ) && sObj->overlaps( trace ) ) {
             sObj->flags &= ~Object::MOVE_CLEAR_MASK;
           }
@@ -850,7 +850,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        foreach( sObj, cell.objects.iter() ) {
+        for( auto sObj : cell.objects.iter() ) {
           if( ( sObj->flags & mask ) && sObj->overlaps( trace ) ) {
             startPos = str->toStructCS( sObj->p ) - entity->offset;
             aabb.dim = sObj->dim + Vec3( margin, margin, margin );

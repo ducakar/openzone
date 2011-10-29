@@ -10,6 +10,8 @@ echo Generating src/oz/CMakeLists.txt
 ( cd src/oz       && ./CMakeLists-gen.sh )
 echo Generating src/matrix/CMakeLists.txt
 ( cd src/matrix   && ./CMakeLists-gen.sh )
+echo Generating src/common/CMakeLists.txt
+( cd src/common   && ./CMakeLists-gen.sh )
 echo Generating src/nirvana/CMakeLists.txt
 ( cd src/nirvana  && ./CMakeLists-gen.sh )
 echo Generating src/client/CMakeLists.txt

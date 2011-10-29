@@ -64,7 +64,7 @@ namespace client
       }
     }
 
-    foreach( obj, cell.objects.citer() ) {
+    for( auto obj : cell.objects.citer() ) {
       float radius = ( obj->flags & Object::WIDE_CULL_BIT ) ?
           WIDE_CULL_FACTOR * obj->dim.fastL() : obj->dim.fastL();
 
@@ -73,7 +73,7 @@ namespace client
       }
     }
 
-    foreach( part, cell.particles.citer() ) {
+    for( auto part : cell.particles.citer() ) {
       if( frustum.isVisible( part->p, particleRadius ) ) {
         particles.add( part );
       }
@@ -332,7 +332,7 @@ namespace client
 
         glUniform4fv( param.oz_Colour, 1, Colours::ENTITY_AABB );
 
-        foreach( entity, citer( str->entities, str->nEntities ) ) {
+        for( auto entity : citer( str->entities, str->nEntities ) ) {
           Bounds bb = str->toAbsoluteCS( *entity->model + entity->offset );
           shape.wireBox( bb.toAABB() );
         }
@@ -596,7 +596,7 @@ namespace client
       isGallium = true;
     }
 
-    foreach( extension, extensions.citer() ) {
+    for( auto extension : extensions.citer() ) {
       log.println( "%s", extension->cstr() );
 
       if( extension->equals( "GL_ARB_framebuffer_object" ) ) {

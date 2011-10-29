@@ -30,7 +30,7 @@ namespace client
   {
     const Cell& cell = orbis.cells[cellX][cellY];
 
-    foreach( strIndex, cell.structs.citer() ) {
+    for( auto strIndex : cell.structs.citer() ) {
       if( !playedStructs.get( *strIndex ) ) {
         playedStructs.set( *strIndex );
 
@@ -38,7 +38,7 @@ namespace client
         context.playBSP( str );
       }
     }
-    foreach( obj, cell.objects.citer() ) {
+    for( auto obj : cell.objects.citer() ) {
       if( obj->flags & Object::AUDIO_BIT ) {
         if( ( camera.p - obj->p ).sqL() < DMAX_SQ ) {
           context.playAudio( obj, null );
@@ -331,7 +331,7 @@ namespace client
     log.println( "OpenAL version: %s", alGetString( AL_VERSION ) );
     log.println( "OpenAL extensions {" );
     log.indent();
-    foreach( extension, extensions.citer() ) {
+    for( auto extension : extensions.citer() ) {
       log.println( "%s", extension->cstr() );
     }
     log.unindent();
