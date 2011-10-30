@@ -9,30 +9,33 @@
 
 #pragma once
 
-#include "stable.hpp"
+#include "matrix/common.hpp"
 
 namespace oz
 {
+namespace matrix
+{
 
-  class Matrix
-  {
-    public:
+class Matrix
+{
+  public:
 
-      static const float MAX_VELOCITY2;
+    static const float MAX_VELOCITY2;
 
-      void update();
+    void update();
 
-      void read( InputStream* istream );
-      void write( OutputStream* ostream ) const;
+    void read( InputStream* istream );
+    void write( OutputStream* ostream ) const;
 
-      void load();
-      void unload();
+    void load();
+    void unload();
 
-      void init();
-      void free();
+    void init();
+    void free();
 
-  };
+};
 
-  extern Matrix matrix;
+extern Matrix matrix;
 
+}
 }

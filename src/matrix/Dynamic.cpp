@@ -13,50 +13,53 @@
 
 namespace oz
 {
+namespace matrix
+{
 
-  Pool<Dynamic, 4096> Dynamic::pool;
+Pool<Dynamic, 4096> Dynamic::pool;
 
-  void Dynamic::readFull( InputStream* istream )
-  {
-    Object::readFull( istream );
+void Dynamic::readFull( InputStream* istream )
+{
+  Object::readFull( istream );
 
-    parent     = istream->readInt();
-    velocity   = istream->readVec3();
-    momentum   = istream->readVec3();
-    floor      = istream->readVec3();
-    lower      = istream->readInt();
-    depth      = istream->readFloat();
-  }
+  parent     = istream->readInt();
+  velocity   = istream->readVec3();
+  momentum   = istream->readVec3();
+  floor      = istream->readVec3();
+  lower      = istream->readInt();
+  depth      = istream->readFloat();
+}
 
-  void Dynamic::writeFull( OutputStream* ostream ) const
-  {
-    Object::writeFull( ostream );
+void Dynamic::writeFull( OutputStream* ostream ) const
+{
+  Object::writeFull( ostream );
 
-    ostream->writeInt( parent );
-    ostream->writeVec3( velocity );
-    ostream->writeVec3( momentum );
-    ostream->writeVec3( floor );
-    ostream->writeInt( lower );
-    ostream->writeFloat( depth );
-  }
+  ostream->writeInt( parent );
+  ostream->writeVec3( velocity );
+  ostream->writeVec3( momentum );
+  ostream->writeVec3( floor );
+  ostream->writeInt( lower );
+  ostream->writeFloat( depth );
+}
 
-  void Dynamic::readUpdate( InputStream* istream )
-  {
-    Object::readUpdate( istream );
+void Dynamic::readUpdate( InputStream* istream )
+{
+  Object::readUpdate( istream );
 
-    p        = istream->readPoint3();
-    velocity = istream->readVec3();
-    momentum = istream->readVec3();
-  }
+  p        = istream->readPoint3();
+  velocity = istream->readVec3();
+  momentum = istream->readVec3();
+}
 
-  void Dynamic::writeUpdate( OutputStream* ostream ) const
-  {
-    Object::writeUpdate( ostream );
+void Dynamic::writeUpdate( OutputStream* ostream ) const
+{
+  Object::writeUpdate( ostream );
 
-    ostream->writePoint3( p );
-    ostream->writeFloat( life );
-    ostream->writeVec3( velocity );
-    ostream->writeVec3( momentum );
-  }
+  ostream->writePoint3( p );
+  ostream->writeFloat( life );
+  ostream->writeVec3( velocity );
+  ostream->writeVec3( momentum );
+}
 
+}
 }

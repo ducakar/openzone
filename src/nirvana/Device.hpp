@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "nirvana/common.hpp"
 
 namespace oz
@@ -18,36 +16,36 @@ namespace oz
 namespace nirvana
 {
 
-  class Device
-  {
-    public:
+class Device
+{
+  public:
 
-      static const int MEMO_BIT     = 0x0001;
-      static const int COMPUTER_BIT = 0x0002;
+    static const int MEMO_BIT     = 0x0001;
+    static const int COMPUTER_BIT = 0x0002;
 
-      typedef Device* ( * CreateFunc )( int id, InputStream* istream );
+    typedef Device* ( * CreateFunc )( int id, InputStream* istream );
 
-      int flags;
+    int flags;
 
-    protected:
+  protected:
 
-      explicit Device( int flags_ ) : flags( flags_ )
-      {}
+    explicit Device( int flags_ ) : flags( flags_ )
+    {}
 
-      virtual void onUse( const Bot* user );
-      virtual void onUpdate();
+    virtual void onUse( const Bot* user );
+    virtual void onUpdate();
 
-    public:
+  public:
 
-      virtual ~Device();
+    virtual ~Device();
 
-      virtual const char* type() const = 0;
+    virtual const char* type() const = 0;
 
-      virtual const char* getMemo() const;
+    virtual const char* getMemo() const;
 
-      virtual void write( OutputStream* ostream ) const;
+    virtual void write( OutputStream* ostream ) const;
 
-  };
+};
 
 }
 }

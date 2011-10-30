@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "client/Stage.hpp"
 
 #include "client/ui/MainMenu.hpp"
@@ -20,24 +18,24 @@ namespace oz
 namespace client
 {
 
-  class MenuStage : public Stage
-  {
-    public:
+class MenuStage : public Stage
+{
+  public:
 
-      bool doExit;
+    bool doExit;
 
-      virtual bool update();
-      virtual void present();
+    virtual bool update();
+    virtual void present();
 
-      virtual void load();
-      virtual void unload();
+    virtual void load();
+    virtual void unload();
 
-      virtual void init();
-      virtual void free();
+    virtual void init();
+    virtual void free();
 
-  };
+};
 
-  extern MenuStage menuStage;
+extern MenuStage menuStage;
 
 }
 }

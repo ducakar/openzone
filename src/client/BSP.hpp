@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/Struct.hpp"
 #include "matrix/BSP.hpp"
 
@@ -25,11 +23,11 @@ class BSP
 {
   private:
 
-    int      id;
-    int      flags;
-    Mesh     mesh;
+    int  id;
+    int  flags;
+    Mesh mesh;
 
-    const oz::BSP* bsp;
+    const matrix::BSP* bsp;
 
     void playSound( const Struct::Entity* entity, int sample ) const;
     void playContSound( const Struct::Entity* entity, int sample ) const;

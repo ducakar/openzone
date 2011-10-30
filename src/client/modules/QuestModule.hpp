@@ -21,50 +21,50 @@ namespace oz
 namespace client
 {
 
-  struct Quest
+struct Quest
+{
+  enum State
   {
-    enum State
-    {
-      PENDING    = 0,
-      SUCCESSFUL = 1,
-      FAILED     = 2
-    };
-
-    String title;
-    String description;
-    Point3 place;
-    int    state;
-
-    Quest();
-    explicit Quest( const char* title, const char* description, const Point3& place, int state );
+    PENDING    = 0,
+    SUCCESSFUL = 1,
+    FAILED     = 2
   };
 
-  class QuestModule : public Module
-  {
-    public:
+  String title;
+  String description;
+  Point3 place;
+  int    state;
 
-      Vector<Quest> quests;
+  Quest();
+  explicit Quest( const char* title, const char* description, const Point3& place, int state );
+};
 
-      ui::QuestFrame* questFrame;
+class QuestModule : public Module
+{
+  public:
 
-      virtual void read( InputStream* istream );
-      virtual void write( OutputStream* ostream ) const;
+    Vector<Quest> quests;
 
-      virtual void load();
-      virtual void unload();
+    ui::QuestFrame* questFrame;
 
-      virtual void registerLua() const;
+    virtual void read( InputStream* istream );
+    virtual void write( OutputStream* ostream ) const;
 
-      virtual void init();
+    virtual void load();
+    virtual void unload();
 
-    private:
+    virtual void registerLua() const;
 
-      OZ_LUA_API( ozQuestAdd );
-      OZ_LUA_API( ozQuestEnd );
+    virtual void init();
 
-  };
+  private:
 
-  extern QuestModule questModule;
+    OZ_LUA_API( ozQuestAdd );
+    OZ_LUA_API( ozQuestEnd );
+
+};
+
+extern QuestModule questModule;
 
 }
 }

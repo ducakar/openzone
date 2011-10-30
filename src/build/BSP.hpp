@@ -208,37 +208,37 @@ class BSP : public Bounds
       Vec3 normal;
     };
 
-    String          name;
+    String              name;
 
-    float           life;
-    float           resistance;
+    float               life;
+    float               resistance;
 
-    int             nTextures;
-    int             nPlanes;
-    int             nNodes;
-    int             nLeaves;
-    int             nLeafBrushes;
-    int             nModels;
-    int             nBrushes;
-    int             nBrushSides;
-    int             nVertices;
-    int             nIndices;
-    int             nFaces;
+    int                 nTextures;
+    int                 nPlanes;
+    int                 nNodes;
+    int                 nLeaves;
+    int                 nLeafBrushes;
+    int                 nModels;
+    int                 nBrushes;
+    int                 nBrushSides;
+    int                 nVertices;
+    int                 nIndices;
+    int                 nFaces;
 
-    Texture*        textures;
-    Plane*          planes;
-    oz::BSP::Node*  nodes;
-    oz::BSP::Leaf*  leaves;
-    int*            leafBrushes;
-    oz::BSP::Model* models;
-    oz::BSP::Brush* brushes;
-    int*            brushSides;
-    ModelFaces*     modelFaces;
-    client::Vertex* vertices;
-    int*            indices;
-    Face*           faces;
+    Texture*            textures;
+    Plane*              planes;
+    matrix::BSP::Node*  nodes;
+    matrix::BSP::Leaf*  leaves;
+    int*                leafBrushes;
+    matrix::BSP::Model* models;
+    matrix::BSP::Brush* brushes;
+    int*                brushSides;
+    ModelFaces*         modelFaces;
+    client::Vertex*     vertices;
+    int*                indices;
+    Face*               faces;
 
-    bool includes( const oz::BSP::Brush& brush, float maxDim ) const;
+    bool includes( const matrix::BSP::Brush& brush, float maxDim ) const;
 
     void load();
     void optimise();

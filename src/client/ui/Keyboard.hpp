@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "stable.hpp"
+#include "client/common.hpp"
 
 namespace oz
 {

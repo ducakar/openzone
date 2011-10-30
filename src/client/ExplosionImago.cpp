@@ -21,51 +21,51 @@ namespace oz
 namespace client
 {
 
-  int ExplosionImago::modelId;
+int ExplosionImago::modelId;
 
-  Pool<ExplosionImago> ExplosionImago::pool;
+Pool<ExplosionImago> ExplosionImago::pool;
 
-  Imago* ExplosionImago::create( const Object* obj )
-  {
-    ExplosionImago* imago = new ExplosionImago();
+Imago* ExplosionImago::create( const Object* obj )
+{
+  ExplosionImago* imago = new ExplosionImago();
 
-    modelId = library.modelIndex( "explosion" );
+  modelId = library.modelIndex( "explosion" );
 
-    imago->obj = obj;
-    imago->smm = context.requestSMM( modelId );
-    imago->startMillis = timer.millis;
+  imago->obj = obj;
+  imago->smm = context.requestSMM( modelId );
+  imago->startMillis = timer.millis;
 
-    return imago;
+  return imago;
+}
+
+ExplosionImago::~ExplosionImago()
+{
+  context.releaseSMM( modelId );
+}
+
+void ExplosionImago::draw( const Imago*, int mask )
+{
+  if( !smm->isLoaded || !( mask & Mesh::ALPHA_BIT ) ) {
+    return;
   }
 
-  ExplosionImago::~ExplosionImago()
-  {
-    context.releaseSMM( modelId );
-  }
+  float millis = float( timer.millis - startMillis );
+  float radius = millis * obj->dim.z * 0.004f;
+  float alpha  = 1.0f - 0.002f * millis;
 
-  void ExplosionImago::draw( const Imago*, int mask )
-  {
-    if( !smm->isLoaded || !( mask & Mesh::ALPHA_BIT ) ) {
-      return;
-    }
+  glDisable( GL_CULL_FACE );
 
-    float millis = float( timer.millis - startMillis );
-    float radius = millis * obj->dim.z * 0.004f;
-    float alpha  = 1.0f - 0.002f * millis;
+  shader.colour = Vec4( 1.0f, 1.0f, 1.0f, alpha*alpha );
 
-    glDisable( GL_CULL_FACE );
+  tf.model.scale( Vec3( radius, radius, radius ) );
+  tf.apply();
 
-    shader.colour = Vec4( 1.0f, 1.0f, 1.0f, alpha*alpha );
+  smm->draw( Mesh::SOLID_BIT );
 
-    tf.model.scale( Vec3( radius, radius, radius ) );
-    tf.apply();
+  shader.colour = Colours::WHITE;
 
-    smm->draw( Mesh::SOLID_BIT );
-
-    shader.colour = Colours::WHITE;
-
-    glEnable( GL_CULL_FACE );
-  }
+  glEnable( GL_CULL_FACE );
+}
 
 }
 }

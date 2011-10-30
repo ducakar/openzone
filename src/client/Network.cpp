@@ -16,25 +16,25 @@ namespace oz
 namespace client
 {
 
-  Network network;
+Network network;
 
 #ifndef OZ_NETWORKING
 
-  bool Network::connect()
-  {
-    return true;
-  }
+bool Network::connect()
+{
+  return true;
+}
 
-  void Network::disconnect()
-  {}
+void Network::disconnect()
+{}
 
-  void Network::update()
-  {}
+void Network::update()
+{}
 
 #else
 
-  bool Network::connect()
-  {
+bool Network::connect()
+{
 //    const char* host = config.getSet( "net.server", "localhost" );
 //    int port = config.getSet( "net.port", 6666 );
 //
@@ -50,17 +50,17 @@ namespace client
 //    }
 //
 //    log.printEnd( " OK" );
-    return true;
-  }
+  return true;
+}
 
-  void Network::disconnect()
-  {
+void Network::disconnect()
+{
 //    SDLNet_TCP_Close( socket );
 //    socket = null;
-  }
+}
 
-  void Network::update()
-  {}
+void Network::update()
+{}
 
 #endif
 

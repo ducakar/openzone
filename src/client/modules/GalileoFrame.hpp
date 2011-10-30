@@ -20,28 +20,28 @@ namespace client
 namespace ui
 {
 
-  class GalileoFrame : public Frame
-  {
-    private:
+class GalileoFrame : public Frame
+{
+  private:
 
-      uint mapTexId;
-      uint arrowTexId;
-      uint markerTexId;
-      bool isVisible;
+    uint mapTexId;
+    uint arrowTexId;
+    uint markerTexId;
+    bool isVisible;
 
-      uint loadTexture( const char* path ) const;
+    uint loadTexture( const char* path ) const;
 
-    protected:
+  protected:
 
-      virtual bool onMouseEvent();
-      virtual void onDraw();
+    virtual bool onMouseEvent();
+    virtual void onDraw();
 
-    public:
+  public:
 
-      GalileoFrame();
-      virtual ~GalileoFrame();
+    GalileoFrame();
+    virtual ~GalileoFrame();
 
-  };
+};
 
 }
 }

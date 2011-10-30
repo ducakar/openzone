@@ -18,109 +18,112 @@
 
 namespace oz
 {
+namespace matrix
+{
 
-  Pool<Weapon, 1024> Weapon::pool;
+Pool<Weapon, 1024> Weapon::pool;
 
-  void Weapon::onUpdate()
-  {
-    if( shotTime > 0.0f ) {
-      shotTime = max( shotTime - Timer::TICK_TIME, 0.0f );
-    }
-
-    if( ( flags & LUA_BIT ) && !clazz->onUpdate.isEmpty() ) {
-      lua.objectCall( clazz->onUpdate, this );
-    }
-
-    if( !( flags & Object::UPDATE_FUNC_BIT ) ) {
-      // actually a hack, if Lua handler disables update
-      shotTime = 0.0f;
-    }
+void Weapon::onUpdate()
+{
+  if( shotTime > 0.0f ) {
+    shotTime = max( shotTime - Timer::TICK_TIME, 0.0f );
   }
 
-  bool Weapon::onUse( Bot* user )
-  {
-    hard_assert( parent == -1 || parent == user->index );
+  if( ( flags & LUA_BIT ) && !clazz->onUpdate.isEmpty() ) {
+    lua.objectCall( clazz->onUpdate, this );
+  }
 
-    const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
+  if( !( flags & Object::UPDATE_FUNC_BIT ) ) {
+    // actually a hack, if Lua handler disables update
+    shotTime = 0.0f;
+  }
+}
 
-    if( !clazz->allowedUsers.contains( user->clazz ) ) {
-      hard_assert( user->weapon != index );
-      return false;
-    }
+bool Weapon::onUse( Bot* user )
+{
+  hard_assert( parent == -1 || parent == user->index );
 
-    if( parent == -1 && user->items.length() < user->clazz->nItems ) {
-      user->items.add( index );
-      parent = user->index;
-      synapse.cut( this );
+  const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
 
-      user->weapon = index;
-
-      return true;
-    }
-    else if( parent == user->index ) {
-      user->weapon = user->weapon == index  ? -1 : index;
-
-      return true;
-    }
+  if( !clazz->allowedUsers.contains( user->clazz ) ) {
+    hard_assert( user->weapon != index );
     return false;
   }
 
-  Weapon::Weapon()
-  {}
+  if( parent == -1 && user->items.length() < user->clazz->nItems ) {
+    user->items.add( index );
+    parent = user->index;
+    synapse.cut( this );
 
-  void Weapon::trigger( Bot* user )
-  {
-    hard_assert( user != null );
+    user->weapon = index;
 
-    const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
+    return true;
+  }
+  else if( parent == user->index ) {
+    user->weapon = user->weapon == index  ? -1 : index;
 
-    if( clazz->onShot.isEmpty() ) {
-      return;
+    return true;
+  }
+  return false;
+}
+
+Weapon::Weapon()
+{}
+
+void Weapon::trigger( Bot* user )
+{
+  hard_assert( user != null );
+
+  const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
+
+  if( clazz->onShot.isEmpty() ) {
+    return;
+  }
+
+  if( shotTime == 0.0f ) {
+    shotTime = clazz->shotInterval;
+
+    if( nRounds == 0 ) {
+      addEvent( EVENT_SHOT_EMPTY, 1.0f );
     }
+    else {
+      nRounds = max( -1, nRounds - 1 );
 
-    if( shotTime == 0.0f ) {
-      shotTime = clazz->shotInterval;
-
-      if( nRounds == 0 ) {
-        addEvent( EVENT_SHOT_EMPTY, 1.0f );
-      }
-      else {
-        nRounds = max( -1, nRounds - 1 );
-
-        addEvent( EVENT_SHOT, 1.0f );
-        lua.objectCall( clazz->onShot, this, user );
-      }
+      addEvent( EVENT_SHOT, 1.0f );
+      lua.objectCall( clazz->onShot, this, user );
     }
   }
+}
 
-  void Weapon::readFull( InputStream* istream )
-  {
-    Dynamic::readFull( istream );
+void Weapon::readFull( InputStream* istream )
+{
+  Dynamic::readFull( istream );
 
-    nRounds  = istream->readInt();
-    shotTime = istream->readFloat();
-  }
+  nRounds  = istream->readInt();
+  shotTime = istream->readFloat();
+}
 
-  void Weapon::writeFull( OutputStream* ostream ) const
-  {
-    Dynamic::writeFull( ostream );
+void Weapon::writeFull( OutputStream* ostream ) const
+{
+  Dynamic::writeFull( ostream );
 
-    ostream->writeInt( nRounds );
-    ostream->writeFloat( shotTime );
-  }
+  ostream->writeInt( nRounds );
+  ostream->writeFloat( shotTime );
+}
 
-  void Weapon::readUpdate( InputStream* istream )
-  {
-    Dynamic::readUpdate( istream );
+void Weapon::readUpdate( InputStream* istream )
+{
+  Dynamic::readUpdate( istream );
 
-    nRounds = istream->readInt();
-  }
+  nRounds = istream->readInt();
+}
 
-  void Weapon::writeUpdate( OutputStream* ostream ) const
-  {
-    Dynamic::writeUpdate( ostream );
+void Weapon::writeUpdate( OutputStream* ostream ) const
+{
+  Dynamic::writeUpdate( ostream );
 
-    ostream->writeInt( nRounds );
-  }
+  ostream->writeInt( nRounds );
+}
 
+}
 }

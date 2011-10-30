@@ -16,17 +16,17 @@ namespace oz
 namespace nirvana
 {
 
-  Task::~Task()
-  {}
+Task::~Task()
+{}
 
-  void Task::write( OutputStream* ostream ) const
-  {
-    for( auto child : children.citer() ) {
-      ostream->writeString( child->type() );
-      child->write( ostream );
-    }
-    ostream->writeInt( flags );
+void Task::write( OutputStream* ostream ) const
+{
+  for( auto child : children.citer() ) {
+    ostream->writeString( child->type() );
+    child->write( ostream );
   }
+  ostream->writeInt( flags );
+}
 
 }
 }

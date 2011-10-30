@@ -16,30 +16,30 @@ namespace oz
 namespace nirvana
 {
 
-  Pool<Memo, 1024> Memo::pool;
+Pool<Memo, 1024> Memo::pool;
 
-  Device* Memo::create( int, InputStream* istream )
-  {
-    return new Memo( istream->readString() );
-  }
+Device* Memo::create( int, InputStream* istream )
+{
+  return new Memo( istream->readString() );
+}
 
-  Memo::Memo( const char* text_ ) : Device( MEMO_BIT ), text( text_ )
-  {}
+Memo::Memo( const char* text_ ) : Device( MEMO_BIT ), text( text_ )
+{}
 
-  const char* Memo::type() const
-  {
-    return "Memo";
-  }
+const char* Memo::type() const
+{
+  return "Memo";
+}
 
-  const char* Memo::getMemo() const
-  {
-    return text;
-  }
+const char* Memo::getMemo() const
+{
+  return text;
+}
 
-  void Memo::write( OutputStream* ostream ) const
-  {
-    ostream->writeString( text );
-  }
+void Memo::write( OutputStream* ostream ) const
+{
+  ostream->writeString( text );
+}
 
 }
 }

@@ -9,9 +9,9 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/Orbis.hpp"
+
+#include "client/common.hpp"
 
 namespace oz
 {

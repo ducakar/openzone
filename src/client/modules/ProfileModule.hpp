@@ -19,25 +19,25 @@ namespace oz
 namespace client
 {
 
-  class ProfileModule : public Module
-  {
-    private:
+class ProfileModule : public Module
+{
+  private:
 
-      String playerName;
+    String playerName;
 
-    public:
+  public:
 
-      virtual void registerLua() const;
+    virtual void registerLua() const;
 
-      virtual void init();
+    virtual void init();
 
-    private:
+  private:
 
-      OZ_LUA_API( ozProfileGetPlayerName );
+    OZ_LUA_API( ozProfileGetPlayerName );
 
-  };
+};
 
-  extern ProfileModule profileModule;
+extern ProfileModule profileModule;
 
 }
 }

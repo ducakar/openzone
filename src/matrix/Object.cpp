@@ -17,144 +17,147 @@
 
 namespace oz
 {
+namespace matrix
+{
 
-  const float Object::BASE_INTENSITY          = 0.5f;
-  const float Object::MOMENTUM_INTENSITY_COEF = -0.10f;
-  const float Object::DAMAGE_INTENSITY_COEF   = +0.02f;
+const float Object::BASE_INTENSITY          = 0.5f;
+const float Object::MOMENTUM_INTENSITY_COEF = -0.10f;
+const float Object::DAMAGE_INTENSITY_COEF   = +0.02f;
 
-  Pool<Object::Event, 4096> Object::Event::pool;
-  Pool<Object, 2048>        Object::pool;
+Pool<Object::Event, 4096> Object::Event::pool;
+Pool<Object, 2048>        Object::pool;
 
-  Object::~Object()
-  {
-    hard_assert( dim.x <= AABB::REAL_MAX_DIM );
-    hard_assert( dim.y <= AABB::REAL_MAX_DIM );
+Object::~Object()
+{
+  hard_assert( dim.x <= AABB::REAL_MAX_DIM );
+  hard_assert( dim.y <= AABB::REAL_MAX_DIM );
 
-    events.free();
-  }
+  events.free();
+}
 
-  void Object::onDestroy()
-  {
-    synapse.genParts( clazz->nDebris, p, Vec3::ZERO, clazz->debrisVelocitySpread,
-                      clazz->debrisColour, clazz->debrisColourSpread,
-                      clazz->debrisRejection, clazz->debrisMass, clazz->debrisLifeTime );
+void Object::onDestroy()
+{
+  synapse.genParts( clazz->nDebris, p, Vec3::ZERO, clazz->debrisVelocitySpread,
+                    clazz->debrisColour, clazz->debrisColourSpread,
+                    clazz->debrisRejection, clazz->debrisMass, clazz->debrisLifeTime );
 
-    for( int i = 0; i < items.length(); ++i ) {
-      Object* obj = orbis.objects[ items[i] ];
+  for( int i = 0; i < items.length(); ++i ) {
+    Object* obj = orbis.objects[ items[i] ];
 
-      if( obj != null ) {
-        obj->destroy();
-      }
-    }
-
-    if( !clazz->onDestroy.isEmpty() ) {
-      lua.objectCall( clazz->onDestroy, this );
+    if( obj != null ) {
+      obj->destroy();
     }
   }
 
-  void Object::onDamage( float )
-  {
-    hard_assert( !clazz->onDamage.isEmpty() );
+  if( !clazz->onDestroy.isEmpty() ) {
+    lua.objectCall( clazz->onDestroy, this );
+  }
+}
 
-    lua.objectCall( clazz->onDamage, this );
+void Object::onDamage( float )
+{
+  hard_assert( !clazz->onDamage.isEmpty() );
+
+  lua.objectCall( clazz->onDamage, this );
+}
+
+void Object::onHit( const Hit*, float )
+{
+  hard_assert( !clazz->onHit.isEmpty() );
+
+  lua.objectCall( clazz->onHit, this );
+}
+
+bool Object::onUse( Bot* user )
+{
+  lua.objectCall( clazz->onUse, this, user );
+  return !lua.hasUseFailed;
+}
+
+void Object::onUpdate()
+{
+  hard_assert( !clazz->onUpdate.isEmpty() );
+
+  lua.objectCall( clazz->onUpdate, this );
+}
+
+void Object::readFull( InputStream* istream )
+{
+  p        = istream->readPoint3();
+  flags    = istream->readInt();
+  oldFlags = istream->readInt();
+  life     = istream->readFloat();
+
+  int nEvents = istream->readInt();
+  for( int i = 0; i < nEvents; ++i ) {
+    int id = istream->readInt();
+    float intensity = istream->readFloat();
+
+    addEvent( id, intensity );
   }
 
-  void Object::onHit( const Hit*, float )
-  {
-    hard_assert( !clazz->onHit.isEmpty() );
+  int nItems = istream->readInt();
+  for( int i = 0; i < nItems; ++i ) {
+    int index = istream->readInt();
 
-    lua.objectCall( clazz->onHit, this );
+    items.add( index );
+  }
+}
+
+void Object::writeFull( OutputStream* ostream ) const
+{
+  ostream->writePoint3( p );
+  ostream->writeInt( flags );
+  ostream->writeInt( oldFlags );
+  ostream->writeFloat( life );
+
+  ostream->writeInt( events.length() );
+  for( auto event : events.citer() ) {
+    ostream->writeInt( event->id );
+    ostream->writeFloat( event->intensity );
   }
 
-  bool Object::onUse( Bot* user )
-  {
-    lua.objectCall( clazz->onUse, this, user );
-    return !lua.hasUseFailed;
+  ostream->writeInt( items.length() );
+  for( auto item : items.citer() ) {
+    ostream->writeInt( *item );
+  }
+}
+
+void Object::readUpdate( InputStream* istream )
+{
+  life = istream->readFloat();
+
+  int nEvents = istream->readInt();
+  for( int i = 0; i < nEvents; ++i ) {
+    int   id        = istream->readInt();
+    float intensity = istream->readFloat();
+
+    addEvent( id, intensity );
   }
 
-  void Object::onUpdate()
-  {
-    hard_assert( !clazz->onUpdate.isEmpty() );
+  int nItems = istream->readInt();
+  for( int i = 0; i < nItems; ++i ) {
+    int index = istream->readInt();
 
-    lua.objectCall( clazz->onUpdate, this );
+    items.add( index );
+  }
+}
+
+void Object::writeUpdate( OutputStream* ostream ) const
+{
+  ostream->writeFloat( life );
+
+  ostream->writeInt( events.length() );
+  for( auto event : events.citer() ) {
+    ostream->writeInt( event->id );
+    ostream->writeFloat( event->intensity );
   }
 
-  void Object::readFull( InputStream* istream )
-  {
-    p        = istream->readPoint3();
-    flags    = istream->readInt();
-    oldFlags = istream->readInt();
-    life     = istream->readFloat();
-
-    int nEvents = istream->readInt();
-    for( int i = 0; i < nEvents; ++i ) {
-      int id = istream->readInt();
-      float intensity = istream->readFloat();
-
-      addEvent( id, intensity );
-    }
-
-    int nItems = istream->readInt();
-    for( int i = 0; i < nItems; ++i ) {
-      int index = istream->readInt();
-
-      items.add( index );
-    }
+  ostream->writeInt( items.length() );
+  for( auto item : items.citer() ) {
+    ostream->writeInt( *item );
   }
+}
 
-  void Object::writeFull( OutputStream* ostream ) const
-  {
-    ostream->writePoint3( p );
-    ostream->writeInt( flags );
-    ostream->writeInt( oldFlags );
-    ostream->writeFloat( life );
-
-    ostream->writeInt( events.length() );
-    for( auto event : events.citer() ) {
-      ostream->writeInt( event->id );
-      ostream->writeFloat( event->intensity );
-    }
-
-    ostream->writeInt( items.length() );
-    for( auto item : items.citer() ) {
-      ostream->writeInt( *item );
-    }
-  }
-
-  void Object::readUpdate( InputStream* istream )
-  {
-    life = istream->readFloat();
-
-    int nEvents = istream->readInt();
-    for( int i = 0; i < nEvents; ++i ) {
-      int   id        = istream->readInt();
-      float intensity = istream->readFloat();
-
-      addEvent( id, intensity );
-    }
-
-    int nItems = istream->readInt();
-    for( int i = 0; i < nItems; ++i ) {
-      int index = istream->readInt();
-
-      items.add( index );
-    }
-  }
-
-  void Object::writeUpdate( OutputStream* ostream ) const
-  {
-    ostream->writeFloat( life );
-
-    ostream->writeInt( events.length() );
-    for( auto event : events.citer() ) {
-      ostream->writeInt( event->id );
-      ostream->writeFloat( event->intensity );
-    }
-
-    ostream->writeInt( items.length() );
-    for( auto item : items.citer() ) {
-      ostream->writeInt( *item );
-    }
-  }
-
+}
 }

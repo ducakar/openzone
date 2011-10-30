@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "stable.hpp"
+#include "client/common.hpp"
 
 #ifdef OZ_TOOLS
 
@@ -20,75 +20,75 @@ namespace oz
 namespace client
 {
 
-  struct Face;
+struct Face;
 
-  class OBJ
-  {
-    private:
+class OBJ
+{
+  private:
 
-      static const int LINE_BUFFER_SIZE = 1024;
+    static const int LINE_BUFFER_SIZE = 1024;
 
-      struct FaceVertex
+    struct FaceVertex
+    {
+      // vertex position index in positions array
+      int position;
+      // vertex normal in normals array
+      int normal;
+      // vertex texture coordinates in texCoords array
+      int texCoord;
+
+      FaceVertex() = default;
+
+      explicit FaceVertex( int pos_, int norm_, int texCoord_ ) :
+          position( pos_ ), normal( norm_ ), texCoord( texCoord_ )
+      {}
+
+      // lexicographical order
+      bool operator == ( const FaceVertex& v ) const
       {
-        // vertex position index in positions array
-        int position;
-        // vertex normal in normals array
-        int normal;
-        // vertex texture coordinates in texCoords array
-        int texCoord;
+        return position == v.position && normal == v.normal && texCoord == v.texCoord;
+      }
+    };
 
-        FaceVertex() = default;
+    struct Face
+    {
+      Vector<FaceVertex> vertices;
+    };
 
-        explicit FaceVertex( int pos_, int norm_, int texCoord_ ) :
-            position( pos_ ), normal( norm_ ), texCoord( texCoord_ )
-        {}
+    struct Part
+    {
+      Vector<Face> faces;
 
-        // lexicographical order
-        bool operator == ( const FaceVertex& v ) const
-        {
-          return position == v.position && normal == v.normal && texCoord == v.texCoord;
-        }
-      };
+      String texture;
+      float  alpha;
+      float  specular;
+    };
 
-      struct Face
-      {
-        Vector<FaceVertex> vertices;
-      };
+    static String           shaderName;
+    static Vector<Point3>   positions;
+    static Vector<Vec3>     normals;
+    static Vector<TexCoord> texCoords;
+    static Vector<Part>     parts;
+    static HashString<int>  materialIndices;
 
-      struct Part
-      {
-        Vector<Face> faces;
+    String name;
 
-        String texture;
-        float  alpha;
-        float  specular;
-      };
+    static char* skipSpaces( char* pos );
+    static char* readWord( char* pos );
 
-      static String           shaderName;
-      static Vector<Point3>   positions;
-      static Vector<Vec3>     normals;
-      static Vector<TexCoord> texCoords;
-      static Vector<Part>     parts;
-      static HashString<int>  materialIndices;
+    static bool readVertexData( char* pos );
+    static bool readFace( char* pos, int part );
+    static bool loadMaterials( const String& path );
 
-      String name;
+    static void loadOBJ( const char* name );
+    static void freeOBJ();
+    static void save( const char* fileName );
 
-      static char* skipSpaces( char* pos );
-      static char* readWord( char* pos );
+  public:
 
-      static bool readVertexData( char* pos );
-      static bool readFace( char* pos, int part );
-      static bool loadMaterials( const String& path );
+    static void prebuild( const char* name );
 
-      static void loadOBJ( const char* name );
-      static void freeOBJ();
-      static void save( const char* fileName );
-
-    public:
-
-      static void prebuild( const char* name );
-
-  };
+};
 
 }
 }

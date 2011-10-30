@@ -21,37 +21,37 @@ namespace client
 namespace ui
 {
 
-  class MusicPlayer : public Frame
-  {
-    private:
+class MusicPlayer : public Frame
+{
+  private:
 
-      Label title;
-      Label trackLabel;
-      Label volumeLabel;
-      int   currentTrack;
-      int   volume;
-      bool  isPlaying;
-      bool  isVisible;
+    Label title;
+    Label trackLabel;
+    Label volumeLabel;
+    int   currentTrack;
+    int   volume;
+    bool  isPlaying;
+    bool  isVisible;
 
-      static void prevTrack( Button* sender );
-      static void nextTrack( Button* sender );
-      static void playTrack( Button* sender );
-      static void stopTrack( Button* sender );
-      static void volumeDown( Button* sender );
-      static void volumeUp( Button* sender );
+    static void prevTrack( Button* sender );
+    static void nextTrack( Button* sender );
+    static void playTrack( Button* sender );
+    static void stopTrack( Button* sender );
+    static void volumeDown( Button* sender );
+    static void volumeUp( Button* sender );
 
-    protected:
+  protected:
 
-      virtual void onUpdate();
-      virtual bool onMouseEvent();
-      virtual void onDraw();
+    virtual void onUpdate();
+    virtual bool onMouseEvent();
+    virtual void onDraw();
 
-    public:
+  public:
 
-      MusicPlayer();
-      virtual ~MusicPlayer();
+    MusicPlayer();
+    virtual ~MusicPlayer();
 
-  };
+};
 
 }
 }

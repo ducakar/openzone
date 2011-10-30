@@ -18,34 +18,34 @@ namespace oz
 namespace client
 {
 
-  Pool<SMMImago, 1024> SMMImago::pool;
+Pool<SMMImago, 1024> SMMImago::pool;
 
-  Imago* SMMImago::create( const Object* obj )
-  {
-    SMMImago* imago = new SMMImago();
+Imago* SMMImago::create( const Object* obj )
+{
+  SMMImago* imago = new SMMImago();
 
-    imago->obj   = obj;
-    imago->clazz = obj->clazz;
-    imago->smm   = context.requestSMM( obj->clazz->imagoModel );
+  imago->obj   = obj;
+  imago->clazz = obj->clazz;
+  imago->smm   = context.requestSMM( obj->clazz->imagoModel );
 
-    return imago;
+  return imago;
+}
+
+SMMImago::~SMMImago()
+{
+  context.releaseSMM( clazz->imagoModel );
+}
+
+void SMMImago::draw( const Imago*, int mask )
+{
+  if( !smm->isLoaded ) {
+    return;
   }
 
-  SMMImago::~SMMImago()
-  {
-    context.releaseSMM( clazz->imagoModel );
-  }
+  tf.model.rotateZ( float( obj->flags & Object::HEADING_MASK ) * Math::TAU / 4.0f );
 
-  void SMMImago::draw( const Imago*, int mask )
-  {
-    if( !smm->isLoaded ) {
-      return;
-    }
-
-    tf.model.rotateZ( float( obj->flags & Object::HEADING_MASK ) * Math::TAU / 4.0f );
-
-    smm->draw( mask );
-  }
+  smm->draw( mask );
+}
 
 }
 }

@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "stable.hpp"
+#include "client/common.hpp"
 
 struct _TTF_Font;
 typedef _TTF_Font TTF_Font;

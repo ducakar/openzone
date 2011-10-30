@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/common.hpp"
 
 #define OZ_CLASS_SET_FLAG( flagBit, varName, defValue ) \
@@ -20,71 +18,74 @@
 
 namespace oz
 {
+namespace matrix
+{
 
-  class Object;
+class Object;
 
-  class ObjectClass
-  {
-    private:
+class ObjectClass
+{
+  private:
 
-      static const int INVENTORY_ITEMS = 100;
+    static const int INVENTORY_ITEMS = 100;
 
-    public:
+  public:
 
-      // 00 <= AUDIO_SAMPLES <= 99 (two decimal digits)
-      static const int AUDIO_SAMPLES = 16;
+    // 00 <= AUDIO_SAMPLES <= 99 (two decimal digits)
+    static const int AUDIO_SAMPLES = 16;
 
-      typedef ObjectClass* ( * InitFunc )( const Config* config );
+    typedef ObjectClass* ( * InitFunc )( const Config* config );
 
-      String name;
-      String title;
-      String description;
+    String name;
+    String title;
+    String description;
 
-      Vec3   dim;
-      int    flags;
-      int    type;
-      float  life;
-      float  resistance;
+    Vec3   dim;
+    int    flags;
+    int    type;
+    float  life;
+    float  resistance;
 
-      String onDestroy;
-      String onDamage;
-      String onHit;
-      String onUse;
-      String onUpdate;
+    String onDestroy;
+    String onDamage;
+    String onHit;
+    String onUse;
+    String onUpdate;
 
-      int    nDebris;
-      float  debrisVelocitySpread;
-      float  debrisRejection;
-      float  debrisMass;
-      float  debrisLifeTime;
-      float  debrisColourSpread;
-      Vec3   debrisColour;
+    int    nDebris;
+    float  debrisVelocitySpread;
+    float  debrisRejection;
+    float  debrisMass;
+    float  debrisLifeTime;
+    float  debrisColourSpread;
+    Vec3   debrisColour;
 
-      String deviceType;
+    String deviceType;
 
-      String imagoType;
-      int    imagoModel;
+    String imagoType;
+    int    imagoModel;
 
-      String audioType;
-      int    audioSamples[AUDIO_SAMPLES];
+    String audioType;
+    int    audioSamples[AUDIO_SAMPLES];
 
-      int    nItems;
-      Vector<String> items;
+    int    nItems;
+    Vector<String> items;
 
-    protected:
+  protected:
 
-      void fillCommonConfig( const Config* config );
-      void fillCommonFields( Object* obj ) const;
+    void fillCommonConfig( const Config* config );
+    void fillCommonFields( Object* obj ) const;
 
-    public:
+  public:
 
-      virtual ~ObjectClass();
+    virtual ~ObjectClass();
 
-      static ObjectClass* init( const Config* config );
+    static ObjectClass* init( const Config* config );
 
-      virtual Object* create( int index, const Point3& pos, Heading heading ) const;
-      virtual Object* create( int index, InputStream* istream ) const;
+    virtual Object* create( int index, const Point3& pos, Heading heading ) const;
+    virtual Object* create( int index, InputStream* istream ) const;
 
-  };
+};
 
+}
 }

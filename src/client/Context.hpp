@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/Library.hpp"
 
 #include "client/Shader.hpp"
@@ -23,177 +21,177 @@ namespace oz
 namespace client
 {
 
-  class SMM;
-  class MD2;
-  class MD3;
+class SMM;
+class MD2;
+class MD3;
 
-  class Context
-  {
-    friend class Loader;
-    friend class BSP;
-    friend class Audio;
-    friend class Render;
-    friend class Sound;
+class Context
+{
+  friend class Loader;
+  friend class BSP;
+  friend class Audio;
+  friend class Render;
+  friend class Sound;
 
-    public:
+  public:
 
-      static const int DEFAULT_MAG_FILTER;
-      static const int DEFAULT_MIN_FILTER;
+    static const int DEFAULT_MAG_FILTER;
+    static const int DEFAULT_MIN_FILTER;
 
-    private:
+  private:
 
-      // texture reading buffer
-      static const int BUFFER_SIZE          = 256 * 1024;
-      // default audio format
-      static const int DEFAULT_AUDIO_FREQ   = 44100;
-      static const int DEFAULT_AUDIO_FORMAT = AUDIO_S16LSB;
+    // texture reading buffer
+    static const int BUFFER_SIZE          = 256 * 1024;
+    // default audio format
+    static const int DEFAULT_AUDIO_FREQ   = 44100;
+    static const int DEFAULT_AUDIO_FORMAT = AUDIO_S16LSB;
 
 #ifndef OZ_TOOLS
 
-      template <typename Type>
-      struct Resource
-      {
-        Type id;
-        int  nUsers;
-      };
+    template <typename Type>
+    struct Resource
+    {
+      Type id;
+      int  nUsers;
+    };
 
-      template <typename Type>
-      struct Resource<Type*>
-      {
-        Type* object;
-        int   nUsers;
-      };
+    template <typename Type>
+    struct Resource<Type*>
+    {
+      Type* object;
+      int   nUsers;
+    };
 
-      struct Source
-      {
-        uint    id;
-        int     sample;
-        Source* next[1];
+    struct Source
+    {
+      uint    id;
+      int     sample;
+      Source* next[1];
 
-        explicit Source( uint sourceId, int sample_ ) : id( sourceId ), sample( sample_ )
-        {}
+      explicit Source( uint sourceId, int sample_ ) : id( sourceId ), sample( sample_ )
+      {}
 
-        static Pool<Source> pool;
+      static Pool<Source> pool;
 
-        OZ_STATIC_POOL_ALLOC( pool )
-      };
+      OZ_STATIC_POOL_ALLOC( pool )
+    };
 
-      struct ContSource
-      {
-        uint id;
-        int  sample;
-        bool isUpdated;
+    struct ContSource
+    {
+      uint id;
+      int  sample;
+      bool isUpdated;
 
-        explicit ContSource( uint sourceId, int sample_ ) :
-            id( sourceId ), sample( sample_ ), isUpdated( true )
-        {}
-      };
+      explicit ContSource( uint sourceId, int sample_ ) :
+          id( sourceId ), sample( sample_ ), isUpdated( true )
+      {}
+    };
 
-      HashString<Imago::CreateFunc, 16> imagoClasses;
-      HashString<Audio::CreateFunc, 8>  audioClasses;
+    HashString<Imago::CreateFunc, 16> imagoClasses;
+    HashString<Audio::CreateFunc, 8>  audioClasses;
 
-      Resource<uint>*                 textures;
-      Resource<uint>*                 sounds;
+    Resource<uint>*                 textures;
+    Resource<uint>*                 sounds;
 
-      // non-looping sources
-      List<Source>                    sources;
-      // looping sources
-      HashIndex<ContSource, 64>       bspSources;
-      HashIndex<ContSource, 64>       objSources;
+    // non-looping sources
+    List<Source>                    sources;
+    // looping sources
+    HashIndex<ContSource, 64>       bspSources;
+    HashIndex<ContSource, 64>       objSources;
 
-      Resource<BSP*>*                 bsps;
-      Resource<SMM*>*                 smms;
-      Resource<MD2*>*                 md2s;
-      Resource<MD3*>*                 md3s;
+    Resource<BSP*>*                 bsps;
+    Resource<SMM*>*                 smms;
+    Resource<MD2*>*                 md2s;
+    Resource<MD3*>*                 md3s;
 
-      HashIndex<Imago*, 8191>         imagines; // currently loaded graphics models
-      HashIndex<Audio*, 2039>         audios;   // currently loaded audio models
+    HashIndex<Imago*, 8191>         imagines; // currently loaded graphics models
+    HashIndex<Audio*, 2039>         audios;   // currently loaded audio models
 
-      int                             maxImagines;
-      int                             maxAudios;
-      int                             maxSources;
-      int                             maxBSPSources;
-      int                             maxObjSources;
+    int                             maxImagines;
+    int                             maxAudios;
+    int                             maxSources;
+    int                             maxBSPSources;
+    int                             maxObjSources;
 
-      static Buffer                   buffer;
-      static bool                     isS3TCSupported;
+    static Buffer                   buffer;
+    static bool                     isS3TCSupported;
 
-      void addSource( uint srcId, int sample );
-      void addBSPSource( uint srcId, int sample, int key );
-      void addObjSource( uint srcId, int sample, int key );
+    void addSource( uint srcId, int sample );
+    void addBSPSource( uint srcId, int sample, int key );
+    void addObjSource( uint srcId, int sample, int key );
 
-      void removeSource( Source* source, Source* prev );
-      void removeBSPSource( ContSource* contSource, int key );
-      void removeObjSource( ContSource* contSource, int key );
+    void removeSource( Source* source, Source* prev );
+    void removeBSPSource( ContSource* contSource, int key );
+    void removeObjSource( ContSource* contSource, int key );
 
-    public:
+  public:
 
-      Context();
+    Context();
 
-      static uint loadTexture( const char* path );
-      static uint readTexture( InputStream* stream );
+    static uint loadTexture( const char* path );
+    static uint readTexture( InputStream* stream );
 
-      uint requestTexture( int id );
-      void releaseTexture( int id );
+    uint requestTexture( int id );
+    void releaseTexture( int id );
 
-      uint requestSound( int id );
-      void releaseSound( int id );
+    uint requestSound( int id );
+    void releaseSound( int id );
 
-      SMM* requestSMM( int id );
-      void releaseSMM( int id );
+    SMM* requestSMM( int id );
+    void releaseSMM( int id );
 
-      MD2* requestMD2( int id );
-      void releaseMD2( int id );
+    MD2* requestMD2( int id );
+    void releaseMD2( int id );
 
-      MD3* requestMD3( int id );
-      void releaseMD3( int id );
+    MD3* requestMD3( int id );
+    void releaseMD3( int id );
 
-      void drawBSP( const Struct* str, int mask );
-      void playBSP( const Struct* str );
+    void drawBSP( const Struct* str, int mask );
+    void playBSP( const Struct* str );
 
-      void drawImago( const Object* obj, const Imago* parent, int mask );
-      void playAudio( const Object* obj, const Audio* parent );
+    void drawImago( const Object* obj, const Imago* parent, int mask );
+    void playAudio( const Object* obj, const Audio* parent );
 
 # ifndef NDEBUG
-      void updateLoad();
-      void printLoad();
+    void updateLoad();
+    void printLoad();
 # endif
 
-      void load();
-      void unload();
+    void load();
+    void unload();
 
-      void init();
-      void free();
+    void init();
+    void free();
 
 #else
 
-    public:
+  public:
 
-      static bool isS3TCSupported;
-      static bool useS3TC;
+    static bool isS3TCSupported;
+    static bool useS3TC;
 
-    private:
+  private:
 
-      static uint buildTexture( const void* data, int width, int height, uint format,
-                                bool wrap, int magFilter, int minFilter );
+    static uint buildTexture( const void* data, int width, int height, uint format,
+                              bool wrap, int magFilter, int minFilter );
 
-    public:
+  public:
 
-      static uint createTexture( const void* data, int width, int height, uint format,
-                                 bool wrap = true, int magFilter = DEFAULT_MAG_FILTER,
-                                 int minFilter = DEFAULT_MIN_FILTER );
+    static uint createTexture( const void* data, int width, int height, uint format,
+                               bool wrap = true, int magFilter = DEFAULT_MAG_FILTER,
+                               int minFilter = DEFAULT_MIN_FILTER );
 
-      static uint loadRawTexture( const char* path, bool wrap = true,
-                                  int magFilter = DEFAULT_MAG_FILTER,
-                                  int minFilter = DEFAULT_MIN_FILTER );
+    static uint loadRawTexture( const char* path, bool wrap = true,
+                                int magFilter = DEFAULT_MAG_FILTER,
+                                int minFilter = DEFAULT_MIN_FILTER );
 
-      static void writeTexture( uint id, OutputStream* stream );
+    static void writeTexture( uint id, OutputStream* stream );
 
 #endif
 
-  };
+};
 
-  extern Context context;
+extern Context context;
 
 }
 }

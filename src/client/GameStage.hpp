@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "client/Stage.hpp"
 #include "client/Proxy.hpp"
 #include "client/Module.hpp"
@@ -20,60 +18,60 @@ namespace oz
 namespace client
 {
 
-  class GameStage : public Stage
-  {
-    public:
+class GameStage : public Stage
+{
+  public:
 
-      enum State
-      {
-        GAME,
-        MENU
-      };
+    enum State
+    {
+      GAME,
+      MENU
+    };
 
-      static String AUTOSAVE_FILE;
-      static String QUICKSAVE_FILE;
+    static String AUTOSAVE_FILE;
+    static String QUICKSAVE_FILE;
 
-    private:
+  private:
 
-      SDL_Thread*     auxThread;
-      SDL_sem*        mainSemaphore;
-      SDL_sem*        auxSemaphore;
+    SDL_Thread*     auxThread;
+    SDL_sem*        mainSemaphore;
+    SDL_sem*        auxSemaphore;
 
-      volatile bool   isAlive;
+    volatile bool   isAlive;
 
-      bool            isLoaded;
+    bool            isLoaded;
 
-      Vector<Module*> modules;
+    Vector<Module*> modules;
 
-      static int auxMain( void* );
+    static int auxMain( void* );
 
-      void run();
+    void run();
 
-      void reload();
+    void reload();
 
-    public:
+  public:
 
-      State  state;
-      Proxy* proxy;
+    State  state;
+    Proxy* proxy;
 
-      String stateFile;
-      String missionFile;
+    String stateFile;
+    String missionFile;
 
-      virtual bool update();
-      virtual void present();
+    virtual bool update();
+    virtual void present();
 
-      bool read( const char* file );
-      void write( const char* file ) const;
+    bool read( const char* file );
+    void write( const char* file ) const;
 
-      virtual void load();
-      virtual void unload();
+    virtual void load();
+    virtual void unload();
 
-      virtual void init();
-      virtual void free();
+    virtual void init();
+    virtual void free();
 
-  };
+};
 
-  extern GameStage gameStage;
+extern GameStage gameStage;
 
 }
 }

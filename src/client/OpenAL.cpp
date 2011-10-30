@@ -18,44 +18,44 @@ namespace client
 
 #ifndef NDEBUG
 
-  void alCheckError( const char* file, int line, const char* function )
-  {
-    const char* message;
-    ALenum result = alGetError();
+void alCheckError( const char* file, int line, const char* function )
+{
+  const char* message;
+  ALenum result = alGetError();
 
-    switch( result ) {
-      case AL_NO_ERROR: {
-        return;
-      }
-      case AL_INVALID_NAME: {
-        message = "AL_INVALID_NAME";
-        break;
-      }
-      case AL_INVALID_ENUM: {
-        message = "AL_INVALID_ENUM";
-        break;
-      }
-      case AL_INVALID_VALUE: {
-        message = "AL_INVALID_VALUE";
-        break;
-      }
-      case AL_INVALID_OPERATION: {
-        message = "AL_INVALID_OPERATION";
-        break;
-      }
-      case AL_OUT_OF_MEMORY: {
-        message = "AL_OUT_OF_MEMORY";
-        break;
-      }
-      default: {
-        message = "UNKNOWN(" + String( int( result ) ) + ")";
-        break;
-      }
+  switch( result ) {
+    case AL_NO_ERROR: {
+      return;
     }
-
-    System::trap();
-    System::abort( "AL error `%s' at %s:%d: %s", message, file, line, function );
+    case AL_INVALID_NAME: {
+      message = "AL_INVALID_NAME";
+      break;
+    }
+    case AL_INVALID_ENUM: {
+      message = "AL_INVALID_ENUM";
+      break;
+    }
+    case AL_INVALID_VALUE: {
+      message = "AL_INVALID_VALUE";
+      break;
+    }
+    case AL_INVALID_OPERATION: {
+      message = "AL_INVALID_OPERATION";
+      break;
+    }
+    case AL_OUT_OF_MEMORY: {
+      message = "AL_OUT_OF_MEMORY";
+      break;
+    }
+    default: {
+      message = "UNKNOWN(" + String( int( result ) ) + ")";
+      break;
+    }
   }
+
+  System::trap();
+  System::abort( "AL error `%s' at %s:%d: %s", message, file, line, function );
+}
 
 #endif
 

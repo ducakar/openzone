@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "client/ui/Area.hpp"
 #include "client/ui/Label.hpp"
 

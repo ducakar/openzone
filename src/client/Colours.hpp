@@ -9,35 +9,35 @@
 
 #pragma once
 
-#include "stable.hpp"
+#include "client/common.hpp"
 
 namespace oz
 {
 namespace client
 {
 
-  struct Colours
-  {
-    static const Vec4 NONE;
-    static const Vec4 BLACK;
-    static const Vec4 WHITE;
+struct Colours
+{
+  static const Vec4 NONE;
+  static const Vec4 BLACK;
+  static const Vec4 WHITE;
 
-    static const Vec4 ENTITY_AABB;
-    static const Vec4 STRUCTURE_AABB;
-    static const Vec4 CLIP_AABB;
-    static const Vec4 NOCLIP_AABB;
-    static const Vec4 TAG;
+  static const Vec4 ENTITY_AABB;
+  static const Vec4 STRUCTURE_AABB;
+  static const Vec4 CLIP_AABB;
+  static const Vec4 NOCLIP_AABB;
+  static const Vec4 TAG;
 
-    static const Vec4 GLOBAL_AMBIENT;
+  static const Vec4 GLOBAL_AMBIENT;
 
-    static Vec4 diffuse;
-    static Vec4 ambient;
-    static Vec4 caelum;
-    static Vec4 water;
+  static Vec4 diffuse;
+  static Vec4 ambient;
+  static Vec4 caelum;
+  static Vec4 water;
 
-    static Vec4 waterBlend1;
-    static Vec4 waterBlend2;
-  };
+  static Vec4 waterBlend1;
+  static Vec4 waterBlend2;
+};
 
 }
 }

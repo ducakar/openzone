@@ -16,7 +16,7 @@ namespace oz
 namespace nirvana
 {
 
-  Collider collider;
+Collider collider;
 
 }
 }

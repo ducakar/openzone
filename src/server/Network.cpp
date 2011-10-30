@@ -16,48 +16,48 @@ namespace oz
 namespace server
 {
 
-  Network network;
+Network network;
 
-  bool Network::connect()
-  {
-    int port = config.getSet( "net.port", 6666 );
+bool Network::connect()
+{
+  int port = config.getSet( "net.port", 6666 );
 
-    log.print( "Opening socket on port %d ...", port );
+  log.print( "Opening socket on port %d ...", port );
 
-    IPaddress ip;
-    SDLNet_ResolveHost( &ip, null, port );
-    serverSocket = SDLNet_TCP_Open( &ip );
+  IPaddress ip;
+  SDLNet_ResolveHost( &ip, null, port );
+  serverSocket = SDLNet_TCP_Open( &ip );
 
-    if( serverSocket == null ) {
-      log.printEnd( " Failed" );
-      return false;
-    }
-
-    log.printEnd( " OK" );
-    return true;
+  if( serverSocket == null ) {
+    log.printEnd( " Failed" );
+    return false;
   }
 
-  void Network::disconnect()
-  {
-    SDLNet_TCP_Close( serverSocket );
-    log.println( "Socket closed" );
+  log.printEnd( " OK" );
+  return true;
+}
+
+void Network::disconnect()
+{
+  SDLNet_TCP_Close( serverSocket );
+  log.println( "Socket closed" );
+}
+
+void Network::update()
+{
+  TCPsocket clientSocket = SDLNet_TCP_Accept( serverSocket );
+  if( clientSocket != null ) {
+    Client* client = new Client();
+
+    client->socket = clientSocket;
+    clients.add( client );
+
+    log.println( "Client connected" );
   }
 
-  void Network::update()
-  {
-    TCPsocket clientSocket = SDLNet_TCP_Accept( serverSocket );
-    if( clientSocket != null ) {
-      Client* client = new Client();
-
-      client->socket = clientSocket;
-      clients.add( client );
-
-      log.println( "Client connected" );
-    }
-
-    for( auto client, clients.iterator() ) {
-    }
+  for( auto client, clients.iterator() ) {
   }
+}
 
 }
 }

@@ -9,38 +9,38 @@
 
 #pragma once
 
-#include "stable.hpp"
+#include "nirvana/common.hpp"
 
 namespace oz
 {
 namespace nirvana
 {
 
-  class Mind
-  {
-    public:
+class Mind
+{
+  public:
 
-      static const int FORCE_UPDATE_BIT = 0x00000001;
+    static const int FORCE_UPDATE_BIT = 0x00000001;
 
-      static Pool<Mind, 1024> pool;
+    static Pool<Mind, 1024> pool;
 
-      Mind* prev[1];
-      Mind* next[1];
+    Mind* prev[1];
+    Mind* next[1];
 
-      int flags;
-      int bot;
+    int flags;
+    int bot;
 
-      explicit Mind( int bot );
-      explicit Mind( int bot, InputStream* istream );
-      ~Mind();
+    explicit Mind( int bot );
+    explicit Mind( int bot, InputStream* istream );
+    ~Mind();
 
-      void update();
+    void update();
 
-      void write( OutputStream* ostream ) const;
+    void write( OutputStream* ostream ) const;
 
-    OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC( pool )
 
-  };
+};
 
 }
 }

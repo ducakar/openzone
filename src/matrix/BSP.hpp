@@ -7,109 +7,106 @@
 
 #pragma once
 
-/**
- * @file matrix/BSP.hpp
- */
-
-#include "stable.hpp"
-
 #include "matrix/common.hpp"
 
 namespace oz
 {
+namespace matrix
+{
 
-  class BSP : public Bounds
-  {
-    public:
+class BSP : public Bounds
+{
+  public:
 
-      static const int MAX_BRUSHES = 256;
+    static const int MAX_BRUSHES = 256;
 
-      /**
-       * BSP node.
-       */
-      struct Node
+    /**
+     * BSP node.
+     */
+    struct Node
+    {
+      int plane; ///< Separating plane index in <tt>planes</tt> array.
+
+      int front; ///< Index of node on the positive side of the separating plane.
+      int back;  ///< Index of node on the negative side of the separating plane.
+    };
+
+    /**
+     * BSP leaf node.
+     */
+    struct Leaf
+    {
+      int firstBrush; ///< Index of the first brush index in <tt>leafBrushes</tt> array.
+      int nBrushes;   ///< Number of brush indices.
+    };
+
+    /**
+     * BSP brush (convex polytope).
+     */
+    struct Brush
+    {
+      int firstSide; ///< Index of the first plane index in <tt>bushSides</tt> array.
+      int nSides;    ///< Number of plane indices.
+
+      int material;  ///< Material bits (look <code>matrix::Material</code>.
+    };
+
+    /**
+     * BSP model (doors, lifts etc.).
+     */
+    struct Model : Bounds
+    {
+      enum Type
       {
-        int plane; ///< Separating plane index in <tt>planes</tt> array.
-
-        int front; ///< Index of node on the positive side of the separating plane.
-        int back;  ///< Index of node on the negative side of the separating plane.
+        IGNORING,
+        CRUSHING,
+        AUTO_DOOR
       };
 
-      /**
-       * BSP leaf node.
-       */
-      struct Leaf
-      {
-        int firstBrush; ///< Index of the first brush index in <tt>leafBrushes</tt> array.
-        int nBrushes;   ///< Number of brush indices.
-      };
+      Vec3   move;        ///< Move vector (destination - original position), in BSP coordinate
+                          ///< system.
 
-      /**
-       * BSP brush (convex polytope).
-       */
-      struct Brush
-      {
-        int firstSide; ///< Index of the first plane index in <tt>bushSides</tt> array.
-        int nSides;    ///< Number of plane indices.
+      BSP*   bsp;         ///< Pointer to the parent BSP.
 
-        int material;  ///< Material bits (look <code>oz::::Material</code>.
-      };
+      int    firstBrush;  ///< Index of the first brush in <code>brushes<code> array.
+      int    nBrushes;    ///< Number of brushes.
 
-      /**
-       * BSP model (doors, lifts etc.).
-       */
-      struct Model : Bounds
-      {
-        enum Type
-        {
-          IGNORING,
-          CRUSHING,
-          AUTO_DOOR
-        };
+      float  ratioInc;
+      int    flags;       ///< Flags, not used for now.
+      Type   type;        ///< Model type.
 
-        Vec3   move;        ///< Move vector (destination - original position), in BSP coordinate
-                            ///< system.
+      float  margin;      ///< Margin around entity inside which objects trigger door opening.
+      float  timeout;     ///< Timeout after which entity starts opening/closing.
 
-        BSP*   bsp;         ///< Pointer to the parent BSP.
+      int    openSample;  ///< Open sound sample, played when an entity starts moving.
+      int    closeSample; ///< Close sound sample, played when an entity stops moving.
+      int    frictSample; ///< Friction sound sample, played while the entity is moving.
+    };
 
-        int    firstBrush;  ///< Index of the first brush in <code>brushes<code> array.
-        int    nBrushes;    ///< Number of brushes.
+    int     id;
+    float   life;
+    float   resistance;
 
-        float  ratioInc;
-        int    flags;       ///< Flags, not used for now.
-        Type   type;        ///< Model type.
+    int     nPlanes;
+    int     nNodes;
+    int     nLeaves;
+    int     nLeafBrushes;
+    int     nModels;
+    int     nBrushes;
+    int     nBrushSides;
 
-        float  margin;      ///< Margin around entity inside which objects trigger door opening.
-        float  timeout;     ///< Timeout after which entity starts opening/closing.
+    Plane*  planes;
+    Node*   nodes;
+    Leaf*   leaves;
+    int*    leafBrushes;
+    Model*  models;
+    Brush*  brushes;
+    int*    brushSides;
 
-        int    openSample;  ///< Open sound sample, played when an entity starts moving.
-        int    closeSample; ///< Close sound sample, played when an entity stops moving.
-        int    frictSample; ///< Friction sound sample, played while the entity is moving.
-      };
+    explicit BSP( int id );
+    ~BSP();
 
-      int     id;
-      float   life;
-      float   resistance;
+};
 
-      int     nPlanes;
-      int     nNodes;
-      int     nLeaves;
-      int     nLeafBrushes;
-      int     nModels;
-      int     nBrushes;
-      int     nBrushSides;
-
-      Plane*  planes;
-      Node*   nodes;
-      Leaf*   leaves;
-      int*    leafBrushes;
-      Model*  models;
-      Brush*  brushes;
-      int*    brushSides;
-
-      explicit BSP( int id );
-      ~BSP();
-
-  };
-
+}
 }

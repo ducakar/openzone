@@ -9,31 +9,31 @@
 
 #pragma once
 
-#include "stable.hpp"
+#include "client/common.hpp"
 
 namespace oz
 {
 namespace client
 {
 
-  class Stage
-  {
-    public:
+class Stage
+{
+  public:
 
-      static Stage* nextStage;
+    static Stage* nextStage;
 
-      virtual ~Stage();
+    virtual ~Stage();
 
-      virtual bool update()  = 0;
-      virtual void present() = 0;
+    virtual bool update()  = 0;
+    virtual void present() = 0;
 
-      virtual void load()    = 0;
-      virtual void unload()  = 0;
+    virtual void load()    = 0;
+    virtual void unload()  = 0;
 
-      virtual void init()    = 0;
-      virtual void free()    = 0;
+    virtual void init()    = 0;
+    virtual void free()    = 0;
 
-  };
+};
 
 }
 }

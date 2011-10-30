@@ -9,25 +9,26 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/ObjectClass.hpp"
 
 namespace oz
 {
+namespace matrix
+{
 
-  class DynamicClass : public ObjectClass
-  {
-    public:
+class DynamicClass : public ObjectClass
+{
+  public:
 
-      float mass;
-      float lift;
+    float mass;
+    float lift;
 
-      static ObjectClass* init( const Config* config );
+    static ObjectClass* init( const Config* config );
 
-      virtual Object* create( int index, const Point3& pos, Heading heading ) const;
-      virtual Object* create( int index, InputStream* istream ) const;
+    virtual Object* create( int index, const Point3& pos, Heading heading ) const;
+    virtual Object* create( int index, InputStream* istream ) const;
 
-  };
+};
 
+}
 }

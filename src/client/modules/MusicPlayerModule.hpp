@@ -21,22 +21,22 @@ namespace oz
 namespace client
 {
 
-  class MusicPlayerModule : public Module
-  {
-    private:
+class MusicPlayerModule : public Module
+{
+  private:
 
-      ui::MusicPlayer* musicPlayer;
+    ui::MusicPlayer* musicPlayer;
 
-    public:
+  public:
 
-      MusicPlayerModule();
+    MusicPlayerModule();
 
-      virtual void load();
-      virtual void unload();
+    virtual void load();
+    virtual void unload();
 
-  };
+};
 
-  extern MusicPlayerModule musicPlayerModule;
+extern MusicPlayerModule musicPlayerModule;
 
 }
 }

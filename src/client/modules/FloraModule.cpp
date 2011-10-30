@@ -22,146 +22,146 @@ namespace oz
 namespace client
 {
 
-  // plants/m2
-  const float FloraModule::DENSITY = 0.04f;
-  // dim * SPACING
-  const float FloraModule::SPACING = 12.0f;
+// plants/m2
+const float FloraModule::DENSITY = 0.04f;
+// dim * SPACING
+const float FloraModule::SPACING = 12.0f;
 
-  FloraModule floraModule;
+FloraModule floraModule;
 
-  void FloraModule::addTree( float x, float y )
-  {
-    Point3 pos = Point3( x, y, orbis.terra.height( x, y ) );
+void FloraModule::addTree( float x, float y )
+{
+  Point3 pos = Point3( x, y, orbis.terra.height( x, y ) );
 
-    const char* type;
+  const char* type;
 
-    if( pos.z > 110.0f ) {
-      return;
-    }
-    else if( pos.z > 70.0f ) {
-      type = "pine";
-      pos.z += 7.0f;
-    }
-    else if( pos.z > 30.0f ) {
-      type = "tree";
-      pos.z += 3.0f;
-    }
-    else if( pos.z > 2.0f ) {
-      type = "palm";
-      pos.z += 8.0f;
-    }
-    else {
-      return;
-    }
-
-    const ObjectClass* const* clazz = library.classes.find( type );
-    if( clazz == null ) {
-      throw Exception( "Object class '" + String( type ) + "' missing" );
-    }
-
-    AABB bounds = AABB( pos, ( *clazz )->dim );
-    bounds *= SPACING;
-
-    if( !collider.overlapsOSO( bounds ) ) {
-      synapse.addObject( type, pos, Heading( Math::rand( 4 ) ) );
-    }
+  if( pos.z > 110.0f ) {
+    return;
+  }
+  else if( pos.z > 70.0f ) {
+    type = "pine";
+    pos.z += 7.0f;
+  }
+  else if( pos.z > 30.0f ) {
+    type = "tree";
+    pos.z += 3.0f;
+  }
+  else if( pos.z > 2.0f ) {
+    type = "palm";
+    pos.z += 8.0f;
+  }
+  else {
+    return;
   }
 
-  void FloraModule::addPlant( const char* type, float x, float y )
-  {
-    const ObjectClass* const* clazz = library.classes.find( type );
-    if( clazz == null ) {
-      throw Exception( "Object class '" + String( type ) + "' missing" );
-    }
-
-    Point3 pos    = Point3( x, y, orbis.terra.height( x, y ) );
-    AABB   bounds = AABB( pos, ( *clazz )->dim );
-
-    if( pos.z < 0.0f || 40.0f < pos.z ) {
-      return;
-    }
-
-    if( !collider.overlapsOSO( bounds ) ) {
-      synapse.addObject( type, pos, Heading( Math::rand( 4 ) ) );
-    }
+  const ObjectClass* const* clazz = library.classes.find( type );
+  if( clazz == null ) {
+    throw Exception( "Object class '" + String( type ) + "' missing" );
   }
 
-  void FloraModule::seed()
-  {
-    float area = 4.0f * Orbis::DIM * Orbis::DIM * DENSITY;
+  AABB bounds = AABB( pos, ( *clazz )->dim );
+  bounds *= SPACING;
 
-    number = int( area * DENSITY );
+  if( !collider.overlapsOSO( bounds ) ) {
+    synapse.addObject( type, pos, Heading( Math::rand( 4 ) ) );
+  }
+}
 
-    for( int i = 0; i < number; ++i ) {
-      float x = Math::rand() * 2.0f * Orbis::DIM - Orbis::DIM;
-      float y = Math::rand() * 2.0f * Orbis::DIM - Orbis::DIM;
-
-      addTree( x, y );
-    }
+void FloraModule::addPlant( const char* type, float x, float y )
+{
+  const ObjectClass* const* clazz = library.classes.find( type );
+  if( clazz == null ) {
+    throw Exception( "Object class '" + String( type ) + "' missing" );
   }
 
-  void FloraModule::registerLua() const
-  {
-    OZ_LUA_FUNC( ozFloraGetDensity );
-    OZ_LUA_FUNC( ozFloraSetDensity );
-    OZ_LUA_FUNC( ozFloraGetSpacing );
-    OZ_LUA_FUNC( ozFloraSetSpacing );
-    OZ_LUA_FUNC( ozFloraGetNumber );
-    OZ_LUA_FUNC( ozFloraSeed );
+  Point3 pos    = Point3( x, y, orbis.terra.height( x, y ) );
+  AABB   bounds = AABB( pos, ( *clazz )->dim );
+
+  if( pos.z < 0.0f || 40.0f < pos.z ) {
+    return;
   }
 
-  int FloraModule::ozFloraGetDensity( lua_State* l )
-  {
-    ARG( 0 );
+  if( !collider.overlapsOSO( bounds ) ) {
+    synapse.addObject( type, pos, Heading( Math::rand( 4 ) ) );
+  }
+}
 
-    pushfloat( floraModule.density );
-    return 1;
+void FloraModule::seed()
+{
+  float area = 4.0f * Orbis::DIM * Orbis::DIM * DENSITY;
+
+  number = int( area * DENSITY );
+
+  for( int i = 0; i < number; ++i ) {
+    float x = Math::rand() * 2.0f * Orbis::DIM - Orbis::DIM;
+    float y = Math::rand() * 2.0f * Orbis::DIM - Orbis::DIM;
+
+    addTree( x, y );
+  }
+}
+
+void FloraModule::registerLua() const
+{
+  OZ_LUA_FUNC( ozFloraGetDensity );
+  OZ_LUA_FUNC( ozFloraSetDensity );
+  OZ_LUA_FUNC( ozFloraGetSpacing );
+  OZ_LUA_FUNC( ozFloraSetSpacing );
+  OZ_LUA_FUNC( ozFloraGetNumber );
+  OZ_LUA_FUNC( ozFloraSeed );
+}
+
+int FloraModule::ozFloraGetDensity( lua_State* l )
+{
+  ARG( 0 );
+
+  pushfloat( floraModule.density );
+  return 1;
+}
+
+int FloraModule::ozFloraSetDensity( lua_State* l )
+{
+  ARG( 1 );
+
+  floraModule.density = tofloat( 1 );
+  return 0;
+}
+
+int FloraModule::ozFloraGetSpacing( lua_State* l )
+{
+  ARG( 0 );
+
+  pushfloat( floraModule.spacing );
+  return 1;
+}
+
+int FloraModule::ozFloraSetSpacing( lua_State* l )
+{
+  ARG( 1 );
+
+  float spacing = tofloat( 1 );
+  if( spacing < 0 ) {
+    throw Exception( "Lua::ozFloraGetSpacing: spacing must be >= 0.0" );
   }
 
-  int FloraModule::ozFloraSetDensity( lua_State* l )
-  {
-    ARG( 1 );
+  floraModule.spacing = spacing;
+  return 0;
+}
 
-    floraModule.density = tofloat( 1 );
-    return 0;
-  }
+int FloraModule::ozFloraGetNumber( lua_State* l )
+{
+  ARG( 0 );
 
-  int FloraModule::ozFloraGetSpacing( lua_State* l )
-  {
-    ARG( 0 );
+  pushfloat( floraModule.number );
+  return 1;
+}
 
-    pushfloat( floraModule.spacing );
-    return 1;
-  }
+int FloraModule::ozFloraSeed( lua_State* l )
+{
+  ARG( 0 );
 
-  int FloraModule::ozFloraSetSpacing( lua_State* l )
-  {
-    ARG( 1 );
-
-    float spacing = tofloat( 1 );
-    if( spacing < 0 ) {
-      throw Exception( "Lua::ozFloraGetSpacing: spacing must be >= 0.0" );
-    }
-
-    floraModule.spacing = spacing;
-    return 0;
-  }
-
-  int FloraModule::ozFloraGetNumber( lua_State* l )
-  {
-    ARG( 0 );
-
-    pushfloat( floraModule.number );
-    return 1;
-  }
-
-  int FloraModule::ozFloraSeed( lua_State* l )
-  {
-    ARG( 0 );
-
-    floraModule.seed();
-    return 0;
-  }
+  floraModule.seed();
+  return 0;
+}
 
 }
 }

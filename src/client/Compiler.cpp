@@ -21,310 +21,310 @@ namespace oz
 namespace client
 {
 
-  Compiler compiler;
+Compiler compiler;
 
-  void Compiler::enable( int cap )
-  {
-    caps |= cap;
+void Compiler::enable( int cap )
+{
+  caps |= cap;
+}
+
+void Compiler::disable( int cap )
+{
+  caps &= ~cap;
+}
+
+void Compiler::beginMesh()
+{
+  hard_assert( !( flags & MESH_BIT ) );
+  hard_assert( !( flags & PART_BIT ) );
+
+  flags |= MESH_BIT;
+  caps = 0;
+
+  vertices.clear();
+  parts.clear();
+
+  part.component   = 0;
+  part.texture     = "";
+  part.alpha       = 1.0f;
+  part.specular    = 0.0f;
+
+  vert.pos[0]      = 0.0f;
+  vert.pos[1]      = 0.0f;
+  vert.pos[2]      = 0.0f;
+
+  vert.texCoord[0] = 0.0f;
+  vert.texCoord[1] = 0.0f;
+
+  vert.normal[0]   = 0.0f;
+  vert.normal[1]   = 0.0f;
+  vert.normal[2]   = 0.0f;
+}
+
+void Compiler::endMesh()
+{
+  hard_assert( flags & MESH_BIT );
+  hard_assert( !( flags & PART_BIT ) );
+
+  flags &= ~MESH_BIT;
+}
+
+void Compiler::component( int id )
+{
+  hard_assert( flags & MESH_BIT );
+  hard_assert( !( flags & PART_BIT ) );
+
+  componentId = id;
+}
+
+void Compiler::material( int target, float param )
+{
+  hard_assert( flags & MESH_BIT );
+  hard_assert( !( flags & PART_BIT ) );
+
+  switch( target ) {
+    case GL_DIFFUSE: {
+      part.alpha = param;
+      break;
+    }
+    case GL_SPECULAR: {
+      part.specular = param;
+      break;
+    }
+    default: {
+      hard_assert( false );
+      break;
+    }
+  }
+}
+
+void Compiler::texture( const char* texture )
+{
+  hard_assert( flags & MESH_BIT );
+  hard_assert( !( flags & PART_BIT ) );
+
+  part.texture = texture;
+}
+
+void Compiler::begin( uint mode_ )
+{
+  hard_assert( flags & MESH_BIT );
+  hard_assert( !( flags & PART_BIT ) );
+
+  flags |= PART_BIT;
+
+  mode = mode_;
+  vertNum = 0;
+
+  part.component = componentId;
+
+  switch( mode ) {
+    case GL_QUADS:
+    case GL_POLYGON: {
+      part.mode = GL_TRIANGLE_STRIP;
+      break;
+    }
+    default: {
+      part.mode = mode;
+      break;
+    }
+  }
+}
+
+void Compiler::end()
+{
+  hard_assert( flags & MESH_BIT );
+  hard_assert( flags & PART_BIT );
+
+  flags &= ~PART_BIT;
+
+  if( caps & CAP_CW ) {
+    aReverse<int>( part.indices, part.indices.length() );
   }
 
-  void Compiler::disable( int cap )
-  {
-    caps &= ~cap;
-  }
+  switch( mode ) {
+    case GL_POINTS: {
+      hard_assert( vertNum >= 1 );
+      break;
+    }
+    case GL_TRIANGLE_STRIP: {
+      hard_assert( vertNum >= 3 );
+      break;
+    }
+    case GL_TRIANGLE_FAN: {
+      hard_assert( vertNum >= 3 );
+      break;
+    }
+    case GL_TRIANGLES: {
+      hard_assert( vertNum >= 3 && vertNum % 3 == 0 );
+      break;
+    }
+    case GL_QUADS: {
+      hard_assert( vertNum >= 4 && vertNum % 4 == 0 );
 
-  void Compiler::beginMesh()
-  {
-    hard_assert( !( flags & MESH_BIT ) );
-    hard_assert( !( flags & PART_BIT ) );
-
-    flags |= MESH_BIT;
-    caps = 0;
-
-    vertices.clear();
-    parts.clear();
-
-    part.component   = 0;
-    part.texture     = "";
-    part.alpha       = 1.0f;
-    part.specular    = 0.0f;
-
-    vert.pos[0]      = 0.0f;
-    vert.pos[1]      = 0.0f;
-    vert.pos[2]      = 0.0f;
-
-    vert.texCoord[0] = 0.0f;
-    vert.texCoord[1] = 0.0f;
-
-    vert.normal[0]   = 0.0f;
-    vert.normal[1]   = 0.0f;
-    vert.normal[2]   = 0.0f;
-  }
-
-  void Compiler::endMesh()
-  {
-    hard_assert( flags & MESH_BIT );
-    hard_assert( !( flags & PART_BIT ) );
-
-    flags &= ~MESH_BIT;
-  }
-
-  void Compiler::component( int id )
-  {
-    hard_assert( flags & MESH_BIT );
-    hard_assert( !( flags & PART_BIT ) );
-
-    componentId = id;
-  }
-
-  void Compiler::material( int target, float param )
-  {
-    hard_assert( flags & MESH_BIT );
-    hard_assert( !( flags & PART_BIT ) );
-
-    switch( target ) {
-      case GL_DIFFUSE: {
-        part.alpha = param;
-        break;
+      for( int i = 0; i < vertNum; i += 4 ) {
+        swap( part.indices[i + 2], part.indices[i + 3] );
       }
-      case GL_SPECULAR: {
-        part.specular = param;
-        break;
+      break;
+    }
+    case GL_POLYGON: {
+      hard_assert( vertNum >= 3 );
+
+      int n_2 = ( vertNum - 2 ) / 2;
+      for( int i = 1; i <= n_2; ++i ) {
+        int index = part.indices.last();
+        aInsert<int>( part.indices, index, 2 * i, part.indices.length() );
       }
-      default: {
-        hard_assert( false );
-        break;
-      }
+      break;
     }
   }
 
-  void Compiler::texture( const char* texture )
-  {
-    hard_assert( flags & MESH_BIT );
-    hard_assert( !( flags & PART_BIT ) );
+  int partIndex = parts.index( part );
 
-    part.texture = texture;
+  if( partIndex == -1 ) {
+    parts.add( part );
+  }
+  else {
+    if( part.mode == GL_TRIANGLE_STRIP ) {
+      // reset triangle strip
+      parts[partIndex].indices.add( parts[partIndex].indices.last() );
+      parts[partIndex].indices.add( part.indices.first() );
+    }
+    parts[partIndex].indices.addAll( part.indices, part.indices.length() );
   }
 
-  void Compiler::begin( uint mode_ )
-  {
-    hard_assert( flags & MESH_BIT );
-    hard_assert( !( flags & PART_BIT ) );
+  part.indices.clear();
+}
 
-    flags |= PART_BIT;
+void Compiler::texCoord( float u, float v )
+{
+  hard_assert( flags & MESH_BIT );
 
-    mode = mode_;
-    vertNum = 0;
+  vert.texCoord[0] = u;
+  vert.texCoord[1] = v;
+}
 
-    part.component = componentId;
+void Compiler::texCoord( const float* v )
+{
+  texCoord( v[0], v[1] );
+}
 
-    switch( mode ) {
-      case GL_QUADS:
-      case GL_POLYGON: {
-        part.mode = GL_TRIANGLE_STRIP;
-        break;
-      }
-      default: {
-        part.mode = mode;
-        break;
-      }
-    }
+void Compiler::normal( float nx, float ny, float nz )
+{
+  hard_assert( flags & MESH_BIT );
+
+  vert.normal[0] = nx;
+  vert.normal[1] = ny;
+  vert.normal[2] = nz;
+}
+
+void Compiler::normal( const float* v )
+{
+  normal( v[0], v[1], v[2] );
+}
+
+void Compiler::vertex( float x, float y, float z )
+{
+  hard_assert( flags & MESH_BIT );
+
+  vert.pos[0] = x;
+  vert.pos[1] = y;
+  vert.pos[2] = z;
+
+  if( !( flags & PART_BIT ) ) {
+    vertices.add( vert );
   }
+  else {
+    bool doRestart = false;
 
-  void Compiler::end()
-  {
-    hard_assert( flags & MESH_BIT );
-    hard_assert( flags & PART_BIT );
-
-    flags &= ~PART_BIT;
-
-    if( caps & CAP_CW ) {
-      aReverse<int>( part.indices, part.indices.length() );
+    if( mode == GL_QUADS && vertNum != 0 && vertNum % 4 == 0 ) {
+      doRestart = true;
     }
 
-    switch( mode ) {
-      case GL_POINTS: {
-        hard_assert( vertNum >= 1 );
-        break;
-      }
-      case GL_TRIANGLE_STRIP: {
-        hard_assert( vertNum >= 3 );
-        break;
-      }
-      case GL_TRIANGLE_FAN: {
-        hard_assert( vertNum >= 3 );
-        break;
-      }
-      case GL_TRIANGLES: {
-        hard_assert( vertNum >= 3 && vertNum % 3 == 0 );
-        break;
-      }
-      case GL_QUADS: {
-        hard_assert( vertNum >= 4 && vertNum % 4 == 0 );
-
-        for( int i = 0; i < vertNum; i += 4 ) {
-          swap( part.indices[i + 2], part.indices[i + 3] );
-        }
-        break;
-      }
-      case GL_POLYGON: {
-        hard_assert( vertNum >= 3 );
-
-        int n_2 = ( vertNum - 2 ) / 2;
-        for( int i = 1; i <= n_2; ++i ) {
-          int index = part.indices.last();
-          aInsert<int>( part.indices, index, 2 * i, part.indices.length() );
-        }
-        break;
-      }
+    if( doRestart ) {
+      part.indices.add( part.indices.last() );
     }
 
-    int partIndex = parts.index( part );
+    int index;
 
-    if( partIndex == -1 ) {
-      parts.add( part );
+    if( caps & CAP_UNIQUE ) {
+      index = vertices.include( vert );
+      part.indices.add( index );
     }
     else {
-      if( part.mode == GL_TRIANGLE_STRIP ) {
-        // reset triangle strip
-        parts[partIndex].indices.add( parts[partIndex].indices.last() );
-        parts[partIndex].indices.add( part.indices.first() );
-      }
-      parts[partIndex].indices.addAll( part.indices, part.indices.length() );
-    }
+      index = vertices.length();
 
-    part.indices.clear();
-  }
-
-  void Compiler::texCoord( float u, float v )
-  {
-    hard_assert( flags & MESH_BIT );
-
-    vert.texCoord[0] = u;
-    vert.texCoord[1] = v;
-  }
-
-  void Compiler::texCoord( const float* v )
-  {
-    texCoord( v[0], v[1] );
-  }
-
-  void Compiler::normal( float nx, float ny, float nz )
-  {
-    hard_assert( flags & MESH_BIT );
-
-    vert.normal[0] = nx;
-    vert.normal[1] = ny;
-    vert.normal[2] = nz;
-  }
-
-  void Compiler::normal( const float* v )
-  {
-    normal( v[0], v[1], v[2] );
-  }
-
-  void Compiler::vertex( float x, float y, float z )
-  {
-    hard_assert( flags & MESH_BIT );
-
-    vert.pos[0] = x;
-    vert.pos[1] = y;
-    vert.pos[2] = z;
-
-    if( !( flags & PART_BIT ) ) {
       vertices.add( vert );
-    }
-    else {
-      bool doRestart = false;
-
-      if( mode == GL_QUADS && vertNum != 0 && vertNum % 4 == 0 ) {
-        doRestart = true;
-      }
-
-      if( doRestart ) {
-        part.indices.add( part.indices.last() );
-      }
-
-      int index;
-
-      if( caps & CAP_UNIQUE ) {
-        index = vertices.include( vert );
-        part.indices.add( index );
-      }
-      else {
-        index = vertices.length();
-
-        vertices.add( vert );
-        part.indices.add( index );
-      }
-
-      if( doRestart ) {
-        part.indices.add( index );
-      }
-
-      ++vertNum;
-    }
-  }
-
-  void Compiler::vertex( const float* v )
-  {
-    vertex( v[0], v[1], v[2] );
-  }
-
-  void Compiler::animVertex( int i )
-  {
-    vertex( float( i ), 0.0f, 0.0f );
-  }
-
-  void Compiler::getMeshData( MeshData* mesh ) const
-  {
-    hard_assert( !( flags & MESH_BIT ) );
-    hard_assert( !( flags & PART_BIT ) );
-
-    int nIndices = 0;
-
-    for( int i = 0; i < parts.length(); ++i ) {
-      mesh->parts.add();
-
-      mesh->parts[i].component  = parts[i].component;
-      mesh->parts[i].mode       = parts[i].mode;
-
-      mesh->parts[i].texture    = parts[i].texture;
-      mesh->parts[i].specular   = parts[i].specular;
-      mesh->parts[i].alpha      = parts[i].alpha;
-
-      mesh->parts[i].nIndices   = parts[i].indices.length();
-      mesh->parts[i].firstIndex = nIndices;
-
-      nIndices += parts[i].indices.length();
+      part.indices.add( index );
     }
 
-    mesh->indices.alloc( nIndices );
-    ushort* currIndex = mesh->indices;
-
-    for( auto part : parts.citer() ) {
-      for( auto i : part->indices.citer() ) {
-        *currIndex = ushort( *i );
-        ++currIndex;
-      }
+    if( doRestart ) {
+      part.indices.add( index );
     }
 
-    mesh->vertices.alloc( vertices.length() );
-    aCopy<Vertex>( mesh->vertices, vertices, vertices.length() );
+    ++vertNum;
+  }
+}
+
+void Compiler::vertex( const float* v )
+{
+  vertex( v[0], v[1], v[2] );
+}
+
+void Compiler::animVertex( int i )
+{
+  vertex( float( i ), 0.0f, 0.0f );
+}
+
+void Compiler::getMeshData( MeshData* mesh ) const
+{
+  hard_assert( !( flags & MESH_BIT ) );
+  hard_assert( !( flags & PART_BIT ) );
+
+  int nIndices = 0;
+
+  for( int i = 0; i < parts.length(); ++i ) {
+    mesh->parts.add();
+
+    mesh->parts[i].component  = parts[i].component;
+    mesh->parts[i].mode       = parts[i].mode;
+
+    mesh->parts[i].texture    = parts[i].texture;
+    mesh->parts[i].specular   = parts[i].specular;
+    mesh->parts[i].alpha      = parts[i].alpha;
+
+    mesh->parts[i].nIndices   = parts[i].indices.length();
+    mesh->parts[i].firstIndex = nIndices;
+
+    nIndices += parts[i].indices.length();
   }
 
-  void Compiler::free()
-  {
-    vertices.clear();
-    vertices.dealloc();
+  mesh->indices.alloc( nIndices );
+  ushort* currIndex = mesh->indices;
 
-    parts.clear();
-    parts.dealloc();
-
-    part.texture = "";
-    part.indices.clear();
-    part.indices.dealloc();
+  for( auto part : parts.citer() ) {
+    for( auto i : part->indices.citer() ) {
+      *currIndex = ushort( *i );
+      ++currIndex;
+    }
   }
+
+  mesh->vertices.alloc( vertices.length() );
+  aCopy<Vertex>( mesh->vertices, vertices, vertices.length() );
+}
+
+void Compiler::free()
+{
+  vertices.clear();
+  vertices.dealloc();
+
+  parts.clear();
+  parts.dealloc();
+
+  part.texture = "";
+  part.indices.clear();
+  part.indices.dealloc();
+}
 
 }
 }

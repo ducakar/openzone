@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "stable.hpp"
+#include "client/common.hpp"
 
 #define SDL_BUTTON_WUMASK SDL_BUTTON( SDL_BUTTON_WHEELUP )
 #define SDL_BUTTON_WDMASK SDL_BUTTON( SDL_BUTTON_WHEELDOWN )

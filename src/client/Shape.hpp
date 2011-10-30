@@ -9,10 +9,9 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/common.hpp"
 #include "matrix/Particle.hpp"
+
 #include "client/Context.hpp"
 
 namespace oz
@@ -20,44 +19,44 @@ namespace oz
 namespace client
 {
 
-  class Shape
-  {
-    private:
+class Shape
+{
+  private:
 
-      static const int   MAX_PARTS = 64;
+    static const int   MAX_PARTS = 64;
 
-      static const float SQRT_3_THIRDS;
-      static const float DIM;
+    static const float SQRT_3_THIRDS;
+    static const float DIM;
 
-      uint vao;
-      uint vbo;
-      uint ibo;
+    uint vao;
+    uint vbo;
+    uint ibo;
 
-    public:
+  public:
 
-      Shape();
+    Shape();
 
-      void bindVertexArray() const;
+    void bindVertexArray() const;
 
-      static void fill( float x, float y, float width, float height );
-      static void fill( int x, int y, int width, int height );
-      static void fillInv( float x, float y, float width, float height );
-      static void fillInv( int x, int y, int width, int height );
-      static void rect( float x, float y, float width, float height );
-      static void rect( int x, int y, int width, int height );
-      static void tag( float minX, float minY, float maxX, float maxY );
+    static void fill( float x, float y, float width, float height );
+    static void fill( int x, int y, int width, int height );
+    static void fillInv( float x, float y, float width, float height );
+    static void fillInv( int x, int y, int width, int height );
+    static void rect( float x, float y, float width, float height );
+    static void rect( int x, int y, int width, int height );
+    static void tag( float minX, float minY, float maxX, float maxY );
 
-      static void quad( float dimX, float dimY );
-      static void box( const AABB& bb );
-      static void wireBox( const AABB& bb );
-      static void draw( const Particle* part );
+    static void quad( float dimX, float dimY );
+    static void box( const AABB& bb );
+    static void wireBox( const AABB& bb );
+    static void draw( const Particle* part );
 
-      void load();
-      void unload();
+    void load();
+    void unload();
 
-  };
+};
 
-  extern Shape shape;
+extern Shape shape;
 
 }
 }

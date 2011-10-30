@@ -9,74 +9,74 @@
 
 #pragma once
 
-#include "stable.hpp"
+#include "client/common.hpp"
 
 namespace oz
 {
 namespace client
 {
 
-  class Caelum
-  {
-    private:
+class Caelum
+{
+  private:
 
-      static const float DAY_BIAS;
+    static const float DAY_BIAS;
 
-      static const float AMBIENT_COEF;
+    static const float AMBIENT_COEF;
 
-      static const float RED_COEF;
-      static const float GREEN_COEF;
-      static const float BLUE_COEF;
+    static const float RED_COEF;
+    static const float GREEN_COEF;
+    static const float BLUE_COEF;
 
-      static const float DAY_COLOUR[4];
-      static const float NIGHT_COLOUR[4];
-      static const float WATER_COLOUR[4];
-      static const float STAR_COLOUR[4];
+    static const float DAY_COLOUR[4];
+    static const float NIGHT_COLOUR[4];
+    static const float WATER_COLOUR[4];
+    static const float STAR_COLOUR[4];
 
-      static const float STAR_DIM;
-      static const int   MAX_STARS = 4096;
+    static const float STAR_DIM;
+    static const int   MAX_STARS = 4096;
 
 #ifndef OZ_TOOLS
 
-      uint   vao;
-      uint   vbo;
+    uint   vao;
+    uint   vbo;
 
-      uint   sunTexId;
-      uint   moonTexId;
+    uint   sunTexId;
+    uint   moonTexId;
 
-      int    starShaderId;
-      int    celestialShaderId;
+    int    starShaderId;
+    int    celestialShaderId;
 
-    public:
+  public:
 
-      float  angle;
-      float  ratio;
-      Vec3   originalLightDir;
-      Vec3   axis;
+    float  angle;
+    float  ratio;
+    Vec3   originalLightDir;
+    Vec3   axis;
 
-      Vec3   lightDir;
+    Vec3   lightDir;
 
-      int    id;
+    int    id;
 
-      Caelum();
+    Caelum();
 
-      void update();
-      void draw();
+    void update();
+    void draw();
 
-      void load();
-      void unload();
+    void load();
+    void unload();
 
 #else
 
-    public:
+  public:
 
-      static void prebuild( const char* name );
+    static void prebuild( const char* name );
 
 #endif
 
-  };
+};
 
-  extern Caelum caelum;
+extern Caelum caelum;
 
 }
 }

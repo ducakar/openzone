@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "client/Imago.hpp"
 #include "client/SMM.hpp"
 
@@ -19,25 +17,25 @@ namespace oz
 namespace client
 {
 
-  class SMMVehicleImago : public Imago
-  {
-    protected:
+class SMMVehicleImago : public Imago
+{
+  protected:
 
-      SMM* smm;
+    SMM* smm;
 
-    public:
+  public:
 
-      static Pool<SMMVehicleImago> pool;
+    static Pool<SMMVehicleImago> pool;
 
-      static Imago* create( const Object* obj );
+    static Imago* create( const Object* obj );
 
-      virtual ~SMMVehicleImago();
+    virtual ~SMMVehicleImago();
 
-      virtual void draw( const Imago* parent, int mask );
+    virtual void draw( const Imago* parent, int mask );
 
-    OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC( pool )
 
-  };
+};
 
 }
 }

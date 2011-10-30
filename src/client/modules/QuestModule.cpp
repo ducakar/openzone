@@ -20,96 +20,96 @@ namespace oz
 namespace client
 {
 
-  QuestModule questModule;
+QuestModule questModule;
 
-  Quest::Quest()
-  {}
+Quest::Quest()
+{}
 
-  Quest::Quest( const char* title_, const char* description_, const Point3& place_, int state_ ) :
-      title( title_ ), description( description_ ), place( place_ ), state( state_ )
-  {}
+Quest::Quest( const char* title_, const char* description_, const Point3& place_, int state_ ) :
+    title( title_ ), description( description_ ), place( place_ ), state( state_ )
+{}
 
-  void QuestModule::read( InputStream* istream )
-  {
-    int nQuests = istream->readInt();
-    for( int i = 0; i < nQuests; ++i ) {
-      String title       = istream->readString();
-      String description = istream->readString();
-      Point3 place       = istream->readPoint3();
-      int    state       = istream->readInt();
+void QuestModule::read( InputStream* istream )
+{
+  int nQuests = istream->readInt();
+  for( int i = 0; i < nQuests; ++i ) {
+    String title       = istream->readString();
+    String description = istream->readString();
+    Point3 place       = istream->readPoint3();
+    int    state       = istream->readInt();
 
-      quests.add( Quest( title, description, place, state ) );
-    }
+    quests.add( Quest( title, description, place, state ) );
   }
+}
 
-  void QuestModule::write( OutputStream* ostream ) const
-  {
-    ostream->writeInt( quests.length() );
-    for( auto quest : quests.citer() ) {
-      ostream->writeString( quest->title );
-      ostream->writeString( quest->description );
-      ostream->writePoint3( quest->place );
-      ostream->writeInt( quest->state );
-    }
+void QuestModule::write( OutputStream* ostream ) const
+{
+  ostream->writeInt( quests.length() );
+  for( auto quest : quests.citer() ) {
+    ostream->writeString( quest->title );
+    ostream->writeString( quest->description );
+    ostream->writePoint3( quest->place );
+    ostream->writeInt( quest->state );
   }
+}
 
-  void QuestModule::load()
-  {
-    questFrame = new ui::QuestFrame();
-    ui::ui.root->add( questFrame );
-    ui::ui.root->focus( ui::ui.loadingScreen );
-  }
+void QuestModule::load()
+{
+  questFrame = new ui::QuestFrame();
+  ui::ui.root->add( questFrame );
+  ui::ui.root->focus( ui::ui.loadingScreen );
+}
 
-  void QuestModule::unload()
-  {
-    quests.clear();
-    quests.dealloc();
+void QuestModule::unload()
+{
+  quests.clear();
+  quests.dealloc();
 
-    if( questFrame != null ) {
-      ui::ui.root->remove( questFrame );
-      questFrame = null;
-    }
-  }
-
-  void QuestModule::registerLua() const
-  {
-    OZ_LUA_FUNC( ozQuestAdd );
-    OZ_LUA_FUNC( ozQuestEnd );
-
-    OZ_LUA_CONST( "OZ_QUEST_SUCCESSFUL", Quest::SUCCESSFUL );
-    OZ_LUA_CONST( "OZ_QUEST_FAILED", Quest::FAILED );
-  }
-
-  void QuestModule::init()
-  {
+  if( questFrame != null ) {
+    ui::ui.root->remove( questFrame );
     questFrame = null;
   }
+}
 
-  int QuestModule::ozQuestAdd( lua_State* l )
-  {
-    ARG( 5 );
+void QuestModule::registerLua() const
+{
+  OZ_LUA_FUNC( ozQuestAdd );
+  OZ_LUA_FUNC( ozQuestEnd );
 
-    questModule.quests.add( Quest( tostring( 1 ),
-                                   tostring( 2 ),
-                                   Point3( tofloat( 3 ), tofloat( 4 ), tofloat( 5 ) ),
-                                   Quest::PENDING ) );
+  OZ_LUA_CONST( "OZ_QUEST_SUCCESSFUL", Quest::SUCCESSFUL );
+  OZ_LUA_CONST( "OZ_QUEST_FAILED", Quest::FAILED );
+}
 
-    pushint( questModule.quests.length() - 1 );
-    return 1;
+void QuestModule::init()
+{
+  questFrame = null;
+}
+
+int QuestModule::ozQuestAdd( lua_State* l )
+{
+  ARG( 5 );
+
+  questModule.quests.add( Quest( tostring( 1 ),
+                                 tostring( 2 ),
+                                 Point3( tofloat( 3 ), tofloat( 4 ), tofloat( 5 ) ),
+                                 Quest::PENDING ) );
+
+  pushint( questModule.quests.length() - 1 );
+  return 1;
+}
+
+int QuestModule::ozQuestEnd( lua_State* l )
+{
+  ARG( 2 );
+
+  int id = toint( 1 );
+  if( uint( id ) >= uint( questModule.quests.length() ) ) {
+    ERROR( "invalid quest id" );
   }
 
-  int QuestModule::ozQuestEnd( lua_State* l )
-  {
-    ARG( 2 );
-
-    int id = toint( 1 );
-    if( uint( id ) >= uint( questModule.quests.length() ) ) {
-      ERROR( "invalid quest id" );
-    }
-
-    questModule.quests[id].state = tobool( 2 ) ? Quest::SUCCESSFUL : Quest::FAILED;
-    return 0;
-  }
+  questModule.quests[id].state = tobool( 2 ) ? Quest::SUCCESSFUL : Quest::FAILED;
+  return 0;
+}
 
 }
 }

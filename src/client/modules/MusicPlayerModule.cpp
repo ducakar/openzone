@@ -20,25 +20,25 @@ namespace oz
 namespace client
 {
 
-  MusicPlayerModule musicPlayerModule;
+MusicPlayerModule musicPlayerModule;
 
-  MusicPlayerModule::MusicPlayerModule() : musicPlayer( null )
-  {}
+MusicPlayerModule::MusicPlayerModule() : musicPlayer( null )
+{}
 
-  void MusicPlayerModule::load()
-  {
-    musicPlayer = new ui::MusicPlayer();
-    ui::ui.root->add( musicPlayer );
-    ui::ui.root->focus( ui::ui.loadingScreen );
+void MusicPlayerModule::load()
+{
+  musicPlayer = new ui::MusicPlayer();
+  ui::ui.root->add( musicPlayer );
+  ui::ui.root->focus( ui::ui.loadingScreen );
+}
+
+void MusicPlayerModule::unload()
+{
+  if( musicPlayer != null ) {
+    ui::ui.root->remove( musicPlayer );
+    musicPlayer = null;
   }
-
-  void MusicPlayerModule::unload()
-  {
-    if( musicPlayer != null ) {
-      ui::ui.root->remove( musicPlayer );
-      musicPlayer = null;
-    }
-  }
+}
 
 }
 }

@@ -9,30 +9,31 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/DynamicClass.hpp"
 
 namespace oz
 {
+namespace matrix
+{
 
-  class WeaponClass : public DynamicClass
-  {
-    public:
+class WeaponClass : public DynamicClass
+{
+  public:
 
-      Map<const ObjectClass*> allowedUsers;
+    Map<const ObjectClass*> allowedUsers;
 
-      String onShot;
+    String onShot;
 
-      int    nRounds;
-      float  shotInterval;
+    int    nRounds;
+    float  shotInterval;
 
-      static ObjectClass* init( const Config* config );
+    static ObjectClass* init( const Config* config );
 
-      virtual Object* create( int index, const Point3& pos, Heading heading ) const;
-      virtual Object* create( int index, InputStream* istream ) const;
+    virtual Object* create( int index, const Point3& pos, Heading heading ) const;
+    virtual Object* create( int index, InputStream* istream ) const;
 
-      void fillAllowedUsers();
-  };
+    void fillAllowedUsers();
+};
 
+}
 }

@@ -32,7 +32,7 @@ const float BSP::DEFAULT_RESISTANCE = 400.0f;
 
 Bitset BSP::usedTextures;
 
-inline bool BSP::includes( const oz::BSP::Brush& brush, float maxDim ) const
+inline bool BSP::includes( const matrix::BSP::Brush& brush, float maxDim ) const
 {
   for( int i = 0; i < brush.nSides; ++i ) {
     const Plane& plane = planes[ brushSides[brush.firstSide + i] ];
@@ -140,7 +140,7 @@ void BSP::load()
   }
 
   nNodes = lumps[QBSPLump::NODES].length / int( sizeof( QBSPNode ) );
-  nodes = new oz::BSP::Node[nNodes];
+  nodes = new matrix::BSP::Node[nNodes];
 
   istream.reset();
   istream.skip( lumps[QBSPLump::NODES].offset );
@@ -160,7 +160,7 @@ void BSP::load()
   }
 
   nLeaves = lumps[QBSPLump::LEAFS].length / int( sizeof( QBSPLeaf ) );
-  leaves = new oz::BSP::Leaf[nLeaves];
+  leaves = new matrix::BSP::Leaf[nLeaves];
 
   istream.reset();
   istream.skip( lumps[QBSPLump::LEAFS].offset );
@@ -201,7 +201,7 @@ void BSP::load()
   modelFaces = new ModelFaces[nModels + 1];
 
   if( nModels != 0 ) {
-    models = new oz::BSP::Model[nModels];
+    models = new matrix::BSP::Model[nModels];
 
     istream.reset();
     istream.skip( lumps[QBSPLump::MODELS].offset );
@@ -242,13 +242,13 @@ void BSP::load()
 
       String type = bspConfig.get( keyName + ".type", "BLOCKING" );
       if( type.equals( "IGNORING" ) ) {
-        models[i].type = oz::BSP::Model::IGNORING;
+        models[i].type = matrix::BSP::Model::IGNORING;
       }
       else if( type.equals( "CRUSHING" ) ) {
-        models[i].type = oz::BSP::Model::CRUSHING;
+        models[i].type = matrix::BSP::Model::CRUSHING;
       }
       else if( type.equals( "AUTO_DOOR" ) ) {
-        models[i].type = oz::BSP::Model::AUTO_DOOR;
+        models[i].type = matrix::BSP::Model::AUTO_DOOR;
       }
       else {
         throw Exception( "Invalid BSP model type, must be either IGNORING, CRUSHING or AUTO_DOOR" );
@@ -302,11 +302,11 @@ void BSP::load()
   }
 
   nBrushes = lumps[QBSPLump::BRUSHES].length / int( sizeof( QBSPBrush ) );
-  brushes = new oz::BSP::Brush[nBrushes];
+  brushes = new matrix::BSP::Brush[nBrushes];
 
-  if( nBrushes > oz::BSP::MAX_BRUSHES ) {
+  if( nBrushes > matrix::BSP::MAX_BRUSHES ) {
     throw Exception( "Too many brushes " + String( nBrushes ) + ", can be at most " +
-                     String( oz::BSP::MAX_BRUSHES ) );
+                     String( matrix::BSP::MAX_BRUSHES ) );
   }
 
   istream.reset();

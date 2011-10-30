@@ -19,40 +19,40 @@ namespace oz
 namespace client
 {
 
-  class FloraModule : public Module
-  {
-    private:
+class FloraModule : public Module
+{
+  private:
 
-      static const float DENSITY;
-      static const float SPACING;
+    static const float DENSITY;
+    static const float SPACING;
 
-      // plants/m2
-      float density;
-      // dim * SPACING
-      float spacing;
-      int   number;
+    // plants/m2
+    float density;
+    // dim * SPACING
+    float spacing;
+    int   number;
 
-      void addTree( float x, float y );
-      void addPlant( const char* type, float x, float y );
+    void addTree( float x, float y );
+    void addPlant( const char* type, float x, float y );
 
-    public:
+  public:
 
-      void seed();
+    void seed();
 
-      virtual void registerLua() const;
+    virtual void registerLua() const;
 
-    private:
+  private:
 
-      OZ_LUA_API( ozFloraGetDensity );
-      OZ_LUA_API( ozFloraSetDensity );
-      OZ_LUA_API( ozFloraGetSpacing );
-      OZ_LUA_API( ozFloraSetSpacing );
-      OZ_LUA_API( ozFloraGetNumber );
-      OZ_LUA_API( ozFloraSeed );
+    OZ_LUA_API( ozFloraGetDensity );
+    OZ_LUA_API( ozFloraSetDensity );
+    OZ_LUA_API( ozFloraGetSpacing );
+    OZ_LUA_API( ozFloraSetSpacing );
+    OZ_LUA_API( ozFloraGetNumber );
+    OZ_LUA_API( ozFloraSeed );
 
-  };
+};
 
-  extern FloraModule floraModule;
+extern FloraModule floraModule;
 
 }
 }

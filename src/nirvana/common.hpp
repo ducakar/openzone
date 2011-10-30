@@ -9,17 +9,16 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/Collider.hpp"
-#include "matrix/Bot.hpp"
+
+using namespace oz::matrix;
 
 namespace oz
 {
 namespace nirvana
 {
 
-  extern Collider collider;
+extern Collider collider;
 
 }
 }

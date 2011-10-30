@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "nirvana/Device.hpp"
 
 namespace oz
@@ -18,29 +16,29 @@ namespace oz
 namespace nirvana
 {
 
-  class Memo : public Device
-  {
-    private:
+class Memo : public Device
+{
+  private:
 
-      String text;
+    String text;
 
-    public:
+  public:
 
-      static Pool<Memo, 1024> pool;
+    static Pool<Memo, 1024> pool;
 
-      static Device* create( int id, InputStream* istream );
+    static Device* create( int id, InputStream* istream );
 
-      explicit Memo( const char* text );
+    explicit Memo( const char* text );
 
-      virtual const char* type() const;
+    virtual const char* type() const;
 
-      virtual const char* getMemo() const;
+    virtual const char* getMemo() const;
 
-      virtual void write( OutputStream* ostream ) const;
+    virtual void write( OutputStream* ostream ) const;
 
-    OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC( pool )
 
-  };
+};
 
 }
 }
