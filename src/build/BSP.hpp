@@ -11,10 +11,9 @@
  * @file build/BSP.hpp
  */
 
-#include "stable.hpp"
-
 #include "matrix/BSP.hpp"
 
+#include "build/common.hpp"
 #include "client/Mesh.hpp"
 
 namespace oz
@@ -234,7 +233,7 @@ class BSP : public Bounds
     matrix::BSP::Brush* brushes;
     int*                brushSides;
     ModelFaces*         modelFaces;
-    client::Vertex*     vertices;
+    Vertex*             vertices;
     int*                indices;
     Face*               faces;
 
@@ -254,7 +253,7 @@ class BSP : public Bounds
     static Bitset usedTextures;
 
     // create ozBSP from a Quake 3 QBSP and optimise it
-    static void prebuild( const char* name );
+    static void build( const char* name );
 
 };
 

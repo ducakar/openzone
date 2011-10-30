@@ -32,42 +32,42 @@ namespace client
 namespace ui
 {
 
-  class UI
-  {
-    public:
+class UI
+{
+  public:
 
-      bool isFreelook;
-      bool showBuild;
-      bool showDebug;
+    bool isFreelook;
+    bool showBuild;
+    bool showDebug;
 
-    public:
+  public:
 
-      Area*          root;
-      LoadingArea*   loadingScreen;
-      HudArea*       hudArea;
-      StrategicArea* strategicArea;
-      InventoryMenu* inventoryMenu;
-      InventoryMenu* browseMenu;
-      InfoFrame*     infoFrame;
-      BuildMenu*     buildMenu;
-      DebugFrame*    debugFrame;
+    Area*          root;
+    LoadingArea*   loadingScreen;
+    HudArea*       hudArea;
+    StrategicArea* strategicArea;
+    InventoryMenu* inventoryMenu;
+    InventoryMenu* browseMenu;
+    InfoFrame*     infoFrame;
+    BuildMenu*     buildMenu;
+    DebugFrame*    debugFrame;
 
-      UI();
+    UI();
 
-      void showLoadingScreen( bool doShow );
+    void showLoadingScreen( bool doShow );
 
-      void update();
-      void draw();
+    void update();
+    void draw();
 
-      void load();
-      void unload();
+    void load();
+    void unload();
 
-      void init();
-      void free();
+    void init();
+    void free();
 
-  };
+};
 
-  extern UI ui;
+extern UI ui;
 
 }
 }

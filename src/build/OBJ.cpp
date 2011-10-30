@@ -1,33 +1,23 @@
 /*
  *  OBJ.cpp
  *
- *  [description]
- *
  *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #include "stable.hpp"
 
-#include "client/OBJ.hpp"
-
-#ifdef OZ_TOOLS
+#include "build/OBJ.hpp"
 
 #include "client/Context.hpp"
-#include "client/Colours.hpp"
-#include "client/Compiler.hpp"
+#include "client/OpenGL.hpp"
+
+#include "build/Compiler.hpp"
 
 namespace oz
 {
-namespace client
+namespace build
 {
-
-String            OBJ::shaderName;
-Vector<Point3>    OBJ::positions;
-Vector<Vec3>      OBJ::normals;
-Vector<TexCoord>  OBJ::texCoords;
-Vector<OBJ::Part> OBJ::parts;
-HashString<int>   OBJ::materialIndices;
 
 char* OBJ::skipSpaces( char* pos )
 {
@@ -269,38 +259,37 @@ bool OBJ::loadMaterials( const String& path )
   return true;
 }
 
-void OBJ::loadOBJ( const char* path )
+void OBJ::load()
 {
-  FILE* file;
-  char buffer[LINE_BUFFER_SIZE];
-
   int currentMaterial = 0;
 
-  String sPath = path;
-  String modelFile = sPath + "/data.obj";
-  String configFile = sPath + "/config.rc";
+  String modelFile = path + "/data.obj";
+  String configFile = path + "/config.rc";
+
+  log.print( "Loading OBJ model '%s' ...", modelFile.cstr() );
 
   Config config;
   config.load( configFile );
 
-  log.print( "Loading OBJ model '%s' ...", modelFile.cstr() );
+  float  scaling     = config.get( "scale", 1.0f );
+  Vec3   translation = Vec3( config.get( "translate.x", 0.0f ),
+                             config.get( "translate.y", 0.0f ),
+                             config.get( "translate.z", 0.0f ) );
 
-  float scaling = config.get( "scale", 1.0f );
-  Vec3 translation = Vec3( config.get( "translate.x", 0.0f ),
-                           config.get( "translate.y", 0.0f ),
-                           config.get( "translate.z", 0.0f ) );
-  shaderName = config.get( "shader", "mesh" );
+  shader = config.get( "shader", "mesh" );
 
-  if( !loadMaterials( sPath ) ) {
+  if( !loadMaterials( path ) ) {
     log.printEnd( " Material loading failed" );
     throw Exception( "OBJ model material loading error" );
   }
 
-  file = fopen( modelFile.cstr(), "r" );
+  FILE* file = fopen( modelFile.cstr(), "r" );
   if( file == null ) {
     log.printEnd( " No such file" );
     throw Exception( "OBJ model loading error" );
   }
+
+  DArray<char> buffer( LINE_BUFFER_SIZE );
 
   char* pos = fgets( buffer, LINE_BUFFER_SIZE, file );
   char* end;
@@ -313,8 +302,7 @@ void OBJ::loadOBJ( const char* path )
       case 'v': {
         if( !readVertexData( pos + 1 ) ) {
           fclose( file );
-          log.printEnd( " Invalid vertex line: %s", buffer );
-          throw Exception( "OBJ model loading error" );
+          throw Exception( String( "Invalid OBJ vertex line: " ) + buffer );
         }
         break;
       }
@@ -322,8 +310,7 @@ void OBJ::loadOBJ( const char* path )
       case 'f': {
         if( !readFace( pos + 1, currentMaterial ) ) {
           fclose( file );
-          log.printEnd( " Invalid face line: %s", buffer );
-          throw Exception( "OBJ model loading error" );
+          throw Exception( String( "Invalid OBJ face line: " ) + buffer );
         }
         break;
       }
@@ -341,8 +328,7 @@ void OBJ::loadOBJ( const char* path )
           }
           else {
             fclose( file );
-            log.printEnd( " Invalid material requested: %s", buffer );
-            throw Exception( "Invalid material requested" );
+            throw Exception( String( "Invalid OBJ material requested: " ) + buffer );
           }
         }
         break;
@@ -357,8 +343,7 @@ void OBJ::loadOBJ( const char* path )
   fclose( file );
 
   if( positions.isEmpty() ) {
-    log.printEnd( " No vertices" );
-    throw Exception( "OBJ model loading error" );
+    throw Exception( "No vertices" );
   }
   for( int i = 0; i < positions.length(); ++i ) {
     positions[i] = Point3::ORIGIN + translation + scaling * ( positions[i] - Point3::ORIGIN );
@@ -367,8 +352,10 @@ void OBJ::loadOBJ( const char* path )
   log.printEnd( " OK" );
 }
 
-void OBJ::save( const char* fileName )
+void OBJ::save()
 {
+  String destPath = path + ".ozcSMM";
+
   compiler.beginMesh();
   compiler.enable( CAP_UNIQUE );
 
@@ -404,49 +391,26 @@ void OBJ::save( const char* fileName )
   Buffer buffer( 4 * 1024 * 1024 );
   OutputStream os = buffer.outputStream();
 
-  os.writeString( shaderName );
+  os.writeString( shader );
   mesh.write( &os );
 
-  shaderName = "";
-
-  log.print( "Writing to '%s' ...", fileName );
-  buffer.write( fileName, os.length() );
+  log.print( "Writing to '%s' ...", destPath.cstr() );
+  buffer.write( destPath, os.length() );
   log.printEnd( " OK" );
 }
 
-void OBJ::freeOBJ()
+OBJ::OBJ( const char* path_ ) : path( path_ )
+{}
+
+void OBJ::build( const char* path )
 {
-  positions.clear();
-  positions.dealloc();
-
-  normals.clear();
-  normals.dealloc();
-
-  texCoords.clear();
-  texCoords.dealloc();
-
-  parts.clear();
-  parts.dealloc();
-
-  materialIndices.clear();
-  materialIndices.dealloc();
-}
-
-void OBJ::prebuild( const char* name )
-{
-  log.println( "Prebuilding OBJ model '%s' {", name );
+  log.println( "Prebuilding OBJ model '%s' {", path );
   log.indent();
 
-  try {
-    loadOBJ( name );
-    save( String( name ) + ".ozcSMM" );
-    freeOBJ();
-  }
-  catch( ... ) {
-    log.unindent();
-    log.println( "}" );
-    throw;
-  }
+  OBJ* obj = new OBJ( path );
+  obj->load();
+  obj->save();
+  delete obj;
 
   log.unindent();
   log.println( "}" );
@@ -454,5 +418,3 @@ void OBJ::prebuild( const char* name )
 
 }
 }
-
-#endif

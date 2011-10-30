@@ -21,44 +21,44 @@ namespace client
 namespace ui
 {
 
-  class StrategicArea : public Area
-  {
-    private:
+class StrategicArea : public Area
+{
+  private:
 
-      static const float TAG_CLIP_DIST;
-      static const float TAG_CLAMP_LIMIT;
-      static const float TAG_MIN_PIXEL_SIZE;
-      static const float TAG_MAX_COEFF_SIZE;
+    static const float TAG_CLIP_DIST;
+    static const float TAG_CLAMP_LIMIT;
+    static const float TAG_MIN_PIXEL_SIZE;
+    static const float TAG_MAX_COEFF_SIZE;
 
-      uint  titleTexId;
-      float pixelStep;
-      float stepPixel;
+    uint  titleTexId;
+    float pixelStep;
+    float stepPixel;
 
-    public:
+  public:
 
-      Vector<int> tagged;
-      const Object* hovered;
+    Vector<int> tagged;
+    const Object* hovered;
 
-    private:
+  private:
 
-      bool projectBounds( Span* span, const AABB& bb ) const;
-      void printName( int baseX, int baseY, const char* s, ... );
+    bool projectBounds( Span* span, const AABB& bb ) const;
+    void printName( int baseX, int baseY, const char* s, ... );
 
-      void drawHoveredRect( const Span& span );
-      void drawTaggedRect( const Object* obj, const Span& span );
+    void drawHoveredRect( const Span& span );
+    void drawTaggedRect( const Object* obj, const Span& span );
 
-    protected:
+  protected:
 
-      virtual void onUpdate();
-      virtual bool onMouseEvent();
-      virtual void onDraw();
+    virtual void onUpdate();
+    virtual bool onMouseEvent();
+    virtual void onDraw();
 
-    public:
+  public:
 
-      StrategicArea();
-      virtual ~StrategicArea();
+    StrategicArea();
+    virtual ~StrategicArea();
 
-  };
+};
 
 }
 }

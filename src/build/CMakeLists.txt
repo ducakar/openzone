@@ -1,31 +1,20 @@
-add_definitions( -DOZ_TOOLS )
-
-add_library( client-tools STATIC
-  ../client/Caelum.cpp
-  ../client/Compiler.cpp
-  ../client/Context.cpp
-  ../client/MD2.cpp
-  ../client/MD3.cpp
-  ../client/Mesh.cpp
-  ../client/Module.cpp
-  ../client/OBJ.cpp
-  ../client/OpenGL.cpp
-  ../client/Render.cpp
-  ../client/Shape.cpp
-  ../client/common.cpp
-  ../client/ui/Mouse.cpp
-  ../client/modules/GalileoModule.cpp
-)
-add_dependencies( client-tools pch )
-
-add_executable( ozPrebuild
+add_executable( ozBuild
   BSP.cpp
+  Caelum.cpp
+  Compiler.cpp
+  Context.cpp
+  MD2.cpp
+  MD3.cpp
+  Mesh.cpp
+  Mouse.cpp
+  OBJ.cpp
   Terra.cpp
-  ozPrebuild.cpp
+  ozBuild.cpp
+  modules/GalileoModule.cpp
 )
-add_dependencies( ozPrebuild pch )
-target_link_libraries( ozPrebuild client-tools nirvana matrix common build oz ${libs_tools} )
+add_dependencies( ozBuild pch )
+target_link_libraries( ozBuild client nirvana matrix common build oz ${libs_tools} )
 
 if( OZ_INSTALL_TOOLS )
-  install( TARGETS ozPrebuild DESTINATION bin )
+  install( TARGETS ozBuild DESTINATION bin )
 endif()

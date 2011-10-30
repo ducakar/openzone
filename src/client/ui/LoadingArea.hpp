@@ -19,22 +19,22 @@ namespace client
 namespace ui
 {
 
-  class LoadingArea : public Area
-  {
-    friend class UI;
+class LoadingArea : public Area
+{
+  friend class UI;
 
-    protected:
+  protected:
 
-      virtual void onDraw();
+    virtual void onDraw();
 
-    public:
+  public:
 
-      Label status;
+    Label status;
 
-      LoadingArea();
-      virtual ~LoadingArea();
+    LoadingArea();
+    virtual ~LoadingArea();
 
-  };
+};
 
 }
 }

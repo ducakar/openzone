@@ -12,7 +12,6 @@
 #include "client/ui/Button.hpp"
 
 #include "client/Shader.hpp"
-
 #include "client/OpenGL.hpp"
 
 namespace oz
@@ -22,49 +21,49 @@ namespace client
 namespace ui
 {
 
-  bool Button::onMouseEvent()
-  {
-    isHighlighted = true;
+bool Button::onMouseEvent()
+{
+  isHighlighted = true;
 
-    if( mouse.leftClick ) {
-      isClicked = true;
+  if( mouse.leftClick ) {
+    isClicked = true;
 
-      if( callback != null ) {
-        callback( this );
-      }
+    if( callback != null ) {
+      callback( this );
     }
-    return true;
+  }
+  return true;
+}
+
+void Button::onDraw()
+{
+  if( isClicked ) {
+    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+  }
+  else if( isHighlighted ) {
+    glUniform4f( param.oz_Colour, 0.8f, 0.8f, 0.8f, 0.4f );
+  }
+  else {
+    glUniform4f( param.oz_Colour, 0.6f, 0.6f, 0.6f, 0.4f );
   }
 
-  void Button::onDraw()
-  {
-    if( isClicked ) {
-      glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
-    }
-    else if( isHighlighted ) {
-      glUniform4f( param.oz_Colour, 0.8f, 0.8f, 0.8f, 0.4f );
-    }
-    else {
-      glUniform4f( param.oz_Colour, 0.6f, 0.6f, 0.6f, 0.4f );
-    }
+  fill( 0, 0, width, height );
+  label.draw( this );
 
-    fill( 0, 0, width, height );
-    label.draw( this );
+  isHighlighted = false;
+  isClicked = false;
+}
 
-    isHighlighted = false;
-    isClicked = false;
-  }
+Button::Button( const char* text, Callback* callback, int width, int height ) :
+    Area( width, height ),
+    label( width / 2, height / 2, ALIGN_CENTRE, Font::SANS, text ),
+    callback( callback ), isHighlighted( false ), isClicked( false )
+{}
 
-  Button::Button( const char* text, Callback* callback, int width, int height ) :
-      Area( width, height ),
-      label( width / 2, height / 2, ALIGN_CENTRE, Font::SANS, text ),
-      callback( callback ), isHighlighted( false ), isClicked( false )
-  {}
-
-  void Button::setCallback( Callback* callback_ )
-  {
-    callback = callback_;
-  }
+void Button::setCallback( Callback* callback_ )
+{
+  callback = callback_;
+}
 
 }
 }

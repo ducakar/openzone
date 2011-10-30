@@ -19,29 +19,29 @@ namespace client
 namespace ui
 {
 
-  class Button : public Area
-  {
-    public:
+class Button : public Area
+{
+  public:
 
-      typedef void Callback( Button* sender );
+    typedef void Callback( Button* sender );
 
-    protected:
+  protected:
 
-      Label     label;
-      Callback* callback;
-      bool      isHighlighted;
-      bool      isClicked;
+    Label     label;
+    Callback* callback;
+    bool      isHighlighted;
+    bool      isClicked;
 
-      virtual bool onMouseEvent();
-      virtual void onDraw();
+    virtual bool onMouseEvent();
+    virtual void onDraw();
 
-    public:
+  public:
 
-      explicit Button( const char* text, Callback* callback, int width, int height );
+    explicit Button( const char* text, Callback* callback, int width, int height );
 
-      void setCallback( Callback* callback );
+    void setCallback( Callback* callback );
 
-  };
+};
 
 }
 }

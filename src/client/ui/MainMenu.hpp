@@ -20,23 +20,23 @@ namespace client
 namespace ui
 {
 
-  class MainMenu : public Frame
-  {
-    public:
+class MainMenu : public Frame
+{
+  public:
 
-      static String autosaveFile;
-      static String quicksaveFile;
+    static String autosaveFile;
+    static String quicksaveFile;
 
-      Text copyright;
+    Text copyright;
 
-      MainMenu();
-      ~MainMenu();
+    MainMenu();
+    ~MainMenu();
 
-    protected:
+  protected:
 
-      virtual void onDraw();
+    virtual void onDraw();
 
-  };
+};
 
 }
 }

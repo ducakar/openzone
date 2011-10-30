@@ -16,7 +16,6 @@
 #include "client/Colours.hpp"
 #include "client/Context.hpp"
 #include "client/Camera.hpp"
-
 #include "client/OpenGL.hpp"
 
 namespace oz

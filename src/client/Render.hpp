@@ -104,7 +104,6 @@ class Render
     uint                    colourBuffer;
     uint                    normalBuffer;
 
-#ifndef OZ_TOOLS
     void scheduleCell( int cellX, int cellY );
     void prepareDraw();
     void drawGeometry();
@@ -112,20 +111,17 @@ class Render
 
     void drawUI();
     void drawOrbis();
-#endif
 
   public:
 
     SDL_Surface* surface;
 
-#ifndef OZ_TOOLS
     void draw( int flags );
     void sync() const;
     void toggleFullscreen() const;
 
     void load();
     void unload();
-#endif
 
     void init();
     void free();

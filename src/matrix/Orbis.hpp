@@ -53,8 +53,6 @@ class Orbis : public Bounds
     Terra             terra;
     Caelum            caelum;
 
-#ifndef OZ_TOOLS
-
   private:
 
     int*              bspUsers;
@@ -144,13 +142,9 @@ class Orbis : public Bounds
     void init();
     void free();
 
-#endif
-
 };
 
 extern Orbis orbis;
-
-#ifndef OZ_TOOLS
 
 inline Cell* Orbis::getCell( float x, float y )
 {
@@ -201,8 +195,6 @@ inline Span Orbis::getInters( const Bounds& bounds, float epsilon ) const
 {
   return getInters( bounds.mins.x, bounds.mins.y, bounds.maxs.x, bounds.maxs.y, epsilon );
 }
-
-#endif
 
 }
 }

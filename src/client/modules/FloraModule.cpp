@@ -15,6 +15,8 @@
 #include "matrix/Collider.hpp"
 #include "matrix/Synapse.hpp"
 
+#include "client/Lua.hpp"
+
 #include "luamacros.hpp"
 
 namespace oz

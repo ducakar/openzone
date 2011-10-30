@@ -12,7 +12,6 @@
 #include "client/Shader.hpp"
 
 #include "client/Camera.hpp"
-
 #include "client/OpenGL.hpp"
 
 #define OZ_REGISTER_PARAMETER( paramVar, uniformName ) \

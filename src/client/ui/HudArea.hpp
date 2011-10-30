@@ -21,66 +21,66 @@ namespace client
 namespace ui
 {
 
-  class HudArea : public Area
-  {
-    friend class UI;
+class HudArea : public Area
+{
+  friend class UI;
 
-    private:
+  private:
 
-      static const int   ICON_SIZE    = 32;
-      static const int   VEHICLE_SIZE = 180;
-      static const float VEHICLE_DIMF;
+    static const int   ICON_SIZE    = 32;
+    static const int   VEHICLE_SIZE = 180;
+    static const float VEHICLE_DIMF;
 
-      Label title;
-      Label weaponName;
-      Label weaponRounds;
-      Label vehicleWeaponNames[Vehicle::WEAPONS_MAX];
-      Label vehicleWeaponRounds[Vehicle::WEAPONS_MAX];
+    Label title;
+    Label weaponName;
+    Label weaponRounds;
+    Label vehicleWeaponNames[Vehicle::WEAPONS_MAX];
+    Label vehicleWeaponRounds[Vehicle::WEAPONS_MAX];
 
-      int   lastTaggedId;
-      int   lastWeaponId;
-      int   lastWeaponRounds;
-      int   lastVehicleId;
-      int   lastVehicleWeaponRounds[Vehicle::WEAPONS_MAX];
+    int   lastTaggedId;
+    int   lastWeaponId;
+    int   lastWeaponRounds;
+    int   lastVehicleId;
+    int   lastVehicleWeaponRounds[Vehicle::WEAPONS_MAX];
 
-      uint  crossTexId;
-      uint  useTexId;
-      uint  deviceTexId;
-      uint  equipTexId;
-      uint  mountTexId;
-      uint  takeTexId;
-      uint  browseTexId;
-      uint  liftTexId;
-      uint  grabTexId;
+    uint  crossTexId;
+    uint  useTexId;
+    uint  deviceTexId;
+    uint  equipTexId;
+    uint  mountTexId;
+    uint  takeTexId;
+    uint  browseTexId;
+    uint  liftTexId;
+    uint  grabTexId;
 
-      int   descTextX;
-      int   descTextY;
-      int   healthBarX;
-      int   healthBarY;
-      int   crossIconX;
-      int   crossIconY;
-      int   leftIconX;
-      int   leftIconY;
-      int   rightIconX;
-      int   rightIconY;
-      int   bottomIconX;
-      int   bottomIconY;
+    int   descTextX;
+    int   descTextY;
+    int   healthBarX;
+    int   healthBarY;
+    int   crossIconX;
+    int   crossIconY;
+    int   leftIconX;
+    int   leftIconY;
+    int   rightIconX;
+    int   rightIconY;
+    int   bottomIconX;
+    int   bottomIconY;
 
-      void drawBotCrosshair();
-      void drawBotStatus();
-      void drawVehicleStatus();
+    void drawBotCrosshair();
+    void drawBotStatus();
+    void drawVehicleStatus();
 
-    protected:
+  protected:
 
-      virtual void onUpdate();
-      virtual void onDraw();
+    virtual void onUpdate();
+    virtual void onDraw();
 
-    public:
+  public:
 
-      HudArea();
-      virtual ~HudArea();
+    HudArea();
+    virtual ~HudArea();
 
-  };
+};
 
 }
 }

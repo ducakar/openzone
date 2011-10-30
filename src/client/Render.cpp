@@ -46,8 +46,6 @@ const float Render::NIGHT_FOG_COEFF  = 2.0f;
 const float Render::NIGHT_FOG_DIST   = 0.3f;
 const float Render::WATER_VISIBILITY = 8.0f;
 
-#ifndef OZ_TOOLS
-
 void Render::scheduleCell( int cellX, int cellY )
 {
   const Cell& cell = orbis.cells[cellX][cellY];
@@ -515,8 +513,6 @@ void Render::unload()
   log.println( "}" );
 }
 
-#endif // OZ_TOOLS
-
 void Render::init()
 {
   log.println( "Initialising Render {" );
@@ -549,10 +545,8 @@ void Render::init()
     throw Exception( "Window creation failed" );
   }
 
-#ifndef OZ_TOOLS
   SDL_WM_GrabInput( isFullscreen ? SDL_GRAB_ON : SDL_GRAB_OFF );
   ui::mouse.isGrabOn = SDL_WM_GrabInput( SDL_GRAB_QUERY ) == SDL_GRAB_ON;
-#endif
 
   SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION, null );
 
@@ -644,7 +638,7 @@ void Render::init()
   }
 
   if( hasS3TC ) {
-    context.isS3TCSupported = true;
+    shader.hasS3TC = true;
   }
 
 #ifndef OZ_GL_COMPATIBLE
@@ -771,7 +765,6 @@ void Render::init()
   glActiveTexture( GL_TEXTURE0 );
   glEnable( GL_TEXTURE_2D );
 
-#ifndef OZ_TOOLS
   shader.init();
   shader.load();
   shape.load();
@@ -782,7 +775,6 @@ void Render::init()
 
   glBindTexture( GL_TEXTURE_2D, 0 );
   shape.bindVertexArray();
-#endif
 
   OZ_GL_CHECK_ERROR();
 
@@ -808,12 +800,10 @@ void Render::free()
     glDeleteTextures( 1, &normalBuffer );
   }
 
-#ifndef OZ_TOOLS
   ui::ui.free();
   shape.unload();
   shader.unload();
   shader.free();
-#endif
 
   log.unindent();
   log.println( "}" );

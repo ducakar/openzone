@@ -18,33 +18,33 @@ namespace client
 namespace ui
 {
 
-  class Area;
+class Area;
 
-  class Text
-  {
-    private:
+class Text
+{
+  private:
 
-      int    x;
-      int    y;
-      int    width;
-      int    nLines;
+    int    x;
+    int    y;
+    int    width;
+    int    nLines;
 
-      TTF_Font* font;
-      Label* labels;
+    TTF_Font* font;
+    Label* labels;
 
-      static char buffer[2048];
+    static char buffer[2048];
 
-    public:
+  public:
 
-      explicit Text( int x, int y, int width, int nLines, Font::Type font );
-      ~Text();
+    explicit Text( int x, int y, int width, int nLines, Font::Type font );
+    ~Text();
 
-      void setText( const char* s, ... );
-      void clear();
+    void setText( const char* s, ... );
+    void clear();
 
-      void draw( const Area* area ) const;
+    void draw( const Area* area ) const;
 
-  };
+};
 
 }
 }

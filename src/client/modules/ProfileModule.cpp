@@ -11,6 +11,8 @@
 
 #include "client/modules/ProfileModule.hpp"
 
+#include "client/Lua.hpp"
+
 #include "luamacros.hpp"
 
 namespace oz

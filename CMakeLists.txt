@@ -152,20 +152,16 @@ set( libs "${libs};${OPENGL_gl_LIBRARY}" )
 set( libs "${libs};${OPENAL_LIBRARY}" )
 set( libs "${libs};${VORBISFILE_LIBRARY}" )
 
-set( libs_tools "${SDL_LIBRARY}" )
-set( libs_tools "${libs_tools};${SDLIMAGE_LIBRARY}" )
-set( libs_tools "${libs_tools};${LUA_LIBRARY}" )
-set( libs_tools "${libs_tools};${OPENGL_gl_LIBRARY}" )
-
 if( OZ_MINGW )
   set( libs "${libs};${INTL_LIBRARY}" )
-  set( libs_tools "${libs_tools};${INTL_LIBRARY}" )
 endif()
 
 if( OZ_NETWORK )
   include_directories( ${SDLNET_INCLUDE_DIR} )
   set( libs "${libs};${SDLNET_LIBRARY}" )
 endif()
+
+set( libs_tools "${libs};${SDLIMAGE_LIBRARY}" )
 
 # compiler and linker flags
 set( flags "-pipe -std=c++0x -ffast-math" )

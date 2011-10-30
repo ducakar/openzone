@@ -21,86 +21,76 @@ namespace client
 namespace ui
 {
 
-  class Mouse
-  {
-    public:
+class Mouse
+{
+  public:
 
-      enum Icon
-      {
-        X,
-        ARROW,
-        MOVE,
-        TEXT,
-        HAND,
-        MAX
-      };
+    enum Icon
+    {
+      X,
+      ARROW,
+      MOVE,
+      TEXT,
+      HAND,
+      MAX
+    };
 
-    private:
+    static const char* NAMES[MAX];
 
-      struct Cursor
-      {
-        int  size;
-        int  hotspotX;
-        int  hotspotY;
-        uint texId;
-      };
+  private:
 
-      static const char* NAMES[MAX];
+    struct Cursor
+    {
+      int  size;
+      int  hotspotX;
+      int  hotspotY;
+      uint texId;
+    };
 
-#ifndef OZ_TOOLS
+    Cursor cursors[MAX];
 
-      Cursor cursors[MAX];
+  public:
 
-    public:
+    int  x;
+    int  y;
 
-      int  x;
-      int  y;
+    int   relX;
+    int   relY;
+    int   relZ;
 
-      int   relX;
-      int   relY;
-      int   relZ;
+    char  buttons;
+    char  oldButtons;
+    char  currButtons;
 
-      char  buttons;
-      char  oldButtons;
-      char  currButtons;
+    int   overEdgeX;
+    int   overEdgeY;
 
-      int   overEdgeX;
-      int   overEdgeY;
+    bool  leftClick;
+    bool  rightClick;
+    bool  middleClick;
+    bool  wheelUp;
+    bool  wheelDown;
 
-      bool  leftClick;
-      bool  rightClick;
-      bool  middleClick;
-      bool  wheelUp;
-      bool  wheelDown;
+    bool  doShow;
+    bool  isGrabOn;
+    float accelFactor;
 
-      bool  doShow;
-      bool  isGrabOn;
-      float accelFactor;
+    int   icon;
 
-      int   icon;
+    void prepare();
+    void update();
 
-      void prepare();
-      void update();
+    void draw() const;
 
-      void draw() const;
+    void load();
+    void unload();
 
-      void load();
-      void unload();
+    void init();
+    void free();
 
-      void init();
-      void free();
+};
 
-#else
-
-    public:
-
-      static void prebuild();
-
-#endif
-
-  };
-
-  extern Mouse mouse;
+extern Mouse mouse;
 
 }
 }

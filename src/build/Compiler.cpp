@@ -9,16 +9,14 @@
 
 #include "stable.hpp"
 
-#include "client/Compiler.hpp"
+#include "build/Compiler.hpp"
 
-#ifdef OZ_TOOLS
-
-#include "client/Colours.hpp"
 #include "client/Context.hpp"
+#include "client/OpenGL.hpp"
 
 namespace oz
 {
-namespace client
+namespace build
 {
 
 Compiler compiler;
@@ -328,5 +326,3 @@ void Compiler::free()
 
 }
 }
-
-#endif

@@ -19,27 +19,27 @@ namespace client
 namespace ui
 {
 
-  class BuildButton : public Button
-  {
-    public:
+class BuildButton : public Button
+{
+  public:
 
-      String className;
+    String className;
 
-      explicit BuildButton( const char* className, Callback* callback, int width, int height );
+    explicit BuildButton( const char* className, Callback* callback, int width, int height );
 
-  };
+};
 
-  class BuildMenu : public Frame
-  {
-    private:
+class BuildMenu : public Frame
+{
+  private:
 
-      static void createObject( Button* button );
+    static void createObject( Button* button );
 
-    public:
+  public:
 
-      BuildMenu();
+    BuildMenu();
 
-  };
+};
 
 }
 }

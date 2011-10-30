@@ -12,12 +12,6 @@
 #include "client/BSP.hpp"
 
 #include "client/Context.hpp"
-#include "client/Compiler.hpp"
-#include "client/Frustum.hpp"
-#include "client/Colours.hpp"
-#include "client/Shape.hpp"
-#include "client/Audio.hpp"
-
 #include "client/OpenGL.hpp"
 #include "client/OpenAL.hpp"
 

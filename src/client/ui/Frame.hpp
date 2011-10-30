@@ -19,21 +19,21 @@ namespace client
 namespace ui
 {
 
-  class Frame : public Area
-  {
-    protected:
+class Frame : public Area
+{
+  protected:
 
-      Label title;
+    Label title;
 
-      virtual bool onMouseEvent();
-      virtual void onDraw();
+    virtual bool onMouseEvent();
+    virtual void onDraw();
 
-    public:
+  public:
 
-      explicit Frame( int width, int height, const char* title );
-      explicit Frame( int x, int y, int width, int height, const char* title );
+    explicit Frame( int width, int height, const char* title );
+    explicit Frame( int x, int y, int width, int height, const char* title );
 
-  };
+};
 
 }
 }

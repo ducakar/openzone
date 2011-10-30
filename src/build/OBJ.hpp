@@ -1,23 +1,18 @@
 /*
  *  OBJ.hpp
  *
- *  [description]
- *
  *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
 
-#include "client/common.hpp"
-
-#ifdef OZ_TOOLS
-
+#include "build/common.hpp"
 #include "client/Mesh.hpp"
 
 namespace oz
 {
-namespace client
+namespace build
 {
 
 struct Face;
@@ -64,33 +59,31 @@ class OBJ
       float  specular;
     };
 
-    static String           shaderName;
-    static Vector<Point3>   positions;
-    static Vector<Vec3>     normals;
-    static Vector<TexCoord> texCoords;
-    static Vector<Part>     parts;
-    static HashString<int>  materialIndices;
-
-    String name;
+    String           path;
+    String           shader;
+    Vector<Point3>   positions;
+    Vector<Vec3>     normals;
+    Vector<TexCoord> texCoords;
+    Vector<Part>     parts;
+    HashString<int>  materialIndices;
 
     static char* skipSpaces( char* pos );
     static char* readWord( char* pos );
 
-    static bool readVertexData( char* pos );
-    static bool readFace( char* pos, int part );
-    static bool loadMaterials( const String& path );
+    bool readVertexData( char* pos );
+    bool readFace( char* pos, int part );
+    bool loadMaterials( const String& path );
 
-    static void loadOBJ( const char* name );
-    static void freeOBJ();
-    static void save( const char* fileName );
+    void load();
+    void save();
+
+    OBJ( const char* path );
 
   public:
 
-    static void prebuild( const char* name );
+    static void build( const char* path );
 
 };
 
 }
 }
-
-#endif

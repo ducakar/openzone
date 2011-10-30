@@ -20,9 +20,9 @@ namespace oz
 namespace matrix
 {
 
-const float Object::BASE_INTENSITY          = 0.5f;
 const float Object::MOMENTUM_INTENSITY_COEF = -0.10f;
 const float Object::DAMAGE_INTENSITY_COEF   = +0.02f;
+const float Object::DAMAGE_BASE_INTENSITY   = +0.30f;
 
 Pool<Object::Event, 4096> Object::Event::pool;
 Pool<Object, 2048>        Object::pool;

@@ -38,6 +38,7 @@ void MenuStage::present()
 
 void MenuStage::load()
 {
+  ui::mouse.load();
   ui::ui.root->add( new ui::MainMenu() );
   ui::mouse.doShow = true;
   ui::mouse.buttons = 0;
@@ -47,7 +48,10 @@ void MenuStage::load()
 }
 
 void MenuStage::unload()
-{}
+{
+  ui::mouse.doShow = false;
+  ui::mouse.unload();
+}
 
 void MenuStage::init()
 {
