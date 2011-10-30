@@ -1,13 +1,15 @@
 /*
  *  BSP.hpp
  *
- *  Data structure and loaders for Internal BSP, Quake3 BSP and OpenBSP formats
- *
  *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
+
+/**
+ * @file matrix/BSP.hpp
+ */
 
 #include "stable.hpp"
 
@@ -22,7 +24,9 @@ namespace oz
 
       static const int MAX_BRUSHES = 256;
 
-      /// BSP node.
+      /**
+       * BSP node.
+       */
       struct Node
       {
         int plane; ///< Separating plane index in <tt>planes</tt> array.
@@ -31,14 +35,18 @@ namespace oz
         int back;  ///< Index of node on the negative side of the separating plane.
       };
 
-      /// BSP leaf node.
+      /**
+       * BSP leaf node.
+       */
       struct Leaf
       {
         int firstBrush; ///< Index of the first brush index in <tt>leafBrushes</tt> array.
         int nBrushes;   ///< Number of brush indices.
       };
 
-      /// BSP brush (convex polytope).
+      /**
+       * BSP brush (convex polytope).
+       */
       struct Brush
       {
         int firstSide; ///< Index of the first plane index in <tt>bushSides</tt> array.
@@ -47,7 +55,9 @@ namespace oz
         int material;  ///< Material bits (look <code>oz::::Material</code>.
       };
 
-      /// BSP model (doors, lifts etc.).
+      /**
+       * BSP model (doors, lifts etc.).
+       */
       struct Model : Bounds
       {
         enum Type

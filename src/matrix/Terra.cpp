@@ -13,10 +13,6 @@
 
 #include "matrix/Library.hpp"
 
-#ifdef OZ_TOOLS
-# include <SDL_image.h>
-#endif
-
 namespace oz
 {
 
@@ -88,114 +84,5 @@ namespace oz
   {
     ostream->writeString( library.terras[id].name );
   }
-
-#ifdef OZ_TOOLS
-
-  void Terra::buildTerraFrame()
-  {
-    for( int x = 0; x < QUADS; ++x ) {
-      for( int y = 0; y < QUADS; ++y ) {
-        /*
-          0. triangle -- upper left
-          1. triangle -- lower right
-
-            |  ...  |         D        C
-            +---+---+-         --o--->o
-            |1 /|1 /|          |      ^
-            | / | / |          |      |
-            |/ 0|/ 0|          |      |
-            +---+---+- ...     v      |
-            |1 /|1 /|          o<-----o
-            | / | / |         A        B
-            |/ 0|/ 0|
-          (0,0)
-        */
-        const Point3& a = quads[x    ][y    ].vertex;
-        const Point3& b = quads[x + 1][y    ].vertex;
-        const Point3& c = quads[x + 1][y + 1].vertex;
-        const Point3& d = quads[x    ][y + 1].vertex;
-
-        quads[x][y].triNormal[0] = ~( ( c - b ) ^ ( a - b ) );
-        quads[x][y].triNormal[1] = ~( ( a - d ) ^ ( c - d ) );
-      }
-    }
-  }
-
-  void Terra::prebuild( const char* name_ )
-  {
-    String name       = name_;
-    String configFile = "terra/" + name + ".rc";
-    String imageFile  = "terra/" + name + ".png";
-    String destFile   = "terra/" + name + ".ozTerra";
-
-    Config terraConfig;
-    terraConfig.load( configFile );
-
-    float heightStep = terraConfig.get( "step", 0.5f );
-    float heightBias = terraConfig.get( "bias", 0.0f );
-
-    // just to mark them used to prevent unused config variables warning
-    terraConfig.get( "detailTexture", "" );
-    terraConfig.get( "mapTexture", "" );
-    terraConfig.get( "waterTexture", "" );
-
-    log.print( "Loading terrain heightmap image '%s' ...", name.cstr() );
-
-    init();
-
-    SDL_Surface* image = IMG_Load( imageFile );
-
-    if( image == null ) {
-      log.printEnd( " No such file" );
-      throw Exception( "Failed to load terrain" );
-    }
-    if( image->w != VERTS || image->h != VERTS || image->format->BytesPerPixel != 1 ) {
-      log.printEnd( " Invalid format: %d x %d %d bpp, should be %d x %d 8 bpp", image->w, image->h,
-                   image->format->BytesPerPixel * 8, VERTS, VERTS );
-      SDL_FreeSurface( image );
-      throw Exception( "Failed to load terrain" );
-    }
-
-    int scanLineLength = image->pitch;
-    const ubyte* line = reinterpret_cast<const ubyte*>( image->pixels );
-    for( int y = VERTS - 1; y >= 0; --y ) {
-      for( int x = 0; x < VERTS; ++x ) {
-        quads[x][y].vertex.z = float( line[x] ) * heightStep + heightBias;
-      }
-      line += scanLineLength;
-    }
-
-    buildTerraFrame();
-
-    SDL_FreeSurface( image );
-    log.printEnd( " OK" );
-    log.print( "Dumping terrain to '%s' ...", destFile.cstr() );
-
-    Buffer buffer( 10 * 1024 * 1024 );
-    OutputStream os = buffer.outputStream();
-
-    os.writeInt( VERTS );
-
-    for( int x = 0; x < VERTS; ++x ) {
-      for( int y = 0; y < VERTS; ++y ) {
-        os.writePoint3( quads[x][y].vertex );
-
-        if( x == QUADS || y == QUADS ) {
-          os.writeVec3( Vec3::ZERO );
-          os.writeVec3( Vec3::ZERO );
-        }
-        else {
-          os.writeVec3( quads[x][y].triNormal[0] );
-          os.writeVec3( quads[x][y].triNormal[1] );
-        }
-      }
-    }
-
-    buffer.write( destFile, os.length() );
-
-    log.printEnd( " OK" );
-  }
-
-#endif // OZ_TOOLS
 
 }

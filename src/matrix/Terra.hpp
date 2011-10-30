@@ -11,8 +11,6 @@
 
 #include "stable.hpp"
 
-#include "matrix/common.hpp"
-
 namespace oz
 {
 
@@ -55,13 +53,6 @@ namespace oz
 
       void read( InputStream* istream );
       void write( OutputStream* ostream ) const;
-
-#ifdef OZ_TOOLS
-
-      void buildTerraFrame();
-      void prebuild( const char* name );
-
-#endif
 
   };
 

@@ -18,13 +18,8 @@
 #include <dirent.h>
 #include <sys/types.h>
 
-#ifndef OZ_TOOLS
-# define OZ_REGISTER_BASECLASS( name ) \
+#define OZ_REGISTER_BASECLASS( name ) \
   baseClasses.add( #name, &name##Class::init )
-#else
-# define OZ_REGISTER_BASECLASS( name ) \
-  baseClasses.add( #name, null )
-#endif
 
 namespace oz
 {
@@ -122,8 +117,6 @@ namespace oz
       throw Exception( "Invalid name list index requested '" + String( name ) + "'" );
     }
   }
-
-#ifndef OZ_TOOLS
 
   Struct* Library::createStruct( int index, int id, const Point3& p, Heading heading ) const
   {
@@ -560,9 +553,7 @@ namespace oz
     log.println( "}" );
   }
 
-#else // OZ_TOOLS
-
-  void Library::init()
+  void Library::buildInit()
   {
     OZ_REGISTER_BASECLASS( Object );
     OZ_REGISTER_BASECLASS( Dynamic );
@@ -931,16 +922,11 @@ namespace oz
     }
     dirList.dealloc();
 
-    usedTextures.alloc( textures.length() );
-    usedTextures.clearAll();
-
     log.unindent();
     log.println( "}" );
     log.unindent();
     log.println( "}" );
   }
-
-#endif // OZ_TOOLS
 
   void Library::free()
   {
@@ -987,10 +973,6 @@ namespace oz
     baseClasses.dealloc();
     classes.free();
     classes.dealloc();
-
-#ifdef OZ_TOOLS
-    usedTextures.dealloc();
-#endif
   }
 
 }

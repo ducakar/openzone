@@ -251,6 +251,8 @@ class BSP : public Bounds
 
   public:
 
+    static Bitset usedTextures;
+
     // create ozBSP from a Quake 3 QBSP and optimise it
     static void prebuild( const char* name );
 

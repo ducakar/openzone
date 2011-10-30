@@ -36,8 +36,6 @@ namespace client
 
   Terra terra;
 
-#ifndef OZ_TOOLS
-
   Terra::Terra() : ibo( 0 ), waterTexId( 0 ), detailTexId( 0 ), mapTexId( 0 ), id( -1 )
   {
     for( int i = 0; i < TILES; ++i ) {
@@ -255,130 +253,6 @@ namespace client
       id = -1;
     }
   }
-
-#else // OZ_TOOLS
-
-  void Terra::prebuild( const char* name_ )
-  {
-    String name       = name_;
-    String configFile = "terra/" + name + ".rc";
-    String outFile    = "terra/" + name + ".ozcTerra";
-
-    log.println( "Compiling client terrain data to '%s' {", outFile.cstr() );
-    log.indent();
-
-    Config terraConfig;
-    terraConfig.load( configFile );
-
-    // just to mark them used to prevent unused config variable warning
-    terraConfig.get( "step", 0.5f );
-    terraConfig.get( "bias", 0.0f );
-
-    String terraDir      = "terra/";
-    String waterTexture  = terraDir + terraConfig.get( "waterTexture", "" );
-    String detailTexture = terraDir + terraConfig.get( "detailTexture", "" );
-    String mapTexture    = terraDir + terraConfig.get( "mapTexture", "" );
-
-    uint waterTexId  = context.loadRawTexture( waterTexture );
-    uint detailTexId = context.loadRawTexture( detailTexture );
-    uint mapTexId    = context.loadRawTexture( mapTexture, true,
-                                               GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR );
-
-    Buffer buffer( 20 * 1024 * 1024 );
-    OutputStream os = buffer.outputStream();
-
-    context.writeTexture( waterTexId, &os );
-    context.writeTexture( detailTexId, &os );
-    context.writeTexture( mapTexId, &os );
-
-    glDeleteTextures( 1, &waterTexId );
-    glDeleteTextures( 1, &detailTexId );
-    glDeleteTextures( 1, &mapTexId );
-
-    // generate index buffer
-    int index = 0;
-    for( int x = 0; x < TILE_QUADS; ++x ) {
-      if( x != 0 ) {
-        os.writeShort( short( index + TILE_QUADS + 1 ) );
-      }
-      for( int y = 0; y <= TILE_QUADS; ++y ) {
-        os.writeShort( short( index + TILE_QUADS + 1 ) );
-        os.writeShort( short( index ) );
-        ++index;
-      }
-      if( x != TILE_QUADS - 1 ) {
-        os.writeShort( short( index - 1 ) );
-      }
-    }
-
-    // generate vertex buffers
-    Point3 pos;
-    Vec3   normal;
-    Vertex vertex;
-
-    Bitset waterTiles( TILES * TILES );
-    waterTiles.clearAll();
-
-    for( int i = 0; i < TILES; ++i ) {
-      for( int j = 0; j < TILES; ++j ) {
-        // tile
-        const auto& quads = orbis.terra.quads;
-
-        for( int k = 0; k <= TILE_QUADS; ++k ) {
-          for( int l = 0; l <= TILE_QUADS; ++l ) {
-            int x = i * TILE_QUADS + k;
-            int y = j * TILE_QUADS + l;
-
-            pos    = quads[x][y].vertex;
-            normal = Vec3::ZERO;
-
-            if( x < oz::Terra::QUADS && y < oz::Terra::QUADS ) {
-              normal += quads[x][y].triNormal[0];
-              normal += quads[x][y].triNormal[1];
-            }
-            if( x > 0 && y < oz::Terra::QUADS ) {
-              normal += quads[x - 1][y].triNormal[0];
-            }
-            if( x > 0 && y > 0 ) {
-              normal += quads[x - 1][y - 1].triNormal[0];
-              normal += quads[x - 1][y - 1].triNormal[1];
-            }
-            if( x < oz::Terra::QUADS && y > 0 ) {
-              normal += quads[x][y - 1].triNormal[1];
-            }
-
-            if( pos.z < 0.0f ) {
-              waterTiles.set( i * TILES + j );
-            }
-
-            vertex.pos[0] = pos.x;
-            vertex.pos[1] = pos.y;
-            vertex.pos[2] = pos.z;
-
-            vertex.texCoord[0] = float( x ) / float( oz::Terra::VERTS );
-            vertex.texCoord[1] = float( y ) / float( oz::Terra::VERTS );
-
-            vertex.normal[0] = normal.x;
-            vertex.normal[1] = normal.y;
-            vertex.normal[2] = normal.z;
-
-            vertex.write( &os );
-          }
-        }
-      }
-    }
-
-    for( int i = 0; i < waterTiles.length(); ++i ) {
-      os.writeChar( waterTiles.get( i ) );
-    }
-
-    buffer.write( outFile, os.length() );
-
-    log.unindent();
-    log.println( "}" );
-  }
-
-#endif // OZ_TOOLS
 
 }
 }

@@ -22,10 +22,12 @@ namespace client
 
   class Terra
   {
-    private:
+    public:
 
       static const int   TILE_QUADS = 16;
       static const int   TILES      = oz::Terra::QUADS / TILE_QUADS;
+
+    private:
 
       static const int   TILE_INDICES;
       static const int   TILE_VERTICES;
@@ -34,8 +36,6 @@ namespace client
       static const float TILE_INV_SIZE;
 
       static const float WAVE_BIAS_INC;
-
-#ifndef OZ_TOOLS
 
       uint  vaos[TILES][TILES];
       uint  vbos[TILES][TILES];
@@ -65,13 +65,6 @@ namespace client
       void load();
       void unload();
 
-#else
-
-    public:
-
-      static void prebuild( const char* name );
-
-#endif
   };
 
   extern Terra terra;
