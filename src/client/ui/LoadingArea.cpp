@@ -13,7 +13,6 @@
 
 #include "client/Camera.hpp"
 #include "client/Shader.hpp"
-
 #include "client/OpenGL.hpp"
 
 namespace oz
@@ -23,22 +22,22 @@ namespace client
 namespace ui
 {
 
-  LoadingArea::LoadingArea() : Area( camera.width, camera.height ),
-      status( camera.width / 2, camera.height / 5, ALIGN_CENTRE, Font::LARGE, "" )
-  {
-    flags = PINNED_BIT;
-  }
+LoadingArea::LoadingArea() : Area( camera.width, camera.height ),
+    status( camera.width / 2, camera.height / 5, ALIGN_CENTRE, Font::LARGE, "" )
+{
+  flags = PINNED_BIT;
+}
 
-  LoadingArea::~LoadingArea()
-  {}
+LoadingArea::~LoadingArea()
+{}
 
-  void LoadingArea::onDraw()
-  {
-    glUniform4f( param.oz_Colour, 0.1f, 0.1f, 0.1f, 1.0f );
-    fill( 0, 0, camera.width, camera.height );
+void LoadingArea::onDraw()
+{
+  glUniform4f( param.oz_Colour, 0.1f, 0.1f, 0.1f, 1.0f );
+  fill( 0, 0, camera.width, camera.height );
 
-    status.draw( this );
-  }
+  status.draw( this );
+}
 
 }
 }

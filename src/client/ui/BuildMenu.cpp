@@ -26,53 +26,53 @@ namespace client
 namespace ui
 {
 
-  BuildButton::BuildButton( const char* className, Callback* callback, int width, int height ) :
-      Button( gettext( ( *library.classes.find( className ) )->title ), callback, width, height ),
-      className( className )
-  {}
+BuildButton::BuildButton( const char* className, Callback* callback, int width, int height ) :
+    Button( gettext( ( *library.classes.find( className ) )->title ), callback, width, height ),
+    className( className )
+{}
 
-  void BuildMenu::createObject( Button* button_ )
-  {
-    const BuildButton* button = static_cast<const BuildButton*>( button_ );
-    const ObjectClass* const* clazz = library.classes.find( button->className );
+void BuildMenu::createObject( Button* button_ )
+{
+  const BuildButton* button = static_cast<const BuildButton*>( button_ );
+  const ObjectClass* const* clazz = library.classes.find( button->className );
 
-    if( clazz == null ) {
-      return;
-    }
-
-    Point3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
-    p += camera.at * 2.0f;
-    AABB bb = AABB( p, ( *clazz )->dim );
-
-    if( !collider.overlaps( bb ) ) {
-      synapse.addObject( button->className, p, NORTH );
-    }
+  if( clazz == null ) {
+    return;
   }
 
-  BuildMenu::BuildMenu() :
-      Frame( 8, -308 - Font::INFOS[Font::SMALL].height - Font::INFOS[Font::LARGE].height,
-             240, 250, gettext( "Create" ) )
-  {
-    add( new BuildButton( "smallCrate", createObject, 110, 15 ), 5, -40 );
-    add( new BuildButton( "bigCrate", createObject, 110, 15 ), 5, -60 );
-    add( new BuildButton( "metalBarrel", createObject, 110, 15 ), 5, -80 );
-    add( new BuildButton( "firstAid", createObject, 110, 15 ), 5, -100 );
-    add( new BuildButton( "cvicek", createObject, 110, 15 ), 5, -120 );
-    add( new BuildButton( "bomb", createObject, 110, 15 ), 5, -140 );
-    add( new BuildButton( "droid_weapon.blaster", createObject, 110, 15 ), 5, -160 );
-    add( new BuildButton( "droid_weapon.hyperblaster", createObject, 110, 15 ), 5, -180 );
-    add( new BuildButton( "droid_weapon.chaingun", createObject, 110, 15 ), 5, -200 );
-    add( new BuildButton( "droid_weapon.grenadeLauncher", createObject, 110, 15 ), 5, -220 );
+  Point3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
+  p += camera.at * 2.0f;
+  AABB bb = AABB( p, ( *clazz )->dim );
 
-    add( new BuildButton( "goblin", createObject, 110, 15 ), -115, -40 );
-    add( new BuildButton( "knight", createObject, 110, 15 ), -115, -60 );
-    add( new BuildButton( "bauul", createObject, 110, 15 ), -115, -80 );
-    add( new BuildButton( "beast", createObject, 110, 15 ), -115, -100 );
-    add( new BuildButton( "droid", createObject, 110, 15 ), -115, -120 );
-    add( new BuildButton( "droid.OOM-9", createObject, 110, 15 ), -115, -140 );
-    add( new BuildButton( "raptor", createObject, 110, 15 ), -115, -160 );
-    add( new BuildButton( "hoverTank", createObject, 110, 15 ), -115, -180 );
+  if( !collider.overlaps( bb ) ) {
+    synapse.addObject( button->className, p, NORTH );
   }
+}
+
+BuildMenu::BuildMenu() :
+    Frame( 8, -308 - Font::INFOS[Font::SMALL].height - Font::INFOS[Font::LARGE].height,
+           240, 250, gettext( "Create" ) )
+{
+  add( new BuildButton( "smallCrate", createObject, 110, 15 ), 5, -40 );
+  add( new BuildButton( "bigCrate", createObject, 110, 15 ), 5, -60 );
+  add( new BuildButton( "metalBarrel", createObject, 110, 15 ), 5, -80 );
+  add( new BuildButton( "firstAid", createObject, 110, 15 ), 5, -100 );
+  add( new BuildButton( "cvicek", createObject, 110, 15 ), 5, -120 );
+  add( new BuildButton( "bomb", createObject, 110, 15 ), 5, -140 );
+  add( new BuildButton( "droid_weapon.blaster", createObject, 110, 15 ), 5, -160 );
+  add( new BuildButton( "droid_weapon.hyperblaster", createObject, 110, 15 ), 5, -180 );
+  add( new BuildButton( "droid_weapon.chaingun", createObject, 110, 15 ), 5, -200 );
+  add( new BuildButton( "droid_weapon.grenadeLauncher", createObject, 110, 15 ), 5, -220 );
+
+  add( new BuildButton( "goblin", createObject, 110, 15 ), -115, -40 );
+  add( new BuildButton( "knight", createObject, 110, 15 ), -115, -60 );
+  add( new BuildButton( "bauul", createObject, 110, 15 ), -115, -80 );
+  add( new BuildButton( "beast", createObject, 110, 15 ), -115, -100 );
+  add( new BuildButton( "droid", createObject, 110, 15 ), -115, -120 );
+  add( new BuildButton( "droid.OOM-9", createObject, 110, 15 ), -115, -140 );
+  add( new BuildButton( "raptor", createObject, 110, 15 ), -115, -160 );
+  add( new BuildButton( "hoverTank", createObject, 110, 15 ), -115, -180 );
+}
 
 }
 }

@@ -80,10 +80,17 @@ function bigExplosion_onUpdate( l )
 end
 
 function cvicek_onUse( l )
-  ozObjQuietDestroy()
   ozObjBindUser()
-  ozObjAddLife( 30 )
-  ozBotAddStamina( 30 )
+
+  if ozBotGetState( OZ_BOT_MECHANICAL_BIT ) then
+    ozUseFailed()
+  else
+    ozObjAddLife( 50 )
+    ozBotAddStamina( 30 )
+
+    ozObjBindSelf()
+    ozObjQuietDestroy()
+  end
 end
 
 function bomb_onUse( l )

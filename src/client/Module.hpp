@@ -49,11 +49,6 @@ class Module
     virtual void free()
     {}
 
-#ifdef OZ_TOOLS
-    virtual void prebuild()
-    {}
-#endif
-
 };
 
 }

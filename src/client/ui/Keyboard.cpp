@@ -18,20 +18,20 @@ namespace client
 namespace ui
 {
 
-  Keyboard keyboard;
+Keyboard keyboard;
 
-  void Keyboard::init()
-  {
-    aSet<char>( keys, 0, SDLK_LAST);
-    aSet<char>( oldKeys, 0, SDLK_LAST );
-    currKeys = reinterpret_cast<char*>( SDL_GetKeyState( null ) );
-  }
+void Keyboard::init()
+{
+  aSet<char>( keys, 0, SDLK_LAST);
+  aSet<char>( oldKeys, 0, SDLK_LAST );
+  currKeys = reinterpret_cast<char*>( SDL_GetKeyState( null ) );
+}
 
-  void Keyboard::prepare()
-  {
-    aCopy( oldKeys, keys, SDLK_LAST );
-    aCopy( keys, currKeys, SDLK_LAST );
-  }
+void Keyboard::prepare()
+{
+  aCopy( oldKeys, keys, SDLK_LAST );
+  aCopy( keys, currKeys, SDLK_LAST );
+}
 
 }
 }

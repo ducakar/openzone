@@ -9,10 +9,7 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "client/Module.hpp"
-#include "client/Lua.hpp"
 
 #include "client/modules/MusicPlayer.hpp"
 

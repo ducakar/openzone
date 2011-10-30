@@ -13,11 +13,10 @@
 
 #include "client/Camera.hpp"
 #include "client/Context.hpp"
+#include "client/OpenGL.hpp"
 
 #include "client/modules/GalileoModule.hpp"
 #include "client/modules/QuestModule.hpp"
-
-#include "client/OpenGL.hpp"
 
 namespace oz
 {

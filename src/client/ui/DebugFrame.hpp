@@ -18,25 +18,25 @@ namespace client
 namespace ui
 {
 
-  class DebugFrame : public Frame
-  {
-    protected:
+class DebugFrame : public Frame
+{
+  protected:
 
-      Label camPosRot;
-      Label botPosRot;
-      Label botVelMom;
-      Label botFlagsState;
-      Label tagPos;
-      Label tagVelMom;
-      Label tagFlags;
+    Label camPosRot;
+    Label botPosRot;
+    Label botVelMom;
+    Label botFlagsState;
+    Label tagPos;
+    Label tagVelMom;
+    Label tagFlags;
 
-      virtual void onDraw();
+    virtual void onDraw();
 
-    public:
+  public:
 
-      DebugFrame();
+    DebugFrame();
 
-  };
+};
 
 }
 }

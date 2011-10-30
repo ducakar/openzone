@@ -18,43 +18,43 @@ namespace client
 namespace ui
 {
 
-  class InventoryMenu : public Frame
-  {
-    private:
+class InventoryMenu : public Frame
+{
+  private:
 
-      static const int   ICON_SIZE    = 32;
-      static const int   SLOT_SIZE    = 68;
-      static const float SLOT_OBJ_DIMF;
-      static const int   COLS         = 8;
-      static const int   ROWS         = 1;
-      static const int   PADDING_SIZE = 2;
-      static const int   FOOTER_SIZE  = 32;
+    static const int   ICON_SIZE    = 32;
+    static const int   SLOT_SIZE    = 68;
+    static const float SLOT_OBJ_DIMF;
+    static const int   COLS         = 8;
+    static const int   ROWS         = 1;
+    static const int   PADDING_SIZE = 2;
+    static const int   FOOTER_SIZE  = 32;
 
-      const InventoryMenu* const master;
+    const InventoryMenu* const master;
 
-      Label  itemDesc;
+    Label  itemDesc;
 
-      int    tagged;
-      int    scroll;
+    int    tagged;
+    int    scroll;
 
-      uint   scrollUpTexId;
-      uint   scrollDownTexId;
-      uint   useTexId;
-      uint   equipTexId;
-      uint   unequipTexId;
+    uint   scrollUpTexId;
+    uint   scrollDownTexId;
+    uint   useTexId;
+    uint   equipTexId;
+    uint   unequipTexId;
 
-    protected:
+  protected:
 
-      virtual void onVisibilityChange();
-      virtual bool onMouseEvent();
-      virtual void onDraw();
+    virtual void onVisibilityChange();
+    virtual bool onMouseEvent();
+    virtual void onDraw();
 
-    public:
+  public:
 
-      InventoryMenu( const InventoryMenu* master );
-      virtual ~InventoryMenu();
+    InventoryMenu( const InventoryMenu* master );
+    virtual ~InventoryMenu();
 
-  };
+};
 
 }
 }

@@ -18,39 +18,39 @@ namespace client
 namespace ui
 {
 
-  class Area;
+class Area;
 
-  class Label
-  {
-    private:
+class Label
+{
+  private:
 
-      int        x;
-      int        y;
-      int        align;
-      Font::Type font;
+    int        x;
+    int        y;
+    int        align;
+    Font::Type font;
 
-      int        offsetX;
-      int        offsetY;
-      int        width;
-      int        height;
+    int        offsetX;
+    int        offsetY;
+    int        width;
+    int        height;
 
-      uint       texId;
-      uint       activeTexId;
+    uint       texId;
+    uint       activeTexId;
 
-    public:
+  public:
 
-      Label();
-      ~Label();
+    Label();
+    ~Label();
 
-      explicit Label( int x, int y, int align, Font::Type font, const char* s, ... );
+    explicit Label( int x, int y, int align, Font::Type font, const char* s, ... );
 
-      void vset( int x, int y, int align, Font::Type font, const char* s, va_list ap );
-      void set( int x, int y, int align, Font::Type font, const char* s, ... );
-      void setText( const char* s, ... );
+    void vset( int x, int y, int align, Font::Type font, const char* s, va_list ap );
+    void set( int x, int y, int align, Font::Type font, const char* s, ... );
+    void setText( const char* s, ... );
 
-      void draw( const Area* area ) const;
+    void draw( const Area* area ) const;
 
-  };
+};
 
 }
 }

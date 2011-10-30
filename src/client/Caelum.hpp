@@ -18,6 +18,10 @@ namespace client
 
 class Caelum
 {
+  public:
+
+    static const int   MAX_STARS = 4096;
+
   private:
 
     static const float DAY_BIAS;
@@ -32,11 +36,6 @@ class Caelum
     static const float NIGHT_COLOUR[4];
     static const float WATER_COLOUR[4];
     static const float STAR_COLOUR[4];
-
-    static const float STAR_DIM;
-    static const int   MAX_STARS = 4096;
-
-#ifndef OZ_TOOLS
 
     uint   vao;
     uint   vbo;
@@ -65,14 +64,6 @@ class Caelum
 
     void load();
     void unload();
-
-#else
-
-  public:
-
-    static void prebuild( const char* name );
-
-#endif
 
 };
 

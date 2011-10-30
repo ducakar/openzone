@@ -11,14 +11,12 @@
 
 #include "matrix/Library.hpp"
 
-#include "client/Context.hpp"
 #include "client/Terra.hpp"
-
 #include "client/OpenGL.hpp"
 
-#include <SDL_image.h>
+#include "build/Context.hpp"
 
-using namespace oz::client;
+#include <SDL_image.h>
 
 namespace oz
 {
@@ -135,19 +133,19 @@ void Terra::saveClient()
   String terraDir = "terra/";
   String destFile = terraDir + name + ".ozcTerra";
 
-  log.println( "Compiling client terrain data to '%s' {", destFile.cstr() );
+  log.println( "Compiling terrain model to '%s' {", destFile.cstr() );
   log.indent();
 
-  uint waterTexId  = context.loadRawTexture( terraDir + waterTexture );
-  uint detailTexId = context.loadRawTexture( terraDir + detailTexture );
-  uint mapTexId    = context.loadRawTexture( terraDir + mapTexture );
+  uint waterTexId  = Context::loadRawTexture( terraDir + waterTexture );
+  uint detailTexId = Context::loadRawTexture( terraDir + detailTexture );
+  uint mapTexId    = Context::loadRawTexture( terraDir + mapTexture );
 
   Buffer buffer( 20 * 1024 * 1024 );
   OutputStream os = buffer.outputStream();
 
-  context.writeTexture( waterTexId, &os );
-  context.writeTexture( detailTexId, &os );
-  context.writeTexture( mapTexId, &os );
+  Context::writeTexture( waterTexId, &os );
+  Context::writeTexture( detailTexId, &os );
+  Context::writeTexture( mapTexId, &os );
 
   glDeleteTextures( 1, &waterTexId );
   glDeleteTextures( 1, &detailTexId );
@@ -237,7 +235,7 @@ void Terra::saveClient()
 Terra::Terra( const char* name_ ) : name( name_ )
 {}
 
-void Terra::prebuild( const char* name )
+void Terra::build( const char* name )
 {
   Terra* terra = new Terra( name );
   terra->load();

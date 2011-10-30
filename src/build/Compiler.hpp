@@ -9,17 +9,11 @@
 
 #pragma once
 
-#include "client/common.hpp"
-
-#ifdef OZ_TOOLS
-
-#include "client/Mesh.hpp"
-
-#include "client/OpenGL.hpp"
+#include "build/Mesh.hpp"
 
 namespace oz
 {
-namespace client
+namespace build
 {
 
 static const int CAP_UNIQUE = 0x00000001;
@@ -100,5 +94,3 @@ extern Compiler compiler;
 
 }
 }
-
-#endif

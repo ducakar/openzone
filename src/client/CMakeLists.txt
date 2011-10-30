@@ -8,7 +8,6 @@ add_library( client STATIC
   Camera.cpp
   Client.cpp
   Colours.cpp
-  Compiler.cpp
   Context.cpp
   ExplosionImago.cpp
   Frustum.cpp
@@ -24,7 +23,6 @@ add_library( client STATIC
   Mesh.cpp
   Module.cpp
   Network.cpp
-  OBJ.cpp
   OpenAL.cpp
   OpenGL.cpp
   Render.cpp

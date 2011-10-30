@@ -18,23 +18,23 @@ namespace client
 namespace ui
 {
 
-  class Keyboard
-  {
-    private:
+class Keyboard
+{
+  private:
 
-      char* currKeys;
+    char* currKeys;
 
-    public:
+  public:
 
-      char  keys[SDLK_LAST];
-      char  oldKeys[SDLK_LAST];
+    char  keys[SDLK_LAST];
+    char  oldKeys[SDLK_LAST];
 
-      void init();
-      void prepare();
+    void init();
+    void prepare();
 
-  };
+};
 
-  extern Keyboard keyboard;
+extern Keyboard keyboard;
 
 }
 }

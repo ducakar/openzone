@@ -17,9 +17,9 @@
 #include "matrix/BSP.hpp"
 #include "matrix/Library.hpp"
 
-#include "client/Compiler.hpp"
+#include "client/OpenGL.hpp"
 
-using namespace oz::client;
+#include "build/Compiler.hpp"
 
 namespace oz
 {
@@ -340,7 +340,7 @@ void BSP::load()
   }
 
   nVertices = lumps[QBSPLump::VERTICES].length / int( sizeof( QBSPVertex ) );
-  vertices = new client::Vertex[nVertices];
+  vertices = new Vertex[nVertices];
 
   istream.reset();
   istream.skip( lumps[QBSPLump::VERTICES].offset );
@@ -426,7 +426,7 @@ void BSP::load()
     istream.readInt();
 
     for( int j = 0; j < faces[i].nVertices; ++j ) {
-      const client::Vertex& vertex = vertices[ faces[i].firstVertex + j ];
+      const Vertex& vertex = vertices[ faces[i].firstVertex + j ];
 
       if( vertex.pos[0] < -maxDim || vertex.pos[0] > +maxDim ||
           vertex.pos[1] < -maxDim || vertex.pos[1] > +maxDim ||
@@ -789,7 +789,7 @@ void BSP::optimise()
     log.print( "outside face removed " );
 
     // adjust face references
-    for( int j = 0; j < nModels; ++j ) {
+    for( int j = 0; j < nModels + 1; ++j ) {
       if( i < modelFaces[j].firstFace ) {
         --modelFaces[j].firstFace;
       }
@@ -1043,7 +1043,7 @@ void BSP::saveClient()
           const Vertex& vertex = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
 
           compiler.texCoord( vertex.texCoord );
-          compiler.normal( vertex.normal[0], -vertex.normal[1], -vertex.normal[2] );
+          compiler.normal( -vertex.normal[0], -vertex.normal[1], -vertex.normal[2] );
           compiler.vertex( vertex.pos );
         }
       }
@@ -1118,7 +1118,7 @@ BSP::~BSP()
   log.printEnd( " OK" );
 }
 
-void BSP::prebuild( const char* name )
+void BSP::build( const char* name )
 {
   log.println( "Prebuilding BSP '%s' {", name );
   log.indent();

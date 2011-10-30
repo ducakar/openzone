@@ -11,7 +11,6 @@
 
 #include "client/Shape.hpp"
 #include "client/Camera.hpp"
-
 #include "client/OpenGL.hpp"
 
 namespace oz

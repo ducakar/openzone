@@ -20,22 +20,22 @@ namespace client
 namespace ui
 {
 
-  class SettingsFrame : public Frame
-  {
-    private:
+class SettingsFrame : public Frame
+{
+  private:
 
-      Text    message;
-      Button* close;
+    Text    message;
+    Button* close;
 
-    protected:
+  protected:
 
-      virtual void onDraw();
+    virtual void onDraw();
 
-    public:
+  public:
 
-      SettingsFrame();
+    SettingsFrame();
 
-  };
+};
 
 }
 }

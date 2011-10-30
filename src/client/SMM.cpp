@@ -13,7 +13,6 @@
 #include "client/SMM.hpp"
 
 #include "client/Context.hpp"
-
 #include "client/OpenGL.hpp"
 
 namespace oz

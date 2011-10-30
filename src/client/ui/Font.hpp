@@ -21,44 +21,44 @@ namespace client
 namespace ui
 {
 
-  class Font
-  {
-    friend class Area;
-    friend void init( int screenX, int screenY );
-    friend void free();
+class Font
+{
+  friend class Area;
+  friend void init( int screenX, int screenY );
+  friend void free();
 
-    public:
+  public:
 
-      enum Type
-      {
-        MONO,
-        SANS,
-        SMALL,
-        LARGE,
-        MAX
-      };
+    enum Type
+    {
+      MONO,
+      SANS,
+      SMALL,
+      LARGE,
+      MAX
+    };
 
-      struct Info
-      {
-        const char* file;
-        int height;
-      };
+    struct Info
+    {
+      const char* file;
+      int height;
+    };
 
-      static const SDL_Colour SDL_COLOUR_WHITE;
-      static const Info INFOS[MAX];
+    static const SDL_Colour SDL_COLOUR_WHITE;
+    static const Info INFOS[MAX];
 
-      TTF_Font* fonts[MAX];
+    TTF_Font* fonts[MAX];
 
-      uint textTexId;
+    uint textTexId;
 
-      Font();
+    Font();
 
-      bool init();
-      void free();
+    bool init();
+    void free();
 
-  };
+};
 
-  extern Font font;
+extern Font font;
 
 }
 }

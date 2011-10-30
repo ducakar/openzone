@@ -27,15 +27,11 @@ namespace client
 
 void Module::listModules( Vector<Module*>* list )
 {
-#ifndef OZ_TOOLS
   OZ_REGISTER_MODULE( profile );
   OZ_REGISTER_MODULE( flora );
   OZ_REGISTER_MODULE( musicPlayer );
   OZ_REGISTER_MODULE( galileo );
   OZ_REGISTER_MODULE( quest );
-#else
-  OZ_REGISTER_MODULE( galileo );
-#endif
 }
 
 }

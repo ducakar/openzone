@@ -157,6 +157,7 @@ class Shader
     bool isInWater;
     bool isLoaded;
     bool hasVertexTexture;
+    bool hasS3TC;
 
     Shader();
 

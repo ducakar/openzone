@@ -33,11 +33,6 @@ class Context
   friend class Render;
   friend class Sound;
 
-  public:
-
-    static const int DEFAULT_MAG_FILTER;
-    static const int DEFAULT_MIN_FILTER;
-
   private:
 
     // texture reading buffer
@@ -45,8 +40,6 @@ class Context
     // default audio format
     static const int DEFAULT_AUDIO_FREQ   = 44100;
     static const int DEFAULT_AUDIO_FORMAT = AUDIO_S16LSB;
-
-#ifndef OZ_TOOLS
 
     template <typename Type>
     struct Resource
@@ -114,7 +107,6 @@ class Context
     int                             maxObjSources;
 
     static Buffer                   buffer;
-    static bool                     isS3TCSupported;
 
     void addSource( uint srcId, int sample );
     void addBSPSource( uint srcId, int sample, int key );
@@ -162,32 +154,6 @@ class Context
 
     void init();
     void free();
-
-#else
-
-  public:
-
-    static bool isS3TCSupported;
-    static bool useS3TC;
-
-  private:
-
-    static uint buildTexture( const void* data, int width, int height, uint format,
-                              bool wrap, int magFilter, int minFilter );
-
-  public:
-
-    static uint createTexture( const void* data, int width, int height, uint format,
-                               bool wrap = true, int magFilter = DEFAULT_MAG_FILTER,
-                               int minFilter = DEFAULT_MIN_FILTER );
-
-    static uint loadRawTexture( const char* path, bool wrap = true,
-                                int magFilter = DEFAULT_MAG_FILTER,
-                                int minFilter = DEFAULT_MIN_FILTER );
-
-    static void writeTexture( uint id, OutputStream* stream );
-
-#endif
 
 };
 

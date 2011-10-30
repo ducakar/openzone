@@ -11,6 +11,8 @@
 
 #include "client/modules/QuestModule.hpp"
 
+#include "client/Lua.hpp"
+
 #include "client/ui/UI.hpp"
 
 #include "luamacros.hpp"

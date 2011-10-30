@@ -19,27 +19,27 @@ namespace client
 namespace ui
 {
 
-  class InfoFrame : public Frame
-  {
-    private:
+class InfoFrame : public Frame
+{
+  private:
 
-      static const int REFRESH_INTERVAL = 200;
+    static const int REFRESH_INTERVAL = 200;
 
-      Text text;
-      int  lastId;
-      int  lastTicks;
+    Text text;
+    int  lastId;
+    int  lastTicks;
 
-    protected:
+  protected:
 
-      virtual void onVisibilityChange();
-      virtual bool onMouseOver();
-      virtual void onDraw();
+    virtual void onVisibilityChange();
+    virtual bool onMouseOver();
+    virtual void onDraw();
 
-    public:
+  public:
 
-      InfoFrame();
+    InfoFrame();
 
-  };
+};
 
 }
 }

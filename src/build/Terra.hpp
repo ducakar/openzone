@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/Terra.hpp"
+
+#include "build/common.hpp"
 
 namespace oz
 {
@@ -35,7 +35,7 @@ class Terra
 
   public:
 
-    static void prebuild( const char* name );
+    static void build( const char* name );
 
 };
 

@@ -1,7 +1,7 @@
 /*
- *  ozPrebuild.cpp
+ *  ozBuild.cpp
  *
- *  Prebuild data
+ *  Build data
  *
  *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
@@ -13,19 +13,21 @@
 
 #include "matrix/Library.hpp"
 
-#include "client/Context.hpp"
-#include "client/Compiler.hpp"
-#include "client/Caelum.hpp"
-#include "client/Terra.hpp"
-#include "client/BSP.hpp"
-#include "client/OBJ.hpp"
-#include "client/MD2.hpp"
-#include "client/MD3.hpp"
 #include "client/Render.hpp"
 #include "client/Module.hpp"
+#include "client/OpenGL.hpp"
 
+#include "build/Context.hpp"
+#include "build/Compiler.hpp"
+#include "build/Mouse.hpp"
+#include "build/Caelum.hpp"
 #include "build/Terra.hpp"
 #include "build/BSP.hpp"
+#include "build/OBJ.hpp"
+#include "build/MD2.hpp"
+#include "build/MD3.hpp"
+
+#include "build/modules/GalileoModule.hpp"
 
 #include <cerrno>
 #include <unistd.h>
@@ -35,6 +37,8 @@
 bool oz::Alloc::isLocked = true;
 
 namespace oz
+{
+namespace build
 {
 
 static const char* const CREATE_DIRS[] = {
@@ -61,34 +65,34 @@ static void printUsage()
 {
   log.println( "Usage:" );
   log.indent();
-  log.println( "ozPrebuild [OPTIONS] <prefix>" );
+  log.println( "ozBuild [OPTIONS] <prefix>" );
   log.println();
   log.println( "<prefix>" );
   log.println( "\tSets data directory to <prefix>/share/openzone." );
   log.println();
   log.println( "-u" );
-  log.println( "\tPrebuild UI." );
+  log.println( "\tBuild UI." );
   log.println();
   log.println( "-t" );
-  log.println( "\tPrebuild terrae (terrains)." );
+  log.println( "\tBuild terrae (terrains)." );
   log.println();
   log.println( "-c" );
-  log.println( "\tPrebuild caela (skies)." );
+  log.println( "\tBuild caela (skies)." );
   log.println();
   log.println( "-b" );
-  log.println( "\tCompile maps into BSPs and prebuild BPSs with referenced textures." );
+  log.println( "\tCompile maps into BSPs and build BPSs with referenced textures." );
   log.println();
   log.println( "-m" );
-  log.println( "\tPrebuild models." );
+  log.println( "\tBuild models." );
   log.println();
   log.println( "-o" );
-  log.println( "\tPrebuild modules." );
+  log.println( "\tBuild modules." );
   log.println();
   log.println( "-l" );
   log.println( "\tCheck syntax of Lua scripts." );
   log.println();
   log.println( "-A" );
-  log.println( "\tPrebuild everything." );
+  log.println( "\tBuild everything." );
   log.println();
   log.println( "-C" );
   log.println( "\tUse S3 texture compression" );
@@ -122,10 +126,10 @@ static void createDirs()
   log.println( "}" );
 }
 
-static void prebuildTextures( const char* srcDir, const char* destDir,
+static void buildTextures( const char* srcDir, const char* destDir,
                               bool wrap, int magFilter, int minFilter )
 {
-  log.println( "Prebuilding textures in '%s' {", srcDir );
+  log.println( "Building textures in '%s' {", srcDir );
   log.indent();
 
   String sSrcDir = srcDir;
@@ -148,10 +152,10 @@ static void prebuildTextures( const char* srcDir, const char* destDir,
     String srcPath = file->path();
     String destPath = sDestDir + file->baseName() + ".ozcTex";
 
-    log.println( "Prebuilding texture '%s' {", srcPath.cstr() );
+    log.println( "Building texture '%s' {", srcPath.cstr() );
     log.indent();
 
-    uint id = client::context.loadRawTexture( srcPath, wrap, magFilter, minFilter );
+    uint id = Context::loadRawTexture( srcPath, wrap, magFilter, minFilter );
 
     hard_assert( id != 0 );
 
@@ -159,7 +163,7 @@ static void prebuildTextures( const char* srcDir, const char* destDir,
     OutputStream os = buffer.outputStream();
 
     log.println( "Compiling into '%s'", destPath.cstr() );
-    client::context.writeTexture( id, &os );
+    Context::writeTexture( id, &os );
 
     if( !buffer.write( destPath, os.length() ) ) {
       throw Exception( "Texture writing failed" );
@@ -173,9 +177,9 @@ static void prebuildTextures( const char* srcDir, const char* destDir,
   log.println( "}" );
 }
 
-static void prebuildTerrae()
+static void buildTerrae()
 {
-  log.println( "Prebuilding Terras {" );
+  log.println( "Building Terrae {" );
   log.indent();
 
   String srcDir = "terra";
@@ -193,16 +197,16 @@ static void prebuildTerrae()
       continue;
     }
 
-    build::Terra::prebuild( file->baseName() );
+    Terra::build( file->baseName() );
   }
 
   log.unindent();
   log.println( "}" );
 }
 
-static void prebuildCaela()
+static void buildCaela()
 {
-  log.println( "Prebuilding Caela {" );
+  log.println( "Building Caela {" );
   log.indent();
 
   String srcDir = "caelum";
@@ -222,7 +226,7 @@ static void prebuildCaela()
 
     String name = file->baseName();
 
-    client::caelum.prebuild( name );
+    Caelum::build( name );
   }
 
   log.unindent();
@@ -249,9 +253,12 @@ static void compileBSPs()
       continue;
     }
 
-    const char* dot = String::findLast( file->baseName(), '.' );
+    String baseName = file->baseName();
+    const char* dot = String::findLast( baseName, '.' );
 
-    if( dot != null && String::equals( dot + 1, "autosave" ) ) {
+    if( baseName.equals( "autosave" ) ||
+        ( dot != null && String::equals( dot + 1, "autosave" ) ) )
+    {
       continue;
     }
 
@@ -259,13 +266,13 @@ static void compileBSPs()
 
     log.println( "%s", cmdLine.cstr() );
     log.println();
-    log.println( "========== q3map2 OUTPUT BEGIN %s ==========", file->baseName().cstr() );
+    log.println( "========== q3map2 OUTPUT BEGIN %s ==========", baseName.cstr() );
     log.println();
     if( system( cmdLine ) != 0 ) {
       throw Exception( "BSP map compilation failed" );
     }
     log.println();
-    log.println( "========== q3map2 OUTPUT END %s ==========", file->baseName().cstr() );
+    log.println( "========== q3map2 OUTPUT END %s ==========", baseName.cstr() );
     log.println();
   }
 
@@ -273,9 +280,9 @@ static void compileBSPs()
   log.println( "}" );
 }
 
-static void prebuildBSPs()
+static void buildBSPs()
 {
-  log.println( "Prebuilding BSPs {" );
+  log.println( "Building BSPs {" );
   log.indent();
 
   String srcDir = "data/maps";
@@ -295,30 +302,30 @@ static void prebuildBSPs()
       continue;
     }
 
-    build::BSP::prebuild( file->baseName() );
+    BSP::build( file->baseName() );
   }
 
   log.unindent();
   log.println( "}" );
 }
 
-static void prebuildBSPTextures()
+static void buildBSPTextures()
 {
-  log.println( "Prebuilding BSP textures {" );
+  log.println( "Building BSP textures {" );
   log.indent();
 
   for( int i = 0; i < library.textures.length(); ++i ) {
-    if( !build::BSP::usedTextures.get( i ) ) {
+    if( !BSP::usedTextures.get( i ) ) {
       continue;
     }
 
     String srcPath = library.textures[i].path;
     String destPath = "bsp/" + library.textures[i].name + ".ozcTex";
 
-    log.println( "Prebuilding texture '%s' {", srcPath.cstr() );
+    log.println( "Building texture '%s' {", srcPath.cstr() );
     log.indent();
 
-    uint id = client::context.loadRawTexture( srcPath );
+    uint id = Context::loadRawTexture( srcPath );
 
     hard_assert( id != 0 );
 
@@ -326,7 +333,7 @@ static void prebuildBSPTextures()
     OutputStream os = buffer.outputStream();
 
     log.println( "Compiling into '%s'", destPath.cstr() );
-    client::context.writeTexture( id, &os );
+    Context::writeTexture( id, &os );
 
     int slash = destPath.lastIndex( '/' );
     hard_assert( slash != -1 );
@@ -342,15 +349,15 @@ static void prebuildBSPTextures()
     log.println( "}" );
   }
 
-  build::BSP::usedTextures.dealloc();
+  BSP::usedTextures.dealloc();
 
   log.unindent();
   log.println( "}" );
 }
 
-static void prebuildModels()
+static void buildModels()
 {
-  log.println( "Prebuilding models {" );
+  log.println( "Building models {" );
   log.indent();
 
   String dirName = "mdl";
@@ -378,7 +385,7 @@ static void prebuildModels()
         throw Exception( "OBJ model '" + name + "' source files missing" );
       }
 
-      client::OBJ::prebuild( path );
+      OBJ::build( path );
     }
     else if( stat( path + "/tris.md2", &srcInfo0 ) == 0 ) {
       if( stat( path + "/skin.png", &srcInfo1 ) != 0 ||
@@ -387,14 +394,14 @@ static void prebuildModels()
         throw Exception( "MD2 model '" + name + "' source files missing" );
       }
 
-      client::MD2::prebuild( path );
+      MD2::build( path );
     }
     else if( stat( path + "/.md3", &srcInfo0 ) == 0 ) {
       if( stat( path + "/config.rc", &configInfo ) != 0 ) {
         throw Exception( "MD3 model '" + name + "' source files missing" );
       }
 
-      client::MD3::prebuild( path );
+      MD3::build( path );
     }
   }
 
@@ -402,17 +409,12 @@ static void prebuildModels()
   log.println( "}" );
 }
 
-static void prebuildModules()
+static void buildModules()
 {
-  log.println( "Prebuilding Modules {" );
+  log.println( "Building Modules {" );
   log.indent();
 
-  Vector<client::Module*> modules;
-  client::Module::listModules( &modules );
-
-  for( int i = 0; i < modules.length(); ++i ) {
-    modules[i]->prebuild();
-  }
+  GalileoModule::build();
 
   log.unindent();
   log.println( "}" );
@@ -452,7 +454,7 @@ static void checkLua( const char* path )
 
 static void shutdown()
 {
-  client::compiler.free();
+  compiler.free();
   client::render.free();
   library.free();
   config.clear();
@@ -460,7 +462,7 @@ static void shutdown()
   SDL_Quit();
 
   Alloc::printStatistics();
-  log.printlnETD( OZ_APPLICATION_TITLE " Prebuild finished at" );
+  log.printlnETD( OZ_APPLICATION_TITLE " Build finished at" );
 }
 
 int main( int argc, char** argv )
@@ -506,7 +508,7 @@ int main( int argc, char** argv )
         break;
       }
       case 'C': {
-        client::context.useS3TC = true;
+        Context::useS3TC = true;
         break;
       }
       case 'A': {
@@ -535,7 +537,7 @@ int main( int argc, char** argv )
     return -1;
   }
 
-  log.printlnETD( OZ_APPLICATION_TITLE " Prebuild started at" );
+  log.printlnETD( OZ_APPLICATION_TITLE " Build started at" );
 
   log.println( "Build details {" );
   log.indent();
@@ -572,41 +574,41 @@ int main( int argc, char** argv )
   config.add( "screen.bpp", "32" );
   config.add( "screen.full", "false" );
   client::render.init();
-  SDL_WM_SetCaption( OZ_APPLICATION_TITLE " :: Prebuilding data ...", null );
+  SDL_WM_SetCaption( OZ_APPLICATION_TITLE " :: Building data ...", null );
 
-  if( !client::context.isS3TCSupported && client::context.useS3TC ) {
+  if( !client::shader.hasS3TC && Context::useS3TC ) {
     throw Exception( "S3 texture compression enabled but not supported" );
   }
 
   createDirs();
 
   if( doUI ) {
-    client::ui::Mouse::prebuild();
+    Mouse::build();
 
-    prebuildTextures( "ui/icon", "ui/icon", true, GL_LINEAR, GL_LINEAR );
-    prebuildTextures( "ui/galileo", "ui/galileo", true, GL_LINEAR, GL_LINEAR );
+    buildTextures( "ui/icon", "ui/icon", true, GL_LINEAR, GL_LINEAR );
+    buildTextures( "ui/galileo", "ui/galileo", true, GL_LINEAR, GL_LINEAR );
   }
 
   if( doTerrae ) {
-    prebuildTerrae();
+    buildTerrae();
+  }
+
+  if( doCaela ) {
+    buildCaela();
   }
 
   if( doBSPs ) {
     compileBSPs();
-    prebuildBSPs();
-    prebuildBSPTextures();
-  }
-
-  if( doCaela ) {
-    prebuildCaela();
+    buildBSPs();
+    buildBSPTextures();
   }
 
   if( doModels ) {
-    prebuildModels();
+    buildModels();
   }
 
   if( doModules ) {
-    prebuildModules();
+    buildModules();
   }
 
   if( doLua ) {
@@ -622,6 +624,7 @@ int main( int argc, char** argv )
   return 0;
 }
 
+}
 }
 
 int main( int argc, char** argv )
@@ -641,7 +644,7 @@ int main( int argc, char** argv )
       "under certain conditions; See COPYING file for details.\n\n" );
 
   try {
-    exitCode = oz::main( argc, argv );
+    exitCode = oz::build::main( argc, argv );
   }
   catch( const oz::Exception& e ) {
     oz::log.resetIndent();
@@ -671,7 +674,7 @@ int main( int argc, char** argv )
     exitCode = -1;
   }
 
-  oz::shutdown();
+  oz::build::shutdown();
 
 //   Alloc::isLocked = true;
 //   Alloc::printLeaks();

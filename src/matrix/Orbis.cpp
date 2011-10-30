@@ -29,8 +29,6 @@ const float Cell::SIZE     = float( SIZEI );
 const float Cell::INV_SIZE = 1.0f / float( SIZEI );
 const float Orbis::DIM     = Cell::SIZE * MAX / 2.0f;
 
-#ifndef OZ_TOOLS
-
 void Orbis::requestBSP( int id )
 {
   if( bspUsers[id] == 0 ) {
@@ -637,8 +635,6 @@ void Orbis::init()
 
 void Orbis::free()
 {}
-
-#endif // OZ_TOOLS
 
 }
 }

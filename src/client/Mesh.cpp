@@ -13,7 +13,6 @@
 
 #include "client/Colours.hpp"
 #include "client/Context.hpp"
-
 #include "client/OpenGL.hpp"
 
 namespace oz
@@ -152,8 +151,6 @@ void Vertex::setFormat()
                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
 #endif
 }
-
-#ifndef OZ_TOOLS
 
 Mesh::Mesh() : vao( 0 )
 {}
@@ -384,71 +381,6 @@ void Mesh::draw( int mask ) const
     }
   }
 }
-
-#else // OZ_TOOLS
-
-void MeshData::write( OutputStream* stream, bool embedTextures ) const
-{
-  hard_assert( parts.length() > 0 );
-  hard_assert( indices.length() > 0 );
-  hard_assert( vertices.length() > 0 );
-
-  log.println( "Writing mesh {" );
-  log.indent();
-
-  stream->writeInt( vertices.length() );
-  stream->writeInt( indices.length() );
-
-  for( auto vertex : vertices.citer() ) {
-    vertex->write( stream );
-  }
-  for( auto index : indices.citer() ) {
-    stream->writeShort( short( *index ) );
-  }
-
-  Vector<String> textures;
-  textures.add( "" );
-
-  for( auto part : parts.citer() ) {
-    textures.include( part->texture );
-  }
-
-  if( embedTextures ) {
-    stream->writeInt( ~textures.length() );
-
-    for( int i = 1; i < textures.length(); ++i ) {
-      uint id = context.loadRawTexture( textures[i] );
-
-      context.writeTexture( id, stream );
-      glDeleteTextures( 1, &id );
-    }
-  }
-  else {
-    stream->writeInt( textures.length() );
-    for( auto texture : textures.citer() ) {
-      stream->writeString( *texture );
-    }
-  }
-
-  stream->writeInt( parts.length() );
-
-  for( auto part : parts.citer() ) {
-    stream->writeInt( part->component );
-    stream->writeInt( int( part->mode ) );
-
-    stream->writeInt( textures.index( part->texture ) );
-    stream->writeFloat( part->alpha );
-    stream->writeFloat( part->specular );
-
-    stream->writeInt( part->nIndices );
-    stream->writeInt( part->firstIndex );
-  }
-
-  log.unindent();
-  log.println( "}" );
-}
-
-#endif // OZ_TOOLS
 
 }
 }

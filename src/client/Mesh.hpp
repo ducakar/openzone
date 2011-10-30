@@ -16,9 +16,6 @@ namespace oz
 namespace client
 {
 
-class MeshData;
-class Compiler;
-
 struct Vertex
 {
   float pos[3];
@@ -53,17 +50,12 @@ struct Vertex
 
 class Mesh
 {
-  friend class MeshData;
-  friend class Compiler;
-
   public:
 
     static const int COMPONENT_MASK  = 0x00ff;
     static const int SOLID_BIT       = 0x0100;
     static const int ALPHA_BIT       = 0x0200;
     static const int EMBEDED_TEX_BIT = 0x0400;
-
-#ifndef OZ_TOOLS
 
   private:
 
@@ -104,41 +96,7 @@ class Mesh
     void drawComponent( int id, int mask ) const;
     void draw( int mask ) const;
 
-#endif
-
 };
-
-#ifdef OZ_TOOLS
-
-class MeshData
-{
-  friend class Compiler;
-
-  public:
-
-    struct Part
-    {
-      int    component;
-      uint   mode;
-
-      String texture;
-      float  alpha;
-      float  specular;
-
-      int    nIndices;
-      int    firstIndex;
-    };
-
-    Vector<Part>   parts;
-
-    DArray<ushort> indices;
-    DArray<Vertex> vertices;
-
-    void write( OutputStream* stream, bool embedTextures = true ) const;
-
-};
-
-#endif
 
 }
 }

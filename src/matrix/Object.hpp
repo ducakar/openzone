@@ -182,9 +182,9 @@ class Object : public AABB
     static const int EVENT_FRICTING     = 5;
     static const int EVENT_USE          = 6;
 
-    static const float BASE_INTENSITY;
     static const float MOMENTUM_INTENSITY_COEF;
     static const float DAMAGE_INTENSITY_COEF;
+    static const float DAMAGE_BASE_INTENSITY;
 
     struct Event
     {
@@ -290,7 +290,7 @@ class Object : public AABB
 
       if( damage > 0.0f ) {
         life -= damage;
-        addEvent( EVENT_DAMAGE, BASE_INTENSITY + damage * DAMAGE_INTENSITY_COEF );
+        addEvent( EVENT_DAMAGE, DAMAGE_BASE_INTENSITY + damage * DAMAGE_INTENSITY_COEF );
 
         if( flags & DAMAGE_FUNC_BIT ) {
           onDamage( damage );
@@ -307,7 +307,7 @@ class Object : public AABB
     void hit( const Hit* hit, float hitMomentum )
     {
       flags |= HIT_BIT;
-      addEvent( EVENT_HIT, BASE_INTENSITY + hitMomentum * MOMENTUM_INTENSITY_COEF );
+      addEvent( EVENT_HIT, hitMomentum * MOMENTUM_INTENSITY_COEF );
       damage( hitMomentum * hitMomentum );
 
       if( flags & HIT_FUNC_BIT ) {
@@ -318,8 +318,7 @@ class Object : public AABB
     OZ_ALWAYS_INLINE
     void splash( float hitMomentum )
     {
-      addEvent( EVENT_SPLASH, BASE_INTENSITY + hitMomentum * MOMENTUM_INTENSITY_COEF );
-      static_cast<void>( hitMomentum );
+      addEvent( EVENT_SPLASH, hitMomentum * MOMENTUM_INTENSITY_COEF );
       addEvent( EVENT_SPLASH, 1.0f );
     }
 
