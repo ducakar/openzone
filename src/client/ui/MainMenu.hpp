@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "client/ui/Frame.hpp"
 #include "client/ui/Button.hpp"
 #include "client/ui/Text.hpp"

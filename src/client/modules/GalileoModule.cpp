@@ -24,53 +24,53 @@ namespace oz
 namespace client
 {
 
-  GalileoModule galileoModule;
+GalileoModule galileoModule;
 
 #ifndef OZ_TOOLS
 
-  GalileoModule::GalileoModule() : galileoFrame( null )
-  {}
+GalileoModule::GalileoModule() : galileoFrame( null )
+{}
 
-  void GalileoModule::load()
-  {
-    galileoFrame = new ui::GalileoFrame();
-    ui::ui.root->add( galileoFrame );
-    ui::ui.root->focus( ui::ui.loadingScreen );
-  }
+void GalileoModule::load()
+{
+  galileoFrame = new ui::GalileoFrame();
+  ui::ui.root->add( galileoFrame );
+  ui::ui.root->focus( ui::ui.loadingScreen );
+}
 
-  void GalileoModule::unload()
-  {
-    if( galileoFrame != null ) {
-      ui::ui.root->remove( galileoFrame );
-      galileoFrame = null;
-    }
+void GalileoModule::unload()
+{
+  if( galileoFrame != null ) {
+    ui::ui.root->remove( galileoFrame );
+    galileoFrame = null;
   }
+}
 
 #else
 
-  void GalileoModule::prebuild()
-  {
-    Config terraConfig;
-    Buffer buffer( 2 * 1024 * 1024 );
+void GalileoModule::prebuild()
+{
+  Config terraConfig;
+  Buffer buffer( 2 * 1024 * 1024 );
 
-    for( int i = 0; i < library.terras.length(); ++i ) {
-      const String& name = library.terras[i].name;
+  for( int i = 0; i < library.terras.length(); ++i ) {
+    const String& name = library.terras[i].name;
 
-      terraConfig.load( "terra/" + name + ".rc" );
+    terraConfig.load( "terra/" + name + ".rc" );
 
-      String srcTextureFile = String( "terra/" ) + terraConfig.get( "mapTexture", "" );
-      String destTextureFile = "ui/galileo/" + name + ".ozcTex";
+    String srcTextureFile = String( "terra/" ) + terraConfig.get( "mapTexture", "" );
+    String destTextureFile = "ui/galileo/" + name + ".ozcTex";
 
-      OutputStream ostream = buffer.outputStream();
+    OutputStream ostream = buffer.outputStream();
 
-      uint id = context.loadRawTexture( srcTextureFile, true, GL_LINEAR, GL_LINEAR );
-      context.writeTexture( id, &ostream );
+    uint id = context.loadRawTexture( srcTextureFile, true, GL_LINEAR, GL_LINEAR );
+    context.writeTexture( id, &ostream );
 
-      terraConfig.clear();
+    terraConfig.clear();
 
-      buffer.write( destTextureFile, ostream.length() );
-    }
+    buffer.write( destTextureFile, ostream.length() );
   }
+}
 
 #endif
 

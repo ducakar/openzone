@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/ObjectClass.hpp"
 
 #include "client/common.hpp"
@@ -20,34 +18,34 @@ namespace oz
 namespace client
 {
 
-  class Imago
-  {
-    public:
+class Imago
+{
+  public:
 
-      typedef Imago* ( * CreateFunc )( const Object* object );
+    typedef Imago* ( * CreateFunc )( const Object* object );
 
-      static const int UPDATED_BIT  = 0x00000001;
-      static const int MD2MODEL_BIT = 0x00000002;
-      static const int MD3MODEL_BIT = 0x00000004;
+    static const int UPDATED_BIT  = 0x00000001;
+    static const int MD2MODEL_BIT = 0x00000002;
+    static const int MD3MODEL_BIT = 0x00000004;
 
-    protected:
+  protected:
 
-      Imago() : obj( null ), flags( 0 )
-      {}
+    Imago() : obj( null ), flags( 0 )
+    {}
 
-    public:
+  public:
 
-      const Object* obj;
-      const ObjectClass* clazz;
+    const Object* obj;
+    const ObjectClass* clazz;
 
-      int flags;
+    int flags;
 
-      virtual ~Imago()
-      {}
+    virtual ~Imago()
+    {}
 
-      virtual void draw( const Imago* parent, int mask ) = 0;
+    virtual void draw( const Imago* parent, int mask ) = 0;
 
-  };
+};
 
 }
 }

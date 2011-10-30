@@ -13,64 +13,67 @@
 
 namespace oz
 {
+namespace matrix
+{
 
-  const float Particle::MAX_ROTVELOCITY = 8.0f * Timer::TICK_TIME;
-  const float Particle::DAMAGE_THRESHOLD = 50.0f;
+const float Particle::MAX_ROTVELOCITY = 8.0f * Timer::TICK_TIME;
+const float Particle::DAMAGE_THRESHOLD = 50.0f;
 
-  Pool<Particle, 1024> Particle::pool;
+Pool<Particle, 1024> Particle::pool;
 
-  Particle::Particle( int index_, const Point3& p_, const Vec3& velocity_, const Vec3& colour_,
-                      float restitution_, float mass_, float lifeTime_ ) :
-      cell( null ), index( index_ ), p( p_ ), velocity( velocity_ ), colour( colour_ ),
-      rot( Vec3( Math::rand() * Math::TAU, Math::rand() * Math::TAU, Math::rand() * Math::TAU ) ),
-      rotVelocity( Vec3( Math::rand() * MAX_ROTVELOCITY,
-                         Math::rand() * MAX_ROTVELOCITY,
-                         Math::rand() * MAX_ROTVELOCITY ) ),
-      restitution( restitution_ ), mass( mass_ ), lifeTime( lifeTime_ )
-  {
-    hard_assert( 1.0f + EPSILON < restitution && restitution < 2.0f - EPSILON );
-    hard_assert( mass >= 0.0f );
-    hard_assert( lifeTime > 0.0f );
-  }
+Particle::Particle( int index_, const Point3& p_, const Vec3& velocity_, const Vec3& colour_,
+                    float restitution_, float mass_, float lifeTime_ ) :
+    cell( null ), index( index_ ), p( p_ ), velocity( velocity_ ), colour( colour_ ),
+    rot( Vec3( Math::rand() * Math::TAU, Math::rand() * Math::TAU, Math::rand() * Math::TAU ) ),
+    rotVelocity( Vec3( Math::rand() * MAX_ROTVELOCITY,
+                       Math::rand() * MAX_ROTVELOCITY,
+                       Math::rand() * MAX_ROTVELOCITY ) ),
+    restitution( restitution_ ), mass( mass_ ), lifeTime( lifeTime_ )
+{
+  hard_assert( 1.0f + EPSILON < restitution && restitution < 2.0f - EPSILON );
+  hard_assert( mass >= 0.0f );
+  hard_assert( lifeTime > 0.0f );
+}
 
-  void Particle::readFull( InputStream* istream )
-  {
-    p           = istream->readPoint3();
-    velocity    = istream->readVec3();
+void Particle::readFull( InputStream* istream )
+{
+  p           = istream->readPoint3();
+  velocity    = istream->readVec3();
 
-    colour      = istream->readVec3();
-    rot         = istream->readVec3();
-    rotVelocity = istream->readVec3();
+  colour      = istream->readVec3();
+  rot         = istream->readVec3();
+  rotVelocity = istream->readVec3();
 
-    restitution = istream->readFloat();
-    mass        = istream->readFloat();
-    lifeTime    = istream->readFloat();
-  }
+  restitution = istream->readFloat();
+  mass        = istream->readFloat();
+  lifeTime    = istream->readFloat();
+}
 
-  void Particle::writeFull( OutputStream* ostream )
-  {
-    ostream->writePoint3( p );
-    ostream->writeVec3( velocity );
+void Particle::writeFull( OutputStream* ostream )
+{
+  ostream->writePoint3( p );
+  ostream->writeVec3( velocity );
 
-    ostream->writeVec3( colour );
-    ostream->writeVec3( rot );
-    ostream->writeVec3( rotVelocity );
+  ostream->writeVec3( colour );
+  ostream->writeVec3( rot );
+  ostream->writeVec3( rotVelocity );
 
-    ostream->writeFloat( restitution );
-    ostream->writeFloat( mass );
-    ostream->writeFloat( lifeTime );
-  }
+  ostream->writeFloat( restitution );
+  ostream->writeFloat( mass );
+  ostream->writeFloat( lifeTime );
+}
 
-  void Particle::readUpdate( InputStream* istream )
-  {
-    p        = istream->readPoint3();
-    velocity = istream->readVec3();
-  }
+void Particle::readUpdate( InputStream* istream )
+{
+  p        = istream->readPoint3();
+  velocity = istream->readVec3();
+}
 
-  void Particle::writeUpdate( OutputStream* ostream )
-  {
-    ostream->writePoint3( p );
-    ostream->writeVec3( velocity );
-  }
+void Particle::writeUpdate( OutputStream* ostream )
+{
+  ostream->writePoint3( p );
+  ostream->writeVec3( velocity );
+}
 
+}
 }

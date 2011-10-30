@@ -18,28 +18,28 @@ namespace oz
 namespace client
 {
 
-  ProfileModule profileModule;
+ProfileModule profileModule;
 
-  void ProfileModule::registerLua() const
-  {
-    OZ_LUA_FUNC( ozProfileGetPlayerName );
-  }
+void ProfileModule::registerLua() const
+{
+  OZ_LUA_FUNC( ozProfileGetPlayerName );
+}
 
-  void ProfileModule::init()
-  {
-    const char* userName = getenv( "USER" );
-    userName = userName == null ? "Player" : userName;
+void ProfileModule::init()
+{
+  const char* userName = getenv( "USER" );
+  userName = userName == null ? "Player" : userName;
 
-    playerName = config.getSet( "modules.profile.playerName", userName );
-  }
+  playerName = config.getSet( "modules.profile.playerName", userName );
+}
 
-  int ProfileModule::ozProfileGetPlayerName( lua_State* l )
-  {
-    ARG( 0 );
+int ProfileModule::ozProfileGetPlayerName( lua_State* l )
+{
+  ARG( 0 );
 
-    pushstring( profileModule.playerName );
-    return 1;
-  }
+  pushstring( profileModule.playerName );
+  return 1;
+}
 
 }
 }

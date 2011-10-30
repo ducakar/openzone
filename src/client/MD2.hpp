@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/Library.hpp"
 
 #include "client/Mesh.hpp"
@@ -20,137 +18,137 @@ namespace oz
 namespace client
 {
 
-  class MD2
-  {
-    private:
+class MD2
+{
+  private:
 
-      static const int MAX_VERTS = 2048;
+    static const int MAX_VERTS = 2048;
 
-    public:
+  public:
 
-      struct AnimInfo
-      {
-        int   firstFrame;
-        int   lastFrame;
-        int   repeat;
-        float fps;
-      };
+    struct AnimInfo
+    {
+      int   firstFrame;
+      int   lastFrame;
+      int   repeat;
+      float fps;
+    };
 
-      struct AnimState
-      {
-        Anim::Type type;
-        int   repeat;
+    struct AnimState
+    {
+      Anim::Type type;
+      int   repeat;
 
-        int   startFrame;
-        int   endFrame;
-        int   currFrame;
-        int   nextFrame;
+      int   startFrame;
+      int   endFrame;
+      int   currFrame;
+      int   nextFrame;
 
-        float fps;
-        float frameTime;
-        float currTime;
-      };
+      float fps;
+      float frameTime;
+      float currTime;
+    };
 
-       static const AnimInfo ANIM_LIST[];
+     static const AnimInfo ANIM_LIST[];
 
-    private:
+  private:
 
 #ifndef OZ_TOOLS
 
-      static Vertex animBuffer[MAX_VERTS];
+    static Vertex animBuffer[MAX_VERTS];
 
-      int     id;
+    int     id;
 
-      int     nFrames;
-      int     nFrameVertices;
-      int     nFramePositions;
+    int     nFrames;
+    int     nFrameVertices;
+    int     nFramePositions;
 
-      uint    vertexTexId;
-      uint    normalTexId;
-      int     shaderId;
+    uint    vertexTexId;
+    uint    normalTexId;
+    int     shaderId;
 
-      Vertex* vertices;
-      Vec4*   positions;
-      Vec4*   normals;
+    Vertex* vertices;
+    Vec4*   positions;
+    Vec4*   normals;
 
-      Mesh    mesh;
+    Mesh    mesh;
 
-    public:
+  public:
 
-      Mat44   weaponTransf;
-      bool    isLoaded;
+    Mat44   weaponTransf;
+    bool    isLoaded;
 
-      explicit MD2( int id );
-      ~MD2();
+    explicit MD2( int id );
+    ~MD2();
 
-      void load();
+    void load();
 
-      void advance( AnimState* anim, float dt ) const;
+    void advance( AnimState* anim, float dt ) const;
 
-      void drawFrame( int frame ) const;
-      void draw( const AnimState* anim ) const;
+    void drawFrame( int frame ) const;
+    void draw( const AnimState* anim ) const;
 
 #else // OZ_TOOLS
 
-      struct MD2Header
-      {
-        char id[4];
-        int  version;
+    struct MD2Header
+    {
+      char id[4];
+      int  version;
 
-        int  skinWidth;
-        int  skinHeight;
-        int  frameSize;
+      int  skinWidth;
+      int  skinHeight;
+      int  frameSize;
 
-        int  nSkins;
-        int  nFramePositions;
-        int  nTexCoords;
-        int  nTriangles;
-        int  nGlCmds;
-        int  nFrames;
+      int  nSkins;
+      int  nFramePositions;
+      int  nTexCoords;
+      int  nTriangles;
+      int  nGlCmds;
+      int  nFrames;
 
-        int  offSkins;
-        int  offTexCoords;
-        int  offTriangles;
-        int  offFrames;
-        int  offGLCmds;
-        int  offEnd;
-      };
+      int  offSkins;
+      int  offTexCoords;
+      int  offTriangles;
+      int  offFrames;
+      int  offGLCmds;
+      int  offEnd;
+    };
 
-      struct MD2Vertex
-      {
-        ubyte p[3];
-        ubyte normal;
-      };
+    struct MD2Vertex
+    {
+      ubyte p[3];
+      ubyte normal;
+    };
 
-      struct MD2TexCoord
-      {
-        short s;
-        short t;
-      };
+    struct MD2TexCoord
+    {
+      short s;
+      short t;
+    };
 
-      struct MD2Frame
-      {
-        float     scale[3];
-        float     translate[3];
-        char      name[16];
-        MD2Vertex verts[1];
-      };
+    struct MD2Frame
+    {
+      float     scale[3];
+      float     translate[3];
+      char      name[16];
+      MD2Vertex verts[1];
+    };
 
-      struct MD2Triangle
-      {
-        short vertices[3];
-        short texCoords[3];
-      };
+    struct MD2Triangle
+    {
+      short vertices[3];
+      short texCoords[3];
+    };
 
-      static const Vec3 NORMALS[];
+    static const Vec3 NORMALS[];
 
-    public:
+  public:
 
-      static void prebuild( const char* name );
+    static void prebuild( const char* name );
 
 #endif // OZ_TOOLS
 
-  };
+};
 
 }
 }

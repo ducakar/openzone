@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/Orbis.hpp"
 #include "matrix/Bot.hpp"
 
@@ -22,146 +20,146 @@ namespace oz
 namespace client
 {
 
-  class Camera
-  {
-    public:
+class Camera
+{
+  public:
 
-      enum State
-      {
-        NONE,
-        STRATEGIC,
-        BOT
-      };
+    enum State
+    {
+      NONE,
+      STRATEGIC,
+      BOT
+    };
 
-    private:
+  private:
 
-      float mouseXSens;
-      float mouseYSens;
-      float keyXSens;
-      float keyYSens;
-      float smoothCoef;
+    float mouseXSens;
+    float mouseYSens;
+    float keyXSens;
+    float keyYSens;
+    float smoothCoef;
 
-      static StrategicProxy strategicProxy;
-      static BotProxy       botProxy;
+    static StrategicProxy strategicProxy;
+    static BotProxy       botProxy;
 
-      Proxy* proxy;
+    Proxy* proxy;
 
-    public:
+  public:
 
-      Point3 p;
-      Point3 newP;
-      Point3 oldP;
+    Point3 p;
+    Point3 newP;
+    Point3 oldP;
 
-      // relative to the object the camera is bound to
-      float  h;
-      float  v;
-      float  w;
-      float  relH;
-      float  relV;
+    // relative to the object the camera is bound to
+    float  h;
+    float  v;
+    float  w;
+    float  relH;
+    float  relV;
 
-      Quat   relRot;
-      Quat   rot;
+    Quat   relRot;
+    Quat   rot;
 
-      // global rotation matrix and it's inverse
-      Mat44  rotMat;
-      Mat44  rotTMat;
+    // global rotation matrix and it's inverse
+    Mat44  rotMat;
+    Mat44  rotTMat;
 
-      Vec3   right;
-      Vec3   up;
-      Vec3   at;
+    Vec3   right;
+    Vec3   up;
+    Vec3   at;
 
-      int    tagged;
-      const Object* taggedObj;
+    int    tagged;
+    const Object* taggedObj;
 
-      int    bot;
-      Bot*   botObj;
+    int    bot;
+    Bot*   botObj;
 
-      State  state;
-      State  newState;
-      State  defaultState;
+    State  state;
+    State  newState;
+    State  defaultState;
 
-      int    width;
-      int    height;
-      int    centreX;
-      int    centreY;
+    int    width;
+    int    height;
+    int    centreX;
+    int    centreY;
 
-      float  coeff;
-      float  aspect;
-      float  vertPlane;
-      float  horizPlane;
-      float  minDist;
-      float  maxDist;
+    float  coeff;
+    float  aspect;
+    float  vertPlane;
+    float  horizPlane;
+    float  minDist;
+    float  maxDist;
 
-      bool   isExternal;
-      bool   allowReincarnation;
+    bool   isExternal;
+    bool   allowReincarnation;
 
-      void setState( State state )
-      {
-        newState = state;
+    void setState( State state )
+    {
+      newState = state;
+    }
+
+    void setTagged( const Object* obj )
+    {
+      tagged    = obj == null ? -1 : obj->index;
+      taggedObj = obj;
+    }
+
+    void setBot( Bot* botObj_ )
+    {
+      if( botObj != null ) {
+        botObj->state &= ~Bot::PLAYER_BIT;
       }
 
-      void setTagged( const Object* obj )
-      {
-        tagged    = obj == null ? -1 : obj->index;
-        taggedObj = obj;
+      if( botObj_ == null ) {
+        bot    = -1;
+        botObj = null;
+      }
+      else {
+        bot    = botObj_->index;
+        botObj = botObj_;
+
+        botObj_->state |= Bot::PLAYER_BIT;
       }
 
-      void setBot( Bot* botObj_ )
-      {
-        if( botObj != null ) {
-          botObj->state &= ~Bot::PLAYER_BIT;
-        }
+      hard_assert( botObj == null || ( botObj->flags & Object::BOT_BIT ) );
+    }
 
-        if( botObj_ == null ) {
-          bot    = -1;
-          botObj = null;
-        }
-        else {
-          bot    = botObj_->index;
-          botObj = botObj_;
+    void move( const Point3& pos )
+    {
+      p    = pos + smoothCoef * ( oldP - pos );
+      newP = pos;
+      oldP = p;
+    }
 
-          botObj_->state |= Bot::PLAYER_BIT;
-        }
+    void warp( const Point3& pos )
+    {
+      oldP = pos;
+      newP = pos;
+      p    = pos;
+    }
 
-        hard_assert( botObj == null || ( botObj->flags & Object::BOT_BIT ) );
-      }
+    void warpMoveZ( const Point3& pos )
+    {
+      p.x  = pos.x;
+      p.y  = pos.y;
+      p.z  = pos.z + smoothCoef * ( oldP.z - pos.z );
+      newP = pos;
+      oldP = p;
+    }
 
-      void move( const Point3& pos )
-      {
-        p    = pos + smoothCoef * ( oldP - pos );
-        newP = pos;
-        oldP = p;
-      }
+    void align();
+    void update();
+    void prepare();
+    void reset();
 
-      void warp( const Point3& pos )
-      {
-        oldP = pos;
-        newP = pos;
-        p    = pos;
-      }
+    void read( InputStream* istream );
+    void write( OutputStream* ostream ) const;
 
-      void warpMoveZ( const Point3& pos )
-      {
-        p.x  = pos.x;
-        p.y  = pos.y;
-        p.z  = pos.z + smoothCoef * ( oldP.z - pos.z );
-        newP = pos;
-        oldP = p;
-      }
+    void init();
 
-      void align();
-      void update();
-      void prepare();
-      void reset();
+};
 
-      void read( InputStream* istream );
-      void write( OutputStream* ostream ) const;
-
-      void init();
-
-  };
-
-  extern Camera camera;
+extern Camera camera;
 
 }
 }

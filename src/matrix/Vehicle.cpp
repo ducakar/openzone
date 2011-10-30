@@ -19,383 +19,386 @@
 
 namespace oz
 {
+namespace matrix
+{
 
-  const float Vehicle::EXIT_EPSILON   = 0.20f;
-  const float Vehicle::EXIT_MOMENTUM  = 1.00f;
-  const float Vehicle::EJECT_MOMENTUM = 20.0f;
+const float Vehicle::EXIT_EPSILON   = 0.20f;
+const float Vehicle::EXIT_MOMENTUM  = 1.00f;
+const float Vehicle::EJECT_MOMENTUM = 20.0f;
 
-  Pool<Vehicle> Vehicle::pool;
+Pool<Vehicle> Vehicle::pool;
 
-  void ( Vehicle::* Vehicle::handlers[Vehicle::TYPE_MAX] )( const Mat44& rotMat ) = {
-    &Vehicle::staticHandler,
-    &Vehicle::wheeledHandler,
-    &Vehicle::trackedHandler,
-    &Vehicle::mechHandler,
-    &Vehicle::hoverHandler,
-    &Vehicle::airHandler
-  };
+void ( Vehicle::* Vehicle::handlers[Vehicle::TYPE_MAX] )( const Mat44& rotMat ) = {
+  &Vehicle::staticHandler,
+  &Vehicle::wheeledHandler,
+  &Vehicle::trackedHandler,
+  &Vehicle::mechHandler,
+  &Vehicle::hoverHandler,
+  &Vehicle::airHandler
+};
 
-  void Vehicle::staticHandler( const Mat44& )
-  {}
+void Vehicle::staticHandler( const Mat44& )
+{}
 
-  void Vehicle::wheeledHandler( const Mat44& )
-  {}
+void Vehicle::wheeledHandler( const Mat44& )
+{}
 
-  void Vehicle::trackedHandler( const Mat44& )
-  {}
+void Vehicle::trackedHandler( const Mat44& )
+{}
 
-  void Vehicle::mechHandler( const Mat44& )
-  {}
+void Vehicle::mechHandler( const Mat44& )
+{}
 
-  void Vehicle::hoverHandler( const Mat44& )
-  {
-    const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+void Vehicle::hoverHandler( const Mat44& )
+{
+  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-    // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
-    float hvsc[6];
+  // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+  float hvsc[6];
 
-    Math::sincos( h, &hvsc[0], &hvsc[1] );
-    Math::sincos( v, &hvsc[2], &hvsc[3] );
+  Math::sincos( h, &hvsc[0], &hvsc[1] );
+  Math::sincos( v, &hvsc[2], &hvsc[3] );
 
-    hvsc[4] = hvsc[2] * hvsc[0];
-    hvsc[5] = hvsc[2] * hvsc[1];
+  hvsc[4] = hvsc[2] * hvsc[0];
+  hvsc[5] = hvsc[2] * hvsc[1];
 
-    // raycast for hover
-    float ratio = clamp( p.z / ( dim.z + clazz->hoverHeight ), 0.0f, 1.0f );
-    Vec3  floor = Vec3( 0.0f, 0.0f, 1.0f );
+  // raycast for hover
+  float ratio = clamp( p.z / ( dim.z + clazz->hoverHeight ), 0.0f, 1.0f );
+  Vec3  floor = Vec3( 0.0f, 0.0f, 1.0f );
 
-    collider.translate( p, Vec3( 0.0f, 0.0f, -dim.z - clazz->hoverHeight ) );
+  collider.translate( p, Vec3( 0.0f, 0.0f, -dim.z - clazz->hoverHeight ) );
 
-    if( collider.hit.ratio < ratio ) {
-      ratio = collider.hit.ratio;
-      floor = collider.hit.normal;
-    }
-
-    float ratio_1 = 1.0f - ratio;
-
-    // controls
-    Vec3 move = Vec3::ZERO;
-
-    if( actions & Bot::ACTION_FORWARD ) {
-      move.x -= hvsc[0];
-      move.y += hvsc[1];
-    }
-    if( actions & Bot::ACTION_BACKWARD ) {
-      move.x += hvsc[0];
-      move.y -= hvsc[1];
-    }
-    if( actions & Bot::ACTION_RIGHT ) {
-      move.x += hvsc[1];
-      move.y += hvsc[0];
-    }
-    if( actions & Bot::ACTION_LEFT ) {
-      move.x -= hvsc[1];
-      move.y -= hvsc[0];
-    }
-
-    momentum += move * clazz->moveMomentum;
-
-    // hover momentum
-    if( ratio_1 != 0.0f ) {
-      float groundMomentum = min( velocity * floor, 0.0f );
-      float tickRatio = ratio_1*ratio_1 * Timer::TICK_TIME;
-
-      momentum.z += clazz->hoverHeightStiffness * tickRatio;
-      momentum.z -= groundMomentum * clazz->hoverMomentumStiffness * min( tickRatio / 4.0f, 1.0f );
-    }
+  if( collider.hit.ratio < ratio ) {
+    ratio = collider.hit.ratio;
+    floor = collider.hit.normal;
   }
 
-  void Vehicle::airHandler( const Mat44& rotMat )
-  {
-    const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+  float ratio_1 = 1.0f - ratio;
 
-    const Vec3& right = rotMat.x;
-    const Vec3& at    = rotMat.y;
-    const Vec3& up    = rotMat.z;
+  // controls
+  Vec3 move = Vec3::ZERO;
 
-    // controls
-    Vec3 move = Vec3::ZERO;
-
-    if( actions & Bot::ACTION_FORWARD ) {
-      move += at;
-    }
-    if( actions & Bot::ACTION_BACKWARD ) {
-      move -= at;
-    }
-    if( actions & Bot::ACTION_RIGHT ) {
-      move += right;
-    }
-    if( actions & Bot::ACTION_LEFT ) {
-      move -= right;
-    }
-    if( actions & Bot::ACTION_VEH_UP ) {
-      move += up;
-    }
-    if( actions & Bot::ACTION_VEH_DOWN ) {
-      move -= up;
-    }
-
-    momentum += move * clazz->moveMomentum;
-    momentum.z -= Physics::G_ACCEL * Timer::TICK_TIME;
-    momentum.z *= 1.0f - Physics::AIR_FRICTION;
+  if( actions & Bot::ACTION_FORWARD ) {
+    move.x -= hvsc[0];
+    move.y += hvsc[1];
+  }
+  if( actions & Bot::ACTION_BACKWARD ) {
+    move.x += hvsc[0];
+    move.y -= hvsc[1];
+  }
+  if( actions & Bot::ACTION_RIGHT ) {
+    move.x += hvsc[1];
+    move.y += hvsc[0];
+  }
+  if( actions & Bot::ACTION_LEFT ) {
+    move.x -= hvsc[1];
+    move.y -= hvsc[0];
   }
 
-  void Vehicle::onDestroy()
-  {
-    const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+  momentum += move * clazz->moveMomentum;
 
-    Mat44 rotMat = Mat44::rotation( rot );
+  // hover momentum
+  if( ratio_1 != 0.0f ) {
+    float groundMomentum = min( velocity * floor, 0.0f );
+    float tickRatio = ratio_1*ratio_1 * Timer::TICK_TIME;
 
-    if( pilot != -1 ) {
-      Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
+    momentum.z += clazz->hoverHeightStiffness * tickRatio;
+    momentum.z -= groundMomentum * clazz->hoverMomentumStiffness * min( tickRatio / 4.0f, 1.0f );
+  }
+}
 
-      pilot = -1;
+void Vehicle::airHandler( const Mat44& rotMat )
+{
+  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-      if( bot != null ) {
-        bot->p = p + rotMat * clazz->pilotPos;
-        bot->p.z += dim.z + EXIT_EPSILON;
+  const Vec3& right = rotMat.x;
+  const Vec3& at    = rotMat.y;
+  const Vec3& up    = rotMat.z;
 
-        // kill bot if eject path is blocked
-        if( collider.overlaps( *bot, this ) ) {
-          bot->kill();
-          bot->exit();
-        }
-        else {
-          float hsc[2];
-          Math::sincos( h, &hsc[0], &hsc[1] );
+  // controls
+  Vec3 move = Vec3::ZERO;
 
-          bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
-          bot->exit();
-        }
-      }
-    }
-    Object::onDestroy();
+  if( actions & Bot::ACTION_FORWARD ) {
+    move += at;
+  }
+  if( actions & Bot::ACTION_BACKWARD ) {
+    move -= at;
+  }
+  if( actions & Bot::ACTION_RIGHT ) {
+    move += right;
+  }
+  if( actions & Bot::ACTION_LEFT ) {
+    move -= right;
+  }
+  if( actions & Bot::ACTION_VEH_UP ) {
+    move += up;
+  }
+  if( actions & Bot::ACTION_VEH_DOWN ) {
+    move -= up;
   }
 
-  void Vehicle::onUpdate()
-  {
-    const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+  momentum += move * clazz->moveMomentum;
+  momentum.z -= Physics::G_ACCEL * Timer::TICK_TIME;
+  momentum.z *= 1.0f - Physics::AIR_FRICTION;
+}
 
-    // clean invalid pilot reference and throw him out if dead
-    if( pilot != -1 ) {
-      Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
+void Vehicle::onDestroy()
+{
+  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-      if( bot == null || bot->parent == -1 ) {
-        pilot = -1;
-      }
-      else if( bot->flags & Bot::DEAD_BIT ) {
-        pilot = -1;
-        bot->exit();
-      }
-    }
+  Mat44 rotMat = Mat44::rotation( rot );
 
-    actions = 0;
+  if( pilot != -1 ) {
+    Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
 
-    Bot* bot = null;
-
-    if( pilot != -1 ) {
-      bot = static_cast<Bot*>( orbis.objects[pilot] );
-
-      h = bot->h;
-      v = bot->v;
-      rot = Quat::rotZYX( h, 0.0f, v - Math::TAU / 4.0f );
-      actions = bot->actions;
-      flags &= ~DISABLED_BIT;
-    }
-
-    Mat44 rotMat = Mat44::rotation( rot );
-
-    if( pilot != -1 ) {
-      ( this->*handlers[clazz->type] )( rotMat );
-    }
-
-    // move forwards (predicted movement) to prevent our bullets hitting us in the back when we are
-    // moving very fast
-    Point3 oldPos = p;
-    p += momentum * Timer::TICK_TIME;
-
-    if( clazz->nWeapons != 0 ) {
-      if( actions & ~oldActions & Bot::ACTION_VEH_NEXT_WEAPON ) {
-        weapon = ( weapon + 1 ) % clazz->nWeapons;
-        addEvent( EVENT_NEXT_WEAPON, 1.0f );
-      }
-      if( actions & Bot::ACTION_ATTACK ) {
-        if( shotTime[weapon] == 0.0f ) {
-          shotTime[weapon] = clazz->shotInterval[weapon];
-
-          if( nRounds[weapon] == 0 ) {
-            addEvent( EVENT_SHOT0_EMPTY + weapon*2, 1.0f );
-          }
-          else {
-            nRounds[weapon] = max( -1, nRounds[weapon] - 1 );
-
-            addEvent( EVENT_SHOT0 + weapon*2, 1.0f );
-            lua.objectCall( clazz->onShot[weapon], this, bot );
-          }
-        }
-      }
-    }
-
-    p = oldPos;
-
-    for( int i = 0; i < clazz->nWeapons; ++i ) {
-      if( shotTime[i] > 0.0f ) {
-        shotTime[i] = max( shotTime[i] - Timer::TICK_TIME, 0.0f );
-      }
-    }
+    pilot = -1;
 
     if( bot != null ) {
-      bot->p = p + rotMat * clazz->pilotPos + momentum * Timer::TICK_TIME;
-      bot->momentum = velocity;
-      bot->velocity = velocity;
+      bot->p = p + rotMat * clazz->pilotPos;
+      bot->p.z += dim.z + EXIT_EPSILON;
 
-      if( bot->actions & Bot::ACTION_EXIT ) {
+      // kill bot if eject path is blocked
+      if( collider.overlaps( *bot, this ) ) {
+        bot->kill();
+        bot->exit();
+      }
+      else {
         float hsc[2];
         Math::sincos( h, &hsc[0], &hsc[1] );
 
-        float  handle = !( dim + bot->dim ) + EXIT_EPSILON;
-        Point3 exitPos = Point3( p.x - hsc[0] * handle, p.y + hsc[1] * handle, p.z + dim.z );
-
-        if( !collider.overlaps( AABB( exitPos, bot->dim ) ) ) {
-          pilot = -1;
-
-          bot->p = exitPos;
-          bot->exit();
-        }
+        bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
+        bot->exit();
       }
-      else if( bot->actions & Bot::ACTION_EJECT ) {
-        bot->p = p + rotMat * clazz->pilotPos;
+    }
+  }
+  Object::onDestroy();
+}
 
-        Point3 ejectPos = Point3( p.x, p.y, p.z + dim.z + bot->dim.z + EXIT_EPSILON );
+void Vehicle::onUpdate()
+{
+  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-        pilot = -1;
+  // clean invalid pilot reference and throw him out if dead
+  if( pilot != -1 ) {
+    Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
 
-        // kill bot if eject path is blocked
-        if( collider.overlaps( AABB( ejectPos, bot->dim ) ) ) {
-          bot->kill();
-          bot->exit();
+    if( bot == null || bot->parent == -1 ) {
+      pilot = -1;
+    }
+    else if( bot->flags & Bot::DEAD_BIT ) {
+      pilot = -1;
+      bot->exit();
+    }
+  }
+
+  actions = 0;
+
+  Bot* bot = null;
+
+  if( pilot != -1 ) {
+    bot = static_cast<Bot*>( orbis.objects[pilot] );
+
+    h = bot->h;
+    v = bot->v;
+    rot = Quat::rotZYX( h, 0.0f, v - Math::TAU / 4.0f );
+    actions = bot->actions;
+    flags &= ~DISABLED_BIT;
+  }
+
+  Mat44 rotMat = Mat44::rotation( rot );
+
+  if( pilot != -1 ) {
+    ( this->*handlers[clazz->type] )( rotMat );
+  }
+
+  // move forwards (predicted movement) to prevent our bullets hitting us in the back when we are
+  // moving very fast
+  Point3 oldPos = p;
+  p += momentum * Timer::TICK_TIME;
+
+  if( clazz->nWeapons != 0 ) {
+    if( actions & ~oldActions & Bot::ACTION_VEH_NEXT_WEAPON ) {
+      weapon = ( weapon + 1 ) % clazz->nWeapons;
+      addEvent( EVENT_NEXT_WEAPON, 1.0f );
+    }
+    if( actions & Bot::ACTION_ATTACK ) {
+      if( shotTime[weapon] == 0.0f ) {
+        shotTime[weapon] = clazz->shotInterval[weapon];
+
+        if( nRounds[weapon] == 0 ) {
+          addEvent( EVENT_SHOT0_EMPTY + weapon*2, 1.0f );
         }
         else {
-          float hsc[2];
-          Math::sincos( h, &hsc[0], &hsc[1] );
+          nRounds[weapon] = max( -1, nRounds[weapon] - 1 );
 
-          bot->p = ejectPos;
-          bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
-          bot->exit();
+          addEvent( EVENT_SHOT0 + weapon*2, 1.0f );
+          lua.objectCall( clazz->onShot[weapon], this, bot );
         }
       }
     }
-
-    oldActions = actions;
-    oldState   = state;
   }
 
-  bool Vehicle::onUse( Bot* user )
-  {
-    if( pilot == -1 ) {
-      pilot = user->index;
+  p = oldPos;
 
-      user->h = h;
-      user->v = v;
-      user->enter( index );
-
-      return true;
+  for( int i = 0; i < clazz->nWeapons; ++i ) {
+    if( shotTime[i] > 0.0f ) {
+      shotTime[i] = max( shotTime[i] - Timer::TICK_TIME, 0.0f );
     }
-    return false;
   }
 
-  Vehicle::Vehicle() : actions( 0 ), oldActions( 0 ), weapon( 0 ), pilot( -1 )
-  {}
+  if( bot != null ) {
+    bot->p = p + rotMat * clazz->pilotPos + momentum * Timer::TICK_TIME;
+    bot->momentum = velocity;
+    bot->velocity = velocity;
 
-  void Vehicle::service()
-  {
-    const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+    if( bot->actions & Bot::ACTION_EXIT ) {
+      float hsc[2];
+      Math::sincos( h, &hsc[0], &hsc[1] );
 
-    if( life != clazz->life ) {
-      life = clazz->life;
+      float  handle = !( dim + bot->dim ) + EXIT_EPSILON;
+      Point3 exitPos = Point3( p.x - hsc[0] * handle, p.y + hsc[1] * handle, p.z + dim.z );
+
+      if( !collider.overlaps( AABB( exitPos, bot->dim ) ) ) {
+        pilot = -1;
+
+        bot->p = exitPos;
+        bot->exit();
+      }
     }
+    else if( bot->actions & Bot::ACTION_EJECT ) {
+      bot->p = p + rotMat * clazz->pilotPos;
 
-    for( int i = 0; i < clazz->nWeapons; ++i ) {
-      if( nRounds[i] != clazz->nRounds[i] ) {
-        nRounds[i] = clazz->nRounds[i];
+      Point3 ejectPos = Point3( p.x, p.y, p.z + dim.z + bot->dim.z + EXIT_EPSILON );
+
+      pilot = -1;
+
+      // kill bot if eject path is blocked
+      if( collider.overlaps( AABB( ejectPos, bot->dim ) ) ) {
+        bot->kill();
+        bot->exit();
+      }
+      else {
+        float hsc[2];
+        Math::sincos( h, &hsc[0], &hsc[1] );
+
+        bot->p = ejectPos;
+        bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
+        bot->exit();
       }
     }
   }
 
-  void Vehicle::readFull( InputStream* istream )
-  {
-    Dynamic::readFull( istream );
+  oldActions = actions;
+  oldState   = state;
+}
 
-    h          = istream->readFloat();
-    v          = istream->readFloat();
-    rot        = istream->readQuat();
-    state      = istream->readInt();
-    oldState   = istream->readInt();
-    actions    = istream->readInt();
-    oldActions = istream->readInt();
+bool Vehicle::onUse( Bot* user )
+{
+  if( pilot == -1 ) {
+    pilot = user->index;
 
-    weapon     = istream->readInt();
+    user->h = h;
+    user->v = v;
+    user->enter( index );
 
-    for( int i = 0; i < WEAPONS_MAX; ++i ) {
-      nRounds[i]  = istream->readInt();
-      shotTime[i] = istream->readFloat();
-    }
+    return true;
+  }
+  return false;
+}
 
-    pilot = istream->readInt();
+Vehicle::Vehicle() : actions( 0 ), oldActions( 0 ), weapon( 0 ), pilot( -1 )
+{}
+
+void Vehicle::service()
+{
+  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+
+  if( life != clazz->life ) {
+    life = clazz->life;
   }
 
-  void Vehicle::writeFull( OutputStream* ostream ) const
-  {
-    Dynamic::writeFull( ostream );
-
-    ostream->writeFloat( h );
-    ostream->writeFloat( v );
-    ostream->writeQuat( rot );
-    ostream->writeInt( state );
-    ostream->writeInt( oldState );
-    ostream->writeInt( actions );
-    ostream->writeInt( oldActions );
-
-    ostream->writeInt( weapon );
-
-    for( int i = 0; i < WEAPONS_MAX; ++i ) {
-      ostream->writeInt( nRounds[i] );
-      ostream->writeFloat( shotTime[i] );
+  for( int i = 0; i < clazz->nWeapons; ++i ) {
+    if( nRounds[i] != clazz->nRounds[i] ) {
+      nRounds[i] = clazz->nRounds[i];
     }
+  }
+}
 
-    ostream->writeInt( pilot );
+void Vehicle::readFull( InputStream* istream )
+{
+  Dynamic::readFull( istream );
+
+  h          = istream->readFloat();
+  v          = istream->readFloat();
+  rot        = istream->readQuat();
+  state      = istream->readInt();
+  oldState   = istream->readInt();
+  actions    = istream->readInt();
+  oldActions = istream->readInt();
+
+  weapon     = istream->readInt();
+
+  for( int i = 0; i < WEAPONS_MAX; ++i ) {
+    nRounds[i]  = istream->readInt();
+    shotTime[i] = istream->readFloat();
   }
 
-  void Vehicle::readUpdate( InputStream* istream )
-  {
-    Dynamic::readUpdate( istream );
+  pilot = istream->readInt();
+}
 
-    rot    = istream->readQuat();
-    state  = istream->readInt();
+void Vehicle::writeFull( OutputStream* ostream ) const
+{
+  Dynamic::writeFull( ostream );
 
-    weapon = istream->readInt();
+  ostream->writeFloat( h );
+  ostream->writeFloat( v );
+  ostream->writeQuat( rot );
+  ostream->writeInt( state );
+  ostream->writeInt( oldState );
+  ostream->writeInt( actions );
+  ostream->writeInt( oldActions );
 
-    for( int i = 0; i < WEAPONS_MAX; ++i ) {
-      nRounds[i] = istream->readInt();
-    }
+  ostream->writeInt( weapon );
 
-    pilot = istream->readInt();
+  for( int i = 0; i < WEAPONS_MAX; ++i ) {
+    ostream->writeInt( nRounds[i] );
+    ostream->writeFloat( shotTime[i] );
   }
 
-  void Vehicle::writeUpdate( OutputStream* ostream ) const
-  {
-    Dynamic::writeUpdate( ostream );
+  ostream->writeInt( pilot );
+}
 
-    ostream->writeQuat( rot );
-    ostream->writeInt( state );
+void Vehicle::readUpdate( InputStream* istream )
+{
+  Dynamic::readUpdate( istream );
 
-    ostream->writeInt( weapon );
+  rot    = istream->readQuat();
+  state  = istream->readInt();
 
-    for( int i = 0; i < WEAPONS_MAX; ++i ) {
-      ostream->writeInt( nRounds[i] );
-    }
+  weapon = istream->readInt();
 
-    ostream->writeInt( pilot );
+  for( int i = 0; i < WEAPONS_MAX; ++i ) {
+    nRounds[i] = istream->readInt();
   }
 
+  pilot = istream->readInt();
+}
+
+void Vehicle::writeUpdate( OutputStream* ostream ) const
+{
+  Dynamic::writeUpdate( ostream );
+
+  ostream->writeQuat( rot );
+  ostream->writeInt( state );
+
+  ostream->writeInt( weapon );
+
+  for( int i = 0; i < WEAPONS_MAX; ++i ) {
+    ostream->writeInt( nRounds[i] );
+  }
+
+  ostream->writeInt( pilot );
+}
+
+}
 }

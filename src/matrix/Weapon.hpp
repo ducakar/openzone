@@ -9,43 +9,44 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/Dynamic.hpp"
 #include "matrix/WeaponClass.hpp"
 
 namespace oz
 {
+namespace matrix
+{
 
-  class Weapon : public Dynamic
-  {
-    protected:
+class Weapon : public Dynamic
+{
+  protected:
 
-      virtual void onUpdate();
-      virtual bool onUse( Bot* user );
+    virtual void onUpdate();
+    virtual bool onUse( Bot* user );
 
-    public:
+  public:
 
-      static const int EVENT_SHOT       = 7;
-      static const int EVENT_SHOT_EMPTY = 8;
+    static const int EVENT_SHOT       = 7;
+    static const int EVENT_SHOT_EMPTY = 8;
 
-      static Pool<Weapon, 1024> pool;
+    static Pool<Weapon, 1024> pool;
 
-      // -1: unlimited
-      int   nRounds;
-      float shotTime;
+    // -1: unlimited
+    int   nRounds;
+    float shotTime;
 
-      Weapon();
+    Weapon();
 
-      void trigger( Bot* user );
+    void trigger( Bot* user );
 
-      virtual void readFull( InputStream* istream );
-      virtual void writeFull( OutputStream* ostream ) const;
-      virtual void readUpdate( InputStream* istream );
-      virtual void writeUpdate( OutputStream* ostream ) const;
+    virtual void readFull( InputStream* istream );
+    virtual void writeFull( OutputStream* ostream ) const;
+    virtual void readUpdate( InputStream* istream );
+    virtual void writeUpdate( OutputStream* ostream ) const;
 
-    OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC( pool )
 
-  };
+};
 
+}
 }

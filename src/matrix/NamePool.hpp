@@ -9,29 +9,32 @@
 
 #pragma once
 
-#include "stable.hpp"
+#include "matrix/common.hpp"
 
 namespace oz
 {
+namespace matrix
+{
 
-  class NamePool
-  {
-    private:
+class NamePool
+{
+  private:
 
-      static const int LINE_LENGTH = 64;
+    static const int LINE_LENGTH = 64;
 
-      Vector<String> names;
-      Vector<int>    listPositions;
+    Vector<String> names;
+    Vector<int>    listPositions;
 
-    public:
+  public:
 
-      const String& genName( int list ) const;
+    const String& genName( int list ) const;
 
-      void init();
-      void free();
+    void init();
+    void free();
 
-  };
+};
 
-  extern NamePool namePool;
+extern NamePool namePool;
 
+}
 }

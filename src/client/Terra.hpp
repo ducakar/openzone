@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/Terra.hpp"
 
 #include "client/Mesh.hpp"
@@ -20,54 +18,54 @@ namespace oz
 namespace client
 {
 
-  class Terra
-  {
-    public:
+class Terra
+{
+  public:
 
-      static const int   TILE_QUADS = 16;
-      static const int   TILES      = oz::Terra::QUADS / TILE_QUADS;
+    static const int   TILE_QUADS = 16;
+    static const int   TILES      = matrix::Terra::QUADS / TILE_QUADS;
 
-    private:
+  private:
 
-      static const int   TILE_INDICES;
-      static const int   TILE_VERTICES;
+    static const int   TILE_INDICES;
+    static const int   TILE_VERTICES;
 
-      static const float TILE_SIZE;
-      static const float TILE_INV_SIZE;
+    static const float TILE_SIZE;
+    static const float TILE_INV_SIZE;
 
-      static const float WAVE_BIAS_INC;
+    static const float WAVE_BIAS_INC;
 
-      uint  vaos[TILES][TILES];
-      uint  vbos[TILES][TILES];
-      uint  ibo;
+    uint  vaos[TILES][TILES];
+    uint  vbos[TILES][TILES];
+    uint  ibo;
 
-      uint  waterTexId;
-      uint  detailTexId;
-      uint  mapTexId;
+    uint  waterTexId;
+    uint  detailTexId;
+    uint  mapTexId;
 
-      int   landShaderId;
-      int   waterShaderId;
+    int   landShaderId;
+    int   waterShaderId;
 
-      float waveBias;
+    float waveBias;
 
-      Span span;
-      SBitset<TILES * TILES> waterTiles;
+    Span span;
+    SBitset<TILES * TILES> waterTiles;
 
-    public:
+  public:
 
-      int id;
+    int id;
 
-      Terra();
+    Terra();
 
-      void draw();
-      void drawWater();
+    void draw();
+    void drawWater();
 
-      void load();
-      void unload();
+    void load();
+    void unload();
 
-  };
+};
 
-  extern Terra terra;
+extern Terra terra;
 
 }
 }

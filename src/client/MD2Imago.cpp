@@ -24,136 +24,136 @@ namespace oz
 namespace client
 {
 
-  const float MD2Imago::TURN_SMOOTHING_COEF = 0.60f;
+const float MD2Imago::TURN_SMOOTHING_COEF = 0.60f;
 
-  Pool<MD2Imago> MD2Imago::pool;
+Pool<MD2Imago> MD2Imago::pool;
 
-  Imago* MD2Imago::create( const Object* obj )
-  {
-    hard_assert( obj->flags & Object::BOT_BIT );
+Imago* MD2Imago::create( const Object* obj )
+{
+  hard_assert( obj->flags & Object::BOT_BIT );
 
-    const Bot* bot = static_cast<const Bot*>( obj );
-    MD2Imago* imago = new MD2Imago();
+  const Bot* bot = static_cast<const Bot*>( obj );
+  MD2Imago* imago = new MD2Imago();
 
-    imago->obj   = obj;
-    imago->flags = Imago::MD2MODEL_BIT;
-    imago->clazz = obj->clazz;
-    imago->md2   = context.requestMD2( obj->clazz->imagoModel );
-    imago->h     = bot->h;
+  imago->obj   = obj;
+  imago->flags = Imago::MD2MODEL_BIT;
+  imago->clazz = obj->clazz;
+  imago->md2   = context.requestMD2( obj->clazz->imagoModel );
+  imago->h     = bot->h;
 
-    imago->setAnim( bot->anim );
-    imago->anim.nextFrame = imago->anim.endFrame;
-    imago->anim.currFrame = imago->anim.endFrame;
+  imago->setAnim( bot->anim );
+  imago->anim.nextFrame = imago->anim.endFrame;
+  imago->anim.currFrame = imago->anim.endFrame;
 
-    return imago;
-  }
+  return imago;
+}
 
-  MD2Imago::~MD2Imago()
-  {
-    context.releaseMD2( clazz->imagoModel );
-  }
+MD2Imago::~MD2Imago()
+{
+  context.releaseMD2( clazz->imagoModel );
+}
 
-  void MD2Imago::setAnim( Anim::Type type_ )
-  {
-    int type = int( type_ );
+void MD2Imago::setAnim( Anim::Type type_ )
+{
+  int type = int( type_ );
 
-    anim.type       = type_;
-    anim.repeat     = MD2::ANIM_LIST[type].repeat;
+  anim.type       = type_;
+  anim.repeat     = MD2::ANIM_LIST[type].repeat;
 
-    anim.startFrame = MD2::ANIM_LIST[type].firstFrame;
-    anim.endFrame   = MD2::ANIM_LIST[type].lastFrame;
-    anim.nextFrame  = anim.startFrame == anim.endFrame ? anim.endFrame : anim.startFrame + 1;
+  anim.startFrame = MD2::ANIM_LIST[type].firstFrame;
+  anim.endFrame   = MD2::ANIM_LIST[type].lastFrame;
+  anim.nextFrame  = anim.startFrame == anim.endFrame ? anim.endFrame : anim.startFrame + 1;
 
-    anim.currTime   = 0.0f;
+  anim.currTime   = 0.0f;
 
-    if( type_ == Anim::ATTACK ) {
-      const Bot*    bot    = static_cast<const Bot*>( obj );
-      const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
+  if( type_ == Anim::ATTACK ) {
+    const Bot*    bot    = static_cast<const Bot*>( obj );
+    const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
-      if( weapon != null ) {
-        const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
+    if( weapon != null ) {
+      const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
 
-        anim.fps       = MD2::ANIM_LIST[type].fps * 0.5f / clazz->shotInterval;
-        anim.frameTime = 1.0f / anim.fps;
-      }
-    }
-    else {
-      anim.fps       = MD2::ANIM_LIST[type].fps;
+      anim.fps       = MD2::ANIM_LIST[type].fps * 0.5f / clazz->shotInterval;
       anim.frameTime = 1.0f / anim.fps;
     }
   }
+  else {
+    anim.fps       = MD2::ANIM_LIST[type].fps;
+    anim.frameTime = 1.0f / anim.fps;
+  }
+}
 
-  void MD2Imago::draw( const Imago* parent, int mask )
-  {
-    const Bot* bot = static_cast<const Bot*>( obj );
-    const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
+void MD2Imago::draw( const Imago* parent, int mask )
+{
+  const Bot* bot = static_cast<const Bot*>( obj );
+  const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-    if( !md2->isLoaded ) {
-      return;
-    }
+  if( !md2->isLoaded ) {
+    return;
+  }
 
-    if( mask & Mesh::ALPHA_BIT ) {
-      if( bot->state & Bot::DEAD_BIT ) {
-        if( bot->anim != anim.type ) {
-          setAnim( bot->anim );
-        }
-
-        shader.colour.w = min( bot->life * 8.0f / clazz->life, 1.0f );
-
-        tf.model.rotateZ( h );
-        tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->corpseDim.z ) );
-
-        md2->advance( &anim, timer.frameTime );
-        md2->draw( &anim );
-
-        shader.colour.w = 1.0f;
-      }
-    }
-    else if( ( mask & Mesh::SOLID_BIT ) && !( bot->state & Bot::DEAD_BIT ) ) {
+  if( mask & Mesh::ALPHA_BIT ) {
+    if( bot->state & Bot::DEAD_BIT ) {
       if( bot->anim != anim.type ) {
         setAnim( bot->anim );
       }
 
-      if( parent == null ) {
-        if( !camera.isExternal ) {
-          h = bot->h;
-        }
-        else if( bot->h - h > Math::TAU / 2.0f ) {
-          h = bot->h + TURN_SMOOTHING_COEF * ( h + Math::TAU - bot->h );
-        }
-        else if( h - bot->h > Math::TAU / 2.0f ) {
-          h = bot->h + Math::TAU + TURN_SMOOTHING_COEF * ( h - bot->h - Math::TAU );
-        }
-        else {
-          h = bot->h + TURN_SMOOTHING_COEF * ( h - bot->h );
-        }
+      shader.colour.w = min( bot->life * 8.0f / clazz->life, 1.0f );
 
-        h = Math::mod( h + Math::TAU, Math::TAU );
-        tf.model.rotateZ( h );
+      tf.model.rotateZ( h );
+      tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->corpseDim.z ) );
+
+      md2->advance( &anim, timer.frameTime );
+      md2->draw( &anim );
+
+      shader.colour.w = 1.0f;
+    }
+  }
+  else if( ( mask & Mesh::SOLID_BIT ) && !( bot->state & Bot::DEAD_BIT ) ) {
+    if( bot->anim != anim.type ) {
+      setAnim( bot->anim );
+    }
+
+    if( parent == null ) {
+      if( !camera.isExternal ) {
+        h = bot->h;
+      }
+      else if( bot->h - h > Math::TAU / 2.0f ) {
+        h = bot->h + TURN_SMOOTHING_COEF * ( h + Math::TAU - bot->h );
+      }
+      else if( h - bot->h > Math::TAU / 2.0f ) {
+        h = bot->h + Math::TAU + TURN_SMOOTHING_COEF * ( h - bot->h - Math::TAU );
+      }
+      else {
+        h = bot->h + TURN_SMOOTHING_COEF * ( h - bot->h );
       }
 
-      if( bot->index != camera.bot || camera.isExternal ) {
-        if( bot->state & Bot::CROUCHING_BIT ) {
-          tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->crouchDim.z ) );
-        }
+      h = Math::mod( h + Math::TAU, Math::TAU );
+      tf.model.rotateZ( h );
+    }
 
-        md2->advance( &anim, timer.frameTime );
-        md2->draw( &anim );
-
-        if( parent == null && bot->weapon!= -1 && orbis.objects[bot->weapon] != null ) {
-          context.drawImago( orbis.objects[bot->weapon], this, mask );
-        }
+    if( bot->index != camera.bot || camera.isExternal ) {
+      if( bot->state & Bot::CROUCHING_BIT ) {
+        tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->crouchDim.z ) );
       }
-      else if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
-        tf.model.translate( Vec3( 0.0f, 0.0f,  bot->camZ ) );
-        tf.model.rotateX( bot->v - Math::TAU / 4.0f );
-        tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );
 
-        md2->advance( &anim, timer.frameTime );
+      md2->advance( &anim, timer.frameTime );
+      md2->draw( &anim );
+
+      if( parent == null && bot->weapon!= -1 && orbis.objects[bot->weapon] != null ) {
         context.drawImago( orbis.objects[bot->weapon], this, mask );
       }
     }
+    else if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
+      tf.model.translate( Vec3( 0.0f, 0.0f,  bot->camZ ) );
+      tf.model.rotateX( bot->v - Math::TAU / 4.0f );
+      tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );
+
+      md2->advance( &anim, timer.frameTime );
+      context.drawImago( orbis.objects[bot->weapon], this, mask );
+    }
   }
+}
 
 }
 }

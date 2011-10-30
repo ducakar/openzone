@@ -16,30 +16,30 @@ namespace oz
 namespace server
 {
 
-  class Network
-  {
-    private:
+class Network
+{
+  private:
 
-      class Client
-      {
-        String    name;
-        TCPsocket socket;
-        Client*    next[1];
-      };
+    class Client
+    {
+      String    name;
+      TCPsocket socket;
+      Client*    next[1];
+    };
 
-      TCPsocket serverSocket;
-      List<Client> clients;
+    TCPsocket serverSocket;
+    List<Client> clients;
 
-    public:
+  public:
 
-      bool connect();
-      void disconnect();
+    bool connect();
+    void disconnect();
 
-      void update();
+    void update();
 
-  };
+};
 
-  extern Network network;
+extern Network network;
 
 }
 }

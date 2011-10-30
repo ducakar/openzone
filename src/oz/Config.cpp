@@ -49,7 +49,7 @@ bool Config::loadConf( const char* file )
 
       int i = 1;
       while( i < BUFFER_SIZE - 1 &&
-              ( String::isLetter( ch ) || String::isDigit( ch ) || ch == '_' || ch == '.' ) )
+             ( String::isLetter( ch ) || String::isDigit( ch ) || ch == '_' || ch == '.' ) )
       {
         buffer[i] = ch;
         ch = char( fgetc( f ) );

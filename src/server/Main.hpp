@@ -19,24 +19,24 @@ namespace oz
 namespace server
 {
 
-  class Main
-  {
-    private:
+class Main
+{
+  private:
 
-      static const int INIT_SDL = 0x01;
-      static const int INIT_GAME_INIT = 0x02;
-      static const int INIT_GAME_START = 0x04;
+    static const int INIT_SDL = 0x01;
+    static const int INIT_GAME_INIT = 0x02;
+    static const int INIT_GAME_START = 0x04;
 
-      int initFlags;
+    int initFlags;
 
-    public:
+  public:
 
-      void main();
-      void shutdown();
+    void main();
+    void shutdown();
 
-  };
+};
 
-  extern Main main;
+extern Main main;
 
 }
 }

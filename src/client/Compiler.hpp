@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "stable.hpp"
+#include "client/common.hpp"
 
 #ifdef OZ_TOOLS
 
@@ -22,81 +22,81 @@ namespace oz
 namespace client
 {
 
-  static const int CAP_UNIQUE = 0x00000001;
-  static const int CAP_CW     = 0x00000002;
-  static const int CAP_BLEND  = 0x00000004;
+static const int CAP_UNIQUE = 0x00000001;
+static const int CAP_CW     = 0x00000002;
+static const int CAP_BLEND  = 0x00000004;
 
-  class Compiler
-  {
-    private:
+class Compiler
+{
+  private:
 
-      static const int MESH_BIT = 0x00000001;
-      static const int PART_BIT = 0x00000002;
+    static const int MESH_BIT = 0x00000001;
+    static const int PART_BIT = 0x00000002;
 
-      struct Part
+    struct Part
+    {
+      int    component;
+      uint   mode;
+
+      String texture;
+      float  alpha;
+      float  specular;
+
+      Vector<int> indices;
+
+      bool operator == ( const Part& part ) const
       {
-        int    component;
-        uint   mode;
+        return component == part.component && mode == part.mode && specular == part.specular &&
+            alpha == part.alpha && texture.equals( part.texture );
+      }
+    };
 
-        String texture;
-        float  alpha;
-        float  specular;
+    Vector<Vertex> vertices;
+    Vector<Part>   parts;
 
-        Vector<int> indices;
+    Vertex         vert;
+    Part           part;
 
-        bool operator == ( const Part& part ) const
-        {
-          return component == part.component && mode == part.mode && specular == part.specular &&
-              alpha == part.alpha && texture.equals( part.texture );
-        }
-      };
+    int            caps;
+    int            flags;
+    int            componentId;
+    uint           mode;
+    int            vertNum;
 
-      Vector<Vertex> vertices;
-      Vector<Part>   parts;
+  public:
 
-      Vertex         vert;
-      Part           part;
+    void enable( int cap );
+    void disable( int cap );
 
-      int            caps;
-      int            flags;
-      int            componentId;
-      uint           mode;
-      int            vertNum;
+    void beginMesh();
+    void endMesh();
 
-    public:
+    void component( int id );
+    void material( int target, float param );
+    void texture( const char* texture );
 
-      void enable( int cap );
-      void disable( int cap );
+    void begin( uint mode );
+    void end();
 
-      void beginMesh();
-      void endMesh();
+    void texCoord( float u, float v );
+    void texCoord( const float* v );
 
-      void component( int id );
-      void material( int target, float param );
-      void texture( const char* texture );
+    void normal( float nx, float ny, float nz );
+    void normal( const float* v );
 
-      void begin( uint mode );
-      void end();
+    void vertex( float x, float y, float z );
+    void vertex( const float* v );
 
-      void texCoord( float u, float v );
-      void texCoord( const float* v );
+    void animVertex( int i );
 
-      void normal( float nx, float ny, float nz );
-      void normal( const float* v );
+    void getMeshData( MeshData* mesh ) const;
 
-      void vertex( float x, float y, float z );
-      void vertex( const float* v );
+    void init();
+    void free();
 
-      void animVertex( int i );
+};
 
-      void getMeshData( MeshData* mesh ) const;
-
-      void init();
-      void free();
-
-  };
-
-  extern Compiler compiler;
+extern Compiler compiler;
 
 }
 }

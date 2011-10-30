@@ -46,19 +46,20 @@ void Terra::load()
   if( image == null ) {
     throw Exception( "Terrain heightmap missing" );
   }
-  if( image->w != oz::Terra::VERTS || image->h != oz::Terra::VERTS ||
+  if( image->w != matrix::Terra::VERTS || image->h != matrix::Terra::VERTS ||
       image->format->BytesPerPixel != 1 )
   {
     SDL_FreeSurface( image );
-    throw Exception( "Invalid terrain heightmap format, should be " + String( oz::Terra::VERTS ) +
-                     " x " + String( oz::Terra::VERTS ) + " 8 bpp" );
+    throw Exception( "Invalid terrain heightmap format, should be " +
+                     String( matrix::Terra::VERTS ) + " x " + String( matrix::Terra::VERTS ) +
+                     " 8 bpp" );
   }
 
   const ubyte* line = reinterpret_cast<const ubyte*>( image->pixels );
-  for( int y = oz::Terra::VERTS - 1; y >= 0; --y ) {
-    for( int x = 0; x < oz::Terra::VERTS; ++x ) {
-      quads[x][y].vertex.x     = float( x * oz::Terra::Quad::SIZEI ) - oz::Terra::DIM;
-      quads[x][y].vertex.y     = float( y * oz::Terra::Quad::SIZEI ) - oz::Terra::DIM;
+  for( int y = matrix::Terra::VERTS - 1; y >= 0; --y ) {
+    for( int x = 0; x < matrix::Terra::VERTS; ++x ) {
+      quads[x][y].vertex.x     = float( x * matrix::Terra::Quad::SIZEI ) - matrix::Terra::DIM;
+      quads[x][y].vertex.y     = float( y * matrix::Terra::Quad::SIZEI ) - matrix::Terra::DIM;
       quads[x][y].vertex.z     = float( line[x] ) * heightStep + heightBias;
       quads[x][y].triNormal[0] = Vec3::ZERO;
       quads[x][y].triNormal[1] = Vec3::ZERO;
@@ -66,9 +67,9 @@ void Terra::load()
     line += image->pitch;
   }
 
-  for( int x = 0; x < oz::Terra::QUADS; ++x ) {
-    for( int y = 0; y < oz::Terra::QUADS; ++y ) {
-      if( x != oz::Terra::QUADS && y != oz::Terra::QUADS ) {
+  for( int x = 0; x < matrix::Terra::QUADS; ++x ) {
+    for( int y = 0; y < matrix::Terra::QUADS; ++y ) {
+      if( x != matrix::Terra::QUADS && y != matrix::Terra::QUADS ) {
         //
         // 0. triangle -- upper left
         // 1. triangle -- lower right
@@ -108,15 +109,15 @@ void Terra::saveMatrix()
 
   int size = 0;
   size += int( sizeof( int ) );
-  size += oz::Terra::VERTS * oz::Terra::VERTS * 9 * int( sizeof( float ) );
+  size += matrix::Terra::VERTS * matrix::Terra::VERTS * 9 * int( sizeof( float ) );
 
   Buffer buffer( size );
   OutputStream os = buffer.outputStream();
 
-  os.writeInt( oz::Terra::VERTS );
+  os.writeInt( matrix::Terra::VERTS );
 
-  for( int x = 0; x < oz::Terra::VERTS; ++x ) {
-    for( int y = 0; y < oz::Terra::VERTS; ++y ) {
+  for( int x = 0; x < matrix::Terra::VERTS; ++x ) {
+    for( int y = 0; y < matrix::Terra::VERTS; ++y ) {
       os.writePoint3( quads[x][y].vertex );
       os.writeVec3( quads[x][y].triNormal[0] );
       os.writeVec3( quads[x][y].triNormal[1] );
@@ -187,18 +188,18 @@ void Terra::saveClient()
           pos    = quads[x][y].vertex;
           normal = Vec3::ZERO;
 
-          if( x < oz::Terra::QUADS && y < oz::Terra::QUADS ) {
+          if( x < matrix::Terra::QUADS && y < matrix::Terra::QUADS ) {
             normal += quads[x][y].triNormal[0];
             normal += quads[x][y].triNormal[1];
           }
-          if( x > 0 && y < oz::Terra::QUADS ) {
+          if( x > 0 && y < matrix::Terra::QUADS ) {
             normal += quads[x - 1][y].triNormal[0];
           }
           if( x > 0 && y > 0 ) {
             normal += quads[x - 1][y - 1].triNormal[0];
             normal += quads[x - 1][y - 1].triNormal[1];
           }
-          if( x < oz::Terra::QUADS && y > 0 ) {
+          if( x < matrix::Terra::QUADS && y > 0 ) {
             normal += quads[x][y - 1].triNormal[1];
           }
 
@@ -210,8 +211,8 @@ void Terra::saveClient()
           vertex.pos[1] = pos.y;
           vertex.pos[2] = pos.z;
 
-          vertex.texCoord[0] = float( x ) / float( oz::Terra::VERTS );
-          vertex.texCoord[1] = float( y ) / float( oz::Terra::VERTS );
+          vertex.texCoord[0] = float( x ) / float( matrix::Terra::VERTS );
+          vertex.texCoord[1] = float( y ) / float( matrix::Terra::VERTS );
 
           vertex.normal[0] = normal.x;
           vertex.normal[1] = normal.y;

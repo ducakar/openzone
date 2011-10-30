@@ -22,37 +22,37 @@ namespace client
 namespace ui
 {
 
-  class GalileoFrame;
+class GalileoFrame;
 
-  class QuestFrame : public Frame
-  {
-    friend class GalileoFrame;
+class QuestFrame : public Frame
+{
+  friend class GalileoFrame;
 
-    private:
+  private:
 
-      static const String statusMessages[];
+    static const String statusMessages[];
 
-      Text description;
-      int  lastState;
-      int  currentQuest;
-      int  contentHeight;
-      bool isOpened;
+    Text description;
+    int  lastState;
+    int  currentQuest;
+    int  contentHeight;
+    bool isOpened;
 
-      void updateTask();
+    void updateTask();
 
-      static void open( Button* sender );
-      static void next( Button* sender );
-      static void prev( Button* sender );
+    static void open( Button* sender );
+    static void next( Button* sender );
+    static void prev( Button* sender );
 
-    protected:
+  protected:
 
-      virtual void onDraw();
+    virtual void onDraw();
 
-    public:
+  public:
 
-      QuestFrame();
+    QuestFrame();
 
-  };
+};
 
 }
 }

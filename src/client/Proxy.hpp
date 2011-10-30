@@ -9,29 +9,29 @@
 
 #pragma once
 
-#include "stable.hpp"
+#include "client/common.hpp"
 
 namespace oz
 {
 namespace client
 {
 
-  class Proxy
-  {
-    public:
+class Proxy
+{
+  public:
 
-      virtual ~Proxy()
-      {}
+    virtual ~Proxy()
+    {}
 
-      virtual void begin()   = 0;
-      virtual void update()  = 0;
-      virtual void prepare() = 0;
-      virtual void reset()   = 0;
+    virtual void begin()   = 0;
+    virtual void update()  = 0;
+    virtual void prepare() = 0;
+    virtual void reset()   = 0;
 
-      virtual void read( InputStream* istream )         = 0;
-      virtual void write( OutputStream* ostream ) const = 0;
+    virtual void read( InputStream* istream )         = 0;
+    virtual void write( OutputStream* ostream ) const = 0;
 
-  };
+};
 
 }
 }

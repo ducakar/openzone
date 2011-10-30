@@ -23,430 +23,430 @@ namespace client
 
 #ifndef OZ_BUMPMAP
 
-  Vertex::Vertex( const Point3& pos_, const TexCoord& texCoord_, const Vec3& normal_ )
-  {
-    pos[0] = pos_.x;
-    pos[1] = pos_.y;
-    pos[2] = pos_.z;
+Vertex::Vertex( const Point3& pos_, const TexCoord& texCoord_, const Vec3& normal_ )
+{
+  pos[0] = pos_.x;
+  pos[1] = pos_.y;
+  pos[2] = pos_.z;
 
-    texCoord[0] = texCoord_.u;
-    texCoord[1] = texCoord_.v;
+  texCoord[0] = texCoord_.u;
+  texCoord[1] = texCoord_.v;
 
-    normal[0] = normal_.x;
-    normal[1] = normal_.y;
-    normal[2] = normal_.z;
-  }
+  normal[0] = normal_.x;
+  normal[1] = normal_.y;
+  normal[2] = normal_.z;
+}
 
-  bool Vertex::operator == ( const Vertex& v ) const
-  {
-    return pos[0] == v.pos[0] && pos[1] == v.pos[1] && pos[2] == v.pos[2] &&
-        texCoord[0] == v.texCoord[0] && texCoord[1] == v.texCoord[1] &&
-        normal[0] == v.normal[0] && normal[1] == v.normal[1] && normal[2] == v.normal[2];
-  }
+bool Vertex::operator == ( const Vertex& v ) const
+{
+  return pos[0] == v.pos[0] && pos[1] == v.pos[1] && pos[2] == v.pos[2] &&
+      texCoord[0] == v.texCoord[0] && texCoord[1] == v.texCoord[1] &&
+      normal[0] == v.normal[0] && normal[1] == v.normal[1] && normal[2] == v.normal[2];
+}
 
 #else
 
-  Vertex::Vertex( const Point3& pos_, const TexCoord& texCoord_, const Vec3& normal_,
-                  const Vec3& tangent_, const Vec3& binormal_ )
-  {
-    pos[0] = pos_.x;
-    pos[1] = pos_.y;
-    pos[2] = pos_.z;
+Vertex::Vertex( const Point3& pos_, const TexCoord& texCoord_, const Vec3& normal_,
+                const Vec3& tangent_, const Vec3& binormal_ )
+{
+  pos[0] = pos_.x;
+  pos[1] = pos_.y;
+  pos[2] = pos_.z;
 
-    texCoord[0] = texCoord_.u;
-    texCoord[1] = texCoord_.v;
+  texCoord[0] = texCoord_.u;
+  texCoord[1] = texCoord_.v;
 
-    normal[0] = normal_.x;
-    normal[1] = normal_.y;
-    normal[2] = normal_.z;
+  normal[0] = normal_.x;
+  normal[1] = normal_.y;
+  normal[2] = normal_.z;
 
-    tangent[0] = tangent_.x;
-    tangent[1] = tangent_.y;
-    tangent[2] = tangent_.z;
+  tangent[0] = tangent_.x;
+  tangent[1] = tangent_.y;
+  tangent[2] = tangent_.z;
 
-    binormal[0] = binormal_.x;
-    binormal[1] = binormal_.y;
-    binormal[2] = binormal_.z;
-  }
+  binormal[0] = binormal_.x;
+  binormal[1] = binormal_.y;
+  binormal[2] = binormal_.z;
+}
 
-  bool Vertex::operator == ( const Vertex& v ) const
-  {
-    return pos[0] == v.pos[0] && pos[1] == v.pos[1] && pos[2] == v.pos[2] &&
-        texCoord[0] == v.texCoord[0] && texCoord[1] == v.texCoord[1] &&
-        normal[0] == v.normal[0] && normal[1] == v.normal[1] && normal[2] == v.normal[2] &&
-        tangent[0] == v.tangent[0] && tangent[1] == v.tangent[1] && tangent[2] == v.tangent[2] &&
-        binormal[0] == v.binormal[0] && binormal[1] == v.binormal[1] && binormal[2] == v.binormal[2];
-  }
+bool Vertex::operator == ( const Vertex& v ) const
+{
+  return pos[0] == v.pos[0] && pos[1] == v.pos[1] && pos[2] == v.pos[2] &&
+      texCoord[0] == v.texCoord[0] && texCoord[1] == v.texCoord[1] &&
+      normal[0] == v.normal[0] && normal[1] == v.normal[1] && normal[2] == v.normal[2] &&
+      tangent[0] == v.tangent[0] && tangent[1] == v.tangent[1] && tangent[2] == v.tangent[2] &&
+      binormal[0] == v.binormal[0] && binormal[1] == v.binormal[1] && binormal[2] == v.binormal[2];
+}
 
 #endif
 
-  void Vertex::read( InputStream* stream )
-  {
-    pos[0] = stream->readFloat();
-    pos[1] = stream->readFloat();
-    pos[2] = stream->readFloat();
+void Vertex::read( InputStream* stream )
+{
+  pos[0] = stream->readFloat();
+  pos[1] = stream->readFloat();
+  pos[2] = stream->readFloat();
 
-    texCoord[0] = stream->readFloat();
-    texCoord[1] = stream->readFloat();
+  texCoord[0] = stream->readFloat();
+  texCoord[1] = stream->readFloat();
 
-    normal[0] = stream->readFloat();
-    normal[1] = stream->readFloat();
-    normal[2] = stream->readFloat();
+  normal[0] = stream->readFloat();
+  normal[1] = stream->readFloat();
+  normal[2] = stream->readFloat();
 
 #ifdef OZ_BUMPMAP
-    tangent[0] = stream->readFloat();
-    tangent[1] = stream->readFloat();
-    tangent[2] = stream->readFloat();
+  tangent[0] = stream->readFloat();
+  tangent[1] = stream->readFloat();
+  tangent[2] = stream->readFloat();
 
-    binormal[0] = stream->readFloat();
-    binormal[1] = stream->readFloat();
-    binormal[2] = stream->readFloat();
+  binormal[0] = stream->readFloat();
+  binormal[1] = stream->readFloat();
+  binormal[2] = stream->readFloat();
 #endif
-  }
+}
 
-  void Vertex::write( OutputStream* stream ) const
-  {
-    stream->writeFloat( pos[0] );
-    stream->writeFloat( pos[1] );
-    stream->writeFloat( pos[2] );
+void Vertex::write( OutputStream* stream ) const
+{
+  stream->writeFloat( pos[0] );
+  stream->writeFloat( pos[1] );
+  stream->writeFloat( pos[2] );
 
-    stream->writeFloat( texCoord[0] );
-    stream->writeFloat( texCoord[1] );
+  stream->writeFloat( texCoord[0] );
+  stream->writeFloat( texCoord[1] );
 
-    stream->writeFloat( normal[0] );
-    stream->writeFloat( normal[1] );
-    stream->writeFloat( normal[2] );
+  stream->writeFloat( normal[0] );
+  stream->writeFloat( normal[1] );
+  stream->writeFloat( normal[2] );
 
 #ifdef OZ_BUMPMAP
-    stream->writeFloat( tangent[0] );
-    stream->writeFloat( tangent[1] );
-    stream->writeFloat( tangent[2] );
+  stream->writeFloat( tangent[0] );
+  stream->writeFloat( tangent[1] );
+  stream->writeFloat( tangent[2] );
 
-    stream->writeFloat( binormal[0] );
-    stream->writeFloat( binormal[1] );
-    stream->writeFloat( binormal[2] );
+  stream->writeFloat( binormal[0] );
+  stream->writeFloat( binormal[1] );
+  stream->writeFloat( binormal[2] );
 #endif
-  }
+}
 
-  void Vertex::setFormat()
-  {
-    glEnableVertexAttribArray( Attrib::POSITION );
-    glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+void Vertex::setFormat()
+{
+  glEnableVertexAttribArray( Attrib::POSITION );
+  glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
 
-    glEnableVertexAttribArray( Attrib::TEXCOORD );
-    glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+  glEnableVertexAttribArray( Attrib::TEXCOORD );
+  glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
 
-    glEnableVertexAttribArray( Attrib::NORMAL );
-    glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
+  glEnableVertexAttribArray( Attrib::NORMAL );
+  glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 
 #ifdef OZ_BUMPMAP
-    glEnableVertexAttribArray( Attrib::TANGENT );
-    glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
+  glEnableVertexAttribArray( Attrib::TANGENT );
+  glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
 
-    glEnableVertexAttribArray( Attrib::BINORMAL );
-    glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
+  glEnableVertexAttribArray( Attrib::BINORMAL );
+  glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
 #endif
-  }
+}
 
 #ifndef OZ_TOOLS
 
-  Mesh::Mesh() : vao( 0 )
-  {}
+Mesh::Mesh() : vao( 0 )
+{}
 
-  Mesh::~Mesh()
-  {
-    hard_assert( vao == 0 );
-  }
+Mesh::~Mesh()
+{
+  hard_assert( vao == 0 );
+}
 
-  void Mesh::load( InputStream* stream, uint usage )
-  {
-    DArray<uint> textures;
+void Mesh::load( InputStream* stream, uint usage )
+{
+  DArray<uint> textures;
 
-    flags = 0;
+  flags = 0;
 
-    int nVertices = stream->readInt();
-    int nIndices  = stream->readInt();
+  int nVertices = stream->readInt();
+  int nIndices  = stream->readInt();
 
 # ifdef OZ_GL_COMPATIBLE
-    vao = 1;
+  vao = 1;
 # else
-    glGenVertexArrays( 1, &vao );
-    glBindVertexArray( vao );
+  glGenVertexArrays( 1, &vao );
+  glBindVertexArray( vao );
 # endif
 
-    glGenBuffers( 1, &vbo );
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBufferData( GL_ARRAY_BUFFER, nVertices * int( sizeof( Vertex ) ), 0, usage );
+  glGenBuffers( 1, &vbo );
+  glBindBuffer( GL_ARRAY_BUFFER, vbo );
+  glBufferData( GL_ARRAY_BUFFER, nVertices * int( sizeof( Vertex ) ), 0, usage );
 
-    Vertex* vertices = reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY ) );
+  Vertex* vertices = reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY ) );
 
-    for( int i = 0; i < nVertices; ++i ) {
-      vertices[i].read( stream );
-    }
+  for( int i = 0; i < nVertices; ++i ) {
+    vertices[i].read( stream );
+  }
 
-    glUnmapBuffer( GL_ARRAY_BUFFER );
+  glUnmapBuffer( GL_ARRAY_BUFFER );
 
-    glGenBuffers( 1, &ibo );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * int( sizeof( ushort ) ), 0, GL_STATIC_DRAW );
+  glGenBuffers( 1, &ibo );
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+  glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * int( sizeof( ushort ) ), 0, GL_STATIC_DRAW );
 
-    ushort* indices =
-        reinterpret_cast<ushort*>( glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY ) );
+  ushort* indices =
+      reinterpret_cast<ushort*>( glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY ) );
 
-    for( int i = 0; i < nIndices; ++i ) {
-      indices[i] = ushort( stream->readShort() );
-    }
+  for( int i = 0; i < nIndices; ++i ) {
+    indices[i] = ushort( stream->readShort() );
+  }
 
-    glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER );
+  glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER );
 
 # ifndef OZ_GL_COMPATIBLE
-    Vertex::setFormat();
+  Vertex::setFormat();
 
-    glBindVertexArray( 0 );
+  glBindVertexArray( 0 );
 # endif
 
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
-    int nTextures = stream->readInt();
+  int nTextures = stream->readInt();
 
-    if( nTextures < 0 ) {
-      nTextures = ~nTextures;
-      textures.alloc( nTextures );
+  if( nTextures < 0 ) {
+    nTextures = ~nTextures;
+    textures.alloc( nTextures );
 
-      flags |= EMBEDED_TEX_BIT;
-      textures[0] = 0;
+    flags |= EMBEDED_TEX_BIT;
+    textures[0] = 0;
 
-      for( int i = 1; i < nTextures; ++i ) {
-        textures[i] = context.readTexture( stream );
+    for( int i = 1; i < nTextures; ++i ) {
+      textures[i] = context.readTexture( stream );
+    }
+  }
+  else {
+    textures.alloc( nTextures );
+    texIds.alloc( nTextures );
+
+    for( int i = 0; i < nTextures; ++i ) {
+      const String& name = stream->readString();
+
+      if( name.isEmpty() ) {
+        texIds[i] = -1;
+        textures[i] = 0;
+      }
+      else {
+        texIds[i] = library.textureIndex( name );
+        textures[i] = context.requestTexture( texIds[i] );
+      }
+    }
+  }
+
+  int nParts = stream->readInt();
+
+  parts.alloc( nParts );
+
+  for( auto part : parts.iter() ) {
+    part->flags      = stream->readInt();
+    part->mode       = uint( stream->readInt() );
+
+    part->texture    = textures[ stream->readInt() ];
+    part->alpha      = stream->readFloat();
+    part->specular   = stream->readFloat();
+
+    part->nIndices   = stream->readInt();
+    part->firstIndex = stream->readInt();
+
+    part->flags |= part->alpha == 1.0f ? 0x0100 : 0x0200;
+    flags |= part->flags & ( 0x0100 | 0x0200 );
+  }
+
+  textures.dealloc();
+
+  OZ_GL_CHECK_ERROR();
+}
+
+void Mesh::unload()
+{
+  if( vao != 0 ) {
+    if( flags & EMBEDED_TEX_BIT ) {
+      for( auto part : parts.citer() ) {
+        glDeleteTextures( 1, &part->texture );
       }
     }
     else {
-      textures.alloc( nTextures );
-      texIds.alloc( nTextures );
-
-      for( int i = 0; i < nTextures; ++i ) {
-        const String& name = stream->readString();
-
-        if( name.isEmpty() ) {
-          texIds[i] = -1;
-          textures[i] = 0;
-        }
-        else {
-          texIds[i] = library.textureIndex( name );
-          textures[i] = context.requestTexture( texIds[i] );
+      for( auto id : texIds.citer() ) {
+        if( *id != -1 ) {
+          context.releaseTexture( *id );
         }
       }
+      texIds.dealloc();
     }
 
-    int nParts = stream->readInt();
-
-    parts.alloc( nParts );
-
-    for( auto part : parts.iter() ) {
-      part->flags      = stream->readInt();
-      part->mode       = uint( stream->readInt() );
-
-      part->texture    = textures[ stream->readInt() ];
-      part->alpha      = stream->readFloat();
-      part->specular   = stream->readFloat();
-
-      part->nIndices   = stream->readInt();
-      part->firstIndex = stream->readInt();
-
-      part->flags |= part->alpha == 1.0f ? 0x0100 : 0x0200;
-      flags |= part->flags & ( 0x0100 | 0x0200 );
-    }
-
-    textures.dealloc();
-
-    OZ_GL_CHECK_ERROR();
-  }
-
-  void Mesh::unload()
-  {
-    if( vao != 0 ) {
-      if( flags & EMBEDED_TEX_BIT ) {
-        for( auto part : parts.citer() ) {
-          glDeleteTextures( 1, &part->texture );
-        }
-      }
-      else {
-        for( auto id : texIds.citer() ) {
-          if( *id != -1 ) {
-            context.releaseTexture( *id );
-          }
-        }
-        texIds.dealloc();
-      }
-
-      glDeleteBuffers( 1, &vbo );
-      glDeleteBuffers( 1, &ibo );
+    glDeleteBuffers( 1, &vbo );
+    glDeleteBuffers( 1, &ibo );
 # ifndef OZ_GL_COMPATIBLE
-      glDeleteVertexArrays( 1, &vao );
+    glDeleteVertexArrays( 1, &vao );
 # endif
 
-      vao = 0;
-    }
-
-    OZ_GL_CHECK_ERROR();
+    vao = 0;
   }
 
-  void Mesh::upload( const Vertex* vertices, int nVertices, uint usage ) const
-  {
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBufferData( GL_ARRAY_BUFFER, nVertices * int( sizeof( Vertex ) ), vertices, usage );
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-  }
+  OZ_GL_CHECK_ERROR();
+}
 
-  Vertex* Mesh::map( uint access ) const
-  {
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    return reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, access ) );
-  }
+void Mesh::upload( const Vertex* vertices, int nVertices, uint usage ) const
+{
+  glBindBuffer( GL_ARRAY_BUFFER, vbo );
+  glBufferData( GL_ARRAY_BUFFER, nVertices * int( sizeof( Vertex ) ), vertices, usage );
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+}
 
-  void Mesh::unmap() const
-  {
-    glUnmapBuffer( GL_ARRAY_BUFFER );
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-  }
+Vertex* Mesh::map( uint access ) const
+{
+  glBindBuffer( GL_ARRAY_BUFFER, vbo );
+  return reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, access ) );
+}
 
-  void Mesh::bind() const
-  {
+void Mesh::unmap() const
+{
+  glUnmapBuffer( GL_ARRAY_BUFFER );
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+}
+
+void Mesh::bind() const
+{
 # ifdef OZ_GL_COMPATIBLE
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-    Vertex::setFormat();
+  glBindBuffer( GL_ARRAY_BUFFER, vbo );
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+  Vertex::setFormat();
 # else
-    glBindVertexArray( vao );
+  glBindVertexArray( vao );
 # endif
 
-    glUniform4fv( param.oz_Colour, 1, shader.colour );
+  glUniform4fv( param.oz_Colour, 1, shader.colour );
+}
+
+void Mesh::drawComponent( int id, int mask ) const
+{
+  mask &= flags;
+
+  if( mask == 0 ) {
+    return;
   }
 
-  void Mesh::drawComponent( int id, int mask ) const
-  {
-    mask &= flags;
+  for( auto part : parts.citer() ) {
+    int component = part->flags & COMPONENT_MASK;
 
-    if( mask == 0 ) {
-      return;
+    if( component < id ) {
+      continue;
     }
-
-    for( auto part : parts.citer() ) {
-      int component = part->flags & COMPONENT_MASK;
-
-      if( component < id ) {
-        continue;
-      }
-      else if( component > id ) {
-        break;
-      }
-      else if( part->flags & mask ) {
-        glBindTexture( GL_TEXTURE_2D, part->texture );
-        glUniform1f( param.oz_Specular, part->specular );
-        glUniform4f( param.oz_Colour, shader.colour.x, shader.colour.y, shader.colour.z,
-                     shader.colour.w * part->alpha );
-        glDrawElements( part->mode, part->nIndices, GL_UNSIGNED_SHORT,
-                        reinterpret_cast<const ushort*>( 0 ) + part->firstIndex );
-      }
+    else if( component > id ) {
+      break;
+    }
+    else if( part->flags & mask ) {
+      glBindTexture( GL_TEXTURE_2D, part->texture );
+      glUniform1f( param.oz_Specular, part->specular );
+      glUniform4f( param.oz_Colour, shader.colour.x, shader.colour.y, shader.colour.z,
+                   shader.colour.w * part->alpha );
+      glDrawElements( part->mode, part->nIndices, GL_UNSIGNED_SHORT,
+                      reinterpret_cast<const ushort*>( 0 ) + part->firstIndex );
     }
   }
+}
 
-  void Mesh::draw( int mask ) const
-  {
-    mask &= flags;
+void Mesh::draw( int mask ) const
+{
+  mask &= flags;
 
-    if( mask == 0 ) {
-      return;
-    }
+  if( mask == 0 ) {
+    return;
+  }
 
 # ifdef OZ_GL_COMPATIBLE
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-    Vertex::setFormat();
+  glBindBuffer( GL_ARRAY_BUFFER, vbo );
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+  Vertex::setFormat();
 # else
-    glBindVertexArray( vao );
+  glBindVertexArray( vao );
 # endif
 
-    for( auto part : parts.citer() ) {
-      if( part->flags & mask ) {
-        glBindTexture( GL_TEXTURE_2D, part->texture );
-        glUniform1f( param.oz_Specular, part->specular );
-        glUniform4f( param.oz_Colour, shader.colour.x, shader.colour.y, shader.colour.z,
-                     shader.colour.w * part->alpha );
-        glDrawElements( part->mode, part->nIndices, GL_UNSIGNED_SHORT,
-                        reinterpret_cast<const ushort*>( 0 ) + part->firstIndex );
-      }
+  for( auto part : parts.citer() ) {
+    if( part->flags & mask ) {
+      glBindTexture( GL_TEXTURE_2D, part->texture );
+      glUniform1f( param.oz_Specular, part->specular );
+      glUniform4f( param.oz_Colour, shader.colour.x, shader.colour.y, shader.colour.z,
+                   shader.colour.w * part->alpha );
+      glDrawElements( part->mode, part->nIndices, GL_UNSIGNED_SHORT,
+                      reinterpret_cast<const ushort*>( 0 ) + part->firstIndex );
     }
   }
+}
 
 #else // OZ_TOOLS
 
-  void MeshData::write( OutputStream* stream, bool embedTextures ) const
-  {
-    hard_assert( parts.length() > 0 );
-    hard_assert( indices.length() > 0 );
-    hard_assert( vertices.length() > 0 );
+void MeshData::write( OutputStream* stream, bool embedTextures ) const
+{
+  hard_assert( parts.length() > 0 );
+  hard_assert( indices.length() > 0 );
+  hard_assert( vertices.length() > 0 );
 
-    log.println( "Writing mesh {" );
-    log.indent();
+  log.println( "Writing mesh {" );
+  log.indent();
 
-    stream->writeInt( vertices.length() );
-    stream->writeInt( indices.length() );
+  stream->writeInt( vertices.length() );
+  stream->writeInt( indices.length() );
 
-    for( auto vertex : vertices.citer() ) {
-      vertex->write( stream );
-    }
-    for( auto index : indices.citer() ) {
-      stream->writeShort( short( *index ) );
-    }
-
-    Vector<String> textures;
-    textures.add( "" );
-
-    for( auto part : parts.citer() ) {
-      textures.include( part->texture );
-    }
-
-    if( embedTextures ) {
-      stream->writeInt( ~textures.length() );
-
-      for( int i = 1; i < textures.length(); ++i ) {
-        uint id = context.loadRawTexture( textures[i] );
-
-        context.writeTexture( id, stream );
-        glDeleteTextures( 1, &id );
-      }
-    }
-    else {
-      stream->writeInt( textures.length() );
-      for( auto texture : textures.citer() ) {
-        stream->writeString( *texture );
-      }
-    }
-
-    stream->writeInt( parts.length() );
-
-    for( auto part : parts.citer() ) {
-      stream->writeInt( part->component );
-      stream->writeInt( int( part->mode ) );
-
-      stream->writeInt( textures.index( part->texture ) );
-      stream->writeFloat( part->alpha );
-      stream->writeFloat( part->specular );
-
-      stream->writeInt( part->nIndices );
-      stream->writeInt( part->firstIndex );
-    }
-
-    log.unindent();
-    log.println( "}" );
+  for( auto vertex : vertices.citer() ) {
+    vertex->write( stream );
   }
+  for( auto index : indices.citer() ) {
+    stream->writeShort( short( *index ) );
+  }
+
+  Vector<String> textures;
+  textures.add( "" );
+
+  for( auto part : parts.citer() ) {
+    textures.include( part->texture );
+  }
+
+  if( embedTextures ) {
+    stream->writeInt( ~textures.length() );
+
+    for( int i = 1; i < textures.length(); ++i ) {
+      uint id = context.loadRawTexture( textures[i] );
+
+      context.writeTexture( id, stream );
+      glDeleteTextures( 1, &id );
+    }
+  }
+  else {
+    stream->writeInt( textures.length() );
+    for( auto texture : textures.citer() ) {
+      stream->writeString( *texture );
+    }
+  }
+
+  stream->writeInt( parts.length() );
+
+  for( auto part : parts.citer() ) {
+    stream->writeInt( part->component );
+    stream->writeInt( int( part->mode ) );
+
+    stream->writeInt( textures.index( part->texture ) );
+    stream->writeFloat( part->alpha );
+    stream->writeFloat( part->specular );
+
+    stream->writeInt( part->nIndices );
+    stream->writeInt( part->firstIndex );
+  }
+
+  log.unindent();
+  log.println( "}" );
+}
 
 #endif // OZ_TOOLS
 

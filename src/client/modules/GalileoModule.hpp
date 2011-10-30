@@ -21,29 +21,29 @@ namespace oz
 namespace client
 {
 
-  class GalileoModule : public Module
-  {
+class GalileoModule : public Module
+{
 #ifndef OZ_TOOLS
-    private:
+  private:
 
-      ui::GalileoFrame* galileoFrame;
+    ui::GalileoFrame* galileoFrame;
 
-    public:
+  public:
 
-      GalileoModule();
+    GalileoModule();
 
-      virtual void load();
-      virtual void unload();
+    virtual void load();
+    virtual void unload();
 
 #else
-    public:
+  public:
 
-      virtual void prebuild();
+    virtual void prebuild();
 
 #endif
-  };
+};
 
-  extern GalileoModule galileoModule;
+extern GalileoModule galileoModule;
 
 }
 }

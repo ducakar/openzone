@@ -21,50 +21,50 @@ namespace oz
 namespace client
 {
 
-  void SMM::load()
-  {
-    const String& name = library.models[id].name;
-    const String& path = library.models[id].path;
+void SMM::load()
+{
+  const String& name = library.models[id].name;
+  const String& path = library.models[id].path;
 
-    log.print( "Loading SMM model '%s' ...", name.cstr() );
+  log.print( "Loading SMM model '%s' ...", name.cstr() );
 
-    Buffer buffer;
-    if( !buffer.read( path ) ) {
-      throw Exception( "Cannot read model file" );
-    }
-    InputStream is = buffer.inputStream();
-
-    shaderId = library.shaderIndex( is.readString() );
-    mesh.load( &is, GL_STATIC_DRAW );
-
-    isLoaded = true;
-
-    log.printEnd( " OK" );
+  Buffer buffer;
+  if( !buffer.read( path ) ) {
+    throw Exception( "Cannot read model file" );
   }
+  InputStream is = buffer.inputStream();
 
-  SMM::SMM( int id_ ) : id( id_ ), isLoaded( false )
-  {}
+  shaderId = library.shaderIndex( is.readString() );
+  mesh.load( &is, GL_STATIC_DRAW );
 
-  SMM::~SMM()
-  {
-    const String& name = library.models[id].name;
+  isLoaded = true;
 
-    log.print( "Unloading SMM model '%s' ...", name.cstr() );
+  log.printEnd( " OK" );
+}
 
-    mesh.unload();
+SMM::SMM( int id_ ) : id( id_ ), isLoaded( false )
+{}
 
-    log.printEnd( " OK" );
+SMM::~SMM()
+{
+  const String& name = library.models[id].name;
 
-    OZ_GL_CHECK_ERROR();
-  }
+  log.print( "Unloading SMM model '%s' ...", name.cstr() );
 
-  void SMM::draw( int mask ) const
-  {
-    shader.use( shaderId );
-    tf.apply();
+  mesh.unload();
 
-    mesh.draw( mask );
-  }
+  log.printEnd( " OK" );
+
+  OZ_GL_CHECK_ERROR();
+}
+
+void SMM::draw( int mask ) const
+{
+  shader.use( shaderId );
+  tf.apply();
+
+  mesh.draw( mask );
+}
 
 }
 }

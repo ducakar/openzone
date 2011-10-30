@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "client/Mesh.hpp"
 
 namespace oz
@@ -19,25 +17,25 @@ namespace oz
 namespace client
 {
 
-  class SMM
-  {
-    private:
+class SMM
+{
+  private:
 
-      int    id;
-      Mesh   mesh;
-      int    shaderId;
+    int    id;
+    Mesh   mesh;
+    int    shaderId;
 
-    public:
+  public:
 
-      bool isLoaded;
+    bool isLoaded;
 
-      explicit SMM( int id );
-      ~SMM();
+    explicit SMM( int id );
+    ~SMM();
 
-      void load();
-      void draw( int mask ) const;
+    void load();
+    void draw( int mask ) const;
 
-  };
+};
 
 }
 }

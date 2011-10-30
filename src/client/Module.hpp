@@ -9,54 +9,52 @@
 
 #pragma once
 
-#include "stable.hpp"
-
-#include "matrix/common.hpp"
+#include "client/common.hpp"
 
 namespace oz
 {
 namespace client
 {
 
-  class Module
-  {
-    public:
+class Module
+{
+  public:
 
-      static void listModules( Vector<Module*>* list );
+    static void listModules( Vector<Module*>* list );
 
-      virtual ~Module()
-      {}
+    virtual ~Module()
+    {}
 
-      virtual void update()
-      {}
+    virtual void update()
+    {}
 
-      virtual void read( InputStream* )
-      {}
+    virtual void read( InputStream* )
+    {}
 
-      virtual void write( OutputStream* ) const
-      {}
+    virtual void write( OutputStream* ) const
+    {}
 
-      virtual void load()
-      {}
+    virtual void load()
+    {}
 
-      virtual void unload()
-      {}
+    virtual void unload()
+    {}
 
-      virtual void registerLua() const
-      {}
+    virtual void registerLua() const
+    {}
 
-      virtual void init()
-      {}
+    virtual void init()
+    {}
 
-      virtual void free()
-      {}
+    virtual void free()
+    {}
 
 #ifdef OZ_TOOLS
-      virtual void prebuild()
-      {}
+    virtual void prebuild()
+    {}
 #endif
 
-  };
+};
 
 }
 }

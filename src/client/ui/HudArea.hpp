@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/Vehicle.hpp"
 
 #include "client/ui/Area.hpp"

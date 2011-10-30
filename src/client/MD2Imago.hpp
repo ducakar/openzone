@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "client/Imago.hpp"
 #include "client/MD2.hpp"
 
@@ -19,37 +17,37 @@ namespace oz
 namespace client
 {
 
-  class MD2Imago : public Imago
-  {
-    public:
+class MD2Imago : public Imago
+{
+  public:
 
-      static const float TURN_SMOOTHING_COEF;
+    static const float TURN_SMOOTHING_COEF;
 
-      MD2*           md2;
-      float          h;
-      MD2::AnimState anim;
+    MD2*           md2;
+    float          h;
+    MD2::AnimState anim;
 
-      static Pool<MD2Imago> pool;
+    static Pool<MD2Imago> pool;
 
-    protected:
+  protected:
 
-      MD2Imago()
-      {
-        flags |= Imago::MD2MODEL_BIT;
-      }
+    MD2Imago()
+    {
+      flags |= Imago::MD2MODEL_BIT;
+    }
 
-      virtual ~MD2Imago();
+    virtual ~MD2Imago();
 
-    public:
+  public:
 
-      static Imago* create( const Object* obj );
+    static Imago* create( const Object* obj );
 
-      void setAnim( Anim::Type anim );
-      virtual void draw( const Imago* parent, int mask );
+    void setAnim( Anim::Type anim );
+    virtual void draw( const Imago* parent, int mask );
 
-    OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC( pool )
 
-  };
+};
 
 }
 }

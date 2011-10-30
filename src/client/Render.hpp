@@ -9,11 +9,7 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/Orbis.hpp"
-
-#include "client/ui/UI.hpp"
 
 #include "client/BSP.hpp"
 #include "client/Terra.hpp"
@@ -21,120 +17,122 @@
 #include "client/Imago.hpp"
 #include "client/Context.hpp"
 
+#include "client/ui/UI.hpp"
+
 namespace oz
 {
 namespace client
 {
 
-  class Render
-  {
-    public:
+class Render
+{
+  public:
 
-      static const int   DRAW_UI_BIT    = 0x01;
-      static const int   DRAW_ORBIS_BIT = 0x02;
+    static const int   DRAW_UI_BIT    = 0x01;
+    static const int   DRAW_ORBIS_BIT = 0x02;
 
-    private:
+  private:
 
-      static const float WIDE_CULL_FACTOR;
-      static const float CELL_WIDE_RADIUS;
+    static const float WIDE_CULL_FACTOR;
+    static const float CELL_WIDE_RADIUS;
 
-      static const float NIGHT_FOG_COEFF;
-      static const float NIGHT_FOG_DIST;
-      static const float WATER_VISIBILITY;
+    static const float NIGHT_FOG_COEFF;
+    static const float NIGHT_FOG_DIST;
+    static const float WATER_VISIBILITY;
 
-      struct ObjectEntry
+    struct ObjectEntry
+    {
+      float dist2;
+      union
       {
-        float dist2;
-        union
-        {
-          const Struct* str;
-          const Object* obj;
-        };
-
-        ObjectEntry() = default;
-
-        OZ_ALWAYS_INLINE
-        explicit ObjectEntry( float dist2_, const Struct* str_ ) :
-            dist2( dist2_ ), str( str_ )
-        {}
-
-        OZ_ALWAYS_INLINE
-        explicit ObjectEntry( float dist2_, const Object* obj_ ) :
-            dist2( dist2_ ), obj( obj_ )
-        {}
-
-        OZ_ALWAYS_INLINE
-        bool operator < ( const ObjectEntry& oe ) const
-        {
-          return dist2 < oe.dist2;
-        }
+        const Struct* str;
+        const Object* obj;
       };
 
-      Bitset                  drawnStructs;
+      ObjectEntry() = default;
 
-      Vector<ObjectEntry>     structs;
-      Vector<ObjectEntry>     objects;
-      Vector<const Particle*> particles;
+      OZ_ALWAYS_INLINE
+      explicit ObjectEntry( float dist2_, const Struct* str_ ) :
+          dist2( dist2_ ), str( str_ )
+      {}
 
-      Vector<const Struct*>   waterStructs;
+      OZ_ALWAYS_INLINE
+      explicit ObjectEntry( float dist2_, const Object* obj_ ) :
+          dist2( dist2_ ), obj( obj_ )
+      {}
 
-      float                   nearDist2;
+      OZ_ALWAYS_INLINE
+      bool operator < ( const ObjectEntry& oe ) const
+      {
+        return dist2 < oe.dist2;
+      }
+    };
 
-      float                   dayVisibility;
-      float                   nightVisibility;
-      float                   waterDayVisibility;
-      float                   waterNightVisibility;
+    Bitset                  drawnStructs;
 
-      float                   particleRadius;
-      bool                    showBounds;
-      bool                    showAim;
+    Vector<ObjectEntry>     structs;
+    Vector<ObjectEntry>     objects;
+    Vector<const Particle*> particles;
 
-      bool                    isDeferred;
-      bool                    doPostprocess;
+    Vector<const Struct*>   waterStructs;
 
-      float                   visibility;
+    float                   nearDist2;
 
-      float                   windFactor;
-      float                   windPhiInc;
-      float                   windPhi;
+    float                   dayVisibility;
+    float                   nightVisibility;
+    float                   waterDayVisibility;
+    float                   waterNightVisibility;
 
-      int                     renderWidth;
-      int                     renderHeight;
+    float                   particleRadius;
+    bool                    showBounds;
+    bool                    showAim;
 
-      uint                    frameBuffer;
-      uint                    depthBuffer;
-      uint                    colourBuffer;
-      uint                    normalBuffer;
+    bool                    isDeferred;
+    bool                    doPostprocess;
+
+    float                   visibility;
+
+    float                   windFactor;
+    float                   windPhiInc;
+    float                   windPhi;
+
+    int                     renderWidth;
+    int                     renderHeight;
+
+    uint                    frameBuffer;
+    uint                    depthBuffer;
+    uint                    colourBuffer;
+    uint                    normalBuffer;
 
 #ifndef OZ_TOOLS
-      void scheduleCell( int cellX, int cellY );
-      void prepareDraw();
-      void drawGeometry();
-      void postprocess();
+    void scheduleCell( int cellX, int cellY );
+    void prepareDraw();
+    void drawGeometry();
+    void postprocess();
 
-      void drawUI();
-      void drawOrbis();
+    void drawUI();
+    void drawOrbis();
 #endif
 
-    public:
+  public:
 
-      SDL_Surface* surface;
+    SDL_Surface* surface;
 
 #ifndef OZ_TOOLS
-      void draw( int flags );
-      void sync() const;
-      void toggleFullscreen() const;
+    void draw( int flags );
+    void sync() const;
+    void toggleFullscreen() const;
 
-      void load();
-      void unload();
+    void load();
+    void unload();
 #endif
 
-      void init();
-      void free();
+    void init();
+    void free();
 
-  };
+};
 
-  extern Render render;
+extern Render render;
 
 }
 }

@@ -9,28 +9,31 @@
 
 #pragma once
 
-#include "stable.hpp"
+#include "matrix/common.hpp"
 
 namespace oz
 {
+namespace matrix
+{
 
-  class Caelum
-  {
-    public:
+class Caelum
+{
+  public:
 
-      int   id;
+    int   id;
 
-      float heading;
-      float period;
-      float time;
+    float heading;
+    float period;
+    float time;
 
-      Caelum();
+    Caelum();
 
-      void update();
+    void update();
 
-      void read( InputStream* istream );
-      void write( OutputStream* ostream ) const;
+    void read( InputStream* istream );
+    void write( OutputStream* ostream ) const;
 
-  };
+};
 
+}
 }

@@ -9,104 +9,105 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/Struct.hpp"
 #include "matrix/ObjectClass.hpp"
 
 namespace oz
 {
+namespace matrix
+{
 
-  struct Anim
+struct Anim
+{
+  enum Type
   {
-    enum Type
+    STAND,
+    RUN,
+    ATTACK,
+    PAIN_A,
+    PAIN_B,
+    PAIN_C,
+    JUMP,
+    FLIP,
+    SALUTE,
+    FALLBACK,
+    WAVE,
+    POINT,
+    CROUCH_STAND,
+    CROUCH_WALK,
+    CROUCH_ATTACK,
+    CROUCH_PAIN,
+    CROUCH_DEATH,
+    DEATH_FALLBACK,
+    DEATH_FALLFORWARD,
+    DEATH_FALLBACKSLOW,
+    MAX
+  };
+};
+
+class Library
+{
+  public:
+
+    struct Resource
     {
-      STAND,
-      RUN,
-      ATTACK,
-      PAIN_A,
-      PAIN_B,
-      PAIN_C,
-      JUMP,
-      FLIP,
-      SALUTE,
-      FALLBACK,
-      WAVE,
-      POINT,
-      CROUCH_STAND,
-      CROUCH_WALK,
-      CROUCH_ATTACK,
-      CROUCH_PAIN,
-      CROUCH_DEATH,
-      DEATH_FALLBACK,
-      DEATH_FALLFORWARD,
-      DEATH_FALLBACKSLOW,
-      MAX
+      String name;
+      String path;
+
+      Resource() = default;
+
+      explicit Resource( const String& name, const String& path );
     };
-  };
 
-  class Library
-  {
-    public:
+  private:
 
-      struct Resource
-      {
-        String name;
-        String path;
+    HashString<int, 256> textureIndices;
+    HashString<int, 256> soundIndices;
+    HashString<int, 64>  shaderIndices;
+    HashString<int, 16>  terraIndices;
+    HashString<int, 16>  caelumIndices;
+    HashString<int, 64>  bspIndices;
+    HashString<int, 256> modelIndices;
+    HashString<int, 16>  nameListIndices;
 
-        Resource() = default;
+  public:
 
-        explicit Resource( const String& name, const String& path );
-      };
+    Vector<Resource> textures;
+    Vector<Resource> sounds;
+    Vector<Resource> shaders;
+    Vector<Resource> terras;
+    Vector<Resource> caela;
+    Vector<Resource> bsps;
+    Vector<Resource> models;
+    Vector<Resource> nameLists;
+    Vector<Resource> musics;
 
-    private:
+    Vector<Bounds>   bspBounds;
 
-      HashString<int, 256> textureIndices;
-      HashString<int, 256> soundIndices;
-      HashString<int, 64>  shaderIndices;
-      HashString<int, 16>  terraIndices;
-      HashString<int, 16>  caelumIndices;
-      HashString<int, 64>  bspIndices;
-      HashString<int, 256> modelIndices;
-      HashString<int, 16>  nameListIndices;
+    HashString<ObjectClass::InitFunc, 8> baseClasses;
+    HashString<ObjectClass*, 128> classes;
 
-    public:
+    int textureIndex( const char* name ) const;
+    int soundIndex( const char* name ) const;
+    int shaderIndex( const char* name ) const;
+    int terraIndex( const char* name ) const;
+    int caelumIndex( const char* name ) const;
+    int bspIndex( const char* name ) const;
+    int modelIndex( const char* name ) const;
+    int nameListIndex( const char* name ) const;
 
-      Vector<Resource> textures;
-      Vector<Resource> sounds;
-      Vector<Resource> shaders;
-      Vector<Resource> terras;
-      Vector<Resource> caela;
-      Vector<Resource> bsps;
-      Vector<Resource> models;
-      Vector<Resource> nameLists;
-      Vector<Resource> musics;
+    Struct* createStruct( int index, int id, const Point3& p, Heading heading ) const;
+    Struct* createStruct( int index, int id, InputStream* istream ) const;
+    Object* createObject( int index, const char* name, const Point3& p, Heading heading ) const;
+    Object* createObject( int index, const char* name, InputStream* istream ) const;
 
-      Vector<Bounds>   bspBounds;
+    void init();
+    void buildInit();
+    void free();
 
-      HashString<ObjectClass::InitFunc, 8> baseClasses;
-      HashString<ObjectClass*, 128> classes;
+};
 
-      int textureIndex( const char* name ) const;
-      int soundIndex( const char* name ) const;
-      int shaderIndex( const char* name ) const;
-      int terraIndex( const char* name ) const;
-      int caelumIndex( const char* name ) const;
-      int bspIndex( const char* name ) const;
-      int modelIndex( const char* name ) const;
-      int nameListIndex( const char* name ) const;
+extern Library library;
 
-      Struct* createStruct( int index, int id, const Point3& p, Heading heading ) const;
-      Struct* createStruct( int index, int id, InputStream* istream ) const;
-      Object* createObject( int index, const char* name, const Point3& p, Heading heading ) const;
-      Object* createObject( int index, const char* name, InputStream* istream ) const;
-
-      void init();
-      void buildInit();
-      void free();
-
-  };
-
-  extern Library library;
-
+}
 }

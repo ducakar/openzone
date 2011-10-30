@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "stable.hpp"
+#include "client/common.hpp"
 
 #ifdef OZ_NETWORKING
 # include <SDL_net.h>
@@ -20,24 +20,24 @@ namespace oz
 namespace client
 {
 
-  class Network
-  {
-    private:
+class Network
+{
+  private:
 
 #ifdef OZ_NETWORKING
-      TCPsocket socket;
+    TCPsocket socket;
 #endif
 
-    public:
+  public:
 
-      bool connect();
-      void disconnect();
+    bool connect();
+    void disconnect();
 
-      void update();
+    void update();
 
-  };
+};
 
-  extern Network network;
+extern Network network;
 
 }
 }

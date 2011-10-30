@@ -9,79 +9,80 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "matrix/DynamicClass.hpp"
 
 namespace oz
 {
+namespace matrix
+{
 
-  class BotClass : public DynamicClass
-  {
-    public:
+class BotClass : public DynamicClass
+{
+  public:
 
-      Vec3   crouchDim;
-      Vec3   corpseDim;
+    Vec3   crouchDim;
+    Vec3   corpseDim;
 
-      float  camZ;
-      float  crouchCamZ;
+    float  camZ;
+    float  crouchCamZ;
 
-      float  bobWalkInc;
-      float  bobRunInc;
-      float  bobSwimInc;
-      float  bobSwimRunInc;
-      float  bobRotation;
-      float  bobAmplitude;
-      float  bobSwimAmplitude;
+    float  bobWalkInc;
+    float  bobRunInc;
+    float  bobSwimInc;
+    float  bobSwimRunInc;
+    float  bobRotation;
+    float  bobAmplitude;
+    float  bobSwimAmplitude;
 
-      float  walkMomentum;
-      float  runMomentum;
-      float  crouchMomentum;
-      float  jumpMomentum;
+    float  walkMomentum;
+    float  runMomentum;
+    float  crouchMomentum;
+    float  jumpMomentum;
 
-      float  stepInc;
-      float  stepMax;
-      float  stepRateLimit;
-      float  stepRateCoeff;
-      float  stepRateSupp;
+    float  stepInc;
+    float  stepMax;
+    float  stepRateLimit;
+    float  stepRateCoeff;
+    float  stepRateSupp;
 
-      float  climbInc;
-      float  climbMax;
-      float  climbMomentum;
+    float  climbInc;
+    float  climbMax;
+    float  climbMomentum;
 
-      float  airControl;
-      float  climbControl;
-      float  waterControl;
-      float  slickControl;
+    float  airControl;
+    float  climbControl;
+    float  waterControl;
+    float  slickControl;
 
-      float  reachDist;
+    float  reachDist;
 
-      float  grabMass;
-      float  throwMomentum;
+    float  grabMass;
+    float  throwMomentum;
 
-      float  regeneration;
+    float  regeneration;
 
-      float  stamina;
-      float  staminaGain;
-      float  staminaRunDrain;
-      float  staminaWaterDrain;
-      float  staminaClimbDrain;
-      float  staminaJumpDrain;
-      float  staminaThrowDrain;
+    float  stamina;
+    float  staminaGain;
+    float  staminaRunDrain;
+    float  staminaWaterDrain;
+    float  staminaClimbDrain;
+    float  staminaJumpDrain;
+    float  staminaThrowDrain;
 
-      int    state;
+    int    state;
 
-      int    weaponItem;
+    int    weaponItem;
 
-      String mindFunction;
+    String mindFunction;
 
-      int    nameList;
+    int    nameList;
 
-      static ObjectClass* init( const Config* config );
+    static ObjectClass* init( const Config* config );
 
-      virtual Object* create( int index, const Point3& pos, Heading heading ) const;
-      virtual Object* create( int index, InputStream* istream ) const;
+    virtual Object* create( int index, const Point3& pos, Heading heading ) const;
+    virtual Object* create( int index, InputStream* istream ) const;
 
-  };
+};
 
+}
 }

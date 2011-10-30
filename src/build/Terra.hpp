@@ -20,7 +20,7 @@ class Terra
 {
   private:
 
-    oz::Terra::Quad quads[oz::Terra::VERTS][oz::Terra::VERTS];
+    matrix::Terra::Quad quads[matrix::Terra::VERTS][matrix::Terra::VERTS];
 
     String name;
     String waterTexture;

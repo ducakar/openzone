@@ -14,21 +14,21 @@ namespace oz
 namespace server
 {
 
-  class Game
-  {
-    public:
+class Game
+{
+  public:
 
-      bool init();
-      void start();
+    bool init();
+    void start();
 
-      void update();
+    void update();
 
-      void stop();
-      void free();
+    void stop();
+    void free();
 
-  };
+};
 
-  extern Game game;
+extern Game game;
 
 }
 }

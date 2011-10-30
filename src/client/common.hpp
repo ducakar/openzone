@@ -1,74 +1,76 @@
 /*
  *  common.hpp
  *
- *  [description]
- *
  *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
 
-#include "stable.hpp"
+#include "matrix/Collider.hpp"
+
+using namespace oz::matrix;
 
 namespace oz
 {
 namespace client
 {
 
-  struct TexCoord
+struct TexCoord
+{
+  static const TexCoord ZERO;
+
+  float u;
+  float v;
+
+  TexCoord() = default;
+
+  OZ_ALWAYS_INLINE
+  explicit TexCoord( float u_, float v_ ) : u( u_ ), v( v_ )
+  {}
+
+  OZ_ALWAYS_INLINE
+  bool operator == ( const TexCoord& tc ) const
   {
-    static const TexCoord ZERO;
+    return u == tc.u && v == tc.v;
+  }
 
-    float u;
-    float v;
+  OZ_ALWAYS_INLINE
+  bool operator != ( const TexCoord& tc ) const
+  {
+    return u != tc.u || v != tc.v;
+  }
 
-    TexCoord() = default;
+  OZ_ALWAYS_INLINE
+  operator const float* () const
+  {
+    return &u;
+  }
 
-    OZ_ALWAYS_INLINE
-    explicit TexCoord( float u_, float v_ ) : u( u_ ), v( v_ )
-    {}
+  OZ_ALWAYS_INLINE
+  operator float* ()
+  {
+    return &u;
+  }
 
-    OZ_ALWAYS_INLINE
-    bool operator == ( const TexCoord& tc ) const
-    {
-      return u == tc.u && v == tc.v;
-    }
+  OZ_ALWAYS_INLINE
+  const float& operator [] ( int i ) const
+  {
+    hard_assert( 0 <= i && i < 2 );
 
-    OZ_ALWAYS_INLINE
-    bool operator != ( const TexCoord& tc ) const
-    {
-      return u != tc.u || v != tc.v;
-    }
+    return ( &u )[i];
+  }
 
-    OZ_ALWAYS_INLINE
-    operator const float* () const
-    {
-      return &u;
-    }
+  OZ_ALWAYS_INLINE
+  float& operator [] ( int i )
+  {
+    hard_assert( 0 <= i && i < 2 );
 
-    OZ_ALWAYS_INLINE
-    operator float* ()
-    {
-      return &u;
-    }
+    return ( &u )[i];
+  }
+};
 
-    OZ_ALWAYS_INLINE
-    const float& operator [] ( int i ) const
-    {
-      hard_assert( 0 <= i && i < 2 );
-
-      return ( &u )[i];
-    }
-
-    OZ_ALWAYS_INLINE
-    float& operator [] ( int i )
-    {
-      hard_assert( 0 <= i && i < 2 );
-
-      return ( &u )[i];
-    }
-  };
+extern Collider collider;
 
 }
 }

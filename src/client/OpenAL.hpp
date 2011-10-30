@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "stable.hpp"
+#include "client/common.hpp"
 
 #include <AL/al.h>
 
@@ -23,7 +23,7 @@ namespace client
 # else
 # define OZ_AL_CHECK_ERROR() alCheckError( __FILE__, __LINE__, __PRETTY_FUNCTION__ )
 
-  void alCheckError( const char* file, int line, const char* function );
+void alCheckError( const char* file, int line, const char* function );
 
 #endif
 

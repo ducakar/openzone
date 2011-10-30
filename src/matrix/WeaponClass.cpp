@@ -16,113 +16,116 @@
 
 namespace oz
 {
+namespace matrix
+{
 
-  ObjectClass* WeaponClass::init( const Config* config )
-  {
-    WeaponClass* clazz = new WeaponClass();
+ObjectClass* WeaponClass::init( const Config* config )
+{
+  WeaponClass* clazz = new WeaponClass();
 
-    clazz->flags = Object::DYNAMIC_BIT | Object::WEAPON_BIT | Object::ITEM_BIT |
-        Object::UPDATE_FUNC_BIT | Object::USE_FUNC_BIT;
+  clazz->flags = Object::DYNAMIC_BIT | Object::WEAPON_BIT | Object::ITEM_BIT |
+      Object::UPDATE_FUNC_BIT | Object::USE_FUNC_BIT;
 
-    OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",    true  );
-    OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.onDamage",     false );
-    OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,       "flag.onHit",        false );
-    OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,    "flag.onUpdate",     false );
-    OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",        true  );
-    OZ_CLASS_SET_FLAG( Object::CYLINDER_BIT,       "flag.cylinder",     true  );
-    OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
-    OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
+  OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",    true  );
+  OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.onDamage",     false );
+  OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,       "flag.onHit",        false );
+  OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,    "flag.onUpdate",     false );
+  OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",        true  );
+  OZ_CLASS_SET_FLAG( Object::CYLINDER_BIT,       "flag.cylinder",     true  );
+  OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
+  OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
 
-    clazz->fillCommonConfig( config );
+  clazz->fillCommonConfig( config );
 
-    clazz->mass = config->get( "mass", 100.0f );
-    clazz->lift = config->get( "lift", 12.0f );
+  clazz->mass = config->get( "mass", 100.0f );
+  clazz->lift = config->get( "lift", 12.0f );
 
-    if( clazz->mass < 0.01f ) {
-      throw Exception( "Invalid object mass. Should be >= 0.01." );
-    }
-    if( clazz->lift < 0.0f ) {
-      throw Exception( "Invalid object lift. Should be >= 0." );
-    }
-
-    clazz->onShot = config->get( "onShot", "" );
-
-    if( !String::isEmpty( clazz->onShot ) ) {
-      clazz->flags |= Object::LUA_BIT;
-    }
-
-    clazz->nRounds      = config->get( "nRounds", -1 );
-    clazz->shotInterval = config->get( "shotInterval", 0.5f );
-
-    return clazz;
+  if( clazz->mass < 0.01f ) {
+    throw Exception( "Invalid object mass. Should be >= 0.01." );
+  }
+  if( clazz->lift < 0.0f ) {
+    throw Exception( "Invalid object lift. Should be >= 0." );
   }
 
-  Object* WeaponClass::create( int index, const Point3& pos, Heading heading ) const
-  {
-    Weapon* obj = new Weapon();
+  clazz->onShot = config->get( "onShot", "" );
 
-    hard_assert( obj->index == -1 && obj->cell == null && obj->parent == -1 );
-
-    obj->p          = pos;
-    obj->index      = index;
-    obj->mass       = mass;
-    obj->lift       = lift;
-    obj->nRounds    = nRounds;
-    obj->shotTime   = 0.0f;
-
-    fillCommonFields( obj );
-
-    obj->flags |= heading;
-
-    if( heading == WEST || heading == EAST ) {
-      swap( obj->dim.x, obj->dim.y );
-    }
-
-    return obj;
+  if( !String::isEmpty( clazz->onShot ) ) {
+    clazz->flags |= Object::LUA_BIT;
   }
 
-  Object* WeaponClass::create( int index, InputStream* istream ) const
-  {
-    Weapon* obj = new Weapon();
+  clazz->nRounds      = config->get( "nRounds", -1 );
+  clazz->shotInterval = config->get( "shotInterval", 0.5f );
 
-    obj->dim        = dim;
-    obj->index      = index;
-    obj->clazz      = this;
-    obj->resistance = resistance;
-    obj->mass       = mass;
-    obj->lift       = lift;
+  return clazz;
+}
 
-    obj->readFull( istream );
+Object* WeaponClass::create( int index, const Point3& pos, Heading heading ) const
+{
+  Weapon* obj = new Weapon();
 
-    Heading heading = Heading( obj->flags & Object::HEADING_MASK );
-    if( heading == WEST || heading == EAST ) {
-      swap( obj->dim.x, obj->dim.y );
-    }
+  hard_assert( obj->index == -1 && obj->cell == null && obj->parent == -1 );
 
-    return obj;
+  obj->p          = pos;
+  obj->index      = index;
+  obj->mass       = mass;
+  obj->lift       = lift;
+  obj->nRounds    = nRounds;
+  obj->shotTime   = 0.0f;
+
+  fillCommonFields( obj );
+
+  obj->flags |= heading;
+
+  if( heading == WEST || heading == EAST ) {
+    swap( obj->dim.x, obj->dim.y );
   }
 
-  void WeaponClass::fillAllowedUsers()
-  {
-    int underscore = name.index( '_' );
-    if( underscore == -1 ) {
-      throw Exception( "Weapon class file must be named <botClass>_weapon.<weapon>.rc" );
-    }
+  return obj;
+}
 
-    String matchClass = name.substring( 0, underscore );
+Object* WeaponClass::create( int index, InputStream* istream ) const
+{
+  Weapon* obj = new Weapon();
 
-    for( auto clazz : library.classes.citer() ) {
-      String botClassBase = clazz.value()->name;
+  obj->dim        = dim;
+  obj->index      = index;
+  obj->clazz      = this;
+  obj->resistance = resistance;
+  obj->mass       = mass;
+  obj->lift       = lift;
 
-      int dot = botClassBase.index( '.' );
-      if( dot != -1 ) {
-        botClassBase = botClassBase.substring( 0, dot );
-      }
+  obj->readFull( istream );
 
-      if( matchClass.equals( botClassBase ) ) {
-        allowedUsers.add( clazz.value() );
-      }
-    }
+  Heading heading = Heading( obj->flags & Object::HEADING_MASK );
+  if( heading == WEST || heading == EAST ) {
+    swap( obj->dim.x, obj->dim.y );
   }
 
+  return obj;
+}
+
+void WeaponClass::fillAllowedUsers()
+{
+  int underscore = name.index( '_' );
+  if( underscore == -1 ) {
+    throw Exception( "Weapon class file must be named <botClass>_weapon.<weapon>.rc" );
+  }
+
+  String matchClass = name.substring( 0, underscore );
+
+  for( auto clazz : library.classes.citer() ) {
+    String botClassBase = clazz.value()->name;
+
+    int dot = botClassBase.index( '.' );
+    if( dot != -1 ) {
+      botClassBase = botClassBase.substring( 0, dot );
+    }
+
+    if( matchClass.equals( botClassBase ) ) {
+      allowedUsers.add( clazz.value() );
+    }
+  }
+}
+
+}
 }

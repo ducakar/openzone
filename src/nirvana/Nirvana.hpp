@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "nirvana/Device.hpp"
 #include "nirvana/Mind.hpp"
 
@@ -19,39 +17,39 @@ namespace oz
 namespace nirvana
 {
 
-  class Nirvana
-  {
-    private:
+class Nirvana
+{
+  private:
 
-      // mind is only updated once per UPDATE_INTERVAL frames (maybe less, depends on when it was
-      // added to the list)
-      // to force update, set Mind::FORCE_UPDATE_BIT
-      static const int UPDATE_INTERVAL = 32;
+    // mind is only updated once per UPDATE_INTERVAL frames (maybe less, depends on when it was
+    // added to the list)
+    // to force update, set Mind::FORCE_UPDATE_BIT
+    static const int UPDATE_INTERVAL = 32;
 
-      int updateModulo;
+    int updateModulo;
 
-    public:
+  public:
 
-      HashString<Device::CreateFunc, 32> deviceClasses;
+    HashString<Device::CreateFunc, 32> deviceClasses;
 
-      HashIndex<Device*, 4093> devices;
-      HashIndex<Mind*, 4093>   minds;
+    HashIndex<Device*, 4093> devices;
+    HashIndex<Mind*, 4093>   minds;
 
-      void sync();
-      void update();
+    void sync();
+    void update();
 
-      void read( InputStream* istream );
-      void write( OutputStream* ostream ) const;
+    void read( InputStream* istream );
+    void write( OutputStream* ostream ) const;
 
-      void load();
-      void unload();
+    void load();
+    void unload();
 
-      void init();
-      void free();
+    void init();
+    void free();
 
-  };
+};
 
-  extern Nirvana nirvana;
+extern Nirvana nirvana;
 
 }
 }

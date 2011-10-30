@@ -20,45 +20,45 @@ namespace oz
 namespace nirvana
 {
 
-  Pool<Mind, 1024> Mind::pool;
+Pool<Mind, 1024> Mind::pool;
 
-  Mind::Mind( int bot_ ) : flags( 0 ), bot( bot_ )
-  {
-    lua.registerMind( bot );
-  }
+Mind::Mind( int bot_ ) : flags( 0 ), bot( bot_ )
+{
+  lua.registerMind( bot );
+}
 
-  Mind::Mind( int bot_, InputStream* istream ) : bot( bot_ )
-  {
-    flags = istream->readInt();
-  }
+Mind::Mind( int bot_, InputStream* istream ) : bot( bot_ )
+{
+  flags = istream->readInt();
+}
 
-  Mind::~Mind()
-  {
-    lua.unregisterMind( bot );
-  }
+Mind::~Mind()
+{
+  lua.unregisterMind( bot );
+}
 
-  void Mind::update()
-  {
-    hard_assert( orbis.objects[bot] != null );
-    hard_assert( orbis.objects[bot]->flags & Object::BOT_BIT );
+void Mind::update()
+{
+  hard_assert( orbis.objects[bot] != null );
+  hard_assert( orbis.objects[bot]->flags & Object::BOT_BIT );
 
-    Bot* bot = static_cast<Bot*>( orbis.objects[this->bot] );
+  Bot* bot = static_cast<Bot*>( orbis.objects[this->bot] );
 
-    if( !bot->mindFunc.isEmpty() && !( bot->state & Bot::DEAD_BIT ) ) {
-      flags &= ~FORCE_UPDATE_BIT;
-      bot->actions = 0;
-      lua.mindCall( bot->mindFunc, bot );
+  if( !bot->mindFunc.isEmpty() && !( bot->state & Bot::DEAD_BIT ) ) {
+    flags &= ~FORCE_UPDATE_BIT;
+    bot->actions = 0;
+    lua.mindCall( bot->mindFunc, bot );
 
-      if( lua.forceUpdate ) {
-        flags |= FORCE_UPDATE_BIT;
-      }
+    if( lua.forceUpdate ) {
+      flags |= FORCE_UPDATE_BIT;
     }
   }
+}
 
-  void Mind::write( OutputStream* ostream ) const
-  {
-    ostream->writeInt( flags );
-  }
+void Mind::write( OutputStream* ostream ) const
+{
+  ostream->writeInt( flags );
+}
 
 }
 }

@@ -105,7 +105,7 @@ void BSP::playContSound( const Struct::Entity* entity, int sample ) const
 BSP::BSP( int id_ ) : id( id_ ), flags( 0 ), bsp( orbis.bsps[id_] ), isLoaded( false )
 {
   for( int i = 0; i < bsp->nModels; ++i  ) {
-    const oz::BSP::Model& model = bsp->models[i];
+    const matrix::BSP::Model& model = bsp->models[i];
 
     if( model.openSample != -1 ) {
       context.requestSound( model.openSample );
@@ -125,7 +125,7 @@ BSP::~BSP()
   log.indent();
 
   for( int i = 0; i < bsp->nModels; ++i ) {
-    const oz::BSP::Model& model = bsp->models[i];
+    const matrix::BSP::Model& model = bsp->models[i];
 
     if( model.openSample != -1 ) {
       context.releaseSound( model.openSample );

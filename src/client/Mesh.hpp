@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "client/common.hpp"
 
 namespace oz
@@ -18,127 +16,127 @@ namespace oz
 namespace client
 {
 
-  class MeshData;
-  class Compiler;
+class MeshData;
+class Compiler;
 
-  struct Vertex
-  {
-    float pos[3];
-    float texCoord[2];
-    float normal[3];
+struct Vertex
+{
+  float pos[3];
+  float texCoord[2];
+  float normal[3];
 #ifdef OZ_BUMPMAP
-    float tangent[3];
-    float binormal[3];
+  float tangent[3];
+  float binormal[3];
 #endif
 
-    Vertex() = default;
+  Vertex() = default;
 
 #ifndef OZ_BUMPMAP
-    explicit Vertex( const Point3& pos,
-                     const TexCoord& texCoord = TexCoord( 0.0f, 0.0f ),
-                     const Vec3& normal = Vec3::ZERO );
+  explicit Vertex( const Point3& pos,
+                   const TexCoord& texCoord = TexCoord( 0.0f, 0.0f ),
+                   const Vec3& normal = Vec3::ZERO );
 #else
-    explicit Vertex( const Point3& pos,
-                     const TexCoord& texCoord = TexCoord( 0.0f, 0.0f ),
-                     const Vec3& normal = Vec3::ZERO,
-                     const Vec3& tangent = Vec3::ZERO,
-                     const Vec3& binormal = Vec3::ZERO );
+  explicit Vertex( const Point3& pos,
+                   const TexCoord& texCoord = TexCoord( 0.0f, 0.0f ),
+                   const Vec3& normal = Vec3::ZERO,
+                   const Vec3& tangent = Vec3::ZERO,
+                   const Vec3& binormal = Vec3::ZERO );
 #endif
 
-    bool operator == ( const Vertex& v ) const;
+  bool operator == ( const Vertex& v ) const;
 
-    void read( InputStream* stream );
-    void write( OutputStream* stream ) const;
+  void read( InputStream* stream );
+  void write( OutputStream* stream ) const;
 
-    static void setFormat();
-  };
+  static void setFormat();
+};
 
-  class Mesh
-  {
-    friend class MeshData;
-    friend class Compiler;
+class Mesh
+{
+  friend class MeshData;
+  friend class Compiler;
 
-    public:
+  public:
 
-      static const int COMPONENT_MASK  = 0x00ff;
-      static const int SOLID_BIT       = 0x0100;
-      static const int ALPHA_BIT       = 0x0200;
-      static const int EMBEDED_TEX_BIT = 0x0400;
+    static const int COMPONENT_MASK  = 0x00ff;
+    static const int SOLID_BIT       = 0x0100;
+    static const int ALPHA_BIT       = 0x0200;
+    static const int EMBEDED_TEX_BIT = 0x0400;
 
 #ifndef OZ_TOOLS
 
-    private:
+  private:
 
-      struct Part
-      {
-        int   flags;
-        uint  mode;
+    struct Part
+    {
+      int   flags;
+      uint  mode;
 
-        uint  texture;
-        float alpha;
-        float specular;
+      uint  texture;
+      float alpha;
+      float specular;
 
-        int   nIndices;
-        int   firstIndex;
-      };
+      int   nIndices;
+      int   firstIndex;
+    };
 
-      uint         vao;
-      uint         vbo;
-      uint         ibo;
+    uint         vao;
+    uint         vbo;
+    uint         ibo;
 
-      int          flags;
-      DArray<int>  texIds;
-      DArray<Part> parts;
+    int          flags;
+    DArray<int>  texIds;
+    DArray<Part> parts;
 
-    public:
+  public:
 
-      Mesh();
-      ~Mesh();
+    Mesh();
+    ~Mesh();
 
-      void load( InputStream* stream, uint usage );
-      void unload();
+    void load( InputStream* stream, uint usage );
+    void unload();
 
-      void upload( const Vertex* vertices, int nVertices, uint usage ) const;
-      Vertex* map( uint access ) const;
-      void unmap() const;
+    void upload( const Vertex* vertices, int nVertices, uint usage ) const;
+    Vertex* map( uint access ) const;
+    void unmap() const;
 
-      void bind() const;
-      void drawComponent( int id, int mask ) const;
-      void draw( int mask ) const;
+    void bind() const;
+    void drawComponent( int id, int mask ) const;
+    void draw( int mask ) const;
 
 #endif
 
-  };
+};
 
 #ifdef OZ_TOOLS
 
-  class MeshData
-  {
-    friend class Compiler;
+class MeshData
+{
+  friend class Compiler;
 
-    public:
+  public:
 
-      struct Part
-      {
-        int    component;
-        uint   mode;
+    struct Part
+    {
+      int    component;
+      uint   mode;
 
-        String texture;
-        float  alpha;
-        float  specular;
+      String texture;
+      float  alpha;
+      float  specular;
 
-        int    nIndices;
-        int    firstIndex;
-      };
+      int    nIndices;
+      int    firstIndex;
+    };
 
-      Vector<Part>   parts;
+    Vector<Part>   parts;
 
-      DArray<ushort> indices;
-      DArray<Vertex> vertices;
+    DArray<ushort> indices;
+    DArray<Vertex> vertices;
 
-      void write( OutputStream* stream, bool embedTextures = true ) const;
+    void write( OutputStream* stream, bool embedTextures = true ) const;
 
-  };
+};
 
 #endif
 

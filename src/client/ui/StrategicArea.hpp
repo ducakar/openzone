@@ -10,13 +10,9 @@
 
 #pragma once
 
-#include "stable.hpp"
-
-#include "client/ui/Area.hpp"
-
 #include "matrix/Object.hpp"
 
-#include "client/common.hpp"
+#include "client/ui/Area.hpp"
 
 namespace oz
 {

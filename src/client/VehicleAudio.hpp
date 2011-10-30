@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "stable.hpp"
-
 #include "client/BasicAudio.hpp"
 
 namespace oz
@@ -18,24 +16,24 @@ namespace oz
 namespace client
 {
 
-  class VehicleAudio : public BasicAudio
-  {
-    protected:
+class VehicleAudio : public BasicAudio
+{
+  protected:
 
-      explicit VehicleAudio( const Object* obj ) : BasicAudio( obj )
-      {}
+    explicit VehicleAudio( const Object* obj ) : BasicAudio( obj )
+    {}
 
-    public:
+  public:
 
-      static Pool<VehicleAudio> pool;
+    static Pool<VehicleAudio> pool;
 
-      static Audio* create( const Object* obj );
+    static Audio* create( const Object* obj );
 
-      virtual void play( const Audio* parent );
+    virtual void play( const Audio* parent );
 
-    OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC( pool )
 
-  };
+};
 
 }
 }

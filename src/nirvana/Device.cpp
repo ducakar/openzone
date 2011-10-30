@@ -16,22 +16,22 @@ namespace oz
 namespace nirvana
 {
 
-  void Device::onUse( const Bot* )
-  {}
+void Device::onUse( const Bot* )
+{}
 
-  void Device::onUpdate()
-  {}
+void Device::onUpdate()
+{}
 
-  Device::~Device()
-  {}
+Device::~Device()
+{}
 
-  const char* Device::getMemo() const
-  {
-    return null;
-  }
+const char* Device::getMemo() const
+{
+  return null;
+}
 
-  void Device::write( OutputStream* ) const
-  {}
+void Device::write( OutputStream* ) const
+{}
 
 }
 }
