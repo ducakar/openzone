@@ -192,9 +192,9 @@ class Bitset
      * True iff empty.
      */
     OZ_ALWAYS_INLINE
-    int isEmpty() const
+    bool isEmpty() const
     {
-      return size * ULONG_BITSIZE;
+      return size == 0;
     }
 
     /**

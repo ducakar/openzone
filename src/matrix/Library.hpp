@@ -84,10 +84,6 @@ namespace oz
 
       Vector<Bounds>   bspBounds;
 
-#ifdef OZ_TOOLS
-      Bitset usedTextures;
-#endif
-
       HashString<ObjectClass::InitFunc, 8> baseClasses;
       HashString<ObjectClass*, 128> classes;
 
@@ -100,15 +96,15 @@ namespace oz
       int modelIndex( const char* name ) const;
       int nameListIndex( const char* name ) const;
 
-#ifndef OZ_TOOLS
       Struct* createStruct( int index, int id, const Point3& p, Heading heading ) const;
       Struct* createStruct( int index, int id, InputStream* istream ) const;
       Object* createObject( int index, const char* name, const Point3& p, Heading heading ) const;
       Object* createObject( int index, const char* name, InputStream* istream ) const;
-#endif
 
       void init();
+      void buildInit();
       void free();
+
   };
 
   extern Library library;

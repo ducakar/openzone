@@ -24,6 +24,7 @@
 #include "client/Render.hpp"
 #include "client/Module.hpp"
 
+#include "build/Terra.hpp"
 #include "build/BSP.hpp"
 
 #include <cerrno>
@@ -192,10 +193,7 @@ static void prebuildTerrae()
       continue;
     }
 
-    String name = file->baseName();
-
-    orbis.terra.prebuild( name );
-    client::terra.prebuild( name );
+    build::Terra::prebuild( file->baseName() );
   }
 
   log.unindent();
@@ -297,9 +295,7 @@ static void prebuildBSPs()
       continue;
     }
 
-    String name = file->baseName();
-
-    build::BSP::prebuild( name );
+    build::BSP::prebuild( file->baseName() );
   }
 
   log.unindent();
@@ -312,7 +308,7 @@ static void prebuildBSPTextures()
   log.indent();
 
   for( int i = 0; i < library.textures.length(); ++i ) {
-    if( !library.usedTextures.get( i ) ) {
+    if( !build::BSP::usedTextures.get( i ) ) {
       continue;
     }
 
@@ -345,6 +341,8 @@ static void prebuildBSPTextures()
     log.unindent();
     log.println( "}" );
   }
+
+  build::BSP::usedTextures.dealloc();
 
   log.unindent();
   log.println( "}" );
@@ -567,7 +565,7 @@ int main( int argc, char** argv )
 
   uint startTime = SDL_GetTicks();
 
-  library.init();
+  library.buildInit();
 
   config.add( "screen.width", "400" );
   config.add( "screen.height", "40" );

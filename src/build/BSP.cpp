@@ -30,6 +30,8 @@ const float BSP::DEFAULT_SCALE      = 0.01f;
 const float BSP::DEFAULT_LIFE       = 10000.0f;
 const float BSP::DEFAULT_RESISTANCE = 400.0f;
 
+Bitset BSP::usedTextures;
+
 inline bool BSP::includes( const oz::BSP::Brush& brush, float maxDim ) const
 {
   for( int i = 0; i < brush.nSides; ++i ) {
@@ -1007,7 +1009,7 @@ void BSP::saveClient()
         throw Exception( "BSP has a visible face without texture" );
       }
 
-      library.usedTextures.set( texId );
+      usedTextures.set( texId );
 
       if( textures[face.texture].type & QBSP_WATER_TYPE_BIT ) {
         compiler.material( GL_DIFFUSE, 0.75f );
@@ -1116,12 +1118,15 @@ BSP::~BSP()
   log.printEnd( " OK" );
 }
 
-void BSP::prebuild( const char* name_ )
+void BSP::prebuild( const char* name )
 {
-  String name = name_;
-
-  log.println( "Prebuilding BSP '%s' {", name_ );
+  log.println( "Prebuilding BSP '%s' {", name );
   log.indent();
+
+  if( usedTextures.isEmpty() ) {
+    usedTextures.alloc( library.textures.length() );
+    usedTextures.clearAll();
+  }
 
   BSP* bsp = new BSP( name );
   bsp->load();
