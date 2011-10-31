@@ -21,7 +21,7 @@ namespace oz
 namespace client
 {
 
-Pool<SMMVehicleImago> SMMVehicleImago::pool;
+Pool<SMMVehicleImago, 64> SMMVehicleImago::pool;
 
 Imago* SMMVehicleImago::create( const Object* obj )
 {

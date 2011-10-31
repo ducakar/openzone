@@ -24,7 +24,7 @@ class BotAudio : public BasicAudio
 
   public:
 
-    static Pool<BotAudio> pool;
+    static Pool<BotAudio, 128> pool;
 
     static Audio* create( const Object* obj );
 

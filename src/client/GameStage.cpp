@@ -301,19 +301,19 @@ void GameStage::present()
   timer.renderMillis += SDL_GetTicks() - beginTime;
 }
 
-bool GameStage::read( const char* file )
+bool GameStage::read( const char* path )
 {
-  log.print( "Loading state from '%s' ...", file );
+  log.print( "Loading state from '%s' ...", path );
 
-  Buffer buffer;
-  if( !buffer.read( file ) ) {
+  File file( path );
+  if( !file.map() ) {
     log.printEnd( " Failed" );
     return false;
   }
 
   log.printEnd( " OK" );
 
-  InputStream istream = buffer.inputStream();
+  InputStream istream = file.inputStream();
 
   matrix.read( &istream );
   nirvana.read( &istream );
@@ -324,10 +324,12 @@ bool GameStage::read( const char* file )
     modules[i]->read( &istream );
   }
 
+  file.unmap();
+
   return true;
 }
 
-void GameStage::write( const char* file ) const
+void GameStage::write( const char* path ) const
 {
   Buffer buffer( 4 * 1024 * 1024 );
   OutputStream ostream = buffer.outputStream();
@@ -341,8 +343,8 @@ void GameStage::write( const char* file ) const
     modules[i]->write( &ostream );
   }
 
-  log.print( "Saving state to %s ...", file );
-  buffer.write( file, ostream.length() );
+  log.print( "Saving state to %s ...", path );
+  buffer.write( path, ostream.length() );
   log.printEnd( " OK" );
 }
 

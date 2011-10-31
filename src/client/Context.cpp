@@ -42,7 +42,6 @@ namespace client
 Context context;
 
 Pool<Context::Source> Context::Source::pool;
-Buffer Context::buffer;
 
 void Context::addSource( uint srcId, int sample )
 {
@@ -106,13 +105,15 @@ uint Context::loadTexture( const char* path )
 {
   log.print( "Loading texture '%s' ...", path );
 
-  if( !buffer.read( path ) ) {
-    log.printEnd( " No such file" );
-    throw Exception( "Texture loading failed" );
+  File file( path );
+  if( !file.map() ) {
+    throw Exception( "Texture file mmap failed" );
   }
 
-  InputStream is = buffer.inputStream();
+  InputStream is = file.inputStream();
   uint id = readTexture( &is );
+
+  file.unmap();
 
   log.printEnd( " OK" );
   return id;
@@ -188,18 +189,23 @@ uint Context::requestTexture( int id )
 
   resource.id = GL_NONE;
 
-  if( buffer.read( "bsp/" + name + ".ozcTex" ) ) {
-    InputStream is = buffer.inputStream();
-
-    resource.id = readTexture( &is );
+  File file( "bsp/" + name + ".ozcTex" );
+  if( !file.map() ) {
+    throw Exception( "Texture file mmap failed" );
   }
 
+  InputStream is = file.inputStream();
+
+  resource.id = readTexture( &is );
+
+  file.unmap();
+
   if( resource.id == 0 ) {
-    log.printEnd( " Failed" );
     throw Exception( "Texture loading failed" );
   }
 
   log.printEnd( " OK" );
+
   return resource.id;
 }
 
@@ -239,6 +245,13 @@ uint Context::requestSound( int id )
 
   log.print( "Loading sound '%s' ...", name.cstr() );
 
+  File file( path );
+  if( !file.map() ) {
+    throw Exception( "Failed to mmap sound file" );
+  }
+
+  InputStream is = file.inputStream();
+
   uint   length;
   ubyte* data;
 
@@ -249,7 +262,8 @@ uint Context::requestSound( int id )
   audioSpec.channels = 1;
   audioSpec.samples  = 0;
 
-  if( SDL_LoadWAV( path, &audioSpec, &data, &length ) == null ) {
+  SDL_RWops* rwOps = SDL_RWFromConstMem( is.begin(), is.capacity() );
+  if( SDL_LoadWAV_RW( rwOps, 1, &audioSpec, &data, &length ) == null ) {
     throw Exception( "Failed to load sound" );
   }
 
@@ -266,6 +280,7 @@ uint Context::requestSound( int id )
   alBufferData( resource.id, format, data, int( length ), audioSpec.freq );
 
   SDL_FreeWAV( data );
+  file.unmap();
 
   OZ_AL_CHECK_ERROR();
 
@@ -437,41 +452,69 @@ void Context::playAudio( const Object* obj, const Audio* parent )
   audio->play( parent );
 }
 
-# ifndef NDEBUG
 void Context::updateLoad()
 {
-  maxImagines   = max( maxImagines, imagines.length() );
-  maxAudios     = max( maxAudios, audios.length() );
-  maxSources    = max( maxSources, sources.length() );
-  maxBSPSources = max( maxBSPSources, bspSources.length() );
-  maxObjSources = max( maxObjSources, objSources.length() );
-}
+  maxImagines           = max( maxImagines,           imagines.length() );
+  maxAudios             = max( maxAudios,             audios.length() );
+  maxSources            = max( maxSources,            Source::pool.length() );
+  maxBSPSources         = max( maxBSPSources,         bspSources.length() );
+  maxObjSources         = max( maxObjSources,         objSources.length() );
 
-void Context::printLoad()
-{
-  log.println( "Context maximum load {" );
-  log.indent();
-  log.println( "Imagines     %d (hashtable load %.2f)", maxImagines,
-               float( maxImagines ) / float( imagines.capacity() ) );
-  log.println( "Audios       %d (hashtable load %.2f)", maxAudios,
-               float( maxAudios ) / float( audios.capacity() ) );
-  log.println( "Sources      %d", maxSources );
-  log.println( "BSPSources   %d (hashtable load %.2f)", maxBSPSources,
-               float( maxBSPSources ) / float( bspSources.capacity() ) );
-  log.println( "ObjSources   %d (hashtable load %.2f)", maxObjSources,
-               float( maxObjSources ) / float( bspSources.capacity() ) );
-  log.unindent();
-  log.println( "}" );
+  maxSMMImagines        = max( maxSMMImagines,        SMMImago::pool.length() );
+  maxSMMVehicleImagines = max( maxSMMVehicleImagines, SMMVehicleImago::pool.length() );
+  maxExplosionImagines  = max( maxExplosionImagines,  ExplosionImago::pool.length() );
+  maxMD2Imagines        = max( maxMD2Imagines,        MD2Imago::pool.length() );
+  maxMD2WeaponImagines  = max( maxMD2WeaponImagines,  MD2WeaponImago::pool.length() );
+  maxMD3Imagines        = max( maxMD3Imagines,        MD3Imago::pool.length() );
+
+  maxBasicAudios        = max( maxBasicAudios,        BasicAudio::pool.length() );
+  maxBotAudios          = max( maxBotAudios,          BotAudio::pool.length() );
+  maxVehicleAudios      = max( maxVehicleAudios,      VehicleAudio::pool.length() );
 }
-# endif
 
 void Context::load()
-{}
+{
+  maxImagines           = 0;
+  maxAudios             = 0;
+  maxSources            = 0;
+  maxBSPSources         = 0;
+  maxObjSources         = 0;
+
+  maxSMMImagines        = 0;
+  maxSMMVehicleImagines = 0;
+  maxExplosionImagines  = 0;
+  maxMD2Imagines        = 0;
+  maxMD2WeaponImagines  = 0;
+  maxMD3Imagines        = 0;
+
+  maxBasicAudios        = 0;
+  maxBotAudios          = 0;
+  maxVehicleAudios      = 0;
+}
 
 void Context::unload()
 {
   log.println( "Unloading Context {" );
   log.indent();
+
+  log.println( "Peak context instances {" );
+  log.indent();
+  log.println( "%6d  imago objects",                maxImagines );
+  log.println( "%6d  audio objects",                maxAudios );
+  log.println( "%6d  non-continuous sources",       maxSources );
+  log.println( "%6d  structure continuous sources", maxBSPSources );
+  log.println( "%6d  object continuous sources",    maxObjSources );
+  log.println( "%6d  SMM imagines",                 maxSMMImagines );
+  log.println( "%6d  SMMVehicle imagines",          maxSMMVehicleImagines );
+  log.println( "%6d  Explosion imagines",           maxExplosionImagines );
+  log.println( "%6d  MD2 imagines",                 maxMD2Imagines );
+  log.println( "%6d  MD2Weapon imagines",           maxMD2WeaponImagines );
+  log.println( "%6d  MD3 imagines",                 maxMD3Imagines );
+  log.println( "%6d  Basic audios",                 maxBasicAudios );
+  log.println( "%6d  Bot audios",                   maxBotAudios );
+  log.println( "%6d  Vehicle audios",               maxVehicleAudios );
+  log.unindent();
+  log.println( "}" );
 
   imagines.free();
   imagines.dealloc();
@@ -596,8 +639,6 @@ void Context::init()
   md2s     = new Resource<MD2*>[library.models.length()];
   md3s     = new Resource<MD3*>[library.models.length()];
 
-  buffer.alloc( BUFFER_SIZE );
-
   for( int i = 0; i < library.textures.length(); ++i ) {
     textures[i].nUsers = 0;
   }
@@ -619,20 +660,12 @@ void Context::init()
     md3s[i].nUsers = 0;
   }
 
-  maxImagines   = 0;
-  maxAudios     = 0;
-  maxSources    = 0;
-  maxBSPSources = 0;
-  maxObjSources = 0;
-
   log.printEnd( " OK" );
 }
 
 void Context::free()
 {
   log.print( "Freeing Context ..." );
-
-  buffer.dealloc();
 
   delete[] textures;
   delete[] sounds;

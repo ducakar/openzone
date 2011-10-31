@@ -18,7 +18,7 @@ namespace oz
 namespace client
 {
 
-Pool<SMMImago, 1024> SMMImago::pool;
+Pool<SMMImago, 4096> SMMImago::pool;
 
 Imago* SMMImago::create( const Object* obj )
 {

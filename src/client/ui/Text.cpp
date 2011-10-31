@@ -22,8 +22,8 @@
 #ifdef OZ_MINGW
 static char* strchrnul( const char* s, int c )
 {
-char* p = strchr( s, c );
-return p == null ? const_cast<char*>( s ) + strlen( s ) : p;
+  char* p = strchr( s, c );
+  return p == NULL ? const_cast<char*>( s ) + strlen( s ) : p;
 }
 #endif
 

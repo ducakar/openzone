@@ -189,12 +189,12 @@ void MD2::load()
 
   log.print( "Loading MD2 model '%s' ...", name.cstr() );
 
-  Buffer buffer;
-  if( !buffer.read( path ) ) {
-    throw Exception( "MD2 cannot read model file" );
+  File file( path );
+  if( !file.map() ) {
+    throw Exception( "MD2 model file mmap failed" );
   }
 
-  InputStream is  = buffer.inputStream();
+  InputStream is  = file.inputStream();
 
   shaderId        = library.shaderIndex( is.readString() );
 
@@ -292,6 +292,8 @@ void MD2::load()
 
     mesh.load( &is, GL_STREAM_DRAW );
   }
+
+  file.unmap();
 
   OZ_GL_CHECK_ERROR();
 

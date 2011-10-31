@@ -170,13 +170,12 @@ void Caelum::load()
                            Math::sin( orbis.caelum.heading ),
                            0.0f );
 
-  Buffer buffer;
-  if( !buffer.read( path ) ) {
-    log.printEnd( " Cannot open file" );
-    throw Exception( "Caelum loading failed" );
+  File file( path );
+  if( !file.map() ) {
+    throw Exception( "Caelum file mmap failed" );
   }
 
-  InputStream is = buffer.inputStream();
+  InputStream is = file.inputStream();
 
 # ifndef OZ_GL_COMPATIBLE
   glGenVertexArrays( 1, &vao );
@@ -210,6 +209,8 @@ void Caelum::load()
 
   starShaderId      = library.shaderIndex( "stars" );
   celestialShaderId = library.shaderIndex( "celestial" );
+
+  file.unmap();
 
   OZ_GL_CHECK_ERROR();
 

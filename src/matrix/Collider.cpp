@@ -164,7 +164,7 @@ bool Collider::overlapsAABBOrbis()
     for( int y = span.minY; y <= span.maxY; ++y ) {
       const Cell& cell = orbis.cells[x][y];
 
-      for( auto strIndex : cell.structs.citer() ) {
+      foreach( strIndex, cell.structs.citer() ) {
         str = orbis.structs[*strIndex];
 
         if( str != oldStr && str->overlaps( trace ) ) {
@@ -181,7 +181,7 @@ bool Collider::overlapsAABBOrbis()
         }
       }
 
-      for( auto sObj : cell.objects.citer() ) {
+      foreach( sObj, cell.objects.citer() ) {
         if( sObj != exclObj && ( sObj->flags & mask ) && overlapsAABBObj( sObj ) ) {
           return true;
         }
@@ -202,7 +202,7 @@ bool Collider::overlapsAABBOrbisOO()
     for( int y = span.minY; y <= span.maxY; ++y ) {
       const Cell& cell = orbis.cells[x][y];
 
-      for( auto sObj : cell.objects.citer() ) {
+      foreach( sObj, cell.objects.citer() ) {
         if( sObj != exclObj && ( sObj->flags & mask ) && overlapsAABBObj( sObj ) ) {
           return true;
         }
@@ -225,7 +225,7 @@ bool Collider::overlapsAABBOrbisOSO()
     for( int y = span.minY; y <= span.maxY; ++y ) {
       const Cell& cell = orbis.cells[x][y];
 
-      for( auto strIndex : cell.structs.citer() ) {
+      foreach( strIndex, cell.structs.citer() ) {
         str = orbis.structs[*strIndex];
 
         if( str != oldStr && str->overlaps( trace ) ) {
@@ -242,7 +242,7 @@ bool Collider::overlapsAABBOrbisOSO()
         }
       }
 
-      for( auto sObj : cell.objects.citer() ) {
+      foreach( sObj, cell.objects.citer() ) {
         if( sObj != exclObj && ( sObj->flags & mask ) && overlapsAABBObj( sObj ) ) {
           return true;
         }
@@ -263,7 +263,7 @@ bool Collider::overlapsEntityOrbisOO()
     for( int y = span.minY; y <= span.maxY; ++y ) {
       const Cell& cell = orbis.cells[x][y];
 
-      for( auto sObj : cell.objects.citer() ) {
+      foreach( sObj, cell.objects.citer() ) {
         if( sObj->overlaps( trace ) ) {
           startPos = str->toStructCS( sObj->p ) - entity->offset;
           aabb.dim = sObj->dim + Vec3( margin, margin, margin );
@@ -727,7 +727,7 @@ void Collider::trimAABBOrbis()
     for( int y = span.minY; y <= span.maxY; ++y ) {
       const Cell& cell = orbis.cells[x][y];
 
-      for( auto strIndex : cell.structs.citer() ) {
+      foreach( strIndex, cell.structs.citer() ) {
         str = orbis.structs[*strIndex];
 
         // to prevent some of duplicated structure tests
@@ -749,7 +749,7 @@ void Collider::trimAABBOrbis()
       startPos = originalStartPos;
       endPos   = originalEndPos;
 
-      for( auto sObj : cell.objects.iter() ) {
+      foreach( sObj, cell.objects.iter() ) {
         if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( trace ) ) {
           trimAABBObj( sObj );
         }
@@ -782,7 +782,7 @@ void Collider::getOrbisOverlaps( Vector<Object*>* objects, Vector<Struct*>* stru
       const Cell& cell = orbis.cells[x][y];
 
       if( structs != null ) {
-        for( auto strIndex : cell.structs.citer() ) {
+        foreach( strIndex, cell.structs.citer() ) {
           Struct* str = orbis.structs[*strIndex];
 
           if( str != oldStr && str->overlaps( trace ) && !structs->contains( str ) ) {
@@ -801,7 +801,7 @@ void Collider::getOrbisOverlaps( Vector<Object*>* objects, Vector<Struct*>* stru
       }
 
       if( objects != null ) {
-        for( auto sObj : cell.objects.iter() ) {
+        foreach( sObj, cell.objects.iter() ) {
           if( ( sObj->flags & mask ) && sObj->overlaps( trace ) ) {
             objects->add( sObj );
           }
@@ -820,7 +820,7 @@ void Collider::getOrbisIncludes( Vector<Object*>* objects ) const
     for( int y = span.minY; y <= span.maxY; ++y ) {
       const Cell& cell = orbis.cells[x][y];
 
-      for( auto sObj : cell.objects.iter() ) {
+      foreach( sObj, cell.objects.iter() ) {
         if( ( sObj->flags & mask ) && trace.includes( *sObj ) ) {
           objects->add( sObj );
         }
@@ -835,7 +835,7 @@ void Collider::touchOrbisOverlaps() const
     for( int y = span.minY; y <= span.maxY; ++y ) {
       const Cell& cell = orbis.cells[x][y];
 
-      for( auto sObj : cell.objects.iter() ) {
+      foreach( sObj, cell.objects.iter() ) {
         if( ( sObj->flags & Object::DYNAMIC_BIT ) && sObj->overlaps( trace ) ) {
           sObj->flags &= ~Object::MOVE_CLEAR_MASK;
         }
@@ -852,7 +852,7 @@ void Collider::getEntityOverlaps( Vector<Object*>* objects )
     for( int y = span.minY; y <= span.maxY; ++y ) {
       const Cell& cell = orbis.cells[x][y];
 
-      for( auto sObj : cell.objects.iter() ) {
+      foreach( sObj, cell.objects.iter() ) {
         if( ( sObj->flags & mask ) && sObj->overlaps( trace ) ) {
           startPos = str->toStructCS( sObj->p ) - entity->offset;
           aabb.dim = sObj->dim + Vec3( margin, margin, margin );

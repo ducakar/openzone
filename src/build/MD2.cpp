@@ -364,7 +364,7 @@ void MD2::build( const char* path )
 
     // if we have an animated model, we use vertex position to save texture coordinate for vertex
     // texture to fetch the positions in both frames and interpolate them in vertex shader
-    for( auto vertex : mesh.vertices.iter() ) {
+    foreach( vertex, mesh.vertices.iter() ) {
       vertex->pos[0] = ( vertex->pos[0] + 0.5f ) / float( header.nFramePositions );
       vertex->pos[1] = 0.0f;
       vertex->pos[2] = 0.0f;

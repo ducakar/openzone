@@ -478,41 +478,41 @@ void Orbis::write( OutputStream* ostream ) const
   }
 
   ostream->writeInt( strFreedIndices[freeing].length() );
-  for( auto i : strFreedIndices[freeing].citer() ) {
+  foreach( i, strFreedIndices[freeing].citer() ) {
     ostream->writeInt( *i );
   }
   ostream->writeInt( objFreedIndices[freeing].length() );
-  for( auto i : objFreedIndices[freeing].citer() ) {
+  foreach( i, objFreedIndices[freeing].citer() ) {
     ostream->writeInt( *i );
   }
   ostream->writeInt( partFreedIndices[freeing].length() );
-  for( auto i : partFreedIndices[freeing].citer() ) {
+  foreach( i, partFreedIndices[freeing].citer() ) {
     ostream->writeInt( *i );
   }
 
   ostream->writeInt( strFreedIndices[waiting].length() );
-  for( auto i : strFreedIndices[waiting].citer() ) {
+  foreach( i, strFreedIndices[waiting].citer() ) {
     ostream->writeInt( *i );
   }
   ostream->writeInt( objFreedIndices[waiting].length() );
-  for( auto i : objFreedIndices[waiting].citer() ) {
+  foreach( i, objFreedIndices[waiting].citer() ) {
     ostream->writeInt( *i );
   }
   ostream->writeInt( partFreedIndices[waiting].length() );
-  for( auto i : partFreedIndices[waiting].citer() ) {
+  foreach( i, partFreedIndices[waiting].citer() ) {
     ostream->writeInt( *i );
   }
 
   ostream->writeInt( strAvailableIndices.length() );
-  for( auto i : strAvailableIndices.citer() ) {
+  foreach( i, strAvailableIndices.citer() ) {
     ostream->writeInt( *i );
   }
   ostream->writeInt( objAvailableIndices.length() );
-  for( auto i : objAvailableIndices.citer() ) {
+  foreach( i, objAvailableIndices.citer() ) {
     ostream->writeInt( *i );
   }
   ostream->writeInt( partAvailableIndices.length() );
-  for( auto i : partAvailableIndices.citer() ) {
+  foreach( i, partAvailableIndices.citer() ) {
     ostream->writeInt( *i );
   }
 

@@ -193,7 +193,7 @@ void Library::init()
 
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.iter() ) {
+  foreach( file, dirList.iter() ) {
     if( file->getType() != File::DIRECTORY ) {
       continue;
     }
@@ -209,7 +209,7 @@ void Library::init()
       throw Exception( "Library initialisation failure" );
     }
 
-    for( auto file : subDirList.citer() ) {
+    foreach( file, subDirList.citer() ) {
       if( !file->hasExtension( "ozcTex" ) ) {
         continue;
       }
@@ -239,7 +239,7 @@ void Library::init()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.iter() ) {
+  foreach( file, dirList.iter() ) {
     if( file->getType() != File::DIRECTORY ) {
       continue;
     }
@@ -255,7 +255,7 @@ void Library::init()
       throw Exception( "Library initialisation failure" );
     }
 
-    for( auto file : subDirList.citer() ) {
+    foreach( file, subDirList.citer() ) {
       if( !file->hasExtension( "wav" ) ) {
         continue;
       }
@@ -285,7 +285,7 @@ void Library::init()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "vert" ) ) {
       continue;
     }
@@ -313,7 +313,7 @@ void Library::init()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozTerra" ) ) {
       continue;
     }
@@ -341,7 +341,7 @@ void Library::init()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozcCaelum" ) ) {
       continue;
     }
@@ -360,8 +360,6 @@ void Library::init()
   log.println( "BSP structures (*.ozBSP/*.ozcBSP in 'bsp') {" );
   log.indent();
 
-  Buffer buffer;
-
   dir.setPath( "bsp" );
   if( !dir.ls( &dirList ) ) {
     free();
@@ -371,7 +369,7 @@ void Library::init()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.iter() ) {
     if( !file->hasExtension( "ozBSP" ) ) {
       continue;
     }
@@ -384,20 +382,20 @@ void Library::init()
     bsps.add( Resource( name, file->path() ) );
 
     // read bounds
-    if( !buffer.read( file->path() ) ) {
-      throw Exception( "cannot read dimensions from BSP" );
+    if( !file->map() ) {
+      throw Exception( "Cannot mmap BSP to read dimensions" );
     }
 
-    InputStream is = buffer.inputStream();
+    InputStream is = file->inputStream();
 
     Point3 mins = is.readPoint3();
     Point3 maxs = is.readPoint3();
 
+    file->unmap();
+
     bspBounds.add( Bounds( mins, maxs ) );
   }
   dirList.dealloc();
-
-  buffer.dealloc();
 
   log.unindent();
   log.println( "}" );
@@ -413,7 +411,7 @@ void Library::init()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozcSMM" ) && !file->hasExtension( "ozcMD2" ) &&
         !file->hasExtension( "ozcMD3" ) )
     {
@@ -447,7 +445,7 @@ void Library::init()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "txt" ) ) {
       continue;
     }
@@ -463,7 +461,7 @@ void Library::init()
 
   log.unindent();
   log.println( "}" );
-  log.println( "music (*.oga in 'music') {" );
+  log.println( "music (*.oga, *.mp3 in 'music') {" );
   log.indent();
 
   dir.setPath( "music" );
@@ -475,8 +473,8 @@ void Library::init()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.citer() ) {
-    if( !file->hasExtension( "oga" ) ) {
+  foreach( file, dirList.citer() ) {
+    if( !file->hasExtension( "oga" ) && !file->hasExtension( "mp3" ) ) {
       continue;
     }
 
@@ -502,7 +500,7 @@ void Library::init()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
       continue;
     }
@@ -541,7 +539,7 @@ void Library::init()
   }
   dirList.dealloc();
 
-  for( auto clazz : classes.citer() ) {
+  foreach( clazz, classes.citer() ) {
     const WeaponClass* weaponClass = dynamic_cast<const WeaponClass*>( clazz.value() );
 
     if( weaponClass != null ) {
@@ -592,7 +590,7 @@ void Library::buildInit()
 
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.iter() ) {
+  foreach( file, dirList.iter() ) {
     if( file->getType() != File::DIRECTORY ) {
       continue;
     }
@@ -608,7 +606,7 @@ void Library::buildInit()
       throw Exception( "Library initialisation failure" );
     }
 
-    for( auto file : subDirList.citer() ) {
+    foreach( file, subDirList.citer() ) {
       if( !file->hasExtension( "png" ) && !file->hasExtension( "jpeg" ) &&
           !file->hasExtension( "jpg" ) )
       {
@@ -644,7 +642,7 @@ void Library::buildInit()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.iter() ) {
+  foreach( file, dirList.iter() ) {
     if( file->getType() != File::DIRECTORY ) {
       continue;
     }
@@ -660,7 +658,7 @@ void Library::buildInit()
       throw Exception( "Library initialisation failure" );
     }
 
-    for( auto file : subDirList.citer() ) {
+    foreach( file, subDirList.citer() ) {
       if( !file->hasExtension( "wav" ) ) {
         continue;
       }
@@ -690,7 +688,7 @@ void Library::buildInit()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "vert" ) ) {
       continue;
     }
@@ -718,7 +716,7 @@ void Library::buildInit()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
       continue;
     }
@@ -746,7 +744,7 @@ void Library::buildInit()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
       continue;
     }
@@ -774,7 +772,7 @@ void Library::buildInit()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
       continue;
     }
@@ -802,7 +800,7 @@ void Library::buildInit()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.iter() ) {
+  foreach( file, dirList.iter() ) {
     if( file->getType() != File::DIRECTORY ) {
       continue;
     }
@@ -830,7 +828,7 @@ void Library::buildInit()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "txt" ) ) {
       continue;
     }
@@ -846,7 +844,7 @@ void Library::buildInit()
 
   log.unindent();
   log.println( "}" );
-  log.println( "music (*.oga in 'music') {" );
+  log.println( "music (*.oga, *.mp3 in 'music') {" );
   log.indent();
 
   dir.setPath( "music" );
@@ -858,8 +856,8 @@ void Library::buildInit()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.citer() ) {
-    if( !file->hasExtension( "oga" ) ) {
+  foreach( file, dirList.citer() ) {
+    if( !file->hasExtension( "oga" ) && !file->hasExtension( "mp3" ) ) {
       continue;
     }
 
@@ -885,7 +883,7 @@ void Library::buildInit()
     log.println( "}" );
     throw Exception( "Library initialisation failure" );
   }
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
       continue;
     }

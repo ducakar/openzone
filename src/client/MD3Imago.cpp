@@ -25,7 +25,7 @@ namespace client
 
 const float MD3Imago::TURN_SMOOTHING_COEF = 0.60f;
 
-Pool<MD3Imago> MD3Imago::pool;
+Pool<MD3Imago, 256> MD3Imago::pool;
 
 Imago* MD3Imago::create( const Object* obj )
 {

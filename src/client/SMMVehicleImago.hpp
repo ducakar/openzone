@@ -25,7 +25,7 @@ class SMMVehicleImago : public Imago
 
   public:
 
-    static Pool<SMMVehicleImago> pool;
+    static Pool<SMMVehicleImago, 64> pool;
 
     static Imago* create( const Object* obj );
 

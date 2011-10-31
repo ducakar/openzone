@@ -192,7 +192,7 @@ class Object : public AABB
       float  intensity;
       Event* next[1];
 
-      static Pool<Event, 4096> pool;
+      static Pool<Event, 256> pool;
 
       // exactly events with negative IDs are ignored by BasicAudio, so if ID is nonnegative we
       // don't want to use this ctor as we need to set the intensity
@@ -209,7 +209,7 @@ class Object : public AABB
       OZ_STATIC_POOL_ALLOC( pool )
     };
 
-    static Pool<Object, 2048> pool;
+    static Pool<Object, 16384> pool;
 
     /*
      * FIELDS

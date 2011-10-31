@@ -108,6 +108,15 @@ class InputStream
     }
 
     /**
+     * Length of the stream.
+     */
+    OZ_ALWAYS_INLINE
+    int capacity() const
+    {
+      return int( size_t( end - start ) );
+    }
+
+    /**
      * Number of bytes left before end of the stream is reached.
      */
     OZ_ALWAYS_INLINE
@@ -123,6 +132,15 @@ class InputStream
     bool isAvailable() const
     {
       return pos != end;
+    }
+
+    /**
+     * Pointer to the beginning of the stream.
+     */
+    OZ_ALWAYS_INLINE
+    const char* begin() const
+    {
+      return start;
     }
 
     /**
@@ -428,6 +446,15 @@ class OutputStream
     }
 
     /**
+     * Maximum length of the stream.
+     */
+    OZ_ALWAYS_INLINE
+    int capacity() const
+    {
+      return int( size_t( end - start ) );
+    }
+
+    /**
      * Number of bytes left before end of the stream is reached.
      */
     OZ_ALWAYS_INLINE
@@ -443,6 +470,24 @@ class OutputStream
     bool isAvailable() const
     {
       return pos != end;
+    }
+
+    /**
+     * Constant Pointer to the beginning of the stream.
+     */
+    OZ_ALWAYS_INLINE
+    const char* begin() const
+    {
+      return start;
+    }
+
+    /**
+     * Pointer to the beginning of the stream.
+     */
+    OZ_ALWAYS_INLINE
+    char* begin()
+    {
+      return start;
     }
 
     /**

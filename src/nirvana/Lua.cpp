@@ -576,7 +576,7 @@ void Lua::init()
   File luaDir( "lua/nirvana" );
   luaDir.ls( &luaFiles );
 
-  for( auto file : luaFiles.citer() ) {
+  foreach( file, luaFiles.citer() ) {
     if( file->hasExtension( "lua" ) ) {
       log.print( "%s ...", file->name() );
 
@@ -1459,7 +1459,7 @@ int Lua::ozObjBindItems( lua_State* l )
   OBJ_NOT_NULL();
 
   lua.objects.clear();
-  for( auto item : lua.obj->items.citer() ) {
+  foreach( item, lua.obj->items.citer() ) {
     lua.objects.add( orbis.objects[*item] );
   }
   lua.objIndex = 0;
@@ -2166,7 +2166,7 @@ int Lua::ozSelfBindItems( lua_State* l )
   ARG( 0 );
 
   lua.objects.clear();
-  for( auto item : lua.self->items.citer() ) {
+  foreach( item, lua.self->items.citer() ) {
     lua.objects.add( orbis.objects[*item] );
   }
   lua.objIndex = 0;

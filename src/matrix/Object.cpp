@@ -24,8 +24,8 @@ const float Object::MOMENTUM_INTENSITY_COEF = -0.10f;
 const float Object::DAMAGE_INTENSITY_COEF   = +0.02f;
 const float Object::DAMAGE_BASE_INTENSITY   = +0.30f;
 
-Pool<Object::Event, 4096> Object::Event::pool;
-Pool<Object, 2048>        Object::pool;
+Pool<Object::Event, 256> Object::Event::pool;
+Pool<Object, 16384>      Object::pool;
 
 Object::~Object()
 {
@@ -112,13 +112,13 @@ void Object::writeFull( OutputStream* ostream ) const
   ostream->writeFloat( life );
 
   ostream->writeInt( events.length() );
-  for( auto event : events.citer() ) {
+  foreach( event, events.citer() ) {
     ostream->writeInt( event->id );
     ostream->writeFloat( event->intensity );
   }
 
   ostream->writeInt( items.length() );
-  for( auto item : items.citer() ) {
+  foreach( item, items.citer() ) {
     ostream->writeInt( *item );
   }
 }
@@ -148,13 +148,13 @@ void Object::writeUpdate( OutputStream* ostream ) const
   ostream->writeFloat( life );
 
   ostream->writeInt( events.length() );
-  for( auto event : events.citer() ) {
+  foreach( event, events.citer() ) {
     ostream->writeInt( event->id );
     ostream->writeFloat( event->intensity );
   }
 
   ostream->writeInt( items.length() );
-  for( auto item : items.citer() ) {
+  foreach( item, items.citer() ) {
     ostream->writeInt( *item );
   }
 }

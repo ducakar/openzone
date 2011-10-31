@@ -144,7 +144,7 @@ static void buildTextures( const char* srcDir, const char* destDir,
   sSrcDir  = sSrcDir + "/";
   sDestDir = sDestDir + "/";
 
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "png" ) && !file->hasExtension( "jpg" ) ) {
       continue;
     }
@@ -192,7 +192,7 @@ static void buildTerrae()
 
   srcDir = srcDir + "/";
 
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
       continue;
     }
@@ -219,7 +219,7 @@ static void buildCaela()
 
   srcDir = srcDir + "/";
 
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
       continue;
     }
@@ -248,7 +248,7 @@ static void compileBSPs()
 
   dirName = dirName + "/";
 
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "map" ) ) {
       continue;
     }
@@ -297,7 +297,7 @@ static void buildBSPs()
   srcDir = srcDir + "/";
   destDir = destDir + "/";
 
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
       continue;
     }
@@ -370,7 +370,7 @@ static void buildModels()
 
   dirName = dirName + "/";
 
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     struct stat srcInfo0;
     struct stat srcInfo1;
     struct stat configInfo;
@@ -435,7 +435,7 @@ static void checkLua( const char* path )
 
   String sources;
 
-  for( auto file : dirList.citer() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "lua" ) ) {
       continue;
     }
@@ -676,7 +676,7 @@ int main( int argc, char** argv )
 
   oz::build::shutdown();
 
-//   Alloc::isLocked = true;
-//   Alloc::printLeaks();
+//   oz::Alloc::isLocked = true;
+  oz::Alloc::printLeaks();
   return exitCode;
 }

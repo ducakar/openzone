@@ -36,6 +36,8 @@ class FloraModule : public Module
 
     void seed();
 
+    virtual void load();
+
     virtual void registerLua() const;
 
   private:

@@ -21,7 +21,7 @@
 // main configuration file name
 #define OZ_CLIENT_CONFIG_FILE   "@OZ_CLIENT_CONFIG_FILE@"
 
-// enable/disable networking
+// enable networking
 #cmakedefine                    OZ_NETWORKING
 
 // enable some mesa-specific compatibility
@@ -29,6 +29,9 @@
 
 // enable bump-mapping
 #cmakedefine                    OZ_BUMPMAP
+
+// enable S3TC and MP3 support
+#cmakedefine                    OZ_NONFREE
 
 // fix error in vorbisfile.h
 #ifdef OZ_MINGW

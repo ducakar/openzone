@@ -217,7 +217,7 @@ class IteratorBase
  * equivalent for STL code
  * <pre>
  * std\::vector\<int\> v;
- * for( auto i : v ) {
+ * for( auto& i : v ) {
  *   printf( "%d\n", i );
  * }
  * </pre>
@@ -253,6 +253,33 @@ class IteratorBase
         OZ_ALWAYS_INLINE \
         RangeIterator& operator ++ () { ++iter; return *this; } \
     };
+
+/**
+ * @def foreach
+ * Foreach macro.
+ *
+ * An alternative to range-for loop, may be more suitable for iterator concept used in this library.
+ * It doesn't need <tt>RangeIterator</tt> wrapper to work which results in much better performance
+ * when compiling without optimisation. Furthermore, it works fine with KDevelop's auto-completion
+ * and syntax checker in contrast with range-for.
+ *
+ * It can be used like
+ * <pre>
+ * Vector\<int\> v;
+ * foreach( i, v.citer() ) {
+ *   printf( "%d ", *i );
+ * }
+ * </pre>
+ * to replace a longer piece of code, like:
+ * <pre>
+ * Vector\<int\> v;
+ * for( auto i = v.citer(); i.isValid(); ++i )
+ *   printf( "%d ", *i );
+ * }
+ * </pre>
+ */
+#define foreach( i, iterator ) \
+  for( decltype( iterator ) i = iterator; i.isValid(); ++i )
 
 /**
  * <tt>begin()</tt> template for range-for.

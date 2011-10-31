@@ -21,7 +21,7 @@ namespace oz
 namespace matrix
 {
 
-Pool<Weapon, 1024> Weapon::pool;
+Pool<Weapon, 2048> Weapon::pool;
 
 void Weapon::onUpdate()
 {

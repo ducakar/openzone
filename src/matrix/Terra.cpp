@@ -36,13 +36,13 @@ void Terra::load( int id_ )
 
   log.print( "Loading terrain '%s' ...", name.cstr() );
 
-  Buffer buffer;
-  if( !buffer.read( path ) ) {
+  File file( path );
+  if( !file.map() ) {
     log.printEnd( " Cannot read file" );
     throw Exception( "Failed to load terrain" );
   }
 
-  InputStream is = buffer.inputStream();
+  InputStream is = file.inputStream();
 
   int max = is.readInt();
   if( max != VERTS ) {
@@ -57,6 +57,8 @@ void Terra::load( int id_ )
       quads[x][y].triNormal[1] = is.readVec3();
     }
   }
+
+  file.unmap();
 
   log.printEnd( " OK" );
 }

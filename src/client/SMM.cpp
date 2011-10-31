@@ -27,14 +27,16 @@ void SMM::load()
 
   log.print( "Loading SMM model '%s' ...", name.cstr() );
 
-  Buffer buffer;
-  if( !buffer.read( path ) ) {
-    throw Exception( "Cannot read model file" );
+  File file( path );
+  if( !file.map() ) {
+    throw Exception( "Cannot mmap model file" );
   }
-  InputStream is = buffer.inputStream();
+  InputStream is = file.inputStream();
 
   shaderId = library.shaderIndex( is.readString() );
   mesh.load( &is, GL_STATIC_DRAW );
+
+  file.unmap();
 
   isLoaded = true;
 

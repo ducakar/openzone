@@ -20,7 +20,7 @@ class MD2WeaponImago : public MD2Imago
 {
   public:
 
-    static Pool<MD2WeaponImago> pool;
+    static Pool<MD2WeaponImago, 256> pool;
 
     static Imago* create( const Object* obj );
 

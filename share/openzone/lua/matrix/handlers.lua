@@ -14,6 +14,8 @@ function smallExplosion_onUpdate( l )
       ozObjRemove()
     end
   else
+    ozObjAddEvent( OZ_EVENT_CREATE, 1.0 )
+
     l.ticks = 25
 
     local distance
@@ -49,6 +51,8 @@ function bigExplosion_onUpdate( l )
       ozObjRemove()
     end
   else
+    ozObjAddEvent( OZ_EVENT_CREATE, 1.0 )
+
     l.ticks = 25
 
     local distance

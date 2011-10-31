@@ -195,16 +195,18 @@ void BSP::load()
   log.println( "Loading BSP model '%s' {", name.cstr() );
   log.indent();
 
-  Buffer buffer;
-  if( !buffer.read( "bsp/" + name + ".ozcBSP" ) ) {
-    throw Exception( "BSP loading failed" );
+  File file( "bsp/" + name + ".ozcBSP" );
+  if( !file.map() ) {
+    throw Exception( "BSP file mmap failed" );
   }
 
-  InputStream istream = buffer.inputStream();
+  InputStream istream = file.inputStream();
 
   flags = istream.readInt();
 
   mesh.load( &istream, GL_STATIC_DRAW );
+
+  file.unmap();
 
   log.unindent();
   log.println( "}" );

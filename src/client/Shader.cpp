@@ -91,30 +91,25 @@ void Shader::compileShader( uint id, const char* path, const char** sources, int
 {
   log.print( "Compiling '%s' ...", path );
 
-  Buffer buffer( path );
-  if( buffer.isEmpty() ) {
-    log.printEnd( " No such file" );
-    throw Exception( "Shader source read failed" );
+  File file( path );
+  if( !file.map() ) {
+    throw Exception( "Shader source mmap failed" );
   }
 
-  if( buffer.length() != 0 && *( buffer.end() - 1 ) != '\n' ) {
-    log.printEnd( " Last line not terminated" );
-    throw Exception( "Shader source has invalid format" );
-  }
+  InputStream is = file.inputStream();
 
-  sources[2] = buffer.begin();
-  lengths[2] = buffer.length();
+  sources[2] = is.begin();
+  lengths[2] = is.capacity();
 
   glShaderSource( id, 3, sources, lengths );
-
-  buffer.dealloc();
-
   glCompileShader( id );
+
+  file.unmap();
 
   int result;
   glGetShaderiv( id, GL_COMPILE_STATUS, &result );
 
-  char* logBuffer = new char[BUFFER_SIZE];
+  DArray<char> logBuffer( BUFFER_SIZE );
   int length;
 
   glGetShaderInfoLog( id, BUFFER_SIZE, &length, logBuffer );
@@ -122,17 +117,15 @@ void Shader::compileShader( uint id, const char* path, const char** sources, int
 
   if( result != GL_TRUE ) {
     log.printEnd( " Failed:" );
-    log.printRaw( "%s", logBuffer );
+    log.printRaw( "%s", &logBuffer[0] );
   }
   else if( length != 0 ) {
     log.printEnd( " OK, but:" );
-    log.printRaw( "%s\n", logBuffer );
+    log.printRaw( "%s\n", &logBuffer[0] );
   }
   else {
     log.printEnd( " OK" );
   }
-
-  delete[] logBuffer;
 
   if( result != GL_TRUE ) {
     throw Exception( "Shader compile failed" );

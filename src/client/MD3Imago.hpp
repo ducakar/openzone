@@ -27,7 +27,7 @@ class MD3Imago : public Imago
     float          h;
 //       MD3::AnimState anim;
 
-    static Pool<MD3Imago> pool;
+    static Pool<MD3Imago, 256> pool;
 
   protected:
 

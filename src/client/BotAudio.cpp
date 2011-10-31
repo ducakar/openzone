@@ -21,7 +21,7 @@ namespace oz
 namespace client
 {
 
-Pool<BotAudio> BotAudio::pool;
+Pool<BotAudio, 128> BotAudio::pool;
 
 BotAudio::BotAudio( const Object* obj ) : BasicAudio( obj )
 {}
@@ -62,7 +62,7 @@ void BotAudio::play( const Audio* parent )
   }
 
   // events
-  for( auto event : bot->events.citer() ) {
+  foreach( event, bot->events.citer() ) {
     hard_assert( event->id < ObjectClass::AUDIO_SAMPLES );
 
     if( event->id >= 0 && samples[event->id] != -1 ) {
@@ -77,7 +77,7 @@ void BotAudio::play( const Audio* parent )
   }
 
   // inventory items' events
-  for( auto item : bot->items.citer() ) {
+  foreach( item, bot->items.citer() ) {
     const Object* obj = orbis.objects[*item];
 
     if( obj != null && ( obj->flags & Object::AUDIO_BIT ) ) {

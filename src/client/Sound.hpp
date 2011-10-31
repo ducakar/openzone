@@ -26,38 +26,36 @@ class Sound
 {
   private:
 
-    // only play sounds within 100 m range
     static const float DMAX;
     static const float DMAX_SQ;
 
+    static const int DEFAULT_FREQUENCY = 44100;
     static const int MUSIC_BUFFER_SIZE = 64 * 1024;
 
-    ALCdevice                 *soundDevice;
-    ALCcontext                *soundContext;
+    ALCdevice      *soundDevice;
+    ALCcontext     *soundContext;
 
-    /*
-     * SFX
-     */
-    Bitset                    playedStructs;
-    float                     volume;
+    Bitset         playedStructs;
+    float          volume;
+
+    OggVorbis_File oggStream;
+    vorbis_info*   vorbisInfo;
+
+    int            musicFormat;
+    uint           musicBuffers[2];
+    uint           musicSource;
+
+    int            preferredFreq;
+
+    char           musicBuffer[MUSIC_BUFFER_SIZE];
+
+    // music track id to switch to, -1 to do nothing, -2 stop playing
+    int            selectedTrack;
+    // music track id, -1 for not playing
+    int            currentTrack;
 
     void playCell( int cellX, int cellY );
     bool loadMusicBuffer( uint buffer );
-
-    /*
-     * Music
-     */
-    OggVorbis_File             oggStream;
-    vorbis_info*               vorbisInfo;
-
-    int                        musicFormat;
-    uint                       musicBuffers[2];
-    uint                       musicSource;
-
-    // music track id to switch to, -1 to do nothing, -2 stop playing
-    int                        selectedTrack;
-    // music track id, -1 for not playing
-    int                        currentTrack;
 
   public:
 

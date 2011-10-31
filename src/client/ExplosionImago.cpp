@@ -22,7 +22,7 @@ namespace client
 
 int ExplosionImago::modelId;
 
-Pool<ExplosionImago> ExplosionImago::pool;
+Pool<ExplosionImago, 64> ExplosionImago::pool;
 
 Imago* ExplosionImago::create( const Object* obj )
 {

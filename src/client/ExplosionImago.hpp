@@ -30,7 +30,7 @@ class ExplosionImago : public Imago
 
   public:
 
-    static Pool<ExplosionImago> pool;
+    static Pool<ExplosionImago, 64> pool;
 
     static Imago* create( const Object* obj );
 

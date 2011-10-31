@@ -66,6 +66,7 @@ void FloraModule::addTree( float x, float y )
 
   if( !collider.overlapsOSO( bounds ) ) {
     synapse.addObject( type, pos, Heading( Math::rand( 4 ) ) );
+    ++number;
   }
 }
 
@@ -85,6 +86,7 @@ void FloraModule::addPlant( const char* type, float x, float y )
 
   if( !collider.overlapsOSO( bounds ) ) {
     synapse.addObject( type, pos, Heading( Math::rand( 4 ) ) );
+    ++number;
   }
 }
 
@@ -100,6 +102,13 @@ void FloraModule::seed()
 
     addTree( x, y );
   }
+
+  log.println( "Flora seeded %d trees", number );
+}
+
+void FloraModule::load()
+{
+  number = 0;
 }
 
 void FloraModule::registerLua() const

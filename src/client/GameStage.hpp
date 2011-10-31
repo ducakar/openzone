@@ -60,8 +60,8 @@ class GameStage : public Stage
     virtual bool update();
     virtual void present();
 
-    bool read( const char* file );
-    void write( const char* file ) const;
+    bool read( const char* path );
+    void write( const char* path ) const;
 
     virtual void load();
     virtual void unload();

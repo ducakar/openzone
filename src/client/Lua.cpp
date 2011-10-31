@@ -1485,7 +1485,7 @@ int Lua::ozObjRemoveAllItems( lua_State* l )
   ARG( 0 );
   OBJ_NOT_NULL();
 
-  for( auto item : lua.obj->items.citer() ) {
+  foreach( item, lua.obj->items.citer() ) {
     Dynamic* dyn = static_cast<Dynamic*>( orbis.objects[*item] );
 
     if( dyn != null ) {
@@ -1574,7 +1574,7 @@ int Lua::ozObjBindItems( lua_State* l )
   OBJ_NOT_NULL();
 
   lua.objects.clear();
-  for( auto item : lua.obj->items.citer() ) {
+  foreach( item, lua.obj->items.citer() ) {
     lua.objects.add( orbis.objects[*item] );
   }
   lua.objIndex = 0;

@@ -29,7 +29,7 @@ class Weapon : public Dynamic
     static const int EVENT_SHOT       = 7;
     static const int EVENT_SHOT_EMPTY = 8;
 
-    static Pool<Weapon, 1024> pool;
+    static Pool<Weapon, 2048> pool;
 
     // -1: unlimited
     int   nRounds;

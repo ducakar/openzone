@@ -49,7 +49,7 @@ class Vehicle : public Dynamic
     static const float EXIT_MOMENTUM;
     static const float EJECT_MOMENTUM;
 
-    static Pool<Vehicle> pool;
+    static Pool<Vehicle, 256> pool;
 
   protected:
 

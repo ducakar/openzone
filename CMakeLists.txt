@@ -22,6 +22,7 @@ option( OZ_BIG_ENDIAN_STREAM "Use big-endian byte order for binary files and net
 option( OZ_NETWORKING "Enable networking." OFF )
 option( OZ_GL_COMPATIBLE "Use common subset of OpenGL 2.1, OpenGL 3.0, OpenGL ES 2.0, no texture compression, GLSL 1.20." ON )
 option( OZ_BUMPMAP "Enable bumpmap support (not implemented yet, only vertex format for now)." OFF )
+option( OZ_NONFREE "Enable support for S3 texture compression and MP3s." ON )
 
 option( OZ_BUILD_TESTS "Build tests." OFF )
 option( OZ_INSTALL_LIBOZ "Install liboz." OFF )
@@ -58,7 +59,7 @@ if( NOT DEFINED OZ_SYSTEM_NAME )
 endif()
 
 if( NOT CMAKE_BUILD_TYPE )
-  set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE )
+  set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Debug RelWithDebInfo Release ReleaseGen ReleaseUse" FORCE )
 endif()
 
 include( cmake/pch.cmake )
@@ -104,6 +105,17 @@ if( OZ_NETWORKING )
 
   mark_as_advanced( SDLNET_INCLUDE_DIR )
   mark_as_advanced( SDLNET_LIBRARY )
+endif()
+
+if( OZ_NONFREE )
+  if( NOT DEFINED MAD_INCLUDE_DIR )
+    set( MAD_INCLUDE_DIR "" CACHE PATH "" FORCE )
+  endif()
+
+  find_library( MAD_LIBRARY mad )
+
+  mark_as_advanced( MAD_INCLUDE_DIR )
+  mark_as_advanced( MAD_LIBRARY )
 endif()
 
 if( WIN32 )
@@ -161,6 +173,11 @@ if( OZ_NETWORK )
   set( libs "${libs};${SDLNET_LIBRARY}" )
 endif()
 
+if( OZ_NONFREE )
+  include_directories( ${MAD_INCLUDE_DIR} )
+  set( libs "${libs};${MAD_LIBRARY}" )
+endif()
+
 set( libs_tools "${libs};${SDLIMAGE_LIBRARY}" )
 
 # compiler and linker flags
@@ -181,12 +198,14 @@ endif()
 set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo ReleaseGen Release" )
 set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g3 -O3 -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
 set( CMAKE_CXX_FLAGS_RELEASEGEN "-DNDEBUG -O3 -fdata-sections -ffunction-sections -fprofile-generate" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fdata-sections -ffunction-sections -fprofile-use" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELEASEUSE "-DNDEBUG -O3 -fdata-sections -ffunction-sections -fprofile-use" CACHE STRING "" FORCE )
 
 set( CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "-Wl,--gc-sections" CACHE STRING "" FORCE )
+set( CMAKE_EXE_LINKER_FLAGS_RELEASE "-Wl,--gc-sections" CACHE STRING "" FORCE )
 set( CMAKE_EXE_LINKER_FLAGS_RELEASEGEN "-fprofile-generate -Wl,--gc-sections" CACHE STRING "" FORCE )
-set( CMAKE_EXE_LINKER_FLAGS_RELEASE "-fprofile-use -Wl,--gc-sections" CACHE STRING "" FORCE )
+set( CMAKE_EXE_LINKER_FLAGS_RELEASEUSE "-fprofile-use -Wl,--gc-sections" CACHE STRING "" FORCE )
 
 if( OZ_MINGW )
   set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--enable-auto-import" )
@@ -196,16 +215,20 @@ elseif( OZ_CLANG )
 else()
   set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fstack-protector-all" )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -fstack-protector-all -flto" )
-  set( CMAKE_CXX_FLAGS_RELEASEGEN "${CMAKE_CXX_FLAGS_RELEASEGEN} -flto" )
   set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -flto" )
+  set( CMAKE_CXX_FLAGS_RELEASEGEN "${CMAKE_CXX_FLAGS_RELEASEGEN} -flto" )
+  set( CMAKE_CXX_FLAGS_RELEASEUSE "${CMAKE_CXX_FLAGS_RELEASEUSE} -flto" )
 
   set( CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} -flto" )
-  set( CMAKE_EXE_LINKER_FLAGS_RELEASEGEN "${CMAKE_EXE_LINKER_FLAGS_RELEASEGEN} -flto" )
   set( CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -flto" )
+  set( CMAKE_EXE_LINKER_FLAGS_RELEASEGEN "${CMAKE_EXE_LINKER_FLAGS_RELEASEGEN} -flto" )
+  set( CMAKE_EXE_LINKER_FLAGS_RELEASEUSE "${CMAKE_EXE_LINKER_FLAGS_RELEASEUSE} -flto" )
 endif()
 
 mark_as_advanced( CMAKE_CXX_FLAGS_RELEASEGEN )
+mark_as_advanced( CMAKE_CXX_FLAGS_RELEASEUSE )
 mark_as_advanced( CMAKE_EXE_LINKER_FLAGS_RELEASEGEN )
+mark_as_advanced( CMAKE_EXE_LINKER_FLAGS_RELEASEUSE )
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flags} ${arch_flags} ${warnings}" )
 

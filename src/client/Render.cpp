@@ -62,7 +62,7 @@ void Render::scheduleCell( int cellX, int cellY )
     }
   }
 
-  for( auto obj : cell.objects.citer() ) {
+  foreach( obj, cell.objects.citer() ) {
     float radius = ( obj->flags & Object::WIDE_CULL_BIT ) ?
         WIDE_CULL_FACTOR * obj->dim.fastL() : obj->dim.fastL();
 
@@ -71,7 +71,7 @@ void Render::scheduleCell( int cellX, int cellY )
     }
   }
 
-  for( auto part : cell.particles.citer() ) {
+  foreach( part, cell.particles.citer() ) {
     if( frustum.isVisible( part->p, particleRadius ) ) {
       particles.add( part );
     }
@@ -330,7 +330,7 @@ void Render::drawGeometry()
 
       glUniform4fv( param.oz_Colour, 1, Colours::ENTITY_AABB );
 
-      for( auto entity : citer( str->entities, str->nEntities ) ) {
+      foreach( entity, citer( str->entities, str->nEntities ) ) {
         Bounds bb = str->toAbsoluteCS( *entity->model + entity->offset );
         shape.wireBox( bb.toAABB() );
       }
@@ -590,7 +590,7 @@ void Render::init()
     isGallium = true;
   }
 
-  for( auto extension : extensions.citer() ) {
+  foreach( extension, extensions.citer() ) {
     log.println( "%s", extension->cstr() );
 
     if( extension->equals( "GL_ARB_framebuffer_object" ) ) {
