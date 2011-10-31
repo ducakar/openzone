@@ -16,7 +16,7 @@
 
 #include "build/Context.hpp"
 
-#include <SDL_image.h>
+#include <SDL/SDL_image.h>
 
 namespace oz
 {

@@ -47,7 +47,7 @@ void QuestModule::read( InputStream* istream )
 void QuestModule::write( OutputStream* ostream ) const
 {
   ostream->writeInt( quests.length() );
-  for( auto quest : quests.citer() ) {
+  foreach( quest, quests.citer() ) {
     ostream->writeString( quest->title );
     ostream->writeString( quest->description );
     ostream->writePoint3( quest->place );

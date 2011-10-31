@@ -73,7 +73,7 @@ void Area::realign( int newX, int newY )
   x = newX;
   y = newY;
 
-  for( auto child : children.iter() ) {
+  foreach( child, children.iter() ) {
     child->x += dx;
     child->y += dy;
   }
@@ -87,20 +87,20 @@ void Area::move( int moveX, int moveY )
   x += moveX;
   y += moveY;
 
-  for( auto child : children.iter() ) {
+  foreach( child, children.iter() ) {
     child->move( moveX, moveY );
   }
 }
 
 bool Area::passMouseEvents()
 {
-  for( auto child : children.iter() ) {
+  foreach( child, children.iter() ) {
     if( child->flags & GRAB_BIT ) {
       child->onMouseEvent();
       return true;
     }
   }
-  for( auto child : children.iter() ) {
+  foreach( child, children.iter() ) {
     if( child->x <= mouse.x && mouse.x < child->x + child->width &&
         child->y <= mouse.y && mouse.y < child->y + child->height )
     {

@@ -23,6 +23,8 @@ namespace matrix
 
 NamePool namePool;
 
+char NamePool::buffer[LINE_LENGTH];
+
 const String& NamePool::genName( int list ) const
 {
   hard_assert( names.length() > 0 );
@@ -52,8 +54,6 @@ void NamePool::init()
       log.printEnd( " Failed" );
       return;
     }
-
-    char buffer[LINE_LENGTH];
 
     while( fgets( buffer, LINE_LENGTH, file ) != null ) {
       String name = buffer;

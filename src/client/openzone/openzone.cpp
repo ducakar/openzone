@@ -64,7 +64,7 @@ int main( int argc, char** argv )
 
   oz::client::client.shutdown();
 
-//   Alloc::isLocked = true;
-//   Alloc::printLeaks();
+//   oz::Alloc::isLocked = true;
+  oz::Alloc::printLeaks();
   return exitCode;
 }

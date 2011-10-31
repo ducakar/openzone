@@ -122,7 +122,7 @@ void Struct::Entity::updateCrushing()
         Vec3 move = ( model->ratioInc + 4.0f * EPSILON ) * model->move;
         move = str->toAbsoluteCS( move );
 
-        for( auto obj : overlappingObjs.iter() ) {
+        foreach( obj, overlappingObjs.iter() ) {
           Dynamic* dyn = static_cast<Dynamic*>( *obj );
 
           if( dyn->flags & Object::DYNAMIC_BIT ) {
@@ -166,7 +166,7 @@ void Struct::Entity::updateCrushing()
         Vec3 move = ( model->ratioInc + 4.0f * EPSILON ) * -model->move;
         move = str->toAbsoluteCS( move );
 
-        for( auto obj : overlappingObjs.iter() ) {
+        foreach( obj, overlappingObjs.iter() ) {
           Dynamic* dyn = static_cast<Dynamic*>( *obj );
 
           if( dyn->flags & Object::DYNAMIC_BIT ) {

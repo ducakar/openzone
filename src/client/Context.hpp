@@ -35,8 +35,6 @@ class Context
 
   private:
 
-    // texture reading buffer
-    static const int BUFFER_SIZE          = 256 * 1024;
     // default audio format
     static const int DEFAULT_AUDIO_FREQ   = 44100;
     static const int DEFAULT_AUDIO_FORMAT = AUDIO_S16LSB;
@@ -83,30 +81,39 @@ class Context
     HashString<Imago::CreateFunc, 16> imagoClasses;
     HashString<Audio::CreateFunc, 8>  audioClasses;
 
-    Resource<uint>*                 textures;
-    Resource<uint>*                 sounds;
+    Resource<uint>*                   textures;
+    Resource<uint>*                   sounds;
 
     // non-looping sources
-    List<Source>                    sources;
+    List<Source>                      sources;
     // looping sources
-    HashIndex<ContSource, 64>       bspSources;
-    HashIndex<ContSource, 64>       objSources;
+    HashIndex<ContSource, 64>         bspSources;
+    HashIndex<ContSource, 64>         objSources;
 
-    Resource<BSP*>*                 bsps;
-    Resource<SMM*>*                 smms;
-    Resource<MD2*>*                 md2s;
-    Resource<MD3*>*                 md3s;
+    Resource<BSP*>*                   bsps;
+    Resource<SMM*>*                   smms;
+    Resource<MD2*>*                   md2s;
+    Resource<MD3*>*                   md3s;
 
-    HashIndex<Imago*, 8191>         imagines; // currently loaded graphics models
-    HashIndex<Audio*, 2039>         audios;   // currently loaded audio models
+    HashIndex<Imago*, 8191>           imagines; // currently loaded graphics models
+    HashIndex<Audio*, 2039>           audios;   // currently loaded audio models
 
-    int                             maxImagines;
-    int                             maxAudios;
-    int                             maxSources;
-    int                             maxBSPSources;
-    int                             maxObjSources;
+    int                               maxImagines;
+    int                               maxAudios;
+    int                               maxSources;
+    int                               maxBSPSources;
+    int                               maxObjSources;
 
-    static Buffer                   buffer;
+    int                               maxSMMImagines;
+    int                               maxSMMVehicleImagines;
+    int                               maxExplosionImagines;
+    int                               maxMD2Imagines;
+    int                               maxMD2WeaponImagines;
+    int                               maxMD3Imagines;
+
+    int                               maxBasicAudios;
+    int                               maxBotAudios;
+    int                               maxVehicleAudios;
 
     void addSource( uint srcId, int sample );
     void addBSPSource( uint srcId, int sample, int key );
@@ -144,10 +151,7 @@ class Context
     void drawImago( const Object* obj, const Imago* parent, int mask );
     void playAudio( const Object* obj, const Audio* parent );
 
-# ifndef NDEBUG
     void updateLoad();
-    void printLoad();
-# endif
 
     void load();
     void unload();

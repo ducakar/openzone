@@ -128,7 +128,7 @@ class Pool
     ~Pool()
     {
       // there's a memory leak if count != 0
-      hard_assert( count == 0 && size == 0 );
+      soft_assert( count == 0 && size == 0 );
     }
 
     /**

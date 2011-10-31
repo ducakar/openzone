@@ -21,7 +21,7 @@ namespace oz
 namespace client
 {
 
-Pool<VehicleAudio> VehicleAudio::pool;
+Pool<VehicleAudio, 32> VehicleAudio::pool;
 
 Audio* VehicleAudio::create( const Object* obj )
 {
@@ -45,7 +45,7 @@ void VehicleAudio::play( const Audio* parent )
   }
 
   // events
-  for( auto event : vehicle->events.citer() ) {
+  foreach( event, vehicle->events.citer() ) {
     hard_assert( event->id < ObjectClass::AUDIO_SAMPLES );
 
     if( event->id >= 0 && samples[event->id] != -1 ) {

@@ -25,7 +25,7 @@ class VehicleAudio : public BasicAudio
 
   public:
 
-    static Pool<VehicleAudio> pool;
+    static Pool<VehicleAudio, 32> pool;
 
     static Audio* create( const Object* obj );
 

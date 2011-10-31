@@ -30,7 +30,7 @@ void Sound::playCell( int cellX, int cellY )
 {
   const Cell& cell = orbis.cells[cellX][cellY];
 
-  for( auto strIndex : cell.structs.citer() ) {
+  foreach( strIndex, cell.structs.citer() ) {
     if( !playedStructs.get( *strIndex ) ) {
       playedStructs.set( *strIndex );
 
@@ -38,7 +38,7 @@ void Sound::playCell( int cellX, int cellY )
       context.playBSP( str );
     }
   }
-  for( auto obj : cell.objects.citer() ) {
+  foreach( obj, cell.objects.citer() ) {
     if( obj->flags & Object::AUDIO_BIT ) {
       if( ( camera.p - obj->p ).sqL() < DMAX_SQ ) {
         context.playAudio( obj, null );
@@ -49,14 +49,14 @@ void Sound::playCell( int cellX, int cellY )
 
 bool Sound::loadMusicBuffer( uint buffer )
 {
-  char data[MUSIC_BUFFER_SIZE];
-  int  section;
-  int  bytesRead = 0;
-  int  result;
+  int bytesRead = 0;
+  int result;
+
+  int section;
 
   do {
-    result = int( ov_read( &oggStream, &data[bytesRead], MUSIC_BUFFER_SIZE - bytesRead,
-                           0, 2, 1, &section ) );
+    result = int( ov_read( &oggStream, &musicBuffer[bytesRead], MUSIC_BUFFER_SIZE - bytesRead,
+                            false, 2, true, &section ) );
     bytesRead += result;
     if( result <= 0 ) {
       return false;
@@ -64,7 +64,7 @@ bool Sound::loadMusicBuffer( uint buffer )
   }
   while( result > 0 && bytesRead < MUSIC_BUFFER_SIZE );
 
-  alBufferData( buffer, musicFormat, data, bytesRead, ALsizei( vorbisInfo->rate ) );
+  alBufferData( buffer, musicFormat, musicBuffer, bytesRead, ALsizei( vorbisInfo->rate ) );
 
   return true;
 }
@@ -162,23 +162,14 @@ void Sound::update()
 
       log.print( "Loading music '%s' ...", path );
 
-      FILE* oggFile = fopen( path, "rb" );
-
-      if( oggFile == null ) {
-        log.printEnd( " Failed to open file" );
-        throw Exception( "Music loading failed" );
-      }
-      if( ov_open( oggFile, &oggStream, null, 0 ) < 0 ) {
-        fclose( oggFile );
-        log.printEnd( " Failed to open Ogg stream" );
-        throw Exception( "Music loading failed" );
+      if( ov_fopen( path, &oggStream ) < 0 ) {
+        throw Exception( "Failed to open Ogg stream" );
       }
 
       vorbisInfo = ov_info( &oggStream, -1 );
       if( vorbisInfo == null ) {
         ov_clear( &oggStream );
-        log.printEnd( " Failed to read Vorbis header" );
-        throw Exception( "Music loading failed" );
+        throw Exception( "Failed to read Vorbis header" );
       }
 
       if( vorbisInfo->channels == 1 ) {
@@ -189,8 +180,7 @@ void Sound::update()
       }
       else {
         ov_clear( &oggStream );
-        log.printEnd( " Invalid number of channels, should be 1 or 2" );
-        throw Exception( "Music loading failed" );
+        throw Exception( "Invalid number of channels, should be 1 or 2" );
       }
 
       loadMusicBuffer( musicBuffers[0] );
@@ -257,8 +247,10 @@ void Sound::init()
     throw Exception( "Failed to open OpenAL device" );
   }
 
+  preferredFreq = config.getSet( "sound.frequency", DEFAULT_FREQUENCY );
+
   int defaultAttributes[] = {
-    ALC_FREQUENCY, config.getSet( "sound.frequency", 44100 ),
+    ALC_FREQUENCY, preferredFreq,
     ALC_SYNC, 0,
     ALC_MONO_SOURCES, 255,
     ALC_STEREO_SOURCES, 1,
@@ -331,7 +323,7 @@ void Sound::init()
   log.println( "OpenAL version: %s", alGetString( AL_VERSION ) );
   log.println( "OpenAL extensions {" );
   log.indent();
-  for( auto extension : extensions.citer() ) {
+  foreach( extension, extensions.citer() ) {
     log.println( "%s", extension->cstr() );
   }
   log.unindent();

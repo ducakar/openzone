@@ -33,7 +33,7 @@ Nirvana nirvana;
 void Nirvana::sync()
 {
   // remove devices and minds of removed objects
-  for( auto i : synapse.removedObjects.citer() ) {
+  foreach( i, synapse.removedObjects.citer() ) {
     const Device* const* device = devices.find( *i );
     const Mind* const* mind = minds.find( *i );
 
@@ -47,7 +47,7 @@ void Nirvana::sync()
     }
   }
   // add minds for new bots
-  for( auto i : synapse.addedObjects.citer() ) {
+  foreach( i, synapse.addedObjects.citer() ) {
     const Object* obj = orbis.objects[*i];
 
     if( obj != null && ( obj->flags & Object::BOT_BIT ) ) {
@@ -59,7 +59,7 @@ void Nirvana::sync()
 void Nirvana::update()
 {
   int count = 0;
-  for( auto i : minds.iter() ) {
+  foreach( i, minds.iter() ) {
     Mind* mind = i.value();
 
     const Bot* bot = static_cast<const Bot*>( orbis.objects[mind->bot] );
@@ -116,13 +116,13 @@ void Nirvana::write( OutputStream* ostream ) const
   ostream->writeInt( devices.length() );
   ostream->writeInt( minds.length() );
 
-  for( auto device : devices.citer() ) {
+  foreach( device, devices.citer() ) {
     ostream->writeInt( device.key() );
     ostream->writeString( device.value()->type() );
 
     device.value()->write( ostream );
   }
-  for( auto mind : minds.citer() ) {
+  foreach( mind, minds.citer() ) {
     ostream->writeInt( mind.value()->bot );
     mind.value()->write( ostream );
   }

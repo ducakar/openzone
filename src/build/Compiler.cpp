@@ -300,8 +300,8 @@ void Compiler::getMeshData( MeshData* mesh ) const
   mesh->indices.alloc( nIndices );
   ushort* currIndex = mesh->indices;
 
-  for( auto part : parts.citer() ) {
-    for( auto i : part->indices.citer() ) {
+  foreach( part, parts.citer() ) {
+    foreach( i, part->indices.citer() ) {
       *currIndex = ushort( *i );
       ++currIndex;
     }

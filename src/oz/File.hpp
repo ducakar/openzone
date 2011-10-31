@@ -11,7 +11,7 @@
  * @file oz/File.hpp
  */
 
-#include "Buffer.hpp"
+#include "stream.hpp"
 
 namespace oz
 {
@@ -41,13 +41,20 @@ class File
 
     String filePath; ///< %File path.
     Type   type;     ///< Cached file type.
+    char*  data;     ///< MMapped memory.
+    size_t size;     ///< MMapped memory size.
 
   public:
 
     /**
-     * Create an uninitialised instance.
+     * Create an empty instance.
      */
-    File() = default;
+    File();
+
+    /**
+     * Destructor.
+     */
+    ~File();
 
     /**
      * Create instance for the given path.
@@ -94,6 +101,23 @@ class File
      * @return True iff extension exists.
      */
     bool hasExtension( const char* ext ) const;
+
+    /**
+     * Use mmap to map file in memory.
+     *
+     * One can use <tt>inputStream()</tt> afterwards to read the contents.
+     */
+    bool map();
+
+    /**
+     * Unmap mmaped file.
+     */
+    void unmap();
+
+    /**
+     * Get <code>InputStream</code> for currently mmaped file.
+     */
+    InputStream inputStream() const;
 
     /**
      * Make a new directory.

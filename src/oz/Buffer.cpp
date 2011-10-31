@@ -114,7 +114,7 @@ OutputStream Buffer::outputStream() const
 bool Buffer::read( const char* path )
 {
   struct stat fileStat;
-  if( stat( path, &fileStat ) != 0 || fileStat.st_size > 0x7fffffffl ) {
+  if( stat( path, &fileStat ) != 0 ) {
     return false;
   }
 

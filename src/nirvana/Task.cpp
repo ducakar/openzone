@@ -21,7 +21,7 @@ Task::~Task()
 
 void Task::write( OutputStream* ostream ) const
 {
-  for( auto child : children.citer() ) {
+  foreach( child, children.citer() ) {
     ostream->writeString( child->type() );
     child->write( ostream );
   }

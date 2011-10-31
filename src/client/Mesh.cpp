@@ -245,7 +245,7 @@ void Mesh::load( InputStream* stream, uint usage )
 
   parts.alloc( nParts );
 
-  for( auto part : parts.iter() ) {
+  foreach( part, parts.iter() ) {
     part->flags      = stream->readInt();
     part->mode       = uint( stream->readInt() );
 
@@ -269,12 +269,12 @@ void Mesh::unload()
 {
   if( vao != 0 ) {
     if( flags & EMBEDED_TEX_BIT ) {
-      for( auto part : parts.citer() ) {
+      foreach( part, parts.citer() ) {
         glDeleteTextures( 1, &part->texture );
       }
     }
     else {
-      for( auto id : texIds.citer() ) {
+      foreach( id, texIds.citer() ) {
         if( *id != -1 ) {
           context.releaseTexture( *id );
         }
@@ -334,7 +334,7 @@ void Mesh::drawComponent( int id, int mask ) const
     return;
   }
 
-  for( auto part : parts.citer() ) {
+  foreach( part, parts.citer() ) {
     int component = part->flags & COMPONENT_MASK;
 
     if( component < id ) {
@@ -370,7 +370,7 @@ void Mesh::draw( int mask ) const
   glBindVertexArray( vao );
 # endif
 
-  for( auto part : parts.citer() ) {
+  foreach( part, parts.citer() ) {
     if( part->flags & mask ) {
       glBindTexture( GL_TEXTURE_2D, part->texture );
       glUniform1f( param.oz_Specular, part->specular );

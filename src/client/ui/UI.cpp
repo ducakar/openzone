@@ -42,7 +42,7 @@ void UI::update()
   if( mouse.doShow == isFreelook ) {
     isFreelook = !mouse.doShow;
 
-    for( auto area : root->children.iter() ) {
+    foreach( area, root->children.iter() ) {
       if( !( area->flags & Area::PINNED_BIT ) ) {
         area->show( mouse.doShow );
       }
@@ -70,6 +70,10 @@ void UI::draw()
     if( shader.isLoaded || i == shader.plain ) {
       shader.use( i );
       tf.applyCamera();
+
+      shader.setAmbientLight( Vec4( 0.6f, 0.5f, 0.6f, 1.0f ) );
+      shader.setCaelumLight( Vec3( 0.67f, -0.67f, -0.33f ), Vec4( 0.6f, 0.6f, 0.6f, 1.0f ) );
+      shader.updateLights();
 
       glUniform1f( param.oz_Fog_start, 1000000.0f );
       glUniform1f( param.oz_Fog_end, 2000000.0f );

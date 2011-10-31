@@ -32,17 +32,17 @@ void MeshData::write( OutputStream* stream, bool embedTextures ) const
   stream->writeInt( vertices.length() );
   stream->writeInt( indices.length() );
 
-  for( auto vertex : vertices.citer() ) {
+  foreach( vertex, vertices.citer() ) {
     vertex->write( stream );
   }
-  for( auto index : indices.citer() ) {
+  foreach( index, indices.citer() ) {
     stream->writeShort( short( *index ) );
   }
 
   Vector<String> textures;
   textures.add( "" );
 
-  for( auto part : parts.citer() ) {
+  foreach( part, parts.citer() ) {
     textures.include( part->texture );
   }
 
@@ -58,14 +58,14 @@ void MeshData::write( OutputStream* stream, bool embedTextures ) const
   }
   else {
     stream->writeInt( textures.length() );
-    for( auto texture : textures.citer() ) {
+    foreach( texture, textures.citer() ) {
       stream->writeString( *texture );
     }
   }
 
   stream->writeInt( parts.length() );
 
-  for( auto part : parts.citer() ) {
+  foreach( part, parts.citer() ) {
     stream->writeInt( part->component );
     stream->writeInt( int( part->mode ) );
 

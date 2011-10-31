@@ -63,7 +63,7 @@ void BasicAudio::play( const Audio* parent )
   }
 
   // events
-  for( auto event : obj->events.citer() ) {
+  foreach( event, obj->events.citer() ) {
     hard_assert( event->id < ObjectClass::AUDIO_SAMPLES );
 
     if( event->id >= 0 && samples[event->id] != -1 ) {
@@ -74,7 +74,7 @@ void BasicAudio::play( const Audio* parent )
   }
 
   // inventory items' events
-  for( auto item : obj->items.citer() ) {
+  foreach( item, obj->items.citer() ) {
     const Object* obj = orbis.objects[*item];
 
     if( obj != null && ( obj->flags & Object::AUDIO_BIT ) ) {

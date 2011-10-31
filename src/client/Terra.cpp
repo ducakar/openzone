@@ -150,13 +150,12 @@ void Terra::load()
 
   log.print( "Loading terra '%s' ...", name.cstr() );
 
-  Buffer buffer;
-  if( !buffer.read( path ) ) {
-    log.printEnd( " Failed" );
-    throw Exception( "Terra loading failed" );
+  File file( path );
+  if( !file.map() ) {
+    throw Exception( "Terra file mmap failed" );
   }
 
-  InputStream is = buffer.inputStream();
+  InputStream is = file.inputStream();
 
   waterTexId  = context.readTexture( &is );
   detailTexId = context.readTexture( &is );
@@ -220,6 +219,8 @@ void Terra::load()
 
   landShaderId = library.shaderIndex( "terraLand" );
   waterShaderId = library.shaderIndex( "terraWater" );
+
+  file.unmap();
 
   log.printEnd( " OK" );
 }

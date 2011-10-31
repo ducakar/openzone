@@ -31,6 +31,15 @@ const float Matrix::MAX_VELOCITY2 = 1000000.0f;
 
 void Matrix::update()
 {
+  maxStructs  = max( maxStructs,  Struct::pool.length() );
+  maxEvents   = max( maxEvents,   Object::Event::pool.length() );
+  maxObjects  = max( maxObjects,  Object::pool.length() );
+  maxDynamics = max( maxDynamics, Dynamic::pool.length() );
+  maxWeapons  = max( maxWeapons,  Weapon::pool.length() );
+  maxBots     = max( maxBots,     Bot::pool.length() );
+  maxVehicles = max( maxVehicles, Vehicle::pool.length() );
+  maxParts    = max( maxParts,    Particle::pool.length() );
+
   for( int i = 0; i < orbis.objects.length(); ++i ) {
     Object* obj = orbis.objects[i];
 
@@ -157,6 +166,15 @@ void Matrix::load()
   log.println( "Loading Matrix {" );
   log.indent();
 
+  maxStructs  = 0;
+  maxEvents   = 0;
+  maxObjects  = 0;
+  maxDynamics = 0;
+  maxWeapons  = 0;
+  maxBots     = 0;
+  maxVehicles = 0;
+  maxParts    = 0;
+
   orbis.load();
   synapse.load();
 
@@ -168,6 +186,19 @@ void Matrix::unload()
 {
   log.println( "Unloading Matrix {" );
   log.indent();
+
+  log.println( "Peak matrix instances {" );
+  log.indent();
+  log.println( "%6d  structures",      maxStructs );
+  log.println( "%6d  object events",   maxEvents );
+  log.println( "%6d  static objects",  maxObjects );
+  log.println( "%6d  dynamic objects", maxDynamics );
+  log.println( "%6d  weapon objects",  maxWeapons );
+  log.println( "%6d  bot objects",     maxBots );
+  log.println( "%6d  vehicle objects", maxVehicles );
+  log.println( "%6d  particles",       maxParts );
+  log.unindent();
+  log.println( "}" );
 
   synapse.unload();
   orbis.unload();

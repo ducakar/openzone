@@ -27,7 +27,7 @@ class MD2Imago : public Imago
     float          h;
     MD2::AnimState anim;
 
-    static Pool<MD2Imago> pool;
+    static Pool<MD2Imago, 256> pool;
 
   protected:
 

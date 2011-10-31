@@ -18,6 +18,17 @@ namespace matrix
 
 class Matrix
 {
+  private:
+
+    int maxStructs;
+    int maxEvents;
+    int maxObjects;
+    int maxDynamics;
+    int maxWeapons;
+    int maxBots;
+    int maxVehicles;
+    int maxParts;
+
   public:
 
     static const float MAX_VELOCITY2;

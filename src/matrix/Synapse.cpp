@@ -75,7 +75,6 @@ int Synapse::addObject( const char* name, const Point3& p, Heading heading )
   hard_assert( obj->cell == null );
 
   orbis.position( obj );
-  obj->addEvent( Object::EVENT_CREATE, 1.0f );
 
   addedObjects.add( index );
   return index;

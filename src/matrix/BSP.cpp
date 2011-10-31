@@ -27,12 +27,12 @@ BSP::BSP( int id_ ) :
 {
   log.print( "Loading OpenZone BSP structure '%s' ...", library.bsps[id].name.cstr() );
 
-  Buffer buffer;
-  if( !buffer.read( library.bsps[id].path ) ) {
-    throw Exception( "BSP file read failed" );
+  File file( library.bsps[id].path );
+  if( !file.map() ) {
+    throw Exception( "BSP file mmap failed" );
   }
 
-  InputStream is = buffer.inputStream();
+  InputStream is = file.inputStream();
 
   mins         = is.readPoint3();
   maxs         = is.readPoint3();
@@ -142,6 +142,8 @@ BSP::BSP( int id_ ) :
     models[i].closeSample = sCloseSample.isEmpty() ? -1 : library.soundIndex( sCloseSample );
     models[i].frictSample = sFrictSample.isEmpty() ? -1 : library.soundIndex( sFrictSample );
   }
+
+  file.unmap();
 
   log.printEnd( " OK" );
 }

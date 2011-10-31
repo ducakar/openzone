@@ -73,7 +73,6 @@ void Client::shutdown()
 
   if( initFlags & INIT_SDL ) {
     log.print( "Shutting down SDL ..." );
-    SDL_ShowCursor( SDL_TRUE );
     SDL_Quit();
     log.printEnd( " OK" );
   }

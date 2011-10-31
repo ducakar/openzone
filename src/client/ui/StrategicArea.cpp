@@ -258,7 +258,7 @@ void StrategicArea::onDraw()
 
   hovered = null;
 
-  for( auto objIndex : tagged.citer() ) {
+  foreach( objIndex, tagged.citer() ) {
     const Object* obj = orbis.objects[*objIndex];
 
     if( obj != null ) {

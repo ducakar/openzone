@@ -105,7 +105,7 @@ bool Config::saveConf( const char* file )
   DArray<Elem> sortedVars( size );
 
   int i = 0;
-  for( auto j : vars.citer() ) {
+  foreach( j, vars.citer() ) {
     sortedVars[i].key   = j.key().cstr();
     sortedVars[i].value = j.value().cstr();
     ++i;
@@ -378,7 +378,7 @@ bool Config::save( const char* file )
 void Config::clear()
 {
 #ifndef NDEBUG
-  for( auto var : vars.citer() ) {
+  foreach( var, vars.citer() ) {
     if( !usedVars.contains( var.key() ) ) {
       log.println( "config: unused variable '%s'", var.key().cstr() );
     }
@@ -399,7 +399,7 @@ String Config::toString( const String& indentString )
   DArray<Elem> sortedVars( size );
 
   int i = 0;
-  for( auto j : vars.citer() ) {
+  foreach( j, vars.citer() ) {
     sortedVars[i].key = j.key().cstr();
     sortedVars[i].value = j.value().cstr();
     ++i;
