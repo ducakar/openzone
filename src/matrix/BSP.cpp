@@ -57,6 +57,10 @@ BSP::BSP( int id_ ) :
     is.readString();
   }
 
+  // title and description
+  is.readString();
+  is.readString();
+
   life         = is.readFloat();
   resistance   = is.readFloat();
 

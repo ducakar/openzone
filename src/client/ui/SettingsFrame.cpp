@@ -68,7 +68,7 @@ SettingsFrame::SettingsFrame() :
       "You can change your settings by manually editing '%s' file." ),
       ( config.get( "dir.rc", "" ) + String( "/client.rc" ) ).cstr() );
 
-  add( new Button( gettext( "Close" ), closeFrame, 40, 16 ), -4, 4 );
+  add( new Button( gettext( "Close" ), closeFrame, 40, 16 ), -44, 4 );
 }
 
 }

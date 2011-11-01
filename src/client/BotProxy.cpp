@@ -59,7 +59,8 @@ void BotProxy::begin()
   camera.isExternal = isExternal;
   camera.setTagged( null );
 
-  ui::ui.strategicArea->tagged.clear();
+  ui::ui.strategicArea->taggedStrs.clear();
+  ui::ui.strategicArea->taggedObjs.clear();
   ui::ui.strategicArea->show( false );
   ui::ui.hudArea->show( true );
   ui::mouse.doShow = false;

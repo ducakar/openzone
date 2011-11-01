@@ -56,7 +56,8 @@ void StrategicProxy::begin()
   camera.w = 0.0f;
   camera.setTagged( null );
 
-  ui::ui.strategicArea->tagged.clear();
+  ui::ui.strategicArea->taggedStrs.clear();
+  ui::ui.strategicArea->taggedObjs.clear();
   ui::ui.hudArea->show( false );
   ui::ui.strategicArea->show( true );
   ui::mouse.doShow = true;
@@ -81,8 +82,8 @@ void StrategicProxy::update()
   }
 
   if( camera.allowReincarnation && ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
-    if( ui::ui.strategicArea->tagged.length() == 1 ) {
-      const Object* tagged = orbis.objects[ ui::ui.strategicArea->tagged.first() ];
+    if( ui::ui.strategicArea->taggedObjs.length() == 1 ) {
+      const Object* tagged = orbis.objects[ ui::ui.strategicArea->taggedObjs.first() ];
       const Bot*    me = null;
 
       if( tagged->flags & Object::BOT_BIT ) {

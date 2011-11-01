@@ -138,28 +138,34 @@ void StrategicArea::printName( int baseX, int baseY, const char* s, ... )
 
 void StrategicArea::drawHoveredRect( const Span& span )
 {
-  const ObjectClass *clazz = hovered->clazz;
-
   float minX = float( span.minX );
   float maxX = float( span.maxX );
   float maxY = float( span.maxY );
 
-  const Bot* bot = static_cast<const Bot*>( hovered );
-  String title = ( hovered->flags & Object::BOT_BIT ) && !bot->name.isEmpty() ?
-      bot->name + " (" + clazz->title + ")" : clazz->title;
+  float life = 1.0f;
 
-  printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", title.cstr() );
+  if( hoveredStr != null ) {
+    if( !Math::isInfFM( hoveredStr->life ) ) {
+      life = hoveredStr->life / hoveredStr->bsp->life;
+    }
 
-  float life;
-  if( Math::isInfFM( hovered->life ) ) {
-    life = 1.0f;
+    const String& title = library.bspClasses[hoveredStr->id].title;
+    printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", title.cstr() );
   }
-  else if( hovered->flags & Object::BOT_BIT ) {
-    life = ( hovered->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f );
-    life = max( life, 0.0f );
-  }
-  else{
-    life = hovered->life / clazz->life;
+  else {
+    const ObjectClass *clazz = hoveredObj->clazz;
+
+    const Bot* bot = static_cast<const Bot*>( hoveredObj );
+    String title = ( hoveredObj->flags & Object::BOT_BIT ) && !bot->name.isEmpty() ?
+        bot->name + " (" + clazz->title + ")" : clazz->title;
+
+    printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", title.cstr() );
+
+    if( !Math::isInfFM( hoveredObj->life ) ) {
+      life = ( hoveredObj->flags & Object::BOT_BIT ) ?
+          max( 0.0f, ( hoveredObj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
+          hoveredObj->life / clazz->life;
+    }
   }
 
   float barWidth = maxX - minX + 2.0f;
@@ -175,54 +181,68 @@ void StrategicArea::drawHoveredRect( const Span& span )
   shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
 }
 
-void StrategicArea::drawTaggedRect( const Object* obj, const Span& span )
+void StrategicArea::drawTaggedRect( const Struct* str, const Object* obj, const Span& span )
 {
   float minX = float( span.minX );
   float maxX = float( span.maxX );
   float minY = float( span.minY );
   float maxY = float( span.maxY );
 
+  float life = 1.0f;
+
+  if( str != null ) {
+    float maxLife = str->bsp->life;
+
+    if( !Math::isInfFM( str->life ) ) {
+      life = str->life / maxLife;
+    }
+  }
+  else {
+    float maxLife = obj->clazz->life;
+
+    if( !Math::isInfFM( maxLife ) ) {
+      life = ( obj->flags & Object::BOT_BIT ) ?
+          max( 0.0f, ( obj->life - maxLife / 2.0f ) / ( maxLife / 2.0f ) ) :
+          obj->life / maxLife;
+    }
+  }
+
+  float barWidth = maxX - minX + 2.0f;
+  float lifeWidth = life * barWidth;
+  float lifeWidthLeft = barWidth - lifeWidth;
+
+  hard_assert( 0.0f <= life && life <= 1.0f );
+
   glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
   shape.tag( minX, minY, maxX, maxY );
 
-  if( obj != hovered ) {
-    const ObjectClass *clazz = obj->clazz;
+  glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.5f );
+  shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
+  glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.2f );
+  shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
 
-    float life;
-    if( Math::isInfFM( obj->life ) ) {
-      life = 1.0f;
-    }
-    else if( obj->flags & Object::BOT_BIT ) {
-      life = ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f );
-      life = max( life, 0.0f );
-    }
-    else{
-      life = obj->life / clazz->life;
-    }
-
-    float barWidth = maxX - minX + 2.0f;
-    float lifeWidth = life * barWidth;
-    float lifeWidthLeft = barWidth - lifeWidth;
-
-    hard_assert( 0.0f <= life && life <= 1.0f );
-
-    glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.5f );
-    shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
-    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.2f );
-    shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
-
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.5f );
-    shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
-  }
+  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.5f );
+  shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
 }
 
 void StrategicArea::onUpdate()
 {
-  for( int i = 0; i < tagged.length(); ) {
-    const Dynamic* dyn = static_cast<const Dynamic*>( orbis.objects[ tagged[i] ] );
+  for( int i = 0; i < taggedStrs.length(); ) {
+    const Struct* str = orbis.structs[ taggedStrs[i] ];
 
-    if( dyn == null || ( ( dyn->flags & Object::DYNAMIC_BIT ) && dyn->parent != -1 ) ) {
-      tagged.removeUO( i );
+    if( str == null ) {
+      taggedStrs.removeUO( i );
+    }
+    else {
+      ++i;
+    }
+  }
+
+  for( int i = 0; i < taggedObjs.length(); ) {
+    const Object* obj = orbis.objects[ taggedObjs[i] ];
+
+    if( obj == null || obj->cell == null ) {
+      taggedObjs.removeUO( i );
     }
     else {
       ++i;
@@ -240,21 +260,30 @@ bool StrategicArea::onMouseEvent()
   collider.mask = ~0;
   collider.translate( camera.p, at );
   collider.mask = Object::SOLID_BIT;
-  hovered = collider.hit.obj;
 
-  if( hovered != null ) {
-    camera.setTagged( null );
+  hoveredStr = collider.hit.str;
+  hoveredObj = collider.hit.obj;
 
+  hard_assert( hoveredStr == null || hoveredObj == null );
+
+  if( hoveredStr != null ) {
     if( ui::mouse.leftClick ) {
-      tagged.clear();
-      tagged.add( hovered->index );
+      taggedStrs.clear();
+      taggedObjs.clear();
+      taggedStrs.add( hoveredStr->index );
+    }
+  }
+  else if( hoveredObj != null ) {
+    if( ui::mouse.leftClick ) {
+      taggedStrs.clear();
+      taggedObjs.clear();
+      taggedObjs.add( hoveredObj->index );
     }
   }
   else {
-    camera.setTagged( null );
-
     if( ui::mouse.leftClick ) {
-      tagged.clear();
+      taggedStrs.clear();
+      taggedObjs.clear();
     }
   }
 
@@ -265,29 +294,48 @@ void StrategicArea::onDraw()
 {
   Span span;
 
-  if( hovered != null ) {
-    if( projectBounds( &span, *hovered + ( Point3::ORIGIN - camera.p ) ) ) {
+  if( hoveredStr != null ) {
+    if( projectBounds( &span, hoveredStr->toAABB() + ( Point3::ORIGIN - camera.p ) ) ) {
+      drawHoveredRect( span );
+    }
+  }
+  if( hoveredObj != null ) {
+    if( projectBounds( &span, *hoveredObj + ( Point3::ORIGIN - camera.p ) ) ) {
       drawHoveredRect( span );
     }
   }
 
-  hovered = null;
+  hoveredStr = null;
+  hoveredObj = null;
 
-  foreach( objIndex, tagged.citer() ) {
-    const Object* obj = orbis.objects[*objIndex];
+  for( int i = 0; i < taggedStrs.length(); ++i ) {
+    const Struct* str = orbis.structs[ taggedStrs[i] ];
+
+    if( str != null ) {
+      AABB bb = str->toAABB() + ( Point3::ORIGIN - camera.p );
+      if( bb.p * camera.at >= TAG_CLIP_DIST ) {
+        if( projectBounds( &span, bb ) ) {
+          drawTaggedRect( str, null, span );
+        }
+      }
+    }
+  }
+
+  for( int i = 0; i < taggedObjs.length(); ++i ) {
+    const Object* obj = orbis.objects[ taggedObjs[i] ];
 
     if( obj != null ) {
       AABB bb = *obj + ( Point3::ORIGIN - camera.p );
       if( bb.p * camera.at >= TAG_CLIP_DIST ) {
         if( projectBounds( &span, bb ) ) {
-          drawTaggedRect( obj, span );
+          drawTaggedRect( null, obj, span );
         }
       }
     }
   }
 }
 
-StrategicArea::StrategicArea() : Area( camera.width, camera.height ), hovered( null )
+StrategicArea::StrategicArea() : Area( camera.width, camera.height ), hoveredObj( null )
 {
   flags = IGNORE_BIT | HIDDEN_BIT | UPDATE_BIT | PINNED_BIT;
 

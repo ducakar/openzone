@@ -416,6 +416,9 @@ void Library::init()
       clazz.sounds.add( soundIndex( is.readString() ) );
     }
 
+    clazz.title       = gettext( is.readString() );
+    clazz.description = gettext( is.readString() );
+
     file->unmap();
   }
   dirList.dealloc();

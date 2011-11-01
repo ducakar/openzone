@@ -96,7 +96,7 @@ function onCreate()
   )
 
   local oX, oY, oZ = 82, -55, 69.2
-  ozOrbisAddStr( "tutorial_items", oX, oY, oZ, OZ_NORTH )
+  ozOrbisAddStr( "forum", oX, oY, oZ, OZ_NORTH )
 
   ozOrbisAddObj( "firstAid", oX - 4.5, oY - 3.2, oZ - 1.5 )
   ozOrbisAddObj( "firstAid", oX - 4.5, oY - 2.5, oZ - 1.5 )

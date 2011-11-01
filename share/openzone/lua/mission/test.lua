@@ -95,7 +95,7 @@ function onCreate()
   ozOrbisAddObj( "metalCrate", 140, -4, 72 )
   ozOrbisAddObj( "metalBarrel", 140, -5.5, 72 )
 
-  ozOrbisAddStr( "castle", 143, 0, 79, OZ_NORTH )
+  ozOrbisAddStr( "testCastle", 143, 0, 79, OZ_NORTH )
   ozOrbisAddStr( "pool", 112, -7, 70, OZ_NORTH )
   ozOrbisAddStr( "tower", 106, -7, 75, OZ_WEST )
 

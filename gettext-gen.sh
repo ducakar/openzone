@@ -1,6 +1,7 @@
 #!/bin/sh
 
 sources='src/*/*.hpp src/*/*/*.hpp src/*/*.cpp src/*/*/*.cpp share/openzone/lua/*/*.lua'
+bsps='share/openzone/data/maps/*.rc'
 classes='share/openzone/class/*.rc'
 output='share/locale/openzone.pot'
 
@@ -9,7 +10,29 @@ xgettext --omit-header -C -s -kozGettext -d openzone -o $output $sources
 
 echo >> $output
 echo '#' >> $output
-echo '# share/class/*.rc' >> $output
+echo '# BSP names' >> $output
+echo '#' >> $output
+
+for bsp_path in $bsps; do
+  bsp=`basename $bsp_path .rc`
+
+  if ( grep '^title' $bsp_path &> /dev/null ); then
+    bsp=`grep -h '^title' $bsp_path | sed 's/[^"]*"\(.*\)"[^"]*$/\1/'`
+  fi
+
+  # add bsp name if it doesn't exist yet
+  if ( grep "^msgid \"$bsp\"" $output &> /dev/null ); then
+    echo &> /dev/null;
+  else
+    echo >> $output
+    echo "msgid \"$bsp\"" >> $output
+    echo "msgstr \"\"" >> $output
+  fi
+done
+
+echo >> $output
+echo '#' >> $output
+echo '# Class names' >> $output
 echo '#' >> $output
 
 for class_path in $classes; do
@@ -28,6 +51,11 @@ for class_path in $classes; do
     echo "msgstr \"\"" >> $output
   fi
 done
+
+echo >> $output
+echo '#' >> $output
+echo '# Vehicle weapon names' >> $output
+echo '#' >> $output
 
 # extract weapon names
 weapons=`grep -h '^weapon[0-9][0-9]\.name' $classes | \
