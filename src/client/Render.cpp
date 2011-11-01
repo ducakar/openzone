@@ -84,7 +84,7 @@ void Render::prepareDraw()
   uint beginTime = currentTime;
 
   collider.translate( camera.p, Vec3::ZERO );
-  shader.isInWater = collider.hit.inWater;
+  shader.isInWater = ( collider.hit.medium & Material::WATER_BIT ) != 0;
 
   windPhi = Math::mod( windPhi + windPhiInc, Math::TAU );
 

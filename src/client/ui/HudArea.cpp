@@ -128,7 +128,7 @@ void HudArea::drawBotCrosshair()
     if( !( bot->state & Bot::GRAB_BIT ) && bot->weapon == -1 &&
         ( taggedObj->flags & Object::DYNAMIC_BIT ) && taggedDyn->mass <= botClazz->grabMass &&
         // not swimming or on ladder
-        !( bot->state & ( Bot::CLIMBING_BIT | Bot::SWIMMING_BIT ) ) &&
+        !( bot->state & ( Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) &&
         // if it is not a bot that is holding something
         ( !( taggedObj->flags & Object::BOT_BIT ) || !( taggedBot->state & Bot::GRAB_BIT ) ) )
     {

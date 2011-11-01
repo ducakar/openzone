@@ -60,7 +60,6 @@ class Synapse
 
     Synapse();
 
-
     void use( Bot* user, Object* target );
 
     // schedule for position in the world

@@ -83,10 +83,9 @@ void Object::onUpdate()
 
 void Object::readFull( InputStream* istream )
 {
-  p        = istream->readPoint3();
-  flags    = istream->readInt();
-  oldFlags = istream->readInt();
-  life     = istream->readFloat();
+  p     = istream->readPoint3();
+  flags = istream->readInt();
+  life  = istream->readFloat();
 
   int nEvents = istream->readInt();
   for( int i = 0; i < nEvents; ++i ) {
@@ -108,7 +107,6 @@ void Object::writeFull( OutputStream* ostream ) const
 {
   ostream->writePoint3( p );
   ostream->writeInt( flags );
-  ostream->writeInt( oldFlags );
   ostream->writeFloat( life );
 
   ostream->writeInt( events.length() );

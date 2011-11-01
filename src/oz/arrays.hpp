@@ -494,7 +494,11 @@ static void quicksort( Elem* first, Elem* last )
 template <typename Elem>
 inline void aSort( Elem* aSrc, int count )
 {
-  quicksort( aSrc, aSrc + count - 1 );
+  int last = count - 1;
+
+  if( last > 0 ) {
+    quicksort( aSrc, &aSrc[last] );
+  }
 }
 
 /**

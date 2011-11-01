@@ -174,7 +174,6 @@ class Lua
     OZ_LUA_API( ozObjAddPos );
     OZ_LUA_API( ozObjGetDim );
     OZ_LUA_API( ozObjGetFlags );
-    OZ_LUA_API( ozObjGetOldFlags );
     OZ_LUA_API( ozObjGetHeading );
     OZ_LUA_API( ozObjGetClassName );
     OZ_LUA_API( ozObjGetLife );

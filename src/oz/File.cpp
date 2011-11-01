@@ -17,6 +17,9 @@
 #include <fcntl.h>
 #include <dirent.h>
 
+#undef MAP_FAILED
+#define MAP_FAILED reinterpret_cast<void*>( -1 )
+
 namespace oz
 {
 
@@ -26,10 +29,6 @@ File::File() : type( NONE ), data( null )
 File::~File()
 {
   hard_assert( data == null );
-
-  if( data != null ) {
-    unmap();
-  }
 }
 
 File::File( const char* path ) : filePath( path ), type( NONE ), data( null )

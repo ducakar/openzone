@@ -172,6 +172,7 @@ class Object : public AABB
      * STANDARD EVENT IDs
      */
 
+    // EVENT_CREATE must be invoked manually
     static const int EVENT_CREATE       = 0;
     static const int EVENT_DESTROY      = 1;
     static const int EVENT_DAMAGE       = 2;
@@ -222,7 +223,6 @@ class Object : public AABB
     int                index;      // position in world.objects vector
 
     int                flags;
-    int                oldFlags;
 
     float              life;
     float              resistance;
@@ -341,7 +341,6 @@ class Object : public AABB
       if( flags & UPDATE_FUNC_BIT ) {
         onUpdate();
       }
-      oldFlags = flags;
     }
 
   protected:

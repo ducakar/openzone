@@ -383,17 +383,23 @@ void Library::init()
 
     // read bounds
     if( !file->map() ) {
-      throw Exception( "Cannot mmap BSP to read dimensions" );
+      throw Exception( "Cannot mmap BSP to read class info" );
     }
 
     InputStream is = file->inputStream();
 
-    Point3 mins = is.readPoint3();
-    Point3 maxs = is.readPoint3();
+    bspClasses.add();
+    BSPClass& clazz = bspClasses.last();
+
+    clazz.bounds.mins = is.readPoint3();
+    clazz.bounds.maxs = is.readPoint3();
+
+    int nSounds = is.readInt();
+    for( int i = 0; i < nSounds; ++i ) {
+      clazz.sounds.add( soundIndex( is.readString() ) );
+    }
 
     file->unmap();
-
-    bspBounds.add( Bounds( mins, maxs ) );
   }
   dirList.dealloc();
 
@@ -966,9 +972,8 @@ void Library::free()
   musics.clear();
   musics.dealloc();
 
-  bspBounds.clear();
-  bspBounds.dealloc();
-
+  bspClasses.clear();
+  bspClasses.dealloc();
   baseClasses.clear();
   baseClasses.dealloc();
   classes.free();

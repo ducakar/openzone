@@ -38,9 +38,8 @@ struct Hit
   float ratio;
 
   int   material;
+  int   medium;
   float waterDepth;
-  bool  inWater;
-  bool  onLadder;
 };
 
 class Collider

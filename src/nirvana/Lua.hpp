@@ -158,7 +158,6 @@ class Lua
     OZ_LUA_API( ozObjGetPos );
     OZ_LUA_API( ozObjGetDim );
     OZ_LUA_API( ozObjGetFlags );
-    OZ_LUA_API( ozObjGetOldFlags );
     OZ_LUA_API( ozObjGetHeading );
     OZ_LUA_API( ozObjGetClassName );
     OZ_LUA_API( ozObjGetLife );
@@ -238,7 +237,6 @@ class Lua
     OZ_LUA_API( ozSelfGetPos );
     OZ_LUA_API( ozSelfGetDim );
     OZ_LUA_API( ozSelfGetFlags );
-    OZ_LUA_API( ozSelfGetOldFlags );
     OZ_LUA_API( ozSelfGetTypeName );
     OZ_LUA_API( ozSelfGetLife );
 

@@ -98,18 +98,10 @@ void BSP::playContSound( const Struct::Entity* entity, int sample ) const
 
 BSP::BSP( int id_ ) : id( id_ ), flags( 0 ), bsp( orbis.bsps[id_] ), isLoaded( false )
 {
-  for( int i = 0; i < bsp->nModels; ++i  ) {
-    const matrix::BSP::Model& model = bsp->models[i];
+  const BSPClass& clazz = library.bspClasses[id];
 
-    if( model.openSample != -1 ) {
-      context.requestSound( model.openSample );
-    }
-    if( model.closeSample != -1 ) {
-      context.requestSound( model.closeSample );
-    }
-    if( model.frictSample != -1 ) {
-      context.requestSound( model.frictSample );
-    }
+  for( int i = 0; i < clazz.sounds.length(); ++i ) {
+    context.requestSound( clazz.sounds[i] );
   }
 }
 
@@ -118,22 +110,14 @@ BSP::~BSP()
   log.println( "Unloading BSP model '%s' {", library.bsps[id].name.cstr() );
   log.indent();
 
-  for( int i = 0; i < bsp->nModels; ++i ) {
-    const matrix::BSP::Model& model = bsp->models[i];
-
-    if( model.openSample != -1 ) {
-      context.releaseSound( model.openSample );
-    }
-    if( model.closeSample != -1 ) {
-      context.releaseSound( model.closeSample );
-    }
-    if( model.frictSample != -1 ) {
-      context.releaseSound( model.frictSample );
-    }
-  }
-
   if( isLoaded ) {
     mesh.unload();
+  }
+
+  const BSPClass& clazz = library.bspClasses[id];
+
+  for( int i = 0; i < clazz.sounds.length(); ++i ) {
+    context.releaseSound( clazz.sounds[i] );
   }
 
   log.unindent();
