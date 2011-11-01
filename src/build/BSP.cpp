@@ -1,12 +1,25 @@
 /*
- *  BSP.cpp
+ * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * Copyright (C) 2002-2011  Davorin Učakar
  *
- *  Copyright (C) 2002-2011  Davorin Učakar
- *  This software is covered by GNU GPLv3. See COPYING file for details.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
 /**
- * @file build.BSP.cpp
+ * @file build/BSP.cpp
  */
 
 #include "stable.hpp"
@@ -257,13 +270,13 @@ void BSP::load()
       models[i].margin  = bspConfig.get( keyName + ".margin", 1.0f );
       models[i].timeout = bspConfig.get( keyName + ".timeout", 6.0f );
 
-      String sOpenSample  = bspConfig.get( keyName + ".openSample", "" );
-      String sCloseSample = bspConfig.get( keyName + ".closeSample", "" );
-      String sFrictSample = bspConfig.get( keyName + ".frictSample", "" );
+      String sOpenSound  = bspConfig.get( keyName + ".openSound", "" );
+      String sCloseSound = bspConfig.get( keyName + ".closeSound", "" );
+      String sFrictSound = bspConfig.get( keyName + ".frictSound", "" );
 
-      models[i].openSample  = sOpenSample.isEmpty()  ? -1 : library.soundIndex( sOpenSample );
-      models[i].closeSample = sCloseSample.isEmpty() ? -1 : library.soundIndex( sCloseSample );
-      models[i].frictSample = sFrictSample.isEmpty() ? -1 : library.soundIndex( sFrictSample );
+      models[i].openSound  = sOpenSound.isEmpty()  ? -1 : library.soundIndex( sOpenSound );
+      models[i].closeSound = sCloseSound.isEmpty() ? -1 : library.soundIndex( sCloseSound );
+      models[i].frictSound = sFrictSound.isEmpty() ? -1 : library.soundIndex( sFrictSound );
     }
   }
 
@@ -918,9 +931,9 @@ void BSP::saveMatrix()
 
   Vector<int> sounds;
   for( int i = 0; i < nModels; ++i ) {
-    sounds.include( models[i].openSample );
-    sounds.include( models[i].closeSample );
-    sounds.include( models[i].frictSample );
+    sounds.include( models[i].openSound );
+    sounds.include( models[i].closeSound );
+    sounds.include( models[i].frictSound );
   }
   sounds.sort();
 
@@ -994,13 +1007,13 @@ void BSP::saveMatrix()
     os.writeFloat( models[i].margin );
     os.writeFloat( models[i].timeout );
 
-    int openSample  = models[i].openSample;
-    int closeSample = models[i].closeSample;
-    int frictSample = models[i].frictSample;
+    int openSound  = models[i].openSound;
+    int closeSound = models[i].closeSound;
+    int frictSound = models[i].frictSound;
 
-    os.writeString( openSample  == -1 ? "" : library.sounds[openSample].name );
-    os.writeString( closeSample == -1 ? "" : library.sounds[closeSample].name );
-    os.writeString( frictSample == -1 ? "" : library.sounds[frictSample].name );
+    os.writeString( openSound  == -1 ? "" : library.sounds[openSound].name );
+    os.writeString( closeSound == -1 ? "" : library.sounds[closeSound].name );
+    os.writeString( frictSound == -1 ? "" : library.sounds[frictSound].name );
   }
 
   buffer.write( path, os.length() );

@@ -1,10 +1,25 @@
 /*
- *  ObjectClass.cpp
+ * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * Copyright (C) 2002-2011  Davorin Učakar
  *
- *  [description]
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Copyright (C) 2002-2011  Davorin Učakar
- *  This software is covered by GNU GPLv3. See COPYING file for details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Davorin Učakar <davorin.ucakar@gmail.com>
+ */
+
+/**
+ * @file matrix/ObjectClass.cpp
  */
 
 #include "stable.hpp"
@@ -185,20 +200,20 @@ void ObjectClass::fillCommonConfig( const Config* config )
   if( !audioType.isEmpty() ) {
     flags |= Object::AUDIO_BIT;
 
-    char buffer[] = "audioSample  ";
-    for( int i = 0; i < AUDIO_SAMPLES; ++i ) {
+    char buffer[] = "audioSound  ";
+    for( int i = 0; i < AUDIO_SOUNDS; ++i ) {
       hard_assert( i < 100 );
 
-      buffer[11] = char( '0' + ( i / 10 ) );
-      buffer[12] = char( '0' + ( i % 10 ) );
+      buffer[10] = char( '0' + ( i / 10 ) );
+      buffer[11] = char( '0' + ( i % 10 ) );
 
-      const char* sampleName = config->get( buffer, "" );
-      audioSamples[i] = sampleName[0] == '\0' ? -1 : library.soundIndex( sampleName );
+      const char* soundName = config->get( buffer, "" );
+      audioSounds[i] = soundName[0] == '\0' ? -1 : library.soundIndex( soundName );
     }
   }
   else {
-    for( int i = 0; i < AUDIO_SAMPLES; ++i ) {
-      audioSamples[i] = -1;
+    for( int i = 0; i < AUDIO_SOUNDS; ++i ) {
+      audioSounds[i] = -1;
     }
   }
 

@@ -14,7 +14,6 @@ add_library( oz STATIC
   Vec3.cpp
   Vec4.cpp
   common.cpp
-  oz.cpp
 )
 
 if( OZ_INSTALL_LIBOZ )

@@ -1,8 +1,25 @@
 /*
- *  BSP.hpp
+ * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * Copyright (C) 2002-2011  Davorin Učakar
  *
- *  Copyright (C) 2002-2011  Davorin Učakar
- *  This software is covered by GNU GPLv3. See COPYING file for details.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Davorin Učakar <davorin.ucakar@gmail.com>
+ */
+
+/**
+ * @file matrix/BSP.hpp
  */
 
 #pragma once
@@ -87,9 +104,9 @@ class BSP : public Bounds
       float  margin;      ///< Margin around entity inside which objects trigger door opening.
       float  timeout;     ///< Timeout after which entity starts opening/closing.
 
-      int    openSample;  ///< Open sound sample, played when an entity starts moving.
-      int    closeSample; ///< Close sound sample, played when an entity stops moving.
-      int    frictSample; ///< Friction sound sample, played while the entity is moving.
+      int    openSound;   ///< Open sound sample, played when an entity starts moving.
+      int    closeSound;  ///< Close sound sample, played when an entity stops moving.
+      int    frictSound;  ///< Friction sound sample, played while the entity is moving.
     };
 
     int     id;

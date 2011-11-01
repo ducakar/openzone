@@ -1,10 +1,25 @@
 /*
- *  Audio.cpp
+ * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * Copyright (C) 2002-2011  Davorin Učakar
  *
- *  [description]
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Copyright (C) 2002-2011  Davorin Učakar
- *  This software is covered by GNU GPLv3. See COPYING file for details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Davorin Učakar <davorin.ucakar@gmail.com>
+ */
+
+/**
+ * @file client/Audio.cpp
  */
 
 #include "stable.hpp"
@@ -23,9 +38,9 @@ namespace client
 const float Audio::REFERENCE_DISTANCE = 2.0f;
 const float Audio::ROLLOFF_FACTOR     = 0.25f;
 
-void Audio::playSound( int sample, float volume, const Object* obj, const Object* parent ) const
+void Audio::playSound( int sound, float volume, const Object* obj, const Object* parent ) const
 {
-  hard_assert( uint( sample ) < uint( library.sounds.length() ) );
+  hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 
   uint srcId;
 
@@ -35,7 +50,7 @@ void Audio::playSound( int sample, float volume, const Object* obj, const Object
     return;
   }
 
-  alSourcei( srcId, AL_BUFFER, int( context.sounds[sample].id ) );
+  alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].id ) );
 
   // If the object moves since source starts playing and source stands still, it's usually
   // not noticeable for short-time source. After all, sound source many times does't move
@@ -60,17 +75,17 @@ void Audio::playSound( int sample, float volume, const Object* obj, const Object
   alSourcef( srcId, AL_GAIN, volume );
   alSourcePlay( srcId );
 
-  context.addSource( srcId, sample );
+  context.addSource( srcId, sound );
 
   OZ_AL_CHECK_ERROR();
 }
 
-void Audio::playContSound( int sample, float volume, const Object* obj,
+void Audio::playContSound( int sound, float volume, const Object* obj,
                            const Object* parent ) const
 {
-  hard_assert( uint( sample ) < uint( library.sounds.length() ) );
+  hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 
-  int key = obj->index * ObjectClass::AUDIO_SAMPLES + sample;
+  int key = obj->index * ObjectClass::AUDIO_SOUNDS + sound;
 
   Context::ContSource* contSource = context.objSources.find( key );
 
@@ -83,7 +98,7 @@ void Audio::playContSound( int sample, float volume, const Object* obj,
       return;
     }
 
-    alSourcei( srcId, AL_BUFFER, int( context.sounds[sample].id ) );
+    alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].id ) );
     alSourcei( srcId, AL_LOOPING, AL_TRUE );
     alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
     alSourcef( srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR );
@@ -92,7 +107,7 @@ void Audio::playContSound( int sample, float volume, const Object* obj,
     alSourcef( srcId, AL_GAIN, volume );
     alSourcePlay( srcId );
 
-    context.addObjSource( srcId, sample, key );
+    context.addObjSource( srcId, sound, key );
   }
   else {
     alSourcefv( contSource->id, AL_POSITION, parent->p );
@@ -104,11 +119,11 @@ void Audio::playContSound( int sample, float volume, const Object* obj,
   OZ_AL_CHECK_ERROR();
 }
 
-void Audio::playEngineSound( int sample, float volume, float pitch, const Object* obj ) const
+void Audio::playEngineSound( int sound, float volume, float pitch, const Object* obj ) const
 {
-  hard_assert( uint( sample ) < uint( library.sounds.length() ) );
+  hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 
-  int key = obj->index * ObjectClass::AUDIO_SAMPLES + sample;
+  int key = obj->index * ObjectClass::AUDIO_SOUNDS + sound;
 
   Context::ContSource* contSource = context.objSources.find( key );
 
@@ -121,7 +136,7 @@ void Audio::playEngineSound( int sample, float volume, float pitch, const Object
       return;
     }
 
-    alSourcei( srcId, AL_BUFFER, int( context.sounds[sample].id ) );
+    alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].id ) );
     alSourcei( srcId, AL_LOOPING, AL_TRUE );
     alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
 
@@ -130,7 +145,7 @@ void Audio::playEngineSound( int sample, float volume, float pitch, const Object
     alSourcef( srcId, AL_PITCH, pitch );
     alSourcePlay( srcId );
 
-    context.addObjSource( srcId, sample, key );
+    context.addObjSource( srcId, sound, key );
   }
   else {
     alSourcefv( contSource->id, AL_POSITION, obj->p );
@@ -145,11 +160,11 @@ void Audio::playEngineSound( int sample, float volume, float pitch, const Object
 
 Audio::Audio( const Object* obj_ ) : obj( obj_ ), clazz( obj_->clazz ), flags( 0 )
 {
-  const int* samples = clazz->audioSamples;
+  const int* sounds = clazz->audioSounds;
 
-  for( int i = 0; i < ObjectClass::AUDIO_SAMPLES; ++i ) {
-    if( samples[i] != -1 ) {
-      context.requestSound( samples[i] );
+  for( int i = 0; i < ObjectClass::AUDIO_SOUNDS; ++i ) {
+    if( sounds[i] != -1 ) {
+      context.requestSound( sounds[i] );
     }
   }
   OZ_AL_CHECK_ERROR();
@@ -157,11 +172,11 @@ Audio::Audio( const Object* obj_ ) : obj( obj_ ), clazz( obj_->clazz ), flags( 0
 
 Audio::~Audio()
 {
-  const int* samples = clazz->audioSamples;
+  const int* sounds = clazz->audioSounds;
 
-  for( int i = 0; i < ObjectClass::AUDIO_SAMPLES; ++i ) {
-    if( samples[i] != -1 ) {
-      context.releaseSound( samples[i] );
+  for( int i = 0; i < ObjectClass::AUDIO_SOUNDS; ++i ) {
+    if( sounds[i] != -1 ) {
+      context.releaseSound( sounds[i] );
     }
   }
   OZ_AL_CHECK_ERROR();

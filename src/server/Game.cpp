@@ -1,10 +1,10 @@
-/*
- *  Game.cpp
+/**
+ * Game.cpp
  *
- *  [description]
+ * [description]
  *
- *  Copyright (C) 2002-2011  Davorin Učakar
- *  This software is covered by GNU GPLv3. See COPYING file for details.
+ * Copyright (C) 2002-2011  Davorin Učakar.
+ * This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -14,6 +14,8 @@
 #include "matrix/Matrix.hpp"
 #include "nirvana/Nirvana.hpp"
 #include "Network.hpp"
+ *
+ * Davorin Učakar <davorin.ucakar@gmail.com>
 
 namespace oz
 {

@@ -1,10 +1,10 @@
-/*
- *  Network.cpp
+/**
+ * Network.cpp
  *
- *  [description]
+ * [description]
  *
- *  Copyright (C) 2002-2011  Davorin Učakar
- *  This software is covered by GNU GPLv3. See COPYING file for details.
+ * Copyright (C) 2002-2011  Davorin Učakar.
+ * This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -14,6 +14,8 @@
 namespace oz
 {
 namespace server
+ *
+ * Davorin Učakar <davorin.ucakar@gmail.com>
 {
 
 Network network;

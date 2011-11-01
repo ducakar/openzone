@@ -1,10 +1,10 @@
-/*
- *  Main.cpp
+/**
+ * Main.cpp
  *
- *  Server initialisation and main loop
+ * Server initialisation and main loop
  *
- *  Copyright (C) 2002-2011  Davorin Učakar
- *  This software is covered by GNU GPLv3. See COPYING file for details.
+ * Copyright (C) 2002-2011  Davorin Učakar.
+ * This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -14,6 +14,8 @@
 #include "Game.hpp"
 
 #ifdef OZ_MINGW
+ *
+ * Davorin Učakar <davorin.ucakar@gmail.com>
 # include <dirent.h>
 # include <sys/types.h>
 # include <sys/stat.h>

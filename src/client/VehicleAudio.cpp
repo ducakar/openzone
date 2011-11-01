@@ -1,10 +1,25 @@
 /*
- *  VehicleAudio.cpp
+ * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * Copyright (C) 2002-2011  Davorin Učakar
  *
- *  [description]
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Copyright (C) 2002-2011  Davorin Učakar
- *  This software is covered by GNU GPLv3. See COPYING file for details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Davorin Učakar <davorin.ucakar@gmail.com>
+ */
+
+/**
+ * @file client/VehicleAudio.cpp
  */
 
 #include "stable.hpp"
@@ -34,24 +49,24 @@ void VehicleAudio::play( const Audio* parent )
 {
   const Vehicle* vehicle = static_cast<const Vehicle*>( obj );
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
-  const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->clazz->audioSamples;
+  const int ( &sounds )[ObjectClass::AUDIO_SOUNDS] = obj->clazz->audioSounds;
 
   // engine sound
-  if( vehicle->pilot != -1 && samples[Vehicle::EVENT_ENGINE] != -1 ) {
+  if( vehicle->pilot != -1 && sounds[Vehicle::EVENT_ENGINE] != -1 ) {
     float pitch = clazz->enginePitchBias + min( vehicle->momentum.sqL() * clazz->enginePitchRatio,
                                                 clazz->enginePitchLimit );
 
-    playEngineSound( samples[Vehicle::EVENT_ENGINE], 1.0f, pitch, obj );
+    playEngineSound( sounds[Vehicle::EVENT_ENGINE], 1.0f, pitch, obj );
   }
 
   // events
   foreach( event, vehicle->events.citer() ) {
-    hard_assert( event->id < ObjectClass::AUDIO_SAMPLES );
+    hard_assert( event->id < ObjectClass::AUDIO_SOUNDS );
 
-    if( event->id >= 0 && samples[event->id] != -1 ) {
+    if( event->id >= 0 && sounds[event->id] != -1 ) {
       hard_assert( 0.0f <= event->intensity );
 
-      playSound( samples[event->id], event->intensity, obj, parent == null ? obj : parent->obj );
+      playSound( sounds[event->id], event->intensity, obj, parent == null ? obj : parent->obj );
     }
   }
 
