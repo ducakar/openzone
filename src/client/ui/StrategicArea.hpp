@@ -1,11 +1,28 @@
 /*
- *  StrategicArea.hpp
+ * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * Copyright (C) 2002-2011  Davorin Učakar
  *
- *  Real-time strategy interface layer for HUD.
- *  Provides unit selection and commanding.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Copyright (C) 2002-2011  Davorin Učakar
- *  This software is covered by GNU GPLv3. See COPYING file for details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Davorin Učakar <davorin.ucakar@gmail.com>
+ */
+
+/**
+ * @file client/ui/StrategicArea.hpp
+ *
+ * Real-time strategy interface layer for HUD.
+ * Provides unit selection and commanding.
  */
 
 #pragma once

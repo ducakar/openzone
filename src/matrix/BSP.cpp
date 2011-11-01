@@ -1,10 +1,25 @@
 /*
- *  BSP.cpp
+ * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * Copyright (C) 2002-2011  Davorin Učakar
  *
- *  Data structure for Quake3 BSP level
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Copyright (C) 2002-2011  Davorin Učakar
- *  This software is covered by GNU GPLv3. See COPYING file for details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Davorin Učakar <davorin.ucakar@gmail.com>
+ */
+
+/**
+ * @file matrix/BSP.cpp
  */
 
 #include "stable.hpp"
@@ -140,13 +155,13 @@ BSP::BSP( int id_ ) :
     models[i].margin      = is.readFloat();
     models[i].timeout     = is.readFloat();
 
-    String sOpenSample    = is.readString();
-    String sCloseSample   = is.readString();
-    String sFrictSample   = is.readString();
+    String sOpenSound     = is.readString();
+    String sCloseSound    = is.readString();
+    String sFrictSound    = is.readString();
 
-    models[i].openSample  = sOpenSample.isEmpty()  ? -1 : library.soundIndex( sOpenSample );
-    models[i].closeSample = sCloseSample.isEmpty() ? -1 : library.soundIndex( sCloseSample );
-    models[i].frictSample = sFrictSample.isEmpty() ? -1 : library.soundIndex( sFrictSample );
+    models[i].openSound   = sOpenSound.isEmpty()  ? -1 : library.soundIndex( sOpenSound );
+    models[i].closeSound  = sCloseSound.isEmpty() ? -1 : library.soundIndex( sCloseSound );
+    models[i].frictSound  = sFrictSound.isEmpty() ? -1 : library.soundIndex( sFrictSound );
   }
 
   file.unmap();

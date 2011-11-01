@@ -1,14 +1,30 @@
 /*
- *  md2.vert
+ * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * Copyright (C) 2002-2011  Davorin Učakar
  *
- *  Mesh shader that reads and interpolates vertex positions from the given vertex texture.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Copyright (C) 2002-2011  Davorin Učakar
- *  This software is covered by GNU GPLv3. See COPYING file for details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Davorin Učakar <davorin.ucakar@gmail.com>
+ */
+
+/*
+ * md2.vert
+ *
+ * Mesh shader that reads and interpolates vertex positions from the given vertex texture.
  */
 
 #ifdef OZ_VERTEX_TEXTURE
-// vec3( firstFrame, secondFrame, interpolation )
 uniform vec3 oz_MD2Anim;
 #endif
 

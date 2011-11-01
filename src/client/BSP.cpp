@@ -1,10 +1,25 @@
 /*
- *  BSP.cpp
+ * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * Copyright (C) 2002-2011  Davorin Učakar
  *
- *  BSP level rendering class
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Copyright (C) 2002-2011  Davorin Učakar
- *  This software is covered by GNU GPLv3. See COPYING file for details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Davorin Učakar <davorin.ucakar@gmail.com>
+ */
+
+/**
+ * @file client/BSP.cpp
  */
 
 #include "stable.hpp"
@@ -20,9 +35,9 @@ namespace oz
 namespace client
 {
 
-void BSP::playSound( const Struct::Entity* entity, int sample ) const
+void BSP::playSound( const Struct::Entity* entity, int sound ) const
 {
-  hard_assert( uint( sample ) < uint( library.sounds.length() ) );
+  hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 
   Bounds bounds = *entity->model;
   Point3 localPos = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
@@ -36,7 +51,7 @@ void BSP::playSound( const Struct::Entity* entity, int sample ) const
     return;
   }
 
-  alSourcei( srcId, AL_BUFFER, int( context.sounds[sample].id ) );
+  alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].id ) );
   alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
   alSourcef( srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR );
 
@@ -44,14 +59,14 @@ void BSP::playSound( const Struct::Entity* entity, int sample ) const
   alSourcef( srcId, AL_GAIN, 1.0f );
   alSourcePlay( srcId );
 
-  context.addSource( srcId, sample );
+  context.addSource( srcId, sound );
 
   OZ_AL_CHECK_ERROR();
 }
 
-void BSP::playContSound( const Struct::Entity* entity, int sample ) const
+void BSP::playContSound( const Struct::Entity* entity, int sound ) const
 {
-  hard_assert( uint( sample ) < uint( library.sounds.length() ) );
+  hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 
   const Struct* str = entity->str;
   // we can have at most 100 models per BSP, so stride 128 should do
@@ -77,7 +92,7 @@ void BSP::playContSound( const Struct::Entity* entity, int sample ) const
 
     p = entity->str->toAbsoluteCS( p + entity->offset );
 
-    alSourcei( srcId, AL_BUFFER, int( context.sounds[sample].id ) );
+    alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].id ) );
     alSourcei( srcId, AL_LOOPING, AL_TRUE );
     alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
 
@@ -85,7 +100,7 @@ void BSP::playContSound( const Struct::Entity* entity, int sample ) const
     alSourcef( srcId, AL_GAIN, 1.0f );
     alSourcePlay( srcId );
 
-    context.addBSPSource( srcId, sample, key );
+    context.addBSPSource( srcId, sound, key );
   }
   else {
     alSourcefv( contSource->id, AL_POSITION, p );
@@ -154,19 +169,19 @@ void BSP::play( const Struct* str ) const
     const Struct::Entity& entity = str->entities[i];
 
     if( entity.state == Struct::Entity::OPENING ) {
-      if( entity.ratio == 0.0f && entity.model->openSample != -1 ) {
-        playSound( &entity, entity.model->openSample );
+      if( entity.ratio == 0.0f && entity.model->openSound != -1 ) {
+        playSound( &entity, entity.model->openSound );
       }
-      if( entity.model->frictSample != -1 ) {
-        playContSound( &entity, entity.model->frictSample );
+      if( entity.model->frictSound != -1 ) {
+        playContSound( &entity, entity.model->frictSound );
       }
     }
     else if( entity.state == Struct::Entity::CLOSING ) {
-      if( entity.ratio == 1.0f && entity.model->closeSample != -1 ) {
-        playSound( &entity, entity.model->closeSample );
+      if( entity.ratio == 1.0f && entity.model->closeSound != -1 ) {
+        playSound( &entity, entity.model->closeSound );
       }
-      if( entity.model->frictSample != -1 ) {
-        playContSound( &entity, entity.model->frictSample );
+      if( entity.model->frictSound != -1 ) {
+        playContSound( &entity, entity.model->frictSound );
       }
     }
   }

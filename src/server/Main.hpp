@@ -1,10 +1,10 @@
-/*
- *  Main.hpp
+/**
+ * Main.hpp
  *
- *  [description]
+ * [description]
  *
- *  Copyright (C) 2002-2011  Davorin Učakar
- *  This software is covered by GNU GPLv3. See COPYING file for details.
+ * Copyright (C) 2002-2011  Davorin Učakar.
+ * This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -14,6 +14,8 @@
 // #define OZ_LOG_FILE            "server.log"
 #define OZ_CONFIG_FILE         "server.xml"
 
+ *
+ * Davorin Učakar <davorin.ucakar@gmail.com>
 namespace oz
 {
 namespace server
