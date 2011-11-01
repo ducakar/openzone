@@ -221,6 +221,8 @@ class BSP : public Bounds
     };
 
     String              name;
+    String              title;
+    String              description;
 
     float               life;
     float               resistance;

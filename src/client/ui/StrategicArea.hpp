@@ -53,8 +53,11 @@ class StrategicArea : public Area
 
   public:
 
-    Vector<int> tagged;
-    const Object* hovered;
+    const Struct* hoveredStr;
+    const Object* hoveredObj;
+
+    Vector<int> taggedStrs;
+    Vector<int> taggedObjs;
 
   private:
 
@@ -62,7 +65,7 @@ class StrategicArea : public Area
     void printName( int baseX, int baseY, const char* s, ... );
 
     void drawHoveredRect( const Span& span );
-    void drawTaggedRect( const Object* obj, const Span& span );
+    void drawTaggedRect( const Struct* str, const Object* obj, const Span& span );
 
   protected:
 

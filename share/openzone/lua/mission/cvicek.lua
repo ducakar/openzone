@@ -383,9 +383,9 @@ function onCreate()
   ozBotSetH( 230 )
 
   -- lair
-  ozOrbisAddStr( "beast_bunker", -1014.0, 620.0, 52.0, OZ_NORTH )
-  ozOrbisAddStr( "beast_bunker", -1029.0, 610.0, 51.5, OZ_WEST )
-  ozOrbisAddStr( "beast_bunker", -1010.0, 595.0, 52.3, OZ_SOUTH )
+  ozOrbisAddStr( "beastBunker", -1014.0, 620.0, 52.0, OZ_NORTH )
+  ozOrbisAddStr( "beastBunker", -1029.0, 610.0, 51.5, OZ_WEST )
+  ozOrbisAddStr( "beastBunker", -1010.0, 595.0, 52.3, OZ_SOUTH )
 
   local musicPlayer1 = ozOrbisAddObj( "musicPlayer", 0, 0, 0 )
   local musicPlayer2 = ozOrbisAddObj( "musicPlayer", 0, 0, 0 )

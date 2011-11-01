@@ -69,6 +69,9 @@ void BSP::load()
     throw Exception( "BSP config loading failed" );
   }
 
+  title = bspConfig.get( "title", name );
+  description = bspConfig.get( "description", "" );
+
   float scale = bspConfig.get( "scale", DEFAULT_SCALE );
   float maxDim = bspConfig.get( "maxDim", Math::INF );
 
@@ -951,6 +954,9 @@ void BSP::saveMatrix()
   for( int i = 0; i < sounds.length(); ++i ) {
     os.writeString( library.sounds[ sounds[i] ].name );
   }
+
+  os.writeString( title );
+  os.writeString( description );
 
   sounds.clear();
   sounds.dealloc();

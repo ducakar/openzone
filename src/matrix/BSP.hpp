@@ -36,8 +36,10 @@ namespace matrix
  */
 struct BSPClass
 {
-  Bounds      bounds; ///< Bounds.
-  Vector<int> sounds; ///< Sound samples.
+  Bounds      bounds;      ///< Bounds.
+  Vector<int> sounds;      ///< Sound samples.
+  String      title;       ///< Title.
+  String      description; ///< Description.
 };
 
 class BSP : public Bounds
