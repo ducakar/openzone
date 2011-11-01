@@ -83,7 +83,6 @@ class Particle
     void readUpdate( InputStream* istream );
     void writeUpdate( OutputStream* ostream );
 
-
   OZ_STATIC_POOL_ALLOC( pool )
 
 };

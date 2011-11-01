@@ -36,6 +36,12 @@ BSP::BSP( int id_ ) :
 
   mins         = is.readPoint3();
   maxs         = is.readPoint3();
+
+  int nSounds = is.readInt();
+  for( int i = 0; i < nSounds; ++i ) {
+    is.readString();
+  }
+
   life         = is.readFloat();
   resistance   = is.readFloat();
 

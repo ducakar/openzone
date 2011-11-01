@@ -78,11 +78,11 @@ ObjectClass* BotClass::init( const Config* config )
   clazz->camZ              = config->get( "camZ", 0.79f );
   clazz->crouchCamZ        = config->get( "crouchCamZ", 0.69f );
 
-  clazz->bobWalkInc        = Math::rad( config->get( "bobWalkInc", 8.00f ) );
-  clazz->bobRunInc         = Math::rad( config->get( "bobRunInc", 16.00f ) );
-  clazz->bobSwimInc        = Math::rad( config->get( "bobSwimInc", 2.00f ) );
-  clazz->bobSwimRunInc     = Math::rad( config->get( "bobSwimRunInc", 4.00f ) );
-  clazz->bobRotation       = Math::rad( config->get( "bobRotation", 0.25f ) );
+  clazz->bobWalkInc        = Math::rad( config->get( "bobWalkInc", 300.0f ) ) * Timer::TICK_TIME;
+  clazz->bobRunInc         = Math::rad( config->get( "bobRunInc", 600.0f ) ) * Timer::TICK_TIME;
+  clazz->bobSwimInc        = Math::rad( config->get( "bobSwimInc", 100.0f ) ) * Timer::TICK_TIME;
+  clazz->bobSwimRunInc     = Math::rad( config->get( "bobSwimRunInc", 200.0f ) ) * Timer::TICK_TIME;
+  clazz->bobRotation       = Math::rad( config->get( "bobRotation", 0.35f ) );
   clazz->bobAmplitude      = config->get( "bobAmplitude", 0.02f );
   clazz->bobSwimAmplitude  = config->get( "bobSwimAmplitude", 0.05f );
 

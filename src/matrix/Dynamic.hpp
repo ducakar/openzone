@@ -28,7 +28,7 @@ class Dynamic : public Object
     Vec3  floor;      // if on ground, used as floor normal, it is not set if on another object
 
     int   parent;     // index of container object (if object isn't positioned in the world,
-                      // it has to be contained in another object, otherwise it will be removed)
+                      // it has to be contained in an another object, otherwise it will be removed)
     int   lower;      // index of the lower object
     float depth;      // how deep under water the object's lower bound is
 

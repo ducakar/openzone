@@ -21,5 +21,5 @@ add_subdirectory( nirvana )
 add_subdirectory( client )
 # add_subdirectory( server )
 add_subdirectory( build )
-
+add_subdirectory( tools )
 add_subdirectory( tests )

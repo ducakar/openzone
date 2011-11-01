@@ -14,6 +14,15 @@ namespace oz
 namespace matrix
 {
 
+/**
+ * Information about a BSP that must be available also when the BSP is not loaded.
+ */
+struct BSPClass
+{
+  Bounds      bounds; ///< Bounds.
+  Vector<int> sounds; ///< Sound samples.
+};
+
 class BSP : public Bounds
 {
   public:

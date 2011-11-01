@@ -515,7 +515,7 @@ void Collider::trimAABBWater( const BSP::Brush* brush )
   hard_assert( depth > 0.0f );
 
   hit.waterDepth = max( hit.waterDepth, depth );
-  hit.inWater    = true;
+  hit.medium |= Material::WATER_BIT;
 }
 
 // checks if AABB and Brush overlap and if AABB centre is inside a brush
@@ -532,7 +532,7 @@ void Collider::trimAABBLadder( const BSP::Brush* brush )
     }
   }
 
-  hit.onLadder = true;
+  hit.medium |= Material::LADDER_BIT;
 }
 
 // recursively check nodes of BSP-tree for AABB-Brush collisions
@@ -682,7 +682,7 @@ void Collider::trimAABBTerra()
 {
   if( startPos.z < 0.0f ) {
     hit.waterDepth = max( hit.waterDepth, -startPos.z );
-    hit.inWater = true;
+    hit.medium |= Material::WATER_BIT;
   }
 
   float minPosX = min( startPos.x, endPos.x );
@@ -706,10 +706,9 @@ void Collider::trimAABBOrbis()
   hit.obj        = null;
   hit.str        = null;
   hit.entity     = null;
+  hit.medium     = 0;
   hit.material   = 0;
   hit.waterDepth = 0.0f;
-  hit.inWater    = false;
-  hit.onLadder   = false;
 
   Point3 originalStartPos = aabb.p;
   Point3 originalEndPos   = aabb.p + move;

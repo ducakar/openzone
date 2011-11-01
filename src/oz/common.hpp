@@ -112,8 +112,9 @@ void _softAssert( const char* message, const char* file, int line, const char* f
 //*             TYPES               *
 //***********************************
 
-// Import nullptr_t type into oz namespace.
 using std::nullptr_t;
+using std::size_t;
+using std::ptrdiff_t;
 
 /**
  * Null constant.

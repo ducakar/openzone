@@ -242,7 +242,6 @@ void ObjectClass::fillCommonFields( Object* obj ) const
 {
   obj->dim        = dim;
   obj->flags      = flags;
-  obj->oldFlags   = flags;
   obj->clazz      = this;
   obj->life       = life;
   obj->resistance = resistance;

@@ -552,7 +552,7 @@ int Client::main( int argc, char** argv )
 
     // render graphics, if we have enough time left
     if( timeSpent < uint( Timer::TICK_MILLIS ) ||
-        timeNow - timeLastRender > uint( Timer::TICKS_PER_SEC ) )
+        timeNow - timeLastRender > 1000 )
     {
       stage->present();
 
@@ -568,7 +568,7 @@ int Client::main( int argc, char** argv )
         timeSpent = Timer::TICK_MILLIS;
       }
     }
-    if( timeSpent > 4 * Timer::TICK_MILLIS ) {
+    if( timeSpent > 100 ) {
       timeLast += timeSpent - Timer::TICK_MILLIS;
       droppedMillis += timeSpent - Timer::TICK_MILLIS;
     }

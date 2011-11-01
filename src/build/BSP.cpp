@@ -916,11 +916,32 @@ void BSP::saveMatrix()
 
   log.print( "Dumping BSP structure to '%s' ...", path.cstr() );
 
+  Vector<int> sounds;
+  for( int i = 0; i < nModels; ++i ) {
+    sounds.include( models[i].openSample );
+    sounds.include( models[i].closeSample );
+    sounds.include( models[i].frictSample );
+  }
+  sounds.sort();
+
+  if( !sounds.isEmpty() && sounds[0] == -1 ) {
+    sounds.popFirst();
+  }
+
   Buffer buffer( 4 * 1024 * 1024 );
   OutputStream os = buffer.outputStream();
 
   os.writePoint3( mins );
   os.writePoint3( maxs );
+
+  os.writeInt( sounds.length() );
+  for( int i = 0; i < sounds.length(); ++i ) {
+    os.writeString( library.sounds[ sounds[i] ].name );
+  }
+
+  sounds.clear();
+  sounds.dealloc();
+
   os.writeFloat( life );
   os.writeFloat( resistance );
 

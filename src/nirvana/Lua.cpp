@@ -341,7 +341,6 @@ void Lua::init()
   OZ_LUA_FUNC( ozObjGetPos );
   OZ_LUA_FUNC( ozObjGetDim );
   OZ_LUA_FUNC( ozObjGetFlags );
-  OZ_LUA_FUNC( ozObjGetOldFlags );
   OZ_LUA_FUNC( ozObjGetHeading );
   OZ_LUA_FUNC( ozObjGetClassName );
   OZ_LUA_FUNC( ozObjGetLife );
@@ -421,7 +420,6 @@ void Lua::init()
   OZ_LUA_FUNC( ozSelfGetPos );
   OZ_LUA_FUNC( ozSelfGetDim );
   OZ_LUA_FUNC( ozSelfGetFlags );
-  OZ_LUA_FUNC( ozSelfGetOldFlags );
   OZ_LUA_FUNC( ozSelfGetTypeName );
   OZ_LUA_FUNC( ozSelfGetLife );
 
@@ -1233,16 +1231,6 @@ int Lua::ozObjGetFlags( lua_State* l )
   return 1;
 }
 
-int Lua::ozObjGetOldFlags( lua_State* l )
-{
-  ARG( 1 );
-  OBJ_NOT_NULL();
-
-  int mask = toint( 1 );
-  pushbool( ( lua.obj->oldFlags & mask ) != 0 );
-  return 1;
-}
-
 int Lua::ozObjGetHeading( lua_State* l )
 {
   ARG( 0 );
@@ -1830,15 +1818,6 @@ int Lua::ozSelfGetFlags( lua_State* l )
 
   int mask = toint( 1 );
   pushint( lua.self->flags & mask );
-  return 1;
-}
-
-int Lua::ozSelfGetOldFlags( lua_State* l )
-{
-  ARG( 1 );
-
-  int mask = toint( 1 );
-  pushint( lua.self->oldFlags & mask );
   return 1;
 }
 

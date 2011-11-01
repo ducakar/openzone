@@ -372,7 +372,6 @@ void Lua::init()
   OZ_LUA_FUNC( ozObjAddPos );
   OZ_LUA_FUNC( ozObjGetDim );
   OZ_LUA_FUNC( ozObjGetFlags );
-  OZ_LUA_FUNC( ozObjGetOldFlags );
   OZ_LUA_FUNC( ozObjGetHeading );
   OZ_LUA_FUNC( ozObjGetClassName );
   OZ_LUA_FUNC( ozObjGetLife );
@@ -706,9 +705,7 @@ int Lua::ozOrbisTryAddStr( lua_State* l )
   Heading heading = Heading( toint( 5 ) );
 
   int id = library.bspIndex( name );
-  Bounds bounds = library.bspBounds[id];
-
-  bounds = Struct::rotate( bounds, heading ) + ( p - Point3::ORIGIN );
+  Bounds bounds = Struct::rotate( library.bspClasses[id].bounds, heading ) + ( p - Point3::ORIGIN );
 
   if( collider.overlaps( bounds.toAABB() ) ) {
     lua.str = null;
@@ -1354,16 +1351,6 @@ int Lua::ozObjGetFlags( lua_State* l )
 
   int mask = toint( 1 );
   pushbool( ( lua.obj->flags & mask ) != 0 );
-  return 1;
-}
-
-int Lua::ozObjGetOldFlags( lua_State* l )
-{
-  ARG( 1 );
-  OBJ_NOT_NULL();
-
-  int mask = toint( 1 );
-  pushbool( ( lua.obj->oldFlags & mask ) != 0 );
   return 1;
 }
 

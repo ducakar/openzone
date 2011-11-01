@@ -82,8 +82,7 @@ class Library
     Vector<Resource> nameLists;
     Vector<Resource> musics;
 
-    Vector<Bounds>   bspBounds;
-
+    Vector<BSPClass> bspClasses;
     HashString<ObjectClass::InitFunc, 8> baseClasses;
     HashString<ObjectClass*, 128> classes;
 

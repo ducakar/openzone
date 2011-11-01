@@ -435,6 +435,57 @@ void Bot::onUpdate()
       stamina -= clazz->staminaRunDrain;
     }
 
+    /*
+     * Ledge climbing
+     */
+
+    if( ( actions & ( ACTION_FORWARD | ACTION_JUMP ) ) == ( ACTION_FORWARD | ACTION_JUMP ) &&
+        stamina > clazz->staminaClimbDrain )
+    {
+      // check if bot's gonna hit a wall soon
+      Vec3 desiredMove = CLIMB_MOVE_AHEAD * move;
+
+      collider.mask = flags & SOLID_BIT;
+      collider.translate( this, desiredMove );
+
+      if( collider.hit.ratio != 1.0f && collider.hit.normal.z < Physics::FLOOR_NORMAL_Z ) {
+        Vec3  normal    = collider.hit.normal;
+        float startDist = 4.0f * EPSILON - ( desiredMove * collider.hit.ratio ) * normal;
+        float originalZ = p.z;
+
+        collider.translate( this, Vec3( 0.0f, 0.0f, clazz->climbMax ) );
+
+        float maxRaise = collider.hit.ratio * clazz->climbMax;
+
+        for( float raise = clazz->stepMax; raise <= maxRaise; raise += clazz->climbInc ) {
+          p.z += clazz->climbInc;
+          collider.translate( this, desiredMove );
+
+          Vec3 move = desiredMove * collider.hit.ratio;
+          move.z += raise;
+          float endDist = startDist + move * normal;
+
+          if( endDist < 0.0f ) {
+            momentum.x    *= ( 1.0f - Physics::LADDER_FRICTION );
+            momentum.y    *= ( 1.0f - Physics::LADDER_FRICTION );
+            momentum.z    = max( momentum.z, clazz->climbMomentum );
+
+            instrument    = -1;
+            instrumentObj = null;
+            state         |= CLIMBING_BIT;
+            state         &= ~GRAB_BIT;
+            stamina       -= clazz->staminaClimbDrain;
+
+            break;
+          }
+        }
+
+        p.z = originalZ;
+      }
+
+      collider.mask = SOLID_BIT;
+    }
+
     // First, check if bot's gonna hit an obstacle in the next frame. If it does, check whether it
     // would have moved further if we raised it a bit (over the obstacle). We check different
     // heights (those are specified in configuration file: stepInc and stepMax).
@@ -486,56 +537,6 @@ void Bot::onUpdate()
         }
         p.z = originalZ;
         stepSucceeded:;
-      }
-
-      collider.mask = SOLID_BIT;
-    }
-
-    /*
-     * Ledge climbing
-     */
-
-    if( ( actions & ( ACTION_FORWARD | ACTION_JUMP ) ) == ( ACTION_FORWARD | ACTION_JUMP ) &&
-        stamina > clazz->staminaClimbDrain )
-    {
-      // check if bot's gonna hit a wall soon
-      Vec3 desiredMove = CLIMB_MOVE_AHEAD * move;
-
-      collider.mask = flags & SOLID_BIT;
-      collider.translate( this, desiredMove );
-
-      if( collider.hit.ratio != 1.0f && collider.hit.normal.z < Physics::FLOOR_NORMAL_Z ) {
-        Vec3  normal    = collider.hit.normal;
-        float startDist = 4.0f * EPSILON - ( desiredMove * collider.hit.ratio ) * normal;
-        float originalZ = p.z;
-
-        collider.translate( this, Vec3( 0.0f, 0.0f, clazz->climbMax ) );
-
-        float maxRaise = collider.hit.ratio * clazz->climbMax;
-
-        for( float raise = clazz->stepMax; raise <= maxRaise; raise += clazz->climbInc ) {
-          p.z += clazz->climbInc;
-          collider.translate( this, desiredMove );
-
-          Vec3 move = desiredMove * collider.hit.ratio;
-          move.z += raise;
-          float endDist = startDist + move * normal;
-
-          if( endDist < 0.0f ) {
-            momentum.x    *= ( 1.0f - Physics::LADDER_FRICTION );
-            momentum.y    *= ( 1.0f - Physics::LADDER_FRICTION );
-            momentum.z    = max( momentum.z, clazz->climbMomentum );
-
-            instrument    = -1;
-            instrumentObj = null;
-            state         &= ~GRAB_BIT;
-            stamina       -= clazz->staminaClimbDrain;
-
-            break;
-          }
-        }
-
-        p.z = originalZ;
       }
 
       collider.mask = SOLID_BIT;

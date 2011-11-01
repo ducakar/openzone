@@ -376,18 +376,16 @@ void Physics::handleObjMove()
   }
   while( true );
 
-  dyn->flags &= ~( Object::IN_WATER_BIT | Object::ON_LADDER_BIT );
-  dyn->flags |= collider.hit.inWater  ? Object::IN_WATER_BIT  : 0;
-  dyn->flags |= collider.hit.onLadder ? Object::ON_LADDER_BIT : 0;
-  dyn->depth = min( collider.hit.waterDepth, 2.0f * dyn->dim.z );
+  int newFlags = ( collider.hit.medium & Material::WATER_BIT ) ? Object::IN_WATER_BIT : 0 |
+      ( collider.hit.medium & Material::LADDER_BIT ? Object::ON_LADDER_BIT : 0 );
 
-  hard_assert( ( dyn->depth != 0.0f ) == collider.hit.inWater );
-
-  if( ( dyn->flags & ~dyn->oldFlags & Object::IN_WATER_BIT ) &&
-      dyn->velocity.z <= SPLASH_THRESHOLD )
-  {
+  if( ( newFlags & ~dyn->flags & Object::IN_WATER_BIT ) && dyn->velocity.z <= SPLASH_THRESHOLD ) {
     dyn->splash( dyn->velocity.z );
   }
+
+  dyn->flags &= ~( Object::IN_WATER_BIT | Object::ON_LADDER_BIT );
+  dyn->flags |= newFlags;
+  dyn->depth = min( collider.hit.waterDepth, 2.0f * dyn->dim.z );
 
   orbis.reposition( dyn );
 }
