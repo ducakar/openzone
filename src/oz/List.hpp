@@ -253,40 +253,18 @@ class List
     }
 
     /**
-     * Constant pointer to the first element.
-     */
-    OZ_ALWAYS_INLINE
-    const Elem* first() const
-    {
-      return firstElem;
-    }
-
-    /**
      * Pointer to the first element.
      */
     OZ_ALWAYS_INLINE
-    Elem* first()
+    Elem* first() const
     {
       return firstElem;
-    }
-
-    /**
-     * Constant pointer to the last element.
-     */
-    const Elem* last() const
-    {
-      const Elem* last = firstElem;
-
-      while( last != null ) {
-        last = last->next[INDEX];
-      }
-      return last;
     }
 
     /**
      * Pointer to the last element.
      */
-    Elem* last()
+    Elem* last() const
     {
       Elem* last = firstElem;
 
@@ -297,24 +275,9 @@ class List
     }
 
     /**
-     * Constant pointer to the element before the given one.
-     */
-    const Elem* before( const Elem* e ) const
-    {
-      Elem* current = firstElem;
-      Elem* before = null;
-
-      while( current != e ) {
-        before = current;
-        current = current->next[INDEX];
-      }
-      return before;
-    }
-
-    /**
      * Pointer to the element before the given one.
      */
-    Elem* before( const Elem* e )
+    Elem* before( const Elem* e ) const
     {
       Elem* current = firstElem;
       Elem* before = null;

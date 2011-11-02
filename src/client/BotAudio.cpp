@@ -77,7 +77,7 @@ void BotAudio::play( const Audio* parent )
   }
 
   // events
-  foreach( event, bot->events.citer() ) {
+  for( const Object::Event* event = obj->events.first(); event != null; event = event->next[0] ) {
     hard_assert( event->id < ObjectClass::AUDIO_SOUNDS );
 
     if( event->id >= 0 && sounds[event->id] != -1 ) {
@@ -92,8 +92,8 @@ void BotAudio::play( const Audio* parent )
   }
 
   // inventory items' events
-  foreach( item, bot->items.citer() ) {
-    const Object* obj = orbis.objects[*item];
+  for( int i = 0; i < bot->items.length(); ++i ) {
+    const Object* obj = orbis.objects[ bot->items[i] ];
 
     if( obj != null && ( obj->flags & Object::AUDIO_BIT ) ) {
       context.playAudio( obj, parent == null ? this : parent );

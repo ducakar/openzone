@@ -137,8 +137,8 @@ void Struct::Entity::updateCrushing()
         Vec3 move = ( model->ratioInc + 4.0f * EPSILON ) * model->move;
         move = str->toAbsoluteCS( move );
 
-        foreach( obj, overlappingObjs.iter() ) {
-          Dynamic* dyn = static_cast<Dynamic*>( *obj );
+        for( int i = 0; i < overlappingObjs.length(); ++i ) {
+          Dynamic* dyn = static_cast<Dynamic*>( overlappingObjs[i] );
 
           if( dyn->flags & Object::DYNAMIC_BIT ) {
             collider.translate( dyn, move );
@@ -181,8 +181,8 @@ void Struct::Entity::updateCrushing()
         Vec3 move = ( model->ratioInc + 4.0f * EPSILON ) * -model->move;
         move = str->toAbsoluteCS( move );
 
-        foreach( obj, overlappingObjs.iter() ) {
-          Dynamic* dyn = static_cast<Dynamic*>( *obj );
+        for( int i = 0; i < overlappingObjs.length(); ++i ) {
+          Dynamic* dyn = static_cast<Dynamic*>( overlappingObjs[i] );
 
           if( dyn->flags & Object::DYNAMIC_BIT ) {
             collider.translate( dyn, move );

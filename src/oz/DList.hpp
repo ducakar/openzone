@@ -261,37 +261,19 @@ class DList
     }
 
     /**
-     * Constant pointer to the first element.
-     */
-    OZ_ALWAYS_INLINE
-    const Elem* first() const
-    {
-      return firstElem;
-    }
-
-    /**
      * Pointer to the first element.
      */
     OZ_ALWAYS_INLINE
-    Elem* first()
+    Elem* first() const
     {
       return firstElem;
-    }
-
-    /**
-     * Constant pointer to the last element.
-     */
-    OZ_ALWAYS_INLINE
-    const Elem* last() const
-    {
-      return lastElem;
     }
 
     /**
      * Pointer to the last element.
      */
     OZ_ALWAYS_INLINE
-    Elem* last()
+    Elem* last() const
     {
       return lastElem;
     }
