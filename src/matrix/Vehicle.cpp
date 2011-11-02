@@ -40,7 +40,7 @@ namespace matrix
 const float Vehicle::AIR_FRICTION   = 0.02f;
 const float Vehicle::EXIT_EPSILON   = 0.20f;
 const float Vehicle::EXIT_MOMENTUM  = 1.00f;
-const float Vehicle::EJECT_MOMENTUM = 20.0f;
+const float Vehicle::EJECT_MOMENTUM = 15.0f;
 
 Pool<Vehicle, 256> Vehicle::pool;
 

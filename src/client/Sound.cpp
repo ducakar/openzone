@@ -45,15 +45,17 @@ void Sound::playCell( int cellX, int cellY )
 {
   const Cell& cell = orbis.cells[cellX][cellY];
 
-  foreach( strIndex, cell.structs.citer() ) {
-    if( !playedStructs.get( *strIndex ) ) {
-      playedStructs.set( *strIndex );
+  for( int i = 0; i < cell.structs.length(); ++i ) {
+    int strIndex = cell.structs[i];
 
-      const Struct* str = orbis.structs[*strIndex];
+    if( !playedStructs.get( strIndex ) ) {
+      playedStructs.set( strIndex );
+
+      const Struct* str = orbis.structs[strIndex];
       context.playBSP( str );
     }
   }
-  foreach( obj, cell.objects.citer() ) {
+  for( const Object* obj = cell.objects.first(); obj != null; obj = obj->next[0] ) {
     if( obj->flags & Object::AUDIO_BIT ) {
       if( ( camera.p - obj->p ).sqL() < DMAX_SQ ) {
         context.playAudio( obj, null );

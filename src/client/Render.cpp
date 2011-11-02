@@ -77,7 +77,7 @@ void Render::scheduleCell( int cellX, int cellY )
     }
   }
 
-  foreach( obj, cell.objects.citer() ) {
+  for( const Object* obj = cell.objects.first(); obj != null; obj = obj->next[0] ) {
     float radius = ( obj->flags & Object::WIDE_CULL_BIT ) ?
         WIDE_CULL_FACTOR * obj->dim.fastL() : obj->dim.fastL();
 
@@ -86,7 +86,7 @@ void Render::scheduleCell( int cellX, int cellY )
     }
   }
 
-  foreach( part, cell.particles.citer() ) {
+  for( const Particle* part = cell.particles.first(); part != null; part = part->next[0] ) {
     if( frustum.isVisible( part->p, particleRadius ) ) {
       particles.add( part );
     }
