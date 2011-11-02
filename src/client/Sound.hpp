@@ -32,6 +32,10 @@
 #include <AL/alc.h>
 #include <vorbis/vorbisfile.h>
 
+#ifdef OZ_NONFREE
+# include <mad.h>
+#endif
+
 namespace oz
 {
 namespace client
@@ -47,8 +51,8 @@ class Sound
     static const int DEFAULT_FREQUENCY = 44100;
     static const int MUSIC_BUFFER_SIZE = 64 * 1024;
 
-    ALCdevice      *soundDevice;
-    ALCcontext     *soundContext;
+    ALCdevice*     soundDevice;
+    ALCcontext*    soundContext;
 
     Bitset         playedStructs;
     float          volume;

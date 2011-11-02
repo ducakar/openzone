@@ -41,7 +41,11 @@ File::File() : type( NONE ), data( null )
 
 File::~File()
 {
-  hard_assert( data == null );
+  soft_assert( data == null );
+
+  if( data != null ) {
+    unmap();
+  }
 }
 
 File::File( const char* path ) : filePath( path ), type( NONE ), data( null )

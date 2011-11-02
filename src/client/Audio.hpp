@@ -26,7 +26,7 @@
 
 #pragma once
 
-#include "matrix/Object.hpp"
+#include "matrix/Vehicle.hpp"
 
 #include "client/common.hpp"
 
@@ -43,6 +43,8 @@ class Audio
 
     static const float REFERENCE_DISTANCE;
     static const float ROLLOFF_FACTOR;
+    static const float COCKPIT_GAIN_FACTOR;
+    static const float COCKPIT_PITCH_FACTOR;
 
     typedef Audio* ( * CreateFunc )( const Object* object );
 
@@ -52,7 +54,7 @@ class Audio
     // obj != parent: e.g. an object obj in the inventory of bot parent plays a sound
     void playSound( int sound, float volume, const Object* obj, const Object* parent ) const;
     void playContSound( int sound, float volume, const Object* obj, const Object* parent ) const;
-    void playEngineSound( int sound, float volume, float pitch, const Object* obj ) const;
+    void playEngineSound( int sound, float volume, float pitch, const Vehicle* veh ) const;
 
     explicit Audio( const Object* obj );
 

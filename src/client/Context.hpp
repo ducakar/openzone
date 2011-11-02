@@ -110,8 +110,8 @@ class Context
     Resource<MD2*>*                   md2s;
     Resource<MD3*>*                   md3s;
 
-    HashIndex<Imago*, 8191>           imagines; // currently loaded graphics models
-    HashIndex<Audio*, 2039>           audios;   // currently loaded audio models
+    HashIndex<Imago*, 10223>          imagines; // currently loaded graphics models
+    HashIndex<Audio*, 3067>           audios;   // currently loaded audio models
 
     int                               maxImagines;
     int                               maxAudios;

@@ -38,20 +38,25 @@ namespace oz
 namespace matrix
 {
 
+const float Bot::AIR_FRICTION        =  0.01f;
 const float Bot::HIT_HARD_THRESHOLD  = -8.00f;
-const float Bot::WOUNDED_THRESHOLD   = 0.70f;
-const float Bot::INSTRUMENT_DIST_MAX = 2.00f;
-const float Bot::INSTRUMENT_DOT_MIN  = 0.80f;
-const float Bot::GRAB_EPSILON        = 0.20f;
-const float Bot::GRAB_STRING_RATIO   = 10.0f;
-const float Bot::GRAB_HANDLE_TOL     = 1.60f;
-const float Bot::GRAB_MOM_RATIO      = 0.3f;
+
+const float Bot::WOUNDED_THRESHOLD   =  0.70f;
+const float Bot::CORPSE_FADE_FACTOR  =  0.5f / 100.0f * Timer::TICK_TIME;
+
+const float Bot::INSTRUMENT_DIST_MAX =  2.00f;
+const float Bot::INSTRUMENT_DOT_MIN  =  0.80f;
+
+const float Bot::GRAB_EPSILON        =  0.20f;
+const float Bot::GRAB_STRING_RATIO   =  10.0f;
+const float Bot::GRAB_HANDLE_TOL     =  1.60f;
+const float Bot::GRAB_MOM_RATIO      =  0.3f;
 // should be smaller than abs( Physics::HIT_THRESHOLD )
-const float Bot::GRAB_MOM_MAX        = 1.0f;
-const float Bot::GRAB_MOM_MAX_SQ     = 1.0f;
-const float Bot::STEP_MOVE_AHEAD     = 0.20f;
-const float Bot::CLIMB_MOVE_AHEAD    = 0.50f;
-const float Bot::CORPSE_FADE_FACTOR  = 0.5f / 100.0f * Timer::TICK_TIME;
+const float Bot::GRAB_MOM_MAX        =  1.0f;
+const float Bot::GRAB_MOM_MAX_SQ     =  1.0f;
+
+const float Bot::STEP_MOVE_AHEAD     =  0.20f;
+const float Bot::CLIMB_MOVE_AHEAD    =  0.50f;
 
 Pool<Bot, 1024> Bot::pool;
 
@@ -309,7 +314,7 @@ void Bot::onUpdate()
    * ANIMATION
    */
 
-  if( ( actions & ACTION_JUMP ) && !( state & GROUNDED_BIT ) ) {
+  if( ( actions & ACTION_JUMP ) && !( state & ( GROUNDED_BIT | CLIMBING_BIT ) ) ) {
     anim = Anim::JUMP;
   }
   else if( actions & ( ACTION_FORWARD | ACTION_BACKWARD | ACTION_LEFT | ACTION_RIGHT ) ) {
@@ -446,6 +451,11 @@ void Bot::onUpdate()
     }
     momentum += desiredMomentum;
 
+    if( !( state & ( GROUNDED_BIT | SWIMMING_BIT ) ) ) {
+      momentum.x *= 1.0f - AIR_FRICTION;
+      momentum.y *= 1.0f - AIR_FRICTION;
+    }
+
     if( ( state & RUNNING_BIT ) && ( state & ( GROUNDED_BIT | SWIMMING_BIT | CLIMBING_BIT ) ) ) {
       stamina -= clazz->staminaRunDrain;
     }
@@ -455,7 +465,7 @@ void Bot::onUpdate()
      */
 
     if( ( actions & ( ACTION_FORWARD | ACTION_JUMP ) ) == ( ACTION_FORWARD | ACTION_JUMP ) &&
-        stamina > clazz->staminaClimbDrain )
+        !( state & CLIMBING_BIT ) && stamina > clazz->staminaClimbDrain )
     {
       // check if bot's gonna hit a wall soon
       Vec3 desiredMove = CLIMB_MOVE_AHEAD * move;
@@ -490,6 +500,8 @@ void Bot::onUpdate()
             state         |= CLIMBING_BIT;
             state         &= ~GRAB_BIT;
             stamina       -= clazz->staminaClimbDrain;
+
+            anim          = Anim::RUN;
 
             break;
           }

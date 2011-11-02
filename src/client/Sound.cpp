@@ -38,7 +38,7 @@ namespace client
 
 Sound sound;
 
-const float Sound::DMAX = 100.0f;
+const float Sound::DMAX = 160.0f;
 const float Sound::DMAX_SQ = DMAX * DMAX;
 
 void Sound::playCell( int cellX, int cellY )
@@ -66,7 +66,6 @@ bool Sound::loadMusicBuffer( uint buffer )
 {
   int bytesRead = 0;
   int result;
-
   int section;
 
   do {
@@ -128,9 +127,10 @@ void Sound::suspend() const
 
 void Sound::play()
 {
-  Vec3 orientation[2] = { camera.at, camera.up };
+  float orientation[] = { camera.at.x, camera.at.y, camera.at.y,
+                          camera.up.x, camera.up.y, camera.up.z };
   // add new sounds
-  alListenerfv( AL_ORIENTATION, orientation[0] );
+  alListenerfv( AL_ORIENTATION, orientation );
   alListenerfv( AL_POSITION, camera.p );
 
   if( playedStructs.length() < orbis.structs.length() ) {

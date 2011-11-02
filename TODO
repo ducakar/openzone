@@ -15,15 +15,13 @@ TODO 0.3
     + meat frags
     + bullets
   * MD3 animation
-  * SDL_sound
+  * libmad
 - ui
   * onShow
 - lua
   * API refresh
 - tools
-  * decouple prebuilding from runtime classes
   * documentation
-- PhysFS
 
 TODO 0.4
 - matrix

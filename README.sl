@@ -1,7 +1,7 @@
 
                                         OpenZone
 
-                                     različica 0.2.0
+                                     različica 0.3.0
 
 Nadzor kamere
 -------------

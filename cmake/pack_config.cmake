@@ -9,9 +9,8 @@ set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING" )
 set( CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README" )
 set( CPACK_SYSTEM_NAME "${OZ_SYSTEM_NAME}" )
 set( CPACK_PACKAGE_EXECUTABLES "bin/openzone" "OpenZone" ) # start menu entry
-set( CPACK_STRIP_FILES "bin/openzone" )
+set( CPACK_STRIP_FILES "bin/openzone;bin/ozBuild" )
 
-set( CPACK_RPM_PACKAGE_VERSION "0.2.0rc1" )
 set( CPACK_RPM_PACKAGE_LICENSE "GPL3" )
 set( CPACK_RPM_PACKAGE_GROUP "Amusements/Games" )
 set( CPACK_RPM_PACKAGE_VENDOR "Davorin Učakar" )

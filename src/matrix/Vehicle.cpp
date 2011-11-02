@@ -37,6 +37,7 @@ namespace oz
 namespace matrix
 {
 
+const float Vehicle::AIR_FRICTION   = 0.02f;
 const float Vehicle::EXIT_EPSILON   = 0.20f;
 const float Vehicle::EXIT_MOMENTUM  = 1.00f;
 const float Vehicle::EJECT_MOMENTUM = 20.0f;
@@ -111,6 +112,8 @@ void Vehicle::hoverHandler( const Mat44& )
   }
 
   momentum += move * clazz->moveMomentum;
+  momentum.x *= 1.0f - AIR_FRICTION;
+  momentum.y *= 1.0f - AIR_FRICTION;
 
   // hover momentum
   if( ratio_1 != 0.0f ) {
@@ -154,7 +157,7 @@ void Vehicle::airHandler( const Mat44& rotMat )
 
   momentum += move * clazz->moveMomentum;
   momentum.z -= Physics::G_ACCEL * Timer::TICK_TIME;
-  momentum.z *= 1.0f - Physics::AIR_FRICTION;
+  momentum *= 1.0f - AIR_FRICTION;
 }
 
 void Vehicle::onDestroy()

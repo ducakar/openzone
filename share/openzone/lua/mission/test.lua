@@ -38,6 +38,12 @@ function onCreate()
   local me = ozOrbisAddObj( "beast", 137, -6, 73, OZ_SOUTH )
   ozBotSetName( ozProfileGetPlayerName() )
   ozBotSetMindFunc( "" )
+  ozObjRemoveItem( 2 );
+  ozObjRemoveItem( 2 );
+
+  local myGalileo = ozOrbisAddObj( "galileo", 0, 0, 0 )
+  ozObjBindIndex( me )
+  ozObjAddItem( myGalileo )
 
   local lord = ozOrbisAddObj( "bauul", 138, -11, 73, OZ_EAST )
 

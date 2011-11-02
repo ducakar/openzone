@@ -36,7 +36,7 @@ namespace oz
 namespace client
 {
 
-Pool<VehicleAudio, 32> VehicleAudio::pool;
+Pool<VehicleAudio, 256> VehicleAudio::pool;
 
 Audio* VehicleAudio::create( const Object* obj )
 {
@@ -56,7 +56,7 @@ void VehicleAudio::play( const Audio* parent )
     float pitch = clazz->enginePitchBias + min( vehicle->momentum.sqL() * clazz->enginePitchRatio,
                                                 clazz->enginePitchLimit );
 
-    playEngineSound( sounds[Vehicle::EVENT_ENGINE], 1.0f, pitch, obj );
+    playEngineSound( sounds[Vehicle::EVENT_ENGINE], 1.0f, pitch, vehicle );
   }
 
   // events

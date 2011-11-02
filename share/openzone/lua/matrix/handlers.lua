@@ -44,7 +44,7 @@ function smallExplosion_onUpdate( l )
         if distance < 8 then
           distance = 8 - distance
 
-          if ozObjIsVisibleFromSelf then
+          if ozObjIsVisibleFromSelf() then
             ozObjDamage( 100 + 10*distance )
 
             if distance < 7.9 and ozObjIsDynamic() then
@@ -76,13 +76,15 @@ function bigExplosion_onUpdate( l )
 
     ozObjBindAllOverlaps( 20, 20, 20 )
     while ozStrBindNext() do
-      ozStrDamage( 500 )
+      ozStrDamage( 2000 )
     end
     while ozObjBindNext() do
       if not ozObjIsSelf() then
         distance = ozObjDistanceFromSelf()
         if distance < 20 then
           distance = 20 - distance
+
+          ozObjDamage( 10*distance )
 
           if ozObjIsVisibleFromSelf() then
             ozObjDamage( 100 + 10*distance )

@@ -101,9 +101,9 @@ ObjectClass* BotClass::init( const Config* config )
   clazz->bobAmplitude      = config->get( "bobAmplitude", 0.02f );
   clazz->bobSwimAmplitude  = config->get( "bobSwimAmplitude", 0.05f );
 
-  clazz->walkMomentum      = config->get( "walkMomentum", 1.5f );
-  clazz->runMomentum       = config->get( "runMomentum", 3.5f );
-  clazz->crouchMomentum    = config->get( "crouchMomentum", 1.2f );
+  clazz->walkMomentum      = config->get( "walkMomentum", 0.7f );
+  clazz->runMomentum       = config->get( "runMomentum", 1.6f );
+  clazz->crouchMomentum    = config->get( "crouchMomentum", 0.7f );
   clazz->jumpMomentum      = config->get( "jumpMomentum", 5.0f );
 
   clazz->stepInc           = config->get( "stepInc", 0.25f );
