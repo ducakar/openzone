@@ -41,7 +41,7 @@ class BasicAudio : public Audio
 
   public:
 
-    static Pool<BasicAudio, 1024> pool;
+    static Pool<BasicAudio, 2048> pool;
 
     static Audio* create( const Object* obj );
 

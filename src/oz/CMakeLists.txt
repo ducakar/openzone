@@ -18,6 +18,6 @@ add_library( oz STATIC
 
 if( OZ_INSTALL_LIBOZ )
   install( FILES ${CMAKE_BINARY_DIR}/src/oz/ozconfig.hpp DESTINATION include/oz )
-  install( DIRECTORY . FILES_MATCHING PATTERN "*.hpp" DESTINATION include/oz )
+  install( DIRECTORY . DESTINATION include/oz FILES_MATCHING PATTERN "*.hpp" )
   install( TARGETS oz DESTINATION lib )
 endif()

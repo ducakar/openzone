@@ -164,6 +164,7 @@ void MD2Imago::draw( const Imago* parent, int mask )
       tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );
 
       md2->advance( &anim, timer.frameTime );
+
       context.drawImago( orbis.objects[bot->weapon], this, mask );
     }
   }

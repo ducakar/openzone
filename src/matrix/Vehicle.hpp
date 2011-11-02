@@ -60,6 +60,7 @@ class Vehicle : public Dynamic
 
     static const int   CREW_VISIBLE_BIT       = 0x00000001;
 
+    static const float AIR_FRICTION;
     static const float EXIT_EPSILON;
     static const float EXIT_MOMENTUM;
     static const float EJECT_MOMENTUM;

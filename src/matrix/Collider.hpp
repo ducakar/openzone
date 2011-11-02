@@ -108,7 +108,7 @@ class Collider
     void trimAABBLadder( const BSP::Brush* brush );
     void trimAABBNode( int nodeIndex );
     void trimAABBEntities();
-    bool trimAABBTerraQuad( int x, int y );
+    void trimAABBTerraQuad( int x, int y );
     void trimAABBTerra();
     void trimAABBOrbis();
 

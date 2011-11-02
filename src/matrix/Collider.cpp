@@ -462,9 +462,9 @@ void Collider::trimAABBObj( Object* sObj )
 // finds out if AABB-Brush collision occurs and the time when it occurs
 void Collider::trimAABBBrush( const BSP::Brush* brush )
 {
-  float minRatio   = -1.0f;
-  float maxRatio   =  1.0f;
-  Vec3  lastNormal = Vec3::ZERO;
+  float minRatio = -1.0f;
+  float maxRatio =  1.0f;
+  const Plane* lastPlane = null;
 
   for( int i = 0; i < brush->nSides; ++i ) {
     const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
@@ -485,14 +485,14 @@ void Collider::trimAABBBrush( const BSP::Brush* brush )
       float ratio = ( startDist - EPSILON ) / max( startDist - endDist, Math::EPSILON );
 
       if( ratio > minRatio ) {
-        minRatio   = ratio;
-        lastNormal = plane.n();
+        minRatio  = ratio;
+        lastPlane = &plane;
       }
     }
   }
   if( minRatio != -1.0f && minRatio <= maxRatio && minRatio < hit.ratio ) {
     hit.ratio    = max( 0.0f, minRatio );
-    hit.normal   = str->toAbsoluteCS( lastNormal );
+    hit.normal   = str->toAbsoluteCS( lastPlane->n() );
     hit.obj      = null;
     hit.str      = str;
     hit.entity   = entity;
@@ -630,7 +630,7 @@ void Collider::trimAABBEntities()
 }
 
 // terrain collision detection is penetration-safe
-bool Collider::trimAABBTerraQuad( int x, int y )
+void Collider::trimAABBTerraQuad( int x, int y )
 {
   const Terra::Quad& quad     = orbis.terra.quads[x    ][y    ];
   const Terra::Quad& nextQuad = orbis.terra.quads[x + 1][y + 1];
@@ -645,7 +645,7 @@ bool Collider::trimAABBTerraQuad( int x, int y )
   float endDist   = localEndPos   * quad.triNormal[0];
 
   if( endDist <= EPSILON && endDist <= startDist ) {
-    float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+    float ratio = ( startDist - EPSILON ) / max( startDist - endDist, Math::EPSILON );
 
     float impactX = startPos.x + ratio * move.x;
     float impactY = startPos.y + ratio * move.y;
@@ -655,14 +655,14 @@ bool Collider::trimAABBTerraQuad( int x, int y )
         minVert.y <= impactY && impactY <= maxVert.y &&
         ratio < hit.ratio )
     {
-      hit.ratio    = ratio;
+      hit.ratio    = max( 0.0f, ratio );
       hit.normal   = quad.triNormal[0];
       hit.obj      = null;
       hit.str      = null;
       hit.entity   = null;
       hit.material = Material::TERRAIN_BIT;
 
-      return false;
+      return;
     }
   }
 
@@ -670,7 +670,7 @@ bool Collider::trimAABBTerraQuad( int x, int y )
   endDist   = localEndPos   * quad.triNormal[1];
 
   if( endDist <= EPSILON && endDist <= startDist ) {
-    float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+    float ratio = ( startDist - EPSILON ) / max( startDist - endDist, Math::EPSILON );
 
     float impactX = startPos.x + ratio * move.x;
     float impactY = startPos.y + ratio * move.y;
@@ -680,17 +680,16 @@ bool Collider::trimAABBTerraQuad( int x, int y )
         minVert.y <= impactY && impactY <= maxVert.y &&
         ratio < hit.ratio )
     {
-      hit.ratio    = ratio;
+      hit.ratio    = max( 0.0f, ratio );
       hit.normal   = quad.triNormal[1];
       hit.obj      = null;
       hit.str      = null;
       hit.entity   = null;
       hit.material = Material::TERRAIN_BIT;
 
-      return false;
+      return;
     }
   }
-  return true;
 }
 
 void Collider::trimAABBTerra()

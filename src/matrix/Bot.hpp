@@ -101,19 +101,24 @@ class Bot : public Dynamic
     static const int GESTURE4_BIT             = 0x10000000;
     static const int GESTURE_ALL_BIT          = 0x20000000;
 
+    static const float AIR_FRICTION;
     static const float HIT_HARD_THRESHOLD;
+
     static const float WOUNDED_THRESHOLD;
+    static const float CORPSE_FADE_FACTOR;
+
     static const float INSTRUMENT_DIST_MAX;
     static const float INSTRUMENT_DOT_MIN;
+
     static const float GRAB_EPSILON;
     static const float GRAB_STRING_RATIO;
     static const float GRAB_HANDLE_TOL;
     static const float GRAB_MOM_RATIO;
     static const float GRAB_MOM_MAX;
     static const float GRAB_MOM_MAX_SQ;
+
     static const float STEP_MOVE_AHEAD;
     static const float CLIMB_MOVE_AHEAD;
-    static const float CORPSE_FADE_FACTOR;
 
     static Pool<Bot, 1024> pool;
 

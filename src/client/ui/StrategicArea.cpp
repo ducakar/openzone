@@ -335,7 +335,8 @@ void StrategicArea::onDraw()
   }
 }
 
-StrategicArea::StrategicArea() : Area( camera.width, camera.height ), hoveredObj( null )
+StrategicArea::StrategicArea() : Area( camera.width, camera.height ),
+    hoveredStr( null ), hoveredObj( null )
 {
   flags = IGNORE_BIT | HIDDEN_BIT | UPDATE_BIT | PINNED_BIT;
 

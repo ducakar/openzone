@@ -46,10 +46,9 @@ const float Physics::G_ACCEL                = -9.81f;
 const float Physics::STICK_VELOCITY         =  0.015f;
 const float Physics::SLICK_STICK_VELOCITY   =  0.001f;
 const float Physics::FLOAT_STICK_VELOCITY   =  0.0002f;
-const float Physics::AIR_FRICTION           =  0.02f;
 const float Physics::WATER_FRICTION         =  0.08f;
-const float Physics::LADDER_FRICTION        =  0.65f;
-const float Physics::FLOOR_FRICTION         =  0.40f;
+const float Physics::LADDER_FRICTION        =  0.50f;
+const float Physics::FLOOR_FRICTION         =  0.25f;
 const float Physics::SLICK_FRICTION         =  0.02f;
 
 const float Physics::STRUCT_HIT_MAX_MASS    =  1.0f;
@@ -201,8 +200,6 @@ bool Physics::handleObjFriction()
     }
     // in air or swimming
     else {
-      dyn->momentum.x *= 1.0f - AIR_FRICTION;
-      dyn->momentum.y *= 1.0f - AIR_FRICTION;
       dyn->momentum.z += systemMom;
 
       if( Math::abs( systemMom ) <= FLOAT_STICK_VELOCITY &&

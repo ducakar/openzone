@@ -142,6 +142,8 @@ class Pool
     {
       // there's a memory leak if count != 0
       soft_assert( count == 0 && size == 0 );
+
+      free();
     }
 
     /**

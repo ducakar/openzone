@@ -163,8 +163,7 @@ void System::halt()
 {
   fprintf( stderr, "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
   fflush( stderr );
-  while( sleep( 1 ) == 0 )
-    ;
+  while( sleep( 1 ) == 0 );
 }
 
 #endif
@@ -189,6 +188,8 @@ void System::error( const char* msg, ... )
   }
 
   va_end( ap );
+
+  system( "paplay /usr/share/sounds/pop.wav &" );
 }
 
 #ifdef OZ_MINGW
@@ -211,6 +212,8 @@ void System::abort( const char* msg, ... )
   fprintf( stderr, "\n" );
   vfprintf( stderr, msg, ap );
   fprintf( stderr, "\n" );
+
+  system( "paplay /usr/share/sounds/pop.wav &" );
 
   ::abort();
 }
@@ -410,8 +413,7 @@ void System::abort( const char* msg, ... )
   if( isHaltEnabled ) {
     fprintf( stderr, "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
     fflush( stderr );
-    while( sleep( 1 ) == 0 )
-      ;
+    while( sleep( 1 ) == 0 );
   }
 
   ::abort();
