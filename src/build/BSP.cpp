@@ -85,12 +85,12 @@ void BSP::load()
     throw Exception( "Invalid BSP config" );
   }
 
-  Buffer buffer;
-  if( !buffer.read( bspFile ) ) {
+  File file( bspFile );
+  if( !file.map() ) {
     throw Exception( "BSP reading failed" );
   }
 
-  InputStream istream = buffer.inputStream();
+  InputStream istream = file.inputStream();
 
   char id[4];
   id[0] = istream.readChar();
@@ -114,10 +114,10 @@ void BSP::load()
   textures = new Texture[nTextures];
 
   istream.reset();
-  istream.skip( lumps[QBSPLump::TEXTURES].offset );
+  istream.forward( lumps[QBSPLump::TEXTURES].offset );
 
   for( int i = 0; i < nTextures; ++i ) {
-    String name = istream.prepareRead( 64 );
+    String name = istream.forward( 64 );
 
     textures[i].flags = istream.readInt();
     textures[i].type  = istream.readInt();
@@ -146,7 +146,7 @@ void BSP::load()
   planes = new Plane[nPlanes];
 
   istream.reset();
-  istream.skip( lumps[QBSPLump::PLANES].offset );
+  istream.forward( lumps[QBSPLump::PLANES].offset );
 
   for( int i = 0; i < nPlanes; ++i ) {
     planes[i].nx = istream.readFloat();
@@ -159,7 +159,7 @@ void BSP::load()
   nodes = new matrix::BSP::Node[nNodes];
 
   istream.reset();
-  istream.skip( lumps[QBSPLump::NODES].offset );
+  istream.forward( lumps[QBSPLump::NODES].offset );
 
   for( int i = 0; i < nNodes; ++i ) {
     nodes[i].plane = istream.readInt();
@@ -179,7 +179,7 @@ void BSP::load()
   leaves = new matrix::BSP::Leaf[nLeaves];
 
   istream.reset();
-  istream.skip( lumps[QBSPLump::LEAFS].offset );
+  istream.forward( lumps[QBSPLump::LEAFS].offset );
 
   for( int i = 0; i < nLeaves; ++i ) {
     // int cluster
@@ -206,7 +206,7 @@ void BSP::load()
   leafBrushes = new int[nLeafBrushes];
 
   istream.reset();
-  istream.skip( lumps[QBSPLump::LEAFBRUSHES].offset );
+  istream.forward( lumps[QBSPLump::LEAFBRUSHES].offset );
 
   for( int i = 0; i < nLeafBrushes; ++i ) {
     leafBrushes[i] = istream.readInt();
@@ -220,13 +220,13 @@ void BSP::load()
     models = new matrix::BSP::Model[nModels];
 
     istream.reset();
-    istream.skip( lumps[QBSPLump::MODELS].offset );
+    istream.forward( lumps[QBSPLump::MODELS].offset );
 
     hard_assert( nModels <= 99 );
     char keyBuffer[] = "model  ";
 
     // skip model 0 (whole BSP)
-    istream.skip( int( sizeof( QBSPModel ) ) );
+    istream.forward( int( sizeof( QBSPModel ) ) );
 
     for( int i = 0; i < nModels; ++i ) {
       models[i].mins.x = istream.readFloat() * scale - 4.0f * EPSILON;
@@ -284,7 +284,7 @@ void BSP::load()
   }
 
   istream.reset();
-  istream.skip( lumps[QBSPLump::MODELS].offset );
+  istream.forward( lumps[QBSPLump::MODELS].offset );
 
   for( int i = 0; i < nModels + 1; ++i ) {
     // float bb[2][3]
@@ -308,7 +308,7 @@ void BSP::load()
   brushSides = new int[nBrushSides];
 
   istream.reset();
-  istream.skip( lumps[QBSPLump::BRUSHSIDES].offset );
+  istream.forward( lumps[QBSPLump::BRUSHSIDES].offset );
 
   for( int i = 0; i < nBrushSides; ++i ) {
     brushSides[i] = istream.readInt();
@@ -326,7 +326,7 @@ void BSP::load()
   }
 
   istream.reset();
-  istream.skip( lumps[QBSPLump::BRUSHES].offset );
+  istream.forward( lumps[QBSPLump::BRUSHES].offset );
 
   for( int i = 0; i < nBrushes; ++i ) {
     brushes[i].firstSide = istream.readInt();
@@ -359,7 +359,7 @@ void BSP::load()
   vertices = new Vertex[nVertices];
 
   istream.reset();
-  istream.skip( lumps[QBSPLump::VERTICES].offset );
+  istream.forward( lumps[QBSPLump::VERTICES].offset );
 
   for( int i = 0; i < nVertices; ++i ) {
     vertices[i].pos[0]      = istream.readFloat() * scale;
@@ -388,7 +388,7 @@ void BSP::load()
   indices = new int[nIndices];
 
   istream.reset();
-  istream.skip( lumps[QBSPLump::INDICES].offset );
+  istream.forward( lumps[QBSPLump::INDICES].offset );
 
   for( int i = 0; i < nIndices; ++i ) {
     indices[i] = istream.readInt();
@@ -398,7 +398,7 @@ void BSP::load()
   faces = new Face[nFaces];
 
   istream.reset();
-  istream.skip( lumps[QBSPLump::FACES].offset );
+  istream.forward( lumps[QBSPLump::FACES].offset );
 
   for( int i = 0; i < nFaces; ++i ) {
     faces[i].texture = istream.readInt();
@@ -453,6 +453,8 @@ void BSP::load()
       }
     }
   }
+
+  file.unmap();
 }
 
 void BSP::optimise()
@@ -944,8 +946,7 @@ void BSP::saveMatrix()
     sounds.popFirst();
   }
 
-  Buffer buffer( 4 * 1024 * 1024 );
-  OutputStream os = buffer.outputStream();
+  BufferStream os;
 
   os.writePoint3( mins );
   os.writePoint3( maxs );
@@ -1022,7 +1023,7 @@ void BSP::saveMatrix()
     os.writeString( frictSound == -1 ? "" : library.sounds[frictSound].name );
   }
 
-  buffer.write( path, os.length() );
+  File( path ).write( &os );
 
   log.printEnd( " OK" );
 }
@@ -1094,18 +1095,17 @@ void BSP::saveClient()
 
   compiler.endMesh();
 
-  Buffer buffer( 4 * 1024 * 1024 );
-  OutputStream ostream = buffer.outputStream();
+  BufferStream os;
 
-  ostream.writeInt( flags );
+  os.writeInt( flags );
 
   MeshData mesh;
   compiler.getMeshData( &mesh );
-  mesh.write( &ostream, false );
+  mesh.write( &os, false );
 
   log.print( "Dumping BSP model to '%s' ...", path.cstr() );
 
-  buffer.write( path, ostream.length() );
+  File( path ).write( &os );
 
   log.printEnd( " OK" );
 }

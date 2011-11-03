@@ -60,7 +60,7 @@ class QuestModule : public Module
     ui::QuestFrame* questFrame;
 
     virtual void read( InputStream* istream );
-    virtual void write( OutputStream* ostream ) const;
+    virtual void write( BufferStream* ostream ) const;
 
     virtual void load();
     virtual void unload();

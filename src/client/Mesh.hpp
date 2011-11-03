@@ -58,7 +58,7 @@ struct Vertex
   bool operator == ( const Vertex& v ) const;
 
   void read( InputStream* stream );
-  void write( OutputStream* stream ) const;
+  void write( BufferStream* stream ) const;
 
   static void setFormat();
 };

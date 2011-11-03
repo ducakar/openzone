@@ -439,7 +439,7 @@ void Orbis::read( InputStream* istream )
   log.println( "}" );
 }
 
-void Orbis::write( OutputStream* ostream ) const
+void Orbis::write( BufferStream* ostream ) const
 {
   log.print( "Writing Orbis ..." );
 

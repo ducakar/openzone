@@ -24,7 +24,9 @@
 
 #pragma once
 
-#include "stream.hpp"
+#include "InputStream.hpp"
+#include "OutputStream.hpp"
+#include "BufferStream.hpp"
 
 namespace oz
 {
@@ -128,9 +130,19 @@ class File
     void unmap();
 
     /**
-     * Get <code>InputStream</code> for currently mmaped file.
+     * Get <code>InputStream</code> for currently mmapped file.
      */
     InputStream inputStream() const;
+
+    /**
+     * Write the first <tt>ostream.length()</tt> bytes to a file.
+     */
+    bool write( const OutputStream* ostream ) const;
+
+    /**
+     * Write the first <tt>bstream.length()</tt> bytes of the stream buffer to a file.
+     */
+    bool write( const BufferStream* bstream ) const;
 
     /**
      * Make a new directory.

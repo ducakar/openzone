@@ -176,13 +176,12 @@ static void buildTextures( const char* srcDir, const char* destDir,
 
     hard_assert( id != 0 );
 
-    Buffer buffer( 4 * 1024 * 1024 );
-    OutputStream os = buffer.outputStream();
+    BufferStream os;
 
     log.println( "Compiling into '%s'", destPath.cstr() );
     Context::writeTexture( id, &os );
 
-    if( !buffer.write( destPath, os.length() ) ) {
+    if( !File( destPath ).write( &os ) ) {
       throw Exception( "Texture writing failed" );
     }
 
@@ -346,8 +345,7 @@ static void buildBSPTextures()
 
     hard_assert( id != 0 );
 
-    Buffer buffer( 4 * 1024 * 1024 );
-    OutputStream os = buffer.outputStream();
+    BufferStream os;
 
     log.println( "Compiling into '%s'", destPath.cstr() );
     Context::writeTexture( id, &os );
@@ -358,7 +356,7 @@ static void buildBSPTextures()
 
     File::mkdir( dir );
 
-    if( !buffer.write( destPath, os.length() ) ) {
+    if( !File( destPath ).write( &os ) ) {
       throw Exception( "Texture writing failed" );
     }
 

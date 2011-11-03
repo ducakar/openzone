@@ -59,7 +59,7 @@ void QuestModule::read( InputStream* istream )
   }
 }
 
-void QuestModule::write( OutputStream* ostream ) const
+void QuestModule::write( BufferStream* ostream ) const
 {
   ostream->writeInt( quests.length() );
   foreach( quest, quests.citer() ) {

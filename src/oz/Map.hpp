@@ -360,8 +360,7 @@ class Map
     /**
      * Create an empty map with the given initial capacity.
      */
-    explicit Map( int initSize ) : data( initSize == 0 ? null : new Elem[initSize] ),
-        size( initSize ), count( 0 )
+    explicit Map( int initSize ) : data( new Elem[initSize] ), size( initSize ), count( 0 )
     {}
 
     /**

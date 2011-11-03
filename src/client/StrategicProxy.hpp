@@ -60,7 +60,7 @@ class StrategicProxy : public Proxy
     virtual void reset();
 
     virtual void read( InputStream* istream );
-    virtual void write( OutputStream* ostream ) const;
+    virtual void write( BufferStream* ostream ) const;
 
     void init();
 

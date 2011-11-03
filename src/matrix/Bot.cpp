@@ -877,7 +877,7 @@ void Bot::readFull( InputStream* istream )
   }
 }
 
-void Bot::writeFull( OutputStream* ostream ) const
+void Bot::writeFull( BufferStream* ostream ) const
 {
   Dynamic::writeFull( ostream );
 
@@ -913,7 +913,7 @@ void Bot::readUpdate( InputStream* istream )
   anim       = Anim::Type( istream->readInt() );
 }
 
-void Bot::writeUpdate( OutputStream* ostream ) const
+void Bot::writeUpdate( BufferStream* ostream ) const
 {
   Dynamic::writeUpdate( ostream );
 

@@ -42,14 +42,16 @@ namespace ui
 
 uint GalileoFrame::loadTexture( const char* path ) const
 {
-  Buffer buffer;
-
-  if( !buffer.read( path ) ) {
+  File file( path );
+  if( !file.map() ) {
     throw Exception( "Failed reading galileo texture '" + String( path ) + "'" );
   }
 
-  InputStream istream = buffer.inputStream();
-  return context.readTexture( &istream );
+  InputStream istream = file.inputStream();
+  uint texId = context.readTexture( &istream );
+
+  file.unmap();
+  return texId;
 }
 
 bool GalileoFrame::onMouseEvent()

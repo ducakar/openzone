@@ -195,7 +195,7 @@ void Camera::read( InputStream* istream )
   botProxy.read( istream );
 }
 
-void Camera::write( OutputStream* ostream ) const
+void Camera::write( BufferStream* ostream ) const
 {
   ostream->writePoint3( newP );
 

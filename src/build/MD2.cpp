@@ -352,8 +352,7 @@ void MD2::build( const char* path )
     throw Exception( "MD2 model has too many vertices" );
   }
 
-  Buffer buffer( 4 * 1024 * 1024 );
-  OutputStream os = buffer.outputStream();
+  BufferStream os;
 
   os.writeString( shaderName );
 
@@ -393,12 +392,12 @@ void MD2::build( const char* path )
 
   if( header.nFrames != 1 ) {
     log.print( "Writing to '%s' ...", ( sPath + ".ozcMD2" ).cstr() );
-    buffer.write( sPath + ".ozcMD2", os.length() );
+    File( sPath + ".ozcMD2" ).write( &os );
     log.printEnd( " OK" );
   }
   else {
     log.print( "Writing to '%s' ...", ( sPath + ".ozcSMM" ).cstr() );
-    buffer.write( sPath + ".ozcSMM", os.length() );
+    File( sPath + ".ozcSMM" ).write( &os );
     log.printEnd( " OK" );
   }
 

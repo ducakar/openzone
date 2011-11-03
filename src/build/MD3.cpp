@@ -262,10 +262,9 @@ void MD3::build( const char* path )
 
   const char* model = config.get( "model", "" );
 
-  Buffer buffer( 16 * 1024 * 1024 );
-  OutputStream ostream = buffer.outputStream();
+  BufferStream os;
 
-  ostream.writeString( shaderName );
+  os.writeString( shaderName );
 
   if( !String::isEmpty( model ) ) {
     if( frame == -1 ) {
@@ -286,7 +285,7 @@ void MD3::build( const char* path )
 
     MeshData mesh;
     compiler.getMeshData( &mesh );
-    mesh.write( &ostream );
+    mesh.write( &os );
   }
   else if( frame != -1 ) {
     compiler.beginMesh();
@@ -337,7 +336,7 @@ void MD3::build( const char* path )
 
     MeshData mesh;
     compiler.getMeshData( &mesh );
-    mesh.write( &ostream );
+    mesh.write( &os );
   }
   else {
     compiler.beginMesh();
@@ -360,17 +359,17 @@ void MD3::build( const char* path )
 
     MeshData mesh;
     compiler.getMeshData( &mesh );
-    mesh.write( &ostream );
+    mesh.write( &os );
   }
 
   if( frame != -1 ) {
     log.print( "Writing to '%s%s' ...", sPath.cstr(), ".ozcSMM" );
-    buffer.write( sPath + ".ozcSMM", ostream.length() );
+    File( sPath + ".ozcSMM" ).write( &os );
     log.printEnd( " OK" );
   }
   else {
     log.print( "Writing to '%s%s' ...", sPath.cstr(), ".ozcMD3" );
-    buffer.write( sPath + ".ozcMD3", ostream.length() );
+    File( sPath + ".ozcMD3" ).write( &os );
     log.printEnd( " OK" );
   }
 

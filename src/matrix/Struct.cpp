@@ -423,7 +423,7 @@ void Struct::readFull( InputStream* istream )
   }
 }
 
-void Struct::writeFull( OutputStream* ostream )
+void Struct::writeFull( BufferStream* ostream )
 {
   ostream->writePoint3( mins );
   ostream->writePoint3( maxs );

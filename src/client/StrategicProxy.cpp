@@ -199,7 +199,7 @@ void StrategicProxy::read( InputStream* istream )
   isRTSFast  = istream->readBool();
 }
 
-void StrategicProxy::write( OutputStream* ostream ) const
+void StrategicProxy::write( BufferStream* ostream ) const
 {
   ostream->writeFloat( height );
   ostream->writeBool( isFree );

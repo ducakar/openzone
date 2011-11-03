@@ -46,7 +46,7 @@ class Module
     virtual void read( InputStream* )
     {}
 
-    virtual void write( OutputStream* ) const
+    virtual void write( BufferStream* ) const
     {}
 
     virtual void load()

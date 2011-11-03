@@ -94,9 +94,9 @@ class Particle
      */
 
     void readFull( InputStream* istream );
-    void writeFull( OutputStream* ostream );
+    void writeFull( BufferStream* ostream );
     void readUpdate( InputStream* istream );
-    void writeUpdate( OutputStream* ostream );
+    void writeUpdate( BufferStream* ostream );
 
   OZ_STATIC_POOL_ALLOC( pool )
 

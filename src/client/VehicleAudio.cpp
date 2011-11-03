@@ -52,7 +52,9 @@ void VehicleAudio::play( const Audio* parent )
   const int ( &sounds )[ObjectClass::AUDIO_SOUNDS] = obj->clazz->audioSounds;
 
   // engine sound
-  if( vehicle->pilot != -1 && sounds[Vehicle::EVENT_ENGINE] != -1 ) {
+  if( ( vehicle->pilot != -1 || !( vehicle->flags & Object::DISABLED_BIT ) ) &&
+      sounds[Vehicle::EVENT_ENGINE] != -1 )
+  {
     float pitch = clazz->enginePitchBias + min( vehicle->momentum.sqL() * clazz->enginePitchRatio,
                                                 clazz->enginePitchLimit );
 
@@ -72,10 +74,10 @@ void VehicleAudio::play( const Audio* parent )
 
   // inventory items' events
   for( int i = 0; i < obj->items.length(); ++i ) {
-    const Object* obj = orbis.objects[ obj->items[i] ];
+    const Object* item = orbis.objects[ obj->items[i] ];
 
-    if( obj != null && ( obj->flags & Object::AUDIO_BIT ) ) {
-      context.playAudio( obj, parent == null ? this : parent );
+    if( item != null && ( item->flags & Object::AUDIO_BIT ) ) {
+      context.playAudio( item, parent == null ? this : parent );
     }
   }
 

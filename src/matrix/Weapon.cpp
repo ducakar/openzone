@@ -118,7 +118,7 @@ void Weapon::readFull( InputStream* istream )
   shotTime = istream->readFloat();
 }
 
-void Weapon::writeFull( OutputStream* ostream ) const
+void Weapon::writeFull( BufferStream* ostream ) const
 {
   Dynamic::writeFull( ostream );
 
@@ -133,7 +133,7 @@ void Weapon::readUpdate( InputStream* istream )
   nRounds = istream->readInt();
 }
 
-void Weapon::writeUpdate( OutputStream* ostream ) const
+void Weapon::writeUpdate( BufferStream* ostream ) const
 {
   Dynamic::writeUpdate( ostream );
 

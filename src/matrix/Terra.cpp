@@ -99,7 +99,7 @@ void Terra::read( InputStream* istream )
   load( id );
 }
 
-void Terra::write( OutputStream* ostream ) const
+void Terra::write( BufferStream* ostream ) const
 {
   ostream->writeString( library.terras[id].name );
 }

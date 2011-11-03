@@ -170,6 +170,32 @@ InputStream File::inputStream() const
   return InputStream( data, data + size );
 }
 
+bool File::write( const OutputStream* ostream ) const
+{
+  int fd = open( filePath, O_WRONLY | O_CREAT, 0644 );
+  if( fd == -1 ) {
+    return false;
+  }
+
+  int len = int( ::write( fd, ostream->begin(), size_t( ostream->length() ) ) );
+  close( fd );
+
+  return len == ostream->length();
+}
+
+bool File::write( const BufferStream* bstream ) const
+{
+  int fd = open( filePath, O_WRONLY | O_CREAT, 0644 );
+  if( fd == -1 ) {
+    return false;
+  }
+
+  int len = int( ::write( fd, bstream->begin(), size_t( bstream->length() ) ) );
+  close( fd );
+
+  return len == bstream->length();
+}
+
 bool File::mkdir( const char* path, uint mode )
 {
 #ifdef OZ_MINGW

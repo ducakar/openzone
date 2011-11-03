@@ -126,8 +126,7 @@ void Terra::saveMatrix()
   size += int( sizeof( int ) );
   size += matrix::Terra::VERTS * matrix::Terra::VERTS * 9 * int( sizeof( float ) );
 
-  Buffer buffer( size );
-  OutputStream os = buffer.outputStream();
+  BufferStream os;
 
   os.writeInt( matrix::Terra::VERTS );
 
@@ -139,8 +138,7 @@ void Terra::saveMatrix()
     }
   }
 
-  hard_assert( os.available() == 0 );
-  buffer.write( destFile, os.length() );
+  File( destFile ).write( &os );
 
   log.printEnd( " OK" );
 }
@@ -157,8 +155,7 @@ void Terra::saveClient()
   uint detailTexId = Context::loadRawTexture( terraDir + detailTexture );
   uint mapTexId    = Context::loadRawTexture( terraDir + mapTexture );
 
-  Buffer buffer( 20 * 1024 * 1024 );
-  OutputStream os = buffer.outputStream();
+  BufferStream os;
 
   Context::writeTexture( waterTexId, &os );
   Context::writeTexture( detailTexId, &os );
@@ -243,7 +240,7 @@ void Terra::saveClient()
     os.writeChar( waterTiles.get( i ) );
   }
 
-  buffer.write( destFile, os.length() );
+  File( destFile ).write( &os );
 
   log.unindent();
   log.println( "}" );

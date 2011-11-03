@@ -58,7 +58,7 @@ class Device
 
     virtual const char* getMemo() const;
 
-    virtual void write( OutputStream* ostream ) const;
+    virtual void write( BufferStream* ostream ) const;
 
 };
 

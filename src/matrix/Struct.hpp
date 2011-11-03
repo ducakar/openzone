@@ -149,7 +149,7 @@ class Struct : public Bounds
     void update();
 
     void readFull( InputStream* istream );
-    void writeFull( OutputStream* ostream );
+    void writeFull( BufferStream* ostream );
 
   OZ_STATIC_POOL_ALLOC( pool )
 

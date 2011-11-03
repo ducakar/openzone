@@ -84,7 +84,7 @@ bool Lua::readVariable( InputStream* istream )
   }
 }
 
-void Lua::writeVariable( OutputStream* ostream )
+void Lua::writeVariable( BufferStream* ostream )
 {
   int type = type( -1 );
 
@@ -203,7 +203,7 @@ void Lua::read( InputStream* istream )
   }
 }
 
-void Lua::write( OutputStream* ostream )
+void Lua::write( BufferStream* ostream )
 {
   hard_assert( gettop() == 1 );
 

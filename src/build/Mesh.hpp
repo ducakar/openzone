@@ -57,7 +57,7 @@ class MeshData
     DArray<ushort> indices;
     DArray<Vertex> vertices;
 
-    void write( OutputStream* stream, bool embedTextures = true ) const;
+    void write( BufferStream* stream, bool embedTextures = true ) const;
 
 };
 

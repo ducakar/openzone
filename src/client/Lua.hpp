@@ -68,7 +68,7 @@ class Lua
     String          missionFile;
 
     bool readVariable( InputStream* istream );
-    void writeVariable( OutputStream* stream );
+    void writeVariable( BufferStream* stream );
 
   public:
 
@@ -80,7 +80,7 @@ class Lua
     void create( const char* missionFile );
 
     void read( InputStream* istream );
-    void write( OutputStream* ostream );
+    void write( BufferStream* ostream );
 
     void registerFunction( const char* name, LuaAPI func );
     void registerConstant( const char* name, bool value );
