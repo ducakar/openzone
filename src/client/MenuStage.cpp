@@ -28,6 +28,7 @@
 
 #include "client/GameStage.hpp"
 #include "client/Render.hpp"
+#include "client/Sound.hpp"
 
 #include "client/ui/UI.hpp"
 
@@ -58,6 +59,8 @@ void MenuStage::load()
   ui::mouse.doShow = true;
   ui::mouse.buttons = 0;
   ui::mouse.currButtons = 0;
+
+  sound.update();
 
   ui::ui.showLoadingScreen( false );
 }

@@ -298,7 +298,7 @@ void Shader::load()
 
   log.print( "Reading 'glsl/header.glsl' ..." );
 
-  Buffer buffer( "glsl/header.glsl" );
+  Buffer buffer = File( "glsl/header.glsl" ).read();
   if( buffer.isEmpty() ) {
     log.printEnd( " Failed" );
     throw Exception( "Shader loading failed" );
@@ -403,7 +403,7 @@ void Shader::init()
 
   log.print( "Reading 'glsl/header.glsl' ..." );
 
-  Buffer buffer( "glsl/header.glsl" );
+  Buffer buffer = File( "glsl/header.glsl" ).read();
   if( buffer.isEmpty() ) {
     log.printEnd( " Failed" );
     throw Exception( "Shader loading failed" );
