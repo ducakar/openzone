@@ -109,7 +109,7 @@ void HudArea::drawBotCrosshair()
     {
 
       glBindTexture( GL_TEXTURE_2D,
-                     ( taggedObj->flags & Object::USE_FUNC_BIT ) ? useTexId : deviceTexId );
+                     taggedObj->flags & Object::USE_FUNC_BIT ? useTexId : deviceTexId );
       shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
     }
 

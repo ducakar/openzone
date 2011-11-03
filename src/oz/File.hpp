@@ -56,7 +56,14 @@ class File
     String filePath; ///< %File path.
     Type   type;     ///< Cached file type.
     char*  data;     ///< MMapped memory.
-    size_t size;     ///< MMapped memory size.
+    int    size;     ///< MMapped memory size.
+
+    /**
+     * Internal function to write buffer to the file.
+     *
+     * @return True on success.
+     */
+    bool write( const char* buffer, int count ) const;
 
   public:
 
