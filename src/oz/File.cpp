@@ -26,8 +26,8 @@
 
 #include <sys/stat.h>
 #include <sys/mman.h>
-#include <unistd.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include <dirent.h>
 
 #undef MAP_FAILED
@@ -170,6 +170,46 @@ InputStream File::inputStream() const
   return InputStream( data, data + size );
 }
 
+Buffer File::read() const
+{
+  Buffer buffer;
+
+  int fd = open( filePath, O_RDONLY );
+  if( fd == -1 ) {
+    return buffer;
+  }
+
+  struct stat fileStat;
+  if( fstat( fd, &fileStat ) != 0 ) {
+    close( fd );
+    return buffer;
+  }
+
+  int fileSize = int( fileStat.st_size );
+  buffer.alloc( fileSize );
+
+  int bytesRead = int( ::read( fd, buffer.begin(), size_t( fileSize ) ) );
+  close( fd );
+
+  if( bytesRead != fileSize ) {
+    buffer.dealloc();
+  }
+  return buffer;
+}
+
+bool File::write( const Buffer* buffer ) const
+{
+  int fd = open( filePath, O_WRONLY | O_CREAT, 0644 );
+  if( fd == -1 ) {
+    return false;
+  }
+
+  int bytesWritten = int( ::write( fd, buffer->begin(), size_t( buffer->length() ) ) );
+  close( fd );
+
+  return bytesWritten == buffer->length();
+}
+
 bool File::write( const OutputStream* ostream ) const
 {
   int fd = open( filePath, O_WRONLY | O_CREAT, 0644 );
@@ -177,10 +217,10 @@ bool File::write( const OutputStream* ostream ) const
     return false;
   }
 
-  int len = int( ::write( fd, ostream->begin(), size_t( ostream->length() ) ) );
+  int bytesWritten = int( ::write( fd, ostream->begin(), size_t( ostream->length() ) ) );
   close( fd );
 
-  return len == ostream->length();
+  return bytesWritten == ostream->length();
 }
 
 bool File::write( const BufferStream* bstream ) const
@@ -190,10 +230,10 @@ bool File::write( const BufferStream* bstream ) const
     return false;
   }
 
-  int len = int( ::write( fd, bstream->begin(), size_t( bstream->length() ) ) );
+  int bytesWritten = int( ::write( fd, bstream->begin(), size_t( bstream->length() ) ) );
   close( fd );
 
-  return len == bstream->length();
+  return bytesWritten == bstream->length();
 }
 
 bool File::mkdir( const char* path, uint mode )

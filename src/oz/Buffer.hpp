@@ -84,14 +84,6 @@ class Buffer
     explicit Buffer( int initSize );
 
     /**
-     * Create a buffer from contents of the given file.
-     *
-     * Contents are read from the given file and copied into the buffer. Buffer size matches the
-     * file length.
-     */
-    explicit Buffer( const char* file );
-
-    /**
      * Constant pointer to the beginning of the buffer.
      */
     const char* begin() const
@@ -158,19 +150,6 @@ class Buffer
      * Create an OutputStream object for writing binary data into the buffer.
      */
     OutputStream outputStream() const;
-
-    /**
-     * Discard any existing data and fill the buffer with contents of the given file.
-     *
-     * Buffer storage is not freed and newly allocated if the existing storage is enough to store
-     * the file's contents.
-     */
-    bool read( const char* path );
-
-    /**
-     * Write buffer contents into a file.
-     */
-    bool write( const char* path, int count );
 
 };
 

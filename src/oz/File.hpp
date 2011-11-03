@@ -24,9 +24,8 @@
 
 #pragma once
 
-#include "InputStream.hpp"
-#include "OutputStream.hpp"
 #include "BufferStream.hpp"
+#include "Buffer.hpp"
 
 namespace oz
 {
@@ -133,6 +132,16 @@ class File
      * Get <code>InputStream</code> for currently mmapped file.
      */
     InputStream inputStream() const;
+
+    /**
+     * Read file into a buffer.
+     */
+    Buffer read() const;
+
+    /**
+     * Write buffer contents into a file.
+     */
+    bool write( const Buffer* buffer ) const;
 
     /**
      * Write the first <tt>ostream.length()</tt> bytes to a file.
