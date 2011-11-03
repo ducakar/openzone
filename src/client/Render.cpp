@@ -78,7 +78,7 @@ void Render::scheduleCell( int cellX, int cellY )
   }
 
   for( const Object* obj = cell.objects.first(); obj != null; obj = obj->next[0] ) {
-    float radius = ( obj->flags & Object::WIDE_CULL_BIT ) ?
+    float radius = obj->flags & Object::WIDE_CULL_BIT ?
         WIDE_CULL_FACTOR * obj->dim.fastL() : obj->dim.fastL();
 
     if( frustum.isVisible( obj->p, radius ) ) {
@@ -333,8 +333,9 @@ void Render::drawGeometry()
   if( showBounds ) {
     for( int i = 0; i < objects.length(); ++i ) {
       glUniform4fv( param.oz_Colour, 1,
-                    ( objects[i].obj->flags & Object::SOLID_BIT ) ?
-                        Colours::CLIP_AABB : Colours::NOCLIP_AABB );
+                    objects[i].obj->flags & Object::SOLID_BIT ?
+                        Colours::CLIP_AABB :
+                        Colours::NOCLIP_AABB );
       shape.wireBox( *objects[i].obj );
     }
 

@@ -260,7 +260,11 @@ void Context::writeTexture( uint id, BufferStream* stream )
     stream->writeInt( size );
 
     if( useS3TC ) {
+#ifdef OZ_MINGW
+      client::glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->forward( size ) );
+#else
       glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->forward( size ) );
+#endif
     }
     else {
       glGetTexImage( GL_TEXTURE_2D, i, GL_RGBA, GL_UNSIGNED_BYTE, stream->forward( size ) );

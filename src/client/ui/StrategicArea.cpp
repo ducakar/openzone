@@ -162,7 +162,7 @@ void StrategicArea::drawHoveredRect( const Span& span )
     printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", title.cstr() );
 
     if( !Math::isInfFM( hoveredObj->life ) ) {
-      life = ( hoveredObj->flags & Object::BOT_BIT ) ?
+      life = hoveredObj->flags & Object::BOT_BIT ?
           max( 0.0f, ( hoveredObj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
           hoveredObj->life / clazz->life;
     }
@@ -201,7 +201,7 @@ void StrategicArea::drawTaggedRect( const Struct* str, const Object* obj, const 
     float maxLife = obj->clazz->life;
 
     if( !Math::isInfFM( maxLife ) ) {
-      life = ( obj->flags & Object::BOT_BIT ) ?
+      life = obj->flags & Object::BOT_BIT ?
           max( 0.0f, ( obj->life - maxLife / 2.0f ) / ( maxLife / 2.0f ) ) :
           obj->life / maxLife;
     }

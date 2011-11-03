@@ -118,7 +118,7 @@ ObjectClass* BotClass::init( const Config* config )
 
   clazz->airControl        = config->get( "airControl", 0.025f );
   clazz->climbControl      = config->get( "climbControl", 1.50f );
-  clazz->waterControl      = config->get( "waterControl", 0.05f );
+  clazz->waterControl      = config->get( "waterControl", 0.08f );
   clazz->slickControl      = config->get( "slickControl", 0.04f );
 
   clazz->reachDist         = config->get( "reachDist", 2.0f );
@@ -207,7 +207,7 @@ Object* BotClass::create( int index, InputStream* istream ) const
 
   obj->readFull( istream );
 
-  obj->camZ = ( obj->state & Bot::CROUCHING_BIT ) ? crouchCamZ : camZ;
+  obj->camZ = obj->state & Bot::CROUCHING_BIT ? crouchCamZ : camZ;
 
   return obj;
 }

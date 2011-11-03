@@ -62,6 +62,7 @@ namespace std { typedef decltype( nullptr ) nullptr_t; }
 # define final
 # define noexcept
 # define override
+# define __attribute__( x )
 #endif
 
 #ifdef __BIG_ENDIAN__

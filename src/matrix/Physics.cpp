@@ -317,7 +317,7 @@ void Physics::handleObjHit()
 
     if( hit.normal.z >= FLOOR_NORMAL_Z ) {
       dyn->flags |= Object::ON_FLOOR_BIT;
-      dyn->flags |= ( hit.material & Material::SLICK_BIT ) ? Object::ON_SLICK_BIT : 0;
+      dyn->flags |= hit.material & Material::SLICK_BIT ? Object::ON_SLICK_BIT : 0;
       dyn->lower = -1;
       dyn->floor = hit.normal;
     }
@@ -388,7 +388,7 @@ void Physics::handleObjMove()
   }
   while( true );
 
-  int newFlags = ( collider.hit.medium & Material::WATER_BIT ) ? Object::IN_WATER_BIT : 0 |
+  int newFlags = ( collider.hit.medium & Material::WATER_BIT ? Object::IN_WATER_BIT : 0 ) |
       ( collider.hit.medium & Material::LADDER_BIT ? Object::ON_LADDER_BIT : 0 );
 
   if( ( newFlags & ~dyn->flags & Object::IN_WATER_BIT ) && dyn->velocity.z <= SPLASH_THRESHOLD ) {

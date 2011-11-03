@@ -318,11 +318,11 @@ void Bot::onUpdate()
     anim = Anim::JUMP;
   }
   else if( actions & ( ACTION_FORWARD | ACTION_BACKWARD | ACTION_LEFT | ACTION_RIGHT ) ) {
-    anim = ( state & CROUCHING_BIT ) ? Anim::CROUCH_WALK : Anim::RUN;
+    anim = state & CROUCHING_BIT ? Anim::CROUCH_WALK : Anim::RUN;
   }
   else if( actions & ACTION_ATTACK ) {
     if( weaponObj != null && weaponObj->shotTime == 0.0f ) {
-      anim = ( state & CROUCHING_BIT ) ? Anim::CROUCH_ATTACK : Anim::ATTACK;
+      anim = state & CROUCHING_BIT ? Anim::CROUCH_ATTACK : Anim::ATTACK;
       weaponObj->trigger( this );
     }
   }

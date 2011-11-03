@@ -24,10 +24,14 @@
 
 #include "File.hpp"
 
+#ifdef OZ_MINGW
+# include <cstdio>
+#else
+# include <sys/mman.h>
+# include <fcntl.h>
+# include <unistd.h>
+#endif
 #include <sys/stat.h>
-#include <sys/mman.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <dirent.h>
 
 #undef MAP_FAILED
@@ -35,6 +39,35 @@
 
 namespace oz
 {
+
+bool File::write( const char* buffer, int count ) const
+{
+#ifdef OZ_MINGW
+
+  FILE* fs = fopen( filePath, "wb" );
+  if( fs == null ) {
+    return false;
+  }
+
+  int result = int( ::fwrite( buffer, size_t( count ), 1, fs ) );
+  fclose( fs );
+
+  return result == 1;
+
+#else
+
+  int fd = open( filePath, O_WRONLY | O_CREAT, 0644 );
+  if( fd == -1 ) {
+    return false;
+  }
+
+  int bytesWritten = int( ::write( fd, buffer, size_t( count ) ) );
+  close( fd );
+
+  return bytesWritten == count;
+
+#endif
+}
 
 File::File() : type( NONE ), data( null )
 {}
@@ -132,6 +165,32 @@ bool File::map()
 {
   hard_assert( data == null );
 
+#ifdef OZ_MINGW
+
+  struct stat statInfo;
+  if( stat( filePath, &statInfo ) != 0 ) {
+    return false;
+  }
+
+  FILE* fs = fopen( filePath, "rb" );
+  if( fs == null ) {
+    return false;
+  }
+
+  size = int( statInfo.st_size );
+  data = new char[size];
+
+  int result = int( ::fread( data, size_t( size ), 1, fs ) );
+  fclose( fs );
+
+  if( result != 1 ) {
+    delete[] data;
+    data = null;
+    return false;
+  }
+
+#else
+
   int fd = open( filePath, O_RDONLY );
   if( fd == -1 ) {
     return false;
@@ -143,15 +202,17 @@ bool File::map()
     return false;
   }
 
-  size = size_t( statInfo.st_size );
-  data = reinterpret_cast<char*>( mmap( null, size, PROT_READ, MAP_SHARED, fd, 0 ) );
-
+  size = int( statInfo.st_size );
+  data = reinterpret_cast<char*>( mmap( null, size_t( size ), PROT_READ, MAP_SHARED, fd, 0 ) );
   close( fd );
 
   if( data == MAP_FAILED ) {
     data = null;
     return false;
   }
+
+#endif
+
   return true;
 }
 
@@ -159,7 +220,11 @@ void File::unmap()
 {
   hard_assert( data != null );
 
-  munmap( data, size );
+#ifdef OZ_MINGW
+  delete[] data;
+#else
+  munmap( data, size_t( size ) );
+#endif
   data = null;
 }
 
@@ -173,6 +238,30 @@ InputStream File::inputStream() const
 Buffer File::read() const
 {
   Buffer buffer;
+
+#ifdef OZ_MINGW
+
+  struct stat statInfo;
+  if( stat( filePath, &statInfo ) != 0 ) {
+    return buffer;
+  }
+
+  FILE* fs = fopen( filePath, "rb" );
+  if( fs == null ) {
+    return buffer;
+  }
+
+  int fileSize = int( statInfo.st_size );
+  buffer.alloc( fileSize );
+
+  int result = int( ::fread( buffer.begin(), size_t( fileSize ), 1, fs ) );
+  fclose( fs );
+
+  if( result != 1 ) {
+    buffer.dealloc();
+  }
+
+#else
 
   int fd = open( filePath, O_RDONLY );
   if( fd == -1 ) {
@@ -194,46 +283,25 @@ Buffer File::read() const
   if( bytesRead != fileSize ) {
     buffer.dealloc();
   }
+
+#endif
+
   return buffer;
 }
 
 bool File::write( const Buffer* buffer ) const
 {
-  int fd = open( filePath, O_WRONLY | O_CREAT, 0644 );
-  if( fd == -1 ) {
-    return false;
-  }
-
-  int bytesWritten = int( ::write( fd, buffer->begin(), size_t( buffer->length() ) ) );
-  close( fd );
-
-  return bytesWritten == buffer->length();
+  return write( buffer->begin(), buffer->length() );
 }
 
 bool File::write( const OutputStream* ostream ) const
 {
-  int fd = open( filePath, O_WRONLY | O_CREAT, 0644 );
-  if( fd == -1 ) {
-    return false;
-  }
-
-  int bytesWritten = int( ::write( fd, ostream->begin(), size_t( ostream->length() ) ) );
-  close( fd );
-
-  return bytesWritten == ostream->length();
+  return write( ostream->begin(), ostream->length() );
 }
 
 bool File::write( const BufferStream* bstream ) const
 {
-  int fd = open( filePath, O_WRONLY | O_CREAT, 0644 );
-  if( fd == -1 ) {
-    return false;
-  }
-
-  int bytesWritten = int( ::write( fd, bstream->begin(), size_t( bstream->length() ) ) );
-  close( fd );
-
-  return bytesWritten == bstream->length();
+  return write( bstream->begin(), bstream->length() );
 }
 
 bool File::mkdir( const char* path, uint mode )
