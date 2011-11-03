@@ -71,7 +71,7 @@ class Terra
     void init();
 
     void read( InputStream* istream );
-    void write( OutputStream* ostream ) const;
+    void write( BufferStream* ostream ) const;
 
 };
 

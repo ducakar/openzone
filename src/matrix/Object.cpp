@@ -118,7 +118,7 @@ void Object::readFull( InputStream* istream )
   }
 }
 
-void Object::writeFull( OutputStream* ostream ) const
+void Object::writeFull( BufferStream* ostream ) const
 {
   ostream->writePoint3( p );
   ostream->writeInt( flags );
@@ -156,7 +156,7 @@ void Object::readUpdate( InputStream* istream )
   }
 }
 
-void Object::writeUpdate( OutputStream* ostream ) const
+void Object::writeUpdate( BufferStream* ostream ) const
 {
   ostream->writeFloat( life );
 

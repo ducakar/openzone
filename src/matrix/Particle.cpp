@@ -64,7 +64,7 @@ void Particle::readFull( InputStream* istream )
   lifeTime    = istream->readFloat();
 }
 
-void Particle::writeFull( OutputStream* ostream )
+void Particle::writeFull( BufferStream* ostream )
 {
   ostream->writePoint3( p );
   ostream->writeVec3( velocity );
@@ -84,7 +84,7 @@ void Particle::readUpdate( InputStream* istream )
   velocity = istream->readVec3();
 }
 
-void Particle::writeUpdate( OutputStream* ostream )
+void Particle::writeUpdate( BufferStream* ostream )
 {
   ostream->writePoint3( p );
   ostream->writeVec3( velocity );

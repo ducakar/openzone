@@ -118,7 +118,7 @@ void Vertex::read( InputStream* stream )
 #endif
 }
 
-void Vertex::write( OutputStream* stream ) const
+void Vertex::write( BufferStream* stream ) const
 {
   stream->writeFloat( pos[0] );
   stream->writeFloat( pos[1] );

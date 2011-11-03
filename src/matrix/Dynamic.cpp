@@ -45,7 +45,7 @@ void Dynamic::readFull( InputStream* istream )
   depth      = istream->readFloat();
 }
 
-void Dynamic::writeFull( OutputStream* ostream ) const
+void Dynamic::writeFull( BufferStream* ostream ) const
 {
   Object::writeFull( ostream );
 
@@ -66,7 +66,7 @@ void Dynamic::readUpdate( InputStream* istream )
   momentum = istream->readVec3();
 }
 
-void Dynamic::writeUpdate( OutputStream* ostream ) const
+void Dynamic::writeUpdate( BufferStream* ostream ) const
 {
   Object::writeUpdate( ostream );
 

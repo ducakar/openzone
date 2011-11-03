@@ -376,7 +376,7 @@ void BotProxy::read( InputStream* istream )
   isFreelook = istream->readBool();
 }
 
-void BotProxy::write( OutputStream* ostream ) const
+void BotProxy::write( BufferStream* ostream ) const
 {
   ostream->writeBool( isExternal );
   ostream->writeBool( isFreelook );

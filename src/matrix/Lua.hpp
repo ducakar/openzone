@@ -61,7 +61,7 @@ class Lua
     List<Object::Event>::CIterator event;
 
     bool readVariable( InputStream* istream );
-    void writeVariable( OutputStream* stream );
+    void writeVariable( BufferStream* stream );
 
   public:
 
@@ -75,7 +75,7 @@ class Lua
     void unregisterObject( int index );
 
     void read( InputStream* istream );
-    void write( OutputStream* ostream );
+    void write( BufferStream* ostream );
 
     void registerFunction( const char* name, LuaAPI func );
     void registerConstant( const char* name, bool value );

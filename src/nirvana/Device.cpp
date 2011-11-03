@@ -45,7 +45,7 @@ const char* Device::getMemo() const
   return null;
 }
 
-void Device::write( OutputStream* ) const
+void Device::write( BufferStream* ) const
 {}
 
 }

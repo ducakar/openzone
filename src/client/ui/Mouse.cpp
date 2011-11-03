@@ -117,18 +117,20 @@ void Mouse::load()
   for( int i = 0; i < MAX; ++i ) {
     log.print( "Loading cursor '%s' ...", NAMES[i] );
 
-    Buffer buffer;
-    if( !buffer.read( "ui/cur/" + String( NAMES[i] ) + ".ozcCur" ) ) {
+    File file( "ui/cur/" + String( NAMES[i] ) + ".ozcCur" );
+    if( !file.map() ) {
       log.printEnd( " Failed" );
       throw Exception( "Cursor loading failed" );
     }
 
-    InputStream is = buffer.inputStream();
+    InputStream is = file.inputStream();
 
     cursors[i].size     = is.readInt();
     cursors[i].hotspotX = is.readInt();
     cursors[i].hotspotY = is.readInt();
     cursors[i].texId    = context.readTexture( &is );
+
+    file.unmap();
 
     log.printEnd( " OK" );
   }

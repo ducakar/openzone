@@ -170,11 +170,11 @@ uint Context::readTexture( InputStream* stream )
 
     if( usesS3TC ) {
       glCompressedTexImage2D( GL_TEXTURE_2D, i, uint( internalFormat ), width, height, 0,
-                              size, stream->prepareRead( size ) );
+                              size, stream->forward( size ) );
     }
     else {
       glTexImage2D( GL_TEXTURE_2D, i, internalFormat, width, height, 0,
-                    GL_RGBA, GL_UNSIGNED_BYTE, stream->prepareRead( size ) );
+                    GL_RGBA, GL_UNSIGNED_BYTE, stream->forward( size ) );
     }
   }
 

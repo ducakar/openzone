@@ -364,7 +364,7 @@ void Vehicle::readFull( InputStream* istream )
   pilot = istream->readInt();
 }
 
-void Vehicle::writeFull( OutputStream* ostream ) const
+void Vehicle::writeFull( BufferStream* ostream ) const
 {
   Dynamic::writeFull( ostream );
 
@@ -402,7 +402,7 @@ void Vehicle::readUpdate( InputStream* istream )
   pilot = istream->readInt();
 }
 
-void Vehicle::writeUpdate( OutputStream* ostream ) const
+void Vehicle::writeUpdate( BufferStream* ostream ) const
 {
   Dynamic::writeUpdate( ostream );
 

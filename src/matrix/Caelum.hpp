@@ -46,7 +46,7 @@ class Caelum
     void update();
 
     void read( InputStream* istream );
-    void write( OutputStream* ostream ) const;
+    void write( BufferStream* ostream ) const;
 
 };
 

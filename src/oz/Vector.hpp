@@ -225,8 +225,7 @@ class Vector
     /**
      * Create an empty vector with the given initial capacity.
      */
-    explicit Vector( int initSize ) : data( initSize == 0 ? null : new Elem[initSize] ),
-        size( initSize ), count( 0 )
+    explicit Vector( int initSize ) : data( new Elem[initSize] ), size( initSize ), count( 0 )
     {}
 
     /**

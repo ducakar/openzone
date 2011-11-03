@@ -405,14 +405,13 @@ void OBJ::save()
   MeshData mesh;
   compiler.getMeshData( &mesh );
 
-  Buffer buffer( 4 * 1024 * 1024 );
-  OutputStream os = buffer.outputStream();
+  BufferStream os;
 
   os.writeString( shader );
   mesh.write( &os );
 
   log.print( "Writing to '%s' ...", destPath.cstr() );
-  buffer.write( destPath, os.length() );
+  File( destPath ).write( &os );
   log.printEnd( " OK" );
 }
 

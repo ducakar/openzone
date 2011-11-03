@@ -55,8 +55,7 @@ void Mouse::build()
     uint texId = Context::loadRawTexture( "ui/cur/" + String( imgFile ),
                                           false, GL_LINEAR, GL_LINEAR );
 
-    Buffer buffer( 4 * 1024 * 1024 );
-    OutputStream os = buffer.outputStream();
+    BufferStream os;
 
     os.writeInt( size );
     os.writeInt( hotspotX );
@@ -65,7 +64,7 @@ void Mouse::build()
 
     glDeleteTextures( 1, &texId );
 
-    buffer.write( "ui/cur/" + String( ui::Mouse::NAMES[i] ) + ".ozcCur", os.length() );
+    File( "ui/cur/" + String( ui::Mouse::NAMES[i] ) + ".ozcCur" ).write( &os );
   }
 
   log.unindent();

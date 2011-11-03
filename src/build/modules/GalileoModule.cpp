@@ -43,7 +43,6 @@ namespace build
 void GalileoModule::build()
 {
   Config terraConfig;
-  Buffer buffer( 2 * 1024 * 1024 );
 
   for( int i = 0; i < library.terras.length(); ++i ) {
     const String& name = library.terras[i].name;
@@ -59,14 +58,14 @@ void GalileoModule::build()
     String srcTextureFile = String( "terra/" ) + terraConfig.get( "mapTexture", "" );
     String destTextureFile = "ui/galileo/" + name + ".ozcTex";
 
-    OutputStream ostream = buffer.outputStream();
+    BufferStream os;
 
     uint id = Context::loadRawTexture( srcTextureFile, true, GL_LINEAR, GL_LINEAR );
-    Context::writeTexture( id, &ostream );
+    Context::writeTexture( id, &os );
 
     terraConfig.clear();
 
-    buffer.write( destTextureFile, ostream.length() );
+    File( destTextureFile ).write( &os );
   }
 }
 

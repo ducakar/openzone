@@ -92,11 +92,11 @@ void BotAudio::play( const Audio* parent )
   }
 
   // inventory items' events
-  for( int i = 0; i < bot->items.length(); ++i ) {
-    const Object* obj = orbis.objects[ bot->items[i] ];
+  for( int i = 0; i < obj->items.length(); ++i ) {
+    const Object* item = orbis.objects[ obj->items[i] ];
 
-    if( obj != null && ( obj->flags & Object::AUDIO_BIT ) ) {
-      context.playAudio( obj, parent == null ? this : parent );
+    if( item != null && ( item->flags & Object::AUDIO_BIT ) ) {
+      context.playAudio( item, parent == null ? this : parent );
     }
   }
 }

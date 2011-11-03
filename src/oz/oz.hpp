@@ -93,7 +93,10 @@
 /*
  * IO
  */
-#include "stream.hpp"
+#include "Endian.hpp"
+#include "InputStream.hpp"
+#include "OutputStream.hpp"
+#include "BufferStream.hpp"
 #include "Buffer.hpp"
 #include "File.hpp"
 

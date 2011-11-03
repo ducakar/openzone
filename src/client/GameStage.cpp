@@ -346,8 +346,7 @@ bool GameStage::read( const char* path )
 
 void GameStage::write( const char* path ) const
 {
-  Buffer buffer( 4 * 1024 * 1024 );
-  OutputStream ostream = buffer.outputStream();
+  BufferStream ostream;
 
   matrix.write( &ostream );
   nirvana.write( &ostream );
@@ -359,8 +358,13 @@ void GameStage::write( const char* path ) const
   }
 
   log.print( "Saving state to %s ...", path );
-  buffer.write( path, ostream.length() );
-  log.printEnd( " OK" );
+
+  if( File( path ).write( &ostream ) ) {
+    log.printEnd( " Failed" );
+  }
+  else {
+    log.printEnd( " OK" );
+  }
 }
 
 void GameStage::load()

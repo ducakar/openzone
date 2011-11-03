@@ -165,7 +165,7 @@ void Matrix::read( InputStream* istream )
   log.println( "}" );
 }
 
-void Matrix::write( OutputStream* ostream ) const
+void Matrix::write( BufferStream* ostream ) const
 {
   log.println( "Writing Matrix {" );
   log.indent();

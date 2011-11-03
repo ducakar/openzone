@@ -65,7 +65,7 @@ class Context
                                 int magFilter = DEFAULT_MAG_FILTER,
                                 int minFilter = DEFAULT_MIN_FILTER );
 
-    static void writeTexture( uint id, OutputStream* stream );
+    static void writeTexture( uint id, BufferStream* stream );
 
 };
 

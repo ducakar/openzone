@@ -213,7 +213,7 @@ uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int mi
   return texId;
 }
 
-void Context::writeTexture( uint id, OutputStream* stream )
+void Context::writeTexture( uint id, BufferStream* stream )
 {
   glBindTexture( GL_TEXTURE_2D, id );
 
@@ -260,10 +260,10 @@ void Context::writeTexture( uint id, OutputStream* stream )
     stream->writeInt( size );
 
     if( useS3TC ) {
-      glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->prepareWrite( size ) );
+      glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->forward( size ) );
     }
     else {
-      glGetTexImage( GL_TEXTURE_2D, i, GL_RGBA, GL_UNSIGNED_BYTE, stream->prepareWrite( size ) );
+      glGetTexImage( GL_TEXTURE_2D, i, GL_RGBA, GL_UNSIGNED_BYTE, stream->forward( size ) );
     }
   }
 

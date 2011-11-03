@@ -59,8 +59,7 @@ void Caelum::build( const char* name )
     while( Math::isNaN( length ) || length < 2500.0f || length > 10000.0f );
   }
 
-  Buffer buffer( 4 * 1024 * 1024 );
-  OutputStream os = buffer.outputStream();
+  BufferStream os;
 
   for( int i = 0; i < client::Caelum::MAX_STARS; ++i ) {
     Vec3 z = ~( Point3::ORIGIN - positions[i] );
@@ -92,7 +91,7 @@ void Caelum::build( const char* name )
   glDeleteTextures( 1, &texId );
 
   log.print( "Dumping into '%s' ...", destPath.cstr() );
-  buffer.write( destPath, os.length() );
+  File( destPath ).write( &os );
   log.printEnd( " OK" );
 
   OZ_GL_CHECK_ERROR();

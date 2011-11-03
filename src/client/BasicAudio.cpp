@@ -90,10 +90,10 @@ void BasicAudio::play( const Audio* parent )
 
   // inventory items' events
   for( int i = 0; i < obj->items.length(); ++i ) {
-    const Object* obj = orbis.objects[ obj->items[i] ];
+    const Object* item = orbis.objects[ obj->items[i] ];
 
-    if( obj != null && ( obj->flags & Object::AUDIO_BIT ) ) {
-      context.playAudio( obj, parent == null ? this : parent );
+    if( item != null && ( item->flags & Object::AUDIO_BIT ) ) {
+      context.playAudio( item, parent == null ? this : parent );
     }
   }
 }

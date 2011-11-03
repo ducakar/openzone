@@ -55,9 +55,9 @@ class Dynamic : public Object
     {}
 
     virtual void readFull( InputStream* istream );
-    virtual void writeFull( OutputStream* ostream ) const;
+    virtual void writeFull( BufferStream* ostream ) const;
     virtual void readUpdate( InputStream* istream );
-    virtual void writeUpdate( OutputStream* ostream ) const;
+    virtual void writeUpdate( BufferStream* ostream ) const;
 
   OZ_STATIC_POOL_ALLOC( pool )
 

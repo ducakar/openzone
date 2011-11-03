@@ -49,7 +49,7 @@ class Memo : public Device
 
     virtual const char* getMemo() const;
 
-    virtual void write( OutputStream* ostream ) const;
+    virtual void write( BufferStream* ostream ) const;
 
   OZ_STATIC_POOL_ALLOC( pool )
 

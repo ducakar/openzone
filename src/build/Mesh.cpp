@@ -35,7 +35,7 @@ namespace oz
 namespace build
 {
 
-void MeshData::write( OutputStream* stream, bool embedTextures ) const
+void MeshData::write( BufferStream* stream, bool embedTextures ) const
 {
   hard_assert( parts.length() > 0 );
   hard_assert( indices.length() > 0 );

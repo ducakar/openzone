@@ -24,7 +24,8 @@
 
 #pragma once
 
-#include "stream.hpp"
+#include "InputStream.hpp"
+#include "OutputStream.hpp"
 
 namespace oz
 {
