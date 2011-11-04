@@ -42,22 +42,18 @@ namespace ui
 {
 
 BuildButton::BuildButton( const char* className, Callback* callback, int width, int height ) :
-    Button( gettext( ( *library.classes.find( className ) )->title ), callback, width, height ),
+    Button( gettext( library.clazz( className )->title ), callback, width, height ),
     className( className )
 {}
 
 void BuildMenu::createObject( Button* button_ )
 {
   const BuildButton* button = static_cast<const BuildButton*>( button_ );
-  const ObjectClass* const* clazz = library.classes.find( button->className );
-
-  if( clazz == null ) {
-    return;
-  }
+  const ObjectClass* clazz = library.clazz( button->className );
 
   Point3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
   p += camera.at * 2.0f;
-  AABB bb = AABB( p, ( *clazz )->dim );
+  AABB bb = AABB( p, clazz->dim );
 
   if( !collider.overlaps( bb ) ) {
     synapse.addObject( button->className, p, NORTH );

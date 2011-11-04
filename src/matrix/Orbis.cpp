@@ -210,35 +210,34 @@ void Orbis::reposition( Particle* part )
   }
 }
 
-int Orbis::addStruct( const char* name, const Point3& p, Heading heading )
+int Orbis::addStruct( int id, const Point3& p, Heading heading )
 {
   int index;
-  int id = library.bspIndex( name );
 
   requestBSP( id );
 
   if( strAvailableIndices.isEmpty() ) {
     index = structs.length();
-    structs.add( library.createStruct( index, id, p, heading ) );
+    structs.add( new Struct( index, id, p, heading ) );
   }
   else {
     index = strAvailableIndices.popLast();
-    structs[index] = library.createStruct( index, id, p, heading );
+    structs[index] = new Struct( index, id, p, heading );
   }
   return index;
 }
 
-int Orbis::addObject( const char* name, const Point3& p, Heading heading )
+int Orbis::addObject( const ObjectClass* clazz, const Point3& p, Heading heading )
 {
   int index;
 
   if( objAvailableIndices.isEmpty() ) {
     index = objects.length();
-    objects.add( library.createObject( index, name, p, heading ) );
+    objects.add( clazz->create( index, p, heading ) );
   }
   else {
     index = objAvailableIndices.popLast();
-    objects[index] = library.createObject( index, name, p, heading );
+    objects[index] = clazz->create( index, p, heading );
   }
 
   if( objects[index]->flags & Object::LUA_BIT ) {
@@ -349,7 +348,7 @@ void Orbis::read( InputStream* istream )
       int id = library.bspIndex( bspName );
 
       requestBSP( id );
-      str = library.createStruct( i, id, istream );
+      str = new Struct( i, id, istream );
       structs.add( str );
 
       if( !position( str ) ) {
@@ -364,7 +363,7 @@ void Orbis::read( InputStream* istream )
       objects.add( null );
     }
     else {
-      obj = library.createObject( i, typeName, istream );
+      obj = library.clazz( typeName )->create( i, istream );
       objects.add( obj );
 
       // no need to register objects since Lua state is being deserialised

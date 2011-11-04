@@ -61,32 +61,35 @@ BSP::BSP( int id_ ) :
   is.readString();
   is.readString();
 
-  life         = is.readFloat();
-  resistance   = is.readFloat();
+  life          = is.readFloat();
+  resistance    = is.readFloat();
 
-  nPlanes      = is.readInt();
-  nNodes       = is.readInt();
-  nLeaves      = is.readInt();
-  nLeafBrushes = is.readInt();
-  nBrushes     = is.readInt();
-  nBrushSides  = is.readInt();
-  nModels      = is.readInt();
+  nPlanes       = is.readInt();
+  nNodes        = is.readInt();
+  nLeaves       = is.readInt();
+  nLeafBrushes  = is.readInt();
+  nBrushes      = is.readInt();
+  nBrushSides   = is.readInt();
+  nModels       = is.readInt();
+  nBoundObjects = is.readInt();
 
   size_t size = 0;
 
-  size += size_t( nPlanes )      * sizeof( Plane );
+  size += size_t( nPlanes )       * sizeof( Plane );
   size = Alloc::alignUp( size );
-  size += size_t( nNodes )       * sizeof( Node );
+  size += size_t( nNodes )        * sizeof( Node );
   size = Alloc::alignUp( size );
-  size += size_t( nLeaves )      * sizeof( Leaf );
+  size += size_t( nLeaves )       * sizeof( Leaf );
   size = Alloc::alignUp( size );
-  size += size_t( nLeafBrushes ) * sizeof( int );
+  size += size_t( nLeafBrushes )  * sizeof( int );
   size = Alloc::alignUp( size );
-  size += size_t( nBrushes )     * sizeof( Brush );
+  size += size_t( nBrushes )      * sizeof( Brush );
   size = Alloc::alignUp( size );
-  size += size_t( nBrushSides )  * sizeof( int );
+  size += size_t( nBrushSides )   * sizeof( int );
   size = Alloc::alignUp( size );
-  size += size_t( nModels )      * sizeof( Model );
+  size += size_t( nModels )       * sizeof( Model );
+  size = Alloc::alignUp( size );
+  size += size_t( nBoundObjects ) * sizeof( BoundObject );
 
   char* data = new char[size];
 
@@ -166,6 +169,16 @@ BSP::BSP( int id_ ) :
     models[i].openSound   = sOpenSound.isEmpty()  ? -1 : library.soundIndex( sOpenSound );
     models[i].closeSound  = sCloseSound.isEmpty() ? -1 : library.soundIndex( sCloseSound );
     models[i].frictSound  = sFrictSound.isEmpty() ? -1 : library.soundIndex( sFrictSound );
+  }
+  data += nModels * int( sizeof( Model ) );
+
+  data = Alloc::alignUp( data );
+
+  boundObjects = new( data ) BoundObject[nBoundObjects];
+  for( int i = 0; i < nBoundObjects; ++i ) {
+    boundObjects[i].clazz   = library.clazz( is.readString() );
+    boundObjects[i].pos     = is.readPoint3();
+    boundObjects[i].heading = Heading( is.readInt() );
   }
 
   file.unmap();

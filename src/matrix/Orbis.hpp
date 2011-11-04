@@ -119,8 +119,8 @@ class Orbis : public Bounds
     void unposition( Particle* part );
     void reposition( Particle* part );
 
-    int  addStruct( const char* name, const Point3& p, Heading heading );
-    int  addObject( const char* name, const Point3& p, Heading heading );
+    int  addStruct( int id, const Point3& p, Heading heading );
+    int  addObject( const ObjectClass* clazz, const Point3& p, Heading heading );
     int  addPart( const Point3& p, const Vec3& velocity, const Vec3& colour,
                   float restitution, float mass, float lifeTime );
 

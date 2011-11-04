@@ -292,7 +292,7 @@ class IteratorBase
  * </pre>
  */
 #define foreach( i, iterator ) \
-  for( decltype( iterator ) i = iterator; i.isValid(); ++i )
+  for( auto i = iterator; i.isValid(); ++i )
 
 /**
  * <tt>begin()</tt> template for range-for.

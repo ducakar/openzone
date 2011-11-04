@@ -71,7 +71,8 @@ void Synapse::cut( Dynamic* obj )
 
 int Synapse::addStruct( const char* name, const Point3& p, Heading heading )
 {
-  int index = orbis.addStruct( name, p, heading );
+  int id      = library.bspIndex( name );
+  int index   = orbis.addStruct( id, p, heading );
   Struct* str = orbis.structs[index];
 
   if( !orbis.position( str ) ) {
@@ -80,35 +81,54 @@ int Synapse::addStruct( const char* name, const Point3& p, Heading heading )
     return -1;
   }
 
+  for( int i = 0; i < str->bsp->nBoundObjects; ++i ) {
+    const BSP::BoundObject& boundObj = str->bsp->boundObjects[i];
+
+    int objIndex = orbis.addObject( boundObj.clazz, str->toAbsoluteCS( boundObj.pos ),
+                                    Heading( ( str->heading + boundObj.heading ) % 4 ) );
+    Object* obj  = orbis.objects[objIndex];
+
+    orbis.position( obj );
+
+    str->boundObjects.add( objIndex );
+
+    addedObjects.add( objIndex );
+  }
+
   addedStructs.add( index );
   return index;
 }
 
 int Synapse::addObject( const char* name, const Point3& p, Heading heading )
 {
-  int index = orbis.addObject( name, p, heading );
+  const ObjectClass* clazz = library.clazz( name );
+  int index   = orbis.addObject( clazz, p, heading );
   Object* obj = orbis.objects[index];
 
-  for( int i = 0; i < obj->clazz->items.length(); ++i ) {
-    int itemIndex = orbis.addObject( obj->clazz->items[i], Point3::ORIGIN, NORTH );
-    Dynamic* item = static_cast<Dynamic*>( orbis.objects[itemIndex] );
+  orbis.position( obj );
 
-    obj->items.add( itemIndex );
-    item->parent = obj->index;
+  int nItems = obj->clazz->items.length();
+  if( nItems != 0 ) {
+    for( int i = 0; i < nItems; ++i ) {
+      const ObjectClass* clazz = library.clazz( obj->clazz->items[i] );
+      int itemIndex = orbis.addObject( clazz, Point3::ORIGIN, NORTH );
+      Dynamic* item = static_cast<Dynamic*>( orbis.objects[itemIndex] );
 
-    addedObjects.add( itemIndex );
-  }
+      obj->items.add( itemIndex );
+      item->parent = obj->index;
 
-  if( obj->flags & Object::BOT_BIT ) {
-    const BotClass* botClazz = static_cast<const BotClass*>( obj->clazz );
-    Bot* bot = static_cast<Bot*>( obj );
+      addedObjects.add( itemIndex );
+    }
 
-    if( botClazz->weaponItem != -1 ) {
-      bot->weapon = bot->items[botClazz->weaponItem];
+    if( obj->flags & Object::BOT_BIT ) {
+      const BotClass* botClazz = static_cast<const BotClass*>( obj->clazz );
+      Bot* bot = static_cast<Bot*>( obj );
+
+      if( botClazz->weaponItem != -1 ) {
+        bot->weapon = bot->items[botClazz->weaponItem];
+      }
     }
   }
-
-  orbis.position( obj );
 
   addedObjects.add( index );
   return index;

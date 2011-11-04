@@ -102,6 +102,8 @@ void Object::readFull( InputStream* istream )
   flags = istream->readInt();
   life  = istream->readFloat();
 
+  events.free();
+
   int nEvents = istream->readInt();
   for( int i = 0; i < nEvents; ++i ) {
     int id = istream->readInt();
@@ -110,11 +112,18 @@ void Object::readFull( InputStream* istream )
     addEvent( id, intensity );
   }
 
-  int nItems = istream->readInt();
-  for( int i = 0; i < nItems; ++i ) {
-    int index = istream->readInt();
+  items.dealloc();
 
-    items.add( index );
+  int nItems = istream->readInt();
+
+  hard_assert( nItems <= clazz->items.length() );
+
+  if( !clazz->items.isEmpty() ) {
+    items.alloc( clazz->items.length() );
+
+    for( int i = 0; i < nItems; ++i ) {
+      items.add( istream->readInt() );
+    }
   }
 }
 

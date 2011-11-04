@@ -260,6 +260,10 @@ void ObjectClass::fillCommonFields( Object* obj ) const
   obj->clazz      = this;
   obj->life       = life;
   obj->resistance = resistance;
+
+  if( !items.isEmpty() ) {
+    obj->items.alloc( items.length() );
+  }
 }
 
 ObjectClass::~ObjectClass()
@@ -289,8 +293,6 @@ ObjectClass* ObjectClass::init( const Config* config )
 Object* ObjectClass::create( int index, const Point3& pos, Heading heading ) const
 {
   Object* obj = new Object();
-
-  hard_assert( obj->index == -1 && obj->cell == null );
 
   obj->p          = pos;
   obj->index      = index;

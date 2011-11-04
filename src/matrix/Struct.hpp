@@ -77,22 +77,24 @@ class Struct : public Bounds
 
   private:
 
-    Mat44      transf;
-    Mat44      invTransf;
+    Mat44       transf;
+    Mat44       invTransf;
 
   public:
 
-    Point3     p;
-    int        index;
-    int        id;
-    const BSP* bsp;
-    Heading    heading;
-    float      life;
-    float      resistance;
-    float      demolishing;
+    Point3      p;
+    int         index;
+    int         id;
+    const BSP*  bsp;
+    Heading     heading;
+    float       life;
+    float       resistance;
+    float       demolishing;
 
-    int        nEntities;
-    Entity*    entities;
+    int         nEntities;
+    Entity*     entities;
+
+    Vector<int> boundObjects;
 
     static Vector<Object*> overlappingObjs;
     static Pool<Struct> pool;
@@ -205,7 +207,7 @@ inline void Struct::damage( float damage )
 OZ_ALWAYS_INLINE
 inline void Struct::update()
 {
-  if( nEntities != 0 || life <= 0.0f ) {
+  if( nEntities != 0 || !boundObjects.isEmpty() || life <= 0.0f ) {
     onUpdate();
   }
 }

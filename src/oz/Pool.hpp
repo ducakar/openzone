@@ -140,9 +140,6 @@ class Pool
      */
     ~Pool()
     {
-      // there's a memory leak if count != 0
-      soft_assert( count == 0 && size == 0 );
-
       free();
     }
 
@@ -275,7 +272,8 @@ class Pool
      */
     void free()
     {
-      hard_assert( count == 0 );
+      // there's a memory leak if count != 0
+      soft_assert( count == 0 );
 
       Block* block = firstBlock;
 

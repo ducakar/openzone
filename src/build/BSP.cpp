@@ -454,6 +454,49 @@ void BSP::load()
     }
   }
 
+  char keyBuffer[] = "object  ";
+  for( int i = 0; i < BOUND_OBJECTS; ++i ) {
+    hard_assert( i < 100 );
+
+    keyBuffer[ sizeof( keyBuffer ) - 3 ] = char( '0' + ( i / 10 ) );
+    keyBuffer[ sizeof( keyBuffer ) - 2 ] = char( '0' + ( i % 10 ) );
+
+    String key     = keyBuffer;
+    String objName = bspConfig.get( key + ".name", "" );
+
+    if( !objName.isEmpty() ) {
+      matrix::BSP::BoundObject object;
+
+      object.clazz   = library.clazz( objName );
+
+      object.pos.x   = bspConfig.get( key + ".pos.x", 0.0f );
+      object.pos.y   = bspConfig.get( key + ".pos.y", 0.0f );
+      object.pos.z   = bspConfig.get( key + ".pos.z", 0.0f );
+
+      String sHeading = bspConfig.get( key + ".heading", "" );
+      if( sHeading.equals( "NORTH" ) ) {
+        object.heading = NORTH;
+      }
+      else if( sHeading.equals( "WEST" ) ) {
+        object.heading = WEST;
+      }
+      else if( sHeading.equals( "SOUTH" ) ) {
+        object.heading = SOUTH;
+      }
+      else if( sHeading.equals( "EAST" ) ) {
+        object.heading = EAST;
+      }
+      else if( sHeading.isEmpty() ) {
+        throw Exception( "Missing heading for a BSP bound object" );
+      }
+      else {
+        throw Exception( "Invalid object heading '" + sHeading + "'" );
+      }
+
+      boundObjects.add( object );
+    }
+  }
+
   file.unmap();
 }
 
@@ -972,6 +1015,7 @@ void BSP::saveMatrix()
   os.writeInt( nBrushes );
   os.writeInt( nBrushSides );
   os.writeInt( nModels );
+  os.writeInt( boundObjects.length() );
 
   for( int i = 0; i < nPlanes; ++i ) {
     os.writePlane( planes[i] );
@@ -1021,6 +1065,12 @@ void BSP::saveMatrix()
     os.writeString( openSound  == -1 ? "" : library.sounds[openSound].name );
     os.writeString( closeSound == -1 ? "" : library.sounds[closeSound].name );
     os.writeString( frictSound == -1 ? "" : library.sounds[frictSound].name );
+  }
+
+  for( int i = 0; i < boundObjects.length(); ++i ) {
+    os.writeString( boundObjects[i].clazz->name );
+    os.writePoint3( boundObjects[i].pos );
+    os.writeInt( boundObjects[i].heading );
   }
 
   File( path ).write( &os );

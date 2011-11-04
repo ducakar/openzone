@@ -1,47 +1,41 @@
 TODO 0.3
-- matrix
-  * BSP
-    + bound objects
-    + demolishing
-  * Vehicle
-    + turrets
-  * documentation
 - client
-  * particle model (smoke, fire ...)
   * particle pools
     + wood
     + metal
     + building debris
     + meat frags
     + bullets
-  * MD3 animation
   * libmad
 - ui
   * onShow
 - lua
   * API refresh
-- tools
-  * documentation
 
 TODO 0.4
 - matrix
   * Vehicle
+    + turrets
     + wheeled
     + tracked
     + mech warrior
+- ui
+  * advanced HUD for mechanic units and vehicles
 - client
   * specular masks
-  * BSP rendering per partes
+  * particle model (smoke, fire ...)
   * decals
-  * animated textures
   * bloom effect
-  * documentation
+  * animated textures
+  * BSP rendering per partes
+  * MD3 animation
 
 TODO 0.5
 - RTS interface
 - commanding units
 - building
 - homepage
+- documentation
 
 TODO 0.6
 - AI tasks
