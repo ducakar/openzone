@@ -228,22 +228,18 @@ int Orbis::addStruct( const char* name, const Point3& p, Heading heading )
   return index;
 }
 
-// has to be reentrant, can be called again from library.createObject
 int Orbis::addObject( const char* name, const Point3& p, Heading heading )
 {
   int index;
 
   if( objAvailableIndices.isEmpty() ) {
     index = objects.length();
-    // reserve slot so reentrant calls cannot occupy it again
-    objects.add( null );
+    objects.add( library.createObject( index, name, p, heading ) );
   }
   else {
     index = objAvailableIndices.popLast();
+    objects[index] = library.createObject( index, name, p, heading );
   }
-  // objects vector may relocate during createObject call, we must use this workaround
-  Object* obj = library.createObject( index, name, p, heading );
-  objects[index] = obj;
 
   if( objects[index]->flags & Object::LUA_BIT ) {
     lua.registerObject( index );

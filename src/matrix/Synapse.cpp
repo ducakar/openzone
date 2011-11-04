@@ -29,6 +29,7 @@
 #include "matrix/Library.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Bot.hpp"
+#include "matrix/BotClass.hpp"
 
 namespace oz
 {
@@ -87,7 +88,25 @@ int Synapse::addObject( const char* name, const Point3& p, Heading heading )
 {
   int index = orbis.addObject( name, p, heading );
   Object* obj = orbis.objects[index];
-  hard_assert( obj->cell == null );
+
+  for( int i = 0; i < obj->clazz->items.length(); ++i ) {
+    int itemIndex = orbis.addObject( obj->clazz->items[i], Point3::ORIGIN, NORTH );
+    Dynamic* item = static_cast<Dynamic*>( orbis.objects[itemIndex] );
+
+    obj->items.add( itemIndex );
+    item->parent = obj->index;
+
+    addedObjects.add( itemIndex );
+  }
+
+  if( obj->flags & Object::BOT_BIT ) {
+    const BotClass* botClazz = static_cast<const BotClass*>( obj->clazz );
+    Bot* bot = static_cast<Bot*>( obj );
+
+    if( botClazz->weaponItem != -1 ) {
+      bot->weapon = bot->items[botClazz->weaponItem];
+    }
+  }
 
   orbis.position( obj );
 
@@ -96,7 +115,7 @@ int Synapse::addObject( const char* name, const Point3& p, Heading heading )
 }
 
 int Synapse::addPart( const Point3& p, const Vec3& velocity, const Vec3& colour,
-                             float restitution, float mass, float lifeTime )
+                      float restitution, float mass, float lifeTime )
 {
   int index = orbis.addPart( p, velocity, colour, restitution, mass, lifeTime );
   Particle* part = orbis.parts[index];

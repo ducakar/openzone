@@ -260,17 +260,6 @@ void ObjectClass::fillCommonFields( Object* obj ) const
   obj->clazz      = this;
   obj->life       = life;
   obj->resistance = resistance;
-
-  for( int i = 0; i < items.length(); ++i ) {
-    int index = synapse.addObject( items[i], Point3::ORIGIN, NORTH );
-    Dynamic* item = static_cast<Dynamic*>( orbis.objects[index] );
-
-    hard_assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
-
-    obj->items.add( index );
-    item->parent = obj->index;
-    synapse.cut( item );
-  }
 }
 
 ObjectClass::~ObjectClass()

@@ -359,7 +359,7 @@ void GameStage::write( const char* path ) const
 
   log.print( "Saving state to %s ...", path );
 
-  if( File( path ).write( &ostream ) ) {
+  if( !File( path ).write( &ostream ) ) {
     log.printEnd( " Failed" );
   }
   else {

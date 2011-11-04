@@ -147,8 +147,7 @@ Struct* Library::createStruct( int index, int id, InputStream* istream ) const
   return new Struct( index, id, istream );
 }
 
-Object* Library::createObject( int index, const char* name,
-                               const Point3& p, Heading heading ) const
+Object* Library::createObject( int index, const char* name, const Point3& p, Heading heading ) const
 {
   const ObjectClass* const* value = classes.find( name );
   if( value != null ) {
@@ -565,11 +564,49 @@ void Library::init()
   }
   dirList.dealloc();
 
-  foreach( clazz, classes.citer() ) {
-    const WeaponClass* weaponClass = dynamic_cast<const WeaponClass*>( clazz.value() );
+  foreach( clazzElem, classes.citer() ) {
+    const ObjectClass* clazz = clazzElem.value();
 
+    // check if all items are valid
+    for( int i = 0; i < clazz->items.length(); ++i ) {
+      ObjectClass* const* itemClazz = classes.find( clazz->items[i] );
+
+      if( itemClazz == null || !( ( *itemClazz )->flags & Object::DYNAMIC_BIT ) ||
+          !( ( *itemClazz )->flags & Object::ITEM_BIT ) )
+      {
+        throw Exception( "Invalid item clazz '" + clazz->items[i] + "' in '" + clazz->name + "'" );
+      }
+    }
+
+    // fill allowedUsers for weapons
+    const WeaponClass* weaponClass = dynamic_cast<const WeaponClass*>( clazz );
     if( weaponClass != null ) {
       const_cast<WeaponClass*>( weaponClass )->fillAllowedUsers();
+    }
+  }
+
+  foreach( clazz, classes.citer() ) {
+    // check if weaponItem is a valid weapon for bots
+    if( clazz.value()->flags & Object::BOT_BIT ) {
+      const BotClass* botClazz = static_cast<const BotClass*>( clazz.value() );
+
+      if( botClazz->weaponItem != -1 ) {
+        if( uint( botClazz->weaponItem ) >= uint( botClazz->items.length() ) ) {
+          throw Exception( "Invalid weaponItem for '" + botClazz->name + "'" );
+        }
+
+        ObjectClass* const* itemClazz = classes.find( botClazz->items[botClazz->weaponItem] );
+        // we already checked it the previous loop it's non-null and a valid item
+        const WeaponClass* weaponClazz = dynamic_cast<const WeaponClass*>( *itemClazz );
+
+        if( weaponClazz == null ) {
+          throw Exception( "Default weapon of '" + botClazz->name + "' is of a non-weapon class" );
+        }
+        else if( !weaponClazz->allowedUsers.contains( botClazz ) ) {
+          throw Exception( "Default weapon of '" + botClazz->name +
+                           "' is not allowed for this bot class" );
+        }
+      }
     }
   }
 
@@ -947,6 +984,52 @@ void Library::buildInit()
     classConfig.clear();
   }
   dirList.dealloc();
+
+  foreach( clazzElem, classes.citer() ) {
+    const ObjectClass* clazz = clazzElem.value();
+
+    // check if all items are valid
+    for( int i = 0; i < clazz->items.length(); ++i ) {
+      ObjectClass* const* itemClazz = classes.find( clazz->items[i] );
+
+      if( itemClazz == null || !( ( *itemClazz )->flags & Object::DYNAMIC_BIT ) ||
+          !( ( *itemClazz )->flags & Object::ITEM_BIT ) )
+      {
+        throw Exception( "Invalid item clazz '" + clazz->items[i] + "' in '" + clazz->name + "'" );
+      }
+    }
+
+    // fill allowedUsers for weapons
+    const WeaponClass* weaponClass = dynamic_cast<const WeaponClass*>( clazz );
+    if( weaponClass != null ) {
+      const_cast<WeaponClass*>( weaponClass )->fillAllowedUsers();
+    }
+  }
+
+  foreach( clazz, classes.citer() ) {
+    // check if weaponItem is a valid weapon for bots
+    if( clazz.value()->flags & Object::BOT_BIT ) {
+      const BotClass* botClazz = static_cast<const BotClass*>( clazz.value() );
+
+      if( botClazz->weaponItem != -1 ) {
+        if( uint( botClazz->weaponItem ) >= uint( botClazz->items.length() ) ) {
+          throw Exception( "Invalid weaponItem for '" + botClazz->name + "'" );
+        }
+
+        ObjectClass* const* itemClazz = classes.find( botClazz->items[botClazz->weaponItem] );
+        // we already checked it the previous loop it's non-null and a valid item
+        const WeaponClass* weaponClazz = dynamic_cast<const WeaponClass*>( *itemClazz );
+
+        if( weaponClazz == null ) {
+          throw Exception( "Default weapon of '" + botClazz->name + "' is of a non-weapon class" );
+        }
+        else if( !weaponClazz->allowedUsers.contains( botClazz ) ) {
+          throw Exception( "Default weapon of '" + botClazz->name +
+                           "' is not allowed for this bot class" );
+        }
+      }
+    }
+  }
 
   log.unindent();
   log.println( "}" );

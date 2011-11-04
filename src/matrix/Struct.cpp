@@ -269,6 +269,21 @@ void Struct::Entity::updateAutoDoor()
 
 void Struct::onDemolish()
 {
+  overlappingObjs.clear();
+  collider.mask = ~0;
+  collider.getOverlaps( this->toAABB(), &overlappingObjs, null, 4.0f * EPSILON );
+  collider.mask = Object::SOLID_BIT;
+
+  for( int i = 0; i < overlappingObjs.length(); ++i ) {
+    Object* obj = overlappingObjs[i];
+
+    obj->flags &= ~Object::MOVE_CLEAR_MASK;
+
+    if( collider.overlaps( obj->toAABB( -2.0f * EPSILON ), obj ) ) {
+      obj->destroy();
+    }
+  }
+
   if( demolishing > 1.0f ) {
     synapse.remove( this );
   }
@@ -284,21 +299,6 @@ void Struct::onDemolish()
     Bounds bb = toAbsoluteCS( *bsp );
     mins = bb.mins;
     maxs = bb.maxs;
-
-    overlappingObjs.clear();
-    collider.mask = ~0;
-    collider.getOverlaps( this->toAABB(), &overlappingObjs, null, 4.0f * EPSILON );
-    collider.mask = Object::SOLID_BIT;
-
-    for( int i = 0; i < overlappingObjs.length(); ++i ) {
-      Object* obj = overlappingObjs[i];
-
-      obj->flags &= ~Object::MOVE_CLEAR_MASK;
-
-      if( collider.overlaps( obj->toAABB( -2.0f * EPSILON ), obj ) ) {
-        obj->destroy();
-      }
-    }
   }
 }
 
