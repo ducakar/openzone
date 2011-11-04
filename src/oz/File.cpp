@@ -86,11 +86,15 @@ File::File( const char* path ) : filePath( path ), type( NONE ), data( null )
 
 void File::setPath( const char* path )
 {
-  hard_assert( data == null );
+  soft_assert( data == null );
+
+  if( data != null ) {
+    unmap();
+  }
 
   filePath = path;
-  type = NONE;
-  data = null;
+  type     = NONE;
+  data     = null;
 }
 
 File::Type File::getType()

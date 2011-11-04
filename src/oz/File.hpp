@@ -59,7 +59,7 @@ class File
     int    size;     ///< MMapped memory size.
 
     /**
-     * Internal function to write buffer to the file.
+     * Internal function to a write buffer to the file.
      *
      * @return True on success.
      */
@@ -78,21 +78,21 @@ class File
     ~File();
 
     /**
-     * Create instance for the given path.
+     * Create an instance for the given path.
      */
     explicit File( const char* path );
 
     /**
      * Set a new file path.
      *
-     * Cached file type is cleared to <tt>NONE</tt>.
+     * Cached file type is cleared to <tt>NONE</tt> and file is unmmapped if it is currenty mmaped.
      */
     void setPath( const char* path );
 
     /**
      * Stat file to get its type.
      *
-     * File type is cached until you change the file path.
+     * File type is cached until one changes the file path.
      */
     Type getType();
 

@@ -468,12 +468,12 @@ void Bot::onUpdate()
         !( state & CLIMBING_BIT ) && stamina > clazz->staminaClimbDrain )
     {
       // check if bot's gonna hit a wall soon
-      Vec3 desiredMove = CLIMB_MOVE_AHEAD * move;
+      Vec3 desiredMove = CLIMB_MOVE_AHEAD * Vec3( move.x, move.y, 0.0f );
 
-      collider.mask = flags & SOLID_BIT;
       collider.translate( this, desiredMove );
 
       if( collider.hit.ratio != 1.0f && collider.hit.normal.z < Physics::FLOOR_NORMAL_Z ) {
+        // check how far upwards we can raise
         Vec3  normal    = collider.hit.normal;
         float startDist = 4.0f * EPSILON - ( desiredMove * collider.hit.ratio ) * normal;
         float originalZ = p.z;
@@ -482,35 +482,44 @@ void Bot::onUpdate()
 
         float maxRaise = collider.hit.ratio * clazz->climbMax;
 
+        // for each height check if we can move forwards for desiredMove
         for( float raise = clazz->stepMax; raise <= maxRaise; raise += clazz->climbInc ) {
           p.z += clazz->climbInc;
+
           collider.translate( this, desiredMove );
 
           Vec3 move = desiredMove * collider.hit.ratio;
-          move.z += raise;
-          float endDist = startDist + move * normal;
+          float endDist = startDist + Vec3( move.x, move.y, move.z + raise ) * normal;
 
           if( endDist < 0.0f ) {
-            momentum.x    *= ( 1.0f - Physics::LADDER_FRICTION );
-            momentum.y    *= ( 1.0f - Physics::LADDER_FRICTION );
-            momentum.z    = max( momentum.z, clazz->climbMomentum );
+            // check if ledge has a normal.z >= FLOOR_NORMAL_Z
+            Point3 raisedPos = p;
+            p += move;
 
-            instrument    = -1;
-            instrumentObj = null;
-            state         |= CLIMBING_BIT;
-            state         &= ~GRAB_BIT;
-            stamina       -= clazz->staminaClimbDrain;
+            collider.translate( this, Vec3( 0.0f, 0.0f, -raise ) );
 
-            anim          = Anim::RUN;
+            p = raisedPos;
 
-            break;
+            if( collider.hit.ratio != 1.0f && collider.hit.normal.z >= Physics::FLOOR_NORMAL_Z ) {
+              momentum.x    *= ( 1.0f - Physics::LADDER_FRICTION );
+              momentum.y    *= ( 1.0f - Physics::LADDER_FRICTION );
+              momentum.z    = max( momentum.z, clazz->climbMomentum );
+
+              instrument    = -1;
+              instrumentObj = null;
+              state         |= CLIMBING_BIT;
+              state         &= ~GRAB_BIT;
+              stamina       -= clazz->staminaClimbDrain;
+
+              anim          = Anim::RUN;
+
+              break;
+            }
           }
         }
 
         p.z = originalZ;
       }
-
-      collider.mask = SOLID_BIT;
     }
 
     // First, check if bot's gonna hit an obstacle in the next frame. If it does, check whether it
@@ -537,7 +546,6 @@ void Bot::onUpdate()
       // check if bot's gonna hit a stair in the next frame
       Vec3 desiredMove = STEP_MOVE_AHEAD * move;
 
-      collider.mask = flags & SOLID_BIT;
       collider.translate( this, desiredMove );
 
       if( collider.hit.ratio != 1.0f && collider.hit.normal.z < Physics::FLOOR_NORMAL_Z ) {
@@ -565,8 +573,6 @@ void Bot::onUpdate()
         p.z = originalZ;
         stepSucceeded:;
       }
-
-      collider.mask = SOLID_BIT;
     }
   }
 
