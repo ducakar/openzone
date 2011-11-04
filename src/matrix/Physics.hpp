@@ -61,16 +61,16 @@ class Physics
 
   private:
 
-    Dynamic*  dyn;
-    Particle* part;
-    Bounds    trace;
-    Vec3      move;
-    float     leftRatio;
+    Dynamic* dyn;
+    Frag*    frag;
+    Bounds   trace;
+    Vec3     move;
+    float    leftRatio;
 
-    Vec3      lastNormals[2];
+    Vec3     lastNormals[2];
 
-    void handlePartHit();
-    void handlePartMove();
+    void handleFragHit();
+    void handleFragMove();
 
     bool handleObjFriction();
     void handleObjHit();
@@ -78,7 +78,7 @@ class Physics
 
   public:
 
-    void updatePart( Particle* part );
+    void updateFrag( Frag* frag );
     void updateObj( Dynamic* dyn );
 
 };

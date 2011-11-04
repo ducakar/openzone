@@ -19,24 +19,24 @@
  */
 
 /**
- * @file matrix/Particle.cpp
+ * @file matrix/Frag.cpp
  */
 
 #include "stable.hpp"
 
-#include "matrix/Particle.hpp"
+#include "matrix/Frag.hpp"
 
 namespace oz
 {
 namespace matrix
 {
 
-const float Particle::MAX_ROTVELOCITY = 8.0f * Timer::TICK_TIME;
-const float Particle::DAMAGE_THRESHOLD = 50.0f;
+const float Frag::MAX_ROTVELOCITY = 8.0f * Timer::TICK_TIME;
+const float Frag::DAMAGE_THRESHOLD = 50.0f;
 
-Pool<Particle, 2048> Particle::pool;
+Pool<Frag, 2048> Frag::pool;
 
-Particle::Particle( int index_, const Point3& p_, const Vec3& velocity_, const Vec3& colour_,
+Frag::Frag( int index_, const Point3& p_, const Vec3& velocity_, const Vec3& colour_,
                     float restitution_, float mass_, float lifeTime_ ) :
     cell( null ), index( index_ ), p( p_ ), velocity( velocity_ ), colour( colour_ ),
     rot( Vec3( Math::rand() * Math::TAU, Math::rand() * Math::TAU, Math::rand() * Math::TAU ) ),
@@ -50,7 +50,7 @@ Particle::Particle( int index_, const Point3& p_, const Vec3& velocity_, const V
   hard_assert( lifeTime > 0.0f );
 }
 
-void Particle::readFull( InputStream* istream )
+void Frag::readFull( InputStream* istream )
 {
   p           = istream->readPoint3();
   velocity    = istream->readVec3();
@@ -64,7 +64,7 @@ void Particle::readFull( InputStream* istream )
   lifeTime    = istream->readFloat();
 }
 
-void Particle::writeFull( BufferStream* ostream )
+void Frag::writeFull( BufferStream* ostream )
 {
   ostream->writePoint3( p );
   ostream->writeVec3( velocity );
@@ -78,13 +78,13 @@ void Particle::writeFull( BufferStream* ostream )
   ostream->writeFloat( lifeTime );
 }
 
-void Particle::readUpdate( InputStream* istream )
+void Frag::readUpdate( InputStream* istream )
 {
   p        = istream->readPoint3();
   velocity = istream->readVec3();
 }
 
-void Particle::writeUpdate( BufferStream* ostream )
+void Frag::writeUpdate( BufferStream* ostream )
 {
   ostream->writePoint3( p );
   ostream->writeVec3( velocity );

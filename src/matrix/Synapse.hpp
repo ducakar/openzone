@@ -49,29 +49,16 @@ class Synapse
               ///< be ordered by the server.
     };
 
-    struct Action
-    {
-      int user;
-      int target;
+    Vector<int> putObjects;
+    Vector<int> cutObjects;
 
-      Action() = default;
+    Vector<int> addedStructs;
+    Vector<int> addedObjects;
+    Vector<int> addedFrags;
 
-      explicit Action( int user_, int target_ ) : user( user_ ), target( target_ )
-      {}
-    };
-
-    Vector<Action> actions;
-
-    Vector<int>    putObjects;
-    Vector<int>    cutObjects;
-
-    Vector<int>    addedStructs;
-    Vector<int>    addedObjects;
-    Vector<int>    addedParts;
-
-    Vector<int>    removedStructs;
-    Vector<int>    removedObjects;
-    Vector<int>    removedParts;
+    Vector<int> removedStructs;
+    Vector<int> removedObjects;
+    Vector<int> removedFrags;
 
     Mode mode;
 
@@ -88,15 +75,15 @@ class Synapse
     // create an object, schedule for addition in the world and return predicted world index
     int  addStruct( const char* name, const Point3& p, Heading heading );
     int  addObject( const char* name, const Point3& p, Heading heading );
-    int  addPart( const Point3& p, const Vec3& velocity, const Vec3& colour,
+    int  addFrag( const Point3& p, const Vec3& velocity, const Vec3& colour,
                   float restitution, float mass, float lifeTime );
 
     // schedule for removal from physical world and delete it
     void remove( Struct* str );
     void remove( Object* obj );
-    void remove( Particle* part );
+    void remove( Frag* frag );
 
-    void genParts( int number, const Point3& p,
+    void genFrags( int number, const Point3& p,
                    const Vec3& velocity, float velocitySpread,
                    const Vec3& colour, float colourSpread,
                    float restitution, float mass, float lifeTime );

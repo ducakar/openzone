@@ -20,8 +20,6 @@
 
 /**
  * @file client/SparkModel.hpp
- *
- * Visual particle generator.
  */
 
 #pragma once

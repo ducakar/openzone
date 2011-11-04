@@ -20,8 +20,6 @@
 
 /**
  * @file client/SparkModel.cpp
- *
- * Visual particle generator.
  */
 
 #include "stable.hpp"

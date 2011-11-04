@@ -44,7 +44,6 @@ Synapse::Synapse() : mode( SINGLE )
 void Synapse::use( Bot* user, Object* target )
 {
   if( target->flags & Object::USE_FUNC_BIT ) {
-    actions.add( Action( user->index, target->index ) );
     target->use( user );
   }
 }
@@ -53,8 +52,9 @@ void Synapse::put( Dynamic* obj )
 {
   hard_assert( obj->index != -1 && obj->cell == null && obj->parent == -1 );
 
-  putObjects.add( obj->index );
   orbis.position( obj );
+
+  putObjects.add( obj->index );
 }
 
 void Synapse::cut( Dynamic* obj )
@@ -65,8 +65,9 @@ void Synapse::cut( Dynamic* obj )
       Object::ON_LADDER_BIT | Object::ON_SLICK_BIT | Object::FRICTING_BIT | Object::HIT_BIT );
   obj->lower = -1;
 
-  cutObjects.add( obj->index );
   orbis.unposition( obj );
+
+  cutObjects.add( obj->index );
 }
 
 int Synapse::addStruct( const char* name, const Point3& p, Heading heading )
@@ -134,15 +135,15 @@ int Synapse::addObject( const char* name, const Point3& p, Heading heading )
   return index;
 }
 
-int Synapse::addPart( const Point3& p, const Vec3& velocity, const Vec3& colour,
+int Synapse::addFrag( const Point3& p, const Vec3& velocity, const Vec3& colour,
                       float restitution, float mass, float lifeTime )
 {
-  int index = orbis.addPart( p, velocity, colour, restitution, mass, lifeTime );
-  Particle* part = orbis.parts[index];
+  int index = orbis.addFrag( p, velocity, colour, restitution, mass, lifeTime );
+  Frag* frag = orbis.frags[index];
 
-  orbis.position( part );
+  orbis.position( frag );
 
-  addedParts.add( index );
+  addedFrags.add( index );
   return index;
 }
 
@@ -150,9 +151,10 @@ void Synapse::remove( Struct* str )
 {
   hard_assert( str->index != -1 );
 
+  removedStructs.add( str->index );
+
   collider.touchOverlaps( str->toAABB(), 4.0f * EPSILON );
 
-  removedStructs.add( str->index );
   orbis.unposition( str );
   orbis.remove( str );
 }
@@ -175,16 +177,17 @@ void Synapse::remove( Object* obj )
   orbis.remove( obj );
 }
 
-void Synapse::remove( Particle* part )
+void Synapse::remove( Frag* frag )
 {
-  hard_assert( part->index != -1 );
+  hard_assert( frag->index != -1 );
 
-  removedParts.add( part->index );
-  orbis.unposition( part );
-  orbis.remove( part );
+  removedFrags.add( frag->index );
+
+  orbis.unposition( frag );
+  orbis.remove( frag );
 }
 
-void Synapse::genParts( int number, const Point3& p,
+void Synapse::genFrags( int number, const Point3& p,
                         const Vec3& velocity, float velocitySpread,
                         const Vec3& colour, float colourSpread,
                         float restitution, float mass, float lifeTime )
@@ -201,48 +204,41 @@ void Synapse::genParts( int number, const Point3& p,
                                colourSpread * Math::rand() - colourSpread2 );
     float timeDisturb = lifeTime * Math::rand();
 
-    addPart( p, velocity + velDisturb, colour + colourDisturb,
+    addFrag( p, velocity + velDisturb, colour + colourDisturb,
              restitution, mass, 0.5f * lifeTime + timeDisturb );
   }
 }
 
 void Synapse::update()
 {
-  actions.clear();
-
   putObjects.clear();
   cutObjects.clear();
 
   addedStructs.clear();
   addedObjects.clear();
-  addedParts.clear();
+  addedFrags.clear();
 
   removedStructs.clear();
   removedObjects.clear();
-  removedParts.clear();
+  removedFrags.clear();
 }
 
 void Synapse::load()
 {
-  actions.alloc( 256 );
-
   putObjects.alloc( 32 );
   cutObjects.alloc( 32 );
 
   addedStructs.alloc( 4 * 16 );
   addedObjects.alloc( 64 * 16 );
-  addedParts.alloc( 128 * 8 );
+  addedFrags.alloc( 128 * 8 );
 
   removedStructs.alloc( 4 );
   removedObjects.alloc( 64 );
-  removedParts.alloc( 128 );
+  removedFrags.alloc( 128 );
 }
 
 void Synapse::unload()
 {
-  actions.clear();
-  actions.dealloc();
-
   putObjects.clear();
   putObjects.dealloc();
   cutObjects.clear();
@@ -252,15 +248,15 @@ void Synapse::unload()
   addedStructs.dealloc();
   addedObjects.clear();
   addedObjects.dealloc();
-  addedParts.clear();
-  addedParts.dealloc();
+  addedFrags.clear();
+  addedFrags.dealloc();
 
   removedStructs.clear();
   removedStructs.dealloc();
   removedObjects.clear();
   removedObjects.dealloc();
-  removedParts.clear();
-  removedParts.dealloc();
+  removedFrags.clear();
+  removedFrags.dealloc();
 }
 
 }

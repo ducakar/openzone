@@ -31,7 +31,7 @@
 #include "matrix/Terra.hpp"
 #include "matrix/Struct.hpp"
 #include "matrix/Dynamic.hpp"
-#include "matrix/Particle.hpp"
+#include "matrix/Frag.hpp"
 
 namespace oz
 {
@@ -44,9 +44,9 @@ struct Cell
   static const float SIZE;
   static const float INV_SIZE;
 
-  List<Object>      objects;
-  List<Particle>    particles;
   SVector<short, 6> structs;
+  List<Object>      objects;
+  List<Frag>        frags;
 };
 
 class Orbis : public Bounds
@@ -64,7 +64,7 @@ class Orbis : public Bounds
 
     Vector<Struct*>   structs;
     Vector<Object*>   objects;
-    Vector<Particle*> parts;
+    Vector<Frag*>     frags;
 
     BSP**             bsps;
     Terra             terra;
@@ -78,7 +78,7 @@ class Orbis : public Bounds
      * Index reusing: when an entity is removed, there may still be references to it (from other
      * models or from render or sound subsystems); that's why every cycle all references must
      * be checked if the slot they're pointing at (all references should be indices of a slot
-     * in Orbis::structures/objects/particles vectors). If the target slot is null, the referenced
+     * in Orbis::structures/objects/fragments vectors). If the target slot is null, the referenced
      * entity doesn't exist any more, so reference must be cleared. To make sure all references
      * can be checked that way, a full world update must pass before a slot is reused. Otherwise
      * an entity may be removed and immediately after that another added into it's slot; when an
@@ -96,12 +96,12 @@ class Orbis : public Bounds
     // [waiting]: indices that have been freed previous cycle; those can be reused next time
     Vector<int>        strFreedIndices[2];
     Vector<int>        objFreedIndices[2];
-    Vector<int>        partFreedIndices[2];
+    Vector<int>        fragFreedIndices[2];
 
     // indices of slots that can be reused
     Vector<int>        strAvailableIndices;
     Vector<int>        objAvailableIndices;
-    Vector<int>        partAvailableIndices;
+    Vector<int>        fragAvailableIndices;
 
   private:
 
@@ -115,18 +115,18 @@ class Orbis : public Bounds
     void unposition( Object* obj );
     void reposition( Object* obj );
 
-    void position( Particle* part );
-    void unposition( Particle* part );
-    void reposition( Particle* part );
+    void position( Frag* frag );
+    void unposition( Frag* frag );
+    void reposition( Frag* frag );
 
     int  addStruct( int id, const Point3& p, Heading heading );
     int  addObject( const ObjectClass* clazz, const Point3& p, Heading heading );
-    int  addPart( const Point3& p, const Vec3& velocity, const Vec3& colour,
+    int  addFrag( const Point3& p, const Vec3& velocity, const Vec3& colour,
                   float restitution, float mass, float lifeTime );
 
     void remove( Struct* str );
     void remove( Object* obj );
-    void remove( Particle* part );
+    void remove( Frag* frag );
 
   public:
 

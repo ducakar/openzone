@@ -16,7 +16,5 @@ echo Generating src/nirvana/CMakeLists.txt
 ( cd src/nirvana  && ./CMakeLists-gen.sh )
 echo Generating src/client/CMakeLists.txt
 ( cd src/client   && ./CMakeLists-gen.sh )
-echo Generating src/server/CMakeLists.txt
-( cd src/server   && ./CMakeLists-gen.sh )
 echo Generating src/build/CMakeLists.txt
 ( cd src/build    && ./CMakeLists-gen.sh )

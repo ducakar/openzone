@@ -6,6 +6,7 @@ add_library( matrix STATIC
   Collider.cpp
   Dynamic.cpp
   DynamicClass.cpp
+  Frag.cpp
   Library.cpp
   Lua.cpp
   Matrix.cpp
@@ -13,7 +14,6 @@ add_library( matrix STATIC
   Object.cpp
   ObjectClass.cpp
   Orbis.cpp
-  Particle.cpp
   Physics.cpp
   Struct.cpp
   Synapse.cpp

@@ -49,7 +49,7 @@ function plasmagun_onShot( l )
                      2 - math.random() * 4,
                      2 - math.random() * 4
 
-  ozOrbisAddPart( pX, pY, pZ, vX * 230 + dX, vY * 230 + dY, vZ * 230 + dZ,
+  ozOrbisAddFrag( pX, pY, pZ, vX * 230 + dX, vY * 230 + dY, vZ * 230 + dZ,
                   0.4, 0.8, 0.8, 1.9, 0.004, 5.0 );
 end
 
@@ -62,7 +62,7 @@ function blaster_onShot( l )
                      2 - math.random() * 4,
                      2 - math.random() * 4
 
-  ozOrbisAddPart( pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ,
+  ozOrbisAddFrag( pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ,
                   0.3, 1.0, 0.3, 1.9, 0.004, 5.0 );
 end
 
@@ -75,7 +75,7 @@ function hyperblaster_onShot( l )
                      1 - math.random() * 2,
                      1 - math.random() * 2
 
-  ozOrbisAddPart( pX, pY, pZ, vX * 300 + dX, vY * 300 + dY, vZ * 300 + dZ,
+  ozOrbisAddFrag( pX, pY, pZ, vX * 300 + dX, vY * 300 + dY, vZ * 300 + dZ,
                   1.0, 0.5, 1.0, 1.9, 0.005, 5.0 );
 end
 
@@ -88,7 +88,7 @@ function chaingun_onShot( l )
                      4 - math.random() * 8,
                      4 - math.random() * 8
 
-  ozOrbisAddPart( pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ,
+  ozOrbisAddFrag( pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ,
                   1.0, 1.0, 0.0, 1.9, 0.004, 5.0 );
 end
 
@@ -152,7 +152,7 @@ function vehicle_heavyBlaster_onShot( l )
   local pX, pY, pZ = ozObjGetPos()
   ozObjBindUser();
   local vX, vY, vZ = ozBotGetDir()
-  ozOrbisAddPart( pX, pY, pZ, vX * 300, vY * 300, vZ * 300,
+  ozOrbisAddFrag( pX, pY, pZ, vX * 300, vY * 300, vZ * 300,
                   1.0, 0.2, 0.2, 1.9, 0.01, 3.0 );
 end
 
@@ -164,7 +164,7 @@ function vehicle_chaingun_onShot( l )
                      5 - math.random() * 10,
                      5 - math.random() * 10
 
-  ozOrbisAddPart( pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ,
+  ozOrbisAddFrag( pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ,
                   1.0, 1.0, 0.0, 1.9, 0.008, 3.0 );
 end
 

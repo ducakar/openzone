@@ -134,7 +134,7 @@ void Bot::onUpdate()
       else {
         life -= clazz->life * CORPSE_FADE_FACTOR;
         // we don't want Object::destroy() to be called when body dissolves (destroy() causes
-        // sounds and particles to fly around), that's why we just remove the object
+        // sounds and frags to fly around), that's why we just remove the object
         if( life <= 0.0f ) {
           synapse.remove( this );
         }

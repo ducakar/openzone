@@ -19,7 +19,7 @@
  */
 
 /**
- * @file matrix/Particle.hpp
+ * @file matrix/Frag.hpp
  */
 
 #pragma once
@@ -34,21 +34,21 @@ namespace matrix
 struct Cell;
 struct Hit;
 
-class Particle
+class Frag
 {
   public:
 
     static const float MAX_ROTVELOCITY;
     static const float DAMAGE_THRESHOLD;
 
-    static Pool<Particle, 2048> pool;
+    static Pool<Frag, 2048> pool;
 
     /*
      *  FIELDS
      */
 
-    Particle* prev[1];
-    Particle* next[1];
+    Frag* prev[1];
+    Frag* next[1];
 
     Cell*     cell;
     int       index;        // position in world.objects vector
@@ -65,14 +65,14 @@ class Particle
     float     mass;
     float     lifeTime;
 
-    Particle() : cell( null ), index( -1 )
+    Frag() : cell( null ), index( -1 )
     {}
 
     // no copying
-    Particle( const Particle& ) = delete;
-    Particle& operator = ( const Particle& ) = delete;
+    Frag( const Frag& ) = delete;
+    Frag& operator = ( const Frag& ) = delete;
 
-    explicit Particle( int index, const Point3& p, const Vec3& velocity, const Vec3& colour,
+    explicit Frag( int index, const Point3& p, const Vec3& velocity, const Vec3& colour,
                        float restitution, float mass, float lifeTime );
 
     void damage( float damage )

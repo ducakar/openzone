@@ -87,9 +87,9 @@
   } \
   Vehicle* vehicle = static_cast<Vehicle*>( lua.obj );
 
-#define PART_NOT_NULL() \
-  if( lua.part == null ) { \
-    ERROR( "bound particle is null" ); \
+#define FRAG_NOT_NULL() \
+  if( lua.frag == null ) { \
+    ERROR( "bound fragment is null" ); \
   }
 
 #define SELF_BOT() \

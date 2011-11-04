@@ -46,7 +46,6 @@ class Lua
 
     Struct*         str;
     Object*         obj;
-    Particle*       part;
 
     int             strIndex;
     int             objIndex;

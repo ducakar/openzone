@@ -61,18 +61,18 @@ const float Physics::PART_DESTROY_VELOCITY2 =  900.0f;
 //*   PARTICLE COLLISION HANDLING   *
 //***********************************
 
-void Physics::handlePartHit()
+void Physics::handleFragHit()
 {
-  float velocity2 = part->velocity * part->velocity;
+  float velocity2 = frag->velocity * frag->velocity;
   if( velocity2 >= PART_HIT_VELOCITY2 ) {
     if( velocity2 >= PART_DESTROY_VELOCITY2 ) {
-      part->lifeTime = -Math::INF;
+      frag->lifeTime = -Math::INF;
     }
 
-    if( part->mass != 0.0f ) {
+    if( frag->mass != 0.0f ) {
       if( collider.hit.obj != null ) {
         Object* obj = const_cast<Object*>( collider.hit.obj );
-        float damage = velocity2 * part->mass;
+        float damage = velocity2 * frag->mass;
 
         if( damage > obj->resistance ) {
           damage -= obj->resistance;
@@ -82,7 +82,7 @@ void Physics::handlePartHit()
       }
       else if( collider.hit.str != null ) {
         Struct* str = const_cast<Struct*>( collider.hit.str );
-        float damage = velocity2 * part->mass;
+        float damage = velocity2 * frag->mass;
 
         if( damage > str->resistance ) {
           damage -= str->resistance;
@@ -93,32 +93,32 @@ void Physics::handlePartHit()
     }
   }
 
-  float hitMomentum = part->velocity * collider.hit.normal;
-  part->velocity -= ( part->restitution * hitMomentum ) * collider.hit.normal;
+  float hitMomentum = frag->velocity * collider.hit.normal;
+  frag->velocity -= ( frag->restitution * hitMomentum ) * collider.hit.normal;
 }
 
-void Physics::handlePartMove()
+void Physics::handleFragMove()
 {
   leftRatio = 1.0f;
-  move = part->velocity * Timer::TICK_TIME;
+  move = frag->velocity * Timer::TICK_TIME;
 
   int traceSplits = 0;
   do {
-    collider.translate( part->p, move );
-    part->p += collider.hit.ratio * move;
+    collider.translate( frag->p, move );
+    frag->p += collider.hit.ratio * move;
     leftRatio -= leftRatio * collider.hit.ratio;
 
     if( collider.hit.ratio == 1.0f ) {
       break;
     }
     // collision response
-    handlePartHit();
+    handleFragHit();
 
-    // We must check lifeTime <= 0.0f to prevent an already destroyed particle to bounce off a
+    // We must check lifeTime <= 0.0f to prevent an already destroyed fragment to bounce off a
     // surface and hit something (e.g. if we shoot into something with a rifle, a bullet is not
     // destroyed immediately after it hits something, but bounces off and damages the shooter if
     // he stays too close to the hit surface.
-    if( traceSplits >= 3 || part->lifeTime <= 0.0f ) {
+    if( traceSplits >= 3 || frag->lifeTime <= 0.0f ) {
       break;
     }
     ++traceSplits;
@@ -128,7 +128,7 @@ void Physics::handlePartMove()
   }
   while( true );
 
-  orbis.reposition( part );
+  orbis.reposition( frag );
 }
 
 //***********************************
@@ -406,17 +406,17 @@ void Physics::handleObjMove()
 //*             PUBLIC              *
 //***********************************
 
-void Physics::updatePart( Particle* part_ )
+void Physics::updateFrag( Frag* frag_ )
 {
-  part = part_;
+  frag = frag_;
 
-  hard_assert( part->cell != null );
+  hard_assert( frag->cell != null );
 
-  part->velocity.z += G_ACCEL * Timer::TICK_TIME;
-  part->lifeTime -= Timer::TICK_TIME;
+  frag->velocity.z += G_ACCEL * Timer::TICK_TIME;
+  frag->lifeTime -= Timer::TICK_TIME;
 
-  part->rot += part->rotVelocity * Timer::TICK_TIME;
-  handlePartMove();
+  frag->rot += frag->rotVelocity * Timer::TICK_TIME;
+  handleFragMove();
 }
 
 void Physics::updateObj( Dynamic* dyn_ )
