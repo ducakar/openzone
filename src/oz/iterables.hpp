@@ -301,7 +301,7 @@ class IteratorBase
  */
 template <class Iterator>
 OZ_ALWAYS_INLINE
-typename Iterator::RangeIterator begin( Iterator& iter )
+inline typename Iterator::RangeIterator begin( Iterator& iter )
 {
   return typename Iterator::RangeIterator( iter );
 }
@@ -313,7 +313,7 @@ typename Iterator::RangeIterator begin( Iterator& iter )
  */
 template <class Iterator>
 OZ_ALWAYS_INLINE
-typename Iterator::RangeIterator end( Iterator& iter )
+inline typename Iterator::RangeIterator end( Iterator& iter )
 {
   return typename Iterator::RangeIterator( iter );
 }

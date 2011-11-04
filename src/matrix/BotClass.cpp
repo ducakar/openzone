@@ -175,23 +175,6 @@ Object* BotClass::create( int index, const Point3& pos, Heading heading ) const
 
   fillCommonFields( obj );
 
-  for( int i = 0; i < obj->items.length(); ++i ) {
-    if( weaponItem == i ) {
-      const ObjectClass* itemClazz = orbis.objects[ obj->items[i] ]->clazz;
-      const WeaponClass* weaponClazz = dynamic_cast<const WeaponClass*>( itemClazz );
-
-      if( weaponClazz == null ) {
-        throw Exception( "Default weapon of '" + name + "' is of non-weapon class" );
-      }
-      else if( !weaponClazz->allowedUsers.contains( this ) ) {
-        throw Exception( "Default weapon of '" + name + "' is not allowed for this class" );
-      }
-
-      obj->weapon = obj->items[i];
-      break;
-    }
-  }
-
   return obj;
 }
 
