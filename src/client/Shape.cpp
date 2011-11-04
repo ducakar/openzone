@@ -145,14 +145,14 @@ void Shape::wireBox( const AABB& bb )
                        reinterpret_cast<const ushort*>( 0 ) + 22 );
 }
 
-void Shape::draw( const Particle* part )
+void Shape::draw( const Frag* frag )
 {
-  glUniform4f( param.oz_Colour, part->colour.x, part->colour.y, part->colour.z,
-               clamp( part->lifeTime, 1.0f, 1.0f ) );
+  glUniform4f( param.oz_Colour, frag->colour.x, frag->colour.y, frag->colour.z,
+               clamp( frag->lifeTime, 1.0f, 1.0f ) );
 
   tf.apply();
 
-  int index = part->index % MAX_PARTS;
+  int index = frag->index % MAX_PARTS;
   glDrawArrays( GL_TRIANGLES, 40 + index * 12, 12 );
 }
 

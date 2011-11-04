@@ -42,7 +42,7 @@ class Matrix
     int maxWeapons;
     int maxBots;
     int maxVehicles;
-    int maxParts;
+    int maxFrags;
 
   public:
 

@@ -154,59 +154,59 @@ void Orbis::reposition( Object* obj )
   }
 }
 
-void Orbis::position( Particle* part )
+void Orbis::position( Frag* frag )
 {
-  hard_assert( part->cell == null );
+  hard_assert( frag->cell == null );
 
-  Cell* cell = getCell( part->p );
+  Cell* cell = getCell( frag->p );
 
-  part->cell = cell;
-  part->prev[0] = null;
+  frag->cell = cell;
+  frag->prev[0] = null;
 
-  if( !cell->particles.isEmpty() ) {
-    cell->particles.first()->prev[0] = part;
+  if( !cell->frags.isEmpty() ) {
+    cell->frags.first()->prev[0] = frag;
   }
 
-  cell->particles.add( part );
+  cell->frags.add( frag );
 }
 
-void Orbis::unposition( Particle* part )
+void Orbis::unposition( Frag* frag )
 {
-  hard_assert( part->cell != null );
+  hard_assert( frag->cell != null );
 
-  Cell* cell = part->cell;
+  Cell* cell = frag->cell;
 
-  part->cell = null;
+  frag->cell = null;
 
-  if( part->next[0] != null ) {
-    part->next[0]->prev[0] = part->prev[0];
+  if( frag->next[0] != null ) {
+    frag->next[0]->prev[0] = frag->prev[0];
   }
 
-  cell->particles.remove( part, part->prev[0] );
+  cell->frags.remove( frag, frag->prev[0] );
 }
 
-void Orbis::reposition( Particle* part )
+void Orbis::reposition( Frag* frag )
 {
-  hard_assert( part->cell != null );
+  hard_assert( frag->cell != null );
 
-  Cell* oldCell = part->cell;
-  Cell* newCell = getCell( part->p );
+  Cell* oldCell = frag->cell;
+  Cell* newCell = getCell( frag->p );
 
   if( newCell != oldCell ) {
-    if( part->next[0] != null ) {
-      part->next[0]->prev[0] = part->prev[0];
+    if( frag->next[0] != null ) {
+      frag->next[0]->prev[0] = frag->prev[0];
     }
 
-    oldCell->particles.remove( part, part->prev[0] );
+    oldCell->frags.remove( frag, frag->prev[0] );
 
-    part->cell = newCell;
-    part->prev[0] = null;
+    frag->cell = newCell;
+    frag->prev[0] = null;
 
-    if( !newCell->particles.isEmpty() ) {
-      newCell->particles.first()->prev[0] = part;
+    if( !newCell->frags.isEmpty() ) {
+      newCell->frags.first()->prev[0] = frag;
     }
 
-    newCell->particles.add( part );
+    newCell->frags.add( frag );
   }
 }
 
@@ -246,18 +246,18 @@ int Orbis::addObject( const ObjectClass* clazz, const Point3& p, Heading heading
   return index;
 }
 
-int Orbis::addPart( const Point3& p, const Vec3& velocity, const Vec3& colour,
+int Orbis::addFrag( const Point3& p, const Vec3& velocity, const Vec3& colour,
                     float restitution, float mass, float lifeTime )
 {
   int index;
 
-  if( partAvailableIndices.isEmpty() ) {
-    index = parts.length();
-    parts.add( new Particle( index, p, velocity, colour, restitution, mass, lifeTime ) );
+  if( fragAvailableIndices.isEmpty() ) {
+    index = frags.length();
+    frags.add( new Frag( index, p, velocity, colour, restitution, mass, lifeTime ) );
   }
   else {
-    index = partAvailableIndices.popLast();
-    parts[index] = new Particle( index, p, velocity, colour, restitution, mass, lifeTime );
+    index = fragAvailableIndices.popLast();
+    frags[index] = new Frag( index, p, velocity, colour, restitution, mass, lifeTime );
   }
   return index;
 }
@@ -288,15 +288,15 @@ void Orbis::remove( Object* obj )
   delete obj;
 }
 
-void Orbis::remove( Particle* part )
+void Orbis::remove( Frag* frag )
 {
-  hard_assert( part->index >= 0 );
-  hard_assert( part->cell == null );
+  hard_assert( frag->index >= 0 );
+  hard_assert( frag->cell == null );
 
-  partFreedIndices[freeing].add( part->index );
-  parts[part->index] = null;
+  fragFreedIndices[freeing].add( frag->index );
+  frags[frag->index] = null;
 
-  delete part;
+  delete frag;
 }
 
 void Orbis::update()
@@ -307,8 +307,8 @@ void Orbis::update()
   objAvailableIndices.addAll( objFreedIndices[waiting], objFreedIndices[waiting].length() );
   objFreedIndices[waiting].clear();
 
-  partAvailableIndices.addAll( partFreedIndices[waiting], objFreedIndices[waiting].length() );
-  partFreedIndices[waiting].clear();
+  fragAvailableIndices.addAll( fragFreedIndices[waiting], fragFreedIndices[waiting].length() );
+  fragFreedIndices[waiting].clear();
 
   freeing = !freeing;
   waiting = !waiting;
@@ -318,7 +318,7 @@ void Orbis::update()
 
 void Orbis::read( InputStream* istream )
 {
-  hard_assert( structs.length() == 0 && objects.length() == 0 && parts.length() == 0 );
+  hard_assert( structs.length() == 0 && objects.length() == 0 && frags.length() == 0 );
 
   log.println( "Reading Orbis {" );
   log.indent();
@@ -328,15 +328,15 @@ void Orbis::read( InputStream* istream )
   terra.read( istream );
   caelum.read( istream );
 
-  int nStructs   = istream->readInt();
-  int nObjects   = istream->readInt();
-  int nParticles = istream->readInt();
+  int nStructs = istream->readInt();
+  int nObjects = istream->readInt();
+  int nFrags   = istream->readInt();
 
-  String    bspName;
-  Struct*   str;
-  Object*   obj;
-  String    typeName;
-  Particle* part;
+  String  bspName;
+  Struct* str;
+  Object* obj;
+  String  typeName;
+  Frag*   frag;
 
   for( int i = 0; i < nStructs; ++i ) {
     bspName = istream->readString();
@@ -374,18 +374,18 @@ void Orbis::read( InputStream* istream )
       }
     }
   }
-  for( int i = 0; i < nParticles; ++i ) {
+  for( int i = 0; i < nFrags; ++i ) {
     bool exists = istream->readBool();
 
     if( !exists ) {
-      parts.add( null );
+      frags.add( null );
     }
     else {
-      part = new Particle();
-      part->readFull( istream );
-      part->index = i;
-      parts.add( part );
-      position( part );
+      frag = new Frag();
+      frag->readFull( istream );
+      frag->index = i;
+      frags.add( frag );
+      position( frag );
     }
   }
 
@@ -401,7 +401,7 @@ void Orbis::read( InputStream* istream )
   }
   n = istream->readInt();
   for( int i = 0; i < n; ++i ) {
-    partFreedIndices[freeing].add( istream->readInt() );
+    fragFreedIndices[freeing].add( istream->readInt() );
   }
 
   n = istream->readInt();
@@ -414,7 +414,7 @@ void Orbis::read( InputStream* istream )
   }
   n = istream->readInt();
   for( int i = 0; i < n; ++i ) {
-    partFreedIndices[waiting].add( istream->readInt() );
+    fragFreedIndices[waiting].add( istream->readInt() );
   }
 
   n = istream->readInt();
@@ -427,7 +427,7 @@ void Orbis::read( InputStream* istream )
   }
   n = istream->readInt();
   for( int i = 0; i < n; ++i ) {
-    partAvailableIndices.add( istream->readInt() );
+    fragAvailableIndices.add( istream->readInt() );
   }
 
   log.unindent();
@@ -445,12 +445,12 @@ void Orbis::write( BufferStream* ostream ) const
 
   ostream->writeInt( structs.length() );
   ostream->writeInt( objects.length() );
-  ostream->writeInt( parts.length() );
+  ostream->writeInt( frags.length() );
 
-  String    typeName;
-  Struct*   str;
-  Object*   obj;
-  Particle* part;
+  String  typeName;
+  Struct* str;
+  Object* obj;
+  Frag*   frag;
 
   for( int i = 0; i < structs.length(); ++i ) {
     str = structs[i];
@@ -475,15 +475,15 @@ void Orbis::write( BufferStream* ostream ) const
       ostream->writeBool( obj->cell == null );
     }
   }
-  for( int i = 0; i < parts.length(); ++i ) {
-    part = parts[i];
+  for( int i = 0; i < frags.length(); ++i ) {
+    frag = frags[i];
 
-    if( part == null ) {
+    if( frag == null ) {
       ostream->writeBool( false );
     }
     else {
       ostream->writeBool( true );
-      part->writeFull( ostream );
+      frag->writeFull( ostream );
     }
   }
 
@@ -495,8 +495,8 @@ void Orbis::write( BufferStream* ostream ) const
   foreach( i, objFreedIndices[freeing].citer() ) {
     ostream->writeInt( *i );
   }
-  ostream->writeInt( partFreedIndices[freeing].length() );
-  foreach( i, partFreedIndices[freeing].citer() ) {
+  ostream->writeInt( fragFreedIndices[freeing].length() );
+  foreach( i, fragFreedIndices[freeing].citer() ) {
     ostream->writeInt( *i );
   }
 
@@ -508,8 +508,8 @@ void Orbis::write( BufferStream* ostream ) const
   foreach( i, objFreedIndices[waiting].citer() ) {
     ostream->writeInt( *i );
   }
-  ostream->writeInt( partFreedIndices[waiting].length() );
-  foreach( i, partFreedIndices[waiting].citer() ) {
+  ostream->writeInt( fragFreedIndices[waiting].length() );
+  foreach( i, fragFreedIndices[waiting].citer() ) {
     ostream->writeInt( *i );
   }
 
@@ -521,8 +521,8 @@ void Orbis::write( BufferStream* ostream ) const
   foreach( i, objAvailableIndices.citer() ) {
     ostream->writeInt( *i );
   }
-  ostream->writeInt( partAvailableIndices.length() );
-  foreach( i, partAvailableIndices.citer() ) {
+  ostream->writeInt( fragAvailableIndices.length() );
+  foreach( i, fragAvailableIndices.citer() ) {
     ostream->writeInt( *i );
   }
 
@@ -536,7 +536,7 @@ void Orbis::load()
 
   structs.alloc( 128 );
   objects.alloc( 4096 );
-  parts.alloc( 2048 );
+  frags.alloc( 2048 );
 
   bsps = new BSP*[ library.bsps.length() ];
   bspUsers = new int[ library.bsps.length() ];
@@ -548,12 +548,12 @@ void Orbis::load()
   strFreedIndices[1].alloc( 4 );
   objFreedIndices[0].alloc( 64 );
   objFreedIndices[1].alloc( 64 );
-  partFreedIndices[0].alloc( 128 );
-  partFreedIndices[1].alloc( 128 );
+  fragFreedIndices[0].alloc( 128 );
+  fragFreedIndices[1].alloc( 128 );
 
   strAvailableIndices.alloc( 16 );
   objAvailableIndices.alloc( 256 );
-  partAvailableIndices.alloc( 512 );
+  fragAvailableIndices.alloc( 512 );
 
   log.unindent();
   log.println( "}" );
@@ -574,7 +574,7 @@ void Orbis::unload()
     for( int j = 0; j < Orbis::MAX; ++j ) {
       cells[i][j].structs.clear();
       cells[i][j].objects.clear();
-      cells[i][j].particles.clear();
+      cells[i][j].frags.clear();
     }
   }
 
@@ -585,8 +585,8 @@ void Orbis::unload()
   structs.dealloc();
   objects.free();
   objects.dealloc();
-  parts.free();
-  parts.dealloc();
+  frags.free();
+  frags.dealloc();
 
   aFree( bsps, library.bsps.length() );
 
@@ -601,17 +601,17 @@ void Orbis::unload()
   objFreedIndices[0].dealloc();
   objFreedIndices[1].clear();
   objFreedIndices[1].dealloc();
-  partFreedIndices[0].clear();
-  partFreedIndices[0].dealloc();
-  partFreedIndices[1].clear();
-  partFreedIndices[1].dealloc();
+  fragFreedIndices[0].clear();
+  fragFreedIndices[0].dealloc();
+  fragFreedIndices[1].clear();
+  fragFreedIndices[1].dealloc();
 
   strAvailableIndices.clear();
   strAvailableIndices.dealloc();
   objAvailableIndices.clear();
   objAvailableIndices.dealloc();
-  partAvailableIndices.clear();
-  partAvailableIndices.dealloc();
+  fragAvailableIndices.clear();
+  fragAvailableIndices.dealloc();
 
   Struct::pool.free();
 
@@ -622,7 +622,7 @@ void Orbis::unload()
   Bot::pool.free();
   Vehicle::pool.free();
 
-  Particle::pool.free();
+  Frag::pool.free();
 
   log.unindent();
   log.println( "}" );

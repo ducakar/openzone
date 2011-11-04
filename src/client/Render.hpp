@@ -87,7 +87,7 @@ class Render
 
     Vector<ObjectEntry>     structs;
     Vector<ObjectEntry>     objects;
-    Vector<const Particle*> particles;
+    Vector<const Frag*>     frags;
 
     Vector<const Struct*>   waterStructs;
 
@@ -98,7 +98,7 @@ class Render
     float                   waterDayVisibility;
     float                   waterNightVisibility;
 
-    float                   particleRadius;
+    float                   fragRadius;
     bool                    showBounds;
     bool                    showAim;
 

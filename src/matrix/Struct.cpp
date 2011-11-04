@@ -463,7 +463,7 @@ void Struct::destroy()
 
   onDemolish();
 
-  synapse.genParts( 100, p, Vec3::ZERO, 10.0f, Vec3( 0.4f, 0.4f, 0.4f ), 0.1f,
+  synapse.genFrags( 100, p, Vec3::ZERO, 10.0f, Vec3( 0.4f, 0.4f, 0.4f ), 0.1f,
                     1.98f, 0.0f, 2.0f );
 }
 

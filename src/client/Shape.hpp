@@ -25,7 +25,7 @@
 #pragma once
 
 #include "matrix/common.hpp"
-#include "matrix/Particle.hpp"
+#include "matrix/Frag.hpp"
 
 #include "client/Context.hpp"
 
@@ -64,7 +64,7 @@ class Shape
     static void quad( float dimX, float dimY );
     static void box( const AABB& bb );
     static void wireBox( const AABB& bb );
-    static void draw( const Particle* part );
+    static void draw( const Frag* frag );
 
     void load();
     void unload();

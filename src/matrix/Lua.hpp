@@ -35,7 +35,7 @@ namespace matrix
 
 class Struct;
 class Bot;
-class Particle;
+class Frag;
 class Module;
 
 class Lua
@@ -49,7 +49,7 @@ class Lua
 
     Struct*         str;
     Object*         obj;
-    Particle*       part;
+    Frag*           frag;
 
     int             strIndex;
     int             objIndex;
@@ -106,8 +106,8 @@ class Lua
     OZ_LUA_API( ozOrbisTryAddStr );
     OZ_LUA_API( ozOrbisAddObj );
     OZ_LUA_API( ozOrbisTryAddObj );
-    OZ_LUA_API( ozOrbisAddPart );
-    OZ_LUA_API( ozOrbisGenParts );
+    OZ_LUA_API( ozOrbisAddFrag );
+    OZ_LUA_API( ozOrbisGenFrags );
 
     OZ_LUA_API( ozBindAllOverlaps );
     OZ_LUA_API( ozBindStrOverlaps );
@@ -337,25 +337,25 @@ class Lua
     OZ_LUA_API( ozVehicleService );
 
     /*
-     * Particle
+     * Fragment
      */
 
-    OZ_LUA_API( ozPartBindIndex );
+    OZ_LUA_API( ozFragBindIndex );
 
-    OZ_LUA_API( ozPartIsNull );
+    OZ_LUA_API( ozFragIsNull );
 
-    OZ_LUA_API( ozPartGetPos );
-    OZ_LUA_API( ozPartSetPos );
-    OZ_LUA_API( ozPartAddPos );
-    OZ_LUA_API( ozPartGetIndex );
-    OZ_LUA_API( ozPartGetVelocity );
-    OZ_LUA_API( ozPartSetVelocity );
-    OZ_LUA_API( ozPartAddVelocity );
-    OZ_LUA_API( ozPartGetLife );
-    OZ_LUA_API( ozPartSetLife );
-    OZ_LUA_API( ozPartAddLife );
+    OZ_LUA_API( ozFragGetPos );
+    OZ_LUA_API( ozFragSetPos );
+    OZ_LUA_API( ozFragAddPos );
+    OZ_LUA_API( ozFragGetIndex );
+    OZ_LUA_API( ozFragGetVelocity );
+    OZ_LUA_API( ozFragSetVelocity );
+    OZ_LUA_API( ozFragAddVelocity );
+    OZ_LUA_API( ozFragGetLife );
+    OZ_LUA_API( ozFragSetLife );
+    OZ_LUA_API( ozFragAddLife );
 
-    OZ_LUA_API( ozPartRemove );
+    OZ_LUA_API( ozFragRemove );
 
 };
 

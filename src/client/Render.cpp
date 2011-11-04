@@ -86,9 +86,9 @@ void Render::scheduleCell( int cellX, int cellY )
     }
   }
 
-  for( const Particle* part = cell.particles.first(); part != null; part = part->next[0] ) {
-    if( frustum.isVisible( part->p, particleRadius ) ) {
-      particles.add( part );
+  for( const Frag* frag = cell.frags.first(); frag != null; frag = frag->next[0] ) {
+    if( frustum.isVisible( frag->p, fragRadius ) ) {
+      frags.add( frag );
     }
   }
 }
@@ -267,7 +267,7 @@ void Render::drawGeometry()
   timer.renderObjectsMillis += currentTime - beginTime;
   beginTime = currentTime;
 
-  // draw particles
+  // draw fragments
   shader.use( shader.mesh );
 
   glBindTexture( GL_TEXTURE_2D, 0 );
@@ -275,21 +275,21 @@ void Render::drawGeometry()
 
   shape.bindVertexArray();
 
-  for( int i = 0; i < particles.length(); ++i ) {
-    const Particle* part = particles[i];
+  for( int i = 0; i < frags.length(); ++i ) {
+    const Frag* frag = frags[i];
 
-    tf.model = Mat44::translation( part->p - Point3::ORIGIN );
-    tf.model.rotateX( part->rot.x );
-    tf.model.rotateY( part->rot.y );
-    tf.model.rotateZ( part->rot.z );
+    tf.model = Mat44::translation( frag->p - Point3::ORIGIN );
+    tf.model.rotateX( frag->rot.x );
+    tf.model.rotateY( frag->rot.y );
+    tf.model.rotateZ( frag->rot.z );
 
-    shape.draw( part );
+    shape.draw( frag );
   }
 
   OZ_GL_CHECK_ERROR();
 
   currentTime = SDL_GetTicks();
-  timer.renderParticlesMillis += currentTime - beginTime;
+  timer.renderFragsMillis += currentTime - beginTime;
   beginTime = currentTime;
 
   terra.drawWater();
@@ -363,7 +363,7 @@ void Render::drawGeometry()
   structs.clear();
   waterStructs.clear();
   objects.clear();
-  particles.clear();
+  frags.clear();
 
   currentTime = SDL_GetTicks();
   timer.renderMiscMillis += currentTime - beginTime;
@@ -493,7 +493,7 @@ void Render::load()
 
   structs.alloc( 64 );
   objects.alloc( 8192 );
-  particles.alloc( 1024 );
+  frags.alloc( 1024 );
 
   log.unindent();
   log.println( "}" );
@@ -517,8 +517,8 @@ void Render::unload()
   objects.clear();
   objects.dealloc();
 
-  particles.clear();
-  particles.dealloc();
+  frags.clear();
+  frags.dealloc();
 
   waterStructs.clear();
   waterStructs.dealloc();
@@ -676,7 +676,7 @@ void Render::init()
   nightVisibility      = config.getSet( "render.nightVisibility",      300.0f );
   waterDayVisibility   = config.getSet( "render.waterDayVisibility",   32.0f );
   waterNightVisibility = config.getSet( "render.waterNightVisibility", 32.0f );
-  particleRadius       = config.getSet( "render.particleRadius",       0.5f );
+  fragRadius           = config.getSet( "render.fragRadius",           0.5f );
   showBounds           = config.getSet( "render.showBounds",           false );
   showAim              = config.getSet( "render.showAim",              false );
   windFactor           = config.getSet( "render.windFactor",           0.0008f );

@@ -142,7 +142,7 @@ void Lua::objectCall( const char* functionName, Object* self_, Bot* user_ )
   user         = user_;
   obj          = self_;
   str          = null;
-  part         = null;
+  frag         = null;
   objIndex     = 0;
   strIndex     = 0;
   event        = List<Object::Event>::CIterator();
@@ -290,8 +290,8 @@ void Lua::init()
   OZ_LUA_FUNC( ozOrbisTryAddStr );
   OZ_LUA_FUNC( ozOrbisAddObj );
   OZ_LUA_FUNC( ozOrbisTryAddObj );
-  OZ_LUA_FUNC( ozOrbisAddPart );
-  OZ_LUA_FUNC( ozOrbisGenParts );
+  OZ_LUA_FUNC( ozOrbisAddFrag );
+  OZ_LUA_FUNC( ozOrbisGenFrags );
 
   OZ_LUA_FUNC( ozBindAllOverlaps );
   OZ_LUA_FUNC( ozBindStrOverlaps );
@@ -521,25 +521,25 @@ void Lua::init()
   OZ_LUA_FUNC( ozVehicleService );
 
   /*
-   * Particle
+   * Frag
    */
 
-  OZ_LUA_FUNC( ozPartBindIndex );
+  OZ_LUA_FUNC( ozFragBindIndex );
 
-  OZ_LUA_FUNC( ozPartIsNull );
+  OZ_LUA_FUNC( ozFragIsNull );
 
-  OZ_LUA_FUNC( ozPartGetPos );
-  OZ_LUA_FUNC( ozPartSetPos );
-  OZ_LUA_FUNC( ozPartAddPos );
-  OZ_LUA_FUNC( ozPartGetIndex );
-  OZ_LUA_FUNC( ozPartGetVelocity );
-  OZ_LUA_FUNC( ozPartSetVelocity );
-  OZ_LUA_FUNC( ozPartAddVelocity );
-  OZ_LUA_FUNC( ozPartGetLife );
-  OZ_LUA_FUNC( ozPartSetLife );
-  OZ_LUA_FUNC( ozPartAddLife );
+  OZ_LUA_FUNC( ozFragGetPos );
+  OZ_LUA_FUNC( ozFragSetPos );
+  OZ_LUA_FUNC( ozFragAddPos );
+  OZ_LUA_FUNC( ozFragGetIndex );
+  OZ_LUA_FUNC( ozFragGetVelocity );
+  OZ_LUA_FUNC( ozFragSetVelocity );
+  OZ_LUA_FUNC( ozFragAddVelocity );
+  OZ_LUA_FUNC( ozFragGetLife );
+  OZ_LUA_FUNC( ozFragSetLife );
+  OZ_LUA_FUNC( ozFragAddLife );
 
-  OZ_LUA_FUNC( ozPartRemove );
+  OZ_LUA_FUNC( ozFragRemove );
 
   /*
    * Constants
@@ -799,7 +799,7 @@ int Lua::ozOrbisTryAddObj( lua_State* l )
   return 1;
 }
 
-int Lua::ozOrbisAddPart( lua_State* l )
+int Lua::ozOrbisAddFrag( lua_State* l )
 {
   ARG( 12 );
 
@@ -810,13 +810,13 @@ int Lua::ozOrbisAddPart( lua_State* l )
   float  mass        = tofloat( 11 );
   float  lifeTime    = tofloat( 12 );
 
-  int index = synapse.addPart( p, velocity, colour, restitution, mass, lifeTime );
-  lua.part = orbis.parts[index];
+  int index = synapse.addFrag( p, velocity, colour, restitution, mass, lifeTime );
+  lua.frag = orbis.frags[index];
   pushint( index );
   return 1;
 }
 
-int Lua::ozOrbisGenParts( lua_State* l )
+int Lua::ozOrbisGenFrags( lua_State* l )
 {
   ARG( 15 );
 
@@ -830,9 +830,9 @@ int Lua::ozOrbisGenParts( lua_State* l )
   float  mass           = tofloat( 14 );
   float  lifeTime       = tofloat( 15 );
 
-  synapse.genParts( number, p, velocity, velocitySpread, colour, colourSpread,
+  synapse.genFrags( number, p, velocity, velocitySpread, colour, colourSpread,
                     restitution, mass, lifeTime );
-  lua.part = null;
+  lua.frag = null;
   return 0;
 }
 
@@ -2771,142 +2771,142 @@ int Lua::ozVehicleService( lua_State* l )
 }
 
 /*
- * Particle
+ * Fragment
  */
 
-int Lua::ozPartBindIndex( lua_State* l )
+int Lua::ozFragBindIndex( lua_State* l )
 {
   ARG( 1 );
 
   int index = toint( 1 );
-  if( uint( index ) >= uint( orbis.parts.length() ) ) {
-    ERROR( "invalid particle index" );
+  if( uint( index ) >= uint( orbis.frags.length() ) ) {
+    ERROR( "invalid frag index" );
   }
-  lua.part = orbis.parts[index];
+  lua.frag = orbis.frags[index];
   return 0;
 }
 
-int Lua::ozPartIsNull( lua_State* l )
+int Lua::ozFragIsNull( lua_State* l )
 {
   ARG( 0 );
 
-  pushbool( lua.part == null );
+  pushbool( lua.frag == null );
   return 1;
 }
 
-int Lua::ozPartGetIndex( lua_State* l )
+int Lua::ozFragGetIndex( lua_State* l )
 {
   ARG( 0 );
 
-  if( lua.part == null ) {
+  if( lua.frag == null ) {
     pushint( -1 );
   }
   else {
-    pushint( lua.part->index );
+    pushint( lua.frag->index );
   }
   return 1;
 }
 
-int Lua::ozPartGetPos( lua_State* l )
+int Lua::ozFragGetPos( lua_State* l )
 {
   ARG( 0 );
-  PART_NOT_NULL();
+  FRAG_NOT_NULL();
 
-  pushfloat( lua.part->p.x );
-  pushfloat( lua.part->p.y );
-  pushfloat( lua.part->p.z );
+  pushfloat( lua.frag->p.x );
+  pushfloat( lua.frag->p.y );
+  pushfloat( lua.frag->p.z );
   return 3;
 }
 
-int Lua::ozPartSetPos( lua_State* l )
+int Lua::ozFragSetPos( lua_State* l )
 {
   ARG( 3 );
-  PART_NOT_NULL();
+  FRAG_NOT_NULL();
 
-  lua.part->p.x = tofloat( 1 );
-  lua.part->p.y = tofloat( 2 );
-  lua.part->p.z = tofloat( 3 );
+  lua.frag->p.x = tofloat( 1 );
+  lua.frag->p.y = tofloat( 2 );
+  lua.frag->p.z = tofloat( 3 );
   return 0;
 }
 
-int Lua::ozPartAddPos( lua_State* l )
+int Lua::ozFragAddPos( lua_State* l )
 {
   ARG( 3 );
-  PART_NOT_NULL();
+  FRAG_NOT_NULL();
 
-  lua.part->p.x += tofloat( 1 );
-  lua.part->p.y += tofloat( 2 );
-  lua.part->p.z += tofloat( 3 );
+  lua.frag->p.x += tofloat( 1 );
+  lua.frag->p.y += tofloat( 2 );
+  lua.frag->p.z += tofloat( 3 );
   return 0;
 }
 
-int Lua::ozPartGetVelocity( lua_State* l )
+int Lua::ozFragGetVelocity( lua_State* l )
 {
   ARG( 0 );
-  PART_NOT_NULL();
+  FRAG_NOT_NULL();
 
-  pushfloat( lua.part->velocity.x );
-  pushfloat( lua.part->velocity.y );
-  pushfloat( lua.part->velocity.z );
+  pushfloat( lua.frag->velocity.x );
+  pushfloat( lua.frag->velocity.y );
+  pushfloat( lua.frag->velocity.z );
   return 3;
 }
 
-int Lua::ozPartSetVelocity( lua_State* l )
+int Lua::ozFragSetVelocity( lua_State* l )
 {
   ARG( 3 );
-  PART_NOT_NULL();
+  FRAG_NOT_NULL();
 
-  lua.part->velocity.x = tofloat( 1 );
-  lua.part->velocity.y = tofloat( 2 );
-  lua.part->velocity.z = tofloat( 3 );
+  lua.frag->velocity.x = tofloat( 1 );
+  lua.frag->velocity.y = tofloat( 2 );
+  lua.frag->velocity.z = tofloat( 3 );
   return 0;
 }
 
-int Lua::ozPartAddVelocity( lua_State* l )
+int Lua::ozFragAddVelocity( lua_State* l )
 {
   ARG( 3 );
-  PART_NOT_NULL();
+  FRAG_NOT_NULL();
 
-  lua.part->velocity.x += tofloat( 1 );
-  lua.part->velocity.y += tofloat( 2 );
-  lua.part->velocity.z += tofloat( 3 );
+  lua.frag->velocity.x += tofloat( 1 );
+  lua.frag->velocity.y += tofloat( 2 );
+  lua.frag->velocity.z += tofloat( 3 );
   return 0;
 }
 
-int Lua::ozPartGetLife( lua_State* l )
+int Lua::ozFragGetLife( lua_State* l )
 {
   ARG( 0 );
-  PART_NOT_NULL();
+  FRAG_NOT_NULL();
 
-  pushfloat( lua.part->lifeTime );
+  pushfloat( lua.frag->lifeTime );
   return 1;
 }
 
-int Lua::ozPartSetLife( lua_State* l )
+int Lua::ozFragSetLife( lua_State* l )
 {
   ARG( 1 );
-  PART_NOT_NULL();
+  FRAG_NOT_NULL();
 
-  lua.part->lifeTime = tofloat( 1 );
+  lua.frag->lifeTime = tofloat( 1 );
   return 0;
 }
 
-int Lua::ozPartAddLife( lua_State* l )
+int Lua::ozFragAddLife( lua_State* l )
 {
   ARG( 1 );
-  PART_NOT_NULL();
+  FRAG_NOT_NULL();
 
-  lua.part->lifeTime += tofloat( 1 );
+  lua.frag->lifeTime += tofloat( 1 );
   return 0;
 }
 
-int Lua::ozPartRemove( lua_State* l )
+int Lua::ozFragRemove( lua_State* l )
 {
   ARG( 0 );
-  PART_NOT_NULL();
+  FRAG_NOT_NULL();
 
-  synapse.remove( lua.part );
-  lua.part = null;
+  synapse.remove( lua.frag );
+  lua.frag = null;
   return 0;
 }
 

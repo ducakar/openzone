@@ -54,7 +54,7 @@ void Timer::reset()
   renderTerraMillis       = 0;
   renderStructsMillis     = 0;
   renderObjectsMillis     = 0;
-  renderParticlesMillis   = 0;
+  renderFragsMillis   = 0;
   renderMiscMillis        = 0;
   renderPostprocessMillis = 0;
   renderUiMillis          = 0;

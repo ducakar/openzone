@@ -104,7 +104,7 @@ void Client::shutdown()
     float terraTime       = float( timer.renderTerraMillis )       * 0.001f;
     float structsTime     = float( timer.renderStructsMillis )     * 0.001f;
     float objectsTime     = float( timer.renderObjectsMillis )     * 0.001f;
-    float particlesTime   = float( timer.renderParticlesMillis )   * 0.001f;
+    float fragsTime       = float( timer.renderFragsMillis )       * 0.001f;
     float miscTime        = float( timer.renderMiscMillis )        * 0.001f;
     float postprocessTime = float( timer.renderPostprocessMillis ) * 0.001f;
     float renderUiTime    = float( timer.renderUiMillis )          * 0.001f;
@@ -163,7 +163,7 @@ void Client::shutdown()
     log.println( "    %6.2f %%  [M:2]   + terra",       terraTime       / activeTime * 100.0f );
     log.println( "    %6.2f %%  [M:2]   + structs",     structsTime     / activeTime * 100.0f );
     log.println( "    %6.2f %%  [M:2]   + objects",     objectsTime     / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2]   + particles",   particlesTime   / activeTime * 100.0f );
+    log.println( "    %6.2f %%  [M:2]   + frags",       fragsTime       / activeTime * 100.0f );
     log.println( "    %6.2f %%  [M:2]   + misc",        miscTime        / activeTime * 100.0f );
     log.println( "    %6.2f %%  [M:2]   + postprocess", postprocessTime / activeTime * 100.0f );
     log.println( "    %6.2f %%  [M:2]   + ui",          renderUiTime    / activeTime * 100.0f );

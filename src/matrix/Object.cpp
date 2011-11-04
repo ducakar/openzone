@@ -52,7 +52,7 @@ Object::~Object()
 
 void Object::onDestroy()
 {
-  synapse.genParts( clazz->nDebris, p, Vec3::ZERO, clazz->debrisVelocitySpread,
+  synapse.genFrags( clazz->nDebris, p, Vec3::ZERO, clazz->debrisVelocitySpread,
                     clazz->debrisColour, clazz->debrisColourSpread,
                     clazz->debrisRejection, clazz->debrisMass, clazz->debrisLifeTime );
 

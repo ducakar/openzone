@@ -142,7 +142,6 @@ void Lua::mindCall( const char* functionName, Bot* self_ )
   self         = self_;
   obj          = self_;
   str          = null;
-  part         = null;
   objIndex     = 0;
   strIndex     = 0;
   isFirstEvent = false;

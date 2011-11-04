@@ -53,7 +53,7 @@ class Timer
     uint  renderTerraMillis;
     uint  renderStructsMillis;
     uint  renderObjectsMillis;
-    uint  renderParticlesMillis;
+    uint  renderFragsMillis;
     uint  renderMiscMillis;
     uint  renderPostprocessMillis;
     uint  renderUiMillis;

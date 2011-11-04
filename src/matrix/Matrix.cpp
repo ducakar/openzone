@@ -53,7 +53,7 @@ void Matrix::update()
   maxWeapons  = max( maxWeapons,  Weapon::pool.length() );
   maxBots     = max( maxBots,     Bot::pool.length() );
   maxVehicles = max( maxVehicles, Vehicle::pool.length() );
-  maxParts    = max( maxParts,    Particle::pool.length() );
+  maxFrags    = max( maxFrags,    Frag::pool.length() );
 
   for( int i = 0; i < orbis.objects.length(); ++i ) {
     Object* obj = orbis.objects[i];
@@ -134,19 +134,19 @@ void Matrix::update()
     }
   }
 
-  for( int i = 0; i < orbis.parts.length(); ++i ) {
-    Particle* part = orbis.parts[i];
+  for( int i = 0; i < orbis.frags.length(); ++i ) {
+    Frag* frag = orbis.frags[i];
 
-    if( part == null ) {
+    if( frag == null ) {
       continue;
     }
 
-    if( part->lifeTime <= 0.0f || part->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
-      synapse.remove( part );
+    if( frag->lifeTime <= 0.0f || frag->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
+      synapse.remove( frag );
     }
     else {
-      part->update();
-      physics.updatePart( part );
+      frag->update();
+      physics.updateFrag( frag );
     }
   }
 
@@ -188,7 +188,7 @@ void Matrix::load()
   maxWeapons  = 0;
   maxBots     = 0;
   maxVehicles = 0;
-  maxParts    = 0;
+  maxFrags    = 0;
 
   orbis.load();
   synapse.load();
@@ -211,7 +211,7 @@ void Matrix::unload()
   log.println( "%6d  weapon objects",  maxWeapons );
   log.println( "%6d  bot objects",     maxBots );
   log.println( "%6d  vehicle objects", maxVehicles );
-  log.println( "%6d  particles",       maxParts );
+  log.println( "%6d  fragments",       maxFrags );
   log.unindent();
   log.println( "}" );
 
