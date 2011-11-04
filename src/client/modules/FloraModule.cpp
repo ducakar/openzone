@@ -71,12 +71,9 @@ void FloraModule::addTree( float x, float y )
     return;
   }
 
-  const ObjectClass* const* clazz = library.classes.find( type );
-  if( clazz == null ) {
-    throw Exception( "Object class '" + String( type ) + "' missing" );
-  }
+  const ObjectClass* clazz = library.clazz( type );
 
-  AABB bounds = AABB( pos, ( *clazz )->dim );
+  AABB bounds = AABB( pos, clazz->dim );
   bounds *= SPACING;
 
   if( !collider.overlapsOSO( bounds ) ) {
@@ -87,13 +84,10 @@ void FloraModule::addTree( float x, float y )
 
 void FloraModule::addPlant( const char* type, float x, float y )
 {
-  const ObjectClass* const* clazz = library.classes.find( type );
-  if( clazz == null ) {
-    throw Exception( "Object class '" + String( type ) + "' missing" );
-  }
+  const ObjectClass* clazz = library.clazz( type );
 
   Point3 pos    = Point3( x, y, orbis.terra.height( x, y ) );
-  AABB   bounds = AABB( pos, ( *clazz )->dim );
+  AABB   bounds = AABB( pos, clazz->dim );
 
   if( pos.z < 0.0f || 40.0f < pos.z ) {
     return;

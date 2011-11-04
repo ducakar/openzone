@@ -52,120 +52,99 @@ Library::Resource::Resource( const String& name_, const String& path_ ) :
 int Library::textureIndex( const char* name ) const
 {
   const int* value = textureIndices.find( name );
-  if( value != null ) {
-    return *value;
+  if( value == null ) {
+    throw Exception( "Invalid texture requested '" + String( name ) + "'" );
   }
   else {
-    throw Exception( "Invalid texture requested '" + String( name ) + "'" );
+    return *value;
   }
 }
 
 int Library::soundIndex( const char* name ) const
 {
   const int* value = soundIndices.find( name );
-  if( value != null ) {
-    return *value;
+  if( value == null ) {
+    throw Exception( "Invalid sound requested '" + String( name ) + "'" );
   }
   else {
-    throw Exception( "Invalid sound requested '" + String( name ) + "'" );
+    return *value;
   }
 }
 
 int Library::shaderIndex( const char* name ) const
 {
   const int* value = shaderIndices.find( name );
-  if( value != null ) {
-    return *value;
+  if( value == null ) {
+    throw Exception( "Invalid shader requested '" + String( name ) + "'" );
   }
   else {
-    throw Exception( "Invalid shader requested '" + String( name ) + "'" );
+    return *value;
   }
 }
 
 int Library::terraIndex( const char* name ) const
 {
   const int* value = terraIndices.find( name );
-  if( value != null ) {
-    return *value;
+  if( value == null ) {
+    throw Exception( "Invalid terra index requested '" + String( name ) + "'" );
   }
   else {
-    throw Exception( "Invalid terra index requested '" + String( name ) + "'" );
+    return *value;
   }
 }
 
 int Library::caelumIndex( const char* name ) const
 {
   const int* value = caelumIndices.find( name );
-  if( value != null ) {
-    return *value;
+  if( value == null ) {
+    throw Exception( "Invalid caelum index requested '" + String( name ) + "'" );
   }
   else {
-    throw Exception( "Invalid caelum index requested '" + String( name ) + "'" );
+    return *value;
   }
 }
 
 int Library::bspIndex( const char* name ) const
 {
   const int* value = bspIndices.find( name );
-  if( value != null ) {
-    return *value;
+  if( value == null ) {
+    throw Exception( "Invalid BSP index requested '" + String( name ) + "'" );
   }
   else {
-    throw Exception( "Invalid BSP index requested '" + String( name ) + "'" );
+    return *value;
   }
 }
 
 int Library::modelIndex( const char* name ) const
 {
   const int* value = modelIndices.find( name );
-  if( value != null ) {
-    return *value;
+  if( value == null ) {
+    throw Exception( "Invalid model index requested '" + String( name ) + "'" );
   }
   else {
-    throw Exception( "Invalid model index requested '" + String( name ) + "'" );
+    return *value;
   }
 }
 
 int Library::nameListIndex( const char* name ) const
 {
   const int* value = nameListIndices.find( name );
-  if( value != null ) {
-    return *value;
-  }
-  else {
+  if( value == null ) {
     throw Exception( "Invalid name list index requested '" + String( name ) + "'" );
   }
+  else {
+    return *value;
+  }
 }
 
-Struct* Library::createStruct( int index, int id, const Point3& p, Heading heading ) const
-{
-  return new Struct( index, id, p, heading );
-}
-
-Struct* Library::createStruct( int index, int id, InputStream* istream ) const
-{
-  return new Struct( index, id, istream );
-}
-
-Object* Library::createObject( int index, const char* name, const Point3& p, Heading heading ) const
+const ObjectClass* Library::clazz( const char* name ) const
 {
   const ObjectClass* const* value = classes.find( name );
-  if( value != null ) {
-    return ( *value )->create( index, p, heading );
-  }
-  else {
+  if( value == null ) {
     throw Exception( "Invalid object class requested '" + String( name ) + "'" );
   }
-}
-
-Object* Library::createObject( int index, const char* name, InputStream* istream ) const
-{
-  const ObjectClass* const* value = classes.find( name );
-  if( value != null ) {
-    return ( *value )->create( index, istream );
-  }
   else {
-    throw Exception( "Invalid object class requested '" + String( name ) + "'" );
+    return *value;
   }
 }
 
@@ -565,39 +544,40 @@ void Library::init()
   dirList.dealloc();
 
   foreach( clazzElem, classes.citer() ) {
-    const ObjectClass* clazz = clazzElem.value();
+    const ObjectClass* objClazz = clazzElem.value();
 
     // check if all items are valid
-    for( int i = 0; i < clazz->items.length(); ++i ) {
-      ObjectClass* const* itemClazz = classes.find( clazz->items[i] );
+    for( int i = 0; i < objClazz->items.length(); ++i ) {
+      const ObjectClass* itemClazz = clazz( objClazz->items[i] );
 
-      if( itemClazz == null || !( ( *itemClazz )->flags & Object::DYNAMIC_BIT ) ||
-          !( ( *itemClazz )->flags & Object::ITEM_BIT ) )
+      if( ( itemClazz->flags & ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) ) !=
+          ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) )
       {
-        throw Exception( "Invalid item clazz '" + clazz->items[i] + "' in '" + clazz->name + "'" );
+        throw Exception( "Invalid item clazz '" + objClazz->items[i] + "' in '" +
+                         objClazz->name + "'" );
       }
     }
 
     // fill allowedUsers for weapons
-    const WeaponClass* weaponClass = dynamic_cast<const WeaponClass*>( clazz );
+    const WeaponClass* weaponClass = dynamic_cast<const WeaponClass*>( objClazz );
     if( weaponClass != null ) {
       const_cast<WeaponClass*>( weaponClass )->fillAllowedUsers();
     }
   }
 
-  foreach( clazz, classes.citer() ) {
+  foreach( clazzElem, classes.citer() ) {
     // check if weaponItem is a valid weapon for bots
-    if( clazz.value()->flags & Object::BOT_BIT ) {
-      const BotClass* botClazz = static_cast<const BotClass*>( clazz.value() );
+    if( clazzElem.value()->flags & Object::BOT_BIT ) {
+      const BotClass* botClazz = static_cast<const BotClass*>( clazzElem.value() );
 
       if( botClazz->weaponItem != -1 ) {
         if( uint( botClazz->weaponItem ) >= uint( botClazz->items.length() ) ) {
           throw Exception( "Invalid weaponItem for '" + botClazz->name + "'" );
         }
 
-        ObjectClass* const* itemClazz = classes.find( botClazz->items[botClazz->weaponItem] );
+        const ObjectClass* itemClazz = clazz( botClazz->items[botClazz->weaponItem] );
         // we already checked it the previous loop it's non-null and a valid item
-        const WeaponClass* weaponClazz = dynamic_cast<const WeaponClass*>( *itemClazz );
+        const WeaponClass* weaponClazz = dynamic_cast<const WeaponClass*>( itemClazz );
 
         if( weaponClazz == null ) {
           throw Exception( "Default weapon of '" + botClazz->name + "' is of a non-weapon class" );
@@ -980,45 +960,46 @@ void Library::buildInit()
     }
 
     classConfig.add( "name", name );
-    classes.add( name, null );
+    classes.add( name, ( *initFunc )( &classConfig ) );
     classConfig.clear();
   }
   dirList.dealloc();
 
   foreach( clazzElem, classes.citer() ) {
-    const ObjectClass* clazz = clazzElem.value();
+    const ObjectClass* objClazz = clazzElem.value();
 
     // check if all items are valid
-    for( int i = 0; i < clazz->items.length(); ++i ) {
-      ObjectClass* const* itemClazz = classes.find( clazz->items[i] );
+    for( int i = 0; i < objClazz->items.length(); ++i ) {
+      const ObjectClass* itemClazz = clazz( objClazz->items[i] );
 
-      if( itemClazz == null || !( ( *itemClazz )->flags & Object::DYNAMIC_BIT ) ||
-          !( ( *itemClazz )->flags & Object::ITEM_BIT ) )
+      if( ( itemClazz->flags & ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) ) !=
+          ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) )
       {
-        throw Exception( "Invalid item clazz '" + clazz->items[i] + "' in '" + clazz->name + "'" );
+        throw Exception( "Invalid item clazz '" + objClazz->items[i] + "' in '" +
+                         objClazz->name + "'" );
       }
     }
 
     // fill allowedUsers for weapons
-    const WeaponClass* weaponClass = dynamic_cast<const WeaponClass*>( clazz );
+    const WeaponClass* weaponClass = dynamic_cast<const WeaponClass*>( objClazz );
     if( weaponClass != null ) {
       const_cast<WeaponClass*>( weaponClass )->fillAllowedUsers();
     }
   }
 
-  foreach( clazz, classes.citer() ) {
+  foreach( clazzElem, classes.citer() ) {
     // check if weaponItem is a valid weapon for bots
-    if( clazz.value()->flags & Object::BOT_BIT ) {
-      const BotClass* botClazz = static_cast<const BotClass*>( clazz.value() );
+    if( clazzElem.value()->flags & Object::BOT_BIT ) {
+      const BotClass* botClazz = static_cast<const BotClass*>( clazzElem.value() );
 
       if( botClazz->weaponItem != -1 ) {
         if( uint( botClazz->weaponItem ) >= uint( botClazz->items.length() ) ) {
           throw Exception( "Invalid weaponItem for '" + botClazz->name + "'" );
         }
 
-        ObjectClass* const* itemClazz = classes.find( botClazz->items[botClazz->weaponItem] );
+        const ObjectClass* itemClazz = clazz( botClazz->items[botClazz->weaponItem] );
         // we already checked it the previous loop it's non-null and a valid item
-        const WeaponClass* weaponClazz = dynamic_cast<const WeaponClass*>( *itemClazz );
+        const WeaponClass* weaponClazz = dynamic_cast<const WeaponClass*>( itemClazz );
 
         if( weaponClazz == null ) {
           throw Exception( "Default weapon of '" + botClazz->name + "' is of a non-weapon class" );

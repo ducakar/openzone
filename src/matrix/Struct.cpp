@@ -304,6 +304,15 @@ void Struct::onDemolish()
 
 void Struct::onUpdate()
 {
+  for( int i = 0; i < boundObjects.length(); ) {
+    if( orbis.objects[ boundObjects[i] ] == null ) {
+      boundObjects.removeUO( i );
+    }
+    else {
+      ++i;
+    }
+  }
+
   if( life <= 0.0f ) {
     onDemolish();
   }
@@ -349,6 +358,10 @@ Struct::Struct( int index_, int bspId, const Point3& p_, Heading heading_ ) :
     entity.state  = Entity::CLOSED;
     entity.ratio  = 0.0f;
     entity.time   = 0.0f;
+  }
+
+  if( bsp->nBoundObjects != 0 ) {
+    boundObjects.alloc( bsp->nBoundObjects );
   }
 }
 
@@ -440,6 +453,14 @@ Bounds Struct::toAbsoluteCS( const Bounds& bb ) const
 
 void Struct::destroy()
 {
+  for( int i = 0; i < boundObjects.length(); ++i ) {
+    Object* obj = orbis.objects[ boundObjects[i] ];
+
+    if( obj != null ) {
+      obj->destroy();
+    }
+  }
+
   onDemolish();
 
   synapse.genParts( 100, p, Vec3::ZERO, 10.0f, Vec3( 0.4f, 0.4f, 0.4f ), 0.1f,
@@ -463,6 +484,20 @@ void Struct::readFull( InputStream* istream )
     entities[i].ratio  = istream->readFloat();
     entities[i].time   = istream->readFloat();
   }
+
+  boundObjects.dealloc();
+
+  int nBoundObjects = istream->readInt();
+
+  hard_assert( nBoundObjects <= bsp->nBoundObjects );
+
+  if( bsp->nBoundObjects != 0 ) {
+    boundObjects.alloc( bsp->nBoundObjects );
+
+    for( int i = 0; i < nBoundObjects; ++i ) {
+      boundObjects.add( istream->readInt() );
+    }
+  }
 }
 
 void Struct::writeFull( BufferStream* ostream )
@@ -481,6 +516,11 @@ void Struct::writeFull( BufferStream* ostream )
     ostream->writeInt( entities[i].state );
     ostream->writeFloat( entities[i].ratio );
     ostream->writeFloat( entities[i].time );
+  }
+
+  ostream->writeInt( boundObjects.length() );
+  for( int i = 0; i < boundObjects.length(); ++i ) {
+    ostream->writeInt( boundObjects[i] );
   }
 }
 

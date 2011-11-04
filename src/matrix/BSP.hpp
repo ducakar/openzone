@@ -31,6 +31,8 @@ namespace oz
 namespace matrix
 {
 
+class ObjectClass;
+
 /**
  * Information about a BSP that must be available also when the BSP is not loaded.
  */
@@ -111,25 +113,34 @@ class BSP : public Bounds
       int    frictSound;  ///< Friction sound sample, played while the entity is moving.
     };
 
-    int     id;
-    float   life;
-    float   resistance;
+    struct BoundObject
+    {
+      const ObjectClass* clazz;
+      Point3  pos;
+      Heading heading;
+    };
 
-    int     nPlanes;
-    int     nNodes;
-    int     nLeaves;
-    int     nLeafBrushes;
-    int     nModels;
-    int     nBrushes;
-    int     nBrushSides;
+    int          id;
+    float        life;
+    float        resistance;
 
-    Plane*  planes;
-    Node*   nodes;
-    Leaf*   leaves;
-    int*    leafBrushes;
-    Model*  models;
-    Brush*  brushes;
-    int*    brushSides;
+    int          nPlanes;
+    int          nNodes;
+    int          nLeaves;
+    int          nLeafBrushes;
+    int          nModels;
+    int          nBrushes;
+    int          nBrushSides;
+    int          nBoundObjects;
+
+    Plane*       planes;
+    Node*        nodes;
+    Leaf*        leaves;
+    int*         leafBrushes;
+    Model*       models;
+    Brush*       brushes;
+    int*         brushSides;
+    BoundObject* boundObjects;
 
     explicit BSP( int id );
     ~BSP();

@@ -112,10 +112,7 @@ class Library
     int modelIndex( const char* name ) const;
     int nameListIndex( const char* name ) const;
 
-    Struct* createStruct( int index, int id, const Point3& p, Heading heading ) const;
-    Struct* createStruct( int index, int id, InputStream* istream ) const;
-    Object* createObject( int index, const char* name, const Point3& p, Heading heading ) const;
-    Object* createObject( int index, const char* name, InputStream* istream ) const;
+    const ObjectClass* clazz( const char* name ) const;
 
     void init();
     void buildInit();

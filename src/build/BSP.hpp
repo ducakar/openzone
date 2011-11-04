@@ -48,6 +48,8 @@ class BSP : public Bounds
     static const float DEFAULT_LIFE;
     static const float DEFAULT_RESISTANCE;
 
+    static const int BOUND_OBJECTS = 100;
+
     /// Quake
     static const int QBSP_SLICK_FLAG_BIT    = 0x00000002;
     static const int QBSP_LADDER_FLAG_BIT   = 0x00000008;
@@ -251,6 +253,8 @@ class BSP : public Bounds
     Vertex*             vertices;
     int*                indices;
     Face*               faces;
+
+    Vector<matrix::BSP::BoundObject> boundObjects;
 
     bool includes( const matrix::BSP::Brush& brush, float maxDim ) const;
 
