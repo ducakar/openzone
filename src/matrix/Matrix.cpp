@@ -78,7 +78,7 @@ void Matrix::update()
       continue;
     }
 
-    if( str->life <= 0.0f ) {
+    if( str->life <= 0.0f && str->demolishing == 0.0f ) {
       str->destroy();
     }
     else {

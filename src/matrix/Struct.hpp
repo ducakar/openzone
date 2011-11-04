@@ -35,6 +35,11 @@ class Object;
 
 class Struct : public Bounds
 {
+  private:
+
+    static const float DEMOLISH_SPEED;
+    static const Mat44 ROTATIONS[];
+
   public:
 
     class Entity
@@ -62,7 +67,7 @@ class Struct : public Bounds
 
       private:
 
-        static void ( Entity::* handlers[] )();
+        static void ( Entity::* const HANDLERS[] )();
 
         void updateIgnoring();
         void updateCrushing();
@@ -70,10 +75,7 @@ class Struct : public Bounds
 
     };
 
-    static const Mat44 rotations[];
-
-    static Pool<Struct> pool;
-    static Vector<Object*> overlappingObjs;
+  private:
 
     Mat44      transf;
     Mat44      invTransf;
@@ -87,9 +89,20 @@ class Struct : public Bounds
     Heading    heading;
     float      life;
     float      resistance;
+    float      demolishing;
 
     int        nEntities;
     Entity*    entities;
+
+    static Vector<Object*> overlappingObjs;
+    static Pool<Struct> pool;
+
+  private:
+
+    void onDemolish();
+    void onUpdate();
+
+  public:
 
     ~Struct();
 
@@ -186,6 +199,14 @@ inline void Struct::damage( float damage )
 
   if( damage > 0.0f ) {
     life -= damage;
+  }
+}
+
+OZ_ALWAYS_INLINE
+inline void Struct::update()
+{
+  if( nEntities != 0 || life <= 0.0f ) {
+    onUpdate();
   }
 }
 

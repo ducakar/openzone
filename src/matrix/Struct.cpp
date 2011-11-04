@@ -35,13 +35,9 @@ namespace oz
 namespace matrix
 {
 
-void ( Struct::Entity::* Struct::Entity::handlers[] )() = {
-  &Struct::Entity::updateIgnoring,
-  &Struct::Entity::updateCrushing,
-  &Struct::Entity::updateAutoDoor
-};
+const float Struct::DEMOLISH_SPEED = 8.0f * Timer::TICK_TIME;
 
-const Mat44 Struct::rotations[] =
+const Mat44 Struct::ROTATIONS[] =
 {
   Mat44::ID,
   Mat44(  0.0f,  1.0f,  0.0f,  0.0f,
@@ -59,8 +55,14 @@ const Mat44 Struct::rotations[] =
   Mat44::ID
 };
 
-Pool<Struct> Struct::pool;
+void ( Struct::Entity::* const Struct::Entity::HANDLERS[] )() = {
+  &Struct::Entity::updateIgnoring,
+  &Struct::Entity::updateCrushing,
+  &Struct::Entity::updateAutoDoor
+};
+
 Vector<Object*> Struct::overlappingObjs;
+Pool<Struct> Struct::pool;
 
 void Struct::Entity::updateIgnoring()
 {
@@ -265,6 +267,57 @@ void Struct::Entity::updateAutoDoor()
   }
 }
 
+void Struct::onDemolish()
+{
+  if( demolishing > 1.0f ) {
+    synapse.remove( this );
+  }
+  else {
+    demolishing += DEMOLISH_SPEED / ( maxs.z - mins.z );
+    p.z -= DEMOLISH_SPEED;
+
+    transf.w = p;
+
+    invTransf = ROTATIONS[4 - heading];
+    invTransf.translate( Point3::ORIGIN - p );
+
+    Bounds bb = toAbsoluteCS( *bsp );
+    mins = bb.mins;
+    maxs = bb.maxs;
+
+    overlappingObjs.clear();
+    collider.mask = ~0;
+    collider.getOverlaps( this->toAABB(), &overlappingObjs, null, 4.0f * EPSILON );
+    collider.mask = Object::SOLID_BIT;
+
+    for( int i = 0; i < overlappingObjs.length(); ++i ) {
+      Object* obj = overlappingObjs[i];
+
+      obj->flags &= ~Object::MOVE_CLEAR_MASK;
+
+      if( collider.overlaps( obj->toAABB( -2.0f * EPSILON ), obj ) ) {
+        obj->destroy();
+      }
+    }
+  }
+}
+
+void Struct::onUpdate()
+{
+  if( life <= 0.0f ) {
+    onDemolish();
+  }
+  else {
+    for( int i = 0; i < nEntities; ++i ) {
+      Entity& entity = entities[i];
+
+      hard_assert( 0.0f <= entity.ratio && entity.ratio <= 1.0f );
+
+      ( entity.*Entity::HANDLERS[entity.model->type] )();
+    }
+  }
+}
+
 Struct::~Struct()
 {
   delete[] entities;
@@ -272,12 +325,12 @@ Struct::~Struct()
 
 Struct::Struct( int index_, int bspId, const Point3& p_, Heading heading_ ) :
     p( p_ ), index( index_ ), id( bspId ), bsp( orbis.bsps[bspId] ),
-    heading( heading_ ), life( bsp->life ), resistance( bsp->resistance )
+    heading( heading_ ), life( bsp->life ), resistance( bsp->resistance ), demolishing( 0.0f )
 {
-  transf = rotations[heading];
+  transf = ROTATIONS[heading];
   transf.w = p;
 
-  invTransf = rotations[4 - heading];
+  invTransf = ROTATIONS[4 - heading];
   invTransf.translate( Point3::ORIGIN - p );
 
   Bounds bb = toAbsoluteCS( *bsp );
@@ -387,39 +440,28 @@ Bounds Struct::toAbsoluteCS( const Bounds& bb ) const
 
 void Struct::destroy()
 {
-  collider.touchOverlaps( this->toAABB(), 4.0f * EPSILON );
+  onDemolish();
 
   synapse.genParts( 100, p, Vec3::ZERO, 10.0f, Vec3( 0.4f, 0.4f, 0.4f ), 0.1f,
                     1.98f, 0.0f, 2.0f );
-  synapse.remove( this );
-}
-
-void Struct::update()
-{
-  for( int i = 0; i < nEntities; ++i ) {
-    Entity& entity = entities[i];
-
-    hard_assert( 0.0f <= entity.ratio && entity.ratio <= 1.0f );
-
-    ( entity.*Entity::handlers[entity.model->type] )();
-  }
 }
 
 void Struct::readFull( InputStream* istream )
 {
-  mins      = istream->readPoint3();
-  maxs      = istream->readPoint3();
-  transf    = istream->readMat44();
-  invTransf = istream->readMat44();
-  p         = istream->readPoint3();
-  heading   = Heading( istream->readInt() );
-  life      = istream->readFloat();
+  mins        = istream->readPoint3();
+  maxs        = istream->readPoint3();
+  transf      = istream->readMat44();
+  invTransf   = istream->readMat44();
+  p           = istream->readPoint3();
+  heading     = Heading( istream->readInt() );
+  life        = istream->readFloat();
+  demolishing = istream->readFloat();
 
   for( int i = 0; i < nEntities; ++i ) {
     entities[i].offset = istream->readVec3();
-    entities[i].state = Entity::State( istream->readInt() );
-    entities[i].ratio = istream->readFloat();
-    entities[i].time = istream->readFloat();
+    entities[i].state  = Entity::State( istream->readInt() );
+    entities[i].ratio  = istream->readFloat();
+    entities[i].time   = istream->readFloat();
   }
 }
 
@@ -432,6 +474,7 @@ void Struct::writeFull( BufferStream* ostream )
   ostream->writePoint3( p );
   ostream->writeInt( heading );
   ostream->writeFloat( life );
+  ostream->writeFloat( demolishing );
 
   for( int i = 0; i < nEntities; ++i ) {
     ostream->writeVec3( entities[i].offset );
