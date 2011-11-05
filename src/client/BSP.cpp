@@ -113,10 +113,10 @@ void BSP::playContSound( const Struct::Entity* entity, int sound ) const
 
 BSP::BSP( int id_ ) : id( id_ ), flags( 0 ), bsp( orbis.bsps[id_] ), isLoaded( false )
 {
-  const BSPClass& clazz = library.bspClasses[id];
+  const BSPClass* clazz = library.bspClass( id );
 
-  for( int i = 0; i < clazz.sounds.length(); ++i ) {
-    context.requestSound( clazz.sounds[i] );
+  for( int i = 0; i < clazz->sounds.length(); ++i ) {
+    context.requestSound( clazz->sounds[i] );
   }
 }
 
@@ -129,10 +129,10 @@ BSP::~BSP()
     mesh.unload();
   }
 
-  const BSPClass& clazz = library.bspClasses[id];
+  const BSPClass* clazz = library.bspClass( id );
 
-  for( int i = 0; i < clazz.sounds.length(); ++i ) {
-    context.releaseSound( clazz.sounds[i] );
+  for( int i = 0; i < clazz->sounds.length(); ++i ) {
+    context.releaseSound( clazz->sounds[i] );
   }
 
   log.unindent();

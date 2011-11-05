@@ -72,8 +72,7 @@ void Synapse::cut( Dynamic* obj )
 
 int Synapse::addStruct( const char* name, const Point3& p, Heading heading )
 {
-  int id      = library.bspIndex( name );
-  int index   = orbis.addStruct( id, p, heading );
+  int index   = orbis.addStruct( library.bspIndex( name ), p, heading );
   Struct* str = orbis.structs[index];
 
   if( !orbis.position( str ) ) {
@@ -85,9 +84,11 @@ int Synapse::addStruct( const char* name, const Point3& p, Heading heading )
   for( int i = 0; i < str->bsp->nBoundObjects; ++i ) {
     const BSP::BoundObject& boundObj = str->bsp->boundObjects[i];
 
-    int objIndex = orbis.addObject( boundObj.clazz, str->toAbsoluteCS( boundObj.pos ),
-                                    Heading( ( str->heading + boundObj.heading ) % 4 ) );
-    Object* obj  = orbis.objects[objIndex];
+    Point3  pos      = str->toAbsoluteCS( boundObj.pos );
+    Heading heading  = Heading( ( str->heading + boundObj.heading ) % 4 );
+
+    int     objIndex = orbis.addObject( boundObj.clazz, pos, heading );
+    Object* obj      = orbis.objects[objIndex];
 
     orbis.position( obj );
 
@@ -102,18 +103,17 @@ int Synapse::addStruct( const char* name, const Point3& p, Heading heading )
 
 int Synapse::addObject( const char* name, const Point3& p, Heading heading )
 {
-  const ObjectClass* clazz = library.clazz( name );
-  int index   = orbis.addObject( clazz, p, heading );
-  Object* obj = orbis.objects[index];
+  int     index = orbis.addObject( library.objClass( name ), p, heading );
+  Object* obj   = orbis.objects[index];
 
   orbis.position( obj );
 
-  int nItems = obj->clazz->items.length();
-  if( nItems != 0 ) {
-    for( int i = 0; i < nItems; ++i ) {
-      const ObjectClass* clazz = library.clazz( obj->clazz->items[i] );
-      int itemIndex = orbis.addObject( clazz, Point3::ORIGIN, NORTH );
-      Dynamic* item = static_cast<Dynamic*>( orbis.objects[itemIndex] );
+  const Vector<const ObjectClass*>& defaultItems = obj->clazz->defaultItems;
+
+  if( !defaultItems.isEmpty() ) {
+    for( int i = 0; i < defaultItems.length(); ++i ) {
+      int      itemIndex = orbis.addObject( defaultItems[i], Point3::ORIGIN, NORTH );
+      Dynamic* item      = static_cast<Dynamic*>( orbis.objects[itemIndex] );
 
       obj->items.add( itemIndex );
       item->parent = obj->index;

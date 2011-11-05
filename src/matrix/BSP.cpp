@@ -176,7 +176,7 @@ BSP::BSP( int id_ ) :
 
   boundObjects = new( data ) BoundObject[nBoundObjects];
   for( int i = 0; i < nBoundObjects; ++i ) {
-    boundObjects[i].clazz   = library.clazz( is.readString() );
+    boundObjects[i].clazz   = library.objClass( is.readString() );
     boundObjects[i].pos     = is.readPoint3();
     boundObjects[i].heading = Heading( is.readInt() );
   }

@@ -175,8 +175,10 @@ class Config
 
     /**
      * Clear variables.
+     *
+     * @param suppressUnused true to suppress warnings about unused variables in debug mode.
      */
-    void clear();
+    void clear( bool suppressUnused = false );
 
     /**
      * Return variables in a formatted string.

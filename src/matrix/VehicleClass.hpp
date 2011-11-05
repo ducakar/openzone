@@ -61,7 +61,9 @@ class VehicleClass : public DynamicClass
     float  hoverHeightStiffness;
     float  hoverMomentumStiffness;
 
-    static ObjectClass* init( const Config* config );
+    static ObjectClass* createClass();
+
+    virtual void initClass( const Config* config );
 
     virtual Object* create( int index, const Point3& pos, Heading heading ) const;
     virtual Object* create( int index, InputStream* istream ) const;

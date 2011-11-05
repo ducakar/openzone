@@ -28,7 +28,7 @@
 
 #define OZ_CLASS_SET_FLAG( flagBit, varName, defValue ) \
   if( config->get( varName, defValue ) ) { \
-    clazz->flags |= flagBit; \
+    flags |= flagBit; \
   }
 
 namespace oz
@@ -49,7 +49,7 @@ class ObjectClass
     // 00 <= AUDIO_SOUNDS <= 99 (two decimal digits)
     static const int AUDIO_SOUNDS = 16;
 
-    typedef ObjectClass* ( * InitFunc )( const Config* config );
+    typedef ObjectClass* ( * CreateFunc )();
 
     String name;
     String title;
@@ -84,7 +84,8 @@ class ObjectClass
     int    audioSounds[AUDIO_SOUNDS];
 
     int    nItems;
-    Vector<String> items;
+
+    Vector<const ObjectClass*> defaultItems;
 
   protected:
 
@@ -95,7 +96,9 @@ class ObjectClass
 
     virtual ~ObjectClass();
 
-    static ObjectClass* init( const Config* config );
+    static ObjectClass* createClass();
+
+    virtual void initClass( const Config* config );
 
     virtual Object* create( int index, const Point3& pos, Heading heading ) const;
     virtual Object* create( int index, InputStream* istream ) const;

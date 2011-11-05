@@ -150,7 +150,7 @@ void StrategicArea::drawHoveredRect( const Span& span )
       life = hoveredStr->life / hoveredStr->bsp->life;
     }
 
-    const String& title = library.bspClasses[hoveredStr->id].title;
+    const String& title = library.bspClass( hoveredStr->id )->title;
     printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", title.cstr() );
   }
   else {

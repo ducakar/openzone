@@ -33,11 +33,14 @@ namespace oz
 namespace matrix
 {
 
-ObjectClass* DynamicClass::init( const Config* config )
+ObjectClass* DynamicClass::createClass()
 {
-  DynamicClass* clazz = new DynamicClass();
+  return new DynamicClass();
+}
 
-  clazz->flags = Object::DYNAMIC_BIT;
+void DynamicClass::initClass( const Config* config )
+{
+  flags = Object::DYNAMIC_BIT;
 
   OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",     true  );
   OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.onDamage",      false );
@@ -51,19 +54,17 @@ ObjectClass* DynamicClass::init( const Config* config )
   OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",        false );
   OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",      false );
 
-  clazz->fillCommonConfig( config );
+  fillCommonConfig( config );
 
-  clazz->mass = config->get( "mass", 100.0f );
-  clazz->lift = config->get( "lift", 12.0f );
+  mass = config->get( "mass", 100.0f );
+  lift = config->get( "lift", 12.0f );
 
-  if( clazz->mass < 0.01f ) {
+  if( mass < 0.01f ) {
     throw Exception( "Invalid object mass. Should be >= 0.01." );
   }
-  if( clazz->lift < 0.0f ) {
+  if( lift < 0.0f ) {
     throw Exception( "Invalid object lift. Should be >= 0." );
   }
-
-  return clazz;
 }
 
 Object* DynamicClass::create( int index, const Point3& pos, Heading heading ) const
