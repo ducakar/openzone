@@ -68,23 +68,23 @@ void VehicleClass::initClass( const Config* config )
     throw Exception( "Invalid object lift. Should be >= 0." );
   }
 
-  String sType = config->get( "type", "" );
-  if( sType.equals( "STATIC" ) ) {
+  const char* sType = config->get( "type", "" );
+  if( String::equals( sType, "STATIC" ) ) {
     type = Vehicle::WHEELED;
   }
-  else if( sType.equals( "WHEELED" ) ) {
+  else if( String::equals( sType, "WHEELED" ) ) {
     type = Vehicle::WHEELED;
   }
-  else if( sType.equals( "TRACKED" ) ) {
+  else if( String::equals( sType, "TRACKED" ) ) {
     type = Vehicle::TRACKED;
   }
-  else if( sType.equals( "MECH" ) ) {
+  else if( String::equals( sType, "MECH" ) ) {
     type = Vehicle::TRACKED;
   }
-  else if( sType.equals( "HOVER" ) ) {
+  else if( String::equals( sType, "HOVER" ) ) {
     type = Vehicle::HOVER;
   }
-  else if( sType.equals( "AIR" ) ) {
+  else if( String::equals( sType, "AIR" ) ) {
     type = Vehicle::AIR;
   }
   else {

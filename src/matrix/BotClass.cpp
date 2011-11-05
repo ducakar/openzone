@@ -122,7 +122,7 @@ void BotClass::initClass( const Config* config )
   airControl        = config->get( "airControl", 0.025f );
   climbControl      = config->get( "climbControl", 1.50f );
   waterControl      = config->get( "waterControl", 0.08f );
-  slickControl      = config->get( "slickControl", 0.04f );
+  slickControl      = config->get( "slickControl", 0.08f );
 
   reachDist         = config->get( "reachDist", 2.0f );
 
@@ -146,12 +146,12 @@ void BotClass::initClass( const Config* config )
   OZ_CLASS_SET_STATE( Bot::CROUCHING_BIT,  "state.crouching",  false );
   OZ_CLASS_SET_STATE( Bot::RUNNING_BIT,    "state.running",    true );
 
-  weaponItem           = config->get( "weaponItem", -1 );
+  weaponItem            = config->get( "weaponItem", -1 );
 
-  mindFunction         = config->get( "mindFunction", "" );
+  mindFunction          = config->get( "mindFunction", "" );
 
-  String sNameList     = config->get( "nameList", "" );
-  nameList             = sNameList.isEmpty() ? -1 : library.nameListIndex( sNameList );
+  const char* sNameList = config->get( "nameList", "" );
+  nameList              = String::isEmpty( sNameList ) ? -1 : library.nameListIndex( sNameList );
 }
 
 Object* BotClass::create( int index, const Point3& pos, Heading heading ) const

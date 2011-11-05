@@ -44,10 +44,20 @@
 #include "client/OpenAL.hpp"
 
 #define OZ_REGISTER_IMAGOCLASS( name ) \
-  imagoClasses.add( #name, &name##Imago::create )
+  { \
+    int id = library.imagoIndex( #name ); \
+    if( id != -1 ) { \
+      imagoClasses[id] = name##Imago::create; \
+    } \
+  }
 
 #define OZ_REGISTER_AUDIOCLASS( name ) \
-  audioClasses.add( #name, &name##Audio::create )
+  { \
+    int id = library.audioIndex( #name ); \
+    if( id != -1 ) { \
+      audioClasses[id] = name##Audio::create; \
+    } \
+  }
 
 namespace oz
 {
@@ -113,7 +123,8 @@ void Context::removeObjSource( ContSource* contSource, int key )
   releaseSound( sound );
 }
 
-Context::Context() : textures( null ), sounds( null ), bsps( null )
+Context::Context() : imagoClasses( null ), audioClasses( null ),
+    textures( null ), sounds( null ), bsps( null ), smms( null ), md2s( null ), md3s( null )
 {}
 
 uint Context::loadTexture( const char* path )
@@ -432,12 +443,9 @@ void Context::drawImago( const Object* obj, const Imago* parent, int mask )
   Imago* const* value = imagines.find( obj->index );
 
   if( value == null ) {
-    const Imago::CreateFunc* createFunc = imagoClasses.find( obj->clazz->imagoType );
-    if( createFunc == null ) {
-      throw Exception( "Invalid Imago '" + obj->clazz->imagoType + "'" );
-    }
+    const Imago::CreateFunc& createFunc = imagoClasses[obj->clazz->imagoType];
 
-    value = imagines.add( obj->index, ( *createFunc )( obj ) );
+    value = imagines.add( obj->index, createFunc( obj ) );
   }
 
   Imago* imago = *value;
@@ -453,12 +461,9 @@ void Context::playAudio( const Object* obj, const Audio* parent )
   Audio* const* value = audios.find( obj->index );
 
   if( value == null ) {
-    const Audio::CreateFunc* createFunc = audioClasses.find( obj->clazz->audioType );
-    if( createFunc == null ) {
-      throw Exception( "Invalid Audio '" + obj->clazz->audioType + "'" );
-    }
+    const Audio::CreateFunc& createFunc = audioClasses[obj->clazz->audioType];
 
-    value = audios.add( obj->index, ( *createFunc )( obj ) );
+    value = audios.add( obj->index, createFunc( obj ) );
   }
 
   Audio* audio = *value;
@@ -616,12 +621,12 @@ void Context::init()
 {
   log.print( "Initialising Context ..." );
 
-  textures = null;
-  sounds   = null;
-  bsps     = null;
-  smms     = null;
-  md2s     = null;
-  md3s     = null;
+  if( library.nImagoClasses != 0 ) {
+    imagoClasses = new Imago::CreateFunc[library.nImagoClasses];
+  }
+  if( library.nAudioClasses != 0 ) {
+    audioClasses = new Audio::CreateFunc[library.nAudioClasses];
+  }
 
   OZ_REGISTER_IMAGOCLASS( SMM );
   OZ_REGISTER_IMAGOCLASS( SMMVehicle );
@@ -647,12 +652,12 @@ void Context::init()
     throw Exception( "Context: models missing!" );
   }
 
-  textures = new Resource<uint>[library.textures.length()];
-  sounds   = new Resource<uint>[library.sounds.length()];
-  bsps     = new Resource<BSP*>[library.bsps.length()];
-  smms     = new Resource<SMM*>[library.models.length()];
-  md2s     = new Resource<MD2*>[library.models.length()];
-  md3s     = new Resource<MD3*>[library.models.length()];
+  textures = new Resource<uint>[ library.textures.length() ];
+  sounds   = new Resource<uint>[ library.sounds.length() ];
+  bsps     = new Resource<BSP*>[ library.bsps.length() ];
+  smms     = new Resource<SMM*>[ library.models.length() ];
+  md2s     = new Resource<MD2*>[ library.models.length() ];
+  md3s     = new Resource<MD3*>[ library.models.length() ];
 
   for( int i = 0; i < library.textures.length(); ++i ) {
     textures[i].nUsers = 0;
@@ -682,6 +687,9 @@ void Context::free()
 {
   log.print( "Freeing Context ..." );
 
+  delete[] imagoClasses;
+  delete[] audioClasses;
+
   delete[] textures;
   delete[] sounds;
   delete[] bsps;
@@ -689,17 +697,15 @@ void Context::free()
   delete[] md2s;
   delete[] md3s;
 
-  textures = null;
-  sounds   = null;
-  bsps     = null;
-  smms     = null;
-  md2s     = null;
-  md3s     = null;
+  imagoClasses = null;
+  audioClasses = null;
 
-  imagoClasses.clear();
-  imagoClasses.dealloc();
-  audioClasses.clear();
-  audioClasses.dealloc();
+  textures     = null;
+  sounds       = null;
+  bsps         = null;
+  smms         = null;
+  md2s         = null;
+  md3s         = null;
 
   log.printEnd( " OK" );
 }

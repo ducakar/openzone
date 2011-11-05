@@ -467,7 +467,7 @@ void BSP::load()
     if( !objName.isEmpty() ) {
       matrix::BSP::BoundObject object;
 
-      object.clazz   = library.clazz( objName );
+      object.clazz   = library.objClass( objName );
 
       object.pos.x   = bspConfig.get( key + ".pos.x", 0.0f );
       object.pos.y   = bspConfig.get( key + ".pos.y", 0.0f );

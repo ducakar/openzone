@@ -36,7 +36,7 @@
 #include <sys/types.h>
 
 #define OZ_REGISTER_BASECLASS( name ) \
-  baseClasses.add( #name, &name##Class::createClass )
+  baseClasses.include( #name, name##Class::createClass )
 
 namespace oz
 {
@@ -48,6 +48,17 @@ Library library;
 Library::Resource::Resource( const String& name_, const String& path_ ) :
     name( name_ ), path( path_ )
 {}
+
+const ObjectClass* Library::objClass( const char* name ) const
+{
+  const ObjectClass* const* value = classes.find( name );
+  if( value == null ) {
+    throw Exception( "Invalid object class requested '" + String( name ) + "'" );
+  }
+  else {
+    return *value;
+  }
+}
 
 int Library::textureIndex( const char* name ) const
 {
@@ -137,15 +148,25 @@ int Library::nameListIndex( const char* name ) const
   }
 }
 
-const ObjectClass* Library::objClass( const char* name ) const
+int Library::deviceIndex( const char* name ) const
 {
-  const ObjectClass* const* value = classes.find( name );
-  if( value == null ) {
-    throw Exception( "Invalid object class requested '" + String( name ) + "'" );
-  }
-  else {
-    return *value;
-  }
+  const int* value = deviceIndices.find( name );
+
+  return value == null ? -1 : *value;
+}
+
+int Library::imagoIndex( const char* name ) const
+{
+  const int* value = imagoIndices.find( name );
+
+  return value == null ? -1 : *value;
+}
+
+int Library::audioIndex( const char* name ) const
+{
+  const int* value = audioIndices.find( name );
+
+  return value == null ? -1 : *value;
 }
 
 void Library::initClasses()
@@ -190,8 +211,8 @@ void Library::initClasses()
       throw Exception( "Class parse error" );
     }
 
-    String base = classConfig.get( "base", "" );
-    if( base.isEmpty() ) {
+    const char* base = classConfig.get( "base", "" );
+    if( String::isEmpty( base ) ) {
       classConfig.clear( true );
       throw Exception( "'base' missing in class description" );
     }
@@ -199,15 +220,36 @@ void Library::initClasses()
     const ObjectClass::CreateFunc* createFunc = baseClasses.find( base );
     if( createFunc == null ) {
       classConfig.clear( true );
-      throw Exception( "Invalid class base '" + base + "'" );
+      throw Exception( "Invalid class base '" + String( base ) + "'" );
     }
 
     // First we only add class instances, we don't initialise them as each class may have references
     // to other classes that have not been created yet.
     classes.add( name, ( *createFunc )() );
+
+    // index device, imago and audio classes
+    const char* sDevice = classConfig.get( "deviceType", "" );
+    if( !String::isEmpty( sDevice ) ) {
+      deviceIndices.include( sDevice, deviceIndices.length() );
+    }
+
+    const char* sImago = classConfig.get( "imagoType", "" );
+    if( !String::isEmpty( sImago ) ) {
+      imagoIndices.include( sImago, imagoIndices.length() );
+    }
+
+    const char* sAudio = classConfig.get( "audioType", "" );
+    if( !String::isEmpty( sAudio ) ) {
+      audioIndices.include( sAudio, audioIndices.length() );
+    }
+
     classConfig.clear( true );
   }
   dirList.dealloc();
+
+  nDeviceClasses = deviceIndices.length();
+  nImagoClasses  = imagoIndices.length();
+  nAudioClasses  = audioIndices.length();
 
   // initialise all classes
   foreach( classIter, classes.iter() ) {

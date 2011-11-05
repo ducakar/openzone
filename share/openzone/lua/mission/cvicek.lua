@@ -34,6 +34,12 @@ function test_escapeQuest()
 
   ozObjBindIndex( oz_me )
 
+  if ozBotGetState( OZ_BOT_DEAD_BIT ) then
+    ozQuestEnd( oz_escapeQuest, false )
+    oz_escapeQuest = nil
+    return
+  end
+
   local x, y, z = ozObjGetPos()
   local dx, dy = x - 786.50, y - 999.60
 
