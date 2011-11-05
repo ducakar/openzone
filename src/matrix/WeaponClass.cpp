@@ -34,11 +34,14 @@ namespace oz
 namespace matrix
 {
 
-ObjectClass* WeaponClass::init( const Config* config )
+ObjectClass* WeaponClass::createClass()
 {
-  WeaponClass* clazz = new WeaponClass();
+  return new WeaponClass();
+}
 
-  clazz->flags = Object::DYNAMIC_BIT | Object::WEAPON_BIT | Object::ITEM_BIT |
+void WeaponClass::initClass( const Config* config )
+{
+  flags = Object::DYNAMIC_BIT | Object::WEAPON_BIT | Object::ITEM_BIT |
       Object::UPDATE_FUNC_BIT | Object::USE_FUNC_BIT;
 
   OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",    true  );
@@ -50,28 +53,26 @@ ObjectClass* WeaponClass::init( const Config* config )
   OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
   OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
 
-  clazz->fillCommonConfig( config );
+  fillCommonConfig( config );
 
-  clazz->mass = config->get( "mass", 100.0f );
-  clazz->lift = config->get( "lift", 12.0f );
+  mass = config->get( "mass", 100.0f );
+  lift = config->get( "lift", 12.0f );
 
-  if( clazz->mass < 0.01f ) {
+  if( mass < 0.01f ) {
     throw Exception( "Invalid object mass. Should be >= 0.01." );
   }
-  if( clazz->lift < 0.0f ) {
+  if( lift < 0.0f ) {
     throw Exception( "Invalid object lift. Should be >= 0." );
   }
 
-  clazz->onShot = config->get( "onShot", "" );
+  onShot = config->get( "onShot", "" );
 
-  if( !String::isEmpty( clazz->onShot ) ) {
-    clazz->flags |= Object::LUA_BIT;
+  if( !String::isEmpty( onShot ) ) {
+    flags |= Object::LUA_BIT;
   }
 
-  clazz->nRounds      = config->get( "nRounds", -1 );
-  clazz->shotInterval = config->get( "shotInterval", 0.5f );
-
-  return clazz;
+  nRounds      = config->get( "nRounds", -1 );
+  shotInterval = config->get( "shotInterval", 0.5f );
 }
 
 Object* WeaponClass::create( int index, const Point3& pos, Heading heading ) const
@@ -117,29 +118,6 @@ Object* WeaponClass::create( int index, InputStream* istream ) const
   }
 
   return obj;
-}
-
-void WeaponClass::fillAllowedUsers()
-{
-  int underscore = name.index( '_' );
-  if( underscore == -1 ) {
-    throw Exception( "Weapon class file must be named <botClass>_weapon.<weapon>.rc" );
-  }
-
-  String matchClass = name.substring( 0, underscore );
-
-  foreach( clazz, library.classes.citer() ) {
-    String botClassBase = clazz.value()->name;
-
-    int dot = botClassBase.index( '.' );
-    if( dot != -1 ) {
-      botClassBase = botClassBase.substring( 0, dot );
-    }
-
-    if( matchClass.equals( botClassBase ) ) {
-      allowedUsers.add( clazz.value() );
-    }
-  }
 }
 
 }

@@ -71,7 +71,7 @@ void FloraModule::addTree( float x, float y )
     return;
   }
 
-  const ObjectClass* clazz = library.clazz( type );
+  const ObjectClass* clazz = library.objClass( type );
 
   AABB bounds = AABB( pos, clazz->dim );
   bounds *= SPACING;
@@ -84,7 +84,7 @@ void FloraModule::addTree( float x, float y )
 
 void FloraModule::addPlant( const char* type, float x, float y )
 {
-  const ObjectClass* clazz = library.clazz( type );
+  const ObjectClass* clazz = library.objClass( type );
 
   Point3 pos    = Point3( x, y, orbis.terra.height( x, y ) );
   AABB   bounds = AABB( pos, clazz->dim );

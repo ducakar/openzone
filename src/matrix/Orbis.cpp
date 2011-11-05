@@ -363,7 +363,7 @@ void Orbis::read( InputStream* istream )
       objects.add( null );
     }
     else {
-      obj = library.clazz( typeName )->create( i, istream );
+      obj = library.objClass( typeName )->create( i, istream );
       objects.add( obj );
 
       // no need to register objects since Lua state is being deserialised

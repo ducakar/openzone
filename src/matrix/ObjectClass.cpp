@@ -36,6 +36,9 @@ namespace matrix
 
 void ObjectClass::fillCommonConfig( const Config* config )
 {
+  // suppress warnings
+  config->get( "base", "" );
+
   /*
    * name
    */
@@ -60,11 +63,11 @@ void ObjectClass::fillCommonConfig( const Config* config )
       dim.y < 0.0f || dim.y > AABB::REAL_MAX_DIM ||
       dim.z < 0.0f )
   {
-    throw Exception( "Invalid object dimensions. Should be >= 0 and <= 3.99." );
+    throw Exception( name + ": Invalid dimensions. Should be >= 0 and <= 3.99." );
   }
 
   if( ( flags & Object::CYLINDER_BIT ) && dim.x != dim.y ) {
-    throw Exception( "Cylindric object '" + name + "' should have dim.x == dim.y" );
+    throw Exception( name + ": Cylindric object must have dim.x == dim.y" );
   }
 
   /*
@@ -141,10 +144,10 @@ void ObjectClass::fillCommonConfig( const Config* config )
   resistance = config->get( "resistance", 100.0f );
 
   if( life <= 0.0f ) {
-    throw Exception( "Invalid object life. Should be > 0." );
+    throw Exception( name + ": Invalid life. Should be > 0." );
   }
   if( resistance < 0.0f ) {
-    throw Exception( "Invalid object resistance. Should be >= 0." );
+    throw Exception( name + ": Invalid resistance. Should be >= 0." );
   }
 
   /*
@@ -171,7 +174,7 @@ void ObjectClass::fillCommonConfig( const Config* config )
     flags |= Object::DEVICE_BIT;
 
     if( flags & Object::USE_FUNC_BIT ) {
-      throw Exception( "device cannot have onUse handler" );
+      throw Exception( name + ": Device cannot have onUse handler" );
     }
   }
 
@@ -228,28 +231,32 @@ void ObjectClass::fillCommonConfig( const Config* config )
   }
 
   if( nItems < 0 ) {
-    throw Exception( "Inventory size must be 0 or a positive integer" );
+    throw Exception( name + ": Inventory size must be 0 or a positive integer" );
+  }
+  if( ( flags & Object::ITEM_BIT ) && nItems != 0 ) {
+    throw Exception( name + ": Item cannot have an inventory" );
   }
 
   // default inventory
-  char buffer[] = "item  ";
-  for( int i = 0; i < INVENTORY_ITEMS; ++i ) {
-    hard_assert( i < 100 );
+  if( nItems != 0 ) {
+    defaultItems.alloc( nItems );
 
-    buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
-    buffer[ sizeof( buffer ) - 2 ] = char( '0' + ( i % 10 ) );
+    char buffer[] = "item  ";
+    for( int i = 0; i < INVENTORY_ITEMS; ++i ) {
+      hard_assert( i < 100 );
 
-    String itemName = config->get( buffer, "" );
-    if( !itemName.isEmpty() ) {
-      items.add( itemName );
+      buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
+      buffer[ sizeof( buffer ) - 2 ] = char( '0' + ( i % 10 ) );
+
+      String itemName = config->get( buffer, "" );
+      if( !itemName.isEmpty() ) {
+        defaultItems.add( library.objClass( itemName ) );
+      }
     }
-  }
 
-  if( ( flags & Object::ITEM_BIT ) && nItems != 0 ) {
-    throw Exception( "Object cannot be an item and have an inventory at the same time" );
-  }
-  if( items.length() > nItems ) {
-    throw Exception( "More objects in the default inventory than the inventory size" );
+    if( defaultItems.length() > nItems ) {
+      throw Exception( name + ": Too many items in the default inventory" );
+    }
   }
 }
 
@@ -261,19 +268,22 @@ void ObjectClass::fillCommonFields( Object* obj ) const
   obj->life       = life;
   obj->resistance = resistance;
 
-  if( !items.isEmpty() ) {
-    obj->items.alloc( items.length() );
+  if( nItems != 0 ) {
+    obj->items.alloc( nItems );
   }
 }
 
 ObjectClass::~ObjectClass()
 {}
 
-ObjectClass* ObjectClass::init( const Config* config )
+ObjectClass* ObjectClass::createClass()
 {
-  ObjectClass* clazz = new ObjectClass();
+  return new ObjectClass();
+}
 
-  clazz->flags = 0;
+void ObjectClass::initClass( const Config* config )
+{
+  flags = 0;
 
   OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",     true  );
   OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.onDamage",      false );
@@ -285,9 +295,7 @@ ObjectClass* ObjectClass::init( const Config* config )
   OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",        false );
   OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",      false );
 
-  clazz->fillCommonConfig( config );
-
-  return clazz;
+  fillCommonConfig( config );
 }
 
 Object* ObjectClass::create( int index, const Point3& pos, Heading heading ) const

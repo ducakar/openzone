@@ -713,8 +713,8 @@ int Lua::ozOrbisTryAddStr( lua_State* l )
   Point3 p = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
   Heading heading = Heading( toint( 5 ) );
 
-  int id = library.bspIndex( name );
-  Bounds bounds = Struct::rotate( library.bspClasses[id].bounds, heading ) + ( p - Point3::ORIGIN );
+  Bounds bounds = library.bspClass( name )->bounds;
+  bounds = Struct::rotate( bounds, heading ) + ( p - Point3::ORIGIN );
 
   if( collider.overlaps( bounds.toAABB() ) ) {
     lua.str = null;
@@ -750,12 +750,9 @@ int Lua::ozOrbisTryAddObj( lua_State* l )
   Point3 p = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
   Heading heading = Heading( toint( 5 ) );
 
-  const ObjectClass* const* value = library.classes.find( name );
-  if( value == null ) {
-    ERROR( "invalid object class" );
-  }
+  const ObjectClass* clazz = library.objClass( name );
 
-  AABB aabb = AABB( p, ( *value )->dim );
+  AABB aabb = AABB( p, clazz->dim );
 
   if( heading == WEST || heading == EAST ) {
     swap( aabb.dim.x, aabb.dim.y );

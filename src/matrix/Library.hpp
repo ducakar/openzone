@@ -20,8 +20,6 @@
 
 /**
  * @file matrix/Library.hpp
- *
- * Map of all resources, object types, scripts etc.
  */
 
 #pragma once
@@ -62,6 +60,9 @@ struct Anim
   };
 };
 
+/**
+ * Mapping of all resources, object types, scripts etc.
+ */
 class Library
 {
   public:
@@ -78,6 +79,11 @@ class Library
 
   private:
 
+    Vector<BSPClass>     bspClasses;
+
+    HashString<ObjectClass::CreateFunc, 8> baseClasses;
+    HashString<ObjectClass*, 128> classes;
+
     HashString<int, 256> textureIndices;
     HashString<int, 256> soundIndices;
     HashString<int, 64>  shaderIndices;
@@ -86,6 +92,9 @@ class Library
     HashString<int, 64>  bspIndices;
     HashString<int, 256> modelIndices;
     HashString<int, 16>  nameListIndices;
+
+    HashString<int, 16>  imagoIndices;
+    HashString<int, 8>   audioIndices;
 
   public:
 
@@ -99,10 +108,6 @@ class Library
     Vector<Resource> nameLists;
     Vector<Resource> musics;
 
-    Vector<BSPClass> bspClasses;
-    HashString<ObjectClass::InitFunc, 8> baseClasses;
-    HashString<ObjectClass*, 128> classes;
-
     int textureIndex( const char* name ) const;
     int soundIndex( const char* name ) const;
     int shaderIndex( const char* name ) const;
@@ -112,7 +117,15 @@ class Library
     int modelIndex( const char* name ) const;
     int nameListIndex( const char* name ) const;
 
-    const ObjectClass* clazz( const char* name ) const;
+    const BSPClass*    bspClass( int id ) const;
+    const BSPClass*    bspClass( const char* name ) const;
+    const ObjectClass* objClass( const char* name ) const;
+
+  private:
+
+    void initClasses();
+
+  public:
 
     void init();
     void buildInit();
@@ -121,6 +134,16 @@ class Library
 };
 
 extern Library library;
+
+inline const BSPClass* Library::bspClass( int id ) const
+{
+  return &bspClasses[id];
+}
+
+inline const BSPClass* Library::bspClass( const char* name ) const
+{
+  return &bspClasses[ bspIndex( name ) ];
+}
 
 }
 }

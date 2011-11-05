@@ -388,14 +388,17 @@ bool Config::save( const char* file )
   return false;
 }
 
-void Config::clear()
+void Config::clear( bool suppressWarnings )
 {
 #ifndef NDEBUG
-  foreach( var, vars.citer() ) {
-    if( !usedVars.contains( var.key() ) ) {
-      log.println( "config: unused variable '%s'", var.key().cstr() );
+  if( !suppressWarnings ) {
+    foreach( var, vars.citer() ) {
+      if( !usedVars.contains( var.key() ) ) {
+        log.println( "config: unused variable '%s'", var.key().cstr() );
+      }
     }
   }
+
   usedVars.clear();
   usedVars.dealloc();
 #endif

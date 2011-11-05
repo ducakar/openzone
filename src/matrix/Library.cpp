@@ -36,7 +36,7 @@
 #include <sys/types.h>
 
 #define OZ_REGISTER_BASECLASS( name ) \
-  baseClasses.add( #name, &name##Class::init )
+  baseClasses.add( #name, &name##Class::createClass )
 
 namespace oz
 {
@@ -137,7 +137,7 @@ int Library::nameListIndex( const char* name ) const
   }
 }
 
-const ObjectClass* Library::clazz( const char* name ) const
+const ObjectClass* Library::objClass( const char* name ) const
 {
   const ObjectClass* const* value = classes.find( name );
   if( value == null ) {
@@ -148,7 +148,7 @@ const ObjectClass* Library::clazz( const char* name ) const
   }
 }
 
-void Library::init()
+void Library::initClasses()
 {
   OZ_REGISTER_BASECLASS( Object );
   OZ_REGISTER_BASECLASS( Dynamic );
@@ -156,6 +156,145 @@ void Library::init()
   OZ_REGISTER_BASECLASS( Bot );
   OZ_REGISTER_BASECLASS( Vehicle );
 
+  File dir;
+  DArray<File> dirList;
+  Config classConfig;
+
+  log.println( "object classes (*.rc in 'class') {" );
+  log.indent();
+
+  dir.setPath( "class" );
+  if( !dir.ls( &dirList ) ) {
+    free();
+
+    log.println( "Cannot open directory 'class'" );
+    log.unindent();
+    log.println( "}" );
+    throw Exception( "Library initialisation failure" );
+  }
+  foreach( file, dirList.citer() ) {
+    if( !file->hasExtension( "rc" ) ) {
+      continue;
+    }
+
+    String name = file->baseName();
+
+    log.println( "%s", name.cstr() );
+
+    if( classes.contains( name ) ) {
+      classConfig.clear();
+      throw Exception( "Duplicated class '" + name + "'" );
+    }
+    if( !classConfig.load( file->path() ) ) {
+      classConfig.clear( true );
+      throw Exception( "Class parse error" );
+    }
+
+    String base = classConfig.get( "base", "" );
+    if( base.isEmpty() ) {
+      classConfig.clear( true );
+      throw Exception( "'base' missing in class description" );
+    }
+
+    const ObjectClass::CreateFunc* createFunc = baseClasses.find( base );
+    if( createFunc == null ) {
+      classConfig.clear( true );
+      throw Exception( "Invalid class base '" + base + "'" );
+    }
+
+    // First we only add class instances, we don't initialise them as each class may have references
+    // to other classes that have not been created yet.
+    classes.add( name, ( *createFunc )() );
+    classConfig.clear( true );
+  }
+  dirList.dealloc();
+
+  // initialise all classes
+  foreach( classIter, classes.iter() ) {
+    String path = "class/" + classIter.key() + ".rc";
+
+    if( !classConfig.load( path ) ) {
+      classConfig.clear( true );
+      throw Exception( "Class parse error" );
+    }
+
+    classConfig.add( "name", classIter.key() );
+    classIter.value()->initClass( &classConfig );
+    classConfig.clear();
+  }
+
+  foreach( classIter, classes.iter() ) {
+    ObjectClass* objClazz = classIter.value();
+
+    // check that all items are valid
+    for( int i = 0; i < objClazz->defaultItems.length(); ++i ) {
+      const ObjectClass* itemClazz = objClazz->defaultItems[i];
+
+      if( ( itemClazz->flags & ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) ) !=
+          ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) )
+      {
+        throw Exception( "Invalid item clazz '" + itemClazz->name + "' in '" +
+                         itemClazz->name + "'" );
+      }
+    }
+
+    // fill allowedUsers for weapons
+    WeaponClass* weaponClazz = dynamic_cast<WeaponClass*>( objClazz );
+
+    if( weaponClazz != null ) {
+      int underscore = weaponClazz->name.index( '_' );
+      if( underscore == -1 ) {
+        throw Exception( "Weapon class file must be named <botClass>_weapon.<weapon>.rc" );
+      }
+
+      String matchClassBaseName = weaponClazz->name.substring( 0, underscore );
+
+      foreach( clazz, classes.citer() ) {
+        String botClassBaseName = clazz.value()->name;
+
+        int dot = botClassBaseName.index( '.' );
+        if( dot != -1 ) {
+          botClassBaseName = botClassBaseName.substring( 0, dot );
+        }
+
+        if( matchClassBaseName.equals( botClassBaseName ) ) {
+          weaponClazz->allowedUsers.add( clazz.value() );
+        }
+      }
+    }
+  }
+
+  foreach( classIter, classes.citer() ) {
+    // check if weaponItem is a valid weapon for bots
+    if( classIter.value()->flags & Object::BOT_BIT ) {
+      const BotClass* botClazz = static_cast<const BotClass*>( classIter.value() );
+
+      if( botClazz->weaponItem != -1 ) {
+        if( uint( botClazz->weaponItem ) >= uint( botClazz->defaultItems.length() ) ) {
+          throw Exception( "Invalid weaponItem for '" + botClazz->name + "'" );
+        }
+
+        const ObjectClass* itemClazz = botClazz->defaultItems[botClazz->weaponItem];
+        // we already checked it the previous loop it's non-null and a valid item
+        const WeaponClass* weaponClazz = dynamic_cast<const WeaponClass*>( itemClazz );
+
+        if( weaponClazz == null ) {
+          throw Exception( "Default weapon of '" + botClazz->name + "' is of a non-weapon class" );
+        }
+        else if( !weaponClazz->allowedUsers.contains( botClazz ) ) {
+          throw Exception( "Default weapon of '" + botClazz->name +
+                           "' is not allowed for this bot class" );
+        }
+      }
+    }
+  }
+
+  log.unindent();
+  log.println( "}" );
+}
+
+void Library::init()
+{
   textures.alloc( 256 );
   sounds.alloc( 256 );
   shaders.alloc( 32 );
@@ -492,118 +631,15 @@ void Library::init()
 
   log.unindent();
   log.println( "}" );
-  log.println( "object classes (*.rc in 'class') {" );
-  log.indent();
 
-  dir.setPath( "class" );
-  if( !dir.ls( &dirList ) ) {
-    free();
+  initClasses();
 
-    log.println( "Cannot open directory 'class'" );
-    log.unindent();
-    log.println( "}" );
-    throw Exception( "Library initialisation failure" );
-  }
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "rc" ) ) {
-      continue;
-    }
-
-    String name = file->baseName();
-
-    log.println( "%s", name.cstr() );
-
-    if( !classConfig.load( file->path() ) ) {
-      log.println( "invalid config file %s", file->path() );
-      classConfig.clear();
-      throw Exception( "Class description error" );
-    }
-
-    String base = classConfig.get( "base", "" );
-    if( base.isEmpty() ) {
-      log.println( "missing base variable" );
-      classConfig.clear();
-      throw Exception( "Class description error" );
-    }
-    const ObjectClass::InitFunc* initFunc = baseClasses.find( base );
-    if( initFunc == null ) {
-      log.println( "invalid base %s", base.cstr() );
-      classConfig.clear();
-      throw Exception( "Class description error" );
-    }
-    if( classes.contains( name ) ) {
-      log.println( "duplicated class: %s", name.cstr() );
-      classConfig.clear();
-      throw Exception( "Class description error" );
-    }
-
-    classConfig.add( "name", name );
-    classes.add( name, ( *initFunc )( &classConfig ) );
-    classConfig.clear();
-  }
-  dirList.dealloc();
-
-  foreach( clazzElem, classes.citer() ) {
-    const ObjectClass* objClazz = clazzElem.value();
-
-    // check if all items are valid
-    for( int i = 0; i < objClazz->items.length(); ++i ) {
-      const ObjectClass* itemClazz = clazz( objClazz->items[i] );
-
-      if( ( itemClazz->flags & ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) ) !=
-          ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) )
-      {
-        throw Exception( "Invalid item clazz '" + objClazz->items[i] + "' in '" +
-                         objClazz->name + "'" );
-      }
-    }
-
-    // fill allowedUsers for weapons
-    const WeaponClass* weaponClass = dynamic_cast<const WeaponClass*>( objClazz );
-    if( weaponClass != null ) {
-      const_cast<WeaponClass*>( weaponClass )->fillAllowedUsers();
-    }
-  }
-
-  foreach( clazzElem, classes.citer() ) {
-    // check if weaponItem is a valid weapon for bots
-    if( clazzElem.value()->flags & Object::BOT_BIT ) {
-      const BotClass* botClazz = static_cast<const BotClass*>( clazzElem.value() );
-
-      if( botClazz->weaponItem != -1 ) {
-        if( uint( botClazz->weaponItem ) >= uint( botClazz->items.length() ) ) {
-          throw Exception( "Invalid weaponItem for '" + botClazz->name + "'" );
-        }
-
-        const ObjectClass* itemClazz = clazz( botClazz->items[botClazz->weaponItem] );
-        // we already checked it the previous loop it's non-null and a valid item
-        const WeaponClass* weaponClazz = dynamic_cast<const WeaponClass*>( itemClazz );
-
-        if( weaponClazz == null ) {
-          throw Exception( "Default weapon of '" + botClazz->name + "' is of a non-weapon class" );
-        }
-        else if( !weaponClazz->allowedUsers.contains( botClazz ) ) {
-          throw Exception( "Default weapon of '" + botClazz->name +
-                           "' is not allowed for this bot class" );
-        }
-      }
-    }
-  }
-
-  log.unindent();
-  log.println( "}" );
   log.unindent();
   log.println( "}" );
 }
 
 void Library::buildInit()
 {
-  OZ_REGISTER_BASECLASS( Object );
-  OZ_REGISTER_BASECLASS( Dynamic );
-  OZ_REGISTER_BASECLASS( Weapon );
-  OZ_REGISTER_BASECLASS( Bot );
-  OZ_REGISTER_BASECLASS( Vehicle );
-
   textures.alloc( 256 );
   sounds.alloc( 256 );
   terras.alloc( 16 );
@@ -618,7 +654,6 @@ void Library::buildInit()
   File subDir;
   DArray<File> dirList;
   DArray<File> subDirList;
-  Config classConfig;
 
   log.println( "textures (*.png, *.jpeg, *.jpg in 'data/textures/*') {" );
   log.indent();
@@ -914,106 +949,9 @@ void Library::buildInit()
 
   log.unindent();
   log.println( "}" );
-  log.println( "object classes (*.rc in 'class') {" );
-  log.indent();
 
-  dir.setPath( "class" );
-  if( !dir.ls( &dirList ) ) {
-    free();
+  initClasses();
 
-    log.println( "Cannot open directory 'class'" );
-    log.unindent();
-    log.println( "}" );
-    throw Exception( "Library initialisation failure" );
-  }
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "rc" ) ) {
-      continue;
-    }
-
-    String name = file->baseName();
-
-    log.println( "%s", name.cstr() );
-
-    if( !classConfig.load( file->path() ) ) {
-      log.println( "invalid config file %s", file->path() );
-      classConfig.clear();
-      throw Exception( "Class description error" );
-    }
-
-    String base = classConfig.get( "base", "" );
-    if( base.isEmpty() ) {
-      log.println( "missing base variable" );
-      classConfig.clear();
-      throw Exception( "Class description error" );
-    }
-    const ObjectClass::InitFunc* initFunc = baseClasses.find( base );
-    if( initFunc == null ) {
-      log.println( "invalid base %s", base.cstr() );
-      classConfig.clear();
-      throw Exception( "Class description error" );
-    }
-    if( classes.contains( name ) ) {
-      log.println( "duplicated class: %s", name.cstr() );
-      classConfig.clear();
-      throw Exception( "Class description error" );
-    }
-
-    classConfig.add( "name", name );
-    classes.add( name, ( *initFunc )( &classConfig ) );
-    classConfig.clear();
-  }
-  dirList.dealloc();
-
-  foreach( clazzElem, classes.citer() ) {
-    const ObjectClass* objClazz = clazzElem.value();
-
-    // check if all items are valid
-    for( int i = 0; i < objClazz->items.length(); ++i ) {
-      const ObjectClass* itemClazz = clazz( objClazz->items[i] );
-
-      if( ( itemClazz->flags & ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) ) !=
-          ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) )
-      {
-        throw Exception( "Invalid item clazz '" + objClazz->items[i] + "' in '" +
-                         objClazz->name + "'" );
-      }
-    }
-
-    // fill allowedUsers for weapons
-    const WeaponClass* weaponClass = dynamic_cast<const WeaponClass*>( objClazz );
-    if( weaponClass != null ) {
-      const_cast<WeaponClass*>( weaponClass )->fillAllowedUsers();
-    }
-  }
-
-  foreach( clazzElem, classes.citer() ) {
-    // check if weaponItem is a valid weapon for bots
-    if( clazzElem.value()->flags & Object::BOT_BIT ) {
-      const BotClass* botClazz = static_cast<const BotClass*>( clazzElem.value() );
-
-      if( botClazz->weaponItem != -1 ) {
-        if( uint( botClazz->weaponItem ) >= uint( botClazz->items.length() ) ) {
-          throw Exception( "Invalid weaponItem for '" + botClazz->name + "'" );
-        }
-
-        const ObjectClass* itemClazz = clazz( botClazz->items[botClazz->weaponItem] );
-        // we already checked it the previous loop it's non-null and a valid item
-        const WeaponClass* weaponClazz = dynamic_cast<const WeaponClass*>( itemClazz );
-
-        if( weaponClazz == null ) {
-          throw Exception( "Default weapon of '" + botClazz->name + "' is of a non-weapon class" );
-        }
-        else if( !weaponClazz->allowedUsers.contains( botClazz ) ) {
-          throw Exception( "Default weapon of '" + botClazz->name +
-                           "' is not allowed for this bot class" );
-        }
-      }
-    }
-  }
-
-  log.unindent();
-  log.println( "}" );
   log.unindent();
   log.println( "}" );
 }

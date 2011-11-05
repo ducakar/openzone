@@ -36,8 +36,8 @@ namespace matrix
 {
 
 const float Object::MOMENTUM_INTENSITY_COEF = -0.10f;
-const float Object::DAMAGE_INTENSITY_COEF   = +0.02f;
-const float Object::DAMAGE_BASE_INTENSITY   = +0.30f;
+const float Object::DAMAGE_INTENSITY_COEF   = +0.05f;
+const float Object::DAMAGE_BASE_INTENSITY   = +0.40f;
 
 Pool<Object::Event, 256> Object::Event::pool;
 Pool<Object, 16384>      Object::pool;
@@ -116,10 +116,10 @@ void Object::readFull( InputStream* istream )
 
   int nItems = istream->readInt();
 
-  hard_assert( nItems <= clazz->items.length() );
+  hard_assert( nItems <= clazz->nItems );
 
-  if( !clazz->items.isEmpty() ) {
-    items.alloc( clazz->items.length() );
+  if( clazz->nItems != 0 ) {
+    items.alloc( clazz->nItems );
 
     for( int i = 0; i < nItems; ++i ) {
       items.add( istream->readInt() );
@@ -157,11 +157,11 @@ void Object::readUpdate( InputStream* istream )
     addEvent( id, intensity );
   }
 
+  items.clear();
+
   int nItems = istream->readInt();
   for( int i = 0; i < nItems; ++i ) {
-    int index = istream->readInt();
-
-    items.add( index );
+    items.add( istream->readInt() );
   }
 }
 
