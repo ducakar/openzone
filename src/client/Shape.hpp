@@ -24,10 +24,9 @@
 
 #pragma once
 
-#include "matrix/common.hpp"
 #include "matrix/Frag.hpp"
 
-#include "client/Context.hpp"
+#include "client/common.hpp"
 
 namespace oz
 {
@@ -37,11 +36,6 @@ namespace client
 class Shape
 {
   private:
-
-    static const int   MAX_PARTS = 64;
-
-    static const float SQRT_3_THIRDS;
-    static const float DIM;
 
     uint vao;
     uint vbo;

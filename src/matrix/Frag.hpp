@@ -41,29 +41,34 @@ class Frag
     static const float MAX_ROTVELOCITY;
     static const float DAMAGE_THRESHOLD;
 
+    enum Type
+    {
+      RUIN,
+      WOOD,
+      METAL,
+      MEAT,
+      BULLET
+    };
+
     static Pool<Frag, 2048> pool;
 
     /*
      *  FIELDS
      */
 
-    Frag* prev[1];
-    Frag* next[1];
+    Frag*  prev[1];
+    Frag*  next[1];
 
-    Cell*     cell;
-    int       index;        // position in world.objects vector
+    Cell*  cell;
+    int    index;       // position in world.objects vector
 
-    Point3    p;            // position
-    Vec3      velocity;
+    Point3 p;           // position
+    Vec3   velocity;
+    Vec3   colour;
 
-    // graphics data
-    Vec3      colour;
-    Vec3      rot;
-    Vec3      rotVelocity;
-
-    float     restitution;    // 1.0 < restitution < 2.0
-    float     mass;
-    float     lifeTime;
+    float  restitution; // 1.0 < restitution < 2.0
+    float  mass;
+    float  lifeTime;
 
     Frag() : cell( null ), index( -1 )
     {}
@@ -73,7 +78,7 @@ class Frag
     Frag& operator = ( const Frag& ) = delete;
 
     explicit Frag( int index, const Point3& p, const Vec3& velocity, const Vec3& colour,
-                       float restitution, float mass, float lifeTime );
+                   float restitution, float mass, float lifeTime );
 
     void damage( float damage )
     {
@@ -82,11 +87,6 @@ class Frag
       if( damage > 0.0f ) {
         lifeTime = 0.0f;
       }
-    }
-
-    void update()
-    {
-      rot += rotVelocity;
     }
 
     /*

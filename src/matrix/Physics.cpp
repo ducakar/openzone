@@ -58,7 +58,7 @@ const float Physics::PART_HIT_VELOCITY2     =  100.0f;
 const float Physics::PART_DESTROY_VELOCITY2 =  900.0f;
 
 //***********************************
-//*   PARTICLE COLLISION HANDLING   *
+//*   FRAGMENT COLLISION HANDLING   *
 //***********************************
 
 void Physics::handleFragHit()
@@ -413,9 +413,7 @@ void Physics::updateFrag( Frag* frag_ )
   hard_assert( frag->cell != null );
 
   frag->velocity.z += G_ACCEL * Timer::TICK_TIME;
-  frag->lifeTime -= Timer::TICK_TIME;
 
-  frag->rot += frag->rotVelocity * Timer::TICK_TIME;
   handleFragMove();
 }
 

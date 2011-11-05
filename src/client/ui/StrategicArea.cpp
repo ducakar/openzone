@@ -30,6 +30,7 @@
 
 #include "client/Camera.hpp"
 #include "client/Colours.hpp"
+#include "client/Shader.hpp"
 #include "client/Shape.hpp"
 #include "client/OpenGL.hpp"
 

@@ -43,8 +43,8 @@ class Render
 {
   public:
 
-    static const int   DRAW_UI_BIT    = 0x01;
-    static const int   DRAW_ORBIS_BIT = 0x02;
+    static const int DRAW_UI_BIT    = 0x01;
+    static const int DRAW_ORBIS_BIT = 0x02;
 
   private:
 
@@ -54,6 +54,9 @@ class Render
     static const float NIGHT_FOG_COEFF;
     static const float NIGHT_FOG_DIST;
     static const float WATER_VISIBILITY;
+
+    static const float WIND_FACTOR;
+    static const float WIND_PHI_INC;
 
     struct ObjectEntry
     {
@@ -91,24 +94,15 @@ class Render
 
     Vector<const Struct*>   waterStructs;
 
-    float                   nearDist2;
+    float                   visibilityRange;
+    float                   visibility;
 
-    float                   dayVisibility;
-    float                   nightVisibility;
-    float                   waterDayVisibility;
-    float                   waterNightVisibility;
-
-    float                   fragRadius;
     bool                    showBounds;
     bool                    showAim;
 
     bool                    isDeferred;
     bool                    doPostprocess;
 
-    float                   visibility;
-
-    float                   windFactor;
-    float                   windPhiInc;
     float                   windPhi;
 
     int                     renderWidth;

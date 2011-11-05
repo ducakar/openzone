@@ -67,12 +67,14 @@ void ExplosionImago::draw( const Imago*, int mask )
   float radius = millis * obj->dim.z * 0.004f;
   float alpha  = 1.0f - 0.002f * millis;
 
+  if( shader.mode == Shader::SCENE ) {
+    tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
+    tf.model.scale( Vec3( radius, radius, radius ) );
+  }
+
   glDisable( GL_CULL_FACE );
 
   shader.colour = Vec4( 1.0f, 1.0f, 1.0f, alpha*alpha );
-
-  tf.model.scale( Vec3( radius, radius, radius ) );
-  tf.apply();
 
   smm->draw( Mesh::SOLID_BIT );
 

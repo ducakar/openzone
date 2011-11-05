@@ -64,20 +64,19 @@ void SMMVehicleImago::draw( const Imago*, int mask )
     return;
   }
 
-  if( shader.activeProgram != shader.plain ) {
+  if( shader.mode == Shader::SCENE ) {
+    tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
     tf.model.rotate( veh->rot );
 
-    if( veh->state & Vehicle::CREW_VISIBLE_BIT ) {
-      if( veh->pilot != -1 ) {
-        const Bot* bot = static_cast<const Bot*>( orbis.objects[veh->pilot] );
+    if( veh->pilot != -1 && ( veh->state & Vehicle::CREW_VISIBLE_BIT ) ) {
+      const Bot* bot = static_cast<const Bot*>( orbis.objects[veh->pilot] );
 
-        tf.push();
-        tf.model.translate( clazz->pilotPos );
+      tf.push();
+      tf.model.translate( clazz->pilotPos );
 
-        context.drawImago( bot, this, mask );
+      context.drawImago( bot, this, mask );
 
-        tf.pop();
-      }
+      tf.pop();
     }
   }
 

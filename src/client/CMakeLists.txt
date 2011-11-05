@@ -10,6 +10,7 @@ add_library( client STATIC
   Colours.cpp
   Context.cpp
   ExplosionImago.cpp
+  FragPool.cpp
   Frustum.cpp
   GameStage.cpp
   Loader.cpp

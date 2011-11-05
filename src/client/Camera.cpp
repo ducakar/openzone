@@ -39,6 +39,8 @@ namespace client
 
 Camera camera;
 
+const float Camera::MIN_DISTANCE = 0.1f;
+
 StrategicProxy Camera::strategicProxy;
 BotProxy       Camera::botProxy;
 
@@ -224,7 +226,6 @@ void Camera::init()
   centreY      = height / 2;
 
   aspect       = config.getSet( "camera.aspect",     0.0f );
-  minDist      = config.getSet( "camera.minDist",    0.1f );
   mouseXSens   = config.getSet( "camera.mouseXSens", 0.005f );
   mouseYSens   = config.getSet( "camera.mouseYSens", 0.005f );
   keyXSens     = config.getSet( "camera.keysXSens",  2.0f );
@@ -235,7 +236,7 @@ void Camera::init()
 
   aspect       = aspect != 0.0f ? aspect : float( width ) / float( height );
   coeff        = Math::tan( angle / 2.0f );
-  horizPlane   = coeff * minDist;
+  horizPlane   = coeff * MIN_DISTANCE;
   vertPlane    = aspect * horizPlane;
 
   String sDefaultState = config.getSet( "camera.defaultState", "STRATEGIC" );

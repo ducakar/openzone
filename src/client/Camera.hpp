@@ -39,6 +39,8 @@ class Camera
 {
   public:
 
+    static const float MIN_DISTANCE;
+
     enum State
     {
       NONE,
@@ -102,7 +104,6 @@ class Camera
     float  aspect;
     float  vertPlane;
     float  horizPlane;
-    float  minDist;
     float  maxDist;
 
     bool   isExternal;

@@ -106,6 +106,8 @@ void MD3Imago::draw( const Imago* parent, int mask )
     return;
   }
 
+  tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
+
 //     if( bot->anim != anim.type ) {
 //       setAnim( bot->anim );
 //     }

@@ -19,51 +19,50 @@
  */
 
 /**
- * @file client/SMMImago.cpp
+ * @file client/FragPool.hpp
  */
 
-#include "stable.hpp"
+#pragma once
 
-#include "client/SMMImago.hpp"
+#include "matrix/Frag.hpp"
 
-#include "client/Context.hpp"
+#include "client/common.hpp"
 
 namespace oz
 {
 namespace client
 {
 
-Pool<SMMImago, 4096> SMMImago::pool;
-
-Imago* SMMImago::create( const Object* obj )
+class FragPool
 {
-  SMMImago* imago = new SMMImago();
+  public:
 
-  imago->obj   = obj;
-  imago->clazz = obj->clazz;
-  imago->smm   = context.requestSMM( obj->clazz->imagoModel );
+    static const float FRAG_RADIUS;
 
-  return imago;
-}
+  private:
 
-SMMImago::~SMMImago()
-{
-  context.releaseSMM( clazz->imagoModel );
-}
+    static const int MAX_FRAGS = 64;
 
-void SMMImago::draw( const Imago*, int mask )
-{
-  if( !smm->isLoaded ) {
-    return;
-  }
+    static const float SQRT_3_THIRDS;
+    static const float DIM;
 
-  if( shader.mode == Shader::SCENE ) {
-    tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
-    tf.model.rotateZ( float( obj->flags & Object::HEADING_MASK ) * Math::TAU / 4.0f );
-  }
+    uint vao;
+    uint vbo;
 
-  smm->draw( mask );
-}
+  public:
+
+    FragPool();
+
+    void bindVertexArray() const;
+
+    static void draw( const Frag* frag );
+
+    void load();
+    void unload();
+
+};
+
+extern FragPool fragPool;
 
 }
 }
