@@ -45,6 +45,8 @@ class Physics
     static const float WEIGHT_FACTOR;
     static const float G_ACCEL;
 
+    static const float SLIDE_DAMAGE_THRESHOLD;
+    static const float SLIDE_DAMAGE_COEF;
     static const float STICK_VELOCITY;
     static const float SLICK_STICK_VELOCITY;
     static const float FLOAT_STICK_VELOCITY;

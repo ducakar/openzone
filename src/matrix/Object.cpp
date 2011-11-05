@@ -36,6 +36,7 @@ namespace matrix
 {
 
 const float Object::MOMENTUM_INTENSITY_COEF = -0.10f;
+const float Object::MOMENTUM_DAMAGE_COEF    = +0.80f;
 const float Object::DAMAGE_INTENSITY_COEF   = +0.05f;
 const float Object::DAMAGE_BASE_INTENSITY   = +0.40f;
 

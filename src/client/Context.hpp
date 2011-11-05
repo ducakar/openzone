@@ -93,8 +93,8 @@ class Context
       {}
     };
 
-    HashString<Imago::CreateFunc, 16> imagoClasses;
-    HashString<Audio::CreateFunc, 8>  audioClasses;
+    Imago::CreateFunc*                imagoClasses;
+    Audio::CreateFunc*                audioClasses;
 
     Resource<uint>*                   textures;
     Resource<uint>*                   sounds;

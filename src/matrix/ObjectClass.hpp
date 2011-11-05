@@ -75,12 +75,12 @@ class ObjectClass
     float  debrisColourSpread;
     Vec3   debrisColour;
 
-    String deviceType;
+    int    deviceType;
 
-    String imagoType;
+    int    imagoType;
     int    imagoModel;
 
-    String audioType;
+    int    audioType;
     int    audioSounds[AUDIO_SOUNDS];
 
     int    nItems;

@@ -168,10 +168,15 @@ void ObjectClass::fillCommonConfig( const Config* config )
    * device
    */
 
-  deviceType = config->get( "deviceType", "" );
+  const char* sDeviceType = config->get( "deviceType", "" );
 
-  if( !deviceType.isEmpty() ) {
+  if( String::isEmpty( sDeviceType ) ) {
+    deviceType = -1;
+  }
+  else {
     flags |= Object::DEVICE_BIT;
+
+    deviceType = library.deviceIndex( sDeviceType );
 
     if( flags & Object::USE_FUNC_BIT ) {
       throw Exception( name + ": Device cannot have onUse handler" );
@@ -182,26 +187,33 @@ void ObjectClass::fillCommonConfig( const Config* config )
    * imago
    */
 
-  imagoType = config->get( "imagoType", "" );
+  const char* sImagoType = config->get( "imagoType", "" );
 
-  if( !imagoType.isEmpty() ) {
+  if( String::isEmpty( sImagoType ) ) {
+    imagoType  = -1;
+  }
+  else {
     flags |= Object::IMAGO_BIT;
+
+    imagoType = library.imagoIndex( sImagoType );
 
     const char* modelName = config->get( "imagoModel", "" );
     imagoModel = modelName[0] == '\0' ? -1 : library.modelIndex( modelName );
-  }
-  else {
-    imagoModel = -1;
   }
 
   /*
    * audio
    */
 
-  audioType = config->get( "audioType", "" );
+  const char* sAudioType = config->get( "audioType", "" );
 
-  if( !audioType.isEmpty() ) {
+  if( String::isEmpty( sAudioType ) ) {
+    audioType = -1;
+  }
+  else {
     flags |= Object::AUDIO_BIT;
+
+    audioType = library.audioIndex( sAudioType );
 
     char buffer[] = "audioSound  ";
     for( int i = 0; i < AUDIO_SOUNDS; ++i ) {
@@ -212,11 +224,6 @@ void ObjectClass::fillCommonConfig( const Config* config )
 
       const char* soundName = config->get( buffer, "" );
       audioSounds[i] = soundName[0] == '\0' ? -1 : library.soundIndex( soundName );
-    }
-  }
-  else {
-    for( int i = 0; i < AUDIO_SOUNDS; ++i ) {
-      audioSounds[i] = -1;
     }
   }
 
@@ -248,8 +255,8 @@ void ObjectClass::fillCommonConfig( const Config* config )
       buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
       buffer[ sizeof( buffer ) - 2 ] = char( '0' + ( i % 10 ) );
 
-      String itemName = config->get( buffer, "" );
-      if( !itemName.isEmpty() ) {
+      const char* itemName = config->get( buffer, "" );
+      if( !String::isEmpty( itemName ) ) {
         defaultItems.add( library.objClass( itemName ) );
       }
     }

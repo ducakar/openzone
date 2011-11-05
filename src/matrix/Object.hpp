@@ -42,7 +42,7 @@ class Object : public AABB
 {
   /*
    * Here various flag bits are set; the higher bits are used for flags that are internal flags
-   * and should only be hardcoded in the engine and cannot be set in object class's configuration
+   * and should only be hard-coded in the engine and cannot be set in object class's configuration
    * file. The lower bits are set for object class in the corresponding configuration file. The
    * lower bits are used for that because of easier calculation.
    */
@@ -201,6 +201,7 @@ class Object : public AABB
     static const int EVENT_USE          = 6;
 
     static const float MOMENTUM_INTENSITY_COEF;
+    static const float MOMENTUM_DAMAGE_COEF;
     static const float DAMAGE_INTENSITY_COEF;
     static const float DAMAGE_BASE_INTENSITY;
 
@@ -325,7 +326,7 @@ class Object : public AABB
     {
       flags |= HIT_BIT;
       addEvent( EVENT_HIT, hitMomentum * MOMENTUM_INTENSITY_COEF );
-      damage( hitMomentum * hitMomentum );
+      damage( hitMomentum * hitMomentum * MOMENTUM_DAMAGE_COEF );
 
       if( flags & HIT_FUNC_BIT ) {
         onHit( hit, hitMomentum );

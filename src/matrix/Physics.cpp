@@ -43,6 +43,8 @@ const float Physics::SIDE_PUSH_RATIO        =  0.5f;
 const float Physics::WEIGHT_FACTOR          =  0.1f;
 const float Physics::G_ACCEL                = -9.81f;
 
+const float Physics::SLIDE_DAMAGE_THRESHOLD =  25.0f;
+const float Physics::SLIDE_DAMAGE_COEF      =  0.25f;
 const float Physics::STICK_VELOCITY         =  0.015f;
 const float Physics::SLICK_STICK_VELOCITY   =  0.001f;
 const float Physics::FLOAT_STICK_VELOCITY   =  0.0002f;
@@ -173,8 +175,14 @@ bool Physics::handleObjFriction()
       dyn->momentum += ( systemMom * dyn->floor.z ) * dyn->floor;
       dyn->momentum *= 1.0f - friction;
 
-      if( dyn->velocity.x*dyn->velocity.x + dyn->velocity.y*dyn->velocity.y > stickVel ) {
+      float velocity2 = dyn->velocity.x*dyn->velocity.x + dyn->velocity.y*dyn->velocity.y;
+
+      if( velocity2 > stickVel ) {
         dyn->flags |= Object::FRICTING_BIT;
+
+        if( velocity2 > SLIDE_DAMAGE_THRESHOLD ) {
+          dyn->damage( SLIDE_DAMAGE_COEF * velocity2 - SLIDE_DAMAGE_THRESHOLD );
+        }
       }
 
       if( dyn->momentum.x*dyn->momentum.x + dyn->momentum.y*dyn->momentum.y <= stickVel ) {
@@ -192,11 +200,20 @@ bool Physics::handleObjFriction()
     }
     // on a moving object
     else if( sObj != null ) {
-      dyn->momentum.x += ( sObj->velocity.x - dyn->velocity.x ) * FLOOR_FRICTION;
-      dyn->momentum.y += ( sObj->velocity.y - dyn->velocity.y ) * FLOOR_FRICTION;
+      float deltaVelX = sObj->velocity.x - dyn->velocity.x;
+      float deltaVelY = sObj->velocity.y - dyn->velocity.y;
+
+      dyn->momentum.x += deltaVelX * FLOOR_FRICTION;
+      dyn->momentum.y += deltaVelY * FLOOR_FRICTION;
       dyn->momentum.z += systemMom;
 
       dyn->flags |= Object::FRICTING_BIT;
+
+      float deltaVelocity2 = deltaVelX*deltaVelX + deltaVelY*deltaVelY;
+
+      if( deltaVelocity2 > SLIDE_DAMAGE_THRESHOLD ) {
+        dyn->damage( SLIDE_DAMAGE_COEF * deltaVelocity2 - SLIDE_DAMAGE_THRESHOLD );
+      }
     }
     // in air or swimming
     else {

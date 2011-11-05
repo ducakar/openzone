@@ -81,7 +81,7 @@ class Library
 
     Vector<BSPClass>     bspClasses;
 
-    HashString<ObjectClass::CreateFunc, 8> baseClasses;
+    HashString<const ObjectClass::CreateFunc, 8> baseClasses;
     HashString<ObjectClass*, 128> classes;
 
     HashString<int, 256> textureIndices;
@@ -93,6 +93,7 @@ class Library
     HashString<int, 256> modelIndices;
     HashString<int, 16>  nameListIndices;
 
+    HashString<int, 8>   deviceIndices;
     HashString<int, 16>  imagoIndices;
     HashString<int, 8>   audioIndices;
 
@@ -108,6 +109,14 @@ class Library
     Vector<Resource> nameLists;
     Vector<Resource> musics;
 
+    int nDeviceClasses;
+    int nImagoClasses;
+    int nAudioClasses;
+
+    const BSPClass*    bspClass( int id ) const;
+    const BSPClass*    bspClass( const char* name ) const;
+    const ObjectClass* objClass( const char* name ) const;
+
     int textureIndex( const char* name ) const;
     int soundIndex( const char* name ) const;
     int shaderIndex( const char* name ) const;
@@ -117,9 +126,9 @@ class Library
     int modelIndex( const char* name ) const;
     int nameListIndex( const char* name ) const;
 
-    const BSPClass*    bspClass( int id ) const;
-    const BSPClass*    bspClass( const char* name ) const;
-    const ObjectClass* objClass( const char* name ) const;
+    int deviceIndex( const char* name ) const;
+    int imagoIndex( const char* name ) const;
+    int audioIndex( const char* name ) const;
 
   private:
 
