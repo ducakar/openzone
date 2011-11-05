@@ -139,14 +139,12 @@ Lua::Lua() : l( null )
 
 void Lua::mindCall( const char* functionName, Bot* self_ )
 {
-  self         = self_;
-  obj          = self_;
-  str          = null;
-  objIndex     = 0;
-  strIndex     = 0;
-  isFirstEvent = false;
-  event        = List<Object::Event>::CIterator();
-  forceUpdate  = false;
+  self        = self_;
+  obj         = self_;
+  str         = null;
+  objIndex    = 0;
+  strIndex    = 0;
+  forceUpdate = false;
 
   hard_assert( gettop() == 1 && self != null );
 
@@ -334,10 +332,6 @@ void Lua::init()
    * Object
    */
 
-  OZ_LUA_FUNC( ozEventBindNext );
-
-  OZ_LUA_FUNC( ozEventGet );
-
   OZ_LUA_FUNC( ozObjBindIndex );
   OZ_LUA_FUNC( ozObjBindPilot );
   OZ_LUA_FUNC( ozObjBindSelf );
@@ -361,6 +355,8 @@ void Lua::init()
   OZ_LUA_FUNC( ozObjGetClassName );
   OZ_LUA_FUNC( ozObjGetLife );
 
+  OZ_LUA_FUNC( ozObjBindItems );
+
   OZ_LUA_FUNC( ozObjVectorFromSelf );
   OZ_LUA_FUNC( ozObjVectorFromSelfEye );
   OZ_LUA_FUNC( ozObjDirectionFromSelf );
@@ -373,9 +369,6 @@ void Lua::init()
   OZ_LUA_FUNC( ozObjPitchFromSelfEye );
   OZ_LUA_FUNC( ozObjIsVisibleFromSelf );
   OZ_LUA_FUNC( ozObjIsVisibleFromSelfEye );
-
-  OZ_LUA_FUNC( ozObjBindEvents );
-  OZ_LUA_FUNC( ozObjBindItems );
 
   OZ_LUA_FUNC( ozObjBindAllOverlaps );
   OZ_LUA_FUNC( ozObjBindStrOverlaps );
@@ -478,7 +471,6 @@ void Lua::init()
 
   OZ_LUA_FUNC( ozSelfSetGesture );
 
-  OZ_LUA_FUNC( ozSelfBindEvents );
   OZ_LUA_FUNC( ozSelfBindItems );
   OZ_LUA_FUNC( ozSelfBindParent );
 
@@ -1036,37 +1028,6 @@ int Lua::ozStrBindObjOverlaps( lua_State* l )
  * Object
  */
 
-int Lua::ozEventBindNext( lua_State* l )
-{
-  ARG( 0 );
-
-  if( lua.isFirstEvent ) {
-    lua.isFirstEvent = false;
-    pushbool( true );
-  }
-  else if( lua.event.isValid() ) {
-    ++lua.event;
-    pushbool( true );
-  }
-  else {
-    pushbool( false );
-  }
-  return 1;
-}
-
-int Lua::ozEventGet( lua_State* l )
-{
-  ARG( 0 );
-  EVENT_NOT_NULL();
-
-  if( !lua.event.isValid() ) {
-    ERROR( "event is null" );
-  }
-  pushint( lua.event->id );
-  pushfloat( lua.event->intensity );
-  return 2;
-}
-
 int Lua::ozObjBindIndex( lua_State* l )
 {
   ARG( 1 );
@@ -1274,6 +1235,19 @@ int Lua::ozObjGetLife( lua_State* l )
   return 1;
 }
 
+int Lua::ozObjBindItems( lua_State* l )
+{
+  ARG( 0 );
+  OBJ_NOT_NULL();
+
+  lua.objects.clear();
+  foreach( item, lua.obj->items.citer() ) {
+    lua.objects.add( orbis.objects[*item] );
+  }
+  lua.objIndex = 0;
+  return 0;
+}
+
 int Lua::ozObjVectorFromSelf( lua_State* l )
 {
   ARG( 0 );
@@ -1445,29 +1419,6 @@ int Lua::ozObjIsVisibleFromSelfEye( lua_State* l )
   collider.translate( eye, vector, lua.obj );
   pushbool( collider.hit.ratio == 1.0f );
   return 1;
-}
-
-int Lua::ozObjBindEvents( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-
-  lua.event = lua.obj->events.citer();
-  lua.isFirstEvent = true;
-  return 0;
-}
-
-int Lua::ozObjBindItems( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-
-  lua.objects.clear();
-  foreach( item, lua.obj->items.citer() ) {
-    lua.objects.add( orbis.objects[*item] );
-  }
-  lua.objIndex = 0;
-  return 0;
 }
 
 int Lua::ozObjBindAllOverlaps( lua_State* l )
@@ -2144,15 +2095,6 @@ int Lua::ozSelfSetGesture( lua_State* l )
 
   lua.self->state &= ~( Bot::GESTURE0_BIT | Bot::GESTURE1_BIT | Bot::GESTURE2_BIT | Bot::GESTURE4_BIT );
   lua.self->state |= toint( 1 );
-  return 0;
-}
-
-int Lua::ozSelfBindEvents( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.event = lua.self->events.citer();
-  lua.isFirstEvent = true;
   return 0;
 }
 

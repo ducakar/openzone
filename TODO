@@ -6,11 +6,10 @@ TODO 0.3
     + building debris
     + meat frags
     + bullets
+  * mesh batch
   * libmad
 - ui
-  * onShow
-- lua
-  * API refresh
+  * onShow cleanup
 
 TODO 0.4
 - matrix

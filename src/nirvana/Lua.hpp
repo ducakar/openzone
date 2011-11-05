@@ -40,7 +40,7 @@ class Lua
 {
   private:
 
-    lua_State* l;
+    lua_State*      l;
 
     Bot*            self;
 
@@ -49,12 +49,9 @@ class Lua
 
     int             strIndex;
     int             objIndex;
-    bool            isFirstEvent;
 
     Vector<Object*> objects;
     Vector<Struct*> structs;
-
-    List<Object::Event>::CIterator event;
 
     bool readVariable( InputStream* istream );
     void writeVariable( BufferStream* stream );
@@ -151,10 +148,6 @@ class Lua
      * Object
      */
 
-    OZ_LUA_API( ozEventBindNext );
-
-    OZ_LUA_API( ozEventGet );
-
     OZ_LUA_API( ozObjBindIndex );
     OZ_LUA_API( ozObjBindPilot );
     OZ_LUA_API( ozObjBindSelf );
@@ -178,6 +171,8 @@ class Lua
     OZ_LUA_API( ozObjGetClassName );
     OZ_LUA_API( ozObjGetLife );
 
+    OZ_LUA_API( ozObjBindItems );
+
     OZ_LUA_API( ozObjVectorFromSelf );
     OZ_LUA_API( ozObjVectorFromSelfEye );
     OZ_LUA_API( ozObjDirectionFromSelf );
@@ -190,9 +185,6 @@ class Lua
     OZ_LUA_API( ozObjPitchFromSelfEye );
     OZ_LUA_API( ozObjIsVisibleFromSelf );
     OZ_LUA_API( ozObjIsVisibleFromSelfEye );
-
-    OZ_LUA_API( ozObjBindEvents );
-    OZ_LUA_API( ozObjBindItems );
 
     OZ_LUA_API( ozObjBindAllOverlaps );
     OZ_LUA_API( ozObjBindStrOverlaps );
@@ -297,7 +289,6 @@ class Lua
 
     OZ_LUA_API( ozSelfSetWeaponItem );
 
-    OZ_LUA_API( ozSelfBindEvents );
     OZ_LUA_API( ozSelfBindItems );
     OZ_LUA_API( ozSelfBindParent );
 

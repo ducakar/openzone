@@ -31,8 +31,6 @@
 #include "client/Context.hpp"
 #include "client/Colours.hpp"
 
-#include <typeinfo>
-
 namespace oz
 {
 namespace client
@@ -64,6 +62,11 @@ void MD2WeaponImago::draw( const Imago* parent, int )
   }
 
   if( parent == null ) {
+    if( shader.mode == Shader::SCENE ) {
+      tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
+      tf.model.rotateZ( float( obj->flags & Object::HEADING_MASK ) * Math::TAU / 4.0f );
+    }
+
     tf.model = tf.model * md2->weaponTransf;
 
     md2->drawFrame( 0 );

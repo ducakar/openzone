@@ -33,6 +33,7 @@
 #include "client/Frustum.hpp"
 #include "client/Colours.hpp"
 #include "client/Shape.hpp"
+#include "client/FragPool.hpp"
 
 #include "client/Caelum.hpp"
 #include "client/Terra.hpp"
@@ -59,7 +60,10 @@ const float Render::CELL_WIDE_RADIUS =
 
 const float Render::NIGHT_FOG_COEFF  = 2.0f;
 const float Render::NIGHT_FOG_DIST   = 0.3f;
-const float Render::WATER_VISIBILITY = 8.0f;
+const float Render::WATER_VISIBILITY = 32.0f;
+
+const float Render::WIND_FACTOR      = 0.0008f;
+const float Render::WIND_PHI_INC     = 0.04f;
 
 void Render::scheduleCell( int cellX, int cellY )
 {
@@ -87,7 +91,7 @@ void Render::scheduleCell( int cellX, int cellY )
   }
 
   for( const Frag* frag = cell.frags.first(); frag != null; frag = frag->next[0] ) {
-    if( frustum.isVisible( frag->p, fragRadius ) ) {
+    if( frustum.isVisible( frag->p, FragPool::FRAG_RADIUS ) ) {
       frags.add( frag );
     }
   }
@@ -101,14 +105,8 @@ void Render::prepareDraw()
   collider.translate( camera.p, Vec3::ZERO );
   shader.isInWater = ( collider.hit.medium & Material::WATER_BIT ) != 0;
 
-  windPhi = Math::mod( windPhi + windPhiInc, Math::TAU );
-
-  if( shader.isInWater ) {
-    visibility = waterNightVisibility + caelum.ratio * ( waterDayVisibility - waterNightVisibility );
-  }
-  else {
-    visibility = nightVisibility + caelum.ratio * ( dayVisibility - nightVisibility );
-  }
+  visibility = shader.isInWater ? WATER_VISIBILITY : visibilityRange;
+  windPhi    = Math::mod( windPhi + WIND_PHI_INC, Math::TAU );
 
   // frustum
   camera.maxDist = visibility;
@@ -197,7 +195,7 @@ void Render::drawGeometry()
     glUniform1f( param.oz_Fog_end, visibility );
     glUniform4fv( param.oz_Fog_colour, 1, clearColour );
 
-    glUniform4f( param.oz_Wind, 1.0f, 1.0f, windFactor, windPhi );
+    glUniform4f( param.oz_Wind, 1.0f, 1.0f, WIND_FACTOR, windPhi );
   }
 
   glEnable( GL_DEPTH_TEST );
@@ -210,12 +208,7 @@ void Render::drawGeometry()
   shader.use( shader.mesh );
 
   for( int i = 0; i < structs.length(); ++i ) {
-    const Struct* str = structs[i].str;
-
-    tf.model = Mat44::translation( str->p - Point3::ORIGIN );
-    tf.model.rotateZ( float( str->heading ) * Math::TAU / 4.0f );
-
-    context.drawBSP( str, Mesh::SOLID_BIT );
+    context.drawBSP( structs[i].str, Mesh::SOLID_BIT );
   }
 
   currentTime = SDL_GetTicks();
@@ -236,8 +229,6 @@ void Render::drawGeometry()
       shader.colour = Colours::TAG;
     }
 
-    tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
-
     context.drawImago( obj, null, Mesh::SOLID_BIT );
 
     if( obj->index == camera.tagged && camera.state != Camera::STRATEGIC ) {
@@ -253,8 +244,6 @@ void Render::drawGeometry()
     if( obj->index == camera.tagged && camera.state != Camera::STRATEGIC ) {
       shader.colour = Colours::TAG;
     }
-
-    tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
 
     context.drawImago( obj, null, Mesh::ALPHA_BIT );
 
@@ -273,17 +262,10 @@ void Render::drawGeometry()
   glBindTexture( GL_TEXTURE_2D, 0 );
   glUniform1f( param.oz_Specular, 1.0f );
 
-  shape.bindVertexArray();
+  fragPool.bindVertexArray();
 
   for( int i = 0; i < frags.length(); ++i ) {
-    const Frag* frag = frags[i];
-
-    tf.model = Mat44::translation( frag->p - Point3::ORIGIN );
-    tf.model.rotateX( frag->rot.x );
-    tf.model.rotateY( frag->rot.y );
-    tf.model.rotateZ( frag->rot.z );
-
-    shape.draw( frag );
+    fragPool.draw( frags[i] );
   }
 
   OZ_GL_CHECK_ERROR();
@@ -302,12 +284,7 @@ void Render::drawGeometry()
   shader.use( shader.mesh );
 
   for( int i = structs.length() - 1; i >= 0; --i ) {
-    const Struct* str = structs[i].str;
-
-    tf.model = Mat44::translation( str->p - Point3::ORIGIN );
-    tf.model.rotateZ( float( str->heading ) * Math::TAU / 4.0f );
-
-    context.drawBSP( str, Mesh::ALPHA_BIT );
+    context.drawBSP( structs[i].str, Mesh::ALPHA_BIT );
   }
 
   glDisable( GL_BLEND );
@@ -456,9 +433,13 @@ void Render::drawUI()
 void Render::draw( int flags )
 {
   if( flags & DRAW_ORBIS_BIT ) {
+    shader.mode = Shader::SCENE;
+
     drawOrbis();
   }
   if( flags & DRAW_UI_BIT ) {
+    shader.mode = Shader::UI;
+
     drawUI();
   }
 }
@@ -488,6 +469,7 @@ void Render::load()
   OZ_GL_CHECK_ERROR();
 
   ui::ui.load();
+  fragPool.load();
 
   frustum.init();
 
@@ -523,6 +505,7 @@ void Render::unload()
   waterStructs.clear();
   waterStructs.dealloc();
 
+  fragPool.unload();
   ui::ui.unload();
 
   log.unindent();
@@ -664,26 +647,17 @@ void Render::init()
   }
 #endif
 
-  renderWidth          = config.getSet( "render.width",                screenX );
-  renderHeight         = config.getSet( "render.height",               screenY );
+  renderWidth     = config.getSet( "render.width",                screenX );
+  renderHeight    = config.getSet( "render.height",               screenY );
 
-  isDeferred           = config.getSet( "render.deferred",             false );
-  doPostprocess        = config.getSet( "render.postprocess",          false );
+  isDeferred      = config.getSet( "render.deferred",             false );
+  doPostprocess   = config.getSet( "render.postprocess",          false );
 
-  nearDist2            = config.getSet( "render.nearDistance",         100.0f );
+  visibilityRange = config.getSet( "render.visibilityRange",      300.0f );
+  showBounds      = config.getSet( "render.showBounds",           false );
+  showAim         = config.getSet( "render.showAim",              false );
 
-  dayVisibility        = config.getSet( "render.dayVisibility",        300.0f );
-  nightVisibility      = config.getSet( "render.nightVisibility",      300.0f );
-  waterDayVisibility   = config.getSet( "render.waterDayVisibility",   32.0f );
-  waterNightVisibility = config.getSet( "render.waterNightVisibility", 32.0f );
-  fragRadius           = config.getSet( "render.fragRadius",           0.5f );
-  showBounds           = config.getSet( "render.showBounds",           false );
-  showAim              = config.getSet( "render.showAim",              false );
-  windFactor           = config.getSet( "render.windFactor",           0.0008f );
-  windPhiInc           = config.getSet( "render.windPhiInc",           0.04f );
-
-  nearDist2            *= nearDist2;
-  windPhi              = 0.0f;
+  windPhi         = 0.0f;
 
   glInit();
 

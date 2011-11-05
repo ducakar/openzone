@@ -38,7 +38,7 @@ namespace oz
 namespace client
 {
 
-const float MD2Imago::TURN_SMOOTHING_COEF = 0.60f;
+const float MD2Imago::TURN_SMOOTHING_COEF = 0.80f;
 
 Pool<MD2Imago, 256> MD2Imago::pool;
 
@@ -106,33 +106,45 @@ void MD2Imago::draw( const Imago* parent, int mask )
     return;
   }
 
-  if( mask & Mesh::ALPHA_BIT ) {
-    if( bot->state & Bot::DEAD_BIT ) {
-      if( bot->anim != anim.type ) {
-        setAnim( bot->anim );
-      }
-
-      shader.colour.w = min( bot->life * 8.0f / clazz->life, 1.0f );
-
-      tf.model.rotateZ( h );
-      tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->corpseDim.z ) );
-
-      md2->advance( &anim, timer.frameTime );
-      md2->draw( &anim );
-
-      shader.colour.w = 1.0f;
-    }
-  }
-  else if( ( mask & Mesh::SOLID_BIT ) && !( bot->state & Bot::DEAD_BIT ) ) {
+  if( mask & Mesh::SOLID_BIT ) {
     if( bot->anim != anim.type ) {
       setAnim( bot->anim );
     }
 
-    if( parent == null ) {
-      if( !camera.isExternal ) {
-        h = bot->h;
-      }
-      else if( bot->h - h > Math::TAU / 2.0f ) {
+    md2->advance( &anim, timer.frameTime );
+  }
+
+  if( bot->state & Bot::DEAD_BIT ) {
+    if( shader.mode == Shader::SCENE && parent == null ) {
+      tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
+      tf.model.rotateZ( h );
+    }
+
+    tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->corpseDim.z ) );
+
+    shader.colour.w = min( bot->life * 8.0f / clazz->life, 1.0f );
+
+    md2->draw( &anim );
+
+    shader.colour.w = 1.0f;
+  }
+  else if( bot->index == camera.bot && !camera.isExternal ) {
+    if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
+      h = bot->h;
+
+      tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
+      tf.model.rotateZ( bot->h );
+
+      tf.model.translate( Vec3( 0.0f, 0.0f, +bot->camZ ) );
+      tf.model.rotateX( bot->v - Math::TAU / 4.0f );
+      tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );
+
+      context.drawImago( orbis.objects[bot->weapon], this, mask );
+    }
+  }
+  else {
+    if( shader.mode == Shader::SCENE && parent == null ) {
+      if( bot->h - h > Math::TAU / 2.0f ) {
         h = bot->h + TURN_SMOOTHING_COEF * ( h + Math::TAU - bot->h );
       }
       else if( h - bot->h > Math::TAU / 2.0f ) {
@@ -141,30 +153,19 @@ void MD2Imago::draw( const Imago* parent, int mask )
       else {
         h = bot->h + TURN_SMOOTHING_COEF * ( h - bot->h );
       }
-
       h = Math::mod( h + Math::TAU, Math::TAU );
+
+      tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
       tf.model.rotateZ( h );
     }
 
-    if( bot->index != camera.bot || camera.isExternal ) {
-      if( bot->state & Bot::CROUCHING_BIT ) {
-        tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->crouchDim.z ) );
-      }
-
-      md2->advance( &anim, timer.frameTime );
-      md2->draw( &anim );
-
-      if( parent == null && bot->weapon!= -1 && orbis.objects[bot->weapon] != null ) {
-        context.drawImago( orbis.objects[bot->weapon], this, mask );
-      }
+    if( bot->state & Bot::CROUCHING_BIT ) {
+      tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->crouchDim.z ) );
     }
-    else if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
-      tf.model.translate( Vec3( 0.0f, 0.0f,  bot->camZ ) );
-      tf.model.rotateX( bot->v - Math::TAU / 4.0f );
-      tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );
 
-      md2->advance( &anim, timer.frameTime );
+    md2->draw( &anim );
 
+    if( parent == null && bot->weapon!= -1 && orbis.objects[bot->weapon] != null ) {
       context.drawImago( orbis.objects[bot->weapon], this, mask );
     }
   }

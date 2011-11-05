@@ -147,9 +147,11 @@ void BSP::draw( const Struct* str, int mask ) const
     return;
   }
 
-  mesh.bind();
+  tf.model = Mat44::translation( str->p - Point3::ORIGIN );
+  tf.model.rotateZ( float( str->heading ) * Math::TAU / 4.0f );
   tf.apply();
 
+  mesh.bind();
   mesh.drawComponent( 0, mask );
 
   for( int i = 0; i < bsp->nModels; ++i ) {

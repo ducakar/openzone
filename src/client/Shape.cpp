@@ -25,7 +25,10 @@
 #include "stable.hpp"
 
 #include "client/Shape.hpp"
+
 #include "client/Camera.hpp"
+#include "client/Context.hpp"
+#include "client/Shader.hpp"
 #include "client/OpenGL.hpp"
 
 namespace oz
@@ -34,9 +37,6 @@ namespace client
 {
 
 Shape shape;
-
-const float Shape::SQRT_3_THIRDS = Math::sqrt( 3.0f ) / 3.0f;
-const float Shape::DIM = 1.0f / 2.0f;
 
 Shape::Shape() : vao( 0 ), vbo( 0 ), ibo( 0 )
 {}
@@ -145,21 +145,10 @@ void Shape::wireBox( const AABB& bb )
                        reinterpret_cast<const ushort*>( 0 ) + 22 );
 }
 
-void Shape::draw( const Frag* frag )
-{
-  glUniform4f( param.oz_Colour, frag->colour.x, frag->colour.y, frag->colour.z,
-               clamp( frag->lifeTime, 1.0f, 1.0f ) );
-
-  tf.apply();
-
-  int index = frag->index % MAX_PARTS;
-  glDrawArrays( GL_TRIANGLES, 40 + index * 12, 12 );
-}
-
 void Shape::load()
 {
   DArray<ushort> indices( 46 );
-  DArray<Vertex> vertices( 40 + MAX_PARTS * 12 );
+  DArray<Vertex> vertices( 40 );
 
   // filled rectangle
   vertices[ 0] = Vertex( Point3( 0.0f, 0.0f, 0.0f ), TexCoord( 0.0f, 0.0f ) );
@@ -223,44 +212,6 @@ void Shape::load()
   vertices[37] = Vertex( Point3( +1.0f, -1.0f, +1.0f ) );
   vertices[38] = Vertex( Point3( +1.0f, +1.0f, -1.0f ) );
   vertices[39] = Vertex( Point3( +1.0f, +1.0f, +1.0f ) );
-
-  int  k = 40;
-  Vec3 normal;
-
-  for( int i = 0; i < MAX_PARTS; ++i ) {
-    Point3 v0 = Point3::ORIGIN + Math::rand() * DIM * Vec3( 0.0f,            0.0f,        1.0f );
-    Point3 v1 = Point3::ORIGIN + Math::rand() * DIM * Vec3( 0.0f,            2.0f / 3.0f, 0.0f );
-    Point3 v2 = Point3::ORIGIN + Math::rand() * DIM * Vec3( -SQRT_3_THIRDS, -1.0f / 3.0f, 0.0f );
-    Point3 v3 = Point3::ORIGIN + Math::rand() * DIM * Vec3(  SQRT_3_THIRDS, -1.0f / 3.0f, 0.0f );
-
-    // fore
-    normal = ~( ( v2 - v1 ) ^ ( v0 - v1 ) );
-
-    vertices[k++] = Vertex( v0, TexCoord(), normal );
-    vertices[k++] = Vertex( v1, TexCoord(), normal );
-    vertices[k++] = Vertex( v2, TexCoord(), normal );
-
-    // left
-    normal = ~( ( v1 - v3 ) ^ ( v0 - v3 ) );
-
-    vertices[k++] = Vertex( v0, TexCoord(), normal );
-    vertices[k++] = Vertex( v3, TexCoord(), normal );
-    vertices[k++] = Vertex( v1, TexCoord(), normal );
-
-    // right
-    normal = ~( ( v3 - v2 ) ^ ( v0 - v2 ) );
-
-    vertices[k++] = Vertex( v0, TexCoord(), normal );
-    vertices[k++] = Vertex( v2, TexCoord(), normal );
-    vertices[k++] = Vertex( v3, TexCoord(), normal );
-
-    // bottom
-    normal = ~( ( v3 - v1 ) ^ ( v2 - v1 ) );
-
-    vertices[k++] = Vertex( v1, TexCoord(), normal );
-    vertices[k++] = Vertex( v3, TexCoord(), normal );
-    vertices[k++] = Vertex( v2, TexCoord(), normal );
-  }
 
   /*
    * Full box (GL_TRIANGLE_STRIP)

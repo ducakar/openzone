@@ -145,7 +145,8 @@ void Matrix::update()
       synapse.remove( frag );
     }
     else {
-      frag->update();
+      frag->lifeTime -= Timer::TICK_TIME;
+
       physics.updateFrag( frag );
     }
   }

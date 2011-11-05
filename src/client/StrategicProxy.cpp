@@ -41,10 +41,10 @@ const float StrategicProxy::MIN_HEIGHT      = 5.00f;
 const float StrategicProxy::MAX_HEIGHT      = 50.0f;
 const float StrategicProxy::DEFAULT_HEIGHT  = 15.0f;
 const float StrategicProxy::DEFAULT_ANGLE   = 30.0f;
-const float StrategicProxy::FREE_LOW_SPEED  = 0.04f;
-const float StrategicProxy::FREE_HIGH_SPEED = 0.50f;
-const float StrategicProxy::RTS_LOW_SPEED   = 0.25f;
-const float StrategicProxy::RTS_HIGH_SPEED  = 0.75f;
+const float StrategicProxy::FREE_LOW_SPEED  = 2.40f * Timer::TICK_TIME;
+const float StrategicProxy::FREE_HIGH_SPEED = 30.0f * Timer::TICK_TIME;
+const float StrategicProxy::RTS_LOW_SPEED   = 15.0f * Timer::TICK_TIME;
+const float StrategicProxy::RTS_HIGH_SPEED  = 45.0f * Timer::TICK_TIME;
 const float StrategicProxy::ZOOM_FACTOR     = 0.15f;
 
 StrategicProxy::StrategicProxy() : height( DEFAULT_HEIGHT )
@@ -137,6 +137,10 @@ void StrategicProxy::prepare()
     if( ui::keyboard.keys[SDLK_LCTRL] ) {
       p.z -= speed;
     }
+
+    p.x = clamp( p.x, -Orbis::DIM, +Orbis::DIM );
+    p.y = clamp( p.y, -Orbis::DIM, +Orbis::DIM );
+    p.z = clamp( p.z, -Orbis::DIM, +Orbis::DIM );
   }
   else {
     // RTS camera mode
@@ -177,6 +181,8 @@ void StrategicProxy::prepare()
       height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
     }
 
+    p.x = clamp( p.x, -Orbis::DIM, +Orbis::DIM );
+    p.y = clamp( p.y, -Orbis::DIM, +Orbis::DIM );
     p.z = max( 0.0f, orbis.terra.height( p.x, p.y ) ) + height;
   }
 

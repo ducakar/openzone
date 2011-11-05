@@ -146,13 +146,11 @@ Lua::Lua() : l( null )
 
 void Lua::staticCall( const char* functionName )
 {
-  obj          = null;
-  str          = null;
-  frag         = null;
-  objIndex     = 0;
-  strIndex     = 0;
-  isFirstEvent = false;
-  event        = List<Object::Event>::CIterator();
+  obj      = null;
+  str      = null;
+  frag     = null;
+  objIndex = 0;
+  strIndex = 0;
 
   hard_assert( gettop() == 0 );
 
@@ -366,10 +364,6 @@ void Lua::init()
    * Object
    */
 
-  OZ_LUA_FUNC( ozEventBindNext );
-
-  OZ_LUA_FUNC( ozEventGet );
-
   OZ_LUA_FUNC( ozObjBindIndex );
   OZ_LUA_FUNC( ozObjBindPilot );
   OZ_LUA_FUNC( ozObjBindNext );
@@ -397,6 +391,7 @@ void Lua::init()
 
   OZ_LUA_FUNC( ozObjAddEvent );
 
+  OZ_LUA_FUNC( ozObjBindItems );
   OZ_LUA_FUNC( ozObjAddItem );
   OZ_LUA_FUNC( ozObjRemoveItem );
   OZ_LUA_FUNC( ozObjRemoveAllItems );
@@ -406,9 +401,6 @@ void Lua::init()
   OZ_LUA_FUNC( ozObjDestroy );
   OZ_LUA_FUNC( ozObjQuietDestroy );
   OZ_LUA_FUNC( ozObjRemove );
-
-  OZ_LUA_FUNC( ozObjBindEvents );
-  OZ_LUA_FUNC( ozObjBindItems );
 
   OZ_LUA_FUNC( ozObjBindAllOverlaps );
   OZ_LUA_FUNC( ozObjBindStrOverlaps );
@@ -1154,37 +1146,6 @@ int Lua::ozStrBindObjOverlaps( lua_State* l )
  * Object
  */
 
-int Lua::ozEventBindNext( lua_State* l )
-{
-  ARG( 0 );
-
-  if( lua.isFirstEvent ) {
-    lua.isFirstEvent = false;
-    pushbool( true );
-  }
-  else if( lua.event.isValid() ) {
-    ++lua.event;
-    pushbool( true );
-  }
-  else {
-    pushbool( false );
-  }
-  return 1;
-}
-
-int Lua::ozEventGet( lua_State* l )
-{
-  ARG( 0 );
-  EVENT_NOT_NULL();
-
-  if( !lua.event.isValid() ) {
-    ERROR( "event is null" );
-  }
-  pushint( lua.event->id );
-  pushfloat( lua.event->intensity );
-  return 2;
-}
-
 int Lua::ozObjBindIndex( lua_State* l )
 {
   ARG( 1 );
@@ -1433,6 +1394,19 @@ int Lua::ozObjAddEvent( lua_State* l )
   return 0;
 }
 
+int Lua::ozObjBindItems( lua_State* l )
+{
+  ARG( 0 );
+  OBJ_NOT_NULL();
+
+  lua.objects.clear();
+  foreach( item, lua.obj->items.citer() ) {
+    lua.objects.add( orbis.objects[*item] );
+  }
+  lua.objIndex = 0;
+  return 0;
+}
+
 int Lua::ozObjAddItem( lua_State* l )
 {
   ARG( 1 );
@@ -1559,29 +1533,6 @@ int Lua::ozObjRemove( lua_State* l )
   }
 
   lua.obj  = null;
-  return 0;
-}
-
-int Lua::ozObjBindEvents( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-
-  lua.event = lua.obj->events.citer();
-  lua.isFirstEvent = true;
-  return 0;
-}
-
-int Lua::ozObjBindItems( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-
-  lua.objects.clear();
-  foreach( item, lua.obj->items.citer() ) {
-    lua.objects.add( orbis.objects[*item] );
-  }
-  lua.objIndex = 0;
   return 0;
 }
 

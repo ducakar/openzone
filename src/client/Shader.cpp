@@ -66,7 +66,7 @@ void Transform::projection()
 {
   double lr   = double( client::camera.vertPlane );
   double tb   = double( client::camera.horizPlane );
-  double near = double( client::camera.minDist );
+  double near = double( client::camera.MIN_DISTANCE );
   double far  = double( client::camera.maxDist );
 
   float cx = float( near / lr );
@@ -235,7 +235,7 @@ void Shader::loadProgram( int id, const char** sources, int* lengths )
   log.println( "}" );
 }
 
-Shader::Shader() : plain( -1 )
+Shader::Shader() : mode( UI ), plain( -1 )
 {}
 
 void Shader::use( int id )
