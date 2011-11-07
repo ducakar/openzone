@@ -239,7 +239,7 @@ void Context::releaseTexture( int id )
 {
   Resource<uint>& resource = textures[id];
 
-  hard_assert( uint( id ) < uint( library.textures.length() ) && resource.nUsers > 0 );
+  hard_assert( resource.nUsers > 0 );
 
   --resource.nUsers;
 
@@ -257,8 +257,8 @@ uint Context::requestSound( int id )
 {
   Resource<uint>& resource = sounds[id];
 
-  if( resource.nUsers != 0 ) {
-    ++resource.nUsers;
+  if( resource.nUsers != -1 ) {
+    resource.nUsers = max( resource.nUsers + 1, 1 );
     return resource.id;
   }
 
@@ -323,18 +323,25 @@ void Context::releaseSound( int id )
 {
   Resource<uint>& resource = sounds[id];
 
-  hard_assert( uint( id ) < uint( library.sounds.length() ) && resource.nUsers > 0 );
+  hard_assert( resource.nUsers > 0 );
+
+  --resource.nUsers;
+}
+
+void Context::freeSound( int id )
+{
+  Resource<uint>& resource = sounds[id];
+
+  hard_assert( resource.nUsers == 0 );
 
   --resource.nUsers;
 
-  if( resource.nUsers == 0 ) {
-    log.print( "Unloading sound '%s' ...", library.sounds[id].name.cstr() );
-    alDeleteBuffers( 1, &resource.id );
+  log.print( "Unloading sound '%s' ...", library.sounds[id].name.cstr() );
+  alDeleteBuffers( 1, &resource.id );
 
-    OZ_AL_CHECK_ERROR();
+  OZ_AL_CHECK_ERROR();
 
-    log.printEnd( " OK" );
-  }
+  log.printEnd( " OK" );
 }
 
 SMM* Context::requestSMM( int id )
@@ -594,7 +601,10 @@ void Context::unload()
     hard_assert( textures[i].nUsers == 0 );
   }
   for( int i = 0; i < library.sounds.length(); ++i ) {
-    hard_assert( sounds[i].nUsers == 0 );
+    if( sounds[i].nUsers == 0 ) {
+      freeSound( i );
+    }
+    hard_assert( sounds[i].nUsers == -1 );
   }
 
   hard_assert( glGetError() == AL_NO_ERROR );
@@ -663,7 +673,7 @@ void Context::init()
     textures[i].nUsers = 0;
   }
   for( int i = 0; i < library.sounds.length(); ++i ) {
-    sounds[i].nUsers = 0;
+    sounds[i].nUsers = -1;
   }
   for( int i = 0; i < library.bsps.length(); ++i ) {
     bsps[i].object = null;

@@ -164,6 +164,16 @@ void Loader::cleanupSound()
     }
   }
 
+  if( tick % SOUND_CLEAR_INTERVAL == SOUND_CLEAR_LAG ) {
+    for( int i = 0; i < library.sounds.length(); ++i ) {
+      Context::Resource<uint>& sound = context.sounds[i];
+
+      if( sound.nUsers == 0 ) {
+        context.freeSound( i );
+      }
+    }
+  }
+
   if( tick % SOURCE_CLEAR_INTERVAL == SOURCE_CLEAR_LAG ) {
     // remove stopped sources of non-continous sounds
     Context::Source* prev = null;

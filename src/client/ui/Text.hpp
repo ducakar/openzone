@@ -54,7 +54,9 @@ class Text
     explicit Text( int x, int y, int width, int nLines, Font::Type font );
     ~Text();
 
+    OZ_PRINTF_FORMAT( 2, 3 )
     void setText( const char* s, ... );
+
     void clear();
 
     void draw( const Area* area ) const;

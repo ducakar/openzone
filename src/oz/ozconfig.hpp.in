@@ -78,3 +78,6 @@ namespace std { typedef decltype( nullptr ) nullptr_t; }
 #define OZ_ALWAYS_INLINE __attribute__(( always_inline ))
 #define OZ_WEAK_SYMBOL   __attribute__(( weak ))
 #define OZ_THREAD_LOCAL  __thread
+
+#define OZ_PRINTF_FORMAT( stringArg, firstArg ) \
+  __attribute__(( format( printf, stringArg, firstArg ) ))

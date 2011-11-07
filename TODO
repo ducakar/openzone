@@ -3,9 +3,6 @@ TODO 0.3
 - client
   * particle pools
     + wood
-    + metal
-    + building debris
-    + meat frags
     + bullets
   * mesh batch
   * libmad

@@ -83,13 +83,13 @@ void Alloc::printStatistics()
 
   log.println( "current chunks     %d", count  );
   log.println( "current amount     %.2f MiB (%d B)",
-               float( amount ) / ( 1024.0f*1024.0f ), amount );
+               float( amount ) / ( 1024.0f*1024.0f ), int( amount ) );
   log.println( "maximum chunks     %d", maxCount );
   log.println( "maximum amount     %.2f MiB (%d B)",
-               float( maxAmount ) / ( 1024.0f*1024.0f ), maxAmount );
+               float( maxAmount ) / ( 1024.0f*1024.0f ), int( maxAmount ) );
   log.println( "cumulative chunks  %d", sumCount );
   log.println( "cumulative amount  %.2f MiB (%d B)",
-               float( sumAmount ) / ( 1024.0f*1024.0f ), sumAmount );
+               float( sumAmount ) / ( 1024.0f*1024.0f ), int( sumAmount ) );
 
   log.unindent();
   log.println( "}" );

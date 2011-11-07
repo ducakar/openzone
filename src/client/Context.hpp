@@ -150,6 +150,7 @@ class Context
 
     uint requestSound( int id );
     void releaseSound( int id );
+    void freeSound( int id );
 
     SMM* requestSMM( int id );
     void releaseSMM( int id );

@@ -69,10 +69,10 @@ void BotClass::initClass( const Config* config )
   lift = config->get( "lift", 13.0f );
 
   if( mass < 0.01f ) {
-    throw Exception( "Invalid object mass. Should be >= 0.01." );
+    throw Exception( "%s: Invalid object mass. Should be >= 0.01.", name.cstr() );
   }
   if( lift < 0.0f ) {
-    throw Exception( "Invalid object lift. Should be >= 0." );
+    throw Exception( "%s: Invalid object lift. Should be >= 0.", name.cstr() );
   }
 
   crouchDim.x = dim.x;
@@ -80,7 +80,7 @@ void BotClass::initClass( const Config* config )
   crouchDim.z = config->get( "crouchDim.z", 0.80f );
 
   if( crouchDim.z < 0.0f ) {
-    throw Exception( "Invalid bot crouch dimensions. Should be >= 0." );
+    throw Exception( "%s: Invalid bot crouch dimensions. Should be >= 0.", name.cstr() );
   }
 
   corpseDim.x = config->get( "corpseDim.x", 2.0f * dim.x );
@@ -88,7 +88,7 @@ void BotClass::initClass( const Config* config )
   corpseDim.z = config->get( "corpseDim.z", 0.20f );
 
   if( corpseDim.z < 0.0f || corpseDim.y < 0.0f || corpseDim.z < 0.0f ) {
-    throw Exception( "Invalid bot corpse dimensions. Should be >= 0." );
+    throw Exception( "%s: Invalid bot corpse dimensions. Should be >= 0.", name.cstr() );
   }
 
   camZ              = config->get( "camZ", 0.79f );

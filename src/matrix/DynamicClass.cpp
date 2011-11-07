@@ -60,10 +60,10 @@ void DynamicClass::initClass( const Config* config )
   lift = config->get( "lift", 12.0f );
 
   if( mass < 0.01f ) {
-    throw Exception( "Invalid object mass. Should be >= 0.01." );
+    throw Exception( "%s: Invalid object mass. Should be >= 0.01.", name.cstr() );
   }
   if( lift < 0.0f ) {
-    throw Exception( "Invalid object lift. Should be >= 0." );
+    throw Exception( "%s: Invalid object lift. Should be >= 0.", name.cstr() );
   }
 }
 

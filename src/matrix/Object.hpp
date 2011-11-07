@@ -371,9 +371,8 @@ class Object : public AABB
     OZ_ALWAYS_INLINE
     void update()
     {
-      if( flags & UPDATE_FUNC_BIT ) {
-        onUpdate();
-      }
+      // UPDATE_FUNC_BIT flags is checked by the caller
+      onUpdate();
     }
 
   public:

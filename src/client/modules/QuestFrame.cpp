@@ -84,7 +84,7 @@ void QuestFrame::next( Button* sender )
 
   if( nQuests == 0 ) {
     questFrame->currentQuest = -1;
-    questFrame->description.setText( "" );
+    questFrame->description.setText( " " );
   }
   else {
     questFrame->currentQuest = ( questFrame->currentQuest + 1 + nQuests ) % nQuests;
@@ -100,7 +100,7 @@ void QuestFrame::prev( Button* sender )
 
   if( nQuests == 0 ) {
     questFrame->currentQuest = -1;
-    questFrame->description.setText( "" );
+    questFrame->description.setText( " " );
   }
   else {
     questFrame->currentQuest = ( questFrame->currentQuest - 1 + nQuests + nQuests ) % nQuests;

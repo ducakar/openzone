@@ -62,6 +62,8 @@ class StrategicArea : public Area
   private:
 
     bool projectBounds( Span* span, const AABB& bb ) const;
+
+    OZ_PRINTF_FORMAT( 4, 5 )
     void printName( int baseX, int baseY, const char* s, ... );
 
     void drawHoveredRect( const Span& span );

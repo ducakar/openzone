@@ -198,10 +198,19 @@ void Bot::onUpdate()
   }
 
   if( parent != -1 ) {
-    hard_assert( cell == null && instrument == parent );
+    if( orbis.objects[parent] == null ) {
+      parent = -1;
+      synapse.put( this );
+    }
+    else {
+      hard_assert( cell == null && instrument == parent );
 
-    taggedItem = -1;
-    return;
+      taggedItem = -1;
+
+      oldState   = state;
+      oldActions = actions;
+      return;
+    }
   }
 
   /*

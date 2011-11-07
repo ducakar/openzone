@@ -62,12 +62,6 @@ void Matrix::update()
       // If this is cleared on the object's update, we may also remove effects that were added
       // by other objects, updated before it.
       obj->events.free();
-
-      // We don't remove objects as they get destroyed but on the next update, so the destroy
-      // sound and other effects can be played on an object's destruction.
-      if( obj->flags & Object::DESTROYED_BIT ) {
-        synapse.remove( obj );
-      }
     }
   }
 
@@ -78,7 +72,10 @@ void Matrix::update()
       continue;
     }
 
-    if( str->life <= 0.0f && str->demolishing == 0.0f ) {
+    if( str->demolishing >= 1.0f ) {
+      synapse.remove( str );
+    }
+    else if( str->life <= 0.0f && str->demolishing == 0.0f ) {
       str->destroy();
     }
     else {
@@ -93,42 +90,49 @@ void Matrix::update()
       continue;
     }
 
-    // clear inventory of invalid references
-    for( int j = 0; j < obj->items.length(); ) {
-      if( orbis.objects[ obj->items[j] ] == null ) {
-        obj->items.remove( j );
-      }
-      else {
-        ++j;
-      }
-    }
-
-    obj->update();
-
-    // object might have removed itself within onUpdate()
-    if( orbis.objects[i] == null ) {
-      continue;
+    // We don't remove objects as they get destroyed but on the next update, so the destruction
+    // sound and other effects can be played on an object's destruction.
+    if( obj->flags & Object::DESTROYED_BIT ) {
+      synapse.remove( obj );
     }
     else if( obj->life <= 0.0f ) {
       obj->destroy();
     }
-    else if( obj->flags & Object::DYNAMIC_BIT ) {
-      Dynamic* dyn = static_cast<Dynamic*>( obj );
-
-      hard_assert( ( dyn->parent != -1 ) == ( dyn->cell == null ) );
-
-      if( dyn->cell == null ) {
-        // remove if its container has been removed
-        if( orbis.objects[dyn->parent] == null ) {
-          synapse.remove( dyn );
+    else {
+      // clear inventory of invalid references
+      if( !obj->items.isEmpty() ) {
+        for( int j = 0; j < obj->items.length(); ) {
+          if( orbis.objects[ obj->items[j] ] == null ) {
+            obj->items.remove( j );
+          }
+          else {
+            ++j;
+          }
         }
       }
-      else {
-        physics.updateObj( dyn );
 
-        // remove on velocity overflow
-        if( dyn->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
-          synapse.remove( obj );
+      if( obj->flags & Object::UPDATE_FUNC_BIT ) {
+        obj->update();
+
+        // object might have removed itself within onUpdate()
+        if( orbis.objects[i] == null ) {
+          continue;
+        }
+      }
+
+      if( obj->flags & Object::DYNAMIC_BIT ) {
+        Dynamic* dyn = static_cast<Dynamic*>( obj );
+
+        hard_assert( ( dyn->parent != -1 ) == ( dyn->cell == null ) );
+        hard_assert( dyn->parent == -1 || orbis.objects[dyn->parent] != null );
+
+        if( dyn->cell != null ) {
+          physics.updateObj( dyn );
+
+          // remove on velocity overflow
+          if( dyn->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
+            synapse.remove( obj );
+          }
         }
       }
     }

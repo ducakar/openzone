@@ -95,7 +95,7 @@ void MusicPlayer::stopTrack( Button* sender )
   if( nTracks != 0 ) {
     sound.stopMusic();
 
-    musicPlayer->title.setText( "" );
+    musicPlayer->title.setText( " " );
     musicPlayer->isPlaying = false;
   }
 }
@@ -133,7 +133,7 @@ void MusicPlayer::onUpdate()
 
     if( isPlaying ) {
       isPlaying = false;
-      title.setText( "" );
+      title.setText( " " );
       sound.stopMusic();
     }
     isVisible = false;
@@ -184,9 +184,9 @@ void MusicPlayer::onDraw()
 
 MusicPlayer::MusicPlayer() :
     Frame( 8, -8, 240, 36 + Font::INFOS[Font::SMALL].height, gettext( "Music Player" ) ),
-    title( width / 2, 32, ALIGN_HCENTRE, Font::SMALL, "" ),
+    title( width / 2, 32, ALIGN_HCENTRE, Font::SMALL, " " ),
     trackLabel( 39, 14, ALIGN_CENTRE, Font::SMALL, "0" ),
-    volumeLabel( 201, 14, ALIGN_CENTRE, Font::SMALL, "" ),
+    volumeLabel( 201, 14, ALIGN_CENTRE, Font::SMALL, " " ),
     currentTrack( 0 ), isPlaying( false ), isVisible( true )
 {
   flags = UPDATE_BIT | PINNED_BIT;

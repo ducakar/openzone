@@ -193,13 +193,12 @@ bool Config::get( const char* key, bool defVal ) const
     if( value->equals( "true" ) ) {
       return true;
     }
-    else
-      if( value->equals( "false" ) ) {
-        return false;
-      }
-      else {
-        throw Exception( "Invalid boolean value '" + *value + "'" );
-      }
+    else if( value->equals( "false" ) ) {
+      return false;
+    }
+    else {
+      throw Exception( "Invalid boolean value '%s'", value->cstr() );
+    }
   }
   else {
     return defVal;
@@ -219,7 +218,7 @@ int Config::get( const char* key, int defVal ) const
     int   num = int( strtol( *value, &end, 0 ) );
 
     if( errno != 0 || end == value->cstr() ) {
-      throw Exception( "Invalid int value '" + *value + "'" );
+      throw Exception( "Invalid int value '%s'", value->cstr() );
     }
     else {
       return num;
@@ -243,7 +242,7 @@ float Config::get( const char* key, float defVal ) const
     float num = strtof( *value, &end );
 
     if( errno != 0 || end == value->cstr() ) {
-      throw Exception( "Invalid float value '" + *value + "'" );
+      throw Exception( "Invalid float value '%s'", value->cstr() );
     }
     else {
       return num;
@@ -280,13 +279,12 @@ bool Config::getSet( const char* key, bool defVal )
     if( value->equals( "true" ) ) {
       return true;
     }
-    else
-      if( value->equals( "false" ) ) {
-        return false;
-      }
-      else {
-        throw Exception( "Invalid boolean value '" + *value + "'" );
-      }
+    else if( value->equals( "false" ) ) {
+      return false;
+    }
+    else {
+      throw Exception( "Invalid boolean value '%s'", value->cstr() );
+    }
   }
   else {
     vars.add( key, String( defVal ) );
@@ -307,7 +305,7 @@ int Config::getSet( const char* key, int defVal )
     int   num = int( strtol( *value, &end, 0 ) );
 
     if( errno != 0 || end == value->cstr() ) {
-      throw Exception( "Invalid int value '" + *value + "'" );
+      throw Exception( "Invalid int value '%s'", value->cstr() );
     }
     else {
       return num;
@@ -332,7 +330,7 @@ float Config::getSet( const char* key, float defVal )
     float num = strtof( *value, &end );
 
     if( errno != 0 || end == value->cstr() ) {
-      throw Exception( "Invalid float value '" + *value + "'" );
+      throw Exception( "Invalid float value '%s'", value->cstr() );
     }
     else {
       return num;
@@ -364,10 +362,8 @@ bool Config::load( const char* file )
 {
   const char* suffix = String::findLast( file, '.' );
 
-  if( suffix != null ) {
-    if( String::equals( suffix, ".rc" ) ) {
-      return loadConf( file );
-    }
+  if( suffix != null && String::equals( suffix, ".rc" ) ) {
+    return loadConf( file );
   }
 
   log.println( "Unknown configuration file %s", file );
@@ -378,10 +374,8 @@ bool Config::save( const char* file )
 {
   const char* suffix = String::findLast( file, '.' );
 
-  if( suffix != null ) {
-    if( String::equals( suffix, ".rc" ) ) {
-      return saveConf( file );
-    }
+  if( suffix != null && String::equals( suffix, ".rc" ) ) {
+    return saveConf( file );
   }
 
   log.println( "Unknown configuration file %s", file );
@@ -401,6 +395,8 @@ void Config::clear( bool suppressWarnings )
 
   usedVars.clear();
   usedVars.dealloc();
+#else
+  static_cast<void>( suppressWarnings );
 #endif
   vars.clear();
   vars.dealloc();

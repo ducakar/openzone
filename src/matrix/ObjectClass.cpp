@@ -63,11 +63,11 @@ void ObjectClass::fillCommonConfig( const Config* config )
       dim.y < 0.0f || dim.y > AABB::REAL_MAX_DIM ||
       dim.z < 0.0f )
   {
-    throw Exception( name + ": Invalid dimensions. Should be >= 0 and <= 3.99." );
+    throw Exception( "%s: Invalid dimensions. Should be >= 0 and <= 3.99.", name.cstr() );
   }
 
   if( ( flags & Object::CYLINDER_BIT ) && dim.x != dim.y ) {
-    throw Exception( name + ": Cylindric object must have dim.x == dim.y" );
+    throw Exception( "%s: Cylindric object must have dim.x == dim.y", name.cstr() );
   }
 
   /*
@@ -144,10 +144,10 @@ void ObjectClass::fillCommonConfig( const Config* config )
   resistance = config->get( "resistance", 100.0f );
 
   if( life <= 0.0f ) {
-    throw Exception( name + ": Invalid life. Should be > 0." );
+    throw Exception( "%s: Invalid life. Should be > 0.", name.cstr() );
   }
   if( resistance < 0.0f ) {
-    throw Exception( name + ": Invalid resistance. Should be >= 0." );
+    throw Exception( "%s: Invalid resistance. Should be >= 0.", name.cstr() );
   }
 
   /*
@@ -174,7 +174,7 @@ void ObjectClass::fillCommonConfig( const Config* config )
     deviceType = library.deviceIndex( sDeviceType );
 
     if( flags & Object::USE_FUNC_BIT ) {
-      throw Exception( name + ": Device cannot have onUse handler" );
+      throw Exception( "%s: Device cannot have onUse handler", name.cstr() );
     }
   }
 
@@ -233,10 +233,10 @@ void ObjectClass::fillCommonConfig( const Config* config )
   }
 
   if( nItems < 0 ) {
-    throw Exception( name + ": Inventory size must be 0 or a positive integer" );
+    throw Exception( "%s: Inventory size must be 0 or a positive integer", name.cstr() );
   }
   if( ( flags & Object::ITEM_BIT ) && nItems != 0 ) {
-    throw Exception( name + ": Item cannot have an inventory" );
+    throw Exception( "%s: Item cannot have an inventory", name.cstr() );
   }
 
   // default inventory
@@ -257,7 +257,7 @@ void ObjectClass::fillCommonConfig( const Config* config )
     }
 
     if( defaultItems.length() > nItems ) {
-      throw Exception( name + ": Too many items in the default inventory" );
+      throw Exception( "%s: Too many items in the default inventory", name.cstr() );
     }
   }
 }

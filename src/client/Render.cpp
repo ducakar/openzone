@@ -28,7 +28,6 @@
 
 #include "matrix/Collider.hpp"
 #include "matrix/Physics.hpp"
-#include "matrix/BotClass.hpp"
 
 #include "client/Frustum.hpp"
 #include "client/Colours.hpp"

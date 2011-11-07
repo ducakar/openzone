@@ -46,15 +46,15 @@ DebugFrame::DebugFrame() :
 
   int height = textHeight + 2;
 
-  camPosRot.set( 5, 5 + height * 6, ALIGN_NONE, Font::MONO, "" );
+  camPosRot.set( 5, 5 + height * 6, ALIGN_NONE, Font::MONO, " " );
 
-  botPosRot.set( 5, 5 + height * 5, ALIGN_NONE, Font::MONO, "" );
-  botVelMom.set( 5, 5 + height * 4, ALIGN_NONE, Font::MONO, "" );
-  botFlagsState.set( 5, 5 + height * 3, ALIGN_NONE, Font::MONO, "" );
+  botPosRot.set( 5, 5 + height * 5, ALIGN_NONE, Font::MONO, " " );
+  botVelMom.set( 5, 5 + height * 4, ALIGN_NONE, Font::MONO, " " );
+  botFlagsState.set( 5, 5 + height * 3, ALIGN_NONE, Font::MONO, " " );
 
-  tagPos.set( 5, 5 + height * 2, ALIGN_NONE, Font::MONO, "" );
-  tagVelMom.set( 5, 5 + height * 1, ALIGN_NONE, Font::MONO, "" );
-  tagFlags.set( 5, 5 + height * 0, ALIGN_NONE, Font::MONO, "" );
+  tagPos.set( 5, 5 + height * 2, ALIGN_NONE, Font::MONO, " " );
+  tagVelMom.set( 5, 5 + height * 1, ALIGN_NONE, Font::MONO, " " );
+  tagFlags.set( 5, 5 + height * 0, ALIGN_NONE, Font::MONO, " " );
 }
 
 void DebugFrame::onDraw()

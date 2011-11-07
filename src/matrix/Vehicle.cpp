@@ -203,7 +203,7 @@ void Vehicle::onUpdate()
     if( bot == null || bot->parent == -1 ) {
       pilot = -1;
     }
-    else if( bot->flags & Bot::DEAD_BIT ) {
+    else if( bot->state & Bot::DEAD_BIT ) {
       pilot = -1;
       bot->exit();
     }
