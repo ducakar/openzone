@@ -208,6 +208,10 @@ void InventoryMenu::onDraw()
   for( int i = minIndex; i < maxIndex; ++i ) {
     const Dynamic* item = static_cast<const Dynamic*>( orbis.objects[ items[i] ] );
 
+    if( item == null ) {
+      continue;
+    }
+
     hard_assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 
     float size = item->dim.fastL();

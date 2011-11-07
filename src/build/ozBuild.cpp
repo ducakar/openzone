@@ -46,9 +46,8 @@
 
 #include "build/modules/GalileoModule.hpp"
 
-#include <cerrno>
 #include <unistd.h>
-#include <sys/stat.h>
+
 #include <SDL/SDL_main.h>
 
 bool oz::Alloc::isLocked = true;
@@ -125,8 +124,8 @@ static void createDirs()
   for( int i = 0; i < aLength( CREATE_DIRS ); ++i ) {
     log.print( "%-11s ...", CREATE_DIRS[i] );
 
-    struct stat dirStat;
-    if( stat( CREATE_DIRS[i], &dirStat ) == 0 ) {
+    File dir( CREATE_DIRS[i] );
+    if( dir.getType() == File::DIRECTORY ) {
       log.printEnd( " OK, exists" );
       continue;
     }
@@ -386,33 +385,29 @@ static void buildModels()
   dirName = dirName + "/";
 
   foreach( file, dirList.citer() ) {
-    struct stat srcInfo0;
-    struct stat srcInfo1;
-    struct stat configInfo;
-
     String name = file->name();
     String path = file->path();
 
-    if( stat( path + "/data.obj", &srcInfo0 ) == 0 ) {
-      if( stat( path + "/data.mtl", &srcInfo1 ) != 0 ||
-          stat( path + "/config.rc", &configInfo ) != 0 )
+    if( File( path + "/data.obj" ).getType() != File::MISSING ) {
+      if( File( path + "/data.mtl" ).getType() == File::MISSING ||
+          File( path + "/config.rc" ).getType() == File::MISSING )
       {
         throw Exception( "OBJ model '%s' source files missing", name.cstr() );
       }
 
       OBJ::build( path );
     }
-    else if( stat( path + "/tris.md2", &srcInfo0 ) == 0 ) {
-      if( stat( path + "/skin.png", &srcInfo1 ) != 0 ||
-          stat( path + "/config.rc", &configInfo ) != 0 )
+    else if( File( path + "/tris.md2" ).getType() != File::MISSING ) {
+      if( File( path + "/skin.png" ).getType() == File::MISSING ||
+          File( path + "/config.rc" ).getType() == File::MISSING )
       {
         throw Exception( "MD2 model '%s' source files missing", name.cstr() );
       }
 
       MD2::build( path );
     }
-    else if( stat( path + "/.md3", &srcInfo0 ) == 0 ) {
-      if( stat( path + "/config.rc", &configInfo ) != 0 ) {
+    else if( File( path + "/.md3" ).getType() != File::MISSING ) {
+      if( File( path + "/config.rc" ).getType() == File::MISSING ) {
         throw Exception( "MD3 model '%s' source files missing", name.cstr() );
       }
 
@@ -572,7 +567,7 @@ int main( int argc, char** argv )
   String dataDir   = prefixDir + "/share/" OZ_APPLICATION_NAME;
 
   log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
-  if( chdir( dataDir ) != 0 ) {
+  if( File::chdir( dataDir ) != 0 ) {
     log.printEnd( " Failed" );
     return -1;
   }

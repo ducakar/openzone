@@ -42,7 +42,6 @@
 #include <clocale>
 #include <ctime>
 #include <unistd.h>
-#include <sys/stat.h>
 
 #ifdef OZ_NETWORK
 # include <SDL_net.h>
@@ -265,8 +264,8 @@ int Client::main( int argc, char** argv )
 
   String rcDir = homeVar + String( "/" OZ_RC_DIR );
 
-  struct stat homeDirStat;
-  if( stat( rcDir.cstr(), &homeDirStat ) != 0 ) {
+  File rcDirFile( rcDir.cstr() );
+  if( rcDirFile.getType() != File::DIRECTORY ) {
     printf( "No resource directory found, creating '%s' ...", rcDir.cstr() );
 
     if( !File::mkdir( rcDir.cstr(), 0700 ) ) {
@@ -383,7 +382,7 @@ int Client::main( int argc, char** argv )
   String dataDir   = prefixDir + "/share/" OZ_APPLICATION_NAME;
 
   log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
-  if( chdir( dataDir ) != 0 ) {
+  if( File::chdir( dataDir ) != 0 ) {
     log.printEnd( " Failed" );
     return -1;
   }

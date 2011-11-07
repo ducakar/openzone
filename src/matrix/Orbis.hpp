@@ -61,19 +61,16 @@ class Orbis : public Bounds
     static const int   MAX = 256;
     static const float DIM;
 
-    Cell              cells[Orbis::MAX][Orbis::MAX];
+    Caelum            caelum;
+    Terra             terra;
 
     Vector<Struct*>   structs;
     Vector<Object*>   objects;
     Vector<Frag*>     frags;
 
-    BSP**             bsps;
-    Terra             terra;
-    Caelum            caelum;
+    Cell              cells[Orbis::MAX][Orbis::MAX];
 
   private:
-
-    int*              bspUsers;
 
     /*
      * Index reusing: when an entity is removed, there may still be references to it (from other
@@ -106,9 +103,6 @@ class Orbis : public Bounds
 
   private:
 
-    void requestBSP( int id );
-    void releaseBSP( int id );
-
     bool position( Struct* str );
     void unposition( Struct* str );
 
@@ -120,7 +114,7 @@ class Orbis : public Bounds
     void unposition( Frag* frag );
     void reposition( Frag* frag );
 
-    int  addStruct( int id, const Point3& p, Heading heading );
+    int  addStruct( const BSP* bsp, const Point3& p, Heading heading );
     int  addObject( const ObjectClass* clazz, const Point3& p, Heading heading );
     int  addFrag( const Point3& p, const Vec3& velocity, const Vec3& colour,
                   float restitution, float mass, float lifeTime );

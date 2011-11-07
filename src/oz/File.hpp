@@ -161,6 +161,13 @@ class File
     bool write( const BufferStream* bstream ) const;
 
     /**
+     * Change current directory.
+     *
+     * @return True on success.
+     */
+    static bool chdir( const char* path );
+
+    /**
      * Make a new directory.
      *
      * @return True on success.

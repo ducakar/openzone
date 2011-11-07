@@ -103,7 +103,7 @@ void Loader::cleanupRender()
 
   if( tick % BSP_CLEAR_INTERVAL == BSP_CLEAR_LAG ) {
     // remove unused BSPs
-    for( int i = 0; i < library.bsps.length(); ++i ) {
+    for( int i = 0; i < library.nBSPs; ++i ) {
       Context::Resource<BSP*>& bsp = context.bsps[i];
 
       if( bsp.nUsers != 0 ) {
@@ -232,7 +232,7 @@ void Loader::update()
   }
 
   // BSP
-  for( int i = 0; i < library.bsps.length(); ++i ) {
+  for( int i = 0; i < library.nBSPs; ++i ) {
     BSP* bsp = context.bsps[i].object;
 
     if( bsp != null && !bsp->isLoaded ) {

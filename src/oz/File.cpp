@@ -311,6 +311,11 @@ bool File::write( const BufferStream* bstream ) const
   return write( bstream->begin(), bstream->length() );
 }
 
+bool File::chdir( const char* path )
+{
+  return ::chdir( path ) == 0;
+}
+
 bool File::mkdir( const char* path, uint mode )
 {
 #ifdef OZ_MINGW

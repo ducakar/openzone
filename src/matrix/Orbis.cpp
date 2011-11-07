@@ -44,25 +44,6 @@ const float Cell::SIZE     = float( SIZEI );
 const float Cell::INV_SIZE = 1.0f / float( SIZEI );
 const float Orbis::DIM     = Cell::SIZE * MAX / 2.0f;
 
-void Orbis::requestBSP( int id )
-{
-  if( bspUsers[id] == 0 ) {
-    bsps[id] = new BSP( id );
-  }
-
-  ++bspUsers[id];
-}
-
-void Orbis::releaseBSP( int id )
-{
-  --bspUsers[id];
-
-  if( bspUsers[id] == 0 ) {
-    delete bsps[id];
-    bsps[id] = null;
-  }
-}
-
 bool Orbis::position( Struct* str )
 {
   Span span = getInters( *str, EPSILON );
@@ -210,19 +191,19 @@ void Orbis::reposition( Frag* frag )
   }
 }
 
-int Orbis::addStruct( int id, const Point3& p, Heading heading )
+int Orbis::addStruct( const BSP* bsp, const Point3& p, Heading heading )
 {
   int index;
 
-  requestBSP( id );
+  const_cast<BSP*>( bsp )->request();
 
   if( strAvailableIndices.isEmpty() ) {
     index = structs.length();
-    structs.add( new Struct( id, index, p, heading ) );
+    structs.add( new Struct( bsp, index, p, heading ) );
   }
   else {
     index = strAvailableIndices.popLast();
-    structs[index] = new Struct( id, index, p, heading );
+    structs[index] = new Struct( bsp, index, p, heading );
   }
   return index;
 }
@@ -266,12 +247,13 @@ void Orbis::remove( Struct* str )
 {
   hard_assert( str->index >= 0 );
 
+  BSP* bsp = const_cast<BSP*>( str->bsp );
+
   strFreedIndices[freeing].add( str->index );
   structs[str->index] = null;
 
-  releaseBSP( str->id );
-
   delete str;
+  bsp->release();
 }
 
 void Orbis::remove( Object* obj )
@@ -345,10 +327,10 @@ void Orbis::read( InputStream* istream )
       structs.add( null );
     }
     else {
-      int id = library.bspIndex( bspName );
+      const BSP* bsp = library.bsp( bspName );
+      const_cast<BSP*>( bsp )->request();
 
-      requestBSP( id );
-      str = new Struct( id, istream );
+      str = new Struct( bsp, istream );
       structs.add( str );
 
       if( !position( str ) ) {
@@ -459,7 +441,7 @@ void Orbis::write( BufferStream* ostream ) const
       ostream->writeString( "" );
     }
     else {
-      ostream->writeString( library.bsps[str->id].name );
+      ostream->writeString( str->bsp->name );
       str->write( ostream );
     }
   }
@@ -538,12 +520,6 @@ void Orbis::load()
   objects.alloc( 4096 );
   frags.alloc( 2048 );
 
-  bsps = new BSP*[ library.bsps.length() ];
-  bspUsers = new int[ library.bsps.length() ];
-
-  aSet<BSP*>( bsps, null, library.bsps.length() );
-  aSet( bspUsers, 0, library.bsps.length() );
-
   strFreedIndices[0].alloc( 4 );
   strFreedIndices[1].alloc( 4 );
   objFreedIndices[0].alloc( 64 );
@@ -578,9 +554,6 @@ void Orbis::unload()
     }
   }
 
-  Struct::overlappingObjs.clear();
-  Struct::overlappingObjs.dealloc();
-
   structs.free();
   structs.dealloc();
   objects.free();
@@ -588,10 +561,10 @@ void Orbis::unload()
   frags.free();
   frags.dealloc();
 
-  aFree( bsps, library.bsps.length() );
+  Struct::overlappingObjs.clear();
+  Struct::overlappingObjs.dealloc();
 
-  delete[] bsps;
-  delete[] bspUsers;
+  library.freeBSPs();
 
   strFreedIndices[0].clear();
   strFreedIndices[0].dealloc();

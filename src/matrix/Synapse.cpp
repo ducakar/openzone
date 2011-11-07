@@ -68,7 +68,7 @@ void Synapse::cut( Dynamic* obj )
 
 int Synapse::addStruct( const char* name, const Point3& p, Heading heading )
 {
-  int     index = orbis.addStruct( library.bspIndex( name ), p, heading );
+  int     index = orbis.addStruct( library.bsp( name ), p, heading );
   Struct* str   = orbis.structs[index];
 
   if( !orbis.position( str ) ) {

@@ -729,7 +729,7 @@ int Lua::ozOrbisTryAddStr( lua_State* l )
   Point3 p = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
   Heading heading = Heading( toint( 5 ) );
 
-  Bounds bounds = library.bspClass( name )->bounds;
+  Bounds bounds = *library.bsp( name );
   bounds = Struct::rotate( bounds, heading ) + ( p - Point3::ORIGIN );
 
   if( collider.overlaps( bounds.toAABB() ) ) {
@@ -1043,7 +1043,7 @@ int Lua::ozStrGetBSP( lua_State* l )
   ARG( 0 );
   STR_NOT_NULL();
 
-  pushint( lua.str->id );
+  pushstring( lua.str->bsp->name );
   return 1;
 }
 

@@ -411,20 +411,20 @@ void Struct::destroy()
                     1.98f, 0.0f, 2.0f );
 }
 
-Struct::Struct( int id_, int index_, const Point3& p_, Heading heading_ )
+Struct::Struct( const BSP* bsp_, int index_, const Point3& p_, Heading heading_ )
 {
+  bsp         = bsp_;
   p           = p_;
   index       = index_;
-  id          = id_;
-  bsp         = orbis.bsps[id_];
+  id          = bsp->id;
   heading     = heading_;
 
   life        = bsp->life;
   resistance  = bsp->resistance;
   demolishing = 0.0f;
 
-  transf      = Mat44::translation( p - Point3::ORIGIN ) * ROTATIONS[heading_];
-  invTransf   = ROTATIONS[4 - heading_] * Mat44::translation( Point3::ORIGIN - p );
+  transf      = Mat44::translation( p - Point3::ORIGIN ) * ROTATIONS[heading];
+  invTransf   = ROTATIONS[4 - heading] * Mat44::translation( Point3::ORIGIN - p );
 
   Bounds bb   = toAbsoluteCS( *bsp );
   mins        = bb.mins;
@@ -449,17 +449,17 @@ Struct::Struct( int id_, int index_, const Point3& p_, Heading heading_ )
   }
 }
 
-Struct::Struct( int id_, InputStream* istream )
+Struct::Struct( const BSP* bsp_, InputStream* istream )
 {
   mins        = istream->readPoint3();
   maxs        = istream->readPoint3();
   transf      = istream->readMat44();
   invTransf   = istream->readMat44();
 
+  bsp         = bsp_;
   p           = istream->readPoint3();
   index       = istream->readInt();
-  id          = id_;
-  bsp         = orbis.bsps[id_];
+  id          = bsp->id;
   heading     = Heading( istream->readInt() );
 
   life        = istream->readFloat();

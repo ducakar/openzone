@@ -111,28 +111,24 @@ void BSP::playContSound( const Struct::Entity* entity, int sound ) const
   OZ_AL_CHECK_ERROR();
 }
 
-BSP::BSP( int id_ ) : id( id_ ), flags( 0 ), bsp( orbis.bsps[id_] ), isLoaded( false )
+BSP::BSP( const matrix::BSP* bsp_ ) : bsp( bsp_ ), flags( 0 ), isLoaded( false )
 {
-  const BSPClass* clazz = library.bspClass( id );
-
-  for( int i = 0; i < clazz->sounds.length(); ++i ) {
-    context.requestSound( clazz->sounds[i] );
+  for( int i = 0; i < bsp->sounds.length(); ++i ) {
+    context.requestSound( bsp->sounds[i] );
   }
 }
 
 BSP::~BSP()
 {
-  log.println( "Unloading BSP model '%s' {", library.bsps[id].name.cstr() );
+  log.println( "Unloading BSP model '%s' {", bsp->name.cstr() );
   log.indent();
 
   if( isLoaded ) {
     mesh.unload();
   }
 
-  const BSPClass* clazz = library.bspClass( id );
-
-  for( int i = 0; i < clazz->sounds.length(); ++i ) {
-    context.releaseSound( clazz->sounds[i] );
+  for( int i = 0; i < bsp->sounds.length(); ++i ) {
+    context.releaseSound( bsp->sounds[i] );
   }
 
   log.unindent();
@@ -191,12 +187,10 @@ void BSP::play( const Struct* str ) const
 
 void BSP::load()
 {
-  const String& name = library.bsps[id].name;
-
-  log.println( "Loading BSP model '%s' {", name.cstr() );
+  log.println( "Loading BSP model '%s' {", bsp->name.cstr() );
   log.indent();
 
-  File file( "bsp/" + name + ".ozcBSP" );
+  File file( "bsp/" + bsp->name + ".ozcBSP" );
   if( !file.map() ) {
     throw Exception( "BSP file mmap failed" );
   }

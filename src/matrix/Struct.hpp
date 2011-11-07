@@ -75,6 +75,9 @@ class Struct : public Bounds
 
     };
 
+    static Pool<Struct>    pool;
+    static Vector<Object*> overlappingObjs;
+
   private:
 
     Mat44       transf;
@@ -82,10 +85,10 @@ class Struct : public Bounds
 
   public:
 
+    const BSP*  bsp;
     Point3      p;
     int         index;
-    int         id;
-    const BSP*  bsp;
+    int         id;           ///< Used for Context, so bsp doesn't have to be dereferenced.
     Heading     heading;
     float       life;
     float       resistance;
@@ -95,9 +98,6 @@ class Struct : public Bounds
     Entity*     entities;
 
     Vector<int> boundObjects;
-
-    static Vector<Object*> overlappingObjs;
-    static Pool<Struct> pool;
 
   private:
 
@@ -162,8 +162,8 @@ class Struct : public Bounds
 
   public:
 
-    explicit Struct( int id, int index, const Point3& p, Heading heading );
-    explicit Struct( int id, InputStream* istream );
+    explicit Struct( const BSP* bsp, int index, const Point3& p, Heading heading );
+    explicit Struct( const BSP* bsp, InputStream* istream );
 
     void write( BufferStream* ostream );
 
