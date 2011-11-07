@@ -383,7 +383,6 @@ namespace oz
     hard_assert( Alloc::count == 0 );
     hard_assert( Alloc::sumCount == 2 );
   }
-
 }
 
 int main( int, char** )

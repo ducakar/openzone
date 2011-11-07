@@ -163,7 +163,7 @@ class DArray
         size = a.size;
       }
 
-      aCopy( data, a.data, a.count );
+      aCopy( data, a.data, a.size );
 
       return *this;
     }

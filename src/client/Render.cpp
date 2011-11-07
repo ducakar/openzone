@@ -236,7 +236,26 @@ void Render::drawGeometry()
     }
   }
 
+  currentTime = SDL_GetTicks();
+  timer.renderObjectsMillis += currentTime - beginTime;
+  beginTime = currentTime;
+
+  // draw fragments
   glEnable( GL_BLEND );
+  shader.use( shader.mesh );
+
+  glBindTexture( GL_TEXTURE_2D, 0 );
+  glUniform1f( param.oz_Specular, 1.0f );
+
+  fragPool.bindVertexArray();
+
+  for( int i = 0; i < frags.length(); ++i ) {
+    fragPool.draw( frags[i] );
+  }
+
+  currentTime = SDL_GetTicks();
+  timer.renderFragsMillis += currentTime - beginTime;
+  beginTime = currentTime;
 
   for( int i = objects.length() - 1; i >= 0; --i ) {
     const Object* obj = objects[i].obj;
@@ -252,26 +271,10 @@ void Render::drawGeometry()
     }
   }
 
-  currentTime = SDL_GetTicks();
-  timer.renderObjectsMillis += currentTime - beginTime;
-  beginTime = currentTime;
-
-  // draw fragments
-  shader.use( shader.mesh );
-
-  glBindTexture( GL_TEXTURE_2D, 0 );
-  glUniform1f( param.oz_Specular, 1.0f );
-
-  fragPool.bindVertexArray();
-
-  for( int i = 0; i < frags.length(); ++i ) {
-    fragPool.draw( frags[i] );
-  }
-
   OZ_GL_CHECK_ERROR();
 
   currentTime = SDL_GetTicks();
-  timer.renderFragsMillis += currentTime - beginTime;
+  timer.renderObjectsMillis += currentTime - beginTime;
   beginTime = currentTime;
 
   terra.drawWater();

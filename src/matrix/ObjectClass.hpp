@@ -42,12 +42,12 @@ class ObjectClass
 {
   private:
 
-    static const int INVENTORY_ITEMS = 100;
+    static const int MAX_ITEMS = 100;
 
   public:
 
     // 00 <= AUDIO_SOUNDS <= 99 (two decimal digits)
-    static const int AUDIO_SOUNDS = 16;
+    static const int MAX_SOUNDS = 16;
 
     typedef ObjectClass* ( * CreateFunc )();
 
@@ -57,7 +57,6 @@ class ObjectClass
 
     Vec3   dim;
     int    flags;
-    int    type;
     float  life;
     float  resistance;
 
@@ -68,12 +67,7 @@ class ObjectClass
     String onUpdate;
 
     int    nDebris;
-    float  debrisVelocitySpread;
-    float  debrisRejection;
-    float  debrisMass;
-    float  debrisLifeTime;
-    float  debrisColourSpread;
-    Vec3   debrisColour;
+    int    fragPool;
 
     int    deviceType;
 
@@ -81,7 +75,7 @@ class ObjectClass
     int    imagoModel;
 
     int    audioType;
-    int    audioSounds[AUDIO_SOUNDS];
+    int    audioSounds[MAX_SOUNDS];
 
     int    nItems;
 
@@ -90,7 +84,6 @@ class ObjectClass
   protected:
 
     void fillCommonConfig( const Config* config );
-    void fillCommonFields( Object* obj ) const;
 
   public:
 
@@ -101,7 +94,7 @@ class ObjectClass
     virtual void initClass( const Config* config );
 
     virtual Object* create( int index, const Point3& pos, Heading heading ) const;
-    virtual Object* create( int index, InputStream* istream ) const;
+    virtual Object* create( InputStream* istream ) const;
 
 };
 

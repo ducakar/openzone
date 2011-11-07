@@ -43,19 +43,10 @@ const float Object::DAMAGE_BASE_INTENSITY   = +0.40f;
 Pool<Object::Event, 256> Object::Event::pool;
 Pool<Object, 16384>      Object::pool;
 
-Object::~Object()
-{
-  hard_assert( dim.x <= AABB::REAL_MAX_DIM );
-  hard_assert( dim.y <= AABB::REAL_MAX_DIM );
-
-  events.free();
-}
-
 void Object::onDestroy()
 {
-  synapse.genFrags( clazz->nDebris, p, Vec3::ZERO, clazz->debrisVelocitySpread,
-                    clazz->debrisColour, clazz->debrisColourSpread,
-                    clazz->debrisRejection, clazz->debrisMass, clazz->debrisLifeTime );
+  synapse.genFrags( clazz->nDebris, p, Vec3( 0.0f, 0.0f, 2.0f ), 4.0f,
+                    Vec3( 1.0f, 1.0f, 1.0f ), 0.1f, 1.8f, 0.0f, 2.0f );
 
   for( int i = 0; i < items.length(); ++i ) {
     Object* obj = orbis.objects[ items[i] ];
@@ -97,58 +88,49 @@ void Object::onUpdate()
   lua.objectCall( clazz->onUpdate, this );
 }
 
-void Object::readFull( InputStream* istream )
+Object::~Object()
 {
-  p     = istream->readPoint3();
-  flags = istream->readInt();
-  life  = istream->readFloat();
+  hard_assert( dim.x <= AABB::REAL_MAX_DIM );
+  hard_assert( dim.y <= AABB::REAL_MAX_DIM );
 
   events.free();
+}
 
-  int nEvents = istream->readInt();
-  for( int i = 0; i < nEvents; ++i ) {
-    int id = istream->readInt();
-    float intensity = istream->readFloat();
+Object::Object( const ObjectClass* clazz_, int index_, const Point3& p_, Heading heading )
+{
+  p          = p_;
+  dim        = clazz_->dim;
+  cell       = null;
+  index      = index_;
+  flags      = clazz_->flags | heading;
+  life       = clazz_->life;
+  resistance = clazz_->resistance;
+  clazz      = clazz_;
 
-    addEvent( id, intensity );
+  if( heading == WEST || heading == EAST ) {
+    swap( dim.x, dim.y );
   }
-
-  items.dealloc();
-
-  int nItems = istream->readInt();
-
-  hard_assert( nItems <= clazz->nItems );
 
   if( clazz->nItems != 0 ) {
     items.alloc( clazz->nItems );
-
-    for( int i = 0; i < nItems; ++i ) {
-      items.add( istream->readInt() );
-    }
   }
 }
 
-void Object::writeFull( BufferStream* ostream ) const
+Object::Object( const ObjectClass* clazz_, InputStream* istream )
 {
-  ostream->writePoint3( p );
-  ostream->writeInt( flags );
-  ostream->writeFloat( life );
+  p          = istream->readPoint3();
+  dim        = clazz_->dim;
+  cell       = null;
+  index      = istream->readInt();
+  flags      = istream->readInt();
+  life       = istream->readFloat();
+  resistance = clazz_->resistance;
+  clazz      = clazz_;
 
-  ostream->writeInt( events.length() );
-  foreach( event, events.citer() ) {
-    ostream->writeInt( event->id );
-    ostream->writeFloat( event->intensity );
+  Heading heading = Heading( flags & Object::HEADING_MASK );
+  if( heading == WEST || heading == EAST ) {
+    swap( dim.x, dim.y );
   }
-
-  ostream->writeInt( items.length() );
-  foreach( item, items.citer() ) {
-    ostream->writeInt( *item );
-  }
-}
-
-void Object::readUpdate( InputStream* istream )
-{
-  life = istream->readFloat();
 
   int nEvents = istream->readInt();
   for( int i = 0; i < nEvents; ++i ) {
@@ -158,16 +140,21 @@ void Object::readUpdate( InputStream* istream )
     addEvent( id, intensity );
   }
 
-  items.clear();
+  if( clazz->nItems != 0 ) {
+    items.alloc( clazz->nItems );
 
-  int nItems = istream->readInt();
-  for( int i = 0; i < nItems; ++i ) {
-    items.add( istream->readInt() );
+    int nItems = istream->readInt();
+    for( int i = 0; i < nItems; ++i ) {
+      items.add( istream->readInt() );
+    }
   }
 }
 
-void Object::writeUpdate( BufferStream* ostream ) const
+void Object::write( BufferStream* ostream ) const
 {
+  ostream->writePoint3( p );
+  ostream->writeInt( index );
+  ostream->writeInt( flags );
   ostream->writeFloat( life );
 
   ostream->writeInt( events.length() );
@@ -176,11 +163,19 @@ void Object::writeUpdate( BufferStream* ostream ) const
     ostream->writeFloat( event->intensity );
   }
 
-  ostream->writeInt( items.length() );
-  foreach( item, items.citer() ) {
-    ostream->writeInt( *item );
+  if( clazz->nItems != 0 ) {
+    ostream->writeInt( items.length() );
+    foreach( item, items.citer() ) {
+      ostream->writeInt( *item );
+    }
   }
 }
+
+void Object::readUpdate( InputStream* )
+{}
+
+void Object::writeUpdate( BufferStream* ) const
+{}
 
 }
 }

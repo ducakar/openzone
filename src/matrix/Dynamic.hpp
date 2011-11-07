@@ -25,13 +25,13 @@
 #pragma once
 
 #include "matrix/Object.hpp"
+#include "matrix/DynamicClass.hpp"
 
 namespace oz
 {
 namespace matrix
 {
 
-// dynamic object abstract class
 class Dynamic : public Object
 {
   public:
@@ -39,23 +39,28 @@ class Dynamic : public Object
     static Pool<Dynamic, 4096> pool;
 
     Vec3  velocity;
-    Vec3  momentum;   // desired velocity
-    Vec3  floor;      // if on ground, used as floor normal, it is not set if on another object
+    Vec3  momentum; // desired velocity
+    Vec3  floor;    // if on ground, used as floor normal, it is not set if on another object
 
-    int   parent;     // index of container object (if object isn't positioned in the world,
-                      // it has to be contained in an another object, otherwise it will be removed)
-    int   lower;      // index of the lower object
-    float depth;      // how deep under water the object's lower bound is
+    int   parent;   // index of container object (if object isn't positioned in the world,
+                    // it has to be contained in an another object, otherwise it will be removed)
+    int   lower;    // index of the lower object
+    float depth;    // how deep under water the object's lower bound is
 
     float mass;
     float lift;
 
-    Dynamic() : velocity( Vec3::ZERO ), momentum( Vec3::ZERO ), parent( -1 ), lower( -1 ),
-        depth( 0.0f )
-    {}
+  protected:
 
-    virtual void readFull( InputStream* istream );
-    virtual void writeFull( BufferStream* ostream ) const;
+    virtual void onDestroy();
+
+  public:
+
+    explicit Dynamic( const DynamicClass* clazz, int index, const Point3& p, Heading heading );
+    explicit Dynamic( const DynamicClass* clazz, InputStream* istream );
+
+    virtual void write( BufferStream* ostream ) const;
+
     virtual void readUpdate( InputStream* istream );
     virtual void writeUpdate( BufferStream* ostream ) const;
 

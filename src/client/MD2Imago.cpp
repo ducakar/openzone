@@ -26,7 +26,7 @@
 
 #include "client/MD2Imago.hpp"
 
-#include "matrix/BotClass.hpp"
+#include "matrix/Bot.hpp"
 
 #include "client/Colours.hpp"
 #include "client/Context.hpp"

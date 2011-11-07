@@ -87,7 +87,7 @@ void Audio::playContSound( int sound, float volume, const Object* obj,
 {
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 
-  int key = obj->index * ObjectClass::AUDIO_SOUNDS + sound;
+  int key = obj->index * ObjectClass::MAX_SOUNDS + sound;
 
   Context::ContSource* contSource = context.objSources.find( key );
 
@@ -130,7 +130,7 @@ void Audio::playEngineSound( int sound, float volume, float pitch, const Vehicle
     pitch  *= COCKPIT_PITCH_FACTOR;
   }
 
-  int key = veh->index * ObjectClass::AUDIO_SOUNDS + sound;
+  int key = veh->index * ObjectClass::MAX_SOUNDS + sound;
 
   Context::ContSource* contSource = context.objSources.find( key );
 
@@ -170,7 +170,7 @@ Audio::Audio( const Object* obj_ ) : obj( obj_ ), clazz( obj_->clazz ), flags( 0
 {
   const int* sounds = clazz->audioSounds;
 
-  for( int i = 0; i < ObjectClass::AUDIO_SOUNDS; ++i ) {
+  for( int i = 0; i < ObjectClass::MAX_SOUNDS; ++i ) {
     if( sounds[i] != -1 ) {
       context.requestSound( sounds[i] );
     }
@@ -182,7 +182,7 @@ Audio::~Audio()
 {
   const int* sounds = clazz->audioSounds;
 
-  for( int i = 0; i < ObjectClass::AUDIO_SOUNDS; ++i ) {
+  for( int i = 0; i < ObjectClass::MAX_SOUNDS; ++i ) {
     if( sounds[i] != -1 ) {
       context.releaseSound( sounds[i] );
     }

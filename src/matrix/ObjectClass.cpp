@@ -26,8 +26,8 @@
 
 #include "matrix/ObjectClass.hpp"
 
+#include "matrix/Object.hpp"
 #include "matrix/Library.hpp"
-#include "matrix/Synapse.hpp"
 
 namespace oz
 {
@@ -154,15 +154,10 @@ void ObjectClass::fillCommonConfig( const Config* config )
    * debris
    */
 
-  nDebris              = config->get( "nDebris", 8 );
-  debrisVelocitySpread = config->get( "debrisVelocitySpread", 4.0f );
-  debrisRejection      = config->get( "debrisRejection", 1.80f );
-  debrisMass           = config->get( "debrisMass", 0.0f );
-  debrisLifeTime       = config->get( "debrisLifeTime", 2.0f );
-  debrisColour.x       = config->get( "debrisColour.r", 0.5f );
-  debrisColour.y       = config->get( "debrisColour.g", 0.5f );
-  debrisColour.z       = config->get( "debrisColour.b", 0.5f );
-  debrisColourSpread   = config->get( "debrisColourSpread", 0.1f );
+  const char* sFragPool = config->get( "fragPool", "" );
+
+  nDebris  = config->get( "nDebris", 8 );
+  fragPool = String::isEmpty( sFragPool ) ? -1 : library.fragPoolIndex( sFragPool );
 
   /*
    * device
@@ -216,7 +211,7 @@ void ObjectClass::fillCommonConfig( const Config* config )
     audioType = library.audioIndex( sAudioType );
 
     char buffer[] = "audioSound  ";
-    for( int i = 0; i < AUDIO_SOUNDS; ++i ) {
+    for( int i = 0; i < MAX_SOUNDS; ++i ) {
       hard_assert( i < 100 );
 
       buffer[10] = char( '0' + ( i / 10 ) );
@@ -249,7 +244,7 @@ void ObjectClass::fillCommonConfig( const Config* config )
     defaultItems.alloc( nItems );
 
     char buffer[] = "item  ";
-    for( int i = 0; i < INVENTORY_ITEMS; ++i ) {
+    for( int i = 0; i < MAX_ITEMS; ++i ) {
       hard_assert( i < 100 );
 
       buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
@@ -264,19 +259,6 @@ void ObjectClass::fillCommonConfig( const Config* config )
     if( defaultItems.length() > nItems ) {
       throw Exception( name + ": Too many items in the default inventory" );
     }
-  }
-}
-
-void ObjectClass::fillCommonFields( Object* obj ) const
-{
-  obj->dim        = dim;
-  obj->flags      = flags;
-  obj->clazz      = this;
-  obj->life       = life;
-  obj->resistance = resistance;
-
-  if( nItems != 0 ) {
-    obj->items.alloc( nItems );
   }
 }
 
@@ -307,39 +289,12 @@ void ObjectClass::initClass( const Config* config )
 
 Object* ObjectClass::create( int index, const Point3& pos, Heading heading ) const
 {
-  Object* obj = new Object();
-
-  obj->p          = pos;
-  obj->index      = index;
-
-  fillCommonFields( obj );
-
-  obj->flags |= heading;
-
-  if( heading == WEST || heading == EAST ) {
-    swap( obj->dim.x, obj->dim.y );
-  }
-
-  return obj;
+  return new Object( this, index, pos, heading );
 }
 
-Object* ObjectClass::create( int index, InputStream* istream ) const
+Object* ObjectClass::create( InputStream* istream ) const
 {
-  Object* obj = new Object();
-
-  obj->dim        = dim;
-  obj->index      = index;
-  obj->clazz      = this;
-  obj->resistance = resistance;
-
-  obj->readFull( istream );
-
-  Heading heading = Heading( obj->flags & Object::HEADING_MASK );
-  if( heading == WEST || heading == EAST ) {
-    swap( obj->dim.x, obj->dim.y );
-  }
-
-  return obj;
+  return new Object( this, istream );
 }
 
 }

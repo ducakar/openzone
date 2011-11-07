@@ -19,50 +19,38 @@
  */
 
 /**
- * @file matrix/Weapon.hpp
+ * @file matrix/FragClass.hpp
  */
 
 #pragma once
 
-#include "matrix/Dynamic.hpp"
-#include "matrix/WeaponClass.hpp"
+#include "matrix/common.hpp"
 
 namespace oz
 {
 namespace matrix
 {
 
-class Weapon : public Dynamic
+class Frag;
+
+class FragClass
 {
   public:
 
-    static const int EVENT_SHOT       = 7;
-    static const int EVENT_SHOT_EMPTY = 8;
+    String name;
 
-    static Pool<Weapon, 2048> pool;
+    float  restitution;
+    float  lifeTime;
 
-    // -1: unlimited
-    int   nRounds;
-    float shotTime;
-
-    void trigger( Bot* user );
-
-  protected:
-
-    virtual void onUpdate();
-    virtual bool onUse( Bot* user );
+    int    imagoType;
+    int    imagoModel;
 
   public:
 
-    explicit Weapon( const WeaponClass* clazz, int index, const Point3& p, Heading heading );
-    explicit Weapon( const WeaponClass* clazz, InputStream* istream );
+    FragClass( const Config* config );
 
-    virtual void write( BufferStream* ostream ) const;
-
-    virtual void readUpdate( InputStream* istream );
-    virtual void writeUpdate( BufferStream* ostream ) const;
-
-  OZ_STATIC_POOL_ALLOC( pool )
+    Frag* create( int index, const Point3& pos ) const;
+    Frag* create( int index, InputStream* istream ) const;
 
 };
 

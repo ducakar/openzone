@@ -111,9 +111,8 @@ void VehicleClass::initClass( const Config* config )
   char nRoundsBuffer[]      = "weapon  .nRounds";
   char shotIntervalBuffer[] = "weapon  .shotInterval";
 
-  nWeapons = Vehicle::WEAPONS_MAX;
-
-  for( int i = 0; i < Vehicle::WEAPONS_MAX; ++i ) {
+  nWeapons = MAX_WEAPONS;
+  for( int i = 0; i < MAX_WEAPONS; ++i ) {
     hard_assert( i < 100 );
 
     weaponNameBuffer[6] = char( '0' + ( i / 10 ) );
@@ -155,45 +154,14 @@ void VehicleClass::initClass( const Config* config )
   hoverMomentumStiffness = config->get( "hoverMomentumStiffness", 160.0f );
 }
 
-Object* VehicleClass::create( int index, const Point3& pos, Heading ) const
+Object* VehicleClass::create( int index, const Point3& pos, Heading heading ) const
 {
-  Vehicle* obj = new Vehicle();
-
-  obj->p          = pos;
-  obj->index      = index;
-  obj->mass       = mass;
-  obj->lift       = lift;
-  obj->h          = 0.0f;
-  obj->v          = Math::TAU / 4.0f;
-  obj->rot        = Quat::ID;
-  obj->state      = state;
-  obj->oldState   = state;
-  obj->weapon     = 0;
-
-  for( int i = 0; i < Vehicle::WEAPONS_MAX; ++i ) {
-    obj->nRounds[i]  = nRounds[i];
-    obj->shotTime[i] = 0.0f;
-  }
-
-  fillCommonFields( obj );
-
-  return obj;
+  return new Vehicle( this, index, pos, heading );
 }
 
-Object* VehicleClass::create( int index, InputStream* istream ) const
+Object* VehicleClass::create( InputStream* istream ) const
 {
-  Vehicle* obj = new Vehicle();
-
-  obj->dim        = dim;
-  obj->index      = index;
-  obj->clazz      = this;
-  obj->resistance = resistance;
-  obj->mass       = mass;
-  obj->lift       = lift;
-
-  obj->readFull( istream );
-
-  return obj;
+  return new Vehicle( this, istream );
 }
 
 }

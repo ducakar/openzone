@@ -27,8 +27,6 @@
 #include "matrix/BotClass.hpp"
 
 #include "matrix/Bot.hpp"
-#include "matrix/NamePool.hpp"
-#include "matrix/Synapse.hpp"
 
 #define OZ_CLASS_SET_STATE( stateBit, varName, defValue ) \
   if( config->get( varName, defValue ) ) { \
@@ -148,7 +146,7 @@ void BotClass::initClass( const Config* config )
 
   weaponItem            = config->get( "weaponItem", -1 );
 
-  mindFunction          = config->get( "mindFunction", "" );
+  mindFunc              = config->get( "mindFunction", "" );
 
   const char* sNameList = config->get( "nameList", "" );
   nameList              = String::isEmpty( sNameList ) ? -1 : library.nameListIndex( sNameList );
@@ -156,44 +154,12 @@ void BotClass::initClass( const Config* config )
 
 Object* BotClass::create( int index, const Point3& pos, Heading heading ) const
 {
-  Bot* obj = new Bot();
-
-  hard_assert( obj->index == -1 && obj->cell == null && obj->parent == -1 );
-
-  obj->p          = pos;
-  obj->index      = index;
-  obj->resistance = resistance;
-  obj->mass       = mass;
-  obj->lift       = lift;
-  obj->h          = float( heading ) * Math::TAU / 4.0f;
-  obj->v          = Math::TAU / 4.0f;
-  obj->camZ       = camZ;
-  obj->state      = state;
-  obj->oldState   = state;
-  obj->stamina    = stamina;
-  obj->name       = namePool.genName( nameList );
-  obj->mindFunc   = mindFunction;
-
-  fillCommonFields( obj );
-
-  return obj;
+  return new Bot( this, index, pos, heading );
 }
 
-Object* BotClass::create( int index, InputStream* istream ) const
+Object* BotClass::create( InputStream* istream ) const
 {
-  Bot* obj = new Bot();
-
-  obj->index      = index;
-  obj->clazz      = this;
-  obj->resistance = resistance;
-  obj->mass       = mass;
-  obj->lift       = lift;
-
-  obj->readFull( istream );
-
-  obj->camZ = obj->state & Bot::CROUCHING_BIT ? crouchCamZ : camZ;
-
-  return obj;
+  return new Bot( this, istream );
 }
 
 }

@@ -41,15 +41,6 @@ class Frag
     static const float MAX_ROTVELOCITY;
     static const float DAMAGE_THRESHOLD;
 
-    enum Type
-    {
-      RUIN,
-      WOOD,
-      METAL,
-      MEAT,
-      BULLET
-    };
-
     static Pool<Frag, 2048> pool;
 
     /*
@@ -62,6 +53,7 @@ class Frag
     Cell*  cell;
     int    index;       // position in world.objects vector
 
+    int    type;        // pool of graphical models used
     Point3 p;           // position
     Vec3   velocity;
     Vec3   colour;

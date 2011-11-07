@@ -49,14 +49,14 @@ class HudArea : public Area
     Label title;
     Label weaponName;
     Label weaponRounds;
-    Label vehicleWeaponNames[Vehicle::WEAPONS_MAX];
-    Label vehicleWeaponRounds[Vehicle::WEAPONS_MAX];
+    Label vehicleWeaponNames[Vehicle::MAX_WEAPONS];
+    Label vehicleWeaponRounds[Vehicle::MAX_WEAPONS];
 
     int   lastTaggedId;
     int   lastWeaponId;
     int   lastWeaponRounds;
     int   lastVehicleId;
-    int   lastVehicleWeaponRounds[Vehicle::WEAPONS_MAX];
+    int   lastVehicleWeaponRounds[Vehicle::MAX_WEAPONS];
 
     uint  crossTexId;
     uint  useTexId;

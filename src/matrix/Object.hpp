@@ -190,15 +190,15 @@ class Object : public AABB
      */
 
     // EVENT_CREATE must be invoked manually
-    static const int EVENT_CREATE       = 0;
-    static const int EVENT_DESTROY      = 1;
-    static const int EVENT_DAMAGE       = 2;
-    static const int EVENT_HIT          = 3;
-    static const int EVENT_SPLASH       = 4;
+    static const int EVENT_CREATE   = 0;
+    static const int EVENT_DESTROY  = 1;
+    static const int EVENT_DAMAGE   = 2;
+    static const int EVENT_HIT      = 3;
+    static const int EVENT_SPLASH   = 4;
     // EVENT_FRICTING not in use, but reserved for more convenient BasicAudio
     // (reserves a slot for friction sound)
-    static const int EVENT_FRICTING     = 5;
-    static const int EVENT_USE          = 6;
+    static const int EVENT_FRICTING = 5;
+    static const int EVENT_USE      = 6;
 
     static const float MOMENTUM_INTENSITY_COEF;
     static const float MOMENTUM_DAMAGE_COEF;
@@ -215,11 +215,13 @@ class Object : public AABB
 
       // exactly events with negative IDs are ignored by BasicAudio, so if ID is nonnegative we
       // don't want to use this ctor as we need to set the intensity
+      OZ_ALWAYS_INLINE
       explicit Event( int id_ ) : id( id_ )
       {
         hard_assert( id < 0 );
       }
 
+      OZ_ALWAYS_INLINE
       explicit Event( int id_, float intensity_ ) : id( id_ ), intensity( intensity_ )
       {
         hard_assert( id < 0 || intensity >= 0.0f );
@@ -227,6 +229,8 @@ class Object : public AABB
 
       OZ_STATIC_POOL_ALLOC( pool )
     };
+
+  public:
 
     static Pool<Object, 16384> pool;
 
@@ -253,8 +257,19 @@ class Object : public AABB
     // inventory of an object
     Vector<int>        items;
 
-    Object() : cell( null ), index( -1 )
-    {}
+  protected:
+
+    /*
+     * EVENT HANDLERS
+     */
+
+    virtual void onDestroy();
+    virtual void onDamage( float damage );
+    virtual void onHit( const Hit* hit, float hitMomentum );
+    virtual bool onUse( Bot* user );
+    virtual void onUpdate();
+
+  public:
 
     virtual ~Object();
 
@@ -361,22 +376,13 @@ class Object : public AABB
       }
     }
 
-  protected:
-
-    virtual void onDestroy();
-    virtual void onDamage( float damage );
-    virtual void onHit( const Hit* hit, float hitMomentum );
-    virtual bool onUse( Bot* user );
-    virtual void onUpdate();
-
   public:
 
-    /*
-     * SERIALISATION
-     */
+    explicit Object( const ObjectClass* clazz, int index, const Point3& p, Heading heading );
+    explicit Object( const ObjectClass* clazz, InputStream* istream );
 
-    virtual void readFull( InputStream* istream );
-    virtual void writeFull( BufferStream* ostream ) const;
+    virtual void write( BufferStream* ostream ) const;
+
     virtual void readUpdate( InputStream* istream );
     virtual void writeUpdate( BufferStream* ostream ) const;
 

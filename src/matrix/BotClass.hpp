@@ -88,7 +88,7 @@ class BotClass : public DynamicClass
 
     int    weaponItem;
 
-    String mindFunction;
+    String mindFunc;
 
     int    nameList;
 
@@ -97,7 +97,7 @@ class BotClass : public DynamicClass
     virtual void initClass( const Config* config );
 
     virtual Object* create( int index, const Point3& pos, Heading heading ) const;
-    virtual Object* create( int index, InputStream* istream ) const;
+    virtual Object* create( InputStream* istream ) const;
 
 };
 

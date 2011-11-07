@@ -51,7 +51,7 @@ Audio* BotAudio::create( const Object* obj )
 void BotAudio::play( const Audio* parent )
 {
   const Bot* bot = static_cast<const Bot*>( obj );
-  const int ( &sounds )[ObjectClass::AUDIO_SOUNDS] = obj->clazz->audioSounds;
+  const int ( &sounds )[ObjectClass::MAX_SOUNDS] = obj->clazz->audioSounds;
 
   int objFlags = oldFlags[0] | oldFlags[1] | obj->flags;
   oldFlags[timer.ticks % 2] = obj->flags;
@@ -78,7 +78,7 @@ void BotAudio::play( const Audio* parent )
 
   // events
   for( const Object::Event* event = obj->events.first(); event != null; event = event->next[0] ) {
-    hard_assert( event->id < ObjectClass::AUDIO_SOUNDS );
+    hard_assert( event->id < ObjectClass::MAX_SOUNDS );
 
     if( event->id >= 0 && sounds[event->id] != -1 ) {
       hard_assert( 0.0f <= event->intensity );

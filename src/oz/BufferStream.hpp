@@ -43,6 +43,7 @@ class BufferStream
 {
   private:
 
+    /// Capacity is always a multiple of <tt>GRANULARITY</tt>.
     static const int GRANULARITY = 4096;
 
     char*       pos;   ///< Current position.

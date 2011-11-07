@@ -46,7 +46,7 @@ class Map
 {
   private:
 
-    /// Capacity is always a multiple of <tt>GRANULARITY</tt>.
+    /// Granularity for automatic capacity allocations.
     static const int GRANULARITY = 8;
 
     /**

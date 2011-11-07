@@ -26,8 +26,7 @@
 
 #include "client/ui/HudArea.hpp"
 
-#include "matrix/BotClass.hpp"
-#include "matrix/VehicleClass.hpp"
+#include "matrix/Vehicle.hpp"
 
 #include "client/Camera.hpp"
 #include "client/Context.hpp"
@@ -329,7 +328,7 @@ HudArea::HudArea() : Area( camera.width, camera.height ),
   flags = UPDATE_BIT | IGNORE_BIT | PINNED_BIT;
 
   int step = font.INFOS[Font::LARGE].height + 8;
-  for( int i = 0; i < Vehicle::WEAPONS_MAX; ++i ) {
+  for( int i = 0; i < Vehicle::MAX_WEAPONS; ++i ) {
     lastVehicleWeaponRounds[i] = -1;
 
     vehicleWeaponNames[i].set( -200, 32 + i * step, ALIGN_LEFT, Font::LARGE, "" );

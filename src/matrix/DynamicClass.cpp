@@ -69,45 +69,12 @@ void DynamicClass::initClass( const Config* config )
 
 Object* DynamicClass::create( int index, const Point3& pos, Heading heading ) const
 {
-  Dynamic* obj = new Dynamic();
-
-  hard_assert( obj->index == -1 && obj->cell == null && obj->parent == -1 );
-
-  obj->p          = pos;
-  obj->index      = index;
-  obj->mass       = mass;
-  obj->lift       = lift;
-
-  fillCommonFields( obj );
-
-  obj->flags |= heading;
-
-  if( heading == WEST || heading == EAST ) {
-    swap( obj->dim.x, obj->dim.y );
-  }
-
-  return obj;
+  return new Dynamic( this, index, pos, heading );
 }
 
-Object* DynamicClass::create( int index, InputStream* istream ) const
+Object* DynamicClass::create( InputStream* istream ) const
 {
-  Dynamic* obj = new Dynamic();
-
-  obj->dim        = dim;
-  obj->index      = index;
-  obj->clazz      = this;
-  obj->resistance = resistance;
-  obj->mass       = mass;
-  obj->lift       = lift;
-
-  obj->readFull( istream );
-
-  Heading heading = Heading( obj->flags & Object::HEADING_MASK );
-  if( heading == WEST || heading == EAST ) {
-    swap( obj->dim.x, obj->dim.y );
-  }
-
-  return obj;
+  return new Dynamic( this, istream );
 }
 
 }

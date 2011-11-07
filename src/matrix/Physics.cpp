@@ -66,6 +66,10 @@ const float Physics::PART_DESTROY_VELOCITY2 =  900.0f;
 void Physics::handleFragHit()
 {
   float velocity2 = frag->velocity * frag->velocity;
+  float hitMomentum = frag->velocity * collider.hit.normal;
+
+  frag->velocity -= ( frag->restitution * hitMomentum ) * collider.hit.normal;
+
   if( velocity2 >= PART_HIT_VELOCITY2 ) {
     if( velocity2 >= PART_DESTROY_VELOCITY2 ) {
       frag->lifeTime = -Math::INF;
@@ -73,7 +77,7 @@ void Physics::handleFragHit()
 
     if( frag->mass != 0.0f ) {
       if( collider.hit.obj != null ) {
-        Object* obj = const_cast<Object*>( collider.hit.obj );
+        Object* obj = collider.hit.obj;
         float damage = velocity2 * frag->mass;
 
         if( damage > obj->resistance ) {
@@ -83,7 +87,7 @@ void Physics::handleFragHit()
         }
       }
       else if( collider.hit.str != null ) {
-        Struct* str = const_cast<Struct*>( collider.hit.str );
+        Struct* str = collider.hit.str;
         float damage = velocity2 * frag->mass;
 
         if( damage > str->resistance ) {
@@ -94,9 +98,6 @@ void Physics::handleFragHit()
       }
     }
   }
-
-  float hitMomentum = frag->velocity * collider.hit.normal;
-  frag->velocity -= ( frag->restitution * hitMomentum ) * collider.hit.normal;
 }
 
 void Physics::handleFragMove()
@@ -239,7 +240,7 @@ void Physics::handleObjHit()
   const Hit& hit = collider.hit;
 
   if( hit.obj != null && ( hit.obj->flags & Object::DYNAMIC_BIT ) ) {
-    Dynamic* sDyn = static_cast<Dynamic*>( const_cast<Object*>( hit.obj ) );
+    Dynamic* sDyn = static_cast<Dynamic*>( hit.obj );
 
     float massSum     = dyn->mass + sDyn->mass;
     Vec3  momentum    = ( dyn->momentum * dyn->mass + sDyn->momentum * sDyn->mass ) / massSum;
@@ -313,7 +314,7 @@ void Physics::handleObjHit()
 
     if( hitMomentum <= HIT_THRESHOLD && hitVelocity <= HIT_THRESHOLD ) {
       if( hit.obj != null ) {
-        Object* sObj = const_cast<Object*>( hit.obj );
+        Object* sObj = hit.obj;
 
         dyn->hit( &hit, hitMomentum );
         sObj->hit( &hit, hitMomentum );
@@ -322,7 +323,7 @@ void Physics::handleObjHit()
         dyn->hit( &hit, hitMomentum );
 
         if( hit.str != null ) {
-          Struct* str = const_cast<Struct*>( hit.str );
+          Struct* str = hit.str;
 
           float effectiveMass = min( dyn->mass, STRUCT_HIT_MAX_MASS );
           str->damage( STRUCT_HIT_RATIO * hitMomentum*hitMomentum * effectiveMass );

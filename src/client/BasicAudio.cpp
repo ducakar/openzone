@@ -51,7 +51,7 @@ Audio* BasicAudio::create( const Object* obj )
 void BasicAudio::play( const Audio* parent )
 {
   const Dynamic* dyn = static_cast<const Dynamic*>( obj );
-  const int ( &sounds )[ObjectClass::AUDIO_SOUNDS] = obj->clazz->audioSounds;
+  const int ( &sounds )[ObjectClass::MAX_SOUNDS] = obj->clazz->audioSounds;
 
   // prevent friction sound restarting when it suspends for a tick or two
   int objFlags = oldFlags[0] | oldFlags[1] | obj->flags;
@@ -79,7 +79,7 @@ void BasicAudio::play( const Audio* parent )
 
   // events
   for( const Object::Event* event = obj->events.first(); event != null; event = event->next[0] ) {
-    hard_assert( event->id < ObjectClass::AUDIO_SOUNDS );
+    hard_assert( event->id < ObjectClass::MAX_SOUNDS );
 
     if( event->id >= 0 && sounds[event->id] != -1 ) {
       hard_assert( 0.0f <= event->intensity );

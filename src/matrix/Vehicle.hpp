@@ -25,6 +25,7 @@
 #pragma once
 
 #include "matrix/Bot.hpp"
+#include "matrix/VehicleClass.hpp"
 
 namespace oz
 {
@@ -46,26 +47,39 @@ class Vehicle : public Dynamic
       TYPE_MAX
     };
 
-    static const int   WEAPONS_MAX            = 8;
+    static const int   MAX_WEAPONS       = 8;
 
     // not in use, used to reserve a slot for engine sound sample
-    static const int   EVENT_ENGINE           = 7;
-    static const int   EVENT_NEXT_WEAPON      = 8;
-    static const int   EVENT_SHOT0            = 9;
-    static const int   EVENT_SHOT0_EMPTY      = 10;
-    static const int   EVENT_SHOT1            = 11;
-    static const int   EVENT_SHOT1_EMPTY      = 12;
-    static const int   EVENT_SHOT2            = 13;
-    static const int   EVENT_SHOT2_EMPTY      = 14;
+    static const int   EVENT_ENGINE      = 7;
+    static const int   EVENT_NEXT_WEAPON = 8;
+    static const int   EVENT_SHOT0       = 9;
+    static const int   EVENT_SHOT0_EMPTY = 10;
+    static const int   EVENT_SHOT1       = 11;
+    static const int   EVENT_SHOT1_EMPTY = 12;
+    static const int   EVENT_SHOT2       = 13;
+    static const int   EVENT_SHOT2_EMPTY = 14;
 
-    static const int   CREW_VISIBLE_BIT       = 0x00000001;
+    static const int   CREW_VISIBLE_BIT  = 0x00000001;
 
     static const float AIR_FRICTION;
     static const float EXIT_EPSILON;
     static const float EXIT_MOMENTUM;
     static const float EJECT_MOMENTUM;
 
+  public:
+
     static Pool<Vehicle, 256> pool;
+
+    Quat  rot;
+    float h, v;
+    int   state, oldState;
+    int   actions, oldActions;
+
+    int   weapon;
+    int   nRounds[MAX_WEAPONS];
+    float shotTime[MAX_WEAPONS];
+
+    int   pilot;
 
   protected:
 
@@ -84,25 +98,15 @@ class Vehicle : public Dynamic
 
   public:
 
-    float h, v;
-    Quat  rot;
-    Vec3  camPos;
-
-    int   state, oldState;
-    int   actions, oldActions;
-
-    int   weapon;
-    int   nRounds[WEAPONS_MAX];
-    float shotTime[WEAPONS_MAX];
-
-    int   pilot;
-
-    Vehicle();
-
     void service();
 
-    virtual void readFull( InputStream* istream );
-    virtual void writeFull( BufferStream* ostream ) const;
+  public:
+
+    explicit Vehicle( const VehicleClass* clazz, int index, const Point3& p, Heading heading );
+    explicit Vehicle( const VehicleClass* clazz, InputStream* istream );
+
+    virtual void write( BufferStream* ostream ) const;
+
     virtual void readUpdate( InputStream* istream );
     virtual void writeUpdate( BufferStream* ostream ) const;
 

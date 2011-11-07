@@ -329,7 +329,7 @@ void Collider::trimAABBVoid()
 }
 
 // finds out if AABB-AABB collision occurs and the time when it occurs
-void Collider::trimAABBObj( Object* sObj )
+void Collider::trimAABBObj( const Object* sObj )
 {
   float minRatio   = -1.0f;
   float maxRatio   =  1.0f;
@@ -452,7 +452,7 @@ void Collider::trimAABBObj( Object* sObj )
   if( minRatio != -1.0f && minRatio <= maxRatio && minRatio < hit.ratio ) {
     hit.ratio    = max( 0.0f, minRatio );
     hit.normal   = lastNormal;
-    hit.obj      = sObj;
+    hit.obj      = const_cast<Object*>( sObj );
     hit.str      = null;
     hit.entity   = null;
     hit.material = Material::OBJECT_BIT;
@@ -494,8 +494,8 @@ void Collider::trimAABBBrush( const BSP::Brush* brush )
     hit.ratio    = max( 0.0f, minRatio );
     hit.normal   = str->toAbsoluteCS( lastPlane->n() );
     hit.obj      = null;
-    hit.str      = str;
-    hit.entity   = entity;
+    hit.str      = const_cast<Struct*>( str );
+    hit.entity   = const_cast<Struct::Entity*>( entity );
     hit.material = brush->material;
   }
 }
@@ -762,7 +762,7 @@ void Collider::trimAABBOrbis()
       startPos = originalStartPos;
       endPos   = originalEndPos;
 
-      for( Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
+      for( const Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
         if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( trace ) ) {
           trimAABBObj( sObj );
         }

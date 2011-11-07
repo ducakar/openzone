@@ -218,11 +218,11 @@ int Orbis::addStruct( int id, const Point3& p, Heading heading )
 
   if( strAvailableIndices.isEmpty() ) {
     index = structs.length();
-    structs.add( new Struct( index, id, p, heading ) );
+    structs.add( new Struct( id, index, p, heading ) );
   }
   else {
     index = strAvailableIndices.popLast();
-    structs[index] = new Struct( index, id, p, heading );
+    structs[index] = new Struct( id, index, p, heading );
   }
   return index;
 }
@@ -348,7 +348,7 @@ void Orbis::read( InputStream* istream )
       int id = library.bspIndex( bspName );
 
       requestBSP( id );
-      str = new Struct( i, id, istream );
+      str = new Struct( id, istream );
       structs.add( str );
 
       if( !position( str ) ) {
@@ -363,7 +363,7 @@ void Orbis::read( InputStream* istream )
       objects.add( null );
     }
     else {
-      obj = library.objClass( typeName )->create( i, istream );
+      obj = library.objClass( typeName )->create( istream );
       objects.add( obj );
 
       // no need to register objects since Lua state is being deserialised
@@ -460,7 +460,7 @@ void Orbis::write( BufferStream* ostream ) const
     }
     else {
       ostream->writeString( library.bsps[str->id].name );
-      str->writeFull( ostream );
+      str->write( ostream );
     }
   }
   for( int i = 0; i < objects.length(); ++i ) {
@@ -471,7 +471,7 @@ void Orbis::write( BufferStream* ostream ) const
     }
     else {
       ostream->writeString( obj->clazz->name );
-      obj->writeFull( ostream );
+      obj->write( ostream );
       ostream->writeBool( obj->cell == null );
     }
   }

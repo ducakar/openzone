@@ -47,8 +47,8 @@ struct Hit
   Vec3  normal;
 
   Object* obj;
-  const Struct* str;
-  const Struct::Entity* entity;
+  Struct* str;
+  Struct::Entity* entity;
 
   float ratio;
 
@@ -102,7 +102,7 @@ class Collider
     bool overlapsEntityOrbisOO();
 
     void trimAABBVoid();
-    void trimAABBObj( Object* sObj );
+    void trimAABBObj( const Object* sObj );
     void trimAABBBrush( const BSP::Brush* brush );
     void trimAABBWater( const BSP::Brush* brush );
     void trimAABBLadder( const BSP::Brush* brush );

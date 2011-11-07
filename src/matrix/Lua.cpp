@@ -28,8 +28,7 @@
 
 #include "matrix/Lua.hpp"
 
-#include "matrix/BotClass.hpp"
-#include "matrix/VehicleClass.hpp"
+#include "matrix/Vehicle.hpp"
 #include "matrix/Library.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Synapse.hpp"
