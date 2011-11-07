@@ -156,8 +156,8 @@ void ObjectClass::fillCommonConfig( const Config* config )
 
   const char* sFragPool = config->get( "fragPool", "" );
 
-  nDebris  = config->get( "nDebris", 8 );
-  fragPool = String::isEmpty( sFragPool ) ? -1 : library.fragPoolIndex( sFragPool );
+  nFrags   = config->get( "nFrags", 6 );
+  fragPool = String::isEmpty( sFragPool ) ? null : library.fragPool( sFragPool );
 
   /*
    * device

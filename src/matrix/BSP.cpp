@@ -33,33 +33,64 @@ namespace oz
 namespace matrix
 {
 
-BSP::BSP( int id_ ) :
-    id( id_ ),
-    nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nLeafBrushes( 0 ), nModels( 0 ),
-    nBrushes( 0 ), nBrushSides( 0 ),
-    planes( null ), nodes( null ), leaves( null ), leafBrushes( null ), models( null ),
-    brushes( null ), brushSides( null )
+BSP::BSP( const char* name_, int id_ ) : name( name_ ), id( id_ )
 {
-  log.print( "Loading OpenZone BSP structure '%s' ...", library.bsps[id].name.cstr() );
+  life         = 0.0f;
+  resistance   = 0.0f;
 
-  File file( library.bsps[id].path );
+  nPlanes      = 0;
+  nNodes       = 0;
+  nLeaves      = 0;
+  nLeafBrushes = 0;
+  nBrushes     = 0;
+  nBrushSides  = 0;
+  nModels      = 0;
+
+  planes       = null;
+  nodes        = null;
+  leaves       = null;
+  leafBrushes  = null;
+  brushes      = null;
+  brushSides   = null;
+  models       = null;
+
+  nUsers       = 0;
+}
+
+BSP::~BSP()
+{
+  hard_assert( planes == null );
+}
+
+void BSP::load()
+{
+  hard_assert( nUsers == 0 );
+
+  log.print( "Loading OpenZone BSP structure '%s' ...", name.cstr() );
+
+  String sPath = "bsp/" + name + ".ozBSP";
+
+  File file( sPath );
   if( !file.map() ) {
     throw Exception( "BSP file mmap failed" );
   }
 
   InputStream is = file.inputStream();
 
-  mins         = is.readPoint3();
-  maxs         = is.readPoint3();
+  // bounds
+  is.readPoint3();
+  is.readPoint3();
 
-  int nSounds = is.readInt();
-  for( int i = 0; i < nSounds; ++i ) {
+  // title
+  is.readString();
+  // description
+  is.readString();
+
+  // sound samples
+  is.readInt();
+  for( int i = 0; i < sounds.length(); ++i ) {
     is.readString();
   }
-
-  // title and description
-  is.readString();
-  is.readString();
 
   life          = is.readFloat();
   resistance    = is.readFloat();
@@ -183,12 +214,16 @@ BSP::BSP( int id_ ) :
 
   file.unmap();
 
+  nUsers = 1;
+
   log.printEnd( " OK" );
 }
 
-BSP::~BSP()
+void BSP::unload()
 {
-  log.print( "Freeing BSP structure '%s' ...", library.bsps[id].name.cstr() );
+  hard_assert( ( nUsers == 0 ) == ( planes == null ) );
+
+  log.print( "Freeing BSP structure '%s' ...", name.cstr() );
 
   if( planes != null ) {
     delete[] reinterpret_cast<char*>( planes );
@@ -201,16 +236,47 @@ BSP::~BSP()
     nBrushSides  = 0;
     nModels      = 0;
 
-    planes      = null;
-    nodes       = null;
-    leaves      = null;
-    leafBrushes = null;
-    brushes     = null;
-    brushSides  = null;
-    models      = null;
+    planes       = null;
+    nodes        = null;
+    leaves       = null;
+    leafBrushes  = null;
+    brushes      = null;
+    brushSides   = null;
+    models       = null;
+
+    nUsers       = 0;
   }
 
   log.printEnd( " OK" );
+}
+
+void BSP::init()
+{
+  String sPath = "bsp/" + name + ".ozBSP";
+
+  File file( sPath );
+  if( !file.map() ) {
+    throw Exception( "BSP file mmap failed" );
+  }
+
+  InputStream is = file.inputStream();
+
+  mins        = is.readPoint3();
+  maxs        = is.readPoint3();
+
+  title       = is.readString();
+  description = is.readString();
+
+  int nSounds = is.readInt();
+  if( nSounds != 0 ) {
+    sounds.alloc( nSounds );
+
+    for( int i = 0; i < nSounds; ++i ) {
+      sounds.add( library.soundIndex( is.readString() ) );
+    }
+  }
+
+  file.unmap();
 }
 
 }

@@ -38,11 +38,10 @@ class BSP
 {
   private:
 
-    int  id;
+    const matrix::BSP* bsp;
+
     int  flags;
     Mesh mesh;
-
-    const matrix::BSP* bsp;
 
     void playSound( const Struct::Entity* entity, int sound ) const;
     void playContSound( const Struct::Entity* entity, int sound ) const;
@@ -51,7 +50,7 @@ class BSP
 
     bool isLoaded;
 
-    explicit BSP( int id );
+    explicit BSP( const matrix::BSP* bsp );
     ~BSP();
 
     void draw( const Struct* str, int mask ) const;

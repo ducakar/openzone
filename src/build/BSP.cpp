@@ -993,13 +993,13 @@ void BSP::saveMatrix()
   os.writePoint3( mins );
   os.writePoint3( maxs );
 
+  os.writeString( title );
+  os.writeString( description );
+
   os.writeInt( sounds.length() );
   for( int i = 0; i < sounds.length(); ++i ) {
     os.writeString( library.sounds[ sounds[i] ].name );
   }
-
-  os.writeString( title );
-  os.writeString( description );
 
   sounds.clear();
   sounds.dealloc();

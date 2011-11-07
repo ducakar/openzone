@@ -28,8 +28,6 @@
 
 #include "matrix/Library.hpp"
 
-#include <dirent.h>
-
 namespace oz
 {
 namespace matrix

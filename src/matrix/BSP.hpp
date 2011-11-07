@@ -24,25 +24,12 @@
 
 #pragma once
 
-#include "matrix/common.hpp"
+#include "matrix/ObjectClass.hpp"
 
 namespace oz
 {
 namespace matrix
 {
-
-class ObjectClass;
-
-/**
- * Information about a BSP that must be available also when the BSP is not loaded.
- */
-struct BSPClass
-{
-  Bounds      bounds;      ///< Bounds.
-  Vector<int> sounds;      ///< Sound samples.
-  String      title;       ///< Title.
-  String      description; ///< Description.
-};
 
 class BSP : public Bounds
 {
@@ -93,34 +80,38 @@ class BSP : public Bounds
         AUTO_DOOR
       };
 
-      Vec3   move;        ///< Move vector (destination - original position), in BSP coordinate
-                          ///< system.
+      Vec3   move;       ///< Move vector (destination - original position), in BSP coordinate
+                         ///< system.
 
-      BSP*   bsp;         ///< Pointer to the parent BSP.
+      BSP*   bsp;        ///< Pointer to the parent BSP.
 
-      int    firstBrush;  ///< Index of the first brush in <code>brushes<code> array.
-      int    nBrushes;    ///< Number of brushes.
+      int    firstBrush; ///< Index of the first brush in <code>brushes<code> array.
+      int    nBrushes;   ///< Number of brushes.
 
       float  ratioInc;
-      int    flags;       ///< Flags, not used for now.
-      Type   type;        ///< Model type.
+      int    flags;      ///< Flags, not used for now.
+      Type   type;       ///< Model type.
 
-      float  margin;      ///< Margin around entity inside which objects trigger door opening.
-      float  timeout;     ///< Timeout after which entity starts opening/closing.
+      float  margin;     ///< Margin around entity inside which objects trigger door opening.
+      float  timeout;    ///< Timeout after which entity starts opening/closing.
 
-      int    openSound;   ///< Open sound sample, played when an entity starts moving.
-      int    closeSound;  ///< Close sound sample, played when an entity stops moving.
-      int    frictSound;  ///< Friction sound sample, played while the entity is moving.
+      int    openSound;  ///< Open sound sample, played when an entity starts moving.
+      int    closeSound; ///< Close sound sample, played when an entity stops moving.
+      int    frictSound; ///< Friction sound sample, played while the entity is moving.
     };
 
     struct BoundObject
     {
       const ObjectClass* clazz;
-      Point3  pos;
-      Heading heading;
+      Point3             pos;
+      Heading            heading;
     };
 
-    int          id;
+    String       name;          ///< Name.
+    String       title;         ///< Title.
+    String       description;   ///< Description.
+    Vector<int>  sounds;        ///< Set of used sound samples.
+
     float        life;
     float        resistance;
 
@@ -142,10 +133,43 @@ class BSP : public Bounds
     int*         brushSides;
     BoundObject* boundObjects;
 
-    explicit BSP( int id );
+    int          id;            ///< Used for indexing BSPs in Context.
+    int          nUsers;
+
+    explicit BSP( const char* name, int id );
     ~BSP();
 
+    void request();
+    void release();
+
+    void load();
+    void unload();
+
+    void init();
+
 };
+
+inline void BSP::request()
+{
+  hard_assert( !name.isEmpty() );
+
+  if( nUsers == 0 ) {
+    load();
+  }
+
+  ++nUsers;
+}
+
+inline void BSP::release()
+{
+  hard_assert( nUsers > 0 );
+
+  --nUsers;
+
+  if( nUsers == 0 ) {
+    unload();
+  }
+}
 
 }
 }

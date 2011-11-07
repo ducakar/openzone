@@ -29,8 +29,6 @@
 #include "client/Context.hpp"
 #include "client/OpenGL.hpp"
 
-#include <sys/stat.h>
-
 namespace oz
 {
 namespace client

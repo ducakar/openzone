@@ -30,9 +30,6 @@
 
 #include "matrix/Vehicle.hpp"
 
-#include <dirent.h>
-#include <sys/types.h>
-
 #define OZ_REGISTER_BASECLASS( name ) \
   baseClasses.include( #name, name##Class::createClass )
 
@@ -47,114 +44,104 @@ Library::Resource::Resource( const String& name_, const String& path_ ) :
     name( name_ ), path( path_ )
 {}
 
+const BSP* Library::bsp( const char* name ) const
+{
+  const BSP* value = bsps.find( name );
+
+  if( value == null ) {
+    throw Exception( "Invalid BSP requested '%s'", name );
+  }
+  return value;
+}
+
 const ObjectClass* Library::objClass( const char* name ) const
 {
   const ObjectClass* const* value = objClasses.find( name );
+
   if( value == null ) {
     throw Exception( "Invalid object class requested '%s'", name );
   }
-  else {
-    return *value;
+  return *value;
+}
+
+const FragPool* Library::fragPool( const char* name ) const
+{
+  const FragPool* const* value = fragPools.find( name );
+
+  if( value == null ) {
+    throw Exception( "Invalid fragment pool requested '%s'", name );
   }
+  return *value;
 }
 
 int Library::textureIndex( const char* name ) const
 {
   const int* value = textureIndices.find( name );
+
   if( value == null ) {
     throw Exception( "Invalid texture requested '%s'", name );
   }
-  else {
-    return *value;
-  }
+  return *value;
 }
 
 int Library::soundIndex( const char* name ) const
 {
   const int* value = soundIndices.find( name );
+
   if( value == null ) {
     throw Exception( "Invalid sound requested '%s'", name );
   }
-  else {
-    return *value;
-  }
+  return *value;
 }
 
 int Library::shaderIndex( const char* name ) const
 {
   const int* value = shaderIndices.find( name );
+
   if( value == null ) {
     throw Exception( "Invalid shader requested '%s'", name );
   }
-  else {
-    return *value;
-  }
+  return *value;
 }
 
 int Library::terraIndex( const char* name ) const
 {
   const int* value = terraIndices.find( name );
+
   if( value == null ) {
     throw Exception( "Invalid terra index requested '%s'", name );
   }
-  else {
-    return *value;
-  }
+  return *value;
 }
 
 int Library::caelumIndex( const char* name ) const
 {
   const int* value = caelumIndices.find( name );
+
   if( value == null ) {
     throw Exception( "Invalid caelum index requested '%s'", name );
   }
-  else {
-    return *value;
-  }
-}
-
-int Library::bspIndex( const char* name ) const
-{
-  const int* value = bspIndices.find( name );
-  if( value == null ) {
-    throw Exception( "Invalid BSP index requested '%s'", name );
-  }
-  else {
-    return *value;
-  }
+  return *value;
 }
 
 int Library::modelIndex( const char* name ) const
 {
   const int* value = modelIndices.find( name );
+
   if( value == null ) {
     throw Exception( "Invalid model index requested '%s'", name );
   }
-  else {
-    return *value;
-  }
+  return *value;
 }
 
 int Library::nameListIndex( const char* name ) const
 {
   const int* value = nameListIndices.find( name );
-  if( value == null ) {
-    throw Exception( "Invalid name list index requested '%s'", name );
-  }
-  else {
-    return *value;
-  }
-}
 
-int Library::fragPoolIndex( const char* name ) const
-{
-  const int* value = fragPoolIndices.find( name );
   if( value == null ) {
     throw Exception( "Invalid name list index requested '%s'", name );
   }
-  else {
-    return *value;
-  }
+  return *value;
 }
 
 int Library::deviceIndex( const char* name ) const
@@ -176,6 +163,15 @@ int Library::audioIndex( const char* name ) const
   const int* value = audioIndices.find( name );
 
   return value == null ? -1 : *value;
+}
+
+void Library::freeBSPs()
+{
+  foreach( bsp, bsps.iter() ) {
+    if( bsp.value().nUsers != 0 ) {
+      bsp.value().unload();
+    }
+  }
 }
 
 void Library::initShaders()
@@ -507,32 +503,11 @@ void Library::initBSPs()
 
     log.println( "%s", name.cstr() );
 
-    bspIndices.add( name, bsps.length() );
-    bsps.add( Resource( name, file->path() ) );
-
-    // read bounds
-    if( !file->map() ) {
-      throw Exception( "Cannot mmap BSP to read class info" );
-    }
-
-    InputStream is = file->inputStream();
-
-    bspClasses.add();
-    BSPClass& clazz = bspClasses.last();
-
-    clazz.bounds.mins = is.readPoint3();
-    clazz.bounds.maxs = is.readPoint3();
-
-    int nSounds = is.readInt();
-    for( int i = 0; i < nSounds; ++i ) {
-      clazz.sounds.add( soundIndex( is.readString() ) );
-    }
-
-    clazz.title       = gettext( is.readString() );
-    clazz.description = gettext( is.readString() );
-
-    file->unmap();
+    BSP* bsp = bsps.add( name, BSP( name, bsps.length() ) );
+    bsp->init();
   }
+
+  nBSPs = bsps.length();
 
   log.unindent();
   log.println( "}" );
@@ -561,9 +536,10 @@ void Library::initBuildBSPs()
 
     log.println( "%s", name.cstr() );
 
-    bspIndices.add( name, bsps.length() );
-    bsps.add( Resource( name, file->path() ) );
+    bsps.add( name, BSP( name, bsps.length() ) );
   }
+
+  nBSPs = bsps.length();
 
   log.unindent();
   log.println( "}" );
@@ -704,17 +680,17 @@ void Library::initFragPools()
   File dir;
   DArray<File> dirList;
 
-  log.println( "name lists (*.txt in 'name') {" );
+  log.println( "fragment pools (*.list in 'frag') {" );
   log.indent();
 
-  dir.setPath( "name" );
+  dir.setPath( "frag" );
   if( !dir.ls( &dirList ) ) {
     free();
 
     throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "txt" ) ) {
+    if( !file->hasExtension( "list" ) ) {
       continue;
     }
 
@@ -722,8 +698,7 @@ void Library::initFragPools()
 
     log.println( "%s", name.cstr() );
 
-    nameListIndices.add( name, nameLists.length() );
-    nameLists.add( Resource( name, file->path() ) );
+    fragPools.add( name, new FragPool( name ) );
   }
 
   log.unindent();
@@ -895,17 +870,14 @@ void Library::initClasses()
 
 void Library::init()
 {
-  bspClasses.alloc( 64 );
   shaders.alloc( 64 );
   textures.alloc( 256 );
   sounds.alloc( 256 );
   caela.alloc( 16 );
   terras.alloc( 16 );
-  bsps.alloc( 64 );
   models.alloc( 256 );
   musics.alloc( 64 );
   nameLists.alloc( 16 );
-  fragPools.alloc( 16 );
 
   log.println( "Library mapping resources {" );
   log.indent();
@@ -928,17 +900,14 @@ void Library::init()
 
 void Library::buildInit()
 {
-  bspClasses.alloc( 64 );
   shaders.alloc( 64 );
   textures.alloc( 256 );
   sounds.alloc( 256 );
   caela.alloc( 16 );
   terras.alloc( 16 );
-  bsps.alloc( 64 );
   models.alloc( 256 );
   musics.alloc( 64 );
   nameLists.alloc( 16 );
-  fragPools.alloc( 16 );
 
   log.println( "Library mapping resources {" );
   log.indent();
@@ -961,6 +930,23 @@ void Library::buildInit()
 
 void Library::free()
 {
+  shaders.clear();
+  shaders.dealloc();
+  textures.clear();
+  textures.dealloc();
+  sounds.clear();
+  sounds.dealloc();
+  terras.clear();
+  terras.dealloc();
+  caela.clear();
+  caela.dealloc();
+  models.clear();
+  models.dealloc();
+  nameLists.clear();
+  nameLists.dealloc();
+  musics.clear();
+  musics.dealloc();
+
   textureIndices.clear();
   textureIndices.dealloc();
   soundIndices.clear();
@@ -971,38 +957,19 @@ void Library::free()
   terraIndices.dealloc();
   caelumIndices.clear();
   caelumIndices.dealloc();
-  bspIndices.clear();
-  bspIndices.dealloc();
   modelIndices.clear();
   modelIndices.dealloc();
   nameListIndices.clear();
   nameListIndices.dealloc();
 
-  textures.clear();
-  textures.dealloc();
-  sounds.clear();
-  sounds.dealloc();
-  shaders.clear();
-  shaders.dealloc();
-  terras.clear();
-  terras.dealloc();
-  caela.clear();
-  caela.dealloc();
-  bsps.clear();
-  bsps.dealloc();
-  models.clear();
-  models.dealloc();
-  nameLists.clear();
-  nameLists.dealloc();
-  musics.clear();
-  musics.dealloc();
-
-  bspClasses.clear();
-  bspClasses.dealloc();
   baseClasses.clear();
   baseClasses.dealloc();
   objClasses.free();
   objClasses.dealloc();
+  bsps.clear();
+  bsps.dealloc();
+  fragPools.free();
+  fragPools.dealloc();
 }
 
 }

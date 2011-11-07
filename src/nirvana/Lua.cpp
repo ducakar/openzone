@@ -825,7 +825,7 @@ int Lua::ozStrGetBSP( lua_State* l )
   ARG( 0 );
   STR_NOT_NULL();
 
-  pushint( lua.str->id );
+  pushstring( lua.str->bsp->name );
   return 1;
 }
 

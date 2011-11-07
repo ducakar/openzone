@@ -7,7 +7,7 @@ add_library( matrix STATIC
   Dynamic.cpp
   DynamicClass.cpp
   Frag.cpp
-  FragClass.cpp
+  FragPool.cpp
   Library.cpp
   Lua.cpp
   Matrix.cpp

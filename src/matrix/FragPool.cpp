@@ -19,40 +19,45 @@
  */
 
 /**
- * @file matrix/FragClass.hpp
+ * @file matrix/FragPool.cpp
  */
 
-#pragma once
+#include "stable.hpp"
 
-#include "matrix/common.hpp"
+#include "matrix/FragPool.hpp"
+
+#include "matrix/Frag.hpp"
 
 namespace oz
 {
 namespace matrix
 {
 
-class Frag;
-
-class FragClass
+FragPool::FragPool( const char* name_ )
 {
-  public:
+  name = name_;
+}
 
-    String name;
+Frag* FragPool::create( int index, const Point3& pos ) const
+{
+  Frag* frag = new Frag();
 
-    float  restitution;
-    float  lifeTime;
+  frag->index = index;
+  frag->p     = pos;
 
-    int    imagoType;
-    int    imagoModel;
+  return frag;
+}
 
-  public:
+Frag* FragPool::create( int index, InputStream* istream ) const
+{
+  Frag* frag = new Frag();
 
-    FragClass( const Config* config );
+  frag->index = index;
 
-    Frag* create( int index, const Point3& pos ) const;
-    Frag* create( int index, InputStream* istream ) const;
+  frag->readFull( istream );
 
-};
+  return frag;
+}
 
 }
 }

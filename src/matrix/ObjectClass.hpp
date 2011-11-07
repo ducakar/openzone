@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "matrix/common.hpp"
+#include "matrix/FragPool.hpp"
 
 #define OZ_CLASS_SET_FLAG( flagBit, varName, defValue ) \
   if( config->get( varName, defValue ) ) { \
@@ -51,33 +51,33 @@ class ObjectClass
 
     typedef ObjectClass* ( * CreateFunc )();
 
-    String name;
-    String title;
-    String description;
+    String          name;
+    String          title;
+    String          description;
 
-    Vec3   dim;
-    int    flags;
-    float  life;
-    float  resistance;
+    Vec3            dim;
+    int             flags;
+    float           life;
+    float           resistance;
 
-    String onDestroy;
-    String onDamage;
-    String onHit;
-    String onUse;
-    String onUpdate;
+    String          onDestroy;
+    String          onDamage;
+    String          onHit;
+    String          onUse;
+    String          onUpdate;
 
-    int    nDebris;
-    int    fragPool;
+    const FragPool* fragPool;
+    int             nFrags;
 
-    int    deviceType;
+    int             deviceType;
 
-    int    imagoType;
-    int    imagoModel;
+    int             imagoType;
+    int             imagoModel;
 
-    int    audioType;
-    int    audioSounds[MAX_SOUNDS];
+    int             audioType;
+    int             audioSounds[MAX_SOUNDS];
 
-    int    nItems;
+    int             nItems;
 
     Vector<const ObjectClass*> defaultItems;
 

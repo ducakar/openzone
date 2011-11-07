@@ -421,7 +421,7 @@ void Context::drawBSP( const Struct* str, int mask )
   resource.nUsers = 1;
 
   if( resource.object == null ) {
-    resource.object = new BSP( str->id );
+    resource.object = new BSP( str->bsp );
   }
   else if( resource.object->isLoaded ) {
     resource.object->draw( str, mask );
@@ -436,7 +436,7 @@ void Context::playBSP( const Struct* str )
   resource.nUsers = 1;
 
   if( resource.object == null ) {
-    resource.object = new BSP( str->id );
+    resource.object = new BSP( str->bsp );
   }
   else if( resource.object->isLoaded ) {
     resource.object->play( str );
@@ -550,7 +550,7 @@ void Context::unload()
 
   OZ_AL_CHECK_ERROR();
 
-  for( int i = 0; i < library.bsps.length(); ++i ) {
+  for( int i = 0; i < library.nBSPs; ++i ) {
     delete bsps[i].object;
     bsps[i].object = null;
     bsps[i].nUsers = 0;
@@ -655,7 +655,7 @@ void Context::init()
   if( library.sounds.length() == 0 ) {
     throw Exception( "Context: sounds missing!" );
   }
-  if( library.bsps.length() == 0 ) {
+  if( library.nBSPs == 0 ) {
     throw Exception( "Context: BSPs missing!" );
   }
   if( library.models.length() == 0 ) {
@@ -664,7 +664,7 @@ void Context::init()
 
   textures = new Resource<uint>[ library.textures.length() ];
   sounds   = new Resource<uint>[ library.sounds.length() ];
-  bsps     = new Resource<BSP*>[ library.bsps.length() ];
+  bsps     = new Resource<BSP*>[ library.nBSPs ];
   smms     = new Resource<SMM*>[ library.models.length() ];
   md2s     = new Resource<MD2*>[ library.models.length() ];
   md3s     = new Resource<MD3*>[ library.models.length() ];
@@ -675,7 +675,7 @@ void Context::init()
   for( int i = 0; i < library.sounds.length(); ++i ) {
     sounds[i].nUsers = -1;
   }
-  for( int i = 0; i < library.bsps.length(); ++i ) {
+  for( int i = 0; i < library.nBSPs; ++i ) {
     bsps[i].object = null;
     bsps[i].nUsers = 0;
   }

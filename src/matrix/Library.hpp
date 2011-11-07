@@ -26,6 +26,7 @@
 
 #include "matrix/Struct.hpp"
 #include "matrix/ObjectClass.hpp"
+#include "matrix/FragPool.hpp"
 
 namespace oz
 {
@@ -79,19 +80,18 @@ class Library
 
   private:
 
-    Vector<BSPClass> bspClasses;
     HashString<const ObjectClass::CreateFunc, 8> baseClasses;
     HashString<ObjectClass*, 128> objClasses;
+    HashString<BSP, 64>           bsps;
+    HashString<FragPool*, 64>     fragPools;
 
     HashString<int, 256> textureIndices;
     HashString<int, 256> soundIndices;
     HashString<int, 64>  shaderIndices;
     HashString<int, 16>  terraIndices;
     HashString<int, 16>  caelumIndices;
-    HashString<int, 64>  bspIndices;
     HashString<int, 256> modelIndices;
     HashString<int, 16>  nameListIndices;
-    HashString<int, 16>  fragPoolIndices;
 
     HashString<int, 8>   deviceIndices;
     HashString<int, 16>  imagoIndices;
@@ -104,33 +104,32 @@ class Library
     Vector<Resource> shaders;
     Vector<Resource> terras;
     Vector<Resource> caela;
-    Vector<Resource> bsps;
     Vector<Resource> models;
     Vector<Resource> nameLists;
-    Vector<Resource> fragPools;
     Vector<Resource> musics;
 
+    int nBSPs;
     int nDeviceClasses;
     int nImagoClasses;
     int nAudioClasses;
 
-    const BSPClass*    bspClass( int id ) const;
-    const BSPClass*    bspClass( const char* name ) const;
+    const BSP*         bsp( const char* name ) const;
     const ObjectClass* objClass( const char* name ) const;
+    const FragPool*    fragPool( const char* name ) const;
 
     int textureIndex( const char* name ) const;
     int soundIndex( const char* name ) const;
     int shaderIndex( const char* name ) const;
     int terraIndex( const char* name ) const;
     int caelumIndex( const char* name ) const;
-    int bspIndex( const char* name ) const;
     int modelIndex( const char* name ) const;
     int nameListIndex( const char* name ) const;
-    int fragPoolIndex( const char* name ) const;
 
     int deviceIndex( const char* name ) const;
     int imagoIndex( const char* name ) const;
     int audioIndex( const char* name ) const;
+
+    void freeBSPs();
 
   private:
 
@@ -160,16 +159,6 @@ class Library
 };
 
 extern Library library;
-
-inline const BSPClass* Library::bspClass( int id ) const
-{
-  return &bspClasses[id];
-}
-
-inline const BSPClass* Library::bspClass( const char* name ) const
-{
-  return &bspClasses[ bspIndex( name ) ];
-}
 
 }
 }

@@ -37,25 +37,25 @@ namespace oz
 namespace matrix
 {
 
-const float Bot::AIR_FRICTION        =  0.01f;
-const float Bot::HIT_HARD_THRESHOLD  = -8.00f;
+const float Bot::AIR_FRICTION       =  0.01f;
+const float Bot::HIT_HARD_THRESHOLD = -8.00f;
 
-const float Bot::WOUNDED_THRESHOLD   =  0.70f;
-const float Bot::CORPSE_FADE_FACTOR  =  0.5f / 100.0f * Timer::TICK_TIME;
+const float Bot::WOUNDED_THRESHOLD  =  0.70f;
+const float Bot::CORPSE_FADE_FACTOR =  0.5f / 100.0f * Timer::TICK_TIME;
 
-const float Bot::INSTRUMENT_DIST =  2.00f;
-const float Bot::INSTRUMENT_DOT_MIN  =  0.80f;
+const float Bot::INSTRUMENT_DIST    =  2.00f;
+const float Bot::INSTRUMENT_DOT_MIN =  0.80f;
 
-const float Bot::GRAB_EPSILON        =  0.20f;
-const float Bot::GRAB_STRING_RATIO   =  10.0f;
-const float Bot::GRAB_HANDLE_TOL     =  1.60f;
-const float Bot::GRAB_MOM_RATIO      =  0.3f;
+const float Bot::GRAB_EPSILON       =  0.20f;
+const float Bot::GRAB_STRING_RATIO  =  10.0f;
+const float Bot::GRAB_HANDLE_TOL    =  1.60f;
+const float Bot::GRAB_MOM_RATIO     =  0.3f;
 // should be smaller than abs( Physics::HIT_THRESHOLD )
-const float Bot::GRAB_MOM_MAX        =  1.0f;
-const float Bot::GRAB_MOM_MAX_SQ     =  1.0f;
+const float Bot::GRAB_MOM_MAX       =  1.0f;
+const float Bot::GRAB_MOM_MAX_SQ    =  1.0f;
 
-const float Bot::STEP_MOVE_AHEAD     =  0.20f;
-const float Bot::CLIMB_MOVE_AHEAD    =  0.50f;
+const float Bot::STEP_MOVE_AHEAD    =  0.20f;
+const float Bot::CLIMB_MOVE_AHEAD   =  0.50f;
 
 Pool<Bot, 1024> Bot::pool;
 
@@ -131,6 +131,10 @@ void Bot::onUpdate()
         kill();
       }
       else {
+        if( dim != clazz->corpseDim && !collider.overlaps( AABB( p, clazz->corpseDim ), this ) ) {
+          dim = clazz->corpseDim;
+        }
+
         life -= clazz->life * CORPSE_FADE_FACTOR;
         // we don't want Object::destroy() to be called when body dissolves (destroy() causes
         // sounds and frags to fly around), that's why we just remove the object
@@ -730,33 +734,35 @@ void Bot::onUpdate()
     if( !( state & GRAB_BIT ) && taggedItem != -1 && taggedItem < items.length() ) {
       Dynamic* item = static_cast<Dynamic*>( orbis.objects[ items[taggedItem] ] );
 
-      hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
+      if( item != null ) {
+        hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
-      float dimX = dim.x + item->dim.x;
-      float dimY = dim.y + item->dim.y;
-      float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
+        float dimX = dim.x + item->dim.x;
+        float dimY = dim.y + item->dim.y;
+        float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
 
-      // keep constant length of xy projection of handle
-      Vec3 handle = Vec3( -hvsc[0], hvsc[1], -hvsc[3] ) * dist;
-      // bottom of the object cannot be raised over the player aabb
-      handle.z    = clamp( handle.z, -dim.z - camZ, dim.z - camZ );
-      item->p     = p + Vec3( 0.0f, 0.0f, camZ ) + handle;
+        // keep constant length of xy projection of handle
+        Vec3 handle = Vec3( -hvsc[0], hvsc[1], -hvsc[3] ) * dist;
+        // bottom of the object cannot be raised over the player aabb
+        handle.z    = clamp( handle.z, -dim.z - camZ, dim.z - camZ );
+        item->p     = p + Vec3( 0.0f, 0.0f, camZ ) + handle;
 
-      if( !collider.overlaps( item ) ) {
-        item->parent = -1;
-        synapse.put( item );
-        items.remove( taggedItem );
+        if( !collider.overlaps( item ) ) {
+          item->parent = -1;
+          synapse.put( item );
+          items.remove( taggedItem );
 
-        if( ( actions & ~oldActions & ACTION_INV_GRAB ) &&
-            !( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) &&
-            ( weapon == -1 || weapon == item->index ) )
-        {
-          state      |= GRAB_BIT;
-          instrument = item->index;
-          weapon     = -1;
-          grabHandle = dist;
+          if( ( actions & ~oldActions & ACTION_INV_GRAB ) &&
+              !( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) &&
+              ( weapon == -1 || weapon == item->index ) )
+          {
+            state      |= GRAB_BIT;
+            instrument = item->index;
+            weapon     = -1;
+            grabHandle = dist;
 
-          item->flags &= ~BELOW_BIT;
+            item->flags &= ~BELOW_BIT;
+          }
         }
       }
     }
@@ -799,7 +805,7 @@ void Bot::kill()
     const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
     p.z   -= dim.z - clazz->corpseDim.z - EPSILON;
-    dim   = clazz->corpseDim;
+    dim.z = clazz->corpseDim.z;
     flags |= WIDE_CULL_BIT;
     flags &= ~SOLID_BIT;
     life  = clazz->life / 2.0f - EPSILON;
