@@ -53,16 +53,14 @@ void Terra::load( int id_ )
 
   File file( path );
   if( !file.map() ) {
-    log.printEnd( " Cannot read file" );
-    throw Exception( "Failed to load terrain" );
+    throw Exception( "Cannot map terra file" );
   }
 
   InputStream is = file.inputStream();
 
   int max = is.readInt();
   if( max != VERTS ) {
-    log.printEnd( " Invalid dimension %d, should be %d", max, VERTS );
-    throw Exception( "Failed to load terrain" );
+    throw Exception( "Invalid dimension %d, should be %d", max, VERTS );
   }
 
   for( int x = 0; x < VERTS; ++x ) {

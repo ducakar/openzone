@@ -144,7 +144,7 @@ static void createDirs()
 }
 
 static void buildTextures( const char* srcDir, const char* destDir,
-                              bool wrap, int magFilter, int minFilter )
+                           bool wrap, int magFilter, int minFilter )
 {
   log.println( "Building textures in '%s' {", srcDir );
   log.indent();
@@ -155,7 +155,7 @@ static void buildTextures( const char* srcDir, const char* destDir,
   DArray<File> dirList;
 
   if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '" + sSrcDir + "'" );
+    throw Exception( "Cannot open directory '%s'", sSrcDir.cstr() );
   }
 
   sSrcDir  = sSrcDir + "/";
@@ -203,7 +203,7 @@ static void buildTerrae()
   DArray<File> dirList;
 
   if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '" + srcDir + "'" );
+    throw Exception( "Cannot open directory '%s'", srcDir.cstr() );
   }
 
   srcDir = srcDir + "/";
@@ -230,7 +230,7 @@ static void buildCaela()
   DArray<File> dirList;
 
   if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '" + srcDir + "'" );
+    throw Exception( "Cannot open directory '%s'", srcDir.cstr() );
   }
 
   srcDir = srcDir + "/";
@@ -259,7 +259,7 @@ static void compileBSPs()
   DArray<File> dirList;
 
   if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '" + dirName + "'" );
+    throw Exception( "Cannot open directory '%s'", dirName.cstr() );
   }
 
   dirName = dirName + "/";
@@ -307,7 +307,7 @@ static void buildBSPs()
   DArray<File> dirList;
 
   if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '" + srcDir + "'" );
+    throw Exception( "Cannot open directory '%s'", srcDir.cstr() );
   }
 
   srcDir = srcDir + "/";
@@ -380,7 +380,7 @@ static void buildModels()
   DArray<File> dirList;
 
   if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '" + dirName + "'" );
+    throw Exception( "Cannot open directory '%s'", dirName.cstr() );
   }
 
   dirName = dirName + "/";
@@ -397,7 +397,7 @@ static void buildModels()
       if( stat( path + "/data.mtl", &srcInfo1 ) != 0 ||
           stat( path + "/config.rc", &configInfo ) != 0 )
       {
-        throw Exception( "OBJ model '" + name + "' source files missing" );
+        throw Exception( "OBJ model '%s' source files missing", name.cstr() );
       }
 
       OBJ::build( path );
@@ -406,14 +406,14 @@ static void buildModels()
       if( stat( path + "/skin.png", &srcInfo1 ) != 0 ||
           stat( path + "/config.rc", &configInfo ) != 0 )
       {
-        throw Exception( "MD2 model '" + name + "' source files missing" );
+        throw Exception( "MD2 model '%s' source files missing", name.cstr() );
       }
 
       MD2::build( path );
     }
     else if( stat( path + "/.md3", &srcInfo0 ) == 0 ) {
       if( stat( path + "/config.rc", &configInfo ) != 0 ) {
-        throw Exception( "MD3 model '" + name + "' source files missing" );
+        throw Exception( "MD3 model '%s' source files missing", name.cstr() );
       }
 
       MD3::build( path );
@@ -445,7 +445,7 @@ static void checkLua( const char* path )
   DArray<File> dirList;
 
   if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '" + srcDir + "'" );
+    throw Exception( "Cannot open directory '%s'", srcDir.cstr() );
   }
 
   String sources;

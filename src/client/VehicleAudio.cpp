@@ -27,7 +27,6 @@
 #include "client/VehicleAudio.hpp"
 
 #include "matrix/Orbis.hpp"
-#include "matrix/VehicleClass.hpp"
 
 #include "client/Context.hpp"
 

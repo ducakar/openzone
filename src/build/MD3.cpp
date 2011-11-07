@@ -92,7 +92,7 @@ void MD3::buildMesh( const char* name, int frame )
 
   FILE* file = fopen( modelFile, "rb" );
   if( file == null ) {
-    throw Exception( "MD3 model part file '" + modelFile + "' not found" );
+    throw Exception( "MD3 model part file '%s' not found", modelFile.cstr() );
   }
 
   MD3Header header;

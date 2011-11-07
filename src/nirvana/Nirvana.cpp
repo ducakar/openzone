@@ -28,7 +28,6 @@
 
 #include "matrix/Synapse.hpp"
 #include "matrix/Matrix.hpp"
-#include "matrix/BotClass.hpp"
 #include "matrix/Bot.hpp"
 
 #include "nirvana/Lua.hpp"
@@ -108,7 +107,7 @@ void Nirvana::read( InputStream* istream )
     const Device::CreateFunc* func = deviceClasses.find( type );
 
     if( func == null ) {
-      throw Exception( "Invalid device type '" + type + "'" );
+      throw Exception( "Invalid device type '%s'", type.cstr() );
     }
 
     devices.add( index, ( *func )( index, istream ) );

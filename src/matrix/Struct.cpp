@@ -26,9 +26,9 @@
 
 #include "matrix/Struct.hpp"
 
-#include "matrix/Synapse.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Physics.hpp"
+#include "matrix/Synapse.hpp"
 
 namespace oz
 {
@@ -284,22 +284,17 @@ void Struct::onDemolish()
     }
   }
 
-  if( demolishing > 1.0f ) {
-    synapse.remove( this );
-  }
-  else {
-    demolishing += DEMOLISH_SPEED / ( maxs.z - mins.z );
-    p.z -= DEMOLISH_SPEED;
+  demolishing += DEMOLISH_SPEED / ( maxs.z - mins.z );
+  p.z -= DEMOLISH_SPEED;
 
-    transf.w = p;
+  transf.w = p;
 
-    invTransf = ROTATIONS[4 - heading];
-    invTransf.translate( Point3::ORIGIN - p );
+  invTransf = ROTATIONS[4 - heading];
+  invTransf.translate( Point3::ORIGIN - p );
 
-    Bounds bb = toAbsoluteCS( *bsp );
-    mins = bb.mins;
-    maxs = bb.maxs;
-  }
+  Bounds bb = toAbsoluteCS( *bsp );
+  mins = bb.mins;
+  maxs = bb.maxs;
 }
 
 void Struct::onUpdate()

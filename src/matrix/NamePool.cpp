@@ -65,7 +65,7 @@ void NamePool::init()
 
     FILE* file = fopen( library.nameLists[i].path, "r" );
     if( file == null ) {
-      throw Exception( "Reading '" + library.nameLists[i].path + "' failed" );
+      throw Exception( "Reading '%s' failed", library.nameLists[i].path.cstr() );
     }
 
     while( fgets( buffer, LINE_LENGTH, file ) != null ) {

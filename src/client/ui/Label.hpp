@@ -57,10 +57,16 @@ class Label
     Label();
     ~Label();
 
+    OZ_PRINTF_FORMAT( 6, 7 )
     explicit Label( int x, int y, int align, Font::Type font, const char* s, ... );
 
+    OZ_PRINTF_FORMAT( 6, 0 )
     void vset( int x, int y, int align, Font::Type font, const char* s, va_list ap );
+
+    OZ_PRINTF_FORMAT( 6, 7 )
     void set( int x, int y, int align, Font::Type font, const char* s, ... );
+
+    OZ_PRINTF_FORMAT( 2, 3 )
     void setText( const char* s, ... );
 
     void draw( const Area* area ) const;

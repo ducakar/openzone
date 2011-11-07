@@ -189,7 +189,7 @@ void GameStage::reload()
   }
   else {
     if( !read( stateFile ) ) {
-      throw Exception( "reading saved state '" + stateFile + "' failed" );
+      throw Exception( "Reading saved state '%s' failed", stateFile.cstr() );
     }
   }
 
@@ -417,7 +417,7 @@ void GameStage::load()
     }
   }
   else if( !read( stateFile ) ) {
-    throw Exception( "reading saved state '" + stateFile + "' failed" );
+    throw Exception( "Reading saved state '%s' failed", stateFile.cstr() );
   }
 
   nirvana.sync();

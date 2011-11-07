@@ -319,7 +319,7 @@ void OBJ::load()
       case 'v': {
         if( !readVertexData( pos + 1 ) ) {
           fclose( file );
-          throw Exception( String( "Invalid OBJ vertex line: " ) + buffer );
+          throw Exception( "Invalid OBJ vertex line: %s", &buffer[0] );
         }
         break;
       }
@@ -327,7 +327,7 @@ void OBJ::load()
       case 'f': {
         if( !readFace( pos + 1, currentMaterial ) ) {
           fclose( file );
-          throw Exception( String( "Invalid OBJ face line: " ) + buffer );
+          throw Exception( "Invalid OBJ face line: %s", &buffer[0] );
         }
         break;
       }
@@ -345,7 +345,7 @@ void OBJ::load()
           }
           else {
             fclose( file );
-            throw Exception( String( "Invalid OBJ material requested: " ) + buffer );
+            throw Exception( "Invalid OBJ material requested: %s", &buffer[0] );
           }
         }
         break;

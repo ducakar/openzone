@@ -51,7 +51,7 @@ const ObjectClass* Library::objClass( const char* name ) const
 {
   const ObjectClass* const* value = objClasses.find( name );
   if( value == null ) {
-    throw Exception( "Invalid object class requested '" + String( name ) + "'" );
+    throw Exception( "Invalid object class requested '%s'", name );
   }
   else {
     return *value;
@@ -62,7 +62,7 @@ int Library::textureIndex( const char* name ) const
 {
   const int* value = textureIndices.find( name );
   if( value == null ) {
-    throw Exception( "Invalid texture requested '" + String( name ) + "'" );
+    throw Exception( "Invalid texture requested '%s'", name );
   }
   else {
     return *value;
@@ -73,7 +73,7 @@ int Library::soundIndex( const char* name ) const
 {
   const int* value = soundIndices.find( name );
   if( value == null ) {
-    throw Exception( "Invalid sound requested '" + String( name ) + "'" );
+    throw Exception( "Invalid sound requested '%s'", name );
   }
   else {
     return *value;
@@ -84,7 +84,7 @@ int Library::shaderIndex( const char* name ) const
 {
   const int* value = shaderIndices.find( name );
   if( value == null ) {
-    throw Exception( "Invalid shader requested '" + String( name ) + "'" );
+    throw Exception( "Invalid shader requested '%s'", name );
   }
   else {
     return *value;
@@ -95,7 +95,7 @@ int Library::terraIndex( const char* name ) const
 {
   const int* value = terraIndices.find( name );
   if( value == null ) {
-    throw Exception( "Invalid terra index requested '" + String( name ) + "'" );
+    throw Exception( "Invalid terra index requested '%s'", name );
   }
   else {
     return *value;
@@ -106,7 +106,7 @@ int Library::caelumIndex( const char* name ) const
 {
   const int* value = caelumIndices.find( name );
   if( value == null ) {
-    throw Exception( "Invalid caelum index requested '" + String( name ) + "'" );
+    throw Exception( "Invalid caelum index requested '%s'", name );
   }
   else {
     return *value;
@@ -117,7 +117,7 @@ int Library::bspIndex( const char* name ) const
 {
   const int* value = bspIndices.find( name );
   if( value == null ) {
-    throw Exception( "Invalid BSP index requested '" + String( name ) + "'" );
+    throw Exception( "Invalid BSP index requested '%s'", name );
   }
   else {
     return *value;
@@ -128,7 +128,7 @@ int Library::modelIndex( const char* name ) const
 {
   const int* value = modelIndices.find( name );
   if( value == null ) {
-    throw Exception( "Invalid model index requested '" + String( name ) + "'" );
+    throw Exception( "Invalid model index requested '%s'", name );
   }
   else {
     return *value;
@@ -139,7 +139,7 @@ int Library::nameListIndex( const char* name ) const
 {
   const int* value = nameListIndices.find( name );
   if( value == null ) {
-    throw Exception( "Invalid name list index requested '" + String( name ) + "'" );
+    throw Exception( "Invalid name list index requested '%s'", name );
   }
   else {
     return *value;
@@ -150,7 +150,7 @@ int Library::fragPoolIndex( const char* name ) const
 {
   const int* value = fragPoolIndices.find( name );
   if( value == null ) {
-    throw Exception( "Invalid name list index requested '" + String( name ) + "'" );
+    throw Exception( "Invalid name list index requested '%s'", name );
   }
   else {
     return *value;
@@ -190,10 +190,7 @@ void Library::initShaders()
   if( !dir.ls( &dirList ) ) {
     free();
 
-    log.println( "Cannot open directory 'glsl'" );
-    log.unindent();
-    log.println( "}" );
-    throw Exception( "Library initialisation failure" );
+    throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "vert" ) ) {
@@ -228,11 +225,7 @@ void Library::initTextures()
   if( !dir.ls( &dirList ) ) {
     free();
 
-    log.println( "Cannot open directory 'bsp'" );
-    log.unindent();
-    log.println( "}" );
-
-    throw Exception( "Library initialisation failure" );
+    throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.iter() ) {
     if( file->getType() != File::DIRECTORY ) {
@@ -243,11 +236,7 @@ void Library::initTextures()
     if( !subDir.ls( &subDirList ) ) {
       free();
 
-      log.println( "Cannot open directory '%s'", subDir.path() );
-      log.unindent();
-      log.println( "}" );
-
-      throw Exception( "Library initialisation failure" );
+      throw Exception( "Cannot open directory '%s'", subDir.path() );
     }
 
     foreach( file, subDirList.citer() ) {
@@ -283,11 +272,7 @@ void Library::initBuildTextures()
   if( !dir.ls( &dirList ) ) {
     free();
 
-    log.println( "Cannot open directory 'data/textures'" );
-    log.unindent();
-    log.println( "}" );
-
-    throw Exception( "Library initialisation failure" );
+    throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.iter() ) {
     if( file->getType() != File::DIRECTORY ) {
@@ -298,11 +283,7 @@ void Library::initBuildTextures()
     if( !subDir.ls( &subDirList ) ) {
       free();
 
-      log.println( "Cannot open directory '%s'", subDir.path() );
-      log.unindent();
-      log.println( "}" );
-
-      throw Exception( "Library initialisation failure" );
+      throw Exception( "Cannot open directory '%s'", subDir.path() );
     }
 
     foreach( file, subDirList.citer() ) {
@@ -317,7 +298,7 @@ void Library::initBuildTextures()
       log.println( "%s", name.cstr() );
 
       if( textureIndices.contains( name ) ) {
-        throw Exception( "Duplicated texture '" + name + "'" );
+        throw Exception( "Duplicated texture '%s'", name.cstr() );
       }
 
       textureIndices.add( name, textures.length() );
@@ -344,10 +325,7 @@ void Library::initSounds()
   if( !dir.ls( &dirList ) ) {
     free();
 
-    log.println( "Cannot open directory 'snd'" );
-    log.unindent();
-    log.println( "}" );
-    throw Exception( "Library initialisation failure" );
+    throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.iter() ) {
     if( file->getType() != File::DIRECTORY ) {
@@ -358,11 +336,7 @@ void Library::initSounds()
     if( !subDir.ls( &subDirList ) ) {
       free();
 
-      log.println( "Cannot open directory '%s'", subDir.path() );
-      log.unindent();
-      log.println( "}" );
-
-      throw Exception( "Library initialisation failure" );
+      throw Exception( "Cannot open directory '%s'", subDir.path() );
     }
 
     foreach( file, subDirList.citer() ) {
@@ -397,10 +371,7 @@ void Library::initCaela()
   if( !dir.ls( &dirList ) ) {
     free();
 
-    log.println( "Cannot open directory 'caelum'" );
-    log.unindent();
-    log.println( "}" );
-    throw Exception( "Library initialisation failure" );
+    throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozcCaelum" ) ) {
@@ -431,10 +402,7 @@ void Library::initBuildCaela()
   if( !dir.ls( &dirList ) ) {
     free();
 
-    log.println( "Cannot open directory 'caelum'" );
-    log.unindent();
-    log.println( "}" );
-    throw Exception( "Library initialisation failure" );
+    throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
@@ -466,10 +434,7 @@ void Library::initTerrae()
   if( !dir.ls( &dirList) ) {
     free();
 
-    log.println( "Cannot open directory 'terra'" );
-    log.unindent();
-    log.println( "}" );
-    throw Exception( "Library initialisation failure" );
+    throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozTerra" ) ) {
@@ -500,10 +465,7 @@ void Library::initBuildTerrae()
   if( !dir.ls( &dirList ) ) {
     free();
 
-    log.println( "Cannot open directory 'terra'" );
-    log.unindent();
-    log.println( "}" );
-    throw Exception( "Library initialisation failure" );
+    throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
@@ -534,10 +496,7 @@ void Library::initBSPs()
   if( !dir.ls( &dirList ) ) {
     free();
 
-    log.println( "Cannot open directory 'bsp'" );
-    log.unindent();
-    log.println( "}" );
-    throw Exception( "Library initialisation failure" );
+    throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.iter() ) {
     if( !file->hasExtension( "ozBSP" ) ) {
@@ -591,10 +550,7 @@ void Library::initBuildBSPs()
   if( !dir.ls( &dirList ) ) {
     free();
 
-    log.println( "Cannot open directory 'data/maps'" );
-    log.unindent();
-    log.println( "}" );
-    throw Exception( "Library initialisation failure" );
+    throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
@@ -625,10 +581,7 @@ void Library::initModels()
   if( !dir.ls( &dirList ) ) {
     free();
 
-    log.println( "Cannot open directory 'mdl'" );
-    log.unindent();
-    log.println( "}" );
-    throw Exception( "Library initialisation failure" );
+    throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozcSMM" ) && !file->hasExtension( "ozcMD2" ) &&
@@ -642,7 +595,7 @@ void Library::initModels()
     log.println( "%s", name.cstr() );
 
     if( modelIndices.contains( name ) ) {
-      throw Exception( "Duplicated model '" + name + "'" );
+      throw Exception( "Duplicated model '%s'", name.cstr() );
     }
 
     modelIndices.add( name, models.length() );
@@ -666,10 +619,7 @@ void Library::initBuildModels()
   if( !dir.ls( &dirList ) ) {
     free();
 
-    log.println( "Cannot open directory 'mdl'" );
-    log.unindent();
-    log.println( "}" );
-    throw Exception( "Library initialisation failure" );
+    throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.iter() ) {
     if( file->getType() != File::DIRECTORY ) {
@@ -700,10 +650,7 @@ void Library::initMusic()
   if( !dir.ls( &dirList ) ) {
     free();
 
-    log.println( "Cannot open directory 'music'" );
-    log.unindent();
-    log.println( "}" );
-    throw Exception( "Library initialisation failure" );
+    throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "oga" ) && !file->hasExtension( "mp3" ) ) {
@@ -733,10 +680,7 @@ void Library::initNameLists()
   if( !dir.ls( &dirList ) ) {
     free();
 
-    log.println( "Cannot open directory 'name'" );
-    log.unindent();
-    log.println( "}" );
-    throw Exception( "Library initialisation failure" );
+    throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "txt" ) ) {
@@ -767,10 +711,7 @@ void Library::initFragPools()
   if( !dir.ls( &dirList ) ) {
     free();
 
-    log.println( "Cannot open directory 'name'" );
-    log.unindent();
-    log.println( "}" );
-    throw Exception( "Library initialisation failure" );
+    throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "txt" ) ) {
@@ -808,10 +749,7 @@ void Library::initClasses()
   if( !dir.ls( &dirList ) ) {
     free();
 
-    log.println( "Cannot open directory 'class'" );
-    log.unindent();
-    log.println( "}" );
-    throw Exception( "Library initialisation failure" );
+    throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
@@ -824,7 +762,7 @@ void Library::initClasses()
 
     if( objClasses.contains( name ) ) {
       classConfig.clear();
-      throw Exception( "Duplicated class '" + name + "'" );
+      throw Exception( "Duplicated class '%s'", name.cstr() );
     }
     if( !classConfig.load( file->path() ) ) {
       classConfig.clear( true );
@@ -840,7 +778,7 @@ void Library::initClasses()
     const ObjectClass::CreateFunc* createFunc = baseClasses.find( base );
     if( createFunc == null ) {
       classConfig.clear( true );
-      throw Exception( "Invalid class base '" + String( base ) + "'" );
+      throw Exception( "Invalid class base '%s'", base );
     }
 
     // First we only add class instances, we don't initialise them as each class may have references
@@ -894,8 +832,8 @@ void Library::initClasses()
       if( ( itemClazz->flags & ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) ) !=
           ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) )
       {
-        throw Exception( "Invalid item clazz '" + itemClazz->name + "' in '" +
-                         itemClazz->name + "'" );
+        throw Exception( "Invalid item class '%s' in '%s'",
+                         itemClazz->name.cstr(), objClazz->name.cstr() );
       }
     }
 
@@ -932,7 +870,7 @@ void Library::initClasses()
 
       if( botClazz->weaponItem != -1 ) {
         if( uint( botClazz->weaponItem ) >= uint( botClazz->defaultItems.length() ) ) {
-          throw Exception( "Invalid weaponItem for '" + botClazz->name + "'" );
+          throw Exception( "Invalid weaponItem for '%s'", botClazz->name.cstr() );
         }
 
         const ObjectClass* itemClazz = botClazz->defaultItems[botClazz->weaponItem];
@@ -940,11 +878,12 @@ void Library::initClasses()
         const WeaponClass* weaponClazz = dynamic_cast<const WeaponClass*>( itemClazz );
 
         if( weaponClazz == null ) {
-          throw Exception( "Default weapon of '" + botClazz->name + "' is of a non-weapon class" );
+          throw Exception( "Default weapon of '%s' is of a non-weapon class",
+                           botClazz->name.cstr() );
         }
         else if( !weaponClazz->allowedUsers.contains( botClazz ) ) {
-          throw Exception( "Default weapon of '" + botClazz->name +
-                           "' is not allowed for this bot class" );
+          throw Exception( "Default weapon of '%s' is not allowed for this bot class",
+                           botClazz->name.cstr() );
         }
       }
     }

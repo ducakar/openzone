@@ -44,7 +44,7 @@ uint GalileoFrame::loadTexture( const char* path ) const
 {
   File file( path );
   if( !file.map() ) {
-    throw Exception( "Failed reading galileo texture '" + String( path ) + "'" );
+    throw Exception( "Failed reading galileo texture '%s'", path );
   }
 
   InputStream istream = file.inputStream();

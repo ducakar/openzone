@@ -62,10 +62,10 @@ void VehicleClass::initClass( const Config* config )
   lift = config->get( "lift", 13.0f );
 
   if( mass < 0.01f ) {
-    throw Exception( "Invalid object mass. Should be >= 0.01." );
+    throw Exception( "%s: Invalid object mass. Should be >= 0.01.", name.cstr() );
   }
   if( lift < 0.0f ) {
-    throw Exception( "Invalid object lift. Should be >= 0." );
+    throw Exception( "%s: Invalid object lift. Should be >= 0.", name.cstr() );
   }
 
   const char* sType = config->get( "type", "" );
@@ -88,8 +88,8 @@ void VehicleClass::initClass( const Config* config )
     type = Vehicle::AIR;
   }
   else {
-    throw Exception( "Invalid vehicle type, should be either STATIC, WHEELED, TRACKED, MECH, "
-                     "HOVER or AIR" );
+    throw Exception( "%s: Invalid vehicle type, should be either STATIC, WHEELED, TRACKED, MECH, "
+                     "HOVER or AIR", name.cstr() );
   }
 
   state = 0;

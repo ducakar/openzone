@@ -81,21 +81,25 @@ class Log
     /**
      * Print the text from argument list.
      */
+    OZ_PRINTF_FORMAT( 2, 0 )
     void vprintRaw( const char* s, va_list ap ) const;
 
     /**
      * Print the raw text.
      */
+    OZ_PRINTF_FORMAT( 2, 3 )
     void printRaw( const char* s, ... ) const;
 
     /**
      * Indent and print the text.
      */
+    OZ_PRINTF_FORMAT( 2, 3 )
     void print( const char* s, ... ) const;
 
     /**
      * Print the text and terminate the line.
      */
+    OZ_PRINTF_FORMAT( 2, 3 )
     void printEnd( const char* s, ... ) const;
 
     /**
@@ -106,6 +110,7 @@ class Log
     /**
      * Indent, print the text and terminate the line.
      */
+    OZ_PRINTF_FORMAT( 2, 3 )
     void println( const char* s, ... ) const;
 
     /**
@@ -116,16 +121,19 @@ class Log
     /**
      * As println, but print the current time at the beginning.
      */
+    OZ_PRINTF_FORMAT( 2, 3 )
     void printlnBT( const char* s, ... ) const;
 
     /**
      * As println, but print the current time at the end.
      */
+    OZ_PRINTF_FORMAT( 2, 3 )
     void printlnET( const char* s, ... ) const;
 
     /**
      * As println, but print the current time and date at the end.
      */
+    OZ_PRINTF_FORMAT( 2, 3 )
     void printlnETD( const char* s, ... ) const;
 
     /**

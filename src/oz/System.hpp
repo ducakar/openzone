@@ -115,6 +115,7 @@ class System
      *
      * Everything is printed to stderr and log, unless log output is stdout.
      */
+    OZ_PRINTF_FORMAT( 1, 2 )
     static void error( const char* msg, ... );
 
     /**
@@ -135,6 +136,7 @@ class System
      * Print the error message and stack trace, call <code>halt()</code> and terminate program with
      * SIGABRT after that. Everything is printed to stderr and log, unless log output is stdout.
      */
+    OZ_PRINTF_FORMAT( 1, 2 )
     static void abort( const char* msg, ... );
 
 };

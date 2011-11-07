@@ -27,12 +27,9 @@
 #include "client/BotProxy.hpp"
 
 #include "matrix/Collider.hpp"
-#include "matrix/BotClass.hpp"
-#include "matrix/VehicleClass.hpp"
-
-#include "client/ui/UI.hpp"
 
 #include "client/Camera.hpp"
+#include "client/ui/UI.hpp"
 
 namespace oz
 {

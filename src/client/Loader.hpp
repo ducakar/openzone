@@ -40,16 +40,19 @@ class Loader
     static const int IMAGO_CLEAR_INTERVAL      = 10  * Timer::TICKS_PER_SEC;  // 10 s (+ 3 s)
     static const int IMAGO_CLEAR_LAG           = 3   * Timer::TICKS_PER_SEC;
 
-    static const int IMAGOCLASS_CLEAR_INTERVAL = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 0 min)
+    static const int IMAGOCLASS_CLEAR_INTERVAL = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 30 s)
     static const int IMAGOCLASS_CLEAR_LAG      = 0   * Timer::TICKS_PER_SEC;
 
-    static const int BSP_CLEAR_INTERVAL        = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 1 min)
+    static const int BSP_CLEAR_INTERVAL        = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 60 s)
     static const int BSP_CLEAR_LAG             = 60  * Timer::TICKS_PER_SEC;
 
-    static const int SOURCE_CLEAR_INTERVAL     = 1   * Timer::TICKS_PER_SEC;  //  1 s (+ ~0.5 s)
+    static const int SOUND_CLEAR_INTERVAL      = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 90 s)
+    static const int SOUND_CLEAR_LAG           = 90  * Timer::TICKS_PER_SEC;
+
+    static const int SOURCE_CLEAR_INTERVAL     = 1   * Timer::TICKS_PER_SEC;  //   1 s (+ ~0.5 s)
     static const int SOURCE_CLEAR_LAG          = 1   * Timer::TICKS_PER_SEC / 2;
 
-    static const int AUDIO_CLEAR_INTERVAL      = 10  * Timer::TICKS_PER_SEC;  // 10 s (+ 6 s)
+    static const int AUDIO_CLEAR_INTERVAL      = 10  * Timer::TICKS_PER_SEC;  //  10 s (+ 6 s)
     static const int AUDIO_CLEAR_LAG           = 6   * Timer::TICKS_PER_SEC;
 
     int tick;

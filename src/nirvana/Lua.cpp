@@ -78,7 +78,7 @@ bool Lua::readVariable( InputStream* istream )
       return false;
     }
     default: {
-      throw Exception( "Invalid type char '" + String( ch ) + "' in serialised Lua data" );
+      throw Exception( "Invalid type char '%c' in serialised Lua data", ch );
     }
   }
 }

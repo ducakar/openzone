@@ -58,7 +58,7 @@ Text::Text( int x_, int y_, int width_, int nLines_, Font::Type font_ ) :
 
   for( int i = 0; i < nLines; ++i ) {
     labels[i].set( x, y + ( nLines - i - 1 ) * Font::INFOS[font_].height,
-                   Area::ALIGN_NONE, font_, "" );
+                   Area::ALIGN_NONE, font_, " " );
   }
 }
 
@@ -121,7 +121,7 @@ void Text::setText( const char* s, ... )
   ++line;
 
   while( line < nLines ) {
-    labels[line].setText( "" );
+    labels[line].setText( " " );
     ++line;
   }
 }
@@ -129,7 +129,7 @@ void Text::setText( const char* s, ... )
 void Text::clear()
 {
   for( int i = 0; i < nLines; ++i ) {
-    labels[i].setText( "" );
+    labels[i].setText( " " );
   }
 }
 

@@ -321,8 +321,7 @@ void BSP::load()
   brushes = new matrix::BSP::Brush[nBrushes];
 
   if( nBrushes > matrix::BSP::MAX_BRUSHES ) {
-    throw Exception( "Too many brushes " + String( nBrushes ) + ", can be at most " +
-                     String( matrix::BSP::MAX_BRUSHES ) );
+    throw Exception( "Too many brushes %d, can be at most %d", nBrushes, matrix::BSP::MAX_BRUSHES );
   }
 
   istream.reset();
@@ -490,7 +489,7 @@ void BSP::load()
         throw Exception( "Missing heading for a BSP bound object" );
       }
       else {
-        throw Exception( "Invalid object heading '" + sHeading + "'" );
+        throw Exception( "Invalid object heading '%s'", sHeading.cstr() );
       }
 
       boundObjects.add( object );
@@ -882,13 +881,13 @@ void BSP::check() const
   for( int i = 0; i < nNodes; ++i ) {
     if( nodes[i].front < 0 ) {
       if( usedLeaves.get( ~nodes[i].front ) ) {
-        throw Exception( "BSP leaf " + String( ~nodes[i].front ) + " referenced twice" );
+        throw Exception( "BSP leaf %d referenced twice", ~nodes[i].front );
       }
       usedLeaves.set( ~nodes[i].front );
     }
     else if( nodes[i].front != 0 ) {
       if( usedNodes.get( nodes[i].front ) ) {
-        throw Exception( "BSP node " + String( nodes[i].front ) + " referenced twice" );
+        throw Exception( "BSP node %d referenced twice", nodes[i].front );
       }
       usedNodes.set( nodes[i].front );
     }
@@ -898,13 +897,13 @@ void BSP::check() const
 
     if( nodes[i].back < 0 ) {
       if( usedLeaves.get( ~nodes[i].back ) ) {
-        throw Exception( "BSP leaf " + String( ~nodes[i].back ) + " referenced twice" );
+        throw Exception( "BSP leaf %d referenced twice", ~nodes[i].back );
       }
       usedLeaves.set( ~nodes[i].back );
     }
     else if( nodes[i].back != 0 ) {
       if( usedNodes.get( nodes[i].back ) ) {
-        throw Exception( "BSP node " + String( nodes[i].back ) + " referenced twice" );
+        throw Exception( "BSP node %d referenced twice", nodes[i].back );
       }
       usedNodes.set( nodes[i].back );
     }
@@ -918,7 +917,7 @@ void BSP::check() const
       int index = models[i].firstBrush + j;
 
       if( usedBrushes.get( index ) ) {
-        throw Exception( "BSP brush " + String( index ) + " referenced by two models" );
+        throw Exception( "BSP brush %d referenced by two models", index );
       }
       usedBrushes.set( index );
     }
@@ -937,7 +936,7 @@ void BSP::check() const
       int index = models[i].firstBrush + j;
 
       if( usedBrushes.get( index ) ) {
-        throw Exception( "BSP model brush " + String( index ) + " referenced by static tree" );
+        throw Exception( "BSP model brush %d referenced by static tree", index );
       }
       usedBrushes.set( index );
     }
@@ -948,23 +947,23 @@ void BSP::check() const
   }
   for( int i = 1; i < nNodes; ++i ) {
     if( !usedNodes.get( i ) ) {
-      throw Exception( "BSP node " + String( i ) + " not referenced" );
+      throw Exception( "BSP node %d not referenced", i );
     }
   }
   for( int i = 0; i < nLeaves; ++i ) {
     if( !usedLeaves.get( i ) ) {
-      throw Exception( "BSP leaf " + String( i ) + " not referenced" );
+      throw Exception( "BSP leaf %d not referenced", i );
     }
   }
   for( int i = 0; i < nBrushes; ++i ) {
     if( !usedBrushes.get( i ) ) {
-      throw Exception( "BSP brush " + String( i ) + " not referenced" );
+      throw Exception( "BSP brush %d not referenced", i );
     }
   }
 
   for( int i = 0; i < nPlanes; ++i ) {
     if( !Math::isFinite( planes[i].d ) ) {
-      throw Exception( "BSP has invalid plane " + String( i ) );
+      throw Exception( "BSP has invalid plane %d", i );
     }
   }
 

@@ -38,14 +38,14 @@ class Exception : public std::exception
 {
   public:
 
-    String      message;  ///< Message.
+    char        message[256]; ///< Message.
 
-    const char* file;     ///< %File.
-    const char* function; ///< Function name.
-    int         line;     ///< Source file line.
+    const char* file;         ///< %File.
+    const char* function;     ///< Function name.
+    int         line;         ///< Source file line.
 
-    int         nFrames;  ///< Number of frames of stack trace.
-    char*       frames;   ///< Stack trace buffer.
+    int         nFrames;      ///< Number of frames of stack trace.
+    char*       frames;       ///< Stack trace buffer.
 
     /**
      * %Exception constructor.
@@ -53,8 +53,9 @@ class Exception : public std::exception
      * This constructor is usually not used directly, but via <tt>%Exception</tt> macro.
      * It generates SIGTRAP to signal debugger on exception.
      */
-    explicit Exception( const String& message, const char* file, int line,
-                        const char* function ) throw();
+    OZ_PRINTF_FORMAT( 5, 6 )
+    explicit Exception( const char* file, int line, const char* function,
+                        const char* message, ... ) throw();
 
     /**
      * Destructor.
@@ -74,7 +75,7 @@ class Exception : public std::exception
  *
  * @ingroup oz
  */
-#define Exception( message ) \
-  oz::Exception( message, __FILE__, __LINE__, __PRETTY_FUNCTION__ )
+#define Exception( ... ) \
+  oz::Exception( __FILE__, __LINE__, __PRETTY_FUNCTION__, __VA_ARGS__ )
 
 }

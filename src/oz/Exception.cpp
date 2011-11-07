@@ -26,6 +26,7 @@
 
 #include "System.hpp"
 
+#include <cstdio>
 #include <cstdlib>
 
 #undef Exception
@@ -33,13 +34,19 @@
 namespace oz
 {
 
-Exception::Exception( const String& message_, const char* file_, int line_,
-                      const char* function_ ) throw() :
-    message( message_ ), file( file_ ), function( function_ ), line( line_ ),
+Exception::Exception( const char* file_, int line_, const char* function_,
+                      const char* message_, ... ) throw() :
+    file( file_ ), function( function_ ), line( line_ ),
     nFrames( 0 ), frames( null )
 {
-  nFrames = System::getStackTrace( &frames );
   System::trap();
+
+  va_list ap;
+  va_start( ap, message_ );
+  vsnprintf( message, 256, message_, ap );
+  va_end( ap );
+
+  nFrames = System::getStackTrace( &frames );
 }
 
 Exception::~Exception() throw()

@@ -29,7 +29,6 @@
 #include "matrix/Library.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Bot.hpp"
-#include "matrix/BotClass.hpp"
 
 namespace oz
 {
@@ -43,9 +42,7 @@ Synapse::Synapse() : mode( SINGLE )
 
 void Synapse::use( Bot* user, Object* target )
 {
-  if( target->flags & Object::USE_FUNC_BIT ) {
-    target->use( user );
-  }
+  target->use( user );
 }
 
 void Synapse::put( Dynamic* obj )

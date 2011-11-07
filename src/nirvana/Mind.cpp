@@ -28,7 +28,6 @@
 
 #include "nirvana/Lua.hpp"
 #include "matrix/Bot.hpp"
-#include "matrix/BotClass.hpp"
 
 namespace oz
 {

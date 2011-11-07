@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "matrix/ObjectClass.hpp"
+#include "matrix/Object.hpp"
 
 #include "client/common.hpp"
 

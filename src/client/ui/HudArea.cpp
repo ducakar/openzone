@@ -321,7 +321,7 @@ void HudArea::onDraw()
 }
 
 HudArea::HudArea() : Area( camera.width, camera.height ),
-    weaponName( 16, 54, ALIGN_LEFT, Font::LARGE, ""  ),
+    weaponName( 16, 54, ALIGN_LEFT, Font::LARGE, " "  ),
     weaponRounds( 200, 54, ALIGN_RIGHT, Font::LARGE, "∞" ),
     lastTaggedId( -1 ), lastWeaponId( -1 ), lastWeaponRounds( -1 ), lastVehicleId( -1 )
 {
@@ -331,7 +331,7 @@ HudArea::HudArea() : Area( camera.width, camera.height ),
   for( int i = 0; i < Vehicle::MAX_WEAPONS; ++i ) {
     lastVehicleWeaponRounds[i] = -1;
 
-    vehicleWeaponNames[i].set( -200, 32 + i * step, ALIGN_LEFT, Font::LARGE, "" );
+    vehicleWeaponNames[i].set( -200, 32 + i * step, ALIGN_LEFT, Font::LARGE, " " );
     vehicleWeaponRounds[i].set( -16, 32 + i * step, ALIGN_RIGHT, Font::LARGE, "∞" );
   }
 
@@ -358,7 +358,7 @@ HudArea::HudArea() : Area( camera.width, camera.height ),
   descTextX   = width / 2;
   descTextY   = crossIconY + ICON_SIZE + 36;
 
-  title.set( descTextX, descTextY, ALIGN_CENTRE, Font::LARGE, "" );
+  title.set( descTextX, descTextY, ALIGN_CENTRE, Font::LARGE, " " );
 }
 
 HudArea::~HudArea()

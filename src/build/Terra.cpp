@@ -65,9 +65,8 @@ void Terra::load()
       image->format->BytesPerPixel != 1 )
   {
     SDL_FreeSurface( image );
-    throw Exception( "Invalid terrain heightmap format, should be " +
-                     String( matrix::Terra::VERTS ) + " x " + String( matrix::Terra::VERTS ) +
-                     " 8 bpp" );
+    throw Exception( "Invalid terrain heightmap format, should be %d x %d 8 bpp",
+                     matrix::Terra::VERTS, matrix::Terra::VERTS );
   }
 
   const ubyte* line = reinterpret_cast<const ubyte*>( image->pixels );
