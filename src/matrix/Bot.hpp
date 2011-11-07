@@ -24,16 +24,14 @@
 
 #pragma once
 
-#include "matrix/Library.hpp"
-#include "matrix/Dynamic.hpp"
 #include "matrix/Weapon.hpp"
+#include "matrix/BotClass.hpp"
+#include "matrix/Library.hpp"
 
 namespace oz
 {
 namespace matrix
 {
-
-class Mind;
 
 class Bot : public Dynamic
 {
@@ -107,7 +105,7 @@ class Bot : public Dynamic
     static const float WOUNDED_THRESHOLD;
     static const float CORPSE_FADE_FACTOR;
 
-    static const float INSTRUMENT_DIST_MAX;
+    static const float INSTRUMENT_DIST;
     static const float INSTRUMENT_DOT_MIN;
 
     static const float GRAB_EPSILON;
@@ -120,17 +118,9 @@ class Bot : public Dynamic
     static const float STEP_MOVE_AHEAD;
     static const float CLIMB_MOVE_AHEAD;
 
-    static Pool<Bot, 1024> pool;
-
-    Object* getTagged( float* hvsc, int mask = Object::SOLID_BIT ) const;
-
-  protected:
-
-    virtual void onDestroy();
-    virtual void onHit( const Hit* hit, float hitMomentum );
-    virtual void onUpdate();
-
   public:
+
+    static Pool<Bot, 1024> pool;
 
     float      h, v;
     int        state, oldState;
@@ -150,7 +140,17 @@ class Bot : public Dynamic
     float      camZ;
     Anim::Type anim;
 
-    Bot();
+  private:
+
+    Object* getTagged( float* hvsc, int mask = Object::SOLID_BIT ) const;
+
+  protected:
+
+    virtual void onDestroy();
+    virtual void onHit( const Hit* hit, float hitMomentum );
+    virtual void onUpdate();
+
+  public:
 
     void heal();
     void rearm();
@@ -159,8 +159,13 @@ class Bot : public Dynamic
     void enter( int vehicle );
     void exit();
 
-    virtual void readFull( InputStream* istream );
-    virtual void writeFull( BufferStream* ostream ) const;
+  public:
+
+    explicit Bot( const BotClass* clazz, int index, const Point3& p, Heading heading );
+    explicit Bot( const BotClass* clazz, InputStream* istream );
+
+    virtual void write( BufferStream* ostream ) const;
+
     virtual void readUpdate( InputStream* istream );
     virtual void writeUpdate( BufferStream* ostream ) const;
 

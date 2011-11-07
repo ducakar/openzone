@@ -59,9 +59,6 @@ namespace std { typedef decltype( nullptr ) nullptr_t; }
 // Some KDevelop hacks, ifdef is never processed by a compiler, but KDevelop obviously doesn't
 // recognise __LINE__ macro.
 #ifndef __LINE__
-# define final
-# define noexcept
-# define override
 # define __attribute__( x )
 #endif
 

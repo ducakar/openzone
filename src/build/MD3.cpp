@@ -40,12 +40,13 @@ MD3::AnimInfo MD3::legsAnimList[LEGS_ANIM_MAX];
 MD3::AnimInfo MD3::torsoAnimList[TORSO_ANIM_MAX];
 MD3::Joint    MD3::joints[MAX_FRAMES][JOINTS_MAX];
 
-String        MD3::sPath;
-Config        MD3::config;
+String MD3::sPath;
+Config MD3::config;
 
-float         MD3::scale;
-Mat44         MD3::meshTransf;
-int           MD3::nTags;
+String MD3::skin;
+float  MD3::scale;
+Mat44  MD3::meshTransf;
+int    MD3::nTags;
 
 DArray<MD3::MD3Tag> MD3::tags;
 
@@ -189,17 +190,12 @@ void MD3::buildMesh( const char* name, int frame )
       vertices[i].z = float( +surfaceVertices[i].pos[2] ) / 64.0f * scale;
     }
 
-    const char* skinFile = max( String::findLast( surfaceShaders[0].name, '/' ),
-                                String::findLast( surfaceShaders[0].name, '\\' ) );
-
-    if( skinFile == null ) {
-      skinFile = surfaceShaders[0].name;
-    }
-    else {
-      ++skinFile;
+    if( skin.isEmpty() ) {
+      File skinFile( String::replace( surfaceShaders[0].name, '\\', '/' ).cstr() );
+      skin = skinFile.name();
     }
 
-    compiler.texture( sPath + "/" + skinFile );
+    compiler.texture( sPath + "/" + skin );
 
     compiler.begin( GL_TRIANGLES );
 
@@ -237,21 +233,20 @@ void MD3::build( const char* path )
   Config config;
   config.load( configFile );
 
-  int    frame      = config.get( "frame", 153 );
-  // FIXME
-  String shaderName = config.get( "shader", frame == -1 ? "md3" : "mesh" );
+  scale               = config.get( "scale", 0.04f );
+  skin                = config.get( "skin", "" );
 
-  scale             = config.get( "scale", 0.04f );
+  String model        = config.get( "model", "" );
+  int    frame        = config.get( "frame", 0 );
+  String shaderName   = config.get( "shader", frame == -1 ? "md3" : "mesh" );
+  float  specular     = config.get( "specular", 0.0f );
 
-  float  specular   = config.get( "specular", 0.0f );
-
-  Vec3 weaponTransl = Vec3( config.get( "weaponTranslate.x", 0.00f ),
-                            config.get( "weaponTranslate.y", 0.00f ),
-                            config.get( "weaponTranslate.z", 0.00f ) );
-
-  Vec3 weaponRot    = Vec3( config.get( "weaponRotate.x", 0.00f ),
-                            config.get( "weaponRotate.y", 0.00f ),
-                            config.get( "weaponRotate.z", 0.00f ) );
+  Vec3   weaponTransl = Vec3( config.get( "weaponTranslate.x", 0.00f ),
+                              config.get( "weaponTranslate.y", 0.00f ),
+                              config.get( "weaponTranslate.z", 0.00f ) );
+  Vec3   weaponRot    = Vec3( config.get( "weaponRotate.x", 0.00f ),
+                              config.get( "weaponRotate.y", 0.00f ),
+                              config.get( "weaponRotate.z", 0.00f ) );
 
   meshTransf = Mat44::ID;
 
@@ -259,8 +254,6 @@ void MD3::build( const char* path )
   weaponTransf.rotateX( Math::rad( weaponRot.x ) );
   weaponTransf.rotateZ( Math::rad( weaponRot.z ) );
   weaponTransf.rotateY( Math::rad( weaponRot.y ) );
-
-  const char* model = config.get( "model", "" );
 
   BufferStream os;
 
@@ -376,6 +369,7 @@ void MD3::build( const char* path )
   shaderName.dealloc();
   config.clear();
   sPath.dealloc();
+  skin.dealloc();
 
   log.unindent();
   log.println( "}" );

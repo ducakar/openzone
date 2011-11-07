@@ -34,8 +34,11 @@
 #include <sys/stat.h>
 #include <dirent.h>
 
-#undef MAP_FAILED
-#define MAP_FAILED reinterpret_cast<void*>( -1 )
+// prevent old-style cast warning for GCC
+#ifdef __GNUC__
+# undef MAP_FAILED
+# define MAP_FAILED reinterpret_cast<void*>( -1 )
+#endif
 
 namespace oz
 {

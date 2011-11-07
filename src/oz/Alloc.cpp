@@ -288,7 +288,7 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
  *
  * @ingroup oz
  */
-void operator delete ( void* ptr ) noexcept
+void operator delete ( void* ptr ) throw()
 {
   hard_assert( !Alloc::isLocked );
 
@@ -365,7 +365,7 @@ backtraceFound:;
  *
  * @ingroup oz
  */
-void operator delete[] ( void* ptr ) noexcept
+void operator delete[] ( void* ptr ) throw()
 {
   hard_assert( !Alloc::isLocked );
 

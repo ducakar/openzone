@@ -28,6 +28,8 @@
 
 #include "client/Shader.hpp"
 #include "client/Mesh.hpp"
+#include "client/Context.hpp"
+#include "client/SMM.hpp"
 #include "client/OpenGL.hpp"
 
 namespace oz
@@ -37,10 +39,32 @@ namespace client
 
 FragPool fragPool;
 
-const float FragPool::FRAG_RADIUS = 1.0f;
-
+const float FragPool::FRAG_RADIUS   = 1.0f;
 const float FragPool::SQRT_3_THIRDS = Math::sqrt( 3.0f ) / 3.0f;
-const float FragPool::DIM = 1.0f / 2.0f;
+const float FragPool::DIM           = 1.0f / 2.0f;
+
+char FragPool::buffer[LINE_LENGTH];
+
+void FragPool::loadFrags()
+{
+  FILE* file;
+
+  file = fopen( "frag/stone.list", "r" );
+  if( file == null ) {
+    throw Exception( "frag/stone.list missing" );
+  }
+
+  while( fgets( buffer, LINE_LENGTH, file ) != null ) {
+    FragInfo frag;
+
+    frag.id    = library.modelIndex( buffer );
+    frag.model = new SMM( frag.id );
+    frag.model->load();
+
+    frags.add( frag );
+  }
+  fclose( file );
+}
 
 FragPool::FragPool() : vao( 0 ), vbo( 0 )
 {}
@@ -57,13 +81,18 @@ void FragPool::bindVertexArray() const
 
 void FragPool::draw( const Frag* frag )
 {
-  glUniform4f( param.oz_Colour, frag->colour.x, frag->colour.y, frag->colour.z, 1.0f );
+  int index = 8 + frag->index % 3;
+
+  if( !debris[index]->isLoaded ) {
+    return;
+  }
+//   glUniform4f( param.oz_Colour, frag->colour.x, frag->colour.y, frag->colour.z, 1.0f );
 
   tf.model = Mat44::translation( frag->p - Point3::ORIGIN );
-  tf.apply();
 
-  int index = frag->index % MAX_FRAGS;
-  glDrawArrays( GL_TRIANGLES, index * 12, 12 );
+//   int index = frag->index % MAX_FRAGS;
+//   glDrawArrays( GL_TRIANGLES, index * 12, 12 );
+  debris[index]->draw( Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
 }
 
 void FragPool::load()
@@ -131,12 +160,35 @@ void FragPool::load()
 
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
+  debrisIds[0] = library.modelIndex( "debris01" );
+  debrisIds[1] = library.modelIndex( "debris02" );
+  debrisIds[2] = library.modelIndex( "debris03" );
+  debrisIds[3] = library.modelIndex( "debris04" );
+
+  debrisIds[4] = library.modelIndex( "metalDebris01" );
+  debrisIds[5] = library.modelIndex( "metalDebris02" );
+  debrisIds[6] = library.modelIndex( "metalDebris03" );
+  debrisIds[7] = library.modelIndex( "metalDebris04" );
+
+  debrisIds[8] = library.modelIndex( "gib01" );
+  debrisIds[9] = library.modelIndex( "gib02" );
+  debrisIds[10] = library.modelIndex( "gib03" );
+
+  for( int i = 0; i < 11; ++i ) {
+    debris[i] = new SMM( debrisIds[i] );
+    debris[i]->load();
+  }
+
   log.unindent();
   log.println( "}" );
 }
 
 void FragPool::unload()
 {
+  for( int i = 0; i < 11; ++i ) {
+    delete debris[i];
+  }
+
   if( vao != 0 ) {
     log.print( "Unloading FragPool ..." );
 

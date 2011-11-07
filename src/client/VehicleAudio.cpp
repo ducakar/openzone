@@ -49,7 +49,7 @@ void VehicleAudio::play( const Audio* parent )
 {
   const Vehicle* vehicle = static_cast<const Vehicle*>( obj );
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
-  const int ( &sounds )[ObjectClass::AUDIO_SOUNDS] = obj->clazz->audioSounds;
+  const int ( &sounds )[ObjectClass::MAX_SOUNDS] = obj->clazz->audioSounds;
 
   // engine sound
   if( ( vehicle->pilot != -1 || !( vehicle->flags & Object::DISABLED_BIT ) ) &&
@@ -63,7 +63,7 @@ void VehicleAudio::play( const Audio* parent )
 
   // events
   for( const Object::Event* event = obj->events.first(); event != null; event = event->next[0] ) {
-    hard_assert( event->id < ObjectClass::AUDIO_SOUNDS );
+    hard_assert( event->id < ObjectClass::MAX_SOUNDS );
 
     if( event->id >= 0 && sounds[event->id] != -1 ) {
       hard_assert( 0.0f <= event->intensity );

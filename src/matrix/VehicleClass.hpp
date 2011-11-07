@@ -25,7 +25,6 @@
 #pragma once
 
 #include "matrix/DynamicClass.hpp"
-#include "matrix/Vehicle.hpp"
 
 namespace oz
 {
@@ -34,6 +33,10 @@ namespace matrix
 
 class VehicleClass : public DynamicClass
 {
+  private:
+
+    static const int MAX_WEAPONS = 8;
+
   public:
 
     int    type;
@@ -47,10 +50,10 @@ class VehicleClass : public DynamicClass
     float  enginePitchLimit;
 
     int    nWeapons;
-    String weaponNames[Vehicle::WEAPONS_MAX];
-    String onShot[Vehicle::WEAPONS_MAX];
-    int    nRounds[Vehicle::WEAPONS_MAX];
-    float  shotInterval[Vehicle::WEAPONS_MAX];
+    String weaponNames[MAX_WEAPONS];
+    String onShot[MAX_WEAPONS];
+    int    nRounds[MAX_WEAPONS];
+    float  shotInterval[MAX_WEAPONS];
 
     Vec3   pilotPos;
     Quat   pilotRot;
@@ -66,7 +69,7 @@ class VehicleClass : public DynamicClass
     virtual void initClass( const Config* config );
 
     virtual Object* create( int index, const Point3& pos, Heading heading ) const;
-    virtual Object* create( int index, InputStream* istream ) const;
+    virtual Object* create( InputStream* istream ) const;
 
 };
 

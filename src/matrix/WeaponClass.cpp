@@ -77,47 +77,12 @@ void WeaponClass::initClass( const Config* config )
 
 Object* WeaponClass::create( int index, const Point3& pos, Heading heading ) const
 {
-  Weapon* obj = new Weapon();
-
-  hard_assert( obj->index == -1 && obj->cell == null && obj->parent == -1 );
-
-  obj->p          = pos;
-  obj->index      = index;
-  obj->mass       = mass;
-  obj->lift       = lift;
-  obj->nRounds    = nRounds;
-  obj->shotTime   = 0.0f;
-
-  fillCommonFields( obj );
-
-  obj->flags |= heading;
-
-  if( heading == WEST || heading == EAST ) {
-    swap( obj->dim.x, obj->dim.y );
-  }
-
-  return obj;
+  return new Weapon( this, index, pos, heading );
 }
 
-Object* WeaponClass::create( int index, InputStream* istream ) const
+Object* WeaponClass::create( InputStream* istream ) const
 {
-  Weapon* obj = new Weapon();
-
-  obj->dim        = dim;
-  obj->index      = index;
-  obj->clazz      = this;
-  obj->resistance = resistance;
-  obj->mass       = mass;
-  obj->lift       = lift;
-
-  obj->readFull( istream );
-
-  Heading heading = Heading( obj->flags & Object::HEADING_MASK );
-  if( heading == WEST || heading == EAST ) {
-    swap( obj->dim.x, obj->dim.y );
-  }
-
-  return obj;
+  return new Weapon( this, istream );
 }
 
 }

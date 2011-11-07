@@ -79,10 +79,9 @@ class Library
 
   private:
 
-    Vector<BSPClass>     bspClasses;
-
+    Vector<BSPClass> bspClasses;
     HashString<const ObjectClass::CreateFunc, 8> baseClasses;
-    HashString<ObjectClass*, 128> classes;
+    HashString<ObjectClass*, 128> objClasses;
 
     HashString<int, 256> textureIndices;
     HashString<int, 256> soundIndices;
@@ -92,6 +91,7 @@ class Library
     HashString<int, 64>  bspIndices;
     HashString<int, 256> modelIndices;
     HashString<int, 16>  nameListIndices;
+    HashString<int, 16>  fragPoolIndices;
 
     HashString<int, 8>   deviceIndices;
     HashString<int, 16>  imagoIndices;
@@ -107,6 +107,7 @@ class Library
     Vector<Resource> bsps;
     Vector<Resource> models;
     Vector<Resource> nameLists;
+    Vector<Resource> fragPools;
     Vector<Resource> musics;
 
     int nDeviceClasses;
@@ -125,6 +126,7 @@ class Library
     int bspIndex( const char* name ) const;
     int modelIndex( const char* name ) const;
     int nameListIndex( const char* name ) const;
+    int fragPoolIndex( const char* name ) const;
 
     int deviceIndex( const char* name ) const;
     int imagoIndex( const char* name ) const;
@@ -132,6 +134,21 @@ class Library
 
   private:
 
+    void initShaders();
+    void initTextures();
+    void initBuildTextures();
+    void initSounds();
+    void initCaela();
+    void initBuildCaela();
+    void initTerrae();
+    void initBuildTerrae();
+    void initBSPs();
+    void initBuildBSPs();
+    void initModels();
+    void initBuildModels();
+    void initMusic();
+    void initNameLists();
+    void initFragPools();
     void initClasses();
 
   public:

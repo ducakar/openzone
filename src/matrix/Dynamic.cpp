@@ -26,6 +26,10 @@
 
 #include "matrix/Dynamic.hpp"
 
+#include "matrix/DynamicClass.hpp"
+#include "matrix/Lua.hpp"
+#include "matrix/Synapse.hpp"
+
 namespace oz
 {
 namespace matrix
@@ -33,48 +37,67 @@ namespace matrix
 
 Pool<Dynamic, 4096> Dynamic::pool;
 
-void Dynamic::readFull( InputStream* istream )
+void Dynamic::onDestroy()
 {
-  Object::readFull( istream );
+  synapse.genFrags( clazz->nDebris, p, velocity + Vec3( 0.0f, 0.0f, 2.0f ), 4.0f,
+                    Vec3( 1.0f, 1.0f, 1.0f ), 0.1f, 1.8f, 0.0f, 2.0f );
 
-  parent     = istream->readInt();
-  velocity   = istream->readVec3();
-  momentum   = istream->readVec3();
-  floor      = istream->readVec3();
-  lower      = istream->readInt();
-  depth      = istream->readFloat();
+  for( int i = 0; i < items.length(); ++i ) {
+    Object* obj = orbis.objects[ items[i] ];
+
+    if( obj != null ) {
+      obj->destroy();
+    }
+  }
+
+  if( !clazz->onDestroy.isEmpty() ) {
+    lua.objectCall( clazz->onDestroy, this );
+  }
 }
 
-void Dynamic::writeFull( BufferStream* ostream ) const
+Dynamic::Dynamic( const DynamicClass* clazz_, int index_, const Point3& p_, Heading heading ) :
+    Object( clazz_, index_, p_, heading )
 {
-  Object::writeFull( ostream );
+  velocity = Vec3::ZERO;
+  momentum = Vec3::ZERO;
+  floor    = Vec3( 0.0f, 0.0f, 1.0f );
+  parent   = -1;
+  lower    = -1;
+  depth    = 0.0f;
+  mass     = clazz_->mass;
+  lift     = clazz_->lift;
+}
 
-  ostream->writeInt( parent );
+Dynamic::Dynamic( const DynamicClass* clazz_, InputStream* istream ) :
+    Object( clazz_, istream )
+{
+  velocity = istream->readVec3();
+  momentum = istream->readVec3();
+  floor    = istream->readVec3();
+  parent   = istream->readInt();
+  lower    = istream->readInt();
+  depth    = istream->readFloat();
+  mass     = clazz_->mass;
+  lift     = clazz_->lift;
+}
+
+void Dynamic::write( BufferStream* ostream ) const
+{
+  Object::write( ostream );
+
   ostream->writeVec3( velocity );
   ostream->writeVec3( momentum );
   ostream->writeVec3( floor );
+  ostream->writeInt( parent );
   ostream->writeInt( lower );
   ostream->writeFloat( depth );
 }
 
-void Dynamic::readUpdate( InputStream* istream )
-{
-  Object::readUpdate( istream );
+void Dynamic::readUpdate( InputStream* )
+{}
 
-  p        = istream->readPoint3();
-  velocity = istream->readVec3();
-  momentum = istream->readVec3();
-}
-
-void Dynamic::writeUpdate( BufferStream* ostream ) const
-{
-  Object::writeUpdate( ostream );
-
-  ostream->writePoint3( p );
-  ostream->writeFloat( life );
-  ostream->writeVec3( velocity );
-  ostream->writeVec3( momentum );
-}
+void Dynamic::writeUpdate( BufferStream* ) const
+{}
 
 }
 }

@@ -34,7 +34,7 @@ namespace oz
 {
 
 Exception::Exception( const String& message_, const char* file_, int line_,
-                      const char* function_ ) noexcept :
+                      const char* function_ ) throw() :
     message( message_ ), file( file_ ), function( function_ ), line( line_ ),
     nFrames( 0 ), frames( null )
 {
@@ -42,12 +42,12 @@ Exception::Exception( const String& message_, const char* file_, int line_,
   System::trap();
 }
 
-Exception::~Exception() noexcept
+Exception::~Exception() throw()
 {
   free( frames );
 }
 
-const char* Exception::what() const noexcept
+const char* Exception::what() const throw()
 {
   return message;
 }

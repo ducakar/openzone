@@ -33,6 +33,8 @@ namespace oz
 namespace client
 {
 
+class SMM;
+
 class FragPool
 {
   public:
@@ -41,13 +43,37 @@ class FragPool
 
   private:
 
-    static const int MAX_FRAGS = 64;
-
     static const float SQRT_3_THIRDS;
     static const float DIM;
+    static const int   MAX_FRAGS = 64;
+    static const int   LINE_LENGTH = 64;
+
+    struct FragInfo
+    {
+      SMM* model;
+      int  id;
+    };
+
+    static char buffer[LINE_LENGTH];
 
     uint vao;
     uint vbo;
+
+    Vector<FragInfo> frags;
+
+    int firstStone;
+    int nStones;
+    int firstWood;
+    int nWoods;
+    int firstMetal;
+    int nMetals;
+    int firstMeat;
+    int nMeats;
+
+    int debrisIds[11];
+    SMM* debris[11];
+
+    void loadFrags();
 
   public:
 
@@ -55,7 +81,7 @@ class FragPool
 
     void bindVertexArray() const;
 
-    static void draw( const Frag* frag );
+    void draw( const Frag* frag );
 
     void load();
     void unload();

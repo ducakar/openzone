@@ -112,9 +112,6 @@ class Struct : public Bounds
     Struct( const Struct& ) = delete;
     Struct& operator = ( const Struct& ) = delete;
 
-    explicit Struct( int index, int bspId, const Point3& p, Heading heading );
-    explicit Struct( int index, int bspId, InputStream* istream );
-
     /**
      * Rotate vector from structure coordinate system to absolute coordinate system.
      * @param v
@@ -163,8 +160,12 @@ class Struct : public Bounds
     void destroy();
     void update();
 
-    void readFull( InputStream* istream );
-    void writeFull( BufferStream* ostream );
+  public:
+
+    explicit Struct( int id, int index, const Point3& p, Heading heading );
+    explicit Struct( int id, InputStream* istream );
+
+    void write( BufferStream* ostream );
 
   OZ_STATIC_POOL_ALLOC( pool )
 

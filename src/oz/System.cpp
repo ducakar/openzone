@@ -39,9 +39,8 @@
 # endif
 #endif
 
-// prevent old-style cast warning due to a bug in <bits/signum.h>
+// prevent old-style cast warning for GCC
 #ifdef __GNUC__
-# undef SIG_ERR
 # undef SIG_DFL
 # undef SIG_IGN
 # define SIG_DFL reinterpret_cast<__sighandler_t>( 0 )            /* Default action.  */

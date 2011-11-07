@@ -61,8 +61,7 @@ void Synapse::cut( Dynamic* obj )
 {
   hard_assert( obj->index != -1 && obj->cell != null && obj->parent != -1 );
 
-  obj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT | Object::IN_WATER_BIT |
-      Object::ON_LADDER_BIT | Object::ON_SLICK_BIT | Object::FRICTING_BIT | Object::HIT_BIT );
+  obj->flags &= ~( Object::TICK_CLEAR_MASK | Object::MOVE_CLEAR_MASK );
   obj->lower = -1;
 
   orbis.unposition( obj );
@@ -72,14 +71,15 @@ void Synapse::cut( Dynamic* obj )
 
 int Synapse::addStruct( const char* name, const Point3& p, Heading heading )
 {
-  int index   = orbis.addStruct( library.bspIndex( name ), p, heading );
-  Struct* str = orbis.structs[index];
+  int     index = orbis.addStruct( library.bspIndex( name ), p, heading );
+  Struct* str   = orbis.structs[index];
 
   if( !orbis.position( str ) ) {
     orbis.remove( str );
     delete str;
     return -1;
   }
+  addedStructs.add( index );
 
   for( int i = 0; i < str->bsp->nBoundObjects; ++i ) {
     const BSP::BoundObject& boundObj = str->bsp->boundObjects[i];
@@ -96,8 +96,6 @@ int Synapse::addStruct( const char* name, const Point3& p, Heading heading )
 
     addedObjects.add( objIndex );
   }
-
-  addedStructs.add( index );
   return index;
 }
 
@@ -107,6 +105,7 @@ int Synapse::addObject( const char* name, const Point3& p, Heading heading )
   Object* obj   = orbis.objects[index];
 
   orbis.position( obj );
+  addedObjects.add( index );
 
   const Vector<const ObjectClass*>& defaultItems = obj->clazz->defaultItems;
 
@@ -130,19 +129,16 @@ int Synapse::addObject( const char* name, const Point3& p, Heading heading )
       }
     }
   }
-
-  addedObjects.add( index );
   return index;
 }
 
 int Synapse::addFrag( const Point3& p, const Vec3& velocity, const Vec3& colour,
                       float restitution, float mass, float lifeTime )
 {
-  int index = orbis.addFrag( p, velocity, colour, restitution, mass, lifeTime );
-  Frag* frag = orbis.frags[index];
+  int   index = orbis.addFrag( p, velocity, colour, restitution, mass, lifeTime );
+  Frag* frag  = orbis.frags[index];
 
   orbis.position( frag );
-
   addedFrags.add( index );
   return index;
 }
@@ -151,10 +147,17 @@ void Synapse::remove( Struct* str )
 {
   hard_assert( str->index != -1 );
 
+  for( int i = 0; i < str->boundObjects.length(); ++i ) {
+    Object* boundObj = orbis.objects[ str->boundObjects[i] ];
+
+    if( boundObj != null ) {
+      remove( boundObj );
+    }
+  }
+
   removedStructs.add( str->index );
 
   collider.touchOverlaps( str->toAABB(), 4.0f * EPSILON );
-
   orbis.unposition( str );
   orbis.remove( str );
 }
@@ -162,6 +165,14 @@ void Synapse::remove( Struct* str )
 void Synapse::remove( Object* obj )
 {
   hard_assert( obj->index != -1 );
+
+  for( int i = 0; i < obj->items.length(); ++i ) {
+    Object* item = orbis.objects[ obj->items[i] ];
+
+    if( item != null ) {
+      remove( item );
+    }
+  }
 
   removedObjects.add( obj->index );
 

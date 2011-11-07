@@ -28,8 +28,7 @@
 
 #include "nirvana/Lua.hpp"
 
-#include "matrix/BotClass.hpp"
-#include "matrix/VehicleClass.hpp"
+#include "matrix/Vehicle.hpp"
 #include "matrix/Library.hpp"
 
 #include "nirvana/Nirvana.hpp"

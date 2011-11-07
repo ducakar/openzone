@@ -82,9 +82,6 @@ bool Weapon::onUse( Bot* user )
   return false;
 }
 
-Weapon::Weapon()
-{}
-
 void Weapon::trigger( Bot* user )
 {
   hard_assert( user != null );
@@ -110,35 +107,33 @@ void Weapon::trigger( Bot* user )
   }
 }
 
-void Weapon::readFull( InputStream* istream )
+Weapon::Weapon( const WeaponClass* clazz_, int index_, const Point3& p_, Heading heading ) :
+    Dynamic( clazz_, index_, p_, heading )
 {
-  Dynamic::readFull( istream );
+  nRounds  = clazz_->nRounds;
+  shotTime = 0.0f;
+}
 
+Weapon::Weapon( const WeaponClass* clazz_, InputStream* istream ) :
+    Dynamic( clazz_, istream )
+{
   nRounds  = istream->readInt();
   shotTime = istream->readFloat();
 }
 
-void Weapon::writeFull( BufferStream* ostream ) const
+void Weapon::write( BufferStream* ostream ) const
 {
-  Dynamic::writeFull( ostream );
+  Dynamic::write( ostream );
 
   ostream->writeInt( nRounds );
   ostream->writeFloat( shotTime );
 }
 
-void Weapon::readUpdate( InputStream* istream )
-{
-  Dynamic::readUpdate( istream );
+void Weapon::readUpdate( InputStream* )
+{}
 
-  nRounds = istream->readInt();
-}
-
-void Weapon::writeUpdate( BufferStream* ostream ) const
-{
-  Dynamic::writeUpdate( ostream );
-
-  ostream->writeInt( nRounds );
-}
+void Weapon::writeUpdate( BufferStream* ) const
+{}
 
 }
 }

@@ -26,12 +26,11 @@
 
 #include "matrix/Bot.hpp"
 
-#include "matrix/Synapse.hpp"
+#include "matrix/Weapon.hpp"
+#include "matrix/NamePool.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Physics.hpp"
-#include "matrix/Weapon.hpp"
-#include "matrix/BotClass.hpp"
-#include "matrix/Vehicle.hpp"
+#include "matrix/Synapse.hpp"
 
 namespace oz
 {
@@ -44,7 +43,7 @@ const float Bot::HIT_HARD_THRESHOLD  = -8.00f;
 const float Bot::WOUNDED_THRESHOLD   =  0.70f;
 const float Bot::CORPSE_FADE_FACTOR  =  0.5f / 100.0f * Timer::TICK_TIME;
 
-const float Bot::INSTRUMENT_DIST_MAX =  2.00f;
+const float Bot::INSTRUMENT_DIST =  2.00f;
 const float Bot::INSTRUMENT_DOT_MIN  =  0.80f;
 
 const float Bot::GRAB_EPSILON        =  0.20f;
@@ -762,10 +761,6 @@ void Bot::onUpdate()
   oldActions = actions;
 }
 
-Bot::Bot() : actions( 0 ), oldActions( 0 ), stepRate( 0.0f ),
-    instrument( -1 ), weapon( -1 ), anim( Anim::STAND )
-{}
-
 void Bot::heal()
 {
   const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
@@ -846,46 +841,69 @@ void Bot::exit()
   synapse.put( this );
 }
 
-void Bot::readFull( InputStream* istream )
+Bot::Bot(  const BotClass* clazz_, int index, const Point3& p_, Heading heading ) :
+    Dynamic( clazz_, index, p_, heading )
 {
-  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+  h          = float( heading ) * Math::TAU / 4.0f;
+  v          = Math::TAU / 4.0f;
+  state      = clazz_->state;
+  oldState   = clazz_->state;
+  actions    = 0;
+  oldActions = 0;
 
-  Dynamic::readFull( istream );
+  stamina    = clazz_->stamina;
+  stepRate   = 0.0f;
 
+  instrument = -1;
+  grabHandle = 0.0f;
+  weapon     = -1;
+  taggedItem = -1;
+
+  name       = namePool.genName( clazz_->nameList );
+  mindFunc   = clazz_->mindFunc;
+
+  camZ       = clazz_->camZ;
+  anim       = Anim::STAND;
+}
+
+Bot::Bot( const BotClass* clazz_, InputStream* istream ) :
+    Dynamic( clazz_, istream )
+{
   h          = istream->readFloat();
   v          = istream->readFloat();
   state      = istream->readInt();
   oldState   = istream->readInt();
   actions    = istream->readInt();
   oldActions = istream->readInt();
+
   stamina    = istream->readFloat();
+  stepRate   = istream->readFloat();
 
   instrument = istream->readInt();
   grabHandle = istream->readFloat();
-
-  stepRate   = istream->readFloat();
-
   weapon     = istream->readInt();
-
-  anim       = Anim::Type( istream->readInt() );
+  taggedItem = istream->readInt();
 
   name       = istream->readString();
   mindFunc   = istream->readString();
 
+  camZ       = state & Bot::CROUCHING_BIT ? clazz_->crouchCamZ : clazz_->camZ;
+  anim       = Anim::Type( istream->readInt() );
+
   if( state & DEAD_BIT ) {
-    dim = clazz->corpseDim;
+    dim = clazz_->corpseDim;
   }
   else if( state & CROUCHING_BIT ) {
-    dim = clazz->crouchDim;
+    dim = clazz_->crouchDim;
   }
   else {
-    dim = clazz->dim;
+    dim = clazz_->dim;
   }
 }
 
-void Bot::writeFull( BufferStream* ostream ) const
+void Bot::write( BufferStream* ostream ) const
 {
-  Dynamic::writeFull( ostream );
+  Dynamic::write( ostream );
 
   ostream->writeFloat( h );
   ostream->writeFloat( v );
@@ -893,42 +911,26 @@ void Bot::writeFull( BufferStream* ostream ) const
   ostream->writeInt( oldState );
   ostream->writeInt( actions );
   ostream->writeInt( oldActions );
+
   ostream->writeFloat( stamina );
+  ostream->writeFloat( stepRate );
 
   ostream->writeInt( instrument );
   ostream->writeFloat( grabHandle );
-
-  ostream->writeFloat( stepRate );
-
   ostream->writeInt( weapon );
-
-  ostream->writeInt( int( anim ) );
+  ostream->writeInt( taggedItem );
 
   ostream->writeString( name );
   ostream->writeString( mindFunc );
-}
 
-void Bot::readUpdate( InputStream* istream )
-{
-  Dynamic::readUpdate( istream );
-
-  h          = istream->readFloat();
-  v          = istream->readFloat();
-  state      = istream->readInt();
-  instrument = istream->readInt();
-  anim       = Anim::Type( istream->readInt() );
-}
-
-void Bot::writeUpdate( BufferStream* ostream ) const
-{
-  Dynamic::writeUpdate( ostream );
-
-  ostream->writeFloat( h );
-  ostream->writeFloat( v );
-  ostream->writeInt( state );
-  ostream->writeInt( instrument );
   ostream->writeInt( int( anim ) );
 }
+
+void Bot::readUpdate( InputStream* )
+{}
+
+void Bot::writeUpdate( BufferStream* ) const
+{}
 
 }
 }

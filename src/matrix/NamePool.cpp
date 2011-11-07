@@ -29,7 +29,6 @@
 #include "matrix/Library.hpp"
 
 #include <dirent.h>
-#include <sys/types.h>
 
 namespace oz
 {
@@ -66,8 +65,7 @@ void NamePool::init()
 
     FILE* file = fopen( library.nameLists[i].path, "r" );
     if( file == null ) {
-      log.printEnd( " Failed" );
-      return;
+      throw Exception( "Reading '" + library.nameLists[i].path + "' failed" );
     }
 
     while( fgets( buffer, LINE_LENGTH, file ) != null ) {

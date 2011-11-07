@@ -213,6 +213,7 @@ class MD3
     static String   sPath;
     static Config   config;
 
+    static String   skin;
     static float    scale;
     static Mat44    meshTransf;
     static int      nTags;

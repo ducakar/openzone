@@ -751,6 +751,37 @@ class String
     }
 
     /**
+     * Create a copy that has all instances of <tt>whatChar</tt> replaced by <tt>withChar</tt>.
+     */
+    String replace( char whatChar, char withChar ) const
+    {
+      String r = String( count, 0 );
+
+      for( int i = 0; i < count; ++i ) {
+        r.buffer[i] = buffer[i] == whatChar ? withChar : buffer[i];
+      }
+      r.buffer[count] = '\0';
+
+      return r;
+    }
+
+    /**
+     * Create a copy that has all instances of <tt>whatChar</tt> replaced by <tt>withChar</tt>.
+     */
+    static String replace( const char* s, char whatChar, char withChar )
+    {
+      int    count = length( s );
+      String r    = String( count, 0 );
+
+      for( int i = 0; i < count; ++i ) {
+        r.buffer[i] = s[i] == whatChar ? withChar : s[i];
+      }
+      r.buffer[count] = '\0';
+
+      return r;
+    }
+
+    /**
      * Returns array of substrings between occurrences of the given character token.
      */
     DArray<String> split( char ch ) const

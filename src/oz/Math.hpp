@@ -44,10 +44,10 @@ class Math
     /// Number e.
     static const float E;
 
-    /// 2π.
+    /// \f$ 2\pi \f$.
     static const float TAU;
 
-    /// +∞.
+    /// \f$ +\infty \f$.
     static const float INF;
 
     /// Not a number.
@@ -392,6 +392,15 @@ class Math
      * Random float number from [0, 1].
      */
     static float rand();
+
+    /**
+     * Random number from [-1, 1], numbers close to zero are more likely.
+     *
+     * It tries to generate something "relatively" close to Gaussian distribution. However it's only
+     * possible on an infinite interval, so it actually returns \f$ x^3 \f$, for
+     * \f$ x \in [-1, +1] \f$.
+     */
+    static float normalRand();
 
 };
 

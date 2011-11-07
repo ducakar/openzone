@@ -332,57 +332,6 @@ Struct::~Struct()
   delete[] entities;
 }
 
-Struct::Struct( int index_, int bspId, const Point3& p_, Heading heading_ ) :
-    p( p_ ), index( index_ ), id( bspId ), bsp( orbis.bsps[bspId] ),
-    heading( heading_ ), life( bsp->life ), resistance( bsp->resistance ), demolishing( 0.0f )
-{
-  transf = ROTATIONS[heading];
-  transf.w = p;
-
-  invTransf = ROTATIONS[4 - heading];
-  invTransf.translate( Point3::ORIGIN - p );
-
-  Bounds bb = toAbsoluteCS( *bsp );
-  mins = bb.mins;
-  maxs = bb.maxs;
-
-  nEntities = bsp->nModels;
-  entities = nEntities == 0 ? null : new Entity[nEntities];
-
-  for( int i = 0; i < nEntities; ++i ) {
-    Entity& entity = entities[i];
-
-    entity.model  = &bsp->models[i];
-    entity.str    = this;
-    entity.offset = Vec3::ZERO;
-    entity.state  = Entity::CLOSED;
-    entity.ratio  = 0.0f;
-    entity.time   = 0.0f;
-  }
-
-  if( bsp->nBoundObjects != 0 ) {
-    boundObjects.alloc( bsp->nBoundObjects );
-  }
-}
-
-Struct::Struct( int index_, int bspId, InputStream* istream ) :
-    index( index_ ), id( bspId ), bsp( orbis.bsps[bspId] ), resistance( bsp->resistance )
-{
-  hard_assert( bsp != null );
-
-  nEntities = bsp->nModels;
-  entities = nEntities == 0 ? null : new Entity[nEntities];
-
-  for( int i = 0; i < nEntities; ++i ) {
-    Entity& entity = entities[i];
-
-    entity.model = &bsp->models[i];
-    entity.str   = this;
-  }
-
-  readFull( istream );
-}
-
 Bounds Struct::toStructCS( const Bounds& bb ) const
 {
   switch( heading ) {
@@ -467,28 +416,76 @@ void Struct::destroy()
                     1.98f, 0.0f, 2.0f );
 }
 
-void Struct::readFull( InputStream* istream )
+Struct::Struct( int id_, int index_, const Point3& p_, Heading heading_ )
+{
+  p           = p_;
+  index       = index_;
+  id          = id_;
+  bsp         = orbis.bsps[id_];
+  heading     = heading_;
+
+  life        = bsp->life;
+  resistance  = bsp->resistance;
+  demolishing = 0.0f;
+
+  transf      = Mat44::translation( p - Point3::ORIGIN ) * ROTATIONS[heading_];
+  invTransf   = ROTATIONS[4 - heading_] * Mat44::translation( Point3::ORIGIN - p );
+
+  Bounds bb   = toAbsoluteCS( *bsp );
+  mins        = bb.mins;
+  maxs        = bb.maxs;
+
+  nEntities   = bsp->nModels;
+  entities    = nEntities == 0 ? null : new Entity[nEntities];
+
+  for( int i = 0; i < nEntities; ++i ) {
+    Entity& entity = entities[i];
+
+    entity.model  = &bsp->models[i];
+    entity.str    = this;
+    entity.offset = Vec3::ZERO;
+    entity.state  = Entity::CLOSED;
+    entity.ratio  = 0.0f;
+    entity.time   = 0.0f;
+  }
+
+  if( bsp->nBoundObjects != 0 ) {
+    boundObjects.alloc( bsp->nBoundObjects );
+  }
+}
+
+Struct::Struct( int id_, InputStream* istream )
 {
   mins        = istream->readPoint3();
   maxs        = istream->readPoint3();
   transf      = istream->readMat44();
   invTransf   = istream->readMat44();
+
   p           = istream->readPoint3();
+  index       = istream->readInt();
+  id          = id_;
+  bsp         = orbis.bsps[id_];
   heading     = Heading( istream->readInt() );
+
   life        = istream->readFloat();
+  resistance  = bsp->resistance;
   demolishing = istream->readFloat();
 
+  nEntities   = bsp->nModels;
+  entities    = nEntities == 0 ? null : new Entity[nEntities];
+
   for( int i = 0; i < nEntities; ++i ) {
-    entities[i].offset = istream->readVec3();
-    entities[i].state  = Entity::State( istream->readInt() );
-    entities[i].ratio  = istream->readFloat();
-    entities[i].time   = istream->readFloat();
+    Entity& entity = entities[i];
+
+    entity.offset = istream->readVec3();
+    entity.model  = &bsp->models[i];
+    entity.str    = this;
+    entity.state  = Entity::State( istream->readInt() );
+    entity.ratio  = istream->readFloat();
+    entity.time   = istream->readFloat();
   }
 
-  boundObjects.dealloc();
-
   int nBoundObjects = istream->readInt();
-
   hard_assert( nBoundObjects <= bsp->nBoundObjects );
 
   if( bsp->nBoundObjects != 0 ) {
@@ -500,14 +497,17 @@ void Struct::readFull( InputStream* istream )
   }
 }
 
-void Struct::writeFull( BufferStream* ostream )
+void Struct::write( BufferStream* ostream )
 {
   ostream->writePoint3( mins );
   ostream->writePoint3( maxs );
   ostream->writeMat44( transf );
   ostream->writeMat44( invTransf );
+
   ostream->writePoint3( p );
+  ostream->writeInt( index );
   ostream->writeInt( heading );
+
   ostream->writeFloat( life );
   ostream->writeFloat( demolishing );
 
