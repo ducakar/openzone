@@ -59,7 +59,9 @@ class Vehicle : public Dynamic
     static const int   EVENT_SHOT2       = 13;
     static const int   EVENT_SHOT2_EMPTY = 14;
 
-    static const int   CREW_VISIBLE_BIT  = 0x00000001;
+    static const int   CREW_VISIBLE_BIT  = 0x0001;
+    static const int   AUTO_EJECT_BIT    = 0x0002;
+    static const int   ENGINE_BIT        = 0x0004;
 
     static const float AIR_FRICTION;
     static const float EXIT_EPSILON;

@@ -53,7 +53,7 @@ void Matrix::update()
   maxWeapons  = max( maxWeapons,  Weapon::pool.length() );
   maxBots     = max( maxBots,     Bot::pool.length() );
   maxVehicles = max( maxVehicles, Vehicle::pool.length() );
-  maxFrags    = max( maxFrags,    Frag::pool.length() );
+  maxFrags    = max( maxFrags,    Frag::mpool.length() );
 
   for( int i = 0; i < orbis.objects.length(); ++i ) {
     Object* obj = orbis.objects[i];
@@ -62,6 +62,12 @@ void Matrix::update()
       // If this is cleared on the object's update, we may also remove effects that were added
       // by other objects, updated before it.
       obj->events.free();
+
+      // We don't remove objects as they get destroyed but on the next update, so the destruction
+      // sound and other effects can be played on an object's destruction.
+      if( obj->flags & Object::DESTROYED_BIT ) {
+        synapse.remove( obj );
+      }
     }
   }
 
@@ -90,12 +96,7 @@ void Matrix::update()
       continue;
     }
 
-    // We don't remove objects as they get destroyed but on the next update, so the destruction
-    // sound and other effects can be played on an object's destruction.
-    if( obj->flags & Object::DESTROYED_BIT ) {
-      synapse.remove( obj );
-    }
-    else if( obj->life <= 0.0f ) {
+    if( obj->life <= 0.0f ) {
       obj->destroy();
     }
     else {
@@ -145,11 +146,11 @@ void Matrix::update()
       continue;
     }
 
-    if( frag->lifeTime <= 0.0f || frag->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
+    if( frag->life <= 0.0f || frag->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
       synapse.remove( frag );
     }
     else {
-      frag->lifeTime -= Timer::TICK_TIME;
+      frag->life -= Timer::TICK_TIME;
 
       physics.updateFrag( frag );
     }

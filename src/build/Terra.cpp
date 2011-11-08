@@ -121,10 +121,6 @@ void Terra::saveMatrix()
 
   log.print( "Dumping terrain structure to '%s' ...", destFile.cstr() );
 
-  int size = 0;
-  size += int( sizeof( int ) );
-  size += matrix::Terra::VERTS * matrix::Terra::VERTS * 9 * int( sizeof( float ) );
-
   BufferStream os;
 
   os.writeInt( matrix::Terra::VERTS );

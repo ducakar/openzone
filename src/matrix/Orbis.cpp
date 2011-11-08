@@ -227,18 +227,17 @@ int Orbis::addObject( const ObjectClass* clazz, const Point3& p, Heading heading
   return index;
 }
 
-int Orbis::addFrag( const Point3& p, const Vec3& velocity, const Vec3& colour,
-                    float restitution, float mass, float lifeTime )
+int Orbis::addFrag( const FragPool* pool, const Point3& p, const Vec3& velocity )
 {
   int index;
 
   if( fragAvailableIndices.isEmpty() ) {
     index = frags.length();
-    frags.add( new Frag( index, p, velocity, colour, restitution, mass, lifeTime ) );
+    frags.add( new Frag( pool, index, p, velocity ) );
   }
   else {
     index = fragAvailableIndices.popLast();
-    frags[index] = new Frag( index, p, velocity, colour, restitution, mass, lifeTime );
+    frags[index] = new Frag( pool, index, p, velocity );
   }
   return index;
 }
@@ -316,8 +315,9 @@ void Orbis::read( InputStream* istream )
 
   String  bspName;
   Struct* str;
+  String  className;
   Object* obj;
-  String  typeName;
+  String  poolName;
   Frag*   frag;
 
   for( int i = 0; i < nStructs; ++i ) {
@@ -339,13 +339,15 @@ void Orbis::read( InputStream* istream )
     }
   }
   for( int i = 0; i < nObjects; ++i ) {
-    typeName = istream->readString();
+    className = istream->readString();
 
-    if( typeName.isEmpty() ) {
+    if( className.isEmpty() ) {
       objects.add( null );
     }
     else {
-      obj = library.objClass( typeName )->create( istream );
+      const ObjectClass* clazz = library.objClass( className );
+
+      obj = clazz->create( istream );
       objects.add( obj );
 
       // no need to register objects since Lua state is being deserialised
@@ -357,15 +359,15 @@ void Orbis::read( InputStream* istream )
     }
   }
   for( int i = 0; i < nFrags; ++i ) {
-    bool exists = istream->readBool();
+    poolName = istream->readString();
 
-    if( !exists ) {
+    if( poolName.isEmpty() ) {
       frags.add( null );
     }
     else {
-      frag = new Frag();
-      frag->readFull( istream );
-      frag->index = i;
+      const FragPool* pool = library.fragPool( poolName );
+
+      frag = new Frag( pool, istream );
       frags.add( frag );
       position( frag );
     }
@@ -429,7 +431,6 @@ void Orbis::write( BufferStream* ostream ) const
   ostream->writeInt( objects.length() );
   ostream->writeInt( frags.length() );
 
-  String  typeName;
   Struct* str;
   Object* obj;
   Frag*   frag;
@@ -461,11 +462,11 @@ void Orbis::write( BufferStream* ostream ) const
     frag = frags[i];
 
     if( frag == null ) {
-      ostream->writeBool( false );
+      ostream->writeString( "" );
     }
     else {
-      ostream->writeBool( true );
-      frag->writeFull( ostream );
+      ostream->writeString( frag->pool->name );
+      frag->write( ostream );
     }
   }
 
@@ -517,7 +518,7 @@ void Orbis::load()
   log.indent();
 
   structs.alloc( 128 );
-  objects.alloc( 4096 );
+  objects.alloc( 24576 );
   frags.alloc( 2048 );
 
   strFreedIndices[0].alloc( 4 );
@@ -595,7 +596,7 @@ void Orbis::unload()
   Bot::pool.free();
   Vehicle::pool.free();
 
-  Frag::pool.free();
+  Frag::mpool.free();
 
   log.unindent();
   log.println( "}" );

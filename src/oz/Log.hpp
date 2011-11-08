@@ -43,10 +43,12 @@ class Log
 
     void*  stream;    ///< %File handle, but declared FILE* because we do not want to pollute
                       ///< namespace with \<cstdio\>.
-    int    tabs;      ///< Indentation levels.
     String indentStr; ///< Indent string.
+    int    tabs;      ///< Indentation levels.
 
   public:
+
+    bool   isVerbose; ///< It has no influence on <tt>Log</tt>, only for convenience.
 
     /**
      * Initialise log with default parameters to init().

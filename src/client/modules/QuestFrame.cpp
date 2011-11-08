@@ -55,7 +55,7 @@ void QuestFrame::updateTask()
   }
 
   title.setText( "%s  [%s]", quest.title.cstr(), stateText.cstr() );
-  description.setText( quest.description );
+  description.setText( "%s", quest.description.cstr() );
 
   lastState = quest.state;
 }
@@ -149,7 +149,7 @@ QuestFrame::QuestFrame() :
   y -= contentHeight;
   height += contentHeight;
 
-  title.set( 16, -font.INFOS[Font::LARGE].height - 6, ALIGN_NONE, Font::LARGE,
+  title.set( 16, -font.INFOS[Font::LARGE].height - 6, ALIGN_NONE, Font::LARGE, "%s",
              gettext( "No Quest" ) );
 
   add( new Button( " + ", open, 16, 14 ), -20, -18 );

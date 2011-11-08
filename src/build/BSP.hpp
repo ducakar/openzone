@@ -254,6 +254,9 @@ class BSP : public Bounds
     int*                indices;
     Face*               faces;
 
+    const FragPool*     fragPool;
+    int                 nFrags;
+
     Vector<matrix::BSP::BoundObject> boundObjects;
 
     bool includes( const matrix::BSP::Brush& brush, float maxDim ) const;

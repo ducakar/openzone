@@ -35,7 +35,8 @@ namespace oz
 namespace matrix
 {
 
-const float Struct::DEMOLISH_SPEED = 8.0f * Timer::TICK_TIME;
+const float Struct::DEMOLISH_SPEED         = 8.0f * Timer::TICK_TIME;
+const Vec3  Struct::DESTRUCT_FRAG_VELOCITY = Vec3( 0.0f, 0.0f, 4.0f );
 
 const Mat44 Struct::ROTATIONS[] =
 {
@@ -407,8 +408,12 @@ void Struct::destroy()
 
   onDemolish();
 
-  synapse.genFrags( 100, p, Vec3::ZERO, 10.0f, Vec3( 0.4f, 0.4f, 0.4f ), 0.1f,
-                    1.98f, 0.0f, 2.0f );
+  if( bsp->fragPool != null ) {
+    synapse.genFrags( bsp->fragPool,
+                      bsp->nFrags,
+                      Bounds( Point3( mins.x, mins.y, 0.5f * ( mins.z + maxs.z ) ), maxs ),
+                      DESTRUCT_FRAG_VELOCITY );
+  }
 }
 
 Struct::Struct( const BSP* bsp_, int index_, const Point3& p_, Heading heading_ )

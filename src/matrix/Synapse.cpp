@@ -66,9 +66,29 @@ void Synapse::cut( Dynamic* obj )
   cutObjects.add( obj->index );
 }
 
-int Synapse::addStruct( const char* name, const Point3& p, Heading heading )
+int Synapse::addStruct( const char* bspName, const Point3& p, Heading heading )
 {
-  int     index = orbis.addStruct( library.bsp( name ), p, heading );
+  return addStruct( library.bsp( bspName ), p, heading );
+}
+
+int Synapse::addObject( const char* className, const Point3& p, Heading heading )
+{
+  return addObject( library.objClass( className ), p, heading );
+}
+
+int Synapse::addFrag( const char* poolName, const Point3& p, const Vec3& velocity )
+{
+  return addFrag( library.fragPool( poolName ), p, velocity );
+}
+
+void Synapse::genFrags( const char* poolName, int nFrags, const Bounds& bb, const Vec3& velocity )
+{
+  genFrags( library.fragPool( poolName ), nFrags, bb, velocity );
+}
+
+int Synapse::addStruct( const BSP* bsp, const Point3& p, Heading heading )
+{
+  int     index = orbis.addStruct( bsp, p, heading );
   Struct* str   = orbis.structs[index];
 
   if( !orbis.position( str ) ) {
@@ -96,9 +116,9 @@ int Synapse::addStruct( const char* name, const Point3& p, Heading heading )
   return index;
 }
 
-int Synapse::addObject( const char* name, const Point3& p, Heading heading )
+int Synapse::addObject( const ObjectClass* clazz, const Point3& p, Heading heading )
 {
-  int     index = orbis.addObject( library.objClass( name ), p, heading );
+  int     index = orbis.addObject( clazz, p, heading );
   Object* obj   = orbis.objects[index];
 
   orbis.position( obj );
@@ -129,15 +149,39 @@ int Synapse::addObject( const char* name, const Point3& p, Heading heading )
   return index;
 }
 
-int Synapse::addFrag( const Point3& p, const Vec3& velocity, const Vec3& colour,
-                      float restitution, float mass, float lifeTime )
+int Synapse::addFrag( const FragPool* pool, const Point3& p, const Vec3& velocity )
 {
-  int   index = orbis.addFrag( p, velocity, colour, restitution, mass, lifeTime );
+  int   index = orbis.addFrag( pool, p, velocity );
   Frag* frag  = orbis.frags[index];
 
   orbis.position( frag );
   addedFrags.add( index );
+
   return index;
+}
+
+void Synapse::genFrags( const FragPool* pool, int nFrags, const Bounds& bb, const Vec3& velocity )
+{
+  float velocitySpread   = pool->velocitySpread;
+  float lifeSpread       = pool->lifeSpread;
+  float velocitySpread_2 = velocitySpread / 2.0f;
+  float lifeSpread_2     = lifeSpread / 2.0f;
+
+  for( int i = 0; i < nFrags; ++i ) {
+    // spawn the frag somewhere in the upper half of the structure's bounding box
+    Point3 fragPos = Point3( bb.mins.x + Math::rand() * ( bb.maxs.x - bb.mins.x ),
+                             bb.mins.y + Math::rand() * ( bb.maxs.y - bb.mins.y ),
+                             bb.mins.z + Math::rand() * ( bb.maxs.z - bb.mins.z ) );
+
+    int    index   = synapse.addFrag( pool, fragPos, velocity );
+    Frag*  frag    = orbis.frags[index];
+
+    frag->velocity += Vec3( Math::rand() * velocitySpread - velocitySpread_2,
+                            Math::rand() * velocitySpread - velocitySpread_2,
+                            Math::rand() * velocitySpread - velocitySpread_2 );
+
+    frag->life     += Math::rand() * lifeSpread - lifeSpread_2;
+  }
 }
 
 void Synapse::remove( Struct* str )
@@ -193,28 +237,6 @@ void Synapse::remove( Frag* frag )
 
   orbis.unposition( frag );
   orbis.remove( frag );
-}
-
-void Synapse::genFrags( int number, const Point3& p,
-                        const Vec3& velocity, float velocitySpread,
-                        const Vec3& colour, float colourSpread,
-                        float restitution, float mass, float lifeTime )
-{
-  float velocitySpread2 = velocitySpread / 2.0f;
-  float colourSpread2 = colourSpread / 2.0f;
-
-  for( int i = 0; i < number; ++i ) {
-    Vec3 velDisturb = Vec3( velocitySpread * Math::rand() - velocitySpread2,
-                            velocitySpread * Math::rand() - velocitySpread2,
-                            velocitySpread * Math::rand() - velocitySpread2 );
-    Vec3 colourDisturb = Vec3( colourSpread * Math::rand() - colourSpread2,
-                               colourSpread * Math::rand() - colourSpread2,
-                               colourSpread * Math::rand() - colourSpread2 );
-    float timeDisturb = lifeTime * Math::rand();
-
-    addFrag( p, velocity + velDisturb, colour + colourDisturb,
-             restitution, mass, 0.5f * lifeTime + timeDisturb );
-  }
 }
 
 void Synapse::update()

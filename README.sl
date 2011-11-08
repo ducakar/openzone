@@ -161,13 +161,17 @@ Odvisnosti za gradnjo
 - gettext
 - razvojni paketi knjižnic iz prejšnjega razdelka
 
-Licenca
--------
-Copyright (C) 2002-2011  Davorin Učakar <davorin.ucakar@gmail.com>
+Avtorske pravice za pogon OpenZone
+----------------------------------
+Copyright (C) 2002-2011  Davorin Učakar. Vse pravice pridržane.
+Avtor:   Davorin Učakar
+Kontakt: davorin.ucakar@gmail.com
 
 Ta program je POPOLNOMA BREZ GARANCIJE.
-To je prosto programje, ki se lahko razpečuje pod določenimi pogoji;
+To je prosto programje pod licenco GNU GPLv3, ki se lahko razpečuje pod določenimi pogoji;
 za podrobnosti glejte datoteko COPYING.
 
-Podatki (vse pod imenikom 'share/openzone') in priložene knjižnice ('*.dll' po imenikom
-'bin') so delo različnih avtorjev. Za podrobnosti glejte pripadajoče datoteke *README in *COPYING.
+Avtorske pravice za podatke
+---------------------------
+Podatki (vse pod imenikom 'share/openzone') in priložene knjižnice ('*.dll' pod imenikom 'bin') so
+delo različnih avtorjev. Za podrobnosti glejte pripadajoče datoteke *README in *COPYING.

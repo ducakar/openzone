@@ -567,7 +567,7 @@ int main( int argc, char** argv )
   String dataDir   = prefixDir + "/share/" OZ_APPLICATION_NAME;
 
   log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
-  if( File::chdir( dataDir ) != 0 ) {
+  if( !File::chdir( dataDir ) ) {
     log.printEnd( " Failed" );
     return -1;
   }

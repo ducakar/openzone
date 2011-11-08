@@ -55,7 +55,7 @@ function onCreate()
 
   ozOrbisAddObj( "reaper", 145, -15, 73 )
 
-  ozOrbisGenFrags( 1000, 136, -3, 71, 0, 0, 10, 15, 0.4, 0.4, 0.4, 0.2, 1.95, 0.1, 5.0 )
+  ozOrbisGenFrags( "gibs", 1000, 132, -7, 73, 140, 1, 75, 0, 0, 10 )
 
   ozOrbisAddObj( "musicPlayer", 135, -2, 73 )
   ozOrbisAddObj( "galileo", 136, -2, 73 )

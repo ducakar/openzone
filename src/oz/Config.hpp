@@ -49,37 +49,21 @@ class Config
     /// Column for value alignment when writing .rc configuration files.
     static const int ALIGNMENT = 32;
 
-    /**
-     * Configuration entry.
-     */
-    struct Elem
-    {
-      const char* key;   ///< Key.
-      const char* value; ///< Value.
-
-      /**
-       * True iff <code>String::compare( key, e.key ) < 0</code>.
-       */
-      bool operator < ( const Elem& e ) const
-      {
-        return String::compare( key, e.key ) < 0;
-      }
-    };
-
     HashString<String, SIZE>            vars;     ///< %List of variables.
 #ifndef NDEBUG
     mutable HashString<nullptr_t, SIZE> usedVars; ///< %List of accessed variables.
+    String                              filePath; ///< For warning messages about unused variables.
 #endif
 
     /**
      * Load configuration from a .rc file (does not override existing variables).
      */
-    bool loadConf( const char* file );
+    bool loadConf( const char* path );
 
     /**
      * Save configuration into a .rc file (entries are sorted by their keys).
      */
-    bool saveConf( const char* file );
+    bool saveConf( const char* path );
 
   public:
 
@@ -159,7 +143,7 @@ class Config
      *
      * @return True on success.
      */
-    bool load( const char* file );
+    bool load( const char* path );
 
     /**
      * Write variables to a .rc file.
@@ -171,7 +155,7 @@ class Config
      *
      * @return True on success.
      */
-    bool save( const char* file );
+    bool save( const char* path );
 
     /**
      * Clear variables.

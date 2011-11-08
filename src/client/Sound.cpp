@@ -332,19 +332,24 @@ void Sound::init()
   log.unindent();
   log.println( "}" );
 
-  String sExtensions = alGetString( AL_EXTENSIONS );
-  DArray<String> extensions = sExtensions.trim().split( ' ' );
-
   log.println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );
   log.println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );
   log.println( "OpenAL version: %s", alGetString( AL_VERSION ) );
-  log.println( "OpenAL extensions {" );
-  log.indent();
-  foreach( extension, extensions.citer() ) {
-    log.println( "%s", extension->cstr() );
+
+  if( log.isVerbose ) {
+    String sExtensions = alGetString( AL_EXTENSIONS );
+    DArray<String> extensions = sExtensions.trim().split( ' ' );
+
+    log.println( "OpenAL extensions {" );
+    log.indent();
+
+    foreach( extension, extensions.citer() ) {
+      log.println( "%s", extension->cstr() );
+    }
+
+    log.unindent();
+    log.println( "}" );
   }
-  log.unindent();
-  log.println( "}" );
 
   selectedTrack = -1;
   currentTrack  = -1;

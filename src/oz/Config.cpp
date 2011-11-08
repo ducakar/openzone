@@ -35,14 +35,30 @@ namespace oz
 
 Config config;
 
-bool Config::loadConf( const char* file )
+// Needed when sorting entries for printing.
+struct Elem
 {
+  const char* key;
+  const char* value;
+
+  bool operator < ( const Elem& e ) const
+  {
+    return String::compare( key, e.key ) < 0;
+  }
+};
+
+bool Config::loadConf( const char* path )
+{
+#ifndef NDEBUG
+  filePath = path;
+#endif
+
   char buffer[BUFFER_SIZE];
   char ch;
 
-  FILE* f = fopen( file, "r" );
+  FILE* f = fopen( path, "r" );
   if( f == null ) {
-    log.println( "Error reading variables from '%s' ... Cannot open file", file );
+    log.println( "Error reading variables from '%s' ... Cannot open file", path );
     return false;
   }
 
@@ -109,9 +125,9 @@ bool Config::loadConf( const char* file )
   return true;
 }
 
-bool Config::saveConf( const char* file )
+bool Config::saveConf( const char* path )
 {
-  log.print( "Writing variables to '%s' ...", file );
+  log.print( "Writing variables to '%s' ...", path );
 
   // first we sort all the variables by key
   int size = vars.length();
@@ -125,7 +141,7 @@ bool Config::saveConf( const char* file )
   }
   sortedVars.sort();
 
-  FILE* f = fopen( file, "w" );
+  FILE* f = fopen( path, "w" );
   if( f == null ) {
     log.printEnd( " Cannot open file" );
     return false;
@@ -358,27 +374,27 @@ const char* Config::getSet( const char* key, const char* defVal )
   }
 }
 
-bool Config::load( const char* file )
+bool Config::load( const char* path )
 {
-  const char* suffix = String::findLast( file, '.' );
+  const char* suffix = String::findLast( path, '.' );
 
   if( suffix != null && String::equals( suffix, ".rc" ) ) {
-    return loadConf( file );
+    return loadConf( path );
   }
 
-  log.println( "Unknown configuration file %s", file );
+  log.println( "Unknown configuration file %s", path );
   return false;
 }
 
-bool Config::save( const char* file )
+bool Config::save( const char* path )
 {
-  const char* suffix = String::findLast( file, '.' );
+  const char* suffix = String::findLast( path, '.' );
 
   if( suffix != null && String::equals( suffix, ".rc" ) ) {
-    return saveConf( file );
+    return saveConf( path );
   }
 
-  log.println( "Unknown configuration file %s", file );
+  log.println( "Unknown configuration file %s", path );
   return false;
 }
 
@@ -388,7 +404,7 @@ void Config::clear( bool suppressWarnings )
   if( !suppressWarnings ) {
     foreach( var, vars.citer() ) {
       if( !usedVars.contains( var.key() ) ) {
-        log.println( "config: unused variable '%s'", var.key().cstr() );
+        log.println( "%s: unused variable '%s'", filePath.cstr(), var.key().cstr() );
       }
     }
   }

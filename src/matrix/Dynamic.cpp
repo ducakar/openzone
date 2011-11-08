@@ -39,9 +39,6 @@ Pool<Dynamic, 4096> Dynamic::pool;
 
 void Dynamic::onDestroy()
 {
-  synapse.genFrags( clazz->nFrags, p, velocity + Vec3( 0.0f, 0.0f, 2.0f ), 4.0f,
-                    Vec3( 1.0f, 1.0f, 1.0f ), 0.1f, 1.8f, 0.0f, 2.0f );
-
   for( int i = 0; i < items.length(); ++i ) {
     Object* obj = orbis.objects[ items[i] ];
 
@@ -52,6 +49,14 @@ void Dynamic::onDestroy()
 
   if( !clazz->onDestroy.isEmpty() ) {
     lua.objectCall( clazz->onDestroy, this );
+  }
+
+  if( clazz->fragPool != null ) {
+    synapse.genFrags( clazz->fragPool,
+                      clazz->nFrags,
+                      Bounds( Point3( p.x - dim.x, p.y - dim.y, p.z ),
+                              Point3( p.x + dim.x, p.y + dim.y, p.z + dim.z ) ),
+                      velocity + DESTRUCT_FRAG_VELOCITY );
   }
 }
 

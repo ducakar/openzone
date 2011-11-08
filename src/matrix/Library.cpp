@@ -680,7 +680,7 @@ void Library::initFragPools()
   File dir;
   DArray<File> dirList;
 
-  log.println( "fragment pools (*.list in 'frag') {" );
+  log.println( "fragment pools (*.rc in 'frag') {" );
   log.indent();
 
   dir.setPath( "frag" );
@@ -690,7 +690,7 @@ void Library::initFragPools()
     throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "list" ) ) {
+    if( !file->hasExtension( "rc" ) ) {
       continue;
     }
 
@@ -733,27 +733,25 @@ void Library::initClasses()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
-
     if( objClasses.contains( name ) ) {
       classConfig.clear();
       throw Exception( "Duplicated class '%s'", name.cstr() );
     }
     if( !classConfig.load( file->path() ) ) {
       classConfig.clear( true );
-      throw Exception( "Class parse error" );
+      throw Exception( "%s: Class parse error", name.cstr() );
     }
 
     const char* base = classConfig.get( "base", "" );
     if( String::isEmpty( base ) ) {
       classConfig.clear( true );
-      throw Exception( "'base' missing in class description" );
+      throw Exception( "%s: 'base' missing in class description", name.cstr() );
     }
 
     const ObjectClass::CreateFunc* createFunc = baseClasses.find( base );
     if( createFunc == null ) {
       classConfig.clear( true );
-      throw Exception( "Invalid class base '%s'", base );
+      throw Exception( "%s: Invalid class base '%s'", name.cstr(), base );
     }
 
     // First we only add class instances, we don't initialise them as each class may have references
@@ -785,6 +783,8 @@ void Library::initClasses()
 
   // initialise all classes
   foreach( classIter, objClasses.iter() ) {
+    log.println( "%s", classIter.key().cstr() );
+
     String path = "class/" + classIter.key() + ".rc";
 
     if( !classConfig.load( path ) ) {

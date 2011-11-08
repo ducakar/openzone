@@ -39,18 +39,22 @@ class FragPool
 
     String name;
 
-    float  restitution;
-    float  lifeTime;
+    float  velocitySpread; ///< Used when generating multiple frags from <code>Object::onDestroy()
+                           ///< </code> or <code>Struct::destroy()</code>.
 
-    int    imagoType;
-    int    imagoModel;
+    float  life;
+    float  lifeSpread;
+    float  mass;
+    float  restitution;
+
+    Vector<int> models;
 
   public:
 
-    FragPool( const char* name );
+    explicit FragPool( const char* name );
 
-    Frag* create( int index, const Point3& pos ) const;
-    Frag* create( int index, InputStream* istream ) const;
+    Frag* create( int index, const Point3& pos, const Vec3& velocity ) const;
+    Frag* create( InputStream* istream ) const;
 
 };
 

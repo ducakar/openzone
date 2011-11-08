@@ -51,16 +51,13 @@ const String& NamePool::genName( int list ) const
 
 void NamePool::init()
 {
-  log.println( "Loading name databases {" );
-  log.indent();
+  log.print( "Loading name databases ..." );
 
   // a default entry, we need it if nothing is read
   names.add( "" );
   listPositions.add( names.length() );
 
   for( int i = 0; i < library.nameLists.length(); ++i ) {
-    log.print( "'%s' ...", library.nameLists[i].name.cstr() );
-
     FILE* file = fopen( library.nameLists[i].path, "r" );
     if( file == null ) {
       throw Exception( "Reading '%s' failed", library.nameLists[i].path.cstr() );
@@ -77,14 +74,11 @@ void NamePool::init()
     fclose( file );
 
     listPositions.add( names.length() );
-
-    log.printEnd( " OK" );
   }
 
   hard_assert( listPositions.length() == library.nameLists.length() + 1 );
 
-  log.unindent();
-  log.println( "}" );
+  log.printEnd( " OK" );
 }
 
 void NamePool::free()

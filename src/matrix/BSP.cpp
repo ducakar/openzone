@@ -54,6 +54,9 @@ BSP::BSP( const char* name_, int id_ ) : name( name_ ), id( id_ )
   brushSides   = null;
   models       = null;
 
+  fragPool     = null;
+  nFrags       = 0;
+
   nUsers       = 0;
 }
 
@@ -64,9 +67,7 @@ BSP::~BSP()
 
 void BSP::load()
 {
-  hard_assert( nUsers == 0 );
-
-  log.print( "Loading OpenZone BSP structure '%s' ...", name.cstr() );
+  log.print( "Loading BSP structure '%s' ...", name.cstr() );
 
   String sPath = "bsp/" + name + ".ozBSP";
 
@@ -212,21 +213,27 @@ void BSP::load()
     boundObjects[i].heading = Heading( is.readInt() );
   }
 
-  file.unmap();
+  String sFragPool = is.readString();
 
-  nUsers = 1;
+  fragPool = sFragPool.isEmpty() ? null : library.fragPool( sFragPool );
+  nFrags   = is.readInt();
+
+  hard_assert( !is.isAvailable() );
+
+  file.unmap();
 
   log.printEnd( " OK" );
 }
 
 void BSP::unload()
 {
-  hard_assert( ( nUsers == 0 ) == ( planes == null ) );
-
-  log.print( "Freeing BSP structure '%s' ...", name.cstr() );
+  log.print( "Unloading BSP structure '%s' ...", name.cstr() );
 
   if( planes != null ) {
     delete[] reinterpret_cast<char*>( planes );
+
+    life         = 0.0f;
+    resistance   = 0.0f;
 
     nPlanes      = 0;
     nNodes       = 0;
@@ -243,6 +250,9 @@ void BSP::unload()
     brushes      = null;
     brushSides   = null;
     models       = null;
+
+    fragPool     = null;
+    nFrags       = 0;
 
     nUsers       = 0;
   }
