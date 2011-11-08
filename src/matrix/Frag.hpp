@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "matrix/common.hpp"
+#include "matrix/FragPool.hpp"
 
 namespace oz
 {
@@ -38,10 +38,9 @@ class Frag
 {
   public:
 
-    static const float MAX_ROTVELOCITY;
     static const float DAMAGE_THRESHOLD;
 
-    static Pool<Frag, 2048> pool;
+    static Pool<Frag, 2048> mpool;
 
     /*
      *  FIELDS
@@ -51,46 +50,41 @@ class Frag
     Frag*  next[1];
 
     Cell*  cell;
-    int    index;       // position in world.objects vector
+    int    index;         // position in world.objects vector
 
-    int    type;        // pool of graphical models used
-    Point3 p;           // position
+    const FragPool* pool;
+
+    Point3 p;
     Vec3   velocity;
-    Vec3   colour;
 
-    float  restitution; // 1.0 < restitution < 2.0
+    float  life;
     float  mass;
-    float  lifeTime;
-
-    Frag() : cell( null ), index( -1 )
-    {}
+    float  restitution;
 
     // no copying
     Frag( const Frag& ) = delete;
     Frag& operator = ( const Frag& ) = delete;
-
-    explicit Frag( int index, const Point3& p, const Vec3& velocity, const Vec3& colour,
-                   float restitution, float mass, float lifeTime );
 
     void damage( float damage )
     {
       damage -= DAMAGE_THRESHOLD;
 
       if( damage > 0.0f ) {
-        lifeTime = 0.0f;
+        life = 0.0f;
       }
     }
 
-    /*
-     *  SERIALISATION
-     */
+  public:
 
-    void readFull( InputStream* istream );
-    void writeFull( BufferStream* ostream );
+    explicit Frag( const FragPool* pool, int index, const Point3& p, const Vec3& velocity );
+    explicit Frag( const FragPool* pool, InputStream* istream );
+
+    void write( BufferStream* ostream );
+
     void readUpdate( InputStream* istream );
     void writeUpdate( BufferStream* ostream );
 
-  OZ_STATIC_POOL_ALLOC( pool )
+  OZ_STATIC_POOL_ALLOC( mpool )
 
 };
 

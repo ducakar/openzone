@@ -33,7 +33,7 @@ namespace oz
 
 Log log;
 
-Log::Log() : stream( stdout ), tabs( 0 ), indentStr( "  " )
+Log::Log() : stream( stdout ), indentStr( "  " ), tabs( 0 ), isVerbose( false )
 {}
 
 Log::~Log()

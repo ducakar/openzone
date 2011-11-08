@@ -175,16 +175,23 @@ void Vehicle::onDestroy()
       bot->p = p + rotMat * clazz->pilotPos;
       bot->p.z += dim.z + EXIT_EPSILON;
 
-      // kill bot if eject path is blocked
-      if( collider.overlaps( *bot, this ) ) {
-        bot->kill();
-        bot->exit();
+      if( state & AUTO_EJECT_BIT ) {
+        // kill bot if eject path is blocked
+        if( collider.overlaps( *bot, this ) ) {
+          bot->kill();
+          bot->exit();
+        }
+        else {
+          float hsc[2];
+          Math::sincos( h, &hsc[0], &hsc[1] );
+
+          bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
+          bot->exit();
+        }
       }
       else {
-        float hsc[2];
-        Math::sincos( h, &hsc[0], &hsc[1] );
-
-        bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
+        bot->destroy();
+        // we must put bot out or the death sound won't be played
         bot->exit();
       }
     }

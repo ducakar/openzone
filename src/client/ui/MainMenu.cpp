@@ -107,9 +107,8 @@ MainMenu::MainMenu() : Frame( 0, 0, 400, 450, OZ_APPLICATION_TITLE " v" OZ_APPLI
   x = ( camera.width - width ) / 2;
   y = ( camera.height - height ) / 2;
 
-  copyright.setText(
-      String( "OpenZone  Copyright © 2002-2011  Davorin Učakar" ) +
-      gettext( "\n\nThis program comes with ABSOLUTELY NO WARRANTY. "
+  copyright.setText( "OpenZone  Copyright © 2002-2011  Davorin Učakar\n\n%s",
+      gettext( "This program comes with ABSOLUTELY NO WARRANTY. "
                "This is free software, and you are welcome to redistribute it "
                "under certain conditions; See COPYING file for details.\n\n"
                "Data files come form different sources. See respective README and COPYING "

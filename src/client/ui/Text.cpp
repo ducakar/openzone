@@ -107,7 +107,7 @@ void Text::setText( const char* s, ... )
     char ch = *end;
     *end = '\0';
 
-    labels[line].setText( pos );
+    labels[line].setText( "%s", pos );
 
     *end = ch;
 
@@ -117,7 +117,7 @@ void Text::setText( const char* s, ... )
     ++line;
   }
 
-  labels[line].setText( pos );
+  labels[line].setText( "%s", pos );
   ++line;
 
   while( line < nLines ) {

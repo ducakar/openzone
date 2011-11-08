@@ -79,13 +79,13 @@ Frame::Frame( int width, int height, const char* title_ ) :
 {
   int textHeight = font.INFOS[Font::LARGE].height;
 
-  title.set( width / 2, -textHeight - 8, ALIGN_HCENTRE, Font::LARGE, title_ );
+  title.set( width / 2, -textHeight - 8, ALIGN_HCENTRE, Font::LARGE, "%s", title_ );
 }
 
 Frame::Frame( int x, int y, int width, int height, const char* title_ ) :
     Area( x, y, width, height + Font::INFOS[Font::LARGE].height + 8 )
 {
-  title.set( width / 2, -textHeight - 8, ALIGN_HCENTRE, Font::LARGE, title_ );
+  title.set( width / 2, -textHeight - 8, ALIGN_HCENTRE, Font::LARGE, "%s", title_ );
 }
 
 }

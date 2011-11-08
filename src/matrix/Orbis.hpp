@@ -116,8 +116,7 @@ class Orbis : public Bounds
 
     int  addStruct( const BSP* bsp, const Point3& p, Heading heading );
     int  addObject( const ObjectClass* clazz, const Point3& p, Heading heading );
-    int  addFrag( const Point3& p, const Vec3& velocity, const Vec3& colour,
-                  float restitution, float mass, float lifeTime );
+    int  addFrag( const FragPool* pool, const Point3& p, const Vec3& velocity );
 
     void remove( Struct* str );
     void remove( Object* obj );

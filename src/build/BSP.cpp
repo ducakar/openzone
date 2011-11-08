@@ -78,6 +78,11 @@ void BSP::load()
   life = bspConfig.get( "life", DEFAULT_LIFE );
   resistance = bspConfig.get( "resistance", DEFAULT_RESISTANCE );
 
+  String sFragPool = bspConfig.get( "fragPool", "" );
+
+  fragPool = sFragPool.isEmpty() ? null : library.fragPool( sFragPool );
+  nFrags   = bspConfig.get( "nFrags", 0 );
+
   mins = Point3( -maxDim, -maxDim, -maxDim );
   maxs = Point3( +maxDim, +maxDim, +maxDim );
 
@@ -1071,6 +1076,9 @@ void BSP::saveMatrix()
     os.writePoint3( boundObjects[i].pos );
     os.writeInt( boundObjects[i].heading );
   }
+
+  os.writeString( fragPool == null ? "" : fragPool->name );
+  os.writeInt( nFrags );
 
   File( path ).write( &os );
 

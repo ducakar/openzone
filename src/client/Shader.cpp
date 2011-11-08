@@ -106,8 +106,6 @@ Shader::Light::Light( const Point3& pos_, const Vec4& diffuse_ ) :
 
 void Shader::compileShader( uint id, const char* path, const char** sources, int* lengths ) const
 {
-  log.print( "Compiling '%s' ...", path );
-
   File file( path );
   if( !file.map() ) {
     throw Exception( "Shader source mmap failed" );
@@ -133,15 +131,10 @@ void Shader::compileShader( uint id, const char* path, const char** sources, int
   logBuffer[BUFFER_SIZE - 1] = '\0';
 
   if( result != GL_TRUE ) {
-    log.printEnd( " Failed:" );
-    log.printRaw( "%s", &logBuffer[0] );
+    log.printRaw( "\n%s\n", &logBuffer[0] );
   }
   else if( length != 0 ) {
-    log.printEnd( " OK, but:" );
-    log.printRaw( "%s\n", &logBuffer[0] );
-  }
-  else {
-    log.printEnd( " OK" );
+    log.printRaw( "\n%s\n", &logBuffer[0] );
   }
 
   if( result != GL_TRUE ) {
@@ -155,8 +148,7 @@ void Shader::loadProgram( int id, const char** sources, int* lengths )
 {
   const String& name = library.shaders[id].name;
 
-  log.println( "Creating program '%s' {", name.cstr() );
-  log.indent();
+  log.print( "Building '%s' ...", name.cstr() );
 
   programs[id].vertShader = glCreateShader( GL_VERTEX_SHADER );
   programs[id].fragShader = glCreateShader( GL_FRAGMENT_SHADER );
@@ -167,8 +159,6 @@ void Shader::loadProgram( int id, const char** sources, int* lengths )
   programs[id].program = glCreateProgram();
   glAttachShader( programs[id].program, programs[id].vertShader );
   glAttachShader( programs[id].program, programs[id].fragShader );
-
-  log.print( "Linking ..." );
 
   OZ_REGISTER_ATTRIBUTE( Attrib::POSITION,            "inPosition" );
   OZ_REGISTER_ATTRIBUTE( Attrib::TEXCOORD,            "inTexCoord" );
@@ -189,7 +179,6 @@ void Shader::loadProgram( int id, const char** sources, int* lengths )
     glGetProgramInfoLog( programs[id].program, BUFFER_SIZE, &length, logBuffer );
     logBuffer[BUFFER_SIZE - 1] = '\0';
 
-    log.printEnd( " Error:" );
     log.printRaw( "\n%s", logBuffer );
     delete[] logBuffer;
 
@@ -230,9 +219,6 @@ void Shader::loadProgram( int id, const char** sources, int* lengths )
   OZ_GL_CHECK_ERROR();
 
   log.printEnd( " OK" );
-
-  log.unindent();
-  log.println( "}" );
 }
 
 Shader::Shader() : mode( UI ), plain( -1 )
@@ -296,18 +282,13 @@ void Shader::load()
   sources[0] = defines;
   lengths[0] = defines.length();
 
-  log.print( "Reading 'glsl/header.glsl' ..." );
-
   Buffer buffer = File( "glsl/header.glsl" ).read();
   if( buffer.isEmpty() ) {
-    log.printEnd( " Failed" );
-    throw Exception( "Shader loading failed" );
+    throw Exception( "header.glsl reading failed" );
   }
 
   sources[1] = buffer.begin();
   lengths[1] = buffer.length();
-
-  log.printEnd( " OK" );
 
   for( int i = 0; i < library.shaders.length(); ++i ) {
     if( i == plain ) {
@@ -401,18 +382,14 @@ void Shader::init()
   sources[0] = defines;
   lengths[0] = defines.length();
 
-  log.print( "Reading 'glsl/header.glsl' ..." );
-
   Buffer buffer = File( "glsl/header.glsl" ).read();
   if( buffer.isEmpty() ) {
     log.printEnd( " Failed" );
-    throw Exception( "Shader loading failed" );
+    throw Exception( "header.glsl reading failed" );
   }
 
   sources[1] = buffer.begin();
   lengths[1] = buffer.length();
-
-  log.printEnd( " OK" );
 
   plain     = library.shaderIndex( "plain" );
   mesh      = library.shaderIndex( "mesh" );

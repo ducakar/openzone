@@ -35,7 +35,7 @@ namespace matrix
 
 struct Cell;
 struct Hit;
-class Bot;
+class  Bot;
 
 // static object abstract class
 class Object : public AABB
@@ -204,6 +204,7 @@ class Object : public AABB
     static const float MOMENTUM_DAMAGE_COEF;
     static const float DAMAGE_INTENSITY_COEF;
     static const float DAMAGE_BASE_INTENSITY;
+    static const Vec3  DESTRUCT_FRAG_VELOCITY;
 
     struct Event
     {

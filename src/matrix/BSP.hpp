@@ -107,34 +107,37 @@ class BSP : public Bounds
       Heading            heading;
     };
 
-    String       name;          ///< Name.
-    String       title;         ///< Title.
-    String       description;   ///< Description.
-    Vector<int>  sounds;        ///< Set of used sound samples.
+    String          name;          ///< Name.
+    String          title;         ///< Title.
+    String          description;   ///< Description.
+    Vector<int>     sounds;        ///< Set of used sound samples.
 
-    float        life;
-    float        resistance;
+    float           life;
+    float           resistance;
 
-    int          nPlanes;
-    int          nNodes;
-    int          nLeaves;
-    int          nLeafBrushes;
-    int          nModels;
-    int          nBrushes;
-    int          nBrushSides;
-    int          nBoundObjects;
+    int             nPlanes;
+    int             nNodes;
+    int             nLeaves;
+    int             nLeafBrushes;
+    int             nModels;
+    int             nBrushes;
+    int             nBrushSides;
+    int             nBoundObjects;
 
-    Plane*       planes;
-    Node*        nodes;
-    Leaf*        leaves;
-    int*         leafBrushes;
-    Model*       models;
-    Brush*       brushes;
-    int*         brushSides;
-    BoundObject* boundObjects;
+    Plane*          planes;
+    Node*           nodes;
+    Leaf*           leaves;
+    int*            leafBrushes;
+    Model*          models;
+    Brush*          brushes;
+    int*            brushSides;
+    BoundObject*    boundObjects;
 
-    int          id;            ///< Used for indexing BSPs in Context.
-    int          nUsers;
+    const FragPool* fragPool;
+    int             nFrags;
+
+    int             id;            ///< Used for indexing BSPs in Context.
+    int             nUsers;
 
     explicit BSP( const char* name, int id );
     ~BSP();

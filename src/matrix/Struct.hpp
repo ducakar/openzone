@@ -38,6 +38,7 @@ class Struct : public Bounds
   private:
 
     static const float DEMOLISH_SPEED;
+    static const Vec3  DESTRUCT_FRAG_VELOCITY;
     static const Mat44 ROTATIONS[];
 
   public:
@@ -86,10 +87,12 @@ class Struct : public Bounds
   public:
 
     const BSP*  bsp;
+
     Point3      p;
     int         index;
     int         id;           ///< Used for Context, so bsp doesn't have to be dereferenced.
     Heading     heading;
+
     float       life;
     float       resistance;
     float       demolishing;

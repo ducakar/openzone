@@ -160,13 +160,17 @@ Build dependencies
 - gettext
 - development packages of libraries from previous section
 
-Licence
--------
-Copyright (C) 2002-2011  Davorin Učakar <davorin.ucakar@gmail.com>
+OpenZone engine copyright
+-------------------------
+Copyright (C) 2002-2011  Davorin Učakar
+Author:  Davorin Učakar
+Contact: davorin.ucakar@gmail.com
 
 This program comes with ABSOLUTELY NO WARRANTY.
-This is free software, and you are welcome to redistribute it
+This is free software under GNU GPLv3 licence, and you are welcome to redistribute it
 under certain conditions; See COPYING file for details.
 
+Data copyrights
+---------------
 Data (everything under 'share/openzone' directory) and included libraries ('*.dll' under 'bin'
 directory) are work of various authors. See respective *README and *COPYING files for details.

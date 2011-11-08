@@ -153,6 +153,8 @@ void System::resetSignals()
 
 void System::trap()
 {
+  system( "paplay /usr/share/sounds/pop.wav &" );
+
   signal( SIGTRAP, SIG_IGN );
   raise( SIGTRAP );
   signal( SIGTRAP, SIG_DFL );
@@ -169,6 +171,8 @@ void System::halt()
 
 void System::error( const char* msg, ... )
 {
+  system( "paplay /usr/share/sounds/pop.wav &" );
+
   va_list ap;
   va_start( ap, msg );
 
@@ -187,8 +191,6 @@ void System::error( const char* msg, ... )
   }
 
   va_end( ap );
-
-  system( "paplay /usr/share/sounds/pop.wav &" );
 }
 
 #ifdef OZ_MINGW
@@ -201,6 +203,8 @@ int System::getStackTrace( char** bufferPtr )
 
 void System::abort( const char* msg, ... )
 {
+  system( "paplay /usr/share/sounds/pop.wav &" );
+
   System::resetSignals();
 
   va_list ap;
@@ -211,8 +215,6 @@ void System::abort( const char* msg, ... )
   fprintf( stderr, "\n" );
   vfprintf( stderr, msg, ap );
   fprintf( stderr, "\n" );
-
-  system( "paplay /usr/share/sounds/pop.wav &" );
 
   ::abort();
 }

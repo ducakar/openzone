@@ -26,59 +26,54 @@
 
 #include "matrix/Frag.hpp"
 
+#include "matrix/FragPool.hpp"
+
 namespace oz
 {
 namespace matrix
 {
 
-const float Frag::MAX_ROTVELOCITY = 8.0f * Timer::TICK_TIME;
 const float Frag::DAMAGE_THRESHOLD = 50.0f;
 
-Pool<Frag, 2048> Frag::pool;
+Pool<Frag, 2048> Frag::mpool;
 
-Frag::Frag( int index_, const Point3& p_, const Vec3& velocity_, const Vec3& colour_,
-                    float restitution_, float mass_, float lifeTime_ ) :
-    cell( null ), index( index_ ), p( p_ ), velocity( velocity_ ), colour( colour_ ),
-    restitution( restitution_ ), mass( mass_ ), lifeTime( lifeTime_ )
+Frag::Frag( const FragPool* pool_, int index_, const Point3& p_, const Vec3& velocity_ )
 {
-  hard_assert( 1.0f + EPSILON < restitution && restitution < 2.0f - EPSILON );
-  hard_assert( mass >= 0.0f );
-  hard_assert( lifeTime > 0.0f );
+  cell        = null;
+  index       = index_;
+  pool        = pool_;
+  p           = p_;
+  velocity    = velocity_;
+  life        = pool->life;
+  mass        = pool->mass;
+  restitution = pool->restitution;
 }
 
-void Frag::readFull( InputStream* istream )
+Frag::Frag( const FragPool* pool_, InputStream* istream )
 {
+  cell        = null;
+  index       = istream->readInt();
+  pool        = pool_;
   p           = istream->readPoint3();
   velocity    = istream->readVec3();
-  colour      = istream->readVec3();
-
-  restitution = istream->readFloat();
-  mass        = istream->readFloat();
-  lifeTime    = istream->readFloat();
+  life        = istream->readFloat();
+  mass        = pool->mass;
+  restitution = pool->restitution;
 }
 
-void Frag::writeFull( BufferStream* ostream )
+void Frag::write( BufferStream* ostream )
 {
+  ostream->writeInt( index );
   ostream->writePoint3( p );
   ostream->writeVec3( velocity );
-  ostream->writeVec3( colour );
-
-  ostream->writeFloat( restitution );
-  ostream->writeFloat( mass );
-  ostream->writeFloat( lifeTime );
+  ostream->writeFloat( life );
 }
 
-void Frag::readUpdate( InputStream* istream )
-{
-  p        = istream->readPoint3();
-  velocity = istream->readVec3();
-}
+void Frag::readUpdate( InputStream* )
+{}
 
-void Frag::writeUpdate( BufferStream* ostream )
-{
-  ostream->writePoint3( p );
-  ostream->writeVec3( velocity );
-}
+void Frag::writeUpdate( BufferStream* )
+{}
 
 }
 }

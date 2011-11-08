@@ -46,6 +46,7 @@ static_assert( ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
 
 #ifdef OZ_TRACE_LEAKS
 
+// Holds info about a memory allocation, used to track memory leaks and new/delete mismatches.
 struct TraceEntry
 {
   TraceEntry* next;

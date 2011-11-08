@@ -694,9 +694,9 @@ int Lua::ozOrbisAddStr( lua_State* l )
 {
   ARG( 5 );
 
-  const char* name = tostring( 1 );
-  Point3 p = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
-  Heading heading = Heading( toint( 5 ) );
+  const char* name    = tostring( 1 );
+  Point3      p       = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
+  Heading     heading = Heading( toint( 5 ) );
 
   int index = synapse.addStruct( name, p, heading );
   lua.str = orbis.structs[index];
@@ -708,9 +708,9 @@ int Lua::ozOrbisTryAddStr( lua_State* l )
 {
   ARG( 5 );
 
-  const char* name = tostring( 1 );
-  Point3 p = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
-  Heading heading = Heading( toint( 5 ) );
+  const char* name    = tostring( 1 );
+  Point3      p       = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
+  Heading     heading = Heading( toint( 5 ) );
 
   Bounds bounds = *library.bsp( name );
   bounds = Struct::rotate( bounds, heading ) + ( p - Point3::ORIGIN );
@@ -731,9 +731,9 @@ int Lua::ozOrbisAddObj( lua_State* l )
 {
   ARG_GE( 4 );
 
-  const char* name = tostring( 1 );
-  Point3 p = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
-  Heading heading = Heading( toint( 5 ) );
+  const char* name    = tostring( 1 );
+  Point3      p       = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
+  Heading     heading = Heading( toint( 5 ) );
 
   int index = synapse.addObject( name, p, heading );
   lua.obj = orbis.objects[index];
@@ -745,9 +745,9 @@ int Lua::ozOrbisTryAddObj( lua_State* l )
 {
   ARG_GE( 4 );
 
-  const char* name = tostring( 1 );
-  Point3 p = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
-  Heading heading = Heading( toint( 5 ) );
+  const char* name    = tostring( 1 );
+  Point3      p       = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
+  Heading     heading = Heading( toint( 5 ) );
 
   const ObjectClass* clazz = library.objClass( name );
 
@@ -771,16 +771,13 @@ int Lua::ozOrbisTryAddObj( lua_State* l )
 
 int Lua::ozOrbisAddFrag( lua_State* l )
 {
-  ARG( 12 );
+  ARG( 7 );
 
-  Point3 p           = Point3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) );
-  Vec3   velocity    = Vec3( tofloat( 4 ), tofloat( 5 ), tofloat( 6 ) );
-  Vec3   colour      = Vec3( tofloat( 7 ), tofloat( 8 ), tofloat( 9 ) );
-  float  restitution = tofloat( 10 );
-  float  mass        = tofloat( 11 );
-  float  lifeTime    = tofloat( 12 );
+  const char* name     = tostring( 1 );
+  Point3      p        = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
+  Vec3        velocity = Vec3( tofloat( 5 ), tofloat( 6 ), tofloat( 7 ) );
 
-  int index = synapse.addFrag( p, velocity, colour, restitution, mass, lifeTime );
+  int index = synapse.addFrag( name, p, velocity );
   lua.frag = orbis.frags[index];
   pushint( index );
   return 1;
@@ -788,20 +785,15 @@ int Lua::ozOrbisAddFrag( lua_State* l )
 
 int Lua::ozOrbisGenFrags( lua_State* l )
 {
-  ARG( 15 );
+  ARG( 11 );
 
-  int    number         = int( tofloat( 1 ) );
-  Point3 p              = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
-  Vec3   velocity       = Vec3( tofloat( 5 ), tofloat( 6 ), tofloat( 7 ) );
-  float  velocitySpread = tofloat( 8 );
-  Vec3   colour         = Vec3( tofloat( 9 ), tofloat( 10 ), tofloat( 11 ) );
-  float  colourSpread   = tofloat( 12 );
-  float  restitution    = tofloat( 13 );
-  float  mass           = tofloat( 14 );
-  float  lifeTime       = tofloat( 15 );
+  const char* name     = tostring( 1 );
+  int         nFrags   = toint( 2 );
+  Bounds      bb       = Bounds( Point3( tofloat( 3 ), tofloat( 4 ), tofloat( 5 ) ),
+                                 Point3( tofloat( 6 ), tofloat( 7 ), tofloat( 8 ) ) );
+  Vec3        velocity = Vec3( tofloat( 9 ), tofloat( 10 ), tofloat( 11 ) );
 
-  synapse.genFrags( number, p, velocity, velocitySpread, colour, colourSpread,
-                    restitution, mass, lifeTime );
+  synapse.genFrags( name, nFrags, bb, velocity );
   lua.frag = null;
   return 0;
 }
@@ -2450,7 +2442,7 @@ int Lua::ozFragGetLife( lua_State* l )
   ARG( 0 );
   FRAG_NOT_NULL();
 
-  pushfloat( lua.frag->lifeTime );
+  pushfloat( lua.frag->life );
   return 1;
 }
 
@@ -2459,7 +2451,7 @@ int Lua::ozFragSetLife( lua_State* l )
   ARG( 1 );
   FRAG_NOT_NULL();
 
-  lua.frag->lifeTime = tofloat( 1 );
+  lua.frag->life = tofloat( 1 );
   return 0;
 }
 
@@ -2468,7 +2460,7 @@ int Lua::ozFragAddLife( lua_State* l )
   ARG( 1 );
   FRAG_NOT_NULL();
 
-  lua.frag->lifeTime += tofloat( 1 );
+  lua.frag->life += tofloat( 1 );
   return 0;
 }
 

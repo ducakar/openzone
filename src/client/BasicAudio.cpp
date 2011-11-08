@@ -87,15 +87,6 @@ void BasicAudio::play( const Audio* parent )
       playSound( sounds[event->id], event->intensity, obj, parent == null ? obj : parent->obj );
     }
   }
-
-  // inventory items' events
-  for( int i = 0; i < obj->items.length(); ++i ) {
-    const Object* item = orbis.objects[ obj->items[i] ];
-
-    if( item != null && ( item->flags & Object::AUDIO_BIT ) ) {
-      context.playAudio( item, parent == null ? this : parent );
-    }
-  }
 }
 
 }

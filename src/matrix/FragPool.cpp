@@ -36,27 +36,43 @@ namespace matrix
 FragPool::FragPool( const char* name_ )
 {
   name = name_;
+
+  String sPath = "frag/" + name + ".rc";
+
+  Config fragConfig;
+  if( !fragConfig.load( sPath ) ) {
+    throw Exception( "Failed to read config from '%s'", sPath.cstr() );
+  }
+
+  velocitySpread = fragConfig.get( "velocitySpread", 0.0f );
+
+  life           = fragConfig.get( "life", 6.0f );
+  lifeSpread     = fragConfig.get( "lifeSpread", 0.0f );
+  mass           = fragConfig.get( "mass", 0.0f );
+  restitution    = fragConfig.get( "restitution", 1.8f );
+
+  if( life <= 0.0f ) {
+    throw Exception( "%s: Frag life must be > 0.0", name.cstr() );
+  }
+  if( lifeSpread < 0.0f ) {
+    throw Exception( "%s: Frag lifeSpread must be >= 0.0", name.cstr() );
+  }
+  if( mass < 0.0f ) {
+    throw Exception( "%s: Frag mass must be >= 0.0", name.cstr() );
+  }
+  if( restitution < 0.05f || 0.95f < restitution ) {
+    throw Exception( "%s: Frag restitution must lie on interval [0.05, 0.95]", name.cstr() );
+  }
 }
 
-Frag* FragPool::create( int index, const Point3& pos ) const
+Frag* FragPool::create( int index, const Point3& pos, const Vec3& velocity ) const
 {
-  Frag* frag = new Frag();
-
-  frag->index = index;
-  frag->p     = pos;
-
-  return frag;
+  return new Frag( this, index, pos, velocity );
 }
 
-Frag* FragPool::create( int index, InputStream* istream ) const
+Frag* FragPool::create( InputStream* istream ) const
 {
-  Frag* frag = new Frag();
-
-  frag->index = index;
-
-  frag->readFull( istream );
-
-  return frag;
+  return new Frag( this, istream );
 }
 
 }

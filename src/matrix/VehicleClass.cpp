@@ -95,6 +95,7 @@ void VehicleClass::initClass( const Config* config )
   state = 0;
 
   OZ_CLASS_SET_STATE( Vehicle::CREW_VISIBLE_BIT, "state.crewVisible", true );
+  OZ_CLASS_SET_STATE( Vehicle::AUTO_EJECT_BIT,   "state.autoEject",   false );
 
   turnLimitH = config->get( "turnLimitH", 300.0f );
   turnLimitV = config->get( "turnLimitV", 300.0f );

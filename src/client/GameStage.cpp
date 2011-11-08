@@ -146,7 +146,7 @@ void GameStage::run()
 
 void GameStage::reload()
 {
-  ui::ui.loadingScreen->status.setText( gettext( "Loading ..." ) );
+  ui::ui.loadingScreen->status.setText( "%s", gettext( "Loading ..." ) );
   ui::ui.showLoadingScreen( true );
   ui::ui.root->focus( ui::ui.loadingScreen );
 
@@ -372,7 +372,7 @@ void GameStage::load()
   log.println( "Loading GameStage {" );
   log.indent();
 
-  ui::ui.loadingScreen->status.setText( gettext( "Loading ..." ) );
+  ui::ui.loadingScreen->status.setText( "%s", gettext( "Loading ..." ) );
   ui::ui.loadingScreen->show( true );
 
   render.draw( Render::DRAW_UI_BIT );
@@ -451,7 +451,7 @@ void GameStage::unload()
   log.println( "Unloading GameStage {" );
   log.indent();
 
-  ui::ui.loadingScreen->status.setText( gettext( "Shutting down ..." ) );
+  ui::ui.loadingScreen->status.setText( "%s", gettext( "Shutting down ..." ) );
   ui::ui.showLoadingScreen( true );
 
   render.draw( Render::DRAW_UI_BIT );

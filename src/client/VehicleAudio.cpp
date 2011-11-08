@@ -28,6 +28,7 @@
 
 #include "matrix/Orbis.hpp"
 
+#include "client/Camera.hpp"
 #include "client/Context.hpp"
 
 namespace oz
@@ -51,9 +52,7 @@ void VehicleAudio::play( const Audio* parent )
   const int ( &sounds )[ObjectClass::MAX_SOUNDS] = obj->clazz->audioSounds;
 
   // engine sound
-  if( ( vehicle->pilot != -1 || !( vehicle->flags & Object::DISABLED_BIT ) ) &&
-      sounds[Vehicle::EVENT_ENGINE] != -1 )
-  {
+  if( ( vehicle->pilot != -1 ) && sounds[Vehicle::EVENT_ENGINE] != -1 ) {
     float pitch = clazz->enginePitchBias + min( vehicle->momentum.sqL() * clazz->enginePitchRatio,
                                                 clazz->enginePitchLimit );
 
@@ -81,7 +80,7 @@ void VehicleAudio::play( const Audio* parent )
   }
 
   // pilot
-  if( vehicle->pilot != -1 ) {
+  if( vehicle->pilot != -1 && camera.bot == vehicle->pilot ) {
     const Bot* bot = static_cast<const Bot*>( orbis.objects[vehicle->pilot] );
 
     hard_assert( bot->flags & Object::BOT_BIT );

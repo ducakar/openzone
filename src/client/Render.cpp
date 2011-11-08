@@ -581,8 +581,11 @@ void Render::init()
   log.println( "OpenGL vendor: %s", vendor.cstr() );
   log.println( "OpenGL renderer: %s", renderer.cstr() );
   log.println( "OpenGL version: %s", version.cstr() );
-  log.println( "OpenGL extensions {" );
-  log.indent();
+
+  if( log.isVerbose ) {
+    log.println( "OpenGL extensions {" );
+    log.indent();
+  }
 
   if( strstr( vendor, "ATI" ) != null ) {
     isCatalyst = true;
@@ -592,7 +595,9 @@ void Render::init()
   }
 
   foreach( extension, extensions.citer() ) {
-    log.println( "%s", extension->cstr() );
+    if( log.isVerbose ) {
+      log.println( "%s", extension->cstr() );
+    }
 
     if( extension->equals( "GL_ARB_framebuffer_object" ) ) {
       hasFBO = true;
@@ -610,8 +615,10 @@ void Render::init()
 #endif
   }
 
-  log.unindent();
-  log.println( "}" );
+  if( log.isVerbose ) {
+    log.unindent();
+    log.println( "}" );
+  }
 
   int major = atoi( version );
   int minor = atoi( version.cstr() + version.index( '.' ) + 1 );

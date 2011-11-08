@@ -66,13 +66,13 @@ const float Physics::PART_DESTROY_VELOCITY2 =  900.0f;
 void Physics::handleFragHit()
 {
   float velocity2 = frag->velocity * frag->velocity;
-  float hitMomentum = frag->velocity * collider.hit.normal;
 
-  frag->velocity -= ( frag->restitution * hitMomentum ) * collider.hit.normal;
+  frag->velocity *= frag->restitution;
+  frag->velocity -= ( 2.0f * frag->velocity * collider.hit.normal ) * collider.hit.normal;
 
   if( velocity2 >= PART_HIT_VELOCITY2 ) {
     if( velocity2 >= PART_DESTROY_VELOCITY2 ) {
-      frag->lifeTime = -Math::INF;
+      frag->life = 0.0f;
     }
 
     if( frag->mass != 0.0f ) {
@@ -121,7 +121,7 @@ void Physics::handleFragMove()
     // surface and hit something (e.g. if we shoot into something with a rifle, a bullet is not
     // destroyed immediately after it hits something, but bounces off and damages the shooter if
     // he stays too close to the hit surface.
-    if( traceSplits >= 3 || frag->lifeTime <= 0.0f ) {
+    if( traceSplits >= 3 || frag->life <= 0.0f ) {
       break;
     }
     ++traceSplits;

@@ -202,7 +202,13 @@ void HudArea::drawBotStatus()
     }
     if( lastWeaponRounds != weaponObj->nRounds ) {
       lastWeaponRounds = weaponObj->nRounds;
-      weaponRounds.setText( weaponObj->nRounds == -1 ? "∞" : "%d", weaponObj->nRounds );
+
+      if( weaponObj->nRounds == -1 ) {
+        weaponRounds.setText( "∞" );
+      }
+      else {
+        weaponRounds.setText( "%d", weaponObj->nRounds );
+      }
     }
 
     weaponName.draw( this );
@@ -277,8 +283,13 @@ void HudArea::drawVehicleStatus()
 
     if( lastVehicleWeaponRounds[labelIndex] != vehicle->nRounds[i] ) {
       lastVehicleWeaponRounds[labelIndex] = vehicle->nRounds[i];
-      vehicleWeaponRounds[labelIndex].
-          setText( vehicle->nRounds[i] == -1 ? "∞" : "%d", vehicle->nRounds[i] );
+
+      if( vehicle->nRounds[i] == -1 ) {
+        vehicleWeaponRounds[labelIndex].setText( "∞" );
+      }
+      else {
+        vehicleWeaponRounds[labelIndex].setText( "%d", vehicle->nRounds[i] );
+      }
     }
 
     vehicleWeaponNames[labelIndex].draw( this );

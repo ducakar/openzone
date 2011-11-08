@@ -5,5 +5,5 @@
 #fi
 
 if [ -x /usr/bin/cloc ]; then
-  /usr/bin/cloc --exclude-ext=xml `git ls-files | grep -v '^include'` share/openzone/lua
+  /usr/bin/cloc --force-lang=C++,hpp --force-lang=C++,in --exclude-lang=XML --exclude-ext=h `git ls-files`
 fi
