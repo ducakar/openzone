@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -41,11 +42,10 @@ Imago* SMMVehicleImago::create( const Object* obj )
 {
   hard_assert( obj->flags & Object::VEHICLE_BIT );
 
-  SMMVehicleImago* imago = new SMMVehicleImago();
+  SMMVehicleImago* imago = new SMMVehicleImago( obj );
 
-  imago->obj   = obj;
-  imago->clazz = obj->clazz;
-  imago->smm   = context.requestSMM( obj->clazz->imagoModel );
+  imago->smm = context.requestSMM( obj->clazz->imagoModel );
+
   return imago;
 }
 
@@ -56,12 +56,14 @@ SMMVehicleImago::~SMMVehicleImago()
 
 void SMMVehicleImago::draw( const Imago*, int mask )
 {
-  const Vehicle* veh = static_cast<const Vehicle*>( obj );
-  const VehicleClass* clazz = static_cast<const VehicleClass*>( obj->clazz );
+  flags |= UPDATED_BIT;
 
   if( !smm->isLoaded ) {
     return;
   }
+
+  const Vehicle* veh = static_cast<const Vehicle*>( obj );
+  const VehicleClass* clazz = static_cast<const VehicleClass*>( obj->clazz );
 
   if( shader.mode == Shader::SCENE ) {
     tf.model = Mat44::translation( obj->p - Point3::ORIGIN );

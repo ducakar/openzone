@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -30,6 +31,7 @@
 #include "client/BSP.hpp"
 #include "client/Imago.hpp"
 #include "client/Audio.hpp"
+#include "client/FragPool.hpp"
 
 namespace oz
 {
@@ -110,8 +112,9 @@ class Context
     Resource<MD2*>*                   md2s;
     Resource<MD3*>*                   md3s;
 
-    HashIndex<Imago*, 10223>          imagines; // currently loaded graphics models
-    HashIndex<Audio*, 3067>           audios;   // currently loaded audio models
+    HashIndex<Imago*, 10223>          imagines;  // currently loaded graphics models
+    HashIndex<Audio*, 3067>           audios;    // currently loaded audio models
+    HashIndex<FragPool*, 32>          fragPools; // currently loaded frag pools representations
 
     int                               maxImagines;
     int                               maxAudios;
@@ -129,6 +132,8 @@ class Context
     int                               maxBasicAudios;
     int                               maxBotAudios;
     int                               maxVehicleAudios;
+
+    int                               maxFragPools;
 
     void addSource( uint srcId, int sound );
     void addBSPSource( uint srcId, int sound, int key );
@@ -166,6 +171,8 @@ class Context
 
     void drawImago( const Object* obj, const Imago* parent, int mask );
     void playAudio( const Object* obj, const Audio* parent );
+
+    void drawFrag( const Frag* frag );
 
     void updateLoad();
 

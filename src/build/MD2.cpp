@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -240,7 +241,6 @@ void MD2::build( const char* path )
   if( config.get( "forceStatic", false ) ) {
     header.nFrames = 1;
   }
-
   String shaderName   = config.get( "shader", header.nFrames == 1 ? "mesh" : "md2" );
   float  specular     = config.get( "specular", 0.0f );
   float  scale        = config.get( "scale", 0.04f );
@@ -257,6 +257,8 @@ void MD2::build( const char* path )
   Vec3   weaponRot    = Vec3( config.get( "weaponRotate.x", 0.00f ),
                               config.get( "weaponRotate.y", 0.00f ),
                               config.get( "weaponRotate.z", 0.00f ) );
+
+  config.clear( true );
 
   Mat44 weaponTransf = Mat44::translation( weaponTransl );
   weaponTransf.rotateY( Math::rad( weaponRot.y ) );

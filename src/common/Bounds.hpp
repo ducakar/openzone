@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -50,6 +51,7 @@ class Bounds
       return Bounds( mins - Vec3( eps, eps, eps ), maxs + Vec3( eps, eps, eps ) );
     }
 
+    OZ_ALWAYS_INLINE
     Bounds& fromPointMove( const Point3& p, const Vec3& move, float eps = 0.0f )
     {
       mins = p - 2.0f * Vec3( eps, eps, eps );

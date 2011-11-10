@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -467,7 +468,7 @@ static void shutdown()
   compiler.free();
   client::render.free();
   library.free();
-  config.clear();
+  config.clear( true );
 
   SDL_Quit();
 

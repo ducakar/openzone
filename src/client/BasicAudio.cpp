@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -50,6 +51,8 @@ Audio* BasicAudio::create( const Object* obj )
 
 void BasicAudio::play( const Audio* parent )
 {
+  flags |= UPDATED_BIT;
+
   const Dynamic* dyn = static_cast<const Dynamic*>( obj );
   const int ( &sounds )[ObjectClass::MAX_SOUNDS] = obj->clazz->audioSounds;
 

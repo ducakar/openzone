@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -39,56 +40,26 @@ class FragPool
 {
   public:
 
+    static const int UPDATED_BIT = 0x01;
+
     static const float FRAG_RADIUS;
 
   private:
 
-    static const float SQRT_3_THIRDS;
-    static const float DIM;
-    static const int   MAX_FRAGS = 64;
-    static const int   LINE_LENGTH = 64;
+    const matrix::FragPool* pool;
 
-    struct FragInfo
-    {
-      SMM* model;
-      int  id;
-    };
-
-    static char buffer[LINE_LENGTH];
-
-    uint vao;
-    uint vbo;
-
-    Vector<FragInfo> frags;
-
-    int firstStone;
-    int nStones;
-    int firstWood;
-    int nWoods;
-    int firstMetal;
-    int nMetals;
-    int firstMeat;
-    int nMeats;
-
-    int debrisIds[11];
-    SMM* debris[11];
-
-    void loadFrags();
+    Vector<SMM*> models;
 
   public:
 
-    FragPool();
+    int flags;
 
-    void bindVertexArray() const;
+    explicit FragPool( const matrix::FragPool* pool );
+    ~FragPool();
 
     void draw( const Frag* frag );
 
-    void load();
-    void unload();
-
 };
-
-extern FragPool fragPool;
 
 }
 }

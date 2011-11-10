@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -394,11 +395,15 @@ class Math
     static float rand();
 
     /**
+     * Random float number from [-1, 1].
+     */
+    static float centralRand();
+
+    /**
      * Random number from [-1, 1], numbers close to zero are more likely.
      *
-     * It tries to generate something "relatively" close to Gaussian distribution. However it's only
-     * possible on an infinite interval, so it actually returns \f$ x^3 \f$, for
-     * \f$ x \in [-1, +1] \f$.
+     * It tries to generate something "relatively" close to Gaussian distribution.
+     * It actually returns \f$ x^3 \f$, for an \f$ x \in [-1, +1] \f$ returned by <tt>rand()</tt>.
      */
     static float normalRand();
 

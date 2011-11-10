@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -33,6 +34,11 @@ namespace client
 
 class MD2WeaponImago : public MD2Imago
 {
+  protected:
+
+    explicit MD2WeaponImago( const Object* obj ) : MD2Imago( obj )
+    {}
+
   public:
 
     static Pool<MD2WeaponImago, 256> pool;

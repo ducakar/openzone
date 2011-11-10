@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -157,6 +158,7 @@ class Orbis : public Bounds
 
 extern Orbis orbis;
 
+OZ_ALWAYS_INLINE
 inline Cell* Orbis::getCell( float x, float y )
 {
   int ix = int( ( x + Orbis::DIM ) * Cell::INV_SIZE );
@@ -168,11 +170,13 @@ inline Cell* Orbis::getCell( float x, float y )
   return &cells[ix][iy];
 }
 
+OZ_ALWAYS_INLINE
 inline Cell* Orbis::getCell( const Point3& p )
 {
   return getCell( p.x, p.y );
 }
 
+OZ_ALWAYS_INLINE
 inline Span Orbis::getInters( float x, float y, float epsilon ) const
 {
   return Span( max( int( ( x - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
@@ -181,11 +185,13 @@ inline Span Orbis::getInters( float x, float y, float epsilon ) const
                min( int( ( y + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::MAX - 1 ) );
 }
 
+OZ_ALWAYS_INLINE
 inline Span Orbis::getInters( const Point3& p, float epsilon ) const
 {
   return getInters( p.x, p.y, epsilon );
 }
 
+OZ_ALWAYS_INLINE
 inline Span Orbis::getInters( float minPosX, float minPosY,
                               float maxPosX, float maxPosY, float epsilon ) const
 {
@@ -195,6 +201,7 @@ inline Span Orbis::getInters( float minPosX, float minPosY,
                min( int( ( maxPosY + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::MAX - 1 ) );
 }
 
+OZ_ALWAYS_INLINE
 inline Span Orbis::getInters( const AABB& bb, float epsilon ) const
 {
   return getInters( bb.p.x - bb.dim.x, bb.p.y - bb.dim.y,
@@ -202,6 +209,7 @@ inline Span Orbis::getInters( const AABB& bb, float epsilon ) const
                     epsilon );
 }
 
+OZ_ALWAYS_INLINE
 inline Span Orbis::getInters( const Bounds& bounds, float epsilon ) const
 {
   return getInters( bounds.mins.x, bounds.mins.y, bounds.maxs.x, bounds.maxs.y, epsilon );

@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -274,8 +275,8 @@ void BSP::init()
   mins        = is.readPoint3();
   maxs        = is.readPoint3();
 
-  title       = is.readString();
-  description = is.readString();
+  title       = gettext( is.readString() );
+  description = gettext( is.readString() );
 
   int nSounds = is.readInt();
   if( nSounds != 0 ) {

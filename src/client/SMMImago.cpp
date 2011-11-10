@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -37,11 +38,9 @@ Pool<SMMImago, 4096> SMMImago::pool;
 
 Imago* SMMImago::create( const Object* obj )
 {
-  SMMImago* imago = new SMMImago();
+  SMMImago* imago = new SMMImago( obj );
 
-  imago->obj   = obj;
-  imago->clazz = obj->clazz;
-  imago->smm   = context.requestSMM( obj->clazz->imagoModel );
+  imago->smm = context.requestSMM( obj->clazz->imagoModel );
 
   return imago;
 }
@@ -53,6 +52,8 @@ SMMImago::~SMMImago()
 
 void SMMImago::draw( const Imago*, int mask )
 {
+  flags |= UPDATED_BIT;
+
   if( !smm->isLoaded ) {
     return;
   }

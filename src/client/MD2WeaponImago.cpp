@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -42,11 +43,9 @@ Imago* MD2WeaponImago::create( const Object* obj )
   hard_assert( obj->flags & Object::DYNAMIC_BIT );
   hard_assert( obj->flags & Object::WEAPON_BIT );
 
-  MD2WeaponImago* imago = new MD2WeaponImago();
+  MD2WeaponImago* imago = new MD2WeaponImago( obj );
 
-  imago->obj   = obj;
-  imago->clazz = obj->clazz;
-  imago->md2   = context.requestMD2( obj->clazz->imagoModel );
+  imago->md2 = context.requestMD2( obj->clazz->imagoModel );
 
   imago->setAnim( Anim::STAND );
   imago->anim.nextFrame = imago->anim.endFrame;
@@ -57,6 +56,8 @@ Imago* MD2WeaponImago::create( const Object* obj )
 
 void MD2WeaponImago::draw( const Imago* parent, int )
 {
+  flags |= UPDATED_BIT;
+
   if( !md2->isLoaded ) {
     return;
   }

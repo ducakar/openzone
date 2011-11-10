@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -160,9 +161,10 @@ class Config
     /**
      * Clear variables.
      *
-     * @param suppressUnused true to suppress warnings about unused variables in debug mode.
+     * @param issueWarnings issue warnings about unused variables, works only if <tt>NDEBUG</tt> is
+     * not defined.
      */
-    void clear( bool suppressUnused = false );
+    void clear( bool issueWarnings = false );
 
     /**
      * Return variables in a formatted string.

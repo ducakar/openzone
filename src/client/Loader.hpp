@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -40,14 +41,17 @@ class Loader
     static const int IMAGO_CLEAR_INTERVAL      = 10  * Timer::TICKS_PER_SEC;  // 10 s (+ 3 s)
     static const int IMAGO_CLEAR_LAG           = 3   * Timer::TICKS_PER_SEC;
 
-    static const int IMAGOCLASS_CLEAR_INTERVAL = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 30 s)
-    static const int IMAGOCLASS_CLEAR_LAG      = 0   * Timer::TICKS_PER_SEC;
+    static const int FRAG_CLEAR_INTERVAL       = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 20 s)
+    static const int FRAG_CLEAR_LAG            = 20  * Timer::TICKS_PER_SEC;
+
+    static const int IMAGOCLASS_CLEAR_INTERVAL = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 40 s)
+    static const int IMAGOCLASS_CLEAR_LAG      = 40  * Timer::TICKS_PER_SEC;
 
     static const int BSP_CLEAR_INTERVAL        = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 60 s)
     static const int BSP_CLEAR_LAG             = 60  * Timer::TICKS_PER_SEC;
 
-    static const int SOUND_CLEAR_INTERVAL      = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 90 s)
-    static const int SOUND_CLEAR_LAG           = 90  * Timer::TICKS_PER_SEC;
+    static const int SOUND_CLEAR_INTERVAL      = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 100 s)
+    static const int SOUND_CLEAR_LAG           = 100 * Timer::TICKS_PER_SEC;
 
     static const int SOURCE_CLEAR_INTERVAL     = 1   * Timer::TICKS_PER_SEC;  //   1 s (+ ~0.5 s)
     static const int SOURCE_CLEAR_LAG          = 1   * Timer::TICKS_PER_SEC / 2;

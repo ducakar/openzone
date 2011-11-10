@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -83,7 +84,7 @@ class Library
     HashString<const ObjectClass::CreateFunc, 8> baseClasses;
     HashString<ObjectClass*, 128> objClasses;
     HashString<BSP, 64>           bsps;
-    HashString<FragPool*, 64>     fragPools;
+    HashString<FragPool, 32>      fragPools;
 
     HashString<int, 256> textureIndices;
     HashString<int, 256> soundIndices;

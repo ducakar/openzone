@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -44,12 +45,10 @@ Imago* MD3Imago::create( const Object* obj )
 {
   hard_assert( obj->flags & Object::BOT_BIT );
 
-  const Bot* bot = static_cast<const Bot*>( obj );
-  MD3Imago* imago = new MD3Imago();
+  const Bot* bot   = static_cast<const Bot*>( obj );
+  MD3Imago*  imago = new MD3Imago( obj );
 
-  imago->obj   = obj;
   imago->flags = Imago::MD3MODEL_BIT;
-  imago->clazz = obj->clazz;
   imago->md3   = context.requestMD3( obj->clazz->imagoModel );
   imago->h     = bot->h;
 
@@ -97,12 +96,14 @@ MD3Imago::~MD3Imago()
 
 void MD3Imago::draw( const Imago* parent, int mask )
 {
-  const Bot* bot = static_cast<const Bot*>( obj );
-  const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
+  flags |= UPDATED_BIT;
 
   if( !md3->isLoaded ) {
     return;
   }
+
+  const Bot* bot = static_cast<const Bot*>( obj );
+  const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
   tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
 

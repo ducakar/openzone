@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -276,12 +277,14 @@ void Struct::onDemolish()
   collider.mask = Object::SOLID_BIT;
 
   for( int i = 0; i < overlappingObjs.length(); ++i ) {
-    Object* obj = overlappingObjs[i];
+    Dynamic* dyn = static_cast<Dynamic*>( overlappingObjs[i] );
 
-    obj->flags &= ~Object::MOVE_CLEAR_MASK;
-
-    if( collider.overlaps( obj->toAABB( -2.0f * EPSILON ), obj ) ) {
-      obj->destroy();
+    if( collider.overlaps( dyn->toAABB( -2.0f * EPSILON ), dyn ) ) {
+      dyn->destroy();
+    }
+    else if( dyn->flags & Object::DYNAMIC_BIT ) {
+      dyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
+      dyn->lower = -1;
     }
   }
 
@@ -421,7 +424,6 @@ Struct::Struct( const BSP* bsp_, int index_, const Point3& p_, Heading heading_ 
   bsp         = bsp_;
   p           = p_;
   index       = index_;
-  id          = bsp->id;
   heading     = heading_;
 
   life        = bsp->life;
@@ -464,7 +466,6 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
   bsp         = bsp_;
   p           = istream->readPoint3();
   index       = istream->readInt();
-  id          = bsp->id;
   heading     = Heading( istream->readInt() );
 
   life        = istream->readFloat();

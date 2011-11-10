@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -151,9 +152,14 @@ void System::resetSignals()
   signal( SIGTERM, SIG_DFL );
 }
 
-void System::trap()
+void System::bell()
 {
   system( "paplay /usr/share/sounds/pop.wav &" );
+}
+
+void System::trap()
+{
+  bell();
 
   signal( SIGTRAP, SIG_IGN );
   raise( SIGTRAP );
@@ -171,8 +177,6 @@ void System::halt()
 
 void System::error( const char* msg, ... )
 {
-  system( "paplay /usr/share/sounds/pop.wav &" );
-
   va_list ap;
   va_start( ap, msg );
 
@@ -203,8 +207,6 @@ int System::getStackTrace( char** bufferPtr )
 
 void System::abort( const char* msg, ... )
 {
-  system( "paplay /usr/share/sounds/pop.wav &" );
-
   System::resetSignals();
 
   va_list ap;

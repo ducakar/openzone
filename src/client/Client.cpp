@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -85,7 +86,7 @@ void Client::shutdown()
     }
   }
 
-  config.clear();
+  config.clear( true );
 
   if( initFlags & INIT_SDL ) {
     log.print( "Shutting down SDL ..." );

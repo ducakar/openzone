@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -162,11 +163,6 @@ int Synapse::addFrag( const FragPool* pool, const Point3& p, const Vec3& velocit
 
 void Synapse::genFrags( const FragPool* pool, int nFrags, const Bounds& bb, const Vec3& velocity )
 {
-  float velocitySpread   = pool->velocitySpread;
-  float lifeSpread       = pool->lifeSpread;
-  float velocitySpread_2 = velocitySpread / 2.0f;
-  float lifeSpread_2     = lifeSpread / 2.0f;
-
   for( int i = 0; i < nFrags; ++i ) {
     // spawn the frag somewhere in the upper half of the structure's bounding box
     Point3 fragPos = Point3( bb.mins.x + Math::rand() * ( bb.maxs.x - bb.mins.x ),
@@ -176,11 +172,11 @@ void Synapse::genFrags( const FragPool* pool, int nFrags, const Bounds& bb, cons
     int    index   = synapse.addFrag( pool, fragPos, velocity );
     Frag*  frag    = orbis.frags[index];
 
-    frag->velocity += Vec3( Math::rand() * velocitySpread - velocitySpread_2,
-                            Math::rand() * velocitySpread - velocitySpread_2,
-                            Math::rand() * velocitySpread - velocitySpread_2 );
+    frag->velocity += Vec3( Math::normalRand() * pool->velocitySpread,
+                            Math::normalRand() * pool->velocitySpread,
+                            Math::normalRand() * pool->velocitySpread );
 
-    frag->life     += Math::rand() * lifeSpread - lifeSpread_2;
+    frag->life     += Math::centralRand() * pool->lifeSpread;
   }
 }
 

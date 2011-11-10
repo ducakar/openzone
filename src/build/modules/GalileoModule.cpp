@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -63,7 +64,7 @@ void GalileoModule::build()
     uint id = Context::loadRawTexture( srcTextureFile, true, GL_LINEAR, GL_LINEAR );
     Context::writeTexture( id, &os );
 
-    terraConfig.clear();
+    terraConfig.clear( false );
 
     File( destTextureFile ).write( &os );
   }

@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -27,16 +28,15 @@
 #include "matrix/FragPool.hpp"
 
 #include "matrix/Frag.hpp"
+#include "matrix/Library.hpp"
 
 namespace oz
 {
 namespace matrix
 {
 
-FragPool::FragPool( const char* name_ )
+FragPool::FragPool( const char* name_, int id_ ) : name( name_ ), id( id_ )
 {
-  name = name_;
-
   String sPath = "frag/" + name + ".rc";
 
   Config fragConfig;
@@ -46,10 +46,14 @@ FragPool::FragPool( const char* name_ )
 
   velocitySpread = fragConfig.get( "velocitySpread", 0.0f );
 
-  life           = fragConfig.get( "life", 6.0f );
-  lifeSpread     = fragConfig.get( "lifeSpread", 0.0f );
-  mass           = fragConfig.get( "mass", 0.0f );
-  restitution    = fragConfig.get( "restitution", 1.8f );
+  if( velocitySpread < 0.0f ) {
+    throw Exception( "%s: Frag velocitySpread must be >= 0.0", name.cstr() );
+  }
+
+  life        = fragConfig.get( "life", 6.0f );
+  lifeSpread  = fragConfig.get( "lifeSpread", 0.0f );
+  mass        = fragConfig.get( "mass", 0.0f );
+  restitution = fragConfig.get( "restitution", 1.8f );
 
   if( life <= 0.0f ) {
     throw Exception( "%s: Frag life must be > 0.0", name.cstr() );
@@ -63,6 +67,21 @@ FragPool::FragPool( const char* name_ )
   if( restitution < 0.05f || 0.95f < restitution ) {
     throw Exception( "%s: Frag restitution must lie on interval [0.05, 0.95]", name.cstr() );
   }
+
+  char buffer[] = "model  ";
+  for( int i = 0; i < MAX_MODELS; ++i ) {
+    hard_assert( i < 100 );
+
+    buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
+    buffer[ sizeof( buffer ) - 2 ] = char( '0' + ( i % 10 ) );
+
+    const char* modelName = fragConfig.get( buffer, "" );
+    if( !String::isEmpty( modelName ) ) {
+      models.add( library.modelIndex( modelName ) );
+    }
+  }
+
+  fragConfig.clear( true );
 }
 
 Frag* FragPool::create( int index, const Point3& pos, const Vec3& velocity ) const

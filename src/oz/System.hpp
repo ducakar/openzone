@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -96,6 +97,14 @@ class System
      * Reset signal handlers to defaults.
      */
     static void resetSignals();
+
+    /**
+     * Play a sound alert.
+     *
+     * It runs <tt>paplay /usr/share/sounds/pop.wav &</tt>. <tt>paplay</tt> is part of PulseAudio
+     * server and <tt>pop.wav</tt> comes with KDE SC.
+     */
+    static void bell();
 
     /**
      * Raise trap signal (to trigger a breakpoint).

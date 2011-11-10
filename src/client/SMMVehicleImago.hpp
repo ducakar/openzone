@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -38,13 +39,16 @@ class SMMVehicleImago : public Imago
 
     SMM* smm;
 
+    explicit SMMVehicleImago( const Object* obj ) : Imago( obj )
+    {}
+
+    virtual ~SMMVehicleImago();
+
   public:
 
     static Pool<SMMVehicleImago, 64> pool;
 
     static Imago* create( const Object* obj );
-
-    virtual ~SMMVehicleImago();
 
     virtual void draw( const Imago* parent, int mask );
 

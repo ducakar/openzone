@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -227,7 +228,7 @@ void BSP::load()
     istream.reset();
     istream.forward( lumps[QBSPLump::MODELS].offset );
 
-    hard_assert( nModels <= 99 );
+    hard_assert( nModels < 100 );
     char keyBuffer[] = "model  ";
 
     // skip model 0 (whole BSP)
@@ -502,6 +503,8 @@ void BSP::load()
   }
 
   file.unmap();
+
+  bspConfig.clear( true );
 }
 
 void BSP::optimise()

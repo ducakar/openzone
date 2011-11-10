@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -415,7 +416,7 @@ void Context::releaseMD3( int id )
 
 void Context::drawBSP( const Struct* str, int mask )
 {
-  Resource<BSP*>& resource = bsps[str->id];
+  Resource<BSP*>& resource = bsps[str->bsp->id];
 
   // we don't count users, just to show there is at least one
   resource.nUsers = 1;
@@ -430,7 +431,7 @@ void Context::drawBSP( const Struct* str, int mask )
 
 void Context::playBSP( const Struct* str )
 {
-  Resource<BSP*>& resource = bsps[str->id];
+  Resource<BSP*>& resource = bsps[str->bsp->id];
 
   // we don't count users, just to show there is at least one
   resource.nUsers = 1;
@@ -457,8 +458,9 @@ void Context::drawImago( const Object* obj, const Imago* parent, int mask )
 
   Imago* imago = *value;
 
-  imago->flags |= Imago::UPDATED_BIT;
   imago->draw( parent, mask );
+
+  hard_assert( imago->flags & Imago::UPDATED_BIT );
 }
 
 void Context::playAudio( const Object* obj, const Audio* parent )
@@ -475,8 +477,24 @@ void Context::playAudio( const Object* obj, const Audio* parent )
 
   Audio* audio = *value;
 
-  audio->flags |= Audio::UPDATED_BIT;
   audio->play( parent );
+
+  hard_assert( audio->flags & Audio::UPDATED_BIT );
+}
+
+void Context::drawFrag( const Frag* frag )
+{
+  FragPool* const* value = fragPools.find( frag->pool->id );
+
+  if( value == null ) {
+    value = fragPools.add( frag->pool->id, new FragPool( frag->pool ) );
+  }
+
+  FragPool* pool = *value;
+
+  pool->draw( frag );
+
+  hard_assert( pool->flags & FragPool::UPDATED_BIT );
 }
 
 void Context::updateLoad()
@@ -497,6 +515,8 @@ void Context::updateLoad()
   maxBasicAudios        = max( maxBasicAudios,        BasicAudio::pool.length() );
   maxBotAudios          = max( maxBotAudios,          BotAudio::pool.length() );
   maxVehicleAudios      = max( maxVehicleAudios,      VehicleAudio::pool.length() );
+
+  maxFragPools          = max( maxFragPools,          fragPools.length() );
 }
 
 void Context::load()
@@ -517,6 +537,8 @@ void Context::load()
   maxBasicAudios        = 0;
   maxBotAudios          = 0;
   maxVehicleAudios      = 0;
+
+  maxFragPools          = 0;
 }
 
 void Context::unload()
@@ -540,6 +562,7 @@ void Context::unload()
   log.println( "%6d  Basic audios",                 maxBasicAudios );
   log.println( "%6d  Bot audios",                   maxBotAudios );
   log.println( "%6d  Vehicle audios",               maxVehicleAudios );
+  log.println( "%6d  fragment pools",               maxFragPools );
   log.unindent();
   log.println( "}" );
 
@@ -547,6 +570,8 @@ void Context::unload()
   imagines.dealloc();
   audios.free();
   audios.dealloc();
+  fragPools.free();
+  fragPools.dealloc();
 
   OZ_AL_CHECK_ERROR();
 
@@ -556,6 +581,10 @@ void Context::unload()
     bsps[i].nUsers = 0;
   }
   for( int i = 0; i < library.models.length(); ++i ) {
+    hard_assert( smms[i].nUsers == 0 );
+    hard_assert( md2s[i].nUsers == 0 );
+    hard_assert( md3s[i].nUsers == 0 );
+
     delete smms[i].object;
     smms[i].object = null;
     smms[i].nUsers = 0;

@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -46,12 +47,10 @@ Imago* MD2Imago::create( const Object* obj )
 {
   hard_assert( obj->flags & Object::BOT_BIT );
 
-  const Bot* bot = static_cast<const Bot*>( obj );
-  MD2Imago* imago = new MD2Imago();
+  const Bot* bot   = static_cast<const Bot*>( obj );
+  MD2Imago*  imago = new MD2Imago( obj );
 
-  imago->obj   = obj;
   imago->flags = Imago::MD2MODEL_BIT;
-  imago->clazz = obj->clazz;
   imago->md2   = context.requestMD2( obj->clazz->imagoModel );
   imago->h     = bot->h;
 
@@ -99,12 +98,14 @@ void MD2Imago::setAnim( Anim::Type type_ )
 
 void MD2Imago::draw( const Imago* parent, int mask )
 {
-  const Bot* bot = static_cast<const Bot*>( obj );
-  const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
+  flags |= UPDATED_BIT;
 
   if( !md2->isLoaded ) {
     return;
   }
+
+  const Bot* bot = static_cast<const Bot*>( obj );
+  const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
   if( mask & Mesh::SOLID_BIT ) {
     if( bot->anim != anim.type ) {

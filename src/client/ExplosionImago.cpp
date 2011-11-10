@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -41,11 +42,10 @@ Pool<ExplosionImago, 64> ExplosionImago::pool;
 
 Imago* ExplosionImago::create( const Object* obj )
 {
-  ExplosionImago* imago = new ExplosionImago();
+  ExplosionImago* imago = new ExplosionImago( obj );
 
   modelId = library.modelIndex( "explosion" );
 
-  imago->obj = obj;
   imago->smm = context.requestSMM( modelId );
   imago->startMillis = timer.millis;
 
@@ -59,6 +59,8 @@ ExplosionImago::~ExplosionImago()
 
 void ExplosionImago::draw( const Imago*, int mask )
 {
+  flags |= UPDATED_BIT;
+
   if( !smm->isLoaded || !( mask & Mesh::ALPHA_BIT ) ) {
     return;
   }

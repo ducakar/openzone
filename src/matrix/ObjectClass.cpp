@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -193,7 +194,7 @@ void ObjectClass::fillCommonConfig( const Config* config )
     imagoType = library.imagoIndex( sImagoType );
 
     const char* modelName = config->get( "imagoModel", "" );
-    imagoModel = modelName[0] == '\0' ? -1 : library.modelIndex( modelName );
+    imagoModel = String::isEmpty( modelName ) ? -1 : library.modelIndex( modelName );
   }
 
   /*
@@ -214,11 +215,11 @@ void ObjectClass::fillCommonConfig( const Config* config )
     for( int i = 0; i < MAX_SOUNDS; ++i ) {
       hard_assert( i < 100 );
 
-      buffer[10] = char( '0' + ( i / 10 ) );
-      buffer[11] = char( '0' + ( i % 10 ) );
+      buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
+      buffer[ sizeof( buffer ) - 2 ] = char( '0' + ( i % 10 ) );
 
       const char* soundName = config->get( buffer, "" );
-      audioSounds[i] = soundName[0] == '\0' ? -1 : library.soundIndex( soundName );
+      audioSounds[i] = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
     }
   }
 
