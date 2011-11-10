@@ -55,8 +55,6 @@ function onCreate()
 
   ozOrbisAddObj( "reaper", 145, -15, 73 )
 
-  ozOrbisGenFrags( "gibs", 1000, 132, -7, 73, 140, 1, 75, 0, 0, 10 )
-
   ozOrbisAddObj( "musicPlayer", 135, -2, 73 )
   ozOrbisAddObj( "galileo", 136, -2, 73 )
   ozOrbisAddObj( "cvicek", 135, -3, 73 )
@@ -96,6 +94,8 @@ function onCreate()
   ozOrbisAddObj( "smallCrate", 148, 12, 74 )
   ozOrbisAddObj( "smallCrate", 148, 12, 75 )
   ozOrbisAddObj( "smallCrate", 148, 12, 76 )
+
+  ozOrbisGenFrags( "ruins", 100, 145, 9, 77, 150, 14, 77, 0, 0, 2 )
 
   ozOrbisAddObj( "bigCrate", 140, -7, 72 )
   ozOrbisAddObj( "metalCrate", 140, -4, 72 )

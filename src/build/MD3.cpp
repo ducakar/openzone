@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -366,8 +367,9 @@ void MD3::build( const char* path )
     log.printEnd( " OK" );
   }
 
+  config.clear( true );
+
   shaderName.dealloc();
-  config.clear();
   sPath.dealloc();
   skin.dealloc();
 

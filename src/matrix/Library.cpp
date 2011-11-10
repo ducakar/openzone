@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -66,12 +67,12 @@ const ObjectClass* Library::objClass( const char* name ) const
 
 const FragPool* Library::fragPool( const char* name ) const
 {
-  const FragPool* const* value = fragPools.find( name );
+  const FragPool* value = fragPools.find( name );
 
   if( value == null ) {
     throw Exception( "Invalid fragment pool requested '%s'", name );
   }
-  return *value;
+  return value;
 }
 
 int Library::textureIndex( const char* name ) const
@@ -698,7 +699,7 @@ void Library::initFragPools()
 
     log.println( "%s", name.cstr() );
 
-    fragPools.add( name, new FragPool( name ) );
+    fragPools.add( name, FragPool( name, fragPools.length() ) );
   }
 
   log.unindent();
@@ -734,23 +735,19 @@ void Library::initClasses()
     String name = file->baseName();
 
     if( objClasses.contains( name ) ) {
-      classConfig.clear();
       throw Exception( "Duplicated class '%s'", name.cstr() );
     }
     if( !classConfig.load( file->path() ) ) {
-      classConfig.clear( true );
       throw Exception( "%s: Class parse error", name.cstr() );
     }
 
     const char* base = classConfig.get( "base", "" );
     if( String::isEmpty( base ) ) {
-      classConfig.clear( true );
       throw Exception( "%s: 'base' missing in class description", name.cstr() );
     }
 
     const ObjectClass::CreateFunc* createFunc = baseClasses.find( base );
     if( createFunc == null ) {
-      classConfig.clear( true );
       throw Exception( "%s: Invalid class base '%s'", name.cstr(), base );
     }
 
@@ -774,7 +771,7 @@ void Library::initClasses()
       audioIndices.include( sAudio, audioIndices.length() );
     }
 
-    classConfig.clear( true );
+    classConfig.clear();
   }
 
   nDeviceClasses = deviceIndices.length();
@@ -788,13 +785,12 @@ void Library::initClasses()
     String path = "class/" + classIter.key() + ".rc";
 
     if( !classConfig.load( path ) ) {
-      classConfig.clear( true );
       throw Exception( "Class parse error" );
     }
 
     classConfig.add( "name", classIter.key() );
     classIter.value()->initClass( &classConfig );
-    classConfig.clear();
+    classConfig.clear( true );
   }
 
   foreach( classIter, objClasses.iter() ) {
@@ -968,7 +964,7 @@ void Library::free()
   objClasses.dealloc();
   bsps.clear();
   bsps.dealloc();
-  fragPools.free();
+  fragPools.clear();
   fragPools.dealloc();
 }
 

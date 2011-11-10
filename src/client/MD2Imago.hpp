@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -46,7 +47,7 @@ class MD2Imago : public Imago
 
   protected:
 
-    MD2Imago()
+    explicit MD2Imago( const Object* obj ) : Imago( obj )
     {
       flags |= Imago::MD2MODEL_BIT;
     }

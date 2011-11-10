@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -37,6 +38,9 @@ class SMMImago : public Imago
   protected:
 
     SMM* smm;
+
+    explicit SMMImago( const Object* obj ) : Imago( obj )
+    {}
 
     virtual ~SMMImago();
 

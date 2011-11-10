@@ -141,7 +141,6 @@ Dependencies
 - SDL
 - SDL_image (optional, for ozPrebuild tool, must support at least PNG and JPEG)
 - SDL_ttf
-- SDL_net (optional, for multiplayer -- which does not work yet)
 - OpenGL
 - OpenAL
 - libvorbis
@@ -153,11 +152,11 @@ For Windows build, all dependencies are included.
 Build dependencies
 ------------------
 - basic GNU system (bash, coreutils, grep, sed ...)
+- gettext
 - cmake
 - GNU make
 - GNU binutils
-- GCC >= 4.5 or LLVM/Clang >= 2.9
-- gettext
+- GCC >= 4.6 or LLVM/Clang >= 3.0
 - development packages of libraries from previous section
 
 OpenZone engine copyright

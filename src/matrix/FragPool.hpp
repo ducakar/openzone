@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -35,9 +36,15 @@ class Frag;
 
 class FragPool
 {
+
+  private:
+
+    static const int MAX_MODELS = 100;
+
   public:
 
     String name;
+    int    id;
 
     float  velocitySpread; ///< Used when generating multiple frags from <code>Object::onDestroy()
                            ///< </code> or <code>Struct::destroy()</code>.
@@ -51,7 +58,7 @@ class FragPool
 
   public:
 
-    explicit FragPool( const char* name );
+    explicit FragPool( const char* name, int id );
 
     Frag* create( int index, const Point3& pos, const Vec3& velocity ) const;
     Frag* create( InputStream* istream ) const;

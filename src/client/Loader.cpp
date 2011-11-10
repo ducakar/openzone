@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -76,6 +77,22 @@ void Loader::cleanupRender()
       else {
         delete imago.value();
         context.imagines.exclude( imago.key() );
+      }
+    }
+  }
+
+  if( tick % FRAG_CLEAR_INTERVAL == FRAG_CLEAR_LAG ) {
+    // remove unused frag pools
+    for( auto i = context.fragPools.citer(); i.isValid(); ) {
+      auto pool = i;
+      ++i;
+
+      if( pool.value()->flags & FragPool::UPDATED_BIT ) {
+        pool.value()->flags &= ~FragPool::UPDATED_BIT;
+      }
+      else {
+        delete pool.value();
+        context.fragPools.exclude( pool.key() );
       }
     }
   }

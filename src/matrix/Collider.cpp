@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -332,7 +333,7 @@ void Collider::trimAABBVoid()
 void Collider::trimAABBObj( const Object* sObj )
 {
   float minRatio   = -1.0f;
-  float maxRatio   =  1.0f;
+  float maxRatio   = +1.0f;
   Vec3  lastNormal = Vec3::ZERO;
 
   Vec3  relStartPos = startPos - sObj->p;
@@ -462,9 +463,9 @@ void Collider::trimAABBObj( const Object* sObj )
 // finds out if AABB-Brush collision occurs and the time when it occurs
 void Collider::trimAABBBrush( const BSP::Brush* brush )
 {
-  float minRatio = -1.0f;
-  float maxRatio =  1.0f;
-  const Plane* lastPlane = null;
+  float minRatio   = -1.0f;
+  float maxRatio   = +1.0f;
+  Vec3  lastNormal = Vec3::ZERO;
 
   for( int i = 0; i < brush->nSides; ++i ) {
     const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
@@ -485,14 +486,14 @@ void Collider::trimAABBBrush( const BSP::Brush* brush )
       float ratio = ( startDist - EPSILON ) / max( startDist - endDist, Math::EPSILON );
 
       if( ratio > minRatio ) {
-        minRatio  = ratio;
-        lastPlane = &plane;
+        minRatio   = ratio;
+        lastNormal = plane.n();
       }
     }
   }
   if( minRatio != -1.0f && minRatio <= maxRatio && minRatio < hit.ratio ) {
     hit.ratio    = max( 0.0f, minRatio );
-    hit.normal   = str->toAbsoluteCS( lastPlane->n() );
+    hit.normal   = str->toAbsoluteCS( lastNormal );
     hit.obj      = null;
     hit.str      = const_cast<Struct*>( str );
     hit.entity   = const_cast<Struct::Entity*>( entity );

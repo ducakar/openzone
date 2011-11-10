@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -222,40 +223,40 @@ class BSP : public Bounds
       Vec3 normal;
     };
 
-    String              name;
-    String              title;
-    String              description;
+    String                  name;
+    String                  title;
+    String                  description;
 
-    float               life;
-    float               resistance;
+    float                   life;
+    float                   resistance;
 
-    int                 nTextures;
-    int                 nPlanes;
-    int                 nNodes;
-    int                 nLeaves;
-    int                 nLeafBrushes;
-    int                 nModels;
-    int                 nBrushes;
-    int                 nBrushSides;
-    int                 nVertices;
-    int                 nIndices;
-    int                 nFaces;
+    int                     nTextures;
+    int                     nPlanes;
+    int                     nNodes;
+    int                     nLeaves;
+    int                     nLeafBrushes;
+    int                     nModels;
+    int                     nBrushes;
+    int                     nBrushSides;
+    int                     nVertices;
+    int                     nIndices;
+    int                     nFaces;
 
-    Texture*            textures;
-    Plane*              planes;
-    matrix::BSP::Node*  nodes;
-    matrix::BSP::Leaf*  leaves;
-    int*                leafBrushes;
-    matrix::BSP::Model* models;
-    matrix::BSP::Brush* brushes;
-    int*                brushSides;
-    ModelFaces*         modelFaces;
-    Vertex*             vertices;
-    int*                indices;
-    Face*               faces;
+    Texture*                textures;
+    Plane*                  planes;
+    matrix::BSP::Node*      nodes;
+    matrix::BSP::Leaf*      leaves;
+    int*                    leafBrushes;
+    matrix::BSP::Model*     models;
+    matrix::BSP::Brush*     brushes;
+    int*                    brushSides;
+    ModelFaces*             modelFaces;
+    Vertex*                 vertices;
+    int*                    indices;
+    Face*                   faces;
 
-    const FragPool*     fragPool;
-    int                 nFrags;
+    const matrix::FragPool* fragPool;
+    int                     nFrags;
 
     Vector<matrix::BSP::BoundObject> boundObjects;
 

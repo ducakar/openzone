@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -54,6 +55,8 @@ void Terra::load()
   waterTexture  = terraConfig.get( "waterTexture", "" );
   detailTexture = terraConfig.get( "detailTexture", "" );
   mapTexture    = terraConfig.get( "mapTexture", "" );
+
+  terraConfig.clear( true );
 
   log.print( "Loading terrain heightmap '%s' ...", name.cstr() );
 

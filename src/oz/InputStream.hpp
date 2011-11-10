@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -61,7 +62,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     int length() const
     {
-      return int( size_t( pos - start ) );
+      return int( pos - start );
     }
 
     /**
@@ -70,7 +71,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     int capacity() const
     {
-      return int( size_t( end - start ) );
+      return int( end - start );
     }
 
     /**
@@ -79,7 +80,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     int available() const
     {
-      return int( size_t( end - pos ) );
+      return int( end - pos );
     }
 
     /**
@@ -144,7 +145,7 @@ class InputStream
 
       if( pos > end ) {
         throw Exception( "Buffer overrun for %d B during a read of %d B",
-                         int( ptrdiff_t( pos + count - end ) ), count );
+                         int( pos + count - end ), count );
       }
       return oldPos;
     }

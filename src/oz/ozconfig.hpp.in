@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 #pragma once
@@ -40,44 +41,32 @@
 
 #if defined( __clang__ )
 # if __clang_major__ < 3
-#  error GCC >= 4.6 and LLVM/Clang >= 3.0 are the only supported compilers
+#  warning Only LLVM/Clang >= 3.0 is supported.
 # endif
 #elif defined( __GNUC__ )
 # if __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 6 )
-#  error GCC >= 4.6 and LLVM/Clang >= 3.0 are the only supported compilers
+#  warning Only GCC >= 4.6 is supported.
+#  define nullptr __null
+   namespace std { typedef decltype( __null ) nullptr_t; }
 # endif
 #else
-# error GCC >= 4.6 and LLVM/Clang >= 3.0 are the only supported compilers
-#endif
-
-// Disable C++11 stuff in standard headers, Clang and IDE parsers have problems with that,
-// and we don't need it anyway ...
-#undef __GXX_EXPERIMENTAL_CXX0X__
-// ... except for nullptr_t definition
-namespace std { typedef decltype( nullptr ) nullptr_t; }
-
-// Some KDevelop hacks, ifdef is never processed by a compiler, but KDevelop obviously doesn't
-// recognise __LINE__ macro.
-#ifndef __LINE__
-# define __attribute__( x )
-#endif
-
-#ifdef __BIG_ENDIAN__
-# define OZ_BIG_ENDIAN_ARCH
-#endif
-
-// long and pointer sizes
-#ifndef __LP64__
-# define OZ_LONG_32
+# warning GCC >= 4.6 and LLVM/Clang >= 3.0 are the only supported compilers.
 #endif
 
 #if !defined( __LP64__ ) && !defined( __LLP64__ )
 # define OZ_POINTER_32
 #endif
 
+#if !defined( __LP64__ )
+# define OZ_LONG_32
+#endif
+
+#if defined( __BIG_ENDIAN__ )
+# define OZ_BIG_ENDIAN_ARCH
+#endif
+
 #define OZ_ALWAYS_INLINE __attribute__(( always_inline ))
 #define OZ_WEAK_SYMBOL   __attribute__(( weak ))
 #define OZ_THREAD_LOCAL  __thread
-
 #define OZ_PRINTF_FORMAT( stringArg, firstArg ) \
   __attribute__(( format( printf, stringArg, firstArg ) ))

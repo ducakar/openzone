@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -24,6 +25,7 @@
 
 #include "Config.hpp"
 
+#include "System.hpp"
 #include "Log.hpp"
 
 #include <cerrno>
@@ -54,6 +56,7 @@ bool Config::loadConf( const char* path )
 #endif
 
   char buffer[BUFFER_SIZE];
+  int  lineNum = 1;
   char ch;
 
   FILE* f = fopen( path, "r" );
@@ -72,6 +75,7 @@ bool Config::loadConf( const char* path )
 
     // read variable
     String name;
+
     if( String::isLetter( ch ) || ch == '_' ) {
       buffer[0] = ch;
       ch = char( fgetc( f ) );
@@ -109,6 +113,9 @@ bool Config::loadConf( const char* path )
         buffer[i] = '\0';
         include( name, buffer );
       }
+      else {
+        throw Exception( "%s:%d: Unterminated value string", path, lineNum );
+      }
     }
 
   skipLine:;
@@ -117,6 +124,8 @@ bool Config::loadConf( const char* path )
     while( ch != '\n' && ch != EOF ) {
       ch = char( fgetc( f ) );
     }
+
+    ++lineNum;
   }
   while( ch != EOF );
 
@@ -398,12 +407,13 @@ bool Config::save( const char* path )
   return false;
 }
 
-void Config::clear( bool suppressWarnings )
+void Config::clear( bool issueWarnings )
 {
 #ifndef NDEBUG
-  if( !suppressWarnings ) {
+  if( issueWarnings ) {
     foreach( var, vars.citer() ) {
       if( !usedVars.contains( var.key() ) ) {
+        System::bell();
         log.println( "%s: unused variable '%s'", filePath.cstr(), var.key().cstr() );
       }
     }
@@ -412,7 +422,7 @@ void Config::clear( bool suppressWarnings )
   usedVars.clear();
   usedVars.dealloc();
 #else
-  static_cast<void>( suppressWarnings );
+  static_cast<void>( issueWarnings );
 #endif
   vars.clear();
   vars.dealloc();

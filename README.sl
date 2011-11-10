@@ -142,7 +142,6 @@ Odvisnosti
 - SDL
 - SDL_image (potrebno le za ozPrebuild, vsaj s podporo za PNG in JPEG)
 - SDL_ttf
-- SDL_net (potrebno le za večigralstvo, ki pa še ne deluje)
 - OpenGL
 - OpenAL
 - libvorbis
@@ -154,11 +153,11 @@ V distribuciji za Windows so vse potrebne knjižnice že vključene.
 Odvisnosti za gradnjo
 ---------------------
 - osnovni sistem GNU (bash, coreutils, grep, sed ...)
+- gettext
 - cmake
 - GNU make
 - GNU binutils
-- GCC >= 4.5 ali LLVM/Clang >= 2.9
-- gettext
+- GCC >= 4.6 ali LLVM/Clang >= 3.0
 - razvojni paketi knjižnic iz prejšnjega razdelka
 
 Avtorske pravice za pogon OpenZone

@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -47,6 +48,8 @@ Audio* VehicleAudio::create( const Object* obj )
 
 void VehicleAudio::play( const Audio* parent )
 {
+  flags |= UPDATED_BIT;
+
   const Vehicle* vehicle = static_cast<const Vehicle*>( obj );
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
   const int ( &sounds )[ObjectClass::MAX_SOUNDS] = obj->clazz->audioSounds;

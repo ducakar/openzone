@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -58,6 +59,7 @@ const float Physics::STRUCT_HIT_RATIO       =  0.5f;
 
 const float Physics::PART_HIT_VELOCITY2     =  100.0f;
 const float Physics::PART_DESTROY_VELOCITY2 =  900.0f;
+const float Physics::PART_FIXED_DAMAGE      =  0.75f;
 
 //***********************************
 //*   FRAGMENT COLLISION HANDLING   *
@@ -72,7 +74,7 @@ void Physics::handleFragHit()
 
   if( velocity2 >= PART_HIT_VELOCITY2 ) {
     if( velocity2 >= PART_DESTROY_VELOCITY2 ) {
-      frag->life = 0.0f;
+      frag->life = -Math::INF;
     }
 
     if( frag->mass != 0.0f ) {
@@ -81,9 +83,8 @@ void Physics::handleFragHit()
         float damage = velocity2 * frag->mass;
 
         if( damage > obj->resistance ) {
-          damage -= obj->resistance;
-          damage *= Math::rand();
-          obj->damage( obj->resistance + damage );
+          damage *= PART_FIXED_DAMAGE + ( 1.0f - PART_FIXED_DAMAGE ) * Math::rand();
+          obj->damage( damage );
         }
       }
       else if( collider.hit.str != null ) {
@@ -91,9 +92,8 @@ void Physics::handleFragHit()
         float damage = velocity2 * frag->mass;
 
         if( damage > str->resistance ) {
-          damage -= str->resistance;
-          damage *= Math::rand();
-          str->damage( str->resistance + damage );
+          damage *= PART_FIXED_DAMAGE + ( 1.0f - PART_FIXED_DAMAGE ) * Math::rand();
+          str->damage( damage );
         }
       }
     }
@@ -229,7 +229,7 @@ bool Physics::handleObjFriction()
     }
   }
 
-  dyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT | Object::ON_SLICK_BIT );
+  dyn->flags &= ~( Object::ON_FLOOR_BIT | Object::ON_SLICK_BIT );
   dyn->lower = -1;
 
   return true;

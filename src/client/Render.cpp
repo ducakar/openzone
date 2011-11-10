@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -246,11 +247,11 @@ void Render::drawGeometry()
   glBindTexture( GL_TEXTURE_2D, 0 );
   glUniform1f( param.oz_Specular, 1.0f );
 
-  fragPool.bindVertexArray();
-
   for( int i = 0; i < frags.length(); ++i ) {
-    fragPool.draw( frags[i] );
+    context.drawFrag( frags[i] );
   }
+
+  shader.colour = Colours::WHITE;
 
   currentTime = SDL_GetTicks();
   timer.renderFragsMillis += currentTime - beginTime;
@@ -471,8 +472,6 @@ void Render::load()
   OZ_GL_CHECK_ERROR();
 
   ui::ui.load();
-  fragPool.load();
-
   frustum.init();
 
   structs.alloc( 64 );
@@ -507,7 +506,6 @@ void Render::unload()
   waterStructs.clear();
   waterStructs.dealloc();
 
-  fragPool.unload();
   ui::ui.unload();
 
   log.unindent();
