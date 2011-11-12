@@ -96,15 +96,15 @@ void BSP::load()
     throw Exception( "BSP reading failed" );
   }
 
-  InputStream istream = file.inputStream();
+  InputStream is = file.inputStream();
 
   char id[4];
-  id[0] = istream.readChar();
-  id[1] = istream.readChar();
-  id[2] = istream.readChar();
-  id[3] = istream.readChar();
+  id[0] = is.readChar();
+  id[1] = is.readChar();
+  id[2] = is.readChar();
+  id[3] = is.readChar();
 
-  int version = istream.readInt();
+  int version = is.readInt();
 
   if( id[0] != 'I' || id[1] != 'B' || id[2] != 'S' || id[3] != 'P' || version != 46 ) {
     throw Exception( "Wrong Quake 3 BSP format" );
@@ -112,21 +112,21 @@ void BSP::load()
 
   DArray<QBSPLump> lumps( QBSPLump::MAX );
   for( int i = 0; i < QBSPLump::MAX; ++i ) {
-    lumps[i].offset = istream.readInt();
-    lumps[i].length = istream.readInt();
+    lumps[i].offset = is.readInt();
+    lumps[i].length = is.readInt();
   }
 
   nTextures = lumps[QBSPLump::TEXTURES].length / int( sizeof( QBSPTexture ) );
   textures = new Texture[nTextures];
 
-  istream.reset();
-  istream.forward( lumps[QBSPLump::TEXTURES].offset );
+  is.reset();
+  is.forward( lumps[QBSPLump::TEXTURES].offset );
 
   for( int i = 0; i < nTextures; ++i ) {
-    String name = istream.forward( 64 );
+    String name = is.forward( 64 );
 
-    textures[i].flags = istream.readInt();
-    textures[i].type  = istream.readInt();
+    textures[i].flags = is.readInt();
+    textures[i].type  = is.readInt();
 
     if( name.length() < 10 ) {
       textures[i].id = -1;
@@ -151,71 +151,71 @@ void BSP::load()
   nPlanes = lumps[QBSPLump::PLANES].length / int( sizeof( QBSPPlane ) );
   planes = new Plane[nPlanes];
 
-  istream.reset();
-  istream.forward( lumps[QBSPLump::PLANES].offset );
+  is.reset();
+  is.forward( lumps[QBSPLump::PLANES].offset );
 
   for( int i = 0; i < nPlanes; ++i ) {
-    planes[i].nx = istream.readFloat();
-    planes[i].ny = istream.readFloat();
-    planes[i].nz = istream.readFloat();
-    planes[i].d  = istream.readFloat() * scale;
+    planes[i].nx = is.readFloat();
+    planes[i].ny = is.readFloat();
+    planes[i].nz = is.readFloat();
+    planes[i].d  = is.readFloat() * scale;
   }
 
   nNodes = lumps[QBSPLump::NODES].length / int( sizeof( QBSPNode ) );
   nodes = new matrix::BSP::Node[nNodes];
 
-  istream.reset();
-  istream.forward( lumps[QBSPLump::NODES].offset );
+  is.reset();
+  is.forward( lumps[QBSPLump::NODES].offset );
 
   for( int i = 0; i < nNodes; ++i ) {
-    nodes[i].plane = istream.readInt();
-    nodes[i].front = istream.readInt();
-    nodes[i].back  = istream.readInt();
+    nodes[i].plane = is.readInt();
+    nodes[i].front = is.readInt();
+    nodes[i].back  = is.readInt();
 
     // int bb[2][3]
-    istream.readInt();
-    istream.readInt();
-    istream.readInt();
-    istream.readInt();
-    istream.readInt();
-    istream.readInt();
+    is.readInt();
+    is.readInt();
+    is.readInt();
+    is.readInt();
+    is.readInt();
+    is.readInt();
   }
 
   nLeaves = lumps[QBSPLump::LEAFS].length / int( sizeof( QBSPLeaf ) );
   leaves = new matrix::BSP::Leaf[nLeaves];
 
-  istream.reset();
-  istream.forward( lumps[QBSPLump::LEAFS].offset );
+  is.reset();
+  is.forward( lumps[QBSPLump::LEAFS].offset );
 
   for( int i = 0; i < nLeaves; ++i ) {
     // int cluster
-    istream.readInt();
+    is.readInt();
     // int area
-    istream.readInt();
+    is.readInt();
     // int bb[2][3]
-    istream.readInt();
-    istream.readInt();
-    istream.readInt();
-    istream.readInt();
-    istream.readInt();
-    istream.readInt();
+    is.readInt();
+    is.readInt();
+    is.readInt();
+    is.readInt();
+    is.readInt();
+    is.readInt();
     // int firstFace
-    istream.readInt();
+    is.readInt();
     // int nFaces
-    istream.readInt();
+    is.readInt();
 
-    leaves[i].firstBrush = istream.readInt();
-    leaves[i].nBrushes   = istream.readInt();
+    leaves[i].firstBrush = is.readInt();
+    leaves[i].nBrushes   = is.readInt();
   }
 
   nLeafBrushes = lumps[QBSPLump::LEAFBRUSHES].length / int( sizeof( int ) );
   leafBrushes = new int[nLeafBrushes];
 
-  istream.reset();
-  istream.forward( lumps[QBSPLump::LEAFBRUSHES].offset );
+  is.reset();
+  is.forward( lumps[QBSPLump::LEAFBRUSHES].offset );
 
   for( int i = 0; i < nLeafBrushes; ++i ) {
-    leafBrushes[i] = istream.readInt();
+    leafBrushes[i] = is.readInt();
   }
 
   nModels = lumps[QBSPLump::MODELS].length / int( sizeof( QBSPModel ) ) - 1;
@@ -225,31 +225,31 @@ void BSP::load()
   if( nModels != 0 ) {
     models = new matrix::BSP::Model[nModels];
 
-    istream.reset();
-    istream.forward( lumps[QBSPLump::MODELS].offset );
+    is.reset();
+    is.forward( lumps[QBSPLump::MODELS].offset );
 
     hard_assert( nModels < 100 );
     char keyBuffer[] = "model  ";
 
     // skip model 0 (whole BSP)
-    istream.forward( int( sizeof( QBSPModel ) ) );
+    is.forward( int( sizeof( QBSPModel ) ) );
 
     for( int i = 0; i < nModels; ++i ) {
-      models[i].mins.x = istream.readFloat() * scale - 4.0f * EPSILON;
-      models[i].mins.y = istream.readFloat() * scale - 4.0f * EPSILON;
-      models[i].mins.z = istream.readFloat() * scale - 4.0f * EPSILON;
+      models[i].mins.x = is.readFloat() * scale - 4.0f * EPSILON;
+      models[i].mins.y = is.readFloat() * scale - 4.0f * EPSILON;
+      models[i].mins.z = is.readFloat() * scale - 4.0f * EPSILON;
 
-      models[i].maxs.x = istream.readFloat() * scale + 4.0f * EPSILON;
-      models[i].maxs.y = istream.readFloat() * scale + 4.0f * EPSILON;
-      models[i].maxs.z = istream.readFloat() * scale + 4.0f * EPSILON;
+      models[i].maxs.x = is.readFloat() * scale + 4.0f * EPSILON;
+      models[i].maxs.y = is.readFloat() * scale + 4.0f * EPSILON;
+      models[i].maxs.z = is.readFloat() * scale + 4.0f * EPSILON;
 
       // int firstFace
-      istream.readInt();
+      is.readInt();
       // int nFaces
-      istream.readInt();
+      is.readInt();
 
-      models[i].firstBrush = istream.readInt();
-      models[i].nBrushes   = istream.readInt();
+      models[i].firstBrush = is.readInt();
+      models[i].nBrushes   = is.readInt();
 
       keyBuffer[5] = char( '0' + i / 10 );
       keyBuffer[6] = char( '0' + i % 10 );
@@ -289,38 +289,38 @@ void BSP::load()
     }
   }
 
-  istream.reset();
-  istream.forward( lumps[QBSPLump::MODELS].offset );
+  is.reset();
+  is.forward( lumps[QBSPLump::MODELS].offset );
 
   for( int i = 0; i < nModels + 1; ++i ) {
     // float bb[2][3]
-    istream.readFloat();
-    istream.readFloat();
-    istream.readFloat();
-    istream.readFloat();
-    istream.readFloat();
-    istream.readFloat();
+    is.readFloat();
+    is.readFloat();
+    is.readFloat();
+    is.readFloat();
+    is.readFloat();
+    is.readFloat();
 
-    modelFaces[i].firstFace = istream.readInt();
-    modelFaces[i].nFaces    = istream.readInt();
+    modelFaces[i].firstFace = is.readInt();
+    modelFaces[i].nFaces    = is.readInt();
 
     // int firstBrush
-    istream.readInt();
+    is.readInt();
     // int nBrushes
-    istream.readInt();
+    is.readInt();
   }
 
   nBrushSides = lumps[QBSPLump::BRUSHSIDES].length / int( sizeof( QBSPBrushSide ) );
   brushSides = new int[nBrushSides];
 
-  istream.reset();
-  istream.forward( lumps[QBSPLump::BRUSHSIDES].offset );
+  is.reset();
+  is.forward( lumps[QBSPLump::BRUSHSIDES].offset );
 
   for( int i = 0; i < nBrushSides; ++i ) {
-    brushSides[i] = istream.readInt();
+    brushSides[i] = is.readInt();
 
     // int texture
-    istream.readInt();
+    is.readInt();
   }
 
   nBrushes = lumps[QBSPLump::BRUSHES].length / int( sizeof( QBSPBrush ) );
@@ -330,15 +330,15 @@ void BSP::load()
     throw Exception( "Too many brushes %d, can be at most %d", nBrushes, matrix::BSP::MAX_BRUSHES );
   }
 
-  istream.reset();
-  istream.forward( lumps[QBSPLump::BRUSHES].offset );
+  is.reset();
+  is.forward( lumps[QBSPLump::BRUSHES].offset );
 
   for( int i = 0; i < nBrushes; ++i ) {
-    brushes[i].firstSide = istream.readInt();
-    brushes[i].nSides    = istream.readInt();
+    brushes[i].firstSide = is.readInt();
+    brushes[i].nSides    = is.readInt();
     brushes[i].material  = 0;
 
-    int texture = istream.readInt();
+    int texture = is.readInt();
 
     // brush out of bounds, mark it for exclusion
     if( !includes( brushes[i], maxDim ) ) {
@@ -363,88 +363,88 @@ void BSP::load()
   nVertices = lumps[QBSPLump::VERTICES].length / int( sizeof( QBSPVertex ) );
   vertices = new Vertex[nVertices];
 
-  istream.reset();
-  istream.forward( lumps[QBSPLump::VERTICES].offset );
+  is.reset();
+  is.forward( lumps[QBSPLump::VERTICES].offset );
 
   for( int i = 0; i < nVertices; ++i ) {
-    vertices[i].pos[0]      = istream.readFloat() * scale;
-    vertices[i].pos[1]      = istream.readFloat() * scale;
-    vertices[i].pos[2]      = istream.readFloat() * scale;
+    vertices[i].pos[0]      = is.readFloat() * scale;
+    vertices[i].pos[1]      = is.readFloat() * scale;
+    vertices[i].pos[2]      = is.readFloat() * scale;
 
-    vertices[i].texCoord[0] = istream.readFloat();
-    vertices[i].texCoord[1] = 1.0f - istream.readFloat();
+    vertices[i].texCoord[0] = is.readFloat();
+    vertices[i].texCoord[1] = 1.0f - is.readFloat();
 
     // float lightmapCoord[2]
-    istream.readFloat();
-    istream.readFloat();
+    is.readFloat();
+    is.readFloat();
 
-    vertices[i].normal[0]   = istream.readFloat();
-    vertices[i].normal[1]   = istream.readFloat();
-    vertices[i].normal[2]   = istream.readFloat();
+    vertices[i].normal[0]   = is.readFloat();
+    vertices[i].normal[1]   = is.readFloat();
+    vertices[i].normal[2]   = is.readFloat();
 
     // char colour[4]
-    istream.readChar();
-    istream.readChar();
-    istream.readChar();
-    istream.readChar();
+    is.readChar();
+    is.readChar();
+    is.readChar();
+    is.readChar();
   }
 
   nIndices = lumps[QBSPLump::INDICES].length / int( sizeof( int ) );
   indices = new int[nIndices];
 
-  istream.reset();
-  istream.forward( lumps[QBSPLump::INDICES].offset );
+  is.reset();
+  is.forward( lumps[QBSPLump::INDICES].offset );
 
   for( int i = 0; i < nIndices; ++i ) {
-    indices[i] = istream.readInt();
+    indices[i] = is.readInt();
   }
 
   nFaces = lumps[QBSPLump::FACES].length / int( sizeof( QBSPFace ) );
   faces = new Face[nFaces];
 
-  istream.reset();
-  istream.forward( lumps[QBSPLump::FACES].offset );
+  is.reset();
+  is.forward( lumps[QBSPLump::FACES].offset );
 
   for( int i = 0; i < nFaces; ++i ) {
-    faces[i].texture = istream.readInt();
+    faces[i].texture = is.readInt();
 
     // int effect
-    istream.readInt();
+    is.readInt();
     // int type
-    istream.readInt();
+    is.readInt();
 
-    faces[i].firstVertex = istream.readInt();
-    faces[i].nVertices   = istream.readInt();
+    faces[i].firstVertex = is.readInt();
+    faces[i].nVertices   = is.readInt();
 
-    faces[i].firstIndex  = istream.readInt();
-    faces[i].nIndices    = istream.readInt();
+    faces[i].firstIndex  = is.readInt();
+    faces[i].nIndices    = is.readInt();
 
     // int lightmap
-    istream.readInt();
+    is.readInt();
     // int lightmapCorner[2]
-    istream.readInt();
-    istream.readInt();
+    is.readInt();
+    is.readInt();
     // int lightmapSize[2]
-    istream.readInt();
-    istream.readInt();
+    is.readInt();
+    is.readInt();
     // float lightmapPos[3]
-    istream.readFloat();
-    istream.readFloat();
-    istream.readFloat();
+    is.readFloat();
+    is.readFloat();
+    is.readFloat();
     // float lightmapVecs[2][3]
-    istream.readFloat();
-    istream.readFloat();
-    istream.readFloat();
-    istream.readFloat();
-    istream.readFloat();
-    istream.readFloat();
+    is.readFloat();
+    is.readFloat();
+    is.readFloat();
+    is.readFloat();
+    is.readFloat();
+    is.readFloat();
     // float normal[3]
-    istream.readFloat();
-    istream.readFloat();
-    istream.readFloat();
+    is.readFloat();
+    is.readFloat();
+    is.readFloat();
     // int size[2]
-    istream.readInt();
-    istream.readInt();
+    is.readInt();
+    is.readInt();
 
     for( int j = 0; j < faces[i].nVertices; ++j ) {
       const Vertex& vertex = vertices[ faces[i].firstVertex + j ];
