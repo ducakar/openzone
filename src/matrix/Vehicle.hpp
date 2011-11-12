@@ -48,17 +48,16 @@ class Vehicle : public Dynamic
       TYPE_MAX
     };
 
-    static const int   MAX_WEAPONS       = 8;
+    static const int   MAX_WEAPONS       = 4;
 
     // not in use, used to reserve a slot for engine sound sample
     static const int   EVENT_ENGINE      = 7;
     static const int   EVENT_NEXT_WEAPON = 8;
     static const int   EVENT_SHOT0       = 9;
-    static const int   EVENT_SHOT0_EMPTY = 10;
-    static const int   EVENT_SHOT1       = 11;
-    static const int   EVENT_SHOT1_EMPTY = 12;
-    static const int   EVENT_SHOT2       = 13;
-    static const int   EVENT_SHOT2_EMPTY = 14;
+    static const int   EVENT_SHOT1       = 10;
+    static const int   EVENT_SHOT2       = 11;
+    static const int   EVENT_SHOT3       = 12;
+    static const int   EVENT_SHOT_EMPTY  = 13;
 
     static const int   CREW_VISIBLE_BIT  = 0x0001;
     static const int   AUTO_EJECT_BIT    = 0x0002;

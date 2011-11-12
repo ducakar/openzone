@@ -47,19 +47,49 @@ ObjectClass* BotClass::createClass()
 void BotClass::initClass( const Config* config )
 {
   flags = Object::DYNAMIC_BIT | Object::BOT_BIT | Object::HIT_FUNC_BIT |
-      Object::UPDATE_FUNC_BIT | Object::CYLINDER_BIT;
+      Object::UPDATE_FUNC_BIT | Object::CYLINDER_BIT | Object::CLIMBER_BIT | Object::PUSHER_BIT;
 
   OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",    true  );
-  OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.onDamage",     false );
   OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.onUse",        false );
-  OZ_CLASS_SET_FLAG( Object::ITEM_BIT,           "flag.item",         false );
+  OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.onDamage",     false );
   OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",        true  );
-  OZ_CLASS_SET_FLAG( Object::CLIMBER_BIT,        "flag.climber",      true  );
-  OZ_CLASS_SET_FLAG( Object::PUSHER_BIT,         "flag.pusher",       true  );
   OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
   OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
 
   fillCommonConfig( config );
+
+  if( audioType != -1 ) {
+    const char* soundName;
+    int         soundIndex;
+
+    soundName  = config->get( "audioSound.splash", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Dynamic::EVENT_SPLASH] = soundIndex;
+
+    soundName  = config->get( "audioSound.fricting", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Dynamic::EVENT_FRICTING] = soundIndex;
+
+    soundName  = config->get( "audioSound.hitHard", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Bot::EVENT_HIT_HARD] = soundIndex;
+
+    soundName  = config->get( "audioSound.land", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Bot::EVENT_LAND] = soundIndex;
+
+    soundName  = config->get( "audioSound.jump", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Bot::EVENT_JUMP] = soundIndex;
+
+    soundName  = config->get( "audioSound.flip", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Bot::EVENT_FLIP] = soundIndex;
+
+    soundName  = config->get( "audioSound.death", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Bot::EVENT_DEATH] = soundIndex;
+  }
 
   // we don't allow browsing bots' inventory as long as they are alive
   flags &= ~Object::BROWSABLE_BIT;
@@ -75,6 +105,10 @@ void BotClass::initClass( const Config* config )
   if( lift < 0.0f ) {
     throw Exception( "%s: Invalid object lift. Should be >= 0.", name.cstr() );
   }
+
+  state = Bot::RUNNING_BIT;
+
+  OZ_CLASS_SET_STATE( Bot::MECHANICAL_BIT, "state.mechanical", false );
 
   crouchDim.x = dim.x;
   crouchDim.y = dim.y;
@@ -108,27 +142,20 @@ void BotClass::initClass( const Config* config )
   crouchMomentum    = config->get( "crouchMomentum", 0.7f );
   jumpMomentum      = config->get( "jumpMomentum", 5.0f );
 
-  stepInc           = config->get( "stepInc", 0.25f );
-  stepMax           = config->get( "stepMax", 0.50f );
-  stepRateLimit     = config->get( "stepRateLimit", 0.00f );
-  stepRateCoeff     = config->get( "stepRateCoeff", 500.0f );
-  stepRateSupp      = config->get( "stepRatesupp", 0.50f );
-
-  climbInc          = config->get( "climbInc", 0.25f );
-  climbMax          = config->get( "climbMax", 2.0f );
-  climbMomentum     = config->get( "climbMomentum", 2.0f );
-
   airControl        = config->get( "airControl", 0.025f );
   climbControl      = config->get( "climbControl", 1.50f );
   waterControl      = config->get( "waterControl", 0.08f );
   slickControl      = config->get( "slickControl", 0.08f );
 
-  reachDist         = config->get( "reachDist", 2.0f );
+  stepInc           = config->get( "stepInc", 0.25f );
+  stepMax           = config->get( "stepMax", 0.50f );
+  stepRateLimit     = config->get( "stepRateLimit", 0.00f );
+  stepRateCoeff     = config->get( "stepRateCoeff", 500.0f );
+  stepRateSupp      = config->get( "stepRateSupp", 0.50f );
 
-  grabMass          = config->get( "grabMass", 50.0f );
-  throwMomentum     = config->get( "throwMomentum", 6.0f );
-
-  regeneration      = config->get( "regeneration", 0.0f ) * Timer::TICK_TIME;
+  climbInc          = config->get( "climbInc", 0.25f );
+  climbMax          = config->get( "climbMax", 2.0f );
+  climbMomentum     = config->get( "climbMomentum", 2.0f );
 
   stamina           = config->get( "stamina", 100.0f );
   staminaGain       = config->get( "staminaGain", 2.5f ) * Timer::TICK_TIME;
@@ -138,19 +165,18 @@ void BotClass::initClass( const Config* config )
   staminaJumpDrain  = config->get( "staminaJumpDrain", 5.0f );
   staminaThrowDrain = config->get( "staminaThrowDrain", 8.0f );
 
-  state = 0;
+  regeneration      = config->get( "regeneration", 0.0f ) * Timer::TICK_TIME;
 
-  OZ_CLASS_SET_STATE( Bot::MECHANICAL_BIT, "state.mechanical", false );
-  OZ_CLASS_SET_STATE( Bot::STEPABLE_BIT,   "state.stepable",   true );
-  OZ_CLASS_SET_STATE( Bot::CROUCHING_BIT,  "state.crouching",  false );
-  OZ_CLASS_SET_STATE( Bot::RUNNING_BIT,    "state.running",    true );
+  reachDist         = config->get( "reachDist", 2.0f );
+  grabMass          = config->get( "grabMass", 50.0f );
+  throwMomentum     = config->get( "throwMomentum", 6.0f );
 
-  weaponItem            = config->get( "weaponItem", -1 );
-
-  mindFunc              = config->get( "mindFunction", "" );
+  weaponItem        = config->get( "weaponItem", -1 );
 
   const char* sNameList = config->get( "nameList", "" );
   nameList              = String::isEmpty( sNameList ) ? -1 : library.nameListIndex( sNameList );
+
+  mindFunc          = config->get( "mindFunc", "" );
 }
 
 Object* BotClass::create( int index, const Point3& pos, Heading heading ) const

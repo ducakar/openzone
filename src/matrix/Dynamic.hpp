@@ -37,6 +37,10 @@ class Dynamic : public Object
 {
   public:
 
+    static const int EVENT_SPLASH   = 5;
+    // EVENT_FRICTING not in use, but only reserves a slot for friction sound
+    static const int EVENT_FRICTING = 6;
+
     static Pool<Dynamic, 4096> pool;
 
     Vec3  velocity;
@@ -50,6 +54,15 @@ class Dynamic : public Object
 
     float mass;
     float lift;
+
+  public:
+
+    OZ_ALWAYS_INLINE
+    void splash( float hitMomentum )
+    {
+      addEvent( EVENT_SPLASH, hitMomentum * MOMENTUM_INTENSITY_COEF );
+      addEvent( EVENT_SPLASH, 1.0f );
+    }
 
   protected:
 

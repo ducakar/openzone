@@ -63,7 +63,7 @@ void BasicAudio::play( const Audio* parent )
   // friction
   if( parent == null &&
       ( objFlags & ( Object::DYNAMIC_BIT | Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) ==
-      ( Object::DYNAMIC_BIT | Object::FRICTING_BIT ) && sounds[Object::EVENT_FRICTING] != -1 )
+      ( Object::DYNAMIC_BIT | Object::FRICTING_BIT ) && sounds[Dynamic::EVENT_FRICTING] != -1 )
   {
     float dvx = dyn->velocity.x;
     float dvy = dyn->velocity.y;
@@ -77,7 +77,7 @@ void BasicAudio::play( const Audio* parent )
       }
     }
 
-    playContSound( sounds[Object::EVENT_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), obj, obj );
+    playContSound( sounds[Dynamic::EVENT_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), obj, obj );
   }
 
   // events

@@ -38,6 +38,12 @@ class Bot : public Dynamic
 {
   public:
 
+    static const int EVENT_HIT_HARD           = 7;
+    static const int EVENT_LAND               = 8;
+    static const int EVENT_JUMP               = 9;
+    static const int EVENT_FLIP               = 10;
+    static const int EVENT_DEATH              = 11;
+
     static const int ACTION_FORWARD           = 0x00000001;
     static const int ACTION_BACKWARD          = 0x00000002;
     static const int ACTION_LEFT              = 0x00000004;
@@ -65,25 +71,17 @@ class Bot : public Dynamic
     static const int ACTION_VEH_DOWN          = 0x00200000;
     static const int ACTION_VEH_NEXT_WEAPON   = 0x00400000;
 
-    static const int EVENT_HIT_HARD           = 7;
-    static const int EVENT_LAND               = 8;
-    static const int EVENT_JUMP               = 9;
-    static const int EVENT_FLIP               = 10;
-    static const int EVENT_DEATH              = 11;
-
     static const int DEAD_BIT                 = 0x00000001;
     static const int MECHANICAL_BIT           = 0x00000002;
     static const int INCARNATABLE_BIT         = 0x00000004;
     // bot is currently controlled by player, nirvana shouldn't process its mind
     static const int PLAYER_BIT               = 0x00000008;
 
-    // can step over obstacles, e.g. walk up the stairs
-    static const int STEPABLE_BIT             = 0x00000100;
-    static const int CROUCHING_BIT            = 0x00000200;
-    static const int RUNNING_BIT              = 0x00000400;
-    static const int SHOOTING_BIT             = 0x00000800;
-    static const int MOVING_BIT               = 0x00001000;
-    static const int GRAB_BIT                 = 0x00002000;
+    static const int CROUCHING_BIT            = 0x00000100;
+    static const int RUNNING_BIT              = 0x00000200;
+    static const int SHOOTING_BIT             = 0x00000400;
+    static const int MOVING_BIT               = 0x00000800;
+    static const int GRAB_BIT                 = 0x00001000;
 
     // current state bits
     static const int JUMP_SCHED_BIT           = 0x00004000;

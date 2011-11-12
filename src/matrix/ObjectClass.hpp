@@ -41,13 +41,9 @@ class Object;
 
 class ObjectClass
 {
-  private:
-
-    static const int MAX_ITEMS = 100;
-
   public:
 
-    // 00 <= AUDIO_SOUNDS <= 99 (two decimal digits)
+    static const int MAX_ITEMS = 100;
     static const int MAX_SOUNDS = 16;
 
     typedef ObjectClass* ( * CreateFunc )();
@@ -61,14 +57,12 @@ class ObjectClass
     float           life;
     float           resistance;
 
-    String          onDestroy;
-    String          onDamage;
-    String          onHit;
-    String          onUse;
-    String          onUpdate;
-
     const FragPool* fragPool;
     int             nFrags;
+
+    int             nItems;
+
+    Vector<const ObjectClass*> defaultItems;
 
     int             deviceType;
 
@@ -78,9 +72,11 @@ class ObjectClass
     int             audioType;
     int             audioSounds[MAX_SOUNDS];
 
-    int             nItems;
-
-    Vector<const ObjectClass*> defaultItems;
+    String          onDestroy;
+    String          onDamage;
+    String          onHit;
+    String          onUse;
+    String          onUpdate;
 
   protected:
 

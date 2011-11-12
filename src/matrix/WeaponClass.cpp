@@ -56,6 +56,27 @@ void WeaponClass::initClass( const Config* config )
 
   fillCommonConfig( config );
 
+  if( audioType != -1 ) {
+    const char* soundName;
+    int         soundIndex;
+
+    soundName  = config->get( "audioSound.splash", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Dynamic::EVENT_SPLASH] = soundIndex;
+
+    soundName  = config->get( "audioSound.fricting", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Dynamic::EVENT_FRICTING] = soundIndex;
+
+    soundName  = config->get( "audioSound.shot", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Weapon::EVENT_SHOT] = soundIndex;
+
+    soundName  = config->get( "audioSound.shotEmpty", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Weapon::EVENT_SHOT_EMPTY] = soundIndex;
+  }
+
   mass = config->get( "mass", 100.0f );
   lift = config->get( "lift", 12.0f );
 
