@@ -48,16 +48,16 @@ class InventoryMenu : public Frame
 
     const InventoryMenu* const master;
 
-    Label  itemDesc;
-
-    int    tagged;
-    int    scroll;
-
     uint   scrollUpTexId;
     uint   scrollDownTexId;
     uint   useTexId;
     uint   equipTexId;
     uint   unequipTexId;
+
+    Label  itemDesc;
+
+    int    tagged;
+    int    scroll;
 
   protected:
 

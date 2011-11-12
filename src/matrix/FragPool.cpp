@@ -30,6 +30,11 @@
 #include "matrix/Frag.hpp"
 #include "matrix/Library.hpp"
 
+#define OZ_FRAG_SET_FLAG( flagBit, varName, defValue ) \
+  if( fragConfig.get( varName, defValue ) ) { \
+    flags |= flagBit; \
+  }
+
 namespace oz
 {
 namespace matrix
@@ -44,16 +49,20 @@ FragPool::FragPool( const char* name_, int id_ ) : name( name_ ), id( id_ )
     throw Exception( "Failed to read config from '%s'", sPath.cstr() );
   }
 
-  velocitySpread = fragConfig.get( "velocitySpread", 0.0f );
+  flags = 0;
+
+  OZ_FRAG_SET_FLAG( FADEOUT_BIT, "flag.fadeout", true );
+
+  velocitySpread = fragConfig.get( "velocitySpread", 4.0f );
 
   if( velocitySpread < 0.0f ) {
     throw Exception( "%s: Frag velocitySpread must be >= 0.0", name.cstr() );
   }
 
-  life        = fragConfig.get( "life", 6.0f );
-  lifeSpread  = fragConfig.get( "lifeSpread", 0.0f );
+  life        = fragConfig.get( "life", 4.0f );
+  lifeSpread  = fragConfig.get( "lifeSpread", 1.0f );
   mass        = fragConfig.get( "mass", 0.0f );
-  restitution = fragConfig.get( "restitution", 1.8f );
+  restitution = fragConfig.get( "restitution", 1.5f );
 
   if( life <= 0.0f ) {
     throw Exception( "%s: Frag life must be > 0.0", name.cstr() );
@@ -64,8 +73,8 @@ FragPool::FragPool( const char* name_, int id_ ) : name( name_ ), id( id_ )
   if( mass < 0.0f ) {
     throw Exception( "%s: Frag mass must be >= 0.0", name.cstr() );
   }
-  if( restitution < 0.05f || 0.95f < restitution ) {
-    throw Exception( "%s: Frag restitution must lie on interval [0.05, 0.95]", name.cstr() );
+  if( restitution < 0.0f || 1.0f < restitution ) {
+    throw Exception( "%s: Frag restitution must lie on interval [0, 1]", name.cstr() );
   }
 
   char buffer[] = "model  ";

@@ -147,6 +147,7 @@ void GameStage::run()
 
 void GameStage::reload()
 {
+  ui::mouse.doShow = false;
   ui::ui.loadingScreen->status.setText( "%s", gettext( "Loading ..." ) );
   ui::ui.showLoadingScreen( true );
   ui::ui.root->focus( ui::ui.loadingScreen );
@@ -222,19 +223,6 @@ bool GameStage::update()
    */
 
   beginTime = SDL_GetTicks();
-
-  if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
-    ui::mouse.doShow = !ui::mouse.doShow;
-  }
-
-  if( ui::keyboard.keys[SDLK_o] ) {
-    if( ui::keyboard.keys[SDLK_LSHIFT] || ui::keyboard.keys[SDLK_RSHIFT] ) {
-      orbis.caelum.time -= orbis.caelum.period * 0.002f;
-    }
-    else {
-      orbis.caelum.time += orbis.caelum.period * 0.002f;
-    }
-  }
 
   if( ui::keyboard.keys[SDLK_F5] && !ui::keyboard.oldKeys[SDLK_F5] ) {
     write( config.get( "dir.rc", "" ) + String( "/quicksave.ozState" ) );
@@ -452,6 +440,7 @@ void GameStage::unload()
   log.println( "Unloading GameStage {" );
   log.indent();
 
+  ui::mouse.doShow = false;
   ui::ui.loadingScreen->status.setText( "%s", gettext( "Shutting down ..." ) );
   ui::ui.showLoadingScreen( true );
 

@@ -302,6 +302,8 @@ void HudArea::onUpdate()
 {
   const Bot* bot = camera.botObj;
 
+  // we need this is onUpdate() rather than in onDraw() for the rare case if an object is replaced
+  // by a new one with the same id (onDraw() may not be called each frame and may miss this switch)
   if( camera.tagged != lastTaggedId ) {
     lastTaggedId = -1;
   }
@@ -316,15 +318,12 @@ void HudArea::onUpdate()
 
 void HudArea::onDraw()
 {
-  const Bot* bot = camera.botObj;
-
-  if( camera.state == Camera::BOT && camera.bot != -1 ) {
-    hard_assert( bot != null );
-
+  if( camera.bot != -1 ) {
     drawBotCrosshair();
     drawBotStatus();
 
-    if( bot->parent != -1 && orbis.objects[bot->parent] != null ) {
+    int parent = camera.botObj->parent;
+    if( parent != -1 && orbis.objects[parent] != null ) {
       drawVehicleStatus();
     }
   }

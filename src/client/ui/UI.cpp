@@ -42,9 +42,7 @@ namespace ui
 
 UI ui;
 
-UI::UI() : root( null ), loadingScreen( null ), hudArea( null ), strategicArea( null ),
-    inventoryMenu( null ), browseMenu( null ), infoFrame( null ),
-    buildMenu( null ), debugFrame( null )
+UI::UI() : root( null ), loadingScreen( null ), buildMenu( null ), debugFrame( null )
 {}
 
 void UI::showLoadingScreen( bool doShow )
@@ -116,40 +114,8 @@ void UI::load()
 
   mouse.load();
 
-  try {
-    strategicArea = new StrategicArea();
-    hudArea       = new HudArea();
-    inventoryMenu = new InventoryMenu( null );
-    browseMenu    = new InventoryMenu( inventoryMenu );
-    infoFrame     = new InfoFrame();
-    buildMenu     = showBuild ? new BuildMenu() : null;
-    debugFrame    = showDebug ? new DebugFrame() : null;
-  }
-  catch( ... ) {
-    delete strategicArea;
-    delete hudArea;
-    delete inventoryMenu;
-    delete browseMenu;
-    delete infoFrame;
-    delete buildMenu;
-    delete debugFrame;
-
-    strategicArea = null;
-    hudArea       = null;
-    inventoryMenu = null;
-    browseMenu    = null;
-    infoFrame     = null;
-    buildMenu     = null;
-    debugFrame    = null;
-
-    throw;
-  }
-
-  root->add( strategicArea );
-  root->add( hudArea );
-  root->add( inventoryMenu );
-  root->add( browseMenu );
-  root->add( infoFrame );
+  buildMenu  = showBuild ? new BuildMenu() : null;
+  debugFrame = showDebug ? new DebugFrame() : null;
 
   if( showBuild ) {
     root->add( buildMenu );
@@ -170,26 +136,6 @@ void UI::unload()
   if( buildMenu != null ) {
     root->remove( buildMenu );
     buildMenu = null;
-  }
-  if( infoFrame != null ) {
-    root->remove( infoFrame );
-    infoFrame = null;
-  }
-  if( browseMenu != null ) {
-    root->remove( browseMenu );
-    browseMenu = null;
-  }
-  if( inventoryMenu != null ) {
-    root->remove( inventoryMenu );
-    inventoryMenu = null;
-  }
-  if( hudArea != null ) {
-    root->remove( hudArea  );
-    hudArea = null;
-  }
-  if( strategicArea != null ) {
-    root->remove( strategicArea );
-    strategicArea = null;
   }
 
   mouse.unload();
@@ -212,8 +158,6 @@ void UI::init()
   loadingScreen = new LoadingArea();
 
   root->add( loadingScreen );
-
-  hard_assert( ui::ui.strategicArea == null );
 }
 
 void UI::free()

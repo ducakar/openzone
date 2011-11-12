@@ -44,22 +44,25 @@ const float InventoryMenu::SLOT_OBJ_DIMF = float( SLOT_SIZE - 2*PADDING_SIZE ) /
 
 void InventoryMenu::onVisibilityChange()
 {
+  tagged = -1;
   scroll = 0;
 }
 
 bool InventoryMenu::onMouseEvent()
 {
-  if( camera.state != Camera::BOT || camera.botObj == null ||
-      ( master != null && camera.botObj->instrument == -1 ) )
+  if( camera.botObj == null || ( master != null && camera.botObj->instrument == -1 ) )
   {
+    show( false );
     return false;
   }
 
   Object* container = null;
+
   if( camera.botObj->instrument != -1 ) {
     container = orbis.objects[camera.botObj->instrument];
 
     if( container == null || !( container->flags & Object::BROWSABLE_BIT ) ) {
+      show( false );
       return false;
     }
   }
@@ -129,11 +132,7 @@ bool InventoryMenu::onMouseEvent()
 
 void InventoryMenu::onDraw()
 {
-  if( camera.state != Camera::BOT || camera.botObj == null ||
-      ( master != null && camera.botObj->instrument == -1 ) )
-  {
-    tagged = -1;
-    scroll = 0;
+  if( camera.botObj == null || ( master != null && camera.botObj->instrument == -1 ) ) {
     return;
   }
 
@@ -141,7 +140,7 @@ void InventoryMenu::onDraw()
   const ObjectClass* containerClazz;
 
   if( master == null ) {
-    container = camera.botObj;
+    container      = camera.botObj;
     containerClazz = container->clazz;
   }
   else {
@@ -150,7 +149,6 @@ void InventoryMenu::onDraw()
     if( container == null || !( container->flags & Object::BROWSABLE_BIT ) ) {
       return;
     }
-
     containerClazz = container->clazz;
   }
 
@@ -158,6 +156,7 @@ void InventoryMenu::onDraw()
       static_cast<const Bot*>( container )->name + " (" + containerClazz->title + ")" :
       containerClazz->title;
   title.set( width / 2, -textHeight - 8, ALIGN_HCENTRE, Font::LARGE, "%s", sTitle.cstr() );
+
   Frame::onDraw();
 
   glUniform4f( param.oz_Colour, 0.3f, 0.3f, 0.3f, 0.6f );

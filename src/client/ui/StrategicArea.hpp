@@ -54,11 +54,11 @@ class StrategicArea : public Area
 
   public:
 
-    const Struct* hoveredStr;
-    const Object* hoveredObj;
-
     Vector<int> taggedStrs;
     Vector<int> taggedObjs;
+
+    int hoverStr;
+    int hoverObj;
 
   private:
 
@@ -67,12 +67,13 @@ class StrategicArea : public Area
     OZ_PRINTF_FORMAT( 4, 5 )
     void printName( int baseX, int baseY, const char* s, ... );
 
-    void drawHoveredRect( const Span& span );
-    void drawTaggedRect( const Struct* str, const Object* obj, const Span& span );
+    void drawHoveredRect( const Span& span, const Struct* str, const Object* obj );
+    void drawTaggedRect( const Span& span, const Struct* str, const Object* obj );
 
   protected:
 
     virtual void onUpdate();
+    virtual void onVisibilityChange();
     virtual bool onMouseEvent();
     virtual void onDraw();
 

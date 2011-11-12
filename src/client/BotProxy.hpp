@@ -26,6 +26,9 @@
 #pragma once
 
 #include "client/Proxy.hpp"
+#include "client/ui/HudArea.hpp"
+#include "client/ui/InfoFrame.hpp"
+#include "client/ui/InventoryMenu.hpp"
 
 namespace oz
 {
@@ -41,6 +44,11 @@ class BotProxy : public Proxy
     static const float THIRD_PERSON_CLIP_DIST;
     static const float BOB_SUPPRESSION_COEF;
 
+    ui::HudArea*       hud;
+    ui::InfoFrame*     infoFrame;
+    ui::InventoryMenu* inventory;
+    ui::InventoryMenu* container;
+
     // how far behind the eyes the camera should be
     float externalDistFactor;
 
@@ -53,9 +61,14 @@ class BotProxy : public Proxy
 
   public:
 
+    BotProxy();
+
     virtual void begin();
+    virtual void end();
+
     virtual void update();
     virtual void prepare();
+
     virtual void reset();
 
     virtual void read( InputStream* istream );

@@ -26,6 +26,7 @@
 #pragma once
 
 #include "client/Proxy.hpp"
+#include "client/ui/StrategicArea.hpp"
 
 namespace oz
 {
@@ -46,6 +47,8 @@ class StrategicProxy : public Proxy
     static const float RTS_HIGH_SPEED;
     static const float ZOOM_FACTOR;
 
+    ui::StrategicArea* strategicArea;
+
     float height;
     bool  isFree;
     bool  isFreeFast;
@@ -56,8 +59,11 @@ class StrategicProxy : public Proxy
     StrategicProxy();
 
     virtual void begin();
+    virtual void end();
+
     virtual void update();
     virtual void prepare();
+
     virtual void reset();
 
     virtual void read( InputStream* istream );

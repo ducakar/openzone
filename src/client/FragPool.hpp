@@ -41,6 +41,7 @@ class FragPool
   public:
 
     static const int UPDATED_BIT = 0x01;
+    static const int FADEOUT_BIT = matrix::FragPool::FADEOUT_BIT;
 
     static const float FRAG_RADIUS;
 

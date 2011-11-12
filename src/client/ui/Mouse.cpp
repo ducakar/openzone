@@ -56,7 +56,7 @@ void Mouse::prepare()
   relZ = 0;
 
   oldButtons = buttons;
-  buttons = currButtons;
+  buttons    = currButtons;
 }
 
 void Mouse::update()
@@ -155,10 +155,10 @@ void Mouse::unload()
 
 void Mouse::init()
 {
-  doShow = false;
-  isGrabOn = config.get( "screen.full", true );
+  doShow      = false;
+  isGrabOn    = config.get( "screen.full", true );
   accelFactor = config.getSet( "mouse.accelFactor", 0.05f );
-  icon = ARROW;
+  icon        = ARROW;
 
   x = camera.centreX;
   y = camera.centreY;
@@ -166,8 +166,8 @@ void Mouse::init()
   relY = 0;
   relZ = 0;
 
-  buttons = 0;
-  oldButtons = 0;
+  buttons     = 0;
+  oldButtons  = 0;
   currButtons = 0;
 
   cursors[X].texId     = 0;

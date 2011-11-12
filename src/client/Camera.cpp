@@ -87,12 +87,19 @@ void Camera::update()
   botObj = bot == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
 
   if( botObj == null || ( botObj->state & Bot::DEAD_BIT ) ) {
-    bot = -1;
+    bot    = -1;
     botObj = null;
   }
 
   if( newState != state ) {
-    switch( newState ) {
+    state = newState;
+    isExternal = true;
+
+    if( proxy != null ) {
+      proxy->end();
+    }
+
+    switch( state ) {
       case STRATEGIC: {
         proxy = &strategicProxy;
         break;
@@ -106,12 +113,15 @@ void Camera::update()
         break;
       }
     }
-    isExternal = true;
-    proxy->begin();
-    state = newState;
+
+    if( proxy != null ) {
+      proxy->begin();
+    }
   }
 
-  proxy->update();
+  if( proxy != null ) {
+    proxy->update();
+  }
 }
 
 void Camera::prepare()
@@ -119,11 +129,13 @@ void Camera::prepare()
   botObj = bot == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
 
   if( botObj == null || ( botObj->state & Bot::DEAD_BIT ) ) {
-    bot = -1;
+    bot    = -1;
     botObj = null;
   }
 
-  proxy->prepare();
+  if( proxy != null ) {
+    proxy->prepare();
+  }
 }
 
 void Camera::reset()
@@ -244,8 +256,7 @@ void Camera::init()
     defaultState = STRATEGIC;
   }
   else {
-    log.println( "WARNING: invalid camera enum %s, must be STRATEGIC",
-                 sDefaultState.cstr() );
+    log.println( "WARNING: invalid camera enum %s, must be STRATEGIC", sDefaultState.cstr() );
     defaultState = STRATEGIC;
   }
 

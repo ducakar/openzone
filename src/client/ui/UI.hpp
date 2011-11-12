@@ -29,15 +29,7 @@
 #include "client/ui/Keyboard.hpp"
 #include "client/ui/Mouse.hpp"
 
-#include "client/ui/Area.hpp"
-#include "client/ui/Frame.hpp"
-#include "client/ui/Button.hpp"
-
 #include "client/ui/LoadingArea.hpp"
-#include "client/ui/HudArea.hpp"
-#include "client/ui/StrategicArea.hpp"
-#include "client/ui/InventoryMenu.hpp"
-#include "client/ui/InfoFrame.hpp"
 #include "client/ui/BuildMenu.hpp"
 #include "client/ui/DebugFrame.hpp"
 
@@ -58,15 +50,10 @@ class UI
 
   public:
 
-    Area*          root;
-    LoadingArea*   loadingScreen;
-    HudArea*       hudArea;
-    StrategicArea* strategicArea;
-    InventoryMenu* inventoryMenu;
-    InventoryMenu* browseMenu;
-    InfoFrame*     infoFrame;
-    BuildMenu*     buildMenu;
-    DebugFrame*    debugFrame;
+    Area*        root;
+    LoadingArea* loadingScreen;
+    BuildMenu*   buildMenu;
+    DebugFrame*  debugFrame;
 
     UI();
 
