@@ -53,6 +53,7 @@ class HudArea : public Area
     Label vehicleWeaponNames[Vehicle::MAX_WEAPONS];
     Label vehicleWeaponRounds[Vehicle::MAX_WEAPONS];
 
+    // cache last ids so we know when to re-generate labels
     int   lastTaggedId;
     int   lastWeaponId;
     int   lastWeaponRounds;

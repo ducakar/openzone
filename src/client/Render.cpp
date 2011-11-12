@@ -251,11 +251,14 @@ void Render::drawGeometry()
     context.drawFrag( frags[i] );
   }
 
+  // draw transparent parts of objects
   shader.colour = Colours::WHITE;
 
   currentTime = SDL_GetTicks();
   timer.renderFragsMillis += currentTime - beginTime;
   beginTime = currentTime;
+
+  glEnable( GL_BLEND );
 
   for( int i = objects.length() - 1; i >= 0; --i ) {
     const Object* obj = objects[i].obj;

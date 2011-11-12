@@ -40,6 +40,9 @@ namespace client
 const float BotProxy::THIRD_PERSON_CLIP_DIST = 0.20f;
 const float BotProxy::BOB_SUPPRESSION_COEF   = 0.60f;
 
+BotProxy::BotProxy() : hud( null ), infoFrame( null ), inventory( null ), container( null )
+{}
+
 void BotProxy::begin()
 {
   if( camera.bot == -1 ) {
@@ -57,11 +60,43 @@ void BotProxy::begin()
   camera.isExternal = isExternal;
   camera.setTagged( null );
 
-  ui::ui.strategicArea->taggedStrs.clear();
-  ui::ui.strategicArea->taggedObjs.clear();
-  ui::ui.strategicArea->show( false );
-  ui::ui.hudArea->show( true );
   ui::mouse.doShow = false;
+
+  hud       = new ui::HudArea();
+  infoFrame = new ui::InfoFrame();
+  inventory = new ui::InventoryMenu( null );
+  container = new ui::InventoryMenu( inventory );
+
+  ui::ui.root->add( hud );
+  ui::ui.root->add( infoFrame );
+  ui::ui.root->add( inventory );
+  ui::ui.root->add( container );
+
+  infoFrame->show( true );
+  inventory->show( false );
+  container->show( false );
+}
+
+void BotProxy::end()
+{
+  if( container != null ) {
+    ui::ui.root->remove( container );
+    container = null;
+  }
+  if( inventory != null ) {
+    ui::ui.root->remove( inventory );
+    inventory = null;
+  }
+  if( infoFrame != null ) {
+    ui::ui.root->remove( infoFrame );
+    infoFrame = null;
+  }
+  if( hud != null ) {
+    ui::ui.root->remove( hud );
+    hud = null;
+  }
+
+  ui::mouse.doShow = true;
 }
 
 void BotProxy::update()
@@ -74,6 +109,29 @@ void BotProxy::update()
 
   const char* keys    = ui::keyboard.keys;
   const char* oldKeys = ui::keyboard.oldKeys;
+
+  if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
+    ui::mouse.doShow = !ui::mouse.doShow;
+
+    inventory->show( ui::mouse.doShow );
+  }
+
+  if( keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) {
+    camera.h = bot->h;
+    camera.v = bot->v;
+
+    isExternal = !isExternal;
+    camera.isExternal = isExternal;
+
+    if( !isExternal ) {
+      if( bot->parent != -1 ) {
+        camera.warp( bot->p + camera.up * bot->camZ );
+      }
+      else {
+        camera.warp( bot->p + Vec3( 0.0f, 0.0f, bot->camZ ) );
+      }
+    }
+  }
 
   if( camera.allowReincarnation && keys[SDLK_i] && !oldKeys[SDLK_i] ) {
     bot->actions = 0;
@@ -92,14 +150,13 @@ void BotProxy::update()
     float relH = camera.relH;
     float relV = camera.relV;
 
-    // TODO
-//       if( bot->parent != -1 && orbis.objects[bot->parent] != null ) {
-//         const Vehicle*      vehicle = static_cast<const Vehicle*>( orbis.objects[bot->parent] );
-//         const VehicleClass* clazz   = static_cast<const VehicleClass*>( vehicle->clazz );
-//
-//         relH = clamp( relH, -clazz->turnLimitH, +clazz->turnLimitH );
-//         relV = clamp( relV, -clazz->turnLimitV, +clazz->turnLimitV );
-//       }
+    if( bot->parent != -1 && orbis.objects[bot->parent] != null ) {
+      const Vehicle*      vehicle = static_cast<const Vehicle*>( orbis.objects[bot->parent] );
+      const VehicleClass* clazz   = static_cast<const VehicleClass*>( vehicle->clazz );
+
+      relH = clamp( relH, -clazz->turnLimitH, +clazz->turnLimitH );
+      relV = clamp( relV, -clazz->turnLimitV, +clazz->turnLimitV );
+    }
 
     bot->h += relH;
     bot->v += relV;
@@ -176,24 +233,6 @@ void BotProxy::update()
     bot->state |= Bot::GESTURE_ALL_BIT;
   }
 
-  if( keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) {
-    camera.h = bot->h;
-    camera.v = bot->v;
-
-    isExternal = !isExternal;
-    camera.isExternal = isExternal;
-
-    if( !isExternal ) {
-      if( bot->parent != -1 ) {
-        camera.align();
-        camera.warp( bot->p + camera.up * bot->camZ );
-      }
-      else {
-        camera.warp( bot->p + Vec3( 0.0f, 0.0f, bot->camZ ) );
-      }
-    }
-  }
-
   if( !ui::mouse.doShow ) {
     if( ui::mouse.buttons & SDL_BUTTON_LMASK ) {
       bot->actions |= Bot::ACTION_ATTACK;
@@ -210,6 +249,9 @@ void BotProxy::update()
 
       if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::BROWSABLE_BIT ) ) {
         ui::mouse.doShow = true;
+
+        inventory->show( true );
+        container->show( true );
       }
     }
     if( ui::mouse.wheelUp ) {
@@ -279,15 +321,17 @@ void BotProxy::prepare()
         bobBias  *= BOB_SUPPRESSION_COEF;
       }
 
-      Point3 p = bot->p;
-      p.z += bot->camZ + bobBias;
-
       camera.w = bobTheta;
       camera.align();
-      camera.warpMoveZ( p );
+
+      camera.warpMoveZ( Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ + bobBias ) );
     }
   }
   else { // external
+    bobPhi   = 0.0f;
+    bobTheta = 0.0f;
+    bobBias  = 0.0f;
+
     camera.w = 0.0f;
     camera.align();
 
@@ -312,10 +356,6 @@ void BotProxy::prepare()
     offset += camera.at * THIRD_PERSON_CLIP_DIST;
 
     camera.warpMoveZ( origin + offset );
-
-    bobPhi   = 0.0f;
-    bobTheta = 0.0f;
-    bobBias  = 0.0f;
   }
 
   if( bot->parent != -1 ) {
@@ -335,23 +375,22 @@ void BotProxy::prepare()
     hvsc[5] = hvsc[2] * hvsc[1];
 
     // at vector must be based on bot's orientation, not on camera's
-    Vec3 at = Vec3( -hvsc[4], hvsc[5], -hvsc[3] );
+    Point3 p        = camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
+    Vec3   at       = Vec3( -hvsc[4], hvsc[5], -hvsc[3] );
+    float  distance = static_cast<const BotClass*>( camera.botObj->clazz )->reachDist;
 
-    float distance = static_cast<const BotClass*>( camera.botObj->clazz )->reachDist;
     collider.mask = ~0;
-    collider.translate( camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ ),
-                        at * distance,
-                        camera.botObj );
+    collider.translate( p, at * distance, camera.botObj );
     collider.mask = Object::SOLID_BIT;
 
     camera.setTagged( collider.hit.obj );
   }
   else {
-    float distance = static_cast<const BotClass*>( camera.botObj->clazz )->reachDist;
+    Point3 p        = camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
+    float  distance = static_cast<const BotClass*>( camera.botObj->clazz )->reachDist;
+
     collider.mask = ~0;
-    collider.translate( camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ ),
-                        camera.at * distance,
-                        camera.botObj );
+    collider.translate( p, camera.at * distance, camera.botObj );
     collider.mask = Object::SOLID_BIT;
 
     camera.setTagged( collider.hit.obj );

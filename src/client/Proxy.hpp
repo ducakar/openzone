@@ -40,8 +40,11 @@ class Proxy
     {}
 
     virtual void begin()   = 0;
+    virtual void end()     = 0;
+
     virtual void update()  = 0;
     virtual void prepare() = 0;
+
     virtual void reset()   = 0;
 
     virtual void read( InputStream* istream )         = 0;

@@ -40,7 +40,7 @@ namespace client
 
 const float FragPool::FRAG_RADIUS = 1.0f;
 
-FragPool::FragPool( const matrix::FragPool* pool_ ) : pool( pool_ ), flags( 0 )
+FragPool::FragPool( const matrix::FragPool* pool_ ) : pool( pool_ ), flags( pool_->flags )
 {
   log.print( "Loading FragPool '%s' ...", pool->name.cstr() );
 
@@ -77,7 +77,7 @@ void FragPool::draw( const Frag* frag )
     tf.model.rotateY( frag->p.y );
     tf.model.rotateZ( frag->p.z );
 
-    shader.colour = Vec4( 1.0f, 1.0f, 1.0f, clamp( frag->life, 0.0f, 1.0f ) );
+    shader.colour.w = flags & FADEOUT_BIT ? clamp( frag->life, 0.0f, 1.0f ) : 1.0f;
 
     model->draw( Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
   }

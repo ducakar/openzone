@@ -37,7 +37,7 @@ namespace matrix
 {
 
 const float Struct::DEMOLISH_SPEED         = 8.0f * Timer::TICK_TIME;
-const Vec3  Struct::DESTRUCT_FRAG_VELOCITY = Vec3( 0.0f, 0.0f, 4.0f );
+const Vec3  Struct::DESTRUCT_FRAG_VELOCITY = Vec3( 0.0f, 0.0f, 2.0f );
 
 const Mat44 Struct::ROTATIONS[] =
 {

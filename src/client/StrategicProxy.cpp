@@ -29,9 +29,8 @@
 
 #include "matrix/Vehicle.hpp"
 
-#include "client/ui/UI.hpp"
-
 #include "client/Camera.hpp"
+#include "client/ui/UI.hpp"
 
 namespace oz
 {
@@ -48,7 +47,7 @@ const float StrategicProxy::RTS_LOW_SPEED   = 15.0f * Timer::TICK_TIME;
 const float StrategicProxy::RTS_HIGH_SPEED  = 45.0f * Timer::TICK_TIME;
 const float StrategicProxy::ZOOM_FACTOR     = 0.15f;
 
-StrategicProxy::StrategicProxy() : height( DEFAULT_HEIGHT )
+StrategicProxy::StrategicProxy() : strategicArea( null ), height( DEFAULT_HEIGHT )
 {}
 
 void StrategicProxy::begin()
@@ -57,21 +56,35 @@ void StrategicProxy::begin()
   camera.w = 0.0f;
   camera.setTagged( null );
 
-  ui::ui.strategicArea->taggedStrs.clear();
-  ui::ui.strategicArea->taggedObjs.clear();
-  ui::ui.hudArea->show( false );
-  ui::ui.strategicArea->show( true );
+  ui::mouse.doShow = true;
+
+  strategicArea = new ui::StrategicArea();
+  ui::ui.root->add( strategicArea );
+}
+
+void StrategicProxy::end()
+{
+  if( strategicArea != null ) {
+    ui::ui.root->remove( strategicArea );
+    strategicArea = null;
+  }
+
   ui::mouse.doShow = true;
 }
 
 void StrategicProxy::update()
 {
-  ui::ui.strategicArea->show( true );
+  const char ( & keys )[SDLK_LAST]    = ui::keyboard.keys;
+  const char ( & oldKeys )[SDLK_LAST] = ui::keyboard.oldKeys;
 
   camera.h += camera.relH;
   camera.v += camera.relV;
 
-  if( ui::keyboard.keys[SDLK_KP_ENTER] && !ui::keyboard.oldKeys[SDLK_KP_ENTER] ) {
+  if( keys[SDLK_TAB] && !oldKeys[SDLK_TAB] ) {
+    ui::mouse.doShow = !ui::mouse.doShow;
+  }
+
+  if( keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) {
     isFree = !isFree;
 
     if( isFree ) {
@@ -82,19 +95,30 @@ void StrategicProxy::update()
     }
   }
 
-  if( camera.allowReincarnation && ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
-    if( ui::ui.strategicArea->taggedObjs.length() == 1 ) {
-      const Object* tagged = orbis.objects[ ui::ui.strategicArea->taggedObjs.first() ];
-      const Bot*    me = null;
+  if( keys[SDLK_o] ) {
+    if( keys[SDLK_LSHIFT] || keys[SDLK_RSHIFT] ) {
+      orbis.caelum.time -= orbis.caelum.period * 0.002f;
+    }
+    else {
+      orbis.caelum.time += orbis.caelum.period * 0.002f;
+    }
+  }
 
-      if( tagged->flags & Object::BOT_BIT ) {
-        me = static_cast<const Bot*>( tagged );
-      }
-      else if( tagged->flags & Object::VEHICLE_BIT ) {
-        const Vehicle* veh = static_cast<const Vehicle*>( tagged );
+  if( camera.allowReincarnation && keys[SDLK_i] && !oldKeys[SDLK_i] ) {
+    if( strategicArea->taggedObjs.length() == 1 ) {
+      const Object* tagged = orbis.objects[ strategicArea->taggedObjs.first() ];
+      const Bot*    me     = null;
 
-        if( veh->pilot != -1 && orbis.objects[veh->pilot] != null ) {
-          me = static_cast<const Bot*>( orbis.objects[veh->pilot] );
+      if( tagged != null ) {
+        if( tagged->flags & Object::BOT_BIT ) {
+          me = static_cast<const Bot*>( tagged );
+        }
+        else if( tagged->flags & Object::VEHICLE_BIT ) {
+          const Vehicle* veh = static_cast<const Vehicle*>( tagged );
+
+          if( veh->pilot != -1 && orbis.objects[veh->pilot] != null ) {
+            me = static_cast<const Bot*>( orbis.objects[veh->pilot] );
+          }
         }
       }
 
@@ -108,34 +132,37 @@ void StrategicProxy::update()
 
 void StrategicProxy::prepare()
 {
+  const char ( & keys )[SDLK_LAST]    = ui::keyboard.keys;
+  const char ( & oldKeys )[SDLK_LAST] = ui::keyboard.oldKeys;
+
   camera.align();
 
   Point3 p = camera.newP;
 
   if( isFree ) {
     // free camera mode
-    if( ui::keyboard.keys[SDLK_LSHIFT] && !ui::keyboard.oldKeys[SDLK_LSHIFT] ) {
+    if( keys[SDLK_LSHIFT] && !oldKeys[SDLK_LSHIFT] ) {
       isFreeFast = !isFreeFast;
     }
 
     float speed = isFreeFast ? FREE_HIGH_SPEED : FREE_LOW_SPEED;
 
-    if( ui::keyboard.keys[SDLK_w] ) {
+    if( keys[SDLK_w] ) {
       p += camera.at * speed;
     }
-    if( ui::keyboard.keys[SDLK_s] ) {
+    if( keys[SDLK_s] ) {
       p -= camera.at * speed;
     }
-    if( ui::keyboard.keys[SDLK_d] ) {
+    if( keys[SDLK_d] ) {
       p += camera.right * speed;
     }
-    if( ui::keyboard.keys[SDLK_a] ) {
+    if( keys[SDLK_a] ) {
       p -= camera.right * speed;
     }
-    if( ui::keyboard.keys[SDLK_SPACE] ) {
+    if( keys[SDLK_SPACE] ) {
       p.z += speed;
     }
-    if( ui::keyboard.keys[SDLK_LCTRL] ) {
+    if( keys[SDLK_LCTRL] ) {
       p.z -= speed;
     }
 
@@ -145,7 +172,7 @@ void StrategicProxy::prepare()
   }
   else {
     // RTS camera mode
-    if( ui::keyboard.keys[SDLK_LSHIFT] && !ui::keyboard.oldKeys[SDLK_LSHIFT] ) {
+    if( keys[SDLK_LSHIFT] && !oldKeys[SDLK_LSHIFT] ) {
       isRTSFast = !isRTSFast;
     }
 
@@ -153,22 +180,22 @@ void StrategicProxy::prepare()
     float logHeight = Math::log( height );
     float speed = ( isRTSFast ? RTS_HIGH_SPEED : RTS_LOW_SPEED ) * logHeight;
 
-    if( ui::keyboard.keys[SDLK_w] ) {
+    if( keys[SDLK_w] ) {
       p += up * speed;
     }
-    if( ui::keyboard.keys[SDLK_s] ) {
+    if( keys[SDLK_s] ) {
       p -= up * speed;
     }
-    if( ui::keyboard.keys[SDLK_d] ) {
+    if( keys[SDLK_d] ) {
       p += camera.right * speed;
     }
-    if( ui::keyboard.keys[SDLK_a] ) {
+    if( keys[SDLK_a] ) {
       p -= camera.right * speed;
     }
-    if( ui::keyboard.keys[SDLK_SPACE] ) {
+    if( keys[SDLK_SPACE] ) {
       height = min( MAX_HEIGHT, height + logHeight * ZOOM_FACTOR );
     }
-    if( ui::keyboard.keys[SDLK_LCTRL] ) {
+    if( keys[SDLK_LCTRL] ) {
       height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR );
     }
     if( ui::mouse.wheelDown ) {

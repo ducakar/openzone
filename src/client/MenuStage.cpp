@@ -55,15 +55,16 @@ void MenuStage::present()
 
 void MenuStage::load()
 {
+  ui::mouse.buttons     = 0;
+  ui::mouse.currButtons = 0;
+
   ui::mouse.load();
   ui::ui.root->add( new ui::MainMenu() );
-  ui::mouse.doShow = true;
-  ui::mouse.buttons = 0;
-  ui::mouse.currButtons = 0;
 
   sound.update();
 
   ui::ui.showLoadingScreen( false );
+  ui::mouse.doShow = true;
 }
 
 void MenuStage::unload()

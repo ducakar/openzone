@@ -43,8 +43,13 @@ class FragPool
 
   public:
 
+    // OR'ed to the client::FragPoo::flags, so we must assure bits don't overlap
+    static const int FADEOUT_BIT = 0x0100;
+
     String name;
     int    id;
+
+    int    flags;
 
     float  velocitySpread; ///< Used when generating multiple frags from <code>Object::onDestroy()
                            ///< </code> or <code>Struct::destroy()</code>.
