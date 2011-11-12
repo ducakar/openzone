@@ -1,13 +1,9 @@
 TODO 0.3
 - timer cleanup
 - client
-  * particle pools
-    + wood
-    + bullets
-  * mesh batch
   * libmad
-- ui
-  * onShow cleanup
+- tools
+  * everything ~> *Stream
 
 TODO 0.4
 - matrix
