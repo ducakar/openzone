@@ -36,6 +36,8 @@ class BotClass : public DynamicClass
 {
   public:
 
+    int    state;
+
     Vec3   crouchDim;
     Vec3   corpseDim;
 
@@ -55,6 +57,11 @@ class BotClass : public DynamicClass
     float  crouchMomentum;
     float  jumpMomentum;
 
+    float  airControl;
+    float  climbControl;
+    float  waterControl;
+    float  slickControl;
+
     float  stepInc;
     float  stepMax;
     float  stepRateLimit;
@@ -65,18 +72,6 @@ class BotClass : public DynamicClass
     float  climbMax;
     float  climbMomentum;
 
-    float  airControl;
-    float  climbControl;
-    float  waterControl;
-    float  slickControl;
-
-    float  reachDist;
-
-    float  grabMass;
-    float  throwMomentum;
-
-    float  regeneration;
-
     float  stamina;
     float  staminaGain;
     float  staminaRunDrain;
@@ -85,13 +80,17 @@ class BotClass : public DynamicClass
     float  staminaJumpDrain;
     float  staminaThrowDrain;
 
-    int    state;
+    float  regeneration;
+
+    float  reachDist;
+    float  grabMass;
+    float  throwMomentum;
 
     int    weaponItem;
 
-    String mindFunc;
-
     int    nameList;
+
+    String mindFunc;
 
     static ObjectClass* createClass();
 

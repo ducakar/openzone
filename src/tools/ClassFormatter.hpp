@@ -20,56 +20,37 @@
  */
 
 /**
- * @file matrix/VehicleClass.hpp
+ * @file tools/ClassFormatter.hpp
  */
 
 #pragma once
 
-#include "matrix/DynamicClass.hpp"
+#include "build/common.hpp"
 
 namespace oz
 {
-namespace matrix
-{
 
-class VehicleClass : public DynamicClass
+class ClassFormatter
 {
   private:
 
-    static const int MAX_WEAPONS = 4;
+    const ObjectClass* clazz;
+    const Config*      config;
+    FILE*              fs;
+
+    void writeObjectClass() const;
+    void writeDynamicClass() const;
+    void writeWeaponClass() const;
+    void writeBotClass() const;
+    void writeVehicleClass() const;
+    void writeCommon() const;
 
   public:
 
-    int    type;
-    int    state;
-
-    Vec3   pilotPos;
-    Quat   pilotRot;
-
-    float  moveMomentum;
-
-    float  hoverHeight;
-    float  hoverHeightStiffness;
-    float  hoverMomentumStiffness;
-
-    float  enginePitchBias;
-    float  enginePitchRatio;
-    float  enginePitchLimit;
-
-    int    nWeapons;
-    String weaponNames[MAX_WEAPONS];
-    String onShot[MAX_WEAPONS];
-    int    nRounds[MAX_WEAPONS];
-    float  shotInterval[MAX_WEAPONS];
-
-    static ObjectClass* createClass();
-
-    virtual void initClass( const Config* config );
-
-    virtual Object* create( int index, const Point3& pos, Heading heading ) const;
-    virtual Object* create( InputStream* istream ) const;
+    void format( const char* name );
 
 };
 
-}
+extern ClassFormatter classFormatter;
+
 }

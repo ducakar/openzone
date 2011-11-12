@@ -72,6 +72,143 @@ void ObjectClass::fillCommonConfig( const Config* config )
   }
 
   /*
+   * life
+   */
+
+  life       = config->get( "life", 100.0f );
+  resistance = config->get( "resistance", 100.0f );
+
+  if( life <= 0.0f ) {
+    throw Exception( "%s: Invalid life. Should be > 0.", name.cstr() );
+  }
+  if( resistance < 0.0f ) {
+    throw Exception( "%s: Invalid resistance. Should be >= 0.", name.cstr() );
+  }
+
+  /*
+   * debris
+   */
+
+  const char* sFragPool = config->get( "fragPool", "" );
+
+  nFrags   = config->get( "nFrags", 6 );
+  fragPool = String::isEmpty( sFragPool ) ? null : library.fragPool( sFragPool );
+
+  /*
+   * inventory
+   */
+
+  nItems = config->get( "nItems", 0 );
+
+  if( nItems != 0 ) {
+    flags |= Object::BROWSABLE_BIT;
+  }
+
+  if( nItems < 0 ) {
+    throw Exception( "%s: Inventory size must be 0 or a positive integer", name.cstr() );
+  }
+  if( ( flags & Object::ITEM_BIT ) && nItems != 0 ) {
+    throw Exception( "%s: Item cannot have an inventory", name.cstr() );
+  }
+
+  // default inventory
+  if( nItems != 0 ) {
+    defaultItems.alloc( nItems );
+
+    char buffer[] = "item  ";
+    for( int i = 0; i < MAX_ITEMS; ++i ) {
+      hard_assert( i < 100 );
+
+      buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
+      buffer[ sizeof( buffer ) - 2 ] = char( '0' + ( i % 10 ) );
+
+      const char* itemName = config->get( buffer, "" );
+      if( !String::isEmpty( itemName ) ) {
+        defaultItems.add( library.objClass( itemName ) );
+      }
+    }
+
+    if( defaultItems.length() > nItems ) {
+      throw Exception( "%s: Too many items in the default inventory", name.cstr() );
+    }
+  }
+
+  /*
+   * device
+   */
+
+  const char* sDeviceType = config->get( "deviceType", "" );
+
+  if( String::isEmpty( sDeviceType ) ) {
+    deviceType = -1;
+  }
+  else {
+    flags |= Object::DEVICE_BIT;
+
+    deviceType = library.deviceIndex( sDeviceType );
+
+    if( flags & Object::USE_FUNC_BIT ) {
+      throw Exception( "%s: Device cannot have onUse handler", name.cstr() );
+    }
+  }
+
+  /*
+   * imago
+   */
+
+  const char* sImagoType = config->get( "imagoType", "" );
+
+  if( String::isEmpty( sImagoType ) ) {
+    imagoType  = -1;
+  }
+  else {
+    flags |= Object::IMAGO_BIT;
+
+    imagoType = library.imagoIndex( sImagoType );
+
+    const char* modelName = config->get( "imagoModel", "" );
+    imagoModel = String::isEmpty( modelName ) ? -1 : library.modelIndex( modelName );
+  }
+
+  /*
+   * audio
+   */
+
+  const char* sAudioType = config->get( "audioType", "" );
+
+  if( String::isEmpty( sAudioType ) ) {
+    audioType = -1;
+  }
+  else {
+    flags |= Object::AUDIO_BIT;
+
+    audioType = library.audioIndex( sAudioType );
+
+    const char* soundName;
+    int         soundIndex;
+
+    soundName  = config->get( "audioSound.create", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Object::EVENT_CREATE] = soundIndex;
+
+    soundName  = config->get( "audioSound.destroy", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Object::EVENT_DESTROY] = soundIndex;
+
+    soundName  = config->get( "audioSound.use", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Object::EVENT_USE] = soundIndex;
+
+    soundName  = config->get( "audioSound.damage", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Object::EVENT_DAMAGE] = soundIndex;
+
+    soundName  = config->get( "audioSound.hit", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Object::EVENT_HIT] = soundIndex;
+  }
+
+  /*
    * handler functions
    */
 
@@ -136,131 +273,6 @@ void ObjectClass::fillCommonConfig( const Config* config )
       flags |= Object::UPDATE_FUNC_BIT;
     }
   }
-
-  /*
-   * life
-   */
-
-  life       = config->get( "life", 100.0f );
-  resistance = config->get( "resistance", 100.0f );
-
-  if( life <= 0.0f ) {
-    throw Exception( "%s: Invalid life. Should be > 0.", name.cstr() );
-  }
-  if( resistance < 0.0f ) {
-    throw Exception( "%s: Invalid resistance. Should be >= 0.", name.cstr() );
-  }
-
-  /*
-   * debris
-   */
-
-  const char* sFragPool = config->get( "fragPool", "" );
-
-  nFrags   = config->get( "nFrags", 6 );
-  fragPool = String::isEmpty( sFragPool ) ? null : library.fragPool( sFragPool );
-
-  /*
-   * device
-   */
-
-  const char* sDeviceType = config->get( "deviceType", "" );
-
-  if( String::isEmpty( sDeviceType ) ) {
-    deviceType = -1;
-  }
-  else {
-    flags |= Object::DEVICE_BIT;
-
-    deviceType = library.deviceIndex( sDeviceType );
-
-    if( flags & Object::USE_FUNC_BIT ) {
-      throw Exception( "%s: Device cannot have onUse handler", name.cstr() );
-    }
-  }
-
-  /*
-   * imago
-   */
-
-  const char* sImagoType = config->get( "imagoType", "" );
-
-  if( String::isEmpty( sImagoType ) ) {
-    imagoType  = -1;
-  }
-  else {
-    flags |= Object::IMAGO_BIT;
-
-    imagoType = library.imagoIndex( sImagoType );
-
-    const char* modelName = config->get( "imagoModel", "" );
-    imagoModel = String::isEmpty( modelName ) ? -1 : library.modelIndex( modelName );
-  }
-
-  /*
-   * audio
-   */
-
-  const char* sAudioType = config->get( "audioType", "" );
-
-  if( String::isEmpty( sAudioType ) ) {
-    audioType = -1;
-  }
-  else {
-    flags |= Object::AUDIO_BIT;
-
-    audioType = library.audioIndex( sAudioType );
-
-    char buffer[] = "audioSound  ";
-    for( int i = 0; i < MAX_SOUNDS; ++i ) {
-      hard_assert( i < 100 );
-
-      buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
-      buffer[ sizeof( buffer ) - 2 ] = char( '0' + ( i % 10 ) );
-
-      const char* soundName = config->get( buffer, "" );
-      audioSounds[i] = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
-    }
-  }
-
-  /*
-   * inventory
-   */
-
-  nItems = config->get( "nItems", 0 );
-
-  if( nItems != 0 ) {
-    flags |= Object::BROWSABLE_BIT;
-  }
-
-  if( nItems < 0 ) {
-    throw Exception( "%s: Inventory size must be 0 or a positive integer", name.cstr() );
-  }
-  if( ( flags & Object::ITEM_BIT ) && nItems != 0 ) {
-    throw Exception( "%s: Item cannot have an inventory", name.cstr() );
-  }
-
-  // default inventory
-  if( nItems != 0 ) {
-    defaultItems.alloc( nItems );
-
-    char buffer[] = "item  ";
-    for( int i = 0; i < MAX_ITEMS; ++i ) {
-      hard_assert( i < 100 );
-
-      buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
-      buffer[ sizeof( buffer ) - 2 ] = char( '0' + ( i % 10 ) );
-
-      const char* itemName = config->get( buffer, "" );
-      if( !String::isEmpty( itemName ) ) {
-        defaultItems.add( library.objClass( itemName ) );
-      }
-    }
-
-    if( defaultItems.length() > nItems ) {
-      throw Exception( "%s: Too many items in the default inventory", name.cstr() );
-    }
-  }
 }
 
 ObjectClass::~ObjectClass()
@@ -276,9 +288,9 @@ void ObjectClass::initClass( const Config* config )
   flags = 0;
 
   OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",     true  );
+  OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.onUse",         false );
   OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.onDamage",      false );
   OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,       "flag.onHit",         false );
-  OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.onUse",         false );
   OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,    "flag.onUpdate",      false );
   OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",         true  );
   OZ_CLASS_SET_FLAG( Object::CYLINDER_BIT,       "flag.cylinder",      true  );

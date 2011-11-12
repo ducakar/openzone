@@ -59,6 +59,52 @@ void VehicleClass::initClass( const Config* config )
 
   fillCommonConfig( config );
 
+  if( audioType != -1 ) {
+    const char* soundName;
+    int         soundIndex;
+
+    soundName  = config->get( "audioSound.splash", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Dynamic::EVENT_SPLASH] = soundIndex;
+
+    soundName  = config->get( "audioSound.fricting", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Dynamic::EVENT_FRICTING] = soundIndex;
+
+    soundName  = config->get( "audioSound.engine", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Vehicle::EVENT_ENGINE] = soundIndex;
+
+    soundName  = config->get( "audioSound.nextWeapon", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Vehicle::EVENT_NEXT_WEAPON] = soundIndex;
+
+    soundName  = config->get( "audioSound.shot0", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Vehicle::EVENT_SHOT0] = soundIndex;
+
+    soundName  = config->get( "audioSound.shot1", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Vehicle::EVENT_SHOT1] = soundIndex;
+
+    soundName  = config->get( "audioSound.shot2", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Vehicle::EVENT_SHOT2] = soundIndex;
+
+    soundName  = config->get( "audioSound.shot3", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Vehicle::EVENT_SHOT3] = soundIndex;
+
+    soundName  = config->get( "audioSound.shotEmpty", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Vehicle::EVENT_SHOT_EMPTY] = soundIndex;
+  }
+
+  state = 0;
+
+  OZ_CLASS_SET_STATE( Vehicle::CREW_VISIBLE_BIT, "state.crewVisible", true );
+  OZ_CLASS_SET_STATE( Vehicle::AUTO_EJECT_BIT,   "state.autoEject",   false );
+
   mass = config->get( "mass", 100.0f );
   lift = config->get( "lift", 13.0f );
 
@@ -68,6 +114,13 @@ void VehicleClass::initClass( const Config* config )
   if( lift < 0.0f ) {
     throw Exception( "%s: Invalid object lift. Should be >= 0.", name.cstr() );
   }
+
+  pilotPos = Vec3( config->get( "pilotPos.x", 0.0f ),
+                   config->get( "pilotPos.y", 0.0f ),
+                   config->get( "pilotPos.z", 0.0f ) );
+  pilotRot = Quat::rotZYX( config->get( "pilotRot.z", 0.0f ),
+                           0.0f,
+                           config->get( "pilotRot.x", 0.0f ) );
 
   const char* sType = config->get( "type", "" );
   if( String::equals( sType, "STATIC" ) ) {
@@ -93,16 +146,11 @@ void VehicleClass::initClass( const Config* config )
                      "HOVER or AIR", name.cstr() );
   }
 
-  state = 0;
+  moveMomentum           = config->get( "moveMomentum", 2.0f );
 
-  OZ_CLASS_SET_STATE( Vehicle::CREW_VISIBLE_BIT, "state.crewVisible", true );
-  OZ_CLASS_SET_STATE( Vehicle::AUTO_EJECT_BIT,   "state.autoEject",   false );
-
-  turnLimitH = config->get( "turnLimitH", 300.0f );
-  turnLimitV = config->get( "turnLimitV", 300.0f );
-
-  turnLimitH = Math::rad( turnLimitH ) * Timer::TICK_TIME;
-  turnLimitV = Math::rad( turnLimitV ) * Timer::TICK_TIME;
+  hoverHeight            = config->get( "hoverHeight", 2.0f );
+  hoverHeightStiffness   = config->get( "hoverHeightStiffness", 40.0f );
+  hoverMomentumStiffness = config->get( "hoverMomentumStiffness", 160.0f );
 
   enginePitchBias  = config->get( "enginePitchBias", 1.0f );
   enginePitchRatio = config->get( "enginePitchRatio", 0.001f );
@@ -141,19 +189,6 @@ void VehicleClass::initClass( const Config* config )
       flags |= Object::LUA_BIT;
     }
   }
-
-  pilotPos = Vec3( config->get( "pilot.pos.x", 0.0f ),
-                   config->get( "pilot.pos.y", 0.0f ),
-                   config->get( "pilot.pos.z", 0.0f ) );
-  pilotRot = Quat::rotZYX( config->get( "pilot.rot.z", 0.0f ),
-                           0.0f,
-                           config->get( "pilot.rot.x", 0.0f ) );
-
-  moveMomentum           = config->get( "moveMomentum", 2.0f );
-
-  hoverHeight            = config->get( "hoverHeight", 2.0f );
-  hoverHeightStiffness   = config->get( "hoverHeightStiffness", 40.0f );
-  hoverMomentumStiffness = config->get( "hoverMomentumStiffness", 160.0f );
 }
 
 Object* VehicleClass::create( int index, const Point3& pos, Heading heading ) const

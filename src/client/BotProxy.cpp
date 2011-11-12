@@ -150,13 +150,13 @@ void BotProxy::update()
     float relH = camera.relH;
     float relV = camera.relV;
 
-    if( bot->parent != -1 && orbis.objects[bot->parent] != null ) {
-      const Vehicle*      vehicle = static_cast<const Vehicle*>( orbis.objects[bot->parent] );
-      const VehicleClass* clazz   = static_cast<const VehicleClass*>( vehicle->clazz );
-
-      relH = clamp( relH, -clazz->turnLimitH, +clazz->turnLimitH );
-      relV = clamp( relV, -clazz->turnLimitV, +clazz->turnLimitV );
-    }
+//     if( bot->parent != -1 && orbis.objects[bot->parent] != null ) {
+//       const Vehicle*      vehicle = static_cast<const Vehicle*>( orbis.objects[bot->parent] );
+//       const VehicleClass* clazz   = static_cast<const VehicleClass*>( vehicle->clazz );
+//
+//       relH = clamp( relH, -clazz->turnLimitH, +clazz->turnLimitH );
+//       relV = clamp( relV, -clazz->turnLimitV, +clazz->turnLimitV );
+//     }
 
     bot->h += relH;
     bot->v += relV;
@@ -206,9 +206,6 @@ void BotProxy::update()
 
     camera.h = bot->h;
     camera.v = bot->v;
-  }
-  if( ( keys[SDLK_LALT] || keys[SDLK_RALT] ) && keys[SDLK_p] && !oldKeys[SDLK_p] ) {
-    bot->state ^= Bot::STEPABLE_BIT;
   }
 
   bot->state &= ~( Bot::GESTURE0_BIT | Bot::GESTURE1_BIT | Bot::GESTURE2_BIT |

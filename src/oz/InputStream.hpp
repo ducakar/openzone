@@ -248,22 +248,9 @@ class InputStream
         ++length;
       }
       if( pos + length == end ) {
-        throw Exception( "End of buffer reached while looking for end of string." );
+        throw Exception( "End of buffer reached while looking for the end of a string." );
       }
       return String( forward( length + 1 ), length );
-    }
-
-    /**
-     * Read string, padded with null character till the length of <tt>size</tt> bytes.
-     */
-    OZ_ALWAYS_INLINE
-    String readPaddedString( int size )
-    {
-      const char* data = reinterpret_cast<const char*>( forward( size ) );
-      if( data[size - 1] != '\0' ) {
-        throw Exception( "Padded string does not end with NULL character." );
-      }
-      return String( data );
     }
 
     /**

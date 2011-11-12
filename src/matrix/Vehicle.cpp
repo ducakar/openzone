@@ -252,12 +252,12 @@ void Vehicle::onUpdate()
         shotTime[weapon] = clazz->shotInterval[weapon];
 
         if( nRounds[weapon] == 0 ) {
-          addEvent( EVENT_SHOT0_EMPTY + weapon*2, 1.0f );
+          addEvent( EVENT_SHOT_EMPTY, 1.0f );
         }
         else {
           nRounds[weapon] = max( -1, nRounds[weapon] - 1 );
 
-          addEvent( EVENT_SHOT0 + weapon*2, 1.0f );
+          addEvent( EVENT_SHOT0 + weapon, 1.0f );
           lua.objectCall( clazz->onShot[weapon], this, bot );
         }
       }

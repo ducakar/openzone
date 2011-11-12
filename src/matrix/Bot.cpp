@@ -553,9 +553,7 @@ void Bot::onUpdate()
     //               \----------
     //
     //
-    if( ( state & ( STEPABLE_BIT | CLIMBING_BIT ) ) == STEPABLE_BIT &&
-        stepRate <= clazz->stepRateLimit )
-    {
+    if( !( state & CLIMBING_BIT ) && stepRate <= clazz->stepRateLimit ) {
       // check if bot's gonna hit a stair in the next frame
       Vec3 desiredMove = STEP_MOVE_AHEAD * move;
 

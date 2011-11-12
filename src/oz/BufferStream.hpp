@@ -448,7 +448,7 @@ class BufferStream
         ++length;
       }
       if( pos + length == end ) {
-        throw Exception( "End of buffer reached while looking for end of string." );
+        throw Exception( "End of buffer reached while looking for the end of a string." );
       }
       return String( forward( length + 1 ), length );
     }
@@ -475,45 +475,6 @@ class BufferStream
       char* data = forward( size );
 
       aCopy( data, s, size );
-    }
-
-    /**
-     * Read string, padded with null character till the length of <tt>size</tt> bytes.
-     */
-    OZ_ALWAYS_INLINE
-    String readPaddedString( int size )
-    {
-      const char* data = reinterpret_cast<const char*>( forward( size ) );
-      if( data[size - 1] != '\0' ) {
-        throw Exception( "Padded string does not end with NULL character." );
-      }
-      return String( data );
-    }
-
-    /**
-     * Write string padded with null characters to the given number of bytes.
-     */
-    OZ_ALWAYS_INLINE
-    void writePaddedString( const String& s, int size )
-    {
-      int length = s.length();
-      char* data = forward( size );
-
-      aCopy( data, s.cstr(), length );
-      aSet( data + length, '\0', size - length );
-    }
-
-    /**
-     * Write C string padded with null characters to the given number of bytes.
-     */
-    OZ_ALWAYS_INLINE
-    void writePaddedString( const char* s, int size )
-    {
-      int length = String::length( s );
-      char* data = forward( size );
-
-      aCopy( data, s, length );
-      aSet( data + length, '\0', size - length );
     }
 
     /**

@@ -82,14 +82,14 @@ class Object : public AABB
     // if the onDestroy function should be called on destruction
     static const int DESTROY_FUNC_BIT   = 0x01000000;
 
+    // if the onUse function should be called when object is used
+    static const int USE_FUNC_BIT       = 0x00800000;
+
     // if the onDamage function should be called on damage received
-    static const int DAMAGE_FUNC_BIT    = 0x00800000;
+    static const int DAMAGE_FUNC_BIT    = 0x00400000;
 
     // if the onHit function should be called on hit
-    static const int HIT_FUNC_BIT       = 0x00400000;
-
-    // if the onUse function should be called when object is used
-    static const int USE_FUNC_BIT       = 0x00200000;
+    static const int HIT_FUNC_BIT       = 0x00200000;
 
     // if the onUpdate method should be called on each tick
     static const int UPDATE_FUNC_BIT    = 0x00100000;
@@ -186,26 +186,22 @@ class Object : public AABB
     static const int MOVE_CLEAR_MASK    = DISABLED_BIT | ON_FLOOR_BIT | IN_WATER_BIT |
                                           ON_LADDER_BIT | ON_SLICK_BIT;
 
-    /*
-     * STANDARD EVENT IDs
-     */
-
-    // EVENT_CREATE must be invoked manually
-    static const int EVENT_CREATE   = 0;
-    static const int EVENT_DESTROY  = 1;
-    static const int EVENT_DAMAGE   = 2;
-    static const int EVENT_HIT      = 3;
-    static const int EVENT_SPLASH   = 4;
-    // EVENT_FRICTING not in use, but reserved for more convenient BasicAudio
-    // (reserves a slot for friction sound)
-    static const int EVENT_FRICTING = 5;
-    static const int EVENT_USE      = 6;
-
     static const float MOMENTUM_INTENSITY_COEF;
     static const float MOMENTUM_DAMAGE_COEF;
     static const float DAMAGE_INTENSITY_COEF;
     static const float DAMAGE_BASE_INTENSITY;
     static const Vec3  DESTRUCT_FRAG_VELOCITY;
+
+    /*
+     * EVENTS
+     */
+
+    // EVENT_CREATE must be invoked manually
+    static const int EVENT_CREATE   = 0;
+    static const int EVENT_DESTROY  = 1;
+    static const int EVENT_USE      = 2;
+    static const int EVENT_DAMAGE   = 3;
+    static const int EVENT_HIT      = 4;
 
     struct Event
     {
@@ -348,13 +344,6 @@ class Object : public AABB
       if( flags & HIT_FUNC_BIT ) {
         onHit( hit, hitMomentum );
       }
-    }
-
-    OZ_ALWAYS_INLINE
-    void splash( float hitMomentum )
-    {
-      addEvent( EVENT_SPLASH, hitMomentum * MOMENTUM_INTENSITY_COEF );
-      addEvent( EVENT_SPLASH, 1.0f );
     }
 
     OZ_ALWAYS_INLINE

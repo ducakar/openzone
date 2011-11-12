@@ -28,6 +28,7 @@
 #include "matrix/DynamicClass.hpp"
 
 #include "matrix/Dynamic.hpp"
+#include "matrix/Library.hpp"
 
 namespace oz
 {
@@ -56,6 +57,19 @@ void DynamicClass::initClass( const Config* config )
   OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",      false );
 
   fillCommonConfig( config );
+
+  if( audioType != -1 ) {
+    const char* soundName;
+    int         soundIndex;
+
+    soundName  = config->get( "audioSound.splash", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Dynamic::EVENT_SPLASH] = soundIndex;
+
+    soundName  = config->get( "audioSound.fricting", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Dynamic::EVENT_FRICTING] = soundIndex;
+  }
 
   mass = config->get( "mass", 100.0f );
   lift = config->get( "lift", 12.0f );

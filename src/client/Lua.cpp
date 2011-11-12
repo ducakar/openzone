@@ -556,11 +556,11 @@ void Lua::init()
 
   OZ_LUA_CONST( "OZ_EVENT_CREATE",                Object::EVENT_CREATE );
   OZ_LUA_CONST( "OZ_EVENT_DESTROY",               Object::EVENT_DESTROY );
+  OZ_LUA_CONST( "OZ_EVENT_USE",                   Object::EVENT_USE );
   OZ_LUA_CONST( "OZ_EVENT_DAMAGE",                Object::EVENT_DAMAGE );
   OZ_LUA_CONST( "OZ_EVENT_HIT",                   Object::EVENT_HIT );
-  OZ_LUA_CONST( "OZ_EVENT_SPLASH",                Object::EVENT_SPLASH );
-  OZ_LUA_CONST( "OZ_EVENT_FRICTING",              Object::EVENT_FRICTING );
-  OZ_LUA_CONST( "OZ_EVENT_USE",                   Object::EVENT_USE );
+  OZ_LUA_CONST( "OZ_EVENT_SPLASH",                Dynamic::EVENT_SPLASH );
+  OZ_LUA_CONST( "OZ_EVENT_FRICTING",              Dynamic::EVENT_FRICTING );
   OZ_LUA_CONST( "OZ_EVENT_SHOT",                  Weapon::EVENT_SHOT );
   OZ_LUA_CONST( "OZ_EVENT_SHOT_EMPTY",            Weapon::EVENT_SHOT_EMPTY );
   OZ_LUA_CONST( "OZ_EVENT_HIT_HARD",              Bot::EVENT_HIT_HARD );
@@ -571,11 +571,10 @@ void Lua::init()
   OZ_LUA_CONST( "OZ_EVENT_ENGINE",                Vehicle::EVENT_ENGINE );
   OZ_LUA_CONST( "OZ_EVENT_NEXT_WEAPON",           Vehicle::EVENT_NEXT_WEAPON );
   OZ_LUA_CONST( "OZ_EVENT_SHOT0",                 Vehicle::EVENT_SHOT0 );
-  OZ_LUA_CONST( "OZ_EVENT_SHOT0_EMPTY",           Vehicle::EVENT_SHOT0_EMPTY );
   OZ_LUA_CONST( "OZ_EVENT_SHOT1",                 Vehicle::EVENT_SHOT1 );
-  OZ_LUA_CONST( "OZ_EVENT_SHOT1_EMPTY",           Vehicle::EVENT_SHOT1_EMPTY );
   OZ_LUA_CONST( "OZ_EVENT_SHOT2",                 Vehicle::EVENT_SHOT2 );
-  OZ_LUA_CONST( "OZ_EVENT_SHOT2_EMPTY",           Vehicle::EVENT_SHOT2_EMPTY );
+  OZ_LUA_CONST( "OZ_EVENT_SHOT3",                 Vehicle::EVENT_SHOT3 );
+  OZ_LUA_CONST( "OZ_EVENT_SHOT_EMPTY",            Vehicle::EVENT_SHOT_EMPTY );
 
   OZ_LUA_CONST( "OZ_OBJECT_DYNAMIC_BIT",          Object::DYNAMIC_BIT );
   OZ_LUA_CONST( "OZ_OBJECT_WEAPON_BIT",           Object::WEAPON_BIT );
@@ -618,7 +617,6 @@ void Lua::init()
   OZ_LUA_CONST( "OZ_BOT_INCARNATABLE_BIT",        Bot::INCARNATABLE_BIT );
   OZ_LUA_CONST( "OZ_BOT_PLAYER_BIT",              Bot::PLAYER_BIT );
 
-  OZ_LUA_CONST( "OZ_BOT_STEPABLE_BIT",            Bot::STEPABLE_BIT );
   OZ_LUA_CONST( "OZ_BOT_CROUCHING_BIT",           Bot::CROUCHING_BIT );
   OZ_LUA_CONST( "OZ_BOT_RUNNING_BIT",             Bot::RUNNING_BIT );
   OZ_LUA_CONST( "OZ_BOT_SHOOTING_BIT",            Bot::SHOOTING_BIT );

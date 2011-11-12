@@ -271,32 +271,6 @@ class OutputStream
     }
 
     /**
-     * Write string padded with null characters to the given number of bytes.
-     */
-    OZ_ALWAYS_INLINE
-    void writePaddedString( const String& s, int size )
-    {
-      int length = s.length();
-      char* data = forward( size );
-
-      aCopy( data, s.cstr(), length );
-      aSet( data + length, '\0', size - length );
-    }
-
-    /**
-     * Write C string padded with null characters to the given number of bytes.
-     */
-    OZ_ALWAYS_INLINE
-    void writePaddedString( const char* s, int size )
-    {
-      int length = String::length( s );
-      char* data = forward( size );
-
-      aCopy( data, s, length );
-      aSet( data + length, '\0', size - length );
-    }
-
-    /**
      * Write 3D vector.
      */
     OZ_ALWAYS_INLINE
