@@ -58,7 +58,6 @@ void MenuStage::load()
   ui::mouse.buttons     = 0;
   ui::mouse.currButtons = 0;
 
-  ui::mouse.load();
   ui::ui.root->add( new ui::MainMenu() );
 
   sound.update();
@@ -70,7 +69,6 @@ void MenuStage::load()
 void MenuStage::unload()
 {
   ui::mouse.doShow = false;
-  ui::mouse.unload();
 }
 
 void MenuStage::init()

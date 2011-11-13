@@ -100,6 +100,10 @@ void Camera::update()
     }
 
     switch( state ) {
+      case NONE: {
+        proxy = null;
+        break;
+      }
       case STRATEGIC: {
         proxy = &strategicProxy;
         break;
@@ -108,14 +112,17 @@ void Camera::update()
         proxy = &botProxy;
         break;
       }
-      case NONE: {
-        hard_assert( false );
-        break;
-      }
     }
 
     if( proxy != null ) {
       proxy->begin();
+    }
+    else {
+      bot       = -1;
+      botObj    = null;
+
+      tagged    = -1;
+      taggedObj = null;
     }
   }
 
@@ -126,14 +133,14 @@ void Camera::update()
 
 void Camera::prepare()
 {
-  botObj = bot == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
-
-  if( botObj == null || ( botObj->state & Bot::DEAD_BIT ) ) {
-    bot    = -1;
-    botObj = null;
-  }
-
   if( proxy != null ) {
+    botObj = bot == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
+
+    if( botObj == null || ( botObj->state & Bot::DEAD_BIT ) ) {
+      bot    = -1;
+      botObj = null;
+    }
+
     proxy->prepare();
   }
 }
@@ -165,10 +172,15 @@ void Camera::reset()
   botObj    = null;
 
   state     = NONE;
-  newState  = defaultState;
+  newState  = NONE;
 
   strategicProxy.reset();
   botProxy.reset();
+
+  if( proxy != null ) {
+    proxy->end();
+    proxy = null;
+  }
 
   isExternal         = true;
   allowReincarnation = true;
@@ -251,14 +263,8 @@ void Camera::init()
   horizPlane   = coeff * MIN_DISTANCE;
   vertPlane    = aspect * horizPlane;
 
-  String sDefaultState = config.getSet( "camera.defaultState", "STRATEGIC" );
-  if( sDefaultState.equals( "STRATEGIC" ) ) {
-    defaultState = STRATEGIC;
-  }
-  else {
-    log.println( "WARNING: invalid camera enum %s, must be STRATEGIC", sDefaultState.cstr() );
-    defaultState = STRATEGIC;
-  }
+  state        = NONE;
+  newState     = NONE;
 
   strategicProxy.init();
   botProxy.init();

@@ -421,6 +421,8 @@ void Config::clear( bool issueWarnings )
 
   usedVars.clear();
   usedVars.dealloc();
+
+  filePath.dealloc();
 #else
   static_cast<void>( issueWarnings );
 #endif

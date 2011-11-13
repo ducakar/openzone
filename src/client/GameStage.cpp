@@ -391,6 +391,7 @@ void GameStage::load()
   render.load();
 
   camera.reset();
+  camera.setState( Camera::STRATEGIC );
 
   for( int i = modules.length() - 1; i >= 0; --i ) {
     modules[i]->load();
@@ -454,6 +455,8 @@ void GameStage::unload()
   for( int i = modules.length() - 1; i >= 0; --i ) {
     modules[i]->unload();
   }
+
+  camera.reset();
 
   render.unload();
   context.unload();

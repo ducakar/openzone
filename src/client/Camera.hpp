@@ -94,7 +94,6 @@ class Camera
 
     State  state;
     State  newState;
-    State  defaultState;
 
     int    width;
     int    height;
