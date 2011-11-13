@@ -52,11 +52,6 @@ class Client
     Stage* stage;
     int    initFlags;
 
-    float  allTime;
-    uint   inactiveMillis;
-    uint   droppedMillis;
-    float  loadingTime;
-
   public:
 
     void shutdown();

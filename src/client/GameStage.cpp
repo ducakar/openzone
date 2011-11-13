@@ -102,7 +102,7 @@ void GameStage::run()
 
   while( isAlive ) {
     /*
-     * PHASE 1
+     * PHASE 2
      */
     beginTime = SDL_GetTicks();
 
@@ -111,13 +111,13 @@ void GameStage::run()
     // update world
     matrix.update();
 
-    timer.matrixMillis += SDL_GetTicks() - beginTime;
+    matrixMillis += SDL_GetTicks() - beginTime;
 
     SDL_SemPost( mainSemaphore );
     SDL_SemWait( auxSemaphore );
 
     /*
-     * PHASE 2
+     * PHASE 3
      */
     beginTime = SDL_GetTicks();
 
@@ -130,14 +130,14 @@ void GameStage::run()
     // update minds
     nirvana.update();
 
-    timer.nirvanaMillis += SDL_GetTicks() - beginTime;
+    nirvanaMillis += SDL_GetTicks() - beginTime;
 
     // we can now manipulate world from the main thread after synapse lists have been cleared
     // and nirvana is not accessing matrix any more
     SDL_SemPost( mainSemaphore );
 
     /*
-     * PHASE 3
+     * PHASE 1
      */
 
     SDL_SemPost( mainSemaphore );
@@ -214,12 +214,11 @@ void GameStage::reload()
 bool GameStage::update()
 {
   uint beginTime;
-  uint currentTime;
 
   SDL_SemWait( mainSemaphore );
 
   /*
-   * PHASE 3
+   * PHASE 1
    */
 
   beginTime = SDL_GetTicks();
@@ -248,27 +247,7 @@ bool GameStage::update()
 
   lua.update();
 
-  timer.uiMillis += SDL_GetTicks() - beginTime;
-
-  SDL_SemPost( auxSemaphore );
-  SDL_SemWait( mainSemaphore );
-
-  /*
-   * PHASE 1
-   */
-
-  beginTime = SDL_GetTicks();
-
-#ifndef NDEBUG
-  context.updateLoad();
-#endif
-
-  // clean up unused imagines, sones and sources
-  loader.cleanup();
-  // load scheduled resources
-  loader.update();
-
-  timer.loaderMillis += SDL_GetTicks() - beginTime;
+  uiMillis += SDL_GetTicks() - beginTime;
 
   SDL_SemPost( auxSemaphore );
   SDL_SemWait( mainSemaphore );
@@ -279,18 +258,32 @@ bool GameStage::update()
 
   beginTime = SDL_GetTicks();
 
+#ifndef NDEBUG
+  context.updateLoad();
+#endif
+
+  // clean up unused imagines, audios and sources
+  loader.cleanup();
+  // load scheduled resources
+  loader.update();
+
+  loaderMillis += SDL_GetTicks() - beginTime;
+
+  SDL_SemPost( auxSemaphore );
+  SDL_SemWait( mainSemaphore );
+
+  /*
+   * PHASE 3
+   */
+
+  beginTime = SDL_GetTicks();
+
   camera.prepare();
 
-  currentTime = SDL_GetTicks();
-  timer.uiMillis += currentTime - beginTime;
-
-  beginTime = currentTime;
-
-  // play sounds, but don't do any cleanups
+  // play sounds, but don't do any streaming
   sound.play();
 
-  timer.soundMillis += SDL_GetTicks() - beginTime;
-
+  soundMillis += SDL_GetTicks() - beginTime;
   return true;
 }
 
@@ -302,7 +295,7 @@ void GameStage::present()
   sound.update();
   render.sync();
 
-  timer.renderMillis += SDL_GetTicks() - beginTime;
+  presentMillis += SDL_GetTicks() - beginTime;
 }
 
 bool GameStage::read( const char* path )
@@ -361,11 +354,21 @@ void GameStage::load()
   log.println( "Loading GameStage {" );
   log.indent();
 
+  loadingMillis = SDL_GetTicks();
+
   ui::ui.loadingScreen->status.setText( "%s", gettext( "Loading ..." ) );
   ui::ui.loadingScreen->show( true );
 
   render.draw( Render::DRAW_UI_BIT );
   render.sync();
+
+  timer.reset();
+
+  uiMillis      = 0;
+  loaderMillis  = 0;
+  presentMillis = 0;
+  matrixMillis  = 0;
+  nirvanaMillis = 0;
 
   matrix.load();
   nirvana.load();
@@ -430,6 +433,8 @@ void GameStage::load()
 
   ui::ui.showLoadingScreen( false );
 
+  loadingMillis = SDL_GetTicks() - loadingMillis;
+
   isLoaded = true;
 
   log.unindent();
@@ -440,6 +445,28 @@ void GameStage::unload()
 {
   log.println( "Unloading GameStage {" );
   log.indent();
+
+  float uiTime                = float( uiMillis )                       * 0.001f;
+  float loaderTime            = float( loaderMillis )                   * 0.001f;
+  float soundTime             = float( soundMillis )                    * 0.001f;
+  float presentTime           = float( presentMillis )                  * 0.001f;
+  float renderPrepareTime     = float( render.prepareMillis )           * 0.001f;
+  float renderCaelumTime      = float( render.caelumMillis )            * 0.001f;
+  float renderTerraTime       = float( render.terraMillis )             * 0.001f;
+  float renderStructsTime     = float( render.structsMillis )           * 0.001f;
+  float renderObjectsTime     = float( render.objectsMillis )           * 0.001f;
+  float renderFragsTime       = float( render.fragsMillis )             * 0.001f;
+  float renderMiscTime        = float( render.miscMillis )              * 0.001f;
+  float renderPostprocessTime = float( render.postprocessMillis )       * 0.001f;
+  float renderUITime          = float( render.uiMillis )                * 0.001f;
+  float renderSyncTime        = float( render.syncMillis )              * 0.001f;
+  float matrixTime            = float( matrixMillis )                   * 0.001f;
+  float nirvanaTime           = float( nirvanaMillis )                  * 0.001f;
+  float loadingTime           = float( loadingMillis )                  * 0.001f;
+  float runTime               = float( timer.runMillis )                * 0.001f;
+  float gameTime              = float( timer.millis )                   * 0.001f;
+  float droppedTime           = float( timer.runMillis - timer.millis ) * 0.001f;
+  float frameDropRate         = float( timer.ticks - timer.nFrames ) / float( timer.ticks );
 
   ui::mouse.doShow = false;
   ui::ui.loadingScreen->status.setText( "%s", gettext( "Shutting down ..." ) );
@@ -485,6 +512,38 @@ void GameStage::unload()
   matrix.unload();
 
   ui::ui.showLoadingScreen( false );
+
+  log.println( "Time statistics {" );
+  log.indent();
+  log.println( "loading time          %8.2f s",         loadingTime                              );
+  log.println( "run time              %8.2f s",         runTime                                  );
+  log.println( "game time             %8.2f s  ",       gameTime                                 );
+  log.println( "dropped time          %8.2f s",         droppedTime                              );
+  log.println( "tick rate in run time   %6.2f Hz ",     float( timer.ticks ) / runTime           );
+  log.println( "frame rate in run time  %6.2f Hz",      float( timer.nFrames ) / runTime         );
+  log.println( "frame drop rate         %6.2f %%",      frameDropRate * 100.0f                   );
+  log.println( "Run time usage {" );
+  log.indent();
+  log.println( "%6.2f %%  [M:1] input & ui",            uiTime                / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:2] loader",                loaderTime            / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3] camera & sound.play",   soundTime             / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3] render & sound.update", presentTime           / runTime * 100.0f );
+  log.println( "%6.2f %%      + render prepare",        renderPrepareTime     / runTime * 100.0f );
+  log.println( "%6.2f %%      + render caelum",         renderCaelumTime      / runTime * 100.0f );
+  log.println( "%6.2f %%      + render terra",          renderTerraTime       / runTime * 100.0f );
+  log.println( "%6.2f %%      + render structs",        renderStructsTime     / runTime * 100.0f );
+  log.println( "%6.2f %%      + render objects",        renderObjectsTime     / runTime * 100.0f );
+  log.println( "%6.2f %%      + render frags",          renderFragsTime       / runTime * 100.0f );
+  log.println( "%6.2f %%      + render misc",           renderMiscTime        / runTime * 100.0f );
+  log.println( "%6.2f %%      + render postprocess",    renderPostprocessTime / runTime * 100.0f );
+  log.println( "%6.2f %%      + render ui",             renderUITime          / runTime * 100.0f );
+  log.println( "%6.2f %%      + render sync",           renderSyncTime        / runTime * 100.0f );
+  log.println( "%6.2f %%  [A:2] matrix",                matrixTime            / runTime * 100.0f );
+  log.println( "%6.2f %%  [A:3] nirvana",               nirvanaTime           / runTime * 100.0f );
+  log.unindent();
+  log.println( "}" );
+  log.unindent();
+  log.println( "}" );
 
   isLoaded = false;
 

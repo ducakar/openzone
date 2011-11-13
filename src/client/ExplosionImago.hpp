@@ -40,7 +40,7 @@ class ExplosionImago : public Imago
     static int modelId;
 
     SMM* smm;
-    int  startMillis;
+    uint startMillis;
 
     explicit ExplosionImago( const Object* obj ) : Imago( obj )
     {}
