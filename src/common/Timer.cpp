@@ -39,37 +39,22 @@ Timer::Timer()
 
 void Timer::reset()
 {
-  ticks                   = 0;
-  millis                  = 0;
-  time                    = 0.0f;
+  runMillis   = 0;
 
-  matrixMillis            = 0;
-  nirvanaMillis           = 0;
+  ticks       = 0;
+  millis      = 0;
+  time        = 0.0f;
 
-  sleepMillis             = 0;
-  loaderMillis            = 0;
-  soundMillis             = 0;
-  renderMillis            = 0;
-  renderPrepareMillis     = 0;
-  renderCaelumMillis      = 0;
-  renderTerraMillis       = 0;
-  renderStructsMillis     = 0;
-  renderObjectsMillis     = 0;
-  renderFragsMillis   = 0;
-  renderMiscMillis        = 0;
-  renderPostprocessMillis = 0;
-  renderUiMillis          = 0;
-  renderSyncMillis        = 0;
-  uiMillis                = 0;
-
-  nFrames                 = 0;
-  frameTicks              = 0;
-  frameMillis             = 0;
-  frameTime               = 0.0f;
+  nFrames     = 0;
+  frameTicks  = 0;
+  frameMillis = 0;
+  frameTime   = 0.0f;
 }
 
 void Timer::tick()
 {
+  runMillis   += TICK_MILLIS;
+
   ++ticks;
   millis      += TICK_MILLIS;
   time        = float( millis ) / 1000.0f;
@@ -86,6 +71,11 @@ void Timer::frame()
   frameTicks  = 0;
   frameMillis = 0;
   frameTime   = 0.0f;
+}
+
+void Timer::drop( uint millis_ )
+{
+  runMillis += millis_;
 }
 
 }

@@ -147,7 +147,7 @@ void Render::prepareDraw()
   objects.sort();
 
   currentTime = SDL_GetTicks();
-  timer.renderPrepareMillis += currentTime - beginTime;
+  prepareMillis += currentTime - beginTime;
 }
 
 void Render::drawGeometry()
@@ -201,7 +201,7 @@ void Render::drawGeometry()
   glEnable( GL_DEPTH_TEST );
 
   currentTime = SDL_GetTicks();
-  timer.renderCaelumMillis += currentTime - beginTime;
+  caelumMillis += currentTime - beginTime;
   beginTime = currentTime;
 
   // draw structures
@@ -212,13 +212,13 @@ void Render::drawGeometry()
   }
 
   currentTime = SDL_GetTicks();
-  timer.renderStructsMillis += currentTime - beginTime;
+  structsMillis += currentTime - beginTime;
   beginTime = currentTime;
 
   terra.draw();
 
   currentTime = SDL_GetTicks();
-  timer.renderTerraMillis += currentTime - beginTime;
+  terraMillis += currentTime - beginTime;
   beginTime = currentTime;
 
   // draw objects
@@ -237,7 +237,7 @@ void Render::drawGeometry()
   }
 
   currentTime = SDL_GetTicks();
-  timer.renderObjectsMillis += currentTime - beginTime;
+  objectsMillis += currentTime - beginTime;
   beginTime = currentTime;
 
   // draw fragments
@@ -255,7 +255,7 @@ void Render::drawGeometry()
   shader.colour = Colours::WHITE;
 
   currentTime = SDL_GetTicks();
-  timer.renderFragsMillis += currentTime - beginTime;
+  fragsMillis += currentTime - beginTime;
   beginTime = currentTime;
 
   glEnable( GL_BLEND );
@@ -277,13 +277,13 @@ void Render::drawGeometry()
   OZ_GL_CHECK_ERROR();
 
   currentTime = SDL_GetTicks();
-  timer.renderObjectsMillis += currentTime - beginTime;
+  objectsMillis += currentTime - beginTime;
   beginTime = currentTime;
 
   terra.drawWater();
 
   currentTime = SDL_GetTicks();
-  timer.renderTerraMillis += currentTime - beginTime;
+  terraMillis += currentTime - beginTime;
   beginTime = currentTime;
 
   // draw structures' alpha parts
@@ -296,7 +296,7 @@ void Render::drawGeometry()
   glDisable( GL_BLEND );
 
   currentTime = SDL_GetTicks();
-  timer.renderStructsMillis += currentTime - beginTime;
+  structsMillis += currentTime - beginTime;
   beginTime = currentTime;
 
   shader.use( shader.plain );
@@ -349,7 +349,7 @@ void Render::drawGeometry()
   frags.clear();
 
   currentTime = SDL_GetTicks();
-  timer.renderMiscMillis += currentTime - beginTime;
+  miscMillis += currentTime - beginTime;
 }
 
 void Render::drawOrbis()
@@ -433,7 +433,7 @@ void Render::drawUI()
 
   ui::ui.draw();
 
-  timer.renderUiMillis += SDL_GetTicks() - beginTime;
+  uiMillis += SDL_GetTicks() - beginTime;
 }
 
 void Render::draw( int flags )
@@ -450,13 +450,13 @@ void Render::draw( int flags )
   }
 }
 
-void Render::sync() const
+void Render::sync()
 {
   uint beginTime = SDL_GetTicks();
 
   SDL_GL_SwapBuffers();
 
-  timer.renderSyncMillis += SDL_GetTicks() - beginTime;
+  syncMillis += SDL_GetTicks() - beginTime;
 }
 
 void Render::toggleFullscreen() const
@@ -480,6 +480,17 @@ void Render::load()
   structs.alloc( 64 );
   objects.alloc( 8192 );
   frags.alloc( 1024 );
+
+  prepareMillis     = 0;
+  caelumMillis      = 0;
+  terraMillis       = 0;
+  structsMillis     = 0;
+  objectsMillis     = 0;
+  fragsMillis       = 0;
+  miscMillis        = 0;
+  postprocessMillis = 0;
+  uiMillis          = 0;
+  syncMillis        = 0;
 
   log.unindent();
   log.println( "}" );

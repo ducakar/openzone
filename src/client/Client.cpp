@@ -57,8 +57,6 @@ Client client;
 
 void Client::shutdown()
 {
-  uint beginTime = SDL_GetTicks();
-
   if( initFlags & INIT_STAGE_INIT ) {
     gameStage.free();
     menuStage.free();
@@ -94,88 +92,7 @@ void Client::shutdown()
     log.printEnd( " OK" );
   }
 
-  if( ( initFlags & INIT_MAIN_LOOP ) && allTime >= Timer::TICK_TIME ) {
-    float sleepTime       = float( timer.sleepMillis )             * 0.001f;
-    float loaderTime      = float( timer.loaderMillis )            * 0.001f;
-    float soundTime       = float( timer.soundMillis )             * 0.001f;
-    float renderTime      = float( timer.renderMillis )            * 0.001f;
-    float prepareTime     = float( timer.renderPrepareMillis )     * 0.001f;
-    float caelumTime      = float( timer.renderCaelumMillis )      * 0.001f;
-    float terraTime       = float( timer.renderTerraMillis )       * 0.001f;
-    float structsTime     = float( timer.renderStructsMillis )     * 0.001f;
-    float objectsTime     = float( timer.renderObjectsMillis )     * 0.001f;
-    float fragsTime       = float( timer.renderFragsMillis )       * 0.001f;
-    float miscTime        = float( timer.renderMiscMillis )        * 0.001f;
-    float postprocessTime = float( timer.renderPostprocessMillis ) * 0.001f;
-    float renderUiTime    = float( timer.renderUiMillis )          * 0.001f;
-    float syncTime        = float( timer.renderSyncMillis )        * 0.001f;
-    float uiTime          = float( timer.uiMillis )                * 0.001f;
-
-    float matrixTime      = float( timer.matrixMillis )            * 0.001f;
-    float nirvanaTime     = float( timer.nirvanaMillis )           * 0.001f;
-
-    float m2Time          = uiTime + soundTime + renderTime;
-
-    float inactiveTime    = float( inactiveMillis )                * 0.001f;
-    float droppedTime     = float( droppedMillis )                 * 0.001f;
-    float activeTime      = allTime - inactiveTime;
-
-    int   frameDrops      = timer.ticks - timer.nFrames;
-
-    float shutdownTime    = float( SDL_GetTicks() - beginTime )    * 0.001f;
-
-    log.println( "Memory usage {" );
-    log.indent();
-
-    Alloc::printStatistics();
-
-    log.println( "Orbis                %.2f MiB (%d B)",
-                 float( sizeof( Orbis ) ) / ( 1024.0f * 1024.0f ),
-                 int( sizeof( Orbis ) ) );
-
-    log.unindent();
-    log.println( "}" );
-
-    log.println( "Time statistics {" );
-    log.indent();
-    log.println( "Loading time             %.2f s",    loadingTime );
-    log.println( "Shutdown time            %.2f s",    shutdownTime );
-    log.println( "Main loop {" );
-    log.println( "  Real time              %.2f s",    allTime );
-    log.println( "  Active time            %.2f s",    activeTime );
-    log.println( "  Inactive time          %.2f s",    inactiveTime );
-    log.println( "  Dropped time           %.2f s",    droppedTime );
-    log.println( "  Game time              %.2f s",    timer.time );
-    log.println( "  Ticks in active time   %d (%.2f Hz)",
-                timer.ticks, float( timer.ticks ) / activeTime );
-    log.println( "  Frames in active time  %d (%.2f Hz)",
-                timer.nFrames, float( timer.nFrames ) / activeTime );
-    log.println( "  Frame drops            %d (%.2f %%)",
-                frameDrops, float( frameDrops ) / float( timer.ticks ) * 100.0f );
-    log.println( "  Active time usage {" );
-    log.println( "    %6.2f %%  [M:0] sleep",           sleepTime       / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:1] loader",          loaderTime      / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2] presentation",    m2Time          / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2] - sound",         soundTime       / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2] - render",        renderTime      / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2]   + prepare",     prepareTime     / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2]   + caelum",      caelumTime      / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2]   + terra",       terraTime       / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2]   + structs",     structsTime     / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2]   + objects",     objectsTime     / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2]   + frags",       fragsTime       / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2]   + misc",        miscTime        / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2]   + postprocess", postprocessTime / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2]   + ui",          renderUiTime    / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2]   + sync",        syncTime        / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:3] ui",              uiTime          / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [A:1] matrix",          matrixTime      / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [A:2] nirvana",         nirvanaTime     / activeTime * 100.0f );
-    log.println( "  }" );
-    log.println( "}" );
-    log.unindent();
-    log.println( "}" );
-
+  if( initFlags & INIT_MAIN_LOOP ) {
     log.printlnETD( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " finished at" );
   }
 }
@@ -306,8 +223,6 @@ int Client::main( int argc, char** argv )
   log.printEnd( " OK" );
   initFlags |= INIT_SDL;
 
-  uint createTime = SDL_GetTicks();
-
   log.println( "Build details {" );
   log.indent();
 
@@ -419,6 +334,8 @@ int Client::main( int argc, char** argv )
     stage = &menuStage;
   }
 
+  stage->load();
+
   SDL_Event event;
 
   // set mouse cursor to centre of the screen and clear any events (key presses and mouse moves)
@@ -440,12 +357,6 @@ int Client::main( int argc, char** argv )
   // time at start of the frame
   uint timeLast       = timeZero;
   uint timeLastRender = timeZero;
-
-  loadingTime         = float( timeZero - createTime ) / 1000.0f;
-  inactiveMillis      = 0;
-  droppedMillis       = 0;
-
-  stage->load();
 
   initFlags |= INIT_MAIN_LOOP;
 
@@ -539,9 +450,7 @@ int Client::main( int argc, char** argv )
       SDL_Delay( Timer::TICK_MILLIS );
 
       timeSpent = SDL_GetTicks() - timeLast;
-
       timeLast += timeSpent;
-      inactiveMillis += timeSpent;
 
       continue;
     }
@@ -580,14 +489,14 @@ int Client::main( int argc, char** argv )
 
       if( timeSpent < uint( Timer::TICK_MILLIS ) ) {
         SDL_Delay( Timer::TICK_MILLIS - timeSpent );
-        timer.sleepMillis += Timer::TICK_MILLIS - timeSpent;
 
         timeSpent = Timer::TICK_MILLIS;
       }
     }
     if( timeSpent > 100 ) {
+      timer.drop( timeSpent - Timer::TICK_MILLIS );
+
       timeLast += timeSpent - Timer::TICK_MILLIS;
-      droppedMillis += timeSpent - Timer::TICK_MILLIS;
     }
     timeLast += Timer::TICK_MILLIS;
 
@@ -601,8 +510,6 @@ int Client::main( int argc, char** argv )
   log.println( "}" );
 
   stage->unload();
-
-  allTime = float( SDL_GetTicks() - timeZero ) / 1000.0f;
 
   return 0;
 }

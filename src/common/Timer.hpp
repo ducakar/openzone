@@ -38,28 +38,11 @@ class Timer
     static const float TICK_TIME;
     static const int   TICKS_PER_SEC = 1000 / TICK_MILLIS;
 
+    uint  runMillis;
+
     int   ticks;
-    int   millis;
+    uint  millis;
     float time;
-
-    uint  matrixMillis;
-    uint  nirvanaMillis;
-
-    uint  sleepMillis;
-    uint  loaderMillis;
-    uint  soundMillis;
-    uint  renderMillis;
-    uint  renderPrepareMillis;
-    uint  renderCaelumMillis;
-    uint  renderTerraMillis;
-    uint  renderStructsMillis;
-    uint  renderObjectsMillis;
-    uint  renderFragsMillis;
-    uint  renderMiscMillis;
-    uint  renderPostprocessMillis;
-    uint  renderUiMillis;
-    uint  renderSyncMillis;
-    uint  uiMillis;
 
     int   nFrames;
     int   frameTicks;
@@ -71,6 +54,7 @@ class Timer
     void reset();
     void tick();
     void frame();
+    void drop( uint millis );
 };
 
 extern Timer timer;

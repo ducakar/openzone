@@ -114,6 +114,23 @@ class Render
     uint                    colourBuffer;
     uint                    normalBuffer;
 
+  public:
+
+    SDL_Surface*            surface;
+
+    uint                    prepareMillis;
+    uint                    caelumMillis;
+    uint                    terraMillis;
+    uint                    structsMillis;
+    uint                    objectsMillis;
+    uint                    fragsMillis;
+    uint                    miscMillis;
+    uint                    postprocessMillis;
+    uint                    uiMillis;
+    uint                    syncMillis;
+
+  private:
+
     void scheduleCell( int cellX, int cellY );
     void prepareDraw();
     void drawGeometry();
@@ -124,10 +141,8 @@ class Render
 
   public:
 
-    SDL_Surface* surface;
-
     void draw( int flags );
-    void sync() const;
+    void sync();
     void toggleFullscreen() const;
 
     void load();

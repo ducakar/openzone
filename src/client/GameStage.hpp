@@ -57,13 +57,15 @@ class GameStage : public Stage
 
     bool            isLoaded;
 
+    uint            loadingMillis;
+    uint            uiMillis;
+    uint            loaderMillis;
+    uint            soundMillis;
+    uint            presentMillis;
+    uint            matrixMillis;
+    uint            nirvanaMillis;
+
     Vector<Module*> modules;
-
-    static int auxMain( void* );
-
-    void run();
-
-    void reload();
 
   public:
 
@@ -72,6 +74,15 @@ class GameStage : public Stage
 
     String stateFile;
     String missionFile;
+
+  private:
+
+    static int auxMain( void* );
+
+    void run();
+    void reload();
+
+  public:
 
     virtual bool update();
     virtual void present();

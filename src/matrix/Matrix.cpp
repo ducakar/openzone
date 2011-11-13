@@ -209,7 +209,7 @@ void Matrix::unload()
   log.println( "Unloading Matrix {" );
   log.indent();
 
-  log.println( "Peak matrix instances {" );
+  log.println( "Peak instances {" );
   log.indent();
   log.println( "%6d  structures",      maxStructs );
   log.println( "%6d  object events",   maxEvents );
