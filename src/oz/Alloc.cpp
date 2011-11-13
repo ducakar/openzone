@@ -110,7 +110,7 @@ void Alloc::printLeaks()
 
   bt = firstObjectTraceEntry;
   while( bt != null ) {
-    log.println( "Leaked object at %p of size %d B allocated", bt->address, bt->size );
+    log.println( "Leaked object at %p of size %ld B allocated", bt->address, bt->size );
     log.indent();
     log.printTrace( bt->frames, bt->nFrames );
     log.unindent();
@@ -120,7 +120,7 @@ void Alloc::printLeaks()
 
   bt = firstArrayTraceEntry;
   while( bt != null ) {
-    log.println( "Leaked array at %p of size %d B allocated", bt->address, bt->size );
+    log.println( "Leaked array at %p of size %ld B allocated", bt->address, bt->size );
     log.indent();
     log.printTrace( bt->frames, bt->nFrames );
     log.unindent();

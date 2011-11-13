@@ -174,7 +174,7 @@ void BotClass::initClass( const Config* config )
   weaponItem        = config->get( "weaponItem", -1 );
 
   const char* sNameList = config->get( "nameList", "" );
-  nameList              = String::isEmpty( sNameList ) ? -1 : library.nameListIndex( sNameList );
+  nameList          = String::isEmpty( sNameList ) ? -1 : library.nameListIndex( sNameList );
 
   mindFunc          = config->get( "mindFunc", "" );
 }

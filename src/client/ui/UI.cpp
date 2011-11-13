@@ -112,8 +112,6 @@ void UI::load()
 {
   isFreelook = false;
 
-  mouse.load();
-
   buildMenu  = showBuild ? new BuildMenu() : null;
   debugFrame = showDebug ? new DebugFrame() : null;
 
@@ -137,13 +135,12 @@ void UI::unload()
     root->remove( buildMenu );
     buildMenu = null;
   }
-
-  mouse.unload();
 }
 
 void UI::init()
 {
   mouse.init();
+  mouse.load();
 
   if( !font.init() ) {
     throw Exception( "Failed to load font" );
@@ -168,6 +165,7 @@ void UI::free()
   Area::updateAreas.dealloc();
 
   font.free();
+  mouse.unload();
   mouse.free();
 }
 

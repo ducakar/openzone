@@ -86,11 +86,11 @@ class Library
     HashString<BSP, 64>           bsps;
     HashString<FragPool, 32>      fragPools;
 
+    HashString<int, 64>  shaderIndices;
     HashString<int, 256> textureIndices;
     HashString<int, 256> soundIndices;
-    HashString<int, 64>  shaderIndices;
-    HashString<int, 16>  terraIndices;
     HashString<int, 16>  caelumIndices;
+    HashString<int, 16>  terraIndices;
     HashString<int, 256> modelIndices;
     HashString<int, 16>  nameListIndices;
 
@@ -100,11 +100,11 @@ class Library
 
   public:
 
+    Vector<Resource> shaders;
     Vector<Resource> textures;
     Vector<Resource> sounds;
-    Vector<Resource> shaders;
-    Vector<Resource> terras;
     Vector<Resource> caela;
+    Vector<Resource> terras;
     Vector<Resource> models;
     Vector<Resource> nameLists;
     Vector<Resource> musics;
@@ -118,11 +118,11 @@ class Library
     const ObjectClass* objClass( const char* name ) const;
     const FragPool*    fragPool( const char* name ) const;
 
+    int shaderIndex( const char* name ) const;
     int textureIndex( const char* name ) const;
     int soundIndex( const char* name ) const;
-    int shaderIndex( const char* name ) const;
-    int terraIndex( const char* name ) const;
     int caelumIndex( const char* name ) const;
+    int terraIndex( const char* name ) const;
     int modelIndex( const char* name ) const;
     int nameListIndex( const char* name ) const;
 

@@ -932,10 +932,10 @@ void Library::free()
   textures.dealloc();
   sounds.clear();
   sounds.dealloc();
-  terras.clear();
-  terras.dealloc();
   caela.clear();
   caela.dealloc();
+  terras.clear();
+  terras.dealloc();
   models.clear();
   models.dealloc();
   nameLists.clear();
@@ -943,20 +943,27 @@ void Library::free()
   musics.clear();
   musics.dealloc();
 
+  shaderIndices.clear();
+  shaderIndices.dealloc();
   textureIndices.clear();
   textureIndices.dealloc();
   soundIndices.clear();
   soundIndices.dealloc();
-  shaderIndices.clear();
-  shaderIndices.dealloc();
-  terraIndices.clear();
-  terraIndices.dealloc();
   caelumIndices.clear();
   caelumIndices.dealloc();
+  terraIndices.clear();
+  terraIndices.dealloc();
   modelIndices.clear();
   modelIndices.dealloc();
   nameListIndices.clear();
   nameListIndices.dealloc();
+
+  deviceIndices.clear();
+  deviceIndices.dealloc();
+  imagoIndices.clear();
+  imagoIndices.dealloc();
+  audioIndices.clear();
+  audioIndices.dealloc();
 
   baseClasses.clear();
   baseClasses.dealloc();

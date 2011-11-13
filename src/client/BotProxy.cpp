@@ -263,7 +263,7 @@ void BotProxy::update()
 void BotProxy::prepare()
 {
   if( camera.bot == -1 ) {
-    camera.setState( camera.defaultState );
+    camera.setState( Camera::STRATEGIC );
     return;
   }
 
