@@ -110,11 +110,10 @@ void MD2::drawFrame( int frame ) const
   shader.use( shaderId );
 
   if( shader.hasVertexTexture ) {
-    glActiveTexture( GL_TEXTURE1 );
-    glBindTexture( GL_TEXTURE_2D, vertexTexId );
     glActiveTexture( GL_TEXTURE2 );
+    glBindTexture( GL_TEXTURE_2D, vertexTexId );
+    glActiveTexture( GL_TEXTURE3 );
     glBindTexture( GL_TEXTURE_2D, normalTexId );
-    glActiveTexture( GL_TEXTURE0 );
   }
   else {
     const Vec4* framePositions = &positions[frame * nFramePositions];
@@ -152,11 +151,10 @@ void MD2::draw( const AnimState* anim ) const
   shader.use( shaderId );
 
   if( shader.hasVertexTexture ) {
-    glActiveTexture( GL_TEXTURE1 );
-    glBindTexture( GL_TEXTURE_2D, vertexTexId );
     glActiveTexture( GL_TEXTURE2 );
+    glBindTexture( GL_TEXTURE_2D, vertexTexId );
+    glActiveTexture( GL_TEXTURE3 );
     glBindTexture( GL_TEXTURE_2D, normalTexId );
-    glActiveTexture( GL_TEXTURE0 );
   }
   else {
     const Vec4* currFramePositions = &positions[anim->currFrame * nFramePositions];

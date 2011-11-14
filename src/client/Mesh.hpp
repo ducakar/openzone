@@ -81,6 +81,7 @@ class Mesh
       uint  mode;
 
       uint  texture;
+      uint  masks;
       float alpha;
       float specular;
 

@@ -215,6 +215,7 @@ class MD3
     static Config   config;
 
     static String   skin;
+    static String   masks;
     static float    scale;
     static Mat44    meshTransf;
     static int      nTags;

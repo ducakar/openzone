@@ -60,6 +60,7 @@ void MeshData::write( BufferStream* stream, bool embedTextures ) const
 
   foreach( part, parts.citer() ) {
     textures.include( part->texture );
+    textures.include( part->masks );
   }
 
   if( embedTextures ) {
@@ -74,6 +75,7 @@ void MeshData::write( BufferStream* stream, bool embedTextures ) const
   }
   else {
     stream->writeInt( textures.length() );
+
     foreach( texture, textures.citer() ) {
       stream->writeString( *texture );
     }
@@ -86,6 +88,7 @@ void MeshData::write( BufferStream* stream, bool embedTextures ) const
     stream->writeInt( int( part->mode ) );
 
     stream->writeInt( textures.index( part->texture ) );
+    stream->writeInt( textures.index( part->masks ) );
     stream->writeFloat( part->alpha );
     stream->writeFloat( part->specular );
 

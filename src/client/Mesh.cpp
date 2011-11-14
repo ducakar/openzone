@@ -178,8 +178,6 @@ Mesh::~Mesh()
 
 void Mesh::load( InputStream* stream, uint usage )
 {
-  DArray<uint> textures;
-
   flags = 0;
 
   int nVertices = stream->readInt();
@@ -226,6 +224,8 @@ void Mesh::load( InputStream* stream, uint usage )
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
+  DArray<uint> textures;
+
   int nTextures = stream->readInt();
 
   if( nTextures < 0 ) {
@@ -247,11 +247,11 @@ void Mesh::load( InputStream* stream, uint usage )
       const String& name = stream->readString();
 
       if( name.isEmpty() ) {
-        texIds[i] = -1;
+        texIds[i]   = -1;
         textures[i] = 0;
       }
       else {
-        texIds[i] = library.textureIndex( name );
+        texIds[i]   = library.textureIndex( name );
         textures[i] = context.requestTexture( texIds[i] );
       }
     }
@@ -266,6 +266,7 @@ void Mesh::load( InputStream* stream, uint usage )
     part->mode       = uint( stream->readInt() );
 
     part->texture    = textures[ stream->readInt() ];
+    part->masks      = textures[ stream->readInt() ];
     part->alpha      = stream->readFloat();
     part->specular   = stream->readFloat();
 
@@ -286,7 +287,12 @@ void Mesh::unload()
   if( vao != 0 ) {
     if( flags & EMBEDED_TEX_BIT ) {
       foreach( part, parts.citer() ) {
-        glDeleteTextures( 1, &part->texture );
+        if( part->texture != 0 ) {
+          glDeleteTextures( 1, &part->texture );
+        }
+        if( part->masks != 0 ) {
+          glDeleteTextures( 1, &part->masks );
+        }
       }
     }
     else {
@@ -338,8 +344,6 @@ void Mesh::bind() const
 # else
   glBindVertexArray( vao );
 # endif
-
-  glUniform4fv( param.oz_Colour, 1, shader.colour );
 }
 
 void Mesh::drawComponent( int id, int mask ) const
@@ -361,7 +365,10 @@ void Mesh::drawComponent( int id, int mask ) const
       break;
     }
     else if( part.flags & mask ) {
+      glActiveTexture( GL_TEXTURE0 );
       glBindTexture( GL_TEXTURE_2D, part.texture );
+      glActiveTexture( GL_TEXTURE1 );
+      glBindTexture( GL_TEXTURE_2D, part.masks );
       glUniform1f( param.oz_Specular, part.specular );
       glUniform4f( param.oz_Colour, shader.colour.x, shader.colour.y, shader.colour.z,
                    shader.colour.w * part.alpha );
@@ -391,7 +398,10 @@ void Mesh::draw( int mask ) const
     const Part& part = parts[i];
 
     if( part.flags & mask ) {
+      glActiveTexture( GL_TEXTURE0 );
       glBindTexture( GL_TEXTURE_2D, part.texture );
+      glActiveTexture( GL_TEXTURE1 );
+      glBindTexture( GL_TEXTURE_2D, part.masks );
       glUniform1f( param.oz_Specular, part.specular );
       glUniform4f( param.oz_Colour, shader.colour.x, shader.colour.y, shader.colour.z,
                    shader.colour.w * part.alpha );

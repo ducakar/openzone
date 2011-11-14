@@ -137,8 +137,8 @@ MainMenu::MainMenu() : Frame( 0, 0, 400, 450, OZ_APPLICATION_TITLE " v" OZ_APPLI
 
 MainMenu::~MainMenu()
 {
-  autosaveFile.dealloc();;
-  quicksaveFile.dealloc();
+  autosaveFile  = "";
+  quicksaveFile = "";
 }
 
 void MainMenu::onDraw()

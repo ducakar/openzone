@@ -36,8 +36,10 @@ void main()
   vec3 normal   = normalize( exNormal );
   float dist    = length( toCamera );
 
-  gl_FragData[0] = skyLightColour( normal );
-  gl_FragData[0] *= texture2D( oz_Textures[0], exTexCoord * TERRA_DETAIL_SCALE );
-  gl_FragData[0] *= texture2D( oz_Textures[1], exTexCoord );
+  vec4 colour   = texture2D( oz_Textures[0], exTexCoord * TERRA_DETAIL_SCALE );
+  vec4 map      = texture2D( oz_Textures[2], exTexCoord );
+
+  gl_FragData[0] = colour * map;
+  gl_FragData[0] *= skyLightColour( normal );
   gl_FragData[0] = applyFog( gl_FragData[0], dist );
 }

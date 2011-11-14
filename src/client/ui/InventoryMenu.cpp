@@ -249,7 +249,9 @@ void InventoryMenu::onDraw()
 
   shader.use( shader.plain );
 
+  glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, 0 );
+
   shape.bindVertexArray();
 
   tf.camera = Mat44::ID;

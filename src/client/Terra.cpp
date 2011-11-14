@@ -77,8 +77,11 @@ void Terra::draw()
   tf.model = Mat44::ID;
   tf.apply();
 
+  glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, detailTexId );
   glActiveTexture( GL_TEXTURE1 );
+  glBindTexture( GL_TEXTURE_2D, detailTexId );
+  glActiveTexture( GL_TEXTURE2 );
   glBindTexture( GL_TEXTURE_2D, mapTexId );
 
   OZ_GL_CHECK_ERROR();
@@ -126,6 +129,9 @@ void Terra::drawWater()
   tf.model = Mat44::ID;
   tf.apply();
 
+  glActiveTexture( GL_TEXTURE0 );
+  glBindTexture( GL_TEXTURE_2D, waterTexId );
+  glActiveTexture( GL_TEXTURE1 );
   glBindTexture( GL_TEXTURE_2D, waterTexId );
 
   if( camera.p.z >= 0.0f ) {

@@ -46,6 +46,7 @@ class MeshData
       uint   mode;
 
       String texture;
+      String masks;
       float  alpha;
       float  specular;
 

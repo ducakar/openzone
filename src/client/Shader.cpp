@@ -348,19 +348,18 @@ void Shader::init()
 
   // bind white texture to id 0 to emulate fixed functionality (in fixed functionality sampler
   // always returns white colour when texture 0 is bound)
-  ubyte whitePixel[] = { 0xff, 0xff, 0xff };
+  ubyte whitePixel[] = { 0xff, 0xff, 0xff, 0xff };
 
-  for( int i = 0; i < 2; ++i ) {
+  glBindTexture( GL_TEXTURE_2D, 0 );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, whitePixel );
+
+  for( int i = 1; i >= 0; --i ) {
     glActiveTexture( GL_TEXTURE0 + uint( i ) );
-    glEnable( GL_TEXTURE_2D );
-
     glBindTexture( GL_TEXTURE_2D, 0 );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, whitePixel );
+    glEnable( GL_TEXTURE_2D );
   }
-
-  glActiveTexture( GL_TEXTURE0 );
 
   programs.alloc( library.shaders.length() );
   for( int i = 0; i < library.shaders.length(); ++i ) {

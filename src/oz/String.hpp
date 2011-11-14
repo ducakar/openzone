@@ -36,6 +36,8 @@ namespace oz
  * Class has static storage of <tt>BUFFER_SIZE</tt> bytes, if string is larger it is stored in
  * a dynamically allocated storage.
  *
+ * To deallocate storage just assign an empty string.
+ *
  * @ingroup oz
  */
 class String
@@ -813,20 +815,6 @@ class String
       array[i] = substring( p0 );
 
       return array;
-    }
-
-    /**
-     * Deallocate storage.
-     */
-    void dealloc()
-    {
-      if( buffer != baseBuffer ) {
-        delete[] buffer;
-        buffer = baseBuffer;
-      }
-
-      buffer[0] = '\0';
-      count     = 0;
     }
 
     /**
