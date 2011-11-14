@@ -45,6 +45,7 @@ String MD3::sPath;
 Config MD3::config;
 
 String MD3::skin;
+String MD3::masks;
 float  MD3::scale;
 Mat44  MD3::meshTransf;
 int    MD3::nTags;
@@ -199,6 +200,10 @@ void MD3::buildMesh( const char* name, int frame )
 
     compiler.texture( sPath + "/" + skin );
 
+    if( !masks.isEmpty() ) {
+      compiler.masks( sPath + "/" + masks );
+    }
+
     compiler.begin( GL_TRIANGLES );
 
     for( int i = 0; i < surfaceTriangles.length(); ++i ) {
@@ -237,6 +242,7 @@ void MD3::build( const char* path )
 
   scale               = config.get( "scale", 0.04f );
   skin                = config.get( "skin", "" );
+  masks               = config.get( "masks", "" );
 
   String model        = config.get( "model", "" );
   int    frame        = config.get( "frame", 0 );
@@ -370,9 +376,10 @@ void MD3::build( const char* path )
 
   config.clear( true );
 
-  shaderName.dealloc();
-  sPath.dealloc();
-  skin.dealloc();
+  shaderName = "";
+  sPath      = "";
+  skin       = "";
+  masks      = "";
 
   log.unindent();
   log.println( "}" );

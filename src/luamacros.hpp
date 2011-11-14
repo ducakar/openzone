@@ -42,7 +42,7 @@
   static_cast<void>( l )
 
 #define ERROR( message ) \
-  luaL_error( l, "%s: %s", __FUNCTION__, message )
+  luaL_error( l, "%s: %s", __PRETTY_FUNCTION__, message )
 
 #define STR_NOT_NULL() \
   if( lua.str == null ) { \

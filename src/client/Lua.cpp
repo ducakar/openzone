@@ -643,7 +643,7 @@ void Lua::free()
 
   log.print( "Freeing Client Lua ..." );
 
-  missionFile.dealloc();
+  missionFile = "";
 
   objects.clear();
   objects.dealloc();

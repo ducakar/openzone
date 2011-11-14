@@ -210,7 +210,10 @@ void MD2::build( const char* path )
 {
   String sPath = path;
   String modelFile = sPath + "/tris.md2";
-  String skinFile = sPath + "/skin.png";
+  String skinFile0 = sPath + "/skin.png";
+  String skinFile1 = sPath + "/skin.jpg";
+  String masksFile0 = sPath + "/masks.png";
+  String masksFile1 = sPath + "/masks.jpg";
   String configFile = sPath + "/config.rc";
 
   log.println( "Prebuilding MD2 model '%s' {", path );
@@ -218,6 +221,11 @@ void MD2::build( const char* path )
 
   Config config;
   config.load( configFile );
+
+  const String& skinFile  = File( skinFile0 ).getType() == File::MISSING ? skinFile1 : skinFile0;
+  const String& masksFile = File( masksFile0 ).getType() == File::MISSING ? masksFile1 : masksFile0;
+
+  bool hasMasks = File( masksFile ).getType() != File::MISSING;
 
   File file( modelFile );
   if( !file.map() ) {
@@ -358,6 +366,10 @@ void MD2::build( const char* path )
   compiler.enable( CAP_CW );
   compiler.material( GL_SPECULAR, specular );
   compiler.texture( skinFile );
+
+  if( hasMasks ) {
+    compiler.masks( masksFile );
+  }
 
   compiler.begin( GL_TRIANGLES );
 

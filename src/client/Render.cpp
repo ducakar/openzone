@@ -301,7 +301,9 @@ void Render::drawGeometry()
 
   shader.use( shader.plain );
 
+  glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, 0 );
+
   shape.bindVertexArray();
 
   if( showAim ) {
