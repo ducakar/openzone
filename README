@@ -67,10 +67,12 @@ ALT + x             - eject from vehicle
 
 Misc controls
 -------------
+Esc                 - exit to main menu
+
+LAlt + drag         - move UI windows
+
 o                   - rotate sky forward fast
 Shift + o           - rotate sky backwards fast
-
-LAlt + drag         - move windows
 
 F5                  - quick save (to ~/.config/openzone/quicksave.ozState)
 F7                  - quick load (from ~/.config/openzone/quicksave.ozState)
@@ -78,9 +80,7 @@ F8                  - load autosaved state (from ~/.config/openzone/autosave.ozS
 F10                 - screenshot (saved to '~/.config/openzone/screenshot DATE TIME.bmp')
 Ctrl + F11          - toggle fullscreen mode
 F12                 - minimise and pause
-Ctrl + F12          - force exit
-
-Esc                 - exit application
+Ctrl + F12          - exit application
 
 Command line
 ------------

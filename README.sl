@@ -68,21 +68,21 @@ ALT + x             - izskoči
 
 Razno
 -----
+Esc                 - izhod v glavni meni
+
+LAlt + vlečenje     - vleka oken uporabniškega vmesnika
+
 o                   - hitro vrti nebo naprej
 Shift + o           - hitro vrti nebo nazaj
-
-LAlt + vlečenje     - vleka oken
 
 F5                  - hitro shranjevanje (v ~/.config/openzone/quicksave.ozState)
 F7                  - hitro nalaganje (iz ~/.config/openzone/quicksave.ozState)
 F8                  - naloži zadnje samodejno shranjeno stanje
                       (iz ~/.config/openzone/autosave.ozState)
 F10                 - zajem zaslona (shrani se v '~/config/.openzone/screenshot DATUM ČAS.bmp')
-F11                 - preklopi celozaslonski način
-Ctrl + F12          - minimiraj in zamrzni
-Ctrl + F12          - prisilni izhod
-
-Esc                 - končaj program
+Ctrl + F11          - preklopi celozaslonski način
+F12                 - minimiraj in zamrzni
+Ctrl + F12          - končaj program
 
 Ukazna vrstica
 --------------

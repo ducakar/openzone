@@ -466,7 +466,7 @@ static void checkLua( const char* path )
 static void shutdown()
 {
   compiler.free();
-  client::render.free();
+  client::render.free( true );
   library.free();
   config.clear( true );
 
@@ -584,7 +584,7 @@ int main( int argc, char** argv )
   config.add( "screen.height", "40" );
   config.add( "screen.bpp", "32" );
   config.add( "screen.full", "false" );
-  client::render.init();
+  client::render.init( true );
   SDL_WM_SetCaption( OZ_APPLICATION_TITLE " :: Building data ...", null );
 
   if( !client::shader.hasS3TC && Context::useS3TC ) {

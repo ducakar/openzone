@@ -526,7 +526,7 @@ void Render::unload()
   log.println( "}" );
 }
 
-void Render::init()
+void Render::init( bool isBuild )
 {
   log.println( "Initialising Render {" );
   log.indent();
@@ -668,6 +668,16 @@ void Render::init()
   }
 #endif
 
+  if( isBuild ) {
+    config.get( "shader.setSamplerIndices", false );
+
+    log.unindent();
+    log.println( "}" );
+
+    OZ_GL_CHECK_ERROR();
+    return;
+  }
+
   renderWidth     = config.getSet( "render.width",                screenX );
   renderHeight    = config.getSet( "render.height",               screenY );
 
@@ -793,8 +803,12 @@ void Render::init()
   log.println( "}" );
 }
 
-void Render::free()
+void Render::free( bool isBuild )
 {
+  if( isBuild ) {
+    return;
+  }
+
   log.println( "Shutting down Render {" );
   log.indent();
 

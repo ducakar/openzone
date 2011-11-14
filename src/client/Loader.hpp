@@ -38,8 +38,8 @@ class Loader
 
     static const int TICK_PERIOD               = 180 * Timer::TICKS_PER_SEC;  // 2 min
 
-    static const int IMAGO_CLEAR_INTERVAL      = 10  * Timer::TICKS_PER_SEC;  // 10 s (+ 3 s)
-    static const int IMAGO_CLEAR_LAG           = 3   * Timer::TICKS_PER_SEC;
+    static const int IMAGO_CLEAR_INTERVAL      = 5   * Timer::TICKS_PER_SEC;  //   5 s (+ 2 s)
+    static const int IMAGO_CLEAR_LAG           = 2   * Timer::TICKS_PER_SEC;
 
     static const int FRAG_CLEAR_INTERVAL       = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 20 s)
     static const int FRAG_CLEAR_LAG            = 20  * Timer::TICKS_PER_SEC;
@@ -56,8 +56,8 @@ class Loader
     static const int SOURCE_CLEAR_INTERVAL     = 1   * Timer::TICKS_PER_SEC;  //   1 s (+ ~0.5 s)
     static const int SOURCE_CLEAR_LAG          = 1   * Timer::TICKS_PER_SEC / 2;
 
-    static const int AUDIO_CLEAR_INTERVAL      = 10  * Timer::TICKS_PER_SEC;  //  10 s (+ 6 s)
-    static const int AUDIO_CLEAR_LAG           = 6   * Timer::TICKS_PER_SEC;
+    static const int AUDIO_CLEAR_INTERVAL      = 5   * Timer::TICKS_PER_SEC;  //   5 s (+ 3 s)
+    static const int AUDIO_CLEAR_LAG           = 3   * Timer::TICKS_PER_SEC;
 
     int tick;
 
