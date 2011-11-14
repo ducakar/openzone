@@ -148,8 +148,8 @@ class Render
     void load();
     void unload();
 
-    void init();
-    void free();
+    void init( bool isBuild = false );
+    void free( bool isBuild = false );
 
 };
 

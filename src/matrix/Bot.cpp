@@ -371,6 +371,11 @@ void Bot::onUpdate()
    * MOVE
    */
 
+  if( !( state & ( GROUNDED_BIT | SWIMMING_BIT ) ) ) {
+    momentum.x *= 1.0f - AIR_FRICTION;
+    momentum.y *= 1.0f - AIR_FRICTION;
+  }
+
   Vec3 move = Vec3::ZERO;
   state &= ~MOVING_BIT;
 
@@ -462,12 +467,8 @@ void Bot::onUpdate()
         desiredMomentum -= dot * floor;
       }
     }
-    momentum += desiredMomentum;
 
-    if( !( state & ( GROUNDED_BIT | SWIMMING_BIT ) ) ) {
-      momentum.x *= 1.0f - AIR_FRICTION;
-      momentum.y *= 1.0f - AIR_FRICTION;
-    }
+    momentum += desiredMomentum;
 
     if( ( state & RUNNING_BIT ) && ( state & ( GROUNDED_BIT | SWIMMING_BIT | CLIMBING_BIT ) ) ) {
       stamina -= clazz->staminaRunDrain;

@@ -1,6 +1,6 @@
 TODO 0.3
-- timer cleanup
 - client
+  * specular masks
   * libmad
 - tools
   * everything ~> *Stream
@@ -15,7 +15,6 @@ TODO 0.4
 - ui
   * advanced HUD for mechanic units and vehicles
 - client
-  * specular masks
   * particle model (smoke, fire ...)
   * decals
   * bloom effect

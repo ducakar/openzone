@@ -136,6 +136,7 @@ void MD3::buildMesh( const char* name, int frame )
     }
   }
 
+  // FIXME indexBase unused
   int indexBase = 0;
 
   fseek( file, header.offSurfaces, SEEK_SET );
