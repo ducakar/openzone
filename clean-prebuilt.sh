@@ -18,5 +18,7 @@ echo 'rm -f share/openzone/bsp/*/*.ozcTex'
 rm -f share/openzone/bsp/*/*.ozcTex
 echo 'rm -f share/openzone/mdl/*.{ozcSMM,ozcMD2,ozcMD3}'
 rm -f share/openzone/mdl/*.{ozcSMM,ozcMD2,ozcMD3}
+echo 'rm -f share/openzone/mdl/*/*.{blend1,blend2}'
+rm -f share/openzone/mdl/*/*.{blend1,blend2}
 echo 'rm -f share/openzone/ui/galileo/*.ozcTex'
 rm -f share/openzone/ui/galileo/*.ozcTex

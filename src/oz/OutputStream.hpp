@@ -26,6 +26,7 @@
 #pragma once
 
 #include "Exception.hpp"
+#include "String.hpp"
 #include "Plane.hpp"
 #include "Mat44.hpp"
 #include "Endian.hpp"
@@ -196,7 +197,7 @@ class OutputStream
     void writeShort( short s )
     {
       short* data = reinterpret_cast<short*>( forward( sizeof( short ) ) );
-      *data = Endian::shuffle16( s );
+      *data = Endian::bswap16( s );
     }
 
     /**
@@ -206,7 +207,7 @@ class OutputStream
     void writeInt( int i )
     {
       int* data = reinterpret_cast<int*>( forward( sizeof( int ) ) );
-      *data = Endian::shuffle32( i );
+      *data = Endian::bswap32( i );
     }
 
     /**
@@ -216,7 +217,7 @@ class OutputStream
     void writeLong64( long64 l )
     {
       long64* data = reinterpret_cast<long64*>( forward( sizeof( long64 ) ) );
-      *data = Endian::shuffle64( l );
+      *data = Endian::bswap64( l );
     }
 
     /**
@@ -226,7 +227,7 @@ class OutputStream
     void writeFloat( float f )
     {
       int* data = reinterpret_cast<int*>( forward( sizeof( float ) ) );
-      *data = Endian::shuffle32( Math::toBits( f ) );
+      *data = Endian::bswap32( Math::toBits( f ) );
     }
 
     /**
@@ -243,7 +244,7 @@ class OutputStream
       DoubleToBits db = { d };
 
       long64* data = reinterpret_cast<long64*>( forward( sizeof( double ) ) );
-      *data = Endian::shuffle64( db.b );
+      *data = Endian::bswap64( db.b );
     }
 
     /**
@@ -278,9 +279,9 @@ class OutputStream
     {
       int* data = reinterpret_cast<int*>( forward( sizeof( float[3] ) ) );
 
-      data[0] = Endian::shuffle32( Math::toBits( v.x ) );
-      data[1] = Endian::shuffle32( Math::toBits( v.y ) );
-      data[2] = Endian::shuffle32( Math::toBits( v.z ) );
+      data[0] = Endian::bswap32( Math::toBits( v.x ) );
+      data[1] = Endian::bswap32( Math::toBits( v.y ) );
+      data[2] = Endian::bswap32( Math::toBits( v.z ) );
     }
 
     /**
@@ -291,10 +292,10 @@ class OutputStream
     {
       int* data = reinterpret_cast<int*>( forward( sizeof( float[4] ) ) );
 
-      data[0] = Endian::shuffle32( Math::toBits( v.x ) );
-      data[1] = Endian::shuffle32( Math::toBits( v.y ) );
-      data[2] = Endian::shuffle32( Math::toBits( v.z ) );
-      data[3] = Endian::shuffle32( Math::toBits( v.w ) );
+      data[0] = Endian::bswap32( Math::toBits( v.x ) );
+      data[1] = Endian::bswap32( Math::toBits( v.y ) );
+      data[2] = Endian::bswap32( Math::toBits( v.z ) );
+      data[3] = Endian::bswap32( Math::toBits( v.w ) );
     }
 
     /**
@@ -305,9 +306,9 @@ class OutputStream
     {
       int* data = reinterpret_cast<int*>( forward( sizeof( float[3] ) ) );
 
-      data[0] = Endian::shuffle32( Math::toBits( p.x ) );
-      data[1] = Endian::shuffle32( Math::toBits( p.y ) );
-      data[2] = Endian::shuffle32( Math::toBits( p.z ) );
+      data[0] = Endian::bswap32( Math::toBits( p.x ) );
+      data[1] = Endian::bswap32( Math::toBits( p.y ) );
+      data[2] = Endian::bswap32( Math::toBits( p.z ) );
     }
 
     /**
@@ -318,10 +319,10 @@ class OutputStream
     {
       int* data = reinterpret_cast<int*>( forward( sizeof( float[4] ) ) );
 
-      data[0] = Endian::shuffle32( Math::toBits( p.nx ) );
-      data[1] = Endian::shuffle32( Math::toBits( p.ny ) );
-      data[2] = Endian::shuffle32( Math::toBits( p.nz ) );
-      data[3] = Endian::shuffle32( Math::toBits( p.d ) );
+      data[0] = Endian::bswap32( Math::toBits( p.nx ) );
+      data[1] = Endian::bswap32( Math::toBits( p.ny ) );
+      data[2] = Endian::bswap32( Math::toBits( p.nz ) );
+      data[3] = Endian::bswap32( Math::toBits( p.d ) );
     }
 
     /**
@@ -332,10 +333,10 @@ class OutputStream
     {
       int* data = reinterpret_cast<int*>( forward( sizeof( float[4] ) ) );
 
-      data[0] = Endian::shuffle32( Math::toBits( q.x ) );
-      data[1] = Endian::shuffle32( Math::toBits( q.y ) );
-      data[2] = Endian::shuffle32( Math::toBits( q.z ) );
-      data[3] = Endian::shuffle32( Math::toBits( q.w ) );
+      data[0] = Endian::bswap32( Math::toBits( q.x ) );
+      data[1] = Endian::bswap32( Math::toBits( q.y ) );
+      data[2] = Endian::bswap32( Math::toBits( q.z ) );
+      data[3] = Endian::bswap32( Math::toBits( q.w ) );
     }
 
     /**
@@ -346,22 +347,22 @@ class OutputStream
     {
       int* data = reinterpret_cast<int*>( forward( sizeof( float[16] ) ) );
 
-      data[ 0] = Endian::shuffle32( Math::toBits( m.x.x ) );
-      data[ 1] = Endian::shuffle32( Math::toBits( m.x.y ) );
-      data[ 2] = Endian::shuffle32( Math::toBits( m.x.z ) );
-      data[ 3] = Endian::shuffle32( Math::toBits( m.x.w ) );
-      data[ 4] = Endian::shuffle32( Math::toBits( m.y.x ) );
-      data[ 5] = Endian::shuffle32( Math::toBits( m.y.y ) );
-      data[ 6] = Endian::shuffle32( Math::toBits( m.y.z ) );
-      data[ 7] = Endian::shuffle32( Math::toBits( m.y.w ) );
-      data[ 8] = Endian::shuffle32( Math::toBits( m.z.x ) );
-      data[ 9] = Endian::shuffle32( Math::toBits( m.z.y ) );
-      data[10] = Endian::shuffle32( Math::toBits( m.z.z ) );
-      data[11] = Endian::shuffle32( Math::toBits( m.z.w ) );
-      data[12] = Endian::shuffle32( Math::toBits( m.w.x ) );
-      data[13] = Endian::shuffle32( Math::toBits( m.w.y ) );
-      data[14] = Endian::shuffle32( Math::toBits( m.w.z ) );
-      data[15] = Endian::shuffle32( Math::toBits( m.w.w ) );
+      data[ 0] = Endian::bswap32( Math::toBits( m.x.x ) );
+      data[ 1] = Endian::bswap32( Math::toBits( m.x.y ) );
+      data[ 2] = Endian::bswap32( Math::toBits( m.x.z ) );
+      data[ 3] = Endian::bswap32( Math::toBits( m.x.w ) );
+      data[ 4] = Endian::bswap32( Math::toBits( m.y.x ) );
+      data[ 5] = Endian::bswap32( Math::toBits( m.y.y ) );
+      data[ 6] = Endian::bswap32( Math::toBits( m.y.z ) );
+      data[ 7] = Endian::bswap32( Math::toBits( m.y.w ) );
+      data[ 8] = Endian::bswap32( Math::toBits( m.z.x ) );
+      data[ 9] = Endian::bswap32( Math::toBits( m.z.y ) );
+      data[10] = Endian::bswap32( Math::toBits( m.z.z ) );
+      data[11] = Endian::bswap32( Math::toBits( m.z.w ) );
+      data[12] = Endian::bswap32( Math::toBits( m.w.x ) );
+      data[13] = Endian::bswap32( Math::toBits( m.w.y ) );
+      data[14] = Endian::bswap32( Math::toBits( m.w.z ) );
+      data[15] = Endian::bswap32( Math::toBits( m.w.w ) );
     }
 
 };

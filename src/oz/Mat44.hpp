@@ -472,6 +472,18 @@ class Mat44
     }
 
     /**
+     * Convert 3x3 rotation submatrix to a quaternion.
+     */
+    OZ_ALWAYS_INLINE
+    Quat toQuat() const
+    {
+      float w2 = Math::sqrt( 1.0f + x.x + y.y + z.z );
+      float w4 = 2.0f * w2;
+
+      return ~Quat( ( y.z - z.y ) / w4, ( z.x - x.z ) / w4, ( x.y - y.x ) / w4, 0.5f * w2 );
+    }
+
+    /**
      * Create matrix for rotation around x axis.
      */
     OZ_ALWAYS_INLINE
@@ -496,9 +508,9 @@ class Mat44
       Math::sincos( theta, &s, &c );
 
       return Mat44(    c, 0.0f,   -s, 0.0f,
-                       0.0f, 1.0f, 0.0f, 0.0f,
+                    0.0f, 1.0f, 0.0f, 0.0f,
                        s, 0.0f,    c, 0.0f,
-                       0.0f, 0.0f, 0.0f, 1.0f );
+                    0.0f, 0.0f, 0.0f, 1.0f );
     }
 
     /**
@@ -511,9 +523,9 @@ class Mat44
       Math::sincos( theta, &s, &c );
 
       return Mat44(    c,    s, 0.0f, 0.0f,
-                       -s,    c, 0.0f, 0.0f,
-                       0.0f, 0.0f, 1.0f, 0.0f,
-                       0.0f, 0.0f, 0.0f, 1.0f );
+                      -s,    c, 0.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f, 0.0f,
+                    0.0f, 0.0f, 0.0f, 1.0f );
     }
 
     /**
@@ -523,9 +535,9 @@ class Mat44
     static Mat44 scaling( const Vec3& v )
     {
       return Mat44(  v.x, 0.0f, 0.0f, 0.0f,
-                     0.0f,  v.y, 0.0f, 0.0f,
-                     0.0f, 0.0f,  v.z, 0.0f,
-                     0.0f, 0.0f, 0.0f, 1.0f );
+                    0.0f,  v.y, 0.0f, 0.0f,
+                    0.0f, 0.0f,  v.z, 0.0f,
+                    0.0f, 0.0f, 0.0f, 1.0f );
     }
 
 };

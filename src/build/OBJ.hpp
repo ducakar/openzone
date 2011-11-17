@@ -95,7 +95,7 @@ class OBJ
     void load();
     void save();
 
-    OBJ( const char* path );
+    explicit OBJ( const char* path );
 
   public:
 

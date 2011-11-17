@@ -234,55 +234,57 @@ void MD2::build( const char* path )
 
   InputStream is = file.inputStream();
 
-  char id[4];
-  id[0] = is.readChar();
-  id[1] = is.readChar();
-  id[2] = is.readChar();
-  id[3] = is.readChar();
+  MD2Header header;
 
-  int version = is.readInt();
+  header.id[0]   = is.readChar();
+  header.id[1]   = is.readChar();
+  header.id[2]   = is.readChar();
+  header.id[3]   = is.readChar();
+  header.version = is.readInt();
 
-  if( id[0] != 'I' || id[1] != 'D' || id[2] != 'P' || id[3] != '2' || version != 8 ) {
+  if( header.id[0] != 'I' || header.id[1] != 'D' || header.id[2] != 'P' || header.id[3] != '2' ||
+      header.version != 8 )
+  {
     throw Exception( "Wrong Quake 2 MD2 format" );
   }
 
-  int skinWidth       = is.readInt();
-  int skinHeight      = is.readInt();
-  int frameSize       = is.readInt();
+  header.skinWidth       = is.readInt();
+  header.skinHeight      = is.readInt();
+  header.frameSize       = is.readInt();
 
-  // MD2Header::offGLCmds
+  // MD2Header::nSkins
   is.readInt();
 
-  int nFramePositions = is.readInt();
-  int nTexCoords      = is.readInt();
-  int nTriangles      = is.readInt();
+  header.nFramePositions = is.readInt();
+  header.nTexCoords      = is.readInt();
+  header.nTriangles      = is.readInt();
 
   // MD2Header::nGLCmds
   is.readInt();
 
-  int nFrames         = is.readInt();
+  header.nFrames         = is.readInt();
 
   // MD2Header::offSkins
   is.readInt();
 
-  int offTexCoords    = is.readInt();
-  int offTriangles    = is.readInt();
-  int offFrames       = is.readInt();
+  header.offTexCoords    = is.readInt();
+  header.offTriangles    = is.readInt();
+  header.offFrames       = is.readInt();
 
   // MD2Header::offGLCmds
   is.readInt();
   // MD2Header::offEnd
   is.readInt();
 
-  if( nFrames <= 0 || nFramePositions <= 0 ) {
+  if( header.nFrames <= 0 || header.nFramePositions <= 0 ) {
     throw Exception( "MD2 model loading error" );
   }
 
   if( config.get( "forceStatic", false ) ) {
-    nFrames = 1;
+    header.nFrames = 1;
   }
-  String shaderName   = config.get( "shader", nFrames == 1 ? "mesh" : "md2" );
-  float  specular     = config.get( "specular", 0.0f );
+  String shaderName   = config.get( "shader", header.nFrames == 1 ? "mesh" : "md2" );
+  float  specular     = config.get( "specular", 2.0f );
   float  scale        = config.get( "scale", 0.04f );
 
   Vec3   translation  = Vec3( config.get( "translate.x", +0.00f ),
@@ -305,22 +307,22 @@ void MD2::build( const char* path )
   weaponTransf.rotateX( Math::rad( weaponRot.x ) );
   weaponTransf.rotateZ( Math::rad( weaponRot.z ) );
 
-  DArray<TexCoord>    texCoords( nTexCoords );
-  DArray<MD2Triangle> triangles( nTriangles );
-  DArray<Vec3>        normals( nFrames * nFramePositions );
-  DArray<Point3>      vertices( nFrames * nFramePositions );
+  DArray<TexCoord>    texCoords( header.nTexCoords );
+  DArray<MD2Triangle> triangles( header.nTriangles );
+  DArray<Vec3>        normals( header.nFrames * header.nFramePositions );
+  DArray<Point3>      vertices( header.nFrames * header.nFramePositions );
 
   is.reset();
-  is.forward( offFrames );
+  is.forward( header.offFrames );
 
-  const char* frameData = is.forward( nFrames * frameSize );
+  const char* frameData = is.forward( header.nFrames * header.frameSize );
 
-  for( int i = 0; i < nFrames; ++i ) {
-    const MD2Frame& frame = *reinterpret_cast<const MD2Frame*>( &frameData[i * frameSize] );
+  for( int i = 0; i < header.nFrames; ++i ) {
+    const MD2Frame& frame = *reinterpret_cast<const MD2Frame*>( &frameData[i * header.frameSize] );
 
-    for( int j = 0; j < nFramePositions; ++j ) {
-      Vec3&   normal = normals[i * nFramePositions + j];
-      Point3& vertex = vertices[i * nFramePositions + j];
+    for( int j = 0; j < header.nFramePositions; ++j ) {
+      Vec3&   normal = normals[i * header.nFramePositions + j];
+      Point3& vertex = vertices[i * header.nFramePositions + j];
 
       normal   = NORMALS[ frame.verts[j].normal ];
 
@@ -340,15 +342,15 @@ void MD2::build( const char* path )
   }
 
   is.reset();
-  is.forward( offTexCoords );
+  is.forward( header.offTexCoords );
 
   for( int i = 0; i < texCoords.length(); ++i ) {
-    texCoords[i].u = float( is.readShort() ) / float( skinWidth );
-    texCoords[i].v = float( skinHeight - is.readShort() ) / float( skinHeight );
+    texCoords[i].u = float( is.readShort() ) / float( header.skinWidth );
+    texCoords[i].v = float( header.skinHeight - is.readShort() ) / float( header.skinHeight );
   }
 
   is.reset();
-  is.forward( offTriangles );
+  is.forward( header.offTriangles );
 
   for( int i = 0; i < triangles.length(); ++i ) {
     triangles[i].vertices[0]  = is.readShort();
@@ -373,11 +375,11 @@ void MD2::build( const char* path )
 
   compiler.begin( GL_TRIANGLES );
 
-  for( int i = 0; i < nTriangles; ++i ) {
+  for( int i = 0; i < header.nTriangles; ++i ) {
     for( int j = 0; j < 3; ++j ) {
       compiler.texCoord( texCoords[ triangles[i].texCoords[j] ] );
 
-      if( nFrames == 1 ) {
+      if( header.nFrames == 1 ) {
         compiler.normal( normals[ triangles[i].vertices[j] ] );
         compiler.vertex( vertices[ triangles[i].vertices[j] ] );
       }
@@ -401,7 +403,7 @@ void MD2::build( const char* path )
 
   library.shaderIndex( shaderName );
 
-  if( nFrameVertices > MAX_VERTS ) {
+  if( nFrameVertices > client::MD2::MAX_VERTS ) {
     throw Exception( "MD2 model has too many vertices" );
   }
 
@@ -410,29 +412,29 @@ void MD2::build( const char* path )
   os.writeString( shaderName );
 
   // generate vertex data for animated MD2s
-  if( nFrames != 1 ) {
-    os.writeInt( nFrames );
+  if( header.nFrames != 1 ) {
+    os.writeInt( header.nFrames );
     os.writeInt( nFrameVertices );
-    os.writeInt( nFramePositions );
+    os.writeInt( header.nFramePositions );
     os.writeMat44( weaponTransf );
 
     // write vertex positions for all frames
-    for( int i = 0; i < nFrames; ++i ) {
-      for( int j = 0; j < nFramePositions; ++j ) {
-        os.writePoint3( vertices[i * nFramePositions + j] );
+    for( int i = 0; i < header.nFrames; ++i ) {
+      for( int j = 0; j < header.nFramePositions; ++j ) {
+        os.writePoint3( vertices[i * header.nFramePositions + j] );
       }
     }
     // write vertex normals for all frames
-    for( int i = 0; i < nFrames; ++i ) {
-      for( int j = 0; j < nFramePositions; ++j ) {
-        os.writeVec3( normals[i * nFramePositions + j] );
+    for( int i = 0; i < header.nFrames; ++i ) {
+      for( int j = 0; j < header.nFramePositions; ++j ) {
+        os.writeVec3( normals[i * header.nFramePositions + j] );
       }
     }
 
     // if we have an animated model, we use vertex position to save texture coordinate for vertex
     // texture to fetch the positions in both frames and interpolate them in vertex shader
     foreach( vertex, mesh.vertices.iter() ) {
-      vertex->pos[0] = ( vertex->pos[0] + 0.5f ) / float( nFramePositions );
+      vertex->pos[0] = ( vertex->pos[0] + 0.5f ) / float( header.nFramePositions );
       vertex->pos[1] = 0.0f;
       vertex->pos[2] = 0.0f;
     }
@@ -443,7 +445,7 @@ void MD2::build( const char* path )
 
   mesh.write( &os );
 
-  if( nFrames != 1 ) {
+  if( header.nFrames != 1 ) {
     log.print( "Writing to '%s' ...", ( sPath + ".ozcMD2" ).cstr() );
     File( sPath + ".ozcMD2" ).write( &os );
     log.printEnd( " OK" );

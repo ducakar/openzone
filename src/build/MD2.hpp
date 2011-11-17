@@ -39,35 +39,6 @@ class MD2
 {
   private:
 
-    static const int MAX_VERTS = 2048;
-
-  public:
-
-    struct AnimInfo
-    {
-      int   firstFrame;
-      int   lastFrame;
-      int   repeat;
-      float fps;
-    };
-
-    struct AnimState
-    {
-      Anim::Type type;
-      int   repeat;
-
-      int   startFrame;
-      int   endFrame;
-      int   currFrame;
-      int   nextFrame;
-
-      float fps;
-      float frameTime;
-      float currTime;
-    };
-
-  private:
-
     struct MD2Header
     {
       char id[4];

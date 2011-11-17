@@ -385,7 +385,7 @@ class Math
     static void seed( int n );
 
     /**
-     * Random integer between 0 and <tt>max</tt> non-inclusively.
+     * Random integer between from [0, <tt>max</tt>).
      */
     static int rand( int max );
 

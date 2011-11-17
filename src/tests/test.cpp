@@ -23,7 +23,11 @@
  * @file tests/test.cpp
  */
 
-#include "stable.hpp"
+#include "oz/Vector.hpp"
+
+#include <cstdio>
+#include <locale>
+#include <iostream>
 
 using namespace oz;
 
@@ -57,49 +61,12 @@ struct Foo
   }
 };
 
-// DArray<Foo> bar()
-// {
-//   DArray<Foo> foos( 10 );
-//   return foos;
-// }
-
-void test1( const Vector<int>& v )
-{
-  for( auto i = v.citer(); i.isValid(); ++i ) {
-    printf( "%d\n", *i );
-  }
-}
-
-void test2( const Vector<int>& v )
-{
-  for( const auto& i : v.citer() ) {
-    printf( "%d\n", *i );
-  }
-}
-
-void test3( const Vector<int>& v )
-{
-  auto container = v.citer();
-  for( auto __begin = begin( container ), __end = end( container );
-      __begin != __end;
-      ++__begin )
-  {
-    auto i = *__begin;
-    {
-      printf( "%d\n", *i );
-    }
-  }
-}
-
 int main( int, char** )
 {
-  Vector<int> v;
-  v.add( 10 );
-  v.add( 12 );
-
-  test1( v );
-  test2( v );
-
-//   Alloc::printLeaks();
+  std::locale l = std::locale( "sl_SI.UTF-8" );
+//   l = l.combine< std::numpunct<char> >( std::locale() );
+  std::locale::global( l );
+  std::cout.imbue( l );
+  printf( "%g\n", 1000.42 );
   return 0;
 }

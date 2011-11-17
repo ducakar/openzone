@@ -522,7 +522,7 @@ void Bot::onUpdate()
               instrument    = -1;
               instrumentObj = null;
               state         |= CLIMBING_BIT;
-              state         &= ~GRAB_BIT;
+              state         &= ~( GRAB_BIT | JUMP_SCHED_BIT );
               stamina       -= clazz->staminaClimbDrain;
 
               anim          = Anim::RUN;

@@ -15,39 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
+ * Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-/**
- * @file client/MD3.cpp
+/*
+ * postprocess.vert
+ *
+ * Postprocess pass.
  */
 
-#include "stable.hpp"
+attribute vec3 inPosition;
+attribute vec2 inTexCoord;
 
-#include "client/MD3.hpp"
+varying vec2 exTexCoord;
 
-#include "client/Context.hpp"
-#include "client/OpenGL.hpp"
-
-namespace oz
+void main()
 {
-namespace client
-{
-
-MD3::MD3( int id_ ) : id( id_ ), isLoaded( false )
-{}
-
-MD3::~MD3()
-{
-  OZ_GL_CHECK_ERROR();
-}
-
-void MD3::load()
-{}
-
-void MD3::drawFrame( int ) const
-{}
-
-}
+  gl_Position = oz_Transform.complete * vec4( inPosition, 1.0 );
+  exTexCoord  = inTexCoord;
 }

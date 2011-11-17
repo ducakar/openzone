@@ -301,9 +301,9 @@ void Loader::makeScreenshot()
   ct = time( null );
   t = *localtime( &ct );
 
-  snprintf( fileName, 1024, "%s/screenshot %d.%d.%04d %02d:%02d:%02d.bmp",
+  snprintf( fileName, 1024, "%s/screenshot %04d-%02d-%02d %02d:%02d:%02d.bmp",
             config.get( "dir.rc", "" ),
-            t.tm_mday, 1 + t.tm_mon, 1900 + t.tm_year, t.tm_hour, t.tm_min, t.tm_sec );
+            1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec );
   fileName[1023] = '\0';
 
   log.print( "Saving screenshot to '%s' ...", fileName );
@@ -316,14 +316,14 @@ void Loader::makeScreenshot()
   for( int i = 0; i < camera.height / 2; ++i ) {
     for( int j = 0; j < camera.width; ++j ) {
       swap( pixels[i * camera.width + j],
-            pixels[( camera.height - i - 1 ) * camera.width + j] );
+            pixels[ ( camera.height - i - 1 ) * camera.width + j ] );
     }
   }
   SDL_SaveBMP( surf, fileName );
   SDL_FreeSurface( surf );
   delete[] pixels;
 
-  log.printEnd( "OK" );
+  log.printEnd( " OK" );
 }
 
 void Loader::init()

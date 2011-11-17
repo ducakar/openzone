@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "String.hpp"
+#include "common.hpp"
 
 namespace oz
 {

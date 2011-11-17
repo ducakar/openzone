@@ -25,6 +25,8 @@
 
 #pragma once
 
+#include "client/MD3.hpp"
+
 #include "build/common.hpp"
 
 namespace oz
@@ -37,100 +39,11 @@ struct MD3Tag;
 /**
  * MD3 class.
  *
- * http://www.wikipedia.org/MD3_(file_format)
+ * <a href="http://www.wikipedia.org/MD3_(file_format)">Wiki</a>.
  */
 class MD3
 {
   private:
-
-    static const int MAX_FRAMES = 256;
-
-  public:
-
-    enum LegsAnim
-    {
-      LEGS_DEATH1,
-      LEGS_DEAD1,
-      LEGS_DEATH2,
-      LEGS_DEAD2,
-      LEGS_DEATH3,
-      LEGS_DEAD3,
-
-      LEGS_WALKCR,
-      LEGS_WALK,
-      LEGS_RUN,
-      LEGS_BACK,
-      LEGS_SWIM,
-      LEGS_JUMP,
-      LEGS_LAND,
-      LEGS_JUMPB,
-      LEGS_LANDB,
-      LEGS_IDLE,
-      LEGS_IDLECR,
-      LEGS_TURN,
-
-      LEGS_ANIM_MAX
-    };
-
-    enum TorsoAnim
-    {
-      TORSO_DEATH1,
-      TORSO_DEAD1,
-      TORSO_DEATH2,
-      TORSO_DEAD2,
-      TORSO_DEATH3,
-      TORSO_DEAD3,
-
-      TORSO_GESTURE,
-      TORSO_ATTACK,
-      TORSO_ATTACK2,
-      TORSO_DROP,
-      TORSO_RAISE,
-      TORSO_STAND,
-      TORSO_STAND2,
-
-      TORSO_ANIM_MAX
-    };
-
-    struct AnimInfo
-    {
-      int   firstFrame;
-      int   lastFrame;
-      int   repeat;
-      float fps;
-    };
-
-    struct AnimState
-    {
-      int   type;
-      int   repeat;
-
-      int   startFrame;
-      int   endFrame;
-      int   currFrame;
-      int   nextFrame;
-
-      float fps;
-      float frameTime;
-      float currTime;
-    };
-
-  private:
-
-    enum JointType
-    {
-      JOINT_HIP,
-      JOINT_NECK,
-      JOINT_WEAPON,
-
-      JOINTS_MAX
-    };
-
-    struct Joint
-    {
-      Quat rot;
-      Vec3 transl;
-    };
 
     struct MD3Header
     {
@@ -207,24 +120,40 @@ class MD3
       ubyte normal[2];
     };
 
-    static AnimInfo legsAnimList[LEGS_ANIM_MAX];
-    static AnimInfo torsoAnimList[TORSO_ANIM_MAX];
-    static Joint    joints[MAX_FRAMES][JOINTS_MAX];
+    enum Part
+    {
+      LEGS,
+      TORSO,
+      HEAD
+    };
 
-    static String   sPath;
-    static Config   config;
+    client::MD3::AnimInfo legsAnimList[client::MD3::LEGS_ANIM_MAX];
+    client::MD3::AnimInfo torsoAnimList[client::MD3::TORSO_ANIM_MAX];
+    client::MD3::Joint    joints[client::MD3::MAX_FRAMES][client::MD3::JOINTS_MAX];
 
-    static String   skin;
-    static String   masks;
-    static float    scale;
-    static Mat44    meshTransf;
-    static int      nTags;
+    String   sPath;
 
-    static DArray<MD3Tag> tags;
+    float    scale;
+    String   skin;
+    String   masks;
+    String   model;
+    int      frame;
+    int      lowerFrame;
+    int      upperFrame;
+    String   shaderName;
+    float    specular;
 
-    static void  readAnimData();
-    static Joint toJoint( const MD3Tag* tag );
-    static void  buildMesh( const char* name, int frame );
+    int      nLowerFrames;
+    int      nUpperFrames;
+    Mat44    meshTransf;
+
+    void readAnimData();
+    void buildMesh( const char* name, int frame );
+
+    void load();
+    void save();
+
+    explicit MD3( const char* path );
 
   public:
 

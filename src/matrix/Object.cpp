@@ -109,13 +109,20 @@ Object::Object( const ObjectClass* clazz_, int index_, const Point3& p_, Heading
   dim        = clazz_->dim;
   cell       = null;
   index      = index_;
-  flags      = clazz_->flags | heading;
+  flags      = clazz_->flags;
   life       = clazz_->life;
   resistance = clazz_->resistance;
   clazz      = clazz_;
 
-  if( heading == WEST || heading == EAST ) {
-    swap( dim.x, dim.y );
+  if( flags & ITEM_BIT ) {
+    heading = NORTH;
+  }
+  else {
+    flags |= heading;
+
+    if( heading == WEST || heading == EAST ) {
+      swap( dim.x, dim.y );
+    }
   }
 
   if( clazz->nItems != 0 ) {

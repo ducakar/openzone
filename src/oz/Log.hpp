@@ -42,14 +42,14 @@ class Log
 {
   private:
 
-    void*  stream;    ///< %File handle, but declared FILE* because we do not want to pollute
-                      ///< namespace with \<cstdio\>.
-    String indentStr; ///< Indent string.
-    int    tabs;      ///< Indentation levels.
+    void*       stream;    ///< %File handle, but declared FILE* because we do not want to pollute
+                           ///< namespace with \<cstdio\>.
+    const char* indentStr; ///< Indent string.
+    int         tabs;      ///< Indentation levels.
 
   public:
 
-    bool   isVerbose; ///< It has no influence on <tt>Log</tt>, only for convenience.
+    bool        isVerbose; ///< It has no influence on <tt>Log</tt>, only for convenience.
 
     /**
      * Initialise log with default parameters to init().
@@ -88,7 +88,7 @@ class Log
     void vprintRaw( const char* s, va_list ap ) const;
 
     /**
-     * Print the raw text.
+     * Print the raw text (without indentation on newline).
      */
     OZ_PRINTF_FORMAT( 2, 3 )
     void printRaw( const char* s, ... ) const;
@@ -122,22 +122,9 @@ class Log
     void println() const;
 
     /**
-     * As println, but print the current time at the beginning.
+     * Print current date and time, without indentation or newline.
      */
-    OZ_PRINTF_FORMAT( 2, 3 )
-    void printlnBT( const char* s, ... ) const;
-
-    /**
-     * As println, but print the current time at the end.
-     */
-    OZ_PRINTF_FORMAT( 2, 3 )
-    void printlnET( const char* s, ... ) const;
-
-    /**
-     * As println, but print the current time and date at the end.
-     */
-    OZ_PRINTF_FORMAT( 2, 3 )
-    void printlnETD( const char* s, ... ) const;
+    void printTime() const;
 
     /**
      * Print stack trace returned by <code>System::getStackTrace()</code>.

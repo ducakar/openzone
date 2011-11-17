@@ -61,7 +61,6 @@ bool Config::loadConf( const char* path )
 
   FILE* f = fopen( path, "r" );
   if( f == null ) {
-    log.println( "Error reading variables from '%s' ... Cannot open file", path );
     return false;
   }
 

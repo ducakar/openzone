@@ -194,7 +194,7 @@ class BSP : public Bounds
       int   size[2];
     };
 
-    // Temporary structure for textures.
+    /// Temporary structure for textures.
     struct Texture
     {
       int id;
@@ -268,7 +268,7 @@ class BSP : public Bounds
     void saveMatrix();
     void saveClient();
 
-    BSP( const char* name );
+    explicit BSP( const char* name );
     ~BSP();
 
   public:

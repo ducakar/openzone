@@ -26,6 +26,7 @@
 #pragma once
 
 #include "Exception.hpp"
+#include "String.hpp"
 #include "Plane.hpp"
 #include "Mat44.hpp"
 #include "Endian.hpp"
@@ -187,7 +188,7 @@ class InputStream
     short readShort()
     {
       const short* data = reinterpret_cast<const short*>( forward( sizeof( short ) ) );
-      return Endian::shuffle16( *data );
+      return Endian::bswap16( *data );
     }
 
     /**
@@ -197,7 +198,7 @@ class InputStream
     int readInt()
     {
       const int* data = reinterpret_cast<const int*>( forward( sizeof( int ) ) );
-      return Endian::shuffle32( *data );
+      return Endian::bswap32( *data );
     }
 
     /**
@@ -207,7 +208,7 @@ class InputStream
     long64 readLong64()
     {
       const long64* data = reinterpret_cast<const long64*>( forward( sizeof( long64 ) ) );
-      return Endian::shuffle64( *data );
+      return Endian::bswap64( *data );
     }
 
     /**
@@ -217,7 +218,7 @@ class InputStream
     float readFloat()
     {
       const int* data = reinterpret_cast<const int*>( forward( sizeof( int ) ) );
-      return Math::fromBits( Endian::shuffle32( *data ) );
+      return Math::fromBits( Endian::bswap32( *data ) );
     }
 
     /**
@@ -233,7 +234,7 @@ class InputStream
       };
 
       const long64* data = reinterpret_cast<const long64*>( forward( sizeof( long64 ) ) );
-      BitsToDouble bd = { Endian::shuffle64( *data ) };
+      BitsToDouble bd = { Endian::bswap64( *data ) };
       return bd.d;
     }
 
@@ -260,9 +261,9 @@ class InputStream
     Vec3 readVec3()
     {
       const int* data = reinterpret_cast<const int*>( forward( sizeof( float[3] ) ) );
-      return Vec3( Math::fromBits( Endian::shuffle32( data[0] ) ),
-                   Math::fromBits( Endian::shuffle32( data[1] ) ),
-                   Math::fromBits( Endian::shuffle32( data[2] ) ) );
+      return Vec3( Math::fromBits( Endian::bswap32( data[0] ) ),
+                   Math::fromBits( Endian::bswap32( data[1] ) ),
+                   Math::fromBits( Endian::bswap32( data[2] ) ) );
     }
 
     /**
@@ -272,10 +273,10 @@ class InputStream
     Vec4 readVec4()
     {
       const int* data = reinterpret_cast<const int*>( forward( sizeof( float[4] ) ) );
-      return Vec4( Math::fromBits( Endian::shuffle32( data[0] ) ),
-                   Math::fromBits( Endian::shuffle32( data[1] ) ),
-                   Math::fromBits( Endian::shuffle32( data[2] ) ),
-                   Math::fromBits( Endian::shuffle32( data[3] ) ) );
+      return Vec4( Math::fromBits( Endian::bswap32( data[0] ) ),
+                   Math::fromBits( Endian::bswap32( data[1] ) ),
+                   Math::fromBits( Endian::bswap32( data[2] ) ),
+                   Math::fromBits( Endian::bswap32( data[3] ) ) );
     }
 
     /**
@@ -285,9 +286,9 @@ class InputStream
     Point3 readPoint3()
     {
       const int* data = reinterpret_cast<const int*>( forward( sizeof( float[3] ) ) );
-      return Point3( Math::fromBits( Endian::shuffle32( data[0] ) ),
-                     Math::fromBits( Endian::shuffle32( data[1] ) ),
-                     Math::fromBits( Endian::shuffle32( data[2] ) ) );
+      return Point3( Math::fromBits( Endian::bswap32( data[0] ) ),
+                     Math::fromBits( Endian::bswap32( data[1] ) ),
+                     Math::fromBits( Endian::bswap32( data[2] ) ) );
     }
 
     /**
@@ -297,10 +298,10 @@ class InputStream
     Plane readPlane()
     {
       const int* data = reinterpret_cast<const int*>( forward( sizeof( float[4] ) ) );
-      return Plane( Math::fromBits( Endian::shuffle32( data[0] ) ),
-                    Math::fromBits( Endian::shuffle32( data[1] ) ),
-                    Math::fromBits( Endian::shuffle32( data[2] ) ),
-                    Math::fromBits( Endian::shuffle32( data[3] ) ) );
+      return Plane( Math::fromBits( Endian::bswap32( data[0] ) ),
+                    Math::fromBits( Endian::bswap32( data[1] ) ),
+                    Math::fromBits( Endian::bswap32( data[2] ) ),
+                    Math::fromBits( Endian::bswap32( data[3] ) ) );
     }
 
     /**
@@ -310,10 +311,10 @@ class InputStream
     Quat readQuat()
     {
       const int* data = reinterpret_cast<const int*>( forward( sizeof( float[4] ) ) );
-      return Quat( Math::fromBits( Endian::shuffle32( data[0] ) ),
-                   Math::fromBits( Endian::shuffle32( data[1] ) ),
-                   Math::fromBits( Endian::shuffle32( data[2] ) ),
-                   Math::fromBits( Endian::shuffle32( data[3] ) ) );
+      return Quat( Math::fromBits( Endian::bswap32( data[0] ) ),
+                   Math::fromBits( Endian::bswap32( data[1] ) ),
+                   Math::fromBits( Endian::bswap32( data[2] ) ),
+                   Math::fromBits( Endian::bswap32( data[3] ) ) );
     }
 
     /**
@@ -323,22 +324,22 @@ class InputStream
     Mat44 readMat44()
     {
       const int* data = reinterpret_cast<const int*>( forward( sizeof( float[16] ) ) );
-      return Mat44( Math::fromBits( Endian::shuffle32( data[ 0] ) ),
-                    Math::fromBits( Endian::shuffle32( data[ 1] ) ),
-                    Math::fromBits( Endian::shuffle32( data[ 2] ) ),
-                    Math::fromBits( Endian::shuffle32( data[ 3] ) ),
-                    Math::fromBits( Endian::shuffle32( data[ 4] ) ),
-                    Math::fromBits( Endian::shuffle32( data[ 5] ) ),
-                    Math::fromBits( Endian::shuffle32( data[ 6] ) ),
-                    Math::fromBits( Endian::shuffle32( data[ 7] ) ),
-                    Math::fromBits( Endian::shuffle32( data[ 8] ) ),
-                    Math::fromBits( Endian::shuffle32( data[ 9] ) ),
-                    Math::fromBits( Endian::shuffle32( data[10] ) ),
-                    Math::fromBits( Endian::shuffle32( data[11] ) ),
-                    Math::fromBits( Endian::shuffle32( data[12] ) ),
-                    Math::fromBits( Endian::shuffle32( data[13] ) ),
-                    Math::fromBits( Endian::shuffle32( data[14] ) ),
-                    Math::fromBits( Endian::shuffle32( data[15] ) ) );
+      return Mat44( Math::fromBits( Endian::bswap32( data[ 0] ) ),
+                    Math::fromBits( Endian::bswap32( data[ 1] ) ),
+                    Math::fromBits( Endian::bswap32( data[ 2] ) ),
+                    Math::fromBits( Endian::bswap32( data[ 3] ) ),
+                    Math::fromBits( Endian::bswap32( data[ 4] ) ),
+                    Math::fromBits( Endian::bswap32( data[ 5] ) ),
+                    Math::fromBits( Endian::bswap32( data[ 6] ) ),
+                    Math::fromBits( Endian::bswap32( data[ 7] ) ),
+                    Math::fromBits( Endian::bswap32( data[ 8] ) ),
+                    Math::fromBits( Endian::bswap32( data[ 9] ) ),
+                    Math::fromBits( Endian::bswap32( data[10] ) ),
+                    Math::fromBits( Endian::bswap32( data[11] ) ),
+                    Math::fromBits( Endian::bswap32( data[12] ) ),
+                    Math::fromBits( Endian::bswap32( data[13] ) ),
+                    Math::fromBits( Endian::bswap32( data[14] ) ),
+                    Math::fromBits( Endian::bswap32( data[15] ) ) );
     }
 
 };

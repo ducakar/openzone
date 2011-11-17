@@ -96,7 +96,7 @@ void Log::print( const char* s, ... ) const
   FILE* f = reinterpret_cast<FILE*>( stream );
 
   for( int i = 0; i < tabs; ++i ) {
-    fprintf( f, "%s", indentStr.cstr() );
+    fprintf( f, "%s", indentStr );
   }
 
   va_list ap;
@@ -138,7 +138,7 @@ void Log::println( const char* s, ... ) const
   FILE* f = reinterpret_cast<FILE*>( stream );
 
   for( int i = 0; i < tabs; ++i ) {
-    fprintf( f, "%s", indentStr.cstr() );
+    fprintf( f, "%s", indentStr );
   }
 
   va_list ap;
@@ -161,71 +161,16 @@ void Log::println() const
   fflush( f );
 }
 
-void Log::printlnBT( const char* s, ... ) const
+void Log::printTime() const
 {
   FILE* f = reinterpret_cast<FILE*>( stream );
 
   time_t ct = time( null );
   tm t = *localtime( &ct );
 
-  for( int i = 0; i < tabs; ++i ) {
-    fprintf( f, "%s", indentStr.cstr() );
-  }
-  fprintf( f, "%02d:%02d:%02d ", t.tm_hour, t.tm_min, t.tm_sec );
-
-  va_list ap;
-  va_start( ap, s );
-
-  vfprintf( f, s, ap );
-  fprintf( f, "\n" );
-
-  va_end( ap );
-
-  fflush( f );
-}
-
-void Log::printlnET( const char* s, ... ) const
-{
-  FILE* f = reinterpret_cast<FILE*>( stream );
-
-  time_t ct = time( null );
-  tm t = *localtime( &ct );
-
-  for( int i = 0; i < tabs; ++i ) {
-    fprintf( f, "%s", indentStr.cstr() );
-  }
-
-  va_list ap;
-  va_start( ap, s );
-
-  vfprintf( f, s, ap );
-  fprintf( f, " %02d:%02d:%02d\n", t.tm_hour, t.tm_min, t.tm_sec );
-
-  va_end( ap );
-
-  fflush( f );
-}
-
-void Log::printlnETD( const char* s, ... ) const
-{
-  FILE* f = reinterpret_cast<FILE*>( stream );
-
-  time_t ct = time( null );
-  tm t = *localtime( &ct );
-
-  for( int i = 0; i < tabs; ++i ) {
-    fprintf( f, "%s", indentStr.cstr() );
-  }
-
-  va_list ap;
-  va_start( ap, s );
-
-  vfprintf( f, s, ap );
-  fprintf( f, " %d.%d.%04d %02d:%02d:%02d\n",
-           t.tm_mday, t.tm_mon + 1, t.tm_year + 1900,
+  fprintf( f, "%04d-%02d-%02d %02d:%02d:%02d",
+           t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
            t.tm_hour, t.tm_min, t.tm_sec );
-
-  va_end( ap );
 
   fflush( f );
 }
@@ -236,7 +181,7 @@ void Log::printTrace( const char* frames, int nFrames ) const
 
   if( nFrames == 0 ) {
     for( int i = 0; i < tabs; ++i ) {
-      fprintf( f, "%s", indentStr.cstr() );
+      fprintf( f, "%s", indentStr );
     }
     fprintf( f, "[empty stack trace]\n" );
   }
@@ -245,7 +190,7 @@ void Log::printTrace( const char* frames, int nFrames ) const
 
     for( int i = 0; i < nFrames; ++i ) {
       for( int j = 0; j < tabs; ++j ) {
-        fprintf( f, "%s", indentStr.cstr() );
+        fprintf( f, "%s", indentStr );
       }
       fprintf( f, "%s\n", entry );
       entry += strlen( entry ) + 1;
@@ -265,19 +210,19 @@ void Log::printException( const Exception& e ) const
            "%sin %s\n"
            "%sat %s:%d\n",
            e.what(),
-           indentStr.cstr(), e.function,
-           indentStr.cstr(), e.file, e.line );
+           indentStr, e.function,
+           indentStr, e.file, e.line );
 
-  fprintf( f, "%sstack trace:\n", indentStr.cstr() );
+  fprintf( f, "%sstack trace:\n", indentStr );
 
   if( e.nFrames == 0 ) {
-    fprintf( f, "%s%s[empty stack trace]\n", indentStr.cstr(), indentStr.cstr() );
+    fprintf( f, "%s%s[empty stack trace]\n", indentStr, indentStr );
   }
   else {
     const char* entry = e.frames;
 
     for( int i = 0; i < e.nFrames; ++i ) {
-      fprintf( f, "%s%s%s\n", indentStr.cstr(), indentStr.cstr(), entry );
+      fprintf( f, "%s%s%s\n", indentStr, indentStr, entry );
       entry += strlen( entry ) + 1;
     }
   }

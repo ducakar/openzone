@@ -21,8 +21,6 @@
 
 /**
  * @file client/MD3.hpp
- *
- * http://www.wikipedia.org/MD3_(file_format)
  */
 
 #pragma once
@@ -38,11 +36,9 @@ struct MD3Tag;
 
 class MD3
 {
-  private:
+  public:
 
     static const int MAX_FRAMES = 256;
-
-  public:
 
     enum LegsAnim
     {
@@ -112,8 +108,6 @@ class MD3
       float currTime;
     };
 
-  private:
-
     enum JointType
     {
       JOINT_HIP,
@@ -129,6 +123,8 @@ class MD3
       Vec3 transl;
     };
 
+  private:
+
     AnimInfo legsAnimList[LEGS_ANIM_MAX];
     AnimInfo torsoAnimList[TORSO_ANIM_MAX];
     Joint    joints[MAX_FRAMES][JOINTS_MAX];
@@ -137,8 +133,8 @@ class MD3
 
   public:
 
-    Mat44    weaponTransf;
-    bool     isLoaded;
+    Mat44 weaponTransf;
+    bool  isLoaded;
 
     explicit MD3( int id );
     ~MD3();

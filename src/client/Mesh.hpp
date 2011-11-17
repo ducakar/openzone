@@ -94,8 +94,9 @@ class Mesh
     uint         ibo;
 
     int          flags;
+    int          nParts;
+    Part*        parts;
     DArray<int>  texIds;
-    DArray<Part> parts;
 
   public:
 
