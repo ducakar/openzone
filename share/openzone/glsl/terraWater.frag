@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /*
@@ -35,11 +36,12 @@ void main()
   vec3 toCamera = oz_CameraPosition - exPosition;
   float dist    = length( toCamera );
 
-  vec4 colour   = texture2D( oz_Textures[0], exTexCoord * TERRA_WATER_SCALE );
-  vec4 specular = texture2D( oz_Textures[1], exTexCoord * TERRA_WATER_SCALE );
+  vec4 colourSample   = texture2D( oz_Textures[0], exTexCoord * TERRA_WATER_SCALE );
+  vec4 specularSample = texture2D( oz_Textures[1], exTexCoord * TERRA_WATER_SCALE );
 
-  gl_FragData[0] = vec4( colour.xyz, 0.75 );
-  gl_FragData[0] *= skyLightColour( NORMAL );
-  gl_FragData[0] *= specularColour( specular.r, NORMAL, toCamera / dist );
+  vec4 diffuse  = skyLightColour( NORMAL );
+  vec4 specular = specularColour( oz_Specular, NORMAL, toCamera / dist );
+
+  gl_FragData[0] = vec4( colourSample.xyz, 0.75 ) * ( diffuse + specular );
   gl_FragData[0] = applyFog( gl_FragData[0], dist );
 }

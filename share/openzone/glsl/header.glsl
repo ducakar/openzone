@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /*
@@ -103,7 +104,7 @@ vec4 specularColour( float specular, vec3 normal, vec3 toCamera )
 {
   vec3  reflectedLight = reflect( oz_CaelumLight.dir, normal );
   float factor = specular * max( dot( reflectedLight, toCamera ), 0.0 );
-  return vec4( 1.0, 1.0, 1.0, 1.0 ) + vec4( factor * oz_CaelumLight.diffuse.rgb, 0.0 );
+  return vec4( factor * oz_CaelumLight.diffuse.rgb, 0.0 );
 }
 
 vec4 applyFog( vec4 colour, float dist )
@@ -116,23 +117,6 @@ vec2 noise( vec2 seed )
 {
   return vec2( cos( seed.x ), sin( seed.y ) );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

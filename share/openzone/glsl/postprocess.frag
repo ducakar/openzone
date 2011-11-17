@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /*
@@ -24,40 +25,30 @@
  * Postprocess pass.
  */
 
-const float BLOOM_SIZE      = 2.0;
+const float BLOOM_SIZE      = 4.0;
 const float BLOOM_SPACING   = 0.0012;
-const float BLOOM_THRESHOLD = 2.0;
-const float BLOOM_FACTOR    = 0.02;
 
 varying vec2 exTexCoord;
 
 void main()
 {
   // bloom
-  float bloom = 0.0;
+  vec4 bloom = vec4( 0.0 );
 
   for( float x = -BLOOM_SIZE; x <= BLOOM_SIZE; ++x ) {
-    vec2  coords    = vec2( exTexCoord.s + BLOOM_SPACING * x, exTexCoord.t );
-    vec4  sample    = texture2D( oz_Textures[0], coords );
-    float luminance = sample.r + sample.g + sample.b;
+    vec2 coords = vec2( exTexCoord.s + BLOOM_SPACING * x, exTexCoord.t );
+    vec4 sample = texture2D( oz_Textures[1], coords );
 
-    if( luminance > BLOOM_THRESHOLD ) {
-      bloom += luminance - BLOOM_THRESHOLD;
-    }
+    bloom += sample;
   }
   for( float y = -BLOOM_SIZE; y <= BLOOM_SIZE; ++y ) {
-    vec2  coords    = vec2( exTexCoord.s, exTexCoord.t + BLOOM_SPACING * y );
-    vec4  sample    = texture2D( oz_Textures[0], coords );
-    float luminance = sample.r + sample.g + sample.b;
+    vec2 coords = vec2( exTexCoord.s, exTexCoord.t + BLOOM_SPACING * y );
+    vec4 sample = texture2D( oz_Textures[1], coords );
 
-    if( luminance > BLOOM_THRESHOLD ) {
-      bloom += luminance - BLOOM_THRESHOLD;
-    }
+    bloom += sample;
   }
 
-  gl_FragColor = texture2D( oz_Textures[0], exTexCoord );
-  if( bloom > 1 ) {
-    gl_FragColor += BLOOM_FACTOR * bloom;
-  }
+  vec4 sample = texture2D( oz_Textures[0], exTexCoord );
 
+  gl_FragColor = mix( sample, bloom * 0.15, 0.15 );
 }

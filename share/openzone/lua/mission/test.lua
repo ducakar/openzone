@@ -14,6 +14,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
 ]]--
 
 --[[
@@ -121,7 +124,7 @@ function onCreate()
 end
 
 function init_stressTest()
-  for i = 1, 1000 do
+  for i = 1, 0 do
     local x = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local y = -OZ_ORBIS_DIM + 2 * OZ_ORBIS_DIM * math.random()
     local z = ozTerraHeight( x, y )

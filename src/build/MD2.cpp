@@ -284,7 +284,7 @@ void MD2::build( const char* path )
     header.nFrames = 1;
   }
   String shaderName   = config.get( "shader", header.nFrames == 1 ? "mesh" : "md2" );
-  float  specular     = config.get( "specular", 2.0f );
+  float  specular     = config.get( "specular", 0.0f );
   float  scale        = config.get( "scale", 0.04f );
 
   Vec3   translation  = Vec3( config.get( "translate.x", +0.00f ),
@@ -368,10 +368,7 @@ void MD2::build( const char* path )
   compiler.enable( CAP_CW );
   compiler.material( GL_SPECULAR, specular );
   compiler.texture( skinFile );
-
-  if( hasMasks ) {
-    compiler.masks( masksFile );
-  }
+  compiler.masks( hasMasks ? masksFile : skinFile );
 
   compiler.begin( GL_TRIANGLES );
 

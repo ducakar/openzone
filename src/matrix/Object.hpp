@@ -186,8 +186,8 @@ class Object : public AABB
     static const int MOVE_CLEAR_MASK    = DISABLED_BIT | ON_FLOOR_BIT | IN_WATER_BIT |
                                           ON_LADDER_BIT | ON_SLICK_BIT;
 
-    static const float MOMENTUM_INTENSITY_COEF;
     static const float MOMENTUM_DAMAGE_COEF;
+    static const float MOMENTUM_INTENSITY_COEF;
     static const float DAMAGE_INTENSITY_COEF;
     static const float DAMAGE_BASE_INTENSITY;
     static const Vec3  DESTRUCT_FRAG_VELOCITY;

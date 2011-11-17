@@ -289,7 +289,7 @@ void MD3::load()
   lowerFrame = config.get( "lowerFrame", -1 );
   upperFrame = config.get( "upperFrame", -1 );
   shaderName = config.get( "shader", frame == -1 ? "md3" : "mesh" );
-  specular   = config.get( "specular", 2.0f );
+  specular   = config.get( "specular", 0.0f );
 
   Vec3 weaponTransl = Vec3( config.get( "weaponTranslate.x", 0.00f ),
                             config.get( "weaponTranslate.y", 0.00f ),
@@ -322,6 +322,8 @@ void MD3::save()
     compiler.enable( CAP_UNIQUE );
     compiler.enable( CAP_CW );
     compiler.material( GL_SPECULAR, specular );
+
+    meshTransf = Mat44::ID;
 
     buildMesh( model, frame );
 

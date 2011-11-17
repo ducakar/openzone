@@ -59,6 +59,8 @@ class Render
     static const float WIND_FACTOR;
     static const float WIND_PHI_INC;
 
+    static const int   SPECULAR_MINIFICATION = 2;
+
     struct ObjectEntry
     {
       float dist2;
@@ -108,11 +110,16 @@ class Render
 
     int                     renderWidth;
     int                     renderHeight;
+    int                     minSpecFactor;
 
-    uint                    frameBuffer;
+    uint                    mainFrame;
     uint                    depthBuffer;
     uint                    colourBuffer;
     uint                    normalBuffer;
+    uint                    specularBuffer;
+
+    uint                    minSpecFrame;
+    uint                    minSpecBuffer;
 
   public:
 
