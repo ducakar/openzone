@@ -37,9 +37,9 @@
   hard_assert( lua_gettop( l ) == ( n ) ); \
   static_cast<void>( l )
 
-#define ARG_GE( n ) \
+#define ARG_VAR( n ) \
   hard_assert( lua_gettop( l ) >= ( n ) ); \
-  static_cast<void>( l )
+  static_cast<void>( l );
 
 #define ERROR( message ) \
   luaL_error( l, "%s: %s", __PRETTY_FUNCTION__, message )

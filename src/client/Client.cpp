@@ -93,7 +93,9 @@ void Client::shutdown()
   }
 
   if( initFlags & INIT_MAIN_LOOP ) {
-    log.printlnETD( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " finished at" );
+    log.print( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " finished on " );
+    log.printTime();
+    log.printEnd();
   }
 }
 
@@ -213,7 +215,9 @@ int Client::main( int argc, char** argv )
         "under certain conditions; See COPYING file for details.\n" );
   }
 
-  log.printlnETD( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " started at" );
+  log.print( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " started on " );
+  log.printTime();
+  log.printEnd();
 
   log.print( "Initialising SDL ..." );
   if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO ) != 0 ) {

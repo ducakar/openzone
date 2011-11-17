@@ -36,11 +36,9 @@ namespace client
 
 class MD2
 {
-  private:
+  public:
 
     static const int MAX_VERTS = 2048;
-
-  public:
 
     struct AnimInfo
     {

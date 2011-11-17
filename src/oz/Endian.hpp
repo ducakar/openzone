@@ -37,20 +37,18 @@ namespace oz
  */
 class Endian
 {
-  private:
+  public:
 
     /**
      * Singleton.
      */
-    Endian();
-
-  public:
+    Endian() = delete;
 
     /**
      * Swap byte order if OZ_BIG_ENDIAN_ARCH does not match OZ_BIG_ENDIAN_STREAM.
      */
     OZ_ALWAYS_INLINE
-    static short shuffle16( short s )
+    static short bswap16( short s )
     {
 #if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
       return s;
@@ -63,7 +61,7 @@ class Endian
      * Swap byte order if OZ_BIG_ENDIAN_ARCH does not match OZ_BIG_ENDIAN_STREAM.
      */
     OZ_ALWAYS_INLINE
-    static int shuffle32( int i )
+    static int bswap32( int i )
     {
 #if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
       return i;
@@ -76,7 +74,7 @@ class Endian
      * Swap byte order if OZ_BIG_ENDIAN_ARCH does not match OZ_BIG_ENDIAN_STREAM.
      */
     OZ_ALWAYS_INLINE
-    static long64 shuffle64( long64 l )
+    static long64 bswap64( long64 l )
     {
 #if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
       return l;

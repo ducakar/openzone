@@ -29,7 +29,6 @@
 #include "Log.hpp"
 
 #include <cstdlib>
-#include <cstring>
 
 #ifdef OZ_MINGW
 # include <malloc.h>
@@ -180,7 +179,6 @@ static void posix_memalign_free( void* ptr )
 void* operator new ( size_t size ) throw( std::bad_alloc )
 {
   hard_assert( !Alloc::isLocked );
-  hard_assert( size != 0 );
 
   size += Alloc::alignUp( sizeof( size_t ) );
 
@@ -237,7 +235,6 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
 void* operator new[] ( size_t size ) throw( std::bad_alloc )
 {
   hard_assert( !Alloc::isLocked );
-  hard_assert( size != 0 );
 
   size += Alloc::alignUp( sizeof( size_t ) );
 
@@ -305,7 +302,7 @@ void operator delete ( void* ptr ) throw()
   Alloc::amount -= size;
 
 #ifndef NDEBUG
-  memset( chunk, 0xee, size );
+  __builtin_memset( chunk, 0xee, size );
 #endif
 
 #ifdef OZ_TRACE_LEAKS
@@ -382,7 +379,7 @@ void operator delete[] ( void* ptr ) throw()
   Alloc::amount -= size;
 
 #ifndef NDEBUG
-  memset( chunk, 0xee, size );
+  __builtin_memset( chunk, 0xee, size );
 #endif
 
 #ifdef OZ_TRACE_LEAKS

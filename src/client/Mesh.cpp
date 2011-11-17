@@ -257,24 +257,24 @@ void Mesh::load( InputStream* stream, uint usage )
     }
   }
 
-  int nParts = stream->readInt();
+  nParts = stream->readInt();
 
-  parts.alloc( nParts );
+  parts = new Part[nParts];
 
-  foreach( part, parts.iter() ) {
-    part->flags      = stream->readInt();
-    part->mode       = uint( stream->readInt() );
+  for( int i = 0; i < nParts; ++i ) {
+    parts[i].flags      = stream->readInt();
+    parts[i].mode       = uint( stream->readInt() );
 
-    part->texture    = textures[ stream->readInt() ];
-    part->masks      = textures[ stream->readInt() ];
-    part->alpha      = stream->readFloat();
-    part->specular   = stream->readFloat();
+    parts[i].texture    = textures[ stream->readInt() ];
+    parts[i].masks      = textures[ stream->readInt() ];
+    parts[i].alpha      = stream->readFloat();
+    parts[i].specular   = stream->readFloat();
 
-    part->nIndices   = stream->readInt();
-    part->firstIndex = stream->readInt();
+    parts[i].nIndices   = stream->readInt();
+    parts[i].firstIndex = stream->readInt();
 
-    part->flags |= part->alpha == 1.0f ? 0x0100 : 0x0200;
-    flags |= part->flags & ( 0x0100 | 0x0200 );
+    parts[i].flags |= parts[i].alpha == 1.0f ? 0x0100 : 0x0200;
+    flags |= parts[i].flags & ( 0x0100 | 0x0200 );
   }
 
   textures.dealloc();
@@ -286,12 +286,12 @@ void Mesh::unload()
 {
   if( vao != 0 ) {
     if( flags & EMBEDED_TEX_BIT ) {
-      foreach( part, parts.citer() ) {
-        if( part->texture != 0 ) {
-          glDeleteTextures( 1, &part->texture );
+      for( int i = 0; i < nParts; ++i ) {
+        if( parts[i].texture != 0 ) {
+          glDeleteTextures( 1, &parts[i].texture );
         }
-        if( part->masks != 0 ) {
-          glDeleteTextures( 1, &part->masks );
+        if( parts[i].masks != 0 ) {
+          glDeleteTextures( 1, &parts[i].masks );
         }
       }
     }
@@ -354,7 +354,7 @@ void Mesh::drawComponent( int id, int mask ) const
     return;
   }
 
-  for( int i = 0; i < parts.length(); ++i ) {
+  for( int i = 0; i < nParts; ++i ) {
     const Part& part = parts[i];
 
     int component = part.flags & COMPONENT_MASK;
@@ -394,7 +394,7 @@ void Mesh::draw( int mask ) const
   glBindVertexArray( vao );
 # endif
 
-  for( int i = 0; i < parts.length(); ++i ) {
+  for( int i = 0; i < nParts; ++i ) {
     const Part& part = parts[i];
 
     if( part.flags & mask ) {

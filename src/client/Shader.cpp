@@ -391,9 +391,11 @@ void Shader::init()
   sources[1] = buffer.begin();
   lengths[1] = buffer.length();
 
-  plain     = library.shaderIndex( "plain" );
-  mesh      = library.shaderIndex( "mesh" );
-  combine   = library.shaderIndex( "combine" );
+  plain       = library.shaderIndex( "plain" );
+  mesh        = library.shaderIndex( "mesh" );
+  combine     = library.shaderIndex( "combine" );
+  postprocess = library.shaderIndex( "postprocess" );
+
   colour    = Vec4::ONE;
   isInWater = false;
   isLoaded  = false;

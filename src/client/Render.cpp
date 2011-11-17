@@ -415,15 +415,16 @@ void Render::drawOrbis()
   }
   else if( doPostprocess ) {
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
     glPopAttrib();
 
-    glBindFramebuffer( GL_READ_FRAMEBUFFER, frameBuffer );
+    tf.ortho();
+    tf.camera = Mat44::ID;
+    tf.applyCamera();
+    shader.use( shader.postprocess );
 
-    glBlitFramebuffer( 0, 0, renderWidth, renderHeight, 0, 0, camera.width, camera.height,
-                       GL_COLOR_BUFFER_BIT, GL_LINEAR );
-
-    glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
+    glBindTexture( GL_TEXTURE_2D, frameBuffer );
+    shape.fill( 0, 0, camera.width, camera.height );
+    glBindTexture( GL_TEXTURE_2D, 0 );
   }
 
   OZ_GL_CHECK_ERROR();
@@ -750,9 +751,7 @@ void Render::init( bool isBuild )
     glGenTextures( 1, &colourBuffer );
 
     glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
-
     glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, renderWidth, renderHeight );
-
     glBindRenderbuffer( GL_RENDERBUFFER, 0 );
 
     glBindTexture( GL_TEXTURE_2D, colourBuffer );
@@ -763,7 +762,7 @@ void Render::init( bool isBuild )
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, renderWidth, renderHeight, 0,
-                  GL_RGB, GL_FLOAT, null );
+                  GL_RGB, GL_UNSIGNED_BYTE, null );
 
     glBindTexture( GL_TEXTURE_2D, 0 );
 

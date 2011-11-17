@@ -28,12 +28,12 @@
 #ifdef OZ_MINGW
 # include <cstdio>
 #else
-# include <sys/mman.h>
 # include <fcntl.h>
+# include <sys/mman.h>
 # include <unistd.h>
 #endif
-#include <sys/stat.h>
 #include <dirent.h>
+#include <sys/stat.h>
 
 // prevent old-style cast warning for GCC
 #ifdef __GNUC__

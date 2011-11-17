@@ -47,6 +47,7 @@
 
 #include "build/modules/GalileoModule.hpp"
 
+#include <clocale>
 #include <unistd.h>
 
 #include <SDL/SDL_main.h>
@@ -390,28 +391,12 @@ static void buildModels()
     String path = file->path();
 
     if( File( path + "/data.obj" ).getType() != File::MISSING ) {
-      if( File( path + "/data.mtl" ).getType() == File::MISSING ||
-          File( path + "/config.rc" ).getType() == File::MISSING )
-      {
-        throw Exception( "OBJ model '%s' source files missing", name.cstr() );
-      }
-
       OBJ::build( path );
     }
     else if( File( path + "/tris.md2" ).getType() != File::MISSING ) {
-      if( File( path + "/skin.png" ).getType() == File::MISSING ||
-          File( path + "/config.rc" ).getType() == File::MISSING )
-      {
-        throw Exception( "MD2 model '%s' source files missing", name.cstr() );
-      }
-
       MD2::build( path );
     }
     else if( File( path + "/.md3" ).getType() != File::MISSING ) {
-      if( File( path + "/config.rc" ).getType() == File::MISSING ) {
-        throw Exception( "MD3 model '%s' source files missing", name.cstr() );
-      }
-
       MD3::build( path );
     }
   }
@@ -473,7 +458,10 @@ static void shutdown()
   SDL_Quit();
 
   Alloc::printStatistics();
-  log.printlnETD( OZ_APPLICATION_TITLE " Build finished at" );
+
+  log.print( OZ_APPLICATION_TITLE " Build finished on " );
+  log.printTime();
+  log.printEnd();
 }
 
 int main( int argc, char** argv )
@@ -548,7 +536,9 @@ int main( int argc, char** argv )
     return -1;
   }
 
-  log.printlnETD( OZ_APPLICATION_TITLE " Build started at" );
+  log.print( OZ_APPLICATION_TITLE " Build started on " );
+  log.printTime();
+  log.printEnd();
 
   log.println( "Build details {" );
   log.indent();
@@ -563,6 +553,9 @@ int main( int argc, char** argv )
 
   log.unindent();
   log.println( "}" );
+
+  setlocale( LC_CTYPE, config.getSet( "locale.ctype", "" ) );
+  setlocale( LC_MESSAGES, config.getSet( "locale.messages", "" ) );
 
   String prefixDir = config.get( "dir.prefix", OZ_INSTALL_PREFIX );
   String dataDir   = prefixDir + "/share/" OZ_APPLICATION_NAME;

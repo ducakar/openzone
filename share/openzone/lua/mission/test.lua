@@ -97,6 +97,7 @@ function onCreate()
 
   ozOrbisGenFrags( "ruins", 100, 145, 9, 77, 150, 14, 77, 0, 0, 2 )
 
+  ozOrbisAddObj( "box", 140, -2, 72 )
   ozOrbisAddObj( "bigCrate", 140, -7, 72 )
   ozOrbisAddObj( "metalCrate", 140, -4, 72 )
   ozOrbisAddObj( "metalBarrel", 140, -5.5, 72 )
@@ -156,7 +157,7 @@ function init_stressTest()
     local z = ozTerraHeight( x, y )
 
     if z > 0 then
-      ozOrbisTryAddObj( "metalBarrel", x, y, z + 0.70 )
+      ozOrbisTryAddObj( "explosiveBarrel", x, y, z + 0.70 )
     end
   end
 

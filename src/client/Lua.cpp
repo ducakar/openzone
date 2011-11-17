@@ -728,11 +728,11 @@ int Lua::ozOrbisTryAddStr( lua_State* l )
 
 int Lua::ozOrbisAddObj( lua_State* l )
 {
-  ARG_GE( 4 );
+  ARG_VAR( 4 );
 
   const char* name    = tostring( 1 );
   Point3      p       = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
-  Heading     heading = Heading( toint( 5 ) );
+  Heading     heading = Heading( gettop() == 5 ? toint( 5 ) : Math::rand( 4 ) );
 
   int index = synapse.addObject( name, p, heading );
   lua.obj = orbis.objects[index];
@@ -742,11 +742,11 @@ int Lua::ozOrbisAddObj( lua_State* l )
 
 int Lua::ozOrbisTryAddObj( lua_State* l )
 {
-  ARG_GE( 4 );
+  ARG_VAR( 4 );
 
   const char* name    = tostring( 1 );
   Point3      p       = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
-  Heading     heading = Heading( toint( 5 ) );
+  Heading     heading = Heading( gettop() == 5 ? toint( 5 ) : Math::rand( 4 ) );
 
   const ObjectClass* clazz = library.objClass( name );
 
