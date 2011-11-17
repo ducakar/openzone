@@ -49,6 +49,7 @@ int main( int argc, char** argv )
 
   try {
     exitCode = oz::client::client.main( argc, argv );
+    oz::client::client.shutdown();
   }
   catch( const oz::Exception& e ) {
     oz::log.resetIndent();
@@ -62,7 +63,8 @@ int main( int argc, char** argv )
       fprintf( stderr, "  at %s:%d\n\n", e.file, e.line );
     }
 
-    exitCode = -1;
+    oz::System::resetSignals();
+    abort();
   }
   catch( const std::exception& e ) {
     oz::log.resetIndent();
@@ -75,10 +77,9 @@ int main( int argc, char** argv )
       fprintf( stderr, "\nEXCEPTION: %s\n\n", e.what() );
     }
 
-    exitCode = -1;
+    oz::System::resetSignals();
+    abort();
   }
-
-  oz::client::client.shutdown();
 
 //   oz::Alloc::isLocked = true;
   oz::Alloc::printLeaks();

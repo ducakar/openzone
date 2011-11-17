@@ -44,7 +44,7 @@ const float Physics::SIDE_PUSH_RATIO        =  0.5f;
 const float Physics::WEIGHT_FACTOR          =  0.1f;
 const float Physics::G_ACCEL                = -9.81f;
 
-const float Physics::SLIDE_DAMAGE_THRESHOLD =  20.0f;
+const float Physics::SLIDE_DAMAGE_THRESHOLD =  25.0f;
 const float Physics::SLIDE_DAMAGE_COEF      =  0.50f;
 const float Physics::STICK_VELOCITY         =  0.015f;
 const float Physics::SLICK_STICK_VELOCITY   =  0.001f;

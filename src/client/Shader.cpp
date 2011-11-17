@@ -38,9 +38,6 @@
 #define OZ_REGISTER_ATTRIBUTE( location, name ) \
   glBindAttribLocation( programs[id].program, location, name )
 
-#define OZ_REGISTER_FRAGDATA( location, name ) \
-  glBindFragDataLocation( programs[id].program, location, name )
-
 namespace oz
 {
 namespace client
@@ -343,8 +340,10 @@ void Shader::init()
   log.println( "Initialising Shader {" );
   log.indent();
 
-  bool isDeferred = config.get( "render.deferred", false );
   hasVertexTexture = config.get( "shader.vertexTexture", true );
+
+  bool isDeferred    = config.get( "render.deferred", false );
+  bool doPostprocess = config.get( "render.postprocess", false );
 
   // bind white texture to id 0 to emulate fixed functionality (in fixed functionality sampler
   // always returns white colour when texture 0 is bound)
@@ -372,10 +371,11 @@ void Shader::init()
   int         lengths[3];
 
   defines = "#version 120\n";
-  defines = defines + ( isDeferred ?       "#define OZ_DEFERRED\n" : "\n" );
   defines = defines + ( hasVertexTexture ? "#define OZ_VERTEX_TEXTURE\n" : "\n" );
+  defines = defines + ( isDeferred ?       "#define OZ_DEFERRED\n" : "\n" );
+  defines = defines + ( doPostprocess ?    "#define OZ_POSTPROCESS\n" : "\n" );
 
-  for( int i = 3; i < 10; ++i ) {
+  for( int i = 4; i < 10; ++i ) {
     defines = defines + "\n";
   }
 

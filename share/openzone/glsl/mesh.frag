@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Davorin Učakar <davorin.ucakar@gmail.com>
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
  */
 
 /*
@@ -30,15 +31,16 @@ varying vec3 exNormal;
 
 void main()
 {
-  vec3 toCamera = oz_CameraPosition - exPosition;
-  vec3 normal   = normalize( exNormal );
-  float dist    = length( toCamera );
+  vec3  toCamera = oz_CameraPosition - exPosition;
+  vec3  normal   = normalize( exNormal );
+  float dist     = length( toCamera );
 
-  vec4 colour   = texture2D( oz_Textures[0], exTexCoord );
-  vec4 specular = texture2D( oz_Textures[1], exTexCoord );
+  vec4 colourSample   = texture2D( oz_Textures[0], exTexCoord );
+  vec4 specularSample = texture2D( oz_Textures[1], exTexCoord );
 
-  gl_FragData[0] = oz_Colour * colour;
-  gl_FragData[0] *= skyLightColour( normal );
-  gl_FragData[0] *= specularColour( oz_Specular * specular.r, normal, toCamera / dist );
+  vec4 diffuse  = skyLightColour( normal );
+  vec4 specular = specularColour( oz_Specular * specularSample.r, normal, normalize( toCamera ) );
+
+  gl_FragData[0] = oz_Colour * colourSample * ( diffuse + specular );
   gl_FragData[0] = applyFog( gl_FragData[0], dist );
 }
