@@ -36,10 +36,10 @@ namespace oz
 namespace matrix
 {
 
-const float Object::MOMENTUM_DAMAGE_COEF    = +2.00f;
+const float Object::MOMENTUM_DAMAGE_COEF    = -10.0f;
 const float Object::MOMENTUM_INTENSITY_COEF = -0.10f;
+const float Object::DAMAGE_BASE_INTENSITY   = +0.50f;
 const float Object::DAMAGE_INTENSITY_COEF   = +0.05f;
-const float Object::DAMAGE_BASE_INTENSITY   = +0.30f;
 const Vec3  Object::DESTRUCT_FRAG_VELOCITY  = Vec3( 0.0f, 0.0f, 2.0f );
 
 Pool<Object::Event, 256> Object::Event::pool;

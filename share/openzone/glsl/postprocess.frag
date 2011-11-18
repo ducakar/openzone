@@ -26,7 +26,7 @@
  */
 
 const float BLOOM_SIZE      = 4.0;
-const float BLOOM_SPACING   = 0.0012;
+const float BLOOM_SPACING   = 0.0015;
 
 varying vec2 exTexCoord;
 
@@ -48,7 +48,8 @@ void main()
     bloom += sample;
   }
 
-  vec4 sample = texture2D( oz_Textures[0], exTexCoord );
+  vec4  sample    = texture2D( oz_Textures[0], exTexCoord );
+  float luminance = clamp( 0.010 * ( bloom.r + bloom.g + bloom.b ), 0.0, 1.0 );
 
-  gl_FragColor = mix( sample, bloom * 0.15, 0.15 );
+  gl_FragColor = mix( sample, bloom * 0.10, luminance );
 }

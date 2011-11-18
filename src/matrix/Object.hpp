@@ -188,8 +188,8 @@ class Object : public AABB
 
     static const float MOMENTUM_DAMAGE_COEF;
     static const float MOMENTUM_INTENSITY_COEF;
-    static const float DAMAGE_INTENSITY_COEF;
     static const float DAMAGE_BASE_INTENSITY;
+    static const float DAMAGE_INTENSITY_COEF;
     static const Vec3  DESTRUCT_FRAG_VELOCITY;
 
     /*
@@ -339,7 +339,7 @@ class Object : public AABB
     {
       flags |= HIT_BIT;
       addEvent( EVENT_HIT, hitMomentum * MOMENTUM_INTENSITY_COEF );
-      damage( hitMomentum * hitMomentum * MOMENTUM_DAMAGE_COEF );
+      damage( hitMomentum * MOMENTUM_DAMAGE_COEF );
 
       if( flags & HIT_FUNC_BIT ) {
         onHit( hit, hitMomentum );

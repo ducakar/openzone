@@ -98,7 +98,7 @@ function onCreate()
   ozOrbisAddObj( "smallCrate", 148, 12, 75 )
   ozOrbisAddObj( "smallCrate", 148, 12, 76 )
 
-  ozOrbisGenFrags( "ruins", 100, 145, 9, 77, 150, 14, 77, 0, 0, 2 )
+  ozOrbisGenFrags( "ruins", 100, 146, 10, 79, 149, 13, 79, 0, 0, 2 )
 
   ozOrbisAddObj( "box", 140, -2, 72 )
   ozOrbisAddObj( "bigCrate", 140, -7, 72 )

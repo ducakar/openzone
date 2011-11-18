@@ -45,7 +45,7 @@ const float Physics::WEIGHT_FACTOR          =  0.1f;
 const float Physics::G_ACCEL                = -9.81f;
 
 const float Physics::SLIDE_DAMAGE_THRESHOLD =  25.0f;
-const float Physics::SLIDE_DAMAGE_COEF      =  0.50f;
+const float Physics::SLIDE_DAMAGE_COEF      =  7.50f;
 const float Physics::STICK_VELOCITY         =  0.015f;
 const float Physics::SLICK_STICK_VELOCITY   =  0.001f;
 const float Physics::FLOAT_STICK_VELOCITY   =  0.0002f;
@@ -54,11 +54,12 @@ const float Physics::LADDER_FRICTION        =  0.50f;
 const float Physics::FLOOR_FRICTION         =  0.25f;
 const float Physics::SLICK_FRICTION         =  0.02f;
 
-const float Physics::STRUCT_HIT_MAX_MASS    =  1.0f;
-const float Physics::STRUCT_HIT_RATIO       =  0.5f;
+const float Physics::STRUCT_HIT_MAX_MASS    =  1.00f;
+const float Physics::STRUCT_DAMAGE_COEF     = -10.0f;
 
-const float Physics::PART_HIT_VELOCITY2     =  100.0f;
-const float Physics::PART_DESTROY_VELOCITY2 =  900.0f;
+const float Physics::PART_HIT_VELOCITY      =  10.0f;
+const float Physics::PART_DESTROY_VELOCITY  =  30.0f;
+const float Physics::PART_DAMAGE_COEF       =  10.0f;
 const float Physics::PART_FIXED_DAMAGE      =  0.75f;
 
 //***********************************
@@ -67,20 +68,20 @@ const float Physics::PART_FIXED_DAMAGE      =  0.75f;
 
 void Physics::handleFragHit()
 {
-  float velocity2 = frag->velocity * frag->velocity;
+  float hitVelocity = frag->velocity.fastL();
 
   frag->velocity *= frag->restitution;
   frag->velocity -= ( 2.0f * frag->velocity * collider.hit.normal ) * collider.hit.normal;
 
-  if( velocity2 >= PART_HIT_VELOCITY2 ) {
-    if( velocity2 >= PART_DESTROY_VELOCITY2 ) {
+  if( hitVelocity > PART_HIT_VELOCITY ) {
+    if( hitVelocity > PART_DESTROY_VELOCITY ) {
       frag->life = -Math::INF;
     }
 
     if( frag->mass != 0.0f ) {
       if( collider.hit.obj != null ) {
         Object* obj = collider.hit.obj;
-        float damage = velocity2 * frag->mass;
+        float damage = PART_DAMAGE_COEF * hitVelocity * frag->mass;
 
         if( damage > obj->resistance ) {
           damage *= PART_FIXED_DAMAGE + ( 1.0f - PART_FIXED_DAMAGE ) * Math::rand();
@@ -89,7 +90,7 @@ void Physics::handleFragHit()
       }
       else if( collider.hit.str != null ) {
         Struct* str = collider.hit.str;
-        float damage = velocity2 * frag->mass;
+        float damage = PART_DAMAGE_COEF * hitVelocity * frag->mass;
 
         if( damage > str->resistance ) {
           damage *= PART_FIXED_DAMAGE + ( 1.0f - PART_FIXED_DAMAGE ) * Math::rand();
@@ -182,7 +183,7 @@ bool Physics::handleObjFriction()
         dyn->flags |= Object::FRICTING_BIT;
 
         if( velocity2 > SLIDE_DAMAGE_THRESHOLD ) {
-          dyn->damage( SLIDE_DAMAGE_COEF * velocity2 - SLIDE_DAMAGE_THRESHOLD );
+          dyn->damage( SLIDE_DAMAGE_COEF * Math::fastSqrt( velocity2 ) );
         }
       }
 
@@ -213,7 +214,7 @@ bool Physics::handleObjFriction()
       float deltaVelocity2 = deltaVelX*deltaVelX + deltaVelY*deltaVelY;
 
       if( deltaVelocity2 > SLIDE_DAMAGE_THRESHOLD ) {
-        dyn->damage( SLIDE_DAMAGE_COEF * deltaVelocity2 - SLIDE_DAMAGE_THRESHOLD );
+        dyn->damage( SLIDE_DAMAGE_COEF * Math::fastSqrt( deltaVelocity2 ) );
       }
     }
     // in air or swimming
@@ -247,7 +248,7 @@ void Physics::handleObjHit()
     float hitMomentum = ( dyn->momentum - sDyn->momentum ) * hit.normal;
     float hitVelocity = dyn->velocity * hit.normal;
 
-    if( hitMomentum <= HIT_THRESHOLD && hitVelocity <= HIT_THRESHOLD ) {
+    if( hitMomentum < HIT_THRESHOLD && hitVelocity < HIT_THRESHOLD ) {
       dyn->hit( &hit, hitMomentum );
       sDyn->hit( &hit, hitMomentum );
     }
@@ -312,7 +313,7 @@ void Physics::handleObjHit()
     float hitMomentum = dyn->momentum * hit.normal;
     float hitVelocity = dyn->velocity * hit.normal;
 
-    if( hitMomentum <= HIT_THRESHOLD && hitVelocity <= HIT_THRESHOLD ) {
+    if( hitMomentum < HIT_THRESHOLD && hitVelocity < HIT_THRESHOLD ) {
       if( hit.obj != null ) {
         Object* sObj = hit.obj;
 
@@ -326,7 +327,7 @@ void Physics::handleObjHit()
           Struct* str = hit.str;
 
           float effectiveMass = min( dyn->mass, STRUCT_HIT_MAX_MASS );
-          str->damage( STRUCT_HIT_RATIO * hitMomentum*hitMomentum * effectiveMass );
+          str->damage( STRUCT_DAMAGE_COEF * hitMomentum * effectiveMass );
         }
       }
     }

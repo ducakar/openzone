@@ -502,5 +502,5 @@ function onCreate()
 
   ozCameraIncarnate( oz_me )
   ozCameraWarpTo( ozBotGetEyePos() )
-  ozCameraAllowReincarnation( false )
+--   ozCameraAllowReincarnation( false )
 end
