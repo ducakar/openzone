@@ -368,7 +368,10 @@ void MD2::build( const char* path )
   compiler.enable( CAP_CW );
   compiler.material( GL_SPECULAR, specular );
   compiler.texture( skinFile );
-  compiler.masks( hasMasks ? masksFile : skinFile );
+
+  if( hasMasks ) {
+    compiler.masks( masksFile );
+  }
 
   compiler.begin( GL_TRIANGLES );
 

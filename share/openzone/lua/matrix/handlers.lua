@@ -48,7 +48,7 @@ function smallExplosion_onUpdate( l )
           distance = 8 - distance
 
           if ozObjIsVisibleFromSelf() then
-            ozObjDamage( 100 + 20*distance )
+            ozObjDamage( 100 + 10*distance )
 
             if distance < 7.9 and ozObjIsDynamic() then
               dirX, dirY, dirZ = ozObjDirectionFromSelf()
@@ -90,7 +90,7 @@ function bigExplosion_onUpdate( l )
           ozObjDamage( 10*distance )
 
           if ozObjIsVisibleFromSelf() then
-            ozObjDamage( 100 + 20*distance )
+            ozObjDamage( 100 + 10*distance )
 
             if distance < 19.9 and ozObjIsDynamic() then
               dirX, dirY, dirZ = ozObjDirectionFromSelf()
