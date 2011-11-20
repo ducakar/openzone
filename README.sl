@@ -27,6 +27,7 @@ Space               - skoči
 levi klik           - sproži orožje
 desni klik          - uporabi označen predmet ali vstopi v označeno vozilo
 srednji klik        - zgrabi/spusti označen predmet
+q                   - zarotiraj predmet, ki ga trenutno držiš
 kolešček gor        - vrzi predmet, ki ga trenutno držiš
 kolešček dol        - pospravi izbran predmet v inventar
 

@@ -54,18 +54,19 @@ class Bot : public Dynamic
     static const int ACTION_USE               = 0x00000040;
     static const int ACTION_TAKE              = 0x00000080;
     static const int ACTION_GRAB              = 0x00000100;
-    static const int ACTION_THROW             = 0x00000200;
+    static const int ACTION_ROTATE            = 0x00000200;
+    static const int ACTION_THROW             = 0x00000400;
 
-    static const int ACTION_ATTACK            = 0x00000400;
-    static const int ACTION_EXIT              = 0x00000800;
-    static const int ACTION_EJECT             = 0x00001000;
-    static const int ACTION_SUICIDE           = 0x00002000;
+    static const int ACTION_ATTACK            = 0x00000800;
+    static const int ACTION_EXIT              = 0x00001000;
+    static const int ACTION_EJECT             = 0x00003000;
+    static const int ACTION_SUICIDE           = 0x00004000;
 
-    static const int ACTION_INV_USE           = 0x00004000;
-    static const int ACTION_INV_DROP          = 0x00008000;
-    static const int ACTION_INV_GRAB          = 0x00010000;
-    static const int ACTION_INV_TAKE          = 0x00020000;
-    static const int ACTION_INV_GIVE          = 0x00040000;
+    static const int ACTION_INV_USE           = 0x00008000;
+    static const int ACTION_INV_DROP          = 0x00020000;
+    static const int ACTION_INV_GRAB          = 0x00030000;
+    static const int ACTION_INV_TAKE          = 0x00040000;
+    static const int ACTION_INV_GIVE          = 0x00080000;
 
     static const int ACTION_VEH_UP            = 0x00100000;
     static const int ACTION_VEH_DOWN          = 0x00200000;

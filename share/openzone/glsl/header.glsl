@@ -102,8 +102,8 @@ vec4 skyLightColour( vec3 normal )
 
 vec4 specularColour( float specular, vec3 normal, vec3 toCamera )
 {
-  vec3  reflectedLight = reflect( oz_CaelumLight.dir, normal );
-  float factor = specular * max( dot( reflectedLight, toCamera ), 0.0 );
+  vec3 reflectedLight = reflect( oz_CaelumLight.dir, normal );
+  float factor = oz_Specular * specular * max( dot( reflectedLight, toCamera ), 0.0 );
   return vec4( factor * oz_CaelumLight.diffuse.rgb, 0.0 );
 }
 

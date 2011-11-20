@@ -435,6 +435,28 @@ class Vec3
       return Vec3( y*v.z - z*v.y, z*v.x - x*v.z, x*v.y - y*v.x );
     }
 
+    /**
+     * Spherical linear interpolation.
+     */
+    OZ_ALWAYS_INLINE
+    static Vec3 slerp( const Vec3& a, const Vec3& b, float t )
+    {
+      float angle = Math::acos( a.x*b.x + a.y*b.y + a.z*b.z );
+      float sine  = Math::sin( angle );
+
+      if( sine == 0.0f ) {
+        hard_assert( a * b > 0.0f );
+
+        return a;
+      }
+      else {
+        float alpha = Math::sin( ( 1.0f - t ) * angle ) / sine;
+        float beta  = Math::sin( t * angle ) / sine;
+
+        return alpha * a + beta * b;
+      }
+    }
+
 };
 
 }

@@ -311,7 +311,7 @@ InventoryMenu::InventoryMenu( const InventoryMenu* master_ ) :
     tagged( -1 ),
     scroll( 0 )
 {
-  x = ( camera.width - width ) / 2;
+  x = ( camera.uiWidth - width ) / 2;
 
   if( master != null ) {
     y = 8 + height + 8;

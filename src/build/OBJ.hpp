@@ -88,9 +88,9 @@ class OBJ
     static char* skipSpaces( char* pos );
     static char* readWord( char* pos );
 
-    bool readVertexData( char* pos );
-    bool readFace( char* pos, int part );
-    bool loadMaterials( const String& path );
+    void readVertexData( char* pos );
+    void readFace( char* pos, int part );
+    void loadMaterials( const String& path );
 
     void load();
     void save();

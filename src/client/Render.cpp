@@ -198,6 +198,8 @@ void Render::drawGeometry()
     glUniform4f( param.oz_Wind, 1.0f, 1.0f, WIND_FACTOR, windPhi );
   }
 
+  Mesh::reset();
+
   glEnable( GL_DEPTH_TEST );
 
   currentTime = SDL_GetTicks();
@@ -414,24 +416,10 @@ void Render::drawOrbis()
     glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
   }
   else if( doPostprocess ) {
-    tf.ortho();
-    tf.camera = Mat44::ID;
-
-    // downscale specular texture
-    shader.use( shader.plain );
-    tf.applyCamera();
-
-    uint dbos[] = { GL_COLOR_ATTACHMENT0 };
-
-    glBindFramebuffer( GL_FRAMEBUFFER, minSpecFrame );
-    glDrawBuffers( 1, dbos );
-
-    glBindTexture( GL_TEXTURE_2D, colourBuffer );
-
-    shape.fill( 0, 0, renderWidth / SPECULAR_MINIFICATION, renderHeight / SPECULAR_MINIFICATION );
-
-    // render
     glPopAttrib();
+
+    tf.ortho( camera.width, camera.height );
+    tf.camera = Mat44::ID;
 
     shader.use( shader.postprocess );
     tf.applyCamera();
@@ -439,13 +427,7 @@ void Render::drawOrbis()
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
     glBindTexture( GL_TEXTURE_2D, colourBuffer );
-    glActiveTexture( GL_TEXTURE1 );
-    glBindTexture( GL_TEXTURE_2D, minSpecBuffer );
-
     shape.fill( 0, 0, camera.width, camera.height );
-
-    glBindTexture( GL_TEXTURE_2D, 0 );
-    glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, 0 );
   }
 
@@ -778,8 +760,8 @@ void Render::init( bool isBuild )
 
     glBindTexture( GL_TEXTURE_2D, colourBuffer );
 
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
@@ -792,30 +774,6 @@ void Render::init( bool isBuild )
 
     glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer );
     glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourBuffer, 0 );
-
-    if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE ) {
-      throw Exception( "framebuffer creation failed" );
-    }
-
-    glGenFramebuffers( 1, &minSpecFrame );
-    glGenTextures( 1, &minSpecBuffer );
-
-    glBindTexture( GL_TEXTURE_2D, minSpecBuffer );
-
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB,
-                  renderWidth / SPECULAR_MINIFICATION, renderHeight / SPECULAR_MINIFICATION, 0,
-                  GL_RGB, GL_UNSIGNED_BYTE, null );
-
-    glBindTexture( GL_TEXTURE_2D, 0 );
-
-    glBindFramebuffer( GL_FRAMEBUFFER, minSpecFrame );
-
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, minSpecBuffer, 0 );
 
     if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE ) {
       throw Exception( "framebuffer creation failed" );
@@ -867,10 +825,8 @@ void Render::free( bool isBuild )
   }
   else if( doPostprocess ) {
     glDeleteFramebuffers( 1, &mainFrame );
-    glDeleteFramebuffers( 1, &minSpecFrame );
     glDeleteRenderbuffers( 1, &depthBuffer );
     glDeleteTextures( 1, &colourBuffer );
-    glDeleteTextures( 1, &minSpecBuffer );
   }
 
   ui::ui.free();

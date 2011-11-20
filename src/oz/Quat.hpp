@@ -91,17 +91,10 @@ class Quat : public Vec4
     {}
 
     /**
-     * Create quaternion from a 3D vector (the additional component is zero).
+     * Create quaternion from a four component vector.
      */
     OZ_ALWAYS_INLINE
     explicit Quat( const Vec4& v ) : Vec4( v )
-    {}
-
-    /**
-     * Create quaternion from a point (the additional component is one).
-     */
-    OZ_ALWAYS_INLINE
-    explicit Quat( const Vec3& v, float w ) : Vec4( v.x, v.y, v.z, w )
     {}
 
     /**
@@ -417,9 +410,24 @@ class Quat : public Vec4
     }
 
     /**
-     * Approximate interpolation of two similar rotations.
+     * Spherical linear interpolation between two rotations.
      */
-    static Quat fastSlerp( float t, const Quat& a, const Quat& b )
+    static Quat slerp( const Quat& a, const Quat& b, float t )
+    {
+      Quat d = *a ^ b;
+      float sine  = Math::sqrt( 1.0f - d.w*d.w );
+      float angle = 2.0f * Math::acos( d.w );
+
+      hard_assert( sine != 0.0f );
+
+      float k = 1.0f / sine;
+      return rotAxis( Vec3( d.x * k, d.y * k, d.z * k ), t * angle );
+    }
+
+    /**
+     * Approximate spherical linear interpolation between two similar rotations.
+     */
+    static Quat fastSlerp( const Quat& a, const Quat& b, float t )
     {
       Quat d = *a ^ b;
       float k = d.w < 0.0f ? -t : t;

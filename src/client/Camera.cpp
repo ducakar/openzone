@@ -244,27 +244,34 @@ void Camera::write( BufferStream* ostream ) const
 
 void Camera::init()
 {
-  width        = config.getSet( "screen.width",      0 );
-  height       = config.getSet( "screen.height",     0 );
-  centreX      = width / 2;
-  centreY      = height / 2;
+  width         = config.getSet( "screen.width",      0 );
+  height        = config.getSet( "screen.height",     0 );
+  centreX       = width  / 2;
+  centreY       = height / 2;
 
-  aspect       = config.getSet( "camera.aspect",     0.0f );
-  mouseXSens   = config.getSet( "camera.mouseXSens", 0.005f );
-  mouseYSens   = config.getSet( "camera.mouseYSens", 0.005f );
-  keyXSens     = config.getSet( "camera.keysXSens",  2.0f );
-  keyYSens     = config.getSet( "camera.keysYSens",  2.0f );
-  smoothCoef   = config.getSet( "camera.smoothCoef", 0.50f );
+  float uiScale = config.get( "ui.scale",             1.0f );
 
-  float angle  = Math::rad( config.getSet( "camera.angle", 80.0f ) );
+  uiWidth       = int( float( width  ) * uiScale + 0.5f );
+  uiHeight      = int( float( height ) * uiScale + 0.5f );
+  uiCentreX     = uiWidth  / 2;
+  uiCentreY     = uiHeight / 2;
 
-  aspect       = aspect != 0.0f ? aspect : float( width ) / float( height );
-  coeff        = Math::tan( angle / 2.0f );
-  horizPlane   = coeff * MIN_DISTANCE;
-  vertPlane    = aspect * horizPlane;
+  aspect        = config.getSet( "camera.aspect",     0.0f );
+  mouseXSens    = config.getSet( "camera.mouseXSens", 0.005f );
+  mouseYSens    = config.getSet( "camera.mouseYSens", 0.005f );
+  keyXSens      = config.getSet( "camera.keysXSens",  2.0f );
+  keyYSens      = config.getSet( "camera.keysYSens",  2.0f );
+  smoothCoef    = config.getSet( "camera.smoothCoef", 0.50f );
 
-  state        = NONE;
-  newState     = NONE;
+  float angle   = Math::rad( config.getSet( "camera.angle", 80.0f ) );
+
+  aspect        = aspect != 0.0f ? aspect : float( width ) / float( height );
+  coeff         = Math::tan( angle / 2.0f );
+  horizPlane    = coeff * MIN_DISTANCE;
+  vertPlane     = aspect * horizPlane;
+
+  state         = NONE;
+  newState      = NONE;
 
   strategicProxy.init();
   botProxy.init();

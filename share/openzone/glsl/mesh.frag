@@ -39,7 +39,7 @@ void main()
   vec4 specularSample = texture2D( oz_Textures[1], exTexCoord );
 
   vec4 diffuse  = skyLightColour( normal );
-  vec4 specular = specularColour( oz_Specular * specularSample.r, normal, normalize( toCamera ) );
+  vec4 specular = specularColour( specularSample.r, normal, normalize( toCamera ) );
 
   gl_FragData[0] = oz_Colour * colourSample * ( diffuse + specular );
   gl_FragData[0] = applyFog( gl_FragData[0], dist );

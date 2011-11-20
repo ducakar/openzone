@@ -73,7 +73,7 @@ void UI::draw()
 {
   OZ_GL_CHECK_ERROR();
 
-  tf.ortho();
+  tf.ortho( camera.uiWidth, camera.uiHeight );
   tf.camera = Mat44::ID;
 
   // set shaders
@@ -139,6 +139,10 @@ void UI::unload()
 
 void UI::init()
 {
+  float uiScale = config.getSet( "ui.scale", 1.0f );
+
+  glLineWidth( 1.0f / uiScale );
+
   mouse.init();
   mouse.load();
 
@@ -151,7 +155,7 @@ void UI::init()
   showBuild = config.getSet( "ui.showBuild", false );
   showDebug = config.getSet( "ui.showDebug", false );
 
-  root = new Area( camera.width, camera.height );
+  root = new Area( camera.uiWidth, camera.uiHeight );
   loadingScreen = new LoadingArea();
 
   root->add( loadingScreen );

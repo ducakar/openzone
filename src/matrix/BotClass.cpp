@@ -131,8 +131,8 @@ void BotClass::initClass( const Config* config )
 
   bobWalkInc        = Math::rad( config->get( "bobWalkInc", 300.0f ) ) * Timer::TICK_TIME;
   bobRunInc         = Math::rad( config->get( "bobRunInc", 600.0f ) ) * Timer::TICK_TIME;
-  bobSwimInc        = Math::rad( config->get( "bobSwimInc", 100.0f ) ) * Timer::TICK_TIME;
-  bobSwimRunInc     = Math::rad( config->get( "bobSwimRunInc", 200.0f ) ) * Timer::TICK_TIME;
+  bobSwimInc        = Math::rad( config->get( "bobSwimInc", 150.0f ) ) * Timer::TICK_TIME;
+  bobSwimRunInc     = Math::rad( config->get( "bobSwimRunInc", 300.0f ) ) * Timer::TICK_TIME;
   bobRotation       = Math::rad( config->get( "bobRotation", 0.35f ) );
   bobAmplitude      = config->get( "bobAmplitude", 0.02f );
   bobSwimAmplitude  = config->get( "bobSwimAmplitude", 0.05f );

@@ -53,8 +53,8 @@ Area::Area( int x_, int y_, int width_, int height_ ) :
     width( width_ ), height( height_ ), textWidth( 0 ),
     textHeight( Font::INFOS[Font::SANS].height )
 {
-  x = x < 0 ? camera.width  - width  + x : x;
-  y = y < 0 ? camera.height - height + y : y;
+  x = x < 0 ? camera.uiWidth  - width  + x : x;
+  y = y < 0 ? camera.uiHeight - height + y : y;
 }
 
 Area::~Area()

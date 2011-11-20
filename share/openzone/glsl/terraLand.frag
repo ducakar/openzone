@@ -33,14 +33,15 @@ varying vec3 exNormal;
 
 void main()
 {
-  vec3 toCamera = oz_CameraPosition - exPosition;
-  vec3 normal   = normalize( exNormal );
-  float dist    = length( toCamera );
+  vec3  toCamera = oz_CameraPosition - exPosition;
+  vec3  normal   = normalize( exNormal );
+  float dist     = length( toCamera );
 
-  vec4 colour   = texture2D( oz_Textures[0], exTexCoord * TERRA_DETAIL_SCALE );
-  vec4 map      = texture2D( oz_Textures[2], exTexCoord );
+  vec4 detailSample = texture2D( oz_Textures[0], exTexCoord * TERRA_DETAIL_SCALE );
+  vec4 mapSample    = texture2D( oz_Textures[2], exTexCoord );
 
-  gl_FragData[0] = colour * map;
-  gl_FragData[0] *= skyLightColour( normal );
+  vec4 diffuse  = skyLightColour( normal );
+
+  gl_FragData[0] = detailSample * mapSample * diffuse;
   gl_FragData[0] = applyFog( gl_FragData[0], dist );
 }

@@ -101,7 +101,7 @@ class System
     /**
      * Play a sound alert.
      *
-     * It runs <tt>paplay /usr/share/sounds/pop.wav &</tt>. <tt>paplay</tt> is part of PulseAudio
+     * Runs <tt>paplay /usr/share/sounds/pop.wav &</tt>. <tt>paplay</tt> is part of PulseAudio
      * server and <tt>pop.wav</tt> comes with KDE SC.
      */
     static void bell();

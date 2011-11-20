@@ -25,31 +25,49 @@
  * Postprocess pass.
  */
 
-const float BLOOM_SIZE      = 4.0;
-const float BLOOM_SPACING   = 0.0015;
+const int   MS_LEVEL         = 8;
+const float MS_SIZE          = 0.0075;
+
+const float BLOOM_INTENSITY  = 1.5;
+const float BLOOM_LUMINANCE  = 0.3;
+
+const float MS_DIM           = float( MS_LEVEL - 1 ) / 2.0;
+const float MS_SPACING       = MS_SIZE / float( MS_LEVEL - 1 );
+const float MS_SAMPLES       = float( 2 * MS_LEVEL );
+
+const float BLUR_FACTOR      = 1.0 / MS_SAMPLES;
+const float BLOOM_FACTOR     = BLOOM_INTENSITY / MS_SAMPLES;
+const float LUMINANCE_FACTOR = BLOOM_LUMINANCE / MS_SAMPLES;
 
 varying vec2 exTexCoord;
 
 void main()
 {
-  // bloom
-  vec4 bloom = vec4( 0.0 );
+  vec4 multiSample = vec4( 0.0 );
 
-  for( float x = -BLOOM_SIZE; x <= BLOOM_SIZE; ++x ) {
-    vec2 coords = vec2( exTexCoord.s + BLOOM_SPACING * x, exTexCoord.t );
-    vec4 sample = texture2D( oz_Textures[1], coords );
+  float x = -MS_DIM;
+  for( int i = 0; i < MS_LEVEL; ++i ) {
+    vec2 coords = vec2( exTexCoord.s + MS_SPACING * x, exTexCoord.t );
+    vec4 sample = texture2D( oz_Textures[0], coords );
 
-    bloom += sample;
+    multiSample += sample;
+    x += 1.0;
   }
-  for( float y = -BLOOM_SIZE; y <= BLOOM_SIZE; ++y ) {
-    vec2 coords = vec2( exTexCoord.s, exTexCoord.t + BLOOM_SPACING * y );
-    vec4 sample = texture2D( oz_Textures[1], coords );
 
-    bloom += sample;
+  float y = -MS_DIM;
+  for( int i = 0; i < MS_LEVEL; ++i ) {
+    vec2 coords = vec2( exTexCoord.s, exTexCoord.t + MS_SPACING * y );
+    vec4 sample = texture2D( oz_Textures[0], coords );
+
+    multiSample += sample;
+    y += 1.0;
   }
+
+  vec4  blur      = multiSample * BLUR_FACTOR;
+  vec4  bloom     = multiSample * BLOOM_FACTOR;
 
   vec4  sample    = texture2D( oz_Textures[0], exTexCoord );
-  float luminance = clamp( 0.010 * ( bloom.r + bloom.g + bloom.b ), 0.0, 1.0 );
+  float luminance = clamp( ( multiSample.r + multiSample.g + multiSample.b ) * LUMINANCE_FACTOR, 0.0, 1.0 );
 
-  gl_FragColor = mix( sample, bloom * 0.10, luminance );
+  gl_FragColor = mix( mix( sample, blur, 0 ), bloom, luminance );
 }

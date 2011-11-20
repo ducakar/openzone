@@ -38,27 +38,27 @@ namespace client
 const MD2::AnimInfo MD2::ANIM_LIST[] =
 {
   // first, last, repeat, fps
-  {   0,  39, 1,  9.0f },   // STAND
-  {  40,  45, 1, 10.0f },   // RUN
-  {  46,  53, 1, 16.0f },   // ATTACK
-  {  54,  57, 1,  7.0f },   // PAIN_A
-  {  58,  61, 1,  7.0f },   // PAIN_B
-  {  62,  65, 1,  7.0f },   // PAIN_C
-  {  67,  67, 0,  9.0f },   // JUMP
-  {  72,  83, 1,  7.0f },   // FLIP
-  {  84,  94, 1,  7.0f },   // SALUTE
-  {  95, 111, 1, 10.0f },   // FALLBACK
-  { 112, 122, 1,  7.0f },   // WAVE
-  { 123, 134, 1,  6.0f },   // POINT
-  { 135, 153, 1, 10.0f },   // CROUCH_STAND
-  { 154, 159, 1,  7.0f },   // CROUCH_WALK
-  { 160, 168, 1, 18.0f },   // CROUCH_ATTACK
-  { 169, 172, 1,  7.0f },   // CROUCH_PAIN
-  { 173, 177, 1,  5.0f },   // CROUCH_DEATH
-  { 178, 183, 0,  7.0f },   // DEATH_FALLBACK
-  { 184, 189, 0,  7.0f },   // DEATH_FALLFORWARD
-  { 190, 197, 0,  7.0f },   // DEATH_FALLBACKSLOW
-  {   0, 197, 1,  7.0f }    // FULL
+  {   0,  39,  true,  9.0f },   // STAND
+  {  40,  45,  true, 10.0f },   // RUN
+  {  46,  53,  true, 16.0f },   // ATTACK
+  {  54,  57,  true,  7.0f },   // PAIN_A
+  {  58,  61,  true,  7.0f },   // PAIN_B
+  {  62,  65,  true,  7.0f },   // PAIN_C
+  {  67,  67, false,  9.0f },   // JUMP
+  {  72,  83,  true,  7.0f },   // FLIP
+  {  84,  94,  true,  7.0f },   // SALUTE
+  {  95, 111,  true, 10.0f },   // FALLBACK
+  { 112, 122,  true,  7.0f },   // WAVE
+  { 123, 134,  true,  6.0f },   // POINT
+  { 135, 153,  true, 10.0f },   // CROUCH_STAND
+  { 154, 159,  true,  7.0f },   // CROUCH_WALK
+  { 160, 168,  true, 18.0f },   // CROUCH_ATTACK
+  { 169, 172,  true,  7.0f },   // CROUCH_PAIN
+  { 173, 177,  true,  5.0f },   // CROUCH_DEATH
+  { 178, 183, false,  7.0f },   // DEATH_FALLBACK
+  { 184, 189, false,  7.0f },   // DEATH_FALLFORWARD
+  { 190, 197, false,  7.0f },   // DEATH_FALLBACKSLOW
+  {   0, 197,  true,  7.0f }    // FULL
 };
 
 Vertex MD2::animBuffer[MAX_VERTS];
@@ -99,8 +99,8 @@ void MD2::advance( AnimState* anim, float dt ) const
     anim->currFrame = anim->nextFrame;
     ++anim->nextFrame;
 
-    if( anim->nextFrame > anim->endFrame ) {
-      anim->nextFrame = anim->repeat ? anim->startFrame : anim->endFrame;
+    if( anim->nextFrame > anim->lastFrame ) {
+      anim->nextFrame = anim->repeat ? anim->firstFrame : anim->lastFrame;
     }
   }
 }
@@ -167,8 +167,8 @@ void MD2::draw( const AnimState* anim ) const
     for( int i = 0; i < nFrameVertices; ++i ) {
       int j = int( vertices[i].pos[0] * float( nFramePositions - 1 ) + 0.5f );
 
-      Vec4 pos    = currFramePositions[j] + t * ( nextFramePositions[j] - currFramePositions[j] );
-      Vec4 normal = currFrameNormals[j]   + t * ( nextFrameNormals[j]   - currFrameNormals[j]   );
+      Vec4 pos    = Math::mix( currFramePositions[j], nextFramePositions[j], t );
+      Vec4 normal = Math::mix( currFrameNormals[j],   nextFrameNormals[j],   t );
 
       animBuffer[i].pos[0] = pos.x;
       animBuffer[i].pos[1] = pos.y;

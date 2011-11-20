@@ -49,10 +49,10 @@ Shader    shader;
 
 String Shader::defines;
 
-void Transform::ortho()
+void Transform::ortho( int width, int height )
 {
-  float cx = float( 2.0 / double( client::camera.width ) );
-  float cy = float( 2.0 / double( client::camera.height ) );
+  float cx = float( 2.0 / double( width ) );
+  float cy = float( 2.0 / double( height ) );
 
   proj = Mat44(    cx,  0.0f,  0.0f, 0.0f,
                  0.0f,    cy,  0.0f, 0.0f,

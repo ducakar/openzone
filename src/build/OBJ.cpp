@@ -53,53 +53,49 @@ char* OBJ::readWord( char* pos )
   return pos;
 }
 
-bool OBJ::readVertexData( char* pos )
+void OBJ::readVertexData( char* pos )
 {
-  // pos should point to char just after 'v'
+  // currently pos points to the char just after 'v'
 
   // vertex coords
   if( *pos == ' ' ) {
     ++pos;
 
     float x, y, z;
-    int nMatches = sscanf( pos, "%f %f %f", &x, &y, &z );
-
-    if( nMatches != 3 ) {
-      return false;
+    if( sscanf( pos, "%f %f %f", &x, &y, &z ) != 3 ) {
+      throw Exception( "Invalid OBJ vertex position specification" );
     }
+
     positions.add( Point3( x, y, z ) );
-    return true;
   }
   // vertex normal coords
   else if( *pos == 'n' ) {
     pos += 2;
 
     float x, y, z;
-    int nMatches = sscanf( pos, "%f %f %f", &x, &y, &z );
-
-    if( nMatches != 3 ) {
-      return false;
+    if( sscanf( pos, "%f %f %f", &x, &y, &z ) != 3 ) {
+      throw Exception( "Invalid OBJ vertex normal specification" );
     }
+
     normals.add( Vec3( x, y, z ) );
-    return true;
   }
   // vertex texture coords
   else if( *pos == 't' ) {
     pos += 2;
 
     float u, v;
-    int nMatches = sscanf( pos, "%f %f", &u, &v );
-
-    if( nMatches != 2 ) {
-      return false;
+    if( sscanf( pos, "%f %f", &u, &v ) != 2 ) {
+      throw Exception( "Invalid OBJ vertex texture coordinate specification" );
     }
+
     texCoords.add( TexCoord( u, v ) );
-    return true;
   }
-  return false;
+  else {
+    throw Exception( "Invalid OBJ vertex specification" );
+  }
 }
 
-bool OBJ::readFace( char* pos, int part )
+void OBJ::readFace( char* pos, int part )
 {
   char* end;
 
@@ -110,7 +106,7 @@ bool OBJ::readFace( char* pos, int part )
 
   int wordLength = int( end - pos );
   if( wordLength <= 0 ) {
-    return false;
+    throw Exception( "Invalid OBJ face specification" );
   }
 
   int firstSlash = -1;
@@ -135,7 +131,7 @@ bool OBJ::readFace( char* pos, int part )
   if( firstSlash == -1 ) {
     do {
       if( sscanf( pos, "%d", &vertIndex ) != 1 ) {
-        return false;
+        throw Exception( "Invalid OBJ face specification ('v')" );
       }
       face.vertices.add( FaceVertex( vertIndex - 1, -1, -1 ) );
 
@@ -148,7 +144,7 @@ bool OBJ::readFace( char* pos, int part )
   else if( lastSlash == -1 ) {
     do {
       if( sscanf( pos, "%d/%d", &vertIndex, &texCoordIndex ) != 2 ) {
-        return false;
+        throw Exception( "Invalid OBJ face specification ('v/t')" );
       }
       face.vertices.add( FaceVertex( vertIndex - 1, -1, texCoordIndex - 1 ) );
 
@@ -161,7 +157,7 @@ bool OBJ::readFace( char* pos, int part )
   else if( firstSlash + 1 == lastSlash ) {
     do {
       if( sscanf( pos, "%d//%d", &vertIndex, &normalIndex ) != 2 ) {
-        return false;
+        throw Exception( "Invalid OBJ face specification ('v//n')" );
       }
       face.vertices.add( FaceVertex( vertIndex - 1, normalIndex - 1, -1 ) );
 
@@ -174,7 +170,7 @@ bool OBJ::readFace( char* pos, int part )
   else {
     do {
       if( sscanf( pos, "%d/%d/%d", &vertIndex, &texCoordIndex, &normalIndex ) != 3 ) {
-        return false;
+        throw Exception( "Invalid OBJ face specification ('v/t/n')" );
       }
       face.vertices.add( FaceVertex( vertIndex - 1, normalIndex - 1, texCoordIndex - 1 ) );
 
@@ -185,20 +181,18 @@ bool OBJ::readFace( char* pos, int part )
   }
 
   if( face.vertices.length() < 3 ) {
-    return false;
+    throw Exception( "Invalid OBJ face, must have at least 3 vertices" );
   }
-
-  return true;
 }
 
-bool OBJ::loadMaterials( const String& path )
+void OBJ::loadMaterials( const String& path )
 {
   FILE* file;
   char buffer[LINE_BUFFER_SIZE];
 
   file = fopen( path + "/data.mtl", "r" );
   if( file == null ) {
-    return false;
+    throw Exception( "OBJ model must have a corresponding 'data.mtl' file." );
   }
 
   String mtlName;
@@ -256,7 +250,12 @@ bool OBJ::loadMaterials( const String& path )
           end = readWord( pos );
           *end = '\0';
 
-          part.texture = path + "/" + String( pos );
+          if( *pos != '/' ) {
+            part.texture = path + "/" + pos;
+          }
+          else {
+            part.texture = pos;
+          }
         }
         break;
       }
@@ -274,7 +273,6 @@ bool OBJ::loadMaterials( const String& path )
   }
 
   fclose( file );
-  return true;
 }
 
 void OBJ::load()
@@ -298,15 +296,11 @@ void OBJ::load()
 
   config.clear( true );
 
-  if( !loadMaterials( path ) ) {
-    log.printEnd( " Material loading failed" );
-    throw Exception( "OBJ model material loading error" );
-  }
+  loadMaterials( path );
 
   FILE* file = fopen( modelFile.cstr(), "r" );
   if( file == null ) {
-    log.printEnd( " No such file" );
-    throw Exception( "OBJ model loading error" );
+    throw Exception( "Cannot open OBJ data.obj file" );
   }
 
   DArray<char> buffer( LINE_BUFFER_SIZE );
@@ -320,18 +314,12 @@ void OBJ::load()
 
     switch( *pos ) {
       case 'v': {
-        if( !readVertexData( pos + 1 ) ) {
-          fclose( file );
-          throw Exception( "Invalid OBJ vertex line: %s", &buffer[0] );
-        }
+        readVertexData( pos + 1 );
         break;
       }
       // face
       case 'f': {
-        if( !readFace( pos + 1, currentMaterial ) ) {
-          fclose( file );
-          throw Exception( "Invalid OBJ face line: %s", &buffer[0] );
-        }
+        readFace( pos + 1, currentMaterial );
         break;
       }
       // usemtl
@@ -377,7 +365,7 @@ void OBJ::save()
   String destPath = path + ".ozcSMM";
 
   compiler.beginMesh();
-  compiler.enable( CAP_UNIQUE );
+//   compiler.enable( CAP_UNIQUE );
 
   for( int i = 0; i < parts.length(); ++i ) {
     compiler.texture( parts[i].texture );

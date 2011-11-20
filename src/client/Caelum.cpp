@@ -70,21 +70,21 @@ void Caelum::update()
   ratio = clamp( -dir.z + DAY_BIAS, 0.0f, 1.0f );
   float ratioDiff = ( 1.0f - Math::abs( 1.0f - 2.0f * ratio ) );
 
-  Colours::caelum[0] = NIGHT_COLOUR[0] + ratio * ( DAY_COLOUR[0] - NIGHT_COLOUR[0] ) + RED_COEF * ratioDiff;
-  Colours::caelum[1] = NIGHT_COLOUR[1] + ratio * ( DAY_COLOUR[1] - NIGHT_COLOUR[1] ) + GREEN_COEF * ratioDiff;
-  Colours::caelum[2] = NIGHT_COLOUR[2] + ratio * ( DAY_COLOUR[2] - NIGHT_COLOUR[2] ) + BLUE_COEF * ratioDiff;
+  Colours::caelum[0] = Math::mix( NIGHT_COLOUR[0], DAY_COLOUR[0], ratio ) + RED_COEF   * ratioDiff;
+  Colours::caelum[1] = Math::mix( NIGHT_COLOUR[1], DAY_COLOUR[1], ratio ) + GREEN_COEF * ratioDiff;
+  Colours::caelum[2] = Math::mix( NIGHT_COLOUR[2], DAY_COLOUR[2], ratio ) + BLUE_COEF  * ratioDiff;
   Colours::caelum[3] = 1.0f;
 
-  Colours::water[0] = NIGHT_COLOUR[0] + ratio * ( WATER_COLOUR[0] - NIGHT_COLOUR[0] );
-  Colours::water[1] = NIGHT_COLOUR[1] + ratio * ( WATER_COLOUR[1] - NIGHT_COLOUR[1] );
-  Colours::water[2] = NIGHT_COLOUR[2] + ratio * ( WATER_COLOUR[2] - NIGHT_COLOUR[2] );
-  Colours::water[3] = NIGHT_COLOUR[3] + ratio * ( WATER_COLOUR[3] - NIGHT_COLOUR[3] );
+  Colours::water[0] = Math::mix( NIGHT_COLOUR[0], WATER_COLOUR[0], ratio );
+  Colours::water[1] = Math::mix( NIGHT_COLOUR[1], WATER_COLOUR[1], ratio );
+  Colours::water[2] = Math::mix( NIGHT_COLOUR[2], WATER_COLOUR[2], ratio );
+  Colours::water[3] = Math::mix( NIGHT_COLOUR[3], WATER_COLOUR[3], ratio );
 
   lightDir = dir;
 
-  Colours::diffuse[0] = ratio + RED_COEF * ratioDiff;
+  Colours::diffuse[0] = ratio + RED_COEF   * ratioDiff;
   Colours::diffuse[1] = ratio + GREEN_COEF * ratioDiff;
-  Colours::diffuse[2] = ratio + BLUE_COEF * ratioDiff;
+  Colours::diffuse[2] = ratio + BLUE_COEF  * ratioDiff;
   Colours::diffuse[3] = 1.0f;
 
   Colours::ambient[0] = AMBIENT_COEF * Colours::diffuse[0];
@@ -100,9 +100,9 @@ void Caelum::draw()
   }
 
   float colour[4] = {
-    STAR_COLOUR[0] + ratio * ( DAY_COLOUR[0] - STAR_COLOUR[0] ),
-    STAR_COLOUR[1] + ratio * ( DAY_COLOUR[1] - STAR_COLOUR[1] ),
-    STAR_COLOUR[2] + ratio * ( DAY_COLOUR[2] - STAR_COLOUR[2] ),
+    Math::mix( STAR_COLOUR[0], DAY_COLOUR[0], ratio ),
+    Math::mix( STAR_COLOUR[1], DAY_COLOUR[1], ratio ),
+    Math::mix( STAR_COLOUR[2], DAY_COLOUR[2], ratio ),
     1.0f
   };
 
@@ -253,8 +253,8 @@ void Caelum::unload()
 
     Colours::diffuse = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
     Colours::ambient = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
-    Colours::caelum = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
-    Colours::water = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+    Colours::caelum  = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+    Colours::water   = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
 
     lightDir = Vec3( 0.0f, 0.0f, 1.0f );
 

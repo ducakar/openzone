@@ -55,8 +55,8 @@ Imago* MD2Imago::create( const Object* obj )
   imago->h     = bot->h;
 
   imago->setAnim( bot->anim );
-  imago->anim.nextFrame = imago->anim.endFrame;
-  imago->anim.currFrame = imago->anim.endFrame;
+  imago->anim.currFrame = imago->anim.lastFrame;
+  imago->anim.nextFrame = imago->anim.lastFrame;
 
   return imago;
 }
@@ -72,27 +72,12 @@ void MD2Imago::setAnim( Anim::Type type_ )
 
   anim.type       = type_;
   anim.repeat     = MD2::ANIM_LIST[type].repeat;
-  anim.startFrame = MD2::ANIM_LIST[type].firstFrame;
-  anim.endFrame   = MD2::ANIM_LIST[type].lastFrame;
-  anim.nextFrame  = anim.startFrame == anim.endFrame ? anim.endFrame : anim.startFrame + 1;
-
+  anim.firstFrame = MD2::ANIM_LIST[type].firstFrame;
+  anim.lastFrame  = MD2::ANIM_LIST[type].lastFrame;
+  anim.nextFrame  = anim.firstFrame == anim.lastFrame ? anim.firstFrame : anim.firstFrame + 1;
+  anim.fps        = MD2::ANIM_LIST[type].fps;
+  anim.frameTime  = 1.0f / anim.fps;
   anim.currTime   = 0.0f;
-
-  if( type_ == Anim::ATTACK ) {
-    const Bot*    bot    = static_cast<const Bot*>( obj );
-    const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
-
-    if( weapon != null ) {
-      const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
-
-      anim.fps       = MD2::ANIM_LIST[type].fps * 0.5f / clazz->shotInterval;
-      anim.frameTime = 1.0f / anim.fps;
-    }
-  }
-  else {
-    anim.fps       = MD2::ANIM_LIST[type].fps;
-    anim.frameTime = 1.0f / anim.fps;
-  }
 }
 
 void MD2Imago::draw( const Imago* parent, int mask )
@@ -112,6 +97,15 @@ void MD2Imago::draw( const Imago* parent, int mask )
     }
 
     md2->advance( &anim, timer.frameTime );
+
+    // a hack to keep animation in sync with weapon shotInterval
+    if( bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
+      const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
+
+      if( !weapon->events.isEmpty() ) {
+        anim.nextFrame = anim.firstFrame;
+      }
+    }
 
     if( !( bot->state & Bot::DEAD_BIT ) ) {
       if( bot->index == camera.bot && !camera.isExternal ) {

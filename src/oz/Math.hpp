@@ -380,6 +380,16 @@ class Math
     }
 
     /**
+     * Linear interpolation.
+     */
+    template <typename Value>
+    OZ_ALWAYS_INLINE
+    static Value mix( const Value& a, const Value& b, float t )
+    {
+      return a + t * ( b - a );
+    }
+
+    /**
      * Set seed for random generator.
      */
     static void seed( int n );

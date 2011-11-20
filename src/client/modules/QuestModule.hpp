@@ -48,7 +48,8 @@ struct Quest
   Point3 place;
   int    state;
 
-  Quest();
+  Quest() = default;
+
   explicit Quest( const char* title, const char* description, const Point3& place, int state );
 };
 

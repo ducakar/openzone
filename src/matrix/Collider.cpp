@@ -85,7 +85,7 @@ bool Collider::overlapsAABBBrush( const BSP::Brush* brush ) const
   for( int i = 0; i < brush->nSides; ++i ) {
     const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-    float offset = aabb.dim * plane.abs();
+    float offset = localDim * plane.abs();
     float dist   = startPos * plane - offset;
 
     result &= dist <= EPSILON;
@@ -115,7 +115,7 @@ bool Collider::overlapsAABBNode( int nodeIndex )
     const BSP::Node& node  = bsp->nodes[nodeIndex];
     const Plane&     plane = bsp->planes[node.plane];
 
-    float offset = aabb.dim * plane.abs() + 2.0f * EPSILON;
+    float offset = localDim * plane.abs() + 2.0f * EPSILON;
     float dist   = startPos * plane;
 
     if( dist > offset ) {
@@ -187,6 +187,7 @@ bool Collider::overlapsAABBOrbis()
           visitedBrushes.clearAll();
 
           startPos = str->toStructCS( aabb.p );
+          localDim = str->swapDimCS( aabb.dim );
           bsp      = str->bsp;
 
           if( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) {
@@ -248,6 +249,7 @@ bool Collider::overlapsAABBOrbisOSO()
           visitedBrushes.clearAll();
 
           startPos = str->toStructCS( aabb.p );
+          localDim = str->swapDimCS( aabb.dim );
           bsp      = str->bsp;
 
           if( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) {
@@ -282,7 +284,7 @@ bool Collider::overlapsEntityOrbisOO()
       for( const Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
         if( sObj->overlaps( trace ) ) {
           startPos = str->toStructCS( sObj->p ) - entity->offset;
-          aabb.dim = sObj->dim + Vec3( margin, margin, margin );
+          localDim = str->swapDimCS( sObj->dim + Vec3( margin, margin, margin ) );
 
           for( int i = 0; i < model->nBrushes; ++i ) {
             const BSP::Brush& brush = bsp->brushes[model->firstBrush + i];
@@ -470,7 +472,7 @@ void Collider::trimAABBBrush( const BSP::Brush* brush )
   for( int i = 0; i < brush->nSides; ++i ) {
     const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-    float offset    = aabb.dim * plane.abs();
+    float offset    = localDim * plane.abs();
     float startDist = startPos * plane - offset;
     float endDist   = endPos   * plane - offset;
 
@@ -509,7 +511,7 @@ void Collider::trimAABBWater( const BSP::Brush* brush )
   for( int i = 0; i < brush->nSides; ++i ) {
     const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-    float offset = aabb.dim * plane.abs();
+    float offset = localDim * plane.abs();
     float dist   = startPos * plane - offset;
 
     if( dist >= 0.0f ) {
@@ -540,7 +542,7 @@ void Collider::trimAABBLadder( const BSP::Brush* brush )
   for( int i = 0; i < brush->nSides; ++i ) {
     const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-    float offset = aabb.dim * plane.abs();
+    float offset = localDim * plane.abs();
     float dist   = startPos * plane - offset;
 
     if( dist > 0.0f ) {
@@ -580,7 +582,7 @@ void Collider::trimAABBNode( int nodeIndex )
     const BSP::Node& node  = bsp->nodes[nodeIndex];
     const Plane&     plane = bsp->planes[node.plane];
 
-    float offset    = aabb.dim * plane.abs() + 2.0f * EPSILON;
+    float offset    = localDim * plane.abs() + 2.0f * EPSILON;
     float startDist = startPos * plane;
     float endDist   = endPos   * plane;
 
@@ -750,6 +752,7 @@ void Collider::trimAABBOrbis()
 
           startPos = str->toStructCS( originalStartPos );
           endPos   = str->toStructCS( originalEndPos );
+          localDim = str->swapDimCS( aabb.dim );
           bsp      = str->bsp;
           entity   = null;
 
@@ -803,6 +806,7 @@ void Collider::getOrbisOverlaps( Vector<Object*>* objects, Vector<Struct*>* stru
             visitedBrushes.clearAll();
 
             startPos = str->toStructCS( aabb.p );
+            localDim = str->swapDimCS( aabb.dim );
             bsp      = str->bsp;
 
             if( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) {
@@ -869,7 +873,7 @@ void Collider::getEntityOverlaps( Vector<Object*>* objects )
       for( Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
         if( ( sObj->flags & mask ) && sObj->overlaps( trace ) ) {
           startPos = str->toStructCS( sObj->p ) - entity->offset;
-          aabb.dim = sObj->dim + Vec3( margin, margin, margin );
+          localDim = str->swapDimCS( sObj->dim + Vec3( margin, margin, margin ) );
 
           for( int i = 0; i < model->nBrushes; ++i ) {
             const BSP::Brush& brush = bsp->brushes[model->firstBrush + i];
@@ -883,6 +887,10 @@ void Collider::getEntityOverlaps( Vector<Object*>* objects )
     }
   }
 }
+
+//***********************************
+//*            PUBLIC               *
+//***********************************
 
 bool Collider::overlaps( const Point3& point, const Object* exclObj_ )
 {

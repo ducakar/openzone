@@ -279,7 +279,9 @@ void Struct::onDemolish()
   for( int i = 0; i < overlappingObjs.length(); ++i ) {
     Dynamic* dyn = static_cast<Dynamic*>( overlappingObjs[i] );
 
-    if( collider.overlaps( dyn->toAABB( -2.0f * EPSILON ), dyn ) ) {
+    if( ( dyn->flags & Object::SOLID_BIT ) &&
+        collider.overlaps( dyn->toAABB( -2.0f * EPSILON ), dyn ) )
+    {
       dyn->destroy();
     }
     else if( dyn->flags & Object::DYNAMIC_BIT ) {
@@ -291,7 +293,7 @@ void Struct::onDemolish()
   demolishing += DEMOLISH_SPEED / ( maxs.z - mins.z );
   p.z -= DEMOLISH_SPEED;
 
-  transf.w = p;
+  transf.w = Vec4( p );
 
   invTransf = ROTATIONS[4 - heading];
   invTransf.translate( Point3::ORIGIN - p );

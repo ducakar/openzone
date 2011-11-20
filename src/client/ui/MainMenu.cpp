@@ -105,8 +105,8 @@ static void exit( Button* sender )
 MainMenu::MainMenu() : Frame( 0, 0, 400, 450, OZ_APPLICATION_TITLE " v" OZ_APPLICATION_VERSION ),
     copyright( 10, 10, 380, 9, Font::SANS )
 {
-  x = ( camera.width - width ) / 2;
-  y = ( camera.height - height ) / 2;
+  x = ( camera.uiWidth  - width ) / 2;
+  y = ( camera.uiHeight - height ) / 2;
 
   copyright.setText( "OpenZone  Copyright © 2002-2011  Davorin Učakar\n\n%s",
       gettext( "This program comes with ABSOLUTELY NO WARRANTY. "
@@ -144,7 +144,7 @@ MainMenu::~MainMenu()
 void MainMenu::onDraw()
 {
   glUniform4f( param.oz_Colour, 0.1f, 0.1f, 0.1f, 1.0f );
-  shape.fill( 0, 0, camera.width, camera.height );
+  shape.fill( 0, 0, camera.uiWidth, camera.uiHeight );
 
   Frame::onDraw();
 

@@ -620,7 +620,7 @@ void Library::initMusic()
   File dir;
   DArray<File> dirList;
 
-  log.println( "music (*.oga, *.mp3 in 'music') {" );
+  log.println( "music (*.oga, *.ogg in 'music') {" );
   log.indent();
 
   dir.setPath( "music" );
@@ -630,7 +630,7 @@ void Library::initMusic()
     throw Exception( "Cannot open directory '%s'", dir.path() );
   }
   foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "oga" ) && !file->hasExtension( "mp3" ) ) {
+    if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) ) {
       continue;
     }
 
@@ -809,9 +809,9 @@ void Library::initClasses()
     }
 
     // fill allowedUsers for weapons
-    WeaponClass* weaponClazz = dynamic_cast<WeaponClass*>( objClazz );
+    if( objClazz->flags & Object::WEAPON_BIT ) {
+      WeaponClass* weaponClazz = static_cast<WeaponClass*>( objClazz );
 
-    if( weaponClazz != null ) {
       int underscore = weaponClazz->name.index( '_' );
       if( underscore == -1 ) {
         throw Exception( "Weapon class file must be named <botClass>_weapon.<weapon>.rc" );
@@ -844,15 +844,17 @@ void Library::initClasses()
           throw Exception( "Invalid weaponItem for '%s'", botClazz->name.cstr() );
         }
 
-        const ObjectClass* itemClazz = botClazz->defaultItems[botClazz->weaponItem];
         // we already checked it the previous loop it's non-null and a valid item
-        const WeaponClass* weaponClazz = dynamic_cast<const WeaponClass*>( itemClazz );
+        const ObjectClass* itemClazz = botClazz->defaultItems[botClazz->weaponItem];
 
-        if( weaponClazz == null ) {
+        if( !( itemClazz->flags & Object::WEAPON_BIT ) ) {
           throw Exception( "Default weapon of '%s' is of a non-weapon class",
                            botClazz->name.cstr() );
         }
-        else if( !weaponClazz->allowedUsers.contains( botClazz ) ) {
+
+        const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( itemClazz );
+
+        if( !weaponClazz->allowedUsers.contains( botClazz ) ) {
           throw Exception( "Default weapon of '%s' is not allowed for this bot class",
                            botClazz->name.cstr() );
         }
