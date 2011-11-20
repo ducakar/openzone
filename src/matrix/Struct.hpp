@@ -157,6 +157,13 @@ class Struct : public Bounds
      */
     Bounds toStructCS( const Bounds& bb ) const;
 
+    /**
+     * Rotate AABB::dim between structure and absolute coordinate system.
+     * @param bb
+     * @return
+     */
+    Vec3 swapDimCS( const Vec3& dim ) const;
+
     static Bounds rotate( const Bounds& in, Heading heading );
 
     void damage( float damage );
@@ -196,6 +203,12 @@ OZ_ALWAYS_INLINE
 inline Point3 Struct::toStructCS( const Point3& point ) const
 {
   return invTransf * point;
+}
+
+OZ_ALWAYS_INLINE
+inline Vec3 Struct::swapDimCS( const Vec3& dim ) const
+{
+  return heading & WEST_EAST_MASK ? Vec3( dim.y, dim.x, dim.z ) : dim;
 }
 
 OZ_ALWAYS_INLINE

@@ -44,17 +44,17 @@ class MD2
     {
       int   firstFrame;
       int   lastFrame;
-      int   repeat;
+      bool  repeat;
       float fps;
     };
 
     struct AnimState
     {
       Anim::Type type;
-      int   repeat;
+      bool  repeat;
 
-      int   startFrame;
-      int   endFrame;
+      int   firstFrame;
+      int   lastFrame;
       int   currFrame;
       int   nextFrame;
 

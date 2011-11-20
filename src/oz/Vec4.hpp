@@ -143,40 +143,6 @@ class Vec4 : public Vec3
 #endif
 
     /**
-     * Copy component form a 3D vector (the additional component is zero).
-     */
-    OZ_ALWAYS_INLINE
-    Vec4& operator = ( const Vec3& v )
-    {
-#ifdef OZ_SIMD
-      f4 = v.f4;
-#else
-      x = v.x;
-      y = v.y;
-      z = v.z;
-      w = 0.0f;
-#endif
-      return *this;
-    }
-
-    /**
-     * Copy component form a point (the additional component is one).
-     */
-    OZ_ALWAYS_INLINE
-    Vec4& operator = ( const Point3& v )
-    {
-#ifdef OZ_SIMD
-      f4 = v.f4;
-#else
-      x = v.x;
-      y = v.y;
-      z = v.z;
-      w = 1.0f;
-#endif
-      return *this;
-    }
-
-    /**
      * Equality.
      */
     OZ_ALWAYS_INLINE

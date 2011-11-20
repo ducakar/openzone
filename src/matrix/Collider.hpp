@@ -72,6 +72,7 @@ class Collider
 
     Point3 startPos;
     Point3 endPos;
+    Vec3   localDim;
 
     const Dynamic* obj;
     const Object* exclObj;

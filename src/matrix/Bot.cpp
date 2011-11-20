@@ -515,8 +515,8 @@ void Bot::onUpdate()
             p = raisedPos;
 
             if( collider.hit.ratio != 1.0f && collider.hit.normal.z >= Physics::FLOOR_NORMAL_Z ) {
-              momentum.x    *= ( 1.0f - Physics::LADDER_FRICTION );
-              momentum.y    *= ( 1.0f - Physics::LADDER_FRICTION );
+              momentum.x    *= 1.0f - Physics::LADDER_FRICTION;
+              momentum.y    *= 1.0f - Physics::LADDER_FRICTION;
               momentum.z    = max( momentum.z, clazz->climbMomentum );
 
               instrument    = -1;
@@ -688,6 +688,22 @@ void Bot::onUpdate()
         items.add( obj->index );
         obj->parent = index;
         synapse.cut( obj );
+      }
+    }
+  }
+  else if( actions & ~oldActions & ACTION_ROTATE ) {
+    if( state & GRAB_BIT ) {
+      Dynamic* dyn = static_cast<Dynamic*>( instrumentObj );
+
+      hard_assert( dyn->flags & DYNAMIC_BIT );
+
+      int  heading = dyn->flags & Object::HEADING_MASK;
+      AABB aabb    = AABB( dyn->p, Vec3( dyn->dim.y, dyn->dim.x, dyn->dim.z ) );
+
+      if( !collider.overlaps( aabb, dyn ) ) {
+        dyn->dim = aabb.dim;
+        dyn->flags &= ~Object::HEADING_MASK;
+        dyn->flags |= ( heading + 1 ) % 4;
       }
     }
   }

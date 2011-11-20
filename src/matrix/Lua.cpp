@@ -769,7 +769,7 @@ int Lua::ozOrbisTryAddObj( lua_State* l )
 
   AABB aabb = AABB( p, clazz->dim );
 
-  if( heading == WEST || heading == EAST ) {
+  if( heading & WEST_EAST_MASK ) {
     swap( aabb.dim.x, aabb.dim.y );
   }
 

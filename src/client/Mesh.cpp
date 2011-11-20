@@ -168,6 +168,13 @@ void Vertex::setFormat()
 #endif
 }
 
+const Mesh* Mesh::lastMesh = null;
+
+void Mesh::reset()
+{
+  lastMesh = null;
+}
+
 Mesh::Mesh() : vao( 0 )
 {}
 
@@ -337,13 +344,15 @@ void Mesh::unmap() const
 
 void Mesh::bind() const
 {
+  if( this != lastMesh ) {
 # ifdef OZ_GL_COMPATIBLE
-  glBindBuffer( GL_ARRAY_BUFFER, vbo );
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-  Vertex::setFormat();
+    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+    Vertex::setFormat();
 # else
-  glBindVertexArray( vao );
+    glBindVertexArray( vao );
 # endif
+  }
 }
 
 void Mesh::drawComponent( int id, int mask ) const
@@ -386,13 +395,15 @@ void Mesh::draw( int mask ) const
     return;
   }
 
+  if( this != lastMesh ) {
 # ifdef OZ_GL_COMPATIBLE
-  glBindBuffer( GL_ARRAY_BUFFER, vbo );
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-  Vertex::setFormat();
+    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+    Vertex::setFormat();
 # else
-  glBindVertexArray( vao );
+    glBindVertexArray( vao );
 # endif
+  }
 
   for( int i = 0; i < nParts; ++i ) {
     const Part& part = parts[i];

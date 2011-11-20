@@ -257,6 +257,9 @@ void BotProxy::update()
     if( ui::mouse.middleClick ) {
       bot->actions |= Bot::ACTION_GRAB;
     }
+    if( keys[SDLK_q] && !oldKeys[SDLK_q] ) {
+      bot->actions |= Bot::ACTION_ROTATE;
+    }
   }
 }
 

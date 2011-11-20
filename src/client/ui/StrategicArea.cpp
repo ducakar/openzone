@@ -90,10 +90,10 @@ bool StrategicArea::projectBounds( Span* span, const AABB& bb ) const
     return false;
   }
 
-  span->minX = camera.centreX + int( minX + 0.5f );
-  span->minY = camera.centreY + int( minY + 0.5f );
-  span->maxX = camera.centreX + int( maxX + 0.5f );
-  span->maxY = camera.centreY + int( maxY + 0.5f );
+  span->minX = camera.uiCentreX + int( minX + 0.5f );
+  span->minY = camera.uiCentreY + int( minY + 0.5f );
+  span->maxX = camera.uiCentreX + int( maxX + 0.5f );
+  span->maxY = camera.uiCentreY + int( maxY + 0.5f );
 
   return true;
 }
@@ -119,7 +119,7 @@ void StrategicArea::printName( int baseX, int baseY, const char* s, ... )
   int width = text->w;
   int height = text->h;
 
-  if( x < 0 || x + width >= camera.width - 1 || y < 1 || y + height >= camera.height ) {
+  if( x < 0 || x + width >= camera.uiWidth - 1 || y < 1 || y + height >= camera.uiHeight ) {
     SDL_FreeSurface( text );
     return;
   }
@@ -263,8 +263,8 @@ void StrategicArea::onUpdate()
 
 bool StrategicArea::onMouseEvent()
 {
-  Vec3 at = Vec3( float( mouse.x - camera.centreX ) * pixelStep * 100.0f,
-                  float( mouse.y - camera.centreY ) * pixelStep * 100.0f,
+  Vec3 at = Vec3( float( mouse.x - camera.uiCentreX ) * pixelStep * 100.0f,
+                  float( mouse.y - camera.uiCentreY ) * pixelStep * 100.0f,
                   -100.0f );
 
   at = camera.rotMat * at;
@@ -352,7 +352,8 @@ void StrategicArea::onDraw()
   }
 }
 
-StrategicArea::StrategicArea() : Area( camera.width, camera.height ), hoverStr( -1 ), hoverObj( -1 )
+StrategicArea::StrategicArea() :
+    Area( camera.uiWidth, camera.uiHeight ), hoverStr( -1 ), hoverObj( -1 )
 {
   flags = UPDATE_BIT | PINNED_BIT;
 
@@ -362,7 +363,7 @@ StrategicArea::StrategicArea() : Area( camera.width, camera.height ), hoverStr( 
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
   glBindTexture( GL_TEXTURE_2D, 0 );
 
-  pixelStep = camera.coeff / float( camera.height / 2 );
+  pixelStep = camera.coeff / float( height / 2 );
   stepPixel = 1.0f / pixelStep;
 }
 

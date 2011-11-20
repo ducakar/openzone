@@ -45,7 +45,7 @@ void main()
   vec4 firstNormal    = texture2D( oz_Textures[3], vec2( inPosition.x, oz_MD2Anim[0] ) );
   vec4 secondNormal   = texture2D( oz_Textures[3], vec2( inPosition.x, oz_MD2Anim[1] ) );
   vec4 localPosition  = mix( firstPosition, secondPosition, oz_MD2Anim[2] );
-  vec4 localNormal    = normalize( mix( firstNormal, secondNormal, oz_MD2Anim[2] ) );
+  vec4 localNormal    = mix( firstNormal, secondNormal, oz_MD2Anim[2] );
 
   gl_Position   = oz_Transform.complete * localPosition;
   exPosition    = ( oz_Transform.model * localPosition ).xyz;

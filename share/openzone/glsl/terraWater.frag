@@ -33,14 +33,14 @@ varying vec2 exTexCoord;
 
 void main()
 {
-  vec3 toCamera = oz_CameraPosition - exPosition;
-  float dist    = length( toCamera );
+  vec3  toCamera = oz_CameraPosition - exPosition;
+  float dist     = length( toCamera );
 
   vec4 colourSample   = texture2D( oz_Textures[0], exTexCoord * TERRA_WATER_SCALE );
   vec4 specularSample = texture2D( oz_Textures[1], exTexCoord * TERRA_WATER_SCALE );
 
   vec4 diffuse  = skyLightColour( NORMAL );
-  vec4 specular = specularColour( oz_Specular, NORMAL, toCamera / dist );
+  vec4 specular = specularColour( 1.0, NORMAL, toCamera / dist );
 
   gl_FragData[0] = vec4( colourSample.xyz, 0.75 ) * ( diffuse + specular );
   gl_FragData[0] = applyFog( gl_FragData[0], dist );

@@ -27,6 +27,7 @@ Space               - jump
 left click          - trigger equipped weapon
 right click         - use tagged object or enter tagged vehicle
 middle click        - grab/drop tagged object
+q                   - rotate object you are currently holding
 wheel up            - throw object you are currently holding
 wheel down          - put tagged object into inventory
 

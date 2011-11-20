@@ -77,15 +77,15 @@ void Mouse::update()
     int desiredX = x + relX;
     int desiredY = y + relY;
 
-    x = clamp( desiredX, 0, camera.width - 1 );
-    y = clamp( desiredY, 0, camera.height - 1 );
+    x = clamp( desiredX, 0, camera.uiWidth  - 1 );
+    y = clamp( desiredY, 0, camera.uiHeight - 1 );
 
     overEdgeX = x != desiredX ? desiredX - x : 0;
     overEdgeY = y != desiredY ? desiredY - y : 0;
   }
   else {
-    x = camera.centreX;
-    y = camera.centreY;
+    x = camera.uiCentreX;
+    y = camera.uiCentreY;
 
     overEdgeX = relX;
     overEdgeY = relY;
@@ -160,8 +160,8 @@ void Mouse::init()
   accelFactor = config.getSet( "mouse.accelFactor", 0.05f );
   icon        = ARROW;
 
-  x = camera.centreX;
-  y = camera.centreY;
+  x = camera.uiCentreX;
+  y = camera.uiCentreY;
   relX = 0;
   relY = 0;
   relZ = 0;

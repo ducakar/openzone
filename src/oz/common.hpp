@@ -263,10 +263,10 @@ struct Simd
      */
     struct
     {
-      float x;   ///< X component.
-      float y;   ///< Y component.
-      float z;   ///< Z component.
-      float w;   ///< W component.
+      float x; ///< X component.
+      float y; ///< Y component.
+      float z; ///< Z component.
+      float w; ///< W component.
     };
 
     /**
@@ -274,10 +274,10 @@ struct Simd
      */
     struct
     {
-      float nx;  ///< X component of the normal.
-      float ny;  ///< Y component of the normal.
-      float nz;  ///< Z component of the normal.
-      float d;   ///< Distance from origin.
+      float nx; ///< X component of the normal.
+      float ny; ///< Y component of the normal.
+      float nz; ///< Z component of the normal.
+      float d;  ///< Distance from origin.
     };
   };
 
@@ -307,6 +307,7 @@ struct Simd
   Simd( float4 f4_ ) : f4( f4_ )
   {}
 };
+
 #endif
 
 //***********************************

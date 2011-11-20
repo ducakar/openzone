@@ -89,6 +89,8 @@ class Mesh
       int   firstIndex;
     };
 
+    static const Mesh* lastMesh;
+
     uint         vao;
     uint         vbo;
     uint         ibo;
@@ -99,6 +101,8 @@ class Mesh
     DArray<int>  texIds;
 
   public:
+
+    static void reset();
 
     Mesh();
     ~Mesh();

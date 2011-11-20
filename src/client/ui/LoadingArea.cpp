@@ -38,8 +38,8 @@ namespace client
 namespace ui
 {
 
-LoadingArea::LoadingArea() : Area( camera.width, camera.height ),
-    status( camera.width / 2, camera.height / 5, ALIGN_CENTRE, Font::LARGE, " " )
+LoadingArea::LoadingArea() : Area( camera.uiWidth, camera.uiHeight ),
+    status( width / 2, height / 5, ALIGN_CENTRE, Font::LARGE, " " )
 {
   flags = PINNED_BIT;
 }
@@ -50,7 +50,7 @@ LoadingArea::~LoadingArea()
 void LoadingArea::onDraw()
 {
   glUniform4f( param.oz_Colour, 0.1f, 0.1f, 0.1f, 1.0f );
-  fill( 0, 0, camera.width, camera.height );
+  fill( 0, 0, width, height );
 
   status.draw( this );
 }

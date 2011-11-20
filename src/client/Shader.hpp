@@ -89,7 +89,7 @@ class Transform
       model = stack.popLast();
     }
 
-    void ortho();
+    void ortho( int width, int height );
     void projection();
 
     void applyCamera();

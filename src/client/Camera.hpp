@@ -100,6 +100,11 @@ class Camera
     int    centreX;
     int    centreY;
 
+    int    uiWidth;
+    int    uiHeight;
+    int    uiCentreX;
+    int    uiCentreY;
+
     float  coeff;
     float  aspect;
     float  vertPlane;
@@ -142,7 +147,7 @@ class Camera
 
     void move( const Point3& pos )
     {
-      p    = pos + smoothCoef * ( oldP - pos );
+      p    = Math::mix( oldP, pos, smoothCoef );
       newP = pos;
       oldP = p;
     }
@@ -158,7 +163,7 @@ class Camera
     {
       p.x  = pos.x;
       p.y  = pos.y;
-      p.z  = pos.z + smoothCoef * ( oldP.z - pos.z );
+      p.z  = Math::mix( oldP.z, pos.z, smoothCoef );
       newP = pos;
       oldP = p;
     }

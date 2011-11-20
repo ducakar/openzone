@@ -25,8 +25,8 @@
 
 #include "Math.hpp"
 
-#include <cmath>
 #include <cfloat>
+#include <cmath>
 #include <cstdlib>
 
 namespace oz

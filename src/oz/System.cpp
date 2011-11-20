@@ -106,6 +106,9 @@ void System::catchSignals()
 void System::resetSignals()
 {}
 
+void System::bell()
+{}
+
 void System::trap()
 {}
 

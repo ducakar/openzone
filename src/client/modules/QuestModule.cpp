@@ -40,9 +40,6 @@ namespace client
 
 QuestModule questModule;
 
-Quest::Quest()
-{}
-
 Quest::Quest( const char* title_, const char* description_, const Point3& place_, int state_ ) :
     title( title_ ), description( description_ ), place( place_ ), state( state_ )
 {}
