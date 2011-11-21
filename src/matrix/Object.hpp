@@ -202,6 +202,9 @@ class Object : public AABB
     static const int EVENT_USE      = 2;
     static const int EVENT_DAMAGE   = 3;
     static const int EVENT_HIT      = 4;
+    static const int EVENT_SPLASH   = 5;
+    // EVENT_FRICTING not in use, but only reserves a slot for friction sound
+    static const int EVENT_FRICTING = 6;
 
     struct Event
     {

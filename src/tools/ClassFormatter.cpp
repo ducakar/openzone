@@ -745,8 +745,8 @@ void ClassFormatter::writeCommon() const
              hitSample == -1 ? "" : library.sounds[hitSample].name.cstr() );
 
     if( clazz->flags & Object::DYNAMIC_BIT ) {
-      int splashSample   = clazz->audioSounds[Dynamic::EVENT_SPLASH];
-      int frictingSample = clazz->audioSounds[Dynamic::EVENT_FRICTING];
+      int splashSample   = clazz->audioSounds[Object::EVENT_SPLASH];
+      int frictingSample = clazz->audioSounds[Object::EVENT_FRICTING];
 
       fprintf( fs, "audioSound.splash       \"%s\"\n",
                splashSample == -1 ? "" : library.sounds[splashSample].name.cstr() );

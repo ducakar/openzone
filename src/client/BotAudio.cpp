@@ -56,41 +56,50 @@ void BotAudio::play( const Audio* parent )
   const Bot* bot = static_cast<const Bot*>( obj );
   const int ( &sounds )[ObjectClass::MAX_SOUNDS] = obj->clazz->audioSounds;
 
-  int objFlags = oldFlags[0] | oldFlags[1] | obj->flags;
-  oldFlags[timer.ticks % 2] = obj->flags;
-
-  // friction
-  if( parent == null &&
-      ( objFlags & ( Object::DYNAMIC_BIT | Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) ==
-      ( Object::DYNAMIC_BIT | Object::FRICTING_BIT ) && sounds[Dynamic::EVENT_FRICTING] != -1 )
-  {
-    float dvx = bot->velocity.x;
-    float dvy = bot->velocity.y;
-
-    if( bot->lower != -1 ) {
-      const Dynamic* sDyn = static_cast<const Dynamic*>( orbis.objects[bot->lower] );
-
-      if( sDyn != null ) {
-        dvx -= sDyn->velocity.x;
-        dvy -= sDyn->velocity.y;
-      }
-    }
-
-    playContSound( sounds[Dynamic::EVENT_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), obj, obj );
+  for( int i = 0; i < ObjectClass::MAX_SOUNDS; ++i ) {
+    recent[i] = max( recent[i] - 1, 0 );
   }
 
   // events
-  for( const Object::Event* event = obj->events.first(); event != null; event = event->next[0] ) {
+  foreach( event, obj->events.citer() ) {
     hard_assert( event->id < ObjectClass::MAX_SOUNDS );
 
     if( event->id >= 0 && sounds[event->id] != -1 ) {
       hard_assert( 0.0f <= event->intensity );
 
-      if( event->id == Object::EVENT_DAMAGE && ( bot->state & Bot::DEAD_BIT ) ) {
-        continue;
+      if( recent[event->id] == 0 ) {
+        recent[event->id] = RECENT_TICKS;
+
+        if( event->id != Object::EVENT_DAMAGE || !( bot->state & Bot::DEAD_BIT ) ) {
+          playSound( sounds[event->id], event->intensity, obj, parent == null ? obj : parent->obj );
+        }
+      }
+    }
+  }
+
+  // friction
+  if( parent == null &&
+      ( obj->flags & ( Object::DYNAMIC_BIT | Object::ON_SLICK_BIT ) ) == Object::DYNAMIC_BIT &&
+      sounds[Object::EVENT_FRICTING] != -1 )
+  {
+    const Dynamic* dyn = static_cast<const Dynamic*>( obj );
+
+    if( recent[Object::EVENT_FRICTING] != 0 || ( dyn->flags & Object::FRICTING_BIT ) ) {
+      recent[Object::EVENT_FRICTING] = RECENT_TICKS;
+
+      float dvx = dyn->velocity.x;
+      float dvy = dyn->velocity.y;
+
+      if( dyn->lower != -1 ) {
+        const Dynamic* sDyn = static_cast<const Dynamic*>( orbis.objects[dyn->lower] );
+
+        if( sDyn != null ) {
+          dvx -= sDyn->velocity.x;
+          dvy -= sDyn->velocity.y;
+        }
       }
 
-      playSound( sounds[event->id], event->intensity, obj, parent == null ? obj : parent->obj );
+      playContSound( sounds[Object::EVENT_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), dyn, dyn );
     }
   }
 

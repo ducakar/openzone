@@ -39,6 +39,7 @@ class BotProxy : public Proxy
 {
   private:
 
+    static const float THIRD_PERSON_DIST;
     // leave this much space between obstacle and camera, if camera is brought closer to the eyes
     // because of an obstacle
     static const float THIRD_PERSON_CLIP_DIST;
@@ -48,9 +49,6 @@ class BotProxy : public Proxy
     ui::InfoFrame*     infoFrame;
     ui::InventoryMenu* inventory;
     ui::InventoryMenu* container;
-
-    // how far behind the eyes the camera should be
-    float externalDistFactor;
 
     float bobPhi;
     float bobTheta;

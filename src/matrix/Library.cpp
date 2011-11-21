@@ -177,18 +177,12 @@ void Library::freeBSPs()
 
 void Library::initShaders()
 {
-  File dir;
-  DArray<File> dirList;
-
   log.println( "shaders (*.vert/*.frag in 'glsl') {" );
   log.indent();
 
-  dir.setPath( "glsl" );
-  if( !dir.ls( &dirList ) ) {
-    free();
+  File dir( "glsl" );
+  DArray<File> dirList = dir.ls();
 
-    throw Exception( "Cannot open directory '%s'", dir.path() );
-  }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "vert" ) ) {
       continue;
@@ -201,7 +195,6 @@ void Library::initShaders()
     shaderIndices.add( name, shaders.length() );
     shaders.add( Resource( name, "" ) );
   }
-  dirList.dealloc();
 
   log.unindent();
   log.println( "}" );
@@ -209,32 +202,19 @@ void Library::initShaders()
 
 void Library::initTextures()
 {
-  File dir;
-  File subDir;
-  DArray<File> dirList;
-  DArray<File> subDirList;
-
   log.println( "textures (*.ozcTex in 'bsp/*') {" );
   log.indent();
 
-  dir.setPath( "bsp" );
+  File dir( "bsp" );
+  DArray<File> dirList = dir.ls();
 
-  if( !dir.ls( &dirList ) ) {
-    free();
-
-    throw Exception( "Cannot open directory '%s'", dir.path() );
-  }
   foreach( file, dirList.iter() ) {
     if( file->getType() != File::DIRECTORY ) {
       continue;
     }
 
-    subDir.setPath( file->path() );
-    if( !subDir.ls( &subDirList ) ) {
-      free();
-
-      throw Exception( "Cannot open directory '%s'", subDir.path() );
-    }
+    File subDir( file->path() );
+    DArray<File> subDirList = subDir.ls();
 
     foreach( file, subDirList.citer() ) {
       if( !file->hasExtension( "ozcTex" ) ) {
@@ -248,7 +228,6 @@ void Library::initTextures()
       textureIndices.add( name, textures.length() );
       textures.add( Resource( name, file->path() ) );
     }
-    subDirList.dealloc();
   }
 
   log.unindent();
@@ -257,31 +236,19 @@ void Library::initTextures()
 
 void Library::initBuildTextures()
 {
-  File dir;
-  File subDir;
-  DArray<File> dirList;
-  DArray<File> subDirList;
-
   log.println( "textures (*.png, *.jpeg, *.jpg in 'data/textures/*') {" );
   log.indent();
 
-  dir.setPath( "data/textures" );
-  if( !dir.ls( &dirList ) ) {
-    free();
+  File dir( "data/textures" );
+  DArray<File> dirList = dir.ls();
 
-    throw Exception( "Cannot open directory '%s'", dir.path() );
-  }
   foreach( file, dirList.iter() ) {
     if( file->getType() != File::DIRECTORY ) {
       continue;
     }
 
-    subDir.setPath( file->path() );
-    if( !subDir.ls( &subDirList ) ) {
-      free();
-
-      throw Exception( "Cannot open directory '%s'", subDir.path() );
-    }
+    File subDir( file->path() );
+    DArray<File> subDirList = subDir.ls();
 
     foreach( file, subDirList.citer() ) {
       if( !file->hasExtension( "png" ) && !file->hasExtension( "jpeg" ) &&
@@ -301,7 +268,6 @@ void Library::initBuildTextures()
       textureIndices.add( name, textures.length() );
       textures.add( Resource( name, file->path() ) );
     }
-    subDirList.dealloc();
   }
 
   log.unindent();
@@ -310,31 +276,19 @@ void Library::initBuildTextures()
 
 void Library::initSounds()
 {
-  File dir;
-  File subDir;
-  DArray<File> dirList;
-  DArray<File> subDirList;
-
   log.println( "sounds (*.wav in 'snd') {" );
   log.indent();
 
-  dir.setPath( "snd" );
-  if( !dir.ls( &dirList ) ) {
-    free();
+  File dir( "snd" );
+  DArray<File> dirList = dir.ls();
 
-    throw Exception( "Cannot open directory '%s'", dir.path() );
-  }
   foreach( file, dirList.iter() ) {
     if( file->getType() != File::DIRECTORY ) {
       continue;
     }
 
-    subDir.setPath( file->path() );
-    if( !subDir.ls( &subDirList ) ) {
-      free();
-
-      throw Exception( "Cannot open directory '%s'", subDir.path() );
-    }
+    File subDir( file->path() );
+    DArray<File> subDirList = subDir.ls();
 
     foreach( file, subDirList.citer() ) {
       if( !file->hasExtension( "wav" ) ) {
@@ -348,9 +302,7 @@ void Library::initSounds()
       soundIndices.add( name, sounds.length() );
       sounds.add( Resource( name, file->path() ) );
     }
-    subDirList.dealloc();
   }
-  dirList.dealloc();
 
   log.unindent();
   log.println( "}" );
@@ -358,18 +310,12 @@ void Library::initSounds()
 
 void Library::initCaela()
 {
-  File dir;
-  DArray<File> dirList;
-
   log.println( "Caela (*.ozcCaelum in 'caelum') {" );
   log.indent();
 
-  dir.setPath( "caelum" );
-  if( !dir.ls( &dirList ) ) {
-    free();
+  File dir( "caelum" );
+  DArray<File> dirList = dir.ls();
 
-    throw Exception( "Cannot open directory '%s'", dir.path() );
-  }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozcCaelum" ) ) {
       continue;
@@ -389,18 +335,12 @@ void Library::initCaela()
 
 void Library::initBuildCaela()
 {
-  File dir;
-  DArray<File> dirList;
-
   log.println( "Caela (*.rc in 'caelum') {" );
   log.indent();
 
-  dir.setPath( "caelum" );
-  if( !dir.ls( &dirList ) ) {
-    free();
+  File dir( "caelum" );
+  DArray<File> dirList = dir.ls();
 
-    throw Exception( "Cannot open directory '%s'", dir.path() );
-  }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
       continue;
@@ -413,7 +353,6 @@ void Library::initBuildCaela()
     caelumIndices.add( name, caela.length() );
     caela.add( Resource( name, file->path() ) );
   }
-  dirList.dealloc();
 
   log.unindent();
   log.println( "}" );
@@ -421,18 +360,12 @@ void Library::initBuildCaela()
 
 void Library::initTerrae()
 {
-  File dir;
-  DArray<File> dirList;
-
   log.println( "Terrae (*.ozTerra/*.ozcTerra in 'terra') {" );
   log.indent();
 
-  dir.setPath( "terra" );
-  if( !dir.ls( &dirList) ) {
-    free();
+  File dir( "terra" );
+  DArray<File> dirList = dir.ls();
 
-    throw Exception( "Cannot open directory '%s'", dir.path() );
-  }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozTerra" ) ) {
       continue;
@@ -452,18 +385,12 @@ void Library::initTerrae()
 
 void Library::initBuildTerrae()
 {
-  File dir;
-  DArray<File> dirList;
-
   log.println( "Terrains (*.rc in 'terra') {" );
   log.indent();
 
-  dir.setPath( "terra" );
-  if( !dir.ls( &dirList ) ) {
-    free();
+  File dir( "terra" );
+  DArray<File> dirList = dir.ls();
 
-    throw Exception( "Cannot open directory '%s'", dir.path() );
-  }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
       continue;
@@ -483,18 +410,12 @@ void Library::initBuildTerrae()
 
 void Library::initBSPs()
 {
-  File dir;
-  DArray<File> dirList;
-
   log.println( "BSP structures (*.ozBSP/*.ozcBSP in 'bsp') {" );
   log.indent();
 
-  dir.setPath( "bsp" );
-  if( !dir.ls( &dirList ) ) {
-    free();
+  File dir( "bsp" );
+  DArray<File> dirList = dir.ls();
 
-    throw Exception( "Cannot open directory '%s'", dir.path() );
-  }
   foreach( file, dirList.iter() ) {
     if( !file->hasExtension( "ozBSP" ) ) {
       continue;
@@ -516,18 +437,12 @@ void Library::initBSPs()
 
 void Library::initBuildBSPs()
 {
-  File dir;
-  DArray<File> dirList;
-
   log.println( "BSP structures (*.rc in 'data/maps') {" );
   log.indent();
 
-  dir.setPath( "data/maps" );
-  if( !dir.ls( &dirList ) ) {
-    free();
+  File dir( "data/maps" );
+  DArray<File> dirList = dir.ls();
 
-    throw Exception( "Cannot open directory '%s'", dir.path() );
-  }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
       continue;
@@ -548,18 +463,12 @@ void Library::initBuildBSPs()
 
 void Library::initModels()
 {
-  File dir;
-  DArray<File> dirList;
-
   log.println( "models (*.ozcSMM, *.ozcMD2, *.ozcMD3 in 'mdl') {" );
   log.indent();
 
-  dir.setPath( "mdl" );
-  if( !dir.ls( &dirList ) ) {
-    free();
+  File dir( "mdl" );
+  DArray<File> dirList = dir.ls();
 
-    throw Exception( "Cannot open directory '%s'", dir.path() );
-  }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozcSMM" ) && !file->hasExtension( "ozcMD2" ) &&
         !file->hasExtension( "ozcMD3" ) )
@@ -578,7 +487,6 @@ void Library::initModels()
     modelIndices.add( name, models.length() );
     models.add( Resource( name, file->path() ) );
   }
-  dirList.dealloc();
 
   log.unindent();
   log.println( "}" );
@@ -586,18 +494,12 @@ void Library::initModels()
 
 void Library::initBuildModels()
 {
-  File dir;
-  DArray<File> dirList;
-
   log.println( "models (directories in 'mdl') {" );
   log.indent();
 
-  dir.setPath( "mdl" );
-  if( !dir.ls( &dirList ) ) {
-    free();
+  File dir( "mdl" );
+  DArray<File> dirList = dir.ls();
 
-    throw Exception( "Cannot open directory '%s'", dir.path() );
-  }
   foreach( file, dirList.iter() ) {
     if( file->getType() != File::DIRECTORY ) {
       continue;
@@ -617,18 +519,12 @@ void Library::initBuildModels()
 
 void Library::initMusic()
 {
-  File dir;
-  DArray<File> dirList;
-
   log.println( "music (*.oga, *.ogg in 'music') {" );
   log.indent();
 
-  dir.setPath( "music" );
-  if( !dir.ls( &dirList ) ) {
-    free();
+  File dir( "music" );
+  DArray<File> dirList = dir.ls();
 
-    throw Exception( "Cannot open directory '%s'", dir.path() );
-  }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) ) {
       continue;
@@ -647,18 +543,12 @@ void Library::initMusic()
 
 void Library::initNameLists()
 {
-  File dir;
-  DArray<File> dirList;
-
   log.println( "name lists (*.txt in 'name') {" );
   log.indent();
 
-  dir.setPath( "name" );
-  if( !dir.ls( &dirList ) ) {
-    free();
+  File dir( "name" );
+  DArray<File> dirList = dir.ls();
 
-    throw Exception( "Cannot open directory '%s'", dir.path() );
-  }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "txt" ) ) {
       continue;
@@ -678,18 +568,12 @@ void Library::initNameLists()
 
 void Library::initFragPools()
 {
-  File dir;
-  DArray<File> dirList;
-
   log.println( "fragment pools (*.rc in 'frag') {" );
   log.indent();
 
-  dir.setPath( "frag" );
-  if( !dir.ls( &dirList ) ) {
-    free();
+  File dir( "frag" );
+  DArray<File> dirList = dir.ls();
 
-    throw Exception( "Cannot open directory '%s'", dir.path() );
-  }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
       continue;
@@ -714,19 +598,14 @@ void Library::initClasses()
   OZ_REGISTER_BASECLASS( Bot );
   OZ_REGISTER_BASECLASS( Vehicle );
 
-  File dir;
-  DArray<File> dirList;
   Config classConfig;
 
   log.println( "object classes (*.rc in 'class') {" );
   log.indent();
 
-  dir.setPath( "class" );
-  if( !dir.ls( &dirList ) ) {
-    free();
+  File dir( "class" );
+  DArray<File> dirList = dir.ls();
 
-    throw Exception( "Cannot open directory '%s'", dir.path() );
-  }
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
       continue;

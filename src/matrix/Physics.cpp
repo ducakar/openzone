@@ -57,10 +57,11 @@ const float Physics::SLICK_FRICTION         =  0.02f;
 const float Physics::STRUCT_HIT_MAX_MASS    =  1.00f;
 const float Physics::STRUCT_DAMAGE_COEF     = -10.0f;
 
-const float Physics::PART_HIT_VELOCITY      =  10.0f;
-const float Physics::PART_DESTROY_VELOCITY  =  30.0f;
-const float Physics::PART_DAMAGE_COEF       =  10.0f;
-const float Physics::PART_FIXED_DAMAGE      =  0.75f;
+const float Physics::FRAG_STICK_VELOCITY    =  0.15f;
+const float Physics::FRAG_HIT_VELOCITY      =  10.0f;
+const float Physics::FRAG_DESTROY_VELOCITY  =  30.0f;
+const float Physics::FRAG_DAMAGE_COEF       =  10.0f;
+const float Physics::FRAG_FIXED_DAMAGE      =  0.75f;
 
 //***********************************
 //*   FRAGMENT COLLISION HANDLING   *
@@ -73,27 +74,30 @@ void Physics::handleFragHit()
   frag->velocity *= frag->restitution;
   frag->velocity -= ( 2.0f * frag->velocity * collider.hit.normal ) * collider.hit.normal;
 
-  if( hitVelocity > PART_HIT_VELOCITY ) {
-    if( hitVelocity > PART_DESTROY_VELOCITY ) {
+  if( hitVelocity <= FRAG_STICK_VELOCITY ) {
+    frag->velocity = Vec3::ZERO;
+  }
+  else if( hitVelocity > FRAG_HIT_VELOCITY ) {
+    if( hitVelocity > FRAG_DESTROY_VELOCITY ) {
       frag->life = -Math::INF;
     }
 
     if( frag->mass != 0.0f ) {
       if( collider.hit.obj != null ) {
         Object* obj = collider.hit.obj;
-        float damage = PART_DAMAGE_COEF * hitVelocity * frag->mass;
+        float damage = FRAG_DAMAGE_COEF * hitVelocity * frag->mass;
 
         if( damage > obj->resistance ) {
-          damage *= PART_FIXED_DAMAGE + ( 1.0f - PART_FIXED_DAMAGE ) * Math::rand();
+          damage *= FRAG_FIXED_DAMAGE + ( 1.0f - FRAG_FIXED_DAMAGE ) * Math::rand();
           obj->damage( damage );
         }
       }
       else if( collider.hit.str != null ) {
         Struct* str = collider.hit.str;
-        float damage = PART_DAMAGE_COEF * hitVelocity * frag->mass;
+        float damage = FRAG_DAMAGE_COEF * hitVelocity * frag->mass;
 
         if( damage > str->resistance ) {
-          damage *= PART_FIXED_DAMAGE + ( 1.0f - PART_FIXED_DAMAGE ) * Math::rand();
+          damage *= FRAG_FIXED_DAMAGE + ( 1.0f - FRAG_FIXED_DAMAGE ) * Math::rand();
           str->damage( damage );
         }
       }

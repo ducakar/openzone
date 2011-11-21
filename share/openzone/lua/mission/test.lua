@@ -109,6 +109,8 @@ function onCreate()
   ozOrbisAddStr( "pool", 112, -7, 70, OZ_NORTH )
   ozOrbisAddStr( "tower", 106, -7, 75, OZ_WEST )
 
+  ozOrbisAddObj( "bauul", 112, -7, 100, OZ_NORTH )
+
   ozOrbisAddObj( "serviceStation", 110, -25, 68.8, OZ_WEST )
 
   ozOrbisAddObj( "smallCrate", 108, -6, 81 )

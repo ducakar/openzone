@@ -501,8 +501,8 @@ void Lua::init()
   OZ_LUA_CONST( "OZ_EVENT_USE",                   Object::EVENT_USE );
   OZ_LUA_CONST( "OZ_EVENT_DAMAGE",                Object::EVENT_DAMAGE );
   OZ_LUA_CONST( "OZ_EVENT_HIT",                   Object::EVENT_HIT );
-  OZ_LUA_CONST( "OZ_EVENT_SPLASH",                Dynamic::EVENT_SPLASH );
-  OZ_LUA_CONST( "OZ_EVENT_FRICTING",              Dynamic::EVENT_FRICTING );
+  OZ_LUA_CONST( "OZ_EVENT_SPLASH",                Object::EVENT_SPLASH );
+  OZ_LUA_CONST( "OZ_EVENT_FRICTING",              Object::EVENT_FRICTING );
   OZ_LUA_CONST( "OZ_EVENT_SHOT",                  Weapon::EVENT_SHOT );
   OZ_LUA_CONST( "OZ_EVENT_SHOT_EMPTY",            Weapon::EVENT_SHOT_EMPTY );
   OZ_LUA_CONST( "OZ_EVENT_HIT_HARD",              Bot::EVENT_HIT_HARD );
@@ -576,9 +576,8 @@ void Lua::init()
   setglobal( "ozLocalData" );
   getglobal( "ozLocalData" );
 
-  DArray<File> luaFiles;
   File luaDir( "lua/nirvana" );
-  luaDir.ls( &luaFiles );
+  DArray<File> luaFiles = luaDir.ls();
 
   foreach( file, luaFiles.citer() ) {
     if( file->hasExtension( "lua" ) ) {

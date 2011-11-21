@@ -70,14 +70,17 @@ void Render::scheduleCell( int cellX, int cellY )
   const Cell& cell = orbis.cells[cellX][cellY];
 
   for( int i = 0; i < cell.structs.length(); ++i ) {
-    Struct* str    = orbis.structs[ cell.structs[i] ];
-    Vec3    dim    = str->maxs - str->mins;
-    Point3  p      = str->mins + 0.5f * dim;
-    float   radius = dim.fastL();
-
-    if( !drawnStructs.get( cell.structs[i] ) && frustum.isVisible( p, radius ) ) {
+    if( !drawnStructs.get( cell.structs[i] ) ) {
       drawnStructs.set( cell.structs[i] );
-      structs.add( ObjectEntry( ( p - camera.p ).sqL(), str ) );
+
+      Struct* str    = orbis.structs[ cell.structs[i] ];
+      Vec3    dim    = str->maxs - str->mins;
+      Point3  p      = str->mins + 0.5f * dim;
+      float   radius = dim.fastL();
+
+      if( frustum.isVisible( p, radius ) ) {
+        structs.add( ObjectEntry( ( p - camera.p ).sqL(), str ) );
+      }
     }
   }
 
@@ -690,7 +693,6 @@ void Render::init( bool isBuild )
   }
 
   glEnable( GL_CULL_FACE );
-  glDepthFunc( GL_LESS );
   glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
   glActiveTexture( GL_TEXTURE1 );

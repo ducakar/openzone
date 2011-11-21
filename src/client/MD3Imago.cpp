@@ -164,12 +164,8 @@ void MD3Imago::draw( const Imago* parent, int mask )
     tf.model.rotateX( bot->v - Math::TAU / 4.0f );
     tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );
 
-    glDepthFunc( GL_ALWAYS );
-
 //       md2->advance( &anim, timer.frameTime );
     context.drawImago( orbis.objects[bot->weapon], this, mask );
-
-    glDepthFunc( GL_LESS );
   }
 }
 
