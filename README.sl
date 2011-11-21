@@ -85,37 +85,6 @@ Ctrl + F11          - preklopi celozaslonski način
 F12                 - minimiraj in zamrzni
 Ctrl + F12          - končaj program
 
-Ukazna vrstica
---------------
-openzone [--help] [(--load | -l) | (--init | -i) <function>]
-         [(--time | -t) <št>] [(--prefix | -p) <predpona>]
-
---help
-      Prikaže to sporočilo s pomočjo.
-
--l, --load
-      Preskoči glavni meni in naloži samodejno shranjeno stanje.
-      Samodejno shranjeno stanje se nahaja v ~/.config/openzone/autosave.ozState.
-
--i <misija>, --init <misija>
-      Preskoči glavni meni in poženi misijo <misija>.
-      Misije se nahajajo v <predpona>/share/openzone/lua/mission in v datotekah
-      poimenovanih <misija>.lua.
-
--t <št>, --time <št>
-      Končaj po <št> sekundah (lahko je decimalno število). Za potrebe benchmarka.
-
--p <predpona>, --prefix <predpona>
-      Nastavi podatkovni imenik na <predpona>/share/openzone in imenik lokalizacije na
-      <predpona>/share/locale.
-
-Opombe
-------
-- Med prvim zagonom se ustvari nastavitvena datoteka ~/.config/openzone/client.rc
-  (na Windowsu: %APPDATA%\OpenZone\client.rc) s privzetimi nastavitvami. Uredi jo po želji.
-- %APPDATA% ponavadi pomeni 'C:\Documents and Settings\uporabnik\Application Data' na Windowsu XP
-  ali C:\Users\uporabnik\AppData\Roaming na Windowsu 7.
-
 Problemi
 --------
 - Prepričaj se, da imaš *NAJNOVEJŠE* gonilnike za grafično kartico.
@@ -160,6 +129,184 @@ Odvisnosti za gradnjo
 - GNU binutils
 - GCC >= 4.6 ali LLVM/Clang >= 3.0
 - razvojni paketi knjižnic iz prejšnjega razdelka
+
+Ukazna vrstica
+--------------
+openzone [--help] [(--load | -l) | (--init | -i) <function>]
+         [(--time | -t) <št>] [(--prefix | -p) <predpona>]
+
+--help
+      Prikaže to sporočilo s pomočjo.
+
+-l, --load
+      Preskoči glavni meni in naloži samodejno shranjeno stanje.
+      Samodejno shranjeno stanje se nahaja v ~/.config/openzone/autosave.ozState.
+
+-i <misija>, --init <misija>
+      Preskoči glavni meni in poženi misijo <misija>.
+      Misije se nahajajo v <predpona>/share/openzone/lua/mission in v datotekah
+      poimenovanih <misija>.lua.
+
+-t <št>, --time <št>
+      Končaj po <št> sekundah (lahko je decimalno število). Za potrebe benchmarka.
+
+-p <predpona>, --prefix <predpona>
+      Nastavi podatkovni imenik na <predpona>/share/openzone in imenik lokalizacije na
+      <predpona>/share/locale.
+
+Settings
+--------
+Settings file is located in "$HOME/.config/openzone/client.rc" on Unix-like systems or in
+"%APPDATA%\OpenZone\client.rc" on Windows. Full path is (assuming default setup):
+- Linux:      /home/<user>/.config/openzone/client.rc
+- Wine:       /home/<user>/.wine/drive_c/users/<user>/Application Data/client.rc
+- Windows XP: C:\Documents and Settings\<user>\Application Data\OpenZone\client.rc
+- Windows 7:  C:\Users\<user>\AppData\Roaming\OpenZone\client.rc
+
+variable [type] default_value
+-----------------------------
+_version [string] "0.3.0"
+  Version of OpenZone for which the settings file was created. The only effect of this setting is
+  that on version mismatch, OpenZone dumps its configuration on exit and rewrites the old file.
+  Deprecated variables are not removed during that process.
+
+botProxy.externalDistFactor [float] 2.75
+  3rd person camera is
+    botProxy.externalDistFactor * object_radius
+  behind an object.
+
+botProxy.isExternal [bool] false
+  Whether 3rd person camera is the default.
+
+camera.angle [float] 80.0
+  Vertical camera angle in degrees. Horizontal angle is calculated from aspect ratio.
+
+camera.aspect [float] 0.0
+  Aspect ratio width/height. 0.0 means it is calculated from the current screen resolution.
+
+camera.keysXSens [float] 2.0
+  Key sensitivity for up/down arrow keys.
+
+camera.keysYSens [float] 2.0
+  Key sensitivity for left/right arrow keys.
+
+camera.mouseXSens [float] 0.005
+  Mouse sensitivity for X axis when rotating camera.
+
+camera.mouseYSens [float] 0.005
+  Mouse sensitivity for X axis when rotating camera.
+
+camera.smoothCoef [float] 0.5
+  Camera smoothing used when camera is moved in strategic mode. When in bot camera mode smoothing
+  is performed only along Z axis (vertical). Camera position is calculated as
+    old_position + camera.smoothCoef * ( destination_position - old_position )
+
+dir.prefix [string] Unix-like systems' default: "/usr", Windows default: "."
+  Prefix path to game directory structure. The share/openzone and share/locale directories must be
+  located inside the prefix directory.
+
+locale.messages [string] ""
+  Which locale should be used for translations. Empty string means that system locale is used.
+  On Linux, run "locale -a" to see a list of installed/generated locales on your system.
+  Currently there are only Slovene and English translations.
+
+lua.tolerant [bool] false
+  Do not crash on script errors.
+
+modules.profile.playerName [string] "<user>"
+  Name of the player. Username of the current user is used as default.
+
+mouse.accelFactor [float] 0.05
+  Only used while in fullscreen mode on X11. Usually OS applies mouse acceleration before OpenZone
+  reads the mouse input. The only exception is when running in fullscreen mode on X11 server, when
+  OpenZone receives unaccelerated mouse input. In that case it tries to emulate X11 mouse
+  acceleration, since mouse cursor moves pretty slow otherwise.
+
+render.deferred [bool] false
+  Enable deferred shading. Not implemented.
+
+render.height [int] 0
+  Height of offscreen buffer used for deferred rendering and postprocess of the world. Zero equals
+  screen resolution.
+
+render.postprocess [bool] true
+  When enabled, world is rendered into an offscreen buffer. The image is postprocessed and then
+  rendered to the screen. This technique only applies for the world, UI is always rendered directly.
+  The offscreen buffer may use different resolution than the screen.
+
+render.showAim [bool] false
+  Draw a small green box at the point you are currenty aiming at. It is intended for testing
+  purposes, mostly for testing collision detection.
+
+render.showBounds [bool] false
+  Show AABBs of various objects. Green for solid objects, blue-grey for non-solid objects,
+  blue for structures and purple for structure entities.
+
+render.visibilityRange [float] 300.0
+  Visibility range.
+
+render.width [int] 0
+  Width of offscreen buffer used for deferred rendering and postprocess of the world. Zero equals
+  screen resolution.
+
+screen.bpp [int] 0
+  Desired bits per pixel for the screen mode. This setting is not necessarily obeyed. If zero, SDL
+  chooses on its own.
+
+screen.full [bool] false
+  Start in fullscreen mode.
+
+screen.height [int] 0
+  Vertical screen resolution. Zero equals desktop resolution.
+
+screen.leaveScreensaver [bool] true
+  Do not disable screensaver. Usually there is no need to explicitly disable screensaver, since
+  most system do this on their own when running an fullscreen application and player moves the mouse
+  and/or presses the keys most of the time.
+  You can turn this to false if you want to disable screensaver anyways. Note that screensaver may
+  remain turned off if the application is not terminated properly.
+
+screen.nvVSync [bool] true
+  Try to use vertical synchronisation for Nvidia cards on Linux (sets __SYNC_TO_VBLANK=1).
+
+screen.width [int] 0
+  Horizontal screen resolution. Zero equals desktop resolution.
+
+seed [int|string] "TIME"
+  Seed for random generator. Integer number or "TIME" string to use the current Unix time as the
+  seed.
+
+shader.setSamplerIndices [bool] false
+  Set indices for texture samplers. It set, breaks textures on Gallium3D driver. If not set, breaks
+  textures on older ATI/AMD Catalyst drivers.
+
+shader.vertexTexture [bool] false
+  Use vertex texture fetch feature to perform MD2 model animation on vertex shaders. Should work
+  on GeForce 6 or newer or Radeon 2xxx or newer. Does not work with Catalyst drivers.
+
+sound.device [string] ""
+  Sound device to pass to OpenAL. Empty string to let OpenAL choose on its own.
+
+sound.frequency [int] 44100
+  Sound frequency output from OpenAL. Best to use the same frequency used by your sound mixer or
+  server. PulseAudio uses 44100 Hz by default and ALSA dmix uses 48000 Hz (may depend in Linux
+  your distro).
+
+sound.volume [float] 1.0
+  Sound volume factor. 1.0 means full (original) intensity.
+
+sound.volume.music [float] 0.5
+  Music volume factor. 1.0 means the same intensity as all other sounds.
+
+ui.scale [float] 1.0
+  UI scale factor. Factor 1.0 means that UI runs on screen resolution.
+
+ui.showBuild [bool] false
+  Show a windows with buttons to add various objects into the world. For development purpuses.
+
+ui.showDebug [bool] true
+  Show a window that shows coordinates, orientation and other data about camera, controlled bot,
+  tagged object etc. For development purposes.
 
 Avtorske pravice za pogon OpenZone
 ----------------------------------

@@ -44,9 +44,12 @@ class UI
 {
   public:
 
-    bool isFreelook;
-    bool showBuild;
-    bool showDebug;
+    float uiScale;
+    float uiAspect;
+
+    bool  isFreelook;
+    bool  showBuild;
+    bool  showDebug;
 
   public:
 

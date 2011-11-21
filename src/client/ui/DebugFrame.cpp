@@ -43,7 +43,7 @@ DebugFrame::DebugFrame() :
 {
   flags = PINNED_BIT;
 
-  x = ( camera.uiWidth - width ) / 2;
+  x = ( Area::uiWidth - width ) / 2;
 
   int height = textHeight + 2;
 

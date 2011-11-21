@@ -46,7 +46,7 @@ class Imago
 
   protected:
 
-    const Object* obj;
+    const Object*      obj;
     const ObjectClass* clazz;
 
   public:

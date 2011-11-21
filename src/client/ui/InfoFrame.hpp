@@ -48,7 +48,7 @@ class InfoFrame : public Frame
   protected:
 
     virtual void onVisibilityChange();
-    virtual bool onMouseOver();
+    virtual bool onMouseEvent();
     virtual void onDraw();
 
   public:

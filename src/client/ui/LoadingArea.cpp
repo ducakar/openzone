@@ -27,7 +27,6 @@
 
 #include "client/ui/LoadingArea.hpp"
 
-#include "client/Camera.hpp"
 #include "client/Shader.hpp"
 #include "client/OpenGL.hpp"
 
@@ -38,7 +37,7 @@ namespace client
 namespace ui
 {
 
-LoadingArea::LoadingArea() : Area( camera.uiWidth, camera.uiHeight ),
+LoadingArea::LoadingArea() : Area( Area::uiWidth, Area::uiHeight ),
     status( width / 2, height / 5, ALIGN_CENTRE, Font::LARGE, " " )
 {
   flags = PINNED_BIT;

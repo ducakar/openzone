@@ -76,6 +76,11 @@ class Area
 
   public:
 
+    static int uiWidth;
+    static int uiHeight;
+    static int uiCentreX;
+    static int uiCentreY;
+
     Area* parent;
     DList<Area> children;
 

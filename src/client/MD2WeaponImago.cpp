@@ -29,8 +29,10 @@
 
 #include "matrix/Bot.hpp"
 #include "matrix/Orbis.hpp"
+#include "client/Camera.hpp"
 #include "client/Context.hpp"
 #include "client/Colours.hpp"
+#include "client/OpenGL.hpp"
 
 namespace oz
 {

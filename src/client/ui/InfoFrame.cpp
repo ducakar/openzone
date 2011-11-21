@@ -54,7 +54,7 @@ void InfoFrame::onVisibilityChange()
   lastId = -1;
 }
 
-bool InfoFrame::onMouseOver()
+bool InfoFrame::onMouseEvent()
 {
   if( camera.state != Camera::BOT || camera.botObj == null || camera.tagged == -1 ||
       !nirvana.devices.contains( camera.tagged ) )

@@ -101,11 +101,13 @@ class Render
     bool                    showBounds;
     bool                    showAim;
 
+    bool                    isOffscreen;
     bool                    isDeferred;
     bool                    doPostprocess;
 
     float                   windPhi;
 
+    float                   renderScale;
     int                     renderWidth;
     int                     renderHeight;
 

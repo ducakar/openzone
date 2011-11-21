@@ -50,23 +50,36 @@ void GalileoModule::build()
 
     terraConfig.load( "terra/" + name + ".rc" );
 
-    // disable warnings
-    terraConfig.get( "step", 0.0f );
-    terraConfig.get( "bias", 0.0f );
-    terraConfig.get( "waterTexture", "" );
-    terraConfig.get( "detailTexture", "" );
-
     String srcTextureFile = String( "terra/" ) + terraConfig.get( "mapTexture", "" );
     String destTextureFile = "ui/galileo/" + name + ".ozcTex";
+
+    bool useS3TC = Context::useS3TC;
+    Context::useS3TC = false;
 
     BufferStream os;
 
     uint id = Context::loadRawTexture( srcTextureFile, true, GL_LINEAR, GL_LINEAR );
     Context::writeTexture( id, &os );
-
-    terraConfig.clear( false );
-
+    glDeleteTextures( 1, &id );
     File( destTextureFile ).write( &os );
+
+    os.reset();
+
+    id = Context::loadRawTexture( "ui/galileo/arrow.png", false, GL_LINEAR, GL_LINEAR );
+    Context::writeTexture( id, &os );
+    glDeleteTextures( 1, &id );
+    File( "ui/galileo/arrow.ozcTex" ).write( &os );
+
+    os.reset();
+
+    id = Context::loadRawTexture( "ui/galileo/marker.png", false, GL_LINEAR, GL_LINEAR );
+    Context::writeTexture( id, &os );
+    glDeleteTextures( 1, &id );
+    File( "ui/galileo/marker.ozcTex" ).write( &os );
+
+    Context::useS3TC = useS3TC;
+
+    terraConfig.clear();
   }
 }
 

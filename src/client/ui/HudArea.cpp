@@ -231,7 +231,7 @@ void HudArea::drawVehicleStatus()
 
   tf.model = Mat44::ID;
   tf.camera = Mat44::ID;
-  tf.camera.translate( Vec3( float( camera.uiWidth - 208 + VEHICLE_SIZE / 2 ),
+  tf.camera.translate( Vec3( float( Area::uiWidth - 208 + VEHICLE_SIZE / 2 ),
                              float( 30 + vehClazz->nWeapons * ( textHeight + 8 ) + VEHICLE_SIZE / 2 ),
                              0.0f ) );
   tf.camera.scale( Vec3( 1.0f, 1.0f, 0.001f ) );
@@ -333,7 +333,7 @@ void HudArea::onDraw()
   drawChildren();
 }
 
-HudArea::HudArea() : Area( camera.uiWidth, camera.uiHeight ),
+HudArea::HudArea() : Area( Area::uiWidth, Area::uiHeight ),
     weaponName( 16, 54, ALIGN_LEFT, Font::LARGE, " "  ),
     weaponRounds( 200, 54, ALIGN_RIGHT, Font::LARGE, "∞" ),
     lastTaggedId( -1 ), lastWeaponId( -1 ), lastWeaponRounds( -1 ), lastVehicleId( -1 )

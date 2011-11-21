@@ -182,6 +182,8 @@ static void buildTextures( const char* srcDir, const char* destDir,
     log.println( "Compiling into '%s'", destPath.cstr() );
     Context::writeTexture( id, &os );
 
+    glDeleteTextures( 1, &id );
+
     if( !File( destPath ).write( &os ) ) {
       throw Exception( "Texture writing failed" );
     }
@@ -587,10 +589,13 @@ int main( int argc, char** argv )
   createDirs();
 
   if( doUI ) {
-    Mouse::build();
+    bool useS3TC = Context::useS3TC;
+    Context::useS3TC = false;
 
+    Mouse::build();
     buildTextures( "ui/icon", "ui/icon", true, GL_LINEAR, GL_LINEAR );
-    buildTextures( "ui/galileo", "ui/galileo", true, GL_LINEAR, GL_LINEAR );
+
+    Context::useS3TC = useS3TC;
   }
 
   if( doTerrae ) {

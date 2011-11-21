@@ -71,9 +71,7 @@ void UI::update()
 
 void UI::draw()
 {
-  OZ_GL_CHECK_ERROR();
-
-  tf.ortho( camera.uiWidth, camera.uiHeight );
+  tf.ortho( Area::uiWidth, Area::uiHeight );
   tf.camera = Mat44::ID;
 
   // set shaders
@@ -94,11 +92,12 @@ void UI::draw()
     }
   }
 
-  glEnable( GL_BLEND );
+  shader.use( shader.plain );
 
   glClear( GL_DEPTH_BUFFER_BIT );
+  glLineWidth( 1.0f / uiScale );
 
-  shader.use( shader.plain );
+  glEnable( GL_BLEND );
 
   root->drawChildren();
   mouse.draw();
@@ -139,9 +138,25 @@ void UI::unload()
 
 void UI::init()
 {
-  float uiScale = config.getSet( "ui.scale", 1.0f );
+  isFreelook = false;
 
-  glLineWidth( 1.0f / uiScale );
+  uiScale   = config.getSet( "ui.scale",     1.0f  );
+  uiAspect  = config.getSet( "ui.aspect",    0.0f  );
+  showBuild = config.getSet( "ui.showBuild", false );
+  showDebug = config.getSet( "ui.showDebug", false );
+
+  if( uiAspect == 0.0f ) {
+    Area::uiWidth   = int( float( camera.width  ) * uiScale + 0.5f );
+    Area::uiHeight  = int( float( camera.height ) * uiScale + 0.5f );
+    Area::uiCentreX = Area::uiWidth  / 2;
+    Area::uiCentreY = Area::uiHeight / 2;
+  }
+  else {
+    Area::uiWidth   = int( float( camera.height ) * uiScale * uiAspect + 0.5f );
+    Area::uiHeight  = int( float( camera.height ) * uiScale + 0.5f );
+    Area::uiCentreX = Area::uiWidth  / 2;
+    Area::uiCentreY = Area::uiHeight / 2;
+  }
 
   mouse.init();
   mouse.load();
@@ -150,12 +165,7 @@ void UI::init()
     throw Exception( "Failed to load font" );
   }
 
-  isFreelook = false;
-
-  showBuild = config.getSet( "ui.showBuild", false );
-  showDebug = config.getSet( "ui.showDebug", false );
-
-  root = new Area( camera.uiWidth, camera.uiHeight );
+  root = new Area( Area::uiWidth, Area::uiHeight );
   loadingScreen = new LoadingArea();
 
   root->add( loadingScreen );

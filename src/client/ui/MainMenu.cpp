@@ -27,7 +27,6 @@
 
 #include "client/ui/MainMenu.hpp"
 
-#include "client/Camera.hpp"
 #include "client/Shader.hpp"
 #include "client/Shape.hpp"
 #include "client/GameStage.hpp"
@@ -105,8 +104,8 @@ static void exit( Button* sender )
 MainMenu::MainMenu() : Frame( 0, 0, 400, 450, OZ_APPLICATION_TITLE " v" OZ_APPLICATION_VERSION ),
     copyright( 10, 10, 380, 9, Font::SANS )
 {
-  x = ( camera.uiWidth  - width ) / 2;
-  y = ( camera.uiHeight - height ) / 2;
+  x = ( Area::uiWidth  - width ) / 2;
+  y = ( Area::uiHeight - height ) / 2;
 
   copyright.setText( "OpenZone  Copyright © 2002-2011  Davorin Učakar\n\n%s",
       gettext( "This program comes with ABSOLUTELY NO WARRANTY. "
@@ -144,7 +143,7 @@ MainMenu::~MainMenu()
 void MainMenu::onDraw()
 {
   glUniform4f( param.oz_Colour, 0.1f, 0.1f, 0.1f, 1.0f );
-  shape.fill( 0, 0, camera.uiWidth, camera.uiHeight );
+  shape.fill( 0, 0, Area::uiWidth, Area::uiHeight );
 
   Frame::onDraw();
 
