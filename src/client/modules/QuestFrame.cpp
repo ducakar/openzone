@@ -145,7 +145,7 @@ QuestFrame::QuestFrame() :
 
   contentHeight = 8 + 10 * font.INFOS[Font::SANS].height;
 
-  x = ( camera.width - width ) / 2;
+  x = ( Area::uiWidth - width ) / 2;
 
   y -= contentHeight;
   height += contentHeight;

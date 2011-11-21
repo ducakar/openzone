@@ -242,19 +242,12 @@ void Camera::write( BufferStream* ostream ) const
   botProxy.write( ostream );
 }
 
-void Camera::init()
+void Camera::init( int screenWidth, int screenHeight )
 {
-  width         = config.getSet( "screen.width",      0 );
-  height        = config.getSet( "screen.height",     0 );
+  width         = screenWidth;
+  height        = screenHeight;
   centreX       = width  / 2;
   centreY       = height / 2;
-
-  float uiScale = config.get( "ui.scale",             1.0f );
-
-  uiWidth       = int( float( width  ) * uiScale + 0.5f );
-  uiHeight      = int( float( height ) * uiScale + 0.5f );
-  uiCentreX     = uiWidth  / 2;
-  uiCentreY     = uiHeight / 2;
 
   aspect        = config.getSet( "camera.aspect",     0.0f );
   mouseXSens    = config.getSet( "camera.mouseXSens", 0.005f );

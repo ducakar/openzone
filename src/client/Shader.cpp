@@ -209,7 +209,7 @@ void Shader::loadProgram( int id, const char** sources, int* lengths )
 
   param = programs[id].param;
 
-  if( config.get( "shader.setSamplerIndices", true ) ) {
+  if( config.getSet( "shader.setSamplerIndices", false ) ) {
     int textureIds[4] = { 0, 1, 2, 3 };
     glUniform1iv( param.oz_Textures, 4, textureIds );
   }

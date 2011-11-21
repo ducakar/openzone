@@ -100,11 +100,6 @@ class Camera
     int    centreX;
     int    centreY;
 
-    int    uiWidth;
-    int    uiHeight;
-    int    uiCentreX;
-    int    uiCentreY;
-
     float  coeff;
     float  aspect;
     float  vertPlane;
@@ -176,7 +171,7 @@ class Camera
     void read( InputStream* istream );
     void write( BufferStream* ostream ) const;
 
-    void init();
+    void init( int screenWidth, int screenHeight );
 
 };
 

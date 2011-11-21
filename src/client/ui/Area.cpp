@@ -28,7 +28,6 @@
 #include "client/ui/Area.hpp"
 
 #include "client/Shape.hpp"
-#include "client/Camera.hpp"
 #include "client/OpenGL.hpp"
 
 #include <SDL/SDL_ttf.h>
@@ -42,6 +41,11 @@ namespace ui
 
 Vector<Area*> Area::updateAreas;
 
+int Area::uiWidth;
+int Area::uiHeight;
+int Area::uiCentreX;
+int Area::uiCentreY;
+
 Area::Area( int width_, int height_ ) :
     flags( 0 ), currentFont( font.fonts[Font::SANS] ), parent( null ), x( 0 ), y( 0 ),
     width( width_ ), height( height_ ), textWidth( 0 ),
@@ -53,8 +57,8 @@ Area::Area( int x_, int y_, int width_, int height_ ) :
     width( width_ ), height( height_ ), textWidth( 0 ),
     textHeight( Font::INFOS[Font::SANS].height )
 {
-  x = x < 0 ? camera.uiWidth  - width  + x : x;
-  y = y < 0 ? camera.uiHeight - height + y : y;
+  x = x < 0 ? Area::uiWidth  - width  + x : x;
+  y = y < 0 ? Area::uiHeight - height + y : y;
 }
 
 Area::~Area()

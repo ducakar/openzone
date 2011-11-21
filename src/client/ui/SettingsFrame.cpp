@@ -29,7 +29,6 @@
 
 #include "client/Shader.hpp"
 #include "client/Shape.hpp"
-#include "client/Camera.hpp"
 #include "client/OpenGL.hpp"
 
 #include "client/ui/MainMenu.hpp"
@@ -51,7 +50,7 @@ static void closeFrame( Button* sender )
 void SettingsFrame::onDraw()
 {
   glUniform4f( param.oz_Colour, 0.1f, 0.1f, 0.1f, 1.0f );
-  shape.fill( 0, 0, camera.uiWidth, camera.uiHeight );
+  shape.fill( 0, 0, Area::uiWidth, Area::uiHeight );
 
   Frame::onDraw();
 
@@ -62,8 +61,8 @@ SettingsFrame::SettingsFrame() :
     Frame( 0, 0, 400, 28 + 8 * font.INFOS[Font::SANS].height, gettext( "Settings" ) ),
     message( 4, 24, 392, 8, Font::SANS )
 {
-  x = ( camera.uiWidth  - width ) / 2;
-  y = ( camera.uiHeight - height ) / 2;
+  x = ( Area::uiWidth  - width ) / 2;
+  y = ( Area::uiHeight - height ) / 2;
 
   message.setText( gettext( "NOT IMPLEMENTED YET\n\n"
       "You can change your settings by manually editing '%s' file." ),

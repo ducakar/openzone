@@ -142,9 +142,12 @@ void Compiler::begin( uint mode_ )
   part.component = componentId;
 
   switch( mode ) {
-    case GL_QUADS:
-    case GL_POLYGON: {
+    case GL_QUADS: {
       part.mode = GL_TRIANGLE_STRIP;
+      break;
+    }
+    case GL_POLYGON: {
+      part.mode = GL_TRIANGLES;
       break;
     }
     default: {
@@ -193,10 +196,28 @@ void Compiler::end()
     case GL_POLYGON: {
       hard_assert( vertNum >= 3 );
 
-      int n_2 = ( vertNum - 2 ) / 2;
-      for( int i = 1; i <= n_2; ++i ) {
-        int index = part.indices.last();
-        aInsert<int>( part.indices, index, 2 * i, part.indices.length() );
+      Vector<int> polyIndices = static_cast< Vector<int>&& >( part.indices );
+      part.indices.clear();
+
+      int last[2] = { 0, 1 };
+
+      for( int i = 0; i < vertNum / 2; ++i ) {
+        int j = ( i + 3 ) / 2;
+
+        if( i & 1 ) {
+          part.indices.add( polyIndices[ last[0] ] );
+          part.indices.add( polyIndices[ last[1] ] );
+          part.indices.add( polyIndices[j] );
+
+          last[1] = j;
+        }
+        else {
+          part.indices.add( polyIndices[ last[0] ] );
+          part.indices.add( polyIndices[ last[1] ] );
+          part.indices.add( polyIndices[vertNum - j] );
+
+          last[0] = vertNum - j;
+        }
       }
       break;
     }

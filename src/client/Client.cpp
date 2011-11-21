@@ -257,22 +257,20 @@ int Client::main( int argc, char** argv )
   else {
     log.println( "No configuration file, default configuration will be written on exit" );
     config.add( "_version", OZ_APPLICATION_VERSION );
+    config.get( "_version", "" );
   }
 
   config.add( "dir.rc", rcDir );
 
   log.print( "Setting localisation ..." );
 
-  setlocale( LC_CTYPE, config.getSet( "locale.ctype", "" ) );
   setlocale( LC_MESSAGES, config.getSet( "locale.messages", "" ) );
 
   bindtextdomain( OZ_APPLICATION_NAME, "../locale" );
   bind_textdomain_codeset( OZ_APPLICATION_NAME, "UTF-8" );
   textdomain( OZ_APPLICATION_NAME );
 
-  log.printEnd( " LC_CTYPE: %s LC_MESSAGES: %s ... OK",
-                setlocale( LC_CTYPE, null ),
-                setlocale( LC_MESSAGES, null ) );
+  log.printEnd( " LC_MESSAGES: %s ... OK", setlocale( LC_MESSAGES, null ) );
 
   if( String::equals( config.getSet( "seed", "TIME" ), "TIME" ) ) {
     int seed = int( time( null ) );

@@ -260,8 +260,6 @@ void Render::drawGeometry()
   fragsMillis += currentTime - beginTime;
   beginTime = currentTime;
 
-  glEnable( GL_BLEND );
-
   for( int i = objects.length() - 1; i >= 0; --i ) {
     const Object* obj = objects[i].obj;
 
@@ -318,6 +316,8 @@ void Render::drawGeometry()
   }
 
   if( showBounds ) {
+    glLineWidth( 1.0f );
+
     for( int i = 0; i < objects.length(); ++i ) {
       glUniform4fv( param.oz_Colour, 1,
                     objects[i].obj->flags & Object::SOLID_BIT ?
@@ -358,16 +358,7 @@ void Render::drawGeometry()
 
 void Render::drawOrbis()
 {
-  if( isDeferred ) {
-    glPushAttrib( GL_VIEWPORT_BIT );
-    glViewport( 0, 0, renderWidth, renderHeight );
-
-    uint dbos[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-
-    glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
-    glDrawBuffers( 1, dbos );
-  }
-  else if( doPostprocess ) {
+  if( isOffscreen ) {
     glPushAttrib( GL_VIEWPORT_BIT );
     glViewport( 0, 0, renderWidth, renderHeight );
 
@@ -380,55 +371,31 @@ void Render::drawOrbis()
   prepareDraw();
   drawGeometry();
 
-  if( isDeferred ) {
+  if( isOffscreen ) {
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
     glPopAttrib();
 
-  // postprocess
-//     tf.ortho();
-//     tf.camera = Mat44::ID;
-//     tf.applyCamera();
-//
-//     shader.use( shader.combine );
-//
-//     shader.setAmbientLight( Colours::ambient );
-//     shader.setCaelumLight( caelum.lightDir, Colours::diffuse );
-//     shader.updateLights();
-//
-//     shape.bindVertexArray();
-//
-//     glBindTexture( GL_TEXTURE_2D, colourBuffer );
-//     glActiveTexture( GL_TEXTURE1 );
-//     glBindTexture( GL_TEXTURE_2D, normalBuffer );
-//
-//     shape.fill( 0, 0, camera.width, camera.height );
-//
-//     glBindTexture( GL_TEXTURE_2D, 0 );
-//     glActiveTexture( GL_TEXTURE0 );
-//     glBindTexture( GL_TEXTURE_2D, 0 );
+    if( doPostprocess ) {
+      tf.ortho( camera.width, camera.height );
+      tf.camera = Mat44::ID;
 
-    glBindFramebuffer( GL_READ_FRAMEBUFFER, mainFrame );
+      shader.use( shader.postprocess );
+      tf.applyCamera();
 
-    glBlitFramebuffer( 0, 0, renderWidth, renderHeight, 0, 0, camera.width, camera.height,
-                       GL_COLOR_BUFFER_BIT, GL_LINEAR );
+      glBindTexture( GL_TEXTURE_2D, colourBuffer );
+      shape.fill( 0, 0, camera.width, camera.height );
+      glBindTexture( GL_TEXTURE_2D, 0 );
+    }
+    else {
+      glBindFramebuffer( GL_READ_FRAMEBUFFER, mainFrame );
 
-    glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
-  }
-  else if( doPostprocess ) {
-    glPopAttrib();
+      glBlitFramebuffer( 0, 0, renderWidth, renderHeight,
+                         0, 0, camera.width, camera.height,
+                         GL_COLOR_BUFFER_BIT, GL_LINEAR );
 
-    tf.ortho( camera.width, camera.height );
-    tf.camera = Mat44::ID;
-
-    shader.use( shader.postprocess );
-    tf.applyCamera();
-
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-    glBindTexture( GL_TEXTURE_2D, colourBuffer );
-    shape.fill( 0, 0, camera.width, camera.height );
-    glBindTexture( GL_TEXTURE_2D, 0 );
+      glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
+    }
   }
 
   OZ_GL_CHECK_ERROR();
@@ -538,30 +505,23 @@ void Render::init( bool isBuild )
   log.println( "Initialising Render {" );
   log.indent();
 
-  int  screenX      = config.get( "screen.width", 0 );
-  int  screenY      = config.get( "screen.height", 0 );
+  int  screenWidth  = config.get( "screen.width", 0 );
+  int  screenHeight = config.get( "screen.height", 0 );
   int  screenBpp    = config.get( "screen.bpp", 0 );
-  bool hasBorder    = config.get( "screen.border", true );
   bool isFullscreen = config.getSet( "screen.full", true );
 
   log.print( "Creating OpenGL window %dx%d-%d %s ...",
-             screenX, screenY, screenBpp, isFullscreen ? "fullscreen" : "windowed" );
+             screenWidth, screenHeight, screenBpp, isFullscreen ? "fullscreen" : "windowed" );
 
-  if( ( screenX != 0 || screenY != 0 || screenBpp != 0 ) &&
-      SDL_VideoModeOK( screenX, screenY, screenBpp, SDL_OPENGL |
-                       ( hasBorder ? 0 : SDL_NOFRAME ) |
-                       ( isFullscreen ? SDL_FULLSCREEN : 0 ) ) == 0 )
-  {
-    log.printEnd( " Mode not supported" );
+  uint videoFlags = SDL_OPENGL | ( isFullscreen ? SDL_FULLSCREEN : 0 );
+
+  if( SDL_VideoModeOK( screenWidth, screenHeight, screenBpp, videoFlags ) == 1 ) {
     throw Exception( "Video mode not supported" );
   }
 
-  surface = SDL_SetVideoMode( screenX, screenY, screenBpp, SDL_OPENGL |
-                              ( hasBorder ? 0 : SDL_NOFRAME ) |
-                              ( isFullscreen ? SDL_FULLSCREEN : 0 ) );
+  surface = SDL_SetVideoMode( screenWidth, screenHeight, screenBpp, videoFlags );
 
   if( surface == null ) {
-    log.printEnd( " Failed" );
     throw Exception( "Window creation failed" );
   }
 
@@ -570,20 +530,15 @@ void Render::init( bool isBuild )
 
   SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION, null );
 
-  screenX   = surface->w;
-  screenY   = surface->h;
-  screenBpp = surface->format->BitsPerPixel;
+  screenWidth  = surface->w;
+  screenHeight = surface->h;
+  screenBpp    = surface->format->BitsPerPixel;
 
-  config.getSet( "screen.width", screenX );
-  config.getSet( "screen.height", screenY );
-  config.getSet( "screen.bpp", screenBpp );
-
-  log.printEnd( " %dx%d-%d ... OK", screenX, screenY, screenBpp );
+  log.printEnd( " %dx%d-%d ... OK", screenWidth, screenHeight, screenBpp );
 
   SDL_ShowCursor( SDL_FALSE );
 
   bool isCatalyst  = false;
-  bool isGallium   = false;
   bool hasFBO      = false;
   bool hasFloatTex = false;
   bool hasS3TC     = false;
@@ -609,10 +564,6 @@ void Render::init( bool isBuild )
   if( strstr( vendor, "ATI" ) != null ) {
     isCatalyst = true;
   }
-  if( strstr( renderer, "Gallium" ) != null ) {
-    isGallium = true;
-  }
-
   foreach( extension, extensions.citer() ) {
     if( log.isVerbose ) {
       log.println( "%s", extension->cstr() );
@@ -643,25 +594,19 @@ void Render::init( bool isBuild )
   int minor = atoi( version.cstr() + version.index( '.' ) + 1 );
 
   if( major < 2 || ( major == 2 && minor < 1 ) ) {
-    log.println( "Error: at least OpenGL 2.1 with some 3.0 capabilities is required" );
-    throw Exception( "Too old OpenGL version" );
+    throw Exception( "Too old OpenGL version, at least 2.1 required" );
   }
 
   if( !hasFBO ) {
-    log.println( "Error: framebuffer object (GL_ARB_framebuffer_object) is not supported" );
     throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
   }
   if( !hasFloatTex ) {
-    log.println( "Error: floating-point data texture (GL_ARB_texture_float) is not supported" );
     throw Exception( "GL_ARB_texture_float not supported by OpenGL" );
-  }
-
-  if( isGallium ) {
-    config.include( "shader.setSamplerIndices", "false" );
   }
 
   if( isCatalyst ) {
     config.include( "shader.vertexTexture", "false" );
+    config.include( "shader.setSamplerIndices", "true" );
   }
 
   if( hasS3TC ) {
@@ -677,6 +622,7 @@ void Render::init( bool isBuild )
 
   if( isBuild ) {
     config.get( "shader.setSamplerIndices", false );
+    config.get( "shader.vertexTexture", false );
 
     log.unindent();
     log.println( "}" );
@@ -685,11 +631,11 @@ void Render::init( bool isBuild )
     return;
   }
 
-  renderWidth     = config.getSet( "render.width",                screenX );
-  renderHeight    = config.getSet( "render.height",               screenY );
-
+  isOffscreen     = config.getSet( "render.offscreen",            true );
   isDeferred      = config.getSet( "render.deferred",             false );
-  doPostprocess   = config.getSet( "render.postprocess",          false );
+  doPostprocess   = config.getSet( "render.postprocess",          true );
+
+  renderScale     = config.getSet( "render.scale",                1.0f );
 
   visibilityRange = config.getSet( "render.visibilityRange",      300.0f );
   showBounds      = config.getSet( "render.showBounds",           false );
@@ -697,67 +643,27 @@ void Render::init( bool isBuild )
 
   windPhi         = 0.0f;
 
+  if( isOffscreen ) {
+    renderWidth  = int( float( screenWidth  ) * renderScale + 0.5f );
+    renderHeight = int( float( screenHeight ) * renderScale + 0.5f );
+  }
+  else {
+    isDeferred    = false;
+    doPostprocess = false;
+    renderScale   = 1.0f;
+    renderWidth   = screenWidth;
+    renderHeight  = screenHeight;
+  }
+
   glInit();
 
-  if( isDeferred ) {
-    glGenFramebuffers( 1, &mainFrame );
-    glGenTextures( 1, &depthBuffer );
-    glGenTextures( 1, &colourBuffer );
-    glGenTextures( 1, &normalBuffer );
-
-    glBindTexture( GL_TEXTURE_2D, depthBuffer );
-
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, renderWidth, renderHeight, 0,
-                  GL_DEPTH_COMPONENT, GL_HALF_FLOAT, null );
-
-    glBindTexture( GL_TEXTURE_2D, colourBuffer );
-
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, renderWidth, renderHeight, 0,
-                  GL_RGB, GL_UNSIGNED_BYTE, null );
-
-    glBindTexture( GL_TEXTURE_2D, normalBuffer );
-
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, renderWidth, renderHeight, 0,
-                  GL_RGB, GL_HALF_FLOAT, null );
-
-    glBindTexture( GL_TEXTURE_2D, 0 );
-
-    glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
-
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,  GL_TEXTURE_2D, depthBuffer,  0 );
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourBuffer, 0 );
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalBuffer, 0 );
-
-    if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE ) {
-      throw Exception( "framebuffer creation failed" );
-    }
-
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-  }
-  else if( doPostprocess ) {
-    glGenFramebuffers( 1, &mainFrame );
+  if( isOffscreen ) {
     glGenRenderbuffers( 1, &depthBuffer );
-    glGenTextures( 1, &colourBuffer );
-
     glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
     glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, renderWidth, renderHeight );
     glBindRenderbuffer( GL_RENDERBUFFER, 0 );
 
+    glGenTextures( 1, &colourBuffer );
     glBindTexture( GL_TEXTURE_2D, colourBuffer );
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
@@ -770,13 +676,14 @@ void Render::init( bool isBuild )
 
     glBindTexture( GL_TEXTURE_2D, 0 );
 
+    glGenFramebuffers( 1, &mainFrame );
     glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
 
     glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer );
     glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourBuffer, 0 );
 
     if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE ) {
-      throw Exception( "framebuffer creation failed" );
+      throw Exception( "Main framebuffer creation failed" );
     }
 
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
@@ -794,7 +701,7 @@ void Render::init( bool isBuild )
   shader.init();
   shader.load();
   shape.load();
-  camera.init();
+  camera.init( screenWidth, screenHeight );
   ui::ui.init();
 
   shader.use( shader.plain );
@@ -817,22 +724,18 @@ void Render::free( bool isBuild )
   log.println( "Shutting down Render {" );
   log.indent();
 
-  if( isDeferred ) {
+  if( isOffscreen ) {
     glDeleteFramebuffers( 1, &mainFrame );
-    glDeleteTextures( 1, &depthBuffer );
     glDeleteTextures( 1, &colourBuffer );
-    glDeleteTextures( 1, &normalBuffer );
-  }
-  else if( doPostprocess ) {
-    glDeleteFramebuffers( 1, &mainFrame );
     glDeleteRenderbuffers( 1, &depthBuffer );
-    glDeleteTextures( 1, &colourBuffer );
   }
 
   ui::ui.free();
   shape.unload();
   shader.unload();
   shader.free();
+
+  OZ_GL_CHECK_ERROR();
 
   log.unindent();
   log.println( "}" );
