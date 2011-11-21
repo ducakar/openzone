@@ -820,14 +820,15 @@ void Bot::kill()
   if( !Math::isInfFM( life ) ) {
     const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
-    p.z   -= dim.z - clazz->corpseDim.z - EPSILON;
-    dim.z = clazz->corpseDim.z;
-    flags |= WIDE_CULL_BIT;
-    flags &= ~SOLID_BIT;
-    life  = clazz->life / 2.0f - EPSILON;
-    state |= DEAD_BIT;
-    state &= ~GRAB_BIT;
-    anim  = Anim::Type( Anim::DEATH_FALLBACK + Math::rand( 3 ) );
+    p.z        -= dim.z - clazz->corpseDim.z - EPSILON;
+    dim.z      = clazz->corpseDim.z;
+    flags      |= WIDE_CULL_BIT;
+    flags      &= ~SOLID_BIT;
+    life       = clazz->life / 2.0f - EPSILON;
+    resistance = Math::INF;
+    state      |= DEAD_BIT;
+    state      &= ~GRAB_BIT;
+    anim       = Anim::Type( Anim::DEATH_FALLBACK + Math::rand( 3 ) );
 
     instrument = -1;
     taggedItem = -1;
@@ -900,6 +901,8 @@ Bot::Bot(  const BotClass* clazz_, int index, const Point3& p_, Heading heading 
 Bot::Bot( const BotClass* clazz_, InputStream* istream ) :
     Dynamic( clazz_, istream )
 {
+  dim        = istream->readVec3();
+
   h          = istream->readFloat();
   v          = istream->readFloat();
   state      = istream->readInt();
@@ -922,19 +925,15 @@ Bot::Bot( const BotClass* clazz_, InputStream* istream ) :
   anim       = Anim::Type( istream->readInt() );
 
   if( state & DEAD_BIT ) {
-    dim = clazz_->corpseDim;
-  }
-  else if( state & CROUCHING_BIT ) {
-    dim = clazz_->crouchDim;
-  }
-  else {
-    dim = clazz_->dim;
+    resistance = Math::INF;
   }
 }
 
 void Bot::write( BufferStream* ostream ) const
 {
   Dynamic::write( ostream );
+
+  ostream->writeVec3( dim );
 
   ostream->writeFloat( h );
   ostream->writeFloat( v );

@@ -169,11 +169,6 @@ _version [string] "0.3.0"
   that on version mismatch, OpenZone dumps its configuration on exit and rewrites the old file.
   Deprecated variables are not removed during that process.
 
-botProxy.externalDistFactor [float] 2.75
-  3rd person camera is
-    botProxy.externalDistFactor * object_radius
-  behind an object.
-
 botProxy.isExternal [bool] false
   Whether 3rd person camera is the default.
 
@@ -205,7 +200,7 @@ dir.prefix [string] Linux default: "/usr", Windows default: "."
   located inside the prefix directory.
 
 locale.messages [string] ""
-  Which locale should be used for translations. Empty string means that system locale is used.
+  Which locale should be used for translations. Empty string means the system locale is used.
   On Linux, run "locale -a" to see a list of installed/generated locales on your system.
   Currently there are only Slovene and English translations.
 

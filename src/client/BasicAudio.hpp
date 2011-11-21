@@ -36,7 +36,9 @@ class BasicAudio : public Audio
 {
   protected:
 
-    int oldFlags[2];
+    static const int RECENT_TICKS = Timer::TICKS_PER_SEC / 8;
+
+    int recent[ObjectClass::MAX_SOUNDS];
 
     explicit BasicAudio( const Object* obj );
 

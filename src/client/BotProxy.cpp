@@ -37,6 +37,7 @@ namespace oz
 namespace client
 {
 
+const float BotProxy::THIRD_PERSON_DIST      = 2.75f;
 const float BotProxy::THIRD_PERSON_CLIP_DIST = 0.20f;
 const float BotProxy::BOB_SUPPRESSION_COEF   = 0.60f;
 
@@ -192,11 +193,13 @@ void BotProxy::update()
   if( keys[SDLK_LSHIFT] && !oldKeys[SDLK_LSHIFT] ) {
     bot->state ^= Bot::RUNNING_BIT;
   }
-  if( keys[SDLK_x] && oldKeys[SDLK_x] ) {
-    bot->actions |= Bot::ACTION_EXIT;
-  }
-  if( ( keys[SDLK_LALT] || keys[SDLK_RALT] ) && keys[SDLK_x] && !oldKeys[SDLK_x] ) {
-    bot->actions |= Bot::ACTION_EJECT;
+  if( keys[SDLK_x] && !oldKeys[SDLK_x] ) {
+    if( keys[SDLK_LALT] || keys[SDLK_RALT] ) {
+      bot->actions |= Bot::ACTION_EJECT;
+    }
+    else {
+      bot->actions |= Bot::ACTION_EXIT;
+    }
   }
   if( ( keys[SDLK_LALT] || keys[SDLK_RALT] ) && keys[SDLK_m] && !oldKeys[SDLK_m] ) {
     bot->actions |= Bot::ACTION_SUICIDE;
@@ -341,10 +344,10 @@ void BotProxy::prepare()
 
       hard_assert( veh->flags & Object::VEHICLE_BIT );
 
-      dist = veh->dim.fastL() * externalDistFactor;
+      dist = veh->dim.fastL() * THIRD_PERSON_DIST;
     }
     else {
-      dist = bot->dim.fastL() * externalDistFactor;
+      dist = bot->dim.fastL() * THIRD_PERSON_DIST;
     }
 
     Point3 origin = bot->p + Vec3( 0.0f, 0.0f, bot->camZ );
@@ -420,9 +423,7 @@ void BotProxy::write( BufferStream* ostream ) const
 }
 
 void BotProxy::init()
-{
-  externalDistFactor = config.getSet( "botProxy.externalDistFactor", 2.75f );
-}
+{}
 
 }
 }

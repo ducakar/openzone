@@ -60,7 +60,7 @@ bool File::write( const char* buffer, int count ) const
 
 #else
 
-  int fd = open( filePath, O_WRONLY | O_CREAT, 0644 );
+  int fd = open( filePath, O_WRONLY | O_CREAT | O_TRUNC, 0644 );
   if( fd == -1 ) {
     return false;
   }
@@ -328,17 +328,17 @@ bool File::mkdir( const char* path, uint mode )
 #endif
 }
 
-bool File::ls( DArray<File>* array )
+DArray<File> File::ls()
 {
-  hard_assert( array != null && array->isEmpty() );
+  DArray<File> array;
 
   if( getType() != DIRECTORY ) {
-    return false;
+    return array;
   }
 
   DIR* directory = opendir( filePath );
   if( directory == null ) {
-    return false;
+    return array;
   }
 
   struct dirent* entity = readdir( directory );
@@ -354,10 +354,10 @@ bool File::ls( DArray<File>* array )
 
   if( count == 0 ) {
     closedir( directory );
-    return true;
+    return array;
   }
 
-  array->alloc( count );
+  array.alloc( count );
 
   rewinddir( directory );
 
@@ -365,25 +365,25 @@ bool File::ls( DArray<File>* array )
     entity = readdir( directory );
 
     if( entity == null ) {
-      array->dealloc();
+      array.dealloc();
       closedir( directory );
-      return false;
+      return array;
     }
 
     if( entity->d_name[0] != '.' ) {
-      ( *array )[i].filePath = ( filePath + "/" ) + entity->d_name;
+      array[i].filePath = ( filePath + "/" ) + entity->d_name;
 #ifdef OZ_MINGW
-      ( *array )[i].type = NONE;
+      array[i].type = NONE;
 #else
       if( entity->d_type == DT_REG ) {
-        ( *array )[i].type = REGULAR;
+        array[i].type = REGULAR;
       }
       else
         if( entity->d_type == DT_DIR ) {
-          ( *array )[i].type = DIRECTORY;
+          array[i].type = DIRECTORY;
         }
         else {
-          ( *array )[i].type = OTHER;
+          array[i].type = OTHER;
         }
 #endif
       ++i;
@@ -391,7 +391,7 @@ bool File::ls( DArray<File>* array )
   }
 
   closedir( directory );
-  return true;
+  return array;
 }
 
 }

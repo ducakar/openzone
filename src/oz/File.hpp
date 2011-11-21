@@ -178,12 +178,11 @@ class File
     /**
      * Generate a list of files in directory.
      *
-     * Hidden files (in Unix means, so everything starting with '.') are skipped. On POSIX systems
+     * Hidden files (in Unix means, so everything starting with '.') are skipped. On Unix systems
      * file types are also set - for free.
-     *
-     * @return True on success.
+     * On error, empty array is returned.
      */
-    bool ls( DArray<File>* fileList );
+    DArray<File> ls();
 
 };
 

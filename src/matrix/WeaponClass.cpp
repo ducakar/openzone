@@ -62,11 +62,11 @@ void WeaponClass::initClass( const Config* config )
 
     soundName  = config->get( "audioSound.splash", "" );
     soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
-    audioSounds[Dynamic::EVENT_SPLASH] = soundIndex;
+    audioSounds[Object::EVENT_SPLASH] = soundIndex;
 
     soundName  = config->get( "audioSound.fricting", "" );
     soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
-    audioSounds[Dynamic::EVENT_FRICTING] = soundIndex;
+    audioSounds[Object::EVENT_FRICTING] = soundIndex;
 
     soundName  = config->get( "audioSound.shot", "" );
     soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );

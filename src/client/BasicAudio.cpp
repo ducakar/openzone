@@ -40,8 +40,7 @@ Pool<BasicAudio, 2048> BasicAudio::pool;
 
 BasicAudio::BasicAudio( const Object* obj ) : Audio( obj )
 {
-  oldFlags[0] = 0;
-  oldFlags[1] = 0;
+  aSet( recent, 0, ObjectClass::MAX_SOUNDS );
 }
 
 Audio* BasicAudio::create( const Object* obj )
@@ -53,41 +52,50 @@ void BasicAudio::play( const Audio* parent )
 {
   flags |= UPDATED_BIT;
 
-  const Dynamic* dyn = static_cast<const Dynamic*>( obj );
   const int ( &sounds )[ObjectClass::MAX_SOUNDS] = obj->clazz->audioSounds;
 
-  // prevent friction sound restarting when it suspends for a tick or two
-  int objFlags = oldFlags[0] | oldFlags[1] | obj->flags;
-  oldFlags[timer.ticks % 2] = obj->flags;
-
-  // friction
-  if( parent == null &&
-      ( objFlags & ( Object::DYNAMIC_BIT | Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) ==
-      ( Object::DYNAMIC_BIT | Object::FRICTING_BIT ) && sounds[Dynamic::EVENT_FRICTING] != -1 )
-  {
-    float dvx = dyn->velocity.x;
-    float dvy = dyn->velocity.y;
-
-    if( dyn->lower != -1 ) {
-      const Dynamic* sDyn = static_cast<const Dynamic*>( orbis.objects[dyn->lower] );
-
-      if( sDyn != null ) {
-        dvx -= sDyn->velocity.x;
-        dvy -= sDyn->velocity.y;
-      }
-    }
-
-    playContSound( sounds[Dynamic::EVENT_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), obj, obj );
+  for( int i = 0; i < ObjectClass::MAX_SOUNDS; ++i ) {
+    recent[i] = max( recent[i] - 1, 0 );
   }
 
   // events
-  for( const Object::Event* event = obj->events.first(); event != null; event = event->next[0] ) {
+  foreach( event, obj->events.citer() ) {
     hard_assert( event->id < ObjectClass::MAX_SOUNDS );
 
     if( event->id >= 0 && sounds[event->id] != -1 ) {
       hard_assert( 0.0f <= event->intensity );
 
-      playSound( sounds[event->id], event->intensity, obj, parent == null ? obj : parent->obj );
+      // prevent event from repeating with too high frequency
+      if( recent[event->id] == 0 ) {
+        recent[event->id] = RECENT_TICKS;
+        playSound( sounds[event->id], event->intensity, obj, parent == null ? obj : parent->obj );
+      }
+    }
+  }
+
+  // friction
+  if( parent == null &&
+      ( obj->flags & ( Object::DYNAMIC_BIT | Object::ON_SLICK_BIT ) ) == Object::DYNAMIC_BIT &&
+      sounds[Object::EVENT_FRICTING] != -1 )
+  {
+    const Dynamic* dyn = static_cast<const Dynamic*>( obj );
+
+    if( recent[Object::EVENT_FRICTING] != 0 || ( dyn->flags & Object::FRICTING_BIT ) ) {
+      recent[Object::EVENT_FRICTING] = RECENT_TICKS;
+
+      float dvx = dyn->velocity.x;
+      float dvy = dyn->velocity.y;
+
+      if( dyn->lower != -1 ) {
+        const Dynamic* sDyn = static_cast<const Dynamic*>( orbis.objects[dyn->lower] );
+
+        if( sDyn != null ) {
+          dvx -= sDyn->velocity.x;
+          dvy -= sDyn->velocity.y;
+        }
+      }
+
+      playContSound( sounds[Object::EVENT_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), dyn, dyn );
     }
   }
 }

@@ -285,7 +285,7 @@ void Struct::onDemolish()
       dyn->destroy();
     }
     else if( dyn->flags & Object::DYNAMIC_BIT ) {
-      dyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
+      dyn->flags &= ~Object::MOVE_CLEAR_MASK;
       dyn->lower = -1;
     }
   }

@@ -153,11 +153,7 @@ static void buildTextures( const char* srcDir, const char* destDir,
   String sSrcDir = srcDir;
   String sDestDir = destDir;
   File dir( sSrcDir );
-  DArray<File> dirList;
-
-  if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '%s'", sSrcDir.cstr() );
-  }
+  DArray<File> dirList = dir.ls();
 
   sSrcDir  = sSrcDir + "/";
   sDestDir = sDestDir + "/";
@@ -203,11 +199,7 @@ static void buildTerrae()
 
   String srcDir = "terra";
   File dir( srcDir );
-  DArray<File> dirList;
-
-  if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '%s'", srcDir.cstr() );
-  }
+  DArray<File> dirList = dir.ls();
 
   srcDir = srcDir + "/";
 
@@ -230,11 +222,7 @@ static void buildCaela()
 
   String srcDir = "caelum";
   File dir( srcDir );
-  DArray<File> dirList;
-
-  if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '%s'", srcDir.cstr() );
-  }
+  DArray<File> dirList = dir.ls();
 
   srcDir = srcDir + "/";
 
@@ -259,11 +247,7 @@ static void compileBSPs()
 
   String dirName = "data/maps";
   File dir( dirName );
-  DArray<File> dirList;
-
-  if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '%s'", dirName.cstr() );
-  }
+  DArray<File> dirList = dir.ls();
 
   dirName = dirName + "/";
 
@@ -307,11 +291,7 @@ static void buildBSPs()
   String srcDir = "data/maps";
   String destDir = "bsp";
   File dir( srcDir );
-  DArray<File> dirList;
-
-  if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '%s'", srcDir.cstr() );
-  }
+  DArray<File> dirList = dir.ls();
 
   srcDir = srcDir + "/";
   destDir = destDir + "/";
@@ -380,11 +360,7 @@ static void buildModels()
 
   String dirName = "mdl";
   File dir( dirName );
-  DArray<File> dirList;
-
-  if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '%s'", dirName.cstr() );
-  }
+  DArray<File> dirList = dir.ls();
 
   dirName = dirName + "/";
 
@@ -425,11 +401,7 @@ static void checkLua( const char* path )
 
   String srcDir = path + String( "/" );
   File dir( path );
-  DArray<File> dirList;
-
-  if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '%s'", srcDir.cstr() );
-  }
+  DArray<File> dirList = dir.ls();
 
   String sources;
 

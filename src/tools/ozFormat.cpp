@@ -66,11 +66,7 @@ int main( int argc, char** argv )
 
   String srcDir = "class";
   File dir( srcDir );
-  DArray<File> dirList;
-
-  if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '%s'", srcDir.cstr() );
-  }
+  DArray<File> dirList = dir.ls();
 
   srcDir = srcDir + "/";
 

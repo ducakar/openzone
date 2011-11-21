@@ -65,11 +65,11 @@ void VehicleClass::initClass( const Config* config )
 
     soundName  = config->get( "audioSound.splash", "" );
     soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
-    audioSounds[Dynamic::EVENT_SPLASH] = soundIndex;
+    audioSounds[Object::EVENT_SPLASH] = soundIndex;
 
     soundName  = config->get( "audioSound.fricting", "" );
     soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
-    audioSounds[Dynamic::EVENT_FRICTING] = soundIndex;
+    audioSounds[Object::EVENT_FRICTING] = soundIndex;
 
     soundName  = config->get( "audioSound.engine", "" );
     soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
@@ -103,6 +103,7 @@ void VehicleClass::initClass( const Config* config )
   state = 0;
 
   OZ_CLASS_SET_STATE( Vehicle::CREW_VISIBLE_BIT, "state.crewVisible", true );
+  OZ_CLASS_SET_STATE( Vehicle::HAS_EJECT_BIT,    "state.hasEject",    false );
   OZ_CLASS_SET_STATE( Vehicle::AUTO_EJECT_BIT,   "state.autoEject",   false );
 
   mass = config->get( "mass", 100.0f );

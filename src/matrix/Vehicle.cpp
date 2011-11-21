@@ -161,43 +161,76 @@ void Vehicle::airHandler( const Mat44& rotMat )
   momentum *= 1.0f - AIR_FRICTION;
 }
 
-void Vehicle::onDestroy()
+void Vehicle::exit()
 {
-  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
-
-  Mat44 rotMat = Mat44::rotation( rot );
-
   if( pilot != -1 ) {
     Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
 
-    pilot = -1;
-
     if( bot != null ) {
-      bot->p = p + rotMat * clazz->pilotPos;
-      bot->p.z += dim.z + EXIT_EPSILON;
+      float hsc[2];
+      Math::sincos( h, &hsc[0], &hsc[1] );
 
-      if( state & AUTO_EJECT_BIT ) {
-        // kill bot if eject path is blocked
-        if( collider.overlaps( *bot, this ) ) {
-          bot->kill();
-          bot->exit();
-        }
-        else {
-          float hsc[2];
-          Math::sincos( h, &hsc[0], &hsc[1] );
+      float  handle = !( dim + bot->dim ) + EXIT_EPSILON;
+      Point3 exitPos = Point3( p.x - hsc[0] * handle, p.y + hsc[1] * handle, p.z + dim.z );
 
-          bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
-          bot->exit();
-        }
-      }
-      else {
-        bot->destroy();
-        // we must put bot out or the death sound won't be played
+      if( !collider.overlaps( AABB( exitPos, bot->dim ) ) ) {
+        pilot = -1;
+
+        bot->p = exitPos;
         bot->exit();
       }
     }
   }
-  Object::onDestroy();
+}
+
+void Vehicle::eject()
+{
+  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+
+  if( pilot != -1 ) {
+    Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
+
+    if( bot != null ) {
+      Mat44 rotMat = Mat44::rotation( rot );
+
+      bot->p = p + rotMat * clazz->pilotPos;
+      bot->p.z += dim.z + EXIT_EPSILON;
+
+      // kill bot if eject path is blocked
+      if( collider.overlaps( *bot, this ) ) {
+        bot->exit();
+        bot->kill();
+      }
+      else {
+        float hsc[2];
+        Math::sincos( h, &hsc[0], &hsc[1] );
+
+        bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
+        bot->exit();
+      }
+    }
+  }
+}
+
+void Vehicle::onDestroy()
+{
+  if( pilot != -1 ) {
+    pilot = -1;
+
+    Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
+    if( bot != null ) {
+      if( state & AUTO_EJECT_BIT ) {
+        eject();
+      }
+      else {
+        // we must put bot out or the death sound won't be played
+        bot->exit();
+        bot->destroy();
+      }
+    }
+  }
+
+  Dynamic::onDestroy();
 }
 
 void Vehicle::onUpdate()
@@ -278,38 +311,11 @@ void Vehicle::onUpdate()
     bot->velocity = velocity;
 
     if( bot->actions & Bot::ACTION_EXIT ) {
-      float hsc[2];
-      Math::sincos( h, &hsc[0], &hsc[1] );
-
-      float  handle = !( dim + bot->dim ) + EXIT_EPSILON;
-      Point3 exitPos = Point3( p.x - hsc[0] * handle, p.y + hsc[1] * handle, p.z + dim.z );
-
-      if( !collider.overlaps( AABB( exitPos, bot->dim ) ) ) {
-        pilot = -1;
-
-        bot->p = exitPos;
-        bot->exit();
-      }
+      exit();
     }
     else if( bot->actions & Bot::ACTION_EJECT ) {
-      bot->p = p + rotMat * clazz->pilotPos;
-
-      Point3 ejectPos = Point3( p.x, p.y, p.z + dim.z + bot->dim.z + EXIT_EPSILON );
-
-      pilot = -1;
-
-      // kill bot if eject path is blocked
-      if( collider.overlaps( AABB( ejectPos, bot->dim ) ) ) {
-        bot->kill();
-        bot->exit();
-      }
-      else {
-        float hsc[2];
-        Math::sincos( h, &hsc[0], &hsc[1] );
-
-        bot->p = ejectPos;
-        bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
-        bot->exit();
+      if( state & HAS_EJECT_BIT ) {
+        eject();
       }
     }
   }

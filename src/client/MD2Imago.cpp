@@ -39,7 +39,7 @@ namespace oz
 namespace client
 {
 
-const float MD2Imago::TURN_SMOOTHING_COEF = 0.80f;
+const float MD2Imago::TURN_SMOOTHING_COEF = 0.75f;
 
 Pool<MD2Imago, 256> MD2Imago::pool;
 
@@ -109,9 +109,9 @@ void MD2Imago::draw( const Imago* parent, int mask )
 
     if( !( bot->state & Bot::DEAD_BIT ) ) {
       if( bot->index == camera.bot && !camera.isExternal ) {
-        if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
-          h = bot->h;
+        h = bot->h;
 
+        if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
           tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
           tf.model.rotateZ( bot->h );
 
@@ -125,10 +125,10 @@ void MD2Imago::draw( const Imago* parent, int mask )
       else {
         if( shader.mode == Shader::SCENE && parent == null ) {
           if( bot->h - h > Math::TAU / 2.0f ) {
-            h = bot->h + TURN_SMOOTHING_COEF * ( h + Math::TAU - bot->h );
+            h = Math::mix( bot->h, h + Math::TAU, TURN_SMOOTHING_COEF );
           }
-          else if( h - bot->h > Math::TAU / 2.0f ) {
-            h = bot->h + Math::TAU + TURN_SMOOTHING_COEF * ( h - bot->h - Math::TAU );
+          else if( bot->h - h < -Math::TAU / 2.0f ) {
+            h = Math::mix( bot->h + Math::TAU, h, TURN_SMOOTHING_COEF );
           }
           else {
             h = bot->h + TURN_SMOOTHING_COEF * ( h - bot->h );

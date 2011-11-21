@@ -264,6 +264,8 @@ int Client::main( int argc, char** argv )
 
   log.print( "Setting localisation ..." );
 
+  // LANGUAGE environment variable is a nasty thing, overrides LC_MESSAGES
+  SDL_putenv( const_cast<char*>( "LANGUAGE" ) );
   setlocale( LC_MESSAGES, config.getSet( "locale.messages", "" ) );
 
   bindtextdomain( OZ_APPLICATION_NAME, "../locale" );
