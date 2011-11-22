@@ -147,14 +147,14 @@ void Bot::onUpdate()
     return;
   }
 
-  h = Math::mod( h + Math::TAU, Math::TAU );
+  h = Math::fmod( h + Math::TAU, Math::TAU );
   v = clamp( v, 0.0f, Math::TAU / 2.0f );
 
   life    = min( life + clazz->regeneration, clazz->life );
   stamina = min( stamina + clazz->staminaGain, clazz->stamina );
 
   if( actions & ~oldActions & ACTION_SUICIDE ) {
-    if( Math::isInfFM( life ) ) {
+    if( Math::isinf( life ) ) {
       life = 0.0f;
     }
     else {
@@ -670,6 +670,7 @@ void Bot::onUpdate()
 
     if( obj != null ) {
       if( obj->flags & BROWSABLE_BIT ) {
+        state &= ~GRAB_BIT;
         instrument = obj->index;
       }
       else if( ( obj->flags & ( ITEM_BIT | SOLID_BIT ) ) == ( ITEM_BIT | SOLID_BIT ) &&
@@ -725,6 +726,7 @@ void Bot::onUpdate()
   else if( actions & ~oldActions & ACTION_GRAB ) {
     if( ( state & GRAB_BIT ) || weapon != -1 || ( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) ) {
       state &= ~GRAB_BIT;
+      instrument = -1;
     }
     else {
       Bot* obj = static_cast<Bot*>( getTagged( hvsc ) );
@@ -817,7 +819,7 @@ void Bot::rearm()
 
 void Bot::kill()
 {
-  if( !Math::isInfFM( life ) ) {
+  if( !Math::isinf( life ) ) {
     const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
     p.z        -= dim.z - clazz->corpseDim.z - EPSILON;

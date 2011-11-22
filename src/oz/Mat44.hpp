@@ -176,18 +176,30 @@ class Mat44
       float ikmo = x.z * z.w - z.z * x.w;
       float ijmn = x.z * y.w - y.z * x.w;
       return
-        x.x * y.y * klop -
-        x.x * z.y * jlnp +
-        x.x * w.y * jkno -
-        y.x * x.y * klop +
-        y.x * z.y * ilmp -
-        y.x * w.y * ikmo +
-        z.x * x.y * jlnp -
-        z.x * y.y * ilmp +
-        z.x * w.y * ijmn -
-        w.x * x.y * jkno +
-        w.x * y.y * ikmo -
-        w.x * z.y * ijmn;
+          x.x * y.y * klop -
+          x.x * z.y * jlnp +
+          x.x * w.y * jkno -
+          y.x * x.y * klop +
+          y.x * z.y * ilmp -
+          y.x * w.y * ikmo +
+          z.x * x.y * jlnp -
+          z.x * y.y * ilmp +
+          z.x * w.y * ijmn -
+          w.x * x.y * jkno +
+          w.x * y.y * ikmo -
+          w.x * z.y * ijmn;
+    }
+
+    /**
+     * Determinant of the upper-left 3x3 submatrix.
+     */
+    OZ_ALWAYS_INLINE
+    float det3() const
+    {
+      return
+          x.x * ( y.y*z.z - y.z*z.y ) -
+          y.x * ( x.y*z.z - x.z*z.y ) +
+          z.x * ( x.y*y.z - x.z*y.y );
     }
 
     /**

@@ -1183,7 +1183,7 @@ int Lua::ozStrRelativeHeadingFromSelf( lua_State* l )
 
   float dx = lua.str->p.x - lua.self->p.x;
   float dy = lua.str->p.y - lua.self->p.y;
-  float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
+  float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
 
   pushfloat( angle );
   return 1;
@@ -1197,7 +1197,7 @@ int Lua::ozStrHeadingFromSelf( lua_State* l )
 
   float dx = lua.str->p.x - self->p.x;
   float dy = lua.str->p.y - self->p.y;
-  float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) - self->h ) + 720.0f, 360.0f );
+  float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) - self->h ) + 720.0f, 360.0f );
 
   pushfloat( angle );
   return 1;
@@ -1797,7 +1797,7 @@ int Lua::ozObjHeadingFromSelf( lua_State* l )
 
   float dx = lua.obj->p.x - lua.self->p.x;
   float dy = lua.obj->p.y - lua.self->p.y;
-  float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
+  float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
 
   pushfloat( angle );
   return 1;
@@ -1812,7 +1812,7 @@ int Lua::ozObjRelativeHeadingFromSelf( lua_State* l )
 
   float dx = lua.obj->p.x - self->p.x;
   float dy = lua.obj->p.y - self->p.y;
-  float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) - self->h ) + 720.0f, 360.0f );
+  float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) - self->h ) + 720.0f, 360.0f );
 
   pushfloat( angle );
   return 1;
@@ -2198,7 +2198,7 @@ int Lua::ozBotSetH( lua_State* l )
   OBJ_BOT();
 
   bot->h = Math::rad( tofloat( 1 ) );
-  bot->h = Math::mod( bot->h + Math::TAU, Math::TAU );
+  bot->h = Math::fmod( bot->h + Math::TAU, Math::TAU );
   return 0;
 }
 
@@ -2209,7 +2209,7 @@ int Lua::ozBotAddH( lua_State* l )
   OBJ_BOT();
 
   bot->h += Math::rad( tofloat( 1 ) );
-  bot->h = Math::mod( bot->h + Math::TAU, Math::TAU );
+  bot->h = Math::fmod( bot->h + Math::TAU, Math::TAU );
   return 0;
 }
 
@@ -2591,7 +2591,7 @@ int Lua::ozVehicleSetH( lua_State* l )
   OBJ_VEHICLE();
 
   vehicle->h = Math::rad( tofloat( 1 ) );
-  vehicle->h = Math::mod( vehicle->h + Math::TAU, Math::TAU );
+  vehicle->h = Math::fmod( vehicle->h + Math::TAU, Math::TAU );
 
   vehicle->rot = Quat::rotZYX( vehicle->h, 0.0f, vehicle->v - Math::TAU / 4.0f );
   return 0;
@@ -2604,7 +2604,7 @@ int Lua::ozVehicleAddH( lua_State* l )
   OBJ_VEHICLE();
 
   vehicle->h += Math::rad( tofloat( 1 ) );
-  vehicle->h = Math::mod( vehicle->h + Math::TAU, Math::TAU );
+  vehicle->h = Math::fmod( vehicle->h + Math::TAU, Math::TAU );
 
   vehicle->rot = Quat::rotZYX( vehicle->h, 0.0f, vehicle->v - Math::TAU / 4.0f );
   return 0;

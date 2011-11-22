@@ -57,7 +57,7 @@ void Caelum::build( const char* name )
                              200.0f * Math::rand() - 100.0f );
       length = ( positions[i] - Point3::ORIGIN ).sqL();
     }
-    while( Math::isNaN( length ) || length < 2500.0f || length > 10000.0f );
+    while( Math::isnan( length ) || length < 2500.0f || length > 10000.0f );
   }
 
   BufferStream os;

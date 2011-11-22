@@ -108,7 +108,7 @@ class Math
      * Reminder.
      */
     OZ_ALWAYS_INLINE
-    static float mod( float x, float y )
+    static float fmod( float x, float y )
     {
       return __builtin_fmodf( x, y );
     }
@@ -117,11 +117,9 @@ class Math
      * Get integral and fractional parts.
      */
     OZ_ALWAYS_INLINE
-    static Pair<float> fract( float x )
+    static float modf( float x, float* integral )
     {
-      float integral;
-      float fractional = __builtin_modff( x, &integral );
-      return Pair<float>( integral, fractional );
+      return __builtin_modff( x, integral );
     }
 
     /**
@@ -238,59 +236,52 @@ class Math
     }
 
     /**
-     * True iff the number is "Not a Number".
-     *
-     * Function does not work with <tt>-ffast-math</tt> turned on.
+     * True iff the number is not NaN or infinity.
      */
     OZ_ALWAYS_INLINE
-    static bool isNaN( float x )
+    static bool isfinite( float x )
     {
-      return __builtin_isnan( x );
-    }
-
-    /**
-     * True iff the number is not "Not a Number" or infinity.
-     *
-     * Function does not work with <tt>-ffast-math</tt> turned on.
-     */
-    OZ_ALWAYS_INLINE
-    static bool isFinite( float x )
-    {
+#if defined( __GNUC__ ) && !defined( __clang__ )
+      return x + 1.0f != x;
+#else
       return __builtin_isfinite( x );
+#endif
     }
 
     /**
      * True iff the number (positive or negative) infinity.
-     *
-     * Function does not work with <tt>-ffast-math</tt> turned on.
      */
     OZ_ALWAYS_INLINE
-    static int isInf( float x )
+    static int isinf( float x )
     {
+#if defined( __GNUC__ ) && !defined( __clang__ )
+      return x + 1.0f == x && x * 0.0f != x;
+#else
       return __builtin_isinf( x );
+#endif
+    }
+
+    /**
+     * True iff the number is NaN.
+     */
+    OZ_ALWAYS_INLINE
+    static bool isnan( float x )
+    {
+#if defined( __GNUC__ ) && !defined( __clang__ )
+      return x + 1.0f == x && x * 0.0f == x;
+#else
+      return __builtin_isnan( x );
+#endif
     }
 
     /**
      * True iff the number is not subnormal (i.e. too close to zero for the whole mantissa to be
      * used).
-     *
-     * Function does not work with <tt>-ffast-math</tt> turned on.
      */
     OZ_ALWAYS_INLINE
-    static bool isNormal( float x )
+    static bool isnormal( float x )
     {
       return __builtin_isnormal( x );
-    }
-
-    /**
-     * True iff the number is (positive or negative) infinity.
-     *
-     * Function works with <tt>-ffast-math</tt>.
-     */
-    OZ_ALWAYS_INLINE
-    static int isInfFM( float x )
-    {
-      return x == 2.0f * x;
     }
 
     /**

@@ -39,10 +39,13 @@ class BotProxy : public Proxy
 {
   private:
 
-    static const float THIRD_PERSON_DIST;
+    static const float EXTERNAL_CAM_DIST;
     // leave this much space between obstacle and camera, if camera is brought closer to the eyes
     // because of an obstacle
-    static const float THIRD_PERSON_CLIP_DIST;
+    static const float EXTERNAL_CAM_CLIP_DIST;
+    static const float SHOULDER_CAM_RIGHT;
+    static const float SHOULDER_CAM_UP;
+    static const float VEHICLE_CAM_UP_FACTOR;
     static const float BOB_SUPPRESSION_COEF;
 
     ui::HudArea*       hud;

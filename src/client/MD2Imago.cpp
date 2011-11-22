@@ -133,7 +133,7 @@ void MD2Imago::draw( const Imago* parent, int mask )
           else {
             h = bot->h + TURN_SMOOTHING_COEF * ( h - bot->h );
           }
-          h = Math::mod( h + Math::TAU, Math::TAU );
+          h = Math::fmod( h + Math::TAU, Math::TAU );
 
           tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
           tf.model.rotateZ( h );
