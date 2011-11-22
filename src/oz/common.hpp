@@ -107,14 +107,14 @@ namespace oz
     oz::_softAssert( #cond, __FILE__, __LINE__, __PRETTY_FUNCTION__ ) )
 
 /**
- * Helper function for <tt>soft_assert</tt>.
+ * Helper function for <tt>hard_assert</tt>.
  *
  * @ingroup oz
  */
 void _hardAssert( const char* message, const char* file, int line, const char* function );
 
 /**
- * Helper function for <tt>hard_assert</tt>.
+ * Helper function for <tt>soft_assert</tt>.
  *
  * @ingroup oz
  */

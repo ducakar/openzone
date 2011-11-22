@@ -109,7 +109,7 @@ void Render::prepareDraw()
   shader.isInWater = ( collider.hit.medium & Material::WATER_BIT ) != 0;
 
   visibility = shader.isInWater ? WATER_VISIBILITY : visibilityRange;
-  windPhi    = Math::mod( windPhi + WIND_PHI_INC, Math::TAU );
+  windPhi    = Math::fmod( windPhi + WIND_PHI_INC, Math::TAU );
 
   // frustum
   camera.maxDist = visibility;

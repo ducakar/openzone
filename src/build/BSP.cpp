@@ -87,7 +87,7 @@ void BSP::load()
   mins = Point3( -maxDim, -maxDim, -maxDim );
   maxs = Point3( +maxDim, +maxDim, +maxDim );
 
-  if( Math::isNaN( scale ) || Math::isNaN( maxDim ) ) {
+  if( Math::isnan( scale ) || Math::isnan( maxDim ) ) {
     throw Exception( "Invalid BSP config" );
   }
 
@@ -970,7 +970,7 @@ void BSP::check() const
   }
 
   for( int i = 0; i < nPlanes; ++i ) {
-    if( !Math::isFinite( planes[i].d ) ) {
+    if( !Math::isfinite( planes[i].d ) ) {
       throw Exception( "BSP has invalid plane %d", i );
     }
   }

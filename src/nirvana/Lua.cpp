@@ -927,7 +927,7 @@ int Lua::ozStrHeadingFromSelf( lua_State* l )
 
   float dx = lua.str->p.x - lua.self->p.x;
   float dy = lua.str->p.y - lua.self->p.y;
-  float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
+  float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
 
   pushfloat( angle );
   return 1;
@@ -940,7 +940,7 @@ int Lua::ozStrRelativeHeadingFromSelf( lua_State* l )
 
   float dx = lua.str->p.x - lua.self->p.x;
   float dy = lua.str->p.y - lua.self->p.y;
-  float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) - lua.self->h ) + 720.0f, 360.0f );
+  float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) - lua.self->h ) + 720.0f, 360.0f );
 
   pushfloat( angle );
   return 1;
@@ -1336,7 +1336,7 @@ int Lua::ozObjHeadingFromSelf( lua_State* l )
 
   float dx = lua.obj->p.x - lua.self->p.x;
   float dy = lua.obj->p.y - lua.self->p.y;
-  float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
+  float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
 
   pushfloat( angle );
   return 1;
@@ -1350,7 +1350,7 @@ int Lua::ozObjRelativeHeadingFromSelf( lua_State* l )
 
   float dx = lua.obj->p.x - lua.self->p.x;
   float dy = lua.obj->p.y - lua.self->p.y;
-  float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) - lua.self->h ) + 720.0f, 360.0f );
+  float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) - lua.self->h ) + 720.0f, 360.0f );
 
   pushfloat( angle );
   return 1;
@@ -1877,7 +1877,7 @@ int Lua::ozSelfSetH( lua_State* l )
   ARG( 1 );
 
   lua.self->h = Math::rad( tofloat( 1 ) );
-  lua.self->h = Math::mod( lua.self->h + Math::TAU, Math::TAU );
+  lua.self->h = Math::fmod( lua.self->h + Math::TAU, Math::TAU );
   return 1;
 }
 
@@ -1886,7 +1886,7 @@ int Lua::ozSelfAddH( lua_State* l )
   ARG( 1 );
 
   lua.self->h += Math::rad( tofloat( 1 ) );
-  lua.self->h = Math::mod( lua.self->h + Math::TAU, Math::TAU );
+  lua.self->h = Math::fmod( lua.self->h + Math::TAU, Math::TAU );
   return 1;
 }
 
@@ -1903,7 +1903,7 @@ int Lua::ozSelfSetV( lua_State* l )
   ARG( 1 );
 
   lua.self->v = Math::rad( tofloat( 1 ) );
-  lua.self->v = Math::mod( lua.self->v + Math::TAU, Math::TAU );
+  lua.self->v = Math::fmod( lua.self->v + Math::TAU, Math::TAU );
   return 1;
 }
 
@@ -1912,7 +1912,7 @@ int Lua::ozSelfAddV( lua_State* l )
   ARG( 1 );
 
   lua.self->v += Math::rad( tofloat( 1 ) );
-  lua.self->v = Math::mod( lua.self->v + Math::TAU, Math::TAU );
+  lua.self->v = Math::fmod( lua.self->v + Math::TAU, Math::TAU );
   return 1;
 }
 

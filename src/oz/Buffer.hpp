@@ -42,7 +42,7 @@ class Buffer
 {
   private:
 
-    char* data;  ///< Storage.
+    char* data; ///< Storage.
     int   size; ///< Data length in bytes.
 
   public:

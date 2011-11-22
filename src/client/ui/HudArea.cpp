@@ -50,11 +50,9 @@ void HudArea::drawBotCrosshair()
 
   glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
 
-  if( !camera.isExternal ) {
-    glBindTexture( GL_TEXTURE_2D, crossTexId );
-    shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
-    glBindTexture( GL_TEXTURE_2D, 0 );
-  }
+  glBindTexture( GL_TEXTURE_2D, crossTexId );
+  shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
+  glBindTexture( GL_TEXTURE_2D, 0 );
 
   if( bot->parent == -1 && camera.tagged != -1 ) {
     const Object*      taggedObj   = camera.taggedObj;
@@ -70,7 +68,7 @@ void HudArea::drawBotCrosshair()
     const Bot*     taggedBot = static_cast<const Bot*>( taggedObj );
 
     float life;
-    if( Math::isInfFM( taggedObj->life ) ) {
+    if( Math::isinf( taggedObj->life ) ) {
       life = 1.0f;
     }
     else if( taggedObj->flags & Object::BOT_BIT ) {
@@ -171,7 +169,7 @@ void HudArea::drawBotStatus()
   const BotClass* botClazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
   float life;
-  if( Math::isInfFM( bot->life ) ) {
+  if( Math::isinf( bot->life ) ) {
     life = 1.0f;
   }
   else {
@@ -255,7 +253,7 @@ void HudArea::drawVehicleStatus()
   tf.camera = Mat44::ID;
   tf.applyCamera();
 
-  float life      = Math::isInfFM( vehicle->life ) ? 1.0f : vehicle->life / vehClazz->life;
+  float life      = Math::isinf( vehicle->life ) ? 1.0f : vehicle->life / vehClazz->life;
   int   lifeWidth = max( int( life * 198.0f ), 0 );
 
   glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );

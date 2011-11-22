@@ -37,7 +37,7 @@ Caelum::Caelum() : id( -1 ), heading( 0.0f ), period( 86400.0f ), time( 0.0f )
 
 void Caelum::update()
 {
-  time = Math::mod( time + Timer::TICK_TIME, period );
+  time = Math::fmod( time + Timer::TICK_TIME, period );
 }
 
 void Caelum::read( InputStream* istream )

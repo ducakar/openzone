@@ -84,9 +84,11 @@ void BotAudio::play( const Audio* parent )
   {
     const Dynamic* dyn = static_cast<const Dynamic*>( obj );
 
-    if( recent[Object::EVENT_FRICTING] != 0 || ( dyn->flags & Object::FRICTING_BIT ) ) {
+    if( dyn->flags & Object::FRICTING_BIT ) {
       recent[Object::EVENT_FRICTING] = RECENT_TICKS;
+    }
 
+    if( recent[Object::EVENT_FRICTING] != 0 ) {
       float dvx = dyn->velocity.x;
       float dvy = dyn->velocity.y;
 

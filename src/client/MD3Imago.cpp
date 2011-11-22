@@ -125,7 +125,7 @@ void MD3Imago::draw( const Imago* parent, int mask )
       h = bot->h + TURN_SMOOTHING_COEF * ( h - bot->h );
     }
 
-    h = Math::mod( h + Math::TAU, Math::TAU );
+    h = Math::fmod( h + Math::TAU, Math::TAU );
     tf.model.rotateZ( h );
   }
 

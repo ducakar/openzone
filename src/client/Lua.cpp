@@ -1841,7 +1841,7 @@ int Lua::ozBotSetH( lua_State* l )
   OBJ_BOT();
 
   bot->h = Math::rad( tofloat( 1 ) );
-  bot->h = Math::mod( bot->h + Math::TAU, Math::TAU );
+  bot->h = Math::fmod( bot->h + Math::TAU, Math::TAU );
   return 0;
 }
 
@@ -1852,7 +1852,7 @@ int Lua::ozBotAddH( lua_State* l )
   OBJ_BOT();
 
   bot->h += Math::rad( tofloat( 1 ) );
-  bot->h = Math::mod( bot->h + Math::TAU, Math::TAU );
+  bot->h = Math::fmod( bot->h + Math::TAU, Math::TAU );
   return 0;
 }
 
@@ -2218,7 +2218,7 @@ int Lua::ozVehicleSetH( lua_State* l )
   OBJ_VEHICLE();
 
   vehicle->h = Math::rad( tofloat( 1 ) );
-  vehicle->h = Math::mod( vehicle->h + Math::TAU, Math::TAU );
+  vehicle->h = Math::fmod( vehicle->h + Math::TAU, Math::TAU );
 
   vehicle->rot = Quat::rotZYX( vehicle->h, 0.0f, vehicle->v - Math::TAU / 4.0f );
   return 0;
@@ -2231,7 +2231,7 @@ int Lua::ozVehicleAddH( lua_State* l )
   OBJ_VEHICLE();
 
   vehicle->h += Math::rad( tofloat( 1 ) );
-  vehicle->h = Math::mod( vehicle->h + Math::TAU, Math::TAU );
+  vehicle->h = Math::fmod( vehicle->h + Math::TAU, Math::TAU );
 
   vehicle->rot = Quat::rotZYX( vehicle->h, 0.0f, vehicle->v - Math::TAU / 4.0f );
   return 0;

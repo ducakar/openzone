@@ -65,8 +65,6 @@ class Sound
     uint           musicBuffers[2];
     uint           musicSource;
 
-    int            preferredFreq;
-
     char           musicBuffer[MUSIC_BUFFER_SIZE];
 
     // music track id to switch to, -1 to do nothing, -2 stop playing

@@ -37,8 +37,11 @@ namespace oz
 namespace client
 {
 
-const float BotProxy::THIRD_PERSON_DIST      = 2.75f;
-const float BotProxy::THIRD_PERSON_CLIP_DIST = 0.20f;
+const float BotProxy::EXTERNAL_CAM_DIST      = 2.75f;
+const float BotProxy::EXTERNAL_CAM_CLIP_DIST = 0.20f;
+const float BotProxy::SHOULDER_CAM_RIGHT     = 0.25f;
+const float BotProxy::SHOULDER_CAM_UP        = 0.25f;
+const float BotProxy::VEHICLE_CAM_UP_FACTOR  = 0.15f;
 const float BotProxy::BOB_SUPPRESSION_COEF   = 0.60f;
 
 BotProxy::BotProxy() : hud( null ), infoFrame( null ), inventory( null ), container( null )
@@ -303,7 +306,7 @@ void BotProxy::prepare()
             ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT | Bot::GRAB_BIT ) ) ==
               Bot::RUNNING_BIT ? clazz->bobRunInc : clazz->bobWalkInc;
 
-        bobPhi   = Math::mod( bobPhi + bobInc, Math::TAU );
+        bobPhi   = Math::fmod( bobPhi + bobInc, Math::TAU );
         bobTheta = Math::sin( bobPhi ) * clazz->bobRotation;
         bobBias  = Math::sin( 2.0f * bobPhi ) * clazz->bobAmplitude;
       }
@@ -314,7 +317,7 @@ void BotProxy::prepare()
             ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT ) ) == Bot::RUNNING_BIT ?
             clazz->bobSwimRunInc : clazz->bobSwimInc;
 
-        bobPhi   = Math::mod( bobPhi + bobInc, Math::TAU );
+        bobPhi   = Math::fmod( bobPhi + bobInc, Math::TAU );
         bobTheta = 0.0f;
         bobBias  = Math::sin( 2.0f * bobPhi ) * clazz->bobSwimAmplitude;
       }
@@ -338,25 +341,25 @@ void BotProxy::prepare()
     camera.w = 0.0f;
     camera.align();
 
-    float dist;
+    Point3 origin = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
+    Vec3   offset;
+
     if( bot->parent != -1 && orbis.objects[bot->parent] ) {
       Vehicle* veh = static_cast<Vehicle*>( orbis.objects[bot->parent] );
 
       hard_assert( veh->flags & Object::VEHICLE_BIT );
 
-      dist = veh->dim.fastL() * THIRD_PERSON_DIST;
+      float dist = veh->dim.fastL() * EXTERNAL_CAM_DIST;
+      offset = camera.rotMat * Vec3( 0.0f, VEHICLE_CAM_UP_FACTOR * dist, dist );
     }
     else {
-      dist = bot->dim.fastL() * THIRD_PERSON_DIST;
+      float dist = bot->dim.fastL() * EXTERNAL_CAM_DIST;
+      offset = camera.rotMat * Vec3( SHOULDER_CAM_RIGHT, SHOULDER_CAM_UP, dist );
     }
-
-    Point3 origin = bot->p + Vec3( 0.0f, 0.0f, bot->camZ );
-    Vec3   offset = -camera.at * dist;
 
     collider.translate( origin, offset, bot );
 
     offset *= collider.hit.ratio;
-    offset += camera.at * THIRD_PERSON_CLIP_DIST;
 
     camera.warpMoveZ( origin + offset );
   }
@@ -402,7 +405,7 @@ void BotProxy::prepare()
 
 void BotProxy::reset()
 {
-  isExternal = config.getSet( "botProxy.isExternal", false );
+  isExternal = false;
   isFreelook = false;
 }
 

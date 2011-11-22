@@ -47,20 +47,20 @@ class Frag
      *  FIELDS
      */
 
-    Frag*  prev[1];
-    Frag*  next[1];
+    Frag*           prev[1];
+    Frag*           next[1];
 
-    Cell*  cell;
-    int    index;         // position in world.objects vector
+    Cell*           cell;
+    int             index;         // position in world.objects vector
 
     const FragPool* pool;
 
-    Point3 p;
-    Vec3   velocity;
+    Point3          p;
+    Vec3            velocity;
 
-    float  life;
-    float  mass;
-    float  restitution;
+    float           life;
+    float           mass;
+    float           restitution;
 
     // no copying
     Frag( const Frag& ) = delete;

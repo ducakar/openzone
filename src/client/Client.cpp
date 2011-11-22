@@ -249,13 +249,21 @@ int Client::main( int argc, char** argv )
       initFlags |= INIT_CONFIG;
     }
     else {
-      log.println( "Invalid configuration file version, will be overwritten on exit."
-                   "If you experience any trouble, delete it." );
+      log.println( "Invalid configuration version, default configuration will be used and written "
+                   "on exit" );
+
+      String prefixDir = config.get( "dir.prefix", OZ_INSTALL_PREFIX );
+      String seed      = config.get( "seed", "TIME" );
+
+      config.clear();
       config.add( "_version", OZ_APPLICATION_VERSION );
+      config.get( "_version", "" );
+      config.add( "dir.prefix", prefixDir );
+      config.add( "seed", seed );
     }
   }
   else {
-    log.println( "No configuration file, default configuration will be written on exit" );
+    log.println( "No configuration file, default configuration will be used and written on exit" );
     config.add( "_version", OZ_APPLICATION_VERSION );
     config.get( "_version", "" );
   }

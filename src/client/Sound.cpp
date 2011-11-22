@@ -73,7 +73,7 @@ bool Sound::loadMusicBuffer( uint buffer )
 
   do {
     result = int( ov_read( &oggStream, &musicBuffer[bytesRead], MUSIC_BUFFER_SIZE - bytesRead,
-                            false, 2, true, &section ) );
+                           false, 2, true, &section ) );
     bytesRead += result;
     if( result <= 0 ) {
       return false;
@@ -257,19 +257,15 @@ void Sound::init()
 
   const char* deviceName = config.getSet( "sound.device", "" );
 
+  log.print( "Initialising device '%s' ...", deviceName );
+
   soundDevice = alcOpenDevice( deviceName );
   if( soundDevice == null ) {
-    log.println( "Failed to open OpenAL device" );
-    log.unindent();
-    log.println( "}" );
     throw Exception( "Failed to open OpenAL device" );
   }
 
-  preferredFreq = config.getSet( "sound.frequency", DEFAULT_FREQUENCY );
-
   int defaultAttributes[] = {
-    ALC_FREQUENCY, preferredFreq,
-    ALC_SYNC, 0,
+    ALC_SYNC, AL_FALSE,
     ALC_MONO_SOURCES, 255,
     ALC_STEREO_SOURCES, 1,
     0
@@ -277,18 +273,14 @@ void Sound::init()
 
   soundContext = alcCreateContext( soundDevice, defaultAttributes );
   if( soundContext == null ) {
-    log.println( "Failed to create OpenAL context" );
-    log.unindent();
-    log.println( "}" );
     throw Exception( "Failed to create OpenAL context" );
   }
 
   if( alcMakeContextCurrent( soundContext ) != ALC_TRUE ) {
-    log.println( "Failed to select OpenAL context" );
-    log.unindent();
-    log.println( "}" );
     throw Exception( "Failed to select OpenAL context" );
   }
+
+  log.printEnd( " OK" );
 
   OZ_AL_CHECK_ERROR();
 
@@ -360,8 +352,8 @@ void Sound::init()
 
   alSourcei( musicSource, AL_SOURCE_RELATIVE, AL_TRUE );
 
-  setVolume( config.getSet( "sound.volume", 0.5f ) );
-  setMusicVolume( config.getSet( "sound.volume.music", 0.5f ) );
+  setVolume( config.getSet( "sound.volume", 1.0f ) );
+  setMusicVolume( 0.5f );
 
   log.unindent();
   log.println( "}" );

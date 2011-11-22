@@ -46,7 +46,7 @@ BotProxy       Camera::botProxy;
 
 void Camera::align()
 {
-  h       = Math::mod( h + Math::TAU, Math::TAU );
+  h       = Math::fmod( h + Math::TAU, Math::TAU );
   v       = clamp( v, 0.0f, Math::TAU / 2.0f );
 
   rot     = Quat::rotZ( h ) ^ Quat::rotX( v ) ^ Quat::rotZ( w );

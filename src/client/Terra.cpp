@@ -120,7 +120,7 @@ void Terra::drawWater()
     return;
   }
 
-  waveBias = Math::mod( waveBias + WAVE_BIAS_INC, Math::TAU );
+  waveBias = Math::fmod( waveBias + WAVE_BIAS_INC, Math::TAU );
 
   shader.use( waterShaderId );
 
