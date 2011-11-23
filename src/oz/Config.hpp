@@ -45,16 +45,29 @@ class Config
     static const int SIZE = 256;
 
     /// Size of buffer used when loading from file (maximum key/value length).
-    static const int BUFFER_SIZE = 1024;
+    static const int LINE_BUFFER_SIZE = 1024;
 
     /// Column for value alignment when writing .rc configuration files.
     static const int ALIGNMENT = 32;
 
-    HashString<String, SIZE>            vars;     ///< %List of variables.
-#ifndef NDEBUG
-    mutable HashString<nullptr_t, SIZE> usedVars; ///< %List of accessed variables.
-    String                              filePath; ///< For warning messages about unused variables.
-#endif
+    /**
+     * Entry value.
+     */
+    struct Value
+    {
+      String       text;   ///< Entry value.
+      mutable bool isUsed; ///< To track whether the entry has been used.
+
+      /**
+       * Constructor.
+       */
+      explicit Value( const char* text_, bool isUsed_ = false ) : text( text_ ), isUsed( isUsed_ )
+      {}
+    };
+
+    HashString<Value, SIZE> vars;                   ///< %List of variables.
+    String                  filePath;               ///< Needed to warn about unused variables.
+    char                    line[LINE_BUFFER_SIZE]; ///< Internal buffer used during file parsing.
 
     /**
      * Load configuration from a .rc file (does not override existing variables).

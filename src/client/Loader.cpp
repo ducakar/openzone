@@ -294,17 +294,16 @@ void Loader::cleanup()
 void Loader::makeScreenshot()
 {
   uint* pixels = new uint[camera.width * camera.height * 4];
-  char fileName[1024];
+  char fileName[256];
   time_t ct;
   struct tm t;
 
   ct = time( null );
   t = *localtime( &ct );
 
-  snprintf( fileName, 1024, "%s/screenshot %04d-%02d-%02d %02d:%02d:%02d.bmp",
+  snprintf( fileName, 256, "%s/screenshot %04d-%02d-%02d %02d:%02d:%02d.bmp",
             config.get( "dir.rc", "" ),
             1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec );
-  fileName[1023] = '\0';
 
   log.print( "Saving screenshot to '%s' ...", fileName );
 

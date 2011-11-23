@@ -26,6 +26,7 @@
 #pragma once
 
 #include "Math.hpp"
+#include "Simd.hpp"
 
 namespace oz
 {

@@ -130,6 +130,10 @@ void System::signalHandler( int signum )
     signum = 0;
   }
 
+  if( signum == SIGINT ) {
+    isHaltEnabled = false;
+  }
+
   abort( "Caught signal %d %s (%s)", signum, SIGNALS[signum][0], SIGNALS[signum][1] );
 }
 

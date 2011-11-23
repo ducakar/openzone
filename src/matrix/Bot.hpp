@@ -63,8 +63,8 @@ class Bot : public Dynamic
     static const int ACTION_SUICIDE           = 0x00004000;
 
     static const int ACTION_INV_USE           = 0x00008000;
-    static const int ACTION_INV_DROP          = 0x00020000;
-    static const int ACTION_INV_GRAB          = 0x00030000;
+    static const int ACTION_INV_DROP          = 0x00010000;
+    static const int ACTION_INV_GRAB          = 0x00020000;
     static const int ACTION_INV_TAKE          = 0x00040000;
     static const int ACTION_INV_GIVE          = 0x00080000;
 

@@ -340,7 +340,7 @@ void Shader::init()
   log.println( "Initialising Shader {" );
   log.indent();
 
-  hasVertexTexture = config.get( "shader.vertexTexture", true );
+  hasVertexTexture = config.getSet( "shader.vertexTexture", true );
 
   bool isDeferred    = config.get( "render.deferred", false );
   bool doPostprocess = config.get( "render.postprocess", false );

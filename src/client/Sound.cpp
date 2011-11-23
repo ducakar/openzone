@@ -27,9 +27,7 @@
 
 #include "client/Sound.hpp"
 
-#include "matrix/Collider.hpp"
 #include "client/Camera.hpp"
-
 #include "client/OpenAL.hpp"
 
 namespace oz
@@ -39,8 +37,7 @@ namespace client
 
 Sound sound;
 
-const float Sound::DMAX = 160.0f;
-const float Sound::DMAX_SQ = DMAX * DMAX;
+const float Sound::MAX_DISTANCE = 160.0f;
 
 void Sound::playCell( int cellX, int cellY )
 {
@@ -56,9 +53,10 @@ void Sound::playCell( int cellX, int cellY )
       context.playBSP( str );
     }
   }
-  for( const Object* obj = cell.objects.first(); obj != null; obj = obj->next[0] ) {
+
+  foreach( obj, cell.objects.citer() ) {
     if( obj->flags & Object::AUDIO_BIT ) {
-      if( ( camera.p - obj->p ).sqL() < DMAX_SQ ) {
+      if( ( camera.p - obj->p ).sqL() < MAX_DISTANCE*MAX_DISTANCE ) {
         context.playAudio( obj, null );
       }
     }
@@ -142,7 +140,7 @@ void Sound::play()
   }
   playedStructs.clearAll();
 
-  Span span = orbis.getInters( camera.p, DMAX + AABB::MAX_DIM );
+  Span span = orbis.getInters( camera.p, MAX_DISTANCE + AABB::MAX_DIM );
 
   for( int x = span.minX ; x <= span.maxX; ++x ) {
     for( int y = span.minY; y <= span.maxY; ++y ) {

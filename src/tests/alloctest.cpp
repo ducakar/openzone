@@ -44,23 +44,23 @@ int main( int, char** )
 
   chdir( "share/openzone" );
 
-  library.init();
-  matrix.init();
-  synapse.load();
-  orbis.load();
+  matrix::library.init();
+  matrix::matrix.init();
+  matrix::synapse.load();
+  matrix::orbis.load();
 
   for( int i = 0; i < 1000000; ++i ) {
-    float x = -Orbis::DIM + Math::rand() * 2.0f * Orbis::DIM;
-    float y = -Orbis::DIM + Math::rand() * 2.0f * Orbis::DIM;
-    float z = -Orbis::DIM + Math::rand() * 2.0f * Orbis::DIM;
+    float x = -matrix::Orbis::DIM + Math::rand() * 2.0f * matrix::Orbis::DIM;
+    float y = -matrix::Orbis::DIM + Math::rand() * 2.0f * matrix::Orbis::DIM;
+    float z = -matrix::Orbis::DIM + Math::rand() * 2.0f * matrix::Orbis::DIM;
 
-    synapse.addObject( "Tree2", Point3( x, y, z ), NORTH );
+    matrix::synapse.addObject( "Tree2", Point3( x, y, z ), matrix::NORTH );
   }
 
-  synapse.unload();
-  orbis.unload();
-  matrix.free();
-  library.init();
+  matrix::synapse.unload();
+  matrix::orbis.unload();
+  matrix::matrix.free();
+  matrix::library.init();
 
   SDL_Quit();
 

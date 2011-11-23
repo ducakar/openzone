@@ -47,7 +47,6 @@
 
 #include "build/modules/GalileoModule.hpp"
 
-#include <clocale>
 #include <unistd.h>
 
 #include <SDL/SDL_main.h>
@@ -527,9 +526,6 @@ int main( int argc, char** argv )
 
   log.unindent();
   log.println( "}" );
-
-  setlocale( LC_CTYPE, config.getSet( "locale.ctype", "" ) );
-  setlocale( LC_MESSAGES, config.getSet( "locale.messages", "" ) );
 
   String prefixDir = config.get( "dir.prefix", OZ_INSTALL_PREFIX );
   String dataDir   = prefixDir + "/share/" OZ_APPLICATION_NAME;

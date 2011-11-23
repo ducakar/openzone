@@ -81,6 +81,8 @@ namespace oz
  * Memory pool consists of a linked list of memory blocks, each an array of uninitialised elements
  * of the specified data type.
  *
+ * Unless <tt>NDEBUG</tt> macro is defined, all freed memory is rewritten with 0xee byte values.
+ *
  * @ingroup oz
  */
 template <class Type, int BLOCK_SIZE = 256>

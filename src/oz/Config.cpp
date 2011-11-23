@@ -51,11 +51,8 @@ struct Elem
 
 bool Config::loadConf( const char* path )
 {
-#ifndef NDEBUG
   filePath = path;
-#endif
 
-  char buffer[BUFFER_SIZE];
   int  lineNum = 1;
   char ch;
 
@@ -76,19 +73,19 @@ bool Config::loadConf( const char* path )
     String name;
 
     if( String::isLetter( ch ) || ch == '_' ) {
-      buffer[0] = ch;
+      line[0] = ch;
       ch = char( fgetc( f ) );
 
       int i = 1;
-      while( i < BUFFER_SIZE - 1 &&
+      while( i < LINE_BUFFER_SIZE - 1 &&
              ( String::isLetter( ch ) || String::isDigit( ch ) || ch == '_' || ch == '.' ) )
       {
-        buffer[i] = ch;
+        line[i] = ch;
         ch = char( fgetc( f ) );
         ++i;
       }
-      buffer[i] = '\0';
-      name = buffer;
+      line[i] = '\0';
+      name = line;
     }
     else {
       goto skipLine;
@@ -103,14 +100,14 @@ bool Config::loadConf( const char* path )
       ch = char( fgetc( f ) );
 
       int i = 0;
-      while( i < BUFFER_SIZE - 1 && ch != '"' && ch != '\n' && ch != EOF ) {
-        buffer[i] = ch;
+      while( i < LINE_BUFFER_SIZE - 1 && ch != '"' && ch != '\n' && ch != EOF ) {
+        line[i] = ch;
         ch = char( fgetc( f ) );
         ++i;
       }
       if( ch == '"' ) {
-        buffer[i] = '\0';
-        include( name, buffer );
+        line[i] = '\0';
+        include( name, line );
       }
       else {
         throw Exception( "%s:%d: Unterminated value string", path, lineNum );
@@ -144,7 +141,7 @@ bool Config::saveConf( const char* path )
   int i = 0;
   foreach( j, vars.citer() ) {
     sortedVars[i].key   = j.key().cstr();
-    sortedVars[i].value = j.value().cstr();
+    sortedVars[i].value = j.value().text.cstr();
     ++i;
   }
   sortedVars.sort();
@@ -179,20 +176,20 @@ Config::~Config()
 
 void Config::add( const char* key, const char* value_ )
 {
-  String* value = vars.find( key );
+  Value* value = vars.find( key );
   if( value != null ) {
-    *value = value_;
+    *value = Value( value_ );
   }
   else {
-    vars.add( key, value_ );
+    vars.add( key, Value( value_ ) );
   }
 }
 
 void Config::include( const char* key, const char* value_ )
 {
-  String* value = vars.find( key );
+  Value* value = vars.find( key );
   if( value == null ) {
-    vars.add( key, value_ );
+    vars.add( key, Value( value_ ) );
   }
 }
 
@@ -208,20 +205,19 @@ bool Config::contains( const char* key ) const
 
 bool Config::get( const char* key, bool defVal ) const
 {
-  const String* value = vars.find( key );
-  if( value != null ) {
-#ifndef NDEBUG
-    usedVars.include( key );
-#endif
+  const Value* value = vars.find( key );
 
-    if( value->equals( "true" ) ) {
+  if( value != null ) {
+    value->isUsed = true;
+
+    if( value->text.equals( "true" ) ) {
       return true;
     }
-    else if( value->equals( "false" ) ) {
+    else if( value->text.equals( "false" ) ) {
       return false;
     }
     else {
-      throw Exception( "Invalid boolean value '%s'", value->cstr() );
+      throw Exception( "Invalid boolean value '%s'", value->text.cstr() );
     }
   }
   else {
@@ -231,18 +227,17 @@ bool Config::get( const char* key, bool defVal ) const
 
 int Config::get( const char* key, int defVal ) const
 {
-  const String* value = vars.find( key );
+  const Value* value = vars.find( key );
+
   if( value != null ) {
-#ifndef NDEBUG
-    usedVars.include( key );
-#endif
+    value->isUsed = true;
 
     errno = 0;
     char* end;
-    int   num = int( strtol( *value, &end, 0 ) );
+    int   num = int( strtol( value->text, &end, 0 ) );
 
-    if( errno != 0 || end == value->cstr() ) {
-      throw Exception( "Invalid int value '%s'", value->cstr() );
+    if( errno != 0 || end == value->text.cstr() ) {
+      throw Exception( "Invalid int value '%s'", value->text.cstr() );
     }
     else {
       return num;
@@ -255,18 +250,17 @@ int Config::get( const char* key, int defVal ) const
 
 float Config::get( const char* key, float defVal ) const
 {
-  const String* value = vars.find( key );
+  const Value* value = vars.find( key );
+
   if( value != null ) {
-#ifndef NDEBUG
-    usedVars.include( key );
-#endif
+    value->isUsed = true;
 
     errno = 0;
     char* end;
-    float num = strtof( *value, &end );
+    float num = strtof( value->text, &end );
 
-    if( errno != 0 || end == value->cstr() ) {
-      throw Exception( "Invalid float value '%s'", value->cstr() );
+    if( errno != 0 || end == value->text.cstr() ) {
+      throw Exception( "Invalid float value '%s'", value->text.cstr() );
     }
     else {
       return num;
@@ -279,13 +273,12 @@ float Config::get( const char* key, float defVal ) const
 
 const char* Config::get( const char* key, const char* defVal ) const
 {
-  const String* value = vars.find( key );
-  if( value != null ) {
-#ifndef NDEBUG
-    usedVars.include( key );
-#endif
+  const Value* value = vars.find( key );
 
-    return *value;
+  if( value != null ) {
+    value->isUsed = true;
+
+    return value->text;
   }
   else {
     return defVal;
@@ -294,90 +287,86 @@ const char* Config::get( const char* key, const char* defVal ) const
 
 bool Config::getSet( const char* key, bool defVal )
 {
-#ifndef NDEBUG
-  usedVars.include( key );
-#endif
+  const Value* value = vars.find( key );
 
-  const String* value = vars.find( key );
   if( value != null ) {
-    if( value->equals( "true" ) ) {
+    value->isUsed = true;
+
+    if( value->text.equals( "true" ) ) {
       return true;
     }
-    else if( value->equals( "false" ) ) {
+    else if( value->text.equals( "false" ) ) {
       return false;
     }
     else {
-      throw Exception( "Invalid boolean value '%s'", value->cstr() );
+      throw Exception( "Invalid boolean value '%s'", value->text.cstr() );
     }
   }
   else {
-    vars.add( key, String( defVal ) );
+    vars.add( key, Value( String( defVal ), true ) );
     return defVal;
   }
 }
 
 int Config::getSet( const char* key, int defVal )
 {
-#ifndef NDEBUG
-  usedVars.include( key );
-#endif
+  const Value* value = vars.find( key );
 
-  const String* value = vars.find( key );
   if( value != null ) {
+    value->isUsed = true;
+
     errno = 0;
     char* end;
-    int   num = int( strtol( *value, &end, 0 ) );
+    int   num = int( strtol( value->text, &end, 0 ) );
 
-    if( errno != 0 || end == value->cstr() ) {
-      throw Exception( "Invalid int value '%s'", value->cstr() );
+    if( errno != 0 || end == value->text.cstr() ) {
+      throw Exception( "Invalid int value '%s'", value->text.cstr() );
     }
     else {
       return num;
     }
   }
   else {
-    vars.add( key, String( defVal ) );
+    vars.add( key, Value( String( defVal ), true ) );
     return defVal;
   }
 }
 
 float Config::getSet( const char* key, float defVal )
 {
-#ifndef NDEBUG
-  usedVars.include( key );
-#endif
+  const Value* value = vars.find( key );
 
-  const String* value = vars.find( key );
   if( value != null ) {
+    value->isUsed = true;
+
     errno = 0;
     char* end;
-    float num = strtof( *value, &end );
+    float num = strtof( value->text, &end );
 
-    if( errno != 0 || end == value->cstr() ) {
-      throw Exception( "Invalid float value '%s'", value->cstr() );
+    if( errno != 0 || end == value->text.cstr() ) {
+      throw Exception( "Invalid float value '%s'", value->text.cstr() );
     }
     else {
       return num;
     }
   }
   else {
-    vars.add( key, String( defVal ) );
+    vars.add( key, Value( String( defVal ), true ) );
     return defVal;
   }
 }
 
 const char* Config::getSet( const char* key, const char* defVal )
 {
-#ifndef NDEBUG
-  usedVars.include( key );
-#endif
+  const Value* value = vars.find( key );
 
-  const String* value = vars.find( key );
   if( value != null ) {
-    return *value;
+    value->isUsed = true;
+
+    return value->text;
   }
   else {
-    vars.add( key, defVal );
+    vars.add( key, Value( defVal, true ) );
     return defVal;
   }
 }
@@ -408,25 +397,19 @@ bool Config::save( const char* path )
 
 void Config::clear( bool issueWarnings )
 {
-#ifndef NDEBUG
   if( issueWarnings ) {
     foreach( var, vars.citer() ) {
-      if( !usedVars.contains( var.key() ) ) {
+      if( !var.value().isUsed ) {
         System::bell();
         log.println( "%s: unused variable '%s'", filePath.cstr(), var.key().cstr() );
       }
     }
   }
 
-  usedVars.clear();
-  usedVars.dealloc();
-
-  filePath = "";
-#else
-  static_cast<void>( issueWarnings );
-#endif
   vars.clear();
   vars.dealloc();
+
+  filePath = "";
 }
 
 String Config::toString( const String& indentString )
@@ -440,7 +423,7 @@ String Config::toString( const String& indentString )
   int i = 0;
   foreach( j, vars.citer() ) {
     sortedVars[i].key = j.key().cstr();
-    sortedVars[i].value = j.value().cstr();
+    sortedVars[i].value = j.value().text.cstr();
     ++i;
   }
   sortedVars.sort();
