@@ -160,7 +160,10 @@ uint Context::readTexture( InputStream* stream )
   int nMipmaps       = stream->readInt();
   int internalFormat = stream->readInt();
 
-  bool usesS3TC = internalFormat == GL_COMPRESSED_RGB_S3TC_DXT1_EXT ||
+  bool usesS3TC =
+      internalFormat == GL_COMPRESSED_RGB_S3TC_DXT1_EXT ||
+      internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT ||
+      internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT ||
       internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 
   if( !shader.hasS3TC && usesS3TC ) {
@@ -186,7 +189,7 @@ uint Context::readTexture( InputStream* stream )
     }
     else {
       glTexImage2D( GL_TEXTURE_2D, i, internalFormat, width, height, 0,
-                    GL_RGBA, GL_UNSIGNED_BYTE, stream->forward( size ) );
+                    uint( internalFormat ), GL_UNSIGNED_BYTE, stream->forward( size ) );
     }
   }
 

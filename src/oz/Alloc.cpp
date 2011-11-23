@@ -29,6 +29,7 @@
 #include "Log.hpp"
 
 #include <cstdlib>
+#include <cstring>
 
 #ifdef OZ_MINGW
 # include <malloc.h>
@@ -178,7 +179,11 @@ static void posix_memalign_free( void* ptr )
  */
 void* operator new ( size_t size ) throw( std::bad_alloc )
 {
-  hard_assert( !Alloc::isLocked );
+#ifndef NDEBUG
+  if( Alloc::isLocked ) {
+    System::abort( "operator new called while memory allocation is locked" );
+  }
+#endif
 
   size += Alloc::alignUp( sizeof( size_t ) );
 
@@ -234,7 +239,11 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
  */
 void* operator new[] ( size_t size ) throw( std::bad_alloc )
 {
-  hard_assert( !Alloc::isLocked );
+#ifndef NDEBUG
+  if( Alloc::isLocked ) {
+    System::abort( "operator new[] called while memory allocation is locked" );
+  }
+#endif
 
   size += Alloc::alignUp( sizeof( size_t ) );
 
@@ -289,7 +298,11 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
  */
 void operator delete ( void* ptr ) throw()
 {
-  hard_assert( !Alloc::isLocked );
+#ifndef NDEBUG
+  if( Alloc::isLocked ) {
+    System::abort( "operator delete called while memory allocation is locked" );
+  }
+#endif
 
   if( ptr == null ) {
     return;
@@ -302,7 +315,7 @@ void operator delete ( void* ptr ) throw()
   Alloc::amount -= size;
 
 #ifndef NDEBUG
-  __builtin_memset( chunk, 0xee, size );
+  memset( chunk, 0xee, size );
 #endif
 
 #ifdef OZ_TRACE_LEAKS
@@ -366,7 +379,11 @@ backtraceFound:;
  */
 void operator delete[] ( void* ptr ) throw()
 {
-  hard_assert( !Alloc::isLocked );
+#ifndef NDEBUG
+  if( Alloc::isLocked ) {
+    System::abort( "operator delete[] called while memory allocation is locked" );
+  }
+#endif
 
   if( ptr == null ) {
     return;
@@ -379,7 +396,7 @@ void operator delete[] ( void* ptr ) throw()
   Alloc::amount -= size;
 
 #ifndef NDEBUG
-  __builtin_memset( chunk, 0xee, size );
+  memset( chunk, 0xee, size );
 #endif
 
 #ifdef OZ_TRACE_LEAKS

@@ -68,7 +68,7 @@ void Terra::load()
       image->format->BytesPerPixel != 1 )
   {
     SDL_FreeSurface( image );
-    throw Exception( "Invalid terrain heightmap format, should be %d x %d 8 bpp",
+    throw Exception( "Invalid terrain heightmap format, should be %d x %d 8 bpp greyscale",
                      matrix::Terra::VERTS, matrix::Terra::VERTS );
   }
 

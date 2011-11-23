@@ -84,7 +84,7 @@ void Client::shutdown()
     }
   }
 
-  config.clear( true );
+  config.clear( initFlags & INIT_CONFIG );
 
   if( initFlags & INIT_SDL ) {
     log.print( "Shutting down SDL ..." );

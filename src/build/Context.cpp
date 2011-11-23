@@ -58,16 +58,39 @@ bool Context::useS3TC = false;
 uint Context::buildTexture( const void* data, int width, int height, uint format,
                             bool wrap, int magFilter, int minFilter )
 {
-  OZ_GL_CHECK_ERROR();
-
   if( useS3TC && !( Math::isPow2( width ) && Math::isPow2( height ) ) ) {
     throw Exception( "Texture must be of dimensions 2^n x 2^m to use S3 texture compression." );
   }
 
   bool generateMipmaps = false;
-  int  internalFormat = format == GL_RGBA || format == GL_BGRA ?
-       ( useS3TC ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_RGBA ) :
-       ( useS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_RGB );
+  int internalFormat;
+
+  switch( format ) {
+    case GL_LUMINANCE: {
+      internalFormat = useS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_LUMINANCE;
+      break;
+    }
+    case GL_RGB:
+    case GL_BGR:
+    case GL_COLOR_INDEX: {
+      internalFormat = useS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_RGB;
+      break;
+    }
+    // GL_LUMINANCE_ALPHA is temporarily abused to represent indexed colours with transparency
+    case GL_LUMINANCE_ALPHA: {
+      format = GL_COLOR_INDEX;
+      internalFormat = useS3TC ? GL_COMPRESSED_RGBA_S3TC_DXT1_EXT : GL_RGBA;
+      break;
+    }
+    case GL_RGBA:
+    case GL_BGRA: {
+      internalFormat = useS3TC ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_RGBA;
+      break;
+    }
+    default: {
+      throw Exception( "Internal format resolution fall-through" );
+    }
+  }
 
   uint texId;
   glGenTextures( 1, &texId );
@@ -152,10 +175,56 @@ uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int mi
     throw Exception( "Texture loading failed" );
   }
 
-  uint        format;
+  uint format;
   const char* sFormat;
 
-  if( image->format->BitsPerPixel == 24 ) {
+  if( image->format->BitsPerPixel == 8 ) {
+    if( image->format->palette == null ) {
+      format = GL_LUMINANCE;
+      sFormat = "greyscale";
+    }
+    else {
+      SDL_Palette* palette = image->format->palette;
+
+      if( palette->ncolors > 256 ) {
+        throw Exception( "Palette for indexed images should not have more than 256 colours" );
+      }
+
+      float red[256];
+      float green[256];
+      float blue[256];
+      float alpha[256];
+
+      for( int i = 0; i < palette->ncolors; ++i ) {
+        red[i]   = float( palette->colors[i].r ) / 256.0f;
+        green[i] = float( palette->colors[i].g ) / 256.0f;
+        blue[i]  = float( palette->colors[i].b ) / 256.0f;
+        alpha[i] = i == int( image->format->colorkey ) ? 0.0f : 1.0f;
+      }
+      for( int i = palette->ncolors; i < 256; ++i ) {
+        red[i]   = 1.0f;
+        green[i] = 1.0f;
+        blue[i]  = 1.0f;
+        alpha[i] = 1.0f;
+      }
+
+      glPixelMapfv( GL_PIXEL_MAP_I_TO_R, 256, red );
+      glPixelMapfv( GL_PIXEL_MAP_I_TO_G, 256, green );
+      glPixelMapfv( GL_PIXEL_MAP_I_TO_B, 256, blue );
+      glPixelMapfv( GL_PIXEL_MAP_I_TO_A, 256, alpha );
+
+      if( image->flags & SDL_SRCCOLORKEY ) {
+        // GL_LUMINANCE_ALPHA is temporarily abused to represent indexed colours with transparency
+        format = GL_LUMINANCE_ALPHA;
+        sFormat = "indexed(" + String( palette->ncolors ) + ", alpha)";
+      }
+      else {
+        format = GL_COLOR_INDEX;
+        sFormat = "indexed(" + String( palette->ncolors ) + ")";
+      }
+    }
+  }
+  else if( image->format->BitsPerPixel == 24 ) {
     if( String::equals( ext, ".tga" ) ) {
       format = GL_BGR;
       sFormat = "BGR";
@@ -176,10 +245,12 @@ uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int mi
     }
   }
   else {
-    throw Exception( "Wrong texture format. Should be 24 bpp RGB/BGR or 32 bpp RGBA/BGRA" );
+    throw Exception( "Wrong texture format. Should be indexed, greyscale, RGB/BGR or RGBA/BGRA." );
   }
 
   log.printEnd( " %s ... OK", sFormat );
+
+  OZ_GL_CHECK_ERROR();
 
   int bytesPerPixel = image->format->BitsPerPixel / 8;
   char* bytes = reinterpret_cast<char*>( image->pixels );
@@ -206,8 +277,6 @@ uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int mi
   SDL_FreeSurface( image );
 
   if( texId == 0 || !glIsTexture( texId ) ) {
-    glDeleteTextures( 1, &texId );
-
     throw Exception( "Texture loading failed" );
   }
 
@@ -268,9 +337,12 @@ void Context::writeTexture( uint id, BufferStream* stream )
 #endif
     }
     else {
-      glGetTexImage( GL_TEXTURE_2D, i, GL_RGBA, GL_UNSIGNED_BYTE, stream->forward( size ) );
+      glGetTexImage( GL_TEXTURE_2D, i, uint( internalFormat ),
+                     GL_UNSIGNED_BYTE, stream->forward( size ) );
     }
   }
+
+  glDeleteTextures( 1, &id );
 
   OZ_GL_CHECK_ERROR();
 }

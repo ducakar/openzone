@@ -46,8 +46,7 @@ class Sound
 {
   private:
 
-    static const float DMAX;
-    static const float DMAX_SQ;
+    static const float MAX_DISTANCE;
 
     static const int DEFAULT_FREQUENCY = 44100;
     static const int MUSIC_BUFFER_SIZE = 64 * 1024;
@@ -60,6 +59,9 @@ class Sound
 
     OggVorbis_File oggStream;
     vorbis_info*   vorbisInfo;
+
+#ifdef OZ_NONFREE
+#endif
 
     int            musicFormat;
     uint           musicBuffers[2];
@@ -74,6 +76,9 @@ class Sound
 
     void playCell( int cellX, int cellY );
     bool loadMusicBuffer( uint buffer );
+
+#ifdef OZ_NONFREE
+#endif
 
   public:
 

@@ -84,7 +84,7 @@ void Render::scheduleCell( int cellX, int cellY )
     }
   }
 
-  for( const Object* obj = cell.objects.first(); obj != null; obj = obj->next[0] ) {
+  foreach( obj, cell.objects.citer() ) {
     float radius = obj->flags & Object::WIDE_CULL_BIT ?
         WIDE_CULL_FACTOR * obj->dim.fastL() : obj->dim.fastL();
 
@@ -93,7 +93,7 @@ void Render::scheduleCell( int cellX, int cellY )
     }
   }
 
-  for( const Frag* frag = cell.frags.first(); frag != null; frag = frag->next[0] ) {
+  foreach( frag, cell.frags.citer() ) {
     if( frustum.isVisible( frag->p, FragPool::FRAG_RADIUS ) ) {
       frags.add( frag );
     }
@@ -508,9 +508,9 @@ void Render::init( bool isBuild )
   log.println( "Initialising Render {" );
   log.indent();
 
-  int  screenWidth  = config.get( "screen.width", 0 );
-  int  screenHeight = config.get( "screen.height", 0 );
-  int  screenBpp    = config.get( "screen.bpp", 0 );
+  int  screenWidth  = config.getSet( "screen.width", 0 );
+  int  screenHeight = config.getSet( "screen.height", 0 );
+  int  screenBpp    = config.getSet( "screen.bpp", 0 );
   bool isFullscreen = config.getSet( "screen.full", true );
 
   log.print( "Creating OpenGL window %dx%d-%d %s ...",

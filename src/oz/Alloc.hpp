@@ -38,6 +38,9 @@ namespace oz
  * statistics, specific alignment and optionally tracks memory leaks (if <tt>OZ_TRACE_LEAKS</tt>
  * config option is turned on).
  *
+ * Unless <tt>NDEBUG</tt> macro was defined when building liboz, all freed memory is rewritten with
+ * 0xee byte values.
+ *
  * @ingroup oz
  */
 class Alloc
@@ -68,8 +71,9 @@ class Alloc
     /**
      * Enable/disable memory (de)allocation.
      *
-     * Any attempt of memory (de)allocation via <tt>new</tt>/<tt>delete</tt> will throw
-     * a <code>std::bad_alloc</code> exception unless <tt>isLocked == true</tt>.<br/>
+     * If <tt>isLocked == true</tt>, any attempt of memory (de)allocation via
+     * <tt>new</tt>/<tt>delete</tt> will abort the application with <code>System::abort()</code>.
+     * if liboz was compiled without <tt>NDEBUG</tt> macro.
      * Since it is a weak symbol you can override it in some other module with a custom definition
      * <code><pre>
      *   bool oz::Alloc::isLocked = false;
