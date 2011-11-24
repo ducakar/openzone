@@ -158,12 +158,7 @@ void Lua::staticCall( const char* functionName )
   lua_pcall( l, 0, 0, 0 );
 
   if( gettop() != 0 ) {
-    log.println( "C! [%s] %s", functionName, tostring( -1 ) );
-    settop( 0 );
-
-    if( !config.get( "lua.tolerant", false ) ) {
-      throw Exception( "Client Lua function call finished with an error" );
-    }
+    throw Exception( "Client Lua function call finished with an error" );
   }
 }
 
@@ -278,8 +273,6 @@ void Lua::registerConstant( const char* name, const char* value )
 void Lua::init()
 {
   log.print( "Initialising Client Lua ..." );
-
-  config.getSet( "lua.tolerant", false );
 
   l = luaL_newstate();
   if( l == null ) {

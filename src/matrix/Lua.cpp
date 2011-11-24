@@ -154,12 +154,7 @@ void Lua::objectCall( const char* functionName, Object* self_, Bot* user_ )
   lua_pcall( l, 1, 0, 0 );
 
   if( gettop() != 1 ) {
-    log.println( "M! [%s] %s", functionName, tostring( -1 ) );
-    settop( 1 );
-
-    if( !config.get( "lua.tolerant", false ) ) {
-      throw Exception( "Matrix Lua function call finished with an error" );
-    }
+    throw Exception( "Matrix Lua function call finished with an error" );
   }
 }
 
@@ -259,8 +254,6 @@ void Lua::init()
 {
   log.println( "Initialising Matrix Lua {" );
   log.indent();
-
-  config.getSet( "lua.tolerant", false );
 
   l = luaL_newstate();
   if( l == null ) {

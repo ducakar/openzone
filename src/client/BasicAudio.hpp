@@ -36,7 +36,7 @@ class BasicAudio : public Audio
 {
   protected:
 
-    static const int RECENT_TICKS = Timer::TICKS_PER_SEC / 8;
+    static const int RECENT_TICKS = Timer::TICKS_PER_SEC / 16;
 
     int recent[ObjectClass::MAX_SOUNDS];
 

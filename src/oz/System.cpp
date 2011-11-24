@@ -236,6 +236,7 @@ int System::getStackTrace( char** bufferPtr )
   char** frames  = backtrace_symbols( framePtrs + 1, nFrames );
 
   if( frames == null ) {
+    *bufferPtr = null;
     return 0;
   }
 

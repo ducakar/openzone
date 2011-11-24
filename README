@@ -187,11 +187,6 @@ camera.mouseXSens [float] 0.005
 camera.mouseYSens [float] 0.005
   Mouse sensitivity for X axis when rotating camera.
 
-camera.smoothCoef [float] 0.5
-  Camera smoothing used when camera is moved in strategic mode. When in bot camera mode smoothing
-  is performed only along Z axis (vertical). Camera position is calculated as
-    old_position + camera.smoothCoef * ( destination_position - old_position )
-
 dir.prefix [string] Linux default: "/usr", Windows default: "."
   Prefix path to game directory structure. The share/openzone and share/locale directories must be
   located inside the prefix directory.
@@ -200,9 +195,6 @@ locale.messages [string] ""
   Which locale should be used for translations. Empty string means the system locale is used.
   On Linux, run "locale -a" to see a list of installed/generated locales on your system.
   Currently there are only Slovene and English translations.
-
-lua.tolerant [bool] false
-  Do not crash on script errors.
 
 modules.profile.playerName [string] "<user>"
   Name of the player. Username of the current user is used as default.
