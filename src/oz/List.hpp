@@ -35,7 +35,7 @@ namespace oz
  *
  * It can only be applied on classes that have a <tt>next[]</tt> member.
  * Example:
- * <code><pre>
+ * <pre>
  * struct C
  * {
  *   C*  next[2];
@@ -44,7 +44,7 @@ namespace oz
  * ...
  * List\<C, 0\> list1;
  * List\<C, 1\> list2;
- * </pre></code>
+ * </pre>
  *
  * That way the objects of the same class can be in two separate lists at once.
  * <tt>next[0]</tt> points to next element in <tt>list1</tt> and

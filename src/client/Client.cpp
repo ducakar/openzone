@@ -131,9 +131,9 @@ int Client::main( int argc, char** argv )
   initFlags = 0;
 
   bool   doAutoload    = false;
-  String mission;
   bool   isBenchmark   = false;
   float  benchmarkTime = 0.0f;
+  String mission;
 
   optind = 1;
   int opt;

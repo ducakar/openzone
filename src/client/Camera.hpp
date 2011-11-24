@@ -41,6 +41,7 @@ class Camera
   public:
 
     static const float MIN_DISTANCE;
+    static const float SMOOTHING_COEF;
 
     enum State
     {
@@ -55,7 +56,6 @@ class Camera
     float mouseYSens;
     float keyXSens;
     float keyYSens;
-    float smoothCoef;
 
     static StrategicProxy strategicProxy;
     static BotProxy       botProxy;
@@ -142,7 +142,7 @@ class Camera
 
     void move( const Point3& pos )
     {
-      p    = Math::mix( oldP, pos, smoothCoef );
+      p    = Math::mix( oldP, pos, SMOOTHING_COEF );
       newP = pos;
       oldP = p;
     }
@@ -158,7 +158,7 @@ class Camera
     {
       p.x  = pos.x;
       p.y  = pos.y;
-      p.z  = Math::mix( oldP.z, pos.z, smoothCoef );
+      p.z  = Math::mix( oldP.z, pos.z, SMOOTHING_COEF );
       newP = pos;
       oldP = p;
     }

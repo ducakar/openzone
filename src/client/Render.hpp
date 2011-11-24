@@ -59,39 +59,45 @@ class Render
     static const float WIND_FACTOR;
     static const float WIND_PHI_INC;
 
-    struct ObjectEntry
+    struct ModelEntry
     {
       float dist2;
       union
       {
         const Struct* str;
         const Object* obj;
+        const Frag*   frag;
       };
 
-      ObjectEntry() = default;
+      ModelEntry() = default;
 
       OZ_ALWAYS_INLINE
-      explicit ObjectEntry( float dist2_, const Struct* str_ ) :
+      explicit ModelEntry( float dist2_, const Struct* str_ ) :
           dist2( dist2_ ), str( str_ )
       {}
 
       OZ_ALWAYS_INLINE
-      explicit ObjectEntry( float dist2_, const Object* obj_ ) :
+      explicit ModelEntry( float dist2_, const Object* obj_ ) :
           dist2( dist2_ ), obj( obj_ )
       {}
 
       OZ_ALWAYS_INLINE
-      bool operator < ( const ObjectEntry& oe ) const
+      explicit ModelEntry( float dist2_, const Frag* frag_ ) :
+          dist2( dist2_ ), frag( frag_ )
+      {}
+
+      OZ_ALWAYS_INLINE
+      bool operator < ( const ModelEntry& me ) const
       {
-        return dist2 < oe.dist2;
+        return dist2 < me.dist2;
       }
     };
 
     Bitset                  drawnStructs;
 
-    Vector<ObjectEntry>     structs;
-    Vector<ObjectEntry>     objects;
-    Vector<const Frag*>     frags;
+    Vector<ModelEntry>      structs;
+    Vector<ModelEntry>      objects;
+    Vector<ModelEntry>      frags;
 
     Vector<const Struct*>   waterStructs;
 

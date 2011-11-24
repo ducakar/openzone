@@ -39,7 +39,8 @@ namespace client
 
 Camera camera;
 
-const float Camera::MIN_DISTANCE = 0.1f;
+const float Camera::MIN_DISTANCE   = 0.1f;
+const float Camera::SMOOTHING_COEF = 0.5f;
 
 StrategicProxy Camera::strategicProxy;
 BotProxy       Camera::botProxy;
@@ -254,7 +255,6 @@ void Camera::init( int screenWidth, int screenHeight )
   mouseYSens    = config.getSet( "camera.mouseYSens", 0.005f );
   keyXSens      = config.getSet( "camera.keysXSens",  2.0f );
   keyYSens      = config.getSet( "camera.keysYSens",  2.0f );
-  smoothCoef    = config.getSet( "camera.smoothCoef", 0.50f );
 
   float angle   = Math::rad( config.getSet( "camera.angle", 80.0f ) );
 

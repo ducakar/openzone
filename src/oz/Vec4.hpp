@@ -121,7 +121,7 @@ class Vec4 : public Vec3
      */
 #ifdef OZ_SIMD
     OZ_ALWAYS_INLINE
-    explicit Vec4( const Vec3& v, float w_ ) : Vec3( float4( v.x, v.y, v.z, w ) )
+    explicit Vec4( const Vec3& v, float w_ ) : Vec3( float4( v.x, v.y, v.z, w_ ) )
     {}
 #else
     OZ_ALWAYS_INLINE

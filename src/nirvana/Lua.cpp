@@ -153,12 +153,7 @@ void Lua::mindCall( const char* functionName, Bot* self_ )
   lua_pcall( l, 1, 0, 0 );
 
   if( gettop() != 1 ) {
-    log.println( "N! [%s] %s", functionName, tostring( -1 ) );
-    settop( 1 );
-
-    if( !config.get( "lua.tolerant", false ) ) {
-      throw Exception( "Nirvana Lua function call finished with an error" );
-    }
+    throw Exception( "Nirvana Lua function call finished with an error" );
   }
 }
 
@@ -254,8 +249,6 @@ void Lua::init()
 {
   log.println( "Initialising Nirvana Lua {" );
   log.indent();
-
-  config.getSet( "lua.tolerant", false );
 
   l = luaL_newstate();
   if( l == null ) {

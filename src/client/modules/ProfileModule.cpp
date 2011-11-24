@@ -31,6 +31,11 @@
 
 #include "luamacros.hpp"
 
+#ifndef __clang__
+// GCC bug, issues false warning
+# pragma GCC diagnostic ignored "-Wconversion"
+#endif
+
 namespace oz
 {
 namespace client
@@ -45,10 +50,18 @@ void ProfileModule::registerLua() const
 
 void ProfileModule::init()
 {
-  const char* userName = getenv( "USER" );
+  const char* userName = SDL_getenv( "USER" );
   userName = userName == null ? "Player" : userName;
 
-  playerName = config.getSet( "modules.profile.playerName", userName );
+  char playerName[64];
+  strncpy( playerName, userName, 64 );
+  playerName[63] = '\0';
+
+  if( 'a' <= playerName[0] && playerName[0] <= 'z' ) {
+    playerName[0] += char( 'A' - 'a' );
+  }
+
+  this->playerName = config.getSet( "modules.profile.playerName", playerName );
 }
 
 int ProfileModule::ozProfileGetPlayerName( lua_State* l )

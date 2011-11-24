@@ -181,11 +181,11 @@ endif()
 set( libs_tools "${libs};${SDLIMAGE_LIBRARY}" )
 
 # compiler and linker flags
-set( flags "-pipe -std=c++0x -pedantic -fno-zero-initialized-in-bss -ffast-math" )
+set( flags "-pipe -std=c++0x -pedantic -fno-zero-initialized-in-bss -fvisibility=hidden" )
 set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wattributes" )
 set( warnings "${warnings} -Wconversion -Wsign-conversion -Wsign-promo -Wcast-align" )
 set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor -Wdisabled-optimization" )
-set( arch_flags "-msse3" )
+set( arch_flags "-msse3 -ffast-math" )
 
 if( OZ_CLANG )
   set( warnings "${warnings} -Wno-invalid-offsetof" )

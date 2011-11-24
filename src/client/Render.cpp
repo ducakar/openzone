@@ -79,7 +79,7 @@ void Render::scheduleCell( int cellX, int cellY )
       float   radius = dim.fastL();
 
       if( frustum.isVisible( p, radius ) ) {
-        structs.add( ObjectEntry( ( p - camera.p ).sqL(), str ) );
+        structs.add( ModelEntry( ( p - camera.p ).sqL(), str ) );
       }
     }
   }
@@ -89,13 +89,13 @@ void Render::scheduleCell( int cellX, int cellY )
         WIDE_CULL_FACTOR * obj->dim.fastL() : obj->dim.fastL();
 
     if( frustum.isVisible( obj->p, radius ) ) {
-      objects.add( ObjectEntry( ( obj->p - camera.p ).sqL(), obj ) );
+      objects.add( ModelEntry( ( obj->p - camera.p ).sqL(), obj ) );
     }
   }
 
   foreach( frag, cell.frags.citer() ) {
     if( frustum.isVisible( frag->p, FragPool::FRAG_RADIUS ) ) {
-      frags.add( frag );
+      frags.add( ModelEntry( ( frag->p - camera.p ).sqL(), frag ) );
     }
   }
 }
@@ -148,6 +148,7 @@ void Render::prepareDraw()
 
   structs.sort();
   objects.sort();
+  frags.sort();
 
   currentTime = SDL_GetTicks();
   prepareMillis += currentTime - beginTime;
@@ -252,8 +253,8 @@ void Render::drawGeometry()
   glBindTexture( GL_TEXTURE_2D, 0 );
   glUniform1f( param.oz_Specular, 1.0f );
 
-  for( int i = 0; i < frags.length(); ++i ) {
-    context.drawFrag( frags[i] );
+  for( int i = frags.length() - 1; i >= 0; --i ) {
+    context.drawFrag( frags[i].frag );
   }
 
   // draw transparent parts of objects

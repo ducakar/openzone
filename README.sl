@@ -170,14 +170,6 @@ _version [string] "0.3.0"
   that on version mismatch, OpenZone dumps its configuration on exit and rewrites the old file.
   Deprecated variables are not removed during that process.
 
-botProxy.externalDistFactor [float] 2.75
-  3rd person camera is
-    botProxy.externalDistFactor * object_radius
-  behind an object.
-
-botProxy.isExternal [bool] false
-  Whether 3rd person camera is the default.
-
 camera.angle [float] 80.0
   Vertical camera angle in degrees. Horizontal angle is calculated from aspect ratio.
 
@@ -196,22 +188,14 @@ camera.mouseXSens [float] 0.005
 camera.mouseYSens [float] 0.005
   Mouse sensitivity for X axis when rotating camera.
 
-camera.smoothCoef [float] 0.5
-  Camera smoothing used when camera is moved in strategic mode. When in bot camera mode smoothing
-  is performed only along Z axis (vertical). Camera position is calculated as
-    old_position + camera.smoothCoef * ( destination_position - old_position )
-
-dir.prefix [string] Unix-like systems' default: "/usr", Windows default: "."
+dir.prefix [string] Linux default: "/usr", Windows default: "."
   Prefix path to game directory structure. The share/openzone and share/locale directories must be
   located inside the prefix directory.
 
 locale.messages [string] ""
-  Which locale should be used for translations. Empty string means that system locale is used.
+  Which locale should be used for translations. Empty string means the system locale is used.
   On Linux, run "locale -a" to see a list of installed/generated locales on your system.
   Currently there are only Slovene and English translations.
-
-lua.tolerant [bool] false
-  Do not crash on script errors.
 
 modules.profile.playerName [string] "<user>"
   Name of the player. Username of the current user is used as default.
@@ -224,15 +208,21 @@ mouse.accelFactor [float] 0.05
 
 render.deferred [bool] false
   Enable deferred shading. Not implemented.
+  This option has effect only if offscreen rendering is enabled.
 
-render.height [int] 0
-  Height of offscreen buffer used for deferred rendering and postprocess of the world. Zero equals
-  screen resolution.
+render.offscreen [bool] true
+  Enable rendering into offscreen buffers instead directly to the screen. This enables some advanced
+  effects like deferred shading, postprocess effects. It also enables that the world and UI are
+  rendered at resolutions that differ from the screen resolution.
 
 render.postprocess [bool] true
   When enabled, world is rendered into an offscreen buffer. The image is postprocessed and then
   rendered to the screen. This technique only applies for the world, UI is always rendered directly.
   The offscreen buffer may use different resolution than the screen.
+
+render.scale [float] 1.0
+  Scale of resolution of offscreen buffer where world is rendered to.
+  This option has effect only if offscreen rendering is enabled.
 
 render.showAim [bool] false
   Draw a small green box at the point you are currenty aiming at. It is intended for testing
@@ -244,10 +234,6 @@ render.showBounds [bool] false
 
 render.visibilityRange [float] 300.0
   Visibility range.
-
-render.width [int] 0
-  Width of offscreen buffer used for deferred rendering and postprocess of the world. Zero equals
-  screen resolution.
 
 screen.bpp [int] 0
   Desired bits per pixel for the screen mode. This setting is not necessarily obeyed. If zero, SDL
@@ -281,30 +267,26 @@ shader.setSamplerIndices [bool] false
   textures on older ATI/AMD Catalyst drivers.
 
 shader.vertexTexture [bool] false
-  Use vertex texture fetch feature to perform MD2 model animation on vertex shaders. Should work
+  Use vertex texture fetch feature to perform MD2 model animation in vertex shader. Should work
   on GeForce 6 or newer or Radeon 2xxx or newer. Does not work with Catalyst drivers.
 
 sound.device [string] ""
   Sound device to pass to OpenAL. Empty string to let OpenAL choose on its own.
 
-sound.frequency [int] 44100
-  Sound frequency output from OpenAL. Best to use the same frequency used by your sound mixer or
-  server. PulseAudio uses 44100 Hz by default and ALSA dmix uses 48000 Hz (may depend in Linux
-  your distro).
-
 sound.volume [float] 1.0
   Sound volume factor. 1.0 means full (original) intensity.
 
-sound.volume.music [float] 0.5
-  Music volume factor. 1.0 means the same intensity as all other sounds.
+ui.aspect [float] 0.0
+  Aspect ratio for UI. If 0.0, aspect is the same as resolution and bots axes are scaled by ui.scale
+  factor. Otherwise, height is scaled by ui.scale and width is height scaled by ui.aspect.
 
 ui.scale [float] 1.0
-  UI scale factor. Factor 1.0 means that UI runs on screen resolution.
+  Scale for UI resolution. 1.0 means UI is rendered with the screen resolution.
 
 ui.showBuild [bool] false
   Show a windows with buttons to add various objects into the world. For development purpuses.
 
-ui.showDebug [bool] true
+ui.showDebug [bool] false
   Show a window that shows coordinates, orientation and other data about camera, controlled bot,
   tagged object etc. For development purposes.
 

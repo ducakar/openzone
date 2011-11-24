@@ -57,7 +57,11 @@ typedef float __attribute__(( vector_size( 16 ) )) float4;
  *
  * @ingroup oz
  */
-# define int4( x, y, z, w ) (int4) { x, y, z, w }
+#ifdef __clang__
+# define int4( x, y, z, w ) int4( { x, y, z, w } )
+#else
+# define int4( x, y, z, w ) int4{ x, y, z, w }
+#endif
 
 /**
  * @def uint4
@@ -65,7 +69,11 @@ typedef float __attribute__(( vector_size( 16 ) )) float4;
  *
  * @ingroup oz
  */
-# define uint4( x, y, z, w ) (uint4) { x, y, z, w }
+#ifdef __clang__
+# define uint4( x, y, z, w ) uint4( { x, y, z, w } )
+#else
+# define uint4( x, y, z, w ) uint4{ x, y, z, w }
+#endif
 
 /**
  * @def float4
@@ -73,7 +81,11 @@ typedef float __attribute__(( vector_size( 16 ) )) float4;
  *
  * @ingroup oz
  */
-# define float4( x, y, z, w ) (float4) { x, y, z, w }
+#ifdef __clang__
+# define float4( x, y, z, w ) float4( { x, y, z, w } )
+#else
+# define float4( x, y, z, w ) float4{ x, y, z, w }
+#endif
 
 /**
  * Base class for classes representing a SIMD register.

@@ -36,7 +36,7 @@ class Timer
 
     static const int   TICK_MILLIS   = 17;
     static const float TICK_TIME;
-    static const int   TICKS_PER_SEC = 1000 / TICK_MILLIS;
+    static const int   TICKS_PER_SEC = ( 1000 + TICK_MILLIS / 2 ) / TICK_MILLIS;
 
     uint  runMillis;
 
