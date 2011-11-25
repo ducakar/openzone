@@ -1,5 +1,5 @@
 /*
- * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * OpenZone - simple cross-platform FPS/RTS game engine.
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -357,9 +357,8 @@ DArray<File> File::ls()
     return array;
   }
 
-  array.alloc( count );
-
   rewinddir( directory );
+  array.alloc( count );
 
   for( int i = 0; i < count; ) {
     entity = readdir( directory );
@@ -372,20 +371,6 @@ DArray<File> File::ls()
 
     if( entity->d_name[0] != '.' ) {
       array[i].filePath = ( filePath + "/" ) + entity->d_name;
-#ifdef OZ_MINGW
-      array[i].type = NONE;
-#else
-      if( entity->d_type == DT_REG ) {
-        array[i].type = REGULAR;
-      }
-      else
-        if( entity->d_type == DT_DIR ) {
-          array[i].type = DIRECTORY;
-        }
-        else {
-          array[i].type = OTHER;
-        }
-#endif
       ++i;
     }
   }

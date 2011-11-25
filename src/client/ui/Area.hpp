@@ -1,5 +1,5 @@
 /*
- * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * OpenZone - simple cross-platform FPS/RTS game engine.
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -128,6 +128,8 @@ class Area
     void remove( Area* area );
     // bring to front
     void focus( Area* area );
+    // push to background
+    void sink( Area* area );
 
 };
 

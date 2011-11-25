@@ -107,11 +107,12 @@ Dependencies
 - pthreads (already included in glibc on Linux)
 - libintl (already included in glibc on Linux)
 - SDL
-- SDL_image (optional, for ozPrebuild tool, must support at least PNG and JPEG)
+- SDL_image (for ozBuild tool)
 - SDL_ttf
 - OpenGL
 - OpenAL
 - libvorbis
+- libmad (if compiled with MP3 support)
 - Lua
 
 On Linux you have to install packages that provide those libraries.
@@ -119,7 +120,7 @@ For Windows build, all dependencies are included.
 
 Build dependencies
 ------------------
-- basic GNU system (bash, coreutils, grep, sed ...)
+- GNU/Linux or similar OS
 - gettext
 - cmake
 - GNU make

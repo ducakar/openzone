@@ -1,5 +1,5 @@
 /*
- * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * OpenZone - simple cross-platform FPS/RTS game engine.
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -75,6 +75,11 @@ void BotProxy::begin()
   ui::ui.root->add( infoFrame );
   ui::ui.root->add( inventory );
   ui::ui.root->add( container );
+
+  ui::ui.root->sink( container );
+  ui::ui.root->sink( inventory );
+  ui::ui.root->sink( infoFrame );
+  ui::ui.root->sink( hud );
 
   infoFrame->show( true );
   inventory->show( false );
