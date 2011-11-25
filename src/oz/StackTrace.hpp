@@ -20,37 +20,47 @@
  */
 
 /**
- * @file oz/Exception.cpp
+ * @file oz/StackTrace.hpp
  */
 
-#include "Exception.hpp"
+#pragma once
 
-#include "System.hpp"
-
-#include <cstdio>
-
-#undef Exception
+#include "common.hpp"
 
 namespace oz
 {
 
-Exception::Exception( const char* file_, int line_, const char* function_,
-                      const char* message_, ... ) throw() :
-    file( file_ ), function( function_ ), line( line_ )
+/**
+ * Stack trace entry.
+ *
+ * @ingroup oz
+ */
+class StackTrace
 {
-  System::trap();
+  public:
 
-  va_list ap;
-  va_start( ap, message_ );
-  vsnprintf( message, 256, message_, ap );
-  va_end( ap );
+    // Maximum number of stack frames.
+    static const int MAX_FRAMES = 16;
 
-  stackTrace = StackTrace::current();
-}
+    int   nFrames;            ///< Number of stack frames.
+    void* frames[MAX_FRAMES]; ///< Pointers to stack frames.
 
-const char* Exception::what() const throw()
-{
-  return message;
-}
+    /**
+     * Generates array of frame pointers and return it in StackTrace struct.
+     */
+    static StackTrace current();
+
+    /**
+     * Return string table for stack frames.
+     *
+     * Beginning of returned table contains pointers to string entries in stack trace. Caller must
+     * free returned data with <code>::free()</code>.
+     *
+     * This function is a wrapper for <code>backtrace_symbols()</code> system call from
+     * \<execinfo.h\>.
+     */
+    char** symbols() const;
+
+};
 
 }

@@ -47,6 +47,8 @@ Pool<Object, 16384>      Object::pool;
 
 void Object::onDestroy()
 {
+  hard_assert( cell != null );
+
   for( int i = 0; i < items.length(); ++i ) {
     Object* obj = orbis.objects[ items[i] ];
 

@@ -25,7 +25,10 @@
 
 #include "Log.hpp"
 
+#include "System.hpp"
+
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <ctime>
 
@@ -175,26 +178,21 @@ void Log::printTime() const
   fflush( f );
 }
 
-void Log::printTrace( const char* frames, int nFrames ) const
+void Log::printTrace( const StackTrace* st ) const
 {
   FILE* f = reinterpret_cast<FILE*>( stream );
 
-  if( nFrames == 0 ) {
-    for( int i = 0; i < tabs; ++i ) {
-      fprintf( f, "%s", indentStr );
-    }
-    fprintf( f, "[empty stack trace]\n" );
+  if( st->nFrames == 0 ) {
+    fprintf( f, "    [empty stack trace]\n" );
   }
   else {
-    const char* entry = frames;
+    char** entries = st->symbols();
 
-    for( int i = 0; i < nFrames; ++i ) {
-      for( int j = 0; j < tabs; ++j ) {
-        fprintf( f, "%s", indentStr );
-      }
-      fprintf( f, "%s\n", entry );
-      entry += strlen( entry ) + 1;
+    for( int i = 0; i < st->nFrames; ++i ) {
+      fprintf( f, "    %s\n", entries[i] );
     }
+
+    free( entries );
   }
 
   fflush( f );
@@ -204,27 +202,20 @@ void Log::printException( const Exception& e ) const
 {
   FILE* f = reinterpret_cast<FILE*>( stream );
 
-  fprintf( f,
-           "\n"
-           "EXCEPTION: %s\n"
-           "%sin %s\n"
-           "%sat %s:%d\n",
-           e.what(),
-           indentStr, e.function,
-           indentStr, e.file, e.line );
+  fprintf( f, "\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
+           e.what(), e.function, e.file, e.line );
 
-  fprintf( f, "%sstack trace:\n", indentStr );
-
-  if( e.nFrames == 0 ) {
-    fprintf( f, "%s%s[empty stack trace]\n", indentStr, indentStr );
+  if( e.stackTrace.nFrames == 0 ) {
+    fprintf( f, "    [empty stack trace]\n" );
   }
   else {
-    const char* entry = e.frames;
+    char** entries = e.stackTrace.symbols();
 
-    for( int i = 0; i < e.nFrames; ++i ) {
-      fprintf( f, "%s%s%s\n", indentStr, indentStr, entry );
-      entry += strlen( entry ) + 1;
+    for( int i = 0; i < e.stackTrace.nFrames; ++i ) {
+      fprintf( f, "    %s\n", entries[i] );
     }
+
+    free( entries );
   }
 
   fflush( f );

@@ -9,6 +9,7 @@ add_library( oz STATIC
   Math.cpp
   Point3.cpp
   Quat.cpp
+  StackTrace.cpp
   String.cpp
   System.cpp
   Vec3.cpp

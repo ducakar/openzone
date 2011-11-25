@@ -27,12 +27,6 @@
 // enable Pool allocator; otherwise just call new char[]/delete[]
 #cmakedefine OZ_POOL_ALLOC
 
-// whether math library has sincosf function
-#cmakedefine OZ_HAVE_SINCOSF
-
-// enable SIMD code for vector math
-#cmakedefine OZ_SIMD
-
 // use big-endian for stream
 #cmakedefine OZ_BIG_ENDIAN_STREAM
 

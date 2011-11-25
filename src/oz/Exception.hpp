@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "common.hpp"
+#include "StackTrace.hpp"
 
 namespace oz
 {
@@ -44,9 +44,7 @@ class Exception : public std::exception
     const char* file;         ///< %File.
     const char* function;     ///< Function name.
     int         line;         ///< Source file line.
-
-    int         nFrames;      ///< Number of frames of stack trace.
-    char*       frames;       ///< Stack trace buffer.
+    StackTrace  stackTrace;   ///< Stack trace.
 
     /**
      * %Exception constructor.
@@ -57,11 +55,6 @@ class Exception : public std::exception
     OZ_PRINTF_FORMAT( 5, 6 )
     explicit Exception( const char* file, int line, const char* function,
                         const char* message, ... ) throw();
-
-    /**
-     * Destructor.
-     */
-    virtual ~Exception() throw();
 
     /**
      * Message string (no file, line number etc.).

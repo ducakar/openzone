@@ -50,38 +50,12 @@ class Quat : public Vec4
      */
     Quat() = default;
 
-#ifdef OZ_SIMD
-  protected:
-
-    /**
-     * Create from an uint SIMD vector.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Quat( uint4 u4 ) : Vec4( u4 )
-    {}
-
-    /**
-     * Create from a float SIMD vector.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Quat( float4 f4 ) : Vec4( f4 )
-    {}
-
-  public:
-#endif
-
     /**
      * Create a quaternion with the given components.
      */
-#ifdef OZ_SIMD
-    OZ_ALWAYS_INLINE
-    explicit Quat( float x, float y, float z, float w ) : Vec4( float4( x, y, z, w ) )
-    {}
-#else
     OZ_ALWAYS_INLINE
     explicit Quat( float x, float y, float z, float w ) : Vec4( x, y, z, w )
     {}
-#endif
 
     /**
      * Create from an array of 4 floats.
@@ -103,11 +77,7 @@ class Quat : public Vec4
     OZ_ALWAYS_INLINE
     Quat abs() const
     {
-#ifdef OZ_SIMD
-      return Quat( u4 & uint4( 0x7fffffff, 0x7fffffff, 0x7fffffff, 0x7fffffff ) );
-#else
       return Quat( Math::abs( x ), Math::abs( y ), Math::abs( z ), Math::abs( w ) );
-#endif
     }
 
     /**
@@ -116,11 +86,7 @@ class Quat : public Vec4
     OZ_ALWAYS_INLINE
     Quat operator * () const
     {
-#ifdef OZ_SIMD
-      return Quat( u4 ^ uint4( 0x80000000, 0x80000000, 0x80000000, 0x00000000 ) );
-#else
       return Quat( -x, -y, -z, w );
-#endif
     }
 
     /**
@@ -131,13 +97,8 @@ class Quat : public Vec4
     {
       hard_assert( x*x + y*y + z*z + w*w > 0.0f );
 
-#ifdef OZ_SIMD
-      float k = Math::sqrt( x*x + y*y + z*z + w*w );
-      return Quat( f4 / float4( k, k, k, k ) );
-#else
       float k = 1.0f / Math::sqrt( x*x + y*y + z*z + w*w );
       return Quat( x * k, y * k, z * k, w * k );
-#endif
     }
 
     /**
@@ -148,13 +109,8 @@ class Quat : public Vec4
     {
       hard_assert( x*x + y*y + z*z + w*w > 0.0f );
 
-#ifdef OZ_SIMD
-      float k = Math::fastInvSqrt( x*x + y*y + z*z + w*w );
-      return Quat( f4 * float4( k, k, k, k ) );
-#else
       float k = Math::fastInvSqrt( x*x + y*y + z*z + w*w );
       return Quat( x * k, y * k, z * k, w * k );
-#endif
     }
 
     /**
@@ -172,11 +128,7 @@ class Quat : public Vec4
     OZ_ALWAYS_INLINE
     Quat operator - () const
     {
-#ifdef OZ_SIMD
-      return Quat( -f4 );
-#else
       return Quat( -x, -y, -z, -w );
-#endif
     }
 
     /**
@@ -185,11 +137,7 @@ class Quat : public Vec4
     OZ_ALWAYS_INLINE
     Quat operator + ( const Quat& q ) const
     {
-#ifdef OZ_SIMD
-      return Quat( f4 + q.f4 );
-#else
       return Quat( x + q.x, y + q.y, z + q.z, w + q.w );
-#endif
     }
 
     /**
@@ -198,11 +146,7 @@ class Quat : public Vec4
     OZ_ALWAYS_INLINE
     Quat operator - ( const Quat& q ) const
     {
-#ifdef OZ_SIMD
-      return Quat( f4 - q.f4 );
-#else
       return Quat( x - q.x, y - q.y, z - q.z, w - q.w );
-#endif
     }
 
     /**
@@ -211,11 +155,7 @@ class Quat : public Vec4
     OZ_ALWAYS_INLINE
     Quat operator * ( float k ) const
     {
-#ifdef OZ_SIMD
-      return Quat( f4 * float4( k, k, k, k ) );
-#else
       return Quat( x * k, y * k, z * k, w * k );
-#endif
     }
 
     /**
@@ -224,11 +164,7 @@ class Quat : public Vec4
     OZ_ALWAYS_INLINE
     friend Quat operator * ( float k, const Quat& q )
     {
-#ifdef OZ_SIMD
-      return Quat( float4( k, k, k, k ) * q.f4 );
-#else
       return Quat( k * q.x, k * q.y, k * q.z, k * q.w );
-#endif
     }
 
     /**
@@ -252,12 +188,8 @@ class Quat : public Vec4
     {
       hard_assert( k != 0.0f );
 
-#ifdef OZ_SIMD
-      return Quat( f4 / float4( k, k, k, k ) );
-#else
       k = 1.0f / k;
       return Quat( x * k, y * k, z * k, w * k );
-#endif
     }
 
     /**
@@ -266,14 +198,10 @@ class Quat : public Vec4
     OZ_ALWAYS_INLINE
     Quat& operator += ( const Quat& q )
     {
-#ifdef OZ_SIMD
-      f4 += q.f4;
-#else
       x += q.x;
       y += q.y;
       z += q.z;
       w += q.w;
-#endif
       return *this;
     }
 
@@ -283,14 +211,10 @@ class Quat : public Vec4
     OZ_ALWAYS_INLINE
     Quat& operator -= ( const Quat& q )
     {
-#ifdef OZ_SIMD
-      f4 -= q.f4;
-#else
       x -= q.x;
       y -= q.y;
       z -= q.z;
       w -= q.w;
-#endif
       return *this;
     }
 
@@ -300,14 +224,10 @@ class Quat : public Vec4
     OZ_ALWAYS_INLINE
     Quat& operator *= ( float k )
     {
-#ifdef OZ_SIMD
-      f4 *= float4( k, k, k, k );
-#else
       x *= k;
       y *= k;
       z *= k;
       w *= k;
-#endif
       return *this;
     }
 
@@ -335,15 +255,11 @@ class Quat : public Vec4
     {
       hard_assert( k != 0.0f );
 
-#ifdef OZ_SIMD
-      f4 /= float4( k, k, k, k );
-#else
       k = 1.0f / k;
       x *= k;
       y *= k;
       z *= k;
       w *= k;
-#endif
       return *this;
     }
 

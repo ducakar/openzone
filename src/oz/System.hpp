@@ -39,23 +39,8 @@ class System
 {
   private:
 
-    /// Maximum number of stack frames to be recorded.
-    static const int TRACE_SIZE = 16;
-
-    /// Size of the <tt>output</tt> buffer.
-    static const int TRACE_BUFFER_SIZE = 4096;
-
-    /// Size of buffer for demangling function name.
-    static const int STRING_BUFFER_SIZE = 1024;
-
     /// Table of signal names and descriptions.
     static const char* const SIGNALS[][2];
-
-    /// Internal buffer to store stack frames.
-    static OZ_THREAD_LOCAL void* framePtrs[System::TRACE_SIZE + 1];
-
-    /// Internal buffer for generation of stack trace string.
-    static OZ_THREAD_LOCAL char output[TRACE_BUFFER_SIZE];
 
     /// Whether to enable <code>halt()</code> to be called by <code>abort()</code>.
     static bool isHaltEnabled;
@@ -126,18 +111,6 @@ class System
      */
     OZ_PRINTF_FORMAT( 1, 2 )
     static void error( const char* msg, ... );
-
-    /**
-     * Generates and demangles stack trace.
-     *
-     * On success it allocates a buffer via <tt>malloc</tt> where it stores null-byte-separated
-     * strings of frame names. The caller should free buffer.
-     * On failure 0 is returned and <tt>bufferPtr</tt> is unchanged.
-     *
-     * @param bufferPtr where to save pointer to the buffer.
-     * @return Number of frames.
-     */
-    static int getStackTrace( char** bufferPtr );
 
     /**
      * Abort program.

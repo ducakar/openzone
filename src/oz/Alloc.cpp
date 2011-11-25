@@ -35,9 +35,7 @@
 # include <malloc.h>
 #endif
 
-#ifdef OZ_TRACE_LEAKS
-# include <pthread.h>
-#endif
+#include <pthread.h>
 
 namespace oz
 {
@@ -53,8 +51,7 @@ struct TraceEntry
   TraceEntry* next;
   void*       address;
   size_t      size;
-  int         nFrames;
-  char*       frames;
+  StackTrace  stackTrace;
 };
 
 static TraceEntry* firstObjectTraceEntry = null;
@@ -112,7 +109,7 @@ void Alloc::printLeaks()
   while( bt != null ) {
     log.println( "Leaked object at %p of size %ld B allocated", bt->address, bt->size );
     log.indent();
-    log.printTrace( bt->frames, bt->nFrames );
+    log.printTrace( &bt->stackTrace );
     log.unindent();
 
     bt = bt->next;
@@ -122,7 +119,7 @@ void Alloc::printLeaks()
   while( bt != null ) {
     log.println( "Leaked array at %p of size %ld B allocated", bt->address, bt->size );
     log.indent();
-    log.printTrace( bt->frames, bt->nFrames );
+    log.printTrace( &bt->stackTrace );
     log.unindent();
 
     bt = bt->next;
@@ -135,7 +132,7 @@ void Alloc::printLeaks()
 
 using namespace oz;
 
-#if defined( OZ_MINGW ) && defined( OZ_SIMD )
+#if defined( OZ_MINGW )
 
 /**
  * Emulation of POSIX function posix_memalign.
@@ -187,29 +184,21 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
 
   size += Alloc::alignUp( sizeof( size_t ) );
 
-#ifdef OZ_SIMD
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
     System::trap();
     throw std::bad_alloc();
   }
-#else
-  void* ptr = malloc( size );
-  if( ptr == null ) {
-    System::trap();
-    throw std::bad_alloc();
-  }
-#endif
 
 #ifdef OZ_TRACE_LEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
   pthread_mutex_lock( &sectionMutex );
 
-  st->next    = firstObjectTraceEntry;
-  st->address = ptr;
-  st->size    = size;
-  st->nFrames = System::getStackTrace( &st->frames );
+  st->next       = firstObjectTraceEntry;
+  st->address    = ptr;
+  st->size       = size;
+  st->stackTrace = StackTrace::current();
 
   firstObjectTraceEntry = st;
 
@@ -247,29 +236,21 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 
   size += Alloc::alignUp( sizeof( size_t ) );
 
-#ifdef OZ_SIMD
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
     System::trap();
     throw std::bad_alloc();
   }
-#else
-  void* ptr = malloc( size );
-  if( ptr == null ) {
-    System::trap();
-    throw std::bad_alloc();
-  }
-#endif
 
 #ifdef OZ_TRACE_LEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
   pthread_mutex_lock( &sectionMutex );
 
-  st->next    = firstArrayTraceEntry;
-  st->address = ptr;
-  st->size    = size;
-  st->nFrames = System::getStackTrace( &st->frames );
+  st->next       = firstArrayTraceEntry;
+  st->address    = ptr;
+  st->size       = size;
+  st->stackTrace = StackTrace::current();
 
   firstArrayTraceEntry = st;
 
@@ -336,7 +317,6 @@ void operator delete ( void* ptr ) throw()
       else {
         prev->next = st->next;
       }
-      free( st->frames );
       free( st );
 
       goto backtraceFound;
@@ -344,6 +324,7 @@ void operator delete ( void* ptr ) throw()
     prev = st;
     st = st->next;
   }
+
   System::trap();
 
   st   = firstArrayTraceEntry;
@@ -365,7 +346,7 @@ backtraceFound:;
   pthread_mutex_unlock( &sectionMutex );
 #endif
 
-#if defined( OZ_MINGW ) && defined( OZ_SIMD )
+#if defined( OZ_MINGW )
   posix_memalign_free( chunk );
 #else
   free( chunk );
@@ -417,7 +398,6 @@ void operator delete[] ( void* ptr ) throw()
       else {
         prev->next = st->next;
       }
-      free( st->frames );
       free( st );
 
       goto backtraceFound;
@@ -425,6 +405,7 @@ void operator delete[] ( void* ptr ) throw()
     prev = st;
     st = st->next;
   }
+
   System::trap();
 
   st   = firstObjectTraceEntry;
@@ -434,6 +415,7 @@ void operator delete[] ( void* ptr ) throw()
     if( st->address == chunk ) {
       System::abort( "ALLOC: new -> delete[] mismatch for block at %p", chunk );
     }
+
     prev = st;
     st = st->next;
   }
@@ -445,7 +427,7 @@ backtraceFound:;
   pthread_mutex_unlock( &sectionMutex );
 #endif
 
-#if defined( OZ_MINGW ) && defined( OZ_SIMD )
+#if defined( OZ_MINGW )
   posix_memalign_free( chunk );
 #else
   free( chunk );

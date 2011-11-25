@@ -16,7 +16,6 @@ mark_as_advanced( OZ_APPLICATION_TITLE )
 
 option( OZ_TRACE_LEAKS "Use overloads for default new and delete that saves stacktrace for each new call and trace memory leaks." OFF )
 option( OZ_POOL_ALLOC "Enable Pool and new/delete overloads that use it. Otherwise use a dummy class that calls generic new/delete." ON )
-option( OZ_SIMD "Enable generic SIMD code in linear algebra math classes." OFF )
 option( OZ_BIG_ENDIAN_STREAM "Use big-endian byte order for binary files and networking" OFF )
 
 option( OZ_NETWORKING "Enable networking." OFF )
@@ -65,8 +64,6 @@ endif()
 include( cmake/pch.cmake )
 include( cmake/pack_config.cmake )
 include( CheckLibraryExists )
-
-check_library_exists( m sincosf "" OZ_HAVE_SINCOSF )
 
 Find_Package( SDL REQUIRED )
 
@@ -181,11 +178,11 @@ endif()
 set( libs_tools "${libs};${SDLIMAGE_LIBRARY}" )
 
 # compiler and linker flags
-set( flags "-pipe -std=c++0x -pedantic -fno-zero-initialized-in-bss -fvisibility=hidden" )
+set( flags "-pipe -std=c++0x -pedantic" )
 set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wattributes" )
 set( warnings "${warnings} -Wconversion -Wsign-conversion -Wsign-promo -Wcast-align" )
 set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor -Wdisabled-optimization" )
-set( arch_flags "-msse3 -ffast-math" )
+set( arch_flags "-msse3 -ffast-math -fno-zero-initialized-in-bss" )
 
 if( OZ_CLANG )
   set( warnings "${warnings} -Wno-invalid-offsetof" )
