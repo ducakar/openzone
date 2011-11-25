@@ -1,15 +1,18 @@
 TODO 0.3
 - matrix
-  * vehicle rotation limit, slerp
+  * Vehicle
+    + rotation limit, slerp
+    + turret
 - client
-  * options menu
   * libmad
+  * decals
+  * options menu
   * MD3 animation
 
 TODO 0.4
+- new löök
 - matrix
   * Vehicle
-    + turrets
     + wheeled
     + tracked
     + mech warrior
@@ -17,7 +20,6 @@ TODO 0.4
   * advanced HUD for mechanic units and vehicles
 - client
   * particle model (smoke, fire ...)
-  * decals
   * animated textures
   * BSP rendering per partes
 

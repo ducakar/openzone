@@ -1,5 +1,5 @@
 /*
- * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * OpenZone - simple cross-platform FPS/RTS game engine.
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -57,9 +57,8 @@ const float Physics::SLICK_FRICTION         =  0.02f;
 const float Physics::STRUCT_HIT_MAX_MASS    =  1.00f;
 const float Physics::STRUCT_DAMAGE_COEF     = -10.0f;
 
-const float Physics::FRAG_STICK_VELOCITY    =  0.15f;
-const float Physics::FRAG_HIT_VELOCITY      =  10.0f;
-const float Physics::FRAG_DESTROY_VELOCITY  =  30.0f;
+const float Physics::FRAG_HIT_VELOCITY2     =  100.0f;
+const float Physics::FRAG_DESTROY_VELOCITY2 =  300.0f;
 const float Physics::FRAG_DAMAGE_COEF       =  10.0f;
 const float Physics::FRAG_FIXED_DAMAGE      =  0.75f;
 
@@ -69,23 +68,22 @@ const float Physics::FRAG_FIXED_DAMAGE      =  0.75f;
 
 void Physics::handleFragHit()
 {
-  float hitVelocity = frag->velocity.fastL();
+  float velocity2 = frag->velocity.sqL();
 
   frag->velocity *= frag->restitution;
   frag->velocity -= ( 2.0f * frag->velocity * collider.hit.normal ) * collider.hit.normal;
 
-  if( hitVelocity <= FRAG_STICK_VELOCITY ) {
-    frag->velocity = Vec3::ZERO;
-  }
-  else if( hitVelocity > FRAG_HIT_VELOCITY ) {
-    if( hitVelocity > FRAG_DESTROY_VELOCITY ) {
+  if( velocity2 > FRAG_HIT_VELOCITY2 ) {
+    if( velocity2 > FRAG_DESTROY_VELOCITY2 ) {
+      // we abuse velocity to hold the normal of the fatal hit, needed for positioning decals
+      frag->velocity = collider.hit.normal;
       frag->life = -Math::INF;
     }
 
     if( frag->mass != 0.0f ) {
       if( collider.hit.obj != null ) {
         Object* obj = collider.hit.obj;
-        float damage = FRAG_DAMAGE_COEF * hitVelocity * frag->mass;
+        float damage = FRAG_DAMAGE_COEF * Math::fastSqrt( velocity2 ) * frag->mass;
 
         if( damage > obj->resistance ) {
           damage *= FRAG_FIXED_DAMAGE + ( 1.0f - FRAG_FIXED_DAMAGE ) * Math::rand();
@@ -94,7 +92,7 @@ void Physics::handleFragHit()
       }
       else if( collider.hit.str != null ) {
         Struct* str = collider.hit.str;
-        float damage = FRAG_DAMAGE_COEF * hitVelocity * frag->mass;
+        float damage = FRAG_DAMAGE_COEF * Math::fastSqrt( velocity2 ) * frag->mass;
 
         if( damage > str->resistance ) {
           damage *= FRAG_FIXED_DAMAGE + ( 1.0f - FRAG_FIXED_DAMAGE ) * Math::rand();
@@ -123,9 +121,7 @@ void Physics::handleFragMove()
     handleFragHit();
 
     // We must check lifeTime <= 0.0f to prevent an already destroyed fragment to bounce off a
-    // surface and hit something (e.g. if we shoot into something with a rifle, a bullet is not
-    // destroyed immediately after it hits something, but bounces off and damages the shooter if
-    // he stays too close to the hit surface.
+    // surface and hit something and to position decal properly.
     if( traceSplits >= 3 || frag->life <= 0.0f ) {
       break;
     }

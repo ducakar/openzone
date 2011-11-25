@@ -1,5 +1,5 @@
 /*
- * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * OpenZone - simple cross-platform FPS/RTS game engine.
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -152,7 +152,6 @@ void Matrix::update()
     }
     else {
       frag->life -= Timer::TICK_TIME;
-
       physics.updateFrag( frag );
     }
   }

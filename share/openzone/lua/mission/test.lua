@@ -1,5 +1,5 @@
 --[[
- * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * OpenZone - simple cross-platform FPS/RTS game engine.
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -112,6 +112,7 @@ function onCreate()
   ozOrbisAddObj( "bauul", 112, -7, 100, OZ_NORTH )
 
   ozOrbisAddObj( "serviceStation", 110, -25, 68.8, OZ_WEST )
+  ozOrbisAddObj( "console", 107, -24, 67.3, OZ_SOUTH )
 
   ozOrbisAddObj( "smallCrate", 108, -6, 81 )
   ozOrbisAddObj( "smallCrate", 108, -6, 82 )

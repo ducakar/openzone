@@ -1,5 +1,5 @@
 /*
- * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * OpenZone - simple cross-platform FPS/RTS game engine.
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -178,8 +178,7 @@ class File
     /**
      * Generate a list of files in directory.
      *
-     * Hidden files (in Unix means, so everything starting with '.') are skipped. On Unix systems
-     * file types are also set - for free.
+     * Hidden files (in Unix means, so everything starting with '.') are skipped.
      * On error, empty array is returned.
      */
     DArray<File> ls();

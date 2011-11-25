@@ -1,5 +1,5 @@
 /*
- * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * OpenZone - simple cross-platform FPS/RTS game engine.
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -274,6 +274,7 @@ void Mesh::load( InputStream* stream, uint usage )
 
     parts[i].texture    = textures[ stream->readInt() ];
     parts[i].masks      = textures[ stream->readInt() ];
+    parts[i].masks      = parts[i].masks == 0 ? shader.defaultMasks : parts[i].masks;
     parts[i].alpha      = stream->readFloat();
     parts[i].specular   = stream->readFloat();
 
@@ -297,7 +298,7 @@ void Mesh::unload()
         if( parts[i].texture != 0 ) {
           glDeleteTextures( 1, &parts[i].texture );
         }
-        if( parts[i].masks != 0 ) {
+        if( parts[i].masks != shader.defaultMasks ) {
           glDeleteTextures( 1, &parts[i].masks );
         }
       }

@@ -21,7 +21,7 @@ option( OZ_BIG_ENDIAN_STREAM "Use big-endian byte order for binary files and net
 option( OZ_NETWORKING "Enable networking." OFF )
 option( OZ_GL_COMPATIBLE "Use common subset of OpenGL 2.1, OpenGL 3.0, OpenGL ES 2.0, no texture compression, GLSL 1.20." ON )
 option( OZ_BUMPMAP "Enable bumpmap support (not implemented yet, only vertex format for now)." OFF )
-option( OZ_NONFREE "Enable support for S3 texture compression and MP3s." ON )
+option( OZ_NONFREE "Enable support for MP3s." ON )
 
 option( OZ_BUILD_TESTS "Build tests." OFF )
 option( OZ_INSTALL_LIBOZ "Install liboz." OFF )
@@ -178,11 +178,11 @@ endif()
 set( libs_tools "${libs};${SDLIMAGE_LIBRARY}" )
 
 # compiler and linker flags
-set( flags "-pipe -std=c++0x -pedantic" )
+set( flags "-pipe -std=c++0x -pedantic-errors -ffast-math" )
 set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wattributes" )
 set( warnings "${warnings} -Wconversion -Wsign-conversion -Wsign-promo -Wcast-align" )
 set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor -Wdisabled-optimization" )
-set( arch_flags "-msse3 -ffast-math -fno-zero-initialized-in-bss" )
+set( arch_flags "-msse3" )
 
 if( OZ_CLANG )
   set( warnings "${warnings} -Wno-invalid-offsetof" )

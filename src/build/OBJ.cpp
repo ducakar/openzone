@@ -1,5 +1,5 @@
 /*
- * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * OpenZone - simple cross-platform FPS/RTS game engine.
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -199,6 +199,7 @@ void OBJ::loadMaterials( const String& path )
   Part   part;
 
   part.texture  = "";
+  part.masks    = "";
   part.alpha    = 1.0f;
   part.specular = 0.0f;
 
@@ -250,11 +251,17 @@ void OBJ::loadMaterials( const String& path )
           end = readWord( pos );
           *end = '\0';
 
-          if( *pos != '/' ) {
-            part.texture = path + "/" + pos;
+          File texFile( path + "/" + pos );
+          File masksFile( path + "/" + texFile.baseName() + "_masks." + texFile.extension() );
+
+          if( texFile.getType() == File::MISSING ) {
+            throw Exception( "OBJ texture '%s' missing", texFile.path() );
           }
-          else {
-            part.texture = pos;
+
+          part.texture = texFile.path();
+
+          if( masksFile.getType() != File::MISSING ) {
+            part.masks = masksFile.path();
           }
         }
         break;
@@ -365,10 +372,12 @@ void OBJ::save()
   String destPath = path + ".ozcSMM";
 
   compiler.beginMesh();
-//   compiler.enable( CAP_UNIQUE );
+  compiler.enable( CAP_UNIQUE );
 
   for( int i = 0; i < parts.length(); ++i ) {
     compiler.texture( parts[i].texture );
+    compiler.masks( parts[i].masks );
+
     compiler.material( GL_DIFFUSE,  parts[i].alpha  );
     compiler.material( GL_SPECULAR, parts[i].specular );
 

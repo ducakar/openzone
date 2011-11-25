@@ -1,5 +1,5 @@
 /*
- * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * OpenZone - simple cross-platform FPS/RTS game engine.
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -59,9 +59,8 @@ class Physics
     static const float STRUCT_HIT_MAX_MASS;
     static const float STRUCT_DAMAGE_COEF;
 
-    static const float FRAG_STICK_VELOCITY;
-    static const float FRAG_HIT_VELOCITY;
-    static const float FRAG_DESTROY_VELOCITY;
+    static const float FRAG_HIT_VELOCITY2;
+    static const float FRAG_DESTROY_VELOCITY2;
     static const float FRAG_DAMAGE_COEF;
     static const float FRAG_FIXED_DAMAGE;
 

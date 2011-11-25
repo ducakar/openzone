@@ -222,6 +222,6 @@ if( OZ_INSTALL_DATA_SRC )
   install( DIRECTORY share/locale DESTINATION share )
 
   # launcher, icon
-  install( DIRECTORY share/applications share/icons DESTINATION share )
+  install( DIRECTORY share/applications share/pixmaps DESTINATION share )
 
 endif()

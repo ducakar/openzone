@@ -1,5 +1,5 @@
 /*
- * OpenZone - Simple Cross-Platform FPS/RTS Game Engine
+ * OpenZone - simple cross-platform FPS/RTS game engine.
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -39,9 +39,9 @@ namespace client
 
 Caelum caelum;
 
-const float Caelum::DAY_BIAS       = 0.4f;
+const float Caelum::DAY_BIAS       = 0.40f;
 
-const float Caelum::AMBIENT_COEF   = 0.40f;
+const float Caelum::AMBIENT_COEF   = 0.60f;
 
 const float Caelum::RED_COEF       = +0.05f;
 const float Caelum::GREEN_COEF     = -0.05f;
