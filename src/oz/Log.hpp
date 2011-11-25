@@ -127,9 +127,9 @@ class Log
     void printTime() const;
 
     /**
-     * Print stack trace returned by <code>System::getStackTrace()</code>.
+     * Print stack trace.
      */
-    void printTrace( const char* frames, int nFrames ) const;
+    void printTrace( const StackTrace* st ) const;
 
     /**
      * Print nicely formatted exception (unindented).

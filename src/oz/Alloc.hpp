@@ -48,11 +48,7 @@ class Alloc
   public:
 
     /// Alignment of allocated storage returned by <tt>operator new</tt>.
-#ifdef OZ_SIMD
     static const size_t ALIGNMENT = 16;
-#else
-    static const size_t ALIGNMENT = sizeof( size_t );
-#endif
 
     static int    count;     ///< Current number of allocated memory chunks.
     static size_t amount;    ///< Amount of currently allocated memory.

@@ -26,31 +26,17 @@
 #pragma once
 
 #include "Math.hpp"
-#include "Simd.hpp"
 
 namespace oz
 {
-
-#ifdef OZ_SIMD
-class Point3;
-class Plane;
-#endif
 
 /**
  * 3D vector.
  *
  * @ingroup oz
  */
-#ifdef OZ_SIMD
-class Vec3 : public Simd
-{
-  friend class Point3;
-  friend class Plane;
-#else
 class Vec3
 {
-#endif
-
   public:
 
     /// Zero vector, [0, 0, 0] or [0, 0, 0, 0] for SIMD.
@@ -59,62 +45,28 @@ class Vec3
     /// %Vector of ones, [1, 1, 1] or [1, 1, 1, 0] for SIMD.
     static const Vec3 ONE;
 
-#ifndef OZ_SIMD
     float x; ///< X component.
     float y; ///< Y component.
     float z; ///< Z component.
-#endif
 
     /**
      * Create an uninitialised instance.
      */
     Vec3() = default;
 
-#ifdef OZ_SIMD
-  protected:
-
-    /**
-     * Create from an uint SIMD vector.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Vec3( uint4 u4 ) : Simd( u4 )
-    {}
-
-    /**
-     * Create from a float SIMD vector.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Vec3( float4 f4 ) : Simd( f4 )
-    {}
-
-  public:
-#endif
-
     /**
      * Create a vector with the given components.
      */
-#ifdef OZ_SIMD
-    OZ_ALWAYS_INLINE
-    explicit Vec3( float x, float y, float z ) : Simd( float4( x, y, z, 0.0f ) )
-    {}
-#else
     OZ_ALWAYS_INLINE
     explicit Vec3( float x_, float y_, float z_ ) : x( x_ ), y( y_ ), z( z_ )
     {}
-#endif
 
     /**
      * Create from an array of 3 floats.
      */
-#ifdef OZ_SIMD
-    OZ_ALWAYS_INLINE
-    explicit Vec3( const float* v ) : Simd( float4( v[0], v[1], v[2], 0.0f ) )
-    {}
-#else
     OZ_ALWAYS_INLINE
     explicit Vec3( const float* v ) : x( v[0] ), y( v[1] ), z( v[2] )
     {}
-#endif
 
     /**
      * Equality.
@@ -180,11 +132,7 @@ class Vec3
     OZ_ALWAYS_INLINE
     Vec3 abs() const
     {
-#ifdef OZ_SIMD
-      return Vec3( u4 & uint4( 0x7fffffff, 0x7fffffff, 0x7fffffff, 0x7fffffff ) );
-#else
       return Vec3( Math::abs( x ), Math::abs( y ), Math::abs( z ) );
-#endif
     }
 
     /**
@@ -222,13 +170,8 @@ class Vec3
     {
       hard_assert( x*x + y*y + z*z > 0.0f );
 
-#ifdef OZ_SIMD
-      float k = Math::sqrt( x*x + y*y + z*z );
-      return Vec3( f4 / float4( k, k, k, k ) );
-#else
       float k = 1.0f / Math::sqrt( x*x + y*y + z*z );
       return Vec3( x * k, y * k, z * k );
-#endif
     }
 
     /**
@@ -239,13 +182,8 @@ class Vec3
     {
       hard_assert( x*x + y*y + z*z > 0.0f );
 
-#ifdef OZ_SIMD
-      float k = Math::fastInvSqrt( x*x + y*y + z*z );
-      return Vec3( f4 * float4( k, k, k, k ) );
-#else
       float k = Math::fastInvSqrt( x*x + y*y + z*z );
       return Vec3( x * k, y * k, z * k );
-#endif
     }
 
     /**
@@ -276,11 +214,7 @@ class Vec3
     OZ_ALWAYS_INLINE
     Vec3 operator - () const
     {
-#ifdef OZ_SIMD
-      return Vec3( -f4 );
-#else
       return Vec3( -x, -y, -z );
-#endif
     }
 
     /**
@@ -289,11 +223,7 @@ class Vec3
     OZ_ALWAYS_INLINE
     Vec3 operator + ( const Vec3& v ) const
     {
-#ifdef OZ_SIMD
-      return Vec3( f4 + v.f4 );
-#else
       return Vec3( x + v.x, y + v.y, z + v.z );
-#endif
     }
 
     /**
@@ -302,11 +232,7 @@ class Vec3
     OZ_ALWAYS_INLINE
     Vec3 operator - ( const Vec3& v ) const
     {
-#ifdef OZ_SIMD
-      return Vec3( f4 - v.f4 );
-#else
       return Vec3( x - v.x, y - v.y, z - v.z );
-#endif
     }
 
     /**
@@ -315,11 +241,7 @@ class Vec3
     OZ_ALWAYS_INLINE
     Vec3 operator * ( float k ) const
     {
-#ifdef OZ_SIMD
-      return Vec3( f4 * float4( k, k, k, k ) );
-#else
       return Vec3( x * k, y * k, z * k );
-#endif
     }
 
     /**
@@ -328,11 +250,7 @@ class Vec3
     OZ_ALWAYS_INLINE
     friend Vec3 operator * ( float k, const Vec3& v )
     {
-#ifdef OZ_SIMD
-      return Vec3( float4( k, k, k, k ) * v.f4 );
-#else
       return Vec3( k * v.x, k * v.y, k * v.z );
-#endif
     }
 
     /**
@@ -343,12 +261,8 @@ class Vec3
     {
       hard_assert( k != 0.0f );
 
-#ifdef OZ_SIMD
-      return Vec3( f4 / float4( k, k, k, k ) );
-#else
       k = 1.0f / k;
       return Vec3( x * k, y * k, z * k );
-#endif
     }
 
     /**
@@ -357,13 +271,9 @@ class Vec3
     OZ_ALWAYS_INLINE
     Vec3& operator += ( const Vec3& v )
     {
-#ifdef OZ_SIMD
-      f4 += v.f4;
-#else
       x += v.x;
       y += v.y;
       z += v.z;
-#endif
       return *this;
     }
 
@@ -373,13 +283,9 @@ class Vec3
     OZ_ALWAYS_INLINE
     Vec3& operator -= ( const Vec3& v )
     {
-#ifdef OZ_SIMD
-      f4 -= v.f4;
-#else
       x -= v.x;
       y -= v.y;
       z -= v.z;
-#endif
       return *this;
     }
 
@@ -389,13 +295,9 @@ class Vec3
     OZ_ALWAYS_INLINE
     Vec3& operator *= ( float k )
     {
-#ifdef OZ_SIMD
-      f4 *= float4( k, k, k, k );
-#else
       x *= k;
       y *= k;
       z *= k;
-#endif
       return *this;
     }
 
@@ -407,14 +309,10 @@ class Vec3
     {
       hard_assert( k != 0.0f );
 
-#ifdef OZ_SIMD
-      f4 /= float4( k, k, k, k );
-#else
       k = 1.0f / k;
       x *= k;
       y *= k;
       z *= k;
-#endif
       return *this;
     }
 

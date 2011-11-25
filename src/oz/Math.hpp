@@ -182,12 +182,10 @@ class Math
     OZ_ALWAYS_INLINE
     static void sincos( float x, float* s, float* c )
     {
-#if defined( OZ_HAVE_SINCOSF ) && !defined( __clang__ )
-      __builtin_sincosf( x, s, c );
-#else
+      // No need to use sincosf(). GCC optimises the following calls into one sincosf() call and
+      // LLVM/Clang is missing built-in for sincosf().
       *s = __builtin_sinf( x );
       *c = __builtin_cosf( x );
-#endif
     }
 
     /**
@@ -241,7 +239,8 @@ class Math
     OZ_ALWAYS_INLINE
     static bool isfinite( float x )
     {
-#if defined( __GNUC__ ) && !defined( __clang__ )
+#if !defined( __clang__ ) && defined( __FAST_MATH__ )
+      // GCC's isfinite() is broken with -ffast-math.
       return x + 1.0f != x;
 #else
       return __builtin_isfinite( x );
@@ -254,7 +253,8 @@ class Math
     OZ_ALWAYS_INLINE
     static int isinf( float x )
     {
-#if defined( __GNUC__ ) && !defined( __clang__ )
+#if !defined( __clang__ ) && defined( __FAST_MATH__ )
+      // GCC's isinf() is broken with -ffast-math.
       return x + 1.0f == x && x * 0.0f != x;
 #else
       return __builtin_isinf( x );
@@ -267,7 +267,8 @@ class Math
     OZ_ALWAYS_INLINE
     static bool isnan( float x )
     {
-#if defined( __GNUC__ ) && !defined( __clang__ )
+#if !defined( __clang__ ) && defined( __FAST_MATH__ )
+      // GCC's isnan() is broken with -ffast-math.
       return x + 1.0f == x && x * 0.0f == x;
 #else
       return __builtin_isnan( x );

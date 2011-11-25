@@ -80,7 +80,8 @@ void Bot::onDestroy()
   if( !( state & DEAD_BIT ) ) {
     addEvent( EVENT_DEATH, 1.0f );
   }
-  Object::onDestroy();
+
+  Dynamic::onDestroy();
 }
 
 void Bot::onHit( const Hit* hit, float hitMomentum )

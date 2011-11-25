@@ -62,30 +62,10 @@ struct Foo
   }
 };
 
-struct VecX
-{
-  float x;
-  float y;
-  float z;
-
-  VecX() = default;
-
-  explicit VecX( float x_, float y_, float z_ ) : x( x_ ), y( y_ ), z( z_ )
-  {}
-
-  VecX operator + ( const VecX& v )
-  {
-    return VecX( x + v.x, y + v.y, z + v.z );
-  }
-};
-
 int main( int, char** )
 {
-  VecX* v1 = new VecX[10000];
-  VecX* v2 = new VecX[10000];
-
-  for( int i = 0; i < 10000; ++i ) {
-    v1[i] = v1[i] + v2[i];
-  }
+  System::catchSignals();
+  int* a = 0;
+  *a = 0;
   return 0;
 }

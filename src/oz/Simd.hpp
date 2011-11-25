@@ -25,8 +25,6 @@
 
 #include "common.hpp"
 
-#ifdef OZ_SIMD
-
 namespace oz
 {
 
@@ -57,11 +55,7 @@ typedef float __attribute__(( vector_size( 16 ) )) float4;
  *
  * @ingroup oz
  */
-#ifdef __clang__
 # define int4( x, y, z, w ) int4( { x, y, z, w } )
-#else
-# define int4( x, y, z, w ) int4{ x, y, z, w }
-#endif
 
 /**
  * @def uint4
@@ -69,11 +63,7 @@ typedef float __attribute__(( vector_size( 16 ) )) float4;
  *
  * @ingroup oz
  */
-#ifdef __clang__
 # define uint4( x, y, z, w ) uint4( { x, y, z, w } )
-#else
-# define uint4( x, y, z, w ) uint4{ x, y, z, w }
-#endif
 
 /**
  * @def float4
@@ -81,11 +71,7 @@ typedef float __attribute__(( vector_size( 16 ) )) float4;
  *
  * @ingroup oz
  */
-#ifdef __clang__
 # define float4( x, y, z, w ) float4( { x, y, z, w } )
-#else
-# define float4( x, y, z, w ) float4{ x, y, z, w }
-#endif
 
 /**
  * Base class for classes representing a SIMD register.
@@ -104,28 +90,6 @@ struct Simd
 
     float4 f4;   ///< Float SIMD vector.
     float  f[4]; ///< Float components of SIMD vector.
-
-    /**
-     * %Vector components.
-     */
-    struct
-    {
-      float x; ///< X component.
-      float y; ///< Y component.
-      float z; ///< Z component.
-      float w; ///< W component.
-    };
-
-    /**
-     * Plane components.
-     */
-    struct
-    {
-      float nx; ///< X component of the normal.
-      float ny; ///< Y component of the normal.
-      float nz; ///< Z component of the normal.
-      float d;  ///< Distance from origin.
-    };
   };
 
   /**
@@ -156,5 +120,3 @@ struct Simd
 };
 
 }
-
-#endif

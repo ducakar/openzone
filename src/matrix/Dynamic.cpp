@@ -53,6 +53,18 @@ void Dynamic::onDestroy()
   }
 
   if( clazz->fragPool != null ) {
+    if( cell == null ) {
+      hard_assert( parent != -1 );
+
+      const Object* container = orbis.objects[parent];
+      if( container == null ) {
+        return;
+      }
+      else {
+        p = container->p;
+      }
+    }
+
     synapse.genFrags( clazz->fragPool,
                       clazz->nFrags,
                       Bounds( Point3( p.x - dim.x, p.y - dim.y, p.z ),

@@ -76,20 +76,26 @@
 #include "SBitset.hpp"
 
 /*
- * Exception
- */
-#include "Exception.hpp"
-
-/*
  * Math
  */
 #include "Math.hpp"
+#include "Simd.hpp"
 #include "Vec4.hpp"
 #include "Vec3.hpp"
 #include "Point3.hpp"
 #include "Plane.hpp"
 #include "Quat.hpp"
 #include "Mat44.hpp"
+
+/*
+ * Stack trace.
+ */
+#include "StackTrace.hpp"
+
+/*
+ * Exception
+ */
+#include "Exception.hpp"
 
 /*
  * IO
