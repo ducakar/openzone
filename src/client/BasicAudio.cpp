@@ -74,8 +74,7 @@ void BasicAudio::play( const Audio* parent )
   }
 
   // friction
-  if( parent == null &&
-      ( obj->flags & ( Object::DYNAMIC_BIT | Object::ON_SLICK_BIT ) ) == Object::DYNAMIC_BIT &&
+  if( parent == null && ( obj->flags & Object::DYNAMIC_BIT ) &&
       sounds[Object::EVENT_FRICTING] != -1 )
   {
     const Dynamic* dyn = static_cast<const Dynamic*>( obj );

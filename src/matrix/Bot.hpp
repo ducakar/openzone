@@ -140,10 +140,6 @@ class Bot : public Dynamic
     float      camZ;
     Anim::Type anim;
 
-  private:
-
-    Object* getTagged( float* hvsc, int mask = Object::SOLID_BIT ) const;
-
   protected:
 
     virtual void onDestroy();
@@ -151,6 +147,9 @@ class Bot : public Dynamic
     virtual void onUpdate();
 
   public:
+
+    Object* getTagged( const Vec3& at, int mask ) const;
+    Object* getTagged( int mask ) const;
 
     void heal();
     void rearm();

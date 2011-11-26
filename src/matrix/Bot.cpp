@@ -60,20 +60,6 @@ const float Bot::CLIMB_MOVE_AHEAD   =  0.50f;
 
 Pool<Bot, 1024> Bot::pool;
 
-Object* Bot::getTagged( float* hvsc, int mask ) const
-{
-  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
-
-  Point3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
-  Vec3   look = Vec3( -hvsc[4], hvsc[5], -hvsc[3] ) * clazz->reachDist;
-
-  collider.mask = mask;
-  collider.translate( eye, look, this );
-  collider.mask = SOLID_BIT;
-
-  return collider.hit.obj;
-}
-
 void Bot::onDestroy()
 {
   // only play death sound when an alive bot is destroyed but not when a body is destroyed
@@ -231,6 +217,8 @@ void Bot::onUpdate()
 
   hvsc[4] = hvsc[2] * hvsc[0];
   hvsc[5] = hvsc[2] * hvsc[1];
+
+  Vec3 at = Vec3( -hvsc[4], hvsc[5], -hvsc[3] );
 
   state &= ~( GROUNDED_BIT | ON_STAIRS_BIT | CLIMBING_BIT | SWIMMING_BIT | SUBMERGED_BIT );
 
@@ -641,7 +629,7 @@ void Bot::onUpdate()
    * INSTRUMENT PERSISTENCE
    */
 
-  if( instrumentObj != null && !( state & GRAB_BIT ) && getTagged( hvsc, ~0 ) != instrumentObj ) {
+  if( instrumentObj != null && !( state & GRAB_BIT ) && getTagged( at, ~0 ) != instrumentObj ) {
     instrument = -1;
     instrumentObj = null;
   }
@@ -651,7 +639,7 @@ void Bot::onUpdate()
    */
 
   if( actions & ~oldActions & ACTION_USE ) {
-    Object* obj = instrumentObj != null ? instrumentObj : getTagged( hvsc, ~0 );
+    Object* obj = instrumentObj != null ? instrumentObj : getTagged( at, ~0 );
 
     if( obj != null ) {
       if( obj->flags & DEVICE_BIT ) {
@@ -666,12 +654,11 @@ void Bot::onUpdate()
     Dynamic* obj = static_cast<Dynamic*>( instrumentObj );
 
     if( obj == null ) {
-      obj = static_cast<Dynamic*>( getTagged( hvsc, ~0 ) );
+      obj = static_cast<Dynamic*>( getTagged( at, ~0 ) );
     }
 
     if( obj != null ) {
       if( obj->flags & BROWSABLE_BIT ) {
-        state &= ~GRAB_BIT;
         instrument = obj->index;
       }
       else if( ( obj->flags & ( ITEM_BIT | SOLID_BIT ) ) == ( ITEM_BIT | SOLID_BIT ) &&
@@ -730,7 +717,7 @@ void Bot::onUpdate()
       instrument = -1;
     }
     else {
-      Bot* obj = static_cast<Bot*>( getTagged( hvsc ) );
+      Bot* obj = static_cast<Bot*>( getTagged( at, Object::SOLID_BIT ) );
 
       if( obj != null && ( obj->flags & DYNAMIC_BIT ) && obj->mass <= clazz->grabMass &&
           !( ( obj->flags & BOT_BIT ) && ( obj->state & GRAB_BIT ) ) )
@@ -793,6 +780,34 @@ void Bot::onUpdate()
 
   oldState   = state;
   oldActions = actions;
+}
+
+inline Object* Bot::getTagged( const Vec3& at, int mask ) const
+{
+  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+
+  Point3 eye   = p + Vec3( 0.0f, 0.0f, camZ );
+  Vec3   reach = at * clazz->reachDist;
+
+  collider.mask = mask;
+  collider.translate( eye, reach, this );
+  collider.mask = SOLID_BIT;
+
+  return collider.hit.obj;
+}
+
+Object* Bot::getTagged( int mask ) const
+{
+  // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+  float hvsc[6];
+
+  Math::sincos( h, &hvsc[0], &hvsc[1] );
+  Math::sincos( v, &hvsc[2], &hvsc[3] );
+
+  hvsc[4] = hvsc[2] * hvsc[0];
+  hvsc[5] = hvsc[2] * hvsc[1];
+
+  return getTagged( Vec3( -hvsc[4], hvsc[5], -hvsc[3] ), mask );
 }
 
 void Bot::heal()
