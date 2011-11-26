@@ -119,12 +119,6 @@ void BotProxy::update()
   const char* keys    = ui::keyboard.keys;
   const char* oldKeys = ui::keyboard.oldKeys;
 
-  if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
-    ui::mouse.doShow = !ui::mouse.doShow;
-
-    inventory->show( ui::mouse.doShow );
-  }
-
   if( keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) {
     camera.h = bot->h;
     camera.v = bot->v;
@@ -239,6 +233,20 @@ void BotProxy::update()
   }
   if( keys[SDLK_l] ) {
     bot->state |= Bot::GESTURE_ALL_BIT;
+  }
+
+  if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
+    ui::mouse.doShow = !ui::mouse.doShow;
+
+    inventory->show( ui::mouse.doShow );
+
+    if( ui::mouse.doShow ) {
+      if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::BROWSABLE_BIT ) ) {
+        bot->actions |= Bot::ACTION_TAKE;
+
+        container->show( true );
+      }
+    }
   }
 
   if( !ui::mouse.doShow ) {
@@ -363,10 +371,7 @@ void BotProxy::prepare()
     }
 
     collider.translate( origin, offset, bot );
-
-    offset *= collider.hit.ratio;
-
-    camera.warpMoveZ( origin + offset );
+    camera.warpMoveZ( origin + offset * collider.hit.ratio );
   }
 
   if( bot->parent != -1 ) {
@@ -375,36 +380,8 @@ void BotProxy::prepare()
   else if( bot->state & Bot::GRAB_BIT ) {
     camera.setTagged( orbis.objects[camera.botObj->instrument] );
   }
-  else if( isFreelook ) {
-    // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
-    float hvsc[6];
-
-    Math::sincos( bot->h, &hvsc[0], &hvsc[1] );
-    Math::sincos( bot->v, &hvsc[2], &hvsc[3] );
-
-    hvsc[4] = hvsc[2] * hvsc[0];
-    hvsc[5] = hvsc[2] * hvsc[1];
-
-    // at vector must be based on bot's orientation, not on camera's
-    Point3 p        = camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
-    Vec3   at       = Vec3( -hvsc[4], hvsc[5], -hvsc[3] );
-    float  distance = static_cast<const BotClass*>( camera.botObj->clazz )->reachDist;
-
-    collider.mask = ~0;
-    collider.translate( p, at * distance, camera.botObj );
-    collider.mask = Object::SOLID_BIT;
-
-    camera.setTagged( collider.hit.obj );
-  }
   else {
-    Point3 p        = camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
-    float  distance = static_cast<const BotClass*>( camera.botObj->clazz )->reachDist;
-
-    collider.mask = ~0;
-    collider.translate( p, camera.at * distance, camera.botObj );
-    collider.mask = Object::SOLID_BIT;
-
-    camera.setTagged( collider.hit.obj );
+    camera.setTagged( bot->getTagged( ~0 ) );
   }
 }
 
