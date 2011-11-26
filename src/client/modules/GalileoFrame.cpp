@@ -77,7 +77,7 @@ void GalileoFrame::onDraw()
     return;
   }
 
-  galileoEnabled:;
+galileoEnabled:;
 
   isVisible = true;
 

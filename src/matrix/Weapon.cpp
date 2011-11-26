@@ -57,8 +57,6 @@ void Weapon::onUpdate()
 
 bool Weapon::onUse( Bot* user )
 {
-  hard_assert( parent == -1 || parent == user->index );
-
   const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
 
   if( !clazz->allowedUsers.contains( user->clazz ) ) {
@@ -66,18 +64,26 @@ bool Weapon::onUse( Bot* user )
     return false;
   }
 
-  if( parent == -1 && user->items.length() < user->clazz->nItems ) {
-    user->items.add( index );
-    parent = user->index;
-    synapse.cut( this );
-
-    user->weapon = index;
-
+  if( parent == user->index ) {
+    user->weapon = user->weapon == index  ? -1 : index;
     return true;
   }
-  else if( parent == user->index ) {
-    user->weapon = user->weapon == index  ? -1 : index;
+  else if( user->items.length() < user->clazz->nItems ) {
+    user->items.add( index );
+    user->weapon = index;
 
+    if( parent == -1 ) {
+      parent = user->index;
+      synapse.cut( this );
+    }
+    else {
+      Object* container = orbis.objects[parent];
+
+      hard_assert( container->items.contains( index ) );
+
+      parent = user->index;
+      container->items.exclude( index );
+    }
     return true;
   }
   return false;

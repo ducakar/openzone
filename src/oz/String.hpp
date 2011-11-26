@@ -476,7 +476,7 @@ class String
     }
 
     /**
-     * Compare two C strings per-byte (same as strcmp in \<cstring\>).
+     * Compare two C strings per-byte (same as <tt>strcmp()</tt>).
      */
     static int compare( const char* a, const char* b )
     {

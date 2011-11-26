@@ -36,8 +36,7 @@ void main()
   vec3  toCamera = oz_CameraPosition - exPosition;
   float dist     = length( toCamera );
 
-  vec4 colourSample   = texture2D( oz_Textures[0], exTexCoord * TERRA_WATER_SCALE );
-  vec4 specularSample = texture2D( oz_Textures[1], exTexCoord * TERRA_WATER_SCALE );
+  vec4 colourSample = texture2D( oz_Textures[0], exTexCoord * TERRA_WATER_SCALE );
 
   vec4 diffuse  = skyLightColour( NORMAL );
   vec4 specular = specularColour( 1.0, NORMAL, toCamera / dist );

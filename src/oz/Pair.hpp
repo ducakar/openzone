@@ -46,20 +46,6 @@ class Pair
     ValueY y; ///< Second element.
 
     /**
-     * Create an uninitialised instance.
-     */
-    Pair() = default;
-
-    /**
-     * Create a pair of given values.
-     */
-    template <typename ValueX_, typename ValueY_>
-    OZ_ALWAYS_INLINE
-    explicit Pair( ValueX_&& x_, ValueY_&& y_ ) :
-        x( static_cast<ValueX_&&>( x_ ) ), y( static_cast<ValueY_&&>( y_ ) )
-    {}
-
-    /**
      * Per-member equality operator.
      */
     OZ_ALWAYS_INLINE

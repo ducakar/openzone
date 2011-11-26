@@ -29,6 +29,7 @@
 #include <cstring>
 #include <locale>
 #include <iostream>
+#include <algorithm>
 
 using namespace oz;
 
@@ -64,8 +65,6 @@ struct Foo
 
 int main( int, char** )
 {
-  System::catchSignals();
-  int* a = 0;
-  *a = 0;
+  Pair<Foo> p = { Foo(), Foo() };
   return 0;
 }

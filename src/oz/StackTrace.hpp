@@ -39,7 +39,7 @@ class StackTrace
 {
   public:
 
-    // Maximum number of stack frames.
+    /// Maximum number of stack frames.
     static const int MAX_FRAMES = 16;
 
     int   nFrames;            ///< Number of stack frames.
@@ -53,11 +53,9 @@ class StackTrace
     /**
      * Return string table for stack frames.
      *
-     * Beginning of returned table contains pointers to string entries in stack trace. Caller must
-     * free returned data with <code>::free()</code>.
-     *
-     * This function is a wrapper for <code>backtrace_symbols()</code> system call from
-     * \<execinfo.h\>.
+     * Beginning of the returned table contains pointers to string entries in stack trace, same as
+     * with <code>backtrace_symbols()</code> call from glibc. The table must be freed by caller with
+     * <tt>free()</tt>.
      */
     char** symbols() const;
 

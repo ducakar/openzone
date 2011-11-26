@@ -62,7 +62,6 @@ class Bot : public Dynamic
     static const int ACTION_EJECT             = 0x00002000;
     static const int ACTION_SUICIDE           = 0x00004000;
 
-    static const int ACTION_INV_USE           = 0x00008000;
     static const int ACTION_INV_DROP          = 0x00010000;
     static const int ACTION_INV_GRAB          = 0x00020000;
     static const int ACTION_INV_TAKE          = 0x00040000;
@@ -130,9 +129,9 @@ class Bot : public Dynamic
     float      stepRate;
 
     int        instrument;
-    float      grabHandle;
+    int        container;
     int        weapon;
-    int        taggedItem;
+    float      grabHandle;
 
     String     name;
     String     mindFunc;
@@ -145,6 +144,8 @@ class Bot : public Dynamic
     virtual void onDestroy();
     virtual void onHit( const Hit* hit, float hitMomentum );
     virtual void onUpdate();
+
+    void updateReferences();
 
   public:
 

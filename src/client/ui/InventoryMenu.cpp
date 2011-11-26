@@ -50,19 +50,16 @@ void InventoryMenu::onVisibilityChange()
 
 bool InventoryMenu::onMouseEvent()
 {
-  if( camera.botObj == null || ( master != null && camera.botObj->instrument == -1 ) )
-  {
-    show( false );
+  if( camera.botObj == null || ( master != null && camera.botObj->container == -1 ) ) {
     return false;
   }
 
   Object* container = null;
 
-  if( camera.botObj->instrument != -1 ) {
-    container = orbis.objects[camera.botObj->instrument];
+  if( camera.botObj->container != -1 ) {
+    container = orbis.objects[camera.botObj->container];
 
     if( container == null || !( container->flags & Object::BROWSABLE_BIT ) ) {
-      show( false );
       return false;
     }
   }
@@ -83,32 +80,76 @@ bool InventoryMenu::onMouseEvent()
     if( 0 <= i && i < COLS * ROWS ) {
       tagged = scroll * COLS + i;
 
+      const Dynamic* item;
+
       if( mouse.leftClick ) {
         if( container == null ) {
-          bot->taggedItem = tagged;
-          bot->actions |= Bot::ACTION_INV_DROP;
+          if( uint( tagged ) < uint( bot->items.length() ) ) {
+            item = static_cast<const Dynamic*>( orbis.objects[ bot->items[tagged] ] );
+
+            if( item != null ) {
+              bot->instrument = item->index;
+              bot->actions |= Bot::ACTION_INV_DROP;
+            }
+          }
         }
         else {
-          bot->taggedItem = tagged;
-
           if( master == null ) {
-            bot->actions |= Bot::ACTION_INV_GIVE;
+            if( uint( tagged ) < uint( bot->items.length() ) ) {
+              item = static_cast<const Dynamic*>( orbis.objects[ bot->items[tagged] ] );
+
+              if( item != null ) {
+                bot->actions |= Bot::ACTION_INV_GIVE;
+                bot->instrument = item->index;
+                bot->container = container->index;
+              }
+            }
           }
           else {
-            bot->actions |= Bot::ACTION_INV_TAKE;
+            if( uint( tagged ) < uint( container->items.length() ) ) {
+              item = static_cast<const Dynamic*>( orbis.objects[ container->items[tagged] ] );
+
+              if( item != null ) {
+                bot->actions |= Bot::ACTION_INV_TAKE;
+                bot->instrument = item->index;
+                bot->container = container->index;
+              }
+            }
           }
         }
       }
-      else if( master == null ) {
-        if( mouse.rightClick ) {
-          bot->taggedItem = tagged;
-          bot->actions |= Bot::ACTION_INV_USE;
-        }
-        else if( mouse.middleClick ) {
-          bot->taggedItem = tagged;
-          bot->actions |= Bot::ACTION_INV_GRAB;
+      else if( mouse.rightClick ) {
+        if( master == null ) {
+          if( uint( tagged ) < uint( bot->items.length() ) ) {
+            item = static_cast<const Dynamic*>( orbis.objects[ bot->items[tagged] ] );
 
-          mouse.doShow = false;
+            if( item != null ) {
+              bot->instrument = item->index;
+              bot->actions |= Bot::ACTION_USE;
+            }
+          }
+        }
+        else {
+          if( uint( tagged ) < uint( container->items.length() ) ) {
+            item = static_cast<const Dynamic*>( orbis.objects[ container->items[tagged] ] );
+
+            if( item != null ) {
+              bot->instrument = item->index;
+              bot->actions |= Bot::ACTION_USE;
+            }
+          }
+        }
+      }
+      else if( mouse.middleClick ) {
+        if( uint( tagged ) < uint( bot->items.length() ) ) {
+          item = static_cast<const Dynamic*>( orbis.objects[ bot->items[tagged] ] );
+
+          if( item != null ) {
+            bot->instrument = item->index;
+            bot->actions |= Bot::ACTION_INV_GRAB;
+
+            mouse.doShow = false;
+          }
         }
       }
     }
@@ -132,7 +173,7 @@ bool InventoryMenu::onMouseEvent()
 
 void InventoryMenu::onDraw()
 {
-  if( camera.botObj == null || ( master != null && camera.botObj->instrument == -1 ) ) {
+  if( camera.botObj == null || ( master != null && camera.botObj->container == -1 ) ) {
     return;
   }
 
@@ -144,7 +185,7 @@ void InventoryMenu::onDraw()
     containerClazz = container->clazz;
   }
   else {
-    container = orbis.objects[camera.botObj->instrument];
+    container = orbis.objects[camera.botObj->container];
 
     if( container == null || !( container->flags & Object::BROWSABLE_BIT ) ) {
       return;
@@ -174,7 +215,8 @@ void InventoryMenu::onDraw()
       }
     }
   }
-  slotsRendered:;
+
+slotsRendered:;
 
   int nScrollRows = max( 0, containerClazz->nItems - ( ROWS - 1 ) * COLS - 1 ) / COLS;
 
@@ -273,13 +315,13 @@ void InventoryMenu::onDraw()
     glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.6f );
     rect( -52, -16, 48, 12 );
 
-    if( master == null && ( taggedItem->flags & Object::USE_FUNC_BIT ) ) {
+    if( taggedItem->flags & Object::USE_FUNC_BIT ) {
       uint texId = useTexId;
 
       if( taggedItem->flags & Object::WEAPON_BIT ) {
         const WeaponClass* clazz = static_cast<const WeaponClass*>( taggedClazz );
 
-        if( !clazz->allowedUsers.contains( containerClazz ) ) {
+        if( !clazz->allowedUsers.contains( camera.botObj->clazz ) ) {
           goto noIcon;
         }
 
@@ -291,7 +333,8 @@ void InventoryMenu::onDraw()
       shape.fill( x + width - ICON_SIZE - 4, y + 4, ICON_SIZE, ICON_SIZE );
       glBindTexture( GL_TEXTURE_2D, 0 );
     }
-    noIcon:;
+
+  noIcon:;
 
     if( !taggedClazz->description.isEmpty() ) {
       itemDesc.setText( "%s - %s", taggedClazz->title.cstr(), taggedClazz->description.cstr() );
@@ -317,26 +360,20 @@ InventoryMenu::InventoryMenu( const InventoryMenu* master_ ) :
     y = 8 + height + 8;
   }
 
-  scrollUpTexId = context.loadTexture( "ui/icon/scrollUp.ozcTex" );
+  scrollUpTexId   = context.loadTexture( "ui/icon/scrollUp.ozcTex" );
   scrollDownTexId = context.loadTexture( "ui/icon/scrollDown.ozcTex" );
-
-  if( master == null ) {
-    useTexId = context.loadTexture( "ui/icon/use.ozcTex" );
-    equipTexId = context.loadTexture( "ui/icon/equip.ozcTex" );
-    unequipTexId = context.loadTexture( "ui/icon/unequip.ozcTex" );
-  }
+  useTexId        = context.loadTexture( "ui/icon/use.ozcTex" );
+  equipTexId      = context.loadTexture( "ui/icon/equip.ozcTex" );
+  unequipTexId    = context.loadTexture( "ui/icon/unequip.ozcTex" );
 }
 
 InventoryMenu::~InventoryMenu()
 {
   glDeleteTextures( 1, &scrollUpTexId );
   glDeleteTextures( 1, &scrollDownTexId );
-
-  if( master == null ) {
-    glDeleteTextures( 1, &useTexId );
-    glDeleteTextures( 1, &equipTexId );
-    glDeleteTextures( 1, &unequipTexId );
-  }
+  glDeleteTextures( 1, &useTexId );
+  glDeleteTextures( 1, &equipTexId );
+  glDeleteTextures( 1, &unequipTexId );
 }
 
 }
