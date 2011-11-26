@@ -99,6 +99,15 @@ void BasicAudio::play( const Audio* parent )
       playContSound( sounds[Object::EVENT_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), dyn, dyn );
     }
   }
+
+  // inventory items' events
+  for( int i = 0; i < obj->items.length(); ++i ) {
+    const Object* item = orbis.objects[ obj->items[i] ];
+
+    if( item != null && ( item->flags & Object::AUDIO_BIT ) ) {
+      context.playAudio( item, parent == null ? this : parent );
+    }
+  }
 }
 
 }

@@ -141,7 +141,7 @@ void MusicPlayer::onUpdate()
     return;
   }
 
-  musicPlayerEnabled:;
+musicPlayerEnabled:;
 
   isVisible = true;
 

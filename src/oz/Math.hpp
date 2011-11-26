@@ -31,7 +31,7 @@ namespace oz
 {
 
 /**
- * Replacement for \<cmath\> plus some other utility functions.
+ * Replacement for <tt>\<cmath\></tt> plus some other utility functions.
  *
  * @ingroup oz
  */

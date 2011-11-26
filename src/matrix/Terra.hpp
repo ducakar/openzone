@@ -90,7 +90,7 @@ inline Pair<int> Terra::getIndices( float x, float y ) const
   int ix = int( ( x + DIM ) * Quad::INV_SIZE );
   int iy = int( ( y + DIM ) * Quad::INV_SIZE );
 
-  return Pair<int>( clamp( ix, 0, QUADS - 1 ), clamp( iy, 0, QUADS - 1 ) );
+  return { clamp( ix, 0, QUADS - 1 ), clamp( iy, 0, QUADS - 1 ) };
 }
 
 inline float Terra::height( float x, float y ) const

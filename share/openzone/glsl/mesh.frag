@@ -42,6 +42,6 @@ void main()
   vec4 specular = specularColour( masksSample.r, normal, normalize( toCamera ) );
   vec4 emission = vec4( masksSample.g, masksSample.g, masksSample.g, 0.0 );
 
-  gl_FragData[0] = oz_Colour * colourSample * ( diffuse + specular + emission );
+  gl_FragData[0] = oz_Colour * colourSample * ( min( diffuse + emission, vec4( 1.0 ) ) + specular );
   gl_FragData[0] = applyFog( gl_FragData[0], dist );
 }

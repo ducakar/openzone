@@ -242,7 +242,7 @@ void BotProxy::update()
 
     if( ui::mouse.doShow ) {
       if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::BROWSABLE_BIT ) ) {
-        bot->actions |= Bot::ACTION_TAKE;
+        bot->container = camera.taggedObj->index;
 
         container->show( true );
       }
@@ -261,13 +261,16 @@ void BotProxy::update()
       }
     }
     if( ui::mouse.wheelDown ) {
-      bot->actions |= Bot::ACTION_TAKE;
+      if( camera.taggedObj != null ) {
+        if( camera.taggedObj->flags & Object::BROWSABLE_BIT ) {
+          ui::mouse.doShow = true;
 
-      if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::BROWSABLE_BIT ) ) {
-        ui::mouse.doShow = true;
-
-        inventory->show( true );
-        container->show( true );
+          inventory->show( true );
+          container->show( true );
+        }
+        else {
+          bot->actions |= Bot::ACTION_TAKE;
+        }
       }
     }
     if( ui::mouse.wheelUp ) {
@@ -308,6 +311,8 @@ void BotProxy::prepare()
       bobPhi   = 0.0f;
       bobTheta = 0.0f;
       bobBias  = 0.0f;
+
+      camera.botObj->container = bot->parent;
     }
     else { // 1st person, not in vehicle
       const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
@@ -382,6 +387,15 @@ void BotProxy::prepare()
   }
   else {
     camera.setTagged( bot->getTagged( ~0 ) );
+  }
+
+  if( camera.taggedObj != null ) {
+    if( camera.botObj->instrument == -1 ) {
+      camera.botObj->instrument = camera.tagged;
+    }
+    if( camera.botObj->container == -1 && ( camera.taggedObj->flags & Object::BROWSABLE_BIT ) ) {
+      camera.botObj->container = camera.tagged;
+    }
   }
 }
 
