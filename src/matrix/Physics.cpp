@@ -54,9 +54,6 @@ const float Physics::LADDER_FRICTION        =  0.50f;
 const float Physics::FLOOR_FRICTION         =  0.25f;
 const float Physics::SLICK_FRICTION         =  0.02f;
 
-const float Physics::STRUCT_HIT_MAX_MASS    =  1.00f;
-const float Physics::STRUCT_DAMAGE_COEF     = -10.0f;
-
 const float Physics::FRAG_HIT_VELOCITY2     =  100.0f;
 const float Physics::FRAG_DESTROY_VELOCITY2 =  300.0f;
 const float Physics::FRAG_DAMAGE_COEF       =  10.0f;
@@ -323,10 +320,7 @@ void Physics::handleObjHit()
         dyn->hit( &hit, hitMomentum );
 
         if( hit.str != null ) {
-          Struct* str = hit.str;
-
-          float effectiveMass = min( dyn->mass, STRUCT_HIT_MAX_MASS );
-          str->damage( STRUCT_DAMAGE_COEF * hitMomentum * effectiveMass );
+          hit.str->hit( dyn->mass, hitMomentum );
         }
       }
     }

@@ -26,20 +26,16 @@
 #include "File.hpp"
 
 #ifdef OZ_MINGW
-# include <cstdio>
+# include <windows.h>
 #else
+# include <dirent.h>
 # include <fcntl.h>
-# include <sys/mman.h>
 # include <unistd.h>
+# include <sys/stat.h>
+# include <sys/mman.h>
 #endif
-#include <dirent.h>
-#include <sys/stat.h>
 
-// prevent old-style cast warning for GCC
-#ifdef __GNUC__
-# undef MAP_FAILED
-# define MAP_FAILED reinterpret_cast<void*>( -1 )
-#endif
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 
 namespace oz
 {
@@ -48,15 +44,24 @@ bool File::write( const char* buffer, int count ) const
 {
 #ifdef OZ_MINGW
 
-  FILE* fs = fopen( filePath, "wb" );
-  if( fs == null ) {
+  HANDLE file = CreateFile( filePath, GENERIC_WRITE, 0, null, CREATE_ALWAYS,
+                            FILE_ATTRIBUTE_NORMAL, null );
+  if( file == null ) {
     return false;
   }
 
-  int result = int( ::fwrite( buffer, size_t( count ), 1, fs ) );
-  fclose( fs );
+  DWORD remaining = DWORD( count );
+  DWORD written;
+  BOOL  result;
+  do {
+    result = WriteFile( file, buffer + count - remaining, remaining, &written, null );
+    remaining -= written;
+  }
+  while( result != 0 && remaining != 0 );
 
-  return result == 1;
+  CloseHandle( file );
+
+  return result != 0;
 
 #else
 
@@ -65,10 +70,17 @@ bool File::write( const char* buffer, int count ) const
     return false;
   }
 
-  int bytesWritten = int( ::write( fd, buffer, size_t( count ) ) );
+  size_t    remaining = size_t( count );
+  ptrdiff_t result;
+  do {
+    result = ::write( fd, buffer + count - remaining, remaining );
+    remaining -= size_t( result );
+  }
+  while( result >= 0 && remaining != 0 );
+
   close( fd );
 
-  return bytesWritten == count;
+  return result >= 0;
 
 #endif
 }
@@ -104,19 +116,34 @@ void File::setPath( const char* path )
 File::Type File::getType()
 {
   if( type == NONE ) {
-    struct stat info;
-    if( stat( filePath, &info ) != 0 ) {
+#ifdef OZ_MINGW
+    DWORD attributes = GetFileAttributes( filePath );
+
+    if( attributes == INVALID_FILE_ATTRIBUTES ) {
       type = MISSING;
     }
-    else if( S_ISREG( info.st_mode ) ) {
+    else if( attributes & FILE_ATTRIBUTE_DIRECTORY ) {
+      type = DIRECTORY;
+    }
+    else {
       type = REGULAR;
+    }
+#else
+    struct stat info;
+
+    if( stat( filePath, &info ) != 0 ) {
+      type = MISSING;
     }
     else if( S_ISDIR( info.st_mode ) ) {
       type = DIRECTORY;
     }
+    else if( S_ISREG( info.st_mode ) ) {
+      type = REGULAR;
+    }
     else {
       type = OTHER;
     }
+#endif
   }
   return type;
 }
@@ -175,25 +202,24 @@ bool File::map()
 
 #ifdef OZ_MINGW
 
-  struct stat statInfo;
-  if( stat( filePath, &statInfo ) != 0 ) {
+  HANDLE file = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, null, OPEN_EXISTING,
+                            FILE_ATTRIBUTE_NORMAL, null );
+  if( file == null ) {
     return false;
   }
 
-  FILE* fs = fopen( filePath, "rb" );
-  if( fs == null ) {
+  HANDLE mapping = CreateFileMapping( file, null, PAGE_READONLY, 0, 0, null );
+  if( mapping == null ) {
+    CloseHandle( file );
     return false;
   }
 
-  size = int( statInfo.st_size );
-  data = new char[size];
+  size = int( GetFileSize( mapping, null ) );
+  data = reinterpret_cast<char*>( MapViewOfFile( mapping, FILE_MAP_READ, 0, 0, 0 ) );
+  CloseHandle( mapping );
+  CloseHandle( file );
 
-  int result = int( ::fread( data, size_t( size ), 1, fs ) );
-  fclose( fs );
-
-  if( result != 1 ) {
-    delete[] data;
-    data = null;
+  if( data == null ) {
     return false;
   }
 
@@ -211,7 +237,8 @@ bool File::map()
   }
 
   size = int( statInfo.st_size );
-  data = reinterpret_cast<char*>( mmap( null, size_t( size ), PROT_READ, MAP_SHARED, fd, 0 ) );
+  data = reinterpret_cast<char*>( mmap( null, size_t( statInfo.st_size ),
+                                        PROT_READ, MAP_SHARED, fd, 0 ) );
   close( fd );
 
   if( data == MAP_FAILED ) {
@@ -229,7 +256,7 @@ void File::unmap()
   hard_assert( data != null );
 
 #ifdef OZ_MINGW
-  delete[] data;
+  UnmapViewOfFile( data );
 #else
   munmap( data, size_t( size ) );
 #endif
@@ -249,23 +276,27 @@ Buffer File::read() const
 
 #ifdef OZ_MINGW
 
-  struct stat statInfo;
-  if( stat( filePath, &statInfo ) != 0 ) {
+  HANDLE file = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, null, OPEN_EXISTING,
+                            FILE_ATTRIBUTE_NORMAL, null );
+  if( file == null ) {
     return buffer;
   }
 
-  FILE* fs = fopen( filePath, "rb" );
-  if( fs == null ) {
-    return buffer;
+  size_t fileSize = size_t( GetFileSize( file, null ) );
+  buffer.alloc( int( fileSize ) );
+
+  DWORD remaining = DWORD( fileSize );
+  DWORD read;
+  BOOL  result;
+  do {
+    result = ReadFile( file, buffer.begin() + fileSize - remaining, remaining, &read, null );
+    remaining -= read;
   }
+  while( result != 0 && remaining != 0 );
 
-  int fileSize = int( statInfo.st_size );
-  buffer.alloc( fileSize );
+  CloseHandle( file );
 
-  int result = int( ::fread( buffer.begin(), size_t( fileSize ), 1, fs ) );
-  fclose( fs );
-
-  if( result != 1 ) {
+  if( result == 0 ) {
     buffer.dealloc();
   }
 
@@ -282,13 +313,20 @@ Buffer File::read() const
     return buffer;
   }
 
-  int fileSize = int( fileStat.st_size );
-  buffer.alloc( fileSize );
+  size_t fileSize = size_t( fileStat.st_size );
+  buffer.alloc( int( fileSize ) );
 
-  int bytesRead = int( ::read( fd, buffer.begin(), size_t( fileSize ) ) );
+  size_t    remaining = size_t( fileSize );
+  ptrdiff_t result;
+  do {
+    result = ::read( fd, buffer.begin() + fileSize - remaining, remaining );
+    remaining -= size_t( result );
+  }
+  while( result >= 0 && remaining != 0 );
+
   close( fd );
 
-  if( bytesRead != fileSize ) {
+  if( result < 0 ) {
     buffer.dealloc();
   }
 
@@ -314,7 +352,11 @@ bool File::write( const BufferStream* bstream ) const
 
 bool File::chdir( const char* path )
 {
+#ifdef OZ_MINGW
+  return SetCurrentDirectory( path ) != 0;
+#else
   return ::chdir( path ) == 0;
+#endif
 }
 
 bool File::mkdir( const char* path, uint mode )
@@ -322,7 +364,7 @@ bool File::mkdir( const char* path, uint mode )
 #ifdef OZ_MINGW
   static_cast<void>( mode );
 
-  return ::mkdir( path ) == 0;
+  return CreateDirectory( path, null ) != 0;
 #else
   return ::mkdir( path, mode ) == 0;
 #endif
@@ -335,6 +377,59 @@ DArray<File> File::ls()
   if( getType() != DIRECTORY ) {
     return array;
   }
+
+#ifdef OZ_MINGW
+
+  WIN32_FIND_DATA entity;
+
+  HANDLE dir = FindFirstFile( filePath + "\\*.*", &entity );
+  if( dir == null ) {
+    return array;
+  }
+
+  // count entries first
+  int count = 0;
+  while( FindNextFile( dir, &entity ) ) {
+    if( entity.cFileName[0] != '.' ) {
+      ++count;
+    }
+  }
+
+  CloseHandle( dir );
+
+  if( count == 0 ) {
+    return array;
+  }
+
+  dir = FindFirstFile( filePath + "\\*.*", &entity );
+  if( dir == null ) {
+    return array;
+  }
+  array.alloc( count );
+
+  int i = 0;
+
+  if( entity.cFileName[i] != '.' ) {
+    array[i].filePath = filePath + "/" + entity.cFileName;
+    ++i;
+  }
+
+  while( i < count ) {
+    if( FindNextFile( dir, &entity ) == 0 ) {
+      CloseHandle( dir );
+      array.dealloc();
+      return array;
+    }
+
+    if( entity.cFileName[0] != '.' ) {
+      array[i].filePath = filePath + "/" + entity.cFileName;
+      ++i;
+    }
+  }
+
+  CloseHandle( dir );
+
+#else
 
   DIR* directory = opendir( filePath );
   if( directory == null ) {
@@ -364,18 +459,21 @@ DArray<File> File::ls()
     entity = readdir( directory );
 
     if( entity == null ) {
-      array.dealloc();
       closedir( directory );
+      array.dealloc();
       return array;
     }
 
     if( entity->d_name[0] != '.' ) {
-      array[i].filePath = ( filePath + "/" ) + entity->d_name;
+      array[i].filePath = filePath + "/" + entity->d_name;
       ++i;
     }
   }
 
   closedir( directory );
+
+#endif
+
   return array;
 }
 

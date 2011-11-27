@@ -51,6 +51,8 @@ void InventoryMenu::onVisibilityChange()
 bool InventoryMenu::onMouseEvent()
 {
   if( camera.botObj == null || ( master != null && camera.botObj->container == -1 ) ) {
+    tagged = -1;
+    scroll = 0;
     return false;
   }
 

@@ -304,25 +304,25 @@ class Quat : public Vec4
     }
 
     /**
-     * rotZ ^ rotX ^ rotY
+     * rotZ ^ rotX ^ rotZ
      */
-    static Quat rotZYX( float z, float y, float x )
+    static Quat rotZXZ( float heading, float pitch, float roll )
     {
-      float sx, cx, sy, cy, sz, cz;
+      float hs, hc, ps, pc, rs, rc;
 
-      Math::sincos( x * 0.5f, &sx, &cx );
-      Math::sincos( y * 0.5f, &sy, &cy );
-      Math::sincos( z * 0.5f, &sz, &cz );
+      Math::sincos( heading * 0.5f, &hs, &hc );
+      Math::sincos( pitch   * 0.5f, &ps, &pc );
+      Math::sincos( roll    * 0.5f, &rs, &rc );
 
-      float cxcy = cx * cy;
-      float cxsy = cx * sy;
-      float sxcy = sx * cy;
-      float sxsy = sx * sy;
+      float hsps = hs * ps;
+      float hcpc = hc * pc;
+      float hspc = hs * pc;
+      float hcps = hc * ps;
 
-      return Quat( sxcy * cz - cxsy * sz,
-                   cxsy * cz + sxcy * sz,
-                   cxcy * sz + sxsy * cz,
-                   cxcy * cz - sxsy * sz );
+      return Quat( hcps * rc + hsps * rs,
+                   hsps * rc - hcps * rs,
+                   hspc * rc + hcpc * rs,
+                   hcpc * rc - hspc * rs );
     }
 
     /**
@@ -330,14 +330,14 @@ class Quat : public Vec4
      */
     static Quat slerp( const Quat& a, const Quat& b, float t )
     {
-      Quat d = *a ^ b;
-      float sine  = Math::sqrt( 1.0f - d.w*d.w );
-      float angle = 2.0f * Math::acos( d.w );
+      Quat  diff  = *a ^ b;
+      float sine  = Math::sqrt( 1.0f - diff.w*diff.w );
+      float angle = 2.0f * Math::acos( diff.w );
 
       hard_assert( sine != 0.0f );
 
       float k = 1.0f / sine;
-      return rotAxis( Vec3( d.x * k, d.y * k, d.z * k ), t * angle );
+      return rotAxis( Vec3( diff.x * k, diff.y * k, diff.z * k ), t * angle );
     }
 
     /**
@@ -345,15 +345,15 @@ class Quat : public Vec4
      */
     static Quat fastSlerp( const Quat& a, const Quat& b, float t )
     {
-      Quat d = *a ^ b;
-      float k = d.w < 0.0f ? -t : t;
+      Quat  diff = *a ^ b;
+      float k    = diff.w < 0.0f ? -t : t;
 
-      d.x *= k;
-      d.y *= k;
-      d.z *= k;
-      d.w = Math::fastSqrt( 1.0f - d.x*d.x - d.y*d.y - d.z*d.z );
+      diff.x *= k;
+      diff.y *= k;
+      diff.z *= k;
+      diff.w = Math::fastSqrt( 1.0f - diff.x*diff.x - diff.y*diff.y - diff.z*diff.z );
 
-      return a ^ d;
+      return a ^ diff;
     }
 
 };

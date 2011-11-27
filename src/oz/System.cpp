@@ -27,17 +27,13 @@
 
 #include "Log.hpp"
 
-#include <csignal>
 #include <cstdio>
 #include <cstdlib>
-#include <unistd.h>
 
-// prevent old-style cast warning for GCC
-#ifdef __GNUC__
-# undef SIG_DFL
-# undef SIG_IGN
-# define SIG_DFL reinterpret_cast<__sighandler_t>( 0 )            /* Default action.  */
-# define SIG_IGN reinterpret_cast<__sighandler_t>( 1 )            /* Ignore signal.  */
+#ifndef OZ_MINGW
+# include <csignal>
+# include <unistd.h>
+# pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 
 namespace oz

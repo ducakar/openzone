@@ -6,15 +6,9 @@
 # .hpp and .cpp files in the target directory to the target definition.
 #
 
-echo Generating src/oz/CMakeLists.txt
-( cd src/oz       && ./CMakeLists-gen.sh )
-echo Generating src/matrix/CMakeLists.txt
-( cd src/matrix   && ./CMakeLists-gen.sh )
-echo Generating src/common/CMakeLists.txt
-( cd src/common   && ./CMakeLists-gen.sh )
-echo Generating src/nirvana/CMakeLists.txt
-( cd src/nirvana  && ./CMakeLists-gen.sh )
-echo Generating src/client/CMakeLists.txt
-( cd src/client   && ./CMakeLists-gen.sh )
-echo Generating src/build/CMakeLists.txt
-( cd src/build    && ./CMakeLists-gen.sh )
+components='oz common matrix nirvana client server build'
+
+for component in components; do
+  echo Generating src/$component/CMakeLists.txt
+  ( cd src/$component && ./CMakeLists-gen.sh )
+done

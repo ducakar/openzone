@@ -45,6 +45,11 @@
 # error GCC >= 4.6 and LLVM/Clang >= 3.0 are the only supported compilers.
 #endif
 
+#ifdef OZ_MINGW
+# define WIN32_LEAN_AND_MEAN
+# define __MSVCRT_VERSION__ 0x0700
+#endif
+
 #if !defined( __LP64__ ) && !defined( __LLP64__ )
 # define OZ_POINTER_32
 #endif

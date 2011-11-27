@@ -135,7 +135,11 @@ uint Context::buildTexture( const void* data, int width, int height, uint format
                 format, GL_UNSIGNED_BYTE, data );
 
   if( generateMipmaps ) {
+#ifdef OZ_MINGW
+    client::glGenerateMipmap( GL_TEXTURE_2D );
+#else
     glGenerateMipmap( GL_TEXTURE_2D );
+#endif
   }
 
   glBindTexture( GL_TEXTURE_2D, 0 );

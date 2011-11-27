@@ -56,9 +56,6 @@ class Physics
     static const float FLOOR_FRICTION;
     static const float SLICK_FRICTION;
 
-    static const float STRUCT_HIT_MAX_MASS;
-    static const float STRUCT_DAMAGE_COEF;
-
     static const float FRAG_HIT_VELOCITY2;
     static const float FRAG_DESTROY_VELOCITY2;
     static const float FRAG_DAMAGE_COEF;
