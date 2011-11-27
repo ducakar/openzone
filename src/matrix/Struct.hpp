@@ -38,9 +38,11 @@ class Struct : public Bounds
 {
   private:
 
-    static const float DEMOLISH_SPEED;
-    static const Vec3  DESTRUCT_FRAG_VELOCITY;
     static const Mat44 ROTATIONS[];
+    static const Vec3  DESTRUCT_FRAG_VELOCITY;
+    static const float DEMOLISH_SPEED;
+    static const float MOMENTUM_DAMAGE_COEF;
+    static const float MAX_HIT_DAMAGE_MASS;
 
   public:
 
@@ -166,8 +168,9 @@ class Struct : public Bounds
 
     static Bounds rotate( const Bounds& in, Heading heading );
 
-    void damage( float damage );
     void destroy();
+    void damage( float damage );
+    void hit( float mass, float hitMomentum );
     void update();
 
   public:
@@ -219,6 +222,13 @@ inline void Struct::damage( float damage )
   if( damage > 0.0f ) {
     life -= damage;
   }
+}
+
+OZ_ALWAYS_INLINE
+inline void Struct::hit( float mass, float hitMomentum )
+{
+  float effectiveMass = min( mass, MAX_HIT_DAMAGE_MASS );
+  damage( effectiveMass * hitMomentum * MOMENTUM_DAMAGE_COEF );
 }
 
 OZ_ALWAYS_INLINE

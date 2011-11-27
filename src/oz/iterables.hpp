@@ -269,33 +269,6 @@ class IteratorBase
     };
 
 /**
- * @def foreach
- * Foreach macro.
- *
- * An alternative to range-for loop, may be more suitable for iterator concept used in this library.
- * It doesn't need <tt>RangeIterator</tt> wrapper to work which results in much better performance
- * when compiling without optimisation. Furthermore, it works fine with KDevelop's auto-completion
- * and syntax checker in contrast with range-for.
- *
- * It can be used like
- * <pre>
- * Vector\<int\> v;
- * foreach( i, v.citer() ) {
- *   printf( "%d ", *i );
- * }
- * </pre>
- * to replace a longer piece of code, like:
- * <pre>
- * Vector\<int\> v;
- * for( auto i = v.citer(); i.isValid(); ++i )
- *   printf( "%d ", *i );
- * }
- * </pre>
- */
-#define foreach( i, iterator ) \
-  for( auto i = iterator; i.isValid(); ++i )
-
-/**
  * <tt>begin()</tt> template for range-for.
  *
  * @ingroup oz
@@ -318,6 +291,33 @@ inline typename Iterator::RangeIterator end( Iterator& iter )
 {
   return typename Iterator::RangeIterator( iter );
 }
+
+/**
+ * @def foreach
+ * Foreach macro.
+ *
+ * An alternative to range-for loop, may be more suitable for iterator concept used in this library.
+ * It doesn't need <tt>RangeIterator</tt> wrapper to work which may result in better performance
+ * when compiling without optimisation. Furthermore, it works fine with auto-completion and syntax
+ * checker in KDevelop and Eclipse CDT.
+ *
+ * It can be used like
+ * <pre>
+ * Vector\<int\> v;
+ * foreach( i, v.citer() ) {
+ *   printf( "%d ", *i );
+ * }
+ * </pre>
+ * to replace a longer piece of code, like:
+ * <pre>
+ * Vector\<int\> v;
+ * for( auto i = v.citer(); i.isValid(); ++i )
+ *   printf( "%d ", *i );
+ * }
+ * </pre>
+ */
+#define foreach( i, iterator ) \
+  for( auto i = iterator; i.isValid(); ++i )
 
 /**
  * Copy elements.

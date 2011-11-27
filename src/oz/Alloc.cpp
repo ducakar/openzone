@@ -33,9 +33,10 @@
 
 #ifdef OZ_MINGW
 # include <malloc.h>
+# include <windows.h>
+#else
+# include <pthread.h>
 #endif
-
-#include <pthread.h>
 
 namespace oz
 {
@@ -59,7 +60,11 @@ static TraceEntry* firstArrayTraceEntry  = null;
 
 // If we deallocate from two different threads at once with OZ_TRACE_LEAKS, changing the list
 // of allocated blocks while iterating it in another thread can result in a SIGSEGV.
+#ifdef OZ_MINGW
+static CRITICAL_SECTION sectionMutex;
+#else
 static pthread_mutex_t sectionMutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
 
 #endif
 
@@ -107,7 +112,11 @@ void Alloc::printLeaks()
 
   bt = firstObjectTraceEntry;
   while( bt != null ) {
-    log.println( "Leaked object at %p of size %ld B allocated", bt->address, bt->size );
+#ifdef OZ_POINTER_32
+    log.println( "Leaked object at %p of size %d B allocated", bt->address, bt->size );
+#else
+    log.println( "Leaked object at %p of size %lld B allocated", bt->address, ulong64( bt->size ) );
+#endif
     log.indent();
     log.printTrace( &bt->stackTrace );
     log.unindent();
@@ -117,7 +126,11 @@ void Alloc::printLeaks()
 
   bt = firstArrayTraceEntry;
   while( bt != null ) {
-    log.println( "Leaked array at %p of size %ld B allocated", bt->address, bt->size );
+#ifdef OZ_POINTER_32
+    log.println( "Leaked array at %p of size %d B allocated", bt->address, bt->size );
+#else
+    log.println( "Leaked array at %p of size %lld B allocated", bt->address, ulong64( bt->size ) );
+#endif
     log.indent();
     log.printTrace( &bt->stackTrace );
     log.unindent();
@@ -131,42 +144,6 @@ void Alloc::printLeaks()
 }
 
 using namespace oz;
-
-#if defined( OZ_MINGW )
-
-/**
- * Emulation of POSIX function posix_memalign.
- *
- * @ingroup oz
- */
-static int posix_memalign( void** ptr, size_t alignment, size_t size )
-{
-  void** originalPtr = reinterpret_cast<void**>( malloc( sizeof( void* ) + size + alignment - 1 ) );
-  void** beginPtr = Alloc::alignUp( originalPtr + 1 );
-
-  if( originalPtr == null ) {
-    return -1;
-  }
-
-  beginPtr[-1] = originalPtr;
-  *ptr = reinterpret_cast<void*>( beginPtr );
-
-  return 0;
-}
-
-/**
- * Free storage allocated by the fake posix_memalign function.
- *
- * @ingroup oz
- */
-static void posix_memalign_free( void* ptr )
-{
-  void** beginPtr = reinterpret_cast<void**>( ptr );
-
-  free( beginPtr[-1] );
-}
-
-#endif
 
 /**
  * <tt>operator new</tt> implementation with memory statistics and optionally memory alignment
@@ -184,16 +161,29 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
 
   size += Alloc::alignUp( sizeof( size_t ) );
 
-  void* ptr;
-  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
+#ifdef OZ_MINGW
+  void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
+  if( ptr == null ) {
     System::trap();
     throw std::bad_alloc();
   }
+#else
+  void* ptr;
+  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
+    System::trap();
+    throw std::bad_alloc();
+  }
+#endif
 
 #ifdef OZ_TRACE_LEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
+# ifdef OZ_MINGW
+  InitializeCriticalSection( &sectionMutex );
+  EnterCriticalSection( &sectionMutex );
+# else
   pthread_mutex_lock( &sectionMutex );
+# endif
 
   st->next       = firstObjectTraceEntry;
   st->address    = ptr;
@@ -202,7 +192,12 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
 
   firstObjectTraceEntry = st;
 
+# ifdef OZ_MINGW
+  LeaveCriticalSection( &sectionMutex );
+  DeleteCriticalSection( &sectionMutex );
+# else
   pthread_mutex_unlock( &sectionMutex );
+# endif
 #endif
 
   ++Alloc::count;
@@ -236,16 +231,29 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 
   size += Alloc::alignUp( sizeof( size_t ) );
 
-  void* ptr;
-  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
+#ifdef OZ_MINGW
+  void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
+  if( ptr == null ) {
     System::trap();
     throw std::bad_alloc();
   }
+#else
+  void* ptr;
+  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
+    System::trap();
+    throw std::bad_alloc();
+  }
+#endif
 
 #ifdef OZ_TRACE_LEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
+# ifdef OZ_MINGW
+  InitializeCriticalSection( &sectionMutex );
+  EnterCriticalSection( &sectionMutex );
+# else
   pthread_mutex_lock( &sectionMutex );
+# endif
 
   st->next       = firstArrayTraceEntry;
   st->address    = ptr;
@@ -254,7 +262,12 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 
   firstArrayTraceEntry = st;
 
+# ifdef OZ_MINGW
+  LeaveCriticalSection( &sectionMutex );
+  DeleteCriticalSection( &sectionMutex );
+# else
   pthread_mutex_unlock( &sectionMutex );
+# endif
 #endif
 
   ++Alloc::count;
@@ -302,7 +315,12 @@ void operator delete ( void* ptr ) throw()
 #ifdef OZ_TRACE_LEAKS
   System::resetSignals();
 
+# ifdef OZ_MINGW
+  InitializeCriticalSection( &sectionMutex );
+  EnterCriticalSection( &sectionMutex );
+# else
   pthread_mutex_lock( &sectionMutex );
+# endif
 
   TraceEntry* st   = firstObjectTraceEntry;
   TraceEntry* prev = null;
@@ -343,11 +361,16 @@ void operator delete ( void* ptr ) throw()
 
 backtraceFound:;
 
+# ifdef OZ_MINGW
+  LeaveCriticalSection( &sectionMutex );
+  DeleteCriticalSection( &sectionMutex );
+# else
   pthread_mutex_unlock( &sectionMutex );
+# endif
 #endif
 
-#if defined( OZ_MINGW )
-  posix_memalign_free( chunk );
+#ifdef OZ_MINGW
+  _aligned_free( chunk );
 #else
   free( chunk );
 #endif
@@ -383,7 +406,12 @@ void operator delete[] ( void* ptr ) throw()
 #ifdef OZ_TRACE_LEAKS
   System::resetSignals();
 
+# ifdef OZ_MINGW
+  InitializeCriticalSection( &sectionMutex );
+  EnterCriticalSection( &sectionMutex );
+# else
   pthread_mutex_lock( &sectionMutex );
+# endif
 
   TraceEntry* st   = firstArrayTraceEntry;
   TraceEntry* prev = null;
@@ -424,11 +452,16 @@ void operator delete[] ( void* ptr ) throw()
 
 backtraceFound:;
 
+# ifdef OZ_MINGW
+  LeaveCriticalSection( &sectionMutex );
+  DeleteCriticalSection( &sectionMutex );
+# else
   pthread_mutex_unlock( &sectionMutex );
+# endif
 #endif
 
-#if defined( OZ_MINGW )
-  posix_memalign_free( chunk );
+#ifdef OZ_MINGW
+  _aligned_free( chunk );
 #else
   free( chunk );
 #endif

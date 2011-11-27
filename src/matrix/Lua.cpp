@@ -2586,7 +2586,7 @@ int Lua::ozVehicleSetH( lua_State* l )
   vehicle->h = Math::rad( tofloat( 1 ) );
   vehicle->h = Math::fmod( vehicle->h + Math::TAU, Math::TAU );
 
-  vehicle->rot = Quat::rotZYX( vehicle->h, 0.0f, vehicle->v - Math::TAU / 4.0f );
+  vehicle->rot = Quat::rotZXZ( vehicle->h, vehicle->v - Math::TAU / 4.0f, 0.0f );
   return 0;
 }
 
@@ -2599,7 +2599,7 @@ int Lua::ozVehicleAddH( lua_State* l )
   vehicle->h += Math::rad( tofloat( 1 ) );
   vehicle->h = Math::fmod( vehicle->h + Math::TAU, Math::TAU );
 
-  vehicle->rot = Quat::rotZYX( vehicle->h, 0.0f, vehicle->v - Math::TAU / 4.0f );
+  vehicle->rot = Quat::rotZXZ( vehicle->h, vehicle->v - Math::TAU / 4.0f, 0.0f );
   return 0;
 }
 
@@ -2622,7 +2622,7 @@ int Lua::ozVehicleSetV( lua_State* l )
   vehicle->v = Math::rad( tofloat( 1 ) );
   vehicle->v = clamp( vehicle->v, 0.0f, Math::TAU / 2.0f );
 
-  vehicle->rot = Quat::rotZYX( vehicle->h, 0.0f, vehicle->v - Math::TAU / 4.0f );
+  vehicle->rot = Quat::rotZXZ( vehicle->h, vehicle->v - Math::TAU / 4.0f, 0.0f );
   return 0;
 }
 
@@ -2635,7 +2635,7 @@ int Lua::ozVehicleAddV( lua_State* l )
   vehicle->v += Math::rad( tofloat( 1 ) );
   vehicle->v = clamp( vehicle->v, 0.0f, Math::TAU / 2.0f );
 
-  vehicle->rot = Quat::rotZYX( vehicle->h, 0.0f, vehicle->v - Math::TAU / 4.0f );
+  vehicle->rot = Quat::rotZXZ( vehicle->h, vehicle->v - Math::TAU / 4.0f, 0.0f );
   return 0;
 }
 

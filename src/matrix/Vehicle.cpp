@@ -259,7 +259,7 @@ void Vehicle::onUpdate()
 
     h = bot->h;
     v = bot->v;
-    rot = Quat::rotZYX( h, 0.0f, v - Math::TAU / 4.0f );
+    rot = Quat::rotZXZ( h, v - Math::TAU / 4.0f, 0.0f );
     actions = bot->actions;
     flags &= ~DISABLED_BIT;
   }

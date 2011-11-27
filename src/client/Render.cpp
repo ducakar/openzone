@@ -624,6 +624,8 @@ void Render::init( bool isBuild )
   }
 #endif
 
+  glInit();
+
   if( isBuild ) {
     config.get( "shader.setSamplerIndices", false );
     config.get( "shader.vertexTexture", false );
@@ -658,8 +660,6 @@ void Render::init( bool isBuild )
     renderWidth   = screenWidth;
     renderHeight  = screenHeight;
   }
-
-  glInit();
 
   if( isOffscreen ) {
     glGenRenderbuffers( 1, &depthBuffer );
