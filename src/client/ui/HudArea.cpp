@@ -41,8 +41,75 @@ namespace client
 namespace ui
 {
 
-const float HudArea::VEHICLE_DIMF = VEHICLE_SIZE / 2.0f;
+const float HudArea::VEHICLE_DIMF       = VEHICLE_SIZE / 2.0f;
+/*
+const float HudArea::TAG_CLIP_DIST      = 0.1f;
+const float HudArea::TAG_CLAMP_LIMIT    = 1e6f;
+// size in pixels
+const float HudArea::TAG_MIN_PIXEL_SIZE = 4.0f;
+// size in coefficient
+const float HudArea::TAG_MAX_COEFF_SIZE = 4.0f;
 
+bool HudArea::projectBounds( Span* span, const AABB& bb ) const
+{
+  Vec3 p = bb.p - camera.p;
+  Vec3 corners[8] = {
+    p + Vec3( -bb.dim.x, -bb.dim.y, -bb.dim.z ),
+    p + Vec3( -bb.dim.x, -bb.dim.y, +bb.dim.z ),
+    p + Vec3( -bb.dim.x, +bb.dim.y, -bb.dim.z ),
+    p + Vec3( -bb.dim.x, +bb.dim.y, +bb.dim.z ),
+    p + Vec3( +bb.dim.x, -bb.dim.y, -bb.dim.z ),
+    p + Vec3( +bb.dim.x, -bb.dim.y, +bb.dim.z ),
+    p + Vec3( +bb.dim.x, +bb.dim.y, -bb.dim.z ),
+    p + Vec3( +bb.dim.x, +bb.dim.y, +bb.dim.z )
+  };
+
+  float minX = +Math::INF;
+  float minY = +Math::INF;
+  float maxX = -Math::INF;
+  float maxY = -Math::INF;
+
+  for( int i = 0; i < 8; ++i ) {
+    Vec3  t = camera.rotTMat * corners[i];
+    float d = max( -t.z, TAG_CLIP_DIST );
+    // we have to clamp to prevent integer overflows
+    float x = clamp( ( t.x / d ) * stepPixel, -TAG_CLAMP_LIMIT, +TAG_CLAMP_LIMIT );
+    float y = clamp( ( t.y / d ) * stepPixel, -TAG_CLAMP_LIMIT, +TAG_CLAMP_LIMIT );
+
+    minX = min( minX, x );
+    minY = min( minY, y );
+    maxX = max( maxX, x );
+    maxY = max( maxY, y );
+  }
+
+  if( maxX - minX < TAG_MIN_PIXEL_SIZE || ( maxX - minX ) * pixelStep > TAG_MAX_COEFF_SIZE ||
+      maxY - minY < TAG_MIN_PIXEL_SIZE || ( maxY - minY ) * pixelStep > TAG_MAX_COEFF_SIZE )
+  {
+    return false;
+  }
+
+  span->minX = Area::uiCentreX + int( minX + 0.5f );
+  span->minY = Area::uiCentreY + int( minY + 0.5f );
+  span->maxX = Area::uiCentreX + int( maxX + 0.5f );
+  span->maxY = Area::uiCentreY + int( maxY + 0.5f );
+
+  return true;
+}
+
+void HudArea::drawTaggedRect( const Object* obj ) const
+{
+  Span span;
+  if( projectBounds( &span, *obj ) ) {
+    float minX = float( span.minX );
+    float maxX = float( span.maxX );
+    float minY = float( span.minY );
+    float maxY = float( span.maxY );
+
+    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+    shape.tag( minX, minY, maxX, maxY );
+  }
+}
+*/
 void HudArea::drawBotCrosshair()
 {
   const Bot*      bot      = camera.botObj;
@@ -233,7 +300,7 @@ void HudArea::drawVehicleStatus()
                              float( 30 + vehClazz->nWeapons * ( textHeight + 8 ) + VEHICLE_SIZE / 2 ),
                              0.0f ) );
   tf.camera.scale( Vec3( 1.0f, 1.0f, 0.001f ) );
-  tf.camera.rotateX( Math::rad( -30.0f ) );
+  tf.camera.rotateX( Math::rad( -45.0f ) );
   tf.camera.rotateZ( Math::rad( 160.0f ) );
   tf.camera.scale( Vec3( scale, scale, scale ) );
   tf.applyCamera();
@@ -319,6 +386,9 @@ void HudArea::onUpdate()
 void HudArea::onDraw()
 {
   if( camera.bot != -1 ) {
+//     if( camera.taggedObj != null ) {
+//       drawTaggedRect( camera.taggedObj );
+//     }
     drawBotCrosshair();
     drawBotStatus();
 
@@ -337,6 +407,9 @@ HudArea::HudArea() : Area( Area::uiWidth, Area::uiHeight ),
     lastTaggedId( -1 ), lastWeaponId( -1 ), lastWeaponRounds( -1 ), lastVehicleId( -1 )
 {
   flags = UPDATE_BIT | IGNORE_BIT | PINNED_BIT;
+
+//   pixelStep = camera.coeff / float( Area::uiHeight / 2 );
+//   stepPixel = 1.0f / pixelStep;
 
   int step = font.INFOS[Font::LARGE].height + 8;
   for( int i = 0; i < Vehicle::MAX_WEAPONS; ++i ) {

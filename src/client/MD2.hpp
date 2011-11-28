@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "matrix/Library.hpp"
+#include "matrix/Bot.hpp"
 
 #include "client/Mesh.hpp"
 
@@ -40,6 +40,31 @@ class MD2
 
     static const int MAX_VERTS = 2048;
 
+    enum Anim
+    {
+      ANIM_STAND,
+      ANIM_RUN,
+      ANIM_ATTACK,
+      ANIM_PAIN_A,
+      ANIM_PAIN_B,
+      ANIM_PAIN_C,
+      ANIM_JUMP,
+      ANIM_FLIP,
+      ANIM_SALUTE,
+      ANIM_FALLBACK,
+      ANIM_WAVE,
+      ANIM_POINT,
+      ANIM_CROUCH_STAND,
+      ANIM_CROUCH_WALK,
+      ANIM_CROUCH_ATTACK,
+      ANIM_CROUCH_PAIN,
+      ANIM_CROUCH_DEATH,
+      ANIM_DEATH_FALLBACK,
+      ANIM_DEATH_FALLFORWARD,
+      ANIM_DEATH_FALLBACKSLOW,
+      ANIM_MAX
+    };
+
     struct AnimInfo
     {
       int   firstFrame;
@@ -50,17 +75,18 @@ class MD2
 
     struct AnimState
     {
-      Anim::Type type;
-      bool  repeat;
+      Anim      type;
+      Bot::Anim botAnim;
+      bool      repeat;
 
-      int   firstFrame;
-      int   lastFrame;
-      int   currFrame;
-      int   nextFrame;
+      int       firstFrame;
+      int       lastFrame;
+      int       currFrame;
+      int       nextFrame;
 
-      float fps;
-      float frameTime;
-      float currTime;
+      float     fps;
+      float     frameTime;
+      float     currTime;
     };
 
     static const AnimInfo ANIM_LIST[];

@@ -334,8 +334,9 @@ void MD2::build( const char* path )
       vertex.y = vertex.y * scale + translation.y;
       vertex.z = vertex.z * scale + translation.z;
 
-      if( client::MD2::ANIM_LIST[Anim::JUMP].firstFrame <= i &&
-          i <= client::MD2::ANIM_LIST[Anim::JUMP].lastFrame ) {
+      if( client::MD2::ANIM_LIST[client::MD2::ANIM_JUMP].firstFrame <= i &&
+          i <= client::MD2::ANIM_LIST[client::MD2::ANIM_JUMP].lastFrame )
+      {
         vertex += jumpTransl;
       }
     }

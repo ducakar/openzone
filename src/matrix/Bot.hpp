@@ -84,12 +84,13 @@ class Bot : public Dynamic
     static const int GRAB_BIT                 = 0x00001000;
 
     // current state bits
-    static const int JUMP_SCHED_BIT           = 0x00004000;
-    static const int GROUNDED_BIT             = 0x00008000;
-    static const int ON_STAIRS_BIT            = 0x00010000;
-    static const int CLIMBING_BIT             = 0x00020000;
-    static const int SWIMMING_BIT             = 0x00040000;
-    static const int SUBMERGED_BIT            = 0x00080000;
+    static const int JUMP_SCHED_BIT           = 0x00002000;
+    static const int GROUNDED_BIT             = 0x00004000;
+    static const int ON_STAIRS_BIT            = 0x00008000;
+    static const int CLIMBING_BIT             = 0x00010000;
+    static const int SWIMMING_BIT             = 0x00020000;
+    static const int SUBMERGED_BIT            = 0x00040000;
+    static const int ATTACKING_BIT            = 0x00080000;
 
     static const int GESTURE0_BIT             = 0x01000000;
     static const int GESTURE1_BIT             = 0x02000000;
@@ -117,6 +118,20 @@ class Bot : public Dynamic
     static const float STEP_MOVE_AHEAD;
     static const float CLIMB_MOVE_AHEAD;
 
+    enum Anim
+    {
+      ANIM_STAND,
+      ANIM_RUN,
+      ANIM_ATTACK,
+      ANIM_JUMP,
+      ANIM_DEATH,
+      ANIM_GESTURE0,
+      ANIM_GESTURE1,
+      ANIM_GESTURE2,
+      ANIM_GESTURE3,
+      ANIM_GESTURE4
+    };
+
   public:
 
     static Pool<Bot, 1024> pool;
@@ -137,7 +152,7 @@ class Bot : public Dynamic
     String     mindFunc;
 
     float      camZ;
-    Anim::Type anim;
+    Anim       anim;
 
   protected:
 

@@ -27,8 +27,6 @@
 
 #include "client/MD2Imago.hpp"
 
-#include "matrix/Bot.hpp"
-
 #include "client/Colours.hpp"
 #include "client/Context.hpp"
 #include "client/Camera.hpp"
@@ -66,16 +64,59 @@ MD2Imago::~MD2Imago()
   context.releaseMD2( clazz->imagoModel );
 }
 
-void MD2Imago::setAnim( Anim::Type type_ )
+void MD2Imago::setAnim( Bot::Anim botAnim )
 {
-  int type = int( type_ );
+  const Bot* bot = static_cast<const Bot*>( obj );
 
-  anim.type       = type_;
-  anim.repeat     = MD2::ANIM_LIST[type].repeat;
-  anim.firstFrame = MD2::ANIM_LIST[type].firstFrame;
-  anim.lastFrame  = MD2::ANIM_LIST[type].lastFrame;
+  switch( botAnim ) {
+    case Bot::ANIM_STAND: {
+      anim.type = bot->state & Bot::CROUCHING_BIT ? MD2::ANIM_CROUCH_STAND : MD2::ANIM_STAND;
+      break;
+    }
+    case Bot::ANIM_RUN: {
+      anim.type = bot->state & Bot::CROUCHING_BIT ? MD2::ANIM_CROUCH_WALK : MD2::ANIM_RUN;
+      break;
+    }
+    case Bot::ANIM_JUMP: {
+      anim.type = MD2::ANIM_JUMP;
+      break;
+    }
+    case Bot::ANIM_ATTACK: {
+      anim.type = bot->state & Bot::CROUCHING_BIT ? MD2::ANIM_CROUCH_ATTACK : MD2::ANIM_ATTACK;
+      break;
+    }
+    case Bot::ANIM_DEATH: {
+      anim.type = MD2::Anim( MD2::ANIM_DEATH_FALLBACK + Math::rand( 3 ) );
+      break;
+    }
+    case Bot::ANIM_GESTURE0: {
+      anim.type = MD2::ANIM_POINT;
+      break;
+    }
+    case Bot::ANIM_GESTURE1: {
+      anim.type = MD2::ANIM_FALLBACK;
+      break;
+    }
+    case Bot::ANIM_GESTURE2: {
+      anim.type = MD2::ANIM_SALUTE;
+      break;
+    }
+    case Bot::ANIM_GESTURE3: {
+      anim.type = MD2::ANIM_WAVE;
+      break;
+    }
+    case Bot::ANIM_GESTURE4: {
+      anim.type = MD2::ANIM_FLIP;
+      break;
+    }
+  }
+
+  anim.botAnim    = botAnim;
+  anim.repeat     = MD2::ANIM_LIST[anim.type].repeat;
+  anim.firstFrame = MD2::ANIM_LIST[anim.type].firstFrame;
+  anim.lastFrame  = MD2::ANIM_LIST[anim.type].lastFrame;
   anim.nextFrame  = anim.firstFrame == anim.lastFrame ? anim.firstFrame : anim.firstFrame + 1;
-  anim.fps        = MD2::ANIM_LIST[type].fps;
+  anim.fps        = MD2::ANIM_LIST[anim.type].fps;
   anim.frameTime  = 1.0f / anim.fps;
   anim.currTime   = 0.0f;
 }
@@ -92,7 +133,7 @@ void MD2Imago::draw( const Imago* parent, int mask )
   const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
   if( mask & Mesh::SOLID_BIT ) {
-    if( bot->anim != anim.type ) {
+    if( bot->anim != anim.botAnim ) {
       setAnim( bot->anim );
     }
 

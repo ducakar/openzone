@@ -43,15 +43,22 @@ class HudArea : public Area
 
   private:
 
-    static const int   ICON_SIZE    = 32;
-    static const int   VEHICLE_SIZE = 180;
+    static const int   ICON_SIZE          = 32;
+    static const int   VEHICLE_SIZE       = 180;
     static const float VEHICLE_DIMF;
+//     static const float TAG_CLIP_DIST;
+//     static const float TAG_CLAMP_LIMIT;
+//     static const float TAG_MIN_PIXEL_SIZE;
+//     static const float TAG_MAX_COEFF_SIZE;
 
     Label title;
     Label weaponName;
     Label weaponRounds;
     Label vehicleWeaponNames[Vehicle::MAX_WEAPONS];
     Label vehicleWeaponRounds[Vehicle::MAX_WEAPONS];
+
+//     float pixelStep;
+//     float stepPixel;
 
     // cache last ids so we know when to re-generate labels
     int   lastTaggedId;
@@ -82,6 +89,9 @@ class HudArea : public Area
     int   rightIconY;
     int   bottomIconX;
     int   bottomIconY;
+
+//     bool projectBounds( Span* span, const AABB& bb ) const;
+//     void drawTaggedRect( const Object* obj ) const;
 
     void drawBotCrosshair();
     void drawBotStatus();
