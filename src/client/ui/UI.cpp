@@ -76,19 +76,17 @@ void UI::draw()
 
   // set shaders
   shader.setAmbientLight( Vec4( 0.6f, 0.5f, 0.6f, 1.0f ) );
-  shader.setCaelumLight( Vec3( 0.67f, -0.67f, -0.33f ), Vec4( 0.6f, 0.6f, 0.6f, 1.0f ) );
+  shader.setCaelumLight( ~Vec3( 0.6f, -0.3f, -0.8f ), Vec4( 0.6f, 0.6f, 0.6f, 1.0f ) );
 
   for( int i = 0; i < library.shaders.length(); ++i ) {
     if( shader.isLoaded || i == shader.plain ) {
       shader.use( i );
-      tf.applyCamera();
 
-      shader.setAmbientLight( Vec4( 0.6f, 0.5f, 0.6f, 1.0f ) );
-      shader.setCaelumLight( Vec3( 0.67f, -0.67f, -0.33f ), Vec4( 0.6f, 0.6f, 0.6f, 1.0f ) );
+      tf.applyCamera();
       shader.updateLights();
 
       glUniform1f( param.oz_Fog_start, 1000000.0f );
-      glUniform1f( param.oz_Fog_end, 2000000.0f );
+      glUniform1f( param.oz_Fog_end, 1000000.0f );
     }
   }
 

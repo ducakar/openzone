@@ -267,43 +267,38 @@ void Bot::onUpdate()
      */
 
     if( ( actions & ACTION_JUMP ) && !( state & ( GROUNDED_BIT | CLIMBING_BIT ) ) ) {
-      anim = Anim::JUMP;
+      anim = ANIM_JUMP;
     }
     else if( actions & ( ACTION_FORWARD | ACTION_BACKWARD | ACTION_LEFT | ACTION_RIGHT ) ) {
-      anim = state & CROUCHING_BIT ? Anim::CROUCH_WALK : Anim::RUN;
+      anim = ANIM_RUN;
     }
     else if( actions & ACTION_ATTACK ) {
       if( weaponObj != null && weaponObj->shotTime == 0.0f ) {
-        anim = state & CROUCHING_BIT ? Anim::CROUCH_ATTACK : Anim::ATTACK;
+        anim = ANIM_ATTACK;
         weaponObj->trigger( this );
       }
     }
-    else if( state & CROUCHING_BIT ) {
-      anim = Anim::CROUCH_STAND;
-    }
     else if( state & GESTURE0_BIT ) {
-      anim = Anim::POINT;
+      anim = ANIM_GESTURE0;
     }
     else if( state & GESTURE1_BIT ) {
-      anim = Anim::FALLBACK;
+      anim = ANIM_GESTURE1;
     }
     else if( state & GESTURE2_BIT ) {
-      anim = Anim::SALUTE;
+      anim = ANIM_GESTURE2;
     }
     else if( state & GESTURE3_BIT ) {
-      anim = Anim::WAVE;
+      anim = ANIM_GESTURE3;
     }
     else if( state & GESTURE4_BIT ) {
-      anim = Anim::FLIP;
+      anim = ANIM_GESTURE4;
+
       if( !( oldState & GESTURE4_BIT ) ) {
         addEvent( EVENT_FLIP, 1.0f );
       }
     }
-    else if( state & GESTURE_ALL_BIT ) {
-      anim = Anim::MAX;
-    }
     else {
-      anim = Anim::STAND;
+      anim = ANIM_STAND;
     }
 
     /*
@@ -473,8 +468,7 @@ void Bot::onUpdate()
                 state         &= ~( GRAB_BIT | JUMP_SCHED_BIT );
                 stamina       -= clazz->staminaClimbDrain;
 
-                anim          = Anim::RUN;
-
+                anim          = ANIM_RUN;
                 break;
               }
             }
@@ -815,7 +809,7 @@ void Bot::kill()
     resistance = Math::INF;
     state      |= DEAD_BIT;
     state      &= ~GRAB_BIT;
-    anim       = Anim::Type( Anim::DEATH_FALLBACK + Math::rand( 3 ) );
+    anim       = ANIM_DEATH;
 
     instrument = -1;
     container  = -1;
@@ -845,7 +839,7 @@ void Bot::enter( int vehicle_ )
   actions    = 0;
   instrument = -1;
   container  = vehicle_;
-  anim       = Anim::STAND;
+  anim       = ANIM_STAND;
 
   synapse.cut( this );
 }
@@ -884,7 +878,7 @@ Bot::Bot(  const BotClass* clazz_, int index, const Point3& p_, Heading heading 
   mindFunc   = clazz_->mindFunc;
 
   camZ       = clazz_->camZ;
-  anim       = Anim::STAND;
+  anim       = ANIM_STAND;
 }
 
 Bot::Bot( const BotClass* clazz_, InputStream* istream ) :
@@ -911,7 +905,7 @@ Bot::Bot( const BotClass* clazz_, InputStream* istream ) :
   mindFunc   = istream->readString();
 
   camZ       = state & Bot::CROUCHING_BIT ? clazz_->crouchCamZ : clazz_->camZ;
-  anim       = Anim::Type( istream->readInt() );
+  anim       = Anim( istream->readInt() );
 
   if( state & DEAD_BIT ) {
     resistance = Math::INF;

@@ -190,10 +190,7 @@ void Render::drawGeometry()
     shader.use( i );
 
     tf.applyCamera();
-
     shader.updateLights();
-
-    glUniform1f( param.oz_Specular, 1.0f );
 
     glUniform1f( param.oz_Fog_start, shader.isInWater ? 0.0f : 100.0f );
     glUniform1f( param.oz_Fog_end, visibility );
@@ -229,17 +226,7 @@ void Render::drawGeometry()
 
   // draw objects
   for( int i = 0; i < objects.length(); ++i ) {
-    const Object* obj = objects[i].obj;
-
-    if( obj->index == camera.tagged && camera.state != Camera::STRATEGIC ) {
-      shader.colour = Colours::TAG;
-    }
-
-    context.drawImago( obj, null, Mesh::SOLID_BIT );
-
-    if( obj->index == camera.tagged && camera.state != Camera::STRATEGIC ) {
-      shader.colour = Colours::WHITE;
-    }
+    context.drawImago( objects[i].obj, null, Mesh::SOLID_BIT );
   }
 
   currentTime = SDL_GetTicks();
@@ -265,17 +252,7 @@ void Render::drawGeometry()
   beginTime = currentTime;
 
   for( int i = objects.length() - 1; i >= 0; --i ) {
-    const Object* obj = objects[i].obj;
-
-    if( obj->index == camera.tagged && camera.state != Camera::STRATEGIC ) {
-      shader.colour = Colours::TAG;
-    }
-
-    context.drawImago( obj, null, Mesh::ALPHA_BIT );
-
-    if( obj->index == camera.tagged && camera.state != Camera::STRATEGIC ) {
-      shader.colour = Colours::WHITE;
-    }
+    context.drawImago( objects[i].obj, null, Mesh::ALPHA_BIT );
   }
 
   OZ_GL_CHECK_ERROR();

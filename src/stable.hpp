@@ -30,7 +30,7 @@
 
 #include "common/common.hpp"
 
-// we want to use C++ wrapped C headers, not vanilla C ones that are included via SDL
+// we want to use C++ wrapped C headers, not vanilla ones that are included via SDL
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>

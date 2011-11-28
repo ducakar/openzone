@@ -25,6 +25,8 @@
 
 #pragma once
 
+#include "matrix/Bot.hpp"
+
 #include "client/Imago.hpp"
 #include "client/MD2.hpp"
 
@@ -58,7 +60,7 @@ class MD2Imago : public Imago
 
     static Imago* create( const Object* obj );
 
-    void setAnim( Anim::Type anim );
+    void setAnim( Bot::Anim botAnim );
     virtual void draw( const Imago* parent, int mask );
 
   OZ_STATIC_POOL_ALLOC( pool )

@@ -49,7 +49,7 @@ Imago* MD2WeaponImago::create( const Object* obj )
 
   imago->md2 = context.requestMD2( obj->clazz->imagoModel );
 
-  imago->setAnim( Anim::STAND );
+  imago->setAnim( Bot::ANIM_STAND );
   imago->anim.nextFrame = imago->anim.lastFrame;
   imago->anim.currFrame = imago->anim.lastFrame;
 

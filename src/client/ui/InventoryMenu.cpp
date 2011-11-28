@@ -202,11 +202,15 @@ void InventoryMenu::onDraw()
 
   Frame::onDraw();
 
-  glUniform4f( param.oz_Colour, 0.3f, 0.3f, 0.3f, 0.6f );
-
   for( int i = 0; i < ROWS; ++i ) {
     for( int j = 0; j < COLS; ++j ) {
       if( ( scroll + i ) * COLS + j < containerClazz->nItems ) {
+        if( i * COLS + j == tagged ) {
+          glUniform4f( param.oz_Colour, 0.6f, 0.6f, 0.6f, 0.6f );
+        }
+        else {
+          glUniform4f( param.oz_Colour, 0.3f, 0.3f, 0.3f, 0.6f );
+        }
         fill( j * SLOT_SIZE + PADDING_SIZE,
               FOOTER_SIZE + ( ROWS - i - 1 ) * SLOT_SIZE + PADDING_SIZE,
               SLOT_SIZE - 2*PADDING_SIZE,
@@ -240,8 +244,7 @@ slotsRendered:;
 
   tf.camera = Mat44::ID;
   tf.camera.translate( Vec3( float( x + SLOT_SIZE / 2 ), float( y + SLOT_SIZE / 2 + FOOTER_SIZE ), 0.0f ) );
-  tf.camera.translate( Vec3( float( COLS * SLOT_SIZE ), float( ROWS * SLOT_SIZE ), 0.0f ) );
-  tf.camera.scale( Vec3( 1.0f, 1.0f, 0.001f ) );
+  tf.camera.scale( Vec3( 1.0f, 1.0f, 0.01f ) );
 
   const Vector<int>& items = container->items;
 
@@ -255,37 +258,30 @@ slotsRendered:;
     if( item == null ) {
       continue;
     }
+    if( i == tagged ) {
+      taggedItem = item;
+    }
 
     hard_assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 
     float size = item->dim.fastL();
     float scale = SLOT_OBJ_DIMF / size;
 
-    if( i % COLS == 0 ) {
-      tf.camera.translate( Vec3( -COLS * SLOT_SIZE, -SLOT_SIZE, 0.0f ) );
-    }
-
     Mat44 originalCamera = tf.camera;
 
     tf.model = Mat44::ID;
-    tf.camera.rotateX( Math::rad( -60.0f ) );
+    tf.camera.rotateX( Math::rad( -45.0f ) );
     tf.camera.rotateZ( Math::rad( +70.0f ) );
     tf.camera.scale( Vec3( scale, scale, scale ) );
     tf.applyCamera();
 
-    if( i == tagged ) {
-      shader.colour = Colours::TAG;
-      taggedItem = item;
-    }
-
     context.drawImago( item, null, Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
-
-    if( i == tagged ) {
-      shader.colour = Colours::WHITE;
-    }
 
     tf.camera = originalCamera;
     tf.camera.translate( Vec3( float( SLOT_SIZE ), 0.0f, 0.0f ) );
+    if( ( i + 1 ) % COLS == 0 ) {
+      tf.camera.translate( Vec3( -COLS * SLOT_SIZE, -SLOT_SIZE, 0.0f ) );
+    }
   }
 
   glEnable( GL_BLEND );

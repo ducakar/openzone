@@ -42,7 +42,6 @@ struct Colours
   static const Vec4 STRUCTURE_AABB;
   static const Vec4 CLIP_AABB;
   static const Vec4 NOCLIP_AABB;
-  static const Vec4 TAG;
 
   static const Vec4 GLOBAL_AMBIENT;
 

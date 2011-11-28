@@ -55,15 +55,16 @@ const float StrategicArea::TAG_MAX_COEFF_SIZE = 4.0f;
 
 bool StrategicArea::projectBounds( Span* span, const AABB& bb ) const
 {
-  Point3 corners[8] = {
-    bb.p + Vec3( -bb.dim.x, -bb.dim.y, -bb.dim.z ),
-    bb.p + Vec3( -bb.dim.x, -bb.dim.y, +bb.dim.z ),
-    bb.p + Vec3( -bb.dim.x, +bb.dim.y, -bb.dim.z ),
-    bb.p + Vec3( -bb.dim.x, +bb.dim.y, +bb.dim.z ),
-    bb.p + Vec3( +bb.dim.x, -bb.dim.y, -bb.dim.z ),
-    bb.p + Vec3( +bb.dim.x, -bb.dim.y, +bb.dim.z ),
-    bb.p + Vec3( +bb.dim.x, +bb.dim.y, -bb.dim.z ),
-    bb.p + Vec3( +bb.dim.x, +bb.dim.y, +bb.dim.z )
+  Vec3 p = bb.p - camera.p;
+  Vec3 corners[8] = {
+    p + Vec3( -bb.dim.x, -bb.dim.y, -bb.dim.z ),
+    p + Vec3( -bb.dim.x, -bb.dim.y, +bb.dim.z ),
+    p + Vec3( -bb.dim.x, +bb.dim.y, -bb.dim.z ),
+    p + Vec3( -bb.dim.x, +bb.dim.y, +bb.dim.z ),
+    p + Vec3( +bb.dim.x, -bb.dim.y, -bb.dim.z ),
+    p + Vec3( +bb.dim.x, -bb.dim.y, +bb.dim.z ),
+    p + Vec3( +bb.dim.x, +bb.dim.y, -bb.dim.z ),
+    p + Vec3( +bb.dim.x, +bb.dim.y, +bb.dim.z )
   };
 
   float minX = +Math::INF;
@@ -72,11 +73,11 @@ bool StrategicArea::projectBounds( Span* span, const AABB& bb ) const
   float maxY = -Math::INF;
 
   for( int i = 0; i < 8; ++i ) {
-    Point3 t = camera.rotTMat * corners[i];
-    float  d = max( -t.z, TAG_CLIP_DIST );
+    Vec3  t = camera.rotTMat * corners[i];
+    float d = max( -t.z, TAG_CLIP_DIST );
     // we have to clamp to prevent integer overflows
-    float  x = clamp( ( t.x / d ) * stepPixel, -TAG_CLAMP_LIMIT, +TAG_CLAMP_LIMIT );
-    float  y = clamp( ( t.y / d ) * stepPixel, -TAG_CLAMP_LIMIT, +TAG_CLAMP_LIMIT );
+    float x = clamp( ( t.x / d ) * stepPixel, -TAG_CLAMP_LIMIT, +TAG_CLAMP_LIMIT );
+    float y = clamp( ( t.y / d ) * stepPixel, -TAG_CLAMP_LIMIT, +TAG_CLAMP_LIMIT );
 
     minX = min( minX, x );
     minY = min( minY, y );
@@ -312,12 +313,12 @@ void StrategicArea::onDraw()
   Span span;
 
   if( str != null ) {
-    if( projectBounds( &span, str->toAABB() + ( Point3::ORIGIN - camera.p ) ) ) {
+    if( projectBounds( &span, str->toAABB() ) ) {
       drawHoveredRect( span, str, null );
     }
   }
   if( obj != null ) {
-    if( projectBounds( &span, *obj + ( Point3::ORIGIN - camera.p ) ) ) {
+    if( projectBounds( &span, *obj ) ) {
       drawHoveredRect( span, null, obj );
     }
   }
@@ -329,9 +330,8 @@ void StrategicArea::onDraw()
     const Struct* str = orbis.structs[ taggedStrs[i] ];
 
     if( str != null ) {
-      AABB bb = str->toAABB() + ( Point3::ORIGIN - camera.p );
-      if( bb.p * camera.at >= TAG_CLIP_DIST ) {
-        if( projectBounds( &span, bb ) ) {
+      if( ( str->p - camera.p ) * camera.at >= TAG_CLIP_DIST ) {
+        if( projectBounds( &span, str->toAABB() ) ) {
           drawTaggedRect( span, str, null );
         }
       }
@@ -342,9 +342,8 @@ void StrategicArea::onDraw()
     const Object* obj = orbis.objects[ taggedObjs[i] ];
 
     if( obj != null ) {
-      AABB bb = *obj + ( Point3::ORIGIN - camera.p );
-      if( bb.p * camera.at >= TAG_CLIP_DIST ) {
-        if( projectBounds( &span, bb ) ) {
+      if( ( obj->p - camera.p ) * camera.at >= TAG_CLIP_DIST ) {
+        if( projectBounds( &span, *obj ) ) {
           drawTaggedRect( span, null, obj );
         }
       }
@@ -363,7 +362,7 @@ StrategicArea::StrategicArea() :
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
   glBindTexture( GL_TEXTURE_2D, 0 );
 
-  pixelStep = camera.coeff / float( height / 2 );
+  pixelStep = camera.coeff / float( Area::uiHeight / 2 );
   stepPixel = 1.0f / pixelStep;
 }
 
