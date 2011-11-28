@@ -90,28 +90,9 @@ void Bot::onUpdate()
 {
   const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
-  Object* instrumentObj = null;
-  Object* containerObj  = null;
-  Weapon* weaponObj     = null;
+  Weapon* weaponObj = null;
 
   hard_assert( instrument != -1 || !( state & GRAB_BIT ) );
-
-  if( instrument != -1 ) {
-    instrumentObj = orbis.objects[instrument];
-
-    if( instrumentObj == null ) {
-      state &= GRAB_BIT;
-      instrument = -1;
-    }
-  }
-
-  if( container != -1 ) {
-    containerObj = orbis.objects[container];
-
-    if( containerObj == null ) {
-      container = -1;
-    }
-  }
 
   if( weapon != -1 ) {
     state &= ~GRAB_BIT;
@@ -123,8 +104,6 @@ void Bot::onUpdate()
     }
   }
 
-  hard_assert( instrumentObj != this );
-  hard_assert( containerObj != this );
   hard_assert( weaponObj != static_cast<const Dynamic*>( this ) );
 
   if( life < clazz->life / 2.0f ) {
@@ -326,15 +305,17 @@ void Bot::onUpdate()
       flags &= ~DISABLED_BIT;
       state |= MOVING_BIT;
 
-      if( state & SWIMMING_BIT ) {
-        move.x -= hvsc[4];
-        move.y += hvsc[5];
-        move.z -= hvsc[3];
-      }
-      else if( state & CLIMBING_BIT ) {
+      // for now CLIMBING_BIT is equivalent to ON_LADDER_BIT in flags since ledge climbing has not
+      // been processed yet
+      if( state & CLIMBING_BIT ) {
         move.x -= hvsc[4];
         move.y += hvsc[5];
         move.z += v < Math::TAU / 4.0f ? -1.0f : 1.0f;
+      }
+      else if( state & SWIMMING_BIT ) {
+        move.x -= hvsc[4];
+        move.y += hvsc[5];
+        move.z -= hvsc[3];
       }
       else {
         move.x -= hvsc[0];
@@ -345,7 +326,7 @@ void Bot::onUpdate()
       flags &= ~DISABLED_BIT;
       state |= MOVING_BIT;
 
-      if( state & ( SWIMMING_BIT | CLIMBING_BIT ) ) {
+      if( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) {
         move.x += hvsc[4];
         move.y -= hvsc[5];
         move.z += hvsc[3];
@@ -372,50 +353,6 @@ void Bot::onUpdate()
 
     if( move != Vec3::ZERO ) {
       move = ~move;
-
-      Vec3 desiredMomentum = move;
-
-      if( state & CROUCHING_BIT ) {
-        desiredMomentum *= clazz->crouchMomentum;
-      }
-      else if( ( state & ( RUNNING_BIT | GRAB_BIT ) ) == RUNNING_BIT ) {
-        desiredMomentum *= clazz->runMomentum;
-      }
-      else {
-        desiredMomentum *= clazz->walkMomentum;
-      }
-
-      if( flags & ON_SLICK_BIT ) {
-        desiredMomentum *= clazz->slickControl;
-      }
-      else if( state & CLIMBING_BIT ) {
-        desiredMomentum *= clazz->climbControl;
-      }
-      else if( state & SWIMMING_BIT ) {
-        // not on static ground
-        if( !( flags & ON_FLOOR_BIT ) &&
-            !( lower != -1 && ( orbis.objects[lower]->flags & Object::DISABLED_BIT ) ) )
-        {
-          desiredMomentum *= clazz->waterControl;
-        }
-      }
-      else if( !( state & GROUNDED_BIT ) ) {
-        desiredMomentum *= clazz->airControl;
-      }
-
-      if( ( flags & ( ON_FLOOR_BIT | IN_WATER_BIT ) ) == ON_FLOOR_BIT && floor.z != 1.0f ) {
-        float dot = desiredMomentum * floor;
-
-        if( dot > 0.0f ) {
-          desiredMomentum -= dot * floor;
-        }
-      }
-
-      momentum += desiredMomentum;
-
-      if( ( state & RUNNING_BIT ) && ( state & ( GROUNDED_BIT | SWIMMING_BIT | CLIMBING_BIT ) ) ) {
-        stamina -= clazz->staminaRunDrain;
-      }
 
       /*
        * Ledge climbing
@@ -463,7 +400,6 @@ void Bot::onUpdate()
                 momentum.z    = max( momentum.z, clazz->climbMomentum );
 
                 instrument    = -1;
-                instrumentObj = null;
                 state         |= CLIMBING_BIT;
                 state         &= ~( GRAB_BIT | JUMP_SCHED_BIT );
                 stamina       -= clazz->staminaClimbDrain;
@@ -529,6 +465,50 @@ void Bot::onUpdate()
         stepSucceeded:;
         }
       }
+
+      Vec3 desiredMomentum = move;
+
+      if( state & CROUCHING_BIT ) {
+        desiredMomentum *= clazz->crouchMomentum;
+      }
+      else if( ( state & ( RUNNING_BIT | GRAB_BIT ) ) == RUNNING_BIT ) {
+        desiredMomentum *= clazz->runMomentum;
+      }
+      else {
+        desiredMomentum *= clazz->walkMomentum;
+      }
+
+      if( flags & ON_SLICK_BIT ) {
+        desiredMomentum *= clazz->slickControl;
+      }
+      else if( state & CLIMBING_BIT ) {
+        desiredMomentum *= clazz->climbControl;
+      }
+      else if( state & SWIMMING_BIT ) {
+        // not on static ground
+        if( !( flags & ON_FLOOR_BIT ) &&
+            !( lower != -1 && ( orbis.objects[lower]->flags & Object::DISABLED_BIT ) ) )
+        {
+          desiredMomentum *= clazz->waterControl;
+        }
+      }
+      else if( !( state & GROUNDED_BIT ) ) {
+        desiredMomentum *= clazz->airControl;
+      }
+
+      if( ( flags & ( ON_FLOOR_BIT | IN_WATER_BIT ) ) == ON_FLOOR_BIT && floor.z != 1.0f ) {
+        float dot = desiredMomentum * floor;
+
+        if( dot > 0.0f ) {
+          desiredMomentum -= dot * floor;
+        }
+      }
+
+      momentum += desiredMomentum;
+
+      if( ( state & RUNNING_BIT ) && ( state & ( GROUNDED_BIT | SWIMMING_BIT | CLIMBING_BIT ) ) ) {
+        stamina -= clazz->staminaRunDrain;
+      }
     }
 
     /*
@@ -536,16 +516,18 @@ void Bot::onUpdate()
      */
 
     if( state & GRAB_BIT ) {
-      Bot* obj = static_cast<Bot*>( instrumentObj );
+      Bot* dyn = static_cast<Bot*>( orbis.objects[instrument] );
 
-      if( obj == null || obj->cell == null || ( obj->flags & BELOW_BIT ) ||
+      if( container != -1 ) {
+        state &= ~GRAB_BIT;
+      }
+      else if( dyn == null || dyn->cell == null || ( dyn->flags & BELOW_BIT ) ||
           ( state & SWIMMING_BIT ) || ( actions & ACTION_JUMP ) ||
-          ( ( obj->flags & BOT_BIT ) &&
-            ( ( obj->actions & ACTION_JUMP ) | ( obj->state & GRAB_BIT ) ) ) )
+          ( ( dyn->flags & BOT_BIT ) &&
+            ( ( dyn->actions & ACTION_JUMP ) | ( dyn->state & GRAB_BIT ) ) ) )
       {
         state &= ~GRAB_BIT;
         instrument = -1;
-        instrumentObj = null;
       }
       else {
         // keep constant length of xy projection of handle
@@ -553,16 +535,15 @@ void Bot::onUpdate()
         // bottom of the object cannot be raised over the player AABB, neither can be lowered
         // under the player (in the latter case one can lift himself with the lower object)
         handle.z    = min( handle.z, dim.z - camZ );
-        Vec3 string = p + Vec3( 0.0f, 0.0f, camZ ) + handle - obj->p;
+        Vec3 string = p + Vec3( 0.0f, 0.0f, camZ ) + handle - dyn->p;
 
         if( string.sqL() > GRAB_HANDLE_TOL * grabHandle*grabHandle ) {
           state &= ~GRAB_BIT;
           instrument = -1;
-          instrumentObj = null;
         }
         else {
           Vec3 desiredMom   = string * GRAB_STRING_RATIO;
-          Vec3 momDiff      = ( desiredMom - obj->momentum ) * GRAB_MOM_RATIO;
+          Vec3 momDiff      = ( desiredMom - dyn->momentum ) * GRAB_MOM_RATIO;
 
           float momDiffSqL  = momDiff.sqL();
           momDiff.z         += Physics::G_ACCEL * Timer::TICK_TIME;
@@ -571,8 +552,8 @@ void Bot::onUpdate()
           }
           momDiff.z         -= Physics::G_ACCEL * Timer::TICK_TIME;
 
-          obj->momentum += momDiff;
-          obj->flags    &= ~DISABLED_BIT;
+          dyn->momentum += momDiff;
+          dyn->flags    &= ~DISABLED_BIT;
           flags         &= ~CLIMBER_BIT;
         }
       }
@@ -584,37 +565,41 @@ void Bot::onUpdate()
    */
 
   if( actions & ~oldActions & ACTION_USE ) {
-    if( instrumentObj != null ) {
-      synapse.use( this, instrumentObj );
+    Object* obj = orbis.objects[instrument];
+
+    if( obj != null ) {
+      synapse.use( this, obj );
     }
   }
   else if( actions & ~oldActions & ACTION_INV_TAKE ) {
-    Dynamic* item = static_cast<Dynamic*>( instrumentObj );
+    Dynamic* item   = static_cast<Dynamic*>( orbis.objects[instrument] );
+    Object*  source = orbis.objects[container];
 
     if( item != null && items.length() != clazz->nItems ) {
-      hard_assert( containerObj->items.contains( instrument ) );
+      hard_assert( source->items.contains( instrument ) );
       hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
       item->parent = index;
       items.add( instrument );
-      containerObj->items.exclude( instrument );
+      source->items.exclude( instrument );
     }
   }
   else if( actions & ~oldActions & ACTION_INV_GIVE ) {
-    Dynamic* item = static_cast<Dynamic*>( instrumentObj );
+    Dynamic* item   = static_cast<Dynamic*>( orbis.objects[instrument] );
+    Object*  target = orbis.objects[container];
 
-    if( item != null && containerObj->items.length() != containerObj->clazz->nItems ) {
+    if( item != null && target->items.length() != target->clazz->nItems ) {
       hard_assert( items.contains( instrument ) );
       hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
       item->parent = container;
-      containerObj->items.add( instrument );
+      target->items.add( instrument );
       items.exclude( instrument );
     }
   }
   else if( parent == -1 ) { // not applicable in vehicles
     if( actions & ~oldActions & ACTION_TAKE ) {
-      Dynamic* item = static_cast<Dynamic*>( instrumentObj );
+      Dynamic* item = static_cast<Dynamic*>( orbis.objects[instrument] );
 
       if( item != null && items.length() != clazz->nItems &&
           ( item->flags & ( ITEM_BIT | SOLID_BIT ) ) == ( ITEM_BIT | SOLID_BIT ) )
@@ -632,7 +617,7 @@ void Bot::onUpdate()
       }
     }
     else if( actions & ~oldActions & ACTION_ROTATE ) {
-      Dynamic* dyn = static_cast<Dynamic*>( instrumentObj );
+      Dynamic* dyn = static_cast<Dynamic*>( orbis.objects[instrument] );
 
       if( state & GRAB_BIT ) {
         hard_assert( dyn->flags & DYNAMIC_BIT );
@@ -648,7 +633,7 @@ void Bot::onUpdate()
       }
     }
     else if( actions & ~oldActions & ACTION_THROW ) {
-      Dynamic* dyn = static_cast<Dynamic*>( instrumentObj );
+      Dynamic* dyn = static_cast<Dynamic*>( orbis.objects[instrument] );
 
       if( ( state & GRAB_BIT ) && stamina >= clazz->staminaThrowDrain ) {
         hard_assert( dyn->flags & DYNAMIC_BIT );
@@ -665,11 +650,10 @@ void Bot::onUpdate()
         dyn->momentum = handle * clazz->throwMomentum;
 
         state &= ~GRAB_BIT;
-        instrument = -1;
       }
     }
     else if( actions & ~oldActions & ACTION_GRAB ) {
-      Bot* dyn = static_cast<Bot*>( instrumentObj );
+      Bot* dyn = static_cast<Bot*>( orbis.objects[instrument] );
 
       if( ( state & ( GRAB_BIT | CLIMBING_BIT | SWIMMING_BIT ) ) || weapon != -1 ) {
         state &= ~GRAB_BIT;
@@ -692,7 +676,7 @@ void Bot::onUpdate()
       }
     }
     else if( actions & ~oldActions & ( ACTION_INV_GRAB | ACTION_INV_DROP ) ) {
-      Dynamic* item = static_cast<Dynamic*>( instrumentObj );
+      Dynamic* item = static_cast<Dynamic*>( orbis.objects[instrument] );
 
       if( item != null ) {
         hard_assert( items.contains( instrument ) );
