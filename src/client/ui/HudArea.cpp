@@ -41,75 +41,9 @@ namespace client
 namespace ui
 {
 
-const float HudArea::VEHICLE_DIMF       = VEHICLE_SIZE / 2.0f;
-/*
-const float HudArea::TAG_CLIP_DIST      = 0.1f;
-const float HudArea::TAG_CLAMP_LIMIT    = 1e6f;
-// size in pixels
-const float HudArea::TAG_MIN_PIXEL_SIZE = 4.0f;
-// size in coefficient
-const float HudArea::TAG_MAX_COEFF_SIZE = 4.0f;
+const float HudArea::VEHICLE_DIMF      = VEHICLE_SIZE / 2.0f;
+const float HudArea::CROSS_OFFSET_FADE = 12.0f;
 
-bool HudArea::projectBounds( Span* span, const AABB& bb ) const
-{
-  Vec3 p = bb.p - camera.p;
-  Vec3 corners[8] = {
-    p + Vec3( -bb.dim.x, -bb.dim.y, -bb.dim.z ),
-    p + Vec3( -bb.dim.x, -bb.dim.y, +bb.dim.z ),
-    p + Vec3( -bb.dim.x, +bb.dim.y, -bb.dim.z ),
-    p + Vec3( -bb.dim.x, +bb.dim.y, +bb.dim.z ),
-    p + Vec3( +bb.dim.x, -bb.dim.y, -bb.dim.z ),
-    p + Vec3( +bb.dim.x, -bb.dim.y, +bb.dim.z ),
-    p + Vec3( +bb.dim.x, +bb.dim.y, -bb.dim.z ),
-    p + Vec3( +bb.dim.x, +bb.dim.y, +bb.dim.z )
-  };
-
-  float minX = +Math::INF;
-  float minY = +Math::INF;
-  float maxX = -Math::INF;
-  float maxY = -Math::INF;
-
-  for( int i = 0; i < 8; ++i ) {
-    Vec3  t = camera.rotTMat * corners[i];
-    float d = max( -t.z, TAG_CLIP_DIST );
-    // we have to clamp to prevent integer overflows
-    float x = clamp( ( t.x / d ) * stepPixel, -TAG_CLAMP_LIMIT, +TAG_CLAMP_LIMIT );
-    float y = clamp( ( t.y / d ) * stepPixel, -TAG_CLAMP_LIMIT, +TAG_CLAMP_LIMIT );
-
-    minX = min( minX, x );
-    minY = min( minY, y );
-    maxX = max( maxX, x );
-    maxY = max( maxY, y );
-  }
-
-  if( maxX - minX < TAG_MIN_PIXEL_SIZE || ( maxX - minX ) * pixelStep > TAG_MAX_COEFF_SIZE ||
-      maxY - minY < TAG_MIN_PIXEL_SIZE || ( maxY - minY ) * pixelStep > TAG_MAX_COEFF_SIZE )
-  {
-    return false;
-  }
-
-  span->minX = Area::uiCentreX + int( minX + 0.5f );
-  span->minY = Area::uiCentreY + int( minY + 0.5f );
-  span->maxX = Area::uiCentreX + int( maxX + 0.5f );
-  span->maxY = Area::uiCentreY + int( maxY + 0.5f );
-
-  return true;
-}
-
-void HudArea::drawTaggedRect( const Object* obj ) const
-{
-  Span span;
-  if( projectBounds( &span, *obj ) ) {
-    float minX = float( span.minX );
-    float maxX = float( span.maxX );
-    float minY = float( span.minY );
-    float maxY = float( span.maxY );
-
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
-    shape.tag( minX, minY, maxX, maxY );
-  }
-}
-*/
 void HudArea::drawBotCrosshair()
 {
   const Bot*      bot      = camera.botObj;
@@ -117,6 +51,11 @@ void HudArea::drawBotCrosshair()
 
   glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
 
+  float dx   = Math::abs( camera.h - bot->h );
+  float dy   = Math::abs( camera.v - bot->v );
+  float fade = CROSS_OFFSET_FADE * Math::fastSqrt( min( dx*dx + dy*dy, 1.0f ) );
+
+  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f - fade );
   glBindTexture( GL_TEXTURE_2D, crossTexId );
   shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
   glBindTexture( GL_TEXTURE_2D, 0 );

@@ -85,7 +85,9 @@ void Camera::update()
     relV += keyXSens * Timer::TICK_TIME;
   }
 
-  botObj = bot == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
+  botObj    = bot    == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
+  taggedObj = tagged == -1 ? null : orbis.objects[tagged];
+  tagged    = taggedObj == null ? -1 : tagged;
 
   if( botObj == null || ( botObj->state & Bot::DEAD_BIT ) ) {
     bot    = -1;
@@ -135,7 +137,9 @@ void Camera::update()
 void Camera::prepare()
 {
   if( proxy != null ) {
-    botObj = bot == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
+    botObj    = bot    == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
+    taggedObj = tagged == -1 ? null : orbis.objects[tagged];
+    tagged    = taggedObj == null ? -1 : tagged;
 
     if( botObj == null || ( botObj->state & Bot::DEAD_BIT ) ) {
       bot    = -1;

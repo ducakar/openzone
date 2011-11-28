@@ -50,27 +50,24 @@ void InventoryMenu::onVisibilityChange()
 
 bool InventoryMenu::onMouseEvent()
 {
-  if( camera.botObj == null || ( master != null && camera.botObj->container == -1 ) ) {
-    tagged = -1;
+  tagged = -1;
+
+  Bot* bot = camera.botObj;
+  const Object* container = null;
+
+  if( bot != null && bot->parent != -1 ) {
+    container = orbis.objects[bot->parent];
+  }
+  else if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::BROWSABLE_BIT ) ) {
+    container = camera.taggedObj;
+  }
+
+  if( bot == null || ( master != null && container == null ) ) {
     scroll = 0;
     return false;
   }
 
-  Object* container = null;
-
-  if( camera.botObj->container != -1 ) {
-    container = orbis.objects[camera.botObj->container];
-
-    if( container == null || !( container->flags & Object::BROWSABLE_BIT ) ) {
-      return false;
-    }
-  }
-
   Frame::onMouseEvent();
-
-  Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
-
-  tagged = -1;
 
   int minY = y + FOOTER_SIZE;
   int maxY = y + FOOTER_SIZE + ROWS * SLOT_SIZE;
@@ -85,37 +82,33 @@ bool InventoryMenu::onMouseEvent()
       const Dynamic* item;
 
       if( mouse.leftClick ) {
-        if( container == null ) {
+        if( master == null ) {
           if( uint( tagged ) < uint( bot->items.length() ) ) {
             item = static_cast<const Dynamic*>( orbis.objects[ bot->items[tagged] ] );
 
             if( item != null ) {
-              bot->instrument = item->index;
-              bot->actions |= Bot::ACTION_INV_DROP;
-            }
-          }
-        }
-        else {
-          if( master == null ) {
-            if( uint( tagged ) < uint( bot->items.length() ) ) {
-              item = static_cast<const Dynamic*>( orbis.objects[ bot->items[tagged] ] );
-
-              if( item != null ) {
+              if( container == null ) {
+                bot->actions |= Bot::ACTION_INV_DROP;
+                bot->instrument = item->index;
+              }
+              else {
                 bot->actions |= Bot::ACTION_INV_GIVE;
                 bot->instrument = item->index;
                 bot->container = container->index;
               }
             }
           }
-          else {
-            if( uint( tagged ) < uint( container->items.length() ) ) {
-              item = static_cast<const Dynamic*>( orbis.objects[ container->items[tagged] ] );
+        }
+        else {
+          hard_assert( container != null );
 
-              if( item != null ) {
-                bot->actions |= Bot::ACTION_INV_TAKE;
-                bot->instrument = item->index;
-                bot->container = container->index;
-              }
+          if( uint( tagged ) < uint( container->items.length() ) ) {
+            item = static_cast<const Dynamic*>( orbis.objects[ container->items[tagged] ] );
+
+            if( item != null ) {
+              bot->actions |= Bot::ACTION_INV_TAKE;
+              bot->instrument = item->index;
+              bot->container = container->index;
             }
           }
         }
@@ -126,8 +119,8 @@ bool InventoryMenu::onMouseEvent()
             item = static_cast<const Dynamic*>( orbis.objects[ bot->items[tagged] ] );
 
             if( item != null ) {
-              bot->instrument = item->index;
               bot->actions |= Bot::ACTION_USE;
+              bot->instrument = item->index;
             }
           }
         }
@@ -136,8 +129,8 @@ bool InventoryMenu::onMouseEvent()
             item = static_cast<const Dynamic*>( orbis.objects[ container->items[tagged] ] );
 
             if( item != null ) {
-              bot->instrument = item->index;
               bot->actions |= Bot::ACTION_USE;
+              bot->instrument = item->index;
             }
           }
         }
@@ -147,8 +140,8 @@ bool InventoryMenu::onMouseEvent()
           item = static_cast<const Dynamic*>( orbis.objects[ bot->items[tagged] ] );
 
           if( item != null ) {
-            bot->instrument = item->index;
             bot->actions |= Bot::ACTION_INV_GRAB;
+            bot->instrument = item->index;
 
             mouse.doShow = false;
           }
@@ -175,25 +168,24 @@ bool InventoryMenu::onMouseEvent()
 
 void InventoryMenu::onDraw()
 {
-  if( camera.botObj == null || ( master != null && camera.botObj->container == -1 ) ) {
+  const Object* container = null;
+
+  if( master == null ) {
+    container = camera.botObj;
+  }
+  else if( camera.botObj != null && camera.botObj->parent != -1 ) {
+    container = orbis.objects[camera.botObj->parent];
+  }
+  else if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::BROWSABLE_BIT ) ) {
+    container = camera.taggedObj;
+  }
+
+  if( container == null ) {
+    scroll = 0;
     return;
   }
 
-  const Object*      container;
-  const ObjectClass* containerClazz;
-
-  if( master == null ) {
-    container      = camera.botObj;
-    containerClazz = container->clazz;
-  }
-  else {
-    container = orbis.objects[camera.botObj->container];
-
-    if( container == null || !( container->flags & Object::BROWSABLE_BIT ) ) {
-      return;
-    }
-    containerClazz = container->clazz;
-  }
+  const ObjectClass* containerClazz = container->clazz;
 
   String sTitle = container->flags & Object::BOT_BIT ?
       static_cast<const Bot*>( container )->name + " (" + containerClazz->title + ")" :

@@ -145,7 +145,7 @@ void BotProxy::update()
   /*
    * Camera
    */
-  if( isFreelook ) {
+  if( isFreelook && ( isExternal || bot->parent != -1 ) ) {
     camera.h += camera.relH;
     camera.v += camera.relV;
   }
@@ -163,6 +163,9 @@ void BotProxy::update()
 
     bot->h += relH;
     bot->v += relV;
+
+    camera.h = bot->h;
+    camera.v = bot->v;
   }
 
   bot->actions = 0;
@@ -239,14 +242,7 @@ void BotProxy::update()
     ui::mouse.doShow = !ui::mouse.doShow;
 
     inventory->show( ui::mouse.doShow );
-
-    if( ui::mouse.doShow ) {
-      if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::BROWSABLE_BIT ) ) {
-        bot->container = camera.taggedObj->index;
-
-        container->show( true );
-      }
-    }
+    container->show( true );
   }
 
   if( !ui::mouse.doShow ) {
@@ -254,13 +250,15 @@ void BotProxy::update()
       bot->actions |= Bot::ACTION_ATTACK;
     }
     if( ui::mouse.rightClick ) {
-      bot->actions |= Bot::ACTION_USE | Bot::ACTION_VEH_NEXT_WEAPON;
-
-      if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::DEVICE_BIT ) ) {
-        ui::mouse.doShow = true;
+      if( bot->parent != -1 ) {
+        bot->actions |= Bot::ACTION_VEH_NEXT_WEAPON;
+      }
+      else if( camera.tagged != -1 ) {
+        bot->actions |= Bot::ACTION_USE;
+        bot->instrument = camera.tagged;
       }
     }
-    if( ui::mouse.wheelDown ) {
+    else if( ui::mouse.wheelDown ) {
       if( camera.taggedObj != null ) {
         if( camera.taggedObj->flags & Object::BROWSABLE_BIT ) {
           ui::mouse.doShow = true;
@@ -270,17 +268,25 @@ void BotProxy::update()
         }
         else {
           bot->actions |= Bot::ACTION_TAKE;
+          bot->instrument = camera.tagged;
         }
       }
     }
-    if( ui::mouse.wheelUp ) {
-      bot->actions |= Bot::ACTION_THROW;
+    else if( ui::mouse.wheelUp ) {
+      if( bot->instrument != -1 ) {
+        bot->actions |= Bot::ACTION_THROW;
+      }
     }
-    if( ui::mouse.middleClick ) {
-      bot->actions |= Bot::ACTION_GRAB;
+    else if( ui::mouse.middleClick ) {
+      if( camera.tagged != -1 ) {
+        bot->actions |= Bot::ACTION_GRAB;
+        bot->instrument = camera.tagged;
+      }
     }
-    if( keys[SDLK_q] && !oldKeys[SDLK_q] ) {
-      bot->actions |= Bot::ACTION_ROTATE;
+    else if( keys[SDLK_q] && !oldKeys[SDLK_q] ) {
+      if( bot->instrument != -1 ) {
+        bot->actions |= Bot::ACTION_ROTATE;
+      }
     }
   }
 }
@@ -294,11 +300,6 @@ void BotProxy::prepare()
 
   const Bot* bot = camera.botObj;
 
-  if( !isFreelook ) {
-    camera.h = bot->h;
-    camera.v = bot->v;
-  }
-
   if( !isExternal ) {
     if( bot->parent != -1 ) { // inside vehicle
       hard_assert( orbis.objects[bot->parent] == null ||
@@ -311,8 +312,6 @@ void BotProxy::prepare()
       bobPhi   = 0.0f;
       bobTheta = 0.0f;
       bobBias  = 0.0f;
-
-      camera.botObj->container = bot->parent;
     }
     else { // 1st person, not in vehicle
       const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
@@ -387,15 +386,6 @@ void BotProxy::prepare()
   }
   else {
     camera.setTagged( bot->getTagged( ~0 ) );
-  }
-
-  if( camera.taggedObj != null ) {
-    if( camera.botObj->instrument == -1 ) {
-      camera.botObj->instrument = camera.tagged;
-    }
-    if( camera.botObj->container == -1 && ( camera.taggedObj->flags & Object::BROWSABLE_BIT ) ) {
-      camera.botObj->container = camera.tagged;
-    }
   }
 }
 
