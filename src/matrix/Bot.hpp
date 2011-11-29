@@ -125,14 +125,13 @@ class Bot : public Dynamic
     static Pool<Bot, 1024> pool;
 
     float      h, v;
-    int        state, oldState;
     int        actions, oldActions;
-
-    float      stamina;
-    float      stepRate;
-
     int        instrument;
     int        container;
+
+    int        state, oldState;
+    float      stamina;
+    float      stepRate;
     int        cargo;
     int        weapon;
     float      grabHandle;

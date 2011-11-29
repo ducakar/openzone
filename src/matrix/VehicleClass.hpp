@@ -56,6 +56,9 @@ class VehicleClass : public DynamicClass
     float  enginePitchRatio;
     float  enginePitchLimit;
 
+    float  fuel;
+    float  fuelConsumption;
+
     int    nWeapons;
     String weaponNames[MAX_WEAPONS];
     String onShot[MAX_WEAPONS];

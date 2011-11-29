@@ -72,16 +72,18 @@ class Vehicle : public Dynamic
 
     static Pool<Vehicle, 256> pool;
 
-    Quat  rot;
     float h, v;
-    int   state, oldState;
     int   actions, oldActions;
+
+    Quat  rot;
+    int   state, oldState;
+    float fuel;
+
+    int   pilot;
 
     int   weapon;
     int   nRounds[MAX_WEAPONS];
     float shotTime[MAX_WEAPONS];
-
-    int   pilot;
 
   protected:
 

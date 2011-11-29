@@ -157,6 +157,9 @@ void VehicleClass::initClass( const Config* config )
   enginePitchRatio = config->get( "enginePitchRatio", 0.001f );
   enginePitchLimit = config->get( "enginePitchLimit", 2.00f );
 
+  fuel             = config->get( "fuel", 100.0f );
+  fuelConsumption  = config->get( "fuelConsumption", 0.0f ) * Timer::TICK_TIME;
+
   char weaponNameBuffer[]   = "weapon  .name";
   char onShotBuffer[]       = "weapon  .onShot";
   char nRoundsBuffer[]      = "weapon  .nRounds";

@@ -513,14 +513,14 @@ void ClassFormatter::writeBotClass() const
   fprintf( fs, "climbMomentum           \"%g\"\n", clazz->climbMomentum );
   fprintf( fs, "\n" );
   fprintf( fs, "stamina                 \"%g\"\n", clazz->stamina );
-  fprintf( fs, "staminaGain             \"%g\"\n", clazz->staminaGain / Timer::TICK_TIME );
-  fprintf( fs, "staminaRunDrain         \"%g\"\n", clazz->staminaRunDrain / Timer::TICK_TIME );
-  fprintf( fs, "staminaWaterDrain       \"%g\"\n", clazz->staminaWaterDrain / Timer::TICK_TIME );
-  fprintf( fs, "staminaClimbDrain       \"%g\"\n", clazz->staminaClimbDrain / Timer::TICK_TIME );
+  fprintf( fs, "staminaGain             \"%.4g\"\n", clazz->staminaGain / Timer::TICK_TIME );
+  fprintf( fs, "staminaRunDrain         \"%.4g\"\n", clazz->staminaRunDrain / Timer::TICK_TIME );
+  fprintf( fs, "staminaWaterDrain       \"%.4g\"\n", clazz->staminaWaterDrain / Timer::TICK_TIME );
+  fprintf( fs, "staminaClimbDrain       \"%.4g\"\n", clazz->staminaClimbDrain / Timer::TICK_TIME );
   fprintf( fs, "staminaJumpDrain        \"%g\"\n", clazz->staminaJumpDrain );
   fprintf( fs, "staminaThrowDrain       \"%g\"\n", clazz->staminaThrowDrain );
   fprintf( fs, "\n" );
-  fprintf( fs, "regeneration            \"%g\"\n", clazz->regeneration / Timer::TICK_TIME );
+  fprintf( fs, "regeneration            \"%.4g\"\n", clazz->regeneration / Timer::TICK_TIME );
   fprintf( fs, "\n" );
   fprintf( fs, "reachDist               \"%g\"\n", clazz->reachDist );
   fprintf( fs, "grabMass                \"%g\"\n", clazz->grabMass );
@@ -661,6 +661,8 @@ void ClassFormatter::writeVehicleClass() const
   fprintf( fs, "enginePitchRatio        \"%g\"\n", clazz->enginePitchRatio );
   fprintf( fs, "enginePitchLimit        \"%g\"\n", clazz->enginePitchLimit );
   fprintf( fs, "\n" );
+  fprintf( fs, "fuel                    \"%g\"\n", clazz->fuel );
+  fprintf( fs, "fuelConsumption         \"%.4g\"\n", clazz->fuelConsumption / Timer::TICK_TIME );
 
   for( int i = 0; i < clazz->nWeapons; ++i ) {
     fprintf( fs, "\n" );
