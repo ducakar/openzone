@@ -90,20 +90,21 @@ void Bot::onUpdate()
 {
   const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
-  Weapon* weaponObj = null;
+  Dynamic* cargoObj  = cargo  == -1 ? null : static_cast<Dynamic*>( orbis.objects[cargo] );
+  Weapon*  weaponObj = weapon == -1 ? null : static_cast<Weapon*>( orbis.objects[weapon] );
 
-  hard_assert( instrument != -1 || !( state & GRAB_BIT ) );
+  if( weaponObj == null ) {
+    weapon = -1;
 
-  if( weapon != -1 ) {
-    state &= ~GRAB_BIT;
-
-    weaponObj = static_cast<Weapon*>( orbis.objects[weapon] );
-
-    if( weaponObj == null || weaponObj->parent != index ) {
-      weapon = -1;
+    if( cargoObj == null ) {
+      cargo = -1;
     }
   }
+  else {
+    cargo = -1;
+  }
 
+  hard_assert( cargoObj  != static_cast<const Dynamic*>( this ) );
   hard_assert( weaponObj != static_cast<const Dynamic*>( this ) );
 
   if( life < clazz->life / 2.0f ) {
@@ -149,12 +150,14 @@ void Bot::onUpdate()
     /*
      * STATE
      */
-    state &= ~( GROUNDED_BIT | ON_STAIRS_BIT | CLIMBING_BIT | SWIMMING_BIT | SUBMERGED_BIT );
+    state &= ~( GROUNDED_BIT | ON_STAIRS_BIT | CLIMBING_BIT | SWIMMING_BIT | SUBMERGED_BIT |
+        CARGO_BIT | ATTACKING_BIT );
 
     state |= lower != -1 || ( flags & ON_FLOOR_BIT ) ? GROUNDED_BIT  : 0;
     state |= ( flags & ON_LADDER_BIT )               ? CLIMBING_BIT  : 0;
     state |= depth > dim.z                           ? SWIMMING_BIT  : 0;
     state |= depth > dim.z + camZ                    ? SUBMERGED_BIT : 0;
+    state |= cargo != -1                             ? CARGO_BIT     : 0;
 
     flags |= CLIMBER_BIT;
 
@@ -185,7 +188,7 @@ void Bot::onUpdate()
         state |= JUMP_SCHED_BIT;
       }
       if( ( state & JUMP_SCHED_BIT ) && ( state & ( GROUNDED_BIT | SWIMMING_BIT ) ) &&
-          !( state & GRAB_BIT ) && stamina >= clazz->staminaJumpDrain )
+          cargo == -1 && stamina >= clazz->staminaJumpDrain )
       {
         flags &= ~( DISABLED_BIT | ON_FLOOR_BIT | ON_SLICK_BIT );
         lower = -1;
@@ -242,45 +245,6 @@ void Bot::onUpdate()
     }
 
     /*
-     * ANIMATION
-     */
-
-    if( ( actions & ACTION_JUMP ) && !( state & ( GROUNDED_BIT | CLIMBING_BIT ) ) ) {
-      anim = ANIM_JUMP;
-    }
-    else if( actions & ( ACTION_FORWARD | ACTION_BACKWARD | ACTION_LEFT | ACTION_RIGHT ) ) {
-      anim = ANIM_RUN;
-    }
-    else if( actions & ACTION_ATTACK ) {
-      if( weaponObj != null && weaponObj->shotTime == 0.0f ) {
-        anim = ANIM_ATTACK;
-        weaponObj->trigger( this );
-      }
-    }
-    else if( state & GESTURE0_BIT ) {
-      anim = ANIM_GESTURE0;
-    }
-    else if( state & GESTURE1_BIT ) {
-      anim = ANIM_GESTURE1;
-    }
-    else if( state & GESTURE2_BIT ) {
-      anim = ANIM_GESTURE2;
-    }
-    else if( state & GESTURE3_BIT ) {
-      anim = ANIM_GESTURE3;
-    }
-    else if( state & GESTURE4_BIT ) {
-      anim = ANIM_GESTURE4;
-
-      if( !( oldState & GESTURE4_BIT ) ) {
-        addEvent( EVENT_FLIP, 1.0f );
-      }
-    }
-    else {
-      anim = ANIM_STAND;
-    }
-
-    /*
      * MOVE
      */
 
@@ -302,9 +266,6 @@ void Bot::onUpdate()
     state &= ~MOVING_BIT;
 
     if( actions & ACTION_FORWARD ) {
-      flags &= ~DISABLED_BIT;
-      state |= MOVING_BIT;
-
       // for now CLIMBING_BIT is equivalent to ON_LADDER_BIT in flags since ledge climbing has not
       // been processed yet
       if( state & CLIMBING_BIT ) {
@@ -323,9 +284,6 @@ void Bot::onUpdate()
       }
     }
     if( actions & ACTION_BACKWARD ) {
-      flags &= ~DISABLED_BIT;
-      state |= MOVING_BIT;
-
       if( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) {
         move.x += hvsc[4];
         move.y -= hvsc[5];
@@ -337,21 +295,18 @@ void Bot::onUpdate()
       }
     }
     if( actions & ACTION_RIGHT ) {
-      flags &= ~DISABLED_BIT;
-      state |= MOVING_BIT;
-
       move.x += hvsc[1];
       move.y += hvsc[0];
     }
     if( actions & ACTION_LEFT ) {
-      flags &= ~DISABLED_BIT;
-      state |= MOVING_BIT;
-
       move.x -= hvsc[1];
       move.y -= hvsc[0];
     }
 
     if( move != Vec3::ZERO ) {
+      flags &= ~DISABLED_BIT;
+      state |= MOVING_BIT;
+
       move = ~move;
 
       /*
@@ -400,11 +355,11 @@ void Bot::onUpdate()
                 momentum.z    = max( momentum.z, clazz->climbMomentum );
 
                 instrument    = -1;
+                cargo         = -1;
                 state         |= CLIMBING_BIT;
-                state         &= ~( GRAB_BIT | JUMP_SCHED_BIT );
+                state         &= ~JUMP_SCHED_BIT;
                 stamina       -= clazz->staminaClimbDrain;
 
-                anim          = ANIM_RUN;
                 break;
               }
             }
@@ -471,7 +426,7 @@ void Bot::onUpdate()
       if( state & CROUCHING_BIT ) {
         desiredMomentum *= clazz->crouchMomentum;
       }
-      else if( ( state & ( RUNNING_BIT | GRAB_BIT ) ) == RUNNING_BIT ) {
+      else if( ( state & RUNNING_BIT ) && cargo == -1 ) {
         desiredMomentum *= clazz->runMomentum;
       }
       else {
@@ -512,22 +467,38 @@ void Bot::onUpdate()
     }
 
     /*
+     * ATTACK & GESTURES
+     */
+
+    if( cargo == -1 ) {
+      if( ( actions & ACTION_ATTACK ) && !( state & MOVING_BIT ) &&
+          ( !( actions & ACTION_JUMP ) || ( state & ( Bot::GROUNDED_BIT | Bot::CLIMBING_BIT ) ) ) )
+      {
+        if( weaponObj != null && weaponObj->shotTime == 0.0f ) {
+          state |= ATTACKING_BIT;
+          weaponObj->trigger( this );
+        }
+      }
+      else if( state & GESTURE4_BIT ) {
+        if( !( oldState & GESTURE4_BIT ) ) {
+          addEvent( EVENT_FLIP, 1.0f );
+        }
+      }
+    }
+
+    /*
      * GRAB MOVEMENT
      */
 
-    if( state & GRAB_BIT ) {
-      Bot* dyn = static_cast<Bot*>( orbis.objects[instrument] );
+    if( cargo != -1 ) {
+      const Bot* cargoBot = static_cast<const Bot*>( cargoObj );
 
-      if( container != -1 ) {
-        state &= ~GRAB_BIT;
-      }
-      else if( dyn == null || dyn->cell == null || ( dyn->flags & BELOW_BIT ) ||
+      if( cargoObj == null || cargoObj->cell == null || ( cargoObj->flags & BELOW_BIT ) ||
           ( state & SWIMMING_BIT ) || ( actions & ACTION_JUMP ) ||
-          ( ( dyn->flags & BOT_BIT ) &&
-            ( ( dyn->actions & ACTION_JUMP ) | ( dyn->state & GRAB_BIT ) ) ) )
+          ( ( cargoBot->flags & BOT_BIT ) &&
+            ( ( cargoBot->actions & ACTION_JUMP ) || ( cargoBot->cargo != -1 ) ) ) )
       {
-        state &= ~GRAB_BIT;
-        instrument = -1;
+        cargo = -1;
       }
       else {
         // keep constant length of xy projection of handle
@@ -535,26 +506,26 @@ void Bot::onUpdate()
         // bottom of the object cannot be raised over the player AABB, neither can be lowered
         // under the player (in the latter case one can lift himself with the lower object)
         handle.z    = min( handle.z, dim.z - camZ );
-        Vec3 string = p + Vec3( 0.0f, 0.0f, camZ ) + handle - dyn->p;
+        Vec3 string = p + Vec3( 0.0f, 0.0f, camZ ) + handle - cargoObj->p;
 
         if( string.sqL() > GRAB_HANDLE_TOL * grabHandle*grabHandle ) {
-          state &= ~GRAB_BIT;
-          instrument = -1;
+          cargo = -1;
         }
         else {
-          Vec3 desiredMom   = string * GRAB_STRING_RATIO;
-          Vec3 momDiff      = ( desiredMom - dyn->momentum ) * GRAB_MOM_RATIO;
+          Vec3 desiredMom    = string * GRAB_STRING_RATIO;
+          Vec3 momDiff       = ( desiredMom - cargoObj->momentum ) * GRAB_MOM_RATIO;
 
-          float momDiffSqL  = momDiff.sqL();
-          momDiff.z         += Physics::G_ACCEL * Timer::TICK_TIME;
+          float momDiffSqL   = momDiff.sqL();
+          momDiff.z          += Physics::G_ACCEL * Timer::TICK_TIME;
           if( momDiffSqL > GRAB_MOM_MAX_SQ ) {
             momDiff *= GRAB_MOM_MAX / Math::sqrt( momDiffSqL );
           }
-          momDiff.z         -= Physics::G_ACCEL * Timer::TICK_TIME;
+          momDiff.z          -= Physics::G_ACCEL * Timer::TICK_TIME;
 
-          dyn->momentum += momDiff;
-          dyn->flags    &= ~DISABLED_BIT;
-          flags         &= ~CLIMBER_BIT;
+          flags              &= ~CLIMBER_BIT;
+
+          cargoObj->momentum += momDiff;
+          cargoObj->flags    &= ~DISABLED_BIT;
         }
       }
     }
@@ -604,7 +575,7 @@ void Bot::onUpdate()
       if( item != null && items.length() != clazz->nItems &&
           ( item->flags & ( ITEM_BIT | SOLID_BIT ) ) == ( ITEM_BIT | SOLID_BIT ) )
       {
-        state &= ~GRAB_BIT;
+        cargo = -1;
 
         item->flags &= ~( Object::TICK_CLEAR_MASK | Object::MOVE_CLEAR_MASK );
         item->lower = -1;
@@ -617,26 +588,23 @@ void Bot::onUpdate()
       }
     }
     else if( actions & ~oldActions & ACTION_ROTATE ) {
-      Dynamic* dyn = static_cast<Dynamic*>( orbis.objects[instrument] );
+      if( cargoObj != null ) {
+        int  heading = cargoObj->flags & Object::HEADING_MASK;
 
-      if( state & GRAB_BIT ) {
-        hard_assert( dyn->flags & DYNAMIC_BIT );
+        swap( cargoObj->dim.x, cargoObj->dim.y );
 
-        int  heading = dyn->flags & Object::HEADING_MASK;
-        AABB aabb    = AABB( dyn->p, Vec3( dyn->dim.y, dyn->dim.x, dyn->dim.z ) );
-
-        if( !collider.overlaps( aabb, dyn ) ) {
-          dyn->dim = aabb.dim;
-          dyn->flags &= ~Object::HEADING_MASK;
-          dyn->flags |= ( heading + 1 ) % 4;
+        if( collider.overlaps( cargoObj, cargoObj ) ) {
+          swap( cargoObj->dim.x, cargoObj->dim.y );
+        }
+        else {
+          cargoObj->flags &= ~Object::HEADING_MASK;
+          cargoObj->flags |= ( heading + 1 ) % 4;
         }
       }
     }
     else if( actions & ~oldActions & ACTION_THROW ) {
-      Dynamic* dyn = static_cast<Dynamic*>( orbis.objects[instrument] );
-
-      if( ( state & GRAB_BIT ) && stamina >= clazz->staminaThrowDrain ) {
-        hard_assert( dyn->flags & DYNAMIC_BIT );
+      if( cargoObj != null && stamina >= clazz->staminaThrowDrain ) {
+        hard_assert( cargoObj->flags & DYNAMIC_BIT );
 
         // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
         float hvsc[6];
@@ -647,28 +615,26 @@ void Bot::onUpdate()
         Vec3 handle = Vec3( -hvsc[0], hvsc[1], -hvsc[3] );
 
         stamina -= clazz->staminaThrowDrain;
-        dyn->momentum = handle * clazz->throwMomentum;
+        cargoObj->momentum = handle * clazz->throwMomentum;
 
-        state &= ~GRAB_BIT;
+        cargo = -1;
       }
     }
     else if( actions & ~oldActions & ACTION_GRAB ) {
       Bot* dyn = static_cast<Bot*>( orbis.objects[instrument] );
 
-      if( ( state & ( GRAB_BIT | CLIMBING_BIT | SWIMMING_BIT ) ) || weapon != -1 ) {
-        state &= ~GRAB_BIT;
-        instrument = -1;
+      if( ( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) || cargo != -1 || weapon != -1 ) {
+        cargo = -1;
       }
       else if( dyn != null && ( dyn->flags & DYNAMIC_BIT ) && dyn->mass <= clazz->grabMass &&
-          !( ( dyn->flags & BOT_BIT ) && ( dyn->state & GRAB_BIT ) ) )
+          ( !( dyn->flags & BOT_BIT ) || dyn->cargo == -1 ) )
       {
         float dimX = dim.x + dyn->dim.x;
         float dimY = dim.y + dyn->dim.y;
         float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
 
         if( dist <= clazz->reachDist ) {
-          state      |= GRAB_BIT;
-          instrument = dyn->index;
+          cargo = instrument;
           grabHandle = dist;
 
           dyn->flags &= ~BELOW_BIT;
@@ -678,7 +644,7 @@ void Bot::onUpdate()
     else if( actions & ~oldActions & ( ACTION_INV_GRAB | ACTION_INV_DROP ) ) {
       Dynamic* item = static_cast<Dynamic*>( orbis.objects[instrument] );
 
-      if( item != null ) {
+      if( item != null && cargo == -1 ) {
         hard_assert( items.contains( instrument ) );
         hard_assert( ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
@@ -698,17 +664,19 @@ void Bot::onUpdate()
         handle.z    = clamp( handle.z, -dim.z - camZ, dim.z - camZ );
         item->p     = p + Vec3( 0.0f, 0.0f, camZ ) + handle;
 
+        if( instrument == weapon ) {
+          weapon = -1;
+        }
+
         if( !collider.overlaps( item ) ) {
           item->parent = -1;
           synapse.put( item );
           items.exclude( instrument );
 
           if( ( actions & ~oldActions & ACTION_INV_GRAB ) &&
-              !( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) &&
-              ( weapon == -1 || weapon == instrument ) )
+              !( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) && weapon == -1 )
           {
-            state      |= GRAB_BIT;
-            weapon     = -1;
+            cargo      = instrument;
             grabHandle = dist;
 
             item->flags &= ~BELOW_BIT;
@@ -718,12 +686,8 @@ void Bot::onUpdate()
     }
   }
 
-  if( !( state & GRAB_BIT ) ) {
-    instrument = -1;
-  }
-  container = -1;
-
-  hard_assert( instrument != -1 || !( state & GRAB_BIT ) );
+  instrument = -1;
+  container  = -1;
 
   oldState   = state;
   oldActions = actions;
@@ -792,11 +756,10 @@ void Bot::kill()
     life       = clazz->life / 2.0f - EPSILON;
     resistance = Math::INF;
     state      |= DEAD_BIT;
-    state      &= ~GRAB_BIT;
-    anim       = ANIM_DEATH;
 
     instrument = -1;
     container  = -1;
+    cargo      = -1;
 
     if( clazz->nItems != 0 ) {
       flags |= BROWSABLE_BIT;
@@ -818,12 +781,12 @@ void Bot::enter( int vehicle_ )
 
   dim        = clazz->dim;
   camZ       = clazz->camZ;
-  state      &= ~( CROUCHING_BIT | GRAB_BIT );
+  state      &= ~CROUCHING_BIT;
 
   actions    = 0;
   instrument = -1;
   container  = vehicle_;
-  anim       = ANIM_STAND;
+  cargo      = -1;
 
   synapse.cut( this );
 }
@@ -836,6 +799,7 @@ void Bot::exit()
   actions    = 0;
   instrument = -1;
   container  = -1;
+  cargo      = -1;
 
   synapse.put( this );
 }
@@ -855,14 +819,13 @@ Bot::Bot(  const BotClass* clazz_, int index, const Point3& p_, Heading heading 
 
   instrument = -1;
   container  = -1;
+  cargo      = -1;
   weapon     = -1;
   grabHandle = 0.0f;
+  camZ       = clazz_->camZ;
 
   name       = namePool.genName( clazz_->nameList );
   mindFunc   = clazz_->mindFunc;
-
-  camZ       = clazz_->camZ;
-  anim       = ANIM_STAND;
 }
 
 Bot::Bot( const BotClass* clazz_, InputStream* istream ) :
@@ -882,14 +845,13 @@ Bot::Bot( const BotClass* clazz_, InputStream* istream ) :
 
   instrument = istream->readInt();
   container  = istream->readInt();
+  cargo      = istream->readInt();
   weapon     = istream->readInt();
   grabHandle = istream->readFloat();
+  camZ       = state & Bot::CROUCHING_BIT ? clazz_->crouchCamZ : clazz_->camZ;
 
   name       = istream->readString();
   mindFunc   = istream->readString();
-
-  camZ       = state & Bot::CROUCHING_BIT ? clazz_->crouchCamZ : clazz_->camZ;
-  anim       = Anim( istream->readInt() );
 
   if( state & DEAD_BIT ) {
     resistance = Math::INF;
@@ -914,13 +876,12 @@ void Bot::write( BufferStream* ostream ) const
 
   ostream->writeInt( instrument );
   ostream->writeInt( container );
+  ostream->writeInt( cargo );
   ostream->writeInt( weapon );
   ostream->writeFloat( grabHandle );
 
   ostream->writeString( name );
   ostream->writeString( mindFunc );
-
-  ostream->writeInt( int( anim ) );
 }
 
 void Bot::readUpdate( InputStream* )

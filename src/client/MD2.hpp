@@ -75,18 +75,17 @@ class MD2
 
     struct AnimState
     {
-      Anim      type;
-      Bot::Anim botAnim;
-      bool      repeat;
+      Anim  type;
+      bool  repeat;
 
-      int       firstFrame;
-      int       lastFrame;
-      int       currFrame;
-      int       nextFrame;
+      int   firstFrame;
+      int   lastFrame;
+      int   currFrame;
+      int   nextFrame;
 
-      float     fps;
-      float     frameTime;
-      float     currTime;
+      float fps;
+      float frameTime;
+      float currTime;
     };
 
     static const AnimInfo ANIM_LIST[];

@@ -556,7 +556,7 @@ void Lua::init()
   OZ_LUA_CONST( "OZ_BOT_RUNNING_BIT",             Bot::RUNNING_BIT );
   OZ_LUA_CONST( "OZ_BOT_SHOOTING_BIT",            Bot::SHOOTING_BIT );
   OZ_LUA_CONST( "OZ_BOT_MOVING_BIT",              Bot::MOVING_BIT );
-  OZ_LUA_CONST( "OZ_BOT_GRAB_BIT",                Bot::GRAB_BIT );
+  OZ_LUA_CONST( "OZ_BOT_CARGO_BIT",               Bot::CARGO_BIT );
   OZ_LUA_CONST( "OZ_BOT_CROUCHING_BIT",           Bot::CROUCHING_BIT );
 
   OZ_LUA_CONST( "OZ_BOT_GESTURE0_BIT",            Bot::GESTURE0_BIT );

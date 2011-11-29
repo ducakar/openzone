@@ -256,6 +256,7 @@ void BotProxy::update()
       else if( camera.tagged != -1 ) {
         bot->actions |= Bot::ACTION_USE;
         bot->instrument = camera.tagged;
+        bot->container = -1;
       }
     }
     else if( ui::mouse.wheelDown ) {
@@ -269,22 +270,24 @@ void BotProxy::update()
         else {
           bot->actions |= Bot::ACTION_TAKE;
           bot->instrument = camera.tagged;
+          bot->container = -1;
         }
       }
     }
     else if( ui::mouse.wheelUp ) {
-      if( bot->instrument != -1 ) {
+      if( bot->cargo != -1 ) {
         bot->actions |= Bot::ACTION_THROW;
       }
     }
     else if( ui::mouse.middleClick ) {
-      if( camera.tagged != -1 ) {
+      if( camera.tagged != -1 || bot->cargo != -1 ) {
         bot->actions |= Bot::ACTION_GRAB;
         bot->instrument = camera.tagged;
+        bot->container = -1;
       }
     }
     else if( keys[SDLK_q] && !oldKeys[SDLK_q] ) {
-      if( bot->instrument != -1 ) {
+      if( bot->cargo != -1 ) {
         bot->actions |= Bot::ACTION_ROTATE;
       }
     }
@@ -320,7 +323,7 @@ void BotProxy::prepare()
           Bot::MOVING_BIT )
       {
         float bobInc =
-            ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT | Bot::GRAB_BIT ) ) ==
+            ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT | Bot::CARGO_BIT ) ) ==
               Bot::RUNNING_BIT ? clazz->bobRunInc : clazz->bobWalkInc;
 
         bobPhi   = Math::fmod( bobPhi + bobInc, Math::TAU );
@@ -381,8 +384,8 @@ void BotProxy::prepare()
   if( bot->parent != -1 ) {
     camera.setTagged( null );
   }
-  else if( bot->state & Bot::GRAB_BIT ) {
-    camera.setTagged( orbis.objects[camera.botObj->instrument] );
+  else if( bot->cargo != -1 ) {
+    camera.setTagged( orbis.objects[bot->cargo] );
   }
   else {
     camera.setTagged( bot->getTagged( ~0 ) );

@@ -81,7 +81,7 @@ class Bot : public Dynamic
     static const int RUNNING_BIT              = 0x00000200;
     static const int SHOOTING_BIT             = 0x00000400;
     static const int MOVING_BIT               = 0x00000800;
-    static const int GRAB_BIT                 = 0x00001000;
+    static const int CARGO_BIT                = 0x00001000;
 
     // current state bits
     static const int JUMP_SCHED_BIT           = 0x00002000;
@@ -120,20 +120,6 @@ class Bot : public Dynamic
     static const float STEP_MOVE_AHEAD;
     static const float CLIMB_MOVE_AHEAD;
 
-    enum Anim
-    {
-      ANIM_STAND,
-      ANIM_RUN,
-      ANIM_ATTACK,
-      ANIM_JUMP,
-      ANIM_DEATH,
-      ANIM_GESTURE0,
-      ANIM_GESTURE1,
-      ANIM_GESTURE2,
-      ANIM_GESTURE3,
-      ANIM_GESTURE4
-    };
-
   public:
 
     static Pool<Bot, 1024> pool;
@@ -147,14 +133,13 @@ class Bot : public Dynamic
 
     int        instrument;
     int        container;
+    int        cargo;
     int        weapon;
     float      grabHandle;
+    float      camZ;
 
     String     name;
     String     mindFunc;
-
-    float      camZ;
-    Anim       anim;
 
   protected:
 
