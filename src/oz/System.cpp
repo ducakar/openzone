@@ -26,20 +26,27 @@
 #include "System.hpp"
 
 #include "Log.hpp"
+#include "Math.hpp"
 
 #include <cstdio>
 #include <cstdlib>
+#include <csignal>
 
-#ifndef OZ_MINGW
-# include <csignal>
+#ifdef OZ_MINGW
+# include <windows.h>
+# include <mmsystem.h>
+#else
 # include <unistd.h>
-# pragma GCC diagnostic ignored "-Wold-style-cast"
+# include <pthread.h>
+# include <pulse/simple.h>
 #endif
+
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 
 namespace oz
 {
 
-const char* const System::SIGNALS[][2] =
+static const char* const SIGNALS[][2] =
 {
   { "?",              "[invalid signal number]"    },
   { "SIGHUP",         "Hangup"                     }, //  1
@@ -75,39 +82,15 @@ const char* const System::SIGNALS[][2] =
   { "SIGSYS",         "Bad system call"            }  // 31
 };
 
-bool System::isHaltEnabled = false;
+#ifndef OZ_MINGW
+static const short BELL_SAMPLE[] = {
+# include "bellSample.inc"
+};
+#endif
 
-#ifdef OZ_MINGW
+static bool isHaltEnabled = false;
 
-void System::enableHalt( bool )
-{}
-
-void System::signalHandler( int )
-{}
-
-void System::catchSignals()
-{}
-
-void System::resetSignals()
-{}
-
-void System::bell()
-{}
-
-void System::trap()
-{}
-
-void System::halt()
-{}
-
-#else
-
-void System::enableHalt( bool value )
-{
-  isHaltEnabled = value;
-}
-
-void System::signalHandler( int signum )
+static void signalHandler( int signum )
 {
   System::resetSignals();
 
@@ -119,13 +102,37 @@ void System::signalHandler( int signum )
     isHaltEnabled = false;
   }
 
-  abort( "Caught signal %d %s (%s)", signum, SIGNALS[signum][0], SIGNALS[signum][1] );
+  System::abort( "Caught signal %d %s (%s)", signum, SIGNALS[signum][0], SIGNALS[signum][1] );
+}
+
+
+#ifndef OZ_MINGW
+
+static void* bellThread( void* )
+{
+  pa_simple* pa;
+  pa_sample_spec format = { PA_SAMPLE_S16NE, 44100, 1 };
+
+  pa = pa_simple_new( null, "liboz", PA_STREAM_PLAYBACK, null, "bell", &format, null, null, null );
+  pa_simple_write( pa, BELL_SAMPLE, sizeof( BELL_SAMPLE ), null );
+  pa_simple_free( pa );
+
+  return null;
+}
+
+#endif
+
+void System::enableHalt( bool value )
+{
+  isHaltEnabled = value;
 }
 
 void System::catchSignals()
 {
-  signal( SIGINT,  signalHandler );
+#ifndef OZ_MINGW
   signal( SIGQUIT, signalHandler );
+#endif
+  signal( SIGINT,  signalHandler );
   signal( SIGILL,  signalHandler );
   signal( SIGABRT, signalHandler );
   signal( SIGFPE,  signalHandler );
@@ -135,8 +142,10 @@ void System::catchSignals()
 
 void System::resetSignals()
 {
-  signal( SIGINT,  SIG_DFL );
+#ifndef OZ_MINGW
   signal( SIGQUIT, SIG_DFL );
+#endif
+  signal( SIGINT,  SIG_DFL );
   signal( SIGILL,  SIG_DFL );
   signal( SIGABRT, SIG_DFL );
   signal( SIGFPE,  SIG_DFL );
@@ -144,28 +153,51 @@ void System::resetSignals()
   signal( SIGTERM, SIG_DFL );
 }
 
-void System::bell()
+void System::bell( bool isSync )
 {
-  system( "paplay /usr/share/sounds/pop.wav &" );
+#ifdef OZ_MINGW
+  DWORD flags = SND_ALIAS_ID;
+
+  if( !isSync ) {
+    flags |= SND_ASYNC;
+  }
+
+  PlaySound( reinterpret_cast<LPCSTR>( SND_ALIAS_SYSTEMDEFAULT ), null, flags );
+#else
+  if( isSync ) {
+    bellThread( null );
+  }
+  else {
+    pthread_t thread;
+    pthread_create( &thread, null, bellThread, null );
+  }
+#endif
 }
 
 void System::trap()
 {
-  bell();
+  bell( true );
 
+#ifndef OZ_MINGW
   signal( SIGTRAP, SIG_IGN );
   raise( SIGTRAP );
   signal( SIGTRAP, SIG_DFL );
+#endif
 }
 
 void System::halt()
 {
   fprintf( stderr, "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
   fflush( stderr );
-  while( sleep( 1 ) == 0 );
-}
 
+#ifdef OZ_MINGW
+  while( true ) {
+    Sleep( 1000 );
+  }
+#else
+  while( sleep( 1 ) == 0 );
 #endif
+}
 
 void System::error( const char* msg, ... )
 {
@@ -188,26 +220,6 @@ void System::error( const char* msg, ... )
 
   va_end( ap );
 }
-
-#ifdef OZ_MINGW
-
-void System::abort( const char* msg, ... )
-{
-  System::resetSignals();
-
-  va_list ap;
-  va_start( ap, msg );
-
-  fflush( stdout );
-
-  fprintf( stderr, "\n" );
-  vfprintf( stderr, msg, ap );
-  fprintf( stderr, "\n" );
-
-  ::abort();
-}
-
-#else
 
 void System::abort( const char* msg, ... )
 {
@@ -243,12 +255,17 @@ void System::abort( const char* msg, ... )
   if( isHaltEnabled ) {
     fprintf( stderr, "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
     fflush( stderr );
+
+#ifdef OZ_MINGW
+    while( true ) {
+      Sleep( 1000 );
+    }
+#else
     while( sleep( 1 ) == 0 );
+#endif
   }
 
   ::abort();
 }
-
-#endif
 
 }
