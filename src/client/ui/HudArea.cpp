@@ -41,8 +41,8 @@ namespace client
 namespace ui
 {
 
-const float HudArea::VEHICLE_DIMF      = VEHICLE_SIZE / 2.0f;
-const float HudArea::CROSS_OFFSET_FADE = 12.0f;
+const float HudArea::VEHICLE_DIMF     = VEHICLE_SIZE / 2.0f;
+const float HudArea::CROSS_FADE_COEFF = 4.0f;
 
 void HudArea::drawBotCrosshair()
 {
@@ -51,11 +51,11 @@ void HudArea::drawBotCrosshair()
 
   glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
 
-  float dx   = Math::abs( camera.h - bot->h );
-  float dy   = Math::abs( camera.v - bot->v );
-  float fade = CROSS_OFFSET_FADE * Math::fastSqrt( min( dx*dx + dy*dy, 1.0f ) );
+  float dx     = camera.h - bot->h;
+  float dy     = camera.v - bot->v;
+  float alpha  = 1.0f - CROSS_FADE_COEFF * Math::sqrt( dx*dx + dy*dy );
 
-  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f - fade );
+  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, alpha );
   glBindTexture( GL_TEXTURE_2D, crossTexId );
   shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
   glBindTexture( GL_TEXTURE_2D, 0 );
@@ -144,12 +144,12 @@ void HudArea::drawBotCrosshair()
       shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
     }
 
-    if( !( bot->state & Bot::GRAB_BIT ) && bot->weapon == -1 &&
+    if( bot->cargo == -1 && bot->weapon == -1 &&
         ( taggedObj->flags & Object::DYNAMIC_BIT ) && taggedDyn->mass <= botClazz->grabMass &&
         // not swimming or on ladder
         !( bot->state & ( Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) &&
         // if it is not a bot that is holding something
-        ( !( taggedObj->flags & Object::BOT_BIT ) || !( taggedBot->state & Bot::GRAB_BIT ) ) )
+        ( !( taggedObj->flags & Object::BOT_BIT ) || taggedBot->cargo == -1 ) )
     {
       float dimX = bot->dim.x + taggedDyn->dim.x;
       float dimY = bot->dim.y + taggedDyn->dim.y;
@@ -160,7 +160,7 @@ void HudArea::drawBotCrosshair()
         shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
       }
     }
-    if( camera.botObj->state & Bot::GRAB_BIT ) {
+    if( camera.botObj->cargo != -1 ) {
       glBindTexture( GL_TEXTURE_2D, grabTexId );
       shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
     }

@@ -56,11 +56,13 @@ class MD2Imago : public Imago
 
     virtual ~MD2Imago();
 
+    MD2::Anim extractAnim() const;
+    void setAnim( MD2::Anim type );
+
   public:
 
     static Imago* create( const Object* obj );
 
-    void setAnim( Bot::Anim botAnim );
     virtual void draw( const Imago* parent, int mask );
 
   OZ_STATIC_POOL_ALLOC( pool )
