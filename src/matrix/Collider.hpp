@@ -110,6 +110,7 @@ class Collider
     void trimAABBLadder( const BSP::Brush* brush );
     void trimAABBNode( int nodeIndex );
     void trimAABBEntities();
+    // terrain collision is penetration-safe
     void trimAABBTerraQuad( int x, int y );
     void trimAABBTerra();
     void trimAABBOrbis();
