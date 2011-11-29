@@ -106,6 +106,7 @@ Dependencies
 ------------
 - pthreads (already included in glibc on Linux)
 - libintl (already included in glibc on Linux)
+- libpulse (for Linux-like systems)
 - SDL
 - SDL_image (for ozBuild tool)
 - SDL_ttf

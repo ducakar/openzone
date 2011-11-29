@@ -53,7 +53,14 @@ MD2::Anim MD2Imago::extractAnim() const
       bot->weapon == -1 ? null : static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
   if( bot->state & Bot::DEAD_BIT ) {
-    return MD2::Anim( MD2::ANIM_DEATH_FALLBACK + Math::rand( 3 ) );
+    if( anim.type == MD2::ANIM_DEATH_FALLBACK || anim.type == MD2::ANIM_DEATH_FALLBACKSLOW ||
+        anim.type == MD2::ANIM_DEATH_FALLFORWARD )
+    {
+      return anim.type;
+    }
+    else {
+      return MD2::Anim( MD2::ANIM_DEATH_FALLBACK + Math::rand( 3 ) );
+    }
   }
   else if( bot->cell == null ) {
     return MD2::ANIM_CROUCH_STAND;

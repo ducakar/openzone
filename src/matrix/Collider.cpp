@@ -58,7 +58,6 @@ inline bool Collider::visitBrush( int index )
 //*         STATIC AABB CD          *
 //***********************************
 
-// checks if AABB and Object overlap
 bool Collider::overlapsAABBObj( const Object* sObj ) const
 {
   if( flags & sObj->flags & Object::CYLINDER_BIT ) {
@@ -77,7 +76,6 @@ bool Collider::overlapsAABBObj( const Object* sObj ) const
   return sObj->overlaps( aabb, EPSILON );
 }
 
-// checks if AABB and Brush overlap
 bool Collider::overlapsAABBBrush( const BSP::Brush* brush ) const
 {
   bool result = true;
@@ -93,7 +91,6 @@ bool Collider::overlapsAABBBrush( const BSP::Brush* brush ) const
   return result;
 }
 
-// recursively check nodes of BSP-tree for AABB-Brush overlapping
 bool Collider::overlapsAABBNode( int nodeIndex )
 {
   if( nodeIndex < 0 ) {
@@ -163,7 +160,6 @@ bool Collider::overlapsAABBEntities()
   return false;
 }
 
-// check for AABB-AABB, AABB-Brush and AABB-Terrain overlapping in the world
 bool Collider::overlapsAABBOrbis()
 {
   if( !orbis.includes( aabb, -EPSILON ) ) {
@@ -208,7 +204,6 @@ bool Collider::overlapsAABBOrbis()
   return false;
 }
 
-// check for AABB-AABB overlapping in the world
 bool Collider::overlapsAABBOrbisOO()
 {
   if( !orbis.includes( aabb, -EPSILON ) ) {
@@ -229,7 +224,6 @@ bool Collider::overlapsAABBOrbisOO()
   return false;
 }
 
-// check for AABB-AABB and AABB-Brush overlapping in the world
 bool Collider::overlapsAABBOrbisOSO()
 {
   if( !orbis.includes( aabb, -EPSILON ) ) {
@@ -274,7 +268,6 @@ bool Collider::overlapsAABBOrbisOSO()
 //*        STATIC ENTITY CD         *
 //***********************************
 
-// check for BSP Model-AABB overlapping in the world
 bool Collider::overlapsEntityOrbisOO()
 {
   for( int x = span.minX; x <= span.maxX; ++x ) {
@@ -306,7 +299,6 @@ bool Collider::overlapsEntityOrbisOO()
 //*        DYNAMIC AABB CD          *
 //***********************************
 
-// finds out if AABB-Orbis bounding box collision occurs and the time when it occurs
 void Collider::trimAABBVoid()
 {
   for( int i = 0; i < 3; ++i ) {
@@ -331,7 +323,6 @@ void Collider::trimAABBVoid()
   }
 }
 
-// finds out if AABB-AABB collision occurs and the time when it occurs
 void Collider::trimAABBObj( const Object* sObj )
 {
   float minRatio   = -1.0f;
@@ -462,7 +453,6 @@ void Collider::trimAABBObj( const Object* sObj )
   }
 }
 
-// finds out if AABB-Brush collision occurs and the time when it occurs
 void Collider::trimAABBBrush( const BSP::Brush* brush )
 {
   float minRatio   = -1.0f;
@@ -503,7 +493,6 @@ void Collider::trimAABBBrush( const BSP::Brush* brush )
   }
 }
 
-// checks if AABB and Brush overlap and if AABB centre is inside a brush
 void Collider::trimAABBWater( const BSP::Brush* brush )
 {
   float depth = Math::INF;
@@ -536,7 +525,6 @@ void Collider::trimAABBWater( const BSP::Brush* brush )
   hit.medium |= Material::WATER_BIT;
 }
 
-// checks if AABB and Brush overlap and if AABB centre is inside a brush
 void Collider::trimAABBLadder( const BSP::Brush* brush )
 {
   for( int i = 0; i < brush->nSides; ++i ) {
@@ -553,7 +541,6 @@ void Collider::trimAABBLadder( const BSP::Brush* brush )
   hit.medium |= Material::LADDER_BIT;
 }
 
-// recursively check nodes of BSP-tree for AABB-Brush collisions
 void Collider::trimAABBNode( int nodeIndex )
 {
   if( nodeIndex < 0 ) {
@@ -632,7 +619,6 @@ void Collider::trimAABBEntities()
   endPos   = originalEndPos;
 }
 
-// terrain collision detection is penetration-safe
 void Collider::trimAABBTerraQuad( int x, int y )
 {
   const Terra::Quad& quad     = orbis.terra.quads[x    ][y    ];
@@ -716,7 +702,6 @@ void Collider::trimAABBTerra()
   }
 }
 
-// move AABB until first collisons occurs
 void Collider::trimAABBOrbis()
 {
   hit.ratio      = 1.0f;
@@ -787,7 +772,6 @@ void Collider::trimAABBOrbis()
 //*          OVERLAPPING            *
 //***********************************
 
-// get all objects and structures that overlap with our trace
 void Collider::getOrbisOverlaps( Vector<Object*>* objects, Vector<Struct*>* structs )
 {
   hard_assert( objects != null || structs != null );
@@ -829,7 +813,6 @@ void Collider::getOrbisOverlaps( Vector<Object*>* objects, Vector<Struct*>* stru
   }
 }
 
-// get all objects which are included in our trace
 void Collider::getOrbisIncludes( Vector<Object*>* objects ) const
 {
   hard_assert( objects != null );

@@ -56,7 +56,7 @@ const float Bot::GRAB_MOM_MAX       =  1.0f;
 const float Bot::GRAB_MOM_MAX_SQ    =  1.0f;
 
 const float Bot::STEP_MOVE_AHEAD    =  0.20f;
-const float Bot::CLIMB_MOVE_AHEAD   =  0.50f;
+const float Bot::CLIMB_MOVE_AHEAD   =  0.40f;
 
 Pool<Bot, 1024> Bot::pool;
 
@@ -311,8 +311,26 @@ void Bot::onUpdate()
 
       /*
        * Ledge climbing
+       *
+       * First, check if bot's going to hit an obstacle soon. If it does, check whether it would
+       * have moved further if we raised it (over the obstacle). We check different heights
+       * (those are specified in configuration file: climbInc and climbMax). To prevent climbing
+       * on high slopes, we must check that we step over an edge. In other words:
+       *
+       *      .                                  Start and end position must be on different sides
+       *  end  .     end of a failed attempt     of the obstacle side plane we collided to.
+       *     \  .   /
+       *      o  . x
+       * ----------     collision point
+       *           \   |
+       *            \  |         start
+       *             \ |        /
+       *              \x<------o
+       *               \----------
+       *
+       * If this succeeds, check also that the "ledge" actually exists. We move the bot down and if
+       * it hits a relatively horizontal surface (Physics::FLOOR_NORMAL_Z), proceed with climbing.
        */
-
       if( ( actions & ( ACTION_FORWARD | ACTION_JUMP ) ) == ( ACTION_FORWARD | ACTION_JUMP ) &&
           !( state & CLIMBING_BIT ) && stamina > clazz->staminaClimbDrain )
       {
@@ -359,7 +377,6 @@ void Bot::onUpdate()
                 state         |= CLIMBING_BIT;
                 state         &= ~JUMP_SCHED_BIT;
                 stamina       -= clazz->staminaClimbDrain;
-
                 break;
               }
             }
@@ -369,24 +386,26 @@ void Bot::onUpdate()
         }
       }
 
-      // First, check if bot's gonna hit an obstacle in the next frame. If it does, check whether it
-      // would have moved further if we raised it a bit (over the obstacle). We check different
-      // heights (those are specified in configuration file: stepInc and stepMax).
-      // To prevent that stepping would result in "climbing" high slopes, we must check that we
-      // step over an edge. In other words:
-      //
-      //      .                                  Start and end position must be on different sides
-      //  end  .     end of a failed attempt     of the obstacle side plane we collided to.
-      //     \  .   /
-      //      o  . x
-      // ----------     collision point
-      //           \   |
-      //            \  |         start
-      //             \ |        /
-      //              \x<------o
-      //               \----------
-      //
-      //
+      /*
+       * STEPPING OVER OBSTACLES
+       *
+       * First, check if bot's going to hit an obstacle in the next frame. If it does, check whether
+       * it would have moved further if we raised it a bit (over the obstacle). We check different
+       * heights (those are specified in configuration file: stepInc and stepMax). To prevent that
+       * stepping would result in "climbing" high slopes, we must check that we step over an edge.
+       * In other words:
+       *
+       *      .                                  Start and end position must be on different sides
+       *  end  .     end of a failed attempt     of the obstacle side plane we collided to.
+       *     \  .   /
+       *      o  . x
+       * ----------     collision point
+       *           \   |
+       *            \  |         start
+       *             \ |        /
+       *              \x<------o
+       *               \----------
+       */
       if( !( state & CLIMBING_BIT ) && stepRate <= clazz->stepRateLimit ) {
         // check if bot's gonna hit a stair in the next frame
         Vec3 desiredMove = STEP_MOVE_AHEAD * move;
@@ -437,7 +456,12 @@ void Bot::onUpdate()
         desiredMomentum *= clazz->slickControl;
       }
       else if( state & CLIMBING_BIT ) {
-        desiredMomentum *= clazz->climbControl;
+        if( actions & ACTION_JUMP ) {
+          desiredMomentum = Vec3::ZERO;
+        }
+        else {
+          desiredMomentum *= clazz->climbControl;
+        }
       }
       else if( state & SWIMMING_BIT ) {
         // not on static ground

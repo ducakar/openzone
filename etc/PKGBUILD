@@ -8,11 +8,11 @@ pkgrel=1
 url="http://github.com/ducakar/openzone/"
 license=('GPL3')
 arch=('i686' 'x86_64')
-makedepends=('git' 'cmake' 'gcc>=4.5' 'gettext' 'libvorbis' 'lua' 'mesa' 'sdl_ttf' 'sdl_image')
-source=("http://openzone.googlecode.com/files/openzone-data-src-${pkgver}.tar.xz")
+makedepends=('git' 'cmake' 'gcc>=4.5' 'gettext' 'libpulse' 'libvorbis' 'lua' 'mesa' 'openal' 'sdl_ttf' 'sdl_image')
+#source=("http://openzone.googlecode.com/files/openzone-data-src-${pkgver}.tar.xz")
 md5sums=('7c704605913f49fdaed587fc2f2cf8b8')
 
-_gitname='openzone-src'
+_gitname='openzone'
 
 build() {
   cd ${srcdir}
@@ -45,7 +45,7 @@ build() {
 
 package_liboz() {
   pkgdesc='Base library used by OpenZone 3D engine'
-  depends=('gcc-libs')
+  depends=('gcc-libs' 'libpulse')
   conflicts=('liboz')
   provides=('liboz')
 
