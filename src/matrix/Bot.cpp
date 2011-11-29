@@ -589,7 +589,7 @@ void Bot::onUpdate()
     }
     else if( actions & ~oldActions & ACTION_ROTATE ) {
       if( cargoObj != null ) {
-        int  heading = cargoObj->flags & Object::HEADING_MASK;
+        int heading = cargoObj->flags & Object::HEADING_MASK;
 
         swap( cargoObj->dim.x, cargoObj->dim.y );
 
@@ -686,11 +686,10 @@ void Bot::onUpdate()
     }
   }
 
+  oldActions = actions;
+  oldState   = state;
   instrument = -1;
   container  = -1;
-
-  oldState   = state;
-  oldActions = actions;
 }
 
 inline Object* Bot::getTagged( const Vec3& at, int mask ) const
@@ -755,10 +754,12 @@ void Bot::kill()
     flags      &= ~SOLID_BIT;
     life       = clazz->life / 2.0f - EPSILON;
     resistance = Math::INF;
-    state      |= DEAD_BIT;
 
+    actions    = 0;
     instrument = -1;
     container  = -1;
+
+    state      |= DEAD_BIT;
     cargo      = -1;
 
     if( clazz->nItems != 0 ) {
@@ -780,12 +781,13 @@ void Bot::enter( int vehicle_ )
   parent     = vehicle_;
 
   dim        = clazz->dim;
-  camZ       = clazz->camZ;
-  state      &= ~CROUCHING_BIT;
 
   actions    = 0;
   instrument = -1;
   container  = vehicle_;
+
+  camZ       = clazz->camZ;
+  state      &= ~CROUCHING_BIT;
   cargo      = -1;
 
   synapse.cut( this );
@@ -809,16 +811,15 @@ Bot::Bot(  const BotClass* clazz_, int index, const Point3& p_, Heading heading 
 {
   h          = float( heading ) * Math::TAU / 4.0f;
   v          = Math::TAU / 4.0f;
-  state      = clazz_->state;
-  oldState   = clazz_->state;
   actions    = 0;
   oldActions = 0;
-
-  stamina    = clazz_->stamina;
-  stepRate   = 0.0f;
-
   instrument = -1;
   container  = -1;
+
+  state      = clazz_->state;
+  oldState   = clazz_->state;
+  stamina    = clazz_->stamina;
+  stepRate   = 0.0f;
   cargo      = -1;
   weapon     = -1;
   grabHandle = 0.0f;
@@ -835,16 +836,15 @@ Bot::Bot( const BotClass* clazz_, InputStream* istream ) :
 
   h          = istream->readFloat();
   v          = istream->readFloat();
-  state      = istream->readInt();
-  oldState   = istream->readInt();
   actions    = istream->readInt();
   oldActions = istream->readInt();
-
-  stamina    = istream->readFloat();
-  stepRate   = istream->readFloat();
-
   instrument = istream->readInt();
   container  = istream->readInt();
+
+  state      = istream->readInt();
+  oldState   = istream->readInt();
+  stamina    = istream->readFloat();
+  stepRate   = istream->readFloat();
   cargo      = istream->readInt();
   weapon     = istream->readInt();
   grabHandle = istream->readFloat();
@@ -866,16 +866,15 @@ void Bot::write( BufferStream* ostream ) const
 
   ostream->writeFloat( h );
   ostream->writeFloat( v );
-  ostream->writeInt( state );
-  ostream->writeInt( oldState );
   ostream->writeInt( actions );
   ostream->writeInt( oldActions );
-
-  ostream->writeFloat( stamina );
-  ostream->writeFloat( stepRate );
-
   ostream->writeInt( instrument );
   ostream->writeInt( container );
+
+  ostream->writeInt( state );
+  ostream->writeInt( oldState );
+  ostream->writeFloat( stamina );
+  ostream->writeFloat( stepRate );
   ostream->writeInt( cargo );
   ostream->writeInt( weapon );
   ostream->writeFloat( grabHandle );

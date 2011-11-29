@@ -266,7 +266,9 @@ void Vehicle::onUpdate()
 
   Mat44 rotMat = Mat44::rotation( rot );
 
-  if( pilot != -1 ) {
+  if( pilot != -1 && fuel > 0.0f ) {
+    fuel -= clazz->fuelConsumption;
+
     ( this->*handlers[clazz->type] )( rotMat );
   }
 
@@ -342,9 +344,8 @@ void Vehicle::service()
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-  if( life != clazz->life ) {
-    life = clazz->life;
-  }
+  life = clazz->life;
+  fuel = clazz->fuel;
 
   for( int i = 0; i < clazz->nWeapons; ++i ) {
     if( nRounds[i] != clazz->nRounds[i] ) {
@@ -356,17 +357,19 @@ void Vehicle::service()
 Vehicle::Vehicle( const VehicleClass* clazz_, int index_, const Point3& p_, Heading heading ) :
     Dynamic( clazz_, index_, p_, heading )
 {
-  rot        = Quat::ID;
   h          = 0.0f;
   v          = Math::TAU / 4.0f;
-  state      = clazz_->state;
-  oldState   = clazz_->state;
   actions    = 0;
   oldActions = 0;
 
-  pilot      = -1;
-  weapon     = 0;
+  rot        = Quat::ID;
+  state      = clazz_->state;
+  oldState   = clazz_->state;
+  fuel       = clazz_->fuel;
 
+  pilot      = -1;
+
+  weapon     = 0;
   for( int i = 0; i < MAX_WEAPONS; ++i ) {
     nRounds[i]  = clazz_->nRounds[i];
     shotTime[i] = 0.0f;
@@ -376,17 +379,19 @@ Vehicle::Vehicle( const VehicleClass* clazz_, int index_, const Point3& p_, Head
 Vehicle::Vehicle( const VehicleClass* clazz_, InputStream* istream ) :
     Dynamic( clazz_, istream )
 {
-  rot        = istream->readQuat();
   h          = istream->readFloat();
   v          = istream->readFloat();
-  state      = istream->readInt();
-  oldState   = istream->readInt();
   actions    = istream->readInt();
   oldActions = istream->readInt();
 
-  pilot      = istream->readInt();
-  weapon     = istream->readInt();
+  rot        = istream->readQuat();
+  state      = istream->readInt();
+  oldState   = istream->readInt();
+  fuel       = istream->readFloat();
 
+  pilot      = istream->readInt();
+
+  weapon     = istream->readInt();
   for( int i = 0; i < MAX_WEAPONS; ++i ) {
     nRounds[i]  = istream->readInt();
     shotTime[i] = istream->readFloat();
@@ -397,17 +402,19 @@ void Vehicle::write( BufferStream* ostream ) const
 {
   Dynamic::write( ostream );
 
-  ostream->writeQuat( rot );
   ostream->writeFloat( h );
   ostream->writeFloat( v );
-  ostream->writeInt( state );
-  ostream->writeInt( oldState );
   ostream->writeInt( actions );
   ostream->writeInt( oldActions );
 
-  ostream->writeInt( pilot );
-  ostream->writeInt( weapon );
+  ostream->writeQuat( rot );
+  ostream->writeInt( state );
+  ostream->writeInt( oldState );
+  ostream->writeFloat( fuel );
 
+  ostream->writeInt( pilot );
+
+  ostream->writeInt( weapon );
   for( int i = 0; i < MAX_WEAPONS; ++i ) {
     ostream->writeInt( nRounds[i] );
     ostream->writeFloat( shotTime[i] );

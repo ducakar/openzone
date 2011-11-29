@@ -87,15 +87,15 @@ bool InventoryMenu::onMouseEvent()
             item = static_cast<const Dynamic*>( orbis.objects[ bot->items[tagged] ] );
 
             if( item != null ) {
-              if( container == null ) {
-                bot->actions |= Bot::ACTION_INV_DROP;
-                bot->instrument = item->index;
-                bot->container = -1;
-              }
-              else {
+              if( container != null ) {
                 bot->actions |= Bot::ACTION_INV_GIVE;
                 bot->instrument = item->index;
                 bot->container = container->index;
+              }
+              else if( bot->cargo == -1 ) {
+                bot->actions |= Bot::ACTION_INV_DROP;
+                bot->instrument = item->index;
+                bot->container = -1;
               }
             }
           }
@@ -139,15 +139,13 @@ bool InventoryMenu::onMouseEvent()
         }
       }
       else if( mouse.middleClick ) {
-        if( uint( tagged ) < uint( bot->items.length() ) ) {
+        if( bot->cargo == -1 && uint( tagged ) < uint( bot->items.length() ) ) {
           item = static_cast<const Dynamic*>( orbis.objects[ bot->items[tagged] ] );
 
           if( item != null ) {
             bot->actions |= Bot::ACTION_INV_GRAB;
             bot->instrument = item->index;
             bot->container = -1;
-
-            mouse.doShow = false;
           }
         }
       }

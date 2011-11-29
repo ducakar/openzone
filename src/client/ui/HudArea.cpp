@@ -236,7 +236,7 @@ void HudArea::drawVehicleStatus()
   tf.model = Mat44::ID;
   tf.camera = Mat44::ID;
   tf.camera.translate( Vec3( float( Area::uiWidth - 208 + VEHICLE_SIZE / 2 ),
-                             float( 30 + vehClazz->nWeapons * ( textHeight + 8 ) + VEHICLE_SIZE / 2 ),
+                             float( 52 + vehClazz->nWeapons * ( textHeight + 8 ) + VEHICLE_SIZE / 2 ),
                              0.0f ) );
   tf.camera.scale( Vec3( 1.0f, 1.0f, 0.001f ) );
   tf.camera.rotateX( Math::rad( -45.0f ) );
@@ -261,11 +261,16 @@ void HudArea::drawVehicleStatus()
 
   float life      = Math::isinf( vehicle->life ) ? 1.0f : vehicle->life / vehClazz->life;
   int   lifeWidth = max( int( life * 198.0f ), 0 );
+  float fuel      = Math::isinf( vehicle->fuel ) ? 1.0f : vehicle->fuel / vehClazz->fuel;
+  int   fuelWidth = int( fuel * 198.0f );
 
   glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
-  fill( -207, 9, lifeWidth, 12 );
+  fill( -207, 31, lifeWidth, 12 );
+  glUniform4f( param.oz_Colour, 0.7f - 0.7f * fuel, 0.3f, 0.5f + 0.5f * fuel, 0.6f );
+  fill( -207, 9, fuelWidth, 12 );
 
   glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.6f );
+  rect( -208, 30, 200, 14 );
   rect( -208, 8, 200, 14 );
 
   if( lastVehicleId != bot->parent ) {
@@ -283,7 +288,7 @@ void HudArea::drawVehicleStatus()
       int step = font.INFOS[Font::LARGE].height + 8;
 
       glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.3f );
-      fill( -208, 30 + ( vehClazz->nWeapons - 1 - i ) * step, 200, textHeight + 8 );
+      fill( -208, 52 + ( vehClazz->nWeapons - 1 - i ) * step, 200, textHeight + 8 );
     }
 
     int labelIndex = vehClazz->nWeapons - i - 1;
@@ -354,8 +359,8 @@ HudArea::HudArea() : Area( Area::uiWidth, Area::uiHeight ),
   for( int i = 0; i < Vehicle::MAX_WEAPONS; ++i ) {
     lastVehicleWeaponRounds[i] = -1;
 
-    vehicleWeaponNames[i].set( -200, 32 + i * step, ALIGN_LEFT, Font::LARGE, " " );
-    vehicleWeaponRounds[i].set( -16, 32 + i * step, ALIGN_RIGHT, Font::LARGE, "∞" );
+    vehicleWeaponNames[i].set( -200, 54 + i * step, ALIGN_LEFT, Font::LARGE, " " );
+    vehicleWeaponRounds[i].set( -16, 54 + i * step, ALIGN_RIGHT, Font::LARGE, "∞" );
   }
 
   crossTexId  = context.loadTexture( "ui/icon/crosshair.ozcTex" );
