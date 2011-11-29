@@ -37,19 +37,6 @@ namespace oz
  */
 class System
 {
-  private:
-
-    /// Table of signal names and descriptions.
-    static const char* const SIGNALS[][2];
-
-    /// Whether to enable <code>halt()</code> to be called by <code>abort()</code>.
-    static bool isHaltEnabled;
-
-    /**
-     * Signal handler, prints signal info and calls <code>abort()</code>.
-     */
-    static void signalHandler( int signum );
-
   public:
 
     /**
@@ -86,10 +73,11 @@ class System
     /**
      * Play a sound alert.
      *
-     * Runs <tt>paplay /usr/share/sounds/pop.wav &</tt>. <tt>paplay</tt> is part of PulseAudio
-     * server and <tt>pop.wav</tt> comes with KDE SC.
+     * Plays sine wave from <tt>oz/bellSample.inc</tt> file using pulseaudio.
+     *
+     * @param isSync do not start a new thread for playing. Block until the sample finishes.
      */
-    static void bell();
+    static void bell( bool isSync = false );
 
     /**
      * Raise trap signal (to trigger a breakpoint).

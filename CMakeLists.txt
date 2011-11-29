@@ -117,9 +117,15 @@ endif()
 
 if( WIN32 )
   find_library( INTL_LIBRARY intl )
+  find_library( WINMM_LIBRARY winmm )
 
   mark_as_advanced( MINGW32_LIBRARY )
   mark_as_advanced( INTL_LIBRARY )
+  mark_as_advanced( WINMM_LIBRARY )
+else()
+  find_library( PULSE_SIMPLE_LIBRARY pulse-simple )
+
+  mark_as_advanced( PULSE_SIMPLE_LIBRARY )
 endif()
 
 Find_Package( SDL_image REQUIRED )
@@ -162,7 +168,9 @@ set( libs "${libs};${OPENAL_LIBRARY}" )
 set( libs "${libs};${VORBISFILE_LIBRARY}" )
 
 if( OZ_MINGW )
-  set( libs "${libs};${INTL_LIBRARY}" )
+  set( libs "${libs};${INTL_LIBRARY};${WINMM_LIBRARY}" )
+else()
+  set( libs "${libs};${PULSE_SIMPLE_LIBRARY}" )
 endif()
 
 if( OZ_NETWORK )
