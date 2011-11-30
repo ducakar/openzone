@@ -39,6 +39,7 @@ namespace client
 
 Camera camera;
 
+const float Camera::ROT_LIMIT      = Math::TAU / 2.0f;
 const float Camera::MIN_DISTANCE   = 0.1f;
 const float Camera::SMOOTHING_COEF = 0.5f;
 
@@ -63,6 +64,9 @@ void Camera::update()
 {
   relH = -float( ui::mouse.overEdgeX ) * mouseXSens;
   relV = +float( ui::mouse.overEdgeY ) * mouseYSens;
+
+  relH = clamp( relH, -ROT_LIMIT, +ROT_LIMIT );
+  relV = clamp( relV, -ROT_LIMIT, +ROT_LIMIT );
 
   if( ui::keyboard.keys[SDLK_LEFT] | ui::keyboard.keys[SDLK_KP1] |
       ui::keyboard.keys[SDLK_KP4] | ui::keyboard.keys[SDLK_KP7] )

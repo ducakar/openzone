@@ -40,6 +40,7 @@ class Camera
 {
   public:
 
+    static const float ROT_LIMIT;
     static const float MIN_DISTANCE;
     static const float SMOOTHING_COEF;
 

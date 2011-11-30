@@ -105,7 +105,6 @@ static void signalHandler( int signum )
   System::abort( "Caught signal %d %s (%s)", signum, SIGNALS[signum][0], SIGNALS[signum][1] );
 }
 
-
 #ifndef OZ_MINGW
 
 static void* bellThread( void* )
@@ -176,13 +175,13 @@ void System::bell( bool isSync )
 
 void System::trap()
 {
-  bell( true );
-
 #ifndef OZ_MINGW
   signal( SIGTRAP, SIG_IGN );
   raise( SIGTRAP );
   signal( SIGTRAP, SIG_DFL );
 #endif
+
+  bell();
 }
 
 void System::halt()

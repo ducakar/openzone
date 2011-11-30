@@ -102,7 +102,7 @@ void VehicleClass::initClass( const Config* config )
 
   state = 0;
 
-  OZ_CLASS_SET_STATE( Vehicle::CREW_VISIBLE_BIT, "state.crewVisible", true );
+  OZ_CLASS_SET_STATE( Vehicle::CREW_VISIBLE_BIT, "state.crewVisible", false );
   OZ_CLASS_SET_STATE( Vehicle::HAS_EJECT_BIT,    "state.hasEject",    false );
   OZ_CLASS_SET_STATE( Vehicle::AUTO_EJECT_BIT,   "state.autoEject",   false );
 
@@ -115,13 +115,6 @@ void VehicleClass::initClass( const Config* config )
   if( lift < 0.0f ) {
     throw Exception( "%s: Invalid object lift. Should be >= 0.", name.cstr() );
   }
-
-  pilotPos = Vec3( config->get( "pilotPos.x", 0.0f ),
-                   config->get( "pilotPos.y", 0.0f ),
-                   config->get( "pilotPos.z", 0.0f ) );
-  pilotRot = Quat::rotZXZ( config->get( "pilotRot.z", 0.0f ),
-                           config->get( "pilotRot.x", 0.0f ),
-                           0.0f );
 
   const char* sType = config->get( "type", "" );
   if( String::equals( sType, "STATIC" ) ) {
@@ -146,6 +139,15 @@ void VehicleClass::initClass( const Config* config )
     throw Exception( "%s: Invalid vehicle type, should be either STATIC, WHEELED, TRACKED, MECH, "
                      "HOVER or AIR", name.cstr() );
   }
+
+  pilotPos = Vec3( config->get( "pilotPos.x", 0.0f ),
+                   config->get( "pilotPos.y", 0.0f ),
+                   config->get( "pilotPos.z", 0.0f ) );
+  pilotRot = Quat::rotZXZ( config->get( "pilotRot.z", 0.0f ),
+                           config->get( "pilotRot.x", 0.0f ),
+                           0.0f );
+
+  rotVelLimit            = Math::rad( config->get( "rotVelLimit", 60.0f ) ) * Timer::TICK_TIME;
 
   moveMomentum           = config->get( "moveMomentum", 2.0f );
 

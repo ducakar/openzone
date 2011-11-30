@@ -41,74 +41,51 @@ void ClassFormatter::writeObjectClass() const
   fprintf( fs, "\n" );
   fprintf( fs, "title                   \"%s\"\n", clazz->title.cstr() );
   fprintf( fs, "description             \"%s\"\n", clazz->description.cstr() );
+  fprintf( fs, "\n" );
 
-  bool isFirstFlag = true;
+  bool any = false;
 
   if( !clazz->onDestroy.isEmpty() && !( clazz->flags & Object::DESTROY_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onDestroy          \"false\"\n" );
   }
   if( !clazz->onUse.isEmpty() && !( clazz->flags & Object::USE_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onUse              \"false\"\n" );
   }
   if( !clazz->onDamage.isEmpty() && !( clazz->flags & Object::DAMAGE_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onDamage           \"false\"\n" );
   }
   if( !clazz->onHit.isEmpty() && !( clazz->flags & Object::HIT_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onHit              \"false\"\n" );
   }
   if( !clazz->onUpdate.isEmpty() && !( clazz->flags & Object::UPDATE_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onUpdate           \"false\"\n" );
   }
   if( !( clazz->flags & Object::SOLID_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.solid              \"false\"\n" );
   }
   if( !( clazz->flags & Object::CYLINDER_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.cylinder           \"false\"\n" );
   }
   if( clazz->flags & Object::NO_DRAW_BIT ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.noDraw             \"true\"\n" );
   }
   if( clazz->flags & Object::WIDE_CULL_BIT ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.wideCull           \"true\"\n" );
   }
 
-  fprintf( fs, "\n" );
+  if( any ) {
+    fprintf( fs, "\n" );
+  }
+
   fprintf( fs, "dim.x                   \"%g\"\n", clazz->dim.x );
   fprintf( fs, "dim.y                   \"%g\"\n", clazz->dim.y );
   fprintf( fs, "dim.z                   \"%g\"\n", clazz->dim.z );
@@ -116,39 +93,36 @@ void ClassFormatter::writeObjectClass() const
   fprintf( fs, "life                    \"%g\"\n", clazz->life );
   fprintf( fs, "resistance              \"%g\"\n", clazz->resistance );
 
-  bool isFirstHandler = true;
+  any = false;
 
   if( !clazz->onDestroy.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
+    fprintf( fs, "\n" );
     fprintf( fs, "onDestroy               \"%s\"\n", clazz->onDestroy.cstr() );
   }
   if( !clazz->onUse.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
+    if( !any ) {
       fprintf( fs, "\n" );
     }
+    any = true;
     fprintf( fs, "onUse                   \"%s\"\n", clazz->onUse.cstr() );
   }
   if( !clazz->onDamage.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
+    if( !any ) {
       fprintf( fs, "\n" );
     }
+    any = true;
     fprintf( fs, "onDamage                \"%s\"\n", clazz->onDamage.cstr() );
   }
   if( !clazz->onHit.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
+    if( !any ) {
       fprintf( fs, "\n" );
     }
+    any = true;
     fprintf( fs, "onHit                   \"%s\"\n", clazz->onHit.cstr() );
   }
   if( !clazz->onUpdate.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
+    if( !any ) {
       fprintf( fs, "\n" );
     }
     fprintf( fs, "onUpdate                \"%s\"\n", clazz->onUpdate.cstr() );
@@ -162,81 +136,55 @@ void ClassFormatter::writeDynamicClass() const
   fprintf( fs, "\n" );
   fprintf( fs, "title                   \"%s\"\n", clazz->title.cstr() );
   fprintf( fs, "description             \"%s\"\n", clazz->description.cstr() );
+  fprintf( fs, "\n" );
 
-  bool isFirstFlag = true;
+  bool any = false;
 
   if( !clazz->onDestroy.isEmpty() && !( clazz->flags & Object::DESTROY_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onDestroy          \"false\"\n" );
   }
   if( !clazz->onUse.isEmpty() && !( clazz->flags & Object::USE_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onUse              \"false\"\n" );
   }
   if( !clazz->onDamage.isEmpty() && !( clazz->flags & Object::DAMAGE_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onDamage           \"false\"\n" );
   }
   if( !clazz->onHit.isEmpty() && !( clazz->flags & Object::HIT_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onHit              \"false\"\n" );
   }
   if( !clazz->onUpdate.isEmpty() && !( clazz->flags & Object::UPDATE_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onUpdate           \"false\"\n" );
   }
   if( clazz->flags & Object::ITEM_BIT ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.item               \"true\"\n" );
   }
   if( !( clazz->flags & Object::SOLID_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.solid              \"false\"\n" );
   }
   if( !( clazz->flags & Object::CYLINDER_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.cylinder           \"false\"\n" );
   }
   if( clazz->flags & Object::NO_DRAW_BIT ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.noDraw             \"true\"\n" );
   }
   if( clazz->flags & Object::WIDE_CULL_BIT ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.wideCull           \"true\"\n" );
   }
 
-  fprintf( fs, "\n" );
+  if( any ) {
+    fprintf( fs, "\n" );
+  }
+
   fprintf( fs, "dim.x                   \"%g\"\n", clazz->dim.x );
   fprintf( fs, "dim.y                   \"%g\"\n", clazz->dim.y );
   fprintf( fs, "dim.z                   \"%g\"\n", clazz->dim.z );
@@ -247,39 +195,36 @@ void ClassFormatter::writeDynamicClass() const
   fprintf( fs, "mass                    \"%g\"\n", clazz->mass );
   fprintf( fs, "lift                    \"%g\"\n", clazz->lift );
 
-  bool isFirstHandler = true;
+  any = false;
 
   if( !clazz->onDestroy.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
+    fprintf( fs, "\n" );
     fprintf( fs, "onDestroy               \"%s\"\n", clazz->onDestroy.cstr() );
   }
   if( !clazz->onUse.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
+    if( !any ) {
       fprintf( fs, "\n" );
     }
+    any = true;
     fprintf( fs, "onUse                   \"%s\"\n", clazz->onUse.cstr() );
   }
   if( !clazz->onDamage.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
+    if( !any ) {
       fprintf( fs, "\n" );
     }
+    any = true;
     fprintf( fs, "onDamage                \"%s\"\n", clazz->onDamage.cstr() );
   }
   if( !clazz->onHit.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
+    if( !any ) {
       fprintf( fs, "\n" );
     }
+    any = true;
     fprintf( fs, "onHit                   \"%s\"\n", clazz->onHit.cstr() );
   }
   if( !clazz->onUpdate.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
+    if( !any ) {
       fprintf( fs, "\n" );
     }
     fprintf( fs, "onUpdate                \"%s\"\n", clazz->onUpdate.cstr() );
@@ -293,67 +238,47 @@ void ClassFormatter::writeWeaponClass() const
   fprintf( fs, "\n" );
   fprintf( fs, "title                   \"%s\"\n", clazz->title.cstr() );
   fprintf( fs, "description             \"%s\"\n", clazz->description.cstr() );
+  fprintf( fs, "\n" );
 
-  bool isFirstFlag = true;
+  bool any = false;
 
   if( !clazz->onDestroy.isEmpty() && !( clazz->flags & Object::DESTROY_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onDestroy          \"false\"\n" );
   }
   if( !clazz->onDamage.isEmpty() && !( clazz->flags & Object::DAMAGE_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onDamage           \"false\"\n" );
   }
   if( !clazz->onHit.isEmpty() && !( clazz->flags & Object::HIT_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onHit              \"false\"\n" );
   }
   if( !clazz->onUpdate.isEmpty() && !( clazz->flags & Object::UPDATE_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onUpdate           \"false\"\n" );
   }
   if( !( clazz->flags & Object::SOLID_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.solid              \"false\"\n" );
   }
   if( !( clazz->flags & Object::CYLINDER_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.cylinder           \"false\"\n" );
   }
   if( clazz->flags & Object::NO_DRAW_BIT ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.noDraw             \"true\"\n" );
   }
   if( clazz->flags & Object::WIDE_CULL_BIT ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.wideCull           \"true\"\n" );
   }
 
-  fprintf( fs, "\n" );
+  if( any ) {
+    fprintf( fs, "\n" );
+  }
+
   fprintf( fs, "dim.x                   \"%g\"\n", clazz->dim.x );
   fprintf( fs, "dim.y                   \"%g\"\n", clazz->dim.y );
   fprintf( fs, "dim.z                   \"%g\"\n", clazz->dim.z );
@@ -367,39 +292,36 @@ void ClassFormatter::writeWeaponClass() const
   fprintf( fs, "nRounds                 \"%d\"\n", clazz->nRounds );
   fprintf( fs, "shotInterval            \"%g\"\n", clazz->shotInterval );
 
-  bool isFirstHandler = true;
+  any = false;
 
   if( !clazz->onDestroy.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
+    fprintf( fs, "\n" );
     fprintf( fs, "onDestroy               \"%s\"\n", clazz->onDestroy.cstr() );
   }
   if( !clazz->onDamage.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
+    if( !any ) {
       fprintf( fs, "\n" );
     }
+    any = true;
     fprintf( fs, "onDamage                \"%s\"\n", clazz->onDamage.cstr() );
   }
   if( !clazz->onHit.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
+    if( !any ) {
       fprintf( fs, "\n" );
     }
+    any = true;
     fprintf( fs, "onHit                   \"%s\"\n", clazz->onHit.cstr() );
   }
   if( !clazz->onUpdate.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
+    if( !any ) {
       fprintf( fs, "\n" );
     }
+    any = true;
     fprintf( fs, "onUpdate                \"%s\"\n", clazz->onUpdate.cstr() );
   }
   if( !clazz->onShot.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
+    if( !any ) {
       fprintf( fs, "\n" );
     }
     fprintf( fs, "onShot                  \"%s\"\n", clazz->onShot.cstr() );
@@ -413,63 +335,50 @@ void ClassFormatter::writeBotClass() const
   fprintf( fs, "\n" );
   fprintf( fs, "title                   \"%s\"\n", clazz->title.cstr() );
   fprintf( fs, "description             \"%s\"\n", clazz->description.cstr() );
+  fprintf( fs, "\n" );
 
-  bool isFirstFlag = true;
+  bool any = false;
 
   if( !clazz->onDestroy.isEmpty() && !( clazz->flags & Object::DESTROY_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onDestroy          \"false\"\n" );
   }
   if( !clazz->onUse.isEmpty() && !( clazz->flags & Object::USE_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onUse              \"false\"\n" );
   }
   if( !clazz->onDamage.isEmpty() && !( clazz->flags & Object::DAMAGE_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onDamage           \"false\"\n" );
   }
   if( !( clazz->flags & Object::SOLID_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.solid              \"false\"\n" );
   }
   if( clazz->flags & Object::NO_DRAW_BIT ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.noDraw             \"true\"\n" );
   }
   if( clazz->flags & Object::WIDE_CULL_BIT ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.wideCull           \"true\"\n" );
   }
 
-  bool isFirstState = true;
+  if( any ) {
+    fprintf( fs, "\n" );
+  }
+
+  any = false;
 
   if( clazz->state & Bot::MECHANICAL_BIT ) {
-    if( isFirstState ) {
-      isFirstState = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "state.mechanical        \"true\"\n" );
   }
 
-  fprintf( fs, "\n" );
+  if( any ) {
+    fprintf( fs, "\n" );
+  }
+
   fprintf( fs, "dim.x                   \"%g\"\n", clazz->dim.x );
   fprintf( fs, "dim.y                   \"%g\"\n", clazz->dim.y );
   fprintf( fs, "dim.z                   \"%g\"\n", clazz->dim.z );
@@ -480,7 +389,7 @@ void ClassFormatter::writeBotClass() const
   fprintf( fs, "corpseDim.y             \"%g\"\n", clazz->corpseDim.y );
   fprintf( fs, "corpseDim.z             \"%g\"\n", clazz->corpseDim.z );
   fprintf( fs, "\n" );
-  fprintf( fs, "life                    \"%g\"\n", clazz->life );
+  fprintf( fs, "life                    \"%.4g\"\n", clazz->life / 2.0f );
   fprintf( fs, "resistance              \"%g\"\n", clazz->resistance );
   fprintf( fs, "\n" );
   fprintf( fs, "mass                    \"%g\"\n", clazz->mass );
@@ -536,25 +445,22 @@ void ClassFormatter::writeBotClass() const
   fprintf( fs, "\n" );
   fprintf( fs, "mindFunc                \"%s\"\n", clazz->mindFunc.cstr() );
 
-  bool isFirstHandler = true;
+  any = false;
 
   if( !clazz->onDestroy.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
+    fprintf( fs, "\n" );
     fprintf( fs, "onDestroy               \"%s\"\n", clazz->onDestroy.cstr() );
   }
   if( !clazz->onUse.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
+    if( !any ) {
       fprintf( fs, "\n" );
     }
+    any = true;
     fprintf( fs, "onUse                   \"%s\"\n", clazz->onUse.cstr() );
   }
   if( !clazz->onDamage.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
+    if( !any ) {
       fprintf( fs, "\n" );
     }
     fprintf( fs, "onDamage                \"%s\"\n", clazz->onDamage.cstr() );
@@ -568,70 +474,58 @@ void ClassFormatter::writeVehicleClass() const
   fprintf( fs, "\n" );
   fprintf( fs, "title                   \"%s\"\n", clazz->title.cstr() );
   fprintf( fs, "description             \"%s\"\n", clazz->description.cstr() );
+  fprintf( fs, "\n" );
 
-  bool isFirstFlag = true;
+  bool any = false;
 
   if( !clazz->onDestroy.isEmpty() && !( clazz->flags & Object::DESTROY_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onDestroy          \"false\"\n" );
   }
   if( !clazz->onDamage.isEmpty() && !( clazz->flags & Object::DAMAGE_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onDamage           \"false\"\n" );
   }
   if( !clazz->onHit.isEmpty() && !( clazz->flags & Object::HIT_FUNC_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.onHit              \"false\"\n" );
   }
   if( !( clazz->flags & Object::SOLID_BIT ) ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.solid              \"false\"\n" );
   }
   if( clazz->flags & Object::NO_DRAW_BIT ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.noDraw             \"true\"\n" );
   }
   if( clazz->flags & Object::WIDE_CULL_BIT ) {
-    if( isFirstFlag ) {
-      isFirstFlag = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "flag.wideCull           \"true\"\n" );
   }
 
-  bool isFirstState = true;
+  if( any ) {
+    fprintf( fs, "\n" );
+  }
+
+  any = false;
 
   if( clazz->state & Vehicle::AUTO_EJECT_BIT ) {
-    if( isFirstState ) {
-      isFirstState = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "state.autoEject         \"true\"\n" );
   }
+  if( clazz->state & Vehicle::HAS_EJECT_BIT ) {
+    any = true;
+    fprintf( fs, "state.hasEject          \"true\"\n" );
+  }
   if( clazz->state & Vehicle::CREW_VISIBLE_BIT ) {
-    if( isFirstState ) {
-      isFirstState = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
     fprintf( fs, "state.crewVisible       \"true\"\n" );
   }
 
-  fprintf( fs, "\n" );
+  if( any ) {
+    fprintf( fs, "\n" );
+  }
+
   fprintf( fs, "dim.x                   \"%g\"\n", clazz->dim.x );
   fprintf( fs, "dim.y                   \"%g\"\n", clazz->dim.y );
   fprintf( fs, "dim.z                   \"%g\"\n", clazz->dim.z );
@@ -642,6 +536,8 @@ void ClassFormatter::writeVehicleClass() const
   fprintf( fs, "mass                    \"%g\"\n", clazz->mass );
   fprintf( fs, "lift                    \"%g\"\n", clazz->lift );
   fprintf( fs, "\n" );
+  fprintf( fs, "type                    \"%s\"\n", config->get( "type", "" ) );
+  fprintf( fs, "\n" );
   fprintf( fs, "pilotPos.x              \"%g\"\n", clazz->pilotPos.x );
   fprintf( fs, "pilotPos.y              \"%g\"\n", clazz->pilotPos.y );
   fprintf( fs, "pilotPos.z              \"%g\"\n", clazz->pilotPos.z );
@@ -649,7 +545,7 @@ void ClassFormatter::writeVehicleClass() const
   fprintf( fs, "pilotRot.x              \"%g\"\n", clazz->pilotRot.x );
   fprintf( fs, "pilotRot.z              \"%g\"\n", clazz->pilotRot.z );
   fprintf( fs, "\n" );
-  fprintf( fs, "type                    \"%s\"\n", config->get( "type", "" ) );
+  fprintf( fs, "rotVelLimit             \"%.4g\"\n", Math::deg( clazz->rotVelLimit / Timer::TICK_TIME ) );
   fprintf( fs, "\n" );
   fprintf( fs, "moveMomentum            \"%g\"\n", clazz->moveMomentum );
   fprintf( fs, "\n" );
@@ -672,25 +568,22 @@ void ClassFormatter::writeVehicleClass() const
     fprintf( fs, "weapon%02d.shotInterval   \"%g\"\n", i, clazz->shotInterval[i] );
   }
 
-  bool isFirstHandler = true;
+  any = false;
 
   if( !clazz->onDestroy.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
-      fprintf( fs, "\n" );
-    }
+    any = true;
+    fprintf( fs, "\n" );
     fprintf( fs, "onDestroy               \"%s\"\n", clazz->onDestroy.cstr() );
   }
   if( !clazz->onDamage.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
+    if( !any ) {
       fprintf( fs, "\n" );
     }
+    any = true;
     fprintf( fs, "onDamage                \"%s\"\n", clazz->onDamage.cstr() );
   }
   if( !clazz->onHit.isEmpty() ) {
-    if( isFirstHandler ) {
-      isFirstHandler = false;
+    if( !any ) {
       fprintf( fs, "\n" );
     }
     fprintf( fs, "onHit                   \"%s\"\n", clazz->onHit.cstr() );

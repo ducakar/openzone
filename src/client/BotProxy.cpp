@@ -145,24 +145,13 @@ void BotProxy::update()
   /*
    * Camera
    */
-  if( isFreelook && ( isExternal || bot->parent != -1 ) ) {
+  if( isFreelook && ( bot->parent != -1 || isExternal ) ) {
     camera.h += camera.relH;
     camera.v += camera.relV;
   }
   else {
-    float relH = camera.relH;
-    float relV = camera.relV;
-
-//     if( bot->parent != -1 && orbis.objects[bot->parent] != null ) {
-//       const Vehicle*      vehicle = static_cast<const Vehicle*>( orbis.objects[bot->parent] );
-//       const VehicleClass* clazz   = static_cast<const VehicleClass*>( vehicle->clazz );
-//
-//       relH = clamp( relH, -clazz->turnLimitH, +clazz->turnLimitH );
-//       relV = clamp( relV, -clazz->turnLimitV, +clazz->turnLimitV );
-//     }
-
-    bot->h += relH;
-    bot->v += relV;
+    bot->h = Math::fmod( bot->h + camera.relH + 2.0f*Math::TAU, Math::TAU );
+    bot->v = clamp( bot->v + camera.relV, 0.0f, Math::TAU / 2.0f );
 
     camera.h = bot->h;
     camera.v = bot->v;
@@ -304,6 +293,11 @@ void BotProxy::prepare()
   const Bot* bot = camera.botObj;
 
   if( !isExternal ) {
+    if( !isFreelook ) {
+      camera.h = bot->h;
+      camera.v = bot->v;
+    }
+
     if( bot->parent != -1 ) { // inside vehicle
       hard_assert( orbis.objects[bot->parent] == null ||
           ( orbis.objects[bot->parent]->flags & Object::VEHICLE_BIT ) );
@@ -357,6 +351,11 @@ void BotProxy::prepare()
     bobPhi   = 0.0f;
     bobTheta = 0.0f;
     bobBias  = 0.0f;
+
+    if( !isFreelook ) {
+      camera.h = bot->h;
+      camera.v = bot->v;
+    }
 
     camera.w = 0.0f;
     camera.align();
