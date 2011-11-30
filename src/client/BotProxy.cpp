@@ -205,26 +205,20 @@ void BotProxy::update()
     camera.v = bot->v;
   }
 
-  bot->state &= ~( Bot::GESTURE0_BIT | Bot::GESTURE1_BIT | Bot::GESTURE2_BIT |
-      Bot::GESTURE3_BIT | Bot::GESTURE4_BIT | Bot::GESTURE_ALL_BIT );
-
   if( keys[SDLK_f] ) {
-    bot->state |= Bot::GESTURE0_BIT;
+    bot->actions |= Bot::ACTION_GESTURE0;
   }
   if( keys[SDLK_g] ) {
-    bot->state |= Bot::GESTURE1_BIT;
+    bot->actions |= Bot::ACTION_GESTURE1;
   }
   if( keys[SDLK_h] ) {
-    bot->state |= Bot::GESTURE2_BIT;
+    bot->actions |= Bot::ACTION_GESTURE2;
   }
   if( keys[SDLK_j] ) {
-    bot->state |= Bot::GESTURE3_BIT;
+    bot->actions |= Bot::ACTION_GESTURE3;
   }
   if( keys[SDLK_k] ) {
-    bot->state |= Bot::GESTURE4_BIT;
-  }
-  if( keys[SDLK_l] ) {
-    bot->state |= Bot::GESTURE_ALL_BIT;
+    bot->actions |= Bot::ACTION_GESTURE4;
   }
 
   if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {

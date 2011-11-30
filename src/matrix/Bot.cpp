@@ -494,18 +494,50 @@ void Bot::onUpdate()
      * ATTACK & GESTURES
      */
 
-    if( cargo == -1 ) {
-      if( ( actions & ACTION_ATTACK ) && !( state & MOVING_BIT ) &&
-          ( !( actions & ACTION_JUMP ) || ( state & ( Bot::GROUNDED_BIT | Bot::CLIMBING_BIT ) ) ) )
-      {
-        if( weaponObj != null && weaponObj->shotTime == 0.0f ) {
+    if( !( state & MOVING_BIT ) && cargo == -1 &&
+        ( !( actions & ACTION_JUMP ) || ( state & ( Bot::GROUNDED_BIT | Bot::CLIMBING_BIT ) ) ) )
+    {
+      if( actions & ACTION_ATTACK ) {
+        if( weaponObj != null ) {
           state |= ATTACKING_BIT;
           weaponObj->trigger( this );
         }
       }
-      else if( state & GESTURE4_BIT ) {
-        if( !( oldState & GESTURE4_BIT ) ) {
-          addEvent( EVENT_FLIP, 1.0f );
+      else if( !( state & CROUCHING_BIT ) ) {
+        if( actions & ACTION_GESTURE0 ) {
+          if( !( state & GESTURE0_BIT ) ) {
+            state &= ~( GESTURE0_BIT | GESTURE1_BIT | GESTURE2_BIT | GESTURE3_BIT | GESTURE4_BIT );
+            state |= GESTURE0_BIT;
+          }
+        }
+        else if( actions & ACTION_GESTURE1 ) {
+          if( !( state & GESTURE1_BIT ) ) {
+            state &= ~( GESTURE0_BIT | GESTURE1_BIT | GESTURE2_BIT | GESTURE3_BIT | GESTURE4_BIT );
+            state |= GESTURE1_BIT;
+          }
+        }
+        else if( actions & ACTION_GESTURE2 ) {
+          if( !( state & GESTURE2_BIT ) ) {
+            state &= ~( GESTURE0_BIT | GESTURE1_BIT | GESTURE2_BIT | GESTURE3_BIT | GESTURE4_BIT );
+            state |= GESTURE2_BIT;
+          }
+        }
+        else if( actions & ACTION_GESTURE3 ) {
+          if( !( state & GESTURE3_BIT ) ) {
+            state &= ~( GESTURE0_BIT | GESTURE1_BIT | GESTURE2_BIT | GESTURE3_BIT | GESTURE4_BIT );
+            state |= GESTURE3_BIT;
+          }
+        }
+        else if( actions & ACTION_GESTURE4 ) {
+          if( !( state & GESTURE4_BIT ) ) {
+            state &= ~( GESTURE0_BIT | GESTURE1_BIT | GESTURE2_BIT | GESTURE3_BIT | GESTURE4_BIT );
+            state |= GESTURE4_BIT;
+
+            addEvent( EVENT_FLIP, 1.0f );
+          }
+        }
+        else {
+          state &= ~( GESTURE0_BIT | GESTURE1_BIT | GESTURE2_BIT | GESTURE3_BIT | GESTURE4_BIT );
         }
       }
     }

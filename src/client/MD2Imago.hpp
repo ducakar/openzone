@@ -57,7 +57,6 @@ class MD2Imago : public Imago
     virtual ~MD2Imago();
 
     MD2::Anim extractAnim() const;
-    void setAnim( MD2::Anim type );
 
   public:
 

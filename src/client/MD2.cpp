@@ -37,28 +37,27 @@ namespace client
 
 const MD2::AnimInfo MD2::ANIM_LIST[] =
 {
-  // first, last, repeat, fps
-  {   0,  39,  true,  9.0f },   // STAND
-  {  40,  45,  true, 10.0f },   // RUN
-  {  46,  53,  true, 16.0f },   // ATTACK
-  {  54,  57,  true,  7.0f },   // PAIN_A
-  {  58,  61,  true,  7.0f },   // PAIN_B
-  {  62,  65,  true,  7.0f },   // PAIN_C
-  {  67,  67, false,  9.0f },   // JUMP
-  {  72,  83,  true,  7.0f },   // FLIP
-  {  84,  94,  true,  7.0f },   // SALUTE
-  {  95, 111,  true, 10.0f },   // FALLBACK
-  { 112, 122,  true,  7.0f },   // WAVE
-  { 123, 134,  true,  6.0f },   // POINT
-  { 135, 153,  true, 10.0f },   // CROUCH_STAND
-  { 154, 159,  true,  7.0f },   // CROUCH_WALK
-  { 160, 168,  true, 18.0f },   // CROUCH_ATTACK
-  { 169, 172,  true,  7.0f },   // CROUCH_PAIN
-  { 173, 177,  true,  5.0f },   // CROUCH_DEATH
-  { 178, 183, false,  7.0f },   // DEATH_FALLBACK
-  { 184, 189, false,  7.0f },   // DEATH_FALLFORWARD
-  { 190, 197, false,  7.0f },   // DEATH_FALLBACKSLOW
-  {   0, 197,  true,  7.0f }    // FULL
+  // first, last, fps, nextAnim
+  {   0,  39,  9.0f, ANIM_STAND         }, // STAND
+  {  40,  45, 10.0f, ANIM_RUN           }, // RUN
+  {  46,  53, 16.0f, ANIM_NONE          }, // ATTACK
+  {  54,  57,  7.0f, ANIM_STAND         }, // PAIN_A
+  {  58,  61,  7.0f, ANIM_STAND         }, // PAIN_B
+  {  62,  65,  7.0f, ANIM_STAND         }, // PAIN_C
+  {  67,  67,  9.0f, ANIM_NONE          }, // JUMP
+  {  72,  83,  7.0f, ANIM_STAND         }, // FLIP
+  {  84,  94,  7.0f, ANIM_STAND         }, // SALUTE
+  {  95, 111, 10.0f, ANIM_STAND         }, // WAVE
+  { 112, 122,  7.0f, ANIM_STAND         }, // FALLBACK
+  { 123, 134,  6.0f, ANIM_STAND         }, // POINT
+  { 135, 153, 10.0f, ANIM_CROUCH_STAND  }, // CROUCH_STAND
+  { 154, 159,  7.0f, ANIM_CROUCH_WALK   }, // CROUCH_WALK
+  { 160, 168, 18.0f, ANIM_CROUCH_ATTACK }, // CROUCH_ATTACK
+  { 169, 172,  7.0f, ANIM_CROUCH_STAND  }, // CROUCH_PAIN
+  { 173, 177,  5.0f, ANIM_NONE          }, // CROUCH_DEATH
+  { 178, 183,  7.0f, ANIM_NONE          }, // DEATH_FALLBACK
+  { 184, 189,  7.0f, ANIM_NONE          }, // DEATH_FALLFORWARD
+  { 190, 197,  7.0f, ANIM_NONE          }  // DEATH_FALLBACKSLOW
 };
 
 Vertex MD2::animBuffer[MAX_VERTS];
@@ -90,6 +89,18 @@ MD2::~MD2()
   OZ_GL_CHECK_ERROR();
 }
 
+void MD2::setAnim( AnimState* anim, Anim type )
+{
+  anim->type       = type;
+  anim->nextAnim   = MD2::ANIM_LIST[type].nextAnim;
+  anim->firstFrame = MD2::ANIM_LIST[type].firstFrame;
+  anim->lastFrame  = MD2::ANIM_LIST[type].lastFrame;
+  anim->nextFrame  = anim->firstFrame == anim->lastFrame ? anim->firstFrame : anim->firstFrame + 1;
+  anim->fps        = MD2::ANIM_LIST[type].fps;
+  anim->frameTime  = 1.0f / anim->fps;
+  anim->currTime   = 0.0f;
+}
+
 void MD2::advance( AnimState* anim, float dt ) const
 {
   anim->currTime += dt;
@@ -100,7 +111,15 @@ void MD2::advance( AnimState* anim, float dt ) const
     ++anim->nextFrame;
 
     if( anim->nextFrame > anim->lastFrame ) {
-      anim->nextFrame = anim->repeat ? anim->firstFrame : anim->lastFrame;
+      if( anim->nextAnim == ANIM_NONE ) {
+        anim->nextFrame = anim->lastFrame;
+      }
+      else if( anim->nextAnim == anim->type ) {
+        anim->nextFrame = anim->firstFrame;
+      }
+      else {
+        setAnim( anim, anim->nextAnim );
+      }
     }
   }
 }
