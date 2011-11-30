@@ -38,10 +38,12 @@ namespace oz
 namespace matrix
 {
 
-const float Vehicle::AIR_FRICTION   = 0.02f;
-const float Vehicle::EXIT_EPSILON   = 0.20f;
-const float Vehicle::EXIT_MOMENTUM  = 1.00f;
-const float Vehicle::EJECT_MOMENTUM = 15.0f;
+const float Vehicle::ROT_DIFF_LIMIT      = 0.50f;
+const float Vehicle::ROT_VEL_DIFF_RATIO  = 0.10f;
+const float Vehicle::AIR_FRICTION        = 0.02f;
+const float Vehicle::EXIT_EPSILON        = 0.20f;
+const float Vehicle::EXIT_MOMENTUM       = 1.00f;
+const float Vehicle::EJECT_MOMENTUM      = 15.0f;
 
 Pool<Vehicle, 256> Vehicle::pool;
 
@@ -257,8 +259,48 @@ void Vehicle::onUpdate()
   if( pilot != -1 ) {
     bot = static_cast<Bot*>( orbis.objects[pilot] );
 
-    h = bot->h;
-    v = bot->v;
+    float diffH = bot->h - h;
+    float diffV = bot->v - v;
+
+    if( diffH < -Math::TAU / 2.0f ) {
+      diffH += Math::TAU;
+    }
+    else if( diffH > Math::TAU / 2.0f ) {
+      diffH -= Math::TAU;
+    }
+
+    if( diffV < -Math::TAU / 2.0f ) {
+      diffV += Math::TAU;
+    }
+    else if( diffV > Math::TAU / 2.0f ) {
+      diffV -= Math::TAU;
+    }
+
+    float diffL = Math::sqrt( diffH*diffH + diffV*diffV );
+    if( diffL > ROT_DIFF_LIMIT ) {
+      float k = ROT_DIFF_LIMIT / diffL;
+
+      diffH *= k;
+      diffV *= k;
+    }
+
+    rotVelH = Math::mix( rotVelH, diffH, ROT_VEL_DIFF_RATIO );
+    rotVelV = Math::mix( rotVelV, diffV, ROT_VEL_DIFF_RATIO );
+
+    float rotVelL = Math::sqrt( rotVelH*rotVelH + rotVelV*rotVelV );
+    if( diffL > clazz->rotVelLimit ) {
+      float k = clazz->rotVelLimit / rotVelL;
+
+      rotVelH *= k;
+      rotVelV *= k;
+    }
+
+    h = Math::fmod( h + rotVelH + 2.0f*Math::TAU, Math::TAU );
+    v = clamp( v + rotVelV, 0.0f, Math::TAU / 2.0f );
+
+    bot->h = h;
+    bot->v = v;
+
     rot = Quat::rotZXZ( h, v - Math::TAU / 4.0f, 0.0f );
     actions = bot->actions;
     flags &= ~DISABLED_BIT;
@@ -359,6 +401,8 @@ Vehicle::Vehicle( const VehicleClass* clazz_, int index_, const Point3& p_, Head
 {
   h          = 0.0f;
   v          = Math::TAU / 4.0f;
+  rotVelH    = 0.0f;
+  rotVelV    = 0.0f;
   actions    = 0;
   oldActions = 0;
 
@@ -381,6 +425,8 @@ Vehicle::Vehicle( const VehicleClass* clazz_, InputStream* istream ) :
 {
   h          = istream->readFloat();
   v          = istream->readFloat();
+  rotVelH    = istream->readFloat();
+  rotVelV    = istream->readFloat();
   actions    = istream->readInt();
   oldActions = istream->readInt();
 
@@ -404,6 +450,8 @@ void Vehicle::write( BufferStream* ostream ) const
 
   ostream->writeFloat( h );
   ostream->writeFloat( v );
+  ostream->writeFloat( rotVelH );
+  ostream->writeFloat( rotVelV );
   ostream->writeInt( actions );
   ostream->writeInt( oldActions );
 

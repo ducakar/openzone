@@ -63,6 +63,8 @@ class Vehicle : public Dynamic
     static const int   HAS_EJECT_BIT     = 0x0004;
     static const int   AUTO_EJECT_BIT    = 0x0008;
 
+    static const float ROT_DIFF_LIMIT;
+    static const float ROT_VEL_DIFF_RATIO;
     static const float AIR_FRICTION;
     static const float EXIT_EPSILON;
     static const float EXIT_MOMENTUM;
@@ -73,6 +75,7 @@ class Vehicle : public Dynamic
     static Pool<Vehicle, 256> pool;
 
     float h, v;
+    float rotVelH, rotVelV;
     int   actions, oldActions;
 
     Quat  rot;

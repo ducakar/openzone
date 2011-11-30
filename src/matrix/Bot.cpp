@@ -133,8 +133,8 @@ void Bot::onUpdate()
     return;
   }
 
-  h = Math::fmod( h + Math::TAU, Math::TAU );
-  v = clamp( v, 0.0f, Math::TAU / 2.0f );
+  hard_assert( 0.0f <= h && h < Math::TAU );
+  hard_assert( 0.0f <= v && v <= Math::TAU / 2.0f );
 
   life    = min( life + clazz->regeneration, clazz->life );
   stamina = min( stamina + clazz->staminaGain, clazz->stamina );

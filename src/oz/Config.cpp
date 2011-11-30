@@ -400,7 +400,7 @@ void Config::clear( bool issueWarnings )
   if( issueWarnings ) {
     foreach( var, vars.citer() ) {
       if( !var.value().isUsed ) {
-        System::bell( true );
+        System::bell();
         log.println( "%s: unused variable '%s'", filePath.cstr(), var.key().cstr() );
       }
     }

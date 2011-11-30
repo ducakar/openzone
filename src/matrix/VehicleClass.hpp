@@ -40,11 +40,13 @@ class VehicleClass : public DynamicClass
 
   public:
 
-    int    type;
     int    state;
+    int    type;
 
     Vec3   pilotPos;
     Quat   pilotRot;
+
+    float  rotVelLimit;
 
     float  moveMomentum;
 
