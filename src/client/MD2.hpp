@@ -42,6 +42,7 @@ class MD2
 
     enum Anim
     {
+      ANIM_NONE = -1,
       ANIM_STAND,
       ANIM_RUN,
       ANIM_ATTACK,
@@ -51,8 +52,8 @@ class MD2
       ANIM_JUMP,
       ANIM_FLIP,
       ANIM_SALUTE,
-      ANIM_FALLBACK,
       ANIM_WAVE,
+      ANIM_FALLBACK,
       ANIM_POINT,
       ANIM_CROUCH_STAND,
       ANIM_CROUCH_WALK,
@@ -61,22 +62,21 @@ class MD2
       ANIM_CROUCH_DEATH,
       ANIM_DEATH_FALLBACK,
       ANIM_DEATH_FALLFORWARD,
-      ANIM_DEATH_FALLBACKSLOW,
-      ANIM_MAX
+      ANIM_DEATH_FALLBACKSLOW
     };
 
     struct AnimInfo
     {
       int   firstFrame;
       int   lastFrame;
-      bool  repeat;
       float fps;
+      Anim  nextAnim;
     };
 
     struct AnimState
     {
       Anim  type;
-      bool  repeat;
+      Anim  nextAnim;
 
       int   firstFrame;
       int   lastFrame;
@@ -120,6 +120,7 @@ class MD2
 
     void load();
 
+    static void setAnim( AnimState* anim, Anim type );
     void advance( AnimState* anim, float dt ) const;
 
     void drawFrame( int frame ) const;

@@ -95,10 +95,6 @@ void Weapon::trigger( Bot* user )
 
   const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
 
-  if( clazz->onShot.isEmpty() ) {
-    return;
-  }
-
   if( shotTime == 0.0f ) {
     shotTime = clazz->shotInterval;
 

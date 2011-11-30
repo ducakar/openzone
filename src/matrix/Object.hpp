@@ -208,25 +208,15 @@ class Object : public AABB
 
     struct Event
     {
+      static Pool<Event, 256> pool;
+
       int    id;
       float  intensity;
       Event* next[1];
 
-      static Pool<Event, 256> pool;
-
-      // exactly events with negative IDs are ignored by BasicAudio, so if ID is nonnegative we
-      // don't want to use this ctor as we need to set the intensity
-      OZ_ALWAYS_INLINE
-      explicit Event( int id_ ) : id( id_ )
-      {
-        hard_assert( id < 0 );
-      }
-
       OZ_ALWAYS_INLINE
       explicit Event( int id_, float intensity_ ) : id( id_ ), intensity( intensity_ )
-      {
-        hard_assert( id < 0 || intensity >= 0.0f );
-      }
+      {}
 
       OZ_STATIC_POOL_ALLOC( pool )
     };
@@ -281,20 +271,10 @@ class Object : public AABB
     /**
      * Add an event to the object. Events can be used for reporting collisions, sounds etc.
      * @param id
-     */
-    OZ_ALWAYS_INLINE
-    void addEvent( int id )
-    {
-      events.add( new Event( id ) );
-    }
-
-    /**
-     * Add an event to the object. Events can be used for reporting collisions, sounds etc.
-     * @param id
      * @param intensity
      */
     OZ_ALWAYS_INLINE
-    void addEvent( int id, float intensity )
+    void addEvent( int id, float intensity = 1.0f )
     {
       events.add( new Event( id, intensity ) );
     }
