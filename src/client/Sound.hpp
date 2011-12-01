@@ -51,23 +51,44 @@ class Sound
     static const int DEFAULT_FREQUENCY = 44100;
     static const int MUSIC_BUFFER_SIZE = 64 * 1024;
 
+#ifdef OZ_NONFREE
+    static const int MAD_INPUT_BUFFER_SIZE  = 16 * 1024;
+#endif
+
+    enum StreamType {
+      OGG,
+      MP3
+    };
+
     ALCdevice*     soundDevice;
     ALCcontext*    soundContext;
 
     Bitset         playedStructs;
     float          volume;
 
-    OggVorbis_File oggStream;
-    vorbis_info*   vorbisInfo;
+    StreamType     musicStreamType;
 
-#ifdef OZ_NONFREE
-#endif
-
+    int            musicRate;
+    int            musicChannels;
     int            musicFormat;
     uint           musicBuffers[2];
     uint           musicSource;
 
     char           musicBuffer[MUSIC_BUFFER_SIZE];
+
+    OggVorbis_File oggStream;
+
+#ifdef OZ_NONFREE
+    FILE*          mp3File;
+
+    mad_stream     madStream;
+    mad_frame      madFrame;
+    mad_synth      madSynth;
+
+    int            madWrittenSamples;
+    int            madFrameSamples;
+    ubyte          madInputBuffer[MAD_INPUT_BUFFER_SIZE + MAD_BUFFER_GUARD];
+#endif
 
     // music track id to switch to, -1 to do nothing, -2 stop playing
     int            selectedTrack;
@@ -75,10 +96,16 @@ class Sound
     int            currentTrack;
 
     void playCell( int cellX, int cellY );
-    bool loadMusicBuffer( uint buffer );
 
 #ifdef OZ_NONFREE
+    static short madFixedToShort( mad_fixed_t f );
 #endif
+
+    void streamOpen( const char* path );
+    void streamClear();
+    int  streamDecode();
+
+    bool loadMusicBuffer( uint buffer );
 
   public:
 

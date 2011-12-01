@@ -187,9 +187,9 @@ set( libs_tools "${libs};${SDLIMAGE_LIBRARY}" )
 
 # compiler and linker flags
 set( flags "-pipe -std=c++0x -pedantic-errors -ffast-math" )
-set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wattributes" )
+set( warnings "-Wall -Wextra -Winvalid-pch -Wdisabled-optimization -Wattributes" )
 set( warnings "${warnings} -Wconversion -Wsign-conversion -Wsign-promo -Wcast-align" )
-set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor -Wdisabled-optimization" )
+set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor" )
 set( arch_flags "-msse3" )
 
 if( OZ_CLANG )

@@ -156,7 +156,7 @@ int Client::main( int argc, char** argv )
 
         if( errno != 0 ) {
           printUsage();
-          return -1;
+          return EXIT_FAILURE;
         }
 
         config.add( "seed", "42" );
@@ -170,7 +170,7 @@ int Client::main( int argc, char** argv )
       default: {
         log.println();
         printUsage();
-        return -1;
+        return EXIT_FAILURE;
       }
     }
   }
@@ -191,8 +191,7 @@ int Client::main( int argc, char** argv )
     printf( "No resource directory found, creating '%s' ...", rcDir.cstr() );
 
     if( !File::mkdir( rcDir.cstr(), 0700 ) ) {
-      printf( " Failed\n" );
-      return -1;
+      throw Exception( "Resource directory creation failed" );
     }
     printf( " OK\n" );
   }
@@ -205,8 +204,7 @@ int Client::main( int argc, char** argv )
     String logPath = rcDir + "/" OZ_CLIENT_LOG_FILE;
 
     if( !log.init( logPath, true, "  " ) ) {
-      printf( "Can't create/open log file '%s' for writing\n", logPath.cstr() );
-      return -1;
+      throw Exception( "Can't create/open log file '%s' for writing\n", logPath.cstr() );
     }
 
     printf( "Log file '%s'\n", logPath.cstr() );
@@ -223,8 +221,7 @@ int Client::main( int argc, char** argv )
 
   log.print( "Initialising SDL ..." );
   if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO ) != 0 ) {
-    log.printEnd( " Failed" );
-    return -1;
+    throw Exception( "Failed to initialise SDL" );
   }
   log.printEnd( " OK" );
   initFlags |= INIT_SDL;
@@ -313,8 +310,7 @@ int Client::main( int argc, char** argv )
 
   log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
   if( !File::chdir( dataDir ) ) {
-    log.printEnd( " Failed" );
-    return -1;
+    throw Exception( "Failed to change working directory to '%s'", dataDir.cstr() );
   }
   log.printEnd( " OK" );
 
@@ -525,7 +521,7 @@ int Client::main( int argc, char** argv )
 
   stage->unload();
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 }

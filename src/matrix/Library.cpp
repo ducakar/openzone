@@ -519,16 +519,28 @@ void Library::initBuildModels()
 
 void Library::initMusic()
 {
+#ifdef OZ_NONFREE
+  log.println( "music (*.oga, *.ogg, *.mp3 in 'music') {" );
+#else
   log.println( "music (*.oga, *.ogg in 'music') {" );
+#endif
   log.indent();
 
   File dir( "music" );
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
+#ifdef OZ_NONFREE
+    if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) &&
+        !file->hasExtension( "mp3" ) )
+    {
+      continue;
+    }
+#else
     if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) ) {
       continue;
     }
+#endif
 
     String name = file->baseName();
 

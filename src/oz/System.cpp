@@ -41,8 +41,6 @@
 # include <pulse/simple.h>
 #endif
 
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-
 namespace oz
 {
 

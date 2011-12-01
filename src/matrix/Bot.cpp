@@ -677,23 +677,25 @@ void Bot::onUpdate()
       }
     }
     else if( actions & ~oldActions & ACTION_GRAB ) {
-      Bot* dyn = static_cast<Bot*>( orbis.objects[instrument] );
-
-      if( ( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) || cargo != -1 || weapon != -1 ) {
+      if( instrument == -1 || weapon != -1 || ( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) ) {
         cargo = -1;
       }
-      else if( dyn != null && ( dyn->flags & DYNAMIC_BIT ) && dyn->mass <= clazz->grabMass &&
-          ( !( dyn->flags & BOT_BIT ) || dyn->cargo == -1 ) )
-      {
-        float dimX = dim.x + dyn->dim.x;
-        float dimY = dim.y + dyn->dim.y;
-        float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
+      else {
+        Bot* dyn = static_cast<Bot*>( orbis.objects[instrument] );
 
-        if( dist <= clazz->reachDist ) {
-          cargo = instrument;
-          grabHandle = dist;
+        if( dyn != null && ( dyn->flags & DYNAMIC_BIT ) && dyn->mass <= clazz->grabMass &&
+            ( !( dyn->flags & BOT_BIT ) || dyn->cargo == -1 ) )
+        {
+          float dimX = dim.x + dyn->dim.x;
+          float dimY = dim.y + dyn->dim.y;
+          float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
 
-          dyn->flags &= ~BELOW_BIT;
+          if( dist <= clazz->reachDist ) {
+            cargo = instrument;
+            grabHandle = dist;
+
+            dyn->flags &= ~BELOW_BIT;
+          }
         }
       }
     }
