@@ -35,8 +35,6 @@
 # include <sys/mman.h>
 #endif
 
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-
 namespace oz
 {
 
@@ -50,18 +48,11 @@ bool File::write( const char* buffer, int count ) const
     return false;
   }
 
-  DWORD remaining = DWORD( count );
   DWORD written;
-  BOOL  result;
-  do {
-    result = WriteFile( file, buffer + count - remaining, remaining, &written, null );
-    remaining -= written;
-  }
-  while( result != 0 && remaining != 0 );
-
+  BOOL result = WriteFile( file, buffer, DWORD( count ), &written, null );
   CloseHandle( file );
 
-  return result != 0;
+  return result != 0 && int( written ) == count;
 
 #else
 
@@ -70,17 +61,10 @@ bool File::write( const char* buffer, int count ) const
     return false;
   }
 
-  size_t    remaining = size_t( count );
-  ptrdiff_t result;
-  do {
-    result = ::write( fd, buffer + count - remaining, remaining );
-    remaining -= size_t( result );
-  }
-  while( result >= 0 && remaining != 0 );
-
+  int result = int( ::write( fd, buffer, size_t( count ) ) );
   close( fd );
 
-  return result >= 0;
+  return result == count;
 
 #endif
 }
@@ -282,21 +266,14 @@ Buffer File::read() const
     return buffer;
   }
 
-  size_t fileSize = size_t( GetFileSize( file, null ) );
-  buffer.alloc( int( fileSize ) );
+  int fileSize = int( GetFileSize( file, null ) );
+  buffer.alloc( fileSize );
 
-  DWORD remaining = DWORD( fileSize );
   DWORD read;
-  BOOL  result;
-  do {
-    result = ReadFile( file, buffer.begin() + fileSize - remaining, remaining, &read, null );
-    remaining -= read;
-  }
-  while( result != 0 && remaining != 0 );
-
+  BOOL result = ReadFile( file, buffer.begin(), DWORD( fileSize ), &read, null );
   CloseHandle( file );
 
-  if( result == 0 ) {
+  if( result == 0 || int( read ) != fileSize ) {
     buffer.dealloc();
   }
 
@@ -313,20 +290,13 @@ Buffer File::read() const
     return buffer;
   }
 
-  size_t fileSize = size_t( fileStat.st_size );
-  buffer.alloc( int( fileSize ) );
+  int fileSize = int( fileStat.st_size );
+  buffer.alloc( fileSize );
 
-  size_t    remaining = size_t( fileSize );
-  ptrdiff_t result;
-  do {
-    result = ::read( fd, buffer.begin() + fileSize - remaining, remaining );
-    remaining -= size_t( result );
-  }
-  while( result >= 0 && remaining != 0 );
-
+  int result = int( ::read( fd, buffer.begin(), size_t( fileSize ) ) );
   close( fd );
 
-  if( result < 0 ) {
+  if( result != fileSize ) {
     buffer.dealloc();
   }
 

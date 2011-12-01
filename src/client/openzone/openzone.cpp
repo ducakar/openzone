@@ -40,7 +40,7 @@ int main( int argc, char** argv )
 
   oz::Alloc::isLocked = false;
 
-  int exitCode = 0;
+  int exitCode = EXIT_FAILURE;
 
   printf( "OpenZone  Copyright (C) 2002-2011  Davorin Učakar\n"
       "This program comes with ABSOLUTELY NO WARRANTY.\n"

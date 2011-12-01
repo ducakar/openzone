@@ -237,6 +237,7 @@ void BotProxy::update()
         bot->actions |= Bot::ACTION_VEH_NEXT_WEAPON;
       }
       else if( camera.tagged != -1 ) {
+        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
         bot->actions |= Bot::ACTION_USE;
         bot->instrument = camera.tagged;
         bot->container = -1;
@@ -251,6 +252,7 @@ void BotProxy::update()
           container->show( true );
         }
         else {
+          bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
           bot->actions |= Bot::ACTION_TAKE;
           bot->instrument = camera.tagged;
           bot->container = -1;
@@ -259,11 +261,21 @@ void BotProxy::update()
     }
     else if( ui::mouse.wheelUp ) {
       if( bot->cargo != -1 ) {
+        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
         bot->actions |= Bot::ACTION_THROW;
+        bot->instrument = -1;
+        bot->container = -1;
       }
     }
     else if( ui::mouse.middleClick ) {
-      if( camera.tagged != -1 || bot->cargo != -1 ) {
+      if( bot->cargo != -1 ) {
+        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
+        bot->actions |= Bot::ACTION_GRAB;
+        bot->instrument = -1;
+        bot->container = -1;
+      }
+      else if( camera.tagged != -1 ) {
+        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
         bot->actions |= Bot::ACTION_GRAB;
         bot->instrument = camera.tagged;
         bot->container = -1;
@@ -271,7 +283,10 @@ void BotProxy::update()
     }
     else if( keys[SDLK_q] && !oldKeys[SDLK_q] ) {
       if( bot->cargo != -1 ) {
+        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
         bot->actions |= Bot::ACTION_ROTATE;
+        bot->instrument = -1;
+        bot->container = -1;
       }
     }
   }

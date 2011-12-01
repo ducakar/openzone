@@ -50,7 +50,7 @@ int main( int argc, char** argv )
   }
   else {
     log.println( "Usage: ozFormat <prefix_dir>" );
-    return 0;
+    return EXIT_FAILURE;
   }
 
   String prefixDir = config.get( "dir.prefix", OZ_INSTALL_PREFIX );
@@ -58,7 +58,7 @@ int main( int argc, char** argv )
 
   log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
   if( !File::chdir( dataDir ) ) {
-    return -1;
+    return EXIT_FAILURE;
   }
   log.printEnd( " OK" );
 
@@ -78,7 +78,7 @@ int main( int argc, char** argv )
     classFormatter.format( file->baseName() );
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 }
@@ -92,7 +92,7 @@ int main( int argc, char** argv )
 
   oz::Alloc::isLocked = false;
 
-  int exitCode = 0;
+  int exitCode = EXIT_FAILURE;
 
   printf( "OpenZone  Copyright (C) 2002-2011  Davorin Učakar\n"
       "This program comes with ABSOLUTELY NO WARRANTY.\n"
@@ -114,7 +114,8 @@ int main( int argc, char** argv )
       fprintf( stderr, "  at %s:%d\n\n", e.file, e.line );
     }
 
-    exitCode = -1;
+    oz::System::resetSignals();
+    abort();
   }
   catch( const std::exception& e ) {
     oz::log.resetIndent();
@@ -127,7 +128,8 @@ int main( int argc, char** argv )
       fprintf( stderr, "\nEXCEPTION: %s\n\n", e.what() );
     }
 
-    exitCode = -1;
+    oz::System::resetSignals();
+    abort();
   }
 
   oz::shutdown();

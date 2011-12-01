@@ -496,7 +496,7 @@ int main( int argc, char** argv )
       default: {
         log.println();
         printUsage();
-        return -1;
+        return EXIT_FAILURE;
       }
     }
   }
@@ -506,7 +506,7 @@ int main( int argc, char** argv )
   }
   else {
     printUsage();
-    return -1;
+    return EXIT_FAILURE;
   }
 
   log.print( OZ_APPLICATION_TITLE " Build started on " );
@@ -533,7 +533,7 @@ int main( int argc, char** argv )
   log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
   if( !File::chdir( dataDir ) ) {
     log.printEnd( " Failed" );
-    return -1;
+    return EXIT_FAILURE;
   }
   log.printEnd( " OK" );
 
@@ -598,7 +598,7 @@ int main( int argc, char** argv )
 
   log.println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 }
@@ -613,7 +613,7 @@ int main( int argc, char** argv )
 
   oz::Alloc::isLocked = false;
 
-  int exitCode = 0;
+  int exitCode = EXIT_FAILURE;
 
   printf( "OpenZone  Copyright (C) 2002-2011  Davorin Učakar\n"
       "This program comes with ABSOLUTELY NO WARRANTY.\n"

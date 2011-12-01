@@ -63,24 +63,238 @@ void Sound::playCell( int cellX, int cellY )
   }
 }
 
-bool Sound::loadMusicBuffer( uint buffer )
+#ifdef OZ_NONFREE
+inline short Sound::madFixedToShort( mad_fixed_t f )
 {
-  int bytesRead = 0;
-  int result;
-  int section;
+  if( f >= MAD_F_ONE ) {
+    return +short( ( 1 << 15 ) - 1 );
+  }
+  if( f <= -MAD_F_ONE ) {
+    return -short( ( 1 << 15 ) - 1 );
+  }
+  return short( f >> ( MAD_F_FRACBITS - 15 ) );
+}
+#endif
 
-  do {
-    result = int( ov_read( &oggStream, &musicBuffer[bytesRead], MUSIC_BUFFER_SIZE - bytesRead,
-                           false, 2, true, &section ) );
-    bytesRead += result;
-    if( result <= 0 ) {
-      return false;
+void Sound::streamOpen( const char* path )
+{
+  log.print( "Opening music '%s' ...", path );
+
+  const char* ext = File( path ).extension();
+
+  if( String::equals( ext, "oga" ) || String::equals( ext, "ogg" ) ) {
+    musicStreamType = OGG;
+  }
+  else if( String::equals( ext, "mp3" ) ) {
+    musicStreamType = MP3;
+  }
+  else {
+    throw Exception( "Unknown extension for file '%s'", path );
+  }
+
+  switch( musicStreamType ) {
+    case OGG: {
+      if( ov_fopen( path, &oggStream ) < 0 ) {
+        throw Exception( "Failed to open Ogg stream" );
+      }
+
+      vorbis_info* vorbisInfo = ov_info( &oggStream, -1 );
+
+      if( vorbisInfo == null ) {
+        ov_clear( &oggStream );
+        throw Exception( "Failed to read Vorbis header" );
+      }
+
+      musicRate = int( vorbisInfo->rate );
+      musicChannels = vorbisInfo->channels;
+
+      if( vorbisInfo->channels == 1 ) {
+        musicFormat = AL_FORMAT_MONO16;
+      }
+      else if( vorbisInfo->channels == 2 ) {
+        musicFormat = AL_FORMAT_STEREO16;
+      }
+      else {
+        ov_clear( &oggStream );
+        throw Exception( "Invalid number of channels, should be 1 or 2" );
+      }
+
+      log.printRaw( " Ogg Vorbis %d Hz %d ch %d kb/s ...", musicRate, musicChannels,
+                    int( float( vorbisInfo->bitrate_nominal ) / 1000.0f + 0.5f ) );
+
+      break;
+    }
+    case MP3: {
+#ifdef OZ_NONFREE
+      mad_stream_init( &madStream );
+      mad_frame_init( &madFrame );
+      mad_synth_init( &madSynth );
+
+      mp3File = fopen( path, "rb" );
+      if( mp3File == null ) {
+        throw Exception( "Failed to open MP3 stream" );
+      }
+
+      size_t readSize = fread( madInputBuffer, 1, MAD_INPUT_BUFFER_SIZE, mp3File );
+      if( readSize != size_t( MAD_INPUT_BUFFER_SIZE ) ) {
+        throw Exception( "Failed to read MP3 stream" );
+      }
+
+      mad_stream_buffer( &madStream, madInputBuffer, MAD_INPUT_BUFFER_SIZE );
+
+      while( mad_frame_decode( &madFrame, &madStream ) != 0 ) {
+        if( !MAD_RECOVERABLE( madStream.error ) ) {
+          throw Exception( "Failed to decode MP3 header" );
+        }
+      }
+
+      mad_synth_frame( &madSynth, &madFrame );
+
+      madFrameSamples   = madSynth.pcm.length;
+      madWrittenSamples = 0;
+
+      musicRate = int( madFrame.header.samplerate );
+      musicChannels = MAD_NCHANNELS( &madFrame.header );
+
+      if( musicChannels == 1 ) {
+        musicFormat = AL_FORMAT_MONO16;
+      }
+      else if( musicChannels == 2 ) {
+        musicFormat = AL_FORMAT_STEREO16;
+      }
+      else {
+        fclose( mp3File );
+
+        mad_synth_finish( &madSynth );
+        mad_frame_finish( &madFrame );
+        mad_stream_finish( &madStream );
+
+        throw Exception( "Invalid number of channels, should be 1 or 2" );
+      }
+
+      log.printRaw( " MP3 %d Hz %d ch %d kb/s ...", musicRate, musicChannels,
+                    int( float( madFrame.header.bitrate ) / 1000.0f + 0.5f ) );
+#else
+      log.printRaw( " no MP3 support ..." );
+#endif
+      break;
     }
   }
-  while( result > 0 && bytesRead < MUSIC_BUFFER_SIZE );
 
-  alBufferData( buffer, musicFormat, musicBuffer, bytesRead, ALsizei( vorbisInfo->rate ) );
+  log.printEnd( " OK" );
+}
 
+void Sound::streamClear()
+{
+  switch( musicStreamType ) {
+    case OGG: {
+      ov_clear( &oggStream );
+      break;
+    }
+    case MP3: {
+#ifdef OZ_NONFREE
+      mad_synth_finish( &madSynth );
+      mad_frame_finish( &madFrame );
+      mad_stream_finish( &madStream );
+#endif
+      break;
+    }
+  }
+}
+
+int Sound::streamDecode()
+{
+  switch( musicStreamType ) {
+    case OGG: {
+      int bytesRead = 0;
+      int result;
+      int section;
+
+      do {
+        result = int( ov_read( &oggStream, &musicBuffer[bytesRead], MUSIC_BUFFER_SIZE - bytesRead,
+                               false, 2, true, &section ) );
+        bytesRead += result;
+        if( result <= 0 ) {
+          return 0;
+        }
+      }
+      while( result > 0 && bytesRead < MUSIC_BUFFER_SIZE );
+
+      return bytesRead;
+    }
+    case MP3: {
+#ifdef OZ_NONFREE
+      short*       output    = reinterpret_cast<short*>( musicBuffer );
+      const short* outputEnd = reinterpret_cast<const short*>( musicBuffer + MUSIC_BUFFER_SIZE );
+
+      do {
+        for( ; madWrittenSamples < madFrameSamples; ++madWrittenSamples ) {
+          hard_assert( output <= outputEnd );
+
+          if( output == outputEnd ) {
+            return MUSIC_BUFFER_SIZE;
+          }
+
+          *output = madFixedToShort( madSynth.pcm.samples[0][madWrittenSamples] );
+          ++output;
+
+          if( musicChannels == 2 ) {
+            *output = madFixedToShort( madSynth.pcm.samples[1][madWrittenSamples] );
+            ++output;
+          }
+        }
+
+        while( mad_frame_decode( &madFrame, &madStream ) != 0 ) {
+          if( madStream.error == MAD_ERROR_BUFLEN ) {
+            size_t bytesLeft;
+
+            if( madStream.next_frame == null ) {
+              bytesLeft = 0;
+            }
+            else {
+              bytesLeft = size_t( madStream.bufend - madStream.next_frame );
+
+              memmove( madInputBuffer, madStream.next_frame, bytesLeft );
+            }
+
+            size_t bytesRead = fread( madInputBuffer + bytesLeft, 1,
+                                      MAD_INPUT_BUFFER_SIZE - bytesLeft, mp3File );
+
+            if( bytesRead == 0 ) {
+              return int( reinterpret_cast<char*>( output ) - musicBuffer );
+            }
+            else if( bytesRead < MAD_INPUT_BUFFER_SIZE - bytesLeft ) {
+              memset( madInputBuffer + bytesLeft + bytesRead, 0, MAD_BUFFER_GUARD );
+            }
+
+            mad_stream_buffer( &madStream, madInputBuffer, bytesLeft + bytesRead );
+          }
+          else if( !MAD_RECOVERABLE( madStream.error ) ) {
+            throw Exception( "Unrecoverable error during MP3 decoding" );
+          }
+        }
+
+        mad_synth_frame( &madSynth, &madFrame );
+
+        madFrameSamples   = madSynth.pcm.length;
+        madWrittenSamples = 0;
+      }
+      while( true );
+#else
+      return 0;
+#endif
+    }
+  }
+}
+
+bool Sound::loadMusicBuffer( uint buffer )
+{
+  int length = streamDecode();
+  if( length == 0 ) {
+    return false;
+  }
+
+  alBufferData( buffer, musicFormat, musicBuffer, length, musicRate );
   return true;
 }
 
@@ -164,7 +378,7 @@ void Sound::update()
     uint buffer[2];
     alSourceUnqueueBuffers( musicSource, nQueued, buffer );
 
-    ov_clear( &oggStream );
+    streamClear();
 
     OZ_AL_CHECK_ERROR();
 
@@ -176,41 +390,23 @@ void Sound::update()
     else {
       const char* path = library.musics[selectedTrack].path;
 
-      log.print( "Loading music '%s' ...", path );
+      streamOpen( path );
 
-      if( ov_fopen( path, &oggStream ) < 0 ) {
-        throw Exception( "Failed to open Ogg stream" );
-      }
+      if( loadMusicBuffer( musicBuffers[0] ) && loadMusicBuffer( musicBuffers[1] ) ) {
+        alSourceQueueBuffers( musicSource, 2, &musicBuffers[0] );
+        alSourcePlay( musicSource );
 
-      vorbisInfo = ov_info( &oggStream, -1 );
-      if( vorbisInfo == null ) {
-        ov_clear( &oggStream );
-        throw Exception( "Failed to read Vorbis header" );
-      }
-
-      if( vorbisInfo->channels == 1 ) {
-        musicFormat = AL_FORMAT_MONO16;
-      }
-      else if( vorbisInfo->channels == 2 ) {
-        musicFormat = AL_FORMAT_STEREO16;
+        currentTrack = selectedTrack;
       }
       else {
-        ov_clear( &oggStream );
-        throw Exception( "Invalid number of channels, should be 1 or 2" );
+        streamClear();
+
+        currentTrack = -1;
       }
 
-      loadMusicBuffer( musicBuffers[0] );
-      loadMusicBuffer( musicBuffers[1] );
-
-      alSourceQueueBuffers( musicSource, 2, &musicBuffers[0] );
-      alSourcePlay( musicSource );
-
-      currentTrack  = selectedTrack;
       selectedTrack = -1;
 
       OZ_AL_CHECK_ERROR();
-
-      log.printEnd( " OK" );
     }
   }
   else if( currentTrack != -1 ) {
@@ -238,8 +434,7 @@ void Sound::update()
       }
       else {
         currentTrack = -1;
-
-        ov_clear( &oggStream );
+        streamClear();
       }
     }
   }
