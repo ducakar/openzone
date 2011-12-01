@@ -45,8 +45,8 @@ void GalileoModule::build()
 {
   Config terraConfig;
 
-  for( int i = 0; i < library.terras.length(); ++i ) {
-    const String& name = library.terras[i].name;
+  for( int i = 0; i < library.terrae.length(); ++i ) {
+    const String& name = library.terrae[i].name;
 
     terraConfig.load( "terra/" + name + ".rc" );
 

@@ -80,12 +80,12 @@ void Sound::streamOpen( const char* path )
 {
   log.print( "Opening music '%s' ...", path );
 
-  const char* ext = File( path ).extension();
+  File file( path );
 
-  if( String::equals( ext, "oga" ) || String::equals( ext, "ogg" ) ) {
+  if( file.hasExtension( "oga" ) || file.hasExtension( "ogg" ) ) {
     musicStreamType = OGG;
   }
-  else if( String::equals( ext, "mp3" ) ) {
+  else if( file.hasExtension( "mp3" ) ) {
     musicStreamType = MP3;
   }
   else {
@@ -477,46 +477,48 @@ void Sound::init()
 
   OZ_AL_CHECK_ERROR();
 
-  log.println( "OpenAL device: %s", alcGetString( soundDevice, ALC_DEVICE_SPECIFIER ) );
+  log.println( "OpenAL context device: %s", alcGetString( soundDevice, ALC_DEVICE_SPECIFIER ) );
 
-  int nAttributes;
-  alcGetIntegerv( soundDevice, ALC_ATTRIBUTES_SIZE, 1, &nAttributes );
+  if( log.isVerbose ) {
+    int nAttributes;
+    alcGetIntegerv( soundDevice, ALC_ATTRIBUTES_SIZE, 1, &nAttributes );
 
-  int* attributes = new int[nAttributes];
-  alcGetIntegerv( soundDevice, ALC_ALL_ATTRIBUTES, nAttributes, attributes );
+    int* attributes = new int[nAttributes];
+    alcGetIntegerv( soundDevice, ALC_ALL_ATTRIBUTES, nAttributes, attributes );
 
-  log.println( "OpenAL attributes {" );
-  log.indent();
+    log.println( "OpenAL context attributes {" );
+    log.indent();
 
-  for( int i = 0; i < nAttributes; i += 2 ) {
-    switch( attributes[i] ) {
-      case ALC_FREQUENCY: {
-        log.println( "ALC_FREQUENCY: %d Hz", attributes[i + 1] );
-        break;
-      }
-      case ALC_REFRESH: {
-        log.println( "ALC_REFRESH: %d Hz", attributes[i + 1] );
-        break;
-      }
-      case ALC_SYNC: {
-        log.println( "ALC_SYNC: %s", attributes[i + 1] != 0 ? "on" : "off" );
-        break;
-      }
-      case ALC_MONO_SOURCES: {
-        log.println( "ALC_MONO_SOURCES: %d", attributes[i + 1] );
-        break;
-      }
-      case ALC_STEREO_SOURCES: {
-        log.println( "ALC_STEREO_SOURCES: %d", attributes[i + 1] );
-        break;
+    for( int i = 0; i < nAttributes; i += 2 ) {
+      switch( attributes[i] ) {
+        case ALC_FREQUENCY: {
+          log.println( "ALC_FREQUENCY: %d Hz", attributes[i + 1] );
+          break;
+        }
+        case ALC_REFRESH: {
+          log.println( "ALC_REFRESH: %d Hz", attributes[i + 1] );
+          break;
+        }
+        case ALC_SYNC: {
+          log.println( "ALC_SYNC: %s", attributes[i + 1] != 0 ? "on" : "off" );
+          break;
+        }
+        case ALC_MONO_SOURCES: {
+          log.println( "ALC_MONO_SOURCES: %d", attributes[i + 1] );
+          break;
+        }
+        case ALC_STEREO_SOURCES: {
+          log.println( "ALC_STEREO_SOURCES: %d", attributes[i + 1] );
+          break;
+        }
       }
     }
+
+    delete[] attributes;
+
+    log.unindent();
+    log.println( "}" );
   }
-
-  delete[] attributes;
-
-  log.unindent();
-  log.println( "}" );
 
   log.println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );
   log.println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );

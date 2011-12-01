@@ -108,7 +108,7 @@ class File
     const char* name() const;
 
     /**
-     * Extension (everything after the last dot in name.
+     * Extension (part of base name after the last dot) or <tt>null</tt> if no dot in base name.
      */
     const char* extension() const;
 

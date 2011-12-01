@@ -82,7 +82,7 @@ galileoEnabled:;
   isVisible = true;
 
   if( mapTexId == 0 ) {
-    mapTexId = loadTexture( "ui/galileo/" + library.terras[orbis.terra.id].name + ".ozcTex" );
+    mapTexId = loadTexture( "ui/galileo/" + library.terrae[orbis.terra.id].name + ".ozcTex" );
   }
 
   float pX;

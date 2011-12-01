@@ -13,7 +13,7 @@ LCtrl               - down/decrease height
 LShift              - toggle fast move
 Tab                 - toggle interface mode
 Numpad Enter        - switch between FreeCam and Strategic camera
-i                   - incarnate into the selected bot (also works when the bot is inside a vehicle)
+Numpat .            - incarnate into the selected bot (also works when the bot is inside a vehicle)
 
 Bot controls
 ------------
@@ -131,29 +131,28 @@ Build dependencies
 
 Command line
 ------------
-openzone [--help] [(--load | -l) | (--init | -i) <function>]
-         [(--time | -t) <num>] [(--prefix | -p) <prefix>]
+openzone [-v] [-l | -i <function>] [-t <num>] [-p <prefix>]
 
---help
-      Prints that help message.
+-v
+      More verbose log output.
 
--l, --load
+-l
       Skip main menu and load autosaved state.
       Autosaved game state resides in ~/.config/openzone/autosave.ozState.
 
--i <mission>, --init <mission>
+-i <mission>
       Skip main menu and start mission <mission>.
       Missions reside in <prefix>/share/openzone/lua/mission in files named
       <mission>.lua files.
 
--t <num>, --time <num>
+-t <num>
       Exits after <num> seconds (can be a floating-point number).
       For benchmarking purposes.
 
--p <prefix>, --prefix <prefix>
+-p <prefix>
       Sets data directory to <prefix>/share/openzone and locale directory to
       <prefix>/share/locale.
-      Default: '/usr/local'.
+      Default: '/usr'.
 
 Settings
 --------

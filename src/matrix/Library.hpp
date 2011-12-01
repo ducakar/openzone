@@ -76,7 +76,7 @@ class Library
     Vector<Resource> textures;
     Vector<Resource> sounds;
     Vector<Resource> caela;
-    Vector<Resource> terras;
+    Vector<Resource> terrae;
     Vector<Resource> models;
     Vector<Resource> nameLists;
     Vector<Resource> musics;
@@ -118,6 +118,7 @@ class Library
     void initBuildBSPs();
     void initModels();
     void initBuildModels();
+    void initMusicRecurse( const char* path );
     void initMusic();
     void initNameLists();
     void initFragPools();

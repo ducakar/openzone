@@ -93,7 +93,9 @@ void Client::shutdown()
   }
 
   if( initFlags & INIT_MAIN_LOOP ) {
-    Alloc::printStatistics();
+    if( log.isVerbose ) {
+      Alloc::printStatistics();
+    }
 
     log.print( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " finished on " );
     log.printTime();
@@ -105,7 +107,10 @@ void Client::printUsage()
 {
   log.println( "Usage:" );
   log.indent();
-  log.println( "openzone [-l | -i <function>] [-t <num>] [-p <prefix>]" );
+  log.println( "openzone [-v] [-l | -i <function>] [-t <num>] [-p <prefix>]" );
+  log.println();
+  log.println( "-v" );
+  log.println( "\tMore verbose log output." );
   log.println();
   log.println( "-l" );
   log.println( "\tSkip main menu and load autosaved state." );
@@ -139,8 +144,12 @@ int Client::main( int argc, char** argv )
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "li:t:p:" ) ) != -1 ) {
+  while( ( opt = getopt( argc, argv, "vli:t:p:" ) ) != -1 ) {
     switch( opt ) {
+      case 'v': {
+        log.isVerbose = true;
+        break;
+      }
       case 'l': {
         doAutoload = true;
         break;
