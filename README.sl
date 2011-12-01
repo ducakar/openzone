@@ -13,7 +13,7 @@ LCtrl               - dol / zmanjšaj višino
 LShift              - preklopi hitro premikanje
 Tab                 - preklopi način vmesnika
 Numpad Enter        - preklopi med kamero FreeCam in Strategic
-i                   - inkarniraj se v izbranega bota (deluje tudi ko je bot v vozilu)
+Numpad .            - inkarniraj se v izbranega bota (deluje tudi ko je bot v vozilu)
 
 Nadzor bota
 -----------
@@ -132,27 +132,27 @@ Odvisnosti za gradnjo
 
 Ukazna vrstica
 --------------
-openzone [--help] [(--load | -l) | (--init | -i) <function>]
-         [(--time | -t) <št>] [(--prefix | -p) <predpona>]
+openzone [-v] [-l | -i <function>] [-t <št>] [-p <predpona>]
 
---help
-      Prikaže to sporočilo s pomočjo.
+-v
+      Zgovornejši dnevnik.
 
--l, --load
+-l
       Preskoči glavni meni in naloži samodejno shranjeno stanje.
       Samodejno shranjeno stanje se nahaja v ~/.config/openzone/autosave.ozState.
 
--i <misija>, --init <misija>
+-i <misija>
       Preskoči glavni meni in poženi misijo <misija>.
       Misije se nahajajo v <predpona>/share/openzone/lua/mission in v datotekah
       poimenovanih <misija>.lua.
 
--t <št>, --time <št>
+-t <št>
       Končaj po <št> sekundah (lahko je decimalno število). Za potrebe benchmarka.
 
--p <predpona>, --prefix <predpona>
+-p <predpona>
       Nastavi podatkovni imenik na <predpona>/share/openzone in imenik lokalizacije na
       <predpona>/share/locale.
+      Privzeto: '/usr'.
 
 Settings
 --------

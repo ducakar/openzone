@@ -167,7 +167,7 @@ void Terra::load()
 {
   id = orbis.terra.id;
 
-  const String& name = library.terras[id].name;
+  const String& name = library.terrae[id].name;
   String path = "terra/" + name + ".ozcTerra";
 
   log.print( "Loading terra '%s' ...", name.cstr() );

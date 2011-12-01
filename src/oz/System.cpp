@@ -81,7 +81,7 @@ static const char* const SIGNALS[][2] =
 };
 
 #ifndef OZ_MINGW
-static const short BELL_SAMPLE[] = {
+static const ubyte BELL_SAMPLE[] = {
 # include "bellSample.inc"
 };
 #endif
@@ -108,7 +108,7 @@ static void signalHandler( int signum )
 static void* bellThread( void* )
 {
   pa_simple* pa;
-  pa_sample_spec format = { PA_SAMPLE_S16NE, 44100, 1 };
+  pa_sample_spec format = { PA_SAMPLE_U8, 11025, 1 };
 
   pa = pa_simple_new( null, "liboz", PA_STREAM_PLAYBACK, null, "bell", &format, null, null, null );
   pa_simple_write( pa, BELL_SAMPLE, sizeof( BELL_SAMPLE ), null );

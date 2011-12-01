@@ -136,7 +136,7 @@ void BotProxy::update()
     }
   }
 
-  if( camera.allowReincarnation && keys[SDLK_i] && !oldKeys[SDLK_i] ) {
+  if( camera.allowReincarnation && keys[SDLK_KP_PERIOD] && !oldKeys[SDLK_KP_PERIOD] ) {
     bot->actions = 0;
     camera.setBot( null );
     return;

@@ -22,7 +22,7 @@
 /**
  * @file tools/ozSineSample.cpp
  *
- * Generate S16LE sine sample, used for <tt>src/oz/bellSample.inc</tt>.
+ * Generate sine wave sample, used for <tt>src/oz/bellSample.inc</tt>.
  */
 
 #include <stable.hpp>
@@ -32,22 +32,24 @@
 
 #include <SDL/SDL_main.h>
 
-static const int   RATE      = 44100;
-static const int   SAMPLES   = 11025;
+static const int   RATE      = 11025;
+static const int   SAMPLES   = 4410;
 static const int   COLS      = 12;
-static const float AMPLITUDE = 16384.0f;
 static const float FREQUENCY = 800.0f;
 
 using namespace oz;
 
 int main( int, char** )
 {
-  short samples[SAMPLES];
+  printf( "// Sine wave sound sample at %g Hz, half volume, %g s\n",
+          FREQUENCY, float( SAMPLES ) / float( RATE ) );
+  printf( "// format: U8 mono %d Hz\n\n", RATE );
 
   for( int i = 0; i < SAMPLES; ++i ) {
-    samples[i] = short( AMPLITUDE * Math::sin( float( i ) / RATE * FREQUENCY * Math::TAU ) + 0.5f );
+    float value = Math::sin( float( i ) / RATE * FREQUENCY * Math::TAU );
+    ubyte sample = ubyte( 128.0f + 64.0f * value + 0.5f );
 
-    printf( "%6d", samples[i] );
+    printf( "%3d", sample );
 
     if( i != SAMPLES - 1 ) {
       printf( "," );

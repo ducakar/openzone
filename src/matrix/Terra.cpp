@@ -47,8 +47,8 @@ void Terra::load( int id_ )
 {
   id = id_;
 
-  const String& name = library.terras[id].name;
-  const String& path = library.terras[id].path;
+  const String& name = library.terrae[id].name;
+  const String& path = library.terrae[id].path;
 
   log.print( "Loading terrain '%s' ...", name.cstr() );
 
@@ -100,7 +100,7 @@ void Terra::read( InputStream* istream )
 
 void Terra::write( BufferStream* ostream ) const
 {
-  ostream->writeString( library.terras[id].name );
+  ostream->writeString( library.terrae[id].name );
 }
 
 }

@@ -87,6 +87,9 @@ static void printUsage()
   log.println( "<prefix>" );
   log.println( "\tSets data directory to <prefix>/share/openzone." );
   log.println();
+  log.println( "-v" );
+  log.println( "\tMore verbose log output." );
+  log.println();
   log.println( "-u" );
   log.println( "\tBuild UI." );
   log.println();
@@ -449,8 +452,12 @@ int main( int argc, char** argv )
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "utcbmdlCA" ) ) != -1 ) {
+  while( ( opt = getopt( argc, argv, "vutcbmdlCA" ) ) != -1 ) {
     switch( opt ) {
+      case 'v': {
+        log.isVerbose = true;
+        break;
+      }
       case 'u': {
         doUI = true;
         break;

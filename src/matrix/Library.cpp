@@ -177,8 +177,10 @@ void Library::freeBSPs()
 
 void Library::initShaders()
 {
-  log.println( "shaders (*.vert/*.frag in 'glsl') {" );
-  log.indent();
+  if( log.isVerbose ) {
+    log.println( "Shaders (*.vert/*.frag in 'glsl') {" );
+    log.indent();
+  }
 
   File dir( "glsl" );
   DArray<File> dirList = dir.ls();
@@ -190,20 +192,29 @@ void Library::initShaders()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
+    if( log.isVerbose ) {
+      log.println( "%s", name.cstr() );
+    }
 
     shaderIndices.add( name, shaders.length() );
     shaders.add( Resource( name, "" ) );
   }
 
-  log.unindent();
-  log.println( "}" );
+  if( log.isVerbose ) {
+    log.unindent();
+    log.println( "}" );
+  }
+  else {
+    log.println( "%5d  shaders", shaders.length() );
+  }
 }
 
 void Library::initTextures()
 {
-  log.println( "textures (*.ozcTex in 'bsp/*') {" );
-  log.indent();
+  if( log.isVerbose ) {
+    log.println( "Textures (*.ozcTex in 'bsp/*') {" );
+    log.indent();
+  }
 
   File dir( "bsp" );
   DArray<File> dirList = dir.ls();
@@ -223,21 +234,30 @@ void Library::initTextures()
 
       String name = subDir.name() + String( "/" ) + file->baseName();
 
-      log.println( "%s", name.cstr() );
+      if( log.isVerbose ) {
+        log.println( "%s", name.cstr() );
+      }
 
       textureIndices.add( name, textures.length() );
       textures.add( Resource( name, file->path() ) );
     }
   }
 
-  log.unindent();
-  log.println( "}" );
+  if( log.isVerbose ) {
+    log.unindent();
+    log.println( "}" );
+  }
+  else {
+    log.println( "%5d  textures", textures.length() );
+  }
 }
 
 void Library::initBuildTextures()
 {
-  log.println( "textures (*.png, *.jpeg, *.jpg in 'data/textures/*') {" );
-  log.indent();
+  if( log.isVerbose ) {
+    log.println( "Textures (*.png, *.jpeg, *.jpg in 'data/textures/*') {" );
+    log.indent();
+  }
 
   File dir( "data/textures" );
   DArray<File> dirList = dir.ls();
@@ -259,7 +279,9 @@ void Library::initBuildTextures()
 
       String name = subDir.name() + String( "/" ) + file->baseName();
 
-      log.println( "%s", name.cstr() );
+      if( log.isVerbose ) {
+        log.println( "%s", name.cstr() );
+      }
 
       if( textureIndices.contains( name ) ) {
         throw Exception( "Duplicated texture '%s'", name.cstr() );
@@ -270,14 +292,21 @@ void Library::initBuildTextures()
     }
   }
 
-  log.unindent();
-  log.println( "}" );
+  if( log.isVerbose ) {
+    log.unindent();
+    log.println( "}" );
+  }
+  else {
+    log.println( "%5d  textures", textures.length() );
+  }
 }
 
 void Library::initSounds()
 {
-  log.println( "sounds (*.wav in 'snd') {" );
-  log.indent();
+  if( log.isVerbose ) {
+    log.println( "Sounds (*.wav in 'snd') {" );
+    log.indent();
+  }
 
   File dir( "snd" );
   DArray<File> dirList = dir.ls();
@@ -297,21 +326,30 @@ void Library::initSounds()
 
       String name = subDir.name() + String( "/" ) + file->baseName();
 
-      log.println( "%s", name.cstr() );
+      if( log.isVerbose ) {
+        log.println( "%s", name.cstr() );
+      }
 
       soundIndices.add( name, sounds.length() );
       sounds.add( Resource( name, file->path() ) );
     }
   }
 
-  log.unindent();
-  log.println( "}" );
+  if( log.isVerbose ) {
+    log.unindent();
+    log.println( "}" );
+  }
+  else {
+    log.println( "%5d  sounds", sounds.length() );
+  }
 }
 
 void Library::initCaela()
 {
-  log.println( "Caela (*.ozcCaelum in 'caelum') {" );
-  log.indent();
+  if( log.isVerbose ) {
+    log.println( "Caela (*.ozcCaelum in 'caelum') {" );
+    log.indent();
+  }
 
   File dir( "caelum" );
   DArray<File> dirList = dir.ls();
@@ -323,20 +361,29 @@ void Library::initCaela()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
+    if( log.isVerbose ) {
+      log.println( "%s", name.cstr() );
+    }
 
     caelumIndices.add( name, caela.length() );
     caela.add( Resource( name, file->path() ) );
   }
 
-  log.unindent();
-  log.println( "}" );
+  if( log.isVerbose ) {
+    log.unindent();
+    log.println( "}" );
+  }
+  else {
+    log.println( "%5d  caela", caela.length() );
+  }
 }
 
 void Library::initBuildCaela()
 {
-  log.println( "Caela (*.rc in 'caelum') {" );
-  log.indent();
+  if( log.isVerbose ) {
+    log.println( "Caela (*.rc in 'caelum') {" );
+    log.indent();
+  }
 
   File dir( "caelum" );
   DArray<File> dirList = dir.ls();
@@ -348,20 +395,29 @@ void Library::initBuildCaela()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
+    if( log.isVerbose ) {
+      log.println( "%s", name.cstr() );
+    }
 
     caelumIndices.add( name, caela.length() );
     caela.add( Resource( name, file->path() ) );
   }
 
-  log.unindent();
-  log.println( "}" );
+  if( log.isVerbose ) {
+    log.unindent();
+    log.println( "}" );
+  }
+  else {
+    log.println( "%5d  caela", caela.length() );
+  }
 }
 
 void Library::initTerrae()
 {
-  log.println( "Terrae (*.ozTerra/*.ozcTerra in 'terra') {" );
-  log.indent();
+  if( log.isVerbose ) {
+    log.println( "Terrae (*.ozTerra/*.ozcTerra in 'terra') {" );
+    log.indent();
+  }
 
   File dir( "terra" );
   DArray<File> dirList = dir.ls();
@@ -373,20 +429,29 @@ void Library::initTerrae()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
+    if( log.isVerbose ) {
+      log.println( "%s", name.cstr() );
+    }
 
-    terraIndices.add( name, terras.length() );
-    terras.add( Resource( name, file->path() ) );
+    terraIndices.add( name, terrae.length() );
+    terrae.add( Resource( name, file->path() ) );
   }
 
-  log.unindent();
-  log.println( "}" );
+  if( log.isVerbose ) {
+    log.unindent();
+    log.println( "}" );
+  }
+  else {
+    log.println( "%5d  terras", terrae.length() );
+  }
 }
 
 void Library::initBuildTerrae()
 {
-  log.println( "Terrains (*.rc in 'terra') {" );
-  log.indent();
+  if( log.isVerbose ) {
+    log.println( "Terrae (*.rc in 'terra') {" );
+    log.indent();
+  }
 
   File dir( "terra" );
   DArray<File> dirList = dir.ls();
@@ -398,20 +463,29 @@ void Library::initBuildTerrae()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
+    if( log.isVerbose ) {
+      log.println( "%s", name.cstr() );
+    }
 
-    terraIndices.add( name, terras.length() );
-    terras.add( Resource( name, file->path() ) );
+    terraIndices.add( name, terrae.length() );
+    terrae.add( Resource( name, file->path() ) );
   }
 
-  log.unindent();
-  log.println( "}" );
+  if( log.isVerbose ) {
+    log.unindent();
+    log.println( "}" );
+  }
+  else {
+    log.println( "%5d  terras", terrae.length() );
+  }
 }
 
 void Library::initBSPs()
 {
-  log.println( "BSP structures (*.ozBSP/*.ozcBSP in 'bsp') {" );
-  log.indent();
+  if( log.isVerbose ) {
+    log.println( "BSP structures (*.ozBSP/*.ozcBSP in 'bsp') {" );
+    log.indent();
+  }
 
   File dir( "bsp" );
   DArray<File> dirList = dir.ls();
@@ -423,7 +497,9 @@ void Library::initBSPs()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
+    if( log.isVerbose ) {
+      log.println( "%s", name.cstr() );
+    }
 
     BSP* bsp = bsps.add( name, BSP( name, bsps.length() ) );
     bsp->init();
@@ -431,14 +507,21 @@ void Library::initBSPs()
 
   nBSPs = bsps.length();
 
-  log.unindent();
-  log.println( "}" );
+  if( log.isVerbose ) {
+    log.unindent();
+    log.println( "}" );
+  }
+  else {
+    log.println( "%5d  BSPs", nBSPs );
+  }
 }
 
 void Library::initBuildBSPs()
 {
-  log.println( "BSP structures (*.rc in 'data/maps') {" );
-  log.indent();
+  if( log.isVerbose ) {
+    log.println( "BSP structures (*.rc in 'data/maps') {" );
+    log.indent();
+  }
 
   File dir( "data/maps" );
   DArray<File> dirList = dir.ls();
@@ -450,21 +533,30 @@ void Library::initBuildBSPs()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
+    if( log.isVerbose ) {
+      log.println( "%s", name.cstr() );
+    }
 
     bsps.add( name, BSP( name, bsps.length() ) );
   }
 
   nBSPs = bsps.length();
 
-  log.unindent();
-  log.println( "}" );
+  if( log.isVerbose ) {
+    log.unindent();
+    log.println( "}" );
+  }
+  else {
+    log.println( "%5d  BSPs", nBSPs );
+  }
 }
 
 void Library::initModels()
 {
-  log.println( "models (*.ozcSMM, *.ozcMD2, *.ozcMD3 in 'mdl') {" );
-  log.indent();
+  if( log.isVerbose ) {
+    log.println( "Models (*.ozcSMM, *.ozcMD2, *.ozcMD3 in 'mdl') {" );
+    log.indent();
+  }
 
   File dir( "mdl" );
   DArray<File> dirList = dir.ls();
@@ -478,7 +570,9 @@ void Library::initModels()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
+    if( log.isVerbose ) {
+      log.println( "%s", name.cstr() );
+    }
 
     if( modelIndices.contains( name ) ) {
       throw Exception( "Duplicated model '%s'", name.cstr() );
@@ -488,14 +582,21 @@ void Library::initModels()
     models.add( Resource( name, file->path() ) );
   }
 
-  log.unindent();
-  log.println( "}" );
+  if( log.isVerbose ) {
+    log.unindent();
+    log.println( "}" );
+  }
+  else {
+    log.println( "%5d  models", models.length() );
+  }
 }
 
 void Library::initBuildModels()
 {
-  log.println( "models (directories in 'mdl') {" );
-  log.indent();
+  if( log.isVerbose ) {
+    log.println( "Models (directories in 'mdl') {" );
+    log.indent();
+  }
 
   File dir( "mdl" );
   DArray<File> dirList = dir.ls();
@@ -507,24 +608,74 @@ void Library::initBuildModels()
 
     String name = file->name();
 
-    log.println( "%s", name.cstr() );
+    if( log.isVerbose ) {
+      log.println( "%s", name.cstr() );
+    }
 
     modelIndices.add( name, models.length() );
     models.add( Resource( name, file->path() ) );
   }
 
-  log.unindent();
-  log.println( "}" );
+  if( log.isVerbose ) {
+    log.unindent();
+    log.println( "}" );
+  }
+  else {
+    log.println( "%5d  models", models.length() );
+  }
+}
+
+void Library::initMusicRecurse( const char* path )
+{
+  File dir( path );
+  DArray<File> dirList = dir.ls();
+
+  foreach( file, dirList.iter() ) {
+    if( file->getType() == File::DIRECTORY ) {
+      initMusicRecurse( file->path() );
+    }
+#ifdef OZ_NONFREE
+    if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) &&
+        !file->hasExtension( "mp3" ) )
+    {
+      continue;
+    }
+#else
+    if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) ) {
+      continue;
+    }
+#endif
+
+    if( log.isVerbose ) {
+      log.println( "%s", file->path() );
+    }
+
+    musics.add( Resource( file->baseName(), file->path() ) );
+  }
 }
 
 void Library::initMusic()
 {
+  const char* userMusicPath = config.getSet( "dir.music", "" );
+
+  if( log.isVerbose ) {
 #ifdef OZ_NONFREE
-  log.println( "music (*.oga, *.ogg, *.mp3 in 'music') {" );
+    if( String::isEmpty( userMusicPath ) ) {
+      log.println( "Music (*.oga, *.ogg, *.mp3 in 'music') {" );
+    }
+    else {
+      log.println( "Music (*.oga, *.ogg, *.mp3 in 'music' and '%s') {", userMusicPath );
+    }
 #else
-  log.println( "music (*.oga, *.ogg in 'music') {" );
+    if( String::isEmpty( userMusicPath ) ) {
+      log.println( "Music (*.oga, *.ogg in 'music') {" );
+    }
+    else {
+      log.println( "Music (*.oga, *.ogg in 'music' and '%s') {", userMusicPath );
+    }
 #endif
-  log.indent();
+    log.indent();
+  }
 
   File dir( "music" );
   DArray<File> dirList = dir.ls();
@@ -544,19 +695,32 @@ void Library::initMusic()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
+    if( log.isVerbose ) {
+      log.println( "%s", name.cstr() );
+    }
 
     musics.add( Resource( name, file->path() ) );
   }
 
-  log.unindent();
-  log.println( "}" );
+  if( !String::isEmpty( userMusicPath ) ) {
+    initMusicRecurse( userMusicPath );
+  }
+
+  if( log.isVerbose ) {
+    log.unindent();
+    log.println( "}" );
+  }
+  else {
+    log.println( "%5d  music tracks", musics.length() );
+  }
 }
 
 void Library::initNameLists()
 {
-  log.println( "name lists (*.txt in 'name') {" );
-  log.indent();
+  if( log.isVerbose ) {
+    log.println( "Name lists (*.txt in 'name') {" );
+    log.indent();
+  }
 
   File dir( "name" );
   DArray<File> dirList = dir.ls();
@@ -568,20 +732,29 @@ void Library::initNameLists()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
+    if( log.isVerbose ) {
+      log.println( "%s", name.cstr() );
+    }
 
     nameListIndices.add( name, nameLists.length() );
     nameLists.add( Resource( name, file->path() ) );
   }
 
-  log.unindent();
-  log.println( "}" );
+  if( log.isVerbose ) {
+    log.unindent();
+    log.println( "}" );
+  }
+  else {
+    log.println( "%5d  name lists", nameLists.length() );
+  }
 }
 
 void Library::initFragPools()
 {
-  log.println( "fragment pools (*.rc in 'frag') {" );
-  log.indent();
+  if( log.isVerbose ) {
+    log.println( "Fragment pools (*.rc in 'frag') {" );
+    log.indent();
+  }
 
   File dir( "frag" );
   DArray<File> dirList = dir.ls();
@@ -593,13 +766,20 @@ void Library::initFragPools()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
+    if( log.isVerbose ) {
+      log.println( "%s", name.cstr() );
+    }
 
     fragPools.add( name, FragPool( name, fragPools.length() ) );
   }
 
-  log.unindent();
-  log.println( "}" );
+  if( log.isVerbose ) {
+    log.unindent();
+    log.println( "}" );
+  }
+  else {
+    log.println( "%5d  fragment pools", fragPools.length() );
+  }
 }
 
 void Library::initClasses()
@@ -612,8 +792,10 @@ void Library::initClasses()
 
   Config classConfig;
 
-  log.println( "object classes (*.rc in 'class') {" );
-  log.indent();
+  if( log.isVerbose ) {
+    log.println( "Object classes (*.rc in 'class') {" );
+    log.indent();
+  }
 
   File dir( "class" );
   DArray<File> dirList = dir.ls();
@@ -671,7 +853,9 @@ void Library::initClasses()
 
   // initialise all classes
   foreach( classIter, objClasses.iter() ) {
-    log.println( "%s", classIter.key().cstr() );
+    if( log.isVerbose ) {
+      log.println( "%s", classIter.key().cstr() );
+    }
 
     String path = "class/" + classIter.key() + ".rc";
 
@@ -753,8 +937,13 @@ void Library::initClasses()
     }
   }
 
-  log.unindent();
-  log.println( "}" );
+  if( log.isVerbose ) {
+    log.unindent();
+    log.println( "}" );
+  }
+  else {
+    log.println( "%5d  object classes", objClasses.length() );
+  }
 }
 
 void Library::init()
@@ -763,7 +952,7 @@ void Library::init()
   textures.alloc( 256 );
   sounds.alloc( 256 );
   caela.alloc( 16 );
-  terras.alloc( 16 );
+  terrae.alloc( 16 );
   models.alloc( 256 );
   musics.alloc( 64 );
   nameLists.alloc( 16 );
@@ -793,7 +982,7 @@ void Library::buildInit()
   textures.alloc( 256 );
   sounds.alloc( 256 );
   caela.alloc( 16 );
-  terras.alloc( 16 );
+  terrae.alloc( 16 );
   models.alloc( 256 );
   musics.alloc( 64 );
   nameLists.alloc( 16 );
@@ -827,8 +1016,8 @@ void Library::free()
   sounds.dealloc();
   caela.clear();
   caela.dealloc();
-  terras.clear();
-  terras.dealloc();
+  terrae.clear();
+  terrae.dealloc();
   models.clear();
   models.dealloc();
   nameLists.clear();
