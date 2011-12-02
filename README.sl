@@ -13,7 +13,7 @@ LCtrl               - dol / zmanjšaj višino
 LShift              - preklopi hitro premikanje
 Tab                 - preklopi način vmesnika
 Numpad Enter        - preklopi med kamero FreeCam in Strategic
-Numpad .            - inkarniraj se v izbranega bota (deluje tudi ko je bot v vozilu)
+i                   - inkarniraj se v izbranega bota (deluje tudi ko je bot v vozilu)
 
 Nadzor bota
 -----------

@@ -216,7 +216,9 @@ class Object : public AABB
 
       OZ_ALWAYS_INLINE
       explicit Event( int id_, float intensity_ ) : id( id_ ), intensity( intensity_ )
-      {}
+      {
+        hard_assert( intensity >= 0.0f );
+      }
 
       OZ_STATIC_POOL_ALLOC( pool )
     };
@@ -321,8 +323,11 @@ class Object : public AABB
     void hit( const Hit* hit, float hitMomentum )
     {
       flags |= HIT_BIT;
-      addEvent( EVENT_HIT, hitMomentum * MOMENTUM_INTENSITY_COEF );
-      damage( hitMomentum * MOMENTUM_DAMAGE_COEF );
+
+      float hitMomentum2 = hitMomentum*hitMomentum;
+
+      addEvent( EVENT_HIT, hitMomentum2 * MOMENTUM_INTENSITY_COEF );
+      damage( hitMomentum2 * MOMENTUM_DAMAGE_COEF );
 
       if( flags & HIT_FUNC_BIT ) {
         onHit( hit, hitMomentum );

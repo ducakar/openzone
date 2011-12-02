@@ -56,7 +56,9 @@ class Dynamic : public Object
     OZ_ALWAYS_INLINE
     void splash( float hitMomentum )
     {
-      addEvent( EVENT_SPLASH, hitMomentum * MOMENTUM_INTENSITY_COEF );
+      float hitMomentum2 = hitMomentum*hitMomentum;
+
+      addEvent( EVENT_SPLASH, hitMomentum2 * MOMENTUM_INTENSITY_COEF );
       addEvent( EVENT_SPLASH, 1.0f );
     }
 

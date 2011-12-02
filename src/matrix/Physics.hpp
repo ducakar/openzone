@@ -58,7 +58,8 @@ class Physics
 
     static const float FRAG_HIT_VELOCITY2;
     static const float FRAG_DESTROY_VELOCITY2;
-    static const float FRAG_DAMAGE_COEF;
+    static const float FRAG_STR_DAMAGE_COEF;
+    static const float FRAG_OBJ_DAMAGE_COEF;
     static const float FRAG_FIXED_DAMAGE;
 
   private:

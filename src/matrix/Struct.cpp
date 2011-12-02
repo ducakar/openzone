@@ -56,8 +56,8 @@ const Mat44 Struct::ROTATIONS[] =
 
 const Vec3  Struct::DESTRUCT_FRAG_VELOCITY = Vec3( 0.0f, 0.0f, 2.0f );
 const float Struct::DEMOLISH_SPEED         = 8.0f * Timer::TICK_TIME;
-const float Struct::MOMENTUM_DAMAGE_COEF   = -10.0f;
-const float Struct::MAX_HIT_DAMAGE_MASS    = 2.0f;
+const float Struct::MOMENTUM_DAMAGE_COEF   = 0.01f;
+const float Struct::MAX_HIT_DAMAGE_MASS    = 100.0f;
 
 void ( Struct::Entity::* const Struct::Entity::HANDLERS[] )() = {
   &Struct::Entity::updateIgnoring,

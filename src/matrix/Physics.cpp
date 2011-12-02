@@ -45,7 +45,7 @@ const float Physics::WEIGHT_FACTOR          =  0.1f;
 const float Physics::G_ACCEL                = -9.81f;
 
 const float Physics::SLIDE_DAMAGE_THRESHOLD =  25.0f;
-const float Physics::SLIDE_DAMAGE_COEF      =  7.50f;
+const float Physics::SLIDE_DAMAGE_COEF      =  0.65f;
 const float Physics::STICK_VELOCITY         =  0.015f;
 const float Physics::SLICK_STICK_VELOCITY   =  0.001f;
 const float Physics::FLOAT_STICK_VELOCITY   =  0.0002f;
@@ -56,7 +56,8 @@ const float Physics::SLICK_FRICTION         =  0.02f;
 
 const float Physics::FRAG_HIT_VELOCITY2     =  100.0f;
 const float Physics::FRAG_DESTROY_VELOCITY2 =  300.0f;
-const float Physics::FRAG_DAMAGE_COEF       =  10.0f;
+const float Physics::FRAG_STR_DAMAGE_COEF   =  0.05f;
+const float Physics::FRAG_OBJ_DAMAGE_COEF   =  0.05f;
 const float Physics::FRAG_FIXED_DAMAGE      =  0.75f;
 
 //***********************************
@@ -78,22 +79,22 @@ void Physics::handleFragHit()
     }
 
     if( frag->mass != 0.0f ) {
-      if( collider.hit.obj != null ) {
-        Object* obj = collider.hit.obj;
-        float damage = FRAG_DAMAGE_COEF * Math::fastSqrt( velocity2 ) * frag->mass;
-
-        if( damage > obj->resistance ) {
-          damage *= FRAG_FIXED_DAMAGE + ( 1.0f - FRAG_FIXED_DAMAGE ) * Math::rand();
-          obj->damage( damage );
-        }
-      }
-      else if( collider.hit.str != null ) {
+      if( collider.hit.str != null ) {
         Struct* str = collider.hit.str;
-        float damage = FRAG_DAMAGE_COEF * Math::fastSqrt( velocity2 ) * frag->mass;
+        float damage = FRAG_STR_DAMAGE_COEF * velocity2 * frag->mass;
 
         if( damage > str->resistance ) {
           damage *= FRAG_FIXED_DAMAGE + ( 1.0f - FRAG_FIXED_DAMAGE ) * Math::rand();
           str->damage( damage );
+        }
+      }
+      else if( collider.hit.obj != null ) {
+        Object* obj = collider.hit.obj;
+        float damage = FRAG_OBJ_DAMAGE_COEF * velocity2 * frag->mass;
+
+        if( damage > obj->resistance ) {
+          damage *= FRAG_FIXED_DAMAGE + ( 1.0f - FRAG_FIXED_DAMAGE ) * Math::rand();
+          obj->damage( damage );
         }
       }
     }
@@ -180,7 +181,7 @@ bool Physics::handleObjFriction()
         dyn->flags |= Object::FRICTING_BIT;
 
         if( velocity2 > SLIDE_DAMAGE_THRESHOLD ) {
-          dyn->damage( SLIDE_DAMAGE_COEF * Math::fastSqrt( velocity2 ) );
+          dyn->damage( SLIDE_DAMAGE_COEF * velocity2 );
         }
       }
 
@@ -210,7 +211,7 @@ bool Physics::handleObjFriction()
       dyn->flags |= Object::FRICTING_BIT;
 
       if( deltaVel2 > SLIDE_DAMAGE_THRESHOLD ) {
-        dyn->damage( SLIDE_DAMAGE_COEF * Math::fastSqrt( deltaVel2 ) );
+        dyn->damage( SLIDE_DAMAGE_COEF * deltaVel2 );
       }
     }
     // in air or swimming
