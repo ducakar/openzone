@@ -227,8 +227,10 @@ inline void Struct::damage( float damage )
 OZ_ALWAYS_INLINE
 inline void Struct::hit( float mass, float hitMomentum )
 {
+  float hitMomentum2  = hitMomentum*hitMomentum;
   float effectiveMass = min( mass, MAX_HIT_DAMAGE_MASS );
-  damage( effectiveMass * hitMomentum * MOMENTUM_DAMAGE_COEF );
+
+  damage( effectiveMass * hitMomentum2 * MOMENTUM_DAMAGE_COEF );
 }
 
 OZ_ALWAYS_INLINE

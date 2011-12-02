@@ -105,7 +105,7 @@ void StrategicProxy::update()
     }
   }
 
-  if( camera.allowReincarnation && keys[SDLK_KP_PERIOD] && !oldKeys[SDLK_KP_PERIOD] ) {
+  if( camera.allowReincarnation && keys[SDLK_i] && !oldKeys[SDLK_i] ) {
     if( strategicArea->taggedObjs.length() == 1 ) {
       const Object* tagged = orbis.objects[ strategicArea->taggedObjs.first() ];
       const Bot*    me     = null;

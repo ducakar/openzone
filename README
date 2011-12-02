@@ -13,7 +13,7 @@ LCtrl               - down/decrease height
 LShift              - toggle fast move
 Tab                 - toggle interface mode
 Numpad Enter        - switch between FreeCam and Strategic camera
-Numpat .            - incarnate into the selected bot (also works when the bot is inside a vehicle)
+i                   - incarnate into the selected bot (also works when the bot is inside a vehicle)
 
 Bot controls
 ------------

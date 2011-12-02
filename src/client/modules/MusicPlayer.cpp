@@ -51,7 +51,7 @@ void MusicPlayer::prevTrack( Button* sender )
     sound.playMusic( musicPlayer->currentTrack );
 
     musicPlayer->title.setText( "%s", library.musics[musicPlayer->currentTrack].name.cstr() );
-    musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack );
+    musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack + 1 );
     musicPlayer->isPlaying = true;
   }
 }
@@ -68,7 +68,7 @@ void MusicPlayer::nextTrack( Button* sender )
     sound.playMusic( musicPlayer->currentTrack );
 
     musicPlayer->title.setText( "%s", library.musics[musicPlayer->currentTrack].name.cstr() );
-    musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack );
+    musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack + 1 );
     musicPlayer->isPlaying = true;
   }
 }
@@ -83,7 +83,7 @@ void MusicPlayer::playTrack( Button* sender )
     sound.playMusic( musicPlayer->currentTrack );
 
     musicPlayer->title.setText( "%s", library.musics[musicPlayer->currentTrack].name.cstr() );
-    musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack );
+    musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack + 1 );
     musicPlayer->isPlaying = true;
   }
 }
@@ -155,7 +155,7 @@ musicPlayerEnabled:;
       sound.playMusic( currentTrack );
 
       title.setText( "%s", library.musics[currentTrack].name.cstr() );
-      trackLabel.setText( "%d", currentTrack );
+      trackLabel.setText( "%d", currentTrack + 1 );
     }
   }
 }
@@ -195,6 +195,9 @@ MusicPlayer::MusicPlayer() :
   volume = int( config.get( "sound.volume.music", 0.50f ) * 10.0f + 0.5f );
   volume = clamp( volume, 0, 10 );
 
+  if( library.musics.length() > 0 ) {
+    trackLabel.setText( "1" );
+  }
   volumeLabel.setText( "%.1f", float( volume ) / 10.0f );
 
   add( new Button( "−", volumeDown, 20, 20 ), 4, 4 );
