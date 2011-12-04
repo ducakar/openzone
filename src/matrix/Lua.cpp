@@ -257,11 +257,23 @@ void Lua::init()
 
   l = luaL_newstate();
   if( l == null ) {
-    log.println( "Failed to create state" );
-    throw Exception( "Lua initialisation failed" );
+    throw Exception( "Failed to create Lua state" );
   }
 
-  luaL_openlibs( l );
+  hard_assert( gettop() == 0 );
+
+  lua_pushcfunction( l, luaopen_math );
+  lua_pushcfunction( l, luaopen_table );
+  lua_pushcfunction( l, luaopen_string );
+  lua_pushcfunction( l, luaopen_base );
+  lua_pcall( l, 0, 0, 0 );
+  lua_pcall( l, 0, 0, 0 );
+  lua_pcall( l, 0, 0, 0 );
+  lua_pcall( l, 0, 0, 0 );
+
+  if( gettop() != 0 ) {
+    throw Exception( "Failed to initialise Lua libraries" );
+  }
 
   /*
    * General functions

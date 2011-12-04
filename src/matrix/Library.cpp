@@ -634,17 +634,11 @@ void Library::initMusicRecurse( const char* path )
     if( file->getType() == File::DIRECTORY ) {
       initMusicRecurse( file->path() );
     }
-#ifdef OZ_NONFREE
     if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) &&
         !file->hasExtension( "mp3" ) )
     {
       continue;
     }
-#else
-    if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) ) {
-      continue;
-    }
-#endif
 
     if( log.isVerbose ) {
       log.println( "%s", file->path() );
@@ -659,21 +653,12 @@ void Library::initMusic()
   const char* userMusicPath = config.getSet( "dir.music", "" );
 
   if( log.isVerbose ) {
-#ifdef OZ_NONFREE
     if( String::isEmpty( userMusicPath ) ) {
       log.println( "Music (*.oga, *.ogg, *.mp3 in 'music') {" );
     }
     else {
       log.println( "Music (*.oga, *.ogg, *.mp3 in 'music' and '%s') {", userMusicPath );
     }
-#else
-    if( String::isEmpty( userMusicPath ) ) {
-      log.println( "Music (*.oga, *.ogg in 'music') {" );
-    }
-    else {
-      log.println( "Music (*.oga, *.ogg in 'music' and '%s') {", userMusicPath );
-    }
-#endif
     log.indent();
   }
 
@@ -681,17 +666,11 @@ void Library::initMusic()
   DArray<File> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
-#ifdef OZ_NONFREE
     if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) &&
         !file->hasExtension( "mp3" ) )
     {
       continue;
     }
-#else
-    if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) ) {
-      continue;
-    }
-#endif
 
     String name = file->baseName();
 

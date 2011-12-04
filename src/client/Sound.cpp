@@ -30,6 +30,17 @@
 #include "client/Camera.hpp"
 #include "client/OpenAL.hpp"
 
+#include <limits>
+
+#define OZ_DLDECL( name ) \
+  static decltype( ::name )* name = null
+
+#define OZ_DLLOAD( l, name ) \
+  *reinterpret_cast<void**>( &name ) = SDL_LoadFunction( l, #name ); \
+  if( name == null ) { \
+    throw Exception( "Failed loading " #name " from libmad" ); \
+  }
+
 namespace oz
 {
 namespace client
@@ -38,6 +49,15 @@ namespace client
 Sound sound;
 
 const float Sound::MAX_DISTANCE = 160.0f;
+
+OZ_DLDECL( mad_stream_init   );
+OZ_DLDECL( mad_stream_finish );
+OZ_DLDECL( mad_stream_buffer );
+OZ_DLDECL( mad_frame_init    );
+OZ_DLDECL( mad_frame_finish  );
+OZ_DLDECL( mad_frame_decode  );
+OZ_DLDECL( mad_synth_init    );
+OZ_DLDECL( mad_synth_frame   );
 
 void Sound::playCell( int cellX, int cellY )
 {
@@ -63,18 +83,18 @@ void Sound::playCell( int cellX, int cellY )
   }
 }
 
-#ifdef OZ_NONFREE
 inline short Sound::madFixedToShort( mad_fixed_t f )
 {
-  if( f >= MAD_F_ONE ) {
-    return +short( ( 1 << 15 ) - 1 );
+  if( f < -MAD_F_ONE ) {
+    return -std::numeric_limits<short>::max();
   }
-  if( f <= -MAD_F_ONE ) {
-    return -short( ( 1 << 15 ) - 1 );
+  else if( f > MAD_F_ONE ) {
+    return std::numeric_limits<short>::max();
   }
-  return short( f >> ( MAD_F_FRACBITS - 15 ) );
+  else {
+    return short( f >> ( MAD_F_FRACBITS - 15 ) );
+  }
 }
-#endif
 
 void Sound::streamOpen( const char* path )
 {
@@ -86,13 +106,23 @@ void Sound::streamOpen( const char* path )
     musicStreamType = OGG;
   }
   else if( file.hasExtension( "mp3" ) ) {
-    musicStreamType = MP3;
+    if( enableMP3 ) {
+      musicStreamType = MP3;
+    }
+    else {
+      musicStreamType = NONE;
+
+      log.printEnd( " No MP3 support" );
+    }
   }
   else {
     throw Exception( "Unknown extension for file '%s'", path );
   }
 
   switch( musicStreamType ) {
+    case NONE: {
+      break;
+    }
     case OGG: {
       if( ov_fopen( path, &oggStream ) < 0 ) {
         throw Exception( "Failed to open Ogg stream" );
@@ -119,13 +149,11 @@ void Sound::streamOpen( const char* path )
         throw Exception( "Invalid number of channels, should be 1 or 2" );
       }
 
-      log.printRaw( " Ogg Vorbis %d Hz %d ch %d kb/s ...", musicRate, musicChannels,
+      log.printEnd( " Ogg Vorbis %d Hz %d ch %d kb/s ... OK", musicRate, musicChannels,
                     int( float( vorbisInfo->bitrate_nominal ) / 1000.0f + 0.5f ) );
-
       break;
     }
     case MP3: {
-#ifdef OZ_NONFREE
       mad_stream_init( &madStream );
       mad_frame_init( &madFrame );
       mad_synth_init( &madSynth );
@@ -172,31 +200,27 @@ void Sound::streamOpen( const char* path )
         throw Exception( "Invalid number of channels, should be 1 or 2" );
       }
 
-      log.printRaw( " MP3 %d Hz %d ch %d kb/s ...", musicRate, musicChannels,
+      log.printEnd( " MP3 %d Hz %d ch %d kb/s ... OK", musicRate, musicChannels,
                     int( float( madFrame.header.bitrate ) / 1000.0f + 0.5f ) );
-#else
-      log.printRaw( " no MP3 support ..." );
-#endif
       break;
     }
   }
-
-  log.printEnd( " OK" );
 }
 
 void Sound::streamClear()
 {
   switch( musicStreamType ) {
+    case NONE: {
+      break;
+    }
     case OGG: {
       ov_clear( &oggStream );
       break;
     }
     case MP3: {
-#ifdef OZ_NONFREE
       mad_synth_finish( &madSynth );
       mad_frame_finish( &madFrame );
       mad_stream_finish( &madStream );
-#endif
       break;
     }
   }
@@ -205,6 +229,9 @@ void Sound::streamClear()
 int Sound::streamDecode()
 {
   switch( musicStreamType ) {
+    case NONE: {
+      return 0;
+    }
     case OGG: {
       int bytesRead = 0;
       int result;
@@ -223,7 +250,6 @@ int Sound::streamDecode()
       return bytesRead;
     }
     case MP3: {
-#ifdef OZ_NONFREE
       short*       output    = reinterpret_cast<short*>( musicBuffer );
       const short* outputEnd = reinterpret_cast<const short*>( musicBuffer + MUSIC_BUFFER_SIZE );
 
@@ -280,11 +306,9 @@ int Sound::streamDecode()
         madWrittenSamples = 0;
       }
       while( true );
-#else
-      return 0;
-#endif
     }
   }
+  return 0;
 }
 
 bool Sound::loadMusicBuffer( uint buffer )
@@ -550,6 +574,28 @@ void Sound::init()
   setVolume( config.getSet( "sound.volume", 1.0f ) );
   setMusicVolume( 0.5f );
 
+#ifdef _WIN32
+  libmad = SDL_LoadObject( "libmad.dll" );
+#else
+  libmad = SDL_LoadObject( "libmad.so" );
+#endif
+
+  if( libmad == null ) {
+    enableMP3 = false;
+  }
+  else {
+    enableMP3 = true;
+
+    OZ_DLLOAD( libmad, mad_stream_init   );
+    OZ_DLLOAD( libmad, mad_stream_finish );
+    OZ_DLLOAD( libmad, mad_stream_buffer );
+    OZ_DLLOAD( libmad, mad_frame_init    );
+    OZ_DLLOAD( libmad, mad_frame_finish  );
+    OZ_DLLOAD( libmad, mad_frame_decode  );
+    OZ_DLLOAD( libmad, mad_synth_init    );
+    OZ_DLLOAD( libmad, mad_synth_frame   );
+  }
+
   log.unindent();
   log.println( "}" );
 
@@ -559,6 +605,10 @@ void Sound::init()
 void Sound::free()
 {
   log.print( "Shutting down Sound ..." );
+
+  if( enableMP3 ) {
+    SDL_UnloadObject( libmad );
+  }
 
   if( soundContext != null ) {
     stopMusic();

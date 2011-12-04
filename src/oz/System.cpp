@@ -28,14 +28,15 @@
 #include "Log.hpp"
 #include "Math.hpp"
 
+#include <csignal>
 #include <cstdio>
 #include <cstdlib>
-#include <csignal>
 
 #ifdef _WIN32
 # include <windows.h>
 # include <mmsystem.h>
 #else
+# include <dlfcn.h>
 # include <unistd.h>
 # include <pthread.h>
 # include <pulse/simple.h>
@@ -84,6 +85,8 @@ static const char* const SIGNALS[][2] =
 static const ubyte BELL_SAMPLE[] = {
 # include "bellSample.inc"
 };
+
+static const pa_sample_spec BELL_SPEC = { PA_SAMPLE_U8, 11025, 1 };
 #endif
 
 static bool isHaltEnabled = false;
@@ -107,14 +110,31 @@ static void signalHandler( int signum )
 
 static void* bellThread( void* )
 {
-  pa_simple* pa;
-  pa_sample_spec format = { PA_SAMPLE_U8, 11025, 1 };
+  void* l = dlopen( "libpulse-simple.so", RTLD_NOW );
+  if( l == null ) {
+    return null;
+  }
 
-  pa = pa_simple_new( null, "liboz", PA_STREAM_PLAYBACK, null, "bell", &format, null, null, null );
+  decltype( ::pa_simple_new   )* pa_simple_new   = null;
+  decltype( ::pa_simple_free  )* pa_simple_free  = null;
+  decltype( ::pa_simple_write )* pa_simple_write = null;
+
+  *reinterpret_cast<void**>( &pa_simple_new   ) = dlsym( l, "pa_simple_new" );
+  *reinterpret_cast<void**>( &pa_simple_free  ) = dlsym( l, "pa_simple_free" );
+  *reinterpret_cast<void**>( &pa_simple_write ) = dlsym( l, "pa_simple_write" );
+
+  if( pa_simple_new == null || pa_simple_free == null || pa_simple_write == null ) {
+    return null;
+  }
+
+  pa_simple* pa = pa_simple_new( null, "liboz", PA_STREAM_PLAYBACK, null, "bell", &BELL_SPEC,
+                                 null, null, null );
   if( pa != null ) {
     pa_simple_write( pa, BELL_SAMPLE, sizeof( BELL_SAMPLE ), null );
     pa_simple_free( pa );
   }
+
+  dlclose( l );
   return null;
 }
 

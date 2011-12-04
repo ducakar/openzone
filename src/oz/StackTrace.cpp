@@ -28,8 +28,8 @@
 #ifndef _WIN32
 # include <cstdlib>
 # include <cstring>
-# include <execinfo.h>
 # include <cxxabi.h>
+# include <execinfo.h>
 #endif
 
 namespace oz

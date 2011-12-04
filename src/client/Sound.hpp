@@ -32,10 +32,7 @@
 
 #include <AL/alc.h>
 #include <vorbis/vorbisfile.h>
-
-#ifdef OZ_NONFREE
-# include <mad.h>
-#endif
+#include <mad.h>
 
 namespace oz
 {
@@ -50,12 +47,11 @@ class Sound
 
     static const int DEFAULT_FREQUENCY = 44100;
     static const int MUSIC_BUFFER_SIZE = 64 * 1024;
-
-#ifdef OZ_NONFREE
     static const int MAD_INPUT_BUFFER_SIZE  = 16 * 1024;
-#endif
 
-    enum StreamType {
+    enum StreamType
+    {
+      NONE,
       OGG,
       MP3
     };
@@ -78,7 +74,8 @@ class Sound
 
     OggVorbis_File oggStream;
 
-#ifdef OZ_NONFREE
+    void*          libmad;
+
     FILE*          mp3File;
 
     mad_stream     madStream;
@@ -88,18 +85,17 @@ class Sound
     int            madWrittenSamples;
     int            madFrameSamples;
     ubyte          madInputBuffer[MAD_INPUT_BUFFER_SIZE + MAD_BUFFER_GUARD];
-#endif
 
     // music track id to switch to, -1 to do nothing, -2 stop playing
     int            selectedTrack;
     // music track id, -1 for not playing
     int            currentTrack;
 
+    bool           enableMP3;
+
     void playCell( int cellX, int cellY );
 
-#ifdef OZ_NONFREE
     static short madFixedToShort( mad_fixed_t f );
-#endif
 
     void streamOpen( const char* path );
     void streamClear();

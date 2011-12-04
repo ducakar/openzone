@@ -102,32 +102,35 @@ Troubleshooting
 - For better performance you can enable MD2 animation to be performed in the vertex shader by
   setting shader.vertexTexture to "true" in client.rc file.
 
-Dependencies
-------------
+Run-time dependencies
+---------------------
+On Linux you have to install packages that provide following libraries.
+For Windows build, all dependencies are included.
+
 - pthreads (already included in glibc on Linux)
 - libintl (already included in glibc on Linux)
-- libpulse (for Linux-like systems)
+- libpulse (optional, for bell on warning/error messages on Linux)
+- Lua
 - SDL
 - SDL_image (for ozBuild tool)
 - SDL_ttf
 - OpenGL
 - OpenAL
 - libvorbis
-- libmad (if compiled with MP3 support)
-- Lua
+- libmad (optional, for MP3 support)
 
-On Linux you have to install packages that provide those libraries.
-For Windows build, all dependencies are included.
+Both libpulse and libmad are searched and loaded in runtime. If missing, features they provide won't
+work.
 
-Build dependencies
-------------------
+Build-time dependencies
+-----------------------
 - GNU/Linux or similar OS
 - gettext
 - cmake
 - GNU make
 - GNU binutils
 - GCC >= 4.6 or LLVM/Clang >= 3.0
-- development packages of libraries from previous section
+- development packages of all (including optional) libraries from previous section
 
 Command line
 ------------
