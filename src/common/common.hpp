@@ -34,7 +34,7 @@
 #include "common/AABB.hpp"
 #include "common/Timer.hpp"
 
-#include "libintl.h"
+#include <libintl.h>
 
 #define OZ_LUA_API( func ) static LuaAPI func
 

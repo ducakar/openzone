@@ -65,6 +65,12 @@ struct Foo
 
 int main( int, char** )
 {
-  Pair<Foo> p = { Foo(), Foo() };
+  System::catchSignals();
+  Alloc::isLocked = true;
+
+  HashString<int> hs;
+
+  hs.add( "aaa" );
+
   return 0;
 }

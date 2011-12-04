@@ -395,7 +395,6 @@ class HashIndex
     HashIndex& operator = ( const HashIndex& t )
     {
       if( &t == this ) {
-        soft_assert( &t != this );
         return *this;
       }
 
@@ -414,7 +413,6 @@ class HashIndex
     HashIndex& operator = ( HashIndex&& t )
     {
       if( &t == this ) {
-        soft_assert( &t != this );
         return *this;
       }
 

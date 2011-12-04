@@ -77,7 +77,7 @@ class Quat : public Vec4
     OZ_ALWAYS_INLINE
     Quat abs() const
     {
-      return Quat( Math::abs( x ), Math::abs( y ), Math::abs( z ), Math::abs( w ) );
+      return Quat( Math::fabs( x ), Math::fabs( y ), Math::fabs( z ), Math::fabs( w ) );
     }
 
     /**

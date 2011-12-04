@@ -53,7 +53,6 @@ Buffer::Buffer( Buffer&& b ) : data( b.data ), size( b.size )
 Buffer& Buffer::operator = ( const Buffer& b )
 {
   if( &b == this ) {
-    soft_assert( &b != this );
     return *this;
   }
 
@@ -69,7 +68,6 @@ Buffer& Buffer::operator = ( const Buffer& b )
 Buffer& Buffer::operator = ( Buffer&& b )
 {
   if( &b == this ) {
-    soft_assert( &b != this );
     return *this;
   }
 

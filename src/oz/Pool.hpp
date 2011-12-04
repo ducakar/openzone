@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "common.hpp"
+#include "Alloc.hpp"
 
 /**
  * @def OZ_STATIC_POOL_ALLOC( pool )
@@ -36,23 +36,12 @@
  * The derived classes also need to have overloaded <tt>new</tt>/<tt>delete</tt> defined the
  * same way otherwise the ones from the base class will be used, which will not end good.
  *
- * If <tt>OZ_POOL_ALLOC</tt> is not defined, global <tt>new</tt> and <tt>delete</tt> operators
- * are used.
- *
  * @ingroup oz
  */
-#ifdef OZ_POOL_ALLOC
-
 #define OZ_STATIC_POOL_ALLOC( pool ) \
   public:\
     void* operator new ( size_t ) { return pool.alloc(); } \
     void  operator delete ( void* ptr ) { if( ptr != null ) pool.dealloc( ptr ); }
-
-#else
-
-#define OZ_STATIC_POOL_ALLOC( pool )
-
-#endif
 
 /**
  * @def OZ_PLACEMENT_POOL_ALLOC( Type, SIZE )
@@ -174,7 +163,6 @@ class Pool
     Pool& operator = ( Pool&& p )
     {
       if( &p == this ) {
-        soft_assert( &p != this );
         return *this;
       }
 
@@ -197,9 +185,10 @@ class Pool
     /**
      * Allocate a new object.
      */
-    void* alloc()
+    void* alloc() throw( std::bad_alloc )
     {
-#ifdef OZ_POOL_ALLOC
+      hard_assert( !Alloc::isLocked );
+
       ++count;
 
       if( freeSlot == null ) {
@@ -213,31 +202,29 @@ class Pool
         freeSlot = slot->nextSlot;
         return slot;
       }
-#else
-      return new char[ sizeof( Type ) ];
-#endif
     }
 
     /**
      * Free the given object.
      */
-    void dealloc( void* ptr )
+    void dealloc( void* ptr ) throw()
     {
-#ifdef OZ_POOL_ALLOC
+      hard_assert( !Alloc::isLocked );
       hard_assert( count != 0 );
 
       Slot* slot = reinterpret_cast<Slot*>( ptr );
 
-# ifndef NDEBUG
-      __builtin_memset( slot, 0xee, sizeof( Slot ) );
-# endif
+#ifndef NDEBUG
+      char* slotBytes = reinterpret_cast<char*>( ptr );
+
+      for( size_t i = 0; i < sizeof( Slot ); ++i ) {
+        slotBytes[i] = char( 0xee );
+      }
+#endif
 
       slot->nextSlot = freeSlot;
       freeSlot = slot;
       --count;
-#else
-      delete[] reinterpret_cast<char*>( ptr );
-#endif
     }
 
     /**
@@ -275,7 +262,11 @@ class Pool
      */
     void free()
     {
-      // there's a memory leak if count != 0
+      if( firstBlock == null ) {
+        return;
+      }
+
+      hard_assert( !Alloc::isLocked );
       soft_assert( count == 0 );
 
       Block* block = firstBlock;

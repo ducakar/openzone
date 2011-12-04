@@ -184,7 +184,7 @@ int Client::main( int argc, char** argv )
     }
   }
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
   const char* homeVar = getenv( "APPDATA" );
 #else
   const char* homeVar = getenv( "HOME" );

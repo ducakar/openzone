@@ -144,7 +144,7 @@ class Plane
     OZ_ALWAYS_INLINE
     Plane abs() const
     {
-      return Plane( Math::abs( nx ), Math::abs( ny ), Math::abs( nz ), d );
+      return Plane( Math::fabs( nx ), Math::fabs( ny ), Math::fabs( nz ), d );
     }
 
     /**

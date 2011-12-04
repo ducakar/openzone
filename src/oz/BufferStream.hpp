@@ -101,7 +101,6 @@ class BufferStream
     BufferStream& operator = ( const BufferStream& s )
     {
       if( &s == this ) {
-        soft_assert( &s != this );
         return *this;
       }
 
@@ -127,7 +126,6 @@ class BufferStream
     BufferStream& operator = ( BufferStream&& s )
     {
       if( &s == this ) {
-        soft_assert( &s != this );
         return *this;
       }
 

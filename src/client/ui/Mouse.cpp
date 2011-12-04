@@ -61,7 +61,7 @@ void Mouse::prepare()
 
 void Mouse::update()
 {
-#ifndef OZ_MINGW
+#ifndef _WIN32
   if( isGrabOn ) {
     float move  = Math::sqrt( float( relX )*float( relX ) + float( relY )*float( relY ) );
     float accel = min( 1.0f + move * accelFactor, 2.0f );
@@ -157,7 +157,7 @@ void Mouse::init()
 {
   doShow      = false;
   isGrabOn    = config.get( "screen.full", true );
-  accelFactor = config.getSet( "mouse.accelFactor", 0.05f );
+  accelFactor = config.getSet( "mouse.accelFactor", 0.03125f );
   icon        = ARROW;
 
   x = Area::uiCentreX;

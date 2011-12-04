@@ -32,7 +32,7 @@
 #include <cstdlib>
 #include <csignal>
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
 # include <windows.h>
 # include <mmsystem.h>
 #else
@@ -80,7 +80,7 @@ static const char* const SIGNALS[][2] =
   { "SIGSYS",         "Bad system call"            }  // 31
 };
 
-#ifndef OZ_MINGW
+#ifndef _WIN32
 static const ubyte BELL_SAMPLE[] = {
 # include "bellSample.inc"
 };
@@ -103,7 +103,7 @@ static void signalHandler( int signum )
   System::abort( "Caught signal %d %s (%s)", signum, SIGNALS[signum][0], SIGNALS[signum][1] );
 }
 
-#ifndef OZ_MINGW
+#ifndef _WIN32
 
 static void* bellThread( void* )
 {
@@ -111,9 +111,10 @@ static void* bellThread( void* )
   pa_sample_spec format = { PA_SAMPLE_U8, 11025, 1 };
 
   pa = pa_simple_new( null, "liboz", PA_STREAM_PLAYBACK, null, "bell", &format, null, null, null );
-  pa_simple_write( pa, BELL_SAMPLE, sizeof( BELL_SAMPLE ), null );
-  pa_simple_free( pa );
-
+  if( pa != null ) {
+    pa_simple_write( pa, BELL_SAMPLE, sizeof( BELL_SAMPLE ), null );
+    pa_simple_free( pa );
+  }
   return null;
 }
 
@@ -126,7 +127,7 @@ void System::enableHalt( bool value )
 
 void System::catchSignals()
 {
-#ifndef OZ_MINGW
+#ifndef _WIN32
   signal( SIGQUIT, signalHandler );
 #endif
   signal( SIGINT,  signalHandler );
@@ -139,7 +140,7 @@ void System::catchSignals()
 
 void System::resetSignals()
 {
-#ifndef OZ_MINGW
+#ifndef _WIN32
   signal( SIGQUIT, SIG_DFL );
 #endif
   signal( SIGINT,  SIG_DFL );
@@ -152,7 +153,7 @@ void System::resetSignals()
 
 void System::bell( bool isSync )
 {
-#ifdef OZ_MINGW
+#ifdef _WIN32
   DWORD flags = SND_ALIAS_ID;
 
   if( !isSync ) {
@@ -173,13 +174,11 @@ void System::bell( bool isSync )
 
 void System::trap()
 {
-#ifndef OZ_MINGW
+#ifndef _WIN32
   signal( SIGTRAP, SIG_IGN );
   raise( SIGTRAP );
   signal( SIGTRAP, SIG_DFL );
 #endif
-
-  bell();
 }
 
 void System::halt()
@@ -187,7 +186,7 @@ void System::halt()
   fprintf( stderr, "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
   fflush( stderr );
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
   while( true ) {
     Sleep( 1000 );
   }
@@ -253,7 +252,7 @@ void System::abort( const char* msg, ... )
     fprintf( stderr, "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
     fflush( stderr );
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
     while( true ) {
       Sleep( 1000 );
     }

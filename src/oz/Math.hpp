@@ -63,9 +63,9 @@ class Math
      * Absolute value.
      */
     OZ_ALWAYS_INLINE
-    static float abs( float x )
+    static float fabs( float x )
     {
-      return __builtin_fabsf( x );
+      return std::fabs( x );
     }
 
     /**
@@ -74,7 +74,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float floor( float x )
     {
-      return __builtin_floorf( x );
+      return std::floor( x );
     }
 
     /**
@@ -83,7 +83,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float ceil( float x )
     {
-      return __builtin_ceilf( x );
+      return std::ceil( x );
     }
 
     /**
@@ -92,7 +92,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float round( float x )
     {
-      return __builtin_roundf( x );
+      return std::round( x );
     }
 
     /**
@@ -101,7 +101,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float trunc( float x )
     {
-      return __builtin_truncf( x );
+      return std::trunc( x );
     }
 
     /**
@@ -110,7 +110,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float fmod( float x, float y )
     {
-      return __builtin_fmodf( x, y );
+      return std::fmod( x, y );
     }
 
     /**
@@ -119,7 +119,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float modf( float x, float* integral )
     {
-      return __builtin_modff( x, integral );
+      return std::modf( x, integral );
     }
 
     /**
@@ -128,7 +128,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float sqrt( float x )
     {
-      return __builtin_sqrtf( x );
+      return std::sqrt( x );
     }
 
     /**
@@ -137,7 +137,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float exp( float x )
     {
-      return __builtin_expf( x );
+      return std::exp( x );
     }
 
     /**
@@ -146,7 +146,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float log( float x )
     {
-      return __builtin_logf( x );
+      return std::log( x );
     }
 
     /**
@@ -155,7 +155,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float pow( float x, float y )
     {
-      return __builtin_powf( x, y );
+      return std::pow( x, y );
     }
 
     /**
@@ -164,7 +164,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float sin( float x )
     {
-      return __builtin_sinf( x );
+      return std::sin( x );
     }
 
     /**
@@ -173,7 +173,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float cos( float x )
     {
-      return __builtin_cosf( x );
+      return std::cos( x );
     }
 
     /**
@@ -184,8 +184,8 @@ class Math
     {
       // No need to use sincosf(). GCC optimises the following calls into one sincosf() call and
       // LLVM/Clang is missing built-in for sincosf().
-      *s = __builtin_sinf( x );
-      *c = __builtin_cosf( x );
+      *s = std::sin( x );
+      *c = std::cos( x );
     }
 
     /**
@@ -194,7 +194,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float tan( float x )
     {
-      return __builtin_tanf( x );
+      return std::tan( x );
     }
 
     /**
@@ -203,7 +203,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float asin( float x )
     {
-      return __builtin_asinf( x );
+      return std::asin( x );
     }
 
     /**
@@ -212,7 +212,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float acos( float x )
     {
-      return __builtin_acosf( x );
+      return std::acos( x );
     }
 
     /**
@@ -221,7 +221,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float atan( float x )
     {
-      return __builtin_atanf( x );
+      return std::atan( x );
     }
 
     /**
@@ -230,7 +230,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float atan2( float x, float y )
     {
-      return __builtin_atan2f( x, y );
+      return std::atan2( x, y );
     }
 
     /**
@@ -243,7 +243,7 @@ class Math
       // GCC's isfinite() is broken with -ffast-math.
       return x + 1.0f != x;
 #else
-      return __builtin_isfinite( x );
+      return std::isfinite( x );
 #endif
     }
 
@@ -257,7 +257,7 @@ class Math
       // GCC's isinf() is broken with -ffast-math.
       return x + 1.0f == x && x * 0.0f != x;
 #else
-      return __builtin_isinf( x );
+      return std::isinf( x );
 #endif
     }
 
@@ -271,7 +271,7 @@ class Math
       // GCC's isnan() is broken with -ffast-math.
       return x + 1.0f == x && x * 0.0f == x;
 #else
-      return __builtin_isnan( x );
+      return std::isnan( x );
 #endif
     }
 
@@ -282,7 +282,7 @@ class Math
     OZ_ALWAYS_INLINE
     static bool isnormal( float x )
     {
-      return __builtin_isnormal( x );
+      return std::isnormal( x );
     }
 
     /**

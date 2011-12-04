@@ -204,8 +204,6 @@ inline Iterator<Elem> iter( Elem* array, int count )
 template <typename Elem>
 inline void aCopy( Elem* aDest, const Elem* aSrc, int count )
 {
-  hard_assert( count == 0 || aDest != aSrc );
-
   for( int i = 0; i < count; ++i ) {
     aDest[i] = aSrc[i];
   }
@@ -219,8 +217,6 @@ inline void aCopy( Elem* aDest, const Elem* aSrc, int count )
 template <typename Elem>
 inline void aReverseCopy( Elem* aDest, const Elem* aSrc, int count )
 {
-  hard_assert( count == 0 || aDest != aSrc );
-
   for( int i = count - 1; i >= 0; --i ) {
     aDest[i] = aSrc[i];
   }
@@ -234,8 +230,6 @@ inline void aReverseCopy( Elem* aDest, const Elem* aSrc, int count )
 template <typename Elem>
 inline void aMove( Elem* aDest, Elem* aSrc, int count )
 {
-  hard_assert( count == 0 || aDest != aSrc );
-
   for( int i = 0; i < count; ++i ) {
     aDest[i] = static_cast<Elem&&>( aSrc[i] );
   }
@@ -249,8 +243,6 @@ inline void aMove( Elem* aDest, Elem* aSrc, int count )
 template <typename Elem>
 inline void aReverseMove( Elem* aDest, Elem* aSrc, int count )
 {
-  hard_assert( count == 0 || aDest != aSrc );
-
   for( int i = count - 1; i >= 0; --i ) {
     aDest[i] = static_cast<Elem&&>( aSrc[i] );
   }
@@ -433,7 +425,7 @@ template <typename Elem>
 inline void aReverse( Elem* aDest, int count )
 {
   int bottom = 0;
-  int top    = count - 1;
+  int top = count - 1;
 
   while( bottom < top ) {
     swap( aDest[bottom], aDest[top] );
@@ -474,6 +466,7 @@ static void quicksort( Elem* first, Elem* last )
       if( top >= bottom ) {
         break;
       }
+
       swap( *top, *bottom );
     }
     while( true );
@@ -495,6 +488,7 @@ static void quicksort( Elem* first, Elem* last )
           min = j;
         }
       }
+
       swap( *pivot, *min );
     }
   }

@@ -41,6 +41,7 @@ namespace oz
 static void shutdown()
 {
   library.free();
+  config.clear( true );
 }
 
 int main( int argc, char** argv )
@@ -134,7 +135,7 @@ int main( int argc, char** argv )
 
   oz::shutdown();
 
-//   oz::Alloc::isLocked = true;
+  oz::Alloc::isLocked = true;
   oz::Alloc::printLeaks();
   return exitCode;
 }

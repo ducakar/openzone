@@ -25,8 +25,8 @@
 
 #include "stable.hpp"
 
-#include <stdio.h>
-#include <time.h>
+#include <cstdio>
+#include <ctime>
 
 typedef float __attribute__(( vector_size( 16 ) )) float4;
 
@@ -145,7 +145,7 @@ int main( int, char** )
     c[i] = VecX( Math::rand(), Math::rand(), Math::rand() ) * 100.0f;
     d[i] = VecX( Math::rand(), Math::rand(), Math::rand() ) * 100.0f;
   }
-  long t0 = clock();
+  long t0 = std::clock();
   for( int k = 0; k < 10000; ++k ) {
     for( int i = 0; i < MAX; ++i ) {
       d[i] += c[i] * ( a[i] * b[i] );
@@ -154,7 +154,7 @@ int main( int, char** )
   }
   Quat q = Quat::ZERO;
   q *= 10;
-  printf( "%g\n", float( clock() - t0 ) / float( CLOCKS_PER_SEC ) );
+  printf( "%g\n", float( std::clock() - t0 ) / float( CLOCKS_PER_SEC ) );
 
   Alloc::isLocked = true;
   Alloc::printLeaks();

@@ -24,14 +24,8 @@
 // enable new and delete to save stack traces to show memory leaks
 #cmakedefine OZ_TRACE_LEAKS
 
-// enable Pool allocator; otherwise just call new char[]/delete[]
-#cmakedefine OZ_POOL_ALLOC
-
 // use big-endian for stream
 #cmakedefine OZ_BIG_ENDIAN_STREAM
-
-// we are compiling with MinGW for Windows platform
-#cmakedefine OZ_MINGW
 
 #if defined( __clang__ )
 # if __clang_major__ < 3
@@ -45,12 +39,12 @@
 # error GCC >= 4.6 and LLVM/Clang >= 3.0 are the only supported compilers.
 #endif
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
 # define WIN32_LEAN_AND_MEAN
 # define __MSVCRT_VERSION__ 0x0700
 #endif
 
-#if !defined( __LP64__ ) && !defined( __LLP64__ )
+#if !defined( __LP64__ ) && !defined( __LLP64__ ) && !defined( _WIN64 )
 # define OZ_POINTER_32
 #endif
 

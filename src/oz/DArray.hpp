@@ -153,7 +153,6 @@ class DArray
     DArray& operator = ( const DArray& a )
     {
       if( &a == this ) {
-        soft_assert( &a != this );
         return *this;
       }
 
@@ -175,7 +174,6 @@ class DArray
     DArray& operator = ( DArray&& a )
     {
       if( &a == this ) {
-        soft_assert( &a != this );
         return *this;
       }
 

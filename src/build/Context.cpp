@@ -135,7 +135,7 @@ uint Context::buildTexture( const void* data, int width, int height, uint format
                 format, GL_UNSIGNED_BYTE, data );
 
   if( generateMipmaps ) {
-#ifdef OZ_MINGW
+#ifdef _WIN32
     client::glGenerateMipmap( GL_TEXTURE_2D );
 #else
     glGenerateMipmap( GL_TEXTURE_2D );
@@ -334,7 +334,7 @@ void Context::writeTexture( uint id, BufferStream* stream )
     stream->writeInt( size );
 
     if( useS3TC ) {
-#ifdef OZ_MINGW
+#ifdef _WIN32
       client::glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->forward( size ) );
 #else
       glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->forward( size ) );

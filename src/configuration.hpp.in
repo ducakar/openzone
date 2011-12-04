@@ -55,6 +55,6 @@
 #cmakedefine                    OZ_NONFREE
 
 // fix error in vorbisfile.h
-#ifdef OZ_MINGW
+#ifdef _WIN32
 # define OV_EXCLUDE_STATIC_CALLBACKS
 #endif

@@ -96,8 +96,6 @@ class String
     {
       ensureCapacity();
       aCopy( buffer, s.buffer, count + 1 );
-
-      hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
     }
 
     /**
@@ -107,17 +105,15 @@ class String
     {
       if( s.buffer != s.baseBuffer ) {
         buffer = s.buffer;
-
         s.buffer = s.baseBuffer;
-        s.count = 0;
-        s.baseBuffer[0] = '\0';
       }
       else {
         buffer = baseBuffer;
         aCopy( baseBuffer, s.baseBuffer, count + 1 );
       }
 
-      hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+      s.count = 0;
+      s.baseBuffer[0] = '\0';
     }
 
     /**
@@ -128,7 +124,6 @@ class String
     String& operator = ( const String& s )
     {
       if( &s == this ) {
-        soft_assert( &s != this );
         return *this;
       }
 
@@ -141,8 +136,6 @@ class String
       ensureCapacity();
       aCopy( buffer, s.buffer, count + 1 );
 
-      hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
-
       return *this;
     }
 
@@ -152,7 +145,6 @@ class String
     String& operator = ( String&& s )
     {
       if( &s == this ) {
-        soft_assert( &s != this );
         return *this;
       }
 
@@ -164,17 +156,16 @@ class String
 
       if( s.buffer != s.baseBuffer ) {
         buffer = s.buffer;
-
         s.buffer = s.baseBuffer;
-        s.count = 0;
-        s.baseBuffer[0] = '\0';
+
       }
       else {
         buffer = baseBuffer;
         aCopy( baseBuffer, s.baseBuffer, count + 1 );
       }
 
-      hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+      s.count = 0;
+      s.baseBuffer[0] = '\0';
 
       return *this;
     }
@@ -302,7 +293,6 @@ class String
     String& operator = ( const char* s )
     {
       if( s == buffer ) {
-        soft_assert( s != buffer );
         return *this;
       }
 
