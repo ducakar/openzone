@@ -31,7 +31,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
 # include <malloc.h>
 # include <windows.h>
 #else
@@ -60,7 +60,7 @@ static TraceEntry* firstArrayTraceEntry  = null;
 
 // If we deallocate from two different threads at once with OZ_TRACE_LEAKS, changing the list
 // of allocated blocks while iterating it in another thread can result in a SIGSEGV.
-#ifdef OZ_MINGW
+#ifdef _WIN32
 static CRITICAL_SECTION sectionMutex;
 #else
 static pthread_mutex_t sectionMutex = PTHREAD_MUTEX_INITIALIZER;
@@ -153,15 +153,11 @@ using namespace oz;
  */
 void* operator new ( size_t size ) throw( std::bad_alloc )
 {
-#ifndef NDEBUG
-  if( Alloc::isLocked ) {
-    System::abort( "operator new called while memory allocation is locked" );
-  }
-#endif
+  hard_assert( !Alloc::isLocked );
 
   size += Alloc::alignUp( sizeof( size_t ) );
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
   void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
   if( ptr == null ) {
     System::trap();
@@ -178,7 +174,7 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
 #ifdef OZ_TRACE_LEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
-# ifdef OZ_MINGW
+# ifdef _WIN32
   InitializeCriticalSection( &sectionMutex );
   EnterCriticalSection( &sectionMutex );
 # else
@@ -192,7 +188,7 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
 
   firstObjectTraceEntry = st;
 
-# ifdef OZ_MINGW
+# ifdef _WIN32
   LeaveCriticalSection( &sectionMutex );
   DeleteCriticalSection( &sectionMutex );
 # else
@@ -223,15 +219,11 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
  */
 void* operator new[] ( size_t size ) throw( std::bad_alloc )
 {
-#ifndef NDEBUG
-  if( Alloc::isLocked ) {
-    System::abort( "operator new[] called while memory allocation is locked" );
-  }
-#endif
+  hard_assert( !Alloc::isLocked );
 
   size += Alloc::alignUp( sizeof( size_t ) );
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
   void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
   if( ptr == null ) {
     System::trap();
@@ -248,7 +240,7 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 #ifdef OZ_TRACE_LEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
-# ifdef OZ_MINGW
+# ifdef _WIN32
   InitializeCriticalSection( &sectionMutex );
   EnterCriticalSection( &sectionMutex );
 # else
@@ -262,7 +254,7 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 
   firstArrayTraceEntry = st;
 
-# ifdef OZ_MINGW
+# ifdef _WIN32
   LeaveCriticalSection( &sectionMutex );
   DeleteCriticalSection( &sectionMutex );
 # else
@@ -292,15 +284,11 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
  */
 void operator delete ( void* ptr ) throw()
 {
-#ifndef NDEBUG
-  if( Alloc::isLocked ) {
-    System::abort( "operator delete called while memory allocation is locked" );
-  }
-#endif
-
   if( ptr == null ) {
     return;
   }
+
+  hard_assert( !Alloc::isLocked );
 
   size_t size  = reinterpret_cast<size_t*>( ptr )[-1];
   char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
@@ -315,7 +303,7 @@ void operator delete ( void* ptr ) throw()
 #ifdef OZ_TRACE_LEAKS
   System::resetSignals();
 
-# ifdef OZ_MINGW
+# ifdef _WIN32
   InitializeCriticalSection( &sectionMutex );
   EnterCriticalSection( &sectionMutex );
 # else
@@ -361,7 +349,7 @@ void operator delete ( void* ptr ) throw()
 
 backtraceFound:;
 
-# ifdef OZ_MINGW
+# ifdef _WIN32
   LeaveCriticalSection( &sectionMutex );
   DeleteCriticalSection( &sectionMutex );
 # else
@@ -369,7 +357,7 @@ backtraceFound:;
 # endif
 #endif
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
   _aligned_free( chunk );
 #else
   free( chunk );
@@ -383,15 +371,11 @@ backtraceFound:;
  */
 void operator delete[] ( void* ptr ) throw()
 {
-#ifndef NDEBUG
-  if( Alloc::isLocked ) {
-    System::abort( "operator delete[] called while memory allocation is locked" );
-  }
-#endif
-
   if( ptr == null ) {
     return;
   }
+
+  hard_assert( !Alloc::isLocked );
 
   size_t size  = reinterpret_cast<size_t*>( ptr )[-1];
   char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
@@ -406,7 +390,7 @@ void operator delete[] ( void* ptr ) throw()
 #ifdef OZ_TRACE_LEAKS
   System::resetSignals();
 
-# ifdef OZ_MINGW
+# ifdef _WIN32
   InitializeCriticalSection( &sectionMutex );
   EnterCriticalSection( &sectionMutex );
 # else
@@ -452,7 +436,7 @@ void operator delete[] ( void* ptr ) throw()
 
 backtraceFound:;
 
-# ifdef OZ_MINGW
+# ifdef _WIN32
   LeaveCriticalSection( &sectionMutex );
   DeleteCriticalSection( &sectionMutex );
 # else
@@ -460,7 +444,7 @@ backtraceFound:;
 # endif
 #endif
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
   _aligned_free( chunk );
 #else
   free( chunk );

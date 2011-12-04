@@ -89,7 +89,6 @@ class Bitset
     Bitset& operator = ( const Bitset& b )
     {
       if( &b == this ) {
-        soft_assert( &b != this );
         return *this;
       }
 
@@ -111,7 +110,6 @@ class Bitset
     Bitset& operator = ( Bitset&& b )
     {
       if( &b == this ) {
-        soft_assert( &b != this );
         return *this;
       }
 

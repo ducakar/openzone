@@ -168,8 +168,8 @@ void Log::printTime() const
 {
   FILE* f = reinterpret_cast<FILE*>( stream );
 
-  time_t ct = time( null );
-  tm t = *localtime( &ct );
+  time_t ct = std::time( null );
+  tm t = *std::localtime( &ct );
 
   fprintf( f, "%04d-%02d-%02d %02d:%02d:%02d",
            t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,

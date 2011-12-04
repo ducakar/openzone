@@ -37,14 +37,14 @@
 #define GL_ARB_imaging_DEPRECATED
 #define GL_ARB_framebuffer_object_DEPRECATED
 
-#ifndef OZ_MINGW
+#ifndef _WIN32
 # define GL_GLEXT_PROTOTYPES
 #endif
 
 #include <GL/gl.h>
 
 // fix M$ crap from Windows headers
-#ifdef OZ_MINGW
+#ifdef _WIN32
 # undef ERROR
 # undef PLANES
 # undef near
@@ -56,7 +56,7 @@ namespace oz
 namespace client
 {
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
 extern PFNGLUNIFORM1IPROC               glUniform1i;
 extern PFNGLUNIFORM2IPROC               glUniform2i;
 extern PFNGLUNIFORM3IPROC               glUniform3i;

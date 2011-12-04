@@ -154,17 +154,17 @@ openzone [-v] [-l | -i <function>] [-t <št>] [-p <predpona>]
       <predpona>/share/locale.
       Privzeto: '/usr'.
 
-Settings
---------
-Settings file is located in "$HOME/.config/openzone/client.rc" on Unix-like systems or in
-"%APPDATA%\OpenZone\client.rc" on Windows. Full path is (assuming default setup):
-- Linux:      /home/<user>/.config/openzone/client.rc
-- Wine:       /home/<user>/.wine/drive_c/users/<user>/Application Data/client.rc
-- Windows XP: C:\Documents and Settings\<user>\Application Data\OpenZone\client.rc
-- Windows 7:  C:\Users\<user>\AppData\Roaming\OpenZone\client.rc
+Nastavitve
+----------
+Pot do nastavitvene datoteke je "$HOME/.config/openzone/client.rc" na Linuxu podobnih sistemih ter
+"%APPDATA%\OpenZone\client.rc" na Windowsu. Celotna pot je torej (od običajni namestitvi):
+- Linux:      /home/<uporabnik>/.config/openzone/client.rc
+- Wine:       /home/<uporabnik>/.wine/drive_c/users/<uporabnik>/Podatki programov/client.rc
+- Windows XP: C:\Documents and Settings\<uporabnik>\Application Data\OpenZone\client.rc
+- Windows 7:  C:\Users\<uporabnik>\AppData\Roaming\OpenZone\client.rc
 
-variable [type] default_value
------------------------------
+spremenljivka [tip] privzeta_vrednost
+-------------------------------------
 _version [string] "0.3.0"
   Version of OpenZone for which the settings file was created. The only effect of this setting is
   that on version mismatch, OpenZone dumps its configuration on exit and rewrites the old file.
@@ -187,6 +187,11 @@ camera.mouseXSens [float] 0.005
 
 camera.mouseYSens [float] 0.005
   Mouse sensitivity for X axis when rotating camera.
+
+dir.music [string] ""
+  Top directory that will be recursively searched for *.oga, *.ogg and (if compiled with support for
+  non-free technologies) *.mp3. All found tracks will be accessible from Music Player along the
+  original tracks included in game data.
 
 dir.prefix [string] Linux default: "/usr", Windows default: "."
   Prefix path to game directory structure. The share/openzone and share/locale directories must be

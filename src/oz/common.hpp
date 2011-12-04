@@ -53,6 +53,11 @@
 #include <cstdarg>
 
 /*
+ * Standard math library.
+ */
+#include <cmath>
+
+/*
  * Standard exception definitions (usually included via <new>, but just to be sure).
  */
 #include <exception>

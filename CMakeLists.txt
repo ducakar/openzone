@@ -7,7 +7,7 @@ endif()
 project( openzone C CXX )
 
 set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
-set( OZ_APPLICATION_VERSION "0.2.90" CACHE STRING "" FORCE )
+set( OZ_APPLICATION_VERSION "0.2.80" CACHE STRING "" FORCE )
 set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
 
 mark_as_advanced( OZ_APPLICATION_NAME )
@@ -15,7 +15,6 @@ mark_as_advanced( OZ_APPLICATION_VERSION )
 mark_as_advanced( OZ_APPLICATION_TITLE )
 
 option( OZ_TRACE_LEAKS "Use overloads for default new and delete that saves stacktrace for each new call and trace memory leaks." OFF )
-option( OZ_POOL_ALLOC "Enable Pool and new/delete overloads that use it. Otherwise use a dummy class that calls generic new/delete." ON )
 option( OZ_BIG_ENDIAN_STREAM "Use big-endian byte order for binary files and networking" OFF )
 
 option( OZ_NETWORKING "Enable networking." OFF )
@@ -160,18 +159,18 @@ if( OZ_MINGW )
   include_directories( ./include )
 endif()
 
-set( libs "${SDL_LIBRARY}" )
+if( OZ_MINGW )
+  set( libs "${WINMM_LIBRARY};${INTL_LIBRARY}" )
+else()
+  set( libs "${PULSE_SIMPLE_LIBRARY}" )
+endif()
+
+set( libs "${libs};${SDL_LIBRARY}" )
 set( libs "${libs};${SDLTTF_LIBRARY}" )
 set( libs "${libs};${LUA_LIBRARY}" )
 set( libs "${libs};${OPENGL_gl_LIBRARY}" )
 set( libs "${libs};${OPENAL_LIBRARY}" )
 set( libs "${libs};${VORBISFILE_LIBRARY}" )
-
-if( OZ_MINGW )
-  set( libs "${libs};${INTL_LIBRARY};${WINMM_LIBRARY}" )
-else()
-  set( libs "${libs};${PULSE_SIMPLE_LIBRARY}" )
-endif()
 
 if( OZ_NETWORK )
   include_directories( ${SDLNET_INCLUDE_DIR} )

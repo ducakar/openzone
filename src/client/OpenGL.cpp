@@ -38,7 +38,7 @@ namespace oz
 namespace client
 {
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
 PFNGLUNIFORM1IPROC               glUniform1i;
 PFNGLUNIFORM2IPROC               glUniform2i;
 PFNGLUNIFORM3IPROC               glUniform3i;
@@ -159,7 +159,7 @@ void glCheckError( const char* file, int line, const char* function )
 
 void glInit()
 {
-#ifdef OZ_MINGW
+#ifdef _WIN32
   OZ_REGISTER_GLFUNC( glUniform1i,               PFNGLUNIFORM1IPROC               );
   OZ_REGISTER_GLFUNC( glUniform2i,               PFNGLUNIFORM2IPROC               );
   OZ_REGISTER_GLFUNC( glUniform3i,               PFNGLUNIFORM3IPROC               );

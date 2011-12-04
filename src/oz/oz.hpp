@@ -44,15 +44,13 @@
  * Simple containers
  */
 #include "Pair.hpp"
-#include "Array.hpp"
-#include "DArray.hpp"
 #include "List.hpp"
 #include "DList.hpp"
-
-/*
- * String
- */
-#include "String.hpp"
+#include "Array.hpp"
+#include "DArray.hpp"
+#include "SVector.hpp"
+#include "Vector.hpp"
+#include "Map.hpp"
 
 /*
  * Memory management
@@ -61,11 +59,13 @@
 #include "Pool.hpp"
 
 /*
+ * String
+ */
+#include "String.hpp"
+
+/*
  * Advanced containers
  */
-#include "Vector.hpp"
-#include "SVector.hpp"
-#include "Map.hpp"
 #include "HashIndex.hpp"
 #include "HashString.hpp"
 
@@ -88,16 +88,6 @@
 #include "Mat44.hpp"
 
 /*
- * Stack trace.
- */
-#include "StackTrace.hpp"
-
-/*
- * Exception
- */
-#include "Exception.hpp"
-
-/*
  * IO
  */
 #include "Endian.hpp"
@@ -108,8 +98,14 @@
 #include "File.hpp"
 
 /*
+ * Error handling.
+ */
+#include "StackTrace.hpp"
+#include "Exception.hpp"
+#include "System.hpp"
+
+/*
  * Utilities
  */
-#include "System.hpp"
 #include "Log.hpp"
 #include "Config.hpp"

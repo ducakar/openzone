@@ -25,7 +25,7 @@
 
 #include "StackTrace.hpp"
 
-#ifndef OZ_MINGW
+#ifndef _WIN32
 # include <cstdlib>
 # include <cstring>
 # include <execinfo.h>
@@ -35,7 +35,7 @@
 namespace oz
 {
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
 
 StackTrace StackTrace::current()
 {

@@ -70,12 +70,13 @@ class Alloc
      * If <tt>isLocked == true</tt>, any attempt of memory (de)allocation via
      * <tt>new</tt>/<tt>delete</tt> will abort the application with <code>System::abort()</code>.
      * if liboz was compiled without <tt>NDEBUG</tt> macro.
-     * Since it is a weak symbol you can override it in some other module with a custom definition
+     *
+     * Since <tt>isLocked</tt> is a weak symbol you can override it in some other module with a
+     * custom definition
      * <code><pre>
      *   bool oz::Alloc::isLocked = false;
      * </pre></code>
      */
-    OZ_WEAK_SYMBOL
     static bool isLocked;
 
     /**

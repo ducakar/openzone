@@ -183,7 +183,6 @@ class Vector
     Vector& operator = ( const Vector& v )
     {
       if( &v == this ) {
-        soft_assert( &v != this );
         return *this;
       }
 
@@ -206,7 +205,6 @@ class Vector
     Vector& operator = ( Vector&& v )
     {
       if( &v == this ) {
-        soft_assert( &v != this );
         return *this;
       }
 

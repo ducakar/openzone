@@ -27,8 +27,6 @@
 
 #include "matrix/Physics.hpp"
 
-#include "matrix/Collider.hpp"
-
 namespace oz
 {
 namespace matrix
@@ -36,29 +34,30 @@ namespace matrix
 
 Physics physics;
 
-const float Physics::MOVE_BOUNCE            =  1.5f * EPSILON;
-const float Physics::HIT_THRESHOLD          = -3.0f;
-const float Physics::SPLASH_THRESHOLD       = -2.0f;
-const float Physics::FLOOR_NORMAL_Z         =  0.60f;
-const float Physics::SIDE_PUSH_RATIO        =  0.5f;
-const float Physics::WEIGHT_FACTOR          =  0.1f;
-const float Physics::G_ACCEL                = -9.81f;
+const float Physics::MOVE_BOUNCE             =  1.5f * EPSILON;
+const float Physics::HIT_THRESHOLD           = -3.0f;
+const float Physics::SPLASH_THRESHOLD        = -2.0f;
+const float Physics::FLOOR_NORMAL_Z          =  0.60f;
+const float Physics::SIDE_PUSH_RATIO         =  0.5f;
+const float Physics::WEIGHT_DAMAGE_THRESHOLD =  1000.0f;
+const float Physics::WEIGHT_DAMAGE_FACTOR    =  20.0f;
+const float Physics::G_ACCEL                 = -9.81f;
 
-const float Physics::SLIDE_DAMAGE_THRESHOLD =  25.0f;
-const float Physics::SLIDE_DAMAGE_COEF      =  0.65f;
-const float Physics::STICK_VELOCITY         =  0.015f;
-const float Physics::SLICK_STICK_VELOCITY   =  0.001f;
-const float Physics::FLOAT_STICK_VELOCITY   =  0.0002f;
-const float Physics::WATER_FRICTION         =  0.08f;
-const float Physics::LADDER_FRICTION        =  0.50f;
-const float Physics::FLOOR_FRICTION         =  0.25f;
-const float Physics::SLICK_FRICTION         =  0.02f;
+const float Physics::SLIDE_DAMAGE_THRESHOLD  =  25.0f;
+const float Physics::SLIDE_DAMAGE_COEF       =  0.65f;
+const float Physics::STICK_VELOCITY          =  0.015f;
+const float Physics::SLICK_STICK_VELOCITY    =  0.001f;
+const float Physics::FLOAT_STICK_VELOCITY    =  0.0002f;
+const float Physics::WATER_FRICTION          =  0.08f;
+const float Physics::LADDER_FRICTION         =  0.50f;
+const float Physics::FLOOR_FRICTION          =  0.25f;
+const float Physics::SLICK_FRICTION          =  0.02f;
 
-const float Physics::FRAG_HIT_VELOCITY2     =  100.0f;
-const float Physics::FRAG_DESTROY_VELOCITY2 =  300.0f;
-const float Physics::FRAG_STR_DAMAGE_COEF   =  0.05f;
-const float Physics::FRAG_OBJ_DAMAGE_COEF   =  0.05f;
-const float Physics::FRAG_FIXED_DAMAGE      =  0.75f;
+const float Physics::FRAG_HIT_VELOCITY2      =  100.0f;
+const float Physics::FRAG_DESTROY_VELOCITY2  =  300.0f;
+const float Physics::FRAG_STR_DAMAGE_COEF    =  0.05f;
+const float Physics::FRAG_OBJ_DAMAGE_COEF    =  0.05f;
+const float Physics::FRAG_FIXED_DAMAGE       =  0.75f;
 
 //***********************************
 //*   FRAGMENT COLLISION HANDLING   *
@@ -218,7 +217,7 @@ bool Physics::handleObjFriction()
     else {
       dyn->momentum.z += systemMom;
 
-      if( Math::abs( systemMom ) <= FLOAT_STICK_VELOCITY &&
+      if( Math::fabs( systemMom ) <= FLOAT_STICK_VELOCITY &&
           dyn->momentum.sqL() <= FLOAT_STICK_VELOCITY )
       {
         dyn->momentum = Vec3::ZERO;
@@ -298,7 +297,9 @@ void Physics::handleObjHit()
       dyn->momentum.z = sDyn->velocity.z;
 
       sDyn->flags |= Object::BELOW_BIT;
-      sDyn->damage( dyn->mass * WEIGHT_FACTOR );
+      if( dyn->mass > WEIGHT_DAMAGE_THRESHOLD ) {
+        sDyn->damage( dyn->mass / sDyn->mass * WEIGHT_DAMAGE_FACTOR );
+      }
 
       if( !( sDyn->flags & Object::ON_FLOOR_BIT ) && sDyn->lower == -1 ) {
         sDyn->flags &= ~Object::DISABLED_BIT;

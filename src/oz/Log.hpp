@@ -42,7 +42,7 @@ class Log
 {
   private:
 
-    void*       stream;    ///< %File handle, but declared FILE* because we do not want to pollute
+    void*       stream;    ///< %File handle, but declared FILE* because we don't want to pollute
                            ///< namespace with \<cstdio\>.
     const char* indentStr; ///< Indent string.
     int         tabs;      ///< Indentation levels.

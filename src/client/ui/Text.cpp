@@ -35,7 +35,7 @@
 
 #include <SDL/SDL_ttf.h>
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
 static char* strchrnul( const char* s, int c )
 {
   char* p = strchr( s, c );

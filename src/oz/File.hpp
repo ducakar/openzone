@@ -79,6 +79,26 @@ class File
     ~File();
 
     /**
+     * No copying.
+     */
+    File( const File& ) = delete;
+
+    /**
+     * Move constructor, transfers mmaped region "ownership".
+     */
+    File( File&& file );
+
+    /**
+     * No copying.
+     */
+    File& operator = ( const File& ) = delete;
+
+    /**
+     * Move operator, transfers mmaped region "ownership".
+     */
+    File& operator = ( File&& file );
+
+    /**
      * Create an instance for the given path.
      */
     explicit File( const char* path );

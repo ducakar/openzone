@@ -68,7 +68,7 @@ void Caelum::update()
   Vec3  dir = rot * originalLightDir;
 
   ratio = clamp( -dir.z + DAY_BIAS, 0.0f, 1.0f );
-  float ratioDiff = ( 1.0f - Math::abs( 1.0f - 2.0f * ratio ) );
+  float ratioDiff = ( 1.0f - Math::fabs( 1.0f - 2.0f * ratio ) );
 
   Colours::caelum[0] = Math::mix( NIGHT_COLOUR[0], DAY_COLOUR[0], ratio ) + RED_COEF   * ratioDiff;
   Colours::caelum[1] = Math::mix( NIGHT_COLOUR[1], DAY_COLOUR[1], ratio ) + GREEN_COEF * ratioDiff;

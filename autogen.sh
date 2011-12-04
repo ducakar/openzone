@@ -6,9 +6,9 @@
 # .hpp and .cpp files in the target directory to the target definition.
 #
 
-components='oz common matrix nirvana client server build'
+components='oz common matrix nirvana client build'
 
-for component in components; do
+for component in $components; do
   echo Generating src/$component/CMakeLists.txt
   ( cd src/$component && ./CMakeLists-gen.sh )
 done

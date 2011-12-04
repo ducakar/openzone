@@ -29,7 +29,7 @@
 #include <SDL/SDL_main.h>
 
 #define OZ_CHECK( cond ) \
-  ( ( cond ) ? static_cast<void>( 0 ) : throw Exception( "Check %s failed", #cond ) )
+  if( !( cond ) ) { throw Exception( "Check %s failed", #cond ); }
 
 #define OZ_UNITTEST( name ) \
   oz::name##Unittest(); \

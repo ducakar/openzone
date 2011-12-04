@@ -36,9 +36,6 @@
 #include <cstdlib>
 #include <cstring>
 
-// gettext
-#include <libintl.h>
-
 // include SDL
 #define SDL_NO_COMPAT
 #include <SDL/SDL.h>

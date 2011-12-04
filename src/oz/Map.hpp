@@ -318,7 +318,6 @@ class Map
     Map& operator = ( const Map& m )
     {
       if( &m == this ) {
-        soft_assert( &m != this );
         return *this;
       }
 
@@ -341,7 +340,6 @@ class Map
     Map& operator = ( Map&& m )
     {
       if( &m == this ) {
-        soft_assert( &m != this );
         return *this;
       }
 

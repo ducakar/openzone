@@ -136,7 +136,7 @@ class Vec4 : public Vec3
     OZ_ALWAYS_INLINE
     Vec4 abs() const
     {
-      return Vec4( Math::abs( x ), Math::abs( y ), Math::abs( z ), Math::abs( w ) );
+      return Vec4( Math::fabs( x ), Math::fabs( y ), Math::fabs( z ), Math::fabs( w ) );
     }
 
     /**

@@ -25,7 +25,9 @@
 
 #include "File.hpp"
 
-#ifdef OZ_MINGW
+#include <cstring>
+
+#ifdef _WIN32
 # include <windows.h>
 #else
 # include <dirent.h>
@@ -38,9 +40,14 @@
 namespace oz
 {
 
+static bool operator < ( const File& a, const File& b )
+{
+  return strcmp( a.path(), b.path() ) < 0;
+}
+
 bool File::write( const char* buffer, int count ) const
 {
-#ifdef OZ_MINGW
+#ifdef _WIN32
 
   HANDLE file = CreateFile( filePath, GENERIC_WRITE, 0, null, CREATE_ALWAYS,
                             FILE_ATTRIBUTE_NORMAL, null );
@@ -74,11 +81,38 @@ File::File() : type( NONE ), data( null )
 
 File::~File()
 {
-  soft_assert( data == null );
+  if( data != null ) {
+    unmap();
+  }
+}
+
+File::File( File&& file ) :
+    filePath( static_cast<String&&>( file.filePath ) ), type( file.type ),
+    data( file.data ), size( file.size )
+{
+  file.type = NONE;
+  file.data = null;
+}
+
+File& File::operator=( File&& file )
+{
+  if( &file == this ) {
+    return *this;
+  }
 
   if( data != null ) {
     unmap();
   }
+
+  filePath = static_cast<String&&>( file.filePath );
+  type     = file.type;
+  data     = file.data;
+  size     = file.size;
+
+  file.type = NONE;
+  file.data = null;
+
+  return *this;
 }
 
 File::File( const char* path ) : filePath( path ), type( NONE ), data( null )
@@ -86,8 +120,6 @@ File::File( const char* path ) : filePath( path ), type( NONE ), data( null )
 
 void File::setPath( const char* path )
 {
-  soft_assert( data == null );
-
   if( data != null ) {
     unmap();
   }
@@ -100,7 +132,7 @@ void File::setPath( const char* path )
 File::Type File::getType()
 {
   if( type == NONE ) {
-#ifdef OZ_MINGW
+#ifdef _WIN32
     DWORD attributes = GetFileAttributes( filePath );
 
     if( attributes == INVALID_FILE_ATTRIBUTES ) {
@@ -184,7 +216,7 @@ bool File::map()
 {
   hard_assert( data == null );
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
 
   HANDLE file = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, null, OPEN_EXISTING,
                             FILE_ATTRIBUTE_NORMAL, null );
@@ -239,7 +271,7 @@ void File::unmap()
 {
   hard_assert( data != null );
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
   UnmapViewOfFile( data );
 #else
   munmap( data, size_t( size ) );
@@ -258,7 +290,7 @@ Buffer File::read() const
 {
   Buffer buffer;
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
 
   HANDLE file = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, null, OPEN_EXISTING,
                             FILE_ATTRIBUTE_NORMAL, null );
@@ -322,7 +354,7 @@ bool File::write( const BufferStream* bstream ) const
 
 bool File::chdir( const char* path )
 {
-#ifdef OZ_MINGW
+#ifdef _WIN32
   return SetCurrentDirectory( path ) != 0;
 #else
   return ::chdir( path ) == 0;
@@ -331,7 +363,7 @@ bool File::chdir( const char* path )
 
 bool File::mkdir( const char* path, uint mode )
 {
-#ifdef OZ_MINGW
+#ifdef _WIN32
   static_cast<void>( mode );
 
   return CreateDirectory( path, null ) != 0;
@@ -348,7 +380,7 @@ DArray<File> File::ls()
     return array;
   }
 
-#ifdef OZ_MINGW
+#ifdef _WIN32
 
   WIN32_FIND_DATA entity;
 
@@ -444,6 +476,7 @@ DArray<File> File::ls()
 
 #endif
 
+  array.sort();
   return array;
 }
 

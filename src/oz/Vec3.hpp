@@ -132,7 +132,7 @@ class Vec3
     OZ_ALWAYS_INLINE
     Vec3 abs() const
     {
-      return Vec3( Math::abs( x ), Math::abs( y ), Math::abs( z ) );
+      return Vec3( Math::fabs( x ), Math::fabs( y ), Math::fabs( z ) );
     }
 
     /**
@@ -184,19 +184,6 @@ class Vec3
 
       float k = Math::fastInvSqrt( x*x + y*y + z*z );
       return Vec3( x * k, y * k, z * k );
-    }
-
-    /**
-     * True iff vectors are colinear.
-     */
-    OZ_ALWAYS_INLINE
-    bool isColinear( const Vec3& v, float epsilon ) const
-    {
-      float p1 = v.x * y * z;
-      float p2 = v.y * x * z;
-      float p3 = v.z * x * y;
-
-      return Math::abs( p1 - p2 ) <= epsilon && Math::abs( p1 - p3 ) <= epsilon;
     }
 
     /**

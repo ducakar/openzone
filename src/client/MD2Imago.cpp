@@ -37,7 +37,7 @@ namespace oz
 namespace client
 {
 
-const float MD2Imago::TURN_SMOOTHING_COEF = 0.75f;
+const float MD2Imago::TURN_SMOOTHING_COEF = 0.25f;
 
 Pool<MD2Imago, 256> MD2Imago::pool;
 
@@ -172,16 +172,8 @@ void MD2Imago::draw( const Imago* parent, int mask )
       }
       else {
         if( shader.mode == Shader::SCENE && parent == null ) {
-          if( bot->h - h > Math::TAU / 2.0f ) {
-            h = Math::mix( bot->h, h + Math::TAU, TURN_SMOOTHING_COEF );
-          }
-          else if( bot->h - h < -Math::TAU / 2.0f ) {
-            h = Math::mix( bot->h + Math::TAU, h, TURN_SMOOTHING_COEF );
-          }
-          else {
-            h = bot->h + TURN_SMOOTHING_COEF * ( h - bot->h );
-          }
-          h = Math::fmod( h + Math::TAU, Math::TAU );
+          float diffH = Math::fmod( bot->h - h + 1.5f*Math::TAU, Math::TAU ) - 0.5f*Math::TAU;
+          h = Math::fmod( h + TURN_SMOOTHING_COEF * diffH + Math::TAU, Math::TAU );
 
           tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
           tf.model.rotateZ( h );

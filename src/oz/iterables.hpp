@@ -327,8 +327,6 @@ inline typename Iterator::RangeIterator end( Iterator& iter )
 template <class IteratorA, class CIteratorB>
 inline void iCopy( IteratorA iDest, CIteratorB iSrc )
 {
-  hard_assert( !iDest.isValid() || iDest != iSrc );
-
   while( iDest.isValid() ) {
     hard_assert( iSrc.isValid() );
 
@@ -346,8 +344,6 @@ inline void iCopy( IteratorA iDest, CIteratorB iSrc )
 template <class IteratorA, class IteratorB>
 inline void iMove( IteratorA iDest, IteratorB iSrc )
 {
-  hard_assert( !iDest.isValid() || iDest != iSrc );
-
   typedef typename IteratorB::ElemType ElemB;
 
   while( iDest.isValid() ) {

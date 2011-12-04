@@ -188,6 +188,11 @@ camera.mouseXSens [float] 0.005
 camera.mouseYSens [float] 0.005
   Mouse sensitivity for X axis when rotating camera.
 
+dir.music [string] ""
+  Top directory that will be recursively searched for *.oga, *.ogg and (if compiled with support for
+  non-free technologies) *.mp3. All found tracks will be accessible from Music Player along the
+  original tracks included in game data.
+
 dir.prefix [string] Linux default: "/usr", Windows default: "."
   Prefix path to game directory structure. The share/openzone and share/locale directories must be
   located inside the prefix directory.

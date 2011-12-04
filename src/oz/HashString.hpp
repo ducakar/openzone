@@ -413,7 +413,6 @@ class HashString
     HashString& operator = ( const HashString& t )
     {
       if( &t == this ) {
-        soft_assert( &t != this );
         return *this;
       }
 
@@ -432,7 +431,6 @@ class HashString
     HashString& operator = ( HashString&& t )
     {
       if( &t == this ) {
-        soft_assert( &t != this );
         return *this;
       }
 

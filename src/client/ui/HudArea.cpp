@@ -51,7 +51,7 @@ void HudArea::drawBotCrosshair()
 
   glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
 
-  float dx     = camera.h - bot->h;
+  float dx     = Math::fmod( camera.h - bot->h + 1.5f*Math::TAU, Math::TAU ) - 0.5f*Math::TAU;
   float dy     = camera.v - bot->v;
   float alpha  = 1.0f - CROSS_FADE_COEFF * Math::sqrt( dx*dx + dy*dy );
 
