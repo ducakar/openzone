@@ -33,8 +33,8 @@ namespace oz
 {
 
 const float Math::EPSILON = FLT_EPSILON;
-const float Math::E       = 2.718281828459045f;
-const float Math::TAU     = 6.283185307179586f;
+const float Math::E       = float( M_E );
+const float Math::TAU     = float( 2.0f * M_PI );
 const float Math::INF     = float( INFINITY );
 const float Math::NaN     = float( NAN );
 

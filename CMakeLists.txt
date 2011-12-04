@@ -20,7 +20,6 @@ option( OZ_BIG_ENDIAN_STREAM "Use big-endian byte order for binary files and net
 option( OZ_NETWORKING "Enable networking." OFF )
 option( OZ_GL_COMPATIBLE "Use common subset of OpenGL 2.1, OpenGL 3.0, OpenGL ES 2.0, no texture compression, GLSL 1.20." ON )
 option( OZ_BUMPMAP "Enable bumpmap support (not implemented yet, only vertex format for now)." OFF )
-option( OZ_NONFREE "Enable support for MP3s." ON )
 
 option( OZ_BUILD_TESTS "Build tests." OFF )
 option( OZ_INSTALL_LIBOZ "Install liboz." OFF )
@@ -88,11 +87,15 @@ endif()
 if( NOT DEFINED VORBISFILE_INCLUDE_DIR )
   set( VORBISFILE_INCLUDE_DIR "" CACHE PATH "" FORCE )
 endif()
+if( NOT DEFINED MAD_INCLUDE_DIR )
+  set( MAD_INCLUDE_DIR "" CACHE PATH "" FORCE )
+endif()
 
 find_library( VORBISFILE_LIBRARY vorbisfile )
 
 mark_as_advanced( OGG_INCLUDE_DIR )
 mark_as_advanced( VORBIS_INCLUDE_DIR )
+mark_as_advanced( MAD_INCLUDE_DIR )
 mark_as_advanced( VORBISFILE_INCLUDE_DIR )
 mark_as_advanced( VORBISFILE_LIBRARY )
 
@@ -103,16 +106,7 @@ if( OZ_NETWORKING )
   mark_as_advanced( SDLNET_LIBRARY )
 endif()
 
-if( OZ_NONFREE )
-  if( NOT DEFINED MAD_INCLUDE_DIR )
-    set( MAD_INCLUDE_DIR "" CACHE PATH "" FORCE )
-  endif()
-
-  find_library( MAD_LIBRARY mad )
-
-  mark_as_advanced( MAD_INCLUDE_DIR )
-  mark_as_advanced( MAD_LIBRARY )
-endif()
+mark_as_advanced( MAD_INCLUDE_DIR )
 
 if( WIN32 )
   find_library( INTL_LIBRARY intl )
@@ -162,7 +156,7 @@ endif()
 if( OZ_MINGW )
   set( libs "${WINMM_LIBRARY};${INTL_LIBRARY}" )
 else()
-  set( libs "${PULSE_SIMPLE_LIBRARY}" )
+  set( libs "-ldl" )
 endif()
 
 set( libs "${libs};${SDL_LIBRARY}" )
@@ -175,11 +169,6 @@ set( libs "${libs};${VORBISFILE_LIBRARY}" )
 if( OZ_NETWORK )
   include_directories( ${SDLNET_INCLUDE_DIR} )
   set( libs "${libs};${SDLNET_LIBRARY}" )
-endif()
-
-if( OZ_NONFREE )
-  include_directories( ${MAD_INCLUDE_DIR} )
-  set( libs "${libs};${MAD_LIBRARY}" )
 endif()
 
 set( libs_tools "${libs};${SDLIMAGE_LIBRARY}" )

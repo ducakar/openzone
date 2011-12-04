@@ -54,7 +54,6 @@ void BSP::playSound( const Struct::Entity* entity, int sound ) const
 
   alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].id ) );
   alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
-  alSourcef( srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR );
 
   alSourcefv( srcId, AL_POSITION, p );
   alSourcef( srcId, AL_GAIN, 1.0f );

@@ -51,9 +51,6 @@
 // enable bump-mapping
 #cmakedefine                    OZ_BUMPMAP
 
-// enable S3TC and MP3 support
-#cmakedefine                    OZ_NONFREE
-
 // fix error in vorbisfile.h
 #ifdef _WIN32
 # define OV_EXCLUDE_STATIC_CALLBACKS

@@ -37,7 +37,6 @@ namespace client
 {
 
 const float Audio::REFERENCE_DISTANCE   = 2.00f;
-const float Audio::ROLLOFF_FACTOR       = 0.50f;
 const float Audio::COCKPIT_GAIN_FACTOR  = 0.35f;
 const float Audio::COCKPIT_PITCH_FACTOR = 0.95f;
 
@@ -70,7 +69,6 @@ void Audio::playSound( int sound, float volume, const Object* obj, const Object*
   }
   else {
     alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
-    alSourcef( srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR );
 
     alSourcefv( srcId, AL_POSITION, parent->p );
   }
@@ -104,7 +102,6 @@ void Audio::playContSound( int sound, float volume, const Object* obj,
     alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].id ) );
     alSourcei( srcId, AL_LOOPING, AL_TRUE );
     alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
-    alSourcef( srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR );
 
     alSourcefv( srcId, AL_POSITION, parent->p );
     alSourcef( srcId, AL_GAIN, volume );
@@ -147,7 +144,6 @@ void Audio::playEngineSound( int sound, float volume, float pitch, const Vehicle
     alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].id ) );
     alSourcei( srcId, AL_LOOPING, AL_TRUE );
     alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
-    alSourcef( srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR );
 
     alSourcefv( srcId, AL_POSITION, veh->p );
     alSourcef( srcId, AL_GAIN, volume );

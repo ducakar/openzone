@@ -328,7 +328,7 @@ class Math
     }
 
     /**
-     * Get a float from its per.bit representation.
+     * Get a float from its per-bit representation.
      */
     OZ_ALWAYS_INLINE
     static float fromBits( int i )
@@ -362,7 +362,7 @@ class Math
     }
 
     /**
-     * True iff the integer is a power of 2.
+     * True iff the integer is either a power of 2 or zero.
      */
     template <typename Value>
     OZ_ALWAYS_INLINE
