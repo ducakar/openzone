@@ -5,6 +5,6 @@ if [ -x /usr/bin/sloccount ]; then
 fi
 
 if [ -x /usr/bin/cloc ]; then
-  /usr/bin/cloc --force-lang=C++,hpp --force-lang=C++,in --exclude-lang=XML --exclude-ext=h \
+  /usr/bin/cloc --force-lang=C++,hh --force-lang=C++,in --exclude-lang=XML --exclude-ext=h \
     `git ls-files`
 fi

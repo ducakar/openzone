@@ -2,13 +2,13 @@
 
 cat << EOF > CMakeLists.txt
 add_library( client STATIC
-`LC_COLLATE=C ls *.cpp | xargs printf '  %s\n'`
-`LC_COLLATE=C ls ui/*.cpp | xargs printf '  %s\n'`
-`LC_COLLATE=C ls modules/*.cpp | xargs printf '  %s\n'`
+`LC_COLLATE=C ls *.cc | xargs printf '  %s\n'`
+`LC_COLLATE=C ls ui/*.cc | xargs printf '  %s\n'`
+`LC_COLLATE=C ls modules/*.cc | xargs printf '  %s\n'`
 )
 add_dependencies( client pch )
 
-add_executable( openzone openzone/openzone.cpp )
+add_executable( openzone openzone/openzone.cc )
 add_dependencies( openzone pch )
 target_link_libraries( openzone client nirvana matrix common build oz \${libs} )
 

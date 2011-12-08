@@ -1,0 +1,75 @@
+/*
+ * OpenZone - simple cross-platform FPS/RTS game engine.
+ * Copyright (C) 2002-2011  Davorin Učakar
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Davorin Učakar
+ * <davorin.ucakar@gmail.com>
+ */
+
+/**
+ * @file oz/Exception.hh
+ */
+
+#pragma once
+
+#include "StackTrace.hh"
+
+namespace oz
+{
+
+/**
+ * %Exception class.
+ *
+ * @ingroup oz
+ */
+class Exception : public std::exception
+{
+  public:
+
+    char        message[256]; ///< Message.
+
+    const char* file;         ///< %File.
+    const char* function;     ///< Function name.
+    int         line;         ///< Source file line.
+    StackTrace  stackTrace;   ///< Stack trace.
+
+    /**
+     * %Exception constructor.
+     *
+     * This constructor is usually not used directly, but via <tt>%Exception</tt> macro.
+     * It generates SIGTRAP to signal debugger on exception.
+     */
+    OZ_PRINTF_FORMAT( 5, 6 )
+    explicit Exception( const char* file, int line, const char* function,
+                        const char* message, ... ) throw();
+
+    /**
+     * Message string (no file, line number etc.).
+     */
+    virtual const char* what() const throw();
+
+};
+
+/**
+ * @def Exception
+ * Exception constructor wrapper that provides the current file and line.
+ *
+ * @ingroup oz
+ */
+#define Exception( ... ) \
+  oz::Exception( __FILE__, __LINE__, __PRETTY_FUNCTION__, __VA_ARGS__ )
+
+}

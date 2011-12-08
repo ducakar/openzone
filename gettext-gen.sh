@@ -1,6 +1,6 @@
 #!/bin/sh
 
-sources='src/*/*.hpp src/*/*/*.hpp src/*/*.cpp src/*/*/*.cpp share/openzone/lua/*/*.lua'
+sources='src/*/*.hh src/*/*/*.hh src/*/*.cc src/*/*/*.cc share/openzone/lua/*/*.lua'
 bsps='share/openzone/data/maps/*.rc'
 classes='share/openzone/class/*.rc'
 output='share/locale/openzone.pot'
