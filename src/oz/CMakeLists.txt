@@ -1,24 +1,24 @@
 add_library( oz STATIC
-  Alloc.cpp
-  Buffer.cpp
-  Config.cpp
-  Exception.cpp
-  File.cpp
-  Log.cpp
-  Mat44.cpp
-  Math.cpp
-  Point3.cpp
-  Quat.cpp
-  StackTrace.cpp
-  String.cpp
-  System.cpp
-  Vec3.cpp
-  Vec4.cpp
-  common.cpp
+  Alloc.cc
+  Buffer.cc
+  Config.cc
+  Exception.cc
+  File.cc
+  Log.cc
+  Mat44.cc
+  Math.cc
+  Point3.cc
+  Quat.cc
+  StackTrace.cc
+  String.cc
+  System.cc
+  Vec3.cc
+  Vec4.cc
+  common.cc
 )
 
 if( OZ_INSTALL_LIBOZ )
-  install( FILES ${CMAKE_BINARY_DIR}/src/oz/ozconfig.hpp DESTINATION include/oz )
-  install( DIRECTORY . DESTINATION include/oz FILES_MATCHING PATTERN "*.hpp" )
+  install( FILES ${CMAKE_BINARY_DIR}/src/oz/ozconfig.hh DESTINATION include/oz )
+  install( DIRECTORY . DESTINATION include/oz FILES_MATCHING PATTERN "*.hh" )
   install( TARGETS oz DESTINATION lib )
 endif()

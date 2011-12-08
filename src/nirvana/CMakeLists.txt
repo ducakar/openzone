@@ -1,10 +1,10 @@
 add_library( nirvana STATIC
-  Device.cpp
-  Lua.cpp
-  Memo.cpp
-  Mind.cpp
-  Nirvana.cpp
-  Task.cpp
-  common.cpp
+  Device.cc
+  Lua.cc
+  Memo.cc
+  Mind.cc
+  Nirvana.cc
+  Task.cc
+  common.cc
 )
 add_dependencies( nirvana pch )

@@ -1,5 +1,5 @@
 add_library( common STATIC
-  AABB.cpp
-  Timer.cpp
-  common.cpp
+  AABB.cc
+  Timer.cc
+  common.cc
 )
