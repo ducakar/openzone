@@ -62,7 +62,7 @@ void MD3::buildMesh( const char* name, int frame )
     throw Exception( "Cannot mmap MD3 model part file '%s'", file.path() );
   }
 
-  InputStream is = file.inputStream();
+  InputStream is = file.inputStream( Endian::LITTLE );
 
   MD3Header header;
 

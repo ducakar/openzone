@@ -279,11 +279,11 @@ void File::unmap()
   data = null;
 }
 
-InputStream File::inputStream() const
+InputStream File::inputStream( Endian::Order order ) const
 {
   hard_assert( data != null );
 
-  return InputStream( data, data + size );
+  return InputStream( data, data + size, order );
 }
 
 Buffer File::read() const

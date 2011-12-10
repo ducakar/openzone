@@ -20,7 +20,7 @@
  */
 
 /**
- * @file Build.hh
+ * @file BuildInfo.hh
  *
  * The .cc file is auto-generated on each build and provides information about the current build.
  */
@@ -28,7 +28,7 @@
 namespace oz
 {
 
-class Build
+class BuildInfo
 {
   public:
 

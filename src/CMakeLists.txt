@@ -1,19 +1,18 @@
 configure_file( oz/ozconfig.hh.in oz/ozconfig.hh )
 configure_file( configuration.hh.in configuration.hh )
-configure_file( Build.cc.in Build.cc )
+configure_file( BuildInfo.cc.in BuildInfo.cc )
 
 # Required to include configuration headers when we use a separate build directory. The second entry
 # must be included before '.', so the precompiled header is used instead the actual one.
 include_directories( ${CMAKE_BINARY_DIR}/src/oz )
 include_directories( ${CMAKE_BINARY_DIR}/src )
-
 include_directories( . )
 
 add_subdirectory( oz )
 
-add_pch( pch stable.hh DEPENDS common )
+add_library( build_info STATIC ${CMAKE_BINARY_DIR}/src/BuildInfo.cc )
 
-add_library( build STATIC ${CMAKE_BINARY_DIR}/src/Build.cc )
+add_pch( pch stable.hh DEPENDS common )
 
 add_subdirectory( common )
 add_subdirectory( matrix )

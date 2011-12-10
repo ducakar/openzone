@@ -28,5 +28,5 @@ if( OZ_BUILD_TESTS )
   add_executable( test test.cc )
   add_dependencies( test pch )
 
-  target_link_libraries( test build oz ${libs} )
+  target_link_libraries( test oz ${libs} )
 endif()

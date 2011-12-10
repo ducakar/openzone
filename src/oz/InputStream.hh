@@ -43,9 +43,10 @@ class InputStream
 {
   private:
 
-    const char* pos;   ///< Current position.
-    const char* start; ///< Beginning.
-    const char* end;   ///< End.
+    const char*   pos;   ///< Current position.
+    const char*   start; ///< Beginning.
+    const char*   end;   ///< End.
+    Endian::Order order; ///< Stream byte order.
 
   public:
 
@@ -53,8 +54,9 @@ class InputStream
      * Create a stream with the given beginning and the end.
      */
     OZ_ALWAYS_INLINE
-    explicit InputStream( const char* start_, const char* end_ ) :
-        pos( start_ ), start( start_ ), end( end_ )
+    explicit InputStream( const char* start_, const char* end_,
+                          Endian::Order order_ = Endian::NATIVE ) :
+        pos( start_ ), start( start_ ), end( end_ ), order( order_ )
     {}
 
     /**
@@ -134,6 +136,24 @@ class InputStream
     }
 
     /**
+     * Get byte order.
+     */
+    OZ_ALWAYS_INLINE
+    Endian::Order endian() const
+    {
+      return order;
+    }
+
+    /**
+     * Set byte order.
+     */
+    OZ_ALWAYS_INLINE
+    void setEndian( Endian::Order order_ )
+    {
+      order = order_;
+    }
+
+    /**
      * Skip <tt>count</tt> bytes.
      *
      * @return Constant pointer to the beginning of the skipped bytes.
@@ -188,7 +208,13 @@ class InputStream
     short readShort()
     {
       const short* data = reinterpret_cast<const short*>( forward( sizeof( short ) ) );
-      return Endian::bswap16( *data );
+
+      if( order == Endian::NATIVE ) {
+        return *data;
+      }
+      else {
+        return Endian::bswap16( *data );
+      }
     }
 
     /**
@@ -198,7 +224,13 @@ class InputStream
     int readInt()
     {
       const int* data = reinterpret_cast<const int*>( forward( sizeof( int ) ) );
-      return Endian::bswap32( *data );
+
+      if( order == Endian::NATIVE ) {
+        return *data;
+      }
+      else {
+        return Endian::bswap32( *data );
+      }
     }
 
     /**
@@ -208,7 +240,13 @@ class InputStream
     long64 readLong64()
     {
       const long64* data = reinterpret_cast<const long64*>( forward( sizeof( long64 ) ) );
-      return Endian::bswap64( *data );
+
+      if( order == Endian::NATIVE ) {
+        return *data;
+      }
+      else {
+        return Endian::bswap64( *data );
+      }
     }
 
     /**
@@ -218,7 +256,13 @@ class InputStream
     float readFloat()
     {
       const int* data = reinterpret_cast<const int*>( forward( sizeof( int ) ) );
-      return Math::fromBits( Endian::bswap32( *data ) );
+
+      if( order == Endian::NATIVE ) {
+        return Math::fromBits( *data );
+      }
+      else {
+        return Math::fromBits( Endian::bswap32( *data ) );
+      }
     }
 
     /**
@@ -234,8 +278,15 @@ class InputStream
       };
 
       const long64* data = reinterpret_cast<const long64*>( forward( sizeof( long64 ) ) );
-      BitsToDouble bd = { Endian::bswap64( *data ) };
-      return bd.d;
+
+      if( order == Endian::NATIVE ) {
+        BitsToDouble bd = { Endian::bswap64( *data ) };
+        return bd.d;
+      }
+      else {
+        BitsToDouble bd = { *data };
+        return bd.d;
+      }
     }
 
     /**
@@ -251,6 +302,7 @@ class InputStream
       if( pos + length == end ) {
         throw Exception( "End of buffer reached while looking for the end of a string." );
       }
+
       return String( forward( length + 1 ), length );
     }
 
@@ -261,9 +313,17 @@ class InputStream
     Vec3 readVec3()
     {
       const int* data = reinterpret_cast<const int*>( forward( sizeof( float[3] ) ) );
-      return Vec3( Math::fromBits( Endian::bswap32( data[0] ) ),
-                   Math::fromBits( Endian::bswap32( data[1] ) ),
-                   Math::fromBits( Endian::bswap32( data[2] ) ) );
+
+      if( order == Endian::NATIVE ) {
+        return Vec3( Math::fromBits( data[0] ),
+                     Math::fromBits( data[1] ),
+                     Math::fromBits( data[2] ) );
+      }
+      else {
+        return Vec3( Math::fromBits( Endian::bswap32( data[0] ) ),
+                     Math::fromBits( Endian::bswap32( data[1] ) ),
+                     Math::fromBits( Endian::bswap32( data[2] ) ) );
+      }
     }
 
     /**
@@ -273,10 +333,19 @@ class InputStream
     Vec4 readVec4()
     {
       const int* data = reinterpret_cast<const int*>( forward( sizeof( float[4] ) ) );
-      return Vec4( Math::fromBits( Endian::bswap32( data[0] ) ),
-                   Math::fromBits( Endian::bswap32( data[1] ) ),
-                   Math::fromBits( Endian::bswap32( data[2] ) ),
-                   Math::fromBits( Endian::bswap32( data[3] ) ) );
+
+      if( order == Endian::NATIVE ) {
+        return Vec4( Math::fromBits( data[0] ),
+                     Math::fromBits( data[1] ),
+                     Math::fromBits( data[2] ),
+                     Math::fromBits( data[3] ) );
+      }
+      else {
+        return Vec4( Math::fromBits( Endian::bswap32( data[0] ) ),
+                     Math::fromBits( Endian::bswap32( data[1] ) ),
+                     Math::fromBits( Endian::bswap32( data[2] ) ),
+                     Math::fromBits( Endian::bswap32( data[3] ) ) );
+      }
     }
 
     /**
@@ -286,9 +355,17 @@ class InputStream
     Point3 readPoint3()
     {
       const int* data = reinterpret_cast<const int*>( forward( sizeof( float[3] ) ) );
-      return Point3( Math::fromBits( Endian::bswap32( data[0] ) ),
-                     Math::fromBits( Endian::bswap32( data[1] ) ),
-                     Math::fromBits( Endian::bswap32( data[2] ) ) );
+
+      if( order == Endian::NATIVE ) {
+        return Point3( Math::fromBits( data[0] ),
+                       Math::fromBits( data[1] ),
+                       Math::fromBits( data[2] ) );
+      }
+      else {
+        return Point3( Math::fromBits( Endian::bswap32( data[0] ) ),
+                       Math::fromBits( Endian::bswap32( data[1] ) ),
+                       Math::fromBits( Endian::bswap32( data[2] ) ) );
+      }
     }
 
     /**
@@ -298,10 +375,19 @@ class InputStream
     Plane readPlane()
     {
       const int* data = reinterpret_cast<const int*>( forward( sizeof( float[4] ) ) );
-      return Plane( Math::fromBits( Endian::bswap32( data[0] ) ),
-                    Math::fromBits( Endian::bswap32( data[1] ) ),
-                    Math::fromBits( Endian::bswap32( data[2] ) ),
-                    Math::fromBits( Endian::bswap32( data[3] ) ) );
+
+      if( order == Endian::NATIVE ) {
+        return Plane( Math::fromBits( data[0] ),
+                      Math::fromBits( data[1] ),
+                      Math::fromBits( data[2] ),
+                      Math::fromBits( data[3] ) );
+      }
+      else {
+        return Plane( Math::fromBits( Endian::bswap32( data[0] ) ),
+                      Math::fromBits( Endian::bswap32( data[1] ) ),
+                      Math::fromBits( Endian::bswap32( data[2] ) ),
+                      Math::fromBits( Endian::bswap32( data[3] ) ) );
+      }
     }
 
     /**
@@ -311,10 +397,19 @@ class InputStream
     Quat readQuat()
     {
       const int* data = reinterpret_cast<const int*>( forward( sizeof( float[4] ) ) );
-      return Quat( Math::fromBits( Endian::bswap32( data[0] ) ),
-                   Math::fromBits( Endian::bswap32( data[1] ) ),
-                   Math::fromBits( Endian::bswap32( data[2] ) ),
-                   Math::fromBits( Endian::bswap32( data[3] ) ) );
+
+      if( order == Endian::NATIVE ) {
+        return Quat( Math::fromBits( data[0] ),
+                     Math::fromBits( data[1] ),
+                     Math::fromBits( data[2] ),
+                     Math::fromBits( data[3] ) );
+      }
+      else {
+        return Quat( Math::fromBits( Endian::bswap32( data[0] ) ),
+                     Math::fromBits( Endian::bswap32( data[1] ) ),
+                     Math::fromBits( Endian::bswap32( data[2] ) ),
+                     Math::fromBits( Endian::bswap32( data[3] ) ) );
+      }
     }
 
     /**
@@ -324,22 +419,43 @@ class InputStream
     Mat44 readMat44()
     {
       const int* data = reinterpret_cast<const int*>( forward( sizeof( float[16] ) ) );
-      return Mat44( Math::fromBits( Endian::bswap32( data[ 0] ) ),
-                    Math::fromBits( Endian::bswap32( data[ 1] ) ),
-                    Math::fromBits( Endian::bswap32( data[ 2] ) ),
-                    Math::fromBits( Endian::bswap32( data[ 3] ) ),
-                    Math::fromBits( Endian::bswap32( data[ 4] ) ),
-                    Math::fromBits( Endian::bswap32( data[ 5] ) ),
-                    Math::fromBits( Endian::bswap32( data[ 6] ) ),
-                    Math::fromBits( Endian::bswap32( data[ 7] ) ),
-                    Math::fromBits( Endian::bswap32( data[ 8] ) ),
-                    Math::fromBits( Endian::bswap32( data[ 9] ) ),
-                    Math::fromBits( Endian::bswap32( data[10] ) ),
-                    Math::fromBits( Endian::bswap32( data[11] ) ),
-                    Math::fromBits( Endian::bswap32( data[12] ) ),
-                    Math::fromBits( Endian::bswap32( data[13] ) ),
-                    Math::fromBits( Endian::bswap32( data[14] ) ),
-                    Math::fromBits( Endian::bswap32( data[15] ) ) );
+
+      if( order == Endian::NATIVE ) {
+        return Mat44( Math::fromBits( data[ 0] ),
+                      Math::fromBits( data[ 1] ),
+                      Math::fromBits( data[ 2] ),
+                      Math::fromBits( data[ 3] ),
+                      Math::fromBits( data[ 4] ),
+                      Math::fromBits( data[ 5] ),
+                      Math::fromBits( data[ 6] ),
+                      Math::fromBits( data[ 7] ),
+                      Math::fromBits( data[ 8] ),
+                      Math::fromBits( data[ 9] ),
+                      Math::fromBits( data[10] ),
+                      Math::fromBits( data[11] ),
+                      Math::fromBits( data[12] ),
+                      Math::fromBits( data[13] ),
+                      Math::fromBits( data[14] ),
+                      Math::fromBits( data[15] ) );
+      }
+      else {
+        return Mat44( Math::fromBits( Endian::bswap32( data[ 0] ) ),
+                      Math::fromBits( Endian::bswap32( data[ 1] ) ),
+                      Math::fromBits( Endian::bswap32( data[ 2] ) ),
+                      Math::fromBits( Endian::bswap32( data[ 3] ) ),
+                      Math::fromBits( Endian::bswap32( data[ 4] ) ),
+                      Math::fromBits( Endian::bswap32( data[ 5] ) ),
+                      Math::fromBits( Endian::bswap32( data[ 6] ) ),
+                      Math::fromBits( Endian::bswap32( data[ 7] ) ),
+                      Math::fromBits( Endian::bswap32( data[ 8] ) ),
+                      Math::fromBits( Endian::bswap32( data[ 9] ) ),
+                      Math::fromBits( Endian::bswap32( data[10] ) ),
+                      Math::fromBits( Endian::bswap32( data[11] ) ),
+                      Math::fromBits( Endian::bswap32( data[12] ) ),
+                      Math::fromBits( Endian::bswap32( data[13] ) ),
+                      Math::fromBits( Endian::bswap32( data[14] ) ),
+                      Math::fromBits( Endian::bswap32( data[15] ) ) );
+      }
     }
 
 };

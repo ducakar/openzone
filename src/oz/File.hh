@@ -159,7 +159,7 @@ class File
     /**
      * Get <code>InputStream</code> for currently mmapped file.
      */
-    InputStream inputStream() const;
+    InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
 
     /**
      * Read file into a buffer.
