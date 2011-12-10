@@ -100,21 +100,21 @@ class Alloc
     /**
      * Align to the previous boundary.
      */
-    template <typename Pointer>
+    template <typename Type>
     OZ_ALWAYS_INLINE
-    static Pointer* alignDown( Pointer* p )
+    static Type* alignDown( Type* p )
     {
-      return reinterpret_cast<Pointer*>( size_t( p ) & ~( ALIGNMENT - 1 ) );
+      return reinterpret_cast<Type*>( size_t( p ) & ~( ALIGNMENT - 1 ) );
     }
 
     /**
      * Align to the next boundary.
      */
-    template <typename Pointer>
+    template <typename Type>
     OZ_ALWAYS_INLINE
-    static Pointer* alignUp( Pointer* p )
+    static Type* alignUp( Type* p )
     {
-      return reinterpret_cast<Pointer*>( ( size_t( p - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT );
+      return reinterpret_cast<Type*>( ( size_t( p - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT );
     }
 
     /**

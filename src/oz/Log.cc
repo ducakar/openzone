@@ -168,12 +168,12 @@ void Log::printTime() const
 {
   FILE* f = reinterpret_cast<FILE*>( stream );
 
-  time_t ct = std::time( null );
-  tm t = *std::localtime( &ct );
+  time_t currentTime = std::time( null );
+  struct tm timeStruct = *std::localtime( &currentTime );
 
   fprintf( f, "%04d-%02d-%02d %02d:%02d:%02d",
-           t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
-           t.tm_hour, t.tm_min, t.tm_sec );
+           timeStruct.tm_year + 1900, timeStruct.tm_mon + 1, timeStruct.tm_mday,
+           timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec );
 
   fflush( f );
 }

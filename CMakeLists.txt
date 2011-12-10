@@ -15,7 +15,6 @@ mark_as_advanced( OZ_APPLICATION_VERSION )
 mark_as_advanced( OZ_APPLICATION_TITLE )
 
 option( OZ_TRACE_LEAKS "Use overloads for default new and delete that saves stacktrace for each new call and trace memory leaks." OFF )
-option( OZ_BIG_ENDIAN_STREAM "Use big-endian byte order for binary files and networking" OFF )
 
 option( OZ_NETWORKING "Enable networking." OFF )
 option( OZ_GL_COMPATIBLE "Use common subset of OpenGL 2.1, OpenGL 3.0, OpenGL ES 2.0, no texture compression, GLSL 1.20." ON )
@@ -175,12 +174,11 @@ set( libs_tools "${libs};${SDLIMAGE_LIBRARY}" )
 
 # compiler and linker flags
 set( flags "-pipe -std=c++0x -pedantic-errors -ffast-math" )
-set( warnings "-Wall -Wextra -Winvalid-pch -Wdisabled-optimization -Wattributes" )
-set( warnings "${warnings} -Wconversion -Wsign-conversion -Wsign-promo -Wcast-align" )
-set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor" )
+set( warnings "-Winvalid-pch -Wall -Wextra -Wconversion -Woverloaded-virtual -Wnon-virtual-dtor" )
 set( arch_flags "-msse3" )
 
 if( OZ_CLANG )
+  set( flags "-Qunused-arguments ${flags}" )
   set( warnings "${warnings} -Wno-invalid-offsetof" )
 else()
   set( flags "${flags} -fstrict-enums -freciprocal-math" )

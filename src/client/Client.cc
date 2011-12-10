@@ -29,7 +29,7 @@
 
 #include "client/Client.hh"
 
-#include "Build.hh"
+#include "BuildInfo.hh"
 
 #include "client/Context.hh"
 #include "client/Camera.hh"
@@ -238,13 +238,13 @@ int Client::main( int argc, char** argv )
   log.println( "Build details {" );
   log.indent();
 
-  log.println( "Date:            %s", Build::TIME );
-  log.println( "Host system:     %s", Build::HOST_SYSTEM );
-  log.println( "Target system:   %s", Build::TARGET_SYSTEM );
-  log.println( "Build type:      %s", Build::BUILD_TYPE );
-  log.println( "Compiler:        %s", Build::COMPILER );
-  log.println( "Compiler flags:  %s", Build::CXX_FLAGS );
-  log.println( "Linker flags:    %s", Build::EXE_LINKER_FLAGS );
+  log.println( "Date:            %s", BuildInfo::TIME );
+  log.println( "Host system:     %s", BuildInfo::HOST_SYSTEM );
+  log.println( "Target system:   %s", BuildInfo::TARGET_SYSTEM );
+  log.println( "Build type:      %s", BuildInfo::BUILD_TYPE );
+  log.println( "Compiler:        %s", BuildInfo::COMPILER );
+  log.println( "Compiler flags:  %s", BuildInfo::CXX_FLAGS );
+  log.println( "Linker flags:    %s", BuildInfo::EXE_LINKER_FLAGS );
 
   log.unindent();
   log.println( "}" );

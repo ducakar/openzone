@@ -37,26 +37,10 @@ namespace oz
  */
 struct Span
 {
-  public:
-
-    int minX; ///< Minimum X.
-    int minY; ///< Minimum Y.
-    int maxX; ///< Maximum X.
-    int maxY; ///< Maximum Y.
-
-    /**
-     * Uninitialised instance.
-     */
-    Span() = default;
-
-    /**
-     * Construct with the given values.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Span( int minX_, int minY_, int maxX_, int maxY_ ) :
-        minX( minX_ ), minY( minY_ ), maxX( maxX_ ), maxY( maxY_ )
-    {}
-
+  int minX; ///< Minimum X.
+  int minY; ///< Minimum Y.
+  int maxX; ///< Maximum X.
+  int maxY; ///< Maximum Y.
 };
 
 }

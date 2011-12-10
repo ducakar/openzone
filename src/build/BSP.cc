@@ -96,7 +96,7 @@ void BSP::load()
     throw Exception( "BSP reading failed" );
   }
 
-  InputStream is = file.inputStream();
+  InputStream is = file.inputStream( Endian::LITTLE );
 
   char id[4];
   id[0] = is.readChar();

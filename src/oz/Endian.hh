@@ -39,48 +39,74 @@ class Endian
 {
   public:
 
+    enum Order
+    {
+      LITTLE = 0,
+      BIG    = 1,
+#ifdef OZ_BIG_ENDIAN
+      NATIVE = 1
+#else
+      NATIVE = 0
+#endif
+    };
+
     /**
      * Singleton.
      */
     Endian() = delete;
 
     /**
-     * Swap byte order if OZ_BIG_ENDIAN_ARCH does not match OZ_BIG_ENDIAN_STREAM.
+     * Swap byte order.
      */
     OZ_ALWAYS_INLINE
     static short bswap16( short s )
     {
-#if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
-      return s;
-#else
       return short( ushort( s ) << 8 | ushort( s ) >> 8 );
-#endif
     }
 
     /**
-     * Swap byte order if OZ_BIG_ENDIAN_ARCH does not match OZ_BIG_ENDIAN_STREAM.
+     * Swap byte order.
      */
     OZ_ALWAYS_INLINE
     static int bswap32( int i )
     {
-#if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
-      return i;
-#else
-      return __builtin_bswap32( i );
-#endif
+      return int( __builtin_bswap32( uint( i ) ) );
     }
 
     /**
-     * Swap byte order if OZ_BIG_ENDIAN_ARCH does not match OZ_BIG_ENDIAN_STREAM.
+     * Swap byte order.
      */
     OZ_ALWAYS_INLINE
     static long64 bswap64( long64 l )
     {
-#if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
-      return l;
-#else
-      return __builtin_bswap64( l );
-#endif
+      return long64( __builtin_bswap64( ulong64( l ) ) );
+    }
+
+    /**
+     * Swap byte order if different from native.
+     */
+    OZ_ALWAYS_INLINE
+    static short bswap16( short s, Order order )
+    {
+      return order == NATIVE ? s : short( ushort( s ) << 8 | ushort( s ) >> 8 );
+    }
+
+    /**
+     * Swap byte order if different from native.
+     */
+    OZ_ALWAYS_INLINE
+    static int bswap32( int i, Order order )
+    {
+      return order == NATIVE ? i : int( __builtin_bswap32( uint( i ) ) );
+    }
+
+    /**
+     * Swap byte order if different from native.
+     */
+    OZ_ALWAYS_INLINE
+    static long64 bswap64( long64 l, Order order )
+    {
+      return order == NATIVE ? l : long64( __builtin_bswap64( ulong64( l ) ) );
     }
 
 };

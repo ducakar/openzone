@@ -13,7 +13,7 @@ add_executable( ozBuild
   modules/GalileoModule.cc
 )
 add_dependencies( ozBuild pch )
-target_link_libraries( ozBuild client nirvana matrix common build oz ${libs_tools} )
+target_link_libraries( ozBuild client nirvana matrix common build_info oz ${libs_tools} )
 
 if( OZ_INSTALL_TOOLS )
   install( TARGETS ozBuild DESTINATION bin )

@@ -215,11 +215,7 @@ class Pool
       Slot* slot = reinterpret_cast<Slot*>( ptr );
 
 #ifndef NDEBUG
-      char* slotBytes = reinterpret_cast<char*>( ptr );
-
-      for( size_t i = 0; i < sizeof( Slot ); ++i ) {
-        slotBytes[i] = char( 0xee );
-      }
+      __builtin_memset( slot, 0xee, sizeof( Slot ) );
 #endif
 
       slot->nextSlot = freeSlot;

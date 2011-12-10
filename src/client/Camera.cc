@@ -71,22 +71,22 @@ void Camera::update()
   if( ui::keyboard.keys[SDLK_LEFT] | ui::keyboard.keys[SDLK_KP1] |
       ui::keyboard.keys[SDLK_KP4] | ui::keyboard.keys[SDLK_KP7] )
   {
-    relH += keyYSens * Timer::TICK_TIME;
+    relH += keyYSens;
   }
   if( ui::keyboard.keys[SDLK_RIGHT] | ui::keyboard.keys[SDLK_KP3] |
       ui::keyboard.keys[SDLK_KP6] | ui::keyboard.keys[SDLK_KP9] )
   {
-    relH -= keyYSens * Timer::TICK_TIME;
+    relH -= keyYSens;
   }
   if( ui::keyboard.keys[SDLK_DOWN] | ui::keyboard.keys[SDLK_KP1] |
       ui::keyboard.keys[SDLK_KP2] | ui::keyboard.keys[SDLK_KP3] )
   {
-    relV -= keyXSens * Timer::TICK_TIME;
+    relV -= keyXSens;
   }
   if( ui::keyboard.keys[SDLK_UP] | ui::keyboard.keys[SDLK_KP7] |
       ui::keyboard.keys[SDLK_KP8] | ui::keyboard.keys[SDLK_KP9] )
   {
-    relV += keyXSens * Timer::TICK_TIME;
+    relV += keyXSens;
   }
 
   botObj    = bot    == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
@@ -259,10 +259,10 @@ void Camera::init( int screenWidth, int screenHeight )
   centreY       = height / 2;
 
   aspect        = config.getSet( "camera.aspect",     0.0f );
-  mouseXSens    = config.getSet( "camera.mouseXSens", 0.005f );
-  mouseYSens    = config.getSet( "camera.mouseYSens", 0.005f );
-  keyXSens      = config.getSet( "camera.keysXSens",  2.0f );
-  keyYSens      = config.getSet( "camera.keysYSens",  2.0f );
+  mouseXSens    = config.getSet( "camera.mouseXSens", 0.2f ) * Timer::TICK_TIME;
+  mouseYSens    = config.getSet( "camera.mouseYSens", 0.2f ) * Timer::TICK_TIME;
+  keyXSens      = config.getSet( "camera.keysXSens",  2.0f ) * Timer::TICK_TIME;
+  keyYSens      = config.getSet( "camera.keysYSens",  2.0f ) * Timer::TICK_TIME;
 
   float angle   = Math::rad( config.getSet( "camera.angle", 80.0f ) );
 

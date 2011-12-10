@@ -232,7 +232,7 @@ void MD2::build( const char* path )
     throw Exception( "MD2 reading failed" );
   }
 
-  InputStream is = file.inputStream();
+  InputStream is = file.inputStream( Endian::LITTLE );
 
   MD2Header header;
 
