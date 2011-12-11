@@ -36,64 +36,15 @@ namespace oz
 namespace client
 {
 
-#ifndef OZ_BUMPMAP
-
-Vertex::Vertex( const Point3& pos_, const TexCoord& texCoord_, const Vec3& normal_ )
-{
-  pos[0] = pos_.x;
-  pos[1] = pos_.y;
-  pos[2] = pos_.z;
-
-  texCoord[0] = texCoord_.u;
-  texCoord[1] = texCoord_.v;
-
-  normal[0] = normal_.x;
-  normal[1] = normal_.y;
-  normal[2] = normal_.z;
-}
-
 bool Vertex::operator == ( const Vertex& v ) const
 {
   return pos[0] == v.pos[0] && pos[1] == v.pos[1] && pos[2] == v.pos[2] &&
       texCoord[0] == v.texCoord[0] && texCoord[1] == v.texCoord[1] &&
-      normal[0] == v.normal[0] && normal[1] == v.normal[1] && normal[2] == v.normal[2];
-}
-
-#else
-
-Vertex::Vertex( const Point3& pos_, const TexCoord& texCoord_, const Vec3& normal_,
-                const Vec3& tangent_, const Vec3& binormal_ )
-{
-  pos[0] = pos_.x;
-  pos[1] = pos_.y;
-  pos[2] = pos_.z;
-
-  texCoord[0] = texCoord_.u;
-  texCoord[1] = texCoord_.v;
-
-  normal[0] = normal_.x;
-  normal[1] = normal_.y;
-  normal[2] = normal_.z;
-
-  tangent[0] = tangent_.x;
-  tangent[1] = tangent_.y;
-  tangent[2] = tangent_.z;
-
-  binormal[0] = binormal_.x;
-  binormal[1] = binormal_.y;
-  binormal[2] = binormal_.z;
-}
-
-bool Vertex::operator == ( const Vertex& v ) const
-{
-  return pos[0] == v.pos[0] && pos[1] == v.pos[1] && pos[2] == v.pos[2] &&
-      texCoord[0] == v.texCoord[0] && texCoord[1] == v.texCoord[1] &&
+      detailCoord[0] == v.detailCoord[0] && detailCoord[1] == v.detailCoord[1] &&
       normal[0] == v.normal[0] && normal[1] == v.normal[1] && normal[2] == v.normal[2] &&
       tangent[0] == v.tangent[0] && tangent[1] == v.tangent[1] && tangent[2] == v.tangent[2] &&
       binormal[0] == v.binormal[0] && binormal[1] == v.binormal[1] && binormal[2] == v.binormal[2];
 }
-
-#endif
 
 void Vertex::read( InputStream* stream )
 {
@@ -104,11 +55,13 @@ void Vertex::read( InputStream* stream )
   texCoord[0] = stream->readFloat();
   texCoord[1] = stream->readFloat();
 
+  detailCoord[0] = stream->readFloat();
+  detailCoord[1] = stream->readFloat();
+
   normal[0] = stream->readFloat();
   normal[1] = stream->readFloat();
   normal[2] = stream->readFloat();
 
-#ifdef OZ_BUMPMAP
   tangent[0] = stream->readFloat();
   tangent[1] = stream->readFloat();
   tangent[2] = stream->readFloat();
@@ -116,7 +69,6 @@ void Vertex::read( InputStream* stream )
   binormal[0] = stream->readFloat();
   binormal[1] = stream->readFloat();
   binormal[2] = stream->readFloat();
-#endif
 }
 
 void Vertex::write( BufferStream* stream ) const
@@ -128,11 +80,13 @@ void Vertex::write( BufferStream* stream ) const
   stream->writeFloat( texCoord[0] );
   stream->writeFloat( texCoord[1] );
 
+  stream->writeFloat( detailCoord[0] );
+  stream->writeFloat( detailCoord[1] );
+
   stream->writeFloat( normal[0] );
   stream->writeFloat( normal[1] );
   stream->writeFloat( normal[2] );
 
-#ifdef OZ_BUMPMAP
   stream->writeFloat( tangent[0] );
   stream->writeFloat( tangent[1] );
   stream->writeFloat( tangent[2] );
@@ -140,7 +94,6 @@ void Vertex::write( BufferStream* stream ) const
   stream->writeFloat( binormal[0] );
   stream->writeFloat( binormal[1] );
   stream->writeFloat( binormal[2] );
-#endif
 }
 
 void Vertex::setFormat()
@@ -153,11 +106,14 @@ void Vertex::setFormat()
   glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
 
+  glEnableVertexAttribArray( Attrib::DETAILCOORD );
+  glVertexAttribPointer( Attrib::DETAILCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, detailCoord ) );
+
   glEnableVertexAttribArray( Attrib::NORMAL );
   glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 
-#ifdef OZ_BUMPMAP
   glEnableVertexAttribArray( Attrib::TANGENT );
   glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
@@ -165,7 +121,6 @@ void Vertex::setFormat()
   glEnableVertexAttribArray( Attrib::BINORMAL );
   glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
-#endif
 }
 
 const Mesh* Mesh::lastMesh = null;

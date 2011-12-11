@@ -32,7 +32,7 @@
  * Katepart (Kate/KWrite/KDevelop).
  *
  * For Eclipse I use the same syntax highlighting for macro invocations and reserved words.
- * Import etc/eclipse-defines.xml file to define custom reserver words as macros.
+ * Import etc/eclipse-defines.xml file to define custom reserved words as macros.
  */
 
 #pragma once
@@ -187,11 +187,11 @@ typedef long long long64;
  */
 typedef unsigned long long ulong64;
 
-// Some assumptions type sizes
-static_assert( sizeof( short )  == 2, "sizeof( short ) should be 2" );
-static_assert( sizeof( int )    == 4, "sizeof( int ) should be 4" );
+// Some assumptions type sizes.
+static_assert( sizeof( short  ) == 2, "sizeof( short ) should be 2" );
+static_assert( sizeof( int    ) == 4, "sizeof( int ) should be 4" );
 static_assert( sizeof( long64 ) == 8, "sizeof( long64 ) should be 8" );
-static_assert( sizeof( float )  == 4, "sizeof( float ) should be 4" );
+static_assert( sizeof( float  ) == 4, "sizeof( float ) should be 4" );
 static_assert( sizeof( double ) == 8, "sizeof( double ) should be 8" );
 
 //***********************************

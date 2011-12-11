@@ -49,6 +49,12 @@ struct Elem
   }
 };
 
+// Size of buffer used when loading from file (maximum key/value length).
+static const int LINE_BUFFER_SIZE = 1024;
+
+// Internal buffer used during file parsing.
+static thread_local char line[LINE_BUFFER_SIZE];
+
 bool Config::loadConf( const char* path )
 {
   filePath = path;

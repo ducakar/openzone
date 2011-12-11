@@ -64,6 +64,7 @@ bool Orbis::position( Struct* str )
       cells[x][y].structs.add( short( str->index ) );
     }
   }
+
   return true;
 }
 

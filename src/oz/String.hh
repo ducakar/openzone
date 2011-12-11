@@ -176,7 +176,7 @@ class String
      * @param s
      * @param count_ length in bytes without the terminating null character.
      */
-    explicit String( const char* s, int count_ ) : count( count_ )
+    explicit String( int count_, const char* s ) : count( count_ )
     {
       hard_assert( s != null && s != baseBuffer );
       hard_assert( length( s ) >= count );
@@ -205,85 +205,27 @@ class String
     /**
      * Create string form a boolean value, yields "true" or "false".
      */
-    explicit String( bool b ) : buffer( baseBuffer )
-    {
-      // some protection against too small buffers
-      static_assert( BUFFER_SIZE >= 6, "String::BUFFER_SIZE too small for bool representation" );
-
-      if( b ) {
-        count = 4;
-
-        buffer[0] = 't';
-        buffer[1] = 'r';
-        buffer[2] = 'u';
-        buffer[3] = 'e';
-        buffer[4] = '\0';
-      }
-      else {
-        count = 5;
-
-        buffer[0] = 'f';
-        buffer[1] = 'a';
-        buffer[2] = 'l';
-        buffer[3] = 's';
-        buffer[4] = 'e';
-        buffer[5] = '\0';
-      }
-
-      hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
-    }
+    explicit String( bool b );
 
     /**
      * Create string from an integer value.
      */
-    explicit String( int n ) : buffer( baseBuffer ), count( 1 )
-    {
-      // that should assure enough space, since log10( 2^( 8*sizeof( int ) ) ) <= 3*sizeof( int ),
-      // +2 for sign and terminating null char
-      static_assert( BUFFER_SIZE >= 3 * int( sizeof( int ) ) + 2,
-                     "String::BUFFER_SIZE too small for int representation" );
-
-      // we have [sign +] first digit + remaining digits
-      // since we always count first digit, we assure that we never get 0 digits (if n == 0)
-
-      // first, we count first digit + remaining digits (count has been set to 1 in initialisation)
-      int nn = n / 10;
-      while( nn != 0 ) {
-        nn /= 10;
-        ++count;
-      }
-
-      // check if we have a negative sign
-      if( n < 0 ) {
-        n = -n;
-        ++count;
-        buffer[0] = '-';
-      }
-
-      // terminating null character
-      buffer[count] = '\0';
-
-      // we always write first digit
-      buffer[count - 1] = char( '0' + ( n % 10 ) );
-      n /= 10;
-
-      for( int i = count - 2; n != 0; --i ) {
-        buffer[i] = char( '0' + ( n % 10 ) );
-        n /= 10;
-      }
-
-      hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
-    }
+    explicit String( int i );
 
     /**
-     * Create sting from a float value.
+     * Create string from a float value.
      */
     explicit String( float f );
 
     /**
-     * Create sting from a double value.
+     * Create string from a double value.
      */
     explicit String( double d );
+
+    /**
+     * Create a string in sprintf-like way.
+     */
+    static String str( const char* s, ... );
 
     /**
      * Replace current string with the giver C string.
@@ -408,6 +350,7 @@ class String
     /**
      * True iff the C string is empty.
      */
+    OZ_ALWAYS_INLINE
     static bool isEmpty( const char* s )
     {
       hard_assert( s != null );
@@ -436,6 +379,7 @@ class String
     /**
      * True iff character is an ASCII digit.
      */
+    OZ_ALWAYS_INLINE
     static bool isDigit( char c )
     {
       return '0' <= c && c <= '9';
@@ -444,6 +388,7 @@ class String
     /**
      * True iff character is an ASCII letter.
      */
+    OZ_ALWAYS_INLINE
     static bool isLetter( char c )
     {
       return ( 'A' <= c && c <= 'Z' ) || ( 'a' <= c && c <= 'z' );
@@ -452,6 +397,7 @@ class String
     /**
      * True iff character is a space.
      */
+    OZ_ALWAYS_INLINE
     static bool isSpace( char c )
     {
       return c == ' ' || c == '\t';
@@ -460,6 +406,7 @@ class String
     /**
      * True iff character is a space, horizontal tab or newline.
      */
+    OZ_ALWAYS_INLINE
     static bool isBlank( char c )
     {
       return c == ' ' || c == '\t' || c == '\n';
@@ -722,7 +669,7 @@ class String
       while( start < end && isBlank( *( end - 1 ) ) ) {
         --end;
       }
-      return String( start, int( end - start ) );
+      return String( int( end - start ), start );
     }
 
     /**
@@ -740,7 +687,7 @@ class String
       while( start < end && isBlank( *( end - 1 ) ) ) {
         --end;
       }
-      return String( start, int( end - start ) );
+      return String( int( end - start ), start );
     }
 
     /**
@@ -764,7 +711,7 @@ class String
     static String replace( const char* s, char whatChar, char withChar )
     {
       int    count = length( s );
-      String r    = String( count, 0 );
+      String r     = String( count, 0 );
 
       for( int i = 0; i < count; ++i ) {
         r.buffer[i] = s[i] == whatChar ? withChar : s[i];

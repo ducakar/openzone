@@ -619,6 +619,10 @@ void Bot::onUpdate()
       hard_assert( items.contains( instrument ) );
       hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
+      if( instrument == weapon ) {
+        weapon = -1;
+      }
+
       item->parent = container;
       target->items.add( instrument );
       items.exclude( instrument );

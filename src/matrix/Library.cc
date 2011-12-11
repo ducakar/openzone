@@ -232,7 +232,7 @@ void Library::initTextures()
         continue;
       }
 
-      String name = subDir.name() + String( "/" ) + file->baseName();
+      String name = String::str( "%s/%s", subDir.name(), file->baseName().cstr() );
 
       if( log.isVerbose ) {
         log.println( "%s", name.cstr() );
@@ -277,7 +277,7 @@ void Library::initBuildTextures()
         continue;
       }
 
-      String name = subDir.name() + String( "/" ) + file->baseName();
+      String name = String::str( "%s/%s", subDir.name(), file->baseName().cstr() );
 
       if( log.isVerbose ) {
         log.println( "%s", name.cstr() );
@@ -324,7 +324,7 @@ void Library::initSounds()
         continue;
       }
 
-      String name = subDir.name() + String( "/" ) + file->baseName();
+      String name = String::str( "%s/%s", subDir.name(), file->baseName().cstr() );
 
       if( log.isVerbose ) {
         log.println( "%s", name.cstr() );

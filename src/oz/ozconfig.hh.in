@@ -21,8 +21,8 @@
 
 #pragma once
 
-// enable new and delete to save stack traces to show memory leaks
-#cmakedefine OZ_TRACE_LEAKS
+// Make new and delete operators save stack traces to track memory leaks.
+#cmakedefine OZ_TRACK_LEAKS
 
 #if defined( __clang__ )
 # if __clang_major__ < 3
@@ -55,6 +55,7 @@
 
 #define OZ_ALWAYS_INLINE __attribute__(( always_inline ))
 #define OZ_WEAK_SYMBOL   __attribute__(( weak ))
-#define OZ_THREAD_LOCAL  __thread
 #define OZ_PRINTF_FORMAT( stringArg, firstArg ) \
   __attribute__(( format( printf, stringArg, firstArg ) ))
+
+#define thread_local __thread

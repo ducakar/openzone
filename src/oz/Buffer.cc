@@ -101,18 +101,18 @@ void Buffer::dealloc()
   size = 0;
 }
 
-InputStream Buffer::inputStream() const
+InputStream Buffer::inputStream( Endian::Order order ) const
 {
   hard_assert( data != null );
 
-  return InputStream( data, data + size );
+  return InputStream( data, data + size, order );
 }
 
-OutputStream Buffer::outputStream() const
+OutputStream Buffer::outputStream( Endian::Order order ) const
 {
   hard_assert( data != null );
 
-  return OutputStream( data, data + size );
+  return OutputStream( data, data + size, order );
 }
 
 }

@@ -220,11 +220,11 @@ uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int mi
       if( image->flags & SDL_SRCCOLORKEY ) {
         // GL_LUMINANCE_ALPHA is temporarily abused to represent indexed colours with transparency
         format = GL_LUMINANCE_ALPHA;
-        sFormat = "indexed(" + String( palette->ncolors ) + ", alpha)";
+        sFormat = String::str( "indexed(%d, alpha)", palette->ncolors );
       }
       else {
         format = GL_COLOR_INDEX;
-        sFormat = "indexed(" + String( palette->ncolors ) + ")";
+        sFormat = String::str( "indexed(%d)", palette->ncolors );
       }
     }
   }

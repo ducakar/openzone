@@ -57,9 +57,9 @@ String GameStage::QUICKSAVE_FILE;
 
 int GameStage::auxMain( void* )
 {
-  System::catchSignals();
+  System::init( System::CATCH_SIGNALS_BIT );
 #ifndef NDEBUG
-  System::enableHalt( true );
+  System::init( System::CATCH_SIGNALS_BIT | System::HALT_BIT );
 #endif
 
   try{
@@ -224,7 +224,7 @@ bool GameStage::update()
   beginTime = SDL_GetTicks();
 
   if( ui::keyboard.keys[SDLK_F5] && !ui::keyboard.oldKeys[SDLK_F5] ) {
-    write( config.get( "dir.rc", "" ) + String( "/quicksave.ozState" ) );
+    write( String::str( "%s/quicksave.ozState", config.get( "dir.rc", "" ) ) );
   }
   if( ui::keyboard.keys[SDLK_F7] && !ui::keyboard.oldKeys[SDLK_F7] ) {
     stateFile = QUICKSAVE_FILE;
@@ -559,8 +559,8 @@ void GameStage::init()
   log.println( "Initialising GameStage {" );
   log.indent();
 
-  AUTOSAVE_FILE = config.get( "dir.rc", "" ) + String( "/autosave.ozState" );
-  QUICKSAVE_FILE = config.get( "dir.rc", "" ) + String( "/quicksave.ozState" );
+  AUTOSAVE_FILE = String::str( "%s/autosave.ozState", config.get( "dir.rc", "" ) );
+  QUICKSAVE_FILE = String::str( "%s/quicksave.ozState", config.get( "dir.rc", "" ) );
 
   Module::listModules( &modules );
 
