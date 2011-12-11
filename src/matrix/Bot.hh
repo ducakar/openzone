@@ -122,24 +122,24 @@ class Bot : public Dynamic
     static const int GESTURE3_BIT             = 0x08000000;
     static const int GESTURE4_BIT             = 0x10000000;
 
-    static const float AIR_FRICTION;
-    static const float HIT_HARD_THRESHOLD;
+    static constexpr float AIR_FRICTION       =  0.01f;
+    static constexpr float HIT_HARD_THRESHOLD = -8.00f;
 
-    static const float WOUNDED_THRESHOLD;
-    static const float CORPSE_FADE_FACTOR;
+    static constexpr float WOUNDED_THRESHOLD  =  0.70f;
+    static constexpr float CORPSE_FADE_FACTOR =  0.5f / 100.0f * Timer::TICK_TIME;
 
-    static const float INSTRUMENT_DIST;
-    static const float INSTRUMENT_DOT_MIN;
+    static constexpr float INSTRUMENT_DIST    =  2.00f;
+    static constexpr float INSTRUMENT_DOT_MIN =  0.80f;
 
-    static const float GRAB_EPSILON;
-    static const float GRAB_STRING_RATIO;
-    static const float GRAB_HANDLE_TOL;
-    static const float GRAB_MOM_RATIO;
-    static const float GRAB_MOM_MAX;
-    static const float GRAB_MOM_MAX_SQ;
+    static constexpr float GRAB_EPSILON       =  0.20f;
+    static constexpr float GRAB_STRING_RATIO  =  10.0f;
+    static constexpr float GRAB_HANDLE_TOL    =  1.60f;
+    static constexpr float GRAB_MOM_RATIO     =  0.3f;
+    static constexpr float GRAB_MOM_MAX       =  1.0f; // must be < abs( Physics::HIT_THRESHOLD )
+    static constexpr float GRAB_MOM_MAX_SQ    =  1.0f;
 
-    static const float STEP_MOVE_AHEAD;
-    static const float CLIMB_MOVE_AHEAD;
+    static constexpr float STEP_MOVE_AHEAD    =  0.20f;
+    static constexpr float CLIMB_MOVE_AHEAD   =  0.40f;
 
   public:
 

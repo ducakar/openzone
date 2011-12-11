@@ -579,180 +579,52 @@ class String
     /**
      * %String concatenation.
      */
-    String operator + ( const char* s ) const
-    {
-      hard_assert( s != null );
-
-      int    sLength = length( s );
-      int    rCount  = count + sLength;
-      String r       = String( rCount, 0 );
-
-      aCopy( r.buffer, buffer, count );
-      aCopy( r.buffer + count, s, sLength + 1 );
-
-      return r;
-    }
+    String operator + ( const char* s ) const;
 
     /**
      * %String concatenation.
      */
-    String operator + ( const String& s ) const
-    {
-      int    rCount = count + s.count;
-      String r      = String( rCount, 0 );
-
-      aCopy( r.buffer, buffer, count );
-      aCopy( r.buffer + count, s.buffer, s.count + 1 );
-
-      return r;
-    }
+    String operator + ( const String& s ) const;
 
     /**
      * %String concatenation.
      */
-    friend String operator + ( const char* s, const String& t )
-    {
-      hard_assert( s != null );
-
-      int    sLength = length( s );
-      int    rCount  = t.count + sLength;
-      String r       = String( rCount, 0 );
-
-      aCopy( r.buffer, s, sLength );
-      aCopy( r.buffer + sLength, t.buffer, t.count + 1 );
-
-      return r;
-    }
+    friend String operator + ( const char* s, const String& t );
 
     /**
      * Substring.
      */
-    String substring( int start ) const
-    {
-      hard_assert( 0 <= start && start <= count );
-
-      int    rCount = count - start;
-      String r      = String( rCount, 0 );
-
-      aCopy( r.buffer, buffer + start, rCount + 1 );
-
-      return r;
-    }
+    String substring( int start ) const;
 
     /**
      * Substring.
      */
-    String substring( int start, int end ) const
-    {
-      hard_assert( 0 <= start && start <= count && start <= end && end <= count );
-
-      int    rCount = end - start;
-      String r      = String( rCount, 0 );
-
-      aCopy( r.buffer, buffer + start, rCount );
-      r.buffer[rCount] = '\0';
-
-      return r;
-    }
+    String substring( int start, int end ) const;
 
     /**
      * Create string with stripped leading and trailing blanks.
      */
-    String trim() const
-    {
-      const char* start = buffer;
-      const char* end = buffer + count;
-
-      while( start < end && isBlank( *start ) ) {
-        ++start;
-      }
-      while( start < end && isBlank( *( end - 1 ) ) ) {
-        --end;
-      }
-      return String( int( end - start ), start );
-    }
+    String trim() const;
 
     /**
      * Create string with stripped leading and trailing blanks.
      */
-    String trim( const char* s )
-    {
-      int count = length( s );
-      const char* start = s;
-      const char* end = s + count;
-
-      while( start < end && isBlank( *start ) ) {
-        ++start;
-      }
-      while( start < end && isBlank( *( end - 1 ) ) ) {
-        --end;
-      }
-      return String( int( end - start ), start );
-    }
+    String trim( const char* s );
 
     /**
      * Create a copy that has all instances of <tt>whatChar</tt> replaced by <tt>withChar</tt>.
      */
-    String replace( char whatChar, char withChar ) const
-    {
-      String r = String( count, 0 );
-
-      for( int i = 0; i < count; ++i ) {
-        r.buffer[i] = buffer[i] == whatChar ? withChar : buffer[i];
-      }
-      r.buffer[count] = '\0';
-
-      return r;
-    }
+    String replace( char whatChar, char withChar ) const;
 
     /**
      * Create a copy that has all instances of <tt>whatChar</tt> replaced by <tt>withChar</tt>.
      */
-    static String replace( const char* s, char whatChar, char withChar )
-    {
-      int    count = length( s );
-      String r     = String( count, 0 );
-
-      for( int i = 0; i < count; ++i ) {
-        r.buffer[i] = s[i] == whatChar ? withChar : s[i];
-      }
-      r.buffer[count] = '\0';
-
-      return r;
-    }
+    static String replace( const char* s, char whatChar, char withChar );
 
     /**
      * Returns array of substrings between occurrences of the given character token.
      */
-    DArray<String> split( char ch ) const
-    {
-      int p0    = 0;
-      int p1    = index( ch );
-      int i     = 0;
-      int count = 1;
-
-      // count substrings first
-      while( p1 >= 0 ) {
-        p0 = p1 + 1;
-        p1 = index( ch, p0 );
-        ++count;
-      }
-
-      DArray<String> array( count );
-
-      p0 = 0;
-      p1 = index( ch );
-
-      while( p1 >= 0 ) {
-        array[i] = substring( p0, p1 );
-        p0 = p1 + 1;
-        p1 = index( ch, p0 );
-        ++i;
-      }
-      array[i] = substring( p0 );
-
-      return array;
-    }
+    DArray<String> split( char ch ) const;
 
     /**
      * Cast signed byte string to C string.

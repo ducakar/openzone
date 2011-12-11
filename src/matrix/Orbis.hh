@@ -38,9 +38,9 @@ namespace matrix
 
 struct Cell
 {
-  static const int   SIZEI = 16;
-  static const float SIZE;
-  static const float INV_SIZE;
+  static const     int   SIZEI    = 16;
+  static constexpr float SIZE     = float( SIZEI );
+  static constexpr float INV_SIZE = 1.0f / SIZE;
 
   SVector<short, 6> structs;
   List<Object>      objects;
@@ -59,8 +59,8 @@ class Orbis : public Bounds
   public:
 
     // # of cells on each (x, y) axis
-    static const int   MAX = 256;
-    static const float DIM;
+    static const     int   MAX = 256;
+    static constexpr float DIM = Cell::SIZE * MAX / 2.0f;
 
     Caelum            caelum;
     Terra             terra;

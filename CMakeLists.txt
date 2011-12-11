@@ -183,7 +183,7 @@ endif()
 set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release ReleaseGen ReleaseUse" )
 
 if( OZ_MINGW )
-  set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
+  set( CMAKE_CXX_FLAGS_DEBUG "-g3 -O0" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g3 -O3" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELEASEGEN "-DNDEBUG -O3 -fprofile-generate" CACHE STRING "" FORCE )
@@ -191,8 +191,8 @@ if( OZ_MINGW )
 
   set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--enable-auto-import" )
 else()
-  set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g3 -O3" CACHE STRING "" FORCE )
+  set( CMAKE_CXX_FLAGS_DEBUG "-g3 -O0 -fstack-protector" CACHE STRING "" FORCE )
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g3 -O3 -fstack-protector" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -flto" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELEASEGEN "-DNDEBUG -O3 -flto -fprofile-generate" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELEASEUSE "-DNDEBUG -O3 -flto -fprofile-use" CACHE STRING "" FORCE )
@@ -203,7 +203,7 @@ mark_as_advanced( CMAKE_CXX_FLAGS_RELEASEUSE )
 mark_as_advanced( CMAKE_EXE_LINKER_FLAGS_RELEASEGEN )
 mark_as_advanced( CMAKE_EXE_LINKER_FLAGS_RELEASEUSE )
 
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flags} ${arch_flags} ${warnings}" )
+set( CMAKE_CXX_FLAGS "${flags} ${arch_flags} ${warnings} ${CMAKE_CXX_FLAGS}" )
 
 # construct flags strings for BuildInfo
 string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" OZ_CXX_FLAGS )

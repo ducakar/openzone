@@ -33,6 +33,7 @@ namespace oz
 void _hardAssertHelper( const char* message, const char* file, int line, const char* function )
 {
   System::trap();
+  System::bell();
   System::abort( "Hard assertion `%s' failed at %s:%d: %s", message, file, line, function );
 }
 

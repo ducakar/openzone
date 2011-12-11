@@ -28,7 +28,7 @@
 namespace oz
 {
 
-const float Timer::TICK_TIME = float( TICK_MILLIS ) / 1000.0f;
+constexpr float Timer::TICK_TIME;
 
 Timer timer;
 

@@ -40,19 +40,19 @@ class Math
   public:
 
     /// Floating point epsilon.
-    static const float EPSILON;
+    static constexpr float EPSILON = __FLT_EPSILON__;
 
     /// Number e.
-    static const float E;
+    static constexpr float E = 2.718281828459045f;
 
     /// \f$ 2\pi \f$.
-    static const float TAU;
+    static constexpr float TAU = 6.283185307179586f;
 
     /// \f$ +\infty \f$.
-    static const float INF;
+    static constexpr float INF = __builtin_inff();
 
     /// Not a number.
-    static const float NaN;
+    static constexpr float NaN = __builtin_nanf( "" );
 
     /**
      * Singleton.

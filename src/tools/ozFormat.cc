@@ -86,11 +86,7 @@ int main( int argc, char** argv )
 
 int main( int argc, char** argv )
 {
-  oz::System::init( oz::System::CATCH_SIGNALS_BIT );
-#ifndef NDEBUG
-  oz::System::init( oz::System::CATCH_SIGNALS_BIT | oz::System::HALT_BIT );
-#endif
-
+  oz::System::init();
   oz::Alloc::isLocked = false;
 
   int exitCode = EXIT_FAILURE;

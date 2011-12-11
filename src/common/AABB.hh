@@ -35,8 +35,8 @@ class AABB
   public:
 
     // max allowed dimension for an object plus 1 cm for epsilon
-    static const float MAX_DIM;
-    static const float REAL_MAX_DIM;
+    static constexpr float MAX_DIM      = 4.00f;
+    static constexpr float REAL_MAX_DIM = 3.99f;
 
     /// Position.
     Point3 p;

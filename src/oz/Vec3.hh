@@ -39,10 +39,10 @@ class Vec3
 {
   public:
 
-    /// Zero vector, [0, 0, 0] or [0, 0, 0, 0] for SIMD.
+    /// Zero vector, [0, 0, 0].
     static const Vec3 ZERO;
 
-    /// %Vector of ones, [1, 1, 1] or [1, 1, 1, 0] for SIMD.
+    /// %Vector of ones, [1, 1, 1].
     static const Vec3 ONE;
 
     float x; ///< X component.

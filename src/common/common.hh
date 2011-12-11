@@ -43,7 +43,9 @@ struct lua_State;
 namespace oz
 {
 
-extern const float EPSILON;
+// ensure epsilon is big enough for a 4 km x 4 km world (1 mm should do)
+// EPSILON = Orbis::DIM * 4.0f * Math::EPSILON
+constexpr float EPSILON = 2048.0f * 4.0f * Math::EPSILON;
 
 typedef int ( LuaAPI )( lua_State* );
 

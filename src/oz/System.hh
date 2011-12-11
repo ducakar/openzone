@@ -111,8 +111,8 @@ class System
     /**
      * Abort program.
      *
-     * Print the error message and stack trace, call <code>halt()</code>, it HALT_BIT was passed on
-     * initialisation, and terminate program with SIGABRT after that.
+     * Print the error message and stack trace, call <code>halt()</code> (if HALT_BIT was passed on
+     * initialisation) and terminate program with SIGABRT after that.
      *
      * Everything is printed to stderr and log, unless log output is stdout.
      */
@@ -120,12 +120,16 @@ class System
     static void abort( const char* msg, ... );
 
     /**
-     * Initialise system class.
+     * Initialise <tt>System</tt> class.
      *
      * Set-up crash handler if CATCH_SIGNALS_BIT is given. On Linux, look for PulseAudio and link
      * to libpulse, so the bell can be played.
      */
-    static void init( int flags );
+#ifdef NDEBUG
+    static void init( int flags = CATCH_SIGNALS_BIT | HALT_BIT );
+#else
+    static void init( int flags = CATCH_SIGNALS_BIT );
+#endif
 
 };
 

@@ -36,6 +36,8 @@ class Matrix
 {
   private:
 
+    static const float MAX_VELOCITY2;
+
     int maxStructs;
     int maxEvents;
     int maxObjects;
@@ -46,8 +48,6 @@ class Matrix
     int maxFrags;
 
   public:
-
-    static const float MAX_VELOCITY2;
 
     void update();
 

@@ -39,9 +39,9 @@ namespace client
 
 Camera camera;
 
-const float Camera::ROT_LIMIT      = Math::TAU / 2.0f;
-const float Camera::MIN_DISTANCE   = 0.1f;
-const float Camera::SMOOTHING_COEF = 0.5f;
+constexpr float Camera::ROT_LIMIT;
+constexpr float Camera::MIN_DISTANCE;
+constexpr float Camera::SMOOTHING_COEF;
 
 StrategicProxy Camera::strategicProxy;
 BotProxy       Camera::botProxy;

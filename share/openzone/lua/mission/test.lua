@@ -48,6 +48,14 @@ function onCreate()
   ozObjBindIndex( me )
   ozObjAddItem( myGalileo )
 
+  init_sample()
+
+  ozFloraSeed()
+
+  init_stressTest()
+end
+
+function init_sample()
   local lord = ozOrbisAddObj( "bauul", 138, -11, 73, OZ_EAST )
 
   local memo = ozOrbisAddObj( "datacube", 134, -6, 73 )
@@ -120,10 +128,6 @@ function onCreate()
   ozOrbisAddObj( "smallCrate", 108, -8, 81 )
   ozOrbisAddObj( "smallCrate", 108, -8, 82 )
   ozOrbisAddObj( "smallCrate", 108, -8, 83 )
-
-  ozFloraSeed()
-
-  init_stressTest()
 end
 
 function init_stressTest()

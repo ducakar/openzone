@@ -62,7 +62,7 @@ class Collider
 {
   private:
 
-    static const Vec3 normals[];
+    static const Vec3 NORMALS[];
 
     Span   span;
     Bounds trace;

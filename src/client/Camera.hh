@@ -40,9 +40,9 @@ class Camera
 {
   public:
 
-    static const float ROT_LIMIT;
-    static const float MIN_DISTANCE;
-    static const float SMOOTHING_COEF;
+    static constexpr float ROT_LIMIT      = Math::TAU / 2.0f;
+    static constexpr float MIN_DISTANCE   = 0.1f;
+    static constexpr float SMOOTHING_COEF = 0.5f;
 
     enum State
     {
@@ -50,8 +50,6 @@ class Camera
       STRATEGIC,
       BOT
     };
-
-  private:
 
     float mouseXSens;
     float mouseYSens;

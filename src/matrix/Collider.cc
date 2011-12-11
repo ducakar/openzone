@@ -27,6 +27,8 @@
 
 #include "matrix/Collider.hh"
 
+#define EPSILON ( 4.0f * 2048.0f * __FLT_EPSILON__ )
+
 namespace oz
 {
 namespace matrix
@@ -34,7 +36,7 @@ namespace matrix
 
 Collider collider;
 
-const Vec3 Collider::normals[] =
+const Vec3 Collider::NORMALS[] =
 {
   Vec3(  1.0f,  0.0f,  0.0f ),
   Vec3( -1.0f,  0.0f,  0.0f ),
@@ -303,13 +305,13 @@ void Collider::trimAABBVoid()
 {
   for( int i = 0; i < 3; ++i ) {
     int side = move[i] >= 0.0f;
-    const Vec3& normal = normals[i * 2 + side];
+    const Vec3& normal = NORMALS[i * 2 + side];
 
     float startDist = orbis.maxs[i] + startPos[i] * normal[i] - aabb.dim[i];
     float endDist   = orbis.maxs[i] + endPos[i]   * normal[i] - aabb.dim[i];
 
     if( endDist <= EPSILON && endDist <= startDist ) {
-      float ratio = startDist / max( startDist - endDist, Math::EPSILON );
+      float ratio = startDist / max( startDist - endDist, __FLT_EPSILON__ );
 
       if( ratio < hit.ratio ) {
         hit.ratio    = max( 0.0f, ratio );
@@ -359,7 +361,7 @@ void Collider::trimAABBObj( const Object* sObj )
         hard_assert( discriminant > 0.0f );
 
         float sqrtDiscr = Math::sqrt( discriminant );
-        float endRatio  = ( -pxsx_pysy + sqrtDiscr ) / max( moveDist2, Math::EPSILON );
+        float endRatio  = ( -pxsx_pysy + sqrtDiscr ) / max( moveDist2, __FLT_EPSILON__ );
 
         maxRatio = min( maxRatio, endRatio );
       }
@@ -368,7 +370,7 @@ void Collider::trimAABBObj( const Object* sObj )
       }
       else {
         float sqrtDiscr = Math::sqrt( discriminant );
-        float endRatio  = ( -pxsx_pysy + sqrtDiscr ) / max( moveDist2, Math::EPSILON );
+        float endRatio  = ( -pxsx_pysy + sqrtDiscr ) / max( moveDist2, __FLT_EPSILON__ );
 
         if( endRatio <= 0.0f ) {
           return;
@@ -376,7 +378,7 @@ void Collider::trimAABBObj( const Object* sObj )
 
         maxRatio = min( maxRatio, endRatio );
 
-        float startRatio = ( -pxsx_pysy - sqrtDiscr ) / max( moveDist2, Math::EPSILON );
+        float startRatio = ( -pxsx_pysy - sqrtDiscr ) / max( moveDist2, __FLT_EPSILON__ );
 
         if( startRatio > minRatio ) {
           minRatio = startRatio;
@@ -390,7 +392,7 @@ void Collider::trimAABBObj( const Object* sObj )
       float pxsy_pysx    = px*sy - py*sx;
       float discriminant = radiusEps2 * moveDist2 - pxsy_pysx * pxsy_pysx;
       float sqrtDiscr    = Math::sqrt( max( discriminant, 0.0f ) );
-      float startRatio   = ( -pxsx_pysy - sqrtDiscr ) / max( moveDist2, Math::EPSILON );
+      float startRatio   = ( -pxsx_pysy - sqrtDiscr ) / max( moveDist2, __FLT_EPSILON__ );
 
       if( startRatio > minRatio ) {
         minRatio   = startRatio;
@@ -414,11 +416,11 @@ void Collider::trimAABBObj( const Object* sObj )
       }
     }
     else if( startDist >= 0.0f && endDist <= startDist ) {
-      float ratio = ( startDist - EPSILON ) / max( startDist - endDist, Math::EPSILON );
+      float ratio = ( startDist - EPSILON ) / max( startDist - endDist, __FLT_EPSILON__ );
 
       if( ratio > minRatio ) {
         minRatio   = ratio;
-        lastNormal = normals[2*i];
+        lastNormal = NORMALS[2*i];
       }
     }
 
@@ -434,11 +436,11 @@ void Collider::trimAABBObj( const Object* sObj )
       }
     }
     else if( startDist >= 0.0f && endDist <= startDist ) {
-      float ratio = ( startDist - EPSILON ) / max( startDist - endDist, Math::EPSILON );
+      float ratio = ( startDist - EPSILON ) / max( startDist - endDist, __FLT_EPSILON__ );
 
       if( ratio > minRatio ) {
         minRatio   = ratio;
-        lastNormal = normals[2*i + 1];
+        lastNormal = NORMALS[2*i + 1];
       }
     }
   }
@@ -475,7 +477,7 @@ void Collider::trimAABBBrush( const BSP::Brush* brush )
       }
     }
     else if( startDist >= 0.0f && endDist <= startDist ) {
-      float ratio = ( startDist - EPSILON ) / max( startDist - endDist, Math::EPSILON );
+      float ratio = ( startDist - EPSILON ) / max( startDist - endDist, __FLT_EPSILON__ );
 
       if( ratio > minRatio ) {
         minRatio   = ratio;
@@ -634,7 +636,7 @@ void Collider::trimAABBTerraQuad( int x, int y )
   float endDist   = localEndPos   * quad.triNormal[0];
 
   if( endDist <= EPSILON && endDist <= startDist ) {
-    float ratio = max( 0.0f, startDist - EPSILON ) / max( startDist - endDist, Math::EPSILON );
+    float ratio = max( 0.0f, startDist - EPSILON ) / max( startDist - endDist, __FLT_EPSILON__ );
 
     float impactX = startPos.x + ratio * move.x;
     float impactY = startPos.y + ratio * move.y;
@@ -659,7 +661,7 @@ void Collider::trimAABBTerraQuad( int x, int y )
   endDist   = localEndPos   * quad.triNormal[1];
 
   if( endDist <= EPSILON && endDist <= startDist ) {
-    float ratio = max( 0.0f, startDist - EPSILON ) / max( startDist - endDist, Math::EPSILON );
+    float ratio = max( 0.0f, startDist - EPSILON ) / max( startDist - endDist, __FLT_EPSILON__ );
 
     float impactX = startPos.x + ratio * move.x;
     float impactY = startPos.y + ratio * move.y;
