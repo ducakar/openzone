@@ -160,11 +160,10 @@ void Shader::loadProgram( int id, const char** sources, int* lengths )
 
   OZ_REGISTER_ATTRIBUTE( Attrib::POSITION,            "inPosition" );
   OZ_REGISTER_ATTRIBUTE( Attrib::TEXCOORD,            "inTexCoord" );
+  OZ_REGISTER_ATTRIBUTE( Attrib::DETAILCOORD,         "inDetailCoord" );
   OZ_REGISTER_ATTRIBUTE( Attrib::NORMAL,              "inNormal" );
-#ifdef OZ_BUMPMAP
   OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,             "inTangent" );
   OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL,            "inBinormal" );
-#endif
 
   glLinkProgram( programs[id].program );
 

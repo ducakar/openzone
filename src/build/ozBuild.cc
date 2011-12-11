@@ -267,7 +267,7 @@ static void compileBSPs()
       continue;
     }
 
-    String cmdLine = "q3map2 -fs_basepath . -fs_game data " + String( file->path() );
+    String cmdLine = String::str( "q3map2 -fs_basepath . -fs_game data %s", file->path() );
 
     log.println( "%s", cmdLine.cstr() );
     log.println();
@@ -401,7 +401,7 @@ static void checkLua( const char* path )
   log.println( "Checking Lua scripts '%s' {", path );
   log.indent();
 
-  String srcDir = path + String( "/" );
+  String srcDir = String::str( "%s/", path );
   File dir( path );
   DArray<File> dirList = dir.ls();
 
@@ -613,9 +613,9 @@ int main( int argc, char** argv )
 
 int main( int argc, char** argv )
 {
-  oz::System::catchSignals();
+  oz::System::init( oz::System::CATCH_SIGNALS_BIT );
 #ifndef NDEBUG
-  oz::System::enableHalt( true );
+  oz::System::init( oz::System::CATCH_SIGNALS_BIT | oz::System::HALT_BIT );
 #endif
 
   oz::Alloc::isLocked = false;
@@ -643,8 +643,7 @@ int main( int argc, char** argv )
       fprintf( stderr, "  at %s:%d\n\n", e.file, e.line );
     }
 
-    oz::System::resetSignals();
-    abort();
+    return EXIT_FAILURE;
   }
   catch( const std::exception& e ) {
     oz::log.resetIndent();
@@ -657,11 +656,10 @@ int main( int argc, char** argv )
       fprintf( stderr, "\nEXCEPTION: %s\n\n", e.what() );
     }
 
-    oz::System::resetSignals();
-    abort();
+    return EXIT_FAILURE;
   }
 
 //   oz::Alloc::isLocked = true;
-  oz::Alloc::printLeaks();
+//   oz::Alloc::printLeaks();
   return exitCode;
 }

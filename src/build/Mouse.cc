@@ -43,7 +43,7 @@ void Mouse::build()
   log.indent();
 
   for( int i = 0; i < ui::Mouse::MAX; ++i ) {
-    FILE* f = fopen( "ui/cur/" + String( ui::Mouse::NAMES[i] ) + ".in", "r" );
+    FILE* f = fopen( String::str( "ui/cur/%s.in", ui::Mouse::NAMES[i] ), "r" );
     if( f == null ) {
       throw Exception( "Cursor prebuilding failed" );
     }
@@ -53,7 +53,7 @@ void Mouse::build()
     fscanf( f, "%d %d %d %31s", &size, &hotspotX, &hotspotY, imgFile );
     fclose( f );
 
-    uint texId = Context::loadRawTexture( "ui/cur/" + String( imgFile ),
+    uint texId = Context::loadRawTexture( String::str( "ui/cur/%s", imgFile ),
                                           false, GL_LINEAR, GL_LINEAR );
 
     BufferStream os;
@@ -65,7 +65,7 @@ void Mouse::build()
 
     glDeleteTextures( 1, &texId );
 
-    File( "ui/cur/" + String( ui::Mouse::NAMES[i] ) + ".ozcCur" ).write( &os );
+    File( String::str( "ui/cur/%s.ozcCur", ui::Mouse::NAMES[i] ) ).write( &os );
   }
 
   log.unindent();

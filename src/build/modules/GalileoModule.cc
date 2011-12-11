@@ -50,8 +50,8 @@ void GalileoModule::build()
 
     terraConfig.load( "terra/" + name + ".rc" );
 
-    String srcTextureFile = String( "terra/" ) + terraConfig.get( "mapTexture", "" );
-    String destTextureFile = "ui/galileo/" + name + ".ozcTex";
+    String srcTextureFile = String::str( "terra/%s", terraConfig.get( "mapTexture", "" ) );
+    String destTextureFile = String::str( "ui/galileo/%s.ozcTex", name.cstr() );
 
     bool useS3TC = Context::useS3TC;
     Context::useS3TC = false;

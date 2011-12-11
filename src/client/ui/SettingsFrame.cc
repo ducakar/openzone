@@ -66,7 +66,7 @@ SettingsFrame::SettingsFrame() :
 
   message.setText( gettext( "NOT IMPLEMENTED YET\n\n"
       "You can change your settings by manually editing '%s' file." ),
-      ( config.get( "dir.rc", "" ) + String( "/client.rc" ) ).cstr() );
+      String::str( "%s/client.rc", config.get( "dir.rc", "" ) ).cstr() );
 
   add( new Button( gettext( "Close" ), closeFrame, 40, 16 ), -44, 4 );
 }

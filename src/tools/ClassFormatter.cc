@@ -709,7 +709,7 @@ void ClassFormatter::format( const char* name )
 {
   log.print( "Formatting class '%s' ...", name );
 
-  String sPath = "class/" + String( name ) + ".rc";
+  String sPath = String::str( "class/%s.rc", name );
 
   Config classConfig;
   if( !classConfig.load( sPath ) ) {

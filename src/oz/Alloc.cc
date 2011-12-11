@@ -44,7 +44,7 @@ namespace oz
 static_assert( ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
                "Alloc::ALIGNMENT should be power of two" );
 
-#ifdef OZ_TRACE_LEAKS
+#ifdef OZ_TRACK_LEAKS
 
 // Holds info about a memory allocation, used to track memory leaks and new/delete mismatches.
 struct TraceEntry
@@ -58,7 +58,7 @@ struct TraceEntry
 static TraceEntry* firstObjectTraceEntry = null;
 static TraceEntry* firstArrayTraceEntry  = null;
 
-// If we deallocate from two different threads at once with OZ_TRACE_LEAKS, changing the list
+// If we deallocate from two different threads at once with OZ_TRACK_LEAKS, changing the list
 // of allocated blocks while iterating it in another thread can result in a SIGSEGV.
 #ifdef _WIN32
 static CRITICAL_SECTION sectionMutex;
@@ -99,7 +99,7 @@ void Alloc::printStatistics()
   log.println( "}" );
 }
 
-#ifndef OZ_TRACE_LEAKS
+#ifndef OZ_TRACK_LEAKS
 
 void Alloc::printLeaks()
 {}
@@ -112,11 +112,7 @@ void Alloc::printLeaks()
 
   bt = firstObjectTraceEntry;
   while( bt != null ) {
-#ifdef OZ_POINTER_32
-    log.println( "Leaked object at %p of size %d B allocated", bt->address, bt->size );
-#else
     log.println( "Leaked object at %p of size %lld B allocated", bt->address, ulong64( bt->size ) );
-#endif
     log.indent();
     log.printTrace( &bt->stackTrace );
     log.unindent();
@@ -126,11 +122,7 @@ void Alloc::printLeaks()
 
   bt = firstArrayTraceEntry;
   while( bt != null ) {
-#ifdef OZ_POINTER_32
-    log.println( "Leaked array at %p of size %d B allocated", bt->address, bt->size );
-#else
     log.println( "Leaked array at %p of size %lld B allocated", bt->address, ulong64( bt->size ) );
-#endif
     log.indent();
     log.printTrace( &bt->stackTrace );
     log.unindent();
@@ -171,7 +163,7 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
   }
 #endif
 
-#ifdef OZ_TRACE_LEAKS
+#ifdef OZ_TRACK_LEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
 # ifdef _WIN32
@@ -237,7 +229,7 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
   }
 #endif
 
-#ifdef OZ_TRACE_LEAKS
+#ifdef OZ_TRACK_LEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
 # ifdef _WIN32
@@ -300,9 +292,7 @@ void operator delete ( void* ptr ) throw()
   memset( chunk, 0xee, size );
 #endif
 
-#ifdef OZ_TRACE_LEAKS
-  System::resetSignals();
-
+#ifdef OZ_TRACK_LEAKS
 # ifdef _WIN32
   InitializeCriticalSection( &sectionMutex );
   EnterCriticalSection( &sectionMutex );
@@ -387,9 +377,7 @@ void operator delete[] ( void* ptr ) throw()
   memset( chunk, 0xee, size );
 #endif
 
-#ifdef OZ_TRACE_LEAKS
-  System::resetSignals();
-
+#ifdef OZ_TRACK_LEAKS
 # ifdef _WIN32
   InitializeCriticalSection( &sectionMutex );
   EnterCriticalSection( &sectionMutex );

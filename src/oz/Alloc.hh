@@ -35,7 +35,7 @@ namespace oz
  *
  * This class provides custom implementation for <tt>new</tt>/<tt>delete</tt> and
  * <tt>new[]</tt>/<tt>delete[]</tt> operators that provides memory allocation
- * statistics, specific alignment and optionally tracks memory leaks (if <tt>OZ_TRACE_LEAKS</tt>
+ * statistics, specific alignment and optionally tracks memory leaks (if <tt>OZ_TRACK_LEAKS</tt>
  * config option is turned on).
  *
  * Unless <tt>NDEBUG</tt> macro was defined when building liboz, all freed memory is rewritten with

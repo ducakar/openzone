@@ -45,7 +45,7 @@ void Caelum::build( const char* name )
   log.println( "Prebuilding Caelum '%s' {", name );
   log.indent();
 
-  String destPath = "caelum/" + String( name ) + ".ozcCaelum";
+  String destPath = String::str( "caelum/%s.ozcCaelum", name );
 
   DArray<Point3> positions( client::Caelum::MAX_STARS );
 
@@ -67,20 +67,26 @@ void Caelum::build( const char* name )
     Vec3 x = ~Vec3( z.z, 0.0f, -z.x );
     Vec3 y = z ^ x;
 
-    Mat44 rot = Mat44( x, y, z, Vec3::ZERO );
-    client::Vertex vertex;
+    Mat44 transf = Mat44( x, y, z, positions[i] - Point3::ORIGIN );
 
-    vertex = Vertex( positions[i] + rot * Vec3( -STAR_DIM, 0.0f, 0.0f ) );
-    vertex.write( &os );
+    Vec3 corners[4] = {
+      transf * Vec3( -STAR_DIM, 0.0f, 0.0f ),
+      transf * Vec3( 0.0f, -STAR_DIM, 0.0f ),
+      transf * Vec3( +STAR_DIM, 0.0f, 0.0f ),
+      transf * Vec3( 0.0f, +STAR_DIM, 0.0f )
+    };
 
-    vertex = Vertex( positions[i] + rot * Vec3( 0.0f, -STAR_DIM, 0.0f ) );
-    vertex.write( &os );
+    client::Vertex vertex[4] = {
+      { { corners[0].x, corners[0].y, corners[0].z }, {}, {}, {}, {}, {} },
+      { { corners[1].x, corners[1].y, corners[1].z }, {}, {}, {}, {}, {} },
+      { { corners[2].x, corners[2].y, corners[2].z }, {}, {}, {}, {}, {} },
+      { { corners[3].x, corners[3].y, corners[3].z }, {}, {}, {}, {}, {} }
+    };
 
-    vertex = Vertex( positions[i] + rot * Vec3( +STAR_DIM, 0.0f, 0.0f ) );
-    vertex.write( &os );
-
-    vertex = Vertex( positions[i] + rot * Vec3( 0.0f, +STAR_DIM, 0.0f ) );
-    vertex.write( &os );
+    vertex[0].write( &os );
+    vertex[1].write( &os );
+    vertex[2].write( &os );
+    vertex[3].write( &os );
   }
 
   uint texId = Context::loadRawTexture( "caelum/sun.png", false );

@@ -64,7 +64,7 @@ void alCheckError( const char* file, int line, const char* function )
       break;
     }
     default: {
-      message = "UNKNOWN(" + String( int( result ) ) + ")";
+      message = String::str( "UNKNOWN(%d)", int( result ) );
       break;
     }
   }

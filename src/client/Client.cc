@@ -193,7 +193,7 @@ int Client::main( int argc, char** argv )
     throw Exception( "Cannot determine user home directory from environment" );
   }
 
-  String rcDir = homeVar + String( "/" OZ_RC_DIR );
+  String rcDir = String::str( "%s/" OZ_RC_DIR, homeVar );
 
   File rcDirFile( rcDir.cstr() );
   if( rcDirFile.getType() != File::DIRECTORY ) {

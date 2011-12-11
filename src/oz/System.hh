@@ -39,27 +39,27 @@ class System
 {
   public:
 
-    /**
-     * Singleton.
-     */
-    System() = delete;
+    /// Catch fatal signals and print stack trace.
+    static const int CATCH_SIGNALS_BIT = 0x01;
+
+    /// Wait for a CTRL-C when a fatal signal is caught, so one has time to attach debugger.
+    static const int HALT_BIT = 0x02;
+
+  private:
+
+    static int initFlags; ///< Hold flags which components are initialised.
 
     /**
-     * Enable halt on crash.
+     * Signal handler.
      *
-     * If turned on, the signal handler will halt the program on a fatal signal, write a
-     * notification to stderr and wait for another fatal signal (e.g. CTRL-C).
-     * This is intended to halt the program on a crash, so one can attach with debugger and
-     * inspect the program state.
-     * Default is off.
+     * Handler prints information about signal and calls <code>System::abort()</code>.
      */
-    static void enableHalt( bool value );
+    static void signalHandler( int signum );
 
     /**
      * Set signal handlers.
      *
-     * Set signal handlers to catch critical signals. Handlers print information about signal,
-     * and then call <code>abort()</code>.
+     * Set signal handlers to catch critical signals.
      * SIGINT, SIGQUIT, SIGILL, SIGABRT, SIGFPE, SIGSEGV and SIGTERM should be caught. Some
      * functions or errors may ruin signal catching.
      */
@@ -70,12 +70,20 @@ class System
      */
     static void resetSignals();
 
+  public:
+
+    /**
+     * Singleton.
+     */
+    System() = delete;
+
     /**
      * Play a sound alert.
      *
-     * Plays sine wave from <tt>oz/bellSample.inc</tt> file using pulseaudio.
+     * Plays sine wave from <tt>oz/bellSample.inc</tt> file using PulseAudio on Linux or Win32 API
+     * on Windows.
      *
-     * @param isSync do not start a new thread for playing. Block until the sample finishes.
+     * @param isSync do not start a new thread for playing, wait until the sample finishes.
      */
     static void bell( bool isSync = false );
 
@@ -85,7 +93,7 @@ class System
     static void trap();
 
     /**
-     * Wait for a key to continue or a fatal signal.
+     * Wait for a key or a fatal signal to continue.
      *
      * This function is intended to halt program when something goes wrong, so one can attach
      * a debugger.
@@ -103,11 +111,21 @@ class System
     /**
      * Abort program.
      *
-     * Print the error message and stack trace, call <code>halt()</code> and terminate program with
-     * SIGABRT after that. Everything is printed to stderr and log, unless log output is stdout.
+     * Print the error message and stack trace, call <code>halt()</code>, it HALT_BIT was passed on
+     * initialisation, and terminate program with SIGABRT after that.
+     *
+     * Everything is printed to stderr and log, unless log output is stdout.
      */
     OZ_PRINTF_FORMAT( 1, 2 )
     static void abort( const char* msg, ... );
+
+    /**
+     * Initialise system class.
+     *
+     * Set-up crash handler if CATCH_SIGNALS_BIT is given. On Linux, look for PulseAudio and link
+     * to libpulse, so the bell can be played.
+     */
+    static void init( int flags );
 
 };
 

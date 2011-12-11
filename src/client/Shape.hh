@@ -27,7 +27,7 @@
 
 #include "matrix/Frag.hh"
 
-#include "client/common.hh"
+#include "client/Mesh.hh"
 
 namespace oz
 {
@@ -37,6 +37,9 @@ namespace client
 class Shape
 {
   private:
+
+    static const Vertex VERTICES[];
+    static const ushort INDICES[];
 
     uint vao;
     uint vbo;

@@ -145,12 +145,12 @@ class Buffer
     /**
      * Create an InputStream object for reading binary data from the buffer.
      */
-    InputStream inputStream() const;
+    InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
 
     /**
      * Create an OutputStream object for writing binary data into the buffer.
      */
-    OutputStream outputStream() const;
+    OutputStream outputStream( Endian::Order order = Endian::NATIVE ) const;
 
 };
 

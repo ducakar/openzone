@@ -58,22 +58,33 @@ void Compiler::beginMesh()
   vertices.clear();
   parts.clear();
 
-  part.component   = 0;
-  part.texture     = "";
-  part.masks       = "";
-  part.alpha       = 1.0f;
-  part.specular    = 0.0f;
+  part.component      = 0;
+  part.texture        = "";
+  part.masks          = "";
+  part.alpha          = 1.0f;
+  part.specular       = 0.0f;
 
-  vert.pos[0]      = 0.0f;
-  vert.pos[1]      = 0.0f;
-  vert.pos[2]      = 0.0f;
+  vert.pos[0]         = 0.0f;
+  vert.pos[1]         = 0.0f;
+  vert.pos[2]         = 0.0f;
 
-  vert.texCoord[0] = 0.0f;
-  vert.texCoord[1] = 0.0f;
+  vert.texCoord[0]    = 0.0f;
+  vert.texCoord[1]    = 0.0f;
 
-  vert.normal[0]   = 0.0f;
-  vert.normal[1]   = 0.0f;
-  vert.normal[2]   = 0.0f;
+  vert.detailCoord[0] = 0.0f;
+  vert.detailCoord[1] = 0.0f;
+
+  vert.normal[0]      = 0.0f;
+  vert.normal[1]      = 0.0f;
+  vert.normal[2]      = 0.0f;
+
+  vert.tangent[0]     = 0.0f;
+  vert.tangent[1]     = 0.0f;
+  vert.tangent[2]     = 0.0f;
+
+  vert.binormal[0]    = 0.0f;
+  vert.binormal[1]    = 0.0f;
+  vert.binormal[2]    = 0.0f;
 }
 
 void Compiler::endMesh()
@@ -251,6 +262,19 @@ void Compiler::texCoord( float u, float v )
 void Compiler::texCoord( const float* v )
 {
   texCoord( v[0], v[1] );
+}
+
+void Compiler::detailCoord( float u, float v )
+{
+  hard_assert( flags & MESH_BIT );
+
+  vert.detailCoord[0] = u;
+  vert.detailCoord[1] = v;
+}
+
+void Compiler::detailCoord( const float* v )
+{
+  detailCoord( v[0], v[1] );
 }
 
 void Compiler::normal( float nx, float ny, float nz )

@@ -47,38 +47,38 @@ namespace oz
 
 static const char* const SIGNALS[][2] =
 {
-  { "?",              "[invalid signal number]"    },
-  { "SIGHUP",         "Hangup"                     }, //  1
-  { "SIGINT",         "Interrupt"                  }, //  2
-  { "SIGQUIT",        "Quit"                       }, //  3
-  { "SIGILL",         "Illegal instruction"        }, //  4
-  { "SIGTRAP",        "Trace trap"                 }, //  5
-  { "SIGABRT",        "Abort"                      }, //  6
-  { "SIGBUS",         "BUS error"                  }, //  7
-  { "SIGFPE",         "Floating-point exception"   }, //  8
-  { "SIGKILL",        "Kill, unblockable"          }, //  9
-  { "SIGUSR1",        "User-defined signal 1"      }, // 10
-  { "SIGSEGV",        "Segmentation violation"     }, // 11
-  { "SIGUSR2",        "User-defined signal 2"      }, // 12
-  { "SIGPIPE",        "Broken pipe"                }, // 13
-  { "SIGALRM",        "Alarm clock"                }, // 14
-  { "SIGTERM",        "Termination"                }, // 15
-  { "SIGSTKFLT",      "Stack fault"                }, // 16
-  { "SIGCHLD",        "Child status has changed"   }, // 17
-  { "SIGCONT",        "Continue"                   }, // 18
-  { "SIGSTOP",        "Stop, unblockable"          }, // 19
-  { "SIGTSTP",        "Keyboard stop"              }, // 20
-  { "SIGTTIN",        "Background read from tty"   }, // 21
-  { "SIGTTOU",        "Background write to tty"    }, // 22
-  { "SIGURG",         "Urgent condition on socket" }, // 23
-  { "SIGXCPU",        "CPU limit exceeded"         }, // 24
-  { "SIGXFSZ",        "File size limit exceeded"   }, // 25
-  { "SIGVTALRM",      "Virtual alarm clock"        }, // 26
-  { "SIGPROF",        "Profiling alarm clock"      }, // 27
-  { "SIGWINCH",       "Window size change"         }, // 28
-  { "SIGIO",          "I/O now possible"           }, // 29
-  { "SIGPWR",         "Power failure restart"      }, // 30
-  { "SIGSYS",         "Bad system call"            }  // 31
+  { "?",         "[invalid signal number]"    },
+  { "SIGHUP",    "Hangup"                     }, //  1
+  { "SIGINT",    "Interrupt"                  }, //  2
+  { "SIGQUIT",   "Quit"                       }, //  3
+  { "SIGILL",    "Illegal instruction"        }, //  4
+  { "SIGTRAP",   "Trace trap"                 }, //  5
+  { "SIGABRT",   "Abort"                      }, //  6
+  { "SIGBUS",    "BUS error"                  }, //  7
+  { "SIGFPE",    "Floating-point exception"   }, //  8
+  { "SIGKILL",   "Kill, unblockable"          }, //  9
+  { "SIGUSR1",   "User-defined signal 1"      }, // 10
+  { "SIGSEGV",   "Segmentation violation"     }, // 11
+  { "SIGUSR2",   "User-defined signal 2"      }, // 12
+  { "SIGPIPE",   "Broken pipe"                }, // 13
+  { "SIGALRM",   "Alarm clock"                }, // 14
+  { "SIGTERM",   "Termination"                }, // 15
+  { "SIGSTKFLT", "Stack fault"                }, // 16
+  { "SIGCHLD",   "Child status has changed"   }, // 17
+  { "SIGCONT",   "Continue"                   }, // 18
+  { "SIGSTOP",   "Stop, unblockable"          }, // 19
+  { "SIGTSTP",   "Keyboard stop"              }, // 20
+  { "SIGTTIN",   "Background read from tty"   }, // 21
+  { "SIGTTOU",   "Background write to tty"    }, // 22
+  { "SIGURG",    "Urgent condition on socket" }, // 23
+  { "SIGXCPU",   "CPU limit exceeded"         }, // 24
+  { "SIGXFSZ",   "File size limit exceeded"   }, // 25
+  { "SIGVTALRM", "Virtual alarm clock"        }, // 26
+  { "SIGPROF",   "Profiling alarm clock"      }, // 27
+  { "SIGWINCH",  "Window size change"         }, // 28
+  { "SIGIO",     "I/O now possible"           }, // 29
+  { "SIGPWR",    "Power failure restart"      }, // 30
+  { "SIGSYS",    "Bad system call"            }  // 31
 };
 
 #ifndef _WIN32
@@ -87,11 +87,17 @@ static const ubyte BELL_SAMPLE[] = {
 };
 
 static const pa_sample_spec BELL_SPEC = { PA_SAMPLE_U8, 11025, 1 };
+
+static decltype( ::pa_simple_new   )* pa_simple_new   = null;
+static decltype( ::pa_simple_free  )* pa_simple_free  = null;
+static decltype( ::pa_simple_write )* pa_simple_write = null;
+
+static void* libpulse = null;
 #endif
 
-static bool isHaltEnabled = false;
+int System::initFlags = 0;
 
-static void signalHandler( int signum )
+void System::signalHandler( int signum )
 {
   System::resetSignals();
 
@@ -100,7 +106,7 @@ static void signalHandler( int signum )
   }
 
   if( signum == SIGINT ) {
-    isHaltEnabled = false;
+    System::initFlags &= ~System::HALT_BIT;
   }
 
   System::abort( "Caught signal %d %s (%s)", signum, SIGNALS[signum][0], SIGNALS[signum][1] );
@@ -110,23 +116,6 @@ static void signalHandler( int signum )
 
 static void* bellThread( void* )
 {
-  void* l = dlopen( "libpulse-simple.so", RTLD_NOW );
-  if( l == null ) {
-    return null;
-  }
-
-  decltype( ::pa_simple_new   )* pa_simple_new   = null;
-  decltype( ::pa_simple_free  )* pa_simple_free  = null;
-  decltype( ::pa_simple_write )* pa_simple_write = null;
-
-  *reinterpret_cast<void**>( &pa_simple_new   ) = dlsym( l, "pa_simple_new" );
-  *reinterpret_cast<void**>( &pa_simple_free  ) = dlsym( l, "pa_simple_free" );
-  *reinterpret_cast<void**>( &pa_simple_write ) = dlsym( l, "pa_simple_write" );
-
-  if( pa_simple_new == null || pa_simple_free == null || pa_simple_write == null ) {
-    return null;
-  }
-
   pa_simple* pa = pa_simple_new( null, "liboz", PA_STREAM_PLAYBACK, null, "bell", &BELL_SPEC,
                                  null, null, null );
   if( pa != null ) {
@@ -134,16 +123,10 @@ static void* bellThread( void* )
     pa_simple_free( pa );
   }
 
-  dlclose( l );
   return null;
 }
 
 #endif
-
-void System::enableHalt( bool value )
-{
-  isHaltEnabled = value;
-}
 
 void System::catchSignals()
 {
@@ -268,7 +251,7 @@ void System::abort( const char* msg, ... )
 
   va_end( ap );
 
-  if( isHaltEnabled ) {
+  if( initFlags & HALT_BIT ) {
     fprintf( stderr, "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
     fflush( stderr );
 
@@ -282,6 +265,58 @@ void System::abort( const char* msg, ... )
   }
 
   ::abort();
+}
+
+void System::init( int flags )
+{
+  if( initFlags & CATCH_SIGNALS_BIT ) {
+    resetSignals();
+  }
+
+#ifndef _WIN32
+  if( libpulse != null ) {
+    dlclose( libpulse );
+
+    pa_simple_new   = null;
+    pa_simple_free  = null;
+    pa_simple_write = null;
+    libpulse        = null;
+  }
+#endif
+
+  initFlags = 0;
+
+  if( flags & CATCH_SIGNALS_BIT ) {
+    initFlags |= CATCH_SIGNALS_BIT;
+    catchSignals();
+  }
+
+  if( flags & HALT_BIT ) {
+    initFlags |= HALT_BIT;
+  }
+
+#ifndef _WIN32
+  libpulse = dlopen( "libpulse-simple.so", RTLD_NOW );
+
+  if( libpulse == null ) {
+    return;
+  }
+
+  *reinterpret_cast<void**>( &pa_simple_new   ) = dlsym( libpulse, "pa_simple_new" );
+  *reinterpret_cast<void**>( &pa_simple_free  ) = dlsym( libpulse, "pa_simple_free" );
+  *reinterpret_cast<void**>( &pa_simple_write ) = dlsym( libpulse, "pa_simple_write" );
+
+  if( pa_simple_new == null || pa_simple_free == null || pa_simple_write == null ) {
+    dlclose( libpulse );
+
+    pa_simple_new   = null;
+    pa_simple_free  = null;
+    pa_simple_write = null;
+    libpulse        = null;
+
+    return;
+  }
+#endif
 }
 
 }

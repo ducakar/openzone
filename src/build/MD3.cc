@@ -57,7 +57,7 @@ void MD3::buildMesh( const char* name, int frame )
 {
   log.print( "Mesh '%s' ...", name );
 
-  File file( sPath + "/" + String( name ) + ".md3" );
+  File file( String::str( "%s/%s.md3", sPath.cstr(), name ) );
   if( !file.map() ) {
     throw Exception( "Cannot mmap MD3 model part file '%s'", file.path() );
   }

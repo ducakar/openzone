@@ -45,11 +45,8 @@
 // enable networking
 #cmakedefine                    OZ_NETWORKING
 
-// enable some mesa-specific compatibility
+// enable mesa compatibility
 #cmakedefine                    OZ_GL_COMPATIBLE
-
-// enable bump-mapping
-#cmakedefine                    OZ_BUMPMAP
 
 // fix error in vorbisfile.h
 #ifdef _WIN32

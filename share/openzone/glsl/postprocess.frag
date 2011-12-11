@@ -65,7 +65,6 @@ void main()
 
   vec4  blur      = multiSample * BLUR_FACTOR;
   vec4  bloom     = multiSample * BLOOM_FACTOR;
-
   vec4  sample    = texture2D( oz_Textures[0], exTexCoord );
   float luminance = clamp( ( multiSample.r + multiSample.g + multiSample.b ) * LUMINANCE_FACTOR, 0.0, 1.0 );
 

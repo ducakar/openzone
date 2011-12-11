@@ -44,9 +44,6 @@ class Config
     /// Hashtable size.
     static const int SIZE = 256;
 
-    /// Size of buffer used when loading from file (maximum key/value length).
-    static const int LINE_BUFFER_SIZE = 1024;
-
     /// Column for value alignment when writing .rc configuration files.
     static const int ALIGNMENT = 32;
 
@@ -67,7 +64,6 @@ class Config
 
     HashString<Value, SIZE> vars;                   ///< %List of variables.
     String                  filePath;               ///< Needed to warn about unused variables.
-    char                    line[LINE_BUFFER_SIZE]; ///< Internal buffer used during file parsing.
 
     /**
      * Load configuration from a .rc file (does not override existing variables).

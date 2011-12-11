@@ -535,7 +535,7 @@ class BufferStream
       if( pos + length == end ) {
         throw Exception( "End of buffer reached while looking for the end of a string." );
       }
-      return String( forward( length + 1 ), length );
+      return String( length, forward( length + 1 ) );
     }
 
     /**
