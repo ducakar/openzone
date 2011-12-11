@@ -38,25 +38,24 @@ namespace oz
 namespace matrix
 {
 
-const float Bot::AIR_FRICTION       =  0.01f;
-const float Bot::HIT_HARD_THRESHOLD = -8.00f;
+constexpr float Bot::AIR_FRICTION;
+constexpr float Bot::HIT_HARD_THRESHOLD;
 
-const float Bot::WOUNDED_THRESHOLD  =  0.70f;
-const float Bot::CORPSE_FADE_FACTOR =  0.5f / 100.0f * Timer::TICK_TIME;
+constexpr float Bot::WOUNDED_THRESHOLD;
+constexpr float Bot::CORPSE_FADE_FACTOR;
 
-const float Bot::INSTRUMENT_DIST    =  2.00f;
-const float Bot::INSTRUMENT_DOT_MIN =  0.80f;
+constexpr float Bot::INSTRUMENT_DIST;
+constexpr float Bot::INSTRUMENT_DOT_MIN;
 
-const float Bot::GRAB_EPSILON       =  0.20f;
-const float Bot::GRAB_STRING_RATIO  =  10.0f;
-const float Bot::GRAB_HANDLE_TOL    =  1.60f;
-const float Bot::GRAB_MOM_RATIO     =  0.3f;
-// should be smaller than abs( Physics::HIT_THRESHOLD )
-const float Bot::GRAB_MOM_MAX       =  1.0f;
-const float Bot::GRAB_MOM_MAX_SQ    =  1.0f;
+constexpr float Bot::GRAB_EPSILON;
+constexpr float Bot::GRAB_STRING_RATIO;
+constexpr float Bot::GRAB_HANDLE_TOL;
+constexpr float Bot::GRAB_MOM_RATIO;
+constexpr float Bot::GRAB_MOM_MAX;
+constexpr float Bot::GRAB_MOM_MAX_SQ;
 
-const float Bot::STEP_MOVE_AHEAD    =  0.20f;
-const float Bot::CLIMB_MOVE_AHEAD   =  0.40f;
+constexpr float Bot::STEP_MOVE_AHEAD;
+constexpr float Bot::CLIMB_MOVE_AHEAD;
 
 Pool<Bot, 1024> Bot::pool;
 

@@ -28,7 +28,7 @@
 namespace oz
 {
 
-const float AABB::MAX_DIM      = 4.00f;
-const float AABB::REAL_MAX_DIM = 3.99f;
+constexpr float AABB::MAX_DIM;
+constexpr float AABB::REAL_MAX_DIM;
 
 }

@@ -38,7 +38,10 @@ namespace matrix
 
 const Mat44 Struct::ROTATIONS[] =
 {
-  Mat44::ID,
+  Mat44(  1.0f,  0.0f,  0.0f,  0.0f,
+          0.0f,  1.0f,  0.0f,  0.0f,
+          0.0f,  0.0f,  1.0f,  0.0f,
+          0.0f,  0.0f,  0.0f,  1.0f ),
   Mat44(  0.0f,  1.0f,  0.0f,  0.0f,
          -1.0f,  0.0f,  0.0f,  0.0f,
           0.0f,  0.0f,  1.0f,  0.0f,
@@ -51,7 +54,10 @@ const Mat44 Struct::ROTATIONS[] =
           1.0f,  0.0f,  0.0f,  0.0f,
           0.0f,  0.0f,  1.0f,  0.0f,
           0.0f,  0.0f,  0.0f,  1.0f ),
-  Mat44::ID
+  Mat44(  1.0f,  0.0f,  0.0f,  0.0f,
+          0.0f,  1.0f,  0.0f,  0.0f,
+          0.0f,  0.0f,  1.0f,  0.0f,
+          0.0f,  0.0f,  0.0f,  1.0f ),
 };
 
 const Vec3  Struct::DESTRUCT_FRAG_VELOCITY = Vec3( 0.0f, 0.0f, 2.0f );
@@ -425,6 +431,10 @@ void Struct::destroy()
 
 Struct::Struct( const BSP* bsp_, int index_, const Point3& p_, Heading heading_ )
 {
+  const Mat44& m = ROTATIONS[1];
+  __builtin_printf( "[%g %g %g %g] [%g %g %g %g] [%g %g %g %g] [%g %g %g %g]\n",
+                    m.x.x, m.x.y, m.x.z, m.x.w, m.y.x, m.y.y, m.y.z, m.y.w, m.z.x, m.z.y, m.z.z, m.z.w, m.w.x, m.w.y, m.w.z, m.w.w );
+
   bsp         = bsp_;
   p           = p_;
   index       = index_;
@@ -436,6 +446,8 @@ Struct::Struct( const BSP* bsp_, int index_, const Point3& p_, Heading heading_ 
 
   transf      = Mat44::translation( p - Point3::ORIGIN ) * ROTATIONS[heading];
   invTransf   = ROTATIONS[4 - heading] * Mat44::translation( Point3::ORIGIN - p );
+
+  hard_assert( transf.det() != 0.0f );
 
   Bounds bb   = toAbsoluteCS( *bsp );
   mins        = bb.mins;

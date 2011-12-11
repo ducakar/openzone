@@ -252,16 +252,7 @@ void System::abort( const char* msg, ... )
   va_end( ap );
 
   if( initFlags & HALT_BIT ) {
-    fprintf( stderr, "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
-    fflush( stderr );
-
-#ifdef _WIN32
-    while( true ) {
-      Sleep( 1000 );
-    }
-#else
-    while( sleep( 1 ) == 0 );
-#endif
+    halt();
   }
 
   ::abort();

@@ -38,30 +38,30 @@ class Physics
 {
   public:
 
-    static const float MOVE_BOUNCE;
-    static const float HIT_THRESHOLD;
-    static const float SPLASH_THRESHOLD;
-    static const float FLOOR_NORMAL_Z;
-    static const float SIDE_PUSH_RATIO;
-    static const float WEIGHT_DAMAGE_THRESHOLD;
-    static const float WEIGHT_DAMAGE_FACTOR;
-    static const float G_ACCEL;
+    static constexpr float MOVE_BOUNCE             =  1.5f * EPSILON;
+    static constexpr float HIT_THRESHOLD           = -3.0f;
+    static constexpr float SPLASH_THRESHOLD        = -2.0f;
+    static constexpr float FLOOR_NORMAL_Z          =  0.60f;
+    static constexpr float SIDE_PUSH_RATIO         =  0.5f;
+    static constexpr float WEIGHT_DAMAGE_THRESHOLD =  1000.0f;
+    static constexpr float WEIGHT_DAMAGE_FACTOR    =  20.0f;
+    static constexpr float G_ACCEL                 = -9.81f;
 
-    static const float SLIDE_DAMAGE_THRESHOLD;
-    static const float SLIDE_DAMAGE_COEF;
-    static const float STICK_VELOCITY;
-    static const float SLICK_STICK_VELOCITY;
-    static const float FLOAT_STICK_VELOCITY;
-    static const float WATER_FRICTION;
-    static const float LADDER_FRICTION;
-    static const float FLOOR_FRICTION;
-    static const float SLICK_FRICTION;
+    static constexpr float SLIDE_DAMAGE_THRESHOLD  =  25.0f;
+    static constexpr float SLIDE_DAMAGE_COEF       =  0.65f;
+    static constexpr float STICK_VELOCITY          =  0.015f;
+    static constexpr float SLICK_STICK_VELOCITY    =  0.001f;
+    static constexpr float FLOAT_STICK_VELOCITY    =  0.0002f;
+    static constexpr float WATER_FRICTION          =  0.08f;
+    static constexpr float LADDER_FRICTION         =  0.50f;
+    static constexpr float FLOOR_FRICTION          =  0.25f;
+    static constexpr float SLICK_FRICTION          =  0.02f;
 
-    static const float FRAG_HIT_VELOCITY2;
-    static const float FRAG_DESTROY_VELOCITY2;
-    static const float FRAG_STR_DAMAGE_COEF;
-    static const float FRAG_OBJ_DAMAGE_COEF;
-    static const float FRAG_FIXED_DAMAGE;
+    static constexpr float FRAG_HIT_VELOCITY2      =  100.0f;
+    static constexpr float FRAG_DESTROY_VELOCITY2  =  300.0f;
+    static constexpr float FRAG_STR_DAMAGE_COEF    =  0.05f;
+    static constexpr float FRAG_OBJ_DAMAGE_COEF    =  0.05f;
+    static constexpr float FRAG_FIXED_DAMAGE       =  0.75f;
 
   private:
 

@@ -35,9 +35,11 @@ namespace client
 
 class MD3Imago : public Imago
 {
-  public:
+  private:
 
     static const float TURN_SMOOTHING_COEF;
+
+  public:
 
     MD3*           md3;
     float          h;

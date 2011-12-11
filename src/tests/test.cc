@@ -65,12 +65,8 @@ struct Foo
 
 int main( int, char** )
 {
-  System::catchSignals();
+  System::init();
   Alloc::isLocked = true;
-
-  HashString<int> hs;
-
-  hs.add( "aaa" );
 
   return 0;
 }

@@ -37,9 +37,11 @@ struct Hit;
 
 class Frag
 {
-  public:
+  protected:
 
     static const float DAMAGE_THRESHOLD;
+
+  public:
 
     static Pool<Frag, 2048> mpool;
 

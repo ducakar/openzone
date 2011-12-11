@@ -34,9 +34,9 @@ class Timer
 {
   public:
 
-    static const int   TICK_MILLIS   = 17;
-    static const float TICK_TIME;
-    static const int   TICKS_PER_SEC = ( 1000 + TICK_MILLIS / 2 ) / TICK_MILLIS;
+    static const     int   TICK_MILLIS   = 17;
+    static constexpr float TICK_TIME     = float( TICK_MILLIS ) / 1000.0f;
+    static const     int   TICKS_PER_SEC = ( 1000 + TICK_MILLIS / 2 ) / TICK_MILLIS;
 
     uint  runMillis;
 

@@ -36,9 +36,9 @@ namespace oz
 namespace client
 {
 
-const float Audio::REFERENCE_DISTANCE   = 2.00f;
-const float Audio::COCKPIT_GAIN_FACTOR  = 0.35f;
-const float Audio::COCKPIT_PITCH_FACTOR = 0.95f;
+constexpr float Audio::REFERENCE_DISTANCE;
+constexpr float Audio::COCKPIT_GAIN_FACTOR;
+constexpr float Audio::COCKPIT_PITCH_FACTOR;
 
 void Audio::playSound( int sound, float volume, const Object* obj, const Object* parent ) const
 {

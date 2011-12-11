@@ -38,25 +38,21 @@ class Terra
 {
   public:
 
-    static const int QUADS = 256;
-    static const int VERTS = QUADS + 1;
-
-    // Orbis::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM
-    static const float DIM;
-
     struct Quad
     {
-      // integer size of a terrain quad
-      static const int   SIZEI = 16;
-      // float size of a terrain quad
-      static const float SIZE;
-      static const float INV_SIZE;
-      // dimension of a terrain quad (size / 2)
-      static const float DIM;
+      static const     int   SIZEI    = 16;             ///< Integer size of a terrain quad.
+      static constexpr float SIZE     = float( SIZEI ); ///< Float size of a terrain quad.
+      static constexpr float INV_SIZE = 1.0f / SIZE;
+      static constexpr float DIM      = SIZE / 2.0f;    ///< Dimension of a terrain quad (size / 2).
 
       Point3 vertex;
       Vec3   triNormal[2];
     };
+
+    // Orbis::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM
+    static const     int   QUADS = 256;
+    static const     int   VERTS = QUADS + 1;
+    static constexpr float DIM   = QUADS * Quad::DIM;
 
     Quad quads[VERTS][VERTS];
     int  id;

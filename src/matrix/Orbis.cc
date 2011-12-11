@@ -41,9 +41,10 @@ namespace matrix
 
 Orbis orbis;
 
-const float Cell::SIZE     = float( SIZEI );
-const float Cell::INV_SIZE = 1.0f / float( SIZEI );
-const float Orbis::DIM     = Cell::SIZE * MAX / 2.0f;
+constexpr float Cell::SIZE;
+constexpr float Cell::INV_SIZE;
+
+constexpr float Orbis::DIM;
 
 bool Orbis::position( Struct* str )
 {

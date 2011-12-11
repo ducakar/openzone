@@ -63,6 +63,8 @@ class Vehicle : public Dynamic
     static const int   HAS_EJECT_BIT     = 0x0004;
     static const int   AUTO_EJECT_BIT    = 0x0008;
 
+  protected:
+
     static const float ROT_DIFF_LIMIT;
     static const float ROT_VEL_DIFF_RATIO;
     static const float AIR_FRICTION;
