@@ -68,7 +68,7 @@ class StrategicArea : public Area
     void printName( int baseX, int baseY, const char* s, ... );
 
     void drawHoveredRect( const Span& span, const Struct* str, const Object* obj );
-    void drawTaggedRect( const Span& span, const Struct* str, const Object* obj );
+    void drawTaggedRect( const Span& span, const Struct* str, const Object* obj, bool isHovered );
 
   protected:
 

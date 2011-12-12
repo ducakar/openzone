@@ -56,8 +56,8 @@ class File
 
     String filePath; ///< %File path.
     Type   type;     ///< Cached file type.
-    char*  data;     ///< MMapped memory.
-    int    size;     ///< MMapped memory size.
+    char*  data;     ///< Mapped memory.
+    int    size;     ///< Mapped memory size.
 
     /**
      * Internal function to a write buffer to the file.
@@ -84,7 +84,7 @@ class File
     File( const File& ) = delete;
 
     /**
-     * Move constructor, transfers mmaped region "ownership".
+     * Move constructor, transfers mapped region "ownership".
      */
     File( File&& file );
 
@@ -94,7 +94,7 @@ class File
     File& operator = ( const File& ) = delete;
 
     /**
-     * Move operator, transfers mmaped region "ownership".
+     * Move operator, transfers mapped region "ownership".
      */
     File& operator = ( File&& file );
 
@@ -106,7 +106,7 @@ class File
     /**
      * Set a new file path.
      *
-     * Cached file type is cleared to <tt>NONE</tt> and file is unmmapped if it is currenty mmaped.
+     * Cached file type is cleared to <tt>NONE</tt> and file is unmapped if it is currently mapped.
      */
     void setPath( const char* path );
 
@@ -145,19 +145,19 @@ class File
     bool hasExtension( const char* ext ) const;
 
     /**
-     * Use mmap to map file in memory.
+     * %Map file into memory.
      *
      * One can use <tt>inputStream()</tt> afterwards to read the contents.
      */
     bool map();
 
     /**
-     * Unmap mmaped file.
+     * Unmap mapped file.
      */
     void unmap();
 
     /**
-     * Get <code>InputStream</code> for currently mmapped file.
+     * Get <code>InputStream</code> for currently mapped file.
      */
     InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
 

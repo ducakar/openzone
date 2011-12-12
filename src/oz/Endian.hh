@@ -39,6 +39,9 @@ class Endian
 {
   public:
 
+    /**
+     * Endian order.
+     */
     enum Order
     {
       LITTLE = 0,
@@ -53,13 +56,13 @@ class Endian
     /**
      * Singleton.
      */
-    Endian() = delete;
+    constexpr Endian() = delete;
 
     /**
      * Swap byte order.
      */
     OZ_ALWAYS_INLINE
-    static short bswap16( short s )
+    static constexpr short bswap16( short s )
     {
       return short( ushort( s ) << 8 | ushort( s ) >> 8 );
     }
@@ -68,7 +71,7 @@ class Endian
      * Swap byte order.
      */
     OZ_ALWAYS_INLINE
-    static int bswap32( int i )
+    static constexpr int bswap32( int i )
     {
       return int( __builtin_bswap32( uint( i ) ) );
     }
@@ -77,36 +80,9 @@ class Endian
      * Swap byte order.
      */
     OZ_ALWAYS_INLINE
-    static long64 bswap64( long64 l )
+    static constexpr long64 bswap64( long64 l )
     {
       return long64( __builtin_bswap64( ulong64( l ) ) );
-    }
-
-    /**
-     * Swap byte order if different from native.
-     */
-    OZ_ALWAYS_INLINE
-    static short bswap16( short s, Order order )
-    {
-      return order == NATIVE ? s : short( ushort( s ) << 8 | ushort( s ) >> 8 );
-    }
-
-    /**
-     * Swap byte order if different from native.
-     */
-    OZ_ALWAYS_INLINE
-    static int bswap32( int i, Order order )
-    {
-      return order == NATIVE ? i : int( __builtin_bswap32( uint( i ) ) );
-    }
-
-    /**
-     * Swap byte order if different from native.
-     */
-    OZ_ALWAYS_INLINE
-    static long64 bswap64( long64 l, Order order )
-    {
-      return order == NATIVE ? l : long64( __builtin_bswap64( ulong64( l ) ) );
     }
 
 };

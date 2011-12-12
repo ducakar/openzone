@@ -267,12 +267,7 @@ void Bot::onUpdate()
     if( actions & ACTION_FORWARD ) {
       // for now CLIMBING_BIT is equivalent to ON_LADDER_BIT in flags since ledge climbing has not
       // been processed yet
-      if( state & CLIMBING_BIT ) {
-        move.x -= hvsc[4];
-        move.y += hvsc[5];
-        move.z += v < Math::TAU / 4.0f ? -1.0f : 1.0f;
-      }
-      else if( state & SWIMMING_BIT ) {
+      if( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) {
         move.x -= hvsc[4];
         move.y += hvsc[5];
         move.z -= hvsc[3];

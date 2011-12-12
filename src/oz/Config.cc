@@ -53,7 +53,7 @@ struct Elem
 static const int LINE_BUFFER_SIZE = 1024;
 
 // Internal buffer used during file parsing.
-static thread_local char line[LINE_BUFFER_SIZE];
+static OZ_THREAD_LOCAL char line[LINE_BUFFER_SIZE];
 
 bool Config::loadConf( const char* path )
 {

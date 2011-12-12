@@ -47,7 +47,9 @@ class System
 
   private:
 
-    static int initFlags; ///< Hold flags which components are initialised.
+    static System system; ///< Private instance, takes care for static initialisation/destruction.
+
+    static int initFlags; ///< Holds flags which components are initialised.
 
     /**
      * Signal handler.
@@ -70,22 +72,25 @@ class System
      */
     static void resetSignals();
 
+    /**
+     * Default constructor dynamically loads <tt>libpulse-simple</tt> to enable bell on Linux.
+     */
+    System();
+
+    /**
+     * Destructor delays process termination until bell sound is played to the end.
+     */
+    ~System();
+
   public:
 
     /**
-     * Singleton.
-     */
-    System() = delete;
-
-    /**
-     * Play a sound alert.
+     * Play a sound alert (asynchronously).
      *
-     * Plays sine wave from <tt>oz/bellSample.inc</tt> file using PulseAudio on Linux or Win32 API
-     * on Windows.
-     *
-     * @param isSync do not start a new thread for playing, wait until the sample finishes.
+     * On Linux, sine wave from <tt>oz/bellSample.inc</tt> is played through PulseAudio. On Windows,
+     * default system bell is used.
      */
-    static void bell( bool isSync = false );
+    static void bell();
 
     /**
      * Raise trap signal (to trigger a breakpoint).
@@ -120,10 +125,10 @@ class System
     static void abort( const char* msg, ... );
 
     /**
-     * Initialise <tt>System</tt> class.
+     * Initialise <tt>System</tt> features.
      *
-     * Set-up crash handler if CATCH_SIGNALS_BIT is given. On Linux, look for PulseAudio and link
-     * to libpulse, so the bell can be played.
+     * Set-up crash handler if <tt>CATCH_SIGNALS_BIT</tt> is given. If <tt>HALT_BIT</tt> is also
+     * given, crash handler waits for CTRL-C before exit.
      */
 #ifdef NDEBUG
     static void init( int flags = CATCH_SIGNALS_BIT | HALT_BIT );

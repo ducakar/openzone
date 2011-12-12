@@ -32,9 +32,9 @@
 namespace oz
 {
 
-const int LOCAL_BUFFER_SIZE = 4096;
+static const int LOCAL_BUFFER_SIZE = 4096;
 
-static thread_local char localBuffer[LOCAL_BUFFER_SIZE];
+static OZ_THREAD_LOCAL char localBuffer[LOCAL_BUFFER_SIZE];
 
 String::String( bool b ) : buffer( baseBuffer )
 {

@@ -352,6 +352,8 @@ void Render::drawOrbis()
   prepareDraw();
   drawGeometry();
 
+  uint beginTime = SDL_GetTicks();
+
   if( isOffscreen ) {
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
@@ -380,6 +382,8 @@ void Render::drawOrbis()
   }
 
   OZ_GL_CHECK_ERROR();
+
+  postprocessMillis += SDL_GetTicks() - beginTime;
 }
 
 void Render::drawUI()

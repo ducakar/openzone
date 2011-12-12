@@ -33,21 +33,21 @@ namespace oz
  *
  * @ingroup oz
  */
-typedef int __attribute__(( vector_size( 16 ) )) int4;
+typedef int int4 __attribute__(( vector_size( 16 ) ));
 
 /**
  * SIMD vector of four unsigned integers.
  *
  * @ingroup oz
  */
-typedef uint __attribute__(( vector_size( 16 ) )) uint4;
+typedef uint uint4 __attribute__(( vector_size( 16 ) )) ;
 
 /**
  * SIMD vector of four floats.
  *
  * @ingroup oz
  */
-typedef float __attribute__(( vector_size( 16 ) )) float4;
+typedef float float4 __attribute__(( vector_size( 16 ) ));
 
 /**
  * @def int4

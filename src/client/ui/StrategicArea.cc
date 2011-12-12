@@ -175,57 +175,64 @@ void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const 
   float lifeWidth = life * barWidth;
   float lifeWidthLeft = barWidth - lifeWidth;
 
-  glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 1.0f );
+  glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.8f );
   shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
-  glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.2f );
+
+  glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.15f );
   shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
 
-  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.8f );
   shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
 }
 
-void StrategicArea::drawTaggedRect( const Span& span, const Struct* str, const Object* obj )
+void StrategicArea::drawTaggedRect( const Span& span, const Struct* str, const Object* obj,
+                                    bool isHovered )
 {
   float minX = float( span.minX );
   float maxX = float( span.maxX );
   float minY = float( span.minY );
   float maxY = float( span.maxY );
 
-  float life = 1.0f;
-
-  if( str != null ) {
-    float maxLife = str->bsp->life;
-
-    if( !Math::isinf( str->life ) ) {
-      life = str->life / maxLife;
-    }
+  if( isHovered ) {
+    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.8f );
+    shape.tag( minX, minY, maxX, maxY );
   }
   else {
-    float maxLife = obj->clazz->life;
+    float life = 1.0f;
 
-    if( !Math::isinf( maxLife ) ) {
-      life = obj->flags & Object::BOT_BIT ?
-          max( 0.0f, ( obj->life - maxLife / 2.0f ) / ( maxLife / 2.0f ) ) :
-          obj->life / maxLife;
+    if( str != null ) {
+      float maxLife = str->bsp->life;
+
+      if( !Math::isinf( str->life ) ) {
+        life = str->life / maxLife;
+      }
     }
+    else {
+      float maxLife = obj->clazz->life;
+
+      if( !Math::isinf( maxLife ) ) {
+        life = obj->flags & Object::BOT_BIT ?
+            max( 0.0f, ( obj->life - maxLife / 2.0f ) / ( maxLife / 2.0f ) ) :
+            obj->life / maxLife;
+      }
+    }
+
+    float barWidth = maxX - minX + 2.0f;
+    float lifeWidth = life * barWidth;
+    float lifeWidthLeft = barWidth - lifeWidth;
+
+    hard_assert( 0.0f <= life && life <= 1.0f );
+
+    glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
+    shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
+
+    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.15f );
+    shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
+
+    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.8f );
+    shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
+    shape.tag( minX, minY, maxX, maxY );
   }
-
-  float barWidth = maxX - minX + 2.0f;
-  float lifeWidth = life * barWidth;
-  float lifeWidthLeft = barWidth - lifeWidth;
-
-  hard_assert( 0.0f <= life && life <= 1.0f );
-
-  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
-  shape.tag( minX, minY, maxX, maxY );
-
-  glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.5f );
-  shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
-  glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.2f );
-  shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
-
-  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.5f );
-  shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
 }
 
 void StrategicArea::onVisibilityChange()
@@ -323,16 +330,13 @@ void StrategicArea::onDraw()
     }
   }
 
-  hoverStr = -1;
-  hoverObj = -1;
-
   for( int i = 0; i < taggedStrs.length(); ++i ) {
     const Struct* str = orbis.structs[ taggedStrs[i] ];
 
     if( str != null ) {
       if( ( str->p - camera.p ) * camera.at >= TAG_CLIP_DIST ) {
         if( projectBounds( &span, str->toAABB() ) ) {
-          drawTaggedRect( span, str, null );
+          drawTaggedRect( span, str, null, taggedStrs[i] == hoverStr );
         }
       }
     }
@@ -344,11 +348,14 @@ void StrategicArea::onDraw()
     if( obj != null ) {
       if( ( obj->p - camera.p ) * camera.at >= TAG_CLIP_DIST ) {
         if( projectBounds( &span, *obj ) ) {
-          drawTaggedRect( span, null, obj );
+          drawTaggedRect( span, null, obj, taggedObjs[i] == hoverObj );
         }
       }
     }
   }
+
+  hoverStr = -1;
+  hoverObj = -1;
 }
 
 StrategicArea::StrategicArea() :

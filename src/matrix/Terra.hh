@@ -40,7 +40,7 @@ class Terra
 
     struct Quad
     {
-      static const     int   SIZEI    = 16;             ///< Integer size of a terrain quad.
+      static const     int   SIZEI    = 8;              ///< Integer size of a terrain quad.
       static constexpr float SIZE     = float( SIZEI ); ///< Float size of a terrain quad.
       static constexpr float INV_SIZE = 1.0f / SIZE;
       static constexpr float DIM      = SIZE / 2.0f;    ///< Dimension of a terrain quad (size / 2).
@@ -50,7 +50,7 @@ class Terra
     };
 
     // Orbis::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM
-    static const     int   QUADS = 256;
+    static const     int   QUADS = 512;
     static const     int   VERTS = QUADS + 1;
     static constexpr float DIM   = QUADS * Quad::DIM;
 
