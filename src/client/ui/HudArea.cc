@@ -90,6 +90,9 @@ void HudArea::drawBotCrosshair()
     glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
     fill( healthBarX + 1, healthBarY + 11, lifeWidth, 10 );
 
+    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.15f );
+    fill( healthBarX + 1 + lifeWidth, healthBarY + 11, ICON_SIZE + 14 - lifeWidth, 10 );
+
     glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.8f );
     rect( healthBarX, healthBarY + 10, ICON_SIZE + 16, 12 );
 
@@ -191,6 +194,10 @@ void HudArea::drawBotStatus()
   glUniform4f( param.oz_Colour, 0.7f - 0.7f * stamina, 0.3f, 0.5f + 0.5f * stamina, 0.6f );
   fill( 9, 9, staminaWidth, 12 );
 
+  glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.15f );
+  fill( 9 + lifeWidth, 31, 198 - lifeWidth, 12 );
+  fill( 9 + staminaWidth, 9, 198 - staminaWidth, 12 );
+
   glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.6f );
   rect( 8, 30, 200, 14 );
   rect( 8, 8, 200, 14 );
@@ -268,6 +275,10 @@ void HudArea::drawVehicleStatus()
   fill( -207, 31, lifeWidth, 12 );
   glUniform4f( param.oz_Colour, 0.7f - 0.7f * fuel, 0.3f, 0.5f + 0.5f * fuel, 0.6f );
   fill( -207, 9, fuelWidth, 12 );
+
+  glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.15f );
+  fill( -207 + lifeWidth, 31, 198 - lifeWidth, 12 );
+  fill( -207 + fuelWidth, 9, 198 - fuelWidth, 12 );
 
   glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.6f );
   rect( -208, 30, 200, 14 );

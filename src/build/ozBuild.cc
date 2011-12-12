@@ -452,7 +452,7 @@ int main( int argc, char** argv )
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "vutcbmdlCA" ) ) != -1 ) {
+  while( ( opt = getopt( argc, argv, "vutcbmolCA" ) ) != -1 ) {
     switch( opt ) {
       case 'v': {
         log.isVerbose = true;
@@ -478,8 +478,8 @@ int main( int argc, char** argv )
         doModels = true;
         break;
       }
-      case 'd': {
-        doModels = true;
+      case 'o': {
+        doModules = true;
         break;
       }
       case 'l': {

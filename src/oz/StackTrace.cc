@@ -53,7 +53,7 @@ char** StackTrace::symbols() const
 
 static const int TRACE_BUFFER_SIZE  = 4096;
 static const int STRING_BUFFER_SIZE = 1024;
-static thread_local char output[TRACE_BUFFER_SIZE];
+static OZ_THREAD_LOCAL char output[TRACE_BUFFER_SIZE];
 
 StackTrace StackTrace::current()
 {

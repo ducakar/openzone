@@ -45,6 +45,8 @@
 namespace oz
 {
 
+System System::system;
+
 static const char* const SIGNALS[][2] =
 {
   { "?",         "[invalid signal number]"    },
@@ -95,6 +97,8 @@ static decltype( ::pa_simple_write )* pa_simple_write = null;
 static void* libpulse = null;
 #endif
 
+static volatile int bellUsers = 0;
+
 int System::initFlags = 0;
 
 void System::signalHandler( int signum )
@@ -112,10 +116,24 @@ void System::signalHandler( int signum )
   System::abort( "Caught signal %d %s (%s)", signum, SIGNALS[signum][0], SIGNALS[signum][1] );
 }
 
-#ifndef _WIN32
+#ifdef _WIN32
+
+static DWORD WINAPI bellThread( LPVOID )
+{
+  ++bellUsers;
+
+  PlaySound( reinterpret_cast<LPCSTR>( SND_ALIAS_SYSTEMDEFAULT ), null, SND_ALIAS_ID );
+
+  --bellUsers;
+  return 0;
+}
+
+#else
 
 static void* bellThread( void* )
 {
+  ++bellUsers;
+
   pa_simple* pa = pa_simple_new( null, "liboz", PA_STREAM_PLAYBACK, null, "bell", &BELL_SPEC,
                                  null, null, null );
   if( pa != null ) {
@@ -123,6 +141,7 @@ static void* bellThread( void* )
     pa_simple_free( pa );
   }
 
+  --bellUsers;
   return null;
 }
 
@@ -154,24 +173,53 @@ void System::resetSignals()
   signal( SIGTERM, SIG_DFL );
 }
 
-void System::bell( bool isSync )
+System::System()
+{
+#ifndef _WIN32
+  libpulse = dlopen( "libpulse-simple.so", RTLD_NOW );
+
+  if( libpulse != null ) {
+    *reinterpret_cast<void**>( &pa_simple_new   ) = dlsym( libpulse, "pa_simple_new" );
+    *reinterpret_cast<void**>( &pa_simple_free  ) = dlsym( libpulse, "pa_simple_free" );
+    *reinterpret_cast<void**>( &pa_simple_write ) = dlsym( libpulse, "pa_simple_write" );
+
+    if( pa_simple_new == null || pa_simple_free == null || pa_simple_write == null ) {
+      dlclose( libpulse );
+
+      pa_simple_new   = null;
+      pa_simple_free  = null;
+      pa_simple_write = null;
+      libpulse        = null;
+    }
+  }
+#endif
+}
+
+System::~System()
 {
 #ifdef _WIN32
-  DWORD flags = SND_ALIAS_ID;
-
-  if( !isSync ) {
-    flags |= SND_ASYNC;
+  while( bellUsers != 0 ) {
+    Sleep( 100 );
   }
-
-  PlaySound( reinterpret_cast<LPCSTR>( SND_ALIAS_SYSTEMDEFAULT ), null, flags );
 #else
-  if( isSync ) {
-    bellThread( null );
+  while( bellUsers != 0 ) {
+    usleep( 100 );
   }
-  else {
-    pthread_t thread;
-    pthread_create( &thread, null, bellThread, null );
+
+  if( libpulse != null ) {
+    dlclose( libpulse );
   }
+#endif
+}
+
+void System::bell()
+{
+#ifdef _WIN32
+  HANDLE thread = CreateThread( null, 0, bellThread, null, 0, null );
+  CloseHandle( thread );
+#else
+  pthread_t thread;
+  pthread_create( &thread, null, bellThread, null );
 #endif
 }
 
@@ -264,17 +312,6 @@ void System::init( int flags )
     resetSignals();
   }
 
-#ifndef _WIN32
-  if( libpulse != null ) {
-    dlclose( libpulse );
-
-    pa_simple_new   = null;
-    pa_simple_free  = null;
-    pa_simple_write = null;
-    libpulse        = null;
-  }
-#endif
-
   initFlags = 0;
 
   if( flags & CATCH_SIGNALS_BIT ) {
@@ -285,29 +322,6 @@ void System::init( int flags )
   if( flags & HALT_BIT ) {
     initFlags |= HALT_BIT;
   }
-
-#ifndef _WIN32
-  libpulse = dlopen( "libpulse-simple.so", RTLD_NOW );
-
-  if( libpulse == null ) {
-    return;
-  }
-
-  *reinterpret_cast<void**>( &pa_simple_new   ) = dlsym( libpulse, "pa_simple_new" );
-  *reinterpret_cast<void**>( &pa_simple_free  ) = dlsym( libpulse, "pa_simple_free" );
-  *reinterpret_cast<void**>( &pa_simple_write ) = dlsym( libpulse, "pa_simple_write" );
-
-  if( pa_simple_new == null || pa_simple_free == null || pa_simple_write == null ) {
-    dlclose( libpulse );
-
-    pa_simple_new   = null;
-    pa_simple_free  = null;
-    pa_simple_write = null;
-    libpulse        = null;
-
-    return;
-  }
-#endif
 }
 
 }

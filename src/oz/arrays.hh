@@ -344,7 +344,7 @@ inline void aFree( Elem* aDest, int count )
  * @ingroup oz
  */
 template <typename Elem>
-inline int aLength( const Elem& aSrc )
+inline constexpr int aLength( const Elem& aSrc )
 {
   return int( sizeof( aSrc ) / sizeof( aSrc[0] ) );
 }

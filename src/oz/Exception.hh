@@ -65,7 +65,7 @@ class Exception : public std::exception
 
 /**
  * @def Exception
- * Exception constructor wrapper that provides the current file and line.
+ * Exception constructor wrapper that provides the current file, line and function.
  *
  * @ingroup oz
  */
