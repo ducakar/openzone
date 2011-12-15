@@ -17,8 +17,7 @@ add_library( oz STATIC
   common.cc
 )
 
-if( OZ_INSTALL_LIBOZ )
-  install( FILES ${CMAKE_BINARY_DIR}/src/oz/ozconfig.hh DESTINATION include/oz )
-  install( DIRECTORY . DESTINATION include/oz FILES_MATCHING PATTERN "*.hh" )
-  install( TARGETS oz DESTINATION lib )
-endif()
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/ozconfig.hh DESTINATION include/oz COMPONENT liboz )
+install( DIRECTORY . DESTINATION include/oz COMPONENT liboz FILES_MATCHING PATTERN "*.hh" )
+install( TARGETS oz DESTINATION lib COMPONENT liboz )
+install( FILES ${PROJECT_SOURCE_DIR}/etc/liboz.pc DESTINATION lib/pkgconfig COMPONENT liboz )

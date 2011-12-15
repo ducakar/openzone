@@ -1,5 +1,6 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,9 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -295,15 +293,14 @@ void Loader::makeScreenshot()
 {
   uint* pixels = new uint[camera.width * camera.height * 4];
   char fileName[256];
-  time_t ct;
-  struct tm t;
 
-  ct = time( null );
-  t = *localtime( &ct );
+  time_t currentTime = std::time( null );
+  struct tm timeStruct = *std::localtime( &currentTime );
 
   snprintf( fileName, 256, "%s/screenshot %04d-%02d-%02d %02d:%02d:%02d.bmp",
             config.get( "dir.rc", "" ),
-            1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec );
+            1900 + timeStruct.tm_year, 1 + timeStruct.tm_mon, timeStruct.tm_mday,
+            timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec );
 
   log.print( "Saving screenshot to '%s' ...", fileName );
 

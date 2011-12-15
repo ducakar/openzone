@@ -1,5 +1,6 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,9 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -99,32 +97,13 @@ int main( int argc, char** argv )
   try {
     exitCode = oz::main( argc, argv );
   }
-  catch( const oz::Exception& e ) {
-    oz::log.resetIndent();
-    oz::log.println();
-    oz::log.printException( e );
-    oz::log.println();
-
-    if( oz::log.isFile() ) {
-      fprintf( stderr, "\nEXCEPTION: %s\n", e.what() );
-      fprintf( stderr, "  in %s\n\n", e.function );
-      fprintf( stderr, "  at %s:%d\n\n", e.file, e.line );
-    }
-
-    return EXIT_FAILURE;
-  }
   catch( const std::exception& e ) {
-    oz::log.resetIndent();
-    oz::log.println();
-    oz::log.println();
-    oz::log.println( "EXCEPTION: %s", e.what() );
-    oz::log.println();
+    oz::log.setError( true );
+    oz::log.printException( e );
+    oz::log.setError( false );
 
-    if( oz::log.isFile() ) {
-      fprintf( stderr, "\nEXCEPTION: %s\n\n", e.what() );
-    }
-
-    return EXIT_FAILURE;
+    oz::System::bell();
+    oz::System::abort( false );
   }
 
   oz::shutdown();

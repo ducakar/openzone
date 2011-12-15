@@ -140,8 +140,7 @@ openzone [-v] [-l | -i <function>] [-t <num>] [-p <prefix>]
       More verbose log output.
 
 -l
-      Skip main menu and load autosaved state.
-      Autosaved game state resides in ~/.config/openzone/autosave.ozState.
+      Skip main menu and load the last autosaved state.
 
 -i <mission>
       Skip main menu and start mission <mission>.
@@ -307,6 +306,9 @@ Contact: davorin.ucakar@gmail.com
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software under GNU GPLv3 licence, and you are welcome to redistribute it
 under certain conditions; See COPYING file for details.
+
+liboz library alone can also be distributed under X11 licence;
+See etc/COPYING.liboz file for details.
 
 Data copyrights
 ---------------

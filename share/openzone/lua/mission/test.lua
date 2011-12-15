@@ -119,8 +119,8 @@ function init_sample()
 
   ozOrbisAddObj( "bauul", 112, -7, 100, OZ_NORTH )
 
-  ozOrbisAddObj( "serviceStation", 110, -25, 68.8, OZ_WEST )
-  ozOrbisAddObj( "console", 107, -24, 67.3, OZ_SOUTH )
+  ozOrbisAddObj( "serviceStation", 110, -25, 69.8, OZ_WEST )
+  ozOrbisAddObj( "console", 107, -24, 68.5, OZ_EAST )
 
   ozOrbisAddObj( "smallCrate", 108, -6, 81 )
   ozOrbisAddObj( "smallCrate", 108, -6, 82 )

@@ -1,5 +1,6 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,9 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -70,7 +68,9 @@ void alCheckError( const char* file, int line, const char* function )
   }
 
   System::trap();
-  System::abort( "AL error `%s' at %s:%d: %s", message, file, line, function );
+  System::error( "AL error `%s' at %s:%d: %s", message, file, line, function );
+  System::bell();
+  System::abort();
 }
 
 #endif

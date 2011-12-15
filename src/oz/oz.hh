@@ -1,22 +1,27 @@
 /*
- * OpenZone - simple cross-platform FPS/RTS game engine.
+ * liboz - OpenZone core library.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 /**
@@ -30,18 +35,18 @@
 #pragma once
 
 /*
- * Base definitions and templates
+ * Base definitions and templates.
  */
 #include "common.hh"
 
 /*
- * Iterators and utilities for iterable containers and arrays
+ * Iterators and utilities for iterable containers and arrays.
  */
 #include "iterables.hh"
 #include "arrays.hh"
 
 /*
- * Simple containers
+ * Simple containers.
  */
 #include "Pair.hh"
 #include "List.hh"
@@ -53,30 +58,30 @@
 #include "Map.hh"
 
 /*
- * Memory management
+ * Memory management.
  */
 #include "Alloc.hh"
 #include "Pool.hh"
 
 /*
- * String
+ * String.
  */
 #include "String.hh"
 
 /*
- * Advanced containers
+ * Advanced containers.
  */
 #include "HashIndex.hh"
 #include "HashString.hh"
 
 /*
- * Bitset
+ * Bitset.
  */
 #include "Bitset.hh"
 #include "SBitset.hh"
 
 /*
- * Math
+ * Math.
  */
 #include "Math.hh"
 #include "Simd.hh"
@@ -88,7 +93,7 @@
 #include "Mat44.hh"
 
 /*
- * IO
+ * IO.
  */
 #include "Endian.hh"
 #include "InputStream.hh"
@@ -105,7 +110,7 @@
 #include "System.hh"
 
 /*
- * Utilities
+ * Utilities.
  */
 #include "Log.hh"
 #include "Config.hh"

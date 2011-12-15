@@ -1,22 +1,27 @@
 /*
- * OpenZone - simple cross-platform FPS/RTS game engine.
+ * liboz - OpenZone core library.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 /**
@@ -25,11 +30,8 @@
 
 #include "Log.hh"
 
-#include "System.hh"
-
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 #include <ctime>
 
 namespace oz
@@ -37,21 +39,25 @@ namespace oz
 
 Log log;
 
-Log::Log() : stream( stdout ), indentStr( "  " ), tabs( 0 ), isVerbose( false )
+Log::Log() : conStream( stdout ), fileStream( null ), tabs( 0 ), isError( false ), isVerbose( false )
 {}
 
 Log::~Log()
 {
-  FILE* f = reinterpret_cast<FILE*>( stream );
+  FILE* file = reinterpret_cast<FILE*>( fileStream );
 
-  if( f != stdout ) {
-    fclose( f );
+  if( file != null ) {
+    fclose( file );
+    file = null;
   }
 }
 
-bool Log::isFile() const
+void Log::setError( bool enable )
 {
-  return stream != stdout;
+  fflush( isError ? stderr : stdout );
+  conStream = enable ? stderr : stdout;
+
+  isError = enable;
 }
 
 void Log::resetIndent()
@@ -73,178 +79,286 @@ void Log::unindent()
 
 void Log::vprintRaw( const char* s, va_list ap ) const
 {
-  FILE* f = reinterpret_cast<FILE*>( stream );
+  FILE* con  = reinterpret_cast<FILE*>( conStream );
+  FILE* file = reinterpret_cast<FILE*>( fileStream );
 
-  vfprintf( f, s, ap );
+  va_list ap2;
+  va_copy( ap2, ap );
 
-  fflush( f );
+  vfprintf( con, s, ap );
+
+  if( file != null ) {
+    vfprintf( file, s, ap2 );
+
+    fflush( file );
+  }
 }
 
 void Log::printRaw( const char* s, ... ) const
 {
-  FILE* f = reinterpret_cast<FILE*>( stream );
+  FILE* con  = reinterpret_cast<FILE*>( conStream );
+  FILE* file = reinterpret_cast<FILE*>( fileStream );
 
   va_list ap;
   va_start( ap, s );
 
-  vfprintf( f, s, ap );
+  vfprintf( con, s, ap );
 
   va_end( ap );
 
-  fflush( f );
+  if( file != null ) {
+    va_start( ap, s );
+
+    vfprintf( file, s, ap );
+
+    va_end( ap );
+
+    fflush( file );
+  }
 }
 
 void Log::print( const char* s, ... ) const
 {
-  FILE* f = reinterpret_cast<FILE*>( stream );
+  FILE* con  = reinterpret_cast<FILE*>( conStream );
+  FILE* file = reinterpret_cast<FILE*>( fileStream );
 
   for( int i = 0; i < tabs; ++i ) {
-    fprintf( f, "%s", indentStr );
+    fprintf( con, "  " );
+
+    if( file != null ) {
+      fprintf( file, "  " );
+    }
   }
 
   va_list ap;
   va_start( ap, s );
 
-  vfprintf( f, s, ap );
+  vfprintf( con, s, ap );
 
   va_end( ap );
 
-  fflush( f );
+  if( file != null ) {
+    va_start( ap, s );
+
+    vfprintf( file, s, ap );
+
+    va_end( ap );
+
+    fflush( file );
+  }
 }
 
 void Log::printEnd( const char* s, ... ) const
 {
-  FILE* f = reinterpret_cast<FILE*>( stream );
+  FILE* con  = reinterpret_cast<FILE*>( conStream );
+  FILE* file = reinterpret_cast<FILE*>( fileStream );
 
   va_list ap;
   va_start( ap, s );
 
-  vfprintf( f, s, ap );
-  fprintf( f, "\n" );
+  vfprintf( con, s, ap );
+  fprintf( con, "\n" );
 
   va_end( ap );
 
-  fflush( f );
+  if( file != null ) {
+    va_start( ap, s );
+
+    vfprintf( file, s, ap );
+    fprintf( file, "\n" );
+
+    va_end( ap );
+
+    fflush( file );
+  }
 }
 
 void Log::printEnd() const
 {
-  FILE* f = reinterpret_cast<FILE*>( stream );
+  FILE* con  = reinterpret_cast<FILE*>( conStream );
+  FILE* file = reinterpret_cast<FILE*>( fileStream );
 
-  fprintf( f, "\n" );
+  fprintf( con, "\n" );
 
-  fflush( f );
+  if( file != null ) {
+    fprintf( file, "\n" );
+
+    fflush( file );
+  }
 }
 
 void Log::println( const char* s, ... ) const
 {
-  FILE* f = reinterpret_cast<FILE*>( stream );
+  FILE* con  = reinterpret_cast<FILE*>( conStream );
+  FILE* file = reinterpret_cast<FILE*>( fileStream );
 
   for( int i = 0; i < tabs; ++i ) {
-    fprintf( f, "%s", indentStr );
+    fprintf( con, "  " );
+
+    if( file != null ) {
+      fprintf( file, "  " );
+    }
   }
 
   va_list ap;
   va_start( ap, s );
 
-  vfprintf( f, s, ap );
-  fprintf( f, "\n" );
+  vfprintf( con, s, ap );
+  fprintf( con, "\n" );
 
   va_end( ap );
 
-  fflush( f );
+  if( file != null ) {
+    va_start( ap, s );
+
+    vfprintf( file, s, ap );
+    fprintf( file, "\n" );
+
+    va_end( ap );
+
+    fflush( file );
+  }
 }
 
 void Log::println() const
 {
-  FILE* f = reinterpret_cast<FILE*>( stream );
+  FILE* con  = reinterpret_cast<FILE*>( conStream );
+  FILE* file = reinterpret_cast<FILE*>( fileStream );
 
-  fprintf( f, "\n" );
+  fprintf( con, "\n" );
 
-  fflush( f );
+  if( file != null ) {
+    fprintf( file, "\n" );
+
+    fflush( file );
+  }
 }
 
 void Log::printTime() const
 {
-  FILE* f = reinterpret_cast<FILE*>( stream );
+  FILE* con  = reinterpret_cast<FILE*>( conStream );
+  FILE* file = reinterpret_cast<FILE*>( fileStream );
 
   time_t currentTime = std::time( null );
   struct tm timeStruct = *std::localtime( &currentTime );
 
-  fprintf( f, "%04d-%02d-%02d %02d:%02d:%02d",
+  fprintf( con, "%04d-%02d-%02d %02d:%02d:%02d",
            timeStruct.tm_year + 1900, timeStruct.tm_mon + 1, timeStruct.tm_mday,
            timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec );
 
-  fflush( f );
+  if( file != null ) {
+    fprintf( file, "%04d-%02d-%02d %02d:%02d:%02d",
+             timeStruct.tm_year + 1900, timeStruct.tm_mon + 1, timeStruct.tm_mday,
+             timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec );
+
+    fflush( file );
+  }
 }
 
 void Log::printTrace( const StackTrace* st ) const
 {
-  FILE* f = reinterpret_cast<FILE*>( stream );
+  FILE* con  = reinterpret_cast<FILE*>( conStream );
+  FILE* file = reinterpret_cast<FILE*>( fileStream );
 
   if( st->nFrames == 0 ) {
-    fprintf( f, "    [empty stack trace]\n" );
+    fprintf( con, "    [empty stack trace]\n" );
+
+    if( file != null ) {
+      fprintf( file, "    [empty stack trace]\n" );
+    }
   }
   else {
     char** entries = st->symbols();
 
     for( int i = 0; i < st->nFrames; ++i ) {
-      fprintf( f, "    %s\n", entries[i] );
+      fprintf( con, "    %s\n", entries[i] );
+
+      if( file != null ) {
+        fprintf( file, "    %s\n", entries[i] );
+      }
     }
 
     free( entries );
   }
 
-  fflush( f );
+  if( file != null ) {
+    fflush( file );
+  }
 }
 
-void Log::printException( const Exception& e ) const
+void Log::printException( const std::exception& e ) const
 {
-  FILE* f = reinterpret_cast<FILE*>( stream );
+  FILE* con  = reinterpret_cast<FILE*>( conStream );
+  FILE* file = reinterpret_cast<FILE*>( fileStream );
 
-  fprintf( f, "\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
-           e.what(), e.function, e.file, e.line );
+  const Exception* oe = dynamic_cast<const Exception*>( &e );
 
-  if( e.stackTrace.nFrames == 0 ) {
-    fprintf( f, "    [empty stack trace]\n" );
+  if( oe == null ) {
+    fprintf( con, "\nEXCEPTION: %s\n", e.what() );
+
+    if( file != null ) {
+      fprintf( file, "\nEXCEPTION: %s\n", e.what() );
+
+      fflush( file );
+    }
   }
   else {
-    char** entries = e.stackTrace.symbols();
+    const Exception& e = *oe;
 
-    for( int i = 0; i < e.stackTrace.nFrames; ++i ) {
-      fprintf( f, "    %s\n", entries[i] );
+    fprintf( con, "\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
+             e.what(), e.function, e.file, e.line );
+
+    if( file != null ) {
+      fprintf( file, "\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
+               e.what(), e.function, e.file, e.line );
     }
 
-    free( entries );
-  }
+    if( e.stackTrace.nFrames == 0 ) {
+      fprintf( con, "    [empty stack trace]\n" );
 
-  fflush( f );
+      if( file != null ) {
+        fprintf( file, "    [empty stack trace]\n" );
+      }
+    }
+    else {
+      char** entries = e.stackTrace.symbols();
+
+      for( int i = 0; i < e.stackTrace.nFrames; ++i ) {
+        fprintf( con, "    %s\n", entries[i] );
+
+        if( file != null ) {
+          fprintf( file, "    %s\n", entries[i] );
+        }
+      }
+
+      free( entries );
+    }
+
+    if( file != null ) {
+      fflush( file );
+    }
+  }
 }
 
-bool Log::init( const char* fileName, bool doClear, const char* indentStr_ )
+bool Log::init( const char* fileName, bool doClear )
 {
-  FILE* f = reinterpret_cast<FILE*>( stream );
+  FILE* file = reinterpret_cast<FILE*>( fileStream );
 
   tabs = 0;
-  indentStr = indentStr_ != null ? indentStr_ : "  ";
+  isError = false;
 
-  if( f != stdout ) {
-    fclose( f );
+  conStream = stdout;
+
+  if( file != null ) {
+    fclose( file );
+    fileStream = null;
   }
 
   if( fileName != null && fileName[0] != '\0' ) {
-    FILE* f = fopen( fileName, doClear ? "w" : "a" );
+    fileStream = fopen( fileName, doClear ? "w" : "a" );
+  }
 
-    if( f == null ) {
-      stream = stdout;
-      return false;
-    }
-    stream = f;
-  }
-  else {
-    stream = stdout;
-  }
-  return true;
+  return fileStream != null;
 }
 
 }

@@ -70,8 +70,6 @@ add_dependencies( client pch )
 
 add_executable( openzone openzone/openzone.cc )
 add_dependencies( openzone pch )
-target_link_libraries( openzone client nirvana matrix common build_info oz ${libs} )
+target_link_libraries( openzone client nirvana matrix common build_info oz ${libs_client} )
 
-if( OZ_INSTALL_OPENZONE )
-  install( TARGETS openzone DESTINATION bin )
-endif()
+install( TARGETS openzone DESTINATION bin COMPONENT client )

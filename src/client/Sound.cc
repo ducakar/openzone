@@ -1,5 +1,6 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,9 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -115,6 +113,9 @@ void Sound::streamOpen( const char* path )
       log.printEnd( " No MP3 support" );
     }
   }
+  else if( file.hasExtension( "aac" ) ) {
+    musicStreamType = AAC;
+  }
   else {
     throw Exception( "Unknown extension for file '%s'", path );
   }
@@ -131,7 +132,6 @@ void Sound::streamOpen( const char* path )
       vorbis_info* vorbisInfo = ov_info( &oggStream, -1 );
 
       if( vorbisInfo == null ) {
-        ov_clear( &oggStream );
         throw Exception( "Failed to read Vorbis header" );
       }
 
@@ -145,7 +145,6 @@ void Sound::streamOpen( const char* path )
         musicFormat = AL_FORMAT_STEREO16;
       }
       else {
-        ov_clear( &oggStream );
         throw Exception( "Invalid number of channels, should be 1 or 2" );
       }
 
@@ -191,17 +190,63 @@ void Sound::streamOpen( const char* path )
         musicFormat = AL_FORMAT_STEREO16;
       }
       else {
-        fclose( mp3File );
-
-        mad_synth_finish( &madSynth );
-        mad_frame_finish( &madFrame );
-        mad_stream_finish( &madStream );
-
         throw Exception( "Invalid number of channels, should be 1 or 2" );
       }
 
       log.printEnd( " MP3 %d Hz %d ch %d kb/s ... OK", musicRate, musicChannels,
                     int( float( madFrame.header.bitrate ) / 1000.0f + 0.5f ) );
+      break;
+    }
+    case AAC: {
+      aacDecoder = NeAACDecOpen();
+
+      aacFile = fopen( path, "rb" );
+      if( aacFile == null ) {
+        throw Exception( "Failed to open AAC file" );
+      }
+
+      size_t readSize = fread( madInputBuffer, 1, MAD_INPUT_BUFFER_SIZE, aacFile );
+      if( readSize != size_t( MAD_INPUT_BUFFER_SIZE ) ) {
+        throw Exception( "Failed to read AAC stream" );
+      }
+
+      ulong aacRate;
+      ubyte aacChannels;
+
+      long skipBytes = NeAACDecInit( aacDecoder, madInputBuffer, MAD_INPUT_BUFFER_SIZE,
+                                     &aacRate, &aacChannels );
+
+      if( skipBytes < 0 ) {
+        throw Exception( "Failed to decode AAC header" );
+      }
+
+      memmove( madInputBuffer, madInputBuffer + skipBytes, size_t( skipBytes ) );
+
+      readSize = fread( madInputBuffer + MAD_INPUT_BUFFER_SIZE - skipBytes, 1,
+                        size_t( skipBytes ), aacFile );
+
+      if( readSize != size_t( skipBytes ) ) {
+        throw Exception( "Failed to read AAC stream" );
+      }
+
+      aacBufferBytes  = 0;
+      aacWrittenBytes = 0;
+      aacInputBytes   = MAD_INPUT_BUFFER_SIZE;
+
+      musicRate = int( aacRate );
+      musicChannels = int( aacChannels );
+
+      if( musicChannels == 1 ) {
+        musicFormat = AL_FORMAT_MONO16;
+      }
+      else if( musicChannels == 2 ) {
+        musicFormat = AL_FORMAT_STEREO16;
+      }
+      else {
+        throw Exception( "Invalid number of channels, should be 1 or 2" );
+      }
+
+      log.printEnd( " AAC %d Hz %d ch ... OK", musicRate, musicChannels );
       break;
     }
   }
@@ -218,15 +263,23 @@ void Sound::streamClear()
       break;
     }
     case MP3: {
+      fclose( mp3File );
+
       mad_synth_finish( &madSynth );
       mad_frame_finish( &madFrame );
       mad_stream_finish( &madStream );
       break;
     }
+    case AAC: {
+      fclose( aacFile );
+
+      NeAACDecClose( aacDecoder );
+      break;
+    }
   }
 }
 
-int Sound::streamDecode()
+bool Sound::streamDecode( uint buffer )
 {
   switch( musicStreamType ) {
     case NONE: {
@@ -247,26 +300,33 @@ int Sound::streamDecode()
       }
       while( result > 0 && bytesRead < MUSIC_BUFFER_SIZE );
 
-      return bytesRead;
+      if( bytesRead == 0 ) {
+        return false;
+      }
+      else {
+        alBufferData( buffer, musicFormat, musicBuffer, bytesRead, musicRate );
+        return true;
+      }
     }
     case MP3: {
-      short*       output    = reinterpret_cast<short*>( musicBuffer );
-      const short* outputEnd = reinterpret_cast<const short*>( musicBuffer + MUSIC_BUFFER_SIZE );
+      short* musicOutput    = reinterpret_cast<short*>( musicBuffer );
+      short* musicOutputEnd = reinterpret_cast<short*>( musicBuffer + MUSIC_BUFFER_SIZE );
 
       do {
         for( ; madWrittenSamples < madFrameSamples; ++madWrittenSamples ) {
-          hard_assert( output <= outputEnd );
+          hard_assert( musicOutput <= musicOutputEnd );
 
-          if( output == outputEnd ) {
-            return MUSIC_BUFFER_SIZE;
+          if( musicOutput == musicOutputEnd ) {
+            alBufferData( buffer, musicFormat, musicBuffer, MUSIC_BUFFER_SIZE, musicRate );
+            return true;
           }
 
-          *output = madFixedToShort( madSynth.pcm.samples[0][madWrittenSamples] );
-          ++output;
+          *musicOutput = madFixedToShort( madSynth.pcm.samples[0][madWrittenSamples] );
+          ++musicOutput;
 
           if( musicChannels == 2 ) {
-            *output = madFixedToShort( madSynth.pcm.samples[1][madWrittenSamples] );
-            ++output;
+            *musicOutput = madFixedToShort( madSynth.pcm.samples[1][madWrittenSamples] );
+            ++musicOutput;
           }
         }
 
@@ -287,7 +347,15 @@ int Sound::streamDecode()
                                       MAD_INPUT_BUFFER_SIZE - bytesLeft, mp3File );
 
             if( bytesRead == 0 ) {
-              return int( reinterpret_cast<char*>( output ) - musicBuffer );
+              int length = int( reinterpret_cast<char*>( musicOutput ) - musicBuffer );
+
+              if( length == 0 ) {
+                return false;
+              }
+              else {
+                alBufferData( buffer, musicFormat, musicBuffer, length, musicRate );
+                return true;
+              }
             }
             else if( bytesRead < MAD_INPUT_BUFFER_SIZE - bytesLeft ) {
               memset( madInputBuffer + bytesLeft + bytesRead, 0, MAD_BUFFER_GUARD );
@@ -302,24 +370,63 @@ int Sound::streamDecode()
 
         mad_synth_frame( &madSynth, &madFrame );
 
-        madFrameSamples   = madSynth.pcm.length;
+        madFrameSamples = madSynth.pcm.length;
         madWrittenSamples = 0;
       }
       while( true );
     }
-  }
-  return 0;
-}
+    case AAC: {
+      char* musicOutput    = musicBuffer;
+      char* musicOutputEnd = musicBuffer + MUSIC_BUFFER_SIZE;
 
-bool Sound::loadMusicBuffer( uint buffer )
-{
-  int length = streamDecode();
-  if( length == 0 ) {
-    return false;
-  }
+      do {
+        if( aacWrittenBytes < aacBufferBytes ) {
+          size_t length = size_t( aacBufferBytes - aacWrittenBytes );
+          size_t space  = size_t( musicOutputEnd - musicOutput );
 
-  alBufferData( buffer, musicFormat, musicBuffer, length, musicRate );
-  return true;
+          if( length >= space ) {
+            memcpy( musicOutput, aacOutputBuffer + aacWrittenBytes, space );
+            aacWrittenBytes += space;
+
+            alBufferData( buffer, musicFormat, musicBuffer, MUSIC_BUFFER_SIZE, musicRate );
+            return true;
+          }
+          else {
+            memcpy( musicOutput, aacOutputBuffer + aacWrittenBytes, length );
+            aacWrittenBytes += length;
+            musicOutput += length;
+
+            if( aacInputBytes == 0 ) {
+              alBufferData( buffer, musicFormat, musicBuffer, int( musicOutput - musicBuffer ),
+                            musicRate );
+              return false;
+            }
+          }
+        }
+
+        NeAACDecFrameInfo frameInfo;
+        aacOutputBuffer = reinterpret_cast<char*>
+            ( NeAACDecDecode( aacDecoder, &frameInfo, madInputBuffer, aacInputBytes ) );
+
+        if( aacOutputBuffer == null ) {
+          throw Exception( "Error during AAC decoding" );
+        }
+
+        size_t bytesConsumed = size_t( frameInfo.bytesconsumed );
+        aacInputBytes -= bytesConsumed;
+        aacBufferBytes = int( frameInfo.samples * frameInfo.channels );
+        aacWrittenBytes = 0;
+
+        memmove( madInputBuffer, madInputBuffer + bytesConsumed, aacInputBytes );
+
+        size_t bytesRead = fread( madInputBuffer + aacInputBytes, 1,
+                                  MAD_INPUT_BUFFER_SIZE - aacInputBytes, aacFile );
+
+        aacInputBytes += bytesRead;
+      }
+      while( true );
+    }
+  }
 }
 
 void Sound::setVolume( float volume_ )
@@ -338,13 +445,11 @@ void Sound::playMusic( int track )
   hard_assert( track >= 0 );
 
   selectedTrack = track;
-  currentTrack  = track;
 }
 
 void Sound::stopMusic()
 {
   selectedTrack = -2;
-  currentTrack  = -1;
 }
 
 bool Sound::isMusicPlaying() const
@@ -394,19 +499,20 @@ void Sound::update()
   OZ_AL_CHECK_ERROR();
 
   if( selectedTrack != -1 ) {
-    alSourceStop( musicSource );
+    if( currentTrack != -1 ) {
+      currentTrack = -1;
+      streamClear();
 
-    int nQueued;
-    alGetSourcei( musicSource, AL_BUFFERS_QUEUED, &nQueued );
+      alSourceStop( musicSource );
 
-    uint buffer[2];
-    alSourceUnqueueBuffers( musicSource, nQueued, buffer );
+      int nQueued;
+      alGetSourcei( musicSource, AL_BUFFERS_QUEUED, &nQueued );
 
-    streamClear();
+      uint buffer[2];
+      alSourceUnqueueBuffers( musicSource, nQueued, buffer );
+    }
 
     OZ_AL_CHECK_ERROR();
-
-    currentTrack = -1;
 
     if( selectedTrack == -2 ) {
       selectedTrack = -1;
@@ -416,15 +522,13 @@ void Sound::update()
 
       streamOpen( path );
 
-      if( loadMusicBuffer( musicBuffers[0] ) && loadMusicBuffer( musicBuffers[1] ) ) {
+      if( streamDecode( musicBuffers[0] ) && streamDecode( musicBuffers[1] ) ) {
         alSourceQueueBuffers( musicSource, 2, &musicBuffers[0] );
         alSourcePlay( musicSource );
 
         currentTrack = selectedTrack;
       }
       else {
-        streamClear();
-
         currentTrack = -1;
       }
 
@@ -443,7 +547,7 @@ void Sound::update()
       uint buffer;
       alSourceUnqueueBuffers( musicSource, 1, &buffer );
 
-      if( loadMusicBuffer( buffer ) ) {
+      if( streamDecode( buffer ) ) {
         alSourceQueueBuffers( musicSource, 1, &buffer );
         hasLoaded = true;
       }

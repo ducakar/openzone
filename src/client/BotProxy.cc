@@ -1,5 +1,6 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,9 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -198,7 +196,7 @@ void BotProxy::update()
   if( ( keys[SDLK_LALT] || keys[SDLK_RALT] ) && keys[SDLK_m] && !oldKeys[SDLK_m] ) {
     bot->actions |= Bot::ACTION_SUICIDE;
   }
-  if( keys[SDLK_KP_MULTIPLY] && !oldKeys[SDLK_KP_MULTIPLY] ) {
+  if( keys[SDLK_KP_MULTIPLY] && !oldKeys[SDLK_KP_MULTIPLY] && isExternal ) {
     isFreelook = !isFreelook;
 
     camera.h = bot->h;

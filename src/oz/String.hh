@@ -1,22 +1,27 @@
 /*
- * OpenZone - simple cross-platform FPS/RTS game engine.
+ * liboz - OpenZone core library.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 /**
@@ -178,8 +183,7 @@ class String
      */
     explicit String( int count_, const char* s ) : count( count_ )
     {
-      hard_assert( s != null && s != baseBuffer );
-      hard_assert( length( s ) >= count );
+      hard_assert( s != null && length( s ) >= count );
 
       ensureCapacity();
       aCopy( buffer, s, count );
@@ -193,11 +197,16 @@ class String
      */
     String( const char* s )
     {
-      hard_assert( s != null && s != baseBuffer );
-
-      count = length( s );
-      ensureCapacity();
-      aCopy( buffer, s, count + 1 );
+      if( s != null ) {
+        count = length( s );
+        ensureCapacity();
+        aCopy( buffer, s, count + 1 );
+      }
+      else {
+        buffer = baseBuffer;
+        count = 0;
+        baseBuffer[0] = '\0';
+      }
 
       hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
     }
