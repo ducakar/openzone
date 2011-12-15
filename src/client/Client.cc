@@ -1,5 +1,6 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,9 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -43,6 +41,11 @@
 #include <clocale>
 #include <ctime>
 #include <unistd.h>
+
+#ifdef _WIN32
+# undef WIN32_LEAN_AND_MEAN
+# include <shlobj.h>
+#endif
 
 #ifdef OZ_NETWORK
 # include <SDL_net.h>
@@ -77,7 +80,7 @@ void Client::shutdown()
     String rcDir = config.get( "dir.rc", "" );
 
     if( !rcDir.isEmpty() ) {
-      String configPath = rcDir + "/" OZ_CLIENT_CONFIG_FILE;
+      String configPath = rcDir + "/client.rc";
 
       config.exclude( "dir.rc" );
       config.save( configPath );
@@ -113,8 +116,7 @@ void Client::printUsage()
   log.println( "\tMore verbose log output." );
   log.println();
   log.println( "-l" );
-  log.println( "\tSkip main menu and load autosaved state." );
-  log.println( "\tAutosaved game state resides in ~/" OZ_RC_DIR "/autosave.ozState." );
+  log.println( "\tSkip main menu and load the last autosaved state." );
   log.println();
   log.println( "-i <mission>" );
   log.println( "\tSkip main menu and start mission <mission>." );
@@ -185,44 +187,52 @@ int Client::main( int argc, char** argv )
   }
 
 #ifdef _WIN32
-  const char* homeVar = getenv( "APPDATA" );
+  char configRoot[MAX_PATH];
+  char localRoot[MAX_PATH];
+
+  if( !SHGetSpecialFolderPath( null, configRoot, CSIDL_APPDATA, false ) ) {
+    throw Exception( "Failed to access APPDATA directory" );
+  }
+  if( !SHGetSpecialFolderPath( null, localRoot, CSIDL_APPDATA, false ) ) {
+    throw Exception( "Failed to access LOCAL_APPDATA directory" );
+  }
+
+  File configDir( configRoot );
+  File localDir( localRoot );
 #else
-  const char* homeVar = getenv( "HOME" );
-#endif
-  if( homeVar == null ) {
+  const char* home       = SDL_getenv( "HOME" );
+  const char* configRoot = SDL_getenv( "XDG_CONFIG_HOME" );
+  const char* localRoot  = SDL_getenv( "XDG_LOCAL_HOME" );
+
+  if( home == null ) {
     throw Exception( "Cannot determine user home directory from environment" );
   }
 
-  String rcDir = String::str( "%s/" OZ_RC_DIR, homeVar );
+  File configDir = configRoot == null ?
+      File( String::str( "%s/.config/" OZ_APPLICATION_NAME, home ) ) :
+      File( String::str( "%s/" OZ_APPLICATION_NAME, configRoot ) );
 
-  File rcDirFile( rcDir.cstr() );
-  if( rcDirFile.getType() != File::DIRECTORY ) {
-    printf( "No resource directory found, creating '%s' ...", rcDir.cstr() );
+  File localDir = localRoot == null ?
+      File( String::str( "%s/.local/share/" OZ_APPLICATION_NAME, home ) ) :
+      File( String::str( "%s/" OZ_APPLICATION_NAME, localRoot ) );
+#endif
 
-    if( !File::mkdir( rcDir.cstr(), 0700 ) ) {
+  if( configDir.getType() != File::DIRECTORY ) {
+    printf( "No resource directory found, creating '%s' ...", configDir.path().cstr() );
+
+    if( !File::mkdir( configDir.path(), 0700 ) ) {
       throw Exception( "Resource directory creation failed" );
     }
     printf( " OK\n" );
   }
 
-  if( String::equals( OZ_CLIENT_LOG_FILE, "STDOUT" ) ) {
-    log.init( null, true, "  " );
-    log.println( "Log stream stdout ... OK" );
+  String logPath = configDir.path() + "/client.log";
+
+  if( !log.init( logPath, true ) ) {
+    throw Exception( "Can't create/open log file '%s' for writing\n", logPath.cstr() );
   }
-  else {
-    String logPath = rcDir + "/" OZ_CLIENT_LOG_FILE;
 
-    if( !log.init( logPath, true, "  " ) ) {
-      throw Exception( "Can't create/open log file '%s' for writing\n", logPath.cstr() );
-    }
-
-    printf( "Log file '%s'\n", logPath.cstr() );
-
-    log.println( "OpenZone  Copyright (C) 2002-2011  Davorin Učakar\n"
-        "This program comes with ABSOLUTELY NO WARRANTY.\n"
-        "This is free software, and you are welcome to redistribute it\n"
-        "under certain conditions; See COPYING file for details.\n" );
-  }
+  log.println( "Log file '%s'", logPath.cstr() );
 
   log.print( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " started on " );
   log.printTime();
@@ -249,7 +259,7 @@ int Client::main( int argc, char** argv )
   log.unindent();
   log.println( "}" );
 
-  String configPath = rcDir + "/" OZ_CLIENT_CONFIG_FILE;
+  String configPath = configDir.path() + "/client.rc";
   if( config.load( configPath ) ) {
     log.printEnd( "Configuration read from '%s'", configPath.cstr() );
 
@@ -276,7 +286,7 @@ int Client::main( int argc, char** argv )
     config.get( "_version", "" );
   }
 
-  config.add( "dir.rc", rcDir );
+  config.add( "dir.rc", configDir.path() );
 
   log.print( "Setting localisation ..." );
 
@@ -315,7 +325,7 @@ int Client::main( int argc, char** argv )
   ui::keyboard.init();
 
   String prefixDir = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
-  String dataDir   = prefixDir + "/share/" OZ_APPLICATION_NAME;
+  String dataDir = prefixDir + "/share/" OZ_APPLICATION_NAME;
 
   log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
   if( !File::chdir( dataDir ) ) {

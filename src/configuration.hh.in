@@ -1,5 +1,6 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,41 +15,37 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
  */
 
 #pragma once
 
-// short application name (for internal use)
+/*
+ * Configuration variables
+ */
+
+// Short application name (for internal use).
 #define OZ_APPLICATION_NAME     "@OZ_APPLICATION_NAME@"
 
-// version
+// Application version.
 #define OZ_APPLICATION_VERSION  "@OZ_APPLICATION_VERSION@"
 
-// full application name
+// Full application name.
 #define OZ_APPLICATION_TITLE    "@OZ_APPLICATION_TITLE@"
 
-// default data directory
+// Default data directory.
 #define OZ_INSTALL_PREFIX       "@CMAKE_INSTALL_PREFIX@"
 
-// resource dir (configuration, saved games, logs)
-#define OZ_RC_DIR               "@OZ_RC_DIR@"
+// Enable networking.
+#cmakedefine OZ_NETWORKING
 
-// log file name
-#define OZ_CLIENT_LOG_FILE      "@OZ_CLIENT_LOG_FILE@"
+// Enable compatibility with MesaGL drivers.
+#cmakedefine OZ_GL_COMPATIBLE
 
-// main configuration file name
-#define OZ_CLIENT_CONFIG_FILE   "@OZ_CLIENT_CONFIG_FILE@"
+/*
+ * Compiler and platform-specific macros
+ */
 
-// enable networking
-#cmakedefine                    OZ_NETWORKING
-
-// enable mesa compatibility
-#cmakedefine                    OZ_GL_COMPATIBLE
-
-// fix error in vorbisfile.h
+// Fix error in <vorbisfile.h>.
 #ifdef _WIN32
 # define OV_EXCLUDE_STATIC_CALLBACKS
 #endif

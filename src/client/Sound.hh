@@ -1,5 +1,6 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,9 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -33,6 +31,7 @@
 #include <AL/alc.h>
 #include <vorbis/vorbisfile.h>
 #include <mad.h>
+#include <neaacdec.h>
 
 namespace oz
 {
@@ -46,13 +45,14 @@ class Sound
     static const float MAX_DISTANCE;
     static const int   DEFAULT_FREQUENCY      = 44100;
     static const int   MUSIC_BUFFER_SIZE      = 64 * 1024;
-    static const int   MAD_INPUT_BUFFER_SIZE  = 16 * 1024;
+    static const int   MAD_INPUT_BUFFER_SIZE  = 8 * 1024;
 
     enum StreamType
     {
       NONE,
       OGG,
-      MP3
+      MP3,
+      AAC
     };
 
     ALCdevice*     soundDevice;
@@ -76,7 +76,6 @@ class Sound
     void*          libmad;
 
     FILE*          mp3File;
-
     mad_stream     madStream;
     mad_frame      madFrame;
     mad_synth      madSynth;
@@ -84,6 +83,14 @@ class Sound
     int            madWrittenSamples;
     int            madFrameSamples;
     ubyte          madInputBuffer[MAD_INPUT_BUFFER_SIZE + MAD_BUFFER_GUARD];
+
+    FILE*          aacFile;
+    NeAACDecHandle aacDecoder;
+
+    char*          aacOutputBuffer;
+    int            aacWrittenBytes;
+    int            aacBufferBytes;
+    size_t         aacInputBytes;
 
     // music track id to switch to, -1 to do nothing, -2 stop playing
     int            selectedTrack;
@@ -98,9 +105,7 @@ class Sound
 
     void streamOpen( const char* path );
     void streamClear();
-    int  streamDecode();
-
-    bool loadMusicBuffer( uint buffer );
+    bool streamDecode( uint buffer );
 
   public:
 

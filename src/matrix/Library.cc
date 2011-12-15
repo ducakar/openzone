@@ -1,5 +1,6 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,9 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -635,13 +633,13 @@ void Library::initMusicRecurse( const char* path )
       initMusicRecurse( file->path() );
     }
     if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) &&
-        !file->hasExtension( "mp3" ) )
+        !file->hasExtension( "mp3" ) && !file->hasExtension( "aac" ) )
     {
       continue;
     }
 
     if( log.isVerbose ) {
-      log.println( "%s", file->path() );
+      log.println( "%s", file->path().cstr() );
     }
 
     musics.add( Resource( file->baseName(), file->path() ) );
@@ -654,10 +652,10 @@ void Library::initMusic()
 
   if( log.isVerbose ) {
     if( String::isEmpty( userMusicPath ) ) {
-      log.println( "Music (*.oga, *.ogg, *.mp3 in 'music') {" );
+      log.println( "Music (*.oga, *.ogg, *.mp3, *.aac in 'music') {" );
     }
     else {
-      log.println( "Music (*.oga, *.ogg, *.mp3 in 'music' and '%s') {", userMusicPath );
+      log.println( "Music (*.oga, *.ogg, *.mp3, *.aac in 'music' and '%s') {", userMusicPath );
     }
     log.indent();
   }

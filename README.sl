@@ -138,8 +138,7 @@ openzone [-v] [-l | -i <function>] [-t <št>] [-p <predpona>]
       Zgovornejši dnevnik.
 
 -l
-      Preskoči glavni meni in naloži samodejno shranjeno stanje.
-      Samodejno shranjeno stanje se nahaja v ~/.config/openzone/autosave.ozState.
+      Preskoči glavni meni in naloži nazadnje samodejno shranjeno stanje.
 
 -i <misija>
       Preskoči glavni meni in poženi misijo <misija>.
@@ -304,6 +303,9 @@ Kontakt: davorin.ucakar@gmail.com
 Ta program je POPOLNOMA BREZ GARANCIJE.
 To je prosto programje pod licenco GNU GPLv3, ki se lahko razpečuje pod določenimi pogoji;
 za podrobnosti glejte datoteko COPYING.
+
+Knjižnica liboz samo se lahko razpečuje tudi pod licenco X11;
+za podrobnosti glejte datoteko etc/COPYING.liboz.
 
 Avtorske pravice za podatke
 ---------------------------

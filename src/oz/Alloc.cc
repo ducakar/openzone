@@ -1,22 +1,27 @@
 /*
- * OpenZone - simple cross-platform FPS/RTS game engine.
+ * liboz - OpenZone core library.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 /**
@@ -112,7 +117,7 @@ void Alloc::printLeaks()
 
   bt = firstObjectTraceEntry;
   while( bt != null ) {
-    log.println( "Leaked object at %p of size %lld B allocated", bt->address, ulong64( bt->size ) );
+    log.println( "Leaked object at %p of size %d B allocated", bt->address, int( bt->size ) );
     log.indent();
     log.printTrace( &bt->stackTrace );
     log.unindent();
@@ -122,7 +127,7 @@ void Alloc::printLeaks()
 
   bt = firstArrayTraceEntry;
   while( bt != null ) {
-    log.println( "Leaked array at %p of size %lld B allocated", bt->address, ulong64( bt->size ) );
+    log.println( "Leaked array at %p of size %d B allocated", bt->address, int( bt->size ) );
     log.indent();
     log.printTrace( &bt->stackTrace );
     log.unindent();
@@ -328,14 +333,18 @@ void operator delete ( void* ptr ) throw()
 
   while( st != null ) {
     if( st->address == chunk ) {
-      System::abort( "ALLOC: new[] -> delete mismatch for block at %p", chunk );
+      System::error( "ALLOC: new[] -> delete mismatch for block at %p", chunk );
+      System::bell();
+      System::abort();
       break;
     }
     prev = st;
     st = st->next;
   }
 
-  System::abort( "ALLOC: Trying to free object at %p that does not seem to be allocated", chunk );
+  System::error( "ALLOC: Trying to free object at %p that does not seem to be allocated", chunk );
+  System::bell();
+  System::abort();
 
 backtraceFound:;
 
@@ -413,14 +422,18 @@ void operator delete[] ( void* ptr ) throw()
 
   while( st != null ) {
     if( st->address == chunk ) {
-      System::abort( "ALLOC: new -> delete[] mismatch for block at %p", chunk );
+      System::error( "ALLOC: new -> delete[] mismatch for block at %p", chunk );
+      System::bell();
+      System::abort();
     }
 
     prev = st;
     st = st->next;
   }
 
-  System::abort( "ALLOC: Trying to free array at %p that does not seem to be allocated", chunk );
+  System::error( "ALLOC: Trying to free array at %p that does not seem to be allocated", chunk );
+  System::bell();
+  System::abort();
 
 backtraceFound:;
 

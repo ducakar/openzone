@@ -1,0 +1,12 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: liboz
+Description: OpenZone core library
+Version: 0.3
+Requires:
+Conflicts:
+Libs: -lpthread -lpulse-simple
+Cflags: -std=c++0x

@@ -1,5 +1,6 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,9 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -118,20 +116,14 @@ void Caelum::draw()
   tf.model = transf;
   tf.apply();
 
+  glUniform4fv( param.oz_Fog_colour, 1, Colours::caelum );
+  glUniform4fv( param.oz_Colour, 1, colour );
+
 # ifdef OZ_GL_COMPATIBLE
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
   Vertex::setFormat();
 # else
   glBindVertexArray( vao );
-# endif
-
-  glUniform4fv( param.oz_Fog_colour, 1, Colours::caelum );
-  glUniform4fv( param.oz_Colour, 1, colour );
-
-# ifdef OZ_GL_COMPATIBLE
-  glEnableVertexAttribArray( Attrib::POSITION );
-  glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
 # endif
 
   glDrawArrays( GL_QUADS, 0, MAX_STARS * 4 );

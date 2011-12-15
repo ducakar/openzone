@@ -1,22 +1,27 @@
 /*
- * OpenZone - simple cross-platform FPS/RTS game engine.
+ * liboz - OpenZone core library.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 /**
@@ -33,8 +38,10 @@ namespace oz
 /**
  * %Log writing utility.
  *
- * Logging service, can write to stdout or into a file. After each operation stream is flushed,
+ * Logging service, can write to terminal and into a file. After each operation stream is flushed,
  * so no data is lost on a crash.
+ *
+ * Two spaces are used for indentation.
  *
  * @ingroup oz
  */
@@ -42,17 +49,19 @@ class Log
 {
   private:
 
-    void*       stream;    ///< %File handle, but declared FILE* because we don't want to pollute
-                           ///< namespace with \<cstdio\>.
-    const char* indentStr; ///< Indent string.
-    int         tabs;      ///< Indentation levels.
+    void* conStream;  ///< Terminal stream (<tt>stdout</tt> or <tt>stderr</tt>, but declared
+                      ///< void* because we don't want to pollute namespace with \<cstdio\>.
+    void* fileStream; ///< %Log file stream, but declared void* because we don't want to
+                      ///< pollute namespace with \<cstdio\>.
+    int   tabs;       ///< Indentation level.
 
   public:
 
-    bool        isVerbose; ///< It has no influence on <tt>Log</tt>, only for convenience.
+    bool  isError;    ///< Use <tt>stderr</tt> instead of <tt>stdout</tt> for terminal stream.
+    bool  isVerbose;  ///< It has no influence on <tt>Log</tt>, only for convenience.
 
     /**
-     * Initialise log with default parameters to init().
+     * Initialise log with default parameters to <tt>init()</tt>.
      */
     Log();
 
@@ -62,9 +71,9 @@ class Log
     ~Log();
 
     /**
-     * True iff output stream is a file.
+     * Enable/disable <tt>stderr</tt> stream instead of <tt>stdout</tt> for terminal output.
      */
-    bool isFile() const;
+    void setError( bool enable );
 
     /**
      * Set indent to zero.
@@ -134,13 +143,13 @@ class Log
     /**
      * Print nicely formatted exception (unindented).
      */
-    void printException( const Exception& e ) const;
+    void printException( const std::exception& e ) const;
 
     /**
-     * First parameter is file name (if null or <tt>""</tt>, it writes to stdout),
+     * First parameter is file path (if null or <tt>""</tt>, it only writes to terminal),
      * the other tells us if we want to clear its content if the file already exists.
      */
-    bool init( const char* fileName = null, bool clearFile = true, const char* indentStr = "  " );
+    bool init( const char* fileName = null, bool clearFile = true );
 
 };
 

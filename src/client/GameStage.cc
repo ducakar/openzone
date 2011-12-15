@@ -1,5 +1,6 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,9 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
  */
 
 /**
@@ -65,28 +63,11 @@ int GameStage::auxMain( void* )
   try{
     gameStage.run();
   }
-  catch( const Exception& e ) {
-    log.resetIndent();
-    log.println();
-    log.printException( e );
-    log.println();
-
-    if( oz::log.isFile() ) {
-      fprintf( stderr, "\nEXCEPTION: %s\n", e.what() );
-      fprintf( stderr, "  in %s\n\n", e.function );
-      fprintf( stderr, "  at %s:%d\n\n", e.file, e.line );
-    }
-    abort();
-  }
   catch( const std::exception& e ) {
-    log.resetIndent();
-    log.println();
-    log.println( "EXCEPTION: %s", e.what() );
-    log.println();
+    log.setError( true );
+    log.printException( e );
+    log.setError( false );
 
-    if( log.isFile() ) {
-      fprintf( stderr, "\nEXCEPTION: %s\n\n", e.what() );
-    }
     abort();
   }
   return 0;

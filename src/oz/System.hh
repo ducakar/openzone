@@ -1,22 +1,27 @@
 /*
- * OpenZone - simple cross-platform FPS/RTS game engine.
+ * liboz - OpenZone core library.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 /**
@@ -49,36 +54,17 @@ class System
 
     static System system; ///< Private instance, takes care for static initialisation/destruction.
 
-    static int initFlags; ///< Holds flags which components are initialised.
-
     /**
-     * Signal handler.
+     * Default constructor disables handler for SIGTRAP on Linux.
      *
-     * Handler prints information about signal and calls <code>System::abort()</code>.
-     */
-    static void signalHandler( int signum );
-
-    /**
-     * Set signal handlers.
-     *
-     * Set signal handlers to catch critical signals.
-     * SIGINT, SIGQUIT, SIGILL, SIGABRT, SIGFPE, SIGSEGV and SIGTERM should be caught. Some
-     * functions or errors may ruin signal catching.
-     */
-    static void catchSignals();
-
-    /**
-     * Reset signal handlers to defaults.
-     */
-    static void resetSignals();
-
-    /**
-     * Default constructor dynamically loads <tt>libpulse-simple</tt> to enable bell on Linux.
+     * liboz triggers breakpoint on exceptions and failed assertions, which is done by raising
+     * SIGTRAP on Linux or <tt>DebugBreak()</tt> call on Windows. However, default handler for
+     * SIGTRAP crashes the process, so it's a good idea to disable it.
      */
     System();
 
     /**
-     * Destructor delays process termination until bell sound is played to the end.
+     * Destructor delays normal process termination until bell finishes playing.
      */
     ~System();
 
@@ -87,13 +73,13 @@ class System
     /**
      * Play a sound alert (asynchronously).
      *
-     * On Linux, sine wave from <tt>oz/bellSample.inc</tt> is played through PulseAudio. On Windows,
-     * default system bell is used.
+     * Sine wave from <tt>oz/bellSample.inc</tt> is played through PulseAudio on Linux or Win32 API
+     * in Windows.
      */
     static void bell();
 
     /**
-     * Raise trap signal (to trigger a breakpoint).
+     * Trigger a breakpoint (raises SIGTRAP on Linux or calls DebugBreak() on Windows).
      */
     static void trap();
 
@@ -106,9 +92,7 @@ class System
     static void halt();
 
     /**
-     * Print error message.
-     *
-     * Everything is printed to stderr and log, unless log output is stdout.
+     * Print error message and stack trace.
      */
     OZ_PRINTF_FORMAT( 1, 2 )
     static void error( const char* msg, ... );
@@ -116,13 +100,10 @@ class System
     /**
      * Abort program.
      *
-     * Print the error message and stack trace, call <code>halt()</code> (if HALT_BIT was passed on
-     * initialisation) and terminate program with SIGABRT after that.
-     *
-     * Everything is printed to stderr and log, unless log output is stdout.
+     * If <tt>halt</tt> is true and <tt>HALT_BIT</tt> has been passed on initialisation, call
+     * <code>halt()</code>, then terminate program with SIGABRT.
      */
-    OZ_PRINTF_FORMAT( 1, 2 )
-    static void abort( const char* msg, ... );
+    static void abort( bool halt = true );
 
     /**
      * Initialise <tt>System</tt> features.
@@ -131,9 +112,9 @@ class System
      * given, crash handler waits for CTRL-C before exit.
      */
 #ifdef NDEBUG
-    static void init( int flags = CATCH_SIGNALS_BIT | HALT_BIT );
-#else
     static void init( int flags = CATCH_SIGNALS_BIT );
+#else
+    static void init( int flags = CATCH_SIGNALS_BIT | HALT_BIT );
 #endif
 
 };

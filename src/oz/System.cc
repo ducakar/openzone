@@ -1,22 +1,27 @@
 /*
- * OpenZone - simple cross-platform FPS/RTS game engine.
+ * liboz - OpenZone core library.
+ *
  * Copyright (C) 2002-2011  Davorin Učakar
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Davorin Učakar
- * <davorin.ucakar@gmail.com>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 /**
@@ -26,18 +31,18 @@
 #include "System.hh"
 
 #include "Log.hh"
-#include "Math.hh"
 
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
 
+#include <fcntl.h>
+#include <unistd.h>
+
 #ifdef _WIN32
 # include <windows.h>
 # include <mmsystem.h>
 #else
-# include <dlfcn.h>
-# include <unistd.h>
 # include <pthread.h>
 # include <pulse/simple.h>
 #endif
@@ -83,37 +88,91 @@ static const char* const SIGNALS[][2] =
   { "SIGSYS",    "Bad system call"            }  // 31
 };
 
-#ifndef _WIN32
+#ifdef _WIN32
+
+struct Wave
+{
+  char  chunkId[4];
+  int   chunkSize;
+  char  format[4];
+
+  char  subchunk1Id[4];
+  int   subchunk1Size;
+  short audioFormat;
+  short nChannels;
+  int   sampleRate;
+  int   byteRate;
+  short blockAlign;
+  short bitsPerSample;
+
+  char  subchunk2Id[4];
+  int   subchunk2Size;
+  ubyte data[4410];
+};
+
+static const Wave WAVE_SAMPLE = {
+  { 'R', 'I', 'F', 'F' }, 36 + 4410, { 'W', 'A', 'V', 'E' },
+  { 'f', 'm', 't', ' ' }, 16, 1, 1, 11025, 11025, 1, 8,
+  { 'd', 'a', 't', 'a' }, 4410, {
+# include "bellSample.inc"
+  }
+};
+
+#else
+
+static const pa_sample_spec BELL_SPEC = { PA_SAMPLE_U8, 11025, 1 };
 static const ubyte BELL_SAMPLE[] = {
 # include "bellSample.inc"
 };
 
-static const pa_sample_spec BELL_SPEC = { PA_SAMPLE_U8, 11025, 1 };
-
-static decltype( ::pa_simple_new   )* pa_simple_new   = null;
-static decltype( ::pa_simple_free  )* pa_simple_free  = null;
-static decltype( ::pa_simple_write )* pa_simple_write = null;
-
-static void* libpulse = null;
 #endif
 
 static volatile int bellUsers = 0;
+static int initFlags = 0;
 
-int System::initFlags = 0;
+static void resetSignals();
 
-void System::signalHandler( int signum )
+static void signalHandler( int signum )
 {
-  System::resetSignals();
+  resetSignals();
 
   if( signum < 1 || signum > 31 ) {
     signum = 0;
   }
 
   if( signum == SIGINT ) {
-    System::initFlags &= ~System::HALT_BIT;
+    initFlags &= ~System::HALT_BIT;
   }
 
-  System::abort( "Caught signal %d %s (%s)", signum, SIGNALS[signum][0], SIGNALS[signum][1] );
+  System::error( "Caught signal %d %s (%s)", signum, SIGNALS[signum][0], SIGNALS[signum][1] );
+  System::bell();
+  System::abort();
+}
+
+static void catchSignals()
+{
+  signal( SIGINT,  signalHandler );
+  signal( SIGILL,  signalHandler );
+  signal( SIGABRT, signalHandler );
+  signal( SIGFPE,  signalHandler );
+  signal( SIGSEGV, signalHandler );
+  signal( SIGTERM, signalHandler );
+#ifndef _WIN32
+  signal( SIGQUIT, signalHandler );
+#endif
+}
+
+static void resetSignals()
+{
+  signal( SIGINT,  SIG_DFL );
+  signal( SIGILL,  SIG_DFL );
+  signal( SIGABRT, SIG_DFL );
+  signal( SIGFPE,  SIG_DFL );
+  signal( SIGSEGV, SIG_DFL );
+  signal( SIGTERM, SIG_DFL );
+#ifndef _WIN32
+  signal( SIGQUIT, SIG_DFL );
+#endif
 }
 
 #ifdef _WIN32
@@ -122,7 +181,7 @@ static DWORD WINAPI bellThread( LPVOID )
 {
   ++bellUsers;
 
-  PlaySound( reinterpret_cast<LPCSTR>( SND_ALIAS_SYSTEMDEFAULT ), null, SND_ALIAS_ID );
+  PlaySound( reinterpret_cast<LPCSTR>( &WAVE_SAMPLE ), null, SND_MEMORY | SND_SYNC );
 
   --bellUsers;
   return 0;
@@ -132,8 +191,6 @@ static DWORD WINAPI bellThread( LPVOID )
 
 static void* bellThread( void* )
 {
-  ++bellUsers;
-
   pa_simple* pa = pa_simple_new( null, "liboz", PA_STREAM_PLAYBACK, null, "bell", &BELL_SPEC,
                                  null, null, null );
   if( pa != null ) {
@@ -147,73 +204,29 @@ static void* bellThread( void* )
 
 #endif
 
-void System::catchSignals()
-{
-#ifndef _WIN32
-  signal( SIGQUIT, signalHandler );
-#endif
-  signal( SIGINT,  signalHandler );
-  signal( SIGILL,  signalHandler );
-  signal( SIGABRT, signalHandler );
-  signal( SIGFPE,  signalHandler );
-  signal( SIGSEGV, signalHandler );
-  signal( SIGTERM, signalHandler );
-}
-
-void System::resetSignals()
-{
-#ifndef _WIN32
-  signal( SIGQUIT, SIG_DFL );
-#endif
-  signal( SIGINT,  SIG_DFL );
-  signal( SIGILL,  SIG_DFL );
-  signal( SIGABRT, SIG_DFL );
-  signal( SIGFPE,  SIG_DFL );
-  signal( SIGSEGV, SIG_DFL );
-  signal( SIGTERM, SIG_DFL );
-}
-
 System::System()
 {
 #ifndef _WIN32
-  libpulse = dlopen( "libpulse-simple.so", RTLD_NOW );
-
-  if( libpulse != null ) {
-    *reinterpret_cast<void**>( &pa_simple_new   ) = dlsym( libpulse, "pa_simple_new" );
-    *reinterpret_cast<void**>( &pa_simple_free  ) = dlsym( libpulse, "pa_simple_free" );
-    *reinterpret_cast<void**>( &pa_simple_write ) = dlsym( libpulse, "pa_simple_write" );
-
-    if( pa_simple_new == null || pa_simple_free == null || pa_simple_write == null ) {
-      dlclose( libpulse );
-
-      pa_simple_new   = null;
-      pa_simple_free  = null;
-      pa_simple_write = null;
-      libpulse        = null;
-    }
-  }
+  // Disable default handler for TRAP signal that crashes the process.
+  signal( SIGTRAP, SIG_IGN );
 #endif
 }
 
 System::~System()
 {
+  while( bellUsers != 0 ) {
 #ifdef _WIN32
-  while( bellUsers != 0 ) {
     Sleep( 100 );
-  }
 #else
-  while( bellUsers != 0 ) {
     usleep( 100 );
-  }
-
-  if( libpulse != null ) {
-    dlclose( libpulse );
-  }
 #endif
+  }
 }
 
 void System::bell()
 {
+  ++bellUsers;
+
 #ifdef _WIN32
   HANDLE thread = CreateThread( null, 0, bellThread, null, 0, null );
   CloseHandle( thread );
@@ -225,15 +238,17 @@ void System::bell()
 
 void System::trap()
 {
-#ifndef _WIN32
-  signal( SIGTRAP, SIG_IGN );
+#ifdef _WIN32
+  DebugBreak();
+#else
   raise( SIGTRAP );
-  signal( SIGTRAP, SIG_DFL );
 #endif
 }
 
 void System::halt()
 {
+  fflush( stdout );
+
   fprintf( stderr, "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
   fflush( stderr );
 
@@ -248,58 +263,31 @@ void System::halt()
 
 void System::error( const char* msg, ... )
 {
+  log.setError( true );
+
   va_list ap;
   va_start( ap, msg );
 
-  fflush( stdout );
-
-  fprintf( stderr, "\n" );
-  vfprintf( stderr, msg, ap );
-  fprintf( stderr, "\n" );
-
-  fflush( stderr );
-
-  if( log.isFile() ) {
-    log.printEnd( "\n" );
-    log.vprintRaw( msg, ap );
-    log.printEnd( "\n" );
-  }
+  log.printEnd();
+  log.vprintRaw( msg, ap );
+  log.printEnd();
 
   va_end( ap );
-}
-
-void System::abort( const char* msg, ... )
-{
-  System::resetSignals();
-
-  va_list ap;
-  va_start( ap, msg );
-
-  fflush( stdout );
-
-  fprintf( stderr, "\n" );
-  vfprintf( stderr, msg, ap );
-  fprintf( stderr, "\n" );
 
   StackTrace st = StackTrace::current();
   log.printTrace( &st );
 
-  fflush( stderr );
+  log.setError( false );
+}
 
-  if( log.isFile() ) {
-    log.printEnd();
-    log.vprintRaw( msg, ap );
-    log.printEnd( "\n" );
+void System::abort( bool halt_ )
+{
+  resetSignals();
 
-    log.resetIndent();
-    log.indent();
-    log.printTrace( &st );
-    log.unindent();
-  }
+  // Wait until bell is played completely.
+  system.~System();
 
-  va_end( ap );
-
-  if( initFlags & HALT_BIT ) {
+  if( halt_ && ( initFlags & HALT_BIT ) ) {
     halt();
   }
 
@@ -312,15 +300,10 @@ void System::init( int flags )
     resetSignals();
   }
 
-  initFlags = 0;
+  initFlags = flags;
 
-  if( flags & CATCH_SIGNALS_BIT ) {
-    initFlags |= CATCH_SIGNALS_BIT;
+  if( initFlags & CATCH_SIGNALS_BIT ) {
     catchSignals();
-  }
-
-  if( flags & HALT_BIT ) {
-    initFlags |= HALT_BIT;
   }
 }
 
