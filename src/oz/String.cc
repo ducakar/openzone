@@ -1,27 +1,26 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright (C) 2002-2011  Davorin Učakar
+ * Copyright © 2002-2011 Davorin Učakar
  *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation files
- * (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge,
- * publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice (including the next
+ * paragraph) shall be included in all copies or substantial portions of the
+ * Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 /**
@@ -31,6 +30,7 @@
 #include "String.hh"
 
 #include <cstdio>
+#include <cstdlib>
 
 namespace oz
 {
@@ -38,6 +38,116 @@ namespace oz
 static const int LOCAL_BUFFER_SIZE = 4096;
 
 static OZ_THREAD_LOCAL char localBuffer[LOCAL_BUFFER_SIZE];
+
+inline String::String( int count_, int ) : count( count_ )
+{
+  ensureCapacity();
+}
+
+void String::ensureCapacity()
+{
+  buffer = count < BUFFER_SIZE ?
+      baseBuffer : reinterpret_cast<char*>( malloc( size_t( count + 1 ) ) );
+}
+
+void String::dealloc()
+{
+  free( buffer );
+}
+
+String::String( const String& s ) : count( s.count )
+{
+  ensureCapacity();
+  aCopy( buffer, s.buffer, count + 1 );
+}
+
+String::String( String&& s ) : count( s.count )
+{
+  if( s.buffer != s.baseBuffer ) {
+    buffer = s.buffer;
+    s.buffer = s.baseBuffer;
+  }
+  else {
+    buffer = baseBuffer;
+    aCopy( baseBuffer, s.baseBuffer, count + 1 );
+  }
+
+  s.count = 0;
+  s.baseBuffer[0] = '\0';
+}
+
+String& String::operator = ( const String& s )
+{
+  if( &s == this ) {
+    return *this;
+  }
+
+  count = s.count;
+
+  if( buffer != baseBuffer ) {
+    free( buffer );
+  }
+
+  ensureCapacity();
+  aCopy( buffer, s.buffer, count + 1 );
+
+  return *this;
+}
+
+String& String::operator = ( String&& s )
+{
+  if( &s == this ) {
+    return *this;
+  }
+
+  count = s.count;
+
+  if( buffer != baseBuffer ) {
+    free( buffer );
+  }
+
+  if( s.buffer != s.baseBuffer ) {
+    buffer = s.buffer;
+    s.buffer = s.baseBuffer;
+
+  }
+  else {
+    buffer = baseBuffer;
+    aCopy( baseBuffer, s.baseBuffer, count + 1 );
+  }
+
+  s.count = 0;
+  s.baseBuffer[0] = '\0';
+
+  return *this;
+}
+
+String::String( int count_, const char* s ) : count( count_ )
+{
+  hard_assert( s != null && length( s ) >= count );
+
+  ensureCapacity();
+  aCopy( buffer, s, count );
+  buffer[count] = '\0';
+
+  hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+}
+
+String::String( const char* s )
+{
+  if( s == null ) {
+    buffer = baseBuffer;
+    count = 0;
+    baseBuffer[0] = '\0';
+  }
+  else {
+    count = length( s );
+    ensureCapacity();
+    aCopy( buffer, s, count + 1 );
+  }
+
+  hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+}
 
 String::String( bool b ) : buffer( baseBuffer )
 {
@@ -104,10 +214,29 @@ String String::str( const char* s, ... )
 
   va_end( ap );
 
-  string.buffer = string.count < BUFFER_SIZE ? string.baseBuffer : new char[string.count + 1];
+  string.ensureCapacity();
   aCopy( string.buffer, localBuffer, string.count + 1 );
 
   return string;
+}
+
+String& String::operator = ( const char* s )
+{
+  if( s == buffer ) {
+    return *this;
+  }
+
+  count = length( s );
+
+  if( buffer != baseBuffer ) {
+    free( buffer );
+  }
+  ensureCapacity();
+  aCopy( buffer, s, count + 1 );
+
+  hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+
+  return *this;
 }
 
 String String::operator + ( const char* s ) const

@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright (C) 2002-2011  Davorin Učakar
+ * Copyright © 2002-2011 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,11 +64,10 @@ int GameStage::auxMain( void* )
     gameStage.run();
   }
   catch( const std::exception& e ) {
-    log.setError( true );
     log.printException( e );
-    log.setError( false );
 
-    abort();
+    System::bell();
+    System::abort( false );
   }
   return 0;
 }

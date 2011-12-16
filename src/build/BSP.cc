@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright (C) 2002-2011  Davorin Učakar
+ * Copyright © 2002-2011 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -153,10 +153,10 @@ void BSP::load()
   is.forward( lumps[QBSPLump::PLANES].offset );
 
   for( int i = 0; i < nPlanes; ++i ) {
-    planes[i].nx = is.readFloat();
-    planes[i].ny = is.readFloat();
-    planes[i].nz = is.readFloat();
-    planes[i].d  = is.readFloat() * scale;
+    planes[i].n.x = is.readFloat();
+    planes[i].n.y = is.readFloat();
+    planes[i].n.z = is.readFloat();
+    planes[i].d   = is.readFloat() * scale;
   }
 
   nNodes = lumps[QBSPLump::NODES].length / int( sizeof( QBSPNode ) );
@@ -814,22 +814,22 @@ void BSP::optimise()
   for( int i = 0; i < nBrushSides; ++i ) {
     Plane& plane = planes[ brushSides[i] ];
 
-    if( plane.nx == -1.0f ) {
+    if( plane.n.x == -1.0f ) {
       mins.x = min( -plane.d, mins.x );
     }
-    else if( plane.nx == 1.0f ) {
+    else if( plane.n.x == 1.0f ) {
       maxs.x = max( +plane.d, maxs.x );
     }
-    else if( plane.ny == -1.0f ) {
+    else if( plane.n.y == -1.0f ) {
       mins.y = min( -plane.d, mins.y );
     }
-    else if( plane.ny == 1.0f ) {
+    else if( plane.n.y == 1.0f ) {
       maxs.y = max( +plane.d, maxs.y );
     }
-    else if( plane.nz == -1.0f ) {
+    else if( plane.n.z == -1.0f ) {
       mins.z = min( -plane.d, mins.z );
     }
-    else if( plane.nz == 1.0f ) {
+    else if( plane.n.z == 1.0f ) {
       maxs.z = max( +plane.d, maxs.z );
     }
   }

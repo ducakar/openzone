@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright (C) 2002-2011  Davorin Učakar
+ * Copyright © 2002-2011 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -241,6 +241,20 @@ void BotProxy::update()
         bot->container = -1;
       }
     }
+    else if( ui::mouse.middleClick ) {
+      if( bot->cargo != -1 ) {
+        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
+        bot->actions |= Bot::ACTION_GRAB;
+        bot->instrument = -1;
+        bot->container = -1;
+      }
+      else if( camera.tagged != -1 ) {
+        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
+        bot->actions |= Bot::ACTION_GRAB;
+        bot->instrument = camera.tagged;
+        bot->container = -1;
+      }
+    }
     else if( ui::mouse.wheelDown ) {
       if( camera.taggedObj != null ) {
         if( camera.taggedObj->flags & Object::BROWSABLE_BIT ) {
@@ -262,20 +276,6 @@ void BotProxy::update()
         bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
         bot->actions |= Bot::ACTION_THROW;
         bot->instrument = -1;
-        bot->container = -1;
-      }
-    }
-    else if( ui::mouse.middleClick ) {
-      if( bot->cargo != -1 ) {
-        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-        bot->actions |= Bot::ACTION_GRAB;
-        bot->instrument = -1;
-        bot->container = -1;
-      }
-      else if( camera.tagged != -1 ) {
-        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-        bot->actions |= Bot::ACTION_GRAB;
-        bot->instrument = camera.tagged;
         bot->container = -1;
       }
     }

@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright (C) 2002-2011  Davorin Učakar
+ * Copyright © 2002-2011 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -381,26 +381,20 @@ bool Sound::streamDecode( uint buffer )
 
       do {
         if( aacWrittenBytes < aacBufferBytes ) {
-          size_t length = size_t( aacBufferBytes - aacWrittenBytes );
-          size_t space  = size_t( musicOutputEnd - musicOutput );
+          int length = int( aacBufferBytes - aacWrittenBytes );
+          int space  = int( musicOutputEnd - musicOutput );
 
           if( length >= space ) {
-            memcpy( musicOutput, aacOutputBuffer + aacWrittenBytes, space );
+            memcpy( musicOutput, aacOutputBuffer + aacWrittenBytes, size_t( space ) );
             aacWrittenBytes += space;
 
             alBufferData( buffer, musicFormat, musicBuffer, MUSIC_BUFFER_SIZE, musicRate );
             return true;
           }
           else {
-            memcpy( musicOutput, aacOutputBuffer + aacWrittenBytes, length );
+            memcpy( musicOutput, aacOutputBuffer + aacWrittenBytes, size_t( length ) );
             aacWrittenBytes += length;
             musicOutput += length;
-
-            if( aacInputBytes == 0 ) {
-              alBufferData( buffer, musicFormat, musicBuffer, int( musicOutput - musicBuffer ),
-                            musicRate );
-              return false;
-            }
           }
         }
 
@@ -409,7 +403,15 @@ bool Sound::streamDecode( uint buffer )
             ( NeAACDecDecode( aacDecoder, &frameInfo, madInputBuffer, aacInputBytes ) );
 
         if( aacOutputBuffer == null ) {
-          throw Exception( "Error during AAC decoding" );
+          int length = int( musicOutput - musicBuffer );
+
+          if( length == 0 ) {
+            return false;
+          }
+          else {
+            alBufferData( buffer, musicFormat, musicBuffer, length, musicRate );
+            return true;
+          }
         }
 
         size_t bytesConsumed = size_t( frameInfo.bytesconsumed );
@@ -454,7 +456,7 @@ void Sound::stopMusic()
 
 bool Sound::isMusicPlaying() const
 {
-  return currentTrack != -1;
+  return currentTrack != -1 || selectedTrack != -1;
 }
 
 void Sound::resume() const

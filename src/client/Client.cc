@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright (C) 2002-2011  Davorin Učakar
+ * Copyright © 2002-2011 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -193,12 +193,12 @@ int Client::main( int argc, char** argv )
   if( !SHGetSpecialFolderPath( null, configRoot, CSIDL_APPDATA, false ) ) {
     throw Exception( "Failed to access APPDATA directory" );
   }
-  if( !SHGetSpecialFolderPath( null, localRoot, CSIDL_APPDATA, false ) ) {
+  if( !SHGetSpecialFolderPath( null, localRoot, CSIDL_LOCAL_APPDATA, false ) ) {
     throw Exception( "Failed to access LOCAL_APPDATA directory" );
   }
 
-  File configDir( configRoot );
-  File localDir( localRoot );
+  File configDir( String::str( "%s\\" OZ_APPLICATION_NAME, configRoot ) );
+  File localDir( String::str( "%s\\" OZ_APPLICATION_NAME, localRoot ) );
 #else
   const char* home       = SDL_getenv( "HOME" );
   const char* configRoot = SDL_getenv( "XDG_CONFIG_HOME" );
@@ -218,12 +218,12 @@ int Client::main( int argc, char** argv )
 #endif
 
   if( configDir.getType() != File::DIRECTORY ) {
-    printf( "No resource directory found, creating '%s' ...", configDir.path().cstr() );
+    log.print( "No resource directory found, creating '%s' ...", configDir.path().cstr() );
 
     if( !File::mkdir( configDir.path(), 0700 ) ) {
       throw Exception( "Resource directory creation failed" );
     }
-    printf( " OK\n" );
+    log.printEnd( " OK" );
   }
 
   String logPath = configDir.path() + "/client.log";
@@ -260,6 +260,7 @@ int Client::main( int argc, char** argv )
   log.println( "}" );
 
   String configPath = configDir.path() + "/client.rc";
+
   if( config.load( configPath ) ) {
     log.printEnd( "Configuration read from '%s'", configPath.cstr() );
 
