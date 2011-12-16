@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright (C) 2002-2011  Davorin Učakar
+ * Copyright © 2002-2011 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 /**
  * @file build/modules/GalileoModule.cc
  *
- * Copyright (C) 2002-2011  Davorin Učakar.
+ * Copyright © 2002-2011 Davorin Učakar.
  * This software is covered by GNU GPLv3. See COPYING file for details.
  */
 

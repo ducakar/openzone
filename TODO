@@ -1,7 +1,10 @@
 TODO 0.3
 - matrix
+  * BSP
+    + elevators
+    + switches
+    + scripted actions
   * Vehicle
-    + rotation limit, slerp
     + turret
 - client
   * decals

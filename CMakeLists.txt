@@ -32,30 +32,24 @@ endif()
 mark_as_advanced( OZ_SYSTEM_NAME )
 
 include( cmake/pch.cmake )
-include( cmake/pack_config.cmake )
 include( CheckLibraryExists )
 
 Find_Package( SDL REQUIRED )
+Find_Package( SDL_ttf REQUIRED )
+Find_Package( SDL_image REQUIRED )
+Find_Package( PNG REQUIRED )
+Find_Package( JPEG REQUIRED )
+Find_Package( Lua51 REQUIRED )
+Find_Package( OpenGL REQUIRED )
+Find_Package( OpenAL REQUIRED )
 
 mark_as_advanced( SDL_INCLUDE_DIR )
 mark_as_advanced( SDL_LIBRARY )
 mark_as_advanced( SDLMAIN_LIBRARY )
-
-Find_Package( SDL_ttf REQUIRED )
-
 mark_as_advanced( SDLTTF_INCLUDE_DIR )
 mark_as_advanced( SDLTTF_LIBRARY )
-
-Find_Package( SDL_image REQUIRED )
-Find_Package( PNG REQUIRED )
-Find_Package( JPEG REQUIRED )
-
 mark_as_advanced( SDLIMAGE_INCLUDE_DIR )
 mark_as_advanced( SDLIMAGE_LIBRARY )
-
-Find_Package( Lua51 REQUIRED )
-Find_Package( OpenGL REQUIRED )
-Find_Package( OpenAL REQUIRED )
 
 if( NOT DEFINED OGG_INCLUDE_DIR )
   set( OGG_INCLUDE_DIR "" CACHE PATH "" FORCE )
@@ -74,14 +68,15 @@ if( NOT DEFINED FAAD_INCLUDE_DIR )
 endif()
 
 find_library( VORBISFILE_LIBRARY vorbisfile )
+find_library( MAD_LIBRARY mad )
 find_library( FAAD_LIBRARY faad )
 
 mark_as_advanced( OGG_INCLUDE_DIR )
 mark_as_advanced( VORBIS_INCLUDE_DIR )
-mark_as_advanced( MAD_INCLUDE_DIR )
 mark_as_advanced( VORBISFILE_INCLUDE_DIR )
 mark_as_advanced( VORBISFILE_LIBRARY )
 mark_as_advanced( MAD_INCLUDE_DIR )
+mark_as_advanced( MAD_LIBRARY )
 mark_as_advanced( FAAD_INCLUDE_DIR )
 mark_as_advanced( FAAD_LIBRARY )
 
@@ -136,6 +131,10 @@ set( libs_client "${libs_client};${OPENAL_LIBRARY}" )
 set( libs_client "${libs_client};${VORBISFILE_LIBRARY}" )
 set( libs_client "${libs_client};${FAAD_LIBRARY}" )
 
+if( WIN32 )
+  set( libs_client "${libs_client};${MAD_LIBRARY}" )
+endif()
+
 if( OZ_NETWORK )
   include_directories( ${SDLNET_INCLUDE_DIR} )
   set( libs_client "${libs_client};${SDLNET_LIBRARY}" )
@@ -144,7 +143,7 @@ endif()
 set( libs_tools "${libs_client};${SDLIMAGE_LIBRARY}" )
 
 # compiler and linker flags
-set( flags "-pipe -std=c++0x -pedantic -fstrict-enums -ffast-math -freciprocal-math" )
+set( flags "-pipe -std=c++0x -fstrict-enums -ffast-math -freciprocal-math" )
 set( warnings "-Wall -Wextra -Wconversion -Woverloaded-virtual -Wnon-virtual-dtor -Winvalid-pch" )
 set( arch_flags "-msse3 -mfpmath=sse" )
 
@@ -201,5 +200,6 @@ string( STRIP "${OZ_EXE_LINKER_FLAGS}" OZ_EXE_LINKER_FLAGS )
 # sources
 add_subdirectory( src )
 
-# data installation
+# installation
+include( cmake/CPackConfig.cmake )
 include( cmake/data_install.cmake )

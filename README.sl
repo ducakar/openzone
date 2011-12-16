@@ -296,7 +296,7 @@ ui.showDebug [bool] false
 
 Avtorske pravice za pogon OpenZone
 ----------------------------------
-Copyright (C) 2002-2011  Davorin Učakar. Vse pravice pridržane.
+Copyright © 2002-2011 Davorin Učakar. Vse pravice pridržane.
 Avtor:   Davorin Učakar
 Kontakt: davorin.ucakar@gmail.com
 

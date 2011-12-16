@@ -1,27 +1,26 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright (C) 2002-2011  Davorin Učakar
+ * Copyright © 2002-2011 Davorin Učakar
  *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation files
- * (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge,
- * publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice (including the next
+ * paragraph) shall be included in all copies or substantial portions of the
+ * Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 /**
@@ -44,10 +43,8 @@ class Plane
 {
   public:
 
-    float nx; ///< X component of the normal.
-    float ny; ///< Y component of the normal.
-    float nz; ///< Z component of the normal.
-    float d;  ///< Distance from origin.
+    Vec3  n; ///< Normal.
+    float d; ///< Distance from origin.
 
     /**
      * Create an uninitialised instance.
@@ -58,22 +55,21 @@ class Plane
      * Create form a pair of normal and distance from the origin.
      */
     OZ_ALWAYS_INLINE
-    explicit Plane( const Vec3& n, float d_ ) : nx( n.x ), ny( n.y ), nz( n.z ), d( d_ )
+    explicit Plane( const Vec3& n_, float d_ ) : n( n_ ), d( d_ )
     {}
 
     /**
      * Create from an array of 4 floats.
      */
     OZ_ALWAYS_INLINE
-    explicit Plane( const float* p ) : nx( p[0] ), ny( p[1] ), nz( p[2] ), d( p[3] )
+    explicit Plane( const float* p ) : n( p[0], p[1], p[2] ), d( p[3] )
     {}
 
     /**
      * Create with the given member values.
      */
     OZ_ALWAYS_INLINE
-    explicit Plane( float nx_, float ny_, float nz_, float d_ ) :
-        nx( nx_ ), ny( ny_ ), nz( nz_ ), d( d_ )
+    explicit Plane( float nx, float ny, float nz, float d_ ) : n( nx, ny, nz ), d( d_ )
     {}
 
     /**
@@ -82,7 +78,7 @@ class Plane
     OZ_ALWAYS_INLINE
     bool operator == ( const Plane& p ) const
     {
-      return nx == p.nx && ny == p.ny && nz == p.nz && d == p.d;
+      return n.x == p.n.x && n.y == p.n.y && n.z == p.n.z && d == p.d;
     }
 
     /**
@@ -91,7 +87,7 @@ class Plane
     OZ_ALWAYS_INLINE
     bool operator != ( const Plane& p ) const
     {
-      return nx != p.nx || ny != p.ny || nz != p.nz || d != p.d;
+      return n.x != p.n.x || n.y != p.n.y || n.z != p.n.z || d != p.d;
     }
 
     /**
@@ -100,7 +96,7 @@ class Plane
     OZ_ALWAYS_INLINE
     operator const float* () const
     {
-      return &nx;
+      return &n.x;
     }
 
     /**
@@ -109,7 +105,7 @@ class Plane
     OZ_ALWAYS_INLINE
     operator float* ()
     {
-      return &nx;
+      return &n.x;
     }
 
     /**
@@ -120,7 +116,7 @@ class Plane
     {
       hard_assert( 0 <= i && i < 4 );
 
-      return ( &nx )[i];
+      return ( &n.x )[i];
     }
 
     /**
@@ -131,16 +127,7 @@ class Plane
     {
       hard_assert( 0 <= i && i < 4 );
 
-      return ( &nx )[i];
-    }
-
-    /**
-     * Normal.
-     */
-    OZ_ALWAYS_INLINE
-    Vec3 n() const
-    {
-      return Vec3( nx, ny, nz );
+      return ( &n.x )[i];
     }
 
     /**
@@ -149,7 +136,7 @@ class Plane
     OZ_ALWAYS_INLINE
     Plane abs() const
     {
-      return Plane( Math::fabs( nx ), Math::fabs( ny ), Math::fabs( nz ), d );
+      return Plane( Math::fabs( n.x ), Math::fabs( n.y ), Math::fabs( n.z ), d );
     }
 
     /**
@@ -158,7 +145,7 @@ class Plane
     OZ_ALWAYS_INLINE
     friend float operator * ( const Vec3& v, const Plane& plane )
     {
-      return v.x*plane.nx + v.y*plane.ny + v.z*plane.nz;
+      return v.x*plane.n.x + v.y*plane.n.y + v.z*plane.n.z;
     }
 
     /**
@@ -167,7 +154,7 @@ class Plane
     OZ_ALWAYS_INLINE
     friend float operator * ( const Point3& p, const Plane& plane )
     {
-      return p.x*plane.nx + p.y*plane.ny + p.z*plane.nz - plane.d;
+      return p.x*plane.n.x + p.y*plane.n.y + p.z*plane.n.z - plane.d;
     }
 
 };

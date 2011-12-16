@@ -1,27 +1,26 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright (C) 2002-2011  Davorin Učakar
+ * Copyright © 2002-2011 Davorin Učakar
  *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation files
- * (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge,
- * publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice (including the next
+ * paragraph) shall be included in all copies or substantial portions of the
+ * Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 /**
@@ -39,7 +38,8 @@ namespace oz
  * Immutable string.
  *
  * Class has static storage of <tt>BUFFER_SIZE</tt> bytes, if string is larger it is stored in
- * a dynamically allocated storage.
+ * a dynamically allocated storage. For storage allocation <tt>malloc()</tt> is used, so it bypasses
+ * <code>Alloc</code> memory manager.
  *
  * To deallocate storage just assign an empty string.
  *
@@ -59,18 +59,17 @@ class String
     /**
      * Only allocate storage, do not initialise string.
      */
-    explicit String( int count_, int ) : count( count_ )
-    {
-      ensureCapacity();
-    }
+    explicit String( int count_, int );
 
     /**
      * If existing storage is too small, allocate a new one.
      */
-    void ensureCapacity()
-    {
-      buffer = count < BUFFER_SIZE ? baseBuffer : new char[count + 1];
-    }
+    void ensureCapacity();
+
+    /**
+     * Deallocate storage (needed by destructor to avoid including <tt>\<cstdlib\></tt>).
+     */
+    void dealloc();
 
   public:
 
@@ -90,90 +89,31 @@ class String
       hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
 
       if( buffer != baseBuffer ) {
-        delete[] buffer;
+        dealloc();
       }
     }
 
     /**
      * Copy constructor.
      */
-    String( const String& s ) : count( s.count )
-    {
-      ensureCapacity();
-      aCopy( buffer, s.buffer, count + 1 );
-    }
+    String( const String& s );
 
     /**
      * Move constructor.
      */
-    String( String&& s ) : count( s.count )
-    {
-      if( s.buffer != s.baseBuffer ) {
-        buffer = s.buffer;
-        s.buffer = s.baseBuffer;
-      }
-      else {
-        buffer = baseBuffer;
-        aCopy( baseBuffer, s.baseBuffer, count + 1 );
-      }
-
-      s.count = 0;
-      s.baseBuffer[0] = '\0';
-    }
+    String( String&& s );
 
     /**
      * Copy operator.
      *
      * Reuse existing storage only if the size matches.
      */
-    String& operator = ( const String& s )
-    {
-      if( &s == this ) {
-        return *this;
-      }
-
-      count = s.count;
-
-      if( buffer != baseBuffer ) {
-        delete[] buffer;
-      }
-
-      ensureCapacity();
-      aCopy( buffer, s.buffer, count + 1 );
-
-      return *this;
-    }
+    String& operator = ( const String& s );
 
     /**
      * Move operator.
      */
-    String& operator = ( String&& s )
-    {
-      if( &s == this ) {
-        return *this;
-      }
-
-      count = s.count;
-
-      if( buffer != baseBuffer ) {
-        delete[] buffer;
-      }
-
-      if( s.buffer != s.baseBuffer ) {
-        buffer = s.buffer;
-        s.buffer = s.baseBuffer;
-
-      }
-      else {
-        buffer = baseBuffer;
-        aCopy( baseBuffer, s.baseBuffer, count + 1 );
-      }
-
-      s.count = 0;
-      s.baseBuffer[0] = '\0';
-
-      return *this;
-    }
+    String& operator = ( String&& s );
 
     /**
      * Create string form the given C string with a known length.
@@ -181,35 +121,12 @@ class String
      * @param s
      * @param count_ length in bytes without the terminating null character.
      */
-    explicit String( int count_, const char* s ) : count( count_ )
-    {
-      hard_assert( s != null && length( s ) >= count );
-
-      ensureCapacity();
-      aCopy( buffer, s, count );
-      buffer[count] = '\0';
-
-      hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
-    }
+    explicit String( int count_, const char* s );
 
     /**
      * Create string form the given C string.
      */
-    String( const char* s )
-    {
-      if( s != null ) {
-        count = length( s );
-        ensureCapacity();
-        aCopy( buffer, s, count + 1 );
-      }
-      else {
-        buffer = baseBuffer;
-        count = 0;
-        baseBuffer[0] = '\0';
-      }
-
-      hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
-    }
+    String( const char* s );
 
     /**
      * Create string form a boolean value, yields "true" or "false".
@@ -241,24 +158,7 @@ class String
      *
      * Reuse existing storage only if it the size matches.
      */
-    String& operator = ( const char* s )
-    {
-      if( s == buffer ) {
-        return *this;
-      }
-
-      count = length( s );
-
-      if( buffer != baseBuffer ) {
-        delete[] buffer;
-      }
-      ensureCapacity();
-      aCopy( buffer, s, count + 1 );
-
-      hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
-
-      return *this;
-    }
+    String& operator = ( const char* s );
 
     /**
      * Equality.
@@ -638,6 +538,7 @@ class String
     /**
      * Cast signed byte string to C string.
      */
+    OZ_ALWAYS_INLINE
     static const char* cstr( const byte* s )
     {
       return reinterpret_cast<const char*>( s );
@@ -646,6 +547,7 @@ class String
     /**
      * Cast unsigned byte string to C string.
      */
+    OZ_ALWAYS_INLINE
     static const char* cstr( const ubyte* s )
     {
       return reinterpret_cast<const char*>( s );
@@ -654,6 +556,7 @@ class String
     /**
      * Cast C string to signed byte string.
      */
+    OZ_ALWAYS_INLINE
     static const byte* bytestr( const char* s )
     {
       return reinterpret_cast<const byte*>( s );
@@ -662,6 +565,7 @@ class String
     /**
      * Cast C string to unsigned byte string.
      */
+    OZ_ALWAYS_INLINE
     static const ubyte* ubytestr( const char* s )
     {
       return reinterpret_cast<const ubyte*>( s );

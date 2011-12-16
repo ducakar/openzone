@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright (C) 2002-2011  Davorin Učakar
+ * Copyright © 2002-2011 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,11 +89,13 @@ void Mouse::update()
     overEdgeY = relY;
   }
 
-  leftClick   = ( buttons & ~oldButtons & SDL_BUTTON_LMASK ) != 0;
-  middleClick = ( buttons & ~oldButtons & SDL_BUTTON_MMASK ) != 0;
-  rightClick  = ( buttons & ~oldButtons & SDL_BUTTON_RMASK ) != 0;
-  wheelUp     = ( buttons & ~oldButtons & SDL_BUTTON_WUMASK ) != 0;
-  wheelDown   = ( buttons & ~oldButtons & SDL_BUTTON_WDMASK ) != 0;
+  int clickedButtons = buttons & ~oldButtons;
+
+  leftClick   = ( clickedButtons & SDL_BUTTON_LMASK  ) != 0;
+  middleClick = ( clickedButtons & SDL_BUTTON_MMASK  ) != 0;
+  rightClick  = ( clickedButtons & SDL_BUTTON_RMASK  ) != 0;
+  wheelUp     = ( clickedButtons & SDL_BUTTON_WUMASK ) != 0;
+  wheelDown   = ( clickedButtons & SDL_BUTTON_WDMASK ) != 0;
 }
 
 void Mouse::draw() const
@@ -155,7 +157,7 @@ void Mouse::init()
 {
   doShow      = false;
   isGrabOn    = config.get( "screen.full", true );
-  accelFactor = config.getSet( "mouse.accelFactor", 0.03125f );
+  accelFactor = config.getSet( "mouse.accelFactor", 0.04f );
   icon        = ARROW;
 
   x = Area::uiCentreX;
@@ -167,6 +169,12 @@ void Mouse::init()
   buttons     = 0;
   oldButtons  = 0;
   currButtons = 0;
+
+  leftClick   = false;
+  middleClick = false;
+  rightClick  = false;
+  wheelUp     = false;
+  wheelDown   = false;
 
   cursors[X].texId     = 0;
   cursors[ARROW].texId = 0;

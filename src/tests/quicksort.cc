@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright (C) 2002-2011  Davorin Učakar
+ * Copyright © 2002-2011 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,11 +21,12 @@
  * @file tests/quicksort.cc
  */
 
-#include "stable.hh"
+#include "oz/oz.hh"
 
 #include <cstdlib>
 #include <cstdio>
 #include <ctime>
+#include <SDL/SDL.h>
 #include <SDL/SDL_main.h>
 
 bool oz::Alloc::isLocked = true;

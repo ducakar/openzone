@@ -1,27 +1,26 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright (C) 2002-2011  Davorin Učakar
+ * Copyright © 2002-2011 Davorin Učakar
  *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation files
- * (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge,
- * publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice (including the next
+ * paragraph) shall be included in all copies or substantial portions of the
+ * Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
 /**
@@ -39,7 +38,7 @@ namespace oz
 
 Log log;
 
-Log::Log() : conStream( stdout ), fileStream( null ), tabs( 0 ), isError( false ), isVerbose( false )
+Log::Log() : fileStream( null ), tabs( 0 ), isVerbose( false )
 {}
 
 Log::~Log()
@@ -50,14 +49,6 @@ Log::~Log()
     fclose( file );
     file = null;
   }
-}
-
-void Log::setError( bool enable )
-{
-  fflush( isError ? stderr : stdout );
-  conStream = enable ? stderr : stdout;
-
-  isError = enable;
 }
 
 void Log::resetIndent()
@@ -79,13 +70,12 @@ void Log::unindent()
 
 void Log::vprintRaw( const char* s, va_list ap ) const
 {
-  FILE* con  = reinterpret_cast<FILE*>( conStream );
   FILE* file = reinterpret_cast<FILE*>( fileStream );
 
   va_list ap2;
   va_copy( ap2, ap );
 
-  vfprintf( con, s, ap );
+  vprintf( s, ap );
 
   if( file != null ) {
     vfprintf( file, s, ap2 );
@@ -96,13 +86,12 @@ void Log::vprintRaw( const char* s, va_list ap ) const
 
 void Log::printRaw( const char* s, ... ) const
 {
-  FILE* con  = reinterpret_cast<FILE*>( conStream );
   FILE* file = reinterpret_cast<FILE*>( fileStream );
 
   va_list ap;
   va_start( ap, s );
 
-  vfprintf( con, s, ap );
+  vprintf( s, ap );
 
   va_end( ap );
 
@@ -119,11 +108,10 @@ void Log::printRaw( const char* s, ... ) const
 
 void Log::print( const char* s, ... ) const
 {
-  FILE* con  = reinterpret_cast<FILE*>( conStream );
   FILE* file = reinterpret_cast<FILE*>( fileStream );
 
   for( int i = 0; i < tabs; ++i ) {
-    fprintf( con, "  " );
+    printf( "  " );
 
     if( file != null ) {
       fprintf( file, "  " );
@@ -133,7 +121,7 @@ void Log::print( const char* s, ... ) const
   va_list ap;
   va_start( ap, s );
 
-  vfprintf( con, s, ap );
+  vprintf( s, ap );
 
   va_end( ap );
 
@@ -150,14 +138,13 @@ void Log::print( const char* s, ... ) const
 
 void Log::printEnd( const char* s, ... ) const
 {
-  FILE* con  = reinterpret_cast<FILE*>( conStream );
   FILE* file = reinterpret_cast<FILE*>( fileStream );
 
   va_list ap;
   va_start( ap, s );
 
-  vfprintf( con, s, ap );
-  fprintf( con, "\n" );
+  vprintf( s, ap );
+  printf( "\n" );
 
   va_end( ap );
 
@@ -175,10 +162,9 @@ void Log::printEnd( const char* s, ... ) const
 
 void Log::printEnd() const
 {
-  FILE* con  = reinterpret_cast<FILE*>( conStream );
   FILE* file = reinterpret_cast<FILE*>( fileStream );
 
-  fprintf( con, "\n" );
+  printf( "\n" );
 
   if( file != null ) {
     fprintf( file, "\n" );
@@ -189,11 +175,10 @@ void Log::printEnd() const
 
 void Log::println( const char* s, ... ) const
 {
-  FILE* con  = reinterpret_cast<FILE*>( conStream );
   FILE* file = reinterpret_cast<FILE*>( fileStream );
 
   for( int i = 0; i < tabs; ++i ) {
-    fprintf( con, "  " );
+    printf( "  " );
 
     if( file != null ) {
       fprintf( file, "  " );
@@ -203,8 +188,8 @@ void Log::println( const char* s, ... ) const
   va_list ap;
   va_start( ap, s );
 
-  vfprintf( con, s, ap );
-  fprintf( con, "\n" );
+  vprintf( s, ap );
+  printf( "\n" );
 
   va_end( ap );
 
@@ -222,10 +207,9 @@ void Log::println( const char* s, ... ) const
 
 void Log::println() const
 {
-  FILE* con  = reinterpret_cast<FILE*>( conStream );
   FILE* file = reinterpret_cast<FILE*>( fileStream );
 
-  fprintf( con, "\n" );
+  printf( "\n" );
 
   if( file != null ) {
     fprintf( file, "\n" );
@@ -236,15 +220,14 @@ void Log::println() const
 
 void Log::printTime() const
 {
-  FILE* con  = reinterpret_cast<FILE*>( conStream );
   FILE* file = reinterpret_cast<FILE*>( fileStream );
 
   time_t currentTime = std::time( null );
   struct tm timeStruct = *std::localtime( &currentTime );
 
-  fprintf( con, "%04d-%02d-%02d %02d:%02d:%02d",
-           timeStruct.tm_year + 1900, timeStruct.tm_mon + 1, timeStruct.tm_mday,
-           timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec );
+  printf( "%04d-%02d-%02d %02d:%02d:%02d",
+          timeStruct.tm_year + 1900, timeStruct.tm_mon + 1, timeStruct.tm_mday,
+          timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec );
 
   if( file != null ) {
     fprintf( file, "%04d-%02d-%02d %02d:%02d:%02d",
@@ -257,11 +240,10 @@ void Log::printTime() const
 
 void Log::printTrace( const StackTrace* st ) const
 {
-  FILE* con  = reinterpret_cast<FILE*>( conStream );
   FILE* file = reinterpret_cast<FILE*>( fileStream );
 
   if( st->nFrames == 0 ) {
-    fprintf( con, "    [empty stack trace]\n" );
+    printf( "    [empty stack trace]\n" );
 
     if( file != null ) {
       fprintf( file, "    [empty stack trace]\n" );
@@ -271,7 +253,7 @@ void Log::printTrace( const StackTrace* st ) const
     char** entries = st->symbols();
 
     for( int i = 0; i < st->nFrames; ++i ) {
-      fprintf( con, "    %s\n", entries[i] );
+      printf( "    %s\n", entries[i] );
 
       if( file != null ) {
         fprintf( file, "    %s\n", entries[i] );
@@ -288,16 +270,15 @@ void Log::printTrace( const StackTrace* st ) const
 
 void Log::printException( const std::exception& e ) const
 {
-  FILE* con  = reinterpret_cast<FILE*>( conStream );
   FILE* file = reinterpret_cast<FILE*>( fileStream );
 
   const Exception* oe = dynamic_cast<const Exception*>( &e );
 
   if( oe == null ) {
-    fprintf( con, "\nEXCEPTION: %s\n", e.what() );
+    printf( "\n\nEXCEPTION: %s\n", e.what() );
 
     if( file != null ) {
-      fprintf( file, "\nEXCEPTION: %s\n", e.what() );
+      fprintf( file, "\n\nEXCEPTION: %s\n", e.what() );
 
       fflush( file );
     }
@@ -305,16 +286,16 @@ void Log::printException( const std::exception& e ) const
   else {
     const Exception& e = *oe;
 
-    fprintf( con, "\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
-             e.what(), e.function, e.file, e.line );
+    printf( "\n\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
+            e.what(), e.function, e.file, e.line );
 
     if( file != null ) {
-      fprintf( file, "\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
+      fprintf( file, "\n\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
                e.what(), e.function, e.file, e.line );
     }
 
     if( e.stackTrace.nFrames == 0 ) {
-      fprintf( con, "    [empty stack trace]\n" );
+      printf( "    [empty stack trace]\n" );
 
       if( file != null ) {
         fprintf( file, "    [empty stack trace]\n" );
@@ -324,7 +305,7 @@ void Log::printException( const std::exception& e ) const
       char** entries = e.stackTrace.symbols();
 
       for( int i = 0; i < e.stackTrace.nFrames; ++i ) {
-        fprintf( con, "    %s\n", entries[i] );
+        printf( "    %s\n", entries[i] );
 
         if( file != null ) {
           fprintf( file, "    %s\n", entries[i] );
@@ -345,9 +326,6 @@ bool Log::init( const char* fileName, bool doClear )
   FILE* file = reinterpret_cast<FILE*>( fileStream );
 
   tabs = 0;
-  isError = false;
-
-  conStream = stdout;
 
   if( file != null ) {
     fclose( file );

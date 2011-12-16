@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright (C) 2002-2011  Davorin Učakar
+ * Copyright © 2002-2011 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -429,10 +429,6 @@ void Struct::destroy()
 
 Struct::Struct( const BSP* bsp_, int index_, const Point3& p_, Heading heading_ )
 {
-  const Mat44& m = ROTATIONS[1];
-  __builtin_printf( "[%g %g %g %g] [%g %g %g %g] [%g %g %g %g] [%g %g %g %g]\n",
-                    m.x.x, m.x.y, m.x.z, m.x.w, m.y.x, m.y.y, m.y.z, m.y.w, m.z.x, m.z.y, m.z.z, m.z.w, m.w.x, m.w.y, m.w.z, m.w.w );
-
   bsp         = bsp_;
   p           = p_;
   index       = index_;

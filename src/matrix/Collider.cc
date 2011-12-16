@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright (C) 2002-2011  Davorin Učakar
+ * Copyright © 2002-2011 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -479,7 +479,7 @@ void Collider::trimAABBBrush( const BSP::Brush* brush )
 
       if( ratio > minRatio ) {
         minRatio   = ratio;
-        lastNormal = plane.n();
+        lastNormal = plane.n;
       }
     }
   }
@@ -506,8 +506,8 @@ void Collider::trimAABBWater( const BSP::Brush* brush )
     if( dist >= 0.0f ) {
       return;
     }
-    else if( plane.nz > 0.0f ) {
-      float lowerDist = ( plane.d - startPos.x*plane.nx - startPos.y*plane.ny ) / plane.nz -
+    else if( plane.n.z > 0.0f ) {
+      float lowerDist = ( plane.d - startPos.x*plane.n.x - startPos.y*plane.n.y ) / plane.n.z -
           startPos.z + aabb.dim.z;
 
       if( lowerDist > 0.0f ) {
