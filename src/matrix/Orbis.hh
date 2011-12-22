@@ -57,8 +57,8 @@ class Orbis : public Bounds
   public:
 
     // # of cells on each (x, y) axis
-    static const     int   MAX = 256;
-    static constexpr float DIM = Cell::SIZE * MAX / 2.0f;
+    static const     int   CELLS = 4096 / Cell::SIZEI;
+    static constexpr float DIM   = Cell::SIZE * CELLS / 2.0f;
 
     Caelum            caelum;
     Terra             terra;
@@ -67,7 +67,7 @@ class Orbis : public Bounds
     Vector<Object*>   objects;
     Vector<Frag*>     frags;
 
-    Cell              cells[Orbis::MAX][Orbis::MAX];
+    Cell              cells[Orbis::CELLS][Orbis::CELLS];
 
   private:
 
@@ -162,8 +162,8 @@ inline Cell* Orbis::getCell( float x, float y )
   int ix = int( ( x + Orbis::DIM ) * Cell::INV_SIZE );
   int iy = int( ( y + Orbis::DIM ) * Cell::INV_SIZE );
 
-  ix = clamp( ix, 0, Orbis::MAX - 1 );
-  iy = clamp( iy, 0, Orbis::MAX - 1 );
+  ix = clamp( ix, 0, Orbis::CELLS - 1 );
+  iy = clamp( iy, 0, Orbis::CELLS - 1 );
 
   return &cells[ix][iy];
 }
@@ -179,8 +179,8 @@ inline Span Orbis::getInters( float x, float y, float epsilon ) const
 {
   return { max( int( ( x - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
            max( int( ( y - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
-           min( int( ( x + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::MAX - 1 ),
-           min( int( ( y + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::MAX - 1 ) };
+           min( int( ( x + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::CELLS - 1 ),
+           min( int( ( y + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::CELLS - 1 ) };
 }
 
 OZ_ALWAYS_INLINE
@@ -195,8 +195,8 @@ inline Span Orbis::getInters( float minPosX, float minPosY,
 {
   return { max( int( ( minPosX - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
            max( int( ( minPosY - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
-           min( int( ( maxPosX + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::MAX - 1 ),
-           min( int( ( maxPosY + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::MAX - 1 ) };
+           min( int( ( maxPosX + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::CELLS - 1 ),
+           min( int( ( maxPosY + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::CELLS - 1 ) };
 }
 
 OZ_ALWAYS_INLINE

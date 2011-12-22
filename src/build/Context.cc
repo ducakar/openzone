@@ -42,6 +42,7 @@
 #include "client/OpenGL.hh"
 
 #include <SDL/SDL_image.h>
+#include <IL/il.h>
 
 namespace oz
 {
@@ -53,7 +54,7 @@ const int Context::DEFAULT_MIN_FILTER = GL_LINEAR_MIPMAP_LINEAR;
 
 bool Context::useS3TC = false;
 
-uint Context::buildTexture( const void* data, int width, int height, uint format,
+uint Context::buildTexture( const void* data, int width, int height, int format,
                             bool wrap, int magFilter, int minFilter )
 {
   if( useS3TC && !( Math::isPow2( width ) && Math::isPow2( height ) ) ) {
@@ -68,20 +69,11 @@ uint Context::buildTexture( const void* data, int width, int height, uint format
       internalFormat = useS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_LUMINANCE;
       break;
     }
-    case GL_RGB:
-    case GL_BGR:
-    case GL_COLOR_INDEX: {
+    case GL_RGB: {
       internalFormat = useS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_RGB;
       break;
     }
-    // GL_LUMINANCE_ALPHA is temporarily abused to represent indexed colours with transparency
-    case GL_LUMINANCE_ALPHA: {
-      format = GL_COLOR_INDEX;
-      internalFormat = useS3TC ? GL_COMPRESSED_RGBA_S3TC_DXT1_EXT : GL_RGBA;
-      break;
-    }
-    case GL_RGBA:
-    case GL_BGRA: {
+    case GL_RGBA: {
       internalFormat = useS3TC ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_RGBA;
       break;
     }
@@ -129,8 +121,8 @@ uint Context::buildTexture( const void* data, int width, int height, uint format
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
   }
 
-  glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, width, height, 0,
-                format, GL_UNSIGNED_BYTE, data );
+  glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, width, height, 0, uint( format ), GL_UNSIGNED_BYTE,
+                data );
 
   if( generateMipmaps ) {
 #ifdef _WIN32
@@ -149,7 +141,7 @@ uint Context::buildTexture( const void* data, int width, int height, uint format
   return texId;
 }
 
-uint Context::createTexture( const void* data, int width, int height, uint format,
+uint Context::createTexture( const void* data, int width, int height, int format,
                              bool wrap, int magFilter, int minFilter )
 {
   uint texId = buildTexture( data, width, height, format, wrap, magFilter, minFilter );
@@ -163,120 +155,104 @@ uint Context::createTexture( const void* data, int width, int height, uint forma
 
 uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int minFilter )
 {
-  log.print( "Loading raw texture '%s' ...", path );
+  log.print( "Loading texture '%s' ...", path );
 
-  const char* ext = String::findLast( path, '.' );
-  if( ext == null || ( !String::equals( ext, ".png" ) && !String::equals( ext, ".jpg" ) &&
-        !String::equals( ext, ".tga" ) ) )
-  {
-    throw Exception( "Invalid texture extension. Should be either '.png', '.jpg' or '.tga'" );
+  uint image = ilGenImage();
+  ilBindImage( image );
+
+  if( !ilLoadImage( path ) ) {
+    throw Exception( "Texture '%s' loading failed", path );
   }
 
-  SDL_Surface* image = IMG_Load( path );
-  if( image == null ) {
-    throw Exception( "Texture loading failed" );
-  }
+  log.printRaw( " converting ..." );
 
-  uint format;
-  const char* sFormat;
+  ubyte* data   = null;
+  int    width  = ilGetInteger( IL_IMAGE_WIDTH );
+  int    height = ilGetInteger( IL_IMAGE_HEIGHT );
+  int    format = ilGetInteger( IL_IMAGE_FORMAT );
 
-  if( image->format->BitsPerPixel == 8 ) {
-    if( image->format->palette == null ) {
+  switch( format ) {
+    case IL_LUMINANCE: {
       format = GL_LUMINANCE;
-      sFormat = "greyscale";
+      data   = new ubyte[width * height];
+
+      ilCopyPixels( 0, 0, 0, uint( width ), uint( height ), 1,
+                    IL_LUMINANCE, IL_UNSIGNED_BYTE, data );
+
+      ubyte* top    = data;
+      ubyte* bottom = data + ( height - 1 ) * width;
+
+      for( int y = 0; y < height / 2; ++y ) {
+        for( int x = 0; x < width; ++x ) {
+          swap( top[0], bottom[0] );
+
+          top    += 1;
+          bottom += 1;
+        }
+
+        bottom -= 2 * width;
+      }
+      break;
     }
-    else {
-      SDL_Palette* palette = image->format->palette;
-
-      if( palette->ncolors > 256 ) {
-        throw Exception( "Palette for indexed images should not have more than 256 colours" );
-      }
-
-      float red[256];
-      float green[256];
-      float blue[256];
-      float alpha[256];
-
-      for( int i = 0; i < palette->ncolors; ++i ) {
-        red[i]   = float( palette->colors[i].r ) / 256.0f;
-        green[i] = float( palette->colors[i].g ) / 256.0f;
-        blue[i]  = float( palette->colors[i].b ) / 256.0f;
-        alpha[i] = i == int( image->format->colorkey ) ? 0.0f : 1.0f;
-      }
-      for( int i = palette->ncolors; i < 256; ++i ) {
-        red[i]   = 1.0f;
-        green[i] = 1.0f;
-        blue[i]  = 1.0f;
-        alpha[i] = 1.0f;
-      }
-
-      glPixelMapfv( GL_PIXEL_MAP_I_TO_R, 256, red );
-      glPixelMapfv( GL_PIXEL_MAP_I_TO_G, 256, green );
-      glPixelMapfv( GL_PIXEL_MAP_I_TO_B, 256, blue );
-      glPixelMapfv( GL_PIXEL_MAP_I_TO_A, 256, alpha );
-
-      if( image->flags & SDL_SRCCOLORKEY ) {
-        // GL_LUMINANCE_ALPHA is temporarily abused to represent indexed colours with transparency
-        format = GL_LUMINANCE_ALPHA;
-        sFormat = String::str( "indexed(%d, alpha)", palette->ncolors );
-      }
-      else {
-        format = GL_COLOR_INDEX;
-        sFormat = String::str( "indexed(%d)", palette->ncolors );
-      }
-    }
-  }
-  else if( image->format->BitsPerPixel == 24 ) {
-    if( String::equals( ext, ".tga" ) ) {
-      format = GL_BGR;
-      sFormat = "BGR";
-    }
-    else {
+    case IL_RGB:
+    case IL_BGR:
+    case IL_COLOUR_INDEX: {
       format = GL_RGB;
-      sFormat = "RGB";
-    }
-  }
-  else if( image->format->BitsPerPixel == 32 ) {
-    if( String::equals( ext, ".tga" ) ) {
-      format = GL_BGRA;
-      sFormat = "BGRA";
-    }
-    else {
-      format = GL_RGBA;
-      sFormat = "RBGA";
-    }
-  }
-  else {
-    throw Exception( "Wrong texture format. Should be indexed, greyscale, RGB/BGR or RGBA/BGRA." );
-  }
+      data   = new ubyte[width * height * 3];
 
-  log.printEnd( " %s ... OK", sFormat );
+      ilCopyPixels( 0, 0, 0, uint( width ), uint( height ), 1, IL_RGB, IL_UNSIGNED_BYTE, data );
 
-  OZ_GL_CHECK_ERROR();
+      ubyte* top    = data;
+      ubyte* bottom = data + ( height - 1 ) * width * 3;
 
-  int bytesPerPixel = image->format->BitsPerPixel / 8;
-  char* bytes = reinterpret_cast<char*>( image->pixels );
+      for( int y = 0; y < height / 2; ++y ) {
+        for( int x = 0; x < width; ++x ) {
+          swap( top[0], bottom[0] );
+          swap( top[1], bottom[1] );
+          swap( top[2], bottom[2] );
 
-  char* pos0 = &bytes[0];
-  char* pos1 = &bytes[ ( image->h - 1 ) * image->w * bytesPerPixel ];
+          top    += 3;
+          bottom += 3;
+        }
 
-  for( int y = 0; y < image->h / 2; ++y ) {
-    for( int x = 0; x < image->w; ++x ) {
-      for( int i = 0; i < bytesPerPixel; ++i ) {
-        swap( pos0[i], pos1[i] );
+        bottom -= 2 * width * 3;
       }
-
-      pos0 += bytesPerPixel;
-      pos1 += bytesPerPixel;
+      break;
     }
+    case IL_RGBA:
+    case IL_BGRA: {
+      format = GL_RGBA;
+      data   = new ubyte[width * height * 4];
 
-    pos1 -= 2 * image->w * bytesPerPixel;
+      ilCopyPixels( 0, 0, 0, uint( width ), uint( height ), 1, IL_RGBA, IL_UNSIGNED_BYTE, data );
+
+      ubyte* top    = data;
+      ubyte* bottom = data + ( height - 1 ) * width * 4;
+
+      for( int y = 0; y < height / 2; ++y ) {
+        for( int x = 0; x < width; ++x ) {
+          swap( top[0], bottom[0] );
+          swap( top[1], bottom[1] );
+          swap( top[2], bottom[2] );
+          swap( top[3], bottom[3] );
+
+          top    += 4;
+          bottom += 4;
+        }
+
+        bottom -= 2 * width * 4;
+      }
+      break;
+    }
   }
 
-  uint texId = createTexture( bytes, image->w, image->h, format, wrap,
-                              magFilter, minFilter );
+  ilDeleteImage( image );
 
-  SDL_FreeSurface( image );
+  log.printEnd( " OK" );
+
+  uint texId = createTexture( data, width, height, format, wrap, magFilter, minFilter );
+
+  delete[] data;
 
   if( texId == 0 || !glIsTexture( texId ) ) {
     throw Exception( "Texture loading failed" );

@@ -116,11 +116,6 @@ void Render::prepareDraw()
   frustum.update();
   frustum.getExtrems( span, camera.p );
 
-  span.minX = max( span.minX - 2, 0 );
-  span.maxX = min( span.maxX + 2, Orbis::MAX - 1 );
-  span.minY = max( span.minY - 2, 0 );
-  span.maxY = min( span.maxY + 2, Orbis::MAX - 1 );
-
   caelum.update();
 
   // drawnStructs
@@ -130,8 +125,8 @@ void Render::prepareDraw()
   }
   drawnStructs.clearAll();
 
-  float minXCentre = float( span.minX - Orbis::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
-  float minYCentre = float( span.minY - Orbis::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
+  float minXCentre = float( span.minX - Orbis::CELLS / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
+  float minYCentre = float( span.minY - Orbis::CELLS / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
 
   float x = minXCentre;
   for( int i = span.minX; i <= span.maxX; ++i, x += Cell::SIZE ) {
@@ -671,11 +666,6 @@ void Render::init( bool isBuild )
 
   glEnable( GL_CULL_FACE );
   glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-  glActiveTexture( GL_TEXTURE1 );
-  glEnable( GL_TEXTURE_2D );
-  glActiveTexture( GL_TEXTURE0 );
-  glEnable( GL_TEXTURE_2D );
 
   shader.init();
   shader.load();

@@ -32,7 +32,8 @@
 
 #include "build/Context.hh"
 
-#include <SDL/SDL_image.h>
+#include <limits>
+#include <IL/il.h>
 
 namespace oz
 {
@@ -47,8 +48,8 @@ void Terra::load()
   Config terraConfig;
   terraConfig.load( configFile );
 
-  float heightStep = terraConfig.get( "step", 0.5f );
-  float heightBias = terraConfig.get( "bias", 0.0f );
+  float minHeight = terraConfig.get( "minHeight", std::numeric_limits<short>::min() );
+  float maxHeight = terraConfig.get( "maxHeight", std::numeric_limits<short>::max() );
 
   waterTexture  = terraConfig.get( "waterTexture", "" );
   detailTexture = terraConfig.get( "detailTexture", "" );
@@ -58,29 +59,43 @@ void Terra::load()
 
   log.print( "Loading terrain heightmap '%s' ...", name.cstr() );
 
-  SDL_Surface* image = IMG_Load( imageFile );
-  if( image == null ) {
-    throw Exception( "Terrain heightmap missing" );
-  }
-  if( image->w != matrix::Terra::VERTS || image->h != matrix::Terra::VERTS ||
-      image->format->BytesPerPixel != 1 )
-  {
-    SDL_FreeSurface( image );
-    throw Exception( "Invalid terrain heightmap format, should be %d x %d 8 bpp greyscale",
-                     matrix::Terra::VERTS, matrix::Terra::VERTS );
+  uint image = ilGenImage();
+  ilBindImage( image );
+
+  if( !ilLoadImage( imageFile ) ) {
+    throw Exception( "Terrain heightmap '%s' missing", imageFile.cstr() );
   }
 
-  const ubyte* line = reinterpret_cast<const ubyte*>( image->pixels );
+  int width  = ilGetInteger( IL_IMAGE_WIDTH );
+  int height = ilGetInteger( IL_IMAGE_HEIGHT );
+
+  if( width != matrix::Terra::VERTS || height != matrix::Terra::VERTS ) {
+    throw Exception( "Invalid terrain heightmap dimensions %d x %d, should be %d x %d",
+                     width, height, matrix::Terra::VERTS, matrix::Terra::VERTS );
+  }
+
+  log.printRaw( " converting ..." );
+
+  ilConvertImage( IL_LUMINANCE, IL_FLOAT );
+
+  log.printEnd( " OK" );
+  log.print( "Calculating triangles ..." );
+
+  const float* line = reinterpret_cast<const float*>( ilGetData() );
+
   for( int y = matrix::Terra::VERTS - 1; y >= 0; --y ) {
     for( int x = 0; x < matrix::Terra::VERTS; ++x ) {
       quads[x][y].vertex.x     = float( x * matrix::Terra::Quad::SIZEI ) - matrix::Terra::DIM;
       quads[x][y].vertex.y     = float( y * matrix::Terra::Quad::SIZEI ) - matrix::Terra::DIM;
-      quads[x][y].vertex.z     = float( line[x] ) * heightStep + heightBias;
+      quads[x][y].vertex.z     = Math::mix( minHeight, maxHeight, line[x] );
       quads[x][y].triNormal[0] = Vec3::ZERO;
       quads[x][y].triNormal[1] = Vec3::ZERO;
     }
-    line += image->pitch;
+
+    line += matrix::Terra::VERTS;
   }
+
+  ilDeleteImage( image );
 
   for( int x = 0; x < matrix::Terra::QUADS; ++x ) {
     for( int y = 0; y < matrix::Terra::QUADS; ++y ) {
@@ -110,8 +125,6 @@ void Terra::load()
       }
     }
   }
-
-  SDL_FreeSurface( image );
 
   log.printEnd( " OK" );
 }

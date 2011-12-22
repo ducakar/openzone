@@ -75,7 +75,7 @@ function init_sample()
   ozOrbisAddObj( "droid_weapon.chaingun", 136, -4, 73 )
   ozOrbisAddObj( "droid_weapon.grenadeLauncher", 137, -4, 73 )
 
-  ozOrbisAddObj( "raptor", 155, -30, 70 )
+  ozOrbisAddObj( "raptor", 155, -30, 71 )
   ozOrbisAddObj( "hoverTank", 145, -30, 71 )
 
   ozOrbisAddObj( "metalBarrel", 147, -11, 72 )
@@ -119,8 +119,8 @@ function init_sample()
 
   ozOrbisAddObj( "bauul", 112, -7, 100, OZ_NORTH )
 
-  ozOrbisAddObj( "serviceStation", 110, -25, 69.8, OZ_WEST )
-  ozOrbisAddObj( "console", 107, -24, 68.5, OZ_EAST )
+  ozOrbisAddObj( "serviceStation", 110, -25, 69.6, OZ_WEST )
+  ozOrbisAddObj( "console", 107, -24, 68.0, OZ_EAST )
 
   ozOrbisAddObj( "smallCrate", 108, -6, 81 )
   ozOrbisAddObj( "smallCrate", 108, -6, 82 )

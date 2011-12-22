@@ -42,6 +42,8 @@
 #include <ctime>
 #include <unistd.h>
 
+#include <IL/il.h>
+
 #ifdef _WIN32
 # undef WIN32_LEAN_AND_MEAN
 # include <shlobj.h>
@@ -244,6 +246,10 @@ int Client::main( int argc, char** argv )
   }
   log.printEnd( " OK" );
   initFlags |= INIT_SDL;
+
+  log.print( "Initialising DevIL ..." );
+  ilInit();
+  log.printEnd( " OK" );
 
   log.println( "Build details {" );
   log.indent();
