@@ -48,6 +48,7 @@
 #include <unistd.h>
 
 #include <SDL/SDL_main.h>
+#include <IL/il.h>
 
 bool oz::Alloc::isLocked = true;
 
@@ -558,6 +559,8 @@ int main( int argc, char** argv )
   if( !client::shader.hasS3TC && Context::useS3TC ) {
     throw Exception( "S3 texture compression enabled but not supported" );
   }
+
+  ilInit();
 
   createDirs();
 

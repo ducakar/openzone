@@ -43,16 +43,15 @@ class Sound
   private:
 
     static const float MAX_DISTANCE;
-    static const int   DEFAULT_FREQUENCY      = 44100;
-    static const int   MUSIC_BUFFER_SIZE      = 64 * 1024;
-    static const int   MAD_INPUT_BUFFER_SIZE  = 8 * 1024;
+    static const int   MUSIC_BUFFER_SIZE       = 64 * 1024;
+    static const int   MUSIC_INPUT_BUFFER_SIZE = 8 * 1024;
 
     enum StreamType
     {
       NONE,
       OGG,
-      MP3,
-      AAC
+      AAC,
+      MP3
     };
 
     ALCdevice*     soundDevice;
@@ -70,8 +69,17 @@ class Sound
     uint           musicSource;
 
     char           musicBuffer[MUSIC_BUFFER_SIZE];
+    ubyte          musicInputBuffer[MUSIC_INPUT_BUFFER_SIZE + MAD_BUFFER_GUARD];
 
     OggVorbis_File oggStream;
+
+    FILE*          aacFile;
+    NeAACDecHandle aacDecoder;
+
+    char*          aacOutputBuffer;
+    int            aacWrittenBytes;
+    int            aacBufferBytes;
+    size_t         aacInputBytes;
 
     void*          libmad;
 
@@ -82,15 +90,6 @@ class Sound
 
     int            madWrittenSamples;
     int            madFrameSamples;
-    ubyte          madInputBuffer[MAD_INPUT_BUFFER_SIZE + MAD_BUFFER_GUARD];
-
-    FILE*          aacFile;
-    NeAACDecHandle aacDecoder;
-
-    char*          aacOutputBuffer;
-    int            aacWrittenBytes;
-    int            aacBufferBytes;
-    size_t         aacInputBytes;
 
     // music track id to switch to, -1 to do nothing, -2 stop playing
     int            selectedTrack;

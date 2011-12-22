@@ -104,23 +104,17 @@ Troubleshooting
 
 Run-time dependencies
 ---------------------
-On Linux you have to install packages that provide following libraries.
 For Windows build, all dependencies are included.
-
-- pthreads (already included in glibc on Linux)
-- libintl (already included in glibc on Linux)
-- libpulse (optional, for bell on warning/error messages on Linux)
-- Lua
+On Linux you need following libraries/packages installed:
+- libpulse
 - SDL
-- SDL_image (for ozBuild tool)
-- SDL_ttf
 - OpenGL
 - OpenAL
+- Lua
+- DevIL
 - libvorbis
-- libmad (optional, for MP3 support)
-
-Both libpulse and libmad are searched and loaded in runtime. If missing, features they provide won't
-work.
+- faad2
+- libmad (optional, for MP3 support).
 
 Build-time dependencies
 -----------------------

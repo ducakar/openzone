@@ -37,6 +37,7 @@
 #include "client/OpenAL.hh"
 
 #include <ctime>
+#include <IL/il.h>
 
 namespace oz
 {
@@ -291,33 +292,48 @@ void Loader::cleanup()
 
 void Loader::makeScreenshot()
 {
-  uint* pixels = new uint[camera.width * camera.height * 4];
   char fileName[256];
+  char* data = new char[camera.width * camera.height * 3];
 
   time_t currentTime = std::time( null );
   struct tm timeStruct = *std::localtime( &currentTime );
 
-  snprintf( fileName, 256, "%s/screenshot %04d-%02d-%02d %02d:%02d:%02d.bmp",
+  snprintf( fileName, 256, "%s/screenshot %04d-%02d-%02d %02d:%02d:%02d.png",
             config.get( "dir.rc", "" ),
             1900 + timeStruct.tm_year, 1 + timeStruct.tm_mon, timeStruct.tm_mday,
             timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec );
 
   log.print( "Saving screenshot to '%s' ...", fileName );
 
-  glReadPixels( 0, 0, camera.width, camera.height, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
-  SDL_Surface* surf = SDL_CreateRGBSurfaceFrom( pixels, camera.width, camera.height, 32,
-                                                camera.width * 4,
-                                                0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 );
+  glReadPixels( 0, 0, camera.width, camera.height, GL_RGB, GL_UNSIGNED_BYTE, data );
+
   // flip image
+  char* top    = data;
+  char* bottom = data + ( camera.height - 1 ) * camera.width * 3;
+
   for( int i = 0; i < camera.height / 2; ++i ) {
     for( int j = 0; j < camera.width; ++j ) {
-      swap( pixels[i * camera.width + j],
-            pixels[ ( camera.height - i - 1 ) * camera.width + j ] );
+      swap( top[0], bottom[0] );
+      swap( top[1], bottom[1] );
+      swap( top[2], bottom[2] );
+
+      top    += 3;
+      bottom += 3;
     }
+
+    bottom -= 2 * camera.width * 3;
   }
-  SDL_SaveBMP( surf, fileName );
-  SDL_FreeSurface( surf );
-  delete[] pixels;
+
+  uint image = ilGenImage();
+  ilBindImage( image );
+
+  ilLoadDataL( data, uint( camera.width * camera.height * 4 ),
+               uint( camera.width ), uint( camera.height ), 1, 3 );
+
+  ilSave( IL_PNG, fileName );
+  ilDeleteImage( image );
+
+  delete[] data;
 
   log.printEnd( " OK" );
 }

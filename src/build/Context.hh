@@ -51,12 +51,12 @@ class Context
 
   private:
 
-    static uint buildTexture( const void* data, int width, int height, uint format,
+    static uint buildTexture( const void* data, int width, int height, int format,
                               bool wrap, int magFilter, int minFilter );
 
   public:
 
-    static uint createTexture( const void* data, int width, int height, uint format,
+    static uint createTexture( const void* data, int width, int height, int format,
                                bool wrap = true, int magFilter = DEFAULT_MAG_FILTER,
                                int minFilter = DEFAULT_MIN_FILTER );
 

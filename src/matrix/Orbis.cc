@@ -37,6 +37,9 @@ namespace oz
 namespace matrix
 {
 
+static_assert( Orbis::CELLS * Cell::SIZEI == Terra::QUADS * Terra::Quad::SIZEI,
+               "Orbis and terrain size mismatch" );
+
 Orbis orbis;
 
 constexpr float Cell::SIZE;
@@ -548,8 +551,8 @@ void Orbis::unload()
     }
   }
 
-  for( int i = 0; i < Orbis::MAX; ++i ) {
-    for( int j = 0; j < Orbis::MAX; ++j ) {
+  for( int i = 0; i < Orbis::CELLS; ++i ) {
+    for( int j = 0; j < Orbis::CELLS; ++j ) {
       cells[i][j].structs.clear();
       cells[i][j].objects.clear();
       cells[i][j].frags.clear();
