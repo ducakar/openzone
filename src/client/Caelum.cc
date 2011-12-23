@@ -178,7 +178,7 @@ void Caelum::load()
                            Math::sin( orbis.caelum.heading ),
                            0.0f );
 
-  File file( path );
+  PhysFile file( path );
   if( !file.map() ) {
     throw Exception( "Caelum file mmap failed" );
   }
@@ -190,17 +190,11 @@ void Caelum::load()
   glBindVertexArray( vao );
 # endif
 
+  int size = MAX_STARS * 4 * int( sizeof( Vertex ) );
+
   glGenBuffers( 1, &vbo );
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
-  glBufferData( GL_ARRAY_BUFFER, MAX_STARS * 4 * int( sizeof( Vertex ) ), 0, GL_STATIC_DRAW );
-
-  Vertex* vertices = reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY ) );
-
-  for( int i = 0; i < MAX_STARS * 4; ++i ) {
-    vertices[i].read( &is );
-  }
-
-  glUnmapBuffer( GL_ARRAY_BUFFER );
+  glBufferData( GL_ARRAY_BUFFER, size, is.forward( size ), GL_STATIC_DRAW );
 
 # ifndef OZ_GL_COMPATIBLE
   glEnableVertexAttribArray( Attrib::POSITION );

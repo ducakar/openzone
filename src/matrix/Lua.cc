@@ -626,16 +626,24 @@ void Lua::init()
   setglobal( "ozLocalData" );
   getglobal( "ozLocalData" );
 
-  File luaDir( "lua/matrix" );
-  DArray<File> luaFiles = luaDir.ls();
+  PhysFile luaDir( "lua/matrix" );
+  DArray<PhysFile> luaFiles = luaDir.ls();
 
-  foreach( file, luaFiles.citer() ) {
+  foreach( file, luaFiles.iter() ) {
     if( file->hasExtension( "lua" ) ) {
       log.print( "%s ...", file->name() );
 
-      if( luaL_dofile( l, file->path() ) != 0 ) {
+      if( !file->map() ) {
+        throw Exception( "Failed to read Lua script '%s'", file->path().cstr() );
+      }
+
+      InputStream istream = file->inputStream();
+
+      if( OZ_LUA_DOBUFFER( istream.begin(), istream.capacity(), file->path() ) != 0 ) {
         throw Exception( "Matrix Lua script error" );
       }
+
+      file->unmap();
 
       log.printEnd( " OK" );
     }

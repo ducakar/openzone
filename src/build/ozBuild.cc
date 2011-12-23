@@ -48,6 +48,7 @@
 #include <unistd.h>
 
 #include <SDL/SDL_main.h>
+#include <physfs.h>
 #include <IL/il.h>
 
 bool oz::Alloc::isLocked = true;
@@ -134,7 +135,6 @@ static void createDirs()
     }
 
     if( !File::mkdir( CREATE_DIRS[i] ) ) {
-      log.printEnd( " Failed" );
       throw Exception( "Failed to create directories" );
     }
 
@@ -507,13 +507,12 @@ int main( int argc, char** argv )
     }
   }
 
-  if( optind < argc ) {
-    config.add( "dir.prefix", argv[optind] );
-  }
-  else {
+  if( optind != argc - 1 ) {
     printUsage();
     return EXIT_FAILURE;
   }
+
+  String dataDir = argv[optind];
 
   log.print( OZ_APPLICATION_TITLE " Build started on " );
   log.printTime();
@@ -533,17 +532,16 @@ int main( int argc, char** argv )
   log.unindent();
   log.println( "}" );
 
-  String prefixDir = config.get( "dir.prefix", OZ_INSTALL_PREFIX );
-  String dataDir   = prefixDir + "/share/" OZ_APPLICATION_NAME;
+  SDL_Init( SDL_INIT_VIDEO );
+  PHYSFS_init( null );
+  ilInit();
 
-  log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
   if( !File::chdir( dataDir ) ) {
-    log.printEnd( " Failed" );
+    log.println( "Failed to set working directory '%s'", dataDir.cstr() );
     return EXIT_FAILURE;
   }
-  log.printEnd( " OK" );
 
-  SDL_Init( SDL_INIT_VIDEO );
+  PHYSFS_mount( ".", null, 1 );
 
   uint startTime = SDL_GetTicks();
 
@@ -559,8 +557,6 @@ int main( int argc, char** argv )
   if( !client::shader.hasS3TC && Context::useS3TC ) {
     throw Exception( "S3 texture compression enabled but not supported" );
   }
-
-  ilInit();
 
   createDirs();
 
@@ -603,6 +599,10 @@ int main( int argc, char** argv )
   }
 
   uint endTime = SDL_GetTicks();
+
+  ilShutDown();
+  PHYSFS_deinit();
+  SDL_Quit();
 
   log.println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
 

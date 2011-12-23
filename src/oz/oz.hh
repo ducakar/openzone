@@ -100,6 +100,7 @@
 #include "BufferStream.hh"
 #include "Buffer.hh"
 #include "File.hh"
+#include "PhysFile.hh"
 
 /*
  * Error handling.

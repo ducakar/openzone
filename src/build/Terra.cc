@@ -42,14 +42,14 @@ namespace build
 
 void Terra::load()
 {
-  String configFile = "terra/" + name + ".rc";
+  File configFile( "terra/" + name + ".rc" );
   String imageFile  = "terra/" + name + ".png";
 
   Config terraConfig;
   terraConfig.load( configFile );
 
-  float minHeight = terraConfig.get( "minHeight", std::numeric_limits<short>::min() );
-  float maxHeight = terraConfig.get( "maxHeight", std::numeric_limits<short>::max() );
+  float minHeight = terraConfig.get( "minHeight", float( std::numeric_limits<short>::min() ) );
+  float maxHeight = terraConfig.get( "maxHeight", float( std::numeric_limits<short>::max() ) );
 
   waterTexture  = terraConfig.get( "waterTexture", "" );
   detailTexture = terraConfig.get( "detailTexture", "" );

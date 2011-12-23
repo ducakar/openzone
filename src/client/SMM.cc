@@ -44,7 +44,7 @@ void SMM::load()
 
   log.print( "Loading SMM model '%s' ...", name.cstr() );
 
-  File file( path );
+  PhysFile file( path );
   if( !file.map() ) {
     throw Exception( "Cannot mmap model file" );
   }

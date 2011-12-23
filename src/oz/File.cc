@@ -42,7 +42,7 @@
 namespace oz
 {
 
-static bool operator < ( const File& a, const File& b )
+inline bool operator < ( const File& a, const File& b )
 {
   return String::compare( a.path(), b.path() ) < 0;
 }
@@ -96,7 +96,7 @@ File::File( File&& file ) :
   file.data = null;
 }
 
-File& File::operator=( File&& file )
+File& File::operator = ( File&& file )
 {
   if( &file == this ) {
     return *this;
@@ -352,6 +352,17 @@ bool File::write( const OutputStream* ostream ) const
 bool File::write( const BufferStream* bstream ) const
 {
   return write( bstream->begin(), bstream->length() );
+}
+
+String File::cwd()
+{
+  char buffer[256];
+#ifdef _WIN32
+  GetCurrentDirectory( buffer, 256 );
+#else
+  getcwd( buffer, 256);
+#endif
+  return buffer;
 }
 
 bool File::chdir( const char* path )

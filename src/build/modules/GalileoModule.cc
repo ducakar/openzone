@@ -46,7 +46,8 @@ void GalileoModule::build()
   for( int i = 0; i < library.terrae.length(); ++i ) {
     const String& name = library.terrae[i].name;
 
-    terraConfig.load( "terra/" + name + ".rc" );
+    File file( "terra/" + name + ".rc" );
+    terraConfig.load( file );
 
     String srcTextureFile = String::str( "terra/%s", terraConfig.get( "mapTexture", "" ) );
     String destTextureFile = String::str( "ui/galileo/%s.ozcTex", name.cstr() );

@@ -59,24 +59,19 @@ static const int LINE_BUFFER_SIZE = 1024;
 // Internal buffer used during file parsing.
 static OZ_THREAD_LOCAL char line[LINE_BUFFER_SIZE];
 
-bool Config::loadConf( const char* path )
+void Config::loadConf( InputStream* istream )
 {
-  filePath = path;
-
-  int  lineNum = 1;
+  int  lineNum = 0;
   char ch;
 
-  FILE* f = fopen( path, "r" );
-  if( f == null ) {
-    return false;
-  }
+  while( istream->isAvailable() ) {
+    ++lineNum;
 
-  do {
-    ch = char( fgetc( f ) );
+    ch = istream->readChar();
 
     // skip initial spaces
     while( String::isSpace( ch ) ) {
-      ch = char( fgetc( f ) );
+      ch = istream->readChar();
     }
 
     // read variable
@@ -84,14 +79,14 @@ bool Config::loadConf( const char* path )
 
     if( String::isLetter( ch ) || ch == '_' ) {
       line[0] = ch;
-      ch = char( fgetc( f ) );
+      ch = istream->readChar();
 
       int i = 1;
       while( i < LINE_BUFFER_SIZE - 1 &&
              ( String::isLetter( ch ) || String::isDigit( ch ) || ch == '_' || ch == '.' ) )
       {
         line[i] = ch;
-        ch = char( fgetc( f ) );
+        ch = istream->readChar();
         ++i;
       }
       line[i] = '\0';
@@ -103,16 +98,16 @@ bool Config::loadConf( const char* path )
 
     // skip spaces between name and value
     while( String::isSpace( ch ) ) {
-      ch = char( fgetc( f ) );
+      ch = istream->readChar();
     }
 
     if( ch == '"' ) {
-      ch = char( fgetc( f ) );
+      ch = istream->readChar();
 
       int i = 0;
       while( i < LINE_BUFFER_SIZE - 1 && ch != '"' && ch != '\n' && ch != EOF ) {
         line[i] = ch;
-        ch = char( fgetc( f ) );
+        ch = istream->readChar();
         ++i;
       }
       if( ch == '"' ) {
@@ -120,29 +115,22 @@ bool Config::loadConf( const char* path )
         include( name, line );
       }
       else {
-        throw Exception( "%s:%d: Unterminated value string", path, lineNum );
+        throw Exception( "%s:%d: Unterminated value string", filePath.cstr(), lineNum );
       }
     }
 
   skipLine:;
 
     // find end of line/file
-    while( ch != '\n' && ch != EOF ) {
-      ch = char( fgetc( f ) );
+    while( ch != '\n' && istream->isAvailable() ) {
+      ch = istream->readChar();
     }
-
-    ++lineNum;
   }
-  while( ch != EOF );
-
-  fclose( f );
-
-  return true;
 }
 
-bool Config::saveConf( const char* path )
+void Config::saveConf( BufferStream* bstream )
 {
-  log.print( "Writing variables to '%s' ...", path );
+  log.print( "Writing variables to '%s' ...", filePath.cstr() );
 
   // first we sort all the variables by key
   int size = vars.length();
@@ -156,27 +144,23 @@ bool Config::saveConf( const char* path )
   }
   sortedVars.sort();
 
-  FILE* f = fopen( path, "w" );
-  if( f == null ) {
-    log.printEnd( " Cannot open file" );
-    return false;
-  }
+  char buffer[1024];
 
   for( int i = 0; i < size; ++i ) {
-    fprintf( f, "%s", sortedVars[i].key );
+    int length = snprintf( buffer, 1024, "%s", sortedVars[i].key );
+    bstream->writeChars( buffer, length );
 
     int chars = ALIGNMENT - String::length( sortedVars[i].key );
     int tabs  = ( chars - 1 ) / 8 + 1;
     for( int j = 0; j < tabs; ++j ) {
-      fprintf( f, "\t" );
+      bstream->writeChar( '\t' );
     }
-    fprintf( f, "\"%s\"\n", sortedVars[i].value );
+
+    length = snprintf( buffer, 1024, "\"%s\"\n", sortedVars[i].value );
+    bstream->writeChars( buffer, length );
   }
 
-  fclose( f );
-
   log.printEnd( " OK" );
-  return true;
 }
 
 Config::~Config()
@@ -381,28 +365,40 @@ const char* Config::getSet( const char* key, const char* defVal )
   }
 }
 
-bool Config::load( const char* path )
+bool Config::load( File& file )
 {
-  const char* suffix = String::findLast( path, '.' );
-
-  if( suffix != null && String::equals( suffix, ".rc" ) ) {
-    return loadConf( path );
+  filePath = file.path();
+  if( !file.map() ) {
+    return false;
   }
 
-  log.println( "Unknown configuration file %s", path );
-  return false;
+  InputStream istream = file.inputStream();
+  loadConf( &istream );
+
+  file.unmap();
+  return true;
 }
 
-bool Config::save( const char* path )
+bool Config::load( PhysFile& file )
 {
-  const char* suffix = String::findLast( path, '.' );
-
-  if( suffix != null && String::equals( suffix, ".rc" ) ) {
-    return saveConf( path );
+  filePath = file.path();
+  if( !file.map() ) {
+    return false;
   }
 
-  log.println( "Unknown configuration file %s", path );
-  return false;
+  InputStream istream = file.inputStream();
+  loadConf( &istream );
+
+  file.unmap();
+  return true;
+}
+
+bool Config::save( File& file )
+{
+  BufferStream bstream;
+  saveConf( &bstream );
+
+  return file.write( &bstream );
 }
 
 void Config::clear( bool issueWarnings )

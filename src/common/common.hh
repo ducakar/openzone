@@ -32,6 +32,14 @@
 #include "common/AABB.hh"
 #include "common/Timer.hh"
 
+// We want to use C++ wrapped C headers, not vanilla ones that are included via SDL.
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#define SDL_NO_COMPAT
+#include <SDL/SDL.h>
 #include <libintl.h>
 
 #define OZ_LUA_API( func ) static LuaAPI func

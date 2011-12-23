@@ -156,10 +156,7 @@ void UI::init()
 
   mouse.init();
   mouse.load();
-
-  if( !font.init() ) {
-    throw Exception( "Failed to load font" );
-  }
+  font.init();
 
   root = new Area( Area::uiWidth, Area::uiHeight );
   loadingScreen = new LoadingArea();

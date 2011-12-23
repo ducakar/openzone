@@ -46,6 +46,41 @@ namespace client
 
 Loader loader;
 
+Loader::ScreenshotInfo Loader::screenshotInfo;
+
+int Loader::saveScreenshot( void* )
+{
+  // flip image
+  char* top    = screenshotInfo.pixels;
+  char* bottom = screenshotInfo.pixels + ( camera.height - 1 ) * camera.width * 3;
+
+  for( int i = 0; i < screenshotInfo.height / 2; ++i ) {
+    for( int j = 0; j < screenshotInfo.width; ++j ) {
+      swap( top[0], bottom[0] );
+      swap( top[1], bottom[1] );
+      swap( top[2], bottom[2] );
+
+      top    += 3;
+      bottom += 3;
+    }
+
+    bottom -= 2 * screenshotInfo.width * 3;
+  }
+
+  uint image = ilGenImage();
+  ilBindImage( image );
+
+  ilLoadDataL( screenshotInfo.pixels, uint( screenshotInfo.width * screenshotInfo.height * 3 ),
+               uint( screenshotInfo.width ), uint( screenshotInfo.height ), 1, 3 );
+
+  ilSave( IL_PNG, screenshotInfo.path );
+  ilDeleteImage( image );
+
+  delete[] screenshotInfo.pixels;
+
+  return 0;
+}
+
 void Loader::cleanupRender()
 {
   OZ_GL_CHECK_ERROR();
@@ -292,59 +327,44 @@ void Loader::cleanup()
 
 void Loader::makeScreenshot()
 {
-  char fileName[256];
-  char* data = new char[camera.width * camera.height * 3];
+  if( shotThread != null ) {
+    SDL_WaitThread( shotThread, null );
+    shotThread = null;
+  }
 
   time_t currentTime = std::time( null );
   struct tm timeStruct = *std::localtime( &currentTime );
 
-  snprintf( fileName, 256, "%s/screenshot %04d-%02d-%02d %02d:%02d:%02d.png",
-            config.get( "dir.rc", "" ),
+  snprintf( screenshotInfo.path, 256,
+            "%s/screenshots/" OZ_APPLICATION_NAME " %04d-%02d-%02d %02d:%02d:%02d.png",
+            config.get( "dir.config", "" ),
             1900 + timeStruct.tm_year, 1 + timeStruct.tm_mon, timeStruct.tm_mday,
             timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec );
 
-  log.print( "Saving screenshot to '%s' ...", fileName );
+  log.println( "Screenshot to '%s' scheduled in background thread", screenshotInfo.path );
 
-  glReadPixels( 0, 0, camera.width, camera.height, GL_RGB, GL_UNSIGNED_BYTE, data );
+  screenshotInfo.width  = camera.width;
+  screenshotInfo.height = camera.height;
+  screenshotInfo.pixels = new char[camera.width * camera.height * 3];
 
-  // flip image
-  char* top    = data;
-  char* bottom = data + ( camera.height - 1 ) * camera.width * 3;
+  glReadPixels( 0, 0, camera.width, camera.height, GL_RGB, GL_UNSIGNED_BYTE, screenshotInfo.pixels );
 
-  for( int i = 0; i < camera.height / 2; ++i ) {
-    for( int j = 0; j < camera.width; ++j ) {
-      swap( top[0], bottom[0] );
-      swap( top[1], bottom[1] );
-      swap( top[2], bottom[2] );
-
-      top    += 3;
-      bottom += 3;
-    }
-
-    bottom -= 2 * camera.width * 3;
-  }
-
-  uint image = ilGenImage();
-  ilBindImage( image );
-
-  ilLoadDataL( data, uint( camera.width * camera.height * 4 ),
-               uint( camera.width ), uint( camera.height ), 1, 3 );
-
-  ilSave( IL_PNG, fileName );
-  ilDeleteImage( image );
-
-  delete[] data;
-
-  log.printEnd( " OK" );
+  shotThread = SDL_CreateThread( saveScreenshot, null );
 }
 
 void Loader::init()
 {
+  shotThread = null;
   tick = 0;
 }
 
 void Loader::free()
-{}
+{
+  if( shotThread != null ) {
+    SDL_WaitThread( shotThread, null );
+    shotThread = null;
+  }
+}
 
 }
 }

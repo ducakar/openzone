@@ -117,12 +117,18 @@ static const Wave WAVE_SAMPLE = {
   }
 };
 
+// Needed to protect bellUsers counter.
+static CRITICAL_SECTION mutex;
+
 #else
 
 static const pa_sample_spec BELL_SPEC = { PA_SAMPLE_U8, 11025, 1 };
 static const ubyte BELL_SAMPLE[] = {
 # include "bellSample.inc"
 };
+
+// Needed to protect bellUsers counter.
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 #endif
 
@@ -180,7 +186,10 @@ static DWORD WINAPI bellThread( LPVOID )
 {
   PlaySound( reinterpret_cast<LPCSTR>( &WAVE_SAMPLE ), null, SND_MEMORY | SND_SYNC );
 
+  EnterCriticalSection( &mutex );
   --bellUsers;
+  LeaveCriticalSection( &mutex );
+
   return 0;
 }
 
@@ -195,7 +204,10 @@ static void* bellThread( void* )
     pa_simple_free( pa );
   }
 
+  pthread_mutex_lock( &mutex );
   --bellUsers;
+  pthread_mutex_unlock( &mutex );
+
   return null;
 }
 
@@ -203,7 +215,9 @@ static void* bellThread( void* )
 
 System::System()
 {
-#ifndef _WIN32
+#ifdef _WIN32
+  InitializeCriticalSection( &mutex );
+#else
   // Disable default handler for TRAP signal that crashes the process.
   signal( SIGTRAP, SIG_IGN );
 #endif
@@ -218,16 +232,26 @@ System::~System()
     usleep( 100 );
 #endif
   }
+
+#ifdef _WIN32
+  DeleteCriticalSection( &mutex );
+#endif
 }
 
 void System::bell()
 {
-  ++bellUsers;
-
 #ifdef _WIN32
+  EnterCriticalSection( &mutex );
+  ++bellUsers;
+  LeaveCriticalSection( &mutex );
+
   HANDLE thread = CreateThread( null, 0, bellThread, null, 0, null );
   CloseHandle( thread );
 #else
+  pthread_mutex_lock( &mutex );
+  ++bellUsers;
+  pthread_mutex_unlock( &mutex );
+
   pthread_t thread;
   pthread_create( &thread, null, bellThread, null );
 #endif

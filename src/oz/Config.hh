@@ -30,6 +30,8 @@
 #pragma once
 
 #include "HashString.hh"
+#include "File.hh"
+#include "PhysFile.hh"
 
 namespace oz
 {
@@ -72,12 +74,12 @@ class Config
     /**
      * Load configuration from a .rc file (does not override existing variables).
      */
-    bool loadConf( const char* path );
+    void loadConf( InputStream* istream );
 
     /**
      * Save configuration into a .rc file (entries are sorted by their keys).
      */
-    bool saveConf( const char* path );
+    void saveConf( BufferStream* bstream );
 
   public:
 
@@ -157,7 +159,20 @@ class Config
      *
      * @return True on success.
      */
-    bool load( const char* path );
+    bool load( File& file );
+
+    /**
+     * Load variables from a .rc file.
+     *
+     * Lines in the file must have the following format:
+     * <pre>
+     *   name "value"
+     * </pre>
+     * Everything else is ignored.
+     *
+     * @return True on success.
+     */
+    bool load( PhysFile& file );
 
     /**
      * Write variables to a .rc file.
@@ -169,7 +184,7 @@ class Config
      *
      * @return True on success.
      */
-    bool save( const char* path );
+    bool save( File& file );
 
     /**
      * Clear variables.

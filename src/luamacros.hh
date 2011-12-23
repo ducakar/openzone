@@ -25,6 +25,9 @@
 
 #include <lua.hpp>
 
+#define OZ_LUA_DOBUFFER( begin, length, name ) \
+  ( luaL_loadbuffer( l, begin, size_t( length ), name ) || lua_pcall( l, 0, LUA_MULTRET, 0 ) )
+
 #define OZ_LUA_FUNC( func ) \
   lua.registerFunction( #func, func )
 

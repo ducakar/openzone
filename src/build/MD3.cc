@@ -273,7 +273,7 @@ void MD3::buildMesh( const char* name, int frame )
 
 void MD3::load()
 {
-  String configFile = sPath + "/config.rc";
+  File configFile( sPath + "/config.rc" );
 
   Config config;
   config.load( configFile );

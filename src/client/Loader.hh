@@ -57,7 +57,22 @@ class Loader
     static const int AUDIO_CLEAR_INTERVAL      = 5   * Timer::TICKS_PER_SEC;  //   5 s (+ 3 s)
     static const int AUDIO_CLEAR_LAG           = 3   * Timer::TICKS_PER_SEC;
 
+    struct ScreenshotInfo
+    {
+      char  path[256];
+      int   width;
+      int   height;
+      char* pixels;
+    };
+
+    static ScreenshotInfo screenshotInfo;
+
+    SDL_Thread* preloadThread;
+    SDL_Thread* shotThread;
+
     int tick;
+
+    static int saveScreenshot( void* );
 
     // clean unused imagines and handle screenshots
     void cleanupRender();

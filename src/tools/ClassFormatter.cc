@@ -707,14 +707,14 @@ void ClassFormatter::format( const char* name )
 {
   log.print( "Formatting class '%s' ...", name );
 
-  String sPath = String::str( "class/%s.rc", name );
+  File file( String::str( "class/%s.rc", name ) );
 
   Config classConfig;
-  if( !classConfig.load( sPath ) ) {
+  if( !classConfig.load( file ) ) {
     throw Exception( "Cannot read class file" );
   }
 
-  fs = fopen( sPath, "w" );
+  fs = fopen( file.path(), "w" );
   if( fs == null ) {
     throw Exception( "Cannot open class file for writing" );
   }

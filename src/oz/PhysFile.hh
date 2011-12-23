@@ -24,7 +24,7 @@
  */
 
 /**
- * @file oz/File.hh
+ * @file oz/PhysFile.hh
  */
 
 #pragma once
@@ -36,11 +36,11 @@ namespace oz
 {
 
 /**
- * Class for basic file and directory operations.
+ * PHYSFS wrapper, similar to <code>File</code> class, but read-only.
  *
  * @ingroup oz
  */
-class File
+class PhysFile
 {
   public:
 
@@ -52,7 +52,6 @@ class File
       NONE,
       REGULAR,
       DIRECTORY,
-      OTHER,
       MISSING
     };
 
@@ -63,49 +62,42 @@ class File
     char*  data;     ///< Mapped memory.
     int    size;     ///< Mapped memory size.
 
-    /**
-     * Internal function to a write buffer to the file.
-     *
-     * @return True on success.
-     */
-    bool write( const char* buffer, int count ) const;
-
   public:
 
     /**
      * Create an empty instance.
      */
-    File();
+    PhysFile();
 
     /**
      * Destructor.
      */
-    ~File();
+    ~PhysFile();
 
     /**
      * No copying.
      */
-    File( const File& ) = delete;
+    PhysFile( const PhysFile& ) = delete;
 
     /**
      * Move constructor, transfers mapped region "ownership".
      */
-    File( File&& file );
+    PhysFile( PhysFile&& file );
 
     /**
      * No copying.
      */
-    File& operator = ( const File& ) = delete;
+    PhysFile& operator = ( const PhysFile& ) = delete;
 
     /**
      * Move operator, transfers mapped region "ownership".
      */
-    File& operator = ( File&& file );
+    PhysFile& operator = ( PhysFile&& file );
 
     /**
      * Create an instance for the given path.
      */
-    explicit File( const char* path );
+    explicit PhysFile( const char* path );
 
     /**
      * Set a new file path.
@@ -122,9 +114,14 @@ class File
     Type getType();
 
     /**
-     * %File path.
+     * Virtual file path.
      */
     const String& path() const;
+
+    /**
+     * Real file path.
+     */
+    String realPath() const;
 
     /**
      * %File name.
@@ -171,46 +168,12 @@ class File
     Buffer read() const;
 
     /**
-     * Write buffer contents into a file.
-     */
-    bool write( const Buffer* buffer ) const;
-
-    /**
-     * Write the first <tt>ostream.length()</tt> bytes to a file.
-     */
-    bool write( const OutputStream* ostream ) const;
-
-    /**
-     * Write the first <tt>bstream.length()</tt> bytes of the stream buffer to a file.
-     */
-    bool write( const BufferStream* bstream ) const;
-
-    /**
-     * Return current directory.
-     */
-    static String cwd();
-
-    /**
-     * Change current directory.
-     *
-     * @return True on success.
-     */
-    static bool chdir( const char* path );
-
-    /**
-     * Make a new directory.
-     *
-     * @return True on success.
-     */
-    static bool mkdir( const char* path, uint mode = 0755 );
-
-    /**
      * Generate a list of files in directory.
      *
      * Hidden files (in Unix means, so everything starting with '.') are skipped.
      * On error, empty array is returned.
      */
-    DArray<File> ls();
+    DArray<PhysFile> ls();
 
 };
 

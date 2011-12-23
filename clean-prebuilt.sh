@@ -6,8 +6,8 @@ echo 'rm -f share/openzone/ui/icon/*.ozcTex'
 rm -f share/openzone/ui/icon/*.ozcTex
 echo 'rm -f share/openzone/terra/*.{ozTerra,ozcTerra}'
 rm -f share/openzone/terra/*.{ozTerra,ozcTerra}
-echo 'rm -f share/openzone/sky/*.ozcSky'
-rm -f share/openzone/sky/*.ozcSky
+echo 'rm -f share/openzone/caelum/*.ozcCaelum'
+rm -f share/openzone/caelum/*.ozcCaelum
 echo 'rm -f share/openzone/data/maps/*{autosave.map,.bak}'
 rm -f share/openzone/data/maps/*{autosave.map,.bak}
 echo 'rm -f share/openzone/data/maps/*.{bsp,prt,srf}'

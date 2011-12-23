@@ -578,17 +578,24 @@ void Lua::init()
   setglobal( "ozLocalData" );
   getglobal( "ozLocalData" );
 
-  File luaDir( "lua/nirvana" );
-  DArray<File> luaFiles = luaDir.ls();
+  PhysFile luaDir( "lua/nirvana" );
+  DArray<PhysFile> luaFiles = luaDir.ls();
 
-  foreach( file, luaFiles.citer() ) {
+  foreach( file, luaFiles.iter() ) {
     if( file->hasExtension( "lua" ) ) {
       log.print( "%s ...", file->name() );
 
-      if( luaL_dofile( l, file->path() ) != 0 ) {
-        log.printEnd( " Failed" );
+      if( !file->map() ) {
+        throw Exception( "Failed to read Lua script '%s'", file->path().cstr() );
+      }
+
+      InputStream istream = file->inputStream();
+
+      if( OZ_LUA_DOBUFFER( istream.begin(), istream.capacity(), file->path() ) != 0 ) {
         throw Exception( "Nirvana Lua script error" );
       }
+
+      file->unmap();
 
       log.printEnd( " OK" );
     }

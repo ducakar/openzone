@@ -70,7 +70,7 @@ void BSP::load()
 
   String sPath = "bsp/" + name + ".ozBSP";
 
-  File file( sPath );
+  PhysFile file( sPath );
   if( !file.map() ) {
     throw Exception( "BSP file mmap failed" );
   }
@@ -263,7 +263,7 @@ void BSP::init()
 {
   String sPath = "bsp/" + name + ".ozBSP";
 
-  File file( sPath );
+  PhysFile file( sPath );
   if( !file.map() ) {
     throw Exception( "BSP file mmap failed" );
   }

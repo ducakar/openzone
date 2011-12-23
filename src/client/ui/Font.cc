@@ -54,12 +54,12 @@ Font::Font() : textTexId( 0 )
   }
 }
 
-bool Font::init()
+void Font::init()
 {
   const char* path;
 
   if( TTF_Init() == -1 ) {
-    return false;
+    throw Exception( "Failed to initialise SDL_TTF" );
   }
 
   for( int i = 0; i < MAX; ++i ) {
@@ -67,10 +67,15 @@ bool Font::init()
 
     log.print( "Opening font '%s' %d px ...", path, INFOS[i].height );
 
-    fonts[i] = TTF_OpenFont( path, INFOS[i].height );
+    PhysFile fontFile( path );
+
+    if( !fontFile.map() ) {
+      throw null;
+    }
+
+    fonts[i] = TTF_OpenFont( fontFile.realPath(), INFOS[i].height );
     if( fonts[i] == null ) {
-      log.printEnd( " Error: %s", TTF_GetError() );
-      return false;
+      throw Exception( "%s", TTF_GetError() );
     }
 
     log.printEnd( " OK" );
@@ -87,8 +92,6 @@ bool Font::init()
   glBindTexture( GL_TEXTURE_2D, 0 );
 
   log.printEnd( " OK" );
-
-  return true;
 }
 
 void Font::free()

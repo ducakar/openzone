@@ -57,12 +57,19 @@ void NamePool::init()
   listPositions.add( names.length() );
 
   for( int i = 0; i < library.nameLists.length(); ++i ) {
-    FILE* file = fopen( library.nameLists[i].path, "r" );
-    if( file == null ) {
+    PhysFile file( library.nameLists[i].path );
+    if( !file.map() ) {
       throw Exception( "Reading '%s' failed", library.nameLists[i].path.cstr() );
     }
 
-    while( fgets( buffer, LINE_LENGTH, file ) != null ) {
+    InputStream is = file.inputStream();
+
+    FILE* fs = fmemopen( const_cast<char*>( is.begin() ), size_t( is.capacity() ), "r" );
+    if( fs == null ) {
+      throw Exception( "Reading '%s' failed", library.nameLists[i].path.cstr() );
+    }
+
+    while( fgets( buffer, LINE_LENGTH, fs ) != null ) {
       String name = buffer;
       name = name.trim();
 
@@ -70,7 +77,9 @@ void NamePool::init()
         names.add( name );
       }
     }
-    fclose( file );
+
+    fclose( fs );
+    file.unmap();
 
     listPositions.add( names.length() );
   }
