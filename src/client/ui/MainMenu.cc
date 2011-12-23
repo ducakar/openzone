@@ -112,8 +112,8 @@ MainMenu::MainMenu() : Frame( 0, 0, 400, 450, OZ_APPLICATION_TITLE " v" OZ_APPLI
                "Data files come form different sources. See respective README and COPYING "
                "files for details about copyrights and licences." ) );
 
-  File autosaveFile( String::str( "%s/autosave.ozState", config.get( "dir.rc", "" ) ) );
-  File quicksaveFile( String::str( "%s/quicksave.ozState", config.get( "dir.rc", "" ) ) );
+  File autosaveFile( GameStage::AUTOSAVE_FILE );
+  File quicksaveFile( GameStage::QUICKSAVE_FILE );
 
   if( autosaveFile.getType() == File::REGULAR ) {
     MainMenu::autosaveFile = autosaveFile.path();

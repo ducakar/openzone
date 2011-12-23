@@ -204,7 +204,7 @@ bool GameStage::update()
   beginTime = SDL_GetTicks();
 
   if( ui::keyboard.keys[SDLK_F5] && !ui::keyboard.oldKeys[SDLK_F5] ) {
-    write( String::str( "%s/quicksave.ozState", config.get( "dir.rc", "" ) ) );
+    write( QUICKSAVE_FILE );
   }
   if( ui::keyboard.keys[SDLK_F7] && !ui::keyboard.oldKeys[SDLK_F7] ) {
     stateFile = QUICKSAVE_FILE;
@@ -539,8 +539,8 @@ void GameStage::init()
   log.println( "Initialising GameStage {" );
   log.indent();
 
-  AUTOSAVE_FILE = String::str( "%s/autosave.ozState", config.get( "dir.rc", "" ) );
-  QUICKSAVE_FILE = String::str( "%s/quicksave.ozState", config.get( "dir.rc", "" ) );
+  AUTOSAVE_FILE = String::str( "%s/saves/autosave.ozState", config.get( "dir.config", "" ) );
+  QUICKSAVE_FILE = String::str( "%s/saves/quicksave.ozState", config.get( "dir.config", "" ) );
 
   Module::listModules( &modules );
 

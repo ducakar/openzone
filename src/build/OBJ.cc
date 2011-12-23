@@ -284,10 +284,10 @@ void OBJ::load()
 {
   int currentMaterial = 0;
 
-  String modelFile = path + "/data.obj";
-  String configFile = path + "/config.rc";
+  File modelFile( path + "/data.obj" );
+  File configFile( path + "/config.rc" );
 
-  log.print( "Loading OBJ model '%s' ...", modelFile.cstr() );
+  log.print( "Loading OBJ model '%s' ...", modelFile.path().cstr() );
 
   Config config;
   config.load( configFile );
@@ -303,7 +303,7 @@ void OBJ::load()
 
   loadMaterials( path );
 
-  FILE* file = fopen( modelFile.cstr(), "r" );
+  FILE* file = fopen( modelFile.path().cstr(), "r" );
   if( file == null ) {
     throw Exception( "Cannot open OBJ data.obj file" );
   }

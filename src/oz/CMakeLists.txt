@@ -7,6 +7,7 @@ add_library( oz STATIC
   Log.cc
   Mat44.cc
   Math.cc
+  PhysFile.cc
   Point3.cc
   Quat.cc
   StackTrace.cc

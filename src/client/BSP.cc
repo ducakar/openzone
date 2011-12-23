@@ -188,7 +188,7 @@ void BSP::load()
   log.println( "Loading BSP model '%s' {", bsp->name.cstr() );
   log.indent();
 
-  File file( "bsp/" + bsp->name + ".ozcBSP" );
+  PhysFile file( "bsp/" + bsp->name + ".ozcBSP" );
   if( !file.map() ) {
     throw Exception( "BSP file mmap failed" );
   }

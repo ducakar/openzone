@@ -64,10 +64,30 @@ static TraceEntry* firstArrayTraceEntry  = null;
 
 // If we deallocate from two different threads at once with OZ_TRACK_LEAKS, changing the list
 // of allocated blocks while iterating it in another thread can result in a SIGSEGV.
+
 #ifdef _WIN32
-static CRITICAL_SECTION sectionMutex;
+
+struct CriticalSectionWrapper
+{
+  CRITICAL_SECTION id;
+
+  CriticalSectionWrapper()
+  {
+    InitializeCriticalSection( &id );
+  }
+
+  ~CriticalSectionWrapper()
+  {
+    DeleteCriticalSection( &id );
+  }
+};
+
+static CriticalSectionWrapper mutex;
+
 #else
-static pthread_mutex_t sectionMutex = PTHREAD_MUTEX_INITIALIZER;
+
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 #endif
 
 #endif
@@ -171,10 +191,9 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
 # ifdef _WIN32
-  InitializeCriticalSection( &sectionMutex );
-  EnterCriticalSection( &sectionMutex );
+  EnterCriticalSection( &mutex.id );
 # else
-  pthread_mutex_lock( &sectionMutex );
+  pthread_mutex_lock( &mutex );
 # endif
 
   st->next       = firstObjectTraceEntry;
@@ -185,10 +204,9 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
   firstObjectTraceEntry = st;
 
 # ifdef _WIN32
-  LeaveCriticalSection( &sectionMutex );
-  DeleteCriticalSection( &sectionMutex );
+  LeaveCriticalSection( &mutex.id );
 # else
-  pthread_mutex_unlock( &sectionMutex );
+  pthread_mutex_unlock( &mutex );
 # endif
 #endif
 
@@ -237,10 +255,9 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
 # ifdef _WIN32
-  InitializeCriticalSection( &sectionMutex );
-  EnterCriticalSection( &sectionMutex );
+  EnterCriticalSection( &mutex.id );
 # else
-  pthread_mutex_lock( &sectionMutex );
+  pthread_mutex_lock( &mutex );
 # endif
 
   st->next       = firstArrayTraceEntry;
@@ -251,10 +268,9 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
   firstArrayTraceEntry = st;
 
 # ifdef _WIN32
-  LeaveCriticalSection( &sectionMutex );
-  DeleteCriticalSection( &sectionMutex );
+  LeaveCriticalSection( &mutex.id );
 # else
-  pthread_mutex_unlock( &sectionMutex );
+  pthread_mutex_unlock( &mutex );
 # endif
 #endif
 
@@ -298,10 +314,9 @@ void operator delete ( void* ptr ) throw()
 
 #ifdef OZ_TRACK_LEAKS
 # ifdef _WIN32
-  InitializeCriticalSection( &sectionMutex );
-  EnterCriticalSection( &sectionMutex );
+  EnterCriticalSection( &mutex.id );
 # else
-  pthread_mutex_lock( &sectionMutex );
+  pthread_mutex_lock( &mutex );
 # endif
 
   TraceEntry* st   = firstObjectTraceEntry;
@@ -346,10 +361,9 @@ void operator delete ( void* ptr ) throw()
 backtraceFound:;
 
 # ifdef _WIN32
-  LeaveCriticalSection( &sectionMutex );
-  DeleteCriticalSection( &sectionMutex );
+  LeaveCriticalSection( &mutex.id );
 # else
-  pthread_mutex_unlock( &sectionMutex );
+  pthread_mutex_unlock( &mutex );
 # endif
 #endif
 
@@ -385,10 +399,9 @@ void operator delete[] ( void* ptr ) throw()
 
 #ifdef OZ_TRACK_LEAKS
 # ifdef _WIN32
-  InitializeCriticalSection( &sectionMutex );
-  EnterCriticalSection( &sectionMutex );
+  EnterCriticalSection( &mutex.id );
 # else
-  pthread_mutex_lock( &sectionMutex );
+  pthread_mutex_lock( &mutex );
 # endif
 
   TraceEntry* st   = firstArrayTraceEntry;
@@ -432,10 +445,9 @@ void operator delete[] ( void* ptr ) throw()
 backtraceFound:;
 
 # ifdef _WIN32
-  LeaveCriticalSection( &sectionMutex );
-  DeleteCriticalSection( &sectionMutex );
+  LeaveCriticalSection( &mutex.id );
 # else
-  pthread_mutex_unlock( &sectionMutex );
+  pthread_mutex_unlock( &mutex );
 # endif
 #endif
 

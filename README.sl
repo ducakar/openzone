@@ -107,28 +107,28 @@ Problemi
 
 Odvisnosti
 ----------
-- pthreads (na Linuxu že vgrajeno v glibc)
-- libintl (na Linuxu že vgrajeno v glibc)
+V distribuciji za Windows so vse potrebne knjižnice že vključene.
+Na Linuxu je potrebno namestiti naslednje knjižnice/pakete:
+- libpulse
 - SDL
-- SDL_image (potrebno le za ozPrebuild, vsaj s podporo za PNG in JPEG)
-- SDL_ttf
+- PhysFS
+- Lua
 - OpenGL
 - OpenAL
+- DevIL
 - libvorbis
-- Lua
-
-Na Linuxu morate namestiti pakete, ki vsebujejo zgornje knjižnice.
-V distribuciji za Windows so vse potrebne knjižnice že vključene.
+- faad2
+- libmad (neobvezno, za podporo MP3).
 
 Odvisnosti za gradnjo
 ---------------------
-- osnovni sistem GNU (bash, coreutils, grep, sed ...)
-- gettext
+- GNU/Linux ali podoben OS
 - cmake
 - GNU make
 - GNU binutils
 - GCC >= 4.6 ali LLVM/Clang >= 3.0
-- razvojni paketi knjižnic iz prejšnjega razdelka
+- gettext (neobvezno, za prevajanje)
+- razvojni paketi vseh knjižnic iz prejšnjega razdelka.
 
 Ukazna vrstica
 --------------

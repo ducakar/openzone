@@ -44,7 +44,7 @@ void Terra::load( int id_ )
 
   log.print( "Loading terrain '%s' ...", name.cstr() );
 
-  File file( path );
+  PhysFile file( path );
   if( !file.map() ) {
     throw Exception( "Cannot map terra file" );
   }

@@ -118,9 +118,8 @@ void Mouse::load()
   for( int i = 0; i < MAX; ++i ) {
     log.print( "Loading cursor '%s' ...", NAMES[i] );
 
-    File file( String::str( "ui/cur/%s.ozcCur", NAMES[i] ) );
+    PhysFile file( String::str( "ui/cur/%s.ozcCur", NAMES[i] ) );
     if( !file.map() ) {
-      log.printEnd( " Failed" );
       throw Exception( "Cursor loading failed" );
     }
 

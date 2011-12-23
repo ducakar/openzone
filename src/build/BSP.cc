@@ -60,8 +60,8 @@ inline bool BSP::includes( const matrix::BSP::Brush& brush, float maxDim ) const
 
 void BSP::load()
 {
-  String rcFile = String::str( "data/maps/%s.rc", name.cstr() );
-  String bspFile = String::str( "data/maps/%s.bsp", name.cstr() );
+  File rcFile( String::str( "data/maps/%s.rc", name.cstr() ) );
+  File bspFile( String::str( "data/maps/%s.bsp", name.cstr() ) );
 
   Config bspConfig;
   if( !bspConfig.load( rcFile ) ) {
@@ -89,12 +89,11 @@ void BSP::load()
     throw Exception( "Invalid BSP config" );
   }
 
-  File file( bspFile );
-  if( !file.map() ) {
+  if( !bspFile.map() ) {
     throw Exception( "BSP reading failed" );
   }
 
-  InputStream is = file.inputStream( Endian::LITTLE );
+  InputStream is = bspFile.inputStream( Endian::LITTLE );
 
   char id[4];
   id[0] = is.readChar();
@@ -500,8 +499,7 @@ void BSP::load()
     }
   }
 
-  file.unmap();
-
+  bspFile.unmap();
   bspConfig.clear( true );
 }
 

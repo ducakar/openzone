@@ -130,7 +130,7 @@ uint Context::loadTexture( const char* path )
 {
   log.print( "Loading texture '%s' ...", path );
 
-  File file( path );
+  PhysFile file( path );
   if( !file.map() ) {
     throw Exception( "Texture file mmap failed" );
   }
@@ -217,7 +217,7 @@ uint Context::requestTexture( int id )
 
   resource.id = GL_NONE;
 
-  File file( "bsp/" + name + ".ozcTex" );
+  PhysFile file( "bsp/" + name + ".ozcTex" );
   if( !file.map() ) {
     throw Exception( "Texture file mmap failed" );
   }
@@ -273,7 +273,7 @@ uint Context::requestSound( int id )
 
   log.print( "Loading sound '%s' ...", name.cstr() );
 
-  File file( path );
+  PhysFile file( path );
   if( !file.map() ) {
     throw Exception( "Failed to mmap sound file" );
   }
@@ -298,8 +298,7 @@ uint Context::requestSound( int id )
   if( audioSpec.channels != 1 ||
       ( audioSpec.format != AUDIO_U8 && audioSpec.format != AUDIO_S16 ) )
   {
-    log.printEnd( " Failed, format should be mono U8 mono or S16LE mono" );
-      throw Exception( "Invalid sound format, should be U8 mono or S16LE mono" );
+    throw Exception( "Invalid sound format, should be U8 mono or S16LE mono" );
   }
 
   ALenum format = audioSpec.format == AUDIO_U8 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16;
@@ -313,7 +312,6 @@ uint Context::requestSound( int id )
   OZ_AL_CHECK_ERROR();
 
   if( resource.id == 0 ) {
-    log.printEnd( " Failed" );
     throw Exception( "Sound loading failed" );
   }
 

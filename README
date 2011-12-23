@@ -108,9 +108,10 @@ For Windows build, all dependencies are included.
 On Linux you need following libraries/packages installed:
 - libpulse
 - SDL
+- PhysFS
+- Lua
 - OpenGL
 - OpenAL
-- Lua
 - DevIL
 - libvorbis
 - faad2
@@ -119,12 +120,12 @@ On Linux you need following libraries/packages installed:
 Build-time dependencies
 -----------------------
 - GNU/Linux or similar OS
-- gettext
 - cmake
 - GNU make
 - GNU binutils
 - GCC >= 4.6 or LLVM/Clang >= 3.0
-- development packages of all (including optional) libraries from previous section
+- gettext (optional, for translations)
+- development packages of all libraries from the previous section.
 
 Command line
 ------------

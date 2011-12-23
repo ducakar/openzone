@@ -26,12 +26,3 @@
  */
 
 #include "common/common.hh"
-
-// We want to use C++ wrapped C headers, not vanilla ones that are included via SDL.
-#include <cctype>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
-#define SDL_NO_COMPAT
-#include <SDL/SDL.h>

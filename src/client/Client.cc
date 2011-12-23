@@ -42,15 +42,12 @@
 #include <ctime>
 #include <unistd.h>
 
+#include <physfs.h>
 #include <IL/il.h>
 
 #ifdef _WIN32
 # undef WIN32_LEAN_AND_MEAN
 # include <shlobj.h>
-#endif
-
-#ifdef OZ_NETWORK
-# include <SDL_net.h>
 #endif
 
 namespace oz
@@ -79,22 +76,27 @@ void Client::shutdown()
     library.free();
   }
   if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
-    String rcDir = config.get( "dir.rc", "" );
+    String configDir = config.get( "dir.config", "" );
 
-    if( !rcDir.isEmpty() ) {
-      String configPath = rcDir + "/client.rc";
+    if( !configDir.isEmpty() ) {
+      File configFile( configDir + "/client.rc" );
 
-      config.exclude( "dir.rc" );
-      config.save( configPath );
+      config.exclude( "dir.config" );
+      config.exclude( "dir.local" );
+      config.save( configFile );
     }
   }
 
   config.clear( initFlags & INIT_CONFIG );
 
+  if( initFlags & INIT_DEVIL ) {
+    ilShutDown();
+  }
+  if( initFlags & INIT_PHYSFS ) {
+    PHYSFS_deinit();
+  }
   if( initFlags & INIT_SDL ) {
-    log.print( "Shutting down SDL ..." );
     SDL_Quit();
-    log.printEnd( " OK" );
   }
 
   if( initFlags & INIT_MAIN_LOOP ) {
@@ -219,13 +221,24 @@ int Client::main( int argc, char** argv )
       File( String::str( "%s/" OZ_APPLICATION_NAME, localRoot ) );
 #endif
 
-  if( configDir.getType() != File::DIRECTORY ) {
-    log.print( "No resource directory found, creating '%s' ...", configDir.path().cstr() );
+  String dir = configDir.path();
+  if( File::mkdir( dir, 0755 ) ) {
+    log.println( "Profile directory '%s' created", dir.cstr() );
+  }
 
-    if( !File::mkdir( configDir.path(), 0700 ) ) {
-      throw Exception( "Resource directory creation failed" );
-    }
-    log.printEnd( " OK" );
+  dir = configDir.path() + "/saves";
+  if( File::mkdir( dir, 0755 ) ) {
+    log.println( "Directory for saved games '%s' created", dir.cstr() );
+  }
+
+  dir = configDir.path() + "/screenshots";
+  if( File::mkdir( dir, 0755 ) ) {
+    log.println( "Directory for screenshots '%s' created", dir.cstr() );
+  }
+
+  dir = localDir.path();
+  if( File::mkdir( dir, 0755 ) ) {
+    log.println( "Directory for per-user content '%s' created", dir.cstr() );
   }
 
   String logPath = configDir.path() + "/client.log";
@@ -247,9 +260,15 @@ int Client::main( int argc, char** argv )
   log.printEnd( " OK" );
   initFlags |= INIT_SDL;
 
+  log.print( "Initialising PhysFS ..." );
+  PHYSFS_init( null );
+  log.printEnd( " OK" );
+  initFlags |= INIT_PHYSFS;
+
   log.print( "Initialising DevIL ..." );
   ilInit();
   log.printEnd( " OK" );
+  initFlags |= INIT_DEVIL;
 
   log.println( "Build details {" );
   log.indent();
@@ -265,10 +284,10 @@ int Client::main( int argc, char** argv )
   log.unindent();
   log.println( "}" );
 
-  String configPath = configDir.path() + "/client.rc";
+  File configFile( configDir.path() + "/client.rc" );
 
-  if( config.load( configPath ) ) {
-    log.printEnd( "Configuration read from '%s'", configPath.cstr() );
+  if( config.load( configFile ) ) {
+    log.printEnd( "Configuration read from '%s'", configFile.path().cstr() );
 
     if( String::equals( config.get( "_version", "" ), OZ_APPLICATION_VERSION ) ) {
       initFlags |= INIT_CONFIG;
@@ -293,7 +312,15 @@ int Client::main( int argc, char** argv )
     config.get( "_version", "" );
   }
 
-  config.add( "dir.rc", configDir.path() );
+  config.add( "dir.config", configDir.path() );
+  config.add( "dir.local", localDir.path() );
+
+  // tag variables as used
+  config.get( "dir.config", "" );
+  config.get( "dir.local", "" );
+
+  String prefixDir = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
+  String dataDir = prefixDir + "/share/" OZ_APPLICATION_NAME;
 
   log.print( "Setting localisation ..." );
 
@@ -301,14 +328,14 @@ int Client::main( int argc, char** argv )
   SDL_putenv( const_cast<char*>( "LANGUAGE" ) );
   setlocale( LC_MESSAGES, config.getSet( "locale.messages", "" ) );
 
-  bindtextdomain( OZ_APPLICATION_NAME, "../locale" );
+  bindtextdomain( OZ_APPLICATION_NAME, prefixDir + "/share/locale" );
   bind_textdomain_codeset( OZ_APPLICATION_NAME, "UTF-8" );
   textdomain( OZ_APPLICATION_NAME );
 
   log.printEnd( " LC_MESSAGES: %s ... OK", setlocale( LC_MESSAGES, null ) );
 
   if( String::equals( config.getSet( "seed", "TIME" ), "TIME" ) ) {
-    int seed = int( time( null ) );
+    int seed = int( std::time( null ) );
     Math::seed( seed );
     log.println( "Random generator seed set to the current time: %d", seed );
   }
@@ -331,11 +358,14 @@ int Client::main( int argc, char** argv )
   }
   ui::keyboard.init();
 
-  String prefixDir = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
-  String dataDir = prefixDir + "/share/" OZ_APPLICATION_NAME;
+  log.print( "Adding content search path '%s' ...", localDir.path().cstr() );
+  if( PHYSFS_mount( localDir.path(), null, 1 ) == 0 ) {
+    throw Exception( "Failed to change working directory to '%s'", localDir.path().cstr() );
+  }
+  log.printEnd( " OK" );
 
-  log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
-  if( !File::chdir( dataDir ) ) {
+  log.print( "Adding content search path '%s' ...", dataDir.cstr() );
+  if( PHYSFS_mount( dataDir, null, 1 ) == 0 ) {
     throw Exception( "Failed to change working directory to '%s'", dataDir.cstr() );
   }
   log.printEnd( " OK" );

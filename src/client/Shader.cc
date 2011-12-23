@@ -102,7 +102,7 @@ Shader::Light::Light( const Point3& pos_, const Vec4& diffuse_ ) :
 
 void Shader::compileShader( uint id, const char* path, const char** sources, int* lengths ) const
 {
-  File file( path );
+  PhysFile file( path );
   if( !file.map() ) {
     throw Exception( "Shader source mmap failed" );
   }
@@ -277,7 +277,7 @@ void Shader::load()
   sources[0] = defines;
   lengths[0] = defines.length();
 
-  Buffer buffer = File( "glsl/header.glsl" ).read();
+  Buffer buffer = PhysFile( "glsl/header.glsl" ).read();
   if( buffer.isEmpty() ) {
     throw Exception( "header.glsl reading failed" );
   }
@@ -389,9 +389,8 @@ void Shader::init()
   sources[0] = defines;
   lengths[0] = defines.length();
 
-  Buffer buffer = File( "glsl/header.glsl" ).read();
+  Buffer buffer = PhysFile( "glsl/header.glsl" ).read();
   if( buffer.isEmpty() ) {
-    log.printEnd( " Failed" );
     throw Exception( "header.glsl reading failed" );
   }
 

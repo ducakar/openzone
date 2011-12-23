@@ -61,7 +61,7 @@ class Lua
     Vector<Struct*> structs;
     Vector<Object*> objects;
 
-    String          missionFile;
+    String          missionPath;
 
     bool readVariable( InputStream* istream );
     void writeVariable( BufferStream* stream );
@@ -73,7 +73,7 @@ class Lua
     void staticCall( const char* functionName );
 
     void update();
-    void create( const char* missionFile );
+    void create( const char* missionPath );
 
     void read( InputStream* istream );
     void write( BufferStream* ostream );

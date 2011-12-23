@@ -40,11 +40,11 @@ namespace matrix
 
 FragPool::FragPool( const char* name_, int id_ ) : name( name_ ), id( id_ )
 {
-  String sPath = "frag/" + name + ".rc";
+  PhysFile file( "frag/" + name + ".rc" );
 
   Config fragConfig;
-  if( !fragConfig.load( sPath ) ) {
-    throw Exception( "Failed to read config from '%s'", sPath.cstr() );
+  if( !fragConfig.load( file ) ) {
+    throw Exception( "Failed to read config from '%s'", file.path().cstr() );
   }
 
   flags = 0;

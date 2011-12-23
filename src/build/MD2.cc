@@ -212,7 +212,8 @@ void MD2::build( const char* path )
   String skinFile1 = sPath + "/skin.jpg";
   String masksFile0 = sPath + "/masks.png";
   String masksFile1 = sPath + "/masks.jpg";
-  String configFile = sPath + "/config.rc";
+
+  File configFile( sPath + "/config.rc" );
 
   log.println( "Prebuilding MD2 model '%s' {", path );
   log.indent();

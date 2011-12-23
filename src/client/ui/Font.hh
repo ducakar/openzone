@@ -67,7 +67,7 @@ class Font
 
     Font();
 
-    bool init();
+    void init();
     void free();
 
 };

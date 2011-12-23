@@ -218,7 +218,7 @@ void MD2::load()
 
   log.print( "Loading MD2 model '%s' ...", name.cstr() );
 
-  File file( path );
+  PhysFile file( path );
   if( !file.map() ) {
     throw Exception( "MD2 model file mmap failed" );
   }

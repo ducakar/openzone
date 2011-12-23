@@ -165,16 +165,24 @@ void Lua::update()
   staticCall( "onUpdate" );
 }
 
-void Lua::create( const char* missionFile_ )
+void Lua::create( const char* missionPath_ )
 {
-  missionFile = missionFile_;
+  missionPath = missionPath_;
 
-  log.print( "Reading mission script %s ...", missionFile.cstr() );
+  log.print( "Reading mission script %s ...", missionPath.cstr() );
 
-  if( luaL_dofile( l, missionFile ) != 0 ) {
-    log.printEnd( " Failed" );
+  PhysFile missionFile( missionPath );
+  if( !missionFile.map() ) {
+    throw Exception( "Failed to read mission file '%s'", missionFile.path().cstr() );
+  }
+
+  InputStream istream = missionFile.inputStream();
+
+  if( OZ_LUA_DOBUFFER( istream.begin(), istream.capacity(), missionPath ) != 0 ) {
     throw Exception( "Client Lua script error" );
   }
+
+  missionFile.unmap();
 
   log.printEnd( " OK" );
 
@@ -185,14 +193,22 @@ void Lua::read( InputStream* istream )
 {
   hard_assert( gettop() == 0 );
 
-  missionFile = istream->readString();
+  missionPath = istream->readString();
 
-  log.print( "Reading mission script %s ...", missionFile.cstr() );
+  log.print( "Reading mission script %s ...", missionPath.cstr() );
 
-  if( luaL_dofile( l, missionFile ) != 0 ) {
-    log.printEnd( " Failed" );
+  PhysFile missionFile( missionPath );
+  if( !missionFile.map() ) {
+    throw Exception( "Failed to read mission script '%s'", missionFile.path().cstr() );
+  }
+
+  InputStream is = missionFile.inputStream();
+
+  if( OZ_LUA_DOBUFFER( is.begin(), is.capacity(), missionPath ) != 0 ) {
     throw Exception( "Client Lua script error" );
   }
+
+  missionFile.unmap();
 
   log.printEnd( " OK" );
 
@@ -216,7 +232,7 @@ void Lua::write( BufferStream* ostream )
 {
   hard_assert( gettop() == 0 );
 
-  ostream->writeString( missionFile );
+  ostream->writeString( missionPath );
 
   ostream->writeChar( '[' );
 
@@ -645,7 +661,7 @@ void Lua::free()
 
   log.print( "Freeing Client Lua ..." );
 
-  missionFile = "";
+  missionPath = "";
 
   objects.clear();
   objects.dealloc();
