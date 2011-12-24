@@ -36,6 +36,8 @@ namespace oz
 
 /**
  * Axis-aligned bounding box, represented with minimal and maximal point.
+ *
+ * @ingroup oz
  */
 class Bounds
 {

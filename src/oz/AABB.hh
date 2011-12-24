@@ -36,6 +36,8 @@ namespace oz
 
 /**
  * Axis-aligned bounding box, represented with central point and extents.
+ *
+ * @ingroup oz
  */
 class AABB
 {

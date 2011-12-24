@@ -47,9 +47,6 @@ class Config
 {
   private:
 
-    /// Hashtable size.
-    static const int SIZE = 256;
-
     /// Column for value alignment when writing .rc configuration files.
     static const int ALIGNMENT = 32;
 
@@ -68,8 +65,8 @@ class Config
       {}
     };
 
-    HashString<Value, SIZE> vars;                   ///< %List of variables.
-    String                  filePath;               ///< Needed to warn about unused variables.
+    HashString<Value> vars;     ///< %List of variables.
+    String            filePath; ///< Must be remembered to warn about unused variables.
 
     /**
      * Load configuration from a .rc file (does not override existing variables).

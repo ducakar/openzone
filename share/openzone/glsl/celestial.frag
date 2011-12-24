@@ -30,9 +30,5 @@ varying float exAzimuth;
 
 void main()
 {
-  if( exAzimuth < 0.0 ) {
-    discard;
-  }
-
   gl_FragData[0] = oz_Colour * texture2D( oz_Textures[0], exTexCoord );
 }

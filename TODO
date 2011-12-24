@@ -1,15 +1,18 @@
 TODO 0.3
+- oz
+  * STackTrace for Win32
 - matrix
   * BSP
     + elevators
     + switches
-    + scripted actions
+    + scripting
   * Vehicle
     + turret
 - client
   * decals
   * options menu
   * MD3 animation
+  * distant object fade out
 
 TODO 0.4
 - new löök

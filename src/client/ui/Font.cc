@@ -69,10 +69,6 @@ void Font::init()
 
     PhysFile fontFile( path );
 
-    if( !fontFile.map() ) {
-      throw null;
-    }
-
     fonts[i] = TTF_OpenFont( fontFile.realPath(), INFOS[i].height );
     if( fonts[i] == null ) {
       throw Exception( "%s", TTF_GetError() );

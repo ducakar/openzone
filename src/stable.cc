@@ -18,48 +18,11 @@
  */
 
 /**
- * @file tests/pool.cc
+ * @file stable.cc
+ *
+ * Precompiled header trigger module.
+ *
+ * This file is required for a dummy target to properly trigger recompilation of precompiled header.
  */
 
-#include "oz/oz.hh"
-
-using namespace oz;
-
-bool Alloc::isLocked = true;
-
-class A
-{
-  public:
-
-    int value;
-    A*  next[1];
-
-    static Pool<A, 2> pool;
-
-  OZ_STATIC_POOL_ALLOC( pool )
-
-};
-
-Pool<A, 2> A::pool;
-
-int main()
-{
-  Alloc::isLocked = false;
-
-  const int max = 10000;
-
-  A* array[max];
-  for( int i = 0; i < max; ++i ) {
-    array[i] = new A();
-    array[i]->value = 10;
-  }
-  for( int i = 0; i < max; ++i ) {
-    delete array[i];
-  }
-
-  A::pool.free();
-
-  Alloc::isLocked = true;
-  Alloc::printLeaks();
-  return 0;
-}
+#include "stable.hh"

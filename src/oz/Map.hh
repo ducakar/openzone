@@ -302,7 +302,9 @@ class Map
      */
     Map( const Map& m ) : data( m.size == 0 ? null : new Elem[m.size] ),
         size( m.size ), count( m.count )
-    {}
+    {
+      aCopy( data, m.data, m.count );
+    }
 
     /**
      * Move constructor, moves element storage.
