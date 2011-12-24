@@ -286,7 +286,7 @@ void Struct::onDemolish()
     Dynamic* dyn = static_cast<Dynamic*>( overlappingObjs[i] );
 
     if( ( dyn->flags & Object::SOLID_BIT ) &&
-        collider.overlaps( dyn->toAABB( -2.0f * EPSILON ), dyn ) )
+        collider.overlaps( AABB( *dyn, -2.0f * EPSILON ), dyn ) )
     {
       dyn->destroy();
     }

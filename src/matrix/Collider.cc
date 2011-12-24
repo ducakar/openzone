@@ -275,7 +275,7 @@ bool Collider::overlapsEntityOrbisOO()
       const Cell& cell = orbis.cells[x][y];
 
       for( const Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
-        if( sObj->overlaps( trace ) ) {
+        if( trace.overlaps( *sObj, 0.0f ) ) {
           startPos = str->toStructCS( sObj->p ) - entity->offset;
           localDim = str->swapDimCS( sObj->dim + Vec3( margin, margin, margin ) );
 
@@ -752,7 +752,7 @@ void Collider::trimAABBOrbis()
       endPos   = originalEndPos;
 
       for( const Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
-        if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( trace ) ) {
+        if( sObj != exclObj && ( sObj->flags & mask ) && trace.overlaps( *sObj, 0.0f ) ) {
           trimAABBObj( sObj );
         }
       }
@@ -804,7 +804,7 @@ void Collider::getOrbisOverlaps( Vector<Object*>* objects, Vector<Struct*>* stru
 
       if( objects != null ) {
         for( Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
-          if( ( sObj->flags & mask ) && sObj->overlaps( trace ) ) {
+          if( ( sObj->flags & mask ) && trace.overlaps( *sObj, 0.0f ) ) {
             objects->add( sObj );
           }
         }
@@ -822,7 +822,7 @@ void Collider::getOrbisIncludes( Vector<Object*>* objects ) const
       const Cell& cell = orbis.cells[x][y];
 
       for( Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
-        if( ( sObj->flags & mask ) && trace.includes( *sObj ) ) {
+        if( ( sObj->flags & mask ) && trace.includes( *sObj, 0.0f ) ) {
           objects->add( sObj );
         }
       }
@@ -837,7 +837,7 @@ void Collider::touchOrbisOverlaps() const
       const Cell& cell = orbis.cells[x][y];
 
       for( Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
-        if( ( sObj->flags & Object::DYNAMIC_BIT ) && sObj->overlaps( trace ) ) {
+        if( ( sObj->flags & Object::DYNAMIC_BIT ) && trace.overlaps( *sObj, 0.0f ) ) {
           sObj->flags &= ~Object::MOVE_CLEAR_MASK;
         }
       }
@@ -854,7 +854,7 @@ void Collider::getEntityOverlaps( Vector<Object*>* objects )
       const Cell& cell = orbis.cells[x][y];
 
       for( Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
-        if( ( sObj->flags & mask ) && sObj->overlaps( trace ) ) {
+        if( ( sObj->flags & mask ) && trace.overlaps( *sObj, 0.0f ) ) {
           startPos = str->toStructCS( sObj->p ) - entity->offset;
           localDim = str->swapDimCS( sObj->dim + Vec3( margin, margin, margin ) );
 
@@ -881,7 +881,7 @@ bool Collider::overlaps( const Point3& point, const Object* exclObj_ )
   exclObj = exclObj_;
   flags = Object::CYLINDER_BIT;
 
-  span = orbis.getInters( point, AABB::MAX_DIM );
+  span = orbis.getInters( point, Object::MAX_DIM );
 
   return overlapsAABBOrbis();
 }
@@ -892,7 +892,7 @@ bool Collider::overlapsOO( const Point3& point, const Object* exclObj_ )
   exclObj = exclObj_;
   flags = Object::CYLINDER_BIT;
 
-  span = orbis.getInters( point, AABB::MAX_DIM );
+  span = orbis.getInters( point, Object::MAX_DIM );
 
   return overlapsAABBOrbisOO();
 }
@@ -903,7 +903,7 @@ bool Collider::overlapsOSO( const Point3& point, const Object* exclObj_ )
   exclObj = exclObj_;
   flags = Object::CYLINDER_BIT;
 
-  span = orbis.getInters( point, AABB::MAX_DIM );
+  span = orbis.getInters( point, Object::MAX_DIM );
 
   return overlapsAABBOrbisOSO();
 }
@@ -914,8 +914,8 @@ bool Collider::overlaps( const AABB& aabb_, const Object* exclObj_ )
   exclObj = exclObj_;
   flags = 0;
 
-  trace = aabb.toBounds( 4.0f * EPSILON );
-  span = orbis.getInters( trace, AABB::MAX_DIM );
+  trace = Bounds( aabb, 4.0f * EPSILON );
+  span = orbis.getInters( trace, Object::MAX_DIM );
 
   return overlapsAABBOrbis();
 }
@@ -926,8 +926,8 @@ bool Collider::overlapsOO( const AABB& aabb_, const Object* exclObj_ )
   exclObj = exclObj_;
   flags = 0;
 
-  trace = aabb.toBounds( 4.0f * EPSILON );
-  span = orbis.getInters( trace, AABB::MAX_DIM );
+  trace = Bounds( aabb, 4.0f * EPSILON );
+  span = orbis.getInters( trace, Object::MAX_DIM );
 
   return overlapsAABBOrbisOO();
 }
@@ -938,8 +938,8 @@ bool Collider::overlapsOSO( const AABB& aabb_, const Object* exclObj_ )
   exclObj = exclObj_;
   flags = 0;
 
-  trace = aabb.toBounds( 4.0f * EPSILON );
-  span = orbis.getInters( trace, AABB::MAX_DIM );
+  trace = Bounds( aabb, 4.0f * EPSILON );
+  span = orbis.getInters( trace, Object::MAX_DIM );
 
   return overlapsAABBOrbisOSO();
 }
@@ -950,8 +950,8 @@ bool Collider::overlaps( const Object* obj_, const Object* exclObj_ )
   exclObj = exclObj_;
   flags = obj_->flags;
 
-  trace = aabb.toBounds( 4.0f * EPSILON );
-  span = orbis.getInters( trace, AABB::MAX_DIM );
+  trace = Bounds( aabb, 4.0f * EPSILON );
+  span = orbis.getInters( trace, Object::MAX_DIM );
 
   return overlapsAABBOrbis();
 }
@@ -962,8 +962,8 @@ bool Collider::overlapsOO( const Object* obj_, const Object* exclObj_ )
   exclObj = exclObj_;
   flags = obj_->flags;
 
-  trace = aabb.toBounds( 4.0f * EPSILON );
-  span = orbis.getInters( trace, AABB::MAX_DIM );
+  trace = Bounds( aabb, 4.0f * EPSILON );
+  span = orbis.getInters( trace, Object::MAX_DIM );
 
   return overlapsAABBOrbisOO();
 }
@@ -974,8 +974,8 @@ bool Collider::overlapsOSO( const Object* obj_, const Object* exclObj_ )
   exclObj = exclObj_;
   flags = obj_->flags;
 
-  trace = aabb.toBounds( 4.0f * EPSILON );
-  span = orbis.getInters( trace, AABB::MAX_DIM );
+  trace = Bounds( aabb, 4.0f * EPSILON );
+  span = orbis.getInters( trace, Object::MAX_DIM );
 
   return overlapsAABBOrbisOSO();
 }
@@ -992,7 +992,7 @@ bool Collider::overlapsOO( const Struct::Entity* entity_, float margin_ )
                           model->maxs + Vec3( margin, margin, margin ) + entity->offset );
 
   trace = str->toAbsoluteCS( bounds );
-  span = orbis.getInters( trace, AABB::MAX_DIM );
+  span = orbis.getInters( trace, Object::MAX_DIM );
 
   return overlapsEntityOrbisOO();
 }
@@ -1003,8 +1003,8 @@ void Collider::getOverlaps( const AABB& aabb_, Vector<Object*>* objects,
   aabb = aabb_;
   exclObj = null;
 
-  trace = aabb.toBounds( eps );
-  span = orbis.getInters( trace, AABB::MAX_DIM );
+  trace = Bounds( aabb, eps );
+  span = orbis.getInters( trace, Object::MAX_DIM );
 
   getOrbisOverlaps( objects, structs );
 }
@@ -1014,8 +1014,8 @@ void Collider::getIncludes( const AABB& aabb_, Vector<Object*>* objects, float e
   aabb = aabb_;
   exclObj = null;
 
-  trace = aabb.toBounds( eps );
-  span = orbis.getInters( trace, AABB::MAX_DIM );
+  trace = Bounds( aabb, eps );
+  span = orbis.getInters( trace, Object::MAX_DIM );
 
   getOrbisIncludes( objects );
 }
@@ -1025,8 +1025,8 @@ void Collider::touchOverlaps( const AABB& aabb_, float eps )
   aabb = aabb_;
   exclObj = null;
 
-  trace = aabb.toBounds( eps );
-  span = orbis.getInters( trace, AABB::MAX_DIM );
+  trace = Bounds( aabb, eps );
+  span = orbis.getInters( trace, Object::MAX_DIM );
 
   touchOrbisOverlaps();
 }
@@ -1044,7 +1044,7 @@ void Collider::getOverlaps( const Struct::Entity* entity_, Vector<Object*>* obje
                           model->maxs + Vec3( margin, margin, margin ) + entity->offset );
 
   trace = str->toAbsoluteCS( bounds );
-  span = orbis.getInters( trace, AABB::MAX_DIM );
+  span = orbis.getInters( trace, Object::MAX_DIM );
 
   getEntityOverlaps( objects );
 }
@@ -1056,8 +1056,8 @@ void Collider::translate( const Point3& point, const Vec3& move_, const Object* 
   exclObj = exclObj_;
   flags = Object::CYLINDER_BIT;
 
-  trace.fromPointMove( point, move, 4.0f * EPSILON );
-  span = orbis.getInters( trace, AABB::MAX_DIM );
+  trace = Bounds( point, move, 4.0f * EPSILON );
+  span = orbis.getInters( trace, Object::MAX_DIM );
 
   trimAABBOrbis();
 }
@@ -1070,8 +1070,8 @@ void Collider::translate( const AABB& aabb_, const Vec3& move_, const Object* ex
   exclObj = exclObj_;
   flags = 0;
 
-  trace.fromAABBMove( aabb, move, 4.0f * EPSILON );
-  span = orbis.getInters( trace, AABB::MAX_DIM );
+  trace = Bounds( aabb, move, 4.0f * EPSILON );
+  span = orbis.getInters( trace, Object::MAX_DIM );
 
   trimAABBOrbis();
 }
@@ -1086,8 +1086,8 @@ void Collider::translate( const Dynamic* obj_, const Vec3& move_ )
   exclObj = obj_;
   flags = obj_->flags;
 
-  trace.fromAABBMove( aabb, move, 4.0f * EPSILON );
-  span = orbis.getInters( trace, AABB::MAX_DIM );
+  trace = Bounds( aabb, move, 4.0f * EPSILON );
+  span = orbis.getInters( trace, Object::MAX_DIM );
 
   trimAABBOrbis();
 }

@@ -184,6 +184,9 @@ class Object : public AABB
     static const int MOVE_CLEAR_MASK    = DISABLED_BIT | ON_FLOOR_BIT | IN_WATER_BIT |
                                           ON_LADDER_BIT | ON_SLICK_BIT;
 
+    static constexpr float MAX_DIM      = 4.00f;
+    static constexpr float REAL_MAX_DIM = 3.99f;
+
   protected:
 
     static const float MOMENTUM_DAMAGE_COEF;

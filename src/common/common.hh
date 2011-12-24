@@ -28,8 +28,6 @@
 #include "configuration.hh"
 
 #include "common/Span.hh"
-#include "common/Bounds.hh"
-#include "common/AABB.hh"
 #include "common/Timer.hh"
 
 // We want to use C++ wrapped C headers, not vanilla ones that are included via SDL.
