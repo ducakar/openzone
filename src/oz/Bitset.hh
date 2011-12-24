@@ -37,8 +37,8 @@ namespace oz
 /**
  * Packed array of bits with dynamically allocated storage.
  *
- * Bits are stored in an array of <tt>ulong</tt>s, so the its length in bits is always a
- * multiple of <tt>sizeof( ulong ) * 8</tt>.
+ * Bits are stored in an array of <tt>ulong</tt>s, so the its length in bits is always a multiple of
+ * <tt>sizeof( ulong ) * 8</tt>.
  *
  * @ingroup oz
  */

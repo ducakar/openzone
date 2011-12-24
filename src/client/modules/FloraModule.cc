@@ -39,7 +39,7 @@ namespace client
 {
 
 // plants/m2
-const float FloraModule::DENSITY = 0.04f;
+const float FloraModule::DENSITY = 0.06f;
 // dim * SPACING
 const float FloraModule::SPACING = 16.0f;
 
@@ -72,8 +72,7 @@ void FloraModule::addTree( float x, float y )
 
   const ObjectClass* clazz = library.objClass( type );
 
-  AABB bounds = AABB( pos, clazz->dim );
-  bounds *= SPACING;
+  AABB bounds = AABB( pos, clazz->dim * SPACING );
 
   if( !collider.overlapsOSO( bounds ) ) {
     synapse.addObject( type, pos, Heading( Math::rand( 4 ) ) );

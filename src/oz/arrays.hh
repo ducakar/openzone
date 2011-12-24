@@ -444,7 +444,7 @@ inline void aReverse( Elem* aDest, int count )
  * Elem type must have <tt>operator \< ( const Elem\& )</tt> defined.
  * Quicksort algorithm is used which takes last element in a partition as a pivot so sorting a
  * sorted or nearly sorted array will take O(n^2) time instead of O(n log n) as in average case.
- * When a partition has at most 8 elements, selection sort is used.
+ * When a partition has at most 10 elements, selection sort is used.
  *
  * @param first pointer to first element in the array to be sorted.
  * @param last pointer to last element in the array.

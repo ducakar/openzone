@@ -92,6 +92,12 @@
 #include "Mat44.hh"
 
 /*
+ * Bounding volumes.
+ */
+#include "AABB.hh"
+#include "Bounds.hh"
+
+/*
  * IO.
  */
 #include "Endian.hh"

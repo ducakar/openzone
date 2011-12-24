@@ -485,7 +485,7 @@ void Sound::play()
   }
   playedStructs.clearAll();
 
-  Span span = orbis.getInters( camera.p, MAX_DISTANCE + AABB::MAX_DIM );
+  Span span = orbis.getInters( camera.p, MAX_DISTANCE + Object::MAX_DIM );
 
   for( int x = span.minX ; x <= span.maxX; ++x ) {
     for( int y = span.minY; y <= span.maxY; ++y ) {

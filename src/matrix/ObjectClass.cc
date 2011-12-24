@@ -58,8 +58,8 @@ void ObjectClass::fillCommonConfig( const Config* config )
   dim.y = config->get( "dim.y", 0.50f );
   dim.z = config->get( "dim.z", 0.50f );
 
-  if( dim.x < 0.0f || dim.x > AABB::REAL_MAX_DIM ||
-      dim.y < 0.0f || dim.y > AABB::REAL_MAX_DIM ||
+  if( dim.x < 0.0f || dim.x > Object::REAL_MAX_DIM ||
+      dim.y < 0.0f || dim.y > Object::REAL_MAX_DIM ||
       dim.z < 0.0f )
   {
     throw Exception( "%s: Invalid dimensions. Should be >= 0 and <= 3.99.", name.cstr() );
