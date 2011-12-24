@@ -53,6 +53,7 @@ class Timer
     void tick();
     void frame();
     void drop( uint millis );
+
 };
 
 extern Timer timer;

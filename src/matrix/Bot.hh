@@ -143,21 +143,21 @@ class Bot : public Dynamic
 
     static Pool<Bot, 1024> pool;
 
-    float      h, v;
-    int        actions, oldActions;
-    int        instrument;
-    int        container;
+    float  h, v;
+    int    actions, oldActions;
+    int    instrument;
+    int    container;
 
-    int        state, oldState;
-    float      stamina;
-    float      stepRate;
-    int        cargo;
-    int        weapon;
-    float      grabHandle;
-    float      camZ;
+    int    state, oldState;
+    float  stamina;
+    float  stepRate;
+    int    cargo;
+    int    weapon;
+    float  grabHandle;
+    float  camZ;
 
-    String     name;
-    String     mindFunc;
+    String name;
+    String mindFunc;
 
   protected:
 

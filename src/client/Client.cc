@@ -334,6 +334,7 @@ int Client::main( int argc, char** argv )
 
   log.printEnd( " LC_MESSAGES: %s ... OK", setlocale( LC_MESSAGES, null ) );
 
+  log.println( "%s\n", config.get( "seed", "TIME" ) );
   if( String::equals( config.getSet( "seed", "TIME" ), "TIME" ) ) {
     int seed = int( std::time( null ) );
     Math::seed( seed );
@@ -360,13 +361,27 @@ int Client::main( int argc, char** argv )
 
   log.print( "Adding content search path '%s' ...", localDir.path().cstr() );
   if( PHYSFS_mount( localDir.path(), null, 1 ) == 0 ) {
-    throw Exception( "Failed to change working directory to '%s'", localDir.path().cstr() );
+    throw Exception( "Failed to add '%s' to PhysFS", localDir.path().cstr() );
   }
   log.printEnd( " OK" );
 
+  File dataDirFile( dataDir );
+  DArray<File> list = dataDirFile.ls();
+
+  foreach( file, list.citer() ) {
+    if( file->hasExtension( "ozPack" ) ) {
+      log.print( "Adding content search path '%s' ...", file->path().cstr() );
+      if( PHYSFS_mount( dataDir, null, 1 ) == 0 ) {
+        throw Exception( "Failed to add '%s' to PhysFS", file->path().cstr() );
+      }
+      log.printEnd( " OK" );
+    }
+  }
+  list.dealloc();
+
   log.print( "Adding content search path '%s' ...", dataDir.cstr() );
   if( PHYSFS_mount( dataDir, null, 1 ) == 0 ) {
-    throw Exception( "Failed to change working directory to '%s'", dataDir.cstr() );
+    throw Exception( "Failed to add '%s' to PhysFS", dataDir.cstr() );
   }
   log.printEnd( " OK" );
 

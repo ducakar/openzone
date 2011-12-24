@@ -12,7 +12,7 @@ add_subdirectory( oz )
 
 add_library( build_info STATIC ${CMAKE_BINARY_DIR}/src/BuildInfo.cc )
 
-add_pch( pch stable.hh DEPENDS common )
+add_pch( pch stable.hh stable.cc )
 
 add_subdirectory( common )
 add_subdirectory( matrix )

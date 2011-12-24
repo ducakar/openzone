@@ -34,7 +34,6 @@
 
 #include <cerrno>
 #include <cstdlib>
-#include <cstdio>
 
 namespace oz
 {
@@ -53,76 +52,76 @@ struct Elem
   }
 };
 
-// Size of buffer used when loading from file (maximum key/value length).
-static const int LINE_BUFFER_SIZE = 1024;
-
-// Internal buffer used during file parsing.
-static OZ_THREAD_LOCAL char line[LINE_BUFFER_SIZE];
-
 void Config::loadConf( InputStream* istream )
 {
   int  lineNum = 0;
-  char ch;
 
   while( istream->isAvailable() ) {
     ++lineNum;
 
-    ch = istream->readChar();
+    char ch = istream->readChar();
 
     // skip initial spaces
-    while( String::isSpace( ch ) ) {
+    while( istream->isAvailable() && ( String::isSpace( ch ) || ch == '\n' ) ) {
       ch = istream->readChar();
     }
 
-    // read variable
-    String name;
-
-    if( String::isLetter( ch ) || ch == '_' ) {
-      line[0] = ch;
-      ch = istream->readChar();
-
-      int i = 1;
-      while( i < LINE_BUFFER_SIZE - 1 &&
-             ( String::isLetter( ch ) || String::isDigit( ch ) || ch == '_' || ch == '.' ) )
-      {
-        line[i] = ch;
-        ch = istream->readChar();
-        ++i;
-      }
-      line[i] = '\0';
-      name = line;
-    }
-    else {
+    // skip comment
+    if( ch == '#' || ch == '/' ) {
       goto skipLine;
     }
 
-    // skip spaces between name and value
-    while( String::isSpace( ch ) ) {
-      ch = istream->readChar();
-    }
-
-    if( ch == '"' ) {
-      ch = istream->readChar();
-
-      int i = 0;
-      while( i < LINE_BUFFER_SIZE - 1 && ch != '"' && ch != '\n' && ch != EOF ) {
-        line[i] = ch;
+    {
+      // read key
+      const char* begin = istream->getPos() - 1;
+      while( istream->isAvailable() &&
+          ( String::isLetter( ch ) || String::isDigit( ch ) || ch == '_' || ch == '.' ) )
+      {
         ch = istream->readChar();
-        ++i;
       }
-      if( ch == '"' ) {
-        line[i] = '\0';
-        include( name, line );
+      const char* end = istream->getPos() - 1;
+
+      if( begin == end ) {
+        throw Exception( "%s:%d: Key expected", filePath.cstr(), lineNum );
       }
-      else {
-        throw Exception( "%s:%d: Unterminated value string", filePath.cstr(), lineNum );
+
+      String key = String( int( end - begin ), begin );
+
+      // skip spaces between name and value
+      while( istream->isAvailable() && String::isSpace( ch ) ) {
+        ch = istream->readChar();
       }
+
+      // read value
+      if( ch != '"' ) {
+        throw Exception( "%s:%d: opening '\"' expected", filePath.cstr(), lineNum );
+      }
+
+      if( !istream->isAvailable() ) {
+        throw Exception( "%s:%d: unexpected end of file", filePath.cstr(), lineNum );
+      }
+
+      ch = istream->readChar();
+
+      begin = istream->getPos() - 1;
+      while( istream->isAvailable() && ch != '"' && ch != '\n' ) {
+        ch = istream->readChar();
+      }
+      end = istream->getPos() - 1;
+
+      if( ch != '"' ) {
+        throw Exception( "%s:%d: closing '\"' expected", filePath.cstr(), lineNum );
+      }
+
+      String value = String( int( end - begin ), begin );
+
+      include( key, value );
     }
 
-  skipLine:;
+  skipLine:
 
     // find end of line/file
-    while( ch != '\n' && istream->isAvailable() ) {
+    while( istream->isAvailable() && ch != '\n' ) {
       ch = istream->readChar();
     }
   }
@@ -144,11 +143,8 @@ void Config::saveConf( BufferStream* bstream )
   }
   sortedVars.sort();
 
-  char buffer[1024];
-
   for( int i = 0; i < size; ++i ) {
-    int length = snprintf( buffer, 1024, "%s", sortedVars[i].key );
-    bstream->writeChars( buffer, length );
+    bstream->writeString( sortedVars[i].key );
 
     int chars = ALIGNMENT - String::length( sortedVars[i].key );
     int tabs  = ( chars - 1 ) / 8 + 1;
@@ -156,8 +152,9 @@ void Config::saveConf( BufferStream* bstream )
       bstream->writeChar( '\t' );
     }
 
-    length = snprintf( buffer, 1024, "\"%s\"\n", sortedVars[i].value );
-    bstream->writeChars( buffer, length );
+    bstream->writeChar( '"' );
+    bstream->writeString( sortedVars[i].value );
+    bstream->writeChar( '"' );
   }
 
   log.printEnd( " OK" );
@@ -211,7 +208,7 @@ bool Config::get( const char* key, bool defVal ) const
       return false;
     }
     else {
-      throw Exception( "Invalid boolean value '%s'", value->text.cstr() );
+      throw Exception( "Invalid boolean value '%s' for %s", value->text.cstr(), key );
     }
   }
   else {
@@ -231,7 +228,7 @@ int Config::get( const char* key, int defVal ) const
     int   num = int( strtol( value->text, &end, 0 ) );
 
     if( errno != 0 || end == value->text.cstr() ) {
-      throw Exception( "Invalid int value '%s'", value->text.cstr() );
+      throw Exception( "Invalid int value '%s' for %s", value->text.cstr(), key );
     }
     else {
       return num;
@@ -254,7 +251,7 @@ float Config::get( const char* key, float defVal ) const
     float num = strtof( value->text, &end );
 
     if( errno != 0 || end == value->text.cstr() ) {
-      throw Exception( "Invalid float value '%s'", value->text.cstr() );
+      throw Exception( "Invalid float value '%s' for %s", value->text.cstr(), key );
     }
     else {
       return num;
