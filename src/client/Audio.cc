@@ -34,9 +34,10 @@ namespace oz
 namespace client
 {
 
-constexpr float Audio::REFERENCE_DISTANCE;
-constexpr float Audio::COCKPIT_GAIN_FACTOR;
-constexpr float Audio::COCKPIT_PITCH_FACTOR;
+const float Audio::REFERENCE_DISTANCE   = 2.0f;
+const float Audio::ROLLOFF_FACTOR       = 1.0f;
+const float Audio::COCKPIT_GAIN_FACTOR  = 0.35f;
+const float Audio::COCKPIT_PITCH_FACTOR = 0.95f;
 
 void Audio::playSound( int sound, float volume, const Object* obj, const Object* parent ) const
 {
@@ -79,8 +80,7 @@ void Audio::playSound( int sound, float volume, const Object* obj, const Object*
   OZ_AL_CHECK_ERROR();
 }
 
-void Audio::playContSound( int sound, float volume, const Object* obj,
-                           const Object* parent ) const
+void Audio::playContSound( int sound, float volume, const Object* obj, const Object* parent ) const
 {
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 

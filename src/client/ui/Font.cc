@@ -56,20 +56,23 @@ Font::Font() : textTexId( 0 )
 
 void Font::init()
 {
-  const char* path;
-
   if( TTF_Init() == -1 ) {
     throw Exception( "Failed to initialise SDL_TTF" );
   }
 
   for( int i = 0; i < MAX; ++i ) {
-    path = INFOS[i].file;
+    log.print( "Opening font '%s' %d px ...", INFOS[i].file, INFOS[i].height );
 
-    log.print( "Opening font '%s' %d px ...", path, INFOS[i].height );
+    fontFile[i].setPath( INFOS[i].file );
 
-    PhysFile fontFile( path );
+    if( !fontFile[i].map() ) {
+      throw Exception( "Failed to read font file '%s'", fontFile[i].path().cstr() );
+    }
 
-    fonts[i] = TTF_OpenFont( fontFile.realPath(), INFOS[i].height );
+    InputStream istream = fontFile[i].inputStream();
+
+    fonts[i] = TTF_OpenFontRW( SDL_RWFromConstMem( istream.begin(), istream.capacity() ), true,
+                               INFOS[i].height );
     if( fonts[i] == null ) {
       throw Exception( "%s", TTF_GetError() );
     }
@@ -92,30 +95,32 @@ void Font::init()
 
 void Font::free()
 {
-  log.print( "Deleting text texture ..." );
+  if( textTexId != 0 ) {
+    log.print( "Deleting text texture ..." );
 
-  glDeleteTextures( 1, &textTexId );
-  textTexId = 0;
+    glDeleteTextures( 1, &textTexId );
+    textTexId = 0;
 
-  log.printEnd( " OK" );
-
-  log.print( "Closing fonts ..." );
-
-  if( TTF_WasInit() == 0 ) {
-    log.printEnd( " Not initialised" );
-    return;
+    log.printEnd( " OK" );
   }
 
-  for( int i = 0; i < MAX; ++i ) {
-    if( fonts[i] == null ) {
-      TTF_CloseFont( fonts[i] );
-      fonts[i] = null;
+  if( TTF_WasInit() ) {
+    log.print( "Closing fonts ..." );
+
+    for( int i = 0; i < MAX; ++i ) {
+      if( fonts[i] == null ) {
+        TTF_CloseFont( fonts[i] );
+        fonts[i] = null;
+
+        fontFile[i].unmap();
+        fontFile[i].setPath( "" );
+      }
     }
+
+    TTF_Quit();
+
+    log.printEnd( " OK" );
   }
-
-  TTF_Quit();
-
-  log.printEnd( " OK" );
 }
 
 }

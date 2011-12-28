@@ -141,14 +141,12 @@ char** StackTrace::symbols() const
     ++address;
 
     // demangle name
-    char*  demangleBuf = reinterpret_cast<char*>( malloc( STRING_BUFFER_SIZE ) );
-    char*  demangleOut;
+    char*  demangled;
     size_t size = STRING_BUFFER_SIZE;
     int    status = 0;
 
-    demangleOut = abi::__cxa_demangle( func, demangleBuf, &size, &status );
-    demangleBuf = demangleOut != null ? demangleOut : demangleBuf;
-    func        = status == 0 ? demangleOut : func;
+    demangled = abi::__cxa_demangle( func, null, &size, &status );
+    func      = demangled != null ? demangled : func;
 
     size_t fileLen    = strnlen( file, STRING_BUFFER_SIZE );
     size_t funcLen    = strnlen( func, STRING_BUFFER_SIZE );
@@ -161,7 +159,7 @@ char** StackTrace::symbols() const
     }
 
     if( out + size > outEnd ) {
-      free( demangleBuf );
+      free( demangled );
       break;
     }
 
@@ -201,7 +199,7 @@ char** StackTrace::symbols() const
     *out = '\0';
     ++out;
 
-    free( demangleBuf );
+    free( demangled );
   }
 
   size_t headerSize  = size_t( nFrames ) * sizeof( char* );

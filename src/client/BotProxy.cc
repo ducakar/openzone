@@ -193,7 +193,7 @@ void BotProxy::update()
       bot->actions |= Bot::ACTION_EXIT;
     }
   }
-  if( ( keys[SDLK_LALT] || keys[SDLK_RALT] ) && keys[SDLK_m] && !oldKeys[SDLK_m] ) {
+  if( ( keys[SDLK_LALT] || keys[SDLK_RALT] ) && keys[SDLK_k] && !oldKeys[SDLK_k] ) {
     bot->actions |= Bot::ACTION_SUICIDE;
   }
   if( keys[SDLK_KP_MULTIPLY] && !oldKeys[SDLK_KP_MULTIPLY] && isExternal ) {
@@ -221,14 +221,20 @@ void BotProxy::update()
 
   if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
     ui::mouse.doShow = !ui::mouse.doShow;
-
-    inventory->show( ui::mouse.doShow );
-    container->show( true );
   }
 
   if( !ui::mouse.doShow ) {
     if( ui::mouse.buttons & SDL_BUTTON_LMASK ) {
       bot->actions |= Bot::ACTION_ATTACK;
+    }
+
+    if( ui::mouse.leftClick ) {
+      if( bot->cargo != -1 ) {
+        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
+        bot->actions |= Bot::ACTION_ROTATE;
+        bot->instrument = -1;
+        bot->container = -1;
+      }
     }
     if( ui::mouse.rightClick ) {
       if( bot->parent != -1 ) {
@@ -275,14 +281,6 @@ void BotProxy::update()
       if( bot->cargo != -1 ) {
         bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
         bot->actions |= Bot::ACTION_THROW;
-        bot->instrument = -1;
-        bot->container = -1;
-      }
-    }
-    else if( keys[SDLK_q] && !oldKeys[SDLK_q] ) {
-      if( bot->cargo != -1 ) {
-        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-        bot->actions |= Bot::ACTION_ROTATE;
         bot->instrument = -1;
         bot->container = -1;
       }

@@ -75,9 +75,11 @@ class PhysFile
     ~PhysFile();
 
     /**
-     * No copying.
+     * Copy constructor.
+     *
+     * For mapped files, original stays mapped, copy is not.
      */
-    PhysFile( const PhysFile& ) = delete;
+    PhysFile( const PhysFile& );
 
     /**
      * Move constructor, transfers mapped region "ownership".
@@ -85,9 +87,11 @@ class PhysFile
     PhysFile( PhysFile&& file );
 
     /**
-     * No copying.
+     * Copy operator.
+     *
+     * For mapped files, original stays mapped, copy is not.
      */
-    PhysFile& operator = ( const PhysFile& ) = delete;
+    PhysFile& operator = ( const PhysFile& );
 
     /**
      * Move operator, transfers mapped region "ownership".

@@ -50,8 +50,8 @@ class Sound
     {
       NONE,
       OGG,
-      AAC,
-      MP3
+      MP3,
+      AAC
     };
 
     ALCdevice*     soundDevice;
@@ -71,17 +71,10 @@ class Sound
     char           musicBuffer[MUSIC_BUFFER_SIZE];
     ubyte          musicInputBuffer[MUSIC_INPUT_BUFFER_SIZE + MAD_BUFFER_GUARD];
 
-    OggVorbis_File oggStream;
-
-    FILE*          aacFile;
-    NeAACDecHandle aacDecoder;
-
-    char*          aacOutputBuffer;
-    int            aacWrittenBytes;
-    int            aacBufferBytes;
-    size_t         aacInputBytes;
-
     void*          libmad;
+    void*          libfaad;
+
+    OggVorbis_File oggStream;
 
     FILE*          mp3File;
     mad_stream     madStream;
@@ -91,12 +84,18 @@ class Sound
     int            madWrittenSamples;
     int            madFrameSamples;
 
+    FILE*          aacFile;
+    NeAACDecHandle aacDecoder;
+
+    char*          aacOutputBuffer;
+    int            aacWrittenBytes;
+    int            aacBufferBytes;
+    size_t         aacInputBytes;
+
     // music track id to switch to, -1 to do nothing, -2 stop playing
     int            selectedTrack;
     // music track id, -1 for not playing
     int            currentTrack;
-
-    bool           enableMP3;
 
     void playCell( int cellX, int cellY );
 

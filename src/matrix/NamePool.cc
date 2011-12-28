@@ -58,27 +58,32 @@ void NamePool::init()
 
   for( int i = 0; i < library.nameLists.length(); ++i ) {
     PhysFile file( library.nameLists[i].path );
+
     if( !file.map() ) {
       throw Exception( "Reading '%s' failed", library.nameLists[i].path.cstr() );
     }
 
     InputStream is = file.inputStream();
 
-    FILE* fs = fmemopen( const_cast<char*>( is.begin() ), size_t( is.capacity() ), "r" );
-    if( fs == null ) {
-      throw Exception( "Reading '%s' failed", library.nameLists[i].path.cstr() );
-    }
+    const char* wordBegin = is.begin();
 
-    while( fgets( buffer, LINE_LENGTH, fs ) != null ) {
-      String name = buffer;
-      name = name.trim();
+    while( is.isAvailable() ) {
+      char ch = is.readChar();
 
-      if( !name.isEmpty() ) {
-        names.add( name );
+      printf( "%c", ch );
+
+      if( ch == '\n' ) {
+        String name( int( is.getPos() - wordBegin ), wordBegin );
+        name = name.trim();
+
+        if( !name.isEmpty() ) {
+          names.add( name );
+        }
+
+        wordBegin = is.getPos() + 1;
       }
     }
 
-    fclose( fs );
     file.unmap();
 
     listPositions.add( names.length() );

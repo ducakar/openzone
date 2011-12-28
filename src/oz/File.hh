@@ -83,9 +83,11 @@ class File
     ~File();
 
     /**
-     * No copying.
+     * Copy constructor.
+     *
+     * For mapped files, original stays mapped, copy is not.
      */
-    File( const File& ) = delete;
+    File( const File& file );
 
     /**
      * Move constructor, transfers mapped region "ownership".
@@ -93,9 +95,11 @@ class File
     File( File&& file );
 
     /**
-     * No copying.
+     * Copy operator.
+     *
+     * For mapped files, original stays mapped, copy is not.
      */
-    File& operator = ( const File& ) = delete;
+    File& operator = ( const File& file );
 
     /**
      * Move operator, transfers mapped region "ownership".

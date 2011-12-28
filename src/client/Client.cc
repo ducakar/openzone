@@ -43,7 +43,6 @@
 #include <unistd.h>
 
 #include <physfs.h>
-#include <IL/il.h>
 
 #ifdef _WIN32
 # undef WIN32_LEAN_AND_MEAN
@@ -89,9 +88,6 @@ void Client::shutdown()
 
   config.clear( initFlags & INIT_CONFIG );
 
-  if( initFlags & INIT_DEVIL ) {
-    ilShutDown();
-  }
   if( initFlags & INIT_PHYSFS ) {
     PHYSFS_deinit();
   }
@@ -265,11 +261,6 @@ int Client::main( int argc, char** argv )
   log.printEnd( " OK" );
   initFlags |= INIT_PHYSFS;
 
-  log.print( "Initialising DevIL ..." );
-  ilInit();
-  log.printEnd( " OK" );
-  initFlags |= INIT_DEVIL;
-
   log.println( "Build details {" );
   log.indent();
 
@@ -319,8 +310,8 @@ int Client::main( int argc, char** argv )
   config.get( "dir.config", "" );
   config.get( "dir.local", "" );
 
-  String prefixDir = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
-  String dataDir = prefixDir + "/share/" OZ_APPLICATION_NAME;
+  String prefix = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
+  File dataDir( prefix + "/share/" OZ_APPLICATION_NAME );
 
   log.print( "Setting localisation ..." );
 
@@ -328,7 +319,7 @@ int Client::main( int argc, char** argv )
   SDL_putenv( const_cast<char*>( "LANGUAGE" ) );
   setlocale( LC_MESSAGES, config.getSet( "locale.messages", "" ) );
 
-  bindtextdomain( OZ_APPLICATION_NAME, prefixDir + "/share/locale" );
+  bindtextdomain( OZ_APPLICATION_NAME, prefix + "/share/locale" );
   bind_textdomain_codeset( OZ_APPLICATION_NAME, "UTF-8" );
   textdomain( OZ_APPLICATION_NAME );
 
@@ -359,31 +350,41 @@ int Client::main( int argc, char** argv )
   }
   ui::keyboard.init();
 
-  log.print( "Adding content search path '%s' ...", localDir.path().cstr() );
-  if( PHYSFS_mount( localDir.path(), null, 1 ) == 0 ) {
-    throw Exception( "Failed to add '%s' to PhysFS", localDir.path().cstr() );
-  }
-  log.printEnd( " OK" );
+  log.println( "Content search path {" );
+  log.indent();
 
-  File dataDirFile( dataDir );
-  DArray<File> list = dataDirFile.ls();
+  if( PHYSFS_mount( localDir.path(), null, 1 ) != 0 ) {
+    log.println( "%s", localDir.path().cstr() );
 
-  foreach( file, list.citer() ) {
-    if( file->hasExtension( "ozPack" ) ) {
-      log.print( "Adding content search path '%s' ...", file->path().cstr() );
-      if( PHYSFS_mount( dataDir, null, 1 ) == 0 ) {
-        throw Exception( "Failed to add '%s' to PhysFS", file->path().cstr() );
+    DArray<File> list = localDir.ls();
+
+    foreach( file, list.citer() ) {
+      if( file->hasExtension( "ozPack" ) ) {
+        if( PHYSFS_mount( file->path(), null, 1 ) == 0 ) {
+          throw Exception( "Failed to add '%s' to PhysFS", file->path().cstr() );
+        }
+        log.println( "%s", file->path().cstr() );
       }
-      log.printEnd( " OK" );
     }
   }
-  list.dealloc();
 
-  log.print( "Adding content search path '%s' ...", dataDir.cstr() );
-  if( PHYSFS_mount( dataDir, null, 1 ) == 0 ) {
-    throw Exception( "Failed to add '%s' to PhysFS", dataDir.cstr() );
+  if( PHYSFS_mount( dataDir.path(), null, 1 ) != 0 ) {
+    log.println( "%s", dataDir.path().cstr() );
+
+    DArray<File> list = dataDir.ls();
+
+    foreach( file, list.citer() ) {
+      if( file->hasExtension( "ozPack" ) ) {
+        if( PHYSFS_mount( file->path(), null, 1 ) == 0 ) {
+          throw Exception( "Failed to add '%s' to PhysFS", file->path().cstr() );
+        }
+        log.println( "%s", file->path().cstr() );
+      }
+    }
   }
-  log.printEnd( " OK" );
+
+  log.unindent();
+  log.println( "}" );
 
   initFlags |= INIT_LIBRARY;
   library.init();

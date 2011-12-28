@@ -57,6 +57,11 @@ OZ_DLDECL( mad_frame_decode  );
 OZ_DLDECL( mad_synth_init    );
 OZ_DLDECL( mad_synth_frame   );
 
+OZ_DLDECL( NeAACDecInit      );
+OZ_DLDECL( NeAACDecOpen      );
+OZ_DLDECL( NeAACDecClose     );
+OZ_DLDECL( NeAACDecDecode    );
+
 void Sound::playCell( int cellX, int cellY )
 {
   const Cell& cell = orbis.cells[cellX][cellY];
@@ -103,12 +108,19 @@ void Sound::streamOpen( const char* path )
   if( file.hasExtension( "oga" ) || file.hasExtension( "ogg" ) ) {
     musicStreamType = OGG;
   }
-  else if( file.hasExtension( "aac" ) ) {
-    musicStreamType = AAC;
-  }
   else if( file.hasExtension( "mp3" ) ) {
-    if( enableMP3 ) {
+    if( libmad != null ) {
       musicStreamType = MP3;
+    }
+    else {
+      musicStreamType = NONE;
+
+      log.printEnd( " No MP3 support" );
+    }
+  }
+  else if( file.hasExtension( "aac" ) ) {
+    if( libfaad != null ) {
+      musicStreamType = AAC;
     }
     else {
       musicStreamType = NONE;
@@ -150,6 +162,51 @@ void Sound::streamOpen( const char* path )
 
       log.printEnd( " Ogg Vorbis %d Hz %d ch %d kb/s ... OK", musicRate, musicChannels,
                     int( float( vorbisInfo->bitrate_nominal ) / 1000.0f + 0.5f ) );
+      break;
+    }
+    case MP3: {
+      mad_stream_init( &madStream );
+      mad_frame_init( &madFrame );
+      mad_synth_init( &madSynth );
+
+      mp3File = fopen( path, "rb" );
+      if( mp3File == null ) {
+        throw Exception( "Failed to open MP3 stream" );
+      }
+
+      size_t readSize = fread( musicInputBuffer, 1, MUSIC_INPUT_BUFFER_SIZE, mp3File );
+      if( readSize != size_t( MUSIC_INPUT_BUFFER_SIZE ) ) {
+        throw Exception( "Failed to read MP3 stream" );
+      }
+
+      mad_stream_buffer( &madStream, musicInputBuffer, MUSIC_INPUT_BUFFER_SIZE );
+
+      while( mad_frame_decode( &madFrame, &madStream ) != 0 ) {
+        if( !MAD_RECOVERABLE( madStream.error ) ) {
+          throw Exception( "Failed to decode MP3 header" );
+        }
+      }
+
+      mad_synth_frame( &madSynth, &madFrame );
+
+      madFrameSamples   = madSynth.pcm.length;
+      madWrittenSamples = 0;
+
+      musicRate = int( madFrame.header.samplerate );
+      musicChannels = MAD_NCHANNELS( &madFrame.header );
+
+      if( musicChannels == 1 ) {
+        musicFormat = AL_FORMAT_MONO16;
+      }
+      else if( musicChannels == 2 ) {
+        musicFormat = AL_FORMAT_STEREO16;
+      }
+      else {
+        throw Exception( "Invalid number of channels, should be 1 or 2" );
+      }
+
+      log.printEnd( " MP3 %d Hz %d ch %d kb/s ... OK", musicRate, musicChannels,
+                    int( float( madFrame.header.bitrate ) / 1000.0f + 0.5f ) );
       break;
     }
     case AAC: {
@@ -202,51 +259,6 @@ void Sound::streamOpen( const char* path )
       }
 
       log.printEnd( " AAC %d Hz %d ch ... OK", musicRate, musicChannels );
-      break;
-    }
-    case MP3: {
-      mad_stream_init( &madStream );
-      mad_frame_init( &madFrame );
-      mad_synth_init( &madSynth );
-
-      mp3File = fopen( path, "rb" );
-      if( mp3File == null ) {
-        throw Exception( "Failed to open MP3 stream" );
-      }
-
-      size_t readSize = fread( musicInputBuffer, 1, MUSIC_INPUT_BUFFER_SIZE, mp3File );
-      if( readSize != size_t( MUSIC_INPUT_BUFFER_SIZE ) ) {
-        throw Exception( "Failed to read MP3 stream" );
-      }
-
-      mad_stream_buffer( &madStream, musicInputBuffer, MUSIC_INPUT_BUFFER_SIZE );
-
-      while( mad_frame_decode( &madFrame, &madStream ) != 0 ) {
-        if( !MAD_RECOVERABLE( madStream.error ) ) {
-          throw Exception( "Failed to decode MP3 header" );
-        }
-      }
-
-      mad_synth_frame( &madSynth, &madFrame );
-
-      madFrameSamples   = madSynth.pcm.length;
-      madWrittenSamples = 0;
-
-      musicRate = int( madFrame.header.samplerate );
-      musicChannels = MAD_NCHANNELS( &madFrame.header );
-
-      if( musicChannels == 1 ) {
-        musicFormat = AL_FORMAT_MONO16;
-      }
-      else if( musicChannels == 2 ) {
-        musicFormat = AL_FORMAT_STEREO16;
-      }
-      else {
-        throw Exception( "Invalid number of channels, should be 1 or 2" );
-      }
-
-      log.printEnd( " MP3 %d Hz %d ch %d kb/s ... OK", musicRate, musicChannels,
-                    int( float( madFrame.header.bitrate ) / 1000.0f + 0.5f ) );
       break;
     }
   }
@@ -307,59 +319,6 @@ bool Sound::streamDecode( uint buffer )
         alBufferData( buffer, musicFormat, musicBuffer, bytesRead, musicRate );
         return true;
       }
-    }
-    case AAC: {
-      char* musicOutput    = musicBuffer;
-      char* musicOutputEnd = musicBuffer + MUSIC_BUFFER_SIZE;
-
-      do {
-        if( aacWrittenBytes < aacBufferBytes ) {
-          int length = int( aacBufferBytes - aacWrittenBytes );
-          int space  = int( musicOutputEnd - musicOutput );
-
-          if( length >= space ) {
-            memcpy( musicOutput, aacOutputBuffer + aacWrittenBytes, size_t( space ) );
-            aacWrittenBytes += space;
-
-            alBufferData( buffer, musicFormat, musicBuffer, MUSIC_BUFFER_SIZE, musicRate );
-            return true;
-          }
-          else {
-            memcpy( musicOutput, aacOutputBuffer + aacWrittenBytes, size_t( length ) );
-            aacWrittenBytes += length;
-            musicOutput += length;
-          }
-        }
-
-        NeAACDecFrameInfo frameInfo;
-        aacOutputBuffer = reinterpret_cast<char*>
-            ( NeAACDecDecode( aacDecoder, &frameInfo, musicInputBuffer, aacInputBytes ) );
-
-        if( aacOutputBuffer == null ) {
-          int length = int( musicOutput - musicBuffer );
-
-          if( length == 0 ) {
-            return false;
-          }
-          else {
-            alBufferData( buffer, musicFormat, musicBuffer, length, musicRate );
-            return true;
-          }
-        }
-
-        size_t bytesConsumed = size_t( frameInfo.bytesconsumed );
-        aacInputBytes -= bytesConsumed;
-        aacBufferBytes = int( frameInfo.samples * frameInfo.channels );
-        aacWrittenBytes = 0;
-
-        memmove( musicInputBuffer, musicInputBuffer + bytesConsumed, aacInputBytes );
-
-        size_t bytesRead = fread( musicInputBuffer + aacInputBytes, 1,
-                                  MUSIC_INPUT_BUFFER_SIZE - aacInputBytes, aacFile );
-
-        aacInputBytes += bytesRead;
-      }
-      while( true );
     }
     case MP3: {
       short* musicOutput    = reinterpret_cast<short*>( musicBuffer );
@@ -425,6 +384,59 @@ bool Sound::streamDecode( uint buffer )
 
         madFrameSamples = madSynth.pcm.length;
         madWrittenSamples = 0;
+      }
+      while( true );
+    }
+    case AAC: {
+      char* musicOutput    = musicBuffer;
+      char* musicOutputEnd = musicBuffer + MUSIC_BUFFER_SIZE;
+
+      do {
+        if( aacWrittenBytes < aacBufferBytes ) {
+          int length = int( aacBufferBytes - aacWrittenBytes );
+          int space  = int( musicOutputEnd - musicOutput );
+
+          if( length >= space ) {
+            memcpy( musicOutput, aacOutputBuffer + aacWrittenBytes, size_t( space ) );
+            aacWrittenBytes += space;
+
+            alBufferData( buffer, musicFormat, musicBuffer, MUSIC_BUFFER_SIZE, musicRate );
+            return true;
+          }
+          else {
+            memcpy( musicOutput, aacOutputBuffer + aacWrittenBytes, size_t( length ) );
+            aacWrittenBytes += length;
+            musicOutput += length;
+          }
+        }
+
+        NeAACDecFrameInfo frameInfo;
+        aacOutputBuffer = reinterpret_cast<char*>
+            ( NeAACDecDecode( aacDecoder, &frameInfo, musicInputBuffer, aacInputBytes ) );
+
+        if( aacOutputBuffer == null ) {
+          int length = int( musicOutput - musicBuffer );
+
+          if( length == 0 ) {
+            return false;
+          }
+          else {
+            alBufferData( buffer, musicFormat, musicBuffer, length, musicRate );
+            return true;
+          }
+        }
+
+        size_t bytesConsumed = size_t( frameInfo.bytesconsumed );
+        aacInputBytes -= bytesConsumed;
+        aacBufferBytes = int( frameInfo.samples * frameInfo.channels );
+        aacWrittenBytes = 0;
+
+        memmove( musicInputBuffer, musicInputBuffer + bytesConsumed, aacInputBytes );
+
+        size_t bytesRead = fread( musicInputBuffer + aacInputBytes, 1,
+                                  MUSIC_INPUT_BUFFER_SIZE - aacInputBytes, aacFile );
+
+        aacInputBytes += bytesRead;
       }
       while( true );
     }
@@ -681,17 +693,14 @@ void Sound::init()
   setMusicVolume( 0.5f );
 
 #ifdef _WIN32
-  libmad = SDL_LoadObject( "libmad.dll" );
+  libmad  = SDL_LoadObject( "libmad.dll" );
+  libfaad = SDL_LoadObject( "faad.dll" );
 #else
-  libmad = SDL_LoadObject( "libmad.so" );
+  libmad  = SDL_LoadObject( "libmad.so" );
+  libfaad = SDL_LoadObject( "libfaad.so" );
 #endif
 
-  if( libmad == null ) {
-    enableMP3 = false;
-  }
-  else {
-    enableMP3 = true;
-
+  if( libmad != null ) {
     OZ_DLLOAD( libmad, mad_stream_init   );
     OZ_DLLOAD( libmad, mad_stream_finish );
     OZ_DLLOAD( libmad, mad_stream_buffer );
@@ -700,6 +709,13 @@ void Sound::init()
     OZ_DLLOAD( libmad, mad_frame_decode  );
     OZ_DLLOAD( libmad, mad_synth_init    );
     OZ_DLLOAD( libmad, mad_synth_frame   );
+  }
+
+  if( libfaad != null ) {
+    OZ_DLLOAD( libfaad, NeAACDecInit   );
+    OZ_DLLOAD( libfaad, NeAACDecOpen   );
+    OZ_DLLOAD( libfaad, NeAACDecClose  );
+    OZ_DLLOAD( libfaad, NeAACDecDecode );
   }
 
   log.unindent();
@@ -712,7 +728,10 @@ void Sound::free()
 {
   log.print( "Shutting down Sound ..." );
 
-  if( enableMP3 ) {
+  if( libfaad != null ) {
+    SDL_UnloadObject( libfaad );
+  }
+  if( libmad != null ) {
     SDL_UnloadObject( libmad );
   }
 

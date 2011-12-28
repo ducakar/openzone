@@ -47,12 +47,30 @@ PhysFile::~PhysFile()
   delete[] data;
 }
 
+PhysFile::PhysFile( const PhysFile& file ) :
+    filePath( file.filePath ), type( file.type ), data( null ), size( 0 )
+{}
+
 PhysFile::PhysFile( PhysFile&& file ) :
     filePath( static_cast<String&&>( file.filePath ) ), type( file.type ),
     data( file.data ), size( file.size )
 {
   file.type = NONE;
   file.data = null;
+}
+
+PhysFile& PhysFile::operator = ( const PhysFile& file )
+{
+  if( &file == this ) {
+    return *this;
+  }
+
+  filePath = file.filePath;
+  type     = file.type;
+  data     = null;
+  size     = 0;
+
+  return *this;
 }
 
 PhysFile& PhysFile::operator = ( PhysFile&& file )

@@ -39,7 +39,7 @@ namespace client
 {
 
 // plants/m2
-const float FloraModule::DENSITY = 0.06f;
+const float FloraModule::DENSITY = 0.04f;
 // dim * SPACING
 const float FloraModule::SPACING = 16.0f;
 

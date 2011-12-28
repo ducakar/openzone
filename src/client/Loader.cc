@@ -37,7 +37,6 @@
 #include "client/OpenAL.hh"
 
 #include <ctime>
-#include <IL/il.h>
 
 namespace oz
 {
@@ -67,14 +66,12 @@ int Loader::saveScreenshot( void* )
     bottom -= 2 * screenshotInfo.width * 3;
   }
 
-  uint image = ilGenImage();
-  ilBindImage( image );
+  SDL_Surface* surf = SDL_CreateRGBSurfaceFrom( screenshotInfo.pixels, screenshotInfo.width,
+                                                screenshotInfo.height, 24, screenshotInfo.width * 3,
+                                                0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000 );
 
-  ilLoadDataL( screenshotInfo.pixels, uint( screenshotInfo.width * screenshotInfo.height * 3 ),
-               uint( screenshotInfo.width ), uint( screenshotInfo.height ), 1, 3 );
-
-  ilSave( IL_PNG, screenshotInfo.path );
-  ilDeleteImage( image );
+  SDL_SaveBMP( surf, screenshotInfo.path );
+  SDL_FreeSurface( surf );
 
   delete[] screenshotInfo.pixels;
 
@@ -336,7 +333,7 @@ void Loader::makeScreenshot()
   struct tm timeStruct = *std::localtime( &currentTime );
 
   snprintf( screenshotInfo.path, 256,
-            "%s/screenshots/" OZ_APPLICATION_NAME " %04d-%02d-%02d %02d:%02d:%02d.png",
+            "%s/screenshots/" OZ_APPLICATION_NAME " %04d-%02d-%02d %02d:%02d:%02d.bmp",
             config.get( "dir.config", "" ),
             1900 + timeStruct.tm_year, 1 + timeStruct.tm_mon, timeStruct.tm_mday,
             timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec );

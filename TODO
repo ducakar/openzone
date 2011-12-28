@@ -1,18 +1,21 @@
 TODO 0.3
+- fix Win32
 - oz
-  * STackTrace for Win32
+  * StackTrace for Win32
 - matrix
   * BSP
     + elevators
     + switches
-    + scripting
+    + MANUAL_DOOR
   * Vehicle
     + turret
+    + improve rotation
 - client
+  * smooth loading
   * decals
   * options menu
   * MD3 animation
-  * distant object fade out
+  * distant objects fade out
 
 TODO 0.4
 - new löök

@@ -157,36 +157,8 @@ void Alloc::printLeaks()
 
 #endif
 
-}
-
-using namespace oz;
-
-/**
- * <tt>operator new</tt> implementation with memory statistics and optionally memory alignment
- * and leak tracing.
- *
- * @ingroup oz
- */
-void* operator new ( size_t size ) throw( std::bad_alloc )
+static void* allocateObject( void* ptr, size_t size )
 {
-  hard_assert( !Alloc::isLocked );
-
-  size += Alloc::alignUp( sizeof( size_t ) );
-
-#ifdef _WIN32
-  void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
-  if( ptr == null ) {
-    System::trap();
-    throw std::bad_alloc();
-  }
-#else
-  void* ptr;
-  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
-    System::trap();
-    throw std::bad_alloc();
-  }
-#endif
-
 #ifdef OZ_TRACK_LEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
@@ -225,32 +197,8 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
   return ptr;
 }
 
-/**
- * <tt>operator new[]</tt> implementation with memory statistics and optionally memory alignment
- * and leak tracing.
- *
- * @ingroup oz
- */
-void* operator new[] ( size_t size ) throw( std::bad_alloc )
+static void* allocateArray( void* ptr, size_t size )
 {
-  hard_assert( !Alloc::isLocked );
-
-  size += Alloc::alignUp( sizeof( size_t ) );
-
-#ifdef _WIN32
-  void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
-  if( ptr == null ) {
-    System::trap();
-    throw std::bad_alloc();
-  }
-#else
-  void* ptr;
-  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
-    System::trap();
-    throw std::bad_alloc();
-  }
-#endif
-
 #ifdef OZ_TRACK_LEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
@@ -289,27 +237,16 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
   return ptr;
 }
 
-/**
- * <tt>operator delete</tt> implementation for the matching <tt>operator new</tt>.
- *
- * @ingroup oz
- */
-void operator delete ( void* ptr ) throw()
+static void deallocateObject( void* ptr )
 {
-  if( ptr == null ) {
-    return;
-  }
-
-  hard_assert( !Alloc::isLocked );
-
-  size_t size  = reinterpret_cast<size_t*>( ptr )[-1];
-  char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
+  size_t size = reinterpret_cast<size_t*>( ptr )[-1];
+  ptr = reinterpret_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
 
   --Alloc::count;
   Alloc::amount -= size;
 
 #ifndef NDEBUG
-  memset( chunk, 0xee, size );
+  memset( ptr, 0xee, size );
 #endif
 
 #ifdef OZ_TRACK_LEAKS
@@ -323,7 +260,7 @@ void operator delete ( void* ptr ) throw()
   TraceEntry* prev = null;
 
   while( st != null ) {
-    if( st->address == chunk ) {
+    if( st->address == ptr ) {
       hard_assert( st->size == size );
 
       if( prev == null ) {
@@ -340,23 +277,34 @@ void operator delete ( void* ptr ) throw()
     st = st->next;
   }
 
+# ifdef _WIN32
+  LeaveCriticalSection( &mutex.id );
+# else
+  pthread_mutex_unlock( &mutex );
+# endif
+
   System::trap();
 
+  // Check if allocated as an array.
   st = firstArrayTraceEntry;
 
   while( st != null ) {
-    if( st->address == chunk ) {
-      System::error( "ALLOC: new[] -> delete mismatch for block at %p", chunk );
-      System::bell();
-      System::abort();
+    if( st->address == ptr ) {
       break;
     }
     st = st->next;
   }
 
-  System::error( "ALLOC: Trying to free object at %p that does not seem to be allocated", chunk );
+  if( st == null ) {
+    System::error( "ALLOC: Trying to free object at %p that does not seem to be allocated", ptr );
+  }
+  else {
+    System::error( "ALLOC: new[] -> delete mismatch for block at %p", ptr );
+  }
+
   System::bell();
   System::abort();
+  return;
 
 backtraceFound:;
 
@@ -368,33 +316,22 @@ backtraceFound:;
 #endif
 
 #ifdef _WIN32
-  _aligned_free( chunk );
+  _aligned_free( ptr );
 #else
-  free( chunk );
+  free( ptr );
 #endif
 }
 
-/**
- * <tt>operator delete[]</tt> implementation for the matching <tt>operator new[]</tt>.
- *
- * @ingroup oz
- */
-void operator delete[] ( void* ptr ) throw()
+static void deallocateArray( void* ptr )
 {
-  if( ptr == null ) {
-    return;
-  }
-
-  hard_assert( !Alloc::isLocked );
-
-  size_t size  = reinterpret_cast<size_t*>( ptr )[-1];
-  char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
+  size_t size = reinterpret_cast<size_t*>( ptr )[-1];
+  ptr = reinterpret_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
 
   --Alloc::count;
   Alloc::amount -= size;
 
 #ifndef NDEBUG
-  memset( chunk, 0xee, size );
+  memset( ptr, 0xee, size );
 #endif
 
 #ifdef OZ_TRACK_LEAKS
@@ -408,7 +345,7 @@ void operator delete[] ( void* ptr ) throw()
   TraceEntry* prev = null;
 
   while( st != null ) {
-    if( st->address == chunk ) {
+    if( st->address == ptr ) {
       hard_assert( st->size == size );
 
       if( prev == null ) {
@@ -425,22 +362,34 @@ void operator delete[] ( void* ptr ) throw()
     st = st->next;
   }
 
+# ifdef _WIN32
+  LeaveCriticalSection( &mutex.id );
+# else
+  pthread_mutex_unlock( &mutex );
+# endif
+
   System::trap();
 
+  // Check if allocated as an object.
   st = firstObjectTraceEntry;
 
   while( st != null ) {
-    if( st->address == chunk ) {
-      System::error( "ALLOC: new -> delete[] mismatch for block at %p", chunk );
-      System::bell();
-      System::abort();
+    if( st->address == ptr ) {
+      break;
     }
     st = st->next;
   }
 
-  System::error( "ALLOC: Trying to free array at %p that does not seem to be allocated", chunk );
+  if( st == null ) {
+    System::error( "ALLOC: Trying to free array at %p that does not seem to be allocated", ptr );
+  }
+  else {
+    System::error( "ALLOC: new -> delete[] mismatch for block at %p", ptr );
+  }
+
   System::bell();
   System::abort();
+  return;
 
 backtraceFound:;
 
@@ -452,8 +401,148 @@ backtraceFound:;
 #endif
 
 #ifdef _WIN32
-  _aligned_free( chunk );
+  _aligned_free( ptr );
 #else
-  free( chunk );
+  free( ptr );
 #endif
+}
+
+}
+
+using namespace oz;
+
+void* operator new ( std::size_t size ) throw( std::bad_alloc )
+{
+  hard_assert( !Alloc::isLocked );
+
+  size += Alloc::alignUp( sizeof( size_t ) );
+
+#ifdef _WIN32
+  void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
+  if( ptr == null ) {
+    System::trap();
+    throw std::bad_alloc();
+  }
+#else
+  void* ptr;
+  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
+    System::trap();
+    throw std::bad_alloc();
+  }
+#endif
+
+  return allocateObject( ptr, size );
+}
+
+void* operator new[] ( std::size_t size ) throw( std::bad_alloc )
+{
+  hard_assert( !Alloc::isLocked );
+
+  size += Alloc::alignUp( sizeof( size_t ) );
+
+#ifdef _WIN32
+  void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
+  if( ptr == null ) {
+    System::trap();
+    throw std::bad_alloc();
+  }
+#else
+  void* ptr;
+  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
+    System::trap();
+    throw std::bad_alloc();
+  }
+#endif
+
+  return allocateArray( ptr, size );
+}
+
+void operator delete ( void* ptr ) throw()
+{
+  if( ptr == null ) {
+    return;
+  }
+
+  hard_assert( !Alloc::isLocked );
+
+  deallocateObject( ptr );
+}
+
+void operator delete[] ( void* ptr ) throw()
+{
+  if( ptr == null ) {
+    return;
+  }
+
+  hard_assert( !Alloc::isLocked );
+
+  deallocateArray( ptr );
+}
+
+void* operator new ( std::size_t size, const std::nothrow_t& ) throw()
+{
+  hard_assert( !Alloc::isLocked );
+
+  size += Alloc::alignUp( sizeof( size_t ) );
+
+#ifdef _WIN32
+  void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
+  if( ptr == null ) {
+    System::trap();
+    return null;
+  }
+#else
+  void* ptr;
+  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
+    System::trap();
+    return null;
+  }
+#endif
+
+  return allocateObject( ptr, size );
+}
+
+void* operator new[] ( std::size_t size, const std::nothrow_t& ) throw()
+{
+  hard_assert( !Alloc::isLocked );
+
+  size += Alloc::alignUp( sizeof( size_t ) );
+
+#ifdef _WIN32
+  void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
+  if( ptr == null ) {
+    System::trap();
+    return null;
+  }
+#else
+  void* ptr;
+  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
+    System::trap();
+    return null;
+  }
+#endif
+
+  return allocateArray( ptr, size );
+}
+
+void operator delete ( void* ptr, const std::nothrow_t& ) throw()
+{
+  if( ptr == null ) {
+    return;
+  }
+
+  hard_assert( !Alloc::isLocked );
+
+  deallocateObject( ptr );
+}
+
+void operator delete[] ( void* ptr, const std::nothrow_t& ) throw()
+{
+  if( ptr == null ) {
+    return;
+  }
+
+  hard_assert( !Alloc::isLocked );
+
+  deallocateArray( ptr );
 }

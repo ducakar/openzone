@@ -257,10 +257,10 @@ void Camera::init( int screenWidth, int screenHeight )
   centreY       = height / 2;
 
   aspect        = config.getSet( "camera.aspect",     0.0f );
-  mouseXSens    = config.getSet( "camera.mouseXSens", 0.2f ) * Timer::TICK_TIME;
-  mouseYSens    = config.getSet( "camera.mouseYSens", 0.2f ) * Timer::TICK_TIME;
-  keyXSens      = config.getSet( "camera.keysXSens",  2.0f ) * Timer::TICK_TIME;
-  keyYSens      = config.getSet( "camera.keysYSens",  2.0f ) * Timer::TICK_TIME;
+  mouseXSens    = config.getSet( "camera.mouseXSens", 1.0f ) * 0.2f * Timer::TICK_TIME;
+  mouseYSens    = config.getSet( "camera.mouseYSens", 1.0f ) * 0.2f * Timer::TICK_TIME;
+  keyXSens      = config.getSet( "camera.keysXSens",  1.0f ) * 0.05f;
+  keyYSens      = config.getSet( "camera.keysYSens",  1.0f ) * 0.05f;
 
   float angle   = Math::rad( config.getSet( "camera.angle", 80.0f ) );
 

@@ -41,8 +41,7 @@
 
 #include "client/OpenGL.hh"
 
-#include <SDL/SDL_image.h>
-#include <IL/il.h>
+#include <FreeImage.h>
 
 namespace oz
 {
@@ -65,16 +64,18 @@ uint Context::buildTexture( const void* data, int width, int height, int format,
   int internalFormat;
 
   switch( format ) {
-    case GL_LUMINANCE: {
-      internalFormat = useS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_LUMINANCE;
-      break;
-    }
+    case GL_BGR:
     case GL_RGB: {
       internalFormat = useS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_RGB;
       break;
     }
+    case GL_BGRA:
     case GL_RGBA: {
       internalFormat = useS3TC ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_RGBA;
+      break;
+    }
+    case GL_LUMINANCE: {
+      internalFormat = useS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_LUMINANCE;
       break;
     }
     default: {
@@ -121,8 +122,8 @@ uint Context::buildTexture( const void* data, int width, int height, int format,
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
   }
 
-  glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, width, height, 0, uint( format ), GL_UNSIGNED_BYTE,
-                data );
+  glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, width, height, 0, uint( format ),
+                GL_UNSIGNED_BYTE, data );
 
   if( generateMipmaps ) {
 #ifdef _WIN32
@@ -141,122 +142,92 @@ uint Context::buildTexture( const void* data, int width, int height, int format,
   return texId;
 }
 
-uint Context::createTexture( const void* data, int width, int height, int format,
-                             bool wrap, int magFilter, int minFilter )
-{
-  uint texId = buildTexture( data, width, height, format, wrap, magFilter, minFilter );
-
-  if( texId == 0 ) {
-    log.println( "Error while creating texture from buffer" );
-    throw Exception( "Texture loading failed" );
-  }
-  return texId;
-}
-
 uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int minFilter )
 {
   log.print( "Loading texture '%s' ...", path );
 
-  uint image = ilGenImage();
-  ilBindImage( image );
+  FREE_IMAGE_FORMAT type = FreeImage_GetFileType( path );
+  if( type == FIF_UNKNOWN ) {
+    throw Exception( "Invalid image file type '%s'", path );
+  }
 
-  if( !ilLoadImage( path ) ) {
+  FIBITMAP* image = FreeImage_Load( type, path );
+  if( image == null ) {
     throw Exception( "Texture '%s' loading failed", path );
   }
 
-  log.printRaw( " converting ..." );
+  int width  = int( FreeImage_GetWidth( image ) );
+  int height = int( FreeImage_GetHeight( image ) );
+  int bpp    = int( FreeImage_GetBPP( image ) );
 
-  ubyte* data   = null;
-  int    width  = ilGetInteger( IL_IMAGE_WIDTH );
-  int    height = ilGetInteger( IL_IMAGE_HEIGHT );
-  int    format = ilGetInteger( IL_IMAGE_FORMAT );
+  log.printRaw( " %d x %d %d BPP ...", width, height, bpp );
 
-  switch( format ) {
-    case IL_LUMINANCE: {
-      format = GL_LUMINANCE;
-      data   = new ubyte[width * height];
+  if( width % 4 != 0 || height % 4 != 0 ) {
+    throw Exception( "Image dimensions must be multiples of 4 to avoid padding between lines." );
+  }
 
-      ilCopyPixels( 0, 0, 0, uint( width ), uint( height ), 1,
-                    IL_LUMINANCE, IL_UNSIGNED_BYTE, data );
+  int format = int( FreeImage_GetImageType( image ) );
+  if( format != FIT_BITMAP ) {
+    throw Exception( "Invalid image colour format" );
+  }
 
-      ubyte* top    = data;
-      ubyte* bottom = data + ( height - 1 ) * width;
+  bool isPalettised = FreeImage_GetColorsUsed( image ) != 0;
 
-      for( int y = 0; y < height / 2; ++y ) {
-        for( int x = 0; x < width; ++x ) {
-          swap( top[0], bottom[0] );
+  if( isPalettised ) {
+    bool isOpaque = FreeImage_GetTransparentIndex( image ) == -1;
 
-          top    += 1;
-          bottom += 1;
-        }
+    if( isOpaque ) {
+      format = GL_BGR;
 
-        bottom -= 2 * width;
+      FIBITMAP* newImage = FreeImage_ConvertTo24Bits( image );
+      if( newImage == null ) {
+        throw Exception( "Conversion from palettised to RGB image failed" );
       }
-      break;
+
+      FreeImage_Unload( image );
+      image = newImage;
     }
-    case IL_RGB:
-    case IL_BGR:
-    case IL_COLOUR_INDEX: {
-      format = GL_RGB;
-      data   = new ubyte[width * height * 3];
+    else {
+      format = GL_BGRA;
 
-      ilCopyPixels( 0, 0, 0, uint( width ), uint( height ), 1, IL_RGB, IL_UNSIGNED_BYTE, data );
-
-      ubyte* top    = data;
-      ubyte* bottom = data + ( height - 1 ) * width * 3;
-
-      for( int y = 0; y < height / 2; ++y ) {
-        for( int x = 0; x < width; ++x ) {
-          swap( top[0], bottom[0] );
-          swap( top[1], bottom[1] );
-          swap( top[2], bottom[2] );
-
-          top    += 3;
-          bottom += 3;
-        }
-
-        bottom -= 2 * width * 3;
+      FIBITMAP* newImage = FreeImage_ConvertTo32Bits( image );
+      if( newImage == null ) {
+        throw Exception( "Conversion from palettised to RGBA image failed" );
       }
-      break;
+
+      FreeImage_Unload( image );
+      image = newImage;
     }
-    case IL_RGBA:
-    case IL_BGRA: {
-      format = GL_RGBA;
-      data   = new ubyte[width * height * 4];
-
-      ilCopyPixels( 0, 0, 0, uint( width ), uint( height ), 1, IL_RGBA, IL_UNSIGNED_BYTE, data );
-
-      ubyte* top    = data;
-      ubyte* bottom = data + ( height - 1 ) * width * 4;
-
-      for( int y = 0; y < height / 2; ++y ) {
-        for( int x = 0; x < width; ++x ) {
-          swap( top[0], bottom[0] );
-          swap( top[1], bottom[1] );
-          swap( top[2], bottom[2] );
-          swap( top[3], bottom[3] );
-
-          top    += 4;
-          bottom += 4;
-        }
-
-        bottom -= 2 * width * 4;
+  }
+  else {
+    switch( bpp ) {
+      case 8: {
+        format = GL_LUMINANCE;
+        break;
       }
-      break;
+      case 24: {
+        format = GL_BGR;
+        break;
+      }
+      case 32: {
+        format = GL_BGRA;
+        break;
+      }
+      default: {
+        throw Exception( "Invalid image BPP %d, should be a power of two <= 32", bpp );
+      }
     }
   }
 
-  ilDeleteImage( image );
+  const void* data = FreeImage_GetBits( image );
+  if( data == null ) {
+    throw Exception( "Failed to access image data" );
+  }
+
+  uint texId = buildTexture( data, width, height, format, wrap, magFilter, minFilter );
+  FreeImage_Unload( image );
 
   log.printEnd( " OK" );
-
-  uint texId = createTexture( data, width, height, format, wrap, magFilter, minFilter );
-
-  delete[] data;
-
-  if( texId == 0 || !glIsTexture( texId ) ) {
-    throw Exception( "Texture loading failed" );
-  }
 
   return texId;
 }

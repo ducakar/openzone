@@ -39,7 +39,6 @@ class Client
     static const int INIT_SDL          = 0x0001;
     static const int INIT_SDL_VIDEO    = 0x0002;
     static const int INIT_PHYSFS       = 0x0004;
-    static const int INIT_DEVIL        = 0x0008;
     static const int INIT_CONFIG       = 0x0010;
     static const int INIT_LIBRARY      = 0x0020;
     static const int INIT_STAGE_INIT   = 0x0100;

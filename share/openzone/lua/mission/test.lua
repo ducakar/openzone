@@ -64,7 +64,7 @@ function init_sample()
 
   ozOrbisAddObj( "droid.OOM-9", 140, -11, 73, OZ_WEST )
 
-  ozOrbisAddObj( "reaper", 145, -15, 73 )
+--   ozOrbisAddObj( "reaper", 145, -15, 73 )
 
   ozOrbisAddObj( "musicPlayer", 135, -2, 73 )
   ozOrbisAddObj( "galileo", 136, -2, 73 )

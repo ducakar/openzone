@@ -24,14 +24,13 @@ LShift              - toggle run
 LCtrl               - toggle crouch
 Space               - jump
 
-left click          - trigger equipped weapon
-right click         - use tagged object or enter tagged vehicle
-middle click        - grab/drop tagged object
-q                   - rotate object you are currently holding
-wheel up            - throw object you are currently holding
+left click          - trigger equipped weapon or rotate object you are holding
+right click         - activate tagged object or enter tagged vehicle
+middle click        - grab tagged object or drop object you are holding
+wheel up            - throw object you are holding
 wheel down          - put tagged object into inventory
 
-ALT + m             - commit suicide
+ALT + k             - commit suicide
 ALT + p             - toggle ability to step over small obstacles, e.g. walk up the stairs
 i                   - leave bot
 
@@ -46,11 +45,11 @@ j                   - wave gesture
 k                   - flip out gesture
 l                   - play all animations
 
-Inventar
---------
+Inventory
+---------
 left click          - drop item or move item between inventories when you have two inventory windows
 middle click        - grab item from your inventory
-right click         - use object, for weapons: arm it or put it away into your inventory
+right click         - activate item or for weapons: arm/disarm
 
 Vehicle controls
 ----------------

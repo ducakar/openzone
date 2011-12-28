@@ -188,6 +188,7 @@ void GameStage::reload()
   sound.play();
   sound.update();
 
+  ui::ui.prepare();
   ui::ui.showLoadingScreen( false );
 }
 
@@ -336,6 +337,7 @@ void GameStage::load()
 
   loadingMillis = SDL_GetTicks();
 
+  ui::mouse.doShow = false;
   ui::ui.loadingScreen->status.setText( "%s", gettext( "Loading ..." ) );
   ui::ui.loadingScreen->show( true );
 
@@ -411,6 +413,7 @@ void GameStage::load()
   sound.play();
   sound.update();
 
+  ui::ui.prepare();
   ui::ui.showLoadingScreen( false );
 
   loadingMillis = SDL_GetTicks() - loadingMillis;
@@ -431,6 +434,7 @@ void GameStage::unload()
   float soundTime             = float( soundMillis )                    * 0.001f;
   float presentTime           = float( presentMillis )                  * 0.001f;
   float renderPrepareTime     = float( render.prepareMillis )           * 0.001f;
+  float renderSetupTime       = float( render.setupMillis )             * 0.001f;
   float renderCaelumTime      = float( render.caelumMillis )            * 0.001f;
   float renderTerraTime       = float( render.terraMillis )             * 0.001f;
   float renderStructsTime     = float( render.structsMillis )           * 0.001f;
@@ -510,6 +514,7 @@ void GameStage::unload()
   log.println( "%6.2f %%  [M:3] camera & sound.play",   soundTime             / runTime * 100.0f );
   log.println( "%6.2f %%  [M:3] render & sound.update", presentTime           / runTime * 100.0f );
   log.println( "%6.2f %%  [M:3] + render prepare",      renderPrepareTime     / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3] + render shader setup", renderSetupTime       / runTime * 100.0f );
   log.println( "%6.2f %%  [M:3] + render caelum",       renderCaelumTime      / runTime * 100.0f );
   log.println( "%6.2f %%  [M:3] + render terra",        renderTerraTime       / runTime * 100.0f );
   log.println( "%6.2f %%  [M:3] + render structs",      renderStructsTime     / runTime * 100.0f );

@@ -24,15 +24,7 @@
 #include "oz/oz.hh"
 
 #include <cstdio>
-#include <cstring>
-#include <ctime>
-#include <locale>
-#include <iostream>
-#include <algorithm>
-
-using namespace oz;
-
-bool Alloc::isLocked = true;
+#include <FreeImage.h>
 
 struct Foo
 {
@@ -64,10 +56,7 @@ struct Foo
   }
 };
 
-int main()
+int main( int, char** )
 {
-  System::init();
-  Alloc::isLocked = false;
-
   return 0;
 }

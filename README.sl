@@ -24,14 +24,13 @@ LShift              - preklopi tek
 LCtrl               - preklopi počep
 Space               - skoči
 
-levi klik           - sproži orožje
+levi klik           - sproži orožje ali rotiraj predmet, ki ga držiš
 desni klik          - uporabi označen predmet ali vstopi v označeno vozilo
-srednji klik        - zgrabi/spusti označen predmet
-q                   - zarotiraj predmet, ki ga trenutno držiš
-kolešček gor        - vrzi predmet, ki ga trenutno držiš
+srednji klik        - zgrabi označen predmet ali spusti predmet, ki ga držiš
+kolešček gor        - vrzi predmet, ki ga držiš
 kolešček dol        - pospravi izbran predmet v inventar
 
-ALT + m             - stori samomor
+ALT + k             - stori samomor
 ALT + p             - preklopi zmožnost stopanja čez manjše ovire, npr. hoja po stopnicah
 i                   - zapusti bota
 
@@ -51,7 +50,7 @@ Inventar
 levi klik           - odvrzi predmet ali prestavi predmet v drug inventar, kadar imaš odprti dve
                       okni z inventarjem
 srednji klik        - zgrabi predmet iz inventarja
-desni klik          - uporabi predmet, za orožja: vzemi orožje v roke oziroma ga pospravi
+desni klik          - uporabi predmet, za orožja: vzemi orožje v roke ali ga pospravi
 
 Nadzor vozil
 ------------

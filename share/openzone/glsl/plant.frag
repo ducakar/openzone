@@ -38,10 +38,8 @@ void main()
   vec4 colourSample = texture2D( oz_Textures[0], exTexCoord );
   vec4 masksSample  = texture2D( oz_Textures[1], exTexCoord );
 
-  vec4 diffuse  = skyLightColour( normal );
-  vec4 specular = specularColour( masksSample.r, normal, normalize( toCamera ) );
-  vec4 emission = vec4( masksSample.g, masksSample.g, masksSample.g, 0.0 );
+  vec4 diffuse = skyLightColour( normal );
 
-  gl_FragData[0] = oz_Colour * colourSample * ( min( diffuse + emission, vec4( 1.0 ) ) + specular );
+  gl_FragData[0] = oz_Colour * colourSample * diffuse;
   gl_FragData[0] = applyFog( gl_FragData[0], dist );
 }

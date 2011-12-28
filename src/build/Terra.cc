@@ -33,7 +33,7 @@
 #include "build/Context.hh"
 
 #include <limits>
-#include <IL/il.h>
+#include <FreeImage.h>
 
 namespace oz
 {
@@ -59,43 +59,43 @@ void Terra::load()
 
   log.print( "Loading terrain heightmap '%s' ...", name.cstr() );
 
-  uint image = ilGenImage();
-  ilBindImage( image );
-
-  if( !ilLoadImage( imageFile ) ) {
-    throw Exception( "Terrain heightmap '%s' missing", imageFile.cstr() );
+  FIBITMAP* image = FreeImage_Load( FIF_PNG, imageFile.cstr() );
+  if( image == null ) {
+    throw Exception( "Failed to load heightmap '%s'", imageFile.cstr() );
   }
 
-  int width  = ilGetInteger( IL_IMAGE_WIDTH );
-  int height = ilGetInteger( IL_IMAGE_HEIGHT );
+  int width  = int( FreeImage_GetWidth( image ) );
+  int height = int( FreeImage_GetHeight( image ) );
+  int bpp    = int( FreeImage_GetBPP( image ) );
+  int type   = int( FreeImage_GetImageType( image ) );
 
-  if( width != matrix::Terra::VERTS || height != matrix::Terra::VERTS ) {
-    throw Exception( "Invalid terrain heightmap dimensions %d x %d, should be %d x %d",
-                     width, height, matrix::Terra::VERTS, matrix::Terra::VERTS );
+  if( width != matrix::Terra::VERTS || height != matrix::Terra::VERTS || bpp != 48 ||
+      type != FIT_RGB16 )
+  {
+    throw Exception( "Invalid terrain heightmap format %d x %d %d bpp, "
+                     "should be %d x %d 48 bpp RGB (red channel as greyscale)",
+                     width, height, bpp, matrix::Terra::VERTS, matrix::Terra::VERTS );
   }
 
-  log.printRaw( " converting ..." );
-
-  ilConvertImage( IL_LUMINANCE, IL_FLOAT );
-
-  log.printEnd( " OK" );
   log.print( "Calculating triangles ..." );
 
-  const float* line = reinterpret_cast<const float*>( ilGetData() );
-
   for( int y = matrix::Terra::VERTS - 1; y >= 0; --y ) {
+    const ushort* pixel = reinterpret_cast<const ushort*>( FreeImage_GetScanLine( image, y ) );
+
     for( int x = 0; x < matrix::Terra::VERTS; ++x ) {
+      float value = float( *pixel ) / float( std::numeric_limits<unsigned short>::max() );
+
       quads[x][y].vertex.x     = float( x * matrix::Terra::Quad::SIZEI ) - matrix::Terra::DIM;
       quads[x][y].vertex.y     = float( y * matrix::Terra::Quad::SIZEI ) - matrix::Terra::DIM;
-      quads[x][y].vertex.z     = Math::mix( minHeight, maxHeight, line[x] );
+      quads[x][y].vertex.z     = Math::mix( minHeight, maxHeight, value );
       quads[x][y].triNormal[0] = Vec3::ZERO;
       quads[x][y].triNormal[1] = Vec3::ZERO;
-    }
 
-    line += matrix::Terra::VERTS;
+      pixel += 3;
+    }
   }
 
-  ilDeleteImage( image );
+  FreeImage_Unload( image );
 
   for( int x = 0; x < matrix::Terra::QUADS; ++x ) {
     for( int y = 0; y < matrix::Terra::QUADS; ++y ) {

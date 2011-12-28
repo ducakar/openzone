@@ -142,14 +142,17 @@ bool InventoryMenu::onMouseEvent()
         }
       }
       else if( mouse.middleClick ) {
-        if( bot->cargo == -1 && uint( tagged ) < uint( bot->items.length() ) ) {
+        if( uint( tagged ) < uint( bot->items.length() ) ) {
           item = static_cast<const Dynamic*>( orbis.objects[ bot->items[tagged] ] );
 
           if( item != null ) {
+            ui::mouse.doShow = false;
+
             bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
             bot->actions |= Bot::ACTION_INV_GRAB;
             bot->instrument = item->index;
             bot->container = -1;
+            bot->cargo = -1;
           }
         }
       }

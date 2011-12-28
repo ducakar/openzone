@@ -70,10 +70,10 @@ class System
   public:
 
     /**
-     * Play a sound alert (asynchronously).
+     * Play a sound alert.
      *
-     * Sine wave from <tt>oz/bellSample.inc</tt> is played through PulseAudio on Linux or Win32 API
-     * in Windows.
+     * Sine wave from <tt>oz/bellSample.inc</tt> is played asynchronously through PulseAudio on
+     * Linux or Win32 API on Windows.
      */
     static void bell();
 

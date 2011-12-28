@@ -49,9 +49,9 @@
 
 #include <SDL/SDL_main.h>
 #include <physfs.h>
-#include <IL/il.h>
+#include <FreeImage.h>
 
-bool oz::Alloc::isLocked = true;
+bool oz::Alloc::isLocked = false;
 
 namespace oz
 {
@@ -59,23 +59,23 @@ namespace build
 {
 
 static const char* const CREATE_DIRS[] = {
-  "bsp",
-  "caelum",
-  "class",
-  "glsl",
-  "lua",
-  "lua/matrix",
-  "lua/mission",
-  "lua/nirvana",
-  "mdl",
-  "music",
-  "name",
-  "snd",
-  "terra",
-  "ui",
-  "ui/cur",
-  "ui/font",
-  "ui/icon"
+//   "bsp",
+//   "caelum",
+//   "class",
+//   "glsl",
+//   "lua",
+//   "lua/matrix",
+//   "lua/mission",
+//   "lua/nirvana",
+//   "mdl",
+//   "music",
+//   "name",
+//   "snd",
+//   "terra",
+//   "ui",
+//   "ui/cur",
+//   "ui/font",
+//   "ui/icon"
 };
 
 static void printUsage()
@@ -534,7 +534,7 @@ int main( int argc, char** argv )
 
   SDL_Init( SDL_INIT_VIDEO );
   PHYSFS_init( null );
-  ilInit();
+  FreeImage_Initialise();
 
   if( !File::chdir( dataDir ) ) {
     log.println( "Failed to set working directory '%s'", dataDir.cstr() );
@@ -600,7 +600,7 @@ int main( int argc, char** argv )
 
   uint endTime = SDL_GetTicks();
 
-  ilShutDown();
+  FreeImage_DeInitialise();
   PHYSFS_deinit();
   SDL_Quit();
 
@@ -615,7 +615,6 @@ int main( int argc, char** argv )
 int main( int argc, char** argv )
 {
   oz::System::init();
-  oz::Alloc::isLocked = false;
 
   int exitCode = EXIT_FAILURE;
 
@@ -635,7 +634,6 @@ int main( int argc, char** argv )
     oz::System::abort( false );
   }
 
-//   oz::Alloc::isLocked = true;
 //   oz::Alloc::printLeaks();
   return exitCode;
 }

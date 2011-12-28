@@ -38,9 +38,9 @@ class SMM
 {
   private:
 
-    int    id;
-    Mesh   mesh;
-    int    shaderId;
+    int  id;
+    Mesh mesh;
+    int  shaderId;
 
   public:
 
