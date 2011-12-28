@@ -88,12 +88,30 @@ File::~File()
   }
 }
 
+File::File( const File& file ) :
+    filePath( file.filePath ), type( file.type ), data( null ), size( 0 )
+{}
+
 File::File( File&& file ) :
     filePath( static_cast<String&&>( file.filePath ) ), type( file.type ),
     data( file.data ), size( file.size )
 {
   file.type = NONE;
   file.data = null;
+}
+
+File& File::operator = ( const File& file )
+{
+  if( &file == this ) {
+    return *this;
+  }
+
+  filePath = file.filePath;
+  type     = file.type;
+  data     = null;
+  size     = 0;
+
+  return *this;
 }
 
 File& File::operator = ( File&& file )
@@ -358,7 +376,7 @@ String File::cwd()
 {
   char buffer[256];
 #ifdef _WIN32
-  GetCurrentDirectory( buffer, 256 );
+  GetCurrentDirectory( 256, buffer );
 #else
   getcwd( buffer, 256);
 #endif

@@ -168,6 +168,10 @@ void Render::drawGeometry()
     caelum.draw();
   }
 
+  currentTime = SDL_GetTicks();
+  caelumMillis += currentTime - beginTime;
+  beginTime = currentTime;
+
   // camera transformation
   tf.projection();
   tf.camera.translate( Point3::ORIGIN - camera.p );
@@ -194,7 +198,7 @@ void Render::drawGeometry()
   glEnable( GL_DEPTH_TEST );
 
   currentTime = SDL_GetTicks();
-  caelumMillis += currentTime - beginTime;
+  setupMillis += currentTime - beginTime;
   beginTime = currentTime;
 
   // draw structures
@@ -431,6 +435,7 @@ void Render::load()
   frags.alloc( 1024 );
 
   prepareMillis     = 0;
+  setupMillis       = 0;
   caelumMillis      = 0;
   terraMillis       = 0;
   structsMillis     = 0;

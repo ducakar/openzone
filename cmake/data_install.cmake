@@ -8,7 +8,7 @@ if( WIN32 OR OZ_INSTALL_STANDALONE )
     README
     ${files}
     DESTINATION . COMPONENT info )
-else()
+elseif( OZ_INSTALL_INFO )
   file( GLOB files README.* )
   install( FILES
     AUTHORS
@@ -21,7 +21,9 @@ endif()
 #
 # icons
 #
-install( DIRECTORY share/applications share/pixmaps DESTINATION share COMPONENT icons )
+if( OZ_INSTALL_MENU )
+  install( DIRECTORY share/applications share/pixmaps DESTINATION share COMPONENT icons )
+endif()
 
 #
 # oalinst, DLLs
@@ -32,12 +34,12 @@ if( WIN32 )
 
   install( DIRECTORY support/mingw32-tools/ DESTINATION bin COMPONENT client-script )
   install( FILES support/prebuild.bat DESTINATION . COMPONENT build-script )
-else()
-  install( FILES support/openzone.sh COMPONENTS client-script PERMISSIONS
+elseif( OZ_INSTALL_STANDALONE )
+  install( FILES support/openzone.sh COMPONENT client-script PERMISSIONS
     OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
     DESTINATION . )
 
-  install( FILES support/build.sh COMPONENTS build-script PERMISSIONS
+  install( FILES support/build.sh COMPONENT build-script PERMISSIONS
     OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
     DESTINATION . )
 endif()
@@ -45,157 +47,165 @@ endif()
 #
 # prebuilt data
 #
-install( FILES share/openzone/README DESTINATION share/openzone COMPONENT data )
+if( OZ_INSTALL_DATA )
 
-# bsp
-install( DIRECTORY share/openzone/bsp DESTINATION share/openzone COMPONENT data )
+  install( FILES share/openzone/README DESTINATION share/openzone COMPONENT data )
 
-# caelum
-install( DIRECTORY share/openzone/caelum DESTINATION share/openzone COMPONENT data
-         FILES_MATCHING PATTERN "caelum/*.ozcCaelum" )
+  # bsp
+  install( DIRECTORY share/openzone/bsp DESTINATION share/openzone COMPONENT data )
 
-install( DIRECTORY share/openzone/caelum DESTINATION share/openzone COMPONENT data
-         FILES_MATCHING PATTERN "caelum/*README*" )
+  # caelum
+  install( DIRECTORY share/openzone/caelum DESTINATION share/openzone COMPONENT data
+           FILES_MATCHING PATTERN "caelum/*.ozcCaelum" )
 
-install( DIRECTORY share/openzone/caelum DESTINATION share/openzone COMPONENT data
-         FILES_MATCHING PATTERN "caelum/*COPYING*" )
+  install( DIRECTORY share/openzone/caelum DESTINATION share/openzone COMPONENT data
+           FILES_MATCHING PATTERN "caelum/*README*" )
 
-# class
-install( DIRECTORY share/openzone/class DESTINATION share/openzone COMPONENT data
-         PATTERN "DISABLED" EXCLUDE )
+  install( DIRECTORY share/openzone/caelum DESTINATION share/openzone COMPONENT data
+           FILES_MATCHING PATTERN "caelum/*COPYING*" )
 
-# glsl
-install( DIRECTORY share/openzone/glsl DESTINATION share/openzone COMPONENT data
-         PATTERN "DISABLED" EXCLUDE )
+  # class
+  install( DIRECTORY share/openzone/class DESTINATION share/openzone COMPONENT data
+           PATTERN "DISABLED" EXCLUDE )
 
-# lua
-install( DIRECTORY share/openzone/lua DESTINATION share/openzone COMPONENT data
-         PATTERN "DISABLED" EXCLUDE )
+  # glsl
+  install( DIRECTORY share/openzone/glsl DESTINATION share/openzone COMPONENT data
+           PATTERN "DISABLED" EXCLUDE )
 
-# mdl
-file( GLOB files
-  share/openzone/mdl/*.ozcSMM
-  share/openzone/mdl/*.ozcMD2
-  share/openzone/mdl/*README*
-  share/openzone/mdl/*COPYING* )
+  # lua
+  install( DIRECTORY share/openzone/lua DESTINATION share/openzone COMPONENT data
+           PATTERN "DISABLED" EXCLUDE )
 
-install( FILES ${files} DESTINATION share/openzone/mdl COMPONENT data )
+  # mdl
+  file( GLOB files
+    share/openzone/mdl/*.ozcSMM
+    share/openzone/mdl/*.ozcMD2
+    share/openzone/mdl/*README*
+    share/openzone/mdl/*COPYING* )
 
-# music
-install( DIRECTORY share/openzone/music DESTINATION share/openzone COMPONENT data
-         PATTERN "ALL" EXCLUDE )
+  install( FILES ${files} DESTINATION share/openzone/mdl COMPONENT data )
 
-# name
-install( DIRECTORY share/openzone/name DESTINATION share/openzone COMPONENT data
-         PATTERN "DISABLED" EXCLUDE )
+  # music
+  install( DIRECTORY share/openzone/music DESTINATION share/openzone COMPONENT data
+           PATTERN "ALL" EXCLUDE )
 
-# snd
-install( DIRECTORY share/openzone/snd DESTINATION share/openzone COMPONENT data
-         PATTERN "ALL" EXCLUDE )
+  # name
+  install( DIRECTORY share/openzone/name DESTINATION share/openzone COMPONENT data
+           PATTERN "DISABLED" EXCLUDE )
 
-# terra
-install( DIRECTORY share/openzone/terra DESTINATION share/openzone COMPONENT data
-         FILES_MATCHING PATTERN "terra/*.ozTerra" )
+  # snd
+  install( DIRECTORY share/openzone/snd DESTINATION share/openzone COMPONENT data
+           PATTERN "ALL" EXCLUDE )
 
-install( DIRECTORY share/openzone/terra DESTINATION share/openzone COMPONENT data
-         FILES_MATCHING PATTERN "terra/*.ozcTerra" )
+  # terra
+  install( DIRECTORY share/openzone/terra DESTINATION share/openzone COMPONENT data
+           FILES_MATCHING PATTERN "terra/*.ozTerra" )
 
-install( DIRECTORY share/openzone/terra DESTINATION share/openzone COMPONENT data
-         FILES_MATCHING PATTERN "terra/*README*" )
+  install( DIRECTORY share/openzone/terra DESTINATION share/openzone COMPONENT data
+           FILES_MATCHING PATTERN "terra/*.ozcTerra" )
 
-install( DIRECTORY share/openzone/terra DESTINATION share/openzone COMPONENT data
-         FILES_MATCHING PATTERN "terra/*COPYING*" )
+  install( DIRECTORY share/openzone/terra DESTINATION share/openzone COMPONENT data
+           FILES_MATCHING PATTERN "terra/*README*" )
 
-# ui
-install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data
-         FILES_MATCHING PATTERN "ui/*/*.ozcTex" )
+  install( DIRECTORY share/openzone/terra DESTINATION share/openzone COMPONENT data
+           FILES_MATCHING PATTERN "terra/*COPYING*" )
 
-install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data
-         FILES_MATCHING PATTERN "ui/*/*.ozcCur" )
+  # ui
+  install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data
+           FILES_MATCHING PATTERN "ui/*/*.ozcTex" )
 
-install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data
-         FILES_MATCHING PATTERN "ui/*/*.ttf" )
+  install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data
+           FILES_MATCHING PATTERN "ui/*/*.ozcCur" )
 
-install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data
-         FILES_MATCHING PATTERN "ui/*/*README*" )
+  install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data
+           FILES_MATCHING PATTERN "ui/*/*.ttf" )
 
-install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data
-         FILES_MATCHING PATTERN "ui/*/*COPYING*" )
+  install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data
+           FILES_MATCHING PATTERN "ui/*/*README*" )
 
-# locale
-install( DIRECTORY share/locale DESTINATION share COMPONENT data
-         FILES_MATCHING PATTERN "*.mo" )
+  install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data
+           FILES_MATCHING PATTERN "ui/*/*COPYING*" )
+
+  # locale
+  install( DIRECTORY share/locale DESTINATION share COMPONENT data
+           FILES_MATCHING PATTERN "*.mo" )
+
+endif()
 
 #
 # development data
 #
-install( FILES share/openzone/README DESTINATION share/openzone COMPONENT data-build )
+if( OZ_INSTALL_DATA_SRC )
 
-# caelum
-install( DIRECTORY share/openzone/caelum DESTINATION share/openzone COMPONENT data-build
-         PATTERN "*.ozcCaelum" EXCLUDE )
+  install( FILES share/openzone/README DESTINATION share/openzone COMPONENT data-build )
 
-# class
-install( DIRECTORY share/openzone/class DESTINATION share/openzone COMPONENT data-build
-         PATTERN "DISABLED" EXCLUDE )
+  # caelum
+  install( DIRECTORY share/openzone/caelum DESTINATION share/openzone COMPONENT data-build
+           PATTERN "*.ozcCaelum" EXCLUDE )
 
-# data
-install( DIRECTORY share/openzone/data/maps DESTINATION share/openzone/data COMPONENT data-build
-         PATTERN "DISABLED" EXCLUDE
-         PATTERN "*.bsp" EXCLUDE
-         PATTERN "*.prt" EXCLUDE
-         PATTERN "*.srf" EXCLUDE
-         PATTERN "*autosave.map" EXCLUDE
-         PATTERN "*.bak" EXCLUDE )
+  # class
+  install( DIRECTORY share/openzone/class DESTINATION share/openzone COMPONENT data-build
+           PATTERN "DISABLED" EXCLUDE )
 
-install( DIRECTORY share/openzone/data/scripts DESTINATION share/openzone/data COMPONENT data-build
-         PATTERN "DISABLED" EXCLUDE )
+  # data
+  install( DIRECTORY share/openzone/data/maps DESTINATION share/openzone/data COMPONENT data-build
+           PATTERN "DISABLED" EXCLUDE
+           PATTERN "*.bsp" EXCLUDE
+           PATTERN "*.prt" EXCLUDE
+           PATTERN "*.srf" EXCLUDE
+           PATTERN "*autosave.map" EXCLUDE
+           PATTERN "*.bak" EXCLUDE )
 
-install( DIRECTORY share/openzone/data/textures DESTINATION share/openzone/data COMPONENT data-build
-         PATTERN "DISABLED" EXCLUDE )
+  install( DIRECTORY share/openzone/data/scripts DESTINATION share/openzone/data COMPONENT data-build
+           PATTERN "DISABLED" EXCLUDE )
 
-# glsl
-install( DIRECTORY share/openzone/glsl DESTINATION share/openzone COMPONENT data-build
-         PATTERN "DISABLED" EXCLUDE )
+  install( DIRECTORY share/openzone/data/textures DESTINATION share/openzone/data COMPONENT data-build
+           PATTERN "DISABLED" EXCLUDE )
 
-# lua
-install( DIRECTORY share/openzone/lua DESTINATION share/openzone COMPONENT data-build
-         PATTERN "DISABLED" EXCLUDE )
+  # glsl
+  install( DIRECTORY share/openzone/glsl DESTINATION share/openzone COMPONENT data-build
+           PATTERN "DISABLED" EXCLUDE )
 
-# music
-install( DIRECTORY share/openzone/music DESTINATION share/openzone COMPONENT data-build
-         PATTERN "ALL" EXCLUDE )
+  # lua
+  install( DIRECTORY share/openzone/lua DESTINATION share/openzone COMPONENT data-build
+           PATTERN "DISABLED" EXCLUDE )
 
-# name
-install( DIRECTORY share/openzone/name DESTINATION share/openzone COMPONENT data-build
-         PATTERN "DISABLED" EXCLUDE )
+  # music
+  install( DIRECTORY share/openzone/music DESTINATION share/openzone COMPONENT data-build
+           PATTERN "ALL" EXCLUDE )
 
-# snd
-install( DIRECTORY share/openzone/snd DESTINATION share/openzone COMPONENT data-build
-         PATTERN "ALL" EXCLUDE )
+  # name
+  install( DIRECTORY share/openzone/name DESTINATION share/openzone COMPONENT data-build
+           PATTERN "DISABLED" EXCLUDE )
 
-# terra
-install( DIRECTORY share/openzone/terra DESTINATION share/openzone COMPONENT data-build
-         PATTERN "*.ozTerra" EXCLUDE
-         PATTERN "*.ozcTerra" EXCLUDE )
+  # snd
+  install( DIRECTORY share/openzone/snd DESTINATION share/openzone COMPONENT data-build
+           PATTERN "ALL" EXCLUDE )
 
-# netradiant
-install( DIRECTORY share/openzone/netradiant DESTINATION share/openzone COMPONENT data-build )
+  # terra
+  install( DIRECTORY share/openzone/terra DESTINATION share/openzone COMPONENT data-build
+           PATTERN "*.ozTerra" EXCLUDE
+           PATTERN "*.ozcTerra" EXCLUDE )
 
-# mdl
-install( DIRECTORY share/openzone/mdl DESTINATION share/openzone COMPONENT data-build
-         PATTERN "DISABLED" EXCLUDE
-         PATTERN "mdl/*.ozcSMM" EXCLUDE
-         PATTERN "mdl/*.ozcMD2" EXCLUDE )
+  # netradiant
+  install( DIRECTORY share/openzone/netradiant DESTINATION share/openzone COMPONENT data-build )
 
-# ui
-install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data-build
-         PATTERN "DISABLED" EXCLUDE
-         PATTERN "*.ozcCur" EXCLUDE
-         PATTERN "*.ozcTex" EXCLUDE )
+  # mdl
+  install( DIRECTORY share/openzone/mdl DESTINATION share/openzone COMPONENT data-build
+           PATTERN "DISABLED" EXCLUDE
+           PATTERN "mdl/*.ozcSMM" EXCLUDE
+           PATTERN "mdl/*.ozcMD2" EXCLUDE )
 
-# locale
-install( DIRECTORY share/locale DESTINATION share COMPONENT data-build )
+  # ui
+  install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data-build
+           PATTERN "DISABLED" EXCLUDE
+           PATTERN "*.ozcCur" EXCLUDE
+           PATTERN "*.ozcTex" EXCLUDE )
 
-# launcher, icon
-install( DIRECTORY share/applications share/pixmaps DESTINATION share COMPONENT data-build )
+  # locale
+  install( DIRECTORY share/locale DESTINATION share COMPONENT data-build )
+
+  # launcher, icon
+  install( DIRECTORY share/applications share/pixmaps DESTINATION share COMPONENT data-build )
+
+endif()

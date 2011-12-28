@@ -137,10 +137,6 @@ QuestFrame::QuestFrame() :
     currentQuest( -1 ),
     isOpened( false )
 {
-  if( !mouse.doShow ) {
-    flags = HIDDEN_BIT | IGNORE_BIT;
-  }
-
   contentHeight = 8 + 10 * font.INFOS[Font::SANS].height;
 
   x = ( Area::uiWidth - width ) / 2;
@@ -149,7 +145,7 @@ QuestFrame::QuestFrame() :
   height += contentHeight;
 
   title.set( 16, -font.INFOS[Font::LARGE].height - 6, ALIGN_NONE, Font::LARGE, "%s",
-             gettext( "No Quest" ) );
+             gettext( "No quest" ) );
 
   add( new Button( " + ", open, 16, 14 ), -20, -18 );
   add( new Button( " > ", next, 16, 14 ), -44, -18 );

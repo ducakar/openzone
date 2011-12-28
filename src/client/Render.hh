@@ -126,6 +126,7 @@ class Render
     SDL_Surface*            surface;
 
     uint                    prepareMillis;
+    uint                    setupMillis;
     uint                    caelumMillis;
     uint                    terraMillis;
     uint                    structsMillis;

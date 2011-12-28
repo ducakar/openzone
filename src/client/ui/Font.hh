@@ -61,6 +61,12 @@ class Font
     static const SDL_Colour SDL_COLOUR_WHITE;
     static const Info INFOS[MAX];
 
+  private:
+
+    PhysFile fontFile[MAX];
+
+  public:
+
     TTF_Font* fonts[MAX];
 
     uint textTexId;

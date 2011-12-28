@@ -124,7 +124,7 @@ String& String::operator = ( String&& s )
 
 String::String( int count_, const char* s ) : count( count_ )
 {
-  hard_assert( s != null && length( s ) >= count );
+  hard_assert( s != null && count >= 0 && length( s ) >= count );
 
   ensureCapacity();
   aCopy( buffer, s, count );

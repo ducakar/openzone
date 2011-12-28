@@ -61,7 +61,7 @@ class Struct : public Bounds
         Vec3              offset;
 
         const BSP::Model* model;
-        Struct*           str;
+        const Struct*     str;
 
         State             state;
         float             ratio;

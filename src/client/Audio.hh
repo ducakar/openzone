@@ -38,10 +38,12 @@ class Audio
 {
   public:
 
-    static const     int   UPDATED_BIT          = 0x00000001;
-    static constexpr float REFERENCE_DISTANCE   = 2.00f;
-    static constexpr float COCKPIT_GAIN_FACTOR  = 0.35f;
-    static constexpr float COCKPIT_PITCH_FACTOR = 0.95f;
+    static const int   UPDATED_BIT = 0x00000001;
+
+    static const float REFERENCE_DISTANCE;
+    static const float ROLLOFF_FACTOR;
+    static const float COCKPIT_GAIN_FACTOR;
+    static const float COCKPIT_PITCH_FACTOR;
 
   public:
 

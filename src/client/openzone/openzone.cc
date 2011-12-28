@@ -27,12 +27,11 @@
 
 #include <SDL/SDL_main.h>
 
-bool oz::Alloc::isLocked = true;
+bool oz::Alloc::isLocked = false;
 
 int main( int argc, char** argv )
 {
   oz::System::init();
-  oz::Alloc::isLocked = false;
 
   int exitCode = EXIT_FAILURE;
 
@@ -52,7 +51,6 @@ int main( int argc, char** argv )
     oz::System::abort( false );
   }
 
-//   oz::Alloc::isLocked = true;
 //   oz::Alloc::printLeaks();
   return exitCode;
 }
