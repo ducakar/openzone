@@ -25,9 +25,6 @@
 
 #include <cstdlib>
 #include <cstdio>
-#include <ctime>
-#include <SDL/SDL.h>
-#include <SDL/SDL_main.h>
 
 bool oz::Alloc::isLocked = true;
 
@@ -175,16 +172,14 @@ static void oaSort( Type* array, int begin, int end )
 
 int main( int, char** )
 {
-  oz::System::init();
-  oz::Alloc::isLocked = false;
-
-  SDL_Init( 0 );
+  System::init();
+  Alloc::isLocked = false;
 
   int array[MAX];
 
   srand( 32 );
 
-  oz::uint t0 = SDL_GetTicks();
+  long64 t0 = Time::clock();
   for( int i = 0; i < TESTS; ++i ) {
     for( int j = 0; j < MAX; ++j ) {
       array[j] = rand() % MAX;
@@ -192,17 +187,15 @@ int main( int, char** )
     //sort( array, 0, MAX );
     //quickSort( array, MAX );
     //arSort( array, array + MAX - 1 );
-    oz::aSort( array, MAX );
+    aSort( array, MAX );
     //aSort<int, 100>( array, MAX );
   }
-  printf( "%d ms\n", SDL_GetTicks() - t0 );
+  printf( "%d ms\n", int( Time::clock() - t0 ) );
 //   for( int i = 0; i < MAX; ++i ) {
 //     printf( "%d ", array[i] );
 //   }
 
-  SDL_Quit();
-
-  oz::Alloc::isLocked = true;
-  oz::Alloc::printLeaks();
+  Alloc::isLocked = true;
+  Alloc::printLeaks();
   return 0;
 }

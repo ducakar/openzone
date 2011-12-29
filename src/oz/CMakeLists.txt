@@ -13,6 +13,7 @@ add_library( oz STATIC
   StackTrace.cc
   String.cc
   System.cc
+  Time.cc
   Vec3.cc
   Vec4.cc
   common.cc
@@ -34,6 +35,7 @@ if( OZ_INSTALL_LIBOZ )
   StackTrace.cc
   String.cc
   System.cc
+  Time.cc
   Vec3.cc
   Vec4.cc
   common.cc

@@ -24,39 +24,49 @@
  */
 
 /**
- * @file oz/Exception.cc
+ * @file oz/Time.hh
  */
 
-#include "Exception.hh"
+#pragma once
 
-#include "System.hh"
-
-#include "windefs.h"
-
-#include <cstdio>
-
-#undef Exception
+#include "common.hh"
 
 namespace oz
 {
 
-Exception::Exception( const char* file_, int line_, const char* function_,
-                      const char* message_, ... ) throw() :
-    file( file_ ), function( function_ ), line( line_ )
+/**
+ * %Time structure.
+ *
+ * @ingroup oz
+ */
+class Time
 {
-  System::trap();
+  public:
 
-  va_list ap;
-  va_start( ap, message_ );
-  vsnprintf( message, 256, message_, ap );
-  va_end( ap );
+    int year;   ///< Year, all digits.
+    int month;  ///< Month, from 1 to 12.
+    int day;    ///< Day in month, from 1 to 31.
+    int hour;   ///< Hour.
+    int minute; ///< Minute.
+    int second; ///< Second.
 
-  stackTrace = StackTrace::current();
-}
+    /**
+     * Monotonic clock from an unspecified point in time, with millisecond resolution.
+     *
+     * This clock wraps around in about 49.7 days.
+     */
+    static uint clock();
 
-const char* Exception::what() const throw()
-{
-  return message;
-}
+    /**
+     * Return <tt>%Time</tt> structure filled with the current UTC time.
+     */
+    static Time utc();
+
+    /**
+     * Return <tt>%Time</tt> structure filled with the current local time.
+     */
+    static Time local();
+
+};
 
 }

@@ -84,14 +84,14 @@ void GameStage::run()
     /*
      * PHASE 2
      */
-    beginTime = SDL_GetTicks();
+    beginTime = Time::clock();
 
     network.update();
 
     // update world
     matrix.update();
 
-    matrixMillis += SDL_GetTicks() - beginTime;
+    matrixMillis += Time::clock() - beginTime;
 
     SDL_SemPost( mainSemaphore );
     SDL_SemWait( auxSemaphore );
@@ -99,7 +99,7 @@ void GameStage::run()
     /*
      * PHASE 3
      */
-    beginTime = SDL_GetTicks();
+    beginTime = Time::clock();
 
     // sync nirvana
     nirvana.sync();
@@ -110,7 +110,7 @@ void GameStage::run()
     // update minds
     nirvana.update();
 
-    nirvanaMillis += SDL_GetTicks() - beginTime;
+    nirvanaMillis += Time::clock() - beginTime;
 
     // we can now manipulate world from the main thread after synapse lists have been cleared
     // and nirvana is not accessing matrix any more
@@ -202,7 +202,7 @@ bool GameStage::update()
    * PHASE 1
    */
 
-  beginTime = SDL_GetTicks();
+  beginTime = Time::clock();
 
   if( ui::keyboard.keys[SDLK_F5] && !ui::keyboard.oldKeys[SDLK_F5] ) {
     write( QUICKSAVE_FILE );
@@ -228,7 +228,7 @@ bool GameStage::update()
 
   lua.update();
 
-  uiMillis += SDL_GetTicks() - beginTime;
+  uiMillis += Time::clock() - beginTime;
 
   SDL_SemPost( auxSemaphore );
   SDL_SemWait( mainSemaphore );
@@ -237,7 +237,7 @@ bool GameStage::update()
    * PHASE 2
    */
 
-  beginTime = SDL_GetTicks();
+  beginTime = Time::clock();
 
 #ifndef NDEBUG
   context.updateLoad();
@@ -248,7 +248,7 @@ bool GameStage::update()
   // load scheduled resources
   loader.update();
 
-  loaderMillis += SDL_GetTicks() - beginTime;
+  loaderMillis += Time::clock() - beginTime;
 
   SDL_SemPost( auxSemaphore );
   SDL_SemWait( mainSemaphore );
@@ -257,26 +257,26 @@ bool GameStage::update()
    * PHASE 3
    */
 
-  beginTime = SDL_GetTicks();
+  beginTime = Time::clock();
 
   camera.prepare();
 
   // play sounds, but don't do any streaming
   sound.play();
 
-  soundMillis += SDL_GetTicks() - beginTime;
+  soundMillis += Time::clock() - beginTime;
   return true;
 }
 
 void GameStage::present()
 {
-  uint beginTime = SDL_GetTicks();
+  uint beginTime = Time::clock();
 
   render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
   sound.update();
   render.sync();
 
-  presentMillis += SDL_GetTicks() - beginTime;
+  presentMillis += Time::clock() - beginTime;
 }
 
 bool GameStage::read( const char* path )
@@ -335,7 +335,7 @@ void GameStage::load()
   log.println( "Loading GameStage {" );
   log.indent();
 
-  loadingMillis = SDL_GetTicks();
+  loadingMillis = Time::clock();
 
   ui::mouse.doShow = false;
   ui::ui.loadingScreen->status.setText( "%s", gettext( "Loading ..." ) );
@@ -416,7 +416,7 @@ void GameStage::load()
   ui::ui.prepare();
   ui::ui.showLoadingScreen( false );
 
-  loadingMillis = SDL_GetTicks() - loadingMillis;
+  loadingMillis = Time::clock() - loadingMillis;
 
   isLoaded = true;
 

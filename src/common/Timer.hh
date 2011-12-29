@@ -32,19 +32,19 @@ class Timer
 {
   public:
 
-    static const     int   TICKS_PER_SEC = 60;
-    static const     int   TICK_MILLIS   = ( 1000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;
+    static const     uint  TICKS_PER_SEC = 60;
+    static const     uint  TICK_MILLIS   = ( 1000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;
     static constexpr float TICK_TIME     = float( TICK_MILLIS ) / 1000.0f;
 
     uint  runMillis;
 
-    int   ticks;
+    uint  ticks;
     uint  millis;
     float time;
 
-    int   nFrames;
-    int   frameTicks;
-    int   frameMillis;
+    uint  nFrames;
+    uint  frameTicks;
+    uint  frameMillis;
     float frameTime;
 
     Timer();

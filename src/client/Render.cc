@@ -100,7 +100,7 @@ void Render::scheduleCell( int cellX, int cellY )
 
 void Render::prepareDraw()
 {
-  uint currentTime = SDL_GetTicks();
+  uint currentTime = Time::clock();
   uint beginTime = currentTime;
 
   collider.translate( camera.p, Vec3::ZERO );
@@ -143,13 +143,13 @@ void Render::prepareDraw()
   objects.sort();
   frags.sort();
 
-  currentTime = SDL_GetTicks();
+  currentTime = Time::clock();
   prepareMillis += currentTime - beginTime;
 }
 
 void Render::drawGeometry()
 {
-  uint currentTime = SDL_GetTicks();
+  uint currentTime = Time::clock();
   uint beginTime = currentTime;
 
   OZ_GL_CHECK_ERROR();
@@ -168,7 +168,7 @@ void Render::drawGeometry()
     caelum.draw();
   }
 
-  currentTime = SDL_GetTicks();
+  currentTime = Time::clock();
   caelumMillis += currentTime - beginTime;
   beginTime = currentTime;
 
@@ -197,7 +197,7 @@ void Render::drawGeometry()
 
   glEnable( GL_DEPTH_TEST );
 
-  currentTime = SDL_GetTicks();
+  currentTime = Time::clock();
   setupMillis += currentTime - beginTime;
   beginTime = currentTime;
 
@@ -208,13 +208,13 @@ void Render::drawGeometry()
     context.drawBSP( structs[i].str, Mesh::SOLID_BIT );
   }
 
-  currentTime = SDL_GetTicks();
+  currentTime = Time::clock();
   structsMillis += currentTime - beginTime;
   beginTime = currentTime;
 
   terra.draw();
 
-  currentTime = SDL_GetTicks();
+  currentTime = Time::clock();
   terraMillis += currentTime - beginTime;
   beginTime = currentTime;
 
@@ -223,7 +223,7 @@ void Render::drawGeometry()
     context.drawImago( objects[i].obj, null, Mesh::SOLID_BIT );
   }
 
-  currentTime = SDL_GetTicks();
+  currentTime = Time::clock();
   objectsMillis += currentTime - beginTime;
   beginTime = currentTime;
 
@@ -241,7 +241,7 @@ void Render::drawGeometry()
   // draw transparent parts of objects
   shader.colour = Colours::WHITE;
 
-  currentTime = SDL_GetTicks();
+  currentTime = Time::clock();
   fragsMillis += currentTime - beginTime;
   beginTime = currentTime;
 
@@ -251,13 +251,13 @@ void Render::drawGeometry()
 
   OZ_GL_CHECK_ERROR();
 
-  currentTime = SDL_GetTicks();
+  currentTime = Time::clock();
   objectsMillis += currentTime - beginTime;
   beginTime = currentTime;
 
   terra.drawWater();
 
-  currentTime = SDL_GetTicks();
+  currentTime = Time::clock();
   terraMillis += currentTime - beginTime;
   beginTime = currentTime;
 
@@ -270,7 +270,7 @@ void Render::drawGeometry()
 
   glDisable( GL_BLEND );
 
-  currentTime = SDL_GetTicks();
+  currentTime = Time::clock();
   structsMillis += currentTime - beginTime;
   beginTime = currentTime;
 
@@ -327,7 +327,7 @@ void Render::drawGeometry()
   objects.clear();
   frags.clear();
 
-  currentTime = SDL_GetTicks();
+  currentTime = Time::clock();
   miscMillis += currentTime - beginTime;
 }
 
@@ -346,7 +346,7 @@ void Render::drawOrbis()
   prepareDraw();
   drawGeometry();
 
-  uint beginTime = SDL_GetTicks();
+  uint beginTime = Time::clock();
 
   if( isOffscreen ) {
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
@@ -377,16 +377,16 @@ void Render::drawOrbis()
 
   OZ_GL_CHECK_ERROR();
 
-  postprocessMillis += SDL_GetTicks() - beginTime;
+  postprocessMillis += Time::clock() - beginTime;
 }
 
 void Render::drawUI()
 {
-  uint beginTime = SDL_GetTicks();
+  uint beginTime = Time::clock();
 
   ui::ui.draw();
 
-  uiMillis += SDL_GetTicks() - beginTime;
+  uiMillis += Time::clock() - beginTime;
 }
 
 void Render::draw( int flags )
@@ -405,11 +405,11 @@ void Render::draw( int flags )
 
 void Render::sync()
 {
-  uint beginTime = SDL_GetTicks();
+  uint beginTime = Time::clock();
 
   SDL_GL_SwapBuffers();
 
-  syncMillis += SDL_GetTicks() - beginTime;
+  syncMillis += Time::clock() - beginTime;
 }
 
 void Render::toggleFullscreen() const

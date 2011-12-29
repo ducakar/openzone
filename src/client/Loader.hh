@@ -34,28 +34,28 @@ class Loader
 {
   private:
 
-    static const int TICK_PERIOD               = 180 * Timer::TICKS_PER_SEC;  // 2 min
+    static const uint TICK_PERIOD               = 180 * Timer::TICKS_PER_SEC;  // 2 min
 
-    static const int IMAGO_CLEAR_INTERVAL      = 5   * Timer::TICKS_PER_SEC;  //   5 s (+ 2 s)
-    static const int IMAGO_CLEAR_LAG           = 2   * Timer::TICKS_PER_SEC;
+    static const uint IMAGO_CLEAR_INTERVAL      = 5   * Timer::TICKS_PER_SEC;  //   5 s (+ 2 s)
+    static const uint IMAGO_CLEAR_LAG           = 2   * Timer::TICKS_PER_SEC;
 
-    static const int FRAG_CLEAR_INTERVAL       = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 20 s)
-    static const int FRAG_CLEAR_LAG            = 20  * Timer::TICKS_PER_SEC;
+    static const uint FRAG_CLEAR_INTERVAL       = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 20 s)
+    static const uint FRAG_CLEAR_LAG            = 20  * Timer::TICKS_PER_SEC;
 
-    static const int IMAGOCLASS_CLEAR_INTERVAL = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 40 s)
-    static const int IMAGOCLASS_CLEAR_LAG      = 40  * Timer::TICKS_PER_SEC;
+    static const uint IMAGOCLASS_CLEAR_INTERVAL = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 40 s)
+    static const uint IMAGOCLASS_CLEAR_LAG      = 40  * Timer::TICKS_PER_SEC;
 
-    static const int BSP_CLEAR_INTERVAL        = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 60 s)
-    static const int BSP_CLEAR_LAG             = 60  * Timer::TICKS_PER_SEC;
+    static const uint BSP_CLEAR_INTERVAL        = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 60 s)
+    static const uint BSP_CLEAR_LAG             = 60  * Timer::TICKS_PER_SEC;
 
-    static const int SOUND_CLEAR_INTERVAL      = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 100 s)
-    static const int SOUND_CLEAR_LAG           = 100 * Timer::TICKS_PER_SEC;
+    static const uint SOUND_CLEAR_INTERVAL      = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 100 s)
+    static const uint SOUND_CLEAR_LAG           = 100 * Timer::TICKS_PER_SEC;
 
-    static const int SOURCE_CLEAR_INTERVAL     = 1   * Timer::TICKS_PER_SEC;  //   1 s (+ ~0.5 s)
-    static const int SOURCE_CLEAR_LAG          = 1   * Timer::TICKS_PER_SEC / 2;
+    static const uint SOURCE_CLEAR_INTERVAL     = 1   * Timer::TICKS_PER_SEC;  //   1 s (+ ~0.5 s)
+    static const uint SOURCE_CLEAR_LAG          = 1   * Timer::TICKS_PER_SEC / 2;
 
-    static const int AUDIO_CLEAR_INTERVAL      = 5   * Timer::TICKS_PER_SEC;  //   5 s (+ 3 s)
-    static const int AUDIO_CLEAR_LAG           = 3   * Timer::TICKS_PER_SEC;
+    static const uint AUDIO_CLEAR_INTERVAL      = 5   * Timer::TICKS_PER_SEC;  //   5 s (+ 3 s)
+    static const uint AUDIO_CLEAR_LAG           = 3   * Timer::TICKS_PER_SEC;
 
     struct ScreenshotInfo
     {
@@ -70,7 +70,7 @@ class Loader
     SDL_Thread* preloadThread;
     SDL_Thread* shotThread;
 
-    int tick;
+    uint tick;
 
     static int saveScreenshot( void* );
 

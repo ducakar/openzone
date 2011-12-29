@@ -37,11 +37,11 @@ class InfoFrame : public Frame
 {
   private:
 
-    static const int REFRESH_INTERVAL = 200;
+    static const uint REFRESH_INTERVAL = 200;
 
     Text text;
     int  lastId;
-    int  lastTicks;
+    uint lastTicks;
 
   protected:
 

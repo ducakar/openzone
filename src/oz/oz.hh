@@ -118,5 +118,6 @@
 /*
  * Utilities.
  */
+#include "Time.hh"
 #include "Log.hh"
 #include "Config.hh"

@@ -24,7 +24,6 @@
 #include "oz/oz.hh"
 
 #include <cstdio>
-#include <ctime>
 
 typedef float __attribute__(( vector_size( 16 ) )) float4;
 
@@ -143,7 +142,7 @@ int main()
     c[i] = VecX( Math::rand(), Math::rand(), Math::rand() ) * 100.0f;
     d[i] = VecX( Math::rand(), Math::rand(), Math::rand() ) * 100.0f;
   }
-  long t0 = std::clock();
+  long64 t0 = Time::clock();
   for( int k = 0; k < 10000; ++k ) {
     for( int i = 0; i < MAX; ++i ) {
       d[i] += c[i] * ( a[i] * b[i] );
@@ -152,7 +151,7 @@ int main()
   }
   Quat q = Quat::ZERO;
   q *= 10;
-  printf( "%g\n", float( std::clock() - t0 ) / float( CLOCKS_PER_SEC ) );
+  printf( "%g\n", float( Time::clock() - t0 ) / 1000.0f );
 
   Alloc::isLocked = true;
   Alloc::printLeaks();

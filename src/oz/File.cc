@@ -30,6 +30,7 @@
 #include "File.hh"
 
 #ifdef _WIN32
+# include "windefs.h"
 # include <windows.h>
 #else
 # include <dirent.h>

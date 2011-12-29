@@ -543,7 +543,7 @@ int main( int argc, char** argv )
 
   PHYSFS_mount( ".", null, 1 );
 
-  uint startTime = SDL_GetTicks();
+  uint startTime = Time::clock();
 
   library.buildInit();
 
@@ -598,7 +598,7 @@ int main( int argc, char** argv )
     checkLua( "lua/mission" );
   }
 
-  uint endTime = SDL_GetTicks();
+  uint endTime = Time::clock();
 
   FreeImage_DeInitialise();
   PHYSFS_deinit();

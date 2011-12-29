@@ -23,40 +23,27 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#pragma once
+
 /**
- * @file oz/Exception.cc
+ * @file oz/windefs.h
+ *
+ * Private header that should always be included before <tt>\<windows.h\></tt> and possibly also
+ * before any standard C/C++ header as it may include Windows headers internally.
  */
 
-#include "Exception.hh"
+#ifdef _WIN32
 
-#include "System.hh"
+// At least Windows 2000 required.
+# define WINVER 0x0500
 
-#include "windefs.h"
+// At least Visual Studio 2005 run-time libraries required.
+# define __MSVCRT_VERSION__ 0x0800
 
-#include <cstdio>
+// At least Internet Explorer 6.0 libraries required.
+# define _WIN32_IE 0x0600
 
-#undef Exception
+// Don't import all crap from windows headers.
+# define WIN32_LEAN_AND_MEAN
 
-namespace oz
-{
-
-Exception::Exception( const char* file_, int line_, const char* function_,
-                      const char* message_, ... ) throw() :
-    file( file_ ), function( function_ ), line( line_ )
-{
-  System::trap();
-
-  va_list ap;
-  va_start( ap, message_ );
-  vsnprintf( message, 256, message_, ap );
-  va_end( ap );
-
-  stackTrace = StackTrace::current();
-}
-
-const char* Exception::what() const throw()
-{
-  return message;
-}
-
-}
+#endif

@@ -70,8 +70,6 @@ void NamePool::init()
     while( is.isAvailable() ) {
       char ch = is.readChar();
 
-      printf( "%c", ch );
-
       if( ch == '\n' ) {
         String name( int( is.getPos() - wordBegin ), wordBegin );
         name = name.trim();
