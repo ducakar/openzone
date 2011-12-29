@@ -625,11 +625,11 @@ void Library::initBuildModels()
 
 void Library::initMusicRecurse( const char* path )
 {
-  File dir( path );
-  DArray<File> dirList = dir.ls();
+  PhysFile dir( path );
+  DArray<PhysFile> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
-    if( file->getType() == File::DIRECTORY ) {
+    if( file->getType() == PhysFile::DIRECTORY ) {
       initMusicRecurse( file->path() );
     }
     if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) &&
@@ -648,7 +648,7 @@ void Library::initMusicRecurse( const char* path )
 
 void Library::initMusic()
 {
-  const char* userMusicPath = config.getSet( "dir.music", "" );
+  const char* userMusicPath = config.get( "dir.music", "" );
 
   if( log.isVerbose ) {
     if( String::isEmpty( userMusicPath ) ) {
@@ -660,28 +660,7 @@ void Library::initMusic()
     log.indent();
   }
 
-  PhysFile dir( "music" );
-  DArray<PhysFile> dirList = dir.ls();
-
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) &&
-        !file->hasExtension( "mp3" ) )
-    {
-      continue;
-    }
-
-    String name = file->baseName();
-
-    if( log.isVerbose ) {
-      log.println( "%s", name.cstr() );
-    }
-
-    musics.add( Resource( name, file->realPath() ) );
-  }
-
-  if( !String::isEmpty( userMusicPath ) ) {
-    initMusicRecurse( userMusicPath );
-  }
+  initMusicRecurse( "music" );
 
   if( log.isVerbose ) {
     log.unindent();

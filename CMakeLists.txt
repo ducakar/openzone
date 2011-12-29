@@ -122,7 +122,7 @@ endif()
 if( WIN32 )
   set( libs "${WINMM_LIBRARY};${INTL_LIBRARY};${PHYSFS_LIBRARY}" )
 else()
-  set( libs "-lpthread;-lpulse-simple;${PHYSFS_LIBRARY}" )
+  set( libs "-lrt;-lpthread;-lpulse-simple;${PHYSFS_LIBRARY}" )
 endif()
 
 set( libs_client "${libs};${SDL_LIBRARY}" )

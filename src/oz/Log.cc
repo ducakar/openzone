@@ -29,9 +29,12 @@
 
 #include "Log.hh"
 
+#include "Time.hh"
+
+#include "windefs.h"
+
 #include <cstdio>
 #include <cstdlib>
-#include <ctime>
 
 namespace oz
 {
@@ -222,17 +225,14 @@ void Log::printTime() const
 {
   FILE* file = reinterpret_cast<FILE*>( fileStream );
 
-  time_t currentTime = std::time( null );
-  struct tm timeStruct = *std::localtime( &currentTime );
+  Time time = Time::local();
 
   printf( "%04d-%02d-%02d %02d:%02d:%02d",
-          timeStruct.tm_year + 1900, timeStruct.tm_mon + 1, timeStruct.tm_mday,
-          timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec );
+          time.year, time.month, time.day, time.hour, time.minute, time.second );
 
   if( file != null ) {
     fprintf( file, "%04d-%02d-%02d %02d:%02d:%02d",
-             timeStruct.tm_year + 1900, timeStruct.tm_mon + 1, timeStruct.tm_mday,
-             timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec );
+             time.year, time.month, time.day, time.hour, time.minute, time.second );
 
     fflush( file );
   }

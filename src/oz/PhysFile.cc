@@ -29,6 +29,8 @@
 
 #include "PhysFile.hh"
 
+#include "windefs.h"
+
 #include <physfs.h>
 
 namespace oz

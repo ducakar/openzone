@@ -74,7 +74,7 @@ void InfoFrame::onDraw()
     return;
   }
 
-  if( lastId != camera.tagged || uint( timer.ticks - lastTicks ) >= uint( REFRESH_INTERVAL ) ) {
+  if( lastId != camera.tagged || timer.ticks - lastTicks >= REFRESH_INTERVAL ) {
     const Bot* tagged = static_cast<const Bot*>( camera.taggedObj );
 
     if( tagged->flags & Object::BOT_BIT ) {

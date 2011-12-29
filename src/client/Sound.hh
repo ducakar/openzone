@@ -28,6 +28,7 @@
 
 #include "client/Context.hh"
 
+#include <physfs.h>
 #include <AL/alc.h>
 #include <vorbis/vorbisfile.h>
 #include <mad.h>
@@ -74,9 +75,10 @@ class Sound
     void*          libmad;
     void*          libfaad;
 
+    PHYSFS_File*   musicFile;
+
     OggVorbis_File oggStream;
 
-    FILE*          mp3File;
     mad_stream     madStream;
     mad_frame      madFrame;
     mad_synth      madSynth;
@@ -84,7 +86,6 @@ class Sound
     int            madWrittenSamples;
     int            madFrameSamples;
 
-    FILE*          aacFile;
     NeAACDecHandle aacDecoder;
 
     char*          aacOutputBuffer;
@@ -98,8 +99,6 @@ class Sound
     int            currentTrack;
 
     void playCell( int cellX, int cellY );
-
-    static short madFixedToShort( mad_fixed_t f );
 
     void streamOpen( const char* path );
     void streamClear();

@@ -62,6 +62,28 @@ OZ_DLDECL( NeAACDecOpen      );
 OZ_DLDECL( NeAACDecClose     );
 OZ_DLDECL( NeAACDecDecode    );
 
+static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle );
+static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, null, null, null };
+
+static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle )
+{
+  return size_t( PHYSFS_read( reinterpret_cast<PHYSFS_File*>( handle ), buffer,
+                              uint( size ), uint( n ) ) );
+}
+
+static inline short madFixedToShort( mad_fixed_t f )
+{
+  if( f < -MAD_F_ONE ) {
+    return std::numeric_limits<short>::min();
+  }
+  else if( f > MAD_F_ONE ) {
+    return std::numeric_limits<short>::max();
+  }
+  else {
+    return short( f >> ( MAD_F_FRACBITS - 15 ) );
+  }
+}
+
 void Sound::playCell( int cellX, int cellY )
 {
   const Cell& cell = orbis.cells[cellX][cellY];
@@ -83,19 +105,6 @@ void Sound::playCell( int cellX, int cellY )
         context.playAudio( obj, null );
       }
     }
-  }
-}
-
-inline short Sound::madFixedToShort( mad_fixed_t f )
-{
-  if( f < -MAD_F_ONE ) {
-    return std::numeric_limits<short>::min();
-  }
-  else if( f > MAD_F_ONE ) {
-    return std::numeric_limits<short>::max();
-  }
-  else {
-    return short( f >> ( MAD_F_FRACBITS - 15 ) );
   }
 }
 
@@ -137,7 +146,12 @@ void Sound::streamOpen( const char* path )
       break;
     }
     case OGG: {
-      if( ov_fopen( path, &oggStream ) < 0 ) {
+      musicFile = PHYSFS_openRead( path );
+      if( musicFile == null ) {
+        throw Exception( "Failed to open file '%s'", path );
+      }
+
+      if( ov_open_callbacks( musicFile, &oggStream, null, 0, VORBIS_CALLBACKS ) < 0 ) {
         throw Exception( "Failed to open Ogg stream" );
       }
 
@@ -165,16 +179,17 @@ void Sound::streamOpen( const char* path )
       break;
     }
     case MP3: {
+      musicFile = PHYSFS_openRead( path );
+      if( musicFile == null ) {
+        throw Exception( "Failed to open file '%s'", path );
+      }
+
       mad_stream_init( &madStream );
       mad_frame_init( &madFrame );
       mad_synth_init( &madSynth );
 
-      mp3File = fopen( path, "rb" );
-      if( mp3File == null ) {
-        throw Exception( "Failed to open MP3 stream" );
-      }
-
-      size_t readSize = fread( musicInputBuffer, 1, MUSIC_INPUT_BUFFER_SIZE, mp3File );
+      size_t readSize = size_t( PHYSFS_read( musicFile, musicInputBuffer,
+                                             1, MUSIC_INPUT_BUFFER_SIZE ) );
       if( readSize != size_t( MUSIC_INPUT_BUFFER_SIZE ) ) {
         throw Exception( "Failed to read MP3 stream" );
       }
@@ -210,14 +225,15 @@ void Sound::streamOpen( const char* path )
       break;
     }
     case AAC: {
-      aacDecoder = NeAACDecOpen();
-
-      aacFile = fopen( path, "rb" );
-      if( aacFile == null ) {
-        throw Exception( "Failed to open AAC file" );
+      musicFile = PHYSFS_openRead( path );
+      if( musicFile == null ) {
+        throw Exception( "Failed to open file '%s'", path );
       }
 
-      size_t readSize = fread( musicInputBuffer, 1, MUSIC_INPUT_BUFFER_SIZE, aacFile );
+      aacDecoder = NeAACDecOpen();
+
+      size_t readSize = size_t( PHYSFS_read( musicFile, musicInputBuffer,
+                                             1, MUSIC_INPUT_BUFFER_SIZE ) );
       if( readSize != size_t( MUSIC_INPUT_BUFFER_SIZE ) ) {
         throw Exception( "Failed to read AAC stream" );
       }
@@ -234,8 +250,10 @@ void Sound::streamOpen( const char* path )
 
       memmove( musicInputBuffer, musicInputBuffer + skipBytes, size_t( skipBytes ) );
 
-      readSize = fread( musicInputBuffer + MUSIC_INPUT_BUFFER_SIZE - skipBytes, 1,
-                        size_t( skipBytes ), aacFile );
+      readSize = size_t( PHYSFS_read( musicFile,
+                                      musicInputBuffer + MUSIC_INPUT_BUFFER_SIZE - skipBytes,
+                                      1,
+                                      uint( skipBytes ) ) );
 
       if( readSize != size_t( skipBytes ) ) {
         throw Exception( "Failed to read AAC stream" );
@@ -272,20 +290,22 @@ void Sound::streamClear()
     }
     case OGG: {
       ov_clear( &oggStream );
+
+      PHYSFS_close( musicFile );
       break;
     }
     case MP3: {
-      fclose( mp3File );
-
       mad_synth_finish( &madSynth );
       mad_frame_finish( &madFrame );
       mad_stream_finish( &madStream );
+
+      PHYSFS_close( musicFile );
       break;
     }
     case AAC: {
-      fclose( aacFile );
-
       NeAACDecClose( aacDecoder );
+
+      PHYSFS_close( musicFile );
       break;
     }
   }
@@ -355,8 +375,8 @@ bool Sound::streamDecode( uint buffer )
               memmove( musicInputBuffer, madStream.next_frame, bytesLeft );
             }
 
-            size_t bytesRead = fread( musicInputBuffer + bytesLeft, 1,
-                                      MUSIC_INPUT_BUFFER_SIZE - bytesLeft, mp3File );
+            size_t bytesRead = size_t( PHYSFS_read( musicFile, musicInputBuffer + bytesLeft, 1,
+                                                    uint( MUSIC_INPUT_BUFFER_SIZE - bytesLeft ) ) );
 
             if( bytesRead == 0 ) {
               int length = int( reinterpret_cast<char*>( musicOutput ) - musicBuffer );
@@ -433,8 +453,8 @@ bool Sound::streamDecode( uint buffer )
 
         memmove( musicInputBuffer, musicInputBuffer + bytesConsumed, aacInputBytes );
 
-        size_t bytesRead = fread( musicInputBuffer + aacInputBytes, 1,
-                                  MUSIC_INPUT_BUFFER_SIZE - aacInputBytes, aacFile );
+        size_t bytesRead = size_t( PHYSFS_read( musicFile, musicInputBuffer + aacInputBytes, 1,
+                                                uint( MUSIC_INPUT_BUFFER_SIZE - aacInputBytes ) ) );
 
         aacInputBytes += bytesRead;
       }
@@ -691,6 +711,8 @@ void Sound::init()
 
   setVolume( config.getSet( "sound.volume", 1.0f ) );
   setMusicVolume( 0.5f );
+
+
 
 #ifdef _WIN32
   libmad  = SDL_LoadObject( "libmad.dll" );

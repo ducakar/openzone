@@ -39,7 +39,6 @@
 
 #include <cerrno>
 #include <clocale>
-#include <ctime>
 #include <unistd.h>
 
 #include <physfs.h>
@@ -327,7 +326,7 @@ int Client::main( int argc, char** argv )
 
   log.println( "%s\n", config.get( "seed", "TIME" ) );
   if( String::equals( config.getSet( "seed", "TIME" ), "TIME" ) ) {
-    int seed = int( std::time( null ) );
+    int seed = int( Time::clock() );
     Math::seed( seed );
     log.println( "Random generator seed set to the current time: %d", seed );
   }
@@ -353,6 +352,15 @@ int Client::main( int argc, char** argv )
   log.println( "Content search path {" );
   log.indent();
 
+  const char* userMusicPath = config.getSet( "dir.music", "" );
+
+  if( !String::isEmpty( userMusicPath ) ) {
+    if( PHYSFS_mount( userMusicPath, "/music", 1 ) == 0 ) {
+      throw Exception( "Failed to mount '%s' on /music in PhysFS", userMusicPath );
+    }
+    log.println( "%s [mounted on /music in PHYSFS]", userMusicPath );
+  }
+
   if( PHYSFS_mount( localDir.path(), null, 1 ) != 0 ) {
     log.println( "%s", localDir.path().cstr() );
 
@@ -361,7 +369,7 @@ int Client::main( int argc, char** argv )
     foreach( file, list.citer() ) {
       if( file->hasExtension( "ozPack" ) ) {
         if( PHYSFS_mount( file->path(), null, 1 ) == 0 ) {
-          throw Exception( "Failed to add '%s' to PhysFS", file->path().cstr() );
+          throw Exception( "Failed to mount '%s' on / in PhysFS", file->path().cstr() );
         }
         log.println( "%s", file->path().cstr() );
       }
@@ -376,7 +384,7 @@ int Client::main( int argc, char** argv )
     foreach( file, list.citer() ) {
       if( file->hasExtension( "ozPack" ) ) {
         if( PHYSFS_mount( file->path(), null, 1 ) == 0 ) {
-          throw Exception( "Failed to add '%s' to PhysFS", file->path().cstr() );
+          throw Exception( "Failed to mount '%s' on / in PhysFS", file->path().cstr() );
         }
         log.println( "%s", file->path().cstr() );
       }
@@ -435,7 +443,7 @@ int Client::main( int argc, char** argv )
   // time passed form start of the frame
   uint timeSpent;
   uint timeNow;
-  uint timeZero       = SDL_GetTicks();
+  uint timeZero       = Time::clock();
   // time at start of the frame
   uint timeLast       = timeZero;
   uint timeLastRender = timeZero;
@@ -531,7 +539,7 @@ int Client::main( int argc, char** argv )
     if( !isActive ) {
       SDL_Delay( Timer::TICK_MILLIS );
 
-      timeSpent = SDL_GetTicks() - timeLast;
+      timeSpent = Time::clock() - timeLast;
       timeLast += timeSpent;
 
       continue;
@@ -551,11 +559,11 @@ int Client::main( int argc, char** argv )
 
       stage->load();
 
-      timeLast = SDL_GetTicks();
+      timeLast = Time::clock();
       continue;
     }
 
-    timeNow = SDL_GetTicks();
+    timeNow = Time::clock();
     timeSpent = timeNow - timeLast;
 
     // render graphics, if we have enough time left
@@ -566,7 +574,7 @@ int Client::main( int argc, char** argv )
 
       timer.frame();
       // if there's still some time left, waste it
-      timeLastRender = SDL_GetTicks();
+      timeLastRender = Time::clock();
       timeSpent = timeLastRender - timeLast;
 
       if( timeSpent < uint( Timer::TICK_MILLIS ) ) {
@@ -582,7 +590,7 @@ int Client::main( int argc, char** argv )
     }
     timeLast += Timer::TICK_MILLIS;
 
-    if( isBenchmark && float( SDL_GetTicks() - timeZero ) >= benchmarkTime * 1000.0f ) {
+    if( isBenchmark && float( Time::clock() - timeZero ) >= benchmarkTime * 1000.0f ) {
       isAlive = false;
     }
   }

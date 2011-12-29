@@ -31,17 +31,17 @@
 
 #include "Log.hh"
 
+#include "windefs.h"
+
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
-
-#include <fcntl.h>
-#include <unistd.h>
 
 #ifdef _WIN32
 # include <windows.h>
 # include <mmsystem.h>
 #else
+# include <unistd.h>
 # include <pthread.h>
 # include <pulse/simple.h>
 #endif
@@ -241,19 +241,23 @@ System::~System()
 void System::bell()
 {
 #ifdef _WIN32
+
   EnterCriticalSection( &mutex );
   ++bellUsers;
   LeaveCriticalSection( &mutex );
 
   HANDLE thread = CreateThread( null, 0, bellThread, null, 0, null );
   CloseHandle( thread );
+
 #else
+
   pthread_mutex_lock( &mutex );
   ++bellUsers;
   pthread_mutex_unlock( &mutex );
 
   pthread_t thread;
   pthread_create( &thread, null, bellThread, null );
+
 #endif
 }
 

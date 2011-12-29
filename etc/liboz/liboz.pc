@@ -5,8 +5,8 @@ includedir=${prefix}/include
 
 Name: liboz
 Description: OpenZone core library
-Version: 0.3
+Version: 0.3.0
 Requires:
 Conflicts:
-Libs: -lpthread -lpulse-simple
+Libs: -loz
 Cflags: -std=c++0x

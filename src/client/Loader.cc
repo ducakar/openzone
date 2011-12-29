@@ -36,8 +36,6 @@
 #include "client/OpenGL.hh"
 #include "client/OpenAL.hh"
 
-#include <ctime>
-
 namespace oz
 {
 namespace client
@@ -329,14 +327,12 @@ void Loader::makeScreenshot()
     shotThread = null;
   }
 
-  time_t currentTime = std::time( null );
-  struct tm timeStruct = *std::localtime( &currentTime );
+  Time time = Time::local();
 
   snprintf( screenshotInfo.path, 256,
             "%s/screenshots/" OZ_APPLICATION_NAME " %04d-%02d-%02d %02d:%02d:%02d.bmp",
             config.get( "dir.config", "" ),
-            1900 + timeStruct.tm_year, 1 + timeStruct.tm_mon, timeStruct.tm_mday,
-            timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec );
+            time.year, time.month, time.day, time.hour, time.minute, time.second );
 
   log.println( "Screenshot to '%s' scheduled in background thread", screenshotInfo.path );
 
