@@ -377,11 +377,11 @@ String File::cwd()
 {
   char buffer[256];
 #ifdef _WIN32
-  GetCurrentDirectory( 256, buffer );
+  bool hasFailed = GetCurrentDirectory( 256, buffer ) == 0;
 #else
-  getcwd( buffer, 256);
+  bool hasFailed = getcwd( buffer, 256 ) == null;
 #endif
-  return buffer;
+  return hasFailed ? "" : buffer;
 }
 
 bool File::chdir( const char* path )

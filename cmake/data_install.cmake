@@ -21,27 +21,36 @@ endif()
 #
 # icons
 #
-if( OZ_INSTALL_MENU )
+if( OZ_INSTALL_MENU AND NOT WIN32 )
   install( DIRECTORY share/applications share/pixmaps DESTINATION share COMPONENT icons )
 endif()
 
 #
-# oalinst, DLLs
+# oalinst, DLLs, localisation
 #
-if( WIN32 )
-  install( DIRECTORY support/mingw32-client/ DESTINATION bin COMPONENT client )
-  install( FILES support/oalinst.exe support/openzone.bat DESTINATION . COMPONENT client )
+if( OZ_INSTALL_CLIENT )
+  install( DIRECTORY share/locale DESTINATION share COMPONENT client
+           FILES_MATCHING PATTERN "*.mo" )
 
-  install( DIRECTORY support/mingw32-tools/ DESTINATION bin COMPONENT client-script )
-  install( FILES support/prebuild.bat DESTINATION . COMPONENT build-script )
-elseif( OZ_INSTALL_STANDALONE )
-  install( FILES support/openzone.sh COMPONENT client-script PERMISSIONS
-    OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-    DESTINATION . )
+  if( WIN32 )
+    install( DIRECTORY support/mingw32-client/ DESTINATION bin COMPONENT client )
+    install( FILES support/oalinst.exe support/openzone.bat DESTINATION . COMPONENT client )
+  elseif( OZ_INSTALL_STANDALONE )
+    install( FILES support/openzone.sh COMPONENT client-script PERMISSIONS
+      OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+      DESTINATION . )
+  endif()
+endif()
 
-  install( FILES support/build.sh COMPONENT build-script PERMISSIONS
-    OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-    DESTINATION . )
+if( OZ_INSTALL_TOOLS )
+  if( WIN32 )
+    install( DIRECTORY support/mingw32-tools/ DESTINATION bin COMPONENT client-script )
+    install( FILES support/build.bat DESTINATION . COMPONENT build-script )
+  elseif( OZ_INSTALL_STANDALONE )
+    install( FILES support/build.sh COMPONENT build-script PERMISSIONS
+      OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+      DESTINATION . )
+  endif()
 endif()
 
 #
@@ -112,23 +121,11 @@ if( OZ_INSTALL_DATA )
 
   # ui
   install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data
-           FILES_MATCHING PATTERN "ui/*/*.ozcTex" )
-
-  install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data
-           FILES_MATCHING PATTERN "ui/*/*.ozcCur" )
-
-  install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data
-           FILES_MATCHING PATTERN "ui/*/*.ttf" )
-
-  install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data
-           FILES_MATCHING PATTERN "ui/*/*README*" )
-
-  install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data
-           FILES_MATCHING PATTERN "ui/*/*COPYING*" )
-
-  # locale
-  install( DIRECTORY share/locale DESTINATION share COMPONENT data
-           FILES_MATCHING PATTERN "*.mo" )
+           PATTERN "DISABLED" EXCLUDE
+           PATTERN "ALL" EXCLUDE
+           PATTERN "*.xcf" EXCLUDE
+           PATTERN "*.png" EXCLUDE
+           PATTERN "*.in" EXCLUDE )
 
 endif()
 
@@ -199,6 +196,7 @@ if( OZ_INSTALL_DATA_SRC )
   # ui
   install( DIRECTORY share/openzone/ui DESTINATION share/openzone COMPONENT data-build
            PATTERN "DISABLED" EXCLUDE
+           PATTERN "ALL" EXCLUDE
            PATTERN "*.ozcCur" EXCLUDE
            PATTERN "*.ozcTex" EXCLUDE )
 

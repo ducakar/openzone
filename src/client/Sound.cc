@@ -712,8 +712,6 @@ void Sound::init()
   setVolume( config.getSet( "sound.volume", 1.0f ) );
   setMusicVolume( 0.5f );
 
-
-
 #ifdef _WIN32
   libmad  = SDL_LoadObject( "libmad.dll" );
   libfaad = SDL_LoadObject( "faad.dll" );

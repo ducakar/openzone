@@ -81,7 +81,12 @@ void Client::shutdown()
 
       config.exclude( "dir.config" );
       config.exclude( "dir.local" );
+
+#ifdef _WIN32
+      config.save( configFile, "\r\n" );
+#else
       config.save( configFile );
+#endif
     }
   }
 

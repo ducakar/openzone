@@ -76,7 +76,7 @@ class Config
     /**
      * Save configuration into a .rc file (entries are sorted by their keys).
      */
-    void saveConf( BufferStream* bstream );
+    void saveConf( BufferStream* bstream, const char* lineEnd );
 
   public:
 
@@ -181,7 +181,7 @@ class Config
      *
      * @return True on success.
      */
-    bool save( File& file );
+    bool save( File& file, const char* lineEnd = "\n" );
 
     /**
      * Clear variables.
