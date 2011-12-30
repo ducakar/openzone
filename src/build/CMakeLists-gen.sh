@@ -8,7 +8,7 @@ add_executable( ozBuild
 add_dependencies( ozBuild pch )
 target_link_libraries( ozBuild client nirvana matrix common build_info oz \${libs_tools} )
 
-if( OZ_INSTALL_BUILD )
-  install( TARGETS ozBuild DESTINATION bin COMPONENT build )
+if( OZ_INSTALL_TOOLS )
+  install( TARGETS ozBuild DESTINATION bin COMPONENT tools )
 endif()
 EOF

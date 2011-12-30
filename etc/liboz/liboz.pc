@@ -8,5 +8,5 @@ Description: OpenZone core library
 Version: 0.3.0
 Requires:
 Conflicts:
-Libs: -loz
+Libs: -loz -lphysfs -lpulse-simple -lpthread -lrt
 Cflags: -std=c++0x

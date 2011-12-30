@@ -8,13 +8,14 @@ pkgrel=1
 url="http://github.com/ducakar/openzone/"
 license=('GPL3')
 arch=('i686' 'x86_64')
-makedepends=('git' 'cmake' 'gcc>=4.5' 'gettext' 'libpulse' 'libvorbis' 'lua' 'mesa' 'openal' 'sdl_ttf' 'sdl_image')
+makedepends=('cmake' 'faad2' 'freeimage' 'gcc>=4.6' 'git' 'libmad' 'libpulse' 'lua' 'mesa' 'openal' 'physfs' 'sdl_ttf')
 #source=("http://openzone.googlecode.com/files/openzone-data-src-${pkgver}.tar.xz")
-md5sums=('7c704605913f49fdaed587fc2f2cf8b8')
+#md5sums=('7c704605913f49fdaed587fc2f2cf8b8')
 
 _gitname='openzone'
 
-build() {
+build()
+{
   cd ${srcdir}
 
   _gitroot='git://github.com/ducakar/openzone.git'
@@ -23,13 +24,12 @@ build() {
   msg "git checkout for ${_gitroot} tag ${_gittag}"
   if [[ ! -d ${_gitname} ]]; then
     git clone ${_gitroot} ${_gitname}
-    cd ${srcdir}/${_gitname} && git checkout ${_gittag}
+    cd ${srcdir}/${_gitname} && git checkout #${_gittag}
   fi
   msg "git checkout done or server timeout"
 
-  cd ${srcdir}/${_gitname}
-
-  mkdir -p build && cd build
+  rm -rf build
+  mkdir build && cd build
 
   cmake \
     -D CMAKE_INSTALL_PREFIX=/usr \
@@ -37,48 +37,49 @@ build() {
     ${srcdir}/${_gitname}
 
   make || return 1
-
-  cp -Rf ${srcdir}/openzone/share/* ${srcdir}/${_gitname}/share
-
-  ./src/tools/ozPrebuild ${srcdir}/${_gitname}
 }
 
-package_liboz() {
-  pkgdesc='Base library used by OpenZone 3D engine'
-  depends=('gcc-libs' 'libpulse')
+package_liboz()
+{
+  pkgdesc='OpenZone core library'
+  depends=('libpulse' 'physfs')
   conflicts=('liboz')
   provides=('liboz')
 
-  cd ${srcdir}/${_gitname}/build
+  cd ${srcdir}/build
 
   cmake \
     -D OZ_INSTALL_LIBOZ=1 \
     -D OZ_INSTALL_CLIENT=0 \
     -D OZ_INSTALL_TOOLS=0 \
     -D OZ_INSTALL_INFO=0 \
-    -D OZ_INSTALL_ICONS=0 \
+    -D OZ_INSTALL_MENU=0 \
     -D OZ_INSTALL_DATA=0 \
     -D OZ_INSTALL_DATA_SRC=0 \
     -D OZ_INSTALL_STANDALONE=0 \
     ${srcdir}/${_gitname}
 
   make install DESTDIR=${pkgdir}
+
+  install -Dm644 ${pkgdir}/usr/share/doc/liboz/COPYING ${pkgdir}/usr/share/licenses/liboz
+  rm -rf ${pkgdir}/usr/share/doc
 }
 
-package_openzone() {
-  pkgdesc='A simple cross-platform 3D engine'
-  depends=('libgl' 'libvorbis' 'lua' 'openal' 'openzone-data' 'sdl_ttf')
+package_openzone()
+{
+  pkgdesc='A simple cross-platform FPS/RTS game engine'
+  depends=('libgl' 'libpulse' 'lua' 'openal' 'openzone-data' 'physfs' 'sdl_ttf')
   conflicts=('openzone')
   provides=('openzone')
 
-  cd ${srcdir}/${_gitname}/build
+  cd ${srcdir}/build
 
   cmake \
     -D OZ_INSTALL_LIBOZ=0 \
     -D OZ_INSTALL_CLIENT=1 \
     -D OZ_INSTALL_TOOLS=0 \
     -D OZ_INSTALL_INFO=1 \
-    -D OZ_INSTALL_ICONS=1 \
+    -D OZ_INSTALL_MENU=1 \
     -D OZ_INSTALL_DATA=0 \
     -D OZ_INSTALL_DATA_SRC=0 \
     -D OZ_INSTALL_STANDALONE=0 \
@@ -87,20 +88,21 @@ package_openzone() {
   make install DESTDIR=${pkgdir}
 }
 
-package_openzone-tools() {
-  pkgdesc='Tools for prebuilding data for OpenZone 3D engine'
-  depends=('libgl' 'libvorbis' 'lua' 'openal' 'sdl_image' 'sdl_ttf')
+package_openzone-tools()
+{
+  pkgdesc='Tools for prebuilding data for OpenZone game engine'
+  depends=('freeimage' 'libgl' 'libpulse' 'lua' 'openal' 'physfs' 'sdl_ttf')
   conflicts=('openzone-tools')
   provides=('openzone-tools')
 
-  cd ${srcdir}/${_gitname}/build
+  cd ${srcdir}/build
 
   cmake \
     -D OZ_INSTALL_LIBOZ=0 \
     -D OZ_INSTALL_CLIENT=0 \
     -D OZ_INSTALL_TOOLS=1 \
     -D OZ_INSTALL_INFO=0 \
-    -D OZ_INSTALL_ICONS=0 \
+    -D OZ_INSTALL_MENU=0 \
     -D OZ_INSTALL_DATA=0 \
     -D OZ_INSTALL_DATA_SRC=0 \
     -D OZ_INSTALL_STANDALONE=0 \
@@ -109,19 +111,20 @@ package_openzone-tools() {
   make install DESTDIR=${pkgdir}
 }
 
-package_openzone-data() {
+package_openzone-data()
+{
   pkgver=${_dataver}
-  pkgdesc='Runtime data for OpenZone 3D engine'
+  pkgdesc='Runtime data for OpenZone game engine'
   arch=('any')
 
-  cd ${srcdir}/${_gitname}/build
+  cd ${srcdir}/build
 
   cmake \
     -D OZ_INSTALL_LIBOZ=0 \
     -D OZ_INSTALL_CLIENT=0 \
     -D OZ_INSTALL_TOOLS=0 \
     -D OZ_INSTALL_INFO=0 \
-    -D OZ_INSTALL_ICONS=0 \
+    -D OZ_INSTALL_MENU=0 \
     -D OZ_INSTALL_DATA=1 \
     -D OZ_INSTALL_DATA_SRC=0 \
     -D OZ_INSTALL_STANDALONE=0 \

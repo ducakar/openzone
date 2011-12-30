@@ -1,4 +1,8 @@
 #!/bin/sh
 
-sed '/./,/^$/ !d' -i `git ls-files | grep -v '^include'`
-Linux-x86_64/src/tools/checkBlanks `git ls-files | grep -v '^include'`
+files=`git ls-files | grep -v '^include' | grep -v 'README' | grep -v 'header\.glsl'`
+
+for file in $files; do
+  sed '/./,/^$/ !d' -i $file
+  Linux-x86_64-Clang/src/tools/checkBlanks $file
+done

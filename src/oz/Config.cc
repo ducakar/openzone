@@ -127,7 +127,7 @@ void Config::loadConf( InputStream* istream )
   }
 }
 
-void Config::saveConf( BufferStream* bstream )
+void Config::saveConf( BufferStream* bstream, const char* lineEnd )
 {
   log.print( "Writing variables to '%s' ...", filePath.cstr() );
 
@@ -144,7 +144,7 @@ void Config::saveConf( BufferStream* bstream )
   sortedVars.sort();
 
   for( int i = 0; i < size; ++i ) {
-    bstream->writeString( sortedVars[i].key );
+    bstream->writeChars( sortedVars[i].key, String::length( sortedVars[i].key ) );
 
     int chars = ALIGNMENT - String::length( sortedVars[i].key );
     int tabs  = ( chars - 1 ) / 8 + 1;
@@ -153,8 +153,9 @@ void Config::saveConf( BufferStream* bstream )
     }
 
     bstream->writeChar( '"' );
-    bstream->writeString( sortedVars[i].value );
+    bstream->writeChars( sortedVars[i].value, String::length( sortedVars[i].value ) );
     bstream->writeChar( '"' );
+    bstream->writeChars( lineEnd, String::length( lineEnd ) );
   }
 
   log.printEnd( " OK" );
@@ -390,10 +391,10 @@ bool Config::load( PhysFile& file )
   return true;
 }
 
-bool Config::save( File& file )
+bool Config::save( File& file, const char* lineEnd )
 {
   BufferStream bstream;
-  saveConf( &bstream );
+  saveConf( &bstream, lineEnd );
 
   return file.write( &bstream );
 }
