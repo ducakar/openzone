@@ -972,6 +972,19 @@ void BSP::check() const
   }
 
   log.printEnd( " OK" );
+
+  log.println( "Statistics {" );
+  log.indent();
+  log.println( "%4d  models",      nModels );
+  log.println( "%4d  nodes",       nNodes );
+  log.println( "%4d  leaves",      nLeaves );
+  log.println( "%4d  brushes",     nBrushes );
+  log.println( "%4d  brush sides", nBrushSides );
+  log.println( "%4d  planes",      nPlanes );
+  log.println( "%4d  faces",       nFaces );
+  log.println( "%4d  textures",    nTextures );
+  log.unindent();
+  log.println( "}" );
 }
 
 void BSP::saveMatrix()

@@ -171,19 +171,14 @@ void Matrix::read( InputStream* istream )
 
 void Matrix::write( BufferStream* ostream ) const
 {
-  log.println( "Writing Matrix {" );
-  log.indent();
-
+  log.print( "Writing Matrix ..." );
   orbis.write( ostream );
-
-  log.unindent();
-  log.println( "}" );
+  log.printEnd( " OK" );
 }
 
 void Matrix::load()
 {
-  log.println( "Loading Matrix {" );
-  log.indent();
+  log.print( "Loading Matrix ..." );
 
   maxStructs  = 0;
   maxEvents   = 0;
@@ -197,8 +192,7 @@ void Matrix::load()
   orbis.load();
   synapse.load();
 
-  log.unindent();
-  log.println( "}" );
+  log.printEnd( " OK" );
 }
 
 void Matrix::unload()

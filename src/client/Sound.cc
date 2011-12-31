@@ -134,7 +134,7 @@ void Sound::streamOpen( const char* path )
     else {
       musicStreamType = NONE;
 
-      log.printEnd( " No MP3 support" );
+      log.printEnd( " No AAC support" );
     }
   }
   else {
@@ -714,7 +714,7 @@ void Sound::init()
 
 #ifdef _WIN32
   libmad  = SDL_LoadObject( "libmad.dll" );
-  libfaad = SDL_LoadObject( "faad.dll" );
+  libfaad = SDL_LoadObject( "libfaad2.dll" );
 #else
   libmad  = SDL_LoadObject( "libmad.so" );
   libfaad = SDL_LoadObject( "libfaad.so" );

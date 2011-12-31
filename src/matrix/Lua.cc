@@ -152,7 +152,8 @@ void Lua::objectCall( const char* functionName, Object* self_, Bot* user_ )
   lua_pcall( l, 1, 0, 0 );
 
   if( gettop() != 1 ) {
-    throw Exception( "Matrix Lua function call finished with an error" );
+    throw Exception( "Matrix Lua: %s(self = %d, user = %d): %s",
+                     functionName, self->index, user->index, tostring( -1 ) );
   }
 }
 
@@ -259,14 +260,7 @@ void Lua::init()
 
   hard_assert( gettop() == 0 );
 
-  lua_pushcfunction( l, luaopen_math );
-  lua_pushcfunction( l, luaopen_table );
-  lua_pushcfunction( l, luaopen_string );
-  lua_pushcfunction( l, luaopen_base );
-  lua_pcall( l, 0, 0, 0 );
-  lua_pcall( l, 0, 0, 0 );
-  lua_pcall( l, 0, 0, 0 );
-  lua_pcall( l, 0, 0, 0 );
+  OZ_LUA_LOADLIBS();
 
   if( gettop() != 0 ) {
     throw Exception( "Failed to initialise Lua libraries" );

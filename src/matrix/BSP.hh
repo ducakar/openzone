@@ -34,7 +34,7 @@ class BSP : public Bounds
 {
   public:
 
-    static const int MAX_BRUSHES = 256;
+    static const int MAX_BRUSHES = 1024;
 
     /**
      * BSP node.

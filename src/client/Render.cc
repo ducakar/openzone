@@ -487,19 +487,18 @@ void Render::init( bool isBuild )
 
   int  screenWidth  = config.getSet( "screen.width", 0 );
   int  screenHeight = config.getSet( "screen.height", 0 );
-  int  screenBpp    = config.getSet( "screen.bpp", 0 );
   bool isFullscreen = config.getSet( "screen.full", true );
 
-  log.print( "Creating OpenGL window %dx%d-%d %s ...",
-             screenWidth, screenHeight, screenBpp, isFullscreen ? "fullscreen" : "windowed" );
+  log.print( "Creating OpenGL window %dx%d %s ...",
+             screenWidth, screenHeight, isFullscreen ? "fullscreen" : "windowed" );
 
   uint videoFlags = SDL_OPENGL | ( isFullscreen ? SDL_FULLSCREEN : 0 );
 
-  if( SDL_VideoModeOK( screenWidth, screenHeight, screenBpp, videoFlags ) == 1 ) {
+  if( SDL_VideoModeOK( screenWidth, screenHeight, 0, videoFlags ) == 1 ) {
     throw Exception( "Video mode not supported" );
   }
 
-  surface = SDL_SetVideoMode( screenWidth, screenHeight, screenBpp, videoFlags );
+  surface = SDL_SetVideoMode( screenWidth, screenHeight, 0, videoFlags );
 
   if( surface == null ) {
     throw Exception( "Window creation failed" );
@@ -512,9 +511,8 @@ void Render::init( bool isBuild )
 
   screenWidth  = surface->w;
   screenHeight = surface->h;
-  screenBpp    = surface->format->BitsPerPixel;
 
-  log.printEnd( " %dx%d-%d ... OK", screenWidth, screenHeight, screenBpp );
+  log.printEnd( " %dx%d-%d ... OK", screenWidth, screenHeight, surface->format->BitsPerPixel );
 
   SDL_ShowCursor( SDL_FALSE );
 

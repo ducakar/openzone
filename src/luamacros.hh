@@ -128,3 +128,19 @@
 
 #define getglobal( n )          lua_getglobal( l, n )
 #define setglobal( n )          lua_setglobal( l, n )
+
+#if LUA_VERSION_NUM < 502
+# define OZ_LUA_LOADLIBS() \
+    lua_pushcfunction( l, luaopen_table ); \
+    lua_pushcfunction( l, luaopen_string ); \
+    lua_pushcfunction( l, luaopen_math ); \
+    lua_pcall( l, 0, 0, 0 ); \
+    lua_pcall( l, 0, 0, 0 ); \
+    lua_pcall( l, 0, 0, 0 );
+#else
+# define OZ_LUA_LOADLIBS() \
+    luaL_requiref( l, LUA_TABLIBNAME,  luaopen_table,  true ); \
+    luaL_requiref( l, LUA_STRLIBNAME,  luaopen_string, true ); \
+    luaL_requiref( l, LUA_MATHLIBNAME, luaopen_math,   true ); \
+    lua_settop( l, 0 );
+#endif

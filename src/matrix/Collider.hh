@@ -62,6 +62,8 @@ class Collider
 
     static const Vec3 NORMALS[];
 
+    SBitset<BSP::MAX_BRUSHES> visitedBrushes;
+
     Span   span;
     Bounds trace;
     Vec3   move;
@@ -81,8 +83,6 @@ class Collider
 
     int   flags;
     float margin;
-
-    SBitset<BSP::MAX_BRUSHES> visitedBrushes;
 
     /**
      * Return true if brush was already visited and mark it visited.

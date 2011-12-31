@@ -81,6 +81,7 @@ void Client::shutdown()
 
       config.exclude( "dir.config" );
       config.exclude( "dir.local" );
+      config.removeUnused();
 
 #ifdef _WIN32
       config.save( configFile, "\r\n" );
@@ -129,7 +130,7 @@ void Client::printUsage()
   log.println();
   log.println( "-t <num>" );
   log.println( "\tExit after <num> seconds (can be a floating-point number) and use 42 as" );
-  log.println( "\tthe random seed. For benchmarking purposes." );
+  log.println( "\tthe random seed. Useful for benchmarking." );
   log.println();
   log.println( "-p <prefix>" );
   log.println( "\tSets data directory to <prefix>/share/openzone and locale directory to" );
@@ -288,17 +289,11 @@ int Client::main( int argc, char** argv )
       initFlags |= INIT_CONFIG;
     }
     else {
-      log.println( "Invalid configuration version, default configuration will be used and written "
+      log.println( "Invalid configuration file version, configuration will be cleaned and written "
                    "on exit" );
 
-      String prefixDir = config.get( "dir.prefix", OZ_INSTALL_PREFIX );
-      String seed      = config.get( "seed", "TIME" );
-
-      config.clear();
       config.add( "_version", OZ_APPLICATION_VERSION );
       config.get( "_version", "" );
-      config.add( "dir.prefix", prefixDir );
-      config.add( "seed", seed );
     }
   }
   else {
@@ -346,11 +341,11 @@ int Client::main( int argc, char** argv )
   // crashes, it remains turned off. Besides that, in X11 several programs (e.g. IM clients like
   // Pidgin, Kopete, Psi) rely on screensaver's counter, so they don't detect that you are away
   // if the screensaver is screwed.
-  if( config.getSet( "screen.leaveScreensaver", true ) ) {
+  if( !config.getSet( "screen.disableScreensaver", false ) ) {
     SDL_putenv( const_cast<char*>( "SDL_VIDEO_ALLOW_SCREENSAVER=1" ) );
   }
-  if( config.getSet( "screen.nvVSync", true ) ) {
-    SDL_putenv( const_cast<char*>( "__GL_SYNC_TO_VBLANK=1" ) );
+  if( config.getSet( "screen.vsync", true ) ) {
+    SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, 1 );
   }
   ui::keyboard.init();
 

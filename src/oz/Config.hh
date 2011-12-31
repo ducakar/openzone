@@ -184,10 +184,17 @@ class Config
     bool save( File& file, const char* lineEnd = "\n" );
 
     /**
+     * Remove unused variables.
+     *
+     * Variables are tagged used once it is accessed via <tt>get()</tt> or <tt>getSet()</tt>.
+     * <tt>contains()</tt> does not make difference.
+     */
+    void removeUnused();
+
+    /**
      * Clear variables.
      *
-     * @param issueWarnings issue warnings about unused variables, works only if <tt>NDEBUG</tt> is
-     * not defined.
+     * @param issueWarnings issue warnings about unused variables.
      */
     void clear( bool issueWarnings = false );
 
