@@ -36,7 +36,7 @@ namespace client
 {
 
 const float BotProxy::EXTERNAL_CAM_DIST      = 2.75f;
-const float BotProxy::EXTERNAL_CAM_CLIP_DIST = 0.20f;
+const float BotProxy::EXTERNAL_CAM_CLIP_DIST = 0.10f;
 const float BotProxy::SHOULDER_CAM_RIGHT     = 0.25f;
 const float BotProxy::SHOULDER_CAM_UP        = 0.25f;
 const float BotProxy::VEHICLE_CAM_UP_FACTOR  = 0.15f;
@@ -382,7 +382,17 @@ void BotProxy::prepare()
     }
 
     collider.translate( origin, offset, bot );
-    camera.warpMoveZ( origin + offset * collider.hit.ratio );
+    offset *= collider.hit.ratio;
+
+    float dist = !offset;
+    if( dist > EXTERNAL_CAM_CLIP_DIST ) {
+      offset *= ( dist - EXTERNAL_CAM_CLIP_DIST ) / dist;
+    }
+    else {
+      offset = Vec3::ZERO;
+    }
+
+    camera.warpMoveZ( origin + offset );
   }
 
   if( bot->parent != -1 ) {

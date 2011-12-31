@@ -44,7 +44,7 @@ class Endian
   public:
 
     /**
-     * Endian order.
+     * Byte order.
      */
     enum Order
     {

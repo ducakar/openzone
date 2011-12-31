@@ -156,7 +156,7 @@ void Lua::staticCall( const char* functionName )
   lua_pcall( l, 0, 0, 0 );
 
   if( gettop() != 0 ) {
-    throw Exception( "%s", tostring( 1 ) );
+    throw Exception( "Client Lua: %s(): %s", functionName, tostring( -1 ) );
   }
 }
 
@@ -236,8 +236,16 @@ void Lua::write( BufferStream* ostream )
 
   ostream->writeChar( '[' );
 
+#if LUA_VERSION_NUM >= 502
+  lua_pushglobaltable( l );
+#endif
+
   pushnil();
+#if LUA_VERSION_NUM >= 502
+  while( next( -2 ) != 0 ) {
+#else
   while( next( LUA_GLOBALSINDEX ) != 0 ) {
+#endif
     hard_assert( type( -2 ) == LUA_TSTRING );
 
     const char* name = tostring( -2 );
@@ -250,6 +258,10 @@ void Lua::write( BufferStream* ostream )
 
     pop( 1 );
   }
+
+#if LUA_VERSION_NUM >= 502
+  pop( 1 );
+#endif
 
   ostream->writeChar( ']' );
 }
@@ -294,14 +306,7 @@ void Lua::init()
 
   hard_assert( gettop() == 0 );
 
-  lua_pushcfunction( l, luaopen_math );
-  lua_pushcfunction( l, luaopen_table );
-  lua_pushcfunction( l, luaopen_string );
-  lua_pushcfunction( l, luaopen_base );
-  lua_pcall( l, 0, 0, 0 );
-  lua_pcall( l, 0, 0, 0 );
-  lua_pcall( l, 0, 0, 0 );
-  lua_pcall( l, 0, 0, 0 );
+  OZ_LUA_LOADLIBS();
 
   if( gettop() != 0 ) {
     throw Exception( "Failed to initialise Lua libraries" );

@@ -250,13 +250,12 @@ void Orbis::remove( Struct* str )
 {
   hard_assert( str->index >= 0 );
 
-  BSP* bsp = const_cast<BSP*>( str->bsp );
-
   strFreedIndices[freeing].add( str->index );
   structs[str->index] = null;
 
   delete str;
-  bsp->release();
+
+  const_cast<BSP*>( str->bsp )->release();
 }
 
 void Orbis::remove( Object* obj )
@@ -305,9 +304,6 @@ void Orbis::read( InputStream* istream )
 {
   hard_assert( structs.length() == 0 && objects.length() == 0 && frags.length() == 0 );
 
-  log.println( "Reading Orbis {" );
-  log.indent();
-
   lua.read( istream );
 
   terra.read( istream );
@@ -332,6 +328,7 @@ void Orbis::read( InputStream* istream )
     }
     else {
       const BSP* bsp = library.bsp( bspName );
+
       const_cast<BSP*>( bsp )->request();
 
       str = new Struct( bsp, istream );
@@ -417,15 +414,10 @@ void Orbis::read( InputStream* istream )
   for( int i = 0; i < n; ++i ) {
     fragAvailableIndices.add( istream->readInt() );
   }
-
-  log.unindent();
-  log.println( "}" );
 }
 
 void Orbis::write( BufferStream* ostream ) const
 {
-  log.print( "Writing Orbis ..." );
-
   lua.write( ostream );
 
   terra.write( ostream );
@@ -512,15 +504,10 @@ void Orbis::write( BufferStream* ostream ) const
   foreach( i, fragAvailableIndices.citer() ) {
     ostream->writeInt( *i );
   }
-
-  log.printEnd( " OK" );
 }
 
 void Orbis::load()
 {
-  log.println( "Loading Orbis {" );
-  log.indent();
-
   structs.alloc( 128 );
   objects.alloc( 24576 );
   frags.alloc( 2048 );
@@ -535,16 +522,10 @@ void Orbis::load()
   strAvailableIndices.alloc( 16 );
   objAvailableIndices.alloc( 256 );
   fragAvailableIndices.alloc( 512 );
-
-  log.unindent();
-  log.println( "}" );
 }
 
 void Orbis::unload()
 {
-  log.println( "Unloading Orbis {" );
-  log.indent();
-
   for( int i = 0; i < objects.length(); ++i ) {
     if( objects[i] != null && ( objects[i]->flags & Object::LUA_BIT ) ) {
       lua.unregisterObject( i );
@@ -601,9 +582,6 @@ void Orbis::unload()
   Vehicle::pool.free();
 
   Frag::mpool.free();
-
-  log.unindent();
-  log.println( "}" );
 }
 
 void Orbis::init()

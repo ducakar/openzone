@@ -549,7 +549,6 @@ int main( int argc, char** argv )
 
   config.add( "screen.width", "400" );
   config.add( "screen.height", "40" );
-  config.add( "screen.bpp", "32" );
   config.add( "screen.full", "false" );
   client::render.init( true );
   SDL_WM_SetCaption( OZ_APPLICATION_TITLE " :: Building data ...", null );

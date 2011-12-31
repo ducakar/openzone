@@ -30,7 +30,7 @@ srednji klik        - zgrabi označen predmet ali spusti predmet, ki ga držiš
 kolešček gor        - vrzi predmet, ki ga držiš
 kolešček dol        - pospravi izbran predmet v inventar
 
-ALT + k             - stori samomor
+ALT + k             - stori bridko smert
 ALT + p             - preklopi zmožnost stopanja čez manjše ovire, npr. hoja po stopnicah
 i                   - zapusti bota
 
@@ -109,15 +109,15 @@ Odvisnosti
 V distribuciji za Windows so vse potrebne knjižnice že vključene.
 Na Linuxu je potrebno namestiti naslednje knjižnice/pakete:
 - libpulse
-- SDL
 - PhysFS
+- SDL
 - Lua
 - OpenGL
 - OpenAL
-- DevIL
+- FreeImage (neobvezno, za orodje ozBuild)
 - libvorbis
-- faad2
-- libmad (neobvezno, za podporo MP3).
+- libmad (neobvezno, za podporo MP3)
+- faad2 (neobvezno, za podporo AAC).
 
 Odvisnosti za gradnjo
 ---------------------
@@ -141,157 +141,154 @@ openzone [-v] [-l | -i <function>] [-t <št>] [-p <predpona>]
 
 -i <misija>
       Preskoči glavni meni in poženi misijo <misija>.
-      Misije se nahajajo v <predpona>/share/openzone/lua/mission in v datotekah
+      Misije se nahajajo v <predpona>/share/openzone/lua/mission v datotekah
       poimenovanih <misija>.lua.
 
 -t <št>
-      Končaj po <št> sekundah (lahko je decimalno število). Za potrebe benchmarka.
+      Končaj po <št> sekundah (lahko je decimalno število) in kot naključnostno
+      seme uporabi 42. Uporabno za benchmark.
 
 -p <predpona>
-      Nastavi podatkovni imenik na <predpona>/share/openzone in imenik lokalizacije na
-      <predpona>/share/locale.
+      Nastavi podatkovni imenik na <predpona>/share/openzone in imenik
+      lokalizacije na <predpona>/share/locale.
       Privzeto: '/usr'.
 
 Nastavitve
 ----------
 Pot do nastavitvene datoteke je "$HOME/.config/openzone/client.rc" na Linuxu podobnih sistemih ter
-"%APPDATA%\OpenZone\client.rc" na Windowsu. Celotna pot je torej (od običajni namestitvi):
+"%APPDATA%\openzone\client.rc" na Windowsu. Celotna pot je torej (od običajni namestitvi):
 - Linux:      /home/<uporabnik>/.config/openzone/client.rc
-- Wine:       /home/<uporabnik>/.wine/drive_c/users/<uporabnik>/Podatki programov/client.rc
-- Windows XP: C:\Documents and Settings\<uporabnik>\Application Data\OpenZone\client.rc
-- Windows 7:  C:\Users\<uporabnik>\AppData\Roaming\OpenZone\client.rc
+- Wine:       /home/<uporabnik>/.wine/drive_c/users/<uporabnik>/Podatki programov/openzone/client.rc
+- Windows XP: C:\Documents and Settings\<uporabnik>\Application Data\openzone\client.rc
+- Windows 7:  C:\Users\<uporabnik>\AppData\Roaming\openzone\client.rc
 
 spremenljivka [tip] privzeta_vrednost
 -------------------------------------
 _version [string] "0.3.0"
-  Version of OpenZone for which the settings file was created. The only effect of this setting is
-  that on version mismatch, OpenZone dumps its configuration on exit and rewrites the old file.
-  Deprecated variables are not removed during that process.
+  Različica OpenZone, za katero so pisane nastavitve. Če se različici ne ujemata, se ob izhodu
+  shranijo posodobljene nastavitve. Spremenljivke, ki so v novi verziji opuščene, so odstranjene.
 
 camera.angle [float] 80.0
-  Vertical camera angle in degrees. Horizontal angle is calculated from aspect ratio.
+  Navpični kot kamere. Vodoravni kot je prilagojen glede na razmerje stranic ločljivosti.
 
 camera.aspect [float] 0.0
-  Aspect ratio width/height. 0.0 means it is calculated from the current screen resolution.
+  Razmerje stranic širina/višina. Če je 0.0, je enak razmerju ločljivosti.
 
-camera.keysXSens [float] 2.0
-  Key sensitivity for up/down arrow keys.
+camera.keysXSens [float] 1.0
+  Občutljivost za tipki levo/desno.
 
-camera.keysYSens [float] 2.0
-  Key sensitivity for left/right arrow keys.
+camera.keysYSens [float] 1.0
+  Občutljivost za tipki gor/dol.
 
-camera.mouseXSens [float] 0.005
-  Mouse sensitivity for X axis when rotating camera.
+camera.mouseXSens [float] 1.0
+  Občutljivost miške v vodoravni smeri.
 
-camera.mouseYSens [float] 0.005
-  Mouse sensitivity for X axis when rotating camera.
+camera.mouseYSens [float] 1.0
+  Občutljivost miške v navpični smeri.
 
 dir.music [string] ""
-  Top directory that will be recursively searched for *.oga, *.ogg and (if compiled with support for
-  non-free technologies) *.mp3. All found tracks will be accessible from Music Player along the
-  original tracks included in game data.
+  Vrhnji imenik, ki se rekurzivno preišče za datoteke *.oga, *.ogg, *.mp3 in *.aac. Vse najdene
+  datoteke so skladbe v Predvajalniku glasbe poleg glasbe, ki je priložena igri.
 
-dir.prefix [string] Linux default: "/usr", Windows default: "."
-  Prefix path to game directory structure. The share/openzone and share/locale directories must be
-  located inside the prefix directory.
+dir.prefix [string] Linux: "/usr", Windows: "."
+  Predpona za imenike v katerih se nahajajo podatki za igro. Imenika share/openzone in share/locale
+  se morata nahajati v tem imeniku.
 
 locale.messages [string] ""
-  Which locale should be used for translations. Empty string means the system locale is used.
-  On Linux, run "locale -a" to see a list of installed/generated locales on your system.
-  Currently there are only Slovene and English translations.
+  Lokalizacija, ki naj se uporabi za prevode. Prazen niz pomeni, da se uporabi sistemska
+  lokalizacija. Trenutno so na voljo le slovenski in angleški prevodi.
+
+  Opomba za Linux: ta nastavitev zaobide okoljsko spremenljivko LC_MESSAGES. Če imate nastavljeno
+  okoljsko spremenljivko LANGUAGE, bo ta zaobšla tako LC_MESSAGES kot tudi to nastavitev.
+  Če želite trenutne lokalizacijke nastavitve vašega sistema poženite "locale", če pa vse
+  lokalizacije, ki so na voljo (so nameščene/zgenerirane), pa poženite "locale -a".
 
 modules.profile.playerName [string] "<user>"
-  Name of the player. Username of the current user is used as default.
+  Ime igralca. Privzeto se uporabi uporabniško ime z veliko začetnico.
 
-mouse.accelFactor [float] 0.05
-  Only used while in fullscreen mode on X11. Usually OS applies mouse acceleration before OpenZone
-  reads the mouse input. The only exception is when running in fullscreen mode on X11 server, when
-  OpenZone receives unaccelerated mouse input. In that case it tries to emulate X11 mouse
-  acceleration, since mouse cursor moves pretty slow otherwise.
+mouse.accelFactor [float] 0.04
+  Običajno operacijsko sistem pospeši miško, preden OpenZone prebere položaj le-te, z izjemo okolja
+  X11, če aplikacija teče v celozaslonskem načinu. V tem primeru skuša OpenZone emulirati
+  pospešitev, saj je v nasprotnem primeru miškin kazalec prepočasen.
 
 render.deferred [bool] false
-  Enable deferred shading. Not implemented.
-  This option has effect only if offscreen rendering is enabled.
+  Uporabi odloženo senčene (deferred shading). Trenutno še ni zares implementirano.
+  Ta nastavitev se upošteva le, če je vklopljeno upodabljanje v medpomnilnik.
 
 render.offscreen [bool] true
-  Enable rendering into offscreen buffers instead directly to the screen. This enables some advanced
-  effects like deferred shading, postprocess effects. It also enables that the world and UI are
-  rendered at resolutions that differ from the screen resolution.
+  Vklopi upodabljanje v medpomnilnik (offscreen rendering) namesto neposredno na zaslon. To omogoči
+  nekatere napredne zmožnosti, kot je odloženo senčenje (deferred shading) in postprocesiranje.
+  Omogoča tudi, da se svet upodablja na ločljivosti različni od zaslonske.
 
 render.postprocess [bool] true
-  When enabled, world is rendered into an offscreen buffer. The image is postprocessed and then
-  rendered to the screen. This technique only applies for the world, UI is always rendered directly.
-  The offscreen buffer may use different resolution than the screen.
+  Vključi postprocesiranje. Deluje le, če je vklopljen render.offscreen.
 
 render.scale [float] 1.0
-  Scale of resolution of offscreen buffer where world is rendered to.
-  This option has effect only if offscreen rendering is enabled.
+  Povečava medpomnilnika za upodabljanje glede na zaslonsko ločljivost.
 
 render.showAim [bool] false
-  Draw a small green box at the point you are currenty aiming at. It is intended for testing
-  purposes, mostly for testing collision detection.
+  Prikaže majhen zelen kvadratek v smeri, v katero gleda kamera. To je namenjeno preverjanju zaznave
+  trkov.
 
 render.showBounds [bool] false
-  Show AABBs of various objects. Green for solid objects, blue-grey for non-solid objects,
-  blue for structures and purple for structure entities.
+  Prikaže mejne kvadre predmetov. Za trdne predmete so zelene barve, za (za trke) prosojne predmete
+  sive, za zgradbe modre in za premične dele zgradb redeče.
 
 render.visibilityRange [float] 300.0
-  Visibility range.
-
-screen.bpp [int] 0
-  Desired bits per pixel for the screen mode. This setting is not necessarily obeyed. If zero, SDL
-  chooses on its own.
+  Razdalja vidljivosti.
 
 screen.full [bool] false
-  Start in fullscreen mode.
+  Poženi v celozaslonskem načinu.
 
 screen.height [int] 0
-  Vertical screen resolution. Zero equals desktop resolution.
+  Navpična ločljivost zaslona. Če je 0, se uporabi ločljivost namizja.
 
-screen.leaveScreensaver [bool] true
-  Do not disable screensaver. Usually there is no need to explicitly disable screensaver, since
-  most system do this on their own when running an fullscreen application and player moves the mouse
-  and/or presses the keys most of the time.
-  You can turn this to false if you want to disable screensaver anyways. Note that screensaver may
-  remain turned off if the application is not terminated properly.
+screen.disableScreensaver [bool] false
+  Običajno izklop ohranjevalnika zaslona ni potreben, saj večina sistemov prepreči poganjanje
+  ohranjevalnika zaslona, če teče celozaslonska aplikacija, pa tudi igralec med igranjem večino časa
+  uporablja miško in tipkovnico.
 
-screen.nvVSync [bool] true
-  Try to use vertical synchronisation for Nvidia cards on Linux (sets __SYNC_TO_VBLANK=1).
+  Če ohranjevalnik zalona želite kljub vsemu izključiti, nastavite to nastavitev na true. Vendar
+  pozor: če se aplikacija ne zaključi pravilno, ohranjevalnik zaslona lahko ostane izklopljen, prav
+  tako lahko preneha delovati samodejna odsotnost v različnih aplikacijah.
+
+screen.vsync [bool] true
+  Skušaj vklopiti sinhronizacijo upodabljanja z osveževanjem zaslona (vertical synchronisation).
 
 screen.width [int] 0
-  Horizontal screen resolution. Zero equals desktop resolution.
+  Vodoravna ločljivost zaslona. Če je 0, se uporabi ločljivost namizja.
 
-seed [int|string] "TIME"
-  Seed for random generator. Integer number or "TIME" string to use the current Unix time as the
-  seed.
+seed [int | string] "TIME"
+  Seme za generator naključnih števil. Lahko je celo število ali, če naj se uporabi trenutni čas,
+  "TIME".
 
 shader.setSamplerIndices [bool] false
-  Set indices for texture samplers. It set, breaks textures on Gallium3D driver. If not set, breaks
-  textures on older ATI/AMD Catalyst drivers.
+  Nastavi indekse samplerjev tekstur. Če je vklopljeno, teksture prenehajo delovati na gonilnikih
+  Gallium3D, pa je je izklopljeno, teksture ne delujejo pravilno na starejših gonilnikih ATI/AMD
+  Catalyst.
 
 shader.vertexTexture [bool] false
-  Use vertex texture fetch feature to perform MD2 model animation in vertex shader. Should work
-  on GeForce 6 or newer or Radeon 2xxx or newer. Does not work with Catalyst drivers.
+  Omogoči teksture za senčilnike oglišč, s katerimi se lahko animira površine na senčilnikih.
+  Potreben je vsaj GeForce 6 ali Radeon HD 2xxx. Ne deluje na gonilnikih ATI/AMD Catalyst.
 
 sound.device [string] ""
-  Sound device to pass to OpenAL. Empty string to let OpenAL choose on its own.
+  Zvočna naprava, ki naj jo uporabi OpenAL. Če je niz prazen, OpenAL uporabi privzeto napravo.
 
 sound.volume [float] 1.0
-  Sound volume factor. 1.0 means full (original) intensity.
+  Glasnost. 1.0 pomeni izvirno glasnost.
 
 ui.aspect [float] 0.0
-  Aspect ratio for UI. If 0.0, aspect is the same as resolution and bots axes are scaled by ui.scale
-  factor. Otherwise, height is scaled by ui.scale and width is height scaled by ui.aspect.
+  Razmerje uporabniškega vmesnika. Če je 0.0 se določi iz razmerja ločljivosti.
 
 ui.scale [float] 1.0
-  Scale for UI resolution. 1.0 means UI is rendered with the screen resolution.
+  Pomanjšava uporabniškega vmesnika.
 
 ui.showBuild [bool] false
-  Show a windows with buttons to add various objects into the world. For development purpuses.
+  Prikaži okno z gumbi za dodajanje raznih predmetov v svet. Za namene razvoja.
 
 ui.showDebug [bool] false
-  Show a window that shows coordinates, orientation and other data about camera, controlled bot,
-  tagged object etc. For development purposes.
+  Prikaži okno, ki prikazuje koordinate, usmeritev in druge podatke o kameri, nadzorovanem botu,
+  označenem predmetu ... Za namene razvoje.
 
 Avtorske pravice za pogon OpenZone
 ----------------------------------

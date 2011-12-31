@@ -399,6 +399,18 @@ bool Config::save( File& file, const char* lineEnd )
   return file.write( &bstream );
 }
 
+void Config::removeUnused()
+{
+  for( auto i = vars.citer(); i.isValid(); ) {
+    auto var = i;
+    ++i;
+
+    if( !var.value().isUsed ) {
+      vars.exclude( var.key() );
+    }
+  }
+}
+
 void Config::clear( bool issueWarnings )
 {
   if( issueWarnings ) {
