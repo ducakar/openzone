@@ -1,5 +1,3 @@
-add_executable( checkBlanks checkBlanks.cc )
-
 add_executable( ozSineSample ozSineSample.cc )
 target_link_libraries( ozSineSample oz ${libs} )
 

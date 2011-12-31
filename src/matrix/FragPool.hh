@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,8 +49,8 @@ class FragPool
 
     int    flags;
 
-    float  velocitySpread; ///< Used when generating multiple frags from <code>Object::onDestroy()
-                           ///< </code> or <code>Struct::destroy()</code>.
+    float  velocitySpread; ///< Used when generating multiple frags in <tt>Object::onDestroy()</tt>
+                           ///< or <tt>Struct::destroy()</tt>.
 
     float  life;
     float  lifeSpread;

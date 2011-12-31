@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -188,6 +188,15 @@ class Array
      */
     OZ_ALWAYS_INLINE
     int length() const
+    {
+      return SIZE;
+    }
+
+    /**
+     * Number of elements.
+     */
+    OZ_ALWAYS_INLINE
+    int capacity() const
     {
       return SIZE;
     }

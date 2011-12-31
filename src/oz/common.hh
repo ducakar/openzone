@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -28,12 +28,11 @@
  *
  * Common types and templates.
  *
- * You may want to add <tt>null</tt>, <tt>foreach</tt>, <tt>soft_assert</tt>,
- * <tt>hard_assert</tt>, <tt>byte</tt>, <tt>ubyte</tt>, <tt>ushort</tt>,
- * <tt>ulong</tt>, <tt>long64</tt> and <tt>ulong64</tt> to your
- * <tt>~/.kde/share/apps/katepart/syntax/cpp.xml</tt> or global file
- * <tt>/usr/share/apps/katepart/syntax/cpp.xml</tt> to look like reserved words in
- * Katepart (Kate/KWrite/KDevelop).
+ * You may want to add <tt>null</tt>, <tt>foreach</tt>, <tt>soft_assert</tt>, <tt>hard_assert</tt>,
+ * <tt>byte</tt>, <tt>ubyte</tt>, <tt>ushort</tt>, <tt>ulong</tt>, <tt>long64</tt> and
+ * <tt>ulong64</tt> to your <tt>~/.kde/share/apps/katepart/syntax/cpp.xml</tt> or global file
+ * <tt>/usr/share/apps/katepart/syntax/cpp.xml</tt> to look like reserved words in KatePart
+ * (KWrite/Kate/KDevelop).
  *
  * For Eclipse I use the same syntax highlighting for macro invocations and reserved words.
  * Import etc/eclipse-defines.xml file to define custom reserved words as macros.

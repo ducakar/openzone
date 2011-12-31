@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -86,7 +86,7 @@ class Buffer
     /**
      * Create a buffer of size <tt>size</tt>.
      */
-    explicit Buffer( int initSize );
+    explicit Buffer( int size );
 
     /**
      * Constant pointer to the beginning of the buffer.
@@ -139,7 +139,7 @@ class Buffer
     /**
      * For an empty buffer, allocate new storage of <tt>size</tt> bytes.
      */
-    void alloc( int initSize );
+    void alloc( int size );
 
     /**
      * Deallocate storage.
@@ -147,12 +147,12 @@ class Buffer
     void dealloc();
 
     /**
-     * Create an InputStream object for reading binary data from the buffer.
+     * Create an <tt>InputStream</tt> object for reading binary data from the buffer.
      */
     InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
 
     /**
-     * Create an OutputStream object for writing binary data into the buffer.
+     * Create an <tt>OutputStream</tt> object for writing binary data into the buffer.
      */
     OutputStream outputStream( Endian::Order order = Endian::NATIVE ) const;
 

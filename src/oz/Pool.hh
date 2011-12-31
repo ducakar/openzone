@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -54,7 +54,7 @@
  * <tt>new</tt> and <tt>delete</tt> for the class.
  *
  * The pool is given to new operator as an additional parameter. As delete cannot be provided,
- * object should be manually destructed and deallocated via <code>pool.dealloc( object )</code>.
+ * object should be manually destructed and deallocated via <tt>pool.dealloc( object )</tt>.
  *
  * @ingroup oz
  */
@@ -97,8 +97,8 @@ class Pool
     /**
      * Memory block.
      *
-     * %Block is an array that can hold up to <tt>BLOCK_SIZE</tt> elements. When we run out of
-     * space we simply allocate another block. Once a block is allocated it cannot be freed any
+     * <tt>Block</tt> is an array that can hold up to <tt>BLOCK_SIZE</tt> elements. When we run out
+     * of space we simply allocate another block. Once a block is allocated it cannot be freed any
      * more unless Pool is empty. That would be rarely possible due to fragmentation anyway.
      */
     struct Block

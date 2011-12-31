@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -441,7 +441,7 @@ inline void aReverse( Elem* aDest, int count )
 /**
  * Utility function for aSort.
  *
- * Elem type must have <tt>operator \< ( const Elem\& )</tt> defined.
+ * <tt>Elem</tt> type must have <tt>operator \< ( const Elem\& )</tt> defined.
  * Quicksort algorithm is used which takes last element in a partition as a pivot so sorting a
  * sorted or nearly sorted array will take O(n^2) time instead of O(n log n) as in average case.
  * When a partition has at most 10 elements, selection sort is used.
@@ -516,7 +516,7 @@ inline void aSort( Elem* aSrc, int count )
 /**
  * Find an element using bisection.
  *
- * Elem type must have defined <tt>operator == ( const Key\&, const Elem\& )</tt> and
+ * <tt>Elem</tt> type must have defined <tt>operator == ( const Key\&, const Elem\& )</tt> and
  * <tt>operator \< ( const Key\&, const Elem\& )</tt>.
  *
  * @param aSrc

@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -37,10 +37,9 @@ namespace oz
 /**
  * Memory allocator.
  *
- * This class provides custom implementation for <tt>new</tt>/<tt>delete</tt> and
- * <tt>new[]</tt>/<tt>delete[]</tt> operators that provides memory allocation
- * statistics, specific alignment and optionally tracks memory leaks (if <tt>OZ_TRACK_LEAKS</tt>
- * config option is turned on).
+ * This class implements <tt>new</tt>/<tt>delete</tt> operators that provide memory allocation
+ * statistics, specific alignment and optionally track memory leaks (if <tt>OZ_TRACK_LEAKS</tt>
+ * configuration option is turned on).
  *
  * Unless <tt>NDEBUG</tt> macro was defined when building liboz, all freed memory is rewritten with
  * 0xee byte values.
@@ -72,14 +71,14 @@ class Alloc
      * Enable/disable memory (de)allocation.
      *
      * If <tt>isLocked == true</tt>, any attempt of memory (de)allocation via
-     * <tt>new</tt>/<tt>delete</tt> will abort the application with <code>System::abort()</code>.
-     * if liboz was compiled without <tt>NDEBUG</tt> macro.
+     * <tt>new</tt>/<tt>delete</tt> will abort the application with <tt>System::abort()</tt>, if
+     * liboz was compiled without <tt>NDEBUG</tt> macro.
      *
      * Since <tt>isLocked</tt> is a weak symbol you can override it in some other module with a
      * custom definition
-     * <code><pre>
+     * <pre>
      *   bool oz::Alloc::isLocked = false;
-     * </pre></code>
+     * </pre>
      */
     static bool isLocked;
 

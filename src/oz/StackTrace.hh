@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -50,7 +50,7 @@ class StackTrace
     void* frames[MAX_FRAMES]; ///< Pointers to stack frames.
 
     /**
-     * Generates array of frame pointers and return it in StackTrace struct.
+     * Generates array of frame pointers and return it in <tt>StackTrace</tt> struct.
      */
     static StackTrace current();
 
@@ -58,8 +58,8 @@ class StackTrace
      * Return string table for stack frames.
      *
      * Beginning of the returned table contains pointers to string entries in stack trace, same as
-     * with <code>backtrace_symbols()</code> call from glibc. The table must be freed by caller with
-     * <tt>free()</tt>.
+     * with <tt>backtrace_symbols()</tt> call from glibc. The table must be freed by caller with
+     * <tt>std::free()</tt>.
      */
     char** symbols() const;
 
