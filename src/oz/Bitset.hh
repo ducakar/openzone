@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -231,7 +231,8 @@ class Bitset
      * subset of the second one. Other explanation: the result is true iff the following statement
      * is true: if first bitset has true on the i-th position then the second bitset also has true
      * on the i-th position.
-     * Bitsets must be the same size.
+     *
+     * Both bitsets must be the same size.
      */
     bool isSubset( const Bitset& b ) const
     {

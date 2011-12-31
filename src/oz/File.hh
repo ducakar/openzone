@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -165,7 +165,7 @@ class File
     void unmap();
 
     /**
-     * Get <code>InputStream</code> for currently mapped file.
+     * Get <tt>InputStream</tt> for currently mapped file.
      */
     InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
 

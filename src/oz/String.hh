@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -38,8 +38,8 @@ namespace oz
  * Immutable string.
  *
  * Class has static storage of <tt>BUFFER_SIZE</tt> bytes, if string is larger it is stored in
- * a dynamically allocated storage. For storage allocation <tt>malloc()</tt> is used, so it bypasses
- * <code>Alloc</code> memory manager.
+ * a dynamically allocated storage. For storage allocation <tt>std::malloc()</tt> is used, so it
+ * bypasses <tt>Alloc</tt> memory manager.
  *
  * To deallocate storage just assign an empty string.
  *

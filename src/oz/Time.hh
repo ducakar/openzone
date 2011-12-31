@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -58,12 +58,12 @@ class Time
     static uint clock();
 
     /**
-     * Return <tt>%Time</tt> structure filled with the current UTC time.
+     * Return <tt>Time</tt> structure filled with the current UTC time.
      */
     static Time utc();
 
     /**
-     * Return <tt>%Time</tt> structure filled with the current local time.
+     * Return <tt>Time</tt> structure filled with the current local time.
      */
     static Time local();
 

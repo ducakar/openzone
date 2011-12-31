@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -75,8 +75,6 @@ class HashString
 
     /**
      * %Iterator with constant access to container elements.
-     *
-     * Since <tt>Elem</tt> class is private inherited cast and operator functions are useless.
      */
     class CIterator : public CIteratorBase<Elem>
     {
@@ -167,17 +165,16 @@ class HashString
           if( B::elem->next != null ) {
             B::elem = B::elem->next;
           }
-          else
-            if( index < SIZE - 1 ) {
-              do {
-                ++index;
-                B::elem = data[index];
-              }
-              while( B::elem == null && index < SIZE - 1 );
+          else if( index == SIZE - 1 ) {
+            B::elem = null;
+          }
+          else {
+            do {
+              ++index;
+              B::elem = data[index];
             }
-            else {
-              B::elem = null;
-            }
+            while( B::elem == null && index < SIZE - 1 );
+          }
           return *this;
         }
 
@@ -185,8 +182,6 @@ class HashString
 
     /**
      * %Iterator with non-constant access to container elements.
-     *
-     * Since <tt>Elem</tt> class is private inherited cast and operator functions are useless.
      */
     class Iterator : public IteratorBase<Elem>
     {
@@ -286,17 +281,16 @@ class HashString
           if( B::elem->next != null ) {
             B::elem = B::elem->next;
           }
-          else
-            if( index < SIZE - 1 ) {
-              do {
-                ++index;
-                B::elem = data[index];
-              }
-              while( B::elem == null && index < SIZE - 1 );
+          else if( index == SIZE - 1 ) {
+            B::elem = null;
+          }
+          else {
+            do {
+              ++index;
+              B::elem = data[index];
             }
-            else {
-              B::elem = null;
-            }
+            while( B::elem == null && index < SIZE - 1 );
+          }
           return *this;
         }
 

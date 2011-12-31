@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -99,8 +99,6 @@ class Map
 
     /**
      * %Iterator with constant access to container elements.
-     *
-     * Since <tt>Elem</tt> class is private, inherited cast and operator functions are invalid.
      */
     class CIterator : public oz::CIterator<Elem>
     {
@@ -178,8 +176,6 @@ class Map
 
     /**
      * %Iterator with non-constant access to container elements.
-     *
-     * Since <tt>Elem</tt> class is private, inherited cast and operator functions are invalid.
      */
     class Iterator : public oz::Iterator<Elem>
     {
@@ -365,7 +361,7 @@ class Map
     /**
      * Create an empty map with the given initial capacity.
      */
-    explicit Map( int initSize ) : data( new Elem[initSize] ), size( initSize ), count( 0 )
+    explicit Map( int size_ ) : data( new Elem[size_] ), size( size_ ), count( 0 )
     {}
 
     /**
@@ -620,15 +616,14 @@ class Map
     }
 
     /**
-     * For an empty map with no allocated storage, allocate capacity for <tt>initSize</tt>
-     * elements.
+     * For an empty map with no allocated storage, allocate capacity for <tt>size_</tt> elements.
      */
-    void alloc( int initSize )
+    void alloc( int size_ )
     {
-      hard_assert( size == 0 && initSize > 0 );
+      hard_assert( size == 0 && size_ > 0 );
 
-      data = new Elem[initSize];
-      size = initSize;
+      data = new Elem[size_];
+      size = size_;
     }
 
     /**

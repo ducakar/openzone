@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -49,7 +49,7 @@ class Log
   private:
 
     void* fileStream; ///< %Log file stream, but declared void* because we don't want to
-                      ///< pollute namespace with \<cstdio\>.
+                      ///< pollute namespace with <tt>\<cstdio\></tt>.
     int   tabs;       ///< Indentation level.
 
   public:
@@ -137,7 +137,7 @@ class Log
     void printException( const std::exception& e ) const;
 
     /**
-     * First parameter is file path (if null or <tt>""</tt>, it only writes to terminal),
+     * First parameter is file path (if null or "", it only writes to terminal),
      * the other tells us if we want to clear its content if the file already exists.
      */
     bool init( const char* fileName = null, bool clearFile = true );

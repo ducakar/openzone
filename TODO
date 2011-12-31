@@ -1,4 +1,4 @@
-TODO 0.3
+0.3
 - oz
   * StackTrace for Win32
 - matrix
@@ -14,7 +14,7 @@ TODO 0.3
   * MD3 animation
   * distant objects fade out
 
-TODO 0.4
+0.4
 - new löök
 - matrix
   * Vehicle
@@ -33,10 +33,10 @@ TODO 0.4
   * better sky
   * weather
 
-TODO 0.5
+0.5
 - networking
 
-TODO 0.6
+0.6
 - RTS interface
 - commanding units
 - AI tasks

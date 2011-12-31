@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -156,8 +156,8 @@ class BufferStream
     /**
      * Create a stream with the given size of the buffer.
      */
-    explicit BufferStream( int initSize ) :
-        pos( new char[initSize] ), start( pos ), end( start + initSize ), order( Endian::NATIVE )
+    explicit BufferStream( int size ) :
+        pos( new char[size] ), start( pos ), end( start + size ), order( Endian::NATIVE )
     {}
 
     /**

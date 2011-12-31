@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -52,21 +52,21 @@ class AABB
     AABB() = default;
 
     /**
-     * Create <tt>%AABB</tt> with the given centre and extents.
+     * Create <tt>AABB</tt> with the given centre and extents.
      */
     OZ_ALWAYS_INLINE
     explicit AABB( const Point3& p_, const Vec3& dim_ ) : p( p_ ), dim( dim_ )
     {}
 
     /**
-     * Create <tt>%AABB</tt> enlarged for margin <tt>eps</tt> (can also be negative).
+     * Create <tt>AABB</tt> enlarged for margin <tt>eps</tt> (can also be negative).
      */
     OZ_ALWAYS_INLINE
     explicit AABB( const AABB& a, float eps ) : p( a.p ), dim( a.dim + Vec3( eps, eps, eps ) )
     {}
 
     /**
-     * Translated <tt>%AABB</tt>.
+     * Translated <tt>AABB</tt>.
      */
     OZ_ALWAYS_INLINE
     AABB operator + ( const Vec3& v ) const
@@ -75,7 +75,7 @@ class AABB
     }
 
     /**
-     * Translated <tt>%AABB</tt>.
+     * Translated <tt>AABB</tt>.
      */
     OZ_ALWAYS_INLINE
     AABB operator - ( const Vec3& v ) const
@@ -84,7 +84,7 @@ class AABB
     }
 
     /**
-     * Translate <tt>%AABB</tt>.
+     * Translate <tt>AABB</tt>.
      */
     OZ_ALWAYS_INLINE
     AABB& operator += ( const Vec3& v )
@@ -94,7 +94,7 @@ class AABB
     }
 
     /**
-     * Translate <tt>%AABB</tt>.
+     * Translate <tt>AABB</tt>.
      */
     OZ_ALWAYS_INLINE
     AABB& operator -= ( const Vec3& v )
@@ -104,10 +104,10 @@ class AABB
     }
 
     /**
-     * True iff the given point is inside this <tt>%AABB</tt>.
+     * True iff the given point is inside this <tt>AABB</tt>.
      *
      * @param point
-     * @param eps margin for which this <tt>%AABB</tt> is enlarged (can also be negative).
+     * @param eps margin for which this <tt>AABB</tt> is enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
     bool includes( const Point3& point, float eps = 0.0f ) const
@@ -119,10 +119,10 @@ class AABB
     }
 
     /**
-     * True iff the given <tt>%AABB</tt> is inside this <tt>%AABB</tt>.
+     * True iff the given <tt>AABB</tt> is inside this <tt>AABB</tt>.
      *
      * @param a
-     * @param eps margin for which this <tt>%AABB</tt> is enlarged (can also be negative).
+     * @param eps margin for which this <tt>AABB</tt> is enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
     bool includes( const AABB& a, float eps = 0.0f ) const
@@ -134,10 +134,10 @@ class AABB
     }
 
     /**
-     * True iff the given <tt>%AABB</tt> overlaps with this <tt>%AABB</tt>.
+     * True iff the given <tt>AABB</tt> overlaps with this <tt>AABB</tt>.
      *
      * @param a
-     * @param eps margin for which this <tt>%AABB</tt> is enlarged (can also be negative).
+     * @param eps margin for which this <tt>AABB</tt> is enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
     bool overlaps( const AABB& a, float eps = 0.0f ) const

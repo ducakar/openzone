@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -50,9 +50,9 @@ class Exception : public std::exception
     StackTrace  stackTrace;   ///< Stack trace.
 
     /**
-     * %Exception constructor.
+     * <tt>Exception</tt> constructor.
      *
-     * This constructor is usually not used directly, but via <tt>%Exception</tt> macro.
+     * This constructor is usually not used directly, but via <tt>Exception</tt> macro.
      * It generates SIGTRAP to signal debugger on exception.
      */
     OZ_PRINTF_FORMAT( 5, 6 )
@@ -68,7 +68,7 @@ class Exception : public std::exception
 
 /**
  * @def Exception
- * Exception constructor wrapper that provides the current file, line and function.
+ * <tt>Exception</tt> constructor wrapper that provides the current file, line and function.
  *
  * @ingroup oz
  */

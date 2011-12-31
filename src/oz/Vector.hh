@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -230,7 +230,7 @@ class Vector
     /**
      * Create an empty vector with the given initial capacity.
      */
-    explicit Vector( int initSize ) : data( new Elem[initSize] ), size( initSize ), count( 0 )
+    explicit Vector( int size_ ) : data( new Elem[size_] ), size( size_ ), count( 0 )
     {}
 
     /**
@@ -628,15 +628,14 @@ class Vector
     }
 
     /**
-     * For an empty vector with no allocated storage, allocate capacity for <tt>initSize</tt>
-     * elements.
+     * For an empty vector with no allocated storage, allocate capacity for <tt>size_</tt> elements.
      */
-    void alloc( int initSize )
+    void alloc( int size_ )
     {
-      hard_assert( size == 0 && initSize > 0 );
+      hard_assert( size == 0 && size_ > 0 );
 
-      data = new Elem[initSize];
-      size = initSize;
+      data = new Elem[size_];
+      size = size_;
     }
 
     /**

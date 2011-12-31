@@ -1,7 +1,7 @@
 /*
  * OpenZone - simple cross-platform FPS/RTS game engine.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ class BSP : public Bounds
       int firstSide; ///< Index of the first plane index in <tt>bushSides</tt> array.
       int nSides;    ///< Number of plane indices.
 
-      int material;  ///< Material bits (look <code>matrix::Material</code>.
+      int material;  ///< Material bits (look <tt>matrix::Material</tt>.
     };
 
     /**
@@ -84,7 +84,7 @@ class BSP : public Bounds
 
       BSP*   bsp;        ///< Pointer to the parent BSP.
 
-      int    firstBrush; ///< Index of the first brush in <code>brushes<code> array.
+      int    firstBrush; ///< Index of the first brush in <tt>brushes<tt> array.
       int    nBrushes;   ///< Number of brushes.
 
       float  ratioInc;

@@ -1,7 +1,7 @@
 /*
  * liboz - OpenZone core library.
  *
- * Copyright © 2002-2011 Davorin Učakar
+ * Copyright © 2002-2012 Davorin Učakar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -60,12 +60,10 @@ namespace oz
  * <tt>prev[INDEX]</tt> and <tt>next[INDEX]</tt> pointers are not cleared when element is
  * removed from the list, they may still point to elements in the list or to invalid locations!
  *
- * <tt>%DList</tt> class doesn't take care of memory management except for the
- * <code>free()</code> method.
- *
- * <tt>%DList</tt> is not a real container but merely binds together already existing elements.
+ * <tt>DList</tt> is not a real container but merely binds together already existing elements.
  * So, copy operator does not copy the elements, to make a copy of a list including its elements,
- * use <code>clone()</code> function.
+ * use <tt>clone()</tt> instead. It also doesn't delete removed elements (except for <tt>free()</tt>
+ * method).
  *
  * @ingroup oz
  */
