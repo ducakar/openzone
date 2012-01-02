@@ -45,7 +45,7 @@ const float Vehicle::EJECT_MOMENTUM      = 15.0f;
 
 Pool<Vehicle, 256> Vehicle::pool;
 
-void ( Vehicle::* Vehicle::handlers[Vehicle::TYPE_MAX] )( const Mat44& rotMat ) = {
+const Vehicle::Handler Vehicle::HANDLERS[] = {
   &Vehicle::staticHandler,
   &Vehicle::wheeledHandler,
   &Vehicle::trackedHandler,
@@ -309,7 +309,7 @@ void Vehicle::onUpdate()
   if( pilot != -1 && fuel > 0.0f ) {
     fuel -= clazz->fuelConsumption;
 
-    ( this->*handlers[clazz->type] )( rotMat );
+    ( this->*HANDLERS[clazz->type] )( rotMat );
   }
 
   // move forwards (predicted movement) to prevent our bullets hitting us in the back when we are

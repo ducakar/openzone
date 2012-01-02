@@ -81,10 +81,10 @@ char** StackTrace::symbols() const
   *out = '\0';
 
   for( int i = 0; i < nFrames; ++i ) {
-    // file
+    // File.
     char* file = symbols[i];
 
-    // mangled function name
+    // Mangled function name.
     char* func = strrchr( symbols[i], '(' );
 
     if( func == null ) {
@@ -104,7 +104,7 @@ char** StackTrace::symbols() const
     *func = '\0';
     ++func;
 
-    // offset
+    // Offset.
     char* offset = strchr( func, '+' );
 
     if( offset == null ) {
@@ -114,7 +114,7 @@ char** StackTrace::symbols() const
     *offset = '\0';
     ++offset;
 
-    // address (plus a leading space)
+    // Address (plus a leading space).
     char* address = strchr( offset, ')' );
 
     if( address == null ) {
@@ -140,7 +140,7 @@ char** StackTrace::symbols() const
     *address = '\0';
     ++address;
 
-    // demangle name
+    // Demangle name.
     char*  demangled;
     size_t size = STRING_BUFFER_SIZE;
     int    status = 0;

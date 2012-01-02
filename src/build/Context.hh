@@ -49,8 +49,8 @@ class Context
 
     static bool useS3TC;
 
-    static uint buildTexture( const void* data, int width, int height, int format,
-                              bool wrap, int magFilter, int minFilter );
+    static uint buildTexture( const void* data, int width, int height, int format, bool wrap,
+                              int magFilter, int minFilter );
 
     static uint loadRawTexture( const char* path, bool wrap = true,
                                 int magFilter = DEFAULT_MAG_FILTER,

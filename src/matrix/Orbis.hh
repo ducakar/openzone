@@ -177,10 +177,12 @@ inline Cell* Orbis::getCell( const Point3& p )
 OZ_ALWAYS_INLINE
 inline Span Orbis::getInters( float x, float y, float epsilon ) const
 {
-  return { max( int( ( x - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
-           max( int( ( y - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
-           min( int( ( x + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::CELLS - 1 ),
-           min( int( ( y + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::CELLS - 1 ) };
+  return {
+    max( int( ( x - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
+    max( int( ( y - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
+    min( int( ( x + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::CELLS - 1 ),
+    min( int( ( y + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::CELLS - 1 )
+  };
 }
 
 OZ_ALWAYS_INLINE
@@ -193,10 +195,12 @@ OZ_ALWAYS_INLINE
 inline Span Orbis::getInters( float minPosX, float minPosY,
                               float maxPosX, float maxPosY, float epsilon ) const
 {
-  return { max( int( ( minPosX - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
-           max( int( ( minPosY - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
-           min( int( ( maxPosX + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::CELLS - 1 ),
-           min( int( ( maxPosY + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::CELLS - 1 ) };
+  return {
+    max( int( ( minPosX - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
+    max( int( ( minPosY - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
+    min( int( ( maxPosX + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::CELLS - 1 ),
+    min( int( ( maxPosY + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::CELLS - 1 )
+  };
 }
 
 OZ_ALWAYS_INLINE

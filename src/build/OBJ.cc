@@ -60,7 +60,7 @@ void OBJ::readVertexData( char* pos )
     ++pos;
 
     float x, y, z;
-    if( sscanf( pos, "%f %f %f", &x, &y, &z ) != 3 ) {
+    if( sscanf( pos, "%17f %17f %17f", &x, &y, &z ) != 3 ) {
       throw Exception( "Invalid OBJ vertex position specification" );
     }
 
@@ -71,7 +71,7 @@ void OBJ::readVertexData( char* pos )
     pos += 2;
 
     float x, y, z;
-    if( sscanf( pos, "%f %f %f", &x, &y, &z ) != 3 ) {
+    if( sscanf( pos, "%17f %17f %17f", &x, &y, &z ) != 3 ) {
       throw Exception( "Invalid OBJ vertex normal specification" );
     }
 
@@ -82,7 +82,7 @@ void OBJ::readVertexData( char* pos )
     pos += 2;
 
     float u, v;
-    if( sscanf( pos, "%f %f", &u, &v ) != 2 ) {
+    if( sscanf( pos, "%17f %17f", &u, &v ) != 2 ) {
       throw Exception( "Invalid OBJ vertex texture coordinate specification" );
     }
 
@@ -128,7 +128,7 @@ void OBJ::readFace( char* pos, int part )
   // vert
   if( firstSlash == -1 ) {
     do {
-      if( sscanf( pos, "%d", &vertIndex ) != 1 ) {
+      if( sscanf( pos, "%5d", &vertIndex ) != 1 ) {
         throw Exception( "Invalid OBJ face specification ('v')" );
       }
       face.vertices.add( FaceVertex( vertIndex - 1, -1, -1 ) );
@@ -141,7 +141,7 @@ void OBJ::readFace( char* pos, int part )
   // vert/tex
   else if( lastSlash == -1 ) {
     do {
-      if( sscanf( pos, "%d/%d", &vertIndex, &texCoordIndex ) != 2 ) {
+      if( sscanf( pos, "%5d/%5d", &vertIndex, &texCoordIndex ) != 2 ) {
         throw Exception( "Invalid OBJ face specification ('v/t')" );
       }
       face.vertices.add( FaceVertex( vertIndex - 1, -1, texCoordIndex - 1 ) );
@@ -154,7 +154,7 @@ void OBJ::readFace( char* pos, int part )
   // vert//norm
   else if( firstSlash + 1 == lastSlash ) {
     do {
-      if( sscanf( pos, "%d//%d", &vertIndex, &normalIndex ) != 2 ) {
+      if( sscanf( pos, "%5d//%5d", &vertIndex, &normalIndex ) != 2 ) {
         throw Exception( "Invalid OBJ face specification ('v//n')" );
       }
       face.vertices.add( FaceVertex( vertIndex - 1, normalIndex - 1, -1 ) );
@@ -167,7 +167,7 @@ void OBJ::readFace( char* pos, int part )
   // vert/tex/norm
   else {
     do {
-      if( sscanf( pos, "%d/%d/%d", &vertIndex, &texCoordIndex, &normalIndex ) != 3 ) {
+      if( sscanf( pos, "%5d/%5d/%5d", &vertIndex, &texCoordIndex, &normalIndex ) != 3 ) {
         throw Exception( "Invalid OBJ face specification ('v/t/n')" );
       }
       face.vertices.add( FaceVertex( vertIndex - 1, normalIndex - 1, texCoordIndex - 1 ) );
@@ -233,13 +233,13 @@ void OBJ::loadMaterials( const String& path )
       case 'K': {
         if( pos[1] == 's' ) {
           Vec4 colour;
-          sscanf( pos + 2, "%f %f %f", &colour.x, &colour.y, &colour.z );
+          sscanf( pos + 2, "%17f %17f %17f", &colour.x, &colour.y, &colour.z );
           part.specular = ( colour.x + colour.y + colour.z ) / 3.0f;
         }
         break;
       }
       case 'd': {
-        sscanf( pos + 1, "%f", &part.alpha );
+        sscanf( pos + 1, "%17f", &part.alpha );
         break;
       }
       case 'm': {

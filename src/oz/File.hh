@@ -121,24 +121,24 @@ class File
     /**
      * Stat file to get its type.
      *
-     * File type is cached until one changes the file path.
+     * %File type is cached until one changes the file path.
      */
     Type getType();
 
     /**
      * %File path.
      */
-    const String& path() const;
+    String path() const;
 
     /**
      * %File name.
      */
-    const char* name() const;
+    String name() const;
 
     /**
-     * Extension (part of base name after the last dot) or <tt>null</tt> if no dot in base name.
+     * Extension (part of base name after the last dot) or "" if no dot in base name.
      */
-    const char* extension() const;
+    String extension() const;
 
     /**
      * Name without the extension (and the dot).

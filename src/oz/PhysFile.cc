@@ -31,6 +31,7 @@
 
 #include "windefs.h"
 
+#include <cerrno>
 #include <physfs.h>
 
 namespace oz
@@ -122,7 +123,7 @@ PhysFile::Type PhysFile::getType()
   return type;
 }
 
-const String& PhysFile::path() const
+String PhysFile::path() const
 {
   return filePath;
 }
@@ -133,19 +134,25 @@ String PhysFile::realPath() const
   return mountPoint == null ? filePath : mountPoint + ( "/" + filePath );
 }
 
-const char* PhysFile::name() const
+String PhysFile::mountPoint() const
 {
-  const char* slash = String::findLast( filePath, '/' );
-
-  return slash == null ? filePath.cstr() : slash + 1;
+  const char* mountPoint = PHYSFS_getRealDir( filePath );
+  return mountPoint == null ? "" : mountPoint;
 }
 
-const char* PhysFile::extension() const
+String PhysFile::name() const
 {
-  const char* slash = String::findLast( filePath, '/' );
-  const char* dot   = String::findLast( filePath, '.' );
+  int slash = filePath.lastIndex( '/' );
 
-  return slash < dot ? dot + 1 : null;
+  return slash == -1 ? filePath : filePath.substring( slash + 1 );
+}
+
+String PhysFile::extension() const
+{
+  int slash = filePath.lastIndex( '/' );
+  int dot   = filePath.lastIndex( '.' );
+
+  return slash < dot ? filePath.substring( dot + 1 ) : String();
 }
 
 String PhysFile::baseName() const
@@ -165,14 +172,14 @@ bool PhysFile::hasExtension( const char* ext ) const
 {
   hard_assert( ext != null );
 
-  const char* slash = String::findLast( filePath, '/' );
-  const char* dot   = String::findLast( filePath, '.' );
+  const char* slash = filePath.findLast( '/' );
+  const char* dot   = filePath.findLast( '.' );
 
   if( slash < dot ) {
     return String::equals( dot + 1, ext );
   }
   else {
-    return ext[0] == '\0';
+    return String::isEmpty( ext );
   }
 }
 
@@ -259,7 +266,7 @@ DArray<PhysFile> PhysFile::ls()
     return array;
   }
 
-  // count entries first
+  // Count entries first.
   int count = 0;
   char** entity = list;
   while( *entity != null ) {
@@ -295,6 +302,25 @@ DArray<PhysFile> PhysFile::ls()
 
   array.sort();
   return array;
+}
+
+bool PhysFile::mount( const char* source, const char* mountPoint, bool append )
+{
+  return PHYSFS_mount( source, mountPoint, append ) != 0;
+}
+
+bool PhysFile::init()
+{
+#ifdef _WIN32
+  return PHYSFS_init( null ) != 0;
+#else
+  return PHYSFS_init( program_invocation_name ) != 0;
+#endif
+}
+
+bool PhysFile::free()
+{
+  return PHYSFS_deinit() != 0;
 }
 
 }

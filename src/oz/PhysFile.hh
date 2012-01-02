@@ -36,7 +36,10 @@ namespace oz
 {
 
 /**
- * PHYSFS wrapper, similar to <tt>File</tt> class, but read-only.
+ * PhysicsFS wrapper, similar to <tt>File</tt> class.
+ *
+ * Files can only be accessed for reading through this class. Besides from <tt>File</tt> it also
+ * provides some PhysicsFS-specific functions.
  *
  * @ingroup oz
  */
@@ -113,29 +116,36 @@ class PhysFile
     /**
      * Stat file to get its type.
      *
-     * File type is cached until one changes the file path.
+     * %File type is cached until one changes the file path.
      */
     Type getType();
 
     /**
-     * Virtual file path.
+     * %File path in virtual FS.
      */
-    const String& path() const;
+    String path() const;
 
     /**
-     * Real file path.
+     * %File path in real FS.
+     *
+     * If file is inside an archive, looks like <tt>"/path/to/archive.zip/file"</tt>.
      */
     String realPath() const;
 
     /**
-     * %File name.
+     * Mount point under which file's archive or top directory is mounted.
      */
-    const char* name() const;
+    String mountPoint() const;
 
     /**
-     * Extension (part of base name after the last dot) or <tt>null</tt> if no dot in base name.
+     * %File name.
      */
-    const char* extension() const;
+    String name() const;
+
+    /**
+     * Extension (part of base name after the last dot) or "" if no dot in base name.
+     */
+    String extension() const;
 
     /**
      * Name without the extension (and the dot).
@@ -178,6 +188,27 @@ class PhysFile
      * On error, empty array is returned.
      */
     DArray<PhysFile> ls();
+
+    /**
+     * Add PhysicsFS search path.
+     *
+     * For more detailed information see PhysicsFS manual for <tt>PHYSFS_mount()</tt>.
+     *
+     * @param source archive or directory in real FS to mount.
+     * @param mountPoint mount point in virtual FS, "" or <tt>null</tt> equals root ("/").
+     * @param append true to add to the end instead to the beginning of the search path.
+     */
+    static bool mount( const char* source, const char* mountPoint, bool append );
+
+    /**
+     * Initialise PhysicsFS.
+     */
+    static bool init();
+
+    /**
+     * Deinitialise PhysicsFS.
+     */
+    static bool free();
 
 };
 

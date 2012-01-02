@@ -297,7 +297,7 @@ class HashIndex
         chainA = chainA->next;
         chainB = chainB->next;
       }
-      // at least one is null
+      // At least one is null.
       return chainA == chainB;
     }
 
@@ -531,7 +531,7 @@ class HashIndex
     }
 
     /**
-     * If the key exists, return constant pointer to its value, otherwise return null.
+     * If the key exists, return constant pointer to its value, otherwise return <tt>null</tt>.
      */
     const Value* find( int key ) const
     {
@@ -550,7 +550,7 @@ class HashIndex
     }
 
     /**
-     * If the key exists, return pointer to its value, otherwise return null.
+     * If the key exists, return pointer to its value, otherwise return <tt>null</tt>.
      */
     Value* find( int key )
     {

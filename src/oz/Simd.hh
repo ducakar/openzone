@@ -76,7 +76,7 @@ typedef uint uint4 __attribute__(( vector_size( 16 ) )) ;
 #endif
 
 /**
- * Base class for classes representing a SIMD register.
+ * SIMD register representation.
  *
  * @ingroup oz
  */

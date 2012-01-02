@@ -505,8 +505,11 @@ void Sound::suspend() const
 
 void Sound::play()
 {
-  float orientation[] = { camera.at.x, camera.at.y, camera.at.y,
-                          camera.up.x, camera.up.y, camera.up.z };
+  float orientation[] = {
+    camera.at.x, camera.at.y, camera.at.y,
+    camera.up.x, camera.up.y, camera.up.z
+  };
+
   // add new sounds
   alListenerfv( AL_ORIENTATION, orientation );
   alListenerfv( AL_POSITION, camera.p );

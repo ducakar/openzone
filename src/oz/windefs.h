@@ -43,7 +43,7 @@
 // At least Internet Explorer 6.0 libraries required.
 # define _WIN32_IE 0x0600
 
-// Don't import all crap from windows headers.
+// Don't import all crap from Windows headers.
 # define WIN32_LEAN_AND_MEAN
 
 #endif

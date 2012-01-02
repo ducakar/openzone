@@ -42,8 +42,7 @@ class Vehicle : public Dynamic
       TRACKED,
       MECH,
       HOVER,
-      AIR,
-      TYPE_MAX
+      AIR
     };
 
     static const int   MAX_WEAPONS       = 4;
@@ -70,6 +69,10 @@ class Vehicle : public Dynamic
     static const float EXIT_MOMENTUM;
     static const float EJECT_MOMENTUM;
 
+    typedef void ( Vehicle::* Handler )( const Mat44& rotMat );
+
+    static const Handler HANDLERS[];
+
   public:
 
     static Pool<Vehicle, 256> pool;
@@ -89,8 +92,6 @@ class Vehicle : public Dynamic
     float shotTime[MAX_WEAPONS];
 
   protected:
-
-    static void ( Vehicle::* handlers[TYPE_MAX] )( const Mat44& rotMat );
 
     void exit();
     void eject();

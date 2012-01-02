@@ -48,6 +48,12 @@ class Struct : public Bounds
     {
       friend class Struct;
 
+      private:
+
+        typedef void ( Entity::* Handler )();
+
+        static const Handler HANDLERS[];
+
       public:
 
         enum State
@@ -69,11 +75,9 @@ class Struct : public Bounds
 
       private:
 
-        static void ( Entity::* const HANDLERS[] )();
-
-        void updateIgnoring();
-        void updateCrushing();
-        void updateAutoDoor();
+        void ignoringHandler();
+        void crushingHandler();
+        void autoDoorHandler();
 
     };
 

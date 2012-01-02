@@ -120,7 +120,7 @@ void BotClass::initClass( const Config* config )
   corpseDim.y = config->get( "corpseDim.y", 2.0f * dim.y );
   corpseDim.z = config->get( "corpseDim.z", 0.20f );
 
-  if( corpseDim.z < 0.0f || corpseDim.y < 0.0f || corpseDim.z < 0.0f ) {
+  if( corpseDim.x < 0.0f || corpseDim.y < 0.0f || corpseDim.z < 0.0f ) {
     throw Exception( "%s: Invalid bot corpse dimensions. Should be >= 0.", name.cstr() );
   }
 
