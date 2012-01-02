@@ -151,7 +151,7 @@ String::String( const char* s )
 
 String::String( bool b ) : buffer( baseBuffer )
 {
-  // some protection against too small buffers
+  // Protection against too small buffers.
   static_assert( BUFFER_SIZE >= 6, "String::BUFFER_SIZE too small for bool representation" );
 
   if( b ) {
@@ -177,8 +177,8 @@ String::String( bool b ) : buffer( baseBuffer )
 
 String::String( int i ) : buffer( baseBuffer )
 {
-  // that should assure enough space, since log10( 2^( 8*sizeof( int ) ) ) <= 3*sizeof( int ),
-  // +2 for sign and terminating null char
+  // That should assure enough space, since log10( 2^( 8*sizeof( int ) ) ) <= 3*sizeof( int ), +2
+  // for sign and terminating null char.
   static_assert( BUFFER_SIZE >= 3 * int( sizeof( int ) ) + 2,
                  "String::BUFFER_SIZE too small for int representation" );
 
@@ -187,7 +187,7 @@ String::String( int i ) : buffer( baseBuffer )
 
 String::String( float f ) : buffer( baseBuffer )
 {
-  // worst case: sign + 8 digits + dot + exponent (at most e-xx) + optional '.0' + '\0'
+  // Worst case: sign + 8 digits + dot + exponent (at most e-xx) + optional '.0' + '\0'.
   static_assert( BUFFER_SIZE >= 17,
                  "String::BUFFER_SIZE too small for float representation." );
 
@@ -196,7 +196,7 @@ String::String( float f ) : buffer( baseBuffer )
 
 String::String( double d ) : buffer( baseBuffer )
 {
-  // worst case: sign + 16 digits + dot + exponent (at most e-xxx) + optional '.0' + '\0'
+  // Worst case: sign + 16 digits + dot + exponent (at most e-xxx) + optional '.0' + '\0'.
   static_assert( BUFFER_SIZE >= 26,
                  "String::BUFFER_SIZE too small for double representation." );
 
@@ -364,7 +364,7 @@ DArray<String> String::split( char ch ) const
   int i     = 0;
   int count = 1;
 
-  // count substrings first
+  // Count substrings first.
   while( p1 >= 0 ) {
     p0 = p1 + 1;
     p1 = index( ch, p0 );

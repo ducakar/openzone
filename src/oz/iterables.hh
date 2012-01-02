@@ -426,7 +426,7 @@ inline Iterator iFind( Iterator iSrc, const Value& value )
 template <class CIterator, typename Value>
 inline CIterator iFindLast( CIterator iSrc, const Value& value )
 {
-  // default constructor produces an invalid, passed iterator
+  // Default constructor creates an invalid, passed iterator.
   CIterator lastOccurence;
 
   while( iSrc.isValid() ) {

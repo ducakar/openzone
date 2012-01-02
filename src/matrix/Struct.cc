@@ -63,16 +63,16 @@ const float Struct::DEMOLISH_SPEED         = 8.0f * Timer::TICK_TIME;
 const float Struct::MOMENTUM_DAMAGE_COEF   = 0.01f;
 const float Struct::MAX_HIT_DAMAGE_MASS    = 100.0f;
 
-void ( Struct::Entity::* const Struct::Entity::HANDLERS[] )() = {
-  &Struct::Entity::updateIgnoring,
-  &Struct::Entity::updateCrushing,
-  &Struct::Entity::updateAutoDoor
+const Struct::Entity::Handler Struct::Entity::HANDLERS[] = {
+  &Struct::Entity::ignoringHandler,
+  &Struct::Entity::crushingHandler,
+  &Struct::Entity::autoDoorHandler
 };
 
 Vector<Object*> Struct::overlappingObjs;
 Pool<Struct> Struct::pool;
 
-void Struct::Entity::updateIgnoring()
+void Struct::Entity::ignoringHandler()
 {
   switch( state ) {
     case CLOSED: {
@@ -122,7 +122,7 @@ void Struct::Entity::updateIgnoring()
   }
 }
 
-void Struct::Entity::updateCrushing()
+void Struct::Entity::crushingHandler()
 {
   switch( state ) {
     case CLOSED: {
@@ -216,7 +216,7 @@ void Struct::Entity::updateCrushing()
   }
 }
 
-void Struct::Entity::updateAutoDoor()
+void Struct::Entity::autoDoorHandler()
 {
   switch( state ) {
     case CLOSED: {

@@ -53,8 +53,8 @@ const int Context::DEFAULT_MIN_FILTER = GL_LINEAR_MIPMAP_LINEAR;
 
 bool Context::useS3TC = false;
 
-uint Context::buildTexture( const void* data, int width, int height, int format,
-                            bool wrap, int magFilter, int minFilter )
+uint Context::buildTexture( const void* data, int width, int height, int format, bool wrap,
+                            int magFilter, int minFilter )
 {
   if( useS3TC && !( Math::isPow2( width ) && Math::isPow2( height ) ) ) {
     throw Exception( "Texture must be of dimensions 2^n x 2^m to use S3 texture compression." );

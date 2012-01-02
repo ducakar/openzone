@@ -41,8 +41,6 @@
 #include <clocale>
 #include <unistd.h>
 
-#include <physfs.h>
-
 #ifdef _WIN32
 # undef WIN32_LEAN_AND_MEAN
 # include <shlobj.h>
@@ -94,7 +92,7 @@ void Client::shutdown()
   config.clear( initFlags & INIT_CONFIG );
 
   if( initFlags & INIT_PHYSFS ) {
-    PHYSFS_deinit();
+    PhysFile::free();
   }
   if( initFlags & INIT_SDL ) {
     SDL_Quit();
@@ -254,16 +252,14 @@ int Client::main( int argc, char** argv )
   log.printTime();
   log.printEnd();
 
-  log.print( "Initialising SDL ..." );
   if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO ) != 0 ) {
     throw Exception( "Failed to initialise SDL" );
   }
-  log.printEnd( " OK" );
   initFlags |= INIT_SDL;
 
-  log.print( "Initialising PhysFS ..." );
-  PHYSFS_init( null );
-  log.printEnd( " OK" );
+  if( !PhysFile::init() ) {
+    throw Exception( "PhysicsFS initialisation failed" );
+  }
   initFlags |= INIT_PHYSFS;
 
   log.println( "Build details {" );
@@ -355,36 +351,36 @@ int Client::main( int argc, char** argv )
   const char* userMusicPath = config.getSet( "dir.music", "" );
 
   if( !String::isEmpty( userMusicPath ) ) {
-    if( PHYSFS_mount( userMusicPath, "/music", 1 ) == 0 ) {
-      throw Exception( "Failed to mount '%s' on /music in PhysFS", userMusicPath );
+    if( !PhysFile::mount( userMusicPath, "/music", true ) ) {
+      throw Exception( "Failed to mount '%s' on /music in PhysicsFS", userMusicPath );
     }
     log.println( "%s [mounted on /music in PHYSFS]", userMusicPath );
   }
 
-  if( PHYSFS_mount( localDir.path(), null, 1 ) != 0 ) {
+  if( !PhysFile::mount( localDir.path(), null, true ) ) {
     log.println( "%s", localDir.path().cstr() );
 
     DArray<File> list = localDir.ls();
 
     foreach( file, list.citer() ) {
       if( file->hasExtension( "ozPack" ) ) {
-        if( PHYSFS_mount( file->path(), null, 1 ) == 0 ) {
-          throw Exception( "Failed to mount '%s' on / in PhysFS", file->path().cstr() );
+        if( !PhysFile::mount( file->path(), null, true ) ) {
+          throw Exception( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
         log.println( "%s", file->path().cstr() );
       }
     }
   }
 
-  if( PHYSFS_mount( dataDir.path(), null, 1 ) != 0 ) {
+  if( !PhysFile::mount( dataDir.path(), null, true ) ) {
     log.println( "%s", dataDir.path().cstr() );
 
     DArray<File> list = dataDir.ls();
 
     foreach( file, list.citer() ) {
       if( file->hasExtension( "ozPack" ) ) {
-        if( PHYSFS_mount( file->path(), null, 1 ) == 0 ) {
-          throw Exception( "Failed to mount '%s' on / in PhysFS", file->path().cstr() );
+        if( !PhysFile::mount( file->path(), null, true ) ) {
+          throw Exception( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
         log.println( "%s", file->path().cstr() );
       }

@@ -576,7 +576,7 @@ void Lua::init()
 
   foreach( file, luaFiles.iter() ) {
     if( file->hasExtension( "lua" ) ) {
-      log.print( "%s ...", file->name() );
+      log.print( "%s ...", file->name().cstr() );
 
       if( !file->map() ) {
         throw Exception( "Failed to read Lua script '%s'", file->path().cstr() );

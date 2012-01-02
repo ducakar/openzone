@@ -49,7 +49,7 @@ void Mouse::build()
     int size, hotspotX, hotspotY;
     char imgFile[32];
 
-    int nMatches = fscanf( f, "%d %d %d %31s", &size, &hotspotX, &hotspotY, imgFile );
+    int nMatches = fscanf( f, "%3d %3d %3d %31s", &size, &hotspotX, &hotspotY, imgFile );
     if( nMatches != 4 ) {
       throw Exception( "Invalid xcursor line" );
     }

@@ -37,7 +37,7 @@ namespace oz
 /**
  * Static array.
  *
- * The advantage over C++ arrays is it that is has bounds checking and an iterator.
+ * The advantage over C++ arrays is it that is has bounds checking and iterator.
  *
  * @ingroup oz
  */
@@ -292,7 +292,7 @@ class Array
     }
 
     /**
-     * Delete objects referenced by elements and set all elements to null.
+     * Delete objects referenced by elements and set all elements to <tt>null</tt>.
      */
     void free()
     {

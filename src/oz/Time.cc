@@ -80,8 +80,10 @@ Time Time::utc()
   SYSTEMTIME timeStruct;
   GetSystemTime( &timeStruct );
 
-  Time time = { timeStruct.wYear, timeStruct.wMonth, timeStruct.wDay, timeStruct.wHour,
-      timeStruct.wMinute, timeStruct.wSecond };
+  return {
+    timeStruct.wYear, timeStruct.wMonth, timeStruct.wDay, timeStruct.wHour,
+    timeStruct.wMinute, timeStruct.wSecond
+  };
 
 #else
 
@@ -89,12 +91,12 @@ Time Time::utc()
   time_t currentTime = ::time( null );
   gmtime_r( &currentTime, &timeStruct );
 
-  Time time = { 1900 + timeStruct.tm_year, 1 + timeStruct.tm_mon, timeStruct.tm_mday,
-      timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec };
+  return {
+    1900 + timeStruct.tm_year, 1 + timeStruct.tm_mon, timeStruct.tm_mday,
+    timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec
+  };
 
 #endif
-
-  return time;
 }
 
 Time Time::local()
@@ -104,8 +106,10 @@ Time Time::local()
   SYSTEMTIME timeStruct;
   GetLocalTime( &timeStruct );
 
-  Time time = { timeStruct.wYear, timeStruct.wMonth, timeStruct.wDay, timeStruct.wHour,
-      timeStruct.wMinute, timeStruct.wSecond };
+  return {
+    timeStruct.wYear, timeStruct.wMonth, timeStruct.wDay, timeStruct.wHour,
+    timeStruct.wMinute, timeStruct.wSecond
+  };
 
 #else
 
@@ -113,12 +117,12 @@ Time Time::local()
   time_t currentTime = ::time( null );
   localtime_r( &currentTime, &timeStruct );
 
-  Time time = { 1900 + timeStruct.tm_year, 1 + timeStruct.tm_mon, timeStruct.tm_mday,
-      timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec };
+  return {
+    1900 + timeStruct.tm_year, 1 + timeStruct.tm_mon, timeStruct.tm_mday,
+    timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec
+  };
 
 #endif
-
-  return time;
 }
 
 }

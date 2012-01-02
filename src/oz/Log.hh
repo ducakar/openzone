@@ -137,8 +137,8 @@ class Log
     void printException( const std::exception& e ) const;
 
     /**
-     * First parameter is file path (if null or "", it only writes to terminal),
-     * the other tells us if we want to clear its content if the file already exists.
+     * First parameter is file path (if <tt>null</tt> or "", it only writes to terminal), the other
+     * tells us if we want to clear its content if the file already exists.
      */
     bool init( const char* fileName = null, bool clearFile = true );
 

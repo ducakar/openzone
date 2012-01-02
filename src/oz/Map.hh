@@ -497,7 +497,7 @@ class Map
     }
 
     /**
-     * Constant pointer to the given key's value or null if not found.
+     * Constant pointer to the given key's value or <tt>null</tt> if not found.
      */
     const Value* find( const Key& key ) const
     {
@@ -506,7 +506,7 @@ class Map
     }
 
     /**
-     * Pointer to the given key's value or null if not found.
+     * Pointer to the given key's value or <tt>null</tt> if not found.
      */
     Value* find( const Key& key )
     {

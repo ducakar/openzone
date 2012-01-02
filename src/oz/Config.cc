@@ -61,18 +61,18 @@ void Config::loadConf( InputStream* istream )
 
     char ch = istream->readChar();
 
-    // skip initial spaces
+    // Skip initial spaces.
     while( istream->isAvailable() && ( String::isSpace( ch ) || ch == '\n' ) ) {
       ch = istream->readChar();
     }
 
-    // skip comment
+    // Skip comment.
     if( ch == '#' || ch == '/' ) {
       goto skipLine;
     }
 
     {
-      // read key
+      // Key.
       const char* begin = istream->getPos() - 1;
       while( istream->isAvailable() &&
           ( String::isLetter( ch ) || String::isDigit( ch ) || ch == '_' || ch == '.' ) )
@@ -87,12 +87,12 @@ void Config::loadConf( InputStream* istream )
 
       String key = String( int( end - begin ), begin );
 
-      // skip spaces between name and value
+      // Spaces between name and value.
       while( istream->isAvailable() && String::isSpace( ch ) ) {
         ch = istream->readChar();
       }
 
-      // read value
+      // Value.
       if( ch != '"' ) {
         throw Exception( "%s:%d: opening '\"' expected", filePath.cstr(), lineNum );
       }
@@ -120,7 +120,7 @@ void Config::loadConf( InputStream* istream )
 
   skipLine:
 
-    // find end of line/file
+    // End of line/file.
     while( istream->isAvailable() && ch != '\n' ) {
       ch = istream->readChar();
     }
@@ -131,7 +131,7 @@ void Config::saveConf( BufferStream* bstream, const char* lineEnd )
 {
   log.print( "Writing variables to '%s' ...", filePath.cstr() );
 
-  // first we sort all the variables by key
+  // Sort all the variables by key.
   int size = vars.length();
   DArray<Elem> sortedVars( size );
 
@@ -432,7 +432,7 @@ String Config::toString( const String& indentString )
 {
   String s = "";
 
-  // first we sort all the variables by key
+  // Sort all the variables by key.
   int size = vars.length();
   DArray<Elem> sortedVars( size );
 

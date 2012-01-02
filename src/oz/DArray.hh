@@ -38,7 +38,7 @@ namespace oz
  * Dynamic array.
  *
  * The advantage over C++ arrays is it has bounds checking, iterator and it frees allocated memory
- * when destroyed.
+ * when destructed.
  *
  * @ingroup oz
  */
@@ -388,7 +388,7 @@ class DArray
     }
 
     /**
-     * Delete objects referenced by elements and set all elements to null.
+     * Delete objects referenced by elements and set all elements to <tt>null</tt>.
      */
     void free()
     {

@@ -60,8 +60,8 @@ inline bool BSP::includes( const matrix::BSP::Brush& brush, float maxDim ) const
 
 void BSP::load()
 {
-  File rcFile( String::str( "data/maps/%s.rc", name.cstr() ) );
-  File bspFile( String::str( "data/maps/%s.bsp", name.cstr() ) );
+  PhysFile rcFile( String::str( "data/maps/%s.rc", name.cstr() ) );
+  PhysFile bspFile( String::str( "data/maps/%s.bsp", name.cstr() ) );
 
   Config bspConfig;
   if( !bspConfig.load( rcFile ) ) {

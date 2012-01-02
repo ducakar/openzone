@@ -185,24 +185,24 @@ File::Type File::getType()
   return type;
 }
 
-const String& File::path() const
+String File::path() const
 {
   return filePath;
 }
 
-const char* File::name() const
+String File::name() const
 {
-  const char* slash = String::findLast( filePath, '/' );
+  int slash = filePath.lastIndex( '/' );
 
-  return slash == null ? filePath.cstr() : slash + 1;
+  return slash == -1 ? filePath : filePath.substring( slash + 1 );
 }
 
-const char* File::extension() const
+String File::extension() const
 {
-  const char* slash = String::findLast( filePath, '/' );
-  const char* dot   = String::findLast( filePath, '.' );
+  int slash = filePath.lastIndex( '/' );
+  int dot   = filePath.lastIndex( '.' );
 
-  return slash < dot ? dot + 1 : null;
+  return slash < dot ? filePath.substring( dot + 1 ) : String();
 }
 
 String File::baseName() const
@@ -222,14 +222,14 @@ bool File::hasExtension( const char* ext ) const
 {
   hard_assert( ext != null );
 
-  const char* slash = String::findLast( filePath, '/' );
-  const char* dot   = String::findLast( filePath, '.' );
+  const char* slash = filePath.findLast( '/' );
+  const char* dot   = filePath.findLast( '.' );
 
   if( slash < dot ) {
     return String::equals( dot + 1, ext );
   }
   else {
-    return ext[0] == '\0';
+    return String::isEmpty( ext );
   }
 }
 
@@ -381,7 +381,7 @@ String File::cwd()
 #else
   bool hasFailed = getcwd( buffer, 256 ) == null;
 #endif
-  return hasFailed ? "" : buffer;
+  return hasFailed ? "." : buffer;
 }
 
 bool File::chdir( const char* path )
@@ -421,7 +421,7 @@ DArray<File> File::ls()
     return array;
   }
 
-  // count entries first
+  // Count entries first.
   int count = 0;
   while( FindNextFile( dir, &entity ) ) {
     if( entity.cFileName[0] != '.' ) {
@@ -472,7 +472,7 @@ DArray<File> File::ls()
 
   struct dirent* entity = readdir( directory );
 
-  // count entries first
+  // Count entries first.
   int count = 0;
   while( entity != null ) {
     if( entity->d_name[0] != '.' ) {
