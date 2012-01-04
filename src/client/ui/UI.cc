@@ -75,6 +75,7 @@ void UI::update()
   if( !isFreelook ) {
     root->passMouseEvents();
   }
+
   Area::update();
 }
 
@@ -108,6 +109,15 @@ void UI::draw()
 
   root->drawChildren();
   mouse.draw();
+
+  if( showFPS ) {
+    if( timer.frameTicks != 0 ) {
+      fps = Math::mix( fps, 1.0f / timer.frameTime, 0.05f );
+    }
+
+    Label fpsLabel( -4, -4, Area::ALIGN_RIGHT | Area::ALIGN_TOP, Font::MONO, "%.0f", fps );
+    fpsLabel.draw( root );
+  }
 
   glDisable( GL_BLEND );
 
@@ -149,8 +159,11 @@ void UI::init()
 
   uiScale   = config.getSet( "ui.scale",     1.0f  );
   uiAspect  = config.getSet( "ui.aspect",    0.0f  );
+  showFPS   = config.getSet( "ui.showFPS",   false );
   showBuild = config.getSet( "ui.showBuild", false );
   showDebug = config.getSet( "ui.showDebug", false );
+
+  fps = 1.0f / Timer::TICK_TIME;
 
   if( uiAspect == 0.0f ) {
     Area::uiWidth   = int( float( camera.width  ) * uiScale + 0.5f );

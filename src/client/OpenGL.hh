@@ -41,14 +41,6 @@
 
 #include <GL/gl.h>
 
-// fix M$ crap from Windows headers
-#ifdef _WIN32
-# undef ERROR
-# undef PLANES
-# undef near
-# undef far
-#endif
-
 namespace oz
 {
 namespace client

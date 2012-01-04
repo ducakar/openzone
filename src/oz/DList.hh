@@ -181,6 +181,7 @@ class DList
     DList clone() const
     {
       DList clone;
+
       Elem* prev = null;
       Elem* elem = firstElem;
 
@@ -204,8 +205,8 @@ class DList
     /**
      * True iff same size and respective elements are equal.
      *
-     * Elem should implement <tt>operator ==</tt>, otherwise comparison doesn't make sense as
-     * two copies always differ in <tt>prev[INDEX]</tt> and <tt>next[INDEX]</tt> members.
+     * <tt>Elem</tt> type should implement <tt>operator ==</tt>, otherwise comparison doesn't make
+     * sense as two copies always differ in <tt>prev[INDEX]</tt> and <tt>next[INDEX]</tt> members.
      */
     bool equals( const DList& l ) const
     {
@@ -284,19 +285,34 @@ class DList
     /**
      * True iff the given element is in the list.
      */
+    bool has( const Elem* e ) const
+    {
+      hard_assert( e != null );
+
+      Elem* p = firstElem;
+
+      while( p != null && p != e ) {
+        p = p->next[INDEX];
+      }
+      return p != null;
+    }
+
+    /**
+     * True iff an element equal to the given one is in the list.
+     *
+     * <tt>Elem</tt> type should implement <tt>operator ==</tt>, otherwise comparison doesn't make
+     * sense as two copies always differ in <tt>prev[INDEX]</tt> and <tt>next[INDEX]</tt> members.
+     */
     bool contains( const Elem* e ) const
     {
       hard_assert( e != null );
 
       Elem* p = firstElem;
 
-      while( p != null ) {
-        if( p == e ) {
-          return true;
-        }
+      while( p != null && !( *p == *e ) ) {
         p = p->next[INDEX];
       }
-      return false;
+      return p != null;
     }
 
     /**

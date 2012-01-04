@@ -65,101 +65,93 @@ void Synapse::cut( Dynamic* obj )
   cutObjects.add( obj->index );
 }
 
-int Synapse::addStruct( const char* bspName, const Point3& p, Heading heading )
+Struct* Synapse::add( const BSP* bsp, const Point3& p, Heading heading )
 {
-  return addStruct( library.bsp( bspName ), p, heading );
-}
-
-int Synapse::addObject( const char* className, const Point3& p, Heading heading )
-{
-  return addObject( library.objClass( className ), p, heading );
-}
-
-int Synapse::addFrag( const char* poolName, const Point3& p, const Vec3& velocity )
-{
-  return addFrag( library.fragPool( poolName ), p, velocity );
-}
-
-void Synapse::genFrags( const char* poolName, int nFrags, const Bounds& bb, const Vec3& velocity )
-{
-  genFrags( library.fragPool( poolName ), nFrags, bb, velocity );
-}
-
-int Synapse::addStruct( const BSP* bsp, const Point3& p, Heading heading )
-{
-  int     index = orbis.addStruct( bsp, p, heading );
-  Struct* str   = orbis.structs[index];
+  Struct* str = orbis.add( bsp, p, heading );
+  if( str == null ) {
+    return null;
+  }
 
   if( !orbis.position( str ) ) {
     orbis.remove( str );
     delete str;
-    return -1;
+    return null;
   }
-  addedStructs.add( index );
+
+  addedStructs.add( str->index );
 
   for( int i = 0; i < str->bsp->nBoundObjects; ++i ) {
     const BSP::BoundObject& boundObj = str->bsp->boundObjects[i];
 
-    Point3  pos      = str->toAbsoluteCS( boundObj.pos );
-    Heading heading  = Heading( ( str->heading + boundObj.heading ) % 4 );
+    Point3  pos     = str->toAbsoluteCS( boundObj.pos );
+    Heading heading = Heading( ( str->heading + boundObj.heading ) % 4 );
 
-    int     objIndex = orbis.addObject( boundObj.clazz, pos, heading );
-    Object* obj      = orbis.objects[objIndex];
+    Object* obj = orbis.add( boundObj.clazz, pos, heading );
+    if( obj == null ) {
+      continue;
+    }
 
     orbis.position( obj );
+    str->boundObjects.add( obj->index );
 
-    str->boundObjects.add( objIndex );
-
-    addedObjects.add( objIndex );
+    addedObjects.add( obj->index );
   }
-  return index;
+
+  return str;
 }
 
-int Synapse::addObject( const ObjectClass* clazz, const Point3& p, Heading heading )
+Object* Synapse::add( const ObjectClass* clazz, const Point3& p, Heading heading )
 {
-  int     index = orbis.addObject( clazz, p, heading );
-  Object* obj   = orbis.objects[index];
+  Object* obj = orbis.add( clazz, p, heading );
+  if( obj == null ) {
+    return null;
+  }
 
   orbis.position( obj );
-  addedObjects.add( index );
+
+  addedObjects.add( obj->index );
 
   const Vector<const ObjectClass*>& defaultItems = obj->clazz->defaultItems;
 
-  if( !defaultItems.isEmpty() ) {
-    for( int i = 0; i < defaultItems.length(); ++i ) {
-      int      itemIndex = orbis.addObject( defaultItems[i], Point3::ORIGIN, NORTH );
-      Dynamic* item      = static_cast<Dynamic*>( orbis.objects[itemIndex] );
-
-      obj->items.add( itemIndex );
-      item->parent = obj->index;
-
-      addedObjects.add( itemIndex );
+  for( int i = 0; i < defaultItems.length(); ++i ) {
+    Dynamic* item = static_cast<Dynamic*>
+        ( orbis.add( defaultItems[i], Point3::ORIGIN, NORTH ) );
+    if( item == null ) {
+      continue;
     }
 
-    if( obj->flags & Object::BOT_BIT ) {
-      const BotClass* botClazz = static_cast<const BotClass*>( obj->clazz );
-      Bot* bot = static_cast<Bot*>( obj );
+    obj->items.add( item->index );
+    item->parent = obj->index;
 
-      if( botClazz->weaponItem != -1 ) {
-        bot->weapon = bot->items[botClazz->weaponItem];
-      }
+    addedObjects.add( item->index );
+  }
+
+  if( obj->flags & Object::BOT_BIT ) {
+    const BotClass* botClazz = static_cast<const BotClass*>( obj->clazz );
+    Bot* bot = static_cast<Bot*>( obj );
+
+    if( uint( botClazz->weaponItem ) < uint( obj->items.length() ) ) {
+      bot->weapon = bot->items[botClazz->weaponItem];
     }
   }
-  return index;
+
+  return obj;
 }
 
-int Synapse::addFrag( const FragPool* pool, const Point3& p, const Vec3& velocity )
+Frag* Synapse::add( const FragPool* pool, const Point3& p, const Vec3& velocity )
 {
-  int   index = orbis.addFrag( pool, p, velocity );
-  Frag* frag  = orbis.frags[index];
+  Frag* frag = orbis.add( pool, p, velocity );
+  if( frag == null ) {
+    return null;
+  }
 
   orbis.position( frag );
-  addedFrags.add( index );
+  addedFrags.add( frag->index );
 
-  return index;
+  return frag;
 }
 
-void Synapse::genFrags( const FragPool* pool, int nFrags, const Bounds& bb, const Vec3& velocity )
+void Synapse::gen( const FragPool* pool, int nFrags, const Bounds& bb, const Vec3& velocity )
 {
   for( int i = 0; i < nFrags; ++i ) {
     // spawn the frag somewhere in the upper half of the structure's bounding box
@@ -167,8 +159,10 @@ void Synapse::genFrags( const FragPool* pool, int nFrags, const Bounds& bb, cons
                              bb.mins.y + Math::rand() * ( bb.maxs.y - bb.mins.y ),
                              bb.mins.z + Math::rand() * ( bb.maxs.z - bb.mins.z ) );
 
-    int    index   = synapse.addFrag( pool, fragPos, velocity );
-    Frag*  frag    = orbis.frags[index];
+    Frag*  frag = add( pool, fragPos, velocity );
+    if( frag == null ) {
+      continue;
+    }
 
     frag->velocity += Vec3( Math::normalRand() * pool->velocitySpread,
                             Math::normalRand() * pool->velocitySpread,
@@ -176,6 +170,26 @@ void Synapse::genFrags( const FragPool* pool, int nFrags, const Bounds& bb, cons
 
     frag->life     += Math::centralRand() * pool->lifeSpread;
   }
+}
+
+Struct* Synapse::addStruct( const char* bspName, const Point3& p, Heading heading )
+{
+  return add( library.bsp( bspName ), p, heading );
+}
+
+Object* Synapse::addObject( const char* className, const Point3& p, Heading heading )
+{
+  return add( library.objClass( className ), p, heading );
+}
+
+Frag* Synapse::addFrag( const char* poolName, const Point3& p, const Vec3& velocity )
+{
+  return add( library.fragPool( poolName ), p, velocity );
+}
+
+void Synapse::genFrags( const char* poolName, int nFrags, const Bounds& bb, const Vec3& velocity )
+{
+  gen( library.fragPool( poolName ), nFrags, bb, velocity );
 }
 
 void Synapse::remove( Struct* str )

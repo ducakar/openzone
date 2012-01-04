@@ -420,10 +420,10 @@ void Struct::destroy()
   onDemolish();
 
   if( bsp->fragPool != null ) {
-    synapse.genFrags( bsp->fragPool,
-                      bsp->nFrags,
-                      Bounds( Point3( mins.x, mins.y, 0.5f * ( mins.z + maxs.z ) ), maxs ),
-                      DESTRUCT_FRAG_VELOCITY );
+    synapse.gen( bsp->fragPool,
+                 bsp->nFrags,
+                 Bounds( Point3( mins.x, mins.y, 0.5f * ( mins.z + maxs.z ) ), maxs ),
+                 DESTRUCT_FRAG_VELOCITY );
   }
 }
 

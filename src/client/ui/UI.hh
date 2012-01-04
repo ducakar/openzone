@@ -40,12 +40,15 @@ namespace ui
 
 class UI
 {
-  public:
+  private:
 
     float uiScale;
     float uiAspect;
 
+    float fps;
+
     bool  isFreelook;
+    bool  showFPS;
     bool  showBuild;
     bool  showDebug;
 

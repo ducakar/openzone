@@ -296,10 +296,14 @@ bool GameStage::read( const char* path )
   matrix.read( &istream );
   nirvana.read( &istream );
 
-  log.print( "Reading Client ..." );
+  log.println( "Reading Client {" );
+  log.indent();
+
   camera.read( &istream );
   lua.read( &istream );
-  log.printEnd( " OK" );
+
+  log.unindent();
+  log.println( "}" );
 
   for( int i = 0; i < modules.length(); ++i ) {
     modules[i]->read( &istream );
@@ -391,9 +395,13 @@ void GameStage::load()
   if( stateFile.isEmpty() ) {
     log.println( "Initialising new world" );
 
-    log.print( "Loading Client ..." );
+    log.println( "Loading Client {" );
+    log.indent();
+
     lua.create( "lua/mission/" + missionFile + ".lua" );
-    log.printEnd( " OK" );
+
+    log.unindent();
+    log.println( "}" );
 
     if( orbis.terra.id == -1 || orbis.caelum.id == -1 ) {
       throw Exception( "Terrain and Caelum must both be loaded via the client.onCreate" );

@@ -63,11 +63,11 @@ void Object::onDestroy()
   }
 
   if( clazz->fragPool != null ) {
-    synapse.genFrags( clazz->fragPool,
-                      clazz->nFrags,
-                      Bounds( Point3( p.x - dim.x, p.y - dim.y, p.z ),
-                              Point3( p.x + dim.x, p.y + dim.y, p.z + dim.z ) ),
-                      DESTRUCT_FRAG_VELOCITY );
+    synapse.gen( clazz->fragPool,
+                 clazz->nFrags,
+                 Bounds( Point3( p.x - dim.x, p.y - dim.y, p.z ),
+                         Point3( p.x + dim.x, p.y + dim.y, p.z + dim.z ) ),
+                 DESTRUCT_FRAG_VELOCITY );
   }
 }
 

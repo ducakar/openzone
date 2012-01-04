@@ -298,7 +298,7 @@ class HashString
 
   private:
 
-    Elem*            data[SIZE]; ///< Array of lists.
+    Elem*            data[SIZE]; ///< %Array of lists.
     Pool<Elem, SIZE> pool;       ///< Memory pool for elements.
     int              count;      ///< Number of elements.
 
@@ -322,7 +322,7 @@ class HashString
     /**
      * Allocate and make a copy of the given chain.
      */
-    Elem* copyChain( const Elem* chain )
+    Elem* cloneChain( const Elem* chain )
     {
       Elem* newChain = null;
 
@@ -336,7 +336,7 @@ class HashString
     /**
      * Delete all elements in the given chain.
      */
-    void freeChain( Elem* chain )
+    void clearChain( Elem* chain )
     {
       while( chain != null ) {
         Elem* next = chain->next;
@@ -351,7 +351,7 @@ class HashString
     /**
      * Delete all elements and referenced objects in the given chain.
      */
-    void freeChainAndValues( Elem* chain )
+    void freeChain( Elem* chain )
     {
       while( chain != null ) {
         Elem* next = chain->next;
@@ -389,7 +389,7 @@ class HashString
     HashString( const HashString& t ) : count( t.count )
     {
       for( int i = 0; i < SIZE; ++i ) {
-        data[i] = copyChain( t.data[i] );
+        data[i] = cloneChain( t.data[i] );
       }
     }
 
@@ -415,8 +415,8 @@ class HashString
       }
 
       for( int i = 0; i < SIZE; ++i ) {
-        freeChain( data[i] );
-        data[i] = copyChain( t.data[i] );
+        clearChain( data[i] );
+        data[i] = cloneChain( t.data[i] );
       }
       count = t.count;
 
@@ -678,7 +678,7 @@ class HashString
     void clear()
     {
       for( int i = 0; i < SIZE; ++i ) {
-        freeChain( data[i] );
+        clearChain( data[i] );
         data[i] = null;
       }
       count = 0;
@@ -690,7 +690,7 @@ class HashString
     void free()
     {
       for( int i = 0; i < SIZE; ++i ) {
-        freeChainAndValues( data[i] );
+        freeChain( data[i] );
         data[i] = null;
       }
       count = 0;

@@ -208,7 +208,7 @@ void Area::add( Area* area )
 
 void Area::remove( Area* area )
 {
-  hard_assert( children.contains( area ) );
+  hard_assert( children.has( area ) );
 
   if( area->flags & UPDATE_BIT ) {
     updateAreas.exclude( area );
@@ -220,7 +220,7 @@ void Area::remove( Area* area )
 
 void Area::focus( Area* area )
 {
-  hard_assert( children.contains( area ) );
+  hard_assert( children.has( area ) );
 
   if( children.first() != area ) {
     children.remove( area );
@@ -230,7 +230,7 @@ void Area::focus( Area* area )
 
 void Area::sink( Area* area )
 {
-  hard_assert( children.contains( area ) );
+  hard_assert( children.has( area ) );
 
   if( children.last() != area ) {
     children.remove( area );

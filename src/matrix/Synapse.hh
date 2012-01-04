@@ -72,15 +72,15 @@ class Synapse
     void cut( Dynamic* obj );
 
     // create an object, schedule for addition in the world and return predicted world index
-    int  addStruct( const char* bspName, const Point3& p, Heading heading );
-    int  addObject( const char* className, const Point3& p, Heading heading );
-    int  addFrag( const char* poolName, const Point3& p, const Vec3& velocity );
-    void genFrags( const char* poolName, int nFrags, const Bounds& bb, const Vec3& velocity );
+    Struct* add( const BSP* bsp, const Point3& p, Heading heading );
+    Object* add( const ObjectClass* clazz, const Point3& p, Heading heading );
+    Frag*   add( const FragPool* pool, const Point3& p, const Vec3& velocity );
+    void    gen( const FragPool* pool, int nFrags, const Bounds& bb, const Vec3& velocity );
 
-    int  addStruct( const BSP* bsp, const Point3& p, Heading heading );
-    int  addObject( const ObjectClass* clazz, const Point3& p, Heading heading );
-    int  addFrag( const FragPool* pool, const Point3& p, const Vec3& velocity );
-    void genFrags( const FragPool* pool, int nFrags, const Bounds& bb, const Vec3& velocity );
+    Struct* addStruct( const char* bspName, const Point3& p, Heading heading );
+    Object* addObject( const char* className, const Point3& p, Heading heading );
+    Frag*   addFrag( const char* poolName, const Point3& p, const Vec3& velocity );
+    void    genFrags( const char* poolName, int nFrags, const Bounds& bb, const Vec3& velocity );
 
     // schedule for removal from physical world and delete it
     void remove( Struct* str );

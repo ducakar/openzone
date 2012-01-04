@@ -41,6 +41,15 @@
 #include <SDL/SDL.h>
 #include <libintl.h>
 
+#ifdef _WIN32
+# include <windows.h>
+// Fix M$ crap from Windows headers.
+# undef ERROR
+# undef PLANES
+# undef near
+# undef far
+#endif
+
 #define OZ_LUA_API( func ) static LuaAPI func
 
 struct lua_State;
