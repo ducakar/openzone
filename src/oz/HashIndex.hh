@@ -304,7 +304,7 @@ class HashIndex
     /**
      * Allocate and make a copy of the given chain.
      */
-    Elem* copyChain( const Elem* chain )
+    Elem* cloneChain( const Elem* chain )
     {
       Elem* newChain = null;
 
@@ -318,7 +318,7 @@ class HashIndex
     /**
      * Delete all elements in the given chain.
      */
-    void freeChain( Elem* chain )
+    void clearChain( Elem* chain )
     {
       while( chain != null ) {
         Elem* next = chain->next;
@@ -333,7 +333,7 @@ class HashIndex
     /**
      * Delete all elements and referenced objects in the given chain.
      */
-    void freeChainAndValues( Elem* chain )
+    void freeChain( Elem* chain )
     {
       while( chain != null ) {
         Elem* next = chain->next;
@@ -371,7 +371,7 @@ class HashIndex
     HashIndex( const HashIndex& t ) : count( t.count )
     {
       for( int i = 0; i < SIZE; ++i ) {
-        data[i] = copyChain( t.data[i] );
+        data[i] = cloneChain( t.data[i] );
       }
     }
 
@@ -397,8 +397,8 @@ class HashIndex
       }
 
       for( int i = 0; i < SIZE; ++i ) {
-        freeChain( data[i] );
-        data[i] = copyChain( t.data[i] );
+        clearChain( data[i] );
+        data[i] = cloneChain( t.data[i] );
       }
       count = t.count;
 
@@ -660,7 +660,7 @@ class HashIndex
     void clear()
     {
       for( int i = 0; i < SIZE; ++i ) {
-        freeChain( data[i] );
+        clearChain( data[i] );
         data[i] = null;
       }
       count = 0;
@@ -672,7 +672,7 @@ class HashIndex
     void free()
     {
       for( int i = 0; i < SIZE; ++i ) {
-        freeChainAndValues( data[i] );
+        freeChain( data[i] );
         data[i] = null;
       }
       count = 0;

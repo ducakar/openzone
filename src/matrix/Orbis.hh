@@ -54,20 +54,26 @@ class Orbis : public Bounds
   friend class Synapse;
   friend class Physics;
 
+  private:
+
+    static const int MAX_STRUCTS = 1 << 14;
+    static const int MAX_OBJECTS = 1 << 16;
+    static const int MAX_FRAGS   = 1 << 15;
+
   public:
 
     // # of cells on each (x, y) axis
     static const     int   CELLS = 4096 / Cell::SIZEI;
     static constexpr float DIM   = Cell::SIZE * CELLS / 2.0f;
 
-    Caelum            caelum;
-    Terra             terra;
+    Caelum caelum;
+    Terra  terra;
 
-    Vector<Struct*>   structs;
-    Vector<Object*>   objects;
-    Vector<Frag*>     frags;
+    SVector<Struct*, MAX_STRUCTS> structs;
+    SVector<Object*, MAX_OBJECTS> objects;
+    SVector<Frag*,   MAX_FRAGS>   frags;
 
-    Cell              cells[Orbis::CELLS][Orbis::CELLS];
+    Cell cells[Orbis::CELLS][Orbis::CELLS];
 
   private:
 
@@ -113,9 +119,9 @@ class Orbis : public Bounds
     void unposition( Frag* frag );
     void reposition( Frag* frag );
 
-    int  addStruct( const BSP* bsp, const Point3& p, Heading heading );
-    int  addObject( const ObjectClass* clazz, const Point3& p, Heading heading );
-    int  addFrag( const FragPool* pool, const Point3& p, const Vec3& velocity );
+    Struct* add( const BSP* bsp, const Point3& p, Heading heading );
+    Object* add( const ObjectClass* clazz, const Point3& p, Heading heading );
+    Frag*   add( const FragPool* pool, const Point3& p, const Vec3& velocity );
 
     void remove( Struct* str );
     void remove( Object* obj );

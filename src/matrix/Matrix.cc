@@ -200,6 +200,8 @@ void Matrix::unload()
   log.println( "Unloading Matrix {" );
   log.indent();
 
+  log.println( "Static memory usage  %.2f MiB", float( sizeof( Orbis ) ) / ( 1024.0f * 1024.0f ) );
+
   log.println( "Peak instances {" );
   log.indent();
   log.println( "%6d  structures",      maxStructs );

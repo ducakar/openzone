@@ -195,55 +195,82 @@ void Orbis::reposition( Frag* frag )
   }
 }
 
-int Orbis::addStruct( const BSP* bsp, const Point3& p, Heading heading )
+Struct* Orbis::add( const BSP* bsp, const Point3& p, Heading heading )
 {
-  int index;
-
   const_cast<BSP*>( bsp )->request();
 
+  Struct* str;
+
   if( strAvailableIndices.isEmpty() ) {
-    index = structs.length();
-    structs.add( new Struct( bsp, index, p, heading ) );
+    int index = structs.length();
+
+    if( index == MAX_STRUCTS ) {
+      return null;
+    }
+
+    str = new Struct( bsp, index, p, heading );
+    structs.add( str );
   }
   else {
-    index = strAvailableIndices.popLast();
-    structs[index] = new Struct( bsp, index, p, heading );
+    int index = strAvailableIndices.popLast();
+
+    str = new Struct( bsp, index, p, heading );
+    structs[index] = str;
   }
-  return index;
+
+  return str;
 }
 
-int Orbis::addObject( const ObjectClass* clazz, const Point3& p, Heading heading )
+Object* Orbis::add( const ObjectClass* clazz, const Point3& p, Heading heading )
 {
-  int index;
+  Object* obj;
 
   if( objAvailableIndices.isEmpty() ) {
-    index = objects.length();
-    objects.add( clazz->create( index, p, heading ) );
+    int index = objects.length();
+
+    if( index == MAX_OBJECTS ) {
+      return null;
+    }
+
+    obj = clazz->create( index, p, heading );
+    objects.add( obj );
   }
   else {
-    index = objAvailableIndices.popLast();
-    objects[index] = clazz->create( index, p, heading );
+    int index = objAvailableIndices.popLast();
+
+    obj = clazz->create( index, p, heading );
+    objects[index] = obj;
   }
 
-  if( objects[index]->flags & Object::LUA_BIT ) {
-    lua.registerObject( index );
+  if( obj->flags & Object::LUA_BIT ) {
+    lua.registerObject( obj->index );
   }
-  return index;
+
+  return obj;
 }
 
-int Orbis::addFrag( const FragPool* pool, const Point3& p, const Vec3& velocity )
+Frag* Orbis::add( const FragPool* pool, const Point3& p, const Vec3& velocity )
 {
-  int index;
+  Frag* frag;
 
   if( fragAvailableIndices.isEmpty() ) {
-    index = frags.length();
-    frags.add( new Frag( pool, index, p, velocity ) );
+    int index = frags.length();
+
+    if( index == MAX_FRAGS ) {
+      return null;
+    }
+
+    frag = new Frag( pool, index, p, velocity );
+    frags.add( frag );
   }
   else {
-    index = fragAvailableIndices.popLast();
-    frags[index] = new Frag( pool, index, p, velocity );
+    int index = fragAvailableIndices.popLast();
+
+    frag = new Frag( pool, index, p, velocity );
+    frags[index] = frag;
   }
-  return index;
+
+  return frag;
 }
 
 void Orbis::remove( Struct* str )
@@ -508,10 +535,6 @@ void Orbis::write( BufferStream* ostream ) const
 
 void Orbis::load()
 {
-  structs.alloc( 128 );
-  objects.alloc( 24576 );
-  frags.alloc( 2048 );
-
   strFreedIndices[0].alloc( 4 );
   strFreedIndices[1].alloc( 4 );
   objFreedIndices[0].alloc( 64 );
@@ -541,11 +564,8 @@ void Orbis::unload()
   }
 
   structs.free();
-  structs.dealloc();
   objects.free();
-  objects.dealloc();
   frags.free();
-  frags.dealloc();
 
   Struct::overlappingObjs.clear();
   Struct::overlappingObjs.dealloc();

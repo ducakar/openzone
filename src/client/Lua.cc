@@ -169,7 +169,8 @@ void Lua::create( const char* missionPath_ )
 {
   missionPath = missionPath_;
 
-  log.print( "Reading mission script %s ...", missionPath.cstr() );
+  log.println( "Executing mission script %s {", missionPath.cstr() );
+  log.indent();
 
   PhysFile missionFile( missionPath );
   if( !missionFile.map() ) {
@@ -184,9 +185,10 @@ void Lua::create( const char* missionPath_ )
 
   missionFile.unmap();
 
-  log.printEnd( " OK" );
-
   staticCall( "onCreate" );
+
+  log.unindent();
+  log.println( "}" );
 }
 
 void Lua::read( InputStream* istream )
@@ -195,7 +197,7 @@ void Lua::read( InputStream* istream )
 
   missionPath = istream->readString();
 
-  log.print( "Reading mission script %s ...", missionPath.cstr() );
+  log.print( "Deserialising mission script %s ...", missionPath.cstr() );
 
   PhysFile missionFile( missionPath );
   if( !missionFile.map() ) {
@@ -209,8 +211,6 @@ void Lua::read( InputStream* istream )
   }
 
   missionFile.unmap();
-
-  log.printEnd( " OK" );
 
   istream->readChar();
 
@@ -226,6 +226,8 @@ void Lua::read( InputStream* istream )
 
     ch = istream->readChar();
   }
+
+  log.printEnd( " OK" );
 }
 
 void Lua::write( BufferStream* ostream )
@@ -720,9 +722,8 @@ int Lua::ozOrbisAddStr( lua_State* l )
   Point3      p       = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
   Heading     heading = Heading( toint( 5 ) );
 
-  int index = synapse.addStruct( name, p, heading );
-  lua.str = orbis.structs[index];
-  pushint( index );
+  lua.str = synapse.addStruct( name, p, heading );
+  pushint( lua.str == null ? -1 : lua.str->index );
   return 1;
 }
 
@@ -742,9 +743,8 @@ int Lua::ozOrbisTryAddStr( lua_State* l )
     pushint( -1 );
   }
   else {
-    int index = synapse.addStruct( name, p, heading );
-    lua.str = orbis.structs[index];
-    pushint( index );
+    lua.str = synapse.addStruct( name, p, heading );
+    pushint( lua.str == null ? -1 : lua.str->index );
   }
   return 1;
 }
@@ -757,9 +757,8 @@ int Lua::ozOrbisAddObj( lua_State* l )
   Point3      p       = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
   Heading     heading = Heading( gettop() == 5 ? toint( 5 ) : Math::rand( 4 ) );
 
-  int index = synapse.addObject( name, p, heading );
-  lua.obj = orbis.objects[index];
-  pushint( index );
+  lua.obj = synapse.addObject( name, p, heading );
+  pushint( lua.obj == null ? -1 : lua.obj->index );
   return 1;
 }
 
@@ -784,9 +783,8 @@ int Lua::ozOrbisTryAddObj( lua_State* l )
     pushint( -1 );
   }
   else {
-    int index = synapse.addObject( name, p, heading );
-    lua.obj = orbis.objects[index];
-    pushint( index );
+    lua.obj = synapse.addObject( name, p, heading );
+    pushint( lua.obj == null ? -1 : lua.obj->index );
   }
   return 1;
 }
@@ -799,9 +797,8 @@ int Lua::ozOrbisAddFrag( lua_State* l )
   Point3      p        = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
   Vec3        velocity = Vec3( tofloat( 5 ), tofloat( 6 ), tofloat( 7 ) );
 
-  int index = synapse.addFrag( name, p, velocity );
-  lua.frag = orbis.frags[index];
-  pushint( index );
+  lua.frag = synapse.addFrag( name, p, velocity );
+  pushint( lua.frag == null ? -1 : lua.frag->index );
   return 1;
 }
 
