@@ -62,7 +62,7 @@ void Transform::projection()
 {
   double lr   = double( client::camera.vertPlane );
   double tb   = double( client::camera.horizPlane );
-  double near = double( client::camera.MIN_DISTANCE );
+  double near = double( client::Camera::MIN_DISTANCE );
   double far  = double( client::camera.maxDist );
 
   float cx = float( near / lr );

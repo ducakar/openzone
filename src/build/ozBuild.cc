@@ -59,23 +59,23 @@ namespace build
 {
 
 static const char* const CREATE_DIRS[] = {
-//   "bsp",
-//   "caelum",
-//   "class",
-//   "glsl",
-//   "lua",
-//   "lua/matrix",
-//   "lua/mission",
-//   "lua/nirvana",
-//   "mdl",
-//   "music",
-//   "name",
-//   "snd",
-//   "terra",
-//   "ui",
-//   "ui/cur",
-//   "ui/font",
-//   "ui/icon"
+  "bsp",
+  "caelum",
+  "class",
+  "glsl",
+  "lua",
+  "lua/matrix",
+  "lua/mission",
+  "lua/nirvana",
+  "mdl",
+  "music",
+  "name",
+  "snd",
+  "terra",
+  "ui",
+  "ui/cur",
+  "ui/font",
+  "ui/icon"
 };
 
 static void printUsage()
@@ -630,7 +630,7 @@ int main( int argc, char** argv )
     oz::log.printException( e );
 
     oz::System::bell();
-    oz::System::abort( false );
+    oz::System::abort();
   }
 
 //   oz::Alloc::printLeaks();

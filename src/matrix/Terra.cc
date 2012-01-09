@@ -32,6 +32,12 @@ namespace oz
 namespace matrix
 {
 
+const float Terra::Quad::SIZE     = float( SIZEI );
+const float Terra::Quad::INV_SIZE = 1.0f / SIZE;
+const float Terra::Quad::DIM      = SIZE / 2.0f;
+
+const float Terra::DIM            = QUADS * Terra::Quad::DIM;
+
 Terra::Terra() : id( -1 )
 {}
 

@@ -37,9 +37,9 @@ namespace client
 
 Camera camera;
 
-constexpr float Camera::ROT_LIMIT;
-constexpr float Camera::MIN_DISTANCE;
-constexpr float Camera::SMOOTHING_COEF;
+const float Camera::ROT_LIMIT      = Math::TAU / 2.0f;
+const float Camera::MIN_DISTANCE   = 0.1f;
+const float Camera::SMOOTHING_COEF = 0.5f;
 
 StrategicProxy Camera::strategicProxy;
 BotProxy       Camera::botProxy;
@@ -49,7 +49,7 @@ void Camera::align()
   h       = Math::fmod( h + Math::TAU, Math::TAU );
   v       = clamp( v, 0.0f, Math::TAU / 2.0f );
 
-  rot     = Quat::rotZ( h ) ^ Quat::rotX( v ) ^ Quat::rotZ( w );
+  rot     = Quat::rotZ( h ) * Quat::rotX( v ) * Quat::rotZ( w );
   rotMat  = Mat44::rotation( rot );
   rotTMat = ~rotMat;
 
@@ -205,7 +205,7 @@ void Camera::read( InputStream* istream )
   relH      = istream->readFloat();
   relV      = istream->readFloat();
 
-  rot       = Quat::rotZ( h ) ^ Quat::rotX( v ) ^ Quat::rotZ( w );
+  rot       = Quat::rotZ( h ) * Quat::rotX( v ) * Quat::rotZ( w );
   rotMat    = Mat44::rotation( rot );
   rotTMat   = ~rotMat;
 

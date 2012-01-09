@@ -51,7 +51,7 @@ Exception::Exception( const char* file_, int line_, const char* function_,
   vsnprintf( message, 256, message_, ap );
   va_end( ap );
 
-  stackTrace = StackTrace::current();
+  stackTrace = StackTrace::current( 1 );
 }
 
 const char* Exception::what() const throw()

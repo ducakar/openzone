@@ -43,31 +43,37 @@ class Math
 {
   public:
 
+    /// Not a number.
+    static constexpr float NaN = __builtin_nanf( "" );
+
+    /// \f$ +\infty \f$.
+    static constexpr float INF = __builtin_inff();
+
     /// Floating point epsilon.
     static constexpr float EPSILON = __FLT_EPSILON__;
 
-    /// Number e.
+    /// \f$ e \f$.
     static constexpr float E = 2.718281828459045f;
 
     /// \f$ 2\pi \f$.
     static constexpr float TAU = 6.283185307179586f;
 
-    /// \f$ +\infty \f$.
-    static constexpr float INF = __builtin_inff();
+    /// \f$ \sqrt{2} \f$.
+    static constexpr float SQRT_2 = 1.414213562373095f;
 
-    /// Not a number.
-    static constexpr float NaN = __builtin_nanf( "" );
+    /// \f$ \sqrt{3} \f$.
+    static constexpr float SQRT_3 = 1.732050807568877f;
 
     /**
      * Singleton.
      */
-    constexpr Math() = delete;
+    Math() = delete;
 
     /**
      * Absolute value.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float fabs( float x )
+    static float fabs( float x )
     {
       return __builtin_fabsf( x );
     }
@@ -76,7 +82,7 @@ class Math
      * Round to the closest integer towards negative infinity.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float floor( float x )
+    static float floor( float x )
     {
       return __builtin_floorf( x );
     }
@@ -85,7 +91,7 @@ class Math
      * Round to the closest integer towards positive infinity.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float ceil( float x )
+    static float ceil( float x )
     {
       return __builtin_ceilf( x );
     }
@@ -94,7 +100,7 @@ class Math
      * Round to the closest integer.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float round( float x )
+    static float round( float x )
     {
       return __builtin_roundf( x );
     }
@@ -103,7 +109,7 @@ class Math
      * Subtract fractional part.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float trunc( float x )
+    static float trunc( float x )
     {
       return __builtin_truncf( x );
     }
@@ -112,7 +118,7 @@ class Math
      * Reminder.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float fmod( float x, float y )
+    static float fmod( float x, float y )
     {
       return __builtin_fmodf( x, y );
     }
@@ -121,7 +127,7 @@ class Math
      * Get integral and fractional parts.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float modf( float x, float* integral )
+    static float modf( float x, float* integral )
     {
       return __builtin_modff( x, integral );
     }
@@ -130,7 +136,7 @@ class Math
      * Square root.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float sqrt( float x )
+    static float sqrt( float x )
     {
       return __builtin_sqrtf( x );
     }
@@ -139,7 +145,7 @@ class Math
      * Base-e exponent function.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float exp( float x )
+    static float exp( float x )
     {
       return __builtin_expf( x );
     }
@@ -148,7 +154,7 @@ class Math
      * Logarithm.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float log( float x )
+    static float log( float x )
     {
       return __builtin_logf( x );
     }
@@ -157,7 +163,7 @@ class Math
      * Power.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float pow( float x, float y )
+    static float pow( float x, float y )
     {
       return __builtin_powf( x, y );
     }
@@ -166,7 +172,7 @@ class Math
      * Sine.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float sin( float x )
+    static float sin( float x )
     {
       return __builtin_sinf( x );
     }
@@ -175,7 +181,7 @@ class Math
      * Cosine.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float cos( float x )
+    static float cos( float x )
     {
       return __builtin_cosf( x );
     }
@@ -196,7 +202,7 @@ class Math
      * Tangent function.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float tan( float x )
+    static float tan( float x )
     {
       return __builtin_tanf( x );
     }
@@ -205,7 +211,7 @@ class Math
      * Arc sine.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float asin( float x )
+    static float asin( float x )
     {
       return __builtin_asinf( x );
     }
@@ -214,7 +220,7 @@ class Math
      * Arc cosine.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float acos( float x )
+    static float acos( float x )
     {
       return __builtin_acosf( x );
     }
@@ -223,7 +229,7 @@ class Math
      * Arc tangent function.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float atan( float x )
+    static float atan( float x )
     {
       return __builtin_atanf( x );
     }
@@ -232,7 +238,7 @@ class Math
      * Arc tangent of two variables.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float atan2( float x, float y )
+    static float atan2( float x, float y )
     {
       return __builtin_atan2f( x, y );
     }
@@ -241,7 +247,7 @@ class Math
      * True iff the number is not NaN or infinity.
      */
     OZ_ALWAYS_INLINE
-    static constexpr bool isfinite( float x )
+    static bool isfinite( float x )
     {
 #if !defined( __clang__ ) && defined( __FAST_MATH__ )
       // GCC's isfinite() is broken with -ffast-math.
@@ -255,7 +261,7 @@ class Math
      * True iff the number (positive or negative) infinity.
      */
     OZ_ALWAYS_INLINE
-    static constexpr int isinf( float x )
+    static int isinf( float x )
     {
 #if !defined( __clang__ ) && defined( __FAST_MATH__ )
       // GCC's isinf() is broken with -ffast-math.
@@ -269,7 +275,7 @@ class Math
      * True iff the number is NaN.
      */
     OZ_ALWAYS_INLINE
-    static constexpr bool isnan( float x )
+    static bool isnan( float x )
     {
 #if !defined( __clang__ ) && defined( __FAST_MATH__ )
       // GCC's isnan() is broken with -ffast-math.
@@ -284,7 +290,7 @@ class Math
      * used).
      */
     OZ_ALWAYS_INLINE
-    static constexpr bool isnormal( float x )
+    static bool isnormal( float x )
     {
       return __builtin_isnormal( x );
     }
@@ -293,7 +299,7 @@ class Math
      * Sign, -1.0 for negative and 1.0 for non-negative.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float sgn( float x )
+    static float sgn( float x )
     {
       return x < 0.0f ? -1.0f : 1.0f;
     }
@@ -302,7 +308,7 @@ class Math
      * Convert degrees to radians.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float rad( float x )
+    static float rad( float x )
     {
       return x * ( TAU / 360.0f );
     }
@@ -311,7 +317,7 @@ class Math
      * Convert radians to degrees.
      */
     OZ_ALWAYS_INLINE
-    static constexpr float deg( float x )
+    static float deg( float x )
     {
       return x * ( 360.0f / TAU );
     }
@@ -370,7 +376,7 @@ class Math
      */
     template <typename Value>
     OZ_ALWAYS_INLINE
-    static constexpr bool isPow2( const Value& v )
+    static bool isPow2( const Value& v )
     {
       return ( v & ( v - 1 ) ) == 0;
     }
@@ -380,7 +386,7 @@ class Math
      */
     template <typename Value>
     OZ_ALWAYS_INLINE
-    static constexpr Value mix( const Value& a, const Value& b, float t )
+    static Value mix( const Value& a, const Value& b, float t )
     {
       return a + t * ( b - a );
     }

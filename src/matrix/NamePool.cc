@@ -65,7 +65,7 @@ void NamePool::init()
 
     InputStream is = file.inputStream();
 
-    const char* wordBegin = is.begin();
+    const char* wordBegin = is.getPos();
 
     while( is.isAvailable() ) {
       char ch = is.readChar();
@@ -78,7 +78,7 @@ void NamePool::init()
           names.add( name );
         }
 
-        wordBegin = is.getPos() + 1;
+        wordBegin = is.getPos();
       }
     }
 

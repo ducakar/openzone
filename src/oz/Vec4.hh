@@ -39,7 +39,7 @@ namespace oz
  *
  * @ingroup oz
  */
-class Vec4 : public Vec3
+class Vec4
 {
   public:
 
@@ -52,6 +52,9 @@ class Vec4 : public Vec3
     /// Equivalent to origin point or identity quaternion, [0, 0, 0, 1].
     static const Vec4 ID;
 
+    float x; ///< X component.
+    float y; ///< Y component.
+    float z; ///< Z component.
     float w; ///< W component.
 
     /**
@@ -63,35 +66,35 @@ class Vec4 : public Vec3
      * Create a vector with the given components.
      */
     OZ_ALWAYS_INLINE
-    explicit Vec4( float x, float y, float z, float w_ ) : Vec3( x, y, z ), w( w_ )
+    explicit Vec4( float x_, float y_, float z_, float w_ ) : x( x_ ), y( y_ ), z( z_ ), w( w_ )
     {}
 
     /**
      * Create from an array of 4 floats.
      */
     OZ_ALWAYS_INLINE
-    explicit Vec4( const float* v ) : Vec3( v[0], v[1], v[2] ), w( v[3] )
+    explicit Vec4( const float* v ) : x( v[0] ), y( v[1] ), z( v[2] ), w( v[3] )
     {}
 
     /**
      * Create vector from a 3D vector (the additional component is zero).
      */
     OZ_ALWAYS_INLINE
-    explicit Vec4( const Vec3& v ) : Vec3( v ), w( 0.0f )
+    explicit Vec4( const Vec3& v ) : x( v.x ), y( v.y ), z( v.z ), w( 0.0f )
     {}
 
     /**
      * Create vector from a 3D vector, specify the last component.
      */
     OZ_ALWAYS_INLINE
-    explicit Vec4( const Vec3& v, float w_ ) : Vec3( v ), w( w_ )
+    explicit Vec4( const Vec3& v, float w_ ) : x( v.x ), y( v.y ), z( v.z ), w( w_ )
     {}
 
     /**
      * Create vector from a point (the additional component is one).
      */
     OZ_ALWAYS_INLINE
-    explicit Vec4( const Point3& p ) : Vec3( p.x, p.y, p.z ), w( 1.0f )
+    explicit Vec4( const Point3& p ) : x( p.x ), y( p.y ), z( p.z ), w( 1.0f )
     {}
 
     /**
@@ -110,6 +113,32 @@ class Vec4 : public Vec3
     bool operator != ( const Vec4& v ) const
     {
       return x != v.x || y != v.y || z != v.z || w != v.w;
+    }
+
+    /**
+     * Cast to 3D vector.
+     */
+    operator Vec3 () const
+    {
+      return Vec3( x, y, z );
+    }
+
+    /**
+     * Constant float pointer to the members.
+     */
+    OZ_ALWAYS_INLINE
+    operator const float* () const
+    {
+      return &x;
+    }
+
+    /**
+     * Float pointer to the members.
+     */
+    OZ_ALWAYS_INLINE
+    operator float* ()
+    {
+      return &x;
     }
 
     /**
@@ -198,7 +227,7 @@ class Vec4 : public Vec3
      * Original vector.
      */
     OZ_ALWAYS_INLINE
-    const Vec4& operator + () const
+    Vec4 operator + () const
     {
       return *this;
     }

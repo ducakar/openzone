@@ -60,13 +60,13 @@ class Endian
     /**
      * Singleton.
      */
-    constexpr Endian() = delete;
+    Endian() = delete;
 
     /**
      * Swap byte order.
      */
     OZ_ALWAYS_INLINE
-    static constexpr short bswap16( short s )
+    static short bswap16( short s )
     {
       return short( ushort( s ) << 8 | ushort( s ) >> 8 );
     }
@@ -75,7 +75,7 @@ class Endian
      * Swap byte order.
      */
     OZ_ALWAYS_INLINE
-    static constexpr int bswap32( int i )
+    static int bswap32( int i )
     {
       return int( __builtin_bswap32( uint( i ) ) );
     }
@@ -84,7 +84,7 @@ class Endian
      * Swap byte order.
      */
     OZ_ALWAYS_INLINE
-    static constexpr long64 bswap64( long64 l )
+    static long64 bswap64( long64 l )
     {
       return long64( __builtin_bswap64( ulong64( l ) ) );
     }

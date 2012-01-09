@@ -42,7 +42,7 @@ namespace client
 const int   Terra::TILE_INDICES  = TILE_QUADS * ( TILE_QUADS + 1 ) * 2 + ( TILE_QUADS - 1 ) * 2;
 const int   Terra::TILE_VERTICES = ( TILE_QUADS + 1 ) * ( TILE_QUADS + 1 );
 
-const float Terra::TILE_SIZE     = TILE_QUADS * matrix::Terra::Quad::SIZE;
+const float Terra::TILE_SIZE     = TILE_QUADS * float( matrix::Terra::Quad::SIZEI );
 const float Terra::TILE_INV_SIZE = 1.0f / TILE_SIZE;
 
 const float Terra::WAVE_BIAS_INC = 2.0f * Timer::TICK_TIME;

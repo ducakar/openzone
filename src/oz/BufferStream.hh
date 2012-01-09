@@ -218,7 +218,18 @@ class BufferStream
      * Pointer to the current position.
      */
     OZ_ALWAYS_INLINE
-    char* getPos() const
+    const char* getPos() const
+    {
+      hard_assert( start <= pos && pos <= end );
+
+      return pos;
+    }
+
+    /**
+     * Pointer to the current position.
+     */
+    OZ_ALWAYS_INLINE
+    char* getPos()
     {
       hard_assert( start <= pos && pos <= end );
 

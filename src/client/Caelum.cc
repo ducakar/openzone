@@ -38,7 +38,6 @@ namespace client
 Caelum caelum;
 
 const float Caelum::DAY_BIAS       = 0.40f;
-
 const float Caelum::AMBIENT_COEF   = 0.60f;
 
 const float Caelum::RED_COEF       = +0.05f;

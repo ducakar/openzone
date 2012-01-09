@@ -39,7 +39,7 @@ mark_as_advanced( OZ_APPLICATION_VERSION )
 mark_as_advanced( OZ_APPLICATION_TITLE )
 mark_as_advanced( OZ_SYSTEM_NAME )
 
-include( cmake/pch.cmake )
+include( cmake/PCH.cmake )
 include( CheckLibraryExists )
 
 if( WIN32 )
@@ -133,8 +133,7 @@ else()
   set( libs "${RT_LIBRARY};${PTHREAD_LIBRARY};${PULSESIMPLE_LIBRARY};${PHYSFS_LIBRARY}" )
 endif()
 
-set( libs_client "${libs};${PHYSFS_LIBRARY}" )
-set( libs_client "${libs_client};${SDL_LIBRARY}" )
+set( libs_client "${libs};${SDL_LIBRARY}" )
 set( libs_client "${libs_client};${SDLTTF_LIBRARY}" )
 set( libs_client "${libs_client};${LUA_LIBRARY}" )
 set( libs_client "${libs_client};${OPENGL_gl_LIBRARY}" )
@@ -149,7 +148,7 @@ endif()
 set( libs_tools "${libs_client};${FREEIMAGE_LIBRARY}" )
 
 # compiler and linker flags
-set( flags "-pipe -std=c++0x -fstrict-enums -ffast-math -freciprocal-math" )
+set( flags "-pipe -std=c++0x -pedantic -fstrict-enums -ffast-math -freciprocal-math" )
 set( warnings "-Wall -Wextra -Wconversion -Woverloaded-virtual -Wnon-virtual-dtor -Winvalid-pch" )
 set( arch_flags "-msse3 -mfpmath=sse" )
 
@@ -208,4 +207,4 @@ add_subdirectory( src )
 
 # installation
 include( cmake/CPackConfig.cmake )
-include( cmake/data_install.cmake )
+include( cmake/Data-Install.cmake )

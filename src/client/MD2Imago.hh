@@ -23,8 +23,6 @@
 
 #pragma once
 
-#include "matrix/Bot.hh"
-
 #include "client/Imago.hh"
 #include "client/MD2.hh"
 
@@ -35,9 +33,11 @@ namespace client
 
 class MD2Imago : public Imago
 {
-  public:
+  private:
 
     static const float TURN_SMOOTHING_COEF;
+
+  public:
 
     MD2*           md2;
     float          h;

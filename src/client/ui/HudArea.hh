@@ -43,7 +43,7 @@ class HudArea : public Area
 
     static const int   ICON_SIZE    = 32;
     static const int   VEHICLE_SIZE = 180;
-    static const float VEHICLE_DIMF;
+    static const float VEHICLE_DIM;
     static const float CROSS_FADE_COEFF;
 
     Label title;

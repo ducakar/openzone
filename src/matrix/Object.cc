@@ -34,8 +34,8 @@ namespace oz
 namespace matrix
 {
 
-constexpr float Object::MAX_DIM;
-constexpr float Object::REAL_MAX_DIM;
+const float Object::MAX_DIM                 = float( MAX_DIMI );
+const float Object::REAL_MAX_DIM            = MAX_DIM - 0.01f;
 
 const float Object::MOMENTUM_DAMAGE_COEF    = 1.00f;
 const float Object::MOMENTUM_INTENSITY_COEF = 0.02f;

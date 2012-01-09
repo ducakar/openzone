@@ -25,6 +25,8 @@
 
 #include "build/common.hh"
 
+#include "client/OpenGL.hh"
+
 namespace oz
 {
 namespace build
@@ -34,18 +36,8 @@ class Context
 {
   public:
 
-    static const int DEFAULT_MAG_FILTER;
-    static const int DEFAULT_MIN_FILTER;
-
-  private:
-
-    // texture reading buffer
-    static const int BUFFER_SIZE          = 256 * 1024;
-    // default audio format
-    static const int DEFAULT_AUDIO_FREQ   = 44100;
-    static const int DEFAULT_AUDIO_FORMAT = AUDIO_S16LSB;
-
-  public:
+    static const int DEFAULT_MAG_FILTER = GL_LINEAR;
+    static const int DEFAULT_MIN_FILTER = GL_LINEAR_MIPMAP_LINEAR;
 
     static bool useS3TC;
 

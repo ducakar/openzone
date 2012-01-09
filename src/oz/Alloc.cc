@@ -173,7 +173,7 @@ static void* allocateObject( void* ptr, size_t size )
   st->next       = firstObjectTraceEntry;
   st->address    = ptr;
   st->size       = size;
-  st->stackTrace = StackTrace::current();
+  st->stackTrace = StackTrace::current( 1 );
 
   firstObjectTraceEntry = st;
 
@@ -213,7 +213,7 @@ static void* allocateArray( void* ptr, size_t size )
   st->next       = firstArrayTraceEntry;
   st->address    = ptr;
   st->size       = size;
-  st->stackTrace = StackTrace::current();
+  st->stackTrace = StackTrace::current( 1 );
 
   firstArrayTraceEntry = st;
 
@@ -298,10 +298,10 @@ static void deallocateObject( void* ptr )
   }
 
   if( st == null ) {
-    System::error( "ALLOC: Trying to free object at %p that does not seem to be allocated", ptr );
+    System::error( 1, "ALLOC: Trying to free object at %p that has not been allocated", ptr );
   }
   else {
-    System::error( "ALLOC: new[] -> delete mismatch for block at %p", ptr );
+    System::error( 1, "ALLOC: new[] -> delete mismatch for block at %p", ptr );
   }
 
   System::bell();
@@ -383,10 +383,10 @@ static void deallocateArray( void* ptr )
   }
 
   if( st == null ) {
-    System::error( "ALLOC: Trying to free array at %p that does not seem to be allocated", ptr );
+    System::error( 1, "ALLOC: Trying to free array at %p that has not been allocated", ptr );
   }
   else {
-    System::error( "ALLOC: new -> delete[] mismatch for block at %p", ptr );
+    System::error( 1, "ALLOC: new -> delete[] mismatch for block at %p", ptr );
   }
 
   System::bell();
@@ -422,16 +422,13 @@ void* operator new ( std::size_t size ) throw( std::bad_alloc )
 #ifdef _WIN32
   void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
   if( ptr == null ) {
-    System::trap();
-    throw std::bad_alloc();
-  }
 #else
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
+#endif
     System::trap();
     throw std::bad_alloc();
   }
-#endif
 
   return allocateObject( ptr, size );
 }
@@ -445,16 +442,13 @@ void* operator new[] ( std::size_t size ) throw( std::bad_alloc )
 #ifdef _WIN32
   void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
   if( ptr == null ) {
-    System::trap();
-    throw std::bad_alloc();
-  }
 #else
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
+#endif
     System::trap();
     throw std::bad_alloc();
   }
-#endif
 
   return allocateArray( ptr, size );
 }
@@ -490,16 +484,13 @@ void* operator new ( std::size_t size, const std::nothrow_t& ) throw()
 #ifdef _WIN32
   void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
   if( ptr == null ) {
-    System::trap();
-    return null;
-  }
 #else
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
+#endif
     System::trap();
     return null;
   }
-#endif
 
   return allocateObject( ptr, size );
 }
@@ -513,16 +504,13 @@ void* operator new[] ( std::size_t size, const std::nothrow_t& ) throw()
 #ifdef _WIN32
   void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
   if( ptr == null ) {
-    System::trap();
-    return null;
-  }
 #else
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
+#endif
     System::trap();
     return null;
   }
-#endif
 
   return allocateArray( ptr, size );
 }

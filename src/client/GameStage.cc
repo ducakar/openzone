@@ -55,10 +55,7 @@ String GameStage::QUICKSAVE_FILE;
 
 int GameStage::auxMain( void* )
 {
-  System::init( System::CATCH_SIGNALS_BIT );
-#ifndef NDEBUG
-  System::init( System::CATCH_SIGNALS_BIT | System::HALT_BIT );
-#endif
+  System::init();
 
   try{
     gameStage.run();
@@ -67,7 +64,7 @@ int GameStage::auxMain( void* )
     log.printException( e );
 
     System::bell();
-    System::abort( false );
+    System::abort();
   }
   return 0;
 }
@@ -519,7 +516,7 @@ void GameStage::unload()
   log.println( "run time              %8.2f s",         runTime                                  );
   log.println( "game time             %8.2f s  ",       gameTime                                 );
   log.println( "dropped time          %8.2f s",         droppedTime                              );
-  log.println( "optimal tick/frame rate %6.2f Hz ",     1000.0f / float( Timer::TICK_MILLIS )    );
+  log.println( "optimal tick/frame rate %6.2f Hz ",     1.0f / Timer::TICK_TIME                  );
   log.println( "tick rate in run time   %6.2f Hz ",     float( timer.ticks ) / runTime           );
   log.println( "frame rate in run time  %6.2f Hz",      float( timer.nFrames ) / runTime         );
   log.println( "frame drop              %6.2f %%",      frameDropRate * 100.0f                   );

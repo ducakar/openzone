@@ -116,7 +116,7 @@ void Compiler::material( int target, float param )
       break;
     }
     default: {
-      hard_assert( false );
+      throw Exception( "Invalid material target" );
       break;
     }
   }

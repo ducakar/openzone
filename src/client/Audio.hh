@@ -38,7 +38,7 @@ class Audio
 {
   public:
 
-    static const int   UPDATED_BIT = 0x00000001;
+    static const int UPDATED_BIT = 0x00000001;
 
     static const float REFERENCE_DISTANCE;
     static const float ROLLOFF_FACTOR;

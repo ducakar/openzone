@@ -44,8 +44,8 @@
  */
 #define OZ_STATIC_POOL_ALLOC( pool ) \
   public:\
-    void* operator new ( size_t ) { return pool.alloc(); } \
-    void  operator delete ( void* ptr ) { if( ptr != null ) pool.dealloc( ptr ); }
+    void* operator new ( size_t ) throw( std::bad_alloc ) { return pool.alloc(); } \
+    void operator delete ( void* ptr ) throw() { if( ptr != null ) pool.dealloc( ptr ); }
 
 /**
  * @def OZ_PLACEMENT_POOL_ALLOC( Type, SIZE )
@@ -60,10 +60,14 @@
  */
 #define OZ_PLACEMENT_POOL_ALLOC( Type, SIZE ) \
   public: \
-    void* operator new ( size_t, oz::Pool<Type, SIZE>& pool ) { return pool.alloc(); } \
-    void  operator delete ( void* ptr, oz::Pool<Type, SIZE>& pool ) { pool.dealloc( ptr ); } \
-    void* operator new ( size_t ) = delete; \
-    void  operator delete ( void* ) = delete;
+    void* operator new ( size_t ) throw( std::bad_alloc ) = delete; \
+    void  operator delete ( void* ) throw() = delete; \
+    void* operator new ( size_t, const std::nothrow_t& ) throw() = delete; \
+    void  operator delete ( void*, const std::nothrow_t& ) throw() = delete; \
+    void* operator new ( size_t, oz::Pool<Type, SIZE>& pool ) throw( std::bad_alloc ) \
+    { return pool.alloc(); } \
+    void  operator delete ( void* ptr, oz::Pool<Type, SIZE>& pool ) throw() \
+    { pool.dealloc( ptr ); }
 
 namespace oz
 {
@@ -171,6 +175,7 @@ class Pool
       }
 
       hard_assert( count == 0 );
+
       free();
 
       firstBlock = p.firstBlock;
@@ -189,7 +194,7 @@ class Pool
     /**
      * Allocate a new object.
      */
-    void* alloc() throw( std::bad_alloc )
+    void* alloc()
     {
       hard_assert( !Alloc::isLocked );
 
@@ -211,7 +216,7 @@ class Pool
     /**
      * Free the given object.
      */
-    void dealloc( void* ptr ) throw()
+    void dealloc( void* ptr )
     {
       hard_assert( !Alloc::isLocked );
       hard_assert( count != 0 );
@@ -257,8 +262,9 @@ class Pool
     /**
      * Deallocate the storage.
      *
-     * Frees all blocks allocated. It will not end good if something still uses memory allocated by
-     * the pool.
+     * In the case the pool is not empty it is still cleared but memory is not deallocated. This
+     * memory leak is intended to prevent potential crashes and it only happens if you already have
+     * a memory leak in your program.
      */
     void free()
     {

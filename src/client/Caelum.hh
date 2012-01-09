@@ -34,12 +34,11 @@ class Caelum
 {
   public:
 
-    static const int   MAX_STARS = 4096;
+    static const int MAX_STARS = 4096;
 
   private:
 
     static const float DAY_BIAS;
-
     static const float AMBIENT_COEF;
 
     static const float RED_COEF;

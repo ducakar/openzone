@@ -39,7 +39,7 @@ namespace client
 namespace ui
 {
 
-const float HudArea::VEHICLE_DIMF     = VEHICLE_SIZE / 2.0f;
+const float HudArea::VEHICLE_DIM      = VEHICLE_SIZE / 2.0f;
 const float HudArea::CROSS_FADE_COEFF = 4.0f;
 
 void HudArea::drawBotCrosshair()
@@ -236,7 +236,7 @@ void HudArea::drawVehicleStatus()
   glDisable( GL_BLEND );
 
   float size = vehicle->dim.fastL();
-  float scale = VEHICLE_DIMF / size;
+  float scale = VEHICLE_DIM / size;
 
   tf.model = Mat44::ID;
   tf.camera = Mat44::ID;

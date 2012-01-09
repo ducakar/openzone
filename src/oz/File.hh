@@ -180,12 +180,17 @@ class File
     bool write( const Buffer* buffer ) const;
 
     /**
-     * Write the first <tt>ostream.length()</tt> bytes to a file.
+     * Write the first <tt>istream.length()</tt> bytes of an input stream to a file.
+     */
+    bool write( const InputStream* istream ) const;
+
+    /**
+     * Write the first <tt>ostream.length()</tt> bytes of an output stream to a file.
      */
     bool write( const OutputStream* ostream ) const;
 
     /**
-     * Write the first <tt>bstream.length()</tt> bytes of the stream buffer to a file.
+     * Write the first <tt>bstream.length()</tt> bytes of an stream buffer to a file.
      */
     bool write( const BufferStream* bstream ) const;
 

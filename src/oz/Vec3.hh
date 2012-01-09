@@ -194,7 +194,7 @@ class Vec3
      * Original vector.
      */
     OZ_ALWAYS_INLINE
-    const Vec3& operator + () const
+    Vec3 operator + () const
     {
       return *this;
     }
