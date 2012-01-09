@@ -36,13 +36,13 @@ class InventoryMenu : public Frame
 {
   private:
 
-    static const int   ICON_SIZE    = 32;
-    static const int   SLOT_SIZE    = 68;
-    static const float SLOT_OBJ_DIMF;
     static const int   COLS         = 8;
     static const int   ROWS         = 1;
     static const int   PADDING_SIZE = 2;
     static const int   FOOTER_SIZE  = 32;
+    static const int   ICON_SIZE    = 32;
+    static const int   SLOT_SIZE    = 68;
+    static const float SLOT_OBJ_DIM;
 
     const InventoryMenu* const master;
 

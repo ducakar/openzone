@@ -222,19 +222,7 @@ inline void swap( Value& a, Value& b )
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
-inline constexpr const Value& min( const Value& a, const Value& b )
-{
-  return b < a ? b : a;
-}
-
-/**
- * <tt>a</tt> if <tt>a <= b</tt>, <tt>b</tt> otherwise.
- *
- * @ingroup oz
- */
-template <typename Value>
-OZ_ALWAYS_INLINE
-inline constexpr Value& min( Value& a, Value& b )
+inline const Value& min( const Value& a, const Value& b )
 {
   return b < a ? b : a;
 }
@@ -246,19 +234,7 @@ inline constexpr Value& min( Value& a, Value& b )
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
-inline constexpr const Value& max( const Value& a, const Value& b )
-{
-  return a < b ? b : a;
-}
-
-/**
- * <tt>a</tt> if <tt>a >= b</tt>, <tt>b</tt> otherwise.
- *
- * @ingroup oz
- */
-template <typename Value>
-OZ_ALWAYS_INLINE
-inline constexpr Value& max( Value& a, Value& b )
+inline const Value& max( const Value& a, const Value& b )
 {
   return a < b ? b : a;
 }
@@ -270,19 +246,7 @@ inline constexpr Value& max( Value& a, Value& b )
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
-inline constexpr const Value& clamp( const Value& c, const Value& a, const Value& b )
-{
-  return c < a ? a : ( b < c ? b : c );
-}
-
-/**
- * <tt>c</tt> if <tt>a <= c <= b</tt>, respective boundary otherwise.
- *
- * @ingroup oz
- */
-template <typename Value>
-OZ_ALWAYS_INLINE
-inline constexpr Value& clamp( Value& c, Value& a, Value& b )
+inline const Value& clamp( const Value& c, const Value& a, const Value& b )
 {
   return c < a ? a : ( b < c ? b : c );
 }

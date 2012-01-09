@@ -43,27 +43,31 @@ class System
 {
   public:
 
-    /// Catch fatal signals and print stack trace.
-    static const int CATCH_SIGNALS_BIT = 0x01;
-
-    /// Wait for a CTRL-C when a fatal signal is caught, so one has time to attach debugger.
+    /// Wait for a CTRL-C in <tt>abort()</tt>, so one has time to attach debugger.
     static const int HALT_BIT = 0x02;
+
+    /// Catch fatal signals, print diagnostics and abort program.
+    static const int SIGNAL_HANDLER_BIT = 0x10;
+
+    /// Override handlers for exception violations (<tt>std::terminate()</tt> and
+    /// <tt>std::unexpected()</tt>).
+    static const int EXCEPTION_HANDLERS_BIT = 0x20;
+
+    /// Handlers bitmask.
+    static const int HANDLERS_MASK = 0xf0;
 
   private:
 
     static System system; ///< Private instance, takes care for static initialisation/destruction.
 
     /**
-     * Default constructor disables handler for SIGTRAP on Linux.
-     *
-     * liboz triggers breakpoint on exceptions and failed assertions, which is done by raising
-     * SIGTRAP on Linux or <tt>DebugBreak()</tt> call on Windows. However, default handler for
-     * SIGTRAP crashes the process, so it's a good idea to disable it.
+     * Sets up bell and disables <tt>SIGTRAP</tt> handler on Linux, since the default handler would
+     * crash the application on <tt>trap()</tt> call.
      */
     System();
 
     /**
-     * Destructor delays normal process termination until bell finishes playing.
+     * Destructor delays normal process termination until the bell finishes playing.
      */
     ~System();
 
@@ -78,7 +82,7 @@ class System
     static void bell();
 
     /**
-     * Trigger a breakpoint (raises SIGTRAP on Linux or calls DebugBreak() on Windows).
+     * Trigger a breakpoint (raises <tt>SIGTRAP</tt> on Linux or calls DebugBreak() on Windows).
      */
     static void trap();
 
@@ -92,28 +96,38 @@ class System
 
     /**
      * Print error message and stack trace.
+     *
+     * If <tt>nSkippedFrames</tt> is 0, stack frames from including caller frame are included. Can
+     * also be negative; -1 and -2 include from <tt>error()</tt>'s and <tt>System::current()</tt>'s
+     * frame respectively.
      */
-    OZ_PRINTF_FORMAT( 1, 2 )
-    static void error( const char* msg, ... );
+    OZ_PRINTF_FORMAT( 2, 3 )
+    static void error( int nSkippedFrames, const char* msg, ... );
 
     /**
      * Abort program.
-     *
-     * @param halt call <tt>halt()</tt> if <tt>HALT_BIT</tt> has been passed in on initialisation.
      */
-    static void abort( bool halt = true );
+    static void abort();
 
     /**
      * Initialise <tt>System</tt> features.
      *
-     * Set-up crash handler if <tt>CATCH_SIGNALS_BIT</tt> is given. If <tt>HALT_BIT</tt> is also
+     * Set-up crash handler for cases specified in <tt>flags</tt>. If <tt>HALT_BIT</tt> is also
      * given, crash handler waits for CTRL-C before exit.
      */
 #ifdef NDEBUG
-    static void init( int flags = CATCH_SIGNALS_BIT );
+    static void init( int flags = HANDLERS_MASK );
 #else
-    static void init( int flags = CATCH_SIGNALS_BIT | HALT_BIT );
+    static void init( int flags = HANDLERS_MASK | HALT_BIT );
 #endif
+
+    /**
+     * Deinitialise <tt>System</tt>.
+     *
+     * It resets signal handlers (including <tt>SIG_IGN</tt>), <tt>std::terminate()</tt> and
+     * <tt>std::unexpected()</tt> to defaults.
+     */
+    static void free();
 
 };
 

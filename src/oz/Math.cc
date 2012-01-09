@@ -36,11 +36,13 @@
 namespace oz
 {
 
+constexpr float Math::NaN;
+constexpr float Math::INF;
 constexpr float Math::EPSILON;
 constexpr float Math::E;
 constexpr float Math::TAU;
-constexpr float Math::INF;
-constexpr float Math::NaN;
+constexpr float Math::SQRT_2;
+constexpr float Math::SQRT_3;
 
 void Math::seed( int n )
 {

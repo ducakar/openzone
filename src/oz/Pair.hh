@@ -53,7 +53,7 @@ class Pair
      * Per-member equality operator.
      */
     OZ_ALWAYS_INLINE
-    constexpr bool operator == ( const Pair& p ) const
+    bool operator == ( const Pair& p ) const
     {
       return x == p.x && y == p.y;
     }
@@ -62,7 +62,7 @@ class Pair
      * Per-member inequality operator.
      */
     OZ_ALWAYS_INLINE
-    constexpr bool operator != ( const Pair& p ) const
+    bool operator != ( const Pair& p ) const
     {
       return x != p.x || y != p.y;
     }

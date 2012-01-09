@@ -210,7 +210,7 @@ class Mat44
      * Original matrix.
      */
     OZ_ALWAYS_INLINE
-    const Mat44& operator + () const
+    Mat44 operator + () const
     {
       return *this;
     }
@@ -269,11 +269,9 @@ class Mat44
     OZ_ALWAYS_INLINE
     Vec3 operator * ( const Vec3& v ) const
     {
-      const Vec3& i = x;
-      const Vec3& j = y;
-      const Vec3& k = z;
-
-      return i * v.x + j * v.y + k * v.z;
+      return Vec3( x.x * v.x + y.x * v.y + z.x * v.z,
+                   x.y * v.x + y.y * v.y + z.y * v.z,
+                   x.z * v.x + y.z * v.y + z.z * v.z );
     }
 
     /**
@@ -282,12 +280,9 @@ class Mat44
     OZ_ALWAYS_INLINE
     Point3 operator * ( const Point3& p ) const
     {
-      const Vec3& i = x;
-      const Vec3& j = y;
-      const Vec3& k = z;
-      const Vec3& t = w;
-
-      return Point3::ORIGIN + i * p.x + j * p.y + k * p.z + t;
+      return Point3( x.x * p.x + y.x * p.y + z.x * p.z + w.x,
+                     x.y * p.x + y.y * p.y + z.y * p.z + w.y,
+                     x.z * p.x + y.z * p.y + z.z * p.z + w.z );
     }
 
     /**
@@ -363,12 +358,9 @@ class Mat44
     OZ_ALWAYS_INLINE
     void translate( const Vec3& v )
     {
-      const Vec3& i = x;
-      const Vec3& j = y;
-      const Vec3& k = z;
-      const Vec3& t = w;
-
-      w = Vec4( i * v.x + j * v.y + k * v.z + t, 1.0f );
+      w.x = x.x * v.x + y.x * v.y + z.x * v.z + w.x;
+      w.y = x.y * v.x + y.y * v.y + z.y * v.z + w.y;
+      w.z = x.z * v.x + y.z * v.y + z.z * v.z + w.z;
     }
 
     /**
@@ -434,13 +426,17 @@ class Mat44
     OZ_ALWAYS_INLINE
     void scale( const Vec3& v )
     {
-      Vec3& i = x;
-      Vec3& j = y;
-      Vec3& k = z;
+      x.x *= v.x;
+      x.y *= v.x;
+      x.z *= v.x;
 
-      i *= v.x;
-      j *= v.y;
-      k *= v.z;
+      y.x *= v.y;
+      y.y *= v.y;
+      y.z *= v.y;
+
+      z.x *= v.z;
+      z.y *= v.z;
+      z.z *= v.z;
     }
 
     /**

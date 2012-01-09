@@ -101,7 +101,7 @@ int main( int argc, char** argv )
     oz::log.printException( e );
 
     oz::System::bell();
-    oz::System::abort( false );
+    oz::System::abort();
   }
 
   oz::shutdown();

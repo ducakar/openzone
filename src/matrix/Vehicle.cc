@@ -36,12 +36,12 @@ namespace oz
 namespace matrix
 {
 
-const float Vehicle::ROT_DIFF_LIMIT      = 0.50f;
-const float Vehicle::ROT_VEL_DIFF_RATIO  = 0.10f;
-const float Vehicle::AIR_FRICTION        = 0.02f;
-const float Vehicle::EXIT_EPSILON        = 0.20f;
-const float Vehicle::EXIT_MOMENTUM       = 1.00f;
-const float Vehicle::EJECT_MOMENTUM      = 15.0f;
+const float Vehicle::ROT_DIFF_LIMIT     = 0.50f;
+const float Vehicle::ROT_VEL_DIFF_RATIO = 0.10f;
+const float Vehicle::AIR_FRICTION       = 0.02f;
+const float Vehicle::EXIT_EPSILON       = 0.20f;
+const float Vehicle::EXIT_MOMENTUM      = 1.00f;
+const float Vehicle::EJECT_MOMENTUM     = 15.0f;
 
 Pool<Vehicle, 256> Vehicle::pool;
 
@@ -130,9 +130,9 @@ void Vehicle::airHandler( const Mat44& rotMat )
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-  const Vec3& right = rotMat.x;
-  const Vec3& at    = rotMat.y;
-  const Vec3& up    = rotMat.z;
+  Vec3 right = rotMat.x;
+  Vec3 at    = rotMat.y;
+  Vec3 up    = rotMat.z;
 
   // controls
   Vec3 move = Vec3::ZERO;

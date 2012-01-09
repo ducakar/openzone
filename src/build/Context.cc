@@ -39,17 +39,12 @@
 #include "client/BotAudio.hh"
 #include "client/VehicleAudio.hh"
 
-#include "client/OpenGL.hh"
-
 #include <FreeImage.h>
 
 namespace oz
 {
 namespace build
 {
-
-const int Context::DEFAULT_MAG_FILTER = GL_LINEAR;
-const int Context::DEFAULT_MIN_FILTER = GL_LINEAR_MIPMAP_LINEAR;
 
 bool Context::useS3TC = false;
 

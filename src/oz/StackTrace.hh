@@ -51,8 +51,12 @@ class StackTrace
 
     /**
      * Generates array of frame pointers and return it in <tt>StackTrace</tt> struct.
+     *
+     * If <tt>nSkippedFrames</tt> is non-negative, stack frame of this function plus
+     * <tt>nSkippedFrames</tt> following stack frames are skipped. If -1, no stack frames are
+     * skipped including stack frame of this function.
      */
-    static StackTrace current();
+    static StackTrace current( int nSkippedFrames );
 
     /**
      * Return string table for stack frames.

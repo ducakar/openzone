@@ -42,10 +42,10 @@ static_assert( Orbis::CELLS * Cell::SIZEI == Terra::QUADS * Terra::Quad::SIZEI,
 
 Orbis orbis;
 
-constexpr float Cell::SIZE;
-constexpr float Cell::INV_SIZE;
+const float Cell::SIZE     = float( SIZEI );
+const float Cell::INV_SIZE = 1.0f / SIZE;
 
-constexpr float Orbis::DIM;
+const float Orbis::DIM     = Cell::SIZE * CELLS / 2.0f;
 
 bool Orbis::position( Struct* str )
 {

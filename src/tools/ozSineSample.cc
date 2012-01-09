@@ -29,7 +29,7 @@
 #include <cstdlib>
 
 static const int   RATE      = 11025;
-static const int   SAMPLES   = 4410;
+static const int   SAMPLES   = 3087;
 static const int   COLS      = 20;
 static const float FREQUENCY = 800.0f;
 

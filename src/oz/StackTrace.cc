@@ -29,6 +29,8 @@
 
 #include "StackTrace.hh"
 
+#include "arrays.hh"
+
 #ifndef _WIN32
 # include <cstdlib>
 # include <cstring>
@@ -41,7 +43,7 @@ namespace oz
 
 #ifdef _WIN32
 
-StackTrace StackTrace::current()
+StackTrace StackTrace::current( int )
 {
   StackTrace st;
   st.nFrames = 0;
@@ -58,12 +60,18 @@ char** StackTrace::symbols() const
 static const int TRACE_BUFFER_SIZE  = 4096;
 static const int STRING_BUFFER_SIZE = 1024;
 
-static OZ_THREAD_LOCAL char output[TRACE_BUFFER_SIZE];
+static OZ_THREAD_LOCAL void* framesBuffer[StackTrace::MAX_FRAMES + 4];
+static OZ_THREAD_LOCAL char  outputBuffer[TRACE_BUFFER_SIZE];
 
-StackTrace StackTrace::current()
+StackTrace StackTrace::current( int nSkippedFrames )
 {
+  hard_assert( nSkippedFrames >= -1 );
+
+  int nFrames = backtrace( framesBuffer, MAX_FRAMES + 4 );
+
   StackTrace st;
-  st.nFrames = backtrace( st.frames, MAX_FRAMES );
+  st.nFrames = min( nFrames - 1 - nSkippedFrames, int( MAX_FRAMES ) );
+  aCopy( st.frames, framesBuffer + 1 + nSkippedFrames, st.nFrames );
   return st;
 }
 
@@ -75,8 +83,8 @@ char** StackTrace::symbols() const
     return null;
   }
 
-  const char* const outEnd = output + TRACE_BUFFER_SIZE;
-  char* out = output;
+  const char* const outEnd = outputBuffer + TRACE_BUFFER_SIZE;
+  char* out = outputBuffer;
 
   *out = '\0';
 
@@ -203,10 +211,10 @@ char** StackTrace::symbols() const
   }
 
   size_t headerSize  = size_t( nFrames ) * sizeof( char* );
-  size_t bodySize    = size_t( out - output );
+  size_t bodySize    = size_t( out - outputBuffer );
   char** niceSymbols = reinterpret_cast<char**>( realloc( symbols, headerSize + bodySize ) );
 
-  memcpy( &niceSymbols[nFrames], output, bodySize );
+  memcpy( &niceSymbols[nFrames], outputBuffer, bodySize );
 
   char* entry = reinterpret_cast<char*>( &niceSymbols[nFrames] );
   for( int i = 0; i < nFrames; ++i ) {

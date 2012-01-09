@@ -39,7 +39,7 @@ namespace oz
 {
 
 /**
- * Read-only stream.
+ * Fixed-size read-only stream.
  *
  * @ingroup oz
  */

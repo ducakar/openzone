@@ -149,7 +149,21 @@ static void signalHandler( int signum )
     initFlags &= ~System::HALT_BIT;
   }
 
-  System::error( "Caught signal %d %s (%s)", signum, SIGNALS[signum][0], SIGNALS[signum][1] );
+  System::error( 0, "Caught signal %d %s (%s)", signum, SIGNALS[signum][0], SIGNALS[signum][1] );
+  System::bell();
+  System::abort();
+}
+
+static void terminate()
+{
+  System::error( 0, "EXCEPTION HANDLING ABORTED" );
+  System::bell();
+  System::abort();
+}
+
+static void unexpected()
+{
+  System::error( 0, "EXCEPTION SPECIFICATION VIOLATION" );
   System::bell();
   System::abort();
 }
@@ -201,6 +215,7 @@ static void* bellThread( void* )
                                  null, null, null );
   if( pa != null ) {
     pa_simple_write( pa, BELL_SAMPLE, sizeof( BELL_SAMPLE ), null );
+    usleep( uint( ulong64( sizeof( BELL_SAMPLE ) ) * 1000000 / ulong64( BELL_SPEC.rate ) ) );
     pa_simple_free( pa );
   }
 
@@ -229,7 +244,7 @@ System::~System()
 #ifdef _WIN32
     Sleep( 100 );
 #else
-    usleep( 100 );
+    usleep( 100000 );
 #endif
   }
 
@@ -285,7 +300,7 @@ void System::halt()
 #endif
 }
 
-void System::error( const char* msg, ... )
+void System::error( int nSkippedFrames, const char* msg, ... )
 {
   va_list ap;
   va_start( ap, msg );
@@ -296,18 +311,18 @@ void System::error( const char* msg, ... )
 
   va_end( ap );
 
-  StackTrace st = StackTrace::current();
+  StackTrace st = StackTrace::current( 1 + nSkippedFrames );
   log.printTrace( &st );
 }
 
-void System::abort( bool halt_ )
+void System::abort()
 {
   resetSignals();
 
   // Wait until bell is played completely.
   system.~System();
 
-  if( halt_ && ( initFlags & HALT_BIT ) ) {
+  if( initFlags & HALT_BIT ) {
     halt();
   }
 
@@ -316,15 +331,32 @@ void System::abort( bool halt_ )
 
 void System::init( int flags )
 {
-  if( initFlags & CATCH_SIGNALS_BIT ) {
+  if( initFlags & SIGNAL_HANDLER_BIT ) {
     resetSignals();
+  }
+  if( initFlags & EXCEPTION_HANDLERS_BIT ) {
+    std::set_unexpected( std::unexpected );
+    std::set_terminate( std::terminate );
   }
 
   initFlags = flags;
 
-  if( initFlags & CATCH_SIGNALS_BIT ) {
+  if( initFlags & SIGNAL_HANDLER_BIT ) {
     catchSignals();
   }
+  if( initFlags & EXCEPTION_HANDLERS_BIT ) {
+    std::set_terminate( terminate );
+    std::set_unexpected( unexpected );
+  }
+}
+
+void System::free()
+{
+  std::set_unexpected( std::unexpected );
+  std::set_terminate( std::terminate );
+  resetSignals();
+
+  initFlags = 0;
 }
 
 }

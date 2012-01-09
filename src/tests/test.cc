@@ -56,7 +56,11 @@ struct Foo
   }
 };
 
+using namespace oz;
+
 int main( int, char** )
 {
+  oz::System::init();
+  hard_assert( 0 );
   return 0;
 }

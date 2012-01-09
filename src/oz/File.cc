@@ -363,6 +363,11 @@ bool File::write( const Buffer* buffer ) const
   return write( buffer->begin(), buffer->length() );
 }
 
+bool File::write( const InputStream* istream ) const
+{
+  return write( istream->begin(), istream->length() );
+}
+
 bool File::write( const OutputStream* ostream ) const
 {
   return write( ostream->begin(), ostream->length() );

@@ -43,9 +43,9 @@ class Sound
 {
   private:
 
-    static const float MAX_DISTANCE;
     static const int   MUSIC_BUFFER_SIZE       = 64 * 1024;
     static const int   MUSIC_INPUT_BUFFER_SIZE = 8 * 1024;
+    static const float MAX_DISTANCE;
 
     enum StreamType
     {

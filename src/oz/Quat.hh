@@ -39,7 +39,7 @@ namespace oz
  *
  * @ingroup oz
  */
-class Quat : public Vec4
+class Quat
 {
   public:
 
@@ -48,6 +48,11 @@ class Quat : public Vec4
 
     /// Quaternion representing rotation identity.
     static const Quat ID;
+
+    float x; ///< X component.
+    float y; ///< Y component.
+    float z; ///< Z component.
+    float w; ///< W component.
 
     /**
      * Create an uninitialised instance.
@@ -58,22 +63,88 @@ class Quat : public Vec4
      * Create a quaternion with the given components.
      */
     OZ_ALWAYS_INLINE
-    explicit Quat( float x, float y, float z, float w ) : Vec4( x, y, z, w )
+    explicit Quat( float x_, float y_, float z_, float w_ ) : x( x_ ), y( y_ ), z( z_ ), w( w_ )
     {}
 
     /**
      * Create from an array of 4 floats.
      */
     OZ_ALWAYS_INLINE
-    explicit Quat( const float* q ) : Vec4( q )
+    explicit Quat( const float* q ) : x( q[0] ), y( q[1] ), z( q[2] ), w( q[3] )
     {}
 
     /**
-     * Create quaternion from a four component vector.
+     * Create quaternion from a four-component vector.
      */
     OZ_ALWAYS_INLINE
-    explicit Quat( const Vec4& v ) : Vec4( v )
+    explicit Quat( const Vec4& v ) : x( v.x ), y( v.y ), z( v.z ), w( v.w )
     {}
+
+    /**
+     * Equality.
+     */
+    OZ_ALWAYS_INLINE
+    bool operator == ( const Quat& v ) const
+    {
+      return x == v.x && y == v.y && z == v.z && w == v.w;
+    }
+
+    /**
+     * Inequality.
+     */
+    OZ_ALWAYS_INLINE
+    bool operator != ( const Quat& v ) const
+    {
+      return x != v.x || y != v.y || z != v.z || w != v.w;
+    }
+
+    /**
+     * Cast to four-component vector.
+     */
+    operator Vec4 () const
+    {
+      return Vec4( x, y, z, w );
+    }
+
+    /**
+     * Constant float pointer to the members.
+     */
+    OZ_ALWAYS_INLINE
+    operator const float* () const
+    {
+      return &x;
+    }
+
+    /**
+     * Float pointer to the members.
+     */
+    OZ_ALWAYS_INLINE
+    operator float* ()
+    {
+      return &x;
+    }
+
+    /**
+     * Constant reference to the i-th member.
+     */
+    OZ_ALWAYS_INLINE
+    const float& operator [] ( int i ) const
+    {
+      hard_assert( 0 <= i && i < 4 );
+
+      return ( &x )[i];
+    }
+
+    /**
+     * Reference to the i-th member.
+     */
+    OZ_ALWAYS_INLINE
+    float& operator [] ( int i )
+    {
+      hard_assert( 0 <= i && i < 4 );
+
+      return ( &x )[i];
+    }
 
     /**
      * Quaternion with absolute components.
@@ -91,6 +162,33 @@ class Quat : public Vec4
     Quat operator * () const
     {
       return Quat( -x, -y, -z, w );
+    }
+
+    /**
+     * Length.
+     */
+    OZ_ALWAYS_INLINE
+    float operator ! () const
+    {
+      return Math::sqrt( x*x + y*y + z*z + w*w );
+    }
+
+    /**
+     * Approximate length.
+     */
+    OZ_ALWAYS_INLINE
+    float fastL() const
+    {
+      return Math::fastSqrt( x*x + y*y + z*z + w*w );
+    }
+
+    /**
+     * Square of length.
+     */
+    OZ_ALWAYS_INLINE
+    float sqL() const
+    {
+      return x*x + y*y + z*z + w*w;
     }
 
     /**
@@ -121,7 +219,7 @@ class Quat : public Vec4
      * Original quaternion.
      */
     OZ_ALWAYS_INLINE
-    const Quat& operator + () const
+    Quat operator + () const
     {
       return *this;
     }
@@ -172,10 +270,10 @@ class Quat : public Vec4
     }
 
     /**
-     * Product.
+     * Quaternion product.
      */
     OZ_ALWAYS_INLINE
-    Quat operator ^ ( const Quat& q ) const
+    Quat operator * ( const Quat& q ) const
     {
 
       return Quat( w*q.x + x*q.w + y*q.z - z*q.y,
@@ -236,10 +334,10 @@ class Quat : public Vec4
     }
 
     /**
-     * Multiplication.
+     * Quaternion multiplication.
      */
     OZ_ALWAYS_INLINE
-    Quat& operator ^= ( const Quat& q )
+    Quat& operator *= ( const Quat& q )
     {
       float tx = x, ty = y, tz = z;
 
@@ -334,7 +432,7 @@ class Quat : public Vec4
      */
     static Quat slerp( const Quat& a, const Quat& b, float t )
     {
-      Quat  diff  = *a ^ b;
+      Quat  diff  = *a * b;
       float sine  = Math::sqrt( 1.0f - diff.w*diff.w );
       float angle = 2.0f * Math::acos( diff.w );
 
@@ -349,7 +447,7 @@ class Quat : public Vec4
      */
     static Quat fastSlerp( const Quat& a, const Quat& b, float t )
     {
-      Quat  diff = *a ^ b;
+      Quat  diff = *a * b;
       float k    = diff.w < 0.0f ? -t : t;
 
       diff.x *= k;
@@ -357,7 +455,7 @@ class Quat : public Vec4
       diff.z *= k;
       diff.w = Math::fastSqrt( 1.0f - diff.x*diff.x - diff.y*diff.y - diff.z*diff.z );
 
-      return a ^ diff;
+      return a * diff;
     }
 
 };

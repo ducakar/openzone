@@ -38,7 +38,7 @@ namespace client
 namespace ui
 {
 
-const float InventoryMenu::SLOT_OBJ_DIMF = float( SLOT_SIZE - 2*PADDING_SIZE ) / 2.0f;
+const float InventoryMenu::SLOT_OBJ_DIM = float( SLOT_SIZE - 2*PADDING_SIZE ) / 2.0f;
 
 void InventoryMenu::onVisibilityChange()
 {
@@ -266,7 +266,7 @@ slotsRendered:;
     hard_assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 
     float size = item->dim.fastL();
-    float scale = SLOT_OBJ_DIMF / size;
+    float scale = SLOT_OBJ_DIM / size;
 
     Mat44 originalCamera = tf.camera;
 

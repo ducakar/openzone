@@ -32,30 +32,30 @@ namespace matrix
 
 Physics physics;
 
-constexpr float Physics::MOVE_BOUNCE;
-constexpr float Physics::HIT_THRESHOLD;
-constexpr float Physics::SPLASH_THRESHOLD;
-constexpr float Physics::FLOOR_NORMAL_Z;
-constexpr float Physics::SIDE_PUSH_RATIO;
-constexpr float Physics::WEIGHT_DAMAGE_THRESHOLD;
-constexpr float Physics::WEIGHT_DAMAGE_FACTOR;
-constexpr float Physics::G_ACCEL;
+const float Physics::MOVE_BOUNCE             =  1.5f * EPSILON;
+const float Physics::HIT_THRESHOLD           = -3.0f;
+const float Physics::SPLASH_THRESHOLD        = -2.0f;
+const float Physics::FLOOR_NORMAL_Z          =  0.60f;
+const float Physics::SIDE_PUSH_RATIO         =  0.5f;
+const float Physics::WEIGHT_DAMAGE_THRESHOLD =  1000.0f;
+const float Physics::WEIGHT_DAMAGE_FACTOR    =  20.0f;
+const float Physics::G_ACCEL                 = -9.81f;
 
-constexpr float Physics::SLIDE_DAMAGE_THRESHOLD;
-constexpr float Physics::SLIDE_DAMAGE_COEF;
-constexpr float Physics::STICK_VELOCITY;
-constexpr float Physics::SLICK_STICK_VELOCITY;
-constexpr float Physics::FLOAT_STICK_VELOCITY;
-constexpr float Physics::WATER_FRICTION;
-constexpr float Physics::LADDER_FRICTION;
-constexpr float Physics::FLOOR_FRICTION;
-constexpr float Physics::SLICK_FRICTION;
+const float Physics::SLIDE_DAMAGE_THRESHOLD  =  25.0f;
+const float Physics::SLIDE_DAMAGE_COEF       =  0.65f;
+const float Physics::STICK_VELOCITY          =  0.02f;
+const float Physics::SLICK_STICK_VELOCITY    =  0.001f;
+const float Physics::FLOAT_STICK_VELOCITY    =  0.0002f;
+const float Physics::WATER_FRICTION          =  0.08f;
+const float Physics::LADDER_FRICTION         =  0.50f;
+const float Physics::FLOOR_FRICTION          =  0.25f;
+const float Physics::SLICK_FRICTION          =  0.02f;
 
-constexpr float Physics::FRAG_HIT_VELOCITY2;
-constexpr float Physics::FRAG_DESTROY_VELOCITY2;
-constexpr float Physics::FRAG_STR_DAMAGE_COEF;
-constexpr float Physics::FRAG_OBJ_DAMAGE_COEF;
-constexpr float Physics::FRAG_FIXED_DAMAGE;
+const float Physics::FRAG_HIT_VELOCITY2      =  100.0f;
+const float Physics::FRAG_DESTROY_VELOCITY2  =  300.0f;
+const float Physics::FRAG_STR_DAMAGE_COEF    =  0.05f;
+const float Physics::FRAG_OBJ_DAMAGE_COEF    =  0.05f;
+const float Physics::FRAG_FIXED_DAMAGE       =  0.75f;
 
 //***********************************
 //*   FRAGMENT COLLISION HANDLING   *
