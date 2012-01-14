@@ -18,49 +18,30 @@
  */
 
 /**
- * @file client/Client.hh
- *
- * Game initialisation and main loop.
+ * @file build/Lingua.hh
  */
 
 #pragma once
 
-#include "client/Stage.hh"
+#include "build/common.hh"
 
 namespace oz
 {
-namespace client
+namespace build
 {
 
-class Client
+class Lingua
 {
   private:
 
-    static const int INIT_SDL        = 0x0001;
-    static const int INIT_PHYSFS     = 0x0002;
-    static const int INIT_CONFIG     = 0x0010;
-    static const int INIT_LINGUA     = 0x0020;
-    static const int INIT_LIBRARY    = 0x0040;
-    static const int INIT_CONTEXT    = 0x0100;
-    static const int INIT_RENDER     = 0x0200;
-    static const int INIT_AUDIO      = 0x0400;
-    static const int INIT_STAGE_INIT = 0x1000;
-    static const int INIT_STAGE_LOAD = 0x2000;
-    static const int INIT_MAIN_LOOP  = 0x4000;
-
-    Stage* stage;
-    int    initFlags;
+    void buildCatalogue( const char* srcDir, const char* lang, const char* name );
 
   public:
 
-    void shutdown();
-    void printUsage();
-
-    int  main( int argc, char* argv[] );
-
+    void build();
 };
 
-extern Client client;
+extern Lingua lingua;
 
 }
 }

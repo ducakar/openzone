@@ -49,14 +49,14 @@ package_liboz()
   cd ${srcdir}/build
 
   cmake \
-    -D OZ_INSTALL_LIBOZ=1 \
-    -D OZ_INSTALL_CLIENT=0 \
-    -D OZ_INSTALL_TOOLS=0 \
-    -D OZ_INSTALL_INFO=0 \
-    -D OZ_INSTALL_MENU=0 \
-    -D OZ_INSTALL_DATA=0 \
-    -D OZ_INSTALL_DATA_SRC=0 \
-    -D OZ_INSTALL_STANDALONE=0 \
+    -D OZINST_LIBOZ=1 \
+    -D OZINST_CLIENT=0 \
+    -D OZINST_TOOLS=0 \
+    -D OZINST_INFO=0 \
+    -D OZINST_MENU=0 \
+    -D OZINST_DATA=0 \
+    -D OZINST_DATA_SRC=0 \
+    -D OZINST_STANDALONE=0 \
     ${srcdir}/${_gitname}
 
   make install DESTDIR=${pkgdir}
@@ -75,14 +75,14 @@ package_openzone()
   cd ${srcdir}/build
 
   cmake \
-    -D OZ_INSTALL_LIBOZ=0 \
-    -D OZ_INSTALL_CLIENT=1 \
-    -D OZ_INSTALL_TOOLS=0 \
-    -D OZ_INSTALL_INFO=1 \
-    -D OZ_INSTALL_MENU=1 \
-    -D OZ_INSTALL_DATA=0 \
-    -D OZ_INSTALL_DATA_SRC=0 \
-    -D OZ_INSTALL_STANDALONE=0 \
+    -D OZINST_LIBOZ=0 \
+    -D OZINST_CLIENT=1 \
+    -D OZINST_TOOLS=0 \
+    -D OZINST_INFO=1 \
+    -D OZINST_MENU=1 \
+    -D OZINST_DATA=0 \
+    -D OZINST_DATA_SRC=0 \
+    -D OZINST_STANDALONE=0 \
     ${srcdir}/${_gitname}
 
   make install DESTDIR=${pkgdir}
@@ -98,14 +98,14 @@ package_openzone-tools()
   cd ${srcdir}/build
 
   cmake \
-    -D OZ_INSTALL_LIBOZ=0 \
-    -D OZ_INSTALL_CLIENT=0 \
-    -D OZ_INSTALL_TOOLS=1 \
-    -D OZ_INSTALL_INFO=0 \
-    -D OZ_INSTALL_MENU=0 \
-    -D OZ_INSTALL_DATA=0 \
-    -D OZ_INSTALL_DATA_SRC=0 \
-    -D OZ_INSTALL_STANDALONE=0 \
+    -D OZINST_LIBOZ=0 \
+    -D OZINST_CLIENT=0 \
+    -D OZINST_TOOLS=1 \
+    -D OZINST_INFO=0 \
+    -D OZINST_MENU=0 \
+    -D OZINST_DATA=0 \
+    -D OZINST_DATA_SRC=0 \
+    -D OZINST_STANDALONE=0 \
     ${srcdir}/${_gitname}
 
   make install DESTDIR=${pkgdir}
@@ -120,14 +120,14 @@ package_openzone-data()
   cd ${srcdir}/build
 
   cmake \
-    -D OZ_INSTALL_LIBOZ=0 \
-    -D OZ_INSTALL_CLIENT=0 \
-    -D OZ_INSTALL_TOOLS=0 \
-    -D OZ_INSTALL_INFO=0 \
-    -D OZ_INSTALL_MENU=0 \
-    -D OZ_INSTALL_DATA=1 \
-    -D OZ_INSTALL_DATA_SRC=0 \
-    -D OZ_INSTALL_STANDALONE=0 \
+    -D OZINST_LIBOZ=0 \
+    -D OZINST_CLIENT=0 \
+    -D OZINST_TOOLS=0 \
+    -D OZINST_INFO=0 \
+    -D OZINST_MENU=0 \
+    -D OZINST_DATA=1 \
+    -D OZINST_DATA_SRC=0 \
+    -D OZINST_STANDALONE=0 \
     ${srcdir}/${_gitname}
 
   make install DESTDIR=${pkgdir}

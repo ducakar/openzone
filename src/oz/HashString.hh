@@ -541,9 +541,8 @@ class HashString
         if( p->key.equals( key ) ) {
           return true;
         }
-        else {
-          p = p->next;
-        }
+
+        p = p->next;
       }
       return false;
     }
@@ -560,9 +559,8 @@ class HashString
         if( p->key.equals( key ) ) {
           return &p->value;
         }
-        else {
-          p = p->next;
-        }
+
+        p = p->next;
       }
       return null;
     }
@@ -579,9 +577,8 @@ class HashString
         if( p->key.equals( key ) ) {
           return &p->value;
         }
-        else {
-          p = p->next;
-        }
+
+        p = p->next;
       }
       return null;
     }
@@ -602,9 +599,8 @@ class HashString
           p->value = static_cast<Value_&&>( value );
           return &p->value;
         }
-        else {
-          p = p->next;
-        }
+
+        p = p->next;
       }
 
       data[i] = new( pool ) Elem( key, static_cast<Value_&&>( value ), data[i] );
@@ -630,9 +626,8 @@ class HashString
         if( p->key.equals( key ) ) {
           return &p->value;
         }
-        else {
-          p = p->next;
-        }
+
+        p = p->next;
       }
 
       data[i] = new( pool ) Elem( key, static_cast<Value_&&>( value ), data[i] );
@@ -664,10 +659,9 @@ class HashString
 
           return true;
         }
-        else {
-          prev = &p->next;
-          p = p->next;
-        }
+
+        prev = &p->next;
+        p = p->next;
       }
       return false;
     }

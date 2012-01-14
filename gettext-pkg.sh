@@ -1,12 +1,12 @@
 #!/bin/sh
 
-sources='src/*/*.hh src/*/*/*.hh src/*/*.cc src/*/*/*.cc share/openzone/lua/*/*.lua'
+scripts='share/openzone/lua/*/*.lua'
 bsps='share/openzone/data/maps/*.rc'
 classes='share/openzone/class/*.rc'
-output='share/locale/openzone.pot'
+output='share/openzone/lingua/package.pot'
 
 rm -rf $output
-xgettext --omit-header -C -s -kozGettext -d openzone -o $output $sources
+xgettext --omit-header -C -s -kozGettext -d openzone -o $output $scripts
 
 echo >> $output
 echo '#' >> $output

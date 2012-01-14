@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo 'rm -f share/openzone/lingua/*/*.{ozCat,mo}'
+rm -f share/openzone/lingua/*/*.{ozCat,.mo}
 echo 'rm -f share/openzone/ui/cur/*.ozcCur'
 rm -f share/openzone/ui/cur/*.ozcCur
 echo 'rm -f share/openzone/ui/icon/*.ozcTex'

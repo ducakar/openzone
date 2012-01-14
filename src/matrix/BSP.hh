@@ -106,10 +106,10 @@ class BSP : public Bounds
       Heading            heading;
     };
 
-    String          name;          ///< Name.
-    String          title;         ///< Title.
-    String          description;   ///< Description.
-    Vector<int>     sounds;        ///< Set of used sound samples.
+    String          name;        ///< Name.
+    String          title;       ///< Title.
+    String          description; ///< Description.
+    Vector<int>     sounds;      ///< Set of used sound samples.
 
     float           life;
     float           resistance;

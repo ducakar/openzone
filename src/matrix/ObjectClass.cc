@@ -43,8 +43,8 @@ void ObjectClass::fillCommonConfig( const Config* config )
    */
 
   name        = config->get( "name", "" );
-  title       = gettext( config->get( "title", name ) );
-  description = gettext( config->get( "description", "" ) );
+  title       = lingua.get( config->get( "title", name ) );
+  description = lingua.get( config->get( "description", "" ) );
 
   if( name.isEmpty() ) {
     throw Exception( "Empty class name" );
