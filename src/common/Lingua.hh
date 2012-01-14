@@ -18,49 +18,45 @@
  */
 
 /**
- * @file common/common.hh
+ * @file common/Lingua.hh
  */
 
 #pragma once
 
 #include "oz/oz.hh"
-#include "oz/windefs.h"
-
-#include "configuration.hh"
-
-#include "common/Span.hh"
-#include "common/Timer.hh"
-#include "common/Lingua.hh"
-
-// We want to use C++ wrapped C headers, not vanilla ones that are included via SDL.
-#include <cctype>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
-#define SDL_NO_COMPAT
-#include <SDL/SDL.h>
-
-#ifdef _WIN32
-# include <windows.h>
-// Fix M$ crap from Windows headers.
-# undef ERROR
-# undef PLANES
-# undef near
-# undef far
-#endif
-
-#define OZ_LUA_API( func ) static int func( lua_State* )
-
-struct lua_State;
 
 namespace oz
 {
 
-// ensure epsilon is big enough for a 4 km x 4 km world (1 mm should do)
-// EPSILON = Orbis::DIM * 4.0f * Math::EPSILON
-constexpr float EPSILON = 2048.0f * 4.0f * Math::EPSILON;
+class Lingua
+{
+  private:
 
-typedef int ( LuaAPI )( lua_State* );
+    struct Message
+    {
+      String   original;
+      String   translation;
+      Message* next;
+
+      OZ_PLACEMENT_POOL_ALLOC( Message, 256 );
+    };
+
+    Message**     messages;
+    int           nMessages;
+    Pool<Message> msgPool;
+
+    void count( const char* path );
+    void import( const char* path );
+
+  public:
+
+    const char* get( const char* message ) const;
+
+    bool init( const char* locale );
+    void free();
+
+};
+
+extern Lingua lingua;
 
 }

@@ -56,17 +56,17 @@ void SettingsFrame::onDraw()
 }
 
 SettingsFrame::SettingsFrame() :
-    Frame( 0, 0, 400, 28 + 8 * font.INFOS[Font::SANS].height, gettext( "Settings" ) ),
+    Frame( 0, 0, 400, 28 + 8 * font.INFOS[Font::SANS].height, lingua.get( "Settings" ) ),
     message( 4, 24, 392, 8, Font::SANS )
 {
   x = ( Area::uiWidth  - width ) / 2;
   y = ( Area::uiHeight - height ) / 2;
 
-  message.setText( gettext( "NOT IMPLEMENTED YET\n\n"
+  message.setText( lingua.get( "NOT IMPLEMENTED YET\n\n"
       "You can change your settings by manually editing '%s' file." ),
       String::str( "%s/client.rc", config.get( "dir.config", "" ) ).cstr() );
 
-  add( new Button( gettext( "Close" ), closeFrame, 40, 16 ), -44, 4 );
+  add( new Button( lingua.get( "Close" ), closeFrame, 40, 16 ), -44, 4 );
 }
 
 }

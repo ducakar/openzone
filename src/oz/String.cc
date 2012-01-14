@@ -205,19 +205,27 @@ String::String( double d ) : buffer( baseBuffer )
 
 String String::str( const char* s, ... )
 {
-  String string;
+  String r;
 
   va_list ap;
   va_start( ap, s );
 
-  string.count = vsnprintf( localBuffer, LOCAL_BUFFER_SIZE, s, ap );
+  r.count = vsnprintf( localBuffer, LOCAL_BUFFER_SIZE, s, ap );
 
   va_end( ap );
 
-  string.ensureCapacity();
-  aCopy( string.buffer, localBuffer, string.count + 1 );
+  r.ensureCapacity();
+  aCopy( r.buffer, localBuffer, r.count + 1 );
 
-  return string;
+  return r;
+}
+
+String String::create( int length, char** buffer_ )
+{
+  String r( length, 0 );
+
+  *buffer_ = r.buffer;
+  return r;
 }
 
 String& String::operator = ( const char* s )

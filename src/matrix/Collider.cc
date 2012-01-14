@@ -25,8 +25,6 @@
 
 #include "matrix/Collider.hh"
 
-#define EPSILON ( 4.0f * 2048.0f * __FLT_EPSILON__ )
-
 namespace oz
 {
 namespace matrix

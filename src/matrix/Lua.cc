@@ -693,7 +693,7 @@ int Lua::ozGettext( lua_State* l )
 {
   ARG( 1 );
 
-  pushstring( gettext( tostring( 1 ) ) );
+  pushstring( lingua.get( tostring( 1 ) ) );
   return 1;
 }
 

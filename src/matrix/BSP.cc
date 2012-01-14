@@ -273,8 +273,8 @@ void BSP::init()
   mins        = is.readPoint3();
   maxs        = is.readPoint3();
 
-  title       = gettext( is.readString() );
-  description = gettext( is.readString() );
+  title       = lingua.get( is.readString() );
+  description = lingua.get( is.readString() );
 
   int nSounds = is.readInt();
   if( nSounds != 0 ) {

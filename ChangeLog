@@ -10,5 +10,5 @@
 - support for MP3 and AAC
 - ozFormat tool for formatting object class files
 - liboz under X11 licence and fully documented
-- better Win32 support, Unix APIs replaced with Win32 API where possible
+- better Win32 support, POSIX API replaced with Win32 API where possible
 - more C++11 features: move semantics, defaulted & deleted functions, constexpr, range-for support

@@ -294,6 +294,7 @@ class HashIndex
         if( chainA->key != chainB->key || chainA->value != chainB->value ) {
           return false;
         }
+
         chainA = chainA->next;
         chainB = chainB->next;
       }
@@ -523,9 +524,8 @@ class HashIndex
         if( p->key == key ) {
           return true;
         }
-        else {
-          p = p->next;
-        }
+
+        p = p->next;
       }
       return false;
     }
@@ -542,9 +542,8 @@ class HashIndex
         if( p->key == key ) {
           return &p->value;
         }
-        else {
-          p = p->next;
-        }
+
+        p = p->next;
       }
       return null;
     }
@@ -561,9 +560,8 @@ class HashIndex
         if( p->key == key ) {
           return &p->value;
         }
-        else {
-          p = p->next;
-        }
+
+        p = p->next;
       }
       return null;
     }
@@ -584,9 +582,8 @@ class HashIndex
           p->value = static_cast<Value_&&>( value );
           return &p->value;
         }
-        else {
-          p = p->next;
-        }
+
+        p = p->next;
       }
 
       data[i] = new( pool ) Elem( key, static_cast<Value_&&>( value ), data[i] );
@@ -612,9 +609,8 @@ class HashIndex
         if( p->key == key ) {
           return &p->value;
         }
-        else {
-          p = p->next;
-        }
+
+        p = p->next;
       }
 
       data[i] = new( pool ) Elem( key, static_cast<Value_&&>( value ), data[i] );
@@ -646,10 +642,9 @@ class HashIndex
 
           return true;
         }
-        else {
-          prev = &p->next;
-          p = p->next;
-        }
+
+        prev = &p->next;
+        p = p->next;
       }
       return false;
     }

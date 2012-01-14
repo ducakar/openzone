@@ -149,8 +149,7 @@ openzone [-v] [-l | -i <function>] [-t <št>] [-p <predpona>]
       seme uporabi 42. Uporabno za benchmark.
 
 -p <predpona>
-      Nastavi podatkovni imenik na <predpona>/share/openzone in imenik
-      lokalizacije na <predpona>/share/locale.
+      Nastavi podatkovni imenik na <predpona>/share/openzone.
       Privzeto: '/usr'.
 
 Nastavitve
@@ -198,10 +197,9 @@ locale.messages [string] ""
   Lokalizacija, ki naj se uporabi za prevode. Prazen niz pomeni, da se uporabi sistemska
   lokalizacija. Trenutno so na voljo le slovenski in angleški prevodi.
 
-  Opomba za Linux: ta nastavitev zaobide okoljsko spremenljivko LC_MESSAGES. Če imate nastavljeno
-  okoljsko spremenljivko LANGUAGE, bo ta zaobšla tako LC_MESSAGES kot tudi to nastavitev.
-  Če želite trenutne lokalizacijke nastavitve vašega sistema poženite "locale", če pa vse
-  lokalizacije, ki so na voljo (so nameščene/zgenerirane), pa poženite "locale -a".
+  Opomba za Linux: ta nastavitev zaobide okoljsko spremenljivko LC_MESSAGES. Če želite trenutne
+  lokalizacijke nastavitve vašega sistema poženite "locale", če pa vse lokalizacije, ki so na voljo
+  (so nameščene/zgenerirane), pa poženite "locale -a".
 
 modules.profile.playerName [string] "<user>"
   Ime igralca. Privzeto se uporabi uporabniško ime z veliko začetnico.

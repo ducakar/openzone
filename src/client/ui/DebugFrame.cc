@@ -37,7 +37,7 @@ namespace ui
 {
 
 DebugFrame::DebugFrame() :
-    Frame( 0, -38, 560, 10 + 7 * ( Font::INFOS[Font::MONO].height + 2 ), gettext( "Debug" ) )
+    Frame( 0, -38, 560, 10 + 7 * ( Font::INFOS[Font::MONO].height + 2 ), lingua.get( "Debug" ) )
 {
   flags = PINNED_BIT;
 

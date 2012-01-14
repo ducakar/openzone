@@ -154,6 +154,17 @@ class String
     static String str( const char* s, ... );
 
     /**
+     * Create uninitialised string.
+     *
+     * Terminating null character is written, so it represents a valid string even if not
+     * initialised manually by the caller.
+     *
+     * @param length length of string (without the terminating null character).
+     * @param buffer where to pass non-constant pointer to the internal buffer.
+     */
+    static String create( int length, char** buffer );
+
+    /**
      * Replace current string with the giver C string.
      *
      * Reuse existing storage only if it the size matches.
@@ -443,11 +454,11 @@ class String
     /**
      * Pointer to the first occurrence of the substring from the given index (inclusive).
      */
-    const char* find( const char* str, int start ) const
+    const char* find( const char* sub, int start ) const
     {
       const char* p = buffer + start;
       const char* begin = null;
-      const char* end = str;
+      const char* end = sub;
 
       while( *p != '\0' && *end != '\0' ) {
         if( *p == *end ) {
@@ -457,6 +468,69 @@ class String
         ++p;
       }
       return *end == '\0' ? begin : null;
+    }
+
+    /**
+     * True iff string begins with the given characters.
+     */
+    bool beginsWith( const char* sub ) const
+    {
+      return beginsWith( buffer, sub );
+    }
+
+    /**
+     * True iff string ends with the given characters.
+     */
+    bool endsWith( const char* sub ) const
+    {
+      int subLen = length( sub );
+
+      if( subLen > count ) {
+        return false;
+      }
+
+      const char* end    = buffer + count  - 1;
+      const char* subEnd = sub    + subLen - 1;
+
+      while( subEnd >= sub && *subEnd == *end ) {
+        --subEnd;
+        --end;
+      }
+      return subEnd < sub;
+    }
+
+    /**
+     * True iff string begins with the given characters.
+     */
+    static bool beginsWith( const char* s, const char* sub )
+    {
+      while( *sub != '\0' && *sub == *s ) {
+        ++sub;
+        ++s;
+      }
+      return *sub == '\0';
+    }
+
+    /**
+     * True iff string ends with the given characters.
+     */
+    static bool endsWith( const char* s, const char* sub )
+    {
+      int len    = length( s );
+      int subLen = length( sub );
+
+      if( subLen > len ) {
+        return false;
+      }
+
+      const char* end    = s   + len    - 1;
+      const char* subEnd = sub + subLen - 1;
+
+      while( subEnd >= sub && *subEnd == *end ) {
+        --subEnd;
+        --end;
+      }
+      return subEnd < sub;
     }
 
     /**

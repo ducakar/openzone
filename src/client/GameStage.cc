@@ -125,7 +125,7 @@ void GameStage::run()
 void GameStage::reload()
 {
   ui::mouse.doShow = false;
-  ui::ui.loadingScreen->status.setText( "%s", gettext( "Loading ..." ) );
+  ui::ui.loadingScreen->status.setText( "%s", lingua.get( "Loading ..." ) );
   ui::ui.showLoadingScreen( true );
   ui::ui.root->focus( ui::ui.loadingScreen );
 
@@ -345,7 +345,7 @@ void GameStage::load()
   loadingMillis = Time::clock();
 
   ui::mouse.doShow = false;
-  ui::ui.loadingScreen->status.setText( "%s", gettext( "Loading ..." ) );
+  ui::ui.loadingScreen->status.setText( "%s", lingua.get( "Loading ..." ) );
   ui::ui.loadingScreen->show( true );
 
   render.draw( Render::DRAW_UI_BIT );
@@ -466,7 +466,7 @@ void GameStage::unload()
   float frameDropRate         = float( timer.ticks - timer.nFrames ) / float( timer.ticks );
 
   ui::mouse.doShow = false;
-  ui::ui.loadingScreen->status.setText( "%s", gettext( "Shutting down ..." ) );
+  ui::ui.loadingScreen->status.setText( "%s", lingua.get( "Shutting down ..." ) );
   ui::ui.showLoadingScreen( true );
 
   render.draw( Render::DRAW_UI_BIT );

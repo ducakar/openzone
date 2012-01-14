@@ -38,7 +38,6 @@
 #include "client/Loader.hh"
 
 #include <cerrno>
-#include <clocale>
 #include <unistd.h>
 
 #ifdef _WIN32
@@ -62,15 +61,19 @@ void Client::shutdown()
   if( initFlags & INIT_AUDIO ) {
     sound.free();
   }
-  if( initFlags & INIT_RENDER_INIT ) {
+  if( initFlags & INIT_RENDER ) {
     render.free();
   }
-  if( initFlags & INIT_CONTEXT_INIT ) {
+  if( initFlags & INIT_CONTEXT ) {
     context.free();
   }
   if( initFlags & INIT_LIBRARY ) {
     library.free();
   }
+  if( initFlags & INIT_LINGUA ) {
+    lingua.free();
+  }
+
   if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
     String configDir = config.get( "dir.config", "" );
 
@@ -131,8 +134,7 @@ void Client::printUsage()
   log.println( "\tthe random seed. Useful for benchmarking." );
   log.println();
   log.println( "-p <prefix>" );
-  log.println( "\tSets data directory to <prefix>/share/openzone and locale directory to" );
-  log.println( "\t<prefix>/share/locale." );
+  log.println( "\tSets data directory to <prefix>/share/openzone." );
   log.println( "\tDefault: '%s'.", OZ_INSTALL_PREFIX );
   log.println();
   log.unindent();
@@ -262,19 +264,19 @@ int Client::main( int argc, char** argv )
   }
   initFlags |= INIT_PHYSFS;
 
-  log.println( "Build details {" );
-  log.indent();
-
-  log.println( "Date:            %s", BuildInfo::TIME );
-  log.println( "Host system:     %s", BuildInfo::HOST_SYSTEM );
-  log.println( "Target system:   %s", BuildInfo::TARGET_SYSTEM );
-  log.println( "Build type:      %s", BuildInfo::BUILD_TYPE );
-  log.println( "Compiler:        %s", BuildInfo::COMPILER );
-  log.println( "Compiler flags:  %s", BuildInfo::CXX_FLAGS );
-  log.println( "Linker flags:    %s", BuildInfo::EXE_LINKER_FLAGS );
-
-  log.unindent();
-  log.println( "}" );
+  if( log.isVerbose ) {
+    log.println( "Build details {" );
+    log.indent();
+    log.println( "Date:            %s", BuildInfo::TIME );
+    log.println( "Host system:     %s", BuildInfo::HOST_SYSTEM );
+    log.println( "Target system:   %s", BuildInfo::TARGET_SYSTEM );
+    log.println( "Build type:      %s", BuildInfo::BUILD_TYPE );
+    log.println( "Compiler:        %s", BuildInfo::COMPILER );
+    log.println( "Compiler flags:  %s", BuildInfo::CXX_FLAGS );
+    log.println( "Linker flags:    %s", BuildInfo::EXE_LINKER_FLAGS );
+    log.unindent();
+    log.println( "}" );
+  }
 
   File configFile( configDir.path() + "/client.rc" );
 
@@ -308,19 +310,6 @@ int Client::main( int argc, char** argv )
   String prefix = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
   File dataDir( prefix + "/share/" OZ_APPLICATION_NAME );
 
-  log.print( "Setting localisation ..." );
-
-  // LANGUAGE environment variable is a nasty thing, overrides LC_MESSAGES
-  SDL_putenv( const_cast<char*>( "LANGUAGE" ) );
-  setlocale( LC_MESSAGES, config.getSet( "locale.messages", "" ) );
-
-  bindtextdomain( OZ_APPLICATION_NAME, prefix + "/share/locale" );
-  bind_textdomain_codeset( OZ_APPLICATION_NAME, "UTF-8" );
-  textdomain( OZ_APPLICATION_NAME );
-
-  log.printEnd( " LC_MESSAGES: %s ... OK", setlocale( LC_MESSAGES, null ) );
-
-  log.println( "%s\n", config.get( "seed", "TIME" ) );
   if( String::equals( config.getSet( "seed", "TIME" ), "TIME" ) ) {
     int seed = int( Time::clock() );
     Math::seed( seed );
@@ -363,7 +352,7 @@ int Client::main( int argc, char** argv )
     DArray<File> list = localDir.ls();
 
     foreach( file, list.citer() ) {
-      if( file->hasExtension( "ozPack" ) ) {
+      if( file->hasExtension( "zip" ) ) {
         if( !PhysFile::mount( file->path(), null, true ) ) {
           throw Exception( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
@@ -378,7 +367,7 @@ int Client::main( int argc, char** argv )
     DArray<File> list = dataDir.ls();
 
     foreach( file, list.citer() ) {
-      if( file->hasExtension( "ozPack" ) ) {
+      if( file->hasExtension( "zip" ) ) {
         if( !PhysFile::mount( file->path(), null, true ) ) {
           throw Exception( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
@@ -390,13 +379,24 @@ int Client::main( int argc, char** argv )
   log.unindent();
   log.println( "}" );
 
+  const char* locale = config.getSet( "lingua", "en" );
+
+  log.print( "Setting localisation '%s' ...", locale );
+  if( lingua.init( locale ) ) {
+    log.printEnd( " OK" );
+    initFlags |= INIT_LINGUA;
+  }
+  else {
+    log.printEnd( " Failed" );
+  }
+
   initFlags |= INIT_LIBRARY;
   library.init();
 
-  initFlags |= INIT_CONTEXT_INIT;
+  initFlags |= INIT_CONTEXT;
   context.init();
 
-  initFlags |= INIT_RENDER_INIT;
+  initFlags |= INIT_RENDER;
   render.init();
 
   initFlags |= INIT_AUDIO;

@@ -33,6 +33,7 @@
 #include "client/Module.hh"
 #include "client/OpenGL.hh"
 
+#include "build/Lingua.hh"
 #include "build/Context.hh"
 #include "build/Compiler.hh"
 #include "build/Mouse.hh"
@@ -48,7 +49,6 @@
 #include <unistd.h>
 
 #include <SDL/SDL_main.h>
-#include <physfs.h>
 #include <FreeImage.h>
 
 bool oz::Alloc::isLocked = false;
@@ -63,6 +63,7 @@ static const char* const CREATE_DIRS[] = {
   "caelum",
   "class",
   "glsl",
+  "lingua",
   "lua",
   "lua/matrix",
   "lua/mission",
@@ -82,13 +83,20 @@ static void printUsage()
 {
   log.println( "Usage:" );
   log.indent();
-  log.println( "ozBuild [OPTIONS] <prefix>" );
+  log.println( "ozBuild [OPTIONS] <data_src_dir> <data_out_dir>" );
   log.println();
-  log.println( "<prefix>" );
-  log.println( "\tSets data directory to <prefix>/share/openzone." );
+  log.println( "<data_src_dir>" );
+  log.println( "\tUses <data_src_dir> as game data source directory." );
+  log.println();
+  log.println( "<data_out_dir>" );
+  log.println( "\tWhere to write built game data (data that doesn't need building are copied)." );
+  log.println( "\tThis directory must differ from <data_src_dir>." );
   log.println();
   log.println( "-v" );
   log.println( "\tMore verbose log output." );
+  log.println();
+  log.println( "-l" );
+  log.println( "\tBuild translations." );
   log.println();
   log.println( "-u" );
   log.println( "\tBuild UI." );
@@ -108,7 +116,7 @@ static void printUsage()
   log.println( "-o" );
   log.println( "\tBuild modules." );
   log.println();
-  log.println( "-l" );
+  log.println( "-s" );
   log.println( "\tCheck syntax of Lua scripts." );
   log.println();
   log.println( "-A" );
@@ -247,8 +255,8 @@ static void compileBSPs()
   log.indent();
 
   String dirName = "data/maps";
-  File dir( dirName );
-  DArray<File> dirList = dir.ls();
+  PhysFile dir( dirName );
+  DArray<PhysFile> dirList = dir.ls();
 
   dirName = dirName + "/";
 
@@ -260,21 +268,29 @@ static void compileBSPs()
     String baseName = file->baseName();
     const char* dot = String::findLast( baseName, '.' );
 
-    if( baseName.equals( "autosave" ) ||
-        ( dot != null && String::equals( dot + 1, "autosave" ) ) )
+    if( baseName.equals( "autosave" ) || ( dot != null && String::equals( dot + 1, "autosave" ) ) )
     {
       continue;
     }
 
-    String cmdLine = String::str( "q3map2 -fs_basepath . -fs_game data %s", file->path().cstr() );
+    String cmdLine = String::str( "q3map2 -fs_basepath %s -fs_game data %s",
+                                  file->mountPoint().cstr(), file->realPath().cstr() );
 
     log.println( "%s", cmdLine.cstr() );
     log.println();
     log.println( "========== q3map2 OUTPUT BEGIN %s ==========", baseName.cstr() );
     log.println();
+
+    fflush( stdout );
+    fflush( stderr );
+
     if( system( cmdLine ) != 0 ) {
       throw Exception( "BSP map compilation failed" );
     }
+
+    fflush( stdout );
+    fflush( stderr );
+
     log.println();
     log.println( "========== q3map2 OUTPUT END %s ==========", baseName.cstr() );
     log.println();
@@ -291,8 +307,8 @@ static void buildBSPs()
 
   String srcDir = "data/maps";
   String destDir = "bsp";
-  File dir( srcDir );
-  DArray<File> dirList = dir.ls();
+  PhysFile dir( srcDir );
+  DArray<PhysFile> dirList = dir.ls();
 
   srcDir = srcDir + "/";
   destDir = destDir + "/";
@@ -309,7 +325,7 @@ static void buildBSPs()
   log.println( "}" );
 }
 
-static void buildBSPTextures()
+static void buildBSPTextures( const char* mountPoint )
 {
   log.println( "Building BSP textures {" );
   log.indent();
@@ -319,8 +335,8 @@ static void buildBSPTextures()
       continue;
     }
 
-    String srcPath = library.textures[i].path;
-    String destPath = "bsp/" + library.textures[i].name + ".ozcTex";
+    String srcPath = String::str( "%s/%s", mountPoint, library.textures[i].path.cstr() );
+    String destPath = String::str( "bsp/%s.ozcTex", library.textures[i].name.cstr() );
 
     log.println( "Building texture '%s' {", srcPath.cstr() );
     log.indent();
@@ -384,6 +400,15 @@ static void buildModels()
   log.println( "}" );
 }
 
+static void buildSounds()
+{
+  log.println( "Copying used sounds {" );
+  log.indent();
+
+  log.unindent();
+  log.println( "}" );
+}
+
 static void buildModules()
 {
   log.println( "Building Modules {" );
@@ -441,6 +466,7 @@ static void shutdown()
 
 int main( int argc, char** argv )
 {
+  bool doCat     = false;
   bool doUI      = false;
   bool doTerrae  = false;
   bool doCaela   = false;
@@ -455,6 +481,10 @@ int main( int argc, char** argv )
     switch( opt ) {
       case 'v': {
         log.isVerbose = true;
+        break;
+      }
+      case 'l': {
+        doCat = true;
         break;
       }
       case 'u': {
@@ -481,7 +511,7 @@ int main( int argc, char** argv )
         doModules = true;
         break;
       }
-      case 'l': {
+      case 's': {
         doLua = true;
         break;
       }
@@ -490,6 +520,7 @@ int main( int argc, char** argv )
         break;
       }
       case 'A': {
+        doCat     = true;
         doUI      = true;
         doTerrae  = true;
         doCaela   = true;
@@ -507,12 +538,20 @@ int main( int argc, char** argv )
     }
   }
 
-  if( optind != argc - 1 ) {
+  if( optind != argc - 2 ) {
     printUsage();
     return EXIT_FAILURE;
   }
 
   String dataDir = argv[optind];
+  String outDir = argv[optind + 1];
+
+  if( dataDir[0] != '/' ) {
+    dataDir = File::cwd() + "/" + dataDir;
+  }
+  if( outDir[0] != '/' ) {
+    outDir = File::cwd() + "/" + outDir;
+  }
 
   log.print( OZ_APPLICATION_TITLE " Build started on " );
   log.printTime();
@@ -533,15 +572,22 @@ int main( int argc, char** argv )
   log.println( "}" );
 
   SDL_Init( SDL_INIT_VIDEO );
-  PHYSFS_init( null );
+  if( !PhysFile::init() ) {
+    throw Exception( "PhysicsFS initialisation failed" );
+  }
   FreeImage_Initialise();
 
-  if( !File::chdir( dataDir ) ) {
-    log.println( "Failed to set working directory '%s'", dataDir.cstr() );
+  log.println( "Chdir to output directory '%s'", outDir.cstr() );
+  if( !File::chdir( outDir ) ) {
+    log.println( "Failed to set working directory '%s'", outDir.cstr() );
     return EXIT_FAILURE;
   }
 
-  PHYSFS_mount( ".", null, 1 );
+  log.println( "Adding source directory '%s' to search path", dataDir.cstr() );
+  if( !PhysFile::mount( dataDir, null, true ) ) {
+    log.println( "Failed to add directory '%s' to search path", dataDir.cstr() );
+    return EXIT_FAILURE;
+  }
 
   uint startTime = Time::clock();
 
@@ -558,6 +604,10 @@ int main( int argc, char** argv )
   }
 
   createDirs();
+
+  if( doCat ) {
+    lingua.build();
+  }
 
   if( doUI ) {
     bool useS3TC = Context::useS3TC;
@@ -580,7 +630,7 @@ int main( int argc, char** argv )
   if( doBSPs ) {
     compileBSPs();
     buildBSPs();
-    buildBSPTextures();
+    buildBSPTextures( dataDir );
   }
 
   if( doModels ) {
@@ -600,7 +650,7 @@ int main( int argc, char** argv )
   uint endTime = Time::clock();
 
   FreeImage_DeInitialise();
-  PHYSFS_deinit();
+  PhysFile::free();
   SDL_Quit();
 
   log.println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );

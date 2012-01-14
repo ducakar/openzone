@@ -146,8 +146,7 @@ openzone [-v] [-l | -i <function>] [-t <num>] [-p <prefix>]
       the random seed. For benchmarking purposes.
 
 -p <prefix>
-      Sets data directory to <prefix>/share/openzone and locale directory to
-      <prefix>/share/locale.
+      Sets data directory to <prefix>/share/openzone.
       Default: '/usr'.
 
 Settings
@@ -195,10 +194,9 @@ locale.messages [string] ""
   Which locale should be used for translations. Empty string means the system locale is used.
   Currently there are only Slovene and English translations.
 
-  Linux note: this setting overrides LC_MESSAGES environment variable. If you have LANGUAGE
-  environment variable set, it will override both LC_MESSAGES and this setting. To see current
-  locale settings run "locale", to see a list of all available (installed/generated) locales on your
-  system run "locale -a".
+  Linux note: this setting overrides LC_MESSAGES environment variable. To see current locale
+  settings run "locale", to see a list of all available (installed/generated) locales on your system
+  run "locale -a".
 
 modules.profile.playerName [string] "<user>"
   Name of the player. Capitalised username of the current user is used by default.
