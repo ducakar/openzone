@@ -196,8 +196,6 @@ class Pool
      */
     void* alloc()
     {
-      hard_assert( !Alloc::isLocked );
-
       ++count;
 
       if( freeSlot == null ) {
@@ -218,7 +216,6 @@ class Pool
      */
     void dealloc( void* ptr )
     {
-      hard_assert( !Alloc::isLocked );
       hard_assert( count != 0 );
 
       Slot* slot = reinterpret_cast<Slot*>( ptr );
@@ -272,7 +269,6 @@ class Pool
         return;
       }
 
-      hard_assert( !Alloc::isLocked );
       soft_assert( count == 0 );
 
       if( count == 0 ) {

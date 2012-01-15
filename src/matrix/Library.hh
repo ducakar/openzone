@@ -106,16 +106,11 @@ class Library
 
     void initShaders();
     void initTextures();
-    void initBuildTextures();
     void initSounds();
     void initCaela();
-    void initBuildCaela();
     void initTerrae();
-    void initBuildTerrae();
     void initBSPs();
-    void initBuildBSPs();
     void initModels();
-    void initBuildModels();
     void initMusicRecurse( const char* path );
     void initMusic();
     void initNameLists();
@@ -125,7 +120,6 @@ class Library
   public:
 
     void init();
-    void buildInit();
     void free();
 
 };

@@ -141,14 +141,17 @@ uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int mi
 {
   log.print( "Loading texture '%s' ...", path );
 
-  FREE_IMAGE_FORMAT type = FreeImage_GetFileType( path );
+  PhysFile file( path );
+  String realPath = file.realPath();
+
+  FREE_IMAGE_FORMAT type = FreeImage_GetFileType( realPath );
   if( type == FIF_UNKNOWN ) {
-    throw Exception( "Invalid image file type '%s'", path );
+    throw Exception( "Invalid image file type '%s'", realPath.cstr() );
   }
 
-  FIBITMAP* image = FreeImage_Load( type, path );
+  FIBITMAP* image = FreeImage_Load( type, realPath );
   if( image == null ) {
-    throw Exception( "Texture '%s' loading failed", path );
+    throw Exception( "Texture '%s' loading failed", realPath.cstr() );
   }
 
   int width  = int( FreeImage_GetWidth( image ) );

@@ -26,8 +26,6 @@
 #include <cstdlib>
 #include <cstdio>
 
-bool oz::Alloc::isLocked = true;
-
 using namespace std;
 using namespace oz;
 
@@ -173,7 +171,6 @@ static void oaSort( Type* array, int begin, int end )
 int main( int, char** )
 {
   System::init();
-  Alloc::isLocked = false;
 
   int array[MAX];
 
@@ -195,7 +192,6 @@ int main( int, char** )
 //     printf( "%d ", array[i] );
 //   }
 
-  Alloc::isLocked = true;
   Alloc::printLeaks();
   return 0;
 }

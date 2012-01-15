@@ -6,6 +6,8 @@
 /.settings
 
 /support
+/pkgsrc
+/pkg
 
 /Linux-*
 /Windows-*

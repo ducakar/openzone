@@ -68,21 +68,6 @@ class Alloc
     Alloc() = delete;
 
     /**
-     * Enable/disable memory (de)allocation.
-     *
-     * If <tt>isLocked == true</tt>, any attempt of memory (de)allocation via
-     * <tt>new</tt>/<tt>delete</tt> will abort the application with <tt>System::abort()</tt>, if
-     * liboz was compiled without <tt>NDEBUG</tt> macro.
-     *
-     * Since <tt>isLocked</tt> is a weak symbol you can override it in some other module with a
-     * custom definition
-     * <pre>
-     *   bool oz::Alloc::isLocked = false;
-     * </pre>
-     */
-    static bool isLocked;
-
-    /**
      * Align to the previous boundary.
      */
     OZ_ALWAYS_INLINE

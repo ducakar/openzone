@@ -131,7 +131,7 @@ Odvisnosti za gradnjo
 
 Ukazna vrstica
 --------------
-openzone [-v] [-l | -i <function>] [-t <št>] [-p <predpona>]
+openzone [-v] [-l | -i <misija>] [-t <št>] [-p <predpona>]
 
 -v
       Zgovornejši dnevnik.

@@ -73,6 +73,256 @@ class String
 
   public:
 
+    /*
+     * C string functions.
+     */
+
+    /**
+     * Equality.
+     */
+    static bool equals( const char* a, const char* b )
+    {
+      hard_assert( a != null && b != null );
+
+      for( int i = 0; a[i] == b[i]; ++i ) {
+        if( a[i] == '\0' ) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    /**
+     * Compare two C strings per-byte (same as <tt>strcmp()</tt>).
+     */
+    static int compare( const char* a, const char* b )
+    {
+      hard_assert( a != null && b != null );
+
+      int diff = 0;
+      int i = 0;
+
+      while( ( diff = a[i] - b[i] ) == 0 && a[i] != 0 ) {
+        ++i;
+      }
+      return diff;
+    }
+
+    /**
+     * Length of a C string.
+     */
+    static int length( const char* s )
+    {
+      int i = 0;
+
+      while( s[i] != '\0' ) {
+        ++i;
+      }
+      return i;
+    }
+
+    /**
+     * Index of the first occurrence of the character from the given index (inclusive).
+     */
+    static int index( const char* s, char ch, int start = 0 )
+    {
+      for( int i = start; s[i] != '\0'; ++i ) {
+        if( s[i] == ch ) {
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    /**
+     * Index of the last occurrence of the character before the given index (not inclusive).
+     */
+    static int lastIndex( const char* s, char ch, int end )
+    {
+      for( int i = end - 1; i >= 0; --i ) {
+        if( s[i] == ch ) {
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    /**
+     * Index of the last occurrence of the character.
+     */
+    static int lastIndex( const char* s, char ch )
+    {
+      int last = -1;
+
+      for( int i = 0; s[i] != '\0'; ++i ) {
+        if( s[i] == ch ) {
+          last = i;
+        }
+      }
+      return last;
+    }
+
+    /**
+     * Pointer to the first occurrence of the character from the given index (inclusive).
+     */
+    static const char* find( const char* s, char ch, int start = 0 )
+    {
+      for( const char* p = s + start; *p != '\0'; ++p ) {
+        if( *p == ch ) {
+          return p;
+        }
+      }
+      return null;
+    }
+
+    /**
+     * Pointer to the last occurrence of the character before the given index (not inclusive).
+     */
+    static const char* findLast( const char* s, char ch, int end )
+    {
+      for( const char* p = s + end - 1; p >= s; --p ) {
+        if( *p == ch ) {
+          return p;
+        }
+      }
+      return null;
+    }
+
+    /**
+     * Pointer to the last occurrence of the character.
+     */
+    static const char* findLast( const char* s, char ch )
+    {
+      const char* last = null;
+
+      for( const char* p = s; *p != '\0'; ++p ) {
+        if( *p == ch ) {
+          last = p;
+        }
+      }
+      return last;
+    }
+
+    /**
+     * True iff string begins with the given characters.
+     */
+    static bool beginsWith( const char* s, const char* sub )
+    {
+      while( *sub != '\0' && *sub == *s ) {
+        ++sub;
+        ++s;
+      }
+      return *sub == '\0';
+    }
+
+    /**
+     * True iff string ends with the given characters.
+     */
+    static bool endsWith( const char* s, const char* sub );
+
+    /**
+     * Bernstein's hash function.
+     *
+     * @return absolute value of hash.
+     */
+    static int hash( const char* s )
+    {
+      uint hash = 5381;
+
+      while( *s != '\0' ) {
+        hash = hash * 33 + uint( *s );
+        ++s;
+      }
+      return int( hash );
+    }
+
+    /**
+     * True iff the C string is empty.
+     */
+    OZ_ALWAYS_INLINE
+    static bool isEmpty( const char* s )
+    {
+      hard_assert( s != null );
+
+      return s[0] == '\0';
+    }
+
+    /**
+     * True iff character is an ASCII digit.
+     */
+    OZ_ALWAYS_INLINE
+    static bool isDigit( char c )
+    {
+      return '0' <= c && c <= '9';
+    }
+
+    /**
+     * True iff character is an ASCII letter.
+     */
+    OZ_ALWAYS_INLINE
+    static bool isLetter( char c )
+    {
+      return ( 'A' <= c && c <= 'Z' ) || ( 'a' <= c && c <= 'z' );
+    }
+
+    /**
+     * True iff character is a space.
+     */
+    OZ_ALWAYS_INLINE
+    static bool isSpace( char c )
+    {
+      return c == ' ' || c == '\t';
+    }
+
+    /**
+     * True iff character is a space, horizontal tab or newline.
+     */
+    OZ_ALWAYS_INLINE
+    static bool isBlank( char c )
+    {
+      return c == ' ' || c == '\t' || c == '\n';
+    }
+
+    /**
+     * Cast signed byte string to C string.
+     */
+    OZ_ALWAYS_INLINE
+    static const char* cstr( const byte* s )
+    {
+      return reinterpret_cast<const char*>( s );
+    }
+
+    /**
+     * Cast unsigned byte string to C string.
+     */
+    OZ_ALWAYS_INLINE
+    static const char* cstr( const ubyte* s )
+    {
+      return reinterpret_cast<const char*>( s );
+    }
+
+    /**
+     * Cast C string to signed byte string.
+     */
+    OZ_ALWAYS_INLINE
+    static const byte* bytestr( const char* s )
+    {
+      return reinterpret_cast<const byte*>( s );
+    }
+
+    /**
+     * Cast C string to unsigned byte string.
+     */
+    OZ_ALWAYS_INLINE
+    static const ubyte* ubytestr( const char* s )
+    {
+      return reinterpret_cast<const ubyte*>( s );
+    }
+
+    /*
+     * Functions that operate on a String object.
+     */
+
     /**
      * Create an empty string.
      */
@@ -165,6 +415,11 @@ class String
     static String create( int length, char** buffer );
 
     /**
+     * Create a copy that has all instances of <tt>whatChar</tt> replaced by <tt>withChar</tt>.
+     */
+    static String replace( const char* s, char whatChar, char withChar );
+
+    /**
      * Replace current string with the giver C string.
      *
      * Reuse existing storage only if it the size matches.
@@ -211,18 +466,19 @@ class String
     }
 
     /**
-     * Equality.
+     * Compare with a C string per-byte.
      */
-    static bool equals( const char* a, const char* b )
+    int compare( const char* s ) const
     {
-      hard_assert( a != null && b != null );
+      return compare( buffer, s );
+    }
 
-      for( int i = 0; a[i] == b[i]; ++i ) {
-        if( a[i] == '\0' ) {
-          return true;
-        }
-      }
-      return false;
+    /**
+     * Compare strings per-byte.
+     */
+    int compare( const String& s ) const
+    {
+      return compare( buffer, s.buffer );
     }
 
     /**
@@ -255,30 +511,6 @@ class String
     }
 
     /**
-     * Length of a C string.
-     */
-    static int length( const char* s )
-    {
-      int i = 0;
-
-      while( s[i] != '\0' ) {
-        ++i;
-      }
-      return i;
-    }
-
-    /**
-     * True iff the C string is empty.
-     */
-    OZ_ALWAYS_INLINE
-    static bool isEmpty( const char* s )
-    {
-      hard_assert( s != null );
-
-      return s[0] == '\0';
-    }
-
-    /**
      * Length.
      */
     OZ_ALWAYS_INLINE
@@ -297,97 +529,19 @@ class String
     }
 
     /**
-     * True iff character is an ASCII digit.
-     */
-    OZ_ALWAYS_INLINE
-    static bool isDigit( char c )
-    {
-      return '0' <= c && c <= '9';
-    }
-
-    /**
-     * True iff character is an ASCII letter.
-     */
-    OZ_ALWAYS_INLINE
-    static bool isLetter( char c )
-    {
-      return ( 'A' <= c && c <= 'Z' ) || ( 'a' <= c && c <= 'z' );
-    }
-
-    /**
-     * True iff character is a space.
-     */
-    OZ_ALWAYS_INLINE
-    static bool isSpace( char c )
-    {
-      return c == ' ' || c == '\t';
-    }
-
-    /**
-     * True iff character is a space, horizontal tab or newline.
-     */
-    OZ_ALWAYS_INLINE
-    static bool isBlank( char c )
-    {
-      return c == ' ' || c == '\t' || c == '\n';
-    }
-
-    /**
-     * Compare two C strings per-byte (same as <tt>strcmp()</tt>).
-     */
-    static int compare( const char* a, const char* b )
-    {
-      hard_assert( a != null && b != null );
-
-      int diff = 0;
-      int i = 0;
-
-      while( ( diff = a[i] - b[i] ) == 0 && a[i] != 0 ) {
-        ++i;
-      }
-      return diff;
-    }
-
-    /**
-     * Compare with a C string per-byte.
-     */
-    int compare( const char* s ) const
-    {
-      return compare( buffer, s );
-    }
-
-    /**
-     * Compare strings per-byte.
-     */
-    int compare( const String& s ) const
-    {
-      return compare( buffer, s.buffer );
-    }
-
-    /**
      * Index of the first occurrence of the character from the given index (inclusive).
      */
     int index( char ch, int start = 0 ) const
     {
-      int i = start;
-
-      while( buffer[i] != ch && buffer[i] != '\0' ) {
-        ++i;
-      }
-      return i == count ? -1 : i;
+      return index( buffer, ch, start );
     }
 
     /**
-     * Index of the last occurrence of the character before the given index (inclusive).
+     * Index of the last occurrence of the character before the given index (not inclusive).
      */
     int lastIndex( char ch, int end ) const
     {
-      int i = end;
-
-      while( buffer[i] != ch && i >= 0 ) {
-        --i;
-      }
-      return i;
+      return lastIndex( buffer, ch, end );
     }
 
     /**
@@ -395,34 +549,7 @@ class String
      */
     int lastIndex( char ch ) const
     {
-      return lastIndex( ch, count - 1 );
-    }
-
-    /**
-     * Pointer to the first occurrence of the character from the given index (inclusive).
-     */
-    static const char* find( const char* s, char ch )
-    {
-      while( *s != ch && *s != '\0' ) {
-        ++s;
-      }
-      return *s == ch ? s : null;
-    }
-
-    /**
-     * Pointer to the last occurrence of the character.
-     */
-    static const char* findLast( const char* s, char ch )
-    {
-      const char* last = null;
-
-      while( *s != '\0' ) {
-        if( *s == ch ) {
-          last = s;
-        }
-        ++s;
-      }
-      return last;
+      return lastIndex( buffer, ch, count );
     }
 
     /**
@@ -430,12 +557,15 @@ class String
      */
     const char* find( char ch, int start = 0 ) const
     {
-      const char* p = buffer + start;
+      return find( buffer, ch, start );
+    }
 
-      while( *p != ch && *p != '\0' ) {
-        ++p;
-      }
-      return *p == ch ? p : null;
+    /**
+     * Pointer to the last occurrence of the character before the given index (not inclusive).
+     */
+    const char* findLast( char ch, int end ) const
+    {
+      return findLast( buffer, ch, end );
     }
 
     /**
@@ -443,31 +573,7 @@ class String
      */
     const char* findLast( char ch ) const
     {
-      const char* p = buffer + count - 1;
-
-      while( *p != ch && p != buffer ) {
-        --p;
-      }
-      return *p == ch ? p : null;
-    }
-
-    /**
-     * Pointer to the first occurrence of the substring from the given index (inclusive).
-     */
-    const char* find( const char* sub, int start ) const
-    {
-      const char* p = buffer + start;
-      const char* begin = null;
-      const char* end = sub;
-
-      while( *p != '\0' && *end != '\0' ) {
-        if( *p == *end ) {
-          begin = p;
-          ++end;
-        }
-        ++p;
-      }
-      return *end == '\0' ? begin : null;
+      return findLast( buffer, ch, count );
     }
 
     /**
@@ -481,73 +587,7 @@ class String
     /**
      * True iff string ends with the given characters.
      */
-    bool endsWith( const char* sub ) const
-    {
-      int subLen = length( sub );
-
-      if( subLen > count ) {
-        return false;
-      }
-
-      const char* end    = buffer + count  - 1;
-      const char* subEnd = sub    + subLen - 1;
-
-      while( subEnd >= sub && *subEnd == *end ) {
-        --subEnd;
-        --end;
-      }
-      return subEnd < sub;
-    }
-
-    /**
-     * True iff string begins with the given characters.
-     */
-    static bool beginsWith( const char* s, const char* sub )
-    {
-      while( *sub != '\0' && *sub == *s ) {
-        ++sub;
-        ++s;
-      }
-      return *sub == '\0';
-    }
-
-    /**
-     * True iff string ends with the given characters.
-     */
-    static bool endsWith( const char* s, const char* sub )
-    {
-      int len    = length( s );
-      int subLen = length( sub );
-
-      if( subLen > len ) {
-        return false;
-      }
-
-      const char* end    = s   + len    - 1;
-      const char* subEnd = sub + subLen - 1;
-
-      while( subEnd >= sub && *subEnd == *end ) {
-        --subEnd;
-        --end;
-      }
-      return subEnd < sub;
-    }
-
-    /**
-     * Bernstein's hash function.
-     *
-     * @return absolute value of hash.
-     */
-    static int hash( const char* s )
-    {
-      uint hash = 5381;
-
-      while( *s != '\0' ) {
-        hash = hash * 33 + uint( *s );
-        ++s;
-      }
-      return int( hash );
-    }
+    bool endsWith( const char* sub ) const;
 
     /**
      * Bernstein's hash function.
@@ -600,50 +640,9 @@ class String
     String replace( char whatChar, char withChar ) const;
 
     /**
-     * Create a copy that has all instances of <tt>whatChar</tt> replaced by <tt>withChar</tt>.
-     */
-    static String replace( const char* s, char whatChar, char withChar );
-
-    /**
      * Returns array of substrings between occurrences of the given character token.
      */
     DArray<String> split( char ch ) const;
-
-    /**
-     * Cast signed byte string to C string.
-     */
-    OZ_ALWAYS_INLINE
-    static const char* cstr( const byte* s )
-    {
-      return reinterpret_cast<const char*>( s );
-    }
-
-    /**
-     * Cast unsigned byte string to C string.
-     */
-    OZ_ALWAYS_INLINE
-    static const char* cstr( const ubyte* s )
-    {
-      return reinterpret_cast<const char*>( s );
-    }
-
-    /**
-     * Cast C string to signed byte string.
-     */
-    OZ_ALWAYS_INLINE
-    static const byte* bytestr( const char* s )
-    {
-      return reinterpret_cast<const byte*>( s );
-    }
-
-    /**
-     * Cast C string to unsigned byte string.
-     */
-    OZ_ALWAYS_INLINE
-    static const ubyte* ubytestr( const char* s )
-    {
-      return reinterpret_cast<const ubyte*>( s );
-    }
 
 };
 

@@ -659,12 +659,8 @@ void Context::init()
 {
   log.print( "Initialising Context ..." );
 
-  if( library.nImagoClasses != 0 ) {
-    imagoClasses = new Imago::CreateFunc[library.nImagoClasses];
-  }
-  if( library.nAudioClasses != 0 ) {
-    audioClasses = new Audio::CreateFunc[library.nAudioClasses];
-  }
+  imagoClasses = library.nImagoClasses == 0 ? null : new Imago::CreateFunc[library.nImagoClasses];
+  audioClasses = library.nAudioClasses == 0 ? null : new Audio::CreateFunc[library.nAudioClasses];
 
   OZ_REGISTER_IMAGOCLASS( SMM );
   OZ_REGISTER_IMAGOCLASS( SMMVehicle );
@@ -690,12 +686,12 @@ void Context::init()
     throw Exception( "Context: models missing!" );
   }
 
-  textures = new Resource<uint>[ library.textures.length() ];
-  sounds   = new Resource<uint>[ library.sounds.length() ];
-  bsps     = new Resource<BSP*>[ library.nBSPs ];
-  smms     = new Resource<SMM*>[ library.models.length() ];
-  md2s     = new Resource<MD2*>[ library.models.length() ];
-  md3s     = new Resource<MD3*>[ library.models.length() ];
+  textures = library.textures.length() == 0 ? null : new Resource<uint>[library.textures.length()];
+  sounds   = library.sounds.length()   == 0 ? null : new Resource<uint>[library.sounds.length()];
+  bsps     = library.nBSPs             == 0 ? null : new Resource<BSP*>[library.nBSPs];
+  smms     = library.models.length()   == 0 ? null : new Resource<SMM*>[library.models.length()];
+  md2s     = library.models.length()   == 0 ? null : new Resource<MD2*>[library.models.length()];
+  md3s     = library.models.length()   == 0 ? null : new Resource<MD3*>[library.models.length()];
 
   for( int i = 0; i < library.textures.length(); ++i ) {
     textures[i].nUsers = 0;

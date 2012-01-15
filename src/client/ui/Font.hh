@@ -69,8 +69,6 @@ class Font
 
     TTF_Font* fonts[MAX];
 
-    uint textTexId;
-
     Font();
 
     void init();

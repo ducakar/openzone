@@ -1,26 +1,30 @@
 #!/bin/sh
 
-echo 'rm -f share/openzone/lingua/*/*.{ozCat,mo}'
-rm -f share/openzone/lingua/*/*.{ozCat,.mo}
-echo 'rm -f share/openzone/ui/cur/*.ozcCur'
-rm -f share/openzone/ui/cur/*.ozcCur
-echo 'rm -f share/openzone/ui/icon/*.ozcTex'
-rm -f share/openzone/ui/icon/*.ozcTex
-echo 'rm -f share/openzone/terra/*.{ozTerra,ozcTerra}'
-rm -f share/openzone/terra/*.{ozTerra,ozcTerra}
-echo 'rm -f share/openzone/caelum/*.ozcCaelum'
-rm -f share/openzone/caelum/*.ozcCaelum
-echo 'rm -f share/openzone/data/maps/*{autosave.map,.bak}'
-rm -f share/openzone/data/maps/*{autosave.map,.bak}
-echo 'rm -f share/openzone/data/maps/*.{bsp,prt,srf}'
-rm -f share/openzone/data/maps/*.{bsp,prt,srf}
-echo 'rm -f share/openzone/bsp/*.{ozBSP,ozcBSP}'
-rm -f share/openzone/bsp/*.{ozBSP,ozcBSP}
-echo 'rm -f share/openzone/bsp/*/*.ozcTex'
-rm -f share/openzone/bsp/*/*.ozcTex
-echo 'rm -f share/openzone/mdl/*.{ozcSMM,ozcMD2,ozcMD3}'
-rm -f share/openzone/mdl/*.{ozcSMM,ozcMD2,ozcMD3}
-echo 'rm -f share/openzone/mdl/*/*.{blend1,blend2}'
-rm -f share/openzone/mdl/*/*.{blend1,blend2}
-echo 'rm -f share/openzone/ui/galileo/*.ozcTex'
-rm -f share/openzone/ui/galileo/*.ozcTex
+[[ -z "$1" ]] && exit
+
+dir="$1"
+
+echo rm -f $dir'/lingua/*/*.{ozCat,mo}'
+rm -f $dir/lingua/*/*.{ozCat,mo}
+echo rm -f $dir'/ui/cur/*.ozcCur'
+rm -f $dir/ui/cur/*.ozcCur
+echo rm -f $dir'/ui/icon/*.ozcTex'
+rm -f $dir/ui/icon/*.ozcTex
+echo rm -f $dir'/terra/*.{ozTerra,ozcTerra}'
+rm -f $dir/terra/*.{ozTerra,ozcTerra}
+echo rm -f $dir'/caelum/*.ozcCaelum'
+rm -f $dir/caelum/*.ozcCaelum
+echo rm -f $dir'/data/maps/*{autosave.map,.bak}'
+rm -f $dir/data/maps/*{autosave.map,.bak}
+echo rm -f $dir'/data/maps/*.{bsp,prt,srf}'
+rm -f $dir/data/maps/*.{bsp,prt,srf}
+echo rm -f $dir'/bsp/*.{ozBSP,ozcBSP}'
+rm -f $dir/bsp/*.{ozBSP,ozcBSP}
+echo rm -f $dir'/bsp/*/*.ozcTex'
+rm -f $dir/bsp/*/*.ozcTex
+echo rm -f $dir'/mdl/*.{ozcSMM,ozcMD2,ozcMD3}'
+rm -f $dir/mdl/*.{ozcSMM,ozcMD2,ozcMD3}
+echo rm -f $dir'/mdl/*/*.{blend1,blend2}'
+rm -f $dir/mdl/*/*.{blend1,blend2}
+echo rm -f $dir'/ui/galileo/*.ozcTex'
+rm -f $dir/ui/galileo/*.ozcTex

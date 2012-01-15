@@ -103,9 +103,6 @@ size_t Alloc::sumAmount = 0;
 int    Alloc::maxCount  = 0;
 size_t Alloc::maxAmount = 0;
 
-OZ_WEAK_SYMBOL
-bool Alloc::isLocked = false;
-
 void Alloc::printStatistics()
 {
   log.println( "Alloc statistics {" );
@@ -415,8 +412,6 @@ using namespace oz;
 
 void* operator new ( std::size_t size ) throw( std::bad_alloc )
 {
-  hard_assert( !Alloc::isLocked );
-
   size += Alloc::alignUp( sizeof( size_t ) );
 
 #ifdef _WIN32
@@ -435,8 +430,6 @@ void* operator new ( std::size_t size ) throw( std::bad_alloc )
 
 void* operator new[] ( std::size_t size ) throw( std::bad_alloc )
 {
-  hard_assert( !Alloc::isLocked );
-
   size += Alloc::alignUp( sizeof( size_t ) );
 
 #ifdef _WIN32
@@ -459,8 +452,6 @@ void operator delete ( void* ptr ) throw()
     return;
   }
 
-  hard_assert( !Alloc::isLocked );
-
   deallocateObject( ptr );
 }
 
@@ -470,15 +461,11 @@ void operator delete[] ( void* ptr ) throw()
     return;
   }
 
-  hard_assert( !Alloc::isLocked );
-
   deallocateArray( ptr );
 }
 
 void* operator new ( std::size_t size, const std::nothrow_t& ) throw()
 {
-  hard_assert( !Alloc::isLocked );
-
   size += Alloc::alignUp( sizeof( size_t ) );
 
 #ifdef _WIN32
@@ -497,8 +484,6 @@ void* operator new ( std::size_t size, const std::nothrow_t& ) throw()
 
 void* operator new[] ( std::size_t size, const std::nothrow_t& ) throw()
 {
-  hard_assert( !Alloc::isLocked );
-
   size += Alloc::alignUp( sizeof( size_t ) );
 
 #ifdef _WIN32
@@ -521,8 +506,6 @@ void operator delete ( void* ptr, const std::nothrow_t& ) throw()
     return;
   }
 
-  hard_assert( !Alloc::isLocked );
-
   deallocateObject( ptr );
 }
 
@@ -531,8 +514,6 @@ void operator delete[] ( void* ptr, const std::nothrow_t& ) throw()
   if( ptr == null ) {
     return;
   }
-
-  hard_assert( !Alloc::isLocked );
 
   deallocateArray( ptr );
 }

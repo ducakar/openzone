@@ -63,13 +63,6 @@ class File
     char*  data;     ///< Mapped memory.
     int    size;     ///< Mapped memory size.
 
-    /**
-     * Internal function to a write buffer to the file.
-     *
-     * @return True on success.
-     */
-    bool write( const char* buffer, int count ) const;
-
   public:
 
     /**
@@ -175,12 +168,17 @@ class File
     Buffer read() const;
 
     /**
+     * Write a buffer to the file.
+     */
+    bool write( const char* buffer, int count ) const;
+
+    /**
      * Write buffer contents into a file.
      */
     bool write( const Buffer* buffer ) const;
 
     /**
-     * Write the first <tt>istream.length()</tt> bytes of an input stream to a file.
+     * Write all <tt>istream.capacity()</tt> bytes of an input stream to a file.
      */
     bool write( const InputStream* istream ) const;
 

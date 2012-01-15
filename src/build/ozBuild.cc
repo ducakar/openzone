@@ -51,33 +51,10 @@
 #include <SDL/SDL_main.h>
 #include <FreeImage.h>
 
-bool oz::Alloc::isLocked = false;
-
 namespace oz
 {
 namespace build
 {
-
-static const char* const CREATE_DIRS[] = {
-  "bsp",
-  "caelum",
-  "class",
-  "glsl",
-  "lingua",
-  "lua",
-  "lua/matrix",
-  "lua/mission",
-  "lua/nirvana",
-  "mdl",
-  "music",
-  "name",
-  "snd",
-  "terra",
-  "ui",
-  "ui/cur",
-  "ui/font",
-  "ui/icon"
-};
 
 static void printUsage()
 {
@@ -100,6 +77,9 @@ static void printUsage()
   log.println();
   log.println( "-u" );
   log.println( "\tBuild UI." );
+  log.println();
+  log.println( "-g" );
+  log.println( "\tCopy shaders." );
   log.println();
   log.println( "-t" );
   log.println( "\tBuild terrae (terrains)." );
@@ -128,25 +108,47 @@ static void printUsage()
   log.unindent();
 }
 
-static void createDirs()
+static void copyFiles( const char* srcDir, const char* destDir, const char* ext )
 {
-  log.println( "Creating directory structure {" );
+  log.println( "Copying *.%s from '%s' to '%s' {", ext, srcDir, destDir );
   log.indent();
 
-  for( int i = 0; i < aLength( CREATE_DIRS ); ++i ) {
-    log.print( "%-11s ...", CREATE_DIRS[i] );
+  String sSrcDir = srcDir;
+  String sDestDir = destDir;
+  PhysFile dir( sSrcDir );
+  DArray<PhysFile> dirList = dir.ls();
 
-    File dir( CREATE_DIRS[i] );
-    if( dir.getType() == File::DIRECTORY ) {
-      log.printEnd( " OK, exists" );
+  if( !dirList.isEmpty() ) {
+    File::mkdir( destDir );
+  }
+
+  sSrcDir  = sSrcDir + "/";
+  sDestDir = sDestDir + "/";
+
+  foreach( file, dirList.iter() ) {
+    String fileName = file->name();
+
+    if( file->hasExtension( ext ) || fileName.beginsWith( "README" ) ||
+      fileName.beginsWith( "COPYING" ) )
+    {
+      log.print( "Copying '%s' ...", fileName.cstr() );
+
+      if( !file->map() ) {
+        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
+      }
+
+      InputStream is = file->inputStream();
+      File destFile( String::str( "%s/%s", destDir, fileName.cstr() ) );
+
+      if( !destFile.write( &is ) ) {
+        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
+      }
+
+      file->unmap();
+
+      log.printEnd( " OK" );
       continue;
     }
-
-    if( !File::mkdir( CREATE_DIRS[i] ) ) {
-      throw Exception( "Failed to create directories" );
-    }
-
-    log.printEnd( " OK, created" );
   }
 
   log.unindent();
@@ -156,18 +158,44 @@ static void createDirs()
 static void buildTextures( const char* srcDir, const char* destDir,
                            bool wrap, int magFilter, int minFilter )
 {
-  log.println( "Building textures in '%s' {", srcDir );
+  log.println( "Building textures in '%s' to '%s' {", srcDir, destDir );
   log.indent();
 
   String sSrcDir = srcDir;
   String sDestDir = destDir;
-  File dir( sSrcDir );
-  DArray<File> dirList = dir.ls();
+  PhysFile dir( sSrcDir );
+  DArray<PhysFile> dirList = dir.ls();
+
+  if( !dirList.isEmpty() ) {
+    File::mkdir( destDir );
+  }
 
   sSrcDir  = sSrcDir + "/";
   sDestDir = sDestDir + "/";
 
-  foreach( file, dirList.citer() ) {
+  foreach( file, dirList.iter() ) {
+    String fileName = file->name();
+
+    if( fileName.beginsWith( "README" ) || fileName.beginsWith( "COPYING" ) ) {
+      log.print( "Copying '%s' ...", fileName.cstr() );
+
+      if( !file->map() ) {
+        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
+      }
+
+      InputStream is = file->inputStream();
+      File destFile( String::str( "%s/%s", destDir, fileName.cstr() ) );
+
+      if( !destFile.write( &is ) ) {
+        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
+      }
+
+      file->unmap();
+
+      log.printEnd( " OK" );
+      continue;
+    }
+
     if( !file->hasExtension( "png" ) && !file->hasExtension( "jpg" ) ) {
       continue;
     }
@@ -409,6 +437,15 @@ static void buildSounds()
   log.println( "}" );
 }
 
+static void buildNames()
+{
+  log.println( "Copying name lists {" );
+  log.indent();
+
+  log.unindent();
+  log.println( "}" );
+}
+
 static void buildModules()
 {
   log.println( "Building Modules {" );
@@ -468,16 +505,19 @@ int main( int argc, char** argv )
 {
   bool doCat     = false;
   bool doUI      = false;
+  bool doShaders = false;
   bool doTerrae  = false;
   bool doCaela   = false;
   bool doBSPs    = false;
   bool doModels  = false;
+  bool doSounds  = false;
+  bool doNames   = false;
   bool doModules = false;
   bool doLua     = false;
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "vutcbmolCA" ) ) != -1 ) {
+  while( ( opt = getopt( argc, argv, "vlugtcbmsnoxCA" ) ) != -1 ) {
     switch( opt ) {
       case 'v': {
         log.isVerbose = true;
@@ -489,6 +529,10 @@ int main( int argc, char** argv )
       }
       case 'u': {
         doUI = true;
+        break;
+      }
+      case 'g': {
+        doShaders = true;
         break;
       }
       case 't': {
@@ -507,11 +551,19 @@ int main( int argc, char** argv )
         doModels = true;
         break;
       }
+      case 's': {
+        doSounds = true;
+        break;
+      }
+      case 'n': {
+        doNames = true;
+        break;
+      }
       case 'o': {
         doModules = true;
         break;
       }
-      case 's': {
+      case 'x': {
         doLua = true;
         break;
       }
@@ -522,10 +574,13 @@ int main( int argc, char** argv )
       case 'A': {
         doCat     = true;
         doUI      = true;
+        doShaders = true;
         doTerrae  = true;
         doCaela   = true;
         doBSPs    = true;
         doModels  = true;
+        doSounds  = true;
+        doNames   = true;
         doModules = true;
         doLua     = true;
         break;
@@ -577,6 +632,8 @@ int main( int argc, char** argv )
   }
   FreeImage_Initialise();
 
+  File::mkdir( outDir );
+
   log.println( "Chdir to output directory '%s'", outDir.cstr() );
   if( !File::chdir( outDir ) ) {
     log.println( "Failed to set working directory '%s'", outDir.cstr() );
@@ -591,7 +648,8 @@ int main( int argc, char** argv )
 
   uint startTime = Time::clock();
 
-  library.buildInit();
+  // FIXME
+//   library.init();
 
   config.add( "screen.width", "400" );
   config.add( "screen.height", "40" );
@@ -603,7 +661,33 @@ int main( int argc, char** argv )
     throw Exception( "S3 texture compression enabled but not supported" );
   }
 
-  createDirs();
+  // copy package README
+  DArray<PhysFile> dirList = PhysFile( "/" ).ls();
+
+  foreach( file, dirList.iter() ) {
+    String fileName = file->name();
+
+    if( fileName.beginsWith( "README" ) || fileName.beginsWith( "COPYING" ) ) {
+      log.print( "Copying '%s' ...", fileName.cstr() );
+
+      if( !file->map() ) {
+        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
+      }
+
+      InputStream is = file->inputStream();
+      File destFile( fileName );
+
+      if( !destFile.write( &is ) ) {
+        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
+      }
+
+      file->unmap();
+
+      log.printEnd( " OK" );
+    }
+  }
+
+  dirList.dealloc();
 
   if( doCat ) {
     lingua.build();
@@ -613,10 +697,23 @@ int main( int argc, char** argv )
     bool useS3TC = Context::useS3TC;
     Context::useS3TC = false;
 
-    Mouse::build();
+    File::mkdir( "ui" );
+
+    if( PhysFile( "ui/cur" ).getType() != PhysFile::MISSING ) {
+      Mouse::build();
+    }
+
+    copyFiles( "ui/font", "ui/font", "ttf" );
     buildTextures( "ui/icon", "ui/icon", true, GL_LINEAR, GL_LINEAR );
+    buildTextures( "ui/galileo", "ui/galileo", true, GL_LINEAR, GL_LINEAR );
 
     Context::useS3TC = useS3TC;
+  }
+
+  if( doShaders ) {
+    copyFiles( "glsl", "glsl", "glsl" );
+    copyFiles( "glsl", "glsl", "vert" );
+    copyFiles( "glsl", "glsl", "frag" );
   }
 
   if( doTerrae ) {
@@ -635,6 +732,14 @@ int main( int argc, char** argv )
 
   if( doModels ) {
     buildModels();
+  }
+
+  if( doSounds ) {
+    buildSounds();
+  }
+
+  if( doNames ) {
+    buildNames();
   }
 
   if( doModules ) {

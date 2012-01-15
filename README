@@ -128,7 +128,7 @@ Build-time dependencies
 
 Command line
 ------------
-openzone [-v] [-l | -i <function>] [-t <num>] [-p <prefix>]
+openzone [-v] [-l | -i <mission>] [-t <num>] [-p <prefix>]
 
 -v
       More verbose log output.

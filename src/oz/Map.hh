@@ -296,8 +296,8 @@ class Map
     /**
      * Copy constructor, copies elements.
      */
-    Map( const Map& m ) : data( m.size == 0 ? null : new Elem[m.size] ),
-        size( m.size ), count( m.count )
+    Map( const Map& m ) :
+        data( m.size == 0 ? null : new Elem[m.size] ), size( m.size ), count( m.count )
     {
       aCopy( data, m.data, m.count );
     }

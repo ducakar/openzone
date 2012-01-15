@@ -250,55 +250,6 @@ void Library::initTextures()
   }
 }
 
-void Library::initBuildTextures()
-{
-  if( log.isVerbose ) {
-    log.println( "Textures (*.png, *.jpeg, *.jpg in 'data/textures/*') {" );
-    log.indent();
-  }
-
-  PhysFile dir( "data/textures" );
-  DArray<PhysFile> dirList = dir.ls();
-
-  foreach( file, dirList.iter() ) {
-    if( file->getType() != PhysFile::DIRECTORY ) {
-      continue;
-    }
-
-    PhysFile subDir( file->path() );
-    DArray<PhysFile> subDirList = subDir.ls();
-
-    foreach( file, subDirList.citer() ) {
-      if( !file->hasExtension( "png" ) && !file->hasExtension( "jpeg" ) &&
-          !file->hasExtension( "jpg" ) )
-      {
-        continue;
-      }
-
-      String name = subDir.name() + "/" + file->baseName();
-
-      if( log.isVerbose ) {
-        log.println( "%s", name.cstr() );
-      }
-
-      if( textureIndices.contains( name ) ) {
-        throw Exception( "Duplicated texture '%s'", name.cstr() );
-      }
-
-      textureIndices.add( name, textures.length() );
-      textures.add( Resource( name, file->path() ) );
-    }
-  }
-
-  if( log.isVerbose ) {
-    log.unindent();
-    log.println( "}" );
-  }
-  else {
-    log.println( "%5d  textures", textures.length() );
-  }
-}
-
 void Library::initSounds()
 {
   if( log.isVerbose ) {
@@ -376,40 +327,6 @@ void Library::initCaela()
   }
 }
 
-void Library::initBuildCaela()
-{
-  if( log.isVerbose ) {
-    log.println( "Caela (*.rc in 'caelum') {" );
-    log.indent();
-  }
-
-  PhysFile dir( "caelum" );
-  DArray<PhysFile> dirList = dir.ls();
-
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "rc" ) ) {
-      continue;
-    }
-
-    String name = file->baseName();
-
-    if( log.isVerbose ) {
-      log.println( "%s", name.cstr() );
-    }
-
-    caelumIndices.add( name, caela.length() );
-    caela.add( Resource( name, file->path() ) );
-  }
-
-  if( log.isVerbose ) {
-    log.unindent();
-    log.println( "}" );
-  }
-  else {
-    log.println( "%5d  caela", caela.length() );
-  }
-}
-
 void Library::initTerrae()
 {
   if( log.isVerbose ) {
@@ -422,40 +339,6 @@ void Library::initTerrae()
 
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozTerra" ) ) {
-      continue;
-    }
-
-    String name = file->baseName();
-
-    if( log.isVerbose ) {
-      log.println( "%s", name.cstr() );
-    }
-
-    terraIndices.add( name, terrae.length() );
-    terrae.add( Resource( name, file->path() ) );
-  }
-
-  if( log.isVerbose ) {
-    log.unindent();
-    log.println( "}" );
-  }
-  else {
-    log.println( "%5d  terras", terrae.length() );
-  }
-}
-
-void Library::initBuildTerrae()
-{
-  if( log.isVerbose ) {
-    log.println( "Terrae (*.rc in 'terra') {" );
-    log.indent();
-  }
-
-  PhysFile dir( "terra" );
-  DArray<PhysFile> dirList = dir.ls();
-
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "rc" ) ) {
       continue;
     }
 
@@ -514,41 +397,6 @@ void Library::initBSPs()
   }
 }
 
-void Library::initBuildBSPs()
-{
-  if( log.isVerbose ) {
-    log.println( "BSP structures (*.rc in 'data/maps') {" );
-    log.indent();
-  }
-
-  PhysFile dir( "data/maps" );
-  DArray<PhysFile> dirList = dir.ls();
-
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "rc" ) ) {
-      continue;
-    }
-
-    String name = file->baseName();
-
-    if( log.isVerbose ) {
-      log.println( "%s", name.cstr() );
-    }
-
-    bsps.add( name, BSP( name, bsps.length() ) );
-  }
-
-  nBSPs = bsps.length();
-
-  if( log.isVerbose ) {
-    log.unindent();
-    log.println( "}" );
-  }
-  else {
-    log.println( "%5d  BSPs", nBSPs );
-  }
-}
-
 void Library::initModels()
 {
   if( log.isVerbose ) {
@@ -574,40 +422,6 @@ void Library::initModels()
 
     if( modelIndices.contains( name ) ) {
       throw Exception( "Duplicated model '%s'", name.cstr() );
-    }
-
-    modelIndices.add( name, models.length() );
-    models.add( Resource( name, file->path() ) );
-  }
-
-  if( log.isVerbose ) {
-    log.unindent();
-    log.println( "}" );
-  }
-  else {
-    log.println( "%5d  models", models.length() );
-  }
-}
-
-void Library::initBuildModels()
-{
-  if( log.isVerbose ) {
-    log.println( "Models (directories in 'mdl') {" );
-    log.indent();
-  }
-
-  PhysFile dir( "mdl" );
-  DArray<PhysFile> dirList = dir.ls();
-
-  foreach( file, dirList.iter() ) {
-    if( file->getType() != PhysFile::DIRECTORY ) {
-      continue;
-    }
-
-    String name = file->name();
-
-    if( log.isVerbose ) {
-      log.println( "%s", name.cstr() );
     }
 
     modelIndices.add( name, models.length() );
@@ -923,36 +737,6 @@ void Library::init()
   initTerrae();
   initBSPs();
   initModels();
-  initMusic();
-  initNameLists();
-  initFragPools();
-  initClasses();
-
-  log.unindent();
-  log.println( "}" );
-}
-
-void Library::buildInit()
-{
-  shaders.alloc( 64 );
-  textures.alloc( 256 );
-  sounds.alloc( 256 );
-  caela.alloc( 16 );
-  terrae.alloc( 16 );
-  models.alloc( 256 );
-  musics.alloc( 64 );
-  nameLists.alloc( 16 );
-
-  log.println( "Library mapping resources {" );
-  log.indent();
-
-  initShaders();
-  initBuildTextures();
-  initSounds();
-  initBuildCaela();
-  initBuildTerrae();
-  initBuildBSPs();
-  initBuildModels();
   initMusic();
   initNameLists();
   initFragPools();

@@ -27,8 +27,6 @@
 
 #include <SDL/SDL_main.h>
 
-bool oz::Alloc::isLocked = false;
-
 int main( int argc, char** argv )
 {
   oz::System::init();
@@ -51,6 +49,6 @@ int main( int argc, char** argv )
     oz::System::abort();
   }
 
-//   oz::Alloc::printLeaks();
+  oz::Alloc::printLeaks();
   return exitCode;
 }

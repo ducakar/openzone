@@ -39,6 +39,25 @@ static const int LOCAL_BUFFER_SIZE = 4096;
 
 static OZ_THREAD_LOCAL char localBuffer[LOCAL_BUFFER_SIZE];
 
+bool String::endsWith( const char* s, const char* sub )
+{
+  int len    = length( s );
+  int subLen = length( sub );
+
+  if( subLen > len ) {
+    return false;
+  }
+
+  const char* end    = s   + len    - 1;
+  const char* subEnd = sub + subLen - 1;
+
+  while( subEnd >= sub && *subEnd == *end ) {
+    --subEnd;
+    --end;
+  }
+  return subEnd < sub;
+}
+
 inline String::String( int count_, int ) : count( count_ )
 {
   ensureCapacity();
@@ -124,7 +143,7 @@ String& String::operator = ( String&& s )
 
 String::String( int count_, const char* s ) : count( count_ )
 {
-  hard_assert( s != null && count >= 0 && length( s ) >= count );
+  hard_assert( s != null && count >= 0 );
 
   ensureCapacity();
   aCopy( buffer, s, count );
@@ -228,6 +247,19 @@ String String::create( int length, char** buffer_ )
   return r;
 }
 
+String String::replace( const char* s, char whatChar, char withChar )
+{
+  int    count = length( s );
+  String r     = String( count, 0 );
+
+  for( int i = 0; i < count; ++i ) {
+    r.buffer[i] = s[i] == whatChar ? withChar : s[i];
+  }
+  r.buffer[count] = '\0';
+
+  return r;
+}
+
 String& String::operator = ( const char* s )
 {
   if( s == buffer ) {
@@ -245,6 +277,24 @@ String& String::operator = ( const char* s )
   hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
 
   return *this;
+}
+
+bool String::endsWith( const char* sub ) const
+{
+  int subLen = length( sub );
+
+  if( subLen > count ) {
+    return false;
+  }
+
+  const char* end    = buffer + count  - 1;
+  const char* subEnd = sub    + subLen - 1;
+
+  while( subEnd >= sub && *subEnd == *end ) {
+    --subEnd;
+    --end;
+  }
+  return subEnd < sub;
 }
 
 String String::operator + ( const char* s ) const
@@ -346,19 +396,6 @@ String String::replace( char whatChar, char withChar ) const
 
   for( int i = 0; i < count; ++i ) {
     r.buffer[i] = buffer[i] == whatChar ? withChar : buffer[i];
-  }
-  r.buffer[count] = '\0';
-
-  return r;
-}
-
-String String::replace( const char* s, char whatChar, char withChar )
-{
-  int    count = length( s );
-  String r     = String( count, 0 );
-
-  for( int i = 0; i < count; ++i ) {
-    r.buffer[i] = s[i] == whatChar ? withChar : s[i];
   }
   r.buffer[count] = '\0';
 
