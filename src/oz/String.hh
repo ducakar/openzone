@@ -401,6 +401,7 @@ class String
     /**
      * Create a string in sprintf-like way.
      */
+    OZ_PRINTF_FORMAT( 1, 2 )
     static String str( const char* s, ... );
 
     /**

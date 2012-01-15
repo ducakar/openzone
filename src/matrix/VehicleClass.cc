@@ -181,7 +181,7 @@ void VehicleClass::initClass( const Config* config )
     shotIntervalBuffer[6] = char( '0' + ( i / 10 ) );
     shotIntervalBuffer[7] = char( '0' + ( i % 10 ) );
 
-    weaponNames[i]  = lingua.get( config->get( weaponNameBuffer, "" ) );
+    weaponNames[i]  = OZ_GETTEXT( config->get( weaponNameBuffer, "" ) );
     onShot[i]       = config->get( onShotBuffer, "" );
     nRounds[i]      = config->get( nRoundsBuffer, -1 );
     shotInterval[i] = config->get( shotIntervalBuffer, 0.5f );

@@ -644,65 +644,69 @@ void Sound::init()
 
   log.println( "OpenAL context device: %s", alcGetString( soundDevice, ALC_DEVICE_SPECIFIER ) );
 
-  if( log.isVerbose ) {
-    int nAttributes;
-    alcGetIntegerv( soundDevice, ALC_ATTRIBUTES_SIZE, 1, &nAttributes );
+  log.verboseMode = true;
 
-    int* attributes = new int[nAttributes];
-    alcGetIntegerv( soundDevice, ALC_ALL_ATTRIBUTES, nAttributes, attributes );
+  int nAttributes;
+  alcGetIntegerv( soundDevice, ALC_ATTRIBUTES_SIZE, 1, &nAttributes );
 
-    log.println( "OpenAL context attributes {" );
-    log.indent();
+  int* attributes = new int[nAttributes];
+  alcGetIntegerv( soundDevice, ALC_ALL_ATTRIBUTES, nAttributes, attributes );
 
-    for( int i = 0; i < nAttributes; i += 2 ) {
-      switch( attributes[i] ) {
-        case ALC_FREQUENCY: {
-          log.println( "ALC_FREQUENCY: %d Hz", attributes[i + 1] );
-          break;
-        }
-        case ALC_REFRESH: {
-          log.println( "ALC_REFRESH: %d Hz", attributes[i + 1] );
-          break;
-        }
-        case ALC_SYNC: {
-          log.println( "ALC_SYNC: %s", attributes[i + 1] != 0 ? "on" : "off" );
-          break;
-        }
-        case ALC_MONO_SOURCES: {
-          log.println( "ALC_MONO_SOURCES: %d", attributes[i + 1] );
-          break;
-        }
-        case ALC_STEREO_SOURCES: {
-          log.println( "ALC_STEREO_SOURCES: %d", attributes[i + 1] );
-          break;
-        }
+  log.println( "OpenAL context attributes {" );
+  log.indent();
+
+  for( int i = 0; i < nAttributes; i += 2 ) {
+    switch( attributes[i] ) {
+      case ALC_FREQUENCY: {
+        log.println( "ALC_FREQUENCY: %d Hz", attributes[i + 1] );
+        break;
+      }
+      case ALC_REFRESH: {
+        log.println( "ALC_REFRESH: %d Hz", attributes[i + 1] );
+        break;
+      }
+      case ALC_SYNC: {
+        log.println( "ALC_SYNC: %s", attributes[i + 1] != 0 ? "on" : "off" );
+        break;
+      }
+      case ALC_MONO_SOURCES: {
+        log.println( "ALC_MONO_SOURCES: %d", attributes[i + 1] );
+        break;
+      }
+      case ALC_STEREO_SOURCES: {
+        log.println( "ALC_STEREO_SOURCES: %d", attributes[i + 1] );
+        break;
       }
     }
-
-    delete[] attributes;
-
-    log.unindent();
-    log.println( "}" );
   }
+
+  delete[] attributes;
+
+  log.unindent();
+  log.println( "}" );
+
+  log.verboseMode = false;
 
   log.println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );
   log.println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );
   log.println( "OpenAL version: %s", alGetString( AL_VERSION ) );
 
-  if( log.isVerbose ) {
-    String sExtensions = alGetString( AL_EXTENSIONS );
-    DArray<String> extensions = sExtensions.trim().split( ' ' );
+  log.verboseMode = true;
 
-    log.println( "OpenAL extensions {" );
-    log.indent();
+  String sExtensions = alGetString( AL_EXTENSIONS );
+  DArray<String> extensions = sExtensions.trim().split( ' ' );
 
-    foreach( extension, extensions.citer() ) {
-      log.println( "%s", extension->cstr() );
-    }
+  log.println( "OpenAL extensions {" );
+  log.indent();
 
-    log.unindent();
-    log.println( "}" );
+  foreach( extension, extensions.citer() ) {
+    log.println( "%s", extension->cstr() );
   }
+
+  log.unindent();
+  log.println( "}" );
+
+  log.verboseMode = false;
 
   selectedTrack = -1;
   currentTrack  = -1;

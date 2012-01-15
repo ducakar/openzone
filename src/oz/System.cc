@@ -305,6 +305,7 @@ void System::error( int nSkippedFrames, const char* msg, ... )
   va_list ap;
   va_start( ap, msg );
 
+  log.verboseMode = false;
   log.printEnd();
   log.vprintRaw( msg, ap );
   log.printEnd();

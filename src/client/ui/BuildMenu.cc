@@ -41,7 +41,7 @@ namespace ui
 {
 
 BuildButton::BuildButton( const char* className, Callback* callback, int width, int height ) :
-    Button( lingua.get( library.objClass( className )->title ), callback, width, height ),
+    Button( OZ_GETTEXT( library.objClass( className )->title ), callback, width, height ),
     className( className )
 {}
 
@@ -61,7 +61,7 @@ void BuildMenu::createObject( Button* button_ )
 
 BuildMenu::BuildMenu() :
     Frame( 8, -308 - Font::INFOS[Font::SMALL].height - Font::INFOS[Font::LARGE].height,
-           240, 250, lingua.get( "Create" ) )
+           240, 250, OZ_GETTEXT( "Create" ) )
 {
   add( new BuildButton( "smallCrate", createObject, 110, 15 ), 5, -40 );
   add( new BuildButton( "bigCrate", createObject, 110, 15 ), 5, -60 );

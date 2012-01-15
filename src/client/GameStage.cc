@@ -125,7 +125,7 @@ void GameStage::run()
 void GameStage::reload()
 {
   ui::mouse.doShow = false;
-  ui::ui.loadingScreen->status.setText( "%s", lingua.get( "Loading ..." ) );
+  ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Loading ..." ) );
   ui::ui.showLoadingScreen( true );
   ui::ui.root->focus( ui::ui.loadingScreen );
 
@@ -160,7 +160,7 @@ void GameStage::reload()
   if( stateFile.isEmpty() ) {
     log.println( "Initialising new world" );
 
-    lua.create( "lua/mission/" + missionFile + ".lua" );
+    lua.create( mission );
 
     if( orbis.terra.id == -1 || orbis.caelum.id == -1 ) {
       throw Exception( "Terrain and Caelum must both be loaded via the client.onCreate" );
@@ -345,7 +345,7 @@ void GameStage::load()
   loadingMillis = Time::clock();
 
   ui::mouse.doShow = false;
-  ui::ui.loadingScreen->status.setText( "%s", lingua.get( "Loading ..." ) );
+  ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Loading ..." ) );
   ui::ui.loadingScreen->show( true );
 
   render.draw( Render::DRAW_UI_BIT );
@@ -395,7 +395,7 @@ void GameStage::load()
     log.println( "Loading Client {" );
     log.indent();
 
-    lua.create( "lua/mission/" + missionFile + ".lua" );
+    lua.create( mission );
 
     log.unindent();
     log.println( "}" );
@@ -466,7 +466,7 @@ void GameStage::unload()
   float frameDropRate         = float( timer.ticks - timer.nFrames ) / float( timer.ticks );
 
   ui::mouse.doShow = false;
-  ui::ui.loadingScreen->status.setText( "%s", lingua.get( "Shutting down ..." ) );
+  ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Shutting down ..." ) );
   ui::ui.showLoadingScreen( true );
 
   render.draw( Render::DRAW_UI_BIT );
@@ -590,7 +590,7 @@ void GameStage::free()
   matrix.free();
 
   stateFile      = "";
-  missionFile    = "";
+  mission        = "";
   AUTOSAVE_FILE  = "";
   QUICKSAVE_FILE = "";
 

@@ -61,7 +61,8 @@ class Lua
     Vector<Struct*> structs;
     Vector<Object*> objects;
 
-    String          missionPath;
+    String          mission;
+    Lingua          missionLingua;
 
     bool readVariable( InputStream* istream );
     void writeVariable( BufferStream* stream );

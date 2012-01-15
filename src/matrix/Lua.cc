@@ -272,7 +272,6 @@ void Lua::init()
 
   OZ_LUA_FUNC( ozPrintln );
   OZ_LUA_FUNC( ozException );
-  OZ_LUA_FUNC( ozGettext );
 
   OZ_LUA_FUNC( ozUseFailed );
 
@@ -687,14 +686,6 @@ int Lua::ozException( lua_State* l )
 
   const char* message = tostring( 1 );
   throw Exception( message );
-}
-
-int Lua::ozGettext( lua_State* l )
-{
-  ARG( 1 );
-
-  pushstring( lingua.get( tostring( 1 ) ) );
-  return 1;
 }
 
 int Lua::ozUseFailed( lua_State* l )

@@ -71,7 +71,7 @@ class GameStage : public Stage
     Proxy* proxy;
 
     String stateFile;
-    String missionFile;
+    String mission;
 
   private:
 

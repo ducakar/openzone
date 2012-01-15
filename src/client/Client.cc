@@ -102,9 +102,7 @@ void Client::shutdown()
   }
 
   if( initFlags & INIT_MAIN_LOOP ) {
-    if( log.isVerbose ) {
-      Alloc::printStatistics();
-    }
+    Alloc::printStatistics();
 
     log.print( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " finished on " );
     log.printTime();
@@ -264,19 +262,19 @@ int Client::main( int argc, char** argv )
   }
   initFlags |= INIT_PHYSFS;
 
-  if( log.isVerbose ) {
-    log.println( "Build details {" );
-    log.indent();
-    log.println( "Date:            %s", BuildInfo::TIME );
-    log.println( "Host system:     %s", BuildInfo::HOST_SYSTEM );
-    log.println( "Target system:   %s", BuildInfo::TARGET_SYSTEM );
-    log.println( "Build type:      %s", BuildInfo::BUILD_TYPE );
-    log.println( "Compiler:        %s", BuildInfo::COMPILER );
-    log.println( "Compiler flags:  %s", BuildInfo::CXX_FLAGS );
-    log.println( "Linker flags:    %s", BuildInfo::EXE_LINKER_FLAGS );
-    log.unindent();
-    log.println( "}" );
-  }
+  log.verboseMode = true;
+  log.println( "Build details {" );
+  log.indent();
+  log.println( "Date:            %s", BuildInfo::TIME );
+  log.println( "Host system:     %s", BuildInfo::HOST_SYSTEM );
+  log.println( "Target system:   %s", BuildInfo::TARGET_SYSTEM );
+  log.println( "Build type:      %s", BuildInfo::BUILD_TYPE );
+  log.println( "Compiler:        %s", BuildInfo::COMPILER );
+  log.println( "Compiler flags:  %s", BuildInfo::CXX_FLAGS );
+  log.println( "Linker flags:    %s", BuildInfo::EXE_LINKER_FLAGS );
+  log.unindent();
+  log.println( "}" );
+  log.verboseMode = false;
 
   File configFile( configDir.path() + "/client.rc" );
 
@@ -343,7 +341,7 @@ int Client::main( int argc, char** argv )
     if( !PhysFile::mount( userMusicPath, "/music", true ) ) {
       throw Exception( "Failed to mount '%s' on /music in PhysicsFS", userMusicPath );
     }
-    log.println( "%s [mounted on /music in PHYSFS]", userMusicPath );
+    log.println( "%s [mounted on /music]", userMusicPath );
   }
 
   if( PhysFile::mount( localDir.path(), null, true ) ) {
@@ -352,7 +350,7 @@ int Client::main( int argc, char** argv )
     DArray<File> list = localDir.ls();
 
     foreach( file, list.citer() ) {
-      if( file->hasExtension( "zip" ) ) {
+      if( file->hasExtension( "zip" ) || file->hasExtension( "7z" ) ) {
         if( !PhysFile::mount( file->path(), null, true ) ) {
           throw Exception( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
@@ -367,7 +365,7 @@ int Client::main( int argc, char** argv )
     DArray<File> list = dataDir.ls();
 
     foreach( file, list.citer() ) {
-      if( file->hasExtension( "zip" ) ) {
+      if( file->hasExtension( "zip" ) || file->hasExtension( "7z" ) ) {
         if( !PhysFile::mount( file->path(), null, true ) ) {
           throw Exception( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
@@ -409,7 +407,7 @@ int Client::main( int argc, char** argv )
   Stage::nextStage = null;
 
   if( !mission.isEmpty() ) {
-    gameStage.missionFile = mission;
+    gameStage.mission = mission;
     stage = &gameStage;
   }
   else if( doAutoload ) {

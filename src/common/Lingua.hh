@@ -25,6 +25,10 @@
 
 #include "oz/oz.hh"
 
+// we need to define this macro because xgettext is not able to extract strings otherwise
+#define OZ_GETTEXT( s ) \
+  oz::lingua.get( s )
+
 namespace oz
 {
 
@@ -41,17 +45,19 @@ class Lingua
       OZ_PLACEMENT_POOL_ALLOC( Message, 256 );
     };
 
+    static String locale;
+
     Message**     messages;
     int           nMessages;
     Pool<Message> msgPool;
 
-    void count( const char* path );
-    void import( const char* path );
-
   public:
+
+    Lingua();
 
     const char* get( const char* message ) const;
 
+    bool initDomain( const char* domain );
     bool init( const char* locale );
     void free();
 

@@ -44,13 +44,13 @@ void QuestFrame::updateTask()
 
   String stateText;
   if( quest.state == Quest::PENDING ) {
-    stateText = lingua.get( "in progress" );
+    stateText = OZ_GETTEXT( "in progress" );
   }
   else if( quest.state == Quest::SUCCESSFUL ) {
-    stateText = lingua.get( "successful" );
+    stateText = OZ_GETTEXT( "successful" );
   }
   else {
-    stateText = lingua.get( "failed" );
+    stateText = OZ_GETTEXT( "failed" );
   }
 
   title.setText( "%s  [%s]", quest.title.cstr(), stateText.cstr() );
@@ -131,7 +131,7 @@ void QuestFrame::onDraw()
 }
 
 QuestFrame::QuestFrame() :
-    Frame( 0, -8, 500, 0, lingua.get( "Quests" ) ),
+    Frame( 0, -8, 500, 0, OZ_GETTEXT( "Quests" ) ),
     description( 6, 4, 488, 10, Font::SANS ),
     lastState( Quest::PENDING ),
     currentQuest( -1 ),
@@ -145,7 +145,7 @@ QuestFrame::QuestFrame() :
   height += contentHeight;
 
   title.set( 16, -font.INFOS[Font::LARGE].height - 6, ALIGN_NONE, Font::LARGE, "%s",
-             lingua.get( "No quest" ) );
+             OZ_GETTEXT( "No quest" ) );
 
   add( new Button( " + ", open, 16, 14 ), -20, -18 );
   add( new Button( " > ", next, 16, 14 ), -44, -18 );
