@@ -43,6 +43,7 @@ int main( int argc, char** argv )
     oz::client::client.shutdown();
   }
   catch( const std::exception& e ) {
+    oz::log.verboseMode = false;
     oz::log.printException( e );
 
     oz::System::bell();

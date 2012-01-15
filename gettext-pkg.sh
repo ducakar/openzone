@@ -1,12 +1,19 @@
 #!/bin/sh
 
-scripts='share/openzone/lua/*/*.lua'
-bsps='share/openzone/data/maps/*.rc'
-classes='share/openzone/class/*.rc'
-output='share/openzone/lingua/package.pot'
+[[ -z "$1" ]] && exit
 
-rm -rf $output
-xgettext --omit-header -C -s -kozGettext -d openzone -o $output $scripts
+pkg="$1"
+scripts=share/$pkg/lua/*/*.lua
+bsps=share/$pkg/data/maps/*.rc
+classes=share/$pkg/class/*.rc
+output=share/$pkg/lingua/$pkg.pot
+
+mkdir -p share/$pkg/lingua
+rm -rf share/$pkg/lingua/*.pot
+
+for i in $scripts; do
+  xgettext --omit-header -C -s -kozGettext -d openzone -o share/$pkg/lingua/`basename $i .lua`.pot $i
+done
 
 echo >> $output
 echo '#' >> $output

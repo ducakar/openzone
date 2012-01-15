@@ -216,6 +216,8 @@ void MD2::load()
   const String& name = library.models[id].name;
   const String& path = library.models[id].path;
 
+  log.verboseMode = true;
+
   log.print( "Loading MD2 model '%s' ...", name.cstr() );
 
   PhysFile file( path );
@@ -326,9 +328,11 @@ void MD2::load()
 
   OZ_GL_CHECK_ERROR();
 
-  isLoaded = true;
-
   log.printEnd( " OK" );
+
+  log.verboseMode = false;
+
+  isLoaded = true;
 }
 
 }

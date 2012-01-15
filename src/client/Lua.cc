@@ -165,11 +165,20 @@ void Lua::update()
   staticCall( "onUpdate" );
 }
 
-void Lua::create( const char* missionPath_ )
+void Lua::create( const char* mission_ )
 {
-  missionPath = missionPath_;
+  mission = mission_;
+  String missionPath = "lua/mission/" + mission + ".lua";
 
-  log.println( "Executing mission script %s {", missionPath.cstr() );
+  log.print( "Importing mission catalogue '%s' ...", mission.cstr() );
+  if( missionLingua.initDomain( mission ) ) {
+    log.printEnd( " OK" );
+  }
+  else {
+    log.printEnd( " Failed" );
+  }
+
+  log.println( "Executing mission script %s {", mission.cstr() );
   log.indent();
 
   PhysFile missionFile( missionPath );
@@ -195,9 +204,18 @@ void Lua::read( InputStream* istream )
 {
   hard_assert( gettop() == 0 );
 
-  missionPath = istream->readString();
+  mission = istream->readString();
+  String missionPath = "lua/mission/" + mission + ".lua";
 
-  log.print( "Deserialising mission script %s ...", missionPath.cstr() );
+  log.print( "Importing mission catalogue '%s' ...", mission.cstr() );
+  if( missionLingua.initDomain( mission ) ) {
+    log.printEnd( " OK" );
+  }
+  else {
+    log.printEnd( " Failed" );
+  }
+
+  log.print( "Deserialising mission script %s ...", mission.cstr() );
 
   PhysFile missionFile( missionPath );
   if( !missionFile.map() ) {
@@ -234,7 +252,7 @@ void Lua::write( BufferStream* ostream )
 {
   hard_assert( gettop() == 0 );
 
-  ostream->writeString( missionPath );
+  ostream->writeString( mission );
 
   ostream->writeChar( '[' );
 
@@ -668,7 +686,8 @@ void Lua::free()
 
   log.print( "Freeing Client Lua ..." );
 
-  missionPath = "";
+  mission = "";
+  missionLingua.free();
 
   objects.clear();
   objects.dealloc();
@@ -706,7 +725,7 @@ int Lua::ozGettext( lua_State* l )
 {
   ARG( 1 );
 
-  pushstring( lingua.get( tostring( 1 ) ) );
+  pushstring( lua.missionLingua.get( tostring( 1 ) ) );
   return 1;
 }
 

@@ -28,6 +28,11 @@ namespace oz
 
 Lingua lingua;
 
+String Lingua::locale;
+
+Lingua::Lingua() : messages( null ), nMessages( 0 )
+{}
+
 const char* Lingua::get( const char* message ) const
 {
   if( nMessages == 0 ) {
@@ -48,12 +53,48 @@ const char* Lingua::get( const char* message ) const
   return message;
 }
 
-bool Lingua::init( const char* locale )
+bool Lingua::initDomain( const char* domain )
 {
-  messages  = null;
-  nMessages = 0;
+  free();
 
-  PhysFile dir( String::str( "lingua/%s", locale ) );
+  PhysFile file( String::str( "lingua/%s/domain/%s.ozCat", locale.cstr(), domain ) );
+
+  if( !file.map() ) {
+    return false;
+  }
+
+  InputStream is = file.inputStream();
+
+  int length = is.readInt();
+
+  nMessages = ( 4 * length ) / 3;
+  messages = new Message*[nMessages];
+  aSet<Message*>( messages, null, nMessages );
+
+  for( int i = 0; i < length; ++i ) {
+    uint index = uint( is.readInt() ) % uint( nMessages );
+
+    Message* msg = new( msgPool ) Message();
+
+    msg->original    = is.readString();
+    msg->translation = is.readString();
+    msg->next        = messages[index];
+
+    messages[index] = msg;
+  }
+
+  file.unmap();
+
+  return true;
+}
+
+bool Lingua::init( const char* locale_ )
+{
+  free();
+
+  locale    = locale_;
+
+  PhysFile dir( "lingua/" + locale + "/main" );
   DArray<PhysFile> files = dir.ls();
 
   foreach( file, files.iter() ) {

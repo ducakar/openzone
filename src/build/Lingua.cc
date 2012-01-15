@@ -28,17 +28,18 @@ namespace build
 
 Lingua lingua;
 
-void Lingua::buildCatalogue( const char* srcDir, const char* lang, const char* name )
+void Lingua::buildCatalogue( const char* lang, const char* category, const char* name )
 {
   log.print( "%s/%s ...", lang, name );
 
   File::mkdir( "lingua" );
   File::mkdir( String::str( "lingua/%s", lang ) );
+  File::mkdir( String::str( "lingua/%s/%s", lang, category ) );
 
-  File srcFile( String::str( "%s/lingua/%s/%s.po", srcDir, lang, name ) );
-  File outFile( String::str( "lingua/%s/%s.ozCat", lang, name ) );
+  PhysFile srcFile( String::str( "lingua/%s/%s/%s.po", lang, category, name ) );
+  File outFile( String::str( "lingua/%s/%s/%s.ozCat", lang, category, name ) );
 
-  FILE* fs = fopen( srcFile.path(), "r" );
+  FILE* fs = fopen( srcFile.realPath(), "r" );
   if( fs == null ) {
     throw Exception( "Cannot read catalogue source '%s'", srcFile.path().cstr() );
   }
@@ -87,7 +88,7 @@ void Lingua::buildCatalogue( const char* srcDir, const char* lang, const char* n
     if( String::beginsWith( line, "msgid" ) ) {
       mode = 1;
 
-      if( !lastOriginal.isEmpty() ) {
+      if( !lastOriginal.isEmpty() && !lastOriginal.equals( lastTranslation ) ) {
         messages.add( lastOriginal );
         messages.add( lastTranslation );
       }
@@ -145,7 +146,7 @@ void Lingua::buildCatalogue( const char* srcDir, const char* lang, const char* n
     }
   }
 
-  if( !lastOriginal.isEmpty() ) {
+  if( !lastOriginal.isEmpty() && !lastOriginal.equals( lastTranslation ) ) {
     messages.add( lastOriginal );
     messages.add( lastTranslation );
   }
@@ -175,22 +176,35 @@ void Lingua::build()
   log.indent();
 
   PhysFile linguaDir( "lingua" );
-  DArray<PhysFile> linguae = linguaDir.ls();
+  DArray<PhysFile> languages = linguaDir.ls();
 
-  foreach( catDir, linguae.iter() ) {
-    if( catDir->getType() != PhysFile::DIRECTORY ) {
+  foreach( langDir, languages.iter() ) {
+    if( langDir->getType() != PhysFile::DIRECTORY ) {
       continue;
     }
 
-    String langCode = catDir->baseName();
-    DArray<PhysFile> files = catDir->ls();
+    String langCode = langDir->baseName();
 
-    foreach( file, files.citer() ) {
+    PhysFile linguaMainDir( langDir->path() + "/main" );
+    DArray<PhysFile> mainCats = linguaMainDir.ls();
+
+    foreach( file, mainCats.citer() ) {
       if( !file->hasExtension( "po" ) ) {
         continue;
       }
 
-      buildCatalogue( file->mountPoint(), langCode, file->baseName() );
+      buildCatalogue( langCode, "main", file->baseName() );
+    }
+
+    PhysFile linguaDomainDir( langDir->path() + "/domain" );
+    DArray<PhysFile> domainCats = linguaDomainDir.ls();
+
+    foreach( file, domainCats.citer() ) {
+      if( !file->hasExtension( "po" ) ) {
+        continue;
+      }
+
+      buildCatalogue( langCode, "domain", file->baseName() );
     }
   }
 

@@ -66,7 +66,7 @@ static void loadTutorial( Button* sender )
 
   Stage::nextStage = &gameStage;
   gameStage.stateFile = "";
-  gameStage.missionFile = "tutorial";
+  gameStage.mission = "tutorial";
 }
 
 static void loadTest( Button* sender )
@@ -75,7 +75,7 @@ static void loadTest( Button* sender )
 
   Stage::nextStage = &gameStage;
   gameStage.stateFile = "";
-  gameStage.missionFile = "test";
+  gameStage.mission = "test";
 }
 
 static void loadCvicek( Button* sender )
@@ -84,7 +84,7 @@ static void loadCvicek( Button* sender )
 
   Stage::nextStage = &gameStage;
   gameStage.stateFile = "";
-  gameStage.missionFile = "cvicek";
+  gameStage.mission = "cvicek";
 }
 
 static void settings( Button* sender )
@@ -106,7 +106,7 @@ MainMenu::MainMenu() : Frame( 0, 0, 400, 450, OZ_APPLICATION_TITLE " v" OZ_APPLI
   y = ( Area::uiHeight - height ) / 2;
 
   copyright.setText( "OpenZone  Copyright © 2002-2012 Davorin Učakar\n\n%s",
-      lingua.get( "This program comes with ABSOLUTELY NO WARRANTY. "
+      OZ_GETTEXT( "This program comes with ABSOLUTELY NO WARRANTY. "
           "This is free software, and you are welcome to redistribute it "
           "under certain conditions; See COPYING file for details.\n\n"
           "Data files come form different sources. See respective README and COPYING "
@@ -117,19 +117,19 @@ MainMenu::MainMenu() : Frame( 0, 0, 400, 450, OZ_APPLICATION_TITLE " v" OZ_APPLI
 
   if( autosaveFile.getType() == File::REGULAR ) {
     MainMenu::autosaveFile = autosaveFile.path();
-    add( new Button( lingua.get( "Continue" ), continueAutosaved, 300, 20 ), 50, -60 );
+    add( new Button( OZ_GETTEXT( "Continue" ), continueAutosaved, 300, 20 ), 50, -60 );
   }
   if( quicksaveFile.getType() == File::REGULAR ) {
     MainMenu::quicksaveFile = quicksaveFile.path();
-    add( new Button( lingua.get( "Load Quicksave" ), continueQuicksaved, 300, 20 ), 50, -90 );
+    add( new Button( OZ_GETTEXT( "Load Quicksave" ), continueQuicksaved, 300, 20 ), 50, -90 );
   }
 
-  add( new Button( lingua.get( "Tutorial" ), loadTutorial, 300, 20 ), 50, -150 );
-  add( new Button( lingua.get( "Test World" ), loadTest, 300, 20 ), 50, -180 );
-  add( new Button( lingua.get( "Mission 1: Cvicek" ), loadCvicek, 300, 20 ), 50, -210 );
+  add( new Button( OZ_GETTEXT( "Tutorial" ), loadTutorial, 300, 20 ), 50, -150 );
+  add( new Button( OZ_GETTEXT( "Test World" ), loadTest, 300, 20 ), 50, -180 );
+  add( new Button( OZ_GETTEXT( "Mission 1: Cvicek" ), loadCvicek, 300, 20 ), 50, -210 );
 
-  add( new Button( lingua.get( "Settings" ), settings, 300, 20 ), 50, -270 );
-  add( new Button( lingua.get( "Exit" ), exit, 300, 20 ), 50, -300 );
+  add( new Button( OZ_GETTEXT( "Settings" ), settings, 300, 20 ), 50, -270 );
+  add( new Button( OZ_GETTEXT( "Exit" ), exit, 300, 20 ), 50, -300 );
 }
 
 MainMenu::~MainMenu()
