@@ -116,7 +116,7 @@ void Client::printUsage()
 {
   log.println( "Usage:" );
   log.indent();
-  log.println( "openzone [-v] [-l | -i <function>] [-t <num>] [-p <prefix>]" );
+  log.println( "openzone [-v] [-l | -i <mission>] [-t <num>] [-p <prefix>]" );
   log.println();
   log.println( "-v" );
   log.println( "\tMore verbose log output." );
@@ -346,7 +346,7 @@ int Client::main( int argc, char** argv )
     log.println( "%s [mounted on /music in PHYSFS]", userMusicPath );
   }
 
-  if( !PhysFile::mount( localDir.path(), null, true ) ) {
+  if( PhysFile::mount( localDir.path(), null, true ) ) {
     log.println( "%s", localDir.path().cstr() );
 
     DArray<File> list = localDir.ls();
@@ -361,7 +361,7 @@ int Client::main( int argc, char** argv )
     }
   }
 
-  if( !PhysFile::mount( dataDir.path(), null, true ) ) {
+  if( PhysFile::mount( dataDir.path(), null, true ) ) {
     log.println( "%s", dataDir.path().cstr() );
 
     DArray<File> list = dataDir.ls();

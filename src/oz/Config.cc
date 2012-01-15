@@ -226,7 +226,7 @@ int Config::get( const char* key, int defVal ) const
 
     errno = 0;
     char* end;
-    int   num = int( strtol( value->text, &end, 0 ) );
+    int num = int( strtol( value->text, &end, 0 ) );
 
     if( errno != 0 || end == value->text.cstr() ) {
       throw Exception( "Invalid int value '%s' for %s", value->text.cstr(), key );
@@ -309,7 +309,7 @@ int Config::getSet( const char* key, int defVal )
 
     errno = 0;
     char* end;
-    int   num = int( strtol( value->text, &end, 0 ) );
+    int num = int( strtol( value->text, &end, 0 ) );
 
     if( errno != 0 || end == value->text.cstr() ) {
       throw Exception( "Invalid int value '%s'", value->text.cstr() );

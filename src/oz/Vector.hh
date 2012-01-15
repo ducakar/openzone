@@ -165,8 +165,8 @@ class Vector
     /**
      * Copy constructor, copies elements.
      */
-    Vector( const Vector& v ) : data( v.size == 0 ? null : new Elem[v.size] ),
-        size( v.size ), count( v.count )
+    Vector( const Vector& v ) :
+        data( v.size == 0 ? null : new Elem[v.size] ), size( v.size ), count( v.count )
     {
       aCopy( data, v.data, v.count );
     }

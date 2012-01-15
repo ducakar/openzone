@@ -128,12 +128,14 @@ void Mesh::reset()
   lastMesh = null;
 }
 
-Mesh::Mesh() : vao( 0 )
+Mesh::Mesh() : vao( 0 ), parts( null )
 {}
 
 Mesh::~Mesh()
 {
   hard_assert( vao == 0 );
+
+  delete[] parts;
 }
 
 void Mesh::load( InputStream* stream, uint usage )

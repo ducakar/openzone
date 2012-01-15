@@ -38,8 +38,6 @@ using namespace std;
 namespace oz
 {
 
-  bool Alloc::isLocked = true;
-
   static int constructCount = 0;
 
   struct Test
@@ -384,8 +382,6 @@ namespace oz
 
 int main()
 {
-  oz::Alloc::isLocked = false;
-
   // check first, before any memory allocations are made
   OZ_UNITTEST( ozAlloc );
 
@@ -393,7 +389,6 @@ int main()
   OZ_UNITTEST( ozIterables );
   OZ_UNITTEST( ozArrays );
 
-  oz::Alloc::isLocked = true;
   oz::Alloc::printLeaks();
   return 0;
 }

@@ -27,8 +27,6 @@
 
 using namespace oz;
 
-bool Alloc::isLocked = true;
-
 struct Elem
 {
   int value;
@@ -41,8 +39,6 @@ struct Elem
 
 int main()
 {
-  Alloc::isLocked = false;
-
   List<Elem, 0> l;
   DList<Elem, 0> dl;
   Array<int, 5> a;
@@ -185,7 +181,6 @@ int main()
   hs.clear();
   hs.dealloc();
 
-  Alloc::isLocked = true;
   Alloc::printLeaks();
   return 0;
 }

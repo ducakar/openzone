@@ -29,8 +29,6 @@ typedef float __attribute__(( vector_size( 16 ) )) float4;
 
 using namespace oz;
 
-bool Alloc::isLocked = true;
-
 #if 0
 struct __attribute__(( aligned( 16 ) )) VecX
 {
@@ -134,8 +132,6 @@ VecX e[MAX];
 
 int main()
 {
-  Alloc::isLocked = false;
-
   for( int i = 0; i < MAX; ++i ) {
     a[i] = VecX( Math::rand(), Math::rand(), Math::rand() ) * 100.0f;
     b[i] = VecX( Math::rand(), Math::rand(), Math::rand() ) * 100.0f;
@@ -153,7 +149,6 @@ int main()
   q *= 10;
   printf( "%g\n", float( Time::clock() - t0 ) / 1000.0f );
 
-  Alloc::isLocked = true;
   Alloc::printLeaks();
   return 0;
 }

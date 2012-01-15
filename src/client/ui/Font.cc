@@ -47,7 +47,7 @@ const Font::Info Font::INFOS[MAX] = {
   { "ui/font/DroidSans.ttf",     14 },
 };
 
-Font::Font() : textTexId( 0 )
+Font::Font()
 {
   for( int i = 0; i < MAX; ++i ) {
     fonts[i] = null;
@@ -79,36 +79,15 @@ void Font::init()
 
     log.printEnd( " OK" );
   }
-
-  log.print( "Generating text texture ..." );
-
-  glGenTextures( 1, &textTexId );
-  glBindTexture( GL_TEXTURE_2D, textTexId );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-  glBindTexture( GL_TEXTURE_2D, 0 );
-
-  log.printEnd( " OK" );
 }
 
 void Font::free()
 {
-  if( textTexId != 0 ) {
-    log.print( "Deleting text texture ..." );
-
-    glDeleteTextures( 1, &textTexId );
-    textTexId = 0;
-
-    log.printEnd( " OK" );
-  }
-
   if( TTF_WasInit() ) {
     log.print( "Closing fonts ..." );
 
     for( int i = 0; i < MAX; ++i ) {
-      if( fonts[i] == null ) {
+      if( fonts[i] != null ) {
         TTF_CloseFont( fonts[i] );
         fonts[i] = null;
 

@@ -48,37 +48,6 @@ inline bool operator < ( const File& a, const File& b )
   return String::compare( a.path(), b.path() ) < 0;
 }
 
-bool File::write( const char* buffer, int count ) const
-{
-#ifdef _WIN32
-
-  HANDLE file = CreateFile( filePath, GENERIC_WRITE, 0, null, CREATE_ALWAYS,
-                            FILE_ATTRIBUTE_NORMAL, null );
-  if( file == null ) {
-    return false;
-  }
-
-  DWORD written;
-  BOOL result = WriteFile( file, buffer, DWORD( count ), &written, null );
-  CloseHandle( file );
-
-  return result != 0 && int( written ) == count;
-
-#else
-
-  int fd = open( filePath, O_WRONLY | O_CREAT | O_TRUNC, 0644 );
-  if( fd == -1 ) {
-    return false;
-  }
-
-  int result = int( ::write( fd, buffer, size_t( count ) ) );
-  close( fd );
-
-  return result == count;
-
-#endif
-}
-
 File::File() : type( NONE ), data( null )
 {}
 
@@ -358,6 +327,37 @@ Buffer File::read() const
   return buffer;
 }
 
+bool File::write( const char* buffer, int count ) const
+{
+#ifdef _WIN32
+
+  HANDLE file = CreateFile( filePath, GENERIC_WRITE, 0, null, CREATE_ALWAYS,
+                            FILE_ATTRIBUTE_NORMAL, null );
+  if( file == null ) {
+    return false;
+  }
+
+  DWORD written;
+  BOOL result = WriteFile( file, buffer, DWORD( count ), &written, null );
+  CloseHandle( file );
+
+  return result != 0 && int( written ) == count;
+
+#else
+
+  int fd = open( filePath, O_WRONLY | O_CREAT | O_TRUNC, 0644 );
+  if( fd == -1 ) {
+    return false;
+  }
+
+  int result = int( ::write( fd, buffer, size_t( count ) ) );
+  close( fd );
+
+  return result == count;
+
+#endif
+}
+
 bool File::write( const Buffer* buffer ) const
 {
   return write( buffer->begin(), buffer->length() );
@@ -365,7 +365,7 @@ bool File::write( const Buffer* buffer ) const
 
 bool File::write( const InputStream* istream ) const
 {
-  return write( istream->begin(), istream->length() );
+  return write( istream->begin(), istream->capacity() );
 }
 
 bool File::write( const OutputStream* ostream ) const

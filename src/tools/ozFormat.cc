@@ -31,8 +31,6 @@
 
 #include <SDL/SDL_main.h>
 
-bool oz::Alloc::isLocked = true;
-
 namespace oz
 {
 
@@ -61,7 +59,7 @@ int main( int argc, char** argv )
   }
   log.printEnd( " OK" );
 
-  library.buildInit();
+  library.init();
 
   String srcDir = "class";
   File dir( srcDir );
@@ -85,7 +83,6 @@ int main( int argc, char** argv )
 int main( int argc, char** argv )
 {
   oz::System::init();
-  oz::Alloc::isLocked = false;
 
   int exitCode = EXIT_FAILURE;
 
@@ -106,7 +103,6 @@ int main( int argc, char** argv )
 
   oz::shutdown();
 
-  oz::Alloc::isLocked = true;
   oz::Alloc::printLeaks();
   return exitCode;
 }

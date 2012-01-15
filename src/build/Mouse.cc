@@ -40,23 +40,28 @@ void Mouse::build()
   log.println( "Prebuilding mouse cursors {" );
   log.indent();
 
+  File::mkdir( "ui" );
+  File::mkdir( "ui/cur" );
+
   for( int i = 0; i < ui::Mouse::MAX; ++i ) {
-    FILE* f = fopen( String::str( "ui/cur/%s.in", ui::Mouse::NAMES[i] ), "r" );
+    PhysFile inFile( String::str( "ui/cur/%s.in", ui::Mouse::NAMES[i] ) );
+
+    FILE* f = fopen( inFile.realPath(), "r" );
     if( f == null ) {
-      throw Exception( "Cursor prebuilding failed" );
+      throw Exception( "Failed to open cursor description '%s'", inFile.realPath().cstr() );
     }
 
     int size, hotspotX, hotspotY;
-    char imgFile[32];
+    char imgPath[32];
 
-    int nMatches = fscanf( f, "%3d %3d %3d %31s", &size, &hotspotX, &hotspotY, imgFile );
+    int nMatches = fscanf( f, "%3d %3d %3d %31s", &size, &hotspotX, &hotspotY, imgPath );
     if( nMatches != 4 ) {
       throw Exception( "Invalid xcursor line" );
     }
 
     fclose( f );
 
-    uint texId = Context::loadRawTexture( String::str( "ui/cur/%s", imgFile ),
+    uint texId = Context::loadRawTexture( String::str( "ui/cur/%s", imgPath ),
                                           false, GL_LINEAR, GL_LINEAR );
 
     BufferStream os;
@@ -69,6 +74,31 @@ void Mouse::build()
     glDeleteTextures( 1, &texId );
 
     File( String::str( "ui/cur/%s.ozcCur", ui::Mouse::NAMES[i] ) ).write( &os );
+  }
+
+  DArray<PhysFile> files = PhysFile( "ui/cur" ).ls();
+
+  foreach( file, files.iter() ) {
+    String fileName = file->name();
+
+    if( fileName.beginsWith( "README" ) || fileName.beginsWith( "COPYING" ) ) {
+      log.print( "Copying '%s' ...", fileName.cstr() );
+
+      if( !file->map() ) {
+        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
+      }
+
+      InputStream is = file->inputStream();
+      File destFile( "ui/cur/" + fileName );
+
+      if( !destFile.write( &is ) ) {
+        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
+      }
+
+      file->unmap();
+
+      log.printEnd( " OK" );
+    }
   }
 
   log.unindent();

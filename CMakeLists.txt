@@ -10,7 +10,7 @@ set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
 set( OZ_APPLICATION_VERSION "0.2.80" CACHE STRING "" FORCE )
 set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
 
-option( OZ_TRACK_LEAKS "Save stack trace on operator new calls and track memory leaks." ON )
+option( OZ_TRACK_LEAKS "Save stack trace on operator new calls and track memory leaks." OFF )
 
 option( OZ_NETWORKING "Enable networking." OFF )
 option( OZ_GL_COMPATIBLE "Use OpenGL 2.1 plus FBOs (roughly OpenGL ES 2.0) instead of OpenGL 3.0." ON )

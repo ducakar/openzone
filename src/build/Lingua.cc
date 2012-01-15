@@ -32,6 +32,9 @@ void Lingua::buildCatalogue( const char* srcDir, const char* lang, const char* n
 {
   log.print( "%s/%s ...", lang, name );
 
+  File::mkdir( "lingua" );
+  File::mkdir( String::str( "lingua/%s", lang ) );
+
   File srcFile( String::str( "%s/lingua/%s/%s.po", srcDir, lang, name ) );
   File outFile( String::str( "lingua/%s/%s.ozCat", lang, name ) );
 
@@ -159,7 +162,9 @@ void Lingua::buildCatalogue( const char* srcDir, const char* lang, const char* n
     ostream.writeString( messages[i + 1] );
   }
 
-  outFile.write( &ostream );
+  if( !outFile.write( &ostream ) ) {
+    throw Exception( "Catalogue write failed" );
+  }
 
   log.printEnd( " OK" );
 }
