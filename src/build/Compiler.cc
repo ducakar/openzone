@@ -117,7 +117,6 @@ void Compiler::material( int target, float param )
     }
     default: {
       throw Exception( "Invalid material target" );
-      break;
     }
   }
 }

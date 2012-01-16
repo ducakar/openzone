@@ -43,6 +43,8 @@ void Caelum::build( const char* name )
   log.println( "Prebuilding Caelum '%s' {", name );
   log.indent();
 
+  File::mkdir( "caelum" );
+
   String destPath = String::str( "caelum/%s.ozcCaelum", name );
 
   BufferStream os;

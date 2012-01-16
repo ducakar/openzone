@@ -230,11 +230,9 @@ void Lua::read( InputStream* istream )
 
   missionFile.unmap();
 
-  istream->readChar();
-
   char ch = istream->readChar();
 
-  while( ch != ']' ) {
+  while( ch != '\0' ) {
     hard_assert( ch == 's' );
 
     String name = istream->readString();
@@ -253,8 +251,6 @@ void Lua::write( BufferStream* ostream )
   hard_assert( gettop() == 0 );
 
   ostream->writeString( mission );
-
-  ostream->writeChar( '[' );
 
 #if LUA_VERSION_NUM >= 502
   lua_pushglobaltable( l );
@@ -283,7 +279,7 @@ void Lua::write( BufferStream* ostream )
   pop( 1 );
 #endif
 
-  ostream->writeChar( ']' );
+  ostream->writeChar( '\0' );
 }
 
 void Lua::registerFunction( const char* name, LuaAPI func )

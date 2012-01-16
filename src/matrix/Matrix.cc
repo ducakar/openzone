@@ -172,7 +172,9 @@ void Matrix::read( InputStream* istream )
 void Matrix::write( BufferStream* ostream ) const
 {
   log.print( "Writing Matrix ..." );
+
   orbis.write( ostream );
+
   log.printEnd( " OK" );
 }
 

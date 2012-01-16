@@ -46,20 +46,21 @@ void Mouse::build()
   for( int i = 0; i < ui::Mouse::MAX; ++i ) {
     PhysFile inFile( String::str( "ui/cur/%s.in", ui::Mouse::NAMES[i] ) );
 
-    FILE* f = fopen( inFile.realPath(), "r" );
-    if( f == null ) {
+    FILE* fs = fopen( inFile.realPath(), "r" );
+    if( fs == null ) {
       throw Exception( "Failed to open cursor description '%s'", inFile.realPath().cstr() );
     }
 
     int size, hotspotX, hotspotY;
     char imgPath[32];
 
-    int nMatches = fscanf( f, "%3d %3d %3d %31s", &size, &hotspotX, &hotspotY, imgPath );
+    int nMatches = fscanf( fs, "%3d %3d %3d %31s", &size, &hotspotX, &hotspotY, imgPath );
     if( nMatches != 4 ) {
+      fclose( fs );
       throw Exception( "Invalid xcursor line" );
     }
 
-    fclose( f );
+    fclose( fs );
 
     uint texId = Context::loadRawTexture( String::str( "ui/cur/%s", imgPath ),
                                           false, GL_LINEAR, GL_LINEAR );

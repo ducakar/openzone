@@ -207,13 +207,12 @@ const Vec3 MD2::NORMALS[] =
 void MD2::build( const char* path )
 {
   String sPath = path;
-  String modelFile = sPath + "/tris.md2";
-  String skinFile0 = sPath + "/skin.png";
-  String skinFile1 = sPath + "/skin.jpg";
-  String masksFile0 = sPath + "/masks.png";
-  String masksFile1 = sPath + "/masks.jpg";
-
-  File configFile( sPath + "/config.rc" );
+  PhysFile modelFile( sPath + "/tris.md2" );
+  PhysFile skinFile0( sPath + "/skin.png" );
+  PhysFile skinFile1( sPath + "/skin.jpg" );
+  PhysFile masksFile0( sPath + "/masks.png" );
+  PhysFile masksFile1( sPath + "/masks.jpg" );
+  PhysFile configFile( sPath + "/config.rc" );
 
   log.println( "Prebuilding MD2 model '%s' {", path );
   log.indent();
@@ -221,17 +220,16 @@ void MD2::build( const char* path )
   Config config;
   config.load( configFile );
 
-  const String& skinFile  = File( skinFile0 ).getType() == File::MISSING ? skinFile1 : skinFile0;
-  const String& masksFile = File( masksFile0 ).getType() == File::MISSING ? masksFile1 : masksFile0;
+  PhysFile& skinFile  = skinFile0.getType()  == PhysFile::MISSING ? skinFile1  : skinFile0;
+  PhysFile& masksFile = masksFile0.getType() == PhysFile::MISSING ? masksFile1 : masksFile0;
 
-  bool hasMasks = File( masksFile ).getType() != File::MISSING;
+  bool hasMasks = masksFile.getType() != PhysFile::MISSING;
 
-  File file( modelFile );
-  if( !file.map() ) {
+  if( !modelFile.map() ) {
     throw Exception( "MD2 reading failed" );
   }
 
-  InputStream is = file.inputStream( Endian::LITTLE );
+  InputStream is = modelFile.inputStream( Endian::LITTLE );
 
   MD2Header header;
 
@@ -361,16 +359,16 @@ void MD2::build( const char* path )
     triangles[i].texCoords[2] = is.readShort();
   }
 
-  file.unmap();
+  modelFile.unmap();
 
   compiler.beginMesh();
   compiler.enable( CAP_UNIQUE );
   compiler.enable( CAP_CW );
   compiler.material( GL_SPECULAR, specular );
-  compiler.texture( skinFile );
+  compiler.texture( skinFile.path() );
 
   if( hasMasks ) {
-    compiler.masks( masksFile );
+    compiler.masks( masksFile.path() );
   }
 
   compiler.begin( GL_TRIANGLES );

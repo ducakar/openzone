@@ -73,6 +73,7 @@ void Lingua::buildCatalogue( const char* lang, const char* category, const char*
             break;
           }
           default: {
+            fclose( fs );
             throw Exception( "%s:%d: invalid escape sequence '\\%c'",
                              srcFile.path().cstr(), lineNum, line[i] );
           }
@@ -97,6 +98,7 @@ void Lingua::buildCatalogue( const char* lang, const char* category, const char*
       char* end = strrchr( line, '"' );
 
       if( begin == null || end == null || begin >= end ) {
+        fclose( fs );
         throw Exception( "%s:%d: syntax error", srcFile.path().cstr(), lineNum );
       }
 
@@ -114,6 +116,7 @@ void Lingua::buildCatalogue( const char* lang, const char* category, const char*
       char* end = strrchr( line, '"' );
 
       if( begin == null || end == null || begin >= end ) {
+        fclose( fs );
         throw Exception( "%s:%d: syntax error", srcFile.path().cstr(), lineNum );
       }
 
@@ -128,6 +131,7 @@ void Lingua::buildCatalogue( const char* lang, const char* category, const char*
       char* end = strrchr( line, '"' );
 
       if( begin == null || end == null || begin >= end ) {
+        fclose( fs );
         throw Exception( "%s:%d: syntax error", srcFile.path().cstr(), lineNum );
       }
 
@@ -141,6 +145,7 @@ void Lingua::buildCatalogue( const char* lang, const char* category, const char*
         lastTranslation = lastTranslation + begin;
       }
       else {
+        fclose( fs );
         throw Exception( "%s:%d: loose string", srcFile.path().cstr(), lineNum );
       }
     }
