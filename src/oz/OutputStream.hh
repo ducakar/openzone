@@ -373,7 +373,7 @@ class OutputStream
     OZ_ALWAYS_INLINE
     void writeFloat( float f )
     {
-      int* data = reinterpret_cast<int*>( forward( sizeof( float ) ) );
+      int* data = reinterpret_cast<int*>( forward( sizeof( int ) ) );
 
       if( order == Endian::NATIVE ) {
         *data = Math::toBits( f );
@@ -398,11 +398,11 @@ class OutputStream
       const long64* data = reinterpret_cast<const long64*>( forward( sizeof( long64 ) ) );
 
       if( order == Endian::NATIVE ) {
-        BitsToDouble bd = { Endian::bswap64( *data ) };
+        BitsToDouble bd = { *data };
         return bd.d;
       }
       else {
-        BitsToDouble bd = { *data };
+        BitsToDouble bd = { Endian::bswap64( *data ) };
         return bd.d;
       }
     }
@@ -420,7 +420,7 @@ class OutputStream
       };
       DoubleToBits db = { d };
 
-      long64* data = reinterpret_cast<long64*>( forward( sizeof( double ) ) );
+      long64* data = reinterpret_cast<long64*>( forward( sizeof( long64 ) ) );
 
       if( order == Endian::NATIVE ) {
         *data = db.b;

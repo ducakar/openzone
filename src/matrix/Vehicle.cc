@@ -215,9 +215,8 @@ void Vehicle::eject()
 void Vehicle::onDestroy()
 {
   if( pilot != -1 ) {
-    pilot = -1;
-
     Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
+
     if( bot != null ) {
       if( state & AUTO_EJECT_BIT ) {
         eject();
@@ -228,6 +227,8 @@ void Vehicle::onDestroy()
         bot->destroy();
       }
     }
+
+    pilot = -1;
   }
 
   Dynamic::onDestroy();

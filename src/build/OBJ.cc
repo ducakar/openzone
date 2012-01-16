@@ -185,11 +185,10 @@ void OBJ::readFace( char* pos, int part )
 
 void OBJ::loadMaterials( const String& path )
 {
-  FILE* file;
   char buffer[LINE_BUFFER_SIZE];
 
-  file = fopen( path + "/data.mtl", "r" );
-  if( file == null ) {
+  FILE* fs = fopen( path + "/data.mtl", "r" );
+  if( fs == null ) {
     throw Exception( "OBJ model must have a corresponding 'data.mtl' file." );
   }
 
@@ -201,7 +200,7 @@ void OBJ::loadMaterials( const String& path )
   part.alpha    = 1.0f;
   part.specular = 0.0f;
 
-  char* pos = fgets( buffer, LINE_BUFFER_SIZE, file );
+  char* pos = fgets( buffer, LINE_BUFFER_SIZE, fs );
   char* end;
 
   // until EOF reached
@@ -253,6 +252,7 @@ void OBJ::loadMaterials( const String& path )
           File masksFile( path + "/" + texFile.baseName() + "_masks." + texFile.extension() );
 
           if( texFile.getType() == File::MISSING ) {
+            fclose( fs );
             throw Exception( "OBJ texture '%s' missing", texFile.path().cstr() );
           }
 
@@ -269,7 +269,7 @@ void OBJ::loadMaterials( const String& path )
       }
     }
     // next line
-    pos = fgets( buffer, LINE_BUFFER_SIZE, file );
+    pos = fgets( buffer, LINE_BUFFER_SIZE, fs );
   }
 
   if( !mtlName.isEmpty() ) {
@@ -277,15 +277,15 @@ void OBJ::loadMaterials( const String& path )
     parts.add( part );
   }
 
-  fclose( file );
+  fclose( fs );
 }
 
 void OBJ::load()
 {
   int currentMaterial = 0;
 
-  File modelFile( path + "/data.obj" );
-  File configFile( path + "/config.rc" );
+  PhysFile modelFile( path + "/data.obj" );
+  PhysFile configFile( path + "/config.rc" );
 
   log.print( "Loading OBJ model '%s' ...", modelFile.path().cstr() );
 
@@ -303,14 +303,14 @@ void OBJ::load()
 
   loadMaterials( path );
 
-  FILE* file = fopen( modelFile.path().cstr(), "r" );
-  if( file == null ) {
+  FILE* fs = fopen( modelFile.path().cstr(), "r" );
+  if( fs == null ) {
     throw Exception( "Cannot open OBJ data.obj file" );
   }
 
   DArray<char> buffer( LINE_BUFFER_SIZE );
 
-  char* pos = fgets( buffer, LINE_BUFFER_SIZE, file );
+  char* pos = fgets( buffer, LINE_BUFFER_SIZE, fs );
   char* end;
 
   // until EOF reached
@@ -340,7 +340,7 @@ void OBJ::load()
             currentMaterial = *value;
           }
           else {
-            fclose( file );
+            fclose( fs );
             throw Exception( "Invalid OBJ material requested: %s", &buffer[0] );
           }
         }
@@ -351,9 +351,10 @@ void OBJ::load()
       }
     }
     // next line
-    pos = fgets( buffer, LINE_BUFFER_SIZE, file );
+    pos = fgets( buffer, LINE_BUFFER_SIZE, fs );
   }
-  fclose( file );
+
+  fclose( fs );
 
   if( positions.isEmpty() ) {
     throw Exception( "No vertices" );

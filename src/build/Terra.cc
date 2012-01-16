@@ -42,8 +42,8 @@ namespace build
 
 void Terra::load()
 {
-  File configFile( "terra/" + name + ".rc" );
-  String imageFile  = "terra/" + name + ".png";
+  PhysFile configFile( "terra/" + name + ".rc" );
+  PhysFile imageFile( "terra/" + name + ".png" );
 
   Config terraConfig;
   terraConfig.load( configFile );
@@ -59,9 +59,9 @@ void Terra::load()
 
   log.print( "Loading terrain heightmap '%s' ...", name.cstr() );
 
-  FIBITMAP* image = FreeImage_Load( FIF_PNG, imageFile.cstr() );
+  FIBITMAP* image = FreeImage_Load( FIF_PNG, imageFile.realPath().cstr() );
   if( image == null ) {
-    throw Exception( "Failed to load heightmap '%s'", imageFile.cstr() );
+    throw Exception( "Failed to load heightmap '%s'", imageFile.realPath().cstr() );
   }
 
   int width  = int( FreeImage_GetWidth( image ) );
@@ -131,6 +131,8 @@ void Terra::load()
 
 void Terra::saveMatrix()
 {
+  File::mkdir( "terra" );
+
   String destFile = "terra/" + name + ".ozTerra";
 
   log.print( "Dumping terrain structure to '%s' ...", destFile.cstr() );
@@ -154,15 +156,14 @@ void Terra::saveMatrix()
 
 void Terra::saveClient()
 {
-  String terraDir = "terra/";
-  String destFile = terraDir + name + ".ozcTerra";
+  File destFile( "terra/" + name + ".ozcTerra" );
 
-  log.println( "Compiling terrain model to '%s' {", destFile.cstr() );
+  log.println( "Compiling terrain model to '%s' {", destFile.path().cstr() );
   log.indent();
 
-  uint waterTexId  = Context::loadRawTexture( terraDir + waterTexture );
-  uint detailTexId = Context::loadRawTexture( terraDir + detailTexture );
-  uint mapTexId    = Context::loadRawTexture( terraDir + mapTexture );
+  uint waterTexId  = Context::loadRawTexture( "terra/" + waterTexture );
+  uint detailTexId = Context::loadRawTexture( "terra/" + detailTexture );
+  uint mapTexId    = Context::loadRawTexture( "terra/" + mapTexture );
 
   BufferStream os;
 
@@ -249,7 +250,7 @@ void Terra::saveClient()
     os.writeChar( waterTiles.get( i ) );
   }
 
-  File( destFile ).write( &os );
+  destFile.write( &os );
 
   log.unindent();
   log.println( "}" );

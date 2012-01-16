@@ -81,11 +81,11 @@ static void printUsage()
   log.println( "-g" );
   log.println( "\tCopy shaders." );
   log.println();
-  log.println( "-t" );
-  log.println( "\tBuild terrae (terrains)." );
-  log.println();
   log.println( "-c" );
   log.println( "\tBuild caela (skies)." );
+  log.println();
+  log.println( "-t" );
+  log.println( "\tBuild terrae (terrains)." );
   log.println();
   log.println( "-b" );
   log.println( "\tCompile maps into BSPs and build BPSs with referenced textures." );
@@ -93,11 +93,26 @@ static void printUsage()
   log.println( "-m" );
   log.println( "\tBuild models." );
   log.println();
+  log.println( "-s" );
+  log.println( "\tCopy sounds (only used ones)." );
+  log.println();
+  log.println( "-a" );
+  log.println( "\tCopy object class definitions." );
+  log.println();
+  log.println( "-f" );
+  log.println( "\tCopy fragment pool definitions." );
+  log.println();
+  log.println( "-n" );
+  log.println( "\tCopy name lists." );
+  log.println();
+  log.println( "-x" );
+  log.println( "\tCheck and copy Lua scripts." );
+  log.println();
   log.println( "-o" );
   log.println( "\tBuild modules." );
   log.println();
-  log.println( "-s" );
-  log.println( "\tCheck syntax of Lua scripts." );
+  log.println( "-r" );
+  log.println( "\tCopy music tracks." );
   log.println();
   log.println( "-A" );
   log.println( "\tBuild everything." );
@@ -108,7 +123,7 @@ static void printUsage()
   log.unindent();
 }
 
-static void copyFiles( const char* srcDir, const char* destDir, const char* ext )
+static void copyFiles( const char* srcDir, const char* destDir, const char* ext, bool recurse )
 {
   log.println( "Copying *.%s from '%s' to '%s' {", ext, srcDir, destDir );
   log.indent();
@@ -128,7 +143,12 @@ static void copyFiles( const char* srcDir, const char* destDir, const char* ext 
   foreach( file, dirList.iter() ) {
     String fileName = file->name();
 
-    if( file->hasExtension( ext ) || fileName.beginsWith( "README" ) ||
+    if( file->getType() == PhysFile::DIRECTORY ) {
+      if( recurse ) {
+        copyFiles( srcDir + ( "/" + file->name() ), destDir + ( "/" + file->name() ), ext, true );
+      }
+    }
+    else if( file->hasExtension( ext ) || fileName.beginsWith( "README" ) ||
       fileName.beginsWith( "COPYING" ) )
     {
       log.print( "Copying '%s' ...", fileName.cstr() );
@@ -229,37 +249,14 @@ static void buildTextures( const char* srcDir, const char* destDir,
   log.println( "}" );
 }
 
-static void buildTerrae()
-{
-  log.println( "Building Terrae {" );
-  log.indent();
-
-  String srcDir = "terra";
-  File dir( srcDir );
-  DArray<File> dirList = dir.ls();
-
-  srcDir = srcDir + "/";
-
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "rc" ) ) {
-      continue;
-    }
-
-    Terra::build( file->baseName() );
-  }
-
-  log.unindent();
-  log.println( "}" );
-}
-
 static void buildCaela()
 {
   log.println( "Building Caela {" );
   log.indent();
 
   String srcDir = "caelum";
-  File dir( srcDir );
-  DArray<File> dirList = dir.ls();
+  PhysFile dir( srcDir );
+  DArray<PhysFile> dirList = dir.ls();
 
   srcDir = srcDir + "/";
 
@@ -271,6 +268,29 @@ static void buildCaela()
     String name = file->baseName();
 
     Caelum::build( name );
+  }
+
+  log.unindent();
+  log.println( "}" );
+}
+
+static void buildTerrae()
+{
+  log.println( "Building Terrae {" );
+  log.indent();
+
+  String srcDir = "terra";
+  PhysFile dir( srcDir );
+  DArray<PhysFile> dirList = dir.ls();
+
+  srcDir = srcDir + "/";
+
+  foreach( file, dirList.citer() ) {
+    if( !file->hasExtension( "rc" ) ) {
+      continue;
+    }
+
+    Terra::build( file->baseName() );
   }
 
   log.unindent();
@@ -404,22 +424,21 @@ static void buildModels()
   log.indent();
 
   String dirName = "mdl";
-  File dir( dirName );
-  DArray<File> dirList = dir.ls();
+  PhysFile dir( dirName );
+  DArray<PhysFile> dirList = dir.ls();
 
   dirName = dirName + "/";
 
   foreach( file, dirList.citer() ) {
-    String name = file->name();
     String path = file->path();
 
-    if( File( path + "/data.obj" ).getType() != File::MISSING ) {
+    if( PhysFile( path + "/data.obj" ).getType() != PhysFile::MISSING ) {
       OBJ::build( path );
     }
-    else if( File( path + "/tris.md2" ).getType() != File::MISSING ) {
+    else if( PhysFile( path + "/tris.md2" ).getType() != PhysFile::MISSING ) {
       MD2::build( path );
     }
-    else if( File( path + "/.md3" ).getType() != File::MISSING ) {
+    else if( PhysFile( path + "/.md3" ).getType() != PhysFile::MISSING ) {
       MD3::build( path );
     }
   }
@@ -431,15 +450,6 @@ static void buildModels()
 static void buildSounds()
 {
   log.println( "Copying used sounds {" );
-  log.indent();
-
-  log.unindent();
-  log.println( "}" );
-}
-
-static void buildNames()
-{
-  log.println( "Copying name lists {" );
   log.indent();
 
   log.unindent();
@@ -463,8 +473,8 @@ static void checkLua( const char* path )
   log.indent();
 
   String srcDir = String::str( "%s/", path );
-  File dir( path );
-  DArray<File> dirList = dir.ls();
+  PhysFile dir( path );
+  DArray<PhysFile> dirList = dir.ls();
 
   String sources;
 
@@ -473,12 +483,12 @@ static void checkLua( const char* path )
       continue;
     }
 
-    sources = sources + " " + file->path();
-  }
+    String cmdLine = "luac -p " + file->realPath();
 
-  log.println( "luac -p%s", sources.cstr() );
-  if( system( "luac -p" + sources ) != 0 ) {
-    throw Exception( "Lua syntax check failed" );
+    log.println( "%s", cmdLine.cstr() );
+    if( system( cmdLine ) != 0 ) {
+      throw Exception( "Lua syntax check failed" );
+    }
   }
 
   log.unindent();
@@ -506,18 +516,21 @@ int main( int argc, char** argv )
   bool doCat     = false;
   bool doUI      = false;
   bool doShaders = false;
-  bool doTerrae  = false;
   bool doCaela   = false;
+  bool doTerrae  = false;
   bool doBSPs    = false;
   bool doModels  = false;
   bool doSounds  = false;
+  bool doClasses = false;
+  bool doFrags   = false;
   bool doNames   = false;
-  bool doModules = false;
   bool doLua     = false;
+  bool doModules = false;
+  bool doMusic   = false;
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "vlugtcbmsnoxCA" ) ) != -1 ) {
+  while( ( opt = getopt( argc, argv, "vlugtcbmsafnxorCA" ) ) != -1 ) {
     switch( opt ) {
       case 'v': {
         log.isVerbose = true;
@@ -535,12 +548,12 @@ int main( int argc, char** argv )
         doShaders = true;
         break;
       }
-      case 't': {
-        doTerrae = true;
-        break;
-      }
       case 'c': {
         doCaela = true;
+        break;
+      }
+      case 't': {
+        doTerrae = true;
         break;
       }
       case 'b': {
@@ -555,16 +568,28 @@ int main( int argc, char** argv )
         doSounds = true;
         break;
       }
+      case 'a': {
+        doClasses = true;
+        break;
+      }
+      case 'f': {
+        doFrags = true;
+        break;
+      }
       case 'n': {
         doNames = true;
+        break;
+      }
+      case 'x': {
+        doLua = true;
         break;
       }
       case 'o': {
         doModules = true;
         break;
       }
-      case 'x': {
-        doLua = true;
+      case 'r': {
+        doMusic = true;
         break;
       }
       case 'C': {
@@ -575,8 +600,8 @@ int main( int argc, char** argv )
         doCat     = true;
         doUI      = true;
         doShaders = true;
-        doTerrae  = true;
         doCaela   = true;
+        doTerrae  = true;
         doBSPs    = true;
         doModels  = true;
         doSounds  = true;
@@ -692,64 +717,64 @@ int main( int argc, char** argv )
   if( doCat ) {
     lingua.build();
   }
-
   if( doUI ) {
     bool useS3TC = Context::useS3TC;
     Context::useS3TC = false;
-
-    File::mkdir( "ui" );
 
     if( PhysFile( "ui/cur" ).getType() != PhysFile::MISSING ) {
       Mouse::build();
     }
 
-    copyFiles( "ui/font", "ui/font", "ttf" );
+    copyFiles( "ui", "ui", "", false );
+    copyFiles( "ui/font", "ui/font", "ttf", false );
     buildTextures( "ui/icon", "ui/icon", true, GL_LINEAR, GL_LINEAR );
     buildTextures( "ui/galileo", "ui/galileo", true, GL_LINEAR, GL_LINEAR );
 
     Context::useS3TC = useS3TC;
   }
-
   if( doShaders ) {
-    copyFiles( "glsl", "glsl", "glsl" );
-    copyFiles( "glsl", "glsl", "vert" );
-    copyFiles( "glsl", "glsl", "frag" );
+    copyFiles( "glsl", "glsl", "glsl", false );
+    copyFiles( "glsl", "glsl", "vert", false );
+    copyFiles( "glsl", "glsl", "frag", false );
   }
-
-  if( doTerrae ) {
-    buildTerrae();
-  }
-
   if( doCaela ) {
     buildCaela();
   }
-
+  if( doTerrae ) {
+    buildTerrae();
+  }
   if( doBSPs ) {
     compileBSPs();
     buildBSPs();
     buildBSPTextures( dataDir );
   }
-
   if( doModels ) {
     buildModels();
   }
-
   if( doSounds ) {
     buildSounds();
   }
-
+  if( doClasses ) {
+    copyFiles( "class", "class", "rc", false );
+  }
+  if( doFrags ) {
+    copyFiles( "frag", "frag", "rc", false );
+  }
   if( doNames ) {
-    buildNames();
+    copyFiles( "name", "name", "txt", false );
   }
-
-  if( doModules ) {
-    buildModules();
-  }
-
   if( doLua ) {
     checkLua( "lua/matrix" );
     checkLua( "lua/nirvana" );
     checkLua( "lua/mission" );
+
+    copyFiles( "lua", "lua", "lua", true );
+  }
+  if( doModules ) {
+    buildModules();
+  }
+  if( doMusic ) {
+    copyFiles( "music", "music", "oga", true );
   }
 
   uint endTime = Time::clock();

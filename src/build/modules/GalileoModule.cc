@@ -40,42 +40,51 @@ void GalileoModule::build()
 {
   Config terraConfig;
 
-  for( int i = 0; i < library.terrae.length(); ++i ) {
-    const String& name = library.terrae[i].name;
+  PhysFile terraDir( "terra" );
+  DArray<PhysFile> terrae = terraDir.ls();
 
-    File file( "terra/" + name + ".rc" );
-    terraConfig.load( file );
+  foreach( file, terrae.iter() ) {
+    if( !file->hasExtension( "rc" ) ) {
+      continue;
+    }
 
-    String srcTextureFile = String::str( "terra/%s", terraConfig.get( "mapTexture", "" ) );
-    String destTextureFile = String::str( "ui/galileo/%s.ozcTex", name.cstr() );
+    File::mkdir( "terra" );
+
+    String name = file->baseName();
+
+    log.println( "Terrain texture '%s' for minimap {", name.cstr() );
+    log.indent();
+
+    if( !terraConfig.load( *file ) ) {
+      throw Exception( "Failed to read terra configuration from '%s'", file->path().cstr() );
+    }
+
+    PhysFile srcTextureFile( String::str( "terra/%s", terraConfig.get( "mapTexture", "" ) ) );
+    File destTextureFile( "terra/" + file->baseName() + ".ozcTex" );
 
     bool useS3TC = Context::useS3TC;
     Context::useS3TC = false;
 
     BufferStream os;
 
-    uint id = Context::loadRawTexture( srcTextureFile, true, GL_LINEAR, GL_LINEAR );
+    uint id = Context::loadRawTexture( srcTextureFile.path(), true, GL_LINEAR, GL_LINEAR );
     Context::writeTexture( id, &os );
     glDeleteTextures( 1, &id );
-    File( destTextureFile ).write( &os );
 
-    os.reset();
+    log.print( "Writing to '%s' ...", destTextureFile.path().cstr() );
 
-    id = Context::loadRawTexture( "ui/galileo/arrow.png", false, GL_LINEAR, GL_LINEAR );
-    Context::writeTexture( id, &os );
-    glDeleteTextures( 1, &id );
-    File( "ui/galileo/arrow.ozcTex" ).write( &os );
+    if( !destTextureFile.write( &os ) ) {
+      throw Exception( "Terra texture '%s' write failed", destTextureFile.path().cstr() );
+    }
 
-    os.reset();
-
-    id = Context::loadRawTexture( "ui/galileo/marker.png", false, GL_LINEAR, GL_LINEAR );
-    Context::writeTexture( id, &os );
-    glDeleteTextures( 1, &id );
-    File( "ui/galileo/marker.ozcTex" ).write( &os );
+    log.printEnd( " OK" );
 
     Context::useS3TC = useS3TC;
 
     terraConfig.clear();
+
+    log.unindent();
+    log.println( "}" );
   }
 }
 

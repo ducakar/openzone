@@ -284,11 +284,11 @@ class InputStream
       const long64* data = reinterpret_cast<const long64*>( forward( sizeof( long64 ) ) );
 
       if( order == Endian::NATIVE ) {
-        BitsToDouble bd = { Endian::bswap64( *data ) };
+        BitsToDouble bd = { *data };
         return bd.d;
       }
       else {
-        BitsToDouble bd = { *data };
+        BitsToDouble bd = { Endian::bswap64( *data ) };
         return bd.d;
       }
     }

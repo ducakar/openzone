@@ -157,7 +157,7 @@ void BotClass::initClass( const Config* config )
 
   stamina           = config->get( "stamina", 100.0f );
   staminaGain       = config->get( "staminaGain", 2.5f ) * Timer::TICK_TIME;
-  staminaRunDrain   = config->get( "staminaRunDrain", 4.0f ) * Timer::TICK_TIME;
+  staminaRunDrain   = config->get( "staminaRunDrain", 5.0f ) * Timer::TICK_TIME;
   staminaWaterDrain = config->get( "staminaWaterDrain", 5.0f ) * Timer::TICK_TIME;
   staminaClimbDrain = config->get( "staminaClimbDrain", 10.0f ) * Timer::TICK_TIME;
   staminaJumpDrain  = config->get( "staminaJumpDrain", 5.0f );

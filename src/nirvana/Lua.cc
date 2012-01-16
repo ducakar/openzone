@@ -176,11 +176,9 @@ void Lua::read( InputStream* istream )
   hard_assert( gettop() == 1 );
   hard_assert( ( pushnil(), next( 1 ) == 0 ) );
 
-  istream->readChar();
-
   char ch = istream->readChar();
 
-  while( ch != ']' ) {
+  while( ch != '\0' ) {
     hard_assert( ch == 'i' );
 
     int index = istream->readInt();
@@ -196,8 +194,6 @@ void Lua::write( BufferStream* ostream )
 {
   hard_assert( gettop() == 1 );
 
-  ostream->writeChar( '[' );
-
   pushnil();
   while( next( 1 ) != 0 ) {
     hard_assert( type( -2 ) == LUA_TNUMBER );
@@ -210,7 +206,7 @@ void Lua::write( BufferStream* ostream )
     pop( 1 );
   }
 
-  ostream->writeChar( ']' );
+  ostream->writeChar( '\0' );
 }
 
 void Lua::registerFunction( const char* name, LuaAPI func )

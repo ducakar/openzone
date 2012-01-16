@@ -280,9 +280,9 @@ void Orbis::remove( Struct* str )
   strFreedIndices[freeing].add( str->index );
   structs[str->index] = null;
 
-  delete str;
-
   const_cast<BSP*>( str->bsp )->release();
+
+  delete str;
 }
 
 void Orbis::remove( Object* obj )

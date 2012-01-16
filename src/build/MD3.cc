@@ -37,25 +37,27 @@ namespace build
 
 void MD3::readAnimData()
 {
-  String animFile = sPath + "/animation.cfg";
+  PhysFile animFile( sPath + "/animation.cfg" );
 
-  FILE* file = fopen( animFile, "r" );
-  if( file == null ) {
+  FILE* fs = fopen( animFile.realPath(), "r" );
+  if( fs == null ) {
     throw Exception( "Reading animation data failed" );
   }
 
   char line[1024];
 
-  while( fgets( line, 1024, file ) != null ) {
+  while( fgets( line, 1024, fs ) != null ) {
 
   }
+
+  fclose( fs );
 }
 
 void MD3::buildMesh( const char* name, int frame )
 {
   log.print( "Mesh '%s' ...", name );
 
-  File file( String::str( "%s/%s.md3", sPath.cstr(), name ) );
+  PhysFile file( String::str( "%s/%s.md3", sPath.cstr(), name ) );
   if( !file.map() ) {
     throw Exception( "Cannot mmap MD3 model part file '%s'", file.path().cstr() );
   }
@@ -207,7 +209,7 @@ void MD3::buildMesh( const char* name, int frame )
     }
 
     if( skin.isEmpty() ) {
-      File skinFile( String::replace( surfaceShaders[0].name, '\\', '/' ).cstr() );
+      PhysFile skinFile( String::replace( surfaceShaders[0].name, '\\', '/' ).cstr() );
       texture = skinFile.name();
     }
     else {
