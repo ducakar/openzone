@@ -122,6 +122,22 @@ class String
     }
 
     /**
+     * First character or null character if empty string.
+     */
+    char first() const
+    {
+      return count == 0 ? '\0' : buffer[0];
+    }
+
+    /**
+     * Last character or null character if empty string.
+     */
+    char last() const
+    {
+      return count == 0 ? '\0' : buffer[count - 1];
+    }
+
+    /**
      * Index of the first occurrence of the character from the given index (inclusive).
      */
     static int index( const char* s, char ch, int start = 0 )
@@ -616,12 +632,12 @@ class String
     friend String operator + ( const char* s, const String& t );
 
     /**
-     * Substring.
+     * Substring from <tt>start<tt> character (inclusively).
      */
     String substring( int start ) const;
 
     /**
-     * Substring.
+     * Substring between <tt>start<tt> (inclusively) and <tt>end</tt> (not inclusively) character.
      */
     String substring( int start, int end ) const;
 

@@ -91,51 +91,51 @@ class Render
       }
     };
 
-    Bitset                  drawnStructs;
+    Bitset                drawnStructs;
 
-    Vector<ModelEntry>      structs;
-    Vector<ModelEntry>      objects;
-    Vector<ModelEntry>      frags;
+    Vector<ModelEntry>    structs;
+    Vector<ModelEntry>    objects;
+    Vector<ModelEntry>    frags;
 
-    Vector<const Struct*>   waterStructs;
+    Vector<const Struct*> waterStructs;
 
-    float                   visibilityRange;
-    float                   visibility;
+    float                 visibilityRange;
+    float                 visibility;
 
-    bool                    showBounds;
-    bool                    showAim;
+    bool                  showBounds;
+    bool                  showAim;
 
-    bool                    isOffscreen;
-    bool                    isDeferred;
-    bool                    doPostprocess;
+    bool                  isOffscreen;
+    bool                  isDeferred;
+    bool                  doPostprocess;
 
-    float                   windPhi;
+    float                 windPhi;
 
-    float                   renderScale;
-    int                     renderWidth;
-    int                     renderHeight;
+    float                 renderScale;
+    int                   renderWidth;
+    int                   renderHeight;
 
-    uint                    mainFrame;
-    uint                    depthBuffer;
-    uint                    colourBuffer;
-    uint                    normalBuffer;
-    uint                    specularBuffer;
+    uint                  mainFrame;
+    uint                  depthBuffer;
+    uint                  colourBuffer;
+    uint                  normalBuffer;
+    uint                  specularBuffer;
 
   public:
 
-    SDL_Surface*            surface;
+    SDL_Surface*          surface;
 
-    uint                    prepareMillis;
-    uint                    setupMillis;
-    uint                    caelumMillis;
-    uint                    terraMillis;
-    uint                    structsMillis;
-    uint                    objectsMillis;
-    uint                    fragsMillis;
-    uint                    miscMillis;
-    uint                    postprocessMillis;
-    uint                    uiMillis;
-    uint                    syncMillis;
+    uint                  prepareMillis;
+    uint                  setupMillis;
+    uint                  caelumMillis;
+    uint                  terraMillis;
+    uint                  structsMillis;
+    uint                  objectsMillis;
+    uint                  fragsMillis;
+    uint                  miscMillis;
+    uint                  postprocessMillis;
+    uint                  uiMillis;
+    uint                  syncMillis;
 
   private:
 

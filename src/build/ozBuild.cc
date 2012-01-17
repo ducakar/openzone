@@ -60,14 +60,14 @@ static void printUsage()
 {
   log.println( "Usage:" );
   log.indent();
-  log.println( "ozBuild [OPTIONS] <data_src_dir> <data_out_dir>" );
+  log.println( "ozBuild [OPTIONS] <data_src> <out_root>" );
   log.println();
-  log.println( "<data_src_dir>" );
-  log.println( "\tUses <data_src_dir> as game data source directory." );
+  log.println( "<data_src>" );
+  log.println( "\tPath to directory that includes data to be built. Name of this" );
+  log.println( "\tdirectory name is used as package name." );
   log.println();
-  log.println( "<data_out_dir>" );
-  log.println( "\tWhere to write built game data (data that doesn't need building are copied)." );
-  log.println( "\tThis directory must differ from <data_src_dir>." );
+  log.println( "<out_root>" );
+  log.println( "\tDirectory where output directory and archive will be created." );
   log.println();
   log.println( "-v" );
   log.println( "\tMore verbose log output." );
@@ -113,6 +113,9 @@ static void printUsage()
   log.println();
   log.println( "-r" );
   log.println( "\tCopy music tracks." );
+  log.println();
+  log.println( "-p" );
+  log.println( "\tPack built files into ZIP archive." );
   log.println();
   log.println( "-A" );
   log.println( "\tBuild everything." );
@@ -495,6 +498,20 @@ static void checkLua( const char* path )
   log.println( "}" );
 }
 
+static void packArchive( const char* name )
+{
+  log.println( "Packing archive {" );
+  log.indent();
+
+  String cmdLine = String::str( "zip -Z store -r \"../%s.zip\" *", name );
+
+  log.println( "%s", cmdLine.cstr() );
+  system( cmdLine );
+
+  log.unindent();
+  log.println( "}" );
+}
+
 static void shutdown()
 {
   compiler.free();
@@ -527,10 +544,11 @@ int main( int argc, char** argv )
   bool doLua     = false;
   bool doModules = false;
   bool doMusic   = false;
+  bool doPack    = false;
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "vlugtcbmsafnxorCA" ) ) != -1 ) {
+  while( ( opt = getopt( argc, argv, "vlugtcbmsafnxorpCA" ) ) != -1 ) {
     switch( opt ) {
       case 'v': {
         log.isVerbose = true;
@@ -592,6 +610,10 @@ int main( int argc, char** argv )
         doMusic = true;
         break;
       }
+      case 'p': {
+        doPack = true;
+        break;
+      }
       case 'C': {
         Context::useS3TC = true;
         break;
@@ -605,9 +627,13 @@ int main( int argc, char** argv )
         doBSPs    = true;
         doModels  = true;
         doSounds  = true;
+        doClasses = true;
+        doFrags   = true;
         doNames   = true;
-        doModules = true;
         doLua     = true;
+        doModules = true;
+        doMusic   = true;
+        doPack    = true;
         break;
       }
       default: {
@@ -623,14 +649,25 @@ int main( int argc, char** argv )
     return EXIT_FAILURE;
   }
 
-  String dataDir = argv[optind];
-  String outDir = argv[optind + 1];
+  String dataDir = String::replace( argv[optind], '\\', '/' );
+  String outDir  = String::replace( argv[optind + 1], '\\', '/' );
+
+  while( !dataDir.isEmpty() && dataDir.last() == '/' ) {
+    dataDir = dataDir.substring( 0, dataDir.length() - 1 );
+  }
+
+  if( dataDir.isEmpty() ) {
+    log.println( "Source directory cannot be root ('/')" );
+    return EXIT_FAILURE;
+  }
+
+  String pkgName = dataDir.substring( dataDir.index( '/' ) );
 
   if( dataDir[0] != '/' ) {
     dataDir = File::cwd() + "/" + dataDir;
   }
   if( outDir[0] != '/' ) {
-    outDir = File::cwd() + "/" + outDir;
+    outDir = File::cwd() + "/" + outDir + "/" + pkgName;
   }
 
   log.print( OZ_APPLICATION_TITLE " Build started on " );
@@ -775,6 +812,9 @@ int main( int argc, char** argv )
   }
   if( doMusic ) {
     copyFiles( "music", "music", "oga", true );
+  }
+  if( doPack ) {
+    packArchive( pkgName );
   }
 
   uint endTime = Time::clock();
