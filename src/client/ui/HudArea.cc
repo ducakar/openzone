@@ -204,7 +204,7 @@ void HudArea::drawBotStatus()
     const Weapon* weaponObj = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
     glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.3f );
-    fill( 8, 52, 200, textHeight + 8 );
+    fill( 8, 52, 200, Font::INFOS[Font::LARGE].height + 8 );
 
     if( lastWeaponId != bot->weapon ) {
       lastWeaponId = bot->weapon;
@@ -237,12 +237,12 @@ void HudArea::drawVehicleStatus()
 
   float size = vehicle->dim.fastL();
   float scale = VEHICLE_DIM / size;
+  int x = Area::uiWidth - 208 + VEHICLE_SIZE / 2;
+  int y = 52 + vehClazz->nWeapons * ( Font::INFOS[Font::LARGE].height + 8 ) + VEHICLE_SIZE / 2;
 
   tf.model = Mat44::ID;
   tf.camera = Mat44::ID;
-  tf.camera.translate( Vec3( float( Area::uiWidth - 208 + VEHICLE_SIZE / 2 ),
-                             float( 52 + vehClazz->nWeapons * ( textHeight + 8 ) + VEHICLE_SIZE / 2 ),
-                             0.0f ) );
+  tf.camera.translate( Vec3( float( x ), float( y ), 0.0f ) );
   tf.camera.scale( Vec3( 1.0f, 1.0f, 0.001f ) );
   tf.camera.rotateX( Math::rad( -45.0f ) );
   tf.camera.rotateZ( Math::rad( 160.0f ) );
@@ -297,7 +297,8 @@ void HudArea::drawVehicleStatus()
       int step = font.INFOS[Font::LARGE].height + 8;
 
       glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.3f );
-      fill( -208, 52 + ( vehClazz->nWeapons - 1 - i ) * step, 200, textHeight + 8 );
+      fill( -208, 52 + ( vehClazz->nWeapons - 1 - i ) * step,
+            200, Font::INFOS[Font::LARGE].height + 8 );
     }
 
     int labelIndex = vehClazz->nWeapons - i - 1;

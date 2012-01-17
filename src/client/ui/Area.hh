@@ -70,8 +70,6 @@ class Area
 
     int flags;
 
-    TTF_Font* currentFont;
-
   public:
 
     static int uiWidth;
@@ -87,11 +85,6 @@ class Area
     int y;
     int width;
     int height;
-
-    // width of the last printed text
-    int textWidth;
-    // height of the current font
-    int textHeight;
 
   protected:
 

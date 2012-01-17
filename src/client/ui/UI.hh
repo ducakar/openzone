@@ -42,15 +42,17 @@ class UI
 {
   private:
 
-    float uiScale;
-    float uiAspect;
+    float        uiScale;
+    float        uiAspect;
 
-    float fps;
+    float        fps;
 
-    bool  isFreelook;
-    bool  showFPS;
-    bool  showBuild;
-    bool  showDebug;
+    bool         isFreelook;
+    bool         showFPS;
+    bool         showBuild;
+    bool         showDebug;
+
+    Label*       fpsLabel;
 
   public:
 

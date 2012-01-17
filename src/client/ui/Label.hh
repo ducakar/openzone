@@ -47,9 +47,12 @@ class Label
     int        offsetY;
     int        width;
     int        height;
+    int        newWidth;
+    int        newHeight;
 
-    uint       texId;
+    uint       texIds[2];
     uint       activeTexId;
+    bool       hasChanged;
 
   public:
 
@@ -68,7 +71,7 @@ class Label
     OZ_PRINTF_FORMAT( 2, 3 )
     void setText( const char* s, ... );
 
-    void draw( const Area* area ) const;
+    void draw( const Area* area );
 
 };
 

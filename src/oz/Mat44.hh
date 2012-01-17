@@ -179,6 +179,7 @@ class Mat44
       float ilmp = x.z * w.w - w.z * x.w;
       float ikmo = x.z * z.w - z.z * x.w;
       float ijmn = x.z * y.w - y.z * x.w;
+
       return
           x.x * y.y * klop -
           x.x * z.y * jlnp +

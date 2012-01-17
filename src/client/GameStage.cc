@@ -130,6 +130,7 @@ void GameStage::reload()
   ui::ui.root->focus( ui::ui.loadingScreen );
 
   render.draw( Render::DRAW_UI_BIT );
+  render.draw( Render::DRAW_UI_BIT );
   render.sync();
 
   for( int i = modules.length() - 1; i >= 0; --i ) {
@@ -348,6 +349,7 @@ void GameStage::load()
   ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Loading ..." ) );
   ui::ui.loadingScreen->show( true );
 
+  render.draw( Render::DRAW_UI_BIT );
   render.draw( Render::DRAW_UI_BIT );
   render.sync();
 

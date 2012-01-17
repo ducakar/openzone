@@ -43,7 +43,7 @@ DebugFrame::DebugFrame() :
 
   x = ( Area::uiWidth - width ) / 2;
 
-  int height = textHeight + 2;
+  int height = Font::INFOS[Font::MONO].height + 2;
 
   camPosRot.set( 5, 5 + height * 6, ALIGN_NONE, Font::MONO, " " );
 

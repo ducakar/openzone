@@ -40,24 +40,35 @@ namespace client
 namespace ui
 {
 
-Label::Label() : x( 0 ), y( 0 ),align( Area::ALIGN_NONE ), font( Font::MONO ),
-    offsetX( 0 ), offsetY( 0 ), width( 0 ), height( 0 ), activeTexId( 0 )
+Label::Label() : x( 0 ), y( 0 ), align( Area::ALIGN_NONE ), font( Font::MONO ),
+    offsetX( 0 ), offsetY( 0 ), width( 0 ), height( 0 ), activeTexId( 0 ), hasChanged( false )
 {
-  glGenTextures( 1, &texId );
-  glBindTexture( GL_TEXTURE_2D, texId );
+  glGenTextures( 2, texIds );
+
+  glBindTexture( GL_TEXTURE_2D, texIds[0] );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+
+  glBindTexture( GL_TEXTURE_2D, texIds[1] );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 }
 
 Label::~Label()
 {
-  glDeleteTextures( 1, &texId );
+  glDeleteTextures( 2, texIds );
 }
 
-Label::Label( int x, int y, int align, Font::Type font, const char* s, ... )
+Label::Label( int x, int y, int align, Font::Type font, const char* s, ... ) :
+    offsetX( 0 ), offsetY( 0 ), activeTexId( 0 )
 {
-  glGenTextures( 1, &texId );
-  glBindTexture( GL_TEXTURE_2D, texId );
+  glGenTextures( 2, texIds );
+
+  glBindTexture( GL_TEXTURE_2D, texIds[0] );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+
+  glBindTexture( GL_TEXTURE_2D, texIds[1] );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
@@ -92,32 +103,18 @@ void Label::vset( int x_, int y_, int align_, Font::Type font_, const char* s, v
 
   SDL_Surface* text = TTF_RenderUTF8_Blended( ui::font.fonts[font], buffer, Font::SDL_COLOUR_WHITE );
 
+  uint texId = activeTexId == texIds[0] ? texIds[1] : texIds[0];
+
   glBindTexture( GL_TEXTURE_2D, texId );
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                 text->pixels );
   glBindTexture( GL_TEXTURE_2D, 0 );
 
-  activeTexId = texId;
-
-  offsetX = x;
-  offsetY = y;
-  width   = text->w;
-  height  = text->h;
+  newWidth   = text->w;
+  newHeight  = text->h;
+  hasChanged = true;
 
   SDL_FreeSurface( text );
-
-  if( align & Area::ALIGN_RIGHT ) {
-    offsetX -= width;
-  }
-  else if( align & Area::ALIGN_HCENTRE ) {
-    offsetX -= width / 2;
-  }
-  if( align & Area::ALIGN_TOP ) {
-    offsetY -= height;
-  }
-  else if( align & Area::ALIGN_VCENTRE ) {
-    offsetY -= height / 2;
-  }
 }
 
 void Label::set( int x, int y, int align, Font::Type font, const char* s, ... )
@@ -136,19 +133,44 @@ void Label::setText( const char* s, ... )
   va_end( ap );
 }
 
-void Label::draw( const Area* area ) const
+void Label::draw( const Area* area )
 {
-  glBindTexture( GL_TEXTURE_2D, width == 0 ? 0 : texId );
+  if( activeTexId != 0 ) {
+    glBindTexture( GL_TEXTURE_2D, activeTexId );
 
-  int posX = area->x + ( x < 0 ? area->width  + offsetX : offsetX );
-  int posY = area->y + ( y < 0 ? area->height + offsetY : offsetY );
+    int posX = area->x + ( x < 0 ? area->width  + offsetX : offsetX );
+    int posY = area->y + ( y < 0 ? area->height + offsetY : offsetY );
 
-  glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
-  shape.fillInv( posX + 1, posY - 1, width, height );
-  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
-  shape.fillInv( posX, posY, width, height );
+    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
+    shape.fillInv( posX + 1, posY - 1, width, height );
+    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+    shape.fillInv( posX, posY, width, height );
 
-  glBindTexture( GL_TEXTURE_2D, 0 );
+    glBindTexture( GL_TEXTURE_2D, 0 );
+  }
+
+  if( hasChanged ) {
+    hasChanged  = false;
+    activeTexId = activeTexId == texIds[0] ? texIds[1] : texIds[0];
+
+    offsetX = x;
+    offsetY = y;
+    width   = newWidth;
+    height  = newHeight;
+
+    if( align & Area::ALIGN_RIGHT ) {
+      offsetX -= width;
+    }
+    else if( align & Area::ALIGN_HCENTRE ) {
+      offsetX -= width / 2;
+    }
+    if( align & Area::ALIGN_TOP ) {
+      offsetY -= height;
+    }
+    else if( align & Area::ALIGN_VCENTRE ) {
+      offsetY -= height / 2;
+    }
+  }
 }
 
 }

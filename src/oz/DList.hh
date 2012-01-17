@@ -259,8 +259,6 @@ class DList
     OZ_ALWAYS_INLINE
     bool isEmpty() const
     {
-      hard_assert( ( firstElem == null ) == ( lastElem == null ) );
-
       return firstElem == null;
     }
 

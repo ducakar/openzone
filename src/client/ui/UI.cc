@@ -40,7 +40,8 @@ namespace ui
 
 UI ui;
 
-UI::UI() : root( null ), loadingScreen( null ), buildMenu( null ), debugFrame( null )
+UI::UI() :
+    fpsLabel( null ), root( null ), loadingScreen( null ), buildMenu( null ), debugFrame( null )
 {}
 
 void UI::showLoadingScreen( bool doShow )
@@ -112,11 +113,11 @@ void UI::draw()
 
   if( showFPS ) {
     if( timer.frameTicks != 0 ) {
-      fps = Math::mix( fps, 1.0f / timer.frameTime, 0.05f );
+      fps = Math::mix( fps, 1.0f / timer.frameTime, 0.04f );
     }
 
-    Label fpsLabel( -4, -4, Area::ALIGN_RIGHT | Area::ALIGN_TOP, Font::MONO, "%.0f", fps );
-    fpsLabel.draw( root );
+    fpsLabel->setText( "%.2f", fps );
+    fpsLabel->draw( root );
   }
 
   glDisable( GL_BLEND );
@@ -185,12 +186,20 @@ void UI::init()
   root = new Area( Area::uiWidth, Area::uiHeight );
   loadingScreen = new LoadingArea();
 
+  if( showFPS ) {
+    fpsLabel = new Label( -4, -4, Area::ALIGN_RIGHT | Area::ALIGN_TOP, Font::MONO, "" );
+  }
+
   root->add( loadingScreen );
 }
 
 void UI::free()
 {
+  delete fpsLabel;
   delete root;
+
+  root     = null;
+  fpsLabel = null;
 
   Area::updateAreas.clear();
   Area::updateAreas.dealloc();
