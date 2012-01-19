@@ -79,6 +79,8 @@ class Mouse
     int   overEdgeX;
     int   overEdgeY;
 
+    float accelFactor;
+
     bool  leftClick;
     bool  rightClick;
     bool  middleClick;
@@ -86,8 +88,8 @@ class Mouse
     bool  wheelDown;
 
     bool  doShow;
-    bool  isGrabOn;
-    float accelFactor;
+    bool  isGrabbed;
+    bool  isJailed;
 
     int   icon;
 

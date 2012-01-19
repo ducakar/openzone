@@ -34,7 +34,8 @@ class VehicleAudio : public BasicAudio
 {
   protected:
 
-    explicit VehicleAudio( const Object* obj ) : BasicAudio( obj )
+    explicit VehicleAudio( const Object* obj ) :
+      BasicAudio( obj )
     {}
 
   public:

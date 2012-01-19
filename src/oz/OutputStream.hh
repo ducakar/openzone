@@ -60,7 +60,7 @@ class OutputStream
     OZ_ALWAYS_INLINE
     explicit OutputStream( char* start_, const char* end_,
                            Endian::Order order_ = Endian::NATIVE ) :
-        pos( start_ ), start( start_ ), end( end_ ), order( order_ )
+      pos( start_ ), start( start_ ), end( end_ ), order( order_ )
     {}
 
     /**

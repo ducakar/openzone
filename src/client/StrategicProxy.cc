@@ -45,7 +45,8 @@ const float StrategicProxy::RTS_LOW_SPEED   = 15.0f * Timer::TICK_TIME;
 const float StrategicProxy::RTS_HIGH_SPEED  = 45.0f * Timer::TICK_TIME;
 const float StrategicProxy::ZOOM_FACTOR     = 0.15f;
 
-StrategicProxy::StrategicProxy() : strategicArea( null ), height( DEFAULT_HEIGHT )
+StrategicProxy::StrategicProxy() :
+  strategicArea( null ), height( DEFAULT_HEIGHT )
 {}
 
 void StrategicProxy::begin()

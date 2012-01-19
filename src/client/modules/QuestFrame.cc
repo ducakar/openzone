@@ -131,11 +131,11 @@ void QuestFrame::onDraw()
 }
 
 QuestFrame::QuestFrame() :
-    Frame( 0, -8, 500, 0, OZ_GETTEXT( "Quests" ) ),
-    description( 6, 4, 488, 10, Font::SANS ),
-    lastState( Quest::PENDING ),
-    currentQuest( -1 ),
-    isOpened( false )
+  Frame( 0, -8, 500, 0, OZ_GETTEXT( "Quests" ) ),
+  description( 6, 4, 488, 10, Font::SANS ),
+  lastState( Quest::PENDING ),
+  currentQuest( -1 ),
+  isOpened( false )
 {
   contentHeight = 8 + 10 * font.INFOS[Font::SANS].height;
 

@@ -139,7 +139,8 @@ void Lua::writeVariable( BufferStream* ostream )
   }
 }
 
-Lua::Lua() : l( null )
+Lua::Lua() :
+  l( null )
 {}
 
 void Lua::staticCall( const char* functionName )

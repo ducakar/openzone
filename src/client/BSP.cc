@@ -109,7 +109,8 @@ void BSP::playContSound( const Struct::Entity* entity, int sound ) const
   OZ_AL_CHECK_ERROR();
 }
 
-BSP::BSP( const matrix::BSP* bsp_ ) : bsp( bsp_ ), flags( 0 ), isLoaded( false )
+BSP::BSP( const matrix::BSP* bsp_ ) :
+  bsp( bsp_ ), flags( 0 ), isLoaded( false )
 {
   for( int i = 0; i < bsp->sounds.length(); ++i ) {
     context.requestSound( bsp->sounds[i] );

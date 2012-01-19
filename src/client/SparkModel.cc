@@ -49,7 +49,8 @@ namespace client
 //    sparks[i].lifeTime = sparkGen->lifeTime;
 //  }
 //
-//  SparkGenRender::SparkGenRender( oz::SparkGen* sparkGen_ ) : sparkGen( sparkGen_ )
+//  SparkGenRender::SparkGenRender( oz::SparkGen* sparkGen_ ) :
+//    sparkGen( sparkGen_ )
 //  {
 //    sparks = new Spark[sparkGen->number];
 //    startMillis = float( timer.millis );
@@ -61,10 +62,10 @@ namespace client
 //  }
 //
 //  SparkGenRender::SparkGenRender( const SparkGenRender& sparkGenRender ) :
-//      sparkGen( sparkGenRender.sparkGen ),
-//      startMillis( sparkGenRender.startMillis ),
-//      sparksPerTick( sparkGenRender.sparksPerTick ),
-//      nSparks( sparkGenRender.nSparks )
+//    sparkGen( sparkGenRender.sparkGen ),
+//    startMillis( sparkGenRender.startMillis ),
+//    sparksPerTick( sparkGenRender.sparksPerTick ),
+//    nSparks( sparkGenRender.nSparks )
 //  {
 //    sparks = new Spark[nSparks];
 //    aCopy( sparks, sparkGenRender.sparks, nSparks );

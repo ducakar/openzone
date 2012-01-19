@@ -97,7 +97,7 @@ void Transform::apply() const
 const Shader::Light Shader::Light::NONE = Light( Point3::ORIGIN, Vec4::ZERO );
 
 Shader::Light::Light( const Point3& pos_, const Vec4& diffuse_ ) :
-    pos( pos_ ), diffuse( diffuse_ )
+  pos( pos_ ), diffuse( diffuse_ )
 {}
 
 void Shader::compileShader( uint id, const char* path, const char** sources, int* lengths ) const
@@ -216,7 +216,8 @@ void Shader::loadProgram( int id, const char** sources, int* lengths )
   log.printEnd( " OK" );
 }
 
-Shader::Shader() : mode( UI ), plain( -1 ), defaultMasks( 0 )
+Shader::Shader() :
+  mode( UI ), plain( -1 ), defaultMasks( 0 )
 {}
 
 void Shader::use( int id )

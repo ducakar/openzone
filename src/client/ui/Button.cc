@@ -69,9 +69,9 @@ void Button::onDraw()
 }
 
 Button::Button( const char* text, Callback* callback, int width, int height ) :
-    Area( width, height ),
-    label( width / 2, height / 2, ALIGN_CENTRE, Font::SANS, text ),
-    callback( callback ), isHighlighted( false ), isClicked( false )
+  Area( width, height ),
+  label( width / 2, height / 2, ALIGN_CENTRE, Font::SANS, text ),
+  callback( callback ), isHighlighted( false ), isClicked( false )
 {}
 
 void Button::setCallback( Callback* callback_ )

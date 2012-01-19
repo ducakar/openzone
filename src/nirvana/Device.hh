@@ -43,7 +43,8 @@ class Device
 
   protected:
 
-    explicit Device( int flags_ ) : flags( flags_ )
+    explicit Device( int flags_ ) :
+      flags( flags_ )
     {}
 
     virtual void onUse( const Bot* user );

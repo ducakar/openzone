@@ -122,8 +122,9 @@ void Context::removeObjSource( ContSource* contSource, int key )
   releaseSound( sound );
 }
 
-Context::Context() : imagoClasses( null ), audioClasses( null ),
-    textures( null ), sounds( null ), bsps( null ), smms( null ), md2s( null ), md3s( null )
+Context::Context() :
+  imagoClasses( null ), audioClasses( null ), textures( null ), sounds( null ), bsps( null ),
+  smms( null ), md2s( null ), md3s( null )
 {}
 
 uint Context::loadTexture( const char* path )

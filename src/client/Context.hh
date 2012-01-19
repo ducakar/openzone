@@ -74,7 +74,8 @@ class Context
       int     sound;
       Source* next[1];
 
-      explicit Source( uint sourceId, int sound_ ) : id( sourceId ), sound( sound_ )
+      explicit Source( uint sourceId, int sound_ ) :
+        id( sourceId ), sound( sound_ )
       {}
 
       static Pool<Source> pool;
@@ -89,7 +90,7 @@ class Context
       bool isUpdated;
 
       explicit ContSource( uint sourceId, int sound_ ) :
-          id( sourceId ), sound( sound_ ), isUpdated( true )
+        id( sourceId ), sound( sound_ ), isUpdated( true )
       {}
     };
 

@@ -72,7 +72,7 @@ void Dynamic::onDestroy()
 }
 
 Dynamic::Dynamic( const DynamicClass* clazz_, int index_, const Point3& p_, Heading heading ) :
-    Object( clazz_, index_, p_, heading )
+  Object( clazz_, index_, p_, heading )
 {
   velocity = Vec3::ZERO;
   momentum = Vec3::ZERO;
@@ -85,7 +85,7 @@ Dynamic::Dynamic( const DynamicClass* clazz_, int index_, const Point3& p_, Head
 }
 
 Dynamic::Dynamic( const DynamicClass* clazz_, InputStream* istream ) :
-    Object( clazz_, istream )
+  Object( clazz_, istream )
 {
   velocity = istream->readVec3();
   momentum = istream->readVec3();

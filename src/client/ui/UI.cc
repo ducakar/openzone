@@ -41,7 +41,7 @@ namespace ui
 UI ui;
 
 UI::UI() :
-    fpsLabel( null ), root( null ), loadingScreen( null ), buildMenu( null ), debugFrame( null )
+  fpsLabel( null ), root( null ), loadingScreen( null ), buildMenu( null ), debugFrame( null )
 {}
 
 void UI::showLoadingScreen( bool doShow )
@@ -187,7 +187,7 @@ void UI::init()
   loadingScreen = new LoadingArea();
 
   if( showFPS ) {
-    fpsLabel = new Label( -4, -4, Area::ALIGN_RIGHT | Area::ALIGN_TOP, Font::MONO, "" );
+    fpsLabel = new Label( -4, -4, Area::ALIGN_RIGHT | Area::ALIGN_TOP, Font::MONO, " " );
   }
 
   root->add( loadingScreen );

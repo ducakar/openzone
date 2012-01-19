@@ -66,7 +66,7 @@ class HashIndex
       template <typename Value_>
       OZ_ALWAYS_INLINE
       explicit Elem( int key_, Value_&& value_, Elem* next_ ) :
-          key( key_ ), value( static_cast<Value_&&>( value_ ) ), next( next_ )
+        key( key_ ), value( static_cast<Value_&&>( value_ ) ), next( next_ )
       {}
 
       OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
@@ -94,7 +94,8 @@ class HashIndex
         /**
          * %Iterator for the given container, points to its first element.
          */
-        explicit CIterator( const HashIndex& t ) : B( t.data[0] ), data( t.data ), index( 0 )
+        explicit CIterator( const HashIndex& t ) :
+          B( t.data[0] ), data( t.data ), index( 0 )
         {
           while( B::elem == null && index < SIZE - 1 ) {
             ++index;
@@ -108,7 +109,8 @@ class HashIndex
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        CIterator() : B( null )
+        CIterator() :
+          B( null )
         {}
 
         /**
@@ -192,7 +194,8 @@ class HashIndex
         /**
          * %Iterator for the given container, points to its first element.
          */
-        explicit Iterator( const HashIndex& t ) : B( t.data[0] ), data( t.data ), index( 0 )
+        explicit Iterator( const HashIndex& t ) :
+          B( t.data[0] ), data( t.data ), index( 0 )
         {
           while( B::elem == null && index < SIZE - 1 ) {
             ++index;
@@ -206,7 +209,8 @@ class HashIndex
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        Iterator() : B( null )
+        Iterator() :
+          B( null )
         {}
 
         /**
@@ -352,7 +356,8 @@ class HashIndex
     /**
      * Create an empty hashtable.
      */
-    HashIndex() : count( 0 )
+    HashIndex() :
+      count( 0 )
     {
       aSet<Elem*>( data, null, SIZE );
     }
@@ -369,7 +374,8 @@ class HashIndex
     /**
      * Copy constructor, copies elements and storage.
      */
-    HashIndex( const HashIndex& t ) : count( t.count )
+    HashIndex( const HashIndex& t ) :
+      count( t.count )
     {
       for( int i = 0; i < SIZE; ++i ) {
         data[i] = cloneChain( t.data[i] );
@@ -380,7 +386,7 @@ class HashIndex
      * Move constructor, moves storage.
      */
     HashIndex( HashIndex&& t ) :
-        pool( static_cast< Pool<Elem, SIZE>&& >( t.pool ) ), count( t.count )
+      pool( static_cast< Pool<Elem, SIZE>&& >( t.pool ) ), count( t.count )
     {
       aCopy( data, t.data, SIZE );
 

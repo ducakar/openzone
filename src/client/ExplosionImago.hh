@@ -40,7 +40,8 @@ class ExplosionImago : public Imago
     SMM* smm;
     uint startMillis;
 
-    explicit ExplosionImago( const Object* obj ) : Imago( obj )
+    explicit ExplosionImago( const Object* obj ) :
+      Imago( obj )
     {}
 
     virtual ~ExplosionImago();

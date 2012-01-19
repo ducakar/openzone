@@ -143,9 +143,9 @@ galileoEnabled:;
 }
 
 GalileoFrame::GalileoFrame() :
-    Frame( 8, -60 - Font::INFOS[Font::SMALL].height - Font::INFOS[Font::LARGE].height,
-           240, 232 - Font::INFOS[Font::LARGE].height, "" ),
-    mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ), isVisible( true )
+  Frame( 8, -60 - Font::INFOS[Font::SMALL].height - Font::INFOS[Font::LARGE].height,
+         240, 232 - Font::INFOS[Font::LARGE].height, "" ),
+  mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ), isVisible( true )
 
 {
   flags = PINNED_BIT;

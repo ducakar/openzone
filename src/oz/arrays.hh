@@ -71,7 +71,8 @@ class CIterator : public CIteratorBase<Elem>
      * @param past_ successor of the last element in an array.
      */
     OZ_ALWAYS_INLINE
-    explicit CIterator( const Elem* start, const Elem* past_ ) : B( start ), past( past_ )
+    explicit CIterator( const Elem* start, const Elem* past_ ) :
+      B( start ), past( past_ )
     {}
 
   public:
@@ -80,7 +81,8 @@ class CIterator : public CIteratorBase<Elem>
      * Default constructor, creates an invalid iterator.
      */
     OZ_ALWAYS_INLINE
-    CIterator() : B( null ), past( null )
+    CIterator() :
+      B( null ), past( null )
     {}
 
     /**
@@ -141,7 +143,8 @@ class Iterator : public IteratorBase<Elem>
      * @param past_ successor of the last element in an array.
      */
     OZ_ALWAYS_INLINE
-    explicit Iterator( Elem* start, const Elem* past_ ) : B( start ), past( past_ )
+    explicit Iterator( Elem* start, const Elem* past_ ) :
+      B( start ), past( past_ )
     {}
 
   public:
@@ -150,7 +153,8 @@ class Iterator : public IteratorBase<Elem>
      * Default constructor, creates an invalid iterator.
      */
     OZ_ALWAYS_INLINE
-    Iterator() : B( null ), past( null )
+    Iterator() :
+      B( null ), past( null )
     {}
 
     /**

@@ -128,7 +128,8 @@ void Mesh::reset()
   lastMesh = null;
 }
 
-Mesh::Mesh() : vao( 0 ), parts( null )
+Mesh::Mesh() :
+  vao( 0 ), parts( null )
 {}
 
 Mesh::~Mesh()

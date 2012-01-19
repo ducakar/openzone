@@ -68,7 +68,8 @@ class CIteratorBase
      * Create an iterator that points to the given element.
      */
     OZ_ALWAYS_INLINE
-    explicit CIteratorBase( const Elem* start ) : elem( start )
+    explicit CIteratorBase( const Elem* start ) :
+      elem( start )
     {}
 
   public:
@@ -150,7 +151,8 @@ class IteratorBase
      * Create an iterator that points to the given element.
      */
     OZ_ALWAYS_INLINE
-    explicit IteratorBase( Elem* start ) : elem( start )
+    explicit IteratorBase( Elem* start ) :
+      elem( start )
     {}
 
   public:

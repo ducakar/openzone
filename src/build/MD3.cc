@@ -423,7 +423,8 @@ void MD3::save()
   }
 }
 
-MD3::MD3( const char* path ) : sPath( path )
+MD3::MD3( const char* path ) :
+  sPath( path )
 {}
 
 void MD3::build( const char* path )

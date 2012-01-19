@@ -58,7 +58,8 @@ bool String::endsWith( const char* s, const char* sub )
   return subEnd < sub;
 }
 
-inline String::String( int count_, int ) : count( count_ )
+inline String::String( int count_, int ) :
+  count( count_ )
 {
   ensureCapacity();
 }
@@ -74,13 +75,15 @@ void String::dealloc()
   free( buffer );
 }
 
-String::String( const String& s ) : count( s.count )
+String::String( const String& s ) :
+  count( s.count )
 {
   ensureCapacity();
   aCopy( buffer, s.buffer, count + 1 );
 }
 
-String::String( String&& s ) : count( s.count )
+String::String( String&& s ) :
+  count( s.count )
 {
   if( s.buffer != s.baseBuffer ) {
     buffer = s.buffer;
@@ -141,7 +144,8 @@ String& String::operator = ( String&& s )
   return *this;
 }
 
-String::String( int count_, const char* s ) : count( count_ )
+String::String( int count_, const char* s ) :
+  count( count_ )
 {
   hard_assert( s != null && count >= 0 );
 
@@ -168,7 +172,8 @@ String::String( const char* s )
   hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
 }
 
-String::String( bool b ) : buffer( baseBuffer )
+String::String( bool b ) :
+  buffer( baseBuffer )
 {
   // Protection against too small buffers.
   static_assert( BUFFER_SIZE >= 6, "String::BUFFER_SIZE too small for bool representation" );
@@ -194,7 +199,8 @@ String::String( bool b ) : buffer( baseBuffer )
   }
 }
 
-String::String( int i ) : buffer( baseBuffer )
+String::String( int i ) :
+  buffer( baseBuffer )
 {
   // That should assure enough space, since log10( 2^( 8*sizeof( int ) ) ) <= 3*sizeof( int ), +2
   // for sign and terminating null char.
@@ -204,7 +210,8 @@ String::String( int i ) : buffer( baseBuffer )
   count = snprintf( baseBuffer, BUFFER_SIZE, "%d", i );
 }
 
-String::String( float f ) : buffer( baseBuffer )
+String::String( float f ) :
+  buffer( baseBuffer )
 {
   // Worst case: sign + 8 digits + dot + exponent (at most e-xx) + optional '.0' + '\0'.
   static_assert( BUFFER_SIZE >= 17,
@@ -213,7 +220,8 @@ String::String( float f ) : buffer( baseBuffer )
   count = snprintf( baseBuffer, BUFFER_SIZE, "%#.8g", f );
 }
 
-String::String( double d ) : buffer( baseBuffer )
+String::String( double d ) :
+  buffer( baseBuffer )
 {
   // Worst case: sign + 16 digits + dot + exponent (at most e-xxx) + optional '.0' + '\0'.
   static_assert( BUFFER_SIZE >= 26,

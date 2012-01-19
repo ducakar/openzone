@@ -38,7 +38,8 @@ namespace client
 
 const float FragPool::FRAG_RADIUS = 1.0f;
 
-FragPool::FragPool( const matrix::FragPool* pool_ ) : pool( pool_ ), flags( pool_->flags )
+FragPool::FragPool( const matrix::FragPool* pool_ ) :
+  pool( pool_ ), flags( pool_->flags )
 {
   log.print( "Loading FragPool '%s' ...", pool->name.cstr() );
 

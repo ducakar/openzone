@@ -64,7 +64,7 @@ class Mat44
      */
     OZ_ALWAYS_INLINE
     explicit Mat44( const Vec4& a, const Vec4& b, const Vec4& c, const Vec4& d ) :
-        x( a ), y( b ), z( c ), w( d )
+      x( a ), y( b ), z( c ), w( d )
     {}
 
     /**
@@ -73,7 +73,7 @@ class Mat44
      */
     OZ_ALWAYS_INLINE
     explicit Mat44( const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d ) :
-        x( a, 0.0f ), y( b, 0.0f ), z( c, 0.0f ), w( d, 1.0f )
+      x( a, 0.0f ), y( b, 0.0f ), z( c, 0.0f ), w( d, 1.0f )
     {}
 
     /**
@@ -84,17 +84,18 @@ class Mat44
                     float yx, float yy, float yz, float yw,
                     float zx, float zy, float zz, float zw,
                     float wx, float wy, float wz, float ww ) :
-        x( xx, xy, xz, xw ),
-        y( yx, yy, yz, yw ),
-        z( zx, zy, zz, zw ),
-        w( wx, wy, wz, ww )
+      x( xx, xy, xz, xw ),
+      y( yx, yy, yz, yw ),
+      z( zx, zy, zz, zw ),
+      w( wx, wy, wz, ww )
     {}
 
     /**
      * Create matrix from an array of 16 floats.
      */
     OZ_ALWAYS_INLINE
-    explicit Mat44( const float* v ) : x( &v[0] ), y( &v[4] ), z( &v[8] ), w( &v[12] )
+    explicit Mat44( const float* v ) :
+      x( &v[0] ), y( &v[4] ), z( &v[8] ), w( &v[12] )
     {}
 
     /**

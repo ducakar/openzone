@@ -87,7 +87,8 @@ class List
          * %Iterator for the given container, points to the first element.
          */
         OZ_ALWAYS_INLINE
-        explicit CIterator( const List& l ) : B( l.firstElem )
+        explicit CIterator( const List& l ) :
+          B( l.firstElem )
         {}
 
       public:
@@ -96,7 +97,8 @@ class List
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        CIterator() : B( null )
+        CIterator() :
+          B( null )
         {}
 
         /**
@@ -131,7 +133,8 @@ class List
          * %Iterator for the given container, points to the first element.
          */
         OZ_ALWAYS_INLINE
-        explicit Iterator( const List& l ) : B( l.firstElem )
+        explicit Iterator( const List& l ) :
+          B( l.firstElem )
         {}
 
       public:
@@ -140,7 +143,8 @@ class List
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        Iterator() : B( null )
+        Iterator() :
+          B( null )
         {}
 
         /**
@@ -166,7 +170,8 @@ class List
     /**
      * Create an empty list.
      */
-    List() : firstElem( null )
+    List() :
+      firstElem( null )
     {}
 
     /**

@@ -71,7 +71,8 @@ class Vector
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
-        explicit CIterator( const Vector& v ) : B( v.data, v.data + v.count )
+        explicit CIterator( const Vector& v ) :
+          B( v.data, v.data + v.count )
         {}
 
       public:
@@ -80,7 +81,8 @@ class Vector
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        CIterator() : B( null, null )
+        CIterator() :
+          B( null, null )
         {}
 
     };
@@ -103,7 +105,8 @@ class Vector
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
-        explicit Iterator( const Vector& v ) : B( v.data, v.data + v.count )
+        explicit Iterator( const Vector& v ) :
+          B( v.data, v.data + v.count )
         {}
 
       public:
@@ -112,7 +115,8 @@ class Vector
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        Iterator() : B( null, null )
+        Iterator() :
+          B( null, null )
         {}
 
     };
@@ -151,7 +155,8 @@ class Vector
     /**
      * Create an empty vector.
      */
-    Vector() : data( null ), size( 0 ), count( 0 )
+    Vector() :
+      data( null ), size( 0 ), count( 0 )
     {}
 
     /**
@@ -166,7 +171,7 @@ class Vector
      * Copy constructor, copies elements.
      */
     Vector( const Vector& v ) :
-        data( v.size == 0 ? null : new Elem[v.size] ), size( v.size ), count( v.count )
+      data( v.size == 0 ? null : new Elem[v.size] ), size( v.size ), count( v.count )
     {
       aCopy( data, v.data, v.count );
     }
@@ -174,7 +179,8 @@ class Vector
     /**
      * Move constructor, moves element storage.
      */
-    Vector( Vector&& v ) : data( v.data ), size( v.size ), count( v.count )
+    Vector( Vector&& v ) :
+      data( v.data ), size( v.size ), count( v.count )
     {
       v.data  = null;
       v.size  = 0;
@@ -230,7 +236,8 @@ class Vector
     /**
      * Create an empty vector with the given initial capacity.
      */
-    explicit Vector( int size_ ) : data( new Elem[size_] ), size( size_ ), count( 0 )
+    explicit Vector( int size_ ) :
+      data( new Elem[size_] ), size( size_ ), count( 0 )
     {}
 
     /**

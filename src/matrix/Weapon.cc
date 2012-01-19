@@ -109,14 +109,14 @@ void Weapon::trigger( Bot* user )
 }
 
 Weapon::Weapon( const WeaponClass* clazz_, int index_, const Point3& p_, Heading heading ) :
-    Dynamic( clazz_, index_, p_, heading )
+  Dynamic( clazz_, index_, p_, heading )
 {
   nRounds  = clazz_->nRounds;
   shotTime = 0.0f;
 }
 
 Weapon::Weapon( const WeaponClass* clazz_, InputStream* istream ) :
-    Dynamic( clazz_, istream )
+  Dynamic( clazz_, istream )
 {
   nRounds  = istream->readInt();
   shotTime = istream->readFloat();

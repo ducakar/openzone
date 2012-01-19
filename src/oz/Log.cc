@@ -41,7 +41,8 @@ namespace oz
 
 Log log;
 
-Log::Log() : fileStream( null ), tabs( 0 ), isVerbose( false ), verboseMode( false )
+Log::Log() :
+  fileStream( null ), tabs( 0 ), isVerbose( false ), verboseMode( false )
 {}
 
 Log::~Log()

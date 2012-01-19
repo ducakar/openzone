@@ -51,7 +51,7 @@ namespace ui
 char Text::buffer[2048];
 
 Text::Text( int x_, int y_, int width_, int nLines_, Font::Type font_ ) :
-    x( x_ ), y( y_ ), width( width_ ), nLines( nLines_ ), font( ui::font.fonts[font_] )
+  x( x_ ), y( y_ ), width( width_ ), nLines( nLines_ ), font( ui::font.fonts[font_] )
 {
   labels = new Label[nLines];
 

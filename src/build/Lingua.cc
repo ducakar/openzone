@@ -78,7 +78,7 @@ void Lingua::buildCatalogue( const char* lang, const char* category, const char*
                              srcFile.path().cstr(), lineNum, line[i] );
           }
         }
-        strcpy( line + i, line + i + 1 );
+        memmove( line + i, line + i + 1, size_t( 1024 - i - 1 ) );
       }
     }
 

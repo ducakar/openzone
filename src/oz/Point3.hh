@@ -59,14 +59,16 @@ class Point3
      * Create a point with the given coordinates.
      */
     OZ_ALWAYS_INLINE
-    explicit Point3( float x_, float y_, float z_ ) : x( x_ ), y( y_ ), z( z_ )
+    explicit Point3( float x_, float y_, float z_ ) :
+      x( x_ ), y( y_ ), z( z_ )
     {}
 
     /**
      * Create from an array of 3 floats.
      */
     OZ_ALWAYS_INLINE
-    explicit Point3( const float* v ) : x( v[0] ), y( v[1] ), z( v[2] )
+    explicit Point3( const float* v ) :
+      x( v[0] ), y( v[1] ), z( v[2] )
     {}
 
     /**

@@ -358,7 +358,7 @@ void StrategicArea::onDraw()
 }
 
 StrategicArea::StrategicArea() :
-    Area( Area::uiWidth, Area::uiHeight ), hoverStr( -1 ), hoverObj( -1 )
+  Area( Area::uiWidth, Area::uiHeight ), hoverStr( -1 ), hoverObj( -1 )
 {
   flags = UPDATE_BIT | PINNED_BIT;
 

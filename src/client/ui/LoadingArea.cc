@@ -35,8 +35,9 @@ namespace client
 namespace ui
 {
 
-LoadingArea::LoadingArea() : Area( Area::uiWidth, Area::uiHeight ),
-    status( width / 2, height / 5, ALIGN_CENTRE, Font::LARGE, " " )
+LoadingArea::LoadingArea() :
+  Area( Area::uiWidth, Area::uiHeight ),
+  status( width / 2, height / 5, ALIGN_CENTRE, Font::LARGE, " " )
 {
   flags = PINNED_BIT;
 }

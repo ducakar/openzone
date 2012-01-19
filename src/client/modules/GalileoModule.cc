@@ -39,7 +39,8 @@ namespace client
 
 GalileoModule galileoModule;
 
-GalileoModule::GalileoModule() : galileoFrame( null )
+GalileoModule::GalileoModule() :
+  galileoFrame( null )
 {}
 
 void GalileoModule::load()

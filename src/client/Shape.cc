@@ -161,7 +161,8 @@ const ushort Shape::INDICES[46] = {
   32 + 7
 };
 
-Shape::Shape() : vao( 0 ), vbo( 0 ), ibo( 0 )
+Shape::Shape() :
+  vao( 0 ), vbo( 0 ), ibo( 0 )
 {}
 
 void Shape::bindVertexArray() const

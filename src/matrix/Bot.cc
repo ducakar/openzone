@@ -861,7 +861,7 @@ void Bot::exit()
 }
 
 Bot::Bot(  const BotClass* clazz_, int index, const Point3& p_, Heading heading ) :
-    Dynamic( clazz_, index, p_, heading )
+  Dynamic( clazz_, index, p_, heading )
 {
   h          = float( heading ) * Math::TAU / 4.0f;
   v          = Math::TAU / 4.0f;
@@ -884,7 +884,7 @@ Bot::Bot(  const BotClass* clazz_, int index, const Point3& p_, Heading heading 
 }
 
 Bot::Bot( const BotClass* clazz_, InputStream* istream ) :
-    Dynamic( clazz_, istream )
+  Dynamic( clazz_, istream )
 {
   dim        = istream->readVec3();
 

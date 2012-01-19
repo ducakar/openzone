@@ -64,8 +64,8 @@ class HashString
       template <typename Key_, typename Value_>
       OZ_ALWAYS_INLINE
       explicit Elem( Key_&& key_, Value_&& value_, Elem* next_ ) :
-          key( static_cast<Key_&&>( key_ ) ), value( static_cast<Value_&&>( value_ ) ),
-          next( next_ )
+        key( static_cast<Key_&&>( key_ ) ), value( static_cast<Value_&&>( value_ ) ),
+        next( next_ )
       {}
 
       OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
@@ -93,7 +93,8 @@ class HashString
         /**
          * %Iterator for the given container, points to its first element.
          */
-        explicit CIterator( const HashString& t ) : B( t.data[0] ), data( t.data ), index( 0 )
+        explicit CIterator( const HashString& t ) :
+          B( t.data[0] ), data( t.data ), index( 0 )
         {
           while( B::elem == null && index < SIZE - 1 ) {
             ++index;
@@ -107,7 +108,8 @@ class HashString
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        CIterator() : B( null )
+        CIterator() :
+          B( null )
         {}
 
         /**
@@ -200,7 +202,8 @@ class HashString
         /**
          * %Iterator for the given container, points to its first element.
          */
-        explicit Iterator( const HashString& t ) : B( t.data[0] ), data( t.data ), index( 0 )
+        explicit Iterator( const HashString& t ) :
+          B( t.data[0] ), data( t.data ), index( 0 )
         {
           while( B::elem == null && index < SIZE - 1 ) {
             ++index;
@@ -214,7 +217,8 @@ class HashString
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        Iterator() : B( null )
+        Iterator() :
+          B( null )
         {}
 
         /**
@@ -369,7 +373,8 @@ class HashString
     /**
      * Create an empty hashtable.
      */
-    HashString() : count( 0 )
+    HashString() :
+      count( 0 )
     {
       aSet<Elem*>( data, null, SIZE );
     }
@@ -386,7 +391,8 @@ class HashString
     /**
      * Copy constructor, copies elements and storage.
      */
-    HashString( const HashString& t ) : count( t.count )
+    HashString( const HashString& t ) :
+      count( t.count )
     {
       for( int i = 0; i < SIZE; ++i ) {
         data[i] = cloneChain( t.data[i] );
@@ -397,7 +403,7 @@ class HashString
      * Move constructor, moves storage.
      */
     HashString( HashString&& t ) :
-        pool( static_cast< Pool<Elem, SIZE>&& >( t.pool ) ), count( t.count )
+      pool( static_cast< Pool<Elem, SIZE>&& >( t.pool ) ), count( t.count )
     {
       aCopy( data, t.data, SIZE );
 

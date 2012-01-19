@@ -32,7 +32,8 @@ namespace oz
 namespace matrix
 {
 
-BSP::BSP( const char* name_, int id_ ) : name( name_ ), id( id_ )
+BSP::BSP( const char* name_, int id_ ) :
+  name( name_ ), id( id_ )
 {
   life         = 0.0f;
   resistance   = 0.0f;

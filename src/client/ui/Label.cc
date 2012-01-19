@@ -40,8 +40,9 @@ namespace client
 namespace ui
 {
 
-Label::Label() : x( 0 ), y( 0 ), align( Area::ALIGN_NONE ), font( Font::MONO ),
-    offsetX( 0 ), offsetY( 0 ), width( 0 ), height( 0 ), activeTexId( 0 ), hasChanged( false )
+Label::Label() :
+  x( 0 ), y( 0 ), align( Area::ALIGN_NONE ), font( Font::MONO ), offsetX( 0 ), offsetY( 0 ),
+  width( 0 ), height( 0 ), activeTexId( 0 ), hasChanged( false )
 {
   glGenTextures( 2, texIds );
 
@@ -60,7 +61,7 @@ Label::~Label()
 }
 
 Label::Label( int x, int y, int align, Font::Type font, const char* s, ... ) :
-    offsetX( 0 ), offsetY( 0 ), activeTexId( 0 )
+  offsetX( 0 ), offsetY( 0 ), activeTexId( 0 )
 {
   glGenTextures( 2, texIds );
 

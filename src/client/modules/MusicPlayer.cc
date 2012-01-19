@@ -182,11 +182,11 @@ void MusicPlayer::onDraw()
 }
 
 MusicPlayer::MusicPlayer() :
-    Frame( 8, -8, 240, 36 + Font::INFOS[Font::SMALL].height, OZ_GETTEXT( "Music Player" ) ),
-    title( width / 2, 32, ALIGN_HCENTRE, Font::SMALL, " " ),
-    trackLabel( 39, 14, ALIGN_CENTRE, Font::SMALL, "0" ),
-    volumeLabel( 201, 14, ALIGN_CENTRE, Font::SMALL, " " ),
-    currentTrack( 0 ), isPlaying( false ), isVisible( true )
+  Frame( 8, -8, 240, 36 + Font::INFOS[Font::SMALL].height, OZ_GETTEXT( "Music Player" ) ),
+  title( width / 2, 32, ALIGN_HCENTRE, Font::SMALL, " " ),
+  trackLabel( 39, 14, ALIGN_CENTRE, Font::SMALL, "0" ),
+  volumeLabel( 201, 14, ALIGN_CENTRE, Font::SMALL, " " ),
+  currentTrack( 0 ), isPlaying( false ), isVisible( true )
 {
   flags = UPDATE_BIT | PINNED_BIT;
 

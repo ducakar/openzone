@@ -37,7 +37,8 @@ namespace client
 
 Pool<BotAudio, 256> BotAudio::pool;
 
-BotAudio::BotAudio( const Object* obj ) : BasicAudio( obj )
+BotAudio::BotAudio( const Object* obj ) :
+  BasicAudio( obj )
 {}
 
 Audio* BotAudio::create( const Object* obj )

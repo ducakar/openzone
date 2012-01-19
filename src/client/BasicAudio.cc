@@ -36,7 +36,8 @@ namespace client
 
 Pool<BasicAudio, 2048> BasicAudio::pool;
 
-BasicAudio::BasicAudio( const Object* obj ) : Audio( obj )
+BasicAudio::BasicAudio( const Object* obj ) :
+  Audio( obj )
 {
   aSet( recent, 0, ObjectClass::MAX_SOUNDS );
 }

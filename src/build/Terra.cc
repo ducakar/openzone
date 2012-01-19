@@ -256,7 +256,8 @@ void Terra::saveClient()
   log.println( "}" );
 }
 
-Terra::Terra( const char* name_ ) : name( name_ )
+Terra::Terra( const char* name_ ) :
+  name( name_ )
 {}
 
 void Terra::build( const char* name )

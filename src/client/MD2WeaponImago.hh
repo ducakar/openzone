@@ -34,7 +34,8 @@ class MD2WeaponImago : public MD2Imago
 {
   protected:
 
-    explicit MD2WeaponImago( const Object* obj ) : MD2Imago( obj )
+    explicit MD2WeaponImago( const Object* obj ) :
+      MD2Imago( obj )
     {}
 
   public:

@@ -418,7 +418,8 @@ void OBJ::save()
   log.printEnd( " OK" );
 }
 
-OBJ::OBJ( const char* path_ ) : path( path_ )
+OBJ::OBJ( const char* path_ ) :
+  path( path_ )
 {}
 
 void OBJ::build( const char* path )

@@ -63,21 +63,24 @@ class Quat
      * Create a quaternion with the given components.
      */
     OZ_ALWAYS_INLINE
-    explicit Quat( float x_, float y_, float z_, float w_ ) : x( x_ ), y( y_ ), z( z_ ), w( w_ )
+    explicit Quat( float x_, float y_, float z_, float w_ ) :
+      x( x_ ), y( y_ ), z( z_ ), w( w_ )
     {}
 
     /**
      * Create from an array of 4 floats.
      */
     OZ_ALWAYS_INLINE
-    explicit Quat( const float* q ) : x( q[0] ), y( q[1] ), z( q[2] ), w( q[3] )
+    explicit Quat( const float* q ) :
+      x( q[0] ), y( q[1] ), z( q[2] ), w( q[3] )
     {}
 
     /**
      * Create quaternion from a four-component vector.
      */
     OZ_ALWAYS_INLINE
-    explicit Quat( const Vec4& v ) : x( v.x ), y( v.y ), z( v.z ), w( v.w )
+    explicit Quat( const Vec4& v ) :
+      x( v.x ), y( v.y ), z( v.z ), w( v.w )
     {}
 
     /**
