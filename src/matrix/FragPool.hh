@@ -34,12 +34,9 @@ class Frag;
 
 class FragPool
 {
-
-  private:
+  public:
 
     static const int MAX_MODELS = 100;
-
-  public:
 
     // OR'ed to the client::FragPoo::flags, so we must assure bits don't overlap
     static const int FADEOUT_BIT = 0x0100;

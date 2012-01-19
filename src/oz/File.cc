@@ -378,6 +378,15 @@ bool File::write( const BufferStream* bstream ) const
   return write( bstream->begin(), bstream->length() );
 }
 
+bool File::unlink( const char* path )
+{
+#ifdef _WIN32
+  return DeleteFile( path ) != 0;
+#else
+  return ::unlink( path ) == 0;
+#endif
+}
+
 String File::cwd()
 {
   char buffer[256];
@@ -406,6 +415,15 @@ bool File::mkdir( const char* path, uint mode )
   return CreateDirectory( path, null ) != 0;
 #else
   return ::mkdir( path, mode ) == 0;
+#endif
+}
+
+bool File::rmdir( const char* path )
+{
+#ifdef _WIN32
+  return DeleteDirectory( path ) != 0;
+#else
+  return ::rmdir( path ) == 0;
 #endif
 }
 

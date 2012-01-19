@@ -23,8 +23,6 @@
 
 #pragma once
 
-#include "matrix/Library.hh"
-
 #include "build/common.hh"
 #include "client/Mesh.hh"
 

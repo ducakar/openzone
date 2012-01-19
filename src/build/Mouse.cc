@@ -62,15 +62,15 @@ void Mouse::build()
 
     fclose( fs );
 
-    uint texId = Context::loadRawTexture( String::str( "ui/cur/%s", imgPath ),
-                                          false, GL_LINEAR, GL_LINEAR );
+    uint texId = context.loadRawTexture( String::str( "ui/cur/%s", imgPath ), false,
+                                         GL_LINEAR, GL_LINEAR );
 
     BufferStream os;
 
     os.writeInt( size );
     os.writeInt( hotspotX );
     os.writeInt( hotspotY );
-    Context::writeTexture( texId, &os );
+    context.writeTexture( texId, &os );
 
     glDeleteTextures( 1, &texId );
 

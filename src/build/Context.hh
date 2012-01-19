@@ -39,18 +39,27 @@ class Context
     static const int DEFAULT_MAG_FILTER = GL_LINEAR;
     static const int DEFAULT_MIN_FILTER = GL_LINEAR_MIPMAP_LINEAR;
 
-    static bool useS3TC;
+    HashString<> usedTextures;
+    HashString<> usedSounds;
+    HashString<> usedModels;
 
-    static uint buildTexture( const void* data, int width, int height, int format, bool wrap,
-                              int magFilter, int minFilter );
+    bool useS3TC;
 
-    static uint loadRawTexture( const char* path, bool wrap = true,
-                                int magFilter = DEFAULT_MAG_FILTER,
-                                int minFilter = DEFAULT_MIN_FILTER );
+    uint buildTexture( const void* data, int width, int height, int format, bool wrap,
+                       int magFilter, int minFilter );
 
-    static void writeTexture( uint id, BufferStream* stream );
+    uint loadRawTexture( const char* path, bool wrap = true,
+                         int magFilter = DEFAULT_MAG_FILTER,
+                         int minFilter = DEFAULT_MIN_FILTER );
+
+    void writeTexture( uint id, BufferStream* stream );
+
+    void init();
+    void free();
 
 };
+
+extern Context context;
 
 }
 }

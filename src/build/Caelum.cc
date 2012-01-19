@@ -43,9 +43,7 @@ void Caelum::build( const char* name )
   log.println( "Prebuilding Caelum '%s' {", name );
   log.indent();
 
-  File::mkdir( "caelum" );
-
-  String destPath = String::str( "caelum/%s.ozcCaelum", name );
+  File destFile( String::str( "caelum/%s.ozcCaelum", name ) );
 
   BufferStream os;
 
@@ -85,16 +83,20 @@ void Caelum::build( const char* name )
     vertex[3].write( &os );
   }
 
-  uint texId = Context::loadRawTexture( "caelum/sun.png", false );
-  Context::writeTexture( texId, &os );
+  uint texId = context.loadRawTexture( "caelum/sun.png", false );
+  context.writeTexture( texId, &os );
   glDeleteTextures( 1, &texId );
 
-  texId = Context::loadRawTexture( "caelum/moon.png", false );
-  Context::writeTexture( texId, &os );
+  texId = context.loadRawTexture( "caelum/moon.png", false );
+  context.writeTexture( texId, &os );
   glDeleteTextures( 1, &texId );
 
-  log.print( "Dumping into '%s' ...", destPath.cstr() );
-  File( destPath ).write( &os );
+  log.print( "Dumping into '%s' ...", destFile.path().cstr() );
+
+  if( !destFile.write( &os ) ) {
+    throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+  }
+
   log.printEnd( " OK" );
 
   OZ_GL_CHECK_ERROR();

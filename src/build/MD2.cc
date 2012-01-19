@@ -207,6 +207,7 @@ const Vec3 MD2::NORMALS[] =
 void MD2::build( const char* path )
 {
   String sPath = path;
+
   PhysFile modelFile( sPath + "/tris.md2" );
   PhysFile skinFile0( sPath + "/skin.png" );
   PhysFile skinFile1( sPath + "/skin.jpg" );
@@ -220,10 +221,10 @@ void MD2::build( const char* path )
   Config config;
   config.load( configFile );
 
-  PhysFile& skinFile  = skinFile0.getType()  == PhysFile::MISSING ? skinFile1  : skinFile0;
-  PhysFile& masksFile = masksFile0.getType() == PhysFile::MISSING ? masksFile1 : masksFile0;
+  PhysFile& skinFile  = skinFile0.getType()  == File::MISSING ? skinFile1  : skinFile0;
+  PhysFile& masksFile = masksFile0.getType() == File::MISSING ? masksFile1 : masksFile0;
 
-  bool hasMasks = masksFile.getType() != PhysFile::MISSING;
+  bool hasMasks = masksFile.getType() != File::MISSING;
 
   if( !modelFile.map() ) {
     throw Exception( "MD2 reading failed" );
@@ -399,8 +400,6 @@ void MD2::build( const char* path )
 
   int nFrameVertices = mesh.vertices.length();
 
-  library.shaderIndex( shaderName );
-
   if( nFrameVertices > client::MD2::MAX_VERTS ) {
     throw Exception( "MD2 model has too many vertices" );
   }
@@ -444,13 +443,25 @@ void MD2::build( const char* path )
   mesh.write( &os );
 
   if( header.nFrames != 1 ) {
-    log.print( "Writing to '%s' ...", ( sPath + ".ozcMD2" ).cstr() );
-    File( sPath + ".ozcMD2" ).write( &os );
+    File destFile( sPath + ".ozcMD2" );
+
+    log.print( "Writing to '%s' ...", destFile.path().cstr() );
+
+    if( !destFile.write( &os ) ) {
+      throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+    }
+
     log.printEnd( " OK" );
   }
   else {
-    log.print( "Writing to '%s' ...", ( sPath + ".ozcSMM" ).cstr() );
-    File( sPath + ".ozcSMM" ).write( &os );
+    File destFile( sPath + ".ozcSMM" );
+
+    log.print( "Writing to '%s' ...", destFile.path().cstr() );
+
+    if( !destFile.write( &os ) ) {
+      throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+    }
+
     log.printEnd( " OK" );
   }
 

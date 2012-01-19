@@ -200,14 +200,14 @@ void Library::initShaders()
 
 void Library::initTextures()
 {
-  log.println( "Textures (*.ozcTex in 'bsp/*') {" );
+  log.println( "Textures (*.ozcTex in 'tex/*') {" );
   log.indent();
 
-  PhysFile dir( "bsp" );
+  PhysFile dir( "tex" );
   DArray<PhysFile> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
-    if( file->getType() != PhysFile::DIRECTORY ) {
+    if( file->getType() != File::DIRECTORY ) {
       continue;
     }
 
@@ -241,7 +241,7 @@ void Library::initSounds()
   DArray<PhysFile> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
-    if( file->getType() != PhysFile::DIRECTORY ) {
+    if( file->getType() != File::DIRECTORY ) {
       continue;
     }
 
@@ -382,7 +382,7 @@ void Library::initMusicRecurse( const char* path )
   DArray<PhysFile> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
-    if( file->getType() == PhysFile::DIRECTORY ) {
+    if( file->getType() == File::DIRECTORY ) {
       initMusicRecurse( file->path() );
     }
     if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) &&
@@ -711,12 +711,12 @@ void Library::free()
   audioIndices.clear();
   audioIndices.dealloc();
 
+  bsps.clear();
+  bsps.dealloc();
   baseClasses.clear();
   baseClasses.dealloc();
   objClasses.free();
   objClasses.dealloc();
-  bsps.clear();
-  bsps.dealloc();
   fragPools.clear();
   fragPools.dealloc();
 }

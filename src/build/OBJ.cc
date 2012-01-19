@@ -301,9 +301,9 @@ void OBJ::load()
 
   config.clear( true );
 
-  loadMaterials( path );
+  loadMaterials( modelFile.mountPoint() + "/" + path );
 
-  FILE* fs = fopen( modelFile.path().cstr(), "r" );
+  FILE* fs = fopen( modelFile.realPath().cstr(), "r" );
   if( fs == null ) {
     throw Exception( "Cannot open OBJ data.obj file" );
   }
@@ -368,7 +368,7 @@ void OBJ::load()
 
 void OBJ::save()
 {
-  String destPath = path + ".ozcSMM";
+  File destFile( path + ".ozcSMM" );
 
   compiler.beginMesh();
   compiler.enable( CAP_UNIQUE );
@@ -409,8 +409,12 @@ void OBJ::save()
   os.writeString( shader );
   mesh.write( &os );
 
-  log.print( "Writing to '%s' ...", destPath.cstr() );
-  File( destPath ).write( &os );
+  log.print( "Writing to '%s' ...", destFile.path().cstr() );
+
+  if( !destFile.write( &os ) ) {
+    throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+  }
+
   log.printEnd( " OK" );
 }
 

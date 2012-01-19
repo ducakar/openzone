@@ -46,7 +46,7 @@ namespace oz
 namespace build
 {
 
-bool Context::useS3TC = false;
+Context context;
 
 uint Context::buildTexture( const void* data, int width, int height, int format, bool wrap,
                             int magFilter, int minFilter )
@@ -292,6 +292,19 @@ void Context::writeTexture( uint id, BufferStream* stream )
   glDeleteTextures( 1, &id );
 
   OZ_GL_CHECK_ERROR();
+}
+
+void Context::init()
+{}
+
+void Context::free()
+{
+  usedTextures.clear();
+  usedTextures.dealloc();
+  usedSounds.clear();
+  usedSounds.dealloc();
+  usedModels.clear();
+  usedModels.dealloc();
 }
 
 }

@@ -200,6 +200,10 @@ void BSP::load()
     models[i].openSound   = sOpenSound.isEmpty()  ? -1 : library.soundIndex( sOpenSound );
     models[i].closeSound  = sCloseSound.isEmpty() ? -1 : library.soundIndex( sCloseSound );
     models[i].frictSound  = sFrictSound.isEmpty() ? -1 : library.soundIndex( sFrictSound );
+
+    String sKeyClass      = is.readString();
+
+    models[i].keyClass    = sKeyClass.isEmpty() ? null : library.objClass( sKeyClass );
   }
   data += nModels * int( sizeof( Model ) );
 

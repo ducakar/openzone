@@ -59,7 +59,7 @@ void MD3::buildMesh( const char* name, int frame )
 
   PhysFile file( String::str( "%s/%s.md3", sPath.cstr(), name ) );
   if( !file.map() ) {
-    throw Exception( "Cannot mmap MD3 model part file '%s'", file.path().cstr() );
+    throw Exception( "Cannot mmap MD3 model part file '%s'", file.realPath().cstr() );
   }
 
   InputStream is = file.inputStream( Endian::LITTLE );
@@ -275,7 +275,7 @@ void MD3::buildMesh( const char* name, int frame )
 
 void MD3::load()
 {
-  File configFile( sPath + "/config.rc" );
+  PhysFile configFile( sPath + "/config.rc" );
 
   Config config;
   config.load( configFile );
@@ -399,14 +399,26 @@ void MD3::save()
     mesh.write( &os );
   }
 
-  if( frame != -1 ) {
-    log.print( "Writing to '%s%s' ...", sPath.cstr(), ".ozcSMM" );
-    File( sPath + ".ozcSMM" ).write( &os );
+  if( frame != 1 ) {
+    File destFile( sPath + ".ozcMD3" );
+
+    log.print( "Writing to '%s' ...", destFile.path().cstr() );
+
+    if( !destFile.write( &os ) ) {
+      throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+    }
+
     log.printEnd( " OK" );
   }
   else {
-    log.print( "Writing to '%s%s' ...", sPath.cstr(), ".ozcMD3" );
-    File( sPath + ".ozcMD3" ).write( &os );
+    File destFile( sPath + ".ozcSMM" );
+
+    log.print( "Writing to '%s' ...", destFile.path().cstr() );
+
+    if( !destFile.write( &os ) ) {
+      throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+    }
+
     log.printEnd( " OK" );
   }
 }

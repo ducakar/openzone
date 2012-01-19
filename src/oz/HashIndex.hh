@@ -567,7 +567,7 @@ class HashIndex
     }
 
     /**
-     * Add a new element. The key must not yet exist in this hashtable.
+     * Add a new element, if the key already exists in the hashtable overwrite existing element.
      *
      * @return pointer to the value of the inserted element.
      */
@@ -595,7 +595,7 @@ class HashIndex
     }
 
     /**
-     * Add a new element if the key do not exist in the hashtable.
+     * Add a new element if the key does not exist in the hashtable.
      *
      * @return pointer to the value of the inserted or the existing element with the same key.
      */

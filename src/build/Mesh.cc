@@ -65,9 +65,9 @@ void MeshData::write( BufferStream* stream, bool embedTextures ) const
     stream->writeInt( ~textures.length() );
 
     for( int i = 1; i < textures.length(); ++i ) {
-      uint id = Context::loadRawTexture( textures[i] );
+      uint id = context.loadRawTexture( textures[i] );
 
-      Context::writeTexture( id, stream );
+      context.writeTexture( id, stream );
       glDeleteTextures( 1, &id );
     }
   }

@@ -25,8 +25,6 @@
 
 #include "build/Terra.hh"
 
-#include "matrix/Library.hh"
-
 #include "client/Terra.hh"
 #include "client/OpenGL.hh"
 
@@ -131,11 +129,9 @@ void Terra::load()
 
 void Terra::saveMatrix()
 {
-  File::mkdir( "terra" );
+  File destFile( "terra/" + name + ".ozTerra" );
 
-  String destFile = "terra/" + name + ".ozTerra";
-
-  log.print( "Dumping terrain structure to '%s' ...", destFile.cstr() );
+  log.print( "Dumping terrain structure to '%s' ...", destFile.path().cstr() );
 
   BufferStream os;
 
@@ -149,7 +145,9 @@ void Terra::saveMatrix()
     }
   }
 
-  File( destFile ).write( &os );
+  if( !destFile.write( &os ) ) {
+    throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+  }
 
   log.printEnd( " OK" );
 }
@@ -161,15 +159,15 @@ void Terra::saveClient()
   log.println( "Compiling terrain model to '%s' {", destFile.path().cstr() );
   log.indent();
 
-  uint waterTexId  = Context::loadRawTexture( "terra/" + waterTexture );
-  uint detailTexId = Context::loadRawTexture( "terra/" + detailTexture );
-  uint mapTexId    = Context::loadRawTexture( "terra/" + mapTexture );
+  uint waterTexId  = context.loadRawTexture( "terra/" + waterTexture );
+  uint detailTexId = context.loadRawTexture( "terra/" + detailTexture );
+  uint mapTexId    = context.loadRawTexture( "terra/" + mapTexture );
 
   BufferStream os;
 
-  Context::writeTexture( waterTexId, &os );
-  Context::writeTexture( detailTexId, &os );
-  Context::writeTexture( mapTexId, &os );
+  context.writeTexture( waterTexId, &os );
+  context.writeTexture( detailTexId, &os );
+  context.writeTexture( mapTexId, &os );
 
   glDeleteTextures( 1, &waterTexId );
   glDeleteTextures( 1, &detailTexId );
@@ -250,7 +248,9 @@ void Terra::saveClient()
     os.writeChar( waterTiles.get( i ) );
   }
 
-  destFile.write( &os );
+  if( !destFile.write( &os ) ) {
+    throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+  }
 
   log.unindent();
   log.println( "}" );

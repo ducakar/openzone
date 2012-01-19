@@ -27,10 +27,10 @@
 
 #include "matrix/Collider.hh"
 #include "matrix/BSP.hh"
-#include "matrix/Library.hh"
 
 #include "client/OpenGL.hh"
 
+#include "build/Context.hh"
 #include "build/Compiler.hh"
 
 namespace oz
@@ -41,8 +41,6 @@ namespace build
 const float BSP::DEFAULT_SCALE      = 0.01f;
 const float BSP::DEFAULT_LIFE       = 10000.0f;
 const float BSP::DEFAULT_RESISTANCE = 400.0f;
-
-Bitset BSP::usedTextures;
 
 inline bool BSP::includes( const matrix::BSP::Brush& brush, float maxDim ) const
 {
@@ -77,9 +75,7 @@ void BSP::load()
   life = bspConfig.get( "life", DEFAULT_LIFE );
   resistance = bspConfig.get( "resistance", DEFAULT_RESISTANCE );
 
-  String sFragPool = bspConfig.get( "fragPool", "" );
-
-  fragPool = sFragPool.isEmpty() ? null : library.fragPool( sFragPool );
+  fragPool = bspConfig.get( "fragPool", "" );
   nFrags   = bspConfig.get( "nFrags", 0 );
 
   mins = Point3( -maxDim, -maxDim, -maxDim );
@@ -120,23 +116,17 @@ void BSP::load()
   is.forward( lumps[QBSPLump::TEXTURES].offset );
 
   for( int i = 0; i < nTextures; ++i ) {
-    String name = is.forward( 64 );
-
+    textures[i].name  = is.forward( 64 );
     textures[i].flags = is.readInt();
     textures[i].type  = is.readInt();
 
-    if( name.length() < 10 ) {
-      textures[i].id = -1;
+    if( textures[i].name.length() < 10 || textures[i].name.endsWith( "NULL" ) ||
+        ( textures[i].flags & QBSP_LADDER_FLAG_BIT ) )
+    {
+      textures[i].name = "";
     }
     else {
-      name = name.substring( 9 );
-
-      if( name.equals( "NULL" ) || ( textures[i].flags & QBSP_LADDER_FLAG_BIT ) ) {
-        textures[i].id = -1;
-      }
-      else {
-        textures[i].id = library.textureIndex( name );
-      }
+      textures[i].name = textures[i].name.substring( 9 );
     }
 
     log.println( "Texture '%s' flags %x type %x",
@@ -220,7 +210,7 @@ void BSP::load()
   modelFaces = new ModelFaces[nModels + 1];
 
   if( nModels != 0 ) {
-    models = new matrix::BSP::Model[nModels];
+    models = new Model[nModels];
 
     is.reset();
     is.forward( lumps[QBSPLump::MODELS].offset );
@@ -259,30 +249,31 @@ void BSP::load()
       models[i].ratioInc = Timer::TICK_TIME / bspConfig.get( keyName + ".slideTime", 1.0f );
       models[i].flags    = 0;
 
-      String type = bspConfig.get( keyName + ".type", "BLOCKING" );
-      if( type.equals( "IGNORING" ) ) {
+      String sType = bspConfig.get( keyName + ".type", "IGNORING" );
+
+      if( sType.equals( "IGNORING" ) ) {
         models[i].type = matrix::BSP::Model::IGNORING;
       }
-      else if( type.equals( "CRUSHING" ) ) {
+      else if( sType.equals( "CRUSHING" ) ) {
         models[i].type = matrix::BSP::Model::CRUSHING;
       }
-      else if( type.equals( "AUTO_DOOR" ) ) {
+      else if( sType.equals( "AUTO_DOOR" ) ) {
         models[i].type = matrix::BSP::Model::AUTO_DOOR;
       }
+      else if( sType.equals( "MANUAL_DOOR" ) ) {
+        models[i].type = matrix::BSP::Model::MANUAL_DOOR;
+      }
       else {
-        throw Exception( "Invalid BSP model type, must be either IGNORING, CRUSHING or AUTO_DOOR" );
+        throw Exception( "Invalid BSP model type, must be either IGNORING, CRUSHING, AUTO_DOOR "
+                         "or MANUAL_DOOR." );
       }
 
       models[i].margin  = bspConfig.get( keyName + ".margin", 1.0f );
       models[i].timeout = bspConfig.get( keyName + ".timeout", 6.0f );
 
-      String sOpenSound  = bspConfig.get( keyName + ".openSound", "" );
-      String sCloseSound = bspConfig.get( keyName + ".closeSound", "" );
-      String sFrictSound = bspConfig.get( keyName + ".frictSound", "" );
-
-      models[i].openSound  = sOpenSound.isEmpty()  ? -1 : library.soundIndex( sOpenSound );
-      models[i].closeSound = sCloseSound.isEmpty() ? -1 : library.soundIndex( sCloseSound );
-      models[i].frictSound = sFrictSound.isEmpty() ? -1 : library.soundIndex( sFrictSound );
+      models[i].openSound  = bspConfig.get( keyName + ".openSound", "" );
+      models[i].closeSound = bspConfig.get( keyName + ".closeSound", "" );
+      models[i].frictSound = bspConfig.get( keyName + ".frictSound", "" );
     }
   }
 
@@ -467,10 +458,9 @@ void BSP::load()
     String objName = bspConfig.get( key + ".name", "" );
 
     if( !objName.isEmpty() ) {
-      matrix::BSP::BoundObject object;
+      BoundObject object;
 
-      object.clazz   = library.objClass( objName );
-
+      object.clazz   = objName;
       object.pos.x   = bspConfig.get( key + ".pos.x", 0.0f );
       object.pos.y   = bspConfig.get( key + ".pos.y", 0.0f );
       object.pos.z   = bspConfig.get( key + ".pos.z", 0.0f );
@@ -989,21 +979,24 @@ void BSP::check() const
 
 void BSP::saveMatrix()
 {
-  String path = "bsp/" + name + ".ozBSP";
+  File destFile( "bsp/" + name + ".ozBSP" );
 
-  log.print( "Dumping BSP structure to '%s' ...", path.cstr() );
+  log.print( "Dumping BSP structure to '%s' ...", destFile.path().cstr() );
 
-  Vector<int> sounds;
+  Vector<String> sounds;
+
   for( int i = 0; i < nModels; ++i ) {
-    sounds.include( models[i].openSound );
-    sounds.include( models[i].closeSound );
-    sounds.include( models[i].frictSound );
+    if( !models[i].openSound.isEmpty() ) {
+      sounds.include( models[i].openSound );
+    }
+    if( !models[i].closeSound.isEmpty() ) {
+      sounds.include( models[i].closeSound );
+    }
+    if( !models[i].frictSound.isEmpty() ) {
+      sounds.include( models[i].frictSound );
+    }
   }
   sounds.sort();
-
-  if( !sounds.isEmpty() && sounds[0] == -1 ) {
-    sounds.popFirst();
-  }
 
   BufferStream os;
 
@@ -1015,7 +1008,7 @@ void BSP::saveMatrix()
 
   os.writeInt( sounds.length() );
   for( int i = 0; i < sounds.length(); ++i ) {
-    os.writeString( library.sounds[ sounds[i] ].name );
+    os.writeString( sounds[i] );
   }
 
   sounds.clear();
@@ -1074,32 +1067,36 @@ void BSP::saveMatrix()
     os.writeFloat( models[i].margin );
     os.writeFloat( models[i].timeout );
 
-    int openSound  = models[i].openSound;
-    int closeSound = models[i].closeSound;
-    int frictSound = models[i].frictSound;
+    context.usedSounds.include( models[i].openSound );
+    context.usedSounds.include( models[i].closeSound );
+    context.usedSounds.include( models[i].frictSound );
 
-    os.writeString( openSound  == -1 ? "" : library.sounds[openSound].name );
-    os.writeString( closeSound == -1 ? "" : library.sounds[closeSound].name );
-    os.writeString( frictSound == -1 ? "" : library.sounds[frictSound].name );
+    os.writeString( models[i].openSound );
+    os.writeString( models[i].closeSound );
+    os.writeString( models[i].frictSound );
+
+    os.writeString( models[i].keyClass );
   }
 
   for( int i = 0; i < boundObjects.length(); ++i ) {
-    os.writeString( boundObjects[i].clazz->name );
+    os.writeString( boundObjects[i].clazz );
     os.writePoint3( boundObjects[i].pos );
     os.writeInt( boundObjects[i].heading );
   }
 
-  os.writeString( fragPool == null ? "" : fragPool->name );
+  os.writeString( fragPool );
   os.writeInt( nFrags );
 
-  File( path ).write( &os );
+  if( !destFile.write( &os ) ) {
+    throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+  }
 
   log.printEnd( " OK" );
 }
 
 void BSP::saveClient()
 {
-  String path = "bsp/" + name + ".ozcBSP";
+  File destFile( "bsp/" + name + ".ozcBSP" );
 
   int flags = 0;
 
@@ -1114,12 +1111,9 @@ void BSP::saveClient()
     for( int j = 0; j < modelFaces[i].nFaces; ++j ) {
       const Face& face = faces[ modelFaces[i].firstFace + j ];
 
-      int texId = textures[face.texture].id;
-      if( texId == -1 ) {
+      if( textures[face.texture].name.isEmpty() ) {
         throw Exception( "BSP has a visible face without texture" );
       }
-
-      usedTextures.set( texId );
 
       if( textures[face.texture].type & QBSP_WATER_TYPE_BIT ) {
         compiler.material( GL_DIFFUSE, 0.75f );
@@ -1137,7 +1131,9 @@ void BSP::saveClient()
         flags |= Mesh::SOLID_BIT;
       }
 
-      compiler.texture( library.textures[texId].name );
+      context.usedTextures.include( textures[face.texture].name );
+
+      compiler.texture( textures[face.texture].name );
       compiler.begin( GL_TRIANGLES );
 
       for( int k = 0; k < face.nIndices; ++k ) {
@@ -1172,9 +1168,11 @@ void BSP::saveClient()
   compiler.getMeshData( &mesh );
   mesh.write( &os, false );
 
-  log.print( "Dumping BSP model to '%s' ...", path.cstr() );
+  log.print( "Dumping BSP model to '%s' ...", destFile.path().cstr() );
 
-  File( path ).write( &os );
+  if( !destFile.write( &os ) ) {
+    throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+  }
 
   log.printEnd( " OK" );
 }
@@ -1231,11 +1229,6 @@ void BSP::build( const char* name )
 {
   log.println( "Prebuilding BSP '%s' {", name );
   log.indent();
-
-  if( usedTextures.isEmpty() ) {
-    usedTextures.alloc( library.textures.length() );
-    usedTextures.clearAll();
-  }
 
   BSP* bsp = new BSP( name );
   bsp->load();
