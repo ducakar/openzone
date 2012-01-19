@@ -396,7 +396,7 @@ void Vehicle::service()
 }
 
 Vehicle::Vehicle( const VehicleClass* clazz_, int index_, const Point3& p_, Heading heading ) :
-    Dynamic( clazz_, index_, p_, heading )
+  Dynamic( clazz_, index_, p_, heading )
 {
   h          = 0.0f;
   v          = Math::TAU / 4.0f;
@@ -420,7 +420,7 @@ Vehicle::Vehicle( const VehicleClass* clazz_, int index_, const Point3& p_, Head
 }
 
 Vehicle::Vehicle( const VehicleClass* clazz_, InputStream* istream ) :
-    Dynamic( clazz_, istream )
+  Dynamic( clazz_, istream )
 {
   h          = istream->readFloat();
   v          = istream->readFloat();

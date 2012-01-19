@@ -66,7 +66,8 @@ class SVector
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
-        explicit CIterator( const SVector& v ) : B( v.data, v.data + v.count )
+        explicit CIterator( const SVector& v ) :
+          B( v.data, v.data + v.count )
         {}
 
       public:
@@ -75,7 +76,8 @@ class SVector
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        CIterator() : B( null, null )
+        CIterator() :
+          B( null, null )
         {}
 
     };
@@ -98,7 +100,8 @@ class SVector
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
-        explicit Iterator( SVector& v ) : B( v.data, v.data + v.count )
+        explicit Iterator( SVector& v ) :
+          B( v.data, v.data + v.count )
         {}
 
       public:
@@ -107,7 +110,8 @@ class SVector
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        Iterator() : B( null, null )
+        Iterator() :
+          B( null, null )
         {}
 
     };
@@ -122,7 +126,8 @@ class SVector
     /**
      * Create an empty vector with capacity SIZE.
      */
-    SVector() : count( 0 )
+    SVector() :
+      count( 0 )
     {}
 
     /**

@@ -36,7 +36,8 @@ namespace client
 
 MusicPlayerModule musicPlayerModule;
 
-MusicPlayerModule::MusicPlayerModule() : musicPlayer( null )
+MusicPlayerModule::MusicPlayerModule() :
+  musicPlayer( null )
 {}
 
 void MusicPlayerModule::load()

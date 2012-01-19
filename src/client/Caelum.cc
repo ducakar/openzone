@@ -49,8 +49,8 @@ const float Caelum::NIGHT_COLOUR[] = { 0.02f, 0.02f, 0.05f, 1.0f };
 const float Caelum::WATER_COLOUR[] = { 0.00f, 0.05f, 0.25f, 1.0f };
 const float Caelum::STAR_COLOUR[]  = { 0.80f, 0.80f, 0.80f, 1.0f };
 
-Caelum::Caelum() : vao( 0 ), vbo( 0 ), sunTexId( 0 ), moonTexId( 0 ),
-    lightDir( Vec3( 0.0f, 0.0f, 1.0f ) ), id( -1 )
+Caelum::Caelum() :
+  vao( 0 ), vbo( 0 ), sunTexId( 0 ), moonTexId( 0 ), lightDir( Vec3( 0.0f, 0.0f, 1.0f ) ), id( -1 )
 {}
 
 void Caelum::update()

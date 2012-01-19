@@ -71,17 +71,17 @@ class Render
 
       OZ_ALWAYS_INLINE
       explicit ModelEntry( float dist2_, const Struct* str_ ) :
-          dist2( dist2_ ), str( str_ )
+        dist2( dist2_ ), str( str_ )
       {}
 
       OZ_ALWAYS_INLINE
       explicit ModelEntry( float dist2_, const Object* obj_ ) :
-          dist2( dist2_ ), obj( obj_ )
+        dist2( dist2_ ), obj( obj_ )
       {}
 
       OZ_ALWAYS_INLINE
       explicit ModelEntry( float dist2_, const Frag* frag_ ) :
-          dist2( dist2_ ), frag( frag_ )
+        dist2( dist2_ ), frag( frag_ )
       {}
 
       OZ_ALWAYS_INLINE
@@ -151,7 +151,7 @@ class Render
 
     void draw( int flags );
     void sync();
-    void toggleFullscreen() const;
+    bool toggleFullscreen() const;
 
     void load();
     void unload();

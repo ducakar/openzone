@@ -37,7 +37,8 @@ class SMMVehicleImago : public Imago
 
     SMM* smm;
 
-    explicit SMMVehicleImago( const Object* obj ) : Imago( obj )
+    explicit SMMVehicleImago( const Object* obj ) :
+      Imago( obj )
     {}
 
     virtual ~SMMVehicleImago();

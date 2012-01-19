@@ -80,7 +80,8 @@ F7                  - hitro nalaganje (iz ~/.config/openzone/quicksave.ozState)
 F8                  - naloži zadnje samodejno shranjeno stanje
                       (iz ~/.config/openzone/autosave.ozState)
 F10                 - zajem zaslona (shrani se v '~/config/.openzone/screenshot DATUM ČAS.bmp')
-Ctrl + F11          - preklopi celozaslonski način
+F11                 - preklopi celozaslonski način
+Ctrl + F11          - preklopi centriranje miške in sistemski kazalec (samo v okenskem načinu)
 F12                 - minimiraj in zamrzni
 Ctrl + F12          - končaj program
 

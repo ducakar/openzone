@@ -30,7 +30,8 @@ Lingua lingua;
 
 String Lingua::locale;
 
-Lingua::Lingua() : messages( null ), nMessages( 0 )
+Lingua::Lingua() :
+  messages( null ), nMessages( 0 )
 {}
 
 const char* Lingua::get( const char* message ) const
@@ -92,7 +93,7 @@ bool Lingua::init( const char* locale_ )
 {
   free();
 
-  locale    = locale_;
+  locale = locale_;
 
   PhysFile dir( "lingua/" + locale + "/main" );
   DArray<PhysFile> files = dir.ls();

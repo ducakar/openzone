@@ -99,8 +99,9 @@ static void exit( Button* sender )
   menuStage.doExit = true;
 }
 
-MainMenu::MainMenu() : Frame( 0, 0, 400, 450, OZ_APPLICATION_TITLE " v" OZ_APPLICATION_VERSION ),
-    copyright( 10, 10, 380, 9, Font::SANS )
+MainMenu::MainMenu() :
+  Frame( 0, 0, 400, 450, OZ_APPLICATION_TITLE " v" OZ_APPLICATION_VERSION ),
+  copyright( 10, 10, 380, 9, Font::SANS )
 {
   x = ( Area::uiWidth  - width ) / 2;
   y = ( Area::uiHeight - height ) / 2;

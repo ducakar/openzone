@@ -48,7 +48,8 @@ inline bool operator < ( const File& a, const File& b )
   return String::compare( a.path(), b.path() ) < 0;
 }
 
-File::File() : type( NONE ), data( null )
+File::File() :
+  type( NONE ), data( null )
 {}
 
 File::~File()
@@ -59,12 +60,12 @@ File::~File()
 }
 
 File::File( const File& file ) :
-    filePath( file.filePath ), type( file.type ), data( null ), size( 0 )
+  filePath( file.filePath ), type( file.type ), data( null ), size( 0 )
 {}
 
 File::File( File&& file ) :
-    filePath( static_cast<String&&>( file.filePath ) ), type( file.type ),
-    data( file.data ), size( file.size )
+  filePath( static_cast<String&&>( file.filePath ) ), type( file.type ),
+  data( file.data ), size( file.size )
 {
   file.type = NONE;
   file.data = null;
@@ -105,7 +106,8 @@ File& File::operator = ( File&& file )
   return *this;
 }
 
-File::File( const char* path ) : filePath( path ), type( NONE ), data( null )
+File::File( const char* path ) :
+  filePath( path ), type( NONE ), data( null )
 {}
 
 void File::setPath( const char* path )
@@ -421,7 +423,7 @@ bool File::mkdir( const char* path, uint mode )
 bool File::rmdir( const char* path )
 {
 #ifdef _WIN32
-  return DeleteDirectory( path ) != 0;
+  return RemoveDirectory( path ) != 0;
 #else
   return ::rmdir( path ) == 0;
 #endif

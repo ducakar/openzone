@@ -55,14 +55,16 @@ class AABB
      * Create <tt>AABB</tt> with the given centre and extents.
      */
     OZ_ALWAYS_INLINE
-    explicit AABB( const Point3& p_, const Vec3& dim_ ) : p( p_ ), dim( dim_ )
+    explicit AABB( const Point3& p_, const Vec3& dim_ ) :
+      p( p_ ), dim( dim_ )
     {}
 
     /**
      * Create <tt>AABB</tt> enlarged for margin <tt>eps</tt> (can also be negative).
      */
     OZ_ALWAYS_INLINE
-    explicit AABB( const AABB& a, float eps ) : p( a.p ), dim( a.dim + Vec3( eps, eps, eps ) )
+    explicit AABB( const AABB& a, float eps ) :
+      p( a.p ), dim( a.dim + Vec3( eps, eps, eps ) )
     {}
 
     /**

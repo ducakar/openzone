@@ -132,7 +132,8 @@ void Lua::writeVariable( BufferStream* ostream )
   }
 }
 
-Lua::Lua() : l( null )
+Lua::Lua() :
+  l( null )
 {}
 
 void Lua::mindCall( const char* functionName, Bot* self_ )

@@ -62,14 +62,16 @@ class Vec3
      * Create a vector with the given components.
      */
     OZ_ALWAYS_INLINE
-    explicit Vec3( float x_, float y_, float z_ ) : x( x_ ), y( y_ ), z( z_ )
+    explicit Vec3( float x_, float y_, float z_ ) :
+      x( x_ ), y( y_ ), z( z_ )
     {}
 
     /**
      * Create from an array of 3 floats.
      */
     OZ_ALWAYS_INLINE
-    explicit Vec3( const float* v ) : x( v[0] ), y( v[1] ), z( v[2] )
+    explicit Vec3( const float* v ) :
+      x( v[0] ), y( v[1] ), z( v[2] )
     {}
 
     /**

@@ -190,6 +190,7 @@ int Client::main( int argc, char** argv )
   }
 
 #ifdef _WIN32
+
   char configRoot[MAX_PATH];
   char localRoot[MAX_PATH];
 
@@ -202,7 +203,9 @@ int Client::main( int argc, char** argv )
 
   File configDir( String::str( "%s\\" OZ_APPLICATION_NAME, configRoot ) );
   File localDir( String::str( "%s\\" OZ_APPLICATION_NAME, localRoot ) );
+
 #else
+
   const char* home       = SDL_getenv( "HOME" );
   const char* configRoot = SDL_getenv( "XDG_CONFIG_HOME" );
   const char* localRoot  = SDL_getenv( "XDG_LOCAL_HOME" );
@@ -218,6 +221,7 @@ int Client::main( int argc, char** argv )
   File localDir = localRoot == null ?
       File( String::str( "%s/.local/share/" OZ_APPLICATION_NAME, home ) ) :
       File( String::str( "%s/" OZ_APPLICATION_NAME, localRoot ) );
+
 #endif
 
   String dir = configDir.path();
@@ -428,8 +432,8 @@ int Client::main( int argc, char** argv )
   ushort screenCentreY = ushort( camera.centreY );
 
   SDL_WarpMouse( screenCentreX, screenCentreY );
-  while( SDL_PollEvent( &event ) ) {
-  }
+  SDL_PumpEvents();
+  while( SDL_PollEvent( &event ) );
 
   bool isAlive        = true;
   bool isActive       = true;
@@ -453,21 +457,8 @@ int Client::main( int argc, char** argv )
     ui::keyboard.prepare();
     ui::mouse.prepare();
 
-    if( ui::mouse.isGrabOn ) {
-      SDL_GetRelativeMouseState( &ui::mouse.relX, &ui::mouse.relY );
-      ui::mouse.relY = -ui::mouse.relY;
-    }
-
-    while( SDL_PollEvent( &event ) ) {
+    while( SDL_PollEvent( &event ) != 0 ) {
       switch( event.type ) {
-        case SDL_MOUSEMOTION: {
-          if( !ui::mouse.isGrabOn ) {
-            ui::mouse.relX = -event.motion.xrel;
-            ui::mouse.relY = +event.motion.yrel;
-            SDL_WarpMouse( screenCentreX, screenCentreY );
-          }
-          break;
-        }
         case SDL_KEYDOWN: {
           const SDL_keysym& keysym = event.key.keysym;
 
@@ -479,8 +470,20 @@ int Client::main( int argc, char** argv )
             }
           }
           else if( keysym.sym == SDLK_F11 ) {
-            if( ( keysym.mod & KMOD_CTRL ) && !( keysym.mod & ~KMOD_CTRL ) ) {
-              render.toggleFullscreen();
+            if( keysym.mod == 0 ) {
+              if( render.toggleFullscreen() ) {
+                ui::mouse.isGrabbed = !ui::mouse.isGrabbed;
+                ui::mouse.isJailed = true;
+
+                SDL_ShowCursor( false );
+              }
+            }
+            else if( ( keysym.mod & KMOD_CTRL ) && !( keysym.mod & ~KMOD_CTRL ) ) {
+              if( !ui::mouse.isGrabbed ) {
+                ui::mouse.isJailed = !ui::mouse.isJailed;
+
+                SDL_ShowCursor( !ui::mouse.isJailed );
+              }
             }
           }
           else if( keysym.sym == SDLK_F12 ) {
@@ -529,7 +532,24 @@ int Client::main( int argc, char** argv )
       }
     }
 
-    // waste time when iconified
+    // Update mouse motion.
+    int x, y;
+
+    SDL_PumpEvents();
+    SDL_GetRelativeMouseState( &x, &y );
+
+    ui::mouse.relX = +x;
+    ui::mouse.relY = -y;
+    ui::mouse.update();
+
+    // Centre mouse cursor and suppress mouse motion event.
+    if( ui::mouse.isJailed ) {
+      SDL_WarpMouse( screenCentreX, screenCentreY );
+      SDL_PumpEvents();
+      SDL_GetRelativeMouseState( &x, &y );
+    }
+
+    // Waste time when iconified.
     if( !isActive ) {
       SDL_Delay( Timer::TICK_MILLIS );
 
@@ -538,8 +558,6 @@ int Client::main( int argc, char** argv )
 
       continue;
     }
-
-    ui::mouse.update();
 
     timer.tick();
 

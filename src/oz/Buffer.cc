@@ -32,7 +32,8 @@
 namespace oz
 {
 
-Buffer::Buffer() : data( null ), size( 0 )
+Buffer::Buffer() :
+  data( null ), size( 0 )
 {}
 
 Buffer::~Buffer()
@@ -40,7 +41,8 @@ Buffer::~Buffer()
   dealloc();
 }
 
-Buffer::Buffer( const Buffer& b ) : data( null ), size( b.size )
+Buffer::Buffer( const Buffer& b ) :
+  data( null ), size( b.size )
 {
   if( b.size != 0 ) {
     data = new char[size];
@@ -48,7 +50,8 @@ Buffer::Buffer( const Buffer& b ) : data( null ), size( b.size )
   }
 }
 
-Buffer::Buffer( Buffer&& b ) : data( b.data ), size( b.size )
+Buffer::Buffer( Buffer&& b ) :
+  data( b.data ), size( b.size )
 {
   b.data = null;
   b.size = 0;
@@ -86,7 +89,8 @@ Buffer& Buffer::operator = ( Buffer&& b )
   return *this;
 }
 
-Buffer::Buffer( int size_ ) : data( new char[size_] ), size( size_ )
+Buffer::Buffer( int size_ ) :
+  data( new char[size_] ), size( size_ )
 {}
 
 void Buffer::alloc( int size_ )

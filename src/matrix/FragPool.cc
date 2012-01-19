@@ -38,7 +38,8 @@ namespace oz
 namespace matrix
 {
 
-FragPool::FragPool( const char* name_, int id_ ) : name( name_ ), id( id_ )
+FragPool::FragPool( const char* name_, int id_ ) :
+  name( name_ ), id( id_ )
 {
   PhysFile file( "frag/" + name + ".rc" );
 

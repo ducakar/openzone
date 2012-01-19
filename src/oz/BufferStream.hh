@@ -63,7 +63,7 @@ class BufferStream
      * Create an empty stream.
      */
     BufferStream( Endian::Order order_ = Endian::NATIVE ) :
-        pos( null ), start( null ), end( null ), order( order_ )
+      pos( null ), start( null ), end( null ), order( order_ )
     {}
 
     /**
@@ -93,7 +93,8 @@ class BufferStream
     /**
      * Move constructor, moves buffer.
      */
-    BufferStream( BufferStream&& s ) : pos( s.pos ), start( s.start ), end( s.end )
+    BufferStream( BufferStream&& s ) :
+      pos( s.pos ), start( s.start ), end( s.end )
     {
       s.pos   = null;
       s.start = null;
@@ -157,7 +158,7 @@ class BufferStream
      * Create a stream with the given size of the buffer.
      */
     explicit BufferStream( int size ) :
-        pos( new char[size] ), start( pos ), end( start + size ), order( Endian::NATIVE )
+      pos( new char[size] ), start( pos ), end( start + size ), order( Endian::NATIVE )
     {}
 
     /**

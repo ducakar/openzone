@@ -3,16 +3,16 @@
 [[ -z "$1" ]] && exit
 
 pkg="$1"
-scripts=share/$pkg/lua/*/*.lua
-bsps=share/$pkg/data/maps/*.rc
-classes=share/$pkg/class/*.rc
-output=share/$pkg/lingua/$pkg.pot
+scripts=pkg/src/$pkg/lua/*/*.lua
+bsps=pkg/src/$pkg/data/maps/*.rc
+classes=pkg/src/$pkg/class/*.rc
+output=pkg/src/$pkg/lingua/$pkg.pot
 
-mkdir -p share/$pkg/lingua
-rm -rf share/$pkg/lingua/*.pot
+mkdir -p pkg/build/$pkg/lingua
+rm -rf pkg/build/$pkg/lingua/*.pot
 
 for i in $scripts; do
-  xgettext --omit-header -C -s -kozGettext -d openzone -o share/$pkg/lingua/`basename $i .lua`.pot $i
+  xgettext --omit-header -C -s -kozGettext -d openzone -o pkg/build/$pkg/lingua/`basename $i .lua`.pot $i
 done
 
 echo >> $output

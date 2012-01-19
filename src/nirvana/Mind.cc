@@ -35,12 +35,14 @@ namespace nirvana
 
 Pool<Mind, 1024> Mind::pool;
 
-Mind::Mind( int bot_ ) : flags( 0 ), bot( bot_ )
+Mind::Mind( int bot_ ) :
+  flags( 0 ), bot( bot_ )
 {
   lua.registerMind( bot );
 }
 
-Mind::Mind( int bot_, InputStream* istream ) : bot( bot_ )
+Mind::Mind( int bot_, InputStream* istream ) :
+  bot( bot_ )
 {
   flags = istream->readInt();
 }

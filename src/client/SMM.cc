@@ -60,7 +60,8 @@ void SMM::load()
   isLoaded = true;
 }
 
-SMM::SMM( int id_ ) : id( id_ ), isLoaded( false )
+SMM::SMM( int id_ ) :
+  id( id_ ), isLoaded( false )
 {}
 
 SMM::~SMM()

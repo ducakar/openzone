@@ -60,8 +60,8 @@ const MD2::AnimInfo MD2::ANIM_LIST[] =
 
 Vertex MD2::animBuffer[MAX_VERTS];
 
-MD2::MD2( int id_ ) : id( id_ ), vertices( null ), positions( null ), normals( 0 ),
-    isLoaded( false )
+MD2::MD2( int id_ ) :
+  id( id_ ), vertices( null ), positions( null ), normals( 0 ), isLoaded( false )
 {}
 
 MD2::~MD2()

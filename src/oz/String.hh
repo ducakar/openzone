@@ -342,7 +342,8 @@ class String
     /**
      * Create an empty string.
      */
-    String() : buffer( baseBuffer ), count( 0 )
+    String() :
+      buffer( baseBuffer ), count( 0 )
     {
       buffer[0] = '\0';
     }

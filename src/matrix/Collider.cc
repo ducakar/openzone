@@ -42,7 +42,8 @@ const Vec3 Collider::NORMALS[] =
   Vec3(  0.0f,  0.0f, -1.0f )
 };
 
-Collider::Collider() : mask( Object::SOLID_BIT )
+Collider::Collider() :
+  mask( Object::SOLID_BIT )
 {}
 
 inline bool Collider::visitBrush( int index )

@@ -355,10 +355,11 @@ void HudArea::onDraw()
   drawChildren();
 }
 
-HudArea::HudArea() : Area( Area::uiWidth, Area::uiHeight ),
-    weaponName( 16, 54, ALIGN_LEFT, Font::LARGE, " "  ),
-    weaponRounds( 200, 54, ALIGN_RIGHT, Font::LARGE, "∞" ),
-    lastTaggedId( -1 ), lastWeaponId( -1 ), lastWeaponRounds( -1 ), lastVehicleId( -1 )
+HudArea::HudArea() :
+  Area( Area::uiWidth, Area::uiHeight ),
+  weaponName( 16, 54, ALIGN_LEFT, Font::LARGE, " "  ),
+  weaponRounds( 200, 54, ALIGN_RIGHT, Font::LARGE, "∞" ),
+  lastTaggedId( -1 ), lastWeaponId( -1 ), lastWeaponRounds( -1 ), lastVehicleId( -1 )
 {
   flags = UPDATE_BIT | IGNORE_BIT | PINNED_BIT;
 

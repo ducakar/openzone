@@ -60,7 +60,7 @@ void Mouse::prepare()
 void Mouse::update()
 {
 #ifndef _WIN32
-  if( isGrabOn ) {
+  if( isGrabbed ) {
     float move  = Math::sqrt( float( relX )*float( relX ) + float( relY )*float( relY ) );
     float accel = min( 1.0f + move * accelFactor, 2.0f );
 
@@ -154,9 +154,10 @@ void Mouse::unload()
 
 void Mouse::init()
 {
-  doShow      = false;
-  isGrabOn    = config.get( "screen.full", true );
   accelFactor = config.getSet( "mouse.accelFactor", 0.04f );
+  doShow      = false;
+  isGrabbed   = config.get( "screen.full", true );
+  isJailed    = true;
   icon        = ARROW;
 
   x = Area::uiCentreX;

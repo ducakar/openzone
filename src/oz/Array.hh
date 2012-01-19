@@ -66,7 +66,8 @@ class Array
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
-        explicit CIterator( const Array& a ) : B( a.data, a.data + SIZE )
+        explicit CIterator( const Array& a ) :
+          B( a.data, a.data + SIZE )
         {}
 
       public:
@@ -75,7 +76,8 @@ class Array
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        CIterator() : B( null, null )
+        CIterator() :
+          B( null, null )
         {}
 
     };
@@ -98,7 +100,8 @@ class Array
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
-        explicit Iterator( Array& a ) : B( a.data, a.data + SIZE )
+        explicit Iterator( Array& a ) :
+          B( a.data, a.data + SIZE )
         {}
 
       public:
@@ -107,7 +110,8 @@ class Array
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        Iterator() : B( null, null )
+        Iterator() :
+          B( null, null )
         {}
 
     };

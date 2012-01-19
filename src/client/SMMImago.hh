@@ -37,7 +37,8 @@ class SMMImago : public Imago
 
     SMM* smm;
 
-    explicit SMMImago( const Object* obj ) : Imago( obj )
+    explicit SMMImago( const Object* obj ) :
+      Imago( obj )
     {}
 
     virtual ~SMMImago();

@@ -349,11 +349,11 @@ slotsRendered:;
 }
 
 InventoryMenu::InventoryMenu( const InventoryMenu* master_ ) :
-    Frame( 0, 8, COLS*SLOT_SIZE, ROWS*SLOT_SIZE + FOOTER_SIZE, " " ),
-    master( master_ ),
-    itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " " ),
-    tagged( -1 ),
-    scroll( 0 )
+  Frame( 0, 8, COLS*SLOT_SIZE, ROWS*SLOT_SIZE + FOOTER_SIZE, " " ),
+  master( master_ ),
+  itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " " ),
+  tagged( -1 ),
+  scroll( 0 )
 {
   x = ( Area::uiWidth - width ) / 2;
 

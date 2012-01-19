@@ -36,7 +36,8 @@ namespace matrix
 
 Synapse synapse;
 
-Synapse::Synapse() : mode( SINGLE )
+Synapse::Synapse() :
+  mode( SINGLE )
 {}
 
 void Synapse::use( Bot* user, Object* target )

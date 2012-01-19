@@ -61,7 +61,8 @@ class Config
       /**
        * Constructor.
        */
-      explicit Value( const char* text_, bool isUsed_ = false ) : text( text_ ), isUsed( isUsed_ )
+      explicit Value( const char* text_, bool isUsed_ = false ) :
+        text( text_ ), isUsed( isUsed_ )
       {}
     };
 

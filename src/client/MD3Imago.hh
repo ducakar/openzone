@@ -47,7 +47,8 @@ class MD3Imago : public Imago
 
   protected:
 
-    explicit MD3Imago( const Object* obj ) : Imago( obj )
+    explicit MD3Imago( const Object* obj ) :
+      Imago( obj )
     {
       flags |= Imago::MD2MODEL_BIT;
     }

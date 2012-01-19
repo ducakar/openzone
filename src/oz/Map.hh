@@ -73,7 +73,7 @@ class Map
       template <typename Key_, typename Value_>
       OZ_ALWAYS_INLINE
       explicit Elem( Key_&& key_, Value_&& value_ ) :
-          key( static_cast<Key_&&>( key_ ) ), value( static_cast<Value_&&>( value_ ) )
+        key( static_cast<Key_&&>( key_ ) ), value( static_cast<Value_&&>( value_ ) )
       {}
 
       /**
@@ -115,7 +115,8 @@ class Map
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
-        explicit CIterator( const Map& m ) : B( m.data, m.data + m.count )
+        explicit CIterator( const Map& m ) :
+          B( m.data, m.data + m.count )
         {}
 
       public:
@@ -124,7 +125,8 @@ class Map
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        CIterator() : B( null, null )
+        CIterator() :
+          B( null, null )
         {}
 
         /**
@@ -192,7 +194,8 @@ class Map
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
-        explicit Iterator( const Map& m ) : B( m.data, m.data + m.count )
+        explicit Iterator( const Map& m ) :
+          B( m.data, m.data + m.count )
         {}
 
       public:
@@ -201,7 +204,8 @@ class Map
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        Iterator() : B( null, null )
+        Iterator() :
+          B( null, null )
         {}
 
         /**
@@ -282,7 +286,8 @@ class Map
     /**
      * Create an empty map.
      */
-    Map() : data( null ), size( 0 ), count( 0 )
+    Map() :
+      data( null ), size( 0 ), count( 0 )
     {}
 
     /**
@@ -297,7 +302,7 @@ class Map
      * Copy constructor, copies elements.
      */
     Map( const Map& m ) :
-        data( m.size == 0 ? null : new Elem[m.size] ), size( m.size ), count( m.count )
+      data( m.size == 0 ? null : new Elem[m.size] ), size( m.size ), count( m.count )
     {
       aCopy( data, m.data, m.count );
     }
@@ -305,7 +310,8 @@ class Map
     /**
      * Move constructor, moves element storage.
      */
-    Map( Map&& m ) : data( m.data ), size( m.size ), count( m.count )
+    Map( Map&& m ) :
+      data( m.data ), size( m.size ), count( m.count )
     {
       m.data  = null;
       m.size  = 0;
@@ -361,7 +367,8 @@ class Map
     /**
      * Create an empty map with the given initial capacity.
      */
-    explicit Map( int size_ ) : data( new Elem[size_] ), size( size_ ), count( 0 )
+    explicit Map( int size_ ) :
+      data( new Elem[size_] ), size( size_ ), count( 0 )
     {}
 
     /**

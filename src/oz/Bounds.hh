@@ -55,7 +55,8 @@ class Bounds
      * Create from the given minimal and maximal point.
      */
     OZ_ALWAYS_INLINE
-    explicit Bounds( const Point3& mins_, const Point3& maxs_ ) : mins( mins_ ), maxs( maxs_ )
+    explicit Bounds( const Point3& mins_, const Point3& maxs_ ) :
+      mins( mins_ ), maxs( maxs_ )
     {}
 
     /**
@@ -63,7 +64,7 @@ class Bounds
      */
     OZ_ALWAYS_INLINE
     explicit Bounds( const Bounds& b, float eps ) :
-        mins( b.mins - Vec3( eps, eps, eps ) ), maxs( b.maxs + Vec3( eps, eps, eps ) )
+      mins( b.mins - Vec3( eps, eps, eps ) ), maxs( b.maxs + Vec3( eps, eps, eps ) )
     {}
 
     /**

@@ -65,7 +65,8 @@ class DArray
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
-        explicit CIterator( const DArray& a ) : B( a.data, a.data + a.size )
+        explicit CIterator( const DArray& a ) :
+          B( a.data, a.data + a.size )
         {}
 
       public:
@@ -74,7 +75,8 @@ class DArray
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        CIterator() : B( null, null )
+        CIterator() :
+          B( null, null )
         {}
 
     };
@@ -97,7 +99,8 @@ class DArray
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
-        explicit Iterator( const DArray& a ) : B( a.data, a.data + a.size )
+        explicit Iterator( const DArray& a ) :
+          B( a.data, a.data + a.size )
         {}
 
       public:
@@ -106,7 +109,8 @@ class DArray
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        Iterator() : B( null, null )
+        Iterator() :
+          B( null, null )
         {}
 
     };
@@ -121,7 +125,8 @@ class DArray
     /**
      * Create an empty array.
      */
-    DArray() : data( null ), size( 0 )
+    DArray() :
+      data( null ), size( 0 )
     {}
 
     /**
@@ -135,7 +140,8 @@ class DArray
     /**
      * Copy constructor, copies elements.
      */
-    DArray( const DArray& a ) : data( a.size == 0 ? null : new Elem[a.size] ), size( a.size )
+    DArray( const DArray& a ) :
+      data( a.size == 0 ? null : new Elem[a.size] ), size( a.size )
     {
       aCopy( data, a.data, a.size );
     }
@@ -143,7 +149,8 @@ class DArray
     /**
      * Move constructor, moves element storage.
      */
-    DArray( DArray&& a ) : data( a.data ), size( a.size )
+    DArray( DArray&& a ) :
+      data( a.data ), size( a.size )
     {
       a.data = null;
       a.size = 0;
@@ -195,14 +202,15 @@ class DArray
     /**
      * Create an array with the given size.
      */
-    explicit DArray( int size_ ) : data( size_ == 0 ? null : new Elem[size_] ), size( size_ )
+    explicit DArray( int size_ ) :
+      data( size_ == 0 ? null : new Elem[size_] ), size( size_ )
     {}
 
     /**
      * Initialise from a C++ array.
      */
-    explicit DArray( const Elem* array, int size_ ) : data( size_ == 0 ? null : new Elem[size_] ),
-        size( size_ )
+    explicit DArray( const Elem* array, int size_ ) :
+      data( size_ == 0 ? null : new Elem[size_] ), size( size_ )
     {
       aCopy( data, array, size );
     }

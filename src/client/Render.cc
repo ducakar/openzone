@@ -412,12 +412,9 @@ void Render::sync()
   syncMillis += Time::clock() - beginTime;
 }
 
-void Render::toggleFullscreen() const
+bool Render::toggleFullscreen() const
 {
-  if( SDL_WM_ToggleFullScreen( surface ) ) {
-    ui::mouse.isGrabOn = !ui::mouse.isGrabOn;
-    SDL_WM_GrabInput( ui::mouse.isGrabOn ? SDL_GRAB_ON : SDL_GRAB_OFF );
-  }
+  return SDL_WM_ToggleFullScreen( surface ) != 0;
 }
 
 void Render::load()
@@ -503,9 +500,6 @@ void Render::init( bool isBuild )
   if( surface == null ) {
     throw Exception( "Window creation failed" );
   }
-
-  SDL_WM_GrabInput( isFullscreen ? SDL_GRAB_ON : SDL_GRAB_OFF );
-  ui::mouse.isGrabOn = SDL_WM_GrabInput( SDL_GRAB_QUERY ) == SDL_GRAB_ON;
 
   SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION, null );
 

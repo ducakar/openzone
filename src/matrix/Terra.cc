@@ -38,7 +38,8 @@ const float Terra::Quad::DIM      = SIZE / 2.0f;
 
 const float Terra::DIM            = QUADS * Terra::Quad::DIM;
 
-Terra::Terra() : id( -1 )
+Terra::Terra() :
+  id( -1 )
 {}
 
 void Terra::load( int id_ )

@@ -41,8 +41,8 @@ using namespace oz::nirvana;
 using oz::nirvana::nirvana;
 
 InfoFrame::InfoFrame() :
-    Frame( -8, -8, 360, 12 + 24 * Font::INFOS[Font::SANS].height, "" ),
-    text( 6, 4, 348, 24, Font::SANS ), lastId( -1 )
+  Frame( -8, -8, 360, 12 + 24 * Font::INFOS[Font::SANS].height, "" ),
+  text( 6, 4, 348, 24, Font::SANS ), lastId( -1 )
 {
   flags = PINNED_BIT;
 }

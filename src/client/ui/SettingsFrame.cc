@@ -56,8 +56,8 @@ void SettingsFrame::onDraw()
 }
 
 SettingsFrame::SettingsFrame() :
-    Frame( 0, 0, 400, 28 + 8 * font.INFOS[Font::SANS].height, OZ_GETTEXT( "Settings" ) ),
-    message( 4, 24, 392, 8, Font::SANS )
+  Frame( 0, 0, 400, 28 + 8 * font.INFOS[Font::SANS].height, OZ_GETTEXT( "Settings" ) ),
+  message( 4, 24, 392, 8, Font::SANS )
 {
   x = ( Area::uiWidth  - width ) / 2;
   y = ( Area::uiHeight - height ) / 2;

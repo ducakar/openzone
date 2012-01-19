@@ -40,7 +40,7 @@ namespace matrix
 Library library;
 
 Library::Resource::Resource( const String& name_, const String& path_ ) :
-    name( name_ ), path( path_ )
+  name( name_ ), path( path_ )
 {}
 
 const BSP* Library::bsp( const char* name ) const

@@ -49,7 +49,8 @@ const float Terra::WAVE_BIAS_INC = 2.0f * Timer::TICK_TIME;
 
 Terra terra;
 
-Terra::Terra() : ibo( 0 ), waterTexId( 0 ), detailTexId( 0 ), mapTexId( 0 ), id( -1 )
+Terra::Terra() :
+  ibo( 0 ), waterTexId( 0 ), detailTexId( 0 ), mapTexId( 0 ), id( -1 )
 {
   for( int i = 0; i < TILES; ++i ) {
     for( int j = 0; j < TILES; ++j ) {

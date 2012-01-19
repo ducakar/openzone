@@ -42,7 +42,7 @@ namespace oz
 
 Exception::Exception( const char* file_, int line_, const char* function_,
                       const char* message_, ... ) throw() :
-    file( file_ ), function( function_ ), line( line_ )
+  file( file_ ), function( function_ ), line( line_ )
 {
   System::trap();
 

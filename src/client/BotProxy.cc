@@ -42,7 +42,8 @@ const float BotProxy::SHOULDER_CAM_UP        = 0.25f;
 const float BotProxy::VEHICLE_CAM_UP_FACTOR  = 0.15f;
 const float BotProxy::BOB_SUPPRESSION_COEF   = 0.60f;
 
-BotProxy::BotProxy() : hud( null ), infoFrame( null ), inventory( null ), container( null )
+BotProxy::BotProxy() :
+  hud( null ), infoFrame( null ), inventory( null ), container( null )
 {}
 
 void BotProxy::begin()

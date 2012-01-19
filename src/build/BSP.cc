@@ -1177,7 +1177,8 @@ void BSP::saveClient()
   log.printEnd( " OK" );
 }
 
-BSP::BSP( const char* name_ ) : name( name_ )
+BSP::BSP( const char* name_ ) :
+  name( name_ )
 {}
 
 BSP::~BSP()

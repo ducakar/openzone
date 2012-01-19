@@ -221,7 +221,8 @@ class Object : public AABB
       Event* next[1];
 
       OZ_ALWAYS_INLINE
-      explicit Event( int id_, float intensity_ ) : id( id_ ), intensity( intensity_ )
+      explicit Event( int id_, float intensity_ ) :
+        id( id_ ), intensity( intensity_ )
       {
         hard_assert( intensity >= 0.0f );
       }

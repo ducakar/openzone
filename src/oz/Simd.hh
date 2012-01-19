@@ -100,63 +100,72 @@ struct Simd
    * Create from a float SIMD vector.
    */
   OZ_ALWAYS_INLINE
-  Simd( float4 f4_ ) : f4( f4_ )
+  Simd( float4 f4_ ) :
+    f4( f4_ )
   {}
 
   /**
    * Initialise all SIMD components to the given float value.
    */
   OZ_ALWAYS_INLINE
-  Simd( float f ) : f4( float4( f, f, f, f ) )
+  Simd( float f ) :
+    f4( float4( f, f, f, f ) )
   {}
 
   /**
    * Create from an uint SIMD vector.
    */
   OZ_ALWAYS_INLINE
-  Simd( uint4 u4_ ) : u4( u4_ )
+  Simd( uint4 u4_ ) :
+    u4( u4_ )
   {}
 
   /**
    * Initialise all SIMD components to the given unsigned integer value.
    */
   OZ_ALWAYS_INLINE
-  Simd( uint u ) : u4( uint4( u, u, u, u ) )
+  Simd( uint u ) :
+    u4( uint4( u, u, u, u ) )
   {}
 
   /**
    * Create from <tt>Vec3</tt>.
    */
   OZ_ALWAYS_INLINE
-  Simd( const Vec3& v ) : f4( float4( v.x, v.y, v.z, 0.0f ) )
+  Simd( const Vec3& v ) :
+    f4( float4( v.x, v.y, v.z, 0.0f ) )
   {}
 
   /**
    * Create from <tt>Point3</tt>.
    */
   OZ_ALWAYS_INLINE
-  Simd( const Point3& p ) : f4( float4( p.x, p.y, p.z, 1.0f ) )
+  Simd( const Point3& p ) :
+    f4( float4( p.x, p.y, p.z, 1.0f ) )
   {}
 
   /**
    * Create from <tt>Plane</tt>.
    */
   OZ_ALWAYS_INLINE
-  Simd( const Plane& p ) : f4( float4( p.n.x, p.n.y, p.n.z, p.d ) )
+  Simd( const Plane& p ) :
+    f4( float4( p.n.x, p.n.y, p.n.z, p.d ) )
   {}
 
   /**
    * Create from <tt>Vec4</tt>.
    */
   OZ_ALWAYS_INLINE
-  Simd( const Vec4& v ) : f4( float4( v.x, v.y, v.z, v.w ) )
+  Simd( const Vec4& v ) :
+    f4( float4( v.x, v.y, v.z, v.w ) )
   {}
 
   /**
    * Create from <tt>Quat</tt>.
    */
   OZ_ALWAYS_INLINE
-  Simd( const Quat& q ) : f4( float4( q.x, q.y, q.z, q.w ) )
+  Simd( const Quat& q ) :
+    f4( float4( q.x, q.y, q.z, q.w ) )
   {}
 
   /**

@@ -131,7 +131,8 @@ void Lua::writeVariable( BufferStream* ostream )
   }
 }
 
-Lua::Lua() : l( null )
+Lua::Lua() :
+  l( null )
 {}
 
 void Lua::objectCall( const char* functionName, Object* self_, Bot* user_ )

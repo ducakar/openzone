@@ -42,7 +42,8 @@ inline bool operator < ( const PhysFile& a, const PhysFile& b )
   return String::compare( a.path(), b.path() ) < 0;
 }
 
-PhysFile::PhysFile() : type( File::NONE ), data( null )
+PhysFile::PhysFile() :
+  type( File::NONE ), data( null )
 {}
 
 PhysFile::~PhysFile()
@@ -51,12 +52,12 @@ PhysFile::~PhysFile()
 }
 
 PhysFile::PhysFile( const PhysFile& file ) :
-    filePath( file.filePath ), type( file.type ), data( null ), size( 0 )
+  filePath( file.filePath ), type( file.type ), data( null ), size( 0 )
 {}
 
 PhysFile::PhysFile( PhysFile&& file ) :
-    filePath( static_cast<String&&>( file.filePath ) ), type( file.type ),
-    data( file.data ), size( file.size )
+  filePath( static_cast<String&&>( file.filePath ) ), type( file.type ),
+  data( file.data ), size( file.size )
 {
   file.type = File::NONE;
   file.data = null;
@@ -95,7 +96,8 @@ PhysFile& PhysFile::operator = ( PhysFile&& file )
   return *this;
 }
 
-PhysFile::PhysFile( const char* path ) : filePath( path ), type( File::NONE ), data( null )
+PhysFile::PhysFile( const char* path ) :
+  filePath( path ), type( File::NONE ), data( null )
 {}
 
 void PhysFile::setPath( const char* path )

@@ -33,7 +33,8 @@ namespace oz
 namespace client
 {
 
-MD3::MD3( int id_ ) : id( id_ ), isLoaded( false )
+MD3::MD3( int id_ ) :
+  id( id_ ), isLoaded( false )
 {}
 
 MD3::~MD3()

@@ -113,7 +113,8 @@ class Pool
       /**
        * Create a new block.
        */
-      explicit Block( Block* next_ ) : next( next_ )
+      explicit Block( Block* next_ ) :
+        next( next_ )
       {
         for( int i = 0; i < BLOCK_SIZE - 1; ++i ) {
           data[i].nextSlot = &data[i + 1];
@@ -132,7 +133,8 @@ class Pool
     /**
      * Create an empty pool, storage is allocated when the first allocation is made.
      */
-    Pool() : firstBlock( null ), freeSlot( null ), size( 0 ), count( 0 )
+    Pool() :
+      firstBlock( null ), freeSlot( null ), size( 0 ), count( 0 )
     {}
 
     /**
@@ -152,7 +154,7 @@ class Pool
      * Move constructor, moves storage.
      */
     Pool( Pool&& p ) :
-        firstBlock( p.firstBlock ), freeSlot( p.freeSlot ), size( p.size ), count( p.count )
+      firstBlock( p.firstBlock ), freeSlot( p.freeSlot ), size( p.size ), count( p.count )
     {
       p.firstBlock = null;
       p.freeSlot   = null;
