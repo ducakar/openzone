@@ -64,7 +64,7 @@ class BSP : public Bounds
       int firstSide; ///< Index of the first plane index in <tt>bushSides</tt> array.
       int nSides;    ///< Number of plane indices.
 
-      int material;  ///< Material bits (look <tt>matrix::Material</tt>.
+      int material;  ///< %Material bits (look <tt>matrix::Material</tt>.
     };
 
     /**
@@ -76,27 +76,31 @@ class BSP : public Bounds
       {
         IGNORING,
         CRUSHING,
-        AUTO_DOOR
+        AUTO_DOOR,
+        MANUAL_DOOR
       };
 
-      Vec3   move;       ///< Move vector (destination - original position), in BSP coordinate
-                         ///< system.
+      Vec3  move;                  ///< Move vector (destination - original position), in %BSP
+                                   ///< coordinate system.
 
-      BSP*   bsp;        ///< Pointer to the parent BSP.
+      BSP*  bsp;                   ///< Pointer to the parent %BSP.
 
-      int    firstBrush; ///< Index of the first brush in <tt>brushes<tt> array.
-      int    nBrushes;   ///< Number of brushes.
+      int   firstBrush;            ///< Index of the first brush in <tt>brushes<tt> array.
+      int   nBrushes;              ///< Number of brushes.
 
-      float  ratioInc;
-      int    flags;      ///< Flags, not used for now.
-      Type   type;       ///< Model type.
+      float ratioInc;              ///< Step in ratio for each frame.
+      int   flags;                 ///< Flags, not used for now.
+      Type  type;                  ///< Model type.
 
-      float  margin;     ///< Margin around entity inside which objects trigger door opening.
-      float  timeout;    ///< Timeout after which entity starts opening/closing.
+      float margin;                ///< Margin around entity inside which triggers door opening.
+      float timeout;               ///< Timeout after which entity starts opening/closing.
 
-      int    openSound;  ///< Open sound sample, played when an entity starts moving.
-      int    closeSound; ///< Close sound sample, played when an entity stops moving.
-      int    frictSound; ///< Friction sound sample, played while the entity is moving.
+      int   openSound;             ///< Open sound sample, played when an entity starts moving.
+      int   closeSound;            ///< Close sound sample, played when an entity stops moving.
+      int   frictSound;            ///< Friction sound sample, played while the entity is moving.
+
+      const ObjectClass* keyClass; ///< %ObjectClass that must be in present inventory of the bot
+                                   ///< that tries to open the door.
     };
 
     struct BoundObject

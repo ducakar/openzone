@@ -25,8 +25,6 @@
 
 #include "build/modules/GalileoModule.hh"
 
-#include "matrix/Library.hh"
-
 #include "client/OpenGL.hh"
 
 #include "build/Context.hh"
@@ -62,13 +60,13 @@ void GalileoModule::build()
     PhysFile srcTextureFile( String::str( "terra/%s", terraConfig.get( "mapTexture", "" ) ) );
     File destTextureFile( "terra/" + file->baseName() + ".ozcTex" );
 
-    bool useS3TC = Context::useS3TC;
-    Context::useS3TC = false;
+    bool useS3TC = context.useS3TC;
+    context.useS3TC = false;
 
     BufferStream os;
 
-    uint id = Context::loadRawTexture( srcTextureFile.path(), true, GL_LINEAR, GL_LINEAR );
-    Context::writeTexture( id, &os );
+    uint id = context.loadRawTexture( srcTextureFile.path(), true, GL_LINEAR, GL_LINEAR );
+    context.writeTexture( id, &os );
     glDeleteTextures( 1, &id );
 
     log.print( "Writing to '%s' ...", destTextureFile.path().cstr() );
@@ -79,7 +77,7 @@ void GalileoModule::build()
 
     log.printEnd( " OK" );
 
-    Context::useS3TC = useS3TC;
+    context.useS3TC = useS3TC;
 
     terraConfig.clear();
 

@@ -195,9 +195,9 @@ class BSP : public Bounds
     /// Temporary structure for textures.
     struct Texture
     {
-      int id;
-      int flags;
-      int type;
+      String name;
+      int    flags;
+      int    type;
     };
 
     /// Temporary structure to hold per-model face indices.
@@ -219,6 +219,39 @@ class BSP : public Bounds
       int  nIndices;
 
       Vec3 normal;
+    };
+
+    /// Temporary structure for model.
+    struct Model : Bounds
+    {
+      Vec3   move;
+
+      BSP*   bsp;
+
+      int    firstBrush;
+      int    nBrushes;
+
+      float  ratioInc;
+      int    flags;
+
+      matrix::BSP::Model::Type type;
+
+      float  margin;
+      float  timeout;
+
+      String openSound;
+      String closeSound;
+      String frictSound;
+
+      String keyClass;
+    };
+
+    /// Temporary structure for bound objects.
+    struct BoundObject
+    {
+      String  clazz;
+      Point3  pos;
+      Heading heading;
     };
 
     String                  name;
@@ -245,7 +278,7 @@ class BSP : public Bounds
     matrix::BSP::Node*      nodes;
     matrix::BSP::Leaf*      leaves;
     int*                    leafBrushes;
-    matrix::BSP::Model*     models;
+    Model*                  models;
     matrix::BSP::Brush*     brushes;
     int*                    brushSides;
     ModelFaces*             modelFaces;
@@ -253,10 +286,10 @@ class BSP : public Bounds
     int*                    indices;
     Face*                   faces;
 
-    const matrix::FragPool* fragPool;
+    String                  fragPool;
     int                     nFrags;
 
-    Vector<matrix::BSP::BoundObject> boundObjects;
+    Vector<BoundObject>     boundObjects;
 
     bool includes( const matrix::BSP::Brush& brush, float maxDim ) const;
 
@@ -270,8 +303,6 @@ class BSP : public Bounds
     ~BSP();
 
   public:
-
-    static Bitset usedTextures;
 
     // create ozBSP from a Quake 3 QBSP and optimise it
     static void build( const char* name );

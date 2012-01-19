@@ -42,7 +42,7 @@ Imago* ExplosionImago::create( const Object* obj )
 {
   ExplosionImago* imago = new ExplosionImago( obj );
 
-  modelId = library.modelIndex( "explosion" );
+  modelId = obj->clazz->imagoModel;
 
   imago->smm = context.requestSMM( modelId );
   imago->startMillis = timer.millis;

@@ -29,8 +29,7 @@
 
 #pragma once
 
-#include "BufferStream.hh"
-#include "Buffer.hh"
+#include "File.hh"
 
 namespace oz
 {
@@ -45,25 +44,12 @@ namespace oz
  */
 class PhysFile
 {
-  public:
-
-    /**
-     * %File type classification.
-     */
-    enum Type
-    {
-      NONE,
-      REGULAR,
-      DIRECTORY,
-      MISSING
-    };
-
   private:
 
-    String filePath; ///< %File path.
-    Type   type;     ///< Cached file type.
-    char*  data;     ///< Mapped memory.
-    int    size;     ///< Mapped memory size.
+    String     filePath; ///< %File path.
+    File::Type type;     ///< Cached file type.
+    char*      data;     ///< Mapped memory.
+    int        size;     ///< Mapped memory size.
 
   public:
 
@@ -118,7 +104,7 @@ class PhysFile
      *
      * %File type is cached until one changes the file path.
      */
-    Type getType();
+    File::Type getType();
 
     /**
      * %File path in virtual FS.

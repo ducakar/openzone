@@ -27,8 +27,6 @@
 
 #include "BuildInfo.hh"
 
-#include "matrix/Library.hh"
-
 #include "client/Render.hh"
 #include "client/Module.hh"
 #include "client/OpenGL.hh"
@@ -146,7 +144,7 @@ static void copyFiles( const char* srcDir, const char* destDir, const char* ext,
   foreach( file, dirList.iter() ) {
     String fileName = file->name();
 
-    if( file->getType() == PhysFile::DIRECTORY ) {
+    if( file->getType() == File::DIRECTORY ) {
       if( recurse ) {
         copyFiles( srcDir + ( "/" + file->name() ), destDir + ( "/" + file->name() ), ext, true );
       }
@@ -203,14 +201,14 @@ static void buildTextures( const char* srcDir, const char* destDir,
       log.print( "Copying '%s' ...", fileName.cstr() );
 
       if( !file->map() ) {
-        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
+        throw Exception( "Failed to read '%s'", file->realPath().cstr() );
       }
 
       InputStream is = file->inputStream();
       File destFile( String::str( "%s/%s", destDir, fileName.cstr() ) );
 
       if( !destFile.write( &is ) ) {
-        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
+        throw Exception( "Failed to write '%s'", file->realPath().cstr() );
       }
 
       file->unmap();
@@ -229,14 +227,14 @@ static void buildTextures( const char* srcDir, const char* destDir,
     log.println( "Building texture '%s' {", srcPath.cstr() );
     log.indent();
 
-    uint id = Context::loadRawTexture( srcPath, wrap, magFilter, minFilter );
+    uint id = context.loadRawTexture( srcPath, wrap, magFilter, minFilter );
 
     hard_assert( id != 0 );
 
     BufferStream os;
 
     log.println( "Compiling into '%s'", destPath.cstr() );
-    Context::writeTexture( id, &os );
+    context.writeTexture( id, &os );
 
     glDeleteTextures( 1, &id );
 
@@ -270,6 +268,7 @@ static void buildCaela()
 
     String name = file->baseName();
 
+    File::mkdir( "caelum" );
     Caelum::build( name );
   }
 
@@ -293,6 +292,7 @@ static void buildTerrae()
       continue;
     }
 
+    File::mkdir( "terra" );
     Terra::build( file->baseName() );
   }
 
@@ -369,6 +369,7 @@ static void buildBSPs()
       continue;
     }
 
+    File::mkdir( "bsp" );
     BSP::build( file->baseName() );
   }
 
@@ -376,54 +377,190 @@ static void buildBSPs()
   log.println( "}" );
 }
 
-static void buildBSPTextures( const char* mountPoint )
+static void buildBSPTextures()
 {
-  log.println( "Building BSP textures {" );
+  log.println( "Building used BSP textures {" );
   log.indent();
 
-  for( int i = 0; i < library.textures.length(); ++i ) {
-    if( !BSP::usedTextures.get( i ) ) {
+  PhysFile dir( "data/textures" );
+  DArray<PhysFile> dirList = dir.ls();
+
+  foreach( subDir, dirList.iter() ) {
+    if( subDir->getType() != File::DIRECTORY ) {
       continue;
     }
 
-    String srcPath = String::str( "%s/%s", mountPoint, library.textures[i].path.cstr() );
-    String destPath = String::str( "bsp/%s.ozcTex", library.textures[i].name.cstr() );
+    DArray<PhysFile> texList = subDir->ls();
 
-    log.println( "Building texture '%s' {", srcPath.cstr() );
-    log.indent();
+    foreach( file, texList.iter() ) {
+      String name = file->name();
+      String path = file->path();
 
-    uint id = Context::loadRawTexture( srcPath );
+      if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
+        log.print( "Copying '%s' ...", path.cstr() );
 
-    hard_assert( id != 0 );
+        if( !file->map() ) {
+          throw Exception( "Failed to read '%s'", file->realPath().cstr() );
+        }
 
-    BufferStream os;
+        InputStream is = file->inputStream();
+        File destFile( String::str( "tex/%s/%s", subDir->name().cstr(), name.cstr() ) );
 
-    log.println( "Compiling into '%s'", destPath.cstr() );
-    Context::writeTexture( id, &os );
+        File::mkdir( "tex" );
+        File::mkdir( "tex/" + subDir->name() );
 
-    int slash = destPath.lastIndex( '/' );
-    hard_assert( slash != -1 );
-    String dir = destPath.substring( 0, slash );
+        if( !destFile.write( &is ) ) {
+          throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+        }
 
-    File::mkdir( dir );
+        file->unmap();
 
-    if( !File( destPath ).write( &os ) ) {
-      throw Exception( "Texture writing failed" );
+        log.printEnd( " OK" );
+        continue;
+      }
+
+      int dot   = path.lastIndex( '.' );
+      int slash = path.lastIndex( '/' );
+
+      if( slash >= dot ) {
+        continue;
+      }
+
+      hard_assert( slash > 13 );
+
+      name = path.substring( 14, dot );
+
+      if( !context.usedTextures.contains( name ) ) {
+        continue;
+      }
+
+      log.println( "Building texture '%s' {", name.cstr() );
+      log.indent();
+
+      File::mkdir( "tex" );
+      File::mkdir( "tex/" + subDir->name() );
+
+      File destFile( String::str( "tex/%s.ozcTex", name.cstr() ) );
+
+      uint id = context.loadRawTexture( path );
+
+      BufferStream os;
+
+      log.println( "Compiling into '%s'", destFile.path().cstr() );
+      context.writeTexture( id, &os );
+
+      if( !destFile.write( &os ) ) {
+        throw Exception( "Failed to write texture '%s'", destFile.path().cstr() );
+      }
+
+      log.unindent();
+      log.println( "}" );
     }
-
-    log.unindent();
-    log.println( "}" );
   }
-
-  BSP::usedTextures.dealloc();
 
   log.unindent();
   log.println( "}" );
 }
 
+static void tagClassResources()
+{
+  log.print( "Extracting model and sound names form object class definitions ..." );
+
+  String dirName = "class";
+  PhysFile dir( dirName );
+  DArray<PhysFile> dirList = dir.ls();
+
+  foreach( file, dirList.iter() ) {
+    if( !file->hasExtension( "rc" ) ) {
+      continue;
+    }
+
+    Config classConfig;
+    classConfig.load( *file );
+
+    const char* imagoModel      = classConfig.get( "imagoModel", "" );
+
+    const char* createSound     = classConfig.get( "audioSound.create", "" );
+    const char* destroySound    = classConfig.get( "audioSound.destroy", "" );
+    const char* useSound        = classConfig.get( "audioSound.use", "" );
+    const char* damageSound     = classConfig.get( "audioSound.damage", "" );
+    const char* hitSound        = classConfig.get( "audioSound.hit", "" );
+    const char* splashSound     = classConfig.get( "audioSound.splash", "" );
+    const char* frictingSound   = classConfig.get( "audioSound.fricting", "" );
+    const char* shotSound       = classConfig.get( "audioSound.shot", "" );
+    const char* shotEmptySound  = classConfig.get( "audioSound.shotEmpty", "" );
+    const char* hitHardSound    = classConfig.get( "audioSound.hitHard", "" );
+    const char* landSound       = classConfig.get( "audioSound.land", "" );
+    const char* jumpSound       = classConfig.get( "audioSound.jump", "" );
+    const char* flipSound       = classConfig.get( "audioSound.flip", "" );
+    const char* deathSound      = classConfig.get( "audioSound.death", "" );
+    const char* engineSound     = classConfig.get( "audioSound.engine", "" );
+    const char* nextWeaponSound = classConfig.get( "audioSound.nextWeapon", "" );
+    const char* shot0Sound      = classConfig.get( "audioSound.shot0", "" );
+    const char* shot1Sound      = classConfig.get( "audioSound.shot1", "" );
+    const char* shot2Sound      = classConfig.get( "audioSound.shot2", "" );
+    const char* shot3Sound      = classConfig.get( "audioSound.shot3", "" );
+
+    context.usedModels.include( imagoModel );
+
+    context.usedSounds.include( createSound );
+    context.usedSounds.include( destroySound );
+    context.usedSounds.include( useSound );
+    context.usedSounds.include( damageSound );
+    context.usedSounds.include( hitSound );
+    context.usedSounds.include( splashSound );
+    context.usedSounds.include( frictingSound );
+    context.usedSounds.include( shotSound );
+    context.usedSounds.include( shotEmptySound );
+    context.usedSounds.include( hitHardSound );
+    context.usedSounds.include( landSound );
+    context.usedSounds.include( jumpSound );
+    context.usedSounds.include( flipSound );
+    context.usedSounds.include( deathSound );
+    context.usedSounds.include( engineSound );
+    context.usedSounds.include( nextWeaponSound );
+    context.usedSounds.include( shot0Sound );
+    context.usedSounds.include( shot1Sound );
+    context.usedSounds.include( shot2Sound );
+    context.usedSounds.include( shot3Sound );
+  }
+
+  log.printEnd( " OK" );
+}
+
+static void tagFragResources()
+{
+  log.print( "Extracting model names form fragment pool definitions..." );
+
+  String dirName = "frag";
+  PhysFile dir( dirName );
+  DArray<PhysFile> dirList = dir.ls();
+
+  foreach( file, dirList.iter() ) {
+    if( !file->hasExtension( "rc" ) ) {
+      continue;
+    }
+
+    Config fragConfig;
+    fragConfig.load( *file );
+
+    char buffer[] = "model  ";
+    for( int i = 0; i < matrix::FragPool::MAX_MODELS; ++i ) {
+      hard_assert( i < 100 );
+
+      buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
+      buffer[ sizeof( buffer ) - 2 ] = char( '0' + ( i % 10 ) );
+
+      context.usedModels.include( fragConfig.get( buffer, "" ) );
+    }
+  }
+
+  log.printEnd( " OK" );
+}
+
 static void buildModels()
 {
-  log.println( "Building models {" );
+  log.println( "Building used models {" );
   log.indent();
 
   String dirName = "mdl";
@@ -433,15 +570,22 @@ static void buildModels()
   dirName = dirName + "/";
 
   foreach( file, dirList.citer() ) {
+    if( !context.usedModels.contains( file->name() ) ) {
+      continue;
+    }
+
     String path = file->path();
 
-    if( PhysFile( path + "/data.obj" ).getType() != PhysFile::MISSING ) {
+    if( PhysFile( path + "/data.obj" ).getType() != File::MISSING ) {
+      File::mkdir( "mdl" );
       OBJ::build( path );
     }
-    else if( PhysFile( path + "/tris.md2" ).getType() != PhysFile::MISSING ) {
+    else if( PhysFile( path + "/tris.md2" ).getType() != File::MISSING ) {
+      File::mkdir( "mdl" );
       MD2::build( path );
     }
-    else if( PhysFile( path + "/.md3" ).getType() != PhysFile::MISSING ) {
+    else if( PhysFile( path + "/.md3" ).getType() != File::MISSING ) {
+      File::mkdir( "mdl" );
       MD3::build( path );
     }
   }
@@ -450,10 +594,85 @@ static void buildModels()
   log.println( "}" );
 }
 
-static void buildSounds()
+static void copySounds()
 {
   log.println( "Copying used sounds {" );
   log.indent();
+
+  PhysFile dir( "snd" );
+  DArray<PhysFile> dirList = dir.ls();
+
+  foreach( subDir, dirList.iter() ) {
+    if( subDir->getType() != File::DIRECTORY ) {
+      continue;
+    }
+
+    DArray<PhysFile> texList = subDir->ls();
+
+    foreach( file, texList.iter() ) {
+      String name = file->name();
+      String path = file->path();
+
+      if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
+        log.print( "Copying '%s' ...", path.cstr() );
+
+        if( !file->map() ) {
+          throw Exception( "Failed to read '%s'", file->realPath().cstr() );
+        }
+
+        InputStream is = file->inputStream();
+        File destFile( path );
+
+        File::mkdir( "snd" );
+        File::mkdir( "snd/" + subDir->name() );
+
+        if( !destFile.write( &is ) ) {
+          throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+        }
+
+        file->unmap();
+
+        log.printEnd( " OK" );
+        continue;
+      }
+
+      int dot   = path.lastIndex( '.' );
+      int slash = path.lastIndex( '/' );
+
+      if( slash >= dot ) {
+        continue;
+      }
+
+      hard_assert( slash > 3 );
+
+      name = path.substring( 4, dot );
+
+      if( !context.usedSounds.contains( name ) ) {
+        continue;
+      }
+
+      log.print( "Copying '%s' ...", name.cstr() );
+
+      File::mkdir( "snd" );
+      File::mkdir( "snd/" + subDir->name() );
+
+      if( !file->map() ) {
+        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
+      }
+
+      InputStream is = file->inputStream();
+
+      File destFile( file->path() );
+
+      if( !destFile.write( &is ) ) {
+        throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+      }
+
+      file->unmap();
+
+      log.printEnd( " OK" );
+    }
+  }
 
   log.unindent();
   log.println( "}" );
@@ -503,9 +722,13 @@ static void packArchive( const char* name )
   log.println( "Packing archive {" );
   log.indent();
 
-  String cmdLine = String::str( "zip -Z store -r \"../%s.zip\" *", name );
+  String path = String::str( "../%s.zip", name );
+  String cmdLine = String::str( "zip -Z store -r \"%s\" *", path.cstr() );
 
   log.println( "%s", cmdLine.cstr() );
+  log.println();
+
+  File::unlink( path );
   system( cmdLine );
 
   log.unindent();
@@ -515,8 +738,8 @@ static void packArchive( const char* name )
 static void shutdown()
 {
   compiler.free();
+  context.free();
   client::render.free( true );
-  library.free();
   config.clear( true );
 
   SDL_Quit();
@@ -615,7 +838,7 @@ int main( int argc, char** argv )
         break;
       }
       case 'C': {
-        Context::useS3TC = true;
+        context.useS3TC = true;
         break;
       }
       case 'A': {
@@ -661,7 +884,7 @@ int main( int argc, char** argv )
     return EXIT_FAILURE;
   }
 
-  String pkgName = dataDir.substring( dataDir.index( '/' ) );
+  String pkgName = dataDir.substring( dataDir.lastIndex( '/' ) + 1 );
 
   if( dataDir[0] != '/' ) {
     dataDir = File::cwd() + "/" + dataDir;
@@ -710,8 +933,7 @@ int main( int argc, char** argv )
 
   uint startTime = Time::clock();
 
-  // FIXME
-//   library.init();
+  context.init();
 
   config.add( "screen.width", "400" );
   config.add( "screen.height", "40" );
@@ -719,7 +941,7 @@ int main( int argc, char** argv )
   client::render.init( true );
   SDL_WM_SetCaption( OZ_APPLICATION_TITLE " :: Building data ...", null );
 
-  if( !client::shader.hasS3TC && Context::useS3TC ) {
+  if( !client::shader.hasS3TC && context.useS3TC ) {
     throw Exception( "S3 texture compression enabled but not supported" );
   }
 
@@ -755,10 +977,10 @@ int main( int argc, char** argv )
     lingua.build();
   }
   if( doUI ) {
-    bool useS3TC = Context::useS3TC;
-    Context::useS3TC = false;
+    bool useS3TC = context.useS3TC;
+    context.useS3TC = false;
 
-    if( PhysFile( "ui/cur" ).getType() != PhysFile::MISSING ) {
+    if( PhysFile( "ui/cur" ).getType() != File::MISSING ) {
       Mouse::build();
     }
 
@@ -767,7 +989,7 @@ int main( int argc, char** argv )
     buildTextures( "ui/icon", "ui/icon", true, GL_LINEAR, GL_LINEAR );
     buildTextures( "ui/galileo", "ui/galileo", true, GL_LINEAR, GL_LINEAR );
 
-    Context::useS3TC = useS3TC;
+    context.useS3TC = useS3TC;
   }
   if( doShaders ) {
     copyFiles( "glsl", "glsl", "glsl", false );
@@ -783,19 +1005,21 @@ int main( int argc, char** argv )
   if( doBSPs ) {
     compileBSPs();
     buildBSPs();
-    buildBSPTextures( dataDir );
+    buildBSPTextures();
+  }
+  if( doClasses ) {
+    tagClassResources();
+    copyFiles( "class", "class", "rc", false );
+  }
+  if( doFrags ) {
+    tagFragResources();
+    copyFiles( "frag", "frag", "rc", false );
   }
   if( doModels ) {
     buildModels();
   }
   if( doSounds ) {
-    buildSounds();
-  }
-  if( doClasses ) {
-    copyFiles( "class", "class", "rc", false );
-  }
-  if( doFrags ) {
-    copyFiles( "frag", "frag", "rc", false );
+    copySounds();
   }
   if( doNames ) {
     copyFiles( "name", "name", "txt", false );
@@ -817,11 +1041,13 @@ int main( int argc, char** argv )
     packArchive( pkgName );
   }
 
-  uint endTime = Time::clock();
+  context.free();
 
   FreeImage_DeInitialise();
   PhysFile::free();
   SDL_Quit();
+
+  uint endTime = Time::clock();
 
   log.println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
 

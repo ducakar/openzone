@@ -185,8 +185,6 @@ void BSP::play( const Struct* str ) const
 
 void BSP::load()
 {
-  log.verboseMode = true;
-
   log.println( "Loading BSP model '%s' {", bsp->name.cstr() );
   log.indent();
 
@@ -205,8 +203,6 @@ void BSP::load()
 
   log.unindent();
   log.println( "}" );
-
-  log.verboseMode = false;
 
   isLoaded = true;
 }

@@ -16,13 +16,13 @@ echo rm -f $dir'/terra/*.{ozTerra,ozcTerra,ozcTex}'
 rm -f $dir/terra/*.{ozTerra,ozcTerra,ozcTex}
 echo rm -f $dir'/data/maps/*{autosave.map,.bak}'
 rm -f $dir/data/maps/*{autosave.map,.bak}
-#echo rm -f $dir'/data/maps/*.{bsp,prt,srf}'
-#rm -f $dir/data/maps/*.{bsp,prt,srf}
-#echo rm -f $dir'/bsp/*.{ozBSP,ozcBSP}'
-#rm -f $dir/bsp/*.{ozBSP,ozcBSP}
-#echo rm -f $dir'/bsp/*/*.ozcTex'
-#rm -f $dir/bsp/*/*.ozcTex
-#echo rm -f $dir'/mdl/*.{ozcSMM,ozcMD2,ozcMD3}'
-#rm -f $dir/mdl/*.{ozcSMM,ozcMD2,ozcMD3}
-#echo rm -f $dir'/mdl/*/*.{blend1,blend2}'
-#rm -f $dir/mdl/*/*.{blend1,blend2}
+echo rm -f $dir'/data/maps/*.{bsp,prt,srf}'
+rm -f $dir/data/maps/*.{bsp,prt,srf}
+echo rm -f $dir'/bsp/*.{ozBSP,ozcBSP}'
+rm -f $dir/bsp/*.{ozBSP,ozcBSP}
+echo rm -f $dir'/bsp/*/*.ozcTex'
+rm -f $dir/bsp/*/*.ozcTex
+echo rm -f $dir'/mdl/*.{ozcSMM,ozcMD2,ozcMD3}'
+rm -f $dir/mdl/*.{ozcSMM,ozcMD2,ozcMD3}
+echo rm -f $dir'/mdl/*/*.{blend1,blend2}'
+rm -f $dir/mdl/*/*.{blend1,blend2}

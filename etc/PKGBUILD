@@ -42,7 +42,7 @@ build()
 package_liboz()
 {
   pkgdesc='OpenZone core library'
-  depends=('libpulse' 'physfs')
+  depends=('gcc-libs' 'libpulse' 'physfs')
   conflicts=('liboz')
   provides=('liboz')
 

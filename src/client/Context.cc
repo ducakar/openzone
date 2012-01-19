@@ -217,7 +217,7 @@ uint Context::requestTexture( int id )
 
   resource.id = GL_NONE;
 
-  PhysFile file( "bsp/" + name + ".ozcTex" );
+  PhysFile file( "tex/" + name + ".ozcTex" );
   if( !file.map() ) {
     throw Exception( "Texture file mmap failed" );
   }

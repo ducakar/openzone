@@ -193,23 +193,29 @@ class File
     bool write( const BufferStream* bstream ) const;
 
     /**
+     * Delete file.
+     */
+    static bool unlink( const char* path );
+
+    /**
      * Return current directory.
      */
     static String cwd();
 
     /**
      * Change current directory.
-     *
-     * @return True on success.
      */
     static bool chdir( const char* path );
 
     /**
      * Make a new directory.
-     *
-     * @return True on success.
      */
     static bool mkdir( const char* path, uint mode = 0755 );
+
+    /**
+     * Delete empty directory.
+     */
+    static bool rmdir( const char* path );
 
     /**
      * Generate a list of files in directory.

@@ -42,7 +42,7 @@ inline bool operator < ( const PhysFile& a, const PhysFile& b )
   return String::compare( a.path(), b.path() ) < 0;
 }
 
-PhysFile::PhysFile() : type( NONE ), data( null )
+PhysFile::PhysFile() : type( File::NONE ), data( null )
 {}
 
 PhysFile::~PhysFile()
@@ -58,7 +58,7 @@ PhysFile::PhysFile( PhysFile&& file ) :
     filePath( static_cast<String&&>( file.filePath ) ), type( file.type ),
     data( file.data ), size( file.size )
 {
-  file.type = NONE;
+  file.type = File::NONE;
   file.data = null;
 }
 
@@ -89,13 +89,13 @@ PhysFile& PhysFile::operator = ( PhysFile&& file )
   data     = file.data;
   size     = file.size;
 
-  file.type = NONE;
+  file.type = File::NONE;
   file.data = null;
 
   return *this;
 }
 
-PhysFile::PhysFile( const char* path ) : filePath( path ), type( NONE ), data( null )
+PhysFile::PhysFile( const char* path ) : filePath( path ), type( File::NONE ), data( null )
 {}
 
 void PhysFile::setPath( const char* path )
@@ -103,21 +103,21 @@ void PhysFile::setPath( const char* path )
   delete[] data;
 
   filePath = path;
-  type     = NONE;
+  type     = File::NONE;
   data     = null;
 }
 
-PhysFile::Type PhysFile::getType()
+File::Type PhysFile::getType()
 {
-  if( type == NONE ) {
+  if( type == File::NONE ) {
     if( !PHYSFS_exists( filePath ) ) {
-      type = MISSING;
+      type = File::MISSING;
     }
     else if( PHYSFS_isDirectory( filePath ) ) {
-      type = DIRECTORY;
+      type = File::DIRECTORY;
     }
     else {
-      type = REGULAR;
+      type = File::REGULAR;
     }
   }
   return type;
@@ -257,7 +257,7 @@ DArray<PhysFile> PhysFile::ls()
 {
   DArray<PhysFile> array;
 
-  if( getType() != DIRECTORY ) {
+  if( getType() != File::DIRECTORY ) {
     return array;
   }
 
