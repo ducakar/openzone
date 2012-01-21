@@ -1,5 +1,6 @@
 add_executable( ozBuild
   BSP.cc
+  Build.cc
   Caelum.cc
   Compiler.cc
   Context.cc
