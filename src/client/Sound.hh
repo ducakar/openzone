@@ -104,6 +104,8 @@ class Sound
     void streamClear();
     bool streamDecode( uint buffer );
 
+    static int streamMain( void* );
+
   public:
 
     void setVolume( float volume );

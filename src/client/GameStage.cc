@@ -55,12 +55,11 @@ String GameStage::QUICKSAVE_FILE;
 
 int GameStage::auxMain( void* )
 {
-  System::init();
-
   try{
     gameStage.run();
   }
   catch( const std::exception& e ) {
+    log.verboseMode = false;
     log.printException( e );
 
     System::bell();

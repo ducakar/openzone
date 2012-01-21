@@ -4,15 +4,13 @@
     + elevators
     + switches
     + MANUAL_DOOR
+    + keys
   * Vehicle
     + improve rotation
 - client
   * smooth loading
   * options menu
   * MD3 animation
-  * distant objects fade out
-- build
-  * separate build directory
 
 0.4
 - new löök
@@ -25,6 +23,7 @@
 - ui
   * advanced HUD for mechanic units and vehicles
 - client
+  * distant objects fade out
   * BSP rendering per partes
   * decals
   * particle model (smoke, fire ...)

@@ -58,8 +58,8 @@ inline bool BSP::includes( const matrix::BSP::Brush& brush, float maxDim ) const
 
 void BSP::load()
 {
-  PhysFile rcFile( String::str( "data/maps/%s.rc", name.cstr() ) );
-  PhysFile bspFile( String::str( "data/maps/%s.bsp", name.cstr() ) );
+  PhysFile rcFile( String::str( "baseq3/maps/%s.rc", name.cstr() ) );
+  PhysFile bspFile( String::str( "baseq3/maps/%s.bsp", name.cstr() ) );
 
   Config bspConfig;
   if( !bspConfig.load( rcFile ) ) {
@@ -120,7 +120,7 @@ void BSP::load()
     textures[i].flags = is.readInt();
     textures[i].type  = is.readInt();
 
-    if( textures[i].name.length() < 10 || textures[i].name.endsWith( "NULL" ) ||
+    if( textures[i].name.length() < 10 || textures[i].name.endsWith( "NONE" ) ||
         ( textures[i].flags & QBSP_LADDER_FLAG_BIT ) )
     {
       textures[i].name = "";

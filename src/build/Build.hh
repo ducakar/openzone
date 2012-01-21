@@ -18,49 +18,46 @@
  */
 
 /**
- * @file client/Client.hh
+ * @file build/Build.hh
  *
- * Game initialisation and main loop.
+ * Data builder.
  */
-
-#pragma once
-
-#include "client/Stage.hh"
 
 namespace oz
 {
-namespace client
+namespace build
 {
 
-class Client
+class Build
 {
   private:
 
-    static const int INIT_SDL        = 0x0001;
-    static const int INIT_PHYSFS     = 0x0002;
-    static const int INIT_CONFIG     = 0x0010;
-    static const int INIT_LINGUA     = 0x0020;
-    static const int INIT_LIBRARY    = 0x0040;
-    static const int INIT_CONTEXT    = 0x0100;
-    static const int INIT_RENDER     = 0x0200;
-    static const int INIT_AUDIO      = 0x0400;
-    static const int INIT_STAGE_INIT = 0x1000;
-    static const int INIT_STAGE_LOAD = 0x2000;
-    static const int INIT_MAIN_LOOP  = 0x4000;
+    void printUsage();
 
-    Stage* stage;
-    int    initFlags;
+    void copyFiles( const char* srcDir, const char* destDir, const char* ext, bool recurse );
+    void buildTextures( const char* srcDir, const char* destDir, bool wrap,
+                        int magFilter, int minFilter );
+
+    void buildCaela();
+    void buildTerrae();
+    void buildBSPs();
+    void buildBSPTextures();
+    void tagClassResources();
+    void tagFragResources();
+    void buildModels();
+    void copySounds();
+    void buildModules();
+    void checkLua( const char* path );
+    void packArchive( const char* name );
 
   public:
 
     void shutdown();
-    void printUsage();
-
     int  main( int argc, char** argv );
 
 };
 
-extern Client client;
+extern Build build;
 
 }
 }

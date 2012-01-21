@@ -463,6 +463,21 @@ bool Sound::streamDecode( uint buffer )
   }
 }
 
+int Sound::streamMain( void* )
+{
+  try{
+//     sound.run();
+  }
+  catch( const std::exception& e ) {
+    log.verboseMode = false;
+    log.printException( e );
+
+    System::bell();
+    System::abort();
+  }
+  return 0;
+}
+
 void Sound::setVolume( float volume_ )
 {
   volume = volume_;
