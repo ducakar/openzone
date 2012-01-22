@@ -39,7 +39,7 @@ class MenuStage : public Stage
     bool doExit;
 
     virtual bool update();
-    virtual void present();
+    virtual void present( bool isFull );
 
     virtual void load();
     virtual void unload();

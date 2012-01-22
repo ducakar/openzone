@@ -56,7 +56,7 @@ String GameStage::QUICKSAVE_FILE;
 int GameStage::auxMain( void* )
 {
   try{
-    gameStage.run();
+    gameStage.auxRun();
   }
   catch( const std::exception& e ) {
     log.verboseMode = false;
@@ -68,7 +68,7 @@ int GameStage::auxMain( void* )
   return 0;
 }
 
-void GameStage::run()
+void GameStage::auxRun()
 {
   uint beginTime;
 
@@ -179,11 +179,10 @@ void GameStage::reload()
   camera.prepare();
 
   render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
-  loader.update();
+  sound.play();
   render.sync();
 
-  sound.play();
-  sound.update();
+  loader.update();
 
   ui::ui.prepare();
   ui::ui.showLoadingScreen( false );
@@ -258,20 +257,23 @@ bool GameStage::update()
 
   camera.prepare();
 
-  // play sounds, but don't do any streaming
-  sound.play();
-
   soundMillis += Time::clock() - beginTime;
   return true;
 }
 
-void GameStage::present()
+void GameStage::present( bool full )
 {
   uint beginTime = Time::clock();
 
-  render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
-  sound.update();
-  render.sync();
+  if( full ) {
+    render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+  }
+
+  sound.play();
+
+  if( full ) {
+    render.sync();
+  }
 
   presentMillis += Time::clock() - beginTime;
 }
@@ -421,11 +423,10 @@ void GameStage::load()
   ui::ui.showLoadingScreen( true );
 
   render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
-  loader.update();
+  sound.play();
   render.sync();
 
-  sound.play();
-  sound.update();
+  loader.update();
 
   ui::ui.prepare();
   ui::ui.showLoadingScreen( false );

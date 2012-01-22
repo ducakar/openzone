@@ -191,13 +191,9 @@ dir.prefix [string] Linux: "/usr", Windows: "."
   Prefix path to game directory structure. The share/openzone and share/locale directories should be
   located inside the prefix directory.
 
-locale.messages [string] ""
-  Which locale should be used for translations. Empty string means the system locale is used.
-  Currently there are only Slovene and English translations.
-
-  Linux note: this setting overrides LC_MESSAGES environment variable. To see current locale
-  settings run "locale", to see a list of all available (installed/generated) locales on your system
-  run "locale -a".
+lingua [string] ""
+  Language code for translations. Language code must correspond to a subdirectory of "lingua"
+  directory in one of game data archives.
 
 modules.profile.playerName [string] "<user>"
   Name of the player. Capitalised username of the current user is used by default.

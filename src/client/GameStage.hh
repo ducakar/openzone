@@ -50,7 +50,6 @@ class GameStage : public Stage
     SDL_Thread*     auxThread;
     SDL_sem*        mainSemaphore;
     SDL_sem*        auxSemaphore;
-
     volatile bool   isAlive;
 
     bool            isLoaded;
@@ -77,13 +76,13 @@ class GameStage : public Stage
 
     static int auxMain( void* );
 
-    void run();
+    void auxRun();
     void reload();
 
   public:
 
     virtual bool update();
-    virtual void present();
+    virtual void present( bool full );
 
     bool read( const char* path );
     void write( const char* path ) const;

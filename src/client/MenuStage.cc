@@ -45,9 +45,10 @@ bool MenuStage::update()
   return !doExit;
 }
 
-void MenuStage::present()
+void MenuStage::present( bool )
 {
   render.draw( Render::DRAW_UI_BIT );
+  sound.play();
   render.sync();
 }
 
@@ -57,8 +58,6 @@ void MenuStage::load()
   ui::mouse.currButtons = 0;
 
   ui::ui.root->add( new ui::MainMenu() );
-
-  sound.update();
 
   ui::ui.showLoadingScreen( false );
   ui::mouse.doShow = true;

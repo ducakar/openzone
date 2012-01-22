@@ -194,13 +194,9 @@ dir.prefix [string] Linux: "/usr", Windows: "."
   Predpona za imenike v katerih se nahajajo podatki za igro. Imenika share/openzone in share/locale
   se morata nahajati v tem imeniku.
 
-locale.messages [string] ""
-  Lokalizacija, ki naj se uporabi za prevode. Prazen niz pomeni, da se uporabi sistemska
-  lokalizacija. Trenutno so na voljo le slovenski in angleški prevodi.
-
-  Opomba za Linux: ta nastavitev zaobide okoljsko spremenljivko LC_MESSAGES. Če želite trenutne
-  lokalizacijke nastavitve vašega sistema poženite "locale", če pa vse lokalizacije, ki so na voljo
-  (so nameščene/zgenerirane), pa poženite "locale -a".
+lingua [string] ""
+  Koda jezika, za katerega naj se naložijo prevodi. Ta mora ustrezati imenu katerega od podimenikov
+  imenika "lingua", ki se nahaja v katerem od arhivov s podatki.
 
 modules.profile.playerName [string] "<user>"
   Ime igralca. Privzeto se uporabi uporabniško ime z veliko začetnico.

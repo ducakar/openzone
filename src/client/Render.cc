@@ -529,17 +529,15 @@ void Render::init( bool isBuild )
   log.println( "OpenGL version: %s", version.cstr() );
 
   log.verboseMode = true;
+
   log.println( "OpenGL extensions {" );
   log.indent();
-  log.verboseMode = false;
 
   if( strstr( vendor, "ATI" ) != null ) {
     isCatalyst = true;
   }
   foreach( extension, extensions.citer() ) {
-    log.verboseMode = true;
     log.println( "%s", extension->cstr() );
-    log.verboseMode = false;
 
     if( extension->equals( "GL_ARB_framebuffer_object" ) ) {
       hasFBO = true;
@@ -557,9 +555,9 @@ void Render::init( bool isBuild )
 #endif
   }
 
-  log.verboseMode = true;
   log.unindent();
   log.println( "}" );
+
   log.verboseMode = false;
 
   int major = atoi( version );
