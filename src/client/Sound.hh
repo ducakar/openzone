@@ -66,9 +66,9 @@ class Sound
     int            musicRate;
     int            musicChannels;
     int            musicFormat;
-    uint           musicBuffers[2];
     uint           musicSource;
-
+    uint           musicBufferIds[2];
+    int            musicBuffersQueued;
     char           musicBuffer[MUSIC_BUFFER_SIZE];
     ubyte          musicInputBuffer[MUSIC_INPUT_BUFFER_SIZE + MAD_BUFFER_GUARD];
 
@@ -96,15 +96,26 @@ class Sound
     // music track id to switch to, -1 to do nothing, -2 stop playing
     int            selectedTrack;
     // music track id, -1 for not playing
-    int            currentTrack;
+    volatile int   currentTrack;
+
+    int            streamedTrack;
+    volatile int   streamedBytes;
+
+    SDL_Thread*    decoderThread;
+    SDL_sem*       mainSemaphore;
+    SDL_sem*       decoderSemaphore;
+    volatile bool  isAlive;
+
+    static int decoderMain( void* );
 
     void playCell( int cellX, int cellY );
 
     void streamOpen( const char* path );
     void streamClear();
-    bool streamDecode( uint buffer );
+    int  streamDecode();
+    void streamRun();
 
-    static int streamMain( void* );
+    void updateMusic();
 
   public:
 
@@ -119,7 +130,6 @@ class Sound
     void suspend() const;
 
     void play();
-    void update();
 
     void init();
     void free();

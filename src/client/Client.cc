@@ -578,14 +578,15 @@ int Client::main( int argc, char** argv )
     timeNow = Time::clock();
     timeSpent = timeNow - timeLast;
 
-    // render graphics, if we have enough time left
-    if( timeSpent < uint( Timer::TICK_MILLIS ) ||
-        timeNow - timeLastRender > 1000 )
-    {
-      stage->present();
+    // Skip rendering graphics, only play sounds if there's not enough time.
+    if( timeSpent >= uint( Timer::TICK_MILLIS ) && timeNow - timeLastRender < 1000 ) {
+      stage->present( false );
+    }
+    else {
+      stage->present( true );
 
       timer.frame();
-      // if there's still some time left, waste it
+      // If there's still some time left, sleep.
       timeLastRender = Time::clock();
       timeSpent = timeLastRender - timeLast;
 
@@ -595,9 +596,9 @@ int Client::main( int argc, char** argv )
         timeSpent = Timer::TICK_MILLIS;
       }
     }
+
     if( timeSpent > 100 ) {
       timer.drop( timeSpent - Timer::TICK_MILLIS );
-
       timeLast += timeSpent - Timer::TICK_MILLIS;
     }
     timeLast += Timer::TICK_MILLIS;

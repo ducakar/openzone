@@ -84,6 +84,21 @@ static inline short madFixedToShort( mad_fixed_t f )
   }
 }
 
+int Sound::decoderMain( void* )
+{
+  try{
+    sound.streamRun();
+  }
+  catch( const std::exception& e ) {
+    log.verboseMode = false;
+    log.printException( e );
+
+    System::bell();
+    System::abort();
+  }
+  return 0;
+}
+
 void Sound::playCell( int cellX, int cellY )
 {
   const Cell& cell = orbis.cells[cellX][cellY];
@@ -243,7 +258,6 @@ void Sound::streamOpen( const char* path )
 
       long skipBytes = NeAACDecInit( aacDecoder, musicInputBuffer, MUSIC_INPUT_BUFFER_SIZE,
                                      &aacRate, &aacChannels );
-
       if( skipBytes < 0 ) {
         throw Exception( "Failed to decode AAC header" );
       }
@@ -252,8 +266,7 @@ void Sound::streamOpen( const char* path )
 
       readSize = size_t( PHYSFS_read( musicFile,
                                       musicInputBuffer + MUSIC_INPUT_BUFFER_SIZE - skipBytes,
-                                      1,
-                                      uint( skipBytes ) ) );
+                                      1, uint( skipBytes ) ) );
 
       if( readSize != size_t( skipBytes ) ) {
         throw Exception( "Failed to read AAC stream" );
@@ -311,7 +324,7 @@ void Sound::streamClear()
   }
 }
 
-bool Sound::streamDecode( uint buffer )
+int Sound::streamDecode()
 {
   switch( musicStreamType ) {
     case NONE: {
@@ -326,19 +339,14 @@ bool Sound::streamDecode( uint buffer )
         result = int( ov_read( &oggStream, &musicBuffer[bytesRead],
                                MUSIC_BUFFER_SIZE - bytesRead, false, 2, true, &section ) );
         bytesRead += result;
-        if( result <= 0 ) {
-          return 0;
+
+        if( result < 0 ) {
+          throw Exception( "Error during Ogg Vorbis decoding" );
         }
       }
       while( result > 0 && bytesRead < MUSIC_BUFFER_SIZE );
 
-      if( bytesRead == 0 ) {
-        return false;
-      }
-      else {
-        alBufferData( buffer, musicFormat, musicBuffer, bytesRead, musicRate );
-        return true;
-      }
+      return bytesRead;
     }
     case MP3: {
       short* musicOutput    = reinterpret_cast<short*>( musicBuffer );
@@ -349,8 +357,7 @@ bool Sound::streamDecode( uint buffer )
           hard_assert( musicOutput <= musicOutputEnd );
 
           if( musicOutput == musicOutputEnd ) {
-            alBufferData( buffer, musicFormat, musicBuffer, MUSIC_BUFFER_SIZE, musicRate );
-            return true;
+            return MUSIC_BUFFER_SIZE;
           }
 
           *musicOutput = madFixedToShort( madSynth.pcm.samples[0][madWrittenSamples] );
@@ -379,15 +386,7 @@ bool Sound::streamDecode( uint buffer )
                                                     uint( MUSIC_INPUT_BUFFER_SIZE - bytesLeft ) ) );
 
             if( bytesRead == 0 ) {
-              int length = int( reinterpret_cast<char*>( musicOutput ) - musicBuffer );
-
-              if( length == 0 ) {
-                return false;
-              }
-              else {
-                alBufferData( buffer, musicFormat, musicBuffer, length, musicRate );
-                return true;
-              }
+              return int( reinterpret_cast<char*>( musicOutput ) - musicBuffer );
             }
             else if( bytesRead < MUSIC_INPUT_BUFFER_SIZE - bytesLeft ) {
               memset( musicInputBuffer + bytesLeft + bytesRead, 0, MAD_BUFFER_GUARD );
@@ -420,8 +419,7 @@ bool Sound::streamDecode( uint buffer )
             memcpy( musicOutput, aacOutputBuffer + aacWrittenBytes, size_t( space ) );
             aacWrittenBytes += space;
 
-            alBufferData( buffer, musicFormat, musicBuffer, MUSIC_BUFFER_SIZE, musicRate );
-            return true;
+            return MUSIC_BUFFER_SIZE;
           }
           else {
             memcpy( musicOutput, aacOutputBuffer + aacWrittenBytes, size_t( length ) );
@@ -435,15 +433,7 @@ bool Sound::streamDecode( uint buffer )
             ( NeAACDecDecode( aacDecoder, &frameInfo, musicInputBuffer, aacInputBytes ) );
 
         if( aacOutputBuffer == null ) {
-          int length = int( musicOutput - musicBuffer );
-
-          if( length == 0 ) {
-            return false;
-          }
-          else {
-            alBufferData( buffer, musicFormat, musicBuffer, length, musicRate );
-            return true;
-          }
+          return int( musicOutput - musicBuffer );
         }
 
         size_t bytesConsumed = size_t( frameInfo.bytesconsumed );
@@ -463,19 +453,110 @@ bool Sound::streamDecode( uint buffer )
   }
 }
 
-int Sound::streamMain( void* )
+void Sound::streamRun()
 {
-  try{
-//     sound.run();
-  }
-  catch( const std::exception& e ) {
-    log.verboseMode = false;
-    log.printException( e );
+  streamedTrack = -1;
 
-    System::bell();
-    System::abort();
+  while( isAlive ) {
+    SDL_SemPost( mainSemaphore );
+    SDL_SemWait( decoderSemaphore );
+
+    if( currentTrack != streamedTrack ) {
+      if( streamedTrack != -1 ) {
+        streamClear();
+      }
+
+      streamedTrack = currentTrack;
+
+      if( streamedTrack != -1 ) {
+        streamOpen( library.musics[streamedTrack].path );
+      }
+    }
+
+    if( streamedTrack != -1 ) {
+      streamedBytes = streamDecode();
+    }
   }
-  return 0;
+}
+
+void Sound::updateMusic()
+{
+  OZ_AL_CHECK_ERROR();
+
+  if( SDL_SemTryWait( mainSemaphore ) != 0 ) {
+    return;
+  }
+
+  if( selectedTrack != -1 ) {
+    currentTrack = selectedTrack == -2 ? -1 : selectedTrack;
+    selectedTrack = -1;
+
+    musicBuffersQueued = 0;
+
+    alSourceStop( musicSource );
+
+    int nQueued;
+    alGetSourcei( musicSource, AL_BUFFERS_QUEUED, &nQueued );
+
+    if( nQueued != 0 ) {
+      uint buffers[2];
+      alSourceUnqueueBuffers( musicSource, nQueued, buffers );
+    }
+
+    OZ_AL_CHECK_ERROR();
+
+    SDL_SemPost( decoderSemaphore );
+  }
+  else if( currentTrack == -1 ) {
+    SDL_SemPost( mainSemaphore );
+  }
+  else if( streamedBytes == 0 ) {
+    currentTrack = -1;
+
+    SDL_SemPost( decoderSemaphore );
+  }
+  else {
+    bool hasLoaded = false;
+
+    int nProcessed;
+    alGetSourcei( musicSource, AL_BUFFERS_PROCESSED, &nProcessed );
+
+    if( nProcessed != 0 ) {
+      hasLoaded = true;
+
+      uint buffer;
+      alSourceUnqueueBuffers( musicSource, 1, &buffer );
+      OZ_AL_CHECK_ERROR();
+      alBufferData( buffer, musicFormat, musicBuffer, streamedBytes, musicRate );
+      OZ_AL_CHECK_ERROR();
+      alSourceQueueBuffers( musicSource, 1, &buffer );
+      OZ_AL_CHECK_ERROR();
+    }
+    else if( musicBuffersQueued != 2 ) {
+      hasLoaded = true;
+
+      int i = musicBuffersQueued;
+      ++musicBuffersQueued;
+
+      alBufferData( musicBufferIds[i], musicFormat, musicBuffer, streamedBytes, musicRate );
+      alSourceQueueBuffers( musicSource, 1, &musicBufferIds[i] );
+      alSourcePlay( musicSource );
+    }
+
+    ALint value;
+    alGetSourcei( musicSource, AL_SOURCE_STATE, &value );
+
+    if( value == AL_STOPPED ) {
+      alSourcePlay( musicSource );
+    }
+
+    if( hasLoaded ) {
+      SDL_SemPost( decoderSemaphore );
+    }
+    else {
+      SDL_SemPost( mainSemaphore );
+    }
+  }
 }
 
 void Sound::setVolume( float volume_ )
@@ -543,90 +624,15 @@ void Sound::play()
     }
   }
 
+  updateMusic();
+
   OZ_AL_CHECK_ERROR();
-}
-
-void Sound::update()
-{
-  OZ_AL_CHECK_ERROR();
-
-  if( selectedTrack != -1 ) {
-    if( currentTrack != -1 ) {
-      currentTrack = -1;
-      streamClear();
-
-      alSourceStop( musicSource );
-
-      int nQueued;
-      alGetSourcei( musicSource, AL_BUFFERS_QUEUED, &nQueued );
-
-      uint buffer[2];
-      alSourceUnqueueBuffers( musicSource, nQueued, buffer );
-    }
-
-    OZ_AL_CHECK_ERROR();
-
-    if( selectedTrack == -2 ) {
-      selectedTrack = -1;
-    }
-    else {
-      const char* path = library.musics[selectedTrack].path;
-
-      streamOpen( path );
-
-      if( streamDecode( musicBuffers[0] ) && streamDecode( musicBuffers[1] ) ) {
-        alSourceQueueBuffers( musicSource, 2, &musicBuffers[0] );
-        alSourcePlay( musicSource );
-
-        currentTrack = selectedTrack;
-      }
-      else {
-        currentTrack = -1;
-      }
-
-      selectedTrack = -1;
-
-      OZ_AL_CHECK_ERROR();
-    }
-  }
-  else if( currentTrack != -1 ) {
-    bool hasLoaded = false;
-
-    int nProcessed;
-    alGetSourcei( musicSource, AL_BUFFERS_PROCESSED, &nProcessed );
-
-    for( int i = 0; i < nProcessed; ++i ) {
-      uint buffer;
-      alSourceUnqueueBuffers( musicSource, 1, &buffer );
-
-      if( streamDecode( buffer ) ) {
-        alSourceQueueBuffers( musicSource, 1, &buffer );
-        hasLoaded = true;
-      }
-    }
-
-    ALint value;
-    alGetSourcei( musicSource, AL_SOURCE_STATE, &value );
-
-    if( value == AL_STOPPED ) {
-      if( hasLoaded ) {
-        alSourcePlay( musicSource );
-      }
-      else {
-        currentTrack = -1;
-        streamClear();
-      }
-    }
-  }
 }
 
 void Sound::init()
 {
   log.println( "Initialising Sound {" );
   log.indent();
-
-  musicBuffers[0] = 0;
-  musicBuffers[1] = 0;
 
   const char* deviceName = config.getSet( "sound.device", "" );
 
@@ -658,8 +664,6 @@ void Sound::init()
   OZ_AL_CHECK_ERROR();
 
   log.println( "OpenAL context device: %s", alcGetString( soundDevice, ALC_DEVICE_SPECIFIER ) );
-
-  log.verboseMode = true;
 
   int nAttributes;
   alcGetIntegerv( soundDevice, ALC_ATTRIBUTES_SIZE, 1, &nAttributes );
@@ -700,8 +704,6 @@ void Sound::init()
   log.unindent();
   log.println( "}" );
 
-  log.verboseMode = false;
-
   log.println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );
   log.println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );
   log.println( "OpenAL version: %s", alGetString( AL_VERSION ) );
@@ -725,9 +727,12 @@ void Sound::init()
 
   selectedTrack = -1;
   currentTrack  = -1;
+  streamedTrack = -1;
 
-  alGenBuffers( 2, musicBuffers );
+  alGenBuffers( 2, musicBufferIds );
   alGenSources( 1, &musicSource );
+
+  musicBuffersQueued = 0;
 
   alSourcei( musicSource, AL_SOURCE_RELATIVE, AL_TRUE );
 
@@ -760,6 +765,12 @@ void Sound::init()
     OZ_DLLOAD( libfaad, NeAACDecDecode );
   }
 
+  isAlive = true;
+
+  mainSemaphore    = SDL_CreateSemaphore( 0 );
+  decoderSemaphore = SDL_CreateSemaphore( 0 );
+  decoderThread    = SDL_CreateThread( decoderMain, null );
+
   log.unindent();
   log.println( "}" );
 
@@ -770,6 +781,22 @@ void Sound::free()
 {
   log.print( "Shutting down Sound ..." );
 
+  selectedTrack = -1;
+  currentTrack  = -1;
+  streamedTrack = -1;
+
+  isAlive = false;
+
+  SDL_SemPost( decoderSemaphore );
+  SDL_WaitThread( decoderThread, null );
+
+  SDL_DestroySemaphore( mainSemaphore );
+  SDL_DestroySemaphore( decoderSemaphore );
+
+  mainSemaphore    = null;
+  decoderSemaphore = null;
+  decoderThread    = null;
+
   if( libfaad != null ) {
     SDL_UnloadObject( libfaad );
   }
@@ -778,12 +805,11 @@ void Sound::free()
   }
 
   if( soundContext != null ) {
-    stopMusic();
-
     playedStructs.dealloc();
 
+    alSourceStop( musicSource );
     alDeleteSources( 1, &musicSource );
-    alDeleteBuffers( 2, musicBuffers );
+    alDeleteBuffers( 2, musicBufferIds );
 
     OZ_AL_CHECK_ERROR();
 

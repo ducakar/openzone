@@ -546,7 +546,7 @@ void Context::unload()
   log.println( "Unloading Context {" );
   log.indent();
 
-  log.println( "Peak context instances {" );
+  log.println( "Peak instances {" );
   log.indent();
   log.println( "%6d  imago objects",                maxImagines );
   log.println( "%6d  audio objects",                maxAudios );
