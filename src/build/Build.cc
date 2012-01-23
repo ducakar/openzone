@@ -697,7 +697,7 @@ void Build::shutdown()
 
   SDL_Quit();
 
-  Alloc::printStatistics();
+  Alloc::printSummary();
 
   log.print( OZ_APPLICATION_TITLE " Build finished on " );
   log.printTime();
@@ -833,8 +833,7 @@ int Build::main( int argc, char** argv )
   }
 
   if( dataDir.isEmpty() ) {
-    log.println( "Source directory cannot be root ('/')" );
-    return EXIT_FAILURE;
+    throw Exception( "Source directory cannot be root ('/')" );
   }
 
   String pkgName = dataDir.substring( dataDir.lastIndex( '/' ) + 1 );
@@ -874,14 +873,12 @@ int Build::main( int argc, char** argv )
 
   log.println( "Chdir to output directory '%s'", outDir.cstr() );
   if( !File::chdir( outDir ) ) {
-    log.println( "Failed to set working directory '%s'", outDir.cstr() );
-    return EXIT_FAILURE;
+    throw Exception( "Failed to set working directory '%s'", outDir.cstr() );
   }
 
   log.println( "Adding source directory '%s' to search path", dataDir.cstr() );
   if( !PhysFile::mount( dataDir, null, true ) ) {
-    log.println( "Failed to add directory '%s' to search path", dataDir.cstr() );
-    return EXIT_FAILURE;
+    throw Exception( "Failed to add directory '%s' to search path", dataDir.cstr() );
   }
 
   uint startTime = Time::clock();

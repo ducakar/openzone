@@ -633,12 +633,12 @@ class String
     friend String operator + ( const char* s, const String& t );
 
     /**
-     * Substring from <tt>start<tt> character (inclusively).
+     * Substring from <tt>start</tt> character (inclusively).
      */
     String substring( int start ) const;
 
     /**
-     * Substring between <tt>start<tt> (inclusively) and <tt>end</tt> (not inclusively) character.
+     * Substring between <tt>start</tt> (inclusively) and <tt>end</tt> (not inclusively) character.
      */
     String substring( int start, int end ) const;
 

@@ -78,11 +78,13 @@ class Loader
     void cleanupRender();
     // stop playing stopped continuous sounds, clean up unused audios
     void cleanupSound();
+    // load scheduled models
+    void loadModels();
 
 public:
 
     void cleanup();
-    void update();
+    void loadScheduled();
 
     void makeScreenshot();
 

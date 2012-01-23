@@ -77,14 +77,14 @@ namespace oz
 
 /**
  * @def soft_assert
- * If condition fails, raise SIGTRAP and print error.
+ * If condition fails, raise SIGTRAP and print error using global log.
  *
  * @ingroup oz
  */
 
 /**
  * @def hard_assert
- * If condition fails, raise SIGTRAP, print error, and abort program.
+ * If condition fails, raise SIGTRAP, print error using global log and abort program.
  *
  * @ingroup oz
  */
@@ -112,14 +112,15 @@ namespace oz
 #endif
 
 /**
- * Helper function for <tt>hard_assert</tt>.
+ * Helper method for <tt>hard_assert</tt> macro.
  *
  * @ingroup oz
  */
+OZ_NORETURN
 void _hardAssertHelper( const char* message, const char* file, int line, const char* function );
 
 /**
- * Helper function for <tt>soft_assert</tt>.
+ * Helper method for <tt>soft_assert</tt> macro.
  *
  * @ingroup oz
  */

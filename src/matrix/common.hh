@@ -37,9 +37,10 @@ enum Heading
   NORTH          = 0x00,
   WEST           = 0x01,
   SOUTH          = 0x02,
-  EAST           = 0x03,
-  WEST_EAST_MASK = 0x01
+  EAST           = 0x03
 };
+
+const int WEST_EAST_MASK = 0x01;
 
 }
 }

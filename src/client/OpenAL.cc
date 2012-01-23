@@ -67,10 +67,7 @@ void alCheckError( const char* file, int line, const char* function )
     }
   }
 
-  System::trap();
   System::error( 1, "AL error `%s' at %s:%d: %s", message, file, line, function );
-  System::bell();
-  System::abort();
 }
 
 #endif

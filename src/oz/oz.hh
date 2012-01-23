@@ -112,7 +112,6 @@
  * Error handling.
  */
 #include "StackTrace.hh"
-#include "Exception.hh"
 #include "System.hh"
 
 /*

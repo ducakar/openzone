@@ -451,6 +451,8 @@ void Render::unload()
 {
   glFinish();
 
+  log.verboseMode = true;
+
   log.println( "Unloading Render {" );
   log.indent();
 
@@ -475,6 +477,8 @@ void Render::unload()
 
   log.unindent();
   log.println( "}" );
+
+  log.verboseMode = false;
 }
 
 void Render::init( bool isBuild )

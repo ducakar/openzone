@@ -58,8 +58,10 @@ void Synapse::cut( Dynamic* obj )
 {
   hard_assert( obj->index != -1 && obj->cell != null && obj->parent != -1 );
 
-  obj->flags &= ~( Object::TICK_CLEAR_MASK | Object::MOVE_CLEAR_MASK );
-  obj->lower = -1;
+  obj->flags    &= ~( Object::TICK_CLEAR_MASK | Object::MOVE_CLEAR_MASK );
+  obj->lower    = -1;
+  obj->velocity = Vec3::ZERO;
+  obj->momentum = Vec3::ZERO;
 
   orbis.unposition( obj );
 
@@ -115,8 +117,9 @@ Object* Synapse::add( const ObjectClass* clazz, const Point3& p, Heading heading
   const Vector<const ObjectClass*>& defaultItems = obj->clazz->defaultItems;
 
   for( int i = 0; i < defaultItems.length(); ++i ) {
-    Dynamic* item = static_cast<Dynamic*>
-        ( orbis.add( defaultItems[i], Point3::ORIGIN, NORTH ) );
+    Heading heading = Heading( Math::rand( 4 ) );
+    Dynamic* item = static_cast<Dynamic*>( orbis.add( defaultItems[i], Point3::ORIGIN, heading ) );
+
     if( item == null ) {
       continue;
     }

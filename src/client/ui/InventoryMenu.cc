@@ -361,11 +361,15 @@ InventoryMenu::InventoryMenu( const InventoryMenu* master_ ) :
     y = 8 + height + 8;
   }
 
+  log.verboseMode = true;
+
   scrollUpTexId   = context.loadTexture( "ui/icon/scrollUp.ozcTex" );
   scrollDownTexId = context.loadTexture( "ui/icon/scrollDown.ozcTex" );
   useTexId        = context.loadTexture( "ui/icon/use.ozcTex" );
   equipTexId      = context.loadTexture( "ui/icon/equip.ozcTex" );
   unequipTexId    = context.loadTexture( "ui/icon/unequip.ozcTex" );
+
+  log.verboseMode = false;
 }
 
 InventoryMenu::~InventoryMenu()

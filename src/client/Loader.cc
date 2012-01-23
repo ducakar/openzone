@@ -169,7 +169,7 @@ void Loader::cleanupSound()
 {
   OZ_AL_CHECK_ERROR();
 
-  // remove sones of removed objects
+  // remove audios of removed objects
   for( auto i = context.audios.citer(); i.isValid(); ) {
     auto audio = i;
     ++i;
@@ -261,7 +261,7 @@ void Loader::cleanupSound()
   OZ_AL_CHECK_ERROR();
 }
 
-void Loader::update()
+void Loader::loadModels()
 {
   tick = ( tick + 1 ) % TICK_PERIOD;
 
@@ -316,8 +316,21 @@ void Loader::update()
 
 void Loader::cleanup()
 {
+  log.verboseMode = true;
+
   cleanupRender();
   cleanupSound();
+
+  log.verboseMode = false;
+}
+
+void Loader::loadScheduled()
+{
+  log.verboseMode = true;
+
+  loadModels();
+
+  log.verboseMode = false;
 }
 
 void Loader::makeScreenshot()

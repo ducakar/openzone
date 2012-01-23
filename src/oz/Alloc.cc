@@ -103,20 +103,20 @@ size_t Alloc::sumAmount = 0;
 int    Alloc::maxCount  = 0;
 size_t Alloc::maxAmount = 0;
 
-void Alloc::printStatistics()
+void Alloc::printSummary()
 {
-  log.println( "Alloc statistics {" );
+  log.println( "Alloc summary {" );
   log.indent();
 
   log.println( "current chunks     %d", count  );
-  log.println( "current amount     %.2f MiB (%d B)",
-               float( amount ) / ( 1024.0f*1024.0f ), int( amount ) );
+  log.println( "current amount     %.2f MiB (%ld B)",
+               float( amount ) / ( 1024.0f*1024.0f ), ulong( amount ) );
   log.println( "maximum chunks     %d", maxCount );
-  log.println( "maximum amount     %.2f MiB (%d B)",
-               float( maxAmount ) / ( 1024.0f*1024.0f ), int( maxAmount ) );
+  log.println( "maximum amount     %.2f MiB (%ld B)",
+               float( maxAmount ) / ( 1024.0f*1024.0f ), ulong( maxAmount ) );
   log.println( "cumulative chunks  %d", sumCount );
-  log.println( "cumulative amount  %.2f MiB (%d B)",
-               float( sumAmount ) / ( 1024.0f*1024.0f ), int( sumAmount ) );
+  log.println( "cumulative amount  %.2f MiB (%ld B)",
+               float( sumAmount ) / ( 1024.0f*1024.0f ), ulong( sumAmount ) );
 
   log.unindent();
   log.println( "}" );
@@ -282,8 +282,6 @@ static void deallocateObject( void* ptr )
   pthread_mutex_unlock( &mutex );
 # endif
 
-  System::trap();
-
   // Check if allocated as an array.
   st = firstArrayTraceEntry;
 
@@ -300,10 +298,6 @@ static void deallocateObject( void* ptr )
   else {
     System::error( 1, "ALLOC: new[] -> delete mismatch for block at %p", ptr );
   }
-
-  System::bell();
-  System::abort();
-  return;
 
 backtraceFound:;
 
@@ -367,8 +361,6 @@ static void deallocateArray( void* ptr )
   pthread_mutex_unlock( &mutex );
 # endif
 
-  System::trap();
-
   // Check if allocated as an object.
   st = firstObjectTraceEntry;
 
@@ -385,10 +377,6 @@ static void deallocateArray( void* ptr )
   else {
     System::error( 1, "ALLOC: new -> delete[] mismatch for block at %p", ptr );
   }
-
-  System::bell();
-  System::abort();
-  return;
 
 backtraceFound:;
 

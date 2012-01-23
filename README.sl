@@ -30,8 +30,8 @@ srednji klik        - zgrabi označen predmet ali spusti predmet, ki ga držiš
 kolešček gor        - vrzi predmet, ki ga držiš
 kolešček dol        - pospravi izbran predmet v inventar
 
-ALT + k             - stori bridko smert
-ALT + p             - preklopi zmožnost stopanja čez manjše ovire, npr. hoja po stopnicah
+Alt + k             - stori bridko smert
+Alt + p             - preklopi zmožnost stopanja čez manjše ovire, npr. hoja po stopnicah
 i                   - zapusti bota
 
 Tab                 - preklopi način uporabniškega vmesnika
@@ -64,7 +64,7 @@ levi klik           - sproži izbrano orožje
 desni klik          - izberi naslednje orožje
 
 x                   - izstopi
-ALT + x             - izskoči
+Alt + x             - izskoči
 
 Razno
 -----
@@ -75,15 +75,20 @@ LAlt + vlečenje     - vleka oken uporabniškega vmesnika
 o                   - hitro vrti nebo naprej
 Shift + o           - hitro vrti nebo nazaj
 
-F5                  - hitro shranjevanje (v ~/.config/openzone/quicksave.ozState)
-F7                  - hitro nalaganje (iz ~/.config/openzone/quicksave.ozState)
-F8                  - naloži zadnje samodejno shranjeno stanje
-                      (iz ~/.config/openzone/autosave.ozState)
-F10                 - zajem zaslona (shrani se v '~/config/.openzone/screenshot DATUM ČAS.bmp')
+F5                  - hitro shranjevanje (v <config>/saves/quicksave.ozState)*
+F7                  - hitro nalaganje (iz <config>/saves/quicksave.ozState)*
+F8                  - naloži zadnje samodejno shranjeno stanje (iz <config>/saves/autosave.ozState)*
+F10                 - zajem zaslona (v <config>/screenshots/screenshot DATUM ČAS.bmp)*
 F11                 - preklopi celozaslonski način
 Ctrl + F11          - preklopi centriranje miške in sistemski kazalec (samo v okenskem načinu)
 F12                 - minimiraj in zamrzni
 Ctrl + F12          - končaj program
+
+* Mesto imenika <config>:
+  - Linux:      /home/<user>/.config/openzone
+  - Wine:       /home/<user>/.wine/drive_c/users/<user>/Podatki programov/openzone
+  - Windows XP: C:\Documents and Settings\<user>\Application Data\openzone
+  - Windows 7:  C:\Users\<user>\AppData\Roaming\openzone
 
 Problemi
 --------

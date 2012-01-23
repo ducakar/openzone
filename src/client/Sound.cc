@@ -189,8 +189,6 @@ void Sound::streamOpen( const char* path )
         throw Exception( "Invalid number of channels, should be 1 or 2" );
       }
 
-      log.printEnd( " Ogg Vorbis %d Hz %d ch %d kb/s ... OK", musicRate, musicChannels,
-                    int( float( vorbisInfo->bitrate_nominal ) / 1000.0f + 0.5f ) );
       break;
     }
     case MP3: {
@@ -235,8 +233,6 @@ void Sound::streamOpen( const char* path )
         throw Exception( "Invalid number of channels, should be 1 or 2" );
       }
 
-      log.printEnd( " MP3 %d Hz %d ch %d kb/s ... OK", musicRate, musicChannels,
-                    int( float( madFrame.header.bitrate ) / 1000.0f + 0.5f ) );
       break;
     }
     case AAC: {
@@ -289,7 +285,6 @@ void Sound::streamOpen( const char* path )
         throw Exception( "Invalid number of channels, should be 1 or 2" );
       }
 
-      log.printEnd( " AAC %d Hz %d ch ... OK", musicRate, musicChannels );
       break;
     }
   }

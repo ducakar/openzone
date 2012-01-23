@@ -621,6 +621,9 @@ void Library::initClasses()
 
 void Library::init()
 {
+  log.println( "Initialising Library {" );
+  log.indent();
+
   shaders.alloc( 64 );
   textures.alloc( 256 );
   sounds.alloc( 256 );
@@ -630,10 +633,10 @@ void Library::init()
   musics.alloc( 64 );
   nameLists.alloc( 16 );
 
-  log.println( "Library mapping resources {" );
-  log.indent();
-
   log.verboseMode = true;
+
+  log.println( "Mapping resources {" );
+  log.indent();
 
   initShaders();
   initTextures();
@@ -649,10 +652,11 @@ void Library::init()
 
   log.unindent();
   log.println( "}" );
-  log.println( "Library statistics {" );
-  log.indent();
 
   log.verboseMode = false;
+
+  log.println( "Summary {" );
+  log.indent();
 
   log.println( "%5d  shaders", shaders.length() );
   log.println( "%5d  textures", textures.length() );
@@ -665,6 +669,9 @@ void Library::init()
   log.println( "%5d  name lists", nameLists.length() );
   log.println( "%5d  fragment pools", fragPools.length() );
   log.println( "%5d  object classes", objClasses.length() );
+
+  log.unindent();
+  log.println( "}" );
 
   log.unindent();
   log.println( "}" );

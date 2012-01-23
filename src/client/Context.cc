@@ -133,7 +133,7 @@ uint Context::loadTexture( const char* path )
 
   PhysFile file( path );
   if( !file.map() ) {
-    throw Exception( "Texture file mmap failed" );
+    throw Exception( "Texture file '%s' mmap failed", path );
   }
 
   InputStream is = file.inputStream();
@@ -213,14 +213,15 @@ uint Context::requestTexture( int id )
   resource.nUsers = 1;
 
   const String& name = library.textures[id].name;
+  const String& path = library.textures[id].path;
 
   log.print( "Loading texture '%s' ...", name.cstr() );
 
   resource.id = GL_NONE;
 
-  PhysFile file( "tex/" + name + ".ozcTex" );
+  PhysFile file( path );
   if( !file.map() ) {
-    throw Exception( "Texture file mmap failed" );
+    throw Exception( "Texture file '%s' mmap failed", path.cstr() );
   }
 
   InputStream is = file.inputStream();
@@ -230,7 +231,7 @@ uint Context::requestTexture( int id )
   file.unmap();
 
   if( resource.id == 0 ) {
-    throw Exception( "Texture loading failed" );
+    throw Exception( "Texture '%s' loading failed", name.cstr() );
   }
 
   log.printEnd( " OK" );
@@ -276,7 +277,7 @@ uint Context::requestSound( int id )
 
   PhysFile file( path );
   if( !file.map() ) {
-    throw Exception( "Failed to mmap sound file" );
+    throw Exception( "Failed to mmap sound file '%s'", path.cstr() );
   }
 
   InputStream is = file.inputStream();
@@ -293,13 +294,13 @@ uint Context::requestSound( int id )
 
   SDL_RWops* rwOps = SDL_RWFromConstMem( is.begin(), is.capacity() );
   if( SDL_LoadWAV_RW( rwOps, 1, &audioSpec, &data, &length ) == null ) {
-    throw Exception( "Failed to load sound" );
+    throw Exception( "Failed to load WAVE sound '%s'", name.cstr() );
   }
 
   if( audioSpec.channels != 1 ||
       ( audioSpec.format != AUDIO_U8 && audioSpec.format != AUDIO_S16 ) )
   {
-    throw Exception( "Invalid sound format, should be U8 mono or S16LE mono" );
+    throw Exception( "Invalid sound '%s' format, should be U8 mono or S16LE mono", name.cstr() );
   }
 
   ALenum format = audioSpec.format == AUDIO_U8 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16;
@@ -313,10 +314,11 @@ uint Context::requestSound( int id )
   OZ_AL_CHECK_ERROR();
 
   if( resource.id == 0 ) {
-    throw Exception( "Sound loading failed" );
+    throw Exception( "Sound '%s' loading failed", name.cstr() );
   }
 
   log.printEnd( " %s %d Hz ... OK", format == AL_FORMAT_MONO8 ? "U8" : "S16LE", audioSpec.freq );
+
   return resource.id;
 }
 
@@ -629,12 +631,17 @@ void Context::unload()
   for( int i = 0; i < library.textures.length(); ++i ) {
     hard_assert( textures[i].nUsers == 0 );
   }
+
+  log.verboseMode = true;
+
   for( int i = 0; i < library.sounds.length(); ++i ) {
     if( sounds[i].nUsers == 0 ) {
       freeSound( i );
     }
     hard_assert( sounds[i].nUsers == -1 );
   }
+
+  log.verboseMode = false;
 
   hard_assert( glGetError() == AL_NO_ERROR );
   OZ_AL_CHECK_ERROR();

@@ -36,17 +36,12 @@ namespace oz
 
 void _hardAssertHelper( const char* message, const char* file, int line, const char* function )
 {
-  System::trap();
   System::error( 1, "Hard assertion `%s' failed at %s:%d: %s", message, file, line, function );
-  System::bell();
-  System::abort();
 }
 
 void _softAssertHelper( const char* message, const char* file, int line, const char* function )
 {
-  System::trap();
-  System::error( 1, "Soft assertion `%s' failed at %s:%d: %s", message, file, line, function );
-  System::bell();
+  System::warning( 1, "Soft assertion `%s' failed at %s:%d: %s", message, file, line, function );
 }
 
 }

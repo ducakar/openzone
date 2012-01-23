@@ -76,8 +76,7 @@ void HudArea::drawBotCrosshair()
       life = 1.0f;
     }
     else if( taggedObj->flags & Object::BOT_BIT ) {
-      life = ( taggedObj->life - taggedClazz->life / 2.0f ) / ( taggedClazz->life / 2.0f );
-      life = max( life, 0.0f );
+      life = max( 0.0f, 2.0f * taggedObj->life / taggedClazz->life - 1.0f );
     }
     else{
       life = taggedObj->life / taggedClazz->life;
@@ -175,16 +174,9 @@ void HudArea::drawBotStatus()
   const Bot*      bot      = camera.botObj;
   const BotClass* botClazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
-  float life;
-  if( Math::isinf( bot->life ) ) {
-    life = 1.0f;
-  }
-  else {
-    life = ( bot->life - botClazz->life / 2.0f ) / ( botClazz->life / 2.0f );
-  }
-
+  float life         = Math::isinf( bot->life ) ? 1.0f : 2.0f * bot->life / botClazz->life - 1.0f;
+  float stamina      = Math::isinf( bot->stamina ) ? 1.0f : bot->stamina / botClazz->stamina;
   int   lifeWidth    = max( int( life * 198.0f ), 0 );
-  float stamina      = bot->stamina / botClazz->stamina;
   int   staminaWidth = max( int( stamina * 198.0f ), 0 );
 
   glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
@@ -374,6 +366,8 @@ HudArea::HudArea() :
     vehicleWeaponRounds[i].set( -16, 54 + i * step, ALIGN_RIGHT, Font::LARGE, "∞" );
   }
 
+  log.verboseMode = true;
+
   crossTexId  = context.loadTexture( "ui/icon/crosshair.ozcTex" );
   useTexId    = context.loadTexture( "ui/icon/use.ozcTex" );
   deviceTexId = context.loadTexture( "ui/icon/device.ozcTex" );
@@ -383,6 +377,8 @@ HudArea::HudArea() :
   browseTexId = context.loadTexture( "ui/icon/browse.ozcTex" );
   liftTexId   = context.loadTexture( "ui/icon/lift.ozcTex" );
   grabTexId   = context.loadTexture( "ui/icon/grab.ozcTex" );
+
+  log.verboseMode = false;
 
   crossIconX  = ( width - ICON_SIZE ) / 2;
   crossIconY  = ( height - ICON_SIZE ) / 2;

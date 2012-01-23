@@ -43,14 +43,14 @@ class Math
 {
   public:
 
+    /// Floating point epsilon.
+    static constexpr float FLOAT_EPS = __FLT_EPSILON__;
+
     /// Not a number.
     static constexpr float NaN = __builtin_nanf( "" );
 
     /// \f$ +\infty \f$.
     static constexpr float INF = __builtin_inff();
-
-    /// Floating point epsilon.
-    static constexpr float EPSILON = __FLT_EPSILON__;
 
     /// \f$ e \f$.
     static constexpr float E = 2.718281828459045f;

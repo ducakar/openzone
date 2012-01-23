@@ -629,11 +629,6 @@ void Bot::onUpdate()
       {
         cargo = -1;
 
-        item->flags &= ~( Object::TICK_CLEAR_MASK | Object::MOVE_CLEAR_MASK );
-        item->lower = -1;
-        item->velocity = Vec3::ZERO;
-        item->momentum = Vec3::ZERO;
-
         item->parent = index;
         items.add( item->index );
         synapse.cut( item );
@@ -726,6 +721,9 @@ void Bot::onUpdate()
           item->parent = -1;
           synapse.put( item );
           items.exclude( instrument );
+
+          item->velocity = velocity;
+          item->momentum = velocity;
 
           if( ( actions & ~oldActions & ACTION_INV_GRAB ) &&
               !( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) && weapon == -1 )

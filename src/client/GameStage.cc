@@ -53,231 +53,6 @@ GameStage gameStage;
 String GameStage::AUTOSAVE_FILE;
 String GameStage::QUICKSAVE_FILE;
 
-int GameStage::auxMain( void* )
-{
-  try{
-    gameStage.auxRun();
-  }
-  catch( const std::exception& e ) {
-    log.verboseMode = false;
-    log.printException( e );
-
-    System::bell();
-    System::abort();
-  }
-  return 0;
-}
-
-void GameStage::auxRun()
-{
-  uint beginTime;
-
-  SDL_SemPost( mainSemaphore );
-  SDL_SemPost( mainSemaphore );
-  SDL_SemWait( auxSemaphore );
-
-  while( isAlive ) {
-    /*
-     * PHASE 2
-     */
-    beginTime = Time::clock();
-
-    network.update();
-
-    // update world
-    matrix.update();
-
-    matrixMillis += Time::clock() - beginTime;
-
-    SDL_SemPost( mainSemaphore );
-    SDL_SemWait( auxSemaphore );
-
-    /*
-     * PHASE 3
-     */
-    beginTime = Time::clock();
-
-    // sync nirvana
-    nirvana.sync();
-
-    // now synapse lists are not needed any more
-    synapse.update();
-
-    // update minds
-    nirvana.update();
-
-    nirvanaMillis += Time::clock() - beginTime;
-
-    // we can now manipulate world from the main thread after synapse lists have been cleared
-    // and nirvana is not accessing matrix any more
-    SDL_SemPost( mainSemaphore );
-
-    /*
-     * PHASE 1
-     */
-
-    SDL_SemPost( mainSemaphore );
-    SDL_SemWait( auxSemaphore );
-  }
-}
-
-void GameStage::reload()
-{
-  ui::mouse.doShow = false;
-  ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Loading ..." ) );
-  ui::ui.showLoadingScreen( true );
-  ui::ui.root->focus( ui::ui.loadingScreen );
-
-  render.draw( Render::DRAW_UI_BIT );
-  render.draw( Render::DRAW_UI_BIT );
-  render.sync();
-
-  for( int i = modules.length() - 1; i >= 0; --i ) {
-    modules[i]->unload();
-  }
-
-  context.unload();
-
-  lua.free();
-
-  nirvana.unload();
-  matrix.unload();
-
-  matrix.load();
-  nirvana.load();
-
-  lua.init();
-  for( int i = 0; i < modules.length(); ++i ) {
-    modules[i]->registerLua();
-  }
-
-  context.load();
-
-  for( int i = modules.length() - 1; i >= 0; --i ) {
-    modules[i]->load();
-  }
-
-  if( stateFile.isEmpty() ) {
-    log.println( "Initialising new world" );
-
-    lua.create( mission );
-
-    if( orbis.terra.id == -1 || orbis.caelum.id == -1 ) {
-      throw Exception( "Terrain and Caelum must both be loaded via the client.onCreate" );
-    }
-  }
-  else {
-    if( !read( stateFile ) ) {
-      throw Exception( "Reading saved state '%s' failed", stateFile.cstr() );
-    }
-  }
-
-  nirvana.sync();
-  synapse.update();
-
-  camera.update();
-  camera.prepare();
-
-  render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
-  sound.play();
-  render.sync();
-
-  loader.update();
-
-  ui::ui.prepare();
-  ui::ui.showLoadingScreen( false );
-}
-
-bool GameStage::update()
-{
-  uint beginTime;
-
-  SDL_SemWait( mainSemaphore );
-
-  /*
-   * PHASE 1
-   */
-
-  beginTime = Time::clock();
-
-  if( ui::keyboard.keys[SDLK_F5] && !ui::keyboard.oldKeys[SDLK_F5] ) {
-    write( QUICKSAVE_FILE );
-  }
-  if( ui::keyboard.keys[SDLK_F7] && !ui::keyboard.oldKeys[SDLK_F7] ) {
-    stateFile = QUICKSAVE_FILE;
-    reload();
-  }
-  if( ui::keyboard.keys[SDLK_F8] && !ui::keyboard.oldKeys[SDLK_F8] ) {
-    stateFile = AUTOSAVE_FILE;
-    reload();
-  }
-  if( ui::keyboard.keys[SDLK_ESCAPE] ) {
-    Stage::nextStage = &menuStage;
-  }
-
-  camera.update();
-  ui::ui.update();
-
-  for( int i = 0; i < modules.length(); ++i ) {
-    modules[i]->update();
-  }
-
-  lua.update();
-
-  uiMillis += Time::clock() - beginTime;
-
-  SDL_SemPost( auxSemaphore );
-  SDL_SemWait( mainSemaphore );
-
-  /*
-   * PHASE 2
-   */
-
-  beginTime = Time::clock();
-
-#ifndef NDEBUG
-  context.updateLoad();
-#endif
-
-  // clean up unused imagines, audios and sources
-  loader.cleanup();
-  // load scheduled resources
-  loader.update();
-
-  loaderMillis += Time::clock() - beginTime;
-
-  SDL_SemPost( auxSemaphore );
-  SDL_SemWait( mainSemaphore );
-
-  /*
-   * PHASE 3
-   */
-
-  beginTime = Time::clock();
-
-  camera.prepare();
-
-  soundMillis += Time::clock() - beginTime;
-  return true;
-}
-
-void GameStage::present( bool full )
-{
-  uint beginTime = Time::clock();
-
-  if( full ) {
-    render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
-  }
-
-  sound.play();
-
-  if( full ) {
-    render.sync();
-  }
-
-  presentMillis += Time::clock() - beginTime;
-}
-
 bool GameStage::read( const char* path )
 {
   log.print( "Loading state from '%s' ...", path );
@@ -339,9 +114,248 @@ void GameStage::write( const char* path ) const
   }
 }
 
+void GameStage::reload()
+{
+  log.print( "[" );
+  log.printTime();
+  log.printEnd( "] Reloading GameStage {" );
+  log.indent();
+
+  ui::mouse.doShow = false;
+  ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Loading ..." ) );
+  ui::ui.showLoadingScreen( true );
+  ui::ui.root->focus( ui::ui.loadingScreen );
+
+  render.draw( Render::DRAW_UI_BIT );
+  render.draw( Render::DRAW_UI_BIT );
+  render.sync();
+
+  for( int i = modules.length() - 1; i >= 0; --i ) {
+    modules[i]->unload();
+  }
+
+  context.unload();
+
+  lua.free();
+
+  nirvana.unload();
+  matrix.unload();
+
+  matrix.load();
+  nirvana.load();
+
+  lua.init();
+  for( int i = 0; i < modules.length(); ++i ) {
+    modules[i]->registerLua();
+  }
+
+  context.load();
+
+  for( int i = modules.length() - 1; i >= 0; --i ) {
+    modules[i]->load();
+  }
+
+  if( stateFile.isEmpty() ) {
+    log.println( "Initialising new world" );
+
+    lua.create( mission );
+
+    if( orbis.terra.id == -1 || orbis.caelum.id == -1 ) {
+      throw Exception( "Terrain and Caelum must both be loaded via the client.onCreate" );
+    }
+  }
+  else {
+    if( !read( stateFile ) ) {
+      throw Exception( "Reading saved state '%s' failed", stateFile.cstr() );
+    }
+  }
+
+  nirvana.sync();
+  synapse.update();
+
+  camera.update();
+  camera.prepare();
+
+  render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+  sound.play();
+  render.sync();
+
+  loader.loadScheduled();
+
+  ui::ui.prepare();
+  ui::ui.showLoadingScreen( false );
+
+  log.unindent();
+  log.println( "}" );
+}
+
+int GameStage::auxMain( void* )
+{
+  try {
+    gameStage.auxRun();
+  }
+  catch( const std::exception& e ) {
+    oz::log.verboseMode = false;
+    oz::log.printException( e );
+
+    oz::System::bell();
+    oz::System::abort();
+  }
+  return 0;
+}
+
+void GameStage::auxRun()
+{
+  uint beginTime;
+
+  SDL_SemPost( mainSemaphore );
+  SDL_SemPost( mainSemaphore );
+  SDL_SemWait( auxSemaphore );
+
+  while( isAlive ) {
+    /*
+     * PHASE 2
+     */
+    beginTime = Time::clock();
+
+    network.update();
+
+    // update world
+    matrix.update();
+
+    matrixMillis += Time::clock() - beginTime;
+
+    SDL_SemPost( mainSemaphore );
+    SDL_SemWait( auxSemaphore );
+
+    /*
+     * PHASE 3
+     */
+    beginTime = Time::clock();
+
+    // sync nirvana
+    nirvana.sync();
+
+    // now synapse lists are not needed any more
+    synapse.update();
+
+    // update minds
+    nirvana.update();
+
+    nirvanaMillis += Time::clock() - beginTime;
+
+    // we can now manipulate world from the main thread after synapse lists have been cleared
+    // and nirvana is not accessing matrix any more
+    SDL_SemPost( mainSemaphore );
+
+    /*
+     * PHASE 1
+     */
+
+    SDL_SemPost( mainSemaphore );
+    SDL_SemWait( auxSemaphore );
+  }
+}
+
+bool GameStage::update()
+{
+  uint beginTime;
+
+  SDL_SemWait( mainSemaphore );
+
+  /*
+   * PHASE 1
+   */
+
+  beginTime = Time::clock();
+
+  if( ui::keyboard.keys[SDLK_F5] && !ui::keyboard.oldKeys[SDLK_F5] ) {
+    write( QUICKSAVE_FILE );
+  }
+  if( ui::keyboard.keys[SDLK_F7] && !ui::keyboard.oldKeys[SDLK_F7] ) {
+    stateFile = QUICKSAVE_FILE;
+    reload();
+  }
+  if( ui::keyboard.keys[SDLK_F8] && !ui::keyboard.oldKeys[SDLK_F8] ) {
+    stateFile = AUTOSAVE_FILE;
+    reload();
+  }
+  if( ui::keyboard.keys[SDLK_ESCAPE] ) {
+    Stage::nextStage = &menuStage;
+  }
+
+  camera.update();
+  ui::ui.update();
+
+  for( int i = 0; i < modules.length(); ++i ) {
+    modules[i]->update();
+  }
+
+  lua.update();
+
+  uiMillis += Time::clock() - beginTime;
+
+  SDL_SemPost( auxSemaphore );
+  SDL_SemWait( mainSemaphore );
+
+  /*
+   * PHASE 2
+   */
+
+  beginTime = Time::clock();
+
+  context.updateLoad();
+
+  loader.cleanup();
+  loader.loadScheduled();
+
+  loaderMillis += Time::clock() - beginTime;
+
+  SDL_SemPost( auxSemaphore );
+  SDL_SemWait( mainSemaphore );
+
+  /*
+   * PHASE 3
+   */
+
+  camera.prepare();
+
+  return true;
+}
+
+void GameStage::present( bool full )
+{
+  uint beginTime = Time::clock();
+  uint currentTime;
+
+  if( full ) {
+    render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+
+    currentTime = Time::clock();
+    renderMillis += currentTime - beginTime;
+    beginTime = currentTime;
+  }
+
+  sound.play();
+
+  currentTime = Time::clock();
+  soundMillis += currentTime - beginTime;
+
+  if( full ) {
+    beginTime = currentTime;
+
+    render.sync();
+
+    currentTime = Time::clock();
+    renderMillis += currentTime - beginTime;
+  }
+}
+
 void GameStage::load()
 {
-  log.println( "Loading GameStage {" );
+  log.print( "[" );
+  log.printTime();
+  log.printEnd( "] Loading GameStage {" );
   log.indent();
 
   loadingMillis = Time::clock();
@@ -358,7 +372,8 @@ void GameStage::load()
 
   uiMillis      = 0;
   loaderMillis  = 0;
-  presentMillis = 0;
+  soundMillis   = 0;
+  renderMillis  = 0;
   matrixMillis  = 0;
   nirvanaMillis = 0;
 
@@ -426,7 +441,7 @@ void GameStage::load()
   sound.play();
   render.sync();
 
-  loader.update();
+  loader.loadScheduled();
 
   ui::ui.prepare();
   ui::ui.showLoadingScreen( false );
@@ -441,13 +456,15 @@ void GameStage::load()
 
 void GameStage::unload()
 {
-  log.println( "Unloading GameStage {" );
+  log.print( "[" );
+  log.printTime();
+  log.printEnd( "] Unloading GameStage {" );
   log.indent();
 
   float uiTime                = float( uiMillis )                       * 0.001f;
   float loaderTime            = float( loaderMillis )                   * 0.001f;
   float soundTime             = float( soundMillis )                    * 0.001f;
-  float presentTime           = float( presentMillis )                  * 0.001f;
+  float renderTime            = float( renderMillis )                   * 0.001f;
   float renderPrepareTime     = float( render.prepareMillis )           * 0.001f;
   float renderSetupTime       = float( render.setupMillis )             * 0.001f;
   float renderCaelumTime      = float( render.caelumMillis )            * 0.001f;
@@ -526,8 +543,8 @@ void GameStage::unload()
   log.indent();
   log.println( "%6.2f %%  [M:1] input & ui",            uiTime                / runTime * 100.0f );
   log.println( "%6.2f %%  [M:2] loader",                loaderTime            / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] camera & sound.play",   soundTime             / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] render & sound.update", presentTime           / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3] sound",                 soundTime             / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3] render",                renderTime            / runTime * 100.0f );
   log.println( "%6.2f %%  [M:3] + render prepare",      renderPrepareTime     / runTime * 100.0f );
   log.println( "%6.2f %%  [M:3] + render shader setup", renderSetupTime       / runTime * 100.0f );
   log.println( "%6.2f %%  [M:3] + render caelum",       renderCaelumTime      / runTime * 100.0f );

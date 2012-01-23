@@ -106,12 +106,12 @@ class Alloc
     }
 
     /**
-     * Print memory statistics into the global log.
+     * Print summary about memory usage using the global log instance.
      */
-    static void printStatistics();
+    static void printSummary();
 
     /**
-     * Print memory leaks into the global log.
+     * Print memory leaks using the global log.
      */
     static void printLeaks();
 
