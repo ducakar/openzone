@@ -36,6 +36,7 @@ namespace oz
 {
 namespace client
 {
+
 Pool<MD2WeaponImago, 256> MD2WeaponImago::pool;
 
 Imago* MD2WeaponImago::create( const Object* obj )

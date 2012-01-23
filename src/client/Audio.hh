@@ -47,7 +47,7 @@ class Audio
 
   public:
 
-    typedef Audio* ( * CreateFunc )( const Object* object );
+    typedef Audio* CreateFunc( const Object* object );
 
   protected:
 

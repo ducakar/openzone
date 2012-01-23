@@ -285,8 +285,6 @@ class Lua
 
     OZ_LUA_API( ozSelfSetGesture );
 
-    OZ_LUA_API( ozSelfSetWeaponItem );
-
     OZ_LUA_API( ozSelfBindItems );
     OZ_LUA_API( ozSelfBindParent );
 

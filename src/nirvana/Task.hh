@@ -38,8 +38,8 @@ class Task
 
     static const int ACTIVE_BIT = 0x00000001;
 
-    typedef Task* ( * CreateFunc )( const Task* parent );
-    typedef Task* ( * ReadFunc )( InputStream* istream, const Task* parent );
+    typedef Task* CreateFunc( const Task* parent );
+    typedef Task* ReadFunc( InputStream* istream, const Task* parent );
 
     Task*       prev[1];
     Task*       next[1];

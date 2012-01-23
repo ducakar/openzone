@@ -61,6 +61,6 @@ namespace oz
 // EPSILON = Orbis::DIM * 4.0f * Math::EPSILON
 const float EPSILON = 2048.0f * 4.0f * Math::FLOAT_EPS;
 
-typedef int ( LuaAPI )( lua_State* );
+typedef int LuaAPI( lua_State* );
 
 }

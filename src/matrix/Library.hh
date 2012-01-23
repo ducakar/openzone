@@ -51,10 +51,10 @@ class Library
 
   private:
 
-    HashString<BSP, 64>                          bsps;
-    HashString<const ObjectClass::CreateFunc, 8> baseClasses;
-    HashString<ObjectClass*, 128>                objClasses;
-    HashString<FragPool, 32>                     fragPools;
+    HashString<BSP, 64>                     bsps;
+    HashString<ObjectClass::CreateFunc*, 8> baseClasses;
+    HashString<ObjectClass*, 128>           objClasses;
+    HashString<FragPool, 32>                fragPools;
 
     HashString<int, 64>  shaderIndices;
     HashString<int, 256> textureIndices;

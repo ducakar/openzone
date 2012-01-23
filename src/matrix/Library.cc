@@ -499,7 +499,7 @@ void Library::initClasses()
       throw Exception( "%s: 'base' missing in class description", name.cstr() );
     }
 
-    const ObjectClass::CreateFunc* createFunc = baseClasses.find( base );
+    ObjectClass::CreateFunc* const* createFunc = baseClasses.find( base );
     if( createFunc == null ) {
       throw Exception( "%s: Invalid class base '%s'", name.cstr(), base );
     }

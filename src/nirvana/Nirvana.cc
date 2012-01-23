@@ -103,7 +103,7 @@ void Nirvana::read( InputStream* istream )
     int index   = istream->readInt();
     String type = istream->readString();
 
-    const Device::CreateFunc* func = deviceClasses.find( type );
+    Device::CreateFunc* const* func = deviceClasses.find( type );
 
     if( func == null ) {
       throw Exception( "Invalid device type '%s'", type.cstr() );

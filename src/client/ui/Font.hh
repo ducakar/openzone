@@ -37,10 +37,6 @@ namespace ui
 
 class Font
 {
-  friend class Area;
-  friend void init( int screenX, int screenY );
-  friend void free();
-
   public:
 
     enum Type

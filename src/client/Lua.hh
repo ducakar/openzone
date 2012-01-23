@@ -284,17 +284,9 @@ class Lua
     OZ_LUA_API( ozBotRearm );
     OZ_LUA_API( ozBotKill );
 
-    OZ_LUA_API( ozBotVectorFromSelfEye );
-    OZ_LUA_API( ozBotDirectionFromSelfEye );
-    OZ_LUA_API( ozBotDistanceFromSelfEye );
-    OZ_LUA_API( ozBotHeadingFromSelfEye );
-    OZ_LUA_API( ozBotPitchFromSelfEye );
-
     /*
      * Vehicle
      */
-
-    OZ_LUA_API( ozVehicleBindVehicle );
 
     OZ_LUA_API( ozVehicleGetH );
     OZ_LUA_API( ozVehicleSetH );
