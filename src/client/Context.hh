@@ -94,8 +94,8 @@ class Context
       {}
     };
 
-    Imago::CreateFunc*                imagoClasses;
-    Audio::CreateFunc*                audioClasses;
+    Imago::CreateFunc**               imagoClasses;
+    Audio::CreateFunc**               audioClasses;
 
     Resource<uint>*                   textures;
     Resource<uint>*                   sounds;

@@ -695,6 +695,8 @@ void Build::shutdown()
   client::render.free( true );
   config.clear( true );
 
+  FreeImage_DeInitialise();
+  PhysFile::free();
   SDL_Quit();
 
   Alloc::printSummary();
@@ -883,8 +885,6 @@ int Build::main( int argc, char** argv )
 
   uint startTime = Time::clock();
 
-  context.init();
-
   config.add( "screen.width", "400" );
   config.add( "screen.height", "40" );
   config.add( "screen.full", "false" );
@@ -894,6 +894,9 @@ int Build::main( int argc, char** argv )
   if( !client::shader.hasS3TC && context.useS3TC ) {
     throw Exception( "S3 texture compression enabled but not supported" );
   }
+
+  context.init();
+  compiler.init();
 
   // copy package README
   DArray<PhysFile> dirList = PhysFile( "/" ).ls();
@@ -989,12 +992,6 @@ int Build::main( int argc, char** argv )
   if( doPack ) {
     packArchive( pkgName );
   }
-
-  context.free();
-
-  FreeImage_DeInitialise();
-  PhysFile::free();
-  SDL_Quit();
 
   uint endTime = Time::clock();
 

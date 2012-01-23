@@ -36,7 +36,7 @@ class Imago
 {
   public:
 
-    typedef Imago* ( * CreateFunc )( const Object* object );
+    typedef Imago* CreateFunc( const Object* object );
 
     static const int UPDATED_BIT  = 0x00000001;
     static const int MD2MODEL_BIT = 0x00000002;

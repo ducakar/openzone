@@ -142,7 +142,6 @@ class Render
     void scheduleCell( int cellX, int cellY );
     void prepareDraw();
     void drawGeometry();
-    void postprocess();
 
     void drawUI();
     void drawOrbis();

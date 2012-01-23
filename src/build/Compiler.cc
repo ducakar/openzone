@@ -379,6 +379,9 @@ void Compiler::getMeshData( MeshData* mesh ) const
   aCopy<Vertex>( mesh->vertices, vertices, vertices.length() );
 }
 
+void Compiler::init()
+{}
+
 void Compiler::free()
 {
   vertices.clear();

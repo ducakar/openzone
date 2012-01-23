@@ -453,7 +453,7 @@ void Context::drawImago( const Object* obj, const Imago* parent, int mask )
   Imago* const* value = imagines.find( obj->index );
 
   if( value == null ) {
-    const Imago::CreateFunc& createFunc = imagoClasses[obj->clazz->imagoType];
+    Imago::CreateFunc* createFunc = imagoClasses[obj->clazz->imagoType];
 
     value = imagines.add( obj->index, createFunc( obj ) );
   }
@@ -472,7 +472,7 @@ void Context::playAudio( const Object* obj, const Audio* parent )
   Audio* const* value = audios.find( obj->index );
 
   if( value == null ) {
-    const Audio::CreateFunc& createFunc = audioClasses[obj->clazz->audioType];
+    Audio::CreateFunc* createFunc = audioClasses[obj->clazz->audioType];
 
     value = audios.add( obj->index, createFunc( obj ) );
   }
@@ -667,8 +667,8 @@ void Context::init()
 {
   log.print( "Initialising Context ..." );
 
-  imagoClasses = library.nImagoClasses == 0 ? null : new Imago::CreateFunc[library.nImagoClasses];
-  audioClasses = library.nAudioClasses == 0 ? null : new Audio::CreateFunc[library.nAudioClasses];
+  imagoClasses = library.nImagoClasses == 0 ? null : new Imago::CreateFunc*[library.nImagoClasses];
+  audioClasses = library.nAudioClasses == 0 ? null : new Audio::CreateFunc*[library.nAudioClasses];
 
   OZ_REGISTER_IMAGOCLASS( SMM );
   OZ_REGISTER_IMAGOCLASS( SMMVehicle );

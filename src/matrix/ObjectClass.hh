@@ -44,7 +44,7 @@ class ObjectClass
     static const int MAX_ITEMS = 100;
     static const int MAX_SOUNDS = 16;
 
-    typedef ObjectClass* ( * CreateFunc )();
+    typedef ObjectClass* CreateFunc();
 
     String          name;
     String          title;

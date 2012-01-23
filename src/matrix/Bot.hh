@@ -165,8 +165,6 @@ class Bot : public Dynamic
     virtual void onHit( const Hit* hit, float hitMomentum );
     virtual void onUpdate();
 
-    void updateReferences();
-
   public:
 
     Object* getTagged( const Vec3& at, int mask ) const;

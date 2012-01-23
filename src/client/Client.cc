@@ -541,7 +541,6 @@ int Client::main( int argc, char** argv )
     if( hasMouseFocus ) {
       // Update mouse motion.
       int x, y;
-
       SDL_GetRelativeMouseState( &x, &y );
 
       ui::mouse.relX = +x;
