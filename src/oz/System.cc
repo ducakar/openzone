@@ -132,7 +132,7 @@ static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 #endif
 
-static volatile int bellUsers = 0;
+static volatile int nBellUsers = 0;
 static int initFlags = 0;
 
 static void resetSignals();
@@ -149,7 +149,14 @@ static void signalHandler( int signum )
     initFlags &= ~System::HALT_BIT;
   }
 
-  System::error( 0, "Caught signal %d %s (%s)", signum, SIGNALS[signum][0], SIGNALS[signum][1] );
+  log.verboseMode = false;
+  log.printEnd();
+  log.printRaw( "Caught signal %d %s (%s)", signum, SIGNALS[signum][0], SIGNALS[signum][1] );
+  log.printEnd();
+
+  StackTrace st = StackTrace::current( 0 );
+  log.printTrace( &st );
+
   System::bell();
   System::abort();
 }
@@ -157,15 +164,11 @@ static void signalHandler( int signum )
 static void terminate()
 {
   System::error( 0, "EXCEPTION HANDLING ABORTED" );
-  System::bell();
-  System::abort();
 }
 
 static void unexpected()
 {
   System::error( 0, "EXCEPTION SPECIFICATION VIOLATION" );
-  System::bell();
-  System::abort();
 }
 
 static void catchSignals()
@@ -201,7 +204,7 @@ static DWORD WINAPI bellThread( LPVOID )
   PlaySound( reinterpret_cast<LPCSTR>( &WAVE_SAMPLE ), null, SND_MEMORY | SND_SYNC );
 
   EnterCriticalSection( &mutex );
-  --bellUsers;
+  --nBellUsers;
   LeaveCriticalSection( &mutex );
 
   return 0;
@@ -220,7 +223,7 @@ static void* bellThread( void* )
   }
 
   pthread_mutex_lock( &mutex );
-  --bellUsers;
+  --nBellUsers;
   pthread_mutex_unlock( &mutex );
 
   return null;
@@ -240,7 +243,7 @@ System::System()
 
 System::~System()
 {
-  while( bellUsers != 0 ) {
+  while( nBellUsers != 0 ) {
 #ifdef _WIN32
     Sleep( 100 );
 #else
@@ -253,27 +256,26 @@ System::~System()
 #endif
 }
 
-void System::bell()
+void System::abort( bool preventHalt )
 {
+  resetSignals();
+
+  // Wait until bell is played completely.
+  system.~System();
+
+  if( !preventHalt && ( initFlags & HALT_BIT ) ) {
+    printf( "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
+
 #ifdef _WIN32
-
-  EnterCriticalSection( &mutex );
-  ++bellUsers;
-  LeaveCriticalSection( &mutex );
-
-  HANDLE thread = CreateThread( null, 0, bellThread, null, 0, null );
-  CloseHandle( thread );
-
+    while( true ) {
+      Sleep( 1000 );
+    }
 #else
-
-  pthread_mutex_lock( &mutex );
-  ++bellUsers;
-  pthread_mutex_unlock( &mutex );
-
-  pthread_t thread;
-  pthread_create( &thread, null, bellThread, null );
-
+    while( sleep( 1 ) == 0 );
 #endif
+  }
+
+  ::abort();
 }
 
 void System::trap()
@@ -287,21 +289,33 @@ void System::trap()
 #endif
 }
 
-void System::halt()
+void System::bell()
 {
-  printf( "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
-
 #ifdef _WIN32
-  while( true ) {
-    Sleep( 1000 );
-  }
+
+  EnterCriticalSection( &mutex );
+  ++nBellUsers;
+  LeaveCriticalSection( &mutex );
+
+  HANDLE thread = CreateThread( null, 0, bellThread, null, 0, null );
+  CloseHandle( thread );
+
 #else
-  while( sleep( 1 ) == 0 );
+
+  pthread_mutex_lock( &mutex );
+  ++nBellUsers;
+  pthread_mutex_unlock( &mutex );
+
+  pthread_t thread;
+  pthread_create( &thread, null, bellThread, null );
+
 #endif
 }
 
-void System::error( int nSkippedFrames, const char* msg, ... )
+void System::warning( int nSkippedFrames, const char* msg, ... )
 {
+  trap();
+
   va_list ap;
   va_start( ap, msg );
 
@@ -314,20 +328,29 @@ void System::error( int nSkippedFrames, const char* msg, ... )
 
   StackTrace st = StackTrace::current( 1 + nSkippedFrames );
   log.printTrace( &st );
+
+  bell();
 }
 
-void System::abort()
+void System::error( int nSkippedFrames, const char* msg, ... )
 {
-  resetSignals();
+  trap();
 
-  // Wait until bell is played completely.
-  system.~System();
+  va_list ap;
+  va_start( ap, msg );
 
-  if( initFlags & HALT_BIT ) {
-    halt();
-  }
+  log.verboseMode = false;
+  log.printEnd();
+  log.vprintRaw( msg, ap );
+  log.printEnd();
 
-  ::abort();
+  va_end( ap );
+
+  StackTrace st = StackTrace::current( 1 + nSkippedFrames );
+  log.printTrace( &st );
+
+  bell();
+  abort();
 }
 
 void System::init( int flags )

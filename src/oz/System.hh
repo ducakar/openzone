@@ -44,7 +44,7 @@ class System
   public:
 
     /// Wait for a CTRL-C in <tt>abort()</tt>, so one has time to attach debugger.
-    static const int HALT_BIT = 0x02;
+    static const int HALT_BIT = 0x01;
 
     /// Catch fatal signals, print diagnostics and abort program.
     static const int SIGNAL_HANDLER_BIT = 0x10;
@@ -74,6 +74,21 @@ class System
   public:
 
     /**
+     * Abort program.
+     *
+     * If <tt>HALT_BIT</tt> was passed in on initialisation and <tt>preventHalt</tt> is false,
+     * program is halted and waits for a fatal signal before it is aborted, so a debugger can be
+     * attached.
+     */
+    OZ_NORETURN
+    static void abort( bool preventHalt = false );
+
+    /**
+     * Trigger a breakpoint (raises <tt>SIGTRAP</tt> on Linux or calls DebugBreak() on Windows).
+     */
+    static void trap();
+
+    /**
      * Play a sound alert.
      *
      * Sine wave from <tt>oz/bellSample.inc</tt> is played asynchronously through PulseAudio on
@@ -82,32 +97,21 @@ class System
     static void bell();
 
     /**
-     * Trigger a breakpoint (raises <tt>SIGTRAP</tt> on Linux or calls DebugBreak() on Windows).
-     */
-    static void trap();
-
-    /**
-     * Wait for a key or a fatal signal to continue.
+     * Print warning message.
      *
-     * This function is intended to halt program when something goes wrong, so one can attach
-     * a debugger.
-     */
-    static void halt();
-
-    /**
-     * Print error message and stack trace.
-     *
-     * If <tt>nSkippedFrames</tt> is 0, stack frames from including caller frame are included. Can
-     * also be negative; -1 and -2 include from <tt>error()</tt>'s and <tt>System::current()</tt>'s
-     * frame respectively.
+     * This function first triggers breakpoint with <tt>trap()</tt>, prints error message and stack
+     * trace to global log instance and plays a bell.
      */
     OZ_PRINTF_FORMAT( 2, 3 )
-    static void error( int nSkippedFrames, const char* msg, ... );
+    static void warning( int nSkippedFrames, const char* msg, ... );
 
     /**
-     * Abort program.
+     * Print error message and halt the program.
+     *
+     * Same as <tt>warning()</tt> but also aborts the program.
      */
-    static void abort();
+    OZ_PRINTF_FORMAT( 2, 3 ) OZ_NORETURN
+    static void error( int nSkippedFrames, const char* msg, ... );
 
     /**
      * Initialise <tt>System</tt> features.

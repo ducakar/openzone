@@ -42,6 +42,7 @@ void SMM::load()
   const String& name = library.models[id].name;
   const String& path = library.models[id].path;
 
+  log.verboseMode = true;
   log.print( "Loading SMM model '%s' ...", name.cstr() );
 
   PhysFile file( path );
@@ -56,6 +57,7 @@ void SMM::load()
   file.unmap();
 
   log.printEnd( " OK" );
+  log.verboseMode = false;
 
   isLoaded = true;
 }
@@ -68,11 +70,13 @@ SMM::~SMM()
 {
   const String& name = library.models[id].name;
 
+  log.verboseMode = true;
   log.print( "Unloading SMM model '%s' ...", name.cstr() );
 
   mesh.unload();
 
   log.printEnd( " OK" );
+  log.verboseMode = false;
 
   OZ_GL_CHECK_ERROR();
 }

@@ -55,7 +55,7 @@ int main( int argc, char** argv )
 
   log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
   if( !File::chdir( dataDir ) ) {
-    return EXIT_FAILURE;
+    throw Exception( "Failed to chdir to '%s'", dataDir.cstr() );
   }
   log.printEnd( " OK" );
 

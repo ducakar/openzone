@@ -30,8 +30,8 @@ middle click        - grab tagged object or drop object you are holding
 wheel up            - throw object you are holding
 wheel down          - put tagged object into inventory
 
-ALT + k             - commit suicide
-ALT + p             - toggle ability to step over small obstacles, e.g. walk up the stairs
+Alt + k             - commit suicide
+Alt + p             - toggle ability to step over small obstacles, e.g. walk up the stairs
 i                   - leave bot
 
 Tab                 - toggle interface mode
@@ -63,7 +63,7 @@ left click          - trigger selected weapon
 right click         - select next weapon
 
 x                   - exit vehicle
-ALT + x             - eject from vehicle
+Alt + x             - eject from vehicle
 
 Misc controls
 -------------
@@ -74,14 +74,20 @@ LAlt + drag         - move UI windows
 o                   - rotate sky forward fast
 Shift + o           - rotate sky backwards fast
 
-F5                  - quick save (to ~/.config/openzone/quicksave.ozState)
-F7                  - quick load (from ~/.config/openzone/quicksave.ozState)
-F8                  - load autosaved state (from ~/.config/openzone/autosave.ozState)
-F10                 - screenshot (saved to '~/.config/openzone/screenshot DATE TIME.bmp')
+F5                  - quick save (to <config>/saves/quicksave.ozState)*
+F7                  - quick load (from <config>/saves/quicksave.ozState)*
+F8                  - load autosaved state (from <config>/saves/autosave.ozState)*
+F10                 - screenshot (to <config>/screenshots/screenshot DATE TIME.bmp)*
 F11                 - toggle fullscreen mode
 Ctrl + F11          - toggle mouse centring and system cursor visibility (only in windowed mode)
 F12                 - minimise and pause
 Ctrl + F12          - exit application
+
+* Location of <config> directory:
+  - Linux:      /home/<user>/.config/openzone
+  - Wine:       /home/<user>/.wine/drive_c/users/<user>/Application Data/openzone
+  - Windows XP: C:\Documents and Settings\<user>\Application Data\openzone
+  - Windows 7:  C:\Users\<user>\AppData\Roaming\openzone
 
 Troubleshooting
 ---------------

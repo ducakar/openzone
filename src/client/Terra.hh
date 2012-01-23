@@ -36,7 +36,7 @@ class Terra
 {
   public:
 
-    static const int TILE_QUADS = 64;
+    static const int TILE_QUADS = 32;
     static const int TILES      = matrix::Terra::QUADS / TILE_QUADS;
 
   private:

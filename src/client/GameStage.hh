@@ -58,7 +58,7 @@ class GameStage : public Stage
     uint            uiMillis;
     uint            loaderMillis;
     uint            soundMillis;
-    uint            presentMillis;
+    uint            renderMillis;
     uint            matrixMillis;
     uint            nirvanaMillis;
 
@@ -74,18 +74,18 @@ class GameStage : public Stage
 
   private:
 
+    bool read( const char* path );
+    void write( const char* path ) const;
+    void reload();
+
     static int auxMain( void* );
 
     void auxRun();
-    void reload();
 
   public:
 
     virtual bool update();
     virtual void present( bool full );
-
-    bool read( const char* path );
-    void write( const char* path ) const;
 
     virtual void load();
     virtual void unload();

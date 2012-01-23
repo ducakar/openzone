@@ -166,11 +166,16 @@ Audio::Audio( const Object* obj_ ) :
 {
   const int* sounds = clazz->audioSounds;
 
+  log.verboseMode = true;
+
   for( int i = 0; i < ObjectClass::MAX_SOUNDS; ++i ) {
     if( sounds[i] != -1 ) {
       context.requestSound( sounds[i] );
     }
   }
+
+  log.verboseMode = false;
+
   OZ_AL_CHECK_ERROR();
 }
 
@@ -178,11 +183,16 @@ Audio::~Audio()
 {
   const int* sounds = clazz->audioSounds;
 
+  log.verboseMode = true;
+
   for( int i = 0; i < ObjectClass::MAX_SOUNDS; ++i ) {
     if( sounds[i] != -1 ) {
       context.releaseSound( sounds[i] );
     }
   }
+
+  log.verboseMode = false;
+
   OZ_AL_CHECK_ERROR();
 }
 

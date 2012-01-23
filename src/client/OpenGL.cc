@@ -149,10 +149,7 @@ void glCheckError( const char* file, int line, const char* function )
     }
   }
 
-  System::trap();
   System::error( 1, "GL error `%s' at %s:%d: %s", message, file, line, function );
-  System::bell();
-  System::abort();
 }
 
 #endif
