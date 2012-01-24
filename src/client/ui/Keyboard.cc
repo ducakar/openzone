@@ -36,7 +36,7 @@ Keyboard keyboard;
 
 void Keyboard::init()
 {
-  aSet<char>( keys, 0, SDLK_LAST);
+  aSet<char>( keys, 0, SDLK_LAST );
   aSet<char>( oldKeys, 0, SDLK_LAST );
   currKeys = reinterpret_cast<char*>( SDL_GetKeyState( null ) );
 }

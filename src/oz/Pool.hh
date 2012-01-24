@@ -282,12 +282,12 @@ class Pool
 
           block = next;
         }
-
-        firstBlock = null;
-        freeSlot   = null;
-        size       = 0;
-        count      = 0;
       }
+
+      firstBlock = null;
+      freeSlot   = null;
+      size       = 0;
+      count      = 0;
     }
 
 };

@@ -31,8 +31,6 @@
 
 #include "System.hh"
 
-#include "windefs.h"
-
 #include <cstdio>
 
 #undef Exception

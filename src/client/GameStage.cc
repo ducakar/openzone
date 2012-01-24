@@ -53,6 +53,21 @@ GameStage gameStage;
 String GameStage::AUTOSAVE_FILE;
 String GameStage::QUICKSAVE_FILE;
 
+int GameStage::auxMain( void* )
+{
+  try {
+    gameStage.auxRun();
+  }
+  catch( const std::exception& e ) {
+    oz::log.verboseMode = false;
+    oz::log.printException( &e );
+
+    oz::System::bell();
+    oz::System::abort();
+  }
+  return 0;
+}
+
 bool GameStage::read( const char* path )
 {
   log.print( "Loading state from '%s' ...", path );
@@ -128,7 +143,7 @@ void GameStage::reload()
 
   render.draw( Render::DRAW_UI_BIT );
   render.draw( Render::DRAW_UI_BIT );
-  render.sync();
+  render.swap();
 
   for( int i = modules.length() - 1; i >= 0; --i ) {
     modules[i]->unload();
@@ -176,9 +191,10 @@ void GameStage::reload()
   camera.update();
   camera.prepare();
 
-  render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
   sound.play();
-  render.sync();
+  render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+  render.swap();
+  sound.sync();
 
   loader.loadScheduled();
 
@@ -189,21 +205,6 @@ void GameStage::reload()
   log.println( "}" );
 }
 
-int GameStage::auxMain( void* )
-{
-  try {
-    gameStage.auxRun();
-  }
-  catch( const std::exception& e ) {
-    oz::log.verboseMode = false;
-    oz::log.printException( e );
-
-    oz::System::bell();
-    oz::System::abort();
-  }
-  return 0;
-}
-
 void GameStage::auxRun()
 {
   uint beginTime;
@@ -212,7 +213,7 @@ void GameStage::auxRun()
   SDL_SemPost( mainSemaphore );
   SDL_SemWait( auxSemaphore );
 
-  while( isAlive ) {
+  while( isAuxAlive ) {
     /*
      * PHASE 2
      */
@@ -329,26 +330,18 @@ void GameStage::present( bool full )
   uint currentTime;
 
   if( full ) {
+    sound.play();
     render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
-
-    currentTime = Time::clock();
-    renderMillis += currentTime - beginTime;
-    beginTime = currentTime;
+    render.swap();
+    sound.sync();
   }
-
-  sound.play();
+  else {
+    sound.play();
+    sound.sync();
+  }
 
   currentTime = Time::clock();
-  soundMillis += currentTime - beginTime;
-
-  if( full ) {
-    beginTime = currentTime;
-
-    render.sync();
-
-    currentTime = Time::clock();
-    renderMillis += currentTime - beginTime;
-  }
+  presentMillis += currentTime - beginTime;
 }
 
 void GameStage::load()
@@ -366,13 +359,13 @@ void GameStage::load()
 
   render.draw( Render::DRAW_UI_BIT );
   render.draw( Render::DRAW_UI_BIT );
-  render.sync();
+  render.swap();
 
   timer.reset();
 
   uiMillis      = 0;
   loaderMillis  = 0;
-  soundMillis   = 0;
+  presentMillis = 0;
   renderMillis  = 0;
   matrixMillis  = 0;
   nirvanaMillis = 0;
@@ -384,8 +377,7 @@ void GameStage::load()
 
   log.print( "Starting auxilary thread ..." );
 
-  isAlive = true;
-
+  isAuxAlive    = true;
   mainSemaphore = SDL_CreateSemaphore( 0 );
   auxSemaphore  = SDL_CreateSemaphore( 0 );
   auxThread     = SDL_CreateThread( auxMain, null );
@@ -437,9 +429,10 @@ void GameStage::load()
 
   ui::ui.showLoadingScreen( true );
 
-  render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
   sound.play();
-  render.sync();
+  render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+  render.swap();
+  sound.sync();
 
   loader.loadScheduled();
 
@@ -461,9 +454,16 @@ void GameStage::unload()
   log.printEnd( "] Unloading GameStage {" );
   log.indent();
 
+  ui::mouse.doShow = false;
+  ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Shutting down ..." ) );
+  ui::ui.showLoadingScreen( true );
+
+  render.draw( Render::DRAW_UI_BIT );
+  render.swap();
+
   float uiTime                = float( uiMillis )                       * 0.001f;
   float loaderTime            = float( loaderMillis )                   * 0.001f;
-  float soundTime             = float( soundMillis )                    * 0.001f;
+  float presentTime           = float( presentMillis )                  * 0.001f;
   float renderTime            = float( renderMillis )                   * 0.001f;
   float renderPrepareTime     = float( render.prepareMillis )           * 0.001f;
   float renderSetupTime       = float( render.setupMillis )             * 0.001f;
@@ -475,7 +475,7 @@ void GameStage::unload()
   float renderMiscTime        = float( render.miscMillis )              * 0.001f;
   float renderPostprocessTime = float( render.postprocessMillis )       * 0.001f;
   float renderUITime          = float( render.uiMillis )                * 0.001f;
-  float renderSyncTime        = float( render.syncMillis )              * 0.001f;
+  float renderSwapTime        = float( render.swapMillis )              * 0.001f;
   float matrixTime            = float( matrixMillis )                   * 0.001f;
   float nirvanaTime           = float( nirvanaMillis )                  * 0.001f;
   float loadingTime           = float( loadingMillis )                  * 0.001f;
@@ -483,13 +483,6 @@ void GameStage::unload()
   float gameTime              = float( timer.millis )                   * 0.001f;
   float droppedTime           = float( timer.runMillis - timer.millis ) * 0.001f;
   float frameDropRate         = float( timer.ticks - timer.nFrames ) / float( timer.ticks );
-
-  ui::mouse.doShow = false;
-  ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Shutting down ..." ) );
-  ui::ui.showLoadingScreen( true );
-
-  render.draw( Render::DRAW_UI_BIT );
-  render.sync();
 
   if( isLoaded ) {
     write( AUTOSAVE_FILE );
@@ -508,13 +501,13 @@ void GameStage::unload()
 
   log.print( "Stopping auxilary thread ..." );
 
-  isAlive = false;
+  isAuxAlive = false;
 
   SDL_SemPost( auxSemaphore );
   SDL_WaitThread( auxThread, null );
 
-  SDL_DestroySemaphore( mainSemaphore );
   SDL_DestroySemaphore( auxSemaphore );
+  SDL_DestroySemaphore( mainSemaphore );
 
   mainSemaphore = null;
   auxSemaphore  = null;
@@ -543,7 +536,7 @@ void GameStage::unload()
   log.indent();
   log.println( "%6.2f %%  [M:1] input & ui",            uiTime                / runTime * 100.0f );
   log.println( "%6.2f %%  [M:2] loader",                loaderTime            / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] sound",                 soundTime             / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3] present",               presentTime           / runTime * 100.0f );
   log.println( "%6.2f %%  [M:3] render",                renderTime            / runTime * 100.0f );
   log.println( "%6.2f %%  [M:3] + render prepare",      renderPrepareTime     / runTime * 100.0f );
   log.println( "%6.2f %%  [M:3] + render shader setup", renderSetupTime       / runTime * 100.0f );
@@ -555,7 +548,7 @@ void GameStage::unload()
   log.println( "%6.2f %%  [M:3] + render misc",         renderMiscTime        / runTime * 100.0f );
   log.println( "%6.2f %%  [M:3] + render postprocess",  renderPostprocessTime / runTime * 100.0f );
   log.println( "%6.2f %%  [M:3] + render ui",           renderUITime          / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] + render sync",         renderSyncTime        / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3] + render swap",         renderSwapTime        / runTime * 100.0f );
   log.println( "%6.2f %%  [A:2] matrix",                matrixTime            / runTime * 100.0f );
   log.println( "%6.2f %%  [A:3] nirvana",               nirvanaTime           / runTime * 100.0f );
   log.unindent();

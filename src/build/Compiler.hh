@@ -56,7 +56,7 @@ class Compiler
       bool operator == ( const Part& part ) const
       {
         return component == part.component && mode == part.mode && specular == part.specular &&
-            alpha == part.alpha && texture.equals( part.texture ) && masks.equals( part.masks );
+               alpha == part.alpha && texture.equals( part.texture ) && masks.equals( part.masks );
       }
     };
 

@@ -249,7 +249,7 @@ class OutputStream
      * Write an array of characters.
      */
     OZ_ALWAYS_INLINE
-    void writeChars( const char *array, int count )
+    void writeChars( const char* array, int count )
     {
       char* data = reinterpret_cast<char*>( forward( count * int( sizeof( char ) ) ) );
       aCopy( data, array, count );

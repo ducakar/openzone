@@ -192,7 +192,7 @@ void Terra::load()
   glBufferData( GL_ELEMENT_ARRAY_BUFFER, TILE_INDICES * sizeof( ushort ), 0, GL_STATIC_DRAW );
 
   ushort* indices =
-      reinterpret_cast<ushort*>( glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY ) );
+    reinterpret_cast<ushort*>( glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY ) );
 
   for( int i = 0; i < TILE_INDICES; ++i ) {
     indices[i] = ushort( is.readShort() );
@@ -211,7 +211,7 @@ void Terra::load()
       glBufferData( GL_ARRAY_BUFFER, TILE_VERTICES * sizeof( Vertex ), 0, GL_STATIC_DRAW );
 
       Vertex* vertices =
-          reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY ) );
+        reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY ) );
 
       for( int k = 0; k < TILE_VERTICES; ++k ) {
         vertices[k].read( &is );

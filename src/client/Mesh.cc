@@ -37,11 +37,11 @@ namespace client
 bool Vertex::operator == ( const Vertex& v ) const
 {
   return pos[0] == v.pos[0] && pos[1] == v.pos[1] && pos[2] == v.pos[2] &&
-      texCoord[0] == v.texCoord[0] && texCoord[1] == v.texCoord[1] &&
-      detailCoord[0] == v.detailCoord[0] && detailCoord[1] == v.detailCoord[1] &&
-      normal[0] == v.normal[0] && normal[1] == v.normal[1] && normal[2] == v.normal[2] &&
-      tangent[0] == v.tangent[0] && tangent[1] == v.tangent[1] && tangent[2] == v.tangent[2] &&
-      binormal[0] == v.binormal[0] && binormal[1] == v.binormal[1] && binormal[2] == v.binormal[2];
+         texCoord[0] == v.texCoord[0] && texCoord[1] == v.texCoord[1] &&
+         detailCoord[0] == v.detailCoord[0] && detailCoord[1] == v.detailCoord[1] &&
+         normal[0] == v.normal[0] && normal[1] == v.normal[1] && normal[2] == v.normal[2] &&
+         tangent[0] == v.tangent[0] && tangent[1] == v.tangent[1] && tangent[2] == v.tangent[2] &&
+         binormal[0] == v.binormal[0] && binormal[1] == v.binormal[1] && binormal[2] == v.binormal[2];
 }
 
 void Vertex::read( InputStream* stream )
@@ -170,7 +170,7 @@ void Mesh::load( InputStream* stream, uint usage )
   glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * int( sizeof( ushort ) ), 0, GL_STATIC_DRAW );
 
   ushort* indices =
-      reinterpret_cast<ushort*>( glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY ) );
+    reinterpret_cast<ushort*>( glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY ) );
 
   for( int i = 0; i < nIndices; ++i ) {
     indices[i] = ushort( stream->readShort() );

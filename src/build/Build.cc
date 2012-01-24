@@ -154,7 +154,7 @@ void Build::copyFiles( const char* srcDir, const char* destDir, const char* ext,
       }
     }
     else if( file->hasExtension( ext ) || fileName.beginsWith( "README" ) ||
-      fileName.beginsWith( "COPYING" ) )
+             fileName.beginsWith( "COPYING" ) )
     {
       log.print( "Copying '%s' ...", fileName.cstr() );
 

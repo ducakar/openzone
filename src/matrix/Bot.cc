@@ -148,7 +148,7 @@ void Bot::onUpdate()
      * STATE
      */
     state &= ~( GROUNDED_BIT | ON_STAIRS_BIT | CLIMBING_BIT | SWIMMING_BIT | SUBMERGED_BIT |
-        CARGO_BIT | ATTACKING_BIT );
+                CARGO_BIT | ATTACKING_BIT );
 
     state |= lower != -1 || ( flags & ON_FLOOR_BIT ) ? GROUNDED_BIT  : 0;
     state |= ( flags & ON_LADDER_BIT )               ? CLIMBING_BIT  : 0;
@@ -858,7 +858,7 @@ void Bot::exit()
   synapse.put( this );
 }
 
-Bot::Bot(  const BotClass* clazz_, int index, const Point3& p_, Heading heading ) :
+Bot::Bot( const BotClass* clazz_, int index, const Point3& p_, Heading heading ) :
   Dynamic( clazz_, index, p_, heading )
 {
   h          = float( heading ) * Math::TAU / 4.0f;

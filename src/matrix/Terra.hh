@@ -73,10 +73,12 @@ class Terra
 inline Span Terra::getInters( float minPosX, float minPosY,
                               float maxPosX, float maxPosY, float epsilon ) const
 {
-  return { max( int( ( minPosX - epsilon + DIM ) * Quad::INV_SIZE ), 0 ),
-           max( int( ( minPosY - epsilon + DIM ) * Quad::INV_SIZE ), 0 ),
-           min( int( ( maxPosX + epsilon + DIM ) * Quad::INV_SIZE ), QUADS - 1 ),
-           min( int( ( maxPosY + epsilon + DIM ) * Quad::INV_SIZE ), QUADS - 1 ) };
+  return {
+    max( int( ( minPosX - epsilon + DIM ) * Quad::INV_SIZE ), 0 ),
+    max( int( ( minPosY - epsilon + DIM ) * Quad::INV_SIZE ), 0 ),
+    min( int( ( maxPosX + epsilon + DIM ) * Quad::INV_SIZE ), QUADS - 1 ),
+    min( int( ( maxPosY + epsilon + DIM ) * Quad::INV_SIZE ), QUADS - 1 )
+  };
 }
 
 inline Pair<int> Terra::getIndices( float x, float y ) const

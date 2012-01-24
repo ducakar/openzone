@@ -47,22 +47,22 @@ class GameStage : public Stage
 
   private:
 
-    SDL_Thread*     auxThread;
-    SDL_sem*        mainSemaphore;
-    SDL_sem*        auxSemaphore;
-    volatile bool   isAlive;
-
-    bool            isLoaded;
-
     uint            loadingMillis;
     uint            uiMillis;
     uint            loaderMillis;
-    uint            soundMillis;
+    uint            presentMillis;
     uint            renderMillis;
     uint            matrixMillis;
     uint            nirvanaMillis;
 
     Vector<Module*> modules;
+
+    SDL_Thread*     auxThread;
+    SDL_sem*        mainSemaphore;
+    SDL_sem*        auxSemaphore;
+    volatile bool   isAuxAlive;
+
+    bool            isLoaded;
 
   public:
 
@@ -74,11 +74,11 @@ class GameStage : public Stage
 
   private:
 
+    static int auxMain( void* );
+
     bool read( const char* path );
     void write( const char* path ) const;
     void reload();
-
-    static int auxMain( void* );
 
     void auxRun();
 

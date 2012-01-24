@@ -34,7 +34,7 @@ class Caelum
 {
   public:
 
-    static const int MAX_STARS = 4096;
+    static const int MAX_STARS = 2048;
 
   private:
 
@@ -50,25 +50,25 @@ class Caelum
     static const float WATER_COLOUR[4];
     static const float STAR_COLOUR[4];
 
-    uint   vao;
-    uint   vbo;
+    uint  vao;
+    uint  vbo;
 
-    uint   sunTexId;
-    uint   moonTexId;
+    uint  sunTexId;
+    uint  moonTexId;
 
-    int    starShaderId;
-    int    celestialShaderId;
+    int   starShaderId;
+    int   celestialShaderId;
 
   public:
 
-    float  angle;
-    float  ratio;
-    Vec3   originalLightDir;
-    Vec3   axis;
+    float angle;
+    float ratio;
+    Vec3  originalLightDir;
+    Vec3  axis;
 
-    Vec3   lightDir;
+    Vec3  lightDir;
 
-    int    id;
+    int   id;
 
     Caelum();
 

@@ -63,8 +63,8 @@ SettingsFrame::SettingsFrame() :
   y = ( Area::uiHeight - height ) / 2;
 
   message.setText( OZ_GETTEXT( "NOT IMPLEMENTED YET\n\n"
-      "You can change your settings by manually editing '%s' file." ),
-      String::str( "%s/client.rc", config.get( "dir.config", "" ) ).cstr() );
+                               "You can change your settings by manually editing '%s' file." ),
+                   String::str( "%s/client.rc", config.get( "dir.config", "" ) ).cstr() );
 
   add( new Button( OZ_GETTEXT( "Close" ), closeFrame, 40, 16 ), -44, 4 );
 }

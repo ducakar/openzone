@@ -197,8 +197,8 @@ void InventoryMenu::onDraw()
   const ObjectClass* containerClazz = container->clazz;
 
   String sTitle = container->flags & Object::BOT_BIT ?
-      static_cast<const Bot*>( container )->name + " (" + containerClazz->title + ")" :
-      containerClazz->title;
+                  static_cast<const Bot*>( container )->name + " (" + containerClazz->title + ")" :
+                  containerClazz->title;
 
   title.set( width / 2, -Font::INFOS[Font::LARGE].height - 8, ALIGN_HCENTRE, Font::LARGE,
              "%s", sTitle.cstr() );

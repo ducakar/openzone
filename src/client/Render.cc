@@ -54,7 +54,7 @@ Render render;
 
 const float Render::WIDE_CULL_FACTOR = 6.0f;
 const float Render::CELL_WIDE_RADIUS =
-    ( float( Cell::SIZEI / 2 ) + float( Object::MAX_DIMI ) * WIDE_CULL_FACTOR ) * Math::SQRT_2;
+  ( float( Cell::SIZEI / 2 ) + float( Object::MAX_DIMI ) * WIDE_CULL_FACTOR ) * Math::SQRT_2;
 
 const float Render::NIGHT_FOG_COEFF  = 2.0f;
 const float Render::NIGHT_FOG_DIST   = 0.3f;
@@ -296,8 +296,7 @@ void Render::drawGeometry()
     for( int i = 0; i < objects.length(); ++i ) {
       glUniform4fv( param.oz_Colour, 1,
                     objects[i].obj->flags & Object::SOLID_BIT ?
-                        Colours::CLIP_AABB :
-                        Colours::NOCLIP_AABB );
+                      Colours::CLIP_AABB : Colours::NOCLIP_AABB );
       shape.wireBox( *objects[i].obj );
     }
 
@@ -389,6 +388,11 @@ void Render::drawUI()
   uiMillis += Time::clock() - beginTime;
 }
 
+bool Render::toggleFullscreen() const
+{
+  return SDL_WM_ToggleFullScreen( surface ) != 0;
+}
+
 void Render::draw( int flags )
 {
   if( flags & DRAW_ORBIS_BIT ) {
@@ -403,18 +407,13 @@ void Render::draw( int flags )
   }
 }
 
-void Render::sync()
+void Render::swap()
 {
   uint beginTime = Time::clock();
 
   SDL_GL_SwapBuffers();
 
-  syncMillis += Time::clock() - beginTime;
-}
-
-bool Render::toggleFullscreen() const
-{
-  return SDL_WM_ToggleFullScreen( surface ) != 0;
+  swapMillis += Time::clock() - beginTime;
 }
 
 void Render::load()
@@ -441,7 +440,7 @@ void Render::load()
   miscMillis        = 0;
   postprocessMillis = 0;
   uiMillis          = 0;
-  syncMillis        = 0;
+  swapMillis        = 0;
 
   log.unindent();
   log.println( "}" );
@@ -489,11 +488,16 @@ void Render::init( bool isBuild )
   int  screenWidth  = config.getSet( "screen.width", 0 );
   int  screenHeight = config.getSet( "screen.height", 0 );
   bool isFullscreen = config.getSet( "screen.full", true );
+  bool enableVSync  = config.getSet( "screen.vsync", true );
 
   log.print( "Creating OpenGL window %dx%d %s ...",
              screenWidth, screenHeight, isFullscreen ? "fullscreen" : "windowed" );
 
   uint videoFlags = SDL_OPENGL | ( isFullscreen ? SDL_FULLSCREEN : 0 );
+
+  if( enableVSync ) {
+    SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, 1 );
+  }
 
   if( SDL_VideoModeOK( screenWidth, screenHeight, 0, videoFlags ) == 1 ) {
     throw Exception( "Video mode not supported" );
@@ -522,15 +526,17 @@ void Render::init( bool isBuild )
   bool hasVAO      = false;
 #endif
 
-  String vendor   = String::cstr( glGetString( GL_VENDOR ) );
-  String renderer = String::cstr( glGetString( GL_RENDERER ) );
-  String version  = String::cstr( glGetString( GL_VERSION ) );
+  String vendor      = String::cstr( glGetString( GL_VENDOR ) );
+  String renderer    = String::cstr( glGetString( GL_RENDERER ) );
+  String version     = String::cstr( glGetString( GL_VERSION ) );
+  String glslVersion = String::cstr( glGetString( GL_SHADING_LANGUAGE_VERSION ) );
   String sExtensions = String::cstr( glGetString( GL_EXTENSIONS ) );
   DArray<String> extensions = sExtensions.trim().split( ' ' );
 
   log.println( "OpenGL vendor: %s", vendor.cstr() );
   log.println( "OpenGL renderer: %s", renderer.cstr() );
   log.println( "OpenGL version: %s", version.cstr() );
+  log.println( "GLSL version: %s", glslVersion.cstr() );
 
   log.verboseMode = true;
 

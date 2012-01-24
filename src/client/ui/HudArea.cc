@@ -78,7 +78,7 @@ void HudArea::drawBotCrosshair()
     else if( taggedObj->flags & Object::BOT_BIT ) {
       life = max( 0.0f, 2.0f * taggedObj->life / taggedClazz->life - 1.0f );
     }
-    else{
+    else {
       life = taggedObj->life / taggedClazz->life;
     }
 
@@ -97,7 +97,7 @@ void HudArea::drawBotCrosshair()
       lastTaggedId = camera.tagged;
 
       String sTitle = ( taggedObj->flags & Object::BOT_BIT ) && !taggedBot->name.isEmpty() ?
-          taggedBot->name + " (" + taggedClazz->title + ")" : taggedClazz->title;
+                      taggedBot->name + " (" + taggedClazz->title + ")" : taggedClazz->title;
 
       title.setText( "%s", sTitle.cstr() );
     }
@@ -349,7 +349,7 @@ void HudArea::onDraw()
 
 HudArea::HudArea() :
   Area( Area::uiWidth, Area::uiHeight ),
-  weaponName( 16, 54, ALIGN_LEFT, Font::LARGE, " "  ),
+  weaponName( 16, 54, ALIGN_LEFT, Font::LARGE, " " ),
   weaponRounds( 200, 54, ALIGN_RIGHT, Font::LARGE, "∞" ),
   lastTaggedId( -1 ), lastWeaponId( -1 ), lastWeaponRounds( -1 ), lastVehicleId( -1 )
 {
