@@ -84,7 +84,9 @@ class System
     static void abort( bool preventHalt = false );
 
     /**
-     * Trigger a breakpoint (raises <tt>SIGTRAP</tt> on Linux or calls DebugBreak() on Windows).
+     * Trigger a breakpoint.
+     *
+     * It raises <tt>SIGTRAP</tt> on Linux or calls <tt>DebugBreak()</tt> on Windows.
      */
     static void trap();
 
@@ -110,7 +112,8 @@ class System
      *
      * Same as <tt>warning()</tt> but also aborts the program.
      */
-    OZ_PRINTF_FORMAT( 2, 3 ) OZ_NORETURN
+    OZ_NORETURN
+    OZ_PRINTF_FORMAT( 2, 3 )
     static void error( int nSkippedFrames, const char* msg, ... );
 
     /**

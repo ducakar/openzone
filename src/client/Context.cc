@@ -159,11 +159,10 @@ uint Context::readTexture( InputStream* stream )
   int nMipmaps       = stream->readInt();
   int internalFormat = stream->readInt();
 
-  bool usesS3TC =
-      internalFormat == GL_COMPRESSED_RGB_S3TC_DXT1_EXT ||
-      internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT ||
-      internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT ||
-      internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+  bool usesS3TC = internalFormat == GL_COMPRESSED_RGB_S3TC_DXT1_EXT ||
+                  internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT ||
+                  internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT ||
+                  internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 
   if( !shader.hasS3TC && usesS3TC ) {
     throw Exception( "Texture uses S3 texture compression but texture compression disabled" );

@@ -283,60 +283,33 @@ void Log::printTrace( const StackTrace* st ) const
   }
 }
 
-void Log::printException( const std::exception& e ) const
+void Log::printException( const std::exception* e ) const
 {
   FILE* file = reinterpret_cast<FILE*>( fileStream );
 
-  const Exception* oe = dynamic_cast<const Exception*>( &e );
+  const Exception* oe = dynamic_cast<const Exception*>( e );
 
   if( oe == null ) {
     if( !verboseMode || isVerbose ) {
-      printf( "\n\nEXCEPTION: %s\n", e.what() );
+      printf( "\n\nEXCEPTION: %s\n", e->what() );
     }
     if( file != null ) {
-      fprintf( file, "\n\nEXCEPTION: %s\n", e.what() );
+      fprintf( file, "\n\nEXCEPTION: %s\n", e->what() );
 
       fflush( file );
     }
   }
   else {
-    const Exception& e = *oe;
-
     if( !verboseMode || isVerbose ) {
       printf( "\n\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
-              e.what(), e.function, e.file, e.line );
+              oe->message, oe->function, oe->file, oe->line );
     }
     if( file != null ) {
       fprintf( file, "\n\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
-               e.what(), e.function, e.file, e.line );
+               oe->message, oe->function, oe->file, oe->line );
     }
 
-    if( e.stackTrace.nFrames == 0 ) {
-      if( !verboseMode || isVerbose ) {
-        printf( "    [empty stack trace]\n" );
-      }
-      if( file != null ) {
-        fprintf( file, "    [empty stack trace]\n" );
-      }
-    }
-    else {
-      char** entries = e.stackTrace.symbols();
-
-      for( int i = 0; i < e.stackTrace.nFrames; ++i ) {
-        if( !verboseMode || isVerbose ) {
-          printf( "    %s\n", entries[i] );
-        }
-        if( file != null ) {
-          fprintf( file, "    %s\n", entries[i] );
-        }
-      }
-
-      free( entries );
-    }
-
-    if( file != null ) {
-      fflush( file );
-    }
+    printTrace( &oe->stackTrace );
   }
 }
 

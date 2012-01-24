@@ -60,7 +60,7 @@ class Exception : public std::exception
                         const char* message, ... ) throw();
 
     /**
-     * Message string (no file, line number etc.).
+     * Message string (no file, stack trace etc.).
      */
     virtual const char* what() const throw();
 

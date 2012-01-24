@@ -377,7 +377,7 @@ void OBJ::save()
     compiler.texture( parts[i].texture );
     compiler.masks( parts[i].masks );
 
-    compiler.material( GL_DIFFUSE,  parts[i].alpha  );
+    compiler.material( GL_DIFFUSE,  parts[i].alpha );
     compiler.material( GL_SPECULAR, parts[i].specular );
 
     for( int j = 0; j < parts[i].faces.length(); ++j ) {

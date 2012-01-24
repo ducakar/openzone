@@ -46,7 +46,7 @@ ObjectClass* VehicleClass::createClass()
 void VehicleClass::initClass( const Config* config )
 {
   flags = Object::DYNAMIC_BIT | Object::VEHICLE_BIT | Object::USE_FUNC_BIT |
-      Object::UPDATE_FUNC_BIT | Object::CYLINDER_BIT;
+          Object::UPDATE_FUNC_BIT | Object::CYLINDER_BIT;
 
   OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",    true  );
   OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.onDamage",     false );

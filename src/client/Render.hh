@@ -135,7 +135,7 @@ class Render
     uint                  miscMillis;
     uint                  postprocessMillis;
     uint                  uiMillis;
-    uint                  syncMillis;
+    uint                  swapMillis;
 
   private:
 
@@ -148,9 +148,10 @@ class Render
 
   public:
 
-    void draw( int flags );
-    void sync();
     bool toggleFullscreen() const;
+
+    void draw( int flags );
+    void swap();
 
     void load();
     void unload();

@@ -101,21 +101,29 @@ class Sound
     int            streamedTrack;
     volatile int   streamedBytes;
 
-    SDL_Thread*    decoderThread;
-    SDL_sem*       mainSemaphore;
-    SDL_sem*       decoderSemaphore;
-    volatile bool  isAlive;
+    SDL_Thread*    musicThread;
+    SDL_Thread*    soundThread;
 
-    static int decoderMain( void* );
+    SDL_sem*       musicAuxSemaphore;
+    SDL_sem*       musicMainSemaphore;
+    SDL_sem*       soundAuxSemaphore;
+    SDL_sem*       soundMainSemaphore;
+
+    volatile bool  isSoundAlive;
+    volatile bool  isMusicAlive;
+
+    static int musicMain( void* );
+    static int soundMain( void* );
+
+    void musicOpen( const char* path );
+    void musicClear();
+    int  musicDecode();
+    void musicRun();
 
     void playCell( int cellX, int cellY );
-
-    void streamOpen( const char* path );
-    void streamClear();
-    int  streamDecode();
-    void streamRun();
-
     void updateMusic();
+
+    void soundRun();
 
   public:
 
@@ -130,6 +138,7 @@ class Sound
     void suspend() const;
 
     void play();
+    void sync();
 
     void init();
     void free();

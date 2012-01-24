@@ -29,6 +29,7 @@
 
 #include "System.hh"
 
+#include "arrays.hh"
 #include "Log.hh"
 
 #include "windefs.h"
@@ -53,7 +54,7 @@ System System::system;
 
 static const char* const SIGNALS[][2] =
 {
-  { "?",         "[invalid signal number]"    },
+  { "SIG???",    "[invalid signal number]"    },
   { "SIGHUP",    "Hangup"                     }, //  1
   { "SIGINT",    "Interrupt"                  }, //  2
   { "SIGQUIT",   "Quit"                       }, //  3
@@ -117,7 +118,7 @@ static const Wave WAVE_SAMPLE = {
   }
 };
 
-// Needed to protect bellUsers counter.
+// Needed to protect nBellUsers counter.
 static CRITICAL_SECTION mutex;
 
 #else
@@ -127,7 +128,7 @@ static const ubyte BELL_SAMPLE[] = {
 # include "bellSample.inc"
 };
 
-// Needed to protect bellUsers counter.
+// Needed to protect nBellUsers counter.
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 #endif
@@ -141,24 +142,18 @@ static void signalHandler( int signum )
 {
   resetSignals();
 
-  if( signum < 1 || signum > 31 ) {
-    signum = 0;
-  }
-
-  if( signum == SIGINT ) {
-    initFlags &= ~System::HALT_BIT;
-  }
+  int sigindex = uint( signum ) >= uint( aLength( SIGNALS ) ) ? 0 : signum;
 
   log.verboseMode = false;
   log.printEnd();
-  log.printRaw( "Caught signal %d %s (%s)", signum, SIGNALS[signum][0], SIGNALS[signum][1] );
+  log.printRaw( "Caught signal %d %s (%s)", signum, SIGNALS[sigindex][0], SIGNALS[sigindex][1] );
   log.printEnd();
 
   StackTrace st = StackTrace::current( 0 );
   log.printTrace( &st );
 
   System::bell();
-  System::abort();
+  System::abort( signum == SIGINT );
 }
 
 static void terminate()

@@ -69,8 +69,8 @@ bool Collider::overlapsAABBObj( const Object* sObj ) const
     float radius  = sumDimX + EPSILON;
 
     return distXY2 <= radius*radius &&
-        relPos.z <= +sumDimZ + EPSILON &&
-        relPos.z >= -sumDimZ - EPSILON;
+           relPos.z <= +sumDimZ + EPSILON &&
+           relPos.z >= -sumDimZ - EPSILON;
   }
   return sObj->overlaps( aabb, EPSILON );
 }
@@ -507,7 +507,7 @@ void Collider::trimAABBWater( const BSP::Brush* brush )
     }
     else if( plane.n.z > 0.0f ) {
       float lowerDist = ( plane.d - startPos.x*plane.n.x - startPos.y*plane.n.y ) / plane.n.z -
-          startPos.z + aabb.dim.z;
+                        startPos.z + aabb.dim.z;
 
       if( lowerDist > 0.0f ) {
         depth = min( depth, lowerDist );

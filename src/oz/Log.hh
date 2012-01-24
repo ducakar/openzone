@@ -136,7 +136,7 @@ class Log
     /**
      * Print nicely formatted exception (unindented).
      */
-    void printException( const std::exception& e ) const;
+    void printException( const std::exception* e ) const;
 
     /**
      * First parameter is file path (if <tt>null</tt> or "", it only writes to terminal), the other

@@ -141,9 +141,19 @@ void BotProxy::update()
     return;
   }
 
+  if( keys[SDLK_o] ) {
+    if( keys[SDLK_LSHIFT] || keys[SDLK_RSHIFT] ) {
+      orbis.caelum.time -= orbis.caelum.period * 0.002f;
+    }
+    else {
+      orbis.caelum.time += orbis.caelum.period * 0.002f;
+    }
+  }
+
   /*
    * Camera
    */
+
   if( isFreelook && ( bot->parent != -1 || isExternal ) ) {
     camera.h += camera.relH;
     camera.v += camera.relV;
@@ -161,6 +171,7 @@ void BotProxy::update()
   /*
    * Movement
    */
+
   if( keys[SDLK_w] ) {
     bot->actions |= Bot::ACTION_FORWARD;
   }
@@ -306,7 +317,7 @@ void BotProxy::prepare()
 
     if( bot->parent != -1 ) { // inside vehicle
       hard_assert( orbis.objects[bot->parent] == null ||
-          ( orbis.objects[bot->parent]->flags & Object::VEHICLE_BIT ) );
+                   ( orbis.objects[bot->parent]->flags & Object::VEHICLE_BIT ) );
 
       camera.w = 0.0f;
       camera.align();
@@ -323,19 +334,19 @@ void BotProxy::prepare()
           Bot::MOVING_BIT )
       {
         float bobInc =
-            ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT | Bot::CARGO_BIT ) ) ==
-              Bot::RUNNING_BIT ? clazz->bobRunInc : clazz->bobWalkInc;
+          ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT | Bot::CARGO_BIT ) ) ==
+          Bot::RUNNING_BIT ? clazz->bobRunInc : clazz->bobWalkInc;
 
         bobPhi   = Math::fmod( bobPhi + bobInc, Math::TAU );
         bobTheta = Math::sin( bobPhi ) * clazz->bobRotation;
         bobBias  = Math::sin( 2.0f * bobPhi ) * clazz->bobAmplitude;
       }
       else if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
-          ( Bot::MOVING_BIT | Bot::SWIMMING_BIT ) )
+               ( Bot::MOVING_BIT | Bot::SWIMMING_BIT ) )
       {
         float bobInc =
-            ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT ) ) == Bot::RUNNING_BIT ?
-            clazz->bobSwimRunInc : clazz->bobSwimInc;
+          ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT ) ) == Bot::RUNNING_BIT ?
+          clazz->bobSwimRunInc : clazz->bobSwimInc;
 
         bobPhi   = Math::fmod( bobPhi + bobInc, Math::TAU );
         bobTheta = 0.0f;

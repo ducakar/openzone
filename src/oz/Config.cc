@@ -75,7 +75,7 @@ void Config::loadConf( InputStream* istream )
       // Key.
       const char* begin = istream->getPos() - 1;
       while( istream->isAvailable() &&
-          ( String::isLetter( ch ) || String::isDigit( ch ) || ch == '_' || ch == '.' ) )
+             ( String::isLetter( ch ) || String::isDigit( ch ) || ch == '_' || ch == '.' ) )
       {
         ch = istream->readChar();
       }

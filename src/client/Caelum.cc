@@ -105,7 +105,7 @@ void Caelum::draw()
 
   // we need the transformation matrix for occlusion of stars below horizon
   Mat44 transf = Mat44::rotationZ( orbis.caelum.heading ) *
-      Mat44::rotationY( angle - Math::TAU / 4.0f );
+                 Mat44::rotationY( angle - Math::TAU / 4.0f );
 
   OZ_GL_CHECK_ERROR();
 

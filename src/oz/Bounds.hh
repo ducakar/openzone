@@ -204,10 +204,9 @@ class Bounds
     OZ_ALWAYS_INLINE
     bool includes( const Point3& p, float eps = 0.0f ) const
     {
-      return
-          mins.x - eps <= p.x && p.x <= maxs.x + eps &&
-          mins.y - eps <= p.y && p.y <= maxs.y + eps &&
-          mins.z - eps <= p.z && p.z <= maxs.z + eps;
+      return mins.x - eps <= p.x && p.x <= maxs.x + eps &&
+             mins.y - eps <= p.y && p.y <= maxs.y + eps &&
+             mins.z - eps <= p.z && p.z <= maxs.z + eps;
     }
 
     /**
@@ -221,10 +220,9 @@ class Bounds
     {
       Vec3 epsDim = a.dim + Vec3( eps, eps, eps );
 
-      return
-          mins.x <= a.p.x - epsDim.x && a.p.x + epsDim.x <= maxs.x &&
-          mins.y <= a.p.y - epsDim.y && a.p.y + epsDim.y <= maxs.y &&
-          mins.z <= a.p.z - epsDim.z && a.p.z + epsDim.z <= maxs.z;
+      return mins.x <= a.p.x - epsDim.x && a.p.x + epsDim.x <= maxs.x &&
+             mins.y <= a.p.y - epsDim.y && a.p.y + epsDim.y <= maxs.y &&
+             mins.z <= a.p.z - epsDim.z && a.p.z + epsDim.z <= maxs.z;
     }
 
     /**
@@ -238,10 +236,9 @@ class Bounds
     {
       Vec3 epsDim = a.dim + Vec3( eps, eps, eps );
 
-      return
-          mins.x <= a.p.x + epsDim.x && a.p.x - epsDim.x <= maxs.x &&
-          mins.y <= a.p.y + epsDim.y && a.p.y - epsDim.y <= maxs.y &&
-          mins.z <= a.p.z + epsDim.z && a.p.z - epsDim.z <= maxs.z;
+      return mins.x <= a.p.x + epsDim.x && a.p.x - epsDim.x <= maxs.x &&
+             mins.y <= a.p.y + epsDim.y && a.p.y - epsDim.y <= maxs.y &&
+             mins.z <= a.p.z + epsDim.z && a.p.z - epsDim.z <= maxs.z;
     }
 
     /**
@@ -253,10 +250,9 @@ class Bounds
     OZ_ALWAYS_INLINE
     bool includes( const Bounds& b, float eps = 0.0f ) const
     {
-      return
-          mins.x - eps <= b.mins.x && b.maxs.x <= maxs.x + eps &&
-          mins.y - eps <= b.mins.y && b.maxs.y <= maxs.y + eps &&
-          mins.z - eps <= b.mins.z && b.maxs.z <= maxs.z + eps;
+      return mins.x - eps <= b.mins.x && b.maxs.x <= maxs.x + eps &&
+             mins.y - eps <= b.mins.y && b.maxs.y <= maxs.y + eps &&
+             mins.z - eps <= b.mins.z && b.maxs.z <= maxs.z + eps;
     }
 
     /**
@@ -268,10 +264,9 @@ class Bounds
     OZ_ALWAYS_INLINE
     bool overlaps( const Bounds& b, float eps = 0.0f ) const
     {
-      return
-          mins.x - eps <= b.maxs.x && b.mins.x <= maxs.x + eps &&
-          mins.y - eps <= b.maxs.y && b.mins.y <= maxs.y + eps &&
-          mins.z - eps <= b.maxs.z && b.mins.z <= maxs.z + eps;
+      return mins.x - eps <= b.maxs.x && b.mins.x <= maxs.x + eps &&
+             mins.y - eps <= b.maxs.y && b.mins.y <= maxs.y + eps &&
+             mins.z - eps <= b.maxs.z && b.mins.z <= maxs.z + eps;
     }
 
 };

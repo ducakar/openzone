@@ -81,7 +81,7 @@ class Loader
     // load scheduled models
     void loadModels();
 
-public:
+  public:
 
     void cleanup();
     void loadScheduled();

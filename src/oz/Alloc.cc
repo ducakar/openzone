@@ -108,7 +108,7 @@ void Alloc::printSummary()
   log.println( "Alloc summary {" );
   log.indent();
 
-  log.println( "current chunks     %d", count  );
+  log.println( "current chunks     %d", count );
   log.println( "current amount     %.2f MiB (%ld B)",
                float( amount ) / ( 1024.0f*1024.0f ), ulong( amount ) );
   log.println( "maximum chunks     %d", maxCount );

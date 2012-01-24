@@ -401,7 +401,7 @@ void Physics::handleObjMove()
   while( true );
 
   int newFlags = ( collider.hit.medium & Material::WATER_BIT ? Object::IN_WATER_BIT : 0 ) |
-      ( collider.hit.medium & Material::LADDER_BIT ? Object::ON_LADDER_BIT : 0 );
+                 ( collider.hit.medium & Material::LADDER_BIT ? Object::ON_LADDER_BIT : 0 );
 
   if( ( newFlags & ~dyn->flags & Object::IN_WATER_BIT ) && dyn->velocity.z <= SPLASH_THRESHOLD ) {
     dyn->splash( dyn->velocity.z );

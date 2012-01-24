@@ -126,7 +126,7 @@ void StrategicArea::printName( int baseX, int baseY, const char* s, ... )
 
   glBindTexture( GL_TEXTURE_2D, titleTexId );
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                text->pixels);
+                text->pixels );
 
   SDL_FreeSurface( text );
 
@@ -159,14 +159,14 @@ void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const 
     const ObjectClass* clazz = obj->clazz;
 
     String title = ( obj->flags & Object::BOT_BIT ) && !bot->name.isEmpty() ?
-        bot->name + " (" + clazz->title + ")" : clazz->title;
+                   bot->name + " (" + clazz->title + ")" : clazz->title;
 
     printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", title.cstr() );
 
     if( !Math::isinf( obj->life ) ) {
       life = obj->flags & Object::BOT_BIT ?
-          max( 0.0f, ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
-          obj->life / clazz->life;
+             max( 0.0f, ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
+             obj->life / clazz->life;
     }
   }
 
@@ -211,8 +211,8 @@ void StrategicArea::drawTaggedRect( const Span& span, const Struct* str, const O
 
       if( !Math::isinf( maxLife ) ) {
         life = obj->flags & Object::BOT_BIT ?
-            max( 0.0f, ( obj->life - maxLife / 2.0f ) / ( maxLife / 2.0f ) ) :
-            obj->life / maxLife;
+               max( 0.0f, ( obj->life - maxLife / 2.0f ) / ( maxLife / 2.0f ) ) :
+               obj->life / maxLife;
       }
     }
 

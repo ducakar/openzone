@@ -41,7 +41,7 @@ ObjectClass* WeaponClass::createClass()
 void WeaponClass::initClass( const Config* config )
 {
   flags = Object::DYNAMIC_BIT | Object::WEAPON_BIT | Object::ITEM_BIT |
-      Object::UPDATE_FUNC_BIT | Object::USE_FUNC_BIT;
+          Object::UPDATE_FUNC_BIT | Object::USE_FUNC_BIT;
 
   OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",    true  );
   OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.onDamage",     false );

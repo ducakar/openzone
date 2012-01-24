@@ -46,9 +46,9 @@ MD2Imago::~MD2Imago()
 
 MD2::Anim MD2Imago::extractAnim() const
 {
-  const Bot* bot = static_cast<const Bot*>( obj );
-  const Weapon* weapon =
-      bot->weapon == -1 ? null : static_cast<const Weapon*>( orbis.objects[bot->weapon] );
+  const Bot*    bot    = static_cast<const Bot*>( obj );
+  const Weapon* weapon = bot->weapon == -1 ?
+                         null : static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
   if( bot->state & Bot::DEAD_BIT ) {
     if( anim.type == MD2::ANIM_DEATH_FALLBACK || anim.type == MD2::ANIM_DEATH_FALLBACKSLOW ||
@@ -64,7 +64,7 @@ MD2::Anim MD2Imago::extractAnim() const
     return MD2::ANIM_CROUCH_STAND;
   }
   else if( ( bot->actions & Bot::ACTION_JUMP ) &&
-      !( bot->state & ( Bot::GROUNDED_BIT | Bot::CLIMBING_BIT ) ) )
+           !( bot->state & ( Bot::GROUNDED_BIT | Bot::CLIMBING_BIT ) ) )
   {
     return MD2::ANIM_JUMP;
   }
@@ -94,8 +94,8 @@ MD2::Anim MD2Imago::extractAnim() const
       return MD2::ANIM_FLIP;
     }
     else if( anim.type == MD2::ANIM_POINT || anim.type == MD2::ANIM_FALLBACK ||
-        anim.type == MD2::ANIM_SALUTE || anim.type == MD2::ANIM_WAVE ||
-        anim.type == MD2::ANIM_FLIP )
+             anim.type == MD2::ANIM_SALUTE || anim.type == MD2::ANIM_WAVE ||
+             anim.type == MD2::ANIM_FLIP )
     {
       return anim.type;
     }
@@ -146,7 +146,8 @@ void MD2Imago::draw( const Imago* parent, int mask )
     if( anim.type == MD2::ANIM_ATTACK && bot->weapon != -1 ) {
       const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
-      if( weapon != null && ( weapon->shotTime == 0.0f ||
+      if( weapon != null &&
+          ( weapon->shotTime == 0.0f ||
             weapon->shotTime == static_cast<const WeaponClass*>( weapon->clazz )->shotInterval ) )
       {
         anim.nextFrame = anim.firstFrame;
