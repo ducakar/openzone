@@ -135,7 +135,7 @@ void Text::clear()
 void Text::draw( const Area* area ) const
 {
   for( int i = 0; i < nLines; ++i ) {
-    labels[i].draw( area );
+    labels[i].draw( area, false );
   }
 }
 

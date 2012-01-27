@@ -117,7 +117,7 @@ void UI::draw()
     }
 
     fpsLabel->setText( "%.2f", fps );
-    fpsLabel->draw( root );
+    fpsLabel->draw( root, true );
   }
 
   glDisable( GL_BLEND );

@@ -54,13 +54,19 @@ class InventoryMenu : public Frame
 
     Label  itemDesc;
 
+    int    cachedContainerIndex;
+    int    cachedTaggedItemIndex;
+
     int    tagged;
     int    scroll;
+
+    bool   isMouseOver;
 
   protected:
 
     virtual void onVisibilityChange();
     virtual bool onMouseEvent();
+    virtual void onUpdate();
     virtual void onDraw();
 
   public:

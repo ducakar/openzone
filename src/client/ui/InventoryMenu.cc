@@ -42,12 +42,16 @@ const float InventoryMenu::SLOT_OBJ_DIM = float( SLOT_SIZE - 2*PADDING_SIZE ) / 
 
 void InventoryMenu::onVisibilityChange()
 {
+  cachedContainerIndex  = -1;
+  cachedTaggedItemIndex = -1;
+
   tagged = -1;
   scroll = 0;
 }
 
 bool InventoryMenu::onMouseEvent()
 {
+  isMouseOver = true;
   tagged = -1;
 
   Bot* bot = camera.botObj;
@@ -175,6 +179,14 @@ bool InventoryMenu::onMouseEvent()
   return true;
 }
 
+void InventoryMenu::onUpdate()
+{
+  if( !isMouseOver ) {
+    tagged = -1;
+  }
+  isMouseOver = false;
+}
+
 void InventoryMenu::onDraw()
 {
   const Object* container = null;
@@ -196,12 +208,18 @@ void InventoryMenu::onDraw()
 
   const ObjectClass* containerClazz = container->clazz;
 
-  String sTitle = container->flags & Object::BOT_BIT ?
-                  static_cast<const Bot*>( container )->name + " (" + containerClazz->title + ")" :
-                  containerClazz->title;
+  if( container->index != cachedContainerIndex ) {
+    cachedContainerIndex = container->index;
 
-  title.set( width / 2, -Font::INFOS[Font::LARGE].height - 8, ALIGN_HCENTRE, Font::LARGE,
-             "%s", sTitle.cstr() );
+    if( container->flags & Object::BOT_BIT ) {
+      const Bot* bot = static_cast<const Bot*>( container );
+
+      title.setText( "%s (%s)", bot->name.cstr(), containerClazz->title.cstr() );
+    }
+    else {
+      title.setText( "%s", containerClazz->title.cstr() );
+    }
+  }
 
   Frame::onDraw();
 
@@ -214,6 +232,7 @@ void InventoryMenu::onDraw()
         else {
           glUniform4f( param.oz_Colour, 0.3f, 0.3f, 0.3f, 0.6f );
         }
+
         fill( j * SLOT_SIZE + PADDING_SIZE,
               FOOTER_SIZE + ( ROWS - i - 1 ) * SLOT_SIZE + PADDING_SIZE,
               SLOT_SIZE - 2*PADDING_SIZE,
@@ -300,9 +319,10 @@ slotsRendered:;
   tf.camera = Mat44::ID;
   tf.applyCamera();
 
-  tagged = -1;
-
-  if( taggedItem != null ) {
+  if( taggedItem == null ) {
+    cachedTaggedItemIndex = -1;
+  }
+  else {
     const ObjectClass* taggedClazz = taggedItem->clazz;
 
     float life = taggedItem->life / taggedClazz->life;
@@ -337,14 +357,18 @@ slotsRendered:;
 
   noIcon:;
 
-    if( !taggedClazz->description.isEmpty() ) {
-      itemDesc.setText( "%s - %s", taggedClazz->title.cstr(), taggedClazz->description.cstr() );
-    }
-    else {
-      itemDesc.setText( "%s", taggedClazz->title.cstr() );
+    if( tagged != cachedTaggedItemIndex ) {
+      cachedTaggedItemIndex = tagged;
+
+      if( !taggedClazz->description.isEmpty() ) {
+        itemDesc.setText( "%s - %s", taggedClazz->title.cstr(), taggedClazz->description.cstr() );
+      }
+      else {
+        itemDesc.setText( "%s", taggedClazz->title.cstr() );
+      }
     }
 
-    itemDesc.draw( this );
+    itemDesc.draw( this, false );
   }
 }
 
@@ -352,9 +376,14 @@ InventoryMenu::InventoryMenu( const InventoryMenu* master_ ) :
   Frame( 0, 8, COLS*SLOT_SIZE, ROWS*SLOT_SIZE + FOOTER_SIZE, " " ),
   master( master_ ),
   itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " " ),
+  cachedContainerIndex( -1 ),
+  cachedTaggedItemIndex( -1 ),
   tagged( -1 ),
-  scroll( 0 )
+  scroll( 0 ),
+  isMouseOver( false )
 {
+  flags |= UPDATE_BIT;
+
   x = ( Area::uiWidth - width ) / 2;
 
   if( master != null ) {

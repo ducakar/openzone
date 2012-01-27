@@ -10,7 +10,6 @@
   * Vehicle
     + improve rotation
 - ui
-  * drag cursors: openhand, closedhand
   * Struct::Entity info
 - client
   * look around with middle button

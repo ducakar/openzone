@@ -134,9 +134,9 @@ void Label::setText( const char* s, ... )
   va_end( ap );
 }
 
-void Label::draw( const Area* area )
+void Label::draw( const Area* area, bool allowChanged )
 {
-  if( activeTexId != 0 ) {
+  if( ( allowChanged || !hasChanged ) && activeTexId != 0 ) {
     glBindTexture( GL_TEXTURE_2D, activeTexId );
 
     int posX = area->x + ( x < 0 ? area->width  + offsetX : offsetX );

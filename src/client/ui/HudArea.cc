@@ -102,7 +102,7 @@ void HudArea::drawBotCrosshair()
       title.setText( "%s", sTitle.cstr() );
     }
 
-    title.draw( this );
+    title.draw( this, false );
 
     if( taggedObj->flags & Object::BROWSABLE_BIT ) {
       glBindTexture( GL_TEXTURE_2D, browseTexId );
@@ -213,8 +213,8 @@ void HudArea::drawBotStatus()
       }
     }
 
-    weaponName.draw( this );
-    weaponRounds.draw( this );
+    weaponName.draw( this, false );
+    weaponRounds.draw( this, true );
   }
 }
 
@@ -306,8 +306,8 @@ void HudArea::drawVehicleStatus()
       }
     }
 
-    vehicleWeaponNames[labelIndex].draw( this );
-    vehicleWeaponRounds[labelIndex].draw( this );
+    vehicleWeaponNames[labelIndex].draw( this, false );
+    vehicleWeaponRounds[labelIndex].draw( this, true );
   }
 }
 
