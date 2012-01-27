@@ -31,6 +31,14 @@
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"
 
+#include "client/ui/Label.hh"
+#include "client/ui/LoadingArea.hh"
+#include "client/ui/QuestFrame.hh"
+#include "client/ui/GalileoFrame.hh"
+#include "client/ui/MusicPlayer.hh"
+#include "client/ui/BuildMenu.hh"
+#include "client/ui/DebugFrame.hh"
+
 namespace oz
 {
 namespace client
@@ -41,7 +49,8 @@ namespace ui
 UI ui;
 
 UI::UI() :
-  fpsLabel( null ), root( null ), loadingScreen( null ), buildMenu( null ), debugFrame( null )
+  fpsLabel( null ), root( null ), loadingScreen( null ), questFrame( null ), galileoFrame( null ),
+  musicPlayer( null ), buildMenu( null ), debugFrame( null )
 {}
 
 void UI::showLoadingScreen( bool doShow )
@@ -129,8 +138,15 @@ void UI::load()
 {
   isFreelook = false;
 
-  buildMenu  = showBuild ? new BuildMenu() : null;
-  debugFrame = showDebug ? new DebugFrame() : null;
+  questFrame   = new QuestFrame();
+  galileoFrame = new GalileoFrame( questFrame );
+  musicPlayer  = new MusicPlayer();
+  buildMenu    = showBuild ? new BuildMenu() : null;
+  debugFrame   = showDebug ? new DebugFrame() : null;
+
+  root->add( questFrame );
+  root->add( galileoFrame );
+  root->add( musicPlayer );
 
   if( showBuild ) {
     root->add( buildMenu );
@@ -151,6 +167,18 @@ void UI::unload()
   if( buildMenu != null ) {
     root->remove( buildMenu );
     buildMenu = null;
+  }
+  if( musicPlayer != null ) {
+    root->remove( musicPlayer );
+    musicPlayer = null;
+  }
+  if( galileoFrame != null ) {
+    root->remove( galileoFrame );
+    galileoFrame = null;
+  }
+  if( questFrame != null ) {
+    root->remove( questFrame );
+    questFrame = null;
   }
 }
 

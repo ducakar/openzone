@@ -329,6 +329,13 @@ class Lua
     OZ_LUA_API( ozNirvanaAddMemo );
 
     /*
+     * QuestList
+     */
+
+    OZ_LUA_API( ozQuestAdd );
+    OZ_LUA_API( ozQuestEnd );
+
+    /*
      * Camera
      */
 

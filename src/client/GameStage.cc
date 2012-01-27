@@ -37,8 +37,11 @@
 #include "client/Network.hh"
 #include "client/Camera.hh"
 #include "client/Lua.hh"
+#include "client/QuestList.hh"
 #include "client/MenuStage.hh"
 #include "client/Module.hh"
+
+#include "client/ui/LoadingArea.hh"
 
 namespace oz
 {
@@ -88,15 +91,17 @@ bool GameStage::read( const char* path )
   log.println( "Reading Client {" );
   log.indent();
 
+  questList.read( &istream );
   camera.read( &istream );
-  lua.read( &istream );
-
-  log.unindent();
-  log.println( "}" );
 
   for( int i = 0; i < modules.length(); ++i ) {
     modules[i]->read( &istream );
   }
+
+  lua.read( &istream );
+
+  log.unindent();
+  log.println( "}" );
 
   file.unmap();
 
@@ -111,13 +116,17 @@ void GameStage::write( const char* path ) const
   nirvana.write( &ostream );
 
   log.print( "Writing Client ..." );
+
+  questList.write( &ostream );
   camera.write( &ostream );
-  lua.write( &ostream );
-  log.printEnd( " OK" );
 
   for( int i = 0; i < modules.length(); ++i ) {
     modules[i]->write( &ostream );
   }
+
+  lua.write( &ostream );
+
+  log.printEnd( " OK" );
 
   log.print( "Saving state to %s ...", path );
 
@@ -145,11 +154,15 @@ void GameStage::reload()
   render.draw( Render::DRAW_UI_BIT );
   render.swap();
 
+  camera.reset();
+
   for( int i = modules.length() - 1; i >= 0; --i ) {
     modules[i]->unload();
   }
 
   context.unload();
+  render.unload();
+  questList.unload();
 
   lua.free();
 
@@ -164,6 +177,8 @@ void GameStage::reload()
     modules[i]->registerLua();
   }
 
+  questList.load();
+  render.load();
   context.load();
 
   for( int i = modules.length() - 1; i >= 0; --i ) {
@@ -367,11 +382,6 @@ void GameStage::load()
   matrixMillis  = 0;
   nirvanaMillis = 0;
 
-  matrix.load();
-  nirvana.load();
-
-  network.connect();
-
   log.print( "Starting auxilary thread ..." );
 
   isAuxAlive    = true;
@@ -381,13 +391,19 @@ void GameStage::load()
 
   log.printEnd( " OK" );
 
+  network.connect();
+
+  matrix.load();
+  nirvana.load();
+
   lua.init();
   for( int i = 0; i < modules.length(); ++i ) {
     modules[i]->registerLua();
   }
 
-  context.load();
+  questList.load();
   render.load();
+  context.load();
 
   camera.reset();
   camera.setState( Camera::STRATEGIC );
@@ -484,16 +500,22 @@ void GameStage::unload()
     write( AUTOSAVE_FILE );
   }
 
+  camera.reset();
+
   for( int i = modules.length() - 1; i >= 0; --i ) {
     modules[i]->unload();
   }
 
-  camera.reset();
-
-  render.unload();
   context.unload();
+  render.unload();
+  questList.unload();
 
   lua.free();
+
+  nirvana.unload();
+  matrix.unload();
+
+  network.disconnect();
 
   log.print( "Stopping auxilary thread ..." );
 
@@ -510,11 +532,6 @@ void GameStage::unload()
   auxThread     = null;
 
   log.printEnd( " OK" );
-
-  network.disconnect();
-
-  nirvana.unload();
-  matrix.unload();
 
   ui::ui.showLoadingScreen( false );
 

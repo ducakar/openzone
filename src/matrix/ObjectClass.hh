@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "matrix/FragPool.hh"
+#include "matrix/common.hh"
 
 #define OZ_CLASS_SET_FLAG( flagBit, varName, defValue ) \
   if( config->get( varName, defValue ) ) { \
@@ -36,13 +36,17 @@ namespace matrix
 {
 
 class Object;
+class FragPool;
 
 class ObjectClass
 {
   public:
 
-    static const int MAX_ITEMS = 100;
-    static const int MAX_SOUNDS = 16;
+    static const int MAX_ITEMS        = 100;
+    static const int MAX_SOUNDS       = 16;
+
+    static const int GALILEO_BIT      = 0x01;
+    static const int MUSIC_PLAYER_BIT = 0x02;
 
     typedef ObjectClass* CreateFunc();
 
@@ -54,6 +58,8 @@ class ObjectClass
     int             flags;
     float           life;
     float           resistance;
+
+    int             attributes;
 
     const FragPool* fragPool;
     int             nFrags;

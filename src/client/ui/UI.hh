@@ -27,16 +27,21 @@
 #include "client/ui/Keyboard.hh"
 #include "client/ui/Mouse.hh"
 
-#include "client/ui/LoadingArea.hh"
-#include "client/ui/BuildMenu.hh"
-#include "client/ui/DebugFrame.hh"
-
 namespace oz
 {
 namespace client
 {
 namespace ui
 {
+
+class Label;
+class Area;
+class LoadingArea;
+class QuestFrame;
+class GalileoFrame;
+class MusicPlayer;
+class BuildMenu;
+class DebugFrame;
 
 class UI
 {
@@ -56,10 +61,13 @@ class UI
 
   public:
 
-    Area*        root;
-    LoadingArea* loadingScreen;
-    BuildMenu*   buildMenu;
-    DebugFrame*  debugFrame;
+    Area*         root;
+    LoadingArea*  loadingScreen;
+    QuestFrame*   questFrame;
+    GalileoFrame* galileoFrame;
+    MusicPlayer*  musicPlayer;
+    BuildMenu*    buildMenu;
+    DebugFrame*   debugFrame;
 
     UI();
 

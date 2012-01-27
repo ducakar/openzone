@@ -224,7 +224,7 @@ void Entity::autoDoorHandler()
 {
   switch( state ) {
     case CLOSED: {
-      if( timer.ticks % 16 != 0 ) {
+      if( ( timer.ticks + uint( str->index ) ) % 8 != 0 ) {
         break;
       }
 
