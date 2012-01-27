@@ -41,15 +41,16 @@ class Mouse
 
     enum Icon
     {
-      X,
       ARROW,
-      MOVE,
       TEXT,
       HAND,
-      MAX
+      OPENHAND,
+      CLOSEDHAND,
+      SCROLL,
+      CURSORS_MAX
     };
 
-    static const char* NAMES[MAX];
+    static const char* NAMES[CURSORS_MAX];
 
   private:
 
@@ -61,12 +62,12 @@ class Mouse
       uint texId;
     };
 
-    Cursor cursors[MAX];
+    Cursor cursors[CURSORS_MAX];
 
   public:
 
-    int  x;
-    int  y;
+    int   x;
+    int   y;
 
     int   relX;
     int   relY;
@@ -91,7 +92,7 @@ class Mouse
     bool  isGrabbed;
     bool  isJailed;
 
-    int   icon;
+    Icon  icon;
 
     void prepare();
     void update();

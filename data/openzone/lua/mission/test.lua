@@ -41,7 +41,7 @@ function onCreate()
   local me = ozOrbisAddObj( "beast", 137, -6, 73, OZ_SOUTH )
   ozBotSetName( ozProfileGetPlayerName() )
   ozBotSetMindFunc( "" )
-  ozObjRemoveItem( 2 );
+  ozObjRemoveItem( 3 );
   ozObjRemoveItem( 2 );
 
   local myGalileo = ozOrbisAddObj( "galileo", 0, 0, 0 )

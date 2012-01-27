@@ -43,19 +43,21 @@ bool Frame::onMouseEvent()
     parent->focus( this );
   }
 
-  if( ( keyboard.keys[SDLK_LALT] || keyboard.keys[SDLK_RALT] ) &&
-      ( mouse.buttons & SDL_BUTTON_LMASK ) )
-  {
-    if( mouse.leftClick ) {
-      flags |= GRAB_BIT;
+  if( keyboard.keys[SDLK_LALT] || keyboard.keys[SDLK_RALT] ) {
+    mouse.icon = Mouse::OPENHAND;
+
+    if( mouse.buttons & SDL_BUTTON_LMASK ) {
+      if( mouse.leftClick ) {
+        flags |= GRAB_BIT;
+      }
+      if( flags & GRAB_BIT ) {
+        mouse.icon = Mouse::CLOSEDHAND;
+        move( mouse.relX, mouse.relY );
+      }
     }
-    if( flags & GRAB_BIT ) {
-      mouse.icon = Mouse::MOVE;
-      move( mouse.relX, mouse.relY );
+    else {
+      flags &= ~GRAB_BIT;
     }
-  }
-  else {
-    flags &= ~GRAB_BIT;
   }
   if( !( flags & GRAB_BIT ) && passMouseEvents() ) {
     return true;
