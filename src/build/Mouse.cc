@@ -43,7 +43,7 @@ void Mouse::build()
   File::mkdir( "ui" );
   File::mkdir( "ui/cur" );
 
-  for( int i = 0; i < ui::Mouse::MAX; ++i ) {
+  for( int i = 0; i < ui::Mouse::CURSORS_MAX; ++i ) {
     PhysFile inFile( String::str( "ui/cur/%s.in", ui::Mouse::NAMES[i] ) );
 
     FILE* fs = fopen( inFile.realPath(), "r" );

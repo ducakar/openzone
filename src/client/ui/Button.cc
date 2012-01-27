@@ -28,6 +28,8 @@
 #include "client/Shader.hh"
 #include "client/OpenGL.hh"
 
+#include "client/ui/Keyboard.hh"
+
 namespace oz
 {
 namespace client
@@ -37,13 +39,15 @@ namespace ui
 
 bool Button::onMouseEvent()
 {
-  isHighlighted = true;
+  if( !keyboard.keys[SDLK_LALT] && !keyboard.keys[SDLK_RALT] ) {
+    isHighlighted = true;
 
-  if( mouse.leftClick ) {
-    isClicked = true;
+    if( mouse.leftClick ) {
+      isClicked = true;
 
-    if( callback != null ) {
-      callback( this );
+      if( callback != null ) {
+        callback( this );
+      }
     }
   }
   return true;

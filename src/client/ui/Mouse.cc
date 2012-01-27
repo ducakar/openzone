@@ -39,12 +39,13 @@ namespace ui
 
 Mouse mouse;
 
-const char* Mouse::NAMES[Mouse::MAX] = {
-  "X_cursor",
+const char* Mouse::NAMES[] = {
   "left_ptr",
-  "fleur",
-  "xterm",
-  "hand2"
+  "ibeam",
+  "pointing_hand",
+  "openhand",
+  "closedhand",
+  "size_all"
 };
 
 void Mouse::prepare()
@@ -55,6 +56,8 @@ void Mouse::prepare()
 
   oldButtons = buttons;
   buttons    = currButtons;
+
+  icon = ARROW;
 }
 
 void Mouse::update()
@@ -115,7 +118,7 @@ void Mouse::load()
   log.println( "Loading mouse cursors {" );
   log.indent();
 
-  for( int i = 0; i < MAX; ++i ) {
+  for( int i = 0; i < CURSORS_MAX; ++i ) {
     log.print( "Loading cursor '%s' ...", NAMES[i] );
 
     PhysFile file( String::str( "ui/cur/%s.ozcCur", NAMES[i] ) );
@@ -141,15 +144,10 @@ void Mouse::load()
 
 void Mouse::unload()
 {
-  glDeleteTextures( 1, &cursors[X].texId );
-  glDeleteTextures( 1, &cursors[ARROW].texId );
-  glDeleteTextures( 1, &cursors[MOVE].texId );
-  glDeleteTextures( 1, &cursors[TEXT].texId );
-
-  cursors[X].texId     = 0;
-  cursors[ARROW].texId = 0;
-  cursors[MOVE].texId  = 0;
-  cursors[TEXT].texId  = 0;
+  for( int i = 0; i < CURSORS_MAX; ++i ) {
+    glDeleteTextures( 1, &cursors[i].texId );
+    cursors[i].texId = 0;
+  }
 }
 
 void Mouse::init()
@@ -176,10 +174,9 @@ void Mouse::init()
   wheelUp     = false;
   wheelDown   = false;
 
-  cursors[X].texId     = 0;
-  cursors[ARROW].texId = 0;
-  cursors[MOVE].texId  = 0;
-  cursors[TEXT].texId  = 0;
+  for( int i = 0; i < CURSORS_MAX; ++i ) {
+    cursors[i].texId = 0;
+  }
 }
 
 void Mouse::free()
