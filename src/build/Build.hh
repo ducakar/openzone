@@ -52,8 +52,7 @@ class Build
 
   public:
 
-    void shutdown();
-    int  main( int argc, char** argv );
+    int main( int argc, char** argv );
 
 };
 

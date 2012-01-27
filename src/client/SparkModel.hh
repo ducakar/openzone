@@ -64,7 +64,7 @@ namespace client
 //
 //      State         state;
 //
-//      explicit SparkGenRender( oz::SparkGen* sparkGen );
+//      explicit SparkGenRender( SparkGen* sparkGen );
 //      SparkGenRender( const SparkGenRender& sparkGenRender );
 //      ~SparkGenRender();
 //

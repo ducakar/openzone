@@ -487,7 +487,7 @@ void Collider::trimAABBBrush( const BSP::Brush* brush )
     hit.normal   = str->toAbsoluteCS( lastNormal );
     hit.obj      = null;
     hit.str      = const_cast<Struct*>( str );
-    hit.entity   = const_cast<Struct::Entity*>( entity );
+    hit.entity   = const_cast<Entity*>( entity );
     hit.material = brush->material;
   }
 }
@@ -837,7 +837,10 @@ void Collider::touchOrbisOverlaps() const
 
       for( Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
         if( ( sObj->flags & Object::DYNAMIC_BIT ) && trace.overlaps( *sObj, 0.0f ) ) {
-          sObj->flags &= ~Object::MOVE_CLEAR_MASK;
+          Dynamic* sDyn = static_cast<Dynamic*>( sObj );
+
+          sDyn->flags &= ~Object::MOVE_CLEAR_MASK;
+          sDyn->lower = -1;
         }
       }
     }
@@ -979,7 +982,7 @@ bool Collider::overlapsOSO( const Object* obj_, const Object* exclObj_ )
   return overlapsAABBOrbisOSO();
 }
 
-bool Collider::overlapsOO( const Struct::Entity* entity_, float margin_ )
+bool Collider::overlapsOO( const Entity* entity_, float margin_ )
 {
   str = entity_->str;
   entity = entity_;
@@ -1030,8 +1033,7 @@ void Collider::touchOverlaps( const AABB& aabb_, float eps )
   touchOrbisOverlaps();
 }
 
-void Collider::getOverlaps( const Struct::Entity* entity_, Vector<Object*>* objects,
-                            float margin_ )
+void Collider::getOverlaps( const Entity* entity_, Vector<Object*>* objects, float margin_ )
 {
   str = entity_->str;
   entity = entity_;

@@ -47,10 +47,9 @@ bool MenuStage::update()
 
 void MenuStage::present( bool )
 {
-  sound.play();
   render.draw( Render::DRAW_UI_BIT );
+  sound.play();
   render.swap();
-  sound.sync();
 }
 
 void MenuStage::load()

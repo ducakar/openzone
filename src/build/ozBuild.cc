@@ -40,7 +40,6 @@ int main( int argc, char** argv )
 
   try {
     exitCode = oz::build::build.main( argc, argv );
-    oz::build::build.shutdown();
   }
   catch( const std::exception& e ) {
     oz::log.verboseMode = false;

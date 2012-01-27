@@ -551,6 +551,10 @@ int Client::main( int argc, char** argv )
       }
     }
 
+    if( isBenchmark && float( Time::clock() - timeZero ) >= benchmarkTime * 1000.0f ) {
+      isAlive = false;
+    }
+
     // Waste time when iconified.
     if( !isActive ) {
       SDL_Delay( Timer::TICK_MILLIS );
@@ -606,10 +610,6 @@ int Client::main( int argc, char** argv )
       timeLast += timeSpent - Timer::TICK_MILLIS;
     }
     timeLast += Timer::TICK_MILLIS;
-
-    if( isBenchmark && float( Time::clock() - timeZero ) >= benchmarkTime * 1000.0f ) {
-      isAlive = false;
-    }
   }
   while( isAlive );
 

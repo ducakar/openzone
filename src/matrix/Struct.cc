@@ -63,16 +63,16 @@ const float Struct::DEMOLISH_SPEED         = 8.0f * Timer::TICK_TIME;
 const float Struct::MOMENTUM_DAMAGE_COEF   = 0.01f;
 const float Struct::MAX_HIT_DAMAGE_MASS    = 100.0f;
 
-const Struct::Entity::Handler Struct::Entity::HANDLERS[] = {
-  &Struct::Entity::ignoringHandler,
-  &Struct::Entity::crushingHandler,
-  &Struct::Entity::autoDoorHandler
+const Entity::Handler Entity::HANDLERS[] = {
+  &Entity::ignoringHandler,
+  &Entity::crushingHandler,
+  &Entity::autoDoorHandler
 };
 
+Pool<Struct>    Struct::pool;
 Vector<Object*> Struct::overlappingObjs;
-Pool<Struct> Struct::pool;
 
-void Struct::Entity::ignoringHandler()
+void Entity::ignoringHandler()
 {
   switch( state ) {
     case CLOSED: {
@@ -81,6 +81,7 @@ void Struct::Entity::ignoringHandler()
       if( time >= model->timeout ) {
         time = 0.0f;
         state = OPENING;
+        velocity = model->move * model->ratioInc / Timer::TICK_TIME;
       }
       break;
     }
@@ -92,6 +93,7 @@ void Struct::Entity::ignoringHandler()
         ratio = 1.0f;
         time = 0.0f;
         state = OPENED;
+        velocity = Vec3::ZERO;
       }
 
       offset = ratio * model->move;
@@ -103,6 +105,7 @@ void Struct::Entity::ignoringHandler()
       if( time >= model->timeout ) {
         time = 0.0f;
         state = CLOSING;
+        velocity = -model->move * model->ratioInc / Timer::TICK_TIME;
       }
       break;
     }
@@ -114,6 +117,7 @@ void Struct::Entity::ignoringHandler()
         ratio = 0.0f;
         time = 0.0f;
         state = CLOSED;
+        velocity = Vec3::ZERO;
       }
 
       offset = ratio * model->move;
@@ -122,7 +126,7 @@ void Struct::Entity::ignoringHandler()
   }
 }
 
-void Struct::Entity::crushingHandler()
+void Entity::crushingHandler()
 {
   switch( state ) {
     case CLOSED: {
@@ -131,24 +135,23 @@ void Struct::Entity::crushingHandler()
       if( time >= model->timeout ) {
         time = 0.0f;
         state = OPENING;
+        velocity = model->move * model->ratioInc / Timer::TICK_TIME;
       }
       break;
     }
     case OPENING: {
-      collider.touchOverlaps( str->toAbsoluteCS( *model + offset ).toAABB(), 4.0f * EPSILON );
-
       ratio = min( ratio + model->ratioInc, 1.0f );
       offset = ratio * model->move;
 
-      overlappingObjs.clear();
-      collider.getOverlaps( this, &overlappingObjs, 0.5f * EPSILON );
+      Struct::overlappingObjs.clear();
+      collider.getOverlaps( this, &Struct::overlappingObjs, 0.5f * EPSILON );
 
-      if( !overlappingObjs.isEmpty() ) {
+      if( !Struct::overlappingObjs.isEmpty() ) {
         Vec3 move = ( model->ratioInc + 4.0f * EPSILON ) * model->move;
         move = str->toAbsoluteCS( move );
 
-        for( int i = 0; i < overlappingObjs.length(); ++i ) {
-          Dynamic* dyn = static_cast<Dynamic*>( overlappingObjs[i] );
+        for( int i = 0; i < Struct::overlappingObjs.length(); ++i ) {
+          Dynamic* dyn = static_cast<Dynamic*>( Struct::overlappingObjs[i] );
 
           if( dyn->flags & Object::DYNAMIC_BIT ) {
             collider.translate( dyn, move );
@@ -166,6 +169,7 @@ void Struct::Entity::crushingHandler()
       }
       else if( ratio == 1.0f ) {
         state = OPENED;
+        velocity = Vec3::ZERO;
       }
       break;
     }
@@ -175,24 +179,23 @@ void Struct::Entity::crushingHandler()
       if( time >= model->timeout ) {
         time = 0.0f;
         state = CLOSING;
+        velocity = -model->move * model->ratioInc / Timer::TICK_TIME;
       }
       break;
     }
     case CLOSING: {
-      collider.touchOverlaps( str->toAbsoluteCS( *model + offset ).toAABB(), 4.0f * EPSILON );
-
       ratio = max( ratio - model->ratioInc, 0.0f );
       offset = ratio * model->move;
 
-      overlappingObjs.clear();
-      collider.getOverlaps( this, &overlappingObjs, 0.5f * EPSILON );
+      Struct::overlappingObjs.clear();
+      collider.getOverlaps( this, &Struct::overlappingObjs, 0.5f * EPSILON );
 
-      if( !overlappingObjs.isEmpty() ) {
+      if( !Struct::overlappingObjs.isEmpty() ) {
         Vec3 move = ( model->ratioInc + 4.0f * EPSILON ) * -model->move;
         move = str->toAbsoluteCS( move );
 
-        for( int i = 0; i < overlappingObjs.length(); ++i ) {
-          Dynamic* dyn = static_cast<Dynamic*>( overlappingObjs[i] );
+        for( int i = 0; i < Struct::overlappingObjs.length(); ++i ) {
+          Dynamic* dyn = static_cast<Dynamic*>( Struct::overlappingObjs[i] );
 
           if( dyn->flags & Object::DYNAMIC_BIT ) {
             collider.translate( dyn, move );
@@ -210,23 +213,25 @@ void Struct::Entity::crushingHandler()
       }
       else if( ratio == 0.0f ) {
         state = CLOSED;
+        velocity = Vec3::ZERO;
       }
       break;
     }
   }
 }
 
-void Struct::Entity::autoDoorHandler()
+void Entity::autoDoorHandler()
 {
   switch( state ) {
     case CLOSED: {
-      if( timer.ticks % 10 == 0 ) {
+      if( timer.ticks % 16 != 0 ) {
         break;
       }
 
       if( collider.overlapsOO( this, model->margin ) ) {
         time = 0.0f;
         state = OPENING;
+        velocity = model->move * model->ratioInc / Timer::TICK_TIME;
       }
       break;
     }
@@ -236,6 +241,7 @@ void Struct::Entity::autoDoorHandler()
 
       if( ratio == 1.0f ) {
         state = OPENED;
+        velocity = Vec3::ZERO;
       }
       break;
     }
@@ -249,6 +255,7 @@ void Struct::Entity::autoDoorHandler()
 
         if( !collider.overlapsOO( this, model->margin ) ) {
           state = CLOSING;
+          velocity = -model->move * model->ratioInc / Timer::TICK_TIME;
         }
 
         offset = model->move;
@@ -256,11 +263,14 @@ void Struct::Entity::autoDoorHandler()
       break;
     }
     case CLOSING: {
-      offset = Vec3::ZERO;
-
       if( collider.overlapsOO( this, model->margin ) ) {
-        offset = ratio * model->move;
-        state = ratio == 1.0f ? OPENED : OPENING;
+        if( ratio == 1.0f ) {
+          state = OPENED;
+        }
+        else {
+          state = OPENING;
+          velocity = model->move * model->ratioInc / Timer::TICK_TIME;
+        }
         break;
       }
 
@@ -269,6 +279,7 @@ void Struct::Entity::autoDoorHandler()
 
       if( ratio == 0.0f ) {
         state = CLOSED;
+        velocity = Vec3::ZERO;
       }
       break;
     }
@@ -453,12 +464,13 @@ Struct::Struct( const BSP* bsp_, int index_, const Point3& p_, Heading heading_ 
   for( int i = 0; i < nEntities; ++i ) {
     Entity& entity = entities[i];
 
-    entity.model  = &bsp->models[i];
-    entity.str    = this;
-    entity.offset = Vec3::ZERO;
-    entity.state  = Entity::CLOSED;
-    entity.ratio  = 0.0f;
-    entity.time   = 0.0f;
+    entity.model    = &bsp->models[i];
+    entity.str      = this;
+    entity.offset   = Vec3::ZERO;
+    entity.state    = Entity::CLOSED;
+    entity.ratio    = 0.0f;
+    entity.time     = 0.0f;
+    entity.velocity = Vec3::ZERO;
   }
 
   if( bsp->nBoundObjects != 0 ) {
@@ -488,12 +500,22 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
   for( int i = 0; i < nEntities; ++i ) {
     Entity& entity = entities[i];
 
-    entity.offset = istream->readVec3();
-    entity.model  = &bsp->models[i];
-    entity.str    = this;
-    entity.state  = Entity::State( istream->readInt() );
-    entity.ratio  = istream->readFloat();
-    entity.time   = istream->readFloat();
+    entity.offset   = istream->readVec3();
+    entity.model    = &bsp->models[i];
+    entity.str      = this;
+    entity.state    = Entity::State( istream->readInt() );
+    entity.ratio    = istream->readFloat();
+    entity.time     = istream->readFloat();
+
+    if( entity.state == Entity::OPENING ) {
+      entity.velocity = entity.model->move * entity.model->ratioInc / Timer::TICK_TIME;
+    }
+    else if( entity.state == Entity::CLOSING ) {
+      entity.velocity = -entity.model->move * entity.model->ratioInc / Timer::TICK_TIME;
+    }
+    else {
+      entity.velocity = Vec3::ZERO;
+    }
   }
 
   int nBoundObjects = istream->readInt();
