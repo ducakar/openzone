@@ -59,23 +59,29 @@ bool InfoFrame::onMouseEvent()
   {
     return false;
   }
-
   return true;
 }
 
 void InfoFrame::onDraw()
 {
   if( camera.state != Camera::BOT || camera.botObj == null || camera.tagged == -1 ) {
+    lastId = -1;
     return;
   }
 
   const Device* const* device = nirvana.devices.find( camera.tagged );
   if( device == null ) {
+    lastId = -1;
     return;
   }
 
-  if( lastId != camera.tagged || timer.ticks - lastTicks >= REFRESH_INTERVAL ) {
+  if( lastId != camera.tagged ) {
+    lastId = camera.tagged;
+    lastTicks = timer.ticks;
+
     const Bot* tagged = static_cast<const Bot*>( camera.taggedObj );
+
+    text.setText( "%s", ( *device )->getMemo() );
 
     if( tagged->flags & Object::BOT_BIT ) {
       title.setText( "%s (%s)", tagged->name.cstr(), tagged->clazz->title.cstr() );
@@ -83,10 +89,6 @@ void InfoFrame::onDraw()
     else {
       title.setText( "%s", tagged->clazz->title.cstr() );
     }
-    text.setText( "%s", ( *device )->getMemo() );
-
-    lastId = camera.tagged;
-    lastTicks = timer.ticks;
   }
 
   Frame::onDraw();

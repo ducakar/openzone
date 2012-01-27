@@ -71,7 +71,7 @@ class Label
     OZ_PRINTF_FORMAT( 2, 3 )
     void setText( const char* s, ... );
 
-    void draw( const Area* area );
+    void draw( const Area* area, bool allowChanged );
 
 };
 

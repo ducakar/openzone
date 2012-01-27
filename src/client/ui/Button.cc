@@ -66,7 +66,7 @@ void Button::onDraw()
   }
 
   fill( 0, 0, width, height );
-  label.draw( this );
+  label.draw( this, true );
 
   isHighlighted = false;
   isClicked = false;

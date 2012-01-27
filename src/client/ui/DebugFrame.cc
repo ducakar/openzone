@@ -63,7 +63,7 @@ void DebugFrame::onDraw()
   camPosRot.setText( "cam.p(%+.2f %+.2f %+.2f) cam.relRot(%+.2f %+.2f)",
                      camera.p.x, camera.p.y, camera.p.z,
                      Math::deg( camera.h ), Math::deg( camera.v ) );
-  camPosRot.draw( this );
+  camPosRot.draw( this, true );
 
   if( camera.bot != -1 ) {
     const Bot* bot = static_cast<const Bot*>( camera.botObj );
@@ -71,13 +71,13 @@ void DebugFrame::onDraw()
     botPosRot.setText( "bot.pos(%+.2f %+.2f %+.2f) bot.rot(%+.2f %+.2f)",
                        bot->p.x, bot->p.y, bot->p.z,
                        Math::deg( bot->h ), Math::deg( bot->v ) );
-    botPosRot.draw( this );
+    botPosRot.draw( this, true );
 
     botVelMom.setText( "bot.vel(%+.2f %+.2f %+.2f) bot.mom(%+.2f %+.2f %+.2f) bot.wd %+.2f",
                        bot->velocity.x, bot->velocity.y, bot->velocity.z,
                        bot->momentum.x, bot->momentum.y, bot->momentum.z,
                        bot->depth );
-    botVelMom.draw( this );
+    botVelMom.draw( this, true );
 
     botFlagsState.setText( "d %d fl %d lw %d h %d fr %d b %d iw %d s %d ld %d ovlp %d sr %+.3f",
                            ( bot->flags & Object::DISABLED_BIT ) != 0,
@@ -91,19 +91,19 @@ void DebugFrame::onDraw()
                            ( bot->flags & Object::ON_LADDER_BIT ) != 0,
                            collider.overlaps( bot, bot ),
                            bot->stepRate * 10.0f );
-    botFlagsState.draw( this );
+    botFlagsState.draw( this, true );
   }
 
   if( camera.tagged != -1 && ( camera.taggedObj->flags & Object::DYNAMIC_BIT ) ) {
     const Dynamic* dyn = static_cast<const Dynamic*>( camera.taggedObj );
 
     tagPos.setText( "tagDyn.pos(%+.2f %+.2f %+.2f)", dyn->p.x, dyn->p.y, dyn->p.z );
-    tagPos.draw( this );
+    tagPos.draw( this, true );
 
     tagVelMom.setText( "tagDyn.vel(%+.2f %+.2f %+.2f) tagDyn.mom(%+.2f %+.2f %+.2f)",
                        dyn->velocity.x, dyn->velocity.y, dyn->velocity.z,
                        dyn->momentum.x, dyn->momentum.y, dyn->momentum.z );
-    tagVelMom.draw( this );
+    tagVelMom.draw( this, true );
 
     tagFlags.setText( "d %d fl %d lw %d h %d fr %d b %d iw %d s %d ld %d",
                       ( dyn->flags & Object::DISABLED_BIT ) != 0,
@@ -115,7 +115,7 @@ void DebugFrame::onDraw()
                       ( dyn->flags & Object::IN_WATER_BIT ) != 0,
                       ( dyn->flags & Object::ON_SLICK_BIT ) != 0,
                       ( dyn->flags & Object::ON_LADDER_BIT ) != 0 );
-    tagFlags.draw( this );
+    tagFlags.draw( this, true );
   }
 }
 

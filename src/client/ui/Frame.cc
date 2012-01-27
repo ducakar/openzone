@@ -70,7 +70,7 @@ void Frame::onDraw()
   glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.3f );
   fill( 0, 0, width, height );
 
-  title.draw( this );
+  title.draw( this, false );
 
   drawChildren();
 }
