@@ -18,19 +18,19 @@
  */
 
 /**
- * @file client/modules/GalileoFrame.cc
+ * @file client/ui/GalileoFrame.cc
  */
 
 #include "stable.hh"
 
-#include "client/modules/GalileoFrame.hh"
+#include "client/ui/GalileoFrame.hh"
 
 #include "client/Camera.hh"
 #include "client/Context.hh"
+#include "client/QuestList.hh"
 #include "client/OpenGL.hh"
 
-#include "client/modules/GalileoModule.hh"
-#include "client/modules/QuestModule.hh"
+#include "client/ui/QuestFrame.hh"
 
 namespace oz
 {
@@ -61,13 +61,24 @@ bool GalileoFrame::onMouseEvent()
 void GalileoFrame::onDraw()
 {
   if( camera.state == Camera::BOT && camera.botObj != null ) {
-    const Vector<int>& items = camera.botObj->items;
+    if( camera.botObj->clazz->attributes & ObjectClass::GALILEO_BIT ) {
+      goto galileoEnabled;
+    }
+    else {
+      if( camera.botObj->parent != -1 ) {
+        const Object* veh = orbis.objects[camera.botObj->parent];
 
-    for( int i = 0; i < items.length(); ++i ) {
-      const Object* item = orbis.objects[ items[i] ];
+        if( veh != null && ( veh->clazz->attributes & ObjectClass::GALILEO_BIT ) ) {
+          goto galileoEnabled;
+        }
+      }
 
-      if( item != null && item->clazz->name.equals( "galileo" ) ) {
-        goto galileoEnabled;
+      foreach( i, camera.botObj->items.citer() ) {
+        const Object* item = orbis.objects[*i];
+
+        if( item != null && ( item->clazz->attributes & ObjectClass::GALILEO_BIT ) ) {
+          goto galileoEnabled;
+        }
       }
     }
 
@@ -109,9 +120,8 @@ galileoEnabled:;
   float fWidth  = float( width );
   float fHeight = float( height );
 
-  const QuestFrame* questFrame = questModule.questFrame;
   if( questFrame != null && questFrame->currentQuest != -1 ) {
-    const Quest& quest = questModule.quests[questFrame->currentQuest];
+    const Quest& quest = questList.quests[questFrame->currentQuest];
 
     glBindTexture( GL_TEXTURE_2D, markerTexId );
 
@@ -142,10 +152,10 @@ galileoEnabled:;
   glBindTexture( GL_TEXTURE_2D, 0 );
 }
 
-GalileoFrame::GalileoFrame() :
+GalileoFrame::GalileoFrame( const QuestFrame* questFrame_ ) :
   Frame( 8, -60 - Font::INFOS[Font::SMALL].height - Font::INFOS[Font::LARGE].height,
          240, 232 - Font::INFOS[Font::LARGE].height, "" ),
-  mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ), isVisible( true )
+  questFrame( questFrame_ ), mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ), isVisible( true )
 
 {
   flags = PINNED_BIT;

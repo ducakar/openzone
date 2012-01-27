@@ -36,6 +36,7 @@
 #include "nirvana/Nirvana.hh"
 #include "nirvana/Memo.hh"
 
+#include "client/QuestList.hh"
 #include "client/Camera.hh"
 
 #include "luamacros.hh"
@@ -561,6 +562,20 @@ void Lua::init()
   OZ_LUA_FUNC( ozFragRemove );
 
   /*
+   * Nirvana
+   */
+
+  OZ_LUA_FUNC( ozNirvanaRemoveDevice );
+  OZ_LUA_FUNC( ozNirvanaAddMemo );
+
+  /*
+   * QuestList
+   */
+
+  OZ_LUA_FUNC( ozQuestAdd );
+  OZ_LUA_FUNC( ozQuestEnd );
+
+  /*
    * Camera
    */
 
@@ -575,13 +590,6 @@ void Lua::init()
 
   OZ_LUA_FUNC( ozCameraAllowReincarnation );
   OZ_LUA_FUNC( ozCameraIncarnate );
-
-  /*
-   * Nirvana
-   */
-
-  OZ_LUA_FUNC( ozNirvanaRemoveDevice );
-  OZ_LUA_FUNC( ozNirvanaAddMemo );
 
   /*
    * Constants
@@ -2506,6 +2514,36 @@ int Lua::ozFragRemove( lua_State* l )
 
   synapse.remove( lua.frag );
   lua.frag = null;
+  return 0;
+}
+
+/*
+ * QuestList
+ */
+
+int Lua::ozQuestAdd( lua_State* l )
+{
+  ARG( 5 );
+
+  questList.quests.add( Quest( tostring( 1 ),
+                               tostring( 2 ),
+                               Point3( tofloat( 3 ), tofloat( 4 ), tofloat( 5 ) ),
+                               Quest::PENDING ) );
+
+  pushint( questList.quests.length() - 1 );
+  return 1;
+}
+
+int Lua::ozQuestEnd( lua_State* l )
+{
+  ARG( 2 );
+
+  int id = toint( 1 );
+  if( uint( id ) >= uint( questList.quests.length() ) ) {
+    ERROR( "invalid quest id" );
+  }
+
+  questList.quests[id].state = tobool( 2 ) ? Quest::SUCCESSFUL : Quest::FAILED;
   return 0;
 }
 

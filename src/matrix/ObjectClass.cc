@@ -28,6 +28,11 @@
 #include "matrix/Object.hh"
 #include "matrix/Library.hh"
 
+#define OZ_CLASS_SET_ATTRIB( attribBit, varName, defValue ) \
+  if( config->get( varName, defValue ) ) { \
+    attributes |= attribBit; \
+  }
+
 namespace oz
 {
 namespace matrix
@@ -82,6 +87,13 @@ void ObjectClass::fillCommonConfig( const Config* config )
   if( resistance < 0.0f ) {
     throw Exception( "%s: Invalid resistance. Should be >= 0.", name.cstr() );
   }
+
+  /*
+   * attributes
+   */
+
+  OZ_CLASS_SET_ATTRIB( GALILEO_BIT,      "attrib.galileo",     false );
+  OZ_CLASS_SET_ATTRIB( MUSIC_PLAYER_BIT, "attrib.musicPlayer", false );
 
   /*
    * debris

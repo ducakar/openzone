@@ -26,6 +26,7 @@ add_library( client STATIC
   Network.cc
   OpenAL.cc
   OpenGL.cc
+  QuestList.cc
   Render.cc
   SMM.cc
   SMMImago.cc
@@ -45,6 +46,7 @@ add_library( client STATIC
   ui/DebugFrame.cc
   ui/Font.cc
   ui/Frame.cc
+  ui/GalileoFrame.cc
   ui/HudArea.cc
   ui/InfoFrame.cc
   ui/InventoryMenu.cc
@@ -53,18 +55,14 @@ add_library( client STATIC
   ui/LoadingArea.cc
   ui/MainMenu.cc
   ui/Mouse.cc
+  ui/MusicPlayer.cc
+  ui/QuestFrame.cc
   ui/SettingsFrame.cc
   ui/StrategicArea.cc
   ui/Text.cc
   ui/UI.cc
   modules/FloraModule.cc
-  modules/GalileoFrame.cc
-  modules/GalileoModule.cc
-  modules/MusicPlayer.cc
-  modules/MusicPlayerModule.cc
   modules/ProfileModule.cc
-  modules/QuestFrame.cc
-  modules/QuestModule.cc
 )
 add_dependencies( client pch )
 

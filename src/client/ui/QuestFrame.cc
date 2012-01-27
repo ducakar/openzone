@@ -23,13 +23,12 @@
 
 #include "stable.hh"
 
-#include "client/modules/QuestFrame.hh"
+#include "client/ui/QuestFrame.hh"
 
 #include "client/Camera.hh"
+#include "client/QuestList.hh"
 
 #include "client/ui/Button.hh"
-
-#include "client/modules/QuestModule.hh"
 
 namespace oz
 {
@@ -40,7 +39,7 @@ namespace ui
 
 void QuestFrame::updateTask()
 {
-  const Quest& quest = questModule.quests[currentQuest];
+  const Quest& quest = questList.quests[currentQuest];
 
   String stateText;
   if( quest.state == Quest::PENDING ) {
@@ -79,7 +78,7 @@ void QuestFrame::next( Button* sender )
 {
   QuestFrame* questFrame = static_cast<QuestFrame*>( sender->parent );
 
-  int nQuests = questModule.quests.length();
+  int nQuests = questList.quests.length();
 
   if( nQuests == 0 ) {
     questFrame->currentQuest = -1;
@@ -95,7 +94,7 @@ void QuestFrame::prev( Button* sender )
 {
   QuestFrame* questFrame = static_cast<QuestFrame*>( sender->parent );
 
-  int nQuests = questModule.quests.length();
+  int nQuests = questList.quests.length();
 
   if( nQuests == 0 ) {
     questFrame->currentQuest = -1;
@@ -110,13 +109,13 @@ void QuestFrame::prev( Button* sender )
 void QuestFrame::onDraw()
 {
   if( currentQuest == -1 ) {
-    if( !questModule.quests.isEmpty() ) {
+    if( !questList.quests.isEmpty() ) {
       currentQuest = 0;
       updateTask();
     }
   }
   else {
-    const Quest& quest = questModule.quests[currentQuest];
+    const Quest& quest = questList.quests[currentQuest];
 
     if( quest.state != lastState ) {
       updateTask();
@@ -134,8 +133,8 @@ QuestFrame::QuestFrame() :
   Frame( 0, -8, 500, 0, OZ_GETTEXT( "Quests" ) ),
   description( 6, 4, 488, 10, Font::SANS ),
   lastState( Quest::PENDING ),
-  currentQuest( -1 ),
-  isOpened( false )
+  isOpened( false ),
+  currentQuest( -1 )
 {
   contentHeight = 8 + 10 * font.INFOS[Font::SANS].height;
 
@@ -153,6 +152,12 @@ QuestFrame::QuestFrame() :
 
   y += contentHeight;
   height -= contentHeight;
+}
+
+void QuestFrame::clear()
+{
+  currentQuest = -1;
+  description.clear();
 }
 
 }

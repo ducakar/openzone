@@ -355,9 +355,6 @@ HudArea::HudArea() :
 {
   flags = UPDATE_BIT | IGNORE_BIT | PINNED_BIT;
 
-//   pixelStep = camera.coeff / float( Area::uiHeight / 2 );
-//   stepPixel = 1.0f / pixelStep;
-
   int step = font.INFOS[Font::LARGE].height + 8;
   for( int i = 0; i < Vehicle::MAX_WEAPONS; ++i ) {
     lastVehicleWeaponRounds[i] = -1;

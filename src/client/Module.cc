@@ -27,9 +27,6 @@
 
 #include "client/modules/ProfileModule.hh"
 #include "client/modules/FloraModule.hh"
-#include "client/modules/MusicPlayerModule.hh"
-#include "client/modules/GalileoModule.hh"
-#include "client/modules/QuestModule.hh"
 
 #define OZ_REGISTER_MODULE( module ) \
   list->add( &module##Module )
@@ -43,9 +40,6 @@ void Module::listModules( Vector<Module*>* list )
 {
   OZ_REGISTER_MODULE( profile );
   OZ_REGISTER_MODULE( flora );
-  OZ_REGISTER_MODULE( musicPlayer );
-  OZ_REGISTER_MODULE( galileo );
-  OZ_REGISTER_MODULE( quest );
 }
 
 }

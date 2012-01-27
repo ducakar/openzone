@@ -18,53 +18,52 @@
  */
 
 /**
- * @file client/modules/MusicPlayer.hh
+ * @file client/QuestList.hh
  */
 
 #pragma once
 
-#include "client/ui/Frame.hh"
-#include "client/ui/Button.hh"
+#include "client/common.hh"
 
 namespace oz
 {
 namespace client
 {
-namespace ui
+
+struct Quest
 {
+  enum State
+  {
+    PENDING    = 0,
+    SUCCESSFUL = 1,
+    FAILED     = 2
+  };
 
-class MusicPlayer : public Frame
+  String title;
+  String description;
+  Point3 place;
+  int    state;
+
+  Quest() = default;
+
+  explicit Quest( const char* title, const char* description, const Point3& place, int state );
+};
+
+class QuestList
 {
-  private:
-
-    Label title;
-    Label trackLabel;
-    Label volumeLabel;
-    int   currentTrack;
-    int   volume;
-    bool  isPlaying;
-    bool  isVisible;
-
-    static void prevTrack( Button* sender );
-    static void nextTrack( Button* sender );
-    static void playTrack( Button* sender );
-    static void stopTrack( Button* sender );
-    static void volumeDown( Button* sender );
-    static void volumeUp( Button* sender );
-
-  protected:
-
-    virtual void onUpdate();
-    virtual bool onMouseEvent();
-    virtual void onDraw();
-
   public:
 
-    MusicPlayer();
-    virtual ~MusicPlayer();
+    Vector<Quest> quests;
+
+    void read( InputStream* istream );
+    void write( BufferStream* ostream ) const;
+
+    void load();
+    void unload();
 
 };
 
-}
+extern QuestList questList;
+
 }
 }

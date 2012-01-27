@@ -18,14 +18,13 @@
  */
 
 /**
- * @file client/modules/QuestFrame.hh
+ * @file client/ui/MusicPlayer.hh
  */
 
 #pragma once
 
 #include "client/ui/Frame.hh"
 #include "client/ui/Button.hh"
-#include "client/ui/Text.hh"
 
 namespace oz
 {
@@ -34,35 +33,35 @@ namespace client
 namespace ui
 {
 
-class GalileoFrame;
-
-class QuestFrame : public Frame
+class MusicPlayer : public Frame
 {
-  friend class GalileoFrame;
-
   private:
 
-    static const String statusMessages[];
+    Label title;
+    Label trackLabel;
+    Label volumeLabel;
+    int   currentTrack;
+    int   volume;
+    bool  isPlaying;
+    bool  isVisible;
 
-    Text description;
-    int  lastState;
-    int  currentQuest;
-    int  contentHeight;
-    bool isOpened;
-
-    void updateTask();
-
-    static void open( Button* sender );
-    static void next( Button* sender );
-    static void prev( Button* sender );
+    static void prevTrack( Button* sender );
+    static void nextTrack( Button* sender );
+    static void playTrack( Button* sender );
+    static void stopTrack( Button* sender );
+    static void volumeDown( Button* sender );
+    static void volumeUp( Button* sender );
 
   protected:
 
+    virtual void onUpdate();
+    virtual bool onMouseEvent();
     virtual void onDraw();
 
   public:
 
-    QuestFrame();
+    MusicPlayer();
+    virtual ~MusicPlayer();
 
 };
 

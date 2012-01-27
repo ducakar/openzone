@@ -18,65 +18,57 @@
  */
 
 /**
- * @file client/modules/QuestModule.hh
+ * @file client/ui/QuestFrame.hh
  */
 
 #pragma once
 
-#include "client/Module.hh"
-
-#include "client/modules/QuestFrame.hh"
+#include "client/ui/Frame.hh"
+#include "client/ui/Button.hh"
+#include "client/ui/Text.hh"
 
 namespace oz
 {
 namespace client
 {
-
-struct Quest
+namespace ui
 {
-  enum State
-  {
-    PENDING    = 0,
-    SUCCESSFUL = 1,
-    FAILED     = 2
-  };
 
-  String title;
-  String description;
-  Point3 place;
-  int    state;
-
-  Quest() = default;
-
-  explicit Quest( const char* title, const char* description, const Point3& place, int state );
-};
-
-class QuestModule : public Module
+class QuestFrame : public Frame
 {
+  private:
+
+    static const String statusMessages[];
+
+    Text description;
+    int  lastState;
+    int  contentHeight;
+    bool isOpened;
+
   public:
 
-    Vector<Quest> quests;
-
-    ui::QuestFrame* questFrame;
-
-    virtual void read( InputStream* istream );
-    virtual void write( BufferStream* ostream ) const;
-
-    virtual void load();
-    virtual void unload();
-
-    virtual void registerLua() const;
-
-    virtual void init();
+    int  currentQuest;
 
   private:
 
-    OZ_LUA_API( ozQuestAdd );
-    OZ_LUA_API( ozQuestEnd );
+    void updateTask();
+
+    static void open( Button* sender );
+    static void next( Button* sender );
+    static void prev( Button* sender );
+
+  protected:
+
+    virtual void onDraw();
+
+  public:
+
+    QuestFrame();
+
+    void clear();
 
 };
 
-extern QuestModule questModule;
-
+}
 }
 }

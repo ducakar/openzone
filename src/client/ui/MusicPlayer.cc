@@ -18,12 +18,12 @@
  */
 
 /**
- * @file client/modules/MusicPlayer.cc
+ * @file client/ui/MusicPlayer.cc
  */
 
 #include "stable.hh"
 
-#include "client/modules/MusicPlayer.hh"
+#include "client/ui/MusicPlayer.hh"
 
 #include "matrix/Library.hh"
 
@@ -120,13 +120,24 @@ void MusicPlayer::volumeUp( Button* sender )
 void MusicPlayer::onUpdate()
 {
   if( camera.state == Camera::BOT && camera.botObj != null ) {
-    const Vector<int>& items = camera.botObj->items;
+    if( camera.botObj->clazz->attributes & ObjectClass::MUSIC_PLAYER_BIT ) {
+      goto musicPlayerEnabled;
+    }
+    else {
+      if( camera.botObj->parent != -1 ) {
+        const Object* veh = orbis.objects[camera.botObj->parent];
 
-    for( int i = 0; i < items.length(); ++i ) {
-      const Object* item = orbis.objects[ items[i] ];
+        if( veh != null && ( veh->clazz->attributes & ObjectClass::MUSIC_PLAYER_BIT ) ) {
+          goto musicPlayerEnabled;
+        }
+      }
 
-      if( item != null && item->clazz->name.equals( "musicPlayer" ) ) {
-        goto musicPlayerEnabled;
+      foreach( i, camera.botObj->items.citer() ) {
+        const Object* item = orbis.objects[*i];
+
+        if( item != null && ( item->clazz->attributes & ObjectClass::MUSIC_PLAYER_BIT ) ) {
+          goto musicPlayerEnabled;
+        }
       }
     }
 

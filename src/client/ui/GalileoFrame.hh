@@ -18,45 +18,47 @@
  */
 
 /**
- * @file client/modules/GalileoModule.cc
+ * @file client/ui/GalileoFrame.hh
  */
 
-#include "stable.hh"
+#pragma once
 
-#include "client/modules/GalileoModule.hh"
-
-#include "client/Context.hh"
-#include "client/OpenGL.hh"
-
-#include "client/ui/UI.hh"
-
-#include "luamacros.hh"
+#include "client/ui/Frame.hh"
 
 namespace oz
 {
 namespace client
 {
-
-GalileoModule galileoModule;
-
-GalileoModule::GalileoModule() :
-  galileoFrame( null )
-{}
-
-void GalileoModule::load()
+namespace ui
 {
-  galileoFrame = new ui::GalileoFrame();
-  ui::ui.root->add( galileoFrame );
-  ui::ui.root->focus( ui::ui.loadingScreen );
-}
 
-void GalileoModule::unload()
+class QuestFrame;
+
+class GalileoFrame : public Frame
 {
-  if( galileoFrame != null ) {
-    ui::ui.root->remove( galileoFrame );
-    galileoFrame = null;
-  }
-}
+  private:
 
+    const QuestFrame* questFrame;
+
+    uint mapTexId;
+    uint arrowTexId;
+    uint markerTexId;
+    bool isVisible;
+
+    uint loadTexture( const char* path ) const;
+
+  protected:
+
+    virtual bool onMouseEvent();
+    virtual void onDraw();
+
+  public:
+
+    GalileoFrame( const QuestFrame* questFrame );
+    virtual ~GalileoFrame();
+
+};
+
+}
 }
 }
