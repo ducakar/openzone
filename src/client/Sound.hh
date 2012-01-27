@@ -102,18 +102,12 @@ class Sound
     volatile int   streamedBytes;
 
     SDL_Thread*    musicThread;
-    SDL_Thread*    soundThread;
 
     SDL_sem*       musicAuxSemaphore;
     SDL_sem*       musicMainSemaphore;
-    SDL_sem*       soundAuxSemaphore;
-    SDL_sem*       soundMainSemaphore;
-
-    volatile bool  isSoundAlive;
     volatile bool  isMusicAlive;
 
     static int musicMain( void* );
-    static int soundMain( void* );
 
     void musicOpen( const char* path );
     void musicClear();
@@ -122,8 +116,6 @@ class Sound
 
     void playCell( int cellX, int cellY );
     void updateMusic();
-
-    void soundRun();
 
   public:
 
@@ -138,7 +130,6 @@ class Sound
     void suspend() const;
 
     void play();
-    void sync();
 
     void init();
     void free();

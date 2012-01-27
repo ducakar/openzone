@@ -688,24 +688,6 @@ void Build::packArchive( const char* name )
   log.println( "}" );
 }
 
-void Build::shutdown()
-{
-  compiler.free();
-  context.free();
-  client::render.free( true );
-  config.clear( true );
-
-  FreeImage_DeInitialise();
-  PhysFile::free();
-  SDL_Quit();
-
-  Alloc::printSummary();
-
-  log.print( OZ_APPLICATION_TITLE " Build finished on " );
-  log.printTime();
-  log.printEnd();
-}
-
 int Build::main( int argc, char** argv )
 {
   bool doCat     = false;
@@ -883,8 +865,6 @@ int Build::main( int argc, char** argv )
     throw Exception( "Failed to add directory '%s' to search path", dataDir.cstr() );
   }
 
-  uint startTime = Time::clock();
-
   config.add( "screen.width", "400" );
   config.add( "screen.height", "40" );
   config.add( "screen.full", "false" );
@@ -897,6 +877,8 @@ int Build::main( int argc, char** argv )
 
   context.init();
   compiler.init();
+
+  uint startTime = Time::clock();
 
   // copy package README
   DArray<PhysFile> dirList = PhysFile( "/" ).ls();
@@ -994,8 +976,22 @@ int Build::main( int argc, char** argv )
   }
 
   uint endTime = Time::clock();
-
   log.println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
+
+  compiler.free();
+  context.free();
+  client::render.free( true );
+  config.clear( true );
+
+  FreeImage_DeInitialise();
+  PhysFile::free();
+  SDL_Quit();
+
+  Alloc::printSummary();
+
+  log.print( OZ_APPLICATION_TITLE " Build finished on " );
+  log.printTime();
+  log.printEnd();
 
   return EXIT_SUCCESS;
 }

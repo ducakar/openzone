@@ -191,10 +191,9 @@ void GameStage::reload()
   camera.update();
   camera.prepare();
 
-  sound.play();
   render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+  sound.play();
   render.swap();
-  sound.sync();
 
   loader.loadScheduled();
 
@@ -330,14 +329,12 @@ void GameStage::present( bool full )
   uint currentTime;
 
   if( full ) {
-    sound.play();
     render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+    sound.play();
     render.swap();
-    sound.sync();
   }
   else {
     sound.play();
-    sound.sync();
   }
 
   currentTime = Time::clock();
@@ -429,10 +426,9 @@ void GameStage::load()
 
   ui::ui.showLoadingScreen( true );
 
-  sound.play();
   render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+  sound.play();
   render.swap();
-  sound.sync();
 
   loader.loadScheduled();
 

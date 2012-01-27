@@ -47,7 +47,7 @@ struct Hit
 
   Object* obj;
   Struct* str;
-  Struct::Entity* entity;
+  Entity* entity;
 
   float ratio;
 
@@ -74,12 +74,12 @@ class Collider
     Point3 endPos;
     Vec3   localDim;
 
-    const Dynamic* obj;
-    const Object* exclObj;
-    const Struct* str;
-    const Struct::Entity* entity;
+    const Dynamic*    obj;
+    const Object*     exclObj;
+    const Struct*     str;
+    const Entity*     entity;
     const BSP::Model* model;
-    const BSP* bsp;
+    const BSP*        bsp;
 
     int   flags;
     float margin;
@@ -146,7 +146,7 @@ class Collider
     bool overlapsOO( const Object* obj, const Object* exclObj = null );
     bool overlapsOSO( const Object* obj, const Object* exclObj = null );
 
-    bool overlapsOO( const Struct::Entity* entity, float margin = 0.0f );
+    bool overlapsOO( const Entity* entity, float margin = 0.0f );
 
     // fill given vectors with objects and structures overlapping with the AABB
     // if either vector is null the respecitve test is not performed
@@ -157,8 +157,7 @@ class Collider
     // un-disable all dynamic objects that overlap (does not respect mask)
     void touchOverlaps( const AABB& aabb, float eps = 0.0f );
 
-    void getOverlaps( const Struct::Entity* entity, Vector<Object*>* objects,
-                      float margin = 0.0f );
+    void getOverlaps( const Entity* entity, Vector<Object*>* objects, float margin = 0.0f );
 
     void translate( const Point3& point, const Vec3& move, const Object* exclObj = null );
     void translate( const AABB& aabb, const Vec3& move, const Object* exclObj = null );

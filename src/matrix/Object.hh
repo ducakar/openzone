@@ -131,9 +131,8 @@ class Object : public AABB
     // objects from being carried around)
     static const int BELOW_BIT          = 0x00001000;
 
-    // if the the object lies or moves on a structure, terrain or non-dynamic object
+    // if the object lies or moves on a structure, terrain or non-dynamic object
     // (if on another dynamic object, we determine that with "lower" index)
-    // (not cleared if disabled)
     static const int ON_FLOOR_BIT       = 0x00000800;
 
     // if the object is on slipping surface (not cleared if disabled)

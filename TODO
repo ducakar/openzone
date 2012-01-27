@@ -1,13 +1,21 @@
 0.3
 - matrix
+  * ObjectClass attributes
   * BSP
     + elevators
     + switches
     + MANUAL_DOOR
+    + CONTAINER
     + keys
   * Vehicle
     + improve rotation
+- ui
+  * drag cursors: openhand, closedhand
+  * Struct::Entity info
 - client
+  * look around with middle button
+  * merge Galileo, MusicPlayer back to client::ui
+  * clean up Proxies
   * smooth loading
   * options menu
   * MD3 animation

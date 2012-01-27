@@ -30,56 +30,64 @@ namespace oz
 namespace matrix
 {
 
+class Struct;
 class Object;
+
+class Entity
+{
+  friend class Struct;
+
+  private:
+
+    typedef void ( Entity::* Handler )();
+
+    static const Handler HANDLERS[];
+
+  public:
+
+    enum State
+    {
+      CLOSED,
+      OPENING,
+      OPENED,
+      CLOSING
+    };
+
+    Vec3              offset;
+
+    const BSP::Model* model;
+    const Struct*     str;
+
+    State             state;
+    float             ratio;
+    float             time;
+
+    Vec3              velocity;
+
+  private:
+
+    void ignoringHandler();
+    void crushingHandler();
+    void autoDoorHandler();
+
+};
 
 class Struct : public Bounds
 {
+  public:
+
+    static const int   MAX_ENTITIES = 1024;
+
   private:
 
     static const Mat44 ROTATIONS[];
+
     static const Vec3  DESTRUCT_FRAG_VELOCITY;
     static const float DEMOLISH_SPEED;
     static const float MOMENTUM_DAMAGE_COEF;
     static const float MAX_HIT_DAMAGE_MASS;
 
   public:
-
-    class Entity
-    {
-      friend class Struct;
-
-      private:
-
-        typedef void ( Entity::* Handler )();
-
-        static const Handler HANDLERS[];
-
-      public:
-
-        enum State
-        {
-          CLOSED,
-          OPENING,
-          OPENED,
-          CLOSING
-        };
-
-        Vec3              offset;
-
-        const BSP::Model* model;
-        const Struct*     str;
-
-        State             state;
-        float             ratio;
-        float             time;
-
-      private:
-
-        void ignoringHandler();
-        void crushingHandler();
-        void autoDoorHandler();
-
-    };
 
     static Pool<Struct>    pool;
     static Vector<Object*> overlappingObjs;

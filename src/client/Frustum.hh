@@ -57,7 +57,7 @@ class Frustum
     bool isVisible( float x, float y, float radius ) const
     {
       Point3 mins = Point3( x, y, -Orbis::DIM );
-      Point3 maxs = Point3( x, y,  Orbis::DIM );
+      Point3 maxs = Point3( x, y, +Orbis::DIM );
 
       return ( mins * left  > -radius || maxs * left  > -radius ) &&
              ( mins * right > -radius || maxs * right > -radius ) &&

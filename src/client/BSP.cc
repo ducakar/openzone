@@ -34,7 +34,7 @@ namespace oz
 namespace client
 {
 
-void BSP::playSound( const Struct::Entity* entity, int sound ) const
+void BSP::playSound( const Entity* entity, int sound ) const
 {
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 
@@ -62,7 +62,7 @@ void BSP::playSound( const Struct::Entity* entity, int sound ) const
   OZ_AL_CHECK_ERROR();
 }
 
-void BSP::playContSound( const Struct::Entity* entity, int sound ) const
+void BSP::playContSound( const Entity* entity, int sound ) const
 {
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 
@@ -171,9 +171,9 @@ void BSP::draw( const Struct* str, int mask ) const
 void BSP::play( const Struct* str ) const
 {
   for( int i = 0; i < bsp->nModels; ++i ) {
-    const Struct::Entity& entity = str->entities[i];
+    const Entity& entity = str->entities[i];
 
-    if( entity.state == Struct::Entity::OPENING ) {
+    if( entity.state == Entity::OPENING ) {
       if( entity.ratio == 0.0f && entity.model->openSound != -1 ) {
         playSound( &entity, entity.model->openSound );
       }
@@ -181,7 +181,7 @@ void BSP::play( const Struct* str ) const
         playContSound( &entity, entity.model->frictSound );
       }
     }
-    else if( entity.state == Struct::Entity::CLOSING ) {
+    else if( entity.state == Entity::CLOSING ) {
       if( entity.ratio == 1.0f && entity.model->closeSound != -1 ) {
         playSound( &entity, entity.model->closeSound );
       }

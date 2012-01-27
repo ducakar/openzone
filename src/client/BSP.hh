@@ -42,8 +42,8 @@ class BSP
     int  flags;
     Mesh mesh;
 
-    void playSound( const Struct::Entity* entity, int sound ) const;
-    void playContSound( const Struct::Entity* entity, int sound ) const;
+    void playSound( const Entity* entity, int sound ) const;
+    void playContSound( const Entity* entity, int sound ) const;
 
   public:
 

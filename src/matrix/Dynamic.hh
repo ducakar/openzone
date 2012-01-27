@@ -43,7 +43,7 @@ class Dynamic : public Object
 
     int   parent;   // index of container object (if object isn't positioned in the world,
                     // it has to be contained in an another object, otherwise it will be removed)
-    int   lower;    // index of the lower object
+    int   lower;    // index of the lower object or structure entity
     float depth;    // how deep under water the object's lower bound is
 
     float mass;

@@ -154,35 +154,55 @@ bool Physics::handleObjFriction()
       systemMom += frictionFactor * dyn->lift * Timer::TICK_TIME;
     }
 
-    Dynamic* sObj;
-    sObj = dyn->lower == -1 ? null : static_cast<Dynamic*>( orbis.objects[dyn->lower] );
+    float deltaVelX = dyn->momentum.x;
+    float deltaVelY = dyn->momentum.y;
+
+    if( dyn->lower != -1 ) {
+      if( dyn->flags & Object::ON_FLOOR_BIT ) {
+        int structIndex = dyn->lower / Struct::MAX_ENTITIES;
+        int entityIndex = dyn->lower % Struct::MAX_ENTITIES;
+
+        const Entity& entity = orbis.structs[structIndex]->entities[entityIndex];
+
+        deltaVelX -= entity.velocity.x;
+        deltaVelY -= entity.velocity.y;
+      }
+      else {
+        const Dynamic* sDyn = static_cast<const Dynamic*>( orbis.objects[dyn->lower] );
+
+        deltaVelX -= sDyn->velocity.x;
+        deltaVelY -= sDyn->velocity.y;
+      }
+    }
 
     // on floor or on a still object
-    if( ( dyn->flags & Object::ON_FLOOR_BIT ) ||
-        ( sObj != null && ( sObj->flags & Object::DISABLED_BIT ) ) )
-    {
+    if( ( dyn->flags & Object::ON_FLOOR_BIT ) || dyn->lower != -1  ) {
+      float deltaVel2 = deltaVelX*deltaVelX + deltaVelY*deltaVelY;
       float friction  = FLOOR_FRICTION;
       float stickVel  = STICK_VELOCITY;
-      float velocity2 = dyn->velocity.x*dyn->velocity.x + dyn->velocity.y*dyn->velocity.y;
 
       if( dyn->flags & Object::ON_SLICK_BIT ) {
+        deltaVel2 = 0.0f;
         friction  = SLICK_FRICTION;
         stickVel  = SLICK_STICK_VELOCITY;
-        velocity2 = 0.0f;
       }
 
       dyn->momentum += ( systemMom * dyn->floor.z ) * dyn->floor;
-      dyn->momentum *= 1.0f - friction;
+      dyn->momentum.x -= deltaVelX * friction;
+      dyn->momentum.y -= deltaVelY * friction;
+      dyn->momentum.z *= 1.0f - friction;
 
-      if( velocity2 > stickVel ) {
+      if( deltaVel2 > stickVel ) {
         dyn->flags |= Object::FRICTING_BIT;
 
-        if( velocity2 > SLIDE_DAMAGE_THRESHOLD ) {
-          dyn->damage( SLIDE_DAMAGE_COEF * velocity2 );
+        if( deltaVel2 > SLIDE_DAMAGE_THRESHOLD ) {
+          dyn->damage( SLIDE_DAMAGE_COEF * deltaVel2 );
         }
       }
 
-      if( dyn->momentum.x*dyn->momentum.x + dyn->momentum.y*dyn->momentum.y <= stickVel ) {
+      if( dyn->lower == -1 &&
+          dyn->momentum.x*dyn->momentum.x + dyn->momentum.y*dyn->momentum.y <= stickVel )
+      {
         dyn->momentum.x = 0.0f;
         dyn->momentum.y = 0.0f;
 
@@ -193,22 +213,6 @@ bool Physics::handleObjFriction()
             return false;
           }
         }
-      }
-    }
-    // on a moving object
-    else if( sObj != null ) {
-      float deltaVelX = sObj->velocity.x - dyn->velocity.x;
-      float deltaVelY = sObj->velocity.y - dyn->velocity.y;
-      float deltaVel2 = deltaVelX*deltaVelX + deltaVelY*deltaVelY;
-
-      dyn->momentum.x += deltaVelX * FLOOR_FRICTION;
-      dyn->momentum.y += deltaVelY * FLOOR_FRICTION;
-      dyn->momentum.z += systemMom;
-
-      dyn->flags |= Object::FRICTING_BIT;
-
-      if( deltaVel2 > SLIDE_DAMAGE_THRESHOLD ) {
-        dyn->damage( SLIDE_DAMAGE_COEF * deltaVel2 );
       }
     }
     // in air or swimming
@@ -330,8 +334,19 @@ void Physics::handleObjHit()
     if( hit.normal.z >= FLOOR_NORMAL_Z ) {
       dyn->flags |= Object::ON_FLOOR_BIT;
       dyn->flags |= hit.material & Material::SLICK_BIT ? Object::ON_SLICK_BIT : 0;
-      dyn->lower = -1;
       dyn->floor = hit.normal;
+
+      if( hit.entity == null ) {
+        dyn->lower = -1;
+      }
+      else {
+        int structIndex = hit.str->index;
+        int entityIndex = int( hit.entity - hit.str->entities );
+
+        hard_assert( uint( entityIndex ) < uint( Struct::MAX_ENTITIES ) );
+
+        dyn->lower = structIndex * Struct::MAX_ENTITIES + entityIndex;
+      }
     }
   }
 }
@@ -434,20 +449,39 @@ void Physics::updateObj( Dynamic* dyn_ )
   dyn = dyn_;
 
   hard_assert( dyn->cell != null );
-  hard_assert( !( dyn->flags & Object::ON_FLOOR_BIT ) || ( dyn->lower == -1 ) );
 
   dyn->flags &= ~Object::TICK_CLEAR_MASK;
 
   if( dyn->lower != -1 ) {
-    Object* sObj = orbis.objects[dyn->lower];
+    if( dyn->flags & Object::ON_FLOOR_BIT ) {
+      int structIndex = dyn->lower / Struct::MAX_ENTITIES;
+      int entityIndex = dyn->lower % Struct::MAX_ENTITIES;
 
-    // clear the lower object if it doesn't exist any more
-    if( sObj == null || sObj->cell == null ) {
-      dyn->flags &= ~Object::DISABLED_BIT;
-      dyn->lower = -1;
+      const Struct* str = orbis.structs[structIndex];
+
+      if( str == null ) {
+        dyn->flags &= ~Object::DISABLED_BIT;
+        dyn->lower = -1;
+      }
+      else {
+        const Entity& entity = str->entities[entityIndex];
+
+        if( entity.state == Entity::OPENING || entity.state == Entity::CLOSING ) {
+          dyn->flags &= ~Object::DISABLED_BIT;
+        }
+      }
     }
-    else if( !( sObj->flags & Object::DISABLED_BIT ) ) {
-      dyn->flags &= ~Object::DISABLED_BIT;
+    else {
+      const Object* sObj = orbis.objects[dyn->lower];
+
+      // clear the lower object if it doesn't exist any more
+      if( sObj == null || sObj->cell == null ) {
+        dyn->flags &= ~Object::DISABLED_BIT;
+        dyn->lower = -1;
+      }
+      else if( !( sObj->flags & Object::DISABLED_BIT ) ) {
+        dyn->flags &= ~Object::DISABLED_BIT;
+      }
     }
   }
   // handle physics

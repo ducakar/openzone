@@ -49,7 +49,7 @@ namespace client
 //    sparks[i].lifeTime = sparkGen->lifeTime;
 //  }
 //
-//  SparkGenRender::SparkGenRender( oz::SparkGen* sparkGen_ ) :
+//  SparkGenRender::SparkGenRender( SparkGen* sparkGen_ ) :
 //    sparkGen( sparkGen_ )
 //  {
 //    sparks = new Spark[sparkGen->number];
