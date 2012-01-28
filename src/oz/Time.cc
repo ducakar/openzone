@@ -29,12 +29,15 @@
 
 #include "Time.hh"
 
+#include "System.hh"
+
 #ifdef _WIN32
 # include "windefs.h"
 # include <windows.h>
 # include <mmsystem.h>
 #else
 # include <ctime>
+# include <unistd.h>
 #endif
 
 namespace oz
@@ -42,34 +45,85 @@ namespace oz
 
 #ifdef _WIN32
 
-// The following struct is used to initialise and deinitialise Windows multimedia timer to
-// resolution of 1 millisecond.
-struct MMTimer
+// The following struct is used to initialise and Windows high-resolution timer.
+struct PerformanceTimer
 {
-  MMTimer()
+  ulong64 resolution;
+  ulong64 uresolution;
+
+  PerformanceTimer()
   {
     timeBeginPeriod( 1 );
-  }
 
-  ~MMTimer()
-  {
-    timeEndPeriod( 1 );
+    LARGE_INTEGER frequency;
+    if( QueryPerformanceFrequency( &frequency ) == 0 || frequency.QuadPart == 0 ) {
+      System::error( 0, "PANIC: High-performance timer initialisation failed" );
+    }
+
+    resolution = ( 1000 + frequency.QuadPart / 2 ) / frequency.QuadPart;
+    uresolution = ( 1000000 + frequency.QuadPart / 2 ) / frequency.QuadPart;
   }
 };
 
-MMTimer mmTimer;
+PerformanceTimer performanceTimer;
 
 #endif
 
 uint Time::clock()
 {
 #ifdef _WIN32
-  return timeGetTime();
+
+  LARGE_INTEGER now;
+  QueryPerformanceCounter( &now );
+
+  return uint( now.QuadPart * performanceTimer.resolution );
+
 #else
+
   struct timespec now;
   clock_gettime( CLOCK_MONOTONIC, &now );
-  // This wraps around together with uint since time_t.range * 1000 is a multiple of uint.range.
+
+  // This wraps around together with uint since (time_t range) * 1000 is a multiple of uint range.
   return uint( now.tv_sec * 1000 + now.tv_nsec / 1000000 );
+
+#endif
+}
+
+void Time::sleep( uint milliseconds )
+{
+#ifdef _WIN32
+  Sleep( milliseconds );
+#else
+  ::usleep( milliseconds * 1000 );
+#endif
+}
+
+uint Time::uclock()
+{
+#ifdef _WIN32
+
+  LARGE_INTEGER now;
+  QueryPerformanceCounter( &now );
+
+  return uint( now.QuadPart * performanceTimer.uresolution );
+
+#else
+
+  struct timespec now;
+  clock_gettime( CLOCK_MONOTONIC, &now );
+
+  // This wraps around together with uint since (time_t range) * 10^6 is a multiple of uint range.
+  return uint( now.tv_sec * 1000000 + now.tv_nsec / 1000 );
+
+#endif
+}
+
+void Time::usleep( uint microseconds )
+{
+#ifdef _WIN32
+  Sleep( max( ( microseconds + 500 ) / 1000, 1u ) );
+#else
+  ::usleep( microseconds );
 #endif
 }
 

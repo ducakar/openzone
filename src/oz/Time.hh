@@ -58,6 +58,26 @@ class Time
     static uint clock();
 
     /**
+     * Sleep specified number of milliseconds.
+     */
+    static void sleep( uint milliseconds );
+
+    /**
+     * Monotonic clock from an unspecified point in time, with microsecond resolution.
+     *
+     * This clock wraps around in about 72 min.
+     */
+    static uint uclock();
+
+    /**
+     * Sleep specified number of microseconds.
+     *
+     * On Windows usleep has millisecond granularity; it this case <tt>microseconds</tt> is rounded
+     * to the nearest millisecond value greater than zero.
+     */
+    static void usleep( uint microseconds );
+
+    /**
      * Return <tt>Time</tt> structure filled with the current UTC time.
      */
     static Time utc();

@@ -33,8 +33,9 @@ class Timer
   public:
 
     static const     uint  TICKS_PER_SEC = 60;
+    static constexpr float TICK_TIME     = 1.0f / float( TICKS_PER_SEC );
+    static const     uint  TICK_MICROS   = ( 1000000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;
     static const     uint  TICK_MILLIS   = ( 1000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;
-    static constexpr float TICK_TIME     = float( TICK_MILLIS ) / 1000.0f;
 
     uint  runMillis;
 

@@ -313,7 +313,7 @@ int Client::main( int argc, char** argv )
   File dataDir( prefix + "/share/" OZ_APPLICATION_NAME );
 
   if( String::equals( config.getSet( "seed", "TIME" ), "TIME" ) ) {
-    int seed = int( Time::clock() );
+    int seed = int( Time::uclock() );
     Math::seed( seed );
     log.println( "Random generator seed set to the current time: %d", seed );
   }
@@ -437,7 +437,7 @@ int Client::main( int argc, char** argv )
   // time passed form start of the frame
   uint timeSpent;
   uint timeNow;
-  uint timeZero       = Time::clock();
+  uint timeZero       = Time::uclock();
   // time at start of the frame
   uint timeLast       = timeZero;
   uint timeLastRender = timeZero;
@@ -551,15 +551,15 @@ int Client::main( int argc, char** argv )
       }
     }
 
-    if( isBenchmark && float( Time::clock() - timeZero ) >= benchmarkTime * 1000.0f ) {
+    if( isBenchmark && float( Time::uclock() - timeZero ) >= benchmarkTime * 1000000.0f ) {
       isAlive = false;
     }
 
     // Waste time when iconified.
     if( !isActive ) {
-      SDL_Delay( Timer::TICK_MILLIS );
+      Time::usleep( Timer::TICK_MICROS );
 
-      timeSpent = Time::clock() - timeLast;
+      timeSpent = Time::uclock() - timeLast;
       timeLast += timeSpent;
 
       continue;
@@ -578,16 +578,16 @@ int Client::main( int argc, char** argv )
 
         stage->load();
 
-        timeLast = Time::clock();
+        timeLast = Time::uclock();
       }
       continue;
     }
 
-    timeNow = Time::clock();
+    timeNow = Time::uclock();
     timeSpent = timeNow - timeLast;
 
     // Skip rendering graphics, only play sounds if there's not enough time.
-    if( timeSpent >= uint( Timer::TICK_MILLIS ) && timeNow - timeLastRender < 1000 ) {
+    if( timeSpent >= uint( Timer::TICK_MICROS ) && timeNow - timeLastRender < 1000000 ) {
       stage->present( false );
     }
     else {
@@ -595,21 +595,21 @@ int Client::main( int argc, char** argv )
 
       timer.frame();
       // If there's still some time left, sleep.
-      timeLastRender = Time::clock();
+      timeLastRender = Time::uclock();
       timeSpent = timeLastRender - timeLast;
 
-      if( timeSpent < uint( Timer::TICK_MILLIS ) ) {
-        SDL_Delay( Timer::TICK_MILLIS - timeSpent );
+      if( timeSpent < uint( Timer::TICK_MICROS ) ) {
+        Time::usleep( Timer::TICK_MICROS - timeSpent );
 
-        timeSpent = Timer::TICK_MILLIS;
+        timeSpent = Timer::TICK_MICROS;
       }
     }
 
     if( timeSpent > 100 ) {
-      timer.drop( timeSpent - Timer::TICK_MILLIS );
-      timeLast += timeSpent - Timer::TICK_MILLIS;
+      timer.drop( ( timeSpent - Timer::TICK_MICROS + 500 ) / 1000 );
+      timeLast += timeSpent - Timer::TICK_MICROS;
     }
-    timeLast += Timer::TICK_MILLIS;
+    timeLast += Timer::TICK_MICROS;
   }
   while( isAlive );
 
