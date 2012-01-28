@@ -54,8 +54,8 @@ void InfoFrame::onVisibilityChange()
 
 bool InfoFrame::onMouseEvent()
 {
-  if( camera.state != Camera::BOT || camera.botObj == null || camera.tagged == -1 ||
-      !nirvana.devices.contains( camera.tagged ) )
+  if( camera.state != Camera::BOT || camera.botObj == null || camera.object == -1 ||
+      !nirvana.devices.contains( camera.object ) )
   {
     return false;
   }
@@ -64,22 +64,22 @@ bool InfoFrame::onMouseEvent()
 
 void InfoFrame::onDraw()
 {
-  if( camera.state != Camera::BOT || camera.botObj == null || camera.tagged == -1 ) {
+  if( camera.state != Camera::BOT || camera.botObj == null || camera.object == -1 ) {
     lastId = -1;
     return;
   }
 
-  const Device* const* device = nirvana.devices.find( camera.tagged );
+  const Device* const* device = nirvana.devices.find( camera.object );
   if( device == null ) {
     lastId = -1;
     return;
   }
 
-  if( lastId != camera.tagged ) {
-    lastId = camera.tagged;
+  if( lastId != camera.object ) {
+    lastId = camera.object;
     lastTicks = timer.ticks;
 
-    const Bot* tagged = static_cast<const Bot*>( camera.taggedObj );
+    const Bot* tagged = static_cast<const Bot*>( camera.objectObj );
 
     text.setText( "%s", ( *device )->getMemo() );
 

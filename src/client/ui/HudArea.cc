@@ -58,113 +58,124 @@ void HudArea::drawBotCrosshair()
   shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
   glBindTexture( GL_TEXTURE_2D, 0 );
 
-  if( bot->parent == -1 && camera.tagged != -1 ) {
-    const Object*      taggedObj   = camera.taggedObj;
-    const ObjectClass* taggedClazz = camera.taggedObj->clazz;
+  if( bot->parent == -1 && ( camera.object != -1 || camera.entity != -1 ) ) {
+    const Object*      obj   = camera.objectObj;
+    const ObjectClass* clazz = obj == null ? null : obj->clazz;
+    const Dynamic*     dyn   = static_cast<const Dynamic*>( obj );
+    const Bot*         bot   = static_cast<const Bot*>( obj );
+    const Entity*      ent   = camera.entityObj;
+
+    const matrix::BSP::Model* model = ent == null ? null : ent->model;
 
     // it might happen that bot itself is tagged object for a frame when switching from freecam
     // into a bot
-    if( taggedObj == bot ) {
+    if( obj == camera.botObj ) {
       return;
     }
 
-    const Dynamic* taggedDyn = static_cast<const Dynamic*>( taggedObj );
-    const Bot*     taggedBot = static_cast<const Bot*>( taggedObj );
+    if( ent != null ) {
+      if( lastEntityId != camera.entity ) {
+        lastEntityId = camera.entity;
 
-    float life;
-    if( Math::isinf( taggedObj->life ) ) {
-      life = 1.0f;
-    }
-    else if( taggedObj->flags & Object::BOT_BIT ) {
-      life = max( 0.0f, 2.0f * taggedObj->life / taggedClazz->life - 1.0f );
+        title.setText( "%s", model->title.cstr() );
+      }
+
+      title.draw( this, false );
     }
     else {
-      life = taggedObj->life / taggedClazz->life;
-    }
+      float life;
+      if( Math::isinf( obj->life ) ) {
+        life = 1.0f;
+      }
+      else if( obj->flags & Object::BOT_BIT ) {
+        life = max( 0.0f, 2.0f * obj->life / clazz->life - 1.0f );
+      }
+      else {
+        life = obj->life / clazz->life;
+      }
 
-    int lifeWidth = int( life * float( ICON_SIZE + 14 ) );
+      int lifeWidth = int( life * float( ICON_SIZE + 14 ) );
 
-    glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
-    fill( healthBarX + 1, healthBarY + 11, lifeWidth, 10 );
+      glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
+      fill( healthBarX + 1, healthBarY + 11, lifeWidth, 10 );
 
-    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.15f );
-    fill( healthBarX + 1 + lifeWidth, healthBarY + 11, ICON_SIZE + 14 - lifeWidth, 10 );
+      glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.15f );
+      fill( healthBarX + 1 + lifeWidth, healthBarY + 11, ICON_SIZE + 14 - lifeWidth, 10 );
 
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.8f );
-    rect( healthBarX, healthBarY + 10, ICON_SIZE + 16, 12 );
+      glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.8f );
+      rect( healthBarX, healthBarY + 10, ICON_SIZE + 16, 12 );
 
-    if( lastTaggedId != camera.tagged ) {
-      lastTaggedId = camera.tagged;
+      if( lastObjectId != camera.object ) {
+        lastObjectId = camera.object;
 
-      String sTitle = ( taggedObj->flags & Object::BOT_BIT ) && !taggedBot->name.isEmpty() ?
-                      taggedBot->name + " (" + taggedClazz->title + ")" : taggedClazz->title;
+        String sTitle = ( obj->flags & Object::BOT_BIT ) && !bot->name.isEmpty() ?
+                        bot->name + " (" + clazz->title + ")" : clazz->title;
 
-      title.setText( "%s", sTitle.cstr() );
-    }
+        title.setText( "%s", sTitle.cstr() );
+      }
 
-    title.draw( this, false );
+      title.draw( this, false );
 
-    if( taggedObj->flags & Object::BROWSABLE_BIT ) {
-      glBindTexture( GL_TEXTURE_2D, browseTexId );
-      shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
-    }
-    if( ( taggedObj->flags & ( Object::USE_FUNC_BIT | Object::DEVICE_BIT ) ) &&
-        !( taggedObj->flags & ( Object::WEAPON_BIT | Object::VEHICLE_BIT ) ) )
-    {
+      if( obj->flags & Object::BROWSABLE_BIT ) {
+        glBindTexture( GL_TEXTURE_2D, browseTexId );
+        shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
+      }
+      if( ( obj->flags & ( Object::USE_FUNC_BIT | Object::DEVICE_BIT ) ) &&
+          !( obj->flags & ( Object::WEAPON_BIT | Object::VEHICLE_BIT ) ) )
+      {
 
-      glBindTexture( GL_TEXTURE_2D,
-                     taggedObj->flags & Object::USE_FUNC_BIT ? useTexId : deviceTexId );
-      shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
-    }
-
-    if( !( taggedObj->flags & Object::SOLID_BIT ) ) {
-      glBindTexture( GL_TEXTURE_2D, 0 );
-      return;
-    }
-
-    if( taggedObj->flags & Object::VEHICLE_BIT ) {
-      const Vehicle* vehicle = static_cast<const Vehicle*>( taggedObj );
-
-      if( vehicle->pilot == -1 ) {
-        glBindTexture( GL_TEXTURE_2D, mountTexId );
+        glBindTexture( GL_TEXTURE_2D, obj->flags & Object::USE_FUNC_BIT ? useTexId : deviceTexId );
         shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
       }
-    }
-    else if( taggedObj->flags & Object::WEAPON_BIT ) {
-      const WeaponClass* clazz = static_cast<const WeaponClass*>( taggedObj->clazz );
 
-      if( clazz->allowedUsers.contains( botClazz ) ) {
-        glBindTexture( GL_TEXTURE_2D, equipTexId );
-        shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
+      if( !( obj->flags & Object::SOLID_BIT ) ) {
+        glBindTexture( GL_TEXTURE_2D, 0 );
+        return;
       }
-    }
 
-    if( taggedObj->flags & Object::ITEM_BIT ) {
-      glBindTexture( GL_TEXTURE_2D, takeTexId );
-      shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
-    }
+      if( obj->flags & Object::VEHICLE_BIT ) {
+        const Vehicle* vehicle = static_cast<const Vehicle*>( obj );
 
-    if( bot->cargo == -1 && bot->weapon == -1 &&
-        ( taggedObj->flags & Object::DYNAMIC_BIT ) && taggedDyn->mass <= botClazz->grabMass &&
-        // not swimming or on ladder
-        !( bot->state & ( Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) &&
-        // if it is not a bot that is holding something
-        ( !( taggedObj->flags & Object::BOT_BIT ) || taggedBot->cargo == -1 ) )
-    {
-      float dimX = bot->dim.x + taggedDyn->dim.x;
-      float dimY = bot->dim.y + taggedDyn->dim.y;
-      float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + Bot::GRAB_EPSILON;
+        if( vehicle->pilot == -1 ) {
+          glBindTexture( GL_TEXTURE_2D, mountTexId );
+          shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
+        }
+      }
+      else if( obj->flags & Object::WEAPON_BIT ) {
+        const WeaponClass* clazz = static_cast<const WeaponClass*>( obj->clazz );
 
-      if( dist <= botClazz->reachDist ) {
-        glBindTexture( GL_TEXTURE_2D, liftTexId );
+        if( clazz->allowedUsers.contains( botClazz ) ) {
+          glBindTexture( GL_TEXTURE_2D, equipTexId );
+          shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
+        }
+      }
+
+      if( obj->flags & Object::ITEM_BIT ) {
+        glBindTexture( GL_TEXTURE_2D, takeTexId );
+        shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
+      }
+
+      if( bot->cargo == -1 && bot->weapon == -1 &&
+        ( obj->flags & Object::DYNAMIC_BIT ) && dyn->mass <= botClazz->grabMass &&
+          // not swimming or on ladder
+          !( bot->state & ( Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) &&
+          // if it is not a bot that is holding something
+          ( !( obj->flags & Object::BOT_BIT ) || bot->cargo == -1 ) )
+      {
+        float dimX = bot->dim.x + dyn->dim.x;
+        float dimY = bot->dim.y + dyn->dim.y;
+        float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + Bot::GRAB_EPSILON;
+
+        if( dist <= botClazz->reachDist ) {
+          glBindTexture( GL_TEXTURE_2D, liftTexId );
+          shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
+        }
+      }
+      if( camera.botObj->cargo != -1 ) {
+        glBindTexture( GL_TEXTURE_2D, grabTexId );
         shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
       }
     }
-    if( camera.botObj->cargo != -1 ) {
-      glBindTexture( GL_TEXTURE_2D, grabTexId );
-      shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
-    }
-
     glBindTexture( GL_TEXTURE_2D, 0 );
   }
 }
@@ -317,10 +328,12 @@ void HudArea::onUpdate()
 
   // we need this is onUpdate() rather than in onDraw() for the rare case if an object is replaced
   // by a new one with the same id (onDraw() may not be called each frame and may miss this switch)
-  if( camera.tagged != lastTaggedId ) {
-    lastTaggedId = -1;
+  if( camera.object != lastObjectId ) {
+    lastObjectId = -1;
   }
-
+  if( camera.entity != lastEntityId ) {
+    lastEntityId = -1;
+  }
   if( camera.state != Camera::BOT || camera.bot == -1 ) {
     lastWeaponId = -1;
   }
@@ -332,9 +345,6 @@ void HudArea::onUpdate()
 void HudArea::onDraw()
 {
   if( camera.bot != -1 ) {
-//     if( camera.taggedObj != null ) {
-//       drawTaggedRect( camera.taggedObj );
-//     }
     drawBotCrosshair();
     drawBotStatus();
 
@@ -351,7 +361,11 @@ HudArea::HudArea() :
   Area( Area::uiWidth, Area::uiHeight ),
   weaponName( 16, 54, ALIGN_LEFT, Font::LARGE, " " ),
   weaponRounds( 200, 54, ALIGN_RIGHT, Font::LARGE, "∞" ),
-  lastTaggedId( -1 ), lastWeaponId( -1 ), lastWeaponRounds( -1 ), lastVehicleId( -1 )
+  lastObjectId( -1 ),
+  lastEntityId( -1 ),
+  lastWeaponId( -1 ),
+  lastWeaponRounds( -1 ),
+  lastVehicleId( -1 )
 {
   flags = UPDATE_BIT | IGNORE_BIT | PINNED_BIT;
 

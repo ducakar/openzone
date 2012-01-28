@@ -184,6 +184,8 @@ void BSP::load()
   for( int i = 0; i < nModels; ++i ) {
     models[i].mins        = is.readPoint3();
     models[i].maxs        = is.readPoint3();
+    models[i].name        = is.readString();
+    models[i].title       = OZ_GETTEXT( models[i].name );
     models[i].bsp         = this;
     models[i].firstBrush  = is.readInt();
     models[i].nBrushes    = is.readInt();

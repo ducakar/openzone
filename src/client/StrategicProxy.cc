@@ -53,7 +53,8 @@ void StrategicProxy::begin()
 {
   camera.v = isFree ? camera.v : Math::rad( DEFAULT_ANGLE );
   camera.w = 0.0f;
-  camera.setTagged( null );
+  camera.setTaggedObj( null );
+  camera.setTaggedEnt( null );
 
   ui::mouse.doShow = true;
 

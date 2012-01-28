@@ -61,7 +61,8 @@ void BotProxy::begin()
   camera.h = bot->h;
   camera.v = bot->v;
   camera.isExternal = isExternal;
-  camera.setTagged( null );
+  camera.setTaggedObj( null );
+  camera.setTaggedEnt( null );
 
   ui::mouse.doShow = false;
 
@@ -252,10 +253,10 @@ void BotProxy::update()
       if( bot->parent != -1 ) {
         bot->actions |= Bot::ACTION_VEH_NEXT_WEAPON;
       }
-      else if( camera.tagged != -1 ) {
+      else if( camera.object != -1 ) {
         bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
         bot->actions |= Bot::ACTION_USE;
-        bot->instrument = camera.tagged;
+        bot->instrument = camera.object;
         bot->container = -1;
       }
     }
@@ -266,16 +267,16 @@ void BotProxy::update()
         bot->instrument = -1;
         bot->container = -1;
       }
-      else if( camera.tagged != -1 ) {
+      else if( camera.object != -1 ) {
         bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
         bot->actions |= Bot::ACTION_GRAB;
-        bot->instrument = camera.tagged;
+        bot->instrument = camera.object;
         bot->container = -1;
       }
     }
     else if( ui::mouse.wheelDown ) {
-      if( camera.taggedObj != null ) {
-        if( camera.taggedObj->flags & Object::BROWSABLE_BIT ) {
+      if( camera.objectObj != null ) {
+        if( camera.objectObj->flags & Object::BROWSABLE_BIT ) {
           ui::mouse.doShow = true;
 
           inventory->show( true );
@@ -284,7 +285,7 @@ void BotProxy::update()
         else {
           bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
           bot->actions |= Bot::ACTION_TAKE;
-          bot->instrument = camera.tagged;
+          bot->instrument = camera.object;
           bot->container = -1;
         }
       }
@@ -408,13 +409,33 @@ void BotProxy::prepare()
   }
 
   if( bot->parent != -1 ) {
-    camera.setTagged( null );
+    camera.setTaggedObj( null );
   }
   else if( bot->cargo != -1 ) {
-    camera.setTagged( orbis.objects[bot->cargo] );
+    camera.setTaggedObj( orbis.objects[bot->cargo] );
   }
   else {
-    camera.setTagged( bot->getTagged( ~0 ) );
+    const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
+
+    // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+    float hvsc[6];
+
+    Math::sincos( bot->h, &hvsc[0], &hvsc[1] );
+    Math::sincos( bot->v, &hvsc[2], &hvsc[3] );
+
+    hvsc[4] = hvsc[2] * hvsc[0];
+    hvsc[5] = hvsc[2] * hvsc[1];
+
+    Vec3   at    = Vec3( -hvsc[4], hvsc[5], -hvsc[3] );
+    Point3 eye   = bot->p + Vec3( 0.0f, 0.0f, bot->camZ );
+    Vec3   reach = at * clazz->reachDist;
+
+    collider.mask = ~0;
+    collider.translate( eye, reach, bot );
+    collider.mask = Object::SOLID_BIT;
+
+    camera.setTaggedObj( collider.hit.obj );
+    camera.setTaggedEnt( collider.hit.entity );
   }
 }
 

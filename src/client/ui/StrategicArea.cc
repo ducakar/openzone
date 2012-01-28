@@ -138,7 +138,8 @@ void StrategicArea::printName( int baseX, int baseY, const char* s, ... )
   glBindTexture( GL_TEXTURE_2D, 0 );
 }
 
-void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const Object* obj )
+void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const Entity* ent,
+                                     const Object* obj )
 {
   float minX = float( span.minX );
   float maxX = float( span.maxX );
@@ -147,12 +148,18 @@ void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const 
   float life = 1.0f;
 
   if( str != null ) {
-    if( !Math::isinf( str->life ) ) {
-      life = str->life / str->bsp->life;
+    if( ent != null ) {
+      const String& title = ent->model->title;
+      printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 8 ), "%s", title.cstr() );
     }
+    else {
+      if( !Math::isinf( str->life ) ) {
+        life = str->life / str->bsp->life;
+      }
 
-    const String& title = str->bsp->title;
-    printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", title.cstr() );
+      const String& title = str->bsp->title;
+      printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", title.cstr() );
+    }
   }
   else {
     const Bot*         bot   = static_cast<const Bot*>( obj );
@@ -170,18 +177,20 @@ void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const 
     }
   }
 
-  float barWidth = maxX - minX + 2.0f;
-  float lifeWidth = life * barWidth;
-  float lifeWidthLeft = barWidth - lifeWidth;
+  if( ent == null ) {
+    float barWidth = maxX - minX + 2.0f;
+    float lifeWidth = life * barWidth;
+    float lifeWidthLeft = barWidth - lifeWidth;
 
-  glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.8f );
-  shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
+    glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.8f );
+    shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
 
-  glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.15f );
-  shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
+    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.15f );
+    shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
 
-  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.8f );
-  shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
+    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.8f );
+    shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
+  }
 }
 
 void StrategicArea::drawTaggedRect( const Span& span, const Struct* str, const Object* obj,
@@ -280,12 +289,15 @@ bool StrategicArea::onMouseEvent()
   collider.mask = Object::SOLID_BIT;
 
   const Struct* str = collider.hit.str;
+  const Entity* ent = collider.hit.entity;
   const Object* obj = collider.hit.obj;
-
-  hard_assert( str == null || obj == null );
 
   if( str != null ) {
     hoverStr = str->index;
+
+    if( ent != null ) {
+      hoverEnt = str->index * Struct::MAX_ENTITIES + int( ent - str->entities );
+    }
 
     if( ui::mouse.leftClick ) {
       taggedStrs.clear();
@@ -314,18 +326,27 @@ bool StrategicArea::onMouseEvent()
 void StrategicArea::onDraw()
 {
   const Struct* str = hoverStr == -1 ? null : orbis.structs[hoverStr];
+  const Entity* ent = hoverEnt == -1 ? null : &orbis.structs[hoverEnt / Struct::MAX_ENTITIES]->
+                      entities[hoverEnt % Struct::MAX_ENTITIES];
   const Object* obj = hoverObj == -1 ? null : orbis.objects[hoverObj];
 
   Span span;
 
   if( str != null ) {
     if( projectBounds( &span, str->toAABB() ) ) {
-      drawHoveredRect( span, str, null );
+      drawHoveredRect( span, str, null, null );
+    }
+  }
+  if( ent != null ) {
+    str = ent->str;
+
+    if( projectBounds( &span, str->toAbsoluteCS( *ent->model + ent->offset ).toAABB() ) ) {
+      drawHoveredRect( span, str, ent, null );
     }
   }
   if( obj != null ) {
     if( projectBounds( &span, *obj ) ) {
-      drawHoveredRect( span, null, obj );
+      drawHoveredRect( span, null, null, obj );
     }
   }
 
@@ -354,11 +375,12 @@ void StrategicArea::onDraw()
   }
 
   hoverStr = -1;
+  hoverEnt = -1;
   hoverObj = -1;
 }
 
 StrategicArea::StrategicArea() :
-  Area( Area::uiWidth, Area::uiHeight ), hoverStr( -1 ), hoverObj( -1 )
+  Area( Area::uiWidth, Area::uiHeight ), hoverStr( -1 ), hoverEnt( -1 ), hoverObj( -1 )
 {
   flags = UPDATE_BIT | PINNED_BIT;
 

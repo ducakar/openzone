@@ -60,8 +60,8 @@ bool InventoryMenu::onMouseEvent()
   if( bot != null && bot->parent != -1 ) {
     container = orbis.objects[bot->parent];
   }
-  else if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::BROWSABLE_BIT ) ) {
-    container = camera.taggedObj;
+  else if( camera.objectObj != null && ( camera.objectObj->flags & Object::BROWSABLE_BIT ) ) {
+    container = camera.objectObj;
   }
 
   if( bot == null || ( master != null && container == null ) ) {
@@ -197,8 +197,8 @@ void InventoryMenu::onDraw()
   else if( camera.botObj != null && camera.botObj->parent != -1 ) {
     container = orbis.objects[camera.botObj->parent];
   }
-  else if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::BROWSABLE_BIT ) ) {
-    container = camera.taggedObj;
+  else if( camera.objectObj != null && ( camera.objectObj->flags & Object::BROWSABLE_BIT ) ) {
+    container = camera.objectObj;
   }
 
   if( container == null ) {

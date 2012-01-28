@@ -44,6 +44,47 @@ const float Camera::SMOOTHING_COEF = 0.5f;
 StrategicProxy Camera::strategicProxy;
 BotProxy       Camera::botProxy;
 
+void Camera::updateReferences()
+{
+  if( object == -1 ) {
+    objectObj = null;
+  }
+  else {
+    objectObj = orbis.objects[object];
+    object = objectObj == null ? -1 : object;
+  }
+
+  if( entity == -1 ) {
+    entityObj = null;
+  }
+  else {
+    int strIndex = entity / Struct::MAX_ENTITIES;
+    int entIndex = entity % Struct::MAX_ENTITIES;
+
+    const Struct* str = orbis.structs[strIndex];
+
+    if( str == null ) {
+      entity = -1;
+      entityObj = null;
+    }
+    else {
+      entityObj = &str->entities[entIndex];
+    }
+  }
+
+  if( bot == -1 ) {
+    botObj = null;
+  }
+  else {
+    botObj = static_cast<Bot*>( orbis.objects[bot] );
+
+    if( botObj == null ) {
+      bot = -1;
+      botObj = null;
+    }
+  }
+}
+
 void Camera::align()
 {
   h       = Math::fmod( h + Math::TAU, Math::TAU );
@@ -60,6 +101,8 @@ void Camera::align()
 
 void Camera::update()
 {
+  updateReferences();
+
   relH = -float( ui::mouse.overEdgeX ) * mouseXSens;
   relV = +float( ui::mouse.overEdgeY ) * mouseYSens;
 
@@ -85,15 +128,6 @@ void Camera::update()
       ui::keyboard.keys[SDLK_KP8] | ui::keyboard.keys[SDLK_KP9] )
   {
     relV += keyXSens;
-  }
-
-  botObj    = bot    == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
-  taggedObj = tagged == -1 ? null : orbis.objects[tagged];
-  tagged    = taggedObj == null ? -1 : tagged;
-
-  if( botObj == null || ( botObj->state & Bot::DEAD_BIT ) ) {
-    bot    = -1;
-    botObj = null;
   }
 
   if( newState != state ) {
@@ -126,8 +160,11 @@ void Camera::update()
       bot       = -1;
       botObj    = null;
 
-      tagged    = -1;
-      taggedObj = null;
+      object    = -1;
+      objectObj = null;
+
+      entity    = -1;
+      entityObj = null;
     }
   }
 
@@ -138,16 +175,9 @@ void Camera::update()
 
 void Camera::prepare()
 {
+  updateReferences();
+
   if( proxy != null ) {
-    botObj    = bot    == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
-    taggedObj = tagged == -1 ? null : orbis.objects[tagged];
-    tagged    = taggedObj == null ? -1 : tagged;
-
-    if( botObj == null || ( botObj->state & Bot::DEAD_BIT ) ) {
-      bot    = -1;
-      botObj = null;
-    }
-
     proxy->prepare();
   }
 }
@@ -173,8 +203,10 @@ void Camera::reset()
   up        = rotMat.y;
   at        = -rotMat.z;
 
-  tagged    = -1;
-  taggedObj = null;
+  object    = -1;
+  objectObj = null;
+  entity    = -1;
+  entityObj = null;
   bot       = -1;
   botObj    = null;
 
@@ -213,8 +245,10 @@ void Camera::read( InputStream* istream )
   up        = rotMat.y;
   at        = -rotMat.z;
 
-  tagged    = -1;
-  taggedObj = null;
+  object    = -1;
+  objectObj = null;
+  entity    = -1;
+  entityObj = null;
   bot       = istream->readInt();
   botObj    = bot == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
 

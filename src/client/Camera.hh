@@ -83,8 +83,11 @@ class Camera
     Vec3   up;
     Vec3   at;
 
-    int    tagged;
-    const Object* taggedObj;
+    int    object;
+    const Object* objectObj;
+
+    int    entity;
+    const Entity* entityObj;
 
     int    bot;
     Bot*   botObj;
@@ -111,10 +114,25 @@ class Camera
       newState = state;
     }
 
-    void setTagged( const Object* obj )
+    void setTaggedObj( const Object* obj )
     {
-      tagged    = obj == null ? -1 : obj->index;
-      taggedObj = obj;
+      object    = obj == null ? -1 : obj->index;
+      objectObj = obj;
+    }
+
+    void setTaggedEnt( const Entity* ent )
+    {
+      entityObj = ent;
+
+      if( ent == null ) {
+        entity = -1;
+      }
+      else {
+        int strIndex = ent->str->index;
+        int entIndex = int( ent - ent->str->entities );
+
+        entity = strIndex * Struct::MAX_ENTITIES + entIndex;
+      }
     }
 
     void setBot( Bot* botObj_ )
@@ -160,6 +178,7 @@ class Camera
       oldP = p;
     }
 
+    void updateReferences();
     void align();
     void update();
     void prepare();
