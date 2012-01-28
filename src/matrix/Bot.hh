@@ -167,9 +167,6 @@ class Bot : public Dynamic
 
   public:
 
-    Object* getTagged( const Vec3& at, int mask ) const;
-    Object* getTagged( int mask ) const;
-
     void heal();
     void rearm();
     void kill();

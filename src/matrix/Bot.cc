@@ -744,34 +744,6 @@ void Bot::onUpdate()
   container  = -1;
 }
 
-inline Object* Bot::getTagged( const Vec3& at, int mask ) const
-{
-  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
-
-  Point3 eye   = p + Vec3( 0.0f, 0.0f, camZ );
-  Vec3   reach = at * clazz->reachDist;
-
-  collider.mask = mask;
-  collider.translate( eye, reach, this );
-  collider.mask = SOLID_BIT;
-
-  return collider.hit.obj;
-}
-
-Object* Bot::getTagged( int mask ) const
-{
-  // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
-  float hvsc[6];
-
-  Math::sincos( h, &hvsc[0], &hvsc[1] );
-  Math::sincos( v, &hvsc[2], &hvsc[3] );
-
-  hvsc[4] = hvsc[2] * hvsc[0];
-  hvsc[5] = hvsc[2] * hvsc[1];
-
-  return getTagged( Vec3( -hvsc[4], hvsc[5], -hvsc[3] ), mask );
-}
-
 void Bot::heal()
 {
   const BotClass* clazz = static_cast<const BotClass*>( this->clazz );

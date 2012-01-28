@@ -3,16 +3,16 @@
 [[ -z "$1" ]] && exit
 
 pkg="$1"
-scripts=pkg/src/$pkg/lua/*/*.lua
-bsps=pkg/src/$pkg/data/maps/*.rc
-classes=pkg/src/$pkg/class/*.rc
-output=pkg/src/$pkg/lingua/$pkg.pot
+scripts=data/$pkg/lua/*/*.lua
+bsps=data/$pkg/baseq3/maps/*.rc
+classes=data/$pkg/class/*.rc
+output=data/$pkg/lingua/$pkg.pot
 
-mkdir -p pkg/build/$pkg/lingua
-rm -rf pkg/build/$pkg/lingua/*.pot
+mkdir -p data/$pkg/lingua
+rm -rf data/$pkg/lingua/*.pot
 
 for i in $scripts; do
-  xgettext --omit-header -C -s -kozGettext -d openzone -o pkg/build/$pkg/lingua/`basename $i .lua`.pot $i
+  xgettext --omit-header -C -s -kozGettext -d openzone -o data/$pkg/lingua/`basename $i .lua`.pot $i
 done
 
 echo >> $output
@@ -33,6 +33,28 @@ for bsp_path in $bsps; do
   else
     echo >> $output
     echo "msgid \"$bsp\"" >> $output
+    echo "msgstr \"\"" >> $output
+  fi
+done
+
+echo >> $output
+echo '#' >> $output
+echo '# BSP model names' >> $output
+echo '#' >> $output
+
+# extract model names
+models=`grep -h '^model[0-9][0-9]\.name' $bsps | \
+    sed 's/[^"]*"\(.*\)"[^"]*/\1/' | \
+    sed 's/ /_/g'`
+
+for model in $models; do
+  model=`echo $model | sed 's/_/ /g'`
+  # add model name if it doesn't exist yet
+  if ( grep "^msgid \"$model\"" $output &> /dev/null ); then
+    echo &> /dev/null;
+  else
+    echo >> $output
+    echo "msgid \"$model\"" >> $output
     echo "msgstr \"\"" >> $output
   fi
 done

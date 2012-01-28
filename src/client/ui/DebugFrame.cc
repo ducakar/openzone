@@ -94,8 +94,8 @@ void DebugFrame::onDraw()
     botFlagsState.draw( this, true );
   }
 
-  if( camera.tagged != -1 && ( camera.taggedObj->flags & Object::DYNAMIC_BIT ) ) {
-    const Dynamic* dyn = static_cast<const Dynamic*>( camera.taggedObj );
+  if( camera.object != -1 && ( camera.objectObj->flags & Object::DYNAMIC_BIT ) ) {
+    const Dynamic* dyn = static_cast<const Dynamic*>( camera.objectObj );
 
     tagPos.setText( "tagDyn.pos(%+.2f %+.2f %+.2f)", dyn->p.x, dyn->p.y, dyn->p.z );
     tagPos.draw( this, true );
