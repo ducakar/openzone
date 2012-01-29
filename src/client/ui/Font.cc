@@ -47,22 +47,15 @@ const Font::Info Font::INFOS[MAX] = {
   { "ui/font/DroidSans.ttf",     14 },
 };
 
-Font::Font()
-{
-  for( int i = 0; i < MAX; ++i ) {
-    fonts[i] = null;
-  }
-}
-
 void Font::init()
 {
+  log.print( "Initialising Fonts ..." );
+
   if( TTF_Init() == -1 ) {
     throw Exception( "Failed to initialise SDL_TTF" );
   }
 
   for( int i = 0; i < MAX; ++i ) {
-    log.print( "Opening font '%s' %d px ...", INFOS[i].file, INFOS[i].height );
-
     fontFile[i].setPath( INFOS[i].file );
 
     if( !fontFile[i].map() ) {
@@ -77,29 +70,28 @@ void Font::init()
       throw Exception( "%s", TTF_GetError() );
     }
 
-    log.printEnd( " OK" );
   }
+
+  log.printEnd( " OK" );
 }
 
 void Font::free()
 {
-  if( TTF_WasInit() ) {
-    log.print( "Closing fonts ..." );
+  log.print( "Freeing Font ..." );
 
-    for( int i = 0; i < MAX; ++i ) {
-      if( fonts[i] != null ) {
-        TTF_CloseFont( fonts[i] );
-        fonts[i] = null;
+  for( int i = 0; i < MAX; ++i ) {
+    if( fonts[i] != null ) {
+      TTF_CloseFont( fonts[i] );
+      fonts[i] = null;
 
-        fontFile[i].unmap();
-        fontFile[i].setPath( "" );
-      }
+      fontFile[i].unmap();
+      fontFile[i].setPath( "" );
     }
-
-    TTF_Quit();
-
-    log.printEnd( " OK" );
   }
+
+  TTF_Quit();
+
+  log.printEnd( " OK" );
 }
 
 }

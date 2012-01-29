@@ -127,25 +127,7 @@ Context::Context() :
   smms( null ), md2s( null ), md3s( null )
 {}
 
-uint Context::loadTexture( const char* path )
-{
-  log.print( "Loading texture '%s' ...", path );
-
-  PhysFile file( path );
-  if( !file.map() ) {
-    throw Exception( "Texture file '%s' mmap failed", path );
-  }
-
-  InputStream is = file.inputStream();
-  uint id = readTexture( &is );
-
-  file.unmap();
-
-  log.printEnd( " OK" );
-  return id;
-}
-
-uint Context::readTexture( InputStream* stream )
+uint Context::readTexture( InputStream* stream, const char* path )
 {
   OZ_GL_CHECK_ERROR();
 
@@ -165,7 +147,7 @@ uint Context::readTexture( InputStream* stream )
                   internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 
   if( !shader.hasS3TC && usesS3TC ) {
-    throw Exception( "Texture uses S3 texture compression but texture compression disabled" );
+    throw Exception( "Texture '%s' uses S3TC but texture compression disabled", path );
   }
 
   if( !wrap ) {
@@ -193,11 +175,24 @@ uint Context::readTexture( InputStream* stream )
 
   if( glGetError() != GL_NO_ERROR || !glIsTexture( texId ) ) {
     glDeleteTextures( 1, &texId );
-
-    throw Exception( "Texture loading failed" );
+    throw Exception( "Texture '%s' loading failed", path );
   }
 
   return texId;
+}
+
+uint Context::loadTexture( const char* path )
+{
+  PhysFile file( path );
+  if( !file.map() ) {
+    throw Exception( "Texture file '%s' mmap failed", path );
+  }
+
+  InputStream is = file.inputStream();
+  uint id = readTexture( &is, path );
+
+  file.unmap();
+  return id;
 }
 
 uint Context::requestTexture( int id )
@@ -211,10 +206,7 @@ uint Context::requestTexture( int id )
 
   resource.nUsers = 1;
 
-  const String& name = library.textures[id].name;
   const String& path = library.textures[id].path;
-
-  log.print( "Loading texture '%s' ...", name.cstr() );
 
   resource.id = GL_NONE;
 
@@ -224,17 +216,9 @@ uint Context::requestTexture( int id )
   }
 
   InputStream is = file.inputStream();
-
-  resource.id = readTexture( &is );
+  resource.id = readTexture( &is, path );
 
   file.unmap();
-
-  if( resource.id == 0 ) {
-    throw Exception( "Texture '%s' loading failed", name.cstr() );
-  }
-
-  log.printEnd( " OK" );
-
   return resource.id;
 }
 
@@ -247,12 +231,9 @@ void Context::releaseTexture( int id )
   --resource.nUsers;
 
   if( resource.nUsers == 0 ) {
-    log.print( "Unloading texture '%s' ...", library.textures[id].name.cstr() );
     glDeleteTextures( 1, &resource.id );
 
     OZ_GL_CHECK_ERROR();
-
-    log.printEnd( " OK" );
   }
 }
 
@@ -272,11 +253,9 @@ uint Context::requestSound( int id )
   const String& name = library.sounds[id].name;
   const String& path = library.sounds[id].path;
 
-  log.print( "Loading sound '%s' ...", name.cstr() );
-
   PhysFile file( path );
   if( !file.map() ) {
-    throw Exception( "Failed to mmap sound file '%s'", path.cstr() );
+    throw Exception( "Sound file '%s' mmap failed", path.cstr() );
   }
 
   InputStream is = file.inputStream();
@@ -316,8 +295,6 @@ uint Context::requestSound( int id )
     throw Exception( "Sound '%s' loading failed", name.cstr() );
   }
 
-  log.printEnd( " %s %d Hz ... OK", format == AL_FORMAT_MONO8 ? "U8" : "S16LE", audioSpec.freq );
-
   return resource.id;
 }
 
@@ -337,13 +314,9 @@ void Context::freeSound( int id )
   hard_assert( resource.nUsers == 0 );
 
   --resource.nUsers;
-
-  log.print( "Unloading sound '%s' ...", library.sounds[id].name.cstr() );
   alDeleteBuffers( 1, &resource.id );
 
   OZ_AL_CHECK_ERROR();
-
-  log.printEnd( " OK" );
 }
 
 SMM* Context::requestSMM( int id )

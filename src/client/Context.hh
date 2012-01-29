@@ -146,8 +146,8 @@ class Context
 
     Context();
 
+    static uint readTexture( InputStream* stream, const char* path );
     static uint loadTexture( const char* path );
-    static uint readTexture( InputStream* stream );
 
     uint requestTexture( int id );
     void releaseTexture( int id );

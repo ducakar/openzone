@@ -9,4 +9,4 @@ Version: 0.3.0
 Requires:
 Conflicts:
 Cflags: -std=c++0x
-Libs: -loz -lphysfs -lpulse-simple -lpthread -lrt
+Libs: -loz

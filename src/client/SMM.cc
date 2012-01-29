@@ -39,25 +39,18 @@ namespace client
 
 void SMM::load()
 {
-  const String& name = library.models[id].name;
   const String& path = library.models[id].path;
-
-  log.verboseMode = true;
-  log.print( "Loading SMM model '%s' ...", name.cstr() );
 
   PhysFile file( path );
   if( !file.map() ) {
-    throw Exception( "Cannot mmap model file" );
+    throw Exception( "SMM file '%s' mmap failed", path.cstr() );
   }
   InputStream is = file.inputStream();
 
   shaderId = library.shaderIndex( is.readString() );
-  mesh.load( &is, GL_STATIC_DRAW );
+  mesh.load( &is, GL_STATIC_DRAW, path );
 
   file.unmap();
-
-  log.printEnd( " OK" );
-  log.verboseMode = false;
 
   isLoaded = true;
 }
@@ -68,17 +61,7 @@ SMM::SMM( int id_ ) :
 
 SMM::~SMM()
 {
-  const String& name = library.models[id].name;
-
-  log.verboseMode = true;
-  log.print( "Unloading SMM model '%s' ...", name.cstr() );
-
   mesh.unload();
-
-  log.printEnd( " OK" );
-  log.verboseMode = false;
-
-  OZ_GL_CHECK_ERROR();
 }
 
 void SMM::draw( int mask ) const

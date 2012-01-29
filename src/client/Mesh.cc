@@ -139,7 +139,7 @@ Mesh::~Mesh()
   delete[] parts;
 }
 
-void Mesh::load( InputStream* stream, uint usage )
+void Mesh::load( InputStream* stream, uint usage, const char* path )
 {
   flags = 0;
 
@@ -199,7 +199,7 @@ void Mesh::load( InputStream* stream, uint usage )
     textures[0] = 0;
 
     for( int i = 1; i < nTextures; ++i ) {
-      textures[i] = context.readTexture( stream );
+      textures[i] = context.readTexture( stream, path );
     }
   }
   else {

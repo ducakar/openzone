@@ -29,7 +29,7 @@ endif()
 # oalinst, DLLs, localisation
 #
 if( OZINST_CLIENT )
-  install( FILES share/openzone/ozbase.ozPack DESTINATION share/openzone )
+  install( FILES share/openzone/ozbase.zip DESTINATION share/openzone )
 
   if( WIN32 )
     install( DIRECTORY support/mingw32-client/ DESTINATION bin )

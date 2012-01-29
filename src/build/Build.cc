@@ -682,7 +682,9 @@ void Build::packArchive( const char* name )
   log.println( "%s", cmdLine.cstr() );
   log.println();
 
-  system( cmdLine );
+  if( system( cmdLine ) != 0 ) {
+    throw Exception( "ZIP packing failed" );
+  }
 
   log.unindent();
   log.println( "}" );

@@ -101,8 +101,6 @@ int Sound::musicMain( void* )
 
 void Sound::musicOpen( const char* path )
 {
-  log.print( "Opening music '%s' ...", path );
-
   File file( path );
 
   if( file.hasExtension( "oga" ) || file.hasExtension( "ogg" ) ) {
@@ -114,8 +112,6 @@ void Sound::musicOpen( const char* path )
     }
     else {
       musicStreamType = NONE;
-
-      log.printEnd( " No MP3 support" );
     }
   }
   else if( file.hasExtension( "aac" ) ) {
@@ -124,8 +120,6 @@ void Sound::musicOpen( const char* path )
     }
     else {
       musicStreamType = NONE;
-
-      log.printEnd( " No AAC support" );
     }
   }
   else {
@@ -660,10 +654,9 @@ void Sound::init()
 
   log.println( "OpenAL device: %s", alcGetString( soundDevice, ALC_DEVICE_SPECIFIER ) );
 
-  log.verboseMode = true;
-
   const char* deviceSpec = alcGetString( null, ALC_DEVICE_SPECIFIER );
 
+  log.verboseMode = true;
   log.println( "Available OpenAL devices {" );
   log.indent();
 
@@ -673,7 +666,6 @@ void Sound::init()
 
   log.unindent();
   log.println( "}" );
-
   log.verboseMode = false;
 
   int nAttributes;
@@ -719,11 +711,10 @@ void Sound::init()
   log.println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );
   log.println( "OpenAL version: %s", alGetString( AL_VERSION ) );
 
-  log.verboseMode = true;
-
   String sExtensions = alGetString( AL_EXTENSIONS );
   DArray<String> extensions = sExtensions.trim().split( ' ' );
 
+  log.verboseMode = true;
   log.println( "OpenAL extensions {" );
   log.indent();
 
@@ -733,7 +724,6 @@ void Sound::init()
 
   log.unindent();
   log.println( "}" );
-
   log.verboseMode = false;
 
   selectedTrack = -1;
@@ -789,7 +779,7 @@ void Sound::init()
 
 void Sound::free()
 {
-  log.print( "Shutting down Sound ..." );
+  log.print( "Freeing Sound ..." );
 
   selectedTrack = -1;
   currentTrack  = -1;

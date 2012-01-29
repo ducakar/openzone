@@ -208,7 +208,6 @@ void UI::init()
   }
 
   mouse.init();
-  mouse.load();
   font.init();
 
   root = new Area( Area::uiWidth, Area::uiHeight );
@@ -233,7 +232,6 @@ void UI::free()
   Area::updateAreas.dealloc();
 
   font.free();
-  mouse.unload();
   mouse.free();
 }
 

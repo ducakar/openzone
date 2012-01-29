@@ -620,7 +620,9 @@ void Orbis::init()
 }
 
 void Orbis::free()
-{}
+{
+  log.println( "Freeing Orbis ... OK" );
+}
 
 }
 }

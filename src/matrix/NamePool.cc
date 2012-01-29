@@ -50,7 +50,7 @@ const String& NamePool::genName( int list ) const
 
 void NamePool::init()
 {
-  log.print( "Loading name databases ..." );
+  log.print( "Initialising NamePool ..." );
 
   // a default entry, we need it if nothing is read
   names.add( "" );
@@ -94,10 +94,14 @@ void NamePool::init()
 
 void NamePool::free()
 {
+  log.print( "Freeing NamePool ..." );
+
   names.clear();
   names.dealloc();
   listPositions.clear();
   listPositions.dealloc();
+
+  log.printEnd( " OK" );
 }
 
 }

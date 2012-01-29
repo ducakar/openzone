@@ -1,7 +1,7 @@
 # Maintainer: Davorin Učakar <davorin.ucakar@gmail.com>
 
 pkgbase=openzone
-pkgname=('liboz' 'openzone' 'openzone-tools' 'openzone-data')
+pkgname=('liboz' 'openzone-bin' 'openzone-data')
 pkgver=0.3.0
 _dataver=0.3.0
 pkgrel=1
@@ -9,17 +9,17 @@ url="http://github.com/ducakar/openzone/"
 license=('GPL3')
 arch=('i686' 'x86_64')
 makedepends=('cmake' 'faad2' 'freeimage' 'gcc>=4.6' 'git' 'libmad' 'libpulse' 'lua' 'mesa' 'openal' 'physfs' 'sdl_ttf')
-#source=("http://openzone.googlecode.com/files/openzone-data-src-${pkgver}.tar.xz")
+#source=("http://openzone.googlecode.com/files/openzone-${_dataver}.7z")
 #md5sums=('7c704605913f49fdaed587fc2f2cf8b8')
+source=('ozbase.zip' 'openzone.zip')
 
 _gitname='openzone'
+_gitroot='git://github.com/ducakar/openzone.git'
+_gittag="v${pkgver}"
 
 build()
 {
   cd ${srcdir}
-
-  _gitroot='git://github.com/ducakar/openzone.git'
-  _gittag="v${pkgver}"
 
   msg "git checkout for ${_gitroot} tag ${_gittag}"
   if [[ ! -d ${_gitname} ]]; then
@@ -36,15 +36,13 @@ build()
     -D CMAKE_BUILD_TYPE=RelWithDebInfo \
     ${srcdir}/${_gitname}
 
-  make || return 1
+  make
 }
 
 package_liboz()
 {
   pkgdesc='OpenZone core library'
-  depends=('gcc-libs' 'libpulse' 'physfs')
-  conflicts=('liboz')
-  provides=('liboz')
+  depends=('libpulse' 'physfs')
 
   cd ${srcdir}/build
 
@@ -54,8 +52,6 @@ package_liboz()
     -D OZINST_TOOLS=0 \
     -D OZINST_INFO=0 \
     -D OZINST_MENU=0 \
-    -D OZINST_DATA=0 \
-    -D OZINST_DATA_SRC=0 \
     -D OZINST_STANDALONE=0 \
     ${srcdir}/${_gitname}
 
@@ -65,50 +61,24 @@ package_liboz()
   rm -rf ${pkgdir}/usr/share/doc
 }
 
-package_openzone()
+package_openzone-bin()
 {
   pkgdesc='A simple cross-platform FPS/RTS game engine'
-  depends=('libgl' 'libpulse' 'lua' 'openal' 'openzone-data' 'physfs' 'sdl_ttf')
-  conflicts=('openzone')
-  provides=('openzone')
+  depends=('freeimage' 'libgl' 'liboz' 'lua' 'openal' 'sdl_ttf')
 
   cd ${srcdir}/build
 
   cmake \
     -D OZINST_LIBOZ=0 \
     -D OZINST_CLIENT=1 \
-    -D OZINST_TOOLS=0 \
+    -D OZINST_TOOLS=1 \
     -D OZINST_INFO=1 \
     -D OZINST_MENU=1 \
-    -D OZINST_DATA=0 \
-    -D OZINST_DATA_SRC=0 \
     -D OZINST_STANDALONE=0 \
     ${srcdir}/${_gitname}
 
   make install DESTDIR=${pkgdir}
-}
-
-package_openzone-tools()
-{
-  pkgdesc='Tools for prebuilding data for OpenZone game engine'
-  depends=('freeimage' 'libgl' 'libpulse' 'lua' 'openal' 'physfs' 'sdl_ttf')
-  conflicts=('openzone-tools')
-  provides=('openzone-tools')
-
-  cd ${srcdir}/build
-
-  cmake \
-    -D OZINST_LIBOZ=0 \
-    -D OZINST_CLIENT=0 \
-    -D OZINST_TOOLS=1 \
-    -D OZINST_INFO=0 \
-    -D OZINST_MENU=0 \
-    -D OZINST_DATA=0 \
-    -D OZINST_DATA_SRC=0 \
-    -D OZINST_STANDALONE=0 \
-    ${srcdir}/${_gitname}
-
-  make install DESTDIR=${pkgdir}
+  install -Dm644 share/openzone/ozbase.zip ${pkgdir}/usr/share/openzone/ozbase.zip
 }
 
 package_openzone-data()
@@ -118,17 +88,5 @@ package_openzone-data()
   arch=('any')
 
   cd ${srcdir}/build
-
-  cmake \
-    -D OZINST_LIBOZ=0 \
-    -D OZINST_CLIENT=0 \
-    -D OZINST_TOOLS=0 \
-    -D OZINST_INFO=0 \
-    -D OZINST_MENU=0 \
-    -D OZINST_DATA=1 \
-    -D OZINST_DATA_SRC=0 \
-    -D OZINST_STANDALONE=0 \
-    ${srcdir}/${_gitname}
-
-  make install DESTDIR=${pkgdir}
+  install -Dm644 share/openzone/openzone.zip ${pkgdir}/usr/share/openzone/openzone.zip
 }

@@ -247,8 +247,7 @@ void Lua::registerConstant( const char* name, const char* value )
 
 void Lua::init()
 {
-  log.println( "Initialising Matrix Lua {" );
-  log.indent();
+  log.print( "Initialising Matrix Lua ..." );
 
   l = luaL_newstate();
   if( l == null ) {
@@ -621,8 +620,6 @@ void Lua::init()
 
   foreach( file, luaFiles.iter() ) {
     if( file->hasExtension( "lua" ) ) {
-      log.print( "%s ...", file->name().cstr() );
-
       if( !file->map() ) {
         throw Exception( "Failed to read Lua script '%s'", file->path().cstr() );
       }
@@ -634,15 +631,12 @@ void Lua::init()
       }
 
       file->unmap();
-
-      log.printEnd( " OK" );
     }
   }
 
   hard_assert( gettop() == 1 );
 
-  log.unindent();
-  log.println( "}" );
+  log.printEnd( " OK" );
 }
 
 void Lua::free()

@@ -47,7 +47,7 @@ uint GalileoFrame::loadTexture( const char* path ) const
   }
 
   InputStream istream = file.inputStream();
-  uint texId = context.readTexture( &istream );
+  uint texId = context.readTexture( &istream, path );
 
   file.unmap();
   return texId;
@@ -153,8 +153,7 @@ galileoEnabled:;
 }
 
 GalileoFrame::GalileoFrame( const QuestFrame* questFrame_ ) :
-  Frame( 8, -60 - Font::INFOS[Font::SMALL].height - Font::INFOS[Font::LARGE].height,
-         240, 232 - Font::INFOS[Font::LARGE].height, "" ),
+  Frame( 8, -8, 240, 232 - Font::INFOS[Font::LARGE].height, "" ),
   questFrame( questFrame_ ), mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ), isVisible( true )
 
 {

@@ -1,5 +1,5 @@
 add_executable( ozSineSample ozSineSample.cc )
-target_link_libraries( ozSineSample oz ${libs} )
+target_link_libraries( ozSineSample oz )
 
 add_executable( ozFormat ClassFormatter.cc ozFormat.cc )
 add_dependencies( ozFormat pch )

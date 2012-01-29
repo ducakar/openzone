@@ -343,17 +343,15 @@ void GameStage::present( bool full )
   uint beginTime = Time::clock();
   uint currentTime;
 
-  if( full ) {
-    render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
-    sound.play();
-    render.swap();
-  }
-  else {
-    sound.play();
-  }
+  sound.play();
 
   currentTime = Time::clock();
   presentMillis += currentTime - beginTime;
+
+  if( full ) {
+    render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+    render.swap();
+  }
 }
 
 void GameStage::load()

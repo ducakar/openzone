@@ -104,7 +104,7 @@ void Shader::compileShader( uint id, const char* path, const char** sources, int
 {
   PhysFile file( path );
   if( !file.map() ) {
-    throw Exception( "Shader source mmap failed" );
+    throw Exception( "Shader source '%s' mmap failed", path );
   }
 
   InputStream is = file.inputStream();
@@ -127,14 +127,7 @@ void Shader::compileShader( uint id, const char* path, const char** sources, int
   logBuffer[BUFFER_SIZE - 1] = '\0';
 
   if( result != GL_TRUE ) {
-    log.printRaw( "\n%s\n", &logBuffer[0] );
-  }
-  else if( length != 0 ) {
-    log.printRaw( "\n%s\n", &logBuffer[0] );
-  }
-
-  if( result != GL_TRUE ) {
-    throw Exception( "Shader compile failed" );
+    throw Exception( "Shader '%s' compile failed", path );
   }
 
   OZ_GL_CHECK_ERROR();
@@ -143,8 +136,6 @@ void Shader::compileShader( uint id, const char* path, const char** sources, int
 void Shader::loadProgram( int id, const char** sources, int* lengths )
 {
   const String& name = library.shaders[id].name;
-
-  log.print( "Building '%s' ...", name.cstr() );
 
   programs[id].vertShader = glCreateShader( GL_VERTEX_SHADER );
   programs[id].fragShader = glCreateShader( GL_FRAGMENT_SHADER );
@@ -177,7 +168,7 @@ void Shader::loadProgram( int id, const char** sources, int* lengths )
     log.printRaw( "\n%s", logBuffer );
     delete[] logBuffer;
 
-    throw Exception( "Shader program linking failed" );
+    throw Exception( "Shader program '%s' linking failed", name.cstr() );
   }
 
   glUseProgram( programs[id].program );
@@ -212,8 +203,6 @@ void Shader::loadProgram( int id, const char** sources, int* lengths )
   }
 
   OZ_GL_CHECK_ERROR();
-
-  log.printEnd( " OK" );
 }
 
 Shader::Shader() :
@@ -267,76 +256,9 @@ void Shader::updateLights()
   glUniform4fv( param.oz_CaelumLight_ambient, 1, caelumLight.ambient );
 }
 
-void Shader::load()
-{
-  log.println( "Loading Shader {" );
-  log.indent();
-
-  const char* sources[3];
-  int         lengths[3];
-
-  sources[0] = defines;
-  lengths[0] = defines.length();
-
-  Buffer buffer = PhysFile( "glsl/header.glsl" ).read();
-  if( buffer.isEmpty() ) {
-    throw Exception( "header.glsl reading failed" );
-  }
-
-  sources[1] = buffer.begin();
-  lengths[1] = buffer.length();
-
-  for( int i = 0; i < library.shaders.length(); ++i ) {
-    if( i == plain ) {
-      continue;
-    }
-
-    loadProgram( i, sources, lengths );
-  }
-
-  isLoaded = true;
-
-  log.unindent();
-  log.println( "}" );
-}
-
-void Shader::unload()
-{
-  log.print( "Unloading Shader ..." );
-
-  isLoaded = false;
-
-  for( int i = 0; i < library.shaders.length(); ++i ) {
-    if( i == plain ) {
-      continue;
-    }
-
-    if( programs[i].program != 0 ) {
-      glDetachShader( programs[i].program, programs[i].vertShader );
-      glDetachShader( programs[i].program, programs[i].fragShader );
-      glDeleteProgram( programs[i].program );
-      programs[i].program = 0;
-    }
-    if( programs[i].vertShader != 0 ) {
-      glDeleteShader( programs[i].vertShader );
-      programs[i].vertShader = 0;
-    }
-    if( programs[i].fragShader != 0 ) {
-      glDeleteShader( programs[i].fragShader );
-      programs[i].fragShader = 0;
-    }
-  }
-
-  OZ_GL_CHECK_ERROR();
-  hard_assert( tf.stack.isEmpty() );
-
-  log.printEnd( " OK" );
-}
-
 void Shader::init()
 {
-  log.println( "Initialising Shader {" );
-  log.indent();
+  log.print( "Initialising Shader ..." );
 
   hasVertexTexture = config.getSet( "shader.vertexTexture", true );
 
@@ -407,29 +329,32 @@ void Shader::init()
   isInWater = false;
   isLoaded  = false;
 
-  loadProgram( plain, sources, lengths );
+  for( int i = 0; i < library.shaders.length(); ++i ) {
+    loadProgram( i, sources, lengths );
+  }
 
-  log.unindent();
-  log.println( "}" );
+  log.printEnd( " OK" );
 }
 
 void Shader::free()
 {
-  log.print( "Shutting down Shader ..." );
+  log.print( "Freeing Shader ..." );
 
-  if( plain != -1 && programs[plain].program != 0 ) {
-    glDetachShader( programs[plain].program, programs[plain].vertShader );
-    glDetachShader( programs[plain].program, programs[plain].fragShader );
-    glDeleteProgram( programs[plain].program );
-    programs[plain].program = 0;
-  }
-  if( plain != -1 && programs[plain].vertShader != 0 ) {
-    glDeleteShader( programs[plain].vertShader );
-    programs[plain].vertShader = 0;
-  }
-  if( plain != -1 && programs[plain].fragShader != 0 ) {
-    glDeleteShader( programs[plain].fragShader );
-    programs[plain].fragShader = 0;
+  for( int i = 0; i < library.shaders.length(); ++i ) {
+    if( programs[i].program != 0 ) {
+      glDetachShader( programs[i].program, programs[i].vertShader );
+      glDetachShader( programs[i].program, programs[i].fragShader );
+      glDeleteProgram( programs[i].program );
+      programs[i].program = 0;
+    }
+    if( programs[i].vertShader != 0 ) {
+      glDeleteShader( programs[i].vertShader );
+      programs[i].vertShader = 0;
+    }
+    if( programs[i].fragShader != 0 ) {
+      glDeleteShader( programs[i].fragShader );
+      programs[i].fragShader = 0;
+    }
   }
 
   if( defaultMasks != 0 ) {

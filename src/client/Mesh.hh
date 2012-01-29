@@ -90,7 +90,7 @@ class Mesh
     Mesh();
     ~Mesh();
 
-    void load( InputStream* stream, uint usage );
+    void load( InputStream* stream, uint usage, const char* path );
     void unload();
 
     void upload( const Vertex* vertices, int nVertices, uint usage ) const;
