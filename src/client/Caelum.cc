@@ -179,7 +179,7 @@ void Caelum::load()
 
   PhysFile file( path );
   if( !file.map() ) {
-    throw Exception( "Caelum file mmap failed" );
+    throw Exception( "Caelum file '%s' mmap failed", path.cstr() );
   }
 
   InputStream is = file.inputStream();
@@ -205,8 +205,8 @@ void Caelum::load()
 
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-  sunTexId  = context.readTexture( &is );
-  moonTexId = context.readTexture( &is );
+  sunTexId  = context.readTexture( &is, path );
+  moonTexId = context.readTexture( &is, path );
 
   starShaderId      = library.shaderIndex( "stars" );
   celestialShaderId = library.shaderIndex( "celestial" );

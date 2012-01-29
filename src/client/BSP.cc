@@ -112,22 +112,13 @@ void BSP::playContSound( const Entity* entity, int sound ) const
 BSP::BSP( const matrix::BSP* bsp_ ) :
   bsp( bsp_ ), flags( 0 ), isLoaded( false )
 {
-  log.verboseMode = true;
-
   for( int i = 0; i < bsp->sounds.length(); ++i ) {
     context.requestSound( bsp->sounds[i] );
   }
-
-  log.verboseMode = false;
 }
 
 BSP::~BSP()
 {
-  log.verboseMode = true;
-
-  log.println( "Unloading BSP model '%s' {", bsp->name.cstr() );
-  log.indent();
-
   if( isLoaded ) {
     mesh.unload();
   }
@@ -135,11 +126,6 @@ BSP::~BSP()
   for( int i = 0; i < bsp->sounds.length(); ++i ) {
     context.releaseSound( bsp->sounds[i] );
   }
-
-  log.unindent();
-  log.println( "}" );
-
-  log.verboseMode = false;
 }
 
 void BSP::draw( const Struct* str, int mask ) const
@@ -194,28 +180,17 @@ void BSP::play( const Struct* str ) const
 
 void BSP::load()
 {
-  log.verboseMode = true;
-
-  log.println( "Loading BSP model '%s' {", bsp->name.cstr() );
-  log.indent();
-
   PhysFile file( "bsp/" + bsp->name + ".ozcBSP" );
   if( !file.map() ) {
-    throw Exception( "BSP file mmap failed" );
+    throw Exception( "BSP file '%s' mmap failed", file.path().cstr() );
   }
 
   InputStream istream = file.inputStream();
 
   flags = istream.readInt();
-
-  mesh.load( &istream, GL_STATIC_DRAW );
+  mesh.load( &istream, GL_STATIC_DRAW, file.path() );
 
   file.unmap();
-
-  log.unindent();
-  log.println( "}" );
-
-  log.verboseMode = false;
 
   isLoaded = true;
 }

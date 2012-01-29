@@ -418,8 +418,7 @@ void Render::swap()
 
 void Render::load()
 {
-  log.println( "Loading Render {" );
-  log.indent();
+  log.print( "Loading Render ..." );
 
   OZ_GL_CHECK_ERROR();
 
@@ -442,18 +441,14 @@ void Render::load()
   uiMillis          = 0;
   swapMillis        = 0;
 
-  log.unindent();
-  log.println( "}" );
+  log.printEnd( " OK" );
 }
 
 void Render::unload()
 {
   glFinish();
 
-  log.verboseMode = true;
-
-  log.println( "Unloading Render {" );
-  log.indent();
+  log.print( "Unloading Render ..." );
 
   drawnStructs.dealloc();
 
@@ -474,10 +469,7 @@ void Render::unload()
 
   ui::ui.unload();
 
-  log.unindent();
-  log.println( "}" );
-
-  log.verboseMode = false;
+  log.printEnd( " OK" );
 }
 
 void Render::init( bool isBuild )
@@ -673,7 +665,6 @@ void Render::init( bool isBuild )
   glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
   shader.init();
-  shader.load();
   shape.load();
   camera.init( screenWidth, screenHeight );
   ui::ui.init();
@@ -695,7 +686,7 @@ void Render::free( bool isBuild )
     return;
   }
 
-  log.println( "Shutting down Render {" );
+  log.println( "Freeing Render {" );
   log.indent();
 
   if( isOffscreen ) {
@@ -706,7 +697,6 @@ void Render::free( bool isBuild )
 
   ui::ui.free();
   shape.unload();
-  shader.unload();
   shader.free();
 
   OZ_GL_CHECK_ERROR();

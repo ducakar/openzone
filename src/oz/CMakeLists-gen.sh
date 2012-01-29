@@ -1,9 +1,10 @@
 #!/bin/sh
 
 cat << EOF > CMakeLists.txt
-add_library( oz STATIC
+add_library( oz SHARED
 `LC_COLLATE=C ls *.cc | xargs printf '  %s\n'`
 )
+target_link_libraries( oz \${libs_oz} )
 
 if( OZINST_LIBOZ )
   install( FILES \${CMAKE_CURRENT_BINARY_DIR}/ozconfig.hh DESTINATION include/oz )

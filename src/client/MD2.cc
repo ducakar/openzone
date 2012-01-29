@@ -66,11 +66,6 @@ MD2::MD2( int id_ ) :
 
 MD2::~MD2()
 {
-  const String& name = library.models[id].name;
-
-  log.verboseMode = true;
-  log.print( "Unloading MD2 model '%s' ...", name.cstr() );
-
   if( shader.hasVertexTexture ) {
     glDeleteTextures( 1, &vertexTexId );
     glDeleteTextures( 1, &normalTexId );
@@ -82,11 +77,6 @@ MD2::~MD2()
   }
 
   mesh.unload();
-
-  log.printEnd( " OK" );
-  log.verboseMode = false;
-
-  OZ_GL_CHECK_ERROR();
 }
 
 void MD2::setAnim( AnimState* anim, Anim type )
@@ -215,15 +205,11 @@ void MD2::draw( const AnimState* anim ) const
 
 void MD2::load()
 {
-  const String& name = library.models[id].name;
   const String& path = library.models[id].path;
-
-  log.verboseMode = true;
-  log.print( "Loading MD2 model '%s' ...", name.cstr() );
 
   PhysFile file( path );
   if( !file.map() ) {
-    throw Exception( "MD2 model file mmap failed" );
+    throw Exception( "MD2 model file '%s' mmap failed", path.cstr() );
   }
 
   InputStream is  = file.inputStream();
@@ -288,7 +274,7 @@ void MD2::load()
 
     glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
 
-    mesh.load( &is, GL_STATIC_DRAW );
+    mesh.load( &is, GL_STATIC_DRAW, path );
 
     glDeleteBuffers( 2, pbos );
   }
@@ -322,15 +308,10 @@ void MD2::load()
 
     is.setPos( meshStart );
 
-    mesh.load( &is, GL_STREAM_DRAW );
+    mesh.load( &is, GL_STREAM_DRAW, path );
   }
 
   file.unmap();
-
-  OZ_GL_CHECK_ERROR();
-
-  log.printEnd( " OK" );
-  log.verboseMode = false;
 
   isLoaded = true;
 }

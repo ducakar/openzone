@@ -113,45 +113,10 @@ void Mouse::draw() const
   }
 }
 
-void Mouse::load()
-{
-  log.println( "Loading mouse cursors {" );
-  log.indent();
-
-  for( int i = 0; i < CURSORS_MAX; ++i ) {
-    log.print( "Loading cursor '%s' ...", NAMES[i] );
-
-    PhysFile file( String::str( "ui/cur/%s.ozcCur", NAMES[i] ) );
-    if( !file.map() ) {
-      throw Exception( "Cursor loading failed" );
-    }
-
-    InputStream is = file.inputStream();
-
-    cursors[i].size     = is.readInt();
-    cursors[i].hotspotX = is.readInt();
-    cursors[i].hotspotY = is.readInt();
-    cursors[i].texId    = context.readTexture( &is );
-
-    file.unmap();
-
-    log.printEnd( " OK" );
-  }
-
-  log.unindent();
-  log.println( "}" );
-}
-
-void Mouse::unload()
-{
-  for( int i = 0; i < CURSORS_MAX; ++i ) {
-    glDeleteTextures( 1, &cursors[i].texId );
-    cursors[i].texId = 0;
-  }
-}
-
 void Mouse::init()
 {
+  log.print( "Initialising Mouse ..." );
+
   accelFactor = config.getSet( "mouse.accelFactor", 0.04f );
   doShow      = false;
   isGrabbed   = config.get( "screen.full", true );
@@ -175,12 +140,35 @@ void Mouse::init()
   wheelDown   = false;
 
   for( int i = 0; i < CURSORS_MAX; ++i ) {
-    cursors[i].texId = 0;
+    PhysFile file( String::str( "ui/cur/%s.ozcCur", NAMES[i] ) );
+    if( !file.map() ) {
+      throw Exception( "Cursor loading failed" );
+    }
+
+    InputStream is = file.inputStream();
+
+    cursors[i].size     = is.readInt();
+    cursors[i].hotspotX = is.readInt();
+    cursors[i].hotspotY = is.readInt();
+    cursors[i].texId    = context.readTexture( &is, file.path() );
+
+    file.unmap();
   }
+
+  log.printEnd( " OK" );
 }
 
 void Mouse::free()
-{}
+{
+  log.print( "Freeing Mouse ..." );
+
+  for( int i = 0; i < CURSORS_MAX; ++i ) {
+    glDeleteTextures( 1, &cursors[i].texId );
+    cursors[i].texId = 0;
+  }
+
+  log.printEnd( " OK" );
+}
 
 }
 }

@@ -197,9 +197,6 @@ class Shader
 
     void updateLights();
 
-    void load();
-    void unload();
-
     void init();
     void free();
 
