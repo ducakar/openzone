@@ -6,9 +6,15 @@ endif()
 
 project( openzone C CXX )
 
+#
+# Configuration begin
+#
+
 set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
 set( OZ_APPLICATION_VERSION "0.2.80" CACHE STRING "" FORCE )
 set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
+
+set( OZ_SOVERSION "0.3" CACHE STRING "" FORCE )
 
 option( OZ_TRACK_LEAKS "Save stack trace on operator new calls and track memory leaks." OFF )
 
@@ -22,6 +28,10 @@ option( OZINST_MENU "Install applications launcher and icon (Linux only)" OFF )
 option( OZINST_INFO "Install README, AUTHORS, COPYING ..." OFF )
 option( OZINST_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
 
+#
+# Configuration end
+#
+
 if( NOT CMAKE_BUILD_TYPE )
   set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Debug RelWithDebInfo Release ReleaseGen ReleaseUse" FORCE )
 endif()
@@ -32,6 +42,7 @@ else()
   set( OZ_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" CACHE STRING "" FORCE )
 endif()
 
+mark_as_advanced( OZ_VERSION )
 mark_as_advanced( OZ_APPLICATION_NAME )
 mark_as_advanced( OZ_APPLICATION_VERSION )
 mark_as_advanced( OZ_APPLICATION_TITLE )

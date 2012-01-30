@@ -447,7 +447,7 @@ class Vector
     /**
      * Add an element to the end if there is no equal element in the vector.
      *
-     * @return position of the inserted or the existing equal element.
+     * @return Position of the inserted or the existing equal element.
      */
     template <typename Elem_>
     int include( Elem_&& e )
@@ -520,7 +520,7 @@ class Vector
     /**
      * Find and remove the first element with the given value.
      *
-     * @return index of the removed element or -1 if not found.
+     * @return Index of the removed element or -1 if not found.
      */
     int exclude( const Elem& e )
     {
@@ -538,7 +538,7 @@ class Vector
      *
      * The last element is moved to its place.
      *
-     * @return index of the removed element or -1 if not found.
+     * @return Index of the removed element or -1 if not found.
      */
     int excludeUO( const Elem& e )
     {
@@ -583,7 +583,7 @@ class Vector
      *
      * All elements are shifted to fill the gap.
      *
-     * @return value of the removed element.
+     * @return Value of the removed element.
      */
     Elem popFirst()
     {
@@ -598,7 +598,7 @@ class Vector
     /**
      * Remove the last element.
      *
-     * @return value of the removed element.
+     * @return Value of the removed element.
      */
     Elem popLast()
     {

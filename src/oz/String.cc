@@ -147,13 +147,9 @@ String& String::operator = ( String&& s )
 String::String( int count_, const char* s ) :
   count( count_ )
 {
-  hard_assert( s != null && count >= 0 );
-
   ensureCapacity();
   aCopy( buffer, s, count );
   buffer[count] = '\0';
-
-  hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
 }
 
 String::String( const char* s )
@@ -168,8 +164,6 @@ String::String( const char* s )
     ensureCapacity();
     aCopy( buffer, s, count + 1 );
   }
-
-  hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
 }
 
 String::String( bool b ) :
@@ -282,8 +276,6 @@ String& String::operator = ( const char* s )
   ensureCapacity();
   aCopy( buffer, s, count + 1 );
 
-  hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
-
   return *this;
 }
 
@@ -307,8 +299,6 @@ bool String::endsWith( const char* sub ) const
 
 String String::operator + ( const char* s ) const
 {
-  hard_assert( s != null );
-
   int    sLength = length( s );
   int    rCount  = count + sLength;
   String r       = String( rCount, 0 );
@@ -332,8 +322,6 @@ String String::operator + ( const String& s ) const
 
 String operator + ( const char* s, const String& t )
 {
-  hard_assert( s != null );
-
   int    sLength = String::length( s );
   int    rCount  = t.count + sLength;
   String r       = String( rCount, 0 );

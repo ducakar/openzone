@@ -172,8 +172,6 @@ String PhysFile::baseName() const
 
 bool PhysFile::hasExtension( const char* ext ) const
 {
-  hard_assert( ext != null );
-
   const char* slash = filePath.findLast( '/' );
   const char* dot   = filePath.findLast( '.' );
 
@@ -187,7 +185,9 @@ bool PhysFile::hasExtension( const char* ext ) const
 
 bool PhysFile::map()
 {
-  hard_assert( data == null );
+  if( data != null ) {
+    unmap();
+  }
 
   PHYSFS_File* file = PHYSFS_openRead( filePath );
   if( file == null ) {
@@ -216,10 +216,10 @@ bool PhysFile::map()
 
 void PhysFile::unmap()
 {
-  hard_assert( data != null );
-
-  delete[] data;
-  data = null;
+  if( data != null ) {
+    delete[] data;
+    data = null;
+  }
 }
 
 InputStream PhysFile::inputStream( Endian::Order order ) const

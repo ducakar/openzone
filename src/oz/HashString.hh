@@ -592,7 +592,7 @@ class HashString
     /**
      * Add a new element, if the key already exists in the hashtable overwrite existing element.
      *
-     * @return pointer to the value of the inserted element.
+     * @return Pointer to the value of the inserted element.
      */
     template <typename Value_ = Value>
     Value* add( const char* key, Value_&& value = Value() )
@@ -620,7 +620,7 @@ class HashString
     /**
      * Add a new element if the key does not exist in the hashtable.
      *
-     * @return pointer to the value of the inserted or the existing element with the same key.
+     * @return Pointer to the value of the inserted or the existing element with the same key.
      */
     template <typename Value_ = Value>
     Value* include( const char* key, Value_&& value = Value() )

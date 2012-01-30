@@ -363,7 +363,7 @@ inline int aLength( const Elem& aSrc )
  * Allocate new array of <tt>newCount</tt> elements, copy first <tt>count</tt> elements
  * of the source array <tt>aSrc</tt>to the newly created one and delete the source array.
  *
- * @return newly allocated array.
+ * @return Newly allocated array.
  *
  * @ingroup oz
  */
@@ -526,7 +526,7 @@ inline void aSort( Elem* aSrc, int count )
  * @param aSrc
  * @param key the key we are looking for.
  * @param count
- * @return index of the requested element or -1 if not found.
+ * @return Index of the requested element or -1 if not found.
  *
  * @ingroup oz
  */
@@ -571,7 +571,7 @@ inline int aBisectFind( Elem* aSrc, const Key& key, int count )
  * @param aSrc
  * @param key the key we are looking for.
  * @param count
- * @return index of least element greater than the key, or count if there's no such element.
+ * @return Index of least element greater than the key, or count if there's no such element.
  *
  * @ingroup oz
  */
