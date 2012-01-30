@@ -86,8 +86,6 @@ class Collider
 
     /**
      * Return true if brush was already visited and mark it visited.
-     * @param index
-     * @return
      */
     bool visitBrush( int index );
 

@@ -15,7 +15,7 @@ elseif( OZINST_INFO )
     COPYING
     README
     ${files}
-    DESTINATION share/doc )
+    DESTINATION share/doc/openzone )
 endif()
 
 #
@@ -28,26 +28,26 @@ endif()
 #
 # oalinst, DLLs, localisation
 #
-if( OZINST_CLIENT )
-  install( FILES share/openzone/ozbase.zip DESTINATION share/openzone )
-
-  if( WIN32 )
-    install( DIRECTORY support/mingw32-client/ DESTINATION bin )
-    install( FILES support/oalinst.exe support/openzone.bat DESTINATION . )
-  elseif( OZINST_STANDALONE )
-    install( FILES support/openzone.sh PERMISSIONS
-      OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-      DESTINATION . )
+if( OZINST_STANDALONE )
+  if( OZINST_CLIENT )
+    if( WIN32 )
+      install( DIRECTORY support/mingw32-client/ DESTINATION bin )
+      install( FILES support/oalinst.exe support/openzone.bat DESTINATION . )
+    else()
+      install( FILES support/openzone.sh PERMISSIONS
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+        DESTINATION . )
+    endif()
   endif()
-endif()
 
-if( OZINST_TOOLS )
-  if( WIN32 )
-    install( DIRECTORY support/mingw32-tools/ DESTINATION bin )
-    install( FILES support/build.bat DESTINATION . )
-  elseif( OZINST_STANDALONE )
-    install( FILES support/build.sh PERMISSIONS
-      OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-      DESTINATION . )
+  if( OZINST_TOOLS )
+    if( WIN32 )
+      install( DIRECTORY support/mingw32-tools/ DESTINATION bin )
+      install( FILES support/build.bat DESTINATION . )
+    else()
+      install( FILES support/build.sh PERMISSIONS
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+        DESTINATION . )
+    endif()
   endif()
 endif()

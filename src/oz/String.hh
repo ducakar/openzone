@@ -239,7 +239,7 @@ class String
     /**
      * Bernstein's hash function.
      *
-     * @return absolute value of hash.
+     * @return Absolute value of hash.
      */
     static int hash( const char* s )
     {
@@ -610,7 +610,7 @@ class String
     /**
      * Bernstein's hash function.
      *
-     * @return absolute value of hash.
+     * @return Absolute value of hash.
      */
     int hash() const
     {

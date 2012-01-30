@@ -19,6 +19,7 @@ add_library( oz SHARED
   common.cc
 )
 target_link_libraries( oz ${libs_oz} )
+set_target_properties( oz PROPERTIES SOVERSION ${OZ_SOVERSION} )
 
 if( OZINST_LIBOZ )
   install( FILES ${CMAKE_CURRENT_BINARY_DIR}/ozconfig.hh DESTINATION include/oz )

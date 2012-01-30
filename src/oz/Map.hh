@@ -524,7 +524,7 @@ class Map
     /**
      * Add an element or override value if an element with the same key exists.
      *
-     * @return position of the inserted or the existing element.
+     * @return Position of the inserted or the existing element.
      */
     template <typename Key_, typename Value_ = Value>
     int add( Key_&& key, Value_&& value = Value() )
@@ -543,7 +543,7 @@ class Map
     /**
      * Add an element if the key does not exist in the map.
      *
-     * @return position of the inserted or the existing element with the same key.
+     * @return Position of the inserted or the existing element with the same key.
      */
     template <typename Key_, typename Value_ = Value>
     int include( Key_&& key, Value_&& value = Value() )
@@ -593,7 +593,7 @@ class Map
     /**
      * Find and remove the element with the given key.
      *
-     * @return index of the removed element or -1 if not found.
+     * @return Index of the removed element or -1 if not found.
      */
     int exclude( const Key& key )
     {

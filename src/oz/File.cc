@@ -191,8 +191,6 @@ String File::baseName() const
 
 bool File::hasExtension( const char* ext ) const
 {
-  hard_assert( ext != null );
-
   const char* slash = filePath.findLast( '/' );
   const char* dot   = filePath.findLast( '.' );
 
@@ -206,7 +204,9 @@ bool File::hasExtension( const char* ext ) const
 
 bool File::map()
 {
-  hard_assert( data == null );
+  if( data != null ) {
+    unmap();
+  }
 
 #ifdef _WIN32
 
@@ -261,14 +261,14 @@ bool File::map()
 
 void File::unmap()
 {
-  hard_assert( data != null );
-
+  if( data != null ) {
 #ifdef _WIN32
-  UnmapViewOfFile( data );
+    UnmapViewOfFile( data );
 #else
-  munmap( data, size_t( size ) );
+    munmap( data, size_t( size ) );
 #endif
-  data = null;
+    data = null;
+  }
 }
 
 InputStream File::inputStream( Endian::Order order ) const

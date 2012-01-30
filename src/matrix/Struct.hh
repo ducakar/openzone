@@ -129,50 +129,36 @@ class Struct : public Bounds
 
     /**
      * Rotate vector from structure coordinate system to absolute coordinate system.
-     * @param v
-     * @return
      */
     Vec3 toAbsoluteCS( const Vec3& v ) const;
 
     /**
      * Rotate vector from absolute coordinate system to structure coordinate system.
-     * @param v
-     * @return
      */
     Vec3 toStructCS( const Vec3& v ) const;
 
     /**
      * Rotate point from structure coordinate system to absolute coordinate system.
-     * @param point
-     * @return
      */
     Point3 toAbsoluteCS( const Point3& point ) const;
 
     /**
      * Rotate point from absolute coordinate system to structure coordinate system.
-     * @param point
-     * @return
      */
     Point3 toStructCS( const Point3& point ) const;
 
     /**
      * Rotate Bounds from structure coordinate system to absolute coordinate system.
-     * @param bb
-     * @return
      */
     Bounds toAbsoluteCS( const Bounds& bb ) const;
 
     /**
      * Rotate Bounds from absolute coordinate system to structure coordinate system.
-     * @param bb
-     * @return
      */
     Bounds toStructCS( const Bounds& bb ) const;
 
     /**
      * Rotate AABB::dim between structure and absolute coordinate system.
-     * @param bb
-     * @return
      */
     Vec3 swapDimCS( const Vec3& dim ) const;
 
