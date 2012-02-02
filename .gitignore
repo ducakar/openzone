@@ -5,8 +5,8 @@
 /.cproject
 /.settings
 
-/support
 /share
+/support
 
 /Linux-*
 /Windows-*

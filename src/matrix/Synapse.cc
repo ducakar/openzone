@@ -45,6 +45,11 @@ void Synapse::use( Bot* user, Object* target )
   target->use( user );
 }
 
+void Synapse::trigger( Bot* user, Entity* target )
+{
+  target->trigger( user );
+}
+
 void Synapse::put( Dynamic* obj )
 {
   hard_assert( obj->index != -1 && obj->cell == null && obj->parent == -1 );

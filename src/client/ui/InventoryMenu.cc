@@ -94,12 +94,14 @@ bool InventoryMenu::onMouseEvent()
                 bot->actions |= Bot::ACTION_INV_GIVE;
                 bot->instrument = item->index;
                 bot->container = container->index;
+                bot->trigger = -1;
               }
               else if( bot->cargo == -1 ) {
                 bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
                 bot->actions |= Bot::ACTION_INV_DROP;
                 bot->instrument = item->index;
                 bot->container = -1;
+                bot->trigger = -1;
               }
             }
           }
@@ -115,6 +117,7 @@ bool InventoryMenu::onMouseEvent()
               bot->actions |= Bot::ACTION_INV_TAKE;
               bot->instrument = item->index;
               bot->container = container->index;
+              bot->trigger = -1;
             }
           }
         }
@@ -129,6 +132,7 @@ bool InventoryMenu::onMouseEvent()
               bot->actions |= Bot::ACTION_USE;
               bot->instrument = item->index;
               bot->container = -1;
+              bot->trigger = -1;
             }
           }
         }
@@ -141,6 +145,7 @@ bool InventoryMenu::onMouseEvent()
               bot->actions |= Bot::ACTION_USE;
               bot->instrument = item->index;
               bot->container = -1;
+              bot->trigger = -1;
             }
           }
         }
@@ -156,6 +161,7 @@ bool InventoryMenu::onMouseEvent()
             bot->actions |= Bot::ACTION_INV_GRAB;
             bot->instrument = item->index;
             bot->container = -1;
+            bot->trigger = -1;
             bot->cargo = -1;
           }
         }

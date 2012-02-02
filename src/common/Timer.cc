@@ -55,11 +55,11 @@ void Timer::tick()
 
   ++ticks;
   micros      += TICK_MICROS;
-  time        = float( micros ) / 1000000.0f;
+  time        = float( micros ) / 1.0e6f;
 
   ++frameTicks;
   frameMicros += TICK_MICROS;
-  frameTime   = float( frameMicros ) / 1000000.0f;
+  frameTime   = float( frameMicros ) / 1.0e6f;
 }
 
 void Timer::frame()

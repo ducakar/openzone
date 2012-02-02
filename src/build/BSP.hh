@@ -46,6 +46,7 @@ class BSP : public Bounds
     static const float DEFAULT_SCALE;
     static const float DEFAULT_LIFE;
     static const float DEFAULT_RESISTANCE;
+    static const float DEFAULT_MARGIN;
 
     static const int BOUND_OBJECTS = 100;
 
@@ -233,19 +234,18 @@ class BSP : public Bounds
       int    firstBrush;
       int    nBrushes;
 
-      float  ratioInc;
-      int    flags;
-
       matrix::BSP::Model::Type type;
 
       float  margin;
       float  timeout;
+      float  ratioInc;
+
+      int    target;
+      int    key;
 
       String openSound;
       String closeSound;
       String frictSound;
-
-      String keyClass;
     };
 
     /// Temporary structure for bound objects.

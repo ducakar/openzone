@@ -65,10 +65,7 @@ class Physics
 
     Dynamic* dyn;
     Frag*    frag;
-    Bounds   trace;
     Vec3     move;
-    float    leftRatio;
-
     Vec3     lastNormals[2];
 
     void handleFragHit();

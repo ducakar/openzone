@@ -100,8 +100,9 @@ void Physics::handleFragHit()
 
 void Physics::handleFragMove()
 {
-  leftRatio = 1.0f;
   move = frag->velocity * Timer::TICK_TIME;
+
+  float leftRatio = 1.0f;
 
   int traceSplits = 0;
   do {
@@ -354,7 +355,14 @@ void Physics::handleObjHit()
 void Physics::handleObjMove()
 {
   move = dyn->momentum * Timer::TICK_TIME;
-  leftRatio = 1.0f;
+
+  float moveLen = !move;
+  if( moveLen == 0.0f ) {
+    return;
+  }
+
+  Vec3  originalDir = move / moveLen;
+  float leftRatio   = 1.0f;
 
   int traceSplits = 0;
   do {
@@ -376,7 +384,7 @@ void Physics::handleObjMove()
     move *= 1.0f - collider.hit.ratio;
     move -= ( move * collider.hit.normal - MOVE_BOUNCE ) * collider.hit.normal;
 
-    // to prevent getting stuck in corners < 90° and to prevent oscillations in corners > 90°
+    // In acute (< 90°) corners we move the object a little out of it to prevent it getting stuck.
     if( traceSplits == 1 ) {
       lastNormals[0] = collider.hit.normal;
     }
@@ -393,6 +401,7 @@ void Physics::handleObjMove()
           move += MOVE_BOUNCE * ( collider.hit.normal + lastNormals[0] );
         }
       }
+
       if( traceSplits == 2 ) {
         lastNormals[1] = lastNormals[0];
         lastNormals[0] = collider.hit.normal;
@@ -412,6 +421,10 @@ void Physics::handleObjMove()
         }
       }
     }
+
+    // By preventing movement in the opposite direction from the original one we effectively prevent
+    // oscillations in obtuse (> 90°) corners.
+    move -= min( move * originalDir, 0.0f ) * originalDir;
   }
   while( true );
 

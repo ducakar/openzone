@@ -147,6 +147,7 @@ class Bot : public Dynamic
     int    actions, oldActions;
     int    instrument;
     int    container;
+    int    trigger;
 
     int    state, oldState;
     float  stamina;
