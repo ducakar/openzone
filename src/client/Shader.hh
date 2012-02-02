@@ -181,7 +181,6 @@ class Shader
     uint defaultMasks;
 
     bool isInWater;
-    bool isLoaded;
     bool hasVertexTexture;
     bool hasS3TC;
 

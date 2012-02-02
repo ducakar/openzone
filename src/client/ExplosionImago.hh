@@ -37,8 +37,8 @@ class ExplosionImago : public Imago
 
     static int modelId;
 
-    SMM* smm;
-    uint startMillis;
+    SMM*  smm;
+    float startTime;
 
     explicit ExplosionImago( const Object* obj ) :
       Imago( obj )

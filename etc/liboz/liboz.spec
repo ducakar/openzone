@@ -6,6 +6,7 @@ URL:            https://github.com/ducakar/openzone/
 License:        MIT
 Group:          System Environment/Libraries
 Packager:       Davorin Učakar <davorin.ucakar@gmail.com>
+Source:         openzone-src-%{version}.tar.xz
 
 %description
 Library provides facilities like container templates, array utilities,
@@ -16,7 +17,7 @@ linear algebra classes.
 Library is primarily intended for use in OpenZone game engine.
 
 %package devel
-Summary:        OpenZone core library development files
+Summary:        Headers for OpenZone core library
 Group:          Development/Libraries
 Requires:       %{name} = %{version}
 
@@ -29,12 +30,7 @@ linear algebra classes.
 Library is primarily intended for use in OpenZone game engine.
 
 %prep
-if [ ! -d openzone ]; then
-  git clone /home/davorin/Projects/openzone
-  ( cd openzone && git checkout devel )
-fi
-
-( cd openzone && git pull )
+tar xf %{_sourcedir}/openzone-src-%{version}.tar.xz
 
 %build
 mkdir -p openzone-build && cd openzone-build
@@ -50,7 +46,7 @@ cd openzone-build
 make install DESTDIR=$RPM_BUILD_ROOT
 
 # Some distros use /usr/lib64 instead of /usr/lib.
-if [ %{_libdor} != /usr/lib ]; then
+if [ %{_libdir} != /usr/lib ]; then
   mv $RPM_BUILD_ROOT/usr/lib $RPM_BUILD_ROOT/%{_libdir}
 fi
 mv $RPM_BUILD_ROOT/usr/share/doc/liboz $RPM_BUILD_ROOT/%{_defaultdocdir}/%{name}-%{version}

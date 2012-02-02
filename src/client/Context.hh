@@ -104,7 +104,7 @@ class Context
     List<Source>                      sources;
     // looping sources
     HashIndex<ContSource, 64>         bspSources;
-    HashIndex<ContSource, 64>         objSources;
+    HashIndex<ContSource, 256>        objSources;
 
     Resource<BSP*>*                   bsps;
     Resource<SMM*>*                   smms;
@@ -112,7 +112,7 @@ class Context
     Resource<MD3*>*                   md3s;
 
     HashIndex<Imago*, 10223>          imagines;  // currently loaded graphics models
-    HashIndex<Audio*, 3067>           audios;    // currently loaded audio models
+    HashIndex<Audio*, 6143>           audios;    // currently loaded audio models
     HashIndex<FragPool*, 32>          fragPools; // currently loaded frag pools representations
 
     int                               maxImagines;

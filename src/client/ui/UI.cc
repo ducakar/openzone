@@ -99,15 +99,13 @@ void UI::draw()
   shader.setCaelumLight( ~Vec3( 0.6f, -0.3f, -0.8f ), Vec4( 0.6f, 0.6f, 0.6f, 1.0f ) );
 
   for( int i = 0; i < library.shaders.length(); ++i ) {
-    if( shader.isLoaded || i == shader.plain ) {
-      shader.use( i );
+    shader.use( i );
 
-      tf.applyCamera();
-      shader.updateLights();
+    tf.applyCamera();
+    shader.updateLights();
 
-      glUniform1f( param.oz_Fog_start, 1000000.0f );
-      glUniform1f( param.oz_Fog_end, 1000000.0f );
-    }
+    glUniform1f( param.oz_Fog_start, 1000000.0f );
+    glUniform1f( param.oz_Fog_end, 1000000.0f );
   }
 
   shader.use( shader.plain );

@@ -39,13 +39,13 @@
 #include "common.hh"
 
 /*
- * Iterators and utilities for iterable containers and arrays.
+ * Iterators and containers utilities.
  */
 #include "iterables.hh"
 #include "arrays.hh"
 
 /*
- * Simple containers.
+ * Containers.
  */
 #include "Pair.hh"
 #include "List.hh"
@@ -57,18 +57,18 @@
 #include "Map.hh"
 
 /*
+ * String.
+ */
+#include "String.hh"
+
+/*
  * Memory management.
  */
 #include "Alloc.hh"
 #include "Pool.hh"
 
 /*
- * String.
- */
-#include "String.hh"
-
-/*
- * Advanced containers.
+ * Hashtable containers.
  */
 #include "HashIndex.hh"
 #include "HashString.hh"
@@ -84,10 +84,10 @@
  */
 #include "Math.hh"
 #include "Simd.hh"
-#include "Vec4.hh"
 #include "Vec3.hh"
 #include "Point3.hh"
 #include "Plane.hh"
+#include "Vec4.hh"
 #include "Quat.hh"
 #include "Mat44.hh"
 
@@ -98,7 +98,14 @@
 #include "Bounds.hh"
 
 /*
- * IO.
+ * Error handling.
+ */
+#include "System.hh"
+#include "StackTrace.hh"
+#include "Exception.hh"
+
+/*
+ * I/O.
  */
 #include "Endian.hh"
 #include "InputStream.hh"
@@ -107,12 +114,6 @@
 #include "Buffer.hh"
 #include "File.hh"
 #include "PhysFile.hh"
-
-/*
- * Error handling.
- */
-#include "StackTrace.hh"
-#include "System.hh"
 
 /*
  * Utilities.

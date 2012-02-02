@@ -32,9 +32,6 @@
 #include "System.hh"
 #include "Log.hh"
 
-#include <cerrno>
-#include <cstdlib>
-
 namespace oz
 {
 
@@ -202,13 +199,10 @@ bool Config::get( const char* key, bool defVal ) const
   if( value != null ) {
     value->isUsed = true;
 
-    if( value->text.equals( "true" ) ) {
-      return true;
+    try {
+      return value->text.parseBool();
     }
-    else if( value->text.equals( "false" ) ) {
-      return false;
-    }
-    else {
+    catch( const String::ParseException& ) {
       throw Exception( "Invalid boolean value '%s' for %s", value->text.cstr(), key );
     }
   }
@@ -224,15 +218,11 @@ int Config::get( const char* key, int defVal ) const
   if( value != null ) {
     value->isUsed = true;
 
-    errno = 0;
-    char* end;
-    int num = int( strtol( value->text, &end, 0 ) );
-
-    if( errno != 0 || end == value->text.cstr() ) {
-      throw Exception( "Invalid int value '%s' for %s", value->text.cstr(), key );
+    try {
+      return value->text.parseInt();
     }
-    else {
-      return num;
+    catch( const String::ParseException& ) {
+      throw Exception( "Invalid integer value '%s' for %s", value->text.cstr(), key );
     }
   }
   else {
@@ -247,15 +237,11 @@ float Config::get( const char* key, float defVal ) const
   if( value != null ) {
     value->isUsed = true;
 
-    errno = 0;
-    char* end;
-    float num = strtof( value->text, &end );
-
-    if( errno != 0 || end == value->text.cstr() ) {
-      throw Exception( "Invalid float value '%s' for %s", value->text.cstr(), key );
+    try {
+      return value->text.parseFloat();
     }
-    else {
-      return num;
+    catch( const String::ParseException& ) {
+      throw Exception( "Invalid float value '%s' for %s", value->text.cstr(), key );
     }
   }
   else {
@@ -284,14 +270,11 @@ bool Config::getSet( const char* key, bool defVal )
   if( value != null ) {
     value->isUsed = true;
 
-    if( value->text.equals( "true" ) ) {
-      return true;
+    try {
+      return value->text.parseBool();
     }
-    else if( value->text.equals( "false" ) ) {
-      return false;
-    }
-    else {
-      throw Exception( "Invalid boolean value '%s'", value->text.cstr() );
+    catch( const String::ParseException& ) {
+      throw Exception( "Invalid boolean value '%s' for %s", value->text.cstr(), key );
     }
   }
   else {
@@ -307,15 +290,11 @@ int Config::getSet( const char* key, int defVal )
   if( value != null ) {
     value->isUsed = true;
 
-    errno = 0;
-    char* end;
-    int num = int( strtol( value->text, &end, 0 ) );
-
-    if( errno != 0 || end == value->text.cstr() ) {
-      throw Exception( "Invalid int value '%s'", value->text.cstr() );
+    try {
+      return value->text.parseInt();
     }
-    else {
-      return num;
+    catch( const String::ParseException& ) {
+      throw Exception( "Invalid integer value '%s' for %s", value->text.cstr(), key );
     }
   }
   else {
@@ -331,15 +310,11 @@ float Config::getSet( const char* key, float defVal )
   if( value != null ) {
     value->isUsed = true;
 
-    errno = 0;
-    char* end;
-    float num = strtof( value->text, &end );
-
-    if( errno != 0 || end == value->text.cstr() ) {
-      throw Exception( "Invalid float value '%s'", value->text.cstr() );
+    try {
+      return value->text.parseFloat();
     }
-    else {
-      return num;
+    catch( const String::ParseException& ) {
+      throw Exception( "Invalid float value '%s' for %s", value->text.cstr(), key );
     }
   }
   else {

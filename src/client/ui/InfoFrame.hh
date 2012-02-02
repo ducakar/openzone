@@ -39,9 +39,9 @@ class InfoFrame : public Frame
 
     static const uint REFRESH_INTERVAL = 200;
 
-    Text text;
-    int  lastId;
-    uint lastTicks;
+    Text    text;
+    int     lastId;
+    ulong64 lastTicks;
 
   protected:
 

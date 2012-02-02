@@ -30,7 +30,6 @@
 #pragma once
 
 #include "HashString.hh"
-#include "File.hh"
 #include "PhysFile.hh"
 
 namespace oz

@@ -26,7 +26,7 @@
 /**
  * @file oz/iterables.hh
  *
- * Iterator base classes and utility functions for iterable containers.
+ * %Iterator base classes and utility functions for iterable containers.
  *
  * For all functions that work with iterators it is assumed that one uses them with iterators that
  * have not been incremented yet, so they point to the first element in a container.

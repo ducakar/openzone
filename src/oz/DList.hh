@@ -87,7 +87,7 @@ class DList
         typedef CIteratorBase<Elem> B;
 
         /**
-         * Iterator for the given container, points to the first element.
+         * %Iterator for the given container, points to the first element.
          */
         OZ_ALWAYS_INLINE
         explicit CIterator( const DList& l ) :
@@ -133,7 +133,7 @@ class DList
         typedef IteratorBase<Elem> B;
 
         /**
-         * Iterator for the given container, points to the first element.
+         * %Iterator for the given container, points to the first element.
          */
         OZ_ALWAYS_INLINE
         explicit Iterator( const DList& l ) :
