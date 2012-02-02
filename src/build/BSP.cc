@@ -41,6 +41,7 @@ namespace build
 const float BSP::DEFAULT_SCALE      = 0.01f;
 const float BSP::DEFAULT_LIFE       = 10000.0f;
 const float BSP::DEFAULT_RESISTANCE = 400.0f;
+const float BSP::DEFAULT_MARGIN     = 0.1f;
 
 inline bool BSP::includes( const matrix::BSP::Brush& brush, float maxDim ) const
 {
@@ -248,9 +249,6 @@ void BSP::load()
       models[i].move.y = bspConfig.get( keyName + ".move.y", 0.0f );
       models[i].move.z = bspConfig.get( keyName + ".move.z", 0.0f );
 
-      models[i].ratioInc = Timer::TICK_TIME / bspConfig.get( keyName + ".slideTime", 1.0f );
-      models[i].flags    = 0;
-
       String sType = bspConfig.get( keyName + ".type", "IGNORING" );
 
       if( sType.equals( "IGNORING" ) ) {
@@ -270,8 +268,12 @@ void BSP::load()
                          "or MANUAL_DOOR." );
       }
 
-      models[i].margin  = bspConfig.get( keyName + ".margin", 1.0f );
-      models[i].timeout = bspConfig.get( keyName + ".timeout", 6.0f );
+      models[i].margin     = bspConfig.get( keyName + ".margin", DEFAULT_MARGIN );
+      models[i].timeout    = bspConfig.get( keyName + ".timeout", 6.0f );
+      models[i].ratioInc   = Timer::TICK_TIME / bspConfig.get( keyName + ".slideTime", 1.0f );
+
+      models[i].target     = bspConfig.get( keyName + ".target", -1 );
+      models[i].key        = bspConfig.get( keyName + ".key", 0 );
 
       models[i].openSound  = bspConfig.get( keyName + ".openSound", "" );
       models[i].closeSound = bspConfig.get( keyName + ".closeSound", "" );
@@ -1060,15 +1062,20 @@ void BSP::saveMatrix()
   for( int i = 0; i < nModels; ++i ) {
     os.writePoint3( models[i].mins );
     os.writePoint3( models[i].maxs );
+
     os.writeString( models[i].name );
+    os.writeVec3( models[i].move );
+
     os.writeInt( models[i].firstBrush );
     os.writeInt( models[i].nBrushes );
-    os.writeVec3( models[i].move );
-    os.writeFloat( models[i].ratioInc );
-    os.writeInt( models[i].flags );
+
     os.writeInt( int( models[i].type ) );
     os.writeFloat( models[i].margin );
     os.writeFloat( models[i].timeout );
+    os.writeFloat( models[i].ratioInc );
+
+    os.writeInt( models[i].target );
+    os.writeInt( models[i].key );
 
     context.usedSounds.include( models[i].openSound );
     context.usedSounds.include( models[i].closeSound );
@@ -1077,8 +1084,6 @@ void BSP::saveMatrix()
     os.writeString( models[i].openSound );
     os.writeString( models[i].closeSound );
     os.writeString( models[i].frictSound );
-
-    os.writeString( models[i].keyClass );
   }
 
   for( int i = 0; i < boundObjects.length(); ++i ) {

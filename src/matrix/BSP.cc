@@ -184,17 +184,22 @@ void BSP::load()
   for( int i = 0; i < nModels; ++i ) {
     models[i].mins        = is.readPoint3();
     models[i].maxs        = is.readPoint3();
+
     models[i].name        = is.readString();
     models[i].title       = OZ_GETTEXT( models[i].name );
     models[i].bsp         = this;
+    models[i].move        = is.readVec3();
+
     models[i].firstBrush  = is.readInt();
     models[i].nBrushes    = is.readInt();
-    models[i].move        = is.readVec3();
-    models[i].ratioInc    = is.readFloat();
-    models[i].flags       = is.readInt();
+
     models[i].type        = Model::Type( is.readInt() );
     models[i].margin      = is.readFloat();
     models[i].timeout     = is.readFloat();
+    models[i].ratioInc    = is.readFloat();
+
+    models[i].target      = is.readInt();
+    models[i].key         = is.readInt();
 
     String sOpenSound     = is.readString();
     String sCloseSound    = is.readString();
@@ -203,10 +208,6 @@ void BSP::load()
     models[i].openSound   = sOpenSound.isEmpty()  ? -1 : library.soundIndex( sOpenSound );
     models[i].closeSound  = sCloseSound.isEmpty() ? -1 : library.soundIndex( sCloseSound );
     models[i].frictSound  = sFrictSound.isEmpty() ? -1 : library.soundIndex( sFrictSound );
-
-    String sKeyClass      = is.readString();
-
-    models[i].keyClass    = sKeyClass.isEmpty() ? null : library.objClass( sKeyClass );
   }
   data += nModels * int( sizeof( Model ) );
 

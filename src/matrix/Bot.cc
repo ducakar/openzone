@@ -364,7 +364,6 @@ void Bot::onUpdate()
                 momentum.y    *= 1.0f - Physics::LADDER_FRICTION;
                 momentum.z    = max( momentum.z, clazz->climbMomentum );
 
-                instrument    = -1;
                 cargo         = -1;
                 state         |= CLIMBING_BIT;
                 state         &= ~JUMP_SCHED_BIT;
@@ -422,6 +421,7 @@ void Bot::onUpdate()
             float endDist = startDist + move * normal;
 
             if( endDist < 0.0f ) {
+              momentum.z = max( momentum.z, 0.0f );
               stepRate += raise*raise * clazz->stepRateCoeff;
               goto stepSucceeded;
             }
@@ -584,10 +584,22 @@ void Bot::onUpdate()
    */
 
   if( actions & ~oldActions & ACTION_USE ) {
-    Object* obj = orbis.objects[instrument];
+    if( instrument != -1 ) {
+      Object* obj = orbis.objects[instrument];
 
-    if( obj != null ) {
-      synapse.use( this, obj );
+      if( obj != null ) {
+        synapse.use( this, obj );
+      }
+    }
+    else {
+      int strIndex = trigger / Struct::MAX_ENTITIES;
+      int entIndex = trigger % Struct::MAX_ENTITIES;
+
+      Struct* str = orbis.structs[strIndex];
+
+      if( str != null ) {
+        synapse.trigger( this, &str->entities[entIndex] );
+      }
     }
   }
   else if( actions & ~oldActions & ACTION_INV_TAKE ) {
@@ -742,6 +754,7 @@ void Bot::onUpdate()
   oldState   = state;
   instrument = -1;
   container  = -1;
+  trigger    = -1;
 }
 
 void Bot::heal()
@@ -782,6 +795,7 @@ void Bot::kill()
     actions    = 0;
     instrument = -1;
     container  = -1;
+    trigger    = -1;
 
     state      |= DEAD_BIT;
     cargo      = -1;
@@ -809,6 +823,7 @@ void Bot::enter( int vehicle_ )
   actions    = 0;
   instrument = -1;
   container  = vehicle_;
+  trigger    = -1;
 
   camZ       = clazz->camZ;
   state      &= ~CROUCHING_BIT;
@@ -839,6 +854,7 @@ Bot::Bot( const BotClass* clazz_, int index, const Point3& p_, Heading heading )
   oldActions = 0;
   instrument = -1;
   container  = -1;
+  trigger    = -1;
 
   state      = clazz_->state;
   oldState   = clazz_->state;
@@ -864,6 +880,7 @@ Bot::Bot( const BotClass* clazz_, InputStream* istream ) :
   oldActions = istream->readInt();
   instrument = istream->readInt();
   container  = istream->readInt();
+  trigger    = istream->readInt();
 
   state      = istream->readInt();
   oldState   = istream->readInt();
@@ -894,6 +911,7 @@ void Bot::write( BufferStream* ostream ) const
   ostream->writeInt( oldActions );
   ostream->writeInt( instrument );
   ostream->writeInt( container );
+  ostream->writeInt( trigger );
 
   ostream->writeInt( state );
   ostream->writeInt( oldState );

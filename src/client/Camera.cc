@@ -78,7 +78,7 @@ void Camera::updateReferences()
   else {
     botObj = static_cast<Bot*>( orbis.objects[bot] );
 
-    if( botObj == null ) {
+    if( botObj == null || ( botObj->state & Bot::DEAD_BIT ) ) {
       bot = -1;
       botObj = null;
     }

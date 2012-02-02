@@ -8,25 +8,19 @@ pkgrel=1
 url="http://github.com/ducakar/openzone/"
 license=('GPL3')
 arch=('i686' 'x86_64')
-makedepends=('cmake' 'faad2' 'freeimage' 'gcc>=4.6' 'git' 'libmad' 'libpulse' 'lua' 'mesa' 'openal' 'physfs' 'sdl_ttf')
+makedepends=('cmake' 'faad2' 'freeimage' 'gcc>=4.6' 'git' 'libmad' 'libpulse'
+             'lua' 'mesa' 'openal' 'physfs' 'sdl_ttf')
 # source=("http://openzone.googlecode.com/files/openzone-${_dataver}.7z")
-source=('ozbase.zip' 'openzone.zip')
-md5sums=()
-
-_gitname='openzone'
-_gitroot='git://github.com/ducakar/openzone.git'
-_gittag="v${pkgver}"
+source=("openzone-src-${pkgver}.tar.xz"
+        "openzone-data-ozbase-${pkgver}.tar.xz"
+        "openzone-data-openzone-${pkgver}.tar.xz")
+md5sums=('8ea5e3d8f5ef2ffd78845c1420cb7a68'
+         'ac2ef739e356488a8c04ba5df6e1d437'
+         'fdef8bc1b328e82373e3edb87bce1a17')
 
 build()
 {
   cd ${srcdir}
-
-  msg "git checkout for ${_gitroot} tag ${_gittag}"
-  if [[ ! -d ${_gitname} ]]; then
-    git clone ${_gitroot} ${_gitname}
-    cd ${srcdir}/${_gitname} && git checkout #${_gittag}
-  fi
-  msg "git checkout done or server timeout"
 
   rm -rf build
   mkdir build && cd build

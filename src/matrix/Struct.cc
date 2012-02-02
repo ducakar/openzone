@@ -28,6 +28,7 @@
 #include "matrix/Collider.hh"
 #include "matrix/Physics.hh"
 #include "matrix/Synapse.hh"
+#include "matrix/Bot.hh"
 
 namespace oz
 {
@@ -71,6 +72,37 @@ const Entity::Handler Entity::HANDLERS[] = {
 
 Pool<Struct>    Struct::pool;
 Vector<Object*> Struct::overlappingObjs;
+
+void Entity::trigger( Bot* user )
+{
+  if( model->target == -1 ) {
+    return;
+  }
+
+  if( key > 0 && user != null ) {
+    if( user->clazz->key == key ) {
+      goto canUnlock;
+    }
+    foreach( i, user->items.citer() ) {
+      Object* obj = orbis.objects[*i];
+
+      if( obj->clazz->key == key ) {
+        goto canUnlock;
+      }
+    }
+    return;
+  }
+canUnlock:;
+
+  int strIndex = model->target / Struct::MAX_ENTITIES;
+  int entIndex = model->target % Struct::MAX_ENTITIES;
+
+  Struct* str = orbis.structs[strIndex];
+
+  if( str != null ) {
+    str->entities[entIndex].state = TRIGGERED;
+  }
+}
 
 void Entity::ignoringHandler()
 {
@@ -121,6 +153,17 @@ void Entity::ignoringHandler()
       }
 
       offset = ratio * model->move;
+      break;
+    }
+    case TRIGGERED: {
+      if( ratio == 1.0f ) {
+        state = OPENED;
+      }
+      else {
+        time = 0.0f;
+        state = OPENING;
+        velocity = model->move * model->ratioInc / Timer::TICK_TIME;
+      }
       break;
     }
   }
@@ -217,6 +260,17 @@ void Entity::crushingHandler()
       }
       break;
     }
+    case TRIGGERED: {
+      if( ratio == 1.0f ) {
+        state = OPENED;
+      }
+      else {
+        time = 0.0f;
+        state = OPENING;
+        velocity = model->move * model->ratioInc / Timer::TICK_TIME;
+      }
+      break;
+    }
   }
 }
 
@@ -280,6 +334,17 @@ void Entity::autoDoorHandler()
       if( ratio == 0.0f ) {
         state = CLOSED;
         velocity = Vec3::ZERO;
+      }
+      break;
+    }
+    case TRIGGERED: {
+      if( ratio == 1.0f ) {
+        state = OPENED;
+      }
+      else {
+        time = 0.0f;
+        state = OPENING;
+        velocity = model->move * model->ratioInc / Timer::TICK_TIME;
       }
       break;
     }
@@ -470,6 +535,7 @@ Struct::Struct( const BSP* bsp_, int index_, const Point3& p_, Heading heading_ 
     entity.state    = Entity::CLOSED;
     entity.ratio    = 0.0f;
     entity.time     = 0.0f;
+    entity.key      = bsp->models[i].key;
     entity.velocity = Vec3::ZERO;
   }
 
@@ -506,6 +572,7 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
     entity.state    = Entity::State( istream->readInt() );
     entity.ratio    = istream->readFloat();
     entity.time     = istream->readFloat();
+    entity.key      = istream->readInt();
 
     if( entity.state == Entity::OPENING ) {
       entity.velocity = entity.model->move * entity.model->ratioInc / Timer::TICK_TIME;
@@ -549,6 +616,7 @@ void Struct::write( BufferStream* ostream )
     ostream->writeInt( entities[i].state );
     ostream->writeFloat( entities[i].ratio );
     ostream->writeFloat( entities[i].time );
+    ostream->writeInt( entities[i].key );
   }
 
   ostream->writeInt( boundObjects.length() );

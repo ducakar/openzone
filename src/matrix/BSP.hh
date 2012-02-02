@@ -91,19 +91,17 @@ class BSP : public Bounds
       int    firstBrush;            ///< Index of the first brush in <tt>brushes<tt> array.
       int    nBrushes;              ///< Number of brushes.
 
-      float  ratioInc;              ///< Step in ratio for each frame.
-      int    flags;                 ///< Flags, not used for now.
       Type   type;                  ///< Model type.
-
       float  margin;                ///< Margin around entity inside which triggers door opening.
       float  timeout;               ///< Timeout after which entity starts opening/closing.
+      float  ratioInc;              ///< Step in ratio for each frame.
+
+      int    target;                ///< Target model index for triggers, -1 otherwise.
+      int    key;                   ///< Default key code or 0 if door is unlocked by default.
 
       int    openSound;             ///< Open sound sample, played when an entity starts moving.
       int    closeSound;            ///< Close sound sample, played when an entity stops moving.
       int    frictSound;            ///< Friction sound sample, played while the entity is moving.
-
-      const ObjectClass* keyClass;  ///< %ObjectClass that must be in present inventory of the bot
-                                    ///< that tries to open the door.
     };
 
     struct BoundObject

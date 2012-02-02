@@ -247,6 +247,7 @@ void BotProxy::update()
         bot->actions |= Bot::ACTION_ROTATE;
         bot->instrument = -1;
         bot->container = -1;
+        bot->trigger = -1;
       }
     }
     if( ui::mouse.rightClick ) {
@@ -254,10 +255,24 @@ void BotProxy::update()
         bot->actions |= Bot::ACTION_VEH_NEXT_WEAPON;
       }
       else if( camera.object != -1 ) {
-        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-        bot->actions |= Bot::ACTION_USE;
-        bot->instrument = camera.object;
-        bot->container = -1;
+        if( camera.objectObj->flags & Object::USE_FUNC_BIT ) {
+          bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
+          bot->actions |= Bot::ACTION_USE;
+          bot->instrument = camera.object;
+          bot->container = -1;
+          bot->trigger = -1;
+        }
+      }
+      else if( camera.entity != -1 ) {
+        int targetEntity = camera.entityObj->model->target;
+
+        if( targetEntity != -1 ) {
+          bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
+          bot->actions |= Bot::ACTION_USE;
+          bot->instrument = -1;
+          bot->container = -1;
+          bot->trigger = camera.entity;
+        }
       }
     }
     else if( ui::mouse.middleClick ) {
@@ -266,12 +281,14 @@ void BotProxy::update()
         bot->actions |= Bot::ACTION_GRAB;
         bot->instrument = -1;
         bot->container = -1;
+        bot->trigger = -1;
       }
       else if( camera.object != -1 ) {
         bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
         bot->actions |= Bot::ACTION_GRAB;
         bot->instrument = camera.object;
         bot->container = -1;
+        bot->trigger = -1;
       }
     }
     else if( ui::mouse.wheelDown ) {
@@ -287,6 +304,7 @@ void BotProxy::update()
           bot->actions |= Bot::ACTION_TAKE;
           bot->instrument = camera.object;
           bot->container = -1;
+          bot->trigger = -1;
         }
       }
     }
@@ -296,6 +314,7 @@ void BotProxy::update()
         bot->actions |= Bot::ACTION_THROW;
         bot->instrument = -1;
         bot->container = -1;
+        bot->trigger = -1;
       }
     }
   }

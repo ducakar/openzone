@@ -32,6 +32,7 @@ namespace matrix
 
 class Struct;
 class Object;
+class Bot;
 
 class Entity
 {
@@ -50,7 +51,8 @@ class Entity
       CLOSED,
       OPENING,
       OPENED,
-      CLOSING
+      CLOSING,
+      TRIGGERED
     };
 
     Vec3              offset;
@@ -62,7 +64,11 @@ class Entity
     float             ratio;
     float             time;
 
+    int               key;
+
     Vec3              velocity;
+
+    void trigger( Bot* user );
 
   private:
 

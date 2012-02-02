@@ -96,6 +96,12 @@ void ObjectClass::fillCommonConfig( const Config* config )
   OZ_CLASS_SET_ATTRIB( MUSIC_PLAYER_BIT, "attrib.musicPlayer", false );
 
   /*
+   * key code
+   */
+
+  key = config->get( "key", 0 );
+
+  /*
    * debris
    */
 

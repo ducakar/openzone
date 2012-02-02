@@ -81,6 +81,11 @@ void HudArea::drawBotCrosshair()
       }
 
       title.draw( this, false );
+
+      if( ent->model->target != -1 ) {
+        glBindTexture( GL_TEXTURE_2D, useTexId );
+        shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
+      }
     }
     else {
       float life;

@@ -104,8 +104,8 @@ void UI::draw()
     tf.applyCamera();
     shader.updateLights();
 
-    glUniform1f( param.oz_Fog_start, 1000000.0f );
-    glUniform1f( param.oz_Fog_end, 1000000.0f );
+    glUniform1f( param.oz_Fog_start, 1.0e6f );
+    glUniform1f( param.oz_Fog_end, 1.0e6f );
   }
 
   shader.use( shader.plain );
@@ -123,7 +123,7 @@ void UI::draw()
       fps = Math::mix( fps, 1.0f / timer.frameTime, 0.04f );
     }
 
-    fpsLabel->setText( "%.2f", fps );
+    fpsLabel->setText( "%.1f", fps );
     fpsLabel->draw( root, true );
   }
 

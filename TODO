@@ -2,17 +2,24 @@
 - matrix
   * BSP
     + elevators
-    + switches
     + MANUAL_DOOR
-    + CONTAINER
-    + keys
   * Vehicle
     + improve rotation
+- lua
+  * ozBotSetInstrument & co.
+  * ozStructSetEntityKey & co.
+- ui
+  * tutorial tips
+  * options menu
+  * mission selection
 - client
   * clean up Proxies
   * smooth loading
-  * options menu
   * MD3 animation
+  * fix bloom
+  * fix in-vehicle camera (rotation axis & free look)
+- missions
+  * new tutorial missions
 
 0.4
 - new löök

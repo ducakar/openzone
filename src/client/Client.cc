@@ -549,7 +549,7 @@ int Client::main( int argc, char** argv )
       }
     }
 
-    if( isBenchmark && float( Time::uclock() - timeZero ) >= benchmarkTime * 1000000.0f ) {
+    if( isBenchmark && float( Time::uclock() - timeZero ) >= benchmarkTime * 1.0e6f ) {
       isAlive = false;
     }
 

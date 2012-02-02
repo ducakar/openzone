@@ -64,6 +64,7 @@ class Synapse
     Synapse();
 
     void use( Bot* user, Object* target );
+    void trigger( Bot* user, Entity* target );
 
     // schedule for position in the world
     void put( Dynamic* obj );

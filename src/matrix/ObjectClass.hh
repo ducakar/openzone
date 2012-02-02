@@ -60,6 +60,7 @@ class ObjectClass
     float           resistance;
 
     int             attributes;
+    int             key;
 
     const FragPool* fragPool;
     int             nFrags;
