@@ -44,13 +44,13 @@ const float HudArea::CROSS_FADE_COEFF = 4.0f;
 
 void HudArea::drawBotCrosshair()
 {
-  const Bot*      bot      = camera.botObj;
-  const BotClass* botClazz = static_cast<const BotClass*>( camera.botObj->clazz );
+  const Bot*      me      = camera.botObj;
+  const BotClass* myClazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
   glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
 
-  float dx     = Math::fmod( camera.h - bot->h + 1.5f*Math::TAU, Math::TAU ) - 0.5f*Math::TAU;
-  float dy     = camera.v - bot->v;
+  float dx     = Math::fmod( camera.h - me->h + 1.5f*Math::TAU, Math::TAU ) - 0.5f*Math::TAU;
+  float dy     = camera.v - me->v;
   float alpha  = 1.0f - CROSS_FADE_COEFF * Math::sqrt( dx*dx + dy*dy );
 
   glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, alpha );
@@ -58,7 +58,7 @@ void HudArea::drawBotCrosshair()
   shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
   glBindTexture( GL_TEXTURE_2D, 0 );
 
-  if( bot->parent == -1 && ( camera.object != -1 || camera.entity != -1 ) ) {
+  if( me->parent == -1 && ( camera.object != -1 || camera.entity != -1 ) ) {
     const Object*      obj   = camera.objectObj;
     const ObjectClass* clazz = obj == null ? null : obj->clazz;
     const Dynamic*     dyn   = static_cast<const Dynamic*>( obj );
@@ -144,7 +144,7 @@ void HudArea::drawBotCrosshair()
       else if( obj->flags & Object::WEAPON_BIT ) {
         const WeaponClass* clazz = static_cast<const WeaponClass*>( obj->clazz );
 
-        if( clazz->allowedUsers.contains( botClazz ) ) {
+        if( clazz->allowedUsers.contains( myClazz ) ) {
           glBindTexture( GL_TEXTURE_2D, equipTexId );
           shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
         }
@@ -155,10 +155,10 @@ void HudArea::drawBotCrosshair()
         shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
       }
 
-      if( bot->cargo == -1 && bot->weapon == -1 &&
-        ( obj->flags & Object::DYNAMIC_BIT ) && dyn->mass <= botClazz->grabMass &&
+      if( me->cargo == -1 && me->weapon == -1 &&
+        ( obj->flags & Object::DYNAMIC_BIT ) && dyn->mass <= myClazz->grabMass &&
           // not swimming or on ladder
-          !( bot->state & ( Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) &&
+          !( me->state & ( Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) &&
           // if it is not a bot that is holding something
           ( !( obj->flags & Object::BOT_BIT ) || bot->cargo == -1 ) )
       {
@@ -166,7 +166,7 @@ void HudArea::drawBotCrosshair()
         float dimY = bot->dim.y + dyn->dim.y;
         float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + Bot::GRAB_EPSILON;
 
-        if( dist <= botClazz->reachDist ) {
+        if( dist <= myClazz->reachDist ) {
           glBindTexture( GL_TEXTURE_2D, liftTexId );
           shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
         }

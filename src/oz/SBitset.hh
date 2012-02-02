@@ -112,6 +112,15 @@ class SBitset
     }
 
     /**
+     * Always false since internal static array cannot have zero size.
+     */
+    OZ_ALWAYS_INLINE
+    bool isEmpty() const
+    {
+      return false;
+    }
+
+    /**
      * Get the i-th bit.
      */
     OZ_ALWAYS_INLINE

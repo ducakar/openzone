@@ -47,6 +47,14 @@ namespace oz
  */
 class String
 {
+  public:
+
+    /**
+     * Thrown by parse functions if parsing fails or completes only partially.
+     */
+    struct ParseException : std::exception
+    {};
+
   private:
 
     /// Size of static buffer.
@@ -122,19 +130,14 @@ class String
     }
 
     /**
-     * First character or null character if empty string.
+     * True iff the C string is empty.
      */
-    char first() const
+    OZ_ALWAYS_INLINE
+    static bool isEmpty( const char* s )
     {
-      return count == 0 ? '\0' : buffer[0];
-    }
+      hard_assert( s != null );
 
-    /**
-     * Last character or null character if empty string.
-     */
-    char last() const
-    {
-      return count == 0 ? '\0' : buffer[count - 1];
+      return s[0] == '\0';
     }
 
     /**
@@ -253,17 +256,6 @@ class String
     }
 
     /**
-     * True iff the C string is empty.
-     */
-    OZ_ALWAYS_INLINE
-    static bool isEmpty( const char* s )
-    {
-      hard_assert( s != null );
-
-      return s[0] == '\0';
-    }
-
-    /**
      * True iff character is an ASCII digit.
      */
     OZ_ALWAYS_INLINE
@@ -334,6 +326,34 @@ class String
     {
       return reinterpret_cast<const ubyte*>( s );
     }
+
+    /**
+     * Parse boolean value (must exactly match either "true" or "false").
+     *
+     * If parsing fails, a ParseException is thrown.
+     */
+    static bool parseBool( const char* s );
+
+    /**
+     * Parse integer value.
+     *
+     * If parsing fails, a ParseException is thrown.
+     */
+    static int parseInt( const char* s );
+
+    /**
+     * Parse float value.
+     *
+     * If parsing fails, a ParseException is thrown.
+     */
+    static float parseFloat( const char* s );
+
+    /**
+     * Parse double value.
+     *
+     * If parsing fails, a ParseException is thrown.
+     */
+    static double parseDouble( const char* s );
 
     /*
      * Functions that operate on a String object.
@@ -518,17 +538,6 @@ class String
     }
 
     /**
-     * Constant refernece to the i-th byte.
-     */
-    OZ_ALWAYS_INLINE
-    const char& operator [] ( int i ) const
-    {
-      hard_assert( 0 <= i && i < count );
-
-      return buffer[i];
-    }
-
-    /**
      * Length.
      */
     OZ_ALWAYS_INLINE
@@ -544,6 +553,33 @@ class String
     bool isEmpty() const
     {
       return count == 0;
+    }
+
+    /**
+     * Constant refernece to the i-th byte.
+     */
+    OZ_ALWAYS_INLINE
+    const char& operator [] ( int i ) const
+    {
+      hard_assert( 0 <= i && i < count );
+
+      return buffer[i];
+    }
+
+    /**
+     * First character or null character if empty string.
+     */
+    char first() const
+    {
+      return buffer[0];
+    }
+
+    /**
+     * Last character or null character if empty string.
+     */
+    char last() const
+    {
+      return count == 0 ? '\0' : buffer[count - 1];
     }
 
     /**
@@ -615,6 +651,46 @@ class String
     int hash() const
     {
       return hash( buffer );
+    }
+
+    /**
+     * Parse boolean value (must exactly match either "true" or "false").
+     *
+     * If parsing fails, a ParseException is thrown.
+     */
+    bool parseBool() const
+    {
+      return parseBool( buffer );
+    }
+
+    /**
+     * Parse integer value.
+     *
+     * If parsing fails, a ParseException is thrown.
+     */
+    int parseInt() const
+    {
+      return parseInt( buffer );
+    }
+
+    /**
+     * Parse float value.
+     *
+     * If parsing fails, a ParseException is thrown.
+     */
+    float parseFloat() const
+    {
+      return parseFloat( buffer );
+    }
+
+    /**
+     * Parse double value.
+     *
+     * If parsing fails, a ParseException is thrown.
+     */
+    double parseDouble() const
+    {
+      return parseDouble( buffer );
     }
 
     /**

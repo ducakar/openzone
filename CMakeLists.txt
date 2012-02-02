@@ -7,16 +7,20 @@ endif()
 project( openzone C CXX )
 
 #
-# Configuration begin
+# liboz configuration
+#
+
+set( OZ_SOVERSION "0.3" CACHE STRING "" FORCE )
+
+option( OZ_TRACK_LEAKS "Save stack trace on operator new calls and track memory leaks." OFF )
+
+#
+# OpenZone configuration
 #
 
 set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
 set( OZ_APPLICATION_VERSION "0.2.80" CACHE STRING "" FORCE )
 set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
-
-set( OZ_SOVERSION "0.3" CACHE STRING "" FORCE )
-
-option( OZ_TRACK_LEAKS "Save stack trace on operator new calls and track memory leaks." OFF )
 
 option( OZ_NETWORKING "Enable networking." OFF )
 option( OZ_GL_COMPATIBLE "Use OpenGL 2.1 plus FBOs (roughly OpenGL ES 2.0) instead of OpenGL 3.0." ON )
@@ -42,7 +46,7 @@ else()
   set( OZ_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" CACHE STRING "" FORCE )
 endif()
 
-mark_as_advanced( OZ_VERSION )
+mark_as_advanced( OZ_SOVERSION )
 mark_as_advanced( OZ_APPLICATION_NAME )
 mark_as_advanced( OZ_APPLICATION_VERSION )
 mark_as_advanced( OZ_APPLICATION_TITLE )

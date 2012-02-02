@@ -216,7 +216,7 @@ class DArray
     }
 
     /**
-     * True iff the same size and respective elements are equal.
+     * True iff respective elements are equal.
      */
     bool operator == ( const DArray& a ) const
     {
@@ -224,7 +224,7 @@ class DArray
     }
 
     /**
-     * False iff the same size and respective elements are equal.
+     * False iff respective elements are equal.
      */
     bool operator != ( const DArray& a ) const
     {

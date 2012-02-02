@@ -45,7 +45,7 @@ Imago* ExplosionImago::create( const Object* obj )
   modelId = obj->clazz->imagoModel;
 
   imago->smm = context.requestSMM( modelId );
-  imago->startMillis = timer.millis;
+  imago->startTime = timer.time;
 
   return imago;
 }
@@ -63,9 +63,9 @@ void ExplosionImago::draw( const Imago*, int mask )
     return;
   }
 
-  float millis = float( timer.millis - startMillis );
-  float radius = millis * obj->dim.z * 0.004f;
-  float alpha  = 1.0f - 0.002f * millis;
+  float time   = timer.time - startTime;
+  float radius = 4.0f * time * obj->dim.z;
+  float alpha  = 1.0f - 2.0f * time;
 
   if( shader.mode == Shader::SCENE ) {
     tf.model = Mat44::translation( obj->p - Point3::ORIGIN );

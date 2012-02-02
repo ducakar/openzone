@@ -37,7 +37,6 @@
 #include "client/Render.hh"
 #include "client/Loader.hh"
 
-#include <cerrno>
 #include <unistd.h>
 
 #ifdef _WIN32
@@ -164,11 +163,10 @@ int Client::main( int argc, char** argv )
         break;
       }
       case 't': {
-        errno = 0;
-        char* end;
-        benchmarkTime = strtof( optarg, &end );
-
-        if( errno != 0 ) {
+        try {
+          benchmarkTime = String::parseFloat( optarg );
+        }
+        catch( const String::ParseException& ) {
           printUsage();
           return EXIT_FAILURE;
         }
@@ -606,7 +604,7 @@ int Client::main( int argc, char** argv )
     }
 
     if( timeSpent > 100 * 1000 ) {
-      timer.drop( ( timeSpent - Timer::TICK_MICROS + 500 ) / 1000 );
+      timer.drop( timeSpent - Timer::TICK_MICROS );
       timeLast += timeSpent - Timer::TICK_MICROS;
     }
     timeLast += Timer::TICK_MICROS;

@@ -197,12 +197,12 @@ class Array
     }
 
     /**
-     * Number of elements.
+     * Always false since static array cannot have zero size.
      */
     OZ_ALWAYS_INLINE
-    int capacity() const
+    bool isEmpty() const
     {
-      return SIZE;
+      return false;
     }
 
     /**

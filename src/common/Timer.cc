@@ -37,29 +37,29 @@ Timer::Timer()
 
 void Timer::reset()
 {
-  runMillis   = 0;
+  runMicros   = 0;
 
   ticks       = 0;
-  millis      = 0;
+  micros      = 0;
   time        = 0.0f;
 
   nFrames     = 0;
   frameTicks  = 0;
-  frameMillis = 0;
+  frameMicros = 0;
   frameTime   = 0.0f;
 }
 
 void Timer::tick()
 {
-  runMillis   += TICK_MILLIS;
+  runMicros   += TICK_MICROS;
 
   ++ticks;
-  millis      += TICK_MILLIS;
-  time        = float( millis ) / 1000.0f;
+  micros      += TICK_MICROS;
+  time        = float( micros ) / 1000000.0f;
 
   ++frameTicks;
-  frameMillis += TICK_MILLIS;
-  frameTime   += TICK_TIME;
+  frameMicros += TICK_MICROS;
+  frameTime   = float( frameMicros ) / 1000000.0f;
 }
 
 void Timer::frame()
@@ -67,13 +67,13 @@ void Timer::frame()
   ++nFrames;
 
   frameTicks  = 0;
-  frameMillis = 0;
+  frameMicros = 0;
   frameTime   = 0.0f;
 }
 
-void Timer::drop( uint millis_ )
+void Timer::drop( uint micros_ )
 {
-  runMillis += millis_;
+  runMicros += micros_;
 }
 
 }

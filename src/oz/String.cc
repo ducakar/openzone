@@ -29,6 +29,7 @@
 
 #include "String.hh"
 
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 
@@ -58,7 +59,56 @@ bool String::endsWith( const char* s, const char* sub )
   return subEnd < sub;
 }
 
-inline String::String( int count_, int ) :
+bool String::parseBool( const char* s )
+{
+  if( s[0] == 'f' && s[1] == 'a' && s[2] == 'l' && s[3] == 's' && s[4] == 'e' && s[5] == '\0' ) {
+    return false;
+  }
+  else if( s[0] == 't' && s[1] == 'r' && s[2] == 'u' && s[3] == 'e' && s[4] == '\0' ) {
+    return true;
+  }
+  else {
+    throw ParseException();
+  }
+}
+
+int String::parseInt( const char* s )
+{
+  char* end;
+  errno = 0;
+  int i = int( strtol( s, &end, 0 ) );
+
+  if( errno != 0 || *end != '\0' || s[0] == '\0' ) {
+    throw ParseException();
+  }
+  return i;
+}
+
+float String::parseFloat( const char* s )
+{
+  char* end;
+  errno = 0;
+  float f = strtof( s, &end );
+
+  if( errno != 0 || *end != '\0' || s[0] == '\0' ) {
+    throw ParseException();
+  }
+  return f;
+}
+
+double String::parseDouble( const char* s )
+{
+  char* end;
+  errno = 0;
+  double d = strtod( s, &end );
+
+  if( errno != 0 || *end != '\0' || s[0] == '\0' ) {
+    throw ParseException();
+  }
+  return d;
+}
+
+String::String( int count_, int ) :
   count( count_ )
 {
   ensureCapacity();

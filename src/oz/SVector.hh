@@ -131,7 +131,7 @@ class SVector
     {}
 
     /**
-     * True iff all elements are equal.
+     * True iff respective elements are equal.
      */
     bool operator == ( const SVector& v ) const
     {
@@ -139,7 +139,7 @@ class SVector
     }
 
     /**
-     * False if all elements are equal.
+     * False if respective elements are equal.
      */
     bool operator != ( const SVector& v ) const
     {

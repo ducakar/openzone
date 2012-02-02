@@ -327,7 +327,6 @@ void Shader::init()
 
   colour    = Vec4::ONE;
   isInWater = false;
-  isLoaded  = false;
 
   for( int i = 0; i < library.shaders.length(); ++i ) {
     loadProgram( i, sources, lengths );

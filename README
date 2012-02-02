@@ -5,177 +5,170 @@
 
 Free camera controls
 --------------------
-mouse movement      - rotate camera (when in UI mode, push mouse cursor into screen borders)
-arrow keys          - rotate camera
-w/a/s/d             - move forwards, left, backwards, right
-Space               - up/increase height
-LCtrl               - down/decrease height
-LShift              - toggle fast move
-Tab                 - toggle interface mode
-Numpad Enter        - switch between FreeCam and Strategic camera
-i                   - incarnate into the selected bot (also works when the bot is inside a vehicle)
+mouse movement  - rotate camera
+arrow keys      - rotate camera
+w/a/s/d         - move forwards / left / backwards / right
+Space           - up / increase height
+LCtrl           - down / decrease height
+LShift          - toggle fast move
+Tab             - toggle interface mode
+Numpad Enter    - switch between FreeCam and Strategic camera
+i               - incarnate into the selected bot (or selected vehicle's pilot)
 
 Bot controls
 ------------
-mouse movement      - look around (when in UI mode, push mouse cursor into screen borders)
-arrow keys          - look around
-w/a/s/d             - move forwards, left, backwards, right
-LShift              - toggle run
-LCtrl               - toggle crouch
-Space               - jump
+mouse movement  - look around
+arrow keys      - look around
+w/a/s/d         - move forwards / left / backwards / right
+LShift          - toggle run
+LCtrl           - toggle crouch
+Space           - jump
 
-left click          - trigger equipped weapon or rotate object you are holding
-right click         - activate tagged object or enter tagged vehicle
-middle click        - grab tagged object or drop object you are holding
-wheel up            - throw object you are holding
-wheel down          - put tagged object into inventory
+left click      - trigger equipped weapon / rotate object you are holding one
+right click     - perform action on tagged object
+middle click    - grab tagged object / drop object you are holding
+wheel up        - throw object you are holding
+wheel down      - put tagged object into inventory
 
-Alt + k             - commit suicide
-Alt + p             - toggle ability to step over small obstacles, e.g. walk up the stairs
-i                   - leave bot
+Alt + k         - commit suicide
+i               - un-incarnate bot
 
-Tab                 - toggle interface mode
-Numpad Enter        - switch between 1st person and 3rd person camera
-Numpad *            - toggle freelook (look around without rotating the bot)
+Tab             - toggle interface mode
+Numpad Enter    - switch between 1st person and 3rd person camera
 
-f                   - point gesture
-g                   - fall back gesture
-h                   - salute gesture
-j                   - wave gesture
-k                   - flip out gesture
-l                   - play all animations
+f               - point gesture
+g               - fall back gesture
+h               - salute gesture
+j               - wave gesture
+k               - flip out gesture
+l               - play all animations
 
 Inventory
 ---------
-left click          - drop item or move item between inventories when you have two inventory windows
-middle click        - grab item from your inventory
-right click         - activate item or for weapons: arm/disarm
+left click      - drop item / move item between inventories
+middle click    - grab item
+right click     - perform action on item
 
 Vehicle controls
 ----------------
-mouse movement      - look around (when in UI mode, push mouse cursor into screen borders)
-arrow keys          - look around
-w/a/s/d             - move forwards, left, backwards, right
-Space               - up (air vehicles only)
-LCtrl               - down (air vehicles only)
+mouse movement  - rotate vehicle
+arrow keys      - rotate vehicle
+w/a/s/d         - move forwards / left / backwards / right
+Space           - up (air vehicles only)
+LCtrl           - down (air vehicles only)
 
-left click          - trigger selected weapon
-right click         - select next weapon
+left click      - trigger selected weapon
+right click     - select next weapon
 
-x                   - exit vehicle
-Alt + x             - eject from vehicle
+x               - exit vehicle
+Alt + x         - eject from vehicle
+
+Numpad *        - toggle freelook (look around without rotating the vehicle)
 
 Misc controls
 -------------
-Esc                 - exit to main menu
+Esc             - exit to main menu
 
-LAlt + drag         - move UI windows
+Alt + drag      - move UI windows
 
-o                   - rotate sky forward fast
-Shift + o           - rotate sky backwards fast
+o               - rotate sky forward fast
+Shift + o       - rotate sky backwards fast
 
-F5                  - quick save (to <config>/saves/quicksave.ozState)*
-F7                  - quick load (from <config>/saves/quicksave.ozState)*
-F8                  - load autosaved state (from <config>/saves/autosave.ozState)*
-F10                 - screenshot (to <config>/screenshots/screenshot DATE TIME.bmp)*
-F11                 - toggle fullscreen mode
-Ctrl + F11          - toggle mouse centring and system cursor visibility (only in windowed mode)
-F12                 - minimise and pause
-Ctrl + F12          - exit application
+F5              - quick save (to <config>/saves/quicksave.ozState)*
+F7              - quick load (from <config>/saves/quicksave.ozState)*
+F8              - load autosaved state (from <config>/saves/autosave.ozState)*
+F10             - screenshot (to <config>/screenshots/screenshot DATE TIME.bmp)*
+F11             - toggle fullscreen mode
+Ctrl + F11      - toggle mouse centring and cursor visibility in windowed mode
+F12             - minimise and pause
+Ctrl + F12      - exit application
 
 * Location of <config> directory:
-  - Linux:      /home/<user>/.config/openzone
-  - Wine:       /home/<user>/.wine/drive_c/users/<user>/Application Data/openzone
-  - Windows XP: C:\Documents and Settings\<user>\Application Data\openzone
-  - Windows 7:  C:\Users\<user>\AppData\Roaming\openzone
+- Linux: /home/<user>/.config/openzone
+- WinXP: C:\Documents and Settings\<user>\Application Data\openzone
+- Win7:  C:\Users\<user>\AppData\Roaming\openzone
 
 Troubleshooting
 ---------------
 - Make sure you have the *LATEST* display drivers.
-- Turning off desktop effects on Linux may improve performance when running in windowed mode.
-- You need at least OpenGL 2.1 compatible graphic card & driver that additionally supports the
-  following extensions:
+- Turning off desktop effects on Linux may significantly improve performance.
+- You need at least OpenGL 2.1 compatible graphic card & driver with support of
+  the following extensions:
   - GL_ARB_framebuffer_object and
   - GL_EXT_texture_compression_s3tc.
-  A cards with complete DirectX 9.0c support should do, a DirectX 10 card will certainly do.
-  On Linux the engine works both with properitary and opensource Gallium3D drivers.
-- If you are using Gallium3D based drivers and all textures are (mostly) missing, set
-  shader.setSamplerIndices to "false" in client.rc file.
+  Cards with complete DirectX 9.0c support should do. On Linux, the engine works
+  with both properitary and opensource Gallium3D drivers.
+- If you are using Gallium3D-based drivers and textures are (mostly) missing,
+  set shader.setSamplerIndices to "false" in <config>/client.rc file.
 - If you are using AMD/ATI Catalyst driver and terrain looks white/grey, set
-  shader.setSamplerIndices to "true" in client.rc file.
-- If you are using some old graphics card or AMD/ATI Catalyst drivers and MD2 models are missing
-  set shader.vertexTexture to "false" in client.rc file.
-- For better performance you can enable MD2 animation to be performed in the vertex shader by
-  setting shader.vertexTexture to "true" in client.rc file.
+  shader.setSamplerIndices to "true" in <config>/client.rc file.
+- If you are using some old graphics card or AMD/ATI Catalyst drivers and MD2
+  models are missing set shader.vertexTexture to "false" in <config>/client.rc
+  file. Otherwise set it to "true" for better rendering performance.
 
-Run-time dependencies
----------------------
-For Windows build, all dependencies are included.
-On Linux you need following libraries/packages installed:
+Dependencies
+------------
+Binary packages already either include all required libraries or list them as
+dependencies.
+
+The following libraries are required in run-time:
 - libpulse
-- PhysFS
+- PhysicsFS
 - SDL
 - Lua
 - OpenGL
 - OpenAL
 - FreeImage (optional, for ozBuild tool)
 - libvorbis
-- libmad (optional, for MP3 support)
-- faad2 (optional, for AAC support).
-
-Build-time dependencies
------------------------
-- GNU/Linux or similar OS
-- cmake
-- GNU make
-- GNU binutils
-- GCC >= 4.6 or LLVM/Clang >= 3.0
-- gettext (optional, for translations)
-- development packages of all libraries from the previous section.
+- libmad (optional, to play MP3 files)
+- faad2 (optional, to play AAC files).
 
 Command line
 ------------
 openzone [-v] [-l | -i <mission>] [-t <num>] [-p <prefix>]
 
--v
-      More verbose log output.
+  -v
+        More verbose log output.
 
--l
-      Skip main menu and load the last autosaved state.
+  -l
+        Skip main menu and load the last autosaved state.
 
--i <mission>
-      Skip main menu and start mission <mission>.
-      Missions reside in <prefix>/share/openzone/lua/mission in files named
-      <mission>.lua files.
+  -i <mission>
+        Skip main menu and start mission <mission>.
+        Missions reside in <prefix>/share/openzone/lua/mission in files named
+        <mission>.lua files.
 
--t <num>
-      Exit after <num> seconds (can be a floating-point number) and use 42 as
-      the random seed. For benchmarking purposes.
+  -t <num>
+        Exit after <num> seconds (can be a floating-point number) and use 42 as
+        the random seed. Useful for benchmarking.
 
--p <prefix>
-      Sets data directory to <prefix>/share/openzone.
-      Default: '/usr'.
+  -p <prefix>
+        Sets data directory to <prefix>/share/openzone.
+        Default: '/usr'.
 
 Settings
 --------
-Settings file is located in "$HOME/.config/openzone/client.rc" on Linux-like systems or in
-"%APPDATA%\openzone\client.rc" on Windows. Full path is (assuming default setup):
-- Linux:      /home/<user>/.config/openzone/client.rc
-- Wine:       /home/<user>/.wine/drive_c/users/<user>/Application Data/openzone/client.rc
-- Windows XP: C:\Documents and Settings\<user>\Application Data\openzone\client.rc
-- Windows 7:  C:\Users\<user>\AppData\Roaming\openzone\client.rc
+Settings file is located in "$HOME/.config/openzone/client.rc" on Linux-like
+systems or in "%APPDATA%\openzone\client.rc" on Windows. Assuming default setup
+that is:
+- Linux: /home/<user>/.config/openzone/client.rc
+- WinXP: C:\Documents and Settings\<user>\Application Data\openzone\client.rc
+- Win7:  C:\Users\<user>\AppData\Roaming\openzone\client.rc
 
 variable [type] default_value
 -----------------------------
 _version [string] "0.3.0"
-  Version of OpenZone for which the settings file was created. If version doesn't match, OpenZone
-  saves updated configuration on exit. Obsolete variables are lost during that process.
+  Version of OpenZone for which the settings file was created. If version
+  doesn't match, OpenZone saves updated configuration on exit. Obsolete
+  variables are lost during that process.
 
 camera.angle [float] 80.0
-  Vertical camera angle in degrees. Horizontal angle adjusted depending on aspect ratio.
+  Vertical camera angle in degrees. Horizontal angle adjusted depending on
+  aspect ratio.
 
 camera.aspect [float] 0.0
-  Aspect ratio width/height. If 0.0, it is determined from the screen resolution.
+  Aspect ratio (width/height). If 0.0, it is determined from the screen
+  resolution.
 
 camera.keysXSens [float] 1.0
   Key sensitivity for left/right arrow keys.
@@ -190,33 +183,35 @@ camera.mouseYSens [float] 1.0
   Vertical mouse sensitivity.
 
 dir.music [string] ""
-  Top directory that will be recursively searched for *.oga, *.ogg, *.mp3 and *.aac. All found
-  tracks will be accessible from Music Player along the original tracks included in game data.
+  Top directory that will be recursively searched for *.oga, *.ogg, *.mp3 and
+  *.aac files. All found tracks will be accessible from Music Player along the
+  original tracks included in game data.
 
 dir.prefix [string] Linux: "/usr", Windows: "."
-  Prefix path to game directory structure. The share/openzone and share/locale directories should be
-  located inside the prefix directory.
+  Prefix path to game directory structure. The share/openzone directory should
+  be located inside the prefix directory.
 
 lingua [string] ""
-  Language code for translations. Language code must correspond to a subdirectory of "lingua"
-  directory in one of game data archives.
+  Language code for translations. Language code must correspond to a
+  subdirectory of "lingua" directory in one of game data archives.
 
 modules.profile.playerName [string] "<user>"
-  Name of the player. Capitalised username of the current user is used by default.
+  Name of the player. Capitalised username of the current user by default.
 
 mouse.accelFactor [float] 0.04
-  Usually OS applies mouse acceleration before OpenZone reads the mouse input. The only exception is
-  when running in fullscreen mode on X11 server. In that case OpenZone tries to emulate X11 mouse
-  acceleration, since mouse cursor moves pretty slow otherwise.
+  Usually OS applies mouse acceleration before OpenZone reads the mouse input.
+  The only exception is when running in fullscreen mode on X11 server. In this
+  case OpenZone tries to emulate X11 mouse acceleration.
 
 render.deferred [bool] false
   Enable deferred shading. Not really implemented yet.
   This option has effect only if offscreen rendering is enabled.
 
 render.offscreen [bool] true
-  Enable rendering into offscreen buffers instead directly to the screen. This enables some advanced
-  effects like deferred shading and postprocessing. It also enables that the world is rendered at
-  resolution that differ from the screen resolution.
+  Enable rendering into offscreen buffers instead directly to the screen. This
+  enables some advanced effects like deferred shading and postprocessing. It
+  also enables that the world is rendered at resolution that differ from the
+  screen resolution.
 
 render.postprocess [bool] true
   Enable postprocessing when using offscreen rendering.
@@ -225,30 +220,21 @@ render.scale [float] 1.0
   Scale of resolution of offscreen buffer where world is rendered to.
 
 render.showAim [bool] false
-  Draw a small green box at the point you are currenty aiming at. It was intended for testing
-  collision detection.
+  Draw a small green box at the point you are currenty aiming at. It was
+  intended for testing collision detection.
 
 render.showBounds [bool] false
-  Show AABBs of objects. Green for solid objects, grey for non-solid objects, blue for structures
-  and red for structure entities.
+  Show AABBs of objects. Green for solid objects, grey for non-solid objects,
+  blue for structures and red for structure entities.
 
 render.visibilityRange [float] 300.0
-  Visibility range.
+  Visible range.
 
 screen.full [bool] false
   Start in fullscreen mode.
 
 screen.height [int] 0
   Vertical screen resolution. Zero equals desktop resolution.
-
-screen.disableScreensaver [bool] false
-  Usually there is no need to explicitly disable screensaver. Most systems prevent screensaver from
-  starting when there is an application running in fullscreen. Furthermore, player moves the mouse
-  and/or presses the keys most of the time while playing a game.
-
-  You can still set this to true if you want to turn off screensaver anyway. Note that if the
-  application does not terminate properly, the screensaver may remain turned off and it may also
-  break auto-away feature in various applications.
 
 screen.vsync [bool] true
   Try to turn on vertical synchronisation.
@@ -257,18 +243,21 @@ screen.width [int] 0
   Horizontal screen resolution. Zero equals desktop resolution.
 
 seed [int | string] "TIME"
-  Seed for random number generator. Can be an integer or "TIME" to use the current time as the seed.
+  Seed for random number generator. Can be an integer or "TIME" to use the
+  current time as the seed.
 
 shader.setSamplerIndices [bool] false
-  Set indices for texture samplers. If set, breaks textures on Gallium3D driver. If not set, breaks
-  textures on older ATI/AMD Catalyst drivers.
+  Set indices for texture samplers. If set, breaks textures on Gallium3D driver.
+  If not set, breaks textures on older ATI/AMD Catalyst drivers.
 
 shader.vertexTexture [bool] false
-  Use vertex texture fetch feature to perform mesh animation in vertex shader. Should work on
-  GeForce 6 or newer and Radeon HD 2xxx or newer. Does not work with Catalyst drivers.
+  Use vertex texture fetch feature to perform mesh animation in vertex shader.
+  Should work on GeForce 6 or newer and Radeon HD 2xxx or newer. Does not work
+  with Catalyst drivers.
 
 sound.device [string] ""
-  Sound device to pass to OpenAL. If empty string, OpenAL chooses default device.
+  Sound device to pass to OpenAL. If empty string, choice is left to OpenAL.
+  To see available devices look into log file <config>/client.log.
 
 sound.volume [float] 1.0
   Sound volume. 1.0 means full (original) intensity.
@@ -280,11 +269,16 @@ ui.scale [float] 1.0
   Scale for UI resolution.
 
 ui.showBuild [bool] false
-  Show a windows with buttons to add various objects into the world. For development purpuses.
+  Show a windows with buttons to add various objects into the world. For
+  development purpuses.
 
 ui.showDebug [bool] false
-  Show a window that shows coordinates, orientation and other data about camera, controlled bot,
-  tagged object etc. For development purposes.
+  Show a window that shows coordinates, orientation and other data about camera,
+  controlled bot, tagged object etc. For development purposes.
+
+ui.showFPS
+  Show frames per second. Since world simulation runs on 60 Hz FPS cannot be
+  higher than this value.
 
 OpenZone engine copyright
 -------------------------
@@ -292,14 +286,15 @@ Copyright © 2002-2012 Davorin Učakar
 Author:  Davorin Učakar
 Contact: davorin.ucakar@gmail.com
 
-This program comes with ABSOLUTELY NO WARRANTY.
-This is free software under GNU GPLv3 licence, and you are welcome to redistribute it
-under certain conditions; See COPYING file for details.
+This program comes with ABSOLUTELY NO WARRANTY. This is free software under GNU
+GPLv3 licence, and you are welcome to redistribute it under certain conditions;
+See COPYING file for details.
 
 liboz library alone can also be distributed under X11 licence;
 See etc/COPYING.liboz file for details.
 
 Data copyrights
 ---------------
-Data (everything under 'share/openzone' directory) and included libraries ('*.dll' under 'bin'
-directory) are work of various authors. See respective *README and *COPYING files for details.
+Data (everything under 'share/openzone' directory) and included libraries
+('*.dll' under 'bin' directory) is work of various authors. See respective
+README* and COPYING* files (in the ZIP archives) for details.

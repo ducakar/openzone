@@ -372,7 +372,7 @@ class Map
     {}
 
     /**
-     * True iff same size or respective elements are equal.
+     * True iff respective elements are equal.
      */
     bool operator == ( const Map& m ) const
     {
@@ -380,7 +380,7 @@ class Map
     }
 
     /**
-     * False iff same size or respective elements are equal.
+     * False iff respective elements are equal.
      */
     bool operator != ( const Map& m ) const
     {

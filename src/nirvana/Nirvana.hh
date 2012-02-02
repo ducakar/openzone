@@ -46,8 +46,8 @@ class Nirvana
 
     HashString<Device::CreateFunc*, 32> deviceClasses;
 
-    HashIndex<Device*, 4093> devices;
-    HashIndex<Mind*, 4093>   minds;
+    HashIndex<Device*, 8191> devices;
+    HashIndex<Mind*, 12281>  minds;
 
     void sync();
     void update();

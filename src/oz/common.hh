@@ -249,6 +249,8 @@ template <typename Value>
 OZ_ALWAYS_INLINE
 inline const Value& clamp( const Value& c, const Value& a, const Value& b )
 {
+  hard_assert( !( b < a ) );
+
   return c < a ? a : ( b < c ? b : c );
 }
 

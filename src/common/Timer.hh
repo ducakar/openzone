@@ -37,23 +37,23 @@ class Timer
     static const     uint  TICK_MICROS   = ( 1000000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;
     static const     uint  TICK_MILLIS   = ( 1000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;
 
-    uint  runMillis;
+    ulong64 runMicros;
 
-    uint  ticks;
-    uint  millis;
-    float time;
+    ulong64 ticks;
+    ulong64 micros;
+    float   time;
 
-    uint  nFrames;
-    uint  frameTicks;
-    uint  frameMillis;
-    float frameTime;
+    ulong64 nFrames;
+    ulong64 frameTicks;
+    ulong64 frameMicros;
+    float   frameTime;
 
     Timer();
 
     void reset();
     void tick();
     void frame();
-    void drop( uint millis );
+    void drop( uint micros );
 
 };
 

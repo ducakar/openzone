@@ -6,6 +6,7 @@ URL:            https://github.com/ducakar/openzone/
 License:        GPLv3+
 Group:          Amusements/Games
 Packager:       Davorin Učakar <davorin.ucakar@gmail.com>
+Source:         openzone-src-%{version}.tar.xz
 Source1:        ozbase.zip
 Source2:        openzone.zip
 
@@ -36,12 +37,7 @@ Requires:       %{name} = %{version}
 Game data for OpenZone. Includes tutorials, testing world and cviček mission.
 
 %prep
-if [ ! -d openzone ]; then
-  git clone /home/davorin/Projects/openzone
-  ( cd openzone && git checkout devel )
-fi
-
-( cd openzone && git pull )
+tar xf %{_sourcedir}/openzone-src-%{version}.tar.xz
 
 %build
 mkdir -p openzone-build && cd openzone-build

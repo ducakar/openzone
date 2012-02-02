@@ -489,9 +489,9 @@ void GameStage::unload()
   float matrixTime            = float( matrixMillis )                   * 0.001f;
   float nirvanaTime           = float( nirvanaMillis )                  * 0.001f;
   float loadingTime           = float( loadingMillis )                  * 0.001f;
-  float runTime               = float( timer.runMillis )                * 0.001f;
-  float gameTime              = float( timer.millis )                   * 0.001f;
-  float droppedTime           = float( timer.runMillis - timer.millis ) * 0.001f;
+  float runTime               = float( timer.runMicros )                * 0.000001f;
+  float gameTime              = float( timer.micros )                   * 0.000001f;
+  float droppedTime           = float( timer.runMicros - timer.micros ) * 0.000001f;
   float frameDropRate         = float( timer.ticks - timer.nFrames ) / float( timer.ticks );
 
   if( isLoaded ) {

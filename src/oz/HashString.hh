@@ -64,8 +64,7 @@ class HashString
       template <typename Key_, typename Value_>
       OZ_ALWAYS_INLINE
       explicit Elem( Key_&& key_, Value_&& value_, Elem* next_ ) :
-        key( static_cast<Key_&&>( key_ ) ), value( static_cast<Value_&&>( value_ ) ),
-        next( next_ )
+        key( static_cast<Key_&&>( key_ ) ), value( static_cast<Value_&&>( value_ ) ), next( next_ )
       {}
 
       OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
@@ -472,7 +471,7 @@ class HashString
     bool operator != ( const HashString& t ) const
     {
       if( count != t.count ) {
-        return false;
+        return true;
       }
       for( int i = 0; i < SIZE; ++i ) {
         if( !areChainsEqual( data[i], t.data[i] ) ) {
@@ -528,7 +527,7 @@ class HashString
     }
 
     /**
-     * length / capacity.
+     * Length divided by capacity.
      */
     float loadFactor() const
     {

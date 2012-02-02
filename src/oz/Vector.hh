@@ -241,7 +241,7 @@ class Vector
     {}
 
     /**
-     * True iff same size and all elements are equal.
+     * True iff respective elements are equal.
      */
     bool operator == ( const Vector& v ) const
     {
@@ -249,7 +249,7 @@ class Vector
     }
 
     /**
-     * False iff same size and all elements are equal.
+     * False iff respective elements are equal.
      */
     bool operator != ( const Vector& v ) const
     {

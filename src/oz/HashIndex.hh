@@ -511,7 +511,7 @@ class HashIndex
     }
 
     /**
-     * Length / capacity.
+     * Length divided by capacity.
      */
     float loadFactor() const
     {

@@ -120,6 +120,8 @@ class Math
     OZ_ALWAYS_INLINE
     static float fmod( float x, float y )
     {
+      hard_assert( y != 0.0f );
+
       return __builtin_fmodf( x, y );
     }
 
@@ -138,6 +140,8 @@ class Math
     OZ_ALWAYS_INLINE
     static float sqrt( float x )
     {
+      hard_assert( x >= 0.0f );
+
       return __builtin_sqrtf( x );
     }
 
@@ -156,6 +160,8 @@ class Math
     OZ_ALWAYS_INLINE
     static float log( float x )
     {
+      hard_assert( x > 0.0f );
+
       return __builtin_logf( x );
     }
 
@@ -165,6 +171,8 @@ class Math
     OZ_ALWAYS_INLINE
     static float pow( float x, float y )
     {
+      hard_assert( x >= 0.0f );
+
       return __builtin_powf( x, y );
     }
 
@@ -213,6 +221,8 @@ class Math
     OZ_ALWAYS_INLINE
     static float asin( float x )
     {
+      hard_assert( -1.0f <= x && x <= 1.0f );
+
       return __builtin_asinf( x );
     }
 
@@ -222,6 +232,8 @@ class Math
     OZ_ALWAYS_INLINE
     static float acos( float x )
     {
+      hard_assert( -1.0f <= x && x <= 1.0f );
+
       return __builtin_acosf( x );
     }
 
@@ -353,20 +365,23 @@ class Math
     }
 
     /**
-     * Fast square root.
+     * Fast square root (calculated via fast square root from Quake).
      */
     OZ_ALWAYS_INLINE
     static float fastSqrt( float x )
     {
-      return x * fastInvSqrt( x );
+      float y = fromBits( 0x5f3759df - ( toBits( x ) >> 1 ) );
+      return x * y * ( 1.5f - 0.5f * x * y*y );
     }
 
     /**
-     * Fast inverse square root, the on used in Quake.
+     * Fast inverse square root, the one used in Quake.
      */
     OZ_ALWAYS_INLINE
     static float fastInvSqrt( float x )
     {
+      hard_assert( x != 0.0f );
+
       float y = fromBits( 0x5f3759df - ( toBits( x ) >> 1 ) );
       return y * ( 1.5f - 0.5f * x * y*y );
     }
@@ -388,6 +403,8 @@ class Math
     OZ_ALWAYS_INLINE
     static Value mix( const Value& a, const Value& b, float t )
     {
+      hard_assert( 0.0f <= t && t <= 1.0f );
+
       return a + t * ( b - a );
     }
 
