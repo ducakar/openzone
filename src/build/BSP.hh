@@ -293,8 +293,6 @@ class BSP : public Bounds
 
     Vector<BoundObject>     boundObjects;
 
-    bool includes( const matrix::BSP::Brush& brush, float maxDim ) const;
-
     void load();
     void optimise();
     void check() const;

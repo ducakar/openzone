@@ -43,20 +43,6 @@ const float BSP::DEFAULT_LIFE       = 10000.0f;
 const float BSP::DEFAULT_RESISTANCE = 400.0f;
 const float BSP::DEFAULT_MARGIN     = 0.1f;
 
-inline bool BSP::includes( const matrix::BSP::Brush& brush, float maxDim ) const
-{
-  for( int i = 0; i < brush.nSides; ++i ) {
-    const Plane& plane = planes[ brushSides[brush.firstSide + i] ];
-
-    float offset = Vec3( maxDim, maxDim, maxDim ) * plane.abs();
-
-    if( offset <= plane.d ) {
-      return false;
-    }
-  }
-  return true;
-}
-
 void BSP::load()
 {
   PhysFile rcFile( String::str( "baseq3/maps/%s.rc", name.cstr() ) );
@@ -71,7 +57,6 @@ void BSP::load()
   description = bspConfig.get( "description", "" );
 
   float scale = bspConfig.get( "scale", DEFAULT_SCALE );
-  float maxDim = bspConfig.get( "maxDim", Math::INF );
 
   life = bspConfig.get( "life", DEFAULT_LIFE );
   resistance = bspConfig.get( "resistance", DEFAULT_RESISTANCE );
@@ -79,10 +64,10 @@ void BSP::load()
   fragPool = bspConfig.get( "fragPool", "" );
   nFrags   = bspConfig.get( "nFrags", 0 );
 
-  mins = Point3( -maxDim, -maxDim, -maxDim );
-  maxs = Point3( +maxDim, +maxDim, +maxDim );
+  mins = Point3( -Math::INF, -Math::INF, -Math::INF );
+  maxs = Point3( +Math::INF, +Math::INF, +Math::INF );
 
-  if( Math::isnan( scale ) || Math::isnan( maxDim ) ) {
+  if( Math::isnan( scale ) ) {
     throw Exception( "Invalid BSP config" );
   }
 
@@ -121,17 +106,18 @@ void BSP::load()
     textures[i].flags = is.readInt();
     textures[i].type  = is.readInt();
 
-    if( textures[i].name.length() < 10 || textures[i].name.endsWith( "NONE" ) ||
-        ( textures[i].flags & QBSP_LADDER_FLAG_BIT ) )
-    {
-      textures[i].name = "";
+    if( textures[i].name.equals( "noshader" ) ) {
+      textures[i].name = textures[i].name;
+    }
+    else if( textures[i].name.length() <= 9 ) {
+      throw Exception( "Invalid texture name '%s'", textures[i].name.cstr() );
     }
     else {
       textures[i].name = textures[i].name.substring( 9 );
     }
 
     log.println( "Texture '%s' flags %x type %x",
-                 name.cstr(),
+                 textures[i].name.cstr(),
                  textures[i].flags,
                  textures[i].type );
   }
@@ -332,12 +318,6 @@ void BSP::load()
 
     int texture = is.readInt();
 
-    // brush out of bounds, mark it for exclusion
-    if( !includes( brushes[i], maxDim ) ) {
-      brushes[i].nSides = 0;
-      continue;
-    }
-
     if( textures[texture].flags & QBSP_LADDER_FLAG_BIT ) {
       brushes[i].material |= Material::LADDER_BIT;
     }
@@ -437,18 +417,6 @@ void BSP::load()
     // int size[2]
     is.readInt();
     is.readInt();
-
-    for( int j = 0; j < faces[i].nVertices; ++j ) {
-      const Vertex& vertex = vertices[ faces[i].firstVertex + j ];
-
-      if( vertex.pos[0] < -maxDim || vertex.pos[0] > +maxDim ||
-          vertex.pos[1] < -maxDim || vertex.pos[1] > +maxDim ||
-          vertex.pos[2] < -maxDim || vertex.pos[2] > +maxDim )
-      {
-        faces[i].nIndices = 0;
-        break;
-      }
-    }
   }
 
   char keyBuffer[] = "object  ";
@@ -844,7 +812,7 @@ void BSP::optimise()
 
     aRemove( faces, i, nFaces );
     --nFaces;
-    log.print( "outside face removed " );
+    log.println( "outside face removed" );
 
     // adjust face references
     for( int j = 0; j < nModels + 1; ++j ) {
@@ -857,7 +825,6 @@ void BSP::optimise()
         --modelFaces[j].nFaces;
       }
     }
-    log.printEnd();
   }
 
   log.unindent();
