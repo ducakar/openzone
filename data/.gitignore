@@ -1,5 +1,4 @@
-!/.gitignore
-/netradiant
-/*/*
-!/*/glsl
-!/*/lua
+/*
+!/netradiant
+!/openzone/glsl
+!/openzone/lua
