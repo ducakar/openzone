@@ -18,25 +18,30 @@
  */
 
 /**
- * @file build/modules/GalileoModule.hh
+ * @file client/modules/ProfileModule.hh
  */
 
 #pragma once
 
-#include "build/common.hh"
+#include "client/common.hh"
 
 namespace oz
 {
-namespace build
+namespace client
 {
 
-class GalileoModule
+class Profile
 {
   public:
 
-    static void build();
+    String playerName;
+
+    void init();
+    void free();
 
 };
+
+extern Profile profile;
 
 }
 }

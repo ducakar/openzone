@@ -23,7 +23,7 @@
 
 #include "stable.hh"
 
-#include "client/modules/FloraModule.hh"
+#include "modules/flora/FloraModule.hh"
 
 #include "matrix/Library.hh"
 #include "matrix/Collider.hh"
@@ -33,9 +33,11 @@
 
 #include "luamacros.hh"
 
+using namespace oz::client;
+
 namespace oz
 {
-namespace client
+namespace module
 {
 
 // plants/m2
@@ -74,7 +76,7 @@ void FloraModule::addTree( float x, float y )
 
   AABB bounds = AABB( pos, clazz->dim * SPACING );
 
-  if( !collider.overlapsOSO( bounds ) ) {
+  if( !client::collider.overlapsOSO( bounds ) ) {
     synapse.addObject( type, pos, Heading( Math::rand( 4 ) ) );
     ++number;
   }
@@ -91,7 +93,7 @@ void FloraModule::addPlant( const char* type, float x, float y )
     return;
   }
 
-  if( !collider.overlapsOSO( bounds ) ) {
+  if( !client::collider.overlapsOSO( bounds ) ) {
     synapse.addObject( type, pos, Heading( Math::rand( 4 ) ) );
     ++number;
   }

@@ -31,6 +31,8 @@
 
 #include "nirvana/Nirvana.hh"
 
+#include "modules/Modules.hh"
+
 #include "client/Loader.hh"
 #include "client/Render.hh"
 #include "client/Sound.hh"
@@ -39,7 +41,6 @@
 #include "client/Lua.hh"
 #include "client/QuestList.hh"
 #include "client/MenuStage.hh"
-#include "client/Module.hh"
 
 #include "client/ui/LoadingArea.hh"
 
@@ -93,10 +94,7 @@ bool GameStage::read( const char* path )
 
   questList.read( &istream );
   camera.read( &istream );
-
-  for( int i = 0; i < modules.length(); ++i ) {
-    modules[i]->read( &istream );
-  }
+  modules.read( &istream );
 
   lua.read( &istream );
 
@@ -119,10 +117,7 @@ void GameStage::write( const char* path ) const
 
   questList.write( &ostream );
   camera.write( &ostream );
-
-  for( int i = 0; i < modules.length(); ++i ) {
-    modules[i]->write( &ostream );
-  }
+  modules.write( &ostream );
 
   lua.write( &ostream );
 
@@ -156,10 +151,7 @@ void GameStage::reload()
 
   camera.reset();
 
-  for( int i = modules.length() - 1; i >= 0; --i ) {
-    modules[i]->unload();
-  }
-
+  modules.unload();
   context.unload();
   render.unload();
   questList.unload();
@@ -173,17 +165,12 @@ void GameStage::reload()
   nirvana.load();
 
   lua.init();
-  for( int i = 0; i < modules.length(); ++i ) {
-    modules[i]->registerLua();
-  }
+  modules.registerLua();
 
   questList.load();
   render.load();
   context.load();
-
-  for( int i = modules.length() - 1; i >= 0; --i ) {
-    modules[i]->load();
-  }
+  modules.load();
 
   if( stateFile.isEmpty() ) {
     log.println( "Initialising new world" );
@@ -301,11 +288,7 @@ bool GameStage::update()
 
   camera.update();
   ui::ui.update();
-
-  for( int i = 0; i < modules.length(); ++i ) {
-    modules[i]->update();
-  }
-
+  modules.update();
   lua.update();
 
   uiMillis += Time::clock() - beginTime;
@@ -395,9 +378,7 @@ void GameStage::load()
   nirvana.load();
 
   lua.init();
-  for( int i = 0; i < modules.length(); ++i ) {
-    modules[i]->registerLua();
-  }
+  modules.registerLua();
 
   questList.load();
   render.load();
@@ -406,9 +387,7 @@ void GameStage::load()
   camera.reset();
   camera.setState( Camera::STRATEGIC );
 
-  for( int i = modules.length() - 1; i >= 0; --i ) {
-    modules[i]->load();
-  }
+  modules.load();
 
   if( stateFile.isEmpty() ) {
     log.println( "Initialising new world" );
@@ -498,11 +477,9 @@ void GameStage::unload()
     write( AUTOSAVE_FILE );
   }
 
-  camera.reset();
+  modules.unload();
 
-  for( int i = modules.length() - 1; i >= 0; --i ) {
-    modules[i]->unload();
-  }
+  camera.reset();
 
   context.unload();
   render.unload();
@@ -583,15 +560,10 @@ void GameStage::init()
   AUTOSAVE_FILE = String::str( "%s/saves/autosave.ozState", config.get( "dir.config", "" ) );
   QUICKSAVE_FILE = String::str( "%s/saves/quicksave.ozState", config.get( "dir.config", "" ) );
 
-  Module::listModules( &modules );
-
   matrix.init();
   nirvana.init();
   loader.init();
-
-  for( int i = modules.length() - 1; i >= 0; --i ) {
-    modules[i]->init();
-  }
+  modules.init();
 
   log.unindent();
   log.println( "}" );
@@ -602,12 +574,7 @@ void GameStage::free()
   log.println( "Freeing GameStage {" );
   log.indent();
 
-  for( int i = modules.length() - 1; i >= 0; --i ) {
-    modules[i]->free();
-  }
-  modules.clear();
-  modules.dealloc();
-
+  modules.free();
   loader.free();
   nirvana.free();
   matrix.free();

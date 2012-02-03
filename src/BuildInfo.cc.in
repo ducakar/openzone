@@ -22,16 +22,16 @@
 namespace oz
 {
 
-const char* BuildInfo::TIME               = __DATE__ "  " __TIME__;
-const char* BuildInfo::HOST_SYSTEM        = "@CMAKE_HOST_SYSTEM_NAME@-@CMAKE_HOST_SYSTEM_PROCESSOR@ @CMAKE_HOST_SYSTEM@";
-const char* BuildInfo::TARGET_SYSTEM      = "@OZ_SYSTEM_NAME@ @CMAKE_SYSTEM@";
-const char* BuildInfo::BUILD_TYPE         = "@CMAKE_BUILD_TYPE@";
+const char* BuildInfo::TIME             = __DATE__ "  " __TIME__;
+const char* BuildInfo::HOST_SYSTEM      = "@CMAKE_HOST_SYSTEM_NAME@-@CMAKE_HOST_SYSTEM_PROCESSOR@ @CMAKE_HOST_SYSTEM@";
+const char* BuildInfo::TARGET_SYSTEM    = "@OZ_SYSTEM_NAME@ @CMAKE_SYSTEM@";
+const char* BuildInfo::BUILD_TYPE       = "@CMAKE_BUILD_TYPE@";
 #ifdef __clang__
-const char* BuildInfo::COMPILER           = "LLVM/Clang " __clang_version__;
+const char* BuildInfo::COMPILER         = "LLVM/Clang " __clang_version__;
 #else
-const char* BuildInfo::COMPILER           = "GCC " __VERSION__;
+const char* BuildInfo::COMPILER         = "GCC " __VERSION__;
 #endif
-const char* BuildInfo::CXX_FLAGS          = "@OZ_CXX_FLAGS@";
-const char* BuildInfo::EXE_LINKER_FLAGS   = "@OZ_EXE_LINKER_FLAGS@";
+const char* BuildInfo::CXX_FLAGS        = "@OZ_CXX_FLAGS@";
+const char* BuildInfo::EXE_LINKER_FLAGS = "@OZ_EXE_LINKER_FLAGS@";
 
 }

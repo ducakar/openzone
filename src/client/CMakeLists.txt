@@ -22,10 +22,10 @@ add_library( client STATIC
   MD3Imago.cc
   MenuStage.cc
   Mesh.cc
-  Module.cc
   Network.cc
   OpenAL.cc
   OpenGL.cc
+  Profile.cc
   QuestList.cc
   Render.cc
   SMM.cc
@@ -61,14 +61,12 @@ add_library( client STATIC
   ui/StrategicArea.cc
   ui/Text.cc
   ui/UI.cc
-  modules/FloraModule.cc
-  modules/ProfileModule.cc
 )
 add_dependencies( client pch )
 
 add_executable( openzone openzone/openzone.cc )
 add_dependencies( openzone pch )
-target_link_libraries( openzone client nirvana matrix common build_info oz ${libs_client} )
+target_link_libraries( openzone client modules nirvana matrix common build_info oz ${libs_client} )
 
 if( OZINST_CLIENT )
   install( TARGETS openzone DESTINATION bin )

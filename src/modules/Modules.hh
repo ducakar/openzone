@@ -18,37 +18,39 @@
  */
 
 /**
- * @file client/modules/ProfileModule.hh
+ * @file client/Modules.hh
  */
 
 #pragma once
 
-#include "client/Module.hh"
+#include "modules/Module.hh"
 
 namespace oz
 {
-namespace client
-{
 
-class ProfileModule : public Module
+class Modules
 {
   private:
 
-    String playerName;
+    Vector<module::Module*> modules;
 
   public:
 
-    virtual void registerLua() const;
+    void update();
 
-    virtual void init();
+    void read( InputStream* istream );
+    void write( BufferStream* ) const;
 
-  private:
+    void load();
+    void unload();
 
-    OZ_LUA_API( ozProfileGetPlayerName );
+    void registerLua() const;
+
+    void init();
+    void free();
 
 };
 
-extern ProfileModule profileModule;
+extern Modules modules;
 
-}
 }

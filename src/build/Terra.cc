@@ -155,6 +155,7 @@ void Terra::saveMatrix()
 void Terra::saveClient()
 {
   File destFile( "terra/" + name + ".ozcTerra" );
+  File minimapFile( "terra/" + name + ".ozcTex" );
 
   log.println( "Compiling terrain model to '%s' {", destFile.path().cstr() );
   log.indent();
@@ -254,6 +255,25 @@ void Terra::saveClient()
 
   log.unindent();
   log.println( "}" );
+
+  bool useS3TC = context.useS3TC;
+  context.useS3TC = false;
+
+  mapTexId = context.loadRawTexture( "terra/" + mapTexture );
+
+  log.print( "Writing minimap texture '%s' ...", minimapFile.path().cstr() );
+
+  os.reset();
+  context.writeTexture( mapTexId, &os );
+  glDeleteTextures( 1, &mapTexId );
+
+  if( !minimapFile.write( &os ) ) {
+    throw Exception( "Minimap texture '%s' writing failed", minimapFile.path().cstr() );
+  }
+
+  log.printEnd( " OK" );
+
+  context.useS3TC = useS3TC;
 }
 
 Terra::Terra( const char* name_ ) :

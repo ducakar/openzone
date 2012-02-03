@@ -29,8 +29,9 @@
 
 #include "BuildInfo.hh"
 
+#include "modules/Module.hh"
+
 #include "client/Render.hh"
-#include "client/Module.hh"
 #include "client/OpenGL.hh"
 
 #include "build/Lingua.hh"
@@ -43,8 +44,6 @@
 #include "build/OBJ.hh"
 #include "build/MD2.hh"
 #include "build/MD3.hh"
-
-#include "build/modules/GalileoModule.hh"
 
 #include <unistd.h>
 
@@ -636,8 +635,6 @@ void Build::buildModules()
 {
   log.println( "Building Modules {" );
   log.indent();
-
-  GalileoModule::build();
 
   log.unindent();
   log.println( "}" );

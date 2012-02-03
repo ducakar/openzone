@@ -38,6 +38,7 @@
 
 #include "client/QuestList.hh"
 #include "client/Camera.hh"
+#include "client/Profile.hh"
 
 #include "luamacros.hh"
 
@@ -590,6 +591,12 @@ void Lua::init()
 
   OZ_LUA_FUNC( ozCameraAllowReincarnation );
   OZ_LUA_FUNC( ozCameraIncarnate );
+
+  /*
+   * Profile
+   */
+
+  OZ_LUA_FUNC( ozProfileGetPlayerName );
 
   /*
    * Constants
@@ -2696,6 +2703,18 @@ int Lua::ozCameraAllowReincarnation( lua_State* l )
 
   camera.allowReincarnation = tobool( 1 );
   return 0;
+}
+
+/*
+ * Profile
+ */
+
+int Lua::ozProfileGetPlayerName( lua_State* l )
+{
+  ARG( 0 );
+
+  pushstring( profile.playerName );
+  return 1;
 }
 
 }
