@@ -36,6 +36,7 @@
 #include "client/Sound.hh"
 #include "client/Render.hh"
 #include "client/Loader.hh"
+#include "client/Profile.hh"
 
 #include <unistd.h>
 
@@ -397,6 +398,8 @@ int Client::main( int argc, char** argv )
 
   initFlags |= INIT_AUDIO;
   sound.init();
+
+  profile.init();
 
   initFlags |= INIT_STAGE_INIT;
   menuStage.init();

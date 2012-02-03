@@ -23,11 +23,11 @@
 
 #pragma once
 
-#include "client/Module.hh"
+#include "modules/Module.hh"
 
 namespace oz
 {
-namespace client
+namespace module
 {
 
 class FloraModule : public Module

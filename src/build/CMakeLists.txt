@@ -12,10 +12,9 @@ add_executable( ozBuild
   OBJ.cc
   Terra.cc
   ozBuild.cc
-  modules/GalileoModule.cc
 )
 add_dependencies( ozBuild pch )
-target_link_libraries( ozBuild client nirvana matrix common build_info oz ${libs_tools} )
+target_link_libraries( ozBuild client modules nirvana matrix common build_info oz ${libs_tools} )
 
 if( OZINST_TOOLS )
   install( TARGETS ozBuild DESTINATION bin )

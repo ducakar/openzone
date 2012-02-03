@@ -5,8 +5,14 @@
 /.cproject
 /.settings
 
+/doc/doxygen*
 /share
 /support
+
+/data/*/*
+!/data/netradiant/*
+!/data/*/lua
+!/data/*/glsl
 
 /Linux-*
 /Windows-*

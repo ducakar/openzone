@@ -23,11 +23,7 @@
 
 #include "stable.hh"
 
-#include "client/modules/ProfileModule.hh"
-
-#include "client/Lua.hh"
-
-#include "luamacros.hh"
+#include "client/Profile.hh"
 
 #ifndef __clang__
 // GCC bug, issues false warning
@@ -39,14 +35,9 @@ namespace oz
 namespace client
 {
 
-ProfileModule profileModule;
+Profile profile;
 
-void ProfileModule::registerLua() const
-{
-  OZ_LUA_FUNC( ozProfileGetPlayerName );
-}
-
-void ProfileModule::init()
+void Profile::init()
 {
   const char* userName = SDL_getenv( "USER" );
   userName = userName == null ? "Player" : userName;
@@ -60,14 +51,6 @@ void ProfileModule::init()
   }
 
   this->playerName = config.getSet( "modules.profile.playerName", playerName );
-}
-
-int ProfileModule::ozProfileGetPlayerName( lua_State* l )
-{
-  ARG( 0 );
-
-  pushstring( profileModule.playerName );
-  return 1;
 }
 
 }

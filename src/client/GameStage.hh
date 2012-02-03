@@ -25,7 +25,6 @@
 
 #include "client/Stage.hh"
 #include "client/Proxy.hh"
-#include "client/Module.hh"
 
 namespace oz
 {
@@ -54,8 +53,6 @@ class GameStage : public Stage
     uint            renderMillis;
     uint            matrixMillis;
     uint            nirvanaMillis;
-
-    Vector<Module*> modules;
 
     SDL_Thread*     auxThread;
     SDL_sem*        mainSemaphore;

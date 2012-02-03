@@ -351,6 +351,12 @@ class Lua
     OZ_LUA_API( ozCameraAllowReincarnation );
     OZ_LUA_API( ozCameraIncarnate );
 
+    /*
+     * Profile
+     */
+
+    OZ_LUA_API( ozProfileGetPlayerName );
+
 };
 
 extern Lua lua;

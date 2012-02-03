@@ -18,29 +18,50 @@
  */
 
 /**
- * @file client/Module.cc
+ * @file client/Module.hh
  */
+
+#pragma once
 
 #include "stable.hh"
 
-#include "client/Module.hh"
-
-#include "client/modules/ProfileModule.hh"
-#include "client/modules/FloraModule.hh"
-
-#define OZ_REGISTER_MODULE( module ) \
-  list->add( &module##Module )
-
 namespace oz
 {
-namespace client
+namespace module
 {
 
-void Module::listModules( Vector<Module*>* list )
+class Module
 {
-  OZ_REGISTER_MODULE( profile );
-  OZ_REGISTER_MODULE( flora );
-}
+  public:
+
+    virtual ~Module()
+    {}
+
+    virtual void update()
+    {}
+
+    virtual void read( InputStream* )
+    {}
+
+    virtual void write( BufferStream* ) const
+    {}
+
+    virtual void load()
+    {}
+
+    virtual void unload()
+    {}
+
+    virtual void registerLua() const
+    {}
+
+    virtual void init()
+    {}
+
+    virtual void free()
+    {}
+
+};
 
 }
 }

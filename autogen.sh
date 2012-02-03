@@ -8,7 +8,7 @@
 
 version="0.3.0"
 
-components="oz common matrix nirvana client build"
+components="oz common matrix nirvana modules client build"
 conf_files="etc/liboz/liboz.pc etc/liboz/liboz.spec etc/openzone.spec"
 
 for component in $components; do

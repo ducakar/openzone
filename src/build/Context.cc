@@ -289,8 +289,6 @@ void Context::writeTexture( uint id, BufferStream* stream )
     }
   }
 
-  glDeleteTextures( 1, &id );
-
   OZ_GL_CHECK_ERROR();
 }
 
