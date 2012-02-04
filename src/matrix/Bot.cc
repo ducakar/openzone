@@ -57,6 +57,26 @@ const float Bot::CLIMB_MOVE_AHEAD   =  0.40f;
 
 Pool<Bot, 1024> Bot::pool;
 
+bool Bot::canReach( const Entity* ent ) const
+{
+  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+
+  Point3 eye   = Point3( p.x, p.y, p.z + camZ );
+  Vec3   reach = Vec3( clazz->reachDist, clazz->reachDist, clazz->reachDist );
+
+  return collider.overlapsEntity( AABB( eye, reach ), ent );
+}
+
+bool Bot::canReach( const Object* obj ) const
+{
+  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+
+  Point3 eye   = Point3( p.x, p.y, p.z + camZ );
+  Vec3   reach = Vec3( clazz->reachDist, clazz->reachDist, clazz->reachDist );
+
+  return AABB( eye, reach ).overlaps( *obj );
+}
+
 void Bot::onDestroy()
 {
   // only play death sound when an alive bot is destroyed but not when a body is destroyed
@@ -587,7 +607,7 @@ void Bot::onUpdate()
     if( instrument != -1 ) {
       Object* obj = orbis.objects[instrument];
 
-      if( obj != null ) {
+      if( obj != null && canReach( obj ) ) {
         synapse.use( this, obj );
       }
     }
@@ -598,7 +618,11 @@ void Bot::onUpdate()
       Struct* str = orbis.structs[strIndex];
 
       if( str != null ) {
-        synapse.trigger( this, &str->entities[entIndex] );
+        Entity* ent = &str->entities[entIndex];
+
+        if( canReach( ent ) ) {
+          synapse.trigger( this, ent );
+        }
       }
     }
   }
@@ -606,7 +630,7 @@ void Bot::onUpdate()
     Dynamic* item   = static_cast<Dynamic*>( orbis.objects[instrument] );
     Object*  source = orbis.objects[container];
 
-    if( item != null && items.length() != clazz->nItems ) {
+    if( item != null && items.length() != clazz->nItems && canReach( source ) ) {
       hard_assert( source->items.contains( instrument ) );
       hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
@@ -619,7 +643,7 @@ void Bot::onUpdate()
     Dynamic* item   = static_cast<Dynamic*>( orbis.objects[instrument] );
     Object*  target = orbis.objects[container];
 
-    if( item != null && target->items.length() != target->clazz->nItems ) {
+    if( item != null && target->items.length() != target->clazz->nItems && canReach( target ) ) {
       hard_assert( items.contains( instrument ) );
       hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
@@ -637,7 +661,8 @@ void Bot::onUpdate()
       Dynamic* item = static_cast<Dynamic*>( orbis.objects[instrument] );
 
       if( item != null && items.length() != clazz->nItems &&
-          ( item->flags & ( ITEM_BIT | SOLID_BIT ) ) == ( ITEM_BIT | SOLID_BIT ) )
+          ( item->flags & ( ITEM_BIT | SOLID_BIT ) ) == ( ITEM_BIT | SOLID_BIT ) &&
+          canReach( item ) )
       {
         cargo = -1;
 
@@ -687,7 +712,7 @@ void Bot::onUpdate()
         Bot* dyn = static_cast<Bot*>( orbis.objects[instrument] );
 
         if( dyn != null && ( dyn->flags & DYNAMIC_BIT ) && dyn->mass <= clazz->grabMass &&
-            ( !( dyn->flags & BOT_BIT ) || dyn->cargo == -1 ) )
+            ( !( dyn->flags & BOT_BIT ) || dyn->cargo == -1 ) && canReach( dyn ) )
         {
           float dimX = dim.x + dyn->dim.x;
           float dimY = dim.y + dyn->dim.y;

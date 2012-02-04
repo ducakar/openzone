@@ -74,7 +74,9 @@ class Entity
 
     void ignoringHandler();
     void crushingHandler();
+    void manualDoorHandler();
     void autoDoorHandler();
+    void elevatorHandler();
 
 };
 

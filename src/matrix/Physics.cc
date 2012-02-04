@@ -384,6 +384,10 @@ void Physics::handleObjMove()
     move *= 1.0f - collider.hit.ratio;
     move -= ( move * collider.hit.normal - MOVE_BOUNCE ) * collider.hit.normal;
 
+    // In obtuse corners (> 90°) we prevent oscillations by preventing move in the opposite
+    // direction form the original one.
+    move -= min( move * originalDir + MOVE_BOUNCE, 0.0f ) * originalDir;
+
     // In acute (< 90°) corners we move the object a little out of it to prevent it getting stuck.
     if( traceSplits == 1 ) {
       lastNormals[0] = collider.hit.normal;
@@ -421,10 +425,6 @@ void Physics::handleObjMove()
         }
       }
     }
-
-    // By preventing movement in the opposite direction from the original one we effectively prevent
-    // oscillations in obtuse (> 90°) corners.
-    move -= min( move * originalDir, 0.0f ) * originalDir;
   }
   while( true );
 
