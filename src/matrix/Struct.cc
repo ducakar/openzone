@@ -67,7 +67,9 @@ const float Struct::MAX_HIT_DAMAGE_MASS    = 100.0f;
 const Entity::Handler Entity::HANDLERS[] = {
   &Entity::ignoringHandler,
   &Entity::crushingHandler,
-  &Entity::autoDoorHandler
+  &Entity::manualDoorHandler,
+  &Entity::autoDoorHandler,
+  &Entity::elevatorHandler
 };
 
 Pool<Struct>    Struct::pool;
@@ -157,9 +159,11 @@ void Entity::ignoringHandler()
     }
     case TRIGGERED: {
       if( ratio == 1.0f ) {
-        state = OPENED;
+        time = 0.0f;
+        state = CLOSING;
+        velocity = -model->move * model->ratioInc / Timer::TICK_TIME;
       }
-      else {
+      else if( ratio == 0.0f ) {
         time = 0.0f;
         state = OPENING;
         velocity = model->move * model->ratioInc / Timer::TICK_TIME;
@@ -187,10 +191,10 @@ void Entity::crushingHandler()
       offset = ratio * model->move;
 
       Struct::overlappingObjs.clear();
-      collider.getOverlaps( this, &Struct::overlappingObjs, 0.5f * EPSILON );
+      collider.getOverlaps( this, &Struct::overlappingObjs, EPSILON );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
-        Vec3 move = ( model->ratioInc + 4.0f * EPSILON ) * model->move;
+        Vec3 move = 1.01f * model->ratioInc * model->move;
         move = str->toAbsoluteCS( move );
 
         for( int i = 0; i < Struct::overlappingObjs.length(); ++i ) {
@@ -210,7 +214,8 @@ void Entity::crushingHandler()
           }
         }
       }
-      else if( ratio == 1.0f ) {
+
+      if( ratio == 1.0f ) {
         state = OPENED;
         velocity = Vec3::ZERO;
       }
@@ -231,10 +236,10 @@ void Entity::crushingHandler()
       offset = ratio * model->move;
 
       Struct::overlappingObjs.clear();
-      collider.getOverlaps( this, &Struct::overlappingObjs, 0.5f * EPSILON );
+      collider.getOverlaps( this, &Struct::overlappingObjs, 4.0f * EPSILON );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
-        Vec3 move = ( model->ratioInc + 4.0f * EPSILON ) * -model->move;
+        Vec3 move = -2.1f * model->ratioInc * model->move;
         move = str->toAbsoluteCS( move );
 
         for( int i = 0; i < Struct::overlappingObjs.length(); ++i ) {
@@ -254,7 +259,8 @@ void Entity::crushingHandler()
           }
         }
       }
-      else if( ratio == 0.0f ) {
+
+      if( ratio == 0.0f ) {
         state = CLOSED;
         velocity = Vec3::ZERO;
       }
@@ -262,10 +268,66 @@ void Entity::crushingHandler()
     }
     case TRIGGERED: {
       if( ratio == 1.0f ) {
+        time = 0.0f;
+        state = CLOSING;
+        velocity = -model->move * model->ratioInc / Timer::TICK_TIME;
+      }
+      else if( ratio == 0.0f ) {
+        time = 0.0f;
+        state = OPENING;
+        velocity = model->move * model->ratioInc / Timer::TICK_TIME;
+      }
+      break;
+    }
+  }
+}
+
+void Entity::manualDoorHandler()
+{
+  switch( state ) {
+    case CLOSED: {
+      break;
+    }
+    case OPENING: {
+      ratio = min( ratio + model->ratioInc, 1.0f );
+      offset = ratio * model->move;
+
+      if( ratio == 1.0f ) {
         state = OPENED;
+        velocity = Vec3::ZERO;
+      }
+      break;
+    }
+    case OPENED: {
+      break;
+    }
+    case CLOSING: {
+      if( collider.overlapsOO( this, EPSILON ) ) {
+        if( ratio == 1.0f ) {
+          state = OPENED;
+        }
+        else {
+          state = OPENING;
+          velocity = model->move * model->ratioInc / Timer::TICK_TIME;
+        }
+        break;
+      }
+
+      ratio = max( ratio - model->ratioInc, 0.0f );
+      offset = ratio * model->move;
+
+      if( ratio == 0.0f ) {
+        state = CLOSED;
+        velocity = Vec3::ZERO;
+      }
+      break;
+    }
+    case TRIGGERED: {
+      if( ratio == 1.0f || velocity * model->move > 0.0f ) {
+        state = CLOSING;
+        velocity = -model->move * model->ratioInc / Timer::TICK_TIME;
       }
       else {
-        time = 0.0f;
         state = OPENING;
         velocity = model->move * model->ratioInc / Timer::TICK_TIME;
       }
@@ -305,14 +367,10 @@ void Entity::autoDoorHandler()
       if( time >= model->timeout ) {
         time = 0.0f;
 
-        offset = Vec3::ZERO;
-
         if( !collider.overlapsOO( this, model->margin ) ) {
           state = CLOSING;
           velocity = -model->move * model->ratioInc / Timer::TICK_TIME;
         }
-
-        offset = model->move;
       }
       break;
     }
@@ -338,17 +396,18 @@ void Entity::autoDoorHandler()
       break;
     }
     case TRIGGERED: {
-      if( ratio == 1.0f ) {
-        state = OPENED;
-      }
-      else {
-        time = 0.0f;
+      if( ratio != 1.0f ) {
         state = OPENING;
         velocity = model->move * model->ratioInc / Timer::TICK_TIME;
       }
       break;
     }
   }
+}
+
+void Entity::elevatorHandler()
+{
+  state = CLOSED;
 }
 
 void Struct::onDemolish()

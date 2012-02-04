@@ -84,8 +84,8 @@ class Bot : public Dynamic
     static const int ACTION_GESTURE4          = 0x10000000;
 
     static const int INSTRUMENT_ACTIONS       = ACTION_USE | ACTION_TAKE | ACTION_GRAB |
-        ACTION_ROTATE | ACTION_THROW | ACTION_INV_DROP | ACTION_INV_GRAB | ACTION_INV_TAKE |
-        ACTION_INV_GIVE;
+                                                ACTION_ROTATE | ACTION_THROW | ACTION_INV_DROP |
+                                                ACTION_INV_GRAB | ACTION_INV_TAKE | ACTION_INV_GIVE;
 
     /*
      * STATE
@@ -159,6 +159,11 @@ class Bot : public Dynamic
 
     String name;
     String mindFunc;
+
+  private:
+
+    bool canReach( const Entity* ent ) const;
+    bool canReach( const Object* obj ) const;
 
   protected:
 

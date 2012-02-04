@@ -76,8 +76,9 @@ class BSP : public Bounds
       {
         IGNORING,
         CRUSHING,
+        MANUAL_DOOR,
         AUTO_DOOR,
-        MANUAL_DOOR
+        ELEVATOR
       };
 
       String name;                  ///< Model name.
