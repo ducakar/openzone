@@ -41,17 +41,19 @@ package_liboz()
   cd ${srcdir}/build
 
   cmake \
-    -D OZINST_LIBOZ=1 \
-    -D OZINST_CLIENT=0 \
-    -D OZINST_TOOLS=0 \
-    -D OZINST_INFO=0 \
-    -D OZINST_MENU=0 \
-    -D OZINST_STANDALONE=0 \
+    -D OZ_INSTALL_LIBOZ=1 \
+    -D OZ_INSTALL_CLIENT=0 \
+    -D OZ_INSTALL_TOOLS=0 \
+    -D OZ_INSTALL_INFO=0 \
+    -D OZ_INSTALL_MENU=0 \
+    -D OZ_INSTALL_STANDALONE=0 \
     ${srcdir}/${_gitname}
 
   make install DESTDIR=${pkgdir}
 
-  install -Dm644 ${pkgdir}/usr/share/doc/liboz/COPYING ${pkgdir}/usr/share/licenses/liboz
+  [[ "${_arch}" == "x86_64" ]] && mv ${pkgdir}/usr/lib64 ${pkgdir}/usr/lib
+
+  install -Dm644 ${pkgdir}/usr/share/doc/liboz-${pkgver}/COPYING ${pkgdir}/usr/share/licenses/liboz
   rm -rf ${pkgdir}/usr/share/doc
 }
 
@@ -64,17 +66,19 @@ package_openzone-bin()
   cd ${srcdir}/build
 
   cmake \
-    -D OZINST_LIBOZ=0 \
-    -D OZINST_CLIENT=1 \
-    -D OZINST_TOOLS=1 \
-    -D OZINST_INFO=1 \
-    -D OZINST_MENU=1 \
-    -D OZINST_STANDALONE=0 \
+    -D OZ_INSTALL_LIBOZ=0 \
+    -D OZ_INSTALL_CLIENT=1 \
+    -D OZ_INSTALL_TOOLS=1 \
+    -D OZ_INSTALL_INFO=1 \
+    -D OZ_INSTALL_MENU=1 \
+    -D OZ_INSTALL_STANDALONE=0 \
     ${srcdir}/${_gitname}
 
   make install DESTDIR=${pkgdir}
+
+  rm ${pkgdir}/usr/share/doc/openzone-${pkgver}/COPYING
+
   install -Dm644 share/openzone/ozbase.zip ${pkgdir}/usr/share/openzone/ozbase.zip
-  rm ${pkgdir}/usr/share/doc/COPYING
 }
 
 package_openzone-data()

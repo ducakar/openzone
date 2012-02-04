@@ -7,30 +7,26 @@ endif()
 project( openzone C CXX )
 
 #
-# liboz configuration
+# Configuration
 #
 
+set( OZ_VERSION "0.2.80" CACHE STRING "" FORCE )
 set( OZ_SOVERSION "0.3" CACHE STRING "" FORCE )
 
 option( OZ_TRACK_LEAKS "Save stack trace on operator new calls and track memory leaks." OFF )
 
-#
-# OpenZone configuration
-#
-
 set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
-set( OZ_APPLICATION_VERSION "0.2.80" CACHE STRING "" FORCE )
 set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
 
 option( OZ_NETWORKING "Enable networking." OFF )
 option( OZ_GL_COMPATIBLE "Use OpenGL 2.1 plus FBOs (roughly OpenGL ES 2.0) instead of OpenGL 3.0." ON )
 
-option( OZINST_LIBOZ "Install liboz as a standalone library" OFF )
-option( OZINST_CLIENT "Install openzone client" OFF )
-option( OZINST_TOOLS "Install ozBuild tool" OFF )
-option( OZINST_MENU "Install applications launcher and icon (Linux only)" OFF )
-option( OZINST_INFO "Install README, AUTHORS, COPYING ..." OFF )
-option( OZINST_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
+option( OZ_INSTALL_LIBOZ "Install liboz as a standalone library" OFF )
+option( OZ_INSTALL_CLIENT "Install openzone client" OFF )
+option( OZ_INSTALL_TOOLS "Install ozBuild tool" OFF )
+option( OZ_INSTALL_MENU "Install applications launcher and icon (Linux only)" OFF )
+option( OZ_INSTALL_INFO "Install README, AUTHORS, COPYING ..." OFF )
+option( OZ_INSTALL_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
 
 #
 # Configuration end
@@ -44,6 +40,10 @@ if( WIN32 )
   set( OZ_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-i686" CACHE STRING "" FORCE )
 else()
   set( OZ_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" CACHE STRING "" FORCE )
+endif()
+
+if( "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64" )
+  set( OZ_LIB_SUFFIX "64" )
 endif()
 
 mark_as_advanced( OZ_SOVERSION )
@@ -217,6 +217,83 @@ string( STRIP "${OZ_EXE_LINKER_FLAGS}" OZ_EXE_LINKER_FLAGS )
 # sources
 add_subdirectory( src )
 
-# installation
-include( cmake/CPackConfig.cmake )
-include( cmake/Data-Install.cmake )
+#
+# Installation
+#
+
+# liboz
+if( OZ_INSTALL_LIBOZ )
+  configure_file( etc/liboz/liboz.pc.in etc/liboz/liboz.pc )
+
+  install( FILES ${CMAKE_BINARY_DIR}/etc/liboz/liboz.pc DESTINATION lib${OZ_LIB_SUFFIX}/pkgconfig )
+  install( FILES etc/liboz/COPYING DESTINATION share/doc/liboz-${OZ_VERSION} )
+endif()
+
+# info files
+if( WIN32 OR OZ_INSTALL_STANDALONE )
+  file( GLOB files README.* )
+  install( FILES
+    COPYING
+    README
+    ${files}
+    DESTINATION . )
+elseif( OZ_INSTALL_INFO )
+  file( GLOB files README.* )
+  install( FILES
+    AUTHORS
+    COPYING
+    README
+    ${files}
+    DESTINATION share/doc/openzone-${OZ_VERSION} )
+endif()
+
+# icons
+if( OZ_INSTALL_MENU AND NOT WIN32 )
+  install( DIRECTORY share/applications share/pixmaps DESTINATION share )
+endif()
+
+# oalinst, DLLs, localisation
+if( OZ_INSTALL_STANDALONE )
+  if( OZ_INSTALL_CLIENT )
+    if( WIN32 )
+      install( DIRECTORY support/mingw32-client/ DESTINATION bin )
+      install( FILES support/oalinst.exe support/openzone.bat DESTINATION . )
+    else()
+      install( FILES support/openzone.sh PERMISSIONS
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+        DESTINATION . )
+    endif()
+  endif()
+
+  if( OZ_INSTALL_TOOLS )
+    if( WIN32 )
+      install( DIRECTORY support/mingw32-tools/ DESTINATION bin )
+      install( FILES support/build.bat DESTINATION . )
+    else()
+      install( FILES support/build.sh PERMISSIONS
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+        DESTINATION . )
+    endif()
+  endif()
+endif()
+
+# cpack
+include( CPack )
+
+set( CPACK_PACKAGE_NAME "${OZ_APPLICATION_NAME}" )
+set( CPACK_PACKAGE_VERSION "${OZ_VERSION}" )
+set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "A simple cross-platform 3D game engine" )
+set( CPACK_PACKAGE_CONTACT "Davorin Učakar <davorin.ucakar@gmail.com>" )
+set( CPACK_TOPLEVEL_TAG "openzone" )
+set( CPACK_PACKAGE_INSTALL_DIRECTORY "OpenZone" )
+set( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "OpenZone" )
+set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING" )
+set( CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README" )
+set( CPACK_SYSTEM_NAME "${OZ_SYSTEM_NAME}" )
+set( CPACK_PACKAGE_EXECUTABLES "bin/openzone" "OpenZone" ) # start menu entry
+set( CPACK_STRIP_FILES "bin/openzone;bin/ozBuild" )
+
+set( CPACK_NSIS_DISPLAY_NAME "OpenZone" )
+set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "WriteRegStr HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\" \\\"0\\\"" )
+set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS};ExecWait '\\\"$INSTDIR\\\\support\\\\oalinst.exe\\\"'" )
+set( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "DeleteRegValue HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\"" )

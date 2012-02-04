@@ -146,7 +146,6 @@ class Collider
     bool overlapsOSO( const Object* obj, const Object* exclObj = null );
 
     bool overlapsOO( const Entity* entity, float margin = 0.0f );
-
     bool overlapsEntity( const AABB& aabb, const Entity* entity, float margin = 0.0f );
 
     // fill given vectors with objects and structures overlapping with the AABB

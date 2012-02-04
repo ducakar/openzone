@@ -121,8 +121,8 @@ class Object : public AABB
     // if the object is still and on a still surface, we won't handle physics for it
     static const int DISABLED_BIT       = 0x00008000;
 
-    // if the object collided in the last step
-    static const int HIT_BIT            = 0x00004000;
+    // force full physics update in the next step
+    static const int ENABLE_BIT         = 0x00004000;
 
     // if the object is has been sliding on a floor or on another object in last step
     static const int FRICTING_BIT       = 0x00002000;
@@ -176,7 +176,7 @@ class Object : public AABB
     static const int HEADING_MASK       = 0x00000003;
 
     // those flags are cleared by Physics on each tick
-    static const int TICK_CLEAR_MASK    = HIT_BIT | FRICTING_BIT;
+    static const int TICK_CLEAR_MASK    = FRICTING_BIT;
 
     // those flags are cleared by Physics on each update when an object moves (plus lower = -1)
     static const int MOVE_CLEAR_MASK    = DISABLED_BIT | ON_FLOOR_BIT | IN_WATER_BIT |
@@ -327,8 +327,6 @@ class Object : public AABB
     OZ_ALWAYS_INLINE
     void hit( const Hit* hit, float hitMomentum )
     {
-      flags |= HIT_BIT;
-
       float hitMomentum2 = hitMomentum*hitMomentum;
 
       addEvent( EVENT_HIT, hitMomentum2 * MOMENTUM_INTENSITY_COEF );

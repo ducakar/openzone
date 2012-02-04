@@ -1,3 +1,5 @@
+configure_file( ozconfig.hh.in ozconfig.hh )
+
 add_library( oz SHARED
   Alloc.cc
   Buffer.cc
@@ -21,10 +23,8 @@ add_library( oz SHARED
 target_link_libraries( oz ${libs_oz} )
 set_target_properties( oz PROPERTIES SOVERSION ${OZ_SOVERSION} )
 
-if( OZINST_LIBOZ )
+if( OZ_INSTALL_LIBOZ )
   install( FILES ${CMAKE_CURRENT_BINARY_DIR}/ozconfig.hh DESTINATION include/oz )
   install( DIRECTORY . DESTINATION include/oz FILES_MATCHING PATTERN "*.hh" )
-  install( TARGETS oz DESTINATION lib )
-  install( FILES ${PROJECT_SOURCE_DIR}/etc/liboz/liboz.pc DESTINATION lib/pkgconfig )
-  install( FILES ${PROJECT_SOURCE_DIR}/etc/liboz/COPYING DESTINATION share/doc/liboz )
+  install( TARGETS oz DESTINATION lib${OZ_LIB_SUFFIX} )
 endif()

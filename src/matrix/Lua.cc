@@ -415,8 +415,6 @@ void Lua::init()
   OZ_LUA_FUNC( ozDynBindParent );
 
   OZ_LUA_FUNC( ozDynGetVelocity );
-  OZ_LUA_FUNC( ozDynSetVelocity );
-  OZ_LUA_FUNC( ozDynAddVelocity );
   OZ_LUA_FUNC( ozDynGetMomentum );
   OZ_LUA_FUNC( ozDynSetMomentum );
   OZ_LUA_FUNC( ozDynAddMomentum );
@@ -581,7 +579,6 @@ void Lua::init()
   OZ_LUA_CONST( "OZ_OBJECT_DESTROYED_BIT",        Object::DESTROYED_BIT );
 
   OZ_LUA_CONST( "OZ_OBJECT_DISABLED_BIT",         Object::DISABLED_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_HIT_BIT",              Object::HIT_BIT );
   OZ_LUA_CONST( "OZ_OBJECT_FRICTING_BIT",         Object::FRICTING_BIT );
   OZ_LUA_CONST( "OZ_OBJECT_BELOW_BIT",            Object::BELOW_BIT );
   OZ_LUA_CONST( "OZ_OBJECT_ON_FLOOR_BIT",         Object::ON_FLOOR_BIT );
@@ -1935,32 +1932,6 @@ int Lua::ozDynGetVelocity( lua_State* l )
   pushfloat( dyn->velocity.y );
   pushfloat( dyn->velocity.z );
   return 3;
-}
-
-int Lua::ozDynSetVelocity( lua_State* l )
-{
-  ARG( 3 );
-  OBJ_NOT_NULL();
-  OBJ_DYNAMIC();
-
-  dyn->flags &= ~Object::DISABLED_BIT;
-  dyn->velocity.x = tofloat( 1 );
-  dyn->velocity.y = tofloat( 2 );
-  dyn->velocity.z = tofloat( 3 );
-  return 0;
-}
-
-int Lua::ozDynAddVelocity( lua_State* l )
-{
-  ARG( 3 );
-  OBJ_NOT_NULL();
-  OBJ_DYNAMIC();
-
-  dyn->flags &= ~Object::DISABLED_BIT;
-  dyn->velocity.x += tofloat( 1 );
-  dyn->velocity.y += tofloat( 2 );
-  dyn->velocity.z += tofloat( 3 );
-  return 0;
 }
 
 int Lua::ozDynGetMomentum( lua_State* l )
