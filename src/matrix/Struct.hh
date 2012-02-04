@@ -51,8 +51,7 @@ class Entity
       CLOSED,
       OPENING,
       OPENED,
-      CLOSING,
-      TRIGGERED
+      CLOSING
     };
 
     Vec3              offset;
@@ -60,11 +59,11 @@ class Entity
     const BSP::Model* model;
     const Struct*     str;
 
+    int               key;
+
     State             state;
     float             ratio;
     float             time;
-
-    int               key;
 
     Vec3              velocity;
 
@@ -97,8 +96,8 @@ class Struct : public Bounds
 
   public:
 
-    static Pool<Struct>    pool;
     static Vector<Object*> overlappingObjs;
+    static Pool<Struct>    pool;
 
   private:
 

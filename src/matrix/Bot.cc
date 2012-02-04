@@ -248,8 +248,7 @@ void Bot::onUpdate()
       }
       else {
         flags &= ~DISABLED_BIT;
-        flags &= ~ON_FLOOR_BIT;
-        lower =  -1;
+        flags |= ENABLE_BIT;
 
         p.z    += dim.z - clazz->crouchDim.z;
         dim.z  = clazz->crouchDim.z;
@@ -607,8 +606,17 @@ void Bot::onUpdate()
     if( instrument != -1 ) {
       Object* obj = orbis.objects[instrument];
 
-      if( obj != null && canReach( obj ) ) {
-        synapse.use( this, obj );
+      if( obj != null ) {
+        const Dynamic* item = static_cast<const Dynamic*>( obj );
+
+        if( ( obj->flags & ITEM_BIT ) && item->parent != -1 ) {
+          if( item->parent == index || canReach( orbis.objects[item->parent] ) ) {
+            synapse.use( this, obj );
+          }
+        }
+        else if( canReach( obj ) ) {
+          synapse.use( this, obj );
+        }
       }
     }
     else {
@@ -643,7 +651,9 @@ void Bot::onUpdate()
     Dynamic* item   = static_cast<Dynamic*>( orbis.objects[instrument] );
     Object*  target = orbis.objects[container];
 
-    if( item != null && target->items.length() != target->clazz->nItems && canReach( target ) ) {
+    if( item != null && target != null && target->items.length() != target->clazz->nItems &&
+        canReach( target ) )
+    {
       hard_assert( items.contains( instrument ) );
       hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
@@ -839,8 +849,6 @@ void Bot::enter( int vehicle_ )
 
   const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
-  flags      &= ~( Object::TICK_CLEAR_MASK | Object::MOVE_CLEAR_MASK );
-  lower      = -1;
   parent     = vehicle_;
 
   dim        = clazz->dim;

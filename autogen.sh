@@ -6,18 +6,24 @@
 # .hh and .cc files in the target directory to the target definition.
 #
 
-version="0.3.0"
+version="0.2.80"
 
 components="oz common matrix nirvana modules client build"
-conf_files="etc/liboz/liboz.pc etc/liboz/liboz.spec etc/openzone.spec"
+conf_files="etc/liboz/liboz.spec etc/openzone.spec"
 
 for component in $components; do
   echo Generating src/$component/CMakeLists.txt
   ( cd src/$component && ./CMakeLists-gen.sh )
 done
 
-# Fix versions in various
+# Fix versions in various files
 for file in $conf_files; do
   echo Updating versions in $file
   sed "s/^\(Version: *\).*$/\1$version/g" -i $file
 done
+
+echo Updating version in Doxygen
+sed "s/\(PROJECT_NUMBER *= \).*$/\1$version/" -i Doxyfile
+
+echo Updating version in CMakeLists.txt
+sed "s/^set( OZ_APPLICATION_VERSION .*$/set( OZ_APPLICATION_VERSION \"$version\" CACHE STRING \"\" FORCE )/" -i CMakeLists.txt

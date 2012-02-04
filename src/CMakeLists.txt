@@ -1,4 +1,3 @@
-configure_file( oz/ozconfig.hh.in oz/ozconfig.hh )
 configure_file( configuration.hh.in configuration.hh )
 configure_file( BuildInfo.cc.in BuildInfo.cc )
 

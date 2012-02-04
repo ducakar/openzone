@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=/usr
+
+Name: liboz
+Description: OpenZone core library
+Version: @OZ_VERSION@
+Requires:
+Conflicts:
+Libs: -L/usr/lib@OZ_LIB_SUFFIX@ -loz
+Cflags: -I/usr/include -std=c++0x

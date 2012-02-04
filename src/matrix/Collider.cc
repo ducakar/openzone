@@ -92,7 +92,7 @@ bool Collider::overlapsAABBBrush( const BSP::Brush* brush ) const
 
 bool Collider::overlapsAABBEntity()
 {
-  startPos = str->toStructCS( aabb.p );
+  startPos = str->toStructCS( aabb.p ) - entity->offset;
   localDim = str->swapDimCS( aabb.dim );
 
   Bounds localTrace = str->toStructCS( trace );
@@ -103,7 +103,6 @@ bool Collider::overlapsAABBEntity()
       const BSP::Brush& brush = bsp->brushes[index];
 
       if( ( brush.material & Material::STRUCT_BIT ) && overlapsAABBBrush( &brush ) ) {
-        startPos = aabb.p;
         return true;
       }
     }
@@ -170,13 +169,11 @@ bool Collider::overlapsAABBEntities()
         startPos = originalStartPos - entity->offset;
 
         if( ( brush.material & Material::STRUCT_BIT ) && overlapsAABBBrush( &brush ) ) {
-          startPos = originalStartPos;
           return true;
         }
       }
     }
   }
-  startPos = originalStartPos;
   return false;
 }
 
@@ -634,9 +631,6 @@ void Collider::trimAABBEntities()
       }
     }
   }
-
-  startPos = originalStartPos;
-  endPos   = originalEndPos;
 }
 
 void Collider::trimAABBTerraQuad( int x, int y )
@@ -860,8 +854,8 @@ void Collider::touchOrbisOverlaps() const
         if( ( sObj->flags & Object::DYNAMIC_BIT ) && trace.overlaps( *sObj, 0.0f ) ) {
           Dynamic* sDyn = static_cast<Dynamic*>( sObj );
 
-          sDyn->flags &= ~Object::MOVE_CLEAR_MASK;
-          sDyn->lower = -1;
+          sDyn->flags &= ~Object::DISABLED_BIT;
+          sDyn->flags |= Object::ENABLE_BIT;
         }
       }
     }

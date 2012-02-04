@@ -142,6 +142,8 @@ bool Physics::handleObjFriction()
   if( dyn->flags & Object::ON_LADDER_BIT ) {
     if( dyn->momentum.sqL() <= STICK_VELOCITY ) {
       dyn->momentum = Vec3::ZERO;
+
+      return dyn->flags & Object::ENABLE_BIT;
     }
     else {
       dyn->momentum *= 1.0f - LADDER_FRICTION;
@@ -155,6 +157,8 @@ bool Physics::handleObjFriction()
       systemMom += frictionFactor * dyn->lift * Timer::TICK_TIME;
     }
 
+    bool isLowerStill = true;
+
     float deltaVelX = dyn->momentum.x;
     float deltaVelY = dyn->momentum.y;
 
@@ -165,14 +169,22 @@ bool Physics::handleObjFriction()
 
         const Entity& entity = orbis.structs[structIndex]->entities[entityIndex];
 
-        deltaVelX -= entity.velocity.x;
-        deltaVelY -= entity.velocity.y;
+        if( entity.velocity != Vec3::ZERO ) {
+          isLowerStill = false;
+
+          deltaVelX -= entity.velocity.x;
+          deltaVelY -= entity.velocity.y;
+        }
       }
       else {
         const Dynamic* sDyn = static_cast<const Dynamic*>( orbis.objects[dyn->lower] );
 
-        deltaVelX -= sDyn->velocity.x;
-        deltaVelY -= sDyn->velocity.y;
+        if( sDyn->velocity != Vec3::ZERO ) {
+          isLowerStill = false;
+
+          deltaVelX -= sDyn->velocity.x;
+          deltaVelY -= sDyn->velocity.y;
+        }
       }
     }
 
@@ -201,13 +213,13 @@ bool Physics::handleObjFriction()
         }
       }
 
-      if( dyn->lower == -1 &&
+      if( isLowerStill &&
           dyn->momentum.x*dyn->momentum.x + dyn->momentum.y*dyn->momentum.y <= stickVel )
       {
         dyn->momentum.x = 0.0f;
         dyn->momentum.y = 0.0f;
 
-        if( dyn->momentum.z <= 0.0f ) {
+        if( dyn->momentum.z <= 0.0f && !( dyn->flags & Object::ENABLE_BIT ) ) {
           dyn->momentum.z = 0.0f;
 
           if( systemMom <= 0.0f ) {
@@ -224,13 +236,11 @@ bool Physics::handleObjFriction()
           dyn->momentum.sqL() <= FLOAT_STICK_VELOCITY )
       {
         dyn->momentum = Vec3::ZERO;
-        return false;
+
+        return dyn->flags & Object::ENABLE_BIT;
       }
     }
   }
-
-  dyn->flags &= ~( Object::ON_FLOOR_BIT | Object::ON_SLICK_BIT );
-  dyn->lower = -1;
 
   return true;
 }
@@ -435,7 +445,6 @@ void Physics::handleObjMove()
     dyn->splash( dyn->velocity.z );
   }
 
-  dyn->flags &= ~( Object::IN_WATER_BIT | Object::ON_LADDER_BIT );
   dyn->flags |= newFlags;
   dyn->depth = min( collider.hit.waterDepth, 2.0f * dyn->dim.z );
 
@@ -492,17 +501,19 @@ void Physics::updateObj( Dynamic* dyn_ )
         dyn->flags &= ~Object::DISABLED_BIT;
         dyn->lower = -1;
       }
-      else if( !( sObj->flags & Object::DISABLED_BIT ) ) {
-        dyn->flags &= ~Object::DISABLED_BIT;
+      else {
+        dyn->flags &= sObj->flags | ~Object::DISABLED_BIT;
       }
     }
   }
+
   // handle physics
   if( !( dyn->flags & Object::DISABLED_BIT ) ) {
     if( handleObjFriction() ) {
-      // if objects is still in movement or not on a still surface after friction changed its
-      // velocity, handle physics
       Point3 oldPos = dyn->p;
+
+      dyn->flags &= ~( Object::MOVE_CLEAR_MASK | Object::ENABLE_BIT );
+      dyn->lower = -1;
 
       collider.mask = dyn->flags & Object::SOLID_BIT;
       handleObjMove();

@@ -237,8 +237,6 @@ class Lua
     OZ_LUA_API( ozDynBindParent );
 
     OZ_LUA_API( ozDynGetVelocity );
-    OZ_LUA_API( ozDynSetVelocity );
-    OZ_LUA_API( ozDynAddVelocity );
     OZ_LUA_API( ozDynGetMomentum );
     OZ_LUA_API( ozDynSetMomentum );
     OZ_LUA_API( ozDynAddMomentum );
