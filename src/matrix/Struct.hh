@@ -71,6 +71,7 @@ class Entity
 
   private:
 
+    void staticHandler();
     void manualDoorHandler();
     void autoDoorHandler();
     void ignoringBlockHandler();

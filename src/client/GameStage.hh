@@ -46,13 +46,14 @@ class GameStage : public Stage
 
   private:
 
-    uint            loadingMillis;
-    uint            uiMillis;
-    uint            loaderMillis;
-    uint            presentMillis;
-    uint            renderMillis;
-    uint            matrixMillis;
-    uint            nirvanaMillis;
+    long64          sleepMicros;
+    long64          loadingMicros;
+    long64          uiMicros;
+    long64          loaderMicros;
+    long64          soundMicros;
+    long64          renderMicros;
+    long64          matrixMicros;
+    long64          nirvanaMicros;
 
     SDL_Thread*     auxThread;
     SDL_sem*        mainSemaphore;
@@ -83,6 +84,7 @@ class GameStage : public Stage
 
     virtual bool update();
     virtual void present( bool full );
+    virtual void wait( uint micros );
 
     virtual void load();
     virtual void unload();

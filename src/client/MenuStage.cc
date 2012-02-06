@@ -50,6 +50,12 @@ void MenuStage::present( bool )
   render.draw( Render::DRAW_UI_BIT );
   sound.play();
   render.swap();
+  sound.sync();
+}
+
+void MenuStage::wait( uint micros )
+{
+  Time::usleep( micros );
 }
 
 void MenuStage::load()

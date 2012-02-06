@@ -100,8 +100,8 @@ void Render::scheduleCell( int cellX, int cellY )
 
 void Render::prepareDraw()
 {
-  uint currentTime = Time::clock();
-  uint beginTime = currentTime;
+  uint currentMicros = Time::uclock();
+  uint beginMicros = currentMicros;
 
   collider.translate( camera.p, Vec3::ZERO );
   shader.isInWater = ( collider.hit.medium & Material::WATER_BIT ) != 0;
@@ -143,14 +143,14 @@ void Render::prepareDraw()
   objects.sort();
   frags.sort();
 
-  currentTime = Time::clock();
-  prepareMillis += currentTime - beginTime;
+  currentMicros = Time::uclock();
+  prepareMicros += currentMicros - beginMicros;
 }
 
 void Render::drawGeometry()
 {
-  uint currentTime = Time::clock();
-  uint beginTime = currentTime;
+  uint currentMicros = Time::uclock();
+  uint beginMicros = currentMicros;
 
   OZ_GL_CHECK_ERROR();
 
@@ -160,6 +160,10 @@ void Render::drawGeometry()
   glClearColor( clearColour.x, clearColour.y, clearColour.z, clearColour.w );
   glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 
+  currentMicros = Time::uclock();
+  swapMicros += currentMicros - beginMicros;
+  beginMicros = currentMicros;
+
   tf.camera = camera.rotTMat;
 
   if( !shader.isInWater ) {
@@ -168,9 +172,9 @@ void Render::drawGeometry()
     caelum.draw();
   }
 
-  currentTime = Time::clock();
-  caelumMillis += currentTime - beginTime;
-  beginTime = currentTime;
+  currentMicros = Time::uclock();
+  caelumMicros += currentMicros - beginMicros;
+  beginMicros = currentMicros;
 
   // camera transformation
   tf.projection();
@@ -197,9 +201,9 @@ void Render::drawGeometry()
 
   glEnable( GL_DEPTH_TEST );
 
-  currentTime = Time::clock();
-  setupMillis += currentTime - beginTime;
-  beginTime = currentTime;
+  currentMicros = Time::uclock();
+  setupMicros += currentMicros - beginMicros;
+  beginMicros = currentMicros;
 
   // draw structures
   shader.use( shader.mesh );
@@ -208,24 +212,24 @@ void Render::drawGeometry()
     context.drawBSP( structs[i].str, Mesh::SOLID_BIT );
   }
 
-  currentTime = Time::clock();
-  structsMillis += currentTime - beginTime;
-  beginTime = currentTime;
+  currentMicros = Time::uclock();
+  structsMicros += currentMicros - beginMicros;
+  beginMicros = currentMicros;
 
   terra.draw();
 
-  currentTime = Time::clock();
-  terraMillis += currentTime - beginTime;
-  beginTime = currentTime;
+  currentMicros = Time::uclock();
+  terraMicros += currentMicros - beginMicros;
+  beginMicros = currentMicros;
 
   // draw objects
   for( int i = 0; i < objects.length(); ++i ) {
     context.drawImago( objects[i].obj, null, Mesh::SOLID_BIT );
   }
 
-  currentTime = Time::clock();
-  objectsMillis += currentTime - beginTime;
-  beginTime = currentTime;
+  currentMicros = Time::uclock();
+  objectsMicros += currentMicros - beginMicros;
+  beginMicros = currentMicros;
 
   // draw fragments
   glEnable( GL_BLEND );
@@ -241,9 +245,9 @@ void Render::drawGeometry()
   // draw transparent parts of objects
   shader.colour = Colours::WHITE;
 
-  currentTime = Time::clock();
-  fragsMillis += currentTime - beginTime;
-  beginTime = currentTime;
+  currentMicros = Time::uclock();
+  fragsMicros += currentMicros - beginMicros;
+  beginMicros = currentMicros;
 
   for( int i = objects.length() - 1; i >= 0; --i ) {
     context.drawImago( objects[i].obj, null, Mesh::ALPHA_BIT );
@@ -251,15 +255,15 @@ void Render::drawGeometry()
 
   OZ_GL_CHECK_ERROR();
 
-  currentTime = Time::clock();
-  objectsMillis += currentTime - beginTime;
-  beginTime = currentTime;
+  currentMicros = Time::uclock();
+  objectsMicros += currentMicros - beginMicros;
+  beginMicros = currentMicros;
 
   terra.drawWater();
 
-  currentTime = Time::clock();
-  terraMillis += currentTime - beginTime;
-  beginTime = currentTime;
+  currentMicros = Time::uclock();
+  terraMicros += currentMicros - beginMicros;
+  beginMicros = currentMicros;
 
   // draw structures' alpha parts
   shader.use( shader.mesh );
@@ -270,9 +274,9 @@ void Render::drawGeometry()
 
   glDisable( GL_BLEND );
 
-  currentTime = Time::clock();
-  structsMillis += currentTime - beginTime;
-  beginTime = currentTime;
+  currentMicros = Time::uclock();
+  structsMicros += currentMicros - beginMicros;
+  beginMicros = currentMicros;
 
   shader.use( shader.plain );
 
@@ -326,8 +330,8 @@ void Render::drawGeometry()
   objects.clear();
   frags.clear();
 
-  currentTime = Time::clock();
-  miscMillis += currentTime - beginTime;
+  currentMicros = Time::uclock();
+  miscMicros += currentMicros - beginMicros;
 }
 
 void Render::drawOrbis()
@@ -345,7 +349,7 @@ void Render::drawOrbis()
   prepareDraw();
   drawGeometry();
 
-  uint beginTime = Time::clock();
+  uint beginMicros = Time::uclock();
 
   if( isOffscreen ) {
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
@@ -376,16 +380,16 @@ void Render::drawOrbis()
 
   OZ_GL_CHECK_ERROR();
 
-  postprocessMillis += Time::clock() - beginTime;
+  postprocessMicros += Time::uclock() - beginMicros;
 }
 
 void Render::drawUI()
 {
-  uint beginTime = Time::clock();
+  uint beginMicros = Time::uclock();
 
   ui::ui.draw();
 
-  uiMillis += Time::clock() - beginTime;
+  uiMicros += Time::uclock() - beginMicros;
 }
 
 bool Render::toggleFullscreen() const
@@ -409,11 +413,11 @@ void Render::draw( int flags )
 
 void Render::swap()
 {
-  uint beginTime = Time::clock();
+  uint beginMicros = Time::uclock();
 
   SDL_GL_SwapBuffers();
 
-  swapMillis += Time::clock() - beginTime;
+  swapMicros += Time::uclock() - beginMicros;
 }
 
 void Render::load()
@@ -429,17 +433,17 @@ void Render::load()
   objects.alloc( 8192 );
   frags.alloc( 1024 );
 
-  prepareMillis     = 0;
-  setupMillis       = 0;
-  caelumMillis      = 0;
-  terraMillis       = 0;
-  structsMillis     = 0;
-  objectsMillis     = 0;
-  fragsMillis       = 0;
-  miscMillis        = 0;
-  postprocessMillis = 0;
-  uiMillis          = 0;
-  swapMillis        = 0;
+  prepareMicros     = 0;
+  setupMicros       = 0;
+  caelumMicros      = 0;
+  terraMicros       = 0;
+  structsMicros     = 0;
+  objectsMicros     = 0;
+  fragsMicros       = 0;
+  miscMicros        = 0;
+  postprocessMicros = 0;
+  uiMicros          = 0;
+  swapMicros        = 0;
 
   log.printEnd( " OK" );
 }
@@ -608,6 +612,7 @@ void Render::init( bool isBuild )
   isOffscreen     = config.getSet( "render.offscreen",            true );
   isDeferred      = config.getSet( "render.deferred",             false );
   doPostprocess   = config.getSet( "render.postprocess",          true );
+  isLowDetail     = config.getSet( "render.lowDetail",            false );
 
   renderScale     = config.getSet( "render.scale",                1.0f );
 

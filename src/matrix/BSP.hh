@@ -74,6 +74,7 @@ class BSP : public Bounds
     {
       enum Type
       {
+        STATIC,
         MANUAL_DOOR,
         AUTO_DOOR,
         IGNORING_BLOCK,

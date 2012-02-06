@@ -587,7 +587,7 @@ int Client::main( int argc, char** argv )
     timeSpent = timeNow - timeLast;
 
     // Skip rendering graphics, only play sounds if there's not enough time.
-    if( timeSpent >= uint( Timer::TICK_MICROS ) && timeNow - timeLastRender < 1000 * 1000 ) {
+    if( timeSpent >= Timer::TICK_MICROS && timeNow - timeLastRender < 1000 * 1000 ) {
       stage->present( false );
     }
     else {
@@ -598,8 +598,8 @@ int Client::main( int argc, char** argv )
       timeLastRender = Time::uclock();
       timeSpent = timeLastRender - timeLast;
 
-      if( timeSpent < uint( Timer::TICK_MICROS ) ) {
-        Time::usleep( Timer::TICK_MICROS - timeSpent );
+      if( timeSpent < Timer::TICK_MICROS ) {
+        stage->wait( Timer::TICK_MICROS - timeSpent );
 
         timeSpent = Timer::TICK_MICROS;
       }

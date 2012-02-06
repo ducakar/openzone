@@ -441,16 +441,6 @@ void Physics::handleObjMove()
   }
   while( true );
 
-  int newFlags = ( collider.hit.medium & Material::WATER_BIT ? Object::IN_WATER_BIT : 0 ) |
-                 ( collider.hit.medium & Material::LADDER_BIT ? Object::ON_LADDER_BIT : 0 );
-
-  if( ( newFlags & ~dyn->flags & Object::IN_WATER_BIT ) && dyn->velocity.z <= SPLASH_THRESHOLD ) {
-    dyn->splash( dyn->velocity.z );
-  }
-
-  dyn->flags |= newFlags;
-  dyn->depth = min( collider.hit.waterDepth, 2.0f * dyn->dim.z );
-
   orbis.reposition( dyn );
 }
 
@@ -514,6 +504,7 @@ void Physics::updateObj( Dynamic* dyn_ )
   if( !( dyn->flags & Object::DISABLED_BIT ) ) {
     if( handleObjFriction() ) {
       Point3 oldPos = dyn->p;
+      int oldFlags = dyn->flags;
 
       dyn->flags &= ~( Object::MOVE_CLEAR_MASK | Object::ENABLE_BIT );
       dyn->lower = -1;
@@ -522,12 +513,18 @@ void Physics::updateObj( Dynamic* dyn_ )
       handleObjMove();
       collider.mask = Object::SOLID_BIT;
 
-      dyn->velocity = ( dyn->p - oldPos ) / Timer::TICK_TIME;
+      dyn->flags |= ( collider.hit.medium & Material::WATER_BIT ? Object::IN_WATER_BIT : 0 ) |
+                    ( collider.hit.medium & Material::LADDER_BIT ? Object::ON_LADDER_BIT : 0 );
 
-      Vec3 absVelocity = dyn->velocity.abs();
-      dyn->momentum.x = clamp( dyn->momentum.x, -absVelocity.x, +absVelocity.x );
-      dyn->momentum.y = clamp( dyn->momentum.y, -absVelocity.y, +absVelocity.y );
-      dyn->momentum.z = clamp( dyn->momentum.z, -absVelocity.z, +absVelocity.z );
+      if( ( dyn->flags & ~oldFlags & Object::IN_WATER_BIT ) &&
+          dyn->velocity.z <= SPLASH_THRESHOLD )
+      {
+        dyn->splash( dyn->velocity.z );
+      }
+
+      dyn->velocity = ( dyn->p - oldPos ) / Timer::TICK_TIME;
+      dyn->momentum = dyn->velocity;
+      dyn->depth    = min( collider.hit.waterDepth, 2.0f * dyn->dim.z );
     }
     else {
       hard_assert( dyn->momentum == Vec3::ZERO );

@@ -99,6 +99,21 @@ int Sound::musicMain( void* )
   return 0;
 }
 
+int Sound::soundMain( void* )
+{
+  try {
+    sound.soundRun();
+  }
+  catch( const std::exception& e ) {
+    log.verboseMode = false;
+    log.printException( &e );
+
+    System::bell();
+    System::abort();
+  }
+  return 0;
+}
+
 void Sound::musicOpen( const char* path )
 {
   File file( path );
@@ -548,6 +563,43 @@ void Sound::updateMusic()
   }
 }
 
+void Sound::soundRun()
+{
+  SDL_SemWait( soundAuxSemaphore );
+
+  while( isSoundAlive ) {
+    float orientation[] = {
+      camera.at.x, camera.at.y, camera.at.y,
+      camera.up.x, camera.up.y, camera.up.z
+    };
+
+    // add new sounds
+    alListenerfv( AL_ORIENTATION, orientation );
+    alListenerfv( AL_POSITION, camera.p );
+
+    if( playedStructs.length() < orbis.structs.length() ) {
+      playedStructs.dealloc();
+      playedStructs.alloc( orbis.structs.length() );
+    }
+    playedStructs.clearAll();
+
+    Span span = orbis.getInters( camera.p, MAX_DISTANCE + Object::MAX_DIM );
+
+    for( int x = span.minX ; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
+        playCell( x, y );
+      }
+    }
+
+    updateMusic();
+
+    OZ_AL_CHECK_ERROR();
+
+    SDL_SemPost( soundMainSemaphore );
+    SDL_SemWait( soundAuxSemaphore );
+  }
+}
+
 void Sound::setVolume( float volume_ )
 {
   volume = volume_;
@@ -590,32 +642,12 @@ void Sound::suspend() const
 
 void Sound::play()
 {
-  float orientation[] = {
-    camera.at.x, camera.at.y, camera.at.y,
-    camera.up.x, camera.up.y, camera.up.z
-  };
+  SDL_SemPost( soundAuxSemaphore );
+}
 
-  // add new sounds
-  alListenerfv( AL_ORIENTATION, orientation );
-  alListenerfv( AL_POSITION, camera.p );
-
-  if( playedStructs.length() < orbis.structs.length() ) {
-    playedStructs.dealloc();
-    playedStructs.alloc( orbis.structs.length() );
-  }
-  playedStructs.clearAll();
-
-  Span span = orbis.getInters( camera.p, MAX_DISTANCE + Object::MAX_DIM );
-
-  for( int x = span.minX ; x <= span.maxX; ++x ) {
-    for( int y = span.minY; y <= span.maxY; ++y ) {
-      playCell( x, y );
-    }
-  }
-
-  updateMusic();
-
-  OZ_AL_CHECK_ERROR();
+void Sound::sync()
+{
+  SDL_SemWait( soundMainSemaphore );
 }
 
 void Sound::init()
@@ -767,9 +799,15 @@ void Sound::init()
   }
 
   isMusicAlive       = true;
+  isSoundAlive       = true;
+
   musicMainSemaphore = SDL_CreateSemaphore( 0 );
   musicAuxSemaphore  = SDL_CreateSemaphore( 0 );
+  soundMainSemaphore = SDL_CreateSemaphore( 0 );
+  soundAuxSemaphore  = SDL_CreateSemaphore( 0 );
+
   musicThread        = SDL_CreateThread( musicMain, null );
+  soundThread        = SDL_CreateThread( soundMain, null );
 
   log.unindent();
   log.println( "}" );
@@ -785,16 +823,21 @@ void Sound::free()
   currentTrack  = -1;
   streamedTrack = -1;
 
+  isSoundAlive = false;
   isMusicAlive = false;
 
+  SDL_SemPost( soundAuxSemaphore );
   SDL_SemPost( musicAuxSemaphore );
+  SDL_WaitThread( soundThread, null );
   SDL_WaitThread( musicThread, null );
 
+  SDL_DestroySemaphore( soundAuxSemaphore );
+  SDL_DestroySemaphore( soundMainSemaphore );
   SDL_DestroySemaphore( musicAuxSemaphore );
   SDL_DestroySemaphore( musicMainSemaphore );
 
-  musicMainSemaphore = null;
   musicAuxSemaphore  = null;
+  musicMainSemaphore = null;
   musicThread        = null;
 
   if( libfaad != null ) {

@@ -40,6 +40,7 @@ class Stage
 
     virtual bool update()               = 0;
     virtual void present( bool isFull ) = 0;
+    virtual void wait( uint micros )    = 0;
 
     virtual void load()                 = 0;
     virtual void unload()               = 0;

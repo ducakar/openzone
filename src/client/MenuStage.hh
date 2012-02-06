@@ -40,6 +40,7 @@ class MenuStage : public Stage
 
     virtual bool update();
     virtual void present( bool isFull );
+    virtual void wait( uint micros );
 
     virtual void load();
     virtual void unload();

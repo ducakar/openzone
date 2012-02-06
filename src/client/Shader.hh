@@ -152,7 +152,9 @@ class Shader
       explicit Light( const Point3& pos, const Vec4& diffuse );
     };
 
-    static const int BUFFER_SIZE = 8192;
+    static const int LOG_BUFFER_SIZE = 8192;
+
+    static char     logBuffer[LOG_BUFFER_SIZE];
 
     static String   defines;
 
@@ -181,8 +183,11 @@ class Shader
     uint defaultMasks;
 
     bool isInWater;
-    bool hasVertexTexture;
     bool hasS3TC;
+    bool hasVertexTexture;
+    bool isDeferred;
+    bool doPostprocess;
+    bool isLowDetail;
 
     Shader();
 

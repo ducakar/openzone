@@ -45,6 +45,7 @@ Param     param;
 Transform tf;
 Shader    shader;
 
+char   Shader::logBuffer[LOG_BUFFER_SIZE];
 String Shader::defines;
 
 void Transform::ortho( int width, int height )
@@ -120,11 +121,18 @@ void Shader::compileShader( uint id, const char* path, const char** sources, int
   int result;
   glGetShaderiv( id, GL_COMPILE_STATUS, &result );
 
-  DArray<char> logBuffer( BUFFER_SIZE );
   int length;
+  glGetShaderInfoLog( id, LOG_BUFFER_SIZE, &length, logBuffer );
+  logBuffer[LOG_BUFFER_SIZE - 1] = '\0';
 
-  glGetShaderInfoLog( id, BUFFER_SIZE, &length, logBuffer );
-  logBuffer[BUFFER_SIZE - 1] = '\0';
+  if( length != 0 ) {
+    if( result == GL_TRUE ) {
+      log.verboseMode = true;
+    }
+
+    log.printRaw( "\n%s:\n%s", path, logBuffer );
+    log.verboseMode = false;
+  }
 
   if( result != GL_TRUE ) {
     throw Exception( "Shader '%s' compile failed", path );
@@ -158,16 +166,21 @@ void Shader::loadProgram( int id, const char** sources, int* lengths )
 
   int result;
   glGetProgramiv( programs[id].program, GL_LINK_STATUS, &result );
+
+  int length;
+  glGetProgramInfoLog( programs[id].program, LOG_BUFFER_SIZE, &length, logBuffer );
+  logBuffer[LOG_BUFFER_SIZE - 1] = '\0';
+
+  if( length != 0 ) {
+    if( result == GL_TRUE ) {
+      log.verboseMode = true;
+    }
+
+    log.printRaw( "\n%s:\n%s", name.cstr(), logBuffer );
+    log.verboseMode = false;
+  }
+
   if( result != GL_TRUE ) {
-    char* logBuffer = new char[BUFFER_SIZE];
-    int length;
-
-    glGetProgramInfoLog( programs[id].program, BUFFER_SIZE, &length, logBuffer );
-    logBuffer[BUFFER_SIZE - 1] = '\0';
-
-    log.printRaw( "\n%s", logBuffer );
-    delete[] logBuffer;
-
     throw Exception( "Shader program '%s' linking failed", name.cstr() );
   }
 
@@ -261,9 +274,9 @@ void Shader::init()
   log.print( "Initialising Shader ..." );
 
   hasVertexTexture = config.getSet( "shader.vertexTexture", true );
-
-  bool isDeferred    = config.get( "render.deferred", false );
-  bool doPostprocess = config.get( "render.postprocess", false );
+  isDeferred       = config.get( "render.deferred", false );
+  doPostprocess    = config.get( "render.postprocess", false );
+  isLowDetail      = config.get( "render.lowDetail", false );
 
   // bind white texture to id 0 to emulate fixed functionality (in fixed functionality sampler
   // always returns white colour when texture 0 is bound)
@@ -304,6 +317,7 @@ void Shader::init()
   defines = defines + ( hasVertexTexture ? "#define OZ_VERTEX_TEXTURE\n" : "\n" );
   defines = defines + ( isDeferred ?       "#define OZ_DEFERRED\n" : "\n" );
   defines = defines + ( doPostprocess ?    "#define OZ_POSTPROCESS\n" : "\n" );
+  defines = defines + ( isLowDetail ?      "#define OZ_LOW_DETAIL\n" : "\n" );
 
   for( int i = 4; i < 10; ++i ) {
     defines = defines + "\n";
