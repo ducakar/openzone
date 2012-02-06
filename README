@@ -135,8 +135,7 @@ openzone [-v] [-l | -i <mission>] [-t <num>] [-p <prefix>]
 
   -i <mission>
         Skip main menu and start mission <mission>.
-        Missions reside in <prefix>/share/openzone/lua/mission in files named
-        <mission>.lua files.
+        Missions reside in <prefix>/share/openzone/lua/mission.
 
   -t <num>
         Exit after <num> seconds (can be a floating-point number) and use 42 as

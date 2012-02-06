@@ -7,8 +7,8 @@ License:        GPLv3+
 Group:          Amusements/Games
 Packager:       Davorin Učakar <davorin.ucakar@gmail.com>
 Source:         openzone-src-%{version}.tar.xz
-Source1:        ozbase.zip
-Source2:        openzone.zip
+Source1:        openzone-data-ozbase-%{version}.tar.xz
+Source2:        openzone-data-openzone-%{version}.tar.xz
 
 %package tools
 Summary:        Tools for building game data for OpenZone engine
@@ -38,12 +38,14 @@ Game data for OpenZone. Includes tutorials, testing world and cviček mission.
 
 %prep
 tar xf %{_sourcedir}/openzone-src-%{version}.tar.xz
+tar xf %{_sourcedir}/openzone-data-ozbase-%{version}.tar.xz
+tar xf %{_sourcedir}/openzone-data-openzone-%{version}.tar.xz
 
 %build
 mkdir -p openzone-build && cd openzone-build
 
 cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-  -DOZ_INSTALL_LIBOZ=0 -DOZ_INSTALL_CLIENT=1 -DOZ_INSTALL_TOOLS=1 -DOZ_INSTALL_INFO=1 \
+  -DOZ_INSTALL_LIBOZ=0 -DOZ_INSTALL_CLIENT=1 -DOZ_INSTALL_TOOLS=1 -DOZ_INSTALL_INFO=1 -DOZ_INSTALL_MENU=1 \
   ../openzone
 make -j4
 
@@ -53,14 +55,14 @@ cd openzone-build
 
 make install DESTDIR=$RPM_BUILD_ROOT
 
-install -Dm644 %{_sourcedir}/ozbase.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/ozbase.zip
-install -Dm644 %{_sourcedir}/openzone.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/openzone.zip
+install -Dm644 ../ozbase.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/ozbase.zip
+install -Dm644 ../openzone.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/openzone.zip
 
 %files
 %defattr(-,root,root)
 %{_bindir}/openzone
-%{_datadir}/share/applications/*
-%{_datadir}/share/icons/*
+%{_datadir}/share/applications
+%{_datadir}/share/pixmaps
 %dir %{_datadir}/openzone
 %{_datadir}/openzone/ozbase.zip
 %doc %{_defaultdocdir}/%{name}-%{version}

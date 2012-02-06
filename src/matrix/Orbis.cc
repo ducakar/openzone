@@ -114,31 +114,6 @@ void Orbis::unposition( Object* obj )
   cell->objects.remove( obj, obj->prev[0] );
 }
 
-void Orbis::reposition( Object* obj )
-{
-  hard_assert( obj->cell != null );
-
-  Cell* oldCell = obj->cell;
-  Cell* newCell = getCell( obj->p );
-
-  if( newCell != oldCell ) {
-    if( obj->next[0] != null ) {
-      obj->next[0]->prev[0] = obj->prev[0];
-    }
-
-    oldCell->objects.remove( obj, obj->prev[0] );
-
-    obj->cell = newCell;
-    obj->prev[0] = null;
-
-    if( !newCell->objects.isEmpty() ) {
-      newCell->objects.first()->prev[0] = obj;
-    }
-
-    newCell->objects.add( obj );
-  }
-}
-
 void Orbis::position( Frag* frag )
 {
   hard_assert( frag->cell == null );
@@ -168,31 +143,6 @@ void Orbis::unposition( Frag* frag )
   }
 
   cell->frags.remove( frag, frag->prev[0] );
-}
-
-void Orbis::reposition( Frag* frag )
-{
-  hard_assert( frag->cell != null );
-
-  Cell* oldCell = frag->cell;
-  Cell* newCell = getCell( frag->p );
-
-  if( newCell != oldCell ) {
-    if( frag->next[0] != null ) {
-      frag->next[0]->prev[0] = frag->prev[0];
-    }
-
-    oldCell->frags.remove( frag, frag->prev[0] );
-
-    frag->cell = newCell;
-    frag->prev[0] = null;
-
-    if( !newCell->frags.isEmpty() ) {
-      newCell->frags.first()->prev[0] = frag;
-    }
-
-    newCell->frags.add( frag );
-  }
 }
 
 Struct* Orbis::add( const BSP* bsp, const Point3& p, Heading heading )
@@ -308,6 +258,56 @@ void Orbis::remove( Frag* frag )
   frags[frag->index] = null;
 
   delete frag;
+}
+
+void Orbis::reposition( Object* obj )
+{
+  hard_assert( obj->cell != null );
+
+  Cell* oldCell = obj->cell;
+  Cell* newCell = getCell( obj->p );
+
+  if( newCell != oldCell ) {
+    if( obj->next[0] != null ) {
+      obj->next[0]->prev[0] = obj->prev[0];
+    }
+
+    oldCell->objects.remove( obj, obj->prev[0] );
+
+    obj->cell = newCell;
+    obj->prev[0] = null;
+
+    if( !newCell->objects.isEmpty() ) {
+      newCell->objects.first()->prev[0] = obj;
+    }
+
+    newCell->objects.add( obj );
+  }
+}
+
+void Orbis::reposition( Frag* frag )
+{
+  hard_assert( frag->cell != null );
+
+  Cell* oldCell = frag->cell;
+  Cell* newCell = getCell( frag->p );
+
+  if( newCell != oldCell ) {
+    if( frag->next[0] != null ) {
+      frag->next[0]->prev[0] = frag->prev[0];
+    }
+
+    oldCell->frags.remove( frag, frag->prev[0] );
+
+    frag->cell = newCell;
+    frag->prev[0] = null;
+
+    if( !newCell->frags.isEmpty() ) {
+      newCell->frags.first()->prev[0] = frag;
+    }
+
+    newCell->frags.add( frag );
+  }
 }
 
 void Orbis::update()

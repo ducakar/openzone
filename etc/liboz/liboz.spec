@@ -36,7 +36,7 @@ tar xf %{_sourcedir}/openzone-src-%{version}.tar.xz
 mkdir -p openzone-build && cd openzone-build
 
 cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-  -DOZ_INSTALL_LIBOZ=1 -DOZ_INSTALL_CLIENT=0 -DOZ_INSTALL_TOOLS=0 -DOZ_INSTALL_INFO=0 \
+  -DOZ_INSTALL_LIBOZ=1 -DOZ_INSTALL_CLIENT=0 -DOZ_INSTALL_TOOLS=0 -DOZ_INSTALL_INFO=0 -DOZ_INSTALL_MENU=0 \
   ../openzone
 make -j4
 

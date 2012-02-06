@@ -36,17 +36,19 @@ class Physics
 {
   public:
 
+    static const float G_ACCEL;
+    static const float FLOOR_NORMAL_Z;
     static const float MOVE_BOUNCE;
+    static const float ENTITY_BOND_LIMIT;
+    static const float SIDE_PUSH_RATIO;
+
     static const float HIT_THRESHOLD;
     static const float SPLASH_THRESHOLD;
-    static const float FLOOR_NORMAL_Z;
-    static const float SIDE_PUSH_RATIO;
     static const float WEIGHT_DAMAGE_THRESHOLD;
     static const float WEIGHT_DAMAGE_FACTOR;
-    static const float G_ACCEL;
-
     static const float SLIDE_DAMAGE_THRESHOLD;
     static const float SLIDE_DAMAGE_COEF;
+
     static const float STICK_VELOCITY;
     static const float SLICK_STICK_VELOCITY;
     static const float FLOAT_STICK_VELOCITY;

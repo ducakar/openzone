@@ -187,7 +187,6 @@ void Bot::onUpdate()
       }
     }
 
-    stepRate -= velocity.x*velocity.x + velocity.y*velocity.y;
     stepRate *= clazz->stepRateSupp;
 
     /*
@@ -441,7 +440,7 @@ void Bot::onUpdate()
 
             if( endDist < 0.0f ) {
               momentum.z = max( momentum.z, 0.0f );
-              stepRate += raise*raise * clazz->stepRateCoeff;
+              stepRate += raise*raise;
               goto stepSucceeded;
             }
           }

@@ -71,10 +71,10 @@ class Entity
 
   private:
 
-    void ignoringHandler();
-    void crushingHandler();
     void manualDoorHandler();
     void autoDoorHandler();
+    void ignoringBlockHandler();
+    void crushingBlockHandler();
     void elevatorHandler();
 
 };
