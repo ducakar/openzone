@@ -237,7 +237,10 @@ void BSP::load()
 
       String sType = bspConfig.get( keyName + ".type", "" );
 
-      if( sType.equals( "MANUAL_DOOR" ) ) {
+      if( sType.equals( "STATIC" ) ) {
+        models[i].type = matrix::BSP::Model::STATIC;
+      }
+      else if( sType.equals( "MANUAL_DOOR" ) ) {
         models[i].type = matrix::BSP::Model::MANUAL_DOOR;
       }
       else if( sType.equals( "AUTO_DOOR" ) ) {
@@ -253,8 +256,15 @@ void BSP::load()
         models[i].type = matrix::BSP::Model::ELEVATOR;
       }
       else {
-        throw Exception( "Invalid BSP model type, must be either MANUAL_DOOR, AUTO_DOOR, "
+        throw Exception( "Invalid BSP model type, must be either STATIC, MANUAL_DOOR, AUTO_DOOR, "
                          "IGNORING_BLOCK, CRUSHING_BLOCK or ELEVATOR." );
+      }
+
+      if( models[i].type == matrix::BSP::Model::ELEVATOR &&
+          ( models[i].move.x != 0.0f || models[i].move.y != 0.0f ) )
+      {
+        throw Exception( "Elevator can only move vertically, but model%02d.move = (%g %g %g)",
+                         i, models[i].move.x, models[i].move.y, models[i].move.z );
       }
 
       models[i].margin     = bspConfig.get( keyName + ".margin", DEFAULT_MARGIN );

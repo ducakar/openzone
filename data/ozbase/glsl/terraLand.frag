@@ -38,8 +38,8 @@ void main()
   vec4 detailSample = texture2D( oz_Textures[0], exTexCoord * TERRA_DETAIL_SCALE );
   vec4 mapSample    = texture2D( oz_Textures[2], exTexCoord );
 
-  vec4 diffuse = skyLightColour( normal );
+  vec4 diffuse    = skyLightColour( normal );
+  vec4 fragColour = detailSample * mapSample * diffuse;
 
-  gl_FragData[0] = detailSample * mapSample * diffuse;
-  gl_FragData[0] = applyFog( gl_FragData[0], dist );
+  gl_FragData[0] = applyFog( fragColour, dist );
 }

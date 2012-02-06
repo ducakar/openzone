@@ -92,40 +92,38 @@ void Caelum::update()
 
 void Caelum::draw()
 {
-  if( id == -1 ) {
-    return;
-  }
-
-  float colour[4] = {
-    Math::mix( STAR_COLOUR[0], DAY_COLOUR[0], ratio ),
-    Math::mix( STAR_COLOUR[1], DAY_COLOUR[1], ratio ),
-    Math::mix( STAR_COLOUR[2], DAY_COLOUR[2], ratio ),
-    1.0f
-  };
+  OZ_GL_CHECK_ERROR();
 
   // we need the transformation matrix for occlusion of stars below horizon
   Mat44 transf = Mat44::rotationZ( orbis.caelum.heading ) *
-                 Mat44::rotationY( angle - Math::TAU / 4.0f );
+  Mat44::rotationY( angle - Math::TAU / 4.0f );
 
-  OZ_GL_CHECK_ERROR();
+  if( !shader.isLowDetail ) {
+    float colour[4] = {
+      Math::mix( STAR_COLOUR[0], DAY_COLOUR[0], ratio ),
+      Math::mix( STAR_COLOUR[1], DAY_COLOUR[1], ratio ),
+      Math::mix( STAR_COLOUR[2], DAY_COLOUR[2], ratio ),
+      1.0f
+    };
 
-  shader.use( starShaderId );
-  tf.applyCamera();
+    shader.use( starShaderId );
+    tf.applyCamera();
 
-  tf.model = transf;
-  tf.apply();
+    tf.model = transf;
+    tf.apply();
 
-  glUniform4fv( param.oz_Fog_colour, 1, Colours::caelum );
-  glUniform4fv( param.oz_Colour, 1, colour );
+    glUniform4fv( param.oz_Fog_colour, 1, Colours::caelum );
+    glUniform4fv( param.oz_Colour, 1, colour );
 
 # ifdef OZ_GL_COMPATIBLE
-  glBindBuffer( GL_ARRAY_BUFFER, vbo );
-  Vertex::setFormat();
+    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    Vertex::setFormat();
 # else
-  glBindVertexArray( vao );
+    glBindVertexArray( vao );
 # endif
 
-  glDrawArrays( GL_QUADS, 0, MAX_STARS * 4 );
+    glDrawArrays( GL_QUADS, 0, MAX_STARS * 4 );
+  }
 
   shape.bindVertexArray();
 

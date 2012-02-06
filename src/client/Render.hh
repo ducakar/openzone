@@ -108,6 +108,7 @@ class Render
     bool                  isOffscreen;
     bool                  isDeferred;
     bool                  doPostprocess;
+    bool                  isLowDetail;
 
     float                 windPhi;
 
@@ -125,17 +126,17 @@ class Render
 
     SDL_Surface*          surface;
 
-    uint                  prepareMillis;
-    uint                  setupMillis;
-    uint                  caelumMillis;
-    uint                  terraMillis;
-    uint                  structsMillis;
-    uint                  objectsMillis;
-    uint                  fragsMillis;
-    uint                  miscMillis;
-    uint                  postprocessMillis;
-    uint                  uiMillis;
-    uint                  swapMillis;
+    ulong64               prepareMicros;
+    ulong64               setupMicros;
+    ulong64               caelumMicros;
+    ulong64               terraMicros;
+    ulong64               structsMicros;
+    ulong64               objectsMicros;
+    ulong64               fragsMicros;
+    ulong64               miscMicros;
+    ulong64               postprocessMicros;
+    ulong64               uiMicros;
+    ulong64               swapMicros;
 
   private:
 

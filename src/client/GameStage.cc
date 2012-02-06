@@ -196,6 +196,7 @@ void GameStage::reload()
   render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
   sound.play();
   render.swap();
+  sound.sync();
 
   loader.loadScheduled();
 
@@ -208,7 +209,7 @@ void GameStage::reload()
 
 void GameStage::auxRun()
 {
-  uint beginTime;
+  uint beginMicros;
 
   SDL_SemPost( mainSemaphore );
   SDL_SemPost( mainSemaphore );
@@ -218,14 +219,15 @@ void GameStage::auxRun()
     /*
      * PHASE 2
      */
-    beginTime = Time::clock();
+
+    beginMicros = Time::uclock();
 
     network.update();
 
     // update world
     matrix.update();
 
-    matrixMillis += Time::clock() - beginTime;
+    matrixMicros += Time::uclock() - beginMicros;
 
     SDL_SemPost( mainSemaphore );
     SDL_SemWait( auxSemaphore );
@@ -233,7 +235,8 @@ void GameStage::auxRun()
     /*
      * PHASE 3
      */
-    beginTime = Time::clock();
+
+    beginMicros = Time::uclock();
 
     // sync nirvana
     nirvana.sync();
@@ -244,7 +247,7 @@ void GameStage::auxRun()
     // update minds
     nirvana.update();
 
-    nirvanaMillis += Time::clock() - beginTime;
+    nirvanaMicros += Time::uclock() - beginMicros;
 
     // we can now manipulate world from the main thread after synapse lists have been cleared
     // and nirvana is not accessing matrix any more
@@ -261,7 +264,7 @@ void GameStage::auxRun()
 
 bool GameStage::update()
 {
-  uint beginTime;
+  uint beginMicros;
 
   SDL_SemWait( mainSemaphore );
 
@@ -269,7 +272,7 @@ bool GameStage::update()
    * PHASE 1
    */
 
-  beginTime = Time::clock();
+  beginMicros = Time::uclock();
 
   if( ui::keyboard.keys[SDLK_F5] && !ui::keyboard.oldKeys[SDLK_F5] ) {
     write( QUICKSAVE_FILE );
@@ -291,7 +294,7 @@ bool GameStage::update()
   modules.update();
   lua.update();
 
-  uiMillis += Time::clock() - beginTime;
+  uiMicros += Time::uclock() - beginMicros;
 
   SDL_SemPost( auxSemaphore );
   SDL_SemWait( mainSemaphore );
@@ -300,14 +303,14 @@ bool GameStage::update()
    * PHASE 2
    */
 
-  beginTime = Time::clock();
+  beginMicros = Time::uclock();
 
   context.updateLoad();
 
   loader.cleanup();
   loader.loadScheduled();
 
-  loaderMillis += Time::clock() - beginTime;
+  loaderMicros += Time::uclock() - beginMicros;
 
   SDL_SemPost( auxSemaphore );
   SDL_SemWait( mainSemaphore );
@@ -323,18 +326,35 @@ bool GameStage::update()
 
 void GameStage::present( bool full )
 {
-  uint beginTime = Time::clock();
-  uint currentTime;
+  uint beginMicros = Time::uclock();
+  uint currentMicros;
 
   sound.play();
 
-  currentTime = Time::clock();
-  presentMillis += currentTime - beginTime;
+  currentMicros = Time::uclock();
+  soundMicros += currentMicros - beginMicros;
+  beginMicros = currentMicros;
 
   if( full ) {
     render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
     render.swap();
+
+    currentMicros = Time::uclock();
+    renderMicros += currentMicros - beginMicros;
+    beginMicros = currentMicros;
   }
+
+  sound.sync();
+
+  currentMicros = Time::uclock();
+  soundMicros += currentMicros - beginMicros;
+}
+
+void GameStage::wait( uint micros )
+{
+  sleepMicros += micros;
+
+  Time::usleep( micros );
 }
 
 void GameStage::load()
@@ -344,7 +364,7 @@ void GameStage::load()
   log.printEnd( "] Loading GameStage {" );
   log.indent();
 
-  loadingMillis = Time::clock();
+  loadingMicros = Time::uclock();
 
   ui::mouse.doShow = false;
   ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Loading ..." ) );
@@ -356,12 +376,13 @@ void GameStage::load()
 
   timer.reset();
 
-  uiMillis      = 0;
-  loaderMillis  = 0;
-  presentMillis = 0;
-  renderMillis  = 0;
-  matrixMillis  = 0;
-  nirvanaMillis = 0;
+  sleepMicros   = 0;
+  uiMicros      = 0;
+  loaderMicros  = 0;
+  soundMicros   = 0;
+  renderMicros  = 0;
+  matrixMicros  = 0;
+  nirvanaMicros = 0;
 
   log.print( "Starting auxilary thread ..." );
 
@@ -422,13 +443,14 @@ void GameStage::load()
   render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
   sound.play();
   render.swap();
+  sound.sync();
 
   loader.loadScheduled();
 
   ui::ui.prepare();
   ui::ui.showLoadingScreen( false );
 
-  loadingMillis = Time::clock() - loadingMillis;
+  loadingMicros = Time::uclock() - loadingMicros;
 
   isLoaded = true;
 
@@ -450,24 +472,26 @@ void GameStage::unload()
   render.draw( Render::DRAW_UI_BIT );
   render.swap();
 
-  float uiTime                = float( uiMillis )                       * 0.001f;
-  float loaderTime            = float( loaderMillis )                   * 0.001f;
-  float presentTime           = float( presentMillis )                  * 0.001f;
-  float renderTime            = float( renderMillis )                   * 0.001f;
-  float renderPrepareTime     = float( render.prepareMillis )           * 0.001f;
-  float renderSetupTime       = float( render.setupMillis )             * 0.001f;
-  float renderCaelumTime      = float( render.caelumMillis )            * 0.001f;
-  float renderTerraTime       = float( render.terraMillis )             * 0.001f;
-  float renderStructsTime     = float( render.structsMillis )           * 0.001f;
-  float renderObjectsTime     = float( render.objectsMillis )           * 0.001f;
-  float renderFragsTime       = float( render.fragsMillis )             * 0.001f;
-  float renderMiscTime        = float( render.miscMillis )              * 0.001f;
-  float renderPostprocessTime = float( render.postprocessMillis )       * 0.001f;
-  float renderUITime          = float( render.uiMillis )                * 0.001f;
-  float renderSwapTime        = float( render.swapMillis )              * 0.001f;
-  float matrixTime            = float( matrixMillis )                   * 0.001f;
-  float nirvanaTime           = float( nirvanaMillis )                  * 0.001f;
-  float loadingTime           = float( loadingMillis )                  * 0.001f;
+  float sleepTime             = float( sleepMicros )                    * 1.0e-6f;
+  float uiTime                = float( uiMicros )                       * 1.0e-6f;
+  float loaderTime            = float( loaderMicros )                   * 1.0e-6f;
+  float presentTime           = float( soundMicros + renderMicros )     * 1.0e-6f;
+  float soundTime             = float( soundMicros )                    * 1.0e-6f;
+  float renderTime            = float( renderMicros )                   * 1.0e-6f;
+  float renderPrepareTime     = float( render.prepareMicros )           * 1.0e-6f;
+  float renderSetupTime       = float( render.setupMicros )             * 1.0e-6f;
+  float renderCaelumTime      = float( render.caelumMicros )            * 1.0e-6f;
+  float renderTerraTime       = float( render.terraMicros )             * 1.0e-6f;
+  float renderStructsTime     = float( render.structsMicros )           * 1.0e-6f;
+  float renderObjectsTime     = float( render.objectsMicros )           * 1.0e-6f;
+  float renderFragsTime       = float( render.fragsMicros )             * 1.0e-6f;
+  float renderMiscTime        = float( render.miscMicros )              * 1.0e-6f;
+  float renderPostprocessTime = float( render.postprocessMicros )       * 1.0e-6f;
+  float renderUITime          = float( render.uiMicros )                * 1.0e-6f;
+  float renderSwapTime        = float( render.swapMicros )              * 1.0e-6f;
+  float matrixTime            = float( matrixMicros )                   * 1.0e-6f;
+  float nirvanaTime           = float( nirvanaMicros )                  * 1.0e-6f;
+  float loadingTime           = float( loadingMicros )                  * 1.0e-6f;
   float runTime               = float( timer.runMicros )                * 1.0e-6f;
   float gameTime              = float( timer.micros )                   * 1.0e-6f;
   float droppedTime           = float( timer.runMicros - timer.micros ) * 1.0e-6f;
@@ -522,23 +546,25 @@ void GameStage::unload()
   log.println( "frame drop              %6.2f %%",      frameDropRate * 100.0f                   );
   log.println( "Run time usage {" );
   log.indent();
-  log.println( "%6.2f %%  [M:1] input & ui",            uiTime                / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:2] loader",                loaderTime            / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] present",               presentTime           / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] render",                renderTime            / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] + render prepare",      renderPrepareTime     / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] + render shader setup", renderSetupTime       / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] + render caelum",       renderCaelumTime      / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] + render terra",        renderTerraTime       / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] + render structs",      renderStructsTime     / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] + render objects",      renderObjectsTime     / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] + render frags",        renderFragsTime       / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] + render misc",         renderMiscTime        / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] + render postprocess",  renderPostprocessTime / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] + render ui",           renderUITime          / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] + render swap",         renderSwapTime        / runTime * 100.0f );
-  log.println( "%6.2f %%  [A:2] matrix",                matrixTime            / runTime * 100.0f );
-  log.println( "%6.2f %%  [A:3] nirvana",               nirvanaTime           / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:0] sleep",            sleepTime             / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:1] input & ui",       uiTime                / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:2] loader",           loaderTime            / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3] present",          presentTime           / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3] + sound",          soundTime             / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3] + render",         renderTime            / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3]   + prepare",      renderPrepareTime     / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3]   + shader setup", renderSetupTime       / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3]   + caelum",       renderCaelumTime      / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3]   + terra",        renderTerraTime       / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3]   + structs",      renderStructsTime     / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3]   + objects",      renderObjectsTime     / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3]   + frags",        renderFragsTime       / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3]   + misc",         renderMiscTime        / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3]   + postprocess",  renderPostprocessTime / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3]   + ui",           renderUITime          / runTime * 100.0f );
+  log.println( "%6.2f %%  [M:3]   + swap",         renderSwapTime        / runTime * 100.0f );
+  log.println( "%6.2f %%  [A:2] matrix",           matrixTime            / runTime * 100.0f );
+  log.println( "%6.2f %%  [A:3] nirvana",          nirvanaTime           / runTime * 100.0f );
   log.unindent();
   log.println( "}" );
   log.unindent();

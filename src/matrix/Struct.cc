@@ -65,6 +65,7 @@ const float Struct::MOMENTUM_DAMAGE_COEF   = 0.01f;
 const float Struct::MAX_HIT_DAMAGE_MASS    = 100.0f;
 
 const Entity::Handler Entity::HANDLERS[] = {
+  &Entity::staticHandler,
   &Entity::manualDoorHandler,
   &Entity::autoDoorHandler,
   &Entity::ignoringBlockHandler,
@@ -116,6 +117,9 @@ canUnlock:;
     }
   }
 }
+
+void Entity::staticHandler()
+{}
 
 void Entity::manualDoorHandler()
 {
@@ -435,12 +439,10 @@ void Entity::elevatorHandler()
             collider.translate( dyn, move );
 
             if( collider.hit.ratio != 0.0f ) {
-              dyn->p += collider.hit.ratio * move;
+              dyn->p.z += collider.hit.ratio * move.z;
               dyn->flags &= ~Object::DISABLED_BIT;
               dyn->flags |= Object::ENABLE_BIT;
               dyn->lower = -1;
-
-              orbis.reposition( dyn );
             }
             if( collider.hit.ratio != 1.0f && collider.overlapsEntity( *dyn, this ) ) {
               ratio = originalRatio;
@@ -488,12 +490,10 @@ void Entity::elevatorHandler()
             collider.translate( dyn, move );
 
             if( collider.hit.ratio != 0.0f ) {
-              dyn->p += collider.hit.ratio * move;
+              dyn->p.z += collider.hit.ratio * move.z;
               dyn->flags &= ~Object::DISABLED_BIT;
               dyn->flags |= Object::ENABLE_BIT;
               dyn->lower = -1;
-
-              orbis.reposition( dyn );
             }
             if( collider.hit.ratio != 1.0f && collider.overlapsEntity( *dyn, this ) ) {
               ratio = originalRatio;
