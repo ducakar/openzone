@@ -65,10 +65,10 @@ const float Struct::MOMENTUM_DAMAGE_COEF   = 0.01f;
 const float Struct::MAX_HIT_DAMAGE_MASS    = 100.0f;
 
 const Entity::Handler Entity::HANDLERS[] = {
-  &Entity::ignoringHandler,
-  &Entity::crushingHandler,
   &Entity::manualDoorHandler,
   &Entity::autoDoorHandler,
+  &Entity::ignoringBlockHandler,
+  &Entity::crushingBlockHandler,
   &Entity::elevatorHandler
 };
 
@@ -117,12 +117,139 @@ canUnlock:;
   }
 }
 
-void Entity::ignoringHandler()
+void Entity::manualDoorHandler()
 {
+  time += Timer::TICK_TIME;
+
   switch( state ) {
     case CLOSED: {
-      time += Timer::TICK_TIME;
+      return;
+    }
+    case OPENING: {
+      ratio = min( ratio + model->ratioInc, 1.0f );
+      offset = ratio * model->move;
 
+      if( ratio == 1.0f ) {
+        state = OPENED;
+        time = 0.0f;
+        velocity = Vec3::ZERO;
+      }
+      return;
+    }
+    case OPENED: {
+      return;
+    }
+    case CLOSING: {
+      offset = Vec3::ZERO;
+
+      if( collider.overlapsOO( this, EPSILON ) ) {
+        offset = ratio * model->move;
+
+        if( ratio == 1.0f ) {
+          state = OPENED;
+          time = 0.0f;
+        }
+        else {
+          state = OPENING;
+          time = 0.0f;
+          velocity = model->move * model->ratioInc / Timer::TICK_TIME;
+        }
+        return;
+      }
+
+      ratio = max( ratio - model->ratioInc, 0.0f );
+      offset = ratio * model->move;
+
+      if( ratio == 0.0f ) {
+        state = CLOSED;
+        time = 0.0f;
+        velocity = Vec3::ZERO;
+      }
+      return;
+    }
+  }
+}
+
+void Entity::autoDoorHandler()
+{
+  time += Timer::TICK_TIME;
+
+  switch( state ) {
+    case CLOSED: {
+      if( ( timer.ticks + uint( str->index ) ) % 8 != 0 ) {
+        return;
+      }
+
+      if( collider.overlapsOO( this, model->margin ) ) {
+        state = OPENING;
+        time = 0.0f;
+        velocity = model->move * model->ratioInc / Timer::TICK_TIME;
+      }
+      return;
+    }
+    case OPENING: {
+      ratio = min( ratio + model->ratioInc, 1.0f );
+      offset = ratio * model->move;
+
+      if( ratio == 1.0f ) {
+        state = OPENED;
+        time = 0.0f;
+        velocity = Vec3::ZERO;
+      }
+      return;
+    }
+    case OPENED: {
+      if( time >= model->timeout ) {
+        time = 0.0f;
+
+        offset = Vec3::ZERO;
+
+        if( !collider.overlapsOO( this, model->margin ) ) {
+          state = CLOSING;
+          velocity = -model->move * model->ratioInc / Timer::TICK_TIME;
+        }
+
+        offset = model->move;
+      }
+      return;
+    }
+    case CLOSING: {
+      offset = Vec3::ZERO;
+
+      if( collider.overlapsOO( this, model->margin ) ) {
+        offset = ratio * model->move;
+
+        if( ratio == 1.0f ) {
+          state = OPENED;
+          time = 0.0f;
+        }
+        else {
+          state = OPENING;
+          time = 0.0f;
+          velocity = model->move * model->ratioInc / Timer::TICK_TIME;
+        }
+        return;
+      }
+
+      ratio = max( ratio - model->ratioInc, 0.0f );
+      offset = ratio * model->move;
+
+      if( ratio == 0.0f ) {
+        state = CLOSED;
+        time = 0.0f;
+        velocity = Vec3::ZERO;
+      }
+      return;
+    }
+  }
+}
+
+void Entity::ignoringBlockHandler()
+{
+  time += Timer::TICK_TIME;
+
+  switch( state ) {
+    case CLOSED: {
       if( time >= model->timeout ) {
         state = OPENING;
         time = 0.0f;
@@ -136,13 +263,12 @@ void Entity::ignoringHandler()
 
       if( ratio == 1.0f ) {
         state = OPENED;
+        time = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
     }
     case OPENED: {
-      time += Timer::TICK_TIME;
-
       if( time >= model->timeout ) {
         state = CLOSING;
         time = 0.0f;
@@ -156,6 +282,7 @@ void Entity::ignoringHandler()
 
       if( ratio == 0.0f ) {
         state = CLOSED;
+        time = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -163,12 +290,12 @@ void Entity::ignoringHandler()
   }
 }
 
-void Entity::crushingHandler()
+void Entity::crushingBlockHandler()
 {
+  time += Timer::TICK_TIME;
+
   switch( state ) {
     case CLOSED: {
-      time += Timer::TICK_TIME;
-
       if( time >= model->timeout ) {
         state = OPENING;
         time = 0.0f;
@@ -200,9 +327,12 @@ void Entity::crushingHandler()
               Vec3 velDelta = dynMove / Timer::TICK_TIME;
 
               dyn->p += dynMove;
+              dyn->momentum += velDelta;
               dyn->velocity += velDelta;
               dyn->flags &= ~Object::DISABLED_BIT;
               dyn->flags |= Object::ENABLE_BIT;
+
+              orbis.reposition( dyn );
             }
             if( collider.hit.ratio != 1.0f && collider.overlapsEntity( *dyn, this ) ) {
               dyn->destroy();
@@ -213,13 +343,12 @@ void Entity::crushingHandler()
 
       if( ratio == 1.0f ) {
         state = OPENED;
+        time = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
     }
     case OPENED: {
-      time += Timer::TICK_TIME;
-
       if( time >= model->timeout ) {
         state = CLOSING;
         time = 0.0f;
@@ -251,9 +380,12 @@ void Entity::crushingHandler()
               Vec3 velDelta = dynMove / Timer::TICK_TIME;
 
               dyn->p += dynMove;
+              dyn->momentum += velDelta;
               dyn->velocity += velDelta;
               dyn->flags &= ~Object::DISABLED_BIT;
               dyn->flags |= Object::ENABLE_BIT;
+
+              orbis.reposition( dyn );
             }
             if( collider.hit.ratio != 1.0f && collider.overlapsEntity( *dyn, this ) ) {
               dyn->destroy();
@@ -264,123 +396,7 @@ void Entity::crushingHandler()
 
       if( ratio == 0.0f ) {
         state = CLOSED;
-        velocity = Vec3::ZERO;
-      }
-      return;
-    }
-  }
-}
-
-void Entity::manualDoorHandler()
-{
-  switch( state ) {
-    case CLOSED: {
-      return;
-    }
-    case OPENING: {
-      ratio = min( ratio + model->ratioInc, 1.0f );
-      offset = ratio * model->move;
-
-      if( ratio == 1.0f ) {
-        state = OPENED;
-        velocity = Vec3::ZERO;
-      }
-      return;
-    }
-    case OPENED: {
-      return;
-    }
-    case CLOSING: {
-      offset = Vec3::ZERO;
-
-      if( collider.overlapsOO( this, EPSILON ) ) {
-        offset = ratio * model->move;
-
-        if( ratio == 1.0f ) {
-          state = OPENED;
-        }
-        else {
-          state = OPENING;
-          velocity = model->move * model->ratioInc / Timer::TICK_TIME;
-        }
-        return;
-      }
-
-      ratio = max( ratio - model->ratioInc, 0.0f );
-      offset = ratio * model->move;
-
-      if( ratio == 0.0f ) {
-        state = CLOSED;
-        velocity = Vec3::ZERO;
-      }
-      return;
-    }
-  }
-}
-
-void Entity::autoDoorHandler()
-{
-  switch( state ) {
-    case CLOSED: {
-      if( ( timer.ticks + uint( str->index ) ) % 8 != 0 ) {
-        return;
-      }
-
-      if( collider.overlapsOO( this, model->margin ) ) {
-        state = OPENING;
-        velocity = model->move * model->ratioInc / Timer::TICK_TIME;
-      }
-      return;
-    }
-    case OPENING: {
-      ratio = min( ratio + model->ratioInc, 1.0f );
-      offset = ratio * model->move;
-
-      if( ratio == 1.0f ) {
-        state = OPENED;
-        velocity = Vec3::ZERO;
-      }
-      return;
-    }
-    case OPENED: {
-      time += Timer::TICK_TIME;
-
-      if( time >= model->timeout ) {
         time = 0.0f;
-
-        offset = Vec3::ZERO;
-
-        if( !collider.overlapsOO( this, model->margin ) ) {
-          state = CLOSING;
-          velocity = -model->move * model->ratioInc / Timer::TICK_TIME;
-        }
-
-        offset = model->move;
-      }
-      return;
-    }
-    case CLOSING: {
-      offset = Vec3::ZERO;
-
-      if( collider.overlapsOO( this, model->margin ) ) {
-        offset = ratio * model->move;
-
-        if( ratio == 1.0f ) {
-          state = OPENED;
-        }
-        else {
-          state = OPENING;
-          time = 0.0f;
-          velocity = model->move * model->ratioInc / Timer::TICK_TIME;
-        }
-        return;
-      }
-
-      ratio = max( ratio - model->ratioInc, 0.0f );
-      offset = ratio * model->move;
-
-      if( ratio == 0.0f ) {
-        state = CLOSED;
         velocity = Vec3::ZERO;
       }
       return;
@@ -390,6 +406,8 @@ void Entity::autoDoorHandler()
 
 void Entity::elevatorHandler()
 {
+  time += Timer::TICK_TIME;
+
   switch( state ) {
     case CLOSED: {
       return;
@@ -417,19 +435,19 @@ void Entity::elevatorHandler()
             collider.translate( dyn, move );
 
             if( collider.hit.ratio != 0.0f ) {
-              Vec3 dynMove  = collider.hit.ratio * move;
-              Vec3 velDelta = dynMove / Timer::TICK_TIME;
-
-              dyn->p += dynMove;
-              dyn->velocity += velDelta;
+              dyn->p += collider.hit.ratio * move;
               dyn->flags &= ~Object::DISABLED_BIT;
               dyn->flags |= Object::ENABLE_BIT;
+              dyn->lower = -1;
+
+              orbis.reposition( dyn );
             }
             if( collider.hit.ratio != 1.0f && collider.overlapsEntity( *dyn, this ) ) {
               ratio = originalRatio;
               offset = originalOffset;
 
               state = ratio == 0.0f ? CLOSED : OPENED;
+              time = 0.0f;
               velocity = Vec3::ZERO;
               return;
             }
@@ -439,6 +457,7 @@ void Entity::elevatorHandler()
 
       if( ratio == 1.0f ) {
         state = OPENED;
+        time = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -469,19 +488,19 @@ void Entity::elevatorHandler()
             collider.translate( dyn, move );
 
             if( collider.hit.ratio != 0.0f ) {
-              Vec3 dynMove  = collider.hit.ratio * move;
-              Vec3 velDelta = dynMove / Timer::TICK_TIME;
-
-              dyn->p += dynMove;
-              dyn->velocity += velDelta;
+              dyn->p += collider.hit.ratio * move;
               dyn->flags &= ~Object::DISABLED_BIT;
               dyn->flags |= Object::ENABLE_BIT;
+              dyn->lower = -1;
+
+              orbis.reposition( dyn );
             }
             if( collider.hit.ratio != 1.0f && collider.overlapsEntity( *dyn, this ) ) {
               ratio = originalRatio;
               offset = originalOffset;
 
               state = ratio == 1.0f ? OPENED : CLOSED;
+              time = 0.0f;
               velocity = Vec3::ZERO;
               return;
             }
@@ -491,6 +510,7 @@ void Entity::elevatorHandler()
 
       if( ratio == 0.0f ) {
         state = CLOSED;
+        time = 0.0f;
         velocity = Vec3::ZERO;
       }
       return;
@@ -502,7 +522,7 @@ void Struct::onDemolish()
 {
   overlappingObjs.clear();
   collider.mask = ~0;
-  collider.getOverlaps( this->toAABB(), &overlappingObjs, null, 4.0f * EPSILON );
+  collider.getOverlaps( toAABB(), &overlappingObjs, null, 4.0f * EPSILON );
   collider.mask = Object::SOLID_BIT;
 
   for( int i = 0; i < overlappingObjs.length(); ++i ) {

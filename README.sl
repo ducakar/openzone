@@ -139,8 +139,7 @@ openzone [-v] [-l | -i <misija>] [-t <št>] [-p <predpona>]
 
 -i <misija>
       Preskoči glavni meni in poženi misijo <misija>.
-      Misije se nahajajo v <predpona>/share/openzone/lua/mission v datotekah
-      poimenovanih <misija>.lua.
+      Misije se nahajajo v <predpona>/share/openzone/lua/mission.
 
 -t <št>
       Končaj po <št> sekundah (lahko je decimalno število) in kot naključnostno

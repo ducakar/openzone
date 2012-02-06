@@ -63,7 +63,6 @@ class BotClass : public DynamicClass
     float  stepInc;
     float  stepMax;
     float  stepRateLimit;
-    float  stepRateCoeff;
     float  stepRateSupp;
 
     float  climbInc;

@@ -556,7 +556,7 @@ void Sound::setVolume( float volume_ )
 
 void Sound::setMusicVolume( float volume ) const
 {
-  alSourcef( musicSource, AL_GAIN, volume );
+  alSourcef( musicSource, AL_GAIN, Math::log( 1.0f + volume ) );
 }
 
 void Sound::playMusic( int track )

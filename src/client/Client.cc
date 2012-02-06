@@ -114,7 +114,7 @@ void Client::printUsage()
 {
   log.println( "Usage:" );
   log.indent();
-  log.println( "openzone [-v] [-l | -i <mission>] [-t <num>] [-p <prefix>]" );
+  log.println( OZ_APPLICATION_NAME " [-v] [-l | -i <mission>] [-t <num>] [-p <prefix>]" );
   log.println();
   log.println( "-v" );
   log.println( "\tMore verbose log output." );
@@ -124,15 +124,14 @@ void Client::printUsage()
   log.println();
   log.println( "-i <mission>" );
   log.println( "\tSkip main menu and start mission <mission>." );
-  log.println( "\tMissions reside in <prefix>/share/openzone/lua/mission in files named" );
-  log.println( "\t<mission>.lua files." );
+  log.println( "\tMissions reside in <prefix>/share/" OZ_APPLICATION_NAME "/lua/mission." );
   log.println();
   log.println( "-t <num>" );
   log.println( "\tExit after <num> seconds (can be a floating-point number) and use 42 as" );
   log.println( "\tthe random seed. Useful for benchmarking." );
   log.println();
   log.println( "-p <prefix>" );
-  log.println( "\tSets data directory to <prefix>/share/openzone." );
+  log.println( "\tSets data directory to <prefix>/share/" OZ_APPLICATION_NAME "." );
   log.println( "\tDefault: '%s'.", OZ_INSTALL_PREFIX );
   log.println();
   log.unindent();

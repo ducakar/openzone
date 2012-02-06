@@ -32,17 +32,19 @@ namespace matrix
 
 Physics physics;
 
+const float Physics::G_ACCEL                 = -9.81f;
+const float Physics::FLOOR_NORMAL_Z          =  0.60f;
 const float Physics::MOVE_BOUNCE             =  1.5f * EPSILON;
+const float Physics::ENTITY_BOND_LIMIT       = -2.0f;
+const float Physics::SIDE_PUSH_RATIO         =  0.5f;
+
 const float Physics::HIT_THRESHOLD           = -3.0f;
 const float Physics::SPLASH_THRESHOLD        = -2.0f;
-const float Physics::FLOOR_NORMAL_Z          =  0.60f;
-const float Physics::SIDE_PUSH_RATIO         =  0.5f;
 const float Physics::WEIGHT_DAMAGE_THRESHOLD =  1000.0f;
 const float Physics::WEIGHT_DAMAGE_FACTOR    =  20.0f;
-const float Physics::G_ACCEL                 = -9.81f;
-
 const float Physics::SLIDE_DAMAGE_THRESHOLD  =  25.0f;
 const float Physics::SLIDE_DAMAGE_COEF       =  0.65f;
+
 const float Physics::STICK_VELOCITY          =  0.02f;
 const float Physics::SLICK_STICK_VELOCITY    =  0.001f;
 const float Physics::FLOAT_STICK_VELOCITY    =  0.0002f;
@@ -174,6 +176,7 @@ bool Physics::handleObjFriction()
 
           deltaVelX -= entity.velocity.x;
           deltaVelY -= entity.velocity.y;
+          systemMom += max( entity.velocity.z, ENTITY_BOND_LIMIT );
         }
       }
       else {

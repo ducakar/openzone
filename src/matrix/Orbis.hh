@@ -52,7 +52,6 @@ struct Cell
 class Orbis : public Bounds
 {
   friend class Synapse;
-  friend class Physics;
 
   private:
 
@@ -113,11 +112,9 @@ class Orbis : public Bounds
 
     void position( Object* obj );
     void unposition( Object* obj );
-    void reposition( Object* obj );
 
     void position( Frag* frag );
     void unposition( Frag* frag );
-    void reposition( Frag* frag );
 
     Struct* add( const BSP* bsp, const Point3& p, Heading heading );
     Object* add( const ObjectClass* clazz, const Point3& p, Heading heading );
@@ -128,6 +125,9 @@ class Orbis : public Bounds
     void remove( Frag* frag );
 
   public:
+
+    void reposition( Object* obj );
+    void reposition( Frag* frag );
 
     // get pointer to the cell the point is in
     Cell* getCell( float x, float y );

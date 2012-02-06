@@ -74,35 +74,35 @@ class BSP : public Bounds
     {
       enum Type
       {
-        IGNORING,
-        CRUSHING,
         MANUAL_DOOR,
         AUTO_DOOR,
+        IGNORING_BLOCK,
+        CRUSHING_BLOCK,
         ELEVATOR
       };
 
-      String name;                  ///< Model name.
-      String title;                 ///< Model title.
+      String name;       ///< Model name.
+      String title;      ///< Model title.
 
-      Vec3   move;                  ///< Move vector (destination - original position), in %BSP
-                                    ///< coordinate system.
+      Vec3   move;       ///< Move vector (destination - original position), in %BSP
+                         ///< coordinate system.
 
-      BSP*   bsp;                   ///< Pointer to the parent %BSP.
+      BSP*   bsp;        ///< Pointer to the parent %BSP.
 
-      int    firstBrush;            ///< Index of the first brush in <tt>brushes<tt> array.
-      int    nBrushes;              ///< Number of brushes.
+      int    firstBrush; ///< Index of the first brush in <tt>brushes<tt> array.
+      int    nBrushes;   ///< Number of brushes.
 
-      Type   type;                  ///< Model type.
-      float  margin;                ///< Margin around entity inside which triggers door opening.
-      float  timeout;               ///< Timeout after which entity starts opening/closing.
-      float  ratioInc;              ///< Step in ratio for each frame.
+      Type   type;       ///< Model type.
+      float  margin;     ///< Margin around entity inside which triggers door opening.
+      float  timeout;    ///< Timeout after which entity starts opening/closing.
+      float  ratioInc;   ///< Step in ratio for each frame.
 
-      int    target;                ///< Target model index for triggers, -1 otherwise.
-      int    key;                   ///< Default key code or 0 if door is unlocked by default.
+      int    target;     ///< Target model index for triggers, -1 otherwise.
+      int    key;        ///< Default key code or 0 if door is unlocked by default.
 
-      int    openSound;             ///< Open sound sample, played when an entity starts moving.
-      int    closeSound;            ///< Close sound sample, played when an entity stops moving.
-      int    frictSound;            ///< Friction sound sample, played while the entity is moving.
+      int    openSound;  ///< Open sound sample, played when an entity starts moving.
+      int    closeSound; ///< Close sound sample, played when an entity stops moving.
+      int    frictSound; ///< Friction sound sample, played while the entity is moving.
     };
 
     struct BoundObject

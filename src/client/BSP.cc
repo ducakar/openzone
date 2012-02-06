@@ -160,7 +160,7 @@ void BSP::play( const Struct* str ) const
     const Entity& entity = str->entities[i];
 
     if( entity.state == Entity::OPENING ) {
-      if( entity.ratio == 0.0f && entity.model->openSound != -1 ) {
+      if( entity.time == 0.0f && entity.model->openSound != -1 ) {
         playSound( &entity, entity.model->openSound );
       }
       if( entity.model->frictSound != -1 ) {
@@ -168,7 +168,7 @@ void BSP::play( const Struct* str ) const
       }
     }
     else if( entity.state == Entity::CLOSING ) {
-      if( entity.ratio == 1.0f && entity.model->closeSound != -1 ) {
+      if( entity.time == 0.0f && entity.model->closeSound != -1 ) {
         playSound( &entity, entity.model->closeSound );
       }
       if( entity.model->frictSound != -1 ) {

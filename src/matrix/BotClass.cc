@@ -145,11 +145,10 @@ void BotClass::initClass( const Config* config )
   waterControl      = config->get( "waterControl", 0.08f );
   slickControl      = config->get( "slickControl", 0.08f );
 
-  stepInc           = config->get( "stepInc", 0.25f );
-  stepMax           = config->get( "stepMax", 0.50f );
-  stepRateLimit     = config->get( "stepRateLimit", 0.00f );
-  stepRateCoeff     = config->get( "stepRateCoeff", 500.0f );
-  stepRateSupp      = config->get( "stepRateSupp", 0.50f );
+  stepInc           = config->get( "stepInc", 0.20f );
+  stepMax           = config->get( "stepMax", 0.40f );
+  stepRateLimit     = config->get( "stepRateLimit", 0.15f );
+  stepRateSupp      = config->get( "stepRateSupp", 0.80f );
 
   climbInc          = config->get( "climbInc", 0.25f );
   climbMax          = config->get( "climbMax", 2.0f );

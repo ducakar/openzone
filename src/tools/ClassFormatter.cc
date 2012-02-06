@@ -412,7 +412,6 @@ void ClassFormatter::writeBotClass() const
   fprintf( fs, "stepInc                 \"%g\"\n", clazz->stepInc );
   fprintf( fs, "stepMax                 \"%g\"\n", clazz->stepMax );
   fprintf( fs, "stepRateLimit           \"%g\"\n", clazz->stepRateLimit );
-  fprintf( fs, "stepRateCoeff           \"%g\"\n", clazz->stepRateCoeff );
   fprintf( fs, "stepRateSupp            \"%g\"\n", clazz->stepRateSupp );
   fprintf( fs, "\n" );
   fprintf( fs, "climbInc                \"%g\"\n", clazz->climbInc );

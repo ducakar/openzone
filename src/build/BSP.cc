@@ -237,24 +237,24 @@ void BSP::load()
 
       String sType = bspConfig.get( keyName + ".type", "" );
 
-      if( sType.equals( "IGNORING" ) ) {
-        models[i].type = matrix::BSP::Model::IGNORING;
-      }
-      else if( sType.equals( "CRUSHING" ) ) {
-        models[i].type = matrix::BSP::Model::CRUSHING;
-      }
-      else if( sType.equals( "MANUAL_DOOR" ) ) {
+      if( sType.equals( "MANUAL_DOOR" ) ) {
         models[i].type = matrix::BSP::Model::MANUAL_DOOR;
       }
       else if( sType.equals( "AUTO_DOOR" ) ) {
         models[i].type = matrix::BSP::Model::AUTO_DOOR;
       }
+      else if( sType.equals( "IGNORING_BLOCK" ) ) {
+        models[i].type = matrix::BSP::Model::IGNORING_BLOCK;
+      }
+      else if( sType.equals( "CRUSHING_BLOCK" ) ) {
+        models[i].type = matrix::BSP::Model::CRUSHING_BLOCK;
+      }
       else if( sType.equals( "ELEVATOR" ) ) {
         models[i].type = matrix::BSP::Model::ELEVATOR;
       }
       else {
-        throw Exception( "Invalid BSP model type, must be either IGNORING, CRUSHING, MANUAL_DOOR, "
-                         "AUTO_DOOR or ELEVATOR." );
+        throw Exception( "Invalid BSP model type, must be either MANUAL_DOOR, AUTO_DOOR, "
+                         "IGNORING_BLOCK, CRUSHING_BLOCK or ELEVATOR." );
       }
 
       models[i].margin     = bspConfig.get( keyName + ".margin", DEFAULT_MARGIN );
