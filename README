@@ -83,7 +83,7 @@ Ctrl + F11      - toggle mouse centring and cursor visibility in windowed mode
 F12             - minimise and pause
 Ctrl + F12      - exit application
 
-* Location of <config> directory:
+* Location of <config> directory under typical setup:
 - Linux: /home/<user>/.config/openzone
 - WinXP: C:\Documents and Settings\<user>\Application Data\openzone
 - Win7:  C:\Users\<user>\AppData\Roaming\openzone
@@ -194,23 +194,36 @@ lingua [string] ""
   Language code for translations. Language code must correspond to a
   subdirectory of "lingua" directory in one of game data archives.
 
-modules.profile.playerName [string] "<user>"
-  Name of the player. Capitalised username of the current user by default.
-
 mouse.accelFactor [float] 0.04
   Usually OS applies mouse acceleration before OpenZone reads the mouse input.
   The only exception is when running in fullscreen mode on X11 server. In this
   case OpenZone tries to emulate X11 mouse acceleration.
 
-render.deferred [bool] false
+profile.playerName [string] "<user>"
+  Name of the player. Capitalised username of the current user by default.
+
+  render.deferred [bool] false
   Enable deferred shading. Not really implemented yet.
   This option has effect only if offscreen rendering is enabled.
+
+render.lowDetail [bool] false
+  Use simpler lighting (no specular lighting and emission) and disable stars
+  to increase rendering performance.
 
 render.offscreen [bool] true
   Enable rendering into offscreen buffers instead directly to the screen. This
   enables some advanced effects like deferred shading and postprocessing. It
   also enables that the world is rendered at resolution that differ from the
   screen resolution.
+
+render.offscreenFilte [NEAREST|LINEAR] LINEAR
+  Which texture filter to use when rendering content of the offscreen buffer to
+  the screen. Can be LINEAR to interpolate between pixels (smooth, blurry image)
+  or NEAREST to select nearest pixel value (blocky image).
+  It has no effect if offscreen buffer resolution is the same as screen
+  resolution. Usually one would prefer LINEAR unless screen resolution is a
+  multiple of offscreen buffer resolution (in other words 1.0 / render.scale is
+  an integer).
 
 render.postprocess [bool] true
   Enable postprocessing when using offscreen rendering.

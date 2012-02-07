@@ -249,7 +249,7 @@ endif()
 
 # icons
 if( OZ_INSTALL_MENU AND NOT WIN32 )
-  install( DIRECTORY share/applications share/pixmaps DESTINATION share )
+#   install( DIRECTORY share/applications share/pixmaps DESTINATION share )
 endif()
 
 # oalinst, DLLs, localisation

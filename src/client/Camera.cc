@@ -131,14 +131,13 @@ void Camera::update()
   }
 
   if( newState != state ) {
-    state = newState;
     isExternal = true;
 
     if( proxy != null ) {
       proxy->end();
     }
 
-    switch( state ) {
+    switch( newState ) {
       case NONE: {
         proxy = null;
         break;
@@ -166,6 +165,8 @@ void Camera::update()
       entity    = -1;
       entityObj = null;
     }
+
+    state = newState;
   }
 
   if( proxy != null ) {
@@ -260,6 +261,27 @@ void Camera::read( InputStream* istream )
 
   strategicProxy.read( istream );
   botProxy.read( istream );
+
+  switch( newState ) {
+    case NONE: {
+      proxy = null;
+      break;
+    }
+    case STRATEGIC: {
+      proxy = &strategicProxy;
+      break;
+    }
+    case BOT: {
+      proxy = &botProxy;
+      break;
+    }
+  }
+
+  if( proxy != null ) {
+    proxy->begin();
+  }
+
+  state = newState;
 }
 
 void Camera::write( BufferStream* ostream ) const

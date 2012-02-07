@@ -51,7 +51,7 @@ StrategicProxy::StrategicProxy() :
 
 void StrategicProxy::begin()
 {
-  camera.v = isFree ? camera.v : Math::rad( DEFAULT_ANGLE );
+  camera.v = isFree || camera.state == Camera::NONE ? camera.v : Math::rad( DEFAULT_ANGLE );
   camera.w = 0.0f;
   camera.setTaggedObj( null );
   camera.setTaggedEnt( null );
