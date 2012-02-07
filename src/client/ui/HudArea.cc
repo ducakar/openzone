@@ -82,9 +82,18 @@ void HudArea::drawBotCrosshair()
 
       title.draw( this, false );
 
-      if( ent->model->target != -1 ) {
+      if( ent->model->target != -1 && ent->key <= 0 ) {
         glBindTexture( GL_TEXTURE_2D, useTexId );
         shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
+      }
+
+      if( ent->key > 0 ) {
+        glBindTexture( GL_TEXTURE_2D, lockedTexId );
+        shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
+      }
+      else if( ent->key < 0 ) {
+        glBindTexture( GL_TEXTURE_2D, unlockedTexId );
+        shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
       }
     }
     else {
@@ -384,15 +393,17 @@ HudArea::HudArea() :
 
   log.verboseMode = true;
 
-  crossTexId  = context.loadTexture( "ui/icon/crosshair.ozcTex" );
-  useTexId    = context.loadTexture( "ui/icon/use.ozcTex" );
-  deviceTexId = context.loadTexture( "ui/icon/device.ozcTex" );
-  equipTexId  = context.loadTexture( "ui/icon/equip.ozcTex" );
-  mountTexId  = context.loadTexture( "ui/icon/mount.ozcTex" );
-  takeTexId   = context.loadTexture( "ui/icon/take.ozcTex" );
-  browseTexId = context.loadTexture( "ui/icon/browse.ozcTex" );
-  liftTexId   = context.loadTexture( "ui/icon/lift.ozcTex" );
-  grabTexId   = context.loadTexture( "ui/icon/grab.ozcTex" );
+  crossTexId    = context.loadTexture( "ui/icon/crosshair.ozcTex" );
+  useTexId      = context.loadTexture( "ui/icon/use.ozcTex" );
+  deviceTexId   = context.loadTexture( "ui/icon/device.ozcTex" );
+  equipTexId    = context.loadTexture( "ui/icon/equip.ozcTex" );
+  mountTexId    = context.loadTexture( "ui/icon/mount.ozcTex" );
+  takeTexId     = context.loadTexture( "ui/icon/take.ozcTex" );
+  browseTexId   = context.loadTexture( "ui/icon/browse.ozcTex" );
+  liftTexId     = context.loadTexture( "ui/icon/lift.ozcTex" );
+  grabTexId     = context.loadTexture( "ui/icon/grab.ozcTex" );
+  lockedTexId   = context.loadTexture( "ui/icon/locked.ozcTex" );
+  unlockedTexId = context.loadTexture( "ui/icon/unlocked.ozcTex" );
 
   log.verboseMode = false;
 
@@ -423,6 +434,8 @@ HudArea::~HudArea()
   glDeleteTextures( 1, &browseTexId );
   glDeleteTextures( 1, &liftTexId );
   glDeleteTextures( 1, &grabTexId );
+  glDeleteTextures( 1, &lockedTexId );
+  glDeleteTextures( 1, &unlockedTexId );
 }
 
 }

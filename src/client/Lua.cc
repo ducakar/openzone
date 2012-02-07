@@ -398,6 +398,8 @@ void Lua::init()
   OZ_LUA_FUNC( ozStrDestroy );
   OZ_LUA_FUNC( ozStrRemove );
 
+  OZ_LUA_FUNC( ozStrSetEntityLock );
+
   OZ_LUA_FUNC( ozStrBindAllOverlaps );
   OZ_LUA_FUNC( ozStrBindStrOverlaps );
   OZ_LUA_FUNC( ozStrBindObjOverlaps );
@@ -1130,6 +1132,18 @@ int Lua::ozStrRemove( lua_State* l )
 
   synapse.remove( lua.str );
   lua.str = null;
+  return 0;
+}
+
+int Lua::ozStrSetEntityLock( lua_State* l )
+{
+  ARG( 2 );
+  STR_NOT_NULL();
+
+  int entIndex = toint( 1 );
+  int key      = toint( 2 );
+
+  lua.str->entities[entIndex].key = key;
   return 0;
 }
 
@@ -2597,7 +2611,7 @@ int Lua::ozCameraGetH( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( camera.h );
+  pushfloat( Math::deg( camera.h ) );
   return 1;
 }
 
@@ -2605,7 +2619,7 @@ int Lua::ozCameraSetH( lua_State* l )
 {
   ARG( 1 );
 
-  camera.h = tofloat( 1 );
+  camera.h = Math::rad( tofloat( 1 ) );
   return 0;
 }
 
@@ -2613,7 +2627,7 @@ int Lua::ozCameraGetV( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( camera.v );
+  pushfloat( Math::deg( camera.v ) );
   return 1;
 }
 
@@ -2621,7 +2635,7 @@ int Lua::ozCameraSetV( lua_State* l )
 {
   ARG( 1 );
 
-  camera.v = tofloat( 1 );
+  camera.v = Math::rad( tofloat( 1 ) );
   return 0;
 }
 

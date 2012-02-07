@@ -491,7 +491,7 @@ void Sound::updateMusic()
     return;
   }
 
-  if( selectedTrack != -1 ) {
+  if( selectedTrack != -1 && selectedTrack != currentTrack ) {
     currentTrack = selectedTrack == -2 ? -1 : selectedTrack;
     selectedTrack = -1;
 

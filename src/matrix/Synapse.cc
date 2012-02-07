@@ -45,9 +45,14 @@ void Synapse::use( Bot* user, Object* target )
   target->use( user );
 }
 
-void Synapse::trigger( Bot* user, Entity* target )
+void Synapse::trigger( Entity* target )
 {
-  target->trigger( user );
+  target->trigger();
+}
+
+void Synapse::lock( Bot* user, Entity* target )
+{
+  target->lock( user );
 }
 
 void Synapse::put( Dynamic* obj )

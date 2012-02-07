@@ -628,8 +628,22 @@ void Bot::onUpdate()
         Entity* ent = &str->entities[entIndex];
 
         if( canReach( ent ) ) {
-          synapse.trigger( this, ent );
+          synapse.trigger( ent );
         }
+      }
+    }
+  }
+  if( actions & ~oldActions & ACTION_LOCK ) {
+    int strIndex = trigger / Struct::MAX_ENTITIES;
+    int entIndex = trigger % Struct::MAX_ENTITIES;
+
+    Struct* str = orbis.structs[strIndex];
+
+    if( str != null ) {
+      Entity* ent = &str->entities[entIndex];
+
+      if( canReach( ent ) ) {
+        synapse.lock( this, ent );
       }
     }
   }

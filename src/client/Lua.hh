@@ -157,6 +157,8 @@ class Lua
     OZ_LUA_API( ozStrDestroy );
     OZ_LUA_API( ozStrRemove );
 
+    OZ_LUA_API( ozStrSetEntityLock );
+
     OZ_LUA_API( ozStrBindAllOverlaps );
     OZ_LUA_API( ozStrBindStrOverlaps );
     OZ_LUA_API( ozStrBindObjOverlaps );

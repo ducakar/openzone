@@ -76,26 +76,11 @@ const Entity::Handler Entity::HANDLERS[] = {
 Vector<Object*> Struct::overlappingObjs;
 Pool<Struct>    Struct::pool;
 
-void Entity::trigger( Bot* user )
+void Entity::trigger()
 {
-  if( model->target == -1 ) {
+  if( model->target == -1 || key > 0 ) {
     return;
   }
-
-  if( key > 0 && user != null ) {
-    if( user->clazz->key == key ) {
-      goto canUnlock;
-    }
-    foreach( i, user->items.citer() ) {
-      Object* obj = orbis.objects[*i];
-
-      if( obj->clazz->key == key ) {
-        goto canUnlock;
-      }
-    }
-    return;
-  }
-canUnlock:;
 
   int strIndex = model->target / Struct::MAX_ENTITIES;
   int entIndex = model->target % Struct::MAX_ENTITIES;
@@ -114,6 +99,27 @@ canUnlock:;
       entity.state = OPENING;
       entity.time = 0.0f;
       entity.velocity = entity.model->move * entity.model->ratioInc / Timer::TICK_TIME;
+    }
+  }
+}
+
+void Entity::lock( Bot* user )
+{
+  if( key == 0 ) {
+    return;
+  }
+
+  if( user->clazz->key == key || user->clazz->key == ~key ) {
+    key = ~key;
+    return;
+  }
+
+  foreach( i, user->items.citer() ) {
+    Object* obj = orbis.objects[*i];
+
+    if( obj->clazz->key == key || obj->clazz->key == ~key ) {
+      key = ~key;
+      return;
     }
   }
 }
