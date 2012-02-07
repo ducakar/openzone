@@ -1,7 +1,5 @@
 0.3
 - matrix
-  * BSP
-    + locking
   * Vehicle
     + improve rotation
 - lua

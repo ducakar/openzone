@@ -58,20 +58,21 @@ class Bot : public Dynamic
     static const int ACTION_CROUCH            = 0x00000020;
 
     static const int ACTION_USE               = 0x00000040;
-    static const int ACTION_TAKE              = 0x00000080;
-    static const int ACTION_GRAB              = 0x00000100;
-    static const int ACTION_ROTATE            = 0x00000200;
-    static const int ACTION_THROW             = 0x00000400;
+    static const int ACTION_LOCK              = 0x00000080;
+    static const int ACTION_TAKE              = 0x00000100;
+    static const int ACTION_GRAB              = 0x00000200;
+    static const int ACTION_ROTATE            = 0x00000400;
+    static const int ACTION_THROW             = 0x00000800;
 
-    static const int ACTION_INV_DROP          = 0x00000800;
-    static const int ACTION_INV_GRAB          = 0x00001000;
-    static const int ACTION_INV_TAKE          = 0x00002000;
-    static const int ACTION_INV_GIVE          = 0x00004000;
+    static const int ACTION_INV_DROP          = 0x00001000;
+    static const int ACTION_INV_GRAB          = 0x00002000;
+    static const int ACTION_INV_TAKE          = 0x00004000;
+    static const int ACTION_INV_GIVE          = 0x00008000;
 
-    static const int ACTION_ATTACK            = 0x00008000;
-    static const int ACTION_EXIT              = 0x00010000;
-    static const int ACTION_EJECT             = 0x00020000;
-    static const int ACTION_SUICIDE           = 0x00040000;
+    static const int ACTION_ATTACK            = 0x00010000;
+    static const int ACTION_EXIT              = 0x00020000;
+    static const int ACTION_EJECT             = 0x00040000;
+    static const int ACTION_SUICIDE           = 0x00080000;
 
     static const int ACTION_VEH_UP            = 0x00100000;
     static const int ACTION_VEH_DOWN          = 0x00200000;
@@ -83,9 +84,10 @@ class Bot : public Dynamic
     static const int ACTION_GESTURE3          = 0x08000000;
     static const int ACTION_GESTURE4          = 0x10000000;
 
-    static const int INSTRUMENT_ACTIONS       = ACTION_USE | ACTION_TAKE | ACTION_GRAB |
-                                                ACTION_ROTATE | ACTION_THROW | ACTION_INV_DROP |
-                                                ACTION_INV_GRAB | ACTION_INV_TAKE | ACTION_INV_GIVE;
+    static const int INSTRUMENT_ACTIONS       = ACTION_USE | ACTION_LOCK | ACTION_TAKE |
+                                                ACTION_GRAB | ACTION_ROTATE | ACTION_THROW |
+                                                ACTION_INV_DROP | ACTION_INV_GRAB |
+                                                ACTION_INV_TAKE | ACTION_INV_GIVE;
 
     /*
      * STATE

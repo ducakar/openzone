@@ -330,6 +330,8 @@ void Lua::init()
   OZ_LUA_FUNC( ozStrDestroy );
   OZ_LUA_FUNC( ozStrRemove );
 
+  OZ_LUA_FUNC( ozStrSetEntityLock );
+
   OZ_LUA_FUNC( ozStrVectorFromSelf );
   OZ_LUA_FUNC( ozStrVectorFromSelfEye );
   OZ_LUA_FUNC( ozStrDirectionFromSelf );
@@ -1076,6 +1078,18 @@ int Lua::ozStrRemove( lua_State* l )
 
   synapse.remove( lua.str );
   lua.str = null;
+  return 0;
+}
+
+int Lua::ozStrSetEntityLock( lua_State* l )
+{
+  ARG( 2 );
+  STR_NOT_NULL();
+
+  int entIndex = toint( 1 );
+  int key      = toint( 2 );
+
+  lua.str->entities[entIndex].key = key;
   return 0;
 }
 

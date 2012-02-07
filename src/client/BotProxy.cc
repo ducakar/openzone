@@ -283,6 +283,13 @@ void BotProxy::update()
         bot->container = -1;
         bot->trigger = -1;
       }
+      else if( camera.entity != -1 ) {
+        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
+        bot->actions |= Bot::ACTION_LOCK;
+        bot->instrument = -1;
+        bot->container = -1;
+        bot->trigger = camera.entity;
+      }
       else if( camera.object != -1 ) {
         bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
         bot->actions |= Bot::ACTION_GRAB;

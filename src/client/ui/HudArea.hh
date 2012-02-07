@@ -69,6 +69,8 @@ class HudArea : public Area
     uint  browseTexId;
     uint  liftTexId;
     uint  grabTexId;
+    uint  lockedTexId;
+    uint  unlockedTexId;
 
     int   descTextX;
     int   descTextY;

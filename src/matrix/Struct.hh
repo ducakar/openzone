@@ -67,7 +67,8 @@ class Entity
 
     Vec3              velocity;
 
-    void trigger( Bot* user );
+    void trigger();
+    void lock( Bot* user );
 
   private:
 
