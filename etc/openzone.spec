@@ -61,8 +61,8 @@ install -Dm644 ../openzone.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/openzone.zip
 %files
 %defattr(-,root,root)
 %{_bindir}/openzone
-%{_datadir}/share/applications
-%{_datadir}/share/pixmaps
+# %{_datadir}/share/applications
+# %{_datadir}/share/pixmaps
 %dir %{_datadir}/openzone
 %{_datadir}/openzone/ozbase.zip
 %doc %{_defaultdocdir}/%{name}-%{version}

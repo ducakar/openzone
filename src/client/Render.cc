@@ -372,7 +372,7 @@ void Render::drawOrbis()
 
       glBlitFramebuffer( 0, 0, renderWidth, renderHeight,
                          0, 0, camera.width, camera.height,
-                         GL_COLOR_BUFFER_BIT, GL_LINEAR );
+                         GL_COLOR_BUFFER_BIT, offscreenFilter );
 
       glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
     }
@@ -622,6 +622,19 @@ void Render::init( bool isBuild )
 
   windPhi         = 0.0f;
 
+  String sOffscreenFilter = config.getSet( "render.offscreenFilter", "LINEAR" );
+
+  if( sOffscreenFilter.equals( "NEAREST" ) ) {
+    offscreenFilter = GL_NEAREST;
+  }
+  else if( sOffscreenFilter.equals( "LINEAR" ) ) {
+    offscreenFilter = GL_LINEAR;
+  }
+  else {
+    throw Exception( "Invalid render.offscreenFilter '%s'. Must be either LINEAR or NEAREST.",
+                     sOffscreenFilter.cstr() );
+  }
+
   if( isOffscreen ) {
     renderWidth  = int( float( screenWidth  ) * renderScale + 0.5f );
     renderHeight = int( float( screenHeight ) * renderScale + 0.5f );
@@ -643,8 +656,8 @@ void Render::init( bool isBuild )
     glGenTextures( 1, &colourBuffer );
     glBindTexture( GL_TEXTURE_2D, colourBuffer );
 
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, int( offscreenFilter ) );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, int( offscreenFilter ) );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 

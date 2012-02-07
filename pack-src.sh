@@ -10,4 +10,13 @@ for file in $rel_files; do
   files="$files $topdir_name/$file"
 done
 
+echo Packing openzone-src-$version.tar.xz
 tar Jcf $topdir_name/openzone-src-$version.tar.xz $files
+
+cd $topdir
+
+echo Packing openzone-data-ozbase-$version.tar.xz
+tar Jcf openzone-data-ozbase-$version.tar.xz -C share/openzone ozbase.zip
+
+echo Packing openzone-data-openzone-$version.tar.xz
+tar Jcf openzone-data-openzone-$version.tar.xz -C share/openzone openzone.zip

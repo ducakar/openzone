@@ -92,6 +92,10 @@ void Caelum::update()
 
 void Caelum::draw()
 {
+  if( id == -1 ) {
+    return;
+  }
+
   OZ_GL_CHECK_ERROR();
 
   // we need the transformation matrix for occlusion of stars below horizon

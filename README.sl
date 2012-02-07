@@ -87,7 +87,7 @@ Ctrl + F11          - preklopi centriranje miške in sistemski kazalec v okenske
 F12                 - minimiraj in zamrzni
 Ctrl + F12          - končaj program
 
-* Mesto imenika <config>:
+* Mesto imenika <config> pri običajni namestitvi:
 - Linux:      /home/<uporabnik>/.config/openzone
 - Windows XP: C:\Documents and Settings\<uporabnik>\Application Data\openzone
 - Windows 7:  C:\Users\<uporabnik>\AppData\Roaming\openzone
@@ -198,23 +198,38 @@ lingua [string] ""
   katerega od podimenikov imenika "lingua", ki se nahaja v katerem od arhivov s
   podatki.
 
-modules.profile.playerName [string] "<user>"
-  Ime igralca. Privzeto se uporabi uporabniško ime z veliko začetnico.
-
 mouse.accelFactor [float] 0.04
   Običajno operacijsko sistem pospeši miško, preden OpenZone prebere položaj
   le-te, z izjemo okolja X11, če aplikacija teče v celozaslonskem načinu. V tem
   primeru skuša OpenZone oponašati pospešitev.
 
-render.deferred [bool] false
+profile.playerName [string] "<user>"
+  Ime igralca. Privzeto se uporabi uporabniško ime z veliko začetnico.
+
+  render.deferred [bool] false
   Uporabi odloženo senčene (deferred shading). Trenutno še ni implementirano.
   Ta nastavitev se upošteva le, če je vklopljeno upodabljanje v medpomnilnik.
 
-render.offscreen [bool] true
+render.lowDetail [bool] false
+  Za izboljšanje hitrosti upodabljanja uporabi preprostejše senčenje (brez
+  odseva gladkih površin in izseva) ter ne izrisuj zvezd na nebu.
+
+  render.offscreen [bool] true
   Vklopi upodabljanje v medpomnilnik (offscreen rendering) namesto neposredno na
   zaslon. To omogoči nekatere napredne zmožnosti, kot je odloženo senčenje
   (deferred shading) in postprocesiranje. Omogoča tudi, da se svet upodablja na
   ločljivosti različni od zaslonske.
+
+render.offscreenFilte [NEAREST|LINEAR] LINEAR
+  Določi kateri filter za raztegovanje/krčenje teksture se uporabi pri izrisu
+  vsebine medpomnilnika pri vklopljenem render.offscreen. Če je LINEAR se
+  vrednosti pikslov interpolirajo (zamegljena slika), če pa NEAREST, se izbere
+  vrednost najbližjega piksla (kockasta slika).
+  Ta nastavitev nima učinka, če je velikost medpomnilnika za upodabljanje enaka
+  zaslonski ločljivosti. Ponavadi je boljše nastavitev LINEAR, razen če je
+  zaslonska ločljivost večkratnik velikosti medpomnilnika (z drugimi besedami,
+  če je 1.0 / render.scale celo število), bo za marsikoga boljša nastavitev
+  NEAREST.
 
 render.postprocess [bool] true
   Vključi postprocesiranje. Deluje le, če je vklopljen render.offscreen.
