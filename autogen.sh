@@ -22,8 +22,12 @@ for file in $conf_files; do
   sed "s/^\(Version: *\).*$/\1$version/g" -i $file
 done
 
+echo Updating PKGBUILD
+sed "s/^\(pkgver=*\).*$/\1$version/g" -i etc/PKGBUILD
+sed "s/^\(_dataver=*\).*$/\1$version/g" -i etc/PKGBUILD
+
 echo Updating version in Doxygen
-sed "s/\(PROJECT_NUMBER *= \).*$/\1$version/" -i Doxyfile
+sed "s/\(PROJECT_NUMBER *= \).*$/\1$version/" -i etc/liboz/Doxyfile etc/Doxyfile
 
 echo Updating version in CMakeLists.txt
 sed "s/^set( OZ_APPLICATION_VERSION .*$/set( OZ_APPLICATION_VERSION \"$version\" CACHE STRING \"\" FORCE )/" -i CMakeLists.txt

@@ -9,7 +9,7 @@ Packager:       Davorin Učakar <davorin.ucakar@gmail.com>
 Source:         openzone-src-%{version}.tar.xz
 
 %package devel
-Summary:        Headers for OpenZone core library
+Summary:        Headers and documentation for OpenZone core library
 Group:          Development/Libraries
 Requires:       %{name} = %{version}
 
@@ -33,10 +33,13 @@ Library is primarily intended for use in OpenZone game engine.
 tar xf %{_sourcedir}/openzone-src-%{version}.tar.xz
 
 %build
+( cd openzone && doxygen etc/liboz/Doxyfile )
+
 mkdir -p openzone-build && cd openzone-build
 
 cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-  -DOZ_INSTALL_LIBOZ=1 -DOZ_INSTALL_CLIENT=0 -DOZ_INSTALL_TOOLS=0 -DOZ_INSTALL_INFO=0 -DOZ_INSTALL_MENU=0 \
+  -DOZ_INSTALL_LIBOZ=1 -DOZ_INSTALL_CLIENT=0 -DOZ_INSTALL_TOOLS=0 \
+  -DOZ_INSTALL_INFO=0 -DOZ_INSTALL_DOC=1 -DOZ_INSTALL_MENU=0 \
   ../openzone
 make -j4
 
@@ -49,9 +52,12 @@ make install DESTDIR=$RPM_BUILD_ROOT
 %files
 %defattr(-,root,root)
 %{_libdir}/liboz.so*
-%doc %{_defaultdocdir}/%{name}-%{version}
+%dir %{_defaultdocdir}/%{name}-%{version}
+%{_defaultdocdir}/%{name}-%{version}/COPYING
 
 %files devel
 %defattr(-,root,root)
-%{_includedir}/oz
 %{_libdir}/pkgconfig
+%{_includedir}/oz
+%dir %{_defaultdocdir}/%{name}-%{version}
+%doc %{_defaultdocdir}/%{name}-%{version}/html

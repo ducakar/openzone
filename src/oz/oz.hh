@@ -27,8 +27,6 @@
  * @file oz/oz.hh
  *
  * Common include file for liboz.
- *
- * @defgroup oz liboz - OpenZone core library
  */
 
 #pragma once
