@@ -13,19 +13,20 @@ project( openzone C CXX )
 set( OZ_VERSION "0.2.80" CACHE STRING "" FORCE )
 set( OZ_SOVERSION "0.3" CACHE STRING "" FORCE )
 
-option( OZ_TRACK_LEAKS "Save stack trace on operator new calls and track memory leaks." OFF )
+option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory leaks." OFF )
 
 set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
 set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
 
 option( OZ_NETWORKING "Enable networking." OFF )
-option( OZ_GL_COMPATIBLE "Use OpenGL 2.1 plus FBOs (roughly OpenGL ES 2.0) instead of OpenGL 3.0." ON )
+option( OZ_GL_COMPATIBLE "Only use OpenGL 2.1 + FBO subset of OpenGL 3.0." ON )
 
 option( OZ_INSTALL_LIBOZ "Install liboz as a standalone library" OFF )
 option( OZ_INSTALL_CLIENT "Install openzone client" OFF )
 option( OZ_INSTALL_TOOLS "Install ozBuild tool" OFF )
-option( OZ_INSTALL_MENU "Install applications launcher and icon (Linux only)" OFF )
 option( OZ_INSTALL_INFO "Install README, AUTHORS, COPYING ..." OFF )
+option( OZ_INSTALL_DOC "Install Doxygen documentation" OFF )
+option( OZ_INSTALL_MENU "Install applications launcher and icon (Linux only)" OFF )
 option( OZ_INSTALL_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
 
 #
@@ -46,9 +47,9 @@ if( "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64" )
   set( OZ_LIB_SUFFIX "64" )
 endif()
 
+mark_as_advanced( OZ_VERSION )
 mark_as_advanced( OZ_SOVERSION )
 mark_as_advanced( OZ_APPLICATION_NAME )
-mark_as_advanced( OZ_APPLICATION_VERSION )
 mark_as_advanced( OZ_APPLICATION_TITLE )
 mark_as_advanced( OZ_SYSTEM_NAME )
 
@@ -227,6 +228,10 @@ if( OZ_INSTALL_LIBOZ )
 
   install( FILES ${CMAKE_BINARY_DIR}/etc/liboz/liboz.pc DESTINATION lib${OZ_LIB_SUFFIX}/pkgconfig )
   install( FILES etc/liboz/COPYING DESTINATION share/doc/liboz-${OZ_VERSION} )
+
+  if( OZ_INSTALL_DOC )
+    install( DIRECTORY doc/doxygen-liboz/ DESTINATION share/doc/liboz-${OZ_VERSION} )
+  endif()
 endif()
 
 # info files

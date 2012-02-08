@@ -37,6 +37,7 @@ const MD2::AnimInfo MD2::ANIM_LIST[] =
 {
   // first, last, fps, nextAnim
   {   0,  39,  9.0f, ANIM_STAND         }, // STAND
+  {  40,  45,  7.0f, ANIM_WALK          }, // WALK
   {  40,  45, 10.0f, ANIM_RUN           }, // RUN
   {  46,  53, 16.0f, ANIM_NONE          }, // ATTACK
   {  54,  57,  7.0f, ANIM_STAND         }, // PAIN_A

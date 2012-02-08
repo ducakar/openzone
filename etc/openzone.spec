@@ -45,7 +45,8 @@ tar xf %{_sourcedir}/openzone-data-openzone-%{version}.tar.xz
 mkdir -p openzone-build && cd openzone-build
 
 cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-  -DOZ_INSTALL_LIBOZ=0 -DOZ_INSTALL_CLIENT=1 -DOZ_INSTALL_TOOLS=1 -DOZ_INSTALL_INFO=1 -DOZ_INSTALL_MENU=1 \
+  -DOZ_INSTALL_LIBOZ=0 -DOZ_INSTALL_CLIENT=1 -DOZ_INSTALL_TOOLS=1 \
+  -DOZ_INSTALL_INFO=1 -DOZ_INSTALL_MENU=1 \
   ../openzone
 make -j4
 
@@ -65,7 +66,10 @@ install -Dm644 ../openzone.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/openzone.zip
 # %{_datadir}/share/pixmaps
 %dir %{_datadir}/openzone
 %{_datadir}/openzone/ozbase.zip
-%doc %{_defaultdocdir}/%{name}-%{version}
+%dir %{_defaultdocdir}/%{name}-%{version}
+%{_defaultdocdir}/%{name}-%{version}/AUTHORS
+%{_defaultdocdir}/%{name}-%{version}/COPYING
+%{_defaultdocdir}/%{name}-%{version}/README*
 
 %files tools
 %defattr(-,root,root)

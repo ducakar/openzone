@@ -69,7 +69,12 @@ MD2::Anim MD2Imago::extractAnim() const
     return MD2::ANIM_JUMP;
   }
   else if( bot->state & Bot::MOVING_BIT ) {
-    return bot->state & Bot::CROUCHING_BIT ? MD2::ANIM_CROUCH_WALK : MD2::ANIM_RUN;
+    if( bot->state & Bot::CROUCHING_BIT ) {
+      return MD2::ANIM_CROUCH_WALK;
+    }
+    else {
+      return bot->state & Bot::RUNNING_BIT ? MD2::ANIM_RUN : MD2::ANIM_WALK;
+    }
   }
   else if( bot->cargo == -1 ) {
     if( weapon != null && weapon->shotTime != 0.0f ) {

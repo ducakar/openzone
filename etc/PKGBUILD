@@ -1,34 +1,29 @@
 # Maintainer: Davorin Učakar <davorin.ucakar@gmail.com>
 
 pkgbase=openzone
-pkgname=('liboz' 'openzone-bin' 'openzone-data')
-pkgver=0.3.0
-_dataver=0.3.0
+pkgname=('liboz' 'openzone' 'openzone-data')
+pkgver=0.2.80
 pkgrel=1
 url="http://github.com/ducakar/openzone/"
 license=('GPL3')
 arch=('i686' 'x86_64')
-makedepends=('cmake' 'faad2' 'freeimage' 'gcc>=4.6' 'git' 'libmad' 'libpulse'
-             'lua' 'mesa' 'openal' 'physfs' 'sdl_ttf')
-# source=("http://openzone.googlecode.com/files/openzone-${_dataver}.7z")
+makedepends=('cmake' 'doxygen' 'faad2' 'freeimage' 'gcc>=4.6' 'git' 'graphviz'
+             'libmad' 'libpulse' 'lua' 'openal' 'physfs' 'sdl_ttf')
 source=("openzone-src-${pkgver}.tar.xz"
         "openzone-data-ozbase-${pkgver}.tar.xz"
         "openzone-data-openzone-${pkgver}.tar.xz")
-md5sums=('8ea5e3d8f5ef2ffd78845c1420cb7a68'
-         'ac2ef739e356488a8c04ba5df6e1d437'
-         'fdef8bc1b328e82373e3edb87bce1a17')
+md5sums=()
 
 build()
 {
-  cd ${srcdir}
+  ( cd ${srcdir}/openzone && doxygen etc/liboz/Doxyfile )
 
-  rm -rf build
-  mkdir build && cd build
+  mkdir -p ${srcdir}/build && cd ${srcdir}/build
 
   cmake \
     -D CMAKE_INSTALL_PREFIX=/usr \
     -D CMAKE_BUILD_TYPE=RelWithDebInfo \
-    ${srcdir}/${_gitname}
+    ${srcdir}/openzone
 
   make
 }
@@ -36,6 +31,7 @@ build()
 package_liboz()
 {
   pkgdesc='OpenZone core library'
+  license=('custom')
   depends=('libpulse' 'physfs')
 
   cd ${srcdir}/build
@@ -45,23 +41,27 @@ package_liboz()
     -D OZ_INSTALL_CLIENT=0 \
     -D OZ_INSTALL_TOOLS=0 \
     -D OZ_INSTALL_INFO=0 \
+    -D OZ_INSTALL_DOC=1 \
     -D OZ_INSTALL_MENU=0 \
     -D OZ_INSTALL_STANDALONE=0 \
-    ${srcdir}/${_gitname}
+    ${srcdir}/openzone
 
   make install DESTDIR=${pkgdir}
 
-  [[ "${_arch}" == "x86_64" ]] && mv ${pkgdir}/usr/lib64 ${pkgdir}/usr/lib
+  if [[ "$CARCH" == "x86_64" ]]; then
+    mv ${pkgdir}/usr/lib64 ${pkgdir}/usr/lib
+    sed 's|/usr/lib64|/usr/lib|g' -i ${pkgdir}/usr/lib/pkgconfig/liboz.pc
+  fi
 
-  install -Dm644 ${pkgdir}/usr/share/doc/liboz-${pkgver}/COPYING ${pkgdir}/usr/share/licenses/liboz
-  rm -rf ${pkgdir}/usr/share/doc
+  install -Dm644 ${pkgdir}/usr/share/doc/liboz-${pkgver}/COPYING \
+    ${pkgdir}/usr/share/licenses/liboz/COPYING
+  rm ${pkgdir}/usr/share/doc/liboz-${pkgver}/COPYING
 }
 
-package_openzone-bin()
+package_openzone()
 {
   pkgdesc='Simple cross-platform FPS/RTS game engine'
-  depends=('freeimage' 'libgl' 'liboz' 'lua' 'openal' 'sdl_ttf')
-  optdepends=('openzone-data: OpenZone game data')
+  depends=('freeimage' 'libgl' 'liboz' 'lua' 'openal' 'openzone-data' 'sdl_ttf')
 
   cd ${srcdir}/build
 
@@ -72,22 +72,20 @@ package_openzone-bin()
     -D OZ_INSTALL_INFO=1 \
     -D OZ_INSTALL_MENU=1 \
     -D OZ_INSTALL_STANDALONE=0 \
-    ${srcdir}/${_gitname}
+    ${srcdir}/openzone
 
   make install DESTDIR=${pkgdir}
 
   rm ${pkgdir}/usr/share/doc/openzone-${pkgver}/COPYING
-
-  install -Dm644 share/openzone/ozbase.zip ${pkgdir}/usr/share/openzone/ozbase.zip
+  install -Dm644 ${srcdir}/ozbase.zip ${pkgdir}/usr/share/openzone/ozbase.zip
 }
 
 package_openzone-data()
 {
-  pkgver=${_dataver}
   pkgdesc='OpenZone game data'
-  depends=('openzone-bin')
+  license=('CCPL:by-nc-sa')
   arch=('any')
 
   cd ${srcdir}/build
-  install -Dm644 share/openzone/openzone.zip ${pkgdir}/usr/share/openzone/openzone.zip
+  install -Dm644 ${srcdir}/openzone.zip ${pkgdir}/usr/share/openzone/openzone.zip
 }
