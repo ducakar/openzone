@@ -25,8 +25,8 @@
 
 #include "client/ui/DebugFrame.hh"
 
-#include "matrix/Orbis.hh"
 #include "matrix/Collider.hh"
+
 #include "client/Camera.hh"
 
 namespace oz

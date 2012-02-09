@@ -25,6 +25,7 @@
 
 #include "matrix/BotClass.hh"
 
+#include "matrix/Library.hh"
 #include "matrix/Bot.hh"
 
 #define OZ_CLASS_SET_STATE( stateBit, varName, defValue ) \

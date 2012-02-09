@@ -25,9 +25,6 @@
 
 #include "client/Context.hh"
 
-#include "client/MD2.hh"
-#include "client/MD3.hh"
-
 #include "client/SMMImago.hh"
 #include "client/SMMVehicleImago.hh"
 #include "client/ExplosionImago.hh"

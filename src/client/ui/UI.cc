@@ -31,7 +31,6 @@
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"
 
-#include "client/ui/Label.hh"
 #include "client/ui/LoadingArea.hh"
 #include "client/ui/QuestFrame.hh"
 #include "client/ui/GalileoFrame.hh"

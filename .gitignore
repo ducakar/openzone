@@ -15,5 +15,7 @@
 
 /Linux-*
 /Windows-*
+/MacOSX-*
+/Android-*
 
 /*.patch

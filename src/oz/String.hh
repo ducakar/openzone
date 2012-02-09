@@ -705,6 +705,8 @@ class String
 
     /**
      * %String concatenation.
+     *
+     * @ingroup oz
      */
     friend String operator + ( const char* s, const String& t );
 

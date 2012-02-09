@@ -19,6 +19,8 @@
 
 /**
  * @file common/common.hh
+ *
+ * @defgroup common Common layer
  */
 
 #pragma once
@@ -38,9 +40,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#define SDL_NO_COMPAT
-#include <SDL/SDL.h>
-
 #ifdef _WIN32
 # include <windows.h>
 // Fix M$ crap from Windows headers.
@@ -50,6 +49,9 @@
 # undef far
 #endif
 
+#define SDL_NO_COMPAT
+#include <SDL/SDL.h>
+
 #define OZ_LUA_API( func ) static int func( lua_State* )
 
 struct lua_State;
@@ -57,10 +59,20 @@ struct lua_State;
 namespace oz
 {
 
-// ensure epsilon is big enough for a 4 km x 4 km world (1 mm should do)
-// EPSILON = matrix::Orbis::DIM * 4.0f * Math::FLOAT_EPS
-const float EPSILON = 2048.0f * 4.0f * Math::FLOAT_EPS;
+/**
+ * Margin for collision detection.
+ *
+ * 2 mm should do for a 4 km x 4 km world. It must be big enough to cover rounding errors in
+ * <tt>Collider</tt> (hence <tt>max world coordinate * 4.0 * Math::FLOAT_EPS</tt>) and doubled
+ * because we use half of EPSILON in BSP entity handlers.
+ *
+ * @ingroup common
+ */
+const float EPSILON = 2.0f * 2048.0f * 4.0f * Math::FLOAT_EPS;
 
+/**
+ * Lua C API.
+ */
 typedef int LuaAPI( lua_State* );
 
 }

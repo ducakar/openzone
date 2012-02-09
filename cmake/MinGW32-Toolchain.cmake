@@ -1,23 +1,18 @@
-# the name of the target operating system
+set( PLATFORM_TRIPLET "i486-mingw32" )
+set( PLATFORM_PREFIX "/usr/${PLATFORM_TRIPLET}" )
+set( PLATFORM_TOOL_PREFIX "${PLATFORM_PREFIX}" )
+
 set( CMAKE_SYSTEM_NAME Windows )
 
-# which compilers to use for C and C++
-set( CMAKE_C_COMPILER i486-mingw32-gcc )
-set( CMAKE_CXX_COMPILER i486-mingw32-g++ )
-set( CMAKE_RC_COMPILER i486-mingw32-windres )
+set( CMAKE_FIND_ROOT_PATH "${PLATFORM_PREFIX}" )
 
-# here is the target environment located
-set( CMAKE_FIND_ROOT_PATH /usr/i486-mingw32 )
+set( CMAKE_C_COMPILER "${PLATFORM_TRIPLET}-gcc" )
+set( CMAKE_CXX_COMPILER "${PLATFORM_TRIPLET}-g++" )
+set( CMAKE_RC_COMPILER "${PLATFORM_TRIPLET}-windres" )
 
-# adjust the default behaviour of the FIND_XXX() commands:
-# search headers and libraries in the target environment, search
-# programs in the host environment
-set( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER )
-set( CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY )
-set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY )
+set( CMAKE_EXE_LINKER_FLAGS "-Wl,--enable-auto-import" )
 
-# libraries (settings for ArchLinux)
-set( SDL_INCLUDE_DIR "/usr/i486-mingw32/include/SDL" CACHE PATH "" )
-set( SDLTTF_INCLUDE_DIR "/usr/i486-mingw32/include/SDL" CACHE PATH "" )
-set( OPENAL_INCLUDE_DIR "/usr/i486-mingw32/include/AL" CACHE PATH "" )
-set( FREEIMAGE_LIBRARY "/usr/i486-mingw32/lib/FreeImage.lib" CACHE PATH "" )
+set( SDL_INCLUDE_DIR "${PLATFORM_PREFIX}/include/SDL" CACHE PATH "" )
+set( SDLTTF_INCLUDE_DIR "${PLATFORM_PREFIX}/include/SDL" CACHE PATH "" )
+set( OPENAL_INCLUDE_DIR "${PLATFORM_PREFIX}/include/AL" CACHE PATH "" )
+set( FREEIMAGE_LIBRARY "${PLATFORM_PREFIX}/lib/FreeImage.lib" CACHE PATH "" )

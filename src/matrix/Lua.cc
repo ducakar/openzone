@@ -27,8 +27,8 @@
 
 #include "matrix/Lua.hh"
 
-#include "matrix/Vehicle.hh"
 #include "matrix/Library.hh"
+#include "matrix/Vehicle.hh"
 #include "matrix/Collider.hh"
 #include "matrix/Synapse.hh"
 

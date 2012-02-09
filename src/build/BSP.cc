@@ -25,11 +25,6 @@
 
 #include "build/BSP.hh"
 
-#include "matrix/Collider.hh"
-#include "matrix/BSP.hh"
-
-#include "client/OpenGL.hh"
-
 #include "build/Context.hh"
 #include "build/Compiler.hh"
 

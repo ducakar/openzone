@@ -29,7 +29,6 @@
 
 #include "BuildInfo.hh"
 
-#include "client/Context.hh"
 #include "client/Camera.hh"
 #include "client/MenuStage.hh"
 #include "client/GameStage.hh"

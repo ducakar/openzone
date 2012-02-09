@@ -25,8 +25,6 @@
 
 #include "client/BotProxy.hh"
 
-#include "matrix/Collider.hh"
-
 #include "client/Camera.hh"
 #include "client/ui/UI.hh"
 

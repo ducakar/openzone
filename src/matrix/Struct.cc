@@ -26,7 +26,6 @@
 #include "matrix/Struct.hh"
 
 #include "matrix/Collider.hh"
-#include "matrix/Physics.hh"
 #include "matrix/Synapse.hh"
 #include "matrix/Bot.hh"
 

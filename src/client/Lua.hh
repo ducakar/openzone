@@ -25,8 +25,6 @@
 
 #pragma once
 
-#include "matrix/Object.hh"
-
 #include "client/common.hh"
 
 namespace oz

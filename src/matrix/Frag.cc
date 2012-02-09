@@ -25,8 +25,6 @@
 
 #include "matrix/Frag.hh"
 
-#include "matrix/FragPool.hh"
-
 namespace oz
 {
 namespace matrix

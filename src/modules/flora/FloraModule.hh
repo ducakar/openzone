@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/modules/FloraModule.hh
+ * @file modules/flora/FloraModule.hh
  */
 
 #pragma once

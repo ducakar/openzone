@@ -90,7 +90,7 @@ class BSP : public Bounds
 
       BSP*   bsp;        ///< Pointer to the parent %BSP.
 
-      int    firstBrush; ///< Index of the first brush in <tt>brushes<tt> array.
+      int    firstBrush; ///< Index of the first brush in <tt>brushes</tt> array.
       int    nBrushes;   ///< Number of brushes.
 
       Type   type;       ///< Model type.

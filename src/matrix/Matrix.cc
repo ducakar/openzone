@@ -25,10 +25,8 @@
 
 #include "matrix/Matrix.hh"
 
-#include "matrix/Library.hh"
-#include "matrix/NamePool.hh"
 #include "matrix/Lua.hh"
-#include "matrix/Collider.hh"
+#include "matrix/NamePool.hh"
 #include "matrix/Physics.hh"
 #include "matrix/Synapse.hh"
 #include "matrix/Vehicle.hh"

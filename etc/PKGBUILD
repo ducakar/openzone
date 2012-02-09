@@ -1,7 +1,7 @@
 # Maintainer: Davorin Učakar <davorin.ucakar@gmail.com>
 
 pkgbase=openzone
-pkgname=('liboz' 'openzone' 'openzone-data')
+pkgname=('liboz' 'openzone-bin' 'openzone-data' 'openzone')
 pkgver=0.2.80
 pkgrel=1
 url="http://github.com/ducakar/openzone/"
@@ -40,11 +40,9 @@ package_liboz()
     -D OZ_INSTALL_LIBOZ=1 \
     -D OZ_INSTALL_CLIENT=0 \
     -D OZ_INSTALL_TOOLS=0 \
-    -D OZ_INSTALL_INFO=0 \
-    -D OZ_INSTALL_DOC=1 \
     -D OZ_INSTALL_MENU=0 \
     -D OZ_INSTALL_STANDALONE=0 \
-    ${srcdir}/openzone
+    ../openzone
 
   make install DESTDIR=${pkgdir}
 
@@ -53,15 +51,20 @@ package_liboz()
     sed 's|/usr/lib64|/usr/lib|g' -i ${pkgdir}/usr/lib/pkgconfig/liboz.pc
   fi
 
-  install -Dm644 ${pkgdir}/usr/share/doc/liboz-${pkgver}/COPYING \
-    ${pkgdir}/usr/share/licenses/liboz/COPYING
-  rm ${pkgdir}/usr/share/doc/liboz-${pkgver}/COPYING
+  install -Dm644 ../openzone/etc/liboz/COPYING ${pkgdir}/usr/share/licenses/liboz/COPYING
 }
 
 package_openzone()
 {
+  pkgdesc='Simple cross-platform FPS/RTS game'
+  depends=('openzone-bin' 'openzone-data')
+  arch=('any')
+}
+
+package_openzone-bin()
+{
   pkgdesc='Simple cross-platform FPS/RTS game engine'
-  depends=('freeimage' 'libgl' 'liboz' 'lua' 'openal' 'openzone-data' 'sdl_ttf')
+  depends=('freeimage' 'libgl' 'liboz' 'lua' 'openal' 'sdl_ttf')
 
   cd ${srcdir}/build
 
@@ -69,15 +72,18 @@ package_openzone()
     -D OZ_INSTALL_LIBOZ=0 \
     -D OZ_INSTALL_CLIENT=1 \
     -D OZ_INSTALL_TOOLS=1 \
-    -D OZ_INSTALL_INFO=1 \
     -D OZ_INSTALL_MENU=1 \
     -D OZ_INSTALL_STANDALONE=0 \
     ${srcdir}/openzone
 
   make install DESTDIR=${pkgdir}
 
-  rm ${pkgdir}/usr/share/doc/openzone-${pkgver}/COPYING
-  install -Dm644 ${srcdir}/ozbase.zip ${pkgdir}/usr/share/openzone/ozbase.zip
+  install -Dm644 ../ozbase.zip ${pkgdir}/usr/share/openzone/ozbase.zip
+  install -Dm644 ../openzone/AUTHORS ${pkgdir}/usr/share/doc/openzone/AUTHORS
+  install -Dm644 ../openzone/ChangeLog ${pkgdir}/usr/share/doc/openzone/ChangeLog
+  install -Dm644 ../openzone/TODO ${pkgdir}/usr/share/doc/openzone/TODO
+  install -Dm644 ../openzone/README ${pkgdir}/usr/share/doc/openzone/README
+  install -Dm644 ../openzone/README.sl ${pkgdir}/usr/share/doc/openzone/README.sl
 }
 
 package_openzone-data()
@@ -87,5 +93,6 @@ package_openzone-data()
   arch=('any')
 
   cd ${srcdir}/build
+
   install -Dm644 ${srcdir}/openzone.zip ${pkgdir}/usr/share/openzone/openzone.zip
 }

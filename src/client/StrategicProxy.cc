@@ -25,8 +25,6 @@
 
 #include "client/StrategicProxy.hh"
 
-#include "matrix/Vehicle.hh"
-
 #include "client/Camera.hh"
 #include "client/ui/UI.hh"
 

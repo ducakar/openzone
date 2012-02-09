@@ -25,7 +25,6 @@
 
 #include "client/GameStage.hh"
 
-#include "matrix/Bot.hh"
 #include "matrix/Synapse.hh"
 #include "matrix/Matrix.hh"
 

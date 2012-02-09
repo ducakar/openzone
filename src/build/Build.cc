@@ -32,7 +32,6 @@
 #include "modules/Module.hh"
 
 #include "client/Render.hh"
-#include "client/OpenGL.hh"
 
 #include "build/Lingua.hh"
 #include "build/Context.hh"

@@ -24,7 +24,6 @@
 #include "tools/ClassFormatter.hh"
 
 #include "matrix/Library.hh"
-#include "matrix/VehicleClass.hh"
 #include "matrix/Vehicle.hh"
 
 using namespace oz::matrix;

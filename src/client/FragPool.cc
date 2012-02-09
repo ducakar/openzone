@@ -26,7 +26,6 @@
 #include "client/FragPool.hh"
 
 #include "client/Shader.hh"
-#include "client/Mesh.hh"
 #include "client/Context.hh"
 #include "client/SMM.hh"
 #include "client/OpenGL.hh"

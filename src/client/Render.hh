@@ -23,11 +23,6 @@
 
 #pragma once
 
-#include "matrix/Orbis.hh"
-
-#include "client/BSP.hh"
-#include "client/Terra.hh"
-#include "client/MD2.hh"
 #include "client/Imago.hh"
 #include "client/Context.hh"
 

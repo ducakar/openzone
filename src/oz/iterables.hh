@@ -321,6 +321,8 @@ inline typename Iterator::RangeIterator end( Iterator& iter )
  *   printf( "%d ", *i );
  * }
  * </pre>
+ *
+ * @ingroup oz
  */
 #define foreach( i, iterator ) \
   for( auto i = iterator; i.isValid(); ++i )

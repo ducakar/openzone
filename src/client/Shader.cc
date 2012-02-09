@@ -27,6 +27,8 @@
 
 #include "client/Shader.hh"
 
+#include "matrix/Library.hh"
+
 #include "client/Camera.hh"
 #include "client/OpenGL.hh"
 

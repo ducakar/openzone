@@ -118,3 +118,65 @@ class Alloc
 };
 
 }
+
+/**
+ * Operator new overload with memory statistics and (optionally) memory leak checking.
+ *
+ * Apart from standard new operator this one counts memory allocation and amount of memory allocated
+ * (<tt>Alloc::count</tt>, <tt>Alloc::amount</tt> etc.). If compiled with <tt>OZ_TRACK_LEAKS</tt>
+ * is also tracks all allocated chunks, so it catches new/delete mismatches and
+ * <tt>Alloc::printLeaks()</tt> can be called at any time to print currently allocated chunks.
+ */
+extern void* operator new ( std::size_t size ) throw( std::bad_alloc );
+
+/**
+ * Operator new[] overload with memory statistics and (optionally) memory leak checking.
+ *
+ * Apart from standard new operator this one counts memory allocation and amount of memory allocated
+ * (<tt>Alloc::count</tt>, <tt>Alloc::amount</tt> etc.). If compiled with <tt>OZ_TRACK_LEAKS</tt>
+ * is also tracks all allocated chunks, so it catches new/delete mismatches and
+ * <tt>Alloc::printLeaks()</tt> can be called at any time to print currently allocated chunks.
+ */
+extern void* operator new[] ( std::size_t size ) throw( std::bad_alloc );
+
+/**
+ * Operator delete overload with memory statistics and (optionally) memory leak checking.
+ *
+ * If compiled without <tt>NDEBUG</tt> it overwrites deallocated chunks of memory with 0xee bytes.
+ */
+extern void operator delete ( void* ptr ) throw();
+
+/**
+ * Operator delete[] overload with memory statistics and (optionally) memory leak checking.
+ *
+ * If compiled without <tt>NDEBUG</tt> it overwrites deallocated chunks of memory with 0xee bytes.
+ */
+extern void operator delete[] ( void* ptr ) throw();
+
+/**
+ * Operator new overload with memory statistics and (optionally) memory leak checking.
+ *
+ * nothrow version.
+ */
+extern void* operator new ( std::size_t size, const std::nothrow_t& ) throw();
+
+/**
+ * Operator new[] overload with memory statistics and (optionally) memory leak checking.
+ *
+ * nothrow version.
+ */
+extern void* operator new[] ( std::size_t size, const std::nothrow_t& ) throw();
+
+/**
+ * Operator delete overload with memory statistics and (optionally) memory leak checking.
+ *
+ * nothrow version.
+ */
+extern void operator delete ( void* ptr, const std::nothrow_t& ) throw();
+
+/**
+ * Operator delete[] overload with memory statistics and (optionally) memory leak checking.
+ *
+ * nothrow version.
+ */
+extern void operator delete[] ( void* ptr, const std::nothrow_t& ) throw();

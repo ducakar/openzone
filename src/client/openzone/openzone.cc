@@ -50,6 +50,9 @@ int main( int argc, char** argv )
     oz::System::abort();
   }
 
+  oz::log.verboseMode = true;
   oz::Alloc::printLeaks();
+  oz::log.verboseMode = false;
+
   return exitCode;
 }

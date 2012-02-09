@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/Module.hh
+ * @file modules/Module.hh
  */
 
 #pragma once

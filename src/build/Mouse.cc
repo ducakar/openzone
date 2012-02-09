@@ -25,7 +25,6 @@
 
 #include "build/Mouse.hh"
 
-#include "client/OpenGL.hh"
 #include "client/ui/Mouse.hh"
 
 #include "build/Context.hh"

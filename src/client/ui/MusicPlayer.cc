@@ -25,8 +25,6 @@
 
 #include "client/ui/MusicPlayer.hh"
 
-#include "matrix/Library.hh"
-
 #include "client/Camera.hh"
 #include "client/Sound.hh"
 

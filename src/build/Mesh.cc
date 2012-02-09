@@ -25,8 +25,6 @@
 
 #include "build/Mesh.hh"
 
-#include "client/OpenGL.hh"
-
 #include "build/Context.hh"
 
 namespace oz

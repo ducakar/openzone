@@ -25,7 +25,6 @@
 
 #include "matrix/Weapon.hh"
 
-#include "matrix/WeaponClass.hh"
 #include "matrix/Bot.hh"
 #include "matrix/Lua.hh"
 #include "matrix/Synapse.hh"
