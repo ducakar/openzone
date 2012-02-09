@@ -26,7 +26,6 @@
 #include "build/Terra.hh"
 
 #include "client/Terra.hh"
-#include "client/OpenGL.hh"
 
 #include "build/Context.hh"
 

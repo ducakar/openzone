@@ -27,9 +27,6 @@
 
 #include "matrix/Library.hh"
 #include "matrix/Lua.hh"
-#include "matrix/Dynamic.hh"
-#include "matrix/Bot.hh"
-#include "matrix/Weapon.hh"
 #include "matrix/Vehicle.hh"
 
 namespace oz

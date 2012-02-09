@@ -23,9 +23,6 @@
 
 #pragma once
 
-#include "matrix/Orbis.hh"
-#include "matrix/Bot.hh"
-
 #include "client/StrategicProxy.hh"
 #include "client/BotProxy.hh"
 

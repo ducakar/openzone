@@ -25,8 +25,6 @@
 
 #include "client/MD2WeaponImago.hh"
 
-#include "matrix/Bot.hh"
-#include "matrix/Orbis.hh"
 #include "client/Camera.hh"
 #include "client/Context.hh"
 #include "client/Colours.hh"

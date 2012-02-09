@@ -23,9 +23,6 @@
 
 #pragma once
 
-#include "matrix/Struct.hh"
-#include "matrix/BSP.hh"
-
 #include "client/Mesh.hh"
 
 namespace oz

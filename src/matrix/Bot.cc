@@ -25,9 +25,8 @@
 
 #include "matrix/Bot.hh"
 
-#include "matrix/Weapon.hh"
+#include "matrix/Library.hh"
 #include "matrix/NamePool.hh"
-#include "matrix/Collider.hh"
 #include "matrix/Physics.hh"
 #include "matrix/Synapse.hh"
 

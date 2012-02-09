@@ -25,8 +25,6 @@
 
 #include "client/ui/HudArea.hh"
 
-#include "matrix/Vehicle.hh"
-
 #include "client/Camera.hh"
 #include "client/Context.hh"
 #include "client/Shape.hh"

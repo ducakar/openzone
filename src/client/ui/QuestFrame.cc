@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/modules/QuestFrame.cc
+ * @file client/ui/QuestFrame.cc
  */
 
 #include "stable.hh"
@@ -27,8 +27,6 @@
 
 #include "client/Camera.hh"
 #include "client/QuestList.hh"
-
-#include "client/ui/Button.hh"
 
 namespace oz
 {

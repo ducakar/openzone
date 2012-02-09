@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/modules/FloraModule.cc
+ * @file modules/flora/FloraModule.cc
  */
 
 #include "stable.hh"
@@ -26,7 +26,6 @@
 #include "modules/flora/FloraModule.hh"
 
 #include "matrix/Library.hh"
-#include "matrix/Collider.hh"
 #include "matrix/Synapse.hh"
 
 #include "client/Lua.hh"

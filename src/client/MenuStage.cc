@@ -29,8 +29,6 @@
 #include "client/Render.hh"
 #include "client/Sound.hh"
 
-#include "client/ui/UI.hh"
-
 namespace oz
 {
 namespace client

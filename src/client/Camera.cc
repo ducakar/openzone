@@ -25,9 +25,6 @@
 
 #include "client/Camera.hh"
 
-#include "matrix/Collider.hh"
-#include "matrix/Vehicle.hh"
-
 #include "client/ui/UI.hh"
 
 namespace oz

@@ -25,22 +25,16 @@
 
 #include "client/Render.hh"
 
-#include "matrix/Collider.hh"
-#include "matrix/Physics.hh"
-
 #include "client/Frustum.hh"
 #include "client/Colours.hh"
 #include "client/Shape.hh"
-#include "client/FragPool.hh"
 
 #include "client/Caelum.hh"
 #include "client/Terra.hh"
-#include "client/BSP.hh"
 
 #include "client/SMMImago.hh"
 #include "client/SMMVehicleImago.hh"
 #include "client/ExplosionImago.hh"
-#include "client/MD2Imago.hh"
 #include "client/MD2WeaponImago.hh"
 
 #include "client/OpenGL.hh"

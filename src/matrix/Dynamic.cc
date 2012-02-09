@@ -25,7 +25,6 @@
 
 #include "matrix/Dynamic.hh"
 
-#include "matrix/DynamicClass.hh"
 #include "matrix/Lua.hh"
 #include "matrix/Synapse.hh"
 

@@ -25,12 +25,8 @@
 
 #include "client/Terra.hh"
 
-#include "matrix/Orbis.hh"
-#include "matrix/Terra.hh"
-
-#include "client/Camera.hh"
-#include "client/Context.hh"
 #include "client/Frustum.hh"
+#include "client/Context.hh"
 #include "client/Colours.hh"
 #include "client/OpenGL.hh"
 

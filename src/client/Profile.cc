@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/modules/ProfileModule.cc
+ * @file client/Profile.cc
  */
 
 #include "stable.hh"

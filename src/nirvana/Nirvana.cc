@@ -30,7 +30,6 @@
 #include "matrix/Bot.hh"
 
 #include "nirvana/Lua.hh"
-#include "nirvana/Mind.hh"
 #include "nirvana/Memo.hh"
 
 #define OZ_REGISTER_DEVICE( name ) \

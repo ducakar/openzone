@@ -23,9 +23,6 @@
 
 #pragma once
 
-#include "matrix/Orbis.hh"
-#include "matrix/Library.hh"
-
 #include "client/Context.hh"
 
 #include <physfs.h>

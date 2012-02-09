@@ -25,8 +25,6 @@
 
 #include "client/ui/StrategicArea.hh"
 
-#include "matrix/Collider.hh"
-
 #include "client/Camera.hh"
 #include "client/Colours.hh"
 #include "client/Shader.hh"

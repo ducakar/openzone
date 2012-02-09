@@ -25,7 +25,6 @@
 
 #include "client/SMMVehicleImago.hh"
 
-#include "matrix/Vehicle.hh"
 #include "client/Context.hh"
 #include "client/Camera.hh"
 

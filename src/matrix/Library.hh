@@ -24,7 +24,6 @@
 #pragma once
 
 #include "matrix/Struct.hh"
-#include "matrix/ObjectClass.hh"
 #include "matrix/FragPool.hh"
 
 namespace oz

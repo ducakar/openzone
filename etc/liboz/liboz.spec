@@ -37,10 +37,15 @@ tar xf %{_sourcedir}/openzone-src-%{version}.tar.xz
 
 mkdir -p openzone-build && cd openzone-build
 
-cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-  -DOZ_INSTALL_LIBOZ=1 -DOZ_INSTALL_CLIENT=0 -DOZ_INSTALL_TOOLS=0 \
-  -DOZ_INSTALL_INFO=0 -DOZ_INSTALL_DOC=1 -DOZ_INSTALL_MENU=0 \
+cmake \
+  -D CMAKE_INSTALL_PREFIX=/usr \
+  -D CMAKE_BUILD_TYPE=RelWithDebInfo \
+  -D OZ_INSTALL_LIBOZ=1 \
+  -D OZ_INSTALL_CLIENT=0 \
+  -D OZ_INSTALL_TOOLS=0 \
+  -D OZ_INSTALL_MENU=0 \
   ../openzone
+
 make -j4
 
 %install
@@ -50,14 +55,13 @@ cd openzone-build
 make install DESTDIR=$RPM_BUILD_ROOT
 
 %files
-%defattr(-,root,root)
+%defattr(-, root, root)
 %{_libdir}/liboz.so*
-%dir %{_defaultdocdir}/%{name}-%{version}
-%{_defaultdocdir}/%{name}-%{version}/COPYING
+%doc openzone/AUTHORS openzone/etc/liboz/COPYING
 
 %files devel
-%defattr(-,root,root)
-%{_libdir}/pkgconfig
+%defattr(-, root, root)
 %{_includedir}/oz
-%dir %{_defaultdocdir}/%{name}-%{version}
-%doc %{_defaultdocdir}/%{name}-%{version}/html
+%{_libdir}/pkgconfig
+%doc openzone/AUTHORS openzone/etc/liboz/COPYING
+%doc openzone/doc/doxygen-liboz/html

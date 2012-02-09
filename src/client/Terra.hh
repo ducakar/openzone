@@ -23,8 +23,6 @@
 
 #pragma once
 
-#include "matrix/Terra.hh"
-
 #include "client/Mesh.hh"
 
 namespace oz

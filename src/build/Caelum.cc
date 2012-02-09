@@ -26,7 +26,6 @@
 #include "build/Caelum.hh"
 
 #include "client/Caelum.hh"
-#include "client/OpenGL.hh"
 
 #include "build/Mesh.hh"
 #include "build/Context.hh"

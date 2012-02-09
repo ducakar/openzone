@@ -18,7 +18,7 @@
  */
 
 /**
- * @file tools/ozBuild.cc
+ * @file tools/ozFormat.cc
  *
  * Data builder.
  */
@@ -102,7 +102,7 @@ int main( int argc, char** argv )
   }
 
   oz::shutdown();
-
   oz::Alloc::printLeaks();
+
   return exitCode;
 }

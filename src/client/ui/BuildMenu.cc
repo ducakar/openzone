@@ -26,7 +26,6 @@
 #include "client/ui/BuildMenu.hh"
 
 #include "matrix/Library.hh"
-#include "matrix/Collider.hh"
 #include "matrix/Synapse.hh"
 
 #include "nirvana/Nirvana.hh"

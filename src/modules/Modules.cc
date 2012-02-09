@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/Modules.cc
+ * @file modules/Modules.cc
  */
 
 #include "stable.hh"

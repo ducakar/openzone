@@ -25,8 +25,6 @@
 
 #include "client/VehicleAudio.hh"
 
-#include "matrix/Orbis.hh"
-
 #include "client/Camera.hh"
 #include "client/Context.hh"
 

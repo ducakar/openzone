@@ -24,8 +24,6 @@ option( OZ_GL_COMPATIBLE "Only use OpenGL 2.1 + FBO subset of OpenGL 3.0." ON )
 option( OZ_INSTALL_LIBOZ "Install liboz as a standalone library" OFF )
 option( OZ_INSTALL_CLIENT "Install openzone client" OFF )
 option( OZ_INSTALL_TOOLS "Install ozBuild tool" OFF )
-option( OZ_INSTALL_INFO "Install README, AUTHORS, COPYING ..." OFF )
-option( OZ_INSTALL_DOC "Install Doxygen documentation" OFF )
 option( OZ_INSTALL_MENU "Install applications launcher and icon (Linux only)" OFF )
 option( OZ_INSTALL_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
 
@@ -177,8 +175,6 @@ if( WIN32 )
   set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ofast" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELEASEGEN "-DNDEBUG -Ofast -fprofile-generate" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELEASEUSE "-DNDEBUG -Ofast -fprofile-use" CACHE STRING "" FORCE )
-
-  set( CMAKE_EXE_LINKER_FLAGS "-Wl,--enable-auto-import ${CMAKE_EXE_LINKER_FLAGS}" )
 elseif( OZ_CLANG )
   set( CMAKE_CXX_FLAGS_DEBUG "-D_FORTIFY_SOURCE=2 -g3 -O0 -fstack-protector" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-D_FORTIFY_SOURCE=2 -g3 -O3 -fstack-protector" CACHE STRING "" FORCE )
@@ -227,11 +223,6 @@ if( OZ_INSTALL_LIBOZ )
   configure_file( etc/liboz/liboz.pc.in etc/liboz/liboz.pc )
 
   install( FILES ${CMAKE_BINARY_DIR}/etc/liboz/liboz.pc DESTINATION lib${OZ_LIB_SUFFIX}/pkgconfig )
-  install( FILES etc/liboz/COPYING DESTINATION share/doc/liboz-${OZ_VERSION} )
-
-  if( OZ_INSTALL_DOC )
-    install( DIRECTORY doc/doxygen-liboz/ DESTINATION share/doc/liboz-${OZ_VERSION} )
-  endif()
 endif()
 
 # info files
@@ -242,14 +233,6 @@ if( WIN32 OR OZ_INSTALL_STANDALONE )
     README
     ${files}
     DESTINATION . )
-elseif( OZ_INSTALL_INFO )
-  file( GLOB files README.* )
-  install( FILES
-    AUTHORS
-    COPYING
-    README
-    ${files}
-    DESTINATION share/doc/openzone-${OZ_VERSION} )
 endif()
 
 # icons

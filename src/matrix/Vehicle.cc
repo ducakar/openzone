@@ -25,9 +25,6 @@
 
 #include "matrix/Vehicle.hh"
 
-#include "matrix/VehicleClass.hh"
-#include "matrix/Bot.hh"
-#include "matrix/Collider.hh"
 #include "matrix/Physics.hh"
 #include "matrix/Lua.hh"
 

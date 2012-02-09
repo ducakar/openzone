@@ -25,8 +25,6 @@
 
 #include "client/BasicAudio.hh"
 
-#include "matrix/Orbis.hh"
-
 #include "client/Context.hh"
 
 namespace oz
