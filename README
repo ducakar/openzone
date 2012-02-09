@@ -11,8 +11,10 @@ w/a/s/d         - move forwards / left / backwards / right
 Space           - up / increase height
 LCtrl           - down / decrease height
 LShift          - toggle fast move
+
 Tab             - toggle interface mode
 Numpad Enter    - switch between FreeCam and Strategic camera
+n               - toggle night vision
 i               - incarnate into the selected bot (or selected vehicle's pilot)
 
 Bot controls
@@ -30,6 +32,7 @@ middle click    - grab tagged object / drop object you are holding
 wheel up        - throw object you are holding
 wheel down      - put tagged object into inventory
 
+n               - toggle night vision (if available)
 Alt + k         - commit suicide
 i               - un-incarnate bot
 
@@ -303,7 +306,7 @@ GPLv3 licence, and you are welcome to redistribute it under certain conditions;
 See COPYING file for details.
 
 liboz library alone can also be distributed under X11 licence;
-See etc/COPYING.liboz file for details.
+See etc/liboz/COPYING file for details.
 
 Data copyrights
 ---------------

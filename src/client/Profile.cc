@@ -26,7 +26,7 @@
 #include "client/Profile.hh"
 
 #ifndef __clang__
-// GCC bug, issues false warning
+// GCC bug, issues a false warning.
 # pragma GCC diagnostic ignored "-Wconversion"
 #endif
 

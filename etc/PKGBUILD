@@ -21,8 +21,8 @@ build()
   mkdir -p ${srcdir}/build && cd ${srcdir}/build
 
   cmake \
-    -D CMAKE_INSTALL_PREFIX=/usr \
-    -D CMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     ${srcdir}/openzone
 
   make
@@ -37,11 +37,11 @@ package_liboz()
   cd ${srcdir}/build
 
   cmake \
-    -D OZ_INSTALL_LIBOZ=1 \
-    -D OZ_INSTALL_CLIENT=0 \
-    -D OZ_INSTALL_TOOLS=0 \
-    -D OZ_INSTALL_MENU=0 \
-    -D OZ_INSTALL_STANDALONE=0 \
+    -DOZ_INSTALL_LIBOZ=1 \
+    -DOZ_INSTALL_CLIENT=0 \
+    -DOZ_INSTALL_TOOLS=0 \
+    -DOZ_INSTALL_MENU=0 \
+    -DOZ_INSTALL_STANDALONE=0 \
     ../openzone
 
   make install DESTDIR=${pkgdir}
@@ -54,13 +54,6 @@ package_liboz()
   install -Dm644 ../openzone/etc/liboz/COPYING ${pkgdir}/usr/share/licenses/liboz/COPYING
 }
 
-package_openzone()
-{
-  pkgdesc='Simple cross-platform FPS/RTS game'
-  depends=('openzone-bin' 'openzone-data')
-  arch=('any')
-}
-
 package_openzone-bin()
 {
   pkgdesc='Simple cross-platform FPS/RTS game engine'
@@ -69,11 +62,11 @@ package_openzone-bin()
   cd ${srcdir}/build
 
   cmake \
-    -D OZ_INSTALL_LIBOZ=0 \
-    -D OZ_INSTALL_CLIENT=1 \
-    -D OZ_INSTALL_TOOLS=1 \
-    -D OZ_INSTALL_MENU=1 \
-    -D OZ_INSTALL_STANDALONE=0 \
+    -DOZ_INSTALL_LIBOZ=0 \
+    -DOZ_INSTALL_CLIENT=1 \
+    -DOZ_INSTALL_TOOLS=1 \
+    -DOZ_INSTALL_MENU=1 \
+    -DOZ_INSTALL_STANDALONE=0 \
     ${srcdir}/openzone
 
   make install DESTDIR=${pkgdir}
@@ -95,4 +88,11 @@ package_openzone-data()
   cd ${srcdir}/build
 
   install -Dm644 ${srcdir}/openzone.zip ${pkgdir}/usr/share/openzone/openzone.zip
+}
+
+package_openzone()
+{
+  pkgdesc='Simple cross-platform FPS/RTS game'
+  depends=('openzone-bin' 'openzone-data')
+  arch=('any')
 }

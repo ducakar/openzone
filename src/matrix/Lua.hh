@@ -213,7 +213,6 @@ class Lua
     OZ_LUA_API( ozObjDamage );
     OZ_LUA_API( ozObjDestroy );
     OZ_LUA_API( ozObjQuietDestroy );
-    OZ_LUA_API( ozObjRemove );
 
     OZ_LUA_API( ozObjVectorFromSelf );
     OZ_LUA_API( ozObjVectorFromSelfEye );

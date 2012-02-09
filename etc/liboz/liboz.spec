@@ -38,12 +38,12 @@ tar xf %{_sourcedir}/openzone-src-%{version}.tar.xz
 mkdir -p openzone-build && cd openzone-build
 
 cmake \
-  -D CMAKE_INSTALL_PREFIX=/usr \
-  -D CMAKE_BUILD_TYPE=RelWithDebInfo \
-  -D OZ_INSTALL_LIBOZ=1 \
-  -D OZ_INSTALL_CLIENT=0 \
-  -D OZ_INSTALL_TOOLS=0 \
-  -D OZ_INSTALL_MENU=0 \
+  -DCMAKE_INSTALL_PREFIX=/usr \
+  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+  -DOZ_INSTALL_LIBOZ=1 \
+  -DOZ_INSTALL_CLIENT=0 \
+  -DOZ_INSTALL_TOOLS=0 \
+  -DOZ_INSTALL_MENU=0 \
   ../openzone
 
 make -j4

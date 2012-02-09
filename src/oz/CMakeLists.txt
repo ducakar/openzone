@@ -20,7 +20,7 @@ add_library( oz SHARED
   Vec4.cc
   common.cc
 )
-target_link_libraries( oz ${libs_oz} )
+target_link_libraries( oz LINK_PRIVATE ${libs_oz} )
 set_target_properties( oz PROPERTIES SOVERSION ${OZ_SOVERSION} )
 
 if( OZ_INSTALL_LIBOZ )

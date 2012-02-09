@@ -60,8 +60,7 @@ using namespace oz;
 
 int main( int, char** )
 {
-  oz::System::init();
-
-  hard_assert( 0 );
+  System::init();
+  System::error( 0, "DREK" );
   return 0;
 }

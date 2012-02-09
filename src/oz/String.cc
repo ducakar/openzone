@@ -38,8 +38,6 @@ namespace oz
 
 static const int LOCAL_BUFFER_SIZE = 4096;
 
-static OZ_THREAD_LOCAL char localBuffer[LOCAL_BUFFER_SIZE];
-
 bool String::endsWith( const char* s, const char* sub )
 {
   int len    = length( s );
@@ -281,6 +279,7 @@ String String::str( const char* s, ... )
   va_list ap;
   va_start( ap, s );
 
+  char localBuffer[LOCAL_BUFFER_SIZE];
   r.count = vsnprintf( localBuffer, LOCAL_BUFFER_SIZE, s, ap );
 
   va_end( ap );

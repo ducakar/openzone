@@ -136,7 +136,18 @@ static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static volatile int nBellUsers = 0;
 static int initFlags = 0;
 
-static void resetSignals();
+static void resetSignals()
+{
+  signal( SIGINT,  SIG_DFL );
+  signal( SIGILL,  SIG_DFL );
+  signal( SIGABRT, SIG_DFL );
+  signal( SIGFPE,  SIG_DFL );
+  signal( SIGSEGV, SIG_DFL );
+  signal( SIGTERM, SIG_DFL );
+#ifndef _WIN32
+  signal( SIGQUIT, SIG_DFL );
+#endif
+}
 
 static void signalHandler( int signum )
 {
@@ -149,21 +160,11 @@ static void signalHandler( int signum )
   log.printRaw( "Caught signal %d %s (%s)", signum, SIGNALS[sigindex][0], SIGNALS[sigindex][1] );
   log.printEnd();
 
-  StackTrace st = StackTrace::current( 0 );
+  StackTrace st = StackTrace::current( 1 );
   log.printTrace( &st );
 
   System::bell();
   System::abort( signum == SIGINT );
-}
-
-static void terminate()
-{
-  System::error( 0, "EXCEPTION HANDLING ABORTED" );
-}
-
-static void unexpected()
-{
-  System::error( 0, "EXCEPTION SPECIFICATION VIOLATION" );
 }
 
 static void catchSignals()
@@ -179,17 +180,14 @@ static void catchSignals()
 #endif
 }
 
-static void resetSignals()
+static void terminate()
 {
-  signal( SIGINT,  SIG_DFL );
-  signal( SIGILL,  SIG_DFL );
-  signal( SIGABRT, SIG_DFL );
-  signal( SIGFPE,  SIG_DFL );
-  signal( SIGSEGV, SIG_DFL );
-  signal( SIGTERM, SIG_DFL );
-#ifndef _WIN32
-  signal( SIGQUIT, SIG_DFL );
-#endif
+  System::error( 0, "EXCEPTION HANDLING ABORTED" );
+}
+
+static void unexpected()
+{
+  System::error( 0, "EXCEPTION SPECIFICATION VIOLATION" );
 }
 
 #ifdef _WIN32

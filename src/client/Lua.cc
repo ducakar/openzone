@@ -39,7 +39,7 @@
 #include "client/Camera.hh"
 #include "client/Profile.hh"
 
-#include "luamacros.hh"
+#include "common/luamacros.hh"
 
 using namespace oz::nirvana;
 
