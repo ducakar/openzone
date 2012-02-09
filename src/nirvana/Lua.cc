@@ -33,7 +33,7 @@
 #include "nirvana/Nirvana.hh"
 #include "nirvana/Memo.hh"
 
-#include "luamacros.hh"
+#include "common/luamacros.hh"
 
 namespace oz
 {

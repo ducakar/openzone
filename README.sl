@@ -11,8 +11,10 @@ w/a/s/d             - pojdi naprej / levo / nazaj / desno
 Space               - gor / povečaj višino
 LCtrl               - dol / zmanjšaj višino
 LShift              - preklopi hitro premikanje
+
 Tab                 - preklopi način vmesnika
 Numpad Enter        - preklopi med kamero FreeCam in Strategic
+n                   - preklopi nočno gledanje
 i                   - inkarniraj se v izbranega bota (ali pilota vozila)
 
 Nadzor bota
@@ -30,6 +32,7 @@ srednji klik        - zgrabi označen predmet / spusti predmet, ki ga držiš
 kolešček gor        - vrzi predmet, ki ga držiš
 kolešček dol        - spravi označen predmet v inventar
 
+n                   - preklopi nočno gledanje (če je na voljo)
 Alt + k             - stori samomor
 i                   - zapusti bota
 
@@ -310,8 +313,8 @@ Ta program je POPOLNOMA BREZ GARANCIJE.
 To je prosto programje pod licenco GNU GPLv3, ki se lahko razpečuje pod določenimi pogoji;
 za podrobnosti glejte datoteko COPYING.
 
-Knjižnica liboz samo se lahko razpečuje tudi pod licenco X11;
-za podrobnosti glejte datoteko etc/COPYING.liboz.
+Knjižnico liboz samo se lahko razpečuje tudi pod licenco X11;
+za podrobnosti glejte datoteko etc/liboz/COPYING.
 
 Avtorske pravice za podatke
 ---------------------------

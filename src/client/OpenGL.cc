@@ -28,7 +28,7 @@
 #define OZ_REGISTER_GLFUNC( func, type ) \
   *reinterpret_cast<void**>( &func ) = SDL_GL_GetProcAddress( #func ); \
   if( func == null ) { \
-    throw Exception( "Failed to get OpenGL function '" #func "'" ); \
+    throw Exception( "Failed to link OpenGL function '" #func "'" ); \
   }
 
 namespace oz

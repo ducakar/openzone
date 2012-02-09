@@ -515,6 +515,9 @@ int Client::main( int argc, char** argv )
           }
           if( event.active.state & SDL_APPACTIVE ) {
             if( event.active.gain ) {
+              SDL_PumpEvents();
+              SDL_GetRelativeMouseState( null, null );
+
               sound.resume();
               isActive = true;
             }

@@ -57,16 +57,17 @@ char** StackTrace::symbols() const
 
 #else
 
+// Size of internal output buffer where stack trace output string is generated.
 static const int TRACE_BUFFER_SIZE  = 4096;
-static const int STRING_BUFFER_SIZE = 1024;
 
-static OZ_THREAD_LOCAL void* framesBuffer[StackTrace::MAX_FRAMES + 4];
-static OZ_THREAD_LOCAL char  outputBuffer[TRACE_BUFFER_SIZE];
+// Size of internal buffer where function names are demangled.
+static const int STRING_BUFFER_SIZE = 256;
 
 StackTrace StackTrace::current( int nSkippedFrames )
 {
   hard_assert( nSkippedFrames >= -1 );
 
+  void* framesBuffer[StackTrace::MAX_FRAMES + 4];
   int nFrames = backtrace( framesBuffer, MAX_FRAMES + 4 );
 
   StackTrace st;
@@ -77,6 +78,8 @@ StackTrace StackTrace::current( int nSkippedFrames )
 
 char** StackTrace::symbols() const
 {
+  char outputBuffer[TRACE_BUFFER_SIZE];
+
   char** symbols = backtrace_symbols( frames, nFrames );
 
   if( symbols == null ) {

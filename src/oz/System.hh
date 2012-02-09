@@ -46,7 +46,8 @@ class System
     /// Wait for a CTRL-C in <tt>abort()</tt>, so one has time to attach debugger.
     static const int HALT_BIT = 0x01;
 
-    /// Catch fatal signals, print diagnostics and abort program.
+    /// Catch fatal signals (SIGINT, SIGILL, SIGABRT, SIGFPE, SIGSEGV, SIGTERM and SIGQUIT), print
+    /// diagnostics and abort program.
     static const int SIGNAL_HANDLER_BIT = 0x10;
 
     /// Override handlers for exception violations (<tt>std::terminate()</tt> and
@@ -131,8 +132,8 @@ class System
     /**
      * Deinitialise <tt>System</tt>.
      *
-     * It resets signal handlers (including <tt>SIG_IGN</tt>), <tt>std::terminate()</tt> and
-     * <tt>std::unexpected()</tt> to defaults.
+     * It resets signal handlers, <tt>std::terminate()</tt> and <tt>std::unexpected()</tt> to
+     * defaults.
      */
     static void free();
 

@@ -109,14 +109,10 @@ void Matrix::update()
         }
       }
 
-      if( obj->flags & Object::UPDATE_FUNC_BIT ) {
-        obj->update();
+      obj->update();
 
-        // object might have removed itself within onUpdate()
-        if( orbis.objects[i] == null ) {
-          continue;
-        }
-      }
+      // objects should not remove themselves within onUpdate()
+      hard_assert( orbis.objects[i] != null );
 
       if( obj->flags & Object::DYNAMIC_BIT ) {
         Dynamic* dyn = static_cast<Dynamic*>( obj );

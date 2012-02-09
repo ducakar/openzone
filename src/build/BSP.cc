@@ -531,7 +531,7 @@ void BSP::optimise()
     log.printEnd();
   }
 
-  // remove model brushes from the static tree (Wtf Quake BSP puts them there in the first place?)
+  // remove model brushes from the static tree (WTF Quake BSP puts them there?)
   log.print( "removing model brush references " );
 
   for( int i = 0; i < nModels; ++i ) {

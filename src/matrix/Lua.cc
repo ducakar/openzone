@@ -32,7 +32,7 @@
 #include "matrix/Collider.hh"
 #include "matrix/Synapse.hh"
 
-#include "luamacros.hh"
+#include "common/luamacros.hh"
 
 namespace oz
 {
@@ -154,7 +154,7 @@ void Lua::objectCall( const char* functionName, Object* self_, Bot* user_ )
 
   if( gettop() != 1 ) {
     throw Exception( "Matrix Lua: %s(self = %d, user = %d): %s",
-                     functionName, self->index, user->index, tostring( -1 ) );
+                     functionName, self->index, user == null ? -1 : user->index, tostring( -1 ) );
   }
 }
 
@@ -391,7 +391,6 @@ void Lua::init()
   OZ_LUA_FUNC( ozObjDamage );
   OZ_LUA_FUNC( ozObjDestroy );
   OZ_LUA_FUNC( ozObjQuietDestroy );
-  OZ_LUA_FUNC( ozObjRemove );
 
   OZ_LUA_FUNC( ozObjVectorFromSelf );
   OZ_LUA_FUNC( ozObjVectorFromSelfEye );
@@ -1673,28 +1672,6 @@ int Lua::ozObjQuietDestroy( lua_State* l )
   OBJ_NOT_NULL();
 
   lua.obj->flags |= Object::DESTROYED_BIT;
-  return 0;
-}
-
-int Lua::ozObjRemove( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-
-  if( lua.obj->cell == null ) {
-    Dynamic* dyn = static_cast<Dynamic*>( lua.obj );
-
-    hard_assert( dyn->flags & Object::DYNAMIC_BIT );
-
-    synapse.remove( dyn );
-  }
-  else {
-    synapse.remove( lua.obj );
-  }
-
-  lua.self = lua.self == lua.obj ? null : lua.self;
-  lua.user = lua.user == lua.obj ? null : lua.user;
-  lua.obj  = null;
   return 0;
 }
 

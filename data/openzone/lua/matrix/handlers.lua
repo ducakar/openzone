@@ -30,7 +30,7 @@ function smallExplosion_onUpdate( l )
     l.ticks = l.ticks - 1
 
     if l.ticks == 0 then
-      ozObjRemove()
+      ozObjQuietDestroy()
     end
   else
     ozObjAddEvent( OZ_EVENT_CREATE, 1.0 )
@@ -67,7 +67,7 @@ function bigExplosion_onUpdate( l )
     l.ticks = l.ticks - 1
 
     if l.ticks == 0 then
-      ozObjRemove()
+      ozObjQuietDestroy()
     end
   else
     ozObjAddEvent( OZ_EVENT_CREATE, 1.0 )
