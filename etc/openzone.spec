@@ -23,7 +23,11 @@ Group:          Development/Tools
 Summary:        OpenZone game data
 License:        Custom
 Group:          Amusements/Games
-Requires:       %{name} = %{version}
+
+%package doc
+Summary:        OpenZone engine documentation
+License:        Public Domain
+Group:          Documentation
 
 %description
 OpenZone is a relatively simple cross-platform game engine, suitable for FPS,
@@ -50,12 +54,18 @@ miscellaneous tools.
 %description data
 Game data for OpenZone. Includes tutorials, testing world and cviček mission.
 
+%description doc
+Doxygen-generated documentation for OpenZone engine and PDF articles describing
+concepts and algorithms used in the engine.
+
 %prep
 tar xf %{_sourcedir}/openzone-src-%{version}.tar.xz
 tar xf %{_sourcedir}/openzone-data-ozbase-%{version}.tar.xz
 tar xf %{_sourcedir}/openzone-data-openzone-%{version}.tar.xz
 
 %build
+( cd openzone && doxygen etc/Doxyfile )
+
 mkdir -p openzone-build && cd openzone-build
 
 cmake \
@@ -99,3 +109,7 @@ install -Dm644 ../openzone.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/openzone.zip
 %defattr(-,root,root)
 %dir %{_datadir}/openzone
 %{_datadir}/openzone/openzone.zip
+
+%files doc
+%defattr(-,root,root)
+%doc openzone/doc/doxygen/html

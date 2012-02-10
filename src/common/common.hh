@@ -40,19 +40,30 @@
 #include <cstdlib>
 #include <cstring>
 
-#ifdef _WIN32
-# include <windows.h>
+// Doxygen should skip those macros when generating documentation.
+#ifndef OZ_DOXYGEN
+
+# ifdef _WIN32
+#  include <windows.h>
 // Fix M$ crap from Windows headers.
-# undef ERROR
-# undef PLANES
-# undef near
-# undef far
+#  undef ERROR
+#  undef PLANES
+#  undef near
+#  undef far
+# endif
+
+# define SDL_NO_COMPAT
+# include <SDL/SDL.h>
+
 #endif
 
-#define SDL_NO_COMPAT
-#include <SDL/SDL.h>
-
-#define OZ_LUA_API( func ) static int func( lua_State* )
+/**
+ * Just a handy macro for declaring %Lua API.
+ *
+ * @ingroup common
+ */
+#define OZ_LUA_API( func ) \
+  static int func( lua_State* )
 
 struct lua_State;
 
@@ -72,6 +83,8 @@ const float EPSILON = 2.0f * 2048.0f * 4.0f * Math::FLOAT_EPS;
 
 /**
  * Lua C API.
+ *
+ * @ingroup common
  */
 typedef int LuaAPI( lua_State* );
 

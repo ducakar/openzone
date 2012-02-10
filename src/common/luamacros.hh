@@ -25,6 +25,9 @@
 
 #include <lua.hpp>
 
+// Doxygen should skip those macros, we don't want documentation generated for them.
+#ifndef OZ_DOXYGEN
+
 #define OZ_LUA_DOBUFFER( begin, length, name ) \
   ( luaL_loadbuffer( l, begin, size_t( length ), name ) || lua_pcall( l, 0, LUA_MULTRET, 0 ) )
 
@@ -144,3 +147,5 @@
     luaL_requiref( l, LUA_MATHLIBNAME, luaopen_math,   true ); \
     lua_settop( l, 0 );
 #endif
+
+#endif // OZ_DOXYGEN_SKIP

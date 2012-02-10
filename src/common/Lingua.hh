@@ -25,44 +25,98 @@
 
 #include "oz/oz.hh"
 
-// we need to define this macro because xgettext is not able to extract strings otherwise
+/**
+ * @def OZ_GETTEXT
+ *
+ * Wrapper macro for <tt>lingua.get()</tt>.
+ *
+ * This macro is needed so that standard <tt>xgettext</tt> command can be used to extract strings
+ * for translation from source. Sadly <tt>xgettext</tt> is not capable of recognising C++ constructs
+ * like <tt>oz::lingua.get()</tt>, that's why we need this macro.
+ *
+ * @ingroup common
+ */
 #define OZ_GETTEXT( s ) \
   oz::lingua.get( s )
 
 namespace oz
 {
 
+/**
+ * Translation catalogue database.
+ *
+ * @ingroup common
+ */
 class Lingua
 {
   private:
 
+    /**
+     * Internal structure for message entry in a hashtable.
+     */
     struct Message
     {
-      String   original;
-      String   translation;
-      Message* next;
+      String   original;    ///< Original message that appears in the source code or resource files.
+      String   translation; ///< Translated message from the catalogue.
+      Message* next;        ///< Next entry in the hashtable linked list.
 
       OZ_PLACEMENT_POOL_ALLOC( Message, 256 );
     };
 
-    static String locale;
+    static String locale;    ///< Language code (should match subdirectory in lingua).
 
-    Message**     messages;
-    int           nMessages;
-    Pool<Message> msgPool;
+    Message**     messages;  ///< Message hashtable.
+    int           nMessages; ///< Size of hastable.
+    Pool<Message> msgPool;   ///< Memory pool for messages.
 
   public:
 
+    /**
+     * Default constructor, creates uninitialised instance.
+     */
     Lingua();
 
+    /**
+     * Obtain translation from the loaded catalogue.
+     */
     const char* get( const char* message ) const;
 
+    /**
+     * Initialise a secondary Lingua instance with given catalogue.
+     *
+     * This function is intended to be used with secondary instances of Lingua. The global Lingua
+     * instance must be initialised first with <tt>init()</tt>.
+     *
+     * Secondary instances of Lingua are used for translations of strings that appear inside mission
+     * scripts.
+     *
+     * This function loads catalogue from <tt>lingua/\<locale\>/domain/\<domain\>.ozCat</tt>.
+     */
     bool initDomain( const char* domain );
+
+    /**
+     * Initialise global Lingua instance.
+     *
+     * The global instance must be initialised first so that <tt>locale</tt> member is set properly.
+     * This function loads all catalogues from <tt>lingua/\<locale\>/main</tt> directory.
+     *
+     * The global Lingua instance contains translations for strings that appear in the engine (UI)
+     * and titles and descriptions of objects and structures from game data.
+     */
     bool init( const char* locale );
+
+    /**
+     * Free allocated resources.
+     */
     void free();
 
 };
 
+/**
+ * Global instance, used for non-mission-specific translations.
+ *
+ * @ingroup common
+ */
 extern Lingua lingua;
 
 }
