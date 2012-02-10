@@ -36,13 +36,27 @@ void main()
 
   vec4 colourSample = texture2D( oz_Textures[0], exTexCoord * TERRA_WATER_SCALE );
 
-  vec4 diffuse    = skyLightColour( NORMAL );
-#ifndef OZ_LOW_DETAIL
-  vec4 specular   = specularColour( 1.0, NORMAL, toCamera / dist );
-  vec4 fragColour = vec4( colourSample.xyz, 0.75 ) * ( diffuse + specular );
+  if( oz_NightVision ) {
+    vec4  diffuse    = skyLightColour( NORMAL );
+#ifdef OZ_LOW_DETAIL
+    vec4  fragColour = vec4( colourSample.xyz, 0.75 ) * diffuse;
 #else
-  vec4 fragColour = vec4( colourSample.xyz, 0.75 ) * diffuse;
+    vec4  specular   = specularColour( 1.0, NORMAL, toCamera / dist );
+    vec4  fragColour = vec4( colourSample.xyz, 0.75 ) * ( diffuse + specular );
+#endif
+    float avgColour  = 0.33 * ( fragColour.r + fragColour.g + fragColour.b );
+
+    gl_FragData[0] = applyFog( vec4( 0.0, avgColour, 0.0, fragColour.a ), dist );
+  }
+  else {
+    vec4 diffuse    = skyLightColour( NORMAL );
+#ifdef OZ_LOW_DETAIL
+    vec4 fragColour = vec4( colourSample.xyz, 0.75 ) * diffuse;
+#else
+    vec4 specular   = specularColour( 1.0, NORMAL, toCamera / dist );
+    vec4 fragColour = vec4( colourSample.xyz, 0.75 ) * ( diffuse + specular );
 #endif
 
-  gl_FragData[0] = applyFog( fragColour, dist );
+    gl_FragData[0] = applyFog( fragColour, dist );
+  }
 }

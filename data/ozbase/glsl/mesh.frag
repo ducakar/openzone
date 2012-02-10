@@ -36,14 +36,24 @@ void main()
   vec4 colourSample = texture2D( oz_Textures[0], exTexCoord );
   vec4 masksSample  = texture2D( oz_Textures[1], exTexCoord );
 
-  vec4 diffuse    = skyLightColour( normal );
-#ifndef OZ_LOW_DETAIL
-  vec4 specular   = specularColour( masksSample.r, normal, normalize( toCamera ) );
-  vec4 emission   = vec4( masksSample.g, masksSample.g, masksSample.g, 0.0 );
-  vec4 fragColour = oz_Colour * colourSample * ( min( diffuse + emission, vec4( 1.0 ) ) + specular );
+  if( oz_NightVision ) {
+    vec4  diffuse    = skyLightColour( normal );
+    vec4  emission   = vec4( masksSample.g, masksSample.g, masksSample.g, 0.0 );
+    vec4  fragColour = oz_Colour * colourSample + vec4( diffuse.xyz, 0.0 ) + emission;
+    float avgColour  = 0.33 * ( fragColour.r + fragColour.g + fragColour.b );
+
+    gl_FragData[0] = applyFog( vec4( 0.0, avgColour, 0.0, fragColour.a ), dist );
+  }
+  else {
+    vec4 diffuse    = skyLightColour( normal );
+    vec4 emission   = vec4( masksSample.g, masksSample.g, masksSample.g, 0.0 );
+#ifdef OZ_LOW_DETAIL
+    vec4 fragColour = oz_Colour * colourSample * ( diffuse + emission );
 #else
-  vec4 fragColour = oz_Colour * colourSample * diffuse;
+    vec4 specular   = specularColour( masksSample.r, normal, normalize( toCamera ) );
+    vec4 fragColour = oz_Colour * colourSample * ( diffuse + emission + specular );
 #endif
 
-  gl_FragData[0] = applyFog( fragColour, dist );
+    gl_FragData[0] = applyFog( fragColour, dist );
+  }
 }

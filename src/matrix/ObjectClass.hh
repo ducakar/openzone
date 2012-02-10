@@ -47,6 +47,7 @@ class ObjectClass
 
     static const int GALILEO_BIT      = 0x01;
     static const int MUSIC_PLAYER_BIT = 0x02;
+    static const int NIGHT_VISION_BIT = 0x04;
 
     typedef ObjectClass* CreateFunc();
 

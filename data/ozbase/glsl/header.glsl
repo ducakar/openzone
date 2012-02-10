@@ -68,6 +68,7 @@ uniform CaelumLight     oz_CaelumLight;
 uniform Light           oz_PointLights[8];
 
 uniform float           oz_Specular = 0.0;
+uniform bool            oz_NightVision;
 
 /*
  * Fog

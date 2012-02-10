@@ -89,9 +89,6 @@ class Camera
     int    bot;
     Bot*   botObj;
 
-    State  state;
-    State  newState;
-
     int    width;
     int    height;
     int    centreX;
@@ -105,6 +102,10 @@ class Camera
 
     bool   isExternal;
     bool   allowReincarnation;
+    bool   nightVision;
+
+    State  state;
+    State  newState;
 
     void setState( State state )
     {
