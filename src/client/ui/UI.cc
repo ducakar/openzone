@@ -105,6 +105,8 @@ void UI::draw()
 
     glUniform1f( param.oz_Fog_start, 1.0e6f );
     glUniform1f( param.oz_Fog_end, 1.0e6f );
+
+    glUniform1i( param.oz_NightVision, false );
   }
 
   shader.use( shader.plain );

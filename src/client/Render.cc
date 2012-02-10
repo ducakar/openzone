@@ -188,6 +188,8 @@ void Render::drawGeometry()
     glUniform1f( param.oz_Fog_end, visibility );
     glUniform4fv( param.oz_Fog_colour, 1, clearColour );
 
+    glUniform1i( param.oz_NightVision, camera.nightVision );
+
     glUniform4f( param.oz_Wind, 1.0f, 1.0f, WIND_FACTOR, windPhi );
   }
 

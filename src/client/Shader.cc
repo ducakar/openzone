@@ -201,6 +201,7 @@ void Shader::loadProgram( int id, const char** sources, int* lengths )
   OZ_REGISTER_PARAMETER( oz_CaelumLight_ambient,      "oz_CaelumLight.ambient" );
 
   OZ_REGISTER_PARAMETER( oz_Specular,                 "oz_Specular" );
+  OZ_REGISTER_PARAMETER( oz_NightVision,              "oz_NightVision" );
 
   OZ_REGISTER_PARAMETER( oz_Fog_start,                "oz_Fog.start" );
   OZ_REGISTER_PARAMETER( oz_Fog_end,                  "oz_Fog.end" );

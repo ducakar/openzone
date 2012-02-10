@@ -230,7 +230,11 @@ void BotProxy::update()
     bot->actions |= Bot::ACTION_GESTURE4;
   }
 
-  if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
+  if( keys[SDLK_n] && !oldKeys[SDLK_n] ) {
+    camera.nightVision = !camera.nightVision;
+  }
+
+  if( keys[SDLK_TAB] && !oldKeys[SDLK_TAB] ) {
     ui::mouse.doShow = !ui::mouse.doShow;
   }
 
@@ -323,6 +327,22 @@ void BotProxy::update()
       }
     }
   }
+
+  if( camera.nightVision ) {
+    if( bot->clazz->attributes & ObjectClass::NIGHT_VISION_BIT ) {
+      goto hasNightVision;
+    }
+    foreach( i, bot->items.citer() ) {
+      const Object* item = orbis.objects[*i];
+
+      if( item != null && item->clazz->attributes & ObjectClass::NIGHT_VISION_BIT ) {
+        goto hasNightVision;
+      }
+    }
+
+    camera.nightVision = false;
+  }
+hasNightVision:;
 }
 
 void BotProxy::prepare()

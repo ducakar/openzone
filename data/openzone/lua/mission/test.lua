@@ -37,6 +37,7 @@ function onCreate()
   ozCaelumSetTime( 180 )
 
   ozCameraWarpTo( 141.0, -12.0, 84.75 )
+  ozCameraSetV( 30.0 )
 
   local me = ozOrbisAddObj( "beast", 137, -6, 73, OZ_SOUTH )
   ozBotSetName( ozProfileGetPlayerName() )
@@ -47,6 +48,10 @@ function onCreate()
   local myGalileo = ozOrbisAddObj( "galileo", 0, 0, 0 )
   ozObjBindIndex( me )
   ozObjAddItem( myGalileo )
+
+  local myGoggles = ozOrbisAddObj( "nvGoggles", 0, 0, 0 )
+  ozObjBindIndex( me )
+  ozObjAddItem( myGoggles )
 
   init_sample()
 

@@ -26,6 +26,7 @@
 #include "client/Caelum.hh"
 
 #include "client/Context.hh"
+#include "client/Camera.hh"
 #include "client/Colours.hh"
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"
@@ -77,6 +78,16 @@ void Caelum::update()
   Colours::water[2] = Math::mix( NIGHT_COLOUR[2], WATER_COLOUR[2], ratio );
   Colours::water[3] = Math::mix( NIGHT_COLOUR[3], WATER_COLOUR[3], ratio );
 
+  if( camera.nightVision ) {
+    Colours::caelum.x = 0.0f;
+    Colours::caelum.y = Colours::caelum.x + Colours::caelum.y + Colours::caelum.z;
+    Colours::caelum.z = 0.0f;
+
+    Colours::water.x = 0.0f;
+    Colours::water.y = Colours::water.x + Colours::water.y + Colours::water.z;
+    Colours::water.z = 0.0f;
+  }
+
   lightDir = dir;
 
   Colours::diffuse[0] = ratio + RED_COEF   * ratioDiff;
@@ -118,6 +129,7 @@ void Caelum::draw()
 
     glUniform4fv( param.oz_Fog_colour, 1, Colours::caelum );
     glUniform4fv( param.oz_Colour, 1, colour );
+    glUniform1i( param.oz_NightVision, camera.nightVision );
 
 # ifdef OZ_GL_COMPATIBLE
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
@@ -141,6 +153,7 @@ void Caelum::draw()
                Colours::diffuse[1] + Colours::ambient[1],
                Colours::diffuse[2] + Colours::ambient[2],
                1.0f );
+  glUniform1i( param.oz_NightVision, camera.nightVision );
   glBindTexture( GL_TEXTURE_2D, sunTexId );
 
   glDisable( GL_CULL_FACE );

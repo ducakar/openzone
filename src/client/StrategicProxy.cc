@@ -79,6 +79,10 @@ void StrategicProxy::update()
   camera.h += camera.relH;
   camera.v += camera.relV;
 
+  if( keys[SDLK_n] && !oldKeys[SDLK_n] ) {
+    camera.nightVision = !camera.nightVision;
+  }
+
   if( keys[SDLK_TAB] && !oldKeys[SDLK_TAB] ) {
     ui::mouse.doShow = !ui::mouse.doShow;
   }

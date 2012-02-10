@@ -36,8 +36,17 @@ void main()
   vec4 colourSample = texture2D( oz_Textures[0], exTexCoord );
   vec4 masksSample  = texture2D( oz_Textures[1], exTexCoord );
 
-  vec4 diffuse    = skyLightColour( normal );
-  vec4 fragColour = oz_Colour * colourSample * diffuse;
+  if( oz_NightVision ) {
+    vec4  diffuse    = skyLightColour( normal );
+    vec4  fragColour = oz_Colour * colourSample + vec4( diffuse.xyz, 0.0 );
+    float avgColour  = 0.33 * ( fragColour.r + fragColour.g + fragColour.b );
 
-  gl_FragData[0] = applyFog( fragColour, dist );
+    gl_FragData[0] = applyFog( vec4( 0.0, avgColour, 0.0, fragColour.a ), dist );
+  }
+  else {
+    vec4 diffuse    = skyLightColour( normal );
+    vec4 fragColour = oz_Colour * colourSample * diffuse;
+
+    gl_FragData[0] = applyFog( fragColour, dist );
+  }
 }

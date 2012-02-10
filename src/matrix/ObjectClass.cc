@@ -94,6 +94,7 @@ void ObjectClass::fillCommonConfig( const Config* config )
 
   OZ_CLASS_SET_ATTRIB( GALILEO_BIT,      "attrib.galileo",     false );
   OZ_CLASS_SET_ATTRIB( MUSIC_PLAYER_BIT, "attrib.musicPlayer", false );
+  OZ_CLASS_SET_ATTRIB( NIGHT_VISION_BIT, "attrib.nightVision", false );
 
   /*
    * key code

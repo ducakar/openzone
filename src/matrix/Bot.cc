@@ -137,7 +137,7 @@ void Bot::onUpdate()
         // we don't want Object::destroy() to be called when body dissolves (destroy() causes
         // sounds and frags to fly around), that's why we just remove the object
         if( life <= 0.0f ) {
-          synapse.remove( this );
+          flags |= DESTROYED_BIT;
         }
       }
     }

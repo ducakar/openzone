@@ -208,6 +208,10 @@ void Camera::reset()
   bot       = -1;
   botObj    = null;
 
+  isExternal         = false;
+  allowReincarnation = true;
+  nightVision        = false;
+
   state     = NONE;
   newState  = NONE;
 
@@ -218,9 +222,6 @@ void Camera::reset()
     proxy->end();
     proxy = null;
   }
-
-  isExternal         = true;
-  allowReincarnation = true;
 }
 
 void Camera::read( InputStream* istream )
@@ -250,11 +251,12 @@ void Camera::read( InputStream* istream )
   bot       = istream->readInt();
   botObj    = bot == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
 
-  state     = NONE;
-  newState  = State( istream->readInt() );
-
   isExternal         = istream->readBool();
   allowReincarnation = istream->readBool();
+  nightVision        = istream->readBool();
+
+  state     = NONE;
+  newState  = State( istream->readInt() );
 
   strategicProxy.read( istream );
   botProxy.read( istream );
@@ -293,10 +295,11 @@ void Camera::write( BufferStream* ostream ) const
 
   ostream->writeInt( bot );
 
-  ostream->writeInt( state );
-
   ostream->writeBool( isExternal );
   ostream->writeBool( allowReincarnation );
+  ostream->writeBool( nightVision );
+
+  ostream->writeInt( state );
 
   strategicProxy.write( ostream );
   botProxy.write( ostream );
@@ -322,8 +325,12 @@ void Camera::init( int screenWidth, int screenHeight )
   horizPlane    = coeff * MIN_DISTANCE;
   vertPlane     = aspect * horizPlane;
 
-  state         = NONE;
-  newState      = NONE;
+  isExternal         = false;
+  allowReincarnation = true;
+  nightVision        = false;
+
+  state    = NONE;
+  newState = NONE;
 
   strategicProxy.init();
   botProxy.init();
