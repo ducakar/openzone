@@ -29,9 +29,9 @@ namespace oz
 {
 
 /**
- * Span.
- *
  * 2D integer span.
+ *
+ * @ingroup common
  */
 struct Span
 {

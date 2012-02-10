@@ -28,35 +28,75 @@
 namespace oz
 {
 
+/**
+ * Class that keeps track of the current game time, time passed from the last rendered frame etc.
+ *
+ * @ingroup common
+ */
 class Timer
 {
   public:
 
+    /// Number of ticks (game updates) per second.
     static const     uint  TICKS_PER_SEC = 60;
-    static constexpr float TICK_TIME     = 1.0f / float( TICKS_PER_SEC );
-    static const     uint  TICK_MICROS   = ( 1000000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;
-    static const     uint  TICK_MILLIS   = ( 1000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;
 
-    ulong64 runMicros;
+    /// Length of one tick in seconds.
+    static constexpr float TICK_TIME = 1.0f / float( TICKS_PER_SEC );
 
-    ulong64 ticks;
-    ulong64 micros;
-    float   time;
+    /// Length of one tick in microseconds.
+    static const     uint  TICK_MICROS = ( 1000000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;
 
-    ulong64 nFrames;
-    ulong64 frameTicks;
-    ulong64 frameMicros;
-    float   frameTime;
+    /// Length of one tick in milliseconds.
+    static const     uint  TICK_MILLIS = ( 1000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;
 
+    ulong64 runMicros;   ///< Run time (game time plus dropped time).
+
+    ulong64 ticks;       ///< Ticks from the start of the game.
+    ulong64 micros;      ///< Microseconds from the start of the game.
+    float   time;        ///< %Time from the start of the game is seconds.
+
+    ulong64 nFrames;     ///< Number of rendered frames from the start of the game.
+    ulong64 frameTicks;  ///< Ticks from the last rendered frame.
+    ulong64 frameMicros; ///< Microseconds of game time from the last rendered frame.
+    float   frameTime;   ///< Game time from the last rendered frame.
+
+    /**
+     * Default constructors, resets timer.
+     */
     Timer();
 
+    /**
+     * Set all timer counters to zero.
+     */
     void reset();
+
+    /**
+     * Add one tick to the counters.
+     */
     void tick();
+
+    /**
+     * Add one frame to the counters and reset frame counters.
+     */
     void frame();
+
+    /**
+     * Drop time.
+     *
+     * On some occasions (e.g. when game freezes for a moment because of loading) time has to be
+     * dropped, otherwise main loop will strive to catch up and compensate that time with shorter
+     * ticks. That would results in a period after each "freeze" during which simulation will run
+     * faster than in real time.
+     */
     void drop( uint micros );
 
 };
 
+/**
+ * Global Timer instance.
+ *
+ * @ingroup common
+ */
 extern Timer timer;
 
 }
