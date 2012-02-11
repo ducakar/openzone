@@ -1,18 +1,29 @@
 Name:           openzone
 Version:        0.2.80
 Release:        1
-Summary:        Simple cross-platform FPS/RTS game
+Summary:        Simple cross-platform FPS/RTS game (meta package)
 URL:            https://github.com/ducakar/openzone/
 License:        GPLv3+
 Group:          Amusements/Games
 Packager:       Davorin Učakar <davorin.ucakar@gmail.com>
-Requires:       %{name}-bin = %{version}
+Requires:       %{name}-client = %{version}
 Requires:       %{name}-data = %{version}
 Source:         openzone-src-%{version}.tar.xz
 Source1:        openzone-data-ozbase-%{version}.tar.xz
 Source2:        openzone-data-openzone-%{version}.tar.xz
 
-%package bin
+%package -n liboz
+Summary:        OpenZone core library
+License:        MIT
+Group:          System Environment/Libraries
+
+%package -n liboz-devel
+Summary:        Headers and documentation for OpenZone core library
+License:        MIT
+Group:          Development/Libraries
+Requires:       liboz = %{version}
+
+%package client
 Summary:        Simple cross-platform FPS/RTS game engine
 
 %package tools
@@ -23,10 +34,10 @@ Group:          Development/Tools
 Summary:        OpenZone game data
 License:        Custom
 Group:          Amusements/Games
+Requires:       %{name}-client = %{version}
 
 %package doc
 Summary:        OpenZone engine documentation
-License:        Public Domain
 Group:          Documentation
 
 %description
@@ -38,7 +49,19 @@ simulated world.
 This package only includes engine and essential data needed for engine to run.
 Game data and missions packages must be installed separately.
 
-%description bin
+%description -n liboz
+Library provides facilities like container templates, array utilities,
+string class, memory manager with memory leak tracing, crash handlers,
+I/O buffers and classes for filesystem access with PhysicsFS support,
+log writer, configuration file manipulation class, math functions and
+linear algebra classes.
+Library is primarily intended for use in OpenZone game engine.
+
+%description -n liboz-devel
+This package contains doxygen-generated documentation, header files and
+pkg-config configuration needed for develipment using liboz.
+
+%description client
 OpenZone is a relatively simple cross-platform game engine, suitable for FPS,
 RTS and RPG genres. It is strictly divided into several layers. Back-end runs
 a complete simulation of a world (physics, object handlers, controllers, AI)
@@ -59,57 +82,61 @@ Doxygen-generated documentation for OpenZone engine and PDF articles describing
 concepts and algorithms used in the engine.
 
 %prep
-tar xf %{_sourcedir}/openzone-src-%{version}.tar.xz
-tar xf %{_sourcedir}/openzone-data-ozbase-%{version}.tar.xz
-tar xf %{_sourcedir}/openzone-data-openzone-%{version}.tar.xz
+%setup -q -b 1 -b 2 -n openzone
 
 %build
-( cd openzone && doxygen etc/Doxyfile )
+doxygen etc/liboz/Doxyfile
+doxygen etc/Doxyfile
 
-mkdir -p openzone-build && cd openzone-build
+mkdir -p build && cd build
 
-cmake \
-  -DCMAKE_INSTALL_PREFIX=/usr \
-  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-  -DOZ_INSTALL_LIBOZ=0 \
-  -DOZ_INSTALL_CLIENT=1 \
-  -DOZ_INSTALL_TOOLS=1 \
-  -DOZ_INSTALL_MENU=1 \
-  ../openzone
-make -j4
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+make %{?_smp_mflags}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-cd openzone-build
+cd build
 
 make install DESTDIR=$RPM_BUILD_ROOT
 
-install -Dm644 ../ozbase.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/ozbase.zip
-install -Dm644 ../openzone.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/openzone.zip
+install -Dm644 %{_builddir}/ozbase.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/ozbase.zip
+install -Dm644 %{_builddir}/openzone.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/openzone.zip
 
 %files
 %defattr(-, root, root)
 
-%files bin
+%files -n liboz
+%defattr(-, root, root)
+%{_libdir}/liboz.so*
+%doc AUTHORS etc/liboz/COPYING
+
+%files -n liboz-devel
+%defattr(-, root, root)
+%{_includedir}/oz
+%{_libdir}/pkgconfig
+%doc AUTHORS etc/liboz/COPYING
+%doc doc/doxygen-liboz/html
+
+%files client
 %defattr(-, root, root)
 %{_bindir}/openzone
 # %{_datadir}/share/applications
 # %{_datadir}/share/pixmaps
 %dir %{_datadir}/openzone
 %{_datadir}/openzone/ozbase.zip
-%doc openzone/AUTHORS openzone/COPYING openzone/ChangeLog openzone/README* openzone/TODO
+%doc AUTHORS COPYING ChangeLog README* TODO
 
 %files tools
 %defattr(-, root, root)
 %{_bindir}/ozBuild
 %{_bindir}/ozFormat
-%doc openzone/AUTHORS openzone/COPYING
+%doc AUTHORS COPYING
 
 %files data
-%defattr(-,root,root)
+%defattr(-, root, root)
 %dir %{_datadir}/openzone
 %{_datadir}/openzone/openzone.zip
 
 %files doc
-%defattr(-,root,root)
-%doc openzone/doc/doxygen/html
+%defattr(-, root, root)
+%doc doc/doxygen/html
