@@ -1,21 +1,5 @@
-add_executable( ozBuild
-  BSP.cc
-  Build.cc
-  Caelum.cc
-  Compiler.cc
-  Context.cc
-  Lingua.cc
-  MD2.cc
-  MD3.cc
-  Mesh.cc
-  Mouse.cc
-  OBJ.cc
-  Terra.cc
-  ozBuild.cc
-)
+add_executable( ozBuild BSP.cc Build.cc Caelum.cc Compiler.cc Context.cc Lingua.cc MD2.cc MD3.cc Mesh.cc Mouse.cc OBJ.cc ozBuild.cc Terra.cc )
 add_dependencies( ozBuild pch )
 target_link_libraries( ozBuild client modules nirvana matrix common build_info oz ${libs_tools} )
 
-if( OZ_INSTALL_TOOLS )
-  install( TARGETS ozBuild DESTINATION bin )
-endif()
+install( TARGETS ozBuild COMPONENT tools RUNTIME DESTINATION bin )

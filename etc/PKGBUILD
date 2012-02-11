@@ -1,7 +1,7 @@
 # Maintainer: Davorin Učakar <davorin.ucakar@gmail.com>
 
 pkgbase=openzone
-pkgname=('liboz' 'openzone-bin' 'openzone-data' 'openzone')
+pkgname=('liboz' 'openzone' 'openzone-data' 'openzone-doc')
 pkgver=0.2.80
 pkgrel=1
 url="http://github.com/ducakar/openzone/"
@@ -17,14 +17,11 @@ md5sums=()
 build()
 {
   ( cd ${srcdir}/openzone && doxygen etc/liboz/Doxyfile )
+  ( cd ${srcdir}/openzone && doxygen etc/Doxyfile )
 
   mkdir -p ${srcdir}/build && cd ${srcdir}/build
 
-  cmake \
-    -DCMAKE_INSTALL_PREFIX=/usr \
-    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-    ${srcdir}/openzone
-
+  cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo ${srcdir}/openzone
   make
 }
 
@@ -36,40 +33,31 @@ package_liboz()
 
   cd ${srcdir}/build
 
-  cmake \
-    -DOZ_INSTALL_LIBOZ=1 \
-    -DOZ_INSTALL_CLIENT=0 \
-    -DOZ_INSTALL_TOOLS=0 \
-    -DOZ_INSTALL_MENU=0 \
-    -DOZ_INSTALL_STANDALONE=0 \
-    ../openzone
-
   make install DESTDIR=${pkgdir}
+
+  rm -rf ${pkgdir}/usr/bin
 
   if [[ "$CARCH" == "x86_64" ]]; then
     mv ${pkgdir}/usr/lib64 ${pkgdir}/usr/lib
     sed 's|/usr/lib64|/usr/lib|g' -i ${pkgdir}/usr/lib/pkgconfig/liboz.pc
   fi
 
+  mkdir -p ${pkgdir}/usr/share/doc/openzone
+  cp -r ../openzone/doc/doxygen-liboz/html ${pkgdir}/usr/share/doc/liboz
+
   install -Dm644 ../openzone/etc/liboz/COPYING ${pkgdir}/usr/share/licenses/liboz/COPYING
 }
 
-package_openzone-bin()
+package_openzone()
 {
-  pkgdesc='Simple cross-platform FPS/RTS game engine'
-  depends=('freeimage' 'libgl' 'liboz' 'lua' 'openal' 'sdl_ttf')
+  pkgdesc='Simple cross-platform FPS/RTS game'
+  depends=('freeimage' 'libgl' 'liboz' 'lua' 'openal' 'sdl_ttf' 'openzone-data')
 
   cd ${srcdir}/build
 
-  cmake \
-    -DOZ_INSTALL_LIBOZ=0 \
-    -DOZ_INSTALL_CLIENT=1 \
-    -DOZ_INSTALL_TOOLS=1 \
-    -DOZ_INSTALL_MENU=1 \
-    -DOZ_INSTALL_STANDALONE=0 \
-    ${srcdir}/openzone
-
   make install DESTDIR=${pkgdir}
+
+  rm -rf ${pkgdir}/usr/{include,lib,lib64}
 
   install -Dm644 ../ozbase.zip ${pkgdir}/usr/share/openzone/ozbase.zip
   install -Dm644 ../openzone/AUTHORS ${pkgdir}/usr/share/doc/openzone/AUTHORS
@@ -90,9 +78,11 @@ package_openzone-data()
   install -Dm644 ${srcdir}/openzone.zip ${pkgdir}/usr/share/openzone/openzone.zip
 }
 
-package_openzone()
+package_openzone-doc()
 {
-  pkgdesc='Simple cross-platform FPS/RTS game'
-  depends=('openzone-bin' 'openzone-data')
+  pkgdesc='OpenZone game data'
   arch=('any')
+
+  mkdir -p ${pkgdir}/usr/share/doc/openzone
+  cp -r ${srcdir}/openzone/doc/doxygen/html ${pkgdir}/usr/share/doc/openzone
 }
