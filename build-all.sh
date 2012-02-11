@@ -80,7 +80,7 @@ echo ----------------------------------------------------------------
 
 mkdir -p Windows-i686
 ( cd Windows-i686 && cmake .. \
-  -DCMAKE_TOOLCHAIN_FILE=../cmake/MinGW32-Toolchain.cmake )
+  -DCMAKE_TOOLCHAIN_FILE=../cmake/mingw32.toolchain.cmake )
 ( cd Windows-i686 && time make -j4 )
 
 echo ----------------------------------------------------------------
@@ -97,7 +97,7 @@ echo ----------------------------------------------------------------
 
 mkdir -p Android-i686
 ( cd Android-i686 && cmake .. \
-  -DCMAKE_TOOLCHAIN_FILE=../cmake/AndroidX86-Toolchain.cmake )
+  -DCMAKE_TOOLCHAIN_FILE=../cmake/android-x86.toolchain.cmake )
 ( cd Android-i686 && time make -j4 )
 
 echo ----------------------------------------------------------------
@@ -114,7 +114,7 @@ echo ----------------------------------------------------------------
 
 mkdir -p Android-ARM
 ( cd Android-ARM && cmake .. \
-  -DCMAKE_TOOLCHAIN_FILE=../cmake/AndroidARM-Toolchain.cmake )
+  -DCMAKE_TOOLCHAIN_FILE=../cmake/android-arm.toolchain.cmake )
 ( cd Android-ARM && time make -j4 )
 
 echo ----------------------------------------------------------------

@@ -10,7 +10,7 @@ for cpu in $cpus; do
   sudo cpufreq-set -c $cpu -g powersave
 done
 
-$1/src/client/openzone -L -t 60
+$1/src/client/openzone -i test -t 60
 
 for cpu in $cpus; do
   sudo cpufreq-set -c $cpu -g ondemand

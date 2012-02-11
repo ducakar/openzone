@@ -43,15 +43,17 @@ class System
 {
   public:
 
-    /// Wait for a CTRL-C in <tt>abort()</tt>, so one has time to attach debugger.
+    /// Wait for CTRL-C (or other fatal signal) in <tt>abort()</tt>, so one has time to attach a
+    /// debugger.
     static const int HALT_BIT = 0x01;
 
-    /// Catch fatal signals (SIGINT, SIGILL, SIGABRT, SIGFPE, SIGSEGV, SIGTERM and SIGQUIT), print
-    /// diagnostics and abort program.
+    /// Catch fatal signals (SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon which show diagnostics and
+    /// abort the program (similar to <tt>error()</tt> call).
     static const int SIGNAL_HANDLER_BIT = 0x10;
 
     /// Override handlers for exception violations (<tt>std::terminate()</tt> and
-    /// <tt>std::unexpected()</tt>).
+    /// <tt>std::unexpected()</tt>) with handlers that print diagnostics and abort the program via
+    /// <tt>error()</tt> call.
     static const int EXCEPTION_HANDLERS_BIT = 0x20;
 
     /// Handlers bitmask.
@@ -120,8 +122,8 @@ class System
     /**
      * Initialise <tt>System</tt> features.
      *
-     * Set-up crash handler for cases specified in <tt>flags</tt>. If <tt>HALT_BIT</tt> is also
-     * given, crash handler waits for CTRL-C before exit.
+     * Set-up crash handlers for cases specified in <tt>flags</tt>. If <tt>HALT_BIT</tt> is also
+     * given, crash handlers wait for CTRL-C before exit.
      */
 #ifdef NDEBUG
     static void init( int flags = HANDLERS_MASK );

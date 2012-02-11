@@ -239,7 +239,7 @@ endif()
 
 # icons
 if( NOT OZ_INSTALL_STANDALONE )
-#   install( DIRECTORY share/applications share/pixmaps DESTINATION share )
+  install( DIRECTORY share/applications share/pixmaps DESTINATION share )
 endif()
 
 # libraries and launchers for standalone package

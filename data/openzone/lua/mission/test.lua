@@ -37,21 +37,14 @@ function onCreate()
   ozCaelumSetTime( 180 )
 
   ozCameraWarpTo( 141.0, -12.0, 84.75 )
-  ozCameraSetV( 30.0 )
+  ozCameraSetV( 35.0 )
 
   local me = ozOrbisAddObj( "beast", 137, -6, 73, OZ_SOUTH )
   ozBotSetName( ozProfileGetPlayerName() )
   ozBotSetMindFunc( "" )
   ozObjRemoveItem( 3 );
   ozObjRemoveItem( 2 );
-
-  local myGalileo = ozOrbisAddObj( "galileo", 0, 0, 0 )
-  ozObjBindIndex( me )
-  ozObjAddItem( myGalileo )
-
-  local myGoggles = ozOrbisAddObj( "nvGoggles", 0, 0, 0 )
-  ozObjBindIndex( me )
-  ozObjAddItem( myGoggles )
+  ozObjRemoveItem( 1 );
 
   init_sample()
 
@@ -71,14 +64,15 @@ function init_sample()
 
 --   ozOrbisAddObj( "reaper", 145, -15, 73 )
 
-  ozOrbisAddObj( "musicPlayer", 135, -2, 73 )
-  ozOrbisAddObj( "galileo", 136, -2, 73 )
-  ozOrbisAddObj( "cvicek", 135, -3, 73 )
-  ozOrbisAddObj( "firstAid", 136, -3, 73 )
-  ozOrbisAddObj( "bomb", 137, -3, 73 )
-  ozOrbisAddObj( "droid_weapon.hyperblaster", 135, -4, 73 )
-  ozOrbisAddObj( "droid_weapon.chaingun", 136, -4, 73 )
-  ozOrbisAddObj( "droid_weapon.grenadeLauncher", 137, -4, 73 )
+  ozOrbisAddObj( "musicPlayer", 135, -4, 73 )
+  ozOrbisAddObj( "galileo", 136, -4, 73 )
+  ozOrbisAddObj( "nvGoggles", 137, -4, 73 )
+  ozOrbisAddObj( "cvicek", 135, -2, 73 )
+  ozOrbisAddObj( "firstAid", 136, -2, 73 )
+  ozOrbisAddObj( "bomb", 137, -2, 73 )
+  ozOrbisAddObj( "droid_weapon.hyperblaster", 135, -3, 73 )
+  ozOrbisAddObj( "droid_weapon.chaingun", 136, -3, 73 )
+  ozOrbisAddObj( "droid_weapon.grenadeLauncher", 137, -3, 73 )
 
   ozOrbisAddObj( "raptor", 155, -30, 71 )
   ozOrbisAddObj( "hoverTank", 145, -30, 71 )

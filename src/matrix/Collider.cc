@@ -1005,10 +1005,7 @@ bool Collider::overlapsOO( const Entity* entity_, float margin_ )
   model  = entity_->model;
   margin = margin_;
 
-  Bounds bounds = Bounds( model->mins - Vec3( margin, margin, margin ) + entity->offset,
-                          model->maxs + Vec3( margin, margin, margin ) + entity->offset );
-
-  trace = str->toAbsoluteCS( bounds );
+  trace = Bounds( str->toAbsoluteCS( *model + entity->offset ), 4.0f * EPSILON + margin );
   span = orbis.getInters( trace, Object::MAX_DIM );
 
   return overlapsEntityOrbisOO();
@@ -1023,14 +1020,14 @@ bool Collider::overlapsEntity( const AABB& aabb_, const Entity* entity_, float m
   model  = entity_->model;
   margin = margin_;
 
-  trace = Bounds( aabb, 4.0f * EPSILON );
+  trace = Bounds( aabb, 4.0f * EPSILON + margin );
   span = orbis.getInters( trace );
 
   return overlapsAABBEntity();
 }
 
-void Collider::getOverlaps( const AABB& aabb_, Vector<Object*>* objects,
-                            Vector<Struct*>* structs, float eps )
+void Collider::getOverlaps( const AABB& aabb_, Vector<Object*>* objects, Vector<Struct*>* structs,
+                            float eps )
 {
   aabb   = aabb_;
   exclObj = null;
@@ -1071,10 +1068,7 @@ void Collider::getOverlaps( const Entity* entity_, Vector<Object*>* objects, flo
   model  = entity_->model;
   margin = margin_;
 
-  Bounds bounds = Bounds( model->mins - Vec3( margin, margin, margin ) + entity->offset,
-                          model->maxs + Vec3( margin, margin, margin ) + entity->offset );
-
-  trace = str->toAbsoluteCS( bounds );
+  trace = Bounds( str->toAbsoluteCS( *model + entity->offset ), 4.0f * EPSILON + margin );
   span = orbis.getInters( trace, Object::MAX_DIM );
 
   getEntityOverlaps( objects );
