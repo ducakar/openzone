@@ -73,13 +73,12 @@ namespace oz
 /**
  * Margin for collision detection.
  *
- * 2 mm should do for a 4 km x 4 km world. It must be big enough to cover rounding errors in
- * <tt>Collider</tt> (hence <tt>max world coordinate * 4.0 * Math::FLOAT_EPS</tt>) and doubled
- * because we use half of EPSILON in BSP entity handlers.
+ * 8 * max_rounding_error per kilometre should do. Hence max_world_coord * 4 * Math::FLOAT_EPS,
+ * since max_rounding_error = Math::FLOAT_EPS / 2.
  *
  * @ingroup common
  */
-const float EPSILON = 2.0f * 2048.0f * 4.0f * Math::FLOAT_EPS;
+const float EPSILON = 2048.0f * 4.0f * Math::FLOAT_EPS;
 
 /**
  * Lua C API.

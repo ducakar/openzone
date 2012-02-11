@@ -82,14 +82,20 @@ MD2::~MD2()
 
 void MD2::setAnim( AnimState* anim, Anim type )
 {
+  bool isWalkRunToggle = ( anim->type == ANIM_WALK && type == ANIM_RUN ) ||
+                         ( anim->type == ANIM_RUN && type == ANIM_WALK );
+
   anim->type       = type;
   anim->nextAnim   = MD2::ANIM_LIST[type].nextAnim;
   anim->firstFrame = MD2::ANIM_LIST[type].firstFrame;
   anim->lastFrame  = MD2::ANIM_LIST[type].lastFrame;
-  anim->nextFrame  = anim->firstFrame == anim->lastFrame ? anim->firstFrame : anim->firstFrame + 1;
   anim->fps        = MD2::ANIM_LIST[type].fps;
   anim->frameTime  = 1.0f / anim->fps;
-  anim->currTime   = 0.0f;
+
+  if( !isWalkRunToggle ) {
+    anim->nextFrame = anim->firstFrame == anim->lastFrame ? anim->firstFrame : anim->firstFrame + 1;
+    anim->currTime  = 0.0f;
+  }
 }
 
 void MD2::advance( AnimState* anim, float dt ) const

@@ -30,5 +30,10 @@ void main()
   vec4  diff    = oz_Colour - oz_Fog.colour;
   vec4  disturb = vec4( sin( exPosition * 100.0 ) * 0.1, 0.0 ) * dot( diff, diff );
 
-  gl_FragData[0] = mix( oz_Colour + disturb, oz_Fog.colour, dist );
+  if( oz_NightVision ) {
+    gl_FragData[0] = mix( vec4( 0.0, 1.0, 0.0, 1.0 ), oz_Fog.colour, dist );
+  }
+  else {
+    gl_FragData[0] = mix( oz_Colour + disturb, oz_Fog.colour, dist );
+  }
 }

@@ -10,6 +10,9 @@ for file in $rel_files; do
   files="$files $topdir_name/$file"
 done
 
+files="$files $topdir_name/share/applications"
+files="$files $topdir_name/share/pixmaps"
+
 echo Packing openzone-src-$version.tar.xz
 tar Jcf $topdir_name/openzone-src-$version.tar.xz $files
 

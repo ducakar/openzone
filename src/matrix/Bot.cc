@@ -315,8 +315,11 @@ void Bot::onUpdate()
     if( move != Vec3::ZERO ) {
       flags &= ~DISABLED_BIT;
       state |= MOVING_BIT;
-
       move = ~move;
+
+      if( state & RUNNING_BIT ) {
+        stamina -= clazz->staminaRunDrain;
+      }
 
       /*
        * Ledge climbing
@@ -493,10 +496,6 @@ void Bot::onUpdate()
       }
 
       momentum += desiredMomentum;
-
-      if( ( state & RUNNING_BIT ) && ( state & ( GROUNDED_BIT | SWIMMING_BIT | CLIMBING_BIT ) ) ) {
-        stamina -= clazz->staminaRunDrain;
-      }
     }
 
     /*

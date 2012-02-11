@@ -151,7 +151,7 @@ void Entity::manualDoorHandler()
     case CLOSING: {
       offset = Vec3::ZERO;
 
-      if( collider.overlapsOO( this, EPSILON ) ) {
+      if( collider.overlapsOO( this ) ) {
         offset = ratio * model->move;
 
         if( ratio == 1.0f ) {
@@ -319,7 +319,7 @@ void Entity::crushingBlockHandler()
       offset = ratio * model->move;
 
       Struct::overlappingObjs.clear();
-      collider.getOverlaps( this, &Struct::overlappingObjs, 0.5f * EPSILON );
+      collider.getOverlaps( this, &Struct::overlappingObjs );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
         move = offset - move + 4.0f*EPSILON * ~model->move;
@@ -372,7 +372,7 @@ void Entity::crushingBlockHandler()
       offset = ratio * model->move;
 
       Struct::overlappingObjs.clear();
-      collider.getOverlaps( this, &Struct::overlappingObjs, 0.5f * EPSILON );
+      collider.getOverlaps( this, &Struct::overlappingObjs );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
         move = offset - move - 4.0f*EPSILON * ~model->move;
@@ -431,7 +431,7 @@ void Entity::elevatorHandler()
       offset = ratio * model->move;
 
       Struct::overlappingObjs.clear();
-      collider.getOverlaps( this, &Struct::overlappingObjs, 0.5f * EPSILON );
+      collider.getOverlaps( this, &Struct::overlappingObjs );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
         move = offset - move + EPSILON * ~model->move;
@@ -482,7 +482,7 @@ void Entity::elevatorHandler()
       offset = ratio * model->move;
 
       Struct::overlappingObjs.clear();
-      collider.getOverlaps( this, &Struct::overlappingObjs, 0.5f * EPSILON );
+      collider.getOverlaps( this, &Struct::overlappingObjs );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
         move = offset - move - EPSILON * ~model->move;

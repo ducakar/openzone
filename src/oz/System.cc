@@ -138,15 +138,10 @@ static int initFlags = 0;
 
 static void resetSignals()
 {
-  signal( SIGINT,  SIG_DFL );
   signal( SIGILL,  SIG_DFL );
   signal( SIGABRT, SIG_DFL );
   signal( SIGFPE,  SIG_DFL );
   signal( SIGSEGV, SIG_DFL );
-  signal( SIGTERM, SIG_DFL );
-#ifndef _WIN32
-  signal( SIGQUIT, SIG_DFL );
-#endif
 }
 
 static void signalHandler( int signum )
@@ -169,15 +164,10 @@ static void signalHandler( int signum )
 
 static void catchSignals()
 {
-  signal( SIGINT,  signalHandler );
   signal( SIGILL,  signalHandler );
   signal( SIGABRT, signalHandler );
   signal( SIGFPE,  signalHandler );
   signal( SIGSEGV, signalHandler );
-  signal( SIGTERM, signalHandler );
-#ifndef _WIN32
-  signal( SIGQUIT, signalHandler );
-#endif
 }
 
 static void terminate()
@@ -224,6 +214,17 @@ static void* bellThread( void* )
 
 #endif
 
+static void waitBell()
+{
+  while( nBellUsers != 0 ) {
+#ifdef _WIN32
+    Sleep( 100 );
+#else
+    usleep( 100000 );
+#endif
+  }
+}
+
 System::System()
 {
 #ifdef _WIN32
@@ -236,13 +237,7 @@ System::System()
 
 System::~System()
 {
-  while( nBellUsers != 0 ) {
-#ifdef _WIN32
-    Sleep( 100 );
-#else
-    usleep( 100000 );
-#endif
-  }
+  waitBell();
 
 #ifdef _WIN32
   DeleteCriticalSection( &mutex );
@@ -252,9 +247,6 @@ System::~System()
 void System::abort( bool preventHalt )
 {
   resetSignals();
-
-  // Wait until bell is played completely.
-  system.~System();
 
   if( !preventHalt && ( initFlags & HALT_BIT ) ) {
     printf( "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
@@ -267,6 +259,8 @@ void System::abort( bool preventHalt )
     while( sleep( 1 ) == 0 );
 #endif
   }
+
+  waitBell();
 
   ::abort();
 }

@@ -9,7 +9,6 @@
 version="0.2.80"
 
 components="oz common matrix nirvana modules client build"
-conf_files="etc/liboz/liboz.spec etc/openzone.spec"
 
 for component in $components; do
   echo Generating src/$component/CMakeLists.txt
@@ -17,17 +16,14 @@ for component in $components; do
 done
 
 # Fix versions in various files
-for file in $conf_files; do
-  echo Updating versions in $file
-  sed "s/^\(Version: *\).*$/\1$version/g" -i $file
-done
-
-echo Updating PKGBUILD
-sed "s/^\(pkgver=*\).*$/\1$version/g" -i etc/PKGBUILD
-sed "s/^\(_dataver=*\).*$/\1$version/g" -i etc/PKGBUILD
-
-echo Updating version in Doxygen
-sed "s/\(PROJECT_NUMBER *= \).*$/\1$version/" -i etc/liboz/Doxyfile etc/Doxyfile
-
 echo Updating version in CMakeLists.txt
 sed "s/^set( OZ_APPLICATION_VERSION .*$/set( OZ_APPLICATION_VERSION \"$version\" CACHE STRING \"\" FORCE )/" -i CMakeLists.txt
+
+echo Updating version in Doxyfiles
+sed "s/\(PROJECT_NUMBER *= \).*$/\1$version/" -i etc/liboz/Doxyfile etc/Doxyfile
+
+echo Updating version in openzone.spec
+sed "s/^\(Version: *\).*$/\1$version/g" -i etc/openzone.spec
+
+echo Updating version in PKGBUILD
+sed "s/^\(pkgver=*\).*$/\1$version/g" -i etc/PKGBUILD

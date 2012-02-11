@@ -253,7 +253,7 @@ int Client::main( int argc, char** argv )
   log.printTime();
   log.printEnd();
 
-  if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO ) != 0 ) {
+  if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
     throw Exception( "Failed to initialise SDL" );
   }
   initFlags |= INIT_SDL;
@@ -529,6 +529,7 @@ int Client::main( int argc, char** argv )
           break;
         }
         case SDL_QUIT: {
+          log.println( "Terminal signal or quit event received, exiting ..." );
           isAlive = false;
           break;
         }
