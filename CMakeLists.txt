@@ -134,10 +134,6 @@ include_directories( ${MAD_INCLUDE_DIR} )
 include_directories( ${FAAD_INCLUDE_DIR} )
 
 if( WIN32 )
-  include_directories( ./include )
-endif()
-
-if( WIN32 )
   set( libs_oz "${WINMM_LIBRARY};${PHYSFS_LIBRARY}" )
 else()
   set( libs_oz "${RT_LIBRARY};${PTHREAD_LIBRARY};${PULSESIMPLE_LIBRARY};${PHYSFS_LIBRARY}" )
@@ -221,20 +217,20 @@ string( STRIP "${OZ_EXE_LINKER_FLAGS}" OZ_EXE_LINKER_FLAGS )
 add_subdirectory( src )
 
 #
+# Documentation
+#
+
+add_subdirectory( doc )
+
+#
 # Data files
 #
 
-# liboz
-configure_file( etc/liboz/liboz.pc.in etc/liboz/liboz.pc )
-
-install( FILES ${CMAKE_BINARY_DIR}/etc/liboz/liboz.pc COMPONENT liboz
-  DESTINATION lib${OZ_LIB_SUFFIX}/pkgconfig )
-
 # info files and documentation
 if( WIN32 OR OZ_INSTALL_STANDALONE )
-  file( GLOB files README.* )
-  install( FILES COPYING README ${files} DESTINATION . )
-  install( FILES doc/doxygen/html DESTINATION doc/doxygen )
+  file( GLOB readmes README* )
+  install( FILES AUTHORS COPYING ${readmes} ChangeLog DESTINATION . )
+  install( DIRECTORY doc/doxygen/html/ COMPONENT documentation DESTINATION doc/doxygen )
 endif()
 
 # icons
@@ -244,8 +240,8 @@ endif()
 
 # libraries and launchers for standalone package
 if( OZ_INSTALL_STANDALONE )
-  install( DIRECTORY support/${OZ_SYSTEM_NAME}-client/ COMPONENT client DESTINATION . )
-  install( DIRECTORY support/${OZ_SYSTEM_NAME}-tools/ COMPONENT tools DESTINATION . )
+#   install( DIRECTORY support/${OZ_SYSTEM_NAME}-client/ COMPONENT client DESTINATION . )
+#   install( DIRECTORY support/${OZ_SYSTEM_NAME}-tools/ COMPONENT tools DESTINATION . )
 
   if( WIN32 )
     install( FILES support/oalinst.exe support/openzone.bat COMPONENT client DESTINATION . )

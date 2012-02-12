@@ -136,9 +136,9 @@ void BotClass::initClass( const Config* config )
   bobAmplitude      = config->get( "bobAmplitude", 0.02f );
   bobSwimAmplitude  = config->get( "bobSwimAmplitude", 0.05f );
 
-  walkMomentum      = config->get( "walkMomentum", 1.0f );
-  runMomentum       = config->get( "runMomentum", 2.0f );
-  crouchMomentum    = config->get( "crouchMomentum", 0.7f );
+  walkMomentum      = config->get( "walkMomentum", 1.2f );
+  runMomentum       = config->get( "runMomentum", 2.4f );
+  crouchMomentum    = config->get( "crouchMomentum", 1.2f );
   jumpMomentum      = config->get( "jumpMomentum", 5.0f );
 
   airControl        = config->get( "airControl", 0.025f );

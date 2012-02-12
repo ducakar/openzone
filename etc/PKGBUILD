@@ -16,12 +16,10 @@ md5sums=()
 
 build()
 {
-  ( cd ${srcdir}/openzone && doxygen etc/liboz/Doxyfile )
-  ( cd ${srcdir}/openzone && doxygen etc/Doxyfile )
-
   mkdir -p ${srcdir}/build && cd ${srcdir}/build
 
-  cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo ${srcdir}/openzone
+  cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo ../openzone
+  make doc
   make
 }
 

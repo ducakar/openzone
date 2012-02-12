@@ -19,11 +19,11 @@ done
 echo Updating version in CMakeLists.txt
 sed "s/^set( OZ_APPLICATION_VERSION .*$/set( OZ_APPLICATION_VERSION \"$version\" CACHE STRING \"\" FORCE )/" -i CMakeLists.txt
 
-echo Updating version in Doxyfiles
-sed "s/\(PROJECT_NUMBER *= \).*$/\1$version/" -i etc/liboz/Doxyfile etc/Doxyfile
+echo Updating version in doc/Doxyfiles.liboz and doc/Doxyfile
+sed "s/\(PROJECT_NUMBER *= \).*$/\1$version/" -i doc/Doxyfile.liboz doc/Doxyfile
 
-echo Updating version in openzone.spec
+echo Updating version in etc/openzone.spec
 sed "s/^\(Version: *\).*$/\1$version/g" -i etc/openzone.spec
 
-echo Updating version in PKGBUILD
+echo Updating version in etc/PKGBUILD
 sed "s/^\(pkgver=*\).*$/\1$version/g" -i etc/PKGBUILD

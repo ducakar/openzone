@@ -88,37 +88,37 @@ echo
 echo                           Windows-i686
 echo
 echo ================================================================
-echo
-echo ================================================================
-echo
-echo                           Android-i686
-echo
-echo ----------------------------------------------------------------
-
-mkdir -p Android-i686
-( cd Android-i686 && cmake .. \
-  -DCMAKE_TOOLCHAIN_FILE=../cmake/android-x86.toolchain.cmake )
-( cd Android-i686 && time make -j4 )
-
-echo ----------------------------------------------------------------
-echo
-echo                           Android-i686
-echo
-echo ================================================================
-echo
-echo ================================================================
-echo
-echo                           Android-ARM
-echo
-echo ----------------------------------------------------------------
-
-mkdir -p Android-ARM
-( cd Android-ARM && cmake .. \
-  -DCMAKE_TOOLCHAIN_FILE=../cmake/android-arm.toolchain.cmake )
-( cd Android-ARM && time make -j4 )
-
-echo ----------------------------------------------------------------
-echo
-echo                           Android-ARM
-echo
-echo ================================================================
+# echo
+# echo ================================================================
+# echo
+# echo                           Android-i686
+# echo
+# echo ----------------------------------------------------------------
+#
+# mkdir -p Android-i686
+# ( cd Android-i686 && cmake .. \
+#   -DCMAKE_TOOLCHAIN_FILE=../cmake/android-x86.toolchain.cmake )
+# ( cd Android-i686 && time make -j4 )
+#
+# echo ----------------------------------------------------------------
+# echo
+# echo                           Android-i686
+# echo
+# echo ================================================================
+# echo
+# echo ================================================================
+# echo
+# echo                           Android-ARM
+# echo
+# echo ----------------------------------------------------------------
+#
+# mkdir -p Android-ARM
+# ( cd Android-ARM && cmake .. \
+#   -DCMAKE_TOOLCHAIN_FILE=../cmake/android-arm.toolchain.cmake )
+# ( cd Android-ARM && time make -j4 )
+#
+# echo ----------------------------------------------------------------
+# echo
+# echo                           Android-ARM
+# echo
+# echo ================================================================
