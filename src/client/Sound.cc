@@ -152,13 +152,13 @@ void Sound::musicOpen( const char* path )
       }
 
       if( ov_open_callbacks( musicFile, &oggStream, null, 0, VORBIS_CALLBACKS ) < 0 ) {
-        throw Exception( "Failed to open Ogg stream" );
+        throw Exception( "Failed to open Ogg stream in '%s'", path );
       }
 
       vorbis_info* vorbisInfo = ov_info( &oggStream, -1 );
 
       if( vorbisInfo == null ) {
-        throw Exception( "Failed to read Vorbis header" );
+        throw Exception( "Failed to read Vorbis header in '%s'", path );
       }
 
       musicRate = int( vorbisInfo->rate );
@@ -171,7 +171,7 @@ void Sound::musicOpen( const char* path )
         musicFormat = AL_FORMAT_STEREO16;
       }
       else {
-        throw Exception( "Invalid number of channels, should be 1 or 2" );
+        throw Exception( "Invalid number of channels in '%s', should be 1 or 2", path );
       }
 
       break;
@@ -189,14 +189,14 @@ void Sound::musicOpen( const char* path )
       size_t readSize = size_t( PHYSFS_read( musicFile, musicInputBuffer,
                                              1, MUSIC_INPUT_BUFFER_SIZE ) );
       if( readSize != size_t( MUSIC_INPUT_BUFFER_SIZE ) ) {
-        throw Exception( "Failed to read MP3 stream" );
+        throw Exception( "Failed to read MP3 stream in '%s'", path );
       }
 
       mad_stream_buffer( &madStream, musicInputBuffer, MUSIC_INPUT_BUFFER_SIZE );
 
       while( mad_frame_decode( &madFrame, &madStream ) != 0 ) {
         if( !MAD_RECOVERABLE( madStream.error ) ) {
-          throw Exception( "Failed to decode MP3 header" );
+          throw Exception( "Failed to decode MP3 header in '%s'", path );
         }
       }
 
@@ -215,7 +215,7 @@ void Sound::musicOpen( const char* path )
         musicFormat = AL_FORMAT_STEREO16;
       }
       else {
-        throw Exception( "Invalid number of channels, should be 1 or 2" );
+        throw Exception( "Invalid number of channels in '%s', should be 1 or 2", path );
       }
 
       break;
@@ -231,7 +231,7 @@ void Sound::musicOpen( const char* path )
       size_t readSize = size_t( PHYSFS_read( musicFile, musicInputBuffer,
                                              1, MUSIC_INPUT_BUFFER_SIZE ) );
       if( readSize != size_t( MUSIC_INPUT_BUFFER_SIZE ) ) {
-        throw Exception( "Failed to read AAC stream" );
+        throw Exception( "Failed to read AAC stream in '%s'", path );
       }
 
       ulong aacRate;
@@ -240,7 +240,7 @@ void Sound::musicOpen( const char* path )
       long skipBytes = NeAACDecInit( aacDecoder, musicInputBuffer, MUSIC_INPUT_BUFFER_SIZE,
                                      &aacRate, &aacChannels );
       if( skipBytes < 0 ) {
-        throw Exception( "Failed to decode AAC header" );
+        throw Exception( "Failed to decode AAC header in '%s'", path );
       }
 
       memmove( musicInputBuffer, musicInputBuffer + skipBytes, size_t( skipBytes ) );
@@ -250,7 +250,7 @@ void Sound::musicOpen( const char* path )
                                       1, uint( skipBytes ) ) );
 
       if( readSize != size_t( skipBytes ) ) {
-        throw Exception( "Failed to read AAC stream" );
+        throw Exception( "Failed to read AAC stream in '%s'", path );
       }
 
       aacBufferBytes  = 0;
@@ -267,7 +267,7 @@ void Sound::musicOpen( const char* path )
         musicFormat = AL_FORMAT_STEREO16;
       }
       else {
-        throw Exception( "Invalid number of channels, should be 1 or 2" );
+        throw Exception( "Invalid number of channels in '%s', should be 1 or 2", path );
       }
 
       break;
@@ -321,7 +321,8 @@ int Sound::musicDecode()
         bytesRead += result;
 
         if( result < 0 ) {
-          throw Exception( "Error during Ogg Vorbis decoding" );
+          throw Exception( "Error during Ogg Vorbis decoding of '%s'",
+                           library.musics[streamedTrack].path.cstr() );
         }
       }
       while( result > 0 && bytesRead < MUSIC_BUFFER_SIZE );
@@ -375,7 +376,8 @@ int Sound::musicDecode()
             mad_stream_buffer( &madStream, musicInputBuffer, bytesLeft + bytesRead );
           }
           else if( !MAD_RECOVERABLE( madStream.error ) ) {
-            throw Exception( "Unrecoverable error during MP3 decoding" );
+            throw Exception( "Unrecoverable error during MP3 decoding of '%s'",
+                             library.musics[streamedTrack].path.cstr() );
           }
         }
 

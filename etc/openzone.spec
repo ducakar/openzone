@@ -85,12 +85,10 @@ concepts and algorithms used in the engine.
 %setup -q -b 1 -b 2 -n openzone
 
 %build
-doxygen etc/liboz/Doxyfile
-doxygen etc/Doxyfile
-
 mkdir -p build && cd build
 
 cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+make %{?_smp_mflags} doc
 make %{?_smp_mflags}
 
 %install
@@ -108,14 +106,14 @@ install -Dm644 %{_builddir}/openzone.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/op
 %files -n liboz
 %defattr(-, root, root)
 %{_libdir}/liboz.so*
-%doc AUTHORS etc/liboz/COPYING
+%doc AUTHORS src/oz/COPYING
 
 %files -n liboz-devel
 %defattr(-, root, root)
 %{_includedir}/oz
 %{_libdir}/pkgconfig
-%doc AUTHORS etc/liboz/COPYING
-%doc doc/doxygen-liboz/html
+%doc AUTHORS src/oz/COPYING
+%doc doc/doxygen.liboz/html
 
 %files client
 %defattr(-, root, root)

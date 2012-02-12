@@ -138,6 +138,7 @@ static int initFlags = 0;
 
 static void resetSignals()
 {
+  signal( SIGINT,  SIG_DFL );
   signal( SIGILL,  SIG_DFL );
   signal( SIGABRT, SIG_DFL );
   signal( SIGFPE,  SIG_DFL );
@@ -164,6 +165,7 @@ static void signalHandler( int signum )
 
 static void catchSignals()
 {
+  signal( SIGINT,  signalHandler );
   signal( SIGILL,  signalHandler );
   signal( SIGABRT, signalHandler );
   signal( SIGFPE,  signalHandler );
