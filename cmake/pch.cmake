@@ -1,12 +1,10 @@
 # Author: Davorin Učakar <davorin.ucakar@gmail.com>
 
 # add_pch( target_name stable.h stable.c )
-# where:
-#        - stable.h is a header that should be precompiled
-#        - stable.c is a dummy module that contains only directive to include stable.h (it is only
+# where: - stable.h is a header that should be precompiled
+#        - stable.c is a dummy module that contains only directive to include stable.h (it is
 #          required for proper dependency resolution to trigger recompilation of PCH)
-# Notes: - Fails if the source directory is used as the build directory.
-#        - Only works for GCC and compatible compilers (e.g. LLVM/Clang).
+# Notes: - Only works for GCC and compatible compilers (e.g. LLVM/Clang).
 #        - Compiler flags are retrieved from CMAKE_CXX_FLAGS and CMAKE_CXX_FLAGS_BUILDTYPE.
 #          Include directories added via include_directories and defines added via add_definitions
 #          are also added to compiler flags.
@@ -31,17 +29,15 @@ macro( add_pch _targetName _inputHeader _triggerModule )
   endforeach()
 
   # helper target that properly triggers recompilation of precompiled header
-  add_library( ${_targetName}_trigger STATIC ${_triggerModule} )
+  add_library( ${_targetName}_trigger STATIC "${_triggerModule}" )
 
   # set build rules (build precompiled header and copy original header to the build folder - needs
   # to be there to be included via other headers - which is needed for KDevelop's indexer to work
   # properly)
   add_custom_command( OUTPUT "${_inputHeader}.gch"
     DEPENDS ${_targetName}_trigger
-    COMMAND ${CMAKE_COMMAND} -E remove -f "${_inputHeader}" "${_inputHeader}.gch"
-    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" "${_inputHeader}"
+    COMMAND ${CMAKE_COMMAND} -E remove -f "${_inputHeader}.gch"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" "${_inputHeader}"
     COMMAND ${CMAKE_CXX_COMPILER} ${_flags} -o "${_inputHeader}.gch" "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" )
-  add_custom_target( ${_targetName}
-    SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}"
-    DEPENDS "${_inputHeader}.gch" )
+  add_custom_target( ${_targetName} DEPENDS "${_inputHeader}.gch" )
 endmacro()

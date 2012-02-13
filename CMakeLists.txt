@@ -1,9 +1,5 @@
 cmake_minimum_required( VERSION 2.8 )
 
-if( "${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}" )
-  message( FATAL_ERROR "You should not build in your source directory! (You may now safely delete 'CMakeFiles/' and 'CMakeCache.txt'.)" )
-endif()
-
 project( openzone C CXX )
 
 #
@@ -69,12 +65,12 @@ else()
   mark_as_advanced( PULSESIMPLE_LIBRARY )
 endif()
 
-Find_Package( PhysFS REQUIRED )
-Find_Package( SDL REQUIRED )
-Find_Package( SDL_ttf REQUIRED )
-Find_Package( Lua51 REQUIRED )
-Find_Package( OpenGL REQUIRED )
-Find_Package( OpenAL REQUIRED )
+find_package( PhysFS REQUIRED )
+find_package( SDL REQUIRED )
+find_package( SDL_ttf REQUIRED )
+find_package( Lua51 REQUIRED )
+find_package( OpenGL REQUIRED )
+find_package( OpenAL REQUIRED )
 
 if( NOT DEFINED FREEIMAGE_INCLUDE_DIR )
   set( FREEIMAGE_INCLUDE_DIR "" CACHE PATH "" FORCE )
