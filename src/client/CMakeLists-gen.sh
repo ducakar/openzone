@@ -1,7 +1,7 @@
 #!/bin/sh
 
 cat << EOF > CMakeLists.txt
-add_library( client STATIC `LC_COLLATE=C echo *.cc ui/*.cc` )
+add_library( client STATIC `echo *.cc ui/*.cc` )
 add_dependencies( client pch )
 
 add_executable( openzone openzone/openzone.cc )

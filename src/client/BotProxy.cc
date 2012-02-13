@@ -38,7 +38,7 @@ const float BotProxy::EXTERNAL_CAM_CLIP_DIST = 0.10f;
 const float BotProxy::SHOULDER_CAM_RIGHT     = 0.25f;
 const float BotProxy::SHOULDER_CAM_UP        = 0.25f;
 const float BotProxy::VEHICLE_CAM_UP_FACTOR  = 0.15f;
-const float BotProxy::BOB_SUPPRESSION_COEF   = 0.60f;
+const float BotProxy::BOB_SUPPRESSION_COEF   = 0.80f;
 
 BotProxy::BotProxy() :
   hud( null ), infoFrame( null ), inventory( null ), container( null )
@@ -352,7 +352,8 @@ void BotProxy::prepare()
     return;
   }
 
-  const Bot* bot = camera.botObj;
+  const Bot*      bot   = camera.botObj;
+  const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
   if( !isExternal ) {
     if( !isFreelook ) {
@@ -373,7 +374,11 @@ void BotProxy::prepare()
       bobBias  = 0.0f;
     }
     else { // 1st person, not in vehicle
-      const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
+      if( ( bot->actions & Bot::ACTION_JUMP ) &&
+          !( bot->state & ( Bot::GROUNDED_BIT | Bot::CLIMBING_BIT ) ) )
+      {
+        goto inJump;
+      }
 
       if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
           Bot::MOVING_BIT )
@@ -398,6 +403,7 @@ void BotProxy::prepare()
         bobBias  = Math::sin( 2.0f * bobPhi ) * clazz->bobSwimAmplitude;
       }
       else {
+      inJump:
         bobPhi   = 0.0f;
         bobTheta *= BOB_SUPPRESSION_COEF;
         bobBias  *= BOB_SUPPRESSION_COEF;
@@ -410,14 +416,14 @@ void BotProxy::prepare()
     }
   }
   else { // external
-    bobPhi   = 0.0f;
-    bobTheta = 0.0f;
-    bobBias  = 0.0f;
-
     if( !isFreelook ) {
       camera.h = bot->h;
       camera.v = bot->v;
     }
+
+    bobPhi   = 0.0f;
+    bobTheta = 0.0f;
+    bobBias  = 0.0f;
 
     camera.w = 0.0f;
     camera.align();
@@ -459,8 +465,6 @@ void BotProxy::prepare()
     camera.setTaggedObj( orbis.objects[bot->cargo] );
   }
   else {
-    const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
-
     // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
     float hvsc[6];
 

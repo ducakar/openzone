@@ -511,12 +511,10 @@ void Render::init( bool isBuild )
   SDL_ShowCursor( SDL_FALSE );
 
   bool isCatalyst  = false;
+  bool hasVAO      = false;
   bool hasFBO      = false;
   bool hasFloatTex = false;
   bool hasS3TC     = false;
-#ifndef OZ_GL_COMPATIBLE
-  bool hasVAO      = false;
-#endif
 
   String vendor      = String::cstr( glGetString( GL_VENDOR ) );
   String renderer    = String::cstr( glGetString( GL_RENDERER ) );
@@ -541,6 +539,9 @@ void Render::init( bool isBuild )
   foreach( extension, extensions.citer() ) {
     log.println( "%s", extension->cstr() );
 
+    if( extension->equals( "GL_ARB_vertex_array_object" ) ) {
+      hasVAO = true;
+    }
     if( extension->equals( "GL_ARB_framebuffer_object" ) ) {
       hasFBO = true;
     }
@@ -550,11 +551,6 @@ void Render::init( bool isBuild )
     if( extension->equals( "GL_EXT_texture_compression_s3tc" ) ) {
       hasS3TC = true;
     }
-#ifndef OZ_GL_COMPATIBLE
-    if( extension->equals( "GL_ARB_vertex_array_object" ) ) {
-      hasVAO = true;
-    }
-#endif
   }
 
   log.unindent();
@@ -569,28 +565,24 @@ void Render::init( bool isBuild )
     throw Exception( "Too old OpenGL version, at least 2.1 required" );
   }
 
+  if( isCatalyst ) {
+    config.include( "shader.vertexTexture", "false" );
+    config.include( "shader.setSamplerIndices", "true" );
+  }
+  if( !hasVAO ) {
+#ifndef OZ_GL_COMPATIBLE
+    throw Exception( "GL_ARB_vertex_array_object not supported by OpenGL" );
+#endif
+  }
   if( !hasFBO ) {
     throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
   }
   if( !hasFloatTex ) {
     throw Exception( "GL_ARB_texture_float not supported by OpenGL" );
   }
-
-  if( isCatalyst ) {
-    config.include( "shader.vertexTexture", "false" );
-    config.include( "shader.setSamplerIndices", "true" );
-  }
-
   if( hasS3TC ) {
     shader.hasS3TC = true;
   }
-
-#ifndef OZ_GL_COMPATIBLE
-  if( !hasVAO ) {
-    log.println( "Error: vertex array object (GL_ARB_vertex_array_object) is not supported" );
-    throw Exception( "GL_ARB_vertex_array_object not supported by OpenGL" );
-  }
-#endif
 
   glInit();
 

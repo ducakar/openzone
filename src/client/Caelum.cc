@@ -131,12 +131,12 @@ void Caelum::draw()
     glUniform4fv( param.oz_Colour, 1, colour );
     glUniform1i( param.oz_NightVision, camera.nightVision );
 
-# ifdef OZ_GL_COMPATIBLE
+#ifdef OZ_GL_COMPATIBLE
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
     Vertex::setFormat();
-# else
+#else
     glBindVertexArray( vao );
-# endif
+#endif
 
     glDrawArrays( GL_QUADS, 0, MAX_STARS * 4 );
   }
@@ -199,24 +199,24 @@ void Caelum::load()
 
   InputStream is = file.inputStream();
 
-# ifndef OZ_GL_COMPATIBLE
+  int size = MAX_STARS * 4 * int( sizeof( Vertex ) );
+
+#ifndef OZ_GL_COMPATIBLE
   glGenVertexArrays( 1, &vao );
   glBindVertexArray( vao );
-# endif
-
-  int size = MAX_STARS * 4 * int( sizeof( Vertex ) );
+#endif
 
   glGenBuffers( 1, &vbo );
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
   glBufferData( GL_ARRAY_BUFFER, size, is.forward( size ), GL_STATIC_DRAW );
 
-# ifndef OZ_GL_COMPATIBLE
+#ifndef OZ_GL_COMPATIBLE
   glEnableVertexAttribArray( Attrib::POSITION );
   glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
 
   glBindVertexArray( 0 );
-# endif
+#endif
 
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
@@ -242,9 +242,9 @@ void Caelum::unload()
     glDeleteTextures( 1, &moonTexId );
 
     glDeleteBuffers( 1, &vbo );
-# ifndef OZ_GL_COMPATIBLE
+#ifndef OZ_GL_COMPATIBLE
     glDeleteVertexArrays( 1, &vao );
-# endif
+#endif
 
     sunTexId = 0;
     moonTexId = 0;

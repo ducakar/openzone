@@ -19,9 +19,9 @@ set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
 set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
 
 option( OZ_NETWORKING "Enable networking." OFF )
-option( OZ_GL_COMPATIBLE "Only use OpenGL 2.1 + FBO subset of OpenGL 3.0." ON )
+option( OZ_GL_COMPATIBLE "Use less OpenGL extensions for better compatibility (for Mesa < 8.0)." OFF )
 
-option( OZ_INSTALL_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
+option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
 
 #
 # Internal configuration
@@ -227,24 +227,24 @@ add_subdirectory( doc )
 #
 
 # info files and documentation
-if( WIN32 OR OZ_INSTALL_STANDALONE )
+if( WIN32 OR OZ_STANDALONE )
   file( GLOB readmes README* )
   install( FILES AUTHORS COPYING ${readmes} ChangeLog DESTINATION . )
   install( DIRECTORY doc/doxygen/html/ COMPONENT documentation DESTINATION doc/doxygen )
 endif()
 
 # icons
-if( NOT OZ_INSTALL_STANDALONE )
-  install( DIRECTORY share/applications share/pixmaps DESTINATION share )
+if( NOT OZ_STANDALONE )
+  install( DIRECTORY share/applications share/pixmaps COMPONENT menu DESTINATION share )
 endif()
 
 # libraries and launchers for standalone package
-if( OZ_INSTALL_STANDALONE )
+if( OZ_STANDALONE )
 #   install( DIRECTORY support/${OZ_SYSTEM_NAME}-client/ COMPONENT client DESTINATION . )
 #   install( DIRECTORY support/${OZ_SYSTEM_NAME}-tools/ COMPONENT tools DESTINATION . )
 
   if( WIN32 )
-    install( FILES support/oalinst.exe support/openzone.bat COMPONENT client DESTINATION . )
+    install( FILES support/openzone.bat COMPONENT client DESTINATION . )
     install( FILES support/build.bat COMPONENT tools DESTINATION . )
   else()
     install( FILES support/openzone.sh COMPONENT client  DESTINATION . )
