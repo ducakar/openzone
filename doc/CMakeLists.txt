@@ -1,4 +1,4 @@
-Find_Package( Doxygen )
+find_package( Doxygen )
 
 add_custom_command( OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/doxygen.liboz
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
