@@ -128,13 +128,13 @@ void BotClass::initClass( const Config* config )
   camZ              = config->get( "camZ", 0.79f );
   crouchCamZ        = config->get( "crouchCamZ", 0.69f );
 
-  bobWalkInc        = Math::rad( config->get( "bobWalkInc", 300.0f ) ) * Timer::TICK_TIME;
+  bobWalkInc        = Math::rad( config->get( "bobWalkInc", 420.0f ) ) * Timer::TICK_TIME;
   bobRunInc         = Math::rad( config->get( "bobRunInc", 600.0f ) ) * Timer::TICK_TIME;
-  bobSwimInc        = Math::rad( config->get( "bobSwimInc", 150.0f ) ) * Timer::TICK_TIME;
+  bobSwimInc        = Math::rad( config->get( "bobSwimInc", 210.0f ) ) * Timer::TICK_TIME;
   bobSwimRunInc     = Math::rad( config->get( "bobSwimRunInc", 300.0f ) ) * Timer::TICK_TIME;
   bobRotation       = Math::rad( config->get( "bobRotation", 0.35f ) );
-  bobAmplitude      = config->get( "bobAmplitude", 0.02f );
-  bobSwimAmplitude  = config->get( "bobSwimAmplitude", 0.05f );
+  bobAmplitude      = config->get( "bobAmplitude", 0.035f );
+  bobSwimAmplitude  = config->get( "bobSwimAmplitude", 0.055f );
 
   walkMomentum      = config->get( "walkMomentum", 1.2f );
   runMomentum       = config->get( "runMomentum", 2.4f );
@@ -157,8 +157,8 @@ void BotClass::initClass( const Config* config )
 
   stamina           = config->get( "stamina", 100.0f );
   staminaGain       = config->get( "staminaGain", 2.5f ) * Timer::TICK_TIME;
-  staminaRunDrain   = config->get( "staminaRunDrain", 5.0f ) * Timer::TICK_TIME;
-  staminaWaterDrain = config->get( "staminaWaterDrain", 5.0f ) * Timer::TICK_TIME;
+  staminaRunDrain   = config->get( "staminaRunDrain", 4.0f ) * Timer::TICK_TIME;
+  staminaWaterDrain = config->get( "staminaWaterDrain", 4.0f ) * Timer::TICK_TIME;
   staminaClimbDrain = config->get( "staminaClimbDrain", 10.0f ) * Timer::TICK_TIME;
   staminaJumpDrain  = config->get( "staminaJumpDrain", 5.0f );
   staminaThrowDrain = config->get( "staminaThrowDrain", 8.0f );

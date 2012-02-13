@@ -45,12 +45,11 @@ const float Physics::WEIGHT_DAMAGE_FACTOR    =  20.0f;
 const float Physics::SLIDE_DAMAGE_THRESHOLD  =  25.0f;
 const float Physics::SLIDE_DAMAGE_COEF       =  0.65f;
 
-// 0.02 is not enough for STICK_VELOCITY, may slide indefinitely on the right slope.
 const float Physics::STICK_VELOCITY          =  0.03f;
 const float Physics::SLICK_STICK_VELOCITY    =  0.001f;
 const float Physics::FLOAT_STICK_VELOCITY    =  0.0003f;
 const float Physics::WATER_FRICTION          =  0.08f;
-const float Physics::LADDER_FRICTION         =  0.50f;
+const float Physics::LADDER_FRICTION         =  0.60f;
 const float Physics::FLOOR_FRICTION          =  0.30f;
 const float Physics::SLICK_FRICTION          =  0.02f;
 
