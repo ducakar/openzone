@@ -51,7 +51,6 @@ class BotProxy : public Proxy
     ui::InventoryMenu* inventory;
     ui::InventoryMenu* container;
 
-    float bobPhi;
     float bobTheta;
     float bobBias;
 
@@ -59,6 +58,9 @@ class BotProxy : public Proxy
     bool  isFreelook;
 
   public:
+
+    float bobPhi; ///< Bob parameter, increased by <tt>MD2Imago</tt> etc. to keep it in sync with
+                  ///< walk/run animation.
 
     BotProxy();
 

@@ -160,6 +160,26 @@ void MD2Imago::draw( const Imago* parent, int mask )
     }
 
     if( !( bot->state & Bot::DEAD_BIT ) ) {
+      if( bot->index == camera.bot ) {
+        if( anim.type == MD2::ANIM_WALK || anim.type == MD2::ANIM_RUN ||
+            anim.type == MD2::ANIM_CROUCH_WALK )
+        {
+          int nFrames = anim.lastFrame - anim.firstFrame + 1;
+          int frame   = anim.currFrame - anim.firstFrame;
+
+          if( frame < 0 || frame >= nFrames ) {
+            frame = 0;
+          }
+
+          float animTime = float( frame ) * anim.frameTime + anim.currTime;
+
+          camera.botProxy.bobPhi = animTime * anim.fps / float( nFrames ) * Math::TAU;
+        }
+        else {
+          camera.botProxy.bobPhi = 0.0f;
+        }
+      }
+
       if( bot->index == camera.bot && !camera.isExternal ) {
         h = bot->h;
 

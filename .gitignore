@@ -8,11 +8,6 @@
 /share
 /support
 
-/data/*/*
-!/data/netradiant/*
-!/data/*/lua
-!/data/*/glsl
-
 /Linux-*
 /Windows-*
 /MacOSX-*

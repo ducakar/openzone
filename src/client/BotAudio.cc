@@ -26,6 +26,7 @@
 #include "client/BotAudio.hh"
 
 #include "client/Context.hh"
+#include "client/Camera.hh"
 
 namespace oz
 {
@@ -35,7 +36,7 @@ namespace client
 Pool<BotAudio, 256> BotAudio::pool;
 
 BotAudio::BotAudio( const Object* obj ) :
-  BasicAudio( obj )
+  BasicAudio( obj ), prevStep( 0 )
 {}
 
 Audio* BotAudio::create( const Object* obj )
@@ -106,6 +107,28 @@ void BotAudio::play( const Audio* parent )
 
     if( item != null && ( item->flags & Object::AUDIO_BIT ) ) {
       context.playAudio( item, parent == null ? this : parent );
+    }
+  }
+
+  // footsteps
+  if( camera.bot == bot->index ) {
+    if( bot->state & Bot::MOVING_BIT ) {
+      int currStep = int( camera.botProxy.bobPhi / ( Math::TAU / 2.0f ) ) % 2;
+
+      if( bot->flags & Object::FRICTING_BIT ) {
+        recent[Object::EVENT_FRICTING] = RECENT_TICKS;
+      }
+
+      if( currStep != prevStep && sounds[Bot::EVENT_STEP] != -1 &&
+          recent[Object::EVENT_FRICTING] != 0 )
+      {
+        playSound( sounds[Bot::EVENT_STEP], 1.0f, bot, bot );
+      }
+
+      prevStep = currStep;
+    }
+    else {
+      prevStep = 0;
     }
   }
 }

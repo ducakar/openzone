@@ -32,6 +32,10 @@ namespace client
 
 class BotAudio : public BasicAudio
 {
+  private:
+
+    int prevStep; ///< Used only for player's bot to play footstep sounds.
+
   protected:
 
     explicit BotAudio( const Object* obj );

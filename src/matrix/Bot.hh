@@ -46,6 +46,9 @@ class Bot : public Dynamic
     static const int EVENT_FLIP               = 10;
     static const int EVENT_DEATH              = 11;
 
+    // Step event is not in use but merely reserves a sound slot.
+    static const int EVENT_STEP               = 12;
+
     /*
      * ACTIONS
      */
@@ -154,9 +157,11 @@ class Bot : public Dynamic
     int    state, oldState;
     float  stamina;
     float  stepRate;
+
     int    cargo;
     int    weapon;
     float  grabHandle;
+
     float  camZ;
 
     String name;

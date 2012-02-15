@@ -56,8 +56,8 @@ class Timer
     float   time;        ///< %Time from the start of the game is seconds.
 
     ulong64 nFrames;     ///< Number of rendered frames from the start of the game.
-    ulong64 frameTicks;  ///< Ticks from the last rendered frame.
-    ulong64 frameMicros; ///< Microseconds of game time from the last rendered frame.
+    uint    frameTicks;  ///< Ticks from the last rendered frame.
+    uint    frameMicros; ///< Microseconds of game time from the last rendered frame.
     float   frameTime;   ///< Game time from the last rendered frame.
 
     /**
