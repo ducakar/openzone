@@ -383,27 +383,22 @@ void BotProxy::prepare()
       if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
           Bot::MOVING_BIT )
       {
-        float bobInc =
-          ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT | Bot::CARGO_BIT ) ) ==
-          Bot::RUNNING_BIT ? clazz->bobRunInc : clazz->bobWalkInc;
+        float sine = Math::sin( bobPhi );
+        float tilt = Math::sin( bobPhi + Math::TAU / 4.0f ) * clazz->bobRotation;
 
-        bobPhi   = Math::fmod( bobPhi + bobInc, Math::TAU );
-        bobTheta = Math::sin( bobPhi ) * clazz->bobRotation;
-        bobBias  = Math::sin( 2.0f * bobPhi ) * clazz->bobAmplitude;
+        bobTheta = Math::mix( bobTheta, tilt, 0.25f );
+        bobBias  = sine*sine * clazz->bobAmplitude;
       }
       else if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
                ( Bot::MOVING_BIT | Bot::SWIMMING_BIT ) )
       {
-        float bobInc =
-          ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT ) ) == Bot::RUNNING_BIT ?
-          clazz->bobSwimRunInc : clazz->bobSwimInc;
+        float sine = Math::sin( bobPhi );
 
-        bobPhi   = Math::fmod( bobPhi + bobInc, Math::TAU );
         bobTheta = 0.0f;
-        bobBias  = Math::sin( 2.0f * bobPhi ) * clazz->bobSwimAmplitude;
+        bobBias  = sine*sine * clazz->bobSwimAmplitude;
       }
       else {
-      inJump:
+      inJump:;
         bobPhi   = 0.0f;
         bobTheta *= BOB_SUPPRESSION_COEF;
         bobBias  *= BOB_SUPPRESSION_COEF;
@@ -421,7 +416,6 @@ void BotProxy::prepare()
       camera.v = bot->v;
     }
 
-    bobPhi   = 0.0f;
     bobTheta = 0.0f;
     bobBias  = 0.0f;
 

@@ -165,12 +165,18 @@ void MD2::drawFrame( int frame ) const
 void MD2::draw( const AnimState* anim ) const
 {
   shader.use( shaderId );
+  tf.apply();
 
   if( shader.hasVertexTexture ) {
     glActiveTexture( GL_TEXTURE2 );
     glBindTexture( GL_TEXTURE_2D, vertexTexId );
     glActiveTexture( GL_TEXTURE3 );
     glBindTexture( GL_TEXTURE_2D, normalTexId );
+
+    glUniform3f( param.oz_MD2Anim,
+                 float( anim->currFrame ) / float( nFrames ),
+                 float( anim->nextFrame ) / float( nFrames ),
+                 anim->currTime * anim->fps );
   }
   else {
     const Vec4* currFramePositions = &positions[anim->currFrame * nFramePositions];
@@ -178,7 +184,7 @@ void MD2::draw( const AnimState* anim ) const
     const Vec4* currFrameNormals   = &normals[anim->currFrame * nFramePositions];
     const Vec4* nextFrameNormals   = &normals[anim->nextFrame * nFramePositions];
 
-    float t = anim->fps * anim->currTime;
+    float t = anim->currTime * anim->fps;
 
     for( int i = 0; i < nFrameVertices; ++i ) {
       int j = int( vertices[i].pos[0] * float( nFramePositions - 1 ) + 0.5f );
@@ -200,12 +206,6 @@ void MD2::draw( const AnimState* anim ) const
 
     mesh.upload( animBuffer, nFrameVertices, GL_STREAM_DRAW );
   }
-
-  glUniform3f( param.oz_MD2Anim,
-               float( anim->currFrame ) / float( nFrames ),
-               float( anim->nextFrame ) / float( nFrames ),
-               anim->fps * anim->currTime );
-  tf.apply();
 
   mesh.draw( Mesh::SOLID_BIT );
 }

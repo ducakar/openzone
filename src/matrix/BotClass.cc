@@ -88,6 +88,10 @@ void BotClass::initClass( const Config* config )
     soundName  = config->get( "audioSound.death", "" );
     soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
     audioSounds[Bot::EVENT_DEATH] = soundIndex;
+
+    soundName  = config->get( "audioSound.step", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Bot::EVENT_STEP] = soundIndex;
   }
 
   // we don't allow browsing bots' inventory as long as they are alive
@@ -133,8 +137,8 @@ void BotClass::initClass( const Config* config )
   bobSwimInc        = Math::rad( config->get( "bobSwimInc", 210.0f ) ) * Timer::TICK_TIME;
   bobSwimRunInc     = Math::rad( config->get( "bobSwimRunInc", 300.0f ) ) * Timer::TICK_TIME;
   bobRotation       = Math::rad( config->get( "bobRotation", 0.35f ) );
-  bobAmplitude      = config->get( "bobAmplitude", 0.035f );
-  bobSwimAmplitude  = config->get( "bobSwimAmplitude", 0.055f );
+  bobAmplitude      = config->get( "bobAmplitude", 0.05f );
+  bobSwimAmplitude  = config->get( "bobSwimAmplitude", 0.05f );
 
   walkMomentum      = config->get( "walkMomentum", 1.2f );
   runMomentum       = config->get( "runMomentum", 2.4f );

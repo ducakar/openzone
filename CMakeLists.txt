@@ -196,7 +196,7 @@ string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" OZ_CXX_FLAGS )
 string( TOUPPER "CMAKE_EXE_LINKER_FLAGS_${CMAKE_BUILD_TYPE}" OZ_EXE_LINKER_FLAGS )
 
 set( libsString "" )
-foreach( lib ${libs} )
+foreach( lib ${libs_client} )
   set( libsString "${libsString} ${lib}" )
 endforeach()
 
