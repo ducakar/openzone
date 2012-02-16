@@ -53,7 +53,7 @@ function test_escapeQuest()
 end
 
 function test_cvicekQuest()
-  ozBindObjOverlaps( -1015, 608, 50, 50, 50, 50 )
+  ozOrbisBindObjOverlaps( -1015, 608, 50, 50, 50, 50 )
 
   local nBottles = 0
   while ozObjBindNext() do
@@ -106,7 +106,7 @@ function test_cvicekQuest()
 end
 
 function test_farmQuest()
-  ozBindStrOverlaps( 82.5, -25.0, 70.0, 5.0, 5.0, 5.0 )
+  ozOrbisBindStrOverlaps( 82.5, -25.0, 70.0, 5.0, 5.0, 5.0 )
 
   if not ozStrBindNext() then
     ozQuestEnd( oz_farmQuest, true )

@@ -93,9 +93,11 @@ class Lua
      * Orbis
      */
 
-    OZ_LUA_API( ozBindAllOverlaps );
-    OZ_LUA_API( ozBindStrOverlaps );
-    OZ_LUA_API( ozBindObjOverlaps );
+    OZ_LUA_API( ozOrbisGetGravity );
+
+    OZ_LUA_API( ozOrbisBindAllOverlaps );
+    OZ_LUA_API( ozOrbisBindStrOverlaps );
+    OZ_LUA_API( ozOrbisBindObjOverlaps );
 
     /*
      * Terra

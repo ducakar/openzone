@@ -32,7 +32,6 @@ namespace matrix
 
 Physics physics;
 
-const float Physics::G_ACCEL                 = -9.81f;
 const float Physics::FLOOR_NORMAL_Z          =  0.60f;
 const float Physics::MOVE_BOUNCE             =  1.5f * EPSILON;
 const float Physics::ENTITY_BOND_LIMIT       = -2.0f;
@@ -43,7 +42,7 @@ const float Physics::SPLASH_THRESHOLD        = -2.0f;
 const float Physics::WEIGHT_DAMAGE_THRESHOLD =  1000.0f;
 const float Physics::WEIGHT_DAMAGE_FACTOR    =  20.0f;
 const float Physics::SLIDE_DAMAGE_THRESHOLD  =  25.0f;
-const float Physics::SLIDE_DAMAGE_COEF       =  0.65f;
+const float Physics::SLIDE_DAMAGE_COEF       =  0.065f;
 
 const float Physics::STICK_VELOCITY          =  0.03f;
 const float Physics::SLICK_STICK_VELOCITY    =  0.001f;
@@ -139,7 +138,7 @@ void Physics::handleFragMove()
 
 bool Physics::handleObjFriction()
 {
-  float systemMom = G_ACCEL * Timer::TICK_TIME;
+  float systemMom = gravity * Timer::TICK_TIME;
 
   if( dyn->flags & Object::ON_LADDER_BIT ) {
     if( dyn->momentum.sqL() <= STICK_VELOCITY ) {
@@ -156,7 +155,7 @@ bool Physics::handleObjFriction()
       float frictionFactor = 0.5f * dyn->depth / dyn->dim.z;
 
       dyn->momentum *= 1.0f - frictionFactor * WATER_FRICTION;
-      systemMom += frictionFactor * dyn->lift * Timer::TICK_TIME;
+      systemMom -= frictionFactor * dyn->lift * gravity * Timer::TICK_TIME;
     }
 
     bool isLowerStill = true;
@@ -212,7 +211,7 @@ bool Physics::handleObjFriction()
         dyn->flags |= Object::FRICTING_BIT;
 
         if( deltaVel2 > SLIDE_DAMAGE_THRESHOLD ) {
-          dyn->damage( SLIDE_DAMAGE_COEF * deltaVel2 );
+          dyn->damage( SLIDE_DAMAGE_COEF * deltaVel2 * -gravity );
         }
       }
 
@@ -454,7 +453,7 @@ void Physics::updateFrag( Frag* frag_ )
 
   hard_assert( frag->cell != null );
 
-  frag->velocity.z += G_ACCEL * Timer::TICK_TIME;
+  frag->velocity.z += gravity * Timer::TICK_TIME;
 
   handleFragMove();
 }

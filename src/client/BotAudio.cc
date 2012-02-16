@@ -120,7 +120,7 @@ void BotAudio::play( const Audio* parent )
       }
 
       if( currStep != prevStep && sounds[Bot::EVENT_STEP] != -1 &&
-          recent[Object::EVENT_FRICTING] != 0 )
+          !( bot->state & Bot::SWIMMING_BIT ) && recent[Object::EVENT_FRICTING] != 0 )
       {
         playSound( sounds[Bot::EVENT_STEP], 1.0f, bot, bot );
       }

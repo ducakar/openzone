@@ -158,6 +158,7 @@ void Matrix::read( InputStream* istream )
   log.indent();
 
   orbis.read( istream );
+  physics.gravity = istream->readFloat();
 
   log.unindent();
   log.println( "}" );
@@ -168,6 +169,7 @@ void Matrix::write( BufferStream* ostream ) const
   log.print( "Writing Matrix ..." );
 
   orbis.write( ostream );
+  ostream->writeFloat( physics.gravity );
 
   log.printEnd( " OK" );
 }
@@ -187,6 +189,8 @@ void Matrix::load()
 
   orbis.load();
   synapse.load();
+
+  physics.gravity = -9.81f;
 
   log.printEnd( " OK" );
 }
