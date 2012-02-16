@@ -36,7 +36,6 @@ class Physics
 {
   public:
 
-    static const float G_ACCEL;
     static const float FLOOR_NORMAL_Z;
     static const float MOVE_BOUNCE;
     static const float ENTITY_BOND_LIMIT;
@@ -69,6 +68,12 @@ class Physics
     Frag*    frag;
     Vec3     move;
     Vec3     lastNormals[2];
+
+  public:
+
+    float    gravity;
+
+  private:
 
     void handleFragHit();
     void handleFragMove();

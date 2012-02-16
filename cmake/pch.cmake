@@ -36,6 +36,7 @@ macro( add_pch _targetName _inputHeader _triggerModule )
   # properly)
   add_custom_command( OUTPUT "${_inputHeader}.gch"
     DEPENDS ${_targetName}_trigger
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" "${_inputHeader}"
     COMMAND ${CMAKE_COMMAND} -E remove -f "${_inputHeader}.gch"
     COMMAND ${CMAKE_CXX_COMPILER} ${_flags} -o "${_inputHeader}.gch" "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" )
   add_custom_target( ${_targetName} DEPENDS "${_inputHeader}.gch" )

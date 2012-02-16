@@ -386,13 +386,13 @@ void BotProxy::prepare()
         float sine = Math::sin( bobPhi );
         float tilt = Math::sin( bobPhi + Math::TAU / 4.0f ) * clazz->bobRotation;
 
-        bobTheta = Math::mix( bobTheta, tilt, 0.25f );
+        bobTheta = Math::mix( bobTheta, tilt, 0.35f );
         bobBias  = sine*sine * clazz->bobAmplitude;
       }
       else if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
                ( Bot::MOVING_BIT | Bot::SWIMMING_BIT ) )
       {
-        float sine = Math::sin( bobPhi );
+        float sine = Math::sin( bobPhi / 2.0f );
 
         bobTheta = 0.0f;
         bobBias  = sine*sine * clazz->bobSwimAmplitude;

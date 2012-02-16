@@ -69,8 +69,8 @@ void DynamicClass::initClass( const Config* config )
     audioSounds[Object::EVENT_FRICTING] = soundIndex;
   }
 
-  mass = config->get( "mass", 100.0f );
-  lift = config->get( "lift", 12.0f );
+  mass = config->get( "mass", 0.0f );
+  lift = config->get( "lift", -1.0f );
 
   if( mass < 0.01f ) {
     throw Exception( "%s: Invalid object mass. Should be >= 0.01.", name.cstr() );

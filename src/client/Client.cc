@@ -448,11 +448,13 @@ int Client::main( int argc, char** argv )
 
   // THE MAGNIFICENT MAIN LOOP
   do {
+    if( isBenchmark && float( timer.micros - timeZero ) >= benchmarkTime * 1.0e6f ) {
+      isAlive = false;
+    }
+
     // read input & events
     ui::keyboard.prepare();
     ui::mouse.prepare();
-
-    SDL_PumpEvents();
 
     while( SDL_PollEvent( &event ) != 0 ) {
       switch( event.type ) {
@@ -537,13 +539,11 @@ int Client::main( int argc, char** argv )
     }
 
     if( hasMouseFocus ) {
-      // Update mouse motion.
       int x, y;
       SDL_GetRelativeMouseState( &x, &y );
 
       ui::mouse.relX = +x;
       ui::mouse.relY = -y;
-      ui::mouse.update();
 
       // If input is not grabbed we must centre mouse so it cannot move out of the window.
       if( !ui::mouse.isGrabbed && ui::mouse.isJailed ) {
@@ -554,9 +554,7 @@ int Client::main( int argc, char** argv )
       }
     }
 
-    if( isBenchmark && float( Time::uclock() - timeZero ) >= benchmarkTime * 1.0e6f ) {
-      isAlive = false;
-    }
+    ui::mouse.update();
 
     // Waste time when iconified.
     if( !isActive ) {

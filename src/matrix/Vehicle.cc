@@ -154,7 +154,7 @@ void Vehicle::airHandler( const Mat44& rotMat )
   }
 
   momentum += move * clazz->moveMomentum;
-  momentum.z -= Physics::G_ACCEL * Timer::TICK_TIME;
+  momentum.z -= physics.gravity * Timer::TICK_TIME;
   momentum *= 1.0f - AIR_FRICTION;
 }
 

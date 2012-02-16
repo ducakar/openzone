@@ -30,6 +30,7 @@
 #include "matrix/Library.hh"
 #include "matrix/Vehicle.hh"
 #include "matrix/Collider.hh"
+#include "matrix/Physics.hh"
 #include "matrix/Synapse.hh"
 
 #include "common/luamacros.hh"
@@ -275,6 +276,9 @@ void Lua::init()
    * Orbis
    */
 
+  OZ_LUA_FUNC( ozOrbisGetGravity );
+  OZ_LUA_FUNC( ozOrbisSetGravity );
+
   OZ_LUA_FUNC( ozOrbisAddStr );
   OZ_LUA_FUNC( ozOrbisTryAddStr );
   OZ_LUA_FUNC( ozOrbisAddObj );
@@ -282,9 +286,9 @@ void Lua::init()
   OZ_LUA_FUNC( ozOrbisAddFrag );
   OZ_LUA_FUNC( ozOrbisGenFrags );
 
-  OZ_LUA_FUNC( ozBindAllOverlaps );
-  OZ_LUA_FUNC( ozBindStrOverlaps );
-  OZ_LUA_FUNC( ozBindObjOverlaps );
+  OZ_LUA_FUNC( ozOrbisBindAllOverlaps );
+  OZ_LUA_FUNC( ozOrbisBindStrOverlaps );
+  OZ_LUA_FUNC( ozOrbisBindObjOverlaps );
 
   /*
    * Terra
@@ -689,6 +693,22 @@ int Lua::ozUseFailed( lua_State* l )
  * Orbis
  */
 
+int Lua::ozOrbisGetGravity( lua_State* l )
+{
+  ARG( 0 );
+
+  pushfloat( physics.gravity );
+  return 1;
+}
+
+int Lua::ozOrbisSetGravity( lua_State* l )
+{
+  ARG( 1 );
+
+  physics.gravity = tofloat( 1 );
+  return 0;
+}
+
 int Lua::ozOrbisAddStr( lua_State* l )
 {
   ARG( 5 );
@@ -792,7 +812,7 @@ int Lua::ozOrbisGenFrags( lua_State* l )
   return 0;
 }
 
-int Lua::ozBindAllOverlaps( lua_State* l )
+int Lua::ozOrbisBindAllOverlaps( lua_State* l )
 {
   ARG( 6 );
 
@@ -807,7 +827,7 @@ int Lua::ozBindAllOverlaps( lua_State* l )
   return 0;
 }
 
-int Lua::ozBindStrOverlaps( lua_State* l )
+int Lua::ozOrbisBindStrOverlaps( lua_State* l )
 {
   ARG( 6 );
 
@@ -820,7 +840,7 @@ int Lua::ozBindStrOverlaps( lua_State* l )
   return 0;
 }
 
-int Lua::ozBindObjOverlaps( lua_State* l )
+int Lua::ozOrbisBindObjOverlaps( lua_State* l )
 {
   ARG( 6 );
 

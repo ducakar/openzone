@@ -111,7 +111,7 @@ function axe_onShot( l )
   local pX, pY, pZ = ozObjGetPos()
   local vX, vY, vZ = ozBotGetDir()
 
-  ozBindObjOverlaps( pX + 0.5*vX, pY + 0.5*vY, pZ + 0.5*vZ, 0.3, 0.3, 0.3 );
+  ozOrbisBindObjOverlaps( pX + 0.5*vX, pY + 0.5*vY, pZ + 0.5*vZ, 0.3, 0.3, 0.3 );
   while ozObjBindNext() do
     if not ( ozObjIsSelf() or ozObjIsUser() ) then
       ozObjDamage( 100.0 + 50.0 * math.random() )
@@ -125,7 +125,7 @@ function mace_onShot( l )
   local pX, pY, pZ = ozObjGetPos()
   local vX, vY, vZ = ozBotGetDir()
 
-  ozBindObjOverlaps( pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 );
+  ozOrbisBindObjOverlaps( pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 );
   while ozObjBindNext() do
     if not ( ozObjIsSelf() or ozObjIsUser() ) then
       ozObjDamage( 100.0 + 100.0 * math.random() )
@@ -139,7 +139,7 @@ function skull_onShot( l )
   local pX, pY, pZ = ozObjGetPos()
   local vX, vY, vZ = ozBotGetDir()
 
-  ozBindObjOverlaps( pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 );
+  ozOrbisBindObjOverlaps( pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 );
   while ozObjBindNext() do
     if not ( ozObjIsSelf() or ozObjIsUser() ) then
       ozObjDamage( 100.0 + 200.0 * math.random() )

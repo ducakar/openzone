@@ -92,13 +92,13 @@ void Bot::onHit( const Hit* hit, float hitMomentum )
     return;
   }
 
-  if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
+  if( hitMomentum < HIT_HARD_THRESHOLD ) {
+    addEvent( EVENT_HIT_HARD, 1.0f );
+  }
+  else if( hit->normal.z >= Physics::FLOOR_NORMAL_Z && !( state & GROUNDED_BIT ) ) {
     hard_assert( hitMomentum <= 0.0f );
 
     addEvent( EVENT_LAND, 1.0f );
-  }
-  else if( hitMomentum < HIT_HARD_THRESHOLD ) {
-    addEvent( EVENT_HIT_HARD, 1.0f );
   }
 }
 
@@ -580,11 +580,11 @@ void Bot::onUpdate()
           Vec3 momDiff       = ( desiredMom - cargoObj->momentum ) * GRAB_MOM_RATIO;
 
           float momDiffSqL   = momDiff.sqL();
-          momDiff.z          += Physics::G_ACCEL * Timer::TICK_TIME;
+          momDiff.z          += physics.gravity * Timer::TICK_TIME;
           if( momDiffSqL > GRAB_MOM_MAX_SQ ) {
             momDiff *= GRAB_MOM_MAX / Math::sqrt( momDiffSqL );
           }
-          momDiff.z          -= Physics::G_ACCEL * Timer::TICK_TIME;
+          momDiff.z          -= physics.gravity * Timer::TICK_TIME;
 
           flags              &= ~CLIMBER_BIT;
 

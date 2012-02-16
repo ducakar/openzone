@@ -29,6 +29,8 @@ function onUpdate()
 end
 
 function onCreate()
+  ozOrbisSetGravity( -6.0 )
+
   ozTerraLoad( "terra" )
 
   ozCaelumLoad( "earth" )
