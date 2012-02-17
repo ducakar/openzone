@@ -96,10 +96,7 @@ void HudArea::drawBotCrosshair()
     }
     else {
       float life;
-      if( Math::isinf( obj->life ) ) {
-        life = 1.0f;
-      }
-      else if( obj->flags & Object::BOT_BIT ) {
+      if( obj->flags & Object::BOT_BIT ) {
         life = max( 0.0f, 2.0f * obj->life / clazz->life - 1.0f );
       }
       else {
@@ -132,7 +129,7 @@ void HudArea::drawBotCrosshair()
         glBindTexture( GL_TEXTURE_2D, browseTexId );
         shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
       }
-      if( ( obj->flags & ( Object::USE_FUNC_BIT | Object::DEVICE_BIT ) ) &&
+      if( ( obj->flags & Object::USE_FUNC_BIT ) &&
           !( obj->flags & ( Object::WEAPON_BIT | Object::VEHICLE_BIT ) ) )
       {
 
@@ -197,8 +194,8 @@ void HudArea::drawBotStatus()
   const Bot*      bot      = camera.botObj;
   const BotClass* botClazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
-  float life         = Math::isinf( bot->life ) ? 1.0f : 2.0f * bot->life / botClazz->life - 1.0f;
-  float stamina      = Math::isinf( bot->stamina ) ? 1.0f : bot->stamina / botClazz->stamina;
+  float life         = 2.0f * bot->life / botClazz->life - 1.0f;
+  float stamina      = bot->stamina / botClazz->stamina;
   int   lifeWidth    = max( int( life * 198.0f ), 0 );
   int   staminaWidth = max( int( stamina * 198.0f ), 0 );
 
@@ -279,9 +276,9 @@ void HudArea::drawVehicleStatus()
   tf.camera = Mat44::ID;
   tf.applyCamera();
 
-  float life      = Math::isinf( vehicle->life ) ? 1.0f : vehicle->life / vehClazz->life;
+  float life      = vehicle->life / vehClazz->life;
   int   lifeWidth = max( int( life * 198.0f ), 0 );
-  float fuel      = Math::isinf( vehicle->fuel ) ? 1.0f : vehicle->fuel / vehClazz->fuel;
+  float fuel      = vehicle->fuel / vehClazz->fuel;
   int   fuelWidth = int( fuel * 198.0f );
 
   glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );

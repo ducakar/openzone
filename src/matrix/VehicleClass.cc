@@ -160,6 +160,11 @@ void VehicleClass::initClass( const Config* config )
   fuel             = config->get( "fuel", 100.0f );
   fuelConsumption  = config->get( "fuelConsumption", 0.0f ) * Timer::TICK_TIME;
 
+  if( fuel <= 0.0f || !Math::isnormal( fuel ) ) {
+    throw Exception( "%s: Invalid fuel value. Should be > 0 and finite. If you want infinite fuel"
+                     " rather set fuelConsumption to zero.", name.cstr() );
+  }
+
   char weaponNameBuffer[]   = "weapon  .name";
   char onShotBuffer[]       = "weapon  .onShot";
   char nRoundsBuffer[]      = "weapon  .nRounds";

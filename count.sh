@@ -1,13 +1,9 @@
 #!/bin/sh
 
-if [ -x /usr/bin/sloccount ]; then
-  LANG=C /usr/bin/sloccount src
-fi
+which sloccount &> /dev/null && LANG=C sloccount src
 
 echo
 echo
 
-if [ -x /usr/bin/cloc ]; then
-  /usr/bin/cloc --quiet --force-lang=C++,hh --force-lang=C++,in --exclude-lang=XML --exclude-ext=h \
-    `git ls-files`
-fi
+which cloc &> /dev/null && cloc --quiet --force-lang=C++,hh --force-lang=C++,in \
+                                --exclude-lang=XML --exclude-ext=h `git ls-files`

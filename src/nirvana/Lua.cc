@@ -528,7 +528,6 @@ void Lua::init()
   OZ_LUA_CONST( "OZ_OBJECT_USE_FUNC_BIT",         Object::USE_FUNC_BIT );
   OZ_LUA_CONST( "OZ_OBJECT_UPDATE_FUNC_BIT",      Object::UPDATE_FUNC_BIT );
 
-  OZ_LUA_CONST( "OZ_OBJECT_DEVICE_BIT",           Object::DEVICE_BIT );
   OZ_LUA_CONST( "OZ_OBJECT_IMAGO_BIT",            Object::IMAGO_BIT );
   OZ_LUA_CONST( "OZ_OBJECT_AUDIO_BIT",            Object::AUDIO_BIT );
 
@@ -539,7 +538,7 @@ void Lua::init()
   OZ_LUA_CONST( "OZ_OBJECT_BELOW_BIT",            Object::BELOW_BIT );
   OZ_LUA_CONST( "OZ_OBJECT_ON_FLOOR_BIT",         Object::ON_FLOOR_BIT );
   OZ_LUA_CONST( "OZ_OBJECT_ON_SLICK_BIT",         Object::ON_SLICK_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_IN_WATER_BIT",         Object::IN_WATER_BIT );
+  OZ_LUA_CONST( "OZ_OBJECT_IN_LIQUID_BIT",        Object::IN_LIQUID_BIT );
   OZ_LUA_CONST( "OZ_OBJECT_ON_LADDER_BIT",        Object::ON_LADDER_BIT );
   OZ_LUA_CONST( "OZ_OBJECT_SOLID_BIT",            Object::SOLID_BIT );
   OZ_LUA_CONST( "OZ_OBJECT_CYLINDER_BIT",         Object::CYLINDER_BIT );
@@ -1195,7 +1194,7 @@ int Lua::ozObjGetFlags( lua_State* l )
   OBJ_NOT_NULL();
 
   int mask = toint( 1 );
-  pushbool( ( lua.obj->flags & mask ) != 0 );
+  pushbool( lua.obj->flags & mask );
   return 1;
 }
 
@@ -1577,7 +1576,7 @@ int Lua::ozBotGetState( lua_State* l )
   OBJ_BOT();
 
   int mask = toint( 1 );
-  pushbool( ( bot->state & mask ) != 0 );
+  pushbool( bot->state & mask );
   return 1;
 }
 
@@ -1844,7 +1843,7 @@ int Lua::ozSelfGetState( lua_State* l )
   ARG( 1 );
 
   int mask = toint( 1 );
-  pushbool( ( lua.self->state & mask ) != 0 );
+  pushbool( lua.self->state & mask );
   return 1;
 }
 

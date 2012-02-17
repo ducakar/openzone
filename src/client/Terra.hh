@@ -60,12 +60,13 @@ class Terra
 
     float waveBias;
 
-    Span span;
+    Span  span;
     SBitset<TILES * TILES> waterTiles;
 
   public:
 
-    int id;
+    int   id;
+    Vec4  liquidColour;
 
     Terra();
 

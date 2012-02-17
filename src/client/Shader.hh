@@ -183,7 +183,7 @@ class Shader
 
     uint defaultMasks;
 
-    bool isInWater;
+    int  medium;
     bool hasS3TC;
     bool hasVertexTexture;
     bool isDeferred;

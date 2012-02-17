@@ -102,7 +102,7 @@ bool Collider::overlapsAABBEntity()
       int index = model->firstBrush + j;
       const BSP::Brush& brush = bsp->brushes[index];
 
-      if( ( brush.material & Material::STRUCT_BIT ) && overlapsAABBBrush( &brush ) ) {
+      if( ( brush.flags & Material::STRUCT_BIT ) && overlapsAABBBrush( &brush ) ) {
         return true;
       }
     }
@@ -119,7 +119,7 @@ bool Collider::overlapsAABBNode( int nodeIndex )
       int index = bsp->leafBrushes[leaf.firstBrush + i];
       const BSP::Brush& brush = bsp->brushes[index];
 
-      if( !visitBrush( index ) && ( brush.material & Material::STRUCT_BIT ) &&
+      if( !visitBrush( index ) && ( brush.flags & Material::STRUCT_BIT ) &&
           overlapsAABBBrush( &brush ) )
       {
         return true;
@@ -168,7 +168,7 @@ bool Collider::overlapsAABBEntities()
 
         startPos = originalStartPos - entity->offset;
 
-        if( ( brush.material & Material::STRUCT_BIT ) && overlapsAABBBrush( &brush ) ) {
+        if( ( brush.flags & Material::STRUCT_BIT ) && overlapsAABBBrush( &brush ) ) {
           return true;
         }
       }
@@ -299,7 +299,7 @@ bool Collider::overlapsEntityOrbisOO()
           for( int i = 0; i < model->nBrushes; ++i ) {
             const BSP::Brush& brush = bsp->brushes[model->firstBrush + i];
 
-            if( ( brush.material & Material::STRUCT_BIT ) && ( sObj->flags & mask ) &&
+            if( ( sObj->flags & mask ) && ( brush.flags & Material::STRUCT_BIT ) &&
                 overlapsAABBBrush( &brush ) )
             {
               return true;
@@ -506,11 +506,11 @@ void Collider::trimAABBBrush( const BSP::Brush* brush )
     hit.obj      = null;
     hit.str      = const_cast<Struct*>( str );
     hit.entity   = const_cast<Entity*>( entity );
-    hit.material = brush->material;
+    hit.material = brush->flags & Material::MASK;
   }
 }
 
-void Collider::trimAABBWater( const BSP::Brush* brush )
+void Collider::trimAABBLiquid( const BSP::Brush* brush )
 {
   float depth = Math::INF;
 
@@ -538,11 +538,11 @@ void Collider::trimAABBWater( const BSP::Brush* brush )
 
   hard_assert( depth > 0.0f );
 
-  hit.waterDepth = max( hit.waterDepth, depth );
-  hit.medium |= Material::WATER_BIT;
+  hit.depth = max( hit.depth, depth );
+  hit.medium |= brush->flags & Medium::MASK;
 }
 
-void Collider::trimAABBLadder( const BSP::Brush* brush )
+void Collider::trimAABBArea( const BSP::Brush* brush )
 {
   for( int i = 0; i < brush->nSides; ++i ) {
     const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
@@ -555,7 +555,7 @@ void Collider::trimAABBLadder( const BSP::Brush* brush )
     }
   }
 
-  hit.medium |= Material::LADDER_BIT;
+  hit.medium |= brush->flags & Medium::MASK;
 }
 
 void Collider::trimAABBNode( int nodeIndex )
@@ -568,16 +568,14 @@ void Collider::trimAABBNode( int nodeIndex )
       const BSP::Brush& brush = bsp->brushes[index];
 
       if( !visitBrush( index ) ) {
-        if( brush.material & Material::STRUCT_BIT ) {
+        if( brush.flags & Material::STRUCT_BIT ) {
           trimAABBBrush( &brush );
         }
-        else if( brush.material & Material::WATER_BIT ) {
-          trimAABBWater( &brush );
+        else if( brush.flags & Medium::LIQUID_MASK ) {
+          trimAABBLiquid( &brush );
         }
-        else if( ( brush.material & Material::LADDER_BIT ) &&
-                 obj != null && ( obj->flags & Object::CLIMBER_BIT ) )
-        {
-          trimAABBLadder( &brush );
+        else {
+          trimAABBArea( &brush );
         }
       }
     }
@@ -697,9 +695,9 @@ void Collider::trimAABBTerraQuad( int x, int y )
 
 void Collider::trimAABBTerra()
 {
-  if( startPos.z < 0.0f ) {
-    hit.waterDepth = max( hit.waterDepth, -startPos.z );
-    hit.medium |= Material::WATER_BIT;
+  if( startPos.z < 0.0f && !( hit.medium & Medium::AIR_BIT ) ) {
+    hit.depth = max( hit.depth, -startPos.z );
+    hit.medium |= orbis.terra.liquid;
   }
 
   float minPosX = min( startPos.x, endPos.x );
@@ -718,13 +716,13 @@ void Collider::trimAABBTerra()
 
 void Collider::trimAABBOrbis()
 {
-  hit.ratio      = 1.0f;
-  hit.obj        = null;
-  hit.str        = null;
-  hit.entity     = null;
-  hit.medium     = 0;
-  hit.material   = 0;
-  hit.waterDepth = 0.0f;
+  hit.ratio    = 1.0f;
+  hit.obj      = null;
+  hit.str      = null;
+  hit.entity   = null;
+  hit.medium   = 0;
+  hit.material = 0;
+  hit.depth    = 0.0f;
 
   Point3 originalStartPos = aabb.p;
   Point3 originalEndPos   = aabb.p + move;
@@ -1018,9 +1016,8 @@ bool Collider::overlapsEntity( const AABB& aabb_, const Entity* entity_, float m
   entity = entity_;
   bsp    = entity_->model->bsp;
   model  = entity_->model;
-  margin = margin_;
 
-  trace = Bounds( aabb, 4.0f * EPSILON + margin );
+  trace = Bounds( aabb, 4.0f * EPSILON + margin_ );
   span = orbis.getInters( trace );
 
   return overlapsAABBEntity();

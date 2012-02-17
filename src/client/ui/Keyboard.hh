@@ -36,12 +36,12 @@ class Keyboard
 {
   private:
 
-    char* currKeys;
+    ubyte* currKeys;
 
   public:
 
-    char  keys[SDLK_LAST];
-    char  oldKeys[SDLK_LAST];
+    ubyte keys[SDLK_LAST];
+    ubyte oldKeys[SDLK_LAST];
 
     void init();
     void prepare();

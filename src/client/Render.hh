@@ -48,6 +48,7 @@ class Render
     static const float NIGHT_FOG_COEFF;
     static const float NIGHT_FOG_DIST;
     static const float WATER_VISIBILITY;
+    static const float LAVA_VISIBILITY;
 
     static const float WIND_FACTOR;
     static const float WIND_PHI_INC;

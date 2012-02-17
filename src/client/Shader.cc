@@ -342,8 +342,8 @@ void Shader::init()
   combine     = library.shaderIndex( "combine" );
   postprocess = library.shaderIndex( "postprocess" );
 
-  colour    = Vec4::ONE;
-  isInWater = false;
+  colour = Vec4::ONE;
+  medium = 0;
 
   for( int i = 0; i < library.shaders.length(); ++i ) {
     loadProgram( i, sources, lengths );

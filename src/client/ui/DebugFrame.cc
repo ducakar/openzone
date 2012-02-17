@@ -85,7 +85,7 @@ void DebugFrame::onDraw()
                            bot->lower,
                            ( bot->flags & Object::FRICTING_BIT ) != 0,
                            ( bot->flags & Object::BELOW_BIT ) != 0,
-                           ( bot->flags & Object::IN_WATER_BIT ) != 0,
+                           ( bot->flags & Object::IN_LIQUID_BIT ) != 0,
                            ( bot->flags & Object::ON_SLICK_BIT ) != 0,
                            ( bot->flags & Object::ON_LADDER_BIT ) != 0,
                            collider.overlaps( bot, bot ),
@@ -110,7 +110,7 @@ void DebugFrame::onDraw()
                       dyn->lower,
                       ( dyn->flags & Object::FRICTING_BIT ) != 0,
                       ( dyn->flags & Object::BELOW_BIT ) != 0,
-                      ( dyn->flags & Object::IN_WATER_BIT ) != 0,
+                      ( dyn->flags & Object::IN_LIQUID_BIT ) != 0,
                       ( dyn->flags & Object::ON_SLICK_BIT ) != 0,
                       ( dyn->flags & Object::ON_LADDER_BIT ) != 0 );
     tagFlags.draw( this, true );

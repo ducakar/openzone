@@ -32,13 +32,24 @@ namespace matrix
 
 struct Material
 {
-  static const int VOID_BIT    = 0x00000001;
-  static const int TERRAIN_BIT = 0x00000002;
-  static const int WATER_BIT   = 0x00000004;
-  static const int STRUCT_BIT  = 0x00000008;
-  static const int SLICK_BIT   = 0x00000010;
-  static const int LADDER_BIT  = 0x00000020;
-  static const int OBJECT_BIT  = 0x00000040;
+  static const int VOID_BIT    = 0x0080;
+  static const int TERRAIN_BIT = 0x0001;
+  static const int STRUCT_BIT  = 0x0002;
+  static const int SLICK_BIT   = 0x0004;
+  static const int OBJECT_BIT  = 0x0008;
+
+  static const int MASK        = 0x00ff;
+};
+
+struct Medium
+{
+  static const int LADDER_BIT  = 0x0100;
+  static const int AIR_BIT     = 0x0200;
+  static const int WATER_BIT   = 0x0400;
+  static const int LAVA_BIT    = 0x0800;
+
+  static const int LIQUID_MASK = 0x0c00;
+  static const int MASK        = 0xff00;
 };
 
 struct Hit
@@ -53,7 +64,7 @@ struct Hit
 
   int   material;
   int   medium;
-  float waterDepth;
+  float depth;
 };
 
 class Collider
@@ -103,8 +114,8 @@ class Collider
     void trimAABBVoid();
     void trimAABBObj( const Object* sObj );
     void trimAABBBrush( const BSP::Brush* brush );
-    void trimAABBWater( const BSP::Brush* brush );
-    void trimAABBLadder( const BSP::Brush* brush );
+    void trimAABBLiquid( const BSP::Brush* brush );
+    void trimAABBArea( const BSP::Brush* brush );
     void trimAABBNode( int nodeIndex );
     void trimAABBEntities();
     // terrain collision is penetration-safe

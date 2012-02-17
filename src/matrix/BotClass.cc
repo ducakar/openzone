@@ -137,12 +137,12 @@ void BotClass::initClass( const Config* config )
   bobSwimInc        = Math::rad( config->get( "bobSwimInc", 210.0f ) ) * Timer::TICK_TIME;
   bobSwimRunInc     = Math::rad( config->get( "bobSwimRunInc", 300.0f ) ) * Timer::TICK_TIME;
   bobRotation       = Math::rad( config->get( "bobRotation", 0.35f ) );
-  bobAmplitude      = config->get( "bobAmplitude", 0.05f );
-  bobSwimAmplitude  = config->get( "bobSwimAmplitude", 0.05f );
+  bobAmplitude      = config->get( "bobAmplitude", 0.07f );
+  bobSwimAmplitude  = config->get( "bobSwimAmplitude", 0.07f );
 
   walkMomentum      = config->get( "walkMomentum", 1.0f );
   runMomentum       = config->get( "runMomentum", 2.0f );
-  crouchMomentum    = config->get( "crouchMomentum", 1.2f );
+  crouchMomentum    = config->get( "crouchMomentum", 1.0f );
   jumpMomentum      = config->get( "jumpMomentum", 5.0f );
 
   airControl        = config->get( "airControl", 0.025f );
@@ -160,6 +160,12 @@ void BotClass::initClass( const Config* config )
   climbMomentum     = config->get( "climbMomentum", 2.0f );
 
   stamina           = config->get( "stamina", 100.0f );
+
+  if( stamina <= 0.0f || !Math::isnormal( stamina ) ) {
+    throw Exception( "%s: Invalid stamina value. Should be > 0 and finite. If you want infinite "
+                     " stamina rather set stamina*Drain variables to zero.", name.cstr() );
+  }
+
   staminaGain       = config->get( "staminaGain", 2.5f ) * Timer::TICK_TIME;
   staminaRunDrain   = config->get( "staminaRunDrain", 4.0f ) * Timer::TICK_TIME;
   staminaWaterDrain = config->get( "staminaWaterDrain", 4.0f ) * Timer::TICK_TIME;

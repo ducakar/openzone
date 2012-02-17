@@ -95,7 +95,7 @@ class Mouse
     Icon  icon;
 
     void prepare();
-    void update();
+    void update( bool hasFocus );
 
     void draw() const;
 

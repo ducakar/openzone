@@ -114,8 +114,8 @@ void BotProxy::update()
 
   Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
-  const char* keys    = ui::keyboard.keys;
-  const char* oldKeys = ui::keyboard.oldKeys;
+  const ubyte* keys    = ui::keyboard.keys;
+  const ubyte* oldKeys = ui::keyboard.oldKeys;
 
   if( keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) {
     camera.h = bot->h;
@@ -384,7 +384,7 @@ void BotProxy::prepare()
           Bot::MOVING_BIT )
       {
         float sine = Math::sin( bobPhi );
-        float tilt = Math::sin( bobPhi + Math::TAU / 4.0f ) * clazz->bobRotation;
+        float tilt = Math::sin( bobPhi + Math::TAU / 6.0f ) * clazz->bobRotation;
 
         bobTheta = Math::mix( bobTheta, tilt, 0.35f );
         bobBias  = sine*sine * clazz->bobAmplitude;

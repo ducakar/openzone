@@ -56,6 +56,14 @@ void BSP::load()
   life = bspConfig.get( "life", DEFAULT_LIFE );
   resistance = bspConfig.get( "resistance", DEFAULT_RESISTANCE );
 
+  if( life <= 0.0f || !Math::isnormal( life ) ) {
+    throw Exception( "%s: Invalid life value. Should be > 0 and finite. If you want infinite life"
+                     " rather set resistance to infinity.", name.cstr() );
+  }
+  if( resistance < 0.0f ) {
+    throw Exception( "%s: Invalid resistance. Should be >= 0.", name.cstr() );
+  }
+
   fragPool = bspConfig.get( "fragPool", "" );
   nFrags   = bspConfig.get( "nFrags", 0 );
 
@@ -322,21 +330,30 @@ void BSP::load()
   for( int i = 0; i < nBrushes; ++i ) {
     brushes[i].firstSide = is.readInt();
     brushes[i].nSides    = is.readInt();
-    brushes[i].material  = 0;
+    brushes[i].flags     = 0;
 
     int texture = is.readInt();
 
-    if( textures[texture].flags & QBSP_LADDER_FLAG_BIT ) {
-      brushes[i].material |= Material::LADDER_BIT;
+    if( textures[texture].flags & QBSP_NONSOLID_FLAG_BIT ) {
+      if( textures[texture].flags & QBSP_LADDER_FLAG_BIT ) {
+        brushes[i].flags |= Medium::LADDER_BIT;
+      }
+      else if( textures[texture].type & QBSP_AIR_TYPE_BIT ) {
+        brushes[i].flags |= Medium::AIR_BIT;
+      }
+      else if( textures[texture].type & QBSP_LAVA_TYPE_BIT ) {
+        brushes[i].flags |= Medium::LAVA_BIT;
+      }
+      else if( textures[texture].type & QBSP_WATER_TYPE_BIT ) {
+        brushes[i].flags |= Medium::WATER_BIT;
+      }
     }
-    if( !( textures[texture].flags & QBSP_NONSOLID_FLAG_BIT ) ) {
-      brushes[i].material |= Material::STRUCT_BIT;
-    }
-    if( textures[texture].flags & QBSP_SLICK_FLAG_BIT ) {
-      brushes[i].material |= Material::SLICK_BIT;
-    }
-    if( textures[texture].type & QBSP_WATER_TYPE_BIT ) {
-      brushes[i].material |= Material::WATER_BIT;
+    else {
+      brushes[i].flags |= Material::STRUCT_BIT;
+
+      if( textures[texture].flags & QBSP_SLICK_FLAG_BIT ) {
+        brushes[i].flags |= Material::SLICK_BIT;
+      }
     }
   }
 
@@ -802,6 +819,9 @@ void BSP::optimise()
     }
   }
 
+  mins -= 2.0f * EPSILON * Vec3::ONE;
+  maxs += 2.0f * EPSILON * Vec3::ONE;
+
   log.printEnd( "(%g %g %g) (%g %g %g)", mins.x, mins.y, mins.z, maxs.x, maxs.y, maxs.z );
 
   log.unindent();
@@ -1027,7 +1047,7 @@ void BSP::saveMatrix()
   for( int i = 0; i < nBrushes; ++i ) {
     os.writeInt( brushes[i].firstSide );
     os.writeInt( brushes[i].nSides );
-    os.writeInt( brushes[i].material );
+    os.writeInt( brushes[i].flags );
   }
 
   for( int i = 0; i < nBrushSides; ++i ) {

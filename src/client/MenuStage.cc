@@ -65,6 +65,10 @@ void MenuStage::load()
 
   ui::ui.showLoadingScreen( false );
   ui::mouse.doShow = true;
+
+  render.draw( Render::DRAW_UI_BIT );
+  render.draw( Render::DRAW_UI_BIT );
+  render.swap();
 }
 
 void MenuStage::unload()

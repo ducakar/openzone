@@ -27,6 +27,7 @@
 
 #include "client/Context.hh"
 #include "client/Camera.hh"
+#include "client/Terra.hh"
 #include "client/Colours.hh"
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"
@@ -47,7 +48,6 @@ const float Caelum::BLUE_COEF      = -0.10f;
 
 const float Caelum::DAY_COLOUR[]   = { 0.45f, 0.60f, 0.90f, 1.0f };
 const float Caelum::NIGHT_COLOUR[] = { 0.02f, 0.02f, 0.05f, 1.0f };
-const float Caelum::WATER_COLOUR[] = { 0.00f, 0.05f, 0.25f, 1.0f };
 const float Caelum::STAR_COLOUR[]  = { 0.80f, 0.80f, 0.80f, 1.0f };
 
 Caelum::Caelum() :
@@ -68,24 +68,22 @@ void Caelum::update()
   ratio = clamp( -dir.z + DAY_BIAS, 0.0f, 1.0f );
   float ratioDiff = ( 1.0f - Math::fabs( 1.0f - 2.0f * ratio ) );
 
-  Colours::caelum[0] = Math::mix( NIGHT_COLOUR[0], DAY_COLOUR[0], ratio ) + RED_COEF   * ratioDiff;
-  Colours::caelum[1] = Math::mix( NIGHT_COLOUR[1], DAY_COLOUR[1], ratio ) + GREEN_COEF * ratioDiff;
-  Colours::caelum[2] = Math::mix( NIGHT_COLOUR[2], DAY_COLOUR[2], ratio ) + BLUE_COEF  * ratioDiff;
-  Colours::caelum[3] = 1.0f;
+  Colours::caelum.x = Math::mix( NIGHT_COLOUR[0], DAY_COLOUR[0], ratio ) + RED_COEF   * ratioDiff;
+  Colours::caelum.y = Math::mix( NIGHT_COLOUR[1], DAY_COLOUR[1], ratio ) + GREEN_COEF * ratioDiff;
+  Colours::caelum.z = Math::mix( NIGHT_COLOUR[2], DAY_COLOUR[2], ratio ) + BLUE_COEF  * ratioDiff;
 
-  Colours::water[0] = Math::mix( NIGHT_COLOUR[0], WATER_COLOUR[0], ratio );
-  Colours::water[1] = Math::mix( NIGHT_COLOUR[1], WATER_COLOUR[1], ratio );
-  Colours::water[2] = Math::mix( NIGHT_COLOUR[2], WATER_COLOUR[2], ratio );
-  Colours::water[3] = Math::mix( NIGHT_COLOUR[3], WATER_COLOUR[3], ratio );
+  Colours::liquid.x = Math::mix( NIGHT_COLOUR[0], terra.liquidColour.x, ratio );
+  Colours::liquid.y = Math::mix( NIGHT_COLOUR[1], terra.liquidColour.y, ratio );
+  Colours::liquid.z = Math::mix( NIGHT_COLOUR[2], terra.liquidColour.z, ratio );
 
   if( camera.nightVision ) {
     Colours::caelum.x = 0.0f;
     Colours::caelum.y = Colours::caelum.x + Colours::caelum.y + Colours::caelum.z;
     Colours::caelum.z = 0.0f;
 
-    Colours::water.x = 0.0f;
-    Colours::water.y = Colours::water.x + Colours::water.y + Colours::water.z;
-    Colours::water.z = 0.0f;
+    Colours::liquid.x = 0.0f;
+    Colours::liquid.y = Colours::liquid.x + Colours::liquid.y + Colours::liquid.z;
+    Colours::liquid.z = 0.0f;
   }
 
   lightDir = dir;
@@ -93,12 +91,10 @@ void Caelum::update()
   Colours::diffuse[0] = ratio + RED_COEF   * ratioDiff;
   Colours::diffuse[1] = ratio + GREEN_COEF * ratioDiff;
   Colours::diffuse[2] = ratio + BLUE_COEF  * ratioDiff;
-  Colours::diffuse[3] = 1.0f;
 
   Colours::ambient[0] = AMBIENT_COEF * Colours::diffuse[0];
   Colours::ambient[1] = AMBIENT_COEF * Colours::diffuse[1];
   Colours::ambient[2] = AMBIENT_COEF * Colours::diffuse[2];
-  Colours::ambient[3] = 1.0f;
 }
 
 void Caelum::draw()
@@ -254,7 +250,7 @@ void Caelum::unload()
     Colours::diffuse = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
     Colours::ambient = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
     Colours::caelum  = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
-    Colours::water   = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+    Colours::liquid  = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
 
     lightDir = Vec3( 0.0f, 0.0f, 1.0f );
 

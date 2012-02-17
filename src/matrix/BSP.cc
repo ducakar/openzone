@@ -166,7 +166,7 @@ void BSP::load()
   for( int i = 0; i < nBrushes; ++i ) {
     brushes[i].firstSide = is.readInt();
     brushes[i].nSides    = is.readInt();
-    brushes[i].material  = is.readInt();
+    brushes[i].flags     = is.readInt();
   }
   data += nBrushes * int( sizeof( Brush ) );
 

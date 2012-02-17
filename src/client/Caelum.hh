@@ -47,7 +47,6 @@ class Caelum
 
     static const float DAY_COLOUR[4];
     static const float NIGHT_COLOUR[4];
-    static const float WATER_COLOUR[4];
     static const float STAR_COLOUR[4];
 
     uint  vao;

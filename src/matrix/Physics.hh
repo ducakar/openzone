@@ -56,6 +56,11 @@ class Physics
     static const float FLOOR_FRICTION;
     static const float SLICK_FRICTION;
 
+    static const float LAVA_LIFT;
+    static const float LAVA_DAMAGE_ABSOLUTE;
+    static const float LAVA_DAMAGE_RATIO;
+    static const int   LAVA_DAMAGE_INTERVAL;
+
     static const float FRAG_HIT_VELOCITY2;
     static const float FRAG_DESTROY_VELOCITY2;
     static const float FRAG_STR_DAMAGE_COEF;

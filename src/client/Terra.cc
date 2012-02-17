@@ -238,6 +238,8 @@ void Terra::load()
   landShaderId = library.shaderIndex( "terraLand" );
   waterShaderId = library.shaderIndex( "terraWater" );
 
+  liquidColour = is.readVec4();
+
   file.unmap();
 
   log.printEnd( " OK" );
