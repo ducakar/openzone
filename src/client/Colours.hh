@@ -42,11 +42,13 @@ struct Colours
   static const Vec4 NOCLIP_AABB;
 
   static const Vec4 GLOBAL_AMBIENT;
+  static const Vec4 WATER;
+  static const Vec4 LAVA;
 
   static Vec4 diffuse;
   static Vec4 ambient;
   static Vec4 caelum;
-  static Vec4 water;
+  static Vec4 liquid;
 
   static Vec4 waterBlend1;
   static Vec4 waterBlend2;

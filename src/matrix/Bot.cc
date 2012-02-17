@@ -487,7 +487,7 @@ void Bot::onUpdate()
         desiredMomentum *= clazz->airControl;
       }
 
-      if( ( flags & ( ON_FLOOR_BIT | IN_WATER_BIT ) ) == ON_FLOOR_BIT && floor.z != 1.0f ) {
+      if( ( flags & ( ON_FLOOR_BIT | IN_LIQUID_BIT ) ) == ON_FLOOR_BIT && floor.z != 1.0f ) {
         float dot = desiredMomentum * floor;
 
         if( dot > 0.0f ) {
@@ -828,30 +828,28 @@ void Bot::rearm()
 
 void Bot::kill()
 {
-  if( !Math::isinf( life ) ) {
-    const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
-    p.z        -= dim.z - clazz->corpseDim.z - EPSILON;
-    dim.z      = clazz->corpseDim.z;
-    flags      |= WIDE_CULL_BIT;
-    flags      &= ~SOLID_BIT;
-    life       = clazz->life / 2.0f - EPSILON;
-    resistance = Math::INF;
+  p.z        -= dim.z - clazz->corpseDim.z - EPSILON;
+  dim.z      = clazz->corpseDim.z;
+  flags      |= WIDE_CULL_BIT;
+  flags      &= ~SOLID_BIT;
+  life       = clazz->life / 2.0f - EPSILON;
+  resistance = Math::INF;
 
-    actions    = 0;
-    instrument = -1;
-    container  = -1;
-    trigger    = -1;
+  actions    = 0;
+  instrument = -1;
+  container  = -1;
+  trigger    = -1;
 
-    state      |= DEAD_BIT;
-    cargo      = -1;
+  state      |= DEAD_BIT;
+  cargo      = -1;
 
-    if( clazz->nItems != 0 ) {
-      flags |= BROWSABLE_BIT;
-    }
-
-    addEvent( EVENT_DEATH, 1.0f );
+  if( clazz->nItems != 0 ) {
+    flags |= BROWSABLE_BIT;
   }
+
+  addEvent( EVENT_DEATH, 1.0f );
 }
 
 void Bot::enter( int vehicle_ )

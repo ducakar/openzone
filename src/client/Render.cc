@@ -53,6 +53,7 @@ const float Render::CELL_WIDE_RADIUS =
 const float Render::NIGHT_FOG_COEFF  = 2.0f;
 const float Render::NIGHT_FOG_DIST   = 0.3f;
 const float Render::WATER_VISIBILITY = 32.0f;
+const float Render::LAVA_VISIBILITY  = 4.0f;
 
 const float Render::WIND_FACTOR      = 0.0008f;
 const float Render::WIND_PHI_INC     = 0.04f;
@@ -98,9 +99,10 @@ void Render::prepareDraw()
   uint beginMicros = currentMicros;
 
   collider.translate( camera.p, Vec3::ZERO );
-  shader.isInWater = ( collider.hit.medium & Material::WATER_BIT ) != 0;
+  shader.medium = collider.hit.medium;
 
-  visibility = shader.isInWater ? WATER_VISIBILITY : visibilityRange;
+  visibility = shader.medium & Medium::WATER_BIT ? WATER_VISIBILITY :
+               shader.medium & Medium::LAVA_BIT ? LAVA_VISIBILITY : visibilityRange;
   windPhi    = Math::fmod( windPhi + WIND_PHI_INC, Math::TAU );
 
   // frustum
@@ -148,7 +150,14 @@ void Render::drawGeometry()
 
   OZ_GL_CHECK_ERROR();
 
-  Vec4 clearColour = shader.isInWater ? Colours::water : Colours::caelum;
+  Vec4 clearColour = Colours::caelum;
+
+  if( shader.medium & Medium::WATER_BIT ) {
+    clearColour = camera.p.z >= 0.0f ? Colours::WATER : Colours::liquid;
+  }
+  else if( shader.medium & Medium::LAVA_BIT ) {
+    clearColour = Colours::LAVA;
+  }
 
   // clear buffer
   glClearColor( clearColour.x, clearColour.y, clearColour.z, clearColour.w );
@@ -160,7 +169,7 @@ void Render::drawGeometry()
 
   tf.camera = camera.rotTMat;
 
-  if( !shader.isInWater ) {
+  if( !( shader.medium & Medium::LIQUID_MASK ) ) {
     tf.projection();
 
     caelum.draw();
@@ -184,7 +193,7 @@ void Render::drawGeometry()
     tf.applyCamera();
     shader.updateLights();
 
-    glUniform1f( param.oz_Fog_start, shader.isInWater ? 0.0f : 100.0f );
+    glUniform1f( param.oz_Fog_start, shader.medium & Medium::LIQUID_MASK ? 0.0f : 50.0f );
     glUniform1f( param.oz_Fog_end, visibility );
     glUniform4fv( param.oz_Fog_colour, 1, clearColour );
 

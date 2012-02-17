@@ -71,6 +71,8 @@ void Terra::load( int id_ )
     }
   }
 
+  liquid = is.readInt();
+
   file.unmap();
 
   log.printEnd( " OK" );

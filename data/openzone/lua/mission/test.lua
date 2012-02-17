@@ -29,7 +29,7 @@ function onUpdate()
 end
 
 function onCreate()
-  ozOrbisSetGravity( -6.0 )
+--   ozOrbisSetGravity( -7.0 )
 
   ozTerraLoad( "terra" )
 
@@ -117,6 +117,8 @@ function init_sample()
   ozOrbisAddStr( "testCastle", 143, 0, 79, OZ_NORTH )
   ozOrbisAddStr( "pool", 112, -7, 70, OZ_NORTH )
   ozOrbisAddStr( "tower", 106, -7, 75, OZ_WEST )
+  ozOrbisAddStr( "atlantis", 106, -11, 71.1, OZ_SOUTH )
+  ozOrbisAddStr( "atlantis", -160, 220, -5, OZ_SOUTH )
 
   ozOrbisAddObj( "bauul", 112, -7, 100, OZ_NORTH )
 

@@ -78,11 +78,12 @@ void ObjectClass::fillCommonConfig( const Config* config )
    * life
    */
 
-  life       = config->get( "life", 100.0f );
+  life       = config->get( "life", 0.0f );
   resistance = config->get( "resistance", 100.0f );
 
-  if( life <= 0.0f ) {
-    throw Exception( "%s: Invalid life. Should be > 0.", name.cstr() );
+  if( life <= 0.0f || !Math::isnormal( life ) ) {
+    throw Exception( "%s: Invalid life value. Should be > 0 and finite. If you want infinite life"
+                     " rather set resistance to infinity.", name.cstr() );
   }
   if( resistance < 0.0f ) {
     throw Exception( "%s: Invalid resistance. Should be >= 0.", name.cstr() );
@@ -160,8 +161,6 @@ void ObjectClass::fillCommonConfig( const Config* config )
     deviceType = -1;
   }
   else {
-    flags |= Object::DEVICE_BIT;
-
     deviceType = library.deviceIndex( sDeviceType );
 
     if( flags & Object::USE_FUNC_BIT ) {

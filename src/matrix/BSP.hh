@@ -64,7 +64,8 @@ class BSP : public Bounds
       int firstSide; ///< Index of the first plane index in <tt>bushSides</tt> array.
       int nSides;    ///< Number of plane indices.
 
-      int material;  ///< %Material bits (look <tt>matrix::Material</tt>.
+      int flags;     ///< %Material and medium bits (look <tt>matrix::Material</tt> and
+                     ///< <tt>matrix::Medium</tt>).
     };
 
     /**

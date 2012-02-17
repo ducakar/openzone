@@ -73,8 +73,8 @@ void StrategicProxy::end()
 
 void StrategicProxy::update()
 {
-  const char* keys    = ui::keyboard.keys;
-  const char* oldKeys = ui::keyboard.oldKeys;
+  const ubyte* keys    = ui::keyboard.keys;
+  const ubyte* oldKeys = ui::keyboard.oldKeys;
 
   camera.h += camera.relH;
   camera.v += camera.relV;
@@ -135,8 +135,8 @@ void StrategicProxy::update()
 
 void StrategicProxy::prepare()
 {
-  const char* keys    = ui::keyboard.keys;
-  const char* oldKeys = ui::keyboard.oldKeys;
+  const ubyte* keys    = ui::keyboard.keys;
+  const ubyte* oldKeys = ui::keyboard.oldKeys;
 
   camera.align();
 

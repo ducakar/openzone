@@ -48,9 +48,26 @@ void Terra::load()
   float minHeight = terraConfig.get( "minHeight", float( std::numeric_limits<short>::min() ) );
   float maxHeight = terraConfig.get( "maxHeight", float( std::numeric_limits<short>::max() ) );
 
-  waterTexture  = terraConfig.get( "waterTexture", "" );
-  detailTexture = terraConfig.get( "detailTexture", "" );
-  mapTexture    = terraConfig.get( "mapTexture", "" );
+  String sLiquid = terraConfig.get( "liquid", "WATER" );
+
+  if( sLiquid.equals( "WATER" ) ) {
+    liquid = Medium::WATER_BIT;
+  }
+  else if( sLiquid.equals( "LAVA" ) ) {
+    liquid = Medium::LAVA_BIT;
+  }
+  else {
+    throw Exception( "Liquid should be either WATER or LAVA" );
+  }
+
+  liquidColour.x = terraConfig.get( "liquidColour.r", 0.00f );
+  liquidColour.y = terraConfig.get( "liquidColour.g", 0.05f );
+  liquidColour.z = terraConfig.get( "liquidColour.b", 0.25f );
+  liquidColour.w = 1.0f;
+
+  liquidTexture  = terraConfig.get( "liquidTexture", "" );
+  detailTexture  = terraConfig.get( "detailTexture", "" );
+  mapTexture     = terraConfig.get( "mapTexture", "" );
 
   terraConfig.clear( true );
 
@@ -144,6 +161,8 @@ void Terra::saveMatrix()
     }
   }
 
+  os.writeInt( liquid );
+
   if( !destFile.write( &os ) ) {
     throw Exception( "Failed to write '%s'", destFile.path().cstr() );
   }
@@ -159,17 +178,17 @@ void Terra::saveClient()
   log.println( "Compiling terrain model to '%s' {", destFile.path().cstr() );
   log.indent();
 
-  uint waterTexId  = context.loadRawTexture( "terra/" + waterTexture );
+  uint liquidTexId = context.loadRawTexture( "terra/" + liquidTexture );
   uint detailTexId = context.loadRawTexture( "terra/" + detailTexture );
   uint mapTexId    = context.loadRawTexture( "terra/" + mapTexture );
 
   BufferStream os;
 
-  context.writeTexture( waterTexId, &os );
+  context.writeTexture( liquidTexId, &os );
   context.writeTexture( detailTexId, &os );
   context.writeTexture( mapTexId, &os );
 
-  glDeleteTextures( 1, &waterTexId );
+  glDeleteTextures( 1, &liquidTexId );
   glDeleteTextures( 1, &detailTexId );
   glDeleteTextures( 1, &mapTexId );
 
@@ -247,6 +266,8 @@ void Terra::saveClient()
   for( int i = 0; i < waterTiles.length(); ++i ) {
     os.writeChar( waterTiles.get( i ) );
   }
+
+  os.writeVec4( liquidColour );
 
   if( !destFile.write( &os ) ) {
     throw Exception( "Failed to write '%s'", destFile.path().cstr() );

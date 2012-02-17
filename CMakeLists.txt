@@ -15,7 +15,7 @@ set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
 set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
 
 option( OZ_NETWORKING "Enable networking." OFF )
-option( OZ_GL_COMPATIBLE "Use less OpenGL extensions for better compatibility (for Mesa < 8.0)." OFF )
+option( OZ_GL_COMPATIBLE "Use less OpenGL extensions for better compatibility (for Mesa < 8.0)." ON )
 
 option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
 

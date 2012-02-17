@@ -53,6 +53,8 @@ class Terra
     static const float DIM;
 
     Quad quads[VERTS][VERTS];
+    int  liquid;              ///< Either <tt>matrix::Medium::GLOBAL_WATER_BIT</tt> or
+                              ///< <tt>matrix::Medium::GLOBAL_LAVA_BIT</tt>
     int  id;
 
     Terra();

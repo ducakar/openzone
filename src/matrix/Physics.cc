@@ -52,6 +52,11 @@ const float Physics::LADDER_FRICTION         =  0.60f;
 const float Physics::FLOOR_FRICTION          =  0.30f;
 const float Physics::SLICK_FRICTION          =  0.02f;
 
+const float Physics::LAVA_LIFT               =  1.2f;
+const float Physics::LAVA_DAMAGE_ABSOLUTE    =  175.0f;
+const float Physics::LAVA_DAMAGE_RATIO       =  0.25f;
+const int   Physics::LAVA_DAMAGE_INTERVAL    =  Timer::TICKS_PER_SEC / 2;
+
 const float Physics::FRAG_HIT_VELOCITY2      =  100.0f;
 const float Physics::FRAG_DESTROY_VELOCITY2  =  300.0f;
 const float Physics::FRAG_STR_DAMAGE_COEF    =  0.05f;
@@ -140,7 +145,8 @@ bool Physics::handleObjFriction()
 {
   float systemMom = gravity * Timer::TICK_TIME;
 
-  if( dyn->flags & Object::ON_LADDER_BIT ) {
+  const int ladderMask = Object::CLIMBER_BIT | Object::ON_LADDER_BIT;
+  if( ( dyn->flags & ladderMask ) == ladderMask ) {
     if( dyn->momentum.sqL() <= STICK_VELOCITY ) {
       dyn->momentum = Vec3::ZERO;
 
@@ -151,11 +157,12 @@ bool Physics::handleObjFriction()
     }
   }
   else {
-    if( dyn->flags & Object::IN_WATER_BIT ) {
+    if( dyn->flags & Object::IN_LIQUID_BIT ) {
+      float lift = dyn->flags & Object::IN_LAVA_BIT ? LAVA_LIFT : dyn->lift;
       float frictionFactor = 0.5f * dyn->depth / dyn->dim.z;
 
       dyn->momentum *= 1.0f - frictionFactor * WATER_FRICTION;
-      systemMom -= frictionFactor * dyn->lift * gravity * Timer::TICK_TIME;
+      systemMom -= frictionFactor * lift * gravity * Timer::TICK_TIME;
     }
 
     bool isLowerStill = true;
@@ -225,7 +232,7 @@ bool Physics::handleObjFriction()
           dyn->momentum.z = 0.0f;
 
           if( systemMom <= 0.0f ) {
-            return false;
+            return dyn->flags & Object::ENABLE_BIT;
           }
         }
       }
@@ -285,7 +292,7 @@ void Physics::handleObjHit()
         sDyn->momentum.y += directPushY + SIDE_PUSH_RATIO * ( pushY - directPushY );
 
         // allow side-pushing downwards in water
-        if( ( dyn->flags & sDyn->flags & Object::IN_WATER_BIT ) && momentum.z < 0.0f ) {
+        if( ( dyn->flags & sDyn->flags & Object::IN_LIQUID_BIT ) && momentum.z < 0.0f ) {
           sDyn->momentum.z += SIDE_PUSH_RATIO * ( momentum.z - sDyn->momentum.z );
         }
       }
@@ -512,18 +519,32 @@ void Physics::updateObj( Dynamic* dyn_ )
       handleObjMove();
       collider.mask = Object::SOLID_BIT;
 
-      dyn->flags |= ( collider.hit.medium & Material::WATER_BIT ? Object::IN_WATER_BIT : 0 ) |
-                    ( collider.hit.medium & Material::LADDER_BIT ? Object::ON_LADDER_BIT : 0 );
+      if( collider.hit.medium & Medium::LADDER_BIT ) {
+        dyn->flags |= Object::ON_LADDER_BIT;
+      }
+      if( collider.hit.medium & Medium::WATER_BIT ) {
+        dyn->flags |= Object::IN_LIQUID_BIT;
 
-      if( ( dyn->flags & ~oldFlags & Object::IN_WATER_BIT ) &&
-          dyn->velocity.z <= SPLASH_THRESHOLD )
-      {
-        dyn->splash( dyn->velocity.z );
+        if( !( oldFlags & Object::IN_LIQUID_BIT ) && dyn->velocity.z <= SPLASH_THRESHOLD ) {
+          dyn->splash( dyn->velocity.z );
+        }
+      }
+      if( collider.hit.medium & Medium::LAVA_BIT ) {
+        dyn->flags |= Object::IN_LIQUID_BIT | Object::IN_LAVA_BIT;
+
+        if( dyn->resistance <= LAVA_DAMAGE_ABSOLUTE ) {
+          dyn->flags |= Object::ENABLE_BIT;
+
+          // 199999 is some large enough prime to introduce enough spread among indices.
+          if( ( uint( timer.ticks ) + uint( dyn->index * 199999 ) ) % LAVA_DAMAGE_INTERVAL == 0 ) {
+            dyn->damage( max( LAVA_DAMAGE_ABSOLUTE, dyn->clazz->life * LAVA_DAMAGE_RATIO ) );
+          }
+        }
       }
 
       dyn->velocity = ( dyn->p - oldPos ) / Timer::TICK_TIME;
       dyn->momentum = dyn->velocity;
-      dyn->depth    = min( collider.hit.waterDepth, 2.0f * dyn->dim.z );
+      dyn->depth    = min( collider.hit.depth, 2.0f * dyn->dim.z );
     }
     else {
       hard_assert( dyn->momentum == Vec3::ZERO );

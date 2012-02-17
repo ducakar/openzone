@@ -151,9 +151,7 @@ void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const 
       printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 8 ), "%s", title.cstr() );
     }
     else {
-      if( !Math::isinf( str->life ) ) {
-        life = str->life / str->bsp->life;
-      }
+      life = str->life / str->bsp->life;
 
       const String& title = str->bsp->title;
       printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", title.cstr() );
@@ -168,11 +166,9 @@ void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const 
 
     printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", title.cstr() );
 
-    if( !Math::isinf( obj->life ) ) {
-      life = obj->flags & Object::BOT_BIT ?
-             max( 0.0f, ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
-             obj->life / clazz->life;
-    }
+    life = obj->flags & Object::BOT_BIT ?
+           max( 0.0f, ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
+           obj->life / clazz->life;
   }
 
   if( ent == null ) {
@@ -209,18 +205,14 @@ void StrategicArea::drawTaggedRect( const Span& span, const Struct* str, const O
     if( str != null ) {
       float maxLife = str->bsp->life;
 
-      if( !Math::isinf( str->life ) ) {
-        life = str->life / maxLife;
-      }
+      life = str->life / maxLife;
     }
     else {
       float maxLife = obj->clazz->life;
 
-      if( !Math::isinf( maxLife ) ) {
-        life = obj->flags & Object::BOT_BIT ?
-               max( 0.0f, ( obj->life - maxLife / 2.0f ) / ( maxLife / 2.0f ) ) :
-               obj->life / maxLife;
-      }
+      life = obj->flags & Object::BOT_BIT ?
+             max( 0.0f, ( obj->life - maxLife / 2.0f ) / ( maxLife / 2.0f ) ) :
+             obj->life / maxLife;
     }
 
     float barWidth = maxX - minX + 2.0f;

@@ -96,14 +96,11 @@ class Object : public AABB
      * BOUND OBJECTS
      */
 
-    // if a the object has a device in nirvana
-    static const int DEVICE_BIT         = 0x00080000;
-
     // if the object has an Imago object in frontend
-    static const int IMAGO_BIT          = 0x00040000;
+    static const int IMAGO_BIT          = 0x00080000;
 
     // if the object has an Audio object in frontend
-    static const int AUDIO_BIT          = 0x00020000;
+    static const int AUDIO_BIT          = 0x00040000;
 
     /*
      * STATE FLAGS
@@ -112,34 +109,37 @@ class Object : public AABB
     // when object's life drops to <= 0.0f it's tagged as destroyed first and kept one more tick
     // in the world, so destruction effects can be processed by frontend (e.g. destruction sounds)
     // in the next tick the destroyed objects are actually removed
-    static const int DESTROYED_BIT      = 0x00010000;
+    static const int DESTROYED_BIT      = 0x00020000;
 
     /*
      * COLLISION & PHYSICS FLAGS
      */
 
     // if the object is still and on a still surface, we won't handle physics for it
-    static const int DISABLED_BIT       = 0x00008000;
+    static const int DISABLED_BIT       = 0x00010000;
 
     // force full physics update in the next step
-    static const int ENABLE_BIT         = 0x00004000;
+    static const int ENABLE_BIT         = 0x00008000;
 
     // if the object is has been sliding on a floor or on another object in last step
-    static const int FRICTING_BIT       = 0x00002000;
+    static const int FRICTING_BIT       = 0x00004000;
 
     // if the object has collided into another dynamic object from below (to prevent stacked
     // objects from being carried around)
-    static const int BELOW_BIT          = 0x00001000;
+    static const int BELOW_BIT          = 0x00002000;
 
     // if the object lies or moves on a structure, terrain or non-dynamic object
     // (if on another dynamic object, we determine that with "lower" index)
-    static const int ON_FLOOR_BIT       = 0x00000800;
+    static const int ON_FLOOR_BIT       = 0x00001000;
 
     // if the object is on slipping surface (not cleared if disabled)
-    static const int ON_SLICK_BIT       = 0x00000400;
+    static const int ON_SLICK_BIT       = 0x00000800;
 
-    // if the object intersects with water (not cleared if disabled)
-    static const int IN_WATER_BIT       = 0x00000200;
+    // if the object intersects with a liquid (not cleared if disabled)
+    static const int IN_LIQUID_BIT      = 0x00000400;
+
+    // if the object is in lava
+    static const int IN_LAVA_BIT        = 0x00000200;
 
     // if the object is on ladder (not cleared if disabled)
     static const int ON_LADDER_BIT      = 0x00000100;
@@ -179,8 +179,8 @@ class Object : public AABB
     static const int TICK_CLEAR_MASK    = FRICTING_BIT;
 
     // those flags are cleared by Physics on each update when an object moves (plus lower = -1)
-    static const int MOVE_CLEAR_MASK    = DISABLED_BIT | ON_FLOOR_BIT | IN_WATER_BIT |
-                                          ON_LADDER_BIT | ON_SLICK_BIT;
+    static const int MOVE_CLEAR_MASK    = DISABLED_BIT | ON_FLOOR_BIT | IN_LIQUID_BIT |
+                                          IN_LAVA_BIT | ON_LADDER_BIT | ON_SLICK_BIT;
 
     static const int   MAX_DIMI         = 4;
     static const float MAX_DIM;

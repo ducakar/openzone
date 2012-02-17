@@ -37,7 +37,11 @@ class Terra
     matrix::Terra::Quad quads[matrix::Terra::VERTS][matrix::Terra::VERTS];
 
     String name;
-    String waterTexture;
+
+    int    liquid;
+    Vec4   liquidColour;
+
+    String liquidTexture;
     String detailTexture;
     String mapTexture;
 

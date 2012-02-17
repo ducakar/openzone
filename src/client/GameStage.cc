@@ -193,6 +193,8 @@ void GameStage::reload()
   camera.prepare();
 
   render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+  loader.loadScheduled();
+  render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
   sound.play();
   render.swap();
   sound.sync();
@@ -440,6 +442,8 @@ void GameStage::load()
   ui::ui.showLoadingScreen( true );
 
   render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+  loader.loadScheduled();
+  render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
   sound.play();
   render.swap();
   sound.sync();
@@ -468,6 +472,7 @@ void GameStage::unload()
   ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Shutting down ..." ) );
   ui::ui.showLoadingScreen( true );
 
+  render.draw( Render::DRAW_UI_BIT );
   render.draw( Render::DRAW_UI_BIT );
   render.swap();
 
