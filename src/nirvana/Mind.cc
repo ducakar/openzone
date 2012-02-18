@@ -62,9 +62,8 @@ void Mind::update()
   if( !bot->mindFunc.isEmpty() && !( bot->state & Bot::DEAD_BIT ) ) {
     flags &= ~FORCE_UPDATE_BIT;
     bot->actions = 0;
-    lua.mindCall( bot->mindFunc, bot );
 
-    if( lua.forceUpdate ) {
+    if( lua.mindCall( bot->mindFunc, bot ) ) {
       flags |= FORCE_UPDATE_BIT;
     }
   }

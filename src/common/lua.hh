@@ -28,14 +28,33 @@
 // Doxygen should skip those macros, we don't want documentation generated for them.
 #ifndef OZ_DOXYGEN
 
-#define OZ_LUA_DOBUFFER( begin, length, name ) \
-  ( luaL_loadbuffer( l, begin, size_t( length ), name ) || lua_pcall( l, 0, LUA_MULTRET, 0 ) )
+#if LUA_VERSION_NUM < 502
+# define IMPORT_LIBS() \
+    lua_pushcfunction( l, luaopen_table ); \
+    lua_pushcfunction( l, luaopen_string ); \
+    lua_pushcfunction( l, luaopen_math ); \
+    lua_pcall( l, 0, 0, 0 ); \
+    lua_pcall( l, 0, 0, 0 ); \
+    lua_pcall( l, 0, 0, 0 );
+#else
+# define IMPORT_LIBS() \
+    luaL_requiref( l, LUA_TABLIBNAME,  luaopen_table,  true ); \
+    luaL_requiref( l, LUA_STRLIBNAME,  luaopen_string, true ); \
+    luaL_requiref( l, LUA_MATHLIBNAME, luaopen_math,   true ); \
+    lua_settop( l, 0 );
+#endif
 
-#define OZ_LUA_FUNC( func ) \
+#define IMPORT_FUNC( func ) \
   lua.registerFunction( #func, func )
 
-#define OZ_LUA_CONST( name, value ) \
+#define IGNORE_FUNC( func ) \
+  static_cast<void>( func )
+
+#define IMPORT_CONST( name, value ) \
   lua.registerConstant( name, value )
+
+#define IMPORT_BUFFER( begin, length, name ) \
+  ( luaL_loadbuffer( l, begin, size_t( length ), name ) || lua_pcall( l, 0, LUA_MULTRET, 0 ) )
 
 #define ARG( n ) \
   hard_assert( lua_gettop( l ) == ( n ) ); \
@@ -49,59 +68,59 @@
   luaL_error( l, "%s: %s", __PRETTY_FUNCTION__, message )
 
 #define STR_NOT_NULL() \
-  if( lua.str == null ) { \
+  if( ms.str == null ) { \
     ERROR( "bound structure is null" ); \
   }
 
 #define EVENT_NOT_NULL() \
-  if( !lua.event.isValid() ) { \
+  if( !s.event.isValid() ) { \
     ERROR( "bound event is null" ); \
   }
 
 #define OBJ_NOT_NULL() \
-  if( lua.obj == null ) { \
+  if( ms.obj == null ) { \
     ERROR( "bound object is null" ); \
   }
 
 #define OBJ_NOT_SELF() \
-  if( lua.obj == lua.self ) { \
+  if( ms.obj == ms.self ) { \
     ERROR( "bound object if self" ); \
   }
 
 #define OBJ_DYNAMIC() \
-  if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) { \
+  if( !( ms.obj->flags & Object::DYNAMIC_BIT ) ) { \
     ERROR( "bound object is not dynamic" ); \
   } \
-  Dynamic* dyn = static_cast<Dynamic*>( lua.obj );
+  Dynamic* dyn = static_cast<Dynamic*>( ms.obj );
 
 #define OBJ_WEAPON() \
-  if( !( lua.obj->flags & Object::WEAPON_BIT ) ) { \
+  if( !( ms.obj->flags & Object::WEAPON_BIT ) ) { \
     ERROR( "bound object is not a weapon" ); \
   } \
-  Weapon* weapon = static_cast<Weapon*>( lua.obj );
+  Weapon* weapon = static_cast<Weapon*>( ms.obj );
 
 #define OBJ_BOT() \
-  if( !( lua.obj->flags & Object::BOT_BIT ) ) { \
+  if( !( ms.obj->flags & Object::BOT_BIT ) ) { \
     ERROR( "bound object is not a bot" ); \
   } \
-  Bot* bot = static_cast<Bot*>( lua.obj );
+  Bot* bot = static_cast<Bot*>( ms.obj );
 
 #define OBJ_VEHICLE() \
-  if( !( lua.obj->flags & Object::VEHICLE_BIT ) ) { \
+  if( !( ms.obj->flags & Object::VEHICLE_BIT ) ) { \
     ERROR( "bound object is not a vehicle" ); \
   } \
-  Vehicle* vehicle = static_cast<Vehicle*>( lua.obj );
+  Vehicle* vehicle = static_cast<Vehicle*>( ms.obj );
 
 #define FRAG_NOT_NULL() \
-  if( lua.frag == null ) { \
+  if( ms.frag == null ) { \
     ERROR( "bound fragment is null" ); \
   }
 
 #define SELF_BOT() \
-  if( lua.self == null || !( lua.self->flags & Object::BOT_BIT ) ) { \
+  if( ms.self == null || !( ms.self->flags & Object::BOT_BIT ) ) { \
     ERROR( "self is not a bot" ); \
   } \
-  Bot* self = static_cast<Bot*>( lua.self );
+  Bot* self = static_cast<Bot*>( ms.self );
 
 #define settop( i )             lua_settop( l, i )
 #define gettop()                lua_gettop( l )
@@ -131,21 +150,5 @@
 
 #define getglobal( n )          lua_getglobal( l, n )
 #define setglobal( n )          lua_setglobal( l, n )
-
-#if LUA_VERSION_NUM < 502
-# define OZ_LUA_LOADLIBS() \
-    lua_pushcfunction( l, luaopen_table ); \
-    lua_pushcfunction( l, luaopen_string ); \
-    lua_pushcfunction( l, luaopen_math ); \
-    lua_pcall( l, 0, 0, 0 ); \
-    lua_pcall( l, 0, 0, 0 ); \
-    lua_pcall( l, 0, 0, 0 );
-#else
-# define OZ_LUA_LOADLIBS() \
-    luaL_requiref( l, LUA_TABLIBNAME,  luaopen_table,  true ); \
-    luaL_requiref( l, LUA_STRLIBNAME,  luaopen_string, true ); \
-    luaL_requiref( l, LUA_MATHLIBNAME, luaopen_math,   true ); \
-    lua_settop( l, 0 );
-#endif
 
 #endif // OZ_DOXYGEN_SKIP

@@ -30,7 +30,7 @@
 
 #include "client/Lua.hh"
 
-#include "common/luamacros.hh"
+#include "common/lua.hh"
 
 using namespace oz::client;
 
@@ -121,12 +121,12 @@ void FloraModule::load()
 
 void FloraModule::registerLua() const
 {
-  OZ_LUA_FUNC( ozFloraGetDensity );
-  OZ_LUA_FUNC( ozFloraSetDensity );
-  OZ_LUA_FUNC( ozFloraGetSpacing );
-  OZ_LUA_FUNC( ozFloraSetSpacing );
-  OZ_LUA_FUNC( ozFloraGetNumber );
-  OZ_LUA_FUNC( ozFloraSeed );
+  IMPORT_FUNC( ozFloraGetDensity );
+  IMPORT_FUNC( ozFloraSetDensity );
+  IMPORT_FUNC( ozFloraGetSpacing );
+  IMPORT_FUNC( ozFloraSetSpacing );
+  IMPORT_FUNC( ozFloraGetNumber );
+  IMPORT_FUNC( ozFloraSeed );
 }
 
 int FloraModule::ozFloraGetDensity( lua_State* l )
