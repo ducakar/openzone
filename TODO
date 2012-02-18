@@ -3,8 +3,6 @@
   * improve Vehicle rotation
 - lua
   * ozBotSetInstrument & co.
-  * ozStructSetEntityKey & co.
-  * merge Lua classes?
 - ui
   * tutorial tips
   * options menu

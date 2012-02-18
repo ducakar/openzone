@@ -457,6 +457,17 @@ static int ozStrRemove( lua_State* l )
   return 0;
 }
 
+static int ozStrGetEntityLock( lua_State* l )
+{
+  ARG( 1 );
+  STR_NOT_NULL();
+
+  int entIndex = toint( 1 );
+
+  pushint( ms.str->entities[entIndex].key );
+  return 1;
+}
+
 static int ozStrSetEntityLock( lua_State* l )
 {
   ARG( 2 );
