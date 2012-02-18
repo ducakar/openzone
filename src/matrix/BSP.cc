@@ -267,7 +267,7 @@ void BSP::unload()
   log.printEnd( " OK" );
 }
 
-void BSP::init()
+void BSP::init( const Lingua* classLingua )
 {
   String sPath = "bsp/" + name + ".ozBSP";
 
@@ -281,8 +281,8 @@ void BSP::init()
   mins        = is.readPoint3();
   maxs        = is.readPoint3();
 
-  title       = OZ_GETTEXT( is.readString() );
-  description = OZ_GETTEXT( is.readString() );
+  title       = classLingua->get( is.readString() );
+  description = classLingua->get( is.readString() );
 
   int nSounds = is.readInt();
   if( nSounds != 0 ) {

@@ -675,7 +675,7 @@ void Build::packArchive( const char* name )
   log.indent();
 
   String path = String::str( "../%s.zip", name );
-  String cmdLine = String::str( "zip -Z store -r \"%s\" *", path.cstr() );
+  String cmdLine = String::str( "zip -r \"%s\" *", path.cstr() );
 
   log.println( "%s", cmdLine.cstr() );
   log.println();

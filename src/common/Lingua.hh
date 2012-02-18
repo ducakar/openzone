@@ -82,26 +82,28 @@ class Lingua
     const char* get( const char* message ) const;
 
     /**
-     * Initialise a secondary Lingua instance with given catalogue.
+     * Initialise per-mission Lingua instance from the given catalogue.
      *
-     * This function is intended to be used with secondary instances of Lingua. The global Lingua
-     * instance must be initialised first with <tt>init()</tt>.
-     *
-     * Secondary instances of Lingua are used for translations of strings that appear inside mission
-     * scripts.
-     *
-     * This function loads catalogue from <tt>lingua/\<locale\>/domain/\<domain\>.ozCat</tt>.
+     * This function loads catalogue from <tt>lingua/\<locale\>/domain/\<domain\>.ozCat</tt> that
+     * contains translations of strings that appear inside mission scripts.
      */
     bool initDomain( const char* domain );
+
+    /**
+     * Initialise translation of structure and object names and descriptions.
+     *
+     * Translations of structure and object names and descriptions only need to be available during
+     * <tt>matrix::Library</tt> initialisation, so a Lingua instance initialised with this function
+     * is only exists during that. It loads translations found in <tt>lingua/\<locale\>/class</tt>.
+     */
+    bool initClass();
 
     /**
      * Initialise global Lingua instance.
      *
      * The global instance must be initialised first so that <tt>locale</tt> member is set properly.
-     * This function loads all catalogues from <tt>lingua/\<locale\>/main</tt> directory.
-     *
-     * The global Lingua instance contains translations for strings that appear in the engine (UI)
-     * and titles and descriptions of objects and structures from game data.
+     * This function only loads UI catalogue from <tt>lingua/\<locale\>/ui.ozCat</tt> which must be
+     * loaded all the time when the engine is running.
      */
     bool init( const char* locale );
 

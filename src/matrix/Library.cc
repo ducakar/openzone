@@ -318,7 +318,7 @@ void Library::initTerrae()
   log.println( "}" );
 }
 
-void Library::initBSPs()
+void Library::initBSPs( const Lingua* classLingua )
 {
   log.println( "BSP structures (*.ozBSP/*.ozcBSP in 'bsp') {" );
   log.indent();
@@ -336,7 +336,7 @@ void Library::initBSPs()
     log.println( "%s", name.cstr() );
 
     BSP* bsp = bsps.add( name, BSP( name, bsps.length() ) );
-    bsp->init();
+    bsp->init( classLingua );
   }
 
   nBSPs = bsps.length();
@@ -464,7 +464,7 @@ void Library::initFragPools()
   log.println( "}" );
 }
 
-void Library::initClasses()
+void Library::initClasses( const Lingua* classLingua )
 {
   OZ_REGISTER_BASECLASS( Object );
   OZ_REGISTER_BASECLASS( Dynamic );
@@ -542,7 +542,7 @@ void Library::initClasses()
     }
 
     classConfig.add( "name", classIter.key() );
-    classIter.value()->initClass( &classConfig );
+    classIter.value()->initClass( &classConfig, classLingua );
     classConfig.clear( true );
   }
 
@@ -638,17 +638,22 @@ void Library::init()
   log.println( "Mapping resources {" );
   log.indent();
 
+  Lingua classLingua;
+  classLingua.initClass();
+
   initShaders();
   initTextures();
   initSounds();
   initCaela();
   initTerrae();
-  initBSPs();
+  initBSPs( &classLingua );
   initModels();
   initMusic();
   initNameLists();
   initFragPools();
-  initClasses();
+  initClasses( &classLingua );
+
+  classLingua.free();
 
   log.unindent();
   log.println( "}" );

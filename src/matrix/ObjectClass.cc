@@ -38,7 +38,7 @@ namespace oz
 namespace matrix
 {
 
-void ObjectClass::fillCommonConfig( const Config* config )
+void ObjectClass::fillCommonConfig( const Config* config, const Lingua* classLingua )
 {
   // suppress warnings
   config->get( "base", "" );
@@ -48,8 +48,8 @@ void ObjectClass::fillCommonConfig( const Config* config )
    */
 
   name        = config->get( "name", "" );
-  title       = OZ_GETTEXT( config->get( "title", name ) );
-  description = OZ_GETTEXT( config->get( "description", "" ) );
+  title       = classLingua->get( config->get( "title", name ) );
+  description = classLingua->get( config->get( "description", "" ) );
 
   if( name.isEmpty() ) {
     throw Exception( "Empty class name" );
@@ -299,7 +299,7 @@ ObjectClass* ObjectClass::createClass()
   return new ObjectClass();
 }
 
-void ObjectClass::initClass( const Config* config )
+void ObjectClass::initClass( const Config* config, const Lingua* classLingua )
 {
   flags = 0;
 
@@ -313,7 +313,7 @@ void ObjectClass::initClass( const Config* config )
   OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",        false );
   OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",      false );
 
-  fillCommonConfig( config );
+  fillCommonConfig( config, classLingua );
 }
 
 Object* ObjectClass::create( int index, const Point3& pos, Heading heading ) const

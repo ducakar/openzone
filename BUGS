@@ -1,0 +1,2 @@
+- For Xorg 1.12 when turning mouse wheel in the same direction only the first tick is detected in
+  windowed mode. In fullscreen mode some mouse wheel moves may also be missed.

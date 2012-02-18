@@ -59,10 +59,11 @@ package_openzone()
 
   install -Dm644 ../ozbase.zip ${pkgdir}/usr/share/openzone/ozbase.zip
   install -Dm644 ../openzone/AUTHORS ${pkgdir}/usr/share/doc/openzone/AUTHORS
-  install -Dm644 ../openzone/ChangeLog ${pkgdir}/usr/share/doc/openzone/ChangeLog
-  install -Dm644 ../openzone/TODO ${pkgdir}/usr/share/doc/openzone/TODO
   install -Dm644 ../openzone/README ${pkgdir}/usr/share/doc/openzone/README
   install -Dm644 ../openzone/README.sl ${pkgdir}/usr/share/doc/openzone/README.sl
+  install -Dm644 ../openzone/ChangeLog ${pkgdir}/usr/share/doc/openzone/ChangeLog
+  install -Dm644 ../openzone/BUGS ${pkgdir}/usr/share/doc/openzone/BUGS
+  install -Dm644 ../openzone/TODO ${pkgdir}/usr/share/doc/openzone/TODO
 }
 
 package_openzone-data()

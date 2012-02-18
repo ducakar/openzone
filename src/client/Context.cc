@@ -410,7 +410,7 @@ void Context::playBSP( const Struct* str )
   if( resource.object == null ) {
     resource.object = new BSP( str->bsp );
   }
-  else if( resource.object->isLoaded ) {
+  else {
     resource.object->play( str );
   }
 }

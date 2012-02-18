@@ -38,7 +38,7 @@ ObjectClass* WeaponClass::createClass()
   return new WeaponClass();
 }
 
-void WeaponClass::initClass( const Config* config )
+void WeaponClass::initClass( const Config* config, const Lingua* classLingua )
 {
   flags = Object::DYNAMIC_BIT | Object::WEAPON_BIT | Object::ITEM_BIT |
           Object::UPDATE_FUNC_BIT | Object::USE_FUNC_BIT;
@@ -52,7 +52,7 @@ void WeaponClass::initClass( const Config* config )
   OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
   OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
 
-  fillCommonConfig( config );
+  fillCommonConfig( config, classLingua );
 
   if( audioType != -1 ) {
     const char* soundName;
