@@ -225,7 +225,7 @@ add_subdirectory( doc )
 # info files and documentation
 if( WIN32 OR OZ_STANDALONE )
   file( GLOB readmes README* )
-  install( FILES AUTHORS COPYING ${readmes} ChangeLog DESTINATION . )
+  install( FILES AUTHORS COPYING ${readmes} ChangeLog BUGS TODO DESTINATION . )
   install( DIRECTORY doc/doxygen/html/ COMPONENT documentation DESTINATION doc/doxygen )
 endif()
 

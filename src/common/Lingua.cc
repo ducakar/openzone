@@ -89,13 +89,11 @@ bool Lingua::initDomain( const char* domain )
   return true;
 }
 
-bool Lingua::init( const char* locale_ )
+bool Lingua::initClass()
 {
   free();
 
-  locale = locale_;
-
-  PhysFile dir( "lingua/" + locale + "/main" );
+  PhysFile dir( "lingua/" + locale + "/class" );
   DArray<PhysFile> files = dir.ls();
 
   foreach( file, files.iter() ) {
@@ -150,6 +148,46 @@ bool Lingua::init( const char* locale_ )
     file->unmap();
   }
 
+  return true;
+}
+
+bool Lingua::init( const char* locale_ )
+{
+  free();
+
+  locale = locale_;
+
+  PhysFile file( "lingua/" + locale + "/ui.ozCat" );
+
+  if( !file.map() ) {
+    throw Exception( "Cannot read catalogue '%s'", file.path().cstr() );
+  }
+
+  InputStream is = file.inputStream();
+
+  int length = is.readInt();
+
+  if( length == 0 ) {
+    return false;
+  }
+
+  nMessages = ( 4 * length ) / 3;
+  messages = new Message*[nMessages];
+  aSet<Message*>( messages, null, nMessages );
+
+  for( int i = 0; i < length; ++i ) {
+    uint index = uint( is.readInt() ) % uint( nMessages );
+
+    Message* msg = new( msgPool ) Message();
+
+    msg->original    = is.readString();
+    msg->translation = is.readString();
+    msg->next        = messages[index];
+
+    messages[index] = msg;
+  }
+
+  file.unmap();
   return true;
 }
 

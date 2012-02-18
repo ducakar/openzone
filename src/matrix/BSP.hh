@@ -155,7 +155,7 @@ class BSP : public Bounds
     void load();
     void unload();
 
-    void init();
+    void init( const Lingua* classLingua );
 
 };
 

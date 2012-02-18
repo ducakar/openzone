@@ -1,7 +1,6 @@
 0.3
 - matrix
-  * Vehicle
-    + improve rotation
+  * improve Vehicle rotation
 - lua
   * ozBotSetInstrument & co.
   * ozStructSetEntityKey & co.
@@ -25,11 +24,7 @@
 0.4
 - new löök
 - matrix
-  * Vehicle
-    + turret
-    + wheeled
-    + tracked
-    + mech warrior
+  * Vehicle: turret, wheeled, tracked, mech warrior
 - ui
   * advanced HUD for mechanic units and vehicles
 - client

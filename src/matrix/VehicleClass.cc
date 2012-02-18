@@ -43,7 +43,7 @@ ObjectClass* VehicleClass::createClass()
   return new VehicleClass();
 }
 
-void VehicleClass::initClass( const Config* config )
+void VehicleClass::initClass( const Config* config, const Lingua* classLingua )
 {
   flags = Object::DYNAMIC_BIT | Object::VEHICLE_BIT | Object::USE_FUNC_BIT |
           Object::UPDATE_FUNC_BIT | Object::CYLINDER_BIT;
@@ -55,7 +55,7 @@ void VehicleClass::initClass( const Config* config )
   OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
   OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
 
-  fillCommonConfig( config );
+  fillCommonConfig( config, classLingua );
 
   if( audioType != -1 ) {
     const char* soundName;
@@ -186,7 +186,7 @@ void VehicleClass::initClass( const Config* config )
     shotIntervalBuffer[6] = char( '0' + ( i / 10 ) );
     shotIntervalBuffer[7] = char( '0' + ( i % 10 ) );
 
-    weaponNames[i]  = OZ_GETTEXT( config->get( weaponNameBuffer, "" ) );
+    weaponNames[i]  = classLingua->get( config->get( weaponNameBuffer, "" ) );
     onShot[i]       = config->get( onShotBuffer, "" );
     nRounds[i]      = config->get( nRoundsBuffer, -1 );
     shotInterval[i] = config->get( shotIntervalBuffer, 0.5f );

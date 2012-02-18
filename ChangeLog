@@ -1,44 +1,62 @@
 0.3.0
 - PhysFS used for accessing game data, game data loaded directly from archives
-- prebuilding entirely split from the runtime part of the engine
-- "particles" replaced by "frags" which are configurable similar to object classes
-- structures: crushing, bound objects, triggers, manual doors, elevators, locks
-- specular and emission masks: specular lighting is done per-pixel, objects can emit light
-- offscreen rendering, bloom postprocess effect
-- SDL_image replaced by FreeImage, wider range of image formats supported for prebuilding source
-- ozFormat tool for formatting object class files
 
-  * oz:
-    * more C++11 features
-      * move semantics
-      * defaulted & deleted functions
-      * constexpr for float constants
-      * iterators support range-for (however, foreach macro is still used
-        because of faulty IDE parsers and better performance in debug mode)
-    * better Win32 support, POSIX API replaced with Win32 API where possible
-    * String class has more consistent members, parsing functions added
-    * new Time class
-    * new StackTrace class
-    * OutputStream is readable
-    * new BufferStream class (OutputStream with dynamic internal storage)
-    * new PhysFile class, version of File class for PhysicsFS
-    * Vec3, Vec4, Quat don't inherit from each other or Simd class
-    * AABB & Bounds moved to liboz from matrix
-    * compiled as shared library
-    * fully documented
-    * X11 licence
-  * common:
-    * new layer, split from matrix
-    * Span and Timer classes moved to common from matrix
-    * new Lingua class, gettext-like system, but modularised and suitable for
-      data package system
-  * matrix:
-  * nirvana:
-  * client:
-    * Sound class
-      * sounds are played asynchronously parallel to rendering
-      * asynchronous streaming of tracks
-      * support for music in MP3 and AAC formats
-      * user-specified directory can be searched for music
-  * build:
-  * tools:
+* oz:
+  * more C++11 features
+    * move semantics
+    * defaulted & deleted functions
+    * constexpr for float constants
+    * iterators support range-for (however, foreach macro is still used because of faulty IDE
+      parsers and better performance in debug mode)
+  * better Win32 support, POSIX API replaced with Win32 API where possible
+  * String class has more consistent members, parsing functions added
+  * new Time class
+  * new StackTrace class
+  * OutputStream is readable
+  * new BufferStream class (OutputStream with dynamic internal storage)
+  * new PhysFile class, version of File class for PhysicsFS
+  * Vec3, Vec4, Quat don't inherit from each other or Simd class
+  * AABB & Bounds moved to liboz from matrix
+  * compiled as shared library
+  * fully documented
+  * X11 licence
+* common:
+  * new layer, split from matrix
+  * Span and Timer classes moved to common from matrix
+  * new Lingua class, gettext-like system, but modularised and suitable for data package system
+* matrix:
+  * object attributes, tell what special abilities an object can have (nigh vision, satnav, music
+    player)
+  * keys; object can have assigned a key value, so it can lock/unlock matching structure entities
+  * lava, can be used in both structures and instead of sea in terrain
+  * sliding damage
+  * configurable gravity acceleration
+  * structure improvements
+    * crushing - structures fall into terrain, and crush objects in their way
+    * bound objects - objects that are created together with a structure and destroyed with it;
+      useful for defence turrets
+    * air brushes to tag certain structure areas that should not be filled with water when a
+      structure is under sea
+    * no more need for hull around BSPs
+    * triggers - some entities can be used, upon usage trigger themselves or other entities
+    * entities can be locked/unlocked with appropriate key
+    * manual door
+    * elevators
+    * if an entity moves to a side, it also moves objects that lay on it - like stacks of objects
+  * fragment pools - particle replacements; fragments can be configured like object classes, can
+    have a graphic model assigned, etc.
+* nirvana:
+* client:
+  * specular and emission masks - specular lighting is done per-pixel, objects can emit light
+  * offscreen rendering, bloom postprocess effect
+  * Sound class
+    * sounds are played asynchronously parallel to rendering
+    * asynchronous streaming of tracks
+    * support for music in MP3 and AAC formats
+    * user-specified directory can be searched for music
+* build:
+  * prebuilding entirely split from the runtime part of the engine
+  * SDL_image replaced by FreeImage, wider range of image formats supported for prebuilding source
+  * 16-bit colours for terrain heightmap
+* tools:
+  * ozFormat tool for formatting object class files
