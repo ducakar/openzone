@@ -27,19 +27,24 @@
 
 #include "nirvana/Lua.hh"
 
-#include "matrix/Vehicle.hh"
 #include "matrix/Library.hh"
+#include "matrix/Vehicle.hh"
+#include "matrix/Collider.hh"
 #include "matrix/Physics.hh"
+#include "matrix/Synapse.hh"
 
 #include "nirvana/Nirvana.hh"
 #include "nirvana/Memo.hh"
 
-#include "common/luamacros.hh"
+#include "common/lua.hh"
 
 namespace oz
 {
 namespace nirvana
 {
+
+#include "matrix/luaapi.hh"
+#include "nirvana/luaapi.hh"
 
 Lua lua;
 
@@ -137,24 +142,28 @@ Lua::Lua() :
   l( null )
 {}
 
-void Lua::mindCall( const char* functionName, Bot* self_ )
+bool Lua::mindCall( const char* functionName, Bot* self_ )
 {
-  self        = self_;
-  obj         = self_;
-  str         = null;
-  objIndex    = 0;
-  strIndex    = 0;
-  forceUpdate = false;
+  ms.self        = self_;
+  ms.obj         = self_;
+  ms.str         = null;
+  ms.objIndex    = 0;
+  ms.strIndex    = 0;
+  ns.self        = self_;
+  ns.forceUpdate = false;
 
-  hard_assert( gettop() == 1 && self != null );
+  hard_assert( gettop() == 1 && ms.self != null );
 
   getglobal( functionName );
-  rawgeti( 1, self->index );
+  rawgeti( 1, ms.self->index );
   lua_pcall( l, 1, 0, 0 );
 
   if( gettop() != 1 ) {
-    throw Exception( "Nirvana Lua: %s(self = %d): %s", functionName, self->index, tostring( -1 ) );
+    throw Exception( "Nirvana Lua: %s(self = %d): %s", functionName, ms.self->index,
+                     tostring( -1 ) );
   }
+
+  return ns.forceUpdate;
 }
 
 void Lua::registerMind( int botIndex )
@@ -251,7 +260,7 @@ void Lua::init()
 
   hard_assert( gettop() == 0 );
 
-  OZ_LUA_LOADLIBS();
+  IMPORT_LIBS();
 
   if( gettop() != 0 ) {
     throw Exception( "Failed to initialise Lua libraries" );
@@ -261,307 +270,416 @@ void Lua::init()
    * General functions
    */
 
-  OZ_LUA_FUNC( ozPrintln );
-  OZ_LUA_FUNC( ozException );
+  IMPORT_FUNC( ozPrintln );
+  IMPORT_FUNC( ozException );
 
-  OZ_LUA_FUNC( ozForceUpdate );
+  IGNORE_FUNC( ozUseFailed );
+  IMPORT_FUNC( ozForceUpdate );
 
   /*
    * Orbis
    */
 
-  OZ_LUA_FUNC( ozOrbisGetGravity );
+  IMPORT_FUNC( ozOrbisGetGravity );
+  IGNORE_FUNC( ozOrbisSetGravity );
 
-  OZ_LUA_FUNC( ozOrbisBindAllOverlaps );
-  OZ_LUA_FUNC( ozOrbisBindStrOverlaps );
-  OZ_LUA_FUNC( ozOrbisBindObjOverlaps );
+  IGNORE_FUNC( ozOrbisAddStr );
+  IGNORE_FUNC( ozOrbisTryAddStr );
+  IGNORE_FUNC( ozOrbisAddObj );
+  IGNORE_FUNC( ozOrbisTryAddObj );
+  IGNORE_FUNC( ozOrbisAddFrag );
+  IGNORE_FUNC( ozOrbisGenFrags );
+
+  IMPORT_FUNC( ozOrbisBindAllOverlaps );
+  IMPORT_FUNC( ozOrbisBindStrOverlaps );
+  IMPORT_FUNC( ozOrbisBindObjOverlaps );
 
   /*
    * Terra
    */
 
-  OZ_LUA_FUNC( ozTerraHeight );
+  IGNORE_FUNC( ozTerraLoad );
+
+  IMPORT_FUNC( ozTerraHeight );
 
   /*
    * Caelum
    */
 
-  OZ_LUA_FUNC( ozCaelumGetHeading );
-  OZ_LUA_FUNC( ozCaelumGetPeriod );
-  OZ_LUA_FUNC( ozCaelumGetTime );
+  IGNORE_FUNC( ozCaelumLoad );
+
+  IMPORT_FUNC( ozCaelumGetHeading );
+  IGNORE_FUNC( ozCaelumSetHeading );
+  IMPORT_FUNC( ozCaelumGetPeriod );
+  IGNORE_FUNC( ozCaelumSetPeriod );
+  IMPORT_FUNC( ozCaelumGetTime );
+  IGNORE_FUNC( ozCaelumSetTime );
+  IGNORE_FUNC( ozCaelumAddTime );
 
   /*
    * Structure
    */
 
-  OZ_LUA_FUNC( ozStrBindIndex );
-  OZ_LUA_FUNC( ozStrBindNext );
+  IMPORT_FUNC( ozStrBindIndex );
+  IMPORT_FUNC( ozStrBindNext );
 
-  OZ_LUA_FUNC( ozStrIsNull );
+  IMPORT_FUNC( ozStrIsNull );
 
-  OZ_LUA_FUNC( ozStrGetIndex );
-  OZ_LUA_FUNC( ozStrGetBounds );
-  OZ_LUA_FUNC( ozStrGetPos );
-  OZ_LUA_FUNC( ozStrGetBSP );
-  OZ_LUA_FUNC( ozStrGetHeading );
-  OZ_LUA_FUNC( ozStrGetLife );
+  IMPORT_FUNC( ozStrGetIndex );
+  IMPORT_FUNC( ozStrGetBounds );
+  IMPORT_FUNC( ozStrGetPos );
+  IMPORT_FUNC( ozStrGetBSP );
+  IMPORT_FUNC( ozStrGetHeading );
+  IMPORT_FUNC( ozStrGetLife );
+  IGNORE_FUNC( ozStrSetLife );
+  IGNORE_FUNC( ozStrAddLife );
 
-  OZ_LUA_FUNC( ozStrVectorFromSelf );
-  OZ_LUA_FUNC( ozStrVectorFromSelfEye );
-  OZ_LUA_FUNC( ozStrDirectionFromSelf );
-  OZ_LUA_FUNC( ozStrDirectionFromSelfEye );
-  OZ_LUA_FUNC( ozStrDistanceFromSelf );
-  OZ_LUA_FUNC( ozStrDistanceFromSelfEye );
-  OZ_LUA_FUNC( ozStrHeadingFromSelf );
-  OZ_LUA_FUNC( ozStrRelativeHeadingFromSelf );
-  OZ_LUA_FUNC( ozStrPitchFromSelf );
-  OZ_LUA_FUNC( ozStrPitchFromSelfEye );
+  IGNORE_FUNC( ozStrDamage );
+  IGNORE_FUNC( ozStrDestroy );
+  IGNORE_FUNC( ozStrRemove );
 
-  OZ_LUA_FUNC( ozStrBindAllOverlaps );
-  OZ_LUA_FUNC( ozStrBindStrOverlaps );
-  OZ_LUA_FUNC( ozStrBindObjOverlaps );
+  IGNORE_FUNC( ozStrSetEntityLock );
+
+  IMPORT_FUNC( ozStrVectorFromSelf );
+  IMPORT_FUNC( ozStrVectorFromSelfEye );
+  IMPORT_FUNC( ozStrDirectionFromSelf );
+  IMPORT_FUNC( ozStrDirectionFromSelfEye );
+  IMPORT_FUNC( ozStrDistanceFromSelf );
+  IMPORT_FUNC( ozStrDistanceFromSelfEye );
+  IMPORT_FUNC( ozStrHeadingFromSelf );
+  IMPORT_FUNC( ozStrRelativeHeadingFromSelf );
+  IMPORT_FUNC( ozStrPitchFromSelf );
+  IMPORT_FUNC( ozStrPitchFromSelfEye );
+
+  IMPORT_FUNC( ozStrBindAllOverlaps );
+  IMPORT_FUNC( ozStrBindStrOverlaps );
+  IMPORT_FUNC( ozStrBindObjOverlaps );
 
   /*
    * Object
    */
 
-  OZ_LUA_FUNC( ozObjBindIndex );
-  OZ_LUA_FUNC( ozObjBindPilot );
-  OZ_LUA_FUNC( ozObjBindSelf );
-  OZ_LUA_FUNC( ozObjBindNext );
+  IMPORT_FUNC( ozObjBindIndex );
+  IMPORT_FUNC( ozObjBindPilot );
+  IMPORT_FUNC( ozObjBindSelf );
+  IGNORE_FUNC( ozObjBindUser );
+  IMPORT_FUNC( ozObjBindNext );
 
-  OZ_LUA_FUNC( ozObjIsNull );
-  OZ_LUA_FUNC( ozObjIsSelf );
-  OZ_LUA_FUNC( ozObjIsCut );
-  OZ_LUA_FUNC( ozObjIsBrowsable );
-  OZ_LUA_FUNC( ozObjIsDynamic );
-  OZ_LUA_FUNC( ozObjIsItem );
-  OZ_LUA_FUNC( ozObjIsWeapon );
-  OZ_LUA_FUNC( ozObjIsBot );
-  OZ_LUA_FUNC( ozObjIsVehicle );
+  IMPORT_FUNC( ozObjIsNull );
+  IMPORT_FUNC( ozObjIsSelf );
+  IGNORE_FUNC( ozObjIsUser );
+  IMPORT_FUNC( ozObjIsCut );
+  IMPORT_FUNC( ozObjIsBrowsable );
+  IMPORT_FUNC( ozObjIsDynamic );
+  IMPORT_FUNC( ozObjIsItem );
+  IMPORT_FUNC( ozObjIsWeapon );
+  IMPORT_FUNC( ozObjIsBot );
+  IMPORT_FUNC( ozObjIsVehicle );
 
-  OZ_LUA_FUNC( ozObjGetIndex );
-  OZ_LUA_FUNC( ozObjGetPos );
-  OZ_LUA_FUNC( ozObjGetDim );
-  OZ_LUA_FUNC( ozObjGetFlags );
-  OZ_LUA_FUNC( ozObjGetHeading );
-  OZ_LUA_FUNC( ozObjGetClassName );
-  OZ_LUA_FUNC( ozObjGetLife );
+  IMPORT_FUNC( ozObjGetIndex );
+  IMPORT_FUNC( ozObjGetPos );
+  IGNORE_FUNC( ozObjSetPos );
+  IGNORE_FUNC( ozObjAddPos );
+  IMPORT_FUNC( ozObjGetDim );
+  IMPORT_FUNC( ozObjGetFlags );
+  IMPORT_FUNC( ozObjGetHeading );
+  IMPORT_FUNC( ozObjGetClassName );
+  IMPORT_FUNC( ozObjGetLife );
+  IGNORE_FUNC( ozObjSetLife );
+  IGNORE_FUNC( ozObjAddLife );
 
-  OZ_LUA_FUNC( ozObjBindItems );
+  IGNORE_FUNC( ozObjAddEvent );
 
-  OZ_LUA_FUNC( ozObjVectorFromSelf );
-  OZ_LUA_FUNC( ozObjVectorFromSelfEye );
-  OZ_LUA_FUNC( ozObjDirectionFromSelf );
-  OZ_LUA_FUNC( ozObjDirectionFromSelfEye );
-  OZ_LUA_FUNC( ozObjDistanceFromSelf );
-  OZ_LUA_FUNC( ozObjDistanceFromSelfEye );
-  OZ_LUA_FUNC( ozObjHeadingFromSelf );
-  OZ_LUA_FUNC( ozObjRelativeHeadingFromSelf );
-  OZ_LUA_FUNC( ozObjPitchFromSelf );
-  OZ_LUA_FUNC( ozObjPitchFromSelfEye );
-  OZ_LUA_FUNC( ozObjIsVisibleFromSelf );
-  OZ_LUA_FUNC( ozObjIsVisibleFromSelfEye );
+  IMPORT_FUNC( ozObjBindItems );
+  IGNORE_FUNC( ozObjAddItem );
+  IGNORE_FUNC( ozObjRemoveItem );
+  IGNORE_FUNC( ozObjRemoveAllItems );
 
-  OZ_LUA_FUNC( ozObjBindAllOverlaps );
-  OZ_LUA_FUNC( ozObjBindStrOverlaps );
-  OZ_LUA_FUNC( ozObjBindObjOverlaps );
+  IGNORE_FUNC( ozObjEnableUpdate );
+  IGNORE_FUNC( ozObjDamage );
+  IGNORE_FUNC( ozObjDestroy );
+  IGNORE_FUNC( ozObjQuietDestroy );
+
+  IMPORT_FUNC( ozObjVectorFromSelf );
+  IMPORT_FUNC( ozObjVectorFromSelfEye );
+  IMPORT_FUNC( ozObjDirectionFromSelf );
+  IMPORT_FUNC( ozObjDirectionFromSelfEye );
+  IMPORT_FUNC( ozObjDistanceFromSelf );
+  IMPORT_FUNC( ozObjDistanceFromSelfEye );
+  IMPORT_FUNC( ozObjHeadingFromSelf );
+  IMPORT_FUNC( ozObjRelativeHeadingFromSelf );
+  IMPORT_FUNC( ozObjPitchFromSelf );
+  IMPORT_FUNC( ozObjPitchFromSelfEye );
+  IMPORT_FUNC( ozObjIsVisibleFromSelf );
+  IMPORT_FUNC( ozObjIsVisibleFromSelfEye );
+
+  IMPORT_FUNC( ozObjBindAllOverlaps );
+  IMPORT_FUNC( ozObjBindStrOverlaps );
+  IMPORT_FUNC( ozObjBindObjOverlaps );
 
   /*
    * Dynamic object
    */
 
-  OZ_LUA_FUNC( ozDynBindParent );
+  IMPORT_FUNC( ozDynBindParent );
 
-  OZ_LUA_FUNC( ozDynGetVelocity );
-  OZ_LUA_FUNC( ozDynGetMomentum );
-  OZ_LUA_FUNC( ozDynGetMass );
-  OZ_LUA_FUNC( ozDynGetLift );
+  IMPORT_FUNC( ozDynGetVelocity );
+  IMPORT_FUNC( ozDynGetMomentum );
+  IGNORE_FUNC( ozDynSetMomentum );
+  IGNORE_FUNC( ozDynAddMomentum );
+  IMPORT_FUNC( ozDynGetMass );
+  IMPORT_FUNC( ozDynGetLift );
 
   /*
    * Weapon
    */
 
-  OZ_LUA_FUNC( ozWeaponGetDefaultRounds );
-  OZ_LUA_FUNC( ozWeaponGetRounds );
+  IMPORT_FUNC( ozWeaponGetDefaultRounds );
+  IMPORT_FUNC( ozWeaponGetRounds );
+  IGNORE_FUNC( ozWeaponSetRounds );
+  IGNORE_FUNC( ozWeaponAddRounds );
+  IGNORE_FUNC( ozWeaponReload );
 
   /*
    * Bot
    */
 
-  OZ_LUA_FUNC( ozBotBindPilot );
+  IMPORT_FUNC( ozBotBindPilot );
 
-  OZ_LUA_FUNC( ozBotGetName );
+  IMPORT_FUNC( ozBotGetName );
+  IGNORE_FUNC( ozBotSetName );
+  IMPORT_FUNC( ozBotGetMindFunc );
+  IGNORE_FUNC( ozBotSetMindFunc );
 
-  OZ_LUA_FUNC( ozBotGetState );
-  OZ_LUA_FUNC( ozBotGetEyePos );
-  OZ_LUA_FUNC( ozBotGetH );
-  OZ_LUA_FUNC( ozBotGetV );
-  OZ_LUA_FUNC( ozBotGetDir );
-  OZ_LUA_FUNC( ozBotGetStamina );
+  IMPORT_FUNC( ozBotGetState );
+  IMPORT_FUNC( ozBotGetEyePos );
+  IMPORT_FUNC( ozBotGetH );
+  IGNORE_FUNC( ozBotSetH );
+  IGNORE_FUNC( ozBotAddH );
+  IMPORT_FUNC( ozBotGetV );
+  IGNORE_FUNC( ozBotSetV );
+  IGNORE_FUNC( ozBotAddV );
+  IMPORT_FUNC( ozBotGetDir );
+  IMPORT_FUNC( ozBotGetStamina );
+  IGNORE_FUNC( ozBotSetStamina );
+  IGNORE_FUNC( ozBotAddStamina );
 
-  OZ_LUA_FUNC( ozBotIsRunning );
+  IGNORE_FUNC( ozBotActionForward );
+  IGNORE_FUNC( ozBotActionBackward );
+  IGNORE_FUNC( ozBotActionRight );
+  IGNORE_FUNC( ozBotActionLeft );
+  IGNORE_FUNC( ozBotActionJump );
+  IGNORE_FUNC( ozBotActionCrouch );
+  IGNORE_FUNC( ozBotActionUse );
+  IGNORE_FUNC( ozBotActionTake );
+  IGNORE_FUNC( ozBotActionGrab );
+  IGNORE_FUNC( ozBotActionThrow );
+  IGNORE_FUNC( ozBotActionAttack );
+  IGNORE_FUNC( ozBotActionExit );
+  IGNORE_FUNC( ozBotActionEject );
+  IGNORE_FUNC( ozBotActionSuicide );
 
-  OZ_LUA_FUNC( ozBotIsVisibleFromSelfEyeToEye );
+  IMPORT_FUNC( ozBotIsRunning );
+  IGNORE_FUNC( ozBotSetRunning );
+  IGNORE_FUNC( ozBotToggleRunning );
+
+  IGNORE_FUNC( ozBotSetGesture );
+
+  IGNORE_FUNC( ozBotSetWeaponItem );
+
+  IGNORE_FUNC( ozBotHeal );
+  IGNORE_FUNC( ozBotRearm );
+  IGNORE_FUNC( ozBotKill );
+
+  IMPORT_FUNC( ozBotIsVisibleFromSelfEyeToEye );
 
   /*
    * Vehicle
    */
 
-  OZ_LUA_FUNC( ozVehicleGetH );
-  OZ_LUA_FUNC( ozVehicleGetV );
-  OZ_LUA_FUNC( ozVehicleGetDir );
+  IMPORT_FUNC( ozVehicleGetH );
+  IGNORE_FUNC( ozVehicleSetH );
+  IGNORE_FUNC( ozVehicleAddH );
+  IMPORT_FUNC( ozVehicleGetV );
+  IGNORE_FUNC( ozVehicleSetV );
+  IGNORE_FUNC( ozVehicleAddV );
+  IMPORT_FUNC( ozVehicleGetDir );
+
+  IGNORE_FUNC( ozVehicleEmbarkPilot );
+
+  IGNORE_FUNC( ozVehicleService );
+
+  /*
+   * Frag
+   */
+
+  IGNORE_FUNC( ozFragBindIndex );
+
+  IGNORE_FUNC( ozFragIsNull );
+
+  IGNORE_FUNC( ozFragGetPos );
+  IGNORE_FUNC( ozFragSetPos );
+  IGNORE_FUNC( ozFragAddPos );
+  IGNORE_FUNC( ozFragGetIndex );
+  IGNORE_FUNC( ozFragGetVelocity );
+  IGNORE_FUNC( ozFragSetVelocity );
+  IGNORE_FUNC( ozFragAddVelocity );
+  IGNORE_FUNC( ozFragGetLife );
+  IGNORE_FUNC( ozFragSetLife );
+  IGNORE_FUNC( ozFragAddLife );
+
+  IGNORE_FUNC( ozFragRemove );
 
   /*
    * Mind's bot
    */
 
-  OZ_LUA_FUNC( ozSelfIsCut );
+  IMPORT_FUNC( ozSelfIsCut );
 
-  OZ_LUA_FUNC( ozSelfGetIndex );
-  OZ_LUA_FUNC( ozSelfGetPos );
-  OZ_LUA_FUNC( ozSelfGetDim );
-  OZ_LUA_FUNC( ozSelfGetFlags );
-  OZ_LUA_FUNC( ozSelfGetTypeName );
-  OZ_LUA_FUNC( ozSelfGetLife );
+  IMPORT_FUNC( ozSelfGetIndex );
+  IMPORT_FUNC( ozSelfGetPos );
+  IMPORT_FUNC( ozSelfGetDim );
+  IMPORT_FUNC( ozSelfGetFlags );
+  IMPORT_FUNC( ozSelfGetTypeName );
+  IMPORT_FUNC( ozSelfGetLife );
 
-  OZ_LUA_FUNC( ozSelfGetVelocity );
-  OZ_LUA_FUNC( ozSelfGetMomentum );
-  OZ_LUA_FUNC( ozSelfGetMass );
-  OZ_LUA_FUNC( ozSelfGetLift );
+  IMPORT_FUNC( ozSelfGetVelocity );
+  IMPORT_FUNC( ozSelfGetMomentum );
+  IMPORT_FUNC( ozSelfGetMass );
+  IMPORT_FUNC( ozSelfGetLift );
 
-  OZ_LUA_FUNC( ozSelfGetName );
+  IMPORT_FUNC( ozSelfGetName );
 
-  OZ_LUA_FUNC( ozSelfGetState );
-  OZ_LUA_FUNC( ozSelfGetEyePos );
-  OZ_LUA_FUNC( ozSelfGetH );
-  OZ_LUA_FUNC( ozSelfSetH );
-  OZ_LUA_FUNC( ozSelfAddH );
-  OZ_LUA_FUNC( ozSelfGetV );
-  OZ_LUA_FUNC( ozSelfSetV );
-  OZ_LUA_FUNC( ozSelfAddV );
-  OZ_LUA_FUNC( ozSelfGetDir );
-  OZ_LUA_FUNC( ozSelfGetStamina );
+  IMPORT_FUNC( ozSelfGetState );
+  IMPORT_FUNC( ozSelfGetEyePos );
+  IMPORT_FUNC( ozSelfGetH );
+  IMPORT_FUNC( ozSelfSetH );
+  IMPORT_FUNC( ozSelfAddH );
+  IMPORT_FUNC( ozSelfGetV );
+  IMPORT_FUNC( ozSelfSetV );
+  IMPORT_FUNC( ozSelfAddV );
+  IMPORT_FUNC( ozSelfGetDir );
+  IMPORT_FUNC( ozSelfGetStamina );
 
-  OZ_LUA_FUNC( ozSelfActionForward );
-  OZ_LUA_FUNC( ozSelfActionBackward );
-  OZ_LUA_FUNC( ozSelfActionRight );
-  OZ_LUA_FUNC( ozSelfActionLeft );
-  OZ_LUA_FUNC( ozSelfActionJump );
-  OZ_LUA_FUNC( ozSelfActionCrouch );
-  OZ_LUA_FUNC( ozSelfActionUse );
-  OZ_LUA_FUNC( ozSelfActionTake );
-  OZ_LUA_FUNC( ozSelfActionGrab );
-  OZ_LUA_FUNC( ozSelfActionThrow );
-  OZ_LUA_FUNC( ozSelfActionAttack );
-  OZ_LUA_FUNC( ozSelfActionExit );
-  OZ_LUA_FUNC( ozSelfActionEject );
-  OZ_LUA_FUNC( ozSelfActionSuicide );
+  IMPORT_FUNC( ozSelfActionForward );
+  IMPORT_FUNC( ozSelfActionBackward );
+  IMPORT_FUNC( ozSelfActionRight );
+  IMPORT_FUNC( ozSelfActionLeft );
+  IMPORT_FUNC( ozSelfActionJump );
+  IMPORT_FUNC( ozSelfActionCrouch );
+  IMPORT_FUNC( ozSelfActionUse );
+  IMPORT_FUNC( ozSelfActionTake );
+  IMPORT_FUNC( ozSelfActionGrab );
+  IMPORT_FUNC( ozSelfActionThrow );
+  IMPORT_FUNC( ozSelfActionAttack );
+  IMPORT_FUNC( ozSelfActionExit );
+  IMPORT_FUNC( ozSelfActionEject );
+  IMPORT_FUNC( ozSelfActionSuicide );
 
-  OZ_LUA_FUNC( ozSelfIsRunning );
-  OZ_LUA_FUNC( ozSelfSetRunning );
-  OZ_LUA_FUNC( ozSelfToggleRunning );
+  IMPORT_FUNC( ozSelfIsRunning );
+  IMPORT_FUNC( ozSelfSetRunning );
+  IMPORT_FUNC( ozSelfToggleRunning );
 
-  OZ_LUA_FUNC( ozSelfSetGesture );
+  IMPORT_FUNC( ozSelfSetGesture );
 
-  OZ_LUA_FUNC( ozSelfBindItems );
-  OZ_LUA_FUNC( ozSelfBindParent );
+  IMPORT_FUNC( ozSelfBindItems );
+  IMPORT_FUNC( ozSelfBindParent );
 
-  OZ_LUA_FUNC( ozSelfBindAllOverlaps );
-  OZ_LUA_FUNC( ozSelfBindStrOverlaps );
-  OZ_LUA_FUNC( ozSelfBindObjOverlaps );
+  IMPORT_FUNC( ozSelfBindAllOverlaps );
+  IMPORT_FUNC( ozSelfBindStrOverlaps );
+  IMPORT_FUNC( ozSelfBindObjOverlaps );
 
   /*
    * Nirvana
    */
 
-  OZ_LUA_FUNC( ozNirvanaRemoveDevice );
-  OZ_LUA_FUNC( ozNirvanaAddMemo );
+  IMPORT_FUNC( ozNirvanaRemoveDevice );
+  IMPORT_FUNC( ozNirvanaAddMemo );
 
   /*
    * Constants
    */
 
-  OZ_LUA_CONST( "OZ_ORBIS_DIM",                   Orbis::DIM );
+  IMPORT_CONST( "OZ_ORBIS_DIM",                   Orbis::DIM );
 
-  OZ_LUA_CONST( "OZ_NORTH",                       NORTH );
-  OZ_LUA_CONST( "OZ_WEST",                        WEST );
-  OZ_LUA_CONST( "OZ_SOUTH",                       SOUTH );
-  OZ_LUA_CONST( "OZ_EAST",                        EAST );
+  IMPORT_CONST( "OZ_NORTH",                       NORTH );
+  IMPORT_CONST( "OZ_WEST",                        WEST );
+  IMPORT_CONST( "OZ_SOUTH",                       SOUTH );
+  IMPORT_CONST( "OZ_EAST",                        EAST );
 
-  OZ_LUA_CONST( "OZ_EVENT_CREATE",                Object::EVENT_CREATE );
-  OZ_LUA_CONST( "OZ_EVENT_DESTROY",               Object::EVENT_DESTROY );
-  OZ_LUA_CONST( "OZ_EVENT_USE",                   Object::EVENT_USE );
-  OZ_LUA_CONST( "OZ_EVENT_DAMAGE",                Object::EVENT_DAMAGE );
-  OZ_LUA_CONST( "OZ_EVENT_HIT",                   Object::EVENT_HIT );
-  OZ_LUA_CONST( "OZ_EVENT_SPLASH",                Object::EVENT_SPLASH );
-  OZ_LUA_CONST( "OZ_EVENT_FRICTING",              Object::EVENT_FRICTING );
-  OZ_LUA_CONST( "OZ_EVENT_SHOT",                  Weapon::EVENT_SHOT );
-  OZ_LUA_CONST( "OZ_EVENT_SHOT_EMPTY",            Weapon::EVENT_SHOT_EMPTY );
-  OZ_LUA_CONST( "OZ_EVENT_HIT_HARD",              Bot::EVENT_HIT_HARD );
-  OZ_LUA_CONST( "OZ_EVENT_LAND",                  Bot::EVENT_LAND );
-  OZ_LUA_CONST( "OZ_EVENT_JUMP",                  Bot::EVENT_JUMP );
-  OZ_LUA_CONST( "OZ_EVENT_FLIP",                  Bot::EVENT_FLIP );
-  OZ_LUA_CONST( "OZ_EVENT_DEATH",                 Bot::EVENT_DEATH );
-  OZ_LUA_CONST( "OZ_EVENT_ENGINE",                Vehicle::EVENT_ENGINE );
-  OZ_LUA_CONST( "OZ_EVENT_NEXT_WEAPON",           Vehicle::EVENT_NEXT_WEAPON );
-  OZ_LUA_CONST( "OZ_EVENT_SHOT0",                 Vehicle::EVENT_SHOT0 );
-  OZ_LUA_CONST( "OZ_EVENT_SHOT1",                 Vehicle::EVENT_SHOT1 );
-  OZ_LUA_CONST( "OZ_EVENT_SHOT2",                 Vehicle::EVENT_SHOT2 );
-  OZ_LUA_CONST( "OZ_EVENT_SHOT3",                 Vehicle::EVENT_SHOT3 );
-  OZ_LUA_CONST( "OZ_EVENT_SHOT_EMPTY",            Vehicle::EVENT_SHOT_EMPTY );
+  IMPORT_CONST( "OZ_EVENT_CREATE",                Object::EVENT_CREATE );
+  IMPORT_CONST( "OZ_EVENT_DESTROY",               Object::EVENT_DESTROY );
+  IMPORT_CONST( "OZ_EVENT_USE",                   Object::EVENT_USE );
+  IMPORT_CONST( "OZ_EVENT_DAMAGE",                Object::EVENT_DAMAGE );
+  IMPORT_CONST( "OZ_EVENT_HIT",                   Object::EVENT_HIT );
+  IMPORT_CONST( "OZ_EVENT_SPLASH",                Object::EVENT_SPLASH );
+  IMPORT_CONST( "OZ_EVENT_FRICTING",              Object::EVENT_FRICTING );
+  IMPORT_CONST( "OZ_EVENT_SHOT",                  Weapon::EVENT_SHOT );
+  IMPORT_CONST( "OZ_EVENT_SHOT_EMPTY",            Weapon::EVENT_SHOT_EMPTY );
+  IMPORT_CONST( "OZ_EVENT_HIT_HARD",              Bot::EVENT_HIT_HARD );
+  IMPORT_CONST( "OZ_EVENT_LAND",                  Bot::EVENT_LAND );
+  IMPORT_CONST( "OZ_EVENT_JUMP",                  Bot::EVENT_JUMP );
+  IMPORT_CONST( "OZ_EVENT_FLIP",                  Bot::EVENT_FLIP );
+  IMPORT_CONST( "OZ_EVENT_DEATH",                 Bot::EVENT_DEATH );
+  IMPORT_CONST( "OZ_EVENT_ENGINE",                Vehicle::EVENT_ENGINE );
+  IMPORT_CONST( "OZ_EVENT_NEXT_WEAPON",           Vehicle::EVENT_NEXT_WEAPON );
+  IMPORT_CONST( "OZ_EVENT_SHOT0",                 Vehicle::EVENT_SHOT0 );
+  IMPORT_CONST( "OZ_EVENT_SHOT1",                 Vehicle::EVENT_SHOT1 );
+  IMPORT_CONST( "OZ_EVENT_SHOT2",                 Vehicle::EVENT_SHOT2 );
+  IMPORT_CONST( "OZ_EVENT_SHOT3",                 Vehicle::EVENT_SHOT3 );
+  IMPORT_CONST( "OZ_EVENT_SHOT_EMPTY",            Vehicle::EVENT_SHOT_EMPTY );
 
-  OZ_LUA_CONST( "OZ_OBJECT_DYNAMIC_BIT",          Object::DYNAMIC_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_WEAPON_BIT",           Object::WEAPON_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_BOT_BIT",              Object::BOT_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_VEHICLE_BIT",          Object::VEHICLE_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_ITEM_BIT",             Object::ITEM_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_BROWSABLE_BIT",        Object::BROWSABLE_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_NO_DRAW_BIT",          Object::NO_DRAW_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_WIDE_CULL_BIT",        Object::WIDE_CULL_BIT );
+  IMPORT_CONST( "OZ_OBJECT_DYNAMIC_BIT",          Object::DYNAMIC_BIT );
+  IMPORT_CONST( "OZ_OBJECT_WEAPON_BIT",           Object::WEAPON_BIT );
+  IMPORT_CONST( "OZ_OBJECT_BOT_BIT",              Object::BOT_BIT );
+  IMPORT_CONST( "OZ_OBJECT_VEHICLE_BIT",          Object::VEHICLE_BIT );
+  IMPORT_CONST( "OZ_OBJECT_ITEM_BIT",             Object::ITEM_BIT );
+  IMPORT_CONST( "OZ_OBJECT_BROWSABLE_BIT",        Object::BROWSABLE_BIT );
+  IMPORT_CONST( "OZ_OBJECT_NO_DRAW_BIT",          Object::NO_DRAW_BIT );
+  IMPORT_CONST( "OZ_OBJECT_WIDE_CULL_BIT",        Object::WIDE_CULL_BIT );
 
-  OZ_LUA_CONST( "OZ_OBJECT_LUA_BIT",              Object::LUA_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_DESTROY_FUNC_BIT",     Object::DESTROY_FUNC_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_DAMAGE_FUNC_BIT",      Object::DAMAGE_FUNC_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_HIT_FUNC_BIT",         Object::HIT_FUNC_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_UPDATE_FUNC_BIT",      Object::UPDATE_FUNC_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_USE_FUNC_BIT",         Object::USE_FUNC_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_UPDATE_FUNC_BIT",      Object::UPDATE_FUNC_BIT );
+  IMPORT_CONST( "OZ_OBJECT_LUA_BIT",              Object::LUA_BIT );
+  IMPORT_CONST( "OZ_OBJECT_DESTROY_FUNC_BIT",     Object::DESTROY_FUNC_BIT );
+  IMPORT_CONST( "OZ_OBJECT_DAMAGE_FUNC_BIT",      Object::DAMAGE_FUNC_BIT );
+  IMPORT_CONST( "OZ_OBJECT_HIT_FUNC_BIT",         Object::HIT_FUNC_BIT );
+  IMPORT_CONST( "OZ_OBJECT_UPDATE_FUNC_BIT",      Object::UPDATE_FUNC_BIT );
+  IMPORT_CONST( "OZ_OBJECT_USE_FUNC_BIT",         Object::USE_FUNC_BIT );
+  IMPORT_CONST( "OZ_OBJECT_UPDATE_FUNC_BIT",      Object::UPDATE_FUNC_BIT );
 
-  OZ_LUA_CONST( "OZ_OBJECT_IMAGO_BIT",            Object::IMAGO_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_AUDIO_BIT",            Object::AUDIO_BIT );
+  IMPORT_CONST( "OZ_OBJECT_IMAGO_BIT",            Object::IMAGO_BIT );
+  IMPORT_CONST( "OZ_OBJECT_AUDIO_BIT",            Object::AUDIO_BIT );
 
-  OZ_LUA_CONST( "OZ_OBJECT_DESTROYED_BIT",        Object::DESTROYED_BIT );
+  IMPORT_CONST( "OZ_OBJECT_DESTROYED_BIT",        Object::DESTROYED_BIT );
 
-  OZ_LUA_CONST( "OZ_OBJECT_DISABLED_BIT",         Object::DISABLED_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_FRICTING_BIT",         Object::FRICTING_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_BELOW_BIT",            Object::BELOW_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_ON_FLOOR_BIT",         Object::ON_FLOOR_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_ON_SLICK_BIT",         Object::ON_SLICK_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_IN_LIQUID_BIT",        Object::IN_LIQUID_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_ON_LADDER_BIT",        Object::ON_LADDER_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_SOLID_BIT",            Object::SOLID_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_CYLINDER_BIT",         Object::CYLINDER_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_CLIMBER_BIT",          Object::CLIMBER_BIT );
-  OZ_LUA_CONST( "OZ_OBJECT_PUSHER_BIT",           Object::PUSHER_BIT );
+  IMPORT_CONST( "OZ_OBJECT_DISABLED_BIT",         Object::DISABLED_BIT );
+  IMPORT_CONST( "OZ_OBJECT_FRICTING_BIT",         Object::FRICTING_BIT );
+  IMPORT_CONST( "OZ_OBJECT_BELOW_BIT",            Object::BELOW_BIT );
+  IMPORT_CONST( "OZ_OBJECT_ON_FLOOR_BIT",         Object::ON_FLOOR_BIT );
+  IMPORT_CONST( "OZ_OBJECT_ON_SLICK_BIT",         Object::ON_SLICK_BIT );
+  IMPORT_CONST( "OZ_OBJECT_IN_LIQUID_BIT",        Object::IN_LIQUID_BIT );
+  IMPORT_CONST( "OZ_OBJECT_ON_LADDER_BIT",        Object::ON_LADDER_BIT );
+  IMPORT_CONST( "OZ_OBJECT_SOLID_BIT",            Object::SOLID_BIT );
+  IMPORT_CONST( "OZ_OBJECT_CYLINDER_BIT",         Object::CYLINDER_BIT );
+  IMPORT_CONST( "OZ_OBJECT_CLIMBER_BIT",          Object::CLIMBER_BIT );
+  IMPORT_CONST( "OZ_OBJECT_PUSHER_BIT",           Object::PUSHER_BIT );
 
-  OZ_LUA_CONST( "OZ_BOT_DEAD_BIT",                Bot::DEAD_BIT );
-  OZ_LUA_CONST( "OZ_BOT_MECHANICAL_BIT",          Bot::MECHANICAL_BIT );
-  OZ_LUA_CONST( "OZ_BOT_INCARNATABLE_BIT",        Bot::INCARNATABLE_BIT );
-  OZ_LUA_CONST( "OZ_BOT_PLAYER_BIT",              Bot::PLAYER_BIT );
+  IMPORT_CONST( "OZ_BOT_DEAD_BIT",                Bot::DEAD_BIT );
+  IMPORT_CONST( "OZ_BOT_MECHANICAL_BIT",          Bot::MECHANICAL_BIT );
+  IMPORT_CONST( "OZ_BOT_INCARNATABLE_BIT",        Bot::INCARNATABLE_BIT );
+  IMPORT_CONST( "OZ_BOT_PLAYER_BIT",              Bot::PLAYER_BIT );
 
-  OZ_LUA_CONST( "OZ_BOT_CROUCHING_BIT",           Bot::CROUCHING_BIT );
-  OZ_LUA_CONST( "OZ_BOT_RUNNING_BIT",             Bot::RUNNING_BIT );
-  OZ_LUA_CONST( "OZ_BOT_SHOOTING_BIT",            Bot::SHOOTING_BIT );
-  OZ_LUA_CONST( "OZ_BOT_MOVING_BIT",              Bot::MOVING_BIT );
-  OZ_LUA_CONST( "OZ_BOT_CARGO_BIT",               Bot::CARGO_BIT );
-  OZ_LUA_CONST( "OZ_BOT_CROUCHING_BIT",           Bot::CROUCHING_BIT );
+  IMPORT_CONST( "OZ_BOT_CROUCHING_BIT",           Bot::CROUCHING_BIT );
+  IMPORT_CONST( "OZ_BOT_RUNNING_BIT",             Bot::RUNNING_BIT );
+  IMPORT_CONST( "OZ_BOT_SHOOTING_BIT",            Bot::SHOOTING_BIT );
+  IMPORT_CONST( "OZ_BOT_MOVING_BIT",              Bot::MOVING_BIT );
+  IMPORT_CONST( "OZ_BOT_CARGO_BIT",               Bot::CARGO_BIT );
+  IMPORT_CONST( "OZ_BOT_CROUCHING_BIT",           Bot::CROUCHING_BIT );
 
-  OZ_LUA_CONST( "OZ_BOT_GESTURE0_BIT",            Bot::GESTURE0_BIT );
-  OZ_LUA_CONST( "OZ_BOT_GESTURE1_BIT",            Bot::GESTURE1_BIT );
-  OZ_LUA_CONST( "OZ_BOT_GESTURE2_BIT",            Bot::GESTURE2_BIT );
-  OZ_LUA_CONST( "OZ_BOT_GESTURE3_BIT",            Bot::GESTURE3_BIT );
-  OZ_LUA_CONST( "OZ_BOT_GESTURE4_BIT",            Bot::GESTURE4_BIT );
+  IMPORT_CONST( "OZ_BOT_GESTURE0_BIT",            Bot::GESTURE0_BIT );
+  IMPORT_CONST( "OZ_BOT_GESTURE1_BIT",            Bot::GESTURE1_BIT );
+  IMPORT_CONST( "OZ_BOT_GESTURE2_BIT",            Bot::GESTURE2_BIT );
+  IMPORT_CONST( "OZ_BOT_GESTURE3_BIT",            Bot::GESTURE3_BIT );
+  IMPORT_CONST( "OZ_BOT_GESTURE4_BIT",            Bot::GESTURE4_BIT );
 
   newtable();
   setglobal( "ozLocalData" );
@@ -578,7 +696,7 @@ void Lua::init()
 
       InputStream istream = file->inputStream();
 
-      if( OZ_LUA_DOBUFFER( istream.begin(), istream.capacity(), file->path() ) != 0 ) {
+      if( IMPORT_BUFFER( istream.begin(), istream.capacity(), file->path() ) != 0 ) {
         throw Exception( "Nirvana Lua script error" );
       }
 
@@ -599,1602 +717,16 @@ void Lua::free()
 
   log.print( "Freeing Nirvana Lua ..." );
 
-  objects.clear();
-  objects.dealloc();
-  structs.clear();
-  structs.dealloc();
+  ms.structs.clear();
+  ms.structs.dealloc();
+
+  ms.objects.clear();
+  ms.objects.dealloc();
 
   lua_close( l );
   l = null;
 
   log.printEnd( " OK" );
-}
-
-/*
- * General functions
- */
-
-int Lua::ozPrintln( lua_State* l )
-{
-  ARG( 1 );
-
-  log.println( "N> %s", tostring( 1 ) );
-  return 0;
-}
-
-int Lua::ozException( lua_State* l )
-{
-  ARG( 1 );
-
-  const char* message = tostring( 1 );
-  throw Exception( message );
-}
-
-int Lua::ozForceUpdate( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.forceUpdate = true;
-  return 0;
-}
-
-/*
- * Orbis
- */
-
-int Lua::ozOrbisGetGravity( lua_State* l )
-{
-  ARG( 0 );
-
-  pushfloat( physics.gravity );
-  return 1;
-}
-
-int Lua::ozOrbisBindAllOverlaps( lua_State* l )
-{
-  ARG( 6 );
-
-  AABB aabb = AABB( Point3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ),
-                    Vec3( tofloat( 4 ), tofloat( 5 ), tofloat( 6 ) ) );
-
-  lua.objects.clear();
-  lua.structs.clear();
-  collider.getOverlaps( aabb, &lua.objects, &lua.structs );
-  lua.objIndex = 0;
-  lua.strIndex = 0;
-  return 0;
-}
-
-int Lua::ozOrbisBindStrOverlaps( lua_State* l )
-{
-  ARG( 6 );
-
-  AABB aabb = AABB( Point3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ),
-                    Vec3( tofloat( 4 ), tofloat( 5 ), tofloat( 6 ) ) );
-
-  lua.structs.clear();
-  collider.getOverlaps( aabb, null, &lua.structs );
-  lua.strIndex = 0;
-  return 0;
-}
-
-int Lua::ozOrbisBindObjOverlaps( lua_State* l )
-{
-  ARG( 6 );
-
-  AABB aabb = AABB( Point3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ),
-                    Vec3( tofloat( 4 ), tofloat( 5 ), tofloat( 6 ) ) );
-
-  lua.objects.clear();
-  collider.getOverlaps( aabb, &lua.objects, null );
-  lua.objIndex = 0;
-  return 0;
-}
-
-/*
- * Terra
- */
-
-int Lua::ozTerraHeight( lua_State* l )
-{
-  ARG( 2 );
-
-  float x = tofloat( 1 );
-  float y = tofloat( 2 );
-
-  pushfloat( orbis.terra.height( x, y ) );
-  return 1;
-}
-
-/*
- * Caelum
- */
-
-int Lua::ozCaelumGetHeading( lua_State* l )
-{
-  ARG( 0 );
-
-  pushfloat( orbis.caelum.heading );
-  return 1;
-}
-
-int Lua::ozCaelumGetPeriod( lua_State* l )
-{
-  ARG( 0 );
-
-  pushfloat( orbis.caelum.period );
-  return 1;
-}
-
-int Lua::ozCaelumGetTime( lua_State* l )
-{
-  ARG( 0 );
-
-  pushfloat( orbis.caelum.time );
-  return 1;
-}
-
-/*
- * Structure
- */
-
-int Lua::ozStrBindIndex( lua_State* l )
-{
-  ARG( 1 );
-
-  int index = toint( 1 );
-  if( uint( index ) >= uint( orbis.structs.length() ) ) {
-    ERROR( "invalid structure index" );
-  }
-  lua.str = orbis.structs[index];
-  return 0;
-}
-
-int Lua::ozStrBindNext( lua_State* l )
-{
-  ARG( 0 );
-
-  if( lua.strIndex < lua.structs.length() ) {
-    lua.str = lua.structs[lua.strIndex];
-    ++lua.strIndex;
-    pushbool( true );
-  }
-  else {
-    pushbool( false );
-  }
-  return 1;
-}
-
-int Lua::ozStrIsNull( lua_State* l )
-{
-  ARG( 0 );
-
-  pushbool( lua.str == null );
-  return 1;
-}
-
-int Lua::ozStrGetIndex( lua_State* l )
-{
-  ARG( 0 );
-
-  if( lua.str == null ) {
-    pushint( -1 );
-  }
-  else {
-    pushint( lua.str->index );
-  }
-  return 1;
-}
-
-int Lua::ozStrGetBounds( lua_State* l )
-{
-  ARG( 0 );
-  STR_NOT_NULL();
-
-  pushfloat( lua.str->mins.x );
-  pushfloat( lua.str->mins.y );
-  pushfloat( lua.str->mins.z );
-  pushfloat( lua.str->maxs.x );
-  pushfloat( lua.str->maxs.y );
-  pushfloat( lua.str->maxs.z );
-  return 6;
-}
-
-int Lua::ozStrGetPos( lua_State* l )
-{
-  ARG( 0 );
-  STR_NOT_NULL();
-
-  pushfloat( lua.str->p.x );
-  pushfloat( lua.str->p.y );
-  pushfloat( lua.str->p.z );
-  return 3;
-}
-
-int Lua::ozStrGetBSP( lua_State* l )
-{
-  ARG( 0 );
-  STR_NOT_NULL();
-
-  pushstring( lua.str->bsp->name );
-  return 1;
-}
-
-int Lua::ozStrGetHeading( lua_State* l )
-{
-  ARG( 0 );
-  STR_NOT_NULL();
-
-  pushint( lua.str->heading );
-  return 1;
-}
-
-int Lua::ozStrGetLife( lua_State* l )
-{
-  ARG( 0 );
-  STR_NOT_NULL();
-
-  pushfloat( lua.str->life );
-  return 1;
-}
-
-int Lua::ozStrVectorFromSelf( lua_State* l )
-{
-  ARG( 0 );
-  STR_NOT_NULL();
-
-  Vec3 vec = lua.str->p - lua.self->p;
-  pushfloat( vec.x );
-  pushfloat( vec.y );
-  pushfloat( vec.z );
-  return 3;
-}
-
-int Lua::ozStrVectorFromSelfEye( lua_State* l )
-{
-  ARG( 0 );
-  STR_NOT_NULL();
-  SELF_BOT();
-
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-
-  Vec3 vec = lua.str->p - eye;
-  pushfloat( vec.x );
-  pushfloat( vec.y );
-  pushfloat( vec.z );
-  return 3;
-}
-
-int Lua::ozStrDirectionFromSelf( lua_State* l )
-{
-  ARG( 0 );
-  STR_NOT_NULL();
-
-  Vec3 dir = ~( lua.str->p - lua.self->p );
-  pushfloat( dir.x );
-  pushfloat( dir.y );
-  pushfloat( dir.z );
-  return 3;
-}
-
-int Lua::ozStrDirectionFromSelfEye( lua_State* l )
-{
-  ARG( 0 );
-  STR_NOT_NULL();
-  SELF_BOT();
-
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-
-  Vec3 dir = ~( lua.str->p - eye );
-  pushfloat( dir.x );
-  pushfloat( dir.y );
-  pushfloat( dir.z );
-  return 3;
-}
-
-int Lua::ozStrDistanceFromSelf( lua_State* l )
-{
-  ARG( 0 );
-  STR_NOT_NULL();
-
-  pushfloat( !( lua.str->p - lua.self->p ) );
-  return 1;
-}
-
-int Lua::ozStrDistanceFromSelfEye( lua_State* l )
-{
-  ARG( 0 );
-  STR_NOT_NULL();
-  SELF_BOT();
-
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-
-  pushfloat( !( lua.str->p - eye ) );
-  return 1;
-}
-
-int Lua::ozStrHeadingFromSelf( lua_State* l )
-{
-  ARG( 0 );
-  STR_NOT_NULL();
-
-  float dx = lua.str->p.x - lua.self->p.x;
-  float dy = lua.str->p.y - lua.self->p.y;
-  float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
-
-  pushfloat( angle );
-  return 1;
-}
-
-int Lua::ozStrRelativeHeadingFromSelf( lua_State* l )
-{
-  ARG( 0 );
-  STR_NOT_NULL();
-
-  float dx = lua.str->p.x - lua.self->p.x;
-  float dy = lua.str->p.y - lua.self->p.y;
-  float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) - lua.self->h ) + 720.0f, 360.0f );
-
-  pushfloat( angle );
-  return 1;
-}
-
-int Lua::ozStrPitchFromSelf( lua_State* l )
-{
-  ARG( 0 );
-  STR_NOT_NULL();
-
-  float dx = lua.str->p.x - lua.self->p.x;
-  float dy = lua.str->p.y - lua.self->p.y;
-  float dz = lua.str->p.z - lua.self->p.z;
-  float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
-
-  pushfloat( angle );
-  return 1;
-}
-
-int Lua::ozStrPitchFromSelfEye( lua_State* l )
-{
-  ARG( 0 );
-  STR_NOT_NULL();
-  SELF_BOT();
-
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-
-  float dx = lua.str->p.x - eye.x;
-  float dy = lua.str->p.y - eye.y;
-  float dz = lua.str->p.z - eye.z;
-  float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
-
-  pushfloat( angle );
-  return 1;
-}
-
-int Lua::ozStrBindAllOverlaps( lua_State* l )
-{
-  ARG( 3 );
-  STR_NOT_NULL();
-
-  AABB aabb = AABB( lua.str->p,
-                    Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
-
-  lua.objects.clear();
-  lua.structs.clear();
-  collider.getOverlaps( aabb, &lua.objects, &lua.structs );
-  lua.objIndex = 0;
-  lua.strIndex = 0;
-  return 0;
-}
-
-int Lua::ozStrBindStrOverlaps( lua_State* l )
-{
-  ARG( 3 );
-  STR_NOT_NULL();
-
-  AABB aabb = AABB( lua.str->p,
-                    Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
-
-  lua.structs.clear();
-  collider.getOverlaps( aabb, null, &lua.structs );
-  lua.strIndex = 0;
-  return 0;
-}
-
-int Lua::ozStrBindObjOverlaps( lua_State* l )
-{
-  ARG( 3 );
-  STR_NOT_NULL();
-
-  AABB aabb = AABB( lua.str->p,
-                    Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
-
-  lua.objects.clear();
-  collider.getOverlaps( aabb, &lua.objects, null );
-  lua.objIndex = 0;
-  return 0;
-}
-
-/*
- * Object
- */
-
-int Lua::ozObjBindIndex( lua_State* l )
-{
-  ARG( 1 );
-
-  int index = toint( 1 );
-  if( uint( index ) >= uint( orbis.objects.length() ) ) {
-    ERROR( "invalid object index" );
-  }
-  lua.obj = orbis.objects[index];
-  return 0;
-}
-
-int Lua::ozObjBindPilot( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_VEHICLE();
-
-  lua.obj = vehicle->pilot == -1 ? null : orbis.objects[vehicle->pilot];
-  return 0;
-}
-
-int Lua::ozObjBindSelf( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.obj = lua.self;
-  return 0;
-}
-
-int Lua::ozObjBindNext( lua_State* l )
-{
-  ARG( 0 );
-
-  if( lua.objIndex < lua.objects.length() ) {
-    lua.obj = lua.objects[lua.objIndex];
-    ++lua.objIndex;
-    pushbool( true );
-  }
-  else {
-    pushbool( false );
-  }
-  return 1;
-}
-
-int Lua::ozObjIsNull( lua_State* l )
-{
-  ARG( 0 );
-
-  pushbool( lua.obj == null );
-  return 1;
-}
-
-int Lua::ozObjIsSelf( lua_State* l )
-{
-  ARG( 0 );
-
-  pushbool( lua.obj == lua.self );
-  return 1;
-}
-
-int Lua::ozObjIsCut( lua_State* l )
-{
-  ARG( 0 );
-
-  pushbool( lua.obj != null && lua.obj->cell == null );
-  return 1;
-}
-
-int Lua::ozObjIsBrowsable( lua_State* l )
-{
-  ARG( 0 );
-
-  pushbool( lua.obj != null && ( lua.obj->flags & Object::BROWSABLE_BIT ) );
-  return 1;
-}
-
-int Lua::ozObjIsDynamic( lua_State* l )
-{
-  ARG( 0 );
-
-  pushbool( lua.obj != null && ( lua.obj->flags & Object::DYNAMIC_BIT ) );
-  return 1;
-}
-
-int Lua::ozObjIsItem( lua_State* l )
-{
-  ARG( 0 );
-
-  pushbool( lua.obj != null && ( lua.obj->flags & Object::ITEM_BIT ) );
-  return 1;
-}
-
-int Lua::ozObjIsWeapon( lua_State* l )
-{
-  ARG( 0 );
-
-  pushbool( lua.obj != null && ( lua.obj->flags & Object::WEAPON_BIT ) );
-  return 1;
-}
-
-int Lua::ozObjIsBot( lua_State* l )
-{
-  ARG( 0 );
-
-  const Bot* bot = static_cast<const Bot*>( lua.obj );
-  pushbool( bot != null && ( bot->flags & Object::BOT_BIT ) && !( bot->state & Bot::DEAD_BIT ) );
-  return 1;
-}
-
-int Lua::ozObjIsVehicle( lua_State* l )
-{
-  ARG( 0 );
-
-  pushbool( lua.obj != null && ( lua.obj->flags & Object::VEHICLE_BIT ) );
-  return 1;
-}
-
-int Lua::ozObjGetIndex( lua_State* l )
-{
-  ARG( 0 );
-
-  if( lua.obj == null ) {
-    pushint( -1 );
-  }
-  else {
-    pushint( lua.obj->index );
-  }
-  return 1;
-}
-
-int Lua::ozObjGetPos( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-
-  if( lua.obj->cell == null ) {
-    hard_assert( lua.obj->flags & Object::DYNAMIC_BIT );
-
-    const Dynamic* dyn = static_cast<const Dynamic*>( lua.obj );
-
-    if( dyn->parent != -1 ) {
-      Object* parent = orbis.objects[dyn->parent];
-
-      if( parent != null ) {
-        pushfloat( parent->p.x );
-        pushfloat( parent->p.y );
-        pushfloat( parent->p.z );
-        return 3;
-      }
-    }
-  }
-
-  pushfloat( lua.obj->p.x );
-  pushfloat( lua.obj->p.y );
-  pushfloat( lua.obj->p.z );
-  return 3;
-}
-
-int Lua::ozObjGetDim( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-
-  pushfloat( lua.obj->dim.x );
-  pushfloat( lua.obj->dim.y );
-  pushfloat( lua.obj->dim.z );
-  return 3;
-}
-
-int Lua::ozObjGetFlags( lua_State* l )
-{
-  ARG( 1 );
-  OBJ_NOT_NULL();
-
-  int mask = toint( 1 );
-  pushbool( lua.obj->flags & mask );
-  return 1;
-}
-
-int Lua::ozObjGetHeading( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-
-  pushint( lua.obj->flags & Object::HEADING_MASK );
-  return 1;
-}
-
-int Lua::ozObjGetClassName( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-
-  pushstring( lua.obj->clazz->name );
-  return 1;
-}
-
-int Lua::ozObjGetLife( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-
-  pushfloat( lua.obj->life );
-  return 1;
-}
-
-int Lua::ozObjBindItems( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-
-  lua.objects.clear();
-  foreach( item, lua.obj->items.citer() ) {
-    lua.objects.add( orbis.objects[*item] );
-  }
-  lua.objIndex = 0;
-  return 0;
-}
-
-int Lua::ozObjVectorFromSelf( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_NOT_SELF();
-
-  Vec3 vec = lua.obj->p - lua.self->p;
-
-  pushfloat( vec.x );
-  pushfloat( vec.y );
-  pushfloat( vec.z );
-  return 3;
-}
-
-int Lua::ozObjVectorFromSelfEye( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_NOT_SELF();
-  SELF_BOT();
-
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-  Vec3   vec = lua.obj->p - eye;
-
-  pushfloat( vec.x );
-  pushfloat( vec.y );
-  pushfloat( vec.z );
-  return 3;
-}
-
-int Lua::ozObjDirectionFromSelf( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_NOT_SELF();
-
-  Vec3 dir = ~( lua.obj->p - lua.self->p );
-
-  pushfloat( dir.x );
-  pushfloat( dir.y );
-  pushfloat( dir.z );
-  return 3;
-}
-
-int Lua::ozObjDirectionFromSelfEye( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_NOT_SELF();
-  SELF_BOT();
-
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-  Vec3   dir = ~( lua.obj->p - eye );
-
-  pushfloat( dir.x );
-  pushfloat( dir.y );
-  pushfloat( dir.z );
-  return 3;
-}
-
-int Lua::ozObjDistanceFromSelf( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_NOT_SELF();
-
-  pushfloat( !( lua.obj->p - lua.self->p ) );
-  return 1;
-}
-
-int Lua::ozObjDistanceFromSelfEye( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_NOT_SELF();
-  SELF_BOT();
-
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-
-  pushfloat( !( lua.obj->p - eye ) );
-  return 1;
-}
-
-int Lua::ozObjHeadingFromSelf( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_NOT_SELF();
-
-  float dx = lua.obj->p.x - lua.self->p.x;
-  float dy = lua.obj->p.y - lua.self->p.y;
-  float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
-
-  pushfloat( angle );
-  return 1;
-}
-
-int Lua::ozObjRelativeHeadingFromSelf( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_NOT_SELF();
-
-  float dx = lua.obj->p.x - lua.self->p.x;
-  float dy = lua.obj->p.y - lua.self->p.y;
-  float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) - lua.self->h ) + 720.0f, 360.0f );
-
-  pushfloat( angle );
-  return 1;
-}
-
-int Lua::ozObjPitchFromSelf( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_NOT_SELF();
-
-  float dx = lua.obj->p.x - lua.self->p.x;
-  float dy = lua.obj->p.y - lua.self->p.y;
-  float dz = lua.obj->p.z - lua.self->p.z;
-  float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
-
-  pushfloat( angle );
-  return 1;
-}
-
-int Lua::ozObjPitchFromSelfEye( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_NOT_SELF();
-  SELF_BOT();
-
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-
-  float dx = lua.obj->p.x - eye.x;
-  float dy = lua.obj->p.y - eye.y;
-  float dz = lua.obj->p.z - eye.z;
-  float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
-
-  pushfloat( angle );
-  return 1;
-}
-
-int Lua::ozObjIsVisibleFromSelf( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_NOT_SELF();
-
-  Point3 eye    = Point3( lua.self->p.x, lua.self->p.y, lua.self->p.z );
-  Vec3   vector = lua.obj->p - eye;
-
-  collider.translate( eye, vector, lua.obj );
-  pushbool( collider.hit.ratio == 1.0f );
-  return 1;
-}
-
-int Lua::ozObjIsVisibleFromSelfEye( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_NOT_SELF();
-  SELF_BOT();
-
-  Point3 eye    = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-  Vec3   vector = lua.obj->p - eye;
-
-  collider.translate( eye, vector, lua.obj );
-  pushbool( collider.hit.ratio == 1.0f );
-  return 1;
-}
-
-int Lua::ozObjBindAllOverlaps( lua_State* l )
-{
-  ARG( 3 );
-  OBJ_NOT_NULL();
-
-  AABB aabb = AABB( lua.obj->p,
-                    Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
-
-  lua.objects.clear();
-  lua.structs.clear();
-  collider.getOverlaps( aabb, &lua.objects, &lua.structs );
-  lua.objIndex = 0;
-  lua.strIndex = 0;
-  return 0;
-}
-
-int Lua::ozObjBindStrOverlaps( lua_State* l )
-{
-  ARG( 3 );
-  OBJ_NOT_NULL();
-
-  AABB aabb = AABB( lua.obj->p,
-                    Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
-
-  lua.structs.clear();
-  collider.getOverlaps( aabb, null, &lua.structs );
-  lua.strIndex = 0;
-  return 0;
-}
-
-int Lua::ozObjBindObjOverlaps( lua_State* l )
-{
-  ARG( 3 );
-  OBJ_NOT_NULL();
-
-  AABB aabb = AABB( lua.obj->p,
-                    Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
-
-  lua.objects.clear();
-  collider.getOverlaps( aabb, &lua.objects, null );
-  lua.objIndex = 0;
-  return 0;
-}
-
-/*
- * Dynamic object
- */
-
-int Lua::ozDynBindParent( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_DYNAMIC();
-
-  if( dyn->parent != -1 && orbis.objects[dyn->parent] != null ) {
-    lua.obj = orbis.objects[dyn->parent];
-    pushbool( true );
-  }
-  else {
-    pushbool( false );
-  }
-  return 1;
-}
-
-int Lua::ozDynGetVelocity( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_DYNAMIC();
-
-  pushfloat( dyn->velocity.x );
-  pushfloat( dyn->velocity.y );
-  pushfloat( dyn->velocity.z );
-  return 3;
-}
-
-int Lua::ozDynGetMomentum( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_DYNAMIC();
-
-  pushfloat( dyn->momentum.x );
-  pushfloat( dyn->momentum.y );
-  pushfloat( dyn->momentum.z );
-  return 3;
-}
-
-int Lua::ozDynGetMass( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_DYNAMIC();
-
-  pushfloat( dyn->mass );
-  return 1;
-}
-
-int Lua::ozDynGetLift( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_DYNAMIC();
-
-  pushfloat( dyn->lift );
-  return 1;
-}
-
-/*
- * Weapon
- */
-
-int Lua::ozWeaponGetDefaultRounds( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_WEAPON();
-
-  const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weapon->clazz );
-
-  pushint( weaponClazz->nRounds );
-  return 1;
-}
-
-int Lua::ozWeaponGetRounds( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_WEAPON();
-
-  pushint( weapon->nRounds );
-  return 1;
-}
-
-/*
- * Bot
- */
-
-int Lua::ozBotBindPilot( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_VEHICLE();
-
-  lua.obj = vehicle->pilot == -1 ? null : orbis.objects[vehicle->pilot];
-  return 0;
-}
-
-int Lua::ozBotGetName( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  pushstring( bot->name );
-  return 1;
-}
-
-int Lua::ozBotGetState( lua_State* l )
-{
-  ARG( 1 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  int mask = toint( 1 );
-  pushbool( bot->state & mask );
-  return 1;
-}
-
-int Lua::ozBotGetEyePos( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  pushfloat( bot->p.x );
-  pushfloat( bot->p.y );
-  pushfloat( bot->p.z + bot->camZ );
-  return 3;
-}
-
-int Lua::ozBotGetH( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  pushfloat( Math::deg( bot->h ) );
-  return 1;
-}
-
-int Lua::ozBotGetV( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  pushfloat( Math::deg( bot->v ) );
-  return 1;
-}
-
-int Lua::ozBotGetDir( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
-  float hvsc[6];
-
-  Math::sincos( bot->h, &hvsc[0], &hvsc[1] );
-  Math::sincos( bot->v, &hvsc[2], &hvsc[3] );
-
-  hvsc[4] = hvsc[2] * hvsc[0];
-  hvsc[5] = hvsc[2] * hvsc[1];
-
-  pushfloat( -hvsc[4] );
-  pushfloat(  hvsc[5] );
-  pushfloat( -hvsc[3] );
-
-  return 3;
-}
-
-int Lua::ozBotGetStamina( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  pushfloat( bot->stamina );
-  return 1;
-}
-
-int Lua::ozBotIsRunning( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  pushbool( bot->state & Bot::RUNNING_BIT );
-  return 1;
-}
-
-int Lua::ozBotIsVisibleFromSelfEyeToEye( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_NOT_SELF();
-  OBJ_BOT();
-  SELF_BOT();
-
-  Point3 eye    = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-  Vec3   vector = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ ) - eye;
-
-  collider.translate( eye, vector, lua.obj );
-  pushbool( collider.hit.ratio == 1.0f );
-  return 1;
-}
-
-/*
- * Vehicle
- */
-
-int Lua::ozVehicleGetH( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_VEHICLE();
-
-  pushfloat( Math::deg( vehicle->h ) );
-  return 1;
-}
-
-int Lua::ozVehicleGetV( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_VEHICLE();
-
-  pushfloat( Math::deg( vehicle->v ) );
-  return 1;
-}
-
-int Lua::ozVehicleGetDir( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_VEHICLE();
-
-  // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
-  float hvsc[6];
-
-  Math::sincos( vehicle->h, &hvsc[0], &hvsc[1] );
-  Math::sincos( vehicle->v, &hvsc[2], &hvsc[3] );
-
-  hvsc[4] = hvsc[2] * hvsc[0];
-  hvsc[5] = hvsc[2] * hvsc[1];
-
-  pushfloat( -hvsc[4] );
-  pushfloat(  hvsc[5] );
-  pushfloat( -hvsc[3] );
-
-  return 3;
-}
-
-/*
- * Mind's bot
- */
-
-int Lua::ozSelfIsCut( lua_State* l )
-{
-  ARG( 0 );
-
-  pushbool( lua.self->cell == null );
-  return 1;
-}
-
-int Lua::ozSelfGetIndex( lua_State* l )
-{
-  ARG( 0 );
-
-  pushint( lua.self->index );
-  return 1;
-}
-
-int Lua::ozSelfGetPos( lua_State* l )
-{
-  ARG( 0 );
-
-  if( lua.self->cell == null ) {
-    if( lua.self->parent != -1 ) {
-      Object* parent = orbis.objects[lua.self->parent];
-
-      if( parent != null ) {
-        pushfloat( parent->p.x );
-        pushfloat( parent->p.y );
-        pushfloat( parent->p.z );
-        return 3;
-      }
-    }
-  }
-
-  pushfloat( lua.self->p.x );
-  pushfloat( lua.self->p.y );
-  pushfloat( lua.self->p.z );
-  return 3;
-}
-
-int Lua::ozSelfGetDim( lua_State* l )
-{
-  ARG( 0 );
-
-  pushfloat( lua.self->dim.x );
-  pushfloat( lua.self->dim.y );
-  pushfloat( lua.self->dim.z );
-  return 3;
-}
-
-int Lua::ozSelfGetFlags( lua_State* l )
-{
-  ARG( 1 );
-
-  int mask = toint( 1 );
-  pushint( lua.self->flags & mask );
-  return 1;
-}
-
-int Lua::ozSelfGetTypeName( lua_State* l )
-{
-  ARG( 0 );
-
-  pushstring( lua.self->clazz->name );
-  return 1;
-}
-
-int Lua::ozSelfGetLife( lua_State* l )
-{
-  ARG( 0 );
-
-  pushfloat( lua.self->life );
-  return 1;
-}
-
-int Lua::ozSelfGetVelocity( lua_State* l )
-{
-  ARG( 0 );
-
-  pushfloat( lua.self->velocity.x );
-  pushfloat( lua.self->velocity.y );
-  pushfloat( lua.self->velocity.z );
-  return 3;
-}
-
-int Lua::ozSelfGetMomentum( lua_State* l )
-{
-  ARG( 0 );
-
-  pushfloat( lua.self->momentum.x );
-  pushfloat( lua.self->momentum.y );
-  pushfloat( lua.self->momentum.z );
-  return 3;
-}
-
-int Lua::ozSelfGetMass( lua_State* l )
-{
-  ARG( 0 );
-
-  pushfloat( lua.self->mass );
-  return 1;
-}
-
-int Lua::ozSelfGetLift( lua_State* l )
-{
-  ARG( 0 );
-
-  pushfloat( lua.self->lift );
-  return 1;
-}
-
-int Lua::ozSelfGetName( lua_State* l )
-{
-  ARG( 0 );
-
-  pushstring( lua.self->name );
-  return 1;
-}
-
-int Lua::ozSelfGetState( lua_State* l )
-{
-  ARG( 1 );
-
-  int mask = toint( 1 );
-  pushbool( lua.self->state & mask );
-  return 1;
-}
-
-int Lua::ozSelfGetEyePos( lua_State* l )
-{
-  ARG( 0 );
-
-  pushfloat( lua.self->p.x );
-  pushfloat( lua.self->p.y );
-  pushfloat( lua.self->p.z + lua.self->camZ );
-  return 3;
-}
-
-int Lua::ozSelfGetH( lua_State* l )
-{
-  ARG( 0 );
-
-  pushfloat( Math::deg( lua.self->h ) );
-  return 1;
-}
-
-int Lua::ozSelfSetH( lua_State* l )
-{
-  ARG( 1 );
-
-  lua.self->h = Math::rad( tofloat( 1 ) );
-  lua.self->h = Math::fmod( lua.self->h + Math::TAU, Math::TAU );
-  return 1;
-}
-
-int Lua::ozSelfAddH( lua_State* l )
-{
-  ARG( 1 );
-
-  lua.self->h += Math::rad( tofloat( 1 ) );
-  lua.self->h = Math::fmod( lua.self->h + Math::TAU, Math::TAU );
-  return 1;
-}
-
-int Lua::ozSelfGetV( lua_State* l )
-{
-  ARG( 0 );
-
-  pushfloat( Math::deg( lua.self->v ) );
-  return 1;
-}
-
-int Lua::ozSelfSetV( lua_State* l )
-{
-  ARG( 1 );
-
-  lua.self->v = Math::rad( tofloat( 1 ) );
-  lua.self->v = Math::fmod( lua.self->v + Math::TAU, Math::TAU );
-  return 1;
-}
-
-int Lua::ozSelfAddV( lua_State* l )
-{
-  ARG( 1 );
-
-  lua.self->v += Math::rad( tofloat( 1 ) );
-  lua.self->v = Math::fmod( lua.self->v + Math::TAU, Math::TAU );
-  return 1;
-}
-
-int Lua::ozSelfGetDir( lua_State* l )
-{
-  ARG( 0 );
-
-  // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
-  float hvsc[6];
-
-  Math::sincos( lua.self->h, &hvsc[0], &hvsc[1] );
-  Math::sincos( lua.self->v, &hvsc[2], &hvsc[3] );
-
-  hvsc[4] = hvsc[2] * hvsc[0];
-  hvsc[5] = hvsc[2] * hvsc[1];
-
-  pushfloat( -hvsc[4] );
-  pushfloat(  hvsc[5] );
-  pushfloat( -hvsc[3] );
-
-  return 3;
-}
-
-int Lua::ozSelfGetStamina( lua_State* l )
-{
-  ARG( 0 );
-
-  pushfloat( lua.self->stamina );
-  return 1;
-}
-
-int Lua::ozSelfActionForward( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.self->actions |= Bot::ACTION_FORWARD;
-  return 0;
-}
-
-int Lua::ozSelfActionBackward( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.self->actions |= Bot::ACTION_BACKWARD;
-  return 0;
-}
-
-int Lua::ozSelfActionRight( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.self->actions |= Bot::ACTION_RIGHT;
-  return 0;
-}
-
-int Lua::ozSelfActionLeft( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.self->actions |= Bot::ACTION_LEFT;
-  return 0;
-}
-
-int Lua::ozSelfActionJump( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.self->actions |= Bot::ACTION_JUMP;
-  return 0;
-}
-
-int Lua::ozSelfActionCrouch( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.self->actions |= Bot::ACTION_CROUCH;
-  return 0;
-}
-
-int Lua::ozSelfActionUse( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.self->actions |= Bot::ACTION_USE;
-  return 0;
-}
-
-int Lua::ozSelfActionTake( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.self->actions |= Bot::ACTION_TAKE;
-  return 0;
-}
-
-int Lua::ozSelfActionGrab( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.self->actions |= Bot::ACTION_GRAB;
-  return 0;
-}
-
-int Lua::ozSelfActionThrow( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.self->actions |= Bot::ACTION_THROW;
-  return 0;
-}
-
-int Lua::ozSelfActionAttack( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.self->actions |= Bot::ACTION_ATTACK;
-  return 0;
-}
-
-int Lua::ozSelfActionExit( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.self->actions |= Bot::ACTION_EXIT;
-  return 0;
-}
-
-int Lua::ozSelfActionEject( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.self->actions |= Bot::ACTION_EJECT;
-  return 0;
-}
-
-int Lua::ozSelfActionSuicide( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.self->actions |= Bot::ACTION_SUICIDE;
-  return 0;
-}
-
-int Lua::ozSelfIsRunning( lua_State* l )
-{
-  ARG( 0 );
-
-  lua_pushboolean( l, lua.self->state & Bot::RUNNING_BIT );
-  return 1;
-}
-
-int Lua::ozSelfSetRunning( lua_State* l )
-{
-  ARG( 1 );
-
-  if( lua_toboolean( l, 1 ) ) {
-    lua.self->state |= Bot::RUNNING_BIT;
-  }
-  else {
-    lua.self->state &= ~Bot::RUNNING_BIT;
-  }
-  return 0;
-}
-
-int Lua::ozSelfToggleRunning( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.self->state ^= Bot::RUNNING_BIT;
-  return 0;
-}
-
-int Lua::ozSelfSetGesture( lua_State* l )
-{
-  ARG( 1 );
-  OBJ_NOT_NULL();
-
-  lua.self->state &= ~( Bot::GESTURE0_BIT | Bot::GESTURE1_BIT | Bot::GESTURE2_BIT | Bot::GESTURE4_BIT );
-  lua.self->state |= toint( 1 );
-  return 0;
-}
-
-int Lua::ozSelfBindItems( lua_State* l )
-{
-  ARG( 0 );
-
-  lua.objects.clear();
-  foreach( item, lua.self->items.citer() ) {
-    lua.objects.add( orbis.objects[*item] );
-  }
-  lua.objIndex = 0;
-  return 0;
-}
-
-int Lua::ozSelfBindAllOverlaps( lua_State* l )
-{
-  ARG( 3 );
-
-  AABB aabb = AABB( lua.self->p,
-                    Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
-
-  lua.objects.clear();
-  lua.structs.clear();
-  collider.getOverlaps( aabb, &lua.objects, &lua.structs );
-  lua.objIndex = 0;
-  lua.strIndex = 0;
-  return 0;
-}
-
-int Lua::ozSelfBindStrOverlaps( lua_State* l )
-{
-  ARG( 3 );
-
-  AABB aabb = AABB( lua.self->p,
-                    Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
-
-  lua.structs.clear();
-  collider.getOverlaps( aabb, null, &lua.structs );
-  lua.strIndex = 0;
-  return 0;
-}
-
-int Lua::ozSelfBindObjOverlaps( lua_State* l )
-{
-  ARG( 3 );
-
-  AABB aabb = AABB( lua.self->p,
-                    Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
-
-  lua.objects.clear();
-  collider.getOverlaps( aabb, &lua.objects, null );
-  lua.objIndex = 0;
-  return 0;
-}
-
-int Lua::ozSelfBindParent( lua_State* l )
-{
-  ARG( 0 );
-
-  if( lua.self->parent != -1 && orbis.objects[lua.self->parent] != null ) {
-    lua.obj = orbis.objects[lua.self->parent];
-    pushbool( true );
-  }
-  else {
-    pushbool( false );
-  }
-  return 1;
-}
-
-/*
- * Nirvana
- */
-
-int Lua::ozNirvanaRemoveDevice( lua_State* l )
-{
-  ARG( 1 );
-
-  int index = toint( 1 );
-  const Device* const* device = nirvana.devices.find( index );
-
-  if( device == null ) {
-    pushbool( false );
-  }
-  else {
-    delete *device;
-    nirvana.devices.exclude( index );
-    pushbool( true );
-  }
-  return 1;
-}
-
-int Lua::ozNirvanaAddMemo( lua_State* l )
-{
-  ARG( 2 );
-
-  int index = toint( 1 );
-  if( uint( index ) >= uint( orbis.objects.length() ) ) {
-    ERROR( "invalid object index" );
-  }
-  if( orbis.objects[index] == null ) {
-    ERROR( "object is null" );
-  }
-
-  if( nirvana.devices.contains( index ) ) {
-    ERROR( "object already has a device" );
-  }
-
-  nirvana.devices.add( index, new Memo( tostring( 2 ) ) );
-  return 0;
 }
 
 }

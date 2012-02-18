@@ -87,8 +87,9 @@ void Object::onHit( const Hit*, float )
 
 bool Object::onUse( Bot* user )
 {
-  lua.objectCall( clazz->onUse, this, user );
-  return !lua.hasUseFailed;
+  hard_assert( !clazz->onUse.isEmpty() );
+
+  return lua.objectCall( clazz->onUse, this, user );
 }
 
 void Object::onUpdate()
