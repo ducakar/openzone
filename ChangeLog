@@ -1,6 +1,4 @@
 0.3.0
-- PhysFS used for accessing game data, game data loaded directly from archives
-
 * oz:
   * more C++11 features
     * move semantics
@@ -9,6 +7,7 @@
     * iterators support range-for (however, foreach macro is still used because of faulty IDE
       parsers and better performance in debug mode)
   * better Win32 support, POSIX API replaced with Win32 API where possible
+  * System.bell() method
   * String class has more consistent members, parsing functions added
   * new Time class
   * new StackTrace class
@@ -18,8 +17,9 @@
   * Vec3, Vec4, Quat don't inherit from each other or Simd class
   * AABB & Bounds moved to liboz from matrix
   * compiled as shared library
+  * additional dependencies; libpulse on Linux and PhysicsFS 2.0
   * fully documented
-  * X11 licence
+  * X11 licence for liboz
 * common:
   * new layer, split from matrix
   * Span and Timer classes moved to common from matrix
@@ -45,10 +45,12 @@
     * if an entity moves to a side, it also moves objects that lay on it - like stacks of objects
   * fragment pools - particle replacements; fragments can be configured like object classes, can
     have a graphic model assigned, etc.
-* nirvana:
+  * BSPs, object classes and fragment pools are internally referenced by BSP/ObjectClass/FragPool
+    pointer instead by strings
 * client:
   * specular and emission masks - specular lighting is done per-pixel, objects can emit light
-  * offscreen rendering, bloom postprocess effect
+  * offscreen rendering support
+  * postprocessing, bloom postprocess effect
   * Sound class
     * sounds are played asynchronously parallel to rendering
     * asynchronous streaming of tracks
@@ -60,3 +62,7 @@
   * 16-bit colours for terrain heightmap
 * tools:
   * ozFormat tool for formatting object class files
+* general:
+  * PhysicsFS used for accessing game data, so they can be loaded directly from archives
+  * game data can be modularised into packages
+  * Lua classes share API code - no more code triplication for Lua APIs
