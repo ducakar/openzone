@@ -981,9 +981,9 @@ static int ozObjAddItem( lua_State* l )
     ERROR( "object is already cut" );
   }
 
-  synapse.cut( obj );
-  ms.obj->items.add( obj->index );
   obj->parent = ms.obj->index;
+  ms.obj->items.add( obj->index );
+  synapse.cut( obj );
 
   pushbool( true );
   return 0;
@@ -1003,8 +1003,8 @@ static int ozObjRemoveItem( lua_State* l )
   Dynamic* dyn = static_cast<Dynamic*>( orbis.objects[index] );
 
   if( dyn != null ) {
-    synapse.remove( dyn );
     ms.obj->items.remove( item );
+    synapse.remove( dyn );
   }
   return 0;
 }

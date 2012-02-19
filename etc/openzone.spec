@@ -6,11 +6,13 @@ URL:            https://github.com/ducakar/openzone/
 License:        GPLv3+
 Group:          Amusements/Games
 Packager:       Davorin Učakar <davorin.ucakar@gmail.com>
-Requires:       %{name}-client = %{version}
-Requires:       %{name}-data = %{version}
+
 Source:         openzone-src-%{version}.tar.xz
 Source1:        openzone-data-ozbase-%{version}.tar.xz
 Source2:        openzone-data-openzone-%{version}.tar.xz
+
+Requires:       %{name}-client = %{version}
+Requires:       %{name}-data = %{version}
 
 %package -n liboz
 Summary:        OpenZone core library

@@ -72,6 +72,7 @@ class Mouse
     int   relX;
     int   relY;
     int   relZ;
+    int   relW;
 
     char  buttons;
     char  oldButtons;
@@ -93,6 +94,8 @@ class Mouse
     bool  isJailed;
 
     Icon  icon;
+
+    void reset();
 
     void prepare();
     void update( bool hasFocus );

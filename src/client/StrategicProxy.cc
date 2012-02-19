@@ -202,12 +202,12 @@ void StrategicProxy::prepare()
       height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR );
     }
     if( ui::mouse.wheelDown ) {
-      float wheelFactor = float( ui::mouse.relZ ) * 10.0f;
+      float wheelFactor = float( ui::mouse.relW ) * 10.0f;
 
       height = min( MAX_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
     }
     if( ui::mouse.wheelUp ) {
-      float wheelFactor = float( ui::mouse.relZ ) * 10.0f;
+      float wheelFactor = float( ui::mouse.relW ) * 10.0f;
 
       height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
     }

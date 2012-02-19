@@ -865,11 +865,35 @@ int Build::main( int argc, char** argv )
     throw Exception( "Failed to add directory '%s' to search path", dataDir.cstr() );
   }
 
-  config.add( "screen.width", "400" );
-  config.add( "screen.height", "40" );
-  config.add( "screen.full", "false" );
-  client::render.init( true );
-  SDL_WM_SetCaption( OZ_APPLICATION_TITLE " :: Building data ...", null );
+  int  windowWidth      = 400;
+  int  windowHeight     = 40;
+  bool windowFullscreen = false;
+
+  uint windowFlags = SDL_OPENGL;
+
+  log.print( "Creating OpenGL window %dx%d [%s] ...",
+             windowWidth, windowHeight, windowFullscreen ? "fullscreen" : "windowed" );
+
+  if( SDL_VideoModeOK( windowWidth, windowHeight, 0, windowFlags ) == 1 ) {
+    throw Exception( "Video mode not supported" );
+  }
+
+  SDL_Surface* window = SDL_SetVideoMode( windowWidth, windowHeight, 0, windowFlags );
+
+  if( window == null ) {
+    throw Exception( "Window creation failed" );
+  }
+
+  SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " :: Building data ...", null );
+
+  windowWidth  = window->w;
+  windowHeight = window->h;
+
+  log.printEnd( " %dx%d-%d ... OK", windowWidth, windowHeight, window->format->BitsPerPixel );
+
+  SDL_ShowCursor( SDL_FALSE );
+
+  client::render.init( window, windowWidth, windowHeight, true );
 
   if( !client::shader.hasS3TC && context.useS3TC ) {
     throw Exception( "S3 texture compression enabled but not supported" );

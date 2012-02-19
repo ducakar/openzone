@@ -51,15 +51,6 @@ namespace client
 
 Client client;
 
-static int filter( const SDL_Event* event )
-{
-  if( event->type == SDL_MOUSEBUTTONDOWN ) {
-    ui::mouse.currButtons |= char( SDL_BUTTON( event->button.button ) );
-  }
-
-  return 1;
-}
-
 void Client::shutdown()
 {
   if( initFlags & INIT_STAGE_INIT ) {
@@ -394,6 +385,41 @@ int Client::main( int argc, char** argv )
     log.printEnd( " Failed" );
   }
 
+  int  windowWidth      = config.getSet( "window.width", 0 );
+  int  windowHeight     = config.getSet( "window.height", 0 );
+  bool windowFullscreen = config.getSet( "window.fullscreen", true );
+  bool enableVSync      = config.getSet( "render.vsync", true );
+
+  uint windowFlags = SDL_OPENGL;
+
+  if( windowFullscreen ) {
+    windowFlags |= SDL_FULLSCREEN;
+  }
+
+  SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, enableVSync );
+
+  log.print( "Creating OpenGL window %dx%d [%s] ...",
+             windowWidth, windowHeight, windowFullscreen ? "fullscreen" : "windowed" );
+
+  if( SDL_VideoModeOK( windowWidth, windowHeight, 0, windowFlags ) == 1 ) {
+    throw Exception( "Video mode not supported" );
+  }
+
+  SDL_Surface* window = SDL_SetVideoMode( windowWidth, windowHeight, 0, windowFlags );
+
+  if( window == null ) {
+    throw Exception( "Window creation failed" );
+  }
+
+  SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION, null );
+
+  windowWidth  = window->w;
+  windowHeight = window->h;
+
+  log.printEnd( " %dx%d-%d ... OK", windowWidth, windowHeight, window->format->BitsPerPixel );
+
+  SDL_ShowCursor( SDL_FALSE );
+
   initFlags |= INIT_LIBRARY;
   library.init();
 
@@ -401,7 +427,7 @@ int Client::main( int argc, char** argv )
   context.init();
 
   initFlags |= INIT_RENDER;
-  render.init();
+  render.init( window, windowWidth, windowHeight );
 
   initFlags |= INIT_AUDIO;
   sound.init();
@@ -428,15 +454,9 @@ int Client::main( int argc, char** argv )
 
   stage->load();
 
+  ui::mouse.reset();
+
   SDL_Event event;
-
-  // Set mouse cursor to centre of the screen and clear any mouse movement events from before.
-  ushort screenCentreX = ushort( camera.centreX );
-  ushort screenCentreY = ushort( camera.centreY );
-
-  SDL_WarpMouse( screenCentreX, screenCentreY );
-  SDL_PumpEvents();
-  SDL_GetRelativeMouseState( null, null );
 
   bool isAlive        = true;
   bool isActive       = true;
@@ -454,8 +474,6 @@ int Client::main( int argc, char** argv )
 
   log.println( "Main loop {" );
   log.indent();
-
-  SDL_SetEventFilter( filter );
 
   // THE MAGNIFICENT MAIN LOOP
   do {
@@ -478,10 +496,10 @@ int Client::main( int argc, char** argv )
           ui::mouse.currButtons |= char( SDL_BUTTON( event.button.button ) );
 
           if( ui::mouse.buttons & SDL_BUTTON_WUMASK ) {
-            ++ui::mouse.relZ;
+            ++ui::mouse.relW;
           }
           if( ui::mouse.buttons & SDL_BUTTON_WDMASK ) {
-            --ui::mouse.relZ;
+            --ui::mouse.relW;
           }
           break;
         }
@@ -497,13 +515,13 @@ int Client::main( int argc, char** argv )
           }
           else if( keysym.sym == SDLK_F11 ) {
             if( keysym.mod == 0 ) {
-              if( render.toggleFullscreen() ) {
-                ui::mouse.isGrabbed = !ui::mouse.isGrabbed;
-                ui::mouse.isJailed = true;
+              if( SDL_WM_ToggleFullScreen( window ) != 0 ) {
+                windowFullscreen = !windowFullscreen;
 
-                SDL_WarpMouse( screenCentreX, screenCentreY );
-                SDL_PumpEvents();
-                SDL_GetRelativeMouseState( null, null );
+                ui::mouse.isGrabbed = windowFullscreen;
+                ui::mouse.isJailed = true;
+                ui::mouse.reset();
+
                 SDL_ShowCursor( false );
               }
             }
@@ -531,9 +549,7 @@ int Client::main( int argc, char** argv )
           }
           if( event.active.state & SDL_APPACTIVE ) {
             if( event.active.gain ) {
-              SDL_WarpMouse( screenCentreX, screenCentreY );
-              SDL_PumpEvents();
-              SDL_GetRelativeMouseState( null, null );
+              ui::mouse.reset();
 
               sound.resume();
               isActive = true;
