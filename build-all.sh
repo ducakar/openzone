@@ -36,6 +36,25 @@ echo ================================================================
 echo
 echo ================================================================
 echo
+echo                           Linux-x86_64-GCC44
+echo
+echo ----------------------------------------------------------------
+
+mkdir -p Linux-x86_64-GCC44
+( cd Linux-x86_64-GCC44 && cmake .. \
+  -DCMAKE_C_COMPILER=/usr/bin/gcc-4.4 \
+  -DCMAKE_CXX_COMPILER=/usr/bin/c++-4.4 \
+  -DOZ_LEGACY_GCC=1 )
+( cd Linux-x86_64-GCC44 && time make -j4 )
+
+echo ----------------------------------------------------------------
+echo
+echo                           Linux-x86_64-GCC44
+echo
+echo ================================================================
+echo
+echo ================================================================
+echo
 echo                         Linux-i686-Clang
 echo
 echo ----------------------------------------------------------------
@@ -114,7 +133,7 @@ echo ================================================================
 #
 # mkdir -p Android-ARM
 # ( cd Android-ARM && cmake .. \
-#   -DCMAKE_TOOLCHAIN_FILE=../cmake/android-arm.toolchain.cmake )
+#   -DCMAKE_TOOLCHAIN_FILE=../cmake/android.toolchain.cmake )
 # ( cd Android-ARM && time make -j4 )
 #
 # echo ----------------------------------------------------------------

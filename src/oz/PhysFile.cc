@@ -313,7 +313,7 @@ bool PhysFile::mount( const char* source, const char* mountPoint, bool append )
 
 bool PhysFile::init()
 {
-#ifdef _WIN32
+#if defined( __ANDROID__ ) || defined( _WIN32 )
   return PHYSFS_init( null ) != 0;
 #else
   return PHYSFS_init( program_invocation_name ) != 0;

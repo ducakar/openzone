@@ -337,42 +337,35 @@ void Orbis::read( InputStream* istream )
   int nObjects = istream->readInt();
   int nFrags   = istream->readInt();
 
-  String  bspName;
-  Struct* str;
-  String  className;
-  Object* obj;
-  String  poolName;
-  Frag*   frag;
+  String bspName;
+  String className;
+  String poolName;
 
   for( int i = 0; i < nStructs; ++i ) {
     bspName = istream->readString();
 
     if( bspName.isEmpty() ) {
-      structs.add( null );
+      structs.add<Struct*>( null );
     }
     else {
       const BSP* bsp = library.bsp( bspName );
-
       const_cast<BSP*>( bsp )->request();
 
-      str = new Struct( bsp, istream );
+      Struct* str = new Struct( bsp, istream );
       structs.add( str );
-
-      if( !position( str ) ) {
-        throw Exception( "Orbis structure reading failed, too many structures per cell." );
-      }
+      position( str );
     }
   }
   for( int i = 0; i < nObjects; ++i ) {
     className = istream->readString();
 
     if( className.isEmpty() ) {
-      objects.add( null );
+      objects.add<Object*>( null );
     }
     else {
       const ObjectClass* clazz = library.objClass( className );
 
-      obj = clazz->create( istream );
+      Object* obj = clazz->create( istream );
       objects.add( obj );
 
       // no need to register objects since Lua state is being deserialised
@@ -387,12 +380,12 @@ void Orbis::read( InputStream* istream )
     poolName = istream->readString();
 
     if( poolName.isEmpty() ) {
-      frags.add( null );
+      frags.add<Frag*>( null );
     }
     else {
       const FragPool* pool = library.fragPool( poolName );
 
-      frag = new Frag( pool, istream );
+      Frag* frag = new Frag( pool, istream );
       frags.add( frag );
       position( frag );
     }

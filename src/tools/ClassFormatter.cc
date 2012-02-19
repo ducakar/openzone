@@ -21,6 +21,8 @@
  * @file tools/ClassFormatter.cc
  */
 
+#include "stable.hh"
+
 #include "tools/ClassFormatter.hh"
 
 #include "matrix/Library.hh"
