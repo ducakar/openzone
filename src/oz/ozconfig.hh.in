@@ -41,11 +41,11 @@
 #  error Only LLVM/Clang >= 3.0 is supported.
 # endif
 #elif defined( __GNUC__ )
-# if __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 6 )
-#  error Only GCC >= 4.6 is supported.
+# if __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 4 )
+#  error Only GCC >= 4.4 is supported.
 # endif
 #else
-# error GCC >= 4.6 and LLVM/Clang >= 3.0 are the only supported compilers.
+# error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
 #endif
 
 #if !defined( __LP64__ ) && !defined( __LLP64__ ) && !defined( _WIN64 )
@@ -64,3 +64,9 @@
 #define OZ_NORETURN      __attribute__(( noreturn ))
 #define OZ_PRINTF_FORMAT( stringArg, firstArg ) \
   __attribute__(( format( printf, stringArg, firstArg ) ))
+
+#if !defined( __clang__ ) && __GNUC__ == 4 && __GNUC_MINOR__ < 6
+# define constexpr const
+# define nullptr 0
+namespace std { typedef int nullptr_t; }
+#endif

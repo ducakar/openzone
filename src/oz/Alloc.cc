@@ -402,7 +402,10 @@ void* operator new ( std::size_t size ) throw( std::bad_alloc )
 {
   size += Alloc::alignUp( sizeof( size_t ) );
 
-#ifdef _WIN32
+#if defined( __ANDROID__ )
+  void* ptr = malloc( size );
+  if( ptr == null ) {
+#elif defined( _WIN32 )
   void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
   if( ptr == null ) {
 #else
@@ -420,7 +423,10 @@ void* operator new[] ( std::size_t size ) throw( std::bad_alloc )
 {
   size += Alloc::alignUp( sizeof( size_t ) );
 
-#ifdef _WIN32
+#if defined( __ANDROID__ )
+  void* ptr = malloc( size );
+  if( ptr == null ) {
+#elif defined( _WIN32 )
   void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
   if( ptr == null ) {
 #else
@@ -456,7 +462,10 @@ void* operator new ( std::size_t size, const std::nothrow_t& ) throw()
 {
   size += Alloc::alignUp( sizeof( size_t ) );
 
-#ifdef _WIN32
+#if defined( __ANDROID__ )
+  void* ptr = malloc( size );
+  if( ptr == null ) {
+#elif defined( _WIN32 )
   void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
   if( ptr == null ) {
 #else
@@ -474,7 +483,10 @@ void* operator new[] ( std::size_t size, const std::nothrow_t& ) throw()
 {
   size += Alloc::alignUp( sizeof( size_t ) );
 
-#ifdef _WIN32
+#if defined( __ANDROID__ )
+  void* ptr = malloc( size );
+  if( ptr == null ) {
+#elif defined( _WIN32 )
   void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
   if( ptr == null ) {
 #else

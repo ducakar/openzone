@@ -43,6 +43,20 @@ mark_as_advanced( OZ_APPLICATION_NAME )
 mark_as_advanced( OZ_APPLICATION_TITLE )
 mark_as_advanced( OZ_SYSTEM_NAME )
 
+# detect clang
+string( REGEX MATCH "clang\\+\\+$" compiler_base "${CMAKE_CXX_COMPILER}" )
+if( "${compiler_base}" STREQUAL "clang++" )
+  set( OZ_CLANG ON )
+endif()
+
+# Check if compiler is compatible (GCC >= 4.4 or LLVM/Clang >= 3.0) and if legacy GCC (< 4.6)
+try_run( OZ_LEGACY_GCC OZ_COMPATIBLE_COMPILER
+         ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/cmake/compiler.c )
+
+if( NOT OZ_COMPATIBLE_COMPILER )
+  message( FATAL_ERROR "GCC >= 4.4 and LLVM/Clang 3.0 are the only supported compilers" )
+endif()
+
 #
 # Libraries
 #
@@ -110,12 +124,6 @@ mark_as_advanced( VORBISFILE_LIBRARY )
 mark_as_advanced( MAD_INCLUDE_DIR )
 mark_as_advanced( FAAD_INCLUDE_DIR )
 
-# detect clang
-string( REGEX MATCH "clang\\+\\+$" compiler_base "${CMAKE_CXX_COMPILER}" )
-if( "${compiler_base}" STREQUAL "clang++" )
-  set( OZ_CLANG ON )
-endif()
-
 include_directories( ${PHYSFS_INCLUDE_DIR} )
 include_directories( ${SDL_INCLUDE_DIR} )
 include_directories( ${SDLTTF_INCLUDE_DIR} )
@@ -154,12 +162,21 @@ set( libs_tools "${libs_client};${FREEIMAGE_LIBRARY}" )
 # Compiler flags
 #
 
-set( flags "-pipe -std=c++0x -pedantic -fstrict-enums -ffast-math -freciprocal-math" )
+set( flags "-pipe -ffast-math -freciprocal-math -fexceptions" )
 set( warnings "-Wall -Wextra -Wconversion -Woverloaded-virtual -Wnon-virtual-dtor -Winvalid-pch" )
-set( arch_flags "-msse3 -mfpmath=sse" )
 
 if( OZ_CLANG )
   set( flags "-Qunused-arguments ${flags}" )
+endif()
+
+if( OZ_LEGACY_GCC )
+  set( flags "${flags} -std=gnu++0x" )
+else()
+  set( flags "${flags} -fstrict-enums -std=c++0x -pedantic" )
+endif()
+
+if( NOT CMAKE_SYSTEM_PROCESSOR MATCHES "arm.*" )
+  set( arch_flags "-msse3 -mfpmath=sse" )
 endif()
 
 set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release ReleaseGen ReleaseUse" )
@@ -167,9 +184,9 @@ set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release ReleaseGe
 if( WIN32 )
   set( CMAKE_CXX_FLAGS_DEBUG "-D_FORTIFY_SOURCE=2 -g3 -O0" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-D_FORTIFY_SOURCE=2 -g3 -O3" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ofast" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASEGEN "-DNDEBUG -Ofast -fprofile-generate" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASEUSE "-DNDEBUG -Ofast -fprofile-use" CACHE STRING "" FORCE )
+  set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3" CACHE STRING "" FORCE )
+  set( CMAKE_CXX_FLAGS_RELEASEGEN "-DNDEBUG -O3 -fprofile-generate" CACHE STRING "" FORCE )
+  set( CMAKE_CXX_FLAGS_RELEASEUSE "-DNDEBUG -O3 -fprofile-use" CACHE STRING "" FORCE )
 elseif( OZ_CLANG )
   set( CMAKE_CXX_FLAGS_DEBUG "-D_FORTIFY_SOURCE=2 -g3 -O0 -fstack-protector" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-D_FORTIFY_SOURCE=2 -g3 -O3 -fstack-protector" CACHE STRING "" FORCE )
@@ -179,9 +196,9 @@ elseif( OZ_CLANG )
 else()
   set( CMAKE_CXX_FLAGS_DEBUG "-D_FORTIFY_SOURCE=2 -g3 -O0 -fstack-protector" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-D_FORTIFY_SOURCE=2 -g3 -Ofast -fstack-protector" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ofast -flto" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASEGEN "-DNDEBUG -Ofast -flto -fprofile-generate" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASEUSE "-DNDEBUG -Ofast -flto -fprofile-use" CACHE STRING "" FORCE )
+  set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -flto" CACHE STRING "" FORCE )
+  set( CMAKE_CXX_FLAGS_RELEASEGEN "-DNDEBUG -O3 -flto -fprofile-generate" CACHE STRING "" FORCE )
+  set( CMAKE_CXX_FLAGS_RELEASEUSE "-DNDEBUG -O3 -flto -fprofile-use" CACHE STRING "" FORCE )
 endif()
 
 mark_as_advanced( CMAKE_CXX_FLAGS_RELEASEGEN )

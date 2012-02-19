@@ -38,7 +38,8 @@
 #include <cstdio>
 #include <cstdlib>
 
-#ifdef _WIN32
+#if defined( __ANDROID__ )
+#elif defined( _WIN32 )
 # include <windows.h>
 # include <mmsystem.h>
 #else
@@ -88,7 +89,8 @@ static const char* const SIGNALS[][2] =
   { "SIGSYS",    "Bad system call"            }  // 31
 };
 
-#ifdef _WIN32
+#if defined( __ANDROID__ )
+#elif defined( _WIN32 )
 
 struct Wave
 {
@@ -182,7 +184,8 @@ static void unexpected()
   System::error( 0, "EXCEPTION SPECIFICATION VIOLATION" );
 }
 
-#ifdef _WIN32
+#if defined( __ANDROID__ )
+#elif defined( _WIN32 )
 
 static DWORD WINAPI bellThread( LPVOID )
 {
@@ -218,6 +221,7 @@ static void* bellThread( void* )
 
 static void waitBell()
 {
+#ifndef __ANDROID__
   while( nBellUsers != 0 ) {
 #ifdef _WIN32
     Sleep( 100 );
@@ -225,6 +229,7 @@ static void waitBell()
     usleep( 100000 );
 #endif
   }
+#endif
 }
 
 System::System()
@@ -280,7 +285,8 @@ void System::trap()
 
 void System::bell()
 {
-#ifdef _WIN32
+#if defined( __ANDROID__ )
+#elif defined( _WIN32 )
 
   EnterCriticalSection( &mutex );
   ++nBellUsers;

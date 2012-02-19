@@ -31,7 +31,8 @@
 
 #include "arrays.hh"
 
-#ifndef _WIN32
+#if defined( __ANDROID__ ) || defined( _WIN32 )
+#else
 # include <cstdlib>
 # include <cstring>
 # include <cxxabi.h>
@@ -41,7 +42,7 @@
 namespace oz
 {
 
-#ifdef _WIN32
+#if defined( __ANDROID__ ) || defined( _WIN32 )
 
 StackTrace StackTrace::current( int )
 {

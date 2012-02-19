@@ -47,7 +47,7 @@ class System
     /// debugger.
     static const int HALT_BIT = 0x01;
 
-    /// Catch fatal signals (SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon which show diagnostics and
+    /// Catch fatal signals (SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon which print diagnostics and
     /// abort the program (similar to <tt>error()</tt> call).
     static const int SIGNAL_HANDLER_BIT = 0x10;
 

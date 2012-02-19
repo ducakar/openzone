@@ -47,10 +47,10 @@ class Math
     static constexpr float FLOAT_EPS = __FLT_EPSILON__;
 
     /// Not a number.
-    static constexpr float NaN = __builtin_nanf( "" );
+    static constexpr float NaN = 0.0f / 0.0f;
 
     /// \f$ +\infty \f$.
-    static constexpr float INF = __builtin_inff();
+    static constexpr float INF = 1.0f / 0.0f;
 
     /// \f$ e \f$.
     static constexpr float E = 2.718281828459045f;
