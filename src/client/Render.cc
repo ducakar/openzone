@@ -397,11 +397,6 @@ void Render::drawUI()
   uiMicros += Time::uclock() - beginMicros;
 }
 
-bool Render::toggleFullscreen() const
-{
-  return SDL_WM_ToggleFullScreen( surface ) != 0;
-}
-
 void Render::draw( int flags )
 {
   if( flags & DRAW_ORBIS_BIT ) {
@@ -481,43 +476,12 @@ void Render::unload()
   log.printEnd( " OK" );
 }
 
-void Render::init( bool isBuild )
+void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool isBuild )
 {
   log.println( "Initialising Render {" );
   log.indent();
 
-  int  screenWidth  = config.getSet( "screen.width", 0 );
-  int  screenHeight = config.getSet( "screen.height", 0 );
-  bool isFullscreen = config.getSet( "screen.full", true );
-  bool enableVSync  = config.getSet( "screen.vsync", true );
-
-  log.print( "Creating OpenGL window %dx%d %s ...",
-             screenWidth, screenHeight, isFullscreen ? "fullscreen" : "windowed" );
-
-  uint videoFlags = SDL_OPENGL | ( isFullscreen ? SDL_FULLSCREEN : 0 );
-
-  if( enableVSync ) {
-    SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, 1 );
-  }
-
-  if( SDL_VideoModeOK( screenWidth, screenHeight, 0, videoFlags ) == 1 ) {
-    throw Exception( "Video mode not supported" );
-  }
-
-  surface = SDL_SetVideoMode( screenWidth, screenHeight, 0, videoFlags );
-
-  if( surface == null ) {
-    throw Exception( "Window creation failed" );
-  }
-
-  SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION, null );
-
-  screenWidth  = surface->w;
-  screenHeight = surface->h;
-
-  log.printEnd( " %dx%d-%d ... OK", screenWidth, screenHeight, surface->format->BitsPerPixel );
-
-  SDL_ShowCursor( SDL_FALSE );
+  window = window_;
 
   bool isCatalyst  = false;
   bool hasVAO      = false;
@@ -633,15 +597,15 @@ void Render::init( bool isBuild )
   }
 
   if( isOffscreen ) {
-    renderWidth  = int( float( screenWidth  ) * renderScale + 0.5f );
-    renderHeight = int( float( screenHeight ) * renderScale + 0.5f );
+    renderWidth  = int( float( windowWidth  ) * renderScale + 0.5f );
+    renderHeight = int( float( windowHeight ) * renderScale + 0.5f );
   }
   else {
     isDeferred    = false;
     doPostprocess = false;
     renderScale   = 1.0f;
-    renderWidth   = screenWidth;
-    renderHeight  = screenHeight;
+    renderWidth   = windowWidth;
+    renderHeight  = windowHeight;
   }
 
   if( isOffscreen ) {
@@ -681,7 +645,7 @@ void Render::init( bool isBuild )
 
   shader.init();
   shape.load();
-  camera.init( screenWidth, screenHeight );
+  camera.init( windowWidth, windowHeight );
   ui::ui.init();
 
   shader.use( shader.plain );

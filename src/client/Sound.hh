@@ -25,8 +25,10 @@
 
 #include "client/Context.hh"
 
-#include <physfs.h>
+#include "client/OpenAL.hh"
+
 #include <AL/alc.h>
+#include <physfs.h>
 #include <vorbis/vorbisfile.h>
 #include <mad.h>
 #include <neaacdec.h>

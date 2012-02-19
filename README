@@ -245,17 +245,8 @@ render.showBounds [bool] false
 render.visibilityRange [float] 300.0
   Visible range.
 
-screen.full [bool] false
-  Start in fullscreen mode.
-
-screen.height [int] 0
-  Vertical screen resolution. Zero equals desktop resolution.
-
-screen.vsync [bool] true
+render.vsync [bool] true
   Try to turn on vertical synchronisation.
-
-screen.width [int] 0
-  Horizontal screen resolution. Zero equals desktop resolution.
 
 seed [int | string] "TIME"
   Seed for random number generator. Can be an integer or "TIME" to use the
@@ -294,6 +285,15 @@ ui.showDebug [bool] false
 ui.showFPS
   Show frames per second. Since world simulation runs on 60 Hz FPS cannot be
   higher than this value.
+
+window.fullscreen [bool] false
+  Start in fullscreen mode.
+
+window.height [int] 0
+  Vertical screen resolution. Zero equals desktop resolution.
+
+window.width [int] 0
+  Horizontal screen resolution. Zero equals desktop resolution.
 
 OpenZone engine copyright
 -------------------------

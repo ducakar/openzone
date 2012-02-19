@@ -31,7 +31,7 @@
 
 #include "client/ui/Area.hh"
 
-#include <SDL/SDL_ttf.h>
+#include <SDL_ttf.h>
 
 #ifdef _WIN32
 static char* strchrnul( const char* s, int c )

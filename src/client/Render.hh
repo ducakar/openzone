@@ -119,9 +119,9 @@ class Render
     uint                  normalBuffer;
     uint                  specularBuffer;
 
-  public:
+    SDL_Surface*          window;
 
-    SDL_Surface*          surface;
+  public:
 
     ulong64               prepareMicros;
     ulong64               setupMicros;
@@ -146,15 +146,13 @@ class Render
 
   public:
 
-    bool toggleFullscreen() const;
-
     void draw( int flags );
     void swap();
 
     void load();
     void unload();
 
-    void init( bool isBuild = false );
+    void init( SDL_Surface* window, int windowWidth, int windowHeight, bool isBuild = false );
     void free( bool isBuild = false );
 
 };

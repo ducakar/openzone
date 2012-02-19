@@ -252,18 +252,9 @@ render.showBounds [bool] false
 render.visibilityRange [float] 300.0
   Razdalja vidljivosti.
 
-screen.full [bool] false
-  Poženi v celozaslonskem načinu.
-
-screen.height [int] 0
-  Navpična ločljivost zaslona. Če je 0, se uporabi ločljivost namizja.
-
-screen.vsync [bool] true
+render.vsync [bool] true
   Skušaj vklopiti sinhronizacijo upodabljanja z osveževanjem zaslona
   (vertical synchronisation).
-
-screen.width [int] 0
-  Vodoravna ločljivost zaslona. Če je 0, se uporabi ločljivost namizja.
 
 seed [int | string] "TIME"
   Seme za generator naključnih števil. Lahko je celo število ali, če naj se
@@ -302,6 +293,15 @@ ui.showDebug [bool] false
 ui.showFPS [bool] false
   Prikazuj število sličic na sekundo. Ker se svet simulira na 60 Hz, število
   sličic na sekundo ne more preseči te vrednosti.
+
+window.fullscreen [bool] false
+  Poženi v celozaslonskem načinu.
+
+window.height [int] 0
+  Navpična ločljivost zaslona. Če je 0, se uporabi ločljivost namizja.
+
+window.width [int] 0
+  Vodoravna ločljivost zaslona. Če je 0, se uporabi ločljivost namizja.
 
 Avtorske pravice za pogon OpenZone
 ----------------------------------

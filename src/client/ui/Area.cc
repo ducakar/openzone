@@ -28,7 +28,7 @@
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"
 
-#include <SDL/SDL_ttf.h>
+#include <SDL_ttf.h>
 
 namespace oz
 {

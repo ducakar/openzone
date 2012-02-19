@@ -36,6 +36,7 @@
 
 // We want to use C++ wrapped C headers, not vanilla ones that are included via SDL.
 #include <cctype>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -53,7 +54,7 @@
 # endif
 
 # define SDL_NO_COMPAT
-# include <SDL/SDL.h>
+# include <SDL.h>
 
 #endif
 

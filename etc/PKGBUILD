@@ -8,7 +8,7 @@ url="http://github.com/ducakar/openzone/"
 license=('GPL3')
 arch=('i686' 'x86_64')
 makedepends=('cmake' 'doxygen' 'faad2' 'freeimage' 'gcc>=4.6' 'git' 'graphviz'
-             'libmad' 'libpulse' 'lua' 'openal' 'physfs' 'sdl_ttf')
+             'libmad' 'libpulse' 'lua' 'openal' 'physfs' 'sdl_ttf-hg')
 source=("openzone-src-${pkgver}.tar.xz"
         "openzone-data-ozbase-${pkgver}.tar.xz"
         "openzone-data-openzone-${pkgver}.tar.xz")
