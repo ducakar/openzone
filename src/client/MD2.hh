@@ -93,30 +93,35 @@ class MD2
 
     static Vertex animBuffer[MAX_VERTS];
 
-    int     id;
+    int      id;
 
-    int     nFrames;
-    int     nFrameVertices;
-    int     nFramePositions;
+    int      nFrames;
+    int      nFrameVertices;
+    int      nFramePositions;
 
-    uint    vertexTexId;
-    uint    normalTexId;
-    int     shaderId;
+    uint     vertexTexId;
+    uint     normalTexId;
+    int      shaderId;
 
-    Vertex* vertices;
-    Vec4*   positions;
-    Vec4*   normals;
+    Vertex*  vertices;
+    Vec4*    positions;
+    Vec4*    normals;
 
-    Mesh    mesh;
+    Mesh     mesh;
+
+    PhysFile file;
 
   public:
 
     Mat44   weaponTransf;
+
+    bool    isPreloaded;
     bool    isLoaded;
 
     explicit MD2( int id );
     ~MD2();
 
+    void preload();
     void load();
 
     static void setAnim( AnimState* anim, Anim type );

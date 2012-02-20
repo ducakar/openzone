@@ -50,12 +50,14 @@
 * client:
   * specular and emission masks - specular lighting is done per-pixel, objects can emit light
   * offscreen rendering support
-  * postprocessing, bloom postprocess effect
+  * postprocessing
+  * bloom postprocess effect
   * Sound class
     * sounds are played asynchronously parallel to rendering
     * asynchronous streaming of tracks
     * support for music in MP3 and AAC formats
     * user-specified directory can be searched for music
+  * ported to SDL 2.0
 * build:
   * prebuilding entirely split from the runtime part of the engine
   * SDL_image replaced by FreeImage, wider range of image formats supported for prebuilding source

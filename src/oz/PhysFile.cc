@@ -61,6 +61,7 @@ PhysFile::PhysFile( PhysFile&& file ) :
 {
   file.type = File::NONE;
   file.data = null;
+  file.size = 0;
 }
 
 PhysFile& PhysFile::operator = ( const PhysFile& file )
@@ -92,6 +93,7 @@ PhysFile& PhysFile::operator = ( PhysFile&& file )
 
   file.type = File::NONE;
   file.data = null;
+  file.size = 0;
 
   return *this;
 }
@@ -206,8 +208,9 @@ bool PhysFile::map()
 
   if( result != size ) {
     delete[] data;
-    data = null;
 
+    data = null;
+    size = 0;
     return false;
   }
 
@@ -218,8 +221,20 @@ void PhysFile::unmap()
 {
   if( data != null ) {
     delete[] data;
+
     data = null;
+    size = 0;
   }
+}
+
+void PhysFile::clear()
+{
+  if( data != null ) {
+    unmap();
+  }
+
+  filePath = "";
+  type = File::NONE;
 }
 
 InputStream PhysFile::inputStream( Endian::Order order ) const

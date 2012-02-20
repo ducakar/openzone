@@ -144,6 +144,8 @@ void GameStage::reload()
   ui::ui.showLoadingScreen( true );
   ui::ui.root->focus( ui::ui.loadingScreen );
 
+  loader.unload();
+
   render.draw( Render::DRAW_UI_BIT );
   render.draw( Render::DRAW_UI_BIT );
   render.swap();
@@ -193,13 +195,16 @@ void GameStage::reload()
   camera.prepare();
 
   render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
-  loader.loadScheduled();
+  loader.syncUpdate();
+
   render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+  loader.syncUpdate();
+
   sound.play();
   render.swap();
   sound.sync();
 
-  loader.loadScheduled();
+  loader.load();
 
   ui::ui.prepare();
   ui::ui.showLoadingScreen( false );
@@ -308,8 +313,7 @@ bool GameStage::update()
 
   context.updateLoad();
 
-  loader.cleanup();
-  loader.loadScheduled();
+  loader.update();
 
   loaderMicros += Time::uclock() - beginMicros;
 
@@ -442,13 +446,16 @@ void GameStage::load()
   ui::ui.showLoadingScreen( true );
 
   render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
-  loader.loadScheduled();
+  loader.syncUpdate();
+
   render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+  loader.syncUpdate();
+
   sound.play();
   render.swap();
   sound.sync();
 
-  loader.loadScheduled();
+  loader.load();
 
   ui::ui.prepare();
   ui::ui.showLoadingScreen( false );
@@ -471,6 +478,8 @@ void GameStage::unload()
   ui::mouse.doShow = false;
   ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Shutting down ..." ) );
   ui::ui.showLoadingScreen( true );
+
+  loader.unload();
 
   render.draw( Render::DRAW_UI_BIT );
   render.draw( Render::DRAW_UI_BIT );
@@ -499,6 +508,7 @@ void GameStage::unload()
   float runTime               = float( timer.runMicros )                * 1.0e-6f;
   float gameTime              = float( timer.micros )                   * 1.0e-6f;
   float droppedTime           = float( timer.runMicros - timer.micros ) * 1.0e-6f;
+  int   nFrameDrops           = int( timer.ticks - timer.nFrames );
   float frameDropRate         = float( timer.ticks - timer.nFrames ) / float( timer.ticks );
 
   if( isLoaded ) {
@@ -547,7 +557,8 @@ void GameStage::unload()
   log.println( "optimal tick/frame rate %6.2f Hz ",     1.0f / Timer::TICK_TIME                  );
   log.println( "tick rate in run time   %6.2f Hz ",     float( timer.ticks ) / runTime           );
   log.println( "frame rate in run time  %6.2f Hz",      float( timer.nFrames ) / runTime         );
-  log.println( "frame drop              %6.2f %%",      frameDropRate * 100.0f                   );
+  log.println( "frame drop rate         %6.2f %%",      frameDropRate * 100.0f                   );
+  log.println( "frame drops             %6d",           nFrameDrops                              );
   log.println( "Run time usage {" );
   log.indent();
   log.println( "%6.2f %%  [M:0] sleep",            sleepTime             / runTime * 100.0f );

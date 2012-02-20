@@ -482,12 +482,12 @@ void Sound::playCell( int cellX, int cellY )
       }
     }
   }
+
+  OZ_AL_CHECK_ERROR();
 }
 
 void Sound::updateMusic()
 {
-  OZ_AL_CHECK_ERROR();
-
   if( SDL_SemTryWait( musicMainSemaphore ) != 0 ) {
     return;
   }
@@ -507,8 +507,6 @@ void Sound::updateMusic()
       uint buffers[2];
       alSourceUnqueueBuffers( musicSource, nQueued, buffers );
     }
-
-    OZ_AL_CHECK_ERROR();
 
     SDL_SemPost( musicAuxSemaphore );
   }
@@ -531,11 +529,8 @@ void Sound::updateMusic()
 
       uint buffer;
       alSourceUnqueueBuffers( musicSource, 1, &buffer );
-      OZ_AL_CHECK_ERROR();
       alBufferData( buffer, musicFormat, musicBuffer, streamedBytes, musicRate );
-      OZ_AL_CHECK_ERROR();
       alSourceQueueBuffers( musicSource, 1, &buffer );
-      OZ_AL_CHECK_ERROR();
     }
     else if( musicBuffersQueued != 2 ) {
       hasLoaded = true;
@@ -562,6 +557,8 @@ void Sound::updateMusic()
       SDL_SemPost( musicMainSemaphore );
     }
   }
+
+  OZ_AL_CHECK_ERROR();
 }
 
 void Sound::soundRun()
@@ -593,8 +590,6 @@ void Sound::soundRun()
     }
 
     updateMusic();
-
-    OZ_AL_CHECK_ERROR();
 
     SDL_SemPost( soundMainSemaphore );
     SDL_SemWait( soundAuxSemaphore );

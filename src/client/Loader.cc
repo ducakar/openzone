@@ -45,7 +45,7 @@ Loader loader;
 
 Loader::ScreenshotInfo Loader::screenshotInfo;
 
-int Loader::saveScreenshot( void* )
+int Loader::screenshotMain( void* )
 {
   // flip image
   char* top    = screenshotInfo.pixels;
@@ -73,6 +73,21 @@ int Loader::saveScreenshot( void* )
 
   delete[] screenshotInfo.pixels;
 
+  return 0;
+}
+
+int Loader::preloadMain( void* )
+{
+  try {
+    loader.preloadRun();
+  }
+  catch( const std::exception& e ) {
+    log.verboseMode = false;
+    log.printException( &e );
+
+    System::bell();
+    System::abort();
+  }
   return 0;
 }
 
@@ -261,83 +276,105 @@ void Loader::cleanupSound()
   OZ_AL_CHECK_ERROR();
 }
 
-void Loader::loadModels()
+void Loader::preloadRender()
+{
+  for( int i = 0; i < library.nBSPs; ++i ) {
+    BSP* bsp = context.bsps[i].object;
+
+    if( bsp != null && !bsp->isPreloaded ) {
+      bsp->preload();
+    }
+  }
+
+  for( int i = 0; i < library.models.length(); ++i ) {
+    SMM* smm = context.smms[i].object;
+
+    if( smm != null && !smm->isPreloaded ) {
+      smm->preload();
+    }
+  }
+
+  for( int i = 0; i < library.models.length(); ++i ) {
+    MD2* md2 = context.md2s[i].object;
+
+    if( md2 != null && !md2->isPreloaded ) {
+      md2->preload();
+    }
+  }
+
+  for( int i = 0; i < library.models.length(); ++i ) {
+    MD3* md3 = context.md3s[i].object;
+
+    if( md3 != null && !md3->isPreloaded ) {
+      md3->preload();
+    }
+  }
+}
+
+void Loader::uploadRender()
 {
   tick = ( tick + 1 ) % TICK_PERIOD;
 
-  // terra
   if( terra.id != orbis.terra.id ) {
     terra.unload();
     terra.load();
   }
 
-  // caelum
   if( caelum.id != orbis.caelum.id ) {
     caelum.unload();
     caelum.load();
   }
 
-  // BSP
   for( int i = 0; i < library.nBSPs; ++i ) {
     BSP* bsp = context.bsps[i].object;
 
-    if( bsp != null && !bsp->isLoaded ) {
+    if( bsp != null && !bsp->isLoaded && bsp->isPreloaded ) {
       bsp->load();
     }
   }
 
-  // SMM
   for( int i = 0; i < library.models.length(); ++i ) {
     SMM* smm = context.smms[i].object;
 
-    if( smm != null && !smm->isLoaded ) {
+    if( smm != null && !smm->isLoaded && smm->isPreloaded ) {
       smm->load();
     }
   }
 
-  // MD2
   for( int i = 0; i < library.models.length(); ++i ) {
     MD2* md2 = context.md2s[i].object;
 
-    if( md2 != null && !md2->isLoaded ) {
+    if( md2 != null && !md2->isLoaded && md2->isPreloaded ) {
       md2->load();
     }
   }
 
-  // MD3
   for( int i = 0; i < library.models.length(); ++i ) {
     MD3* md3 = context.md3s[i].object;
 
-    if( md3 != null && !md3->isLoaded ) {
+    if( md3 != null && !md3->isLoaded && md3->isPreloaded ) {
       md3->load();
     }
   }
 }
 
-void Loader::cleanup()
+void Loader::preloadRun()
 {
-  log.verboseMode = true;
+  SDL_SemWait( preloadAuxSemaphore );
 
-  cleanupRender();
-  cleanupSound();
+  while( isPreloadAlive ) {
+    preloadRender();
 
-  log.verboseMode = false;
-}
-
-void Loader::loadScheduled()
-{
-  log.verboseMode = true;
-
-  loadModels();
-
-  log.verboseMode = false;
+    SDL_SemPost( preloadMainSemaphore );
+    SDL_SemWait( preloadAuxSemaphore );
+  }
 }
 
 void Loader::makeScreenshot()
 {
-  if( shotThread != null ) {
-    SDL_WaitThread( shotThread, null );
-    shotThread = null;
+  if( screenshotThread != null ) {
+    SDL_WaitThread( screenshotThread, null );
+    screenshotThread = null;
   }
 
   Time time = Time::local();
@@ -355,20 +392,81 @@ void Loader::makeScreenshot()
 
   glReadPixels( 0, 0, camera.width, camera.height, GL_RGB, GL_UNSIGNED_BYTE, screenshotInfo.pixels );
 
-  shotThread = SDL_CreateThread( saveScreenshot, null );
+  screenshotThread = SDL_CreateThread( screenshotMain, null );
+}
+
+void Loader::syncUpdate()
+{
+  log.verboseMode = true;
+
+  preloadRender();
+  uploadRender();
+
+  log.verboseMode = false;
+}
+
+void Loader::update()
+{
+  log.verboseMode = true;
+
+  cleanupSound();
+
+  log.verboseMode = false;
+
+  if( SDL_SemTryWait( preloadMainSemaphore ) != 0 ) {
+    return;
+  }
+
+  log.verboseMode = true;
+
+  cleanupRender();
+  uploadRender();
+
+  log.verboseMode = false;
+
+  SDL_SemPost( preloadAuxSemaphore );
+}
+
+void Loader::load()
+{
+  tick = 0;
+
+  SDL_SemPost( preloadAuxSemaphore );
+}
+
+void Loader::unload()
+{
+  SDL_SemWait( preloadMainSemaphore );
 }
 
 void Loader::init()
 {
-  shotThread = null;
-  tick = 0;
+  isPreloadAlive       = true;
+
+  preloadMainSemaphore = SDL_CreateSemaphore( 0 );
+  preloadAuxSemaphore  = SDL_CreateSemaphore( 0 );
+
+  screenshotThread     = null;
+  preloadThread        = SDL_CreateThread( preloadMain, null );
 }
 
 void Loader::free()
 {
-  if( shotThread != null ) {
-    SDL_WaitThread( shotThread, null );
-    shotThread = null;
+  isPreloadAlive = false;
+
+  SDL_SemPost( preloadAuxSemaphore );
+  SDL_WaitThread( preloadThread, null );
+
+  SDL_DestroySemaphore( preloadAuxSemaphore );
+  SDL_DestroySemaphore( preloadMainSemaphore );
+
+  preloadAuxSemaphore  = null;
+  preloadMainSemaphore = null;
+  preloadThread        = null;
+
+  if( screenshotThread != null ) {
+    SDL_WaitThread( screenshotThread, null );
+    screenshotThread = null;
   }
 }
 

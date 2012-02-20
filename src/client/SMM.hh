@@ -38,18 +38,23 @@ class SMM
 {
   private:
 
-    int  id;
-    Mesh mesh;
-    int  shaderId;
+    int      id;
+    Mesh     mesh;
+    int      shaderId;
+
+    PhysFile file;
 
   public:
 
+    bool isPreloaded;
     bool isLoaded;
 
     explicit SMM( int id );
     ~SMM();
 
+    void preload();
     void load();
+
     void draw( int mask ) const;
 
 };

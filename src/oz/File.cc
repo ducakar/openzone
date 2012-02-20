@@ -69,6 +69,7 @@ File::File( File&& file ) :
 {
   file.type = NONE;
   file.data = null;
+  file.size = 0;
 }
 
 File& File::operator = ( const File& file )
@@ -102,6 +103,7 @@ File& File::operator = ( File&& file )
 
   file.type = NONE;
   file.data = null;
+  file.size = 0;
 
   return *this;
 }
@@ -202,6 +204,16 @@ bool File::hasExtension( const char* ext ) const
   }
 }
 
+void File::clear()
+{
+  if( data != null ) {
+    unmap();
+  }
+
+  filePath = "";
+  type = NONE;
+}
+
 bool File::map()
 {
   if( data != null ) {
@@ -251,6 +263,7 @@ bool File::map()
 
   if( data == MAP_FAILED ) {
     data = null;
+    size = 0;
     return false;
   }
 
@@ -268,6 +281,7 @@ void File::unmap()
     munmap( data, size_t( size ) );
 #endif
     data = null;
+    size = 0;
   }
 }
 

@@ -121,7 +121,6 @@ class Sound
 
     void playCell( int cellX, int cellY );
     void updateMusic();
-
     void soundRun();
 
   public:

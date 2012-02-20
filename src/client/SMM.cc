@@ -37,31 +37,36 @@ namespace oz
 namespace client
 {
 
-void SMM::load()
-{
-  const String& path = library.models[id].path;
-
-  PhysFile file( path );
-  if( !file.map() ) {
-    throw Exception( "SMM file '%s' mmap failed", path.cstr() );
-  }
-  InputStream is = file.inputStream();
-
-  shaderId = library.shaderIndex( is.readString() );
-  mesh.load( &is, GL_STATIC_DRAW, path );
-
-  file.unmap();
-
-  isLoaded = true;
-}
-
 SMM::SMM( int id_ ) :
-  id( id_ ), isLoaded( false )
+  id( id_ ), isPreloaded( false ), isLoaded( false )
 {}
 
 SMM::~SMM()
 {
   mesh.unload();
+}
+
+void SMM::preload()
+{
+  file.setPath( library.models[id].path );
+
+  if( !file.map() ) {
+    throw Exception( "SMM file '%s' mmap failed", file.path().cstr() );
+  }
+
+  isPreloaded = true;
+}
+
+void SMM::load()
+{
+  InputStream is = file.inputStream();
+
+  shaderId = library.shaderIndex( is.readString() );
+  mesh.load( &is, GL_STATIC_DRAW, file.path() );
+
+  file.clear();
+
+  isLoaded = true;
 }
 
 void SMM::draw( int mask ) const

@@ -347,7 +347,7 @@ int Client::main( int argc, char** argv )
     DArray<File> list = localDir.ls();
 
     foreach( file, list.citer() ) {
-      if( file->hasExtension( "zip" ) ) {
+      if( file->hasExtension( "zip" ) || file->hasExtension( "7z" ) ) {
         if( !PhysFile::mount( file->path(), null, true ) ) {
           throw Exception( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
@@ -362,7 +362,7 @@ int Client::main( int argc, char** argv )
     DArray<File> list = dataDir.ls();
 
     foreach( file, list.citer() ) {
-      if( file->hasExtension( "zip" ) ) {
+      if( file->hasExtension( "zip" ) || file->hasExtension( "7z" ) ) {
         if( !PhysFile::mount( file->path(), null, true ) ) {
           throw Exception( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
@@ -495,10 +495,10 @@ int Client::main( int argc, char** argv )
           ui::mouse.buttons     |= char( SDL_BUTTON( event.button.button ) );
           ui::mouse.currButtons |= char( SDL_BUTTON( event.button.button ) );
 
-          if( ui::mouse.buttons & SDL_BUTTON_WUMASK ) {
+          if( ui::mouse.buttons & SDL_BUTTON( SDL_BUTTON_WHEELUP ) ) {
             ++ui::mouse.relW;
           }
-          if( ui::mouse.buttons & SDL_BUTTON_WDMASK ) {
+          if( ui::mouse.buttons & SDL_BUTTON( SDL_BUTTON_WHEELDOWN ) ) {
             --ui::mouse.relW;
           }
           break;
