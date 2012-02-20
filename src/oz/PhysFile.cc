@@ -43,7 +43,7 @@ inline bool operator < ( const PhysFile& a, const PhysFile& b )
 }
 
 PhysFile::PhysFile() :
-  type( File::NONE ), data( null )
+  type( File::NONE ), data( null ), size( 0 )
 {}
 
 PhysFile::~PhysFile()
@@ -97,7 +97,7 @@ PhysFile& PhysFile::operator = ( PhysFile&& file )
 }
 
 PhysFile::PhysFile( const char* path ) :
-  filePath( path ), type( File::NONE ), data( null )
+  filePath( path ), type( File::NONE ), data( null ), size( 0 )
 {}
 
 void PhysFile::setPath( const char* path )

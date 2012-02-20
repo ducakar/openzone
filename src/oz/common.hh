@@ -91,25 +91,32 @@ namespace oz
 
 #ifdef NDEBUG
 
-# define hard_assert( cond ) \
-  static_cast<void>( 0 )
-
 # define soft_assert( cond ) \
   static_cast<void>( 0 )
 
-#else
-
 # define hard_assert( cond ) \
-  ( ( cond ) ? \
-    static_cast<void>( 0 ) : \
-    oz::_hardAssertHelper( #cond, __FILE__, __LINE__, __PRETTY_FUNCTION__ ) )
+  static_cast<void>( 0 )
+
+#else
 
 # define soft_assert( cond ) \
   ( ( cond ) ? \
     static_cast<void>( 0 ) : \
     oz::_softAssertHelper( #cond, __FILE__, __LINE__, __PRETTY_FUNCTION__ ) )
 
+# define hard_assert( cond ) \
+  ( ( cond ) ? \
+    static_cast<void>( 0 ) : \
+    oz::_hardAssertHelper( #cond, __FILE__, __LINE__, __PRETTY_FUNCTION__ ) )
+
 #endif
+
+/**
+ * Helper method for <tt>soft_assert</tt> macro.
+ *
+ * @ingroup oz
+ */
+void _softAssertHelper( const char* message, const char* file, int line, const char* function );
 
 /**
  * Helper method for <tt>hard_assert</tt> macro.
@@ -119,21 +126,14 @@ namespace oz
 OZ_NORETURN
 void _hardAssertHelper( const char* message, const char* file, int line, const char* function );
 
-/**
- * Helper method for <tt>soft_assert</tt> macro.
- *
- * @ingroup oz
- */
-void _softAssertHelper( const char* message, const char* file, int line, const char* function );
-
 //***********************************
 //*             TYPES               *
 //***********************************
 
 // Import core C++ types from <cstddef>.
 using std::nullptr_t;
-using std::size_t;
 using std::ptrdiff_t;
+using std::size_t;
 
 /**
  * Null constant.
@@ -192,6 +192,7 @@ typedef long long long64;
 typedef unsigned long long ulong64;
 
 // Some assumptions type sizes.
+static_assert( sizeof( char   ) == 1, "sizeof( char ) should be 1" );
 static_assert( sizeof( short  ) == 2, "sizeof( short ) should be 2" );
 static_assert( sizeof( int    ) == 4, "sizeof( int ) should be 4" );
 static_assert( sizeof( long64 ) == 8, "sizeof( long64 ) should be 8" );

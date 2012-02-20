@@ -49,7 +49,7 @@ inline bool operator < ( const File& a, const File& b )
 }
 
 File::File() :
-  type( NONE ), data( null )
+  type( NONE ), data( null ), size( 0 )
 {}
 
 File::~File()
@@ -107,7 +107,7 @@ File& File::operator = ( File&& file )
 }
 
 File::File( const char* path ) :
-  filePath( path ), type( NONE ), data( null )
+  filePath( path ), type( NONE ), data( null ), size( 0 )
 {}
 
 void File::setPath( const char* path )

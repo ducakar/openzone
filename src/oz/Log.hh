@@ -69,6 +69,16 @@ class Log
     ~Log();
 
     /**
+     * No copying.
+     */
+    Log( const Log& ) = delete;
+
+    /**
+     * No copying.
+     */
+    Log& operator = ( const Log& ) = delete;
+
+    /**
      * Set indent to zero.
      */
     void resetIndent();
