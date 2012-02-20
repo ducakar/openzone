@@ -36,23 +36,27 @@ class BSP
 
     const matrix::BSP* bsp;
 
-    int  flags;
-    Mesh mesh;
+    int      flags;
+    Mesh     mesh;
+
+    PhysFile file;
 
     void playSound( const Entity* entity, int sound ) const;
     void playContSound( const Entity* entity, int sound ) const;
 
   public:
 
+    bool isPreloaded;
     bool isLoaded;
 
     explicit BSP( const matrix::BSP* bsp );
     ~BSP();
 
+    void preload();
+    void load();
+
     void draw( const Struct* str, int mask ) const;
     void play( const Struct* str ) const;
-
-    void load();
 
 };
 

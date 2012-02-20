@@ -67,26 +67,40 @@ class Loader
 
     static ScreenshotInfo screenshotInfo;
 
+    SDL_Thread* screenshotThread;
     SDL_Thread* preloadThread;
-    SDL_Thread* shotThread;
+
+    SDL_sem*    preloadMainSemaphore;
+    SDL_sem*    preloadAuxSemaphore;
+
+    volatile bool isPreloadAlive;
 
     uint tick;
 
-    static int saveScreenshot( void* );
+    static int screenshotMain( void* );
+    static int preloadMain( void* );
 
     // clean unused imagines and handle screenshots
     void cleanupRender();
     // stop playing stopped continuous sounds, clean up unused audios
     void cleanupSound();
+
+    // preload scheduled models
+    void preloadRender();
     // load scheduled models
-    void loadModels();
+    void uploadRender();
+
+    void preloadRun();
 
   public:
 
-    void cleanup();
-    void loadScheduled();
-
     void makeScreenshot();
+
+    void syncUpdate();
+    void update();
+
+    void load();
+    void unload();
 
     void init();
     void free();

@@ -865,14 +865,11 @@ int Build::main( int argc, char** argv )
     throw Exception( "Failed to add directory '%s' to search path", dataDir.cstr() );
   }
 
-  int  windowWidth      = 400;
-  int  windowHeight     = 40;
-  bool windowFullscreen = false;
+  int  windowWidth  = 400;
+  int  windowHeight = 40;
+  uint windowFlags  = SDL_OPENGL;
 
-  uint windowFlags = SDL_OPENGL;
-
-  log.print( "Creating OpenGL window %dx%d [%s] ...",
-             windowWidth, windowHeight, windowFullscreen ? "fullscreen" : "windowed" );
+  log.print( "Creating OpenGL window %dx%d [windowed] ...", windowWidth, windowHeight );
 
   if( SDL_VideoModeOK( windowWidth, windowHeight, 0, windowFlags ) == 1 ) {
     throw Exception( "Video mode not supported" );
@@ -890,8 +887,6 @@ int Build::main( int argc, char** argv )
   windowHeight = window->h;
 
   log.printEnd( " %dx%d-%d ... OK", windowWidth, windowHeight, window->format->BitsPerPixel );
-
-  SDL_ShowCursor( SDL_FALSE );
 
   client::render.init( window, windowWidth, windowHeight, true );
 

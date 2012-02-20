@@ -146,6 +146,11 @@ class PhysFile
     bool hasExtension( const char* ext ) const;
 
     /**
+     * Release resources and set default values for internal fields.
+     */
+    void clear();
+
+    /**
      * %Map file into memory.
      *
      * One can use <tt>inputStream()</tt> afterwards to read the contents.

@@ -110,7 +110,7 @@ void BSP::playContSound( const Entity* entity, int sound ) const
 }
 
 BSP::BSP( const matrix::BSP* bsp_ ) :
-  bsp( bsp_ ), flags( 0 ), isLoaded( false )
+  bsp( bsp_ ), flags( 0 ), isPreloaded( false ), isLoaded( false )
 {
   for( int i = 0; i < bsp->sounds.length(); ++i ) {
     context.requestSound( bsp->sounds[i] );
@@ -126,6 +126,29 @@ BSP::~BSP()
   for( int i = 0; i < bsp->sounds.length(); ++i ) {
     context.releaseSound( bsp->sounds[i] );
   }
+}
+
+void BSP::preload()
+{
+  file.setPath( "bsp/" + bsp->name + ".ozcBSP" );
+
+  if( !file.map() ) {
+    throw Exception( "BSP file '%s' mmap failed", file.path().cstr() );
+  }
+
+  isPreloaded = true;
+}
+
+void BSP::load()
+{
+  InputStream istream = file.inputStream();
+
+  flags = istream.readInt();
+  mesh.load( &istream, GL_STATIC_DRAW, file.path() );
+
+  file.clear();
+
+  isLoaded = true;
 }
 
 void BSP::draw( const Struct* str, int mask ) const
@@ -176,23 +199,6 @@ void BSP::play( const Struct* str ) const
       }
     }
   }
-}
-
-void BSP::load()
-{
-  PhysFile file( "bsp/" + bsp->name + ".ozcBSP" );
-  if( !file.map() ) {
-    throw Exception( "BSP file '%s' mmap failed", file.path().cstr() );
-  }
-
-  InputStream istream = file.inputStream();
-
-  flags = istream.readInt();
-  mesh.load( &istream, GL_STATIC_DRAW, file.path() );
-
-  file.unmap();
-
-  isLoaded = true;
 }
 
 }

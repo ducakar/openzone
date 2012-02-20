@@ -132,11 +132,14 @@ class MD3
   public:
 
     Mat44 weaponTransf;
+
+    bool  isPreloaded;
     bool  isLoaded;
 
     explicit MD3( int id );
     ~MD3();
 
+    void preload();
     void load();
 
 //       void advance( AnimState* anim, float dt ) const;

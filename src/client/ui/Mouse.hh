@@ -25,9 +25,6 @@
 
 #include "client/common.hh"
 
-#define SDL_BUTTON_WUMASK SDL_BUTTON( SDL_BUTTON_WHEELUP )
-#define SDL_BUTTON_WDMASK SDL_BUTTON( SDL_BUTTON_WHEELDOWN )
-
 namespace oz
 {
 namespace client

@@ -18,7 +18,7 @@
  */
 
 /**
- * @file luamacros.hh
+ * @file lua.hh
  */
 
 #pragma once

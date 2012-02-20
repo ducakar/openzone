@@ -66,6 +66,7 @@
 #define OZ_LUA_API( func ) \
   static int func( lua_State* )
 
+// Forward declaration for Lua state, needed by LuaAPI type declaration.
 struct lua_State;
 
 namespace oz
@@ -74,12 +75,12 @@ namespace oz
 /**
  * Margin for collision detection.
  *
- * 8 * max_rounding_error per kilometre should do. Hence max_world_coord * 4 * Math::FLOAT_EPS,
- * since max_rounding_error = Math::FLOAT_EPS / 2.
+ * (2 * sqrt(3) + some_little_margin) * max_rounding_error per length unit should do. Hence
+ * max_world_coord * 2 * Math::FLOAT_EPS, since maximum rounding error equals 1/2 Math::FLOAT_EPS.
  *
  * @ingroup common
  */
-const float EPSILON = 2048.0f * 4.0f * Math::FLOAT_EPS;
+const float EPSILON = 2048.0f * 2.0f * Math::FLOAT_EPS;
 
 /**
  * Lua C API.

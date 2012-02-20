@@ -34,7 +34,7 @@ namespace client
 {
 
 MD3::MD3( int id_ ) :
-  id( id_ ), isLoaded( false )
+  id( id_ ), isPreloaded( false ), isLoaded( false )
 {}
 
 MD3::~MD3()
@@ -42,8 +42,15 @@ MD3::~MD3()
   OZ_GL_CHECK_ERROR();
 }
 
+void MD3::preload()
+{
+  isPreloaded = true;
+}
+
 void MD3::load()
-{}
+{
+  isLoaded = true;
+}
 
 void MD3::drawFrame( int ) const
 {}
