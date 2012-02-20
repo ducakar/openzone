@@ -94,7 +94,7 @@ class BufferStream
      * Move constructor, moves buffer.
      */
     BufferStream( BufferStream&& s ) :
-      pos( s.pos ), start( s.start ), end( s.end )
+      pos( s.pos ), start( s.start ), end( s.end ), order( s.order )
     {
       s.pos   = null;
       s.start = null;

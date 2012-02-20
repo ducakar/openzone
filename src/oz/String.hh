@@ -52,7 +52,7 @@ class String
     /**
      * Thrown by parse functions if parsing fails or completes only partially.
      */
-    struct ParseException : std::exception
+    class ParseException : public std::exception
     {};
 
   private:
