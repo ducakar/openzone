@@ -142,10 +142,10 @@ void BotProxy::update()
 
   if( keys[SDLK_o] ) {
     if( keys[SDLK_LSHIFT] || keys[SDLK_RSHIFT] ) {
-      orbis.caelum.time -= orbis.caelum.period * 0.002f;
+      orbis.caelum.time -= 0.1f * Timer::TICK_TIME * orbis.caelum.period;
     }
     else {
-      orbis.caelum.time += orbis.caelum.period * 0.002f;
+      orbis.caelum.time += 0.1f * Timer::TICK_TIME * orbis.caelum.period;
     }
   }
 
@@ -384,7 +384,7 @@ void BotProxy::prepare()
           Bot::MOVING_BIT )
       {
         float sine = Math::sin( bobPhi );
-        float tilt = Math::sin( bobPhi + Math::TAU / 6.0f ) * clazz->bobRotation;
+        float tilt = Math::sin( bobPhi + Math::TAU / 4.0f ) * clazz->bobRotation;
 
         bobTheta = Math::mix( bobTheta, tilt, 0.35f );
         bobBias  = sine*sine * clazz->bobAmplitude;

@@ -59,14 +59,11 @@ void BasicAudio::play( const Audio* parent )
   foreach( event, obj->events.citer() ) {
     hard_assert( event->id < ObjectClass::MAX_SOUNDS );
 
-    if( event->id >= 0 && sounds[event->id] != -1 ) {
+    if( event->id >= 0 && sounds[event->id] != -1 && recent[event->id] == 0 ) {
       hard_assert( 0.0f <= event->intensity );
 
-      // prevent event from repeating with too high frequency
-      if( recent[event->id] == 0 ) {
-        recent[event->id] = RECENT_TICKS;
-        playSound( sounds[event->id], event->intensity, obj, parent == null ? obj : parent->obj );
-      }
+      recent[event->id] = RECENT_TICKS;
+      playSound( sounds[event->id], event->intensity, obj, parent == null ? obj : parent->obj );
     }
   }
 

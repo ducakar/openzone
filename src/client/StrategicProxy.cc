@@ -100,10 +100,10 @@ void StrategicProxy::update()
 
   if( keys[SDLK_o] ) {
     if( keys[SDLK_LSHIFT] || keys[SDLK_RSHIFT] ) {
-      orbis.caelum.time -= orbis.caelum.period * 0.002f;
+      orbis.caelum.time -= 0.1f * Timer::TICK_TIME * orbis.caelum.period;
     }
     else {
-      orbis.caelum.time += orbis.caelum.period * 0.002f;
+      orbis.caelum.time += 0.1f * Timer::TICK_TIME * orbis.caelum.period;
     }
   }
 

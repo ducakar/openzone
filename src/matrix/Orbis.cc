@@ -42,7 +42,7 @@ Orbis orbis;
 const float Cell::SIZE     = float( SIZEI );
 const float Cell::INV_SIZE = 1.0f / SIZE;
 
-const float Orbis::DIM     = Cell::SIZE * CELLS / 2.0f;
+const float Orbis::DIM     = float( CELLS ) / 2.0f * Cell::SIZE;
 
 bool Orbis::position( Struct* str )
 {

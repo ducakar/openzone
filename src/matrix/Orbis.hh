@@ -36,7 +36,7 @@ namespace matrix
 
 struct Cell
 {
-  static const int   SIZEI    = 16;
+  static const int   SIZEI = 16;
   static const float SIZE;
   static const float INV_SIZE;
 
@@ -62,7 +62,7 @@ class Orbis : public Bounds
   public:
 
     // # of cells on each (x, y) axis
-    static const int   CELLS = 4096 / Cell::SIZEI;
+    static const int   CELLS = 2 * MAX_WORLD_COORD / Cell::SIZEI;
     static const float DIM;
 
     Caelum caelum;

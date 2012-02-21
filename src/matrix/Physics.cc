@@ -34,7 +34,7 @@ Physics physics;
 
 const float Physics::FLOOR_NORMAL_Z          =  0.60f;
 const float Physics::MOVE_BOUNCE             =  1.5f * EPSILON;
-const float Physics::ENTITY_BOND_LIMIT       = -2.0f;
+const float Physics::ENTITY_BOND_G_RATIO     =  0.10f;
 const float Physics::SIDE_PUSH_RATIO         =  0.5f;
 
 const float Physics::HIT_THRESHOLD           = -3.0f;
@@ -182,7 +182,7 @@ bool Physics::handleObjFriction()
 
           deltaVelX -= entity.velocity.x;
           deltaVelY -= entity.velocity.y;
-          systemMom += max( entity.velocity.z, ENTITY_BOND_LIMIT );
+          systemMom += ENTITY_BOND_G_RATIO * gravity;
         }
       }
       else {

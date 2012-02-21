@@ -58,29 +58,34 @@
 
 #endif
 
-/**
- * Just a handy macro for declaring %Lua API.
- *
- * @ingroup common
- */
-#define OZ_LUA_API( func ) \
-  static int func( lua_State* )
-
-// Forward declaration for Lua state, needed by LuaAPI type declaration.
+// Forward declaration for Lua state, needed for Lua API declarations, to prevent pollution from Lua
+// headers.
 struct lua_State;
 
 namespace oz
 {
 
 /**
+ * Maximum allowed value for world coordinates.
+ */
+const int MAX_WORLD_COORD = 2048;
+
+/**
  * Margin for collision detection.
  *
- * (2 * sqrt(3) + some_little_margin) * max_rounding_error per length unit should do. Hence
- * max_world_coord * 2 * Math::FLOAT_EPS, since maximum rounding error equals 1/2 Math::FLOAT_EPS.
+ * The maximum relative error for transition from world coordinates to relative coordinates is
+ * \f$ |maxWorldCoord| \cdot \varepsilon \sqrt 3 \f$, where \f$ \varepsilon \f$ is maximum relative
+ * rounding error (half of <tt>Math::FLOAT_EPS</tt>).
+ * Rounding errors made during collision query should only represent a small fraction of that since
+ * calculations are performed in relative coordinates on hundreds of times smaller scale.
+ * When we translate an object additional errors are introduces.
+ * <tt>position += collider.hit.ratio * move</tt> can introduce at most
+ * \f$ 2 \cdot |maxWorldCoord| \cdot \varepsilon \sqrt 3 \f$ error.
+ * Sum of all those errors should be less than <tt>|maxWorldCoord| * 3.0f * Math::FLOAT_EPS</tt>.
  *
  * @ingroup common
  */
-const float EPSILON = 2048.0f * 2.0f * Math::FLOAT_EPS;
+const float EPSILON = 2048.0f * 3.0f * Math::FLOAT_EPS;
 
 /**
  * Lua C API.
