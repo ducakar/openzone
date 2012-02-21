@@ -104,8 +104,8 @@ class MD2
     int      shaderId;
 
     Vertex*  vertices;
-    Vec4*    positions;
-    Vec4*    normals;
+    Point3*  positions;
+    Vec3*    normals;
 
     Mesh     mesh;
 

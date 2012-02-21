@@ -184,17 +184,12 @@ void Terra::load()
   glGenBuffers( TILES * TILES, &vbos[0][0] );
   glGenBuffers( 1, &ibo );
 
+  int vboSize = TILE_VERTICES * int( sizeof( Vertex ) );
+  int iboSize = TILE_INDICES * int( sizeof( ushort ) );
+
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-  glBufferData( GL_ELEMENT_ARRAY_BUFFER, TILE_INDICES * sizeof( ushort ), 0, GL_STATIC_DRAW );
+  glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, is.forward( iboSize ), GL_STATIC_DRAW );
 
-  ushort* indices =
-    reinterpret_cast<ushort*>( glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY ) );
-
-  for( int i = 0; i < TILE_INDICES; ++i ) {
-    indices[i] = ushort( is.readShort() );
-  }
-
-  glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
   for( int i = 0; i < TILES; ++i ) {
@@ -206,16 +201,7 @@ void Terra::load()
 #endif
 
       glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
-      glBufferData( GL_ARRAY_BUFFER, TILE_VERTICES * sizeof( Vertex ), 0, GL_STATIC_DRAW );
-
-      Vertex* vertices =
-        reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY ) );
-
-      for( int k = 0; k < TILE_VERTICES; ++k ) {
-        vertices[k].read( &is );
-      }
-
-      glUnmapBuffer( GL_ARRAY_BUFFER );
+      glBufferData( GL_ARRAY_BUFFER, vboSize, is.forward( vboSize ), GL_STATIC_DRAW );
 
 #ifndef OZ_GL_COMPATIBLE
       Vertex::setFormat();

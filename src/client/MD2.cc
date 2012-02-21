@@ -104,78 +104,37 @@ void MD2::load()
   weaponTransf    = is.readMat44();
 
   if( shader.hasVertexTexture ) {
-    uint pbos[2];
-
-    glGenBuffers( 2, pbos );
-
-    glBindBuffer( GL_PIXEL_UNPACK_BUFFER, pbos[0] );
-    glBufferData( GL_PIXEL_UNPACK_BUFFER, nFrames * nFramePositions * int( sizeof( Vec4 ) ), 0,
-                  GL_STREAM_DRAW );
-
-    positions = reinterpret_cast<Vec4*>( glMapBuffer( GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY ) );
-
-    for( int i = 0; i < nFramePositions * nFrames; ++i ) {
-      positions[i].x = is.readFloat();
-      positions[i].y = is.readFloat();
-      positions[i].z = is.readFloat();
-      positions[i].w = 1.0f;
-    }
-
-    glUnmapBuffer( GL_PIXEL_UNPACK_BUFFER );
+    int vertexBufferSize = nFramePositions * nFrames * int( sizeof( Vec4 ) );
+    int normalBufferSize = nFramePositions * nFrames * int( sizeof( Vec4 ) );
 
     glGenTextures( 1, &vertexTexId );
     glBindTexture( GL_TEXTURE_2D, vertexTexId );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, nFramePositions, nFrames, 0,
-                  GL_RGBA, GL_FLOAT, 0 );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, nFramePositions, nFrames, 0, GL_RGBA, GL_FLOAT,
+                  is.forward( vertexBufferSize ) );
     glBindTexture( GL_TEXTURE_2D, 0 );
-
-    glBindBuffer( GL_PIXEL_UNPACK_BUFFER, pbos[0] );
-    glBufferData( GL_PIXEL_UNPACK_BUFFER, nFrames * nFramePositions * int( sizeof( Vec4 ) ), 0,
-                  GL_STREAM_DRAW );
-
-    normals = reinterpret_cast<Vec4*>( glMapBuffer( GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY ) );
-
-    for( int i = 0; i < nFramePositions * nFrames; ++i ) {
-      normals[i].x  = is.readFloat();
-      normals[i].y  = is.readFloat();
-      normals[i].z  = is.readFloat();
-      normals[i].w  = 0.0f;
-    }
-
-    glUnmapBuffer( GL_PIXEL_UNPACK_BUFFER );
 
     glGenTextures( 1, &normalTexId );
     glBindTexture( GL_TEXTURE_2D, normalTexId );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, nFramePositions, nFrames, 0,
-                  GL_RGBA, GL_FLOAT, 0 );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, nFramePositions, nFrames, 0, GL_RGBA, GL_FLOAT,
+                  is.forward( normalBufferSize ) );
     glBindTexture( GL_TEXTURE_2D, 0 );
 
-    glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
-
     mesh.load( &is, GL_STATIC_DRAW, file.path() );
-
-    glDeleteBuffers( 2, pbos );
   }
   else {
-    positions = new Vec4[nFramePositions * nFrames];
-    normals   = new Vec4[nFramePositions * nFrames];
+    positions = new Point3[nFramePositions * nFrames];
+    normals   = new Vec3[nFramePositions * nFrames];
 
     for( int i = 0; i < nFramePositions * nFrames; ++i ) {
-      positions[i].x = is.readFloat();
-      positions[i].y = is.readFloat();
-      positions[i].z = is.readFloat();
-      positions[i].w = 1.0f;
+      positions[i] = Point3::ORIGIN + is.readVec4();
     }
 
     for( int i = 0; i < nFramePositions * nFrames; ++i ) {
-      normals[i].x  = is.readFloat();
-      normals[i].y  = is.readFloat();
-      normals[i].z  = is.readFloat();
-      normals[i].w  = 0.0f;
+      normals[i] = is.readVec4();
     }
 
     const char* meshStart = is.getPos();
@@ -250,14 +209,14 @@ void MD2::drawFrame( int frame ) const
     glBindTexture( GL_TEXTURE_2D, normalTexId );
   }
   else {
-    const Vec4* framePositions = &positions[frame * nFramePositions];
-    const Vec4* frameNormals   = &normals[frame * nFramePositions];
+    const Point3* framePositions = &positions[frame * nFramePositions];
+    const Vec3*   frameNormals   = &normals[frame * nFramePositions];
 
     for( int i = 0; i < nFrameVertices; ++i ) {
       int j = int( vertices[i].pos[0] * float( nFramePositions - 1 ) + 0.5f );
 
-      Vec4 pos    = framePositions[j];
-      Vec4 normal = frameNormals[j];
+      Point3 pos    = framePositions[j];
+      Vec3   normal = frameNormals[j];
 
       animBuffer[i].pos[0] = pos.x;
       animBuffer[i].pos[1] = pos.y;
@@ -297,18 +256,18 @@ void MD2::draw( const AnimState* anim ) const
                  anim->currTime * anim->fps );
   }
   else {
-    const Vec4* currFramePositions = &positions[anim->currFrame * nFramePositions];
-    const Vec4* nextFramePositions = &positions[anim->nextFrame * nFramePositions];
-    const Vec4* currFrameNormals   = &normals[anim->currFrame * nFramePositions];
-    const Vec4* nextFrameNormals   = &normals[anim->nextFrame * nFramePositions];
+    const Point3* currFramePositions = &positions[anim->currFrame * nFramePositions];
+    const Point3* nextFramePositions = &positions[anim->nextFrame * nFramePositions];
+    const Vec3*   currFrameNormals   = &normals[anim->currFrame * nFramePositions];
+    const Vec3*   nextFrameNormals   = &normals[anim->nextFrame * nFramePositions];
 
     float t = anim->currTime * anim->fps;
 
     for( int i = 0; i < nFrameVertices; ++i ) {
       int j = int( vertices[i].pos[0] * float( nFramePositions - 1 ) + 0.5f );
 
-      Vec4 pos    = Math::mix( currFramePositions[j], nextFramePositions[j], t );
-      Vec4 normal = Math::mix( currFrameNormals[j],   nextFrameNormals[j],   t );
+      Point3 pos    = Math::mix( currFramePositions[j], nextFramePositions[j], t );
+      Vec3   normal = Math::mix( currFrameNormals[j],   nextFrameNormals[j],   t );
 
       animBuffer[i].pos[0] = pos.x;
       animBuffer[i].pos[1] = pos.y;
