@@ -63,8 +63,6 @@ PFNGLGENBUFFERSPROC              glGenBuffers;
 PFNGLDELETEBUFFERSPROC           glDeleteBuffers;
 PFNGLBINDBUFFERPROC              glBindBuffer;
 PFNGLBUFFERDATAPROC              glBufferData;
-PFNGLMAPBUFFERPROC               glMapBuffer;
-PFNGLUNMAPBUFFERPROC             glUnmapBuffer;
 
 PFNGLGENRENDERBUFFERSPROC        glGenRenderbuffers;
 PFNGLDELETERENDERBUFFERSPROC     glDeleteRenderbuffers;
@@ -183,8 +181,6 @@ void glInit()
   OZ_REGISTER_GLFUNC( glDeleteBuffers,           PFNGLDELETEBUFFERSPROC           );
   OZ_REGISTER_GLFUNC( glBindBuffer,              PFNGLBINDBUFFERPROC              );
   OZ_REGISTER_GLFUNC( glBufferData,              PFNGLBUFFERDATAPROC              );
-  OZ_REGISTER_GLFUNC( glMapBuffer,               PFNGLMAPBUFFERPROC               );
-  OZ_REGISTER_GLFUNC( glUnmapBuffer,             PFNGLUNMAPBUFFERPROC             );
 
   OZ_REGISTER_GLFUNC( glGenRenderbuffers,        PFNGLGENRENDERBUFFERSPROC        );
   OZ_REGISTER_GLFUNC( glDeleteRenderbuffers,     PFNGLDELETERENDERBUFFERSPROC     );

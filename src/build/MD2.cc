@@ -418,13 +418,14 @@ void MD2::build( const char* path )
     // write vertex positions for all frames
     for( int i = 0; i < header.nFrames; ++i ) {
       for( int j = 0; j < header.nFramePositions; ++j ) {
-        os.writePoint3( vertices[i * header.nFramePositions + j] );
+        os.writeVec4( Vec4( vertices[i * header.nFramePositions + j] ) );
       }
     }
+
     // write vertex normals for all frames
     for( int i = 0; i < header.nFrames; ++i ) {
       for( int j = 0; j < header.nFramePositions; ++j ) {
-        os.writeVec3( normals[i * header.nFramePositions + j] );
+        os.writeVec4( Vec4( normals[i * header.nFramePositions + j] ) );
       }
     }
 

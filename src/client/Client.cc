@@ -488,7 +488,7 @@ int Client::main( int argc, char** argv )
 
   // THE MAGNIFICENT MAIN LOOP
   do {
-    if( isBenchmark && float( timer.micros - timeZero ) >= benchmarkTime * 1.0e6f ) {
+    if( isBenchmark && float( timer.micros / 1000000 ) >= benchmarkTime ) {
       isAlive = false;
     }
 

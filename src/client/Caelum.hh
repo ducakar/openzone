@@ -51,6 +51,7 @@ class Caelum
 
     uint  vao;
     uint  vbo;
+    uint  ibo;
 
     uint  sunTexId;
     uint  moonTexId;

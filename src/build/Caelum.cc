@@ -69,17 +69,30 @@ void Caelum::build( const char* name )
       transf * Point3( 0.0f, +STAR_DIM, 0.0f )
     };
 
-    client::Vertex vertex[4] = {
-      { { corners[0].x, corners[0].y, corners[0].z }, {}, {}, {}, {}, {} },
-      { { corners[1].x, corners[1].y, corners[1].z }, {}, {}, {}, {}, {} },
-      { { corners[2].x, corners[2].y, corners[2].z }, {}, {}, {}, {}, {} },
-      { { corners[3].x, corners[3].y, corners[3].z }, {}, {}, {}, {}, {} }
-    };
+    os.writeFloat( corners[0].x );
+    os.writeFloat( corners[0].y );
+    os.writeFloat( corners[0].z );
 
-    vertex[0].write( &os );
-    vertex[1].write( &os );
-    vertex[2].write( &os );
-    vertex[3].write( &os );
+    os.writeFloat( corners[1].x );
+    os.writeFloat( corners[1].y );
+    os.writeFloat( corners[1].z );
+
+    os.writeFloat( corners[2].x );
+    os.writeFloat( corners[2].y );
+    os.writeFloat( corners[2].z );
+
+    os.writeFloat( corners[3].x );
+    os.writeFloat( corners[3].y );
+    os.writeFloat( corners[3].z );
+  }
+
+  for( int i = 0; i < client::Caelum::MAX_STARS; ++i ) {
+    os.writeShort( short( i * 4 + 0 ) );
+    os.writeShort( short( i * 4 + 0 ) );
+    os.writeShort( short( i * 4 + 1 ) );
+    os.writeShort( short( i * 4 + 2 ) );
+    os.writeShort( short( i * 4 + 3 ) );
+    os.writeShort( short( i * 4 + 3 ) );
   }
 
   uint texId = context.loadRawTexture( "caelum/sun.png", false );

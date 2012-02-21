@@ -44,54 +44,54 @@ bool Vertex::operator == ( const Vertex& v ) const
          binormal[0] == v.binormal[0] && binormal[1] == v.binormal[1] && binormal[2] == v.binormal[2];
 }
 
-void Vertex::read( InputStream* stream )
+void Vertex::read( InputStream* istream )
 {
-  pos[0] = stream->readFloat();
-  pos[1] = stream->readFloat();
-  pos[2] = stream->readFloat();
+  pos[0] = istream->readFloat();
+  pos[1] = istream->readFloat();
+  pos[2] = istream->readFloat();
 
-  texCoord[0] = stream->readFloat();
-  texCoord[1] = stream->readFloat();
+  texCoord[0] = istream->readFloat();
+  texCoord[1] = istream->readFloat();
 
-  detailCoord[0] = stream->readFloat();
-  detailCoord[1] = stream->readFloat();
+  detailCoord[0] = istream->readFloat();
+  detailCoord[1] = istream->readFloat();
 
-  normal[0] = stream->readFloat();
-  normal[1] = stream->readFloat();
-  normal[2] = stream->readFloat();
+  normal[0] = istream->readFloat();
+  normal[1] = istream->readFloat();
+  normal[2] = istream->readFloat();
 
-  tangent[0] = stream->readFloat();
-  tangent[1] = stream->readFloat();
-  tangent[2] = stream->readFloat();
+  tangent[0] = istream->readFloat();
+  tangent[1] = istream->readFloat();
+  tangent[2] = istream->readFloat();
 
-  binormal[0] = stream->readFloat();
-  binormal[1] = stream->readFloat();
-  binormal[2] = stream->readFloat();
+  binormal[0] = istream->readFloat();
+  binormal[1] = istream->readFloat();
+  binormal[2] = istream->readFloat();
 }
 
-void Vertex::write( BufferStream* stream ) const
+void Vertex::write( BufferStream* ostream ) const
 {
-  stream->writeFloat( pos[0] );
-  stream->writeFloat( pos[1] );
-  stream->writeFloat( pos[2] );
+  ostream->writeFloat( pos[0] );
+  ostream->writeFloat( pos[1] );
+  ostream->writeFloat( pos[2] );
 
-  stream->writeFloat( texCoord[0] );
-  stream->writeFloat( texCoord[1] );
+  ostream->writeFloat( texCoord[0] );
+  ostream->writeFloat( texCoord[1] );
 
-  stream->writeFloat( detailCoord[0] );
-  stream->writeFloat( detailCoord[1] );
+  ostream->writeFloat( detailCoord[0] );
+  ostream->writeFloat( detailCoord[1] );
 
-  stream->writeFloat( normal[0] );
-  stream->writeFloat( normal[1] );
-  stream->writeFloat( normal[2] );
+  ostream->writeFloat( normal[0] );
+  ostream->writeFloat( normal[1] );
+  ostream->writeFloat( normal[2] );
 
-  stream->writeFloat( tangent[0] );
-  stream->writeFloat( tangent[1] );
-  stream->writeFloat( tangent[2] );
+  ostream->writeFloat( tangent[0] );
+  ostream->writeFloat( tangent[1] );
+  ostream->writeFloat( tangent[2] );
 
-  stream->writeFloat( binormal[0] );
-  stream->writeFloat( binormal[1] );
-  stream->writeFloat( binormal[2] );
+  ostream->writeFloat( binormal[0] );
+  ostream->writeFloat( binormal[1] );
+  ostream->writeFloat( binormal[2] );
 }
 
 void Vertex::setFormat()
@@ -139,12 +139,12 @@ Mesh::~Mesh()
   delete[] parts;
 }
 
-void Mesh::load( InputStream* stream, uint usage, const char* path )
+void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
 {
   flags = 0;
 
-  int nVertices = stream->readInt();
-  int nIndices  = stream->readInt();
+  int nVertices = istream->readInt();
+  int nIndices  = istream->readInt();
 
 #ifdef OZ_GL_COMPATIBLE
   vao = 1;
@@ -153,30 +153,16 @@ void Mesh::load( InputStream* stream, uint usage, const char* path )
   glBindVertexArray( vao );
 #endif
 
+  int vboSize = nVertices * int( sizeof( Vertex ) );
+  int iboSize = nIndices * int( sizeof( ushort ) );
+
   glGenBuffers( 1, &vbo );
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
-  glBufferData( GL_ARRAY_BUFFER, nVertices * int( sizeof( Vertex ) ), 0, usage );
-
-  Vertex* vertices = reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY ) );
-
-  for( int i = 0; i < nVertices; ++i ) {
-    vertices[i].read( stream );
-  }
-
-  glUnmapBuffer( GL_ARRAY_BUFFER );
+  glBufferData( GL_ARRAY_BUFFER, vboSize, istream->forward( vboSize ), usage );
 
   glGenBuffers( 1, &ibo );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-  glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * int( sizeof( ushort ) ), 0, GL_STATIC_DRAW );
-
-  ushort* indices =
-    reinterpret_cast<ushort*>( glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY ) );
-
-  for( int i = 0; i < nIndices; ++i ) {
-    indices[i] = ushort( stream->readShort() );
-  }
-
-  glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER );
+  glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, istream->forward( iboSize ), GL_STATIC_DRAW );
 
 #ifndef OZ_GL_COMPATIBLE
   Vertex::setFormat();
@@ -189,7 +175,7 @@ void Mesh::load( InputStream* stream, uint usage, const char* path )
 
   DArray<uint> textures;
 
-  int nTextures = stream->readInt();
+  int nTextures = istream->readInt();
 
   if( nTextures < 0 ) {
     nTextures = ~nTextures;
@@ -199,7 +185,7 @@ void Mesh::load( InputStream* stream, uint usage, const char* path )
     textures[0] = 0;
 
     for( int i = 1; i < nTextures; ++i ) {
-      textures[i] = context.readTexture( stream, path );
+      textures[i] = context.readTexture( istream, path );
     }
   }
   else {
@@ -207,7 +193,7 @@ void Mesh::load( InputStream* stream, uint usage, const char* path )
     texIds.alloc( nTextures );
 
     for( int i = 0; i < nTextures; ++i ) {
-      const String& name = stream->readString();
+      const String& name = istream->readString();
 
       if( name.isEmpty() ) {
         texIds[i]   = -1;
@@ -220,22 +206,22 @@ void Mesh::load( InputStream* stream, uint usage, const char* path )
     }
   }
 
-  nParts = stream->readInt();
+  nParts = istream->readInt();
 
   parts = new Part[nParts];
 
   for( int i = 0; i < nParts; ++i ) {
-    parts[i].flags      = stream->readInt();
-    parts[i].mode       = uint( stream->readInt() );
+    parts[i].flags      = istream->readInt();
+    parts[i].mode       = uint( istream->readInt() );
 
-    parts[i].texture    = textures[ stream->readInt() ];
-    parts[i].masks      = textures[ stream->readInt() ];
+    parts[i].texture    = textures[ istream->readInt() ];
+    parts[i].masks      = textures[ istream->readInt() ];
     parts[i].masks      = parts[i].masks == 0 ? shader.defaultMasks : parts[i].masks;
-    parts[i].alpha      = stream->readFloat();
-    parts[i].specular   = stream->readFloat();
+    parts[i].alpha      = istream->readFloat();
+    parts[i].specular   = istream->readFloat();
 
-    parts[i].nIndices   = stream->readInt();
-    parts[i].firstIndex = stream->readInt();
+    parts[i].nIndices   = istream->readInt();
+    parts[i].firstIndex = istream->readInt();
 
     parts[i].flags |= parts[i].alpha == 1.0f ? 0x0100 : 0x0200;
     flags |= parts[i].flags & ( 0x0100 | 0x0200 );
@@ -286,18 +272,6 @@ void Mesh::upload( const Vertex* vertices, int nVertices, uint usage ) const
 {
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
   glBufferData( GL_ARRAY_BUFFER, nVertices * int( sizeof( Vertex ) ), vertices, usage );
-  glBindBuffer( GL_ARRAY_BUFFER, 0 );
-}
-
-Vertex* Mesh::map( uint access ) const
-{
-  glBindBuffer( GL_ARRAY_BUFFER, vbo );
-  return reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, access ) );
-}
-
-void Mesh::unmap() const
-{
-  glUnmapBuffer( GL_ARRAY_BUFFER );
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 }
 

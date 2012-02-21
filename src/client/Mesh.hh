@@ -41,8 +41,8 @@ struct Vertex
 
   bool operator == ( const Vertex& v ) const;
 
-  void read( InputStream* stream );
-  void write( BufferStream* stream ) const;
+  void read( InputStream* istream );
+  void write( BufferStream* ostream ) const;
 
   static void setFormat();
 };
@@ -90,12 +90,10 @@ class Mesh
     Mesh();
     ~Mesh();
 
-    void load( InputStream* stream, uint usage, const char* path );
+    void load( InputStream* istream, uint usage, const char* path );
     void unload();
 
     void upload( const Vertex* vertices, int nVertices, uint usage ) const;
-    Vertex* map( uint access ) const;
-    void unmap() const;
 
     void bind() const;
     void drawComponent( int id, int mask ) const;

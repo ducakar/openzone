@@ -129,12 +129,16 @@ void Caelum::draw()
 
 #ifdef OZ_GL_COMPATIBLE
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    Vertex::setFormat();
+
+    glEnableVertexAttribArray( Attrib::POSITION );
+    glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( float[3] ), null );
+
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 #else
     glBindVertexArray( vao );
 #endif
 
-    glDrawArrays( GL_QUADS, 0, MAX_STARS * 4 );
+    glDrawElements( GL_TRIANGLE_STRIP, MAX_STARS * 6, GL_UNSIGNED_SHORT, null );
   }
 
   shape.bindVertexArray();
@@ -195,7 +199,8 @@ void Caelum::load()
 
   InputStream is = file.inputStream();
 
-  int size = MAX_STARS * 4 * int( sizeof( Vertex ) );
+  int vboSize = MAX_STARS * 4 * int( sizeof( float[3] ) );
+  int iboSize = MAX_STARS * 6 * int( sizeof( ushort ) );
 
 #ifndef OZ_GL_COMPATIBLE
   glGenVertexArrays( 1, &vao );
@@ -204,12 +209,15 @@ void Caelum::load()
 
   glGenBuffers( 1, &vbo );
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
-  glBufferData( GL_ARRAY_BUFFER, size, is.forward( size ), GL_STATIC_DRAW );
+  glBufferData( GL_ARRAY_BUFFER, vboSize, is.forward( vboSize ), GL_STATIC_DRAW );
+
+  glGenBuffers( 1, &ibo );
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+  glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, is.forward( iboSize ), GL_STATIC_DRAW );
 
 #ifndef OZ_GL_COMPATIBLE
   glEnableVertexAttribArray( Attrib::POSITION );
-  glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+  glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( float[3] ), null );
 
   glBindVertexArray( 0 );
 #endif
