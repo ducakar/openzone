@@ -44,6 +44,8 @@
 # include <shlobj.h>
 #endif
 
+// #include "client/icon.h"
+
 namespace oz
 {
 namespace client
@@ -400,6 +402,15 @@ int Client::main( int argc, char** argv )
 
   log.print( "Creating OpenGL window %dx%d [%s] ...",
              windowWidth, windowHeight, windowFullscreen ? "fullscreen" : "windowed" );
+
+//   SDL_Surface* icon = SDL_CreateRGBSurfaceFrom( const_cast<ubyte*>( ICON.pixel_data ),
+//                                                 int( ICON.width ), int( ICON.height ),
+//                                                 int( ICON.bytes_per_pixel * 8 ),
+//                                                 int( ICON.width * ICON.bytes_per_pixel ),
+//                                                 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 );
+//
+//   SDL_WM_SetIcon( icon, null );
+//   SDL_FreeSurface( icon );
 
   if( SDL_VideoModeOK( windowWidth, windowHeight, 0, windowFlags ) == 1 ) {
     throw Exception( "Video mode not supported" );

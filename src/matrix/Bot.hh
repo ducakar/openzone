@@ -46,8 +46,10 @@ class Bot : public Dynamic
     static const int EVENT_FLIP               = 10;
     static const int EVENT_DEATH              = 11;
 
-    // Step event is not in use but merely reserves a sound slot.
+    // Step and swim events are not in use but merely reserve sound slots.
     static const int EVENT_STEP               = 12;
+    static const int EVENT_WATERSTEP          = 13;
+    static const int EVENT_SWIM               = 14;
 
     /*
      * ACTIONS

@@ -2,13 +2,13 @@
 
 pkgbase=openzone
 pkgname=('liboz' 'openzone' 'openzone-data' 'openzone-doc')
-pkgver=0.2.80
+pkgver=0.2.85
 pkgrel=1
 url="http://github.com/ducakar/openzone/"
 license=('GPL3')
 arch=('i686' 'x86_64')
 makedepends=('cmake' 'doxygen' 'faad2' 'freeimage' 'gcc>=4.6' 'git' 'graphviz'
-             'libmad' 'libpulse' 'lua' 'openal' 'physfs' 'sdl_ttf-hg')
+             'libmad' 'libpulse' 'lua' 'openal' 'physfs' 'sdl_ttf')
 source=("openzone-src-${pkgver}.tar.xz"
         "openzone-data-ozbase-${pkgver}.tar.xz"
         "openzone-data-openzone-${pkgver}.tar.xz")

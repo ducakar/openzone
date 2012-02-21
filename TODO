@@ -10,14 +10,11 @@
   * pause menu
 - client
   * clean up Proxies
-  * smooth loading
   * time compression
   * pause
   * MD3 animation
   * fix bloom
   * fix in-vehicle camera (rotation axis & free look)
-- missions
-  * new tutorial missions
 
 0.4
 - new löök
@@ -34,6 +31,8 @@
   * video to texture
   * better sky
   * weather
+- missions
+  * new tutorial missions
 
 0.5
 - networking
