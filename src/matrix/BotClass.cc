@@ -92,6 +92,14 @@ void BotClass::initClass( const Config* config, const Lingua* classLingua )
     soundName  = config->get( "audioSound.step", "" );
     soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
     audioSounds[Bot::EVENT_STEP] = soundIndex;
+
+    soundName  = config->get( "audioSound.waterStep", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Bot::EVENT_WATERSTEP] = soundIndex;
+
+    soundName  = config->get( "audioSound.swim", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Bot::EVENT_SWIM] = soundIndex;
   }
 
   // we don't allow browsing bots' inventory as long as they are alive

@@ -41,7 +41,8 @@ class Timer
     static const     uint  TICKS_PER_SEC = 60;
 
     /// Length of one tick in seconds.
-    static constexpr float TICK_TIME = 1.0f / 60.0f;
+    // FIXME Add explicit cast when GCC 4.6 becomes minimum.
+    static constexpr float TICK_TIME = 1.0f / TICKS_PER_SEC;
 
     /// Length of one tick in microseconds.
     static const     uint  TICK_MICROS = ( 1000000 + TICKS_PER_SEC / 2 ) / TICKS_PER_SEC;

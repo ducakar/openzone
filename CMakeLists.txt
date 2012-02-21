@@ -6,7 +6,7 @@ project( openzone C CXX )
 # Configuration
 #
 
-set( OZ_VERSION "0.2.80" CACHE STRING "" FORCE )
+set( OZ_VERSION "0.2.85" CACHE STRING "" FORCE )
 set( OZ_SOVERSION "0.3" CACHE STRING "" FORCE )
 
 option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory leaks." OFF )
@@ -181,32 +181,21 @@ endif()
 
 set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release ReleaseGen ReleaseUse" )
 
-if( WIN32 )
-  set( CMAKE_CXX_FLAGS_DEBUG "-D_FORTIFY_SOURCE=2 -g3 -O0" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-D_FORTIFY_SOURCE=2 -g3 -O3" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASEGEN "-DNDEBUG -O3 -fprofile-generate" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASEUSE "-DNDEBUG -O3 -fprofile-use" CACHE STRING "" FORCE )
-elseif( OZ_CLANG )
-  set( CMAKE_CXX_FLAGS_DEBUG "-D_FORTIFY_SOURCE=2 -g3 -O0 -fstack-protector" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-D_FORTIFY_SOURCE=2 -g3 -O3 -fstack-protector" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASEGEN "-DNDEBUG -O3 -fprofile-generate" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASEUSE "-DNDEBUG -O3 -fprofile-use" CACHE STRING "" FORCE )
-else()
-  set( CMAKE_CXX_FLAGS_DEBUG "-D_FORTIFY_SOURCE=2 -g3 -O0 -fstack-protector" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-D_FORTIFY_SOURCE=2 -g3 -Ofast -fstack-protector" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -flto" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASEGEN "-DNDEBUG -O3 -flto -fprofile-generate" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASEUSE "-DNDEBUG -O3 -flto -fprofile-use" CACHE STRING "" FORCE )
+if( NOT WIN32 AND NOT OZ_CLANG )
+  set( lto "-flto" )
 endif()
+
+set( CMAKE_CXX_FLAGS "${flags} ${arch_flags} ${warnings} ${CMAKE_CXX_FLAGS}" )
+set( CMAKE_CXX_FLAGS_DEBUG "-D_FORTIFY_SOURCE=2 -g3 -O0" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-D_FORTIFY_SOURCE=2 -g3 -O3" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 ${lto}" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELEASEGEN "-DNDEBUG -O3 ${lto} -fprofile-generate" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELEASEUSE "-DNDEBUG -O3 ${lto} -fprofile-use" CACHE STRING "" FORCE )
 
 mark_as_advanced( CMAKE_CXX_FLAGS_RELEASEGEN )
 mark_as_advanced( CMAKE_CXX_FLAGS_RELEASEUSE )
 mark_as_advanced( CMAKE_EXE_LINKER_FLAGS_RELEASEGEN )
 mark_as_advanced( CMAKE_EXE_LINKER_FLAGS_RELEASEUSE )
-
-set( CMAKE_CXX_FLAGS "${flags} ${arch_flags} ${warnings} ${CMAKE_CXX_FLAGS}" )
 
 # construct flags strings for BuildInfo
 string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" OZ_CXX_FLAGS )

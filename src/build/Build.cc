@@ -447,6 +447,8 @@ void Build::tagClassResources()
     const char* flipSound       = classConfig.get( "audioSound.flip", "" );
     const char* deathSound      = classConfig.get( "audioSound.death", "" );
     const char* stepSound       = classConfig.get( "audioSound.step", "" );
+    const char* waterStepSound  = classConfig.get( "audioSound.waterStep", "" );
+    const char* swimSound       = classConfig.get( "audioSound.swim", "" );
     const char* engineSound     = classConfig.get( "audioSound.engine", "" );
     const char* nextWeaponSound = classConfig.get( "audioSound.nextWeapon", "" );
     const char* shot0Sound      = classConfig.get( "audioSound.shot0", "" );
@@ -471,6 +473,8 @@ void Build::tagClassResources()
     context.usedSounds.include( flipSound );
     context.usedSounds.include( deathSound );
     context.usedSounds.include( stepSound );
+    context.usedSounds.include( waterStepSound );
+    context.usedSounds.include( swimSound );
     context.usedSounds.include( engineSound );
     context.usedSounds.include( nextWeaponSound );
     context.usedSounds.include( shot0Sound );

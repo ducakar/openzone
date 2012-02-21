@@ -98,8 +98,13 @@ void Render::prepareDraw()
   uint currentMicros = Time::uclock();
   uint beginMicros = currentMicros;
 
-  collider.translate( camera.p, Vec3::ZERO );
-  shader.medium = collider.hit.medium;
+  if( camera.p.z < 0.0f ) {
+    shader.medium = orbis.terra.liquid;
+  }
+  else {
+    collider.translate( camera.p, Vec3::ZERO );
+    shader.medium = collider.hit.medium;
+  }
 
   visibility = shader.medium & Medium::WATER_BIT ? WATER_VISIBILITY :
                shader.medium & Medium::LAVA_BIT ? LAVA_VISIBILITY : visibilityRange;

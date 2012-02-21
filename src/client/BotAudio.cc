@@ -74,33 +74,6 @@ void BotAudio::play( const Audio* parent )
     }
   }
 
-  // friction
-  if( parent == null && ( obj->flags & Object::ON_SLICK_BIT ) &&
-      sounds[Object::EVENT_FRICTING] != -1 )
-  {
-    const Dynamic* dyn = static_cast<const Dynamic*>( obj );
-
-    if( dyn->flags & Object::FRICTING_BIT ) {
-      recent[Object::EVENT_FRICTING] = RECENT_TICKS;
-    }
-
-    if( recent[Object::EVENT_FRICTING] != 0 ) {
-      float dvx = dyn->velocity.x;
-      float dvy = dyn->velocity.y;
-
-      if( dyn->lower != -1 ) {
-        const Dynamic* sDyn = static_cast<const Dynamic*>( orbis.objects[dyn->lower] );
-
-        if( sDyn != null ) {
-          dvx -= sDyn->velocity.x;
-          dvy -= sDyn->velocity.y;
-        }
-      }
-
-      playContSound( sounds[Object::EVENT_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), dyn, dyn );
-    }
-  }
-
   // inventory items' events
   for( int i = 0; i < obj->items.length(); ++i ) {
     const Object* item = orbis.objects[ obj->items[i] ];
@@ -115,14 +88,30 @@ void BotAudio::play( const Audio* parent )
     if( bot->state & Bot::MOVING_BIT ) {
       int currStep = int( camera.botProxy.bobPhi / ( Math::TAU / 2.0f ) ) % 2;
 
-      if( bot->flags & Object::FRICTING_BIT ) {
-        recent[Object::EVENT_FRICTING] = RECENT_TICKS;
-      }
+      if( currStep != prevStep && recent[Object::EVENT_FRICTING] == 0 ) {
+        if( bot->state & Bot::SWIMMING_BIT ) {
+          if( !( bot->state & Bot::SUBMERGED_BIT ) ) {
+            recent[Object::EVENT_FRICTING] = RECENT_TICKS;
 
-      if( currStep != prevStep && sounds[Bot::EVENT_STEP] != -1 &&
-          !( bot->state & Bot::SWIMMING_BIT ) && recent[Object::EVENT_FRICTING] != 0 )
-      {
-        playSound( sounds[Bot::EVENT_STEP], 1.0f, bot, bot );
+            if( sounds[Bot::EVENT_SWIM] != -1 ) {
+              playSound( sounds[Bot::EVENT_SWIM], 1.0f, bot, bot );
+            }
+          }
+        }
+        else if( bot->flags & Object::FRICTING_BIT ) {
+          recent[Object::EVENT_FRICTING] = RECENT_TICKS;
+
+          if( bot->depth != 0.0f ) {
+            if( sounds[Bot::EVENT_WATERSTEP] != -1 ) {
+              playSound( sounds[Bot::EVENT_WATERSTEP], 1.0f, bot, bot );
+            }
+          }
+          else {
+            if( sounds[Bot::EVENT_STEP] != -1 ) {
+              playSound( sounds[Bot::EVENT_STEP], 1.0f, bot, bot );
+            }
+          }
+        }
       }
 
       prevStep = currStep;

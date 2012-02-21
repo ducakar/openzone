@@ -1,12 +1,12 @@
 #!/bin/sh
 #
 # Some CMakeLists.txt files are auto-generated since some targets have lots of source files and it
-# would be unconvenient to keep all CMakeLists.txt files up-to-date.
+# would be inconvenient to keep all CMakeLists.txt files up-to-date.
 # Those CMakeLists.txt are generated via CMakeLists.gen scripts in the same directory that add all
 # .hh and .cc files in the target directory to the target definition.
 #
 
-version="0.2.80"
+version="0.2.85"
 
 components="oz common matrix nirvana modules client build"
 
@@ -17,7 +17,7 @@ done
 
 # Fix versions in various files
 echo Updating version in CMakeLists.txt
-sed "s/^set( OZ_APPLICATION_VERSION .*$/set( OZ_APPLICATION_VERSION \"$version\" CACHE STRING \"\" FORCE )/" -i CMakeLists.txt
+sed "s/^set( OZ_VERSION .*$/set( OZ_VERSION \"$version\" CACHE STRING \"\" FORCE )/" -i CMakeLists.txt
 
 echo Updating version in doc/Doxyfiles.liboz and doc/Doxyfile
 sed "s/\(PROJECT_NUMBER *= \).*$/\1$version/" -i doc/Doxyfile.liboz doc/Doxyfile
