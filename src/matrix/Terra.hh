@@ -48,7 +48,7 @@ class Terra
     };
 
     // Orbis::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM
-    static const int   QUADS = 512;
+    static const int   QUADS = 2 * MAX_WORLD_COORD / Quad::SIZEI;
     static const int   VERTS = QUADS + 1;
     static const float DIM;
 

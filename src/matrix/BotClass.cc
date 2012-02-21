@@ -156,7 +156,7 @@ void BotClass::initClass( const Config* config, const Lingua* classLingua )
   airControl        = config->get( "airControl", 0.025f );
   climbControl      = config->get( "climbControl", 1.50f );
   waterControl      = config->get( "waterControl", 0.08f );
-  slickControl      = config->get( "slickControl", 0.08f );
+  slickControl      = config->get( "slickControl", 0.06f );
 
   stepInc           = config->get( "stepInc", 0.20f );
   stepMax           = config->get( "stepMax", 0.40f );

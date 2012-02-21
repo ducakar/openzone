@@ -447,7 +447,6 @@ void Entity::elevatorHandler()
               dyn->p.z += collider.hit.ratio * move.z;
               dyn->flags &= ~Object::DISABLED_BIT;
               dyn->flags |= Object::ENABLE_BIT;
-              dyn->lower = -1;
             }
             if( collider.hit.ratio != 1.0f && collider.overlapsEntity( *dyn, this ) ) {
               ratio = originalRatio;
@@ -498,7 +497,6 @@ void Entity::elevatorHandler()
               dyn->p.z += collider.hit.ratio * move.z;
               dyn->flags &= ~Object::DISABLED_BIT;
               dyn->flags |= Object::ENABLE_BIT;
-              dyn->lower = -1;
             }
             if( collider.hit.ratio != 1.0f && collider.overlapsEntity( *dyn, this ) ) {
               ratio = originalRatio;

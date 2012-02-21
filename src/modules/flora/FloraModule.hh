@@ -56,12 +56,12 @@ class FloraModule : public Module
 
   private:
 
-    OZ_LUA_API( ozFloraGetDensity );
-    OZ_LUA_API( ozFloraSetDensity );
-    OZ_LUA_API( ozFloraGetSpacing );
-    OZ_LUA_API( ozFloraSetSpacing );
-    OZ_LUA_API( ozFloraGetNumber );
-    OZ_LUA_API( ozFloraSeed );
+    static int ozFloraGetDensity( lua_State* );
+    static int ozFloraSetDensity( lua_State* );
+    static int ozFloraGetSpacing( lua_State* );
+    static int ozFloraSetSpacing( lua_State* );
+    static int ozFloraGetNumber( lua_State* );
+    static int ozFloraSeed( lua_State* );
 
 };
 

@@ -38,7 +38,7 @@ class Physics
 
     static const float FLOOR_NORMAL_Z;
     static const float MOVE_BOUNCE;
-    static const float ENTITY_BOND_LIMIT;
+    static const float ENTITY_BOND_G_RATIO;
     static const float SIDE_PUSH_RATIO;
 
     static const float HIT_THRESHOLD;
