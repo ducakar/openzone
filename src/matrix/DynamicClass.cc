@@ -38,7 +38,7 @@ ObjectClass* DynamicClass::createClass()
   return new DynamicClass();
 }
 
-void DynamicClass::initClass( const Config* config, const Lingua* classLingua )
+void DynamicClass::initClass( const Config* config )
 {
   flags = Object::DYNAMIC_BIT;
 
@@ -54,7 +54,7 @@ void DynamicClass::initClass( const Config* config, const Lingua* classLingua )
   OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",        false );
   OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",      false );
 
-  fillCommonConfig( config, classLingua );
+  fillCommonConfig( config );
 
   if( audioType != -1 ) {
     const char* soundName;

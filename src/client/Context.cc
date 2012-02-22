@@ -410,9 +410,8 @@ void Context::playBSP( const Struct* str )
   if( resource.object == null ) {
     resource.object = new BSP( str->bsp );
   }
-  else {
-    resource.object->play( str );
-  }
+
+  resource.object->play( str );
 }
 
 void Context::drawImago( const Object* obj, const Imago* parent, int mask )

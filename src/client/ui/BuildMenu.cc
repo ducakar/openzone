@@ -40,7 +40,7 @@ namespace ui
 {
 
 BuildButton::BuildButton( const char* className, Callback* callback, int width, int height ) :
-  Button( OZ_GETTEXT( library.objClass( className )->title ), callback, width, height ),
+  Button( lingua.get( library.objClass( className )->title ), callback, width, height ),
   className( className )
 {}
 

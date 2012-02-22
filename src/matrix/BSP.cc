@@ -186,7 +186,7 @@ void BSP::load()
     models[i].maxs        = is.readPoint3();
 
     models[i].name        = is.readString();
-    models[i].title       = OZ_GETTEXT( models[i].name );
+    models[i].title       = lingua.get( models[i].name );
     models[i].bsp         = this;
     models[i].move        = is.readVec3();
 
@@ -267,7 +267,7 @@ void BSP::unload()
   log.printEnd( " OK" );
 }
 
-void BSP::init( const Lingua* classLingua )
+void BSP::init()
 {
   String sPath = "bsp/" + name + ".ozBSP";
 
@@ -281,8 +281,8 @@ void BSP::init( const Lingua* classLingua )
   mins        = is.readPoint3();
   maxs        = is.readPoint3();
 
-  title       = classLingua->get( is.readString() );
-  description = classLingua->get( is.readString() );
+  title       = lingua.get( is.readString() );
+  description = lingua.get( is.readString() );
 
   int nSounds = is.readInt();
   if( nSounds != 0 ) {

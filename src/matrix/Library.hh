@@ -108,13 +108,13 @@ class Library
     void initSounds();
     void initCaela();
     void initTerrae();
-    void initBSPs( const Lingua* classLingua );
+    void initBSPs();
     void initModels();
     void initMusicRecurse( const char* path );
     void initMusic();
     void initNameLists();
     void initFragPools();
-    void initClasses( const Lingua* classLingua );
+    void initClasses();
 
   public:
 

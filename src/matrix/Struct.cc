@@ -81,6 +81,10 @@ void Entity::trigger()
     return;
   }
 
+  if( model->type == BSP::Model::STATIC ) {
+    state = OPENING;
+  }
+
   int strIndex = model->target / Struct::MAX_ENTITIES;
   int entIndex = model->target % Struct::MAX_ENTITIES;
 
@@ -124,7 +128,9 @@ void Entity::lock( Bot* user )
 }
 
 void Entity::staticHandler()
-{}
+{
+  state = CLOSED;
+}
 
 void Entity::manualDoorHandler()
 {

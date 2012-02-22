@@ -190,13 +190,7 @@ void Lingua::build()
 
     String langCode = langDir->baseName();
 
-    PhysFile uiFile( langDir->path() + "/ui.po" );
-
-    if( uiFile.getType() != File::MISSING ) {
-      buildCatalogue( langCode, "", "ui" );
-    }
-
-    PhysFile linguaMainDir( langDir->path() + "/class" );
+    PhysFile linguaMainDir( langDir->path() + "/main" );
     DArray<PhysFile> mainCats = linguaMainDir.ls();
 
     foreach( file, mainCats.citer() ) {
@@ -204,7 +198,7 @@ void Lingua::build()
         continue;
       }
 
-      buildCatalogue( langCode, "class", file->baseName() );
+      buildCatalogue( langCode, "main", file->baseName() );
     }
 
     PhysFile linguaDomainDir( langDir->path() + "/domain" );
