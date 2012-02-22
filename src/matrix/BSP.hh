@@ -102,7 +102,8 @@ class BSP : public Bounds
       int    target;     ///< Target model index for triggers, -1 otherwise.
       int    key;        ///< Default key code or 0 if door is unlocked by default.
 
-      int    openSound;  ///< Open sound sample, played when an entity starts moving.
+      int    openSound;  ///< Open sound sample, played when an entity starts moving or - for static
+                         ///< entities - when activated (as a trigger not as a target).
       int    closeSound; ///< Close sound sample, played when an entity stops moving.
       int    frictSound; ///< Friction sound sample, played while the entity is moving.
     };
@@ -155,7 +156,7 @@ class BSP : public Bounds
     void load();
     void unload();
 
-    void init( const Lingua* classLingua );
+    void init();
 
 };
 

@@ -90,20 +90,13 @@ class Lingua
     bool initDomain( const char* domain );
 
     /**
-     * Initialise translation of structure and object names and descriptions.
-     *
-     * Translations of structure and object names and descriptions only need to be available during
-     * <tt>matrix::Library</tt> initialisation, so a Lingua instance initialised with this function
-     * is only exists during that. It loads translations found in <tt>lingua/\<locale\>/class</tt>.
-     */
-    bool initClass();
-
-    /**
      * Initialise global Lingua instance.
      *
      * The global instance must be initialised first so that <tt>locale</tt> member is set properly.
-     * This function only loads UI catalogue from <tt>lingua/\<locale\>/ui.ozCat</tt> which must be
-     * loaded all the time when the engine is running.
+     * This function loads all catalogues from <tt>lingua/\<locale\>/main</tt> directory.
+     *
+     * The global Lingua instance contains translations for strings that appear in the engine (UI)
+     * and titles and descriptions of objects and structures from game data.*
      */
     bool init( const char* locale );
 

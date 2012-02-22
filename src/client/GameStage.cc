@@ -235,6 +235,8 @@ void GameStage::auxRun()
 
     matrixMicros += Time::uclock() - beginMicros;
 
+    loader.hasTime = false;
+
     SDL_SemPost( mainSemaphore );
     SDL_SemWait( auxSemaphore );
 
@@ -301,6 +303,8 @@ bool GameStage::update()
   lua.update();
 
   uiMicros += Time::uclock() - beginMicros;
+
+  loader.hasTime = true;
 
   SDL_SemPost( auxSemaphore );
   SDL_SemWait( mainSemaphore );

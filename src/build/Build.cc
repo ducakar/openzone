@@ -118,10 +118,13 @@ void Build::printUsage()
   log.println( "\tPack built files into ZIP archive." );
   log.println();
   log.println( "-A" );
-  log.println( "\tBuild everything." );
+  log.println( "\tEverything above." );
   log.println();
   log.println( "-C" );
-  log.println( "\tUse S3 texture compression" );
+  log.println( "\tUse S3 texture compression." );
+  log.println();
+  log.println( "-7" );
+  log.println( "\tCreate non-solid LZMA-compressed 7zip archive instead of ZIP." );
   log.println();
   log.unindent();
 }
@@ -673,19 +676,20 @@ void Build::checkLua( const char* path )
   log.println( "}" );
 }
 
-void Build::packArchive( const char* name )
+void Build::packArchive( const char* name, bool use7zip )
 {
   log.println( "Packing archive {" );
   log.indent();
 
-  String path = String::str( "../%s.zip", name );
-  String cmdLine = String::str( "zip -r \"%s\" *", path.cstr() );
+  String cmdLine = use7zip ?
+                   String::str( "7z u -ms=off '../%s.7z' *", name ) :
+                   String::str( "zip -9ur '../%s.zip' *", name );
 
   log.println( "%s", cmdLine.cstr() );
   log.println();
 
   if( system( cmdLine ) != 0 ) {
-    throw Exception( "ZIP packing failed" );
+    throw Exception( use7zip ? "Packing 7zip archive failed" : "Packing ZIP archive failed" );
   }
 
   log.unindent();
@@ -709,10 +713,11 @@ int Build::main( int argc, char** argv )
   bool doModules = false;
   bool doMusic   = false;
   bool doPack    = false;
+  bool use7zip   = false;
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "vlugtcbmsafnxorpCA" ) ) != -1 ) {
+  while( ( opt = getopt( argc, argv, "vlugtcbmsafnxorpAC7" ) ) != -1 ) {
     switch( opt ) {
       case 'v': {
         log.isVerbose = true;
@@ -778,10 +783,6 @@ int Build::main( int argc, char** argv )
         doPack = true;
         break;
       }
-      case 'C': {
-        context.useS3TC = true;
-        break;
-      }
       case 'A': {
         doCat     = true;
         doUI      = true;
@@ -798,6 +799,14 @@ int Build::main( int argc, char** argv )
         doModules = true;
         doMusic   = true;
         doPack    = true;
+        break;
+      }
+      case 'C': {
+        context.useS3TC = true;
+        break;
+      }
+      case '7': {
+        use7zip = true;
         break;
       }
       default: {
@@ -995,7 +1004,7 @@ int Build::main( int argc, char** argv )
     copyFiles( "music", "music", "oga", true );
   }
   if( doPack ) {
-    packArchive( pkgName );
+    packArchive( pkgName, use7zip );
   }
 
   uint endTime = Time::clock();

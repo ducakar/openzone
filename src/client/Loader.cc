@@ -330,6 +330,10 @@ void Loader::uploadRender()
 
     if( bsp != null && !bsp->isLoaded && bsp->isPreloaded ) {
       bsp->load();
+
+      if( !hasTime ) {
+        return;
+      }
     }
   }
 
@@ -338,6 +342,10 @@ void Loader::uploadRender()
 
     if( smm != null && !smm->isLoaded && smm->isPreloaded ) {
       smm->load();
+
+      if( !hasTime ) {
+        return;
+      }
     }
   }
 
@@ -346,6 +354,10 @@ void Loader::uploadRender()
 
     if( md2 != null && !md2->isLoaded && md2->isPreloaded ) {
       md2->load();
+
+      if( !hasTime ) {
+        return;
+      }
     }
   }
 
@@ -354,6 +366,10 @@ void Loader::uploadRender()
 
     if( md3 != null && !md3->isLoaded && md3->isPreloaded ) {
       md3->load();
+
+      if( !hasTime ) {
+        return;
+      }
     }
   }
 }
@@ -398,6 +414,8 @@ void Loader::makeScreenshot()
 void Loader::syncUpdate()
 {
   log.verboseMode = true;
+
+  hasTime = true;
 
   preloadRender();
   uploadRender();

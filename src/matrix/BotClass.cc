@@ -43,7 +43,7 @@ ObjectClass* BotClass::createClass()
   return new BotClass();
 }
 
-void BotClass::initClass( const Config* config, const Lingua* classLingua )
+void BotClass::initClass( const Config* config )
 {
   flags = Object::DYNAMIC_BIT | Object::BOT_BIT | Object::HIT_FUNC_BIT |
           Object::UPDATE_FUNC_BIT | Object::CYLINDER_BIT | Object::CLIMBER_BIT | Object::PUSHER_BIT;
@@ -55,7 +55,7 @@ void BotClass::initClass( const Config* config, const Lingua* classLingua )
   OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
   OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
 
-  fillCommonConfig( config, classLingua );
+  fillCommonConfig( config );
 
   if( audioType != -1 ) {
     const char* soundName;
