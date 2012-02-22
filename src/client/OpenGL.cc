@@ -129,18 +129,28 @@ void glCheckError( const char* file, int line, const char* function )
       message = "GL_INVALID_OPERATION";
       break;
     }
+# ifdef GL_STACK_OVERFLOW
     case GL_STACK_OVERFLOW: {
       message = "GL_STACK_OVERFLOW";
       break;
     }
+# endif
+# ifdef GL_STACK_UNDERFLOW
+    case GL_STACK_UNDERFLOW: {
+      message = "GL_STACK_UNDERFLOW";
+      break;
+    }
+# endif
     case GL_OUT_OF_MEMORY: {
       message = "GL_OUT_OF_MEMORY";
       break;
     }
+# ifdef GL_TABLE_TOO_LARGE
     case GL_TABLE_TOO_LARGE: {
       message = "GL_TABLE_TOO_LARGE";
       break;
     }
+# endif
     default: {
       message = String::str( "UNKNOWN(%d)", int( result ) );
       break;

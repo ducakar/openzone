@@ -29,6 +29,8 @@
 
 #include "String.hh"
 
+#include "windefs.h"
+
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>

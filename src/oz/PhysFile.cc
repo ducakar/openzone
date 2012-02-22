@@ -30,7 +30,6 @@
 #include "PhysFile.hh"
 
 #include "windefs.h"
-
 #include <cerrno>
 #include <physfs.h>
 

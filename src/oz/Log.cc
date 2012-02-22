@@ -32,7 +32,6 @@
 #include "Time.hh"
 
 #include "windefs.h"
-
 #include <cstdio>
 #include <cstdlib>
 

@@ -46,4 +46,9 @@
 // Don't import all crap from Windows headers.
 # define WIN32_LEAN_AND_MEAN
 
+// Don't define min and max macros as they interfere with oz::min and oz::max.
+#ifndef NOMINMAX
+# define NOMINMAX
+#endif
+
 #endif

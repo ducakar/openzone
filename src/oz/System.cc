@@ -33,7 +33,6 @@
 #include "Log.hh"
 
 #include "windefs.h"
-
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>

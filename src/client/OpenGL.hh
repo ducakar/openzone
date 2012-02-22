@@ -25,6 +25,7 @@
 
 #include "client/common.hh"
 
+#define GL_VERSION_1_1_DEPRECATED
 #define GL_VERSION_1_2_DEPRECATED
 #define GL_VERSION_1_3_DEPRECATED
 #define GL_VERSION_1_4_DEPRECATED
