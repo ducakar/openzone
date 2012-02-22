@@ -29,6 +29,7 @@
 
 #include "Math.hh"
 
+#include "windefs.h"
 #include <cstdlib>
 
 namespace oz

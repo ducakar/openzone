@@ -50,8 +50,8 @@ if( "${compiler_base}" STREQUAL "clang++" )
 endif()
 
 # Check if compiler is compatible (GCC >= 4.4 or LLVM/Clang >= 3.0) and if legacy GCC (< 4.6)
-try_run( OZ_LEGACY_GCC OZ_COMPATIBLE_COMPILER
-         ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/cmake/compiler.c )
+try_compile( OZ_COMPATIBLE_COMPILER ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/cmake/compatible.cpp )
+try_compile( OZ_LEGACY_GCC ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/cmake/legacy_gcc.cpp )
 
 if( NOT OZ_COMPATIBLE_COMPILER )
   message( FATAL_ERROR "GCC >= 4.4 and LLVM/Clang 3.0 are the only supported compilers" )

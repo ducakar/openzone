@@ -44,19 +44,19 @@
 // Doxygen should skip those macros when generating documentation.
 #ifndef OZ_DOXYGEN
 
-# ifdef _WIN32
-#  include <windows.h>
+#ifdef _WIN32
+# include <windows.h>
 // Fix M$ crap from Windows headers.
-#  undef ERROR
-#  undef PLANES
-#  undef near
-#  undef far
-# endif
-
-# define SDL_NO_COMPAT
-# include <SDL.h>
-
+# undef ERROR
+# undef PLANES
+# undef near
+# undef far
 #endif
+
+#define SDL_NO_COMPAT
+#include <SDL.h>
+
+#endif // OZ_DOXYGEN
 
 // Forward declaration for Lua state, needed for Lua API declarations, to prevent pollution from Lua
 // headers.
