@@ -8,12 +8,10 @@ include_directories( ${CMAKE_BINARY_DIR}/src )
 include_directories( . )
 
 add_subdirectory( oz )
-
-add_library( build_info STATIC ${CMAKE_BINARY_DIR}/src/BuildInfo.cc )
+add_subdirectory( common )
 
 add_pch( pch stable.hh stable.cc )
 
-add_subdirectory( common )
 add_subdirectory( matrix )
 add_subdirectory( nirvana )
 add_subdirectory( modules )
@@ -21,3 +19,5 @@ add_subdirectory( client )
 add_subdirectory( build )
 add_subdirectory( tools )
 add_subdirectory( tests )
+
+add_library( build_info STATIC ${CMAKE_BINARY_DIR}/src/BuildInfo.cc )

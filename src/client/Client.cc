@@ -529,7 +529,6 @@ int Client::main( int argc, char** argv )
               if( SDL_WM_ToggleFullScreen( window ) != 0 ) {
                 windowFullscreen = !windowFullscreen;
 
-                ui::mouse.isGrabbed = windowFullscreen;
                 ui::mouse.isJailed = true;
                 ui::mouse.reset();
 
@@ -537,11 +536,9 @@ int Client::main( int argc, char** argv )
               }
             }
             else if( keysym.mod & KMOD_CTRL ) {
-              if( !ui::mouse.isGrabbed ) {
-                ui::mouse.isJailed = !ui::mouse.isJailed;
+              ui::mouse.isJailed = !ui::mouse.isJailed;
 
-                SDL_ShowCursor( !ui::mouse.isJailed );
-              }
+              SDL_ShowCursor( !ui::mouse.isJailed );
             }
           }
           else if( keysym.sym == SDLK_F12 ) {

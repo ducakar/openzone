@@ -612,8 +612,8 @@ void Collider::trimAABBEntities()
   Bounds localTrace       = str->toStructCS( trace );
 
   for( int i = 0; i < bsp->nModels; ++i ) {
-    model  = &bsp->models[i];
     entity = &str->entities[i];
+    model  = entity->model;
 
     if( localTrace.overlaps( *model + entity->offset ) ) {
       for( int j = 0; j < model->nBrushes; ++j ) {

@@ -50,7 +50,6 @@ void DynamicClass::initClass( const Config* config )
   OZ_CLASS_SET_FLAG( Object::ITEM_BIT,           "flag.item",          false );
   OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",         true  );
   OZ_CLASS_SET_FLAG( Object::CYLINDER_BIT,       "flag.cylinder",      true  );
-  OZ_CLASS_SET_FLAG( Object::PUSHER_BIT,         "flag.pusher",        false );
   OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",        false );
   OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",      false );
 

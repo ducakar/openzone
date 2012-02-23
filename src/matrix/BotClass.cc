@@ -45,8 +45,8 @@ ObjectClass* BotClass::createClass()
 
 void BotClass::initClass( const Config* config )
 {
-  flags = Object::DYNAMIC_BIT | Object::BOT_BIT | Object::HIT_FUNC_BIT |
-          Object::UPDATE_FUNC_BIT | Object::CYLINDER_BIT | Object::CLIMBER_BIT | Object::PUSHER_BIT;
+  flags = Object::DYNAMIC_BIT | Object::BOT_BIT | Object::CYLINDER_BIT |
+          Object::HIT_FUNC_BIT | Object::UPDATE_FUNC_BIT;
 
   OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",    true  );
   OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.onUse",        false );

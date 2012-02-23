@@ -67,3 +67,7 @@ class FragPool
 
 }
 }
+
+/**
+ * @page FragPool Fragment Pools
+ */

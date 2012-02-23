@@ -48,3 +48,7 @@ class DynamicClass : public ObjectClass
 
 }
 }
+
+/**
+ * @page DynamicClass Dynamic Objects
+ */

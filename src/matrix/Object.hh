@@ -36,7 +36,11 @@ struct Cell;
 struct Hit;
 class  Bot;
 
-// static object abstract class
+/**
+ * Static object class and base class for other object classes.
+ *
+ * @ingroup matrix
+ */
 class Object : public AABB
 {
   /*
@@ -77,17 +81,17 @@ class Object : public AABB
     // if object has Lua handlers
     static const int LUA_BIT            = 0x02000000;
 
-    // if the onDestroy function should be called on destruction
+    // if the onDestroy method should be called on destruction
     static const int DESTROY_FUNC_BIT   = 0x01000000;
 
+    // if the onDamage method should be called on damage received
+    static const int DAMAGE_FUNC_BIT    = 0x00800000;
+
+    // if the onHit method should be called on hit
+    static const int HIT_FUNC_BIT       = 0x00400000;
+
     // if the onUse function should be called when object is used
-    static const int USE_FUNC_BIT       = 0x00800000;
-
-    // if the onDamage function should be called on damage received
-    static const int DAMAGE_FUNC_BIT    = 0x00400000;
-
-    // if the onHit function should be called on hit
-    static const int HIT_FUNC_BIT       = 0x00200000;
+    static const int USE_FUNC_BIT       = 0x00200000;
 
     // if the onUpdate method should be called on each tick
     static const int UPDATE_FUNC_BIT    = 0x00100000;
@@ -96,11 +100,14 @@ class Object : public AABB
      * BOUND OBJECTS
      */
 
+    // if the object has an Device object in nirvana
+    static const int DEVICE_BIT         = 0x00080000;
+
     // if the object has an Imago object in frontend
-    static const int IMAGO_BIT          = 0x00080000;
+    static const int IMAGO_BIT          = 0x00020000;
 
     // if the object has an Audio object in frontend
-    static const int AUDIO_BIT          = 0x00040000;
+    static const int AUDIO_BIT          = 0x00010000;
 
     /*
      * STATE FLAGS
@@ -109,53 +116,46 @@ class Object : public AABB
     // when object's life drops to <= 0.0f it's tagged as destroyed first and kept one more tick
     // in the world, so destruction effects can be processed by frontend (e.g. destruction sounds)
     // in the next tick the destroyed objects are actually removed
-    static const int DESTROYED_BIT      = 0x00020000;
+    static const int DESTROYED_BIT      = 0x00008000;
 
     /*
      * COLLISION & PHYSICS FLAGS
      */
 
+    // other object can collide with the object
+    static const int SOLID_BIT          = 0x00004000;
+
+    // use cylinder model for collision between objects when both are flagged as cylinder
+    static const int CYLINDER_BIT       = 0x00002000;
+
     // if the object is still and on a still surface, we won't handle physics for it
-    static const int DISABLED_BIT       = 0x00010000;
+    static const int DISABLED_BIT       = 0x00001000;
 
     // force full physics update in the next step
-    static const int ENABLE_BIT         = 0x00008000;
+    static const int ENABLE_BIT         = 0x00000800;
 
     // if the object is has been sliding on a floor or on another object in last step
-    static const int FRICTING_BIT       = 0x00004000;
+    static const int FRICTING_BIT       = 0x00000400;
 
     // if the object has collided into another dynamic object from below (to prevent stacked
     // objects from being carried around)
-    static const int BELOW_BIT          = 0x00002000;
+    static const int BELOW_BIT          = 0x00000200;
 
     // if the object lies or moves on a structure, terrain or non-dynamic object
     // (if on another dynamic object, we determine that with "lower" index)
-    static const int ON_FLOOR_BIT       = 0x00001000;
+    static const int ON_FLOOR_BIT       = 0x00000100;
 
     // if the object is on slipping surface (not cleared if disabled)
-    static const int ON_SLICK_BIT       = 0x00000800;
+    static const int ON_SLICK_BIT       = 0x00000080;
 
     // if the object intersects with a liquid (not cleared if disabled)
-    static const int IN_LIQUID_BIT      = 0x00000400;
+    static const int IN_LIQUID_BIT      = 0x00000040;
 
     // if the object is in lava
-    static const int IN_LAVA_BIT        = 0x00000200;
+    static const int IN_LAVA_BIT        = 0x00000020;
 
-    // if the object is on ladder (not cleared if disabled)
-    static const int ON_LADDER_BIT      = 0x00000100;
-
-    // other object collide with the object
-    static const int SOLID_BIT          = 0x00000080;
-
-    // use cylinder model for collision between objects when both are flagged as cylinder
-    static const int CYLINDER_BIT       = 0x00000040;
-
-    // If the object is climber it is tested against ladder brushes and gains ON_LADDER_BIT if it
-    // intersects with a ladder brush. Otherwise object is not affected by ladders.
-    static const int CLIMBER_BIT        = 0x00000020;
-
-    // enable pushing to side directions
-    static const int PUSHER_BIT         = 0x00000010;
+    // if the object (bot in this case) is on ladder (not cleared if disabled)
+    static const int ON_LADDER_BIT      = 0x00000010;
 
     /*
      * RENDER FLAGS
@@ -203,12 +203,12 @@ class Object : public AABB
     // EVENT_CREATE must be invoked manually
     static const int EVENT_CREATE   = 0;
     static const int EVENT_DESTROY  = 1;
-    static const int EVENT_USE      = 2;
-    static const int EVENT_DAMAGE   = 3;
-    static const int EVENT_HIT      = 4;
-    static const int EVENT_SPLASH   = 5;
-    // EVENT_FRICTING not in use, but only reserves a slot for friction sound
-    static const int EVENT_FRICTING = 6;
+    static const int EVENT_DAMAGE   = 2;
+    static const int EVENT_HIT      = 3;
+    static const int EVENT_SPLASH   = 4;
+    // EVENT_FRICTING is not in use, it only reserves a slot for friction sound
+    static const int EVENT_FRICTING = 5;
+    static const int EVENT_USE      = 6;
 
     struct Event
     {

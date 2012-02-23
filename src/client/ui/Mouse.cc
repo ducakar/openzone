@@ -81,19 +81,17 @@ void Mouse::update( bool hasFocus )
     relY = -inputY;
 
     // If input is not grabbed we must centre mouse so it cannot move out of the window.
-    if( !isGrabbed && isJailed ) {
+    if( isJailed ) {
       reset();
     }
   }
 
 #ifndef _WIN32
-  if( isGrabbed ) {
-    float move  = Math::sqrt( float( relX )*float( relX ) + float( relY )*float( relY ) );
-    float accel = min( 1.0f + move * accelFactor, 2.0f );
-
-    relX = int( float( relX ) * accel );
-    relY = int( float( relY ) * accel );
-  }
+//   float move  = Math::sqrt( float( relX )*float( relX ) + float( relY )*float( relY ) );
+//   float accel = min( 1.0f + move * accelFactor, 2.0f );
+//
+//   relX = int( float( relX ) * accel );
+//   relY = int( float( relY ) * accel );
 #endif
 
   if( doShow ) {
@@ -143,7 +141,6 @@ void Mouse::init()
 
   accelFactor = config.getSet( "mouse.accelFactor", 0.04f );
   doShow      = false;
-  isGrabbed   = config.get( "window.fullscreen", true );
   isJailed    = true;
   icon        = ARROW;
 

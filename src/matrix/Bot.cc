@@ -167,15 +167,16 @@ void Bot::onUpdate()
      * STATE
      */
     state &= ~( GROUNDED_BIT | ON_STAIRS_BIT | CLIMBING_BIT | SWIMMING_BIT | SUBMERGED_BIT |
-                CARGO_BIT | ATTACKING_BIT );
+                ATTACKING_BIT );
+
+    if( cargo != -1 ) {
+      flags &= ~ON_LADDER_BIT;
+    }
 
     state |= lower != -1 || ( flags & ON_FLOOR_BIT ) ? GROUNDED_BIT  : 0;
     state |= ( flags & ON_LADDER_BIT )               ? CLIMBING_BIT  : 0;
     state |= depth > dim.z                           ? SWIMMING_BIT  : 0;
     state |= depth > dim.z + camZ                    ? SUBMERGED_BIT : 0;
-    state |= cargo != -1                             ? CARGO_BIT     : 0;
-
-    flags |= CLIMBER_BIT;
 
     if( state & SUBMERGED_BIT ) {
       stamina -= clazz->staminaWaterDrain;
@@ -585,8 +586,6 @@ void Bot::onUpdate()
             momDiff *= GRAB_MOM_MAX / Math::sqrt( momDiffSqL );
           }
           momDiff.z          -= physics.gravity * Timer::TICK_TIME;
-
-          flags              &= ~CLIMBER_BIT;
 
           cargoObj->momentum += momDiff;
           cargoObj->flags    &= ~DISABLED_BIT;

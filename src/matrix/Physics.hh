@@ -98,3 +98,12 @@ extern Physics physics;
 
 }
 }
+
+/**
+ * @page Physics Physics
+ *
+ * @section Physics_Fragment Fragments
+ * @section Physics_Object Dynamic Objects
+ * @section Physics_Friction Friction
+ * @section Physics_Response Collision Response
+ */

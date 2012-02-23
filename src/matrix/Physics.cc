@@ -35,7 +35,7 @@ Physics physics;
 const float Physics::FLOOR_NORMAL_Z          =  0.60f;
 const float Physics::MOVE_BOUNCE             =  1.5f * EPSILON;
 const float Physics::ENTITY_BOND_G_RATIO     =  0.10f;
-const float Physics::SIDE_PUSH_RATIO         =  0.5f;
+const float Physics::SIDE_PUSH_RATIO         =  0.40f;
 
 const float Physics::HIT_THRESHOLD           = -3.0f;
 const float Physics::SPLASH_THRESHOLD        = -2.0f;
@@ -145,8 +145,7 @@ bool Physics::handleObjFriction()
 {
   float systemMom = gravity * Timer::TICK_TIME;
 
-  const int ladderMask = Object::CLIMBER_BIT | Object::ON_LADDER_BIT;
-  if( ( dyn->flags & ladderMask ) == ladderMask ) {
+  if( dyn->flags & Object::ON_LADDER_BIT ) {
     if( dyn->momentum.sqL() <= STICK_VELOCITY ) {
       dyn->momentum = Vec3::ZERO;
 
@@ -282,7 +281,7 @@ void Physics::handleObjHit()
 
       sDyn->flags &= ~Object::DISABLED_BIT;
 
-      if( dyn->flags & Object::PUSHER_BIT ) {
+      if( dyn->flags & Object::BOT_BIT ) {
         float pushX       = momentum.x - sDyn->momentum.x;
         float pushY       = momentum.y - sDyn->momentum.y;
         float directPushX = ( momProj - sDynMomProj ) * hit.normal.x;
@@ -291,8 +290,8 @@ void Physics::handleObjHit()
         sDyn->momentum.x += directPushX + SIDE_PUSH_RATIO * ( pushX - directPushX );
         sDyn->momentum.y += directPushY + SIDE_PUSH_RATIO * ( pushY - directPushY );
 
-        // allow side-pushing downwards in water
-        if( ( dyn->flags & sDyn->flags & Object::IN_LIQUID_BIT ) && momentum.z < 0.0f ) {
+        // Allow side-pushing downwards in water.
+        if( ( sDyn->flags & Object::IN_LIQUID_BIT ) && momentum.z < 0.0f ) {
           sDyn->momentum.z += SIDE_PUSH_RATIO * ( momentum.z - sDyn->momentum.z );
         }
       }
