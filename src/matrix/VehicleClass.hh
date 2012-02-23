@@ -76,3 +76,7 @@ class VehicleClass : public DynamicClass
 
 }
 }
+
+/**
+ * @page VehicleClass Vehicle Objects
+ */

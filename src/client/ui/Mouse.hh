@@ -87,7 +87,6 @@ class Mouse
     bool  wheelDown;
 
     bool  doShow;
-    bool  isGrabbed;
     bool  isJailed;
 
     Icon  icon;

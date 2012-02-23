@@ -35,19 +35,18 @@ class Dynamic : public Object
 {
   public:
 
-    static Pool<Dynamic, 4096> pool;
+    static Pool<Dynamic, 4096> pool; ///< Memory pool.
 
     Vec3  velocity;
-    Vec3  momentum; // desired velocity
-    Vec3  floor;    // if on ground, used as floor normal, it is not set if on another object
+    Vec3  momentum; ///< Desired velocity
+    Vec3  floor;    ///< Floor normal.
 
-    int   parent;   // index of container object (if object isn't positioned in the world,
-                    // it has to be contained in an another object, otherwise it will be removed)
-    int   lower;    // index of the lower object or structure entity
-    float depth;    // how deep under water the object's lower bound is
+    int   parent;   ///< Index of container object or -1 if object in positioned in the world.
+    int   lower;    ///< Index of structure entity or object below this object, -1 otherwise.
+    float depth;    ///< Depth of object's lower bound when intersecting liquid, 0 otherwise.
 
-    float mass;
-    float lift;
+    float mass;     ///< Mass.
+    float lift;     ///< Lift / weight (water only, for lava Physics::LAVA_LIFT is used).
 
   public:
 

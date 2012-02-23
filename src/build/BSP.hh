@@ -236,7 +236,7 @@ class BSP : public Bounds
       int    firstBrush;
       int    nBrushes;
 
-      matrix::BSP::Model::Type type;
+      matrix::Model::Type type;
 
       float  margin;
       float  timeout;

@@ -33,6 +33,8 @@ namespace matrix
 
 /**
  * Mapping of all resources, object types, scripts etc.
+ *
+ * @ingroup matrix
  */
 class Library
 {

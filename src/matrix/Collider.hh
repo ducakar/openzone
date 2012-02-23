@@ -85,12 +85,12 @@ class Collider
     Point3 endPos;
     Vec3   localDim;
 
-    const Dynamic*    obj;
-    const Object*     exclObj;
-    const Struct*     str;
-    const Entity*     entity;
-    const BSP::Model* model;
-    const BSP*        bsp;
+    const Dynamic* obj;
+    const Object*  exclObj;
+    const Struct*  str;
+    const Entity*  entity;
+    const BSP*     bsp;
+    const Model*   model;
 
     int   flags;
     float margin;
@@ -180,3 +180,11 @@ extern Collider collider;
 
 }
 }
+
+/**
+ * @page Collision Collision Detection
+ *
+ * @section Collision_Algorithm AABB-Convex Polyhedra Collision Detection
+ * @section Collision_Epsilon Handling Rounding Errors
+ * @section Collision_Broadphase Broadphase
+ */

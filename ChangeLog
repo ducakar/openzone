@@ -40,7 +40,7 @@
     * no more need for hull around BSPs
     * triggers - some entities can be used, upon usage trigger themselves or other entities
     * entities can be locked/unlocked with appropriate key
-    * manual door
+    * manual doors
     * elevators
     * if an entity moves to a side, it also moves objects that lay on it - like stacks of objects
   * fragment pools - particle replacements; fragments can be configured like object classes, can

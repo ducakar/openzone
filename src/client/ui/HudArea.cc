@@ -62,8 +62,7 @@ void HudArea::drawBotCrosshair()
     const Dynamic*     dyn   = static_cast<const Dynamic*>( obj );
     const Bot*         bot   = static_cast<const Bot*>( obj );
     const Entity*      ent   = camera.entityObj;
-
-    const matrix::BSP::Model* model = ent == null ? null : ent->model;
+    const Model*       model = ent == null ? null : ent->model;
 
     // it might happen that bot itself is tagged object for a frame when switching from freecam
     // into a bot
@@ -80,7 +79,7 @@ void HudArea::drawBotCrosshair()
 
       title.draw( this, false );
 
-      if( ent->model->target != -1 && ent->key <= 0 ) {
+      if( model->target != -1 && ent->key <= 0 ) {
         glBindTexture( GL_TEXTURE_2D, useTexId );
         shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
       }

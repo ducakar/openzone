@@ -81,7 +81,7 @@ void Entity::trigger()
     return;
   }
 
-  if( model->type == BSP::Model::STATIC ) {
+  if( model->type == Model::STATIC ) {
     state = OPENING;
   }
 
@@ -751,7 +751,7 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
     entity.time   = istream->readFloat();
 
     if( entity.state == Entity::OPENING ) {
-      entity.velocity = entity.model->move * entity.model->ratioInc / Timer::TICK_TIME;
+      entity.velocity = +entity.model->move * entity.model->ratioInc / Timer::TICK_TIME;
     }
     else if( entity.state == Entity::CLOSING ) {
       entity.velocity = -entity.model->move * entity.model->ratioInc / Timer::TICK_TIME;

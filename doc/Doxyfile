@@ -87,7 +87,7 @@ CITE_BIB_FILES         =
 #---------------------------------------------------------------------------
 QUIET                  = YES
 WARNINGS               = YES
-WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_UNDOCUMENTED   = NO
 WARN_IF_DOC_ERROR      = YES
 WARN_NO_PARAMDOC       = NO
 WARN_FORMAT            = "$file:$line: $text"
@@ -96,7 +96,8 @@ WARN_LOGFILE           =
 # configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = src/oz \
-                         src/common
+                         src/common \
+                         src/matrix
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.hh
 RECURSIVE              = YES

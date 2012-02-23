@@ -54,18 +54,18 @@ class Entity
       CLOSING
     };
 
-    Vec3              offset;
+    Vec3          offset;
 
-    const BSP::Model* model;
-    const Struct*     str;
+    const Model*  model;
+    const Struct* str;
 
-    int               key;
+    int           key;
 
-    State             state;
-    float             ratio;
-    float             time;
+    State         state;
+    float         ratio;
+    float         time;
 
-    Vec3              velocity;
+    Vec3          velocity;
 
     void trigger();
     void lock( Bot* user );

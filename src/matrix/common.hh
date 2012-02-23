@@ -21,6 +21,8 @@
  * @file matrix/common.hh
  *
  * Common matrix includes and definitions for matrix.
+ *
+ * @defgroup matrix Matrix layer
  */
 
 #pragma once
@@ -32,15 +34,43 @@ namespace oz
 namespace matrix
 {
 
+/**
+ * Discrete heading for structures and objects.
+ */
 enum Heading
 {
-  NORTH          = 0x00,
-  WEST           = 0x01,
-  SOUTH          = 0x02,
-  EAST           = 0x03
+  NORTH = 0x00, ///< Y+.
+  WEST  = 0x01, ///< X-.
+  SOUTH = 0x02, ///< Y-.
+  EAST  = 0x03  ///< X+.
 };
 
+/// Bitwise AND with this mask is non-zero iff heading is either <tt>EAST</tt> or <tt>WEST</tt>.
 const int WEST_EAST_MASK = 0x01;
 
 }
 }
+
+/**
+ * @page MatrixLayer Matrix Layer
+ *
+ * @subpage Orbis
+ *
+ * @subpage BSP
+ *
+ * @subpage ObjectClass
+ *
+ * @subpage DynamicClass
+ *
+ * @subpage WeaponClass
+ *
+ * @subpage BotClass
+ *
+ * @subpage VehicleClass
+ *
+ * @subpage FragPool
+ *
+ * @subpage Collision
+ *
+ * @subpage Physics
+ */
