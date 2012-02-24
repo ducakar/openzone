@@ -60,33 +60,12 @@ bool GalileoFrame::onMouseEvent()
 
 void GalileoFrame::onDraw()
 {
-  if( camera.state == Camera::BOT && camera.botObj != null ) {
-    if( camera.botObj->clazz->attributes & ObjectClass::GALILEO_BIT ) {
-      goto galileoEnabled;
-    }
-    else {
-      if( camera.botObj->parent != -1 ) {
-        const Object* veh = orbis.objects[camera.botObj->parent];
-
-        if( veh != null && ( veh->clazz->attributes & ObjectClass::GALILEO_BIT ) ) {
-          goto galileoEnabled;
-        }
-      }
-
-      foreach( i, camera.botObj->items.citer() ) {
-        const Object* item = orbis.objects[*i];
-
-        if( item != null && ( item->clazz->attributes & ObjectClass::GALILEO_BIT ) ) {
-          goto galileoEnabled;
-        }
-      }
-    }
-
+  if( camera.state == Camera::BOT && camera.botObj != null &&
+      !camera.botObj->hasAttribute( ObjectClass::GALILEO_BIT ) )
+  {
     isVisible = false;
     return;
   }
-
-galileoEnabled:;
 
   isVisible = true;
 

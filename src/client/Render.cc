@@ -158,10 +158,29 @@ void Render::drawGeometry()
   Vec4 clearColour = Colours::caelum;
 
   if( shader.medium & Medium::WATER_BIT ) {
-    clearColour = camera.p.z >= 0.0f ? Colours::WATER : Colours::liquid;
+    if( camera.nightVision ) {
+      if( camera.p.z >= 0.0f ) {
+        clearColour.x = 0.0f;
+        clearColour.y = Colours::WATER.x + Colours::WATER.y + Colours::WATER.z;
+        clearColour.z = 0.0f;
+      }
+      else {
+        clearColour = Colours::liquid;
+      }
+    }
+    else {
+      clearColour = camera.p.z >= 0.0f ? Colours::WATER : Colours::liquid;
+    }
   }
   else if( shader.medium & Medium::LAVA_BIT ) {
-    clearColour = Colours::LAVA;
+    if( camera.nightVision ) {
+      clearColour.x = 0.0f;
+      clearColour.y = Colours::LAVA.x + Colours::LAVA.y + Colours::LAVA.z;
+      clearColour.z = 0.0f;
+    }
+    else {
+      clearColour = Colours::LAVA;
+    }
   }
 
   // clear buffer
@@ -432,7 +451,6 @@ void Render::load()
   OZ_GL_CHECK_ERROR();
 
   ui::ui.load();
-  frustum.init();
 
   structs.alloc( 64 );
   objects.alloc( 8192 );

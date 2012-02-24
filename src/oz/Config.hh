@@ -149,9 +149,9 @@ class Config
      * Load variables from a .rc file.
      *
      * Lines in the file must have the following format:
-     * <pre>
+     * @code
      *   name "value"
-     * </pre>
+     * @endcode
      * Everything else is ignored.
      *
      * @return True on success.
@@ -162,9 +162,9 @@ class Config
      * Load variables from a .rc file.
      *
      * Lines in the file must have the following format:
-     * <pre>
+     * @code
      *   name "value"
-     * </pre>
+     * @endcode
      * Everything else is ignored.
      *
      * @return True on success.
@@ -175,9 +175,9 @@ class Config
      * Write variables to a .rc file.
      *
      * The .rc file will have lines with the following format
-     * <pre>
+     * @code
      *   name "value"
-     * </pre>
+     * @endcode
      *
      * @return True on success.
      */
@@ -202,10 +202,10 @@ class Config
      * Return variables in a formatted string.
      *
      * It's formatted like
-     * <pre>
+     * @code
      *   key1 = "value1"
      *   key2 = "value2"
-     * </pre>
+     * @endcode
      *
      * @param indentString prepended at the beginning of each line.
      */

@@ -33,12 +33,13 @@ namespace oz
 namespace client
 {
 
-const float BotProxy::EXTERNAL_CAM_DIST      = 2.75f;
-const float BotProxy::EXTERNAL_CAM_CLIP_DIST = 0.10f;
-const float BotProxy::SHOULDER_CAM_RIGHT     = 0.25f;
-const float BotProxy::SHOULDER_CAM_UP        = 0.25f;
-const float BotProxy::VEHICLE_CAM_UP_FACTOR  = 0.15f;
-const float BotProxy::BOB_SUPPRESSION_COEF   = 0.80f;
+const float BotProxy::EXTERNAL_CAM_DIST        = 2.75f;
+const float BotProxy::EXTERNAL_CAM_CLIP_DIST   = 0.10f;
+const float BotProxy::SHOULDER_CAM_RIGHT       = 0.25f;
+const float BotProxy::SHOULDER_CAM_UP          = 0.25f;
+const float BotProxy::VEHICLE_CAM_UP_FACTOR    = 0.15f;
+const float BotProxy::BOB_SUPPRESSION_COEF     = 0.80f;
+const float BotProxy::BINOCULARS_MAGNIFICATION = 0.20f;
 
 BotProxy::BotProxy() :
   hud( null ), infoFrame( null ), inventory( null ), container( null )
@@ -106,7 +107,7 @@ void BotProxy::end()
   ui::mouse.doShow = true;
 }
 
-void BotProxy::update()
+void BotProxy::prepare()
 {
   if( camera.bot == -1 ) {
     return;
@@ -233,6 +234,16 @@ void BotProxy::update()
   if( keys[SDLK_n] && !oldKeys[SDLK_n] ) {
     camera.nightVision = !camera.nightVision;
   }
+  if( keys[SDLK_b] && !oldKeys[SDLK_b] ) {
+    camera.mag = camera.mag == 1.0f ? BINOCULARS_MAGNIFICATION : 1.0f;
+  }
+
+  if( camera.nightVision && !bot->hasAttribute( ObjectClass::NIGHT_VISION_BIT ) ) {
+    camera.nightVision = false;
+  }
+  if( camera.mag != 1.0f && !bot->hasAttribute( ObjectClass::BINOCULARS_BIT ) ) {
+    camera.mag = 1.0f;
+  }
 
   if( keys[SDLK_TAB] && !oldKeys[SDLK_TAB] ) {
     ui::mouse.doShow = !ui::mouse.doShow;
@@ -327,25 +338,9 @@ void BotProxy::update()
       }
     }
   }
-
-  if( camera.nightVision ) {
-    if( bot->clazz->attributes & ObjectClass::NIGHT_VISION_BIT ) {
-      goto hasNightVision;
-    }
-    foreach( i, bot->items.citer() ) {
-      const Object* item = orbis.objects[*i];
-
-      if( item != null && item->clazz->attributes & ObjectClass::NIGHT_VISION_BIT ) {
-        goto hasNightVision;
-      }
-    }
-
-    camera.nightVision = false;
-  }
-hasNightVision:;
 }
 
-void BotProxy::prepare()
+void BotProxy::update()
 {
   if( camera.bot == -1 ) {
     camera.setState( Camera::STRATEGIC );

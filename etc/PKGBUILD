@@ -8,7 +8,7 @@ url="http://github.com/ducakar/openzone/"
 license=('GPL3')
 arch=('i686' 'x86_64')
 makedepends=('cmake' 'doxygen' 'faad2' 'freeimage' 'gcc>=4.6' 'git' 'graphviz'
-             'libmad' 'libpulse' 'lua' 'openal' 'physfs' 'sdl_ttf')
+             'libmad' 'libpulse' 'lua' 'openal' 'physfs' 'sdl_ttf' 'zip')
 source=("openzone-src-${pkgver}.tar.xz"
         "openzone-data-ozbase-${pkgver}.tar.xz"
         "openzone-data-openzone-${pkgver}.tar.xz")
@@ -34,22 +34,24 @@ package_liboz()
   make install DESTDIR=${pkgdir}
 
   rm -rf ${pkgdir}/usr/bin
+  rm -rf ${pkgdir}/usr/share/{applications,pixmaps}
 
   if [[ "$CARCH" == "x86_64" ]]; then
     mv ${pkgdir}/usr/lib64 ${pkgdir}/usr/lib
     sed 's|/usr/lib64|/usr/lib|g' -i ${pkgdir}/usr/lib/pkgconfig/liboz.pc
   fi
 
-  mkdir -p ${pkgdir}/usr/share/doc/openzone
-  cp -r ../openzone/doc/doxygen-liboz/html ${pkgdir}/usr/share/doc/liboz
+  mkdir -p ${pkgdir}/usr/share/doc/liboz
+  cp -r ../openzone/doc/doxygen.liboz/html ${pkgdir}/usr/share/doc/liboz/doxygen
 
-  install -Dm644 ../openzone/etc/liboz/COPYING ${pkgdir}/usr/share/licenses/liboz/COPYING
+  install -Dm644 ../openzone/src/oz/COPYING ${pkgdir}/usr/share/licenses/liboz/COPYING
 }
 
 package_openzone()
 {
   pkgdesc='Simple cross-platform FPS/RTS game'
-  depends=('freeimage' 'libgl' 'liboz' 'lua' 'openal' 'sdl_ttf' 'openzone-data')
+  depends=('freeimage' 'libgl' 'liboz' 'lua' 'openal' 'sdl_ttf' 'zip')
+  optdepends=('openzone-data: game data' 'p7zip: for building 7zip game data archives')
 
   cd ${srcdir}/build
 
@@ -79,9 +81,9 @@ package_openzone-data()
 
 package_openzone-doc()
 {
-  pkgdesc='OpenZone game data'
+  pkgdesc='OpenZone engine documentation'
   arch=('any')
 
   mkdir -p ${pkgdir}/usr/share/doc/openzone
-  cp -r ${srcdir}/openzone/doc/doxygen/html ${pkgdir}/usr/share/doc/openzone
+  cp -r ${srcdir}/openzone/doc/doxygen/html ${pkgdir}/usr/share/doc/openzone/doxygen
 }

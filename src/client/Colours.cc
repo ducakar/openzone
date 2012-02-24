@@ -39,7 +39,7 @@ const Vec4 Colours::STRUCTURE_AABB = Vec4( 0.20f, 0.50f, 1.00f, 0.30f );
 const Vec4 Colours::CLIP_AABB = Vec4( 0.60f, 0.90f, 0.20f, 0.30f );
 const Vec4 Colours::NOCLIP_AABB = Vec4( 0.70f, 0.80f, 0.90f, 0.30f );
 
-const Vec4 Colours::GLOBAL_AMBIENT = Vec4( 0.08f, 0.08f, 0.08f, 1.00f );
+const Vec4 Colours::GLOBAL_AMBIENT = Vec4( 0.20f, 0.20f, 0.25f, 1.00f );
 const Vec4 Colours::WATER = Vec4( 0.00f, 0.05f, 0.25f, 1.0f );
 const Vec4 Colours::LAVA = Vec4( 0.30f, 0.20f, 0.00f, 1.0f );
 

@@ -43,11 +43,8 @@ namespace oz
  * Base class for iterators with constant access to container elements.
  *
  * It should only be used as a base class. Following functions need to be implemented:
- * <ul>
- *   <li><tt>bool isValid() const</tt> (if necessary)</li>
- *   <li><tt>CIterator& operator ++ ()</tt></li>
- * </ul>
- * and constructors of course.
+ * @li <tt>bool isValid() const</tt> (if necessary)
+ * @li <tt>CIterator& operator ++ ()</tt>.
  *
  * @ingroup oz
  */
@@ -122,11 +119,8 @@ class CIteratorBase
  * Base class for iterators with non-constant access to container elements.
  *
  * It should only be used as a base class. Following functions need to be implemented:
- * <ul>
- *   <li><tt>bool isValid() const</tt> (if necessary)</li>
- *   <li><tt>Iterator& operator ++ ()</tt></li>
- * </ul>
- * and a constructor of course.
+ * @li <tt>bool isValid() const</tt> (if necessary)
+ * @li <tt>Iterator& operator ++ ()</tt>.
  *
  * @ingroup oz
  */
@@ -235,19 +229,19 @@ class IteratorBase
  * Note that in contrast with STL iterators, <tt>RangeIterator</tt> evaluates to the iterator that
  * points to the current element rather than the current element itself. That means that the rough
  * equivalent for STL code
- * <pre>
+ * @code
  * std\::vector\<int\> v;
  * for( auto& i : v ) {
  *   printf( "%d\n", i );
  * }
- * </pre>
+ * @endcode
  * is the following code
- * <pre>
+ * @code
  * Vector\<int\> v;
  * for( auto i : v.citer() ) {
  *   printf( "%d\n", *i );
  * }
- * </pre>
+ * @endcode
  * It's a little longer, but we don't loose access to the original iterator, which is very useful
  * with <tt>Map</tt>, <tt>HashIndex</tt> and <tt>HashString</tt> to access the current element's
  * value. Furthermore, one also explicitly specifies whether access to the container elements is
@@ -308,19 +302,19 @@ inline typename Iterator::RangeIterator end( Iterator& iter )
  * checker in KDevelop and Eclipse CDT.
  *
  * It can be used like
- * <pre>
- * Vector\<int\> v;
+ * @code
+ * Vector<int> v;
  * foreach( i, v.citer() ) {
  *   printf( "%d ", *i );
  * }
- * </pre>
+ * @endcode
  * to replace a longer piece of code, like:
- * <pre>
- * Vector\<int\> v;
+ * @code
+ * Vector<int> v;
  * for( auto i = v.citer(); i.isValid(); ++i )
  *   printf( "%d ", *i );
  * }
- * </pre>
+ * @endcode
  *
  * @ingroup oz
  */

@@ -67,7 +67,7 @@ class CIterator : public CIteratorBase<Elem>
     /**
      * %Iterator for an array.
      *
-     * @param start the first array element.
+     * @param start first array element.
      * @param past_ successor of the last element in an array.
      */
     OZ_ALWAYS_INLINE
@@ -139,7 +139,7 @@ class Iterator : public IteratorBase<Elem>
     /**
      * %Iterator for an array.
      *
-     * @param start the first array element.
+     * @param start first array element.
      * @param past_ successor of the last element in an array.
      */
     OZ_ALWAYS_INLINE
@@ -385,7 +385,7 @@ inline Elem* aRealloc( Elem* aSrc, int count, int newCount )
  *
  * The remaining elements are shifted to make a gap. The last element is lost.
  *
- * @param aDest pointer to the first element in the array.
+ * @param aDest array.
  * @param value value of to be inserted.
  * @param index position where the element is to be inserted.
  * @param count number of elements in the array.
@@ -408,7 +408,7 @@ inline void aInsert( Elem* aDest, Elem_&& value, int index, int count )
  *
  * The remaining elements are shifted to fill the gap.
  *
- * @param aDest pointer to the first element in the array.
+ * @param aDest array.
  * @param index position of the element to be removed.
  * @param count number of elements in the array.
  *
@@ -523,9 +523,9 @@ inline void aSort( Elem* aSrc, int count )
  * <tt>Elem</tt> type must have defined <tt>operator == ( const Key\&, const Elem\& )</tt> and
  * <tt>operator \< ( const Key\&, const Elem\& )</tt>.
  *
- * @param aSrc
+ * @param aSrc array.
  * @param key the key we are looking for.
- * @param count
+ * @param count number of elements.
  * @return Index of the requested element or -1 if not found.
  *
  * @ingroup oz
@@ -562,15 +562,15 @@ inline int aBisectFind( Elem* aSrc, const Key& key, int count )
  * Find insert position for an element to be added using bisection.
  *
  * Returns an index such that
- * <pre>
+ * @code
  *   aSrc[index - 1] <= key && key < aSrc[index]
- * </pre>
+ * @endcode
  * If all elements are lesser, return <tt>count</tt> and if all elements are greater, return 0.
  * <tt>Elem</tt> type must have defined <tt>operator \< ( const Key\&, const Elem\& )</tt>.
  *
- * @param aSrc
+ * @param aSrc array.
  * @param key the key we are looking for.
- * @param count
+ * @param count number of elements.
  * @return Index of least element greater than the key, or count if there's no such element.
  *
  * @ingroup oz

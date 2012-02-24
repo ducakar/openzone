@@ -166,11 +166,6 @@ class Bot : public Dynamic
     String name;
     String mindFunc;
 
-  private:
-
-    bool canReach( const Entity* ent ) const;
-    bool canReach( const Object* obj ) const;
-
   protected:
 
     virtual void onDestroy();
@@ -178,6 +173,10 @@ class Bot : public Dynamic
     virtual void onUpdate();
 
   public:
+
+    bool hasAttribute( int attribute ) const;
+    bool canReach( const Entity* ent ) const;
+    bool canReach( const Object* obj ) const;
 
     void heal();
     void rearm();

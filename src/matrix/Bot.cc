@@ -56,26 +56,6 @@ const float Bot::CLIMB_MOVE_AHEAD   =  0.40f;
 
 Pool<Bot, 1024> Bot::pool;
 
-bool Bot::canReach( const Entity* ent ) const
-{
-  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
-
-  Point3 eye   = Point3( p.x, p.y, p.z + camZ );
-  Vec3   reach = Vec3( clazz->reachDist, clazz->reachDist, clazz->reachDist );
-
-  return collider.overlapsEntity( AABB( eye, reach ), ent );
-}
-
-bool Bot::canReach( const Object* obj ) const
-{
-  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
-
-  Point3 eye   = Point3( p.x, p.y, p.z + camZ );
-  Vec3   reach = Vec3( clazz->reachDist, clazz->reachDist, clazz->reachDist );
-
-  return AABB( eye, reach ).overlaps( *obj );
-}
-
 void Bot::onDestroy()
 {
   // only play death sound when an alive bot is destroyed but not when a body is destroyed
@@ -800,6 +780,51 @@ void Bot::onUpdate()
   instrument = -1;
   container  = -1;
   trigger    = -1;
+}
+
+bool Bot::hasAttribute( int attribute ) const
+{
+  if( clazz->attributes & attribute ) {
+    return true;
+  }
+
+  if( parent != -1 ) {
+    const Object* vehicle = orbis.objects[parent];
+
+    if( vehicle != null && ( vehicle->clazz->attributes & attribute ) ) {
+      return true;
+    }
+  }
+
+  for( int i = 0; i < items.length(); ++i ) {
+    const Object* item = orbis.objects[ items[i] ];
+
+    if( item != null && ( item->clazz->attributes & attribute ) ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool Bot::canReach( const Entity* ent ) const
+{
+  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+
+  Point3 eye   = Point3( p.x, p.y, p.z + camZ );
+  Vec3   reach = Vec3( clazz->reachDist, clazz->reachDist, clazz->reachDist );
+
+  return collider.overlapsEntity( AABB( eye, reach ), ent );
+}
+
+bool Bot::canReach( const Object* obj ) const
+{
+  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+
+  Point3 eye   = Point3( p.x, p.y, p.z + camZ );
+  Vec3   reach = Vec3( clazz->reachDist, clazz->reachDist, clazz->reachDist );
+
+  return AABB( eye, reach ).overlaps( *obj );
 }
 
 void Bot::heal()

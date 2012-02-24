@@ -59,8 +59,8 @@ class StrategicProxy : public Proxy
     virtual void begin();
     virtual void end();
 
-    virtual void update();
     virtual void prepare();
+    virtual void update();
 
     virtual void reset();
 

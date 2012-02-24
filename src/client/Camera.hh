@@ -66,6 +66,7 @@ class Camera
     float  h;
     float  v;
     float  w;
+    float  mag;
     float  relH;
     float  relV;
 
@@ -177,9 +178,28 @@ class Camera
     }
 
     void updateReferences();
+
+    /**
+     * Re-calculate quaternions, transformation matrices and <tt>at</tt>, <tt>up</tt>, <tt>left</tt>
+     * vectors.
+     */
     void align();
-    void update();
+
+    /**
+     * Process input.
+     *
+     * This pass is performed before matrix update. It should e.g. update player's bot orientation
+     * and actions.
+     */
     void prepare();
+
+    /**
+     * Update camera after matrix simulation step.
+     *
+     * This pass should align camera to match bot position and orientation etc.
+     */
+    void update();
+
     void reset();
 
     void read( InputStream* istream );
