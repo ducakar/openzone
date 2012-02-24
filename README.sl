@@ -5,90 +5,90 @@
 
 Nadzor kamere
 -------------
-gibanje miške       - rotiraj kamero
-smerne tipke        - rotiraj kamero
-w/a/s/d             - pojdi naprej / levo / nazaj / desno
-Space               - gor / povečaj višino
-LCtrl               - dol / zmanjšaj višino
-LShift              - preklopi hitro premikanje
+gibanje miške   - rotiraj kamero
+smerne tipke    - rotiraj kamero
+w/a/s/d         - pojdi naprej / levo / nazaj / desno
+Space           - gor / povečaj višino
+LCtrl           - dol / zmanjšaj višino
+LShift          - preklopi hitro premikanje
 
-Tab                 - preklopi način vmesnika
-Numpad Enter        - preklopi med kamero FreeCam in Strategic
-n                   - preklopi nočno gledanje
-i                   - inkarniraj se v izbranega bota (ali pilota vozila)
+Tab             - preklopi način vmesnika
+Numpad Enter    - preklopi med kamero FreeCam in Strategic
+n               - preklopi nočno gledanje
+i               - inkarniraj se v izbranega bota (ali pilota vozila)
 
 Nadzor bota
 -----------
-gibanje miške       - glej okoli
-smerne tipke        - glej okoli
-w/a/s/d             - pojdi naprej / levo / nazaj / desno
-LShift              - preklopi tek
-LCtrl               - preklopi počep
-Space               - skoči
+gibanje miške   - glej okoli
+smerne tipke    - glej okoli
+w/a/s/d         - pojdi naprej / levo / nazaj / desno
+LShift          - preklopi tek
+LCtrl           - preklopi počep
+Space           - skoči
 
-levi klik           - sproži orožje / rotiraj predmet, ki ga držiš
-desni klik          - izvedi dejanje na označenem predmetu
-srednji klik        - zgrabi označen predmet / spusti predmet, ki ga držiš
-kolešček gor        - vrzi predmet, ki ga držiš
-kolešček dol        - spravi označen predmet v inventar
+levi klik       - sproži orožje / rotiraj predmet, ki ga držiš
+desni klik      - izvedi dejanje na označenem predmetu
+srednji klik    - zgrabi označen predmet / spusti predmet, ki ga držiš
+kolešček gor    - vrzi predmet, ki ga držiš
+kolešček dol    - spravi označen predmet v inventar
 
-n                   - preklopi nočno gledanje (če je na voljo)
-Alt + k             - stori samomor
-i                   - zapusti bota
+n               - preklopi nočno gledanje (če je na voljo)
+Alt + k         - stori samomor
+i               - zapusti bota
 
-Tab                 - preklopi način uporabniškega vmesnika
-Numpad Enter        - preklopi med prvoosebno in tretjeosebno kamero
+Tab             - preklopi način uporabniškega vmesnika
+Numpad Enter    - preklopi med prvoosebno in tretjeosebno kamero
 
-f                   - kretnja "kazanje"
-g                   - kretnja "nazaj"
-h                   - kretnja "pozdrav"
-j                   - kretnja "pomahaj"
-k                   - kretnja "ponori"
-l                   - predvajaj vse animacije
+f               - kretnja "kazanje"
+g               - kretnja "nazaj"
+h               - kretnja "pozdrav"
+j               - kretnja "pomahaj"
+k               - kretnja "ponori"
+l               - predvajaj vse animacije
 
 Inventar
 --------
-levi klik           - odvrzi predmet ali prestavi predmet v drug inventar, kadar imaš odprti dve
-                      okni z inventarjem
-srednji klik        - zgrabi predmet iz inventarja
-desni klik          - uporabi predmet, za orožja: vzemi orožje v roke ali ga pospravi
+levi klik       - odvrzi predmet ali prestavi predmet v drug inventar, kadar imaš odprti dve
+                  okni z inventarjem
+srednji klik    - zgrabi predmet iz inventarja
+desni klik      - uporabi predmet, za orožja: vzemi orožje v roke ali ga pospravi
 
 Nadzor vozil
 ------------
-gibanje miške       - obračaj vozilo
-smerne tipke        - obračaj vozilo
-w/a/s/d             - pojdi naprej / levo / nazaj / desno
-Space               - gor (samo leteča vozila)
-LCtrl               - dol (samo leteča vozila)
+gibanje miške   - obračaj vozilo
+smerne tipke    - obračaj vozilo
+w/a/s/d         - pojdi naprej / levo / nazaj / desno
+Space           - gor (samo leteča vozila)
+LCtrl           - dol (samo leteča vozila)
 
-levi klik           - sproži izbrano orožje
-desni klik          - izberi naslednje orožje
+levi klik       - sproži izbrano orožje
+desni klik      - izberi naslednje orožje
 
-x                   - izstopi
-Alt + x             - izskoči
+x               - izstopi
+Alt + x         - izskoči
 
-Numpad *            - preklopi prosti pogled (glej okoli brez obračanja vozila)
+Numpad *        - preklopi prosti pogled (glej okoli brez obračanja vozila)
 
 Razno
 -----
-Esc                 - izhod v glavni meni
+Esc             - izhod v glavni meni
 
-Alt + vlečenje      - vleka oken uporabniškega vmesnika
+Alt + vlečenje  - vleka oken uporabniškega vmesnika
 
-o                   - hitro vrti nebo naprej
-Shift + o           - hitro vrti nebo nazaj
+o               - hitro vrti nebo naprej
+Shift + o       - hitro vrti nebo nazaj
 
-F5                  - hitro shranjevanje (v <config>/saves/quicksave.ozState)*
-F7                  - hitro nalaganje (iz <config>/saves/quicksave.ozState)*
-F8                  - naloži zadnje samodejno shranjeno stanje
-                      (iz <config>/saves/autosave.ozState)*
-F10                 - zajem zaslona
-                      (v <config>/screenshots/screenshot DATUM ČAS.bmp)*
-F11                 - preklopi celozaslonski način
-Ctrl + F11          - preklopi centriranje miške in sistemski kazalec v okenskem
-                      načinu
-F12                 - minimiraj in zamrzni
-Ctrl + F12          - končaj program
+F5              - hitro shranjevanje (v <config>/saves/quicksave.ozState)*
+F7              - hitro nalaganje (iz <config>/saves/quicksave.ozState)*
+F8              - naloži zadnje samodejno shranjeno stanje
+                  (iz <config>/saves/autosave.ozState)*
+F10             - zajem zaslona
+                  (v <config>/screenshots/screenshot DATUM ČAS.bmp)*
+F11             - preklopi celozaslonski način
+Ctrl + F11      - preklopi centriranje miške in sistemski kazalec v okenskem
+                  načinu
+F12             - minimiraj in zamrzni
+Ctrl + F12      - končaj program
 
 * Mesto imenika <config> pri običajni namestitvi:
 - Linux:      /home/<uporabnik>/.config/openzone

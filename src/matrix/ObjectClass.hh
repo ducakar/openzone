@@ -45,9 +45,10 @@ class ObjectClass
     static const int MAX_ITEMS        = 100;
     static const int MAX_SOUNDS       = 16;
 
-    static const int GALILEO_BIT      = 0x01;
-    static const int MUSIC_PLAYER_BIT = 0x02;
-    static const int NIGHT_VISION_BIT = 0x04;
+    static const int NIGHT_VISION_BIT = 0x01;
+    static const int BINOCULARS_BIT   = 0x02;
+    static const int GALILEO_BIT      = 0x04;
+    static const int MUSIC_PLAYER_BIT = 0x08;
 
     typedef ObjectClass* CreateFunc();
 

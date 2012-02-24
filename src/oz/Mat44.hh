@@ -49,9 +49,9 @@ class Mat44
     /// Identity.
     static const Mat44 ID;
 
-    Vec4 x; ///< First column (i base vector).
-    Vec4 y; ///< Second column (j base vector).
-    Vec4 z; ///< Third column (k base vector).
+    Vec4 x; ///< First column (image of i base vector).
+    Vec4 y; ///< Second column (image of j base vector).
+    Vec4 z; ///< Third column (image of k base vector).
     Vec4 w; ///< Fourth column (translation).
 
     /**
@@ -448,7 +448,7 @@ class Mat44
       return Mat44( 1.0f, 0.0f, 0.0f, 0.0f,
                     0.0f, 1.0f, 0.0f, 0.0f,
                     0.0f, 0.0f, 1.0f, 0.0f,
-                    v.x,  v.y,  v.z, 1.0f );
+                     v.x,  v.y,  v.z, 1.0f );
     }
 
     /**
@@ -477,10 +477,10 @@ class Mat44
       float yw = y2 * q.w;
       float zw = z2 * q.w;
 
-      return Mat44( 1.0f - yy - zz, xy + zw,  xz - yw,  0.0f,
-                    xy - zw,        xx1 - zz, yz + xw,  0.0f,
-                    xz + yw,        yz - xw,  xx1 - yy, 0.0f,
-                    0.0f,           0.0f,     0.0f,     1.0f );
+      return Mat44( 1.0f - yy - zz,  xy + zw,  xz - yw, 0.0f,
+                           xy - zw, xx1 - zz,  yz + xw, 0.0f,
+                           xz + yw,  yz - xw, xx1 - yy, 0.0f,
+                              0.0f,     0.0f,     0.0f, 1.0f );
     }
 
     /**

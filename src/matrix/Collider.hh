@@ -130,14 +130,10 @@ class Collider
 
   public:
 
-    /**
-     * Collision bitmask for Object::flags
-     */
+    /// Only objects whose <tt>Object::flags</tt> matches that mask are collided against.
     int mask;
 
-    /**
-     * Collision feedback data
-     */
+    /// Collision feedback data.
     Hit hit;
 
     Collider();

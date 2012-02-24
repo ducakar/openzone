@@ -117,38 +117,18 @@ void MusicPlayer::volumeUp( Button* sender )
 
 void MusicPlayer::onUpdate()
 {
-  if( camera.state == Camera::BOT && camera.botObj != null ) {
-    if( camera.botObj->clazz->attributes & ObjectClass::MUSIC_PLAYER_BIT ) {
-      goto musicPlayerEnabled;
-    }
-    else {
-      if( camera.botObj->parent != -1 ) {
-        const Object* veh = orbis.objects[camera.botObj->parent];
-
-        if( veh != null && ( veh->clazz->attributes & ObjectClass::MUSIC_PLAYER_BIT ) ) {
-          goto musicPlayerEnabled;
-        }
-      }
-
-      foreach( i, camera.botObj->items.citer() ) {
-        const Object* item = orbis.objects[*i];
-
-        if( item != null && ( item->clazz->attributes & ObjectClass::MUSIC_PLAYER_BIT ) ) {
-          goto musicPlayerEnabled;
-        }
-      }
-    }
-
+  if( camera.state == Camera::BOT && camera.botObj != null &&
+      !camera.botObj->hasAttribute( ObjectClass::MUSIC_PLAYER_BIT ) )
+  {
     if( isPlaying ) {
       isPlaying = false;
       title.setText( " " );
       sound.stopMusic();
     }
+
     isVisible = false;
     return;
   }
-
-musicPlayerEnabled:;
 
   isVisible = true;
 

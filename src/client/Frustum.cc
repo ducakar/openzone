@@ -42,12 +42,17 @@ void Frustum::getExtrems( Span& span, const Point3& p )
 
 void Frustum::update()
 {
-  radius = camera.maxDist / cx;
+  float fovX = Math::atan( camera.coeff * camera.mag * camera.aspect );
+  float fovY = Math::atan( camera.coeff * camera.mag );
 
-  Vec3 nLeft  = camera.rotMat * nLeft0;
-  Vec3 nRight = camera.rotMat * nRight0;
-  Vec3 nDown  = camera.rotMat * nDown0;
-  Vec3 nUp    = camera.rotMat * nUp0;
+  float sx, cx, sy, cy;
+  Math::sincos( fovX, &sx, &cx );
+  Math::sincos( fovY, &sy, &cy );
+
+  Vec3 nLeft  = camera.rotMat * Vec3(   cx, 0.0f, -sx );
+  Vec3 nRight = camera.rotMat * Vec3(  -cx, 0.0f, -sx );
+  Vec3 nDown  = camera.rotMat * Vec3( 0.0f,   cy, -sy );
+  Vec3 nUp    = camera.rotMat * Vec3( 0.0f,  -cy, -sy );
   Vec3 nFront = camera.at;
 
   float dLeft  = camera.p * nLeft;
@@ -61,22 +66,8 @@ void Frustum::update()
   down  = Plane( nDown,  dDown  );
   up    = Plane( nUp,    dUp    );
   front = Plane( nFront, dFront );
-}
 
-void Frustum::init()
-{
-  fovX = Math::atan( camera.coeff * camera.aspect );
-  fovY = Math::atan( camera.coeff );
-
-  Math::sincos( fovX, &sx, &cx );
-  Math::sincos( fovY, &sy, &cy );
-
-  nLeft0  = Vec3(   cx, 0.0f, -sx );
-  nRight0 = Vec3(  -cx, 0.0f, -sx );
-  nDown0  = Vec3( 0.0f,   cy, -sy );
-  nUp0    = Vec3( 0.0f,  -cy, -sy );
-
-  radius  = camera.maxDist / cx;
+  radius = camera.maxDist / cx;
 }
 
 }

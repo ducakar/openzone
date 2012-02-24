@@ -34,10 +34,11 @@ class Frustum
 {
   private:
 
-    float fovX, fovY;
-    float sx, cx, sy, cy;
-    Vec3  nLeft0, nRight0, nDown0, nUp0;
-    Plane left, right, down, up, front;
+    Plane left;
+    Plane right;
+    Plane down;
+    Plane up;
+    Plane front;
 
   public:
 
@@ -70,7 +71,6 @@ class Frustum
     void getExtrems( Span& span, const Point3& p );
 
     void update();
-    void init();
 
 };
 

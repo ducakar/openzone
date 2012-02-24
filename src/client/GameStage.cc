@@ -191,8 +191,8 @@ void GameStage::reload()
   nirvana.sync();
   synapse.update();
 
-  camera.update();
   camera.prepare();
+  camera.update();
 
   render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
   loader.syncUpdate();
@@ -297,7 +297,8 @@ bool GameStage::update()
     Stage::nextStage = &menuStage;
   }
 
-  camera.update();
+  camera.prepare();
+
   ui::ui.update();
   modules.update();
   lua.update();
@@ -328,7 +329,7 @@ bool GameStage::update()
    * PHASE 3
    */
 
-  camera.prepare();
+  camera.update();
 
   return true;
 }
@@ -444,8 +445,8 @@ void GameStage::load()
   ui::mouse.buttons = 0;
   ui::mouse.currButtons = 0;
 
-  camera.update();
   camera.prepare();
+  camera.update();
 
   ui::ui.showLoadingScreen( true );
 

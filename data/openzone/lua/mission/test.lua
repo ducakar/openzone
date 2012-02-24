@@ -46,7 +46,6 @@ function onCreate()
   ozBotSetMindFunc( "" )
   ozObjRemoveItem( 3 );
   ozObjRemoveItem( 2 );
-  ozObjRemoveItem( 1 );
 
   init_sample()
 
@@ -63,6 +62,8 @@ function init_sample()
   ozNirvanaAddMemo( lord, "Buahahahaha" )
 
   ozOrbisAddObj( "droid.OOM-9", 140, -11, 73, OZ_WEST )
+  ozOrbisAddObj( "cyborg", 140, -13, 73, OZ_WEST )
+  ozBotSetMindFunc( "" )
 
 --   ozOrbisAddObj( "reaper", 145, -15, 73 )
 
@@ -71,7 +72,7 @@ function init_sample()
   ozOrbisAddObj( "nvGoggles", 137, -4, 73 )
   ozOrbisAddObj( "cvicek", 135, -2, 73 )
   ozOrbisAddObj( "firstAid", 136, -2, 73 )
-  ozOrbisAddObj( "bomb", 137, -2, 73 )
+  ozOrbisAddObj( "binoculars", 137, -2, 73 )
   ozOrbisAddObj( "droid_weapon.hyperblaster", 135, -3, 73 )
   ozOrbisAddObj( "droid_weapon.chaingun", 136, -3, 73 )
   ozOrbisAddObj( "droid_weapon.grenadeLauncher", 137, -3, 73 )

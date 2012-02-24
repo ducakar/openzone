@@ -26,6 +26,7 @@
 #include "client/StrategicProxy.hh"
 
 #include "client/Camera.hh"
+
 #include "client/ui/UI.hh"
 
 namespace oz
@@ -36,7 +37,7 @@ namespace client
 const float StrategicProxy::MIN_HEIGHT      = 5.00f;
 const float StrategicProxy::MAX_HEIGHT      = 50.0f;
 const float StrategicProxy::DEFAULT_HEIGHT  = 15.0f;
-const float StrategicProxy::DEFAULT_ANGLE   = 30.0f;
+const float StrategicProxy::DEFAULT_ANGLE   = 45.0f;
 const float StrategicProxy::FREE_LOW_SPEED  = 2.40f * Timer::TICK_TIME;
 const float StrategicProxy::FREE_HIGH_SPEED = 30.0f * Timer::TICK_TIME;
 const float StrategicProxy::RTS_LOW_SPEED   = 15.0f * Timer::TICK_TIME;
@@ -51,6 +52,7 @@ void StrategicProxy::begin()
 {
   camera.v = isFree || camera.state == Camera::NONE ? camera.v : Math::rad( DEFAULT_ANGLE );
   camera.w = 0.0f;
+  camera.mag = 1.0f;
   camera.setTaggedObj( null );
   camera.setTaggedEnt( null );
 
@@ -71,7 +73,7 @@ void StrategicProxy::end()
   ui::mouse.doShow = true;
 }
 
-void StrategicProxy::update()
+void StrategicProxy::prepare()
 {
   const ubyte* keys    = ui::keyboard.keys;
   const ubyte* oldKeys = ui::keyboard.oldKeys;
@@ -133,7 +135,7 @@ void StrategicProxy::update()
   }
 }
 
-void StrategicProxy::prepare()
+void StrategicProxy::update()
 {
   const ubyte* keys    = ui::keyboard.keys;
   const ubyte* oldKeys = ui::keyboard.oldKeys;

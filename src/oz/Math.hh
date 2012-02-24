@@ -47,10 +47,18 @@ class Math
     static constexpr float FLOAT_EPS = __FLT_EPSILON__;
 
     /// Not a number.
+#if !defined( __clang__ ) && __GNUC__ == 4 && __GNUC_MINOR__ < 6
     static constexpr float NaN = 0.0f / 0.0f;
+#else
+    static constexpr float NaN = __builtin_nanf( "" );
+#endif
 
     /// \f$ +\infty \f$.
+#if !defined( __clang__ ) && __GNUC__ == 4 && __GNUC_MINOR__ < 6
     static constexpr float INF = 1.0f / 0.0f;
+#else
+    static constexpr float INF = __builtin_inff();
+#endif
 
     /// \f$ e \f$.
     static constexpr float E = 2.718281828459045f;

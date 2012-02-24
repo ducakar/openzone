@@ -123,6 +123,9 @@ void Build::printUsage()
   log.println( "-C" );
   log.println( "\tUse S3 texture compression." );
   log.println();
+  log.println( "-0" );
+  log.println( "\tUse no compression for ZIP archive." );
+  log.println();
   log.println( "-7" );
   log.println( "\tCreate non-solid LZMA-compressed 7zip archive instead of ZIP." );
   log.println();
@@ -676,14 +679,16 @@ void Build::checkLua( const char* path )
   log.println( "}" );
 }
 
-void Build::packArchive( const char* name, bool use7zip )
+void Build::packArchive( const char* name, bool useCompression, bool use7zip )
 {
   log.println( "Packing archive {" );
   log.indent();
 
   String cmdLine = use7zip ?
                    String::str( "7z u -ms=off '../%s.7z' *", name ) :
-                   String::str( "zip -9ur '../%s.zip' *", name );
+                   String::str( "zip %s -ur '../%s.zip' *",
+                                useCompression ? "-9" : "-Z store",
+                                name );
 
   log.println( "%s", cmdLine.cstr() );
   log.println();
@@ -698,26 +703,27 @@ void Build::packArchive( const char* name, bool use7zip )
 
 int Build::main( int argc, char** argv )
 {
-  bool doCat     = false;
-  bool doUI      = false;
-  bool doShaders = false;
-  bool doCaela   = false;
-  bool doTerrae  = false;
-  bool doBSPs    = false;
-  bool doModels  = false;
-  bool doSounds  = false;
-  bool doClasses = false;
-  bool doFrags   = false;
-  bool doNames   = false;
-  bool doLua     = false;
-  bool doModules = false;
-  bool doMusic   = false;
-  bool doPack    = false;
-  bool use7zip   = false;
+  bool doCat          = false;
+  bool doUI           = false;
+  bool doShaders      = false;
+  bool doCaela        = false;
+  bool doTerrae       = false;
+  bool doBSPs         = false;
+  bool doModels       = false;
+  bool doSounds       = false;
+  bool doClasses      = false;
+  bool doFrags        = false;
+  bool doNames        = false;
+  bool doLua          = false;
+  bool doModules      = false;
+  bool doMusic        = false;
+  bool doPack         = false;
+  bool useCompression = true;
+  bool use7zip        = false;
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "vlugtcbmsafnxorpAC7" ) ) != -1 ) {
+  while( ( opt = getopt( argc, argv, "vlugtcbmsafnxorpAC07" ) ) != -1 ) {
     switch( opt ) {
       case 'v': {
         log.isVerbose = true;
@@ -803,6 +809,10 @@ int Build::main( int argc, char** argv )
       }
       case 'C': {
         context.useS3TC = true;
+        break;
+      }
+      case '0': {
+        useCompression = false;
         break;
       }
       case '7': {
@@ -1004,7 +1014,7 @@ int Build::main( int argc, char** argv )
     copyFiles( "music", "music", "oga", true );
   }
   if( doPack ) {
-    packArchive( pkgName, use7zip );
+    packArchive( pkgName, useCompression, use7zip );
   }
 
   uint endTime = Time::clock();

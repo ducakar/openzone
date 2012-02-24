@@ -22,45 +22,20 @@
  */
 
 #include "oz/oz.hh"
+#include "oz/clearmacros.hh"
 
-#include <cstdio>
-#include <FreeImage.h>
-
-struct Foo
-{
-  Foo()
-  {
-    printf( "Foo()\n" );
-  }
-
-  Foo( const Foo& )
-  {
-    printf( "Foo( const Foo& )\n" );
-  }
-
-  Foo( Foo&& )
-  {
-    printf( "Foo( Foo&& )\n" );
-  }
-
-  Foo& operator = ( const Foo& )
-  {
-    printf( "Foo& operator = ( const Foo& )\n" );
-    return *this;
-  }
-
-  Foo& operator = ( Foo&& )
-  {
-    printf( "Foo& operator = ( Foo&& )\n" );
-    return *this;
-  }
-};
+#include <QtGui/QApplication>
+#include <QtGui/QPushButton>
 
 using namespace oz;
 
-int main( int, char** )
+int main( int argc, char** argv )
 {
-  System::init();
-  System::error( 0, "DREK" );
-  return 0;
+  QApplication app( argc, argv );
+
+  QPushButton hello( "Hello, world!" );
+  hello.resize( 300, 30 );
+  hello.show();
+
+  return app.exec();
 }

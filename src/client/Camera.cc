@@ -91,12 +91,12 @@ void Camera::align()
   rotMat  = Mat44::rotation( rot );
   rotTMat = ~rotMat;
 
-  right   = rotMat.x;
-  up      = rotMat.y;
+  right   = +rotMat.x;
+  up      = +rotMat.y;
   at      = -rotMat.z;
 }
 
-void Camera::update()
+void Camera::prepare()
 {
   updateReferences();
 
@@ -167,16 +167,19 @@ void Camera::update()
   }
 
   if( proxy != null ) {
-    proxy->update();
+    proxy->prepare();
   }
 }
 
-void Camera::prepare()
+void Camera::update()
 {
   updateReferences();
 
+  horizPlane = coeff * mag * MIN_DISTANCE;
+  vertPlane  = aspect * horizPlane;
+
   if( proxy != null ) {
-    proxy->prepare();
+    proxy->update();
   }
 }
 
@@ -188,6 +191,7 @@ void Camera::reset()
   h         = 0.0f;
   v         = Math::TAU / 4.0f;
   w         = 0.0f;
+  mag       = 1.0f;
   relH      = 0.0f;
   relV      = 0.0f;
 
@@ -233,6 +237,7 @@ void Camera::read( InputStream* istream )
   h         = istream->readFloat();
   v         = istream->readFloat();
   w         = istream->readFloat();
+  mag       = istream->readFloat();
   relH      = istream->readFloat();
   relV      = istream->readFloat();
 
@@ -290,6 +295,7 @@ void Camera::write( BufferStream* ostream ) const
   ostream->writeFloat( h );
   ostream->writeFloat( v );
   ostream->writeFloat( w );
+  ostream->writeFloat( mag );
   ostream->writeFloat( relH );
   ostream->writeFloat( relV );
 
@@ -322,8 +328,6 @@ void Camera::init( int screenWidth, int screenHeight )
 
   aspect        = aspect != 0.0f ? aspect : float( width ) / float( height );
   coeff         = Math::tan( angle / 2.0f );
-  horizPlane    = coeff * MIN_DISTANCE;
-  vertPlane     = aspect * horizPlane;
 
   isExternal         = false;
   allowReincarnation = true;

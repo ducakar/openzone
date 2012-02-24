@@ -45,6 +45,7 @@ class BotProxy : public Proxy
     static const float SHOULDER_CAM_UP;
     static const float VEHICLE_CAM_UP_FACTOR;
     static const float BOB_SUPPRESSION_COEF;
+    static const float BINOCULARS_MAGNIFICATION;
 
     ui::HudArea*       hud;
     ui::InfoFrame*     infoFrame;
@@ -67,8 +68,8 @@ class BotProxy : public Proxy
     virtual void begin();
     virtual void end();
 
-    virtual void update();
     virtual void prepare();
+    virtual void update();
 
     virtual void reset();
 
