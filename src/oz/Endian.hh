@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Endian.hh
+ *
+ * Endian class.
  */
 
 #pragma once

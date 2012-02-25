@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Buffer.hh
+ *
+ * Buffer class.
  */
 
 #pragma once

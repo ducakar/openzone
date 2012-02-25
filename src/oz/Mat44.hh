@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Mat44.hh
+ *
+ * Mat44 class.
  */
 
 #pragma once

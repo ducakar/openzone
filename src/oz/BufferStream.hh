@@ -25,6 +25,8 @@
 
 /**
  * @file oz/BufferStream.hh
+ *
+ * BufferStream class.
  */
 
 #pragma once

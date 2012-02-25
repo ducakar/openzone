@@ -27,20 +27,12 @@
 
 #include "matrix/Lua.hh"
 
-#include "matrix/Library.hh"
-#include "matrix/Vehicle.hh"
-#include "matrix/Collider.hh"
-#include "matrix/Physics.hh"
-#include "matrix/Synapse.hh"
-
-#include "common/lua.hh"
+#include "matrix/luaapi.hh"
 
 namespace oz
 {
 namespace matrix
 {
-
-#include "matrix/luaapi.hh"
 
 Lua lua;
 
@@ -267,6 +259,8 @@ void Lua::init()
     throw Exception( "Failed to initialise Lua libraries" );
   }
 
+  ms.envName = "matrix";
+
   /*
    * General functions
    */
@@ -466,26 +460,9 @@ void Lua::init()
   IMPORT_FUNC( ozBotSetStamina );
   IMPORT_FUNC( ozBotAddStamina );
 
-  IMPORT_FUNC( ozBotActionForward );
-  IMPORT_FUNC( ozBotActionBackward );
-  IMPORT_FUNC( ozBotActionRight );
-  IMPORT_FUNC( ozBotActionLeft );
-  IMPORT_FUNC( ozBotActionJump );
-  IMPORT_FUNC( ozBotActionCrouch );
-  IMPORT_FUNC( ozBotActionUse );
-  IMPORT_FUNC( ozBotActionTake );
-  IMPORT_FUNC( ozBotActionGrab );
-  IMPORT_FUNC( ozBotActionThrow );
-  IMPORT_FUNC( ozBotActionAttack );
-  IMPORT_FUNC( ozBotActionExit );
-  IMPORT_FUNC( ozBotActionEject );
-  IMPORT_FUNC( ozBotActionSuicide );
-
   IMPORT_FUNC( ozBotIsRunning );
   IMPORT_FUNC( ozBotSetRunning );
   IMPORT_FUNC( ozBotToggleRunning );
-
-  IMPORT_FUNC( ozBotSetGesture );
 
   IMPORT_FUNC( ozBotSetWeaponItem );
 
@@ -532,7 +509,7 @@ void Lua::init()
 
   IMPORT_FUNC( ozFragRemove );
 
-#include "matrix/luaconst.hh"
+  importLuaConstants( l );
 
   newtable();
   setglobal( "ozLocalData" );

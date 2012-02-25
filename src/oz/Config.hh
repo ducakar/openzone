@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Config.hh
+ *
+ * Config class.
  */
 
 #pragma once

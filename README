@@ -33,7 +33,8 @@ wheel up        - throw object you are holding
 wheel down      - put tagged object into inventory
 
 n               - toggle night vision (if available)
-Alt + k         - commit suicide
+b               - toggle binoculars (if available)
+Alt + k         - commit suicide (if available)
 i               - un-incarnate bot
 
 Tab             - toggle interface mode

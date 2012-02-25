@@ -28,8 +28,10 @@
 /**
  * @file oz/windefs.h
  *
- * Private header that should always be included before <tt>\<windows.h\></tt> and possibly also
- * before any standard C/C++ header as it may include Windows headers internally.
+ * Windows-specific defines.
+ *
+ * This header should always be included before <tt>\<windows.h\></tt> and possibly also before any
+ * standard C/C++ header as it may include Windows headers internally.
  */
 
 #ifdef _WIN32

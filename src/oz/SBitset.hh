@@ -25,6 +25,8 @@
 
 /**
  * @file oz/SBitset.hh
+ *
+ * SBitset class.
  */
 
 #pragma once

@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Point3.hh
+ *
+ * Point3 class.
  */
 
 #pragma once

@@ -18,35 +18,36 @@
  */
 
 /**
- * @file client/Profile.hh
+ * @file common/lua.cc
  */
 
-#pragma once
-
-#include "client/common.hh"
-
-#include "matrix/BotClass.hh"
+#include "common/lua.hh"
 
 namespace oz
 {
-namespace client
+
+void registerLuaConstant( lua_State* l, const char* name, bool value )
 {
-
-class Profile
-{
-  public:
-
-    String                     name;
-    const BotClass*            clazz;
-    Vector<const ObjectClass*> items;
-    int                        weaponItem;
-
-    void init();
-    void free();
-
-};
-
-extern Profile profile;
-
+  pushbool( value );
+  setglobal( name );
 }
+
+void registerLuaConstant( lua_State* l, const char* name, int value )
+{
+  pushint( value );
+  setglobal( name );
+}
+
+void registerLuaConstant( lua_State* l, const char* name, float value )
+{
+  pushfloat( value );
+  setglobal( name );
+}
+
+void registerLuaConstant( lua_State* l, const char* name, const char* value )
+{
+  pushstring( value );
+  setglobal( name );
+}
+
 }

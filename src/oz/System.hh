@@ -25,6 +25,8 @@
 
 /**
  * @file oz/System.hh
+ *
+ * System class.
  */
 
 #pragma once

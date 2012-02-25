@@ -89,6 +89,10 @@ class Synapse
     void remove( Object* obj );
     void remove( Frag* frag );
 
+    void removeStruct( int index );
+    void removeObject( int index );
+    void removeFrag( int index );
+
     // clear lists for actions, additions, removals
     void update();
 

@@ -27,29 +27,14 @@
 
 #include "client/Lua.hh"
 
-#include "matrix/Vehicle.hh"
-#include "matrix/Library.hh"
-#include "matrix/Physics.hh"
-#include "matrix/Synapse.hh"
-#include "matrix/Lua.hh"
+#include "client/luaapi.hh"
 
-#include "nirvana/Nirvana.hh"
-#include "nirvana/Memo.hh"
-
-#include "client/QuestList.hh"
-#include "client/Camera.hh"
-#include "client/Profile.hh"
-
-#include "common/lua.hh"
+using namespace oz::nirvana;
 
 namespace oz
 {
 namespace client
 {
-
-#include "matrix/luaapi.hh"
-#include "nirvana/luaapi.hh"
-#include "client/luaapi.hh"
 
 Lua lua;
 
@@ -358,6 +343,8 @@ void Lua::init()
   IMPORT_FUNC( ozOrbisAddFrag );
   IMPORT_FUNC( ozOrbisGenFrags );
 
+  IMPORT_FUNC( ozOrbisAddPlayer );
+
   IMPORT_FUNC( ozOrbisBindAllOverlaps );
   IMPORT_FUNC( ozOrbisBindStrOverlaps );
   IMPORT_FUNC( ozOrbisBindObjOverlaps );
@@ -534,26 +521,9 @@ void Lua::init()
   IMPORT_FUNC( ozBotSetStamina );
   IMPORT_FUNC( ozBotAddStamina );
 
-  IMPORT_FUNC( ozBotActionForward );
-  IMPORT_FUNC( ozBotActionBackward );
-  IMPORT_FUNC( ozBotActionRight );
-  IMPORT_FUNC( ozBotActionLeft );
-  IMPORT_FUNC( ozBotActionJump );
-  IMPORT_FUNC( ozBotActionCrouch );
-  IMPORT_FUNC( ozBotActionUse );
-  IMPORT_FUNC( ozBotActionTake );
-  IMPORT_FUNC( ozBotActionGrab );
-  IMPORT_FUNC( ozBotActionThrow );
-  IMPORT_FUNC( ozBotActionAttack );
-  IMPORT_FUNC( ozBotActionExit );
-  IMPORT_FUNC( ozBotActionEject );
-  IMPORT_FUNC( ozBotActionSuicide );
-
   IMPORT_FUNC( ozBotIsRunning );
   IMPORT_FUNC( ozBotSetRunning );
   IMPORT_FUNC( ozBotToggleRunning );
-
-  IMPORT_FUNC( ozBotSetGesture );
 
   IMPORT_FUNC( ozBotSetWeaponItem );
 
@@ -693,9 +663,10 @@ void Lua::init()
    * Profile
    */
 
-  IMPORT_FUNC( ozProfileGetPlayerName );
+  IMPORT_FUNC( ozProfileGetName );
+  IMPORT_FUNC( ozProfileGetBot );
 
-#include "matrix/luaconst.hh"
+  importLuaConstants( l );
 
   hard_assert( gettop() == 0 );
 

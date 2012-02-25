@@ -25,6 +25,10 @@
 
 #include "client/Profile.hh"
 
+#include "matrix/Library.hh"
+#include "matrix/BotClass.hh"
+#include "matrix/WeaponClass.hh"
+
 #ifndef __clang__
 // GCC bug, issues a false warning.
 # pragma GCC diagnostic ignored "-Wconversion"
@@ -50,7 +54,42 @@ void Profile::init()
     playerName[0] += char( 'A' - 'a' );
   }
 
-  this->playerName = config.getSet( "modules.profile.playerName", playerName );
+  const ObjectClass* objClazz = library.objClass( config.getSet( "profile.class", "beast" ) );
+
+  name  = config.getSet( "profile.name", playerName );
+  clazz = static_cast<const BotClass*>( objClazz );
+
+  char buffer[] = "profile.item  ";
+  for( int i = 0; i < ObjectClass::MAX_ITEMS; ++i ) {
+    hard_assert( i < 100 );
+
+    buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
+    buffer[ sizeof( buffer ) - 2 ] = char( '0' + ( i % 10 ) );
+
+    const char* itemName = config.get( buffer, "" );
+    if( !String::isEmpty( itemName ) ) {
+      items.add( library.objClass( itemName ) );
+    }
+  }
+
+  if( items.length() > clazz->nItems ) {
+    throw Exception( "Too many items for player profile" );
+  }
+
+  weaponItem = config.getSet( "profile.weaponItem", -1 );
+
+  if( weaponItem != -1 ) {
+    if( uint( weaponItem ) >= uint( items.length() ) ) {
+      throw Exception( "Invalid profile.weaponItem %d", weaponItem );
+    }
+
+    const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( items[weaponItem] );
+
+    if( !weaponClazz->allowedUsers.contains( clazz ) ) {
+      throw Exception( "Invalid weapon class '%s' for player class '%s' in profile",
+                       weaponClazz->name.cstr(), clazz->name.cstr() );
+    }
+  }
 }
 
 }

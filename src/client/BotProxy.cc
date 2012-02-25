@@ -113,42 +113,12 @@ void BotProxy::prepare()
     return;
   }
 
-  Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
-
   const ubyte* keys    = ui::keyboard.keys;
   const ubyte* oldKeys = ui::keyboard.oldKeys;
 
-  if( keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) {
-    camera.h = bot->h;
-    camera.v = bot->v;
+  bool alt = keys[SDLK_LALT] || keys[SDLK_RALT];
 
-    isExternal = !isExternal;
-    camera.isExternal = isExternal;
-
-    if( !isExternal ) {
-      if( bot->parent != -1 ) {
-        camera.warp( bot->p + camera.up * bot->camZ );
-      }
-      else {
-        camera.warp( bot->p + Vec3( 0.0f, 0.0f, bot->camZ ) );
-      }
-    }
-  }
-
-  if( camera.allowReincarnation && keys[SDLK_i] && !oldKeys[SDLK_i] ) {
-    bot->actions = 0;
-    camera.setBot( null );
-    return;
-  }
-
-  if( keys[SDLK_o] ) {
-    if( keys[SDLK_LSHIFT] || keys[SDLK_RSHIFT] ) {
-      orbis.caelum.time -= 0.1f * Timer::TICK_TIME * orbis.caelum.period;
-    }
-    else {
-      orbis.caelum.time += 0.1f * Timer::TICK_TIME * orbis.caelum.period;
-    }
-  }
+  Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
   /*
    * Camera
@@ -188,6 +158,7 @@ void BotProxy::prepare()
   /*
    * Actions
    */
+
   if( keys[SDLK_SPACE] ) {
     bot->actions |= Bot::ACTION_JUMP | Bot::ACTION_VEH_UP;
   }
@@ -197,44 +168,43 @@ void BotProxy::prepare()
   if( keys[SDLK_LSHIFT] && !oldKeys[SDLK_LSHIFT] ) {
     bot->state ^= Bot::RUNNING_BIT;
   }
-  if( keys[SDLK_x] && !oldKeys[SDLK_x] ) {
-    if( keys[SDLK_LALT] || keys[SDLK_RALT] ) {
-      bot->actions |= Bot::ACTION_EJECT;
-    }
-    else {
-      bot->actions |= Bot::ACTION_EXIT;
-    }
-  }
-  if( ( keys[SDLK_LALT] || keys[SDLK_RALT] ) && keys[SDLK_k] && !oldKeys[SDLK_k] ) {
-    bot->actions |= Bot::ACTION_SUICIDE;
-  }
-  if( keys[SDLK_KP_MULTIPLY] && !oldKeys[SDLK_KP_MULTIPLY] && isExternal ) {
-    isFreelook = !isFreelook;
 
-    camera.h = bot->h;
-    camera.v = bot->v;
+  if( !alt && keys[SDLK_x] && !oldKeys[SDLK_x] ) {
+    bot->actions |= Bot::ACTION_EXIT;
+  }
+  if( alt && keys[SDLK_x] && !oldKeys[SDLK_x] ) {
+    bot->actions |= Bot::ACTION_EJECT;
+  }
+  if( alt && keys[SDLK_k] && !oldKeys[SDLK_k] ) {
+    if( bot->hasAttribute( ObjectClass::SUICIDE_BIT ) ) {
+      bot->actions |= Bot::ACTION_SUICIDE;
+    }
   }
 
-  if( keys[SDLK_f] ) {
+  if( !alt && keys[SDLK_f] ) {
     bot->actions |= Bot::ACTION_GESTURE0;
   }
-  if( keys[SDLK_g] ) {
+  if( !alt && keys[SDLK_g] ) {
     bot->actions |= Bot::ACTION_GESTURE1;
   }
-  if( keys[SDLK_h] ) {
+  if( !alt && keys[SDLK_h] ) {
     bot->actions |= Bot::ACTION_GESTURE2;
   }
-  if( keys[SDLK_j] ) {
+  if( !alt && keys[SDLK_j] ) {
     bot->actions |= Bot::ACTION_GESTURE3;
   }
-  if( keys[SDLK_k] ) {
+  if( !alt && keys[SDLK_k] ) {
     bot->actions |= Bot::ACTION_GESTURE4;
   }
 
-  if( keys[SDLK_n] && !oldKeys[SDLK_n] ) {
+  /*
+   * View
+   */
+
+  if( !alt && keys[SDLK_n] && !oldKeys[SDLK_n] ) {
     camera.nightVision = !camera.nightVision;
   }
-  if( keys[SDLK_b] && !oldKeys[SDLK_b] ) {
+  if( !alt && keys[SDLK_b] && !oldKeys[SDLK_b] ) {
     camera.mag = camera.mag == 1.0f ? BINOCULARS_MAGNIFICATION : 1.0f;
   }
 
@@ -245,9 +215,32 @@ void BotProxy::prepare()
     camera.mag = 1.0f;
   }
 
-  if( keys[SDLK_TAB] && !oldKeys[SDLK_TAB] ) {
-    ui::mouse.doShow = !ui::mouse.doShow;
+  if( !alt && keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) {
+    camera.h = bot->h;
+    camera.v = bot->v;
+
+    isExternal = !isExternal;
+    camera.isExternal = isExternal;
+
+    if( !isExternal ) {
+      if( bot->parent != -1 ) {
+        camera.warp( bot->p + camera.up * bot->camZ );
+      }
+      else {
+        camera.warp( bot->p + Vec3( 0.0f, 0.0f, bot->camZ ) );
+      }
+    }
   }
+  if( !alt && keys[SDLK_KP_MULTIPLY] && !oldKeys[SDLK_KP_MULTIPLY] && isExternal ) {
+    isFreelook = !isFreelook;
+
+    camera.h = bot->h;
+    camera.v = bot->v;
+  }
+
+  /*
+   * Mouse
+   */
 
   if( !ui::mouse.doShow ) {
     if( ui::mouse.buttons & SDL_BUTTON_LMASK ) {
@@ -336,6 +329,31 @@ void BotProxy::prepare()
         bot->container = -1;
         bot->trigger = -1;
       }
+    }
+  }
+
+  /*
+   * Other
+   */
+
+  if( !alt && keys[SDLK_TAB] && !oldKeys[SDLK_TAB] ) {
+    ui::mouse.doShow = !ui::mouse.doShow;
+  }
+
+  if( !alt && keys[SDLK_i] && !oldKeys[SDLK_i] ) {
+    if( camera.allowReincarnation ) {
+      bot->actions = 0;
+      camera.setBot( null );
+      return;
+    }
+  }
+
+  if( !alt && keys[SDLK_o] ) {
+    if( keys[SDLK_LSHIFT] || keys[SDLK_RSHIFT] ) {
+      orbis.caelum.time -= 0.1f * Timer::TICK_TIME * orbis.caelum.period;
+    }
+    else {
+      orbis.caelum.time += 0.1f * Timer::TICK_TIME * orbis.caelum.period;
     }
   }
 }
@@ -497,9 +515,6 @@ void BotProxy::write( BufferStream* ostream ) const
   ostream->writeBool( isExternal );
   ostream->writeBool( isFreelook );
 }
-
-void BotProxy::init()
-{}
 
 }
 }

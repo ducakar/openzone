@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Vector.hh
+ *
+ * Vector template class.
  */
 
 #pragma once

@@ -76,8 +76,6 @@ class BotProxy : public Proxy
     virtual void read( InputStream* istream );
     virtual void write( BufferStream* ostream ) const;
 
-    void init();
-
 };
 
 }

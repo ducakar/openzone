@@ -25,6 +25,8 @@
 
 /**
  * @file oz/String.hh
+ *
+ * String class.
  */
 
 #pragma once

@@ -25,6 +25,8 @@
 
 /**
  * @file oz/HashString.hh
+ *
+ * HashString template class.
  */
 
 #pragma once

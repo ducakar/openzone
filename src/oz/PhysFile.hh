@@ -25,6 +25,8 @@
 
 /**
  * @file oz/PhysFile.hh
+ *
+ * PhysFile class.
  */
 
 #pragma once

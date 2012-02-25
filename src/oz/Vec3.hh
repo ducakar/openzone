@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Vec3.hh
+ *
+ * Vec3 class.
  */
 
 #pragma once

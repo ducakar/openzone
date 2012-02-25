@@ -1,3 +1,46 @@
+/*
+ * OpenZone - simple cross-platform FPS/RTS game engine.
+ *
+ * Copyright © 2002-2012 Davorin Učakar
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ * @file matrix/luaapi.hh
+ *
+ * Matrix Lua API implementation.
+ */
+
+#pragma once
+
+#include "matrix/Library.hh"
+#include "matrix/Vehicle.hh"
+#include "matrix/Physics.hh"
+#include "matrix/Synapse.hh"
+#include "matrix/Lua.hh"
+
+#include "common/lua.hh"
+
+namespace oz
+{
+namespace matrix
+{
+
+/// @addtogroup matrix
+/// @{
+
 struct MatrixLuaState
 {
   Object*         self;
@@ -14,6 +57,8 @@ struct MatrixLuaState
   Vector<Object*> objects;
 
   bool            hasUseFailed;
+
+  const char*     envName;
 };
 
 static MatrixLuaState ms;
@@ -26,7 +71,7 @@ static int ozPrintln( lua_State* l )
 {
   ARG( 1 );
 
-  log.println( "M> %s", tostring( 1 ) );
+  log.println( "Lua:%s> %s", ms.envName, tostring( 1 ) );
   return 0;
 }
 
@@ -362,7 +407,7 @@ static int ozStrGetIndex( lua_State* l )
 static int ozStrGetBounds( lua_State* l )
 {
   ARG( 0 );
-  STR_NOT_NULL();
+  STR();
 
   pushfloat( ms.str->mins.x );
   pushfloat( ms.str->mins.y );
@@ -376,7 +421,7 @@ static int ozStrGetBounds( lua_State* l )
 static int ozStrGetPos( lua_State* l )
 {
   ARG( 0 );
-  STR_NOT_NULL();
+  STR();
 
   pushfloat( ms.str->p.x );
   pushfloat( ms.str->p.y );
@@ -387,7 +432,7 @@ static int ozStrGetPos( lua_State* l )
 static int ozStrGetBSP( lua_State* l )
 {
   ARG( 0 );
-  STR_NOT_NULL();
+  STR();
 
   pushstring( ms.str->bsp->name );
   return 1;
@@ -396,7 +441,7 @@ static int ozStrGetBSP( lua_State* l )
 static int ozStrGetHeading( lua_State* l )
 {
   ARG( 0 );
-  STR_NOT_NULL();
+  STR();
 
   pushint( ms.str->heading );
   return 1;
@@ -405,7 +450,7 @@ static int ozStrGetHeading( lua_State* l )
 static int ozStrGetLife( lua_State* l )
 {
   ARG( 0 );
-  STR_NOT_NULL();
+  STR();
 
   pushfloat( ms.str->life );
   return 1;
@@ -414,7 +459,7 @@ static int ozStrGetLife( lua_State* l )
 static int ozStrSetLife( lua_State* l )
 {
   ARG( 1 );
-  STR_NOT_NULL();
+  STR();
 
   ms.str->life = tofloat( 1 );
   return 0;
@@ -423,7 +468,7 @@ static int ozStrSetLife( lua_State* l )
 static int ozStrAddLife( lua_State* l )
 {
   ARG( 1 );
-  STR_NOT_NULL();
+  STR();
 
   ms.str->life += tofloat( 1 );
   return 0;
@@ -432,7 +477,7 @@ static int ozStrAddLife( lua_State* l )
 static int ozStrDamage( lua_State* l )
 {
   ARG( 1 );
-  STR_NOT_NULL();
+  STR();
 
   ms.str->damage( tofloat( 1 ) );
   return 0;
@@ -441,7 +486,7 @@ static int ozStrDamage( lua_State* l )
 static int ozStrDestroy( lua_State* l )
 {
   ARG( 0 );
-  STR_NOT_NULL();
+  STR();
 
   ms.str->destroy();
   return 0;
@@ -450,17 +495,57 @@ static int ozStrDestroy( lua_State* l )
 static int ozStrRemove( lua_State* l )
 {
   ARG( 0 );
-  STR_NOT_NULL();
+  STR();
 
   synapse.remove( ms.str );
   ms.str = null;
   return 0;
 }
 
+static int ozStrGetEntityState( lua_State* l )
+{
+  ARG( 1 );
+  STR();
+
+  int entIndex = toint( 1 );
+
+  pushint( ms.str->entities[entIndex].state );
+  return 1;
+}
+
+static int ozStrSetEntityState( lua_State* l )
+{
+  ARG( 2 );
+  STR();
+
+  int entIndex = toint( 1 );
+  Entity* ent = &ms.str->entities[entIndex];
+  Entity::State state = Entity::State( toint( 2 ) );
+
+  ent->time     = 0.0f;
+  ent->velocity = Vec3::ZERO;
+
+  if( state == Entity::CLOSED ) {
+    ent->offset = Vec3::ZERO;
+    ent->state  = Entity::CLOSED;
+    ent->ratio  = 0.0f;
+  }
+  else if( state == Entity::OPENED ) {
+    ent->offset = ent->model->move;
+    ent->state  = Entity::OPENED;
+    ent->ratio  = 1.0f;
+  }
+  else {
+    ERROR( "Invalid entity state requested, should be either CLOSED or OPENED." );
+  }
+
+  return 0;
+}
+
 static int ozStrGetEntityLock( lua_State* l )
 {
   ARG( 1 );
-  STR_NOT_NULL();
+  STR();
 
   int entIndex = toint( 1 );
 
@@ -471,7 +556,7 @@ static int ozStrGetEntityLock( lua_State* l )
 static int ozStrSetEntityLock( lua_State* l )
 {
   ARG( 2 );
-  STR_NOT_NULL();
+  STR();
 
   int entIndex = toint( 1 );
   int key      = toint( 2 );
@@ -483,7 +568,7 @@ static int ozStrSetEntityLock( lua_State* l )
 static int ozStrVectorFromSelf( lua_State* l )
 {
   ARG( 0 );
-  STR_NOT_NULL();
+  STR();
 
   Vec3 vec = ms.str->p - ms.self->p;
   pushfloat( vec.x );
@@ -495,7 +580,7 @@ static int ozStrVectorFromSelf( lua_State* l )
 static int ozStrVectorFromSelfEye( lua_State* l )
 {
   ARG( 0 );
-  STR_NOT_NULL();
+  STR();
   SELF_BOT();
 
   Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
@@ -510,7 +595,7 @@ static int ozStrVectorFromSelfEye( lua_State* l )
 static int ozStrDirectionFromSelf( lua_State* l )
 {
   ARG( 0 );
-  STR_NOT_NULL();
+  STR();
 
   Vec3 dir = ~( ms.str->p - ms.self->p );
   pushfloat( dir.x );
@@ -522,7 +607,7 @@ static int ozStrDirectionFromSelf( lua_State* l )
 static int ozStrDirectionFromSelfEye( lua_State* l )
 {
   ARG( 0 );
-  STR_NOT_NULL();
+  STR();
   SELF_BOT();
 
   Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
@@ -537,7 +622,7 @@ static int ozStrDirectionFromSelfEye( lua_State* l )
 static int ozStrDistanceFromSelf( lua_State* l )
 {
   ARG( 0 );
-  STR_NOT_NULL();
+  STR();
 
   pushfloat( !( ms.str->p - ms.self->p ) );
   return 1;
@@ -546,7 +631,7 @@ static int ozStrDistanceFromSelf( lua_State* l )
 static int ozStrDistanceFromSelfEye( lua_State* l )
 {
   ARG( 0 );
-  STR_NOT_NULL();
+  STR();
   SELF_BOT();
 
   Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
@@ -558,7 +643,7 @@ static int ozStrDistanceFromSelfEye( lua_State* l )
 static int ozStrRelativeHeadingFromSelf( lua_State* l )
 {
   ARG( 0 );
-  STR_NOT_NULL();
+  STR();
 
   float dx = ms.str->p.x - ms.self->p.x;
   float dy = ms.str->p.y - ms.self->p.y;
@@ -571,7 +656,7 @@ static int ozStrRelativeHeadingFromSelf( lua_State* l )
 static int ozStrHeadingFromSelf( lua_State* l )
 {
   ARG( 0 );
-  STR_NOT_NULL();
+  STR();
   SELF_BOT();
 
   float dx = ms.str->p.x - self->p.x;
@@ -585,7 +670,7 @@ static int ozStrHeadingFromSelf( lua_State* l )
 static int ozStrPitchFromSelf( lua_State* l )
 {
   ARG( 0 );
-  STR_NOT_NULL();
+  STR();
 
   float dx = ms.str->p.x - ms.self->p.x;
   float dy = ms.str->p.y - ms.self->p.y;
@@ -599,7 +684,7 @@ static int ozStrPitchFromSelf( lua_State* l )
 static int ozStrPitchFromSelfEye( lua_State* l )
 {
   ARG( 0 );
-  STR_NOT_NULL();
+  STR();
   SELF_BOT();
 
   Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
@@ -616,7 +701,7 @@ static int ozStrPitchFromSelfEye( lua_State* l )
 static int ozStrBindAllOverlaps( lua_State* l )
 {
   ARG( 3 );
-  STR_NOT_NULL();
+  STR();
 
   AABB aabb = AABB( ms.str->p,
                     Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
@@ -632,7 +717,7 @@ static int ozStrBindAllOverlaps( lua_State* l )
 static int ozStrBindStrOverlaps( lua_State* l )
 {
   ARG( 3 );
-  STR_NOT_NULL();
+  STR();
 
   AABB aabb = AABB( ms.str->p,
                     Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
@@ -646,7 +731,7 @@ static int ozStrBindStrOverlaps( lua_State* l )
 static int ozStrBindObjOverlaps( lua_State* l )
 {
   ARG( 3 );
-  STR_NOT_NULL();
+  STR();
 
   AABB aabb = AABB( ms.str->p,
                     Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
@@ -676,7 +761,7 @@ static int ozObjBindIndex( lua_State* l )
 static int ozObjBindPilot( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_VEHICLE();
 
   ms.obj = vehicle->pilot == -1 ? null : orbis.objects[vehicle->pilot];
@@ -811,7 +896,7 @@ static int ozObjGetIndex( lua_State* l )
 static int ozObjGetPos( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   if( ms.obj->cell == null ) {
     hard_assert( ms.obj->flags & Object::DYNAMIC_BIT );
@@ -839,7 +924,7 @@ static int ozObjGetPos( lua_State* l )
 static int ozObjSetPos( lua_State* l )
 {
   ARG( 3 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   ms.obj->p.x = tofloat( 1 );
   ms.obj->p.y = tofloat( 2 );
@@ -852,7 +937,7 @@ static int ozObjSetPos( lua_State* l )
 static int ozObjAddPos( lua_State* l )
 {
   ARG( 3 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   ms.obj->p.x += tofloat( 1 );
   ms.obj->p.y += tofloat( 2 );
@@ -865,7 +950,7 @@ static int ozObjAddPos( lua_State* l )
 static int ozObjGetDim( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   pushfloat( ms.obj->dim.x );
   pushfloat( ms.obj->dim.y );
@@ -876,7 +961,7 @@ static int ozObjGetDim( lua_State* l )
 static int ozObjGetFlags( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   int mask = toint( 1 );
   pushbool( ms.obj->flags & mask );
@@ -886,7 +971,7 @@ static int ozObjGetFlags( lua_State* l )
 static int ozObjGetHeading( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   pushint( ms.obj->flags & Object::HEADING_MASK );
   return 1;
@@ -895,7 +980,7 @@ static int ozObjGetHeading( lua_State* l )
 static int ozObjGetClassName( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   pushstring( ms.obj->clazz->name );
   return 1;
@@ -904,7 +989,7 @@ static int ozObjGetClassName( lua_State* l )
 static int ozObjGetLife( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   pushfloat( ms.obj->life );
   return 1;
@@ -913,7 +998,7 @@ static int ozObjGetLife( lua_State* l )
 static int ozObjSetLife( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   ms.obj->life = clamp( tofloat( 1 ), 0.0f, ms.obj->clazz->life );
   return 0;
@@ -922,7 +1007,7 @@ static int ozObjSetLife( lua_State* l )
 static int ozObjAddLife( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   ms.obj->life = clamp( ms.obj->life + tofloat( 1 ),
                          0.0f,
@@ -933,7 +1018,7 @@ static int ozObjAddLife( lua_State* l )
 static int ozObjAddEvent( lua_State* l )
 {
   ARG( 2 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   int   id        = toint( 1 );
   float intensity = tofloat( 2 );
@@ -948,7 +1033,7 @@ static int ozObjAddEvent( lua_State* l )
 static int ozObjBindItems( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   ms.objects.clear();
   foreach( item, ms.obj->items.citer() ) {
@@ -961,7 +1046,7 @@ static int ozObjBindItems( lua_State* l )
 static int ozObjAddItem( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   if( ms.obj->items.length() == ms.obj->clazz->nItems ) {
     pushbool( false );
@@ -992,36 +1077,25 @@ static int ozObjAddItem( lua_State* l )
 static int ozObjRemoveItem( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   int item = toint( 1 );
   if( uint( item ) >= uint( ms.obj->items.length() ) ) {
     ERROR( "invalid item number" );
   }
 
-  int index = ms.obj->items[item];
-  Dynamic* dyn = static_cast<Dynamic*>( orbis.objects[index] );
-
-  if( dyn != null ) {
-    ms.obj->items.remove( item );
-    synapse.remove( dyn );
-  }
+  synapse.removeObject( ms.obj->items[item] );
   return 0;
 }
 
 static int ozObjRemoveAllItems( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   foreach( item, ms.obj->items.citer() ) {
-    Dynamic* dyn = static_cast<Dynamic*>( orbis.objects[*item] );
-
-    if( dyn != null ) {
-      synapse.remove( dyn );
-    }
+    synapse.removeObject( *item );
   }
-
   ms.obj->items.clear();
   return 0;
 }
@@ -1029,7 +1103,7 @@ static int ozObjRemoveAllItems( lua_State* l )
 static int ozObjEnableUpdate( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   if( tobool( 1 ) ) {
     ms.obj->flags |= Object::UPDATE_FUNC_BIT;
@@ -1043,7 +1117,7 @@ static int ozObjEnableUpdate( lua_State* l )
 static int ozObjDamage( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   ms.obj->damage( tofloat( 1 ) );
   return 0;
@@ -1052,7 +1126,7 @@ static int ozObjDamage( lua_State* l )
 static int ozObjDestroy( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   ms.obj->life = 0.0f;
   return 0;
@@ -1061,7 +1135,7 @@ static int ozObjDestroy( lua_State* l )
 static int ozObjQuietDestroy( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   ms.obj->flags |= Object::DESTROYED_BIT;
   return 0;
@@ -1070,7 +1144,7 @@ static int ozObjQuietDestroy( lua_State* l )
 static int ozObjVectorFromSelf( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_NOT_SELF();
 
   Vec3 vec = ms.obj->p - ms.self->p;
@@ -1084,7 +1158,7 @@ static int ozObjVectorFromSelf( lua_State* l )
 static int ozObjVectorFromSelfEye( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_NOT_SELF();
   SELF_BOT();
 
@@ -1100,7 +1174,7 @@ static int ozObjVectorFromSelfEye( lua_State* l )
 static int ozObjDirectionFromSelf( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_NOT_SELF();
 
   Vec3 dir = ~( ms.obj->p - ms.self->p );
@@ -1114,7 +1188,7 @@ static int ozObjDirectionFromSelf( lua_State* l )
 static int ozObjDirectionFromSelfEye( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_NOT_SELF();
   SELF_BOT();
 
@@ -1130,7 +1204,7 @@ static int ozObjDirectionFromSelfEye( lua_State* l )
 static int ozObjDistanceFromSelf( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_NOT_SELF();
 
   pushfloat( !( ms.obj->p - ms.self->p ) );
@@ -1140,7 +1214,7 @@ static int ozObjDistanceFromSelf( lua_State* l )
 static int ozObjDistanceFromSelfEye( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_NOT_SELF();
   SELF_BOT();
 
@@ -1153,7 +1227,7 @@ static int ozObjDistanceFromSelfEye( lua_State* l )
 static int ozObjHeadingFromSelf( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_NOT_SELF();
 
   float dx = ms.obj->p.x - ms.self->p.x;
@@ -1167,7 +1241,7 @@ static int ozObjHeadingFromSelf( lua_State* l )
 static int ozObjRelativeHeadingFromSelf( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_NOT_SELF();
   SELF_BOT();
 
@@ -1182,7 +1256,7 @@ static int ozObjRelativeHeadingFromSelf( lua_State* l )
 static int ozObjPitchFromSelf( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_NOT_SELF();
 
   float dx = ms.obj->p.x - ms.self->p.x;
@@ -1197,7 +1271,7 @@ static int ozObjPitchFromSelf( lua_State* l )
 static int ozObjPitchFromSelfEye( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_NOT_SELF();
   SELF_BOT();
 
@@ -1215,7 +1289,7 @@ static int ozObjPitchFromSelfEye( lua_State* l )
 static int ozObjIsVisibleFromSelf( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_NOT_SELF();
 
   Point3 eye    = Point3( ms.self->p.x, ms.self->p.y, ms.self->p.z );
@@ -1229,7 +1303,7 @@ static int ozObjIsVisibleFromSelf( lua_State* l )
 static int ozObjIsVisibleFromSelfEye( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_NOT_SELF();
   SELF_BOT();
 
@@ -1244,7 +1318,7 @@ static int ozObjIsVisibleFromSelfEye( lua_State* l )
 static int ozObjBindAllOverlaps( lua_State* l )
 {
   ARG( 3 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   AABB aabb = AABB( ms.obj->p,
                     Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
@@ -1260,7 +1334,7 @@ static int ozObjBindAllOverlaps( lua_State* l )
 static int ozObjBindStrOverlaps( lua_State* l )
 {
   ARG( 3 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   AABB aabb = AABB( ms.obj->p,
                     Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
@@ -1274,7 +1348,7 @@ static int ozObjBindStrOverlaps( lua_State* l )
 static int ozObjBindObjOverlaps( lua_State* l )
 {
   ARG( 3 );
-  OBJ_NOT_NULL();
+  OBJ();
 
   AABB aabb = AABB( ms.obj->p,
                     Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
@@ -1292,7 +1366,7 @@ static int ozObjBindObjOverlaps( lua_State* l )
 static int ozDynBindParent( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_DYNAMIC();
 
   if( dyn->parent != -1 && orbis.objects[dyn->parent] != null ) {
@@ -1308,7 +1382,7 @@ static int ozDynBindParent( lua_State* l )
 static int ozDynGetVelocity( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_DYNAMIC();
 
   pushfloat( dyn->velocity.x );
@@ -1320,7 +1394,7 @@ static int ozDynGetVelocity( lua_State* l )
 static int ozDynGetMomentum( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_DYNAMIC();
 
   pushfloat( dyn->momentum.x );
@@ -1332,7 +1406,7 @@ static int ozDynGetMomentum( lua_State* l )
 static int ozDynSetMomentum( lua_State* l )
 {
   ARG( 3 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_DYNAMIC();
 
   dyn->flags &= ~Object::DISABLED_BIT;
@@ -1345,7 +1419,7 @@ static int ozDynSetMomentum( lua_State* l )
 static int ozDynAddMomentum( lua_State* l )
 {
   ARG( 3 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_DYNAMIC();
 
   dyn->flags &= ~Object::DISABLED_BIT;
@@ -1358,7 +1432,7 @@ static int ozDynAddMomentum( lua_State* l )
 static int ozDynGetMass( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_DYNAMIC();
 
   pushfloat( dyn->mass );
@@ -1368,7 +1442,7 @@ static int ozDynGetMass( lua_State* l )
 static int ozDynGetLift( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_DYNAMIC();
 
   pushfloat( dyn->lift );
@@ -1382,7 +1456,7 @@ static int ozDynGetLift( lua_State* l )
 static int ozWeaponGetDefaultRounds( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_WEAPON();
 
   const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weapon->clazz );
@@ -1394,7 +1468,7 @@ static int ozWeaponGetDefaultRounds( lua_State* l )
 static int ozWeaponGetRounds( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_WEAPON();
 
   pushint( weapon->nRounds );
@@ -1404,7 +1478,7 @@ static int ozWeaponGetRounds( lua_State* l )
 static int ozWeaponSetRounds( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_WEAPON();
 
   const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weapon->clazz );
@@ -1416,7 +1490,7 @@ static int ozWeaponSetRounds( lua_State* l )
 static int ozWeaponAddRounds( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_WEAPON();
 
   const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weapon->clazz );
@@ -1430,7 +1504,7 @@ static int ozWeaponAddRounds( lua_State* l )
 static int ozWeaponReload( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_WEAPON();
 
   const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weapon->clazz );
@@ -1446,7 +1520,7 @@ static int ozWeaponReload( lua_State* l )
 static int ozBotBindPilot( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_VEHICLE();
 
   ms.obj = vehicle->pilot == -1 ? null : orbis.objects[vehicle->pilot];
@@ -1456,7 +1530,7 @@ static int ozBotBindPilot( lua_State* l )
 static int ozBotGetName( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   pushstring( bot->name );
@@ -1466,7 +1540,7 @@ static int ozBotGetName( lua_State* l )
 static int ozBotSetName( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   bot->name = tostring( 1 );
@@ -1476,7 +1550,7 @@ static int ozBotSetName( lua_State* l )
 static int ozBotGetMindFunc( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   pushstring( bot->mindFunc );
@@ -1486,7 +1560,7 @@ static int ozBotGetMindFunc( lua_State* l )
 static int ozBotSetMindFunc( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   bot->mindFunc = tostring( 1 );
@@ -1496,7 +1570,7 @@ static int ozBotSetMindFunc( lua_State* l )
 static int ozBotGetState( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   int mask = toint( 1 );
@@ -1507,7 +1581,7 @@ static int ozBotGetState( lua_State* l )
 static int ozBotGetEyePos( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   pushfloat( bot->p.x );
@@ -1519,7 +1593,7 @@ static int ozBotGetEyePos( lua_State* l )
 static int ozBotGetH( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   pushfloat( Math::deg( bot->h ) );
@@ -1529,7 +1603,7 @@ static int ozBotGetH( lua_State* l )
 static int ozBotSetH( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   bot->h = Math::rad( tofloat( 1 ) );
@@ -1540,7 +1614,7 @@ static int ozBotSetH( lua_State* l )
 static int ozBotAddH( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   bot->h += Math::rad( tofloat( 1 ) );
@@ -1551,7 +1625,7 @@ static int ozBotAddH( lua_State* l )
 static int ozBotGetV( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   pushfloat( Math::deg( bot->v ) );
@@ -1561,7 +1635,7 @@ static int ozBotGetV( lua_State* l )
 static int ozBotSetV( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   bot->v = Math::rad( tofloat( 1 ) );
@@ -1572,7 +1646,7 @@ static int ozBotSetV( lua_State* l )
 static int ozBotAddV( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   bot->v += Math::rad( tofloat( 1 ) );
@@ -1583,7 +1657,7 @@ static int ozBotAddV( lua_State* l )
 static int ozBotGetDir( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
@@ -1605,7 +1679,7 @@ static int ozBotGetDir( lua_State* l )
 static int ozBotGetStamina( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   pushfloat( bot->stamina );
@@ -1615,7 +1689,7 @@ static int ozBotGetStamina( lua_State* l )
 static int ozBotSetStamina( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
@@ -1627,7 +1701,7 @@ static int ozBotSetStamina( lua_State* l )
 static int ozBotAddStamina( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
@@ -1636,150 +1710,10 @@ static int ozBotAddStamina( lua_State* l )
   return 0;
 }
 
-static int ozBotActionForward( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  bot->actions |= Bot::ACTION_FORWARD;
-  return 0;
-}
-
-static int ozBotActionBackward( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  bot->actions |= Bot::ACTION_BACKWARD;
-  return 0;
-}
-
-static int ozBotActionRight( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  bot->actions |= Bot::ACTION_RIGHT;
-  return 0;
-}
-
-static int ozBotActionLeft( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  bot->actions |= Bot::ACTION_LEFT;
-  return 0;
-}
-
-static int ozBotActionJump( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  bot->actions |= Bot::ACTION_JUMP;
-  return 0;
-}
-
-static int ozBotActionCrouch( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  bot->actions |= Bot::ACTION_CROUCH;
-  return 0;
-}
-
-static int ozBotActionUse( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  bot->actions |= Bot::ACTION_USE;
-  return 0;
-}
-
-static int ozBotActionTake( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  bot->actions |= Bot::ACTION_TAKE;
-  return 0;
-}
-
-static int ozBotActionGrab( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  bot->actions |= Bot::ACTION_GRAB;
-  return 0;
-}
-
-static int ozBotActionThrow( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  bot->actions |= Bot::ACTION_THROW;
-  return 0;
-}
-
-static int ozBotActionAttack( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  bot->actions |= Bot::ACTION_ATTACK;
-  return 0;
-}
-
-static int ozBotActionExit( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  bot->actions |= Bot::ACTION_EXIT;
-  return 0;
-}
-
-static int ozBotActionEject( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  bot->actions |= Bot::ACTION_EJECT;
-  return 0;
-}
-
-static int ozBotActionSuicide( lua_State* l )
-{
-  ARG( 0 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  bot->actions |= Bot::ACTION_SUICIDE;
-  return 0;
-}
-
 static int ozBotIsRunning( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   pushbool( bot->state & Bot::RUNNING_BIT );
@@ -1789,7 +1723,7 @@ static int ozBotIsRunning( lua_State* l )
 static int ozBotSetRunning( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   if( tobool( 1 ) ) {
@@ -1804,28 +1738,17 @@ static int ozBotSetRunning( lua_State* l )
 static int ozBotToggleRunning( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   bot->state ^= Bot::RUNNING_BIT;
   return 0;
 }
 
-static int ozBotSetGesture( lua_State* l )
-{
-  ARG( 1 );
-  OBJ_NOT_NULL();
-  OBJ_BOT();
-
-  bot->state &= ~( Bot::GESTURE0_BIT | Bot::GESTURE1_BIT | Bot::GESTURE2_BIT | Bot::GESTURE4_BIT );
-  bot->state |= toint( 1 );
-  return 0;
-}
-
 static int ozBotSetWeaponItem( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   int item = toint( 1 );
@@ -1862,7 +1785,7 @@ static int ozBotSetWeaponItem( lua_State* l )
 static int ozBotHeal( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   bot->heal();
@@ -1872,7 +1795,7 @@ static int ozBotHeal( lua_State* l )
 static int ozBotRearm( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   bot->rearm();
@@ -1882,7 +1805,7 @@ static int ozBotRearm( lua_State* l )
 static int ozBotKill( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_BOT();
 
   bot->kill();
@@ -1892,7 +1815,7 @@ static int ozBotKill( lua_State* l )
 static int ozBotIsVisibleFromSelfEyeToEye( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_NOT_SELF();
   OBJ_BOT();
   SELF_BOT();
@@ -1912,7 +1835,7 @@ static int ozBotIsVisibleFromSelfEyeToEye( lua_State* l )
 static int ozVehicleGetH( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_VEHICLE();
 
   pushfloat( Math::deg( vehicle->h ) );
@@ -1922,7 +1845,7 @@ static int ozVehicleGetH( lua_State* l )
 static int ozVehicleSetH( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_VEHICLE();
 
   vehicle->h = Math::rad( tofloat( 1 ) );
@@ -1935,7 +1858,7 @@ static int ozVehicleSetH( lua_State* l )
 static int ozVehicleAddH( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_VEHICLE();
 
   vehicle->h += Math::rad( tofloat( 1 ) );
@@ -1948,7 +1871,7 @@ static int ozVehicleAddH( lua_State* l )
 static int ozVehicleGetV( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_VEHICLE();
 
   pushfloat( Math::deg( vehicle->v ) );
@@ -1958,7 +1881,7 @@ static int ozVehicleGetV( lua_State* l )
 static int ozVehicleSetV( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_VEHICLE();
 
   vehicle->v = Math::rad( tofloat( 1 ) );
@@ -1971,7 +1894,7 @@ static int ozVehicleSetV( lua_State* l )
 static int ozVehicleAddV( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_VEHICLE();
 
   vehicle->v += Math::rad( tofloat( 1 ) );
@@ -1984,7 +1907,7 @@ static int ozVehicleAddV( lua_State* l )
 static int ozVehicleGetDir( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_VEHICLE();
 
   // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
@@ -2006,7 +1929,7 @@ static int ozVehicleGetDir( lua_State* l )
 static int ozVehicleEmbarkPilot( lua_State* l )
 {
   ARG( 1 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_VEHICLE();
 
   if( vehicle->pilot != -1 ) {
@@ -2034,7 +1957,7 @@ static int ozVehicleEmbarkPilot( lua_State* l )
 static int ozVehicleService( lua_State* l )
 {
   ARG( 0 );
-  OBJ_NOT_NULL();
+  OBJ();
   OBJ_VEHICLE();
 
   vehicle->service();
@@ -2081,7 +2004,7 @@ static int ozFragGetIndex( lua_State* l )
 static int ozFragGetPos( lua_State* l )
 {
   ARG( 0 );
-  FRAG_NOT_NULL();
+  FRAG();
 
   pushfloat( ms.frag->p.x );
   pushfloat( ms.frag->p.y );
@@ -2092,7 +2015,7 @@ static int ozFragGetPos( lua_State* l )
 static int ozFragSetPos( lua_State* l )
 {
   ARG( 3 );
-  FRAG_NOT_NULL();
+  FRAG();
 
   ms.frag->p.x = tofloat( 1 );
   ms.frag->p.y = tofloat( 2 );
@@ -2103,7 +2026,7 @@ static int ozFragSetPos( lua_State* l )
 static int ozFragAddPos( lua_State* l )
 {
   ARG( 3 );
-  FRAG_NOT_NULL();
+  FRAG();
 
   ms.frag->p.x += tofloat( 1 );
   ms.frag->p.y += tofloat( 2 );
@@ -2114,7 +2037,7 @@ static int ozFragAddPos( lua_State* l )
 static int ozFragGetVelocity( lua_State* l )
 {
   ARG( 0 );
-  FRAG_NOT_NULL();
+  FRAG();
 
   pushfloat( ms.frag->velocity.x );
   pushfloat( ms.frag->velocity.y );
@@ -2125,7 +2048,7 @@ static int ozFragGetVelocity( lua_State* l )
 static int ozFragSetVelocity( lua_State* l )
 {
   ARG( 3 );
-  FRAG_NOT_NULL();
+  FRAG();
 
   ms.frag->velocity.x = tofloat( 1 );
   ms.frag->velocity.y = tofloat( 2 );
@@ -2136,7 +2059,7 @@ static int ozFragSetVelocity( lua_State* l )
 static int ozFragAddVelocity( lua_State* l )
 {
   ARG( 3 );
-  FRAG_NOT_NULL();
+  FRAG();
 
   ms.frag->velocity.x += tofloat( 1 );
   ms.frag->velocity.y += tofloat( 2 );
@@ -2147,7 +2070,7 @@ static int ozFragAddVelocity( lua_State* l )
 static int ozFragGetLife( lua_State* l )
 {
   ARG( 0 );
-  FRAG_NOT_NULL();
+  FRAG();
 
   pushfloat( ms.frag->life );
   return 1;
@@ -2156,7 +2079,7 @@ static int ozFragGetLife( lua_State* l )
 static int ozFragSetLife( lua_State* l )
 {
   ARG( 1 );
-  FRAG_NOT_NULL();
+  FRAG();
 
   ms.frag->life = tofloat( 1 );
   return 0;
@@ -2165,7 +2088,7 @@ static int ozFragSetLife( lua_State* l )
 static int ozFragAddLife( lua_State* l )
 {
   ARG( 1 );
-  FRAG_NOT_NULL();
+  FRAG();
 
   ms.frag->life += tofloat( 1 );
   return 0;
@@ -2174,9 +2097,19 @@ static int ozFragAddLife( lua_State* l )
 static int ozFragRemove( lua_State* l )
 {
   ARG( 0 );
-  FRAG_NOT_NULL();
+  FRAG();
 
   synapse.remove( ms.frag );
   ms.frag = null;
   return 0;
+}
+
+/**
+ * Register matrix-specific Lua constants with the given Lua VM.
+ */
+void importLuaConstants( lua_State* l );
+
+/// @}
+
+}
 }

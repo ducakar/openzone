@@ -27,24 +27,12 @@
 
 #include "nirvana/Lua.hh"
 
-#include "matrix/Library.hh"
-#include "matrix/Vehicle.hh"
-#include "matrix/Collider.hh"
-#include "matrix/Physics.hh"
-#include "matrix/Synapse.hh"
-
-#include "nirvana/Nirvana.hh"
-#include "nirvana/Memo.hh"
-
-#include "common/lua.hh"
+#include "nirvana/luaapi.hh"
 
 namespace oz
 {
 namespace nirvana
 {
-
-#include "matrix/luaapi.hh"
-#include "nirvana/luaapi.hh"
 
 Lua lua;
 
@@ -465,26 +453,9 @@ void Lua::init()
   IGNORE_FUNC( ozBotSetStamina );
   IGNORE_FUNC( ozBotAddStamina );
 
-  IGNORE_FUNC( ozBotActionForward );
-  IGNORE_FUNC( ozBotActionBackward );
-  IGNORE_FUNC( ozBotActionRight );
-  IGNORE_FUNC( ozBotActionLeft );
-  IGNORE_FUNC( ozBotActionJump );
-  IGNORE_FUNC( ozBotActionCrouch );
-  IGNORE_FUNC( ozBotActionUse );
-  IGNORE_FUNC( ozBotActionTake );
-  IGNORE_FUNC( ozBotActionGrab );
-  IGNORE_FUNC( ozBotActionThrow );
-  IGNORE_FUNC( ozBotActionAttack );
-  IGNORE_FUNC( ozBotActionExit );
-  IGNORE_FUNC( ozBotActionEject );
-  IGNORE_FUNC( ozBotActionSuicide );
-
   IMPORT_FUNC( ozBotIsRunning );
   IGNORE_FUNC( ozBotSetRunning );
   IGNORE_FUNC( ozBotToggleRunning );
-
-  IGNORE_FUNC( ozBotSetGesture );
 
   IGNORE_FUNC( ozBotSetWeaponItem );
 
@@ -597,7 +568,7 @@ void Lua::init()
   IMPORT_FUNC( ozNirvanaRemoveDevice );
   IMPORT_FUNC( ozNirvanaAddMemo );
 
-#include "matrix/luaconst.hh"
+  importLuaConstants( l );
 
   newtable();
   setglobal( "ozLocalData" );

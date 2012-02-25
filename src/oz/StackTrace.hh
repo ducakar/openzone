@@ -25,6 +25,8 @@
 
 /**
  * @file oz/StackTrace.hh
+ *
+ * StackTrace class.
  */
 
 #pragma once

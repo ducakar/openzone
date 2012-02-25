@@ -20,6 +20,8 @@
 /**
  * @file common/common.hh
  *
+ * Main include file for the engine. Included via precompiled header <tt>stable.hh</tt>.
+ *
  * @defgroup common Common layer
  */
 
@@ -67,6 +69,8 @@ namespace oz
 
 /**
  * Maximum allowed value for world coordinates.
+ *
+ * @ingroup common
  */
 const int MAX_WORLD_COORD = 2048;
 
@@ -103,7 +107,7 @@ typedef int LuaAPI( lua_State* );
 /**
  * @mainpage OpenZone
  *
- * @subpage CommonLayer
+ * @li @subpage CommonLayer
+ * @li @subpage MatrixLayer
  *
- * @subpage MatrixLayer
  */

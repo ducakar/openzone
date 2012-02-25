@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Alloc.hh
+ *
+ * Alloc class and new/delete operator overloads.
  */
 
 #pragma once
@@ -126,6 +128,8 @@ class Alloc
  * (<tt>Alloc::count</tt>, <tt>Alloc::amount</tt> etc.). If compiled with <tt>OZ_TRACK_LEAKS</tt>
  * is also tracks all allocated chunks, so it catches new/delete mismatches and
  * <tt>Alloc::printLeaks()</tt> can be called at any time to print currently allocated chunks.
+ *
+ * @ingroup oz
  */
 extern void* operator new ( std::size_t size ) throw( std::bad_alloc );
 
@@ -136,6 +140,8 @@ extern void* operator new ( std::size_t size ) throw( std::bad_alloc );
  * (<tt>Alloc::count</tt>, <tt>Alloc::amount</tt> etc.). If compiled with <tt>OZ_TRACK_LEAKS</tt>
  * is also tracks all allocated chunks, so it catches new/delete mismatches and
  * <tt>Alloc::printLeaks()</tt> can be called at any time to print currently allocated chunks.
+ *
+ * @ingroup oz
  */
 extern void* operator new[] ( std::size_t size ) throw( std::bad_alloc );
 
@@ -143,6 +149,8 @@ extern void* operator new[] ( std::size_t size ) throw( std::bad_alloc );
  * Operator delete overload with memory statistics and (optionally) memory leak checking.
  *
  * If compiled without <tt>NDEBUG</tt> it overwrites deallocated chunks of memory with 0xee bytes.
+ *
+ * @ingroup oz
  */
 extern void operator delete ( void* ptr ) throw();
 
@@ -150,6 +158,8 @@ extern void operator delete ( void* ptr ) throw();
  * Operator delete[] overload with memory statistics and (optionally) memory leak checking.
  *
  * If compiled without <tt>NDEBUG</tt> it overwrites deallocated chunks of memory with 0xee bytes.
+ *
+ * @ingroup oz
  */
 extern void operator delete[] ( void* ptr ) throw();
 
@@ -157,6 +167,8 @@ extern void operator delete[] ( void* ptr ) throw();
  * Operator new overload with memory statistics and (optionally) memory leak checking.
  *
  * nothrow version.
+ *
+ * @ingroup oz
  */
 extern void* operator new ( std::size_t size, const std::nothrow_t& ) throw();
 
@@ -164,6 +176,8 @@ extern void* operator new ( std::size_t size, const std::nothrow_t& ) throw();
  * Operator new[] overload with memory statistics and (optionally) memory leak checking.
  *
  * nothrow version.
+ *
+ * @ingroup oz
  */
 extern void* operator new[] ( std::size_t size, const std::nothrow_t& ) throw();
 
@@ -171,6 +185,8 @@ extern void* operator new[] ( std::size_t size, const std::nothrow_t& ) throw();
  * Operator delete overload with memory statistics and (optionally) memory leak checking.
  *
  * nothrow version.
+ *
+ * @ingroup oz
  */
 extern void operator delete ( void* ptr, const std::nothrow_t& ) throw();
 
@@ -178,5 +194,7 @@ extern void operator delete ( void* ptr, const std::nothrow_t& ) throw();
  * Operator delete[] overload with memory statistics and (optionally) memory leak checking.
  *
  * nothrow version.
+ *
+ * @ingroup oz
  */
 extern void operator delete[] ( void* ptr, const std::nothrow_t& ) throw();

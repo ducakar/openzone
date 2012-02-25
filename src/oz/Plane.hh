@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Plane.hh
+ *
+ * Plane class.
  */
 
 #pragma once

@@ -20,7 +20,7 @@
 /**
  * @file stable.hh
  *
- * Precompiled header.
+ * Precompiled header, includes only \<common/common.hh\>.
  *
  * It should be directly included by all '.cc' source files in the project.
  */

@@ -25,6 +25,8 @@
 
 /**
  * @file oz/File.hh
+ *
+ * File class.
  */
 
 #pragma once

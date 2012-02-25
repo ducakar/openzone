@@ -25,6 +25,8 @@
 
 /**
  * @file oz/InputStream.hh
+ *
+ * InputStream class.
  */
 
 #pragma once
