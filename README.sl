@@ -33,7 +33,8 @@ kolešček gor    - vrzi predmet, ki ga držiš
 kolešček dol    - spravi označen predmet v inventar
 
 n               - preklopi nočno gledanje (če je na voljo)
-Alt + k         - stori samomor
+b               - preklopi daljnogled (če je na voljo)
+Alt + k         - stori samomor (če je na voljo)
 i               - zapusti bota
 
 Tab             - preklopi način uporabniškega vmesnika

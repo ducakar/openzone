@@ -20,7 +20,7 @@
 /**
  * @file stable.cc
  *
- * Precompiled header trigger module.
+ * Trigger module for precompiled header.
  *
  * This file is required for a dummy target to properly trigger recompilation of precompiled header.
  */

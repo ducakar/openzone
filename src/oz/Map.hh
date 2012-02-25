@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Map.hh
+ *
+ * Map template class.
  */
 
 #pragma once

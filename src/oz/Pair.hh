@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Pair.hh
+ *
+ * Pair template class.
  */
 
 #pragma once

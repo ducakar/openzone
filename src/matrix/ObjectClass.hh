@@ -49,6 +49,7 @@ class ObjectClass
     static const int BINOCULARS_BIT   = 0x02;
     static const int GALILEO_BIT      = 0x04;
     static const int MUSIC_PLAYER_BIT = 0x08;
+    static const int SUICIDE_BIT      = 0x10;
 
     typedef ObjectClass* CreateFunc();
 

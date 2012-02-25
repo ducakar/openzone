@@ -261,6 +261,39 @@ void Synapse::remove( Frag* frag )
   orbis.remove( frag );
 }
 
+void Synapse::removeStruct( int index )
+{
+  hard_assert( index != -1 );
+
+  Struct* str = orbis.structs[index];
+
+  if( str != null ) {
+    remove( str );
+  }
+}
+
+void Synapse::removeObject( int index )
+{
+  hard_assert( index != -1 );
+
+  Object* obj = orbis.objects[index];
+
+  if( obj != null ) {
+    remove( obj );
+  }
+}
+
+void Synapse::removeFrag( int index )
+{
+  hard_assert( index != -1 );
+
+  Frag* frag = orbis.frags[index];
+
+  if( frag != null ) {
+    remove( frag );
+  }
+}
+
 void Synapse::update()
 {
   putObjects.clear();

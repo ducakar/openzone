@@ -19,6 +19,8 @@
 
 /**
  * @file common/Span.hh
+ *
+ * Span class.
  */
 
 #pragma once

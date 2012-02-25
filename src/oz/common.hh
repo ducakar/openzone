@@ -26,7 +26,7 @@
 /**
  * @file oz/common.hh
  *
- * Common types and templates.
+ * Essential macros, types and templates.
  *
  * You may want to add <tt>null</tt>, <tt>foreach</tt>, <tt>soft_assert</tt>, <tt>hard_assert</tt>,
  * <tt>byte</tt>, <tt>ubyte</tt>, <tt>ushort</tt>, <tt>ulong</tt>, <tt>long64</tt> and

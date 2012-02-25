@@ -336,9 +336,6 @@ void Camera::init( int screenWidth, int screenHeight )
   state    = NONE;
   newState = NONE;
 
-  strategicProxy.init();
-  botProxy.init();
-
   reset();
 }
 

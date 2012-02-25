@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Bounds.hh
+ *
+ * Bounds class.
  */
 
 #pragma once

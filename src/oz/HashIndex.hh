@@ -25,6 +25,8 @@
 
 /**
  * @file oz/HashIndex.hh
+ *
+ * HashIndex template class.
  */
 
 #pragma once

@@ -25,6 +25,8 @@
 
 /**
  * @file oz/SVector.hh
+ *
+ * SVector template class.
  */
 
 #pragma once

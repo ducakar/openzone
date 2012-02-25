@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Bitset.hh
+ *
+ * Bitset class.
  */
 
 #pragma once

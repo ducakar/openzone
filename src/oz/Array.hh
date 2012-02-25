@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Array.hh
+ *
+ * Array template class.
  */
 
 #pragma once

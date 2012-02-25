@@ -25,6 +25,8 @@
 
 /**
  * @file oz/DList.hh
+ *
+ * DList template class.
  */
 
 #pragma once

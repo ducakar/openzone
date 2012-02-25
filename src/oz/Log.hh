@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Log.hh
+ *
+ * Log class.
  */
 
 #pragma once

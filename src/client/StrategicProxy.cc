@@ -246,8 +246,5 @@ void StrategicProxy::write( BufferStream* ostream ) const
   ostream->writeBool( isRTSFast );
 }
 
-void StrategicProxy::init()
-{}
-
 }
 }

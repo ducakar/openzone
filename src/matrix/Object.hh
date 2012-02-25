@@ -57,51 +57,51 @@ class Object : public AABB
      */
 
     // Dynamic object
-    static const int DYNAMIC_BIT        = int( 0x80000000 );
+    static const int DYNAMIC_BIT        = 0x40000000;
 
     // Weapon
-    static const int WEAPON_BIT         = 0x40000000;
+    static const int WEAPON_BIT         = 0x20000000;
 
     // Bot
-    static const int BOT_BIT            = 0x20000000;
+    static const int BOT_BIT            = 0x10000000;
 
     // Vehicle
-    static const int VEHICLE_BIT        = 0x10000000;
+    static const int VEHICLE_BIT        = 0x08000000;
 
     // can be put into inventory
-    static const int ITEM_BIT           = 0x08000000;
+    static const int ITEM_BIT           = 0x04000000;
 
     // bots have access to this object's inventory
-    static const int BROWSABLE_BIT      = 0x04000000;
+    static const int BROWSABLE_BIT      = 0x02000000;
 
     /*
      * FUNCTION FLAGS
      */
 
     // if object has Lua handlers
-    static const int LUA_BIT            = 0x02000000;
+    static const int LUA_BIT            = 0x01000000;
 
     // if the onDestroy method should be called on destruction
-    static const int DESTROY_FUNC_BIT   = 0x01000000;
+    static const int DESTROY_FUNC_BIT   = 0x00800000;
 
     // if the onDamage method should be called on damage received
-    static const int DAMAGE_FUNC_BIT    = 0x00800000;
+    static const int DAMAGE_FUNC_BIT    = 0x00400000;
 
     // if the onHit method should be called on hit
-    static const int HIT_FUNC_BIT       = 0x00400000;
+    static const int HIT_FUNC_BIT       = 0x00200000;
 
     // if the onUse function should be called when object is used
-    static const int USE_FUNC_BIT       = 0x00200000;
+    static const int USE_FUNC_BIT       = 0x00100000;
 
     // if the onUpdate method should be called on each tick
-    static const int UPDATE_FUNC_BIT    = 0x00100000;
+    static const int UPDATE_FUNC_BIT    = 0x00080000;
 
     /*
      * BOUND OBJECTS
      */
 
     // if the object has an Device object in nirvana
-    static const int DEVICE_BIT         = 0x00080000;
+    static const int DEVICE_BIT         = 0x00040000;
 
     // if the object has an Imago object in frontend
     static const int IMAGO_BIT          = 0x00020000;

@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Math.hh
+ *
+ * Math class.
  */
 
 #pragma once

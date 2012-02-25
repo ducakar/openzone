@@ -1,3 +1,41 @@
+/*
+ * OpenZone - simple cross-platform FPS/RTS game engine.
+ *
+ * Copyright © 2002-2012 Davorin Učakar
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ * @file client/luaapi.hh
+ *
+ * Client Lua API implementation.
+ */
+
+#pragma once
+
+#include "client/QuestList.hh"
+#include "client/Camera.hh"
+#include "client/Profile.hh"
+
+#include "nirvana/luaapi.hh"
+
+namespace oz
+{
+namespace client
+{
+
 struct ClientLuaState
 {
   String mission;
@@ -15,6 +53,50 @@ static int ozGettext( lua_State* l )
   ARG( 1 );
 
   pushstring( cs.missionLingua.get( tostring( 1 ) ) );
+  return 1;
+}
+
+/*
+ * Orbis
+ */
+
+static int ozOrbisAddPlayer( lua_State* l )
+{
+  ARG_VAR( 3 );
+
+  Point3  p       = Point3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) );
+  Heading heading = Heading( gettop() == 4 ? toint( 4 ) : Math::rand( 4 ) );
+
+  ms.obj = synapse.add( profile.clazz, p, heading );
+  pushint( ms.obj == null ? -1 : ms.obj->index );
+
+  if( ms.obj != null ) {
+    Bot* player = static_cast<Bot*>( ms.obj );
+
+    player->name = profile.name;
+    player->mindFunc = "";
+
+    foreach( i, player->items.citer() ) {
+      synapse.removeObject( *i );
+    }
+    player->items.clear();
+    player->weapon = -1;
+
+    int iMax = min( player->clazz->nItems, profile.items.length() );
+
+    for( int i = 0; i < iMax; ++i ) {
+      Object*  obj  = synapse.add( profile.items[i], Point3::ORIGIN, Heading( Math::rand( 4 ) ) );
+      Dynamic* item = static_cast<Dynamic*>( obj );
+
+      player->items.add( item->index );
+      item->parent = player->index;
+      synapse.cut( item );
+
+      if( i == profile.weaponItem ) {
+        player->weapon = item->index;
+      }
+    }
+  }
   return 1;
 }
 
@@ -161,10 +243,21 @@ static int ozCameraAllowReincarnation( lua_State* l )
  * Profile
  */
 
-static int ozProfileGetPlayerName( lua_State* l )
+static int ozProfileGetName( lua_State* l )
 {
   ARG( 0 );
 
-  pushstring( profile.playerName );
+  pushstring( profile.name );
   return 1;
+}
+
+static int ozProfileGetBot( lua_State* l )
+{
+  ARG( 0 );
+
+  pushstring( profile.clazz->name );
+  return 1;
+}
+
+}
 }

@@ -25,6 +25,8 @@
 
 /**
  * @file oz/AABB.hh
+ *
+ * AABB class.
  */
 
 #pragma once

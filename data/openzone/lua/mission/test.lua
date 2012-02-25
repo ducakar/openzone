@@ -41,11 +41,7 @@ function onCreate()
   ozCameraWarpTo( 141.0, -12.0, 84.75 )
   ozCameraSetV( 35.0 )
 
-  local me = ozOrbisAddObj( "beast", 137, -6, 73, OZ_SOUTH )
-  ozBotSetName( ozProfileGetPlayerName() )
-  ozBotSetMindFunc( "" )
-  ozObjRemoveItem( 3 );
-  ozObjRemoveItem( 2 );
+  ozOrbisAddPlayer( 137, -6, 73, OZ_SOUTH )
 
   init_sample()
 

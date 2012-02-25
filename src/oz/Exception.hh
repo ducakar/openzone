@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Exception.hh
+ *
+ * Exception class.
  */
 
 #pragma once

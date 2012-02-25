@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Pool.hh
+ *
+ * Pool template class.
  */
 
 #pragma once

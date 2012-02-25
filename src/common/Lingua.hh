@@ -19,6 +19,8 @@
 
 /**
  * @file common/Lingua.hh
+ *
+ * Lingua class.
  */
 
 #pragma once

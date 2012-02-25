@@ -25,6 +25,8 @@
 
 /**
  * @file oz/List.hh
+ *
+ * List template class.
  */
 
 #pragma once

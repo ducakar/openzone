@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Simd.hh
+ *
+ * SIMD type definitions and Simd class.
  */
 
 #include "Plane.hh"

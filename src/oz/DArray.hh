@@ -25,6 +25,8 @@
 
 /**
  * @file oz/DArray.hh
+ *
+ * DArray template class.
  */
 
 #pragma once

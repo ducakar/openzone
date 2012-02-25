@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Time.hh
+ *
+ * Time class.
  */
 
 #pragma once

@@ -25,6 +25,8 @@
 
 /**
  * @file oz/Quat.hh
+ *
+ * Quat class.
  */
 
 #pragma once
