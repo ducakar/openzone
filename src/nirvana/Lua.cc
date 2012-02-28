@@ -326,6 +326,9 @@ void Lua::init()
   IGNORE_FUNC( ozStrDestroy );
   IGNORE_FUNC( ozStrRemove );
 
+  IMPORT_FUNC( ozStrGetEntityState );
+  IGNORE_FUNC( ozStrSetEntityState );
+
   IMPORT_FUNC( ozStrGetEntityLock );
   IGNORE_FUNC( ozStrSetEntityLock );
 

@@ -53,6 +53,11 @@ class Render
     static const float WIND_FACTOR;
     static const float WIND_PHI_INC;
 
+    static const Vec4  STRUCT_AABB;
+    static const Vec4  ENTITY_AABB;
+    static const Vec4  SOLID_AABB;
+    static const Vec4  NONSOLID_AABB;
+
     struct ModelEntry
     {
       float dist2;

@@ -58,6 +58,11 @@ const float Render::LAVA_VISIBILITY  = 4.0f;
 const float Render::WIND_FACTOR      = 0.0008f;
 const float Render::WIND_PHI_INC     = 0.04f;
 
+const Vec4 Render::STRUCT_AABB       = Vec4( 0.20f, 0.50f, 1.00f, 0.30f );
+const Vec4 Render::ENTITY_AABB       = Vec4( 1.00f, 0.40f, 0.60f, 0.30f );
+const Vec4 Render::SOLID_AABB        = Vec4( 0.60f, 0.90f, 0.20f, 0.30f );
+const Vec4 Render::NONSOLID_AABB     = Vec4( 0.70f, 0.80f, 0.90f, 0.30f );
+
 void Render::scheduleCell( int cellX, int cellY )
 {
   const Cell& cell = orbis.cells[cellX][cellY];
@@ -98,17 +103,44 @@ void Render::prepareDraw()
   uint currentMicros = Time::uclock();
   uint beginMicros = currentMicros;
 
+  collider.translate( camera.p, Vec3::ZERO );
+  shader.medium = collider.hit.medium;
+
   if( camera.p.z < 0.0f ) {
-    shader.medium = orbis.terra.liquid;
+    shader.fogColour = terra.liquidFogColour;
+    visibility = orbis.terra.liquid & Medium::WATER_BIT ? WATER_VISIBILITY : LAVA_VISIBILITY;
   }
   else {
-    collider.translate( camera.p, Vec3::ZERO );
-    shader.medium = collider.hit.medium;
+    shader.fogColour = Colours::caelum;
+    visibility = visibilityRange;
   }
 
-  visibility = shader.medium & Medium::WATER_BIT ? WATER_VISIBILITY :
-               shader.medium & Medium::LAVA_BIT ? LAVA_VISIBILITY : visibilityRange;
-  windPhi    = Math::fmod( windPhi + WIND_PHI_INC, Math::TAU );
+  if( collider.hit.mediumStr != null && ( shader.medium & Medium::LIQUID_MASK ) ) {
+    const BSP* bsp = context.getBSP( collider.hit.mediumStr );
+
+    if( bsp != null ) {
+      if( shader.medium & Medium::SEA_BIT ) {
+        shader.fogColour = terra.liquidFogColour;
+        visibility = orbis.terra.liquid & Medium::WATER_BIT ? WATER_VISIBILITY : LAVA_VISIBILITY;
+      }
+      else if( shader.medium & Medium::WATER_BIT ) {
+        shader.fogColour = bsp->waterFogColour;
+        visibility = WATER_VISIBILITY;
+      }
+      else {
+        shader.fogColour = bsp->lavaFogColour;
+        visibility = LAVA_VISIBILITY;
+      }
+    }
+  }
+
+  if( camera.nightVision ) {
+    shader.fogColour.x = 0.0f;
+    shader.fogColour.y = shader.fogColour.x + shader.fogColour.y + shader.fogColour.z;
+    shader.fogColour.z = 0.0f;
+  }
+
+  windPhi = Math::fmod( windPhi + WIND_PHI_INC, Math::TAU );
 
   // frustum
   camera.maxDist = visibility;
@@ -155,36 +187,8 @@ void Render::drawGeometry()
 
   OZ_GL_CHECK_ERROR();
 
-  Vec4 clearColour = Colours::caelum;
-
-  if( shader.medium & Medium::WATER_BIT ) {
-    if( camera.nightVision ) {
-      if( camera.p.z >= 0.0f ) {
-        clearColour.x = 0.0f;
-        clearColour.y = Colours::WATER.x + Colours::WATER.y + Colours::WATER.z;
-        clearColour.z = 0.0f;
-      }
-      else {
-        clearColour = Colours::liquid;
-      }
-    }
-    else {
-      clearColour = camera.p.z >= 0.0f ? Colours::WATER : Colours::liquid;
-    }
-  }
-  else if( shader.medium & Medium::LAVA_BIT ) {
-    if( camera.nightVision ) {
-      clearColour.x = 0.0f;
-      clearColour.y = Colours::LAVA.x + Colours::LAVA.y + Colours::LAVA.z;
-      clearColour.z = 0.0f;
-    }
-    else {
-      clearColour = Colours::LAVA;
-    }
-  }
-
   // clear buffer
-  glClearColor( clearColour.x, clearColour.y, clearColour.z, clearColour.w );
+  glClearColor( shader.fogColour.x, shader.fogColour.y, shader.fogColour.z, shader.fogColour.w );
   glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 
   currentMicros = Time::uclock();
@@ -217,9 +221,11 @@ void Render::drawGeometry()
     tf.applyCamera();
     shader.updateLights();
 
-    glUniform1f( param.oz_Fog_start, shader.medium & Medium::LIQUID_MASK ? 0.0f : 50.0f );
+    float fogStart = camera.p.z < 0.0f || ( shader.medium & Medium::LIQUID_MASK ) ? 0.0f : 50.0f;
+
+    glUniform1f( param.oz_Fog_start, fogStart );
     glUniform1f( param.oz_Fog_end, visibility );
-    glUniform4fv( param.oz_Fog_colour, 1, clearColour );
+    glUniform4fv( param.oz_Fog_colour, 1, shader.fogColour );
 
     glUniform1i( param.oz_NightVision, camera.nightVision );
 
@@ -272,7 +278,7 @@ void Render::drawGeometry()
   }
 
   // draw transparent parts of objects
-  shader.colour = Colours::WHITE;
+  shader.colour.w = 1.0f;
 
   currentMicros = Time::uclock();
   fragsMicros += currentMicros - beginMicros;
@@ -328,24 +334,21 @@ void Render::drawGeometry()
 
     for( int i = 0; i < objects.length(); ++i ) {
       glUniform4fv( param.oz_Colour, 1,
-                    objects[i].obj->flags & Object::SOLID_BIT ?
-                      Colours::CLIP_AABB : Colours::NOCLIP_AABB );
+                    objects[i].obj->flags & Object::SOLID_BIT ? SOLID_AABB : NONSOLID_AABB );
       shape.wireBox( *objects[i].obj );
     }
-
-    glUniform4fv( param.oz_Colour, 1, Colours::STRUCTURE_AABB );
 
     for( int i = 0; i < structs.length(); ++i ) {
       const Struct* str = structs[i].str;
 
-      glUniform4fv( param.oz_Colour, 1, Colours::ENTITY_AABB );
+      glUniform4fv( param.oz_Colour, 1, ENTITY_AABB );
 
       foreach( entity, citer( str->entities, str->nEntities ) ) {
         Bounds bb = str->toAbsoluteCS( *entity->model + entity->offset );
         shape.wireBox( bb.toAABB() );
       }
 
-      glUniform4fv( param.oz_Colour, 1, Colours::STRUCTURE_AABB );
+      glUniform4fv( param.oz_Colour, 1, STRUCT_AABB );
       shape.wireBox( str->toAABB() );
     }
   }

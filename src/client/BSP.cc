@@ -144,6 +144,10 @@ void BSP::load()
   InputStream istream = file.inputStream();
 
   flags = istream.readInt();
+
+  waterFogColour = istream.readVec4();
+  lavaFogColour = istream.readVec4();
+
   mesh.load( &istream, GL_STATIC_DRAW, file.path() );
 
   file.clear();

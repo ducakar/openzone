@@ -109,12 +109,12 @@ class PhysFile
     File::Type getType();
 
     /**
-     * %File path in virtual FS.
+     * %File path in virtual file system.
      */
     String path() const;
 
     /**
-     * %File path in real FS.
+     * %File path in real file system.
      *
      * If file is inside an archive, looks like <tt>"/path/to/archive.zip/file"</tt>.
      */
@@ -187,8 +187,8 @@ class PhysFile
      *
      * For more detailed information see PhysicsFS manual for <tt>PHYSFS_mount()</tt>.
      *
-     * @param source archive or directory in real FS to mount.
-     * @param mountPoint mount point in virtual FS, "" or <tt>null</tt> equals root ("/").
+     * @param source archive or directory in real file system to mount.
+     * @param mountPoint mount point in virtual file system, "" or <tt>null</tt> equals root ("/").
      * @param append true to add to the end instead to the beginning of the search path.
      */
     static bool mount( const char* source, const char* mountPoint, bool append );

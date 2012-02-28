@@ -72,9 +72,9 @@ void Caelum::update()
   Colours::caelum.y = Math::mix( NIGHT_COLOUR[1], DAY_COLOUR[1], ratio ) + GREEN_COEF * ratioDiff;
   Colours::caelum.z = Math::mix( NIGHT_COLOUR[2], DAY_COLOUR[2], ratio ) + BLUE_COEF  * ratioDiff;
 
-  Colours::liquid.x = Math::mix( NIGHT_COLOUR[0], terra.liquidColour.x, ratio );
-  Colours::liquid.y = Math::mix( NIGHT_COLOUR[1], terra.liquidColour.y, ratio );
-  Colours::liquid.z = Math::mix( NIGHT_COLOUR[2], terra.liquidColour.z, ratio );
+  Colours::liquid.x = Math::mix( NIGHT_COLOUR[0], terra.liquidFogColour.x, ratio );
+  Colours::liquid.y = Math::mix( NIGHT_COLOUR[1], terra.liquidFogColour.y, ratio );
+  Colours::liquid.z = Math::mix( NIGHT_COLOUR[2], terra.liquidFogColour.z, ratio );
 
   if( camera.nightVision ) {
     Colours::caelum.x = 0.0f;
@@ -163,7 +163,7 @@ void Caelum::draw()
 
   shape.quad( 1.0f, 1.0f );
 
-  glUniform4fv( param.oz_Colour, 1, Colours::WHITE );
+  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
   glBindTexture( GL_TEXTURE_2D, moonTexId );
 
   tf.model = transf;

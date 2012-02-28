@@ -66,7 +66,7 @@ class Terra
   public:
 
     int   id;
-    Vec4  liquidColour;
+    Vec4  liquidFogColour;
 
     Terra();
 

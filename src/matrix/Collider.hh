@@ -32,24 +32,30 @@ namespace matrix
 
 struct Material
 {
-  static const int VOID_BIT    = 0x0080;
-  static const int TERRAIN_BIT = 0x0001;
-  static const int STRUCT_BIT  = 0x0002;
-  static const int SLICK_BIT   = 0x0004;
-  static const int OBJECT_BIT  = 0x0008;
+  static const int VOID_BIT    = 0x0080; ///< World bounds, invisible walls preventing you to leave.
+  static const int TERRAIN_BIT = 0x0001; ///< Terrain.
+  static const int STRUCT_BIT  = 0x0002; ///< Structure.
+  static const int SLICK_BIT   = 0x0004; ///< Slick brush in a structure.
+  static const int OBJECT_BIT  = 0x0008; ///< Object.
 
-  static const int MASK        = 0x00ff;
+  static const int MASK        = 0x00ff; ///< Material mask (to distinguish from Medium bits when
+                                         ///< used together in same variable).
 };
 
 struct Medium
 {
-  static const int LADDER_BIT  = 0x0100;
-  static const int AIR_BIT     = 0x0200;
-  static const int WATER_BIT   = 0x0400;
-  static const int LAVA_BIT    = 0x0800;
+  static const int LADDER_BIT  = 0x0100; ///< Overlapping with BSP ladder brush.
+  static const int AIR_BIT     = 0x0200; ///< Overlapping with BSP air brush.
+  static const int WATER_BIT   = 0x0400; ///< Overlapping with BSP water brush or overlapping with
+                                         ///< terrain water sea but not BSP air brush.
+  static const int LAVA_BIT    = 0x0800; ///< Overlapping with BSP lava brush or overlapping with
+                                         ///< terrain lava sea but not BSP air brush.
+  static const int SEA_BIT     = 0x1000; ///< Overlapping with terrain water/lava sea but not BSP
+                                         ///< air brush or overlapping with BSP sea brush.
 
-  static const int LIQUID_MASK = 0x0c00;
-  static const int MASK        = 0xff00;
+  static const int LIQUID_MASK = 0x0c00; ///< Mask for liquids (water or lava bit, but not sea).
+  static const int MASK        = 0xff00; ///< Medium mask (to distinguish from Material bits when
+                                         ///< used together in same variable).
 };
 
 struct Hit
@@ -59,6 +65,8 @@ struct Hit
   Object* obj;
   Struct* str;
   Entity* entity;
+
+  Struct* mediumStr;
 
   float ratio;
 

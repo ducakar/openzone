@@ -68,7 +68,7 @@ void Synapse::cut( Dynamic* obj )
 {
   hard_assert( obj->index != -1 && obj->cell != null && obj->parent != -1 );
 
-  obj->flags    &= ~( Object::TICK_CLEAR_MASK | Object::MOVE_CLEAR_MASK );
+  obj->flags   &= ~( Object::TICK_CLEAR_MASK | Object::MOVE_CLEAR_MASK );
   obj->lower    = -1;
   obj->velocity = Vec3::ZERO;
   obj->momentum = Vec3::ZERO;

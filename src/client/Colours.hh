@@ -32,15 +32,6 @@ namespace client
 
 struct Colours
 {
-  static const Vec4 NONE;
-  static const Vec4 BLACK;
-  static const Vec4 WHITE;
-
-  static const Vec4 ENTITY_AABB;
-  static const Vec4 STRUCTURE_AABB;
-  static const Vec4 CLIP_AABB;
-  static const Vec4 NOCLIP_AABB;
-
   static const Vec4 GLOBAL_AMBIENT;
   static const Vec4 WATER;
   static const Vec4 LAVA;

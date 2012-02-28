@@ -186,9 +186,9 @@ void Bot::onUpdate()
       if( ( state & JUMP_SCHED_BIT ) && ( state & ( GROUNDED_BIT | SWIMMING_BIT ) ) &&
           cargo == -1 && stamina >= clazz->staminaJumpDrain )
       {
-        flags &= ~( DISABLED_BIT | ON_FLOOR_BIT | ON_SLICK_BIT );
-        lower = -1;
-        state &= ~GROUNDED_BIT;
+        flags   &= ~( DISABLED_BIT | ON_FLOOR_BIT | ON_SLICK_BIT );
+        lower    = -1;
+        state   &= ~GROUNDED_BIT;
         stamina -= clazz->staminaJumpDrain;
 
         momentum.z = clazz->jumpMomentum;
@@ -229,10 +229,10 @@ void Bot::onUpdate()
         flags &= ~DISABLED_BIT;
         flags |= ENABLE_BIT;
 
-        p.z    += dim.z - clazz->crouchDim.z;
+        p.z   += dim.z - clazz->crouchDim.z;
         dim.z  = clazz->crouchDim.z;
         camZ   = clazz->crouchCamZ;
-        state  |= CROUCHING_BIT;
+        state |= CROUCHING_BIT;
       }
     }
     if( stamina < clazz->staminaRunDrain || life < WOUNDED_THRESHOLD * clazz->life ) {
@@ -296,7 +296,7 @@ void Bot::onUpdate()
     if( move != Vec3::ZERO ) {
       flags &= ~DISABLED_BIT;
       state |= MOVING_BIT;
-      move = ~move;
+      move   = ~move;
 
       if( state & RUNNING_BIT ) {
         stamina -= clazz->staminaRunDrain;
@@ -361,14 +361,15 @@ void Bot::onUpdate()
               p = raisedPos;
 
               if( collider.hit.ratio != 1.0f && collider.hit.normal.z >= Physics::FLOOR_NORMAL_Z ) {
-                momentum.x    *= 1.0f - Physics::LADDER_FRICTION;
-                momentum.y    *= 1.0f - Physics::LADDER_FRICTION;
-                momentum.z    = max( momentum.z, clazz->climbMomentum );
+                momentum.x *= 1.0f - Physics::LADDER_FRICTION;
+                momentum.y *= 1.0f - Physics::LADDER_FRICTION;
+                momentum.z  = max( momentum.z, clazz->climbMomentum );
 
-                cargo         = -1;
-                state         |= CLIMBING_BIT;
-                state         &= ~JUMP_SCHED_BIT;
-                stamina       -= clazz->staminaClimbDrain;
+                cargo       = -1;
+                state      |= CLIMBING_BIT;
+                state      &= ~JUMP_SCHED_BIT;
+                stamina    -= clazz->staminaClimbDrain;
+
                 break;
               }
             }
@@ -557,14 +558,16 @@ void Bot::onUpdate()
           cargo = -1;
         }
         else {
-          Vec3 desiredMom    = string * GRAB_STRING_RATIO;
-          Vec3 momDiff       = ( desiredMom - cargoObj->momentum ) * GRAB_MOM_RATIO;
+          Vec3 desiredMom     = string * GRAB_STRING_RATIO;
+          Vec3 momDiff        = ( desiredMom - cargoObj->momentum ) * GRAB_MOM_RATIO;
 
-          float momDiffSqL   = momDiff.sqL();
+          float momDiffSqL    = momDiff.sqL();
           momDiff.z          += physics.gravity * Timer::TICK_TIME;
+
           if( momDiffSqL > GRAB_MOM_MAX_SQ ) {
             momDiff *= GRAB_MOM_MAX / Math::sqrt( momDiffSqL );
           }
+
           momDiff.z          -= physics.gravity * Timer::TICK_TIME;
 
           cargoObj->momentum += momDiff;
@@ -854,10 +857,10 @@ void Bot::kill()
 {
   const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
-  p.z        -= dim.z - clazz->corpseDim.z - EPSILON;
+  p.z       -= dim.z - clazz->corpseDim.z - EPSILON;
   dim.z      = clazz->corpseDim.z;
-  flags      |= WIDE_CULL_BIT;
-  flags      &= ~SOLID_BIT;
+  flags     |= WIDE_CULL_BIT;
+  flags     &= ~SOLID_BIT;
   life       = clazz->life / 2.0f - EPSILON;
   resistance = Math::INF;
 
@@ -866,7 +869,7 @@ void Bot::kill()
   container  = -1;
   trigger    = -1;
 
-  state      |= DEAD_BIT;
+  state     |= DEAD_BIT;
   cargo      = -1;
 
   if( clazz->nItems != 0 ) {
@@ -892,7 +895,7 @@ void Bot::enter( int vehicle_ )
   trigger    = -1;
 
   camZ       = clazz->camZ;
-  state      &= ~CROUCHING_BIT;
+  state     &= ~CROUCHING_BIT;
   cargo      = -1;
 
   synapse.cut( this );

@@ -2,7 +2,7 @@
 
 files=`git ls-files | grep -v '^include'`
 
-which sloccount &> /dev/null && LANG=C sloccount $files
+which sloccount &> /dev/null && LANG=C sloccount src/* *.sh
 
 echo
 echo

@@ -90,18 +90,18 @@ bool InventoryMenu::onMouseEvent()
 
             if( item != null ) {
               if( container != null ) {
-                bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-                bot->actions |= Bot::ACTION_INV_GIVE;
+                bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
+                bot->actions   |= Bot::ACTION_INV_GIVE;
                 bot->instrument = item->index;
-                bot->container = container->index;
-                bot->trigger = -1;
+                bot->container  = container->index;
+                bot->trigger    = -1;
               }
               else if( bot->cargo == -1 ) {
-                bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-                bot->actions |= Bot::ACTION_INV_DROP;
+                bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
+                bot->actions   |= Bot::ACTION_INV_DROP;
                 bot->instrument = item->index;
-                bot->container = -1;
-                bot->trigger = -1;
+                bot->container  = -1;
+                bot->trigger    = -1;
               }
             }
           }
@@ -113,11 +113,11 @@ bool InventoryMenu::onMouseEvent()
             item = static_cast<const Dynamic*>( orbis.objects[ container->items[tagged] ] );
 
             if( item != null ) {
-              bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-              bot->actions |= Bot::ACTION_INV_TAKE;
+              bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
+              bot->actions   |= Bot::ACTION_INV_TAKE;
               bot->instrument = item->index;
-              bot->container = container->index;
-              bot->trigger = -1;
+              bot->container  = container->index;
+              bot->trigger    = -1;
             }
           }
         }
@@ -128,11 +128,11 @@ bool InventoryMenu::onMouseEvent()
             item = static_cast<const Dynamic*>( orbis.objects[ bot->items[tagged] ] );
 
             if( item != null ) {
-              bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-              bot->actions |= Bot::ACTION_USE;
+              bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
+              bot->actions   |= Bot::ACTION_USE;
               bot->instrument = item->index;
-              bot->container = -1;
-              bot->trigger = -1;
+              bot->container  = -1;
+              bot->trigger    = -1;
             }
           }
         }
@@ -141,11 +141,11 @@ bool InventoryMenu::onMouseEvent()
             item = static_cast<const Dynamic*>( orbis.objects[ container->items[tagged] ] );
 
             if( item != null ) {
-              bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-              bot->actions |= Bot::ACTION_USE;
+              bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
+              bot->actions   |= Bot::ACTION_USE;
               bot->instrument = item->index;
-              bot->container = -1;
-              bot->trigger = -1;
+              bot->container  = -1;
+              bot->trigger    = -1;
             }
           }
         }
@@ -157,12 +157,12 @@ bool InventoryMenu::onMouseEvent()
           if( item != null ) {
             ui::mouse.doShow = false;
 
-            bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-            bot->actions |= Bot::ACTION_INV_GRAB;
+            bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
+            bot->actions   |= Bot::ACTION_INV_GRAB;
             bot->instrument = item->index;
-            bot->container = -1;
-            bot->trigger = -1;
-            bot->cargo = -1;
+            bot->container  = -1;
+            bot->trigger    = -1;
+            bot->cargo      = -1;
           }
         }
       }

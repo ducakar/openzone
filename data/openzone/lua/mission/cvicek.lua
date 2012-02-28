@@ -168,7 +168,7 @@ function onCreate()
   ozCaelumSetPeriod( 1440 )
   ozCaelumSetTime( 180 )
 
-  oz_me = ozOrbisAdd( "beast", 786.50, 999.60, 124.23 )
+  oz_me = ozOrbisAddObj( "beast", 786.50, 999.60, 124.23 )
 
   -- outpost
   ozOrbisAddStr( "bunker", 788.0, 1000.0, 124.5, OZ_NORTH )
@@ -495,7 +495,7 @@ function onCreate()
   ozQuestEnd( lairQuest, true )
 
   ozObjBindIndex( oz_me )
-  ozBotSetName( ozProfileGetPlayerName() )
+  ozBotSetName( ozProfileGetName() )
   ozBotSetMindFunc( "" )
   ozBotSetH( 270 )
   ozObjRemoveAllItems()

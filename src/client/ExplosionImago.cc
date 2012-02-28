@@ -74,11 +74,11 @@ void ExplosionImago::draw( const Imago*, int mask )
 
   glDisable( GL_CULL_FACE );
 
-  shader.colour = Vec4( 1.0f, 1.0f, 1.0f, alpha*alpha );
+  shader.colour.w = alpha*alpha;
 
   smm->draw( Mesh::SOLID_BIT );
 
-  shader.colour = Colours::WHITE;
+  shader.colour.w = 1.0f;
 
   glEnable( GL_CULL_FACE );
 }

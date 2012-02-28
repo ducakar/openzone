@@ -26,6 +26,7 @@
 #include "matrix/BSP.hh"
 
 #include "matrix/Library.hh"
+#include "matrix/Collider.hh"
 
 namespace oz
 {
@@ -108,19 +109,19 @@ void BSP::load()
   size_t size = 0;
 
   size += size_t( nPlanes )       * sizeof( Plane );
-  size = Alloc::alignUp( size );
+  size  = Alloc::alignUp( size );
   size += size_t( nNodes )        * sizeof( Node );
-  size = Alloc::alignUp( size );
+  size  = Alloc::alignUp( size );
   size += size_t( nLeaves )       * sizeof( Leaf );
-  size = Alloc::alignUp( size );
+  size  = Alloc::alignUp( size );
   size += size_t( nLeafBrushes )  * sizeof( int );
-  size = Alloc::alignUp( size );
+  size  = Alloc::alignUp( size );
   size += size_t( nBrushes )      * sizeof( Brush );
-  size = Alloc::alignUp( size );
+  size  = Alloc::alignUp( size );
   size += size_t( nBrushSides )   * sizeof( int );
-  size = Alloc::alignUp( size );
+  size  = Alloc::alignUp( size );
   size += size_t( nModels )       * sizeof( Model );
-  size = Alloc::alignUp( size );
+  size  = Alloc::alignUp( size );
   size += size_t( nBoundObjects ) * sizeof( BoundObject );
 
   char* data = new char[size];
@@ -167,6 +168,10 @@ void BSP::load()
     brushes[i].firstSide = is.readInt();
     brushes[i].nSides    = is.readInt();
     brushes[i].flags     = is.readInt();
+
+    if( brushes[i].flags & Medium::SEA_BIT ) {
+      brushes[i].flags |= orbis.terra.liquid & Medium::LIQUID_MASK;
+    }
   }
   data += nBrushes * int( sizeof( Brush ) );
 

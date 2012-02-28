@@ -385,6 +385,13 @@ void Context::releaseMD3( int id )
   --resource.nUsers;
 }
 
+BSP* Context::getBSP( const Struct* str )
+{
+  Resource<BSP*>& resource = bsps[str->bsp->id];
+
+  return resource.object != null && resource.object->isLoaded ? resource.object : null;
+}
+
 void Context::drawBSP( const Struct* str, int mask )
 {
   Resource<BSP*>& resource = bsps[str->bsp->id];

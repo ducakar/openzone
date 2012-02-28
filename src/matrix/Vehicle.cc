@@ -153,9 +153,9 @@ void Vehicle::airHandler( const Mat44& rotMat )
     move -= up;
   }
 
-  momentum += move * clazz->moveMomentum;
+  momentum   += move * clazz->moveMomentum;
   momentum.z -= physics.gravity * Timer::TICK_TIME;
-  momentum *= 1.0f - AIR_FRICTION;
+  momentum   *= 1.0f - AIR_FRICTION;
 }
 
 void Vehicle::exit()
@@ -190,7 +190,7 @@ void Vehicle::eject()
     if( bot != null ) {
       Mat44 rotMat = Mat44::rotation( rot );
 
-      bot->p = p + rotMat * clazz->pilotPos;
+      bot->p    = p + rotMat * clazz->pilotPos;
       bot->p.z += dim.z + EXIT_EPSILON;
 
       // kill bot if eject path is blocked
@@ -297,9 +297,9 @@ void Vehicle::onUpdate()
     bot->h = h;
     bot->v = v;
 
-    rot = Quat::rotZXZ( h, v - Math::TAU / 4.0f, 0.0f );
+    rot     = Quat::rotZXZ( h, v - Math::TAU / 4.0f, 0.0f );
     actions = bot->actions;
-    flags &= ~DISABLED_BIT;
+    flags  &= ~DISABLED_BIT;
   }
 
   Mat44 rotMat = Mat44::rotation( rot );

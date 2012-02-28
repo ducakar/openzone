@@ -249,11 +249,11 @@ void BotProxy::prepare()
 
     if( ui::mouse.leftClick ) {
       if( bot->cargo != -1 ) {
-        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-        bot->actions |= Bot::ACTION_ROTATE;
+        bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
+        bot->actions   |= Bot::ACTION_ROTATE;
         bot->instrument = -1;
-        bot->container = -1;
-        bot->trigger = -1;
+        bot->container  = -1;
+        bot->trigger    = -1;
       }
     }
     if( ui::mouse.rightClick ) {
@@ -262,46 +262,46 @@ void BotProxy::prepare()
       }
       else if( camera.object != -1 ) {
         if( camera.objectObj->flags & Object::USE_FUNC_BIT ) {
-          bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-          bot->actions |= Bot::ACTION_USE;
+          bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
+          bot->actions   |= Bot::ACTION_USE;
           bot->instrument = camera.object;
-          bot->container = -1;
-          bot->trigger = -1;
+          bot->container  = -1;
+          bot->trigger    = -1;
         }
       }
       else if( camera.entity != -1 ) {
         int targetEntity = camera.entityObj->model->target;
 
         if( targetEntity != -1 ) {
-          bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-          bot->actions |= Bot::ACTION_USE;
+          bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
+          bot->actions   |= Bot::ACTION_USE;
           bot->instrument = -1;
-          bot->container = -1;
-          bot->trigger = camera.entity;
+          bot->container  = -1;
+          bot->trigger    = camera.entity;
         }
       }
     }
     else if( ui::mouse.middleClick ) {
       if( bot->cargo != -1 ) {
-        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-        bot->actions |= Bot::ACTION_GRAB;
+        bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
+        bot->actions   |= Bot::ACTION_GRAB;
         bot->instrument = -1;
-        bot->container = -1;
-        bot->trigger = -1;
+        bot->container  = -1;
+        bot->trigger    = -1;
       }
       else if( camera.entity != -1 ) {
-        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-        bot->actions |= Bot::ACTION_LOCK;
+        bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
+        bot->actions   |= Bot::ACTION_LOCK;
         bot->instrument = -1;
-        bot->container = -1;
-        bot->trigger = camera.entity;
+        bot->container  = -1;
+        bot->trigger    = camera.entity;
       }
       else if( camera.object != -1 ) {
-        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-        bot->actions |= Bot::ACTION_GRAB;
+        bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
+        bot->actions   |= Bot::ACTION_GRAB;
         bot->instrument = camera.object;
-        bot->container = -1;
-        bot->trigger = -1;
+        bot->container  = -1;
+        bot->trigger    = -1;
       }
     }
     else if( ui::mouse.wheelDown ) {
@@ -313,21 +313,21 @@ void BotProxy::prepare()
           container->show( true );
         }
         else {
-          bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-          bot->actions |= Bot::ACTION_TAKE;
+          bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
+          bot->actions   |= Bot::ACTION_TAKE;
           bot->instrument = camera.object;
-          bot->container = -1;
-          bot->trigger = -1;
+          bot->container  = -1;
+          bot->trigger    = -1;
         }
       }
     }
     else if( ui::mouse.wheelUp ) {
       if( bot->cargo != -1 ) {
-        bot->actions &= ~( Bot::INSTRUMENT_ACTIONS );
-        bot->actions |= Bot::ACTION_THROW;
+        bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
+        bot->actions   |= Bot::ACTION_THROW;
         bot->instrument = -1;
-        bot->container = -1;
-        bot->trigger = -1;
+        bot->container  = -1;
+        bot->trigger    = -1;
       }
     }
   }
@@ -412,7 +412,7 @@ void BotProxy::update()
       }
       else {
       inJump:;
-        bobPhi   = 0.0f;
+        bobPhi    = 0.0f;
         bobTheta *= BOB_SUPPRESSION_COEF;
         bobBias  *= BOB_SUPPRESSION_COEF;
       }

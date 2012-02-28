@@ -538,6 +538,9 @@ void Orbis::load()
   strAvailableIndices.alloc( 16 );
   objAvailableIndices.alloc( 256 );
   fragAvailableIndices.alloc( 512 );
+
+  terra.id = -1;
+  caelum.id = -1;
 }
 
 void Orbis::unload()

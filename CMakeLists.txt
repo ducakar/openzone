@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 2.8 )
+ cmake_minimum_required( VERSION 2.8 )
 
 project( openzone C CXX )
 
@@ -181,7 +181,7 @@ endif()
 
 set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release ReleaseGen ReleaseUse" )
 
-if( NOT WIN32 AND NOT OZ_CLANG )
+if( NOT WIN32 )
   set( lto "-flto" )
 endif()
 
