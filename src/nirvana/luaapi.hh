@@ -218,7 +218,7 @@ static int ozSelfAddH( lua_State* l )
   ARG( 1 );
 
   ns.self->h += Math::rad( tofloat( 1 ) );
-  ns.self->h = Math::fmod( ns.self->h + Math::TAU, Math::TAU );
+  ns.self->h  = Math::fmod( ns.self->h + Math::TAU, Math::TAU );
   return 1;
 }
 
@@ -244,7 +244,7 @@ static int ozSelfAddV( lua_State* l )
   ARG( 1 );
 
   ns.self->v += Math::rad( tofloat( 1 ) );
-  ns.self->v = Math::fmod( ns.self->v + Math::TAU, Math::TAU );
+  ns.self->v  = Math::fmod( ns.self->v + Math::TAU, Math::TAU );
   return 1;
 }
 

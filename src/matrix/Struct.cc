@@ -341,11 +341,11 @@ void Entity::crushingBlockHandler()
               Vec3 dynMove  = collider.hit.ratio * move;
               Vec3 velDelta = dynMove / Timer::TICK_TIME;
 
-              dyn->p += dynMove;
+              dyn->p        += dynMove;
               dyn->momentum += velDelta;
               dyn->velocity += velDelta;
-              dyn->flags &= ~Object::DISABLED_BIT;
-              dyn->flags |= Object::ENABLE_BIT;
+              dyn->flags    &= ~Object::DISABLED_BIT;
+              dyn->flags    |= Object::ENABLE_BIT;
 
               orbis.reposition( dyn );
             }
@@ -394,11 +394,11 @@ void Entity::crushingBlockHandler()
               Vec3 dynMove  = collider.hit.ratio * move;
               Vec3 velDelta = dynMove / Timer::TICK_TIME;
 
-              dyn->p += dynMove;
+              dyn->p        += dynMove;
               dyn->momentum += velDelta;
               dyn->velocity += velDelta;
-              dyn->flags &= ~Object::DISABLED_BIT;
-              dyn->flags |= Object::ENABLE_BIT;
+              dyn->flags    &= ~Object::DISABLED_BIT;
+              dyn->flags    |= Object::ENABLE_BIT;
 
               orbis.reposition( dyn );
             }
@@ -450,16 +450,15 @@ void Entity::elevatorHandler()
             collider.translate( dyn, move );
 
             if( collider.hit.ratio != 0.0f ) {
-              dyn->p.z += collider.hit.ratio * move.z;
+              dyn->p.z   += collider.hit.ratio * move.z;
               dyn->flags &= ~Object::DISABLED_BIT;
               dyn->flags |= Object::ENABLE_BIT;
             }
             if( collider.hit.ratio != 1.0f && collider.overlapsEntity( *dyn, this ) ) {
-              ratio = originalRatio;
-              offset = originalOffset;
-
-              state = ratio == 0.0f ? CLOSED : OPENED;
-              time = 0.0f;
+              ratio    = originalRatio;
+              offset   = originalOffset;
+              state    = ratio == 0.0f ? CLOSED : OPENED;
+              time     = 0.0f;
               velocity = Vec3::ZERO;
               return;
             }
@@ -500,16 +499,15 @@ void Entity::elevatorHandler()
             collider.translate( dyn, move );
 
             if( collider.hit.ratio != 0.0f ) {
-              dyn->p.z += collider.hit.ratio * move.z;
+              dyn->p.z   += collider.hit.ratio * move.z;
               dyn->flags &= ~Object::DISABLED_BIT;
               dyn->flags |= Object::ENABLE_BIT;
             }
             if( collider.hit.ratio != 1.0f && collider.overlapsEntity( *dyn, this ) ) {
-              ratio = originalRatio;
-              offset = originalOffset;
-
-              state = ratio == 1.0f ? OPENED : CLOSED;
-              time = 0.0f;
+              ratio    = originalRatio;
+              offset   = originalOffset;
+              state    = ratio == 1.0f ? OPENED : CLOSED;
+              time     = 0.0f;
               velocity = Vec3::ZERO;
               return;
             }

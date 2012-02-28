@@ -362,7 +362,7 @@ class Quat
     {
       hard_assert( k != 0.0f );
 
-      k = 1.0f / k;
+      k  = 1.0f / k;
       x *= k;
       y *= k;
       z *= k;
@@ -458,7 +458,7 @@ class Quat
       diff.x *= k;
       diff.y *= k;
       diff.z *= k;
-      diff.w = Math::fastSqrt( 1.0f - diff.x*diff.x - diff.y*diff.y - diff.z*diff.z );
+      diff.w  = Math::fastSqrt( 1.0f - diff.x*diff.x - diff.y*diff.y - diff.z*diff.z );
 
       return a * diff;
     }

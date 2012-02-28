@@ -51,18 +51,18 @@ void Terra::load()
   String sLiquid = terraConfig.get( "liquid", "WATER" );
 
   if( sLiquid.equals( "WATER" ) ) {
-    liquid = Medium::WATER_BIT;
+    liquid = Medium::WATER_BIT | Medium::SEA_BIT;
   }
   else if( sLiquid.equals( "LAVA" ) ) {
-    liquid = Medium::LAVA_BIT;
+    liquid = Medium::LAVA_BIT | Medium::SEA_BIT;
   }
   else {
     throw Exception( "Liquid should be either WATER or LAVA" );
   }
 
-  liquidColour.x = terraConfig.get( "liquidColour.r", 0.00f );
-  liquidColour.y = terraConfig.get( "liquidColour.g", 0.05f );
-  liquidColour.z = terraConfig.get( "liquidColour.b", 0.25f );
+  liquidColour.x = terraConfig.get( "liquidFogColour.r", 0.00f );
+  liquidColour.y = terraConfig.get( "liquidFogColour.g", 0.05f );
+  liquidColour.z = terraConfig.get( "liquidFogColour.b", 0.25f );
   liquidColour.w = 1.0f;
 
   liquidTexture  = terraConfig.get( "liquidTexture", "" );

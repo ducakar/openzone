@@ -157,7 +157,7 @@ void Sound::musicOpen( const char* path )
       vorbis_info* vorbisInfo = ov_info( &oggStream, -1 );
 
       if( vorbisInfo == null ) {
-        throw Exception( "Failed to read Vorbis header in '%s'", path );
+        throw Exception( "Corrupted Vorbis header in '%s'", path );
       }
 
       musicRate = int( vorbisInfo->rate );
@@ -195,7 +195,7 @@ void Sound::musicOpen( const char* path )
 
       while( mad_frame_decode( &madFrame, &madStream ) != 0 ) {
         if( !MAD_RECOVERABLE( madStream.error ) ) {
-          throw Exception( "Failed to decode MP3 header in '%s'", path );
+          throw Exception( "Corrupted MP3 header in '%s'", path );
         }
       }
 
@@ -239,7 +239,7 @@ void Sound::musicOpen( const char* path )
       long skipBytes = NeAACDecInit( aacDecoder, musicInputBuffer, MUSIC_INPUT_BUFFER_SIZE,
                                      &aacRate, &aacChannels );
       if( skipBytes < 0 ) {
-        throw Exception( "Failed to decode AAC header in '%s'", path );
+        throw Exception( "Corrupted AAC header in '%s'", path );
       }
 
       memmove( musicInputBuffer, musicInputBuffer + skipBytes, size_t( skipBytes ) );

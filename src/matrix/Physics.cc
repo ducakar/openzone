@@ -208,7 +208,7 @@ bool Physics::handleObjFriction()
         stickVel  = SLICK_STICK_VELOCITY;
       }
 
-      dyn->momentum += ( systemMom * dyn->floor.z ) * dyn->floor;
+      dyn->momentum   += ( systemMom * dyn->floor.z ) * dyn->floor;
       dyn->momentum.x -= deltaVelX * friction;
       dyn->momentum.y -= deltaVelY * friction;
       dyn->momentum.z *= 1.0f - friction;
@@ -301,23 +301,24 @@ void Physics::handleObjHit()
       }
     }
     else if( hit.normal.z == -1.0f ) {
-      dyn->flags |= Object::BELOW_BIT;
-      dyn->momentum.z = sDyn->velocity.z;
+      dyn->flags      |= Object::BELOW_BIT;
+      dyn->momentum.z  = sDyn->velocity.z;
 
-      sDyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
-      sDyn->lower = dyn->index;
-      sDyn->floor = Vec3( 0.0f, 0.0f, 1.0f );
+      sDyn->flags     &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
+      sDyn->lower      = dyn->index;
+      sDyn->floor      = Vec3( 0.0f, 0.0f, 1.0f );
       sDyn->momentum.z = momentum.z;
     }
     else { // hit.normal.z == 1.0f
       hard_assert( hit.normal.z == 1.0f );
 
-      dyn->flags &= ~Object::ON_FLOOR_BIT;
-      dyn->lower = sDyn->index;
-      dyn->floor = Vec3( 0.0f, 0.0f, 1.0f );
+      dyn->flags     &= ~Object::ON_FLOOR_BIT;
+      dyn->lower      = sDyn->index;
+      dyn->floor      = Vec3( 0.0f, 0.0f, 1.0f );
       dyn->momentum.z = sDyn->velocity.z;
 
-      sDyn->flags |= Object::BELOW_BIT;
+      sDyn->flags    |= Object::BELOW_BIT;
+
       if( dyn->mass > WEIGHT_DAMAGE_THRESHOLD ) {
         sDyn->damage( dyn->mass / sDyn->mass * WEIGHT_DAMAGE_FACTOR );
       }
@@ -353,7 +354,7 @@ void Physics::handleObjHit()
     if( hit.normal.z >= FLOOR_NORMAL_Z ) {
       dyn->flags |= Object::ON_FLOOR_BIT;
       dyn->flags |= hit.material & Material::SLICK_BIT ? Object::ON_SLICK_BIT : 0;
-      dyn->floor = hit.normal;
+      dyn->floor  = hit.normal;
 
       if( hit.entity == null ) {
         dyn->lower = -1;
@@ -419,8 +420,8 @@ void Physics::handleObjMove()
 
         if( crossSqL != 0.0f ) {
           cross /= Math::sqrt( crossSqL );
-          move = ( move * cross ) * cross;
-          move += MOVE_BOUNCE * ( collider.hit.normal + lastNormals[0] );
+          move   = ( move * cross ) * cross;
+          move  += MOVE_BOUNCE * ( collider.hit.normal + lastNormals[0] );
         }
       }
 
@@ -437,8 +438,8 @@ void Physics::handleObjMove()
 
           if( crossSqL != 0.0f ) {
             cross /= Math::sqrt( crossSqL );
-            move = ( move * cross ) * cross;
-            move += MOVE_BOUNCE * ( collider.hit.normal + lastNormals[1] );
+            move   = ( move * cross ) * cross;
+            move  += MOVE_BOUNCE * ( collider.hit.normal + lastNormals[1] );
           }
         }
       }
@@ -481,7 +482,7 @@ void Physics::updateObj( Dynamic* dyn_ )
 
       if( str == null ) {
         dyn->flags &= ~Object::DISABLED_BIT;
-        dyn->lower = -1;
+        dyn->lower  = -1;
       }
       else {
         const Entity& entity = str->entities[entityIndex];
@@ -497,7 +498,7 @@ void Physics::updateObj( Dynamic* dyn_ )
       // clear the lower object if it doesn't exist any more
       if( sObj == null || sObj->cell == null ) {
         dyn->flags &= ~Object::DISABLED_BIT;
-        dyn->lower = -1;
+        dyn->lower  = -1;
       }
       else {
         dyn->flags &= sObj->flags | ~Object::DISABLED_BIT;
@@ -512,7 +513,7 @@ void Physics::updateObj( Dynamic* dyn_ )
       int oldFlags = dyn->flags;
 
       dyn->flags &= ~( Object::MOVE_CLEAR_MASK | Object::ENABLE_BIT );
-      dyn->lower = -1;
+      dyn->lower  = -1;
 
       collider.mask = dyn->flags & Object::SOLID_BIT;
       handleObjMove();
@@ -548,7 +549,7 @@ void Physics::updateObj( Dynamic* dyn_ )
     else {
       hard_assert( dyn->momentum == Vec3::ZERO );
 
-      dyn->flags |= Object::DISABLED_BIT;
+      dyn->flags   |= Object::DISABLED_BIT;
       dyn->velocity = Vec3::ZERO;
     }
   }

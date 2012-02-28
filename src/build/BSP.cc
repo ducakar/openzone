@@ -56,6 +56,16 @@ void BSP::load()
   life = bspConfig.get( "life", DEFAULT_LIFE );
   resistance = bspConfig.get( "resistance", DEFAULT_RESISTANCE );
 
+  waterFogColour.x = bspConfig.get( "waterFogColour.r", 0.00f );
+  waterFogColour.y = bspConfig.get( "waterFogColour.g", 0.05f );
+  waterFogColour.z = bspConfig.get( "waterFogColour.b", 0.25f );
+  waterFogColour.w = 1.0f;
+
+  lavaFogColour.x = bspConfig.get( "lavaFogColour.r", 0.30f );
+  lavaFogColour.y = bspConfig.get( "lavaFogColour.g", 0.20f );
+  lavaFogColour.z = bspConfig.get( "lavaFogColour.b", 0.00f );
+  lavaFogColour.w = 1.0f;
+
   if( life <= 0.0f || !Math::isnormal( life ) ) {
     throw Exception( "%s: Invalid life value. Should be > 0 and finite. If you want infinite life"
                      " rather set resistance to infinity.", name.cstr() );
@@ -341,11 +351,14 @@ void BSP::load()
       else if( textures[texture].type & QBSP_AIR_TYPE_BIT ) {
         brushes[i].flags |= Medium::AIR_BIT;
       }
+      else if( textures[texture].type & QBSP_WATER_TYPE_BIT ) {
+        brushes[i].flags |= Medium::WATER_BIT;
+      }
       else if( textures[texture].type & QBSP_LAVA_TYPE_BIT ) {
         brushes[i].flags |= Medium::LAVA_BIT;
       }
-      else if( textures[texture].type & QBSP_WATER_TYPE_BIT ) {
-        brushes[i].flags |= Medium::WATER_BIT;
+      else if( textures[texture].type & QBSP_SEA_TYPE_BIT ) {
+        brushes[i].flags |= Medium::SEA_BIT;
       }
     }
     else {
@@ -1166,6 +1179,9 @@ void BSP::saveClient()
   BufferStream os;
 
   os.writeInt( flags );
+
+  os.writeVec4( waterFogColour );
+  os.writeVec4( lavaFogColour );
 
   MeshData mesh;
   compiler.getMeshData( &mesh );

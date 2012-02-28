@@ -165,6 +165,7 @@ class Context
     MD3* requestMD3( int id );
     void releaseMD3( int id );
 
+    BSP* getBSP( const Struct* str );
     void drawBSP( const Struct* str, int mask );
     void playBSP( const Struct* str );
 

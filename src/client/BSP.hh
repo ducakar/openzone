@@ -36,18 +36,25 @@ class BSP
 
     const matrix::BSP* bsp;
 
-    int      flags;
-    Mesh     mesh;
+    int  flags;
+    Mesh mesh;
 
     PhysFile file;
+
+  public:
+
+    Vec4 waterFogColour;
+    Vec4 lavaFogColour;
+
+    bool isPreloaded;
+    bool isLoaded;
+
+  private:
 
     void playSound( const Entity* entity, int sound ) const;
     void playContSound( const Entity* entity, int sound ) const;
 
   public:
-
-    bool isPreloaded;
-    bool isLoaded;
 
     explicit BSP( const matrix::BSP* bsp );
     ~BSP();

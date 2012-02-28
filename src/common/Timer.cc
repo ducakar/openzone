@@ -53,19 +53,18 @@ void Timer::tick()
 {
   runMicros   += TICK_MICROS;
 
-  ++ticks;
+  ticks       += 1;
   micros      += TICK_MICROS;
-  time        = float( micros ) / 1.0e6f;
+  time         = float( micros ) / 1.0e6f;
 
-  ++frameTicks;
+  frameTicks  += 1;
   frameMicros += TICK_MICROS;
-  frameTime   = float( frameMicros ) / 1.0e6f;
+  frameTime    = float( frameMicros ) / 1.0e6f;
 }
 
 void Timer::frame()
 {
-  ++nFrames;
-
+  nFrames    += 1;
   frameTicks  = 0;
   frameMicros = 0;
   frameTime   = 0.0f;

@@ -180,6 +180,7 @@ class Shader
     int  activeProgram;
 
     Vec4 colour;
+    Vec4 fogColour;
 
     uint defaultMasks;
 

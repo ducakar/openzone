@@ -37,7 +37,7 @@ function onCreate()
   ozCaelumSetTime( 450 )
 
   local me = ozOrbisAddObj( "beast", 78, -90, 65.55 )
-  ozBotSetName( ozProfileGetPlayerName() )
+  ozBotSetName( ozProfileGetName() )
   ozBotSetMindFunc( "" )
   ozObjRemoveAllItems()
 

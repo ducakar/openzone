@@ -332,6 +332,9 @@ void Lua::init()
   IMPORT_FUNC( ozStrDestroy );
   IMPORT_FUNC( ozStrRemove );
 
+  IMPORT_FUNC( ozStrGetEntityState );
+  IMPORT_FUNC( ozStrSetEntityState );
+
   IMPORT_FUNC( ozStrGetEntityLock );
   IMPORT_FUNC( ozStrSetEntityLock );
 

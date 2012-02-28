@@ -1409,7 +1409,7 @@ static int ozDynSetMomentum( lua_State* l )
   OBJ();
   OBJ_DYNAMIC();
 
-  dyn->flags &= ~Object::DISABLED_BIT;
+  dyn->flags     &= ~Object::DISABLED_BIT;
   dyn->momentum.x = tofloat( 1 );
   dyn->momentum.y = tofloat( 2 );
   dyn->momentum.z = tofloat( 3 );
@@ -1422,7 +1422,7 @@ static int ozDynAddMomentum( lua_State* l )
   OBJ();
   OBJ_DYNAMIC();
 
-  dyn->flags &= ~Object::DISABLED_BIT;
+  dyn->flags      &= ~Object::DISABLED_BIT;
   dyn->momentum.x += tofloat( 1 );
   dyn->momentum.y += tofloat( 2 );
   dyn->momentum.z += tofloat( 3 );
@@ -1618,7 +1618,7 @@ static int ozBotAddH( lua_State* l )
   OBJ_BOT();
 
   bot->h += Math::rad( tofloat( 1 ) );
-  bot->h = Math::fmod( bot->h + Math::TAU, Math::TAU );
+  bot->h  = Math::fmod( bot->h + Math::TAU, Math::TAU );
   return 0;
 }
 
@@ -1650,7 +1650,7 @@ static int ozBotAddV( lua_State* l )
   OBJ_BOT();
 
   bot->v += Math::rad( tofloat( 1 ) );
-  bot->v = clamp( bot->v, 0.0f, Math::TAU / 2.0f );
+  bot->v  = clamp( bot->v, 0.0f, Math::TAU / 2.0f );
   return 0;
 }
 
@@ -1862,7 +1862,7 @@ static int ozVehicleAddH( lua_State* l )
   OBJ_VEHICLE();
 
   vehicle->h += Math::rad( tofloat( 1 ) );
-  vehicle->h = Math::fmod( vehicle->h + Math::TAU, Math::TAU );
+  vehicle->h  = Math::fmod( vehicle->h + Math::TAU, Math::TAU );
 
   vehicle->rot = Quat::rotZXZ( vehicle->h, vehicle->v - Math::TAU / 4.0f, 0.0f );
   return 0;
@@ -1898,7 +1898,7 @@ static int ozVehicleAddV( lua_State* l )
   OBJ_VEHICLE();
 
   vehicle->v += Math::rad( tofloat( 1 ) );
-  vehicle->v = clamp( vehicle->v, 0.0f, Math::TAU / 2.0f );
+  vehicle->v  = clamp( vehicle->v, 0.0f, Math::TAU / 2.0f );
 
   vehicle->rot = Quat::rotZXZ( vehicle->h, vehicle->v - Math::TAU / 4.0f, 0.0f );
   return 0;

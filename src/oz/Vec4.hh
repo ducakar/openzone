@@ -343,7 +343,7 @@ class Vec4
     {
       hard_assert( k != 0.0f );
 
-      k = 1.0f / k;
+      k  = 1.0f / k;
       x *= k;
       y *= k;
       z *= k;

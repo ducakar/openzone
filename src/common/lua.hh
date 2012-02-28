@@ -194,7 +194,7 @@
   }
 
 /**
- * @def STR
+ * @def SELF_BOT
  * Exits %Lua API function call with an error if self object is not bound or not a bot (Bot class).
  */
 #define SELF_BOT() \
