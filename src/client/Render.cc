@@ -279,7 +279,6 @@ void Render::drawGeometry()
   shader.use( shader.mesh );
 
   glBindTexture( GL_TEXTURE_2D, 0 );
-  glUniform1f( param.oz_Specular, 1.0f );
 
   for( int i = frags.length() - 1; i >= 0; --i ) {
     context.drawFrag( frags[i].frag );

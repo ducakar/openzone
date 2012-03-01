@@ -57,9 +57,8 @@ void Compiler::beginMesh()
   parts.clear();
 
   part.component      = 0;
+  part.material       = Mesh::SOLID_BIT;
   part.texture        = "";
-  part.alpha          = 1.0f;
-  part.specular       = 0.0f;
 
   vert.pos[0]         = 0.0f;
   vert.pos[1]         = 0.0f;
@@ -100,24 +99,12 @@ void Compiler::component( int id )
   componentId = id;
 }
 
-void Compiler::material( int target, float param )
+void Compiler::blend( bool doBlend )
 {
   hard_assert( flags & MESH_BIT );
   hard_assert( !( flags & PART_BIT ) );
 
-  switch( target ) {
-    case GL_DIFFUSE: {
-      part.alpha = param;
-      break;
-    }
-    case GL_SPECULAR: {
-      part.specular = param;
-      break;
-    }
-    default: {
-      throw Exception( "Invalid material target" );
-    }
-  }
+  part.material = doBlend ? Mesh::ALPHA_BIT : Mesh::SOLID_BIT;
 }
 
 void Compiler::texture( const char* texture )
@@ -345,9 +332,8 @@ void Compiler::getMeshData( MeshData* mesh ) const
     mesh->parts[i].component  = parts[i].component;
     mesh->parts[i].mode       = parts[i].mode;
 
+    mesh->parts[i].material   = parts[i].material;
     mesh->parts[i].texture    = parts[i].texture;
-    mesh->parts[i].specular   = parts[i].specular;
-    mesh->parts[i].alpha      = parts[i].alpha;
 
     mesh->parts[i].nIndices   = parts[i].indices.length();
     mesh->parts[i].firstIndex = nIndices;

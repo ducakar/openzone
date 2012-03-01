@@ -58,12 +58,12 @@ class BSP : public Bounds
     /// Quake
     static const int   QBSP_SLICK_FLAG_BIT    = 0x00000002;
     static const int   QBSP_LADDER_FLAG_BIT   = 0x00000008;
-    static const int   QBSP_GLASS_FLAG_BIT    = 0x00000020;
     static const int   QBSP_NONSOLID_FLAG_BIT = 0x00004000;
     static const int   QBSP_LAVA_TYPE_BIT     = 0x00000008;
     static const int   QBSP_SEA_TYPE_BIT      = 0x00000010;
     static const int   QBSP_WATER_TYPE_BIT    = 0x00000020;
     static const int   QBSP_AIR_TYPE_BIT      = 0x00200000;
+    static const int   QBSP_ALPHA_TYPE_BIT    = 0x20000000;
 
     static const int   QBSP_LIGHTMAP_DIM      = 128;
     static const int   QBSP_LIGHTMAP_BPP      = 3;

@@ -73,7 +73,6 @@ class OBJ
       String texture;
       String masks;
       float  alpha;
-      float  specular;
     };
 
     String           path;

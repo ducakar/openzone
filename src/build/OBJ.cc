@@ -198,7 +198,6 @@ void OBJ::loadMaterials( const String& path )
   part.texture  = "";
   part.masks    = "";
   part.alpha    = 1.0f;
-  part.specular = 0.0f;
 
   char* pos = fgets( buffer, LINE_BUFFER_SIZE, fs );
   char* end;
@@ -225,15 +224,6 @@ void OBJ::loadMaterials( const String& path )
           mtlName = pos;
           part.texture  = "";
           part.alpha    = 1.0f;
-          part.specular = 0.0f;
-        }
-        break;
-      }
-      case 'K': {
-        if( pos[1] == 's' ) {
-          Vec4 colour;
-          sscanf( pos + 2, "%17f %17f %17f", &colour.x, &colour.y, &colour.z );
-          part.specular = ( colour.x + colour.y + colour.z ) / 3.0f;
         }
         break;
       }
@@ -366,9 +356,7 @@ void OBJ::save()
 
   for( int i = 0; i < parts.length(); ++i ) {
     compiler.texture( path + "/" + parts[i].texture );
-
-    compiler.material( GL_DIFFUSE,  parts[i].alpha );
-    compiler.material( GL_SPECULAR, parts[i].specular );
+    compiler.blend( parts[i].alpha != 1.0f );
 
     for( int j = 0; j < parts[i].faces.length(); ++j ) {
       const Face& face = parts[i].faces[j];

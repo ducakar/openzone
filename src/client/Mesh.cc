@@ -112,13 +112,13 @@ void Vertex::setFormat()
   glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 
-//   glEnableVertexAttribArray( Attrib::TANGENT );
-//   glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-//                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
-//
-//   glEnableVertexAttribArray( Attrib::BINORMAL );
-//   glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-//                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
+  glEnableVertexAttribArray( Attrib::TANGENT );
+  glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
+
+  glEnableVertexAttribArray( Attrib::BINORMAL );
+  glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
 }
 
 void Texture::free()
@@ -127,11 +127,11 @@ void Texture::free()
     glDeleteTextures( 1, &albedo );
     albedo = 0;
   }
-  if( masks != 0 ) {
+  if( masks != shader.defaultMasks ) {
     glDeleteTextures( 1, &masks );
     masks = 0;
   }
-  if( normals != 0 ) {
+  if( normals != shader.defaultNormals ) {
     glDeleteTextures( 1, &normals );
     normals = 0;
   }
@@ -246,15 +246,11 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
   for( int i = 0; i < nParts; ++i ) {
     parts[i].flags      = istream->readInt();
     parts[i].mode       = uint( istream->readInt() );
-
     parts[i].texture    = textures[ istream->readInt() ];
-    parts[i].alpha      = istream->readFloat();
-    parts[i].specular   = istream->readFloat();
 
     parts[i].nIndices   = istream->readInt();
     parts[i].firstIndex = istream->readInt();
 
-    parts[i].flags     |= parts[i].alpha == 1.0f ? int( SOLID_BIT ) : int( ALPHA_BIT );
     flags              |= parts[i].flags & ( SOLID_BIT | ALPHA_BIT );
   }
 
@@ -268,8 +264,9 @@ void Mesh::unload()
   if( vao != 0 ) {
     if( flags & EMBEDED_TEX_BIT ) {
       foreach( texId, texIds.citer() ) {
-        if( *texId != 0 ) {
-          uint id = uint( *texId );
+        uint id = uint( *texId );
+
+        if( id != 0 && id != shader.defaultMasks && id != shader.defaultNormals ) {
           glDeleteTextures( 1, &id );
         }
       }
@@ -341,10 +338,10 @@ void Mesh::drawComponent( int id, int mask ) const
       glBindTexture( GL_TEXTURE_2D, part.texture.albedo );
       glActiveTexture( GL_TEXTURE1 );
       glBindTexture( GL_TEXTURE_2D, part.texture.masks );
+      glActiveTexture( GL_TEXTURE2 );
+      glBindTexture( GL_TEXTURE_2D, part.texture.normals );
 
-      glUniform1f( param.oz_Specular, part.specular );
-      glUniform4f( param.oz_Colour, shader.colour.x, shader.colour.y, shader.colour.z,
-                   shader.colour.w * part.alpha );
+      glUniform4fv( param.oz_Colour, 1, shader.colour );
 
       glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
                       reinterpret_cast<const ushort*>( 0 ) + part.firstIndex );
@@ -378,10 +375,10 @@ void Mesh::draw( int mask ) const
       glBindTexture( GL_TEXTURE_2D, part.texture.albedo );
       glActiveTexture( GL_TEXTURE1 );
       glBindTexture( GL_TEXTURE_2D, part.texture.masks );
+      glActiveTexture( GL_TEXTURE2 );
+      glBindTexture( GL_TEXTURE_2D, part.texture.normals );
 
-      glUniform1f( param.oz_Specular, part.specular );
-      glUniform4f( param.oz_Colour, shader.colour.x, shader.colour.y, shader.colour.z,
-                   shader.colour.w * part.alpha );
+      glUniform4fv( param.oz_Colour, 1, shader.colour );
 
       glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
                       reinterpret_cast<const ushort*>( 0 ) + part.firstIndex );

@@ -200,7 +200,6 @@ void Shader::loadProgram( int id, const char** sources, int* lengths )
   OZ_REGISTER_PARAMETER( oz_CaelumLight_diffuse,      "oz_CaelumLight.diffuse" );
   OZ_REGISTER_PARAMETER( oz_CaelumLight_ambient,      "oz_CaelumLight.ambient" );
 
-  OZ_REGISTER_PARAMETER( oz_Specular,                 "oz_Specular" );
   OZ_REGISTER_PARAMETER( oz_NightVision,              "oz_NightVision" );
 
   OZ_REGISTER_PARAMETER( oz_Fog_start,                "oz_Fog.start" );
@@ -290,8 +289,8 @@ void Shader::init()
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, whitePixel );
 
-  // default masks (specular 1.0, emission 0.0)
-  ubyte masksPixel[] = { 0xff, 0x00, 0x00, 0xff };
+  // default masks (specular 0.0, emission 0.0)
+  ubyte masksPixel[] = { 0x00, 0x00, 0x00, 0xff };
 
   glGenTextures( 1, &defaultMasks );
   glBindTexture( GL_TEXTURE_2D, defaultMasks );
@@ -310,7 +309,7 @@ void Shader::init()
 
   glBindTexture( GL_TEXTURE_2D, 0 );
 
-  for( int i = 1; i >= 0; --i ) {
+  for( int i = 2; i >= 0; --i ) {
     glActiveTexture( GL_TEXTURE0 + uint( i ) );
     glBindTexture( GL_TEXTURE_2D, 0 );
   }

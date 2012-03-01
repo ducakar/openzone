@@ -46,7 +46,6 @@ struct Param
   int oz_CaelumLight_diffuse;
   int oz_CaelumLight_ambient;
 
-  int oz_Specular;
   int oz_NightVision;
 
   int oz_Fog_start;

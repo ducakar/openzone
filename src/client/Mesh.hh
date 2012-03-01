@@ -75,10 +75,7 @@ class Mesh
     {
       int     flags;
       uint    mode;
-
       Texture texture;
-      float   alpha;
-      float   specular;
 
       int     nIndices;
       int     firstIndex;

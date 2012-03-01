@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "build/Mesh.hh"
+#include "build/MeshData.hh"
 
 namespace oz
 {
@@ -46,16 +46,15 @@ class Compiler
       int    component;
       uint   mode;
 
+      int    material;
       String texture;
-      float  alpha;
-      float  specular;
 
       Vector<int> indices;
 
       bool operator == ( const Part& part ) const
       {
         return component == part.component && mode == part.mode &&
-               specular == part.specular && alpha == part.alpha && texture.equals( part.texture );
+               material == part.material && texture.equals( part.texture );
       }
     };
 
@@ -80,7 +79,7 @@ class Compiler
     void endMesh();
 
     void component( int id );
-    void material( int target, float param );
+    void blend( bool doBlend );
     void texture( const char* texture );
 
     void begin( uint mode );

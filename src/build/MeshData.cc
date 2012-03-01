@@ -23,7 +23,7 @@
 
 #include "stable.hh"
 
-#include "build/Mesh.hh"
+#include "build/MeshData.hh"
 
 #include "build/Context.hh"
 
@@ -68,13 +68,13 @@ void MeshData::write( BufferStream* os, bool embedTextures ) const
       int textureFlags = 0;
 
       if( albedoId != 0 ) {
-        textureFlags |= client::Mesh::ALBEDO_BIT;
+        textureFlags |= Mesh::ALBEDO_BIT;
       }
       if( masksId != 0 ) {
-        textureFlags |= client::Mesh::MASKS_BIT;
+        textureFlags |= Mesh::MASKS_BIT;
       }
       if( normalsId != 0 ) {
-        textureFlags |= client::Mesh::NORMALS_BIT;
+        textureFlags |= Mesh::NORMALS_BIT;
       }
 
       os->writeInt( textureFlags );
@@ -104,12 +104,10 @@ void MeshData::write( BufferStream* os, bool embedTextures ) const
   os->writeInt( parts.length() );
 
   foreach( part, parts.citer() ) {
-    os->writeInt( part->component );
+    os->writeInt( part->component | part->material );
     os->writeInt( int( part->mode ) );
 
     os->writeInt( textures.index( part->texture ) );
-    os->writeFloat( part->alpha );
-    os->writeFloat( part->specular );
 
     os->writeInt( part->nIndices );
     os->writeInt( part->firstIndex );

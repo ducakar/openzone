@@ -669,8 +669,10 @@ void Build::packArchive( const char* name, bool useCompression, bool use7zip )
   log.indent();
 
   String cmdLine = use7zip ?
-                   String::str( "7z u -ms=off '../%s.7z' *", name ) :
-                   String::str( "zip %s -ur '../%s.zip' *",
+                   String::str( "7z u -ms=off %s '../%s.7z' *",
+                                useCompression ? "-mx=9" : "-m0=copy",
+                                name ) :
+                   String::str( "zip -ur %s '../%s.zip' *",
                                 useCompression ? "-9" : "-Z store",
                                 name );
 
