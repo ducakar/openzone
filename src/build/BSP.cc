@@ -1136,22 +1136,13 @@ void BSP::saveClient()
         throw Exception( "BSP has a visible face without texture" );
       }
 
-      if( textures[face.texture].type &
-          ( QBSP_WATER_TYPE_BIT | QBSP_LAVA_TYPE_BIT | QBSP_SEA_TYPE_BIT ) )
-      {
-        compiler.material( GL_DIFFUSE, LIQUID_ALPHA );
-        compiler.material( GL_SPECULAR, LIQUID_SPECULAR );
+      if( textures[face.texture].type & QBSP_ALPHA_TYPE_BIT ) {
         flags |= Mesh::ALPHA_BIT;
-      }
-      else if( textures[face.texture].flags & QBSP_GLASS_FLAG_BIT ) {
-        compiler.material( GL_DIFFUSE, GLASS_ALPHA );
-        compiler.material( GL_SPECULAR, GLASS_SPECULAR );
-        flags |= Mesh::ALPHA_BIT;
+        compiler.blend( true );
       }
       else {
-        compiler.material( GL_DIFFUSE, 1.0f );
-        compiler.material( GL_SPECULAR, 0.0f );
         flags |= Mesh::SOLID_BIT;
+        compiler.blend( false );
       }
 
       context.usedTextures.include( textures[face.texture].name );
@@ -1183,6 +1174,9 @@ void BSP::saveClient()
 
   compiler.endMesh();
 
+  MeshData mesh;
+  compiler.getMeshData( &mesh );
+
   BufferStream os;
 
   os.writeInt( flags );
@@ -1190,8 +1184,6 @@ void BSP::saveClient()
   os.writeVec4( waterFogColour );
   os.writeVec4( lavaFogColour );
 
-  MeshData mesh;
-  compiler.getMeshData( &mesh );
   mesh.write( &os, false );
 
   log.print( "Dumping BSP model to '%s' ...", destFile.path().cstr() );

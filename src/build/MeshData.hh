@@ -43,9 +43,8 @@ class MeshData
       int    component;
       uint   mode;
 
+      int    material;
       String texture;
-      float  alpha;
-      float  specular;
 
       int    nIndices;
       int    firstIndex;

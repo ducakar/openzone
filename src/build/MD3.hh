@@ -139,7 +139,6 @@ class MD3
     int      lowerFrame;
     int      upperFrame;
     String   shaderName;
-    float    specular;
 
     int      nLowerFrames;
     int      nUpperFrames;

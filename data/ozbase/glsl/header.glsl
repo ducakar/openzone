@@ -44,9 +44,9 @@ uniform vec3            oz_CameraPosition;
 uniform vec4            oz_Colour = vec4( 1.0, 1.0, 1.0, 1.0 );
 
 /*
- * Texturing
+ * Texturing { albedo, masks, normals, frames positions, frame normals }
  */
-uniform sampler2D       oz_Textures[4];
+uniform sampler2D       oz_Textures[5];
 
 /*
  * Lighting
@@ -67,8 +67,7 @@ struct Light
 uniform CaelumLight     oz_CaelumLight;
 uniform Light           oz_PointLights[8];
 
-uniform float           oz_Specular = 0.0;
-uniform bool            oz_NightVision;
+uniform bool            oz_NightVision = false;
 
 /*
  * Fog
@@ -102,7 +101,7 @@ vec4 skyLightColour( vec3 normal )
 vec4 specularColour( float specular, vec3 normal, vec3 toCamera )
 {
   vec3 reflectedLight = reflect( oz_CaelumLight.dir, normal );
-  float factor = oz_Specular * specular * max( dot( reflectedLight, toCamera ), 0.0 );
+  float factor = 2.0 * specular * max( dot( reflectedLight, toCamera ), 0.0 );
   return vec4( factor * oz_CaelumLight.diffuse.rgb, 0.0 );
 }
 
@@ -116,6 +115,7 @@ vec2 noise( vec2 seed )
 {
   return vec2( cos( seed.x ), sin( seed.y ) );
 }
+
 
 
 

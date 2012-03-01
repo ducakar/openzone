@@ -203,9 +203,9 @@ void MD2::drawFrame( int frame ) const
   shader.use( shaderId );
 
   if( shader.hasVertexTexture ) {
-    glActiveTexture( GL_TEXTURE2 );
-    glBindTexture( GL_TEXTURE_2D, vertexTexId );
     glActiveTexture( GL_TEXTURE3 );
+    glBindTexture( GL_TEXTURE_2D, vertexTexId );
+    glActiveTexture( GL_TEXTURE4 );
     glBindTexture( GL_TEXTURE_2D, normalTexId );
   }
   else {
@@ -245,9 +245,9 @@ void MD2::draw( const AnimState* anim ) const
   tf.apply();
 
   if( shader.hasVertexTexture ) {
-    glActiveTexture( GL_TEXTURE2 );
-    glBindTexture( GL_TEXTURE_2D, vertexTexId );
     glActiveTexture( GL_TEXTURE3 );
+    glBindTexture( GL_TEXTURE_2D, vertexTexId );
+    glActiveTexture( GL_TEXTURE4 );
     glBindTexture( GL_TEXTURE_2D, normalTexId );
 
     glUniform3f( param.oz_MD2Anim,
