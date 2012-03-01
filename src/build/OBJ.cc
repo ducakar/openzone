@@ -248,19 +248,10 @@ void OBJ::loadMaterials( const String& path )
           end = readWord( pos );
           *end = '\0';
 
-          File texFile( path + "/" + pos );
-          File masksFile( path + "/" + texFile.baseName() + "_masks." + texFile.extension() );
+          int dot = String::index( pos, '.' );
+          String name = dot == -1 ? pos : String( dot, pos );
 
-          if( texFile.getType() == File::MISSING ) {
-            fclose( fs );
-            throw Exception( "OBJ texture '%s' missing", texFile.path().cstr() );
-          }
-
-          part.texture = texFile.path();
-
-          if( masksFile.getType() != File::MISSING ) {
-            part.masks = masksFile.path();
-          }
+          part.texture = name;
         }
         break;
       }
@@ -374,8 +365,7 @@ void OBJ::save()
   compiler.enable( CAP_UNIQUE );
 
   for( int i = 0; i < parts.length(); ++i ) {
-    compiler.texture( parts[i].texture );
-    compiler.masks( parts[i].masks );
+    compiler.texture( path + "/" + parts[i].texture );
 
     compiler.material( GL_DIFFUSE,  parts[i].alpha );
     compiler.material( GL_SPECULAR, parts[i].specular );

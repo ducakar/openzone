@@ -137,7 +137,7 @@ class SVector
      */
     bool operator == ( const SVector& v ) const
     {
-      return count == v.count && aEquals( data, v.data, count );
+      return count == v.count && aEquals<Elem>( data, v.data, count );
     }
 
     /**
@@ -145,7 +145,7 @@ class SVector
      */
     bool operator != ( const SVector& v ) const
     {
-      return count != v.count || !aEquals( data, v.data, count );
+      return count != v.count || !aEquals<Elem>( data, v.data, count );
     }
 
     /**
@@ -282,7 +282,7 @@ class SVector
      */
     bool contains( const Elem& e ) const
     {
-      return aContains( data, e, count );
+      return aContains<Elem>( data, e, count );
     }
 
     /**
@@ -290,7 +290,7 @@ class SVector
      */
     int index( const Elem& e ) const
     {
-      return aIndex( data, e, count );
+      return aIndex<Elem>( data, e, count );
     }
 
     /**
@@ -298,7 +298,7 @@ class SVector
      */
     int lastIndex( const Elem& e ) const
     {
-      return aLastIndex( data, e, count );
+      return aLastIndex<Elem>( data, e, count );
     }
 
     /**
@@ -332,7 +332,7 @@ class SVector
 
       hard_assert( uint( newCount ) <= uint( SIZE ) );
 
-      aCopy( data + count, array, arrayCount );
+      aCopy<Elem>( data + count, array, arrayCount );
       count = newCount;
     }
 
@@ -344,7 +344,7 @@ class SVector
     template <typename Elem_>
     int include( Elem_&& e )
     {
-      int i = aIndex( data, e, count );
+      int i = aIndex<Elem>( data, e, count );
 
       if( i == -1 ) {
         hard_assert( uint( count ) < uint( SIZE ) );
@@ -367,7 +367,7 @@ class SVector
       hard_assert( uint( i ) <= uint( count ) );
       hard_assert( uint( count ) < uint( SIZE ) );
 
-      aReverseMove( data + i + 1, data + i, count - i );
+      aReverseMove<Elem>( data + i + 1, data + i, count - i );
       data[i] = static_cast<Elem_&&>( e );
       ++count;
     }
@@ -392,7 +392,7 @@ class SVector
       hard_assert( uint( i ) < uint( count ) );
 
       --count;
-      aMove( data + i, data + i + 1, count - i );
+      aMove<Elem>( data + i, data + i + 1, count - i );
     }
 
     /**
@@ -415,11 +415,11 @@ class SVector
      */
     int exclude( const Elem& e )
     {
-      int i = aIndex( data, e, count );
+      int i = aIndex<Elem>( data, e, count );
 
       if( i != -1 ) {
         --count;
-        aMove( data + i, data + i + 1, count - i );
+        aMove<Elem>( data + i, data + i + 1, count - i );
       }
       return i;
     }
@@ -433,7 +433,7 @@ class SVector
      */
     int excludeUO( const Elem& e )
     {
-      int i = aIndex( data, e, count );
+      int i = aIndex<Elem>( data, e, count );
 
       if( i != -1 ) {
         --count;
@@ -452,7 +452,7 @@ class SVector
     {
       hard_assert( uint( count ) < uint( SIZE ) );
 
-      aReverseMove( data + 1, data, count );
+      aReverseMove<Elem>( data + 1, data, count );
       data[0] = static_cast<Elem_&&>( e );
       ++count;
     }
@@ -481,7 +481,7 @@ class SVector
       Elem e = static_cast<Elem&&>( data[0] );
 
       --count;
-      aMove( data, data + 1, count );
+      aMove<Elem>( data, data + 1, count );
 
       return e;
     }
@@ -505,7 +505,7 @@ class SVector
      */
     void sort()
     {
-      aSort( data, count );
+      aSort<Elem>( data, count );
     }
 
     /**
@@ -521,7 +521,7 @@ class SVector
      */
     void free()
     {
-      aFree( data, count );
+      aFree<Elem>( data, count );
       clear();
     }
 

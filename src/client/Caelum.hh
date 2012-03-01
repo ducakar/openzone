@@ -68,6 +68,9 @@ class Caelum
 
     Vec3  lightDir;
 
+    Vec4  nightColour;
+    float nightLuminance;
+
     int   id;
 
     Caelum();

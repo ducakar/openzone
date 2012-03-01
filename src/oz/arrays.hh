@@ -68,7 +68,7 @@ class CIterator : public CIteratorBase<Elem>
      * %Iterator for an array.
      *
      * @param start first array element.
-     * @param past_ successor of the last element in an array.
+     * @param past_ successor of the last element.
      */
     OZ_ALWAYS_INLINE
     explicit CIterator( const Elem* start, const Elem* past_ ) :
@@ -140,7 +140,7 @@ class Iterator : public IteratorBase<Elem>
      * %Iterator for an array.
      *
      * @param start first array element.
-     * @param past_ successor of the last element in an array.
+     * @param past_ successor of the last element.
      */
     OZ_ALWAYS_INLINE
     explicit Iterator( Elem* start, const Elem* past_ ) :
@@ -202,6 +202,30 @@ OZ_ALWAYS_INLINE
 inline Iterator<Elem> iter( Elem* array, int count )
 {
   return Iterator<Elem>( array, array + count );
+}
+
+/**
+ * Create static array iterator with constant access to elements.
+ *
+ * @ingroup oz
+ */
+template <typename Elem, size_t SIZE>
+OZ_ALWAYS_INLINE
+inline CIterator<Elem> citer( const Elem ( &array )[SIZE] )
+{
+  return citer<Elem>( array, SIZE );
+}
+
+/**
+ * Create static array iterator with non-constant access to elements.
+ *
+ * @ingroup oz
+ */
+template <typename Elem, size_t SIZE>
+OZ_ALWAYS_INLINE
+inline Iterator<Elem> iter( Elem ( &array )[SIZE] )
+{
+  return iter<Elem>( array, SIZE );
 }
 
 /**
@@ -351,10 +375,10 @@ inline void aFree( Elem* aDest, int count )
  *
  * @ingroup oz
  */
-template <typename Elem>
-inline int aLength( const Elem& aSrc )
+template <typename Elem, size_t SIZE>
+inline int aLength( const Elem ( & )[SIZE] )
 {
-  return int( sizeof( aSrc ) / sizeof( aSrc[0] ) );
+  return int( SIZE );
 }
 
 /**
@@ -436,7 +460,7 @@ inline void aReverse( Elem* aDest, int count )
   int top = count - 1;
 
   while( bottom < top ) {
-    swap( aDest[bottom], aDest[top] );
+    swap<Elem>( aDest[bottom], aDest[top] );
     ++bottom;
     --top;
   }
@@ -475,14 +499,14 @@ static void quicksort( Elem* first, Elem* last )
         break;
       }
 
-      swap( *top, *bottom );
+      swap<Elem>( *top, *bottom );
     }
     while( true );
 
-    swap( *top, *last );
+    swap<Elem>( *top, *last );
 
-    quicksort( first, top - 1 );
-    quicksort( top + 1, last );
+    quicksort<Elem>( first, top - 1 );
+    quicksort<Elem>( top + 1, last );
   }
   else {
     // Selection sort.
@@ -497,7 +521,7 @@ static void quicksort( Elem* first, Elem* last )
         }
       }
 
-      swap( *pivot, *min );
+      swap<Elem>( *pivot, *min );
     }
   }
 }
@@ -513,7 +537,7 @@ inline void aSort( Elem* aSrc, int count )
   int last = count - 1;
 
   if( last > 0 ) {
-    quicksort( aSrc, &aSrc[last] );
+    quicksort<Elem>( aSrc, &aSrc[last] );
   }
 }
 

@@ -209,11 +209,12 @@ void MD3::buildMesh( const char* name, int frame )
     }
 
     if( skin.isEmpty() ) {
-      PhysFile skinFile( String::replace( surfaceShaders[0].name, '\\', '/' ).cstr() );
-      texture = skinFile.name();
+      PhysFile skinFile( String::replace( surfaceShaders[0].name, '\\', '/' ) );
+      texture = skinFile.baseName();
     }
     else {
-      texture = skin;
+      PhysFile skinFile( skin );
+      texture = skinFile.baseName();
     }
 
     is.reset();
@@ -245,10 +246,6 @@ void MD3::buildMesh( const char* name, int frame )
     is.forward( surfaceStart + surface.offEnd );
 
     compiler.texture( sPath + "/" + texture );
-
-    if( !masks.isEmpty() ) {
-      compiler.masks( sPath + "/" + masks );
-    }
 
     compiler.begin( GL_TRIANGLES );
 
@@ -282,7 +279,6 @@ void MD3::load()
 
   scale      = config.get( "scale", 0.04f );
   skin       = config.get( "skin", "" );
-  masks      = config.get( "masks", "" );
 
   model      = config.get( "model", "" );
   frame      = config.get( "frame", -1 );

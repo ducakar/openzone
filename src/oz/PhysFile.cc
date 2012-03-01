@@ -108,6 +108,7 @@ void PhysFile::setPath( const char* path )
   filePath = path;
   type     = File::NONE;
   data     = null;
+  size     = 0;
 }
 
 File::Type PhysFile::getType()
@@ -184,6 +185,21 @@ bool PhysFile::hasExtension( const char* ext ) const
   }
 }
 
+bool PhysFile::isMapped() const
+{
+  return data != null;
+}
+
+void PhysFile::clear()
+{
+  if( data != null ) {
+    unmap();
+  }
+
+  filePath = "";
+  type = File::NONE;
+}
+
 bool PhysFile::map()
 {
   if( data != null ) {
@@ -224,16 +240,6 @@ void PhysFile::unmap()
     data = null;
     size = 0;
   }
-}
-
-void PhysFile::clear()
-{
-  if( data != null ) {
-    unmap();
-  }
-
-  filePath = "";
-  type = File::NONE;
 }
 
 InputStream PhysFile::inputStream( Endian::Order order ) const

@@ -244,7 +244,7 @@ class OutputStream
     void readChars( char* array, int count )
     {
       const char* data = reinterpret_cast<const char*>( forward( count * int( sizeof( char ) ) ) );
-      aCopy( array, data, count );
+      aCopy<char>( array, data, count );
     }
 
     /**
@@ -254,7 +254,7 @@ class OutputStream
     void writeChars( const char* array, int count )
     {
       char* data = reinterpret_cast<char*>( forward( count * int( sizeof( char ) ) ) );
-      aCopy( data, array, count );
+      aCopy<char>( data, array, count );
     }
 
     /**
@@ -457,7 +457,7 @@ class OutputStream
       int size = s.length() + 1;
       char* data = forward( size );
 
-      aCopy( data, s.cstr(), size );
+      aCopy<char>( data, s.cstr(), size );
     }
 
     /**
@@ -469,7 +469,7 @@ class OutputStream
       int size = String::length( s ) + 1;
       char* data = forward( size );
 
-      aCopy( data, s, size );
+      aCopy<char>( data, s, size );
     }
 
     /**

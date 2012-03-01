@@ -141,11 +141,16 @@ class File
     String baseName() const;
 
     /**
-     * True iff the extension is equal to the given string.
+     * True iff the extension (without dot) is equal to the given string.
      *
-     * @return True iff extension exists.
+     * Empty string matches both no extension and files ending with dot.
      */
     bool hasExtension( const char* ext ) const;
+
+    /**
+     * True iff file is mapped to memory.
+     */
+    bool isMapped() const;
 
     /**
      * Release resources and set default values for internal fields.

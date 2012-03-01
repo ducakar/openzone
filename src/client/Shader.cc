@@ -299,6 +299,15 @@ void Shader::init()
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, masksPixel );
 
+  // default normals for bumpmap [0, 0, 1]
+  ubyte normalsPixel[] = { 0x80, 0x80, 0xff, 0xff };
+
+  glGenTextures( 1, &defaultNormals );
+  glBindTexture( GL_TEXTURE_2D, defaultNormals );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, normalsPixel );
+
   glBindTexture( GL_TEXTURE_2D, 0 );
 
   for( int i = 1; i >= 0; --i ) {
@@ -373,9 +382,17 @@ void Shader::free()
     }
   }
 
+  if( glIsTexture( 0 ) ) {
+    uint zero = 0;
+    glDeleteTextures( 1, &zero );
+  }
   if( defaultMasks != 0 ) {
     glDeleteTextures( 1, &defaultMasks );
     defaultMasks = 0;
+  }
+  if( defaultNormals != 0 ) {
+    glDeleteTextures( 1, &defaultNormals );
+    defaultNormals = 0;
   }
 
   plain = -1;

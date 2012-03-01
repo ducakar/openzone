@@ -46,9 +46,7 @@ namespace oz
 
 StackTrace StackTrace::current( int )
 {
-  StackTrace st;
-  st.nFrames = 0;
-  return st;
+  return { 0, {} };
 }
 
 char** StackTrace::symbols() const
@@ -72,7 +70,7 @@ StackTrace StackTrace::current( int nSkippedFrames )
   int nFrames = backtrace( framesBuffer, MAX_FRAMES + 4 );
 
   StackTrace st;
-  st.nFrames = min( nFrames - 1 - nSkippedFrames, int( MAX_FRAMES ) );
+  st.nFrames = min<int>( nFrames - 1 - nSkippedFrames, int( MAX_FRAMES ) );
   aCopy( st.frames, framesBuffer + 1 + nSkippedFrames, st.nFrames );
   return st;
 }

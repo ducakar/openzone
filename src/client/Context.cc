@@ -124,7 +124,7 @@ Context::Context() :
   smms( null ), md2s( null ), md3s( null )
 {}
 
-uint Context::readTexture( InputStream* stream, const char* path )
+uint Context::readTextureLayer( InputStream* stream, const char* path )
 {
   OZ_GL_CHECK_ERROR();
 
@@ -178,7 +178,7 @@ uint Context::readTexture( InputStream* stream, const char* path )
   return texId;
 }
 
-uint Context::loadTexture( const char* path )
+uint Context::loadTextureLayer( const char* path )
 {
   PhysFile file( path );
   if( !file.map() ) {
@@ -186,15 +186,37 @@ uint Context::loadTexture( const char* path )
   }
 
   InputStream is = file.inputStream();
-  uint id = readTexture( &is, path );
+
+  uint id = readTextureLayer( &is, path );
 
   file.unmap();
   return id;
 }
 
-uint Context::requestTexture( int id )
+Texture Context::loadTexture( const char* path )
 {
-  Resource<uint>& resource = textures[id];
+  Texture texture;
+
+  PhysFile file( path );
+  if( !file.map() ) {
+    throw Exception( "Texture file '%s' mmap failed", path );
+  }
+
+  InputStream is = file.inputStream();
+
+  int textureFlags = is.readInt();
+
+  texture.albedo  = textureFlags & Mesh::ALBEDO_BIT  ? readTextureLayer( &is, path ) : 0;
+  texture.masks   = textureFlags & Mesh::MASKS_BIT   ? readTextureLayer( &is, path ) : shader.defaultMasks;
+  texture.normals = textureFlags & Mesh::NORMALS_BIT ? readTextureLayer( &is, path ) : shader.defaultNormals;
+
+  file.unmap();
+  return texture;
+}
+
+Texture Context::requestTexture( int id )
+{
+  Resource<Texture>& resource = textures[id];
 
   if( resource.nUsers != 0 ) {
     ++resource.nUsers;
@@ -202,33 +224,21 @@ uint Context::requestTexture( int id )
   }
 
   resource.nUsers = 1;
+  resource.id = loadTexture( library.textures[id].path );
 
-  const String& path = library.textures[id].path;
-
-  resource.id = GL_NONE;
-
-  PhysFile file( path );
-  if( !file.map() ) {
-    throw Exception( "Texture file '%s' mmap failed", path.cstr() );
-  }
-
-  InputStream is = file.inputStream();
-  resource.id = readTexture( &is, path );
-
-  file.unmap();
   return resource.id;
 }
 
 void Context::releaseTexture( int id )
 {
-  Resource<uint>& resource = textures[id];
+  Resource<Texture>& resource = textures[id];
 
   hard_assert( resource.nUsers > 0 );
 
   --resource.nUsers;
 
   if( resource.nUsers == 0 ) {
-    glDeleteTextures( 1, &resource.id );
+    resource.id.free();
 
     OZ_GL_CHECK_ERROR();
   }
@@ -656,37 +666,42 @@ void Context::init()
   OZ_REGISTER_AUDIOCLASS( Bot );
   OZ_REGISTER_AUDIOCLASS( Vehicle );
 
-  if( library.textures.length() == 0 ) {
+  int nTextures = library.textures.length();
+  int nSounds   = library.sounds.length();
+  int nBSPs     = library.nBSPs;
+  int nModels   = library.models.length();
+
+  if( nTextures == 0 ) {
     throw Exception( "Context: textures missing!" );
   }
-  if( library.sounds.length() == 0 ) {
+  if( nSounds == 0 ) {
     throw Exception( "Context: sounds missing!" );
   }
-  if( library.nBSPs == 0 ) {
+  if( nBSPs == 0 ) {
     throw Exception( "Context: BSPs missing!" );
   }
-  if( library.models.length() == 0 ) {
+  if( nModels == 0 ) {
     throw Exception( "Context: models missing!" );
   }
 
-  textures = library.textures.length() == 0 ? null : new Resource<uint>[library.textures.length()];
-  sounds   = library.sounds.length()   == 0 ? null : new Resource<uint>[library.sounds.length()];
-  bsps     = library.nBSPs             == 0 ? null : new Resource<BSP*>[library.nBSPs];
-  smms     = library.models.length()   == 0 ? null : new Resource<SMM*>[library.models.length()];
-  md2s     = library.models.length()   == 0 ? null : new Resource<MD2*>[library.models.length()];
-  md3s     = library.models.length()   == 0 ? null : new Resource<MD3*>[library.models.length()];
+  textures = nTextures == 0 ? null : new Resource<Texture>[nTextures];
+  sounds   = nSounds   == 0 ? null : new Resource<uint>[nSounds];
+  bsps     = nBSPs     == 0 ? null : new Resource<BSP*>[nBSPs];
+  smms     = nModels   == 0 ? null : new Resource<SMM*>[nModels];
+  md2s     = nModels   == 0 ? null : new Resource<MD2*>[nModels];
+  md3s     = nModels   == 0 ? null : new Resource<MD3*>[nModels];
 
-  for( int i = 0; i < library.textures.length(); ++i ) {
+  for( int i = 0; i < nTextures; ++i ) {
     textures[i].nUsers = 0;
   }
-  for( int i = 0; i < library.sounds.length(); ++i ) {
+  for( int i = 0; i < nSounds; ++i ) {
     sounds[i].nUsers = -1;
   }
-  for( int i = 0; i < library.nBSPs; ++i ) {
+  for( int i = 0; i < nBSPs; ++i ) {
     bsps[i].object = null;
     bsps[i].nUsers = 0;
   }
-  for( int i = 0; i < library.models.length(); ++i ) {
+  for( int i = 0; i < nModels; ++i ) {
     smms[i].object = null;
     smms[i].nUsers = 0;
 

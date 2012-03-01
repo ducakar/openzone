@@ -47,7 +47,7 @@ uint GalileoFrame::loadTexture( const char* path ) const
   }
 
   InputStream istream = file.inputStream();
-  uint texId = context.readTexture( &istream, path );
+  uint texId = context.readTextureLayer( &istream, path );
 
   file.unmap();
   return texId;

@@ -97,7 +97,7 @@ class Context
     Imago::CreateFunc**               imagoClasses;
     Audio::CreateFunc**               audioClasses;
 
-    Resource<uint>*                   textures;
+    Resource<Texture>*                textures;
     Resource<uint>*                   sounds;
 
     // non-looping sources
@@ -146,10 +146,11 @@ class Context
 
     Context();
 
-    static uint readTexture( InputStream* stream, const char* path );
-    static uint loadTexture( const char* path );
+    static uint readTextureLayer( InputStream* stream, const char* path );
+    static uint loadTextureLayer( const char* path );
+    static Texture loadTexture( const char* path );
 
-    uint requestTexture( int id );
+    Texture requestTexture( int id );
     void releaseTexture( int id );
 
     uint requestSound( int id );

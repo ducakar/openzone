@@ -77,7 +77,7 @@ class Bitset
     Bitset( const Bitset& b ) :
       data( b.size == 0 ? null : new ulong[b.size] ), size( b.size )
     {
-      aCopy( data, b.data, b.size );
+      aCopy<ulong>( data, b.data, b.size );
     }
 
     /**
@@ -108,7 +108,7 @@ class Bitset
         size = b.size;
       }
 
-      aCopy( data, b.data, b.size );
+      aCopy<ulong>( data, b.data, b.size );
 
       return *this;
     }
@@ -159,7 +159,7 @@ class Bitset
       if( size != b.size ) {
         return false;
       }
-      return aEquals( data, b.data, size );
+      return aEquals<ulong>( data, b.data, size );
     }
 
     /**
@@ -170,7 +170,7 @@ class Bitset
       if( size != b.size ) {
         return true;
       }
-      return !aEquals( data, b.data, size );
+      return !aEquals<ulong>( data, b.data, size );
     }
 
     /**
@@ -362,7 +362,7 @@ class Bitset
      */
     void setAll()
     {
-      aSet( data, ~0ul, size );
+      aSet<ulong>( data, ~0ul, size );
     }
 
     /**
@@ -370,7 +370,7 @@ class Bitset
      */
     void clearAll()
     {
-      aSet( data, 0ul, size );
+      aSet<ulong>( data, 0ul, size );
     }
 
     /**

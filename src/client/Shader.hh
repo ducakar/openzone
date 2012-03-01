@@ -183,6 +183,7 @@ class Shader
     Vec4 fogColour;
 
     uint defaultMasks;
+    uint defaultNormals;
 
     int  medium;
     bool hasS3TC;

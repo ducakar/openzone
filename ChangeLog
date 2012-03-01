@@ -1,70 +1,76 @@
 0.3.0
 * oz:
-  * more C++11 features
-    * move semantics
-    * defaulted & deleted functions
-    * constexpr for float constants
-    * iterators support range-for (however, foreach macro is still used because of faulty IDE
+  - more C++11 features
+    - move semantics
+    - defaulted & deleted functions
+    - constexpr for float constants
+    - iterators support range-based for (however, foreach macro is still used because of faulty IDE
       parsers and better performance in debug mode)
-  * better Win32 support, POSIX API replaced with Win32 API where possible
-  * System.bell() method
-  * String class has more consistent members, parsing functions added
-  * new Time class
-  * new StackTrace class
-  * OutputStream is readable
-  * new BufferStream class (OutputStream with dynamic internal storage)
-  * new PhysFile class, version of File class for PhysicsFS
-  * Vec3, Vec4, Quat don't inherit from each other or Simd class
-  * AABB & Bounds moved to liboz from matrix
-  * compiled as shared library
-  * additional dependencies; libpulse on Linux and PhysicsFS 2.0
-  * fully documented
-  * X11 licence for liboz
+  - better Win32 support, POSIX API replaced with Win32 API where possible
+  - System.bell() method
+  - String class has more consistent members, parsing functions added
+  - new Time class
+  - new StackTrace class (split from System class)
+  - OutputStream is readable
+  - new BufferStream class (OutputStream with dynamic internal storage)
+  - new PhysFile class: version of File class for PhysicsFS
+  - Vec3, Vec4, Quat don't inherit from each other or Simd class
+  - AABB & Bounds moved to liboz from matrix
+  - clearmacros.hh header to undefine liboz macros that might conflict other libraries
+  - compiled as shared library
+  - additional dependencies: libpulse on Linux and PhysicsFS 2.0
+  - fully documented
+  - X11 licence for liboz
 * common:
-  * new layer, split from matrix
-  * Span and Timer classes moved to common from matrix
-  * new Lingua class, gettext-like system, but modularised and suitable for data package system
+  - new layer, split from matrix
+  - Span and Timer classes moved to common from matrix
+  - new Lingua class, gettext-like system, but modularised and suitable for data package system
 * matrix:
-  * object attributes, tell what special abilities an object can have (nigh vision, satnav, music
-    player)
-  * keys; object can have assigned a key value, so it can lock/unlock matching structure entities
-  * lava, can be used in both structures and instead of sea in terrain
-  * sliding damage
-  * configurable gravity acceleration
-  * structure improvements
-    * crushing - structures fall into terrain, and crush objects in their way
-    * bound objects - objects that are created together with a structure and destroyed with it;
+  - object attributes: tell what special abilities an object can have (nigh vision, binoculars,
+    satnav, music player)
+  - keys: object can have assigned a key value, so it can lock/unlock matching structure entities
+  - lava: can be used both in structures and terrain instead of sea
+  - sliding damage
+  - configurable gravitational acceleration
+  - structure improvements
+    - crushing: structures fall into terrain, and crush objects in their way
+    - bound objects: objects that are created together with a structure and destroyed with it;
       useful for defence turrets
-    * air brushes to tag certain structure areas that should not be filled with water when a
+    - air brushes to tag certain structure areas that should not be filled with water when a
       structure is under sea
-    * no more need for hull around BSPs
-    * triggers - some entities can be used, upon usage trigger themselves or other entities
-    * entities can be locked/unlocked with appropriate key
-    * manual doors
-    * elevators
-    * if an entity moves to a side, it also moves objects that lay on it - like stacks of objects
-  * fragment pools - particle replacements; fragments can be configured like object classes, can
+    - sea brushes tag areas that have the same content as terrain sea (water or lava), fog colour is
+      also matched
+    - no more need for hull around BSPs
+    - triggers: some entities can be used; upon usage trigger themselves or other entities
+    - entities can be locked/unlocked with appropriate key
+    - manual doors
+    - elevators
+    - if an entity moves to a side, it also moves objects that lay on it - like stacks of objects
+  - fragment pools: particle replacements; fragments can be configured like object classes, can
     have a graphic model assigned, etc.
-  * BSPs, object classes and fragment pools are internally referenced by BSP/ObjectClass/FragPool
+  - BSPs, object classes and fragment pools are internally referenced by BSP/ObjectClass/FragPool
     pointer instead by strings
 * client:
-  * specular and emission masks - specular lighting is done per-pixel, objects can emit light
-  * offscreen rendering support
-  * postprocessing
-  * bloom postprocess effect
-  * Sound class
-    * sounds are played asynchronously parallel to rendering
-    * asynchronous streaming of tracks
-    * support for music in MP3 and AAC formats
-    * user-specified directory can be searched for music
-  * ported to SDL 2.0
+  - configurable fog colour for both terrain and structure water/lava
+  - smooth loading: model loading split to preloading (mapping file to memory) that is run in a new
+    thread and upload to graphic card that has to be synchronous with rendering
+  - specular and emission masks - specular lighting is done per-pixel, pixels can emit light
+  - offscreen rendering support
+  - postprocessing
+  - bloom postprocess effect
+  - Sound class
+    - sounds are played asynchronously, parallel to rendering
+    - asynchronous streaming of tracks
+    - support for music in MP3 and AAC formats
+    - user-specified directory can be searched for music
+  - ported to SDL 2.0
 * build:
-  * prebuilding entirely split from the runtime part of the engine
-  * SDL_image replaced by FreeImage, wider range of image formats supported for prebuilding source
-  * 16-bit colours for terrain heightmap
+  - prebuilding entirely split from the runtime part of the engine
+  - SDL_image replaced by FreeImage, wider range of image formats supported as prebuilding source
+  - 16-bit colour components for terrain heightmap
 * tools:
-  * ozFormat tool for formatting object class files
+  - ozFormat tool for formatting object class files
 * general:
-  * PhysicsFS used for accessing game data, so they can be loaded directly from archives
-  * game data can be modularised into packages
-  * Lua classes share API code - no more code triplication for Lua APIs
+  - PhysicsFS used for accessing game data, so they can be loaded directly from archives
+  - game data can be modularised into packages
+  - Lua classes share API code - no more code triplication for Lua APIs

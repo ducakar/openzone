@@ -390,7 +390,7 @@ class HashIndex
     HashIndex( HashIndex&& t ) :
       pool( static_cast< Pool<Elem, SIZE>&& >( t.pool ) ), count( t.count )
     {
-      aCopy( data, t.data, SIZE );
+      aCopy<Elem*>( data, t.data, SIZE );
 
       aSet<Elem*>( t.data, null, SIZE );
       t.count = 0;
@@ -425,7 +425,7 @@ class HashIndex
 
       clear();
 
-      aCopy( data, t.data, SIZE );
+      aCopy<Elem*>( data, t.data, SIZE );
       pool  = static_cast< Pool<Elem, SIZE>&& >( t.pool );
       count = t.count;
 

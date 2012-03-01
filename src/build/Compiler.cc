@@ -58,7 +58,6 @@ void Compiler::beginMesh()
 
   part.component      = 0;
   part.texture        = "";
-  part.masks          = "";
   part.alpha          = 1.0f;
   part.specular       = 0.0f;
 
@@ -127,14 +126,6 @@ void Compiler::texture( const char* texture )
   hard_assert( !( flags & PART_BIT ) );
 
   part.texture = texture;
-}
-
-void Compiler::masks( const char* masks )
-{
-  hard_assert( flags & MESH_BIT );
-  hard_assert( !( flags & PART_BIT ) );
-
-  part.masks = masks;
 }
 
 void Compiler::begin( uint mode_ )
@@ -355,7 +346,6 @@ void Compiler::getMeshData( MeshData* mesh ) const
     mesh->parts[i].mode       = parts[i].mode;
 
     mesh->parts[i].texture    = parts[i].texture;
-    mesh->parts[i].masks      = parts[i].masks;
     mesh->parts[i].specular   = parts[i].specular;
     mesh->parts[i].alpha      = parts[i].alpha;
 
@@ -391,7 +381,6 @@ void Compiler::free()
   parts.dealloc();
 
   part.texture = "";
-  part.masks = "";
   part.indices.clear();
   part.indices.dealloc();
 }

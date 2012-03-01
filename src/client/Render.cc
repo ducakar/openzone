@@ -134,6 +134,14 @@ void Render::prepareDraw()
     }
   }
 
+  if( shader.medium & Medium::WATER_BIT ) {
+    float colourRatio = Math::mix( caelum.nightLuminance, 1.0f, caelum.ratio );
+
+    shader.fogColour.x *= colourRatio;
+    shader.fogColour.y *= colourRatio;
+    shader.fogColour.z *= colourRatio;
+  }
+
   if( camera.nightVision ) {
     shader.fogColour.x = 0.0f;
     shader.fogColour.y = shader.fogColour.x + shader.fogColour.y + shader.fogColour.z;

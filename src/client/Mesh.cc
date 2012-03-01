@@ -112,13 +112,29 @@ void Vertex::setFormat()
   glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 
-  glEnableVertexAttribArray( Attrib::TANGENT );
-  glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
+//   glEnableVertexAttribArray( Attrib::TANGENT );
+//   glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+//                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
+//
+//   glEnableVertexAttribArray( Attrib::BINORMAL );
+//   glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+//                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
+}
 
-  glEnableVertexAttribArray( Attrib::BINORMAL );
-  glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
+void Texture::free()
+{
+  if( albedo != 0 ) {
+    glDeleteTextures( 1, &albedo );
+    albedo = 0;
+  }
+  if( masks != 0 ) {
+    glDeleteTextures( 1, &masks );
+    masks = 0;
+  }
+  if( normals != 0 ) {
+    glDeleteTextures( 1, &normals );
+    normals = 0;
+  }
 }
 
 const Mesh* Mesh::lastMesh = null;
@@ -173,19 +189,35 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
-  DArray<uint> textures;
+  DArray<Texture> textures;
 
   int nTextures = istream->readInt();
 
   if( nTextures < 0 ) {
     nTextures = ~nTextures;
     textures.alloc( nTextures );
+    texIds.alloc( nTextures * 3 );
 
     flags |= EMBEDED_TEX_BIT;
-    textures[0] = 0;
+
+    textures[0].albedo  = 0;
+    textures[0].masks   = shader.defaultMasks;
+    textures[0].normals = shader.defaultNormals;
+
+    texIds[0] = 0;
+    texIds[1] = 0;
+    texIds[2] = 0;
 
     for( int i = 1; i < nTextures; ++i ) {
-      textures[i] = context.readTexture( istream, path );
+      int flags = istream->readInt();
+
+      textures[i].albedo  = flags & ALBEDO_BIT  ? context.readTextureLayer( istream, path ) : 0;
+      textures[i].masks   = flags & MASKS_BIT   ? context.readTextureLayer( istream, path ) : shader.defaultMasks;
+      textures[i].normals = flags & NORMALS_BIT ? context.readTextureLayer( istream, path ) : shader.defaultNormals;
+
+      texIds[i*3 + 0] = int( textures[i].albedo );
+      texIds[i*3 + 1] = int( textures[i].masks );
+      texIds[i*3 + 2] = int( textures[i].normals );
     }
   }
   else {
@@ -196,8 +228,10 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
       const String& name = istream->readString();
 
       if( name.isEmpty() ) {
-        texIds[i]   = -1;
-        textures[i] = 0;
+        texIds[i]           = -1;
+        textures[i].albedo  = 0;
+        textures[i].masks   = shader.defaultMasks;
+        textures[i].normals = shader.defaultNormals;
       }
       else {
         texIds[i]   = library.textureIndex( name );
@@ -207,7 +241,6 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
   }
 
   nParts = istream->readInt();
-
   parts = new Part[nParts];
 
   for( int i = 0; i < nParts; ++i ) {
@@ -215,16 +248,14 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
     parts[i].mode       = uint( istream->readInt() );
 
     parts[i].texture    = textures[ istream->readInt() ];
-    parts[i].masks      = textures[ istream->readInt() ];
-    parts[i].masks      = parts[i].masks == 0 ? shader.defaultMasks : parts[i].masks;
     parts[i].alpha      = istream->readFloat();
     parts[i].specular   = istream->readFloat();
 
     parts[i].nIndices   = istream->readInt();
     parts[i].firstIndex = istream->readInt();
 
-    parts[i].flags |= parts[i].alpha == 1.0f ? 0x0100 : 0x0200;
-    flags |= parts[i].flags & ( 0x0100 | 0x0200 );
+    parts[i].flags     |= parts[i].alpha == 1.0f ? int( SOLID_BIT ) : int( ALPHA_BIT );
+    flags              |= parts[i].flags & ( SOLID_BIT | ALPHA_BIT );
   }
 
   textures.dealloc();
@@ -236,12 +267,10 @@ void Mesh::unload()
 {
   if( vao != 0 ) {
     if( flags & EMBEDED_TEX_BIT ) {
-      for( int i = 0; i < nParts; ++i ) {
-        if( parts[i].texture != 0 ) {
-          glDeleteTextures( 1, &parts[i].texture );
-        }
-        if( parts[i].masks != shader.defaultMasks ) {
-          glDeleteTextures( 1, &parts[i].masks );
+      foreach( texId, texIds.citer() ) {
+        if( *texId != 0 ) {
+          uint id = uint( *texId );
+          glDeleteTextures( 1, &id );
         }
       }
     }
@@ -251,8 +280,9 @@ void Mesh::unload()
           context.releaseTexture( *id );
         }
       }
-      texIds.dealloc();
     }
+
+    texIds.dealloc();
 
     glDeleteBuffers( 1, &vbo );
     glDeleteBuffers( 1, &ibo );
@@ -308,12 +338,14 @@ void Mesh::drawComponent( int id, int mask ) const
     }
     else if( part.flags & mask ) {
       glActiveTexture( GL_TEXTURE0 );
-      glBindTexture( GL_TEXTURE_2D, part.texture );
+      glBindTexture( GL_TEXTURE_2D, part.texture.albedo );
       glActiveTexture( GL_TEXTURE1 );
-      glBindTexture( GL_TEXTURE_2D, part.masks );
+      glBindTexture( GL_TEXTURE_2D, part.texture.masks );
+
       glUniform1f( param.oz_Specular, part.specular );
       glUniform4f( param.oz_Colour, shader.colour.x, shader.colour.y, shader.colour.z,
                    shader.colour.w * part.alpha );
+
       glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
                       reinterpret_cast<const ushort*>( 0 ) + part.firstIndex );
     }
@@ -343,12 +375,14 @@ void Mesh::draw( int mask ) const
 
     if( part.flags & mask ) {
       glActiveTexture( GL_TEXTURE0 );
-      glBindTexture( GL_TEXTURE_2D, part.texture );
+      glBindTexture( GL_TEXTURE_2D, part.texture.albedo );
       glActiveTexture( GL_TEXTURE1 );
-      glBindTexture( GL_TEXTURE_2D, part.masks );
+      glBindTexture( GL_TEXTURE_2D, part.texture.masks );
+
       glUniform1f( param.oz_Specular, part.specular );
       glUniform4f( param.oz_Colour, shader.colour.x, shader.colour.y, shader.colour.z,
                    shader.colour.w * part.alpha );
+
       glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
                       reinterpret_cast<const ushort*>( 0 ) + part.firstIndex );
     }

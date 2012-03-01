@@ -134,7 +134,7 @@ class Array
      */
     explicit Array( const Elem* array )
     {
-      aCopy( data, array, SIZE );
+      aCopy<Elem>( data, array, SIZE );
     }
 
     /**
@@ -142,7 +142,7 @@ class Array
      */
     bool operator == ( const Array& a ) const
     {
-      return aEquals( data, a.data, SIZE );
+      return aEquals<Elem>( data, a.data, SIZE );
     }
 
     /**
@@ -150,7 +150,7 @@ class Array
      */
     bool operator != ( const Array& a ) const
     {
-      return !aEquals( data, a.data, SIZE );
+      return !aEquals<Elem>( data, a.data, SIZE );
     }
 
     /**
@@ -270,7 +270,7 @@ class Array
      */
     bool contains( const Elem& e ) const
     {
-      return aContains( data, e, SIZE );
+      return aContains<Elem>( data, e, SIZE );
     }
 
     /**
@@ -278,7 +278,7 @@ class Array
      */
     int index( const Elem& e ) const
     {
-      return aIndex( data, e, SIZE );
+      return aIndex<Elem>( data, e, SIZE );
     }
 
     /**
@@ -286,7 +286,7 @@ class Array
      */
     int lastIndex( const Elem& e ) const
     {
-      return aLastIndex( data, e, SIZE );
+      return aLastIndex<Elem>( data, e, SIZE );
     }
 
     /**
@@ -294,7 +294,7 @@ class Array
      */
     void sort()
     {
-      aSort( data, SIZE );
+      aSort<Elem>( data, SIZE );
     }
 
     /**
@@ -302,7 +302,7 @@ class Array
      */
     void free()
     {
-      aFree( data, SIZE );
+      aFree<Elem>( data, SIZE );
     }
 
 };

@@ -174,9 +174,9 @@ void Terra::load()
 
   InputStream is = file.inputStream();
 
-  waterTexId  = context.readTexture( &is, path );
-  detailTexId = context.readTexture( &is, path );
-  mapTexId    = context.readTexture( &is, path );
+  waterTexId  = context.readTextureLayer( &is, path );
+  detailTexId = context.readTextureLayer( &is, path );
+  mapTexId    = context.readTextureLayer( &is, path );
 
 #ifndef OZ_GL_COMPATIBLE
   glGenVertexArrays( TILES * TILES, &vaos[0][0] );

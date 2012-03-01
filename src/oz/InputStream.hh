@@ -204,7 +204,7 @@ class InputStream
     void readChars( char* array, int count )
     {
       const char* data = reinterpret_cast<const char*>( forward( count * int( sizeof( char ) ) ) );
-      aCopy( array, data, count );
+      aCopy<char>( array, data, count );
     }
 
     /**

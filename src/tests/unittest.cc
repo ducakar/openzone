@@ -315,7 +315,7 @@ static void ozArraysUnittest()
   aSet( a, Test( 12 ), 2 );
   aSet( b, Test( 12 ), 5 );
   OZ_CHECK( aEquals( b, a, 2 ) );
-  foreach( i, citer( b, 5 ) ) {
+  foreach( i, citer( b ) ) {
     OZ_CHECK( *i == Test( 12 ) );
   }
 

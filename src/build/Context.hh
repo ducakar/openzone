@@ -39,6 +39,8 @@ class Context
     static const int DEFAULT_MAG_FILTER = GL_LINEAR;
     static const int DEFAULT_MIN_FILTER = GL_LINEAR_MIPMAP_LINEAR;
 
+    static const char* const IMAGE_EXTENSIONS[];
+
     HashString<> usedTextures;
     HashString<> usedSounds;
     HashString<> usedModels;
@@ -51,6 +53,11 @@ class Context
     uint loadRawTexture( const char* path, bool wrap = true,
                          int magFilter = DEFAULT_MAG_FILTER,
                          int minFilter = DEFAULT_MIN_FILTER );
+
+    void loadRawTextures( uint* albedoId, uint* masksId, uint* normalsId,
+                          const char* basePath, bool wrap = true,
+                          int magFilter = DEFAULT_MAG_FILTER,
+                          int minFilter = DEFAULT_MIN_FILTER );
 
     void writeTexture( uint id, BufferStream* stream );
 

@@ -32,7 +32,7 @@ namespace oz
 namespace build
 {
 
-void MeshData::write( BufferStream* stream, bool embedTextures ) const
+void MeshData::write( BufferStream* os, bool embedTextures ) const
 {
   hard_assert( parts.length() > 0 );
   hard_assert( indices.length() > 0 );
@@ -41,55 +41,78 @@ void MeshData::write( BufferStream* stream, bool embedTextures ) const
   log.println( "Writing mesh {" );
   log.indent();
 
-  stream->writeInt( vertices.length() );
-  stream->writeInt( indices.length() );
+  os->writeInt( vertices.length() );
+  os->writeInt( indices.length() );
 
   foreach( vertex, vertices.citer() ) {
-    vertex->write( stream );
+    vertex->write( os );
   }
   foreach( index, indices.citer() ) {
-    stream->writeShort( short( *index ) );
+    os->writeShort( short( *index ) );
   }
 
   Vector<String> textures;
-  textures.add( "" );
+  textures.add( "" ); // No texture.
 
   foreach( part, parts.citer() ) {
     textures.include( part->texture );
-    textures.include( part->masks );
   }
 
   if( embedTextures ) {
-    stream->writeInt( ~textures.length() );
+    os->writeInt( ~textures.length() );
 
     for( int i = 1; i < textures.length(); ++i ) {
-      uint id = context.loadRawTexture( textures[i] );
+      uint albedoId, masksId, normalsId;
+      context.loadRawTextures( &albedoId, &masksId, &normalsId, textures[i] );
 
-      context.writeTexture( id, stream );
-      glDeleteTextures( 1, &id );
+      int textureFlags = 0;
+
+      if( albedoId != 0 ) {
+        textureFlags |= client::Mesh::ALBEDO_BIT;
+      }
+      if( masksId != 0 ) {
+        textureFlags |= client::Mesh::MASKS_BIT;
+      }
+      if( normalsId != 0 ) {
+        textureFlags |= client::Mesh::NORMALS_BIT;
+      }
+
+      os->writeInt( textureFlags );
+
+      if( albedoId != 0 ) {
+        context.writeTexture( albedoId, os );
+        glDeleteTextures( 1, &albedoId );
+      }
+      if( masksId != 0 ) {
+        context.writeTexture( masksId, os );
+        glDeleteTextures( 1, &masksId );
+      }
+      if( normalsId != 0 ) {
+        context.writeTexture( normalsId, os );
+        glDeleteTextures( 1, &normalsId );
+      }
     }
   }
   else {
-    stream->writeInt( textures.length() );
+    os->writeInt( textures.length() );
 
     foreach( texture, textures.citer() ) {
-      stream->writeString( *texture );
+      os->writeString( *texture );
     }
   }
 
-  stream->writeInt( parts.length() );
+  os->writeInt( parts.length() );
 
   foreach( part, parts.citer() ) {
-    stream->writeInt( part->component );
-    stream->writeInt( int( part->mode ) );
+    os->writeInt( part->component );
+    os->writeInt( int( part->mode ) );
 
-    stream->writeInt( textures.index( part->texture ) );
-    stream->writeInt( textures.index( part->masks ) );
-    stream->writeFloat( part->alpha );
-    stream->writeFloat( part->specular );
+    os->writeInt( textures.index( part->texture ) );
+    os->writeFloat( part->alpha );
+    os->writeFloat( part->specular );
 
-    stream->writeInt( part->nIndices );
-    stream->writeInt( part->firstIndex );
+    os->writeInt( part->nIndices );
+    os->writeInt( part->firstIndex );
   }
 
   log.unindent();
