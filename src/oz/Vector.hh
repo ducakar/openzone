@@ -136,7 +136,7 @@ class Vector
     {
       if( size == count ) {
         size = size == 0 ? GRANULARITY : 2 * size;
-        data = aRealloc( data, count, size );
+        data = aRealloc<Elem>( data, count, size );
       }
     }
 
@@ -148,7 +148,7 @@ class Vector
     {
       if( size < desiredSize ) {
         size = ( ( desiredSize - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
-        data = aRealloc( data, count, size );
+        data = aRealloc<Elem>( data, count, size );
       }
     }
 
@@ -175,7 +175,7 @@ class Vector
     Vector( const Vector& v ) :
       data( v.size == 0 ? null : new Elem[v.size] ), size( v.size ), count( v.count )
     {
-      aCopy( data, v.data, v.count );
+      aCopy<Elem>( data, v.data, v.count );
     }
 
     /**
@@ -207,7 +207,7 @@ class Vector
         size = v.size;
       }
 
-      aCopy( data, v.data, v.count );
+      aCopy<Elem>( data, v.data, v.count );
       count = v.count;
 
       return *this;
@@ -247,7 +247,7 @@ class Vector
      */
     bool operator == ( const Vector& v ) const
     {
-      return count == v.count && aEquals( data, v.data, count );
+      return count == v.count && aEquals<Elem>( data, v.data, count );
     }
 
     /**
@@ -255,7 +255,7 @@ class Vector
      */
     bool operator != ( const Vector& v ) const
     {
-      return count != v.count || !aEquals( data, v.data, count );
+      return count != v.count || !aEquals<Elem>( data, v.data, count );
     }
 
     /**
@@ -392,7 +392,7 @@ class Vector
      */
     bool contains( const Elem& e ) const
     {
-      return aContains( data, e, count );
+      return aContains<Elem>( data, e, count );
     }
 
     /**
@@ -400,7 +400,7 @@ class Vector
      */
     int index( const Elem& e ) const
     {
-      return aIndex( data, e, count );
+      return aIndex<Elem>( data, e, count );
     }
 
     /**
@@ -408,7 +408,7 @@ class Vector
      */
     int lastIndex( const Elem& e ) const
     {
-      return aLastIndex( data, e, count );
+      return aLastIndex<Elem>( data, e, count );
     }
 
     /**
@@ -442,7 +442,7 @@ class Vector
 
       ensureCapacity( newCount );
 
-      aCopy( data + count, array, arrayCount );
+      aCopy<Elem>( data + count, array, arrayCount );
       count = newCount;
     }
 
@@ -454,7 +454,7 @@ class Vector
     template <typename Elem_>
     int include( Elem_&& e )
     {
-      int i = aIndex( data, e, count );
+      int i = aIndex<Elem>( data, e, count );
 
       if( i == -1 ) {
         ensureCapacity();
@@ -478,7 +478,7 @@ class Vector
 
       ensureCapacity();
 
-      aReverseMove( data + i + 1, data + i, count - i );
+      aReverseMove<Elem>( data + i + 1, data + i, count - i );
       data[i] = static_cast<Elem_&&>( e );
       ++count;
     }
@@ -503,7 +503,7 @@ class Vector
       hard_assert( uint( i ) < uint( count ) );
 
       --count;
-      aMove( data + i, data + i + 1, count - i );
+      aMove<Elem>( data + i, data + i + 1, count - i );
     }
 
     /**
@@ -526,11 +526,11 @@ class Vector
      */
     int exclude( const Elem& e )
     {
-      int i = aIndex( data, e, count );
+      int i = aIndex<Elem>( data, e, count );
 
       if( i != -1 ) {
         --count;
-        aMove( data + i, data + i + 1, count - i );
+        aMove<Elem>( data + i, data + i + 1, count - i );
       }
       return i;
     }
@@ -544,7 +544,7 @@ class Vector
      */
     int excludeUO( const Elem& e )
     {
-      int i = aIndex( data, e, count );
+      int i = aIndex<Elem>( data, e, count );
 
       if( i != -1 ) {
         --count;
@@ -563,7 +563,7 @@ class Vector
     {
       ensureCapacity();
 
-      aReverseMove( data + 1, data, count );
+      aReverseMove<Elem>( data + 1, data, count );
       data[0] = static_cast<Elem_&&>( e );
       ++count;
     }
@@ -592,7 +592,7 @@ class Vector
       Elem e = static_cast<Elem&&>( data[0] );
 
       --count;
-      aMove( data, data + 1, count );
+      aMove<Elem>( data, data + 1, count );
 
       return e;
     }
@@ -616,7 +616,7 @@ class Vector
      */
     void sort()
     {
-      aSort( data, count );
+      aSort<Elem>( data, count );
     }
 
     /**
@@ -632,7 +632,7 @@ class Vector
      */
     void free()
     {
-      aFree( data, count );
+      aFree<Elem>( data, count );
       clear();
     }
 
@@ -670,7 +670,7 @@ class Vector
 
       if( newSize < size ) {
         size = newSize;
-        data = aRealloc( data, count, size );
+        data = aRealloc<Elem>( data, count, size );
       }
     }
 

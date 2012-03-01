@@ -62,73 +62,29 @@ void Build::printUsage()
   log.indent();
   log.println( "ozBuild [OPTIONS] <data_src> <out_root>" );
   log.println();
-  log.println( "<data_src>" );
-  log.println( "\tPath to directory that includes data to be built. Name of this" );
-  log.println( "\tdirectory name is used as package name." );
-  log.println();
-  log.println( "<out_root>" );
-  log.println( "\tDirectory where output directory and archive will be created." );
-  log.println();
-  log.println( "-v" );
-  log.println( "\tMore verbose log output." );
-  log.println();
-  log.println( "-l" );
-  log.println( "\tBuild translations." );
-  log.println();
-  log.println( "-u" );
-  log.println( "\tBuild UI." );
-  log.println();
-  log.println( "-g" );
-  log.println( "\tCopy shaders." );
-  log.println();
-  log.println( "-c" );
-  log.println( "\tBuild caela (skies)." );
-  log.println();
-  log.println( "-t" );
-  log.println( "\tBuild terrae (terrains)." );
-  log.println();
-  log.println( "-b" );
-  log.println( "\tCompile maps into BSPs and build BPSs with referenced textures." );
-  log.println();
-  log.println( "-m" );
-  log.println( "\tBuild models." );
-  log.println();
-  log.println( "-s" );
-  log.println( "\tCopy sounds (only used ones)." );
-  log.println();
-  log.println( "-a" );
-  log.println( "\tCopy object class definitions." );
-  log.println();
-  log.println( "-f" );
-  log.println( "\tCopy fragment pool definitions." );
-  log.println();
-  log.println( "-n" );
-  log.println( "\tCopy name lists." );
-  log.println();
-  log.println( "-x" );
-  log.println( "\tCheck and copy Lua scripts." );
-  log.println();
-  log.println( "-o" );
-  log.println( "\tBuild modules." );
-  log.println();
-  log.println( "-r" );
-  log.println( "\tCopy music tracks." );
-  log.println();
-  log.println( "-p" );
-  log.println( "\tPack built files into ZIP archive." );
-  log.println();
-  log.println( "-A" );
-  log.println( "\tEverything above." );
-  log.println();
-  log.println( "-C" );
-  log.println( "\tUse S3 texture compression." );
-  log.println();
-  log.println( "-0" );
-  log.println( "\tUse no compression for ZIP archive." );
-  log.println();
-  log.println( "-7" );
-  log.println( "\tCreate non-solid LZMA-compressed 7zip archive instead of ZIP." );
-  log.println();
+  log.println( "<data_src>  Path to directory that includes data to be built. Name of this" );
+  log.println( "            directory name is used as package name." );
+  log.println( "<out_root>  Directory where output directory and archive will be created." );
+  log.println( "-v          More verbose log output." );
+  log.println( "-l          Build translations." );
+  log.println( "-u          Build UI." );
+  log.println( "-g          Copy shaders." );
+  log.println( "-c          Build caela (skies)." );
+  log.println( "-t          Build terrae (terrains)." );
+  log.println( "-b          Compile maps into BSPs and build BPSs with referenced textures." );
+  log.println( "-m          Build models." );
+  log.println( "-s          Copy sounds (only used ones)." );
+  log.println( "-a          Copy object class definitions." );
+  log.println( "-f          Copy fragment pool definitions." );
+  log.println( "-n          Copy name lists." );
+  log.println( "-x          Check and copy Lua scripts." );
+  log.println( "-o          Build modules." );
+  log.println( "-r          Copy music tracks." );
+  log.println( "-p          Pack built files into ZIP archive." );
+  log.println( "-A          Everything above." );
+  log.println( "-C          Use S3 texture compression." );
+  log.println( "-0          Use no compression for ZIP archive." );
+  log.println( "-7          Create non-solid LZMA-compressed 7zip archive instead of ZIP." );
   log.unindent();
 }
 
@@ -387,6 +343,11 @@ void Build::buildBSPTextures()
 
       // strlen( "baseq3/textures/" ) == 16
       name = path.substring( 16, dot );
+      path = path.substring( 0, dot );
+
+      if( name.endsWith( "_masks" ) || name.endsWith( "_normals" ) ) {
+        continue;
+      }
 
       if( !context.usedTextures.contains( name ) ) {
         continue;
@@ -400,12 +361,35 @@ void Build::buildBSPTextures()
 
       File destFile( String::str( "tex/%s.ozcTex", name.cstr() ) );
 
-      uint id = context.loadRawTexture( path );
+      uint albedoId, masksId, normalsId;
+      context.loadRawTextures( &albedoId, &masksId, &normalsId, path );
 
       BufferStream os;
 
       log.println( "Compiling into '%s'", destFile.path().cstr() );
-      context.writeTexture( id, &os );
+
+      int textureFlags = client::Mesh::ALBEDO_BIT;
+
+      if( masksId != 0 ) {
+        textureFlags |= client::Mesh::MASKS_BIT;
+      }
+      if( normalsId != 0 ) {
+        textureFlags |= client::Mesh::NORMALS_BIT;
+      }
+
+      os.writeInt( textureFlags );
+
+      context.writeTexture( albedoId, &os );
+      glDeleteTextures( 1, &albedoId );
+
+      if( masksId != 0 ) {
+        context.writeTexture( masksId, &os );
+        glDeleteTextures( 1, &masksId );
+      }
+      if( normalsId != 0 ) {
+        context.writeTexture( normalsId, &os );
+        glDeleteTextures( 1, &normalsId );
+      }
 
       if( !destFile.write( &os ) ) {
         throw Exception( "Failed to write texture '%s'", destFile.path().cstr() );

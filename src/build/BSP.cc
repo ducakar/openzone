@@ -38,6 +38,11 @@ const float BSP::DEFAULT_LIFE       = 10000.0f;
 const float BSP::DEFAULT_RESISTANCE = 400.0f;
 const float BSP::DEFAULT_MARGIN     = 0.1f;
 
+const float BSP::LIQUID_ALPHA       = 0.75f;
+const float BSP::LIQUID_SPECULAR    = 0.50f;
+const float BSP::GLASS_ALPHA        = 0.15f;
+const float BSP::GLASS_SPECULAR     = 2.00f;
+
 void BSP::load()
 {
   PhysFile rcFile( String::str( "baseq3/maps/%s.rc", name.cstr() ) );
@@ -1131,14 +1136,16 @@ void BSP::saveClient()
         throw Exception( "BSP has a visible face without texture" );
       }
 
-      if( textures[face.texture].type & QBSP_WATER_TYPE_BIT ) {
-        compiler.material( GL_DIFFUSE, 0.75f );
-        compiler.material( GL_SPECULAR, 0.5f );
+      if( textures[face.texture].type &
+          ( QBSP_WATER_TYPE_BIT | QBSP_LAVA_TYPE_BIT | QBSP_SEA_TYPE_BIT ) )
+      {
+        compiler.material( GL_DIFFUSE, LIQUID_ALPHA );
+        compiler.material( GL_SPECULAR, LIQUID_SPECULAR );
         flags |= Mesh::ALPHA_BIT;
       }
       else if( textures[face.texture].flags & QBSP_GLASS_FLAG_BIT ) {
-        compiler.material( GL_DIFFUSE, 0.25f );
-        compiler.material( GL_SPECULAR, 2.0f );
+        compiler.material( GL_DIFFUSE, GLASS_ALPHA );
+        compiler.material( GL_SPECULAR, GLASS_SPECULAR );
         flags |= Mesh::ALPHA_BIT;
       }
       else {

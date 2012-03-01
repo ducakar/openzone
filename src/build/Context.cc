@@ -45,6 +45,13 @@ namespace build
 
 Context context;
 
+const char* const Context::IMAGE_EXTENSIONS[] = {
+  ".png",
+  ".jpeg",
+  ".jpg",
+  ".tga"
+};
+
 uint Context::buildTexture( const void* data, int width, int height, int format, bool wrap,
                             int magFilter, int minFilter )
 {
@@ -110,8 +117,8 @@ uint Context::buildTexture( const void* data, int width, int height, int format,
   }
 
   if( !wrap ) {
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
   }
 
   glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, width, height, 0, uint( format ),
@@ -225,6 +232,50 @@ uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int mi
   log.printEnd( " OK" );
 
   return texId;
+}
+
+void Context::loadRawTextures( uint* albedoId, uint* masksId, uint* normalsId,
+                               const char* basePath, bool wrap, int magFilter, int minFilter )
+{
+  String albedoBasePath  = basePath;
+  String masksBasePath   = albedoBasePath + "_masks";
+  String normalsBasePath = albedoBasePath + "_normals";
+
+  PhysFile albedo( albedoBasePath + IMAGE_EXTENSIONS[0] );
+  PhysFile masks( masksBasePath + IMAGE_EXTENSIONS[0] );
+  PhysFile normals( normalsBasePath + IMAGE_EXTENSIONS[0] );
+
+  for( int i = 1; i < aLength( IMAGE_EXTENSIONS ); ++i ) {
+    if( albedo.getType() == File::MISSING ) {
+      albedo.setPath( albedoBasePath + IMAGE_EXTENSIONS[i] );
+    }
+    if( masks.getType() == File::MISSING ) {
+      masks.setPath( masksBasePath + IMAGE_EXTENSIONS[i] );
+    }
+    if( normals.getType() == File::MISSING ) {
+      normals.setPath( normalsBasePath + IMAGE_EXTENSIONS[i] );
+    }
+  }
+
+  if( albedo.getType() == File::MISSING ) {
+    throw Exception( "Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath );
+  }
+
+  *albedoId = loadRawTexture( albedo.path(), wrap, magFilter, minFilter );
+
+  if( masks.getType() != File::MISSING ) {
+    *masksId = loadRawTexture( masks.path(), wrap, magFilter, minFilter );
+  }
+  else {
+    *masksId = 0;
+  }
+
+  if( normals.getType() != File::MISSING ) {
+    *normalsId = loadRawTexture( normals.path(), wrap, magFilter, minFilter );
+  }
+  else {
+    *normalsId = 0;
+  }
 }
 
 void Context::writeTexture( uint id, BufferStream* stream )

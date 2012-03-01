@@ -31,25 +31,25 @@ class BuildInfo
   public:
 
     /// Data and time.
-    static const char* TIME;
+    static const char* const TIME;
 
     /// Host system.
-    static const char* HOST_SYSTEM;
+    static const char* const HOST_SYSTEM;
 
     /// Target system.
-    static const char* TARGET_SYSTEM;
+    static const char* const TARGET_SYSTEM;
 
     /// Build configuration.
-    static const char* BUILD_TYPE;
+    static const char* const BUILD_TYPE;
 
     /// Compiler executable and version.
-    static const char* COMPILER;
+    static const char* const COMPILER;
 
     /// Compiler flags.
-    static const char* CXX_FLAGS;
+    static const char* const CXX_FLAGS;
 
     /// Linker flags.
-    static const char* EXE_LINKER_FLAGS;
+    static const char* const EXE_LINKER_FLAGS;
 
 };
 

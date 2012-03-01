@@ -89,7 +89,7 @@ class BufferStream
       pos   = start + length;
       order = s.order;
 
-      aCopy( start, s.start, size );
+      aCopy<char>( start, s.start, size );
     }
 
     /**
@@ -127,7 +127,7 @@ class BufferStream
 
       pos = start + length;
       order = s.order;
-      aCopy( start, s.start, size );
+      aCopy<char>( start, s.start, size );
 
       return *this;
     }
@@ -297,7 +297,7 @@ class BufferStream
           newSize = ( ( length + count - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
         }
 
-        start  = aRealloc( start, size, newSize );
+        start  = aRealloc<char>( start, size, newSize );
         end    = start + newSize;
         pos    = start + length;
         oldPos = pos - count;
@@ -352,7 +352,7 @@ class BufferStream
     void readChars( char* array, int count )
     {
       const char* data = reinterpret_cast<const char*>( forward( count * int( sizeof( char ) ) ) );
-      aCopy( array, data, count );
+      aCopy<char>( array, data, count );
     }
 
     /**
@@ -362,7 +362,7 @@ class BufferStream
     void writeChars( const char* array, int count )
     {
       char* data = reinterpret_cast<char*>( forward( count * int( sizeof( char ) ) ) );
-      aCopy( data, array, count );
+      aCopy<char>( data, array, count );
     }
 
     /**
@@ -565,7 +565,7 @@ class BufferStream
       int size = s.length() + 1;
       char* data = forward( size );
 
-      aCopy( data, s.cstr(), size );
+      aCopy<char>( data, s.cstr(), size );
     }
 
     /**
@@ -577,7 +577,7 @@ class BufferStream
       int size = String::length( s ) + 1;
       char* data = forward( size );
 
-      aCopy( data, s, size );
+      aCopy<char>( data, s, size );
     }
 
     /**

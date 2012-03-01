@@ -121,6 +121,7 @@ void File::setPath( const char* path )
   filePath = path;
   type     = NONE;
   data     = null;
+  size     = 0;
 }
 
 File::Type File::getType()
@@ -202,6 +203,11 @@ bool File::hasExtension( const char* ext ) const
   else {
     return String::isEmpty( ext );
   }
+}
+
+bool File::isMapped() const
+{
+  return data != null;
 }
 
 void File::clear()

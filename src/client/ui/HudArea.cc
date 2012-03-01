@@ -387,17 +387,17 @@ HudArea::HudArea() :
 
   log.verboseMode = true;
 
-  crossTexId    = context.loadTexture( "ui/icon/crosshair.ozcTex" );
-  useTexId      = context.loadTexture( "ui/icon/use.ozcTex" );
-  deviceTexId   = context.loadTexture( "ui/icon/device.ozcTex" );
-  equipTexId    = context.loadTexture( "ui/icon/equip.ozcTex" );
-  mountTexId    = context.loadTexture( "ui/icon/mount.ozcTex" );
-  takeTexId     = context.loadTexture( "ui/icon/take.ozcTex" );
-  browseTexId   = context.loadTexture( "ui/icon/browse.ozcTex" );
-  liftTexId     = context.loadTexture( "ui/icon/lift.ozcTex" );
-  grabTexId     = context.loadTexture( "ui/icon/grab.ozcTex" );
-  lockedTexId   = context.loadTexture( "ui/icon/locked.ozcTex" );
-  unlockedTexId = context.loadTexture( "ui/icon/unlocked.ozcTex" );
+  crossTexId    = context.loadTextureLayer( "ui/icon/crosshair.ozcTex" );
+  useTexId      = context.loadTextureLayer( "ui/icon/use.ozcTex" );
+  deviceTexId   = context.loadTextureLayer( "ui/icon/device.ozcTex" );
+  equipTexId    = context.loadTextureLayer( "ui/icon/equip.ozcTex" );
+  mountTexId    = context.loadTextureLayer( "ui/icon/mount.ozcTex" );
+  takeTexId     = context.loadTextureLayer( "ui/icon/take.ozcTex" );
+  browseTexId   = context.loadTextureLayer( "ui/icon/browse.ozcTex" );
+  liftTexId     = context.loadTextureLayer( "ui/icon/lift.ozcTex" );
+  grabTexId     = context.loadTextureLayer( "ui/icon/grab.ozcTex" );
+  lockedTexId   = context.loadTextureLayer( "ui/icon/locked.ozcTex" );
+  unlockedTexId = context.loadTextureLayer( "ui/icon/unlocked.ozcTex" );
 
   log.verboseMode = false;
 

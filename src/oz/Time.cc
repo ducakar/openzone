@@ -121,7 +121,7 @@ uint Time::uclock()
 void Time::usleep( uint microseconds )
 {
 #ifdef _WIN32
-  Sleep( max( ( microseconds + 500 ) / 1000, 1u ) );
+  Sleep( max<uint>( ( microseconds + 500 ) / 1000, 1 ) );
 #else
   ::usleep( microseconds );
 #endif

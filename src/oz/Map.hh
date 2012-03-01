@@ -279,7 +279,7 @@ class Map
     {
       if( size == count ) {
         size = size == 0 ? GRANULARITY : 2 * size;
-        data = aRealloc( data, count, size );
+        data = aRealloc<Elem>( data, count, size );
       }
     }
 
@@ -306,7 +306,7 @@ class Map
     Map( const Map& m ) :
       data( m.size == 0 ? null : new Elem[m.size] ), size( m.size ), count( m.count )
     {
-      aCopy( data, m.data, m.count );
+      aCopy<Elem>( data, m.data, m.count );
     }
 
     /**
@@ -338,7 +338,7 @@ class Map
         size = m.size;
       }
 
-      aCopy( data, m.data, m.count );
+      aCopy<Elem>( data, m.data, m.count );
       count = m.count;
 
       return *this;
@@ -378,7 +378,7 @@ class Map
      */
     bool operator == ( const Map& m ) const
     {
-      return count == m.count && aEquals( data, m.data, count );
+      return count == m.count && aEquals<Elem>( data, m.data, count );
     }
 
     /**
@@ -386,7 +386,7 @@ class Map
      */
     bool operator != ( const Map& m ) const
     {
-      return count != m.count || !aEquals( data, m.data, count );
+      return count != m.count || !aEquals<Elem>( data, m.data, count );
     }
 
     /**
@@ -494,7 +494,7 @@ class Map
      */
     bool contains( const Key& key ) const
     {
-      return aBisectFind( data, key, count ) != -1;
+      return aBisectFind<Elem>( data, key, count ) != -1;
     }
 
     /**
@@ -502,7 +502,7 @@ class Map
      */
     int index( const Key& key ) const
     {
-      return aBisectFind( data, key, count );
+      return aBisectFind<Elem>( data, key, count );
     }
 
     /**
@@ -510,7 +510,7 @@ class Map
      */
     const Value* find( const Key& key ) const
     {
-      int i = aBisectFind( data, key, count );
+      int i = aBisectFind<Elem>( data, key, count );
       return i == -1 ? null : &data[i].value;
     }
 
@@ -519,7 +519,7 @@ class Map
      */
     Value* find( const Key& key )
     {
-      int i = aBisectFind( data, key, count );
+      int i = aBisectFind<Elem>( data, key, count );
       return i == -1 ? null : &data[i].value;
     }
 
@@ -531,7 +531,7 @@ class Map
     template <typename Key_, typename Value_ = Value>
     int add( Key_&& key, Value_&& value = Value() )
     {
-      int i = aBisectPosition( data, key, count );
+      int i = aBisectPosition<Elem>( data, key, count );
 
       if( i != 0 && data[i - 1].key == key ) {
         data[i - 1].value = static_cast<Value_&&>( value );
@@ -550,7 +550,7 @@ class Map
     template <typename Key_, typename Value_ = Value>
     int include( Key_&& key, Value_&& value = Value() )
     {
-      int i = aBisectPosition( data, key, count );
+      int i = aBisectPosition<Elem>( data, key, count );
 
       if( i == 0 || !( data[i - 1].key == key ) ) {
         insert( i, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
@@ -572,7 +572,7 @@ class Map
 
       ensureCapacity();
 
-      aReverseMove( data + i + 1, data + i, count - i );
+      aReverseMove<Elem>( data + i + 1, data + i, count - i );
       data[i].key   = static_cast<Key_&&>( key );
       data[i].value = static_cast<Value_&&>( value );
 
@@ -589,7 +589,7 @@ class Map
       hard_assert( uint( i ) < uint( count ) );
 
       --count;
-      aMove( data + i, data + i + 1, count - i );
+      aMove<Elem>( data + i, data + i + 1, count - i );
     }
 
     /**
@@ -599,7 +599,7 @@ class Map
      */
     int exclude( const Key& key )
     {
-      int i = aBisectFind( data, key, count );
+      int i = aBisectFind<Elem>( data, key, count );
 
       if( i != -1 ) {
         remove( i );
@@ -620,7 +620,7 @@ class Map
      */
     void free()
     {
-      aFree( data, count );
+      aFree<Elem>( data, count );
       clear();
     }
 
@@ -658,7 +658,7 @@ class Map
 
       if( newSize < size ) {
         size = newSize;
-        data = aRealloc( data, count, size );
+        data = aRealloc<Elem>( data, count, size );
       }
     }
 

@@ -35,6 +35,10 @@
 
 #pragma once
 
+// Might be defined in ozconfig.hh for compatibility with GCC 4.4 and 4.5.
+#undef constexpr
+#undef nullptr
+
 #undef soft_assert
 #undef hard_assert
 #undef foreach

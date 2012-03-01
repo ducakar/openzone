@@ -209,22 +209,14 @@ void MD2::build( const char* path )
   String sPath = path;
 
   PhysFile modelFile( sPath + "/tris.md2" );
-  PhysFile skinFile0( sPath + "/skin.png" );
-  PhysFile skinFile1( sPath + "/skin.jpg" );
-  PhysFile masksFile0( sPath + "/masks.png" );
-  PhysFile masksFile1( sPath + "/masks.jpg" );
   PhysFile configFile( sPath + "/config.rc" );
+  String skinPath = sPath + "/skin";
 
   log.println( "Prebuilding MD2 model '%s' {", path );
   log.indent();
 
   Config config;
   config.load( configFile );
-
-  PhysFile& skinFile  = skinFile0.getType()  == File::MISSING ? skinFile1  : skinFile0;
-  PhysFile& masksFile = masksFile0.getType() == File::MISSING ? masksFile1 : masksFile0;
-
-  bool hasMasks = masksFile.getType() != File::MISSING;
 
   if( !modelFile.map() ) {
     throw Exception( "MD2 reading failed" );
@@ -366,11 +358,7 @@ void MD2::build( const char* path )
   compiler.enable( CAP_UNIQUE );
   compiler.enable( CAP_CW );
   compiler.material( GL_SPECULAR, specular );
-  compiler.texture( skinFile.path() );
-
-  if( hasMasks ) {
-    compiler.masks( masksFile.path() );
-  }
+  compiler.texture( skinPath );
 
   compiler.begin( GL_TRIANGLES );
 

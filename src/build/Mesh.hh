@@ -44,7 +44,6 @@ class MeshData
       uint   mode;
 
       String texture;
-      String masks;
       float  alpha;
       float  specular;
 
@@ -57,7 +56,7 @@ class MeshData
     DArray<ushort> indices;
     DArray<Vertex> vertices;
 
-    void write( BufferStream* stream, bool embedTextures = true ) const;
+    void write( BufferStream* os, bool embedTextures = true ) const;
 
 };
 

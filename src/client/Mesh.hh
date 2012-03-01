@@ -47,29 +47,41 @@ struct Vertex
   static void setFormat();
 };
 
+struct Texture
+{
+  uint albedo;
+  uint masks;
+  uint normals;
+
+  void free();
+};
+
 class Mesh
 {
   public:
 
-    static const int COMPONENT_MASK  = 0x00ff;
-    static const int SOLID_BIT       = 0x0100;
-    static const int ALPHA_BIT       = 0x0200;
-    static const int EMBEDED_TEX_BIT = 0x0400;
+    static const int COMPONENT_MASK  = 0x00ff; ///< Mask to get number of mesh components.
+    static const int EMBEDED_TEX_BIT = 0x0100; ///< Textures are embedded in SMM file.
+    static const int SOLID_BIT       = 0x0200; ///< Mesh component is not transparent.
+    static const int ALPHA_BIT       = 0x0400; ///< Mesh component is transparent.
+
+    static const int ALBEDO_BIT      = 0x1000; ///< Texture has albedo (base per-pixel colours).
+    static const int MASKS_BIT       = 0x2000; ///< Texture has specular and emission masks.
+    static const int NORMALS_BIT     = 0x4000; ///< Texture has normal map.
 
   private:
 
     struct Part
     {
-      int   flags;
-      uint  mode;
+      int     flags;
+      uint    mode;
 
-      uint  texture;
-      uint  masks;
-      float alpha;
-      float specular;
+      Texture texture;
+      float   alpha;
+      float   specular;
 
-      int   nIndices;
-      int   firstIndex;
+      int     nIndices;
+      int     firstIndex;
     };
 
     static const Mesh* lastMesh;

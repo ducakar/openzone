@@ -1,4 +1,4 @@
-# Doxyfile 1.7.6.1
+# Doxyfile 1.8.0
 
 #---------------------------------------------------------------------------
 # Project related configuration options
@@ -33,6 +33,7 @@ OPTIMIZE_OUTPUT_JAVA   = NO
 OPTIMIZE_FOR_FORTRAN   = NO
 OPTIMIZE_OUTPUT_VHDL   = NO
 EXTENSION_MAPPING      =
+MARKDOWN_SUPPORT       = NO
 BUILTIN_STL_SUPPORT    = NO
 CPP_CLI_SUPPORT        = NO
 SIP_SUPPORT            = NO
@@ -49,7 +50,8 @@ LOOKUP_CACHE_SIZE      = 0
 #---------------------------------------------------------------------------
 EXTRACT_ALL            = NO
 EXTRACT_PRIVATE        = NO
-EXTRACT_STATIC         = NO
+EXTRACT_PACKAGE        = NO
+EXTRACT_STATIC         = YES
 EXTRACT_LOCAL_CLASSES  = NO
 EXTRACT_LOCAL_METHODS  = NO
 EXTRACT_ANON_NSPACES   = NO
@@ -268,6 +270,7 @@ CLASS_GRAPH            = YES
 COLLABORATION_GRAPH    = NO
 GROUP_GRAPHS           = YES
 UML_LOOK               = NO
+UML_LIMIT_NUM_FIELDS   = 10
 TEMPLATE_RELATIONS     = NO
 INCLUDE_GRAPH          = NO
 INCLUDED_BY_GRAPH      = NO

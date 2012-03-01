@@ -47,7 +47,6 @@ class Compiler
       uint   mode;
 
       String texture;
-      String masks;
       float  alpha;
       float  specular;
 
@@ -55,8 +54,8 @@ class Compiler
 
       bool operator == ( const Part& part ) const
       {
-        return component == part.component && mode == part.mode && specular == part.specular &&
-               alpha == part.alpha && texture.equals( part.texture ) && masks.equals( part.masks );
+        return component == part.component && mode == part.mode &&
+               specular == part.specular && alpha == part.alpha && texture.equals( part.texture );
       }
     };
 
@@ -83,7 +82,6 @@ class Compiler
     void component( int id );
     void material( int target, float param );
     void texture( const char* texture );
-    void masks( const char* masks );
 
     void begin( uint mode );
     void end();

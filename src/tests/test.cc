@@ -22,20 +22,29 @@
  */
 
 #include "oz/oz.hh"
-#include "oz/clearmacros.hh"
 
 #include <QtGui/QApplication>
 #include <QtGui/QPushButton>
 
 using namespace oz;
 
+int array[] = { 1, 2, 3, 4 };
+
+StackTrace foo()
+{
+  return { 0, {} };
+}
+
 int main( int argc, char** argv )
 {
-  QApplication app( argc, argv );
+  static_cast<void>( argc );
+  static_cast<void>( argv );
 
-  QPushButton hello( "Hello, world!" );
-  hello.resize( 300, 30 );
-  hello.show();
+  StackTrace st = foo();
 
-  return app.exec();
+  foreach( i, citer( st.frames ) ) {
+    printf( "%p :: ", *i );
+  }
+  printf( "\n" );
+  return 0;
 }

@@ -145,7 +145,7 @@ class DArray
     DArray( const DArray& a ) :
       data( a.size == 0 ? null : new Elem[a.size] ), size( a.size )
     {
-      aCopy( data, a.data, a.size );
+      aCopy<Elem>( data, a.data, a.size );
     }
 
     /**
@@ -176,7 +176,7 @@ class DArray
         size = a.size;
       }
 
-      aCopy( data, a.data, a.size );
+      aCopy<Elem>( data, a.data, a.size );
 
       return *this;
     }
@@ -214,7 +214,7 @@ class DArray
     explicit DArray( const Elem* array, int size_ ) :
       data( size_ == 0 ? null : new Elem[size_] ), size( size_ )
     {
-      aCopy( data, array, size );
+      aCopy<Elem>( data, array, size );
     }
 
     /**
@@ -222,7 +222,7 @@ class DArray
      */
     bool operator == ( const DArray& a ) const
     {
-      return size == a.size && aEquals( data, a.data, size );
+      return size == a.size && aEquals<Elem>( data, a.data, size );
     }
 
     /**
@@ -230,7 +230,7 @@ class DArray
      */
     bool operator != ( const DArray& a ) const
     {
-      return size != a.size || !aEquals( data, a.data, size );
+      return size != a.size || !aEquals<Elem>( data, a.data, size );
     }
 
     /**
@@ -364,7 +364,7 @@ class DArray
     {
       hard_assert( size > 0 );
 
-      return aContains( data, e, size );
+      return aContains<Elem>( data, e, size );
     }
 
     /**
@@ -374,7 +374,7 @@ class DArray
     {
       hard_assert( size > 0 );
 
-      return aIndex( data, e, size );
+      return aIndex<Elem>( data, e, size );
     }
 
     /**
@@ -384,7 +384,7 @@ class DArray
     {
       hard_assert( size > 0 );
 
-      return aLastIndex( data, e, size );
+      return aLastIndex<Elem>( data, e, size );
     }
 
     /**
@@ -394,7 +394,7 @@ class DArray
     {
       hard_assert( size > 0 );
 
-      aSort( data, size );
+      aSort<Elem>( data, size );
     }
 
     /**
@@ -402,7 +402,7 @@ class DArray
      */
     void free()
     {
-      aFree( data, size );
+      aFree<Elem>( data, size );
     }
 
     /**

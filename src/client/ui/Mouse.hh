@@ -47,7 +47,7 @@ class Mouse
       CURSORS_MAX
     };
 
-    static const char* NAMES[CURSORS_MAX];
+    static const char* const NAMES[CURSORS_MAX];
 
   private:
 

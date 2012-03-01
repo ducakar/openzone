@@ -224,11 +224,15 @@ void Caelum::load()
 
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-  sunTexId  = context.readTexture( &is, path );
-  moonTexId = context.readTexture( &is, path );
+  sunTexId  = context.readTextureLayer( &is, path );
+  moonTexId = context.readTextureLayer( &is, path );
 
   starShaderId      = library.shaderIndex( "stars" );
   celestialShaderId = library.shaderIndex( "celestial" );
+
+//   nightColour = is.readVec4();
+  nightColour = Vec4( NIGHT_COLOUR );
+  nightLuminance = ( nightColour.x + nightColour.y + nightColour.z ) / 3.0f;
 
   file.unmap();
 

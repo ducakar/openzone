@@ -186,8 +186,8 @@ static void* allocateObject( void* ptr, size_t size )
   ++Alloc::sumCount;
   Alloc::sumAmount += size;
 
-  Alloc::maxCount = max( Alloc::count, Alloc::maxCount );
-  Alloc::maxAmount = max( Alloc::amount, Alloc::maxAmount );
+  Alloc::maxCount = max<int>( Alloc::count, Alloc::maxCount );
+  Alloc::maxAmount = max<size_t>( Alloc::amount, Alloc::maxAmount );
 
   ptr = reinterpret_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size_t ) );
   reinterpret_cast<size_t*>( ptr )[-1] = size;
@@ -226,8 +226,8 @@ static void* allocateArray( void* ptr, size_t size )
   ++Alloc::sumCount;
   Alloc::sumAmount += size;
 
-  Alloc::maxCount = max( Alloc::count, Alloc::maxCount );
-  Alloc::maxAmount = max( Alloc::amount, Alloc::maxAmount );
+  Alloc::maxCount = max<int>( Alloc::count, Alloc::maxCount );
+  Alloc::maxAmount = max<size_t>( Alloc::amount, Alloc::maxAmount );
 
   ptr = reinterpret_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size_t ) );
   reinterpret_cast<size_t*>( ptr )[-1] = size;

@@ -41,7 +41,7 @@ namespace ui
 
 Mouse mouse;
 
-const char* Mouse::NAMES[] = {
+const char* const Mouse::NAMES[] = {
   "left_ptr",
   "ibeam",
   "pointing_hand",
@@ -173,7 +173,7 @@ void Mouse::init()
     cursors[i].size     = is.readInt();
     cursors[i].hotspotX = is.readInt();
     cursors[i].hotspotY = is.readInt();
-    cursors[i].texId    = context.readTexture( &is, file.path() );
+    cursors[i].texId    = context.readTextureLayer( &is, file.path() );
 
     file.unmap();
   }
