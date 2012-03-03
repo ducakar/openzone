@@ -125,7 +125,7 @@ class MD2
     void load();
 
     static void setAnim( AnimState* anim, Anim type );
-    void advance( AnimState* anim, float dt ) const;
+    void advance( AnimState* anim, const Bot* bot ) const;
 
     void drawFrame( int frame ) const;
     void draw( const AnimState* anim ) const;

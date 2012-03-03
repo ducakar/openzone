@@ -85,7 +85,7 @@ void Profile::init()
 
     const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( items[weaponItem] );
 
-    if( !weaponClazz->allowedUsers.contains( clazz ) ) {
+    if( !clazz->name.beginsWith( weaponClazz->userBase ) ) {
       throw Exception( "Invalid weapon class '%s' for player class '%s' in profile",
                        weaponClazz->name.cstr(), clazz->name.cstr() );
     }

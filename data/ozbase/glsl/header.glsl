@@ -102,7 +102,7 @@ vec4 specularColour( float specular, vec3 normal, vec3 toCamera )
 {
   vec3 reflectedLight = reflect( oz_CaelumLight.dir, normal );
   float factor = 2.0 * specular * max( dot( reflectedLight, toCamera ), 0.0 );
-  return vec4( factor * oz_CaelumLight.diffuse.rgb, 0.0 );
+  return factor * oz_CaelumLight.diffuse;
 }
 
 vec4 applyFog( vec4 colour, float dist )

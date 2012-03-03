@@ -546,7 +546,7 @@ void Library::initClasses()
     classConfig.clear( true );
   }
 
-  foreach( classIter, objClasses.iter() ) {
+  foreach( classIter, objClasses.citer() ) {
     ObjectClass* objClazz = classIter.value();
 
     // check that all items are valid
@@ -554,43 +554,16 @@ void Library::initClasses()
       const ObjectClass* itemClazz = objClazz->defaultItems[i];
 
       if( ( itemClazz->flags & ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) ) !=
-          ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) )
+        ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) )
       {
         throw Exception( "Invalid item class '%s' in '%s'",
                          itemClazz->name.cstr(), objClazz->name.cstr() );
       }
     }
 
-    // fill allowedUsers for weapons
-    if( objClazz->flags & Object::WEAPON_BIT ) {
-      WeaponClass* weaponClazz = static_cast<WeaponClass*>( objClazz );
-
-      int underscore = weaponClazz->name.index( '_' );
-      if( underscore == -1 ) {
-        throw Exception( "Weapon class file must be named <botClass>_weapon.<weapon>.rc" );
-      }
-
-      String matchClassBaseName = weaponClazz->name.substring( 0, underscore );
-
-      foreach( clazz, objClasses.citer() ) {
-        String botClassBaseName = clazz.value()->name;
-
-        int dot = botClassBaseName.index( '.' );
-        if( dot != -1 ) {
-          botClassBaseName = botClassBaseName.substring( 0, dot );
-        }
-
-        if( matchClassBaseName.equals( botClassBaseName ) ) {
-          weaponClazz->allowedUsers.add( clazz.value() );
-        }
-      }
-    }
-  }
-
-  foreach( classIter, objClasses.citer() ) {
     // check if weaponItem is a valid weapon for bots
-    if( classIter.value()->flags & Object::BOT_BIT ) {
-      const BotClass* botClazz = static_cast<const BotClass*>( classIter.value() );
+    if( objClazz->flags & Object::BOT_BIT ) {
+      const BotClass* botClazz = static_cast<const BotClass*>( objClazz );
 
       if( botClazz->weaponItem != -1 ) {
         if( uint( botClazz->weaponItem ) >= uint( botClazz->defaultItems.length() ) ) {
@@ -607,7 +580,7 @@ void Library::initClasses()
 
         const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( itemClazz );
 
-        if( !weaponClazz->allowedUsers.contains( botClazz ) ) {
+        if( !botClazz->name.beginsWith( weaponClazz->userBase ) ) {
           throw Exception( "Default weapon of '%s' is not allowed for this bot class",
                            botClazz->name.cstr() );
         }

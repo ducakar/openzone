@@ -34,7 +34,7 @@ namespace oz
 namespace client
 {
 
-const float StrategicProxy::MIN_HEIGHT      = 5.00f;
+const float StrategicProxy::MIN_HEIGHT      = 2.00f;
 const float StrategicProxy::MAX_HEIGHT      = 50.0f;
 const float StrategicProxy::DEFAULT_HEIGHT  = 15.0f;
 const float StrategicProxy::DEFAULT_ANGLE   = 45.0f;

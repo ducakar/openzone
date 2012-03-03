@@ -164,11 +164,12 @@ uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int mi
 
   log.printRaw( " %d x %d %d BPP ...", width, height, bpp );
 
-  if( width % 4 != 0 || height % 4 != 0 ) {
-    throw Exception( "Image dimensions must be multiples of 4 to avoid padding between lines." );
+  if( height != 1 && ( width * bpp ) % 32 != 0 ) {
+    throw Exception( "Image scan line should be a multiple of 4 (width * bytesPerPixel)." );
   }
 
   int format = int( FreeImage_GetImageType( image ) );
+
   if( format != FIT_BITMAP ) {
     throw Exception( "Invalid image colour format" );
   }
@@ -237,13 +238,15 @@ uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int mi
 void Context::loadRawTextures( uint* albedoId, uint* masksId, uint* normalsId,
                                const char* basePath, bool wrap, int magFilter, int minFilter )
 {
-  String albedoBasePath  = basePath;
-  String masksBasePath   = albedoBasePath + "_masks";
-  String normalsBasePath = albedoBasePath + "_normals";
+  String albedoBasePath   = basePath;
+  String masksBasePath    = albedoBasePath + "_m";
+  String normalsBasePath  = albedoBasePath + "_n";
+  String specularBasePath = albedoBasePath + "_s";
 
   PhysFile albedo( albedoBasePath + IMAGE_EXTENSIONS[0] );
   PhysFile masks( masksBasePath + IMAGE_EXTENSIONS[0] );
   PhysFile normals( normalsBasePath + IMAGE_EXTENSIONS[0] );
+  PhysFile specular( specularBasePath + IMAGE_EXTENSIONS[0] );
 
   for( int i = 1; i < aLength( IMAGE_EXTENSIONS ); ++i ) {
     if( albedo.getType() == File::MISSING ) {
@@ -255,6 +258,9 @@ void Context::loadRawTextures( uint* albedoId, uint* masksId, uint* normalsId,
     if( normals.getType() == File::MISSING ) {
       normals.setPath( normalsBasePath + IMAGE_EXTENSIONS[i] );
     }
+    if( specular.getType() == File::MISSING ) {
+      specular.setPath( specularBasePath + IMAGE_EXTENSIONS[i] );
+    }
   }
 
   if( albedo.getType() == File::MISSING ) {
@@ -265,6 +271,9 @@ void Context::loadRawTextures( uint* albedoId, uint* masksId, uint* normalsId,
 
   if( masks.getType() != File::MISSING ) {
     *masksId = loadRawTexture( masks.path(), wrap, magFilter, minFilter );
+  }
+  else if( specular.getType() != File::MISSING ) {
+
   }
   else {
     *masksId = 0;

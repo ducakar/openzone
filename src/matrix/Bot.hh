@@ -155,7 +155,8 @@ class Bot : public Dynamic
 
     int    state, oldState;
     float  stamina;
-    float  stepRate;
+    float  step;
+    float  stairRate;
 
     int    cargo;
     int    weapon;

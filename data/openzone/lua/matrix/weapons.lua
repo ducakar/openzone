@@ -102,7 +102,6 @@ function grenadeLauncher_onShot( l )
 
   ozOrbisAddObj( "grenade", pX, pY, pZ )
   ozDynSetMomentum( vX * 30 + dX, vY * 30 + dY, vZ * 30 + dZ )
-  ozDynSetVelocity( vX * 30 + dX, vY * 30 + dY, vZ * 30 + dZ )
 end
 
 function axe_onShot( l )
@@ -172,5 +171,4 @@ function vehicle_cannon_onShot( l )
 
   ozOrbisAddObj( "shell", pX, pY, pZ )
   ozDynSetMomentum( vX * 200, vY * 200, vZ * 200 )
-  ozDynSetVelocity( vX * 200, vY * 200, vZ * 200 )
 end

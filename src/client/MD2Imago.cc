@@ -145,7 +145,7 @@ void MD2Imago::draw( const Imago* parent, int mask )
       MD2::setAnim( &anim, desiredAnim );
     }
 
-    md2->advance( &anim, timer.frameTime );
+    md2->advance( &anim, bot );
 
     // keep animation in sync with weapon shotInterval
     if( anim.type == MD2::ANIM_ATTACK && bot->weapon != -1 ) {
@@ -160,26 +160,6 @@ void MD2Imago::draw( const Imago* parent, int mask )
     }
 
     if( !( bot->state & Bot::DEAD_BIT ) ) {
-      if( bot->index == camera.bot ) {
-        if( anim.type == MD2::ANIM_WALK || anim.type == MD2::ANIM_RUN ||
-            anim.type == MD2::ANIM_CROUCH_WALK )
-        {
-          int nFrames = anim.lastFrame - anim.firstFrame + 1;
-          int frame   = anim.currFrame - anim.firstFrame;
-
-          if( frame < 0 || frame >= nFrames ) {
-            frame = 0;
-          }
-
-          float animTime = float( frame ) * anim.frameTime + anim.currTime;
-
-          camera.botProxy.bobPhi = animTime * anim.fps / float( nFrames ) * Math::TAU;
-        }
-        else {
-          camera.botProxy.bobPhi = 0.0f;
-        }
-      }
-
       if( bot->index == camera.bot && !camera.isExternal ) {
         h = bot->h;
 
@@ -209,7 +189,7 @@ void MD2Imago::draw( const Imago* parent, int mask )
 
         md2->draw( &anim );
 
-        if( parent == null && bot->weapon!= -1 && orbis.objects[bot->weapon] != null ) {
+        if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
           context.drawImago( orbis.objects[bot->weapon], this, Mesh::SOLID_BIT );
         }
       }
@@ -225,6 +205,10 @@ void MD2Imago::draw( const Imago* parent, int mask )
     tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->corpseDim.z ) );
 
     md2->draw( &anim );
+
+    if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
+      context.drawImago( orbis.objects[bot->weapon], this, Mesh::SOLID_BIT );
+    }
 
     shader.colour.w = 1.0f;
   }

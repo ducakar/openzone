@@ -1773,7 +1773,7 @@ static int ozBotSetWeaponItem( lua_State* l )
     }
 
     const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
-    if( clazz->allowedUsers.contains( bot->clazz ) ) {
+    if( bot->clazz->name.beginsWith( clazz->userBase ) ) {
       bot->weapon = index;
     }
   }

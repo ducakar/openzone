@@ -28,6 +28,7 @@
 #include "client/Terra.hh"
 
 #include "build/Context.hh"
+#include "build/MeshData.hh"
 
 #include <limits>
 #include <FreeImage.h>

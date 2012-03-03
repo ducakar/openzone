@@ -140,14 +140,6 @@ void BotClass::initClass( const Config* config )
   camZ              = config->get( "camZ", 0.79f );
   crouchCamZ        = config->get( "crouchCamZ", 0.69f );
 
-  bobWalkInc        = Math::rad( config->get( "bobWalkInc", 420.0f ) ) * Timer::TICK_TIME;
-  bobRunInc         = Math::rad( config->get( "bobRunInc", 600.0f ) ) * Timer::TICK_TIME;
-  bobSwimInc        = Math::rad( config->get( "bobSwimInc", 210.0f ) ) * Timer::TICK_TIME;
-  bobSwimRunInc     = Math::rad( config->get( "bobSwimRunInc", 300.0f ) ) * Timer::TICK_TIME;
-  bobRotation       = Math::rad( config->get( "bobRotation", 0.35f ) );
-  bobAmplitude      = config->get( "bobAmplitude", 0.07f );
-  bobSwimAmplitude  = config->get( "bobSwimAmplitude", 0.07f );
-
   walkMomentum      = config->get( "walkMomentum", 1.0f );
   runMomentum       = config->get( "runMomentum", 2.0f );
   crouchMomentum    = config->get( "crouchMomentum", 1.0f );
@@ -158,10 +150,13 @@ void BotClass::initClass( const Config* config )
   waterControl      = config->get( "waterControl", 0.08f );
   slickControl      = config->get( "slickControl", 0.06f );
 
-  stepInc           = config->get( "stepInc", 0.20f );
-  stepMax           = config->get( "stepMax", 0.40f );
-  stepRateLimit     = config->get( "stepRateLimit", 0.15f );
-  stepRateSupp      = config->get( "stepRateSupp", 0.80f );
+  stepWalkInc       = config->get( "stepWalkInc", 7.0f / 6.0f ) * Timer::TICK_TIME;
+  stepRunInc        = config->get( "stepRunInc", 10.0f / 6.0f ) * Timer::TICK_TIME;
+
+  stairInc          = config->get( "stairInc", 0.20f );
+  stairMax          = config->get( "stairMax", 0.40f );
+  stairRateLimit    = config->get( "stairRateLimit", 0.15f );
+  stairRateSupp     = config->get( "stairRateSupp", 0.80f );
 
   climbInc          = config->get( "climbInc", 0.25f );
   climbMax          = config->get( "climbMax", 2.0f );
@@ -193,6 +188,10 @@ void BotClass::initClass( const Config* config )
   nameList          = String::isEmpty( sNameList ) ? -1 : library.nameListIndex( sNameList );
 
   mindFunc          = config->get( "mindFunc", "" );
+
+  bobRotation       = Math::rad( config->get( "bobRotation", 0.35f ) );
+  bobAmplitude      = config->get( "bobAmplitude", 0.07f );
+  bobSwimAmplitude  = config->get( "bobSwimAmplitude", 0.07f );
 }
 
 Object* BotClass::create( int index, const Point3& pos, Heading heading ) const

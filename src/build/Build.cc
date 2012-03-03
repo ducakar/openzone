@@ -345,7 +345,7 @@ void Build::buildBSPTextures()
       name = path.substring( 16, dot );
       path = path.substring( 0, dot );
 
-      if( name.endsWith( "_masks" ) || name.endsWith( "_normals" ) ) {
+      if( name.endsWith( "_m" ) || name.endsWith( "_n" ) ) {
         continue;
       }
 

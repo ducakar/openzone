@@ -348,7 +348,7 @@ slotsRendered:;
       if( taggedItem->flags & Object::WEAPON_BIT ) {
         const WeaponClass* clazz = static_cast<const WeaponClass*>( taggedClazz );
 
-        if( !clazz->allowedUsers.contains( camera.botObj->clazz ) ) {
+        if( !camera.botObj->clazz->name.beginsWith( clazz->userBase ) ) {
           goto noIcon;
         }
 

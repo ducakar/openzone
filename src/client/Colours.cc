@@ -30,7 +30,7 @@ namespace oz
 namespace client
 {
 
-const Vec4 Colours::GLOBAL_AMBIENT = Vec4( 0.15f, 0.15f, 0.20f, 1.00f );
+const Vec4 Colours::GLOBAL_AMBIENT = Vec4( 0.20f, 0.20f, 0.25f, 1.00f );
 const Vec4 Colours::WATER = Vec4( 0.00f, 0.05f, 0.25f, 1.0f );
 const Vec4 Colours::LAVA = Vec4( 0.30f, 0.20f, 0.00f, 1.0f );
 

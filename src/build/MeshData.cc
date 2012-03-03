@@ -32,6 +32,24 @@ namespace oz
 namespace build
 {
 
+bool Vertex::operator == ( const Vertex& v ) const
+{
+  return pos == v.pos && texCoord == v.texCoord && detailCoord == v.detailCoord &&
+         normal == v.normal && part == v.part;
+}
+
+void Vertex::write( BufferStream* ostream ) const
+{
+  ostream->writePoint3( pos );
+  ostream->writeFloat( texCoord.u );
+  ostream->writeFloat( texCoord.v );
+  ostream->writeFloat( detailCoord.u );
+  ostream->writeFloat( detailCoord.v );
+  ostream->writeVec3( normal );
+  ostream->writeVec3( tangent );
+  ostream->writeVec3( binormal );
+}
+
 void MeshData::write( BufferStream* os, bool embedTextures ) const
 {
   hard_assert( parts.length() > 0 );

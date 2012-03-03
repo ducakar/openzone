@@ -39,10 +39,7 @@ struct Vertex
   float tangent[3];
   float binormal[3];
 
-  bool operator == ( const Vertex& v ) const;
-
   void read( InputStream* istream );
-  void write( BufferStream* ostream ) const;
 
   static void setFormat();
 };

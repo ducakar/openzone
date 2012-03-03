@@ -33,6 +33,8 @@ namespace oz
 namespace client
 {
 
+const float BotAudio::FOOTSTEP_DISTANCE_SQ = 50.0f*50.0f;
+
 Pool<BotAudio, 256> BotAudio::pool;
 
 BotAudio::BotAudio( const Object* obj ) :
@@ -82,44 +84,37 @@ void BotAudio::play( const Audio* parent )
   }
 
   // footsteps
-  if( camera.bot == bot->index ) {
-    if( bot->state & Bot::MOVING_BIT ) {
-      if( bot->flags & Object::FRICTING_BIT ) {
-        recent[Object::EVENT_FRICTING] = RECENT_TICKS;
+  if( ( bot->state & Bot::MOVING_BIT ) && ( bot->p - camera.p ).sqL() < FOOTSTEP_DISTANCE_SQ ) {
+    if( bot->flags & Object::FRICTING_BIT ) {
+      recent[Object::EVENT_FRICTING] = RECENT_TICKS;
+    }
+
+    int currStep = int( 2.0f * bot->step ) % 2;
+
+    if( currStep != prevStep ) {
+      if( bot->state & Bot::SWIMMING_BIT ) {
+        if( !( bot->state & Bot::SUBMERGED_BIT ) && sounds[Bot::EVENT_SWIM] != -1 ) {
+          playSound( sounds[Bot::EVENT_SWIM], 1.0f, bot, bot );
+        }
       }
-
-      int currStep = int( camera.botProxy.bobPhi / ( Math::TAU / 2.0f ) ) % 2;
-
-      if( currStep != prevStep ) {
-        if( bot->state & Bot::SWIMMING_BIT ) {
-          if( !( bot->state & Bot::SUBMERGED_BIT ) && sounds[Bot::EVENT_SWIM] != -1 &&
-              recent[Bot::EVENT_SWIM] == 0 )
-          {
-            recent[Bot::EVENT_SWIM] = RECENT_TICKS;
-            playSound( sounds[Bot::EVENT_SWIM], 1.0f, bot, bot );
+      else if( recent[Object::EVENT_FRICTING] != 0 ) {
+        if( bot->depth != 0.0f ) {
+          if( sounds[Bot::EVENT_WATERSTEP] != -1 ) {
+            playSound( sounds[Bot::EVENT_WATERSTEP], 1.0f, bot, bot );
           }
         }
-        else if( recent[Object::EVENT_FRICTING] != 0 ) {
-          if( bot->depth != 0.0f ) {
-            if( sounds[Bot::EVENT_WATERSTEP] != -1 && recent[Bot::EVENT_WATERSTEP] == 0 ) {
-              recent[Bot::EVENT_WATERSTEP] = RECENT_TICKS;
-              playSound( sounds[Bot::EVENT_WATERSTEP], 1.0f, bot, bot );
-            }
-          }
-          else {
-            if( sounds[Bot::EVENT_STEP] != -1 && recent[Bot::EVENT_STEP] == 0 ) {
-              recent[Bot::EVENT_STEP] = RECENT_TICKS;
-              playSound( sounds[Bot::EVENT_STEP], 1.0f, bot, bot );
-            }
+        else {
+          if( sounds[Bot::EVENT_STEP] != -1 ) {
+            playSound( sounds[Bot::EVENT_STEP], 1.0f, bot, bot );
           }
         }
       }
+    }
 
-      prevStep = currStep;
-    }
-    else {
-      prevStep = 0;
-    }
+    prevStep = currStep;
+  }
+  else {
+    prevStep = 0;
   }
 }
 

@@ -152,7 +152,7 @@ void HudArea::drawBotCrosshair()
       else if( obj->flags & Object::WEAPON_BIT ) {
         const WeaponClass* clazz = static_cast<const WeaponClass*>( obj->clazz );
 
-        if( clazz->allowedUsers.contains( myClazz ) ) {
+        if( myClazz->name.beginsWith( clazz->userBase ) ) {
           glBindTexture( GL_TEXTURE_2D, equipTexId );
           shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
         }
