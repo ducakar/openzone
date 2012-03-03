@@ -85,6 +85,15 @@ void WeaponClass::initClass( const Config* config )
     throw Exception( "%s: Invalid object lift. Should be >= 0.", name.cstr() );
   }
 
+  int underscore = name.index( '_' );
+
+  if( underscore == -1 ) {
+    throw Exception( "%s: Weapon name should be of the form botName_weapon.weaponName",
+                     name.cstr() );
+  }
+
+  userBase = name.substring( 0, underscore );
+
   onShot = config->get( "onShot", "" );
 
   if( !String::isEmpty( onShot ) ) {

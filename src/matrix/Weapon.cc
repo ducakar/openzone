@@ -56,7 +56,7 @@ bool Weapon::onUse( Bot* user )
 {
   const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
 
-  if( !clazz->allowedUsers.contains( user->clazz ) ) {
+  if( !user->clazz->name.beginsWith( clazz->userBase ) ) {
     hard_assert( user->weapon != index );
     return false;
   }

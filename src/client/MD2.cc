@@ -175,24 +175,40 @@ void MD2::setAnim( AnimState* anim, Anim type )
   }
 }
 
-void MD2::advance( AnimState* anim, float dt ) const
+void MD2::advance( AnimState* anim, const Bot* bot ) const
 {
-  anim->currTime += dt;
+  if( anim->type == ANIM_WALK || anim->type == ANIM_RUN || anim->type == ANIM_CROUCH_WALK ) {
+    int   nFrames = anim->lastFrame - anim->firstFrame + 1;
+    float time    = bot->step * nFrames * anim->frameTime;
 
-  while( anim->currTime > anim->frameTime ) {
-    anim->currTime -= anim->frameTime;
-    anim->currFrame = anim->nextFrame;
-    ++anim->nextFrame;
+    anim->nextFrame = anim->firstFrame + int( bot->step * nFrames + 1.0f ) % nFrames;
 
-    if( anim->nextFrame > anim->lastFrame ) {
-      if( anim->nextAnim == ANIM_NONE ) {
-        anim->nextFrame = anim->lastFrame;
-      }
-      else if( anim->nextAnim == anim->type ) {
-        anim->nextFrame = anim->firstFrame;
-      }
-      else {
-        setAnim( anim, anim->nextAnim );
+    if( time >= anim->frameTime ||
+        ( anim->firstFrame <= anim->currFrame && anim->lastFrame <= anim->currFrame ) )
+    {
+      anim->currFrame = anim->firstFrame + int( bot->step * nFrames ) % nFrames;
+    }
+
+    anim->currTime = Math::fmod( time, anim->frameTime );
+  }
+  else {
+    anim->currTime += timer.frameTime;
+
+    if( anim->currTime > anim->frameTime ) {
+      anim->currTime -= anim->frameTime;
+      anim->currFrame = anim->nextFrame;
+      ++anim->nextFrame;
+
+      if( anim->nextFrame > anim->lastFrame ) {
+        if( anim->nextAnim == ANIM_NONE ) {
+          anim->nextFrame = anim->lastFrame;
+        }
+        else if( anim->nextAnim == anim->type ) {
+          anim->nextFrame = anim->firstFrame;
+        }
+        else {
+          setAnim( anim, anim->nextAnim );
+        }
       }
     }
   }

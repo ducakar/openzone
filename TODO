@@ -9,9 +9,9 @@
   * mission selection
   * pause menu
 - client
-  * clean up Proxies
   * time compression
   * pause
+  * improve MD2 animation (transitions, firstFrame, secondFrame, nextFrame)
   * MD3 animation
   * fix bloom
   * fix in-vehicle camera (rotation axis & free look)

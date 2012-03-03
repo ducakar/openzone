@@ -34,16 +34,6 @@ namespace oz
 namespace client
 {
 
-bool Vertex::operator == ( const Vertex& v ) const
-{
-  return pos[0] == v.pos[0] && pos[1] == v.pos[1] && pos[2] == v.pos[2] &&
-         texCoord[0] == v.texCoord[0] && texCoord[1] == v.texCoord[1] &&
-         detailCoord[0] == v.detailCoord[0] && detailCoord[1] == v.detailCoord[1] &&
-         normal[0] == v.normal[0] && normal[1] == v.normal[1] && normal[2] == v.normal[2] &&
-         tangent[0] == v.tangent[0] && tangent[1] == v.tangent[1] && tangent[2] == v.tangent[2] &&
-         binormal[0] == v.binormal[0] && binormal[1] == v.binormal[1] && binormal[2] == v.binormal[2];
-}
-
 void Vertex::read( InputStream* istream )
 {
   pos[0] = istream->readFloat();
@@ -67,31 +57,6 @@ void Vertex::read( InputStream* istream )
   binormal[0] = istream->readFloat();
   binormal[1] = istream->readFloat();
   binormal[2] = istream->readFloat();
-}
-
-void Vertex::write( BufferStream* ostream ) const
-{
-  ostream->writeFloat( pos[0] );
-  ostream->writeFloat( pos[1] );
-  ostream->writeFloat( pos[2] );
-
-  ostream->writeFloat( texCoord[0] );
-  ostream->writeFloat( texCoord[1] );
-
-  ostream->writeFloat( detailCoord[0] );
-  ostream->writeFloat( detailCoord[1] );
-
-  ostream->writeFloat( normal[0] );
-  ostream->writeFloat( normal[1] );
-  ostream->writeFloat( normal[2] );
-
-  ostream->writeFloat( tangent[0] );
-  ostream->writeFloat( tangent[1] );
-  ostream->writeFloat( tangent[2] );
-
-  ostream->writeFloat( binormal[0] );
-  ostream->writeFloat( binormal[1] );
-  ostream->writeFloat( binormal[2] );
 }
 
 void Vertex::setFormat()

@@ -53,7 +53,6 @@ void BotProxy::begin()
 
   Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
-  bobPhi     = 0.0f;
   bobTheta   = 0.0f;
   bobBias    = 0.0f;
 
@@ -382,7 +381,6 @@ void BotProxy::update()
       camera.align();
       camera.warp( bot->p + camera.up * bot->camZ );
 
-      bobPhi   = 0.0f;
       bobTheta = 0.0f;
       bobBias  = 0.0f;
     }
@@ -396,8 +394,9 @@ void BotProxy::update()
       if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
           Bot::MOVING_BIT )
       {
-        float sine = Math::sin( bobPhi );
-        float tilt = Math::sin( bobPhi + Math::TAU / 4.0f ) * clazz->bobRotation;
+        float phase = bot->step * Math::TAU;
+        float sine  = Math::sin( phase );
+        float tilt  = Math::sin( phase + Math::TAU / 4.0f ) * clazz->bobRotation;
 
         bobTheta = Math::mix( bobTheta, tilt, 0.35f );
         bobBias  = sine*sine * clazz->bobAmplitude;
@@ -405,14 +404,13 @@ void BotProxy::update()
       else if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
                ( Bot::MOVING_BIT | Bot::SWIMMING_BIT ) )
       {
-        float sine = Math::sin( bobPhi / 2.0f );
+        float sine = Math::sin( bot->step * Math::TAU / 2.0f );
 
         bobTheta = 0.0f;
         bobBias  = sine*sine * clazz->bobSwimAmplitude;
       }
       else {
       inJump:;
-        bobPhi    = 0.0f;
         bobTheta *= BOB_SUPPRESSION_COEF;
         bobBias  *= BOB_SUPPRESSION_COEF;
       }
@@ -502,7 +500,6 @@ void BotProxy::reset()
 
 void BotProxy::read( InputStream* istream )
 {
-  bobPhi   = 0.0f;
   bobTheta = 0.0f;
   bobBias  = 0.0f;
 

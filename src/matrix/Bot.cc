@@ -91,12 +91,8 @@ void Bot::onUpdate()
 
   if( weaponObj == null ) {
     weapon = -1;
-
-    if( cargoObj == null ) {
-      cargo = -1;
-    }
   }
-  else {
+  if( cargoObj == null ) {
     cargo = -1;
   }
 
@@ -167,7 +163,7 @@ void Bot::onUpdate()
       }
     }
 
-    stepRate *= clazz->stepRateSupp;
+    stairRate *= clazz->stairRateSupp;
 
     /*
      * JUMP, CROUCH
@@ -293,14 +289,23 @@ void Bot::onUpdate()
       move.y -= hvsc[0];
     }
 
-    if( move != Vec3::ZERO ) {
+    if( move == Vec3::ZERO ) {
+      step = 0.0f;
+    }
+    else {
       flags &= ~DISABLED_BIT;
       state |= MOVING_BIT;
       move   = ~move;
 
       if( state & RUNNING_BIT ) {
         stamina -= clazz->staminaRunDrain;
+        step += clazz->stepRunInc;
       }
+      else {
+        step += clazz->stepWalkInc;
+      }
+
+      step = Math::fmod( step, 1.0f );
 
       /*
        * Ledge climbing
@@ -343,7 +348,7 @@ void Bot::onUpdate()
           float maxRaise = collider.hit.ratio * clazz->climbMax;
 
           // for each height check if we can move forwards for desiredMove
-          for( float raise = clazz->stepMax; raise <= maxRaise; raise += clazz->climbInc ) {
+          for( float raise = clazz->stairMax; raise <= maxRaise; raise += clazz->climbInc ) {
             p.z += clazz->climbInc;
 
             collider.translate( this, desiredMove );
@@ -380,7 +385,7 @@ void Bot::onUpdate()
       }
 
       /*
-       * STEPPING OVER OBSTACLES
+       * STEPPING OVER OBSTACLES (STAIRS)
        *
        * First, check if bot's going to hit an obstacle in the next frame. If it does, check whether
        * it would have moved further if we raised it a bit (over the obstacle). We check different
@@ -399,7 +404,7 @@ void Bot::onUpdate()
        *              \x<------o
        *               \----------
        */
-      if( !( state & CLIMBING_BIT ) && stepRate <= clazz->stepRateLimit ) {
+      if( !( state & CLIMBING_BIT ) && stairRate <= clazz->stairRateLimit ) {
         // check if bot's gonna hit a stair in the next frame
         Vec3 desiredMove = STEP_MOVE_AHEAD * move;
 
@@ -410,12 +415,12 @@ void Bot::onUpdate()
           float startDist = 2.0f * EPSILON - ( desiredMove * collider.hit.ratio ) * normal;
           float originalZ = p.z;
 
-          collider.translate( this, Vec3( 0.0f, 0.0f, clazz->stepMax + 2.0f * EPSILON ) );
+          collider.translate( this, Vec3( 0.0f, 0.0f, clazz->stairMax + 2.0f * EPSILON ) );
 
-          float maxRaise = collider.hit.ratio * clazz->stepMax;
+          float maxRaise = collider.hit.ratio * clazz->stairMax;
 
-          for( float raise = clazz->stepInc; raise <= maxRaise; raise += clazz->stepInc ) {
-            p.z += clazz->stepInc;
+          for( float raise = clazz->stairInc; raise <= maxRaise; raise += clazz->stairInc ) {
+            p.z += clazz->stairInc;
             collider.translate( this, desiredMove );
 
             Vec3 move = desiredMove * collider.hit.ratio;
@@ -424,7 +429,7 @@ void Bot::onUpdate()
 
             if( endDist < 0.0f ) {
               momentum.z = max( momentum.z, 0.0f );
-              stepRate += raise*raise;
+              stairRate += raise*raise;
               goto stepSucceeded;
             }
           }
@@ -638,6 +643,14 @@ void Bot::onUpdate()
       item->parent = index;
       items.add( instrument );
       source->items.exclude( instrument );
+
+      if( source->flags & BOT_BIT ) {
+        Bot* bot = static_cast<Bot*>( source );
+
+        if( bot->weapon == item->index ) {
+          bot->weapon = -1;
+        }
+      }
     }
   }
   else if( actions & ~oldActions & ACTION_INV_GIVE ) {
@@ -896,6 +909,7 @@ void Bot::enter( int vehicle_ )
 
   camZ       = clazz->camZ;
   state     &= ~CROUCHING_BIT;
+  step       = 0.0f;
   cargo      = -1;
 
   synapse.cut( this );
@@ -904,12 +918,12 @@ void Bot::enter( int vehicle_ )
 void Bot::exit()
 {
   hard_assert( cell == null && parent != -1 );
+  hard_assert( cargo == -1 );
 
   parent     = -1;
   actions    = 0;
   instrument = -1;
   container  = -1;
-  cargo      = -1;
 
   synapse.put( this );
 }
@@ -928,7 +942,8 @@ Bot::Bot( const BotClass* clazz_, int index, const Point3& p_, Heading heading )
   state      = clazz_->state;
   oldState   = clazz_->state;
   stamina    = clazz_->stamina;
-  stepRate   = 0.0f;
+  step       = 0.0f;
+  stairRate  = 0.0f;
   cargo      = -1;
   weapon     = -1;
   grabHandle = 0.0f;
@@ -954,7 +969,8 @@ Bot::Bot( const BotClass* clazz_, InputStream* istream ) :
   state      = istream->readInt();
   oldState   = istream->readInt();
   stamina    = istream->readFloat();
-  stepRate   = istream->readFloat();
+  step       = istream->readFloat();
+  stairRate  = istream->readFloat();
   cargo      = istream->readInt();
   weapon     = istream->readInt();
   grabHandle = istream->readFloat();
@@ -985,7 +1001,8 @@ void Bot::write( BufferStream* ostream ) const
   ostream->writeInt( state );
   ostream->writeInt( oldState );
   ostream->writeFloat( stamina );
-  ostream->writeFloat( stepRate );
+  ostream->writeFloat( step );
+  ostream->writeFloat( stairRate );
   ostream->writeInt( cargo );
   ostream->writeInt( weapon );
   ostream->writeFloat( grabHandle );

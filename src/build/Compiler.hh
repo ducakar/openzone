@@ -30,9 +30,10 @@ namespace oz
 namespace build
 {
 
-static const int CAP_UNIQUE = 0x00000001;
-static const int CAP_CW     = 0x00000002;
-static const int CAP_BLEND  = 0x00000004;
+static const int CAP_UNIQUE  = 0x01;
+static const int CAP_BUMPMAP = 0x02;
+static const int CAP_BLEND   = 0x04;
+static const int CAP_CW      = 0x08;
 
 class Compiler
 {

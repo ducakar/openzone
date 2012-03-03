@@ -34,7 +34,7 @@ class WeaponClass : public DynamicClass
 {
   public:
 
-    Map<const ObjectClass*> allowedUsers;
+    String userBase;
 
     String onShot;
 

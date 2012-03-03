@@ -42,14 +42,6 @@ class BotClass : public DynamicClass
     float  camZ;
     float  crouchCamZ;
 
-    float  bobWalkInc;
-    float  bobRunInc;
-    float  bobSwimInc;
-    float  bobSwimRunInc;
-    float  bobRotation;
-    float  bobAmplitude;
-    float  bobSwimAmplitude;
-
     float  walkMomentum;
     float  runMomentum;
     float  crouchMomentum;
@@ -60,10 +52,13 @@ class BotClass : public DynamicClass
     float  waterControl;
     float  slickControl;
 
-    float  stepInc;
-    float  stepMax;
-    float  stepRateLimit;
-    float  stepRateSupp;
+    float  stepWalkInc;
+    float  stepRunInc;
+
+    float  stairInc;
+    float  stairMax;
+    float  stairRateLimit;
+    float  stairRateSupp;
 
     float  climbInc;
     float  climbMax;
@@ -88,6 +83,10 @@ class BotClass : public DynamicClass
     int    nameList;
 
     String mindFunc;
+
+    float  bobRotation;
+    float  bobAmplitude;
+    float  bobSwimAmplitude;
 
     static ObjectClass* createClass();
 

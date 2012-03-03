@@ -25,8 +25,9 @@
 
 #include "matrix/BSP.hh"
 
-#include "build/common.hh"
 #include "client/Mesh.hh"
+
+#include "build/MeshData.hh"
 
 namespace oz
 {

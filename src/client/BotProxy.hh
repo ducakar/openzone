@@ -60,9 +60,6 @@ class BotProxy : public Proxy
 
   public:
 
-    float bobPhi; ///< Bob parameter, increased by <tt>MD2Imago</tt> etc. to keep it in sync with
-                  ///< walk/run animation.
-
     BotProxy();
 
     virtual void begin();

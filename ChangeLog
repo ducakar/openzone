@@ -58,6 +58,7 @@
   - offscreen rendering support
   - postprocessing
   - bloom postprocess effect
+  - footstep/swim sounds
   - Sound class
     - sounds are played asynchronously, parallel to rendering
     - asynchronous streaming of tracks

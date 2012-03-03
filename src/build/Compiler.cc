@@ -60,27 +60,12 @@ void Compiler::beginMesh()
   part.material       = Mesh::SOLID_BIT;
   part.texture        = "";
 
-  vert.pos[0]         = 0.0f;
-  vert.pos[1]         = 0.0f;
-  vert.pos[2]         = 0.0f;
-
-  vert.texCoord[0]    = 0.0f;
-  vert.texCoord[1]    = 0.0f;
-
-  vert.detailCoord[0] = 0.0f;
-  vert.detailCoord[1] = 0.0f;
-
-  vert.normal[0]      = 0.0f;
-  vert.normal[1]      = 0.0f;
-  vert.normal[2]      = 0.0f;
-
-  vert.tangent[0]     = 0.0f;
-  vert.tangent[1]     = 0.0f;
-  vert.tangent[2]     = 0.0f;
-
-  vert.binormal[0]    = 0.0f;
-  vert.binormal[1]    = 0.0f;
-  vert.binormal[2]    = 0.0f;
+  vert.pos            = Point3::ORIGIN;
+  vert.texCoord       = TexCoord( 0.0f, 0.0f );
+  vert.detailCoord    = TexCoord( 0.0f, 0.0f );
+  vert.normal         = Vec3::ZERO;
+  vert.tangent        = Vec3::ZERO;
+  vert.binormal       = Vec3::ZERO;
 }
 
 void Compiler::endMesh()
@@ -209,6 +194,27 @@ void Compiler::end()
     }
   }
 
+#ifdef OZ_BUMPMAP
+  // generate tangents and binormals
+  if( caps & CAP_BUMPMAP ) {
+    int nVertices = part.indices.length();
+
+    for( int i = 0; i < nVertices; ++i ) {
+      const Vertex& v0 = vertices[ part.indices[i] ];
+      const Vertex& v1 = vertices[ part.indices[ ( i + 1 ) % nVertices ] ];
+      const Vertex& v2 = vertices[ part.indices[ ( i + nVertices - 1 ) % nVertices ] ];
+
+      Vec3 a = Point3( v1.pos ) - Point3( v0.pos );
+      Vec3 b = Point3( v2.pos ) - Point3( v0.pos );
+
+      float s0 = v1.texCoord.u - v0.texCoord.u;
+      float s1 = v1.texCoord.v - v0.texCoord.v;
+      float t0 = v2.texCoord.u - v0.texCoord.u;
+      float t1 = v2.texCoord.v - v0.texCoord.v;
+    }
+  }
+#endif
+
   int partIndex = parts.index( part );
 
   if( partIndex == -1 ) {
@@ -243,8 +249,8 @@ void Compiler::detailCoord( float u, float v )
 {
   hard_assert( flags & MESH_BIT );
 
-  vert.detailCoord[0] = u;
-  vert.detailCoord[1] = v;
+  vert.detailCoord.u = u;
+  vert.detailCoord.v = v;
 }
 
 void Compiler::detailCoord( const float* v )
@@ -256,9 +262,9 @@ void Compiler::normal( float nx, float ny, float nz )
 {
   hard_assert( flags & MESH_BIT );
 
-  vert.normal[0] = nx;
-  vert.normal[1] = ny;
-  vert.normal[2] = nz;
+  vert.normal.x = nx;
+  vert.normal.y = ny;
+  vert.normal.z = nz;
 }
 
 void Compiler::normal( const float* v )
@@ -270,9 +276,9 @@ void Compiler::vertex( float x, float y, float z )
 {
   hard_assert( flags & MESH_BIT );
 
-  vert.pos[0] = x;
-  vert.pos[1] = y;
-  vert.pos[2] = z;
+  vert.pos.x = x;
+  vert.pos.y = y;
+  vert.pos.z = z;
 
   if( !( flags & PART_BIT ) ) {
     vertices.add( vert );

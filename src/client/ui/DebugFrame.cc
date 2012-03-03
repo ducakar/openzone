@@ -89,7 +89,7 @@ void DebugFrame::onDraw()
                            ( bot->flags & Object::ON_SLICK_BIT ) != 0,
                            ( bot->flags & Object::ON_LADDER_BIT ) != 0,
                            collider.overlaps( bot, bot ),
-                           bot->stepRate );
+                           bot->stairRate );
     botFlagsState.draw( this, true );
   }
 
