@@ -1,4 +1,4 @@
- cmake_minimum_required( VERSION 2.8 )
+cmake_minimum_required( VERSION 2.8 )
 
 project( openzone C CXX )
 
@@ -14,8 +14,9 @@ option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory l
 set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
 set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
 
-option( OZ_NETWORKING "Enable networking." OFF )
+option( OZ_NETWORKING "Enable networking (not supported yet)." OFF )
 option( OZ_GL_COMPATIBLE "Use less OpenGL extensions for better compatibility (for Mesa < 8.0)." ON )
+option( OZ_BUMPMAP "Enable bumpmapping (not supported yet)." OFF )
 
 option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
 
@@ -47,14 +48,6 @@ mark_as_advanced( OZ_SYSTEM_NAME )
 string( REGEX MATCH "clang\\+\\+$" compiler_base "${CMAKE_CXX_COMPILER}" )
 if( "${compiler_base}" STREQUAL "clang++" )
   set( OZ_CLANG ON )
-endif()
-
-# Check if compiler is compatible (GCC >= 4.4 or LLVM/Clang >= 3.0) and if legacy GCC (< 4.6)
-try_compile( OZ_COMPATIBLE_COMPILER ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/cmake/compatible.cpp )
-try_compile( OZ_LEGACY_GCC ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/cmake/legacy_gcc.cpp )
-
-if( NOT OZ_COMPATIBLE_COMPILER )
-  message( FATAL_ERROR "GCC >= 4.4 and LLVM/Clang 3.0 are the only supported compilers" )
 endif()
 
 #
@@ -162,21 +155,12 @@ set( libs_tools "${libs_client};${FREEIMAGE_LIBRARY}" )
 # Compiler flags
 #
 
-set( flags "-pipe -ffast-math -freciprocal-math -fexceptions" )
+set( flags "-pipe -std=c++0x -pedantic -fstrict-enums -ffast-math -freciprocal-math" )
 set( warnings "-Wall -Wextra -Wconversion -Woverloaded-virtual -Wnon-virtual-dtor -Winvalid-pch" )
+set( arch_flags "-msse3 -mfpmath=sse" )
 
 if( OZ_CLANG )
   set( flags "-Qunused-arguments ${flags}" )
-endif()
-
-if( OZ_LEGACY_GCC )
-  set( flags "${flags} -std=gnu++0x" )
-else()
-  set( flags "${flags} -fstrict-enums -std=c++0x -pedantic" )
-endif()
-
-if( NOT CMAKE_SYSTEM_PROCESSOR MATCHES "arm.*" )
-  set( arch_flags "-msse3 -mfpmath=sse" )
 endif()
 
 set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release ReleaseGen ReleaseUse" )

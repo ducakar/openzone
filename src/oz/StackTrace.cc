@@ -57,7 +57,7 @@ char** StackTrace::symbols() const
 #else
 
 // Size of internal output buffer where stack trace output string is generated.
-static const int TRACE_BUFFER_SIZE  = 4096;
+static const int TRACE_BUFFER_SIZE = 4096;
 
 // Size of internal buffer where function names are demangled.
 static const int STRING_BUFFER_SIZE = 256;

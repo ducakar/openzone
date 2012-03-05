@@ -38,59 +38,59 @@ Shape shape;
 
 const Vertex Shape::VERTICES[40] = {
   // filled rectangle
-  { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }, {}, {}, {}, {} },
-  { { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f }, {}, {}, {}, {} },
-  { { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f }, {}, {}, {}, {} },
-  { { 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f }, {}, {}, {}, {} },
+  { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+  { { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+  { { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
+  { { 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
 
   // filled rectangle (inverted)
-  { { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f }, {}, {}, {}, {} },
-  { { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, {}, {}, {}, {} },
-  { { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f }, {}, {}, {}, {} },
-  { { 1.0f, 1.0f, 0.0f }, { 1.0f, 0.0f }, {}, {}, {}, {} },
+  { { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
+  { { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
+  { { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+  { { 1.0f, 1.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
 
   // line loop rectangle
-  { { 0.0f, 0.0f, 0.0f }, {}, {}, {}, {}, {} },
-  { { 1.0f, 0.0f, 0.0f }, {}, {}, {}, {}, {} },
-  { { 1.0f, 1.0f, 0.0f }, {}, {}, {}, {}, {} },
-  { { 0.0f, 1.0f, 0.0f }, {}, {}, {}, {}, {} },
+  { { 0.0f, 0.0f, 0.0f }, {}, {} },
+  { { 1.0f, 0.0f, 0.0f }, {}, {} },
+  { { 1.0f, 1.0f, 0.0f }, {}, {} },
+  { { 0.0f, 1.0f, 0.0f }, {}, {} },
 
   // tag box
-  { { -1.5f, -1.5f, 0.0f }, {}, {}, {}, {}, {} },
-  { { -1.5f, +3.5f, 0.0f }, {}, {}, {}, {}, {} },
-  { { -0.5f, -1.5f, 0.0f }, {}, {}, {}, {}, {} },
-  { { +3.5f, -1.5f, 0.0f }, {}, {}, {}, {}, {} },
+  { { -1.5f, -1.5f, 0.0f }, {}, {} },
+  { { -1.5f, +3.5f, 0.0f }, {}, {} },
+  { { -0.5f, -1.5f, 0.0f }, {}, {} },
+  { { +3.5f, -1.5f, 0.0f }, {}, {} },
 
-  { { +1.5f, -1.5f, 0.0f }, {}, {}, {}, {}, {} },
-  { { -3.5f, -1.5f, 0.0f }, {}, {}, {}, {}, {} },
-  { { +1.5f, -0.5f, 0.0f }, {}, {}, {}, {}, {} },
-  { { +1.5f, +3.5f, 0.0f }, {}, {}, {}, {}, {} },
+  { { +1.5f, -1.5f, 0.0f }, {}, {} },
+  { { -3.5f, -1.5f, 0.0f }, {}, {} },
+  { { +1.5f, -0.5f, 0.0f }, {}, {} },
+  { { +1.5f, +3.5f, 0.0f }, {}, {} },
 
-  { { +1.5f, +1.5f, 0.0f }, {}, {}, {}, {}, {} },
-  { { -3.5f, +1.5f, 0.0f }, {}, {}, {}, {}, {} },
-  { { +1.5f, +0.5f, 0.0f }, {}, {}, {}, {}, {} },
-  { { +1.5f, -3.5f, 0.0f }, {}, {}, {}, {}, {} },
+  { { +1.5f, +1.5f, 0.0f }, {}, {} },
+  { { -3.5f, +1.5f, 0.0f }, {}, {} },
+  { { +1.5f, +0.5f, 0.0f }, {}, {} },
+  { { +1.5f, -3.5f, 0.0f }, {}, {} },
 
-  { { -1.5f, +1.5f, 0.0f }, {}, {}, {}, {}, {} },
-  { { +3.5f, +1.5f, 0.0f }, {}, {}, {}, {}, {} },
-  { { -1.5f, +0.5f, 0.0f }, {}, {}, {}, {}, {} },
-  { { -1.5f, -3.5f, 0.0f }, {}, {}, {}, {}, {} },
+  { { -1.5f, +1.5f, 0.0f }, {}, {} },
+  { { +3.5f, +1.5f, 0.0f }, {}, {} },
+  { { -1.5f, +0.5f, 0.0f }, {}, {} },
+  { { -1.5f, -3.5f, 0.0f }, {}, {} },
 
   // sprite
-  { { -1.0f, -1.0f, 0.0f }, { 0.0f, 0.0f }, {}, { 0.0f, 0.0f, 1.0f }, {}, {} },
-  { { +1.0f, -1.0f, 0.0f }, { 1.0f, 0.0f }, {}, { 0.0f, 0.0f, 1.0f }, {}, {} },
-  { { -1.0f, +1.0f, 0.0f }, { 0.0f, 1.0f }, {}, { 0.0f, 0.0f, 1.0f }, {}, {} },
-  { { +1.0f, +1.0f, 0.0f }, { 1.0f, 1.0f }, {}, { 0.0f, 0.0f, 1.0f }, {}, {} },
+  { { -1.0f, -1.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+  { { +1.0f, -1.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+  { { -1.0f, +1.0f, 0.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
+  { { +1.0f, +1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
 
   // box (base index 32)
-  { { -1.0f, -1.0f, -1.0f }, {}, {}, {}, {}, {} },
-  { { -1.0f, -1.0f, +1.0f }, {}, {}, {}, {}, {} },
-  { { -1.0f, +1.0f, -1.0f }, {}, {}, {}, {}, {} },
-  { { -1.0f, +1.0f, +1.0f }, {}, {}, {}, {}, {} },
-  { { +1.0f, -1.0f, -1.0f }, {}, {}, {}, {}, {} },
-  { { +1.0f, -1.0f, +1.0f }, {}, {}, {}, {}, {} },
-  { { +1.0f, +1.0f, -1.0f }, {}, {}, {}, {}, {} },
-  { { +1.0f, +1.0f, +1.0f }, {}, {}, {}, {}, {} }
+  { { -1.0f, -1.0f, -1.0f }, {}, {} },
+  { { -1.0f, -1.0f, +1.0f }, {}, {} },
+  { { -1.0f, +1.0f, -1.0f }, {}, {} },
+  { { -1.0f, +1.0f, +1.0f }, {}, {} },
+  { { +1.0f, -1.0f, -1.0f }, {}, {} },
+  { { +1.0f, -1.0f, +1.0f }, {}, {} },
+  { { +1.0f, +1.0f, -1.0f }, {}, {} },
+  { { +1.0f, +1.0f, +1.0f }, {}, {} }
 };
 
 const ushort Shape::INDICES[46] = {
@@ -169,7 +169,18 @@ void Shape::bindVertexArray() const
 #ifdef OZ_GL_COMPATIBLE
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-  Vertex::setFormat();
+
+  glEnableVertexAttribArray( Attrib::POSITION );
+  glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+
+  glEnableVertexAttribArray( Attrib::TEXCOORD );
+  glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+
+  glEnableVertexAttribArray( Attrib::NORMAL );
+  glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 #else
   glBindVertexArray( vao );
 #endif
@@ -286,7 +297,17 @@ void Shape::load()
   glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( INDICES ), INDICES, GL_STATIC_DRAW );
 
 #ifndef OZ_GL_COMPATIBLE
-  Vertex::setFormat();
+  glEnableVertexAttribArray( Attrib::POSITION );
+  glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+
+  glEnableVertexAttribArray( Attrib::TEXCOORD );
+  glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+
+  glEnableVertexAttribArray( Attrib::NORMAL );
+  glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 
   glBindVertexArray( 0 );
 #endif

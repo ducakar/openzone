@@ -41,6 +41,9 @@
 // Enable compatibility with MesaGL drivers.
 #cmakedefine OZ_GL_COMPATIBLE
 
+// Enable bumpmapping.
+#cmakedefine OZ_BUMPMAP
+
 /*
  * Compiler and platform-specific macros
  */
