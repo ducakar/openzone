@@ -29,8 +29,6 @@
 
 #include "BuildInfo.hh"
 
-#include "modules/Module.hh"
-
 #include "client/Render.hh"
 
 #include "build/Lingua.hh"
@@ -82,6 +80,7 @@ void Build::printUsage()
   log.println( "-r          Copy music tracks." );
   log.println( "-p          Pack built files into ZIP archive." );
   log.println( "-A          Everything above." );
+  log.println( "-B          Build with bumpmap vertex format." );
   log.println( "-C          Use S3 texture compression." );
   log.println( "-0          Use no compression for ZIP archive." );
   log.println( "-7          Create non-solid LZMA-compressed 7zip archive instead of ZIP." );
@@ -181,7 +180,9 @@ void Build::buildTextures( const char* srcDir, const char* destDir, bool wrap,
       continue;
     }
 
-    if( !file->hasExtension( "png" ) && !file->hasExtension( "jpg" ) ) {
+    if( !file->hasExtension( "png" ) && !file->hasExtension( "jpeg" ) &&
+        !file->hasExtension( "jpg" ) && !file->hasExtension( "tga" ) )
+    {
       continue;
     }
 
@@ -191,14 +192,14 @@ void Build::buildTextures( const char* srcDir, const char* destDir, bool wrap,
     log.println( "Building texture '%s' {", srcPath.cstr() );
     log.indent();
 
-    uint id = context.loadRawTexture( srcPath, wrap, magFilter, minFilter );
+    uint id = context.loadLayer( srcPath, wrap, magFilter, minFilter );
 
     hard_assert( id != 0 );
 
     BufferStream os;
 
     log.println( "Compiling into '%s'", destPath.cstr() );
-    context.writeTexture( id, &os );
+    context.writeLayer( id, &os );
 
     glDeleteTextures( 1, &id );
 
@@ -295,6 +296,8 @@ void Build::buildBSPTextures()
   log.println( "Building used BSP textures {" );
   log.indent();
 
+  Map<String> usedDirs;
+
   PhysFile dir( "baseq3/textures" );
   DArray<PhysFile> dirList = dir.ls();
 
@@ -308,29 +311,6 @@ void Build::buildBSPTextures()
     foreach( file, texList.iter() ) {
       String name = file->name();
       String path = file->path();
-
-      if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
-        log.print( "Copying '%s' ...", path.cstr() );
-
-        if( !file->map() ) {
-          throw Exception( "Failed to read '%s'", file->realPath().cstr() );
-        }
-
-        InputStream is = file->inputStream();
-        File destFile( String::str( "tex/%s/%s", subDir->name().cstr(), name.cstr() ) );
-
-        File::mkdir( "tex" );
-        File::mkdir( "tex/" + subDir->name() );
-
-        if( !destFile.write( &is ) ) {
-          throw Exception( "Failed to write '%s'", destFile.path().cstr() );
-        }
-
-        file->unmap();
-
-        log.printEnd( " OK" );
-        continue;
-      }
 
       int dot   = path.lastIndex( '.' );
       int slash = path.lastIndex( '/' );
@@ -356,13 +336,15 @@ void Build::buildBSPTextures()
       log.println( "Building texture '%s' {", name.cstr() );
       log.indent();
 
+      usedDirs.include( subDir->path() );
+
       File::mkdir( "tex" );
       File::mkdir( "tex/" + subDir->name() );
 
       File destFile( String::str( "tex/%s.ozcTex", name.cstr() ) );
 
       uint albedoId, masksId, normalsId;
-      context.loadRawTextures( &albedoId, &masksId, &normalsId, path );
+      context.loadTexture( &albedoId, &masksId, &normalsId, path );
 
       BufferStream os;
 
@@ -379,15 +361,15 @@ void Build::buildBSPTextures()
 
       os.writeInt( textureFlags );
 
-      context.writeTexture( albedoId, &os );
+      context.writeLayer( albedoId, &os );
       glDeleteTextures( 1, &albedoId );
 
       if( masksId != 0 ) {
-        context.writeTexture( masksId, &os );
+        context.writeLayer( masksId, &os );
         glDeleteTextures( 1, &masksId );
       }
       if( normalsId != 0 ) {
-        context.writeTexture( normalsId, &os );
+        context.writeLayer( normalsId, &os );
         glDeleteTextures( 1, &normalsId );
       }
 
@@ -397,6 +379,40 @@ void Build::buildBSPTextures()
 
       log.unindent();
       log.println( "}" );
+    }
+  }
+
+  foreach( subDirPath, usedDirs.citer() ) {
+    PhysFile subDir( *subDirPath );
+
+    DArray<PhysFile> texList = subDir.ls();
+
+    foreach( file, texList.iter() ) {
+      String name = file->name();
+      String path = file->path();
+
+      if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
+        log.print( "Copying '%s' ...", path.cstr() );
+
+        if( !file->map() ) {
+          throw Exception( "Failed to read '%s'", file->realPath().cstr() );
+        }
+
+        InputStream is = file->inputStream();
+        File destFile( String::str( "tex/%s/%s", subDir.name().cstr(), name.cstr() ) );
+
+        File::mkdir( "tex" );
+        File::mkdir( "tex/" + subDir.name() );
+
+        if( !destFile.write( &is ) ) {
+          throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+        }
+
+        file->unmap();
+
+        log.printEnd( " OK" );
+        continue;
+      }
     }
   }
 
@@ -547,6 +563,8 @@ void Build::copySounds()
   log.println( "Copying used sounds {" );
   log.indent();
 
+  Map<String> usedDirs;
+
   PhysFile dir( "snd" );
   DArray<PhysFile> dirList = dir.ls();
 
@@ -560,29 +578,6 @@ void Build::copySounds()
     foreach( file, texList.iter() ) {
       String name = file->name();
       String path = file->path();
-
-      if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
-        log.print( "Copying '%s' ...", path.cstr() );
-
-        if( !file->map() ) {
-          throw Exception( "Failed to read '%s'", file->realPath().cstr() );
-        }
-
-        InputStream is = file->inputStream();
-        File destFile( path );
-
-        File::mkdir( "snd" );
-        File::mkdir( "snd/" + subDir->name() );
-
-        if( !destFile.write( &is ) ) {
-          throw Exception( "Failed to write '%s'", destFile.path().cstr() );
-        }
-
-        file->unmap();
-
-        log.printEnd( " OK" );
-        continue;
-      }
 
       int dot   = path.lastIndex( '.' );
       int slash = path.lastIndex( '/' );
@@ -600,6 +595,8 @@ void Build::copySounds()
       }
 
       log.print( "Copying '%s' ...", name.cstr() );
+
+      usedDirs.include( subDir->path() );
 
       File::mkdir( "snd" );
       File::mkdir( "snd/" + subDir->name() );
@@ -619,6 +616,40 @@ void Build::copySounds()
       file->unmap();
 
       log.printEnd( " OK" );
+    }
+  }
+
+  foreach( subDirPath, usedDirs.citer() ) {
+    PhysFile subDir( *subDirPath );
+
+    DArray<PhysFile> texList = subDir.ls();
+
+    foreach( file, texList.iter() ) {
+      String name = file->name();
+      String path = file->path();
+
+      if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
+        log.print( "Copying '%s' ...", path.cstr() );
+
+        if( !file->map() ) {
+          throw Exception( "Failed to read '%s'", file->realPath().cstr() );
+        }
+
+        InputStream is = file->inputStream();
+        File destFile( path );
+
+        File::mkdir( "snd" );
+        File::mkdir( "snd/" + subDir.name() );
+
+        if( !destFile.write( &is ) ) {
+          throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+        }
+
+        file->unmap();
+
+        log.printEnd( " OK" );
+        continue;
+      }
     }
   }
 
@@ -707,9 +738,12 @@ int Build::main( int argc, char** argv )
   bool useCompression = true;
   bool use7zip        = false;
 
+  context.bumpmap = false;
+  context.useS3TC = false;
+
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "vlugtcbmsafnxorpAC07" ) ) != -1 ) {
+  while( ( opt = getopt( argc, argv, "vlugtcbmsafnxorpABC07" ) ) != -1 ) {
     switch( opt ) {
       case 'v': {
         log.isVerbose = true;
@@ -791,6 +825,10 @@ int Build::main( int argc, char** argv )
         doModules = true;
         doMusic   = true;
         doPack    = true;
+        break;
+      }
+      case 'B': {
+        context.bumpmap = true;
         break;
       }
       case 'C': {

@@ -52,6 +52,16 @@ const char* const Context::IMAGE_EXTENSIONS[] = {
   ".tga"
 };
 
+struct Context::Image
+{
+  FIBITMAP* dib;
+  ubyte*    pixels;
+  int       width;
+  int       height;
+  int       bpp;
+  int       format;
+};
+
 uint Context::buildTexture( const void* data, int width, int height, int format, bool wrap,
                             int magFilter, int minFilter )
 {
@@ -141,9 +151,9 @@ uint Context::buildTexture( const void* data, int width, int height, int format,
   return texId;
 }
 
-uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int minFilter )
+Context::Image Context::loadImage( const char* path, int forceFormat )
 {
-  log.print( "Loading texture '%s' ...", path );
+  log.print( "Loading image '%s' ...", path );
 
   PhysFile file( path );
   String realPath = file.realPath();
@@ -153,104 +163,140 @@ uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int mi
     throw Exception( "Invalid image file type '%s'", realPath.cstr() );
   }
 
-  FIBITMAP* image = FreeImage_Load( type, realPath );
-  if( image == null ) {
+  FIBITMAP* dib = FreeImage_Load( type, realPath );
+  if( dib == null ) {
     throw Exception( "Texture '%s' loading failed", realPath.cstr() );
   }
 
-  int width  = int( FreeImage_GetWidth( image ) );
-  int height = int( FreeImage_GetHeight( image ) );
-  int bpp    = int( FreeImage_GetBPP( image ) );
+  int width  = int( FreeImage_GetWidth( dib ) );
+  int height = int( FreeImage_GetHeight( dib ) );
+  int bpp    = int( FreeImage_GetBPP( dib ) );
 
   log.printRaw( " %d x %d %d BPP ...", width, height, bpp );
 
   if( height != 1 && ( width * bpp ) % 32 != 0 ) {
-    throw Exception( "Image scan line should be a multiple of 4 (width * bytesPerPixel)." );
+    throw Exception( "Image scan line (width * bytesPerPixel) should be a multiple of 4." );
   }
 
-  int format = int( FreeImage_GetImageType( image ) );
+  int format = int( FreeImage_GetImageType( dib ) );
 
   if( format != FIT_BITMAP ) {
     throw Exception( "Invalid image colour format" );
   }
 
-  bool isPalettised = FreeImage_GetColorsUsed( image ) != 0;
+  bool isPalettised = FreeImage_GetColorsUsed( dib ) != 0;
+  bool isOpaque     = FreeImage_GetTransparentIndex( dib ) == -1;
 
-  if( isPalettised ) {
-    bool isOpaque = FreeImage_GetTransparentIndex( image ) == -1;
+  if( forceFormat == 0 ) {
+    if( isPalettised ) {
+      forceFormat = isOpaque ? GL_BGR : GL_BGRA;
+    }
+    else {
+      forceFormat = bpp == 8 ? GL_LUMINANCE : bpp == 24 ? GL_BGR : GL_BGRA;
+    }
+  }
 
-    if( isOpaque ) {
+  switch( forceFormat ) {
+    case GL_LUMINANCE: {
+      bpp    = 8;
+      format = GL_LUMINANCE;
+
+      FIBITMAP* newImage = FreeImage_ConvertToGreyscale( dib );
+      if( newImage == null ) {
+        throw Exception( "Conversion from palettised to grayscale image failed" );
+      }
+
+      FreeImage_Unload( dib );
+      dib = newImage;
+
+      break;
+    }
+    case GL_BGR: {
+      bpp    = 24;
       format = GL_BGR;
 
-      FIBITMAP* newImage = FreeImage_ConvertTo24Bits( image );
+      FIBITMAP* newImage = FreeImage_ConvertTo24Bits( dib );
       if( newImage == null ) {
         throw Exception( "Conversion from palettised to RGB image failed" );
       }
 
-      FreeImage_Unload( image );
-      image = newImage;
+      FreeImage_Unload( dib );
+      dib = newImage;
+
+      break;
     }
-    else {
+    case GL_BGRA: {
+      bpp    = 32;
       format = GL_BGRA;
 
-      FIBITMAP* newImage = FreeImage_ConvertTo32Bits( image );
-      if( newImage == null ) {
+      FIBITMAP* newDIB = FreeImage_ConvertTo32Bits( dib );
+      if( newDIB == null ) {
         throw Exception( "Conversion from palettised to RGBA image failed" );
       }
 
-      FreeImage_Unload( image );
-      image = newImage;
+      FreeImage_Unload( dib );
+      dib = newDIB;
+
+      break;
     }
-  }
-  else {
-    switch( bpp ) {
-      case 8: {
-        format = GL_LUMINANCE;
-        break;
-      }
-      case 24: {
-        format = GL_BGR;
-        break;
-      }
-      case 32: {
-        format = GL_BGRA;
-        break;
-      }
-      default: {
-        throw Exception( "Invalid image BPP %d, should be a power of two <= 32", bpp );
-      }
+    default: {
+      hard_assert( false );
+      break;
     }
   }
 
-  const void* data = FreeImage_GetBits( image );
-  if( data == null ) {
+  ubyte* pixels = FreeImage_GetBits( dib );
+  if( pixels == null ) {
     throw Exception( "Failed to access image data" );
   }
 
-  uint texId = buildTexture( data, width, height, format, wrap, magFilter, minFilter );
-  FreeImage_Unload( image );
-
   log.printEnd( " OK" );
 
-  return texId;
+  return { dib, pixels, width, height, bpp, format };
 }
 
-void Context::loadRawTextures( uint* albedoId, uint* masksId, uint* normalsId,
-                               const char* basePath, bool wrap, int magFilter, int minFilter )
+uint Context::loadLayer( const char* path, bool wrap, int magFilter, int minFilter )
 {
-  String albedoBasePath   = basePath;
-  String masksBasePath    = albedoBasePath + "_m";
-  String normalsBasePath  = albedoBasePath + "_n";
-  String specularBasePath = albedoBasePath + "_s";
+  Image image = loadImage( path );
+  uint  id    = buildTexture( image.pixels, image.width, image.height, image.format,
+                              wrap, magFilter, minFilter );
+  FreeImage_Unload( image.dib );
 
-  PhysFile albedo( albedoBasePath + IMAGE_EXTENSIONS[0] );
+  return id;
+}
+
+void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, const char* basePath_,
+                           bool wrap, int magFilter, int minFilter )
+{
+  String basePath          = basePath_;
+  String diffuseBasePath   = basePath;
+  String diffuse1BasePath  = basePath + "_d";
+  String masksBasePath     = basePath + "_m";
+  String specularBasePath  = basePath + "_s";
+  String specular1BasePath = basePath + "_spec";
+  String emissionBasePath  = basePath + ".blend";
+  String normalsBasePath   = basePath + "_n";
+  String normals1BasePath  = basePath + "_nm";
+  String normals2BasePath  = basePath + "_normal";
+  String normals3BasePath  = basePath + "_local";
+
+  PhysFile diffuse( diffuseBasePath + IMAGE_EXTENSIONS[0] );
+  PhysFile diffuse1( diffuseBasePath + IMAGE_EXTENSIONS[0] );
   PhysFile masks( masksBasePath + IMAGE_EXTENSIONS[0] );
-  PhysFile normals( normalsBasePath + IMAGE_EXTENSIONS[0] );
   PhysFile specular( specularBasePath + IMAGE_EXTENSIONS[0] );
+  PhysFile specular1( specularBasePath + IMAGE_EXTENSIONS[0] );
+  PhysFile emission( emissionBasePath + IMAGE_EXTENSIONS[0] );
+  PhysFile normals( normalsBasePath + IMAGE_EXTENSIONS[0] );
+  PhysFile normals1( normals1BasePath + IMAGE_EXTENSIONS[0] );
+  PhysFile normals2( normals2BasePath + IMAGE_EXTENSIONS[0] );
+  PhysFile normals3( normals3BasePath + IMAGE_EXTENSIONS[0] );
 
   for( int i = 1; i < aLength( IMAGE_EXTENSIONS ); ++i ) {
-    if( albedo.getType() == File::MISSING ) {
-      albedo.setPath( albedoBasePath + IMAGE_EXTENSIONS[i] );
+    if( diffuse.getType() == File::MISSING ) {
+      diffuse.setPath( diffuseBasePath + IMAGE_EXTENSIONS[i] );
+    }
+    if( diffuse1.getType() == File::MISSING ) {
+      diffuse1.setPath( diffuse1BasePath + IMAGE_EXTENSIONS[i] );
     }
     if( masks.getType() == File::MISSING ) {
       masks.setPath( masksBasePath + IMAGE_EXTENSIONS[i] );
@@ -261,33 +307,127 @@ void Context::loadRawTextures( uint* albedoId, uint* masksId, uint* normalsId,
     if( specular.getType() == File::MISSING ) {
       specular.setPath( specularBasePath + IMAGE_EXTENSIONS[i] );
     }
+    if( specular1.getType() == File::MISSING ) {
+      specular1.setPath( specular1BasePath + IMAGE_EXTENSIONS[i] );
+    }
+    if( emission.getType() == File::MISSING ) {
+      emission.setPath( emissionBasePath + IMAGE_EXTENSIONS[i] );
+    }
+    if( normals1.getType() == File::MISSING ) {
+      normals1.setPath( normals1BasePath + IMAGE_EXTENSIONS[i] );
+    }
+    if( normals2.getType() == File::MISSING ) {
+      normals2.setPath( normals2BasePath + IMAGE_EXTENSIONS[i] );
+    }
+    if( normals3.getType() == File::MISSING ) {
+      normals3.setPath( normals3BasePath + IMAGE_EXTENSIONS[i] );
+    }
   }
 
-  if( albedo.getType() == File::MISSING ) {
-    throw Exception( "Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath );
+  Image image, specImage, emissionImage;
+  image.dib = 0;
+
+  if( diffuse.getType() == File::REGULAR ) {
+    image = loadImage( diffuse.path(), 0 );
+  }
+  else if( diffuse1.getType() == File::REGULAR ) {
+    image = loadImage( diffuse1.path(), 0 );
+  }
+  else {
+    throw Exception( "Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.cstr() );
   }
 
-  *albedoId = loadRawTexture( albedo.path(), wrap, magFilter, minFilter );
+  *diffuseId = buildTexture( image.pixels, image.width, image.height, image.format,
+                             wrap, magFilter, minFilter );
+  FreeImage_Unload( image.dib );
 
-  if( masks.getType() != File::MISSING ) {
-    *masksId = loadRawTexture( masks.path(), wrap, magFilter, minFilter );
+  image.dib         = null;
+  specImage.dib     = null;
+  emissionImage.dib = null;
+
+  if( masks.getType() == File::REGULAR ) {
+    image = loadImage( masks.path(), GL_BGR );
   }
-  else if( specular.getType() != File::MISSING ) {
+  else if( specular.getType() == File::REGULAR ) {
+    specImage = loadImage( specular.path(), GL_BGR );
 
+    if( emission.getType() == File::REGULAR ) {
+      emissionImage = loadImage( emission.path(), GL_LUMINANCE );
+    }
+  }
+  else if( specular1.getType() == File::REGULAR ) {
+    specImage = loadImage( specular1.path(), GL_BGR );
+
+    if( emission.getType() == File::REGULAR ) {
+      emissionImage = loadImage( emission.path(), GL_LUMINANCE );
+    }
+  }
+
+  if( image.dib != null ) {
+    *masksId = buildTexture( image.pixels, image.width, image.height, image.format,
+                             wrap, magFilter, minFilter );
+    FreeImage_Unload( image.dib );
+  }
+  else if( specImage.dib != null ) {
+    if( emissionImage.dib != null ) {
+      if( specImage.width != emissionImage.width || specImage.height != emissionImage.height ) {
+        throw Exception( "Specular and emission texture masks must have same size." );
+      }
+    }
+
+    for( int i = 0; i < specImage.width * specImage.height; ++i ) {
+      ubyte& b = specImage.pixels[i*3 + 0];
+      ubyte& g = specImage.pixels[i*3 + 1];
+      ubyte& r = specImage.pixels[i*3 + 2];
+
+      r = ( b + g + r ) / 3;
+      g = emissionImage.dib == null ? 0 : emissionImage.pixels[i];
+      b = 0;
+    }
+
+    *masksId = buildTexture( specImage.pixels, specImage.width, specImage.height, specImage.format,
+                             wrap, magFilter, minFilter );
+
+    FreeImage_Unload( specImage.dib );
+    if( emissionImage.dib != null ) {
+      FreeImage_Unload( emissionImage.dib );
+    }
   }
   else {
     *masksId = 0;
   }
 
-  if( normals.getType() != File::MISSING ) {
-    *normalsId = loadRawTexture( normals.path(), wrap, magFilter, minFilter );
+  if( !bumpmap ) {
+    *normalsId = 0;
   }
   else {
-    *normalsId = 0;
+    image.dib = null;
+
+    if( normals.getType() == File::REGULAR ) {
+      image = loadImage( normals.path() );
+    }
+    else if( normals1.getType() == File::REGULAR ) {
+      image = loadImage( normals1.path(), GL_BGR );
+    }
+    else if( normals2.getType() == File::REGULAR ) {
+      image = loadImage( normals2.path(), GL_BGR );
+    }
+    else if( normals3.getType() == File::REGULAR ) {
+      image = loadImage( normals3.path(), GL_BGR );
+    }
+
+    if( image.dib != null ) {
+      *normalsId = buildTexture( image.pixels, image.width, image.height, GL_BGR,
+                                 wrap, magFilter, minFilter );
+      FreeImage_Unload( image.dib );
+    }
+    else {
+      *normalsId = 0;
+    }
   }
 }
 
-void Context::writeTexture( uint id, BufferStream* stream )
+void Context::writeLayer( uint id, BufferStream* stream )
 {
   glBindTexture( GL_TEXTURE_2D, id );
 

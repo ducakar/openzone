@@ -179,15 +179,15 @@ void Terra::saveClient()
   log.println( "Compiling terrain model to '%s' {", destFile.path().cstr() );
   log.indent();
 
-  uint liquidTexId = context.loadRawTexture( "terra/" + liquidTexture );
-  uint detailTexId = context.loadRawTexture( "terra/" + detailTexture );
-  uint mapTexId    = context.loadRawTexture( "terra/" + mapTexture );
+  uint liquidTexId = context.loadLayer( "terra/" + liquidTexture );
+  uint detailTexId = context.loadLayer( "terra/" + detailTexture );
+  uint mapTexId    = context.loadLayer( "terra/" + mapTexture );
 
   BufferStream os;
 
-  context.writeTexture( liquidTexId, &os );
-  context.writeTexture( detailTexId, &os );
-  context.writeTexture( mapTexId, &os );
+  context.writeLayer( liquidTexId, &os );
+  context.writeLayer( detailTexId, &os );
+  context.writeLayer( mapTexId, &os );
 
   glDeleteTextures( 1, &liquidTexId );
   glDeleteTextures( 1, &detailTexId );
@@ -280,12 +280,12 @@ void Terra::saveClient()
   bool useS3TC = context.useS3TC;
   context.useS3TC = false;
 
-  mapTexId = context.loadRawTexture( "terra/" + mapTexture );
+  mapTexId = context.loadLayer( "terra/" + mapTexture );
 
   log.print( "Writing minimap texture '%s' ...", minimapFile.path().cstr() );
 
   os.reset();
-  context.writeTexture( mapTexId, &os );
+  context.writeLayer( mapTexId, &os );
   glDeleteTextures( 1, &mapTexId );
 
   if( !minimapFile.write( &os ) ) {

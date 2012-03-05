@@ -39,6 +39,13 @@ class Shape
     static const Vertex VERTICES[];
     static const ushort INDICES[];
 
+    struct Vertex
+    {
+      float pos[3];
+      float texCoord[2];
+      float normal[3];
+    };
+
     uint vao;
     uint vbo;
     uint ibo;

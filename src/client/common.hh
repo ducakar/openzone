@@ -23,7 +23,6 @@
 
 #pragma once
 
-#include "matrix/Library.hh"
 #include "matrix/Collider.hh"
 
 using namespace oz::matrix;

@@ -345,8 +345,7 @@ void Orbis::read( InputStream* istream )
     bspName = istream->readString();
 
     if( bspName.isEmpty() ) {
-      // FIXME Remove template parameter when GCC 4.6 becomes minimum.
-      structs.add<Struct*>( null );
+      structs.add( null );
     }
     else {
       const BSP* bsp = library.bsp( bspName );
@@ -361,8 +360,7 @@ void Orbis::read( InputStream* istream )
     className = istream->readString();
 
     if( className.isEmpty() ) {
-      // FIXME Remove template parameter when GCC 4.6 becomes minimum.
-      objects.add<Object*>( null );
+      objects.add( null );
     }
     else {
       const ObjectClass* clazz = library.objClass( className );
@@ -382,8 +380,7 @@ void Orbis::read( InputStream* istream )
     poolName = istream->readString();
 
     if( poolName.isEmpty() ) {
-      // FIXME Remove template parameter when GCC 4.6 becomes minimum.
-      frags.add<Frag*>( null );
+      frags.add( null );
     }
     else {
       const FragPool* pool = library.fragPool( poolName );

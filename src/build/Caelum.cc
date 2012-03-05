@@ -95,12 +95,12 @@ void Caelum::build( const char* name )
     os.writeShort( short( i * 4 + 3 ) );
   }
 
-  uint texId = context.loadRawTexture( "caelum/sun.png", false );
-  context.writeTexture( texId, &os );
+  uint texId = context.loadLayer( "caelum/sun.png", false );
+  context.writeLayer( texId, &os );
   glDeleteTextures( 1, &texId );
 
-  texId = context.loadRawTexture( "caelum/moon.png", false );
-  context.writeTexture( texId, &os );
+  texId = context.loadLayer( "caelum/moon.png", false );
+  context.writeLayer( texId, &os );
   glDeleteTextures( 1, &texId );
 
   log.print( "Dumping into '%s' ...", destFile.path().cstr() );

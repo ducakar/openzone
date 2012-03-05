@@ -34,32 +34,41 @@ namespace build
 
 class Context
 {
-  public:
+  private:
 
     static const int DEFAULT_MAG_FILTER = GL_LINEAR;
     static const int DEFAULT_MIN_FILTER = GL_LINEAR_MIPMAP_LINEAR;
 
     static const char* const IMAGE_EXTENSIONS[];
 
+    struct Image;
+
+  public:
+
     HashString<> usedTextures;
     HashString<> usedSounds;
     HashString<> usedModels;
 
+    bool bumpmap;
     bool useS3TC;
+
+  private:
 
     uint buildTexture( const void* data, int width, int height, int format, bool wrap,
                        int magFilter, int minFilter );
 
-    uint loadRawTexture( const char* path, bool wrap = true,
-                         int magFilter = DEFAULT_MAG_FILTER,
-                         int minFilter = DEFAULT_MIN_FILTER );
+    Image loadImage( const char* path, int forceFormat = 0 );
 
-    void loadRawTextures( uint* albedoId, uint* masksId, uint* normalsId,
-                          const char* basePath, bool wrap = true,
-                          int magFilter = DEFAULT_MAG_FILTER,
-                          int minFilter = DEFAULT_MIN_FILTER );
+  public:
 
-    void writeTexture( uint id, BufferStream* stream );
+    uint loadLayer( const char* path, bool wrap = true,
+                    int magFilter = DEFAULT_MAG_FILTER, int minFilter = DEFAULT_MIN_FILTER );
+
+    void loadTexture( uint* diffuseId, uint* masksId, uint* normalsId,
+                      const char* basePath, bool wrap = true,
+                      int magFilter = DEFAULT_MAG_FILTER, int minFilter = DEFAULT_MIN_FILTER );
+
+    void writeLayer( uint id, BufferStream* stream );
 
     void init();
     void free();

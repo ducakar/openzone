@@ -34,8 +34,7 @@ namespace build
 
 bool Vertex::operator == ( const Vertex& v ) const
 {
-  return pos == v.pos && texCoord == v.texCoord && detailCoord == v.detailCoord &&
-         normal == v.normal && part == v.part;
+  return pos == v.pos && texCoord == v.texCoord && normal == v.normal;
 }
 
 void Vertex::write( BufferStream* ostream ) const
@@ -43,11 +42,14 @@ void Vertex::write( BufferStream* ostream ) const
   ostream->writePoint3( pos );
   ostream->writeFloat( texCoord.u );
   ostream->writeFloat( texCoord.v );
-  ostream->writeFloat( detailCoord.u );
-  ostream->writeFloat( detailCoord.v );
   ostream->writeVec3( normal );
-  ostream->writeVec3( tangent );
-  ostream->writeVec3( binormal );
+
+  if( context.bumpmap ) {
+    ostream->writeVec3( tangent );
+    ostream->writeVec3( binormal );
+    ostream->writeFloat( detailCoord.u );
+    ostream->writeFloat( detailCoord.v );
+  }
 }
 
 void MeshData::write( BufferStream* os, bool embedTextures ) const
@@ -81,7 +83,7 @@ void MeshData::write( BufferStream* os, bool embedTextures ) const
 
     for( int i = 1; i < textures.length(); ++i ) {
       uint albedoId, masksId, normalsId;
-      context.loadRawTextures( &albedoId, &masksId, &normalsId, textures[i] );
+      context.loadTexture( &albedoId, &masksId, &normalsId, textures[i] );
 
       int textureFlags = 0;
 
@@ -98,15 +100,15 @@ void MeshData::write( BufferStream* os, bool embedTextures ) const
       os->writeInt( textureFlags );
 
       if( albedoId != 0 ) {
-        context.writeTexture( albedoId, os );
+        context.writeLayer( albedoId, os );
         glDeleteTextures( 1, &albedoId );
       }
       if( masksId != 0 ) {
-        context.writeTexture( masksId, os );
+        context.writeLayer( masksId, os );
         glDeleteTextures( 1, &masksId );
       }
       if( normalsId != 0 ) {
-        context.writeTexture( normalsId, os );
+        context.writeLayer( normalsId, os );
         glDeleteTextures( 1, &normalsId );
       }
     }

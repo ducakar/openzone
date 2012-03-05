@@ -136,7 +136,7 @@ using std::ptrdiff_t;
 using std::size_t;
 
 /**
- * Null constant.
+ * Null pointer constant.
  *
  * @ingroup oz
  */

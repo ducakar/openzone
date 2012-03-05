@@ -43,13 +43,11 @@ void Vertex::read( InputStream* istream )
   texCoord[0] = istream->readFloat();
   texCoord[1] = istream->readFloat();
 
-  detailCoord[0] = istream->readFloat();
-  detailCoord[1] = istream->readFloat();
-
   normal[0] = istream->readFloat();
   normal[1] = istream->readFloat();
   normal[2] = istream->readFloat();
 
+#ifdef OZ_BUMPMAP
   tangent[0] = istream->readFloat();
   tangent[1] = istream->readFloat();
   tangent[2] = istream->readFloat();
@@ -57,6 +55,10 @@ void Vertex::read( InputStream* istream )
   binormal[0] = istream->readFloat();
   binormal[1] = istream->readFloat();
   binormal[2] = istream->readFloat();
+
+  detailCoord[0] = istream->readFloat();
+  detailCoord[1] = istream->readFloat();
+#endif
 }
 
 void Vertex::setFormat()
@@ -69,14 +71,11 @@ void Vertex::setFormat()
   glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
 
-  glEnableVertexAttribArray( Attrib::DETAILCOORD );
-  glVertexAttribPointer( Attrib::DETAILCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, detailCoord ) );
-
   glEnableVertexAttribArray( Attrib::NORMAL );
   glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 
+#ifdef OZ_BUMPMAP
   glEnableVertexAttribArray( Attrib::TANGENT );
   glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
@@ -84,6 +83,11 @@ void Vertex::setFormat()
   glEnableVertexAttribArray( Attrib::BINORMAL );
   glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
+
+  glEnableVertexAttribArray( Attrib::DETAILCOORD );
+  glVertexAttribPointer( Attrib::DETAILCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, detailCoord ) );
+#endif
 }
 
 void Texture::free()

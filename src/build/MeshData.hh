@@ -36,12 +36,10 @@ struct Vertex
 {
   Point3   pos;
   TexCoord texCoord;
-  TexCoord detailCoord;
   Vec3     normal;
   Vec3     tangent;
   Vec3     binormal;
-
-  int      part;
+  TexCoord detailCoord;
 
   bool operator == ( const Vertex& v ) const;
 

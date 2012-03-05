@@ -104,10 +104,12 @@ struct Attrib
   {
     POSITION,
     TEXCOORD,
-    DETAILCOORD,
     NORMAL,
+#ifdef OZ_BUMPMAP
     TANGENT,
-    BINORMAL
+    BINORMAL,
+    DETAILCOORD
+#endif
   };
 };
 
