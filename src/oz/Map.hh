@@ -106,8 +106,6 @@ class Map
     {
       friend class Map;
 
-      OZ_RANGE_ITERATOR( CIterator )
-
       private:
 
         /// Base class type, convenience definition to make code cleaner.
@@ -184,8 +182,6 @@ class Map
     class Iterator : public oz::Iterator<Elem>
     {
       friend class Map;
-
-      OZ_RANGE_ITERATOR( Iterator )
 
       private:
 

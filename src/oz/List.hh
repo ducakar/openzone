@@ -78,8 +78,6 @@ class List
     {
       friend class List;
 
-      OZ_RANGE_ITERATOR( CIterator )
-
       private:
 
         /// Base class type, convenience definition to make code cleaner.
@@ -123,8 +121,6 @@ class List
     class Iterator : public IteratorBase<Elem>
     {
       friend class List;
-
-      OZ_RANGE_ITERATOR( Iterator )
 
       private:
 

@@ -52,8 +52,6 @@ class CIterator : public CIteratorBase<Elem>
 {
   friend CIterator citer<Elem>( const Elem* array, int count );
 
-  OZ_RANGE_ITERATOR( CIterator )
-
   private:
 
     /// Base class type, convenience definition to make code cleaner.
@@ -123,8 +121,6 @@ template <typename Elem>
 class Iterator : public IteratorBase<Elem>
 {
   friend Iterator iter<Elem>( Elem* array, int count );
-
-  OZ_RANGE_ITERATOR( Iterator )
 
   private:
 
