@@ -23,6 +23,9 @@
  * Terrain sea surface shader.
  */
 
+const float TERRA_WATER_SCALE = 512.0;
+const vec3  NORMAL            = vec3( 0.0, 0.0, 1.0 );
+
 uniform float oz_WaveBias;
 
 attribute vec3 inPosition;
@@ -31,6 +34,7 @@ attribute vec3 inNormal;
 
 varying vec3 exPosition;
 varying vec2 exTexCoord;
+varying vec3 exNormal;
 
 void main()
 {
@@ -40,5 +44,6 @@ void main()
 
   gl_Position = oz_Transform.complete * localPos;
   exPosition  = position;
-  exTexCoord  = inTexCoord;
+  exTexCoord  = inTexCoord * TERRA_WATER_SCALE;
+  exNormal    = NORMAL;
 }

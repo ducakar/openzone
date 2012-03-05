@@ -206,7 +206,7 @@ Texture Context::loadTexture( const char* path )
 
   int textureFlags = is.readInt();
 
-  texture.albedo  = textureFlags & Mesh::ALBEDO_BIT  ? readTextureLayer( &is, path ) : 0;
+  texture.diffuse = textureFlags & Mesh::DIFFUSE_BIT ? readTextureLayer( &is, path ) : 0;
   texture.masks   = textureFlags & Mesh::MASKS_BIT   ? readTextureLayer( &is, path ) : shader.defaultMasks;
   texture.normals = textureFlags & Mesh::NORMALS_BIT ? readTextureLayer( &is, path ) : shader.defaultNormals;
 

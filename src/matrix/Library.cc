@@ -175,14 +175,14 @@ void Library::freeBSPs()
 
 void Library::initShaders()
 {
-  log.println( "Shaders (*.vert/*.frag in 'glsl') {" );
+  log.println( "Shader programs (*.rc in 'glsl') {" );
   log.indent();
 
   PhysFile dir( "glsl" );
   DArray<PhysFile> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "vert" ) ) {
+    if( !file->hasExtension( "rc" ) ) {
       continue;
     }
 

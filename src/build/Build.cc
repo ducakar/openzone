@@ -343,14 +343,14 @@ void Build::buildBSPTextures()
 
       File destFile( String::str( "tex/%s.ozcTex", name.cstr() ) );
 
-      uint albedoId, masksId, normalsId;
-      context.loadTexture( &albedoId, &masksId, &normalsId, path );
+      uint diffuseId, masksId, normalsId;
+      context.loadTexture( &diffuseId, &masksId, &normalsId, path );
 
       BufferStream os;
 
       log.println( "Compiling into '%s'", destFile.path().cstr() );
 
-      int textureFlags = client::Mesh::ALBEDO_BIT;
+      int textureFlags = client::Mesh::DIFFUSE_BIT;
 
       if( masksId != 0 ) {
         textureFlags |= client::Mesh::MASKS_BIT;
@@ -361,8 +361,8 @@ void Build::buildBSPTextures()
 
       os.writeInt( textureFlags );
 
-      context.writeLayer( albedoId, &os );
-      glDeleteTextures( 1, &albedoId );
+      context.writeLayer( diffuseId, &os );
+      glDeleteTextures( 1, &diffuseId );
 
       if( masksId != 0 ) {
         context.writeLayer( masksId, &os );
@@ -996,6 +996,7 @@ int Build::main( int argc, char** argv )
     copyFiles( "glsl", "glsl", "glsl", false );
     copyFiles( "glsl", "glsl", "vert", false );
     copyFiles( "glsl", "glsl", "frag", false );
+    copyFiles( "glsl", "glsl", "rc", false );
   }
   if( doCaela ) {
     buildCaela();

@@ -102,13 +102,17 @@ struct Attrib
 {
   enum Type
   {
+#ifdef OZ_BUMPMAP
     POSITION,
     TEXCOORD,
     NORMAL,
-#ifdef OZ_BUMPMAP
     TANGENT,
     BINORMAL,
     DETAILCOORD
+#else
+    POSITION,
+    TEXCOORD,
+    NORMAL
 #endif
   };
 };
@@ -156,18 +160,20 @@ class Shader
 
     static const int LOG_BUFFER_SIZE = 8192;
 
-    static char     logBuffer[LOG_BUFFER_SIZE];
+    static char       logBuffer[LOG_BUFFER_SIZE];
 
-    static String   defines;
+    static String     defines;
 
-    DArray<Program> programs;
-    SVector<int, 8> programStack;
+    Map<String, uint> vertShaders;
+    Map<String, uint> fragShaders;
+    DArray<Program>   programs;
+    SVector<int, 8>   programStack;
 
-    float           lightingDistance;
-    CaelumLight     caelumLight;
+    float             lightingDistance;
+    CaelumLight       caelumLight;
 
     void compileShader( uint id, const char* path, const char** sources, int* lengths ) const;
-    void loadProgram( int id, const char** sources, int* lengths );
+    void loadProgram( int id );
 
   public:
 

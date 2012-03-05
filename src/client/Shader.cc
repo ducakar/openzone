@@ -106,6 +106,7 @@ Shader::Light::Light( const Point3& pos_, const Vec4& diffuse_ ) :
 void Shader::compileShader( uint id, const char* path, const char** sources, int* lengths ) const
 {
   PhysFile file( path );
+
   if( !file.map() ) {
     throw Exception( "Shader source '%s' mmap failed", path );
   }
@@ -143,17 +144,34 @@ void Shader::compileShader( uint id, const char* path, const char** sources, int
   OZ_GL_CHECK_ERROR();
 }
 
-void Shader::loadProgram( int id, const char** sources, int* lengths )
+void Shader::loadProgram( int id )
 {
   const String& name = library.shaders[id].name;
 
-  programs[id].vertShader = glCreateShader( GL_VERTEX_SHADER );
-  programs[id].fragShader = glCreateShader( GL_FRAGMENT_SHADER );
+  PhysFile configFile( "glsl/" + name + ".rc" );
+  Config programConfig;
 
-  compileShader( programs[id].vertShader, "glsl/" + name + ".vert", sources, lengths );
-  compileShader( programs[id].fragShader, "glsl/" + name + ".frag", sources, lengths );
+  programConfig.load( configFile );
 
-  programs[id].program = glCreateProgram();
+  const char* vertName = programConfig.get( "vertex", "" );
+  const char* fragName = programConfig.get( "fragment", "" );
+
+  const uint* vertId = vertShaders.find( vertName );
+  const uint* fragId = fragShaders.find( fragName );
+
+  if( vertId == null ) {
+    throw Exception( "Invalid vertex shader '%s' requested for shader program '%s'",
+                     vertName, name.cstr() );
+  }
+  if( fragId == null ) {
+    throw Exception( "Invalid fragment shader '%s' requested for shader program '%s'",
+                     fragName, name.cstr() );
+  }
+
+  programs[id].vertShader = *vertId;
+  programs[id].fragShader = *fragId;
+  programs[id].program    = glCreateProgram();
+
   glAttachShader( programs[id].program, programs[id].vertShader );
   glAttachShader( programs[id].program, programs[id].fragShader );
 
@@ -317,6 +335,7 @@ void Shader::init()
   }
 
   programs.alloc( library.shaders.length() );
+
   for( int i = 0; i < library.shaders.length(); ++i ) {
     programs[i].program    = 0;
     programs[i].vertShader = 0;
@@ -355,8 +374,26 @@ void Shader::init()
   colour = Vec4::ONE;
   medium = 0;
 
+  PhysFile dir( "glsl" );
+  DArray<PhysFile> shaderFiles = dir.ls();
+
+  foreach( file, shaderFiles.citer() ) {
+    if( file->hasExtension( "vert" ) ) {
+      uint id = glCreateShader( GL_VERTEX_SHADER );
+
+      vertShaders.add( file->baseName(), id );
+      compileShader( id, file->path(), sources, lengths );
+    }
+    else if( file->hasExtension( "frag" ) ) {
+      uint id = glCreateShader( GL_FRAGMENT_SHADER );
+
+      fragShaders.add( file->baseName(), id );
+      compileShader( id, file->path(), sources, lengths );
+    }
+  }
+
   for( int i = 0; i < library.shaders.length(); ++i ) {
-    loadProgram( i, sources, lengths );
+    loadProgram( i );
   }
 
   log.printEnd( " OK" );
@@ -373,33 +410,37 @@ void Shader::free()
       glDeleteProgram( programs[i].program );
       programs[i].program = 0;
     }
-    if( programs[i].vertShader != 0 ) {
-      glDeleteShader( programs[i].vertShader );
-      programs[i].vertShader = 0;
-    }
-    if( programs[i].fragShader != 0 ) {
-      glDeleteShader( programs[i].fragShader );
-      programs[i].fragShader = 0;
-    }
   }
 
-  if( glIsTexture( 0 ) ) {
-    uint zero = 0;
-    glDeleteTextures( 1, &zero );
+  programs.dealloc();
+
+  foreach( vertShader, vertShaders.citer() ) {
+    glDeleteShader( vertShader.value() );
+  }
+  foreach( fragShader, fragShaders.citer() ) {
+    glDeleteShader( fragShader.value() );
+  }
+
+  fragShaders.clear();
+  fragShaders.dealloc();
+  vertShaders.clear();
+  vertShaders.dealloc();
+
+  if( defaultNormals != 0 ) {
+    glDeleteTextures( 1, &defaultNormals );
+    defaultNormals = 0;
   }
   if( defaultMasks != 0 ) {
     glDeleteTextures( 1, &defaultMasks );
     defaultMasks = 0;
   }
-  if( defaultNormals != 0 ) {
-    glDeleteTextures( 1, &defaultNormals );
-    defaultNormals = 0;
+  if( glIsTexture( 0 ) ) {
+    uint zero = 0;
+    glDeleteTextures( 1, &zero );
   }
 
   plain = -1;
   defines = "";
-
-  programs.dealloc();
 
   OZ_GL_CHECK_ERROR();
 

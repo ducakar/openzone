@@ -610,7 +610,7 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
 
   renderScale     = config.getSet( "render.scale",                1.0f );
 
-  visibilityRange = config.getSet( "render.visibilityRange",      300.0f );
+  visibilityRange = config.getSet( "render.distance",             300.0f );
   showBounds      = config.getSet( "render.showBounds",           false );
   showAim         = config.getSet( "render.showAim",              false );
 

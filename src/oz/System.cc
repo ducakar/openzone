@@ -205,7 +205,7 @@ static void* bellThread( void* )
                                  null, null, null );
   if( pa != null ) {
     pa_simple_write( pa, BELL_SAMPLE, sizeof( BELL_SAMPLE ), null );
-    usleep( uint( ulong64( sizeof( BELL_SAMPLE ) ) * 1000000 / ulong64( BELL_SPEC.rate ) ) );
+    pa_simple_drain( pa, null );
     pa_simple_free( pa );
   }
 

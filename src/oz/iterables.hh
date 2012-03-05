@@ -224,7 +224,7 @@ class IteratorBase
 
 /**
  * @def OZ_RANGE_ITERATOR
- * Define wrapper for range-for loop inside an iterator class.
+ * Defines wrapper for range-based for loop inside an iterator class.
  *
  * Note that in contrast with STL iterators, <tt>RangeIterator</tt> evaluates to the iterator that
  * points to the current element rather than the current element itself. That means that the rough
@@ -269,7 +269,7 @@ class IteratorBase
     };
 
 /**
- * <tt>begin()</tt> template for range-for.
+ * <tt>begin()</tt> template for range-based for.
  *
  * @ingroup oz
  */
@@ -281,7 +281,7 @@ inline typename Iterator::RangeIterator begin( Iterator& iter )
 }
 
 /**
- * <tt>end()</tt> template for range-for.
+ * <tt>end()</tt> template for range-based for.
  *
  * @ingroup oz
  */
@@ -294,12 +294,12 @@ inline typename Iterator::RangeIterator end( Iterator& iter )
 
 /**
  * @def foreach
- * Foreach macro.
+ * Macro to shorten common foreach loops.
  *
- * An alternative to range-for loop, may be more suitable for iterator concept used in this library.
- * It doesn't need <tt>RangeIterator</tt> wrapper to work which may result in better performance
- * when compiling without optimisation. Furthermore, it works fine with auto-completion and syntax
- * checker in KDevelop and Eclipse CDT.
+ * An alternative to range-base for loop, may be more suitable for iterator concept used in this
+ * library. It doesn't need <tt>RangeIterator</tt> wrapper to work which may result in better
+ * performance when compiling without optimisation. Furthermore, it works fine with auto-completion
+ * and syntax checker in KDevelop and Eclipse CDT.
  *
  * It can be used like
  * @code

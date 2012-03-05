@@ -483,6 +483,38 @@ class String
     }
 
     /**
+     * Operator <=.
+     */
+    bool operator <= ( const String& s ) const
+    {
+      return compare( s ) <= 0;
+    }
+
+    /**
+     * Operator >=.
+     */
+    bool operator >= ( const String& s ) const
+    {
+      return compare( s ) >= 0;
+    }
+
+    /**
+     * Operator <.
+     */
+    bool operator < ( const String& s ) const
+    {
+      return compare( s ) < 0;
+    }
+
+    /**
+     * Operator >.
+     */
+    bool operator > ( const String& s ) const
+    {
+      return compare( s ) > 0;
+    }
+
+    /**
      * Equality.
      */
     bool equals( const char* s ) const
