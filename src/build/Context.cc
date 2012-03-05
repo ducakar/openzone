@@ -380,8 +380,8 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
       ubyte& g = specImage.pixels[i*3 + 1];
       ubyte& r = specImage.pixels[i*3 + 2];
 
-      r = ( b + g + r ) / 3;
-      g = emissionImage.dib == null ? 0 : emissionImage.pixels[i];
+      r = ubyte( ( b + g + r ) / 3 );
+      g = ubyte( emissionImage.dib == null ? 0 : emissionImage.pixels[i] );
       b = 0;
     }
 

@@ -48,7 +48,7 @@ struct Vertex
 
 struct Texture
 {
-  uint albedo;
+  uint diffuse;
   uint masks;
   uint normals;
 
@@ -64,7 +64,7 @@ class Mesh
     static const int SOLID_BIT       = 0x0200; ///< Mesh component is not transparent.
     static const int ALPHA_BIT       = 0x0400; ///< Mesh component is transparent.
 
-    static const int ALBEDO_BIT      = 0x1000; ///< Texture has albedo (base per-pixel colours).
+    static const int DIFFUSE_BIT     = 0x1000; ///< Texture has base per-pixel colours.
     static const int MASKS_BIT       = 0x2000; ///< Texture has specular and emission masks.
     static const int NORMALS_BIT     = 0x4000; ///< Texture has normal map.
 

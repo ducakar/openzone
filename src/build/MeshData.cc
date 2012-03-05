@@ -82,13 +82,13 @@ void MeshData::write( BufferStream* os, bool embedTextures ) const
     os->writeInt( ~textures.length() );
 
     for( int i = 1; i < textures.length(); ++i ) {
-      uint albedoId, masksId, normalsId;
-      context.loadTexture( &albedoId, &masksId, &normalsId, textures[i] );
+      uint diffuseId, masksId, normalsId;
+      context.loadTexture( &diffuseId, &masksId, &normalsId, textures[i] );
 
       int textureFlags = 0;
 
-      if( albedoId != 0 ) {
-        textureFlags |= Mesh::ALBEDO_BIT;
+      if( diffuseId != 0 ) {
+        textureFlags |= Mesh::DIFFUSE_BIT;
       }
       if( masksId != 0 ) {
         textureFlags |= Mesh::MASKS_BIT;
@@ -99,9 +99,9 @@ void MeshData::write( BufferStream* os, bool embedTextures ) const
 
       os->writeInt( textureFlags );
 
-      if( albedoId != 0 ) {
-        context.writeLayer( albedoId, os );
-        glDeleteTextures( 1, &albedoId );
+      if( diffuseId != 0 ) {
+        context.writeLayer( diffuseId, os );
+        glDeleteTextures( 1, &diffuseId );
       }
       if( masksId != 0 ) {
         context.writeLayer( masksId, os );

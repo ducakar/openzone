@@ -92,9 +92,9 @@ void Vertex::setFormat()
 
 void Texture::free()
 {
-  if( albedo != 0 ) {
-    glDeleteTextures( 1, &albedo );
-    albedo = 0;
+  if( diffuse != 0 ) {
+    glDeleteTextures( 1, &diffuse );
+    diffuse = 0;
   }
   if( masks != shader.defaultMasks ) {
     glDeleteTextures( 1, &masks );
@@ -169,7 +169,7 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
 
     flags |= EMBEDED_TEX_BIT;
 
-    textures[0].albedo  = 0;
+    textures[0].diffuse = 0;
     textures[0].masks   = shader.defaultMasks;
     textures[0].normals = shader.defaultNormals;
 
@@ -180,11 +180,11 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
     for( int i = 1; i < nTextures; ++i ) {
       int flags = istream->readInt();
 
-      textures[i].albedo  = flags & ALBEDO_BIT  ? context.readTextureLayer( istream, path ) : 0;
+      textures[i].diffuse = flags & DIFFUSE_BIT ? context.readTextureLayer( istream, path ) : 0;
       textures[i].masks   = flags & MASKS_BIT   ? context.readTextureLayer( istream, path ) : shader.defaultMasks;
       textures[i].normals = flags & NORMALS_BIT ? context.readTextureLayer( istream, path ) : shader.defaultNormals;
 
-      texIds[i*3 + 0] = int( textures[i].albedo );
+      texIds[i*3 + 0] = int( textures[i].diffuse );
       texIds[i*3 + 1] = int( textures[i].masks );
       texIds[i*3 + 2] = int( textures[i].normals );
     }
@@ -198,7 +198,7 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
 
       if( name.isEmpty() ) {
         texIds[i]           = -1;
-        textures[i].albedo  = 0;
+        textures[i].diffuse  = 0;
         textures[i].masks   = shader.defaultMasks;
         textures[i].normals = shader.defaultNormals;
       }
@@ -304,7 +304,7 @@ void Mesh::drawComponent( int id, int mask ) const
     }
     else if( part.flags & mask ) {
       glActiveTexture( GL_TEXTURE0 );
-      glBindTexture( GL_TEXTURE_2D, part.texture.albedo );
+      glBindTexture( GL_TEXTURE_2D, part.texture.diffuse );
       glActiveTexture( GL_TEXTURE1 );
       glBindTexture( GL_TEXTURE_2D, part.texture.masks );
       glActiveTexture( GL_TEXTURE2 );
@@ -341,7 +341,7 @@ void Mesh::draw( int mask ) const
 
     if( part.flags & mask ) {
       glActiveTexture( GL_TEXTURE0 );
-      glBindTexture( GL_TEXTURE_2D, part.texture.albedo );
+      glBindTexture( GL_TEXTURE_2D, part.texture.diffuse );
       glActiveTexture( GL_TEXTURE1 );
       glBindTexture( GL_TEXTURE_2D, part.texture.masks );
       glActiveTexture( GL_TEXTURE2 );

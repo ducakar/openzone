@@ -36,7 +36,7 @@ namespace client
 
 Shape shape;
 
-const Vertex Shape::VERTICES[40] = {
+const Shape::ShapeVertex Shape::VERTICES[40] = {
   // filled rectangle
   { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
   { { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
