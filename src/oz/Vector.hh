@@ -62,8 +62,6 @@ class Vector
     {
       friend class Vector;
 
-      OZ_RANGE_ITERATOR( CIterator )
-
       private:
 
         /// Base class type, convenience definition to make code cleaner.
@@ -95,8 +93,6 @@ class Vector
     class Iterator : public oz::Iterator<Elem>
     {
       friend class Vector;
-
-      OZ_RANGE_ITERATOR( Iterator )
 
       private:
 

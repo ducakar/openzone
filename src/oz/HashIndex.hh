@@ -83,8 +83,6 @@ class HashIndex
     {
       friend class HashIndex;
 
-      OZ_RANGE_ITERATOR( CIterator )
-
       private:
 
         /// Base class type, convenience definition to make code cleaner.
@@ -182,8 +180,6 @@ class HashIndex
     class Iterator : public IteratorBase<Elem>
     {
       friend class HashIndex;
-
-      OZ_RANGE_ITERATOR( Iterator )
 
       private:
 

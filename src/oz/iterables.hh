@@ -223,83 +223,8 @@ class IteratorBase
 };
 
 /**
- * @def OZ_RANGE_ITERATOR
- * Defines wrapper for range-based for loop inside an iterator class.
- *
- * Note that in contrast with STL iterators, <tt>RangeIterator</tt> evaluates to the iterator that
- * points to the current element rather than the current element itself. That means that the rough
- * equivalent for STL code
- * @code
- * std\::vector\<int\> v;
- * for( auto& i : v ) {
- *   printf( "%d\n", i );
- * }
- * @endcode
- * is the following code
- * @code
- * Vector\<int\> v;
- * for( auto i : v.citer() ) {
- *   printf( "%d\n", *i );
- * }
- * @endcode
- * It's a little longer, but we don't loose access to the original iterator, which is very useful
- * with <tt>Map</tt>, <tt>HashIndex</tt> and <tt>HashString</tt> to access the current element's
- * value. Furthermore, one also explicitly specifies whether access to the container elements is
- * constant or non-constant.
- *
- * @ingroup oz
- */
-#define OZ_RANGE_ITERATOR( Iterator ) \
-  public: \
-    class RangeIterator \
-    { \
-      friend RangeIterator begin<Iterator>( Iterator& iter ); \
-      friend RangeIterator end<Iterator>( Iterator& iter ); \
-      private: \
-        Iterator& iter; \
-        OZ_ALWAYS_INLINE \
-        explicit RangeIterator( Iterator& iter_ ) : iter( iter_ ) {} \
-      public: \
-        OZ_ALWAYS_INLINE \
-        bool operator != ( const RangeIterator& ) const { return iter.isValid(); } \
-        OZ_ALWAYS_INLINE \
-        Iterator& operator * () { return iter; } \
-        OZ_ALWAYS_INLINE \
-        RangeIterator& operator ++ () { ++iter; return *this; } \
-    };
-
-/**
- * <tt>begin()</tt> template for range-based for.
- *
- * @ingroup oz
- */
-template <class Iterator>
-OZ_ALWAYS_INLINE
-inline typename Iterator::RangeIterator begin( Iterator& iter )
-{
-  return typename Iterator::RangeIterator( iter );
-}
-
-/**
- * <tt>end()</tt> template for range-based for.
- *
- * @ingroup oz
- */
-template <class Iterator>
-OZ_ALWAYS_INLINE
-inline typename Iterator::RangeIterator end( Iterator& iter )
-{
-  return typename Iterator::RangeIterator( iter );
-}
-
-/**
  * @def foreach
  * Macro to shorten common foreach loops.
- *
- * An alternative to range-base for loop, may be more suitable for iterator concept used in this
- * library. It doesn't need <tt>RangeIterator</tt> wrapper to work which may result in better
- * performance when compiling without optimisation. Furthermore, it works fine with auto-completion
- * and syntax checker in KDevelop and Eclipse CDT.
  *
  * It can be used like
  * @code

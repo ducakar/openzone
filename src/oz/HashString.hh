@@ -81,8 +81,6 @@ class HashString
     {
       friend class HashString;
 
-      OZ_RANGE_ITERATOR( CIterator )
-
       private:
 
         /// Base class type, convenience definition to make code cleaner.
@@ -189,8 +187,6 @@ class HashString
     class Iterator : public IteratorBase<Elem>
     {
       friend class HashString;
-
-      OZ_RANGE_ITERATOR( Iterator )
 
       private:
 
