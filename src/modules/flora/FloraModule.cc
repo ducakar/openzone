@@ -40,9 +40,10 @@ namespace module
 {
 
 // plants/m2
-const float FloraModule::DENSITY = 0.04f;
+const float FloraModule::DENSITY    = 0.04f;
 // dim * SPACING
-const float FloraModule::SPACING = 16.0f;
+const float FloraModule::SPACING    = 16.0f;
+const float FloraModule::TREE_DEPTH = 0.75f;
 
 FloraModule floraModule;
 
@@ -57,15 +58,12 @@ void FloraModule::addTree( float x, float y )
   }
   else if( pos.z > 70.0f ) {
     type = "pine";
-    pos.z += 7.0f;
   }
   else if( pos.z > 30.0f ) {
     type = "tree";
-    pos.z += 3.0f;
   }
   else if( pos.z > 2.0f ) {
     type = "palm";
-    pos.z += 8.0f;
   }
   else {
     return;
@@ -73,9 +71,11 @@ void FloraModule::addTree( float x, float y )
 
   const ObjectClass* clazz = library.objClass( type );
 
-  AABB bounds = AABB( pos, clazz->dim * SPACING );
+  pos.z += clazz->dim.z + 2.0f * EPSILON;
+  AABB bounds = AABB( pos, Vec3( clazz->dim.x * SPACING, clazz->dim.y * SPACING, clazz->dim.z ) );
 
-  if( !client::collider.overlapsOSO( bounds ) ) {
+  if( !client::collider.overlaps( bounds ) ) {
+    pos.z -= TREE_DEPTH;
     synapse.addObject( type, pos, Heading( Math::rand( 4 ) ) );
     ++number;
   }
@@ -85,14 +85,15 @@ void FloraModule::addPlant( const char* type, float x, float y )
 {
   const ObjectClass* clazz = library.objClass( type );
 
-  Point3 pos    = Point3( x, y, orbis.terra.height( x, y ) );
+  Point3 pos    = Point3( x, y, orbis.terra.height( x, y ) + clazz->dim.z + 2.0f * EPSILON );
   AABB   bounds = AABB( pos, clazz->dim );
 
   if( pos.z < 0.0f || 40.0f < pos.z ) {
     return;
   }
 
-  if( !client::collider.overlapsOSO( bounds ) ) {
+  if( !client::collider.overlaps( bounds ) ) {
+    pos.z -= TREE_DEPTH;
     synapse.addObject( type, pos, Heading( Math::rand( 4 ) ) );
     ++number;
   }
@@ -133,7 +134,7 @@ int FloraModule::ozFloraGetDensity( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( floraModule.density );
+  l_pushfloat( floraModule.density );
   return 1;
 }
 
@@ -141,7 +142,7 @@ int FloraModule::ozFloraSetDensity( lua_State* l )
 {
   ARG( 1 );
 
-  floraModule.density = tofloat( 1 );
+  floraModule.density = l_tofloat( 1 );
   return 0;
 }
 
@@ -149,7 +150,7 @@ int FloraModule::ozFloraGetSpacing( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( floraModule.spacing );
+  l_pushfloat( floraModule.spacing );
   return 1;
 }
 
@@ -157,7 +158,7 @@ int FloraModule::ozFloraSetSpacing( lua_State* l )
 {
   ARG( 1 );
 
-  float spacing = tofloat( 1 );
+  float spacing = l_tofloat( 1 );
   if( spacing < 0 ) {
     throw Exception( "Lua::ozFloraGetSpacing: spacing must be >= 0.0" );
   }
@@ -170,7 +171,7 @@ int FloraModule::ozFloraGetNumber( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( floraModule.number );
+  l_pushfloat( floraModule.number );
   return 1;
 }
 

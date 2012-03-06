@@ -44,14 +44,14 @@ function healUser100_disposable( l )
     ozObjAddLife( 100.0 )
 
     ozObjBindSelf()
-    ozObjQuietDestroy()
+    ozObjDestroy( true )
   end
 end
 
 function spawnSmallExplosion( l )
-  ozOrbisAddObj( "smallExplosion", ozObjGetPos() );
+  ozOrbisAddObj( OZ_FORCE, "smallExplosion", ozObjGetPos() );
 end
 
 function spawnBigExplosion( l )
-  ozOrbisAddObj( "bigExplosion", ozObjGetPos() );
+  ozOrbisAddObj( OZ_FORCE, "bigExplosion", ozObjGetPos() );
 end

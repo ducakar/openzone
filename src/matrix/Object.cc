@@ -34,7 +34,6 @@ namespace oz
 namespace matrix
 {
 
-const float Object::MAX_DIM                 = float( MAX_DIMI );
 const float Object::REAL_MAX_DIM            = MAX_DIM - 0.01f;
 
 const float Object::MOMENTUM_DAMAGE_COEF    = 1.00f;
@@ -49,14 +48,6 @@ Pool<Object, 16384>      Object::pool;
 void Object::onDestroy()
 {
   hard_assert( cell != null );
-
-  for( int i = 0; i < items.length(); ++i ) {
-    Object* obj = orbis.objects[ items[i] ];
-
-    if( obj != null ) {
-      obj->destroy();
-    }
-  }
 
   if( !clazz->onDestroy.isEmpty() ) {
     lua.objectCall( clazz->onDestroy, this );

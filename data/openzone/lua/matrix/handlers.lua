@@ -30,7 +30,7 @@ function smallExplosion_onUpdate( l )
     l.ticks = l.ticks - 1
 
     if l.ticks == 0 then
-      ozObjQuietDestroy()
+      ozObjDestroy( true )
     end
   else
     ozObjAddEvent( OZ_EVENT_CREATE, 1.0 )
@@ -40,7 +40,7 @@ function smallExplosion_onUpdate( l )
     local distance
     local dirX, dirY, dirZ
 
-    ozObjBindObjOverlaps( 8, 8, 8 )
+    ozObjBindOverlaps( OZ_OBJECTS, 8, 8, 8 )
     while ozObjBindNext() do
       if not ozObjIsSelf() then
         distance = ozObjDistanceFromSelf()
@@ -67,7 +67,7 @@ function bigExplosion_onUpdate( l )
     l.ticks = l.ticks - 1
 
     if l.ticks == 0 then
-      ozObjQuietDestroy()
+      ozObjDestroy( true )
     end
   else
     ozObjAddEvent( OZ_EVENT_CREATE, 1.0 )
@@ -77,7 +77,7 @@ function bigExplosion_onUpdate( l )
     local distance
     local dirX, dirY, dirZ
 
-    ozObjBindAllOverlaps( 20, 20, 20 )
+    ozObjBindOverlaps( OZ_STRUCTS + OZ_OBJECTS, 20, 20, 20 )
     while ozStrBindNext() do
       ozStrDamage( 2000 )
     end
@@ -114,7 +114,7 @@ function cvicek_onUse( l )
     ozBotAddStamina( 30 )
 
     ozObjBindSelf()
-    ozObjQuietDestroy()
+    ozObjDestroy( true )
   end
 end
 
@@ -132,7 +132,7 @@ function bomb_onUpdate( l )
   if l.ticks ~= 0 then
     l.ticks = l.ticks - 1
   else
-    ozObjDestroy()
+    ozObjDestroy( false )
   end
 end
 
@@ -142,7 +142,7 @@ function shell_onUpdate( l )
   elseif l.ticks > 0 then
     l.ticks = l.ticks - 1
   else
-    ozObjDestroy()
+    ozObjDestroy( false )
   end
 end
 

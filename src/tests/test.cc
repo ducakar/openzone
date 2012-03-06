@@ -23,8 +23,10 @@
 
 #include "oz/oz.hh"
 
-#include <QtGui/QApplication>
-#include <QtGui/QPushButton>
+// #include <QtGui/QApplication>
+// #include <QtGui/QPushButton>
+
+#include <cstdio>
 
 using namespace oz;
 

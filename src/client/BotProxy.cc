@@ -410,7 +410,7 @@ void BotProxy::update()
         bobBias  = sine*sine * clazz->bobSwimAmplitude;
       }
       else {
-      inJump:;
+      inJump:
         bobTheta *= BOB_SUPPRESSION_COEF;
         bobBias  *= BOB_SUPPRESSION_COEF;
       }

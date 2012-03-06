@@ -38,8 +38,6 @@ namespace client
 namespace ui
 {
 
-const float InventoryMenu::SLOT_OBJ_DIM = float( SLOT_SIZE - 2*PADDING_SIZE ) / 2.0f;
-
 void InventoryMenu::onVisibilityChange()
 {
   cachedContainerIndex  = -1;
@@ -250,7 +248,7 @@ void InventoryMenu::onDraw()
     }
   }
 
-slotsRendered:;
+slotsRendered:
 
   int nScrollRows = max( 0, containerClazz->nItems - ( ROWS - 1 ) * COLS - 1 ) / COLS;
 
@@ -361,7 +359,7 @@ slotsRendered:;
       glBindTexture( GL_TEXTURE_2D, 0 );
     }
 
-  noIcon:;
+  noIcon:
 
     if( tagged != cachedTaggedItemIndex ) {
       cachedTaggedItemIndex = tagged;

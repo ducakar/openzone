@@ -25,10 +25,10 @@
 
 #pragma once
 
+#include "matrix/luaapi.hh"
+
 #include "nirvana/Memo.hh"
 #include "nirvana/Nirvana.hh"
-
-#include "matrix/luaapi.hh"
 
 namespace oz
 {
@@ -38,10 +38,14 @@ namespace nirvana
 struct NirvanaLuaState
 {
   Bot* self;
+
   bool forceUpdate;
 };
 
 static NirvanaLuaState ns;
+
+/// @addtogroup luaapi
+/// @{
 
 /*
  * General functions
@@ -63,7 +67,7 @@ static int ozSelfIsCut( lua_State* l )
 {
   ARG( 0 );
 
-  pushbool( ns.self->cell == null );
+  l_pushbool( ns.self->cell == null );
   return 1;
 }
 
@@ -71,7 +75,7 @@ static int ozSelfGetIndex( lua_State* l )
 {
   ARG( 0 );
 
-  pushint( ns.self->index );
+  l_pushint( ns.self->index );
   return 1;
 }
 
@@ -84,17 +88,17 @@ static int ozSelfGetPos( lua_State* l )
       Object* parent = orbis.objects[ns.self->parent];
 
       if( parent != null ) {
-        pushfloat( parent->p.x );
-        pushfloat( parent->p.y );
-        pushfloat( parent->p.z );
+        l_pushfloat( parent->p.x );
+        l_pushfloat( parent->p.y );
+        l_pushfloat( parent->p.z );
         return 3;
       }
     }
   }
 
-  pushfloat( ns.self->p.x );
-  pushfloat( ns.self->p.y );
-  pushfloat( ns.self->p.z );
+  l_pushfloat( ns.self->p.x );
+  l_pushfloat( ns.self->p.y );
+  l_pushfloat( ns.self->p.z );
   return 3;
 }
 
@@ -102,9 +106,9 @@ static int ozSelfGetDim( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( ns.self->dim.x );
-  pushfloat( ns.self->dim.y );
-  pushfloat( ns.self->dim.z );
+  l_pushfloat( ns.self->dim.x );
+  l_pushfloat( ns.self->dim.y );
+  l_pushfloat( ns.self->dim.z );
   return 3;
 }
 
@@ -112,8 +116,8 @@ static int ozSelfGetFlags( lua_State* l )
 {
   ARG( 1 );
 
-  int mask = toint( 1 );
-  pushint( ns.self->flags & mask );
+  int mask = l_toint( 1 );
+  l_pushint( ns.self->flags & mask );
   return 1;
 }
 
@@ -121,7 +125,7 @@ static int ozSelfGetTypeName( lua_State* l )
 {
   ARG( 0 );
 
-  pushstring( ns.self->clazz->name );
+  l_pushstring( ns.self->clazz->name );
   return 1;
 }
 
@@ -129,7 +133,7 @@ static int ozSelfGetLife( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( ns.self->life );
+  l_pushfloat( ns.self->life );
   return 1;
 }
 
@@ -137,9 +141,9 @@ static int ozSelfGetVelocity( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( ns.self->velocity.x );
-  pushfloat( ns.self->velocity.y );
-  pushfloat( ns.self->velocity.z );
+  l_pushfloat( ns.self->velocity.x );
+  l_pushfloat( ns.self->velocity.y );
+  l_pushfloat( ns.self->velocity.z );
   return 3;
 }
 
@@ -147,9 +151,9 @@ static int ozSelfGetMomentum( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( ns.self->momentum.x );
-  pushfloat( ns.self->momentum.y );
-  pushfloat( ns.self->momentum.z );
+  l_pushfloat( ns.self->momentum.x );
+  l_pushfloat( ns.self->momentum.y );
+  l_pushfloat( ns.self->momentum.z );
   return 3;
 }
 
@@ -157,7 +161,7 @@ static int ozSelfGetMass( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( ns.self->mass );
+  l_pushfloat( ns.self->mass );
   return 1;
 }
 
@@ -165,7 +169,7 @@ static int ozSelfGetLift( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( ns.self->lift );
+  l_pushfloat( ns.self->lift );
   return 1;
 }
 
@@ -173,7 +177,7 @@ static int ozSelfGetName( lua_State* l )
 {
   ARG( 0 );
 
-  pushstring( ns.self->name );
+  l_pushstring( ns.self->name );
   return 1;
 }
 
@@ -181,8 +185,8 @@ static int ozSelfGetState( lua_State* l )
 {
   ARG( 1 );
 
-  int mask = toint( 1 );
-  pushbool( ns.self->state & mask );
+  int mask = l_toint( 1 );
+  l_pushbool( ns.self->state & mask );
   return 1;
 }
 
@@ -190,9 +194,9 @@ static int ozSelfGetEyePos( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( ns.self->p.x );
-  pushfloat( ns.self->p.y );
-  pushfloat( ns.self->p.z + ns.self->camZ );
+  l_pushfloat( ns.self->p.x );
+  l_pushfloat( ns.self->p.y );
+  l_pushfloat( ns.self->p.z + ns.self->camZ );
   return 3;
 }
 
@@ -200,7 +204,7 @@ static int ozSelfGetH( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( Math::deg( ns.self->h ) );
+  l_pushfloat( Math::deg( ns.self->h ) );
   return 1;
 }
 
@@ -208,7 +212,7 @@ static int ozSelfSetH( lua_State* l )
 {
   ARG( 1 );
 
-  ns.self->h = Math::rad( tofloat( 1 ) );
+  ns.self->h = Math::rad( l_tofloat( 1 ) );
   ns.self->h = Math::fmod( ns.self->h + Math::TAU, Math::TAU );
   return 1;
 }
@@ -217,7 +221,7 @@ static int ozSelfAddH( lua_State* l )
 {
   ARG( 1 );
 
-  ns.self->h += Math::rad( tofloat( 1 ) );
+  ns.self->h += Math::rad( l_tofloat( 1 ) );
   ns.self->h  = Math::fmod( ns.self->h + Math::TAU, Math::TAU );
   return 1;
 }
@@ -226,7 +230,7 @@ static int ozSelfGetV( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( Math::deg( ns.self->v ) );
+  l_pushfloat( Math::deg( ns.self->v ) );
   return 1;
 }
 
@@ -234,7 +238,7 @@ static int ozSelfSetV( lua_State* l )
 {
   ARG( 1 );
 
-  ns.self->v = Math::rad( tofloat( 1 ) );
+  ns.self->v = Math::rad( l_tofloat( 1 ) );
   ns.self->v = Math::fmod( ns.self->v + Math::TAU, Math::TAU );
   return 1;
 }
@@ -243,7 +247,7 @@ static int ozSelfAddV( lua_State* l )
 {
   ARG( 1 );
 
-  ns.self->v += Math::rad( tofloat( 1 ) );
+  ns.self->v += Math::rad( l_tofloat( 1 ) );
   ns.self->v  = Math::fmod( ns.self->v + Math::TAU, Math::TAU );
   return 1;
 }
@@ -261,9 +265,9 @@ static int ozSelfGetDir( lua_State* l )
   hvsc[4] = hvsc[2] * hvsc[0];
   hvsc[5] = hvsc[2] * hvsc[1];
 
-  pushfloat( -hvsc[4] );
-  pushfloat(  hvsc[5] );
-  pushfloat( -hvsc[3] );
+  l_pushfloat( -hvsc[4] );
+  l_pushfloat(  hvsc[5] );
+  l_pushfloat( -hvsc[3] );
 
   return 3;
 }
@@ -272,7 +276,7 @@ static int ozSelfGetStamina( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( ns.self->stamina );
+  l_pushfloat( ns.self->stamina );
   return 1;
 }
 
@@ -423,7 +427,7 @@ static int ozSelfSetGesture( lua_State* l )
   OBJ();
 
   ns.self->state &= ~( Bot::GESTURE0_BIT | Bot::GESTURE1_BIT | Bot::GESTURE2_BIT | Bot::GESTURE4_BIT );
-  ns.self->state |= toint( 1 );
+  ns.self->state |= l_toint( 1 );
   return 0;
 }
 
@@ -444,11 +448,11 @@ static int ozSelfBindAllOverlaps( lua_State* l )
   ARG( 3 );
 
   AABB aabb = AABB( ns.self->p,
-                    Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
+                    Vec3( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) ) );
 
   ms.objects.clear();
   ms.structs.clear();
-  collider.getOverlaps( aabb, &ms.objects, &ms.structs );
+  collider.getOverlaps( aabb, &ms.structs, &ms.objects );
   ms.objIndex = 0;
   ms.strIndex = 0;
   return 0;
@@ -459,10 +463,10 @@ static int ozSelfBindStrOverlaps( lua_State* l )
   ARG( 3 );
 
   AABB aabb = AABB( ns.self->p,
-                    Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
+                    Vec3( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) ) );
 
   ms.structs.clear();
-  collider.getOverlaps( aabb, null, &ms.structs );
+  collider.getOverlaps( aabb, &ms.structs, null );
   ms.strIndex = 0;
   return 0;
 }
@@ -472,10 +476,10 @@ static int ozSelfBindObjOverlaps( lua_State* l )
   ARG( 3 );
 
   AABB aabb = AABB( ns.self->p,
-                    Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
+                    Vec3( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) ) );
 
   ms.objects.clear();
-  collider.getOverlaps( aabb, &ms.objects, null );
+  collider.getOverlaps( aabb, null, &ms.objects );
   ms.objIndex = 0;
   return 0;
 }
@@ -486,10 +490,10 @@ static int ozSelfBindParent( lua_State* l )
 
   if( ns.self->parent != -1 && orbis.objects[ns.self->parent] != null ) {
     ms.obj = orbis.objects[ns.self->parent];
-    pushbool( true );
+    l_pushbool( true );
   }
   else {
-    pushbool( false );
+    l_pushbool( false );
   }
   return 1;
 }
@@ -502,16 +506,16 @@ static int ozNirvanaRemoveDevice( lua_State* l )
 {
   ARG( 1 );
 
-  int index = toint( 1 );
+  int index = l_toint( 1 );
   const nirvana::Device* const* device = nirvana::nirvana.devices.find( index );
 
   if( device == null ) {
-    pushbool( false );
+    l_pushbool( false );
   }
   else {
     delete *device;
     nirvana::nirvana.devices.exclude( index );
-    pushbool( true );
+    l_pushbool( true );
   }
   return 1;
 }
@@ -520,7 +524,7 @@ static int ozNirvanaAddMemo( lua_State* l )
 {
   ARG( 2 );
 
-  int index = toint( 1 );
+  int index = l_toint( 1 );
   if( uint( index ) >= uint( orbis.objects.length() ) ) {
     ERROR( "invalid object index" );
   }
@@ -532,9 +536,11 @@ static int ozNirvanaAddMemo( lua_State* l )
     ERROR( "object already has a device" );
   }
 
-  nirvana::nirvana.devices.add( index, new nirvana::Memo( tostring( 2 ) ) );
+  nirvana::nirvana.devices.add( index, new nirvana::Memo( l_tostring( 2 ) ) );
   return 0;
 }
+
+/// @}
 
 }
 }

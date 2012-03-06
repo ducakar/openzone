@@ -36,9 +36,7 @@ namespace matrix
 
 struct Cell
 {
-  static const int   SIZEI = 16;
-  static const float SIZE;
-  static const float INV_SIZE;
+  static const int SIZE = 16;
 
   SVector<short, 6> structs;
   List<Object>      objects;
@@ -64,8 +62,8 @@ class Orbis : public Bounds
   public:
 
     // # of cells on each (x, y) axis
-    static const int   CELLS = 2 * MAX_WORLD_COORD / Cell::SIZEI;
-    static const float DIM;
+    static const int DIM   = MAX_WORLD_COORD;
+    static const int CELLS = 2 * DIM / Cell::SIZE;
 
     Caelum caelum;
     Terra  terra;
@@ -167,8 +165,8 @@ extern Orbis orbis;
 OZ_ALWAYS_INLINE
 inline Cell* Orbis::getCell( float x, float y )
 {
-  int ix = int( ( x + Orbis::DIM ) * Cell::INV_SIZE );
-  int iy = int( ( y + Orbis::DIM ) * Cell::INV_SIZE );
+  int ix = int( ( x + Orbis::DIM ) / Cell::SIZE );
+  int iy = int( ( y + Orbis::DIM ) / Cell::SIZE );
 
   ix = clamp( ix, 0, Orbis::CELLS - 1 );
   iy = clamp( iy, 0, Orbis::CELLS - 1 );
@@ -186,10 +184,10 @@ OZ_ALWAYS_INLINE
 inline Span Orbis::getInters( float x, float y, float epsilon ) const
 {
   return {
-    max( int( ( x - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
-    max( int( ( y - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
-    min( int( ( x + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::CELLS - 1 ),
-    min( int( ( y + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::CELLS - 1 )
+    max( int( ( x - epsilon + Orbis::DIM ) / Cell::SIZE ), 0 ),
+    max( int( ( y - epsilon + Orbis::DIM ) / Cell::SIZE ), 0 ),
+    min( int( ( x + epsilon + Orbis::DIM ) / Cell::SIZE ), Orbis::CELLS - 1 ),
+    min( int( ( y + epsilon + Orbis::DIM ) / Cell::SIZE ), Orbis::CELLS - 1 )
   };
 }
 
@@ -204,10 +202,10 @@ inline Span Orbis::getInters( float minPosX, float minPosY,
                               float maxPosX, float maxPosY, float epsilon ) const
 {
   return {
-    max( int( ( minPosX - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
-    max( int( ( minPosY - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
-    min( int( ( maxPosX + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::CELLS - 1 ),
-    min( int( ( maxPosY + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::CELLS - 1 )
+    max( int( ( minPosX - epsilon + Orbis::DIM ) / Cell::SIZE ), 0 ),
+    max( int( ( minPosY - epsilon + Orbis::DIM ) / Cell::SIZE ), 0 ),
+    min( int( ( maxPosX + epsilon + Orbis::DIM ) / Cell::SIZE ), Orbis::CELLS - 1 ),
+    min( int( ( maxPosY + epsilon + Orbis::DIM ) / Cell::SIZE ), Orbis::CELLS - 1 )
   };
 }
 

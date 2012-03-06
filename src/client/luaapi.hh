@@ -25,11 +25,11 @@
 
 #pragma once
 
+#include "nirvana/luaapi.hh"
+
 #include "client/QuestList.hh"
 #include "client/Camera.hh"
 #include "client/Profile.hh"
-
-#include "nirvana/luaapi.hh"
 
 namespace oz
 {
@@ -44,6 +44,9 @@ struct ClientLuaState
 
 static ClientLuaState cs;
 
+/// @addtogroup luaapi
+/// @{
+
 /*
  * General functions
  */
@@ -52,7 +55,7 @@ static int ozGettext( lua_State* l )
 {
   ARG( 1 );
 
-  pushstring( cs.missionLingua.get( tostring( 1 ) ) );
+  l_pushstring( cs.missionLingua.get( l_tostring( 1 ) ) );
   return 1;
 }
 
@@ -64,11 +67,11 @@ static int ozOrbisAddPlayer( lua_State* l )
 {
   ARG_VAR( 3 );
 
-  Point3  p       = Point3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) );
-  Heading heading = Heading( gettop() == 4 ? toint( 4 ) : Math::rand( 4 ) );
+  Point3  p       = Point3( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
+  Heading heading = Heading( l_gettop() == 4 ? l_toint( 4 ) : Math::rand( 4 ) );
 
   ms.obj = synapse.add( profile.clazz, p, heading );
-  pushint( ms.obj == null ? -1 : ms.obj->index );
+  l_pushint( ms.obj == null ? -1 : ms.obj->index );
 
   if( ms.obj != null ) {
     Bot* player = static_cast<Bot*>( ms.obj );
@@ -108,12 +111,12 @@ static int ozQuestAdd( lua_State* l )
 {
   ARG( 5 );
 
-  questList.quests.add( Quest( tostring( 1 ),
-                               tostring( 2 ),
-                               Point3( tofloat( 3 ), tofloat( 4 ), tofloat( 5 ) ),
+  questList.quests.add( Quest( l_tostring( 1 ),
+                               l_tostring( 2 ),
+                               Point3( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) ),
                                Quest::PENDING ) );
 
-  pushint( questList.quests.length() - 1 );
+  l_pushint( questList.quests.length() - 1 );
   return 1;
 }
 
@@ -121,12 +124,12 @@ static int ozQuestEnd( lua_State* l )
 {
   ARG( 2 );
 
-  int id = toint( 1 );
+  int id = l_toint( 1 );
   if( uint( id ) >= uint( questList.quests.length() ) ) {
     ERROR( "invalid quest id" );
   }
 
-  questList.quests[id].state = tobool( 2 ) ? Quest::SUCCESSFUL : Quest::FAILED;
+  questList.quests[id].state = l_tobool( 2 ) ? Quest::SUCCESSFUL : Quest::FAILED;
   return 0;
 }
 
@@ -138,9 +141,9 @@ static int ozCameraGetPos( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( camera.p.x );
-  pushfloat( camera.p.y );
-  pushfloat( camera.p.z );
+  l_pushfloat( camera.p.x );
+  l_pushfloat( camera.p.y );
+  l_pushfloat( camera.p.z );
 
   return 3;
 }
@@ -149,9 +152,9 @@ static int ozCameraGetDest( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( camera.newP.x );
-  pushfloat( camera.newP.y );
-  pushfloat( camera.newP.z );
+  l_pushfloat( camera.newP.x );
+  l_pushfloat( camera.newP.y );
+  l_pushfloat( camera.newP.z );
 
   return 3;
 }
@@ -160,7 +163,7 @@ static int ozCameraGetH( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( Math::deg( camera.h ) );
+  l_pushfloat( Math::deg( camera.h ) );
   return 1;
 }
 
@@ -168,7 +171,7 @@ static int ozCameraSetH( lua_State* l )
 {
   ARG( 1 );
 
-  camera.h = Math::rad( tofloat( 1 ) );
+  camera.h = Math::rad( l_tofloat( 1 ) );
   return 0;
 }
 
@@ -176,7 +179,7 @@ static int ozCameraGetV( lua_State* l )
 {
   ARG( 0 );
 
-  pushfloat( Math::deg( camera.v ) );
+  l_pushfloat( Math::deg( camera.v ) );
   return 1;
 }
 
@@ -184,7 +187,7 @@ static int ozCameraSetV( lua_State* l )
 {
   ARG( 1 );
 
-  camera.v = Math::rad( tofloat( 1 ) );
+  camera.v = Math::rad( l_tofloat( 1 ) );
   return 0;
 }
 
@@ -192,7 +195,7 @@ static int ozCameraMoveTo( lua_State* l )
 {
   ARG( 3 );
 
-  Point3 pos = Point3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) );
+  Point3 pos = Point3( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
   camera.move( pos );
 
   return 3;
@@ -202,7 +205,7 @@ static int ozCameraWarpTo( lua_State* l )
 {
   ARG( 3 );
 
-  Point3 pos = Point3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) );
+  Point3 pos = Point3( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
   camera.warp( pos );
 
   return 3;
@@ -212,7 +215,7 @@ static int ozCameraIncarnate( lua_State* l )
 {
   ARG( 1 );
 
-  int index = toint( 1 );
+  int index = l_toint( 1 );
   if( uint( index ) >= uint( orbis.objects.length() ) ) {
     ERROR( "invalid object index" );
   }
@@ -235,7 +238,7 @@ static int ozCameraAllowReincarnation( lua_State* l )
 {
   ARG( 1 );
 
-  camera.allowReincarnation = tobool( 1 );
+  camera.allowReincarnation = l_tobool( 1 );
   return 0;
 }
 
@@ -247,7 +250,7 @@ static int ozProfileGetName( lua_State* l )
 {
   ARG( 0 );
 
-  pushstring( profile.name );
+  l_pushstring( profile.name );
   return 1;
 }
 
@@ -255,9 +258,11 @@ static int ozProfileGetBot( lua_State* l )
 {
   ARG( 0 );
 
-  pushstring( profile.clazz->name );
+  l_pushstring( profile.clazz->name );
   return 1;
 }
+
+/// @}
 
 }
 }

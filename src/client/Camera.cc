@@ -100,8 +100,8 @@ void Camera::prepare()
 {
   updateReferences();
 
-  relH = -float( ui::mouse.overEdgeX ) * mouseXSens;
-  relV = +float( ui::mouse.overEdgeY ) * mouseYSens;
+  relH = float( -ui::mouse.overEdgeX ) * mouseXSens;
+  relV = float( +ui::mouse.overEdgeY ) * mouseYSens;
 
   relH = clamp( relH, -ROT_LIMIT, +ROT_LIMIT );
   relV = clamp( relV, -ROT_LIMIT, +ROT_LIMIT );

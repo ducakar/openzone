@@ -298,7 +298,7 @@ static void deallocateObject( void* ptr )
     System::error( 1, "ALLOC: new[] -> delete mismatch for block at %p", ptr );
   }
 
-backtraceFound:;
+backtraceFound:
 
 # ifdef _WIN32
   LeaveCriticalSection( &mutex.id );
@@ -377,7 +377,7 @@ static void deallocateArray( void* ptr )
     System::error( 1, "ALLOC: new -> delete[] mismatch for block at %p", ptr );
   }
 
-backtraceFound:;
+backtraceFound:
 
 # ifdef _WIN32
   LeaveCriticalSection( &mutex.id );

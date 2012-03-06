@@ -48,7 +48,7 @@ Render render;
 
 const float Render::WIDE_CULL_FACTOR = 6.0f;
 const float Render::CELL_WIDE_RADIUS =
-  ( float( Cell::SIZEI / 2 ) + float( Object::MAX_DIMI ) * WIDE_CULL_FACTOR ) * Math::SQRT_2;
+  ( Cell::SIZE / 2 + Object::MAX_DIM * WIDE_CULL_FACTOR ) * Math::SQRT_2;
 
 const float Render::NIGHT_FOG_COEFF  = 2.0f;
 const float Render::NIGHT_FOG_DIST   = 0.3f;
@@ -166,8 +166,8 @@ void Render::prepareDraw()
   }
   drawnStructs.clearAll();
 
-  float minXCentre = float( span.minX - Orbis::CELLS / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
-  float minYCentre = float( span.minY - Orbis::CELLS / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
+  float minXCentre = float( ( span.minX - Orbis::CELLS / 2 ) * Cell::SIZE + Cell::SIZE / 2 );
+  float minYCentre = float( ( span.minY - Orbis::CELLS / 2 ) * Cell::SIZE + Cell::SIZE / 2 );
 
   float x = minXCentre;
   for( int i = span.minX; i <= span.maxX; ++i, x += Cell::SIZE ) {

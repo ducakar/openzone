@@ -21,10 +21,10 @@
  * @file matrix/luaapi.cc
  */
 
+#include "common/lua.hh"
+
 #include "matrix/Orbis.hh"
 #include "matrix/Vehicle.hh"
-
-#include "common/lua.hh"
 
 namespace oz
 {
@@ -33,12 +33,32 @@ namespace matrix
 
 void importLuaConstants( lua_State* l )
 {
+  enum AddMode
+  {
+    ADD_FORCE = 0,
+    ADD_TRY   = 1
+  };
+
+  enum CollideMode
+  {
+    COLLIDE_STRUCTS_BIT     = 0x00,
+    COLLIDE_OBJECTS_BIT     = 0x01,
+    COLLIDE_ALL_OBJECTS_BIT = 0x02
+  };
+
   registerLuaConstant( l, "OZ_ORBIS_DIM",                   Orbis::DIM );
 
   registerLuaConstant( l, "OZ_NORTH",                       NORTH );
   registerLuaConstant( l, "OZ_WEST",                        WEST );
   registerLuaConstant( l, "OZ_SOUTH",                       SOUTH );
   registerLuaConstant( l, "OZ_EAST",                        EAST );
+
+  registerLuaConstant( l, "OZ_FORCE",                       ADD_FORCE );
+  registerLuaConstant( l, "OZ_TRY",                         ADD_TRY );
+
+  registerLuaConstant( l, "OZ_STRUCTS_BIT",                 COLLIDE_STRUCTS_BIT );
+  registerLuaConstant( l, "OZ_OBJECTS_BIT",                 COLLIDE_OBJECTS_BIT );
+  registerLuaConstant( l, "OZ_ALL_OBJECTS_BIT",             COLLIDE_ALL_OBJECTS_BIT );
 
   registerLuaConstant( l, "OZ_EVENT_CREATE",                Object::EVENT_CREATE );
   registerLuaConstant( l, "OZ_EVENT_DESTROY",               Object::EVENT_DESTROY );

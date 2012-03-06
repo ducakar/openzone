@@ -35,12 +35,6 @@ namespace oz
 namespace client
 {
 
-const int   Terra::TILE_INDICES  = TILE_QUADS * ( TILE_QUADS + 1 ) * 2 + ( TILE_QUADS - 1 ) * 2;
-const int   Terra::TILE_VERTICES = ( TILE_QUADS + 1 ) * ( TILE_QUADS + 1 );
-
-const float Terra::TILE_SIZE     = TILE_QUADS * float( matrix::Terra::Quad::SIZEI );
-const float Terra::TILE_INV_SIZE = 1.0f / TILE_SIZE;
-
 const float Terra::WAVE_BIAS_INC = 2.0f * Timer::TICK_TIME;
 
 Terra terra;
@@ -62,10 +56,10 @@ void Terra::draw()
     return;
   }
 
-  span.minX = max( int( ( camera.p.x - frustum.radius + matrix::Terra::DIM ) * TILE_INV_SIZE ), 0 );
-  span.minY = max( int( ( camera.p.y - frustum.radius + matrix::Terra::DIM ) * TILE_INV_SIZE ), 0 );
-  span.maxX = min( int( ( camera.p.x + frustum.radius + matrix::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
-  span.maxY = min( int( ( camera.p.y + frustum.radius + matrix::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
+  span.minX = max( int( ( camera.p.x - frustum.radius + matrix::Terra::DIM ) / TILE_SIZE ), 0 );
+  span.minY = max( int( ( camera.p.y - frustum.radius + matrix::Terra::DIM ) / TILE_SIZE ), 0 );
+  span.maxX = min( int( ( camera.p.x + frustum.radius + matrix::Terra::DIM ) / TILE_SIZE ), TILES - 1 );
+  span.maxY = min( int( ( camera.p.y + frustum.radius + matrix::Terra::DIM ) / TILE_SIZE ), TILES - 1 );
 
   shader.use( landShaderId );
 

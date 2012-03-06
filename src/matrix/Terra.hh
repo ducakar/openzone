@@ -38,19 +38,17 @@ class Terra
 
     struct Quad
     {
-      static const int   SIZEI = 8; ///< Integer size of a terrain quad.
-      static const float SIZE;      ///< Float size of a terrain quad.
-      static const float INV_SIZE;
-      static const float DIM;       ///< Dimension of a terrain quad (size / 2).
+      static const int SIZE = 8;        ///< Integer size of a terrain quad.
+      static const int DIM  = SIZE / 2; ///< Dimension of a terrain quad (size / 2).
 
       Point3 vertex;
       Vec3   triNormal[2];
     };
 
     // Orbis::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM
-    static const int   QUADS = 2 * MAX_WORLD_COORD / Quad::SIZEI;
-    static const int   VERTS = QUADS + 1;
-    static const float DIM;
+    static const int QUADS = 2 * MAX_WORLD_COORD / Quad::SIZE;
+    static const int VERTS = QUADS + 1;
+    static const int DIM   = QUADS * Quad::DIM;
 
     Quad quads[VERTS][VERTS];
     int  liquid;              ///< Either <tt>matrix::Medium::GLOBAL_WATER_BIT</tt> or
@@ -76,17 +74,17 @@ inline Span Terra::getInters( float minPosX, float minPosY,
                               float maxPosX, float maxPosY, float epsilon ) const
 {
   return {
-    max( int( ( minPosX - epsilon + DIM ) * Quad::INV_SIZE ), 0 ),
-    max( int( ( minPosY - epsilon + DIM ) * Quad::INV_SIZE ), 0 ),
-    min( int( ( maxPosX + epsilon + DIM ) * Quad::INV_SIZE ), QUADS - 1 ),
-    min( int( ( maxPosY + epsilon + DIM ) * Quad::INV_SIZE ), QUADS - 1 )
+    max( int( ( minPosX - epsilon + DIM ) / Quad::SIZE ), 0 ),
+    max( int( ( minPosY - epsilon + DIM ) / Quad::SIZE ), 0 ),
+    min( int( ( maxPosX + epsilon + DIM ) / Quad::SIZE ), QUADS - 1 ),
+    min( int( ( maxPosY + epsilon + DIM ) / Quad::SIZE ), QUADS - 1 )
   };
 }
 
 inline Pair<int> Terra::getIndices( float x, float y ) const
 {
-  int ix = int( ( x + DIM ) * Quad::INV_SIZE );
-  int iy = int( ( y + DIM ) * Quad::INV_SIZE );
+  int ix = int( ( x + DIM ) / Quad::SIZE );
+  int iy = int( ( y + DIM ) / Quad::SIZE );
 
   return { clamp( ix, 0, QUADS - 1 ), clamp( iy, 0, QUADS - 1 ) };
 }

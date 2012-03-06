@@ -214,15 +214,8 @@ void Vehicle::onDestroy()
   if( pilot != -1 ) {
     Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
 
-    if( bot != null ) {
-      if( state & AUTO_EJECT_BIT ) {
-        eject();
-      }
-      else {
-        // we must put bot out or the death sound won't be played
-        bot->exit();
-        bot->destroy();
-      }
+    if( bot != null && ( state & AUTO_EJECT_BIT ) ) {
+      eject();
     }
 
     pilot = -1;

@@ -434,10 +434,10 @@ void Bot::onUpdate()
             }
           }
           p.z = originalZ;
-
-        stepSucceeded:;
         }
       }
+
+    stepSucceeded:
 
       Vec3 desiredMomentum = move;
 

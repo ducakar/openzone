@@ -555,15 +555,15 @@ void GameStage::unload()
 
   log.println( "Time statistics {" );
   log.indent();
-  log.println( "loading time          %8.2f s",         loadingTime                              );
-  log.println( "run time              %8.2f s",         runTime                                  );
-  log.println( "game time             %8.2f s  ",       gameTime                                 );
-  log.println( "dropped time          %8.2f s",         droppedTime                              );
-  log.println( "optimal tick/frame rate %6.2f Hz ",     1.0f / Timer::TICK_TIME                  );
-  log.println( "tick rate in run time   %6.2f Hz ",     float( timer.ticks ) / runTime           );
-  log.println( "frame rate in run time  %6.2f Hz",      float( timer.nFrames ) / runTime         );
-  log.println( "frame drop rate         %6.2f %%",      frameDropRate * 100.0f                   );
-  log.println( "frame drops             %6d",           nFrameDrops                              );
+  log.println( "loading time          %8.2f s",         loadingTime                         );
+  log.println( "run time              %8.2f s",         runTime                             );
+  log.println( "game time             %8.2f s  ",       gameTime                            );
+  log.println( "dropped time          %8.2f s",         droppedTime                         );
+  log.println( "optimal tick/frame rate %6.2f Hz ",     1.0f / Timer::TICK_TIME             );
+  log.println( "tick rate in run time   %6.2f Hz ",     float( timer.ticks ) / runTime      );
+  log.println( "frame rate in run time  %6.2f Hz",      float( timer.nFrames ) / runTime    );
+  log.println( "frame drop rate         %6.2f %%",      frameDropRate * 100.0f              );
+  log.println( "frame drops             %6d",           nFrameDrops                         );
   log.println( "Run time usage {" );
   log.indent();
   log.println( "%6.2f %%  [M:0] sleep",            sleepTime             / runTime * 100.0f );

@@ -114,10 +114,8 @@ class Collider
     bool overlapsAABBNode( int nodeIndex );
     bool overlapsAABBEntities();
     bool overlapsAABBOrbis();
-    bool overlapsAABBOrbisOO();
-    bool overlapsAABBOrbisOSO();
 
-    bool overlapsEntityOrbisOO();
+    bool overlapsEntityOrbis();
 
     void trimAABBVoid();
     void trimAABBObj( const Object* sObj );
@@ -131,7 +129,7 @@ class Collider
     void trimAABBTerra();
     void trimAABBOrbis();
 
-    void getOrbisOverlaps( Vector<Object*>* objects, Vector<Struct*>* structs );
+    void getOrbisOverlaps( Vector<Struct*>* structs, Vector<Object*>* objects );
     void getOrbisIncludes( Vector<Object*>* objects ) const;
     void touchOrbisOverlaps() const;
     void getEntityOverlaps( Vector<Object*>* objects );
@@ -147,25 +145,14 @@ class Collider
     Collider();
 
     bool overlaps( const Point3& point, const Object* exclObj = null );
-    // test for object collisions only (no structures or terrain)
-    bool overlapsOO( const Point3& point, const Object* exclObj = null );
-    // test for object and structure collisions only (no terain)
-    bool overlapsOSO( const Point3& point, const Object* exclObj = null );
-
     bool overlaps( const AABB& aabb, const Object* exclObj = null );
-    bool overlapsOO( const AABB& aabb, const Object* exclObj = null );
-    bool overlapsOSO( const AABB& aabb, const Object* exclObj = null );
-
     bool overlaps( const Object* obj, const Object* exclObj = null );
-    bool overlapsOO( const Object* obj, const Object* exclObj = null );
-    bool overlapsOSO( const Object* obj, const Object* exclObj = null );
-
-    bool overlapsOO( const Entity* entity, float margin = 0.0f );
+    bool overlaps( const Entity* entity, float margin = 0.0f );
     bool overlapsEntity( const AABB& aabb, const Entity* entity, float margin = 0.0f );
 
     // fill given vectors with objects and structures overlapping with the AABB
     // if either vector is null the respecitve test is not performed
-    void getOverlaps( const AABB& aabb, Vector<Object*>* objects, Vector<Struct*>* structs,
+    void getOverlaps( const AABB& aabb, Vector<Struct*>* structs, Vector<Object*>* objects,
                       float eps = EPSILON );
     // fill given vector with objects included in the AABB
     void getIncludes( const AABB& aabb, Vector<Object*>* objects, float eps = EPSILON );

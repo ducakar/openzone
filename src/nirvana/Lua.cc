@@ -42,28 +42,28 @@ bool Lua::readVariable( InputStream* istream )
 
   switch( ch ) {
     case 'N': {
-      pushnil();
+      l_pushnil();
       return true;
     }
     case 'b': {
-      pushbool( istream->readBool() );
+      l_pushbool( istream->readBool() );
       return true;
     }
     case 'n': {
-      pushdouble( istream->readDouble() );
+      l_pushdouble( istream->readDouble() );
       return true;
     }
     case 's': {
-      pushstring( istream->readString() );
+      l_pushstring( istream->readString() );
       return true;
     }
     case '[': {
-      newtable();
+      l_newtable();
 
       while( readVariable( istream ) ) { // key
         readVariable( istream ); // value
 
-        rawset( -3 );
+        l_rawset( -3 );
       }
       return true;
     }
@@ -78,7 +78,7 @@ bool Lua::readVariable( InputStream* istream )
 
 void Lua::writeVariable( BufferStream* ostream )
 {
-  int type = type( -1 );
+  int type = l_type( -1 );
 
   switch( type ) {
     case LUA_TNIL: {
@@ -87,33 +87,33 @@ void Lua::writeVariable( BufferStream* ostream )
     }
     case LUA_TBOOLEAN: {
       ostream->writeChar( 'b' );
-      ostream->writeBool( tobool( -1 ) != 0 );
+      ostream->writeBool( l_tobool( -1 ) != 0 );
       break;
     }
     case LUA_TNUMBER: {
       ostream->writeChar( 'n' );
-      ostream->writeDouble( todouble( -1 ) );
+      ostream->writeDouble( l_todouble( -1 ) );
       break;
     }
     case LUA_TSTRING: {
       ostream->writeChar( 's' );
-      ostream->writeString( tostring( -1 ) );
+      ostream->writeString( l_tostring( -1 ) );
       break;
     }
     case LUA_TTABLE: {
       ostream->writeChar( '[' );
 
-      pushnil();
-      while( next( -2 ) != 0 ) {
+      l_pushnil();
+      while( l_next( -2 ) != 0 ) {
         // key
-        pushvalue( -2 );
+        l_pushvalue( -2 );
         writeVariable( ostream );
-        pop( 1 );
+        l_pop( 1 );
 
         // value
         writeVariable( ostream );
 
-        pop( 1 );
+        l_pop( 1 );
       }
 
       ostream->writeChar( ']' );
@@ -140,15 +140,15 @@ bool Lua::mindCall( const char* functionName, Bot* self_ )
   ns.self        = self_;
   ns.forceUpdate = false;
 
-  hard_assert( gettop() == 1 && ms.self != null );
+  hard_assert( l_gettop() == 1 && ms.self != null );
 
-  getglobal( functionName );
-  rawgeti( 1, ms.self->index );
-  lua_pcall( l, 1, 0, 0 );
+  l_getglobal( functionName );
+  l_rawgeti( 1, ms.self->index );
+  l_pcall( 1, 0 );
 
-  if( gettop() != 1 ) {
+  if( l_gettop() != 1 ) {
     throw Exception( "Nirvana Lua: %s(self = %d): %s", functionName, ms.self->index,
-                     tostring( -1 ) );
+                     l_tostring( -1 ) );
   }
 
   return ns.forceUpdate;
@@ -156,24 +156,23 @@ bool Lua::mindCall( const char* functionName, Bot* self_ )
 
 void Lua::registerMind( int botIndex )
 {
-  hard_assert( gettop() == 1 );
+  hard_assert( l_gettop() == 1 );
 
-  newtable();
-  rawseti( 1, botIndex );
+  l_newtable();
+  l_rawseti( 1, botIndex );
 }
 
 void Lua::unregisterMind( int botIndex )
 {
-  hard_assert( gettop() == 1 );
+  hard_assert( l_gettop() == 1 );
 
-  pushnil();
-  rawseti( 1, botIndex );
+  l_pushnil();
+  l_rawseti( 1, botIndex );
 }
 
 void Lua::read( InputStream* istream )
 {
-  hard_assert( gettop() == 1 );
-  hard_assert( ( pushnil(), next( 1 ) == 0 ) );
+  hard_assert( l_gettop() == 1 );
 
   char ch = istream->readChar();
 
@@ -183,7 +182,7 @@ void Lua::read( InputStream* istream )
     int index = istream->readInt();
     readVariable( istream );
 
-    rawseti( 1, index );
+    l_rawseti( 1, index );
 
     ch = istream->readChar();
   }
@@ -191,18 +190,18 @@ void Lua::read( InputStream* istream )
 
 void Lua::write( BufferStream* ostream )
 {
-  hard_assert( gettop() == 1 );
+  hard_assert( l_gettop() == 1 );
 
-  pushnil();
-  while( next( 1 ) != 0 ) {
-    hard_assert( type( -2 ) == LUA_TNUMBER );
-    hard_assert( type( -1 ) == LUA_TTABLE );
+  l_pushnil();
+  while( l_next( 1 ) != 0 ) {
+    hard_assert( l_type( -2 ) == LUA_TNUMBER );
+    hard_assert( l_type( -1 ) == LUA_TTABLE );
 
     ostream->writeChar( 'i' );
-    ostream->writeInt( toint( -2 ) );
+    ostream->writeInt( l_toint( -2 ) );
     writeVariable( ostream );
 
-    pop( 1 );
+    l_pop( 1 );
   }
 
   ostream->writeChar( '\0' );
@@ -210,31 +209,31 @@ void Lua::write( BufferStream* ostream )
 
 void Lua::registerFunction( const char* name, LuaAPI func )
 {
-  lua_register( l, name, func );
+  l_register( name, func );
 }
 
 void Lua::registerConstant( const char* name, bool value )
 {
-  pushbool( value );
-  setglobal( name );
+  l_pushbool( value );
+  l_setglobal( name );
 }
 
 void Lua::registerConstant( const char* name, int value )
 {
-  pushint( value );
-  setglobal( name );
+  l_pushint( value );
+  l_setglobal( name );
 }
 
 void Lua::registerConstant( const char* name, float value )
 {
-  pushfloat( value );
-  setglobal( name );
+  l_pushfloat( value );
+  l_setglobal( name );
 }
 
 void Lua::registerConstant( const char* name, const char* value )
 {
-  pushstring( value );
-  setglobal( name );
+  l_pushstring( value );
+  l_setglobal( name );
 }
 
 void Lua::init()
@@ -246,20 +245,22 @@ void Lua::init()
     throw Exception( "Failed to create Lua state" );
   }
 
-  hard_assert( gettop() == 0 );
+  hard_assert( l_gettop() == 0 );
 
   IMPORT_LIBS();
 
-  if( gettop() != 0 ) {
+  if( l_gettop() != 0 ) {
     throw Exception( "Failed to initialise Lua libraries" );
   }
+
+  ls.envName = "nirvana";
 
   /*
    * General functions
    */
 
-  IMPORT_FUNC( ozPrintln );
   IMPORT_FUNC( ozException );
+  IMPORT_FUNC( ozPrintln );
 
   IGNORE_FUNC( ozUseFailed );
   IMPORT_FUNC( ozForceUpdate );
@@ -272,23 +273,12 @@ void Lua::init()
   IGNORE_FUNC( ozOrbisSetGravity );
 
   IGNORE_FUNC( ozOrbisAddStr );
-  IGNORE_FUNC( ozOrbisTryAddStr );
   IGNORE_FUNC( ozOrbisAddObj );
-  IGNORE_FUNC( ozOrbisTryAddObj );
   IGNORE_FUNC( ozOrbisAddFrag );
   IGNORE_FUNC( ozOrbisGenFrags );
 
-  IMPORT_FUNC( ozOrbisBindAllOverlaps );
-  IMPORT_FUNC( ozOrbisBindStrOverlaps );
-  IMPORT_FUNC( ozOrbisBindObjOverlaps );
-
-  /*
-   * Terra
-   */
-
-  IGNORE_FUNC( ozTerraLoad );
-
-  IMPORT_FUNC( ozTerraHeight );
+  IMPORT_FUNC( ozOrbisOverlaps );
+  IMPORT_FUNC( ozOrbisBindOverlaps );
 
   /*
    * Caelum
@@ -303,6 +293,14 @@ void Lua::init()
   IMPORT_FUNC( ozCaelumGetTime );
   IGNORE_FUNC( ozCaelumSetTime );
   IGNORE_FUNC( ozCaelumAddTime );
+
+  /*
+   * Terra
+   */
+
+  IGNORE_FUNC( ozTerraLoad );
+
+  IMPORT_FUNC( ozTerraHeight );
 
   /*
    * Structure
@@ -573,9 +571,9 @@ void Lua::init()
 
   importLuaConstants( l );
 
-  newtable();
-  setglobal( "ozLocalData" );
-  getglobal( "ozLocalData" );
+  l_newtable();
+  l_setglobal( "ozLocalData" );
+  l_getglobal( "ozLocalData" );
 
   PhysFile luaDir( "lua/nirvana" );
   DArray<PhysFile> luaFiles = luaDir.ls();
@@ -596,7 +594,7 @@ void Lua::init()
     }
   }
 
-  hard_assert( gettop() == 1 );
+  hard_assert( l_gettop() == 1 );
 
   log.printEnd( " OK" );
 }

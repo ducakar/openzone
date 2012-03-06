@@ -36,6 +36,7 @@ class FloraModule : public Module
 
     static const float DENSITY;
     static const float SPACING;
+    static const float TREE_DEPTH;
 
     // plants/m2
     float density;

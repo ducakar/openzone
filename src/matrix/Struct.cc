@@ -157,7 +157,7 @@ void Entity::manualDoorHandler()
     case CLOSING: {
       offset = Vec3::ZERO;
 
-      if( collider.overlapsOO( this ) ) {
+      if( collider.overlaps( this ) ) {
         offset = ratio * model->move;
 
         if( ratio == 1.0f ) {
@@ -195,7 +195,7 @@ void Entity::autoDoorHandler()
         return;
       }
 
-      if( collider.overlapsOO( this, model->margin ) ) {
+      if( collider.overlaps( this, model->margin ) ) {
         state = OPENING;
         time = 0.0f;
         velocity = model->move * model->ratioInc / Timer::TICK_TIME;
@@ -219,7 +219,7 @@ void Entity::autoDoorHandler()
 
         offset = Vec3::ZERO;
 
-        if( !collider.overlapsOO( this, model->margin ) ) {
+        if( !collider.overlaps( this, model->margin ) ) {
           state = CLOSING;
           velocity = -model->move * model->ratioInc / Timer::TICK_TIME;
         }
@@ -231,7 +231,7 @@ void Entity::autoDoorHandler()
     case CLOSING: {
       offset = Vec3::ZERO;
 
-      if( collider.overlapsOO( this, model->margin ) ) {
+      if( collider.overlaps( this, model->margin ) ) {
         offset = ratio * model->move;
 
         if( ratio == 1.0f ) {
@@ -529,7 +529,7 @@ void Struct::onDemolish()
 {
   overlappingObjs.clear();
   collider.mask = ~0;
-  collider.getOverlaps( toAABB(), &overlappingObjs, null, 4.0f * EPSILON );
+  collider.getOverlaps( toAABB(), null, &overlappingObjs, 4.0f * EPSILON );
   collider.mask = Object::SOLID_BIT;
 
   for( int i = 0; i < overlappingObjs.length(); ++i ) {
