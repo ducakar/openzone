@@ -104,6 +104,10 @@ void VehicleClass::initClass( const Config* config )
   OZ_CLASS_SET_STATE( Vehicle::HAS_EJECT_BIT,    "state.hasEject",    false );
   OZ_CLASS_SET_STATE( Vehicle::AUTO_EJECT_BIT,   "state.autoEject",   false );
 
+  if( ( state & Vehicle::AUTO_EJECT_BIT ) && !( state & Vehicle::HAS_EJECT_BIT ) ) {
+    throw Exception( "%s: Vehicle has state.autoEject but not state.hasEject.", name.cstr() );
+  }
+
   mass = config->get( "mass", 100.0f );
   lift = config->get( "lift", 13.0f );
 

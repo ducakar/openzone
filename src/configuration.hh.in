@@ -43,12 +43,3 @@
 
 // Enable bumpmapping.
 #cmakedefine OZ_BUMPMAP
-
-/*
- * Compiler and platform-specific macros
- */
-
-// Fix error in <vorbisfile.h>.
-#ifdef _WIN32
-# define OV_EXCLUDE_STATIC_CALLBACKS
-#endif

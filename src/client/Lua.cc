@@ -44,28 +44,28 @@ bool Lua::readVariable( InputStream* istream )
 
   switch( ch ) {
     case 'N': {
-      pushnil();
+      l_pushnil();
       return true;
     }
     case 'b': {
-      pushbool( istream->readBool() );
+      l_pushbool( istream->readBool() );
       return true;
     }
     case 'n': {
-      pushdouble( istream->readDouble() );
+      l_pushdouble( istream->readDouble() );
       return true;
     }
     case 's': {
-      pushstring( istream->readString() );
+      l_pushstring( istream->readString() );
       return true;
     }
     case '[': {
-      newtable();
+      l_newtable();
 
       while( readVariable( istream ) ) { // key
         readVariable( istream ); // value
 
-        rawset( -3 );
+        l_rawset( -3 );
       }
       return true;
     }
@@ -80,7 +80,7 @@ bool Lua::readVariable( InputStream* istream )
 
 void Lua::writeVariable( BufferStream* ostream )
 {
-  int type = type( -1 );
+  int type = l_type( -1 );
 
   switch( type ) {
     case LUA_TNIL: {
@@ -89,33 +89,33 @@ void Lua::writeVariable( BufferStream* ostream )
     }
     case LUA_TBOOLEAN: {
       ostream->writeChar( 'b' );
-      ostream->writeBool( tobool( -1 ) != 0 );
+      ostream->writeBool( l_tobool( -1 ) != 0 );
       break;
     }
     case LUA_TNUMBER: {
       ostream->writeChar( 'n' );
-      ostream->writeDouble( todouble( -1 ) );
+      ostream->writeDouble( l_todouble( -1 ) );
       break;
     }
     case LUA_TSTRING: {
       ostream->writeChar( 's' );
-      ostream->writeString( tostring( -1 ) );
+      ostream->writeString( l_tostring( -1 ) );
       break;
     }
     case LUA_TTABLE: {
       ostream->writeChar( '[' );
 
-      pushnil();
-      while( next( -2 ) != 0 ) {
+      l_pushnil();
+      while( l_next( -2 ) != 0 ) {
         // key
-        pushvalue( -2 );
+        l_pushvalue( -2 );
         writeVariable( ostream );
-        pop( 1 );
+        l_pop( 1 );
 
         // value
         writeVariable( ostream );
 
-        pop( 1 );
+        l_pop( 1 );
       }
 
       ostream->writeChar( ']' );
@@ -140,13 +140,13 @@ void Lua::staticCall( const char* functionName )
   ms.objIndex = 0;
   ms.strIndex = 0;
 
-  hard_assert( gettop() == 0 );
+  hard_assert( l_gettop() == 0 );
 
-  getglobal( functionName );
-  lua_pcall( l, 0, 0, 0 );
+  l_getglobal( functionName );
+  l_pcall( 0, 0 );
 
-  if( gettop() != 0 ) {
-    throw Exception( "Client Lua: %s(): %s", functionName, tostring( -1 ) );
+  if( l_gettop() != 0 ) {
+    throw Exception( "Client Lua: %s(): %s", functionName, l_tostring( -1 ) );
   }
 }
 
@@ -192,7 +192,7 @@ void Lua::create( const char* mission_ )
 
 void Lua::read( InputStream* istream )
 {
-  hard_assert( gettop() == 0 );
+  hard_assert( l_gettop() == 0 );
 
   cs.mission = istream->readString();
   String missionPath = "lua/mission/" + cs.mission + ".lua";
@@ -228,7 +228,7 @@ void Lua::read( InputStream* istream )
     String name = istream->readString();
     readVariable( istream );
 
-    setglobal( name );
+    l_setglobal( name );
 
     ch = istream->readChar();
   }
@@ -238,35 +238,35 @@ void Lua::read( InputStream* istream )
 
 void Lua::write( BufferStream* ostream )
 {
-  hard_assert( gettop() == 0 );
+  hard_assert( l_gettop() == 0 );
 
   ostream->writeString( cs.mission );
 
 #if LUA_VERSION_NUM >= 502
-  lua_pushglobaltable( l );
+  l_pushglobaltable();
 #endif
 
-  pushnil();
+  l_pushnil();
 #if LUA_VERSION_NUM >= 502
-  while( next( -2 ) != 0 ) {
+  while( l_next( -2 ) != 0 ) {
 #else
-  while( next( LUA_GLOBALSINDEX ) != 0 ) {
+  while( l_next( LUA_GLOBALSINDEX ) != 0 ) {
 #endif
-    hard_assert( type( -2 ) == LUA_TSTRING );
+    hard_assert( l_type( -2 ) == LUA_TSTRING );
 
-    const char* name = tostring( -2 );
+    const char* name = l_tostring( -2 );
     if( name[0] == 'o' && name[1] == 'z' && name[2] == '_' ) {
       ostream->writeChar( 's' );
-      ostream->writeString( tostring( -2 ) );
+      ostream->writeString( l_tostring( -2 ) );
 
       writeVariable( ostream );
     }
 
-    pop( 1 );
+    l_pop( 1 );
   }
 
 #if LUA_VERSION_NUM >= 502
-  pop( 1 );
+  l_pop( 1 );
 #endif
 
   ostream->writeChar( '\0' );
@@ -274,31 +274,31 @@ void Lua::write( BufferStream* ostream )
 
 void Lua::registerFunction( const char* name, LuaAPI func )
 {
-  lua_register( l, name, func );
+  l_register( name, func );
 }
 
 void Lua::registerConstant( const char* name, bool value )
 {
-  pushbool( value );
-  setglobal( name );
+  l_pushbool( value );
+  l_setglobal( name );
 }
 
 void Lua::registerConstant( const char* name, int value )
 {
-  pushint( value );
-  setglobal( name );
+  l_pushint( value );
+  l_setglobal( name );
 }
 
 void Lua::registerConstant( const char* name, float value )
 {
-  pushfloat( value );
-  setglobal( name );
+  l_pushfloat( value );
+  l_setglobal( name );
 }
 
 void Lua::registerConstant( const char* name, const char* value )
 {
-  pushstring( value );
-  setglobal( name );
+  l_pushstring( value );
+  l_setglobal( name );
 }
 
 void Lua::init()
@@ -310,20 +310,23 @@ void Lua::init()
     throw Exception( "Failed to create Lua state" );
   }
 
-  hard_assert( gettop() == 0 );
+  hard_assert( l_gettop() == 0 );
 
   IMPORT_LIBS();
 
-  if( gettop() != 0 ) {
+  if( l_gettop() != 0 ) {
     throw Exception( "Failed to initialise Lua libraries" );
   }
+
+  ls.envName = "client";
 
   /*
    * General functions
    */
 
-  IMPORT_FUNC( ozPrintln );
   IMPORT_FUNC( ozException );
+  IMPORT_FUNC( ozPrintln );
+
   IMPORT_FUNC( ozGettext );
 
   IGNORE_FUNC( ozUseFailed );
@@ -337,25 +340,14 @@ void Lua::init()
   IMPORT_FUNC( ozOrbisSetGravity );
 
   IMPORT_FUNC( ozOrbisAddStr );
-  IMPORT_FUNC( ozOrbisTryAddStr );
   IMPORT_FUNC( ozOrbisAddObj );
-  IMPORT_FUNC( ozOrbisTryAddObj );
   IMPORT_FUNC( ozOrbisAddFrag );
   IMPORT_FUNC( ozOrbisGenFrags );
 
   IMPORT_FUNC( ozOrbisAddPlayer );
 
-  IMPORT_FUNC( ozOrbisBindAllOverlaps );
-  IMPORT_FUNC( ozOrbisBindStrOverlaps );
-  IMPORT_FUNC( ozOrbisBindObjOverlaps );
-
-  /*
-   * Terra
-   */
-
-  IMPORT_FUNC( ozTerraLoad );
-
-  IMPORT_FUNC( ozTerraHeight );
+  IMPORT_FUNC( ozOrbisOverlaps );
+  IMPORT_FUNC( ozOrbisBindOverlaps );
 
   /*
    * Caelum
@@ -370,6 +362,14 @@ void Lua::init()
   IMPORT_FUNC( ozCaelumGetTime );
   IMPORT_FUNC( ozCaelumSetTime );
   IMPORT_FUNC( ozCaelumAddTime );
+
+  /*
+   * Terra
+   */
+
+  IMPORT_FUNC( ozTerraLoad );
+
+  IMPORT_FUNC( ozTerraHeight );
 
   /*
    * Structure
@@ -671,7 +671,7 @@ void Lua::init()
 
   importLuaConstants( l );
 
-  hard_assert( gettop() == 0 );
+  hard_assert( l_gettop() == 0 );
 
   log.printEnd( " OK" );
 }

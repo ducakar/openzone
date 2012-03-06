@@ -32,12 +32,6 @@ namespace oz
 namespace matrix
 {
 
-const float Terra::Quad::SIZE     = float( SIZEI );
-const float Terra::Quad::INV_SIZE = 1.0f / SIZE;
-const float Terra::Quad::DIM      = SIZE / 2.0f;
-
-const float Terra::DIM            = QUADS * Terra::Quad::DIM;
-
 Terra::Terra() :
   id( -1 )
 {}
@@ -82,8 +76,8 @@ void Terra::init()
 {
   for( int x = 0; x < VERTS; ++x ) {
     for( int y = 0; y < VERTS; ++y ) {
-      quads[x][y].vertex.x = float( x * Quad::SIZEI ) - DIM;
-      quads[x][y].vertex.y = float( y * Quad::SIZEI ) - DIM;
+      quads[x][y].vertex.x = float( x * Quad::SIZE - DIM );
+      quads[x][y].vertex.y = float( y * Quad::SIZE - DIM );
       quads[x][y].vertex.z = 0.0f;
       quads[x][y].triNormal[0] = Vec3::ZERO;
       quads[x][y].triNormal[1] = Vec3::ZERO;

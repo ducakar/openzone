@@ -27,6 +27,9 @@
 
 #include "client/OpenAL.hh"
 
+// We don't use those callbacks anywhere and they don't compile on MinGW.
+#define OV_EXCLUDE_STATIC_CALLBACKS
+
 #include <AL/alc.h>
 #include <physfs.h>
 #include <vorbis/vorbisfile.h>

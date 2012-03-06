@@ -37,14 +37,6 @@ Pool<Dynamic, 4096> Dynamic::pool;
 
 void Dynamic::onDestroy()
 {
-  for( int i = 0; i < items.length(); ++i ) {
-    Object* obj = orbis.objects[ items[i] ];
-
-    if( obj != null ) {
-      obj->destroy();
-    }
-  }
-
   if( !clazz->onDestroy.isEmpty() ) {
     lua.objectCall( clazz->onDestroy, this );
   }

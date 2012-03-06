@@ -34,15 +34,10 @@ namespace oz
 namespace matrix
 {
 
-static_assert( Orbis::CELLS * Cell::SIZEI == Terra::QUADS * Terra::Quad::SIZEI,
+static_assert( Orbis::CELLS * Cell::SIZE == Terra::QUADS * Terra::Quad::SIZE,
                "Orbis and terrain size mismatch" );
 
 Orbis orbis;
-
-const float Cell::SIZE     = float( SIZEI );
-const float Cell::INV_SIZE = 1.0f / SIZE;
-
-const float Orbis::DIM     = float( CELLS ) / 2.0f * Cell::SIZE;
 
 bool Orbis::position( Struct* str )
 {

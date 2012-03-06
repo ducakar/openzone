@@ -29,7 +29,7 @@ for bsp_path in $bsps; do
 
   # add bsp name if it doesn't exist yet
   if grep "^msgid \"$bsp\"" $output &> /dev/null; then
-    echo &> /dev/null;
+    echo &> /dev/null
   else
     echo >> $output
     echo "msgid \"$bsp\"" >> $output
@@ -51,7 +51,7 @@ for model in $models; do
   model=`echo $model | sed 's/_/ /g'`
   # add model name if it doesn't exist yet
   if grep "^msgid \"$model\"" $output &> /dev/null; then
-    echo &> /dev/null;
+    echo &> /dev/null
   else
     echo >> $output
     echo "msgid \"$model\"" >> $output
@@ -73,7 +73,7 @@ for class_path in $classes; do
 
   # add class name if it doesn't exist yet
   if grep "^msgid \"$class\"" $output &> /dev/null; then
-    echo &> /dev/null;
+    echo &> /dev/null
   else
     echo >> $output
     echo "msgid \"$class\"" >> $output
@@ -95,7 +95,7 @@ for weapon in $weapons; do
   weapon=`echo $weapon | sed 's/_/ /g'`
   # add weapon name if it doesn't exist yet
   if grep "^msgid \"$weapon\"" $output &> /dev/null; then
-    echo &> /dev/null;
+    echo &> /dev/null
   else
     echo >> $output
     echo "msgid \"$weapon\"" >> $output

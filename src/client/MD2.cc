@@ -179,14 +179,14 @@ void MD2::advance( AnimState* anim, const Bot* bot ) const
 {
   if( anim->type == ANIM_WALK || anim->type == ANIM_RUN || anim->type == ANIM_CROUCH_WALK ) {
     int   nFrames = anim->lastFrame - anim->firstFrame + 1;
-    float time    = bot->step * nFrames * anim->frameTime;
+    float time    = bot->step * float( nFrames ) * anim->frameTime;
 
-    anim->nextFrame = anim->firstFrame + int( bot->step * nFrames + 1.0f ) % nFrames;
+    anim->nextFrame = anim->firstFrame + int( bot->step * float( nFrames ) + 1.0f ) % nFrames;
 
     if( time >= anim->frameTime ||
         ( anim->firstFrame <= anim->currFrame && anim->lastFrame <= anim->currFrame ) )
     {
-      anim->currFrame = anim->firstFrame + int( bot->step * nFrames ) % nFrames;
+      anim->currFrame = anim->firstFrame + int( bot->step * float( nFrames ) ) % nFrames;
     }
 
     anim->currTime = Math::fmod( time, anim->frameTime );

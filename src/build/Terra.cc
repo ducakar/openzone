@@ -100,8 +100,8 @@ void Terra::load()
     for( int x = 0; x < matrix::Terra::VERTS; ++x ) {
       float value = float( *pixel ) / float( std::numeric_limits<unsigned short>::max() );
 
-      quads[x][y].vertex.x     = float( x * matrix::Terra::Quad::SIZEI ) - matrix::Terra::DIM;
-      quads[x][y].vertex.y     = float( y * matrix::Terra::Quad::SIZEI ) - matrix::Terra::DIM;
+      quads[x][y].vertex.x     = float( x * matrix::Terra::Quad::SIZE - matrix::Terra::DIM );
+      quads[x][y].vertex.y     = float( y * matrix::Terra::Quad::SIZE - matrix::Terra::DIM );
       quads[x][y].vertex.z     = Math::mix( minHeight, maxHeight, value );
       quads[x][y].triNormal[0] = Vec3::ZERO;
       quads[x][y].triNormal[1] = Vec3::ZERO;

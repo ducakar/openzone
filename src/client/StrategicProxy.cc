@@ -171,9 +171,9 @@ void StrategicProxy::update()
       p.z -= speed;
     }
 
-    p.x = clamp( p.x, -Orbis::DIM, +Orbis::DIM );
-    p.y = clamp( p.y, -Orbis::DIM, +Orbis::DIM );
-    p.z = clamp( p.z, -Orbis::DIM, +Orbis::DIM );
+    p.x = clamp<float>( p.x, -Orbis::DIM, +Orbis::DIM );
+    p.y = clamp<float>( p.y, -Orbis::DIM, +Orbis::DIM );
+    p.z = clamp<float>( p.z, -Orbis::DIM, +Orbis::DIM );
   }
   else {
     // RTS camera mode
@@ -214,8 +214,8 @@ void StrategicProxy::update()
       height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
     }
 
-    p.x = clamp( p.x, -Orbis::DIM, +Orbis::DIM );
-    p.y = clamp( p.y, -Orbis::DIM, +Orbis::DIM );
+    p.x = clamp<float>( p.x, -Orbis::DIM, +Orbis::DIM );
+    p.y = clamp<float>( p.y, -Orbis::DIM, +Orbis::DIM );
     p.z = max( 0.0f, orbis.terra.height( p.x, p.y ) ) + height;
   }
 

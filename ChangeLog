@@ -54,7 +54,8 @@
   - configurable fog colour for both terrain and structure water/lava
   - smooth loading: model loading split to preloading (mapping file to memory) that is run in a new
     thread and upload to graphic card that has to be synchronous with rendering
-  - specular and emission masks - specular lighting is done per-pixel, pixels can emit light
+  - textures have 3 components: diffuse (base colour), masks (per-pixel specular and emission masks)
+    and normal map
   - offscreen rendering support
   - postprocessing
   - bloom postprocess effect

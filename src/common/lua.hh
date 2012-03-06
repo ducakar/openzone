@@ -27,7 +27,7 @@
  * %Lua API calls etc. that can be used as some basic building blocks for %Lua APIs. Furthermore
  * there are macros that wrap %Lua library calls so, one can e.g. write
  * @code
- *   tofloat( 1 );
+ *   l_tofloat( 1 );
  * @endcode
  * instead of
  * @code
@@ -38,6 +38,8 @@
  */
 
 #pragma once
+
+#include "common/common.hh"
 
 #include <lua.hpp>
 
@@ -109,12 +111,25 @@
   }
 
 /**
+ * @def VARG( min, max )
+ * Exits %Lua API function call with an error if number of parameters is not between <tt>min</tt>
+ * and <tt>max</tt>.
+ */
+#define VARG( min, max ) \
+  { \
+    int n = lua_gettop( l ); \
+    if( n < ( min ) || ( max ) < n ) { \
+      ERROR( "Between " #min " and " #max " arguments expected" ); \
+    } \
+  }
+
+/**
  * @def ARG_VAR( n )
  * Exits %Lua API function call with an error if number of parameters is less than <tt>n</tt>.
  */
 #define ARG_VAR( n ) \
   if( lua_gettop( l ) < ( n ) ) { \
-    ERROR( "At least " #n " arguments expected" ); \
+    ERROR( #n " or more arguments expected" ); \
   }
 
 /**
@@ -127,6 +142,20 @@
   }
 
 /**
+ * @def STR_INDEX
+ * Initialises variable <tt>str</tt> to structure with the given index or returns with error for
+ * invalid indices.
+ */
+#define STR_INDEX( index ) \
+  if( uint( index ) >= uint( orbis.structs.length() ) ) { \
+    ERROR( "Invalid structure index (out of range)" ); \
+  } \
+  Struct* str = orbis.structs[index]; \
+  if( str == null ) { \
+    ERROR( "Invalid structures index (null)" ); \
+  }
+
+/**
  * @def OBJ
  * Exits %Lua API function call with an error if there is no object bound.
  */
@@ -134,6 +163,38 @@
   if( ms.obj == null ) { \
     ERROR( "No object bound" ); \
   }
+
+/**
+ * @def OBJ_INDEX
+ * Initialises variable <tt>obj</tt> to object with the given index or returns with error for
+ * invalid indices.
+ */
+#define OBJ_INDEX( index ) \
+  if( uint( index ) >= uint( orbis.objects.length() ) ) { \
+    ERROR( "Invalid object index (out of range)" ); \
+  } \
+  Object* obj = orbis.objects[index]; \
+  if( obj == null ) { \
+    ERROR( "Invalid object index (null)" ); \
+  }
+
+/**
+ * @def BOT_INDEX
+ * Initialises variable <tt>bot</tt> to bot with the given index or returns with error for invalid
+ * indices or objects that are not bots.
+ */
+#define BOT_INDEX( index ) \
+  if( uint( index ) >= uint( orbis.objects.length() ) ) { \
+    ERROR( "Invalid bot index (out of range)" ); \
+  } \
+  Object* obj = orbis.objects[index]; \
+  if( obj == null ) { \
+    ERROR( "Invalid bot index (null)" ); \
+  } \
+  if( !( obj->state & Object::BOT_BIT ) ) { \
+    ERROR( "Invalid bot index (not a bot)" ); \
+  } \
+  Bot* bot = static_cast<Bot*>( obj );
 
 /**
  * @def OBJ_NOT_SELF
@@ -194,182 +255,193 @@
   }
 
 /**
- * @def SELF_BOT
- * Exits %Lua API function call with an error if self object is not bound or not a bot (Bot class).
- */
-#define SELF_BOT() \
-  if( ms.self == null || !( ms.self->flags & Object::BOT_BIT ) ) { \
-    ERROR( "Self object is not a bot" ); \
-  } \
-  Bot* self = static_cast<Bot*>( ms.self );
-
-/**
- * @def gettop
+ * @def l_gettop
  * Shorthand for lua_gettop
  */
-#define gettop() \
+#define l_gettop() \
   lua_gettop( l )
 
 /**
- * @def settop
+ * @def l_settop
  * Shorthand for lua_settop
  */
-#define settop( i ) \
+#define l_settop( i ) \
   lua_settop( l, i )
 
 /**
- * @def pop
+ * @def l_pop
  * Shorthand for lua_pop
  */
-#define pop( i ) \
+#define l_pop( i ) \
   lua_pop( l, i )
 
 /**
- * @def type
+ * @def l_type
  * Shorthand for lua_type
  */
-#define type( i ) \
+#define l_type( i ) \
   lua_type( l, i )
 
 /**
- * @def tobool
+ * @def l_tobool
  * Shorthand for lua_toboolean (plus cast to bool)
  */
-#define tobool( i ) \
+#define l_tobool( i ) \
   ( lua_toboolean( l, i ) != 0 )
 
 /**
- * @def toint
+ * @def l_toint
  * Shorthand for lua_tointeger (plus cast to int)
  */
-#define toint( i ) \
+#define l_toint( i ) \
   int( lua_tointeger( l, i ) )
 
 /**
- * @def tofloat
+ * @def l_tofloat
  * Shorthand for lua_tonumber (plus cast to float)
  */
-#define tofloat( i ) \
+#define l_tofloat( i ) \
   float( lua_tonumber( l, i ) )
 
 /**
- * @def todouble
+ * @def l_todouble
  * Shorthand for lua_tonumber
  */
-#define todouble( i ) \
+#define l_todouble( i ) \
   lua_tonumber( l, i )
 
 /**
- * @def tostring
+ * @def l_tostring
  * Shorthand for lua_tostring
  */
-#define tostring( i ) \
+#define l_tostring( i ) \
   lua_tostring( l, i )
 
 /**
- * @def pushnil
+ * @def l_pushnil
  * Shorthand for lua_pushnil
  */
-#define pushnil() \
+#define l_pushnil() \
   lua_pushnil( l )
 
 /**
- * @def pushbool
+ * @def l_pushbool
  * Shorthand for lua_pushboolean
  */
-#define pushbool( b ) \
+#define l_pushbool( b ) \
   lua_pushboolean( l, b )
 
 /**
- * @def pushint
+ * @def l_pushint
  * Shorthand for lua_pushinteger
  */
-#define pushint( i ) \
+#define l_pushint( i ) \
   lua_pushinteger( l, i )
 
 /**
- * @def pushfloat
+ * @def l_pushfloat
  * Shorthand for lua_pushnumber
  */
-#define pushfloat( f ) \
+#define l_pushfloat( f ) \
   lua_pushnumber( l, f )
 
 /**
- * @def pushdouble
+ * @def l_pushdouble
  * Shorthand for lua_pushnumber
  */
-#define pushdouble( d ) \
+#define l_pushdouble( d ) \
   lua_pushnumber( l, d )
 
 /**
- * @def pushstring
+ * @def l_pushstring
  * Shorthand for lua_pushstring
  */
-#define pushstring( s ) \
+#define l_pushstring( s ) \
   lua_pushstring( l, s )
 
 /**
- * @def pushvalue
+ * @def l_pushvalue
  * Shorthand for lua_pushvalue
  */
-#define pushvalue( i ) \
+#define l_pushvalue( i ) \
   lua_pushvalue( l, i )
 
 /**
- * @def newtable
+ * @def l_pushglobaltable
+ * Shorthand for lua_pushglobaltable
+ */
+#define l_pushglobaltable() \
+  lua_pushglobaltable( l )
+
+/**
+ * @def l_newtable
  * Shorthand for lua_newtable
  */
-#define newtable() \
+#define l_newtable() \
   lua_newtable( l )
 
 /**
- * @def next
+ * @def l_next
  * Shorthand for lua_next
  */
-#define next( t ) \
+#define l_next( t ) \
   lua_next( l, t )
 
 /**
- * @def rawget
+ * @def l_rawget
  * Shorthand for lua_rawget
  */
-#define rawget( t ) \
+#define l_rawget( t ) \
   lua_rawget( l, t )
 
 /**
- * @def rawset
+ * @def l_rawset
  * Shorthand for lua_rawset
  */
-#define rawset( t ) \
+#define l_rawset( t ) \
   lua_rawset( l, t )
 
 /**
- * @def rawgeti
+ * @def l_rawgeti
  * Shorthand for lua_rawgeti
  */
-#define rawgeti( t, i ) \
+#define l_rawgeti( t, i ) \
   lua_rawgeti( l, t, i )
 
 /**
- * @def rawseti
+ * @def l_rawseti
  * Shorthand for lua_rawseti
  */
-#define rawseti( t, i ) \
+#define l_rawseti( t, i ) \
   lua_rawseti( l, t, i )
 
 /**
- * @def getglobal
+ * @def l_getglobal
  * Shorthand for lua_getglobal
  */
-#define getglobal( n ) \
+#define l_getglobal( n ) \
   lua_getglobal( l, n )
 
 /**
- * @def setglobal
+ * @def l_setglobal
  * Shorthand for lua_setglobal
  */
-#define setglobal( n ) \
+#define l_setglobal( n ) \
   lua_setglobal( l, n )
+
+/**
+ * @def l_register
+ * Shorthand for lua_register
+ */
+#define l_register( name, func ) \
+  lua_register( l, name, func )
+
+/**
+ * @def l_pcall
+ * Shorthand for lua_pcall
+ */
+#define l_pcall( nArg, nRet ) \
+  lua_pcall( l, nArg, nRet, 0 )
 
 /// @}
 

@@ -52,7 +52,7 @@ function plasmagun_onShot( l )
                      2 - math.random() * 4,
                      2 - math.random() * 4
 
-  ozOrbisAddFrag( "plasmaBullet", pX, pY, pZ, vX * 230 + dX, vY * 230 + dY, vZ * 230 + dZ );
+  ozOrbisAddFrag( OZ_FORCE, "plasmaBullet", pX, pY, pZ, vX * 230 + dX, vY * 230 + dY, vZ * 230 + dZ );
 end
 
 function blaster_onShot( l )
@@ -64,7 +64,7 @@ function blaster_onShot( l )
                      2 - math.random() * 4,
                      2 - math.random() * 4
 
-  ozOrbisAddFrag( "blasterBullet", pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ );
+  ozOrbisAddFrag( OZ_FORCE, "blasterBullet", pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ );
 end
 
 function hyperblaster_onShot( l )
@@ -76,7 +76,7 @@ function hyperblaster_onShot( l )
                      1 - math.random() * 2,
                      1 - math.random() * 2
 
-  ozOrbisAddFrag( "hyperblasterBullet", pX, pY, pZ, vX * 300 + dX, vY * 300 + dY, vZ * 300 + dZ );
+  ozOrbisAddFrag( OZ_FORCE, "hyperblasterBullet", pX, pY, pZ, vX * 300 + dX, vY * 300 + dY, vZ * 300 + dZ );
 end
 
 function chaingun_onShot( l )
@@ -88,7 +88,7 @@ function chaingun_onShot( l )
                      4 - math.random() * 8,
                      4 - math.random() * 8
 
-  ozOrbisAddFrag( "chaingunBullet", pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ );
+  ozOrbisAddFrag( OZ_FORCE, "chaingunBullet", pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ );
 end
 
 function grenadeLauncher_onShot( l )
@@ -100,7 +100,7 @@ function grenadeLauncher_onShot( l )
                      0.5 - math.random() * 1,
                      1.0 - math.random() * 2
 
-  ozOrbisAddObj( "grenade", pX, pY, pZ )
+  ozOrbisAddObj( OZ_FORCE, "grenade", pX, pY, pZ )
   ozDynSetMomentum( vX * 30 + dX, vY * 30 + dY, vZ * 30 + dZ )
 end
 
@@ -110,7 +110,7 @@ function axe_onShot( l )
   local pX, pY, pZ = ozObjGetPos()
   local vX, vY, vZ = ozBotGetDir()
 
-  ozOrbisBindObjOverlaps( pX + 0.5*vX, pY + 0.5*vY, pZ + 0.5*vZ, 0.3, 0.3, 0.3 );
+  ozOrbisBindOverlaps( OZ_OBJECTS, pX + 0.5*vX, pY + 0.5*vY, pZ + 0.5*vZ, 0.3, 0.3, 0.3 );
   while ozObjBindNext() do
     if not ( ozObjIsSelf() or ozObjIsUser() ) then
       ozObjDamage( 100.0 + 50.0 * math.random() )
@@ -124,7 +124,7 @@ function mace_onShot( l )
   local pX, pY, pZ = ozObjGetPos()
   local vX, vY, vZ = ozBotGetDir()
 
-  ozOrbisBindObjOverlaps( pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 );
+  ozOrbisBindObjOverlaps( OZ_OBJECTS, pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 );
   while ozObjBindNext() do
     if not ( ozObjIsSelf() or ozObjIsUser() ) then
       ozObjDamage( 100.0 + 100.0 * math.random() )
@@ -138,7 +138,7 @@ function skull_onShot( l )
   local pX, pY, pZ = ozObjGetPos()
   local vX, vY, vZ = ozBotGetDir()
 
-  ozOrbisBindObjOverlaps( pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 );
+  ozOrbisBindObjOverlaps( OZ_OBJECTS, pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 );
   while ozObjBindNext() do
     if not ( ozObjIsSelf() or ozObjIsUser() ) then
       ozObjDamage( 100.0 + 200.0 * math.random() )
@@ -161,7 +161,7 @@ function vehicle_gatling_onShot( l )
                      5 - math.random() * 10,
                      5 - math.random() * 10
 
-  ozOrbisAddFrag( "gatlingBullet", pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ );
+  ozOrbisAddFrag( OZ_FORCE, "gatlingBullet", pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ );
 end
 
 function vehicle_cannon_onShot( l )
@@ -169,6 +169,6 @@ function vehicle_cannon_onShot( l )
   ozObjBindUser();
   local vX, vY, vZ = ozBotGetDir()
 
-  ozOrbisAddObj( "shell", pX, pY, pZ )
+  ozOrbisAddObj( OZ_FORCE, "shell", pX, pY, pZ )
   ozDynSetMomentum( vX * 200, vY * 200, vZ * 200 )
 end

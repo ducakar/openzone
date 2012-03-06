@@ -34,16 +34,14 @@ class Terra
 {
   public:
 
-    static const int TILE_QUADS = 32;
-    static const int TILES      = matrix::Terra::QUADS / TILE_QUADS;
+    static const int   TILE_QUADS    = 32;
+    static const int   TILES         = matrix::Terra::QUADS / TILE_QUADS;
 
   private:
 
-    static const int   TILE_INDICES;
-    static const int   TILE_VERTICES;
-
-    static const float TILE_SIZE;
-    static const float TILE_INV_SIZE;
+    static const int   TILE_SIZE     = TILE_QUADS * matrix::Terra::Quad::SIZE;
+    static const int   TILE_INDICES  = TILE_QUADS * ( TILE_QUADS + 1 ) * 2 + ( TILE_QUADS - 1 ) * 2;
+    static const int   TILE_VERTICES = ( TILE_QUADS + 1 ) * ( TILE_QUADS + 1 );
 
     static const float WAVE_BIAS_INC;
 
