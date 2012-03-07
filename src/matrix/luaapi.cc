@@ -41,9 +41,9 @@ void importLuaConstants( lua_State* l )
 
   enum CollideMode
   {
-    COLLIDE_STRUCTS_BIT     = 0x00,
-    COLLIDE_OBJECTS_BIT     = 0x01,
-    COLLIDE_ALL_OBJECTS_BIT = 0x02
+    COLLIDE_STRUCTS_BIT     = 0x01,
+    COLLIDE_OBJECTS_BIT     = 0x02,
+    COLLIDE_ALL_OBJECTS_BIT = 0x04
   };
 
   registerLuaConstant( l, "OZ_ORBIS_DIM",                   Orbis::DIM );
@@ -59,6 +59,9 @@ void importLuaConstants( lua_State* l )
   registerLuaConstant( l, "OZ_STRUCTS_BIT",                 COLLIDE_STRUCTS_BIT );
   registerLuaConstant( l, "OZ_OBJECTS_BIT",                 COLLIDE_OBJECTS_BIT );
   registerLuaConstant( l, "OZ_ALL_OBJECTS_BIT",             COLLIDE_ALL_OBJECTS_BIT );
+
+  registerLuaConstant( l, "OZ_ENTITY_CLOSED",               Entity::CLOSED );
+  registerLuaConstant( l, "OZ_ENTITY_OPENED",               Entity::OPENED );
 
   registerLuaConstant( l, "OZ_EVENT_CREATE",                Object::EVENT_CREATE );
   registerLuaConstant( l, "OZ_EVENT_DESTROY",               Object::EVENT_DESTROY );
@@ -85,40 +88,40 @@ void importLuaConstants( lua_State* l )
   registerLuaConstant( l, "OZ_EVENT_SHOT3",                 Vehicle::EVENT_SHOT3 );
   registerLuaConstant( l, "OZ_EVENT_SHOT_EMPTY",            Vehicle::EVENT_SHOT_EMPTY );
 
-  registerLuaConstant( l, "OZ_OBJECT_DYNAMIC_BIT",          Object::DYNAMIC_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_WEAPON_BIT",           Object::WEAPON_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_BOT_BIT",              Object::BOT_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_VEHICLE_BIT",          Object::VEHICLE_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_ITEM_BIT",             Object::ITEM_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_BROWSABLE_BIT",        Object::BROWSABLE_BIT );
+  registerLuaConstant( l, "OZ_DYNAMIC_BIT",                 Object::DYNAMIC_BIT );
+  registerLuaConstant( l, "OZ_WEAPON_BIT",                  Object::WEAPON_BIT );
+  registerLuaConstant( l, "OZ_BOT_BIT",                     Object::BOT_BIT );
+  registerLuaConstant( l, "OZ_VEHICLE_BIT",                 Object::VEHICLE_BIT );
+  registerLuaConstant( l, "OZ_ITEM_BIT",                    Object::ITEM_BIT );
+  registerLuaConstant( l, "OZ_BROWSABLE_BIT",               Object::BROWSABLE_BIT );
 
-  registerLuaConstant( l, "OZ_OBJECT_LUA_BIT",              Object::LUA_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_DESTROY_FUNC_BIT",     Object::DESTROY_FUNC_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_DAMAGE_FUNC_BIT",      Object::DAMAGE_FUNC_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_HIT_FUNC_BIT",         Object::HIT_FUNC_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_USE_FUNC_BIT",         Object::USE_FUNC_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_UPDATE_FUNC_BIT",      Object::UPDATE_FUNC_BIT );
+  registerLuaConstant( l, "OZ_OBJ_LUA_BIT",                 Object::LUA_BIT );
+  registerLuaConstant( l, "OZ_OBJ_DESTROY_FUNC_BIT",        Object::DESTROY_FUNC_BIT );
+  registerLuaConstant( l, "OZ_OBJ_DAMAGE_FUNC_BIT",         Object::DAMAGE_FUNC_BIT );
+  registerLuaConstant( l, "OZ_OBJ_HIT_FUNC_BIT",            Object::HIT_FUNC_BIT );
+  registerLuaConstant( l, "OZ_OBJ_USE_FUNC_BIT",            Object::USE_FUNC_BIT );
+  registerLuaConstant( l, "OZ_OBJ_UPDATE_FUNC_BIT",         Object::UPDATE_FUNC_BIT );
 
-  registerLuaConstant( l, "OZ_OBJECT_DEVICE_BIT",           Object::DEVICE_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_IMAGO_BIT",            Object::IMAGO_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_AUDIO_BIT",            Object::AUDIO_BIT );
+  registerLuaConstant( l, "OZ_OBJ_DEVICE_BIT",              Object::DEVICE_BIT );
+  registerLuaConstant( l, "OZ_OBJ_IMAGO_BIT",               Object::IMAGO_BIT );
+  registerLuaConstant( l, "OZ_OBJ_AUDIO_BIT",               Object::AUDIO_BIT );
 
-  registerLuaConstant( l, "OZ_OBJECT_DESTROYED_BIT",        Object::DESTROYED_BIT );
+  registerLuaConstant( l, "OZ_OBJ_DESTROYED_BIT",           Object::DESTROYED_BIT );
 
-  registerLuaConstant( l, "OZ_OBJECT_SOLID_BIT",            Object::SOLID_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_CYLINDER_BIT",         Object::CYLINDER_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_DISABLED_BIT",         Object::DISABLED_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_ENABLE_BIT",           Object::ENABLE_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_FRICTING_BIT",         Object::FRICTING_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_BELOW_BIT",            Object::BELOW_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_ON_FLOOR_BIT",         Object::ON_FLOOR_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_ON_SLICK_BIT",         Object::ON_SLICK_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_IN_LIQUID_BIT",        Object::IN_LIQUID_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_IN_LAVA_BIT",          Object::IN_LAVA_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_ON_LADDER_BIT",        Object::ON_LADDER_BIT );
+  registerLuaConstant( l, "OZ_OBJ_SOLID_BIT",               Object::SOLID_BIT );
+  registerLuaConstant( l, "OZ_OBJ_CYLINDER_BIT",            Object::CYLINDER_BIT );
+  registerLuaConstant( l, "OZ_OBJ_DISABLED_BIT",            Object::DISABLED_BIT );
+  registerLuaConstant( l, "OZ_OBJ_ENABLE_BIT",              Object::ENABLE_BIT );
+  registerLuaConstant( l, "OZ_OBJ_FRICTING_BIT",            Object::FRICTING_BIT );
+  registerLuaConstant( l, "OZ_OBJ_BELOW_BIT",               Object::BELOW_BIT );
+  registerLuaConstant( l, "OZ_OBJ_ON_FLOOR_BIT",            Object::ON_FLOOR_BIT );
+  registerLuaConstant( l, "OZ_OBJ_ON_SLICK_BIT",            Object::ON_SLICK_BIT );
+  registerLuaConstant( l, "OZ_OBJ_IN_LIQUID_BIT",           Object::IN_LIQUID_BIT );
+  registerLuaConstant( l, "OZ_OBJ_IN_LAVA_BIT",             Object::IN_LAVA_BIT );
+  registerLuaConstant( l, "OZ_OBJ_ON_LADDER_BIT",           Object::ON_LADDER_BIT );
 
-  registerLuaConstant( l, "OZ_OBJECT_NO_DRAW_BIT",          Object::NO_DRAW_BIT );
-  registerLuaConstant( l, "OZ_OBJECT_WIDE_CULL_BIT",        Object::WIDE_CULL_BIT );
+  registerLuaConstant( l, "OZ_OBJ_NO_DRAW_BIT",             Object::NO_DRAW_BIT );
+  registerLuaConstant( l, "OZ_OBJ_WIDE_CULL_BIT",           Object::WIDE_CULL_BIT );
 
   registerLuaConstant( l, "OZ_BOT_DEAD_BIT",                Bot::DEAD_BIT );
   registerLuaConstant( l, "OZ_BOT_MECHANICAL_BIT",          Bot::MECHANICAL_BIT );

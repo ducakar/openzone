@@ -36,19 +36,19 @@ function onCreate()
   ozCaelumSetPeriod( 3600 )
   ozCaelumSetTime( 450 )
 
-  local me = ozOrbisAddObj( "beast", 78, -90, 65.55 )
+  local me = ozOrbisAddObj( OZ_FORCE, "beast", 78, -90, 65.55 )
   ozBotSetName( ozProfileGetName() )
-  ozBotSetMindFunc( "" )
+  ozBotSetMind( "" )
   ozObjRemoveAllItems()
 
   local oX, oY, oZ = 80, -80, 69
-  ozOrbisAddStr( "tutorial_movement", oX, oY, oZ, OZ_NORTH )
+  ozOrbisAddStr( OZ_FORCE, "tutorial_movement", oX, oY, oZ, OZ_NORTH )
 
-  local infoMove = ozOrbisAddObj( "datacube", oX - 2, oY - 9, oZ - 3 )
-  local infoClimb = ozOrbisAddObj( "datacube", oX - 2.5, oY + 1, oZ - 2.5 )
-  local infoLadder = ozOrbisAddObj( "datacube", oX - 4, oY + 3, oZ + 2 )
-  local infoSwim = ozOrbisAddObj( "datacube", oX + 4, oY + 5, oZ + 2 )
-  local infoStamina = ozOrbisAddObj( "datacube", oX + 2, oY - 7, oZ + 2 )
+  local infoMove = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 2, oY - 9, oZ - 3 )
+  local infoClimb = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 2.5, oY + 1, oZ - 2.5 )
+  local infoLadder = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 4, oY + 3, oZ + 2 )
+  local infoSwim = ozOrbisAddObj( OZ_FORCE, "datacube", oX + 4, oY + 5, oZ + 2 )
+  local infoStamina = ozOrbisAddObj( OZ_FORCE, "datacube", oX + 2, oY - 7, oZ + 2 )
 
   ozNirvanaAddMemo( infoMove,
     ozGettext( "1. MOVEMENT\n\nUse W, A, S, D to move and mouse to look around.\n\nYou can jump with SPACEBAR, toggle crouch with LCTRL and toggle running with LSHIFT.\n\nIf you crouch you are a bit lower, so you can go under some obstacles, but you cannot run." )
@@ -71,20 +71,20 @@ function onCreate()
   )
 
   local oX, oY, oZ = 60, -92, 69
-  ozOrbisAddStr( "tutorial_carrying", oX, oY, oZ, OZ_WEST )
+  ozOrbisAddStr( OZ_FORCE, "tutorial_carrying", oX, oY, oZ, OZ_WEST )
 
-  ozOrbisAddObj( "metalCrate", oX + 3.2, oY - 4.5, oZ - 3 )
+  ozOrbisAddObj( OZ_FORCE, "metalCrate", oX + 3.2, oY - 4.5, oZ - 3 )
   ozObjRemoveAllItems()
 
-  ozOrbisAddObj( "bigCrate", oX + 1, oY - 3, oZ - 3 )
-  ozOrbisAddObj( "bigCrate", oX, oY - 1, oZ - 3 )
-  ozOrbisAddObj( "smallCrate", oX + 1.1, oY - 3, oZ - 2 )
-  ozOrbisAddObj( "smallCrate", oX - 2.5, oY - 2, oZ - 3 )
-  ozOrbisAddObj( "smallCrate", oX - 1, oY - 2.5, oZ - 3 )
+  ozOrbisAddObj( OZ_FORCE, "bigCrate", oX + 1, oY - 3, oZ - 3 )
+  ozOrbisAddObj( OZ_FORCE, "bigCrate", oX, oY - 1, oZ - 3 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", oX + 1.1, oY - 3, oZ - 2 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", oX - 2.5, oY - 2, oZ - 3 )
+  ozOrbisAddObj( OZ_FORCE, "smallCrate", oX - 1, oY - 2.5, oZ - 3 )
 
-  local infoPush = ozOrbisAddObj( "datacube", oX + 6, oY - 2, oZ - 2.5 )
-  local infoCarry = ozOrbisAddObj( "datacube", oX - 4, oY - 2.5, oZ - 2.5 )
-  local infoWaterPush = ozOrbisAddObj( "datacube", oX - 6, oY, oZ + 1.5 )
+  local infoPush = ozOrbisAddObj( OZ_FORCE, "datacube", oX + 6, oY - 2, oZ - 2.5 )
+  local infoCarry = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 4, oY - 2.5, oZ - 2.5 )
+  local infoWaterPush = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 6, oY, oZ + 1.5 )
 
   ozNirvanaAddMemo( infoPush,
     ozGettext( "6. PUSHING\n\nYou can push around many object you see. It's also possible to push them to the side if you don't walk into them directly, but slightly to one side (diagonally)." )
@@ -99,24 +99,24 @@ function onCreate()
   )
 
   local oX, oY, oZ = 82, -55, 69.2
-  ozOrbisAddStr( "forum", oX, oY, oZ, OZ_NORTH )
+  ozOrbisAddStr( OZ_FORCE, "forum", oX, oY, oZ, OZ_NORTH )
 
-  ozOrbisAddObj( "firstAid", oX - 4.5, oY - 3.2, oZ - 1.5 )
-  ozOrbisAddObj( "firstAid", oX - 4.5, oY - 2.5, oZ - 1.5 )
-  ozOrbisAddObj( "cvicek", oX - 4.5, oY - 2, oZ - 1.5 )
-  ozOrbisAddObj( "metalCrate", oX + 4.5, oY - 3, oZ - 1.5 )
-  ozOrbisAddObj( "firstAid", oX - 4.5, oY + 2, oZ - 1.5 )
-  ozOrbisAddObj( "firstAid", oX - 4.5, oY + 2, oZ - 1.1 )
-  ozOrbisAddObj( "cvicek", oX - 4.5, oY + 2, oZ - 0.5 )
-  ozOrbisAddObj( "musicPlayer", oX - 4.5, oY + 2.8, oZ - 0.5 )
-  ozOrbisAddObj( "galileo", oX - 4.5, oY + 3.5, oZ - 0.5 )
+  ozOrbisAddObj( OZ_FORCE, "firstAid", oX - 4.5, oY - 3.2, oZ - 1.5 )
+  ozOrbisAddObj( OZ_FORCE, "firstAid", oX - 4.5, oY - 2.5, oZ - 1.5 )
+  ozOrbisAddObj( OZ_FORCE, "cvicek", oX - 4.5, oY - 2, oZ - 1.5 )
+  ozOrbisAddObj( OZ_FORCE, "metalCrate", oX + 4.5, oY - 3, oZ - 1.5 )
+  ozOrbisAddObj( OZ_FORCE, "firstAid", oX - 4.5, oY + 2, oZ - 1.5 )
+  ozOrbisAddObj( OZ_FORCE, "firstAid", oX - 4.5, oY + 2, oZ - 1.1 )
+  ozOrbisAddObj( OZ_FORCE, "cvicek", oX - 4.5, oY + 2, oZ - 0.5 )
+  ozOrbisAddObj( OZ_FORCE, "musicPlayer", oX - 4.5, oY + 2.8, oZ - 0.5 )
+  ozOrbisAddObj( OZ_FORCE, "galileo", oX - 4.5, oY + 3.5, oZ - 0.5 )
 
-  local infoUI = ozOrbisAddObj( "datacube", oX - 1, oY - 4, oZ - 1 )
-  local infoItem = ozOrbisAddObj( "datacube", oX - 4, oY - 1, oZ - 1 )
-  local infoExchange = ozOrbisAddObj( "datacube", oX + 4, oY - 1, oZ - 1 )
-  local infoHealth = ozOrbisAddObj( "datacube", oX - 4, oY + 1, oZ - 1 )
-  local infoSpecial = ozOrbisAddObj( "datacube", oX - 4, oY + 4, oZ - 1 )
-  local infoSaving = ozOrbisAddObj( "datacube", oX + 4, oY + 3, oZ - 1 )
+  local infoUI = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 1, oY - 4, oZ - 1 )
+  local infoItem = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 4, oY - 1, oZ - 1 )
+  local infoExchange = ozOrbisAddObj( OZ_FORCE, "datacube", oX + 4, oY - 1, oZ - 1 )
+  local infoHealth = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 4, oY + 1, oZ - 1 )
+  local infoSpecial = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 4, oY + 4, oZ - 1 )
+  local infoSaving = ozOrbisAddObj( OZ_FORCE, "datacube", oX + 4, oY + 3, oZ - 1 )
 
   ozNirvanaAddMemo( infoUI,
     ozGettext( "9. USER INTERFACE\n\nUse TAB key to toggle between freelook and UI mode. In UI mode you see several other windows (depending on situation) and manage your inventory.\n\nYou can still look around in UI mode by pushing mouse cursor into edges of the screen.\n\nWindows can be dragged around with left mouse button while holding the ALT key." )
@@ -142,39 +142,39 @@ function onCreate()
     ozGettext( "14. SAVING AND CAMERA\n\nThere are some dangers ahead. You can quick-save with F5 and quick-load with F7.\n\nEvery time you exit the level, it is auto-saved. To load last auto-saved state press F8.\n\nTo toggle to 3rd person view use NUMPAD ENTER and to toggle free camera rotation press NUMPAD *." )
   )
 
-  ozOrbisAddObj( "bomb", oX + 25, oY + 17, oZ - 2 )
-  ozOrbisAddObj( "bomb", oX + 25, oY + 18, oZ - 2 )
+  ozOrbisAddObj( OZ_FORCE, "bomb", oX + 25, oY + 17, oZ - 2 )
+  ozOrbisAddObj( OZ_FORCE, "bomb", oX + 25, oY + 18, oZ - 2 )
 
-  local infoBombs = ozOrbisAddObj( "datacube", oX + 23, oY + 17.5, oZ - 2 )
+  local infoBombs = ozOrbisAddObj( OZ_FORCE, "datacube", oX + 23, oY + 17.5, oZ - 2 )
 
   ozNirvanaAddMemo( infoBombs,
     ozGettext( "15. BOMBS\n\nSome objects like this bombs are dangerous. They will explode when destroyed or 5 s after activation (they can also be deactivated by right clicking them again)." )
   )
 
-  local cvicek = ozOrbisAddObj( "cvicek", 0, 0, 0 )
-  local firstAid = ozOrbisAddObj( "firstAid", 0, 0, 0 )
+  local cvicek = ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 )
+  local firstAid = ozOrbisAddObj( OZ_FORCE, "firstAid", 0, 0, 0 )
 
-  ozOrbisAddObj( "beast_weapon.plasmagun", oX - 5, oY + 20, oZ - 2 )
-  ozOrbisAddObj( "metalBarrel", oX - 10, oY + 30, oZ )
-  ozOrbisAddObj( "metalBarrel", oX - 8, oY + 30, oZ )
+  ozOrbisAddObj( OZ_FORCE, "beast_weapon.plasmagun", oX - 5, oY + 20, oZ - 2 )
+  ozOrbisAddObj( OZ_FORCE, "metalBarrel", oX - 10, oY + 30, oZ )
+  ozOrbisAddObj( OZ_FORCE, "metalBarrel", oX - 8, oY + 30, oZ )
 
-  ozOrbisAddObj( "droid", oX - 5, oY + 30, oZ )
+  ozOrbisAddObj( OZ_FORCE, "droid", oX - 5, oY + 30, oZ )
   ozObjRemoveAllItems()
   ozObjAddItem( cvicek )
   ozBotSetH( 180 )
-  ozBotSetMindFunc( "" )
+  ozBotSetMind( "" )
 
-  ozOrbisAddObj( "droid.OOM-9", oX - 2.5, oY + 30, oZ )
+  ozOrbisAddObj( OZ_FORCE, "droid.OOM-9", oX - 2.5, oY + 30, oZ )
   ozObjRemoveAllItems()
   ozObjAddItem( firstAid )
   ozBotSetH( 180 )
-  ozBotSetMindFunc( "" )
+  ozBotSetMind( "" )
 
-  ozOrbisAddObj( "metalCrate", oX, oY + 30, oZ - 1 )
+  ozOrbisAddObj( OZ_FORCE, "metalCrate", oX, oY + 30, oZ - 1 )
   ozObjRemoveAllItems()
 
-  local infoWeapon = ozOrbisAddObj( "datacube", oX - 6, oY + 20, oZ - 0.5 )
-  local infoCorpse = ozOrbisAddObj( "datacube", oX - 6, oY + 30, oZ )
+  local infoWeapon = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 6, oY + 20, oZ - 0.5 )
+  local infoCorpse = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 6, oY + 30, oZ )
 
   ozNirvanaAddMemo( infoWeapon,
     ozGettext( "16. WEAPONS\n\nTo use a weapon you first need to put in in your inventory. By right clicking it in you inventory interface you can arm (red fist icon) and disarm it (grey fist icon).\n\nThere's also a shortcut: when you right click a weapon laying on the floor you will both put it in your inventory and arm it at the same time.\n\nYou are only able to use weapons suitable for your bot class (e.g. if you are a beast you cannot use droid weapons and vice versa).\n\nTo fire your current weapon press left mouse button.\n\nTest that plasma gun on objects ahead and those two droids." )
@@ -184,13 +184,13 @@ function onCreate()
     ozGettext( "17. CORPSES\n\nCorpses can also be searched for items. Use them like the metal container before.\n\nBut don't wait too long. Corpses disappear some time after death." )
   )
 
-  ozOrbisAddObj( "hoverTank", 55, -30, 72 )
-  ozOrbisAddObj( "raptor", 45, -30, 73 )
-  ozOrbisAddObj( "serviceStation", 35, -30, 74 )
+  ozOrbisAddObj( OZ_FORCE, "hoverTank", 55, -30, 72 )
+  ozOrbisAddObj( OZ_FORCE, "raptor", 45, -30, 73 )
+  ozOrbisAddObj( OZ_FORCE, "serviceStation", 35, -30, 74 )
 
-  local infoVehicle = ozOrbisAddObj( "datacube", 58, -33, 71 )
-  local infoRaptor = ozOrbisAddObj( "datacube", 50, -35, 72 )
-  local infoService = ozOrbisAddObj( "datacube", 35, -35, 73 )
+  local infoVehicle = ozOrbisAddObj( OZ_FORCE, "datacube", 58, -33, 71 )
+  local infoRaptor = ozOrbisAddObj( OZ_FORCE, "datacube", 50, -35, 72 )
+  local infoService = ozOrbisAddObj( OZ_FORCE, "datacube", 35, -35, 73 )
 
   ozNirvanaAddMemo( infoVehicle,
     ozGettext( "18. VEHICLES\n\nYou can use the same keys to control vehicle as for movement.\n\nTo switch weapons use right mouse button.\n\nTo exit the vehicle press X and to eject press ALT + X. On destruction the vehicle automatically ejects you." )
@@ -204,15 +204,15 @@ function onCreate()
     ozGettext( "20. SERVICE STATION\n\nYou can repair and rearm vehicles at a service station. Park a vehicle close enough, go out and use the service station.\n\nService station will also reload all weapons in your inventory. For mechanical units, it will also heal (repair) them and refill their stamina." )
   )
 
-  ozOrbisAddObj( "goblin", 58, -52, 70 )
-  ozBotSetMindFunc( "" )
+  ozOrbisAddObj( OZ_FORCE, "goblin", 58, -52, 70 )
+  ozBotSetMind( "" )
   ozBotSetH( 270 )
-  ozOrbisAddObj( "droid", 58, -48, 70 )
-  ozBotSetMindFunc( "" )
+  ozOrbisAddObj( OZ_FORCE, "droid", 58, -48, 70 )
+  ozBotSetMind( "" )
   ozBotSetH( 270 )
 
-  local infoReincarnation = ozOrbisAddObj( "datacube", 60, -50, 69 )
-  local infoQuests = ozOrbisAddObj( "datacube", 60, -55, 68.5 )
+  local infoReincarnation = ozOrbisAddObj( OZ_FORCE, "datacube", 60, -50, 69 )
+  local infoQuests = ozOrbisAddObj( OZ_FORCE, "datacube", 60, -55, 68.5 )
 
   ozNirvanaAddMemo( infoReincarnation,
     ozGettext( "21. STRATEGIC MODE\n\n(Read to the end before you try it.)\n\nYou can exit the bot you are controlling by pressing I key. That puts you in strategic mode. You move the camera the same way you move your bot. By pressing NUMPAD ENTER you switch between strategic camera (top-down) and free camera. In both modes you can still use TAB key to toggle between user interface mode and freelook mode.\n\nTo incarnate into a bot select it by left clicking and press I.\n\nReincarnation and strategic mode are not always available. Depending on a mission, reincarnation can be limited to specific bots only or completely disabled (including strategic mode)." )
@@ -222,11 +222,11 @@ function onCreate()
     ozGettext( "22. OBJECTIVES\n\nWhen in the user interface mode, you see your current objective on top of the screen. By clicking '+' you can open or close objective description and by clicking '<' and '>' you cycle between all available objectives for the current mission.\n\nIf you posses Galileo gadget, you also see your current objective position on your minimap." )
   )
 
-  ozOrbisAddObj( "beast", 100, -100, 71 )
+  ozOrbisAddObj( OZ_FORCE, "beast", 100, -100, 71 )
   ozBotSetH( 0 )
-  ozOrbisAddObj( "beast", 100, -50, 70 )
+  ozOrbisAddObj( OZ_FORCE, "beast", 100, -50, 70 )
   ozBotSetH( 90 )
-  ozOrbisAddObj( "beast", 60, -80, 69 )
+  ozOrbisAddObj( OZ_FORCE, "beast", 60, -80, 69 )
   ozBotSetH( 270 )
 
   local tutorialQuest = ozQuestAdd(

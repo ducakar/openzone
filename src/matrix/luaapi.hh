@@ -46,9 +46,9 @@ enum AddMode
 
 enum CollideMode
 {
-  COLLIDE_STRUCTS_BIT     = 0x00,
-  COLLIDE_OBJECTS_BIT     = 0x01,
-  COLLIDE_ALL_OBJECTS_BIT = 0x02
+  COLLIDE_STRUCTS_BIT     = 0x01,
+  COLLIDE_OBJECTS_BIT     = 0x02,
+  COLLIDE_ALL_OBJECTS_BIT = 0x04
 };
 
 struct MatrixLuaState
@@ -110,10 +110,17 @@ static int ozOrbisAddStr( lua_State* l )
 {
   VARG( 5, 6 );
 
-  AddMode    mode    = AddMode( l_toint( 1 ) );
-  const BSP* bsp     = library.bsp( l_tostring( 2 ) );
-  Point3     p       = Point3( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
-  Heading    heading = Heading( l_gettop() == 6 ? l_toint( 6 ) : Math::rand( 4 ) );
+  const BSP* bsp;
+  try {
+    bsp = library.bsp( l_tostring( 2 ) );
+  }
+  catch( const Exception& e ) {
+    ERROR( e.what() );
+  }
+
+  AddMode mode    = AddMode( l_toint( 1 ) );
+  Point3  p       = Point3( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
+  Heading heading = Heading( l_gettop() == 6 ? l_toint( 6 ) : Math::rand( 4 ) );
 
   if( mode != ADD_FORCE ) {
     Bounds bounds = *bsp;
@@ -135,10 +142,17 @@ static int ozOrbisAddObj( lua_State* l )
 {
   VARG( 5, 6 );
 
-  AddMode            mode    = AddMode( l_toint( 1 ) );
-  const ObjectClass* clazz   = library.objClass( l_tostring( 2 ) );
-  Point3             p       = Point3( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
-  Heading            heading = Heading( l_gettop() == 6 ? l_toint( 6 ) : Math::rand( 4 ) );
+  const ObjectClass* clazz;
+  try {
+    clazz = library.objClass( l_tostring( 2 ) );
+  }
+  catch( const Exception& e ) {
+    ERROR( e.what() );
+  }
+
+  AddMode mode    = AddMode( l_toint( 1 ) );
+  Point3  p       = Point3( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
+  Heading heading = Heading( l_gettop() == 6 ? l_toint( 6 ) : Math::rand( 4 ) );
 
   if( mode != ADD_FORCE ) {
     AABB aabb = AABB( p, clazz->dim );
@@ -163,10 +177,17 @@ static int ozOrbisAddFrag( lua_State* l )
 {
   ARG( 8 );
 
-  AddMode         mode     = AddMode( l_toint( 1 ) );
-  const FragPool* pool     = library.fragPool( l_tostring( 2 ) );
-  Point3          p        = Point3( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
-  Vec3            velocity = Vec3( l_tofloat( 6 ), l_tofloat( 7 ), l_tofloat( 8 ) );
+  const FragPool* pool;
+  try {
+    pool = library.fragPool( l_tostring( 2 ) );
+  }
+  catch( const Exception& e ) {
+    ERROR( e.what() );
+  }
+
+  AddMode mode     = AddMode( l_toint( 1 ) );
+  Point3  p        = Point3( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
+  Vec3    velocity = Vec3( l_tofloat( 6 ), l_tofloat( 7 ), l_tofloat( 8 ) );
 
   if( mode != ADD_FORCE ) {
     if( collider.overlaps( p ) ) {
@@ -185,11 +206,18 @@ static int ozOrbisGenFrags( lua_State* l )
 {
   ARG( 11 );
 
-  const FragPool* pool     = library.fragPool( l_tostring( 1 ) );
-  int             nFrags   = l_toint( 2 );
-  Bounds          bb       = Bounds( Point3( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) ),
-                                     Point3( l_tofloat( 6 ), l_tofloat( 7 ), l_tofloat( 8 ) ) );
-  Vec3            velocity = Vec3( l_tofloat( 9 ), l_tofloat( 10 ), l_tofloat( 11 ) );
+  const FragPool* pool;
+  try {
+    pool = library.fragPool( l_tostring( 1 ) );
+  }
+  catch( const Exception& e ) {
+    ERROR( e.what() );
+  }
+
+  int    nFrags   = l_toint( 2 );
+  Bounds bb       = Bounds( Point3( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) ),
+                            Point3( l_tofloat( 6 ), l_tofloat( 7 ), l_tofloat( 8 ) ) );
+  Vec3   velocity = Vec3( l_tofloat( 9 ), l_tofloat( 10 ), l_tofloat( 11 ) );
 
   synapse.gen( pool, nFrags, bb, velocity );
   ms.frag = null;
@@ -209,7 +237,7 @@ static int ozOrbisOverlaps( lua_State* l )
     int index = l_toint( 8 );
 
     if( uint( index ) >= uint( orbis.objects.length() ) ) {
-      ERROR( "Invalid object index for excluded object" );
+      ERROR( "Invalid excluded object index (out of range)" );
     }
 
     exclObj = orbis.objects[index];
@@ -231,8 +259,12 @@ static int ozOrbisBindOverlaps( lua_State* l )
   ARG( 7 );
 
   int  flags = l_toint( 1 );
-  AABB aabb  = AABB( Point3( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) ),
-                     Vec3( l_tofloat( 4 ), l_tofloat( 5 ), l_tofloat( 6 ) ) );
+  AABB aabb  = AABB( Point3( l_tofloat( 2 ), l_tofloat( 3 ), l_tofloat( 4 ) ),
+                     Vec3( l_tofloat( 5 ), l_tofloat( 6 ), l_tofloat( 7 ) ) );
+
+  if( !( flags & ( COLLIDE_STRUCTS_BIT | COLLIDE_OBJECTS_BIT | COLLIDE_ALL_OBJECTS_BIT ) ) ) {
+    ERROR( "At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
+  }
 
   Vector<Struct*>* structs = null;
   Vector<Object*>* objects = null;
@@ -365,10 +397,11 @@ static int ozStrBindIndex( lua_State* l )
 
   int index = l_toint( 1 );
   if( uint( index ) >= uint( orbis.structs.length() ) ) {
-    ERROR( "Invalid structure index (out of range)" );
+    ms.str = null;
   }
-
-  ms.str = orbis.structs[index];
+  else {
+    ms.str = orbis.structs[index];
+  }
 
   l_pushbool( ms.str != null );
   return 1;
@@ -378,14 +411,14 @@ static int ozStrBindNext( lua_State* l )
 {
   ARG( 0 );
 
-  if( ms.strIndex < ms.structs.length() ) {
+  ms.str = null;
+
+  while( ms.str == null && ms.strIndex < ms.structs.length() ) {
     ms.str = ms.structs[ms.strIndex];
     ++ms.strIndex;
-    l_pushbool( true );
   }
-  else {
-    l_pushbool( false );
-  }
+
+  l_pushbool( ms.str != null );
   return 1;
 }
 
@@ -445,6 +478,15 @@ static int ozStrGetHeading( lua_State* l )
   STR();
 
   l_pushint( ms.str->heading );
+  return 1;
+}
+
+static int ozStrMaxLife( lua_State* l )
+{
+  ARG( 0 );
+  STR();
+
+  l_pushfloat( ms.str->bsp->life );
   return 1;
 }
 
@@ -520,6 +562,10 @@ static int ozStrSetEntityState( lua_State* l )
   STR();
 
   int entIndex = l_toint( 1 );
+  if( uint( entIndex ) >= uint( ms.str->nEntities ) ) {
+    ERROR( "Invalid entity index (out of range)" );
+  }
+
   Entity* ent = &ms.str->entities[entIndex];
   Entity::State state = Entity::State( l_toint( 2 ) );
 
@@ -537,7 +583,7 @@ static int ozStrSetEntityState( lua_State* l )
     ent->ratio  = 1.0f;
   }
   else {
-    ERROR( "Invalid entity state requested, should be either CLOSED or OPENED." );
+    ERROR( "Entity state should be either OZ_ENTITY_CLOSED or OZ_ENTITY_OPENED" );
   }
   return 0;
 }
@@ -565,13 +611,14 @@ static int ozStrSetEntityLock( lua_State* l )
   return 0;
 }
 
-static int ozStrVectorFrom( lua_State* l )
+static int ozStrVectorFromObj( lua_State* l )
 {
   ARG( 1 );
   STR();
   OBJ_INDEX( l_toint( 1 ) );
 
   Vec3 vec = ms.str->p - obj->p;
+
   l_pushfloat( vec.x );
   l_pushfloat( vec.y );
   l_pushfloat( vec.z );
@@ -585,21 +632,22 @@ static int ozStrVectorFromEye( lua_State* l )
   BOT_INDEX( l_toint( 1 ) );
 
   Point3 eye = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
+  Vec3   vec = ms.str->p - eye;
 
-  Vec3 vec = ms.str->p - eye;
   l_pushfloat( vec.x );
   l_pushfloat( vec.y );
   l_pushfloat( vec.z );
   return 3;
 }
 
-static int ozStrDirectionFrom( lua_State* l )
+static int ozStrDirectionFromObj( lua_State* l )
 {
   ARG( 1 );
   STR();
   OBJ_INDEX( l_toint( 1 ) );
 
   Vec3 dir = ~( ms.str->p - obj->p );
+
   l_pushfloat( dir.x );
   l_pushfloat( dir.y );
   l_pushfloat( dir.z );
@@ -613,15 +661,15 @@ static int ozStrDirectionFromEye( lua_State* l )
   BOT_INDEX( l_toint( 1 ) );
 
   Point3 eye = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
+  Vec3   dir = ~( ms.str->p - eye );
 
-  Vec3 dir = ~( ms.str->p - eye );
   l_pushfloat( dir.x );
   l_pushfloat( dir.y );
   l_pushfloat( dir.z );
   return 3;
 }
 
-static int ozStrDistanceFrom( lua_State* l )
+static int ozStrDistanceFromObj( lua_State* l )
 {
   ARG( 1 );
   STR();
@@ -643,30 +691,15 @@ static int ozStrDistanceFromEye( lua_State* l )
   return 1;
 }
 
-static int ozStrHeadingFrom( lua_State* l )
+static int ozStrHeadingFromEye( lua_State* l )
 {
   ARG( 1 );
   STR();
   OBJ_INDEX( l_toint( 1 ) );
 
-  float dx = ms.str->p.x - obj->p.x;
-  float dy = ms.str->p.y - obj->p.y;
-  float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) ) + 720.0f, 360.0f );
-
-  l_pushfloat( angle );
-  return 1;
-}
-
-static int ozStrPitchFrom( lua_State* l )
-{
-  ARG( 1 );
-  STR();
-  OBJ_INDEX( l_toint( 1 ) );
-
-  float dx = ms.str->p.x - obj->p.x;
-  float dy = ms.str->p.y - obj->p.y;
-  float dz = ms.str->p.z - obj->p.z;
-  float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
+  float dx    = ms.str->p.x - obj->p.x;
+  float dy    = ms.str->p.y - obj->p.y;
+  float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
 
   l_pushfloat( angle );
   return 1;
@@ -678,14 +711,42 @@ static int ozStrPitchFromEye( lua_State* l )
   STR();
   BOT_INDEX( l_toint( 1 ) );
 
-  Point3 eye = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
-
-  float dx = ms.str->p.x - eye.x;
-  float dy = ms.str->p.y - eye.y;
-  float dz = ms.str->p.z - eye.z;
-  float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
+  Point3 eye   = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
+  float  dx    = ms.str->p.x - eye.x;
+  float  dy    = ms.str->p.y - eye.y;
+  float  dz    = ms.str->p.z - eye.z;
+  float  angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
 
   l_pushfloat( angle );
+  return 1;
+}
+
+static int ozStrIsVisibleFromObj( lua_State* l )
+{
+  ARG( 1 );
+  OBJ();
+  OBJ_INDEX( l_toint( 1 ) );
+
+  Vec3 vec = ms.str->p - obj->p;
+
+  collider.translate( obj->p, vec, obj );
+
+  l_pushbool( collider.hit.ratio == 1.0f || collider.hit.str == ms.str );
+  return 1;
+}
+
+static int ozStrIsVisibleFromEye( lua_State* l )
+{
+  ARG( 1 );
+  OBJ();
+  BOT_INDEX( l_toint( 1 ) );
+
+  Point3 eye = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
+  Vec3   vec = ms.str->p - eye;
+
+  collider.translate( eye, vec, bot );
+
+  l_pushbool( collider.hit.ratio == 1.0f || collider.hit.str == ms.str );
   return 1;
 }
 
@@ -699,10 +760,11 @@ static int ozObjBindIndex( lua_State* l )
 
   int index = l_toint( 1 );
   if( uint( index ) >= uint( orbis.objects.length() ) ) {
-    ERROR( "Invalid object index (out of range)" );
+    ms.obj = null;
   }
-
-  ms.obj = orbis.objects[index];
+  else {
+    ms.obj = orbis.objects[index];
+  }
 
   l_pushbool( ms.obj != null );
   return 1;
@@ -728,30 +790,18 @@ static int ozObjBindUser( lua_State* l )
   return 1;
 }
 
-static int ozObjBindPilot( lua_State* l )
-{
-  ARG( 0 );
-  OBJ();
-  OBJ_VEHICLE();
-
-  ms.obj = vehicle->pilot == -1 ? null : orbis.objects[vehicle->pilot];
-
-  l_pushbool( ms.obj != null );
-  return 1;
-}
-
 static int ozObjBindNext( lua_State* l )
 {
   ARG( 0 );
 
-  if( ms.objIndex < ms.objects.length() ) {
+  ms.obj = null;
+
+  while( ms.obj == null && ms.objIndex < ms.objects.length() ) {
     ms.obj = ms.objects[ms.objIndex];
     ++ms.objIndex;
-    l_pushbool( true );
   }
-  else {
-    l_pushbool( false );
-  }
+
+  l_pushbool( ms.obj != null );
   return 1;
 }
 
@@ -823,7 +873,7 @@ static int ozObjGetPos( lua_State* l )
   return 3;
 }
 
-static int ozObjSetPos( lua_State* l )
+static int ozObjWarpPos( lua_State* l )
 {
   ARG( 3 );
   OBJ();
@@ -873,6 +923,15 @@ static int ozObjGetClassName( lua_State* l )
   return 1;
 }
 
+static int ozObjMaxLife( lua_State* l )
+{
+  ARG( 0 );
+  OBJ();
+
+  l_pushfloat( ms.obj->clazz->life );
+  return 1;
+}
+
 static int ozObjGetLife( lua_State* l )
 {
   ARG( 0 );
@@ -909,7 +968,7 @@ static int ozObjAddEvent( lua_State* l )
   float intensity = l_tofloat( 2 );
 
   if( id >= 0 && intensity < 0.0f ) {
-    ERROR( "event intensity for sounds (id >= 0) has to be > 0.0" );
+    ERROR( "Event intensity for sounds (eventId >= 0) must be be >= 0.0" );
   }
 
   ms.obj->addEvent( id, intensity );
@@ -925,6 +984,8 @@ static int ozObjBindItems( lua_State* l )
   ms.objects.clear();
 
   foreach( item, ms.obj->items.citer() ) {
+    hard_assert( *item != -1 );
+
     ms.objects.add( orbis.objects[*item] );
   }
   return 0;
@@ -940,18 +1001,7 @@ static int ozObjAddItem( lua_State* l )
     return 1;
   }
 
-  int index = l_toint( 1 );
-  if( uint( index ) >= uint( orbis.objects.length() ) ) {
-    ERROR( "Invalid item index (out of range )" );
-  }
-
-  Dynamic* item = static_cast<Dynamic*>( orbis.objects[index] );
-  if( item == null ) {
-    ERROR( "Invalid item index (null)" );
-  }
-  if( !( item->flags & Object::ITEM_BIT ) ) {
-    ERROR( "Invalid item index (not an item)" );
-  }
+  ITEM_INDEX( l_toint( 1 ) );
 
   if( item->cell == null ) {
     hard_assert( item->parent != -1 );
@@ -1033,14 +1083,14 @@ static int ozObjDamage( lua_State* l )
 /**
  * Destroy object.
  *
- * @code void ozObjDestroy( bool quiet ) @endcode
+ * @code void ozObjDestroy( bool quiet = false ) @endcode
  *
  * %Object will be removed on the beginning of the next update. If <tt>quiet</tt> is true,
  * <tt>onDestroy</tt> handler will not be called nor <tt>EVENT_DESTROY</tt> will be generated.
  */
 static int ozObjDestroy( lua_State* l )
 {
-  ARG( 1 );
+  VARG( 0, 1 );
   OBJ();
 
   ms.obj->life = 0.0f;
@@ -1051,13 +1101,13 @@ static int ozObjDestroy( lua_State* l )
   return 0;
 }
 
-static int ozObjVectorFromSelf( lua_State* l )
+static int ozObjVectorFromObj( lua_State* l )
 {
-  ARG( 0 );
+  ARG( 1 );
   OBJ();
-  OBJ_NOT_SELF();
+  OBJ_INDEX( l_toint( 1 ) );
 
-  Vec3 vec = ms.obj->p - ms.self->p;
+  Vec3 vec = ms.obj->p - obj->p;
 
   l_pushfloat( vec.x );
   l_pushfloat( vec.y );
@@ -1065,14 +1115,13 @@ static int ozObjVectorFromSelf( lua_State* l )
   return 3;
 }
 
-static int ozObjVectorFromSelfEye( lua_State* l )
+static int ozObjVectorFromEye( lua_State* l )
 {
-  ARG( 0 );
+  ARG( 1 );
   OBJ();
-  OBJ_NOT_SELF();
-  SELF_BOT();
+  BOT_INDEX( l_toint( 1 ) );
 
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
+  Point3 eye = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
   Vec3   vec = ms.obj->p - eye;
 
   l_pushfloat( vec.x );
@@ -1081,13 +1130,13 @@ static int ozObjVectorFromSelfEye( lua_State* l )
   return 3;
 }
 
-static int ozObjDirectionFromSelf( lua_State* l )
+static int ozObjDirectionFromObj( lua_State* l )
 {
-  ARG( 0 );
+  ARG( 1 );
   OBJ();
-  OBJ_NOT_SELF();
+  OBJ_INDEX( l_toint( 1 ) );
 
-  Vec3 dir = ~( ms.obj->p - ms.self->p );
+  Vec3 dir = ~( ms.obj->p - obj->p );
 
   l_pushfloat( dir.x );
   l_pushfloat( dir.y );
@@ -1095,14 +1144,13 @@ static int ozObjDirectionFromSelf( lua_State* l )
   return 3;
 }
 
-static int ozObjDirectionFromSelfEye( lua_State* l )
+static int ozObjDirectionFromEye( lua_State* l )
 {
-  ARG( 0 );
+  ARG( 1 );
   OBJ();
-  OBJ_NOT_SELF();
-  SELF_BOT();
+  BOT_INDEX( l_toint( 1 ) );
 
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
+  Point3 eye = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
   Vec3   dir = ~( ms.obj->p - eye );
 
   l_pushfloat( dir.x );
@@ -1111,181 +1159,98 @@ static int ozObjDirectionFromSelfEye( lua_State* l )
   return 3;
 }
 
-static int ozObjDistanceFromSelf( lua_State* l )
+static int ozObjDistanceFromObj( lua_State* l )
 {
-  ARG( 0 );
+  ARG( 1 );
   OBJ();
-  OBJ_NOT_SELF();
+  OBJ_INDEX( l_toint( 1 ) );
 
-  l_pushfloat( !( ms.obj->p - ms.self->p ) );
+  l_pushfloat( !( ms.obj->p - obj->p ) );
   return 1;
 }
 
-static int ozObjDistanceFromSelfEye( lua_State* l )
+static int ozObjDistanceFromEye( lua_State* l )
 {
-  ARG( 0 );
+  ARG( 1 );
   OBJ();
-  OBJ_NOT_SELF();
-  SELF_BOT();
+  BOT_INDEX( l_toint( 1 ) );
 
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
+  Point3 eye = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
 
   l_pushfloat( !( ms.obj->p - eye ) );
   return 1;
 }
 
-static int ozObjHeadingFromSelf( lua_State* l )
+static int ozObjHeadingFromEye( lua_State* l )
 {
-  ARG( 0 );
+  ARG( 1 );
   OBJ();
-  OBJ_NOT_SELF();
+  OBJ_INDEX( l_toint( 1 ) );
 
-  float dx = ms.obj->p.x - ms.self->p.x;
-  float dy = ms.obj->p.y - ms.self->p.y;
+  float dx    = ms.obj->p.x - obj->p.x;
+  float dy    = ms.obj->p.y - obj->p.y;
   float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
 
   l_pushfloat( angle );
   return 1;
 }
 
-static int ozObjRelativeHeadingFromSelf( lua_State* l )
+static int ozObjPitchFromEye( lua_State* l )
 {
-  ARG( 0 );
+  ARG( 1 );
   OBJ();
-  OBJ_NOT_SELF();
-  SELF_BOT();
+  BOT_INDEX( l_toint( 1 ) );
 
-  float dx = ms.obj->p.x - self->p.x;
-  float dy = ms.obj->p.y - self->p.y;
-  float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) - self->h ) + 720.0f, 360.0f );
+  Point3 eye   = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
+  float  dx    = ms.obj->p.x - eye.x;
+  float  dy    = ms.obj->p.y - eye.y;
+  float  dz    = ms.obj->p.z - eye.z;
+  float  angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
 
   l_pushfloat( angle );
   return 1;
 }
 
-static int ozObjPitchFromSelf( lua_State* l )
+static int ozObjIsVisibleFromObj( lua_State* l )
 {
-  ARG( 0 );
+  ARG( 1 );
   OBJ();
-  OBJ_NOT_SELF();
+  OBJ_INDEX( l_toint( 1 ) );
 
-  float dx = ms.obj->p.x - ms.self->p.x;
-  float dy = ms.obj->p.y - ms.self->p.y;
-  float dz = ms.obj->p.z - ms.self->p.z;
-  float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
+  Vec3 vec = ms.obj->p - obj->p;
 
-  l_pushfloat( angle );
+  collider.translate( obj->p, vec, obj );
+
+  l_pushbool( collider.hit.ratio == 1.0f || collider.hit.obj == ms.obj );
   return 1;
 }
 
-static int ozObjPitchFromSelfEye( lua_State* l )
+static int ozObjIsVisibleFromEye( lua_State* l )
 {
-  ARG( 0 );
+  ARG( 1 );
   OBJ();
-  OBJ_NOT_SELF();
-  SELF_BOT();
+  BOT_INDEX( l_toint( 1 ) );
 
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
+  Point3 eye = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
+  Vec3   vec = ms.obj->p - eye;
 
-  float dx = ms.obj->p.x - eye.x;
-  float dy = ms.obj->p.y - eye.y;
-  float dz = ms.obj->p.z - eye.z;
-  float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
+  collider.translate( eye, vec, bot );
 
-  l_pushfloat( angle );
+  l_pushbool( collider.hit.ratio == 1.0f || collider.hit.obj == ms.obj );
   return 1;
-}
-
-static int ozObjIsVisibleFromSelf( lua_State* l )
-{
-  ARG( 0 );
-  OBJ();
-  OBJ_NOT_SELF();
-
-  Point3 eye    = Point3( ms.self->p.x, ms.self->p.y, ms.self->p.z );
-  Vec3   vector = ms.obj->p - eye;
-
-  collider.translate( eye, vector, ms.obj );
-  l_pushbool( collider.hit.ratio == 1.0f );
-  return 1;
-}
-
-static int ozObjIsVisibleFromSelfEye( lua_State* l )
-{
-  ARG( 0 );
-  OBJ();
-  OBJ_NOT_SELF();
-  SELF_BOT();
-
-  Point3 eye    = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-  Vec3   vector = ms.obj->p - eye;
-
-  collider.translate( eye, vector, ms.obj );
-  l_pushbool( collider.hit.ratio == 1.0f );
-  return 1;
-}
-
-static int ozObjBindAllOverlaps( lua_State* l )
-{
-  ARG( 3 );
-  OBJ();
-
-  AABB aabb = AABB( ms.obj->p,
-                    Vec3( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) ) );
-
-  ms.objects.clear();
-  ms.structs.clear();
-  collider.getOverlaps( aabb, &ms.structs, &ms.objects );
-  ms.objIndex = 0;
-  ms.strIndex = 0;
-  return 0;
-}
-
-static int ozObjBindStrOverlaps( lua_State* l )
-{
-  ARG( 3 );
-  OBJ();
-
-  AABB aabb = AABB( ms.obj->p,
-                    Vec3( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) ) );
-
-  ms.structs.clear();
-  collider.getOverlaps( aabb, &ms.structs, null );
-  ms.strIndex = 0;
-  return 0;
-}
-
-static int ozObjBindObjOverlaps( lua_State* l )
-{
-  ARG( 3 );
-  OBJ();
-
-  AABB aabb = AABB( ms.obj->p,
-                    Vec3( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) ) );
-
-  ms.objects.clear();
-  collider.getOverlaps( aabb, null, &ms.objects );
-  ms.objIndex = 0;
-  return 0;
 }
 
 /*
  * Dynamic object
  */
 
-static int ozDynBindParent( lua_State* l )
+static int ozDynGetParent( lua_State* l )
 {
   ARG( 0 );
   OBJ();
   OBJ_DYNAMIC();
 
-  if( dyn->parent != -1 && orbis.objects[dyn->parent] != null ) {
-    ms.obj = orbis.objects[dyn->parent];
-    l_pushbool( true );
-  }
-  else {
-    l_pushbool( false );
-  }
+  l_pushint( dyn->parent != -1 && orbis.objects[dyn->parent] == null ? -1 : dyn->parent );
   return 1;
 }
 
@@ -1363,7 +1328,7 @@ static int ozDynGetLift( lua_State* l )
  * Weapon
  */
 
-static int ozWeaponGetDefaultRounds( lua_State* l )
+static int ozWeaponMaxRounds( lua_State* l )
 {
   ARG( 0 );
   OBJ();
@@ -1411,31 +1376,9 @@ static int ozWeaponAddRounds( lua_State* l )
   return 1;
 }
 
-static int ozWeaponReload( lua_State* l )
-{
-  ARG( 0 );
-  OBJ();
-  OBJ_WEAPON();
-
-  const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weapon->clazz );
-
-  weapon->nRounds = weaponClazz->nRounds;
-  return 1;
-}
-
 /*
  * Bot
  */
-
-static int ozBotBindPilot( lua_State* l )
-{
-  ARG( 0 );
-  OBJ();
-  OBJ_VEHICLE();
-
-  ms.obj = vehicle->pilot == -1 ? null : orbis.objects[vehicle->pilot];
-  return 0;
-}
 
 static int ozBotGetName( lua_State* l )
 {
@@ -1457,7 +1400,7 @@ static int ozBotSetName( lua_State* l )
   return 0;
 }
 
-static int ozBotGetMindFunc( lua_State* l )
+static int ozBotGetMind( lua_State* l )
 {
   ARG( 0 );
   OBJ();
@@ -1467,7 +1410,7 @@ static int ozBotGetMindFunc( lua_State* l )
   return 1;
 }
 
-static int ozBotSetMindFunc( lua_State* l )
+static int ozBotSetMind( lua_State* l )
 {
   ARG( 1 );
   OBJ();
@@ -1477,14 +1420,13 @@ static int ozBotSetMindFunc( lua_State* l )
   return 0;
 }
 
-static int ozBotGetState( lua_State* l )
+static int ozBotHasState( lua_State* l )
 {
   ARG( 1 );
   OBJ();
   OBJ_BOT();
 
-  int mask = l_toint( 1 );
-  l_pushbool( bot->state & mask );
+  l_pushbool( bot->state & l_toint( 1 ) );
   return 1;
 }
 
@@ -1586,6 +1528,38 @@ static int ozBotGetDir( lua_State* l )
   return 3;
 }
 
+static int ozBotGetCargo( lua_State* l )
+{
+  ARG( 0 );
+  OBJ();
+  OBJ_BOT();
+
+  l_pushint( bot->cargo != -1 && orbis.objects[bot->cargo] == null ? -1 : bot->cargo );
+  return 1;
+}
+
+static int ozBotGetWeapon( lua_State* l )
+{
+  ARG( 0 );
+  OBJ();
+  OBJ_BOT();
+
+  l_pushint( bot->weapon != -1 && orbis.objects[bot->weapon] == null ? -1 : bot->weapon );
+  return 1;
+}
+
+static int ozBotMaxStamina( lua_State* l )
+{
+  ARG( 0 );
+  OBJ();
+  OBJ_BOT();
+
+  const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
+
+  l_pushfloat( clazz->stamina );
+  return 1;
+}
+
 static int ozBotGetStamina( lua_State* l )
 {
   ARG( 0 );
@@ -1620,41 +1594,6 @@ static int ozBotAddStamina( lua_State* l )
   return 0;
 }
 
-static int ozBotIsRunning( lua_State* l )
-{
-  ARG( 0 );
-  OBJ();
-  OBJ_BOT();
-
-  l_pushbool( bot->state & Bot::RUNNING_BIT );
-  return 1;
-}
-
-static int ozBotSetRunning( lua_State* l )
-{
-  ARG( 0 );
-  OBJ();
-  OBJ_BOT();
-
-  if( l_tobool( 1 ) ) {
-    bot->state |= Bot::RUNNING_BIT;
-  }
-  else {
-    bot->state &= ~Bot::RUNNING_BIT;
-  }
-  return 0;
-}
-
-static int ozBotToggleRunning( lua_State* l )
-{
-  ARG( 0 );
-  OBJ();
-  OBJ_BOT();
-
-  bot->state ^= Bot::RUNNING_BIT;
-  return 0;
-}
-
 static int ozBotSetWeaponItem( lua_State* l )
 {
   ARG( 1 );
@@ -1667,7 +1606,7 @@ static int ozBotSetWeaponItem( lua_State* l )
   }
   else {
     if( uint( item ) >= uint( ms.obj->items.length() ) ) {
-      ERROR( "invalid item number" );
+      ERROR( "Invalid item number (out of range)" );
     }
 
     int index = ms.obj->items[item];
@@ -1679,7 +1618,7 @@ static int ozBotSetWeaponItem( lua_State* l )
     }
 
     if( !( weapon->flags & Object::WEAPON_BIT ) ) {
-      ERROR( "object is not a weapon" );
+      ERROR( "Invalid item number (not a weapon)" );
     }
 
     const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
@@ -1690,6 +1629,28 @@ static int ozBotSetWeaponItem( lua_State* l )
 
   l_pushbool( true );
   return 1;
+}
+
+static int ozBotAction( lua_State* l )
+{
+  VARG( 1, 3 );
+  OBJ();
+  OBJ_BOT();
+
+  int action = l_toint( 1 );
+  int arg1   = l_toint( 2 );
+  int arg2   = l_toint( 3 );
+
+  if( action & Bot::INSTRUMENT_ACTIONS ) {
+    bot->actions   &= ~Bot::INSTRUMENT_ACTIONS;
+    bot->actions   |= action;
+    bot->instrument = arg1;
+    bot->container  = arg2;
+  }
+  else {
+    bot->actions |= action;
+  }
+  return 0;
 }
 
 static int ozBotHeal( lua_State* l )
@@ -1722,19 +1683,30 @@ static int ozBotKill( lua_State* l )
   return 0;
 }
 
-static int ozBotIsVisibleFromSelfEyeToEye( lua_State* l )
+static int ozBotCanReachEntity( lua_State* l )
 {
-  ARG( 0 );
+  ARG( 2 );
   OBJ();
-  OBJ_NOT_SELF();
   OBJ_BOT();
-  SELF_BOT();
+  STR_INDEX( l_toint( 1 ) );
 
-  Point3 eye    = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-  Vec3   vector = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ ) - eye;
+  int entIndex = l_toint( 2 );
+  if( uint( entIndex ) >= uint( ms.str->nEntities ) ) {
+    ERROR( "Invalid entity index (out of range)" );
+  }
 
-  collider.translate( eye, vector, ms.obj );
-  l_pushbool( collider.hit.ratio == 1.0f );
+  l_pushbool( bot->canReach( &ms.str->entities[entIndex] ) );
+  return 1;
+}
+
+static int ozBotCanReachObj( lua_State* l )
+{
+  ARG( 1 );
+  OBJ();
+  OBJ_BOT();
+  OBJ_INDEX( l_toint( 1 ) );
+
+  l_pushbool( bot->canReach( obj ) );
   return 1;
 }
 
@@ -1742,13 +1714,23 @@ static int ozBotIsVisibleFromSelfEyeToEye( lua_State* l )
  * Vehicle
  */
 
+static int ozVehicleGetPilot( lua_State* l )
+{
+  ARG( 0 );
+  OBJ();
+  OBJ_VEHICLE();
+
+  l_pushint( veh->pilot != -1 && orbis.objects[veh->pilot] == null ? -1 : veh->pilot );
+  return 1;
+}
+
 static int ozVehicleGetH( lua_State* l )
 {
   ARG( 0 );
   OBJ();
   OBJ_VEHICLE();
 
-  l_pushfloat( Math::deg( vehicle->h ) );
+  l_pushfloat( Math::deg( veh->h ) );
   return 1;
 }
 
@@ -1758,10 +1740,10 @@ static int ozVehicleSetH( lua_State* l )
   OBJ();
   OBJ_VEHICLE();
 
-  vehicle->h = Math::rad( l_tofloat( 1 ) );
-  vehicle->h = Math::fmod( vehicle->h + Math::TAU, Math::TAU );
+  veh->h = Math::rad( l_tofloat( 1 ) );
+  veh->h = Math::fmod( veh->h + Math::TAU, Math::TAU );
 
-  vehicle->rot = Quat::rotZXZ( vehicle->h, vehicle->v - Math::TAU / 4.0f, 0.0f );
+  veh->rot = Quat::rotZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
   return 0;
 }
 
@@ -1771,10 +1753,10 @@ static int ozVehicleAddH( lua_State* l )
   OBJ();
   OBJ_VEHICLE();
 
-  vehicle->h += Math::rad( l_tofloat( 1 ) );
-  vehicle->h  = Math::fmod( vehicle->h + Math::TAU, Math::TAU );
+  veh->h += Math::rad( l_tofloat( 1 ) );
+  veh->h  = Math::fmod( veh->h + Math::TAU, Math::TAU );
 
-  vehicle->rot = Quat::rotZXZ( vehicle->h, vehicle->v - Math::TAU / 4.0f, 0.0f );
+  veh->rot = Quat::rotZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
   return 0;
 }
 
@@ -1784,7 +1766,7 @@ static int ozVehicleGetV( lua_State* l )
   OBJ();
   OBJ_VEHICLE();
 
-  l_pushfloat( Math::deg( vehicle->v ) );
+  l_pushfloat( Math::deg( veh->v ) );
   return 1;
 }
 
@@ -1794,10 +1776,10 @@ static int ozVehicleSetV( lua_State* l )
   OBJ();
   OBJ_VEHICLE();
 
-  vehicle->v = Math::rad( l_tofloat( 1 ) );
-  vehicle->v = clamp( vehicle->v, 0.0f, Math::TAU / 2.0f );
+  veh->v = Math::rad( l_tofloat( 1 ) );
+  veh->v = clamp( veh->v, 0.0f, Math::TAU / 2.0f );
 
-  vehicle->rot = Quat::rotZXZ( vehicle->h, vehicle->v - Math::TAU / 4.0f, 0.0f );
+  veh->rot = Quat::rotZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
   return 0;
 }
 
@@ -1807,10 +1789,10 @@ static int ozVehicleAddV( lua_State* l )
   OBJ();
   OBJ_VEHICLE();
 
-  vehicle->v += Math::rad( l_tofloat( 1 ) );
-  vehicle->v  = clamp( vehicle->v, 0.0f, Math::TAU / 2.0f );
+  veh->v += Math::rad( l_tofloat( 1 ) );
+  veh->v  = clamp( veh->v, 0.0f, Math::TAU / 2.0f );
 
-  vehicle->rot = Quat::rotZXZ( vehicle->h, vehicle->v - Math::TAU / 4.0f, 0.0f );
+  veh->rot = Quat::rotZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
   return 0;
 }
 
@@ -1823,8 +1805,8 @@ static int ozVehicleGetDir( lua_State* l )
   // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
   float hvsc[6];
 
-  Math::sincos( vehicle->h, &hvsc[0], &hvsc[1] );
-  Math::sincos( vehicle->v, &hvsc[2], &hvsc[3] );
+  Math::sincos( veh->h, &hvsc[0], &hvsc[1] );
+  Math::sincos( veh->v, &hvsc[2], &hvsc[3] );
 
   hvsc[4] = hvsc[2] * hvsc[0];
   hvsc[5] = hvsc[2] * hvsc[1];
@@ -1836,31 +1818,43 @@ static int ozVehicleGetDir( lua_State* l )
   return 3;
 }
 
-static int ozVehicleEmbarkPilot( lua_State* l )
+static int ozVehicleEmbarkBot( lua_State* l )
 {
   ARG( 1 );
   OBJ();
   OBJ_VEHICLE();
 
-  if( vehicle->pilot != -1 ) {
-    ERROR( "vehicle already has a pilot" );
+  if( veh->pilot != -1 ) {
+    ERROR( "Vehicle already has a pilot" );
   }
 
-  int index = l_toint( 1 );
-  if( uint( index ) >= uint( orbis.objects.length() ) ) {
-    ERROR( "invalid bot index" );
-  }
+  BOT_INDEX( l_toint( 1 ) );
 
-  Bot* bot = static_cast<Bot*>( orbis.objects[index] );
-  if( !( bot->flags & Object::BOT_BIT ) ) {
-    ERROR( "object is not a bot" );
-  }
   if( bot->cell == null ) {
-    ERROR( "bot is already cut" );
+    ERROR( "Bot is already in some vehicle" );
   }
 
-  vehicle->pilot = index;
-  bot->enter( vehicle->index );
+  veh->pilot = bot->index;
+  bot->enter( veh->index );
+  return 0;
+}
+
+static int ozVehicleDisembarkBot( lua_State* l )
+{
+  ARG( 0 );
+  OBJ();
+  OBJ_VEHICLE();
+
+  if( veh->pilot == -1 ) {
+    return 0;
+  }
+
+  Bot* pilot = static_cast<Bot*>( orbis.objects[veh->pilot] );
+  if( pilot == null ) {
+    return 0;
+  }
+
+  pilot->exit();
   return 0;
 }
 
@@ -1870,7 +1864,7 @@ static int ozVehicleService( lua_State* l )
   OBJ();
   OBJ_VEHICLE();
 
-  vehicle->service();
+  veh->service();
   return 0;
 }
 
@@ -1884,10 +1878,14 @@ static int ozFragBindIndex( lua_State* l )
 
   int index = l_toint( 1 );
   if( uint( index ) >= uint( orbis.frags.length() ) ) {
-    ERROR( "invalid frag index" );
+    ms.frag = null;
   }
-  ms.frag = orbis.frags[index];
-  return 0;
+  else {
+    ms.frag = orbis.frags[index];
+  }
+
+  l_pushbool( ms.frag != null );
+  return 1;
 }
 
 static int ozFragIsNull( lua_State* l )
@@ -1902,12 +1900,7 @@ static int ozFragGetIndex( lua_State* l )
 {
   ARG( 0 );
 
-  if( ms.frag == null ) {
-    l_pushint( -1 );
-  }
-  else {
-    l_pushint( ms.frag->index );
-  }
+  l_pushint( ms.frag == null ? -1 : ms.frag->index );
   return 1;
 }
 
@@ -1922,7 +1915,7 @@ static int ozFragGetPos( lua_State* l )
   return 3;
 }
 
-static int ozFragSetPos( lua_State* l )
+static int ozFragWarpPos( lua_State* l )
 {
   ARG( 3 );
   FRAG();
@@ -1930,17 +1923,6 @@ static int ozFragSetPos( lua_State* l )
   ms.frag->p.x = l_tofloat( 1 );
   ms.frag->p.y = l_tofloat( 2 );
   ms.frag->p.z = l_tofloat( 3 );
-  return 0;
-}
-
-static int ozFragAddPos( lua_State* l )
-{
-  ARG( 3 );
-  FRAG();
-
-  ms.frag->p.x += l_tofloat( 1 );
-  ms.frag->p.y += l_tofloat( 2 );
-  ms.frag->p.z += l_tofloat( 3 );
   return 0;
 }
 

@@ -549,7 +549,8 @@ void Bot::onUpdate()
           ( ( cargoBot->flags & BOT_BIT ) &&
             ( ( cargoBot->actions & ACTION_JUMP ) || ( cargoBot->cargo != -1 ) ) ) )
       {
-        cargo = -1;
+        cargo    = -1;
+        cargoObj = null;
       }
       else {
         // keep constant length of xy projection of handle
@@ -560,7 +561,8 @@ void Bot::onUpdate()
         Vec3 string = p + Vec3( 0.0f, 0.0f, camZ ) + handle - cargoObj->p;
 
         if( string.sqL() > GRAB_HANDLE_TOL * grabHandle*grabHandle ) {
-          cargo = -1;
+          cargo    = -1;
+          cargoObj = null;
         }
         else {
           Vec3 desiredMom     = string * GRAB_STRING_RATIO;
@@ -583,208 +585,202 @@ void Bot::onUpdate()
   } // parent == -1
 
   /*
-   * ACTIONS ON ITEMS
+   * ACTIONS ON INSTRUMENT
    */
 
-  if( actions & ~oldActions & ACTION_USE ) {
-    if( instrument != -1 ) {
-      Object* obj = orbis.objects[instrument];
+  if( actions & ~oldActions & INSTRUMENT_ACTIONS ) {
+    if( actions & ~oldActions & ACTION_INV_USE ) {
+      Dynamic* item   = static_cast<Dynamic*>( orbis.objects[instrument] );
+      Object*  source = container == -1 ? this : orbis.objects[container];
 
-      if( obj != null ) {
-        const Dynamic* item = static_cast<const Dynamic*>( obj );
-
-        if( ( obj->flags & ITEM_BIT ) && item->parent != -1 ) {
-          if( item->parent == index || canReach( orbis.objects[item->parent] ) ) {
-            synapse.use( this, obj );
-          }
-        }
-        else if( canReach( obj ) ) {
-          synapse.use( this, obj );
-        }
-      }
-    }
-    else {
-      int strIndex = trigger / Struct::MAX_ENTITIES;
-      int entIndex = trigger % Struct::MAX_ENTITIES;
-
-      Struct* str = orbis.structs[strIndex];
-
-      if( str != null ) {
-        Entity* ent = &str->entities[entIndex];
-
-        if( canReach( ent ) ) {
-          synapse.trigger( ent );
-        }
-      }
-    }
-  }
-  if( actions & ~oldActions & ACTION_LOCK ) {
-    int strIndex = trigger / Struct::MAX_ENTITIES;
-    int entIndex = trigger % Struct::MAX_ENTITIES;
-
-    Struct* str = orbis.structs[strIndex];
-
-    if( str != null ) {
-      Entity* ent = &str->entities[entIndex];
-
-      if( canReach( ent ) ) {
-        synapse.lock( this, ent );
-      }
-    }
-  }
-  else if( actions & ~oldActions & ACTION_INV_TAKE ) {
-    Dynamic* item   = static_cast<Dynamic*>( orbis.objects[instrument] );
-    Object*  source = orbis.objects[container];
-
-    if( item != null && items.length() != clazz->nItems && canReach( source ) ) {
-      hard_assert( source->items.contains( instrument ) );
-      hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
-
-      item->parent = index;
-      items.add( instrument );
-      source->items.exclude( instrument );
-
-      if( source->flags & BOT_BIT ) {
-        Bot* bot = static_cast<Bot*>( source );
-
-        if( bot->weapon == item->index ) {
-          bot->weapon = -1;
-        }
-      }
-    }
-  }
-  else if( actions & ~oldActions & ACTION_INV_GIVE ) {
-    Dynamic* item   = static_cast<Dynamic*>( orbis.objects[instrument] );
-    Object*  target = orbis.objects[container];
-
-    if( item != null && target != null && target->items.length() != target->clazz->nItems &&
-        canReach( target ) )
-    {
-      hard_assert( items.contains( instrument ) );
-      hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
-
-      if( instrument == weapon ) {
-        weapon = -1;
-      }
-
-      item->parent = container;
-      target->items.add( instrument );
-      items.exclude( instrument );
-    }
-  }
-  else if( parent == -1 ) { // not applicable in vehicles
-    if( actions & ~oldActions & ACTION_TAKE ) {
-      Dynamic* item = static_cast<Dynamic*>( orbis.objects[instrument] );
-
-      if( item != null && items.length() != clazz->nItems &&
-          ( item->flags & ( ITEM_BIT | SOLID_BIT ) ) == ( ITEM_BIT | SOLID_BIT ) &&
-          canReach( item ) )
+      if( item != null && source != null &&
+          source->items.contains( instrument ) && canReach( source ) )
       {
-        cargo = -1;
-
-        item->parent = index;
-        items.add( item->index );
-        synapse.cut( item );
-      }
-    }
-    else if( actions & ~oldActions & ACTION_ROTATE ) {
-      if( cargoObj != null ) {
-        int heading = cargoObj->flags & Object::HEADING_MASK;
-
-        swap( cargoObj->dim.x, cargoObj->dim.y );
-
-        if( collider.overlaps( cargoObj, cargoObj ) ) {
-          swap( cargoObj->dim.x, cargoObj->dim.y );
-        }
-        else {
-          cargoObj->flags &= ~Object::HEADING_MASK;
-          cargoObj->flags |= ( heading + 1 ) % 4;
-        }
-      }
-    }
-    else if( actions & ~oldActions & ACTION_THROW ) {
-      if( cargoObj != null && stamina >= clazz->staminaThrowDrain ) {
-        hard_assert( cargoObj->flags & DYNAMIC_BIT );
-
-        // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
-        float hvsc[6];
-
-        Math::sincos( h, &hvsc[0], &hvsc[1] );
-        Math::sincos( v, &hvsc[2], &hvsc[3] );
-
-        Vec3 handle = Vec3( -hvsc[0], hvsc[1], -hvsc[3] );
-
-        stamina -= clazz->staminaThrowDrain;
-        cargoObj->momentum = handle * clazz->throwMomentum;
-
-        cargo = -1;
-      }
-    }
-    else if( actions & ~oldActions & ACTION_GRAB ) {
-      if( instrument == -1 || weapon != -1 || ( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) ) {
-        cargo = -1;
-      }
-      else {
-        Bot* dyn = static_cast<Bot*>( orbis.objects[instrument] );
-
-        if( dyn != null && ( dyn->flags & DYNAMIC_BIT ) && dyn->mass <= clazz->grabMass &&
-            ( !( dyn->flags & BOT_BIT ) || dyn->cargo == -1 ) && canReach( dyn ) )
-        {
-          float dimX = dim.x + dyn->dim.x;
-          float dimY = dim.y + dyn->dim.y;
-          float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
-
-          if( dist <= clazz->reachDist ) {
-            cargo = instrument;
-            grabHandle = dist;
-
-            dyn->flags &= ~BELOW_BIT;
-          }
-        }
-      }
-    }
-    else if( actions & ~oldActions & ( ACTION_INV_GRAB | ACTION_INV_DROP ) ) {
-      Dynamic* item = static_cast<Dynamic*>( orbis.objects[instrument] );
-
-      if( item != null && cargo == -1 ) {
-        hard_assert( items.contains( instrument ) );
         hard_assert( ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
-        // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
-        float hvsc[6];
+        synapse.use( this, item );
+      }
+    }
+    else if( actions & ~oldActions & ACTION_INV_TAKE ) {
+      Dynamic* item   = static_cast<Dynamic*>( orbis.objects[instrument] );
+      Object*  source = orbis.objects[container];
 
-        Math::sincos( h, &hvsc[0], &hvsc[1] );
-        Math::sincos( v, &hvsc[2], &hvsc[3] );
+      if( item != null && source != null && items.length() != clazz->nItems &&
+          source->items.contains( instrument ) && canReach( source ) )
+      {
+        hard_assert( ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
-        float dimX = dim.x + item->dim.x;
-        float dimY = dim.y + item->dim.y;
-        float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
+        item->parent = index;
+        items.add( instrument );
+        source->items.exclude( instrument );
 
-        // keep constant length of xy projection of handle
-        Vec3 handle = Vec3( -hvsc[0], hvsc[1], -hvsc[3] ) * dist;
-        // bottom of the object cannot be raised over the player aabb
-        handle.z    = clamp( handle.z, -dim.z - camZ, dim.z - camZ );
-        item->p     = p + Vec3( 0.0f, 0.0f, camZ ) + handle;
+        if( source->flags & BOT_BIT ) {
+          Bot* bot = static_cast<Bot*>( source );
+
+          if( bot->weapon == item->index ) {
+            bot->weapon = -1;
+          }
+        }
+      }
+    }
+    else if( actions & ~oldActions & ACTION_INV_GIVE ) {
+      Dynamic* item   = static_cast<Dynamic*>( orbis.objects[instrument] );
+      Object*  target = orbis.objects[container];
+
+      if( item != null && target != null && target->items.length() != target->clazz->nItems &&
+          items.contains( instrument ) && canReach( target ) )
+      {
+        hard_assert( ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
+
+        item->parent = container;
+        target->items.add( instrument );
+        items.exclude( instrument );
 
         if( instrument == weapon ) {
           weapon = -1;
         }
+      }
+    }
+    else if( parent == -1 ) { // not applicable in vehicles
+      if( actions & ~oldActions & ( ACTION_TRIGGER | ACTION_LOCK ) ) {
+        int strIndex = instrument / Struct::MAX_ENTITIES;
+        int entIndex = instrument % Struct::MAX_ENTITIES;
 
-        if( !collider.overlaps( item ) ) {
-          item->parent = -1;
-          synapse.put( item );
-          items.exclude( instrument );
+        Struct* str = orbis.structs[strIndex];
 
-          item->velocity = velocity;
-          item->momentum = velocity;
+        if( str != null ) {
+          Entity* ent = &str->entities[entIndex];
 
-          if( ( actions & ~oldActions & ACTION_INV_GRAB ) &&
-              !( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) && weapon == -1 )
+          if( canReach( ent ) ) {
+            if( actions & ~oldActions & ACTION_TRIGGER ) {
+              synapse.trigger( ent );
+            }
+            else {
+              synapse.lock( this, ent );
+            }
+          }
+        }
+      }
+      else if( actions & ~oldActions & ACTION_USE ) {
+        Dynamic* obj = static_cast<Dynamic*>( orbis.objects[instrument] );
+
+        if( obj != null && canReach( obj ) ) {
+          synapse.use( this, obj );
+        }
+      }
+      else if( actions & ~oldActions & ACTION_TAKE ) {
+        Dynamic* item = static_cast<Dynamic*>( orbis.objects[instrument] );
+
+        if( item != null && items.length() != clazz->nItems && canReach( item ) ) {
+          hard_assert( ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
+
+          cargo = -1;
+
+          item->parent = index;
+          items.add( item->index );
+          synapse.cut( item );
+        }
+      }
+      else if( actions & ~oldActions & ACTION_ROTATE ) {
+        if( cargoObj != null ) {
+          int heading = cargoObj->flags & Object::HEADING_MASK;
+
+          swap( cargoObj->dim.x, cargoObj->dim.y );
+
+          if( collider.overlaps( cargoObj, cargoObj ) ) {
+            swap( cargoObj->dim.x, cargoObj->dim.y );
+          }
+          else {
+            cargoObj->flags &= ~Object::HEADING_MASK;
+            cargoObj->flags |= ( heading + 1 ) % 4;
+          }
+        }
+      }
+      else if( actions & ~oldActions & ACTION_THROW ) {
+        if( cargoObj != null && stamina >= clazz->staminaThrowDrain ) {
+          hard_assert( cargoObj->flags & DYNAMIC_BIT );
+
+          // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+          float hvsc[6];
+
+          Math::sincos( h, &hvsc[0], &hvsc[1] );
+          Math::sincos( v, &hvsc[2], &hvsc[3] );
+
+          Vec3 handle = Vec3( -hvsc[0], hvsc[1], -hvsc[3] );
+
+          stamina -= clazz->staminaThrowDrain;
+          cargoObj->momentum = handle * clazz->throwMomentum;
+
+          cargo = -1;
+        }
+      }
+      else if( actions & ~oldActions & ACTION_GRAB ) {
+        if( instrument == -1 || weapon != -1 || ( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) ) {
+          cargo = -1;
+        }
+        else {
+          Bot* dyn = static_cast<Bot*>( orbis.objects[instrument] );
+
+          if( dyn != null && dyn->mass <= clazz->grabMass &&
+              !( ( dyn->flags & BOT_BIT ) && dyn->cargo != -1 ) && canReach( dyn ) )
           {
-            cargo      = instrument;
-            grabHandle = dist;
+            hard_assert( dyn->flags & DYNAMIC_BIT );
 
-            item->flags &= ~BELOW_BIT;
+            float dimX = dim.x + dyn->dim.x;
+            float dimY = dim.y + dyn->dim.y;
+            float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
+
+            if( dist <= clazz->reachDist ) {
+              cargo = instrument;
+              grabHandle = dist;
+
+              dyn->flags &= ~BELOW_BIT;
+            }
+          }
+        }
+      }
+      else if( actions & ~oldActions & ( ACTION_INV_GRAB | ACTION_INV_DROP ) ) {
+        Dynamic* item = static_cast<Dynamic*>( orbis.objects[instrument] );
+
+        if( item != null && cargo == -1 && items.contains( instrument ) ) {
+          hard_assert( ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
+
+          // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+          float hvsc[6];
+
+          Math::sincos( h, &hvsc[0], &hvsc[1] );
+          Math::sincos( v, &hvsc[2], &hvsc[3] );
+
+          float dimX = dim.x + item->dim.x;
+          float dimY = dim.y + item->dim.y;
+          float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
+
+          // keep constant length of xy projection of handle
+          Vec3 handle = Vec3( -hvsc[0], hvsc[1], -hvsc[3] ) * dist;
+          // bottom of the object cannot be raised over the player aabb
+          handle.z    = clamp( handle.z, -dim.z - camZ, dim.z - camZ );
+          item->p     = p + Vec3( 0.0f, 0.0f, camZ ) + handle;
+
+          if( instrument == weapon ) {
+            weapon = -1;
+          }
+
+          if( !collider.overlaps( item ) ) {
+            item->parent = -1;
+            synapse.put( item );
+            items.exclude( instrument );
+
+            item->velocity = velocity;
+            item->momentum = velocity;
+
+            if( ( actions & ~oldActions & ACTION_INV_GRAB ) &&
+                !( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) && weapon == -1 )
+            {
+              cargo      = instrument;
+              grabHandle = dist;
+
+              item->flags &= ~BELOW_BIT;
+            }
           }
         }
       }
@@ -795,7 +791,6 @@ void Bot::onUpdate()
   oldState   = state;
   instrument = -1;
   container  = -1;
-  trigger    = -1;
 }
 
 bool Bot::hasAttribute( int attribute ) const
@@ -843,6 +838,146 @@ bool Bot::canReach( const Object* obj ) const
   return AABB( eye, reach ).overlaps( *obj );
 }
 
+void Bot::invUse( const Dynamic* item, const Object* source )
+{
+  hard_assert( item != null );
+
+  if( source->items.contains( item->index ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_INV_USE;
+    instrument = item->index;
+    container  = -1;
+  }
+}
+
+void Bot::invTake( const Dynamic* item, const Object* source )
+{
+  hard_assert( item != null && source != null );
+
+  if( source->items.contains( item->index ) && canReach( source ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_INV_TAKE;
+    instrument = item->index;
+    container  = source->index;
+  }
+}
+
+void Bot::invGive( const Dynamic* item, const Object* target )
+{
+  hard_assert( item != null && target != null );
+
+  if( items.contains( item->index ) && canReach( target ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_INV_GIVE;
+    instrument = item->index;
+    container  = target->index;
+  }
+}
+
+void Bot::invDrop( const Dynamic* item )
+{
+  hard_assert( item != null );
+
+  if( items.contains( item->index ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_INV_DROP;
+    instrument = item->index;
+    container  = -1;
+  }
+}
+
+void Bot::invGrab( const Dynamic* item )
+{
+  hard_assert( item != null );
+
+  if( items.contains( item->index ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_INV_GRAB;
+    instrument = item->index;
+    container  = -1;
+    cargo      = -1;
+  }
+}
+
+void Bot::trigger( const Entity* entity )
+{
+  hard_assert( entity != null );
+
+  if( canReach( entity ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_TRIGGER;
+    instrument = entity->str->index * Struct::MAX_ENTITIES + int( entity - entity->str->entities );
+    container  = -1;
+  }
+}
+
+void Bot::lock( const Entity* entity )
+{
+  hard_assert( entity != null );
+
+  if( entity->model->target != -1 && canReach( entity ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_LOCK;
+    instrument = entity->str->index * Struct::MAX_ENTITIES + int( entity - entity->str->entities );
+    container  = -1;
+  }
+}
+
+void Bot::use( const Object* object )
+{
+  hard_assert( object != null );
+
+  if( ( object->flags & USE_FUNC_BIT ) && canReach( object ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_USE;
+    instrument = object->index;
+    container  = -1;
+  }
+}
+
+void Bot::take( const Dynamic* item )
+{
+  hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) );
+
+  if( item->flags & ITEM_BIT ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_TAKE;
+    instrument = item->index;
+    container  = -1;
+  }
+}
+
+void Bot::grab( const Dynamic* dynamic )
+{
+  hard_assert( dynamic == null || ( dynamic->flags & DYNAMIC_BIT ) );
+
+  actions   &= ~INSTRUMENT_ACTIONS;
+  actions   |= ACTION_GRAB;
+  instrument = dynamic == null ? -1 : dynamic->index;
+  container  = -1;
+  cargo      = -1;
+}
+
+void Bot::rotateCargo()
+{
+  if( cargo != -1 ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_ROTATE;
+    instrument = -1;
+    container  = -1;
+  }
+}
+
+void Bot::throwCargo()
+{
+  if( cargo != -1 ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_THROW;
+    instrument = -1;
+    container  = -1;
+  }
+}
+
 void Bot::heal()
 {
   const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
@@ -880,7 +1015,6 @@ void Bot::kill()
   actions    = 0;
   instrument = -1;
   container  = -1;
-  trigger    = -1;
 
   state     |= DEAD_BIT;
   cargo      = -1;
@@ -905,7 +1039,6 @@ void Bot::enter( int vehicle_ )
   actions    = 0;
   instrument = -1;
   container  = vehicle_;
-  trigger    = -1;
 
   camZ       = clazz->camZ;
   state     &= ~CROUCHING_BIT;
@@ -937,7 +1070,6 @@ Bot::Bot( const BotClass* clazz_, int index, const Point3& p_, Heading heading )
   oldActions = 0;
   instrument = -1;
   container  = -1;
-  trigger    = -1;
 
   state      = clazz_->state;
   oldState   = clazz_->state;
@@ -964,7 +1096,6 @@ Bot::Bot( const BotClass* clazz_, InputStream* istream ) :
   oldActions = istream->readInt();
   instrument = istream->readInt();
   container  = istream->readInt();
-  trigger    = istream->readInt();
 
   state      = istream->readInt();
   oldState   = istream->readInt();
@@ -996,7 +1127,6 @@ void Bot::write( BufferStream* ostream ) const
   ostream->writeInt( oldActions );
   ostream->writeInt( instrument );
   ostream->writeInt( container );
-  ostream->writeInt( trigger );
 
   ostream->writeInt( state );
   ostream->writeInt( oldState );

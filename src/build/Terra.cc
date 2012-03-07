@@ -156,7 +156,7 @@ void Terra::saveMatrix()
 
   for( int x = 0; x < matrix::Terra::VERTS; ++x ) {
     for( int y = 0; y < matrix::Terra::VERTS; ++y ) {
-      os.writePoint3( quads[x][y].vertex );
+      os.writeFloat( quads[x][y].vertex.z );
       os.writeVec3( quads[x][y].triNormal[0] );
       os.writeVec3( quads[x][y].triNormal[1] );
     }

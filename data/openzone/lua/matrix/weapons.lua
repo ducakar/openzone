@@ -35,7 +35,7 @@ function plasmagun_onUpdate( l )
 
     ozWeaponAddRounds( 1 )
 
-    if ozWeaponGetRounds() == ozWeaponGetDefaultRounds() then
+    if ozWeaponGetRounds() == ozWeaponMaxRounds() then
       ozObjEnableUpdate( false )
     end
   end
@@ -111,6 +111,7 @@ function axe_onShot( l )
   local vX, vY, vZ = ozBotGetDir()
 
   ozOrbisBindOverlaps( OZ_OBJECTS, pX + 0.5*vX, pY + 0.5*vY, pZ + 0.5*vZ, 0.3, 0.3, 0.3 );
+
   while ozObjBindNext() do
     if not ( ozObjIsSelf() or ozObjIsUser() ) then
       ozObjDamage( 100.0 + 50.0 * math.random() )
@@ -125,6 +126,7 @@ function mace_onShot( l )
   local vX, vY, vZ = ozBotGetDir()
 
   ozOrbisBindObjOverlaps( OZ_OBJECTS, pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 );
+
   while ozObjBindNext() do
     if not ( ozObjIsSelf() or ozObjIsUser() ) then
       ozObjDamage( 100.0 + 100.0 * math.random() )
@@ -139,6 +141,7 @@ function skull_onShot( l )
   local vX, vY, vZ = ozBotGetDir()
 
   ozOrbisBindObjOverlaps( OZ_OBJECTS, pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 );
+
   while ozObjBindNext() do
     if not ( ozObjIsSelf() or ozObjIsUser() ) then
       ozObjDamage( 100.0 + 200.0 * math.random() )
@@ -148,13 +151,16 @@ end
 
 function vehicle_heavyBlaster_onShot( l )
   local pX, pY, pZ = ozObjGetPos()
+
   ozObjBindUser();
   local vX, vY, vZ = ozBotGetDir()
-  ozOrbisAddFrag( "heavyBlasterBullet", pX, pY, pZ, vX * 300, vY * 300, vZ * 300 );
+
+  ozOrbisAddFrag( OZ_FORCE, "heavyBlasterBullet", pX, pY, pZ, vX * 300, vY * 300, vZ * 300 );
 end
 
 function vehicle_gatling_onShot( l )
   local pX, pY, pZ = ozObjGetPos()
+
   ozObjBindUser();
   local vX, vY, vZ = ozBotGetDir()
   local dX, dY, dZ = 5 - math.random() * 10,
@@ -166,6 +172,7 @@ end
 
 function vehicle_cannon_onShot( l )
   local pX, pY, pZ = ozObjGetPos()
+
   ozObjBindUser();
   local vX, vY, vZ = ozBotGetDir()
 

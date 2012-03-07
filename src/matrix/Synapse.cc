@@ -93,21 +93,25 @@ Struct* Synapse::add( const BSP* bsp, const Point3& p, Heading heading )
 
   addedStructs.add( str->index );
 
-  for( int i = 0; i < str->bsp->nBoundObjects; ++i ) {
-    const BSP::BoundObject& boundObj = str->bsp->boundObjects[i];
+  if( str->bsp->nBoundObjects != 0 ) {
+    str->boundObjects.alloc( bsp->nBoundObjects );
 
-    Point3  pos     = str->toAbsoluteCS( boundObj.pos );
-    Heading heading = Heading( ( str->heading + boundObj.heading ) % 4 );
+    for( int i = 0; i < str->bsp->nBoundObjects; ++i ) {
+      const BSP::BoundObject& boundObj = str->bsp->boundObjects[i];
 
-    Object* obj = orbis.add( boundObj.clazz, pos, heading );
-    if( obj == null ) {
-      continue;
+      Point3  pos     = str->toAbsoluteCS( boundObj.pos );
+      Heading heading = Heading( ( str->heading + boundObj.heading ) % 4 );
+
+      Object* obj = orbis.add( boundObj.clazz, pos, heading );
+      if( obj == null ) {
+        continue;
+      }
+
+      orbis.position( obj );
+      str->boundObjects.add( obj->index );
+
+      addedObjects.add( obj->index );
     }
-
-    orbis.position( obj );
-    str->boundObjects.add( obj->index );
-
-    addedObjects.add( obj->index );
   }
 
   return str;

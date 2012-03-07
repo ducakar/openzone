@@ -41,7 +41,7 @@ function onCreate()
   ozCameraWarpTo( 141.0, -12.0, 84.75 )
   ozCameraSetV( 35.0 )
 
-  ozOrbisAddPlayer( 137, -6, 73, OZ_SOUTH )
+  ozOrbisAddPlayer( OZ_TRY, 137, -6, 73, OZ_SOUTH )
 
   init_sample()
 
@@ -59,7 +59,7 @@ function init_sample()
 
   ozOrbisAddObj( OZ_FORCE, "droid.OOM-9", 140, -11, 73, OZ_WEST )
   ozOrbisAddObj( OZ_FORCE, "cyborg", 140, -13, 73, OZ_WEST )
-  ozBotSetMindFunc( "" )
+  ozBotSetMind( "" )
 
 --   ozOrbisAddObj( "reaper", 145, -15, 73 )
 
@@ -115,8 +115,6 @@ function init_sample()
   ozOrbisAddStr( OZ_FORCE, "pool", 112, -7, 70 )
   ozOrbisAddStr( OZ_FORCE, "tower", 106, -7, 75, OZ_WEST )
   ozOrbisAddStr( OZ_FORCE, "atlantis", -160, 220, -5 )
-
-  ozOrbisAddObj( OZ_FORCE, "bauul", 112, -7, 100, OZ_NORTH )
 
   ozOrbisAddObj( OZ_FORCE, "serviceStation", 110, -25, 69.6, OZ_WEST )
   ozOrbisAddObj( OZ_FORCE, "console", 107, -24, 68.0, OZ_EAST )

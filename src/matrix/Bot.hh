@@ -57,41 +57,44 @@ class Bot : public Dynamic
 
     static const int ACTION_FORWARD         = 0x00000001;
     static const int ACTION_BACKWARD        = 0x00000002;
-    static const int ACTION_LEFT            = 0x00000004;
-    static const int ACTION_RIGHT           = 0x00000008;
+    static const int ACTION_RIGHT           = 0x00000004;
+    static const int ACTION_LEFT            = 0x00000008;
     static const int ACTION_JUMP            = 0x00000010;
     static const int ACTION_CROUCH          = 0x00000020;
 
-    static const int ACTION_USE             = 0x00000040;
-    static const int ACTION_LOCK            = 0x00000080;
-    static const int ACTION_TAKE            = 0x00000100;
-    static const int ACTION_GRAB            = 0x00000200;
-    static const int ACTION_ROTATE          = 0x00000400;
-    static const int ACTION_THROW           = 0x00000800;
+    static const int ACTION_ATTACK          = 0x00000040;
+    static const int ACTION_EXIT            = 0x00000080;
+    static const int ACTION_EJECT           = 0x00000100;
+    static const int ACTION_SUICIDE         = 0x00000200;
 
-    static const int ACTION_INV_DROP        = 0x00001000;
-    static const int ACTION_INV_GRAB        = 0x00002000;
-    static const int ACTION_INV_TAKE        = 0x00004000;
-    static const int ACTION_INV_GIVE        = 0x00008000;
+    static const int ACTION_VEH_UP          = 0x00000400;
+    static const int ACTION_VEH_DOWN        = 0x00000800;
+    static const int ACTION_VEH_NEXT_WEAPON = 0x00001000;
 
-    static const int ACTION_ATTACK          = 0x00010000;
-    static const int ACTION_EXIT            = 0x00020000;
-    static const int ACTION_EJECT           = 0x00040000;
-    static const int ACTION_SUICIDE         = 0x00080000;
+    static const int ACTION_GESTURE0        = 0x00002000;
+    static const int ACTION_GESTURE1        = 0x00004000;
+    static const int ACTION_GESTURE2        = 0x00008000;
+    static const int ACTION_GESTURE3        = 0x00010000;
+    static const int ACTION_GESTURE4        = 0x00020000;
 
-    static const int ACTION_VEH_UP          = 0x00100000;
-    static const int ACTION_VEH_DOWN        = 0x00200000;
-    static const int ACTION_VEH_NEXT_WEAPON = 0x00400000;
+    static const int ACTION_TRIGGER         = 0x00040000;
+    static const int ACTION_LOCK            = 0x00080000;
+    static const int ACTION_USE             = 0x00100000;
+    static const int ACTION_TAKE            = 0x00200000;
+    static const int ACTION_GRAB            = 0x00400000;
+    static const int ACTION_ROTATE          = 0x00800000;
+    static const int ACTION_THROW           = 0x01000000;
 
-    static const int ACTION_GESTURE0        = 0x01000000;
-    static const int ACTION_GESTURE1        = 0x02000000;
-    static const int ACTION_GESTURE2        = 0x04000000;
-    static const int ACTION_GESTURE3        = 0x08000000;
-    static const int ACTION_GESTURE4        = 0x10000000;
+    static const int ACTION_INV_USE         = 0x02000000;
+    static const int ACTION_INV_TAKE        = 0x04000000;
+    static const int ACTION_INV_GIVE        = 0x08000000;
+    static const int ACTION_INV_DROP        = 0x10000000;
+    static const int ACTION_INV_GRAB        = 0x20000000;
 
-    static const int INSTRUMENT_ACTIONS     = ACTION_USE | ACTION_LOCK | ACTION_TAKE | ACTION_GRAB |
-                                              ACTION_ROTATE | ACTION_THROW | ACTION_INV_DROP |
-                                              ACTION_INV_GRAB | ACTION_INV_TAKE | ACTION_INV_GIVE;
+    static const int INSTRUMENT_ACTIONS     = ACTION_TRIGGER | ACTION_LOCK | ACTION_USE |
+                                              ACTION_TAKE | ACTION_GRAB | ACTION_ROTATE |
+                                              ACTION_THROW | ACTION_INV_USE | ACTION_INV_TAKE |
+                                              ACTION_INV_GIVE | ACTION_INV_DROP | ACTION_INV_GRAB;
 
     /*
      * STATE
@@ -151,7 +154,6 @@ class Bot : public Dynamic
     int    actions, oldActions;
     int    instrument;
     int    container;
-    int    trigger;
 
     int    state, oldState;
     float  stamina;
@@ -176,8 +178,22 @@ class Bot : public Dynamic
   public:
 
     bool hasAttribute( int attribute ) const;
+
     bool canReach( const Entity* ent ) const;
     bool canReach( const Object* obj ) const;
+
+    void invUse( const Dynamic* item, const Object* source );
+    void invTake( const Dynamic* item, const Object* source );
+    void invGive( const Dynamic* item, const Object* target );
+    void invDrop( const Dynamic* item );
+    void invGrab( const Dynamic* item );
+    void trigger( const Entity* entity );
+    void lock( const Entity* entity );
+    void use( const Object* object );
+    void take( const Dynamic* item );
+    void grab( const Dynamic* dynamic = null );
+    void rotateCargo();
+    void throwCargo();
 
     void heal();
     void rearm();

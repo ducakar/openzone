@@ -301,6 +301,8 @@ class BSP : public Bounds
     String                  fragPool;
     int                     nFrags;
 
+    String                  demolishSound;
+
     Vector<BoundObject>     boundObjects;
 
     Vec4                    waterFogColour;

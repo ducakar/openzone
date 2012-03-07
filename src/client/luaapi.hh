@@ -65,10 +65,25 @@ static int ozGettext( lua_State* l )
 
 static int ozOrbisAddPlayer( lua_State* l )
 {
-  ARG_VAR( 3 );
+  VARG( 4, 5 );
 
-  Point3  p       = Point3( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
-  Heading heading = Heading( l_gettop() == 4 ? l_toint( 4 ) : Math::rand( 4 ) );
+  AddMode mode    = AddMode( l_toint( 1 ) );
+  Point3  p       = Point3( l_tofloat( 2 ), l_tofloat( 3 ), l_tofloat( 4 ) );
+  Heading heading = Heading( l_gettop() == 5 ? l_toint( 5 ) : Math::rand( 4 ) );
+
+  if( mode != ADD_FORCE ) {
+    AABB aabb = AABB( p, profile.clazz->dim );
+
+    if( heading & WEST_EAST_MASK ) {
+      swap( aabb.dim.x, aabb.dim.y );
+    }
+
+    if( collider.overlaps( aabb ) ) {
+      ms.obj = null;
+      l_pushint( -1 );
+      return 1;
+    }
+  }
 
   ms.obj = synapse.add( profile.clazz, p, heading );
   l_pushint( ms.obj == null ? -1 : ms.obj->index );
@@ -126,7 +141,7 @@ static int ozQuestEnd( lua_State* l )
 
   int id = l_toint( 1 );
   if( uint( id ) >= uint( questList.quests.length() ) ) {
-    ERROR( "invalid quest id" );
+    ERROR( "Invalid quest id" );
   }
 
   questList.quests[id].state = l_tobool( 2 ) ? Quest::SUCCESSFUL : Quest::FAILED;
@@ -214,23 +229,10 @@ static int ozCameraWarpTo( lua_State* l )
 static int ozCameraIncarnate( lua_State* l )
 {
   ARG( 1 );
-
-  int index = l_toint( 1 );
-  if( uint( index ) >= uint( orbis.objects.length() ) ) {
-    ERROR( "invalid object index" );
-  }
-
-  Bot* bot = static_cast<Bot*>( orbis.objects[index] );
-  if( bot == null ) {
-    ERROR( "object is null" );
-  }
-  else if( !( bot->flags & Object::BOT_BIT ) ) {
-    ERROR( "object is not a bot" );
-  }
+  BOT_INDEX( l_toint( 1 ) );
 
   camera.setBot( bot );
   camera.setState( Camera::BOT );
-
   return 0;
 }
 

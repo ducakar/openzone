@@ -25,89 +25,10 @@
  * Various handlers.
 ]]--
 
-function smallExplosion_onUpdate( l )
-  if l.ticks then
-    l.ticks = l.ticks - 1
-
-    if l.ticks == 0 then
-      ozObjDestroy( true )
-    end
-  else
-    ozObjAddEvent( OZ_EVENT_CREATE, 1.0 )
-
-    l.ticks = 25
-
-    local distance
-    local dirX, dirY, dirZ
-
-    ozObjBindOverlaps( OZ_OBJECTS, 8, 8, 8 )
-    while ozObjBindNext() do
-      if not ozObjIsSelf() then
-        distance = ozObjDistanceFromSelf()
-        if distance < 8 then
-          distance = 8 - distance
-
-          if ozObjIsVisibleFromSelf() then
-            ozObjDamage( 100 + 10*distance )
-
-            if distance < 7.9 and ozObjIsDynamic() then
-              dirX, dirY, dirZ = ozObjDirectionFromSelf()
-              distance = 2 * distance
-              ozDynAddMomentum( dirX * distance, dirY * distance, dirZ * distance )
-            end
-          end
-        end
-      end
-    end
-  end
-end
-
-function bigExplosion_onUpdate( l )
-  if l.ticks then
-    l.ticks = l.ticks - 1
-
-    if l.ticks == 0 then
-      ozObjDestroy( true )
-    end
-  else
-    ozObjAddEvent( OZ_EVENT_CREATE, 1.0 )
-
-    l.ticks = 25
-
-    local distance
-    local dirX, dirY, dirZ
-
-    ozObjBindOverlaps( OZ_STRUCTS + OZ_OBJECTS, 20, 20, 20 )
-    while ozStrBindNext() do
-      ozStrDamage( 2000 )
-    end
-    while ozObjBindNext() do
-      if not ozObjIsSelf() then
-        distance = ozObjDistanceFromSelf()
-        if distance < 20 then
-          distance = 20 - distance
-
-          ozObjDamage( 10*distance )
-
-          if ozObjIsVisibleFromSelf() then
-            ozObjDamage( 100 + 10*distance )
-
-            if distance < 19.9 and ozObjIsDynamic() then
-              dirX, dirY, dirZ = ozObjDirectionFromSelf()
-              distance = 2 * distance
-              ozDynAddMomentum( dirX * distance, dirY * distance, dirZ * distance )
-            end
-          end
-        end
-      end
-    end
-  end
-end
-
 function cvicek_onUse( l )
   ozObjBindUser()
 
-  if ozBotGetState( OZ_BOT_MECHANICAL_BIT ) then
+  if ozBotHasState( OZ_BOT_MECHANICAL_BIT ) then
     ozUseFailed()
   else
     ozObjAddLife( 50 )
@@ -132,7 +53,7 @@ function bomb_onUpdate( l )
   if l.ticks ~= 0 then
     l.ticks = l.ticks - 1
   else
-    ozObjDestroy( false )
+    ozObjDestroy()
   end
 end
 
@@ -142,20 +63,24 @@ function shell_onUpdate( l )
   elseif l.ticks > 0 then
     l.ticks = l.ticks - 1
   else
-    ozObjDestroy( false )
+    ozObjDestroy()
   end
 end
 
 function serviceStation_onUse( l )
+  local pX, pY, pZ = ozObjGetPos()
+
   ozObjBindUser()
   ozBotRearm()
-  if ozBotGetState( OZ_BOT_MECHANICAL_BIT ) then
+
+  if ozBotHasState( OZ_BOT_MECHANICAL_BIT ) then
     ozBotHeal()
   end
 
-  ozObjBindAllOverlaps( 5, 5, 2 )
+  ozOrbisBindOverlaps( OZ_OBJECTS_BIT, posX, posY, posZ, 5, 5, 2 )
+
   while ozObjBindNext() do
-    if ozObjIsVehicle() then
+    if ozObjHasFlag( OZ_VEHICLE_BIT ) then
       ozVehicleService()
     end
   end

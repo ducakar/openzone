@@ -34,6 +34,32 @@ namespace oz
 namespace client
 {
 
+const float BSP::DEMOLISH_SOUND_GAIN = 8.0f;
+
+void BSP::playDemolish( const Struct* str, int sound ) const
+{
+  hard_assert( uint( sound ) < uint( library.sounds.length() ) );
+
+  uint srcId;
+
+  alGenSources( 1, &srcId );
+  if( alGetError() != AL_NO_ERROR ) {
+    log.println( "AL: Too many sources" );
+    return;
+  }
+
+  alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].id ) );
+  alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
+
+  alSourcefv( srcId, AL_POSITION, str->p );
+  alSourcef( srcId, AL_GAIN, DEMOLISH_SOUND_GAIN );
+  alSourcePlay( srcId );
+
+  context.addSource( srcId, sound );
+
+  OZ_AL_CHECK_ERROR();
+}
+
 void BSP::playSound( const Entity* entity, int sound ) const
 {
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
@@ -67,8 +93,7 @@ void BSP::playContSound( const Entity* entity, int sound ) const
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 
   const Struct* str = entity->str;
-  // we can have at most 100 models per BSP, so stride 128 should do
-  int key = str->index * 128 + int( entity - str->entities );
+  int key = str->index * Struct::MAX_ENTITIES + int( entity - str->entities );
 
   Bounds bounds = *entity->model;
   Point3 localPos = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
@@ -183,6 +208,14 @@ void BSP::draw( const Struct* str, int mask ) const
 
 void BSP::play( const Struct* str ) const
 {
+  if( str->life <= 0.0f && str->demolishing == 0.0f ) {
+    int demolishSound = str->bsp->demolishSound;
+
+    if( demolishSound != -1 ) {
+      playDemolish( str, demolishSound );
+    }
+  }
+
   for( int i = 0; i < bsp->nModels; ++i ) {
     const Entity& entity = str->entities[i];
 
