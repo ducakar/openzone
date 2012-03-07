@@ -58,12 +58,14 @@ function beast_happy( l )
 end
 
 function droid_guard( l )
+  local self = ozObjGetIndex()
+
   if l.target then
     ozObjBindIndex( l.target )
-    if ozObjIsBot() and ozBotIsVisibleFromSelfEyeToEye() then
-      local dX, dY, dZ = ozObjVectorFromSelf()
+    if ozObjHasFlag( OZ_BOT_BIT ) and ozObjIsVisibleFromEye( self ) then
+      local dX, dY, dZ = ozObjVectorFromEye( self )
       local vX, vY, xZ = ozDynGetVelocity()
-      local dist = ozObjDistanceFromSelf()
+      local dist = ozObjDistanceFromEye( self )
       local estimatedBulletTime = dist / 300.0
 
       dX = dX + estimatedBulletTime * vX
@@ -72,7 +74,7 @@ function droid_guard( l )
       local heading = math.atan2( -dX, dY ) * 180.0 / math.pi
 
       ozSelfSetH( heading + ( 0.5 - math.random() ) * 4.0 )
-      ozSelfSetV( ozObjPitchFromSelf() + ( 0.5 - math.random() ) * 4.0 )
+      ozSelfSetV( ozObjPitchFromEye( self ) + ( 0.5 - math.random() ) * 4.0 )
 
       if not l.aimed then
         l.aimed = true
@@ -86,10 +88,11 @@ function droid_guard( l )
     return
   else
     ozSelfBindObjOverlaps( 100, 100, 100 )
+
     while ozObjBindNext() do
-      if ozObjIsBot() and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
-          ( ozObjDistanceFromSelf() < 4 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
-          ozBotIsVisibleFromSelfEyeToEye()
+      if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
+         ( ozObjDistanceFromEye( self ) < 4 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
+         ozObjIsVisibleFromEye( self )
       then
         l.target = ozObjGetIndex()
         l.aimed = nil
@@ -104,12 +107,15 @@ function droid_guard( l )
 end
 
 function droid_sniper( l )
+  local self = ozObjGetIndex()
+
   if l.target then
     ozObjBindIndex( l.target )
-    if ozObjIsBot() and ozBotIsVisibleFromSelfEyeToEye() then
-      local dX, dY, dZ = ozObjVectorFromSelf()
+
+    if ozObjHasFlag( OZ_BOT_BIT ) and ozObjIsVisibleFromEye( self ) then
+      local dX, dY, dZ = ozObjVectorFromEye( self )
       local vX, vY, xZ = ozDynGetVelocity()
-      local dist = ozObjDistanceFromSelf()
+      local dist = ozObjDistanceFromEye( self )
       local estimatedBulletTime = dist / 300.0
 
       dX = dX + estimatedBulletTime * vX
@@ -118,7 +124,7 @@ function droid_sniper( l )
       local heading = math.atan2( -dX, dY ) * 180.0 / math.pi
 
       ozSelfSetH( heading )
-      ozSelfSetV( ozObjPitchFromSelf() )
+      ozSelfSetV( ozObjPitchFromEye( self ) )
 
       if not l.aimed then
         l.aimed = true
@@ -132,10 +138,11 @@ function droid_sniper( l )
     return
   else
     ozSelfBindObjOverlaps( 200, 200, 200 )
+
     while ozObjBindNext() do
-      if ozObjIsBot() and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
-          ( ozObjDistanceFromSelf() < 4 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
-          ozBotIsVisibleFromSelfEyeToEye()
+      if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
+         ( ozObjDistanceFromEye( self ) < 4 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
+         ozObjIsVisibleFromEye( self )
       then
         l.target = ozObjGetIndex()
         l.aimed = nil
@@ -150,6 +157,8 @@ function droid_sniper( l )
 end
 
 function droid_patrol( l )
+  local self = ozObjGetIndex()
+
   if not l.pivotX then
     l.pivotX, l.pivotY, l.pivotZ = ozSelfGetPos()
     ozSelfSetRunning( false )
@@ -157,10 +166,10 @@ function droid_patrol( l )
 
   if l.target then
     ozObjBindIndex( l.target )
-    if ozObjIsBot() and ozBotIsVisibleFromSelfEyeToEye() then
-      local dX, dY, dZ = ozObjVectorFromSelf()
+    if ozObjHasFlag( OZ_BOT_BIT ) and ozObjIsVisibleFromEye( self ) then
+      local dX, dY, dZ = ozObjVectorFromEye( self )
       local vX, vY, xZ = ozDynGetVelocity()
-      local dist = ozObjDistanceFromSelf()
+      local dist = ozObjDistanceFromEye( self )
       local estimatedBulletTime = dist / 300.0
 
       dX = dX + estimatedBulletTime * vX
@@ -169,7 +178,7 @@ function droid_patrol( l )
       local heading = math.atan2( -dX, dY ) * 180.0 / math.pi
 
       ozSelfSetH( heading + ( 0.5 - math.random() ) * 4.0 )
-      ozSelfSetV( ozObjPitchFromSelf() + ( 0.5 - math.random() ) * 4.0 )
+      ozSelfSetV( ozObjPitchFromEye( self ) + ( 0.5 - math.random() ) * 4.0 )
 
       if not l.aimed then
         l.aimed = true
@@ -183,10 +192,11 @@ function droid_patrol( l )
     return
   else
     ozSelfBindObjOverlaps( 100, 100, 100 )
+
     while ozObjBindNext() do
-      if ozObjIsBot() and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
-          ( ozObjDistanceFromSelf() < 4 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
-          ozBotIsVisibleFromSelfEyeToEye()
+      if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
+         ( ozObjDistanceFromEye( self ) < 4 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
+         ozObjIsVisibleFromEye( self )
       then
         l.target = ozObjGetIndex()
         l.aimed = nil
@@ -211,6 +221,8 @@ function droid_patrol( l )
 end
 
 function droid_armouredPatrol( l )
+  local self = ozObjGetIndex()
+
   if not l.pivotX then
     l.pivotX, l.pivotY, l.pivotZ = ozSelfGetPos()
     ozSelfSetRunning( false )
@@ -218,12 +230,13 @@ function droid_armouredPatrol( l )
 
   if l.target then
     ozObjBindIndex( l.target )
-    if ( ozObjIsBot() and ozBotIsVisibleFromSelfEyeToEye() ) or
-        ( ozObjIsVehicle() and ozObjIsVisibleFromSelfEye() )
+
+    if ( ozObjHasFlag( OZ_BOT_BIT ) and ozObjIsVisibleFromEye( self ) ) or
+       ( ozObjHasFlag( OZ_VEHICLE_BIT ) and ozObjIsVisibleFromEye( self ) )
     then
-      local dX, dY, dZ = ozObjVectorFromSelf()
+      local dX, dY, dZ = ozObjVectorFromEye( self )
       local vX, vY, xZ = ozDynGetVelocity()
-      local dist = ozObjDistanceFromSelf()
+      local dist = ozObjDistanceFromEye( self )
       local estimatedBulletTime = dist / 300.0
 
       dX = dX + estimatedBulletTime * vX
@@ -232,7 +245,7 @@ function droid_armouredPatrol( l )
       local heading = math.atan2( -dX, dY ) * 180.0 / math.pi
 
       ozSelfSetH( heading )
-      ozSelfSetV( ozObjPitchFromSelf() )
+      ozSelfSetV( ozObjPitchFromEye( self ) )
 
       if not l.aimed then
         l.aimed = true
@@ -248,13 +261,13 @@ function droid_armouredPatrol( l )
     ozSelfBindObjOverlaps( 200, 200, 200 )
     while ozObjBindNext() do
       if ozObjIsBot() and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
-          ( ozObjDistanceFromSelf() < 100 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
-          ozBotIsVisibleFromSelfEyeToEye()
+         ( ozObjDistanceFromSelf() < 100 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
+         ozBotIsVisibleFromSelfEyeToEye()
       then
         l.target = ozObjGetIndex()
         l.aimed = nil
         return
-      elseif ozObjIsVehicle() and
+      elseif ozObjHasFlag( OZ_VEHICLE_BIT ) and
           ( ozObjDistanceFromSelf() < 100 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
           ozObjIsVisibleFromSelfEye()
       then
@@ -291,13 +304,16 @@ function droid_armouredPatrol( l )
 end
 
 function goblin_defend( l )
+  local self = ozObjGetIndex()
+
   if l.target then
     ozObjBindIndex( l.target )
-    if ozObjIsBot() and ozBotIsVisibleFromSelfEyeToEye() then
-      ozSelfSetH( ozObjHeadingFromSelf() )
-      ozSelfSetV( ozObjPitchFromSelf() )
 
-      local dist = ozObjDistanceFromSelf()
+    if ozObjHasFlag( OZ_BOT_BIT ) and ozObjIsVisibleFromEye( self ) then
+      ozSelfSetH( ozObjHeadingFromEye( self ) )
+      ozSelfSetV( ozObjPitchFromEye( self ) )
+
+      local dist = ozObjDistanceFromEye( self )
 
       if dist > 30 then
         l.target = nil
@@ -313,8 +329,8 @@ function goblin_defend( l )
   else
     ozSelfBindObjOverlaps( 10, 10, 10 )
     while ozObjBindNext() do
-      if ozObjIsBot() and string.sub( ozObjGetClassName(), 1, 7 ) ~= "goblin" and
-          ozBotIsVisibleFromSelfEyeToEye()
+      if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( ozObjGetClassName(), 1, 7 ) ~= "goblin" and
+         ozObjIsVisibleFromEye( self )
       then
         l.target = ozObjGetIndex()
       end

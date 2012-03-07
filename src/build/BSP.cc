@@ -82,6 +82,8 @@ void BSP::load()
   fragPool = bspConfig.get( "fragPool", "" );
   nFrags   = bspConfig.get( "nFrags", 0 );
 
+  demolishSound = bspConfig.get( "demolishSound", "" );
+
   mins = Point3( -Math::INF, -Math::INF, -Math::INF );
   maxs = Point3( +Math::INF, +Math::INF, +Math::INF );
 
@@ -1002,6 +1004,9 @@ void BSP::saveMatrix()
 
   Vector<String> sounds;
 
+  if( !demolishSound.isEmpty() ) {
+    sounds.add( demolishSound );
+  }
   for( int i = 0; i < nModels; ++i ) {
     if( !models[i].openSound.isEmpty() ) {
       sounds.include( models[i].openSound );
@@ -1107,6 +1112,8 @@ void BSP::saveMatrix()
 
   os.writeString( fragPool );
   os.writeInt( nFrags );
+
+  os.writeString( demolishSound );
 
   if( !destFile.write( &os ) ) {
     throw Exception( "Failed to write '%s'", destFile.path().cstr() );

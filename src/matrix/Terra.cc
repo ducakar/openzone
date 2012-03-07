@@ -40,62 +40,75 @@ void Terra::load( int id_ )
 {
   id = id_;
 
-  const String& name = library.terrae[id].name;
-  const String& path = library.terrae[id].path;
-
-  log.print( "Loading terrain '%s' ...", name.cstr() );
-
-  PhysFile file( path );
-  if( !file.map() ) {
-    throw Exception( "Cannot map terra file" );
-  }
-
-  InputStream is = file.inputStream();
-
-  int max = is.readInt();
-  if( max != VERTS ) {
-    throw Exception( "Invalid dimension %d, should be %d", max, VERTS );
-  }
-
-  for( int x = 0; x < VERTS; ++x ) {
-    for( int y = 0; y < VERTS; ++y ) {
-      quads[x][y].vertex       = is.readPoint3();
-      quads[x][y].triNormal[0] = is.readVec3();
-      quads[x][y].triNormal[1] = is.readVec3();
+  if( id == -1 ) {
+    for( int x = 0; x < VERTS; ++x ) {
+      for( int y = 0; y < VERTS; ++y ) {
+        quads[x][y].vertex.z     = 0.0f;
+        quads[x][y].triNormal[0] = Vec3( 0.0f, 0.0f, 1.0f );
+        quads[x][y].triNormal[1] = Vec3( 0.0f, 0.0f, 1.0f );
+      }
     }
   }
+  else {
+    const String& name = library.terrae[id].name;
+    const String& path = library.terrae[id].path;
 
-  liquid = is.readInt();
+    log.print( "Loading terrain '%s' ...", name.cstr() );
 
-  file.unmap();
+    PhysFile file( path );
+    if( !file.map() ) {
+      throw Exception( "Cannot map terra file" );
+    }
 
-  log.printEnd( " OK" );
+    InputStream is = file.inputStream();
+
+    int max = is.readInt();
+    if( max != VERTS ) {
+      throw Exception( "Invalid dimension %d, should be %d", max, VERTS );
+    }
+
+    for( int x = 0; x < VERTS; ++x ) {
+      for( int y = 0; y < VERTS; ++y ) {
+        quads[x][y].vertex.z     = is.readFloat();
+        quads[x][y].triNormal[0] = is.readVec3();
+        quads[x][y].triNormal[1] = is.readVec3();
+      }
+    }
+
+    liquid = is.readInt();
+
+    file.unmap();
+
+    log.printEnd( " OK" );
+  }
 }
 
 void Terra::init()
 {
   for( int x = 0; x < VERTS; ++x ) {
     for( int y = 0; y < VERTS; ++y ) {
-      quads[x][y].vertex.x = float( x * Quad::SIZE - DIM );
-      quads[x][y].vertex.y = float( y * Quad::SIZE - DIM );
-      quads[x][y].vertex.z = 0.0f;
-      quads[x][y].triNormal[0] = Vec3::ZERO;
-      quads[x][y].triNormal[1] = Vec3::ZERO;
+      quads[x][y].vertex.x     = float( x * Quad::SIZE - DIM );
+      quads[x][y].vertex.y     = float( y * Quad::SIZE - DIM );
+      quads[x][y].vertex.z     = 0.0f;
+      quads[x][y].triNormal[0] = Vec3( 0.0f, 0.0f, 1.0f );
+      quads[x][y].triNormal[1] = Vec3( 0.0f, 0.0f, 1.0f );
     }
   }
 }
 
 void Terra::read( InputStream* istream )
 {
-  String name = istream->readString();
-  int id = library.terraIndex( name );
+  const char* name = istream->readString();
+  int id = String::isEmpty( name ) ? -1 : library.terraIndex( name );
 
   load( id );
 }
 
 void Terra::write( BufferStream* ostream ) const
 {
-  ostream->writeString( library.terrae[id].name );
+  const char* name = id == -1 ? "" : library.terrae[id].name;
+
+  ostream->writeString( name );
 }
 
 }

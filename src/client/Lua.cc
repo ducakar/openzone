@@ -319,6 +319,8 @@ void Lua::init()
   }
 
   ls.envName = "client";
+  ms.structs.alloc( 32 );
+  ms.objects.alloc( 512 );
 
   /*
    * General functions
@@ -385,6 +387,7 @@ void Lua::init()
   IMPORT_FUNC( ozStrGetPos );
   IMPORT_FUNC( ozStrGetBSP );
   IMPORT_FUNC( ozStrGetHeading );
+  IMPORT_FUNC( ozStrMaxLife );
   IMPORT_FUNC( ozStrGetLife );
   IMPORT_FUNC( ozStrSetLife );
   IMPORT_FUNC( ozStrAddLife );
@@ -399,27 +402,22 @@ void Lua::init()
   IMPORT_FUNC( ozStrGetEntityLock );
   IMPORT_FUNC( ozStrSetEntityLock );
 
-  IGNORE_FUNC( ozStrVectorFromSelf );
-  IGNORE_FUNC( ozStrVectorFromSelfEye );
-  IGNORE_FUNC( ozStrDirectionFromSelf );
-  IGNORE_FUNC( ozStrDirectionFromSelfEye );
-  IGNORE_FUNC( ozStrDistanceFromSelf );
-  IGNORE_FUNC( ozStrDistanceFromSelfEye );
-  IGNORE_FUNC( ozStrHeadingFromSelf );
-  IGNORE_FUNC( ozStrRelativeHeadingFromSelf );
-  IGNORE_FUNC( ozStrPitchFromSelf );
-  IGNORE_FUNC( ozStrPitchFromSelfEye );
-
-  IMPORT_FUNC( ozStrBindAllOverlaps );
-  IMPORT_FUNC( ozStrBindStrOverlaps );
-  IMPORT_FUNC( ozStrBindObjOverlaps );
+  IMPORT_FUNC( ozStrVectorFromObj );
+  IMPORT_FUNC( ozStrVectorFromEye );
+  IMPORT_FUNC( ozStrDirectionFromObj );
+  IMPORT_FUNC( ozStrDirectionFromEye );
+  IMPORT_FUNC( ozStrDistanceFromObj );
+  IMPORT_FUNC( ozStrDistanceFromEye );
+  IMPORT_FUNC( ozStrHeadingFromEye );
+  IMPORT_FUNC( ozStrPitchFromEye );
+  IMPORT_FUNC( ozStrIsVisibleFromObj );
+  IGNORE_FUNC( ozStrIsVisibleFromEye );
 
   /*
    * Object
    */
 
   IMPORT_FUNC( ozObjBindIndex );
-  IMPORT_FUNC( ozObjBindPilot );
   IGNORE_FUNC( ozObjBindSelf );
   IGNORE_FUNC( ozObjBindUser );
   IMPORT_FUNC( ozObjBindNext );
@@ -428,25 +426,18 @@ void Lua::init()
   IGNORE_FUNC( ozObjIsSelf );
   IGNORE_FUNC( ozObjIsUser );
   IMPORT_FUNC( ozObjIsCut );
-  IMPORT_FUNC( ozObjIsBrowsable );
-  IMPORT_FUNC( ozObjIsDynamic );
-  IMPORT_FUNC( ozObjIsItem );
-  IMPORT_FUNC( ozObjIsWeapon );
-  IMPORT_FUNC( ozObjIsBot );
-  IMPORT_FUNC( ozObjIsVehicle );
 
   IMPORT_FUNC( ozObjGetIndex );
   IMPORT_FUNC( ozObjGetPos );
-  IMPORT_FUNC( ozObjSetPos );
-  IMPORT_FUNC( ozObjAddPos );
+  IMPORT_FUNC( ozObjWarpPos );
   IMPORT_FUNC( ozObjGetDim );
-  IMPORT_FUNC( ozObjGetFlags );
+  IMPORT_FUNC( ozObjHasFlag );
   IMPORT_FUNC( ozObjGetHeading );
   IMPORT_FUNC( ozObjGetClassName );
+  IMPORT_FUNC( ozObjMaxLife );
   IMPORT_FUNC( ozObjGetLife );
   IMPORT_FUNC( ozObjSetLife );
   IMPORT_FUNC( ozObjAddLife );
-
   IMPORT_FUNC( ozObjAddEvent );
 
   IMPORT_FUNC( ozObjBindItems );
@@ -457,30 +448,23 @@ void Lua::init()
   IMPORT_FUNC( ozObjEnableUpdate );
   IMPORT_FUNC( ozObjDamage );
   IMPORT_FUNC( ozObjDestroy );
-  IMPORT_FUNC( ozObjQuietDestroy );
 
-  IGNORE_FUNC( ozObjVectorFromSelf );
-  IGNORE_FUNC( ozObjVectorFromSelfEye );
-  IGNORE_FUNC( ozObjDirectionFromSelf );
-  IGNORE_FUNC( ozObjDirectionFromSelfEye );
-  IGNORE_FUNC( ozObjDistanceFromSelf );
-  IGNORE_FUNC( ozObjDistanceFromSelfEye );
-  IGNORE_FUNC( ozObjHeadingFromSelf );
-  IGNORE_FUNC( ozObjRelativeHeadingFromSelf );
-  IGNORE_FUNC( ozObjPitchFromSelf );
-  IGNORE_FUNC( ozObjPitchFromSelfEye );
-  IGNORE_FUNC( ozObjIsVisibleFromSelf );
-  IGNORE_FUNC( ozObjIsVisibleFromSelfEye );
-
-  IMPORT_FUNC( ozObjBindAllOverlaps );
-  IMPORT_FUNC( ozObjBindStrOverlaps );
-  IMPORT_FUNC( ozObjBindObjOverlaps );
+  IMPORT_FUNC( ozObjVectorFromObj );
+  IMPORT_FUNC( ozObjVectorFromEye );
+  IMPORT_FUNC( ozObjDirectionFromObj );
+  IMPORT_FUNC( ozObjDirectionFromEye );
+  IMPORT_FUNC( ozObjDistanceFromObj );
+  IMPORT_FUNC( ozObjDistanceFromEye );
+  IMPORT_FUNC( ozObjHeadingFromEye );
+  IMPORT_FUNC( ozObjPitchFromEye );
+  IMPORT_FUNC( ozObjIsVisibleFromObj );
+  IMPORT_FUNC( ozObjIsVisibleFromEye );
 
   /*
    * Dynamic object
    */
 
-  IMPORT_FUNC( ozDynBindParent );
+  IMPORT_FUNC( ozDynGetParent );
 
   IMPORT_FUNC( ozDynGetVelocity );
   IMPORT_FUNC( ozDynGetMomentum );
@@ -493,24 +477,21 @@ void Lua::init()
    * Weapon
    */
 
-  IMPORT_FUNC( ozWeaponGetDefaultRounds );
+  IMPORT_FUNC( ozWeaponMaxRounds );
   IMPORT_FUNC( ozWeaponGetRounds );
   IMPORT_FUNC( ozWeaponSetRounds );
   IMPORT_FUNC( ozWeaponAddRounds );
-  IMPORT_FUNC( ozWeaponReload );
 
   /*
    * Bot
    */
 
-  IMPORT_FUNC( ozBotBindPilot );
-
   IMPORT_FUNC( ozBotGetName );
   IMPORT_FUNC( ozBotSetName );
-  IMPORT_FUNC( ozBotGetMindFunc );
-  IMPORT_FUNC( ozBotSetMindFunc );
+  IMPORT_FUNC( ozBotGetMind );
+  IMPORT_FUNC( ozBotSetMind );
 
-  IMPORT_FUNC( ozBotGetState );
+  IMPORT_FUNC( ozBotHasState );
   IMPORT_FUNC( ozBotGetEyePos );
   IMPORT_FUNC( ozBotGetH );
   IMPORT_FUNC( ozBotSetH );
@@ -520,25 +501,29 @@ void Lua::init()
   IMPORT_FUNC( ozBotAddV );
   IMPORT_FUNC( ozBotGetDir );
 
+  IMPORT_FUNC( ozBotGetCargo );
+  IMPORT_FUNC( ozBotGetWeapon );
+  IMPORT_FUNC( ozBotSetWeaponItem );
+
+  IMPORT_FUNC( ozBotMaxStamina );
   IMPORT_FUNC( ozBotGetStamina );
   IMPORT_FUNC( ozBotSetStamina );
   IMPORT_FUNC( ozBotAddStamina );
 
-  IMPORT_FUNC( ozBotIsRunning );
-  IMPORT_FUNC( ozBotSetRunning );
-  IMPORT_FUNC( ozBotToggleRunning );
-
-  IMPORT_FUNC( ozBotSetWeaponItem );
+  IMPORT_FUNC( ozBotAction );
 
   IMPORT_FUNC( ozBotHeal );
   IMPORT_FUNC( ozBotRearm );
   IMPORT_FUNC( ozBotKill );
 
-  IGNORE_FUNC( ozBotIsVisibleFromSelfEyeToEye );
+  IMPORT_FUNC( ozBotCanReachEntity );
+  IMPORT_FUNC( ozBotCanReachObj );
 
   /*
    * Vehicle
    */
+
+  IMPORT_FUNC( ozVehicleGetPilot );
 
   IMPORT_FUNC( ozVehicleGetH );
   IMPORT_FUNC( ozVehicleSetH );
@@ -548,7 +533,8 @@ void Lua::init()
   IMPORT_FUNC( ozVehicleAddV );
   IMPORT_FUNC( ozVehicleGetDir );
 
-  IMPORT_FUNC( ozVehicleEmbarkPilot );
+  IMPORT_FUNC( ozVehicleEmbarkBot );
+  IMPORT_FUNC( ozVehicleDisembarkBot );
 
   IMPORT_FUNC( ozVehicleService );
 
@@ -561,8 +547,7 @@ void Lua::init()
   IMPORT_FUNC( ozFragIsNull );
 
   IMPORT_FUNC( ozFragGetPos );
-  IMPORT_FUNC( ozFragSetPos );
-  IMPORT_FUNC( ozFragAddPos );
+  IMPORT_FUNC( ozFragWarpPos );
   IMPORT_FUNC( ozFragGetIndex );
   IMPORT_FUNC( ozFragGetVelocity );
   IMPORT_FUNC( ozFragSetVelocity );

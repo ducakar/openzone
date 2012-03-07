@@ -177,10 +177,6 @@ void GameStage::reload()
     log.println( "Initialising new world" );
 
     lua.create( mission );
-
-    if( orbis.terra.id == -1 || orbis.caelum.id == -1 ) {
-      throw Exception( "Terrain and Caelum must both be loaded via the client.onCreate" );
-    }
   }
   else {
     if( !read( stateFile ) ) {
@@ -430,10 +426,6 @@ void GameStage::load()
 
     log.unindent();
     log.println( "}" );
-
-    if( orbis.terra.id == -1 || orbis.caelum.id == -1 ) {
-      throw Exception( "Terrain and Caelum must both be loaded via the client.onCreate" );
-    }
   }
   else if( !read( stateFile ) ) {
     throw Exception( "Reading saved state '%s' failed", stateFile.cstr() );

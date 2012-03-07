@@ -28,7 +28,7 @@
 function healUser100( l )
   ozObjBindUser()
 
-  if ozBotGetState( OZ_BOT_MECHANICAL_BIT ) then
+  if ozBotHasState( OZ_BOT_MECHANICAL_BIT ) then
     ozUseFailed()
   else
     ozObjAddLife( 100.0 )
@@ -38,7 +38,7 @@ end
 function healUser100_disposable( l )
   ozObjBindUser()
 
-  if ozBotGetState( OZ_BOT_MECHANICAL_BIT ) then
+  if ozBotHasState( OZ_BOT_MECHANICAL_BIT ) then
     ozUseFailed()
   else
     ozObjAddLife( 100.0 )
@@ -54,4 +54,88 @@ end
 
 function spawnBigExplosion( l )
   ozOrbisAddObj( OZ_FORCE, "bigExplosion", ozObjGetPos() );
+end
+
+function smallExplosion_onUpdate( l )
+  if l.ticks then
+    l.ticks = l.ticks - 1
+
+    if l.ticks == 0 then
+      ozObjDestroy( true )
+    end
+  else
+    l.ticks = 25
+
+    local self = ozObjGetIndex()
+    local pX, pY, pZ = ozObjGetPos()
+
+    ozObjAddEvent( OZ_EVENT_CREATE, 1.0 )
+    ozOrbisBindOverlaps( OZ_OBJECTS_BIT, pX, pY, pZ, 8, 8, 8 )
+
+    while ozObjBindNext() do
+      if not ozObjIsSelf() then
+        local distance = ozObjDistanceFromObj( self )
+
+        if distance < 8 then
+          distance = 8 - distance
+
+          if ozObjIsVisibleFromObj( self ) then
+            ozObjDamage( 100 + 10*distance )
+
+            if distance < 7.9 and ozObjHasFlag( OZ_DYNAMIC_BIT ) then
+              local dirX, dirY, dirZ = ozObjDirectionFromObj( self )
+              distance = 2 * distance
+
+              ozDynAddMomentum( dirX * distance, dirY * distance, dirZ * distance )
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
+function bigExplosion_onUpdate( l )
+  if l.ticks then
+    l.ticks = l.ticks - 1
+
+    if l.ticks == 0 then
+      ozObjDestroy( true )
+    end
+  else
+    l.ticks = 25
+
+    local self = ozObjGetIndex()
+    local pX, pY, pZ = ozObjGetPos()
+
+    ozObjAddEvent( OZ_EVENT_CREATE, 1.0 )
+    ozOrbisBindOverlaps( OZ_STRUCTS_BIT + OZ_OBJECTS_BIT, pX, pY, pZ, 20, 20, 20 )
+
+    while ozStrBindNext() do
+      ozStrDamage( 2000 )
+    end
+
+    while ozObjBindNext() do
+      if not ozObjIsSelf() then
+        local distance = ozObjDistanceFromObj( self )
+
+        if distance < 20 then
+          distance = 20 - distance
+
+          ozObjDamage( 10*distance )
+
+          if ozObjIsVisibleFrom( self ) then
+            ozObjDamage( 100 + 10*distance )
+
+            if distance < 19.9 and ozObjHasFlag( OZ_DYNAMIC_BIT ) then
+              local dirX, dirY, dirZ = ozObjDirectionFromObj( self )
+              distance = 2 * distance
+
+              ozDynAddMomentum( dirX * distance, dirY * distance, dirZ * distance )
+            end
+          end
+        end
+      end
+    end
+  end
 end

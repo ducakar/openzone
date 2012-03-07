@@ -179,6 +179,23 @@
   }
 
 /**
+ * @def ITEM_INDEX
+ * Initialises variable <tt>item</tt> to item with the given index or returns with error for invalid
+ * indices or objects that are not items.
+ */
+#define ITEM_INDEX( index ) \
+  if( uint( index ) >= uint( orbis.objects.length() ) ) { \
+    ERROR( "Invalid item index (out of range)" ); \
+  } \
+  Dynamic* item = static_cast<Dynamic*>( orbis.objects[index] ); \
+  if( item == null ) { \
+    ERROR( "Invalid item index (null)" ); \
+  } \
+  if( !( item->flags & Object::ITEM_BIT ) ) { \
+    ERROR( "Invalid item index (not an item)" ); \
+  }
+
+/**
  * @def BOT_INDEX
  * Initialises variable <tt>bot</tt> to bot with the given index or returns with error for invalid
  * indices or objects that are not bots.
@@ -187,14 +204,13 @@
   if( uint( index ) >= uint( orbis.objects.length() ) ) { \
     ERROR( "Invalid bot index (out of range)" ); \
   } \
-  Object* obj = orbis.objects[index]; \
-  if( obj == null ) { \
+  Bot* bot = static_cast<Bot*>( orbis.objects[index] ); \
+  if( bot == null ) { \
     ERROR( "Invalid bot index (null)" ); \
   } \
-  if( !( obj->state & Object::BOT_BIT ) ) { \
+  if( !( bot->flags & Object::BOT_BIT ) ) { \
     ERROR( "Invalid bot index (not a bot)" ); \
-  } \
-  Bot* bot = static_cast<Bot*>( obj );
+  }
 
 /**
  * @def OBJ_NOT_SELF
@@ -243,7 +259,7 @@
   if( !( ms.obj->flags & Object::VEHICLE_BIT ) ) { \
     ERROR( "Bound object is not a vehicle" ); \
   } \
-  Vehicle* vehicle = static_cast<Vehicle*>( ms.obj );
+  Vehicle* veh = static_cast<Vehicle*>( ms.obj );
 
 /**
  * @def FRAG

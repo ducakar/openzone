@@ -153,6 +153,8 @@ class BSP : public Bounds
     const FragPool* fragPool;
     int             nFrags;
 
+    int             demolishSound;
+
     int             id;            ///< Used for indexing BSPs in Context.
     int             nUsers;
 

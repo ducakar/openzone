@@ -248,59 +248,33 @@ void BotProxy::prepare()
 
     if( ui::mouse.leftClick ) {
       if( bot->cargo != -1 ) {
-        bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
-        bot->actions   |= Bot::ACTION_ROTATE;
-        bot->instrument = -1;
-        bot->container  = -1;
-        bot->trigger    = -1;
+        bot->rotateCargo();
       }
     }
     if( ui::mouse.rightClick ) {
       if( bot->parent != -1 ) {
         bot->actions |= Bot::ACTION_VEH_NEXT_WEAPON;
       }
-      else if( camera.object != -1 ) {
-        if( camera.objectObj->flags & Object::USE_FUNC_BIT ) {
-          bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
-          bot->actions   |= Bot::ACTION_USE;
-          bot->instrument = camera.object;
-          bot->container  = -1;
-          bot->trigger    = -1;
-        }
+      else if( camera.entityObj != null ) {
+        bot->trigger( camera.entityObj );
       }
-      else if( camera.entity != -1 ) {
-        int targetEntity = camera.entityObj->model->target;
-
-        if( targetEntity != -1 ) {
-          bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
-          bot->actions   |= Bot::ACTION_USE;
-          bot->instrument = -1;
-          bot->container  = -1;
-          bot->trigger    = camera.entity;
-        }
+      else if( camera.objectObj != null ) {
+        bot->use( camera.objectObj );
       }
     }
     else if( ui::mouse.middleClick ) {
       if( bot->cargo != -1 ) {
-        bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
-        bot->actions   |= Bot::ACTION_GRAB;
-        bot->instrument = -1;
-        bot->container  = -1;
-        bot->trigger    = -1;
+        bot->grab();
       }
       else if( camera.entity != -1 ) {
-        bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
-        bot->actions   |= Bot::ACTION_LOCK;
-        bot->instrument = -1;
-        bot->container  = -1;
-        bot->trigger    = camera.entity;
+        bot->lock( camera.entityObj );
       }
       else if( camera.object != -1 ) {
-        bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
-        bot->actions   |= Bot::ACTION_GRAB;
-        bot->instrument = camera.object;
-        bot->container  = -1;
-        bot->trigger    = -1;
+        Dynamic* dyn = static_cast<Dynamic*>( const_cast<Object*>( camera.objectObj ) );
+
+        if( dyn->flags & Object::DYNAMIC_BIT ) {
+          bot->grab( dyn );
+        }
       }
     }
     else if( ui::mouse.wheelDown ) {
@@ -312,21 +286,17 @@ void BotProxy::prepare()
           container->show( true );
         }
         else {
-          bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
-          bot->actions   |= Bot::ACTION_TAKE;
-          bot->instrument = camera.object;
-          bot->container  = -1;
-          bot->trigger    = -1;
+          Dynamic* dyn = static_cast<Dynamic*>( const_cast<Object*>( camera.objectObj ) );
+
+          if( dyn->flags & Object::DYNAMIC_BIT ) {
+            bot->take( dyn );
+          }
         }
       }
     }
     else if( ui::mouse.wheelUp ) {
       if( bot->cargo != -1 ) {
-        bot->actions   &= ~( Bot::INSTRUMENT_ACTIONS );
-        bot->actions   |= Bot::ACTION_THROW;
-        bot->instrument = -1;
-        bot->container  = -1;
-        bot->trigger    = -1;
+        bot->throwCargo();
       }
     }
   }

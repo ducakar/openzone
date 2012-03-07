@@ -42,6 +42,7 @@ namespace ui
 uint GalileoFrame::loadTexture( const char* path ) const
 {
   PhysFile file( path );
+
   if( !file.map() ) {
     throw Exception( "Failed reading galileo texture '%s'", path );
   }
@@ -60,8 +61,8 @@ bool GalileoFrame::onMouseEvent()
 
 void GalileoFrame::onDraw()
 {
-  if( camera.state == Camera::BOT && camera.botObj != null &&
-      !camera.botObj->hasAttribute( ObjectClass::GALILEO_BIT ) )
+  if( orbis.terra.id == -1 || ( camera.state == Camera::BOT && camera.botObj != null &&
+      !camera.botObj->hasAttribute( ObjectClass::GALILEO_BIT ) ) )
   {
     isVisible = false;
     return;

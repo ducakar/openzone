@@ -36,29 +36,31 @@ namespace matrix
 BSP::BSP( const char* name_, int id_ ) :
   name( name_ ), id( id_ )
 {
-  life         = 0.0f;
-  resistance   = 0.0f;
+  life          = 0.0f;
+  resistance    = 0.0f;
 
-  nPlanes      = 0;
-  nNodes       = 0;
-  nLeaves      = 0;
-  nLeafBrushes = 0;
-  nBrushes     = 0;
-  nBrushSides  = 0;
-  nModels      = 0;
+  nPlanes       = 0;
+  nNodes        = 0;
+  nLeaves       = 0;
+  nLeafBrushes  = 0;
+  nBrushes      = 0;
+  nBrushSides   = 0;
+  nModels       = 0;
 
-  planes       = null;
-  nodes        = null;
-  leaves       = null;
-  leafBrushes  = null;
-  brushes      = null;
-  brushSides   = null;
-  models       = null;
+  planes        = null;
+  nodes         = null;
+  leaves        = null;
+  leafBrushes   = null;
+  brushes       = null;
+  brushSides    = null;
+  models        = null;
 
-  fragPool     = null;
-  nFrags       = 0;
+  fragPool      = null;
+  nFrags        = 0;
 
-  nUsers       = 0;
+  demolishSound = -1;
+
+  nUsers        = 0;
 }
 
 BSP::~BSP()
@@ -229,6 +231,10 @@ void BSP::load()
 
   fragPool = sFragPool.isEmpty() ? null : library.fragPool( sFragPool );
   nFrags   = is.readInt();
+
+  String sDemolishSound = is.readString();
+
+  demolishSound = sDemolishSound.isEmpty() ? -1 : library.soundIndex( sDemolishSound );
 
   hard_assert( !is.isAvailable() );
 

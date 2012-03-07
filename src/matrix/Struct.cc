@@ -528,6 +528,7 @@ void Entity::elevatorHandler()
 void Struct::onDemolish()
 {
   overlappingObjs.clear();
+
   collider.mask = ~0;
   collider.getOverlaps( toAABB(), null, &overlappingObjs, 4.0f * EPSILON );
   collider.mask = Object::SOLID_BIT;
@@ -542,7 +543,7 @@ void Struct::onDemolish()
     }
     else if( dyn->flags & Object::DYNAMIC_BIT ) {
       dyn->flags &= ~Object::DISABLED_BIT;
-      dyn->lower |= Object::ENABLE_BIT;
+      dyn->flags |= Object::ENABLE_BIT;
     }
   }
 
@@ -711,10 +712,6 @@ Struct::Struct( const BSP* bsp_, int index_, const Point3& p_, Heading heading_ 
     entity.ratio    = 0.0f;
     entity.time     = 0.0f;
     entity.velocity = Vec3::ZERO;
-  }
-
-  if( bsp->nBoundObjects != 0 ) {
-    boundObjects.alloc( bsp->nBoundObjects );
   }
 }
 

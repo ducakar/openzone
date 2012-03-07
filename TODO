@@ -1,8 +1,6 @@
 0.3
 - matrix
   * improve Vehicle rotation
-- lua
-  * ozBotSetInstrument & co.
 - ui
   * tutorial tips
   * options menu

@@ -67,18 +67,20 @@ end
 function prey( localData )
   local minDistance = 100
   local heading
-  local distance
 
   ozSelfBindObjOverlaps( 20, 20, 20 )
+
   while ozObjBindNext() do
     if not ozObjIsSelf() and ozObjIsBot() and ozObjGetClassName() ~= "goblin" then
-      distance = ozObjDistanceFromSelf()
+      local distance = ozObjDistanceFromSelf()
+
       if distance < minDistance then
         minDistance = distance
         heading = ozObjHeadingFromSelf()
       end
     end
   end
+
   if heading then
     ozSelfSetH( heading + 180 )
     ozSelfSetRunning( true )
@@ -91,12 +93,13 @@ end
 function predator( localData )
   local minDistance = 100
   local heading
-  local distance
 
   ozSelfBindObjOverlaps( 20, 20, 20 )
+
   while ozObjBindNext() do
-    if not ozObjIsSelf() and ozObjIsBot() and ozObjGetClassName() == "goblin" then
-      distance = ozObjDistanceFromSelf()
+    if not ozObjIsSelf() and ozObjHasFlag( OZ_BOT_BIT ) and ozObjGetClassName() == "goblin" then
+      local distance = ozObjDistanceFromSelf()
+
       if distance < minDistance then
         minDistance = distance
         heading = ozObjHeadingFromSelf()

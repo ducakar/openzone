@@ -34,6 +34,8 @@ class BSP
 {
   private:
 
+    static const float DEMOLISH_SOUND_GAIN;
+
     const matrix::BSP* bsp;
 
     int  flags;
@@ -51,6 +53,7 @@ class BSP
 
   private:
 
+    void playDemolish( const Struct* str, int sound ) const;
     void playSound( const Entity* entity, int sound ) const;
     void playContSound( const Entity* entity, int sound ) const;
 
