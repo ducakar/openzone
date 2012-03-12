@@ -69,9 +69,21 @@ void Terra::load( int id_ )
 
     for( int x = 0; x < VERTS; ++x ) {
       for( int y = 0; y < VERTS; ++y ) {
-        quads[x][y].vertex.z     = is.readFloat();
-        quads[x][y].triNormal[0] = is.readVec3();
-        quads[x][y].triNormal[1] = is.readVec3();
+        quads[x][y].vertex.z = is.readFloat();
+      }
+    }
+
+    for( int x = 0; x < QUADS; ++x ) {
+      for( int y = 0; y < QUADS; ++y ) {
+        if( x != QUADS && y != QUADS ) {
+          const Point3& a = quads[x    ][y    ].vertex;
+          const Point3& b = quads[x + 1][y    ].vertex;
+          const Point3& c = quads[x + 1][y + 1].vertex;
+          const Point3& d = quads[x    ][y + 1].vertex;
+
+          quads[x][y].triNormal[0] = ~( ( c - b ) ^ ( a - b ) );
+          quads[x][y].triNormal[1] = ~( ( a - d ) ^ ( c - d ) );
+        }
       }
     }
 

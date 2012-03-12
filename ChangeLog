@@ -65,14 +65,13 @@
     - asynchronous streaming of tracks
     - support for music in MP3 and AAC formats
     - user-specified directory can be searched for music
-  - ported to SDL 2.0
 * build:
   - prebuilding entirely split from the runtime part of the engine
   - SDL_image replaced by FreeImage, wider range of image formats supported as prebuilding source
   - 16-bit colour components for terrain heightmap
-* tools:
-  - ozFormat tool for formatting object class files
 * general:
   - PhysicsFS used for accessing game data, so they can be loaded directly from archives
   - game data can be modularised into packages
-  - Lua classes share API code - no more code triplication for Lua APIs
+  - Lua API redesigned
+  - Lua classes share API code - no more code triplication of Lua API implementations
+  - ported to SDL 2.0
