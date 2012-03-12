@@ -100,46 +100,15 @@ void Terra::load()
     for( int x = 0; x < matrix::Terra::VERTS; ++x ) {
       float value = float( *pixel ) / float( std::numeric_limits<unsigned short>::max() );
 
-      quads[x][y].vertex.x     = float( x * matrix::Terra::Quad::SIZE - matrix::Terra::DIM );
-      quads[x][y].vertex.y     = float( y * matrix::Terra::Quad::SIZE - matrix::Terra::DIM );
-      quads[x][y].vertex.z     = Math::mix( minHeight, maxHeight, value );
-      quads[x][y].triNormal[0] = Vec3::ZERO;
-      quads[x][y].triNormal[1] = Vec3::ZERO;
+      quads[x][y].vertex.x = float( x * matrix::Terra::Quad::SIZE - matrix::Terra::DIM );
+      quads[x][y].vertex.y = float( y * matrix::Terra::Quad::SIZE - matrix::Terra::DIM );
+      quads[x][y].vertex.z = Math::mix( minHeight, maxHeight, value );
 
       pixel += 3;
     }
   }
 
   FreeImage_Unload( image );
-
-  for( int x = 0; x < matrix::Terra::QUADS; ++x ) {
-    for( int y = 0; y < matrix::Terra::QUADS; ++y ) {
-      if( x != matrix::Terra::QUADS && y != matrix::Terra::QUADS ) {
-        //
-        // 0. triangle -- upper left
-        // 1. triangle -- lower right
-        //
-        //    |  ...  |         D        C
-        //    +---+---+-         o----->o
-        //    |1 /|1 /|          |      ^
-        //    | / | / |          |      |
-        //    |/ 0|/ 0|          |      |
-        //    +---+---+- ...     v      |
-        //    |1 /|1 /|          o<-----o
-        //    | / | / |         A        B
-        //    |/ 0|/ 0|
-        //  (0,0)
-        //
-        const Point3& a = quads[x    ][y    ].vertex;
-        const Point3& b = quads[x + 1][y    ].vertex;
-        const Point3& c = quads[x + 1][y + 1].vertex;
-        const Point3& d = quads[x    ][y + 1].vertex;
-
-        quads[x][y].triNormal[0] = ~( ( c - b ) ^ ( a - b ) );
-        quads[x][y].triNormal[1] = ~( ( a - d ) ^ ( c - d ) );
-      }
-    }
-  }
 
   log.printEnd( " OK" );
 }
@@ -157,8 +126,6 @@ void Terra::saveMatrix()
   for( int x = 0; x < matrix::Terra::VERTS; ++x ) {
     for( int y = 0; y < matrix::Terra::VERTS; ++y ) {
       os.writeFloat( quads[x][y].vertex.z );
-      os.writeVec3( quads[x][y].triNormal[0] );
-      os.writeVec3( quads[x][y].triNormal[1] );
     }
   }
 
@@ -210,10 +177,6 @@ void Terra::saveClient()
   }
 
   // generate vertex buffers
-  Point3 pos;
-  Vec3   normal;
-  Vertex vertex;
-
   Bitset waterTiles( client::Terra::TILES * client::Terra::TILES );
   waterTiles.clearAll();
 
@@ -225,8 +188,7 @@ void Terra::saveClient()
           int x = i * client::Terra::TILE_QUADS + k;
           int y = j * client::Terra::TILE_QUADS + l;
 
-          pos    = quads[x][y].vertex;
-          normal = Vec3::ZERO;
+          Vec3 normal = Vec3::ZERO;
 
           if( x < matrix::Terra::QUADS && y < matrix::Terra::QUADS ) {
             normal += quads[x][y].triNormal[0];
@@ -243,22 +205,11 @@ void Terra::saveClient()
             normal += quads[x][y - 1].triNormal[1];
           }
 
-          if( pos.z < 0.0f ) {
+          if( quads[x][y].vertex.z < 0.0f ) {
             waterTiles.set( i * client::Terra::TILES + j );
           }
 
-          vertex.pos[0] = pos.x;
-          vertex.pos[1] = pos.y;
-          vertex.pos[2] = pos.z;
-
-          vertex.texCoord[0] = float( x ) / float( matrix::Terra::VERTS );
-          vertex.texCoord[1] = float( y ) / float( matrix::Terra::VERTS );
-
-          vertex.normal[0] = normal.x;
-          vertex.normal[1] = normal.y;
-          vertex.normal[2] = normal.z;
-
-          vertex.write( &os );
+          os.writeVec3( normal );
         }
       }
     }

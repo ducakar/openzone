@@ -13,6 +13,8 @@
   * MD3 animation
   * fix bloom
   * fix in-vehicle camera (rotation axis & free look)
+- tools
+  * UI class for prebuilding UI icons etc.
 
 0.4
 - new löök

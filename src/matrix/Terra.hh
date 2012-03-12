@@ -36,6 +36,21 @@ class Terra
 {
   public:
 
+    //
+    // 0. triangle -- upper left
+    // 1. triangle -- lower right
+    //
+    //    |  ...  |         D        C
+    //    +---+---+-         o----->o
+    //    |1 /|1 /|          |      ^
+    //    | / | / |          |      |
+    //    |/ 0|/ 0|          |      |
+    //    +---+---+- ...     v      |
+    //    |1 /|1 /|          o<-----o
+    //    | / | / |         A        B
+    //    |/ 0|/ 0|
+    //  (0,0)
+    //
     struct Quad
     {
       static const int SIZE = 8;        ///< Integer size of a terrain quad.

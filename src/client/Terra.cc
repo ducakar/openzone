@@ -194,7 +194,31 @@ void Terra::load()
 #endif
 
       glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
-      glBufferData( GL_ARRAY_BUFFER, vboSize, is.forward( vboSize ), GL_STATIC_DRAW );
+      glBufferData( GL_ARRAY_BUFFER, vboSize, null, GL_STATIC_DRAW );
+
+      Vertex* vertices = reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY ) );
+
+      for( int k = 0; k <= TILE_QUADS; ++k ) {
+        for( int l = 0; l <= TILE_QUADS; ++l ) {
+          int x = i * TILE_QUADS + k;
+          int y = j * TILE_QUADS + l;
+
+          Vertex& vertex = vertices[ k * ( TILE_QUADS + 1 ) + l ];
+
+          vertex.pos[0] = orbis.terra.quads[x][y].vertex.x;
+          vertex.pos[1] = orbis.terra.quads[x][y].vertex.y;
+          vertex.pos[2] = orbis.terra.quads[x][y].vertex.z;
+
+          vertex.texCoord[0] = float( x ) / float( matrix::Terra::VERTS );
+          vertex.texCoord[1] = float( y ) / float( matrix::Terra::VERTS );
+
+          vertex.normal[0] = is.readFloat();
+          vertex.normal[1] = is.readFloat();
+          vertex.normal[2] = is.readFloat();
+        }
+      }
+
+      glUnmapBuffer( GL_ARRAY_BUFFER );
 
 #ifndef OZ_GL_COMPATIBLE
       Vertex::setFormat();
