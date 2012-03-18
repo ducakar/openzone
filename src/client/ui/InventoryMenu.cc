@@ -373,11 +373,11 @@ InventoryMenu::InventoryMenu( const InventoryMenu* master_ ) :
 
   log.verboseMode = true;
 
-  scrollUpTexId   = context.loadTextureLayer( "ui/icon/scrollUp.ozcTex" );
-  scrollDownTexId = context.loadTextureLayer( "ui/icon/scrollDown.ozcTex" );
-  useTexId        = context.loadTextureLayer( "ui/icon/use.ozcTex" );
-  equipTexId      = context.loadTextureLayer( "ui/icon/equip.ozcTex" );
-  unequipTexId    = context.loadTextureLayer( "ui/icon/unequip.ozcTex" );
+  scrollUpTexId   = context.loadTextureLayer( "ui/icon/scrollUp.ozIcon" );
+  scrollDownTexId = context.loadTextureLayer( "ui/icon/scrollDown.ozIcon" );
+  useTexId        = context.loadTextureLayer( "ui/icon/use.ozIcon" );
+  equipTexId      = context.loadTextureLayer( "ui/icon/equip.ozIcon" );
+  unequipTexId    = context.loadTextureLayer( "ui/icon/unequip.ozIcon" );
 
   log.verboseMode = false;
 }

@@ -125,7 +125,6 @@ void Client::printUsage()
   log.println();
   log.println( "-i <mission>" );
   log.println( "\tSkip main menu and start mission <mission>." );
-  log.println( "\tMissions reside in <prefix>/share/" OZ_APPLICATION_NAME "/lua/mission." );
   log.println();
   log.println( "-t <num>" );
   log.println( "\tExit after <num> seconds (can be a floating-point number) and use 42 as" );

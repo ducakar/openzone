@@ -30,11 +30,16 @@ namespace oz
 namespace build
 {
 
-class Mouse
+class UI
 {
+  private:
+
+    static const char* const ICON_NAMES[];
+
   public:
 
-    static void build();
+    static void buildCursors();
+    static void buildIcons();
 
 };
 

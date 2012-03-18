@@ -34,7 +34,7 @@
 #include "build/Lingua.hh"
 #include "build/Context.hh"
 #include "build/Compiler.hh"
-#include "build/Mouse.hh"
+#include "build/UI.hh"
 #include "build/Caelum.hh"
 #include "build/Terra.hh"
 #include "build/BSP.hh"
@@ -89,17 +89,19 @@ void Build::printUsage()
 
 void Build::copyFiles( const char* srcDir, const char* destDir, const char* ext, bool recurse )
 {
-  log.println( "Copying *.%s from '%s' to '%s' {", ext, srcDir, destDir );
-  log.indent();
-
   String sSrcDir = srcDir;
   String sDestDir = destDir;
   PhysFile dir( sSrcDir );
   DArray<PhysFile> dirList = dir.ls();
 
-  if( !dirList.isEmpty() ) {
-    File::mkdir( destDir );
+  if( dirList.isEmpty() ) {
+    return;
   }
+
+  log.println( "Copying *.%s from '%s' to '%s' {", ext, srcDir, destDir );
+  log.indent();
+
+  File::mkdir( destDir );
 
   sSrcDir  = sSrcDir + "/";
   sDestDir = sDestDir + "/";
@@ -133,82 +135,6 @@ void Build::copyFiles( const char* srcDir, const char* destDir, const char* ext,
       log.printEnd( " OK" );
       continue;
     }
-  }
-
-  log.unindent();
-  log.println( "}" );
-}
-
-void Build::buildTextures( const char* srcDir, const char* destDir, bool wrap,
-                           int magFilter, int minFilter )
-{
-  log.println( "Building textures in '%s' to '%s' {", srcDir, destDir );
-  log.indent();
-
-  String sSrcDir = srcDir;
-  String sDestDir = destDir;
-  PhysFile dir( sSrcDir );
-  DArray<PhysFile> dirList = dir.ls();
-
-  if( !dirList.isEmpty() ) {
-    File::mkdir( destDir );
-  }
-
-  sSrcDir  = sSrcDir + "/";
-  sDestDir = sDestDir + "/";
-
-  foreach( file, dirList.iter() ) {
-    String fileName = file->name();
-
-    if( fileName.beginsWith( "README" ) || fileName.beginsWith( "COPYING" ) ) {
-      log.print( "Copying '%s' ...", fileName.cstr() );
-
-      if( !file->map() ) {
-        throw Exception( "Failed to read '%s'", file->realPath().cstr() );
-      }
-
-      InputStream is = file->inputStream();
-      File destFile( String::str( "%s/%s", destDir, fileName.cstr() ) );
-
-      if( !destFile.write( &is ) ) {
-        throw Exception( "Failed to write '%s'", file->realPath().cstr() );
-      }
-
-      file->unmap();
-
-      log.printEnd( " OK" );
-      continue;
-    }
-
-    if( !file->hasExtension( "png" ) && !file->hasExtension( "jpeg" ) &&
-        !file->hasExtension( "jpg" ) && !file->hasExtension( "tga" ) )
-    {
-      continue;
-    }
-
-    String srcPath = file->path();
-    String destPath = sDestDir + file->baseName() + ".ozcTex";
-
-    log.println( "Building texture '%s' {", srcPath.cstr() );
-    log.indent();
-
-    uint id = context.loadLayer( srcPath, wrap, magFilter, minFilter );
-
-    hard_assert( id != 0 );
-
-    BufferStream os;
-
-    log.println( "Compiling into '%s'", destPath.cstr() );
-    context.writeLayer( id, &os );
-
-    glDeleteTextures( 1, &id );
-
-    if( !File( destPath ).write( &os ) ) {
-      throw Exception( "Texture writing failed" );
-    }
-
-    log.unindent();
-    log.println( "}" );
   }
 
   log.unindent();
@@ -978,19 +904,10 @@ int Build::main( int argc, char** argv )
     lingua.build();
   }
   if( doUI ) {
-    bool useS3TC = context.useS3TC;
-    context.useS3TC = false;
-
-    if( PhysFile( "ui/cur" ).getType() != File::MISSING ) {
-      Mouse::build();
-    }
-
-    copyFiles( "ui", "ui", "", false );
+    UI::buildCursors();
+    UI::buildIcons();
     copyFiles( "ui/font", "ui/font", "ttf", false );
-    buildTextures( "ui/icon", "ui/icon", true, GL_LINEAR, GL_LINEAR );
-    buildTextures( "ui/galileo", "ui/galileo", true, GL_LINEAR, GL_LINEAR );
-
-    context.useS3TC = useS3TC;
+    copyFiles( "ui/icon", "ui/icon", "", true );
   }
   if( doShaders ) {
     copyFiles( "glsl", "glsl", "glsl", false );

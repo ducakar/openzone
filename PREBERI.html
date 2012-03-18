@@ -1,0 +1,1011 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>OpenZone :: Preberi</title>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<style type="text/css">
+.centre {
+  text-align: center;
+}
+.config {
+  font-weight: bold;
+  font-family: monospace;
+}
+h2 {
+  margin-bottom: 4pt;
+}
+h3 {
+  margin-bottom: 4pt;
+}
+h4 {
+  margin-bottom: 4pt;
+}
+th {
+  text-align: left;
+  font-weight: bold;
+  padding-right: 10pt;
+}
+td {
+  padding-right: 10pt;
+}
+td.header {
+  font-weight: bold;
+}
+td.rowspace {
+  height: 10pt;
+}
+table.keys th {
+  text-align: right;
+  font-family: monospace;
+}
+table.args th {
+  font-family: monospace;
+}
+table.settings th {
+  font-family: monospace;
+}
+table.settings td {
+  padding-left: 20pt;
+  padding-bottom: 10pt;
+}
+</style>
+</head>
+<body>
+
+<h1 class="centre">OpenZone</h1>
+<p class="centre"><b>različica 0.3.0</b></p>
+
+<h2><a name="content" href="#">Vsebina</a></h2>
+<ol>
+  <li><a href="#controls">Nadzor</a></li>
+  <li><a href="#cmdline">Ukazna vrstica</a></li>
+  <li><a href="#settings">Nastavitve</a></li>
+  <li><a href="#dirs">Imeniki</a></li>
+  <li><a href="#vfs">Navidezni datotečni sistem</a></li>
+  <li><a href="#deps">Odvisnosti</a></li>
+  <li><a href="#troubleshooting">Problemi</a></li>
+  <li><a href="#legal">Avtorske pravice</a></li>
+</ol>
+
+<h2><a name="controls" href="#">Nadzor</a></h2>
+<table class="keys">
+  <tr>
+    <td class="header" colspan="2">Nadzor proste kamere</td>
+  </tr>
+  <tr>
+    <th>gibanje miške</th>
+    <td>rotiraj kamero</td>
+  </tr>
+  <tr>
+    <th>smerne tipke</th>
+    <td>rotiraj kamero</td>
+  </tr>
+  <tr>
+    <th>w/a/s/d</th>
+    <td>premakni naprej / levo / nazaj / desno</td>
+  </tr>
+  <tr>
+    <th>Space</th>
+    <td>gor / povečaj višino</td>
+  </tr>
+  <tr>
+    <th>LCtrl</th>
+    <td>dol / zmanjšaj višino</td>
+  </tr>
+  <tr>
+    <th>LShift</th>
+    <td>preklopi hitro premikanje</td>
+  </tr>
+  <tr>
+    <th>Tab</th>
+    <td>preklopi način vmesnika</td>
+  </tr>
+  <tr>
+    <th>Numpad Enter</th>
+    <td>preklopi med načinoma kamere FreeCam in Strategic</td>
+  </tr>
+  <tr>
+    <th>n</th>
+    <td>preklopi nočno gledanje</td>
+  </tr>
+  <tr>
+    <th>i</th>
+    <td>inkarniraj se v izbranega bota (ali pilota vozila)</td>
+  </tr>
+  <tr>
+    <td class="rowspace" colspan="2"/>
+  </tr>
+  <tr>
+    <td class="header" colspan="2">Nadzor bota</td>
+  </tr>
+  <tr>
+    <th>gibanje miške</th>
+    <td>glej okoli</td>
+  </tr>
+  <tr>
+    <th>smerne tipke</th>
+    <td>glej okoli</td>
+  </tr>
+  <tr>
+    <th>w/a/s/d</th>
+    <td>pojdi naprej / levo / nazaj / desno</td>
+  </tr>
+  <tr>
+    <th>LShift</th>
+    <td>preklopi tek</td>
+  </tr>
+  <tr>
+    <th>LCtrl</th>
+    <td>preklopi počep</td>
+  </tr>
+  <tr>
+    <th>Space</th>
+    <td>skoči</td>
+  </tr>
+  <tr>
+    <th>levi klik</th>
+    <td>sproži orožje / rotiraj predmet, ki ga držiš</td>
+  </tr>
+  <tr>
+    <th>desni klik</th>
+    <td>izvedi dejanje na označenem predmetu</td>
+  </tr>
+  <tr>
+    <th>srednji klik</th>
+    <td>zgrabi označen predmet / spusti predmet, ki ga držiš</td>
+  </tr>
+  <tr>
+    <th>kolešček gor</th>
+    <td>vrzi predmet, ki ga držiš</td>
+  </tr>
+  <tr>
+    <th>kolešček dol</th>
+    <td>spravi označen predmet v inventar</td>
+  </tr>
+  <tr>
+    <th>n</th>
+    <td>preklopi nočno gledanje (če je na voljo)</td>
+  </tr>
+  <tr>
+    <th>b</th>
+    <td>preklopi daljnogled (če je na voljo)</td>
+  </tr>
+  <tr>
+    <th>Alt + k</th>
+    <td>stori samomor (če je na voljo)</td>
+  </tr>
+  <tr>
+    <th>i</th>
+    <td>zapusti bota</td>
+  </tr>
+  <tr>
+    <th>Tab</th>
+    <td>preklopi način uporabniškega vmesnika</td>
+  </tr>
+  <tr>
+    <th>Numpad Enter</th>
+    <td>preklopi med prvoosebno in tretjeosebno kamero</td>
+  </tr>
+  <tr>
+    <th>f</th>
+    <td>kretnja »kazanje«</td>
+  </tr>
+  <tr>
+    <th>g</th>
+    <td>kretnja »nazaj«</td>
+  </tr>
+  <tr>
+    <th>h</th>
+    <td>kretnja »pozdrav«</td>
+  </tr>
+  <tr>
+    <th>j</th>
+    <td>kretnja »pomahaj«</td>
+  </tr>
+  <tr>
+    <th>k</th>
+    <td>kretnja »ponôri«</td>
+  </tr>
+  <tr>
+    <th>l</th>
+    <td>predvajaj vse animacije</td>
+  </tr>
+  <tr>
+    <td class="rowspace" colspan="2"/>
+  </tr>
+  <tr>
+    <td class="header" colspan="2">Inventar</td>
+  </tr>
+  <tr>
+    <th>levi klik</th>
+    <td>odvrzi predmet ali prestavi predmet v drug inventar</td>
+  </tr>
+  <tr>
+    <th>srednji klik</th>
+    <td>zgrabi predmet iz inventarja</td>
+  </tr>
+  <tr>
+    <th>desni klik</th>
+    <td>uporabi predmet, za orožja: vzemi orožje v roke ali pospravi</td>
+  </tr>
+  <tr>
+    <td class="rowspace" colspan="2"/>
+  </tr>
+  <tr>
+    <td class="header" colspan="2">Nadzor vozila</td>
+  </tr>
+  <tr>
+    <th>gibanje miške</th>
+    <td>obračaj vozilo ali kupolo</td>
+  </tr>
+  <tr>
+    <th>smerne tipke</th>
+    <td>obračaj vozilo ali kupolo</td>
+  </tr>
+  <tr>
+    <th>w/a/s/d</th>
+    <td>pojdi naprej / levo / nazaj / desno</td>
+  </tr>
+  <tr>
+    <th>Space</th>
+    <td>gor (samo leteča vozila)</td>
+  </tr>
+  <tr>
+    <th>LCtrl</th>
+    <td>dol (samo leteča vozila)</td>
+  </tr>
+  <tr>
+    <th>levi klik</th>
+    <td>sproži izbrano orožje</td>
+  </tr>
+  <tr>
+    <th>desni klik</th>
+    <td>izberi naslednje orožje</td>
+  </tr>
+  <tr>
+    <th>x</th>
+    <td>izstopi</td>
+  </tr>
+  <tr>
+    <th>Alt + x</th>
+    <td>izskoči</td>
+  </tr>
+  <tr>
+    <td class="rowspace" colspan="2"/>
+  </tr>
+  <tr>
+    <td class="header" colspan="2">Razno</td>
+  </tr>
+  <tr>
+    <th>Esc</th>
+    <td>izhod v glavni meni</td>
+  </tr>
+  <tr>
+    <th>Alt + vleka</th>
+    <td>vleči okna uporabniškega vmesnika</td>
+  </tr>
+  <tr>
+    <th>o</th>
+    <td>hitro vrti nebo naprej</td>
+  </tr>
+  <tr>
+    <th>Shift + o</th>
+    <td>hitro vrti nebo nazaj</td>
+  </tr>
+  <tr>
+    <th>F5</th>
+    <td>hitro shranjevanje</td>
+  </tr>
+  <tr>
+    <th>F7</th>
+    <td>naloži zadnje hitro shranjeno stanje</td>
+  </tr>
+  <tr>
+    <th>F8</th>
+    <td>naloži zadnje samodejno shranjeno stanje</td>
+  </tr>
+  <tr>
+    <th>F10</th>
+    <td>zajem zaslona</td>
+  </tr>
+  <tr>
+    <th>F11</th>
+    <td>preklopi celozaslonski način</td>
+  </tr>
+  <tr>
+    <th>Ctrl + F11</th>
+    <td>preklopi centriranje miške in vidljivost sistemskega kazalca</td>
+  </tr>
+  <tr>
+    <th>F12</th>
+    <td>minimiraj in zamrzni</td>
+  </tr>
+  <tr>
+    <th>Ctrl + F12</th>
+    <td>končaj program</td>
+  </tr>
+</table>
+
+<h2><a name="cmdline" href="#">Ukazna vrstica</a></h2>
+<p class="config">
+    openzone [-v] [-l | -i &lt;misija&gt;] [-t &lt;št&gt;] [-p &lt;predpona&gt;]
+</p>
+<table class="args">
+  <tr>
+    <th>-v</th>
+    <td>
+      Zgovornejši dnevnik.
+    </td>
+  </tr>
+  <tr>
+    <th>-l</th>
+    <td>
+      Preskoči glavni meni in naloži nazadnje samodejno shranjeno stanje.
+    </td>
+  </tr>
+  <tr>
+    <th>-i &lt;misija&gt;</th>
+    <td>
+      Preskoči glavni meni in poženi misijo &lt;misija&gt;.
+    </td>
+  </tr>
+  <tr>
+    <th>-t &lt;št&gt;</th>
+    <td>
+      Končaj po &lt;št&gt; sekundah (lahko je decimalno število) in kot naključnostno seme uporabi
+      42. Uporabno za benchmark.
+    </td>
+  </tr>
+  <tr>
+    <th>-p &lt;predpona&gt;</th>
+    <td>
+      Nastavi podatkovni imenik na &lt;predpona&gt;/share/openzone. Privzeto: '/usr'.
+    </td>
+  </tr>
+</table>
+
+<h2><a name="settings" href="#">Nastavitve</a></h2>
+<p>
+  Datoteka z nastavitvami se nahaja v <a href="#dirs">&lt;config&gt;</a>/client.rc.
+</p>
+
+<h4>Nastavitvene spremenljivke</h4>
+<table class="settings">
+  <tr>
+    <th>_version [string] "0.3.0"</th>
+  </tr>
+  <tr>
+    <td>
+      Različica OpenZone, za katero so pisane nastavitve. Če se različici ne ujemata, se ob izhodu
+      shranijo posodobljene nastavitve. Spremenljivke, ki so v novi verziji opuščene, so
+      odstranjene.
+    </td>
+  </tr>
+  <tr>
+    <th>camera.angle [float] 80.0</th>
+  </tr>
+  <tr>
+    <td>
+      Navpični kot kamere. Vodoravni kot je prilagojen glede na razmerje stranic ločljivosti.
+    </td>
+  </tr>
+  <tr>
+    <th>camera.aspect [float] 0.0</th>
+  </tr>
+  <tr>
+    <td>
+      Razmerje stranic širina/višina. Če je 0.0, je enak razmerju ločljivosti.
+    </td>
+  </tr>
+  <tr>
+    <th>camera.keysXSens [float] 1.0</th>
+  </tr>
+  <tr>
+    <td>
+      Občutljivost za tipki levo/desno.
+    </td>
+  </tr>
+  <tr>
+    <th>camera.keysYSens [float] 1.0</th>
+  </tr>
+  <tr>
+    <td>
+      Občutljivost za tipki gor/dol.
+    </td>
+  </tr>
+  <tr>
+    <th>camera.mouseXSens [float] 1.0</th>
+  </tr>
+  <tr>
+    <td>
+      Občutljivost miške v vodoravni smeri.
+    </td>
+  </tr>
+  <tr>
+    <th>camera.mouseYSens [float] 1.0</th>
+  </tr>
+  <tr>
+    <td>
+      Občutljivost miške v navpični smeri.
+    </td>
+  </tr>
+  <tr>
+    <th>dir.music [string] ""</th>
+  </tr>
+  <tr>
+    <td>
+      Vrhnji imenik, ki se rekurzivno preišče za datoteke *.oga, *.ogg, *.mp3 in *.aac. Vse najdene
+      datoteke so skladbe v Predvajalniku glasbe poleg glasbe, ki je priložena igri.
+    </td>
+  </tr>
+  <tr>
+    <th>dir.prefix [string] Linux: "/usr", Windows: "."</th>
+  </tr>
+  <tr>
+    <td>
+      Predpona za imenike v katerih se nahajajo podatki za igro. Imenik share/openzone se mora
+      nahajati v tem imeniku.
+    </td>
+  </tr>
+  <tr>
+    <th>lingua [string] ""</th>
+  </tr>
+  <tr>
+    <td>
+      Koda jezika, za katerega naj se naložijo prevodi. Ta mora ustrezati imenu katerega od
+      podimenikov imenika "lingua", ki se nahaja v katerem od arhivov s podatki.
+    </td>
+  </tr>
+  <tr>
+    <th>mouse.accelFactor [float] 0.04</th>
+  </tr>
+  <tr>
+    <td>
+      Običajno operacijsko sistem pospeši miško, preden OpenZone prebere položaj le-te, z izjemo
+      okolja X11, če aplikacija teče v celozaslonskem načinu. V tem primeru skuša OpenZone oponašati
+      pospešitev.
+    </td>
+  </tr>
+  <tr>
+    <th>profile.playerName [string] "&lt;user&gt;"</th>
+  </tr>
+  <tr>
+    <td>
+      Ime igralca. Privzeto se uporabi uporabniško ime z veliko začetnico.
+    </td>
+  </tr>
+  <tr>
+    <th>render.deferred [bool] false</th>
+  </tr>
+  <tr>
+    <td>
+      Uporabi odloženo senčene (deferred shading). Trenutno še ni implementirano. Ta nastavitev se
+      upošteva le, če je vklopljeno upodabljanje v medpomnilnik.
+    </td>
+  </tr>
+  <tr>
+    <th>render.lowDetail [bool] false</th>
+  </tr>
+  <tr>
+    <td>
+      Za izboljšanje hitrosti upodabljanja uporabi preprostejše senčenje (brez odseva gladkih
+      površin in izseva) ter ne izrisuje zvezd na nebu.
+    </td>
+  </tr>
+  <tr>
+    <th>render.offscreen [bool] true</th>
+  </tr>
+  <tr>
+    <td>
+      Vklopi upodabljanje v medpomnilnik (offscreen rendering) namesto neposredno na zaslon. To
+      omogoči nekatere napredne zmožnosti, kot je odloženo senčenje (deferred shading) in
+      postprocesiranje. Omogoča tudi, da se svet upodablja na ločljivosti različni od zaslonske.
+    </td>
+  </tr>
+  <tr>
+    <th>render.offscreenFilter ["NEAREST" | "LINEAR"] "LINEAR"</th>
+  </tr>
+  <tr>
+    <td>
+      Določi kateri filter za raztegovanje/krčenje teksture se uporabi pri izrisu vsebine
+      medpomnilnika pri vklopljenem render.offscreen. Če je LINEAR se vrednosti pikslov
+      interpolirajo (zamegljena slika), če pa NEAREST, se izbere vrednost najbližjega piksla
+      (kockasta slika). Ta nastavitev nima učinka, če je velikost medpomnilnika za upodabljanje
+      enaka zaslonski ločljivosti. Ponavadi je boljše nastavitev LINEAR, razen če je zaslonska
+      ločljivost večkratnik velikosti medpomnilnika (z drugimi besedami, če je 1.0 / render.scale
+      celo število), bo za marsikoga boljša nastavitev NEAREST.
+    </td>
+  </tr>
+  <tr>
+    <th>render.postprocess [bool] true</th>
+  </tr>
+  <tr>
+    <td>
+      Vključi postprocesiranje. Deluje le, če je vklopljen render.offscreen.
+    </td>
+  </tr>
+  <tr>
+    <th>render.scale [float] 1.0</th>
+  </tr>
+  <tr>
+    <td>
+      Povečava medpomnilnika za upodabljanje glede na zaslonsko ločljivost.
+    </td>
+  </tr>
+  <tr>
+    <th>render.showAim [bool] false</th>
+  </tr>
+  <tr>
+    <td>
+      Prikaže majhen zelen kvadratek v smeri, v katero gleda kamera. To je namenjeno preverjanju
+      zaznave trkov.
+    </td>
+  </tr>
+  <tr>
+    <th>render.showBounds [bool] false</th>
+  </tr>
+  <tr>
+    <td>
+      Prikaže mejne kvadre predmetov. Za trdne predmete so zelene barve, za trke prosojne predmete
+      sive, za zgradbe modre in za premične dele zgradb rdeče.
+    </td>
+  </tr>
+  <tr>
+    <th>render.visibilityRange [float] 300.0</th>
+  </tr>
+  <tr>
+    <td>
+      Razdalja vidljivosti.
+    </td>
+  </tr>
+  <tr>
+    <th>render.vsync [bool] true</th>
+  </tr>
+  <tr>
+    <td>
+      Skušaj vklopiti sinhronizacijo upodabljanja z osveževanjem zaslona (vertical synchronisation).
+    </td>
+  </tr>
+  <tr>
+    <th>seed [int | "TIME"] "TIME"</th>
+  </tr>
+  <tr>
+    <td>
+      Seme za generator naključnih števil. Lahko je celo število ali, če naj se uporabi trenutni
+      čas, "TIME".
+    </td>
+  </tr>
+  <tr>
+    <th>shader.setSamplerIndices [bool] false</th>
+  </tr>
+  <tr>
+    <td>
+      Nastavi indekse samplerjev tekstur. Če je vklopljeno, teksture prenehajo delovati na
+      gonilnikih Gallium3D, pa je je izklopljeno, teksture ne delujejo pravilno na starejših
+      gonilnikih ATI/AMD Catalyst.
+    </td>
+  </tr>
+  <tr>
+    <th>shader.vertexTexture [bool] false</th>
+  </tr>
+  <tr>
+    <td>
+      Omogoči teksture za senčilnike oglišč, s katerimi se lahko animira površine na senčilnikih.
+      Potreben je vsaj GeForce 6 ali Radeon HD 2xxx. Ne deluje na gonilnikih ATI/AMD Catalyst.
+    </td>
+  </tr>
+  <tr>
+    <th>sound.device [string] ""</th>
+  </tr>
+  <tr>
+    <td>
+      Zvočna naprava, ki naj jo uporabi OpenAL. Če je niz prazen, se izbira prepusti OpenAL.
+      Razpoložljive naprave se da videti v dnevniku <a href="#dirs">&lt;config&gt;</a>/client.log.
+    </td>
+  </tr>
+  <tr>
+    <th>sound.volume [float] 1.0</th>
+  </tr>
+  <tr>
+    <td>
+      Glasnost. 1.0 pomeni polno (izvirno) glasnost.
+    </td>
+  </tr>
+  <tr>
+    <th>ui.aspect [float] 0.0</th>
+  </tr>
+  <tr>
+    <td>
+      Razmerje uporabniškega vmesnika. Če je 0.0 se določi iz razmerja ločljivosti.
+    </td>
+  </tr>
+  <tr>
+    <th>ui.scale [float] 1.0</th>
+  </tr>
+  <tr>
+    <td>
+      Pomanjšava uporabniškega vmesnika.
+    </td>
+  </tr>
+  <tr>
+    <th>ui.showBuild [bool] false</th>
+  </tr>
+  <tr>
+    <td>
+      Prikaži okno z gumbi za dodajanje raznih predmetov v svet. Za namene razvoja.
+    </td>
+  </tr>
+  <tr>
+    <th>ui.showDebug [bool] false</th>
+  </tr>
+  <tr>
+    <td>
+      Prikaži okno, ki prikazuje koordinate, usmeritev in druge podatke o kameri, nadzorovanem botu,
+      označenem predmetu ... Za namene razvoje.
+    </td>
+  </tr>
+  <tr>
+    <th>ui.showFPS [bool] false</th>
+  </tr>
+  <tr>
+    <td>
+      Prikazuj število sličic na sekundo. Ker se svet simulira na 60 Hz, število sličic na sekundo
+      ne more preseči te vrednosti.
+    </td>
+  </tr>
+  <tr>
+    <th>window.fullscreen [bool] false</th>
+  </tr>
+  <tr>
+    <td>
+      Poženi v celozaslonskem načinu.
+    </td>
+  </tr>
+  <tr>
+    <th>window.height [int] 0</th>
+  </tr>
+  <tr>
+    <td>
+      Navpična ločljivost zaslona. Če je 0, se uporabi ločljivost namizja.
+    </td>
+  </tr>
+  <tr>
+    <th>window.width [int] 0</th>
+  </tr>
+  <tr>
+    <td>
+      Vodoravna ločljivost zaslona. Če je 0, se uporabi ločljivost namizja.
+    </td>
+  </tr>
+</table>
+
+<h2><a name="dirs" href="#">Imeniki</a></h2>
+
+<h4>Imenik &lt;config&gt;</h4>
+<table>
+  <tr>
+    <th>Platforma</th>
+    <th>Natančna pot</th>
+    <th>Običajna pot</th>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>$XDG_CONFIG_HOME/openzone</td>
+    <td>~/.config/openzone</td>
+  </tr>
+  <tr>
+    <td>Windows XP</td>
+    <td>%APPDATA%\openzone</td>
+    <td>C:\Documents and Settings\&lt;uporabniško_ime&gt;\Application Data\openzone</td>
+  </tr>
+  <tr>
+    <td>Windows 7</td>
+    <td>%APPDATA%\openzone</td>
+    <td>C:\Users\&lt;uporabniško_ime&gt;\AppData\Roaming\openzone</td>
+  </tr>
+</table>
+
+<h4>Imenik &lt;local&gt;</h4>
+<table>
+  <tr>
+    <th>Platforma</th>
+    <th>Natančna pot</th>
+    <th>Običajna pot</th>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>$XDG_DATA_HOME/openzone</td>
+    <td>~/.local/share/openzone</td>
+  </tr>
+  <tr>
+    <td>Windows XP</td>
+    <td>%LOCAL_APPDATA%\openzone</td>
+    <td>C:\Documents and Settings\&lt;uporabniško_ime&gt;\Local Settings\openzone</td>
+  </tr>
+  <tr>
+    <td>Windows 7</td>
+    <td>%LOCAL_APPDATA%\openzone</td>
+    <td>C:\Users\&lt;uporabniško_ime&gt;\AppData\Local\openzone</td>
+  </tr>
+</table>
+
+<h4>Imenik &lt;data&gt;</h4>
+<table>
+  <tr>
+    <th>Platforma</th>
+    <th>Natančna pot</th>
+    <th>Običajna pot</th>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>&lt;namestitvena_predpona&gt;/share/openzone</td>
+    <td>/usr/share/openzone</td>
+  </tr>
+  <tr>
+    <td>Windows XP</td>
+    <td>&lt;namestitveni_imenik&gt;\share\openzone</td>
+    <td>C:\Program Files\OpenZone\share\openzone</td>
+  </tr>
+  <tr>
+    <td>Windows 7</td>
+    <td>&lt;namestitveni_imenik&gt;\share\openzone</td>
+    <td>C:\Program Files (x86)\OpenZone\share\openzone</td>
+  </tr>
+</table>
+
+<h2><a name="vfs" href="#">Navidezni datotečni sistem</a></h2>
+<p>
+  Podatki za igre se preberejo iz notranjega navideznega datotečnega sistema, ki je unija naslednjih
+  mest:
+</p>
+<ol>
+  <li>vsebina imenika <a href="#dirs">&lt;local&gt;</a></li>
+  <li>vsebina arhivov *.7z in *.zip v imeniku <a href="#dirs">&lt;local&gt;</a></li>
+  <li>vsebina imenika <a href="#dirs">&lt;data&gt;</a></li>
+  <li>vsebina arhivov *.7z in *.zip v imeniku <a href="#dirs">&lt;data&gt;</a>.</li>
+</ol>
+<p>
+  Če se datoteka nahaja na več mestih, se uporabi prva pojavitev. Mesta se preiščejo v zgoraj
+  navedenem vrstnem redu. Arhivi 7zip se preiščejo pred arhivi ZIP v posameznem imeniku. Arhivi
+  istega tipa v istem imeniku se preiščejo po leksikografskem vrstnem redu (urejeno glede na ime
+  datoteke arhiva z uporabo funkcije <code>strcmp()</code>).
+</p>
+<p>
+  Preverjanje končnic je občutljivo na velikost črk, zato se morajo za končnice arhivov uporabljati
+  izključno male črke.
+</p>
+
+<h2><a name="deps" href="#">Odvisnosti</a></h2>
+<p>
+  Binarni paketi bodisi že vsebujejo potrebne knjižnice ali jih imajo navedene navedene kot
+  odvisnost. Naslednje knjižnice so neposredne odvisnosti, potrebne za poganjanje:
+</p>
+<ul>
+  <li>libpulse (samo na Linuxu)</li>
+  <li>PhysFS 2.0</li>
+  <li>SDL 1.2 (ali 2.0, odvisno od gradnje)</li>
+  <li>Lua 5.1 (ali 5.2, odvisno od gradnje)</li>
+  <li>OpenGL 2.1+</li>
+  <li>OpenAL 1.1</li>
+  <li>FreeImage (neobvezno, za orodje ozBuild)</li>
+  <li>libvorbis</li>
+  <li>libmad (neobvezno, za predvajanje datotek MP3)</li>
+  <li>faad2 (neobvezno, za predvajanje datotek AAC).</li>
+</ul>
+
+<h2><a name="troubleshooting" href="#">Problemi</a></h2>
+<ul>
+  <li>
+    Prepričaj se, da imaš <b>NAJNOVEJŠE</b> gonilnike za grafično kartico.
+  </li>
+  <li>
+    Izklop namiznih učinkov ali preklop v celozaslonski način utegne precej pohitriti grafiko.
+  </li>
+  <li>
+    Potrebuješ vsaj grafično kartico in gonilnik s podporo za OpenGL 2.1 in naslednjimi
+    razširitvami:
+    <ul>
+      <li>
+        GL_ARB_framebuffer_object in
+      </li>
+      <li>
+        GL_EXT_texture_compression_s3tc.
+      </li>
+    </ul>
+    Kartica s popolno podporo za DirectX 9.0c bi morala zadostovati. Na Linuxu pogon deluje tako na
+    lastniških kot na odprtokodnih gonilnikih Gallium3D.
+  </li>
+  <li>
+    Če uporabljaš gonilnike osnovane na Gallium3D in teksture manjkajo, nastavi
+    <span class="config">shader.setSamplerIndices</span> na "false" v datoteki
+    <a href="#dirs">&lt;config&gt;</a>/client.rc.
+  </li>
+  <li>
+    Če uporabljaš gonilnike AMD/ATI Catalyst in je teren bel/siv nastavi <span class="config">
+    shader.setSamplerIndices</span> na "true" v datoteki <a href="#dirs">&lt;config&gt;</a>
+    /client.rc.
+  </li>
+  <li>
+    Če imaš staro grafično kartico ali gonilnike AMD/ATI Catalyst in manjkajo
+    modeli MD2, nastavi <span class="config">shader.vertexTexture</span> na "false" v datoteki
+    <a href="#dirs">&lt;config&gt;</a>/client.rc, sicer pa na "true" za hitrejše izrisovanje.
+  </li>
+</ul>
+
+<h2><a name="legal" href="#">Avtorske pravice</a></h2>
+<h3>Pogon OpenZone</h3>
+<div>
+  Copyright © 2002-2012 Davorin Učakar
+</div>
+<table>
+  <tr>
+    <td>Avtor:</td>
+    <td>Davorin Učakar</td>
+  </tr>
+  <tr>
+    <td>Kontakt:</td>
+    <td><a href="mailto:davorin.ucakar@gmail.com">davorin.ucakar@gmail.com</a></td>
+  </tr>
+  <tr>
+    <td>Izvorna koda:</td>
+    <td><a href="https://github.com/ducakar/openzone/">github.com/ducakar/openzone</a></td>
+  </tr>
+</table>
+<p>
+  Ta program je POPOLNOMA BREZ GARANCIJE. To je prosto programje pod
+  <a href="doc/libs/COPYING.GPL3.txt">GNU General Public License različice 3</a> ali (po vaši
+  izbiri) katere novejše različice.
+</p>
+
+<p>
+  Knjižnico liboz, ki sicer je del pogona, se lahko ločeno razpečuje in spreminja tudi pod pogoji
+  <a href="doc/libs/COPYING.liboz.txt">licence ZLIB</a>.
+</p>
+
+<h3>Podatki</h3>
+<p>
+  Podatki za igre so pridobljeni iz različnih virov in so pod več različnimi licencami. Za
+  podrobnosti glejte posamezne datoteke README* and COPYING* v imenikih in arhivih s podatki za
+  igre.
+</p>
+
+<h3>Tretje knjižnice</h3>
+<p>
+  Vkolikor OpenZone ni razpečevan kot paket za katero od distribucij Linuxa, vsebuje tudi (nekatere)
+  naslednje tretje knjižnice, ki jih potrebuje za delovanje:
+</p>
+
+<h4>PhysFS</h4>
+<table>
+  <tr>
+    <td>Spletna stran:</td>
+    <td><a href="http://icculus.org/physfs/">icculus.org/physfs</a></td>
+  </tr>
+  <tr>
+    <td>Licenca:</td>
+    <td><a href="doc/libs/COPYING.PhysFS.txt">ZLIB</a></td>
+  </tr>
+</table>
+
+<h4>zlib</h4>
+<table>
+  <tr>
+    <td>Spletna stran:</td>
+    <td><a href="http://www.zlib.net/">www.zlib.net</a></td>
+  </tr>
+  <tr>
+    <td>Licenca:</td>
+    <td><a href="doc/libs/COPYING.zlib.txt">ZLIB</a></td>
+  </tr>
+</table>
+
+<h4>SDL 2.0</h4>
+<table>
+  <tr>
+    <td>Spletna stran:</td>
+    <td><a href="http://www.libsdl.org/">www.libsdl.org</a></td>
+  </tr>
+  <tr>
+    <td>Licenca:</td>
+    <td><a href="doc/libs/COPYING.SDL2.txt">ZLIB</a></td>
+  </tr>
+</table>
+
+<h4>SDL 1.2</h4>
+<table>
+  <tr>
+    <td>Spletna stran:</td>
+    <td><a href="http://www.libsdl.org/">www.libsdl.org</a></td>
+  </tr>
+  <tr>
+    <td>Licenca:</td>
+    <td><a href="doc/libs/COPYING.LGPL2.1.txt">GNU Lesser General Public Licence 2.1</a></td>
+  </tr>
+</table>
+
+<h4>SDL_ttf</h4>
+<table>
+  <tr>
+    <td>Spletna stran:</td>
+    <td><a href="http://www.libsdl.org/projects/SDL_ttf/">www.libsdl.org/projects/SDL_ttf</a></td>
+  </tr>
+  <tr>
+    <td>Licenca:</td>
+    <td><a href="doc/libs/COPYING.SDL_ttf.txt">ZLIB</a></td>
+  </tr>
+</table>
+
+<h4>FreeType</h4>
+<table>
+  <tr>
+    <td>Spletna stran:</td>
+    <td><a href="http://freetype.sourceforge.net/">freetype.sourceforge.net</a></td>
+  </tr>
+  <tr>
+    <td>Licenca:</td>
+    <td><a href="doc/libs/COPYING.FreeType.txt">FreeType</a></td>
+  </tr>
+</table>
+
+<h4>Lua</h4>
+<table>
+  <tr>
+    <td>Spletna stran:</td>
+    <td><a href="http://www.lua.org/">www.lua.org</a></td>
+  </tr>
+  <tr>
+    <td>Licenca:</td>
+    <td><a href="doc/libs/COPYING.Lua.txt">MIT</a></td>
+  </tr>
+</table>
+
+<h4>libogg</h4>
+<table>
+  <tr>
+    <td>Spletna stran:</td>
+    <td><a href="http://www.xiph.org/ogg/">www.xiph.org/ogg</a></td>
+  </tr>
+  <tr>
+    <td>Licenca:</td>
+    <td><a href="doc/libs/COPYING.libogg.txt">BSD</a></td>
+  </tr>
+</table>
+
+<h4>libvorbis</h4>
+<table>
+  <tr>
+    <td>Spletna stran:</td>
+    <td><a href="http://www.xiph.org/vorbis/">www.xiph.org/vorbis</a></td>
+  </tr>
+  <tr>
+    <td>Licenca:</td>
+    <td><a href="doc/libs/COPYING.libvorbis.txt">BSD</a></td>
+  </tr>
+</table>
+
+<h4>FreeImage</h4>
+<table>
+  <tr>
+    <td>Spletna stran:</td>
+    <td><a href="http://freeimage.sourceforge.net/">freeimage.sourceforge.net</a></td>
+  </tr>
+  <tr>
+    <td>Licenca:</td>
+    <td><a href="doc/libs/COPYING.FreeImage.txt">FreeImage Public Licence 1.0</a></td>
+  </tr>
+</table>
+
+<h4>MinGW runtime</h4>
+<table>
+  <tr>
+    <td>Spletna stran:</td>
+    <td><a href="http://www.mingw.org/">www.mingw.org</a></td>
+  </tr>
+  <tr>
+    <td>Licenca:</td>
+    <td>Javna last</td>
+  </tr>
+</table>
+
+</body>
+</html>

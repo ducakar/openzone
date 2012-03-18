@@ -1,6 +1,2 @@
-Xorg 1.12 issues:
-- Mouse wheel moves are sometime not detected or wheel moves that didn't happen are detected when
-  wheel changes direction. It seems it's a bug in Xinput 1.6 as many other applications also have
-  similar issues. AFAIK workaround for this bug is not possible.
-- Mesa 8.0 doesn't generate mipmaps correctly (higher levels are black) when using S3 texture
-  compression.
+- Mesa 8.0 doesn't generate mipmaps correctly (higher levels are black) when
+  using S3 texture compression.

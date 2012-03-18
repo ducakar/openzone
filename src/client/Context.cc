@@ -156,9 +156,9 @@ uint Context::readTextureLayer( InputStream* stream, const char* path )
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
 
   for( int i = 0; i < nMipmaps; ++i ) {
-    int width = stream->readInt();
+    int width  = stream->readInt();
     int height = stream->readInt();
-    int size = stream->readInt();
+    int size   = stream->readInt();
 
     if( usesS3TC ) {
       glCompressedTexImage2D( GL_TEXTURE_2D, i, uint( internalFormat ), width, height, 0,
