@@ -139,8 +139,8 @@ GalileoFrame::GalileoFrame( const QuestFrame* questFrame_ ) :
 {
   flags = PINNED_BIT;
 
-  arrowTexId = loadTexture( "ui/galileo/arrow.ozcTex" );
-  markerTexId = loadTexture( "ui/galileo/marker.ozcTex" );
+  arrowTexId = loadTexture( "ui/icon/arrow.ozIcon" );
+  markerTexId = loadTexture( "ui/icon/marker.ozIcon" );
 }
 
 GalileoFrame::~GalileoFrame()

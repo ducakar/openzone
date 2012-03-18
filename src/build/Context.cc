@@ -158,6 +158,10 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
   PhysFile file( path );
   String realPath = file.realPath();
 
+  if( file.getType() == File::MISSING ) {
+    throw Exception( "File '%s' does not exits", realPath.cstr() );
+  }
+
   FREE_IMAGE_FORMAT type = FreeImage_GetFileType( realPath );
   if( type == FIF_UNKNOWN ) {
     throw Exception( "Invalid image file type '%s'", realPath.cstr() );

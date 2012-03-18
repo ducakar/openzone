@@ -26,7 +26,7 @@ build()
 package_liboz()
 {
   pkgdesc='OpenZone core library'
-  license=('custom')
+  license=('ZLIB')
   depends=('libpulse' 'physfs')
 
   cd ${srcdir}/build

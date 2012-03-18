@@ -20,7 +20,7 @@
   - compiled as shared library
   - additional dependencies: libpulse on Linux and PhysicsFS 2.0
   - fully documented
-  - X11 licence for liboz
+  - ZLIB licence for liboz
 * common:
   - new layer, split from matrix
   - Span and Timer classes moved to common from matrix

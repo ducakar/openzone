@@ -23,7 +23,7 @@
 
 #include "stable.hh"
 
-#include "build/Mouse.hh"
+#include "build/UI.hh"
 
 #include "client/ui/Mouse.hh"
 
@@ -34,10 +34,36 @@ namespace oz
 namespace build
 {
 
-void Mouse::build()
+const char* const UI::ICON_NAMES[] = {
+  "crosshair",
+  "use",
+  "device",
+  "equip",
+  "unequip",
+  "mount",
+  "take",
+  "browse",
+  "lift",
+  "grab",
+  "locked",
+  "unlocked",
+  "scrollUp",
+  "scrollDown",
+  "marker",
+  "arrow"
+};
+
+void UI::buildCursors()
 {
-  log.println( "Prebuilding mouse cursors {" );
+  if( PhysFile( "ui/cur" ).getType() == File::MISSING ) {
+    return;
+  }
+
+  log.println( "Building mouse cursors {" );
   log.indent();
+
+  bool useS3TC = context.useS3TC;
+  context.useS3TC = false;
 
   File::mkdir( "ui" );
   File::mkdir( "ui/cur" );
@@ -73,33 +99,50 @@ void Mouse::build()
 
     glDeleteTextures( 1, &texId );
 
-    File( String::str( "ui/cur/%s.ozcCur", ui::Mouse::NAMES[i] ) ).write( &os );
+    File( String::str( "ui/cur/%s.ozCur", ui::Mouse::NAMES[i] ) ).write( &os );
   }
 
-  DArray<PhysFile> files = PhysFile( "ui/cur" ).ls();
+  context.useS3TC = useS3TC;
 
-  foreach( file, files.iter() ) {
-    String fileName = file->name();
+  log.unindent();
+  log.println( "}" );
+}
 
-    if( fileName.beginsWith( "README" ) || fileName.beginsWith( "COPYING" ) ) {
-      log.print( "Copying '%s' ...", fileName.cstr() );
+void UI::buildIcons()
+{
+  if( PhysFile( "ui/icon" ).getType() == File::MISSING ) {
+    return;
+  }
 
-      if( !file->map() ) {
-        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
-      }
+  log.println( "Building UI icons {" );
+  log.indent();
 
-      InputStream is = file->inputStream();
-      File destFile( "ui/cur/" + fileName );
+  bool useS3TC = context.useS3TC;
+  context.useS3TC = false;
 
-      if( !destFile.write( &is ) ) {
-        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
-      }
+  File::mkdir( "ui" );
+  File::mkdir( "ui/icon" );
 
-      file->unmap();
+  foreach( name, citer( ICON_NAMES ) ) {
+    String srcPath  = String::str( "ui/icon/%s.png", *name );
+    String destPath = String::str( "ui/icon/%s.ozIcon", *name );
 
-      log.printEnd( " OK" );
+    uint id = context.loadLayer( srcPath, false, GL_LINEAR, GL_LINEAR );
+    hard_assert( id != 0 );
+
+    BufferStream os;
+
+    log.println( "Compiling '%s'", destPath.cstr() );
+    context.writeLayer( id, &os );
+
+    glDeleteTextures( 1, &id );
+
+    if( !File( destPath ).write( &os ) ) {
+      throw Exception( "Texture writing failed" );
     }
   }
+
+  context.useS3TC = useS3TC;
 
   log.unindent();
   log.println( "}" );

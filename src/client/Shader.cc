@@ -258,16 +258,6 @@ void Shader::use( int id )
   OZ_GL_CHECK_ERROR();
 }
 
-void Shader::push()
-{
-  programStack.pushLast( activeProgram );
-}
-
-void Shader::pop()
-{
-  use( programStack.popLast() );
-}
-
 void Shader::setLightingDistance( float distance )
 {
   lightingDistance = distance;

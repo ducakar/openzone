@@ -98,7 +98,7 @@ if( NOT DEFINED FAAD_INCLUDE_DIR )
   set( FAAD_INCLUDE_DIR "" CACHE PATH "" FORCE )
 endif()
 
-find_library( FREEIMAGE_LIBRARY freeimage NAMES FreeImage )
+find_library( FREEIMAGE_LIBRARY freeimage )
 find_library( VORBISFILE_LIBRARY vorbisfile )
 
 mark_as_advanced( PHYSFS_INCLUDE_DIR )
@@ -214,8 +214,9 @@ add_subdirectory( doc )
 
 # info files and documentation
 if( WIN32 OR OZ_STANDALONE )
-  file( GLOB readmes README* )
-  install( FILES AUTHORS COPYING ${readmes} ChangeLog BUGS TODO DESTINATION . )
+  install( FILES AUTHORS COPYING ChangeLog BUGS TODO
+           README.html PREBERI.html
+           DESTINATION . )
   install( DIRECTORY doc/doxygen/html/ COMPONENT documentation DESTINATION doc/doxygen )
 endif()
 
@@ -252,7 +253,7 @@ set( CPACK_PACKAGE_CONTACT "Davorin Učakar <davorin.ucakar@gmail.com>" )
 set( CPACK_TOPLEVEL_TAG "${OZ_APPLICATION_NAME}" )
 set( CPACK_SYSTEM_NAME "${OZ_SYSTEM_NAME}" )
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING" )
-set( CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README" )
+set( CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.html" )
 set( CPACK_PACKAGE_EXECUTABLES "bin/openzone" "OpenZone" ) # start menu entry
 set( CPACK_STRIP_FILES "bin/openzone;bin/ozBuild" )
 set( CPACK_PACKAGE_INSTALL_DIRECTORY "${OZ_APPLICATION_NAME}" )

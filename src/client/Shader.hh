@@ -202,8 +202,6 @@ class Shader
     Shader();
 
     void use( int id );
-    void push();
-    void pop();
 
     void setLightingDistance( float distance );
     void setAmbientLight( const Vec4& colour );

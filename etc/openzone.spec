@@ -16,12 +16,12 @@ Requires:       %{name}-data = %{version}
 
 %package -n liboz
 Summary:        OpenZone core library
-License:        MIT
+License:        zlib
 Group:          System Environment/Libraries
 
 %package -n liboz-devel
 Summary:        Headers and documentation for OpenZone core library
-License:        MIT
+License:        zlib
 Group:          Development/Libraries
 Requires:       liboz = %{version}
 
