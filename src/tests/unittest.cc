@@ -23,7 +23,7 @@
 
 #include "oz/oz.hh"
 
-#include <iostream>
+#include <cstdio>
 
 #define OZ_CHECK( cond ) \
   if( !( cond ) ) { throw Exception( "Check %s failed", #cond ); }
@@ -31,7 +31,7 @@
 #define OZ_UNITTEST( name ) \
   oz::name##Unittest(); \
   OZ_CHECK( oz::constructCount == 0 ); \
-  cout << #name " Passed" << endl;
+  printf( #name " Passed\n" );
 
 using namespace std;
 

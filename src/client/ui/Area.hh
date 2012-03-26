@@ -72,10 +72,12 @@ class Area
 
   public:
 
-    static int uiWidth;
-    static int uiHeight;
-    static int uiCentreX;
-    static int uiCentreY;
+    static float uiScaleX;
+    static float uiScaleY;
+    static int   uiWidth;
+    static int   uiHeight;
+    static int   uiCentreX;
+    static int   uiCentreY;
 
     Area* parent;
     DList<Area> children;
@@ -117,10 +119,8 @@ class Area
     void add( Area* area, int relativeX, int relativeY );
     void add( Area* area );
     void remove( Area* area );
-    // bring to front
-    void focus( Area* area );
-    // push to background
-    void sink( Area* area );
+    void raise();
+    void sink();
 
 };
 

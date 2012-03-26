@@ -394,7 +394,7 @@ backtraceFound:
 
 using namespace oz;
 
-void* operator new ( std::size_t size ) throw( std::bad_alloc )
+void* operator new ( std::size_t size )
 {
   size += Alloc::alignUp( sizeof( size_t ) );
 
@@ -415,7 +415,7 @@ void* operator new ( std::size_t size ) throw( std::bad_alloc )
   return allocateObject( ptr, size );
 }
 
-void* operator new[] ( std::size_t size ) throw( std::bad_alloc )
+void* operator new[] ( std::size_t size )
 {
   size += Alloc::alignUp( sizeof( size_t ) );
 
@@ -436,7 +436,7 @@ void* operator new[] ( std::size_t size ) throw( std::bad_alloc )
   return allocateArray( ptr, size );
 }
 
-void operator delete ( void* ptr ) throw()
+void operator delete ( void* ptr ) noexcept
 {
   if( ptr == null ) {
     return;
@@ -445,7 +445,7 @@ void operator delete ( void* ptr ) throw()
   deallocateObject( ptr );
 }
 
-void operator delete[] ( void* ptr ) throw()
+void operator delete[] ( void* ptr ) noexcept
 {
   if( ptr == null ) {
     return;
@@ -454,7 +454,7 @@ void operator delete[] ( void* ptr ) throw()
   deallocateArray( ptr );
 }
 
-void* operator new ( std::size_t size, const std::nothrow_t& ) throw()
+void* operator new ( std::size_t size, const std::nothrow_t& ) noexcept
 {
   size += Alloc::alignUp( sizeof( size_t ) );
 
@@ -475,7 +475,7 @@ void* operator new ( std::size_t size, const std::nothrow_t& ) throw()
   return allocateObject( ptr, size );
 }
 
-void* operator new[] ( std::size_t size, const std::nothrow_t& ) throw()
+void* operator new[] ( std::size_t size, const std::nothrow_t& ) noexcept
 {
   size += Alloc::alignUp( sizeof( size_t ) );
 
@@ -496,7 +496,7 @@ void* operator new[] ( std::size_t size, const std::nothrow_t& ) throw()
   return allocateArray( ptr, size );
 }
 
-void operator delete ( void* ptr, const std::nothrow_t& ) throw()
+void operator delete ( void* ptr, const std::nothrow_t& ) noexcept
 {
   if( ptr == null ) {
     return;
@@ -505,7 +505,7 @@ void operator delete ( void* ptr, const std::nothrow_t& ) throw()
   deallocateObject( ptr );
 }
 
-void operator delete[] ( void* ptr, const std::nothrow_t& ) throw()
+void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept
 {
   if( ptr == null ) {
     return;

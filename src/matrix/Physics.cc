@@ -42,7 +42,7 @@ const float Physics::SPLASH_THRESHOLD        = -2.0f;
 const float Physics::WEIGHT_DAMAGE_THRESHOLD =  1000.0f;
 const float Physics::WEIGHT_DAMAGE_FACTOR    =  20.0f;
 const float Physics::SLIDE_DAMAGE_THRESHOLD  =  25.0f;
-const float Physics::SLIDE_DAMAGE_COEF       =  0.065f;
+const float Physics::SLIDE_DAMAGE_COEF       =  0.06f;
 
 const float Physics::STICK_VELOCITY          =  0.03f;
 const float Physics::SLICK_STICK_VELOCITY    =  0.001f;
@@ -260,14 +260,15 @@ void Physics::handleObjHit()
   if( hit.obj != null && ( hit.obj->flags & Object::DYNAMIC_BIT ) ) {
     Dynamic* sDyn = static_cast<Dynamic*>( hit.obj );
 
+    bool  isDynBot    = dyn->flags & Object::BOT_BIT;
     float massSum     = dyn->mass + sDyn->mass;
     Vec3  momentum    = ( dyn->momentum * dyn->mass + sDyn->momentum * sDyn->mass ) / massSum;
     float hitMomentum = ( dyn->momentum - sDyn->momentum ) * hit.normal;
     float hitVelocity = dyn->velocity * hit.normal;
 
     if( hitMomentum < HIT_THRESHOLD && hitVelocity < HIT_THRESHOLD ) {
-      dyn->hit( &hit, hitMomentum );
-      sDyn->hit( &hit, hitMomentum );
+      dyn->hit( &hit, hitMomentum, true );
+      sDyn->hit( &hit, hitMomentum, !isDynBot );
     }
 
     if( hit.normal.z == 0.0f ) {
@@ -275,29 +276,27 @@ void Physics::handleObjHit()
       float dynMomProj  =  dyn->momentum.x * hit.normal.x +  dyn->momentum.y * hit.normal.y;
       float sDynMomProj = sDyn->momentum.x * hit.normal.x + sDyn->momentum.y * hit.normal.y;
       float sDynVelProj = sDyn->velocity.x * hit.normal.x + sDyn->velocity.y * hit.normal.y;
+      float directPushX = ( momProj - sDynMomProj ) * hit.normal.x;
+      float directPushY = ( momProj - sDynMomProj ) * hit.normal.y;
 
       dyn->momentum.x -= ( dynMomProj - sDynVelProj ) * hit.normal.x;
       dyn->momentum.y -= ( dynMomProj - sDynVelProj ) * hit.normal.y;
 
-      sDyn->flags &= ~Object::DISABLED_BIT;
+      sDyn->flags      &= ~Object::DISABLED_BIT;
+      sDyn->momentum.x += directPushX;
+      sDyn->momentum.y += directPushY;
 
-      if( dyn->flags & Object::BOT_BIT ) {
-        float pushX       = momentum.x - sDyn->momentum.x;
-        float pushY       = momentum.y - sDyn->momentum.y;
-        float directPushX = ( momProj - sDynMomProj ) * hit.normal.x;
-        float directPushY = ( momProj - sDynMomProj ) * hit.normal.y;
+      if( isDynBot ) {
+        float pushX = momentum.x - sDyn->momentum.x;
+        float pushY = momentum.y - sDyn->momentum.y;
 
-        sDyn->momentum.x += directPushX + SIDE_PUSH_RATIO * ( pushX - directPushX );
-        sDyn->momentum.y += directPushY + SIDE_PUSH_RATIO * ( pushY - directPushY );
+        sDyn->momentum.x += SIDE_PUSH_RATIO * ( pushX - directPushX );
+        sDyn->momentum.y += SIDE_PUSH_RATIO * ( pushY - directPushY );
 
         // Allow side-pushing downwards in water.
         if( ( sDyn->flags & Object::IN_LIQUID_BIT ) && momentum.z < 0.0f ) {
           sDyn->momentum.z += SIDE_PUSH_RATIO * ( momentum.z - sDyn->momentum.z );
         }
-      }
-      else {
-        sDyn->momentum.x += ( momProj - sDynMomProj ) * hit.normal.x;
-        sDyn->momentum.y += ( momProj - sDynMomProj ) * hit.normal.y;
       }
     }
     else if( hit.normal.z == -1.0f ) {
@@ -324,7 +323,7 @@ void Physics::handleObjHit()
       }
 
       if( !( sDyn->flags & Object::ON_FLOOR_BIT ) && sDyn->lower == -1 ) {
-        sDyn->flags &= ~Object::DISABLED_BIT;
+        sDyn->flags     &= ~Object::DISABLED_BIT;
         sDyn->momentum.z = momentum.z;
       }
     }
@@ -337,11 +336,11 @@ void Physics::handleObjHit()
       if( hit.obj != null ) {
         Object* sObj = hit.obj;
 
-        dyn->hit( &hit, hitMomentum );
-        sObj->hit( &hit, hitMomentum );
+        dyn->hit( &hit, hitMomentum, true );
+        sObj->hit( &hit, hitMomentum, false );
       }
       else {
-        dyn->hit( &hit, hitMomentum );
+        dyn->hit( &hit, hitMomentum, true );
 
         if( hit.str != null ) {
           hit.str->hit( dyn->mass, hitMomentum );

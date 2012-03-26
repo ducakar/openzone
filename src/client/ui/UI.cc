@@ -54,7 +54,7 @@ UI::UI() :
 
 void UI::showLoadingScreen( bool doShow )
 {
-  root->focus( loadingScreen );
+  loadingScreen->raise();
   loadingScreen->show( doShow );
 }
 
@@ -143,9 +143,9 @@ void UI::load()
   buildMenu    = showBuild ? new BuildMenu() : null;
   debugFrame   = showDebug ? new DebugFrame() : null;
 
-  root->add( questFrame );
   root->add( galileoFrame );
   root->add( musicPlayer );
+  root->add( questFrame );
 
   if( showBuild ) {
     root->add( buildMenu );
@@ -154,7 +154,7 @@ void UI::load()
     root->add( debugFrame );
   }
 
-  root->focus( loadingScreen );
+  loadingScreen->raise();
 }
 
 void UI::unload()
@@ -193,18 +193,14 @@ void UI::init()
 
   fps = 1.0f / Timer::TICK_TIME;
 
-  if( uiAspect == 0.0f ) {
-    Area::uiWidth   = int( float( camera.width  ) * uiScale + 0.5f );
-    Area::uiHeight  = int( float( camera.height ) * uiScale + 0.5f );
-    Area::uiCentreX = Area::uiWidth  / 2;
-    Area::uiCentreY = Area::uiHeight / 2;
-  }
-  else {
-    Area::uiWidth   = int( float( camera.height ) * uiScale * uiAspect + 0.5f );
-    Area::uiHeight  = int( float( camera.height ) * uiScale + 0.5f );
-    Area::uiCentreX = Area::uiWidth  / 2;
-    Area::uiCentreY = Area::uiHeight / 2;
-  }
+  float aspect = float( camera.width ) / float( camera.height );
+
+  Area::uiScaleX  = uiAspect == 0.0f ? uiScale : uiScale * uiAspect / aspect;
+  Area::uiScaleY  = uiScale;
+  Area::uiWidth   = int( float( camera.width  ) * Area::uiScaleX + 0.5f );
+  Area::uiHeight  = int( float( camera.height ) * Area::uiScaleY + 0.5f );
+  Area::uiCentreX = Area::uiWidth  / 2;
+  Area::uiCentreY = Area::uiHeight / 2;
 
   mouse.init();
   font.init();

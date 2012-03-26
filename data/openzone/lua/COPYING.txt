@@ -1,0 +1,5 @@
+Content of this directory is part of Openzone game data.
+
+Copyright © 2002-2012 Davorin Učakar
+Author:  Davorin Učakar
+Licence: GNU GPLv3+

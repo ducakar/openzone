@@ -53,17 +53,17 @@ class HashString
      */
     struct Elem
     {
+      Elem*        next;  ///< Next element in a slot.
       const String key;   ///< Key.
       Value        value; ///< Value.
-      Elem*        next;  ///< Next element in a slot.
 
       /**
        * Initialise a new element.
        */
       template <typename Key_, typename Value_>
       OZ_ALWAYS_INLINE
-      explicit Elem( Key_&& key_, Value_&& value_, Elem* next_ ) :
-        key( static_cast<Key_&&>( key_ ) ), value( static_cast<Value_&&>( value_ ) ), next( next_ )
+      explicit Elem( Elem* next_, Key_&& key_, Value_&& value_ ) :
+        next( next_ ), key( static_cast<Key_&&>( key_ ) ), value( static_cast<Value_&&>( value_ ) )
       {}
 
       OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
@@ -325,7 +325,7 @@ class HashString
       Elem* newChain = null;
 
       while( chain != null ) {
-        newChain = new( pool ) Elem( chain->key, chain->value, newChain );
+        newChain = new( pool ) Elem( newChain, chain->key, chain->value );
         chain = chain->next;
       }
       return newChain;
@@ -603,7 +603,7 @@ class HashString
         p = p->next;
       }
 
-      data[i] = new( pool ) Elem( key, static_cast<Value_&&>( value ), data[i] );
+      data[i] = new( pool ) Elem( data[i], key, static_cast<Value_&&>( value ) );
       ++count;
 
       soft_assert( loadFactor() < 0.75f );
@@ -630,7 +630,7 @@ class HashString
         p = p->next;
       }
 
-      data[i] = new( pool ) Elem( key, static_cast<Value_&&>( value ), data[i] );
+      data[i] = new( pool ) Elem( data[i], key, static_cast<Value_&&>( value ) );
       ++count;
 
       soft_assert( loadFactor() < 0.75f );

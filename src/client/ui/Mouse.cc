@@ -86,14 +86,6 @@ void Mouse::update( bool hasFocus )
     }
   }
 
-#ifndef _WIN32
-//   float move  = Math::sqrt( float( relX )*float( relX ) + float( relY )*float( relY ) );
-//   float accel = min( 1.0f + move * accelFactor, 2.0f );
-//
-//   relX = int( float( relX ) * accel );
-//   relY = int( float( relY ) * accel );
-#endif
-
   if( doShow ) {
     icon = ARROW;
 
@@ -139,7 +131,6 @@ void Mouse::init()
 {
   log.print( "Initialising Mouse ..." );
 
-  accelFactor = config.getSet( "mouse.accelFactor", 0.04f );
   doShow      = false;
   isJailed    = true;
   icon        = ARROW;

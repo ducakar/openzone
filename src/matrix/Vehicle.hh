@@ -67,6 +67,7 @@ class Vehicle : public Dynamic
     static const float AIR_FRICTION;
     static const float EXIT_EPSILON;
     static const float EXIT_MOMENTUM;
+    static const float EJECT_EPSILON;
     static const float EJECT_MOMENTUM;
 
     typedef void ( Vehicle::* Handler )( const Mat44& rotMat );

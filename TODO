@@ -1,28 +1,25 @@
 0.3
-- matrix
-  * improve Vehicle rotation
 - ui
-  * tutorial tips
-  * options menu
-  * mission selection
   * pause menu
 - client
   * time compression
   * pause
   * improve MD2 animation (transitions, firstFrame, secondFrame, nextFrame)
-  * MD3 animation
   * fix bloom
   * fix in-vehicle camera (rotation axis & free look)
-- tools
-  * UI class for prebuilding UI icons etc.
 
 0.4
 - new löök
 - matrix
   * Vehicle: turret, wheeled, tracked, mech warrior
+  * improve Vehicle rotation
 - ui
+  * tutorial tips
+  * options menu
+  * mission selection
   * advanced HUD for mechanic units and vehicles
 - client
+  * MD3 animation
   * distant objects fade out
   * BSP rendering per partes
   * decals

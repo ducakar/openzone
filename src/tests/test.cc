@@ -22,31 +22,44 @@
  */
 
 #include "oz/oz.hh"
-
-// #include <QtGui/QApplication>
-// #include <QtGui/QPushButton>
-
 #include <cstdio>
 
 using namespace oz;
 
-int array[] = { 1, 2, 3, 4 };
-
-StackTrace foo()
+struct Foo
 {
-  return { 0, {} };
-}
-
-int main( int argc, char** argv )
-{
-  static_cast<void>( argc );
-  static_cast<void>( argv );
-
-  StackTrace st = foo();
-
-  foreach( i, citer( st.frames ) ) {
-    printf( "%p :: ", *i );
+  Foo()
+  {
+    printf( "Foo()\n" );
   }
-  printf( "\n" );
+
+  Foo( const Foo& )
+  {
+    printf( "Foo( const Foo& )\n" );
+  }
+
+  Foo( Foo&& )
+  {
+    printf( "Foo( Foo&& )\n" );
+  }
+
+  Foo& operator = ( const Foo& )
+  {
+    printf( "Foo& operator = ( const Foo& )\n" );
+    return *this;
+  }
+
+  Foo& operator = ( Foo&& )
+  {
+    printf( "Foo& operator = ( Foo&& )\n" );
+    return *this;
+  }
+};
+
+int main()
+{
+  HashString<Foo> hs;
+
+  hs.add( "Drekec", Foo() );
   return 0;
 }

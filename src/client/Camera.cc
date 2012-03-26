@@ -196,8 +196,6 @@ void Camera::reset()
   relV      = 0.0f;
 
   rot       = Quat::ID;
-  relRot    = Quat::ID;
-
   rotMat    = Mat44::rotation( rot );
   rotTMat   = ~rotTMat;
 

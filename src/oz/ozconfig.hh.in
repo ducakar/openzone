@@ -60,3 +60,8 @@
 #define OZ_ALWAYS_INLINE             __attribute__(( always_inline ))
 #define OZ_NORETURN                  __attribute__(( noreturn ))
 #define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
+
+// A hack for KDevelop to recognise noexcept keyword (it doesn't know __LINE__ macro is defined).
+#ifndef __LINE__
+# define noexcept throw()
+#endif

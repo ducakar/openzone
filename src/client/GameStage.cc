@@ -142,7 +142,7 @@ void GameStage::reload()
   ui::mouse.doShow = false;
   ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Loading ..." ) );
   ui::ui.showLoadingScreen( true );
-  ui::ui.root->focus( ui::ui.loadingScreen );
+  ui::ui.loadingScreen->raise();
 
   loader.unload();
 
@@ -278,15 +278,16 @@ bool GameStage::update()
 
   beginMicros = Time::uclock();
 
-  if( ui::keyboard.keys[SDLK_F5] && !ui::keyboard.oldKeys[SDLK_F5] ) {
+  if( ui::keyboard.keys[SDLK_F9] && !ui::keyboard.oldKeys[SDLK_F9] ) {
     write( QUICKSAVE_FILE );
   }
-  if( ui::keyboard.keys[SDLK_F7] && !ui::keyboard.oldKeys[SDLK_F7] ) {
-    stateFile = QUICKSAVE_FILE;
-    reload();
-  }
-  if( ui::keyboard.keys[SDLK_F8] && !ui::keyboard.oldKeys[SDLK_F8] ) {
-    stateFile = AUTOSAVE_FILE;
+  if( ui::keyboard.keys[SDLK_F10] && !ui::keyboard.oldKeys[SDLK_F10] ) {
+    if( ui::keyboard.keys[SDLK_LCTRL] || ui::keyboard.keys[SDLK_RCTRL] ) {
+      stateFile = AUTOSAVE_FILE;
+    }
+    else {
+      stateFile = QUICKSAVE_FILE;
+    }
     reload();
   }
   if( ui::keyboard.keys[SDLK_ESCAPE] ) {

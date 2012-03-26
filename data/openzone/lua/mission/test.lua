@@ -29,7 +29,7 @@ function onUpdate()
 end
 
 function onCreate()
-  ozOrbisSetGravity( -6.0 )
+--   ozOrbisSetGravity( -6.0 )
 
   ozTerraLoad( "terra" )
 
@@ -72,6 +72,8 @@ function init_sample()
   ozOrbisAddObj( OZ_FORCE, "droid_weapon.hyperblaster", 135, -3, 73 )
   ozOrbisAddObj( OZ_FORCE, "droid_weapon.chaingun", 136, -3, 73 )
   ozOrbisAddObj( OZ_FORCE, "droid_weapon.grenadeLauncher", 137, -3, 73 )
+
+  ozOrbisAddObj( OZ_FORCE, "key", 160, 3, 73 )
 
   ozOrbisAddObj( OZ_FORCE, "raptor", 155, -30, 71 )
   ozOrbisAddObj( OZ_FORCE, "hoverTank", 145, -30, 71 )

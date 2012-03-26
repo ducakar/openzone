@@ -36,7 +36,7 @@ namespace oz
 {
 
 Exception::Exception( const char* file_, int line_, const char* function_,
-                      const char* message_, ... ) throw() :
+                      const char* message_, ... ) noexcept :
   file( file_ ), function( function_ ), line( line_ )
 {
   System::trap();
@@ -49,7 +49,7 @@ Exception::Exception( const char* file_, int line_, const char* function_,
   stackTrace = StackTrace::current( 1 );
 }
 
-const char* Exception::what() const throw()
+const char* Exception::what() const noexcept
 {
   return message;
 }

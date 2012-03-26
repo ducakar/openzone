@@ -39,10 +39,12 @@ namespace ui
 
 Vector<Area*> Area::updateAreas;
 
-int Area::uiWidth;
-int Area::uiHeight;
-int Area::uiCentreX;
-int Area::uiCentreY;
+float Area::uiScaleX;
+float Area::uiScaleY;
+int   Area::uiWidth;
+int   Area::uiHeight;
+int   Area::uiCentreX;
+int   Area::uiCentreY;
 
 Area::Area( int width_, int height_ ) :
   flags( 0 ), parent( null ), x( 0 ), y( 0 ), width( width_ ), height( height_ )
@@ -214,23 +216,19 @@ void Area::remove( Area* area )
   delete area;
 }
 
-void Area::focus( Area* area )
+void Area::raise()
 {
-  hard_assert( children.has( area ) );
-
-  if( children.first() != area ) {
-    children.remove( area );
-    children.pushFirst( area );
+  if( parent != null && parent->children.first() != this ) {
+    parent->children.remove( this );
+    parent->children.pushFirst( this );
   }
 }
 
-void Area::sink( Area* area )
+void Area::sink()
 {
-  hard_assert( children.has( area ) );
-
-  if( children.last() != area ) {
-    children.remove( area );
-    children.pushLast( area );
+  if( parent != null && parent->children.last() != this ) {
+    parent->children.remove( this );
+    parent->children.pushLast( this );
   }
 }
 

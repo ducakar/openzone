@@ -56,12 +56,12 @@ class Exception : public std::exception
      */
     OZ_PRINTF_FORMAT( 5, 6 )
     explicit Exception( const char* file, int line, const char* function,
-                        const char* message, ... ) throw();
+                        const char* message, ... ) noexcept;
 
     /**
      * Message string (no file, stack trace etc.).
      */
-    virtual const char* what() const throw();
+    virtual const char* what() const noexcept;
 
 };
 

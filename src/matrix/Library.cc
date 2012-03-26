@@ -347,20 +347,32 @@ void Library::initBSPs()
 
 void Library::initModels()
 {
-  log.println( "Models (*.ozcSMM, *.ozcMD2, *.ozcMD3 in 'mdl') {" );
+  log.println( "Models (directories in 'mdl') {" );
   log.indent();
 
   PhysFile dir( "mdl" );
   DArray<PhysFile> dirList = dir.ls();
 
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "ozcSMM" ) && !file->hasExtension( "ozcMD2" ) &&
-        !file->hasExtension( "ozcMD3" ) )
-    {
+  foreach( file, dirList.iter() ) {
+    if( file->getType() != File::DIRECTORY ) {
       continue;
     }
 
-    String name = file->baseName();
+    String name = file->name();
+    String path;
+
+    if( PhysFile( file->path() + "/data.ozcSMM" ).getType() != File::MISSING ) {
+      path = file->path() + "/data.ozcSMM";
+    }
+    else if( PhysFile( file->path() + "/data.ozcMD2" ).getType() != File::MISSING ) {
+      path = file->path() + "/data.ozcMD2";
+    }
+    else if( PhysFile( file->path() + "/data.ozcMD3" ).getType() != File::MISSING ) {
+      path = file->path() + "/data.ozcMD3";
+    }
+    else {
+      throw Exception( "Invalid model '%s'", name.cstr() );
+    }
 
     log.println( "%s", name.cstr() );
 
@@ -369,7 +381,7 @@ void Library::initModels()
     }
 
     modelIndices.add( name, models.length() );
-    models.add( Resource( name, file->path() ) );
+    models.add( Resource( name, path ) );
   }
 
   log.unindent();

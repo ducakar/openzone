@@ -766,7 +766,7 @@ void Sound::init()
   alSourcei( musicSource, AL_SOURCE_RELATIVE, AL_TRUE );
 
   setVolume( config.getSet( "sound.volume", 1.0f ) );
-  setMusicVolume( 0.5f );
+  setMusicVolume( 0.3f );
 
 #ifdef _WIN32
   libmad  = SDL_LoadObject( "libmad.dll" );

@@ -42,9 +42,10 @@
  * @ingroup oz
  */
 #define OZ_STATIC_POOL_ALLOC( pool ) \
-  public:\
-    void* operator new ( size_t ) throw( std::bad_alloc ) { return pool.alloc(); } \
-    void operator delete ( void* ptr ) throw() { if( ptr != null ) pool.dealloc( ptr ); }
+  void* operator new ( size_t ) { return pool.alloc(); } \
+  void  operator delete ( void* ptr ) noexcept { if( ptr != null ) pool.dealloc( ptr ); } \
+  void* operator new ( size_t, const std::nothrow_t& ) noexcept = delete; \
+  void  operator delete ( void*, std::nothrow_t& ) noexcept = delete;
 
 /**
  * @def OZ_PLACEMENT_POOL_ALLOC( Type, SIZE )
@@ -58,15 +59,12 @@
  * @ingroup oz
  */
 #define OZ_PLACEMENT_POOL_ALLOC( Type, SIZE ) \
-  public: \
-    void* operator new ( size_t ) throw( std::bad_alloc ) = delete; \
-    void  operator delete ( void* ) throw() = delete; \
-    void* operator new ( size_t, const std::nothrow_t& ) throw() = delete; \
-    void  operator delete ( void*, const std::nothrow_t& ) throw() = delete; \
-    void* operator new ( size_t, oz::Pool<Type, SIZE>& pool ) throw( std::bad_alloc ) \
-    { return pool.alloc(); } \
-    void  operator delete ( void* ptr, oz::Pool<Type, SIZE>& pool ) throw() \
-    { pool.dealloc( ptr ); }
+  void* operator new ( size_t ) = delete; \
+  void  operator delete ( void* ) noexcept = delete; \
+  void* operator new ( size_t, const std::nothrow_t& ) noexcept = delete; \
+  void  operator delete ( void*, const std::nothrow_t& ) noexcept = delete; \
+  void* operator new ( size_t, oz::Pool<Type, SIZE>& pool ) { return pool.alloc(); } \
+  void  operator delete ( void* ptr, oz::Pool<Type, SIZE>& pool ) noexcept { pool.dealloc( ptr ); }
 
 namespace oz
 {

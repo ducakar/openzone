@@ -27,6 +27,7 @@
 
 #include "client/Camera.hh"
 #include "client/ui/UI.hh"
+#include "client/ui/GalileoFrame.hh"
 
 namespace oz
 {
@@ -74,10 +75,7 @@ void BotProxy::begin()
   ui::ui.root->add( inventory );
   ui::ui.root->add( container );
 
-  ui::ui.root->sink( container );
-  ui::ui.root->sink( inventory );
-  ui::ui.root->sink( infoFrame );
-  ui::ui.root->sink( hud );
+  hud->sink();
 
   infoFrame->show( true );
   inventory->show( false );
@@ -128,7 +126,7 @@ void BotProxy::prepare()
     camera.v += camera.relV;
   }
   else {
-    bot->h = Math::fmod( bot->h + camera.relH + 2.0f*Math::TAU, Math::TAU );
+    bot->h = Math::fmod( bot->h + camera.relH + Math::TAU, Math::TAU );
     bot->v = clamp( bot->v + camera.relV, 0.0f, Math::TAU / 2.0f );
 
     camera.h = bot->h;
@@ -206,6 +204,9 @@ void BotProxy::prepare()
   if( !alt && keys[SDLK_b] && !oldKeys[SDLK_b] ) {
     camera.mag = camera.mag == 1.0f ? BINOCULARS_MAGNIFICATION : 1.0f;
   }
+  if( !alt && keys[SDLK_m] && !oldKeys[SDLK_m] ) {
+    ui::ui.galileoFrame->setMaximised( !ui::ui.galileoFrame->isMaximised );
+  }
 
   if( camera.nightVision && !bot->hasAttribute( ObjectClass::NIGHT_VISION_BIT ) ) {
     camera.nightVision = false;
@@ -230,7 +231,7 @@ void BotProxy::prepare()
       }
     }
   }
-  if( !alt && keys[SDLK_KP_MULTIPLY] && !oldKeys[SDLK_KP_MULTIPLY] && isExternal ) {
+  if( !alt && keys[SDLK_KP_MULTIPLY] && !oldKeys[SDLK_KP_MULTIPLY] ) {
     isFreelook = !isFreelook;
 
     camera.h = bot->h;
@@ -281,9 +282,6 @@ void BotProxy::prepare()
       if( camera.objectObj != null ) {
         if( camera.objectObj->flags & Object::BROWSABLE_BIT ) {
           ui::mouse.doShow = true;
-
-          inventory->show( true );
-          container->show( true );
         }
         else {
           Dynamic* dyn = static_cast<Dynamic*>( const_cast<Object*>( camera.objectObj ) );
@@ -305,10 +303,6 @@ void BotProxy::prepare()
    * Other
    */
 
-  if( !alt && keys[SDLK_TAB] && !oldKeys[SDLK_TAB] ) {
-    ui::mouse.doShow = !ui::mouse.doShow;
-  }
-
   if( !alt && keys[SDLK_i] && !oldKeys[SDLK_i] ) {
     if( camera.allowReincarnation ) {
       bot->actions = 0;
@@ -324,6 +318,10 @@ void BotProxy::prepare()
     else {
       orbis.caelum.time += 0.1f * Timer::TICK_TIME * orbis.caelum.period;
     }
+  }
+
+  if( keys[SDLK_TAB] && !oldKeys[SDLK_TAB] ) {
+    ui::mouse.doShow = !ui::mouse.doShow;
   }
 }
 
@@ -343,13 +341,14 @@ void BotProxy::update()
       camera.v = bot->v;
     }
 
-    if( bot->parent != -1 ) { // inside vehicle
-      hard_assert( orbis.objects[bot->parent] == null ||
-                   ( orbis.objects[bot->parent]->flags & Object::VEHICLE_BIT ) );
+    if( bot->parent != -1 && orbis.objects[bot->parent] != null ) { // inside vehicle
+      const Vehicle* veh = static_cast<const Vehicle*>( orbis.objects[bot->parent] );
+
+      Mat44 rot = Mat44::rotation( veh->rot );
 
       camera.w = 0.0f;
       camera.align();
-      camera.warp( bot->p + camera.up * bot->camZ );
+      camera.warp( bot->p + rot.z * bot->camZ );
 
       bobTheta = 0.0f;
       bobBias  = 0.0f;
@@ -366,9 +365,8 @@ void BotProxy::update()
       {
         float phase = bot->step * Math::TAU;
         float sine  = Math::sin( phase );
-        float tilt  = Math::sin( phase + Math::TAU / 4.0f ) * clazz->bobRotation;
 
-        bobTheta = Math::mix( bobTheta, tilt, 0.35f );
+        bobTheta = sine * clazz->bobRotation;
         bobBias  = sine*sine * clazz->bobAmplitude;
       }
       else if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
@@ -406,8 +404,8 @@ void BotProxy::update()
     Point3 origin = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
     Vec3   offset;
 
-    if( bot->parent != -1 && orbis.objects[bot->parent] ) {
-      Vehicle* veh = static_cast<Vehicle*>( orbis.objects[bot->parent] );
+    if( bot->parent != -1 && orbis.objects[bot->parent] != null ) {
+      const Vehicle* veh = static_cast<const Vehicle*>( orbis.objects[bot->parent] );
 
       hard_assert( veh->flags & Object::VEHICLE_BIT );
 

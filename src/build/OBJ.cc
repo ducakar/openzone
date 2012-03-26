@@ -349,7 +349,8 @@ void OBJ::load()
 
 void OBJ::save()
 {
-  File destFile( path + ".ozcSMM" );
+  File::mkdir( path );
+  File destFile( path + "/data.ozcSMM" );
 
   compiler.beginMesh();
   compiler.enable( CAP_UNIQUE );
