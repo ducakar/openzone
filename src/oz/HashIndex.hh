@@ -55,17 +55,17 @@ class HashIndex
      */
     struct Elem
     {
+      Elem*     next;  ///< Next element in a slot.
       const int key;   ///< Key.
       Value     value; ///< Value.
-      Elem*     next;  ///< Next element in a slot.
 
       /**
        * Initialise a new element.
        */
       template <typename Value_>
       OZ_ALWAYS_INLINE
-      explicit Elem( int key_, Value_&& value_, Elem* next_ ) :
-        key( key_ ), value( static_cast<Value_&&>( value_ ) ), next( next_ )
+      explicit Elem( Elem* next_, int key_, Value_&& value_ ) :
+        next( next_ ), key( key_ ), value( static_cast<Value_&&>( value_ ) )
       {}
 
       OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
@@ -309,7 +309,7 @@ class HashIndex
       Elem* newChain = null;
 
       while( chain != null ) {
-        newChain = new( pool ) Elem( chain->key, chain->value, newChain );
+        newChain = new( pool ) Elem( newChain, chain->key, chain->value );
         chain = chain->next;
       }
       return newChain;
@@ -587,7 +587,7 @@ class HashIndex
         p = p->next;
       }
 
-      data[i] = new( pool ) Elem( key, static_cast<Value_&&>( value ), data[i] );
+      data[i] = new( pool ) Elem( data[i], key, static_cast<Value_&&>( value ) );
       ++count;
 
       soft_assert( loadFactor() < 0.75f );
@@ -614,7 +614,7 @@ class HashIndex
         p = p->next;
       }
 
-      data[i] = new( pool ) Elem( key, static_cast<Value_&&>( value ), data[i] );
+      data[i] = new( pool ) Elem( data[i], key, static_cast<Value_&&>( value ) );
       ++count;
 
       soft_assert( loadFactor() < 0.75f );

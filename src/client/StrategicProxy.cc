@@ -26,8 +26,8 @@
 #include "client/StrategicProxy.hh"
 
 #include "client/Camera.hh"
-
 #include "client/ui/UI.hh"
+#include "client/ui/GalileoFrame.hh"
 
 namespace oz
 {
@@ -60,7 +60,7 @@ void StrategicProxy::begin()
 
   strategicArea = new ui::StrategicArea();
   ui::ui.root->add( strategicArea );
-  ui::ui.root->sink( strategicArea );
+  strategicArea->sink();
 }
 
 void StrategicProxy::end()
@@ -78,15 +78,16 @@ void StrategicProxy::prepare()
   const ubyte* keys    = ui::keyboard.keys;
   const ubyte* oldKeys = ui::keyboard.oldKeys;
 
+  bool alt = keys[SDLK_LALT] || keys[SDLK_RALT];
+
   camera.h += camera.relH;
   camera.v += camera.relV;
 
-  if( keys[SDLK_n] && !oldKeys[SDLK_n] ) {
+  if( !alt && keys[SDLK_n] && !oldKeys[SDLK_n] ) {
     camera.nightVision = !camera.nightVision;
   }
-
-  if( keys[SDLK_TAB] && !oldKeys[SDLK_TAB] ) {
-    ui::mouse.doShow = !ui::mouse.doShow;
+  if( !alt && keys[SDLK_m] && !oldKeys[SDLK_m] ) {
+    ui::ui.galileoFrame->setMaximised( !ui::ui.galileoFrame->isMaximised );
   }
 
   if( keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) {
@@ -100,7 +101,7 @@ void StrategicProxy::prepare()
     }
   }
 
-  if( keys[SDLK_o] ) {
+  if( !alt && keys[SDLK_o] ) {
     if( keys[SDLK_LSHIFT] || keys[SDLK_RSHIFT] ) {
       orbis.caelum.time -= 0.1f * Timer::TICK_TIME * orbis.caelum.period;
     }
@@ -109,7 +110,7 @@ void StrategicProxy::prepare()
     }
   }
 
-  if( camera.allowReincarnation && keys[SDLK_i] && !oldKeys[SDLK_i] ) {
+  if( !alt && keys[SDLK_i] && !oldKeys[SDLK_i] && camera.allowReincarnation ) {
     if( strategicArea->taggedObjs.length() == 1 ) {
       const Object* tagged = orbis.objects[ strategicArea->taggedObjs.first() ];
       const Bot*    me     = null;
@@ -132,6 +133,10 @@ void StrategicProxy::prepare()
         camera.setState( Camera::BOT );
       }
     }
+  }
+
+  if( keys[SDLK_TAB] && !oldKeys[SDLK_TAB] ) {
+    ui::mouse.doShow = !ui::mouse.doShow;
   }
 }
 

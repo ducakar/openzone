@@ -518,13 +518,11 @@ int Client::main( int argc, char** argv )
 
           ui::keyboard.keys[keysym.sym] |= SDL_PRESSED;
 
-          if( keysym.sym == SDLK_F10 ) {
+          if( keysym.sym == SDLK_F11 ) {
             if( keysym.mod == 0 ) {
               loader.makeScreenshot();
             }
-          }
-          else if( keysym.sym == SDLK_F11 ) {
-            if( keysym.mod == 0 ) {
+            else if( keysym.mod & KMOD_ALT ) {
               if( SDL_WM_ToggleFullScreen( window ) != 0 ) {
                 windowFullscreen = !windowFullscreen;
 

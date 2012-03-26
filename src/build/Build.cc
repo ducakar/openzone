@@ -453,29 +453,51 @@ void Build::buildModels()
   log.println( "Building used models {" );
   log.indent();
 
-  String dirName = "mdl";
-  PhysFile dir( dirName );
-  DArray<PhysFile> dirList = dir.ls();
+  PhysFile mdlDir( "mdl" );
+  File::mkdir( mdlDir.path() );
+  DArray<PhysFile> dirList = mdlDir.ls();
 
-  dirName = dirName + "/";
-
-  foreach( file, dirList.citer() ) {
-    if( !context.usedModels.contains( file->name() ) ) {
+  foreach( dir, dirList.iter() ) {
+    if( !context.usedModels.contains( dir->name() ) ) {
       continue;
     }
 
-    String path = file->path();
+    String path = dir->path();
+    File::mkdir( path );
+    DArray<PhysFile> fileList = dir->ls();
+
+    foreach( file, fileList.iter() ) {
+      String name = file->name();
+      String path = file->path();
+
+      if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
+        log.print( "Copying '%s' ...", path.cstr() );
+
+        if( !file->map() ) {
+          throw Exception( "Failed to read '%s'", file->realPath().cstr() );
+        }
+
+        InputStream is = file->inputStream();
+        File destFile( path );
+
+        if( !destFile.write( &is ) ) {
+          throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+        }
+
+        file->unmap();
+
+        log.printEnd( " OK" );
+        continue;
+      }
+    }
 
     if( PhysFile( path + "/data.obj" ).getType() != File::MISSING ) {
-      File::mkdir( "mdl" );
       OBJ::build( path );
     }
     else if( PhysFile( path + "/tris.md2" ).getType() != File::MISSING ) {
-      File::mkdir( "mdl" );
       MD2::build( path );
     }
-    else if( PhysFile( path + "/.md3" ).getType() != File::MISSING ) {
-      File::mkdir( "mdl" );
+    else {
       MD3::build( path );
     }
   }

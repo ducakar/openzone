@@ -65,6 +65,7 @@ void GalileoFrame::onDraw()
       !camera.botObj->hasAttribute( ObjectClass::GALILEO_BIT ) ) )
   {
     isVisible = false;
+    setMaximised( false );
     return;
   }
 
@@ -89,7 +90,7 @@ void GalileoFrame::onDraw()
     h  = camera.h;
   }
 
-  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.6f );
+  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, isMaximised ? 0.8f : 0.6f );
   glBindTexture( GL_TEXTURE_2D, mapTexId );
   fill( 0, 0, width, height );
 
@@ -134,13 +135,27 @@ void GalileoFrame::onDraw()
 
 GalileoFrame::GalileoFrame( const QuestFrame* questFrame_ ) :
   Frame( 8, -8, 240, 232 - Font::INFOS[Font::LARGE].height, "" ),
-  questFrame( questFrame_ ), mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ), isVisible( true )
+  questFrame( questFrame_ ), mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ),
+  isVisible( true ), isMaximised( false )
 
 {
   flags = PINNED_BIT;
 
   arrowTexId = loadTexture( "ui/icon/arrow.ozIcon" );
   markerTexId = loadTexture( "ui/icon/marker.ozIcon" );
+
+  normalX      = x;
+  normalY      = y;
+  normalWidth  = width;
+  normalHeight = height;
+
+  int maxSize = Area::uiWidth - 2 * ( width + 8 );
+  maxSize = Area::uiHeight < maxSize ? Area::uiHeight - 64 : maxSize - 64;
+
+  maximisedX      = Area::uiCentreX - maxSize / 2;
+  maximisedY      = Area::uiCentreY - maxSize / 2;
+  maximisedWidth  = maxSize;
+  maximisedHeight = maxSize;
 }
 
 GalileoFrame::~GalileoFrame()
@@ -153,6 +168,26 @@ GalileoFrame::~GalileoFrame()
   }
   if( markerTexId != 0 ) {
     glDeleteTextures( 1, &markerTexId );
+  }
+}
+
+void GalileoFrame::setMaximised( bool doMaximise )
+{
+  isMaximised = doMaximise;
+
+  if( doMaximise ) {
+    x      = maximisedX;
+    y      = maximisedY;
+    width  = maximisedWidth;
+    height = maximisedHeight;
+
+    raise();
+  }
+  else {
+    x      = normalX;
+    y      = normalY;
+    width  = normalWidth;
+    height = normalHeight;
   }
 }
 

@@ -128,7 +128,7 @@ class Alloc
  *
  * @ingroup oz
  */
-extern void* operator new ( std::size_t size ) throw( std::bad_alloc );
+extern void* operator new ( std::size_t size );
 
 /**
  * Operator new[] overload with memory statistics and (optionally) memory leak checking.
@@ -140,7 +140,7 @@ extern void* operator new ( std::size_t size ) throw( std::bad_alloc );
  *
  * @ingroup oz
  */
-extern void* operator new[] ( std::size_t size ) throw( std::bad_alloc );
+extern void* operator new[] ( std::size_t size );
 
 /**
  * Operator delete overload with memory statistics and (optionally) memory leak checking.
@@ -149,7 +149,7 @@ extern void* operator new[] ( std::size_t size ) throw( std::bad_alloc );
  *
  * @ingroup oz
  */
-extern void operator delete ( void* ptr ) throw();
+extern void operator delete ( void* ptr ) noexcept;
 
 /**
  * Operator delete[] overload with memory statistics and (optionally) memory leak checking.
@@ -158,7 +158,7 @@ extern void operator delete ( void* ptr ) throw();
  *
  * @ingroup oz
  */
-extern void operator delete[] ( void* ptr ) throw();
+extern void operator delete[] ( void* ptr ) noexcept;
 
 /**
  * Operator new overload with memory statistics and (optionally) memory leak checking.
@@ -167,7 +167,7 @@ extern void operator delete[] ( void* ptr ) throw();
  *
  * @ingroup oz
  */
-extern void* operator new ( std::size_t size, const std::nothrow_t& ) throw();
+extern void* operator new ( std::size_t size, const std::nothrow_t& ) noexcept;
 
 /**
  * Operator new[] overload with memory statistics and (optionally) memory leak checking.
@@ -176,7 +176,7 @@ extern void* operator new ( std::size_t size, const std::nothrow_t& ) throw();
  *
  * @ingroup oz
  */
-extern void* operator new[] ( std::size_t size, const std::nothrow_t& ) throw();
+extern void* operator new[] ( std::size_t size, const std::nothrow_t& ) noexcept;
 
 /**
  * Operator delete overload with memory statistics and (optionally) memory leak checking.
@@ -185,7 +185,7 @@ extern void* operator new[] ( std::size_t size, const std::nothrow_t& ) throw();
  *
  * @ingroup oz
  */
-extern void operator delete ( void* ptr, const std::nothrow_t& ) throw();
+extern void operator delete ( void* ptr, const std::nothrow_t& ) noexcept;
 
 /**
  * Operator delete[] overload with memory statistics and (optionally) memory leak checking.
@@ -194,4 +194,4 @@ extern void operator delete ( void* ptr, const std::nothrow_t& ) throw();
  *
  * @ingroup oz
  */
-extern void operator delete[] ( void* ptr, const std::nothrow_t& ) throw();
+extern void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept;

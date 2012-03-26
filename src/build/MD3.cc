@@ -391,8 +391,10 @@ void MD3::save()
     mesh.write( &os );
   }
 
+  File::mkdir( sPath );
+
   if( frame != 1 ) {
-    File destFile( sPath + ".ozcMD3" );
+    File destFile( sPath + "/data.ozcMD3" );
 
     log.print( "Writing to '%s' ...", destFile.path().cstr() );
 
@@ -403,7 +405,7 @@ void MD3::save()
     log.printEnd( " OK" );
   }
   else {
-    File destFile( sPath + ".ozcSMM" );
+    File destFile( sPath + "/data.ozcSMM" );
 
     log.print( "Writing to '%s' ...", destFile.path().cstr() );
 

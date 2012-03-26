@@ -38,6 +38,7 @@ const float Vehicle::ROT_VEL_DIFF_RATIO = 0.10f;
 const float Vehicle::AIR_FRICTION       = 0.02f;
 const float Vehicle::EXIT_EPSILON       = 0.20f;
 const float Vehicle::EXIT_MOMENTUM      = 1.00f;
+const float Vehicle::EJECT_EPSILON      = 0.80f;
 const float Vehicle::EJECT_MOMENTUM     = 15.0f;
 
 Pool<Vehicle, 256> Vehicle::pool;
@@ -191,7 +192,7 @@ void Vehicle::eject()
       Mat44 rotMat = Mat44::rotation( rot );
 
       bot->p    = p + rotMat * clazz->pilotPos;
-      bot->p.z += dim.z + EXIT_EPSILON;
+      bot->p.z += bot->dim.z + dim.z + EJECT_EPSILON;
 
       // kill bot if eject path is blocked
       if( collider.overlaps( *bot, this ) ) {
@@ -248,47 +249,50 @@ void Vehicle::onUpdate()
   if( pilot != -1 ) {
     bot = static_cast<Bot*>( orbis.objects[pilot] );
 
-    float diffH = bot->h - h;
-    float diffV = bot->v - v;
+//     float diffH = bot->h - h;
+//     float diffV = bot->v - v;
+//
+//     if( diffH < -Math::TAU / 2.0f ) {
+//       diffH += Math::TAU;
+//     }
+//     else if( diffH > Math::TAU / 2.0f ) {
+//       diffH -= Math::TAU;
+//     }
+//
+//     if( diffV < -Math::TAU / 2.0f ) {
+//       diffV += Math::TAU;
+//     }
+//     else if( diffV > Math::TAU / 2.0f ) {
+//       diffV -= Math::TAU;
+//     }
+//
+//     float diffL = Math::sqrt( diffH*diffH + diffV*diffV );
+//     if( diffL > ROT_DIFF_LIMIT ) {
+//       float k = ROT_DIFF_LIMIT / diffL;
+//
+//       diffH *= k;
+//       diffV *= k;
+//     }
+//
+//     rotVelH = Math::mix( rotVelH, diffH, ROT_VEL_DIFF_RATIO );
+//     rotVelV = Math::mix( rotVelV, diffV, ROT_VEL_DIFF_RATIO );
+//
+//     float rotVelL = Math::sqrt( rotVelH*rotVelH + rotVelV*rotVelV );
+//     if( diffL > clazz->rotVelLimit ) {
+//       float k = clazz->rotVelLimit / rotVelL;
+//
+//       rotVelH *= k;
+//       rotVelV *= k;
+//     }
+//
+//     h = Math::fmod( h + rotVelH + 2.0f*Math::TAU, Math::TAU );
+//     v = clamp( v + rotVelV, 0.0f, Math::TAU / 2.0f );
+//
+//     bot->h = h;
+//     bot->v = v;
 
-    if( diffH < -Math::TAU / 2.0f ) {
-      diffH += Math::TAU;
-    }
-    else if( diffH > Math::TAU / 2.0f ) {
-      diffH -= Math::TAU;
-    }
-
-    if( diffV < -Math::TAU / 2.0f ) {
-      diffV += Math::TAU;
-    }
-    else if( diffV > Math::TAU / 2.0f ) {
-      diffV -= Math::TAU;
-    }
-
-    float diffL = Math::sqrt( diffH*diffH + diffV*diffV );
-    if( diffL > ROT_DIFF_LIMIT ) {
-      float k = ROT_DIFF_LIMIT / diffL;
-
-      diffH *= k;
-      diffV *= k;
-    }
-
-    rotVelH = Math::mix( rotVelH, diffH, ROT_VEL_DIFF_RATIO );
-    rotVelV = Math::mix( rotVelV, diffV, ROT_VEL_DIFF_RATIO );
-
-    float rotVelL = Math::sqrt( rotVelH*rotVelH + rotVelV*rotVelV );
-    if( diffL > clazz->rotVelLimit ) {
-      float k = clazz->rotVelLimit / rotVelL;
-
-      rotVelH *= k;
-      rotVelV *= k;
-    }
-
-    h = Math::fmod( h + rotVelH + 2.0f*Math::TAU, Math::TAU );
-    v = clamp( v + rotVelV, 0.0f, Math::TAU / 2.0f );
-
-    bot->h = h;
-    bot->v = v;
+    h = bot->h;
+    v = bot->v;
 
     rot     = Quat::rotZXZ( h, v - Math::TAU / 4.0f, 0.0f );
     actions = bot->actions;

@@ -1,6 +1,10 @@
 #!/bin/sh
 
-[[ -z "$1" ]] && exit
+if [[ -z "$1" || -z "$2" ]]; then
+  echo "Usage: $0 <pkg_name>"
+  echo "  Extracts messages in package located in ./data/<pkg_name>."
+  exit
+fi
 
 pkg="$1"
 scripts=$pkg/lua/*/*.lua

@@ -43,7 +43,24 @@ class GalileoFrame : public Frame
     uint mapTexId;
     uint arrowTexId;
     uint markerTexId;
+
+    int  normalX;
+    int  normalY;
+    int  normalWidth;
+    int  normalHeight;
+
+    int  maximisedX;
+    int  maximisedY;
+    int  maximisedWidth;
+    int  maximisedHeight;
+
     bool isVisible;
+
+  public:
+
+    bool isMaximised;
+
+  private:
 
     uint loadTexture( const char* path ) const;
 
@@ -56,6 +73,8 @@ class GalileoFrame : public Frame
 
     GalileoFrame( const QuestFrame* questFrame );
     virtual ~GalileoFrame();
+
+    void setMaximised( bool doMaximise );
 
 };
 

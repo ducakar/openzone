@@ -297,16 +297,6 @@ void Bot::onUpdate()
       state |= MOVING_BIT;
       move   = ~move;
 
-      if( state & RUNNING_BIT ) {
-        stamina -= clazz->staminaRunDrain;
-        step += clazz->stepRunInc;
-      }
-      else {
-        step += clazz->stepWalkInc;
-      }
-
-      step = Math::fmod( step, 1.0f );
-
       /*
        * Ledge climbing
        *
@@ -443,12 +433,16 @@ void Bot::onUpdate()
 
       if( state & CROUCHING_BIT ) {
         desiredMomentum *= clazz->crouchMomentum;
+        step            += clazz->stepWalkInc;
       }
       else if( ( state & RUNNING_BIT ) && cargo == -1 ) {
         desiredMomentum *= clazz->runMomentum;
+        stamina         -= clazz->staminaRunDrain;
+        step            += clazz->stepRunInc;
       }
       else {
         desiredMomentum *= clazz->walkMomentum;
+        step            += clazz->stepWalkInc;
       }
 
       if( flags & ON_SLICK_BIT ) {
@@ -483,6 +477,7 @@ void Bot::onUpdate()
       }
 
       momentum += desiredMomentum;
+      step      = Math::fmod( step, 1.0f );
     }
 
     /*

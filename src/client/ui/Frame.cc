@@ -40,7 +40,7 @@ namespace ui
 bool Frame::onMouseEvent()
 {
   if( mouse.buttons & ( SDL_BUTTON_LMASK | SDL_BUTTON_MMASK | SDL_BUTTON_RMASK ) ) {
-    parent->focus( this );
+    raise();
   }
 
   if( keyboard.keys[SDLK_LALT] || keyboard.keys[SDLK_RALT] ) {

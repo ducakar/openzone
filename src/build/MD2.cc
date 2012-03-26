@@ -430,8 +430,10 @@ void MD2::build( const char* path )
 
   mesh.write( &os );
 
+  File::mkdir( sPath );
+
   if( header.nFrames != 1 ) {
-    File destFile( sPath + ".ozcMD2" );
+    File destFile( sPath + "/data.ozcMD2" );
 
     log.print( "Writing to '%s' ...", destFile.path().cstr() );
 
@@ -442,7 +444,7 @@ void MD2::build( const char* path )
     log.printEnd( " OK" );
   }
   else {
-    File destFile( sPath + ".ozcSMM" );
+    File destFile( sPath + "/data.ozcSMM" );
 
     log.print( "Writing to '%s' ...", destFile.path().cstr() );
 

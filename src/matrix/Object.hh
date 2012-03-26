@@ -320,17 +320,21 @@ class Object : public AABB
 
     /**
      * Called by physics engine when the object hits something.
+     *
      * @param hit Hit class filled with collision data
      * @param hitMomentum momentum of the object projected to hit normal
+     * @param isActive true if this object hit something, false if this object was hit by something
      */
     OZ_ALWAYS_INLINE
-    void hit( const Hit* hit, float hitMomentum )
+    void hit( const Hit* hit, float hitMomentum, bool isActive )
     {
       float hitMomentum2 = hitMomentum*hitMomentum;
 
-      addEvent( EVENT_HIT, hitMomentum2 * MOMENTUM_INTENSITY_COEF );
       damage( hitMomentum2 * MOMENTUM_DAMAGE_COEF );
 
+      if( isActive ) {
+        addEvent( EVENT_HIT, hitMomentum2 * MOMENTUM_INTENSITY_COEF );
+      }
       if( flags & HIT_FUNC_BIT ) {
         onHit( hit, hitMomentum );
       }

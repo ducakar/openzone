@@ -67,13 +67,13 @@ class Camera
     float  v;
     float  w;
     float  mag;
+
+    // camera rotation change (from input)
     float  relH;
     float  relV;
 
-    Quat   relRot;
+    // global rotation quaternion, matrix and it's inverse
     Quat   rot;
-
-    // global rotation matrix and it's inverse
     Mat44  rotMat;
     Mat44  rotTMat;
 
