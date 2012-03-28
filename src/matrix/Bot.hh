@@ -40,16 +40,15 @@ class Bot : public Dynamic
      * EVENTS
      */
 
-    static const int EVENT_HIT_HARD         = 7;
-    static const int EVENT_LAND             = 8;
-    static const int EVENT_JUMP             = 9;
-    static const int EVENT_FLIP             = 10;
-    static const int EVENT_DEATH            = 11;
+    static const int EVENT_LAND             = 7;
+    static const int EVENT_JUMP             = 8;
+    static const int EVENT_FLIP             = 9;
+    static const int EVENT_DEATH            = 10;
 
     // Step and swim events are not in use but merely reserve sound slots.
-    static const int EVENT_STEP             = 12;
-    static const int EVENT_WATERSTEP        = 13;
-    static const int EVENT_SWIM             = 14;
+    static const int EVENT_STEP             = 11;
+    static const int EVENT_WATERSTEP        = 12;
+    static const int EVENT_SWIM             = 13;
 
     /*
      * ACTIONS
@@ -128,7 +127,6 @@ class Bot : public Dynamic
     static const int GESTURE4_BIT           = 0x10000000;
 
     static const float AIR_FRICTION;
-    static const float HIT_HARD_THRESHOLD;
 
     static const float WOUNDED_THRESHOLD;
     static const float CORPSE_FADE_FACTOR;
@@ -172,7 +170,7 @@ class Bot : public Dynamic
   protected:
 
     virtual void onDestroy();
-    virtual void onHit( const Hit* hit, float hitMomentum );
+    virtual void onHit( const Hit* hit, float );
     virtual void onUpdate();
 
   public:
@@ -212,7 +210,7 @@ class Bot : public Dynamic
     virtual void readUpdate( InputStream* istream );
     virtual void writeUpdate( BufferStream* ostream ) const;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+    OZ_STATIC_POOL_ALLOC( pool )
 
 };
 

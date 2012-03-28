@@ -80,7 +80,7 @@ function smallExplosion_onUpdate( l )
           distance = 8 - distance
 
           if ozObjIsVisibleFromObj( self ) then
-            ozObjDamage( 100 + 10*distance )
+            ozObjDamage( 100 + 4*distance )
 
             if distance < 7.9 and ozObjHasFlag( OZ_DYNAMIC_BIT ) then
               local dirX, dirY, dirZ = ozObjDirectionFromObj( self )
@@ -112,7 +112,7 @@ function bigExplosion_onUpdate( l )
     ozOrbisBindOverlaps( OZ_STRUCTS_BIT + OZ_OBJECTS_BIT, pX, pY, pZ, 20, 20, 20 )
 
     while ozStrBindNext() do
-      ozStrDamage( 2000 )
+      ozStrDamage( 1000 )
     end
 
     while ozObjBindNext() do
@@ -122,10 +122,10 @@ function bigExplosion_onUpdate( l )
         if distance < 20 then
           distance = 20 - distance
 
-          ozObjDamage( 10*distance )
+          ozObjDamage( 100 + 4*distance )
 
-          if ozObjIsVisibleFrom( self ) then
-            ozObjDamage( 100 + 10*distance )
+          if ozObjIsVisibleFromObj( self ) then
+            ozObjDamage( 100 + 4*distance )
 
             if distance < 19.9 and ozObjHasFlag( OZ_DYNAMIC_BIT ) then
               local dirX, dirY, dirZ = ozObjDirectionFromObj( self )

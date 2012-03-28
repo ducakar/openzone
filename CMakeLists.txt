@@ -15,7 +15,7 @@ set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
 set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
 
 option( OZ_NETWORKING "Enable networking (not supported yet)." OFF )
-option( OZ_GL_COMPATIBLE "Use less OpenGL extensions for better compatibility (for Mesa < 8.0)." ON )
+option( OZ_GL_COMPATIBLE "Use less OpenGL extensions for better compatibility (for Mesa < 8.0)." OFF )
 option( OZ_BUMPMAP "Enable bumpmapping (not supported yet)." OFF )
 
 option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
@@ -255,7 +255,7 @@ set( CPACK_SYSTEM_NAME "${OZ_SYSTEM_NAME}" )
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING" )
 set( CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.html" )
 set( CPACK_PACKAGE_EXECUTABLES "bin/openzone" "OpenZone" ) # start menu entry
-set( CPACK_STRIP_FILES "bin/openzone;bin/ozBuild" )
+set( CPACK_STRIP_FILES "bin/openzone;bin/ozbuild" )
 set( CPACK_PACKAGE_INSTALL_DIRECTORY "${OZ_APPLICATION_NAME}" )
 set( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "${OZ_APPLICATION_NAME}" )
 

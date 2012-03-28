@@ -567,13 +567,16 @@ void Sound::soundRun()
 
   while( isSoundAlive ) {
     float orientation[] = {
-      camera.at.x, camera.at.y, camera.at.y,
+      camera.at.x, camera.at.y, camera.at.z,
       camera.up.x, camera.up.y, camera.up.z
     };
+
+    Vec3 velocity = ( camera.p - camera.oldP ) / Timer::TICK_TIME;
 
     // add new sounds
     alListenerfv( AL_ORIENTATION, orientation );
     alListenerfv( AL_POSITION, camera.p );
+    alListenerfv( AL_VELOCITY, velocity );
 
     if( playedStructs.length() < orbis.structs.length() ) {
       playedStructs.dealloc();

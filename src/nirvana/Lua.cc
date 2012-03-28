@@ -147,8 +147,10 @@ bool Lua::mindCall( const char* functionName, Bot* self_ )
   l_pcall( 1, 0 );
 
   if( l_gettop() != 1 ) {
-    throw Exception( "Nirvana Lua: %s(self = %d): %s", functionName, ms.self->index,
-                     l_tostring( -1 ) );
+    log.println( "Lua[N] in %s(self = %d): %s", functionName, ms.self->index, l_tostring( -1 ) );
+    System::bell();
+
+    l_pop( 1 );
   }
 
   return ns.forceUpdate;

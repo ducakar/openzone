@@ -120,7 +120,7 @@ void Terra::drawWater()
   glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, waterTexId );
   glActiveTexture( GL_TEXTURE1 );
-  glBindTexture( GL_TEXTURE_2D, waterTexId );
+  glBindTexture( GL_TEXTURE_2D, shader.defaultMasks );
 
   if( camera.p.z >= 0.0f ) {
     glFrontFace( GL_CW );

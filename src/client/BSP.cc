@@ -51,8 +51,9 @@ void BSP::playDemolish( const Struct* str, int sound ) const
   alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].id ) );
   alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
 
-  alSourcefv( srcId, AL_POSITION, str->p );
   alSourcef( srcId, AL_GAIN, DEMOLISH_SOUND_GAIN );
+  alSourcefv( srcId, AL_POSITION, str->p );
+
   alSourcePlay( srcId );
 
   context.addSource( srcId, sound );
@@ -79,8 +80,9 @@ void BSP::playSound( const Entity* entity, int sound ) const
   alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].id ) );
   alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
 
-  alSourcefv( srcId, AL_POSITION, p );
   alSourcef( srcId, AL_GAIN, 1.0f );
+  alSourcefv( srcId, AL_POSITION, p );
+
   alSourcePlay( srcId );
 
   context.addSource( srcId, sound );

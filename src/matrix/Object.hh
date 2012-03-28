@@ -262,7 +262,7 @@ class Object : public AABB
 
     virtual void onDestroy();
     virtual void onDamage( float damage );
-    virtual void onHit( const Hit* hit, float hitMomentum );
+    virtual void onHit( const Hit* hit, float energy );
     virtual bool onUse( Bot* user );
     virtual void onUpdate();
 
@@ -322,21 +322,16 @@ class Object : public AABB
      * Called by physics engine when the object hits something.
      *
      * @param hit Hit class filled with collision data
-     * @param hitMomentum momentum of the object projected to hit normal
-     * @param isActive true if this object hit something, false if this object was hit by something
+     * @param energy momentum square projected to hit normal
      */
     OZ_ALWAYS_INLINE
-    void hit( const Hit* hit, float hitMomentum, bool isActive )
+    void hit( const Hit* hit, float energy )
     {
-      float hitMomentum2 = hitMomentum*hitMomentum;
+      damage( energy * MOMENTUM_DAMAGE_COEF );
+      addEvent( EVENT_HIT, energy * MOMENTUM_INTENSITY_COEF );
 
-      damage( hitMomentum2 * MOMENTUM_DAMAGE_COEF );
-
-      if( isActive ) {
-        addEvent( EVENT_HIT, hitMomentum2 * MOMENTUM_INTENSITY_COEF );
-      }
       if( flags & HIT_FUNC_BIT ) {
-        onHit( hit, hitMomentum );
+        onHit( hit, energy );
       }
     }
 
@@ -371,7 +366,7 @@ class Object : public AABB
     virtual void readUpdate( InputStream* istream );
     virtual void writeUpdate( BufferStream* ostream ) const;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+    OZ_STATIC_POOL_ALLOC( pool )
 
 };
 

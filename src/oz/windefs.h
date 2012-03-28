@@ -33,11 +33,11 @@
 
 #ifdef _WIN32
 
-// At least Windows 2000 required.
-# define WINVER 0x0500
-
 // At least Visual Studio 2005 run-time libraries required.
 # define __MSVCRT_VERSION__ 0x0800
+
+// At least Windows XP/2003 required.
+# define WINVER 0x0501
 
 // At least Internet Explorer 6.0 libraries required.
 # define _WIN32_IE 0x0600

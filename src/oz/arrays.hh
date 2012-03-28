@@ -571,7 +571,6 @@ inline int aBisectFind( Elem* aSrc, const Key& key, int count )
       a = c;
     }
   }
-
   return key == aSrc[a] ? a : -1;
 }
 
@@ -612,7 +611,6 @@ inline int aBisectPosition( Elem* aSrc, const Key& key, int count )
       a = c;
     }
   }
-
   return a + 1;
 }
 

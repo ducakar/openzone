@@ -4,10 +4,9 @@
     - move semantics
     - defaulted & deleted functions
     - constexpr for float constants
-    - iterators support range-based for (however, foreach macro is still used because of faulty IDE
-      parsers and better performance in debug mode)
+    - new exception specification
   - better Win32 support, POSIX API replaced with Win32 API where possible
-  - System.bell() method
+  - System::bell() method
   - String class has more consistent members, parsing functions added
   - new Time class
   - new StackTrace class (split from System class)
@@ -18,9 +17,9 @@
   - AABB & Bounds moved to liboz from matrix
   - clearmacros.hh header to undefine liboz macros that might conflict other libraries
   - compiled as shared library
-  - additional dependencies: libpulse on Linux and PhysicsFS 2.0
+  - additional dependencies: libpulse on Linux and PhysFS 2.0
   - fully documented
-  - ZLIB licence for liboz
+  - ZLIB licence
 * common:
   - new layer, split from matrix
   - Span and Timer classes moved to common from matrix
@@ -31,7 +30,7 @@
   - keys: object can have assigned a key value, so it can lock/unlock matching structure entities
   - lava: can be used both in structures and terrain instead of sea
   - sliding damage
-  - configurable gravitational acceleration
+  - configurable gravity
   - structure improvements
     - crushing: structures fall into terrain, and crush objects in their way
     - bound objects: objects that are created together with a structure and destroyed with it;

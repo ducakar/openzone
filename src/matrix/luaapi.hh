@@ -110,7 +110,7 @@ static int ozOrbisAddStr( lua_State* l )
 {
   VARG( 5, 6 );
 
-  const BSP* bsp;
+  const BSP* bsp = null;
   try {
     bsp = library.bsp( l_tostring( 2 ) );
   }
@@ -142,7 +142,7 @@ static int ozOrbisAddObj( lua_State* l )
 {
   VARG( 5, 6 );
 
-  const ObjectClass* clazz;
+  const ObjectClass* clazz = null;
   try {
     clazz = library.objClass( l_tostring( 2 ) );
   }
@@ -177,7 +177,7 @@ static int ozOrbisAddFrag( lua_State* l )
 {
   ARG( 8 );
 
-  const FragPool* pool;
+  const FragPool* pool = null;
   try {
     pool = library.fragPool( l_tostring( 2 ) );
   }
@@ -206,7 +206,7 @@ static int ozOrbisGenFrags( lua_State* l )
 {
   ARG( 11 );
 
-  const FragPool* pool;
+  const FragPool* pool = null;
   try {
     pool = library.fragPool( l_tostring( 1 ) );
   }

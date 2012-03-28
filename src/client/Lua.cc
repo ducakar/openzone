@@ -146,7 +146,10 @@ void Lua::staticCall( const char* functionName )
   l_pcall( 0, 0 );
 
   if( l_gettop() != 0 ) {
-    throw Exception( "Client Lua: %s(): %s", functionName, l_tostring( -1 ) );
+    log.println( "Lua[C] in %s(): %s", functionName, l_tostring( -1 ) );
+    System::bell();
+
+    l_pop( 1 );
   }
 }
 

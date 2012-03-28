@@ -260,15 +260,16 @@ void Physics::handleObjHit()
   if( hit.obj != null && ( hit.obj->flags & Object::DYNAMIC_BIT ) ) {
     Dynamic* sDyn = static_cast<Dynamic*>( hit.obj );
 
-    bool  isDynBot    = dyn->flags & Object::BOT_BIT;
     float massSum     = dyn->mass + sDyn->mass;
     Vec3  momentum    = ( dyn->momentum * dyn->mass + sDyn->momentum * sDyn->mass ) / massSum;
     float hitMomentum = ( dyn->momentum - sDyn->momentum ) * hit.normal;
     float hitVelocity = dyn->velocity * hit.normal;
 
     if( hitMomentum < HIT_THRESHOLD && hitVelocity < HIT_THRESHOLD ) {
-      dyn->hit( &hit, hitMomentum, true );
-      sDyn->hit( &hit, hitMomentum, !isDynBot );
+      float energy = hitMomentum*hitMomentum;
+
+      dyn->hit( &hit, energy );
+      sDyn->hit( &hit, energy );
     }
 
     if( hit.normal.z == 0.0f ) {
@@ -286,7 +287,7 @@ void Physics::handleObjHit()
       sDyn->momentum.x += directPushX;
       sDyn->momentum.y += directPushY;
 
-      if( isDynBot ) {
+      if( dyn->flags & Object::BOT_BIT ) {
         float pushX = momentum.x - sDyn->momentum.x;
         float pushY = momentum.y - sDyn->momentum.y;
 
@@ -333,18 +334,15 @@ void Physics::handleObjHit()
     float hitVelocity = dyn->velocity * hit.normal;
 
     if( hitMomentum < HIT_THRESHOLD && hitVelocity < HIT_THRESHOLD ) {
+      float energy = hitMomentum*hitMomentum;
+
+      dyn->hit( &hit, energy );
+
       if( hit.obj != null ) {
-        Object* sObj = hit.obj;
-
-        dyn->hit( &hit, hitMomentum, true );
-        sObj->hit( &hit, hitMomentum, false );
+        hit.obj->hit( &hit, energy );
       }
-      else {
-        dyn->hit( &hit, hitMomentum, true );
-
-        if( hit.str != null ) {
-          hit.str->hit( dyn->mass, hitMomentum );
-        }
+      else if( hit.str != null ) {
+        hit.str->hit( dyn->mass, energy );
       }
     }
 

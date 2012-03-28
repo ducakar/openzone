@@ -2,8 +2,6 @@
 - ui
   * pause menu
 - client
-  * time compression
-  * pause
   * improve MD2 animation (transitions, firstFrame, secondFrame, nextFrame)
   * fix bloom
   * fix in-vehicle camera (rotation axis & free look)

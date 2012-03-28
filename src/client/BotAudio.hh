@@ -50,7 +50,7 @@ class BotAudio : public BasicAudio
 
     virtual void play( const Audio* parent );
 
-  OZ_STATIC_POOL_ALLOC( pool )
+    OZ_STATIC_POOL_ALLOC( pool )
 
 };
 
