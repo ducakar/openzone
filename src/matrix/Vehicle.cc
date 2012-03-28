@@ -249,6 +249,7 @@ void Vehicle::onUpdate()
   if( pilot != -1 ) {
     bot = static_cast<Bot*>( orbis.objects[pilot] );
 
+    // TODO Limit rotational velocity.
 //     float diffH = bot->h - h;
 //     float diffV = bot->v - v;
 //

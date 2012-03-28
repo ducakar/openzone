@@ -72,7 +72,6 @@ void importLuaConstants( lua_State* l )
   registerLuaConstant( l, "OZ_EVENT_USE",                   Object::EVENT_USE );
   registerLuaConstant( l, "OZ_EVENT_SHOT",                  Weapon::EVENT_SHOT );
   registerLuaConstant( l, "OZ_EVENT_SHOT_EMPTY",            Weapon::EVENT_SHOT_EMPTY );
-  registerLuaConstant( l, "OZ_EVENT_HIT_HARD",              Bot::EVENT_HIT_HARD );
   registerLuaConstant( l, "OZ_EVENT_LAND",                  Bot::EVENT_LAND );
   registerLuaConstant( l, "OZ_EVENT_JUMP",                  Bot::EVENT_JUMP );
   registerLuaConstant( l, "OZ_EVENT_FLIP",                  Bot::EVENT_FLIP );

@@ -23,11 +23,11 @@
 /**
  * @file oz/clearmacros.hh
  *
- * This header clears liboz macros that may interfere with other libraries.
+ * This header clears liboz macros that might interfere with other libraries.
  *
  * It undefines <tt>soft_assert()</tt>, <tt>hard_assert()</tt>, <tt>foreach()</tt> and
  * <tt>Exception()</tt> macros. It is not included by \<oz/oz.hh\>, one should include it manually
- * before headers that conflict liboz.
+ * before headers that conflict with liboz.
  */
 
 #pragma once

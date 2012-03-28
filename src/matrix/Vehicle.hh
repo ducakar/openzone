@@ -122,7 +122,7 @@ class Vehicle : public Dynamic
     virtual void readUpdate( InputStream* istream );
     virtual void writeUpdate( BufferStream* ostream ) const;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+    OZ_STATIC_POOL_ALLOC( pool )
 
 };
 

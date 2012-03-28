@@ -68,7 +68,7 @@ class Timer
     Timer();
 
     /**
-     * Set all timer counters to zero.
+     * Reset all timer counters to zero.
      */
     void reset();
 

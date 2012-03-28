@@ -62,7 +62,7 @@ class MD3Imago : public Imago
 //       void setAnim( Anim::Type anim );
     virtual void draw( const Imago* parent, int mask );
 
-  OZ_STATIC_POOL_ALLOC( pool )
+    OZ_STATIC_POOL_ALLOC( pool )
 
 };
 

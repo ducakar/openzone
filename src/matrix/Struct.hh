@@ -175,7 +175,7 @@ class Struct : public Bounds
 
     void destroy();
     void damage( float damage );
-    void hit( float mass, float hitMomentum );
+    void hit( float mass, float energy );
     void update();
 
   public:
@@ -185,7 +185,7 @@ class Struct : public Bounds
 
     void write( BufferStream* ostream );
 
-  OZ_STATIC_POOL_ALLOC( pool )
+    OZ_STATIC_POOL_ALLOC( pool )
 
 };
 
@@ -230,12 +230,11 @@ inline void Struct::damage( float damage )
 }
 
 OZ_ALWAYS_INLINE
-inline void Struct::hit( float mass, float hitMomentum )
+inline void Struct::hit( float mass, float energy )
 {
-  float hitMomentum2  = hitMomentum*hitMomentum;
   float effectiveMass = min( mass, MAX_HIT_DAMAGE_MASS );
 
-  damage( effectiveMass * hitMomentum2 * MOMENTUM_DAMAGE_COEF );
+  damage( effectiveMass * energy * MOMENTUM_DAMAGE_COEF );
 }
 
 OZ_ALWAYS_INLINE

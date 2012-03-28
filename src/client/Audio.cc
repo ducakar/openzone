@@ -35,13 +35,14 @@ namespace client
 {
 
 const float Audio::REFERENCE_DISTANCE   = 2.0f;
-const float Audio::ROLLOFF_FACTOR       = 1.0f;
 const float Audio::COCKPIT_GAIN_FACTOR  = 0.35f;
 const float Audio::COCKPIT_PITCH_FACTOR = 0.95f;
 
 void Audio::playSound( int sound, float volume, const Object* obj, const Object* parent ) const
 {
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
+
+  const Dynamic* dynParent = static_cast<const Dynamic*>( parent );
 
   uint srcId;
 
@@ -52,6 +53,9 @@ void Audio::playSound( int sound, float volume, const Object* obj, const Object*
   }
 
   alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].id ) );
+  alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
+
+  alSourcef( srcId, AL_GAIN, volume );
 
   // If the object moves since source starts playing and source stands still, it's usually
   // not noticeable for short-time source. After all, sound source many times does't move
@@ -64,15 +68,14 @@ void Audio::playSound( int sound, float volume, const Object* obj, const Object*
       ( camera.botObj != null && parent->index == camera.botObj->parent ) )
   {
     alSourcei( srcId, AL_SOURCE_RELATIVE, AL_TRUE );
-    alSourcefv( srcId, AL_POSITION, Vec3::ZERO );
   }
   else {
-    alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
-
     alSourcefv( srcId, AL_POSITION, parent->p );
+    if( parent->flags & Object::DYNAMIC_BIT ) {
+      alSourcefv( srcId, AL_VELOCITY, dynParent->velocity );
+    }
   }
 
-  alSourcef( srcId, AL_GAIN, volume );
   alSourcePlay( srcId );
 
   context.addSource( srcId, sound );
@@ -87,6 +90,7 @@ void Audio::playContSound( int sound, float volume, const Object* obj, const Obj
   int key = obj->index * ObjectClass::MAX_SOUNDS + sound;
 
   Context::ContSource* contSource = context.objSources.find( key );
+  const Dynamic*       dynParent  = static_cast<const Dynamic*>( parent );
 
   if( contSource == null ) {
     uint srcId;
@@ -101,15 +105,24 @@ void Audio::playContSound( int sound, float volume, const Object* obj, const Obj
     alSourcei( srcId, AL_LOOPING, AL_TRUE );
     alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
 
-    alSourcefv( srcId, AL_POSITION, parent->p );
     alSourcef( srcId, AL_GAIN, volume );
+    alSourcefv( srcId, AL_POSITION, parent->p );
+    if( parent->flags & Object::DYNAMIC_BIT ) {
+      alSourcefv( srcId, AL_VELOCITY, dynParent->velocity );
+    }
+
     alSourcePlay( srcId );
 
     context.addObjSource( srcId, sound, key );
   }
   else {
-    alSourcefv( contSource->id, AL_POSITION, parent->p );
-    alSourcef( contSource->id, AL_GAIN, volume );
+    uint srcId = contSource->id;
+
+    alSourcef( srcId, AL_GAIN, volume );
+    alSourcefv( srcId, AL_POSITION, parent->p );
+    if( parent->flags & Object::DYNAMIC_BIT ) {
+      alSourcefv( srcId, AL_VELOCITY, dynParent->velocity );
+    }
 
     contSource->isUpdated = true;
   }
@@ -143,17 +156,22 @@ void Audio::playEngineSound( int sound, float volume, float pitch, const Vehicle
     alSourcei( srcId, AL_LOOPING, AL_TRUE );
     alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
 
-    alSourcefv( srcId, AL_POSITION, veh->p );
-    alSourcef( srcId, AL_GAIN, volume );
     alSourcef( srcId, AL_PITCH, pitch );
+    alSourcef( srcId, AL_GAIN, volume );
+    alSourcefv( srcId, AL_POSITION, veh->p );
+    alSourcefv( srcId, AL_VELOCITY, veh->velocity );
+
     alSourcePlay( srcId );
 
     context.addObjSource( srcId, sound, key );
   }
   else {
-    alSourcefv( contSource->id, AL_POSITION, veh->p );
-    alSourcef( contSource->id, AL_GAIN, volume );
+    uint srcId = contSource->id;
+
     alSourcef( contSource->id, AL_PITCH, pitch );
+    alSourcef( contSource->id, AL_GAIN, volume );
+    alSourcefv( srcId, AL_POSITION, veh->p );
+    alSourcefv( srcId, AL_VELOCITY, veh->velocity );
 
     contSource->isUpdated = true;
   }

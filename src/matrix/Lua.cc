@@ -148,8 +148,11 @@ bool Lua::objectCall( const char* functionName, Object* self_, Bot* user_ )
   l_pcall( 1, 0 );
 
   if( l_gettop() != 1 ) {
-    throw Exception( "Matrix Lua: %s(self = %d, user = %d): %s", functionName, ms.self->index,
-                     ms.user == null ? -1 : ms.user->index, l_tostring( -1 ) );
+    log.println( "Lua[M] in %s(self = %d, user = %d): %s", functionName, ms.self->index,
+                 ms.user == null ? -1 : ms.user->index, l_tostring( -1 ) );
+    System::bell();
+
+    l_pop( 1 );
   }
 
   return !ms.hasUseFailed;

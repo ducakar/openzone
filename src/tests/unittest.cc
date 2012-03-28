@@ -52,15 +52,12 @@ struct Test
 
   Test()
   {
-    OZ_CHECK( magic != 42 );
-
     magic = 42;
     ++constructCount;
   }
 
   Test( const Test& t )
   {
-    OZ_CHECK( magic != 42 );
     OZ_CHECK( t.magic == 42 );
 
     magic = 42;
@@ -87,8 +84,6 @@ struct Test
 
   explicit Test( int value_ )
   {
-    OZ_CHECK( magic != 42 );
-
     magic = 42;
     value = value_;
     ++constructCount;

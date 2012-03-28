@@ -37,7 +37,7 @@ function test_escapeQuest()
 
   ozObjBindIndex( oz_me )
 
-  if ozBotGetState( OZ_BOT_DEAD_BIT ) then
+  if ozBotHasState( OZ_BOT_DEAD_BIT ) then
     ozQuestEnd( oz_escapeQuest, false )
     oz_escapeQuest = nil
     return
@@ -53,7 +53,7 @@ function test_escapeQuest()
 end
 
 function test_cvicekQuest()
-  ozOrbisBindObjOverlaps( -1015, 608, 50, 50, 50, 50 )
+  ozOrbisBindOverlaps( OZ_OBJECTS_BIT, -1015, 608, 50, 50, 50, 50 )
 
   local nBottles = 0
   while ozObjBindNext() do

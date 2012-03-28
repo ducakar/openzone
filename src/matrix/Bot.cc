@@ -36,10 +36,9 @@ namespace matrix
 {
 
 const float Bot::AIR_FRICTION       =  0.01f;
-const float Bot::HIT_HARD_THRESHOLD = -8.00f;
 
 const float Bot::WOUNDED_THRESHOLD  =  0.70f;
-const float Bot::CORPSE_FADE_FACTOR =  0.5f / 100.0f * Timer::TICK_TIME;
+const float Bot::CORPSE_FADE_FACTOR =  0.50f / 100.0f * Timer::TICK_TIME;
 
 const float Bot::INSTRUMENT_DIST    =  2.00f;
 const float Bot::INSTRUMENT_DOT_MIN =  0.80f;
@@ -47,8 +46,8 @@ const float Bot::INSTRUMENT_DOT_MIN =  0.80f;
 const float Bot::GRAB_EPSILON       =  0.20f;
 const float Bot::GRAB_STRING_RATIO  =  10.0f;
 const float Bot::GRAB_HANDLE_TOL    =  1.60f;
-const float Bot::GRAB_MOM_RATIO     =  0.3f;
-const float Bot::GRAB_MOM_MAX       =  1.0f; // must be < abs( Physics::HIT_THRESHOLD )
+const float Bot::GRAB_MOM_RATIO     =  0.30f;
+const float Bot::GRAB_MOM_MAX       =  1.00f; // must be < abs( Physics::HIT_THRESHOLD )
 const float Bot::GRAB_MOM_MAX_SQ    =  1.00f;
 
 const float Bot::STEP_MOVE_AHEAD    =  0.20f;
@@ -66,19 +65,10 @@ void Bot::onDestroy()
   Dynamic::onDestroy();
 }
 
-void Bot::onHit( const Hit* hit, float hitMomentum )
+void Bot::onHit( const Hit* hit, float )
 {
-  if( state & DEAD_BIT ) {
-    return;
-  }
-
-  if( hitMomentum < HIT_HARD_THRESHOLD ) {
-    addEvent( EVENT_HIT_HARD, 1.0f );
-  }
-  else if( hit->normal.z >= Physics::FLOOR_NORMAL_Z && !( state & GROUNDED_BIT ) ) {
-    hard_assert( hitMomentum <= 0.0f );
-
-    addEvent( EVENT_LAND, 1.0f );
+  if( !( state & ( DEAD_BIT | GROUNDED_BIT ) ) && hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
+    events.first()->id = EVENT_LAND;
   }
 }
 

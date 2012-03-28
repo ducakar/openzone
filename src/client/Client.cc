@@ -131,7 +131,7 @@ void Client::printUsage()
   log.println( "\tthe random seed. Useful for benchmarking." );
   log.println();
   log.println( "-p <prefix>" );
-  log.println( "\tSets data directory to <prefix>/share/" OZ_APPLICATION_NAME "." );
+  log.println( "\tSets data directory to '<prefix>/share/" OZ_APPLICATION_NAME "'." );
   log.println( "\tDefault: '%s'.", OZ_INSTALL_PREFIX );
   log.println();
   log.unindent();

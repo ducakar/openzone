@@ -85,7 +85,7 @@ class Frag
     void readUpdate( InputStream* istream );
     void writeUpdate( BufferStream* ostream );
 
-  OZ_STATIC_POOL_ALLOC( mpool )
+    OZ_STATIC_POOL_ALLOC( mpool )
 
 };
 

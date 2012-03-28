@@ -50,7 +50,7 @@ class Memo : public Device
 
     virtual void write( BufferStream* ostream ) const;
 
-  OZ_STATIC_POOL_ALLOC( pool )
+    OZ_STATIC_POOL_ALLOC( pool )
 
 };
 

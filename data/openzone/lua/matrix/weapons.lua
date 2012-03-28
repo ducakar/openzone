@@ -110,7 +110,7 @@ function axe_onShot( l )
   local pX, pY, pZ = ozObjGetPos()
   local vX, vY, vZ = ozBotGetDir()
 
-  ozOrbisBindOverlaps( OZ_OBJECTS, pX + 0.5*vX, pY + 0.5*vY, pZ + 0.5*vZ, 0.3, 0.3, 0.3 );
+  ozOrbisBindOverlaps( OZ_OBJECTS_BIT, pX + 0.5*vX, pY + 0.5*vY, pZ + 0.5*vZ, 0.3, 0.3, 0.3 );
 
   while ozObjBindNext() do
     if not ( ozObjIsSelf() or ozObjIsUser() ) then
@@ -125,7 +125,7 @@ function mace_onShot( l )
   local pX, pY, pZ = ozObjGetPos()
   local vX, vY, vZ = ozBotGetDir()
 
-  ozOrbisBindObjOverlaps( OZ_OBJECTS, pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 );
+  ozOrbisBindOverlaps( OZ_OBJECTS_BIT, pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 );
 
   while ozObjBindNext() do
     if not ( ozObjIsSelf() or ozObjIsUser() ) then
@@ -140,7 +140,7 @@ function skull_onShot( l )
   local pX, pY, pZ = ozObjGetPos()
   local vX, vY, vZ = ozBotGetDir()
 
-  ozOrbisBindObjOverlaps( OZ_OBJECTS, pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 );
+  ozOrbisBindOverlaps( OZ_OBJECTS_BIT, pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 );
 
   while ozObjBindNext() do
     if not ( ozObjIsSelf() or ozObjIsUser() ) then

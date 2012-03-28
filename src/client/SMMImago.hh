@@ -51,7 +51,7 @@ class SMMImago : public Imago
 
     virtual void draw( const Imago* parent, int mask );
 
-  OZ_STATIC_POOL_ALLOC( pool )
+    OZ_STATIC_POOL_ALLOC( pool )
 
 };
 

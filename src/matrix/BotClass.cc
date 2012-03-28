@@ -69,10 +69,6 @@ void BotClass::initClass( const Config* config )
     soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
     audioSounds[Object::EVENT_FRICTING] = soundIndex;
 
-    soundName  = config->get( "audioSound.hitHard", "" );
-    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
-    audioSounds[Bot::EVENT_HIT_HARD] = soundIndex;
-
     soundName  = config->get( "audioSound.land", "" );
     soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
     audioSounds[Bot::EVENT_LAND] = soundIndex;

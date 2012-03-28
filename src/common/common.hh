@@ -60,8 +60,7 @@
 
 #endif // OZ_DOXYGEN
 
-// Forward declaration for Lua state, needed for Lua API declarations, to prevent pollution from Lua
-// headers.
+// Forward declaration needed for Lua API declarations, to prevent pollution from Lua headers.
 struct lua_State;
 
 namespace oz
