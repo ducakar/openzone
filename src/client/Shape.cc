@@ -166,24 +166,7 @@ Shape::Shape() :
 
 void Shape::bindVertexArray() const
 {
-#ifdef OZ_GL_COMPATIBLE
-  glBindBuffer( GL_ARRAY_BUFFER, vbo );
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-
-  glEnableVertexAttribArray( Attrib::POSITION );
-  glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
-
-  glEnableVertexAttribArray( Attrib::TEXCOORD );
-  glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
-
-  glEnableVertexAttribArray( Attrib::NORMAL );
-  glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
-#else
   glBindVertexArray( vao );
-#endif
 }
 
 void Shape::fill( float x, float y, float width, float height )
@@ -281,12 +264,8 @@ void Shape::wireBox( const AABB& bb )
 
 void Shape::load()
 {
-#ifdef OZ_GL_COMPATIBLE
-  vao = 1;
-#else
   glGenVertexArrays( 1, &vao );
   glBindVertexArray( vao );
-#endif
 
   glGenBuffers( 1, &vbo );
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
@@ -296,7 +275,6 @@ void Shape::load()
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
   glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( INDICES ), INDICES, GL_STATIC_DRAW );
 
-#ifndef OZ_GL_COMPATIBLE
   glEnableVertexAttribArray( Attrib::POSITION );
   glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
@@ -310,7 +288,6 @@ void Shape::load()
                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 
   glBindVertexArray( 0 );
-#endif
 
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
@@ -321,9 +298,7 @@ void Shape::unload()
   if( vao != 0 ) {
     glDeleteBuffers( 1, &ibo );
     glDeleteBuffers( 1, &vbo );
-#ifndef OZ_GL_COMPATIBLE
     glDeleteVertexArrays( 1, &vao );
-#endif
 
     ibo = 0;
     vbo = 0;

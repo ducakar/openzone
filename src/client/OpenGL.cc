@@ -101,11 +101,9 @@ PFNGLCOMPRESSEDTEXIMAGE2DPROC    glCompressedTexImage2D;
 PFNGLGETCOMPRESSEDTEXIMAGEPROC   glGetCompressedTexImage;
 PFNGLGENERATEMIPMAPPROC          glGenerateMipmap;
 
-# ifndef OZ_GL_COMPATIBLE
 PFNGLGENVERTEXARRAYSPROC         glGenVertexArrays;
 PFNGLDELETEVERTEXARRAYSPROC      glDeleteVertexArrays;
 PFNGLBINDVERTEXARRAYPROC         glBindVertexArray;
-# endif
 #endif
 
 #ifndef NDEBUG
@@ -231,11 +229,9 @@ void glInit()
   OZ_REGISTER_GLFUNC( glGetCompressedTexImage,   PFNGLGETCOMPRESSEDTEXIMAGEPROC   );
   OZ_REGISTER_GLFUNC( glGenerateMipmap,          PFNGLGENERATEMIPMAPPROC          );
 
-# ifndef OZ_GL_COMPATIBLE
   OZ_REGISTER_GLFUNC( glGenVertexArrays,         PFNGLGENVERTEXARRAYSPROC         );
   OZ_REGISTER_GLFUNC( glDeleteVertexArrays,      PFNGLDELETEVERTEXARRAYSPROC      );
   OZ_REGISTER_GLFUNC( glBindVertexArray,         PFNGLBINDVERTEXARRAYPROC         );
-# endif
 #endif
 }
 

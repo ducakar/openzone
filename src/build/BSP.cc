@@ -73,7 +73,7 @@ void BSP::load()
 
   if( life <= 0.0f || !Math::isnormal( life ) ) {
     throw Exception( "%s: Invalid life value. Should be > 0 and finite. If you want infinite life"
-                     " rather set resistance to infinity.", name.cstr() );
+                     " rather set resistance to infinity (\"inf\" or \"INF\").", name.cstr() );
   }
   if( resistance < 0.0f ) {
     throw Exception( "%s: Invalid resistance. Should be >= 0.", name.cstr() );

@@ -48,8 +48,7 @@ struct Param
 
   int oz_NightVision;
 
-  int oz_Fog_start;
-  int oz_Fog_end;
+  int oz_Fog_dist;
   int oz_Fog_colour;
 
   int oz_WaveBias;

@@ -91,6 +91,9 @@ void Modules::free()
   for( int i = modules.length() - 1; i >= 0; --i ) {
     modules[i]->free();
   }
+
+  modules.clear();
+  modules.dealloc();
 }
 
 }

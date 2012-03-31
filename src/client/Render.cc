@@ -229,10 +229,7 @@ void Render::drawGeometry()
     tf.applyCamera();
     shader.updateLights();
 
-    float fogStart = camera.p.z < 0.0f || ( shader.medium & Medium::LIQUID_MASK ) ? 0.0f : 50.0f;
-
-    glUniform1f( param.oz_Fog_start, fogStart );
-    glUniform1f( param.oz_Fog_end, visibility );
+    glUniform1f( param.oz_Fog_dist, visibility );
     glUniform4fv( param.oz_Fog_colour, 1, shader.fogColour );
 
     glUniform1i( param.oz_NightVision, camera.nightVision );
@@ -411,7 +408,7 @@ void Render::drawOrbis()
 
       glBlitFramebuffer( 0, 0, renderWidth, renderHeight,
                          0, 0, camera.width, camera.height,
-                         GL_COLOR_BUFFER_BIT, offscreenFilter );
+                         GL_COLOR_BUFFER_BIT, GL_LINEAR );
 
       glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
     }
@@ -576,9 +573,7 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
     config.include( "shader.setSamplerIndices", "true" );
   }
   if( !hasVAO ) {
-#ifndef OZ_GL_COMPATIBLE
     throw Exception( "GL_ARB_vertex_array_object not supported by OpenGL" );
-#endif
   }
   if( !hasFBO ) {
     throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
@@ -616,19 +611,6 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
 
   windPhi         = 0.0f;
 
-  String sOffscreenFilter = config.getSet( "render.offscreenFilter", "LINEAR" );
-
-  if( sOffscreenFilter.equals( "NEAREST" ) ) {
-    offscreenFilter = GL_NEAREST;
-  }
-  else if( sOffscreenFilter.equals( "LINEAR" ) ) {
-    offscreenFilter = GL_LINEAR;
-  }
-  else {
-    throw Exception( "Invalid render.offscreenFilter '%s'. Must be either LINEAR or NEAREST.",
-                     sOffscreenFilter.cstr() );
-  }
-
   if( isOffscreen ) {
     renderWidth  = int( float( windowWidth  ) * renderScale + 0.5f );
     renderHeight = int( float( windowHeight ) * renderScale + 0.5f );
@@ -650,8 +632,8 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
     glGenTextures( 1, &colourBuffer );
     glBindTexture( GL_TEXTURE_2D, colourBuffer );
 
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, int( offscreenFilter ) );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, int( offscreenFilter ) );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 

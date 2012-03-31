@@ -117,7 +117,6 @@ class Render
     int                   renderWidth;
     int                   renderHeight;
 
-    uint                  offscreenFilter;
     uint                  mainFrame;
     uint                  depthBuffer;
     uint                  colourBuffer;

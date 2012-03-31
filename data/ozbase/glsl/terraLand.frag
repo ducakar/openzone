@@ -31,24 +31,28 @@ varying vec3 exNormal;
 
 void main()
 {
-  vec3  toCamera = oz_CameraPosition - exPosition;
-  vec3  normal   = normalize( exNormal );
-  float dist     = length( toCamera );
+  vec3  normal      = normalize( exNormal );
+
+#ifdef OZ_LOW_DETAIL
+  float dist        = gl_FragCoord.w / gl_FragCoord.z;
+#else
+  vec3  toCamera    = oz_CameraPosition - exPosition;
+  float dist        = length( toCamera );
+#endif
 
   vec4 detailSample = texture2D( oz_Textures[0], exTexCoord * TERRA_DETAIL_SCALE );
   vec4 mapSample    = texture2D( oz_Textures[2], exTexCoord );
 
-  if( oz_NightVision ) {
-    vec4  diffuse    = skyLightColour( normal );
-    vec4  fragColour = mapSample * detailSample + vec4( diffuse.xyz, 0.0 );
-    float avgColour  = 0.33 * ( fragColour.r + fragColour.g + fragColour.b );
+  vec4 diffuse      = skyLightColour( normal );
 
-    gl_FragData[0] = applyFog( vec4( 0.0, avgColour, 0.0, fragColour.a ), dist );
+  vec4 fragColour   = detailSample * mapSample * diffuse;
+
+  if( oz_NightVision ) {
+    float nvColour = 2.0 * ( fragColour.r + fragColour.g + fragColour.b );
+
+    gl_FragData[0] = applyFog( vec4( 0.0, nvColour, 0.0, fragColour.a ), dist );
   }
   else {
-    vec4 diffuse    = skyLightColour( normal );
-    vec4 fragColour = mapSample * detailSample * diffuse;
-
     gl_FragData[0] = applyFog( fragColour, dist );
   }
 }

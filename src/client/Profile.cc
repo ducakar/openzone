@@ -92,5 +92,11 @@ void Profile::init()
   }
 }
 
+void Profile::free()
+{
+  items.clear();
+  items.dealloc();
+}
+
 }
 }

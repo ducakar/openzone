@@ -501,18 +501,6 @@ table.settings td {
     </td>
   </tr>
   <tr>
-    <th>render.offscreenFilter ["NEAREST" | "LINEAR"] "LINEAR"</th>
-  </tr>
-  <tr>
-    <td>
-      Which texture filter to use when rendering content of the offscreen buffer to the screen. Can
-      be LINEAR to interpolate between pixels (smooth, blurry image) or NEAREST to select nearest
-      pixel value (blocky image). It has no effect if offscreen buffer resolution is the same as
-      screen resolution. Usually one would prefer LINEAR unless screen resolution is a multiple of
-      offscreen buffer resolution (in other words 1.0 / render.scale is an integer).
-    </td>
-  </tr>
-  <tr>
     <th>render.postprocess [bool] true</th>
   </tr>
   <tr>
@@ -779,7 +767,7 @@ table.settings td {
   <li>PhysFS 2.0</li>
   <li>SDL 1.2 or 2.0</li>
   <li>Lua 5.1 or 5.2</li>
-  <li>OpenGL 2.1+</li>
+  <li>OpenGL 2.1+ (Mesa 8.0+ required open-source Linux drivers)</li>
   <li>OpenAL 1.1+</li>
   <li>FreeImage (optional, for ozBuild tool)</li>
   <li>libvorbis</li>
@@ -790,7 +778,8 @@ table.settings td {
 <h2><a name="troubleshooting" href="#">Troubleshooting</a></h2>
 <ul>
   <li>
-    Make sure you have the <b>LATEST</b> display drivers.
+    Make sure you have the <b>LATEST</b> display drivers. If you use open-source drivers on Linux,
+    Mesa library should be 8.0 or newer.
   </li>
   <li>
     Turning off desktop effects or switching to fullscreen mode significantly improves performance
@@ -808,7 +797,7 @@ table.settings td {
       </li>
     </ul>
     Cards with complete DirectX 9.0c support should do. On Linux, the engine works with both
-    proprietary and open-source Gallium3D-based drivers.
+    proprietary and open-source Gallium3D-based drivers with Mesa 8.0+.
   </li>
   <li>
     If you are using Gallium3D-based drivers and textures are (mostly) missing, set
@@ -848,13 +837,13 @@ table.settings td {
 </table>
 <p>
   This program comes with ABSOLUTELY NO WARRANTY. This is free software under
-  <a href="doc/libs/COPYING.GPL3.txt">GNU General Public Licence version 3</a> or (at your option)
+  <a href="licences/COPYING.GPL3.txt">GNU General Public Licence version 3</a> or (at your option)
   any later version.
 </p>
 
 <p>
   liboz library is a part of OpenZone engine but it can also be distributed separately or modified
-  under <a href="doc/libs/COPYING.liboz.txt">ZLIB licence</a>.
+  under <a href="licences/COPYING.liboz.txt">ZLIB licence</a>.
 </p>
 
 <h3>Game Data</h3>
@@ -877,7 +866,7 @@ table.settings td {
   </tr>
   <tr>
     <td>Licence:</td>
-    <td><a href="doc/libs/COPYING.PhysFS.txt">ZLIB</a></td>
+    <td><a href="licences/COPYING.PhysFS.txt">ZLIB</a></td>
   </tr>
 </table>
 
@@ -889,7 +878,7 @@ table.settings td {
   </tr>
   <tr>
     <td>Licence:</td>
-    <td><a href="doc/libs/COPYING.zlib.txt">ZLIB</a></td>
+    <td><a href="licences/COPYING.zlib.txt">ZLIB</a></td>
   </tr>
 </table>
 
@@ -901,7 +890,7 @@ table.settings td {
   </tr>
   <tr>
     <td>Licence:</td>
-    <td><a href="doc/libs/COPYING.SDL2.txt">ZLIB</a></td>
+    <td><a href="licences/COPYING.SDL2.txt">ZLIB</a></td>
   </tr>
 </table>
 
@@ -913,7 +902,7 @@ table.settings td {
   </tr>
   <tr>
     <td>Licence:</td>
-    <td><a href="doc/libs/COPYING.LGPL2.1.txt">GNU Lesser General Public Licence 2.1</a></td>
+    <td><a href="licences/COPYING.LGPL2.1.txt">GNU Lesser General Public Licence 2.1</a></td>
   </tr>
 </table>
 
@@ -925,7 +914,7 @@ table.settings td {
   </tr>
   <tr>
     <td>Licence:</td>
-    <td><a href="doc/libs/COPYING.SDL_ttf.txt">ZLIB</a></td>
+    <td><a href="licences/COPYING.SDL_ttf.txt">ZLIB</a></td>
   </tr>
 </table>
 
@@ -937,7 +926,7 @@ table.settings td {
   </tr>
   <tr>
     <td>Licence:</td>
-    <td><a href="doc/libs/COPYING.FreeType.txt">FreeType</a></td>
+    <td><a href="licences/COPYING.FreeType.txt">FreeType</a></td>
   </tr>
 </table>
 
@@ -949,7 +938,7 @@ table.settings td {
   </tr>
   <tr>
     <td>Licence:</td>
-    <td><a href="doc/libs/COPYING.Lua.txt">MIT</a></td>
+    <td><a href="licences/COPYING.Lua.txt">MIT</a></td>
   </tr>
 </table>
 
@@ -961,7 +950,7 @@ table.settings td {
   </tr>
   <tr>
     <td>Licence:</td>
-    <td><a href="doc/libs/COPYING.libogg.txt">BSD</a></td>
+    <td><a href="licences/COPYING.libogg.txt">BSD</a></td>
   </tr>
 </table>
 
@@ -973,7 +962,7 @@ table.settings td {
   </tr>
   <tr>
     <td>Licence:</td>
-    <td><a href="doc/libs/COPYING.libvorbis.txt">BSD</a></td>
+    <td><a href="licences/COPYING.libvorbis.txt">BSD</a></td>
   </tr>
 </table>
 
@@ -985,7 +974,7 @@ table.settings td {
   </tr>
   <tr>
     <td>Licence:</td>
-    <td><a href="doc/libs/COPYING.FreeImage.txt">FreeImage Public Licence 1.0</a></td>
+    <td><a href="licences/COPYING.FreeImage.txt">FreeImage Public Licence 1.0</a></td>
   </tr>
 </table>
 

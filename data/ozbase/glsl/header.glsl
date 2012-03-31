@@ -74,8 +74,7 @@ uniform bool            oz_NightVision = false;
  */
 struct Fog
 {
-  float start;
-  float end;
+  float dist;
   vec4  colour;
 };
 
@@ -107,8 +106,8 @@ vec4 specularColour( float specular, vec3 normal, vec3 toCamera )
 
 vec4 applyFog( vec4 colour, float dist )
 {
-  float ratio = ( dist - oz_Fog.start ) / ( oz_Fog.end - oz_Fog.start );
-  return mix( colour, oz_Fog.colour, clamp( ratio, 0.0, 1.0 ) );
+  float ratio = min( dist / oz_Fog.dist, 1.0 );
+  return mix( colour, oz_Fog.colour, ratio*ratio );
 }
 
 vec2 noise( vec2 seed )
