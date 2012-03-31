@@ -112,11 +112,9 @@ extern PFNGLCOMPRESSEDTEXIMAGE2DPROC    glCompressedTexImage2D;
 extern PFNGLGETCOMPRESSEDTEXIMAGEPROC   glGetCompressedTexImage;
 extern PFNGLGENERATEMIPMAPPROC          glGenerateMipmap;
 
-# ifndef OZ_GL_COMPATIBLE
 extern PFNGLGENVERTEXARRAYSPROC         glGenVertexArrays;
 extern PFNGLDELETEVERTEXARRAYSPROC      glDeleteVertexArrays;
 extern PFNGLBINDVERTEXARRAYPROC         glBindVertexArray;
-# endif
 #endif
 
 #ifdef NDEBUG

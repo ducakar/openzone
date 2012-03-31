@@ -131,12 +131,8 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
   int nVertices = istream->readInt();
   int nIndices  = istream->readInt();
 
-#ifdef OZ_GL_COMPATIBLE
-  vao = 1;
-#else
   glGenVertexArrays( 1, &vao );
   glBindVertexArray( vao );
-#endif
 
   int vboSize = nVertices * int( sizeof( Vertex ) );
   int iboSize = nIndices * int( sizeof( ushort ) );
@@ -149,11 +145,9 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
   glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, istream->forward( iboSize ), GL_STATIC_DRAW );
 
-#ifndef OZ_GL_COMPATIBLE
   Vertex::setFormat();
 
   glBindVertexArray( 0 );
-#endif
 
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
@@ -250,14 +244,12 @@ void Mesh::unload()
 
     texIds.dealloc();
 
-    glDeleteBuffers( 1, &vbo );
     glDeleteBuffers( 1, &ibo );
-#ifndef OZ_GL_COMPATIBLE
+    glDeleteBuffers( 1, &vbo );
     glDeleteVertexArrays( 1, &vao );
-#endif
 
-    vbo = 0;
     ibo = 0;
+    vbo = 0;
     vao = 0;
   }
 
@@ -274,13 +266,7 @@ void Mesh::upload( const Vertex* vertices, int nVertices, uint usage ) const
 void Mesh::bind() const
 {
   if( this != lastMesh ) {
-#ifdef OZ_GL_COMPATIBLE
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-    Vertex::setFormat();
-#else
     glBindVertexArray( vao );
-#endif
   }
 }
 
@@ -327,13 +313,7 @@ void Mesh::draw( int mask ) const
   }
 
   if( this != lastMesh ) {
-#ifdef OZ_GL_COMPATIBLE
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-    Vertex::setFormat();
-#else
     glBindVertexArray( vao );
-#endif
   }
 
   for( int i = 0; i < nParts; ++i ) {

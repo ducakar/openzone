@@ -15,7 +15,6 @@ set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
 set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
 
 option( OZ_NETWORKING "Enable networking (not supported yet)." OFF )
-option( OZ_GL_COMPATIBLE "Use less OpenGL extensions for better compatibility (for Mesa < 8.0)." OFF )
 option( OZ_BUMPMAP "Enable bumpmapping (not supported yet)." OFF )
 
 option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
@@ -212,17 +211,17 @@ add_subdirectory( doc )
 # Data files
 #
 
+# icons
+install( DIRECTORY share/applications share/pixmaps COMPONENT client DESTINATION share )
+
 # info files and documentation
 if( WIN32 OR OZ_STANDALONE )
-  install( FILES AUTHORS COPYING ChangeLog BUGS TODO
-           README.html PREBERI.html
-           DESTINATION . )
-  install( DIRECTORY doc/doxygen/html/ COMPONENT documentation DESTINATION doc/doxygen )
-endif()
+  file( GLOB readmes doc/*.html )
 
-# icons
-if( NOT OZ_STANDALONE )
-  install( DIRECTORY share/applications share/pixmaps COMPONENT menu DESTINATION share )
+  install( FILES AUTHORS COPYING ChangeLog BUGS TODO COMPONENT client DESTINATION . )
+  install( FILES ${readmes} COMPONENT client DESTINATION doc )
+  install( DIRECTORY doc/licences COMPONENT client DESTINATION doc )
+  install( DIRECTORY doc/doxygen/html/ COMPONENT documentation DESTINATION doc/doxygen )
 endif()
 
 # libraries and launchers for standalone package
@@ -232,10 +231,10 @@ if( OZ_STANDALONE )
 
   if( WIN32 )
     install( FILES support/openzone.bat COMPONENT client DESTINATION . )
-    install( FILES support/build.bat COMPONENT tools DESTINATION . )
+    install( FILES support/ozbuild.bat COMPONENT tools DESTINATION . )
   else()
-    install( FILES support/openzone.sh COMPONENT client  DESTINATION . )
-    install( FILES support/build.sh COMPONENT tools DESTINATION . )
+    install( FILES support/openzone.sh COMPONENT client DESTINATION . )
+    install( FILES support/ozbuild.sh COMPONENT tools DESTINATION . )
   endif()
 endif()
 
@@ -243,9 +242,8 @@ endif()
 # CPack
 #
 
-set( CPACK_GENERATOR "ZIP" )
+set( CPACK_GENERATOR "TGZ" )
 
-set( CPACK_PACKAGE_NAME "${OZ_APPLICATION_NAME}" )
 set( CPACK_PACKAGE_VERSION "${OZ_VERSION}" )
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "A simple cross-platform FPS/RTS game engine" )
 set( CPACK_PACKAGE_VENDOR "Davorin Učakar" )
@@ -253,7 +251,7 @@ set( CPACK_PACKAGE_CONTACT "Davorin Učakar <davorin.ucakar@gmail.com>" )
 set( CPACK_TOPLEVEL_TAG "${OZ_APPLICATION_NAME}" )
 set( CPACK_SYSTEM_NAME "${OZ_SYSTEM_NAME}" )
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING" )
-set( CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.html" )
+set( CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/doc/README.html" )
 set( CPACK_PACKAGE_EXECUTABLES "bin/openzone" "OpenZone" ) # start menu entry
 set( CPACK_STRIP_FILES "bin/openzone;bin/ozbuild" )
 set( CPACK_PACKAGE_INSTALL_DIRECTORY "${OZ_APPLICATION_NAME}" )

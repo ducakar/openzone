@@ -127,16 +127,7 @@ void Caelum::draw()
     glUniform4fv( param.oz_Colour, 1, colour );
     glUniform1i( param.oz_NightVision, camera.nightVision );
 
-#ifdef OZ_GL_COMPATIBLE
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
-
-    glEnableVertexAttribArray( Attrib::POSITION );
-    glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( float[3] ), null );
-
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-#else
     glBindVertexArray( vao );
-#endif
 
     glDrawElements( GL_TRIANGLE_STRIP, MAX_STARS * 6, GL_UNSIGNED_SHORT, null );
   }
@@ -202,10 +193,8 @@ void Caelum::load()
   int vboSize = MAX_STARS * 4 * int( sizeof( float[3] ) );
   int iboSize = MAX_STARS * 6 * int( sizeof( ushort ) );
 
-#ifndef OZ_GL_COMPATIBLE
   glGenVertexArrays( 1, &vao );
   glBindVertexArray( vao );
-#endif
 
   glGenBuffers( 1, &vbo );
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
@@ -215,14 +204,13 @@ void Caelum::load()
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
   glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, is.forward( iboSize ), GL_STATIC_DRAW );
 
-#ifndef OZ_GL_COMPATIBLE
   glEnableVertexAttribArray( Attrib::POSITION );
   glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( float[3] ), null );
 
   glBindVertexArray( 0 );
-#endif
 
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
   sunTexId  = context.readTextureLayer( &is, path );
   moonTexId = context.readTextureLayer( &is, path );
@@ -249,13 +237,14 @@ void Caelum::unload()
     glDeleteTextures( 1, &sunTexId );
     glDeleteTextures( 1, &moonTexId );
 
+    glDeleteBuffers( 1, &ibo );
     glDeleteBuffers( 1, &vbo );
-#ifndef OZ_GL_COMPATIBLE
     glDeleteVertexArrays( 1, &vao );
-#endif
 
     sunTexId = 0;
     moonTexId = 0;
+
+    ibo = 0;
     vbo = 0;
     vao = 0;
 

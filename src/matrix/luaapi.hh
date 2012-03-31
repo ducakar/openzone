@@ -504,7 +504,7 @@ static int ozStrSetLife( lua_State* l )
   ARG( 1 );
   STR();
 
-  ms.str->life = l_tofloat( 1 );
+  ms.str->life = clamp( l_tofloat( 1 ), 0.0f, ms.str->bsp->life );
   return 0;
 }
 
@@ -513,7 +513,34 @@ static int ozStrAddLife( lua_State* l )
   ARG( 1 );
   STR();
 
-  ms.str->life += l_tofloat( 1 );
+  ms.str->life = clamp( ms.str->life + l_tofloat( 1 ), 0.0f, ms.str->bsp->life );
+  return 0;
+}
+
+static int ozStrDefaultResistance( lua_State* l )
+{
+  ARG( 0 );
+  STR();
+
+  l_pushfloat( ms.str->bsp->resistance );
+  return 1;
+}
+
+static int ozStrGetResistance( lua_State* l )
+{
+  ARG( 0 );
+  STR();
+
+  l_pushfloat( ms.str->resistance );
+  return 1;
+}
+
+static int ozStrSetResistance( lua_State* l )
+{
+  ARG( 1 );
+  STR();
+
+  ms.str->resistance = l_tofloat( 1 );
   return 0;
 }
 
@@ -956,6 +983,33 @@ static int ozObjAddLife( lua_State* l )
   OBJ();
 
   ms.obj->life = clamp( ms.obj->life + l_tofloat( 1 ), 0.0f, ms.obj->clazz->life );
+  return 0;
+}
+
+static int ozObjDefaultResistance( lua_State* l )
+{
+  ARG( 0 );
+  OBJ();
+
+  l_pushfloat( ms.obj->clazz->resistance );
+  return 1;
+}
+
+static int ozObjGetResistance( lua_State* l )
+{
+  ARG( 0 );
+  OBJ();
+
+  l_pushfloat( ms.obj->resistance );
+  return 1;
+}
+
+static int ozObjSetResistance( lua_State* l )
+{
+  ARG( 1 );
+  OBJ();
+
+  ms.obj->resistance = l_tofloat( 1 );
   return 0;
 }
 

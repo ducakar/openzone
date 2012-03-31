@@ -38,6 +38,7 @@
 #include "client/Network.hh"
 #include "client/Camera.hh"
 #include "client/Lua.hh"
+#include "client/Profile.hh"
 #include "client/QuestList.hh"
 #include "client/MenuStage.hh"
 
@@ -602,6 +603,7 @@ void GameStage::init()
   matrix.init();
   nirvana.init();
   loader.init();
+  profile.init();
   modules.init();
 
   log.unindent();
@@ -614,6 +616,7 @@ void GameStage::free()
   log.indent();
 
   modules.free();
+  profile.free();
   loader.free();
   nirvana.free();
   matrix.free();

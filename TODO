@@ -5,6 +5,8 @@
   * improve MD2 animation (transitions, firstFrame, secondFrame, nextFrame)
   * fix bloom
   * fix in-vehicle camera (rotation axis & free look)
+  * bullet push
+  * death camera
 
 0.4
 - new löök

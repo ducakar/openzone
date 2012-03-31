@@ -222,8 +222,7 @@ void Shader::loadProgram( int id )
 
   OZ_REGISTER_PARAMETER( oz_NightVision,              "oz_NightVision" );
 
-  OZ_REGISTER_PARAMETER( oz_Fog_start,                "oz_Fog.start" );
-  OZ_REGISTER_PARAMETER( oz_Fog_end,                  "oz_Fog.end" );
+  OZ_REGISTER_PARAMETER( oz_Fog_dist,                 "oz_Fog.dist" );
   OZ_REGISTER_PARAMETER( oz_Fog_colour,               "oz_Fog.colour" );
 
   OZ_REGISTER_PARAMETER( oz_WaveBias,                 "oz_WaveBias" );

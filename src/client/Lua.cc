@@ -390,10 +390,14 @@ void Lua::init()
   IMPORT_FUNC( ozStrGetPos );
   IMPORT_FUNC( ozStrGetBSP );
   IMPORT_FUNC( ozStrGetHeading );
+
   IMPORT_FUNC( ozStrMaxLife );
   IMPORT_FUNC( ozStrGetLife );
   IMPORT_FUNC( ozStrSetLife );
   IMPORT_FUNC( ozStrAddLife );
+  IMPORT_FUNC( ozStrDefaultResistance );
+  IMPORT_FUNC( ozStrGetResistance );
+  IMPORT_FUNC( ozStrSetResistance );
 
   IMPORT_FUNC( ozStrDamage );
   IMPORT_FUNC( ozStrDestroy );
@@ -437,10 +441,15 @@ void Lua::init()
   IMPORT_FUNC( ozObjHasFlag );
   IMPORT_FUNC( ozObjGetHeading );
   IMPORT_FUNC( ozObjGetClassName );
+
   IMPORT_FUNC( ozObjMaxLife );
   IMPORT_FUNC( ozObjGetLife );
   IMPORT_FUNC( ozObjSetLife );
   IMPORT_FUNC( ozObjAddLife );
+  IMPORT_FUNC( ozObjDefaultResistance );
+  IMPORT_FUNC( ozObjGetResistance );
+  IMPORT_FUNC( ozObjSetResistance );
+
   IMPORT_FUNC( ozObjAddEvent );
 
   IMPORT_FUNC( ozObjBindItems );
