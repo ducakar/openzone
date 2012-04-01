@@ -387,6 +387,7 @@ int Client::main( int argc, char** argv )
 
   int  windowWidth      = config.getSet( "window.width", 0 );
   int  windowHeight     = config.getSet( "window.height", 0 );
+  int  windowBpp        = config.getSet( "window.bpp", 0 );
   bool windowFullscreen = config.getSet( "window.fullscreen", true );
   bool enableVSync      = config.getSet( "render.vsync", true );
 
@@ -396,36 +397,49 @@ int Client::main( int argc, char** argv )
     windowFlags |= SDL_FULLSCREEN;
   }
 
+  char videoDriverBuf[64];
+  SDL_VideoDriverName( videoDriverBuf, 64 );
+
+  log.println( "Video driver: %s", videoDriverBuf );
+
+  const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
+
+  log.verboseMode = true;
+  log.println( "Desktop video mode: %dx%d-%d",
+               videoInfo->current_w, videoInfo->current_h, videoInfo->vfmt->BitsPerPixel );
+  log.verboseMode = false;
+
+  if( windowWidth == 0 || windowHeight == 0 ) {
+    windowWidth  = videoInfo->current_w;
+    windowHeight = videoInfo->current_h;
+  }
+  if( windowBpp == 0 ) {
+    windowBpp = videoInfo->vfmt->BitsPerPixel;
+  }
+
   SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, enableVSync );
 
-  log.print( "Creating OpenGL window %dx%d [%s] ...",
-             windowWidth, windowHeight, windowFullscreen ? "fullscreen" : "windowed" );
+  log.print( "Creating OpenGL window %dx%d-%d [%s] ...",
+             windowWidth, windowHeight, windowBpp, windowFullscreen ? "fullscreen" : "windowed" );
 
-//   SDL_Surface* icon = SDL_CreateRGBSurfaceFrom( const_cast<ubyte*>( ICON.pixel_data ),
-//                                                 int( ICON.width ), int( ICON.height ),
-//                                                 int( ICON.bytes_per_pixel * 8 ),
-//                                                 int( ICON.width * ICON.bytes_per_pixel ),
-//                                                 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 );
-//
-//   SDL_WM_SetIcon( icon, null );
-//   SDL_FreeSurface( icon );
-
-  if( SDL_VideoModeOK( windowWidth, windowHeight, 0, windowFlags ) == 1 ) {
+  if( SDL_VideoModeOK( windowWidth, windowHeight, windowBpp, windowFlags ) == 1 ) {
     throw Exception( "Video mode not supported" );
   }
 
-  SDL_Surface* window = SDL_SetVideoMode( windowWidth, windowHeight, 0, windowFlags );
+  SDL_Surface* window = SDL_SetVideoMode( windowWidth, windowHeight, windowBpp, windowFlags );
 
   if( window == null ) {
     throw Exception( "Window creation failed" );
   }
 
-  SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION, null );
+  SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION,
+                     OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION );
 
   windowWidth  = window->w;
   windowHeight = window->h;
+  windowBpp    = window->format->BitsPerPixel;
 
-  log.printEnd( " %dx%d-%d ... OK", windowWidth, windowHeight, window->format->BitsPerPixel );
+  log.printEnd( " %dx%d-%d ... OK", windowWidth, windowHeight, windowBpp );
 
   SDL_ShowCursor( SDL_FALSE );
 

@@ -40,7 +40,6 @@ class Bot : public Dynamic
      * EVENTS
      */
 
-    static const int EVENT_LAND             = 7;
     static const int EVENT_JUMP             = 8;
     static const int EVENT_FLIP             = 9;
     static const int EVENT_DEATH            = 10;
@@ -170,7 +169,6 @@ class Bot : public Dynamic
   protected:
 
     virtual void onDestroy();
-    virtual void onHit( const Hit* hit, float );
     virtual void onUpdate();
 
   public:

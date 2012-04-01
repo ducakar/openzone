@@ -35,8 +35,8 @@ class Weapon : public Dynamic
 {
   public:
 
-    static const int EVENT_SHOT       = 7;
-    static const int EVENT_SHOT_EMPTY = 8;
+    static const int EVENT_SHOT       = 8;
+    static const int EVENT_SHOT_EMPTY = 9;
 
     static Pool<Weapon, 2048> pool;
 

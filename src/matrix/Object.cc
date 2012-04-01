@@ -62,20 +62,6 @@ void Object::onDestroy()
   }
 }
 
-void Object::onDamage( float )
-{
-  hard_assert( !clazz->onDamage.isEmpty() );
-
-  lua.objectCall( clazz->onDamage, this );
-}
-
-void Object::onHit( const Hit*, float )
-{
-  hard_assert( !clazz->onHit.isEmpty() );
-
-  lua.objectCall( clazz->onHit, this );
-}
-
 bool Object::onUse( Bot* user )
 {
   hard_assert( !clazz->onUse.isEmpty() );

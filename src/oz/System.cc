@@ -147,15 +147,14 @@ static void signalHandler( int signum )
 {
   resetSignals();
 
-  int sigindex = uint( signum ) >= uint( aLength( SIGNALS ) ) ? 0 : signum;
+  int index = uint( signum ) >= uint( aLength( SIGNALS ) ) ? 0 : signum;
 
   log.verboseMode = false;
-  log.printEnd();
-  log.printRaw( "Caught signal %d %s (%s)", signum, SIGNALS[sigindex][0], SIGNALS[sigindex][1] );
-  log.printEnd();
+  log.printRaw( "\n\nCaught signal %d %s (%s)\n", signum, SIGNALS[index][0], SIGNALS[index][1] );
 
   StackTrace st = StackTrace::current( 1 );
   log.printTrace( &st );
+  log.println();
 
   System::bell();
   System::abort( signum == SIGINT );
@@ -311,14 +310,15 @@ void System::warning( int nSkippedFrames, const char* msg, ... )
   va_start( ap, msg );
 
   log.verboseMode = false;
-  log.printEnd();
+  log.printRaw( "\n\n" );
   log.vprintRaw( msg, ap );
-  log.printEnd();
+  log.printRaw( "\n" );
 
   va_end( ap );
 
   StackTrace st = StackTrace::current( 1 + nSkippedFrames );
   log.printTrace( &st );
+  log.println();
 
   bell();
 }
@@ -331,14 +331,15 @@ void System::error( int nSkippedFrames, const char* msg, ... )
   va_start( ap, msg );
 
   log.verboseMode = false;
-  log.printEnd();
+  log.printRaw( "\n\n" );
   log.vprintRaw( msg, ap );
-  log.printEnd();
+  log.printRaw( "\n" );
 
   va_end( ap );
 
   StackTrace st = StackTrace::current( 1 + nSkippedFrames );
   log.printTrace( &st );
+  log.println();
 
   bell();
   abort();

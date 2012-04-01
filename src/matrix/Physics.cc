@@ -69,18 +69,13 @@ const float Physics::FRAG_FIXED_DAMAGE       =  0.75f;
 
 void Physics::handleFragHit()
 {
-  float velocity2 = frag->velocity.sqL();
+  Vec3  fragVelocity = frag->velocity;
+  float velocity2    = frag->velocity.sqL();
 
   frag->velocity *= frag->restitution;
-  frag->velocity -= ( 2.0f * frag->velocity * collider.hit.normal ) * collider.hit.normal;
+  frag->velocity -= ( 2.0f * ( frag->velocity * collider.hit.normal ) ) * collider.hit.normal;
 
   if( velocity2 > FRAG_HIT_VELOCITY2 ) {
-    if( velocity2 > FRAG_DESTROY_VELOCITY2 ) {
-      // we abuse velocity to hold the normal of the fatal hit, needed for positioning decals
-      frag->velocity = collider.hit.normal;
-      frag->life = -Math::INF;
-    }
-
     if( frag->mass != 0.0f ) {
       if( collider.hit.str != null ) {
         Struct* str = collider.hit.str;
@@ -99,7 +94,22 @@ void Physics::handleFragHit()
           damage *= FRAG_FIXED_DAMAGE + ( 1.0f - FRAG_FIXED_DAMAGE ) * Math::rand();
           obj->damage( damage );
         }
+        if( obj->flags & Object::DYNAMIC_BIT ) {
+          Dynamic* dyn = static_cast<Dynamic*>( obj );
+
+          float fragMass = frag->mass * 10.0f;
+          float massSum  = fragMass + dyn->mass;
+
+          dyn->flags   &= ~Object::DISABLED_BIT;
+          dyn->momentum = ( fragVelocity * fragMass + dyn->momentum * dyn->mass ) / massSum;
+        }
       }
+    }
+
+    if( velocity2 > FRAG_DESTROY_VELOCITY2 ) {
+      // We abuse velocity to hold the normal of the fatal hit, needed for positioning decals.
+      frag->velocity = collider.hit.normal;
+      frag->life     = -Math::INF;
     }
   }
 }
@@ -268,8 +278,9 @@ void Physics::handleObjHit()
     if( hitMomentum < HIT_THRESHOLD && hitVelocity < HIT_THRESHOLD ) {
       float energy = hitMomentum*hitMomentum;
 
-      dyn->hit( &hit, energy );
-      sDyn->hit( &hit, energy );
+      // Since it can only be -1, 0 or +1, it's enough to test for sign.
+      dyn->hit( energy, hit.normal.z > 0.0f );
+      sDyn->hit( energy );
     }
 
     if( hit.normal.z == 0.0f ) {
@@ -336,10 +347,10 @@ void Physics::handleObjHit()
     if( hitMomentum < HIT_THRESHOLD && hitVelocity < HIT_THRESHOLD ) {
       float energy = hitMomentum*hitMomentum;
 
-      dyn->hit( &hit, energy );
+      dyn->hit( energy, hit.normal.z >= FLOOR_NORMAL_Z );
 
       if( hit.obj != null ) {
-        hit.obj->hit( &hit, energy );
+        hit.obj->hit( energy );
       }
       else if( hit.str != null ) {
         hit.str->hit( dyn->mass, energy );
@@ -523,7 +534,7 @@ void Physics::updateObj( Dynamic* dyn_ )
         dyn->flags |= Object::IN_LIQUID_BIT;
 
         if( !( oldFlags & Object::IN_LIQUID_BIT ) && dyn->velocity.z <= SPLASH_THRESHOLD ) {
-          dyn->splash( dyn->velocity.z );
+          dyn->splash( dyn->velocity.z*dyn->velocity.z );
         }
       }
       if( collider.hit.medium & Medium::LAVA_BIT ) {

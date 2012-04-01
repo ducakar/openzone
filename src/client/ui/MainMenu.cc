@@ -100,7 +100,7 @@ static void exit( Button* sender )
 }
 
 MainMenu::MainMenu() :
-  Frame( 0, 0, 400, 450, OZ_APPLICATION_TITLE " v" OZ_APPLICATION_VERSION ),
+  Frame( 0, 0, 400, 450, OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION ),
   copyright( 10, 10, 380, 9, Font::SANS )
 {
   x = ( Area::uiWidth  - width ) / 2;

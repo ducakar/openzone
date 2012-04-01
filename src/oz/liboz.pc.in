@@ -1,10 +1,12 @@
 prefix=/usr
-exec_prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib@OZ_LIB_SUFFIX@
+includedir=${prefix}/include
 
 Name: liboz
 Description: OpenZone core library
 Version: @OZ_VERSION@
 Requires:
 Conflicts:
-Libs: -L/usr/lib@OZ_LIB_SUFFIX@ -loz
-Cflags: -I/usr/include -std=c++0x
+Libs: -L${libdir} -loz
+Cflags: -I${includedir} -std=c++0x

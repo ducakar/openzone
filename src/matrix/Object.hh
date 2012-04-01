@@ -33,7 +33,6 @@ namespace matrix
 {
 
 struct Cell;
-struct Hit;
 class  Bot;
 
 /**
@@ -79,22 +78,16 @@ class Object : public AABB
      */
 
     // if object has Lua handlers
-    static const int LUA_BIT            = 0x01000000;
+    static const int LUA_BIT            = 0x00800000;
 
     // if the onDestroy method should be called on destruction
-    static const int DESTROY_FUNC_BIT   = 0x00800000;
-
-    // if the onDamage method should be called on damage received
-    static const int DAMAGE_FUNC_BIT    = 0x00400000;
-
-    // if the onHit method should be called on hit
-    static const int HIT_FUNC_BIT       = 0x00200000;
+    static const int DESTROY_FUNC_BIT   = 0x00400000;
 
     // if the onUse function should be called when object is used
-    static const int USE_FUNC_BIT       = 0x00100000;
+    static const int USE_FUNC_BIT       = 0x00200000;
 
     // if the onUpdate method should be called on each tick
-    static const int UPDATE_FUNC_BIT    = 0x00080000;
+    static const int UPDATE_FUNC_BIT    = 0x00100000;
 
     /*
      * BOUND OBJECTS
@@ -161,12 +154,9 @@ class Object : public AABB
      * RENDER FLAGS
      */
 
-    // don't render object (it will be rendered via another path, e.g. bots in a vehicle)
-    static const int NO_DRAW_BIT        = 0x00000008;
-
     // wide frustum culling: object is represented some times larger to frustum culling system than
     // it really is; how larger it is, is specified by client::Render::WIDE_CULL_FACTOR
-    static const int WIDE_CULL_BIT      = 0x00000004;
+    static const int WIDE_CULL_BIT      = 0x00000008;
 
     /*
      * FLAG MASKS
@@ -204,10 +194,11 @@ class Object : public AABB
     static const int EVENT_DESTROY  = 1;
     static const int EVENT_DAMAGE   = 2;
     static const int EVENT_HIT      = 3;
-    static const int EVENT_SPLASH   = 4;
+    static const int EVENT_LAND     = 4;
+    static const int EVENT_SPLASH   = 5;
     // EVENT_FRICTING is not in use, it only reserves a slot for friction sound
-    static const int EVENT_FRICTING = 5;
-    static const int EVENT_USE      = 6;
+    static const int EVENT_FRICTING = 6;
+    static const int EVENT_USE      = 7;
 
     struct Event
     {
@@ -261,8 +252,6 @@ class Object : public AABB
      */
 
     virtual void onDestroy();
-    virtual void onDamage( float damage );
-    virtual void onHit( const Hit* hit, float energy );
     virtual bool onUse( Bot* user );
     virtual void onUpdate();
 
@@ -276,6 +265,7 @@ class Object : public AABB
 
     /**
      * Add an event to the object. Events can be used for reporting collisions, sounds etc.
+     *
      * @param id
      * @param intensity
      */
@@ -301,6 +291,7 @@ class Object : public AABB
 
     /**
      * Inflict damage to the object.
+     *
      * @param damage
      */
     OZ_ALWAYS_INLINE
@@ -311,28 +302,26 @@ class Object : public AABB
       if( damage > 0.0f ) {
         life -= damage;
         addEvent( EVENT_DAMAGE, DAMAGE_BASE_INTENSITY + damage * DAMAGE_INTENSITY_COEF );
-
-        if( flags & DAMAGE_FUNC_BIT ) {
-          onDamage( damage );
-        }
       }
     }
 
     /**
-     * Called by physics engine when the object hits something.
+     * Called by physics engine when object hits something.
      *
-     * @param hit Hit class filled with collision data
-     * @param energy momentum square projected to hit normal
+     * @param energy momentum square (usually projected to the hit normal).
+     * @param hasLanded whether EVENT_LAND should be issued instead of EVENT_HIT.
      */
     OZ_ALWAYS_INLINE
-    void hit( const Hit* hit, float energy )
+    void hit( float energy, bool hasLanded = false )
     {
+      addEvent( EVENT_HIT + hasLanded, energy * MOMENTUM_INTENSITY_COEF );
       damage( energy * MOMENTUM_DAMAGE_COEF );
-      addEvent( EVENT_HIT, energy * MOMENTUM_INTENSITY_COEF );
+    }
 
-      if( flags & HIT_FUNC_BIT ) {
-        onHit( hit, energy );
-      }
+    OZ_ALWAYS_INLINE
+    void splash( float energy )
+    {
+      addEvent( EVENT_SPLASH, energy * MOMENTUM_INTENSITY_COEF );
     }
 
     OZ_ALWAYS_INLINE

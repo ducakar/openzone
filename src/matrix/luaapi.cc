@@ -96,8 +96,6 @@ void importLuaConstants( lua_State* l )
 
   registerLuaConstant( l, "OZ_OBJ_LUA_BIT",                 Object::LUA_BIT );
   registerLuaConstant( l, "OZ_OBJ_DESTROY_FUNC_BIT",        Object::DESTROY_FUNC_BIT );
-  registerLuaConstant( l, "OZ_OBJ_DAMAGE_FUNC_BIT",         Object::DAMAGE_FUNC_BIT );
-  registerLuaConstant( l, "OZ_OBJ_HIT_FUNC_BIT",            Object::HIT_FUNC_BIT );
   registerLuaConstant( l, "OZ_OBJ_USE_FUNC_BIT",            Object::USE_FUNC_BIT );
   registerLuaConstant( l, "OZ_OBJ_UPDATE_FUNC_BIT",         Object::UPDATE_FUNC_BIT );
 
@@ -119,7 +117,6 @@ void importLuaConstants( lua_State* l )
   registerLuaConstant( l, "OZ_OBJ_IN_LAVA_BIT",             Object::IN_LAVA_BIT );
   registerLuaConstant( l, "OZ_OBJ_ON_LADDER_BIT",           Object::ON_LADDER_BIT );
 
-  registerLuaConstant( l, "OZ_OBJ_NO_DRAW_BIT",             Object::NO_DRAW_BIT );
   registerLuaConstant( l, "OZ_OBJ_WIDE_CULL_BIT",           Object::WIDE_CULL_BIT );
 
   registerLuaConstant( l, "OZ_BOT_DEAD_BIT",                Bot::DEAD_BIT );

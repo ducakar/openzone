@@ -65,13 +65,6 @@ void Bot::onDestroy()
   Dynamic::onDestroy();
 }
 
-void Bot::onHit( const Hit* hit, float )
-{
-  if( !( state & ( DEAD_BIT | GROUNDED_BIT ) ) && hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
-    events.first()->id = EVENT_LAND;
-  }
-}
-
 void Bot::onUpdate()
 {
   const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
@@ -576,7 +569,7 @@ void Bot::onUpdate()
   if( actions & ~oldActions & INSTRUMENT_ACTIONS ) {
     if( actions & ~oldActions & ACTION_INV_USE ) {
       Dynamic* item   = static_cast<Dynamic*>( orbis.objects[instrument] );
-      Object*  source = container == -1 ? this : orbis.objects[container];
+      Object*  source = orbis.objects[container];
 
       if( item != null && source != null &&
           source->items.contains( instrument ) && canReach( source ) )
@@ -825,13 +818,15 @@ bool Bot::canReach( const Object* obj ) const
 
 void Bot::invUse( const Dynamic* item, const Object* source )
 {
-  hard_assert( item != null );
+  hard_assert( item != null && source != null );
 
-  if( source->items.contains( item->index ) ) {
+  if( ( item->flags & USE_FUNC_BIT ) && source->items.contains( item->index ) &&
+      canReach( source ) )
+  {
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_INV_USE;
     instrument = item->index;
-    container  = -1;
+    container  = source->index;
   }
 }
 
@@ -888,7 +883,7 @@ void Bot::trigger( const Entity* entity )
 {
   hard_assert( entity != null );
 
-  if( canReach( entity ) ) {
+  if( entity->model->target != -1 && entity->key >= 0 && canReach( entity ) ) {
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_TRIGGER;
     instrument = entity->str->index * Struct::MAX_ENTITIES + int( entity - entity->str->entities );
@@ -900,7 +895,7 @@ void Bot::lock( const Entity* entity )
 {
   hard_assert( entity != null );
 
-  if( entity->model->target != -1 && canReach( entity ) ) {
+  if( entity->key != 0 && canReach( entity ) ) {
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_LOCK;
     instrument = entity->str->index * Struct::MAX_ENTITIES + int( entity - entity->str->entities );
@@ -924,7 +919,7 @@ void Bot::take( const Dynamic* item )
 {
   hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) );
 
-  if( item->flags & ITEM_BIT ) {
+  if( ( item->flags & ITEM_BIT ) && canReach( item ) ) {
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_TAKE;
     instrument = item->index;
@@ -938,7 +933,7 @@ void Bot::grab( const Dynamic* dynamic )
 
   actions   &= ~INSTRUMENT_ACTIONS;
   actions   |= ACTION_GRAB;
-  instrument = dynamic == null ? -1 : dynamic->index;
+  instrument = dynamic != null && canReach( dynamic ) ? dynamic->index : -1;
   container  = -1;
   cargo      = -1;
 }
