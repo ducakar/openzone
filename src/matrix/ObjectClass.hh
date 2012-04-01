@@ -81,8 +81,6 @@ class ObjectClass
     int             audioSounds[MAX_SOUNDS];
 
     String          onDestroy;
-    String          onDamage;
-    String          onHit;
     String          onUse;
     String          onUpdate;
 

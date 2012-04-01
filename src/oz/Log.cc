@@ -306,6 +306,13 @@ void Log::printException( const std::exception* e ) const
     }
 
     printTrace( &oe->stackTrace );
+
+    if( !verboseMode || isVerbose ) {
+      printf( "\n" );
+    }
+    if( file != null ) {
+      fprintf( file, "\n" );
+    }
   }
 }
 

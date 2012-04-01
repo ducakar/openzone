@@ -213,10 +213,6 @@ void ObjectClass::fillCommonConfig( const Config* config )
     soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
     audioSounds[Object::EVENT_DESTROY] = soundIndex;
 
-    soundName  = config->get( "audioSound.use", "" );
-    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
-    audioSounds[Object::EVENT_USE] = soundIndex;
-
     soundName  = config->get( "audioSound.damage", "" );
     soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
     audioSounds[Object::EVENT_DAMAGE] = soundIndex;
@@ -224,6 +220,23 @@ void ObjectClass::fillCommonConfig( const Config* config )
     soundName  = config->get( "audioSound.hit", "" );
     soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
     audioSounds[Object::EVENT_HIT] = soundIndex;
+
+    soundName  = config->get( "audioSound.land", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Object::EVENT_LAND] = soundIndex;
+
+    soundName  = config->get( "audioSound.splash", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Object::EVENT_SPLASH] = soundIndex;
+
+    soundName  = config->get( "audioSound.fricting", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Object::EVENT_FRICTING] = soundIndex;
+
+    soundName  = config->get( "audioSound.use", "" );
+    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
+    audioSounds[Object::EVENT_USE] = soundIndex;
+
   }
 
   /*
@@ -231,8 +244,6 @@ void ObjectClass::fillCommonConfig( const Config* config )
    */
 
   onDestroy = config->get( "onDestroy", "" );
-  onDamage  = config->get( "onDamage", "" );
-  onHit     = config->get( "onHit", "" );
   onUse     = config->get( "onUse", "" );
   onUpdate  = config->get( "onUpdate", "" );
 
@@ -245,28 +256,6 @@ void ObjectClass::fillCommonConfig( const Config* config )
     }
     else {
       flags |= Object::DESTROY_FUNC_BIT;;
-    }
-  }
-  if( !onDamage.isEmpty() ) {
-    flags |= Object::LUA_BIT;
-
-    // disable event handler if explicitly set to false
-    if( !config->get( "flag.onDamage", true ) ) {
-      flags &= ~Object::DAMAGE_FUNC_BIT;
-    }
-    else {
-      flags |= Object::DAMAGE_FUNC_BIT;
-    }
-  }
-  if( !onHit.isEmpty() ) {
-    flags |= Object::LUA_BIT;
-
-    // disable event handler if explicitly set to false
-    if( !config->get( "flag.onHit", true ) ) {
-      flags &= ~Object::HIT_FUNC_BIT;
-    }
-    else {
-      flags |= Object::HIT_FUNC_BIT;
     }
   }
   if( !onUse.isEmpty() ) {
@@ -307,12 +296,9 @@ void ObjectClass::initClass( const Config* config )
 
   OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",     true  );
   OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.onUse",         false );
-  OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.onDamage",      false );
-  OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,       "flag.onHit",         false );
   OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,    "flag.onUpdate",      false );
   OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",         true  );
   OZ_CLASS_SET_FLAG( Object::CYLINDER_BIT,       "flag.cylinder",      true  );
-  OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",        false );
   OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",      false );
 
   fillCommonConfig( config );

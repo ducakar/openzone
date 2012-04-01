@@ -654,6 +654,20 @@ void Sound::init()
   log.println( "Initialising Sound {" );
   log.indent();
 
+  const char* deviceSpec = alcGetString( null, ALC_DEVICE_SPECIFIER );
+
+  log.verboseMode = true;
+  log.println( "Available OpenAL devices {" );
+  log.indent();
+
+  for( const char* s = deviceSpec; *s != '\0'; s += String::length( s ) + 1 ) {
+    log.println( "%s", s );
+  }
+
+  log.unindent();
+  log.println( "}" );
+  log.verboseMode = false;
+
   const char* deviceName = config.getSet( "sound.device", "" );
 
   log.print( "Initialising device '%s' ...", deviceName );
@@ -684,20 +698,6 @@ void Sound::init()
   OZ_AL_CHECK_ERROR();
 
   log.println( "OpenAL device: %s", alcGetString( soundDevice, ALC_DEVICE_SPECIFIER ) );
-
-  const char* deviceSpec = alcGetString( null, ALC_DEVICE_SPECIFIER );
-
-  log.verboseMode = true;
-  log.println( "Available OpenAL devices {" );
-  log.indent();
-
-  for( const char* s = deviceSpec; *s != '\0'; s += String::length( s ) + 1 ) {
-    log.println( "%s", s );
-  }
-
-  log.unindent();
-  log.println( "}" );
-  log.verboseMode = false;
 
   int nAttributes;
   alcGetIntegerv( soundDevice, ALC_ATTRIBUTES_SIZE, 1, &nAttributes );

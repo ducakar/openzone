@@ -638,6 +638,17 @@ static int ozStrSetEntityLock( lua_State* l )
   return 0;
 }
 
+static int ozStrTriggerEntity( lua_State* l )
+{
+  ARG( 1 );
+  STR();
+
+  int entIndex = l_toint( 1 );
+
+  ms.str->entities[entIndex].trigger();;
+  return 0;
+}
+
 static int ozStrVectorFromObj( lua_State* l )
 {
   ARG( 1 );

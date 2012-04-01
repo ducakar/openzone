@@ -49,10 +49,7 @@ void VehicleClass::initClass( const Config* config )
           Object::UPDATE_FUNC_BIT | Object::USE_FUNC_BIT;
 
   OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",    true  );
-  OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.onDamage",     false );
-  OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,       "flag.onHit",        false );
   OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",        true  );
-  OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
   OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
 
   fillCommonConfig( config );
@@ -60,14 +57,6 @@ void VehicleClass::initClass( const Config* config )
   if( audioType != -1 ) {
     const char* soundName;
     int         soundIndex;
-
-    soundName  = config->get( "audioSound.splash", "" );
-    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
-    audioSounds[Object::EVENT_SPLASH] = soundIndex;
-
-    soundName  = config->get( "audioSound.fricting", "" );
-    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
-    audioSounds[Object::EVENT_FRICTING] = soundIndex;
 
     soundName  = config->get( "audioSound.engine", "" );
     soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );

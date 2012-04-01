@@ -335,9 +335,9 @@ void Lua::init()
 
   IMPORT_FUNC( ozStrGetEntityState );
   IGNORE_FUNC( ozStrSetEntityState );
-
   IMPORT_FUNC( ozStrGetEntityLock );
   IGNORE_FUNC( ozStrSetEntityLock );
+  IGNORE_FUNC( ozStrTriggerEntity );
 
   IMPORT_FUNC( ozStrVectorFromObj );
   IMPORT_FUNC( ozStrVectorFromEye );

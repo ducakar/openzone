@@ -48,17 +48,6 @@ class Dynamic : public Object
     float mass;     ///< Mass.
     float lift;     ///< Lift / weight (water only, for lava Physics::LAVA_LIFT is used).
 
-  public:
-
-    OZ_ALWAYS_INLINE
-    void splash( float hitMomentum )
-    {
-      float hitMomentum2 = hitMomentum*hitMomentum;
-
-      addEvent( EVENT_SPLASH, hitMomentum2 * MOMENTUM_INTENSITY_COEF );
-      addEvent( EVENT_SPLASH, 1.0f );
-    }
-
   protected:
 
     virtual void onDestroy();

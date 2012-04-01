@@ -637,6 +637,14 @@ table.settings td {
     </td>
   </tr>
   <tr>
+    <th>window.bpp [int] 0</th>
+  </tr>
+  <tr>
+    <td>
+      Colour depth (bits per pixel). If zero, desktop depth is used.
+    </td>
+  </tr>
+  <tr>
     <th>window.fullscreen [bool] false</th>
   </tr>
   <tr>
@@ -649,7 +657,8 @@ table.settings td {
   </tr>
   <tr>
     <td>
-      Vertical screen resolution. Zero equals desktop resolution.
+      Vertical screen resolution. If either <span class="settings">window.width</span> or
+      <span class="settings">window.height</span> is zero, desktop resolution is used.
     </td>
   </tr>
   <tr>
@@ -657,7 +666,8 @@ table.settings td {
   </tr>
   <tr>
     <td>
-      Horizontal screen resolution. Zero equals desktop resolution.
+      Horizontal screen resolution. If either <span class="settings">window.width</span> or
+      <span class="settings">window.height</span> is zero, desktop resolution is used.
     </td>
   </tr>
 </table>

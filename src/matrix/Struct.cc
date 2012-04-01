@@ -77,7 +77,7 @@ Pool<Struct>    Struct::pool;
 
 void Entity::trigger()
 {
-  if( model->target == -1 || key > 0 ) {
+  if( model->target == -1 || key < 0 ) {
     return;
   }
 

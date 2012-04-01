@@ -79,16 +79,16 @@ void HudArea::drawBotCrosshair()
 
       title.draw( this, false );
 
-      if( model->target != -1 && ent->key <= 0 ) {
+      if( model->target != -1 && ent->key >= 0 ) {
         glBindTexture( GL_TEXTURE_2D, useTexId );
         shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
       }
 
-      if( ent->key > 0 ) {
+      if( ent->key < 0 ) {
         glBindTexture( GL_TEXTURE_2D, lockedTexId );
         shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
       }
-      else if( ent->key < 0 ) {
+      else if( ent->key > 0 ) {
         glBindTexture( GL_TEXTURE_2D, unlockedTexId );
         shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
       }
