@@ -100,8 +100,8 @@ void Camera::prepare()
 {
   updateReferences();
 
-  relH = float( -ui::mouse.overEdgeX ) * mouseXSens;
-  relV = float( +ui::mouse.overEdgeY ) * mouseYSens;
+  relH = float( -ui::mouse.overEdgeX ) * mouseXSens * mag;
+  relV = float( +ui::mouse.overEdgeY ) * mouseYSens * mag;
 
   relH = clamp( relH, -ROT_LIMIT, +ROT_LIMIT );
   relV = clamp( relV, -ROT_LIMIT, +ROT_LIMIT );
@@ -317,10 +317,10 @@ void Camera::init( int screenWidth, int screenHeight )
   centreY       = height / 2;
 
   aspect        = config.getSet( "camera.aspect",     0.0f );
-  mouseXSens    = config.getSet( "camera.mouseXSens", 1.0f ) * 0.2f * Timer::TICK_TIME;
-  mouseYSens    = config.getSet( "camera.mouseYSens", 1.0f ) * 0.2f * Timer::TICK_TIME;
-  keyXSens      = config.getSet( "camera.keysXSens",  1.0f ) * 0.05f;
-  keyYSens      = config.getSet( "camera.keysYSens",  1.0f ) * 0.05f;
+  mouseXSens    = config.getSet( "camera.mouseXSens", 1.0f ) * 0.004f;
+  mouseYSens    = config.getSet( "camera.mouseYSens", 1.0f ) * 0.004f;
+  keyXSens      = config.getSet( "camera.keysXSens",  1.0f ) * 0.04f;
+  keyYSens      = config.getSet( "camera.keysYSens",  1.0f ) * 0.04f;
 
   float angle   = Math::rad( config.getSet( "camera.angle", 80.0f ) );
 

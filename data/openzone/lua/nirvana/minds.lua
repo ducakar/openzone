@@ -31,10 +31,10 @@ function randomWalk( localData )
   if math.random( 3 ) == 1 then
     ozSelfAddH( math.random() * 120.0 - 60.0 )
   end
-  if math.random( 3 ) == 1 then
+  if math.random( 10 ) == 1 then
     ozSelfActionJump()
   end
-  if math.random( 3 ) == 1 then
+  if math.random( 10 ) == 1 then
     ozSelfToggleRunning()
   end
 end
@@ -70,13 +70,13 @@ function prey( localData )
 
   ozSelfBindObjOverlaps( 20, 20, 20 )
 
-  while ozObjBindNext() do
-    if not ozObjIsSelf() and ozObjIsBot() and ozObjGetClassName() ~= "goblin" then
+  while ozBindNextObj() do
+    if not ozObjIsSelf() and ozObjHasFlag( OZ_BOT_BIT ) and ozObjGetClassName() ~= "goblin" then
       local distance = ozObjDistanceFromSelf()
 
       if distance < minDistance then
         minDistance = distance
-        heading = ozObjHeadingFromSelf()
+        heading = ozObjHeadingFromSelfEye()
       end
     end
   end
@@ -91,18 +91,19 @@ function prey( localData )
 end
 
 function predator( localData )
+  local self = ozObjGetIndex()
   local minDistance = 100
   local heading
 
   ozSelfBindObjOverlaps( 20, 20, 20 )
 
-  while ozObjBindNext() do
+  while ozBindNextObj() do
     if not ozObjIsSelf() and ozObjHasFlag( OZ_BOT_BIT ) and ozObjGetClassName() == "goblin" then
-      local distance = ozObjDistanceFromSelf()
+      local distance = ozObjDistanceFromObj( self )
 
       if distance < minDistance then
         minDistance = distance
-        heading = ozObjHeadingFromSelf()
+        heading = ozObjHeadingFromEye( self )
       end
     end
   end

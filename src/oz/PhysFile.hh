@@ -99,11 +99,18 @@ class PhysFile
     void setPath( const char* path );
 
     /**
-     * Stat file to get its type.
+     * Get file type.
      *
      * %File type is cached until one changes the file path.
      */
     File::Type getType();
+
+    /**
+     * Get file size.
+     *
+     * %File size in bytes or -1 if file doesn't exist.
+     */
+    int getSize() const;
 
     /**
      * %File path in virtual file system.

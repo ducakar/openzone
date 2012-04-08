@@ -128,7 +128,11 @@ class Alloc
  *
  * @ingroup oz
  */
+#if __GNUC__ == 4 && __GNUC_MINOR__ < 7
+extern void* operator new ( std::size_t size ) throw ( std::bad_alloc );
+#else
 extern void* operator new ( std::size_t size );
+#endif
 
 /**
  * Operator new[] overload with memory statistics and (optionally) memory leak checking.
@@ -140,7 +144,11 @@ extern void* operator new ( std::size_t size );
  *
  * @ingroup oz
  */
+#if __GNUC__ == 4 && __GNUC_MINOR__ < 7
+extern void* operator new[] ( std::size_t size ) throw( std::bad_alloc );
+#else
 extern void* operator new[] ( std::size_t size );
+#endif
 
 /**
  * Operator delete overload with memory statistics and (optionally) memory leak checking.

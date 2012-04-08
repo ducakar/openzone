@@ -165,7 +165,7 @@ void MusicPlayer::onDraw()
 
   Frame::onDraw();
 
-  title.draw( this, true );
+  title.draw( this, false );
   trackLabel.draw( this, true );
   volumeLabel.draw( this, true );
 }

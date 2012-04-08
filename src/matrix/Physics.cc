@@ -45,12 +45,13 @@ const float Physics::SLIDE_DAMAGE_THRESHOLD  =  25.0f;
 const float Physics::SLIDE_DAMAGE_COEF       =  0.06f;
 
 const float Physics::STICK_VELOCITY          =  0.03f;
-const float Physics::SLICK_STICK_VELOCITY    =  0.001f;
-const float Physics::FLOAT_STICK_VELOCITY    =  0.0003f;
-const float Physics::WATER_FRICTION          =  0.08f;
-const float Physics::LADDER_FRICTION         =  0.60f;
+const float Physics::SLICK_STICK_VELOCITY    =  0.003f;
+const float Physics::FLOAT_STICK_VELOCITY    =  0.0005f;
+const float Physics::LADDER_SLIP_MOMENTUM    =  8.0f;
+const float Physics::WATER_FRICTION          =  0.09f;
+const float Physics::LADDER_FRICTION         =  0.20f;
 const float Physics::FLOOR_FRICTION          =  0.30f;
-const float Physics::SLICK_FRICTION          =  0.02f;
+const float Physics::SLICK_FRICTION          =  0.03f;
 
 const float Physics::LAVA_LIFT               =  1.2f;
 const float Physics::LAVA_DAMAGE_ABSOLUTE    =  175.0f;
@@ -155,25 +156,30 @@ bool Physics::handleObjFriction()
 {
   float systemMom = gravity * Timer::TICK_TIME;
 
+  if( dyn->flags & Object::IN_LIQUID_BIT ) {
+    float lift = dyn->flags & Object::IN_LAVA_BIT ? LAVA_LIFT : dyn->lift;
+    float frictionFactor = 0.5f * dyn->depth / dyn->dim.z;
+
+    dyn->momentum *= 1.0f - frictionFactor * WATER_FRICTION;
+    systemMom -= frictionFactor * lift * gravity * Timer::TICK_TIME;
+  }
+
   if( dyn->flags & Object::ON_LADDER_BIT ) {
-    if( dyn->momentum.sqL() <= STICK_VELOCITY ) {
+    float momentum2 = dyn->momentum.sqL();
+
+    if( momentum2 <= STICK_VELOCITY ) {
       dyn->momentum = Vec3::ZERO;
 
       return dyn->flags & Object::ENABLE_BIT;
     }
-    else {
+    else if( momentum2 <= LADDER_SLIP_MOMENTUM ) {
       dyn->momentum *= 1.0f - LADDER_FRICTION;
+    }
+    else {
+      dyn->momentum.z += systemMom;
     }
   }
   else {
-    if( dyn->flags & Object::IN_LIQUID_BIT ) {
-      float lift = dyn->flags & Object::IN_LAVA_BIT ? LAVA_LIFT : dyn->lift;
-      float frictionFactor = 0.5f * dyn->depth / dyn->dim.z;
-
-      dyn->momentum *= 1.0f - frictionFactor * WATER_FRICTION;
-      systemMom -= frictionFactor * lift * gravity * Timer::TICK_TIME;
-    }
-
     bool isLowerStill = true;
 
     float deltaVelX = dyn->momentum.x;
@@ -213,9 +219,8 @@ bool Physics::handleObjFriction()
       float stickVel  = STICK_VELOCITY;
 
       if( dyn->flags & Object::ON_SLICK_BIT ) {
-        deltaVel2 = 0.0f;
-        friction  = SLICK_FRICTION;
-        stickVel  = SLICK_STICK_VELOCITY;
+        friction = SLICK_FRICTION;
+        stickVel = SLICK_STICK_VELOCITY;
       }
 
       dyn->momentum   += ( systemMom * dyn->floor.z ) * dyn->floor;
@@ -226,14 +231,11 @@ bool Physics::handleObjFriction()
       if( deltaVel2 > stickVel ) {
         dyn->flags |= Object::FRICTING_BIT;
 
-        if( deltaVel2 > SLIDE_DAMAGE_THRESHOLD ) {
+        if( deltaVel2 > SLIDE_DAMAGE_THRESHOLD && !( dyn->flags & Object::ON_SLICK_BIT ) ) {
           dyn->damage( SLIDE_DAMAGE_COEF * deltaVel2 * -gravity );
         }
       }
-
-      if( isLowerStill &&
-          dyn->momentum.x*dyn->momentum.x + dyn->momentum.y*dyn->momentum.y <= stickVel )
-      {
+      else if( isLowerStill ) {
         dyn->momentum.x = 0.0f;
         dyn->momentum.y = 0.0f;
 

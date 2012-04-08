@@ -156,6 +156,30 @@ File::Type File::getType()
   return type;
 }
 
+int File::getSize() const
+{
+#ifdef _WIN32
+
+  HANDLE handle = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, null, OPEN_EXISTING,
+                              FILE_ATTRIBUTE_NORMAL, null );
+  if( handle != null ) {
+    int size = int( GetFileSize( handle, null ) );
+    CloseHandle( handle );
+    return size;
+  }
+
+#else
+
+  struct stat info;
+  if( stat( filePath, &info ) == 0 ) {
+    return int( info.st_size );
+  }
+
+#endif
+
+  return -1;
+}
+
 String File::path() const
 {
   return filePath;

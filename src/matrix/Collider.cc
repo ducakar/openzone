@@ -440,6 +440,7 @@ void Collider::trimAABBBrush( const BSP::Brush* brush )
       }
     }
   }
+
   if( minRatio != -1.0f && minRatio <= maxRatio && minRatio < hit.ratio ) {
     hit.ratio    = max( 0.0f, minRatio );
     hit.normal   = str->toAbsoluteCS( lastNormal );

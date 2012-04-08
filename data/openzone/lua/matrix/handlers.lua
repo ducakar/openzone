@@ -26,7 +26,7 @@
 ]]--
 
 function cvicek_onUse( l )
-  ozObjBindUser()
+  ozBindUser()
 
   if ozBotHasState( OZ_BOT_MECHANICAL_BIT ) then
     ozUseFailed()
@@ -34,7 +34,7 @@ function cvicek_onUse( l )
     ozObjAddLife( 50 )
     ozBotAddStamina( 30 )
 
-    ozObjBindSelf()
+    ozBindSelf()
     ozObjDestroy( true )
   end
 end
@@ -70,7 +70,7 @@ end
 function serviceStation_onUse( l )
   local pX, pY, pZ = ozObjGetPos()
 
-  ozObjBindUser()
+  ozBindUser()
   ozBotRearm()
 
   if ozBotHasState( OZ_BOT_MECHANICAL_BIT ) then
@@ -79,7 +79,7 @@ function serviceStation_onUse( l )
 
   ozOrbisBindOverlaps( OZ_OBJECTS_BIT, posX, posY, posZ, 5, 5, 2 )
 
-  while ozObjBindNext() do
+  while ozBindNextObj() do
     if ozObjHasFlag( OZ_VEHICLE_BIT ) then
       ozVehicleService()
     end

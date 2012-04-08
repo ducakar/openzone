@@ -22,6 +22,8 @@
  */
 
 #include "oz/oz.hh"
+#include "oz/windefs.h"
+
 #include <cstdio>
 
 using namespace oz;
@@ -58,8 +60,5 @@ struct Foo
 
 int main()
 {
-  HashString<Foo> hs;
-
-  hs.add( "Drekec", Foo() );
   return 0;
 }

@@ -124,6 +124,18 @@ File::Type PhysFile::getType()
   return type;
 }
 
+int PhysFile::getSize() const
+{
+  PHYSFS_File* file = PHYSFS_openRead( filePath );
+
+  if( file != null ) {
+    int size = int( PHYSFS_fileLength( file ) );
+    PHYSFS_close( file );
+    return size;
+  }
+  return -1;
+}
+
 String PhysFile::path() const
 {
   return filePath;
@@ -330,7 +342,7 @@ bool PhysFile::mount( const char* source, const char* mountPoint, bool append )
 
 bool PhysFile::init()
 {
-#if defined( __ANDROID__ ) || defined( _WIN32 )
+#if defined( _WIN32 ) || defined( __ANDROID__ )
   return PHYSFS_init( null ) != 0;
 #else
   return PHYSFS_init( program_invocation_name ) != 0;

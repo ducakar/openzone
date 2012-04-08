@@ -179,19 +179,19 @@ void BotProxy::prepare()
   }
 
   if( !alt && keys[SDLK_f] ) {
-    bot->actions |= Bot::ACTION_GESTURE0;
+    bot->actions |= Bot::ACTION_POINT;
   }
   if( !alt && keys[SDLK_g] ) {
-    bot->actions |= Bot::ACTION_GESTURE1;
+    bot->actions |= Bot::ACTION_BACK;
   }
   if( !alt && keys[SDLK_h] ) {
-    bot->actions |= Bot::ACTION_GESTURE2;
+    bot->actions |= Bot::ACTION_SALUTE;
   }
   if( !alt && keys[SDLK_j] ) {
-    bot->actions |= Bot::ACTION_GESTURE3;
+    bot->actions |= Bot::ACTION_WAVE;
   }
   if( !alt && keys[SDLK_k] ) {
-    bot->actions |= Bot::ACTION_GESTURE4;
+    bot->actions |= Bot::ACTION_FLIP;
   }
 
   /*
@@ -354,12 +354,6 @@ void BotProxy::update()
       bobBias  = 0.0f;
     }
     else { // 1st person, not in vehicle
-      if( ( bot->actions & Bot::ACTION_JUMP ) &&
-          !( bot->state & ( Bot::GROUNDED_BIT | Bot::CLIMBING_BIT ) ) )
-      {
-        goto inJump;
-      }
-
       if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
           Bot::MOVING_BIT )
       {
@@ -378,7 +372,6 @@ void BotProxy::update()
         bobBias  = sine*sine * clazz->bobSwimAmplitude;
       }
       else {
-      inJump:
         bobTheta *= BOB_SUPPRESSION_COEF;
         bobBias  *= BOB_SUPPRESSION_COEF;
       }

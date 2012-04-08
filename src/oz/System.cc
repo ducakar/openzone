@@ -34,10 +34,10 @@
 #include <cstdio>
 #include <cstdlib>
 
-#if defined( __ANDROID__ )
-#elif defined( _WIN32 )
+#if defined( _WIN32 )
 # include <windows.h>
 # include <mmsystem.h>
+#elif defined( __ANDROID__ )
 #else
 # include <unistd.h>
 # include <pthread.h>
@@ -85,8 +85,7 @@ static const char* const SIGNALS[][2] =
   { "SIGSYS",    "Bad system call"            }  // 31
 };
 
-#if defined( __ANDROID__ )
-#elif defined( _WIN32 )
+#if defined( _WIN32 )
 
 struct Wave
 {
@@ -119,6 +118,7 @@ static const Wave WAVE_SAMPLE = {
 // Needed to protect nBellUsers counter.
 static CRITICAL_SECTION mutex;
 
+#elif defined( __ANDROID__ )
 #else
 
 static const pa_sample_spec BELL_SPEC = { PA_SAMPLE_U8, 11025, 1 };
@@ -179,8 +179,7 @@ static void unexpected()
   System::error( 0, "EXCEPTION SPECIFICATION VIOLATION" );
 }
 
-#if defined( __ANDROID__ )
-#elif defined( _WIN32 )
+#if defined( _WIN32 )
 
 static DWORD WINAPI bellThread( LPVOID )
 {
@@ -193,6 +192,7 @@ static DWORD WINAPI bellThread( LPVOID )
   return 0;
 }
 
+#elif defined( __ANDROID__ )
 #else
 
 static void* bellThread( void* )
@@ -216,14 +216,19 @@ static void* bellThread( void* )
 
 static void waitBell()
 {
-#ifndef __ANDROID__
+#if defined( _WIN32 )
+
   while( nBellUsers != 0 ) {
-#ifdef _WIN32
     Sleep( 100 );
-#else
-    usleep( 100000 );
-#endif
   }
+
+#elif defined( __ANDROID__ )
+#else
+
+  while( nBellUsers != 0 ) {
+    usleep( 100000 );
+  }
+
 #endif
 }
 
@@ -280,8 +285,7 @@ void System::trap()
 
 void System::bell()
 {
-#if defined( __ANDROID__ )
-#elif defined( _WIN32 )
+#if defined( _WIN32 )
 
   EnterCriticalSection( &mutex );
   ++nBellUsers;
@@ -290,6 +294,7 @@ void System::bell()
   HANDLE thread = CreateThread( null, 0, bellThread, null, 0, null );
   CloseHandle( thread );
 
+#elif defined( __ANDROID__ )
 #else
 
   pthread_mutex_lock( &mutex );

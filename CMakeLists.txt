@@ -154,12 +154,12 @@ set( libs_tools "${libs_client};${FREEIMAGE_LIBRARY}" )
 # Compiler flags
 #
 
-set( flags "-pipe -std=c++0x -pedantic -fstrict-enums -ffast-math -freciprocal-math" )
+set( flags "-std=c++0x -pedantic -fstrict-enums -ffast-math -freciprocal-math -pipe" )
 set( warnings "-Wall -Wextra -Wconversion -Woverloaded-virtual -Wnon-virtual-dtor -Winvalid-pch" )
 set( arch_flags "-msse3 -mfpmath=sse" )
 
 if( OZ_CLANG )
-  set( flags "-Qunused-arguments ${flags}" )
+  set( flags "-Qunused-arguments -stdlib=libstdc++ ${flags}" )
 endif()
 
 set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release ReleaseGen ReleaseUse" )

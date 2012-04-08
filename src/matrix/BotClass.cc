@@ -127,9 +127,9 @@ void BotClass::initClass( const Config* config )
   jumpMomentum      = config->get( "jumpMomentum", 5.0f );
 
   airControl        = config->get( "airControl", 0.025f );
-  climbControl      = config->get( "climbControl", 1.50f );
-  waterControl      = config->get( "waterControl", 0.08f );
-  slickControl      = config->get( "slickControl", 0.06f );
+  climbControl      = config->get( "climbControl", 0.20f );
+  waterControl      = config->get( "waterControl", 0.07f );
+  slickControl      = config->get( "slickControl", 0.07f );
 
   stepWalkInc       = config->get( "stepWalkInc", 7.0f / 6.0f ) * Timer::TICK_TIME;
   stepRunInc        = config->get( "stepRunInc", 10.0f / 6.0f ) * Timer::TICK_TIME;

@@ -65,9 +65,10 @@ void BSP::playSound( const Entity* entity, int sound ) const
 {
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 
-  Bounds bounds = *entity->model;
+  Bounds bounds   = *entity->model;
   Point3 localPos = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
-  Point3 p = entity->str->toAbsoluteCS( localPos + entity->offset );
+  Point3 p        = entity->str->toAbsoluteCS( localPos + entity->offset );
+  Vec3   velocity = entity->str->toAbsoluteCS( entity->velocity );
 
   uint srcId;
 
@@ -82,6 +83,7 @@ void BSP::playSound( const Entity* entity, int sound ) const
 
   alSourcef( srcId, AL_GAIN, 1.0f );
   alSourcefv( srcId, AL_POSITION, p );
+  alSourcefv( srcId, AL_VELOCITY, velocity );
 
   alSourcePlay( srcId );
 
@@ -97,9 +99,10 @@ void BSP::playContSound( const Entity* entity, int sound ) const
   const Struct* str = entity->str;
   int key = str->index * Struct::MAX_ENTITIES + int( entity - str->entities );
 
-  Bounds bounds = *entity->model;
+  Bounds bounds   = *entity->model;
   Point3 localPos = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
-  Point3 p = entity->str->toAbsoluteCS( localPos + entity->offset );
+  Point3 p        = entity->str->toAbsoluteCS( localPos + entity->offset );
+  Vec3   velocity = entity->str->toAbsoluteCS( entity->velocity );
 
   Context::ContSource* contSource = context.bspSources.find( key );
 
@@ -121,8 +124,9 @@ void BSP::playContSound( const Entity* entity, int sound ) const
     alSourcei( srcId, AL_LOOPING, AL_TRUE );
     alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
 
-    alSourcefv( srcId, AL_POSITION, p );
     alSourcef( srcId, AL_GAIN, 1.0f );
+    alSourcefv( srcId, AL_POSITION, p );
+    alSourcefv( srcId, AL_VELOCITY, velocity );
     alSourcePlay( srcId );
 
     context.addBSPSource( srcId, sound, key );

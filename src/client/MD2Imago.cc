@@ -83,19 +83,19 @@ MD2::Anim MD2Imago::extractAnim() const
     else if( bot->state & Bot::CROUCHING_BIT ) {
       return MD2::ANIM_CROUCH_STAND;
     }
-    else if( bot->state & Bot::GESTURE0_BIT ) {
+    else if( bot->state & Bot::GESTURE_POINT_BIT ) {
       return MD2::ANIM_POINT;
     }
-    else if( bot->state & Bot::GESTURE1_BIT ) {
+    else if( bot->state & Bot::GESTURE_BACK_BIT ) {
       return MD2::ANIM_FALLBACK;
     }
-    else if( bot->state & Bot::GESTURE2_BIT ) {
+    else if( bot->state & Bot::GESTURE_SALUTE_BIT ) {
       return MD2::ANIM_SALUTE;
     }
-    else if( bot->state & Bot::GESTURE3_BIT ) {
+    else if( bot->state & Bot::GESTURE_WAVE_BIT ) {
       return MD2::ANIM_WAVE;
     }
-    else if( bot->state & Bot::GESTURE4_BIT ) {
+    else if( bot->state & Bot::GESTURE_FLIP_BIT ) {
       return MD2::ANIM_FLIP;
     }
     else if( anim.type == MD2::ANIM_POINT || anim.type == MD2::ANIM_FALLBACK ||
@@ -171,7 +171,11 @@ void MD2Imago::draw( const Imago* parent, int mask )
           tf.model.rotateX( bot->v - Math::TAU / 4.0f );
           tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );
 
+          glDepthFunc( GL_ALWAYS );
+
           context.drawImago( orbis.objects[bot->weapon], this, Mesh::SOLID_BIT );
+
+          glDepthFunc( GL_LEQUAL );
         }
       }
       else {

@@ -206,8 +206,10 @@ void InventoryMenu::onDraw()
 
   for( int i = 0; i < ROWS; ++i ) {
     for( int j = 0; j < COLS; ++j ) {
-      if( ( scroll + i ) * COLS + j < containerClazz->nItems ) {
-        if( i * COLS + j == tagged ) {
+      int index = ( scroll + i ) * COLS + j;
+
+      if( index < containerClazz->nItems ) {
+        if( index == tagged ) {
           glUniform4f( param.oz_Colour, 0.6f, 0.6f, 0.6f, 0.6f );
         }
         else {

@@ -201,8 +201,8 @@ void UI::init()
   Area::uiCentreX = Area::uiWidth  / 2;
   Area::uiCentreY = Area::uiHeight / 2;
 
-  mouse.init();
   font.init();
+  mouse.load();
 
   root = new Area( Area::uiWidth, Area::uiHeight );
   loadingScreen = new LoadingArea();
@@ -225,8 +225,8 @@ void UI::free()
   Area::updateAreas.clear();
   Area::updateAreas.dealloc();
 
+  mouse.unload();
   font.free();
-  mouse.free();
 }
 
 }

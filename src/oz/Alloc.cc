@@ -152,6 +152,55 @@ void Alloc::printLeaks()
 
 #endif
 
+inline static void* aligned_malloc( size_t size )
+{
+#if defined( _WIN32 )
+
+  return _aligned_malloc( size, Alloc::ALIGNMENT );
+
+#elif defined( __ANDROID__ )
+
+  size += Alloc::alignUp<size_t>( sizeof( void* ) );
+
+  void* ptr = malloc( size );
+  if( ptr == null ) {
+    return null;
+  }
+
+  char* begin = Alloc::alignUp<char*>( reinterpret_cast<char*>( ptr ) + sizeof( void* ) );
+  reinterpret_cast<void**>( begin )[-1] = ptr;
+
+  return begin;
+
+#else
+
+  void* ptr;
+  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
+    return null;
+  }
+  return ptr;
+
+#endif
+}
+
+inline static void aligned_free( void* ptr )
+{
+#if defined( _WIN32 )
+
+  _aligned_free( ptr );
+
+#elif defined( __ANDROID__ )
+
+  ptr = reinterpret_cast<void**>( ptr )[-1];
+  free( ptr );
+
+#else
+
+  free( ptr );
+
+#endif
+}
+
 static void* allocateObject( void* ptr, size_t size )
 {
 #ifdef OZ_TRACK_LEAKS
@@ -304,11 +353,7 @@ backtraceFound:
 # endif
 #endif
 
-#ifdef _WIN32
-  _aligned_free( ptr );
-#else
-  free( ptr );
-#endif
+  aligned_free( ptr );
 }
 
 static void deallocateArray( void* ptr )
@@ -383,56 +428,44 @@ backtraceFound:
 # endif
 #endif
 
-#ifdef _WIN32
-  _aligned_free( ptr );
-#else
-  free( ptr );
-#endif
+  aligned_free( ptr );
 }
 
 }
 
 using namespace oz;
 
-void* operator new ( std::size_t size )
+#if __GNUC__ == 4 && __GNUC_MINOR__ < 7
+extern void* operator new ( std::size_t size ) throw ( std::bad_alloc )
+#else
+extern void* operator new ( std::size_t size )
+#endif
 {
   size += Alloc::alignUp( sizeof( size_t ) );
 
-#if defined( __ANDROID__ )
-  void* ptr = malloc( size );
+  void* ptr = aligned_malloc( size );
+
   if( ptr == null ) {
-#elif defined( _WIN32 )
-  void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
-  if( ptr == null ) {
-#else
-  void* ptr;
-  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
-#endif
     System::trap();
     throw std::bad_alloc();
   }
-
   return allocateObject( ptr, size );
 }
 
-void* operator new[] ( std::size_t size )
+#if __GNUC__ == 4 && __GNUC_MINOR__ < 7
+extern void* operator new[] ( std::size_t size ) throw ( std::bad_alloc )
+#else
+extern void* operator new[] ( std::size_t size )
+#endif
 {
   size += Alloc::alignUp( sizeof( size_t ) );
 
-#if defined( __ANDROID__ )
-  void* ptr = malloc( size );
+  void* ptr = aligned_malloc( size );
+
   if( ptr == null ) {
-#elif defined( _WIN32 )
-  void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
-  if( ptr == null ) {
-#else
-  void* ptr;
-  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
-#endif
     System::trap();
     throw std::bad_alloc();
   }
-
   return allocateArray( ptr, size );
 }
 
@@ -458,20 +491,12 @@ void* operator new ( std::size_t size, const std::nothrow_t& ) noexcept
 {
   size += Alloc::alignUp( sizeof( size_t ) );
 
-#if defined( __ANDROID__ )
-  void* ptr = malloc( size );
+  void* ptr = aligned_malloc( size );
+
   if( ptr == null ) {
-#elif defined( _WIN32 )
-  void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
-  if( ptr == null ) {
-#else
-  void* ptr;
-  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
-#endif
     System::trap();
     return null;
   }
-
   return allocateObject( ptr, size );
 }
 
@@ -479,20 +504,12 @@ void* operator new[] ( std::size_t size, const std::nothrow_t& ) noexcept
 {
   size += Alloc::alignUp( sizeof( size_t ) );
 
-#if defined( __ANDROID__ )
-  void* ptr = malloc( size );
+  void* ptr = aligned_malloc( size );
+
   if( ptr == null ) {
-#elif defined( _WIN32 )
-  void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
-  if( ptr == null ) {
-#else
-  void* ptr;
-  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
-#endif
     System::trap();
     return null;
   }
-
   return allocateArray( ptr, size );
 }
 
