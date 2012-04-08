@@ -17,7 +17,7 @@
   - AABB & Bounds moved to liboz from matrix
   - clearmacros.hh header to undefine liboz macros that might conflict other libraries
   - compiled as shared library
-  - additional dependencies: libpulse on Linux and PhysFS 2.0
+  - additional dependencies: libpulse on Linux and PhysicsFS
   - fully documented
   - ZLIB licence
 * common:
@@ -26,29 +26,30 @@
   - new Lingua class, gettext-like system, but modularised and suitable for data package system
 * matrix:
   - object attributes: tell what special abilities an object can have (nigh vision, binoculars,
-    satnav, music player)
+    satnav, music player ...)
+  - fragment pools: particle replacements; fragments can be configured like object classes, can
+    have a graphic model assigned, etc.
+  - BSPs, object classes and fragment pools are internally referenced by BSP/ObjectClass/FragPool
+    pointer instead by strings
   - keys: object can have assigned a key value, so it can lock/unlock matching structure entities
   - lava: can be used both in structures and terrain instead of sea
-  - sliding damage
-  - configurable gravity
-  - structure improvements
+  - physics
+    - object tracks lower entity: when an entity moves horizontally it also moves objects on top
+    - sliding damage
+    - configurable gravity
+    - fine-tuning of constants and many other small improvements
+  - structures
     - crushing: structures fall into terrain, and crush objects in their way
     - bound objects: objects that are created together with a structure and destroyed with it;
       useful for defence turrets
     - air brushes to tag certain structure areas that should not be filled with water when a
       structure is under sea
-    - sea brushes tag areas that have the same content as terrain sea (water or lava), fog colour is
-      also matched
+    - sea brushes tag areas with the same content as terrain sea (including fog colour)
     - no more need for hull around BSPs
     - triggers: some entities can be used; upon usage trigger themselves or other entities
     - entities can be locked/unlocked with appropriate key
     - manual doors
     - elevators
-    - if an entity moves to a side, it also moves objects that lay on it - like stacks of objects
-  - fragment pools: particle replacements; fragments can be configured like object classes, can
-    have a graphic model assigned, etc.
-  - BSPs, object classes and fragment pools are internally referenced by BSP/ObjectClass/FragPool
-    pointer instead by strings
 * client:
   - configurable fog colour for both terrain and structure water/lava
   - smooth loading: model loading split to preloading (mapping file to memory) that is run in a new
@@ -58,12 +59,16 @@
   - offscreen rendering support
   - postprocessing
   - bloom postprocess effect
-  - footstep/swim sounds
+  - camera bob, walk/run animations and footsteps sounds are synchronised to a counter in Bot class
+  - *Audio classes
+    - footstep and swim sounds
+    - filtering of high-frequency events
+    - velocity is set for sound sources
   - Sound class
     - sounds are played asynchronously, parallel to rendering
     - asynchronous streaming of tracks
     - support for music in MP3 and AAC formats
-    - user-specified directory can be searched for music
+    - a user-specified directory can be searched for music
 * build:
   - prebuilding entirely split from the runtime part of the engine
   - SDL_image replaced by FreeImage, wider range of image formats supported as prebuilding source

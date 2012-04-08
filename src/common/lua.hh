@@ -142,6 +142,15 @@
   }
 
 /**
+ * @def ENT
+ * Exits %Lua API function call with an error if there is no structure entity bound.
+ */
+#define ENT() \
+  if( ms.ent == null ) { \
+    ERROR( "No structure entity bound" ); \
+  }
+
+/**
  * @def STR_INDEX
  * Initialises variable <tt>str</tt> to structure with the given index or returns with error for
  * invalid indices.
@@ -162,6 +171,26 @@
 #define OBJ() \
   if( ms.obj == null ) { \
     ERROR( "No object bound" ); \
+  }
+
+/**
+ * @def SELF
+ * Exits %Lua API function call with an error if self object is null.
+ */
+#define SELF() \
+  if( ms.self == null ) { \
+    ERROR( "Self object is null" ); \
+  }
+
+/**
+ * @def SELF_BOT
+ * Exits %Lua API function call with an error if self object is null or not a bot.
+ */
+#define SELF_BOT() \
+  SELF(); \
+  Bot* self = static_cast<Bot*>( ms.self ); \
+  if( !( self->flags & Object::BOT_BIT ) ) { \
+    ERROR( "Self object is not a bot" ); \
   }
 
 /**

@@ -136,11 +136,11 @@ void importLuaConstants( lua_State* l )
   registerLuaConstant( l, "OZ_BOT_SWIMMING_BIT",            Bot::SWIMMING_BIT );
   registerLuaConstant( l, "OZ_BOT_SUBMERGED_BIT",           Bot::SUBMERGED_BIT );
 
-  registerLuaConstant( l, "OZ_BOT_GESTURE0_BIT",            Bot::GESTURE0_BIT );
-  registerLuaConstant( l, "OZ_BOT_GESTURE1_BIT",            Bot::GESTURE1_BIT );
-  registerLuaConstant( l, "OZ_BOT_GESTURE2_BIT",            Bot::GESTURE2_BIT );
-  registerLuaConstant( l, "OZ_BOT_GESTURE3_BIT",            Bot::GESTURE3_BIT );
-  registerLuaConstant( l, "OZ_BOT_GESTURE4_BIT",            Bot::GESTURE4_BIT );
+  registerLuaConstant( l, "OZ_BOT_GESTURE_POINT_BIT",       Bot::GESTURE_POINT_BIT );
+  registerLuaConstant( l, "OZ_BOT_GESTURE_BACK_BIT",        Bot::GESTURE_BACK_BIT );
+  registerLuaConstant( l, "OZ_BOT_GESTURE_SALUTE_BIT",      Bot::GESTURE_SALUTE_BIT );
+  registerLuaConstant( l, "OZ_BOT_GESTURE_WAVE_BIT",        Bot::GESTURE_WAVE_BIT );
+  registerLuaConstant( l, "OZ_BOT_GESTURE_FLIP_BIT",        Bot::GESTURE_FLIP_BIT );
 
   registerLuaConstant( l, "OZ_VEHICLE_CREW_VISIBLE_BIT",    Vehicle::CREW_VISIBLE_BIT );
   registerLuaConstant( l, "OZ_VEHICLE_HAS_EJECT_BIT",       Vehicle::HAS_EJECT_BIT );
@@ -151,6 +151,37 @@ void importLuaConstants( lua_State* l )
   registerLuaConstant( l, "OZ_ATTRIB_GALILEO_BIT",          ObjectClass::GALILEO_BIT );
   registerLuaConstant( l, "OZ_ATTRIB_MUSIC_PLAYER_BIT",     ObjectClass::MUSIC_PLAYER_BIT );
   registerLuaConstant( l, "OZ_ATTRIB_SUICIDE_BIT",          ObjectClass::SUICIDE_BIT );
+
+  registerLuaConstant( l, "OZ_ACTION_FORWARD",              Bot::ACTION_FORWARD );
+  registerLuaConstant( l, "OZ_ACTION_BACKWARD",             Bot::ACTION_BACKWARD );
+  registerLuaConstant( l, "OZ_ACTION_RIGHT",                Bot::ACTION_RIGHT );
+  registerLuaConstant( l, "OZ_ACTION_LEFT",                 Bot::ACTION_LEFT );
+  registerLuaConstant( l, "OZ_ACTION_JUMP",                 Bot::ACTION_JUMP );
+  registerLuaConstant( l, "OZ_ACTION_CROUCH",               Bot::ACTION_CROUCH );
+  registerLuaConstant( l, "OZ_ACTION_ATTACK",               Bot::ACTION_ATTACK );
+  registerLuaConstant( l, "OZ_ACTION_EXIT",                 Bot::ACTION_EXIT );
+  registerLuaConstant( l, "OZ_ACTION_EJECT",                Bot::ACTION_EJECT );
+  registerLuaConstant( l, "OZ_ACTION_SUICIDE",              Bot::ACTION_SUICIDE );
+  registerLuaConstant( l, "OZ_ACTION_VEH_UP",               Bot::ACTION_VEH_UP );
+  registerLuaConstant( l, "OZ_ACTION_VEH_DOWN",             Bot::ACTION_VEH_DOWN );
+  registerLuaConstant( l, "OZ_ACTION_VEH_NEXT_WEAPON",      Bot::ACTION_VEH_NEXT_WEAPON );
+  registerLuaConstant( l, "OZ_ACTION_POINT",                Bot::ACTION_POINT );
+  registerLuaConstant( l, "OZ_ACTION_BACK",                 Bot::ACTION_BACK );
+  registerLuaConstant( l, "OZ_ACTION_SALUTE",               Bot::ACTION_SALUTE );
+  registerLuaConstant( l, "OZ_ACTION_WAVE",                 Bot::ACTION_WAVE );
+  registerLuaConstant( l, "OZ_ACTION_FLIP",                 Bot::ACTION_FLIP );
+  registerLuaConstant( l, "OZ_ACTION_TRIGGER",              Bot::ACTION_TRIGGER );
+  registerLuaConstant( l, "OZ_ACTION_LOCK",                 Bot::ACTION_LOCK );
+  registerLuaConstant( l, "OZ_ACTION_USE",                  Bot::ACTION_USE );
+  registerLuaConstant( l, "OZ_ACTION_TAKE",                 Bot::ACTION_TAKE );
+  registerLuaConstant( l, "OZ_ACTION_GRAB",                 Bot::ACTION_GRAB );
+  registerLuaConstant( l, "OZ_ACTION_ROTATE",               Bot::ACTION_ROTATE );
+  registerLuaConstant( l, "OZ_ACTION_THROW",                Bot::ACTION_THROW );
+  registerLuaConstant( l, "OZ_ACTION_INV_USE",              Bot::ACTION_INV_USE );
+  registerLuaConstant( l, "OZ_ACTION_INV_TAKE",             Bot::ACTION_INV_TAKE );
+  registerLuaConstant( l, "OZ_ACTION_INV_GIVE",             Bot::ACTION_INV_GIVE );
+  registerLuaConstant( l, "OZ_ACTION_INV_DROP",             Bot::ACTION_INV_DROP );
+  registerLuaConstant( l, "OZ_ACTION_INV_GRAB",             Bot::ACTION_INV_GRAB );
 }
 
 }

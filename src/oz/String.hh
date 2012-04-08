@@ -468,7 +468,23 @@ class String
      */
     bool operator == ( const String& s ) const
     {
-      return equals( s );
+      return equals( buffer, s.buffer );
+    }
+
+    /**
+     * Equality.
+     */
+    bool operator == ( const char* s ) const
+    {
+      return equals( buffer, s );
+    }
+
+    /**
+     * Equality.
+     */
+    friend bool operator == ( const char* a, const String& b )
+    {
+      return equals( a, b.buffer );
     }
 
     /**
@@ -476,7 +492,23 @@ class String
      */
     bool operator != ( const String& s ) const
     {
-      return !equals( s );
+      return !equals( buffer, s.buffer );
+    }
+
+    /**
+     * Inequality.
+     */
+    bool operator != ( const char* s ) const
+    {
+      return !equals( buffer, s );
+    }
+
+    /**
+     * Inequality.
+     */
+    friend bool operator != ( const char* a, const String& b )
+    {
+      return !equals( a, b.buffer );
     }
 
     /**
@@ -484,7 +516,23 @@ class String
      */
     bool operator <= ( const String& s ) const
     {
-      return compare( s ) <= 0;
+      return compare( buffer, s.buffer ) <= 0;
+    }
+
+    /**
+     * Operator <=.
+     */
+    bool operator <= ( const char* s ) const
+    {
+      return compare( buffer, s ) <= 0;
+    }
+
+    /**
+     * Operator <=.
+     */
+    friend bool operator <= ( const char* a, const String& b )
+    {
+      return compare( a, b.buffer ) <= 0;
     }
 
     /**
@@ -492,7 +540,23 @@ class String
      */
     bool operator >= ( const String& s ) const
     {
-      return compare( s ) >= 0;
+      return compare( buffer, s.buffer ) >= 0;
+    }
+
+    /**
+     * Operator >=.
+     */
+    bool operator >= ( const char* s ) const
+    {
+      return compare( buffer, s ) >= 0;
+    }
+
+    /**
+     * Operator >=.
+     */
+    friend bool operator >= ( const char* a, const String& b )
+    {
+      return compare( a, b.buffer ) >= 0;
     }
 
     /**
@@ -500,7 +564,23 @@ class String
      */
     bool operator < ( const String& s ) const
     {
-      return compare( s ) < 0;
+      return compare( buffer, s.buffer ) < 0;
+    }
+
+    /**
+     * Operator <.
+     */
+    bool operator < ( const char* s ) const
+    {
+      return compare( buffer, s ) < 0;
+    }
+
+    /**
+     * Operator <.
+     */
+    friend bool operator < ( const char* a, const String& b )
+    {
+      return compare( a, b.buffer ) < 0;
     }
 
     /**
@@ -508,22 +588,23 @@ class String
      */
     bool operator > ( const String& s ) const
     {
-      return compare( s ) > 0;
+      return compare( buffer, s.buffer ) > 0;
     }
 
     /**
-     * Equality.
+     * Operator >.
      */
-    bool equals( const char* s ) const
+    bool operator > ( const char* s ) const
     {
-      hard_assert( s != null );
+      return compare( buffer, s ) > 0;
+    }
 
-      for( int i = 0; buffer[i] == s[i]; ++i ) {
-        if( buffer[i] == '\0' ) {
-          return true;
-        }
-      }
-      return false;
+    /**
+     * Operator >.
+     */
+    friend bool operator > ( const char* a, const String& b )
+    {
+      return compare( a, b.buffer ) > 0;
     }
 
     /**
@@ -531,15 +612,15 @@ class String
      */
     bool equals( const String& s ) const
     {
-      return equals( s.buffer );
+      return equals( buffer, s.buffer );
     }
 
     /**
-     * Compare with a C string per-byte.
+     * Equality.
      */
-    int compare( const char* s ) const
+    bool equals( const char* s ) const
     {
-      return compare( buffer, s );
+      return equals( buffer, s );
     }
 
     /**
@@ -548,6 +629,14 @@ class String
     int compare( const String& s ) const
     {
       return compare( buffer, s.buffer );
+    }
+
+    /**
+     * Compare strings per-byte.
+     */
+    int compare( const char* s ) const
+    {
+      return compare( buffer, s );
     }
 
     /**

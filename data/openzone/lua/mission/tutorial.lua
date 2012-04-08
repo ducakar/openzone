@@ -238,7 +238,7 @@ function onCreate()
 
   ozFloraSeed()
 
-  ozObjBindIndex( me )
+  ozBindObj( me )
   ozCameraAllowReincarnation( true )
   ozCameraIncarnate( me )
   ozCameraWarpTo( ozBotGetEyePos() )

@@ -61,7 +61,7 @@ function droid_guard( l )
   local self = ozObjGetIndex()
 
   if l.target then
-    ozObjBindIndex( l.target )
+    ozBindObj( l.target )
     if ozObjHasFlag( OZ_BOT_BIT ) and ozObjIsVisibleFromEye( self ) then
       local dX, dY, dZ = ozObjVectorFromEye( self )
       local vX, vY, xZ = ozDynGetVelocity()
@@ -89,7 +89,7 @@ function droid_guard( l )
   else
     ozSelfBindObjOverlaps( 100, 100, 100 )
 
-    while ozObjBindNext() do
+    while ozBindNextObj() do
       if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
          ( ozObjDistanceFromEye( self ) < 4 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
          ozObjIsVisibleFromEye( self )
@@ -110,7 +110,7 @@ function droid_sniper( l )
   local self = ozObjGetIndex()
 
   if l.target then
-    ozObjBindIndex( l.target )
+    ozBindObj( l.target )
 
     if ozObjHasFlag( OZ_BOT_BIT ) and ozObjIsVisibleFromEye( self ) then
       local dX, dY, dZ = ozObjVectorFromEye( self )
@@ -139,7 +139,7 @@ function droid_sniper( l )
   else
     ozSelfBindObjOverlaps( 200, 200, 200 )
 
-    while ozObjBindNext() do
+    while ozBindNextObj() do
       if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
          ( ozObjDistanceFromEye( self ) < 4 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
          ozObjIsVisibleFromEye( self )
@@ -165,7 +165,7 @@ function droid_patrol( l )
   end
 
   if l.target then
-    ozObjBindIndex( l.target )
+    ozBindObj( l.target )
     if ozObjHasFlag( OZ_BOT_BIT ) and ozObjIsVisibleFromEye( self ) then
       local dX, dY, dZ = ozObjVectorFromEye( self )
       local vX, vY, xZ = ozDynGetVelocity()
@@ -193,7 +193,7 @@ function droid_patrol( l )
   else
     ozSelfBindObjOverlaps( 100, 100, 100 )
 
-    while ozObjBindNext() do
+    while ozBindNextObj() do
       if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
          ( ozObjDistanceFromEye( self ) < 4 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
          ozObjIsVisibleFromEye( self )
@@ -229,7 +229,7 @@ function droid_armouredPatrol( l )
   end
 
   if l.target then
-    ozObjBindIndex( l.target )
+    ozBindObj( l.target )
 
     if ( ozObjHasFlag( OZ_BOT_BIT ) and ozObjIsVisibleFromEye( self ) ) or
        ( ozObjHasFlag( OZ_VEHICLE_BIT ) and ozObjIsVisibleFromEye( self ) )
@@ -259,7 +259,7 @@ function droid_armouredPatrol( l )
     return
   else
     ozSelfBindObjOverlaps( 200, 200, 200 )
-    while ozObjBindNext() do
+    while ozBindNextObj() do
       if ozObjIsBot() and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
          ( ozObjDistanceFromSelf() < 100 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
          ozBotIsVisibleFromSelfEyeToEye()
@@ -272,7 +272,7 @@ function droid_armouredPatrol( l )
           ozObjIsVisibleFromSelfEye()
       then
         local vehicleIndex = ozObjGetIndex()
-        ozObjBindPilot()
+        ozBindPilot()
 
         if not ozObjIsNull() and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" then
           l.target = vehicleIndex
@@ -307,7 +307,7 @@ function goblin_defend( l )
   local self = ozObjGetIndex()
 
   if l.target then
-    ozObjBindIndex( l.target )
+    ozBindObj( l.target )
 
     if ozObjHasFlag( OZ_BOT_BIT ) and ozObjIsVisibleFromEye( self ) then
       ozSelfSetH( ozObjHeadingFromEye( self ) )
@@ -328,7 +328,7 @@ function goblin_defend( l )
     end
   else
     ozSelfBindObjOverlaps( 10, 10, 10 )
-    while ozObjBindNext() do
+    while ozBindNextObj() do
       if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( ozObjGetClassName(), 1, 7 ) ~= "goblin" and
          ozObjIsVisibleFromEye( self )
       then

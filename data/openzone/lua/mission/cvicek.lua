@@ -35,7 +35,7 @@ function test_escapeQuest()
     return
   end
 
-  ozObjBindIndex( oz_me )
+  ozBindObj( oz_me )
 
   if ozBotHasState( OZ_BOT_DEAD_BIT ) then
     ozQuestEnd( oz_escapeQuest, false )
@@ -56,7 +56,7 @@ function test_cvicekQuest()
   ozOrbisBindOverlaps( OZ_OBJECTS_BIT, -1015, 608, 50, 50, 50, 50 )
 
   local nBottles = 0
-  while ozObjBindNext() do
+  while ozBindNextObj() do
     if ozObjGetClassName() == "cvicek" then
       nBottles = nBottles + 1
     end
@@ -68,7 +68,7 @@ function test_cvicekQuest()
 
     for i = 1, 5 do
       if oz_beasts[i] ~= -1 then
-        ozObjBindIndex( oz_beasts[i] )
+        ozBindObj( oz_beasts[i] )
         ozBotSetMind( "beast_happy" )
       end
     end
@@ -108,7 +108,7 @@ end
 function test_farmQuest()
   ozOrbisBindStrOverlaps( 82.5, -25.0, 70.0, 5.0, 5.0, 5.0 )
 
-  if not ozStrBindNext() then
+  if not ozBindNextStr() then
     ozQuestEnd( oz_farmQuest, true )
     oz_farmQuest = nil
 
@@ -125,7 +125,7 @@ end
 function onUpdate()
   -- clear references
   if oz_me ~= -1 then
-    ozObjBindIndex( oz_me )
+    ozBindObj( oz_me )
 
     if ozObjIsNull() then
       oz_me = -1
@@ -134,7 +134,7 @@ function onUpdate()
 
   for i = 1, 5 do
     if oz_beasts[i] ~= -1 then
-      ozObjBindIndex( oz_beasts[i] )
+      ozBindObj( oz_beasts[i] )
 
       if ozObjIsNull() then
         oz_beasts[i] = -1
@@ -494,7 +494,7 @@ function onCreate()
     -1015, 608, 50 )
   ozQuestEnd( lairQuest, true )
 
-  ozObjBindIndex( oz_me )
+  ozBindObj( oz_me )
   ozBotSetName( ozProfileGetName() )
   ozBotSetMind( "" )
   ozBotSetH( 270 )

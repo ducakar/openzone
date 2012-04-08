@@ -118,6 +118,13 @@ class File
     Type getType();
 
     /**
+     * Stat file to get its size.
+     *
+     * %File size in bytes or -1 if stat fails.
+     */
+    int getSize() const;
+
+    /**
      * %File path.
      */
     String path() const;

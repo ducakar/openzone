@@ -426,7 +426,7 @@ static int ozSelfSetGesture( lua_State* l )
   ARG( 1 );
   OBJ();
 
-  ns.self->state &= ~( Bot::GESTURE0_BIT | Bot::GESTURE1_BIT | Bot::GESTURE2_BIT | Bot::GESTURE4_BIT );
+  ns.self->state &= ~Bot::GESTURE_MASK;
   ns.self->state |= l_toint( 1 );
   return 0;
 }

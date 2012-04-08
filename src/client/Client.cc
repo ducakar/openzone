@@ -254,12 +254,12 @@ int Client::main( int argc, char** argv )
   log.printEnd();
 
   if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
-    throw Exception( "Failed to initialise SDL" );
+    throw Exception( "Failed to initialise SDL: %s", SDL_GetError() );
   }
   initFlags |= INIT_SDL;
 
   if( !PhysFile::init() ) {
-    throw Exception( "PhysicsFS initialisation failed" );
+    throw Exception( "PhysicsFS initialisation failed: %s", PHYSFS_getLastError() );
   }
   initFlags |= INIT_PHYSFS;
 
@@ -309,17 +309,6 @@ int Client::main( int argc, char** argv )
   String prefix = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
   File dataDir( prefix + "/share/" OZ_APPLICATION_NAME );
 
-  if( String::equals( config.getSet( "seed", "TIME" ), "TIME" ) ) {
-    int seed = int( Time::uclock() );
-    Math::seed( seed );
-    log.println( "Random generator seed set to the current time: %d", seed );
-  }
-  else {
-    int seed = config.get( "seed", 0 );
-    Math::seed( seed );
-    log.println( "Random generator seed set to: %d", seed );
-  }
-
   // Don't mess with screensaver. In X11 it only makes effect for windowed mode, in fullscreen
   // mode screensaver never starts anyway. Turning off screensaver has a side effect: if the game
   // crashes, it remains turned off. Besides that, in X11 several programs (e.g. IM clients) rely
@@ -327,7 +316,61 @@ int Client::main( int argc, char** argv )
   static char allowScreensaverEnv[] = "SDL_VIDEO_ALLOW_SCREENSAVER=1";
   SDL_putenv( allowScreensaverEnv );
 
+  int  windowWidth      = config.getSet( "window.width", 0 );
+  int  windowHeight     = config.getSet( "window.height", 0 );
+  int  windowBpp        = config.getSet( "window.bpp", 0 );
+  bool windowFullscreen = config.getSet( "window.fullscreen", true );
+  bool enableVSync      = config.getSet( "window.vsync", true );
+
+  uint windowFlags = SDL_OPENGL;
+
+  if( windowFullscreen ) {
+    windowFlags |= SDL_FULLSCREEN;
+  }
+
+  const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
+
+  log.verboseMode = true;
+  log.println( "Desktop video mode: %dx%d-%d",
+               videoInfo->current_w, videoInfo->current_h, videoInfo->vfmt->BitsPerPixel );
+  log.verboseMode = false;
+
+  if( windowWidth == 0 || windowHeight == 0 ) {
+    windowWidth  = videoInfo->current_w;
+    windowHeight = videoInfo->current_h;
+  }
+  if( windowBpp == 0 ) {
+    windowBpp = videoInfo->vfmt->BitsPerPixel;
+  }
+
+  SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, enableVSync );
+
+  log.print( "Creating OpenGL window %dx%d-%d [%s] ...",
+             windowWidth, windowHeight, windowBpp, windowFullscreen ? "fullscreen" : "windowed" );
+
+  if( SDL_VideoModeOK( windowWidth, windowHeight, windowBpp, windowFlags ) == 1 ) {
+    throw Exception( "Video mode not supported" );
+  }
+
+  SDL_Surface* window = SDL_SetVideoMode( windowWidth, windowHeight, windowBpp, windowFlags );
+
+  if( window == null ) {
+    throw Exception( "Window creation failed" );
+  }
+
+  SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION,
+                     OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION );
+
+  windowWidth  = window->w;
+  windowHeight = window->h;
+  windowBpp    = window->format->BitsPerPixel;
+
+  log.printEnd( " %dx%d-%d ... OK", windowWidth, windowHeight, windowBpp );
+
+  SDL_ShowCursor( SDL_FALSE );
+
   ui::keyboard.init();
+  ui::mouse.init();
 
   log.println( "Content search path {" );
   log.indent();
@@ -374,6 +417,17 @@ int Client::main( int argc, char** argv )
   log.unindent();
   log.println( "}" );
 
+  if( String::equals( config.getSet( "seed", "TIME" ), "TIME" ) ) {
+    int seed = int( Time::uclock() );
+    Math::seed( seed );
+    log.println( "Random generator seed set to the current time: %d", seed );
+  }
+  else {
+    int seed = config.get( "seed", 0 );
+    Math::seed( seed );
+    log.println( "Random generator seed set to: %d", seed );
+  }
+
   const char* locale = config.getSet( "lingua", "en" );
 
   log.print( "Setting localisation '%s' ...", locale );
@@ -384,64 +438,6 @@ int Client::main( int argc, char** argv )
   else {
     log.printEnd( " Failed" );
   }
-
-  int  windowWidth      = config.getSet( "window.width", 0 );
-  int  windowHeight     = config.getSet( "window.height", 0 );
-  int  windowBpp        = config.getSet( "window.bpp", 0 );
-  bool windowFullscreen = config.getSet( "window.fullscreen", true );
-  bool enableVSync      = config.getSet( "render.vsync", true );
-
-  uint windowFlags = SDL_OPENGL;
-
-  if( windowFullscreen ) {
-    windowFlags |= SDL_FULLSCREEN;
-  }
-
-  char videoDriverBuf[64];
-  SDL_VideoDriverName( videoDriverBuf, 64 );
-
-  log.println( "Video driver: %s", videoDriverBuf );
-
-  const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
-
-  log.verboseMode = true;
-  log.println( "Desktop video mode: %dx%d-%d",
-               videoInfo->current_w, videoInfo->current_h, videoInfo->vfmt->BitsPerPixel );
-  log.verboseMode = false;
-
-  if( windowWidth == 0 || windowHeight == 0 ) {
-    windowWidth  = videoInfo->current_w;
-    windowHeight = videoInfo->current_h;
-  }
-  if( windowBpp == 0 ) {
-    windowBpp = videoInfo->vfmt->BitsPerPixel;
-  }
-
-  SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, enableVSync );
-
-  log.print( "Creating OpenGL window %dx%d-%d [%s] ...",
-             windowWidth, windowHeight, windowBpp, windowFullscreen ? "fullscreen" : "windowed" );
-
-  if( SDL_VideoModeOK( windowWidth, windowHeight, windowBpp, windowFlags ) == 1 ) {
-    throw Exception( "Video mode not supported" );
-  }
-
-  SDL_Surface* window = SDL_SetVideoMode( windowWidth, windowHeight, windowBpp, windowFlags );
-
-  if( window == null ) {
-    throw Exception( "Window creation failed" );
-  }
-
-  SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION,
-                     OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION );
-
-  windowWidth  = window->w;
-  windowHeight = window->h;
-  windowBpp    = window->format->BitsPerPixel;
-
-  log.printEnd( " %dx%d-%d ... OK", windowWidth, windowHeight, windowBpp );
-
-  SDL_ShowCursor( SDL_FALSE );
 
   initFlags |= INIT_LIBRARY;
   library.init();

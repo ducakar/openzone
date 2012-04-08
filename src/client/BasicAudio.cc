@@ -73,11 +73,13 @@ void BasicAudio::play( const Audio* parent )
   {
     const Dynamic* dyn = static_cast<const Dynamic*>( obj );
 
-    if( dyn->flags & Object::FRICTING_BIT ) {
+    if( ( dyn->flags & ( Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) == Object::FRICTING_BIT &&
+        ( ( dyn->flags & Object::ON_FLOOR_BIT ) || dyn->lower != -1 ) )
+    {
       recent[Object::EVENT_FRICTING] = RECENT_TICKS;
     }
 
-    if( recent[Object::EVENT_FRICTING] != 0 ) {
+    if( recent[Object::EVENT_FRICTING] != 0 && recent ) {
       float dvx = dyn->velocity.x;
       float dvy = dyn->velocity.y;
 

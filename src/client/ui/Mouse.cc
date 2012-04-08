@@ -127,31 +127,12 @@ void Mouse::draw() const
   }
 }
 
-void Mouse::init()
+void Mouse::load()
 {
-  log.print( "Initialising Mouse ..." );
-
-  doShow      = false;
-  isJailed    = true;
-  icon        = ARROW;
+  log.print( "Loading Mouse ..." );
 
   x = Area::uiCentreX;
   y = Area::uiCentreY;
-
-  relX = 0;
-  relY = 0;
-  relZ = 0;
-  relW = 0;
-
-  buttons     = 0;
-  oldButtons  = 0;
-  currButtons = 0;
-
-  leftClick   = false;
-  middleClick = false;
-  rightClick  = false;
-  wheelUp     = false;
-  wheelDown   = false;
 
   for( int i = 0; i < CURSORS_MAX; ++i ) {
     PhysFile file( String::str( "ui/cur/%s.ozCur", NAMES[i] ) );
@@ -172,9 +153,9 @@ void Mouse::init()
   log.printEnd( " OK" );
 }
 
-void Mouse::free()
+void Mouse::unload()
 {
-  log.print( "Freeing Mouse ..." );
+  log.print( "Unloading Mouse ..." );
 
   for( int i = 0; i < CURSORS_MAX; ++i ) {
     glDeleteTextures( 1, &cursors[i].texId );
@@ -182,6 +163,31 @@ void Mouse::free()
   }
 
   log.printEnd( " OK" );
+}
+
+void Mouse::init()
+{
+  doShow   = false;
+  isJailed = true;
+  icon     = ARROW;
+
+  x = 0;
+  y = 0;
+
+  relX = 0;
+  relY = 0;
+  relZ = 0;
+  relW = 0;
+
+  buttons     = 0;
+  oldButtons  = 0;
+  currButtons = 0;
+
+  leftClick   = false;
+  middleClick = false;
+  rightClick  = false;
+  wheelUp     = false;
+  wheelDown   = false;
 }
 
 }

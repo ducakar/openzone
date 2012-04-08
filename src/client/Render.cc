@@ -205,7 +205,7 @@ void Render::drawGeometry()
 
   tf.camera = camera.rotTMat;
 
-  if( !( shader.medium & Medium::LIQUID_MASK ) ) {
+  if( !( shader.medium & Medium::LIQUID_MASK ) && camera.p.z >= 0.0f ) {
     tf.projection();
 
     caelum.draw();

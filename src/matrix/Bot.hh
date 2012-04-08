@@ -69,11 +69,11 @@ class Bot : public Dynamic
     static const int ACTION_VEH_DOWN        = 0x00000800;
     static const int ACTION_VEH_NEXT_WEAPON = 0x00001000;
 
-    static const int ACTION_GESTURE0        = 0x00002000;
-    static const int ACTION_GESTURE1        = 0x00004000;
-    static const int ACTION_GESTURE2        = 0x00008000;
-    static const int ACTION_GESTURE3        = 0x00010000;
-    static const int ACTION_GESTURE4        = 0x00020000;
+    static const int ACTION_POINT           = 0x00002000;
+    static const int ACTION_BACK            = 0x00004000;
+    static const int ACTION_SALUTE          = 0x00008000;
+    static const int ACTION_WAVE            = 0x00010000;
+    static const int ACTION_FLIP            = 0x00020000;
 
     static const int ACTION_TRIGGER         = 0x00040000;
     static const int ACTION_LOCK            = 0x00080000;
@@ -88,6 +88,9 @@ class Bot : public Dynamic
     static const int ACTION_INV_GIVE        = 0x08000000;
     static const int ACTION_INV_DROP        = 0x10000000;
     static const int ACTION_INV_GRAB        = 0x20000000;
+
+    static const int ACTION_GESTURE_MASK    = ACTION_POINT | ACTION_BACK | ACTION_SALUTE |
+                                              ACTION_WAVE | ACTION_FLIP;
 
     static const int INSTRUMENT_ACTIONS     = ACTION_TRIGGER | ACTION_LOCK | ACTION_USE |
                                               ACTION_TAKE | ACTION_GRAB | ACTION_ROTATE |
@@ -119,11 +122,15 @@ class Bot : public Dynamic
     static const int SWIMMING_BIT           = 0x00002000;
     static const int SUBMERGED_BIT          = 0x00004000;
 
-    static const int GESTURE0_BIT           = 0x01000000;
-    static const int GESTURE1_BIT           = 0x02000000;
-    static const int GESTURE2_BIT           = 0x04000000;
-    static const int GESTURE3_BIT           = 0x08000000;
-    static const int GESTURE4_BIT           = 0x10000000;
+    static const int GESTURE_POINT_BIT      = 0x01000000;
+    static const int GESTURE_BACK_BIT       = 0x02000000;
+    static const int GESTURE_SALUTE_BIT     = 0x04000000;
+    static const int GESTURE_WAVE_BIT       = 0x08000000;
+    static const int GESTURE_FLIP_BIT       = 0x10000000;
+
+    static const int GESTURE_MASK           = GESTURE_POINT_BIT | GESTURE_BACK_BIT |
+                                              GESTURE_SALUTE_BIT | GESTURE_WAVE_BIT |
+                                              GESTURE_FLIP_BIT;
 
     static const float AIR_FRICTION;
 
@@ -178,18 +185,18 @@ class Bot : public Dynamic
     bool canReach( const Entity* ent ) const;
     bool canReach( const Object* obj ) const;
 
-    void invUse( const Dynamic* item, const Object* source );
-    void invTake( const Dynamic* item, const Object* source );
-    void invGive( const Dynamic* item, const Object* target );
-    void invDrop( const Dynamic* item );
-    void invGrab( const Dynamic* item );
-    void trigger( const Entity* entity );
-    void lock( const Entity* entity );
-    void use( const Object* object );
-    void take( const Dynamic* item );
-    void grab( const Dynamic* dynamic = null );
-    void rotateCargo();
-    void throwCargo();
+    bool invUse( const Dynamic* item, const Object* source );
+    bool invTake( const Dynamic* item, const Object* source );
+    bool invGive( const Dynamic* item, const Object* target );
+    bool invDrop( const Dynamic* item );
+    bool invGrab( const Dynamic* item );
+    bool trigger( const Entity* entity );
+    bool lock( const Entity* entity );
+    bool use( const Object* object );
+    bool take( const Dynamic* item );
+    bool grab( const Dynamic* dynamic = null );
+    bool rotateCargo();
+    bool throwCargo();
 
     void heal();
     void rearm();

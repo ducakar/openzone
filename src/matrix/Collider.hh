@@ -60,7 +60,7 @@ struct Medium
 
 struct Hit
 {
-  Vec3  normal;
+  Vec3    normal;
 
   Object* obj;
   Struct* str;
@@ -68,11 +68,11 @@ struct Hit
 
   Struct* mediumStr;
 
-  float ratio;
+  float   ratio;
 
-  int   material;
-  int   medium;
-  float depth;
+  int     material;
+  int     medium;
+  float   depth;
 };
 
 class Collider
@@ -83,15 +83,14 @@ class Collider
 
     SBitset<BSP::MAX_BRUSHES> visitedBrushes;
 
-    Span   span;
-    Bounds trace;
-    Vec3   move;
+    Span           span;
+    Bounds         trace;
+    Vec3           move;
 
-    AABB   aabb;
-
-    Point3 startPos;
-    Point3 endPos;
-    Vec3   localDim;
+    AABB           aabb;
+    Point3         startPos;
+    Point3         endPos;
+    Vec3           localDim;
 
     const Dynamic* obj;
     const Object*  exclObj;
@@ -100,8 +99,8 @@ class Collider
     const BSP*     bsp;
     const Model*   model;
 
-    int   flags;
-    float margin;
+    int            flags;
+    float          margin;
 
     /**
      * Return true if brush was already visited and mark it visited.

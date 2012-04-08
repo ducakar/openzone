@@ -647,19 +647,30 @@ void Build::packArchive( const char* name, bool useCompression, bool use7zip )
   log.println( "Packing archive {" );
   log.indent();
 
+  File archive( String::str( "../%s.%s", name, use7zip ? "7z" : "zip" ) );
+
   String cmdLine = use7zip ?
-                   String::str( "7z u -ms=off %s '../%s.7z' *",
+                   String::str( "7z u -ms=off %s '%s' *",
                                 useCompression ? "-mx=9" : "-m0=copy",
-                                name ) :
-                   String::str( "zip -ur %s '../%s.zip' *",
+                                archive.path().cstr() ) :
+                   String::str( "zip -ur %s '%s' *",
                                 useCompression ? "-9" : "-Z store",
-                                name );
+                                archive.path().cstr() );
 
   log.println( "%s", cmdLine.cstr() );
   log.println();
 
   if( system( cmdLine ) != 0 ) {
     throw Exception( use7zip ? "Packing 7zip archive failed" : "Packing ZIP archive failed" );
+  }
+
+  int size = archive.getSize();
+
+  if( size >= 0 ) {
+    log.println();
+    log.println( "Archive size: %.1f MiB = %.1f MB",
+                 float( size ) / ( 1024.0f * 1024.0f ),
+                 float( size ) / ( 1000.0f * 1000.0f ) );
   }
 
   log.unindent();
@@ -976,6 +987,7 @@ int Build::main( int argc, char** argv )
   }
   if( doMusic ) {
     copyFiles( "music", "music", "oga", true );
+    copyFiles( "music", "music", "ogg", true );
   }
   if( doPack ) {
     packArchive( pkgName, useCompression, use7zip );

@@ -477,40 +477,42 @@ void Bot::onUpdate()
         }
       }
       else if( !( state & CROUCHING_BIT ) ) {
-        if( actions & ACTION_GESTURE0 ) {
-          if( !( state & GESTURE0_BIT ) ) {
-            state &= ~( GESTURE0_BIT | GESTURE1_BIT | GESTURE2_BIT | GESTURE3_BIT | GESTURE4_BIT );
-            state |= GESTURE0_BIT;
+        if( actions & ACTION_GESTURE_MASK ) {
+          if( actions & ACTION_POINT ) {
+            if( !( state & GESTURE_POINT_BIT ) ) {
+              state &= ~GESTURE_MASK;
+              state |= GESTURE_POINT_BIT;
+            }
           }
-        }
-        else if( actions & ACTION_GESTURE1 ) {
-          if( !( state & GESTURE1_BIT ) ) {
-            state &= ~( GESTURE0_BIT | GESTURE1_BIT | GESTURE2_BIT | GESTURE3_BIT | GESTURE4_BIT );
-            state |= GESTURE1_BIT;
+          else if( actions & ACTION_BACK ) {
+            if( !( state & GESTURE_BACK_BIT ) ) {
+              state &= ~GESTURE_MASK;
+              state |= GESTURE_BACK_BIT;
+            }
           }
-        }
-        else if( actions & ACTION_GESTURE2 ) {
-          if( !( state & GESTURE2_BIT ) ) {
-            state &= ~( GESTURE0_BIT | GESTURE1_BIT | GESTURE2_BIT | GESTURE3_BIT | GESTURE4_BIT );
-            state |= GESTURE2_BIT;
+          else if( actions & ACTION_SALUTE ) {
+            if( !( state & GESTURE_SALUTE_BIT ) ) {
+              state &= ~GESTURE_MASK;
+              state |= GESTURE_SALUTE_BIT;
+            }
           }
-        }
-        else if( actions & ACTION_GESTURE3 ) {
-          if( !( state & GESTURE3_BIT ) ) {
-            state &= ~( GESTURE0_BIT | GESTURE1_BIT | GESTURE2_BIT | GESTURE3_BIT | GESTURE4_BIT );
-            state |= GESTURE3_BIT;
+          else if( actions & ACTION_WAVE ) {
+            if( !( state & GESTURE_WAVE_BIT ) ) {
+              state &= ~GESTURE_MASK;
+              state |= GESTURE_WAVE_BIT;
+            }
           }
-        }
-        else if( actions & ACTION_GESTURE4 ) {
-          if( !( state & GESTURE4_BIT ) ) {
-            state &= ~( GESTURE0_BIT | GESTURE1_BIT | GESTURE2_BIT | GESTURE3_BIT | GESTURE4_BIT );
-            state |= GESTURE4_BIT;
+          else {
+            if( !( state & GESTURE_FLIP_BIT ) ) {
+              state &= ~GESTURE_MASK;
+              state |= GESTURE_FLIP_BIT;
 
-            addEvent( EVENT_FLIP, 1.0f );
+              addEvent( EVENT_FLIP, 1.0f );
+            }
           }
         }
         else {
-          state &= ~( GESTURE0_BIT | GESTURE1_BIT | GESTURE2_BIT | GESTURE3_BIT | GESTURE4_BIT );
+          state &= ~GESTURE_MASK;
         }
       }
     }
@@ -816,7 +818,7 @@ bool Bot::canReach( const Object* obj ) const
   return AABB( eye, reach ).overlaps( *obj );
 }
 
-void Bot::invUse( const Dynamic* item, const Object* source )
+bool Bot::invUse( const Dynamic* item, const Object* source )
 {
   hard_assert( item != null && source != null );
 
@@ -827,10 +829,13 @@ void Bot::invUse( const Dynamic* item, const Object* source )
     actions   |= ACTION_INV_USE;
     instrument = item->index;
     container  = source->index;
+
+    return true;
   }
+  return false;
 }
 
-void Bot::invTake( const Dynamic* item, const Object* source )
+bool Bot::invTake( const Dynamic* item, const Object* source )
 {
   hard_assert( item != null && source != null );
 
@@ -839,10 +844,13 @@ void Bot::invTake( const Dynamic* item, const Object* source )
     actions   |= ACTION_INV_TAKE;
     instrument = item->index;
     container  = source->index;
+
+    return true;
   }
+  return false;
 }
 
-void Bot::invGive( const Dynamic* item, const Object* target )
+bool Bot::invGive( const Dynamic* item, const Object* target )
 {
   hard_assert( item != null && target != null );
 
@@ -851,10 +859,13 @@ void Bot::invGive( const Dynamic* item, const Object* target )
     actions   |= ACTION_INV_GIVE;
     instrument = item->index;
     container  = target->index;
+
+    return true;
   }
+  return false;
 }
 
-void Bot::invDrop( const Dynamic* item )
+bool Bot::invDrop( const Dynamic* item )
 {
   hard_assert( item != null );
 
@@ -863,10 +874,13 @@ void Bot::invDrop( const Dynamic* item )
     actions   |= ACTION_INV_DROP;
     instrument = item->index;
     container  = -1;
+
+    return true;
   }
+  return false;
 }
 
-void Bot::invGrab( const Dynamic* item )
+bool Bot::invGrab( const Dynamic* item )
 {
   hard_assert( item != null );
 
@@ -876,10 +890,13 @@ void Bot::invGrab( const Dynamic* item )
     instrument = item->index;
     container  = -1;
     cargo      = -1;
+
+    return true;
   }
+  return false;
 }
 
-void Bot::trigger( const Entity* entity )
+bool Bot::trigger( const Entity* entity )
 {
   hard_assert( entity != null );
 
@@ -888,10 +905,13 @@ void Bot::trigger( const Entity* entity )
     actions   |= ACTION_TRIGGER;
     instrument = entity->str->index * Struct::MAX_ENTITIES + int( entity - entity->str->entities );
     container  = -1;
+
+    return true;
   }
+  return false;
 }
 
-void Bot::lock( const Entity* entity )
+bool Bot::lock( const Entity* entity )
 {
   hard_assert( entity != null );
 
@@ -900,10 +920,13 @@ void Bot::lock( const Entity* entity )
     actions   |= ACTION_LOCK;
     instrument = entity->str->index * Struct::MAX_ENTITIES + int( entity - entity->str->entities );
     container  = -1;
+
+    return true;
   }
+  return false;
 }
 
-void Bot::use( const Object* object )
+bool Bot::use( const Object* object )
 {
   hard_assert( object != null );
 
@@ -912,10 +935,13 @@ void Bot::use( const Object* object )
     actions   |= ACTION_USE;
     instrument = object->index;
     container  = -1;
+
+    return true;
   }
+  return false;
 }
 
-void Bot::take( const Dynamic* item )
+bool Bot::take( const Dynamic* item )
 {
   hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) );
 
@@ -924,38 +950,52 @@ void Bot::take( const Dynamic* item )
     actions   |= ACTION_TAKE;
     instrument = item->index;
     container  = -1;
+
+    return true;
   }
+  return false;
 }
 
-void Bot::grab( const Dynamic* dynamic )
+bool Bot::grab( const Dynamic* dynamic )
 {
   hard_assert( dynamic == null || ( dynamic->flags & DYNAMIC_BIT ) );
 
-  actions   &= ~INSTRUMENT_ACTIONS;
-  actions   |= ACTION_GRAB;
-  instrument = dynamic != null && canReach( dynamic ) ? dynamic->index : -1;
-  container  = -1;
-  cargo      = -1;
+  if( dynamic == null || canReach( dynamic ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_GRAB;
+    instrument = dynamic == null ? -1 : dynamic->index;
+    container  = -1;
+    cargo      = -1;
+
+    return true;
+  }
+  return false;
 }
 
-void Bot::rotateCargo()
+bool Bot::rotateCargo()
 {
   if( cargo != -1 ) {
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_ROTATE;
     instrument = -1;
     container  = -1;
+
+    return true;
   }
+  return false;
 }
 
-void Bot::throwCargo()
+bool Bot::throwCargo()
 {
   if( cargo != -1 ) {
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_THROW;
     instrument = -1;
     container  = -1;
+
+    return true;
   }
+  return false;
 }
 
 void Bot::heal()
