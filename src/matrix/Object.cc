@@ -56,8 +56,8 @@ void Object::onDestroy()
   if( clazz->fragPool != null ) {
     synapse.gen( clazz->fragPool,
                  clazz->nFrags,
-                 Bounds( Point3( p.x - dim.x, p.y - dim.y, p.z ),
-                         Point3( p.x + dim.x, p.y + dim.y, p.z + dim.z ) ),
+                 Bounds( Point( p.x - dim.x, p.y - dim.y, p.z ),
+                         Point( p.x + dim.x, p.y + dim.y, p.z + dim.z ) ),
                  DESTRUCT_FRAG_VELOCITY );
   }
 }
@@ -84,7 +84,7 @@ Object::~Object()
   events.free();
 }
 
-Object::Object( const ObjectClass* clazz_, int index_, const Point3& p_, Heading heading )
+Object::Object( const ObjectClass* clazz_, int index_, const Point& p_, Heading heading )
 {
   p          = p_;
   dim        = clazz_->dim;
@@ -106,7 +106,7 @@ Object::Object( const ObjectClass* clazz_, int index_, const Point3& p_, Heading
 
 Object::Object( const ObjectClass* clazz_, InputStream* istream )
 {
-  p          = istream->readPoint3();
+  p          = istream->readPoint();
   dim        = clazz_->dim;
   cell       = null;
   index      = istream->readInt();
@@ -139,7 +139,7 @@ Object::Object( const ObjectClass* clazz_, InputStream* istream )
 
 void Object::write( BufferStream* ostream ) const
 {
-  ostream->writePoint3( p );
+  ostream->writePoint( p );
   ostream->writeInt( index );
   ostream->writeInt( flags );
   ostream->writeFloat( life );

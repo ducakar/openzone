@@ -58,55 +58,58 @@ class Camera
 
   public:
 
-    Point3 p;
-    Point3 newP;
-    Point3 oldP;
+    Point         p;
+    Point         newP;
+    Point         oldP;
 
     // relative to the object the camera is bound to
-    float  h;
-    float  v;
-    float  w;
-    float  mag;
+    float         h;
+    float         v;
+    float         w;
+    float         mag;
 
     // camera rotation change (from input)
-    float  relH;
-    float  relV;
+    float         relH;
+    float         relV;
 
     // global rotation quaternion, matrix and it's inverse
-    Quat   rot;
-    Mat44  rotMat;
-    Mat44  rotTMat;
+    Quat          rot;
+    Mat44         rotMat;
+    Mat44         rotTMat;
 
-    Vec3   right;
-    Vec3   up;
-    Vec3   at;
+    Vec3          right;
+    Vec3          up;
+    Vec3          at;
 
-    int    object;
+    int           object;
     const Object* objectObj;
 
-    int    entity;
+    int           entity;
     const Entity* entityObj;
 
-    int    bot;
-    Bot*   botObj;
+    int           bot;
+    Bot*          botObj;
 
-    int    width;
-    int    height;
-    int    centreX;
-    int    centreY;
+    int           vehicle;
+    Vehicle*      vehicleObj;
 
-    float  coeff;
-    float  aspect;
-    float  vertPlane;
-    float  horizPlane;
-    float  maxDist;
+    int           width;
+    int           height;
+    int           centreX;
+    int           centreY;
 
-    bool   isExternal;
-    bool   allowReincarnation;
-    bool   nightVision;
+    float         coeff;
+    float         aspect;
+    float         vertPlane;
+    float         horizPlane;
+    float         maxDist;
 
-    State  state;
-    State  newState;
+    bool          isExternal;
+    bool          allowReincarnation;
+    bool          nightVision;
+
+    State         state;
+    State         newState;
 
     void setState( State state )
     {
@@ -154,21 +157,21 @@ class Camera
       hard_assert( botObj == null || ( botObj->flags & Object::BOT_BIT ) );
     }
 
-    void move( const Point3& pos )
+    void move( const Point& pos )
     {
       p    = Math::mix( oldP, pos, SMOOTHING_COEF );
       newP = pos;
       oldP = p;
     }
 
-    void warp( const Point3& pos )
+    void warp( const Point& pos )
     {
       oldP = pos;
       newP = pos;
       p    = pos;
     }
 
-    void warpMoveZ( const Point3& pos )
+    void warpMoveZ( const Point& pos )
     {
       p.x  = pos.x;
       p.y  = pos.y;

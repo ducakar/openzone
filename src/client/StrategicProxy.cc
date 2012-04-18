@@ -147,7 +147,7 @@ void StrategicProxy::update()
 
   camera.align();
 
-  Point3 p = camera.newP;
+  Point p = camera.newP;
 
   if( isFree ) {
     // free camera mode

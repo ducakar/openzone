@@ -207,7 +207,7 @@ class Bot : public Dynamic
 
   public:
 
-    explicit Bot( const BotClass* clazz, int index, const Point3& p, Heading heading );
+    explicit Bot( const BotClass* clazz, int index, const Point& p, Heading heading );
     explicit Bot( const BotClass* clazz, InputStream* istream );
 
     virtual void write( BufferStream* ostream ) const;

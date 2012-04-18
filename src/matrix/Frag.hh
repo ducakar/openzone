@@ -55,7 +55,7 @@ class Frag
 
     const FragPool* pool;
 
-    Point3          p;
+    Point           p;
     Vec3            velocity;
 
     float           life;
@@ -77,7 +77,7 @@ class Frag
 
   public:
 
-    explicit Frag( const FragPool* pool, int index, const Point3& p, const Vec3& velocity );
+    explicit Frag( const FragPool* pool, int index, const Point& p, const Vec3& velocity );
     explicit Frag( const FragPool* pool, InputStream* istream );
 
     void write( BufferStream* ostream );

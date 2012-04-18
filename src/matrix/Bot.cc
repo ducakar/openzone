@@ -331,7 +331,7 @@ void Bot::onUpdate()
 
             if( endDist < 0.0f ) {
               // check if ledge has a normal.z >= FLOOR_NORMAL_Z
-              Point3 raisedPos = p;
+              Point raisedPos = p;
               p += move;
 
               collider.translate( this, Vec3( 0.0f, 0.0f, -raise ) );
@@ -802,8 +802,8 @@ bool Bot::canReach( const Entity* ent ) const
 {
   const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
-  Point3 eye   = Point3( p.x, p.y, p.z + camZ );
-  Vec3   reach = Vec3( clazz->reachDist, clazz->reachDist, clazz->reachDist );
+  Point eye   = Point( p.x, p.y, p.z + camZ );
+  Vec3  reach = Vec3( clazz->reachDist, clazz->reachDist, clazz->reachDist );
 
   return collider.overlapsEntity( AABB( eye, reach ), ent );
 }
@@ -812,8 +812,8 @@ bool Bot::canReach( const Object* obj ) const
 {
   const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
-  Point3 eye   = Point3( p.x, p.y, p.z + camZ );
-  Vec3   reach = Vec3( clazz->reachDist, clazz->reachDist, clazz->reachDist );
+  Point eye   = Point( p.x, p.y, p.z + camZ );
+  Vec3  reach = Vec3( clazz->reachDist, clazz->reachDist, clazz->reachDist );
 
   return AABB( eye, reach ).overlaps( *obj );
 }
@@ -1081,7 +1081,7 @@ void Bot::exit()
   synapse.put( this );
 }
 
-Bot::Bot( const BotClass* clazz_, int index, const Point3& p_, Heading heading ) :
+Bot::Bot( const BotClass* clazz_, int index, const Point& p_, Heading heading ) :
   Dynamic( clazz_, index, p_, heading )
 {
   h          = float( heading ) * Math::TAU / 4.0f;

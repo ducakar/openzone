@@ -44,6 +44,11 @@ class VehicleClass : public DynamicClass
     Vec3   pilotPos;
     Quat   pilotRot;
 
+    float  lookHMin;
+    float  lookHMax;
+    float  lookVMin;
+    float  lookVMax;
+
     float  rotVelLimit;
 
     float  moveMomentum;
@@ -69,7 +74,7 @@ class VehicleClass : public DynamicClass
 
     virtual void initClass( const Config* config );
 
-    virtual Object* create( int index, const Point3& pos, Heading heading ) const;
+    virtual Object* create( int index, const Point& pos, Heading heading ) const;
     virtual Object* create( InputStream* istream ) const;
 
 };

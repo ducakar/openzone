@@ -21,14 +21,14 @@
  */
 
 /**
- * @file oz/Point3.cc
+ * @file oz/Point.cc
  */
 
-#include "Point3.hh"
+#include "Point.hh"
 
 namespace oz
 {
 
-const Point3 Point3::ORIGIN = Point3( 0.0f, 0.0f, 0.0f );
+const Point Point::ORIGIN = Point( 0.0f, 0.0f, 0.0f );
 
 }

@@ -32,7 +32,7 @@ namespace client
 
 Frustum frustum;
 
-void Frustum::getExtrems( Span& span, const Point3& p )
+void Frustum::getExtrems( Span& span, const Point& p )
 {
   span.minX = max( int( ( p.x - radius + Orbis::DIM ) / Cell::SIZE ), 0 );
   span.minY = max( int( ( p.y - radius + Orbis::DIM ) / Cell::SIZE ), 0 );

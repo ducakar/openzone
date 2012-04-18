@@ -98,11 +98,8 @@ MD2::Anim MD2Imago::extractAnim() const
     else if( bot->state & Bot::GESTURE_FLIP_BIT ) {
       return MD2::ANIM_FLIP;
     }
-    else if( anim.type == MD2::ANIM_POINT || anim.type == MD2::ANIM_FALLBACK ||
-             anim.type == MD2::ANIM_SALUTE || anim.type == MD2::ANIM_WAVE ||
-             anim.type == MD2::ANIM_FLIP )
-    {
-      return anim.type;
+    else {
+      return anim.nextType;
     }
   }
   return bot->state & Bot::CROUCHING_BIT ? MD2::ANIM_CROUCH_STAND : MD2::ANIM_STAND;
@@ -120,7 +117,7 @@ Imago* MD2Imago::create( const Object* obj )
   imago->h     = bot->h;
 
   imago->anim.type = MD2::ANIM_STAND;
-  MD2::setAnim( &imago->anim, imago->extractAnim() );
+  imago->anim.set( MD2::ANIM_STAND );
   imago->anim.currFrame = imago->anim.lastFrame;
   imago->anim.nextFrame = imago->anim.lastFrame;
 
@@ -139,13 +136,8 @@ void MD2Imago::draw( const Imago* parent, int mask )
   const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
   if( mask & Mesh::SOLID_BIT ) {
-    MD2::Anim desiredAnim = extractAnim();
-
-    if( desiredAnim != anim.type ) {
-      MD2::setAnim( &anim, desiredAnim );
-    }
-
-    md2->advance( &anim, bot );
+    anim.nextType = extractAnim();
+    anim.advance( bot );
 
     // keep animation in sync with weapon shotInterval
     if( anim.type == MD2::ANIM_ATTACK && bot->weapon != -1 ) {
@@ -164,7 +156,7 @@ void MD2Imago::draw( const Imago* parent, int mask )
         h = bot->h;
 
         if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
-          tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
+          tf.model = Mat44::translation( obj->p - Point::ORIGIN );
           tf.model.rotateZ( bot->h );
 
           tf.model.translate( Vec3( 0.0f, 0.0f, +bot->camZ ) );
@@ -180,10 +172,9 @@ void MD2Imago::draw( const Imago* parent, int mask )
       }
       else {
         if( shader.mode == Shader::SCENE && parent == null ) {
-          float diffH = Math::fmod( bot->h - h + 1.5f*Math::TAU, Math::TAU ) - 0.5f*Math::TAU;
-          h = Math::fmod( h + TURN_SMOOTHING_COEF * diffH + Math::TAU, Math::TAU );
+          h = angleWrap( h + TURN_SMOOTHING_COEF * angleDiff( bot->h, h ) );
 
-          tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
+          tf.model = Mat44::translation( obj->p - Point::ORIGIN );
           tf.model.rotateZ( h );
         }
 
@@ -203,7 +194,7 @@ void MD2Imago::draw( const Imago* parent, int mask )
     shader.colour.w = min( bot->life * 8.0f / clazz->life, 1.0f );
 
     if( shader.mode == Shader::SCENE && parent == null ) {
-      tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
+      tf.model = Mat44::translation( obj->p - Point::ORIGIN );
       tf.model.rotateZ( h );
     }
     tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->corpseDim.z ) );

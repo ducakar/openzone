@@ -73,7 +73,7 @@ void Render::scheduleCell( int cellX, int cellY )
 
       Struct* str    = orbis.structs[ cell.structs[i] ];
       Vec3    dim    = str->maxs - str->mins;
-      Point3  p      = str->mins + 0.5f * dim;
+      Point   p      = str->mins + 0.5f * dim;
       float   radius = dim.fastL();
 
       if( frustum.isVisible( p, radius ) ) {
@@ -217,7 +217,7 @@ void Render::drawGeometry()
 
   // camera transformation
   tf.projection();
-  tf.camera.translate( Point3::ORIGIN - camera.p );
+  tf.camera.translate( Point::ORIGIN - camera.p );
 
   shader.setAmbientLight( Colours::GLOBAL_AMBIENT + Colours::ambient );
   shader.setCaelumLight( caelum.lightDir, Colours::diffuse );

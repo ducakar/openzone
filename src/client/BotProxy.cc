@@ -26,6 +26,7 @@
 #include "client/BotProxy.hh"
 
 #include "client/Camera.hh"
+
 #include "client/ui/UI.hh"
 #include "client/ui/GalileoFrame.hh"
 
@@ -115,18 +116,38 @@ void BotProxy::prepare()
 
   bool alt = keys[SDLK_LALT] || keys[SDLK_RALT];
 
-  Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
+  Bot*     bot = camera.botObj;
+  Vehicle* veh = camera.vehicleObj;
 
   /*
    * Camera
    */
 
-  if( isFreelook && ( bot->parent != -1 || isExternal ) ) {
-    camera.h += camera.relH;
-    camera.v += camera.relV;
+  if( veh != null ) {
+    if( isFreelook ) {
+      const VehicleClass* vehClazz = static_cast<const VehicleClass*>( veh->clazz );
+
+      camera.h = angleDiff( camera.h, 0.0f );
+
+      camera.h = clamp( camera.h + camera.relH, vehClazz->lookHMin, vehClazz->lookHMax );
+      camera.v = clamp( camera.v + camera.relV, vehClazz->lookVMin, vehClazz->lookVMax );
+
+      camera.h = angleWrap( camera.h );
+    }
+    else {
+      bot->h = angleWrap( bot->h + camera.relH );
+      bot->v = clamp( bot->v + camera.relV, 0.0f, Math::TAU / 2.0f );
+
+      camera.h = 0.0f;
+      camera.v = Math::TAU / 4.0f;
+    }
+  }
+  else if( isFreelook && isExternal ) {
+    camera.h = angleWrap( camera.h + camera.relH );
+    camera.v = clamp( camera.v + camera.relV, 0.0f, Math::TAU / 2.0f );
   }
   else {
-    bot->h = Math::fmod( bot->h + camera.relH + Math::TAU, Math::TAU );
+    bot->h = angleWrap( bot->h + camera.relH );
     bot->v = clamp( bot->v + camera.relV, 0.0f, Math::TAU / 2.0f );
 
     camera.h = bot->h;
@@ -231,11 +252,19 @@ void BotProxy::prepare()
       }
     }
   }
-  if( !alt && keys[SDLK_KP_MULTIPLY] && !oldKeys[SDLK_KP_MULTIPLY] ) {
+  if( !alt && keys[SDLK_KP_MULTIPLY] && !oldKeys[SDLK_KP_MULTIPLY] &&
+      ( isExternal || veh != null ) )
+  {
     isFreelook = !isFreelook;
 
-    camera.h = bot->h;
-    camera.v = bot->v;
+    if( veh != null ) {
+      camera.h = 0.0f;
+      camera.v = Math::TAU / 4.0f;
+    }
+    else {
+      camera.h = bot->h;
+      camera.v = bot->v;
+    }
   }
 
   /*
@@ -334,9 +363,10 @@ void BotProxy::update()
 
   const Bot*      bot   = camera.botObj;
   const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
+  const Vehicle*  veh   = camera.vehicleObj;
 
   if( !isExternal ) {
-    if( !isFreelook ) {
+    if( veh == null ) {
       camera.h = bot->h;
       camera.v = bot->v;
     }
@@ -379,7 +409,7 @@ void BotProxy::update()
       camera.w = bobTheta;
       camera.align();
 
-      camera.warpMoveZ( Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ + bobBias ) );
+      camera.warpMoveZ( Point( bot->p.x, bot->p.y, bot->p.z + bot->camZ + bobBias ) );
     }
   }
   else { // external
@@ -394,8 +424,8 @@ void BotProxy::update()
     camera.w = 0.0f;
     camera.align();
 
-    Point3 origin = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
-    Vec3   offset;
+    Point origin = Point( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
+    Vec3  offset;
 
     if( bot->parent != -1 && orbis.objects[bot->parent] != null ) {
       const Vehicle* veh = static_cast<const Vehicle*>( orbis.objects[bot->parent] );
@@ -440,9 +470,9 @@ void BotProxy::update()
     hvsc[4] = hvsc[2] * hvsc[0];
     hvsc[5] = hvsc[2] * hvsc[1];
 
-    Vec3   at    = Vec3( -hvsc[4], hvsc[5], -hvsc[3] );
-    Point3 eye   = bot->p + Vec3( 0.0f, 0.0f, bot->camZ );
-    Vec3   reach = at * clazz->reachDist;
+    Vec3  at    = Vec3( -hvsc[4], hvsc[5], -hvsc[3] );
+    Point eye   = bot->p + Vec3( 0.0f, 0.0f, bot->camZ );
+    Vec3  reach = at * clazz->reachDist;
 
     collider.mask = ~0;
     collider.translate( eye, reach, bot );

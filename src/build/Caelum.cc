@@ -62,11 +62,11 @@ void Caelum::build( const char* name )
 
     Mat44 transf = Mat44( x, y, z, -p );
 
-    Point3 corners[4] = {
-      transf * Point3( -STAR_DIM, 0.0f, 0.0f ),
-      transf * Point3( 0.0f, -STAR_DIM, 0.0f ),
-      transf * Point3( +STAR_DIM, 0.0f, 0.0f ),
-      transf * Point3( 0.0f, +STAR_DIM, 0.0f )
+    Point corners[4] = {
+      transf * Point( -STAR_DIM, 0.0f, 0.0f ),
+      transf * Point( 0.0f, -STAR_DIM, 0.0f ),
+      transf * Point( +STAR_DIM, 0.0f, 0.0f ),
+      transf * Point( 0.0f, +STAR_DIM, 0.0f )
     };
 
     os.writeFloat( corners[0].x );

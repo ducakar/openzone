@@ -665,19 +665,19 @@ class BufferStream
      * Read 3D point.
      */
     OZ_ALWAYS_INLINE
-    Point3 readPoint3()
+    Point readPoint()
     {
       const int* data = reinterpret_cast<const int*>( forward( sizeof( float[3] ) ) );
 
       if( order == Endian::NATIVE ) {
-        return Point3( Math::fromBits( data[0] ),
-                       Math::fromBits( data[1] ),
-                       Math::fromBits( data[2] ) );
+        return Point( Math::fromBits( data[0] ),
+                      Math::fromBits( data[1] ),
+                      Math::fromBits( data[2] ) );
       }
       else {
-        return Point3( Math::fromBits( Endian::bswap32( data[0] ) ),
-                       Math::fromBits( Endian::bswap32( data[1] ) ),
-                       Math::fromBits( Endian::bswap32( data[2] ) ) );
+        return Point( Math::fromBits( Endian::bswap32( data[0] ) ),
+                      Math::fromBits( Endian::bswap32( data[1] ) ),
+                      Math::fromBits( Endian::bswap32( data[2] ) ) );
       }
     }
 
@@ -685,7 +685,7 @@ class BufferStream
      * Write 3D point.
      */
     OZ_ALWAYS_INLINE
-    void writePoint3( const Point3& p )
+    void writePoint( const Point& p )
     {
       int* data = reinterpret_cast<int*>( forward( sizeof( float[3] ) ) );
 

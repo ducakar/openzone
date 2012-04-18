@@ -2,10 +2,12 @@
 - ui
   * pause menu
 - client
-  * improve MD2 animation (transitions, firstFrame, secondFrame, nextFrame)
+  * fix switch to MD2 run animation
   * fix bloom
-  * fix in-vehicle camera (rotation axis & free look)
+  * fix in-vehicle camera relative h/v rotation
   * death camera
+- lua
+  * finish API transition
 
 0.4
 - new löök

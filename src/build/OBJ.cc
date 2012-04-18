@@ -64,7 +64,7 @@ void OBJ::readVertexData( char* pos )
       throw Exception( "Invalid OBJ vertex position specification" );
     }
 
-    positions.add( Point3( x, y, z ) );
+    positions.add( Point( x, y, z ) );
   }
   // vertex normal coords
   else if( *pos == 'n' ) {
@@ -341,7 +341,7 @@ void OBJ::load()
     throw Exception( "No vertices" );
   }
   for( int i = 0; i < positions.length(); ++i ) {
-    positions[i] = Point3::ORIGIN + translation + scaling * ( positions[i] - Point3::ORIGIN );
+    positions[i] = Point::ORIGIN + translation + scaling * ( positions[i] - Point::ORIGIN );
   }
 
   log.printEnd( " OK" );

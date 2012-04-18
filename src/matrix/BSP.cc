@@ -82,8 +82,8 @@ void BSP::load()
   InputStream is = file.inputStream();
 
   // bounds
-  is.readPoint3();
-  is.readPoint3();
+  is.readPoint();
+  is.readPoint();
 
   // title
   is.readString();
@@ -189,8 +189,8 @@ void BSP::load()
 
   models = new( data ) Model[nModels];
   for( int i = 0; i < nModels; ++i ) {
-    models[i].mins        = is.readPoint3();
-    models[i].maxs        = is.readPoint3();
+    models[i].mins        = is.readPoint();
+    models[i].maxs        = is.readPoint();
 
     models[i].name        = is.readString();
     models[i].title       = lingua.get( models[i].name );
@@ -223,7 +223,7 @@ void BSP::load()
   boundObjects = new( data ) BoundObject[nBoundObjects];
   for( int i = 0; i < nBoundObjects; ++i ) {
     boundObjects[i].clazz   = library.objClass( is.readString() );
-    boundObjects[i].pos     = is.readPoint3();
+    boundObjects[i].pos     = is.readPoint();
     boundObjects[i].heading = Heading( is.readInt() );
   }
 
@@ -289,8 +289,8 @@ void BSP::init()
 
   InputStream is = file.inputStream();
 
-  mins        = is.readPoint3();
-  maxs        = is.readPoint3();
+  mins        = is.readPoint();
+  maxs        = is.readPoint();
 
   title       = lingua.get( is.readString() );
   description = lingua.get( is.readString() );

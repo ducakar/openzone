@@ -45,7 +45,7 @@ class Frustum
     float radius;
 
     OZ_ALWAYS_INLINE
-    bool isVisible( const Point3& p, float radius = 0.0f ) const
+    bool isVisible( const Point& p, float radius = 0.0f ) const
     {
       return p * left  > -radius &&
              p * right > -radius &&
@@ -57,8 +57,8 @@ class Frustum
     OZ_ALWAYS_INLINE
     bool isVisible( float x, float y, float radius ) const
     {
-      Point3 mins = Point3( x, y, -Orbis::DIM );
-      Point3 maxs = Point3( x, y, +Orbis::DIM );
+      Point mins = Point( x, y, -Orbis::DIM );
+      Point maxs = Point( x, y, +Orbis::DIM );
 
       return ( mins * left  > -radius || maxs * left  > -radius ) &&
              ( mins * right > -radius || maxs * right > -radius ) &&
@@ -68,7 +68,7 @@ class Frustum
     }
 
     // get min and max index for cells per each axis, which should be included in PVS
-    void getExtrems( Span& span, const Point3& p );
+    void getExtrems( Span& span, const Point& p );
 
     void update();
 

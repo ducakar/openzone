@@ -38,17 +38,15 @@ namespace ui
 {
 
 const float HudArea::VEHICLE_DIM      = VEHICLE_SIZE / 2.0f;
-const float HudArea::CROSS_FADE_COEFF = 4.0f;
+const float HudArea::CROSS_FADE_COEFF = 8.0f;
 
 void HudArea::drawBotCrosshair()
 {
   const Bot*      me      = camera.botObj;
   const BotClass* myClazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
-  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
-
-  float dx     = Math::fmod( camera.h - me->h + 1.5f*Math::TAU, Math::TAU ) - 0.5f*Math::TAU;
-  float dy     = camera.v - me->v;
+  float dx     = me->parent == -1 ? angleDiff( camera.h, me->h ) : angleDiff( camera.h, 0.0f );
+  float dy     = me->parent == -1 ? camera.v - me->v : camera.v - Math::TAU / 4.0f;
   float alpha  = 1.0f - CROSS_FADE_COEFF * Math::sqrt( dx*dx + dy*dy );
 
   glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, alpha );

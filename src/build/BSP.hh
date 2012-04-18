@@ -262,7 +262,7 @@ class BSP : public Bounds
     struct BoundObject
     {
       String  clazz;
-      Point3  pos;
+      Point   pos;
       Heading heading;
     };
 

@@ -59,7 +59,7 @@ void MD2WeaponImago::draw( const Imago* parent, int )
 
   if( parent == null ) {
     if( shader.mode == Shader::SCENE ) {
-      tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
+      tf.model = Mat44::translation( obj->p - Point::ORIGIN );
       tf.model.rotateZ( float( obj->flags & Object::HEADING_MASK ) * Math::TAU / 4.0f );
     }
 

@@ -49,7 +49,7 @@ FloraModule floraModule;
 
 void FloraModule::addTree( float x, float y )
 {
-  Point3 pos = Point3( x, y, orbis.terra.height( x, y ) );
+  Point pos = Point( x, y, orbis.terra.height( x, y ) );
 
   const char* type;
 
@@ -85,8 +85,8 @@ void FloraModule::addPlant( const char* type, float x, float y )
 {
   const ObjectClass* clazz = library.objClass( type );
 
-  Point3 pos    = Point3( x, y, orbis.terra.height( x, y ) + clazz->dim.z + 2.0f * EPSILON );
-  AABB   bounds = AABB( pos, clazz->dim );
+  Point pos    = Point( x, y, orbis.terra.height( x, y ) + clazz->dim.z + 2.0f * EPSILON );
+  AABB  bounds = AABB( pos, clazz->dim );
 
   if( pos.z < 0.0f || 40.0f < pos.z ) {
     return;

@@ -78,7 +78,7 @@ void Synapse::cut( Dynamic* obj )
   cutObjects.add( obj->index );
 }
 
-Struct* Synapse::add( const BSP* bsp, const Point3& p, Heading heading )
+Struct* Synapse::add( const BSP* bsp, const Point& p, Heading heading )
 {
   Struct* str = orbis.add( bsp, p, heading );
   if( str == null ) {
@@ -99,7 +99,7 @@ Struct* Synapse::add( const BSP* bsp, const Point3& p, Heading heading )
     for( int i = 0; i < str->bsp->nBoundObjects; ++i ) {
       const BSP::BoundObject& boundObj = str->bsp->boundObjects[i];
 
-      Point3  pos     = str->toAbsoluteCS( boundObj.pos );
+      Point   pos     = str->toAbsoluteCS( boundObj.pos );
       Heading heading = Heading( ( str->heading + boundObj.heading ) % 4 );
 
       Object* obj = orbis.add( boundObj.clazz, pos, heading );
@@ -117,7 +117,7 @@ Struct* Synapse::add( const BSP* bsp, const Point3& p, Heading heading )
   return str;
 }
 
-Object* Synapse::add( const ObjectClass* clazz, const Point3& p, Heading heading )
+Object* Synapse::add( const ObjectClass* clazz, const Point& p, Heading heading )
 {
   Object* obj = orbis.add( clazz, p, heading );
   if( obj == null ) {
@@ -132,7 +132,7 @@ Object* Synapse::add( const ObjectClass* clazz, const Point3& p, Heading heading
 
   for( int i = 0; i < defaultItems.length(); ++i ) {
     Heading heading = Heading( Math::rand( 4 ) );
-    Dynamic* item = static_cast<Dynamic*>( orbis.add( defaultItems[i], Point3::ORIGIN, heading ) );
+    Dynamic* item = static_cast<Dynamic*>( orbis.add( defaultItems[i], Point::ORIGIN, heading ) );
 
     if( item == null ) {
       continue;
@@ -156,7 +156,7 @@ Object* Synapse::add( const ObjectClass* clazz, const Point3& p, Heading heading
   return obj;
 }
 
-Frag* Synapse::add( const FragPool* pool, const Point3& p, const Vec3& velocity )
+Frag* Synapse::add( const FragPool* pool, const Point& p, const Vec3& velocity )
 {
   Frag* frag = orbis.add( pool, p, velocity );
   if( frag == null ) {
@@ -173,9 +173,9 @@ void Synapse::gen( const FragPool* pool, int nFrags, const Bounds& bb, const Vec
 {
   for( int i = 0; i < nFrags; ++i ) {
     // spawn the frag somewhere in the upper half of the structure's bounding box
-    Point3 fragPos = Point3( bb.mins.x + Math::rand() * ( bb.maxs.x - bb.mins.x ),
-                             bb.mins.y + Math::rand() * ( bb.maxs.y - bb.mins.y ),
-                             bb.mins.z + Math::rand() * ( bb.maxs.z - bb.mins.z ) );
+    Point fragPos = Point( bb.mins.x + Math::rand() * ( bb.maxs.x - bb.mins.x ),
+                           bb.mins.y + Math::rand() * ( bb.maxs.y - bb.mins.y ),
+                           bb.mins.z + Math::rand() * ( bb.maxs.z - bb.mins.z ) );
 
     Frag*  frag = add( pool, fragPos, velocity );
     if( frag == null ) {
@@ -190,17 +190,17 @@ void Synapse::gen( const FragPool* pool, int nFrags, const Bounds& bb, const Vec
   }
 }
 
-Struct* Synapse::addStruct( const char* bspName, const Point3& p, Heading heading )
+Struct* Synapse::addStruct( const char* bspName, const Point& p, Heading heading )
 {
   return add( library.bsp( bspName ), p, heading );
 }
 
-Object* Synapse::addObject( const char* className, const Point3& p, Heading heading )
+Object* Synapse::addObject( const char* className, const Point& p, Heading heading )
 {
   return add( library.objClass( className ), p, heading );
 }
 
-Frag* Synapse::addFrag( const char* poolName, const Point3& p, const Vec3& velocity )
+Frag* Synapse::addFrag( const char* poolName, const Point& p, const Vec3& velocity )
 {
   return add( library.fragPool( poolName ), p, velocity );
 }

@@ -92,7 +92,7 @@ FragPool::FragPool( const char* name_, int id_ ) :
   fragConfig.clear( true );
 }
 
-Frag* FragPool::create( int index, const Point3& pos, const Vec3& velocity ) const
+Frag* FragPool::create( int index, const Point& pos, const Vec3& velocity ) const
 {
   return new Frag( this, index, pos, velocity );
 }

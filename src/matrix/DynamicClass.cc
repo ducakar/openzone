@@ -63,7 +63,7 @@ void DynamicClass::initClass( const Config* config )
   }
 }
 
-Object* DynamicClass::create( int index, const Point3& pos, Heading heading ) const
+Object* DynamicClass::create( int index, const Point& pos, Heading heading ) const
 {
   return new Dynamic( this, index, pos, heading );
 }

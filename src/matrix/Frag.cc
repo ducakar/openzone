@@ -34,7 +34,7 @@ const float Frag::DAMAGE_THRESHOLD = 50.0f;
 
 Pool<Frag, 2048> Frag::mpool;
 
-Frag::Frag( const FragPool* pool_, int index_, const Point3& p_, const Vec3& velocity_ )
+Frag::Frag( const FragPool* pool_, int index_, const Point& p_, const Vec3& velocity_ )
 {
   cell        = null;
   index       = index_;
@@ -51,7 +51,7 @@ Frag::Frag( const FragPool* pool_, InputStream* istream )
   cell        = null;
   index       = istream->readInt();
   pool        = pool_;
-  p           = istream->readPoint3();
+  p           = istream->readPoint();
   velocity    = istream->readVec3();
   life        = istream->readFloat();
   mass        = pool->mass;
@@ -61,7 +61,7 @@ Frag::Frag( const FragPool* pool_, InputStream* istream )
 void Frag::write( BufferStream* ostream )
 {
   ostream->writeInt( index );
-  ostream->writePoint3( p );
+  ostream->writePoint( p );
   ostream->writeVec3( velocity );
   ostream->writeFloat( life );
 }

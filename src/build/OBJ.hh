@@ -77,7 +77,7 @@ class OBJ
 
     String           path;
     String           shader;
-    Vector<Point3>   positions;
+    Vector<Point>    positions;
     Vector<Vec3>     normals;
     Vector<TexCoord> texCoords;
     Vector<Part>     parts;

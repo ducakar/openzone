@@ -137,7 +137,7 @@ void Orbis::unposition( Frag* frag )
   cell->frags.remove( frag, frag->prev[0] );
 }
 
-Struct* Orbis::add( const BSP* bsp, const Point3& p, Heading heading )
+Struct* Orbis::add( const BSP* bsp, const Point& p, Heading heading )
 {
   const_cast<BSP*>( bsp )->request();
 
@@ -163,7 +163,7 @@ Struct* Orbis::add( const BSP* bsp, const Point3& p, Heading heading )
   return str;
 }
 
-Object* Orbis::add( const ObjectClass* clazz, const Point3& p, Heading heading )
+Object* Orbis::add( const ObjectClass* clazz, const Point& p, Heading heading )
 {
   Object* obj;
 
@@ -191,7 +191,7 @@ Object* Orbis::add( const ObjectClass* clazz, const Point3& p, Heading heading )
   return obj;
 }
 
-Frag* Orbis::add( const FragPool* pool, const Point3& p, const Vec3& velocity )
+Frag* Orbis::add( const FragPool* pool, const Point& p, const Vec3& velocity )
 {
   Frag* frag;
 
@@ -599,8 +599,8 @@ void Orbis::init()
   freeing = 0;
   waiting = 1;
 
-  mins = Point3( -Orbis::DIM, -Orbis::DIM, -Orbis::DIM );
-  maxs = Point3(  Orbis::DIM,  Orbis::DIM,  Orbis::DIM );
+  mins = Point( -Orbis::DIM, -Orbis::DIM, -Orbis::DIM );
+  maxs = Point(  Orbis::DIM,  Orbis::DIM,  Orbis::DIM );
 
   terra.init();
 

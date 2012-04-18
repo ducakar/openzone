@@ -154,7 +154,7 @@ set( libs_tools "${libs_client};${FREEIMAGE_LIBRARY}" )
 # Compiler flags
 #
 
-set( flags "-std=c++0x -pedantic -fstrict-enums -ffast-math -freciprocal-math -pipe" )
+set( flags "-std=c++0x -pedantic -fstrict-enums -ffast-math -pipe" )
 set( warnings "-Wall -Wextra -Wconversion -Woverloaded-virtual -Wnon-virtual-dtor -Winvalid-pch" )
 set( arch_flags "-msse3 -mfpmath=sse" )
 

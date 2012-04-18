@@ -34,7 +34,7 @@ namespace client
 
 QuestList questList;
 
-Quest::Quest( const char* title_, const char* description_, const Point3& place_, int state_ ) :
+Quest::Quest( const char* title_, const char* description_, const Point& place_, int state_ ) :
   title( title_ ), description( description_ ), place( place_ ), state( state_ )
 {}
 
@@ -44,7 +44,7 @@ void QuestList::read( InputStream* istream )
   for( int i = 0; i < nQuests; ++i ) {
     String title       = istream->readString();
     String description = istream->readString();
-    Point3 place       = istream->readPoint3();
+    Point  place       = istream->readPoint();
     int    state       = istream->readInt();
 
     quests.add( Quest( title, description, place, state ) );
@@ -57,7 +57,7 @@ void QuestList::write( BufferStream* ostream ) const
   foreach( quest, quests.citer() ) {
     ostream->writeString( quest->title );
     ostream->writeString( quest->description );
-    ostream->writePoint3( quest->place );
+    ostream->writePoint( quest->place );
     ostream->writeInt( quest->state );
   }
 }

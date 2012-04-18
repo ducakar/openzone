@@ -299,7 +299,7 @@ void MD2::build( const char* path )
   DArray<TexCoord>    texCoords( header.nTexCoords );
   DArray<MD2Triangle> triangles( header.nTriangles );
   DArray<Vec3>        normals( header.nFrames * header.nFramePositions );
-  DArray<Point3>      vertices( header.nFrames * header.nFramePositions );
+  DArray<Point>       vertices( header.nFrames * header.nFramePositions );
 
   is.reset();
   is.forward( header.offFrames );
@@ -310,8 +310,8 @@ void MD2::build( const char* path )
     const MD2Frame& frame = *reinterpret_cast<const MD2Frame*>( &frameData[i * header.frameSize] );
 
     for( int j = 0; j < header.nFramePositions; ++j ) {
-      Vec3&   normal = normals[i * header.nFramePositions + j];
-      Point3& vertex = vertices[i * header.nFramePositions + j];
+      Vec3&  normal = normals[i * header.nFramePositions + j];
+      Point& vertex = vertices[i * header.nFramePositions + j];
 
       normal   = NORMALS[ frame.verts[j].normal ];
 

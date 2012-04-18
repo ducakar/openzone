@@ -82,7 +82,7 @@
 #include "Math.hh"
 #include "Simd.hh"
 #include "Vec3.hh"
-#include "Point3.hh"
+#include "Point.hh"
 #include "Plane.hh"
 #include "Vec4.hh"
 #include "Quat.hh"

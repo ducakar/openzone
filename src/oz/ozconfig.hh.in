@@ -61,7 +61,7 @@
 #define OZ_NORETURN                  __attribute__(( noreturn ))
 #define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
 
-// A hack for KDevelop to recognise noexcept keyword (it doesn't know __LINE__ macro is defined).
-#ifndef __LINE__
+// A hack for KDevelop to recognise noexcept keyword (it doesn't know __FILE__ macro is defined).
+#ifndef __FILE__
 # define noexcept throw()
 #endif

@@ -93,7 +93,7 @@ void WeaponClass::initClass( const Config* config )
   shotInterval = config->get( "shotInterval", 0.5f );
 }
 
-Object* WeaponClass::create( int index, const Point3& pos, Heading heading ) const
+Object* WeaponClass::create( int index, const Point& pos, Heading heading ) const
 {
   return new Weapon( this, index, pos, heading );
 }

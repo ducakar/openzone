@@ -21,9 +21,9 @@
  */
 
 /**
- * @file oz/Point3.hh
+ * @file oz/Point.hh
  *
- * Point3 class.
+ * Point class.
  */
 
 #pragma once
@@ -38,12 +38,12 @@ namespace oz
  *
  * @ingroup oz
  */
-class Point3
+class Point
 {
   public:
 
     /// Origin, [0, 0, 0].
-    static const Point3 ORIGIN;
+    static const Point ORIGIN;
 
     float x; ///< X component.
     float y; ///< Y component.
@@ -52,13 +52,13 @@ class Point3
     /**
      * Create an uninitialised instance.
      */
-    Point3() = default;
+    Point() = default;
 
     /**
      * Create a point with the given coordinates.
      */
     OZ_ALWAYS_INLINE
-    explicit Point3( float x_, float y_, float z_ ) :
+    explicit Point( float x_, float y_, float z_ ) :
       x( x_ ), y( y_ ), z( z_ )
     {}
 
@@ -66,7 +66,7 @@ class Point3
      * Create from an array of 3 floats.
      */
     OZ_ALWAYS_INLINE
-    explicit Point3( const float* v ) :
+    explicit Point( const float* v ) :
       x( v[0] ), y( v[1] ), z( v[2] )
     {}
 
@@ -74,7 +74,7 @@ class Point3
      * Equality.
      */
     OZ_ALWAYS_INLINE
-    bool operator == ( const Point3& p ) const
+    bool operator == ( const Point& p ) const
     {
       return x == p.x && y == p.y && z == p.z;
     }
@@ -83,7 +83,7 @@ class Point3
      * Inequality.
      */
     OZ_ALWAYS_INLINE
-    bool operator != ( const Point3& p ) const
+    bool operator != ( const Point& p ) const
     {
       return x != p.x || y != p.y || z != p.z;
     }
@@ -132,25 +132,25 @@ class Point3
      * Point translated for <tt>v</tt>.
      */
     OZ_ALWAYS_INLINE
-    Point3 operator + ( const Vec3& v ) const
+    Point operator + ( const Vec3& v ) const
     {
-      return Point3( x + v.x, y + v.y, z + v.z );
+      return Point( x + v.x, y + v.y, z + v.z );
     }
 
     /**
      * Point translated for <tt>-v</tt>.
      */
     OZ_ALWAYS_INLINE
-    Point3 operator - ( const Vec3& v ) const
+    Point operator - ( const Vec3& v ) const
     {
-      return Point3( x - v.x, y - v.y, z - v.z );
+      return Point( x - v.x, y - v.y, z - v.z );
     }
 
     /**
      * Difference of two points.
      */
     OZ_ALWAYS_INLINE
-    Vec3 operator - ( const Point3& p ) const
+    Vec3 operator - ( const Point& p ) const
     {
       return Vec3( x - p.x, y - p.y, z - p.z );
     }
@@ -159,7 +159,7 @@ class Point3
      * Translate for <tt>v</tt>.
      */
     OZ_ALWAYS_INLINE
-    Point3& operator += ( const Vec3& v )
+    Point& operator += ( const Vec3& v )
     {
       x += v.x;
       y += v.y;
@@ -171,7 +171,7 @@ class Point3
      * Translate for <tt>-v</tt>.
      */
     OZ_ALWAYS_INLINE
-    Point3& operator -= ( const Vec3& v )
+    Point& operator -= ( const Vec3& v )
     {
       x -= v.x;
       y -= v.y;

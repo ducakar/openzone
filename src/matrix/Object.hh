@@ -347,7 +347,7 @@ class Object : public AABB
 
   public:
 
-    explicit Object( const ObjectClass* clazz, int index, const Point3& p, Heading heading );
+    explicit Object( const ObjectClass* clazz, int index, const Point& p, Heading heading );
     explicit Object( const ObjectClass* clazz, InputStream* istream );
 
     virtual void write( BufferStream* ostream ) const;

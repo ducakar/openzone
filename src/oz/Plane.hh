@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Point3.hh"
+#include "Point.hh"
 
 namespace oz
 {
@@ -154,7 +154,7 @@ class Plane
      * Distance between a point and the plane.
      */
     OZ_ALWAYS_INLINE
-    friend float operator * ( const Point3& p, const Plane& plane )
+    friend float operator * ( const Point& p, const Plane& plane )
     {
       return p.x*plane.n.x + p.y*plane.n.y + p.z*plane.n.z - plane.d;
     }

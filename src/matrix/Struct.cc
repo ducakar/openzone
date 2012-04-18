@@ -553,7 +553,7 @@ void Struct::onDemolish()
   transf.w = Vec4( p );
 
   invTransf = ROTATIONS[4 - heading];
-  invTransf.translate( Point3::ORIGIN - p );
+  invTransf.translate( Point::ORIGIN - p );
 
   Bounds bb = toAbsoluteCS( *bsp );
   mins = bb.mins;
@@ -594,27 +594,27 @@ Bounds Struct::toStructCS( const Bounds& bb ) const
 {
   switch( heading ) {
     case NORTH: {
-      return Bounds( Point3( +bb.mins.x - p.x, +bb.mins.y - p.y, +bb.mins.z - p.z ),
-                     Point3( +bb.maxs.x - p.x, +bb.maxs.y - p.y, +bb.maxs.z - p.z ) );
+      return Bounds( Point( +bb.mins.x - p.x, +bb.mins.y - p.y, +bb.mins.z - p.z ),
+                     Point( +bb.maxs.x - p.x, +bb.maxs.y - p.y, +bb.maxs.z - p.z ) );
     }
     case WEST: {
-      return Bounds( Point3( +bb.mins.y - p.y, -bb.maxs.x + p.x, +bb.mins.z - p.z ),
-                     Point3( +bb.maxs.y - p.y, -bb.mins.x + p.x, +bb.maxs.z - p.z ) );
+      return Bounds( Point( +bb.mins.y - p.y, -bb.maxs.x + p.x, +bb.mins.z - p.z ),
+                     Point( +bb.maxs.y - p.y, -bb.mins.x + p.x, +bb.maxs.z - p.z ) );
     }
     case SOUTH: {
-      return Bounds( Point3( -bb.maxs.x + p.x, -bb.maxs.y + p.y, +bb.mins.z - p.z ),
-                     Point3( -bb.mins.x + p.x, -bb.mins.y + p.y, +bb.maxs.z - p.z ) );
+      return Bounds( Point( -bb.maxs.x + p.x, -bb.maxs.y + p.y, +bb.mins.z - p.z ),
+                     Point( -bb.mins.x + p.x, -bb.mins.y + p.y, +bb.maxs.z - p.z ) );
     }
     case EAST: {
-      return Bounds( Point3( -bb.maxs.y + p.y, +bb.mins.x - p.x, +bb.mins.z - p.z ),
-                     Point3( -bb.mins.y + p.y, +bb.maxs.x - p.x, +bb.maxs.z - p.z ) );
+      return Bounds( Point( -bb.maxs.y + p.y, +bb.mins.x - p.x, +bb.mins.z - p.z ),
+                     Point( -bb.mins.y + p.y, +bb.maxs.x - p.x, +bb.maxs.z - p.z ) );
     }
   }
 }
 
 Bounds Struct::rotate( const Bounds& in, Heading heading )
 {
-  Point3 p = in.mins + ( in.maxs - in.mins ) * 0.5f;
+  Point p = in.mins + ( in.maxs - in.mins ) * 0.5f;
 
   switch( heading ) {
     case NORTH: {
@@ -673,12 +673,12 @@ void Struct::destroy()
   if( bsp->fragPool != null ) {
     synapse.gen( bsp->fragPool,
                  bsp->nFrags,
-                 Bounds( Point3( mins.x, mins.y, 0.5f * ( mins.z + maxs.z ) ), maxs ),
+                 Bounds( Point( mins.x, mins.y, 0.5f * ( mins.z + maxs.z ) ), maxs ),
                  DESTRUCT_FRAG_VELOCITY );
   }
 }
 
-Struct::Struct( const BSP* bsp_, int index_, const Point3& p_, Heading heading_ )
+Struct::Struct( const BSP* bsp_, int index_, const Point& p_, Heading heading_ )
 {
   bsp         = bsp_;
   p           = p_;
@@ -689,8 +689,8 @@ Struct::Struct( const BSP* bsp_, int index_, const Point3& p_, Heading heading_ 
   resistance  = bsp->resistance;
   demolishing = 0.0f;
 
-  transf      = Mat44::translation( p - Point3::ORIGIN ) * ROTATIONS[heading];
-  invTransf   = ROTATIONS[4 - heading] * Mat44::translation( Point3::ORIGIN - p );
+  transf      = Mat44::translation( p - Point::ORIGIN ) * ROTATIONS[heading];
+  invTransf   = ROTATIONS[4 - heading] * Mat44::translation( Point::ORIGIN - p );
 
   hard_assert( transf.det() != 0.0f );
 
@@ -717,13 +717,13 @@ Struct::Struct( const BSP* bsp_, int index_, const Point3& p_, Heading heading_ 
 
 Struct::Struct( const BSP* bsp_, InputStream* istream )
 {
-  mins        = istream->readPoint3();
-  maxs        = istream->readPoint3();
+  mins        = istream->readPoint();
+  maxs        = istream->readPoint();
   transf      = istream->readMat44();
   invTransf   = istream->readMat44();
 
   bsp         = bsp_;
-  p           = istream->readPoint3();
+  p           = istream->readPoint();
   index       = istream->readInt();
   heading     = Heading( istream->readInt() );
 
@@ -770,12 +770,12 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
 
 void Struct::write( BufferStream* ostream )
 {
-  ostream->writePoint3( mins );
-  ostream->writePoint3( maxs );
+  ostream->writePoint( mins );
+  ostream->writePoint( maxs );
   ostream->writeMat44( transf );
   ostream->writeMat44( invTransf );
 
-  ostream->writePoint3( p );
+  ostream->writePoint( p );
   ostream->writeInt( index );
   ostream->writeInt( heading );
 

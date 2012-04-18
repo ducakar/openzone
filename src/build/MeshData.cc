@@ -39,7 +39,7 @@ bool Vertex::operator == ( const Vertex& v ) const
 
 void Vertex::write( BufferStream* ostream ) const
 {
-  ostream->writePoint3( pos );
+  ostream->writePoint( pos );
   ostream->writeFloat( texCoord.u );
   ostream->writeFloat( texCoord.v );
   ostream->writeVec3( normal );

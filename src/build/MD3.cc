@@ -189,7 +189,7 @@ void MD3::buildMesh( const char* name, int frame )
     DArray<TexCoord>    surfaceTexCoords( surface.nVertices );
     DArray<MD3Vertex>   surfaceVertices( surface.nFrames * surface.nVertices );
     DArray<Vec3>        normals( surfaceVertices.length() );
-    DArray<Point3>      vertices( surfaceVertices.length() );
+    DArray<Point>       vertices( surfaceVertices.length() );
 
     is.reset();
     is.forward( surfaceStart + surface.offTriangles );

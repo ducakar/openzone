@@ -119,12 +119,12 @@ static int ozOrbisAddStr( lua_State* l )
   }
 
   AddMode mode    = AddMode( l_toint( 1 ) );
-  Point3  p       = Point3( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
+  Point   p       = Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
   Heading heading = Heading( l_gettop() == 6 ? l_toint( 6 ) : Math::rand( 4 ) );
 
   if( mode != ADD_FORCE ) {
     Bounds bounds = *bsp;
-    bounds = Struct::rotate( bounds, heading ) + ( p - Point3::ORIGIN );
+    bounds = Struct::rotate( bounds, heading ) + ( p - Point::ORIGIN );
 
     if( collider.overlaps( bounds.toAABB() ) ) {
       ms.str = null;
@@ -151,7 +151,7 @@ static int ozOrbisAddObj( lua_State* l )
   }
 
   AddMode mode    = AddMode( l_toint( 1 ) );
-  Point3  p       = Point3( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
+  Point   p       = Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
   Heading heading = Heading( l_gettop() == 6 ? l_toint( 6 ) : Math::rand( 4 ) );
 
   if( mode != ADD_FORCE ) {
@@ -186,7 +186,7 @@ static int ozOrbisAddFrag( lua_State* l )
   }
 
   AddMode mode     = AddMode( l_toint( 1 ) );
-  Point3  p        = Point3( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
+  Point   p        = Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
   Vec3    velocity = Vec3( l_tofloat( 6 ), l_tofloat( 7 ), l_tofloat( 8 ) );
 
   if( mode != ADD_FORCE ) {
@@ -215,8 +215,8 @@ static int ozOrbisGenFrags( lua_State* l )
   }
 
   int    nFrags   = l_toint( 2 );
-  Bounds bb       = Bounds( Point3( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) ),
-                            Point3( l_tofloat( 6 ), l_tofloat( 7 ), l_tofloat( 8 ) ) );
+  Bounds bb       = Bounds( Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) ),
+                            Point( l_tofloat( 6 ), l_tofloat( 7 ), l_tofloat( 8 ) ) );
   Vec3   velocity = Vec3( l_tofloat( 9 ), l_tofloat( 10 ), l_tofloat( 11 ) );
 
   synapse.gen( pool, nFrags, bb, velocity );
@@ -229,7 +229,7 @@ static int ozOrbisOverlaps( lua_State* l )
   VARG( 7, 8 );
 
   int  flags = l_toint( 1 );
-  AABB aabb  = AABB( Point3( l_tofloat( 2 ), l_tofloat( 3 ), l_tofloat( 4 ) ),
+  AABB aabb  = AABB( Point( l_tofloat( 2 ), l_tofloat( 3 ), l_tofloat( 4 ) ),
                      Vec3( l_tofloat( 5 ), l_tofloat( 6 ), l_tofloat( 7 ) ) );
 
   const Object* exclObj = null;
@@ -259,7 +259,7 @@ static int ozOrbisBindOverlaps( lua_State* l )
   ARG( 7 );
 
   int  flags = l_toint( 1 );
-  AABB aabb  = AABB( Point3( l_tofloat( 2 ), l_tofloat( 3 ), l_tofloat( 4 ) ),
+  AABB aabb  = AABB( Point( l_tofloat( 2 ), l_tofloat( 3 ), l_tofloat( 4 ) ),
                      Vec3( l_tofloat( 5 ), l_tofloat( 6 ), l_tofloat( 7 ) ) );
 
   if( !( flags & ( COLLIDE_STRUCTS_BIT | COLLIDE_OBJECTS_BIT | COLLIDE_ALL_OBJECTS_BIT ) ) ) {
@@ -616,8 +616,8 @@ static int ozStrVectorFromSelfEye( lua_State* l )
   STR();
   BOT_INDEX( l_toint( 1 ) );
 
-  Point3 eye = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
-  Vec3   vec = ms.str->p - eye;
+  Point eye = Point( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
+  Vec3  vec = ms.str->p - eye;
 
   l_pushfloat( vec.x );
   l_pushfloat( vec.y );
@@ -645,8 +645,8 @@ static int ozStrDirectionFromSelfEye( lua_State* l )
   STR();
   SELF_BOT();
 
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-  Vec3   dir = ~( ms.str->p - eye );
+  Point eye = Point( self->p.x, self->p.y, self->p.z + self->camZ );
+  Vec3  dir = ~( ms.str->p - eye );
 
   l_pushfloat( dir.x );
   l_pushfloat( dir.y );
@@ -670,7 +670,7 @@ static int ozStrDistanceFromSelfEye( lua_State* l )
   STR();
   SELF_BOT();
 
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
+  Point eye = Point( self->p.x, self->p.y, self->p.z + self->camZ );
 
   l_pushfloat( !( ms.str->p - eye ) );
   return 1;
@@ -684,7 +684,7 @@ static int ozStrHeadingFromSelfEye( lua_State* l )
 
   float dx    = ms.str->p.x - self->p.x;
   float dy    = ms.str->p.y - self->p.y;
-  float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
+  float angle = Math::deg( angleWrap( Math::atan2( -dx, dy ) ) );
 
   l_pushfloat( angle );
   return 1;
@@ -696,11 +696,11 @@ static int ozStrPitchFromSelfEye( lua_State* l )
   STR();
   SELF_BOT();
 
-  Point3 eye   = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-  float  dx    = ms.str->p.x - eye.x;
-  float  dy    = ms.str->p.y - eye.y;
-  float  dz    = ms.str->p.z - eye.z;
-  float  angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
+  Point eye   = Point( self->p.x, self->p.y, self->p.z + self->camZ );
+  float dx    = ms.str->p.x - eye.x;
+  float dy    = ms.str->p.y - eye.y;
+  float dz    = ms.str->p.z - eye.z;
+  float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
 
   l_pushfloat( angle );
   return 1;
@@ -726,8 +726,8 @@ static int ozStrIsVisibleFromSelfEye( lua_State* l )
   OBJ();
   SELF_BOT();
 
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-  Vec3   vec = ms.str->p - eye;
+  Point eye = Point( self->p.x, self->p.y, self->p.z + self->camZ );
+  Vec3  vec = ms.str->p - eye;
 
   collider.translate( eye, vec, self );
 
@@ -1210,8 +1210,8 @@ static int ozObjVectorFromSelfEye( lua_State* l )
   OBJ();
   SELF_BOT();
 
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-  Vec3   vec = ms.obj->p - eye;
+  Point eye = Point( self->p.x, self->p.y, self->p.z + self->camZ );
+  Vec3  vec = ms.obj->p - eye;
 
   l_pushfloat( vec.x );
   l_pushfloat( vec.y );
@@ -1239,8 +1239,8 @@ static int ozObjDirectionFromSelfEye( lua_State* l )
   OBJ();
   SELF_BOT();
 
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-  Vec3   dir = ~( ms.obj->p - eye );
+  Point eye = Point( self->p.x, self->p.y, self->p.z + self->camZ );
+  Vec3  dir = ~( ms.obj->p - eye );
 
   l_pushfloat( dir.x );
   l_pushfloat( dir.y );
@@ -1264,7 +1264,7 @@ static int ozObjDistanceFromSelfEye( lua_State* l )
   OBJ();
   SELF_BOT();
 
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
+  Point eye = Point( self->p.x, self->p.y, self->p.z + self->camZ );
 
   l_pushfloat( !( ms.obj->p - eye ) );
   return 1;
@@ -1278,7 +1278,7 @@ static int ozObjHeadingFromSelfEye( lua_State* l )
 
   float dx    = ms.obj->p.x - self->p.x;
   float dy    = ms.obj->p.y - self->p.y;
-  float angle = Math::fmod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
+  float angle = Math::deg( angleWrap( Math::atan2( -dx, dy ) ) );
 
   l_pushfloat( angle );
   return 1;
@@ -1290,11 +1290,11 @@ static int ozObjPitchFromSelfEye( lua_State* l )
   OBJ();
   SELF_BOT();
 
-  Point3 eye   = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-  float  dx    = ms.obj->p.x - eye.x;
-  float  dy    = ms.obj->p.y - eye.y;
-  float  dz    = ms.obj->p.z - eye.z;
-  float  angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
+  Point eye   = Point( self->p.x, self->p.y, self->p.z + self->camZ );
+  float dx    = ms.obj->p.x - eye.x;
+  float dy    = ms.obj->p.y - eye.y;
+  float dz    = ms.obj->p.z - eye.z;
+  float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
 
   l_pushfloat( angle );
   return 1;
@@ -1320,8 +1320,8 @@ static int ozObjIsVisibleFromSelfEye( lua_State* l )
   OBJ();
   SELF_BOT();
 
-  Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-  Vec3   vec = ms.obj->p - eye;
+  Point eye = Point( self->p.x, self->p.y, self->p.z + self->camZ );
+  Vec3  vec = ms.obj->p - eye;
 
   collider.translate( eye, vec, self );
 
@@ -1548,7 +1548,7 @@ static int ozBotSetH( lua_State* l )
   OBJ_BOT();
 
   bot->h = Math::rad( l_tofloat( 1 ) );
-  bot->h = Math::fmod( bot->h + Math::TAU, Math::TAU );
+  bot->h = angleWrap( bot->h );
   return 0;
 }
 
@@ -1559,7 +1559,7 @@ static int ozBotAddH( lua_State* l )
   OBJ_BOT();
 
   bot->h += Math::rad( l_tofloat( 1 ) );
-  bot->h  = Math::fmod( bot->h + Math::TAU, Math::TAU );
+  bot->h  = angleWrap( bot->h );
   return 0;
 }
 
@@ -1830,7 +1830,7 @@ static int ozVehicleSetH( lua_State* l )
   OBJ_VEHICLE();
 
   veh->h = Math::rad( l_tofloat( 1 ) );
-  veh->h = Math::fmod( veh->h + Math::TAU, Math::TAU );
+  veh->h = angleWrap( veh->h );
 
   veh->rot = Quat::rotZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
   return 0;
@@ -1843,7 +1843,7 @@ static int ozVehicleAddH( lua_State* l )
   OBJ_VEHICLE();
 
   veh->h += Math::rad( l_tofloat( 1 ) );
-  veh->h  = Math::fmod( veh->h + Math::TAU, Math::TAU );
+  veh->h  = angleWrap( veh->h );
 
   veh->rot = Quat::rotZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
   return 0;

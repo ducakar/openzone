@@ -116,9 +116,9 @@ class Orbis : public Bounds
     void position( Frag* frag );
     void unposition( Frag* frag );
 
-    Struct* add( const BSP* bsp, const Point3& p, Heading heading );
-    Object* add( const ObjectClass* clazz, const Point3& p, Heading heading );
-    Frag*   add( const FragPool* pool, const Point3& p, const Vec3& velocity );
+    Struct* add( const BSP* bsp, const Point& p, Heading heading );
+    Object* add( const ObjectClass* clazz, const Point& p, Heading heading );
+    Frag*   add( const FragPool* pool, const Point& p, const Vec3& velocity );
 
     void remove( Struct* str );
     void remove( Object* obj );
@@ -131,11 +131,11 @@ class Orbis : public Bounds
 
     // get pointer to the cell the point is in
     Cell* getCell( float x, float y );
-    Cell* getCell( const Point3& p );
+    Cell* getCell( const Point& p );
 
     // get indices of the cell the point is in
     Span getInters( float x, float y, float epsilon = 0.0f ) const;
-    Span getInters( const Point3& p, float epsilon = 0.0f ) const;
+    Span getInters( const Point& p, float epsilon = 0.0f ) const;
 
     // get indices of min and max cells which the area intersects
     Span getInters( float minPosX, float minPosY, float maxPosX, float maxPosY,
@@ -175,7 +175,7 @@ inline Cell* Orbis::getCell( float x, float y )
 }
 
 OZ_ALWAYS_INLINE
-inline Cell* Orbis::getCell( const Point3& p )
+inline Cell* Orbis::getCell( const Point& p )
 {
   return getCell( p.x, p.y );
 }
@@ -192,7 +192,7 @@ inline Span Orbis::getInters( float x, float y, float epsilon ) const
 }
 
 OZ_ALWAYS_INLINE
-inline Span Orbis::getInters( const Point3& p, float epsilon ) const
+inline Span Orbis::getInters( const Point& p, float epsilon ) const
 {
   return getInters( p.x, p.y, epsilon );
 }

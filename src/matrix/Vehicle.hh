@@ -114,7 +114,7 @@ class Vehicle : public Dynamic
 
   public:
 
-    explicit Vehicle( const VehicleClass* clazz, int index, const Point3& p, Heading heading );
+    explicit Vehicle( const VehicleClass* clazz, int index, const Point& p, Heading heading );
     explicit Vehicle( const VehicleClass* clazz, InputStream* istream );
 
     virtual void write( BufferStream* ostream ) const;

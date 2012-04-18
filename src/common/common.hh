@@ -97,6 +97,29 @@ const float EPSILON = 2048.0f * 3.0f * Math::FLOAT_EPS;
  */
 typedef int LuaAPI( lua_State* );
 
+/**
+ * Wrap angle to interval \f$ [0, \tau) \f$.
+ *
+ * This adjustment should be made after each angle addition/subtraction. It assumes that input angle
+ * lies on interval \f$ (-\tau, 2 \tau) \f$.
+ */
+OZ_ALWAYS_INLINE
+inline float angleWrap( float x )
+{
+  return Math::fmod( x + Math::TAU, Math::TAU );
+}
+
+/**
+ * Difference between two angles, maps to interval \f$ [-\frac{\tau}{2}, +\frac{\tau}{2}) \f$.
+ *
+ * This function assumes that both angles lie on interval \f$ [0, \tau) \f$.
+ */
+OZ_ALWAYS_INLINE
+inline float angleDiff( float x, float y )
+{
+  return Math::fmod( x - y + 1.5f*Math::TAU, Math::TAU ) - 0.5f*Math::TAU;
+}
+
 }
 
 /**

@@ -136,10 +136,10 @@ struct Simd
   {}
 
   /**
-   * Create from <tt>Point3</tt>.
+   * Create from <tt>Point</tt>.
    */
   OZ_ALWAYS_INLINE
-  Simd( const Point3& p ) :
+  Simd( const Point& p ) :
     f4( float4( p.x, p.y, p.z, 1.0f ) )
   {}
 
@@ -204,12 +204,12 @@ struct Simd
   }
 
   /**
-   * Construct <tt>Point3</tt> from SIMD components.
+   * Construct <tt>Point</tt> from SIMD components.
    */
   OZ_ALWAYS_INLINE
-  Point3 point3() const
+  Point point() const
   {
-    return Point3( f[0], f[1], f[2] );
+    return Point( f[0], f[1], f[2] );
   }
 
   /**

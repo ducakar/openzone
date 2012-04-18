@@ -120,7 +120,7 @@ class BSP : public Bounds
     struct BoundObject
     {
       const ObjectClass* clazz;
-      Point3             pos;
+      Point              pos;
       Heading            heading;
     };
 

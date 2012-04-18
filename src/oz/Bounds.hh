@@ -42,8 +42,8 @@ class Bounds
 {
   public:
 
-    Point3 mins; ///< Minimums.
-    Point3 maxs; ///< Maximums.
+    Point mins; ///< Minimums.
+    Point maxs; ///< Maximums.
 
     /**
      * Create uninitialised instance.
@@ -54,7 +54,7 @@ class Bounds
      * Create from the given minimal and maximal point.
      */
     OZ_ALWAYS_INLINE
-    explicit Bounds( const Point3& mins_, const Point3& maxs_ ) :
+    explicit Bounds( const Point& mins_, const Point& maxs_ ) :
       mins( mins_ ), maxs( maxs_ )
     {}
 
@@ -82,7 +82,7 @@ class Bounds
      * Create <tt>Bounds</tt> that cover the trace described by the given point move.
      */
     OZ_ALWAYS_INLINE
-    explicit Bounds( const Point3& p, const Vec3& move, float eps = 0.0f )
+    explicit Bounds( const Point& p, const Vec3& move, float eps = 0.0f )
     {
       Vec3 epsDim = Vec3( eps, eps, eps );
 
@@ -146,9 +146,9 @@ class Bounds
     OZ_ALWAYS_INLINE
     AABB toAABB( float eps = 0.0f ) const
     {
-      return AABB( Point3( ( mins.x + maxs.x ) * 0.5f,
-                           ( mins.y + maxs.y ) * 0.5f,
-                           ( mins.z + maxs.z ) * 0.5f ),
+      return AABB( Point( ( mins.x + maxs.x ) * 0.5f,
+                          ( mins.y + maxs.y ) * 0.5f,
+                          ( mins.z + maxs.z ) * 0.5f ),
                    Vec3( ( maxs.x - mins.x ) * 0.5f + eps,
                          ( maxs.y - mins.y ) * 0.5f + eps,
                          ( maxs.z - mins.z ) * 0.5f + eps ) );
@@ -201,7 +201,7 @@ class Bounds
      * @param eps margin for which this <tt>Bounds</tt> are enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
-    bool includes( const Point3& p, float eps = 0.0f ) const
+    bool includes( const Point& p, float eps = 0.0f ) const
     {
       return mins.x - eps <= p.x && p.x <= maxs.x + eps &&
              mins.y - eps <= p.y && p.y <= maxs.y + eps &&

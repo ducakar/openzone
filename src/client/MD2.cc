@@ -61,6 +61,58 @@ const MD2::AnimInfo MD2::ANIM_LIST[] =
 
 Vertex MD2::animBuffer[MAX_VERTS];
 
+void MD2::AnimState::set( Anim newType )
+{
+  bool isWalkRunToggle = ( type == ANIM_WALK && newType == ANIM_RUN ) ||
+                         ( type == ANIM_RUN && newType == ANIM_WALK );
+
+  type       = newType;
+  nextType   = MD2::ANIM_LIST[type].nextType;
+  firstFrame = MD2::ANIM_LIST[type].firstFrame;
+  lastFrame  = MD2::ANIM_LIST[type].lastFrame;
+  fps        = MD2::ANIM_LIST[type].fps;
+  frameTime  = 1.0f / fps;
+
+  if( !isWalkRunToggle ) {
+    nextFrame = min( firstFrame + 1, lastFrame );
+    currTime  = 0.0f;
+  }
+}
+
+void MD2::AnimState::advance( const Bot* bot )
+{
+  if( ( type == ANIM_WALK || type == ANIM_RUN || type == ANIM_CROUCH_WALK ) && nextType == type ) {
+    int   nFrames = lastFrame - firstFrame + 1;
+    float time    = bot->step * float( nFrames ) * frameTime;
+
+    nextFrame = firstFrame + int( bot->step * float( nFrames ) + 1.0f ) % nFrames;
+
+    if( time >= frameTime || ( firstFrame <= currFrame && lastFrame <= currFrame ) ) {
+      currFrame = firstFrame + int( bot->step * float( nFrames ) ) % nFrames;
+    }
+
+    currTime = Math::fmod( time, frameTime );
+  }
+  else {
+    currTime += timer.frameTime;
+
+    while( currTime > frameTime ) {
+      currTime -= frameTime;
+      currFrame = nextFrame;
+
+      if( nextType == ANIM_NONE ) {
+        nextFrame = min( nextFrame + 1, lastFrame );
+      }
+      else if( nextType == type ) {
+        nextFrame = nextFrame == lastFrame ? firstFrame : nextFrame + 1;
+      }
+      else {
+        set( nextType );
+      }
+    }
+  }
+}
+
 MD2::MD2( int id_ ) :
   id( id_ ), vertices( null ), positions( null ), normals( 0 ),
   isPreloaded( false ), isLoaded( false )
@@ -126,11 +178,11 @@ void MD2::load()
     mesh.load( &is, GL_STATIC_DRAW, file.path() );
   }
   else {
-    positions = new Point3[nFramePositions * nFrames];
+    positions = new Point[nFramePositions * nFrames];
     normals   = new Vec3[nFramePositions * nFrames];
 
     for( int i = 0; i < nFramePositions * nFrames; ++i ) {
-      positions[i] = Point3::ORIGIN + is.readVec4();
+      positions[i] = Point::ORIGIN + is.readVec4();
     }
 
     for( int i = 0; i < nFramePositions * nFrames; ++i ) {
@@ -157,63 +209,6 @@ void MD2::load()
   isLoaded = true;
 }
 
-void MD2::setAnim( AnimState* anim, Anim type )
-{
-  bool isWalkRunToggle = ( anim->type == ANIM_WALK && type == ANIM_RUN ) ||
-                         ( anim->type == ANIM_RUN && type == ANIM_WALK );
-
-  anim->type       = type;
-  anim->nextAnim   = MD2::ANIM_LIST[type].nextAnim;
-  anim->firstFrame = MD2::ANIM_LIST[type].firstFrame;
-  anim->lastFrame  = MD2::ANIM_LIST[type].lastFrame;
-  anim->fps        = MD2::ANIM_LIST[type].fps;
-  anim->frameTime  = 1.0f / anim->fps;
-
-  if( !isWalkRunToggle ) {
-    anim->nextFrame = anim->firstFrame == anim->lastFrame ? anim->firstFrame : anim->firstFrame + 1;
-    anim->currTime  = 0.0f;
-  }
-}
-
-void MD2::advance( AnimState* anim, const Bot* bot ) const
-{
-  if( anim->type == ANIM_WALK || anim->type == ANIM_RUN || anim->type == ANIM_CROUCH_WALK ) {
-    int   nFrames = anim->lastFrame - anim->firstFrame + 1;
-    float time    = bot->step * float( nFrames ) * anim->frameTime;
-
-    anim->nextFrame = anim->firstFrame + int( bot->step * float( nFrames ) + 1.0f ) % nFrames;
-
-    if( time >= anim->frameTime ||
-        ( anim->firstFrame <= anim->currFrame && anim->lastFrame <= anim->currFrame ) )
-    {
-      anim->currFrame = anim->firstFrame + int( bot->step * float( nFrames ) ) % nFrames;
-    }
-
-    anim->currTime = Math::fmod( time, anim->frameTime );
-  }
-  else {
-    anim->currTime += timer.frameTime;
-
-    if( anim->currTime > anim->frameTime ) {
-      anim->currTime -= anim->frameTime;
-      anim->currFrame = anim->nextFrame;
-      ++anim->nextFrame;
-
-      if( anim->nextFrame > anim->lastFrame ) {
-        if( anim->nextAnim == ANIM_NONE ) {
-          anim->nextFrame = anim->lastFrame;
-        }
-        else if( anim->nextAnim == anim->type ) {
-          anim->nextFrame = anim->firstFrame;
-        }
-        else {
-          setAnim( anim, anim->nextAnim );
-        }
-      }
-    }
-  }
-}
-
 void MD2::drawFrame( int frame ) const
 {
   shader.use( shaderId );
@@ -225,14 +220,14 @@ void MD2::drawFrame( int frame ) const
     glBindTexture( GL_TEXTURE_2D, normalTexId );
   }
   else {
-    const Point3* framePositions = &positions[frame * nFramePositions];
-    const Vec3*   frameNormals   = &normals[frame * nFramePositions];
+    const Point* framePositions = &positions[frame * nFramePositions];
+    const Vec3*  frameNormals   = &normals[frame * nFramePositions];
 
     for( int i = 0; i < nFrameVertices; ++i ) {
       int j = int( vertices[i].pos[0] * float( nFramePositions - 1 ) + 0.5f );
 
-      Point3 pos    = framePositions[j];
-      Vec3   normal = frameNormals[j];
+      Point pos    = framePositions[j];
+      Vec3  normal = frameNormals[j];
 
       animBuffer[i].pos[0] = pos.x;
       animBuffer[i].pos[1] = pos.y;
@@ -272,18 +267,18 @@ void MD2::draw( const AnimState* anim ) const
                  anim->currTime * anim->fps );
   }
   else {
-    const Point3* currFramePositions = &positions[anim->currFrame * nFramePositions];
-    const Point3* nextFramePositions = &positions[anim->nextFrame * nFramePositions];
-    const Vec3*   currFrameNormals   = &normals[anim->currFrame * nFramePositions];
-    const Vec3*   nextFrameNormals   = &normals[anim->nextFrame * nFramePositions];
+    const Point* currFramePositions = &positions[anim->currFrame * nFramePositions];
+    const Point* nextFramePositions = &positions[anim->nextFrame * nFramePositions];
+    const Vec3*  currFrameNormals   = &normals[anim->currFrame * nFramePositions];
+    const Vec3*  nextFrameNormals   = &normals[anim->nextFrame * nFramePositions];
 
     float t = anim->currTime * anim->fps;
 
     for( int i = 0; i < nFrameVertices; ++i ) {
       int j = int( vertices[i].pos[0] * float( nFramePositions - 1 ) + 0.5f );
 
-      Point3 pos    = Math::mix( currFramePositions[j], nextFramePositions[j], t );
-      Vec3   normal = Math::mix( currFrameNormals[j],   nextFrameNormals[j],   t );
+      Point pos    = Math::mix( currFramePositions[j], nextFramePositions[j], t );
+      Vec3  normal = Math::mix( currFrameNormals[j],   nextFrameNormals[j],   t );
 
       animBuffer[i].pos[0] = pos.x;
       animBuffer[i].pos[1] = pos.y;

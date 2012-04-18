@@ -69,13 +69,13 @@ class MD2
       int   firstFrame;
       int   lastFrame;
       float fps;
-      Anim  nextAnim;
+      Anim  nextType;
     };
 
     struct AnimState
     {
       Anim  type;
-      Anim  nextAnim;
+      Anim  nextType;
 
       int   firstFrame;
       int   lastFrame;
@@ -85,6 +85,9 @@ class MD2
       float fps;
       float frameTime;
       float currTime;
+
+      void set( Anim type );
+      void advance( const Bot* bot );
     };
 
     static const AnimInfo ANIM_LIST[];
@@ -104,7 +107,7 @@ class MD2
     int      shaderId;
 
     Vertex*  vertices;
-    Point3*  positions;
+    Point*   positions;
     Vec3*    normals;
 
     Mesh     mesh;
@@ -123,9 +126,6 @@ class MD2
 
     void preload();
     void load();
-
-    static void setAnim( AnimState* anim, Anim type );
-    void advance( AnimState* anim, const Bot* bot ) const;
 
     void drawFrame( int frame ) const;
     void draw( const AnimState* anim ) const;
