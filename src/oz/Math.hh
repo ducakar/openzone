@@ -260,26 +260,20 @@ class Math
     OZ_ALWAYS_INLINE
     static bool isfinite( float x )
     {
-#if !defined( __clang__ ) && defined( __FAST_MATH__ )
-      // GCC's isfinite() is broken with -ffast-math.
+      // GCC's isfinite() is broken with -ffast-math since it implies -ffinite-math-only.
+      // Furthermore, this expression is faster than isfinite().
       return x + 1.0f != x;
-#else
-      return __builtin_isfinite( x );
-#endif
     }
 
     /**
      * True iff the number (positive or negative) infinity.
      */
     OZ_ALWAYS_INLINE
-    static int isinf( float x )
+    static bool isinf( float x )
     {
-#if !defined( __clang__ ) && defined( __FAST_MATH__ )
-      // GCC's isinf() is broken with -ffast-math.
+      // GCC's isinf() is broken with -ffast-math since it implies -ffinite-math-only. Furthermore,
+      // this expression is faster than isinf().
       return x + 1.0f == x && x * 0.0f != x;
-#else
-      return __builtin_isinf( x );
-#endif
     }
 
     /**
@@ -288,12 +282,9 @@ class Math
     OZ_ALWAYS_INLINE
     static bool isnan( float x )
     {
-#if !defined( __clang__ ) && defined( __FAST_MATH__ )
-      // GCC's isnan() is broken with -ffast-math.
+      // GCC's isnan() is broken with -ffast-math since it implies -ffinite-math-only. Furthermore,
+      // this expression is faster than isnan().
       return x + 1.0f == x && x * 0.0f == x;
-#else
-      return __builtin_isnan( x );
-#endif
     }
 
     /**
@@ -313,6 +304,15 @@ class Math
     static float sgn( float x )
     {
       return x < 0.0f ? -1.0f : 1.0f;
+    }
+
+    /**
+     * Remainder, always non-negative, on interval [0, y).
+     */
+    OZ_ALWAYS_INLINE
+    static float mod( float x, float y )
+    {
+      return x - __builtin_floorf( x / y ) * y;
     }
 
     /**
@@ -386,7 +386,7 @@ class Math
     }
 
     /**
-     * True iff the integer is either a power of 2 or zero.
+     * For a positive integer, true iff it is a power of 2.
      */
     template <typename Value>
     OZ_ALWAYS_INLINE

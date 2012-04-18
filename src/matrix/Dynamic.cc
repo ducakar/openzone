@@ -56,13 +56,13 @@ void Dynamic::onDestroy()
 
     synapse.gen( clazz->fragPool,
                  clazz->nFrags,
-                 Bounds( Point3( p.x - dim.x, p.y - dim.y, p.z ),
-                         Point3( p.x + dim.x, p.y + dim.y, p.z + dim.z ) ),
+                 Bounds( Point( p.x - dim.x, p.y - dim.y, p.z ),
+                         Point( p.x + dim.x, p.y + dim.y, p.z + dim.z ) ),
                  velocity + DESTRUCT_FRAG_VELOCITY );
   }
 }
 
-Dynamic::Dynamic( const DynamicClass* clazz_, int index_, const Point3& p_, Heading heading ) :
+Dynamic::Dynamic( const DynamicClass* clazz_, int index_, const Point& p_, Heading heading ) :
   Object( clazz_, index_, p_, heading )
 {
   velocity = Vec3::ZERO;

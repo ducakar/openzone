@@ -35,6 +35,11 @@ struct Foo
     printf( "Foo()\n" );
   }
 
+  ~Foo()
+  {
+    printf( "~Foo()\n" );
+  }
+
   Foo( const Foo& )
   {
     printf( "Foo( const Foo& )\n" );

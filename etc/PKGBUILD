@@ -61,11 +61,11 @@ package_openzone()
 
   install -Dm644 ../ozbase.zip ${pkgdir}/usr/share/openzone/ozbase.zip
   install -Dm644 ../openzone/AUTHORS ${pkgdir}/usr/share/doc/openzone/AUTHORS
-  install -Dm644 ../openzone/README.html ${pkgdir}/usr/share/doc/openzone/README.html
-  install -Dm644 ../openzone/PREBERI.html ${pkgdir}/usr/share/doc/openzone/PREBERI.html
   install -Dm644 ../openzone/ChangeLog ${pkgdir}/usr/share/doc/openzone/ChangeLog
   install -Dm644 ../openzone/BUGS ${pkgdir}/usr/share/doc/openzone/BUGS
   install -Dm644 ../openzone/TODO ${pkgdir}/usr/share/doc/openzone/TODO
+  install -Dm644 ../openzone/doc/README.html ${pkgdir}/usr/share/doc/openzone/README.html
+  install -Dm644 ../openzone/doc/PREBERI.html ${pkgdir}/usr/share/doc/openzone/PREBERI.html
 }
 
 package_openzone-data()

@@ -60,7 +60,7 @@ void Compiler::beginMesh()
   part.material       = Mesh::SOLID_BIT;
   part.texture        = "";
 
-  vert.pos            = Point3::ORIGIN;
+  vert.pos            = Point::ORIGIN;
   vert.texCoord       = TexCoord( 0.0f, 0.0f );
   vert.detailCoord    = TexCoord( 0.0f, 0.0f );
   vert.normal         = Vec3::ZERO;
@@ -204,8 +204,8 @@ void Compiler::end()
       const Vertex& v1 = vertices[ part.indices[ ( i + 1 ) % nVertices ] ];
       const Vertex& v2 = vertices[ part.indices[ ( i + nVertices - 1 ) % nVertices ] ];
 
-      Vec3 a = Point3( v1.pos ) - Point3( v0.pos );
-      Vec3 b = Point3( v2.pos ) - Point3( v0.pos );
+      Vec3 a = Point( v1.pos ) - Point( v0.pos );
+      Vec3 b = Point( v2.pos ) - Point( v0.pos );
 
       float s0 = v1.texCoord.u - v0.texCoord.u;
       float s1 = v1.texCoord.v - v0.texCoord.v;

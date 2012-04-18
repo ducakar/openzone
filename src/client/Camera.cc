@@ -61,7 +61,7 @@ void Camera::updateReferences()
     const Struct* str = orbis.structs[strIndex];
 
     if( str == null ) {
-      entity = -1;
+      entity    = -1;
       entityObj = null;
     }
     else {
@@ -76,18 +76,33 @@ void Camera::updateReferences()
     botObj = static_cast<Bot*>( orbis.objects[bot] );
 
     if( botObj == null || ( botObj->state & Bot::DEAD_BIT ) ) {
-      bot = -1;
+      bot    = -1;
       botObj = null;
+    }
+  }
+
+  if( botObj == null || botObj->parent == -1 ) {
+    vehicle    = -1;
+    vehicleObj = null;
+  }
+  else {
+    vehicle    = botObj->parent;
+    vehicleObj = static_cast<Vehicle*>( orbis.objects[vehicle] );
+
+    if( vehicleObj == null ) {
+      vehicle    = -1;
+      vehicleObj = null;
     }
   }
 }
 
 void Camera::align()
 {
-  h       = Math::fmod( h + Math::TAU, Math::TAU );
-  v       = clamp( v, 0.0f, Math::TAU / 2.0f );
+  hard_assert( 0.0f <= h && h < Math::TAU );
+  hard_assert( 0.0f <= v && v <= Math::TAU / 2.0f );
 
   rot     = Quat::rotZ( h ) * Quat::rotX( v ) * Quat::rotZ( w );
+  rot     = vehicleObj == null ? rot : vehicleObj->rot * rot;
   rotMat  = Mat44::rotation( rot );
   rotTMat = ~rotMat;
 
@@ -185,37 +200,40 @@ void Camera::update()
 
 void Camera::reset()
 {
-  p         = Point3::ORIGIN;
-  oldP      = Point3::ORIGIN;
-  newP      = Point3::ORIGIN;
-  h         = 0.0f;
-  v         = Math::TAU / 4.0f;
-  w         = 0.0f;
-  mag       = 1.0f;
-  relH      = 0.0f;
-  relV      = 0.0f;
+  p          = Point::ORIGIN;
+  oldP       = Point::ORIGIN;
+  newP       = Point::ORIGIN;
+  h          = 0.0f;
+  v          = Math::TAU / 4.0f;
+  w          = 0.0f;
+  mag        = 1.0f;
 
-  rot       = Quat::ID;
-  rotMat    = Mat44::rotation( rot );
-  rotTMat   = ~rotTMat;
+  relH       = 0.0f;
+  relV       = 0.0f;
 
-  right     = rotMat.x;
-  up        = rotMat.y;
-  at        = -rotMat.z;
+  rot        = Quat::ID;
+  rotMat     = Mat44::rotation( rot );
+  rotTMat    = ~rotTMat;
 
-  object    = -1;
-  objectObj = null;
-  entity    = -1;
-  entityObj = null;
-  bot       = -1;
-  botObj    = null;
+  right      = rotMat.x;
+  up         = rotMat.y;
+  at         = -rotMat.z;
+
+  object     = -1;
+  objectObj  = null;
+  entity     = -1;
+  entityObj  = null;
+  bot        = -1;
+  botObj     = null;
+  vehicle    = -1;
+  vehicleObj = null;
 
   isExternal         = false;
   allowReincarnation = true;
   nightVision        = false;
 
-  state     = NONE;
-  newState  = NONE;
+  state    = NONE;
+  newState = NONE;
 
   strategicProxy.reset();
   botProxy.reset();
@@ -228,31 +246,33 @@ void Camera::reset()
 
 void Camera::read( InputStream* istream )
 {
-  p         = istream->readPoint3();
-  oldP      = p;
-  newP      = p;
+  p          = istream->readPoint();
+  oldP       = p;
+  newP       = p;
 
-  h         = istream->readFloat();
-  v         = istream->readFloat();
-  w         = istream->readFloat();
-  mag       = istream->readFloat();
-  relH      = istream->readFloat();
-  relV      = istream->readFloat();
+  h          = istream->readFloat();
+  v          = istream->readFloat();
+  w          = istream->readFloat();
+  mag        = istream->readFloat();
+  relH       = istream->readFloat();
+  relV       = istream->readFloat();
 
-  rot       = Quat::rotZ( h ) * Quat::rotX( v ) * Quat::rotZ( w );
-  rotMat    = Mat44::rotation( rot );
-  rotTMat   = ~rotMat;
+  rot        = Quat::rotZ( h ) * Quat::rotX( v ) * Quat::rotZ( w );
+  rotMat     = Mat44::rotation( rot );
+  rotTMat    = ~rotMat;
 
-  right     = rotMat.x;
-  up        = rotMat.y;
-  at        = -rotMat.z;
+  right      = rotMat.x;
+  up         = rotMat.y;
+  at         = -rotMat.z;
 
-  object    = -1;
-  objectObj = null;
-  entity    = -1;
-  entityObj = null;
-  bot       = istream->readInt();
-  botObj    = bot == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
+  object     = -1;
+  objectObj  = null;
+  entity     = -1;
+  entityObj  = null;
+  bot        =  istream->readInt();
+  botObj     = bot == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
+  vehicle    = istream->readInt();
+  vehicleObj = vehicle == -1 ? null : static_cast<Vehicle*>( orbis.objects[vehicle] );
 
   isExternal         = istream->readBool();
   allowReincarnation = istream->readBool();
@@ -288,16 +308,18 @@ void Camera::read( InputStream* istream )
 
 void Camera::write( BufferStream* ostream ) const
 {
-  ostream->writePoint3( newP );
+  ostream->writePoint( newP );
 
   ostream->writeFloat( h );
   ostream->writeFloat( v );
   ostream->writeFloat( w );
   ostream->writeFloat( mag );
+
   ostream->writeFloat( relH );
   ostream->writeFloat( relV );
 
   ostream->writeInt( bot );
+  ostream->writeInt( vehicle );
 
   ostream->writeBool( isExternal );
   ostream->writeBool( allowReincarnation );

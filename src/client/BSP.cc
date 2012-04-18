@@ -66,8 +66,8 @@ void BSP::playSound( const Entity* entity, int sound ) const
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 
   Bounds bounds   = *entity->model;
-  Point3 localPos = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
-  Point3 p        = entity->str->toAbsoluteCS( localPos + entity->offset );
+  Point  localPos = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
+  Point  p        = entity->str->toAbsoluteCS( localPos + entity->offset );
   Vec3   velocity = entity->str->toAbsoluteCS( entity->velocity );
 
   uint srcId;
@@ -100,8 +100,8 @@ void BSP::playContSound( const Entity* entity, int sound ) const
   int key = str->index * Struct::MAX_ENTITIES + int( entity - str->entities );
 
   Bounds bounds   = *entity->model;
-  Point3 localPos = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
-  Point3 p        = entity->str->toAbsoluteCS( localPos + entity->offset );
+  Point  localPos = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
+  Point  p        = entity->str->toAbsoluteCS( localPos + entity->offset );
   Vec3   velocity = entity->str->toAbsoluteCS( entity->velocity );
 
   Context::ContSource* contSource = context.bspSources.find( key );
@@ -116,7 +116,7 @@ void BSP::playContSound( const Entity* entity, int sound ) const
     }
 
     Bounds bounds = *entity->model;
-    Point3 p = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
+    Point  p = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
 
     p = entity->str->toAbsoluteCS( p + entity->offset );
 
@@ -194,7 +194,7 @@ void BSP::draw( const Struct* str, int mask ) const
     return;
   }
 
-  tf.model = Mat44::translation( str->p - Point3::ORIGIN );
+  tf.model = Mat44::translation( str->p - Point::ORIGIN );
   tf.model.rotateZ( float( str->heading ) * Math::TAU / 4.0f );
   tf.apply();
 

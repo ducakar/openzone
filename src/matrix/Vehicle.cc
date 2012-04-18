@@ -168,8 +168,8 @@ void Vehicle::exit()
       float hsc[2];
       Math::sincos( h, &hsc[0], &hsc[1] );
 
-      float  handle = !( dim + bot->dim ) + EXIT_EPSILON;
-      Point3 exitPos = Point3( p.x - hsc[0] * handle, p.y + hsc[1] * handle, p.z + dim.z );
+      float handle = !( dim + bot->dim ) + EXIT_EPSILON;
+      Point exitPos = Point( p.x - hsc[0] * handle, p.y + hsc[1] * handle, p.z + dim.z );
 
       if( !collider.overlaps( AABB( exitPos, bot->dim ) ) ) {
         pilot = -1;
@@ -315,7 +315,7 @@ void Vehicle::onUpdate()
 
   // move forwards (predicted movement) to prevent our bullets hitting us in the back when we are
   // moving very fast
-  Point3 oldPos = p;
+  Point oldPos = p;
   p += momentum * Timer::TICK_TIME;
 
   if( clazz->nWeapons != 0 ) {
@@ -395,7 +395,7 @@ void Vehicle::service()
   }
 }
 
-Vehicle::Vehicle( const VehicleClass* clazz_, int index_, const Point3& p_, Heading heading ) :
+Vehicle::Vehicle( const VehicleClass* clazz_, int index_, const Point& p_, Heading heading ) :
   Dynamic( clazz_, index_, p_, heading )
 {
   h          = 0.0f;

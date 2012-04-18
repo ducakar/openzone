@@ -152,7 +152,7 @@ bool Collider::overlapsAABBEntities()
     return false;
   }
 
-  Point3 originalStartPos = startPos;
+  Point  originalStartPos = startPos;
   Bounds localTrace       = str->toStructCS( trace );
 
   for( int i = 0; i < bsp->nModels; ++i ) {
@@ -550,8 +550,8 @@ void Collider::trimAABBEntities()
     return;
   }
 
-  Point3 originalStartPos = startPos;
-  Point3 originalEndPos   = endPos;
+  Point  originalStartPos = startPos;
+  Point  originalEndPos   = endPos;
   Bounds localTrace       = str->toStructCS( trace );
 
   for( int i = 0; i < bsp->nModels; ++i ) {
@@ -579,8 +579,8 @@ void Collider::trimAABBTerraQuad( int x, int y )
   const Terra::Quad& quad     = orbis.terra.quads[x    ][y    ];
   const Terra::Quad& nextQuad = orbis.terra.quads[x + 1][y + 1];
 
-  const Point3& minVert = quad.vertex;
-  const Point3& maxVert = nextQuad.vertex;
+  const Point& minVert = quad.vertex;
+  const Point& maxVert = nextQuad.vertex;
 
   Vec3 localStartPos = startPos - minVert;
   Vec3 localEndPos   = endPos   - minVert;
@@ -668,8 +668,8 @@ void Collider::trimAABBOrbis()
   hit.medium    = 0;
   hit.depth     = 0.0f;
 
-  Point3 originalStartPos = aabb.p;
-  Point3 originalEndPos   = aabb.p + move;
+  Point originalStartPos = aabb.p;
+  Point originalEndPos   = aabb.p + move;
 
   startPos = originalStartPos;
   endPos   = originalEndPos;
@@ -834,7 +834,7 @@ void Collider::getEntityOverlaps( Vector<Object*>* objects )
 //*            PUBLIC               *
 //***********************************
 
-bool Collider::overlaps( const Point3& point, const Object* exclObj_ )
+bool Collider::overlaps( const Point& point, const Object* exclObj_ )
 {
   aabb    = AABB( point, Vec3::ZERO );
   exclObj = exclObj_;
@@ -945,7 +945,7 @@ void Collider::getOverlaps( const Entity* entity_, Vector<Object*>* objects, flo
   getEntityOverlaps( objects );
 }
 
-void Collider::translate( const Point3& point, const Vec3& move_, const Object* exclObj_ )
+void Collider::translate( const Point& point, const Vec3& move_, const Object* exclObj_ )
 {
   aabb    = AABB( point, Vec3::ZERO );
   move    = move_;

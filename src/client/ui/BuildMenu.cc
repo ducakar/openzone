@@ -49,7 +49,7 @@ void BuildMenu::createObject( Button* button_ )
   const BuildButton* button = static_cast<const BuildButton*>( button_ );
   const ObjectClass* clazz = library.objClass( button->className );
 
-  Point3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
+  Point p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
   p += camera.at * 2.0f;
   AABB bb = AABB( p, clazz->dim );
 

@@ -149,12 +149,12 @@ class Shader
     {
       static const Light NONE;
 
-      Point3 pos;
-      Vec4   diffuse;
+      Point pos;
+      Vec4  diffuse;
 
       Light() = default;
 
-      explicit Light( const Point3& pos, const Vec4& diffuse );
+      explicit Light( const Point& pos, const Vec4& diffuse );
     };
 
     static const int LOG_BUFFER_SIZE = 8192;

@@ -206,6 +206,18 @@ class Mat44
     }
 
     /**
+     * Convert 3x3 rotation submatrix to a quaternion.
+     */
+    OZ_ALWAYS_INLINE
+    Quat toQuat() const
+    {
+      float w2 = Math::sqrt( 1.0f + x.x + y.y + z.z );
+      float w4 = 2.0f * w2;
+
+      return ~Quat( ( y.z - z.y ) / w4, ( z.x - x.z ) / w4, ( x.y - y.x ) / w4, 0.5f * w2 );
+    }
+
+    /**
      * Original matrix.
      */
     OZ_ALWAYS_INLINE
@@ -277,11 +289,11 @@ class Mat44
      * Product, transformation of a point (translation is applied).
      */
     OZ_ALWAYS_INLINE
-    Point3 operator * ( const Point3& p ) const
+    Point operator * ( const Point& p ) const
     {
-      return Point3( x.x * p.x + y.x * p.y + z.x * p.z + w.x,
-                     x.y * p.x + y.y * p.y + z.y * p.z + w.y,
-                     x.z * p.x + y.z * p.y + z.z * p.z + w.z );
+      return Point( x.x * p.x + y.x * p.y + z.x * p.z + w.x,
+                    x.y * p.x + y.y * p.y + z.y * p.z + w.y,
+                    x.z * p.x + y.z * p.y + z.z * p.z + w.z );
     }
 
     /**
@@ -480,18 +492,6 @@ class Mat44
                            xy - zw, xx1 - zz,  yz + xw, 0.0f,
                            xz + yw,  yz - xw, xx1 - yy, 0.0f,
                               0.0f,     0.0f,     0.0f, 1.0f );
-    }
-
-    /**
-     * Convert 3x3 rotation submatrix to a quaternion.
-     */
-    OZ_ALWAYS_INLINE
-    Quat toQuat() const
-    {
-      float w2 = Math::sqrt( 1.0f + x.x + y.y + z.z );
-      float w4 = 2.0f * w2;
-
-      return ~Quat( ( y.z - z.y ) / w4, ( z.x - x.z ) / w4, ( x.y - y.x ) / w4, 0.5f * w2 );
     }
 
     /**

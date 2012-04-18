@@ -53,7 +53,7 @@ class Weapon : public Dynamic
 
   public:
 
-    explicit Weapon( const WeaponClass* clazz, int index, const Point3& p, Heading heading );
+    explicit Weapon( const WeaponClass* clazz, int index, const Point& p, Heading heading );
     explicit Weapon( const WeaponClass* clazz, InputStream* istream );
 
     virtual void write( BufferStream* ostream ) const;

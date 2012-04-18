@@ -37,6 +37,23 @@ namespace oz
 
 static const int LOCAL_BUFFER_SIZE = 4096;
 
+String::String( int count_, int ) :
+  count( count_ )
+{
+  ensureCapacity();
+}
+
+void String::ensureCapacity()
+{
+  buffer = count < BUFFER_SIZE ?
+           baseBuffer : reinterpret_cast<char*>( malloc( size_t( count + 1 ) ) );
+}
+
+void String::dealloc()
+{
+  free( buffer );
+}
+
 bool String::endsWith( const char* s, const char* sub )
 {
   int len    = length( s );
@@ -103,23 +120,6 @@ double String::parseDouble( const char* s )
     throw ParseException();
   }
   return d;
-}
-
-String::String( int count_, int ) :
-  count( count_ )
-{
-  ensureCapacity();
-}
-
-void String::ensureCapacity()
-{
-  buffer = count < BUFFER_SIZE ?
-           baseBuffer : reinterpret_cast<char*>( malloc( size_t( count + 1 ) ) );
-}
-
-void String::dealloc()
-{
-  free( buffer );
 }
 
 String::String( const String& s ) :

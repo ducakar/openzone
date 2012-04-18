@@ -68,7 +68,7 @@ void ExplosionImago::draw( const Imago*, int mask )
   float alpha  = 1.0f - 2.0f * time;
 
   if( shader.mode == Shader::SCENE ) {
-    tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
+    tf.model = Mat44::translation( obj->p - Point::ORIGIN );
     tf.model.scale( Vec3( radius, radius, radius ) );
   }
 

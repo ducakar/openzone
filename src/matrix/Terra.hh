@@ -56,8 +56,8 @@ class Terra
       static const int SIZE = 8;        ///< Integer size of a terrain quad.
       static const int DIM  = SIZE / 2; ///< Dimension of a terrain quad (size / 2).
 
-      Point3 vertex;
-      Vec3   triNormal[2];
+      Point vertex;
+      Vec3  triNormal[2];
     };
 
     // Orbis::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM

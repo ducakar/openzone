@@ -110,7 +110,7 @@ class Struct : public Bounds
 
     const BSP*  bsp;
 
-    Point3      p;
+    Point       p;
     int         index;
     Heading     heading;
 
@@ -149,12 +149,12 @@ class Struct : public Bounds
     /**
      * Rotate point from structure coordinate system to absolute coordinate system.
      */
-    Point3 toAbsoluteCS( const Point3& point ) const;
+    Point toAbsoluteCS( const Point& point ) const;
 
     /**
      * Rotate point from absolute coordinate system to structure coordinate system.
      */
-    Point3 toStructCS( const Point3& point ) const;
+    Point toStructCS( const Point& point ) const;
 
     /**
      * Rotate Bounds from structure coordinate system to absolute coordinate system.
@@ -180,7 +180,7 @@ class Struct : public Bounds
 
   public:
 
-    explicit Struct( const BSP* bsp, int index, const Point3& p, Heading heading );
+    explicit Struct( const BSP* bsp, int index, const Point& p, Heading heading );
     explicit Struct( const BSP* bsp, InputStream* istream );
 
     void write( BufferStream* ostream );
@@ -202,13 +202,13 @@ inline Vec3 Struct::toStructCS( const Vec3& v ) const
 }
 
 OZ_ALWAYS_INLINE
-inline Point3 Struct::toAbsoluteCS( const Point3& point ) const
+inline Point Struct::toAbsoluteCS( const Point& point ) const
 {
   return transf * point;
 }
 
 OZ_ALWAYS_INLINE
-inline Point3 Struct::toStructCS( const Point3& point ) const
+inline Point Struct::toStructCS( const Point& point ) const
 {
   return invTransf * point;
 }

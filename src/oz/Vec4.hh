@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Point3.hh"
+#include "Point.hh"
 
 namespace oz
 {
@@ -97,7 +97,7 @@ class Vec4
      * Create vector from a point (the additional component is one).
      */
     OZ_ALWAYS_INLINE
-    explicit Vec4( const Point3& p ) :
+    explicit Vec4( const Point& p ) :
       x( p.x ), y( p.y ), z( p.z ), w( 1.0f )
     {}
 

@@ -88,8 +88,8 @@ class Collider
     Vec3           move;
 
     AABB           aabb;
-    Point3         startPos;
-    Point3         endPos;
+    Point          startPos;
+    Point          endPos;
     Vec3           localDim;
 
     const Dynamic* obj;
@@ -143,7 +143,7 @@ class Collider
 
     Collider();
 
-    bool overlaps( const Point3& point, const Object* exclObj = null );
+    bool overlaps( const Point& point, const Object* exclObj = null );
     bool overlaps( const AABB& aabb, const Object* exclObj = null );
     bool overlaps( const Object* obj, const Object* exclObj = null );
     bool overlaps( const Entity* entity, float margin = 0.0f );
@@ -160,7 +160,7 @@ class Collider
 
     void getOverlaps( const Entity* entity, Vector<Object*>* objects, float margin = 0.0f );
 
-    void translate( const Point3& point, const Vec3& move, const Object* exclObj = null );
+    void translate( const Point& point, const Vec3& move, const Object* exclObj = null );
     void translate( const AABB& aabb, const Vec3& move, const Object* exclObj = null );
     void translate( const Dynamic* obj, const Vec3& move );
 

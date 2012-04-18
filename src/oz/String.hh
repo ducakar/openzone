@@ -372,8 +372,6 @@ class String
      */
     ~String()
     {
-      hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
-
       if( buffer != baseBuffer ) {
         dealloc();
       }

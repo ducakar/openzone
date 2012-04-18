@@ -97,9 +97,9 @@ void Transform::apply() const
   glUniformMatrix4fv( param.oz_Transform_complete, 1, GL_FALSE, projCamera * model );
 }
 
-const Shader::Light Shader::Light::NONE = Light( Point3::ORIGIN, Vec4::ZERO );
+const Shader::Light Shader::Light::NONE = Light( Point::ORIGIN, Vec4::ZERO );
 
-Shader::Light::Light( const Point3& pos_, const Vec4& diffuse_ ) :
+Shader::Light::Light( const Point& pos_, const Vec4& diffuse_ ) :
   pos( pos_ ), diffuse( diffuse_ )
 {}
 

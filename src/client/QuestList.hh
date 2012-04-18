@@ -41,12 +41,12 @@ struct Quest
 
   String title;
   String description;
-  Point3 place;
+  Point  place;
   int    state;
 
   Quest() = default;
 
-  explicit Quest( const char* title, const char* description, const Point3& place, int state );
+  explicit Quest( const char* title, const char* description, const Point& place, int state );
 };
 
 class QuestList

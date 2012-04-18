@@ -34,7 +34,7 @@ namespace build
 
 struct Vertex
 {
-  Point3   pos;
+  Point    pos;
   TexCoord texCoord;
   Vec3     normal;
   Vec3     tangent;

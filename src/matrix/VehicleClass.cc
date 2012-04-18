@@ -138,6 +138,31 @@ void VehicleClass::initClass( const Config* config )
                            config->get( "pilotRot.x", 0.0f ),
                            0.0f );
 
+  lookHMin = config->get( "lookHMin", -120.0f );
+  lookHMax = config->get( "lookHMax", +120.0f );
+  lookVMin = config->get( "lookVMin", -60.0f );
+  lookVMax = config->get( "lookVMax", +60.0f );
+
+  if( lookHMin < -180.0f || lookHMin > 0.0f ) {
+    throw Exception( "%s: lookHMin must lie on interval [-180.0, 0.0]", name.cstr() );
+  }
+  if( lookHMax < 0.0f || lookHMax > 180.0f ) {
+    throw Exception( "%s: lookHMax must lie on interval [0.0, 180.0]", name.cstr() );
+  }
+  if( lookVMin < -90.0f || lookVMin > 90.0f || lookVMin > lookVMax ) {
+    throw Exception( "%s: lookVMin must lie on interval [-90.0, 90.0] and must not be greater than "
+                     "lookVMax", name.cstr() );
+  }
+  if( lookVMax < -90.0f || lookVMax > 90.0f ) {
+    throw Exception( "%s: lookVMax must lie on interval [-90.0, 90.0] and must not be less than "
+    "lookVMin", name.cstr() );
+  }
+
+  lookHMin = Math::rad( lookHMin );
+  lookHMax = Math::rad( lookHMax );
+  lookVMin = Math::rad( lookVMin + 90.0f );
+  lookVMax = Math::rad( lookVMax + 90.0f );
+
   rotVelLimit            = Math::rad( config->get( "rotVelLimit", 60.0f ) ) * Timer::TICK_TIME;
 
   moveMomentum           = config->get( "moveMomentum", 2.0f );
@@ -193,7 +218,7 @@ void VehicleClass::initClass( const Config* config )
   }
 }
 
-Object* VehicleClass::create( int index, const Point3& pos, Heading heading ) const
+Object* VehicleClass::create( int index, const Point& pos, Heading heading ) const
 {
   return new Vehicle( this, index, pos, heading );
 }

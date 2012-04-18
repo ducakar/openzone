@@ -54,7 +54,7 @@ class Dynamic : public Object
 
   public:
 
-    explicit Dynamic( const DynamicClass* clazz, int index, const Point3& p, Heading heading );
+    explicit Dynamic( const DynamicClass* clazz, int index, const Point& p, Heading heading );
     explicit Dynamic( const DynamicClass* clazz, InputStream* istream );
 
     virtual void write( BufferStream* ostream ) const;

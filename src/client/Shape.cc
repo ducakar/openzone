@@ -244,7 +244,7 @@ void Shape::quad( float dimX, float dimY )
 
 void Shape::box( const AABB& bb )
 {
-  tf.model = Mat44::translation( bb.p - Point3::ORIGIN );
+  tf.model = Mat44::translation( bb.p - Point::ORIGIN );
   tf.model.scale( bb.dim );
   tf.apply();
 
@@ -254,7 +254,7 @@ void Shape::box( const AABB& bb )
 
 void Shape::wireBox( const AABB& bb )
 {
-  tf.model = Mat44::translation( bb.p - Point3::ORIGIN );
+  tf.model = Mat44::translation( bb.p - Point::ORIGIN );
   tf.model.scale( bb.dim );
   tf.apply();
 

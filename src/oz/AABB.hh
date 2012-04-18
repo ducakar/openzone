@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Point3.hh"
+#include "Point.hh"
 
 namespace oz
 {
@@ -42,8 +42,8 @@ class AABB
 {
   public:
 
-    Point3 p;   ///< Position.
-    Vec3   dim; ///< Extents.
+    Point p;   ///< Position.
+    Vec3  dim; ///< Extents.
 
     /**
      * Create uninitialised instance.
@@ -54,7 +54,7 @@ class AABB
      * Create <tt>AABB</tt> with the given centre and extents.
      */
     OZ_ALWAYS_INLINE
-    explicit AABB( const Point3& p_, const Vec3& dim_ ) :
+    explicit AABB( const Point& p_, const Vec3& dim_ ) :
       p( p_ ), dim( dim_ )
     {}
 
@@ -111,7 +111,7 @@ class AABB
      * @param eps margin for which this <tt>AABB</tt> is enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
-    bool includes( const Point3& point, float eps = 0.0f ) const
+    bool includes( const Point& point, float eps = 0.0f ) const
     {
       Vec3 relPos = ( point - p ).abs();
       Vec3 sumDim = dim + Vec3( eps, eps, eps );

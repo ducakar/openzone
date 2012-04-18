@@ -68,7 +68,7 @@ static int ozOrbisAddPlayer( lua_State* l )
   VARG( 4, 5 );
 
   AddMode mode    = AddMode( l_toint( 1 ) );
-  Point3  p       = Point3( l_tofloat( 2 ), l_tofloat( 3 ), l_tofloat( 4 ) );
+  Point   p       = Point( l_tofloat( 2 ), l_tofloat( 3 ), l_tofloat( 4 ) );
   Heading heading = Heading( l_gettop() == 5 ? l_toint( 5 ) : Math::rand( 4 ) );
 
   if( mode != ADD_FORCE ) {
@@ -103,7 +103,7 @@ static int ozOrbisAddPlayer( lua_State* l )
     int iMax = min( player->clazz->nItems, profile.items.length() );
 
     for( int i = 0; i < iMax; ++i ) {
-      Object*  obj  = synapse.add( profile.items[i], Point3::ORIGIN, Heading( Math::rand( 4 ) ) );
+      Object*  obj  = synapse.add( profile.items[i], Point::ORIGIN, Heading( Math::rand( 4 ) ) );
       Dynamic* item = static_cast<Dynamic*>( obj );
 
       player->items.add( item->index );
@@ -128,7 +128,7 @@ static int ozQuestAdd( lua_State* l )
 
   questList.quests.add( Quest( l_tostring( 1 ),
                                l_tostring( 2 ),
-                               Point3( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) ),
+                               Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) ),
                                Quest::PENDING ) );
 
   l_pushint( questList.quests.length() - 1 );
@@ -210,7 +210,7 @@ static int ozCameraMoveTo( lua_State* l )
 {
   ARG( 3 );
 
-  Point3 pos = Point3( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
+  Point pos = Point( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
   camera.move( pos );
 
   return 3;
@@ -220,7 +220,7 @@ static int ozCameraWarpTo( lua_State* l )
 {
   ARG( 3 );
 
-  Point3 pos = Point3( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
+  Point pos = Point( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
   camera.warp( pos );
 
   return 3;

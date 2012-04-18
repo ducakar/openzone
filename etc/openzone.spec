@@ -114,8 +114,7 @@ install -Dm644 %{_builddir}/openzone.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/op
 %defattr(-, root, root)
 %{_includedir}/oz
 %{_libdir}/pkgconfig
-%doc AUTHORS src/oz/COPYING
-%doc doc/doxygen.liboz/html
+%doc AUTHORS src/oz/COPYING doc/doxygen.liboz/html
 
 %files client
 %defattr(-, root, root)
@@ -124,7 +123,7 @@ install -Dm644 %{_builddir}/openzone.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/op
 %{_datadir}/pixmaps
 %dir %{_datadir}/openzone
 %{_datadir}/openzone/ozbase.zip
-%doc AUTHORS COPYING *.html ChangeLog BUGS TODO
+%doc AUTHORS COPYING ChangeLog BUGS TODO doc/*.html
 
 %files tools
 %defattr(-, root, root)

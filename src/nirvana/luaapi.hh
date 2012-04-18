@@ -213,7 +213,7 @@ static int ozSelfSetH( lua_State* l )
   ARG( 1 );
 
   ns.self->h = Math::rad( l_tofloat( 1 ) );
-  ns.self->h = Math::fmod( ns.self->h + Math::TAU, Math::TAU );
+  ns.self->h = angleWrap( ns.self->h );
   return 1;
 }
 
@@ -222,7 +222,7 @@ static int ozSelfAddH( lua_State* l )
   ARG( 1 );
 
   ns.self->h += Math::rad( l_tofloat( 1 ) );
-  ns.self->h  = Math::fmod( ns.self->h + Math::TAU, Math::TAU );
+  ns.self->h  = angleWrap( ns.self->h );
   return 1;
 }
 
@@ -239,7 +239,7 @@ static int ozSelfSetV( lua_State* l )
   ARG( 1 );
 
   ns.self->v = Math::rad( l_tofloat( 1 ) );
-  ns.self->v = Math::fmod( ns.self->v + Math::TAU, Math::TAU );
+  ns.self->v = clamp( ns.self->v, 0.0f, Math::TAU / 2.0f );
   return 1;
 }
 
@@ -248,7 +248,7 @@ static int ozSelfAddV( lua_State* l )
   ARG( 1 );
 
   ns.self->v += Math::rad( l_tofloat( 1 ) );
-  ns.self->v  = Math::fmod( ns.self->v + Math::TAU, Math::TAU );
+  ns.self->v  = clamp( ns.self->v, 0.0f, Math::TAU / 2.0f );
   return 1;
 }
 

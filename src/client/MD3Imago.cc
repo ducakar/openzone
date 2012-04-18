@@ -103,7 +103,7 @@ void MD3Imago::draw( const Imago* parent, int mask )
   const Bot* bot = static_cast<const Bot*>( obj );
   const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-  tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
+  tf.model = Mat44::translation( obj->p - Point::ORIGIN );
 
 //     if( bot->anim != anim.type ) {
 //       setAnim( bot->anim );
@@ -123,7 +123,6 @@ void MD3Imago::draw( const Imago* parent, int mask )
       h = bot->h + TURN_SMOOTHING_COEF * ( h - bot->h );
     }
 
-    h = Math::fmod( h + Math::TAU, Math::TAU );
     tf.model.rotateZ( h );
   }
 

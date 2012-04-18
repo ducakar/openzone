@@ -131,7 +131,7 @@ void BotClass::initClass( const Config* config )
   waterControl      = config->get( "waterControl", 0.07f );
   slickControl      = config->get( "slickControl", 0.07f );
 
-  stepWalkInc       = config->get( "stepWalkInc", 7.0f / 6.0f ) * Timer::TICK_TIME;
+  stepWalkInc       = config->get( "stepWalkInc", 6.0f / 6.0f ) * Timer::TICK_TIME;
   stepRunInc        = config->get( "stepRunInc", 10.0f / 6.0f ) * Timer::TICK_TIME;
 
   stairInc          = config->get( "stairInc", 0.20f );
@@ -175,7 +175,7 @@ void BotClass::initClass( const Config* config )
   bobSwimAmplitude  = config->get( "bobSwimAmplitude", 0.07f );
 }
 
-Object* BotClass::create( int index, const Point3& pos, Heading heading ) const
+Object* BotClass::create( int index, const Point& pos, Heading heading ) const
 {
   return new Bot( this, index, pos, heading );
 }

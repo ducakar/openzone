@@ -70,7 +70,7 @@ void FragPool::draw( const Frag* frag )
   SMM* model = models[index];
 
   if( model->isLoaded ) {
-    tf.model = Mat44::translation( frag->p - Point3::ORIGIN );
+    tf.model = Mat44::translation( frag->p - Point::ORIGIN );
     tf.model.rotateX( frag->p.x );
     tf.model.rotateY( frag->p.y );
     tf.model.rotateZ( frag->p.z );

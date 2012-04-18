@@ -519,8 +519,8 @@ void Physics::updateObj( Dynamic* dyn_ )
   // handle physics
   if( !( dyn->flags & Object::DISABLED_BIT ) ) {
     if( handleObjFriction() ) {
-      Point3 oldPos = dyn->p;
-      int oldFlags = dyn->flags;
+      Point oldPos   = dyn->p;
+      int   oldFlags = dyn->flags;
 
       dyn->flags &= ~( Object::MOVE_CLEAR_MASK | Object::ENABLE_BIT );
       dyn->lower  = -1;

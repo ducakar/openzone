@@ -84,8 +84,8 @@ void BSP::load()
 
   demolishSound = bspConfig.get( "demolishSound", "" );
 
-  mins = Point3( -Math::INF, -Math::INF, -Math::INF );
-  maxs = Point3( +Math::INF, +Math::INF, +Math::INF );
+  mins = Point( -Math::INF, -Math::INF, -Math::INF );
+  maxs = Point( +Math::INF, +Math::INF, +Math::INF );
 
   if( Math::isnan( scale ) ) {
     throw Exception( "Invalid BSP config" );
@@ -813,8 +813,8 @@ void BSP::optimise()
   // optimise bounds
   log.print( "Fitting bounds: " );
 
-  mins = Point3( +Math::INF, +Math::INF, +Math::INF );
-  maxs = Point3( -Math::INF, -Math::INF, -Math::INF );
+  mins = Point( +Math::INF, +Math::INF, +Math::INF );
+  maxs = Point( -Math::INF, -Math::INF, -Math::INF );
 
   for( int i = 0; i < nBrushSides; ++i ) {
     Plane& plane = planes[ brushSides[i] ];
@@ -1022,8 +1022,8 @@ void BSP::saveMatrix()
 
   BufferStream os;
 
-  os.writePoint3( mins );
-  os.writePoint3( maxs );
+  os.writePoint( mins );
+  os.writePoint( maxs );
 
   os.writeString( title );
   os.writeString( description );
@@ -1078,8 +1078,8 @@ void BSP::saveMatrix()
   }
 
   for( int i = 0; i < nModels; ++i ) {
-    os.writePoint3( models[i].mins );
-    os.writePoint3( models[i].maxs );
+    os.writePoint( models[i].mins );
+    os.writePoint( models[i].maxs );
 
     os.writeString( models[i].name );
     os.writeVec3( models[i].move );
@@ -1106,7 +1106,7 @@ void BSP::saveMatrix()
 
   for( int i = 0; i < boundObjects.length(); ++i ) {
     os.writeString( boundObjects[i].clazz );
-    os.writePoint3( boundObjects[i].pos );
+    os.writePoint( boundObjects[i].pos );
     os.writeInt( boundObjects[i].heading );
   }
 

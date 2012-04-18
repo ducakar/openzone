@@ -304,7 +304,7 @@ void ObjectClass::initClass( const Config* config )
   fillCommonConfig( config );
 }
 
-Object* ObjectClass::create( int index, const Point3& pos, Heading heading ) const
+Object* ObjectClass::create( int index, const Point& pos, Heading heading ) const
 {
   return new Object( this, index, pos, heading );
 }
