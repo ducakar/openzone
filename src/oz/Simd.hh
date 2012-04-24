@@ -47,7 +47,7 @@ typedef float float4 __attribute__(( vector_size( 16 ) ));
  */
 #ifndef __LINE__
 # define float4( x, y, z, w ) float4( { x, y, z, w } )
-#elif defined( __clang__ )
+#elif OZ_CLANG == 300
 # define float4( x, y, z, w ) float4( { x, y, z, w } )
 #else
 # define float4( x, y, z, w ) float4{ x, y, z, w }
@@ -68,7 +68,7 @@ typedef uint uint4 __attribute__(( vector_size( 16 ) )) ;
  */
 #ifndef __LINE__
 # define uint4( x, y, z, w ) uint4( { x, y, z, w } )
-#elif defined( __clang__ )
+#elif OZ_CLANG == 300
 # define uint4( x, y, z, w ) uint4( { x, y, z, w } )
 #else
 # define uint4( x, y, z, w ) uint4{ x, y, z, w }

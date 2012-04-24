@@ -347,7 +347,6 @@ class Quat
       y = w*q.y + ty*q.w + tz*q.x - tx*q.z;
       z = w*q.z + tz*q.w + tx*q.y - ty*q.x;
       w = w*q.w - tx*q.x - ty*q.y - tz*q.z;
-
       return *this;
     }
 
@@ -435,12 +434,9 @@ class Quat
     static Quat slerp( const Quat& a, const Quat& b, float t )
     {
       Quat  diff  = *a * b;
-      float sine  = Math::sqrt( 1.0f - diff.w*diff.w );
       float angle = 2.0f * Math::acos( diff.w );
+      float k     = Math::fastInvSqrt( 1.0f - diff.w*diff.w );
 
-      hard_assert( sine != 0.0f );
-
-      float k = 1.0f / sine;
       return rotAxis( Vec3( diff.x * k, diff.y * k, diff.z * k ), t * angle );
     }
 

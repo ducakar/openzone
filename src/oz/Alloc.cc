@@ -435,10 +435,10 @@ backtraceFound:
 
 using namespace oz;
 
-#if __GNUC__ == 4 && __GNUC_MINOR__ < 7
-extern void* operator new ( std::size_t size ) throw ( std::bad_alloc )
+#if OZ_GCC == 406
+extern void* operator new ( size_t size ) throw ( std::bad_alloc )
 #else
-extern void* operator new ( std::size_t size )
+extern void* operator new ( size_t size )
 #endif
 {
   size += Alloc::alignUp( sizeof( size_t ) );
@@ -452,10 +452,10 @@ extern void* operator new ( std::size_t size )
   return allocateObject( ptr, size );
 }
 
-#if __GNUC__ == 4 && __GNUC_MINOR__ < 7
-extern void* operator new[] ( std::size_t size ) throw ( std::bad_alloc )
+#if OZ_GCC == 406
+extern void* operator new[] ( size_t size ) throw ( std::bad_alloc )
 #else
-extern void* operator new[] ( std::size_t size )
+extern void* operator new[] ( size_t size )
 #endif
 {
   size += Alloc::alignUp( sizeof( size_t ) );
@@ -487,7 +487,7 @@ void operator delete[] ( void* ptr ) noexcept
   deallocateArray( ptr );
 }
 
-void* operator new ( std::size_t size, const std::nothrow_t& ) noexcept
+void* operator new ( size_t size, const std::nothrow_t& ) noexcept
 {
   size += Alloc::alignUp( sizeof( size_t ) );
 
@@ -500,7 +500,7 @@ void* operator new ( std::size_t size, const std::nothrow_t& ) noexcept
   return allocateObject( ptr, size );
 }
 
-void* operator new[] ( std::size_t size, const std::nothrow_t& ) noexcept
+void* operator new[] ( size_t size, const std::nothrow_t& ) noexcept
 {
   size += Alloc::alignUp( sizeof( size_t ) );
 

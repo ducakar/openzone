@@ -73,7 +73,7 @@ MD2::Anim MD2Imago::extractAnim() const
       return MD2::ANIM_CROUCH_WALK;
     }
     else {
-      return bot->state & Bot::RUNNING_BIT ? MD2::ANIM_RUN : MD2::ANIM_WALK;
+      return MD2::ANIM_RUN;
     }
   }
   else if( bot->cargo == -1 ) {
@@ -97,9 +97,6 @@ MD2::Anim MD2Imago::extractAnim() const
     }
     else if( bot->state & Bot::GESTURE_FLIP_BIT ) {
       return MD2::ANIM_FLIP;
-    }
-    else {
-      return anim.nextType;
     }
   }
   return bot->state & Bot::CROUCHING_BIT ? MD2::ANIM_CROUCH_STAND : MD2::ANIM_STAND;

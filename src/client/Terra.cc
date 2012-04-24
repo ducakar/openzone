@@ -35,7 +35,7 @@ namespace oz
 namespace client
 {
 
-const float Terra::WAVE_BIAS_INC = 2.0f * Timer::TICK_TIME;
+const float Terra::WAVE_BIAS_INC = 2.0f;
 
 Terra terra;
 
@@ -100,7 +100,7 @@ void Terra::drawWater()
     return;
   }
 
-  waveBias = Math::fmod( waveBias + WAVE_BIAS_INC, Math::TAU );
+  waveBias = Math::fmod( waveBias + WAVE_BIAS_INC * Timer::TICK_TIME, Math::TAU );
 
   shader.use( waterShaderId );
 

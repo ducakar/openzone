@@ -89,14 +89,7 @@ class String
      */
     static bool equals( const char* a, const char* b )
     {
-      hard_assert( a != null && b != null );
-
-      for( int i = 0; a[i] == b[i]; ++i ) {
-        if( a[i] == '\0' ) {
-          return true;
-        }
-      }
-      return false;
+      return compare( a, b ) == 0;
     }
 
     /**
@@ -106,11 +99,11 @@ class String
     {
       hard_assert( a != null && b != null );
 
-      int diff = 0;
-      int i = 0;
+      int diff;
 
-      while( ( diff = a[i] - b[i] ) == 0 && a[i] != 0 ) {
-        ++i;
+      while( ( diff = *a - *b ) == 0 && *a != '\0' ) {
+        ++a;
+        ++b;
       }
       return diff;
     }

@@ -45,7 +45,7 @@ class Bitset
 {
   private:
 
-    /// Number of bits per unit
+    /// Number of bits per unit.
     static const int ULONG_BITSIZE = sizeof( ulong ) * 8;
 
     ulong* data; ///< Pointer to array of units that holds the data.

@@ -57,12 +57,6 @@ class Math
     /// \f$ 2\pi \f$.
     static constexpr float TAU = 6.283185307179586f;
 
-    /// \f$ \sqrt{2} \f$.
-    static constexpr float SQRT_2 = 1.414213562373095f;
-
-    /// \f$ \sqrt{3} \f$.
-    static constexpr float SQRT_3 = 1.732050807568877f;
-
     /**
      * Singleton.
      */
@@ -170,7 +164,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float pow( float x, float y )
     {
-      hard_assert( x >= 0.0f );
+      hard_assert( x > 0.0f || ( x == 0.0f && y >= 0.0f ) );
 
       return __builtin_powf( x, y );
     }
@@ -312,6 +306,8 @@ class Math
     OZ_ALWAYS_INLINE
     static float mod( float x, float y )
     {
+      hard_assert( y > 0.0f );
+
       return x - __builtin_floorf( x / y ) * y;
     }
 
@@ -321,7 +317,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float rad( float x )
     {
-      return x * ( TAU / 360.0f );
+      return TAU / 360.0f * x;
     }
 
     /**
@@ -330,7 +326,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float deg( float x )
     {
-      return x * ( 360.0f / TAU );
+      return 360.0f / TAU * x;
     }
 
     /**
@@ -392,6 +388,8 @@ class Math
     OZ_ALWAYS_INLINE
     static bool isPow2( const Value& v )
     {
+      hard_assert( 0 < v );
+
       return ( v & ( v - 1 ) ) == 0;
     }
 
