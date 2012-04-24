@@ -37,7 +37,6 @@ const MD2::AnimInfo MD2::ANIM_LIST[] =
 {
   // first, last, fps, nextAnim
   {   0,  39,  9.0f, ANIM_STAND         }, // STAND
-  {  40,  45,  7.0f, ANIM_WALK          }, // WALK
   {  40,  45, 10.0f, ANIM_RUN           }, // RUN
   {  46,  53, 16.0f, ANIM_NONE          }, // ATTACK
   {  54,  57,  7.0f, ANIM_STAND         }, // PAIN_A
@@ -63,8 +62,7 @@ Vertex MD2::animBuffer[MAX_VERTS];
 
 void MD2::AnimState::set( Anim newType )
 {
-  bool isWalkRunToggle = ( type == ANIM_WALK && newType == ANIM_RUN ) ||
-                         ( type == ANIM_RUN && newType == ANIM_WALK );
+  bool isWalkRunToggle = type == ANIM_RUN && newType == ANIM_RUN;
 
   type       = newType;
   nextType   = MD2::ANIM_LIST[type].nextType;
@@ -81,17 +79,20 @@ void MD2::AnimState::set( Anim newType )
 
 void MD2::AnimState::advance( const Bot* bot )
 {
-  if( ( type == ANIM_WALK || type == ANIM_RUN || type == ANIM_CROUCH_WALK ) && nextType == type ) {
+  bool isWalkAnim = nextType == ANIM_RUN || nextType == ANIM_CROUCH_WALK;
+
+  if( ( isWalkAnim && ANIM_LIST[ANIM_RUN].firstFrame <= currFrame &&
+        currFrame <= ANIM_LIST[ANIM_RUN].lastFrame ) ||
+      ( isWalkAnim && ANIM_LIST[ANIM_CROUCH_WALK].firstFrame <= currFrame &&
+        currFrame <= ANIM_LIST[ANIM_CROUCH_WALK].lastFrame ) )
+  {
     int   nFrames = lastFrame - firstFrame + 1;
-    float time    = bot->step * float( nFrames ) * frameTime;
+    float frame   = bot->step * float( nFrames );
 
-    nextFrame = firstFrame + int( bot->step * float( nFrames ) + 1.0f ) % nFrames;
+    currFrame = firstFrame + int( frame ) % nFrames;
+    nextFrame = firstFrame + int( frame + 1.0f ) % nFrames;
 
-    if( time >= frameTime || ( firstFrame <= currFrame && lastFrame <= currFrame ) ) {
-      currFrame = firstFrame + int( bot->step * float( nFrames ) ) % nFrames;
-    }
-
-    currTime = Math::fmod( time, frameTime );
+    currTime = Math::fmod( frame * frameTime, frameTime );
   }
   else {
     currTime += timer.frameTime;

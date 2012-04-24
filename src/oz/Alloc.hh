@@ -128,10 +128,10 @@ class Alloc
  *
  * @ingroup oz
  */
-#if __GNUC__ == 4 && __GNUC_MINOR__ < 7
-extern void* operator new ( std::size_t size ) throw ( std::bad_alloc );
+#if OZ_GCC == 406
+extern void* operator new ( size_t size ) throw ( std::bad_alloc );
 #else
-extern void* operator new ( std::size_t size );
+extern void* operator new ( size_t size );
 #endif
 
 /**
@@ -144,10 +144,10 @@ extern void* operator new ( std::size_t size );
  *
  * @ingroup oz
  */
-#if __GNUC__ == 4 && __GNUC_MINOR__ < 7
-extern void* operator new[] ( std::size_t size ) throw( std::bad_alloc );
+#if OZ_GCC == 406
+extern void* operator new[] ( size_t size ) throw( std::bad_alloc );
 #else
-extern void* operator new[] ( std::size_t size );
+extern void* operator new[] ( size_t size );
 #endif
 
 /**
@@ -175,7 +175,7 @@ extern void operator delete[] ( void* ptr ) noexcept;
  *
  * @ingroup oz
  */
-extern void* operator new ( std::size_t size, const std::nothrow_t& ) noexcept;
+extern void* operator new ( size_t size, const std::nothrow_t& ) noexcept;
 
 /**
  * Operator new[] overload with memory statistics and (optionally) memory leak checking.
@@ -184,7 +184,7 @@ extern void* operator new ( std::size_t size, const std::nothrow_t& ) noexcept;
  *
  * @ingroup oz
  */
-extern void* operator new[] ( std::size_t size, const std::nothrow_t& ) noexcept;
+extern void* operator new[] ( size_t size, const std::nothrow_t& ) noexcept;
 
 /**
  * Operator delete overload with memory statistics and (optionally) memory leak checking.

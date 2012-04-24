@@ -38,10 +38,10 @@ const float StrategicProxy::MIN_HEIGHT      = 2.00f;
 const float StrategicProxy::MAX_HEIGHT      = 50.0f;
 const float StrategicProxy::DEFAULT_HEIGHT  = 15.0f;
 const float StrategicProxy::DEFAULT_ANGLE   = 45.0f;
-const float StrategicProxy::FREE_LOW_SPEED  = 2.40f * Timer::TICK_TIME;
-const float StrategicProxy::FREE_HIGH_SPEED = 30.0f * Timer::TICK_TIME;
-const float StrategicProxy::RTS_LOW_SPEED   = 15.0f * Timer::TICK_TIME;
-const float StrategicProxy::RTS_HIGH_SPEED  = 45.0f * Timer::TICK_TIME;
+const float StrategicProxy::FREE_LOW_SPEED  = 2.40f;
+const float StrategicProxy::FREE_HIGH_SPEED = 30.0f;
+const float StrategicProxy::RTS_LOW_SPEED   = 15.0f;
+const float StrategicProxy::RTS_HIGH_SPEED  = 45.0f;
 const float StrategicProxy::ZOOM_FACTOR     = 0.15f;
 
 StrategicProxy::StrategicProxy() :
@@ -155,7 +155,7 @@ void StrategicProxy::update()
       isFreeFast = !isFreeFast;
     }
 
-    float speed = isFreeFast ? FREE_HIGH_SPEED : FREE_LOW_SPEED;
+    float speed = ( isFreeFast ? FREE_HIGH_SPEED : FREE_LOW_SPEED ) * Timer::TICK_TIME;
 
     if( keys[SDLK_w] ) {
       p += camera.at * speed;
@@ -188,7 +188,7 @@ void StrategicProxy::update()
 
     Vec3  up = Vec3( -camera.right.y, camera.right.x, 0.0f );
     float logHeight = Math::log( height );
-    float speed = ( isRTSFast ? RTS_HIGH_SPEED : RTS_LOW_SPEED ) * logHeight;
+    float speed = ( isRTSFast ? RTS_HIGH_SPEED : RTS_LOW_SPEED ) * Timer::TICK_TIME * logHeight;
 
     if( keys[SDLK_w] ) {
       p += up * speed;

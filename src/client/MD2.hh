@@ -42,7 +42,6 @@ class MD2
     {
       ANIM_NONE = -1,
       ANIM_STAND,
-      ANIM_WALK,
       ANIM_RUN,
       ANIM_ATTACK,
       ANIM_PAIN_A,

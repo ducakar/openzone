@@ -90,6 +90,7 @@ class Buffer
     /**
      * Constant pointer to the beginning of the buffer.
      */
+    OZ_ALWAYS_INLINE
     const char* begin() const
     {
       return data;
@@ -98,6 +99,7 @@ class Buffer
     /**
      * Pointer to the beginning of the buffer.
      */
+    OZ_ALWAYS_INLINE
     char* begin()
     {
       return data;
@@ -106,6 +108,7 @@ class Buffer
     /**
      * Constant pointer to the end of the buffer.
      */
+    OZ_ALWAYS_INLINE
     const char* end() const
     {
       return data + size;
@@ -114,6 +117,7 @@ class Buffer
     /**
      * Pointer to the end of the buffer.
      */
+    OZ_ALWAYS_INLINE
     char* end()
     {
       return data + size;
@@ -122,6 +126,7 @@ class Buffer
     /**
      * %Buffer size in bytes.
      */
+    OZ_ALWAYS_INLINE
     int length() const
     {
       return size;
@@ -130,6 +135,7 @@ class Buffer
     /**
      * True iff buffer size is 0 (and no resources allocated).
      */
+    OZ_ALWAYS_INLINE
     bool isEmpty() const
     {
       return size == 0;

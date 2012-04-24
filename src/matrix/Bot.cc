@@ -38,7 +38,7 @@ namespace matrix
 const float Bot::AIR_FRICTION       =  0.01f;
 
 const float Bot::WOUNDED_THRESHOLD  =  0.70f;
-const float Bot::CORPSE_FADE_FACTOR =  0.50f / 100.0f * Timer::TICK_TIME;
+const float Bot::CORPSE_FADE_FACTOR =  0.50f / 100.0f;
 
 const float Bot::INSTRUMENT_DIST    =  2.00f;
 const float Bot::INSTRUMENT_DOT_MIN =  0.80f;
@@ -92,7 +92,7 @@ void Bot::onUpdate()
           dim = clazz->corpseDim;
         }
 
-        life -= clazz->life * CORPSE_FADE_FACTOR;
+        life -= clazz->life * CORPSE_FADE_FACTOR * Timer::TICK_TIME;
         // we don't want Object::destroy() to be called when body dissolves (destroy() causes
         // sounds and frags to fly around), that's why we just remove the object
         if( life <= 0.0f ) {

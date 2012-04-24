@@ -35,7 +35,7 @@ struct Foo
     printf( "Foo()\n" );
   }
 
-  ~Foo()
+  virtual ~Foo()
   {
     printf( "~Foo()\n" );
   }
@@ -61,9 +61,20 @@ struct Foo
     printf( "Foo& operator = ( Foo&& )\n" );
     return *this;
   }
+
+  virtual void bar()
+  {}
+};
+
+struct Bar : Foo
+{
+  void bar() override;
 };
 
 int main()
 {
+  Pair<int> p;
+
+  printf( "%d\n", noexcept( p.x = p.y ) );
   return 0;
 }

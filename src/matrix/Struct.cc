@@ -59,7 +59,7 @@ const Mat44 Struct::ROTATIONS[] =
 };
 
 const Vec3  Struct::DESTRUCT_FRAG_VELOCITY = Vec3( 0.0f, 0.0f, 2.0f );
-const float Struct::DEMOLISH_SPEED         = 8.0f * Timer::TICK_TIME;
+const float Struct::DEMOLISH_SPEED         = 8.0f;
 const float Struct::MOMENTUM_DAMAGE_COEF   = 0.01f;
 const float Struct::MAX_HIT_DAMAGE_MASS    = 100.0f;
 
@@ -547,8 +547,9 @@ void Struct::onDemolish()
     }
   }
 
-  demolishing += DEMOLISH_SPEED / ( maxs.z - mins.z );
-  p.z -= DEMOLISH_SPEED;
+  float deltaHeight = DEMOLISH_SPEED * Timer::TICK_TIME;
+  demolishing += deltaHeight / ( maxs.z - mins.z );
+  p.z -= deltaHeight;
 
   transf.w = Vec4( p );
 

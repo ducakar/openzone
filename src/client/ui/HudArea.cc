@@ -48,8 +48,10 @@ void HudArea::drawBotCrosshair()
   float dx     = me->parent == -1 ? angleDiff( camera.h, me->h ) : angleDiff( camera.h, 0.0f );
   float dy     = me->parent == -1 ? camera.v - me->v : camera.v - Math::TAU / 4.0f;
   float alpha  = 1.0f - CROSS_FADE_COEFF * Math::sqrt( dx*dx + dy*dy );
+  float life   = 2.0f * me->life / myClazz->life - 1.0f;
+  Vec3  colour = Math::mix( Vec3( 1.00f, 0.50f, 0.25f ), Vec3( 1.0f, 1.0f, 1.0f ), life );
 
-  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, alpha );
+  glUniform4f( param.oz_Colour, colour.x, colour.y, colour.z, alpha );
   glBindTexture( GL_TEXTURE_2D, crossTexId );
   shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
   glBindTexture( GL_TEXTURE_2D, 0 );
@@ -94,7 +96,7 @@ void HudArea::drawBotCrosshair()
     else {
       float life;
       if( obj->flags & Object::BOT_BIT ) {
-        life = max( 0.0f, 2.0f * obj->life / clazz->life - 1.0f );
+        life = max( 2.0f * obj->life / clazz->life - 1.0f, 0.0f );
       }
       else {
         life = obj->life / clazz->life;
