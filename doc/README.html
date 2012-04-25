@@ -473,15 +473,6 @@ table.settings td {
     </td>
   </tr>
   <tr>
-    <th>render.deferred [bool] false</th>
-  </tr>
-  <tr>
-    <td>
-      Enable deferred shading. Not really implemented yet. This option has effect only if offscreen
-      rendering is enabled.
-    </td>
-  </tr>
-  <tr>
     <th>render.lowDetail [bool] false</th>
   </tr>
   <tr>
@@ -491,21 +482,11 @@ table.settings td {
     </td>
   </tr>
   <tr>
-    <th>render.offscreen [bool] true</th>
-  </tr>
-  <tr>
-    <td>
-      Enable rendering into offscreen buffers instead directly to the screen. This enables some
-      advanced effects like deferred shading and postprocessing. It also enables that the world is
-      rendered at resolution that differ from the screen resolution.
-    </td>
-  </tr>
-  <tr>
     <th>render.postprocess [bool] true</th>
   </tr>
   <tr>
     <td>
-      Enable postprocessing when using offscreen rendering.
+      Enable postprocessing. Also enables offscreen rendering.
     </td>
   </tr>
   <tr>
@@ -513,7 +494,8 @@ table.settings td {
   </tr>
   <tr>
     <td>
-      Scale of resolution of offscreen buffer where world is rendered to.
+      Scale of resolution of offscreen buffer where world is rendered to. Enables offscreen
+      rendering if not 1.0.
     </td>
   </tr>
   <tr>

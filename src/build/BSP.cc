@@ -63,7 +63,7 @@ void BSP::load()
 
   waterFogColour.x = bspConfig.get( "waterFogColour.r", 0.00f );
   waterFogColour.y = bspConfig.get( "waterFogColour.g", 0.05f );
-  waterFogColour.z = bspConfig.get( "waterFogColour.b", 0.25f );
+  waterFogColour.z = bspConfig.get( "waterFogColour.b", 0.20f );
   waterFogColour.w = 1.0f;
 
   lavaFogColour.x = bspConfig.get( "lavaFogColour.r", 0.30f );

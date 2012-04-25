@@ -194,7 +194,6 @@ class Shader
     int  medium;
     bool hasS3TC;
     bool hasVertexTexture;
-    bool isDeferred;
     bool doPostprocess;
     bool isLowDetail;
 

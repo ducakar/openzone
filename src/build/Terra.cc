@@ -63,7 +63,7 @@ void Terra::load()
 
   liquidColour.x = terraConfig.get( "liquidFogColour.r", 0.00f );
   liquidColour.y = terraConfig.get( "liquidFogColour.g", 0.05f );
-  liquidColour.z = terraConfig.get( "liquidFogColour.b", 0.25f );
+  liquidColour.z = terraConfig.get( "liquidFogColour.b", 0.20f );
   liquidColour.w = 1.0f;
 
   liquidTexture  = terraConfig.get( "liquidTexture", "" );

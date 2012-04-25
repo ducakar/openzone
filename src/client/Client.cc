@@ -247,7 +247,7 @@ int Client::main( int argc, char** argv )
     throw Exception( "Can't create/open log file '%s' for writing\n", logPath.cstr() );
   }
 
-  log.println( "Log file '%s'", logPath.cstr() );
+  log.println( "Log file '%s'", log.logFile() );
 
   log.print( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " started on " );
   log.printTime();

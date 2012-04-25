@@ -9,7 +9,7 @@ project( openzone C CXX )
 set( OZ_VERSION "0.2.85" CACHE STRING "" FORCE )
 set( OZ_SOVERSION "0" CACHE STRING "" FORCE )
 
-option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory leaks." OFF )
+option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory leaks." ON )
 
 set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
 set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )

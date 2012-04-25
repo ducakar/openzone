@@ -285,7 +285,6 @@ void Shader::init()
   log.print( "Initialising Shader ..." );
 
   hasVertexTexture = config.getSet( "shader.vertexTexture", true );
-  isDeferred       = config.get( "render.deferred", false );
   doPostprocess    = config.get( "render.postprocess", false );
   isLowDetail      = config.get( "render.lowDetail", false );
 
@@ -336,11 +335,10 @@ void Shader::init()
 
   defines = "#version 120\n";
   defines = defines + ( hasVertexTexture ? "#define OZ_VERTEX_TEXTURE\n" : "\n" );
-  defines = defines + ( isDeferred ?       "#define OZ_DEFERRED\n" : "\n" );
   defines = defines + ( doPostprocess ?    "#define OZ_POSTPROCESS\n" : "\n" );
   defines = defines + ( isLowDetail ?      "#define OZ_LOW_DETAIL\n" : "\n" );
 
-  for( int i = 4; i < 10; ++i ) {
+  for( int i = 3; i < 10; ++i ) {
     defines = defines + "\n";
   }
 

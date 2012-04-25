@@ -107,13 +107,13 @@ class Render
     bool                  showAim;
 
     bool                  isOffscreen;
-    bool                  isDeferred;
     bool                  doPostprocess;
     bool                  isLowDetail;
 
     float                 windPhi;
 
     float                 renderScale;
+    uint                  renderScaleFilter;
     int                   renderWidth;
     int                   renderHeight;
 

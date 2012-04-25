@@ -19,19 +19,24 @@
 
 #include "BuildInfo.hh"
 
+#include "oz/oz.hh"
+
 namespace oz
 {
 
-const char* const BuildInfo::TIME             = __DATE__ "  " __TIME__;
-const char* const BuildInfo::HOST_SYSTEM      = "@CMAKE_HOST_SYSTEM_NAME@-@CMAKE_HOST_SYSTEM_PROCESSOR@ @CMAKE_HOST_SYSTEM@";
-const char* const BuildInfo::TARGET_SYSTEM    = "@OZ_SYSTEM_NAME@ @CMAKE_SYSTEM@";
-const char* const BuildInfo::BUILD_TYPE       = "@CMAKE_BUILD_TYPE@";
-#ifdef __clang__
-const char* const BuildInfo::COMPILER         = "LLVM/Clang " __clang_version__;
+const char* const   BuildInfo::TIME             = __DATE__ "  " __TIME__;
+const char* const   BuildInfo::HOST_SYSTEM      = "@CMAKE_HOST_SYSTEM_NAME@-@CMAKE_HOST_SYSTEM_PROCESSOR@ @CMAKE_HOST_SYSTEM@";
+const char* const   BuildInfo::TARGET_SYSTEM    = "@OZ_SYSTEM_NAME@ @CMAKE_SYSTEM@";
+const char* const   BuildInfo::BUILD_TYPE       = "@CMAKE_BUILD_TYPE@";
+#if defined( OZ_MSVC )
+static const String COMPILER_STRING             = "MSVC " + String::str( "%g", float( OZ_MSVC ) / 100.0f );
+const char* const   BuildInfo::COMPILER         = COMPILER_STRING;
+#elif defined( OZ_CLANG )
+const char* const   BuildInfo::COMPILER         = "LLVM/Clang " __clang_version__;
 #else
-const char* const BuildInfo::COMPILER         = "GCC " __VERSION__;
+const char* const   BuildInfo::COMPILER         = "GCC " __VERSION__;
 #endif
-const char* const BuildInfo::CXX_FLAGS        = "@OZ_CXX_FLAGS@";
-const char* const BuildInfo::EXE_LINKER_FLAGS = "@OZ_EXE_LINKER_FLAGS@";
+const char* const   BuildInfo::CXX_FLAGS        = "@OZ_CXX_FLAGS@";
+const char* const   BuildInfo::EXE_LINKER_FLAGS = "@OZ_EXE_LINKER_FLAGS@";
 
 }
