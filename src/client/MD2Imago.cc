@@ -44,64 +44,6 @@ MD2Imago::~MD2Imago()
   context.releaseMD2( clazz->imagoModel );
 }
 
-MD2::Anim MD2Imago::extractAnim() const
-{
-  const Bot*    bot    = static_cast<const Bot*>( obj );
-  const Weapon* weapon = bot->weapon == -1 ?
-                         null : static_cast<const Weapon*>( orbis.objects[bot->weapon] );
-
-  if( bot->state & Bot::DEAD_BIT ) {
-    if( anim.type == MD2::ANIM_DEATH_FALLBACK || anim.type == MD2::ANIM_DEATH_FALLBACKSLOW ||
-        anim.type == MD2::ANIM_DEATH_FALLFORWARD )
-    {
-      return anim.type;
-    }
-    else {
-      return MD2::Anim( MD2::ANIM_DEATH_FALLBACK + Math::rand( 3 ) );
-    }
-  }
-  else if( bot->cell == null ) {
-    return MD2::ANIM_CROUCH_STAND;
-  }
-  else if( ( bot->actions & Bot::ACTION_JUMP ) &&
-           !( bot->state & ( Bot::GROUNDED_BIT | Bot::CLIMBING_BIT ) ) )
-  {
-    return MD2::ANIM_JUMP;
-  }
-  else if( bot->state & Bot::MOVING_BIT ) {
-    if( bot->state & Bot::CROUCHING_BIT ) {
-      return MD2::ANIM_CROUCH_WALK;
-    }
-    else {
-      return MD2::ANIM_RUN;
-    }
-  }
-  else if( bot->cargo == -1 ) {
-    if( weapon != null && weapon->shotTime != 0.0f ) {
-      return bot->state & Bot::CROUCHING_BIT ? MD2::ANIM_CROUCH_ATTACK : MD2::ANIM_ATTACK;
-    }
-    else if( bot->state & Bot::CROUCHING_BIT ) {
-      return MD2::ANIM_CROUCH_STAND;
-    }
-    else if( bot->state & Bot::GESTURE_POINT_BIT ) {
-      return MD2::ANIM_POINT;
-    }
-    else if( bot->state & Bot::GESTURE_BACK_BIT ) {
-      return MD2::ANIM_FALLBACK;
-    }
-    else if( bot->state & Bot::GESTURE_SALUTE_BIT ) {
-      return MD2::ANIM_SALUTE;
-    }
-    else if( bot->state & Bot::GESTURE_WAVE_BIT ) {
-      return MD2::ANIM_WAVE;
-    }
-    else if( bot->state & Bot::GESTURE_FLIP_BIT ) {
-      return MD2::ANIM_FLIP;
-    }
-  }
-  return bot->state & Bot::CROUCHING_BIT ? MD2::ANIM_CROUCH_STAND : MD2::ANIM_STAND;
-}
-
 Imago* MD2Imago::create( const Object* obj )
 {
   hard_assert( obj->flags & Object::BOT_BIT );
@@ -112,11 +54,6 @@ Imago* MD2Imago::create( const Object* obj )
   imago->flags = Imago::MD2MODEL_BIT;
   imago->md2   = context.requestMD2( obj->clazz->imagoModel );
   imago->h     = bot->h;
-
-  imago->anim.type = MD2::ANIM_STAND;
-  imago->anim.set( MD2::ANIM_STAND );
-  imago->anim.currFrame = imago->anim.lastFrame;
-  imago->anim.nextFrame = imago->anim.lastFrame;
 
   return imago;
 }
@@ -133,20 +70,7 @@ void MD2Imago::draw( const Imago* parent, int mask )
   const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
   if( mask & Mesh::SOLID_BIT ) {
-    anim.nextType = extractAnim();
-    anim.advance( bot );
-
-    // keep animation in sync with weapon shotInterval
-    if( anim.type == MD2::ANIM_ATTACK && bot->weapon != -1 ) {
-      const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
-
-      if( weapon != null &&
-          ( weapon->shotTime == 0.0f ||
-            weapon->shotTime == static_cast<const WeaponClass*>( weapon->clazz )->shotInterval ) )
-      {
-        anim.nextFrame = anim.firstFrame;
-      }
-    }
+    anim.advance();
 
     if( !( bot->state & Bot::DEAD_BIT ) ) {
       if( bot->index == camera.bot && !camera.isExternal ) {

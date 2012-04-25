@@ -54,5 +54,9 @@ int main( int argc, char** argv )
   oz::Alloc::printLeaks();
   oz::log.verboseMode = false;
 
+  if( oz::Alloc::count != 0 ) {
+    oz::log.println( "There are some memory leaks. See '%s' for details.", oz::log.logFile() );
+  }
+
   return exitCode;
 }

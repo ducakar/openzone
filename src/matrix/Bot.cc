@@ -165,15 +165,12 @@ void Bot::onUpdate()
       if( ( state & JUMP_SCHED_BIT ) && ( state & ( GROUNDED_BIT | SWIMMING_BIT ) ) &&
           cargo == -1 && stamina >= clazz->staminaJumpDrain )
       {
-        flags   &= ~( DISABLED_BIT | ON_FLOOR_BIT | ON_SLICK_BIT );
-        lower    = -1;
-        state   &= ~GROUNDED_BIT;
-        stamina -= clazz->staminaJumpDrain;
-
+        flags     &= ~( DISABLED_BIT | ON_FLOOR_BIT );
+        lower      = -1;
+        state     &= ~( JUMP_SCHED_BIT | GROUNDED_BIT );
         momentum.z = clazz->jumpMomentum;
+        stamina   -= clazz->staminaJumpDrain;
         addEvent( EVENT_JUMP, 1.0f );
-
-        state &= ~JUMP_SCHED_BIT;
       }
     }
     else {
@@ -557,8 +554,8 @@ void Bot::onUpdate()
 
           momDiff.z          -= physics.gravity * Timer::TICK_TIME;
 
-          cargoObj->momentum += momDiff;
           cargoObj->flags    &= ~DISABLED_BIT;
+          cargoObj->momentum += momDiff;
         }
       }
     }

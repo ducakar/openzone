@@ -80,8 +80,8 @@ void StrategicProxy::prepare()
 
   bool alt = keys[SDLK_LALT] || keys[SDLK_RALT];
 
-  camera.h += camera.relH;
-  camera.v += camera.relV;
+  camera.h = angleWrap( camera.h + camera.relH );
+  camera.v = clamp( camera.v + camera.relV, 0.0f, Math::TAU / 2.0f );
 
   if( !alt && keys[SDLK_n] && !oldKeys[SDLK_n] ) {
     camera.nightVision = !camera.nightVision;

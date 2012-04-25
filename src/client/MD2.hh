@@ -38,7 +38,7 @@ class MD2
 
     static const int MAX_VERTS = 2048;
 
-    enum Anim
+    enum AnimType
     {
       ANIM_NONE = -1,
       ANIM_STAND,
@@ -65,28 +65,40 @@ class MD2
 
     struct AnimInfo
     {
-      int   firstFrame;
-      int   lastFrame;
-      float fps;
-      Anim  nextType;
+      int      firstFrame;
+      int      lastFrame;
+      float    fps;
+      AnimType nextType;
     };
 
-    struct AnimState
+    class AnimState
     {
-      Anim  type;
-      Anim  nextType;
+      friend class MD2;
 
-      int   firstFrame;
-      int   lastFrame;
-      int   currFrame;
-      int   nextFrame;
+      private:
 
-      float fps;
-      float frameTime;
-      float currTime;
+        const Bot* bot;
 
-      void set( Anim type );
-      void advance( const Bot* bot );
+        AnimType   type;
+        AnimType   nextType;
+
+        int        firstFrame;
+        int        lastFrame;
+        int        currFrame;
+        int        nextFrame;
+
+        float      fps;
+        float      frameTime;
+        float      currTime;
+
+        AnimType extractAnim() const;
+        void set( AnimType type );
+
+      public:
+
+        AnimState( const Bot* bot );
+
+        void advance();
     };
 
     static const AnimInfo ANIM_LIST[];

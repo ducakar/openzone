@@ -2,9 +2,7 @@
 - ui
   * pause menu
 - client
-  * fix switch to MD2 run animation
   * fix bloom
-  * fix in-vehicle camera relative h/v rotation
   * death camera
 - lua
   * finish API transition

@@ -47,15 +47,16 @@ class Log
 {
   private:
 
-    void* fileStream;  ///< %Log file stream, but declared void* because we don't want to
-                       ///< pollute namespace with <tt>\<cstdio\></tt>.
-    int   tabs;        ///< Indentation level.
+    void* fileStream;    ///< %Log file stream, but declared void* because we don't want to
+                         ///< pollute namespace with <tt>\<cstdio\></tt>.
+    char  filePath[256]; ///< Log file name.
+    int   tabs;          ///< Indentation level (one level is represented with two spaces).
 
   public:
 
-    bool  isVerbose;   ///< Do not suppress messages on stdout in verbose mode. Off by default.
-    bool  verboseMode; ///< While <tt>verboseMode</tt> is on log output is only written to log file
-                       ///< unless <tt>isVerbose</tt> is also on. Off by default.
+    bool  isVerbose;     ///< Do not suppress verbose messages on stdout. Off by default.
+    bool  verboseMode;   ///< While <tt>verboseMode</tt> is on log output is only written to log
+                         ///< file unless <tt>isVerbose</tt> is also on. Off by default.
 
     /**
      * Initialise log with default parameters to <tt>init()</tt>.
@@ -76,6 +77,11 @@ class Log
      * No copying.
      */
     Log& operator = ( const Log& ) = delete;
+
+    /**
+     * Return log file path or an empty string if log is printed to stdout only.
+     */
+    const char* logFile() const;
 
     /**
      * Set indent to zero.
@@ -151,7 +157,7 @@ class Log
      * First parameter is file path (if <tt>null</tt> or "", it only writes to terminal), the other
      * tells us if we want to clear its content if the file already exists.
      */
-    bool init( const char* fileName = null, bool clearFile = true );
+    bool init( const char* filePath = null, bool clearFile = true );
 
 };
 

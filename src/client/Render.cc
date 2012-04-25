@@ -408,7 +408,7 @@ void Render::drawOrbis()
 
       glBlitFramebuffer( 0, 0, renderWidth, renderHeight,
                          0, 0, camera.width, camera.height,
-                         GL_COLOR_BUFFER_BIT, GL_LINEAR );
+                         GL_COLOR_BUFFER_BIT, renderScaleFilter );
 
       glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
     }
@@ -598,27 +598,36 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
     return;
   }
 
-  isOffscreen     = config.getSet( "render.offscreen",            true );
-  isDeferred      = config.getSet( "render.deferred",             false );
-  doPostprocess   = config.getSet( "render.postprocess",          true );
-  isLowDetail     = config.getSet( "render.lowDetail",            false );
+  String sRenderScaleFilter;
 
-  renderScale     = config.getSet( "render.scale",                1.0f );
+  doPostprocess      = config.getSet( "render.postprocess", true );
+  isLowDetail        = config.getSet( "render.lowDetail",   false );
 
-  visibilityRange = config.getSet( "render.distance",             300.0f );
-  showBounds      = config.getSet( "render.showBounds",           false );
-  showAim         = config.getSet( "render.showAim",              false );
+  renderScale        = config.getSet( "render.scale",       1.0f );
+  sRenderScaleFilter = config.getSet( "render.scaleFilter", "NEAREST" );
 
-  windPhi         = 0.0f;
+  visibilityRange    = config.getSet( "render.distance",    300.0f );
+  showBounds         = config.getSet( "render.showBounds",  false );
+  showAim            = config.getSet( "render.showAim",     false );
+
+  isOffscreen        = doPostprocess || renderScale != 1.0f;
+  windPhi            = 0.0f;
+
+  if( sRenderScaleFilter.equals( "NEAREST" ) ) {
+    renderScaleFilter = GL_NEAREST;
+  }
+  else if( sRenderScaleFilter.equals( "LINEAR" ) ) {
+    renderScaleFilter = GL_LINEAR;
+  }
+  else {
+    throw Exception( "render.scaleFilter should be either NEAREST or LINEAR." );
+  }
 
   if( isOffscreen ) {
     renderWidth  = int( float( windowWidth  ) * renderScale + 0.5f );
     renderHeight = int( float( windowHeight ) * renderScale + 0.5f );
   }
   else {
-    isDeferred    = false;
-    doPostprocess = false;
-    renderScale   = 1.0f;
     renderWidth   = windowWidth;
     renderHeight  = windowHeight;
   }

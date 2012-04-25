@@ -31,6 +31,7 @@
 #include "windefs.h"
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
 namespace oz
 {
@@ -49,6 +50,11 @@ Log::~Log()
     fclose( file );
     file = null;
   }
+}
+
+const char* Log::logFile() const
+{
+  return filePath;
 }
 
 void Log::resetIndent()
@@ -316,8 +322,16 @@ void Log::printException( const std::exception* e ) const
   }
 }
 
-bool Log::init( const char* fileName, bool doClear )
+bool Log::init( const char* filePath_, bool doClear )
 {
+  if( filePath_ == null ) {
+    filePath[0] = '\0';
+  }
+  else {
+    strncpy( filePath, filePath_, 256 );
+    filePath[255] = '\0';
+  }
+
   FILE* file = reinterpret_cast<FILE*>( fileStream );
 
   tabs = 0;
@@ -327,8 +341,8 @@ bool Log::init( const char* fileName, bool doClear )
     fileStream = null;
   }
 
-  if( fileName != null && fileName[0] != '\0' ) {
-    fileStream = fopen( fileName, doClear ? "w" : "a" );
+  if( filePath[0] != '\0' ) {
+    fileStream = fopen( filePath, doClear ? "w" : "a" );
   }
 
   return fileStream != null;

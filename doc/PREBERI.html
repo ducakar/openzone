@@ -473,15 +473,6 @@ table.settings td {
     </td>
   </tr>
   <tr>
-    <th>render.deferred [bool] false</th>
-  </tr>
-  <tr>
-    <td>
-      Uporabi odloženo senčene (deferred shading). Trenutno še ni implementirano. Ta nastavitev se
-      upošteva le, če je vklopljeno upodabljanje v medpomnilnik.
-    </td>
-  </tr>
-  <tr>
     <th>render.lowDetail [bool] false</th>
   </tr>
   <tr>
@@ -491,21 +482,11 @@ table.settings td {
     </td>
   </tr>
   <tr>
-    <th>render.offscreen [bool] true</th>
-  </tr>
-  <tr>
-    <td>
-      Vklopi upodabljanje v medpomnilnik (offscreen rendering) namesto neposredno na zaslon. To
-      omogoči nekatere napredne zmožnosti, kot je odloženo senčenje (deferred shading) in
-      postprocesiranje. Omogoča tudi, da se svet upodablja na ločljivosti različni od zaslonske.
-    </td>
-  </tr>
-  <tr>
     <th>render.postprocess [bool] true</th>
   </tr>
   <tr>
     <td>
-      Vključi postprocesiranje. Deluje le, če je vklopljen render.offscreen.
+      Vključi postprocesiranje in upodabljanje v medpomnilnik.
     </td>
   </tr>
   <tr>
@@ -513,7 +494,8 @@ table.settings td {
   </tr>
   <tr>
     <td>
-      Povečava medpomnilnika za upodabljanje glede na zaslonsko ločljivost.
+      Povečava medpomnilnika za upodabljanje glede na zaslonsko ločljivost. Vklopi upodabljanje v
+      medpomnilnik, če je različno od 1.0.
     </td>
   </tr>
   <tr>

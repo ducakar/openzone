@@ -60,15 +60,81 @@ const MD2::AnimInfo MD2::ANIM_LIST[] =
 
 Vertex MD2::animBuffer[MAX_VERTS];
 
-void MD2::AnimState::set( Anim newType )
+MD2::AnimType MD2::AnimState::extractAnim() const
+{
+  const Weapon* weapon = bot->weapon == -1 ?
+                         null : static_cast<const Weapon*>( orbis.objects[bot->weapon] );
+
+  if( bot->state & Bot::DEAD_BIT ) {
+    if( type == ANIM_DEATH_FALLBACK || type == ANIM_DEATH_FALLBACKSLOW ||
+        type == ANIM_DEATH_FALLFORWARD )
+    {
+      return type;
+    }
+    else {
+      return AnimType( ANIM_DEATH_FALLBACK + Math::rand( 3 ) );
+    }
+  }
+  else if( bot->cell == null ) {
+    return ANIM_CROUCH_STAND;
+  }
+  else if( ( bot->actions & Bot::ACTION_JUMP ) &&
+    !( bot->state & ( Bot::GROUNDED_BIT | Bot::CLIMBING_BIT ) ) )
+  {
+    return ANIM_JUMP;
+  }
+  else if( bot->state & Bot::MOVING_BIT ) {
+    if( bot->state & Bot::CROUCHING_BIT ) {
+      return ANIM_CROUCH_WALK;
+    }
+    else {
+      return ANIM_RUN;
+    }
+  }
+  else if( bot->cargo == -1 ) {
+    if( weapon != null && weapon->shotTime != 0.0f ) {
+      return bot->state & Bot::CROUCHING_BIT ? ANIM_CROUCH_ATTACK : ANIM_ATTACK;
+    }
+    else if( bot->state & Bot::CROUCHING_BIT ) {
+      return ANIM_CROUCH_STAND;
+    }
+    else if( bot->state & Bot::GESTURE_POINT_BIT ) {
+      return ANIM_POINT;
+    }
+    else if( bot->state & Bot::GESTURE_BACK_BIT ) {
+      return ANIM_FALLBACK;
+    }
+    else if( bot->state & Bot::GESTURE_SALUTE_BIT ) {
+      return ANIM_SALUTE;
+    }
+    else if( bot->state & Bot::GESTURE_WAVE_BIT ) {
+      return ANIM_WAVE;
+    }
+    else if( bot->state & Bot::GESTURE_FLIP_BIT ) {
+      return ANIM_FLIP;
+    }
+  }
+  return bot->state & Bot::CROUCHING_BIT ? ANIM_CROUCH_STAND : ANIM_STAND;
+}
+
+MD2::AnimState::AnimState( const Bot* bot_ ) :
+  bot( bot_ ), type( ANIM_STAND ), nextType( ANIM_STAND )
+{
+  set( ANIM_STAND );
+
+  currFrame  = lastFrame;
+  nextFrame  = lastFrame;
+}
+
+void MD2::AnimState::set( AnimType newType )
 {
   bool isWalkRunToggle = type == ANIM_RUN && newType == ANIM_RUN;
 
   type       = newType;
-  nextType   = MD2::ANIM_LIST[type].nextType;
-  firstFrame = MD2::ANIM_LIST[type].firstFrame;
-  lastFrame  = MD2::ANIM_LIST[type].lastFrame;
-  fps        = MD2::ANIM_LIST[type].fps;
+  nextType   = ANIM_LIST[type].nextType;
+  firstFrame = ANIM_LIST[type].firstFrame;
+  lastFrame  = ANIM_LIST[type].lastFrame;
+  fps        = ANIM_LIST[type].fps;
   frameTime  = 1.0f / fps;
 
   if( !isWalkRunToggle ) {
@@ -77,39 +143,62 @@ void MD2::AnimState::set( Anim newType )
   }
 }
 
-void MD2::AnimState::advance( const Bot* bot )
+void MD2::AnimState::advance()
 {
-  bool isWalkAnim = nextType == ANIM_RUN || nextType == ANIM_CROUCH_WALK;
+  nextType = extractAnim();
 
-  if( ( isWalkAnim && ANIM_LIST[ANIM_RUN].firstFrame <= currFrame &&
-        currFrame <= ANIM_LIST[ANIM_RUN].lastFrame ) ||
-      ( isWalkAnim && ANIM_LIST[ANIM_CROUCH_WALK].firstFrame <= currFrame &&
-        currFrame <= ANIM_LIST[ANIM_CROUCH_WALK].lastFrame ) )
-  {
-    int   nFrames = lastFrame - firstFrame + 1;
-    float frame   = bot->step * float( nFrames );
+  currTime += timer.frameTime;
 
-    currFrame = firstFrame + int( frame ) % nFrames;
-    nextFrame = firstFrame + int( frame + 1.0f ) % nFrames;
+  while( currTime > frameTime ) {
+    currTime -= frameTime;
+    currFrame = nextFrame;
 
-    currTime = Math::fmod( frame * frameTime, frameTime );
-  }
-  else {
-    currTime += timer.frameTime;
+    if( ( type == ANIM_RUN || type == ANIM_CROUCH_WALK ) &&
+        ( nextType == ANIM_RUN || nextType == ANIM_CROUCH_WALK ) )
+    {
+      const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-    while( currTime > frameTime ) {
-      currTime -= frameTime;
-      currFrame = nextFrame;
+      int   nFrames = lastFrame - firstFrame + 1;
+      float frame   = bot->step * float( nFrames );
+      float stepInc = ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT ) ) == Bot::RUNNING_BIT ?
+                      clazz->stepRunInc : clazz->stepWalkInc;
 
-      if( nextType == ANIM_NONE ) {
-        nextFrame = min( nextFrame + 1, lastFrame );
+      nextFrame = firstFrame + int( frame + 1.0f ) % nFrames;
+
+      fps = float( nFrames ) * stepInc / Timer::TICK_TIME;
+      frameTime = 1.0f / fps;
+    }
+    else if( ( type == ANIM_ATTACK && nextType == ANIM_ATTACK ) ||
+             ( type == ANIM_CROUCH_ATTACK && nextType == ANIM_CROUCH_ATTACK ) )
+    {
+      if( bot->weapon == -1 ) {
+        goto normalAnim;
       }
-      else if( nextType == type ) {
-        nextFrame = nextFrame == lastFrame ? firstFrame : nextFrame + 1;
+
+      const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
+      if( weapon == null ) {
+        goto normalAnim;
       }
-      else {
-        set( nextType );
-      }
+
+      const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
+
+      int   nFrames = lastFrame - firstFrame + 1;
+      float frame   = weapon->shotTime / clazz->shotInterval * float( nFrames );
+
+      nextFrame = firstFrame + int( frame + 1.0f ) % nFrames;
+
+      fps = float( nFrames ) / clazz->shotInterval;
+      frameTime = 1.0f / fps;
+    }
+    else if( nextType == ANIM_NONE ) {
+      nextFrame = min( nextFrame + 1, lastFrame );
+    }
+    else if( nextType == type ) {
+    normalAnim:
+      nextFrame = nextFrame == lastFrame ? firstFrame : nextFrame + 1;
+    }
+    else {
+      set( nextType );
     }
   }
 }

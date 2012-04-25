@@ -48,14 +48,12 @@ class MD2Imago : public Imago
   protected:
 
     explicit MD2Imago( const Object* obj ) :
-      Imago( obj )
+      Imago( obj ), anim( static_cast<const Bot*>( obj ) )
     {
       flags |= Imago::MD2MODEL_BIT;
     }
 
     virtual ~MD2Imago();
-
-    MD2::Anim extractAnim() const;
 
   public:
 

@@ -110,10 +110,11 @@ vec4 applyFog( vec4 colour, float dist )
   return mix( colour, oz_Fog.colour, ratio*ratio );
 }
 
-vec2 noise( vec2 seed )
-{
-  return vec2( cos( seed.x ), sin( seed.y ) );
-}
+
+
+
+
+
 
 
 
