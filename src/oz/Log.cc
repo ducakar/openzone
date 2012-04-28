@@ -44,7 +44,7 @@ Log::Log() :
 
 Log::~Log()
 {
-  FILE* file = reinterpret_cast<FILE*>( fileStream );
+  FILE* file = static_cast<FILE*>( fileStream );
 
   if( file != null ) {
     fclose( file );
@@ -76,7 +76,7 @@ void Log::unindent()
 
 void Log::vprintRaw( const char* s, va_list ap ) const
 {
-  FILE* file = reinterpret_cast<FILE*>( fileStream );
+  FILE* file = static_cast<FILE*>( fileStream );
 
   va_list ap2;
   va_copy( ap2, ap );
@@ -93,7 +93,7 @@ void Log::vprintRaw( const char* s, va_list ap ) const
 
 void Log::printRaw( const char* s, ... ) const
 {
-  FILE* file = reinterpret_cast<FILE*>( fileStream );
+  FILE* file = static_cast<FILE*>( fileStream );
 
   va_list ap;
 
@@ -117,7 +117,7 @@ void Log::printRaw( const char* s, ... ) const
 
 void Log::print( const char* s, ... ) const
 {
-  FILE* file = reinterpret_cast<FILE*>( fileStream );
+  FILE* file = static_cast<FILE*>( fileStream );
 
   va_list ap;
 
@@ -149,7 +149,7 @@ void Log::print( const char* s, ... ) const
 
 void Log::printEnd( const char* s, ... ) const
 {
-  FILE* file = reinterpret_cast<FILE*>( fileStream );
+  FILE* file = static_cast<FILE*>( fileStream );
 
   va_list ap;
 
@@ -175,7 +175,7 @@ void Log::printEnd( const char* s, ... ) const
 
 void Log::printEnd() const
 {
-  FILE* file = reinterpret_cast<FILE*>( fileStream );
+  FILE* file = static_cast<FILE*>( fileStream );
 
   if( !verboseMode || isVerbose ) {
     printf( "\n" );
@@ -189,7 +189,7 @@ void Log::printEnd() const
 
 void Log::println( const char* s, ... ) const
 {
-  FILE* file = reinterpret_cast<FILE*>( fileStream );
+  FILE* file = static_cast<FILE*>( fileStream );
 
   va_list ap;
 
@@ -223,7 +223,7 @@ void Log::println( const char* s, ... ) const
 
 void Log::println() const
 {
-  FILE* file = reinterpret_cast<FILE*>( fileStream );
+  FILE* file = static_cast<FILE*>( fileStream );
 
   if( !verboseMode || isVerbose ) {
     printf( "\n" );
@@ -237,7 +237,7 @@ void Log::println() const
 
 void Log::printTime() const
 {
-  FILE* file = reinterpret_cast<FILE*>( fileStream );
+  FILE* file = static_cast<FILE*>( fileStream );
 
   Time time = Time::local();
 
@@ -255,7 +255,7 @@ void Log::printTime() const
 
 void Log::printTrace( const StackTrace* st ) const
 {
-  FILE* file = reinterpret_cast<FILE*>( fileStream );
+  FILE* file = static_cast<FILE*>( fileStream );
 
   if( st->nFrames == 0 ) {
     if( !verboseMode || isVerbose ) {
@@ -287,7 +287,7 @@ void Log::printTrace( const StackTrace* st ) const
 
 void Log::printException( const std::exception* e ) const
 {
-  FILE* file = reinterpret_cast<FILE*>( fileStream );
+  FILE* file = static_cast<FILE*>( fileStream );
 
   const Exception* oe = dynamic_cast<const Exception*>( e );
 
@@ -332,7 +332,7 @@ bool Log::init( const char* filePath_, bool doClear )
     filePath[255] = '\0';
   }
 
-  FILE* file = reinterpret_cast<FILE*>( fileStream );
+  FILE* file = static_cast<FILE*>( fileStream );
 
   tabs = 0;
 

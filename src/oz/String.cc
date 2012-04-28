@@ -45,8 +45,7 @@ String::String( int count_, int ) :
 
 void String::ensureCapacity()
 {
-  buffer = count < BUFFER_SIZE ?
-           baseBuffer : reinterpret_cast<char*>( malloc( size_t( count + 1 ) ) );
+  buffer = count < BUFFER_SIZE ? baseBuffer : static_cast<char*>( malloc( size_t( count + 1 ) ) );
 }
 
 void String::dealloc()

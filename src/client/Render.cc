@@ -372,6 +372,7 @@ void Render::drawGeometry()
 
 void Render::drawOrbis()
 {
+#ifndef OZ_GL_COMPATIBLE
   if( isOffscreen ) {
     glPushAttrib( GL_VIEWPORT_BIT );
     glViewport( 0, 0, renderWidth, renderHeight );
@@ -381,10 +382,12 @@ void Render::drawOrbis()
     glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
     glDrawBuffers( 1, dbos );
   }
+#endif
 
   prepareDraw();
   drawGeometry();
 
+#ifndef OZ_GL_COMPATIBLE
   uint beginMicros = Time::uclock();
 
   if( isOffscreen ) {
@@ -414,9 +417,10 @@ void Render::drawOrbis()
     }
   }
 
-  OZ_GL_CHECK_ERROR();
-
   postprocessMicros += Time::uclock() - beginMicros;
+#endif
+
+  OZ_GL_CHECK_ERROR();
 }
 
 void Render::drawUI()
@@ -623,16 +627,14 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
     throw Exception( "render.scaleFilter should be either NEAREST or LINEAR." );
   }
 
+  renderWidth  = windowWidth;
+  renderHeight = windowHeight;
+
+#ifndef OZ_GL_COMPATIBLE
   if( isOffscreen ) {
     renderWidth  = int( float( windowWidth  ) * renderScale + 0.5f );
     renderHeight = int( float( windowHeight ) * renderScale + 0.5f );
-  }
-  else {
-    renderWidth   = windowWidth;
-    renderHeight  = windowHeight;
-  }
 
-  if( isOffscreen ) {
     glGenRenderbuffers( 1, &depthBuffer );
     glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
     glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, renderWidth, renderHeight );
@@ -663,6 +665,7 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
 
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
   }
+#endif
 
   glEnable( GL_CULL_FACE );
   glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -692,11 +695,13 @@ void Render::free( bool isBuild )
   log.println( "Freeing Render {" );
   log.indent();
 
+#ifndef OZ_GL_COMPATIBLE
   if( isOffscreen ) {
     glDeleteFramebuffers( 1, &mainFrame );
     glDeleteTextures( 1, &colourBuffer );
     glDeleteRenderbuffers( 1, &depthBuffer );
   }
+#endif
 
   ui::ui.free();
   shape.unload();

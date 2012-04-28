@@ -152,25 +152,25 @@ void Alloc::printLeaks()
 
 #endif
 
-inline static void* aligned_malloc( size_t size )
+static void* aligned_malloc( size_t size )
 {
-#if defined( _WIN32 )
+#if defined( __native_client__ ) || defined( __ANDROID__ )
 
-  return _aligned_malloc( size, Alloc::ALIGNMENT );
-
-#elif defined( __ANDROID__ )
-
-  size += Alloc::alignUp<size_t>( sizeof( void* ) );
+  size += Alloc::alignUp( sizeof( void* ) );
 
   void* ptr = malloc( size );
   if( ptr == null ) {
     return null;
   }
 
-  char* begin = Alloc::alignUp<char*>( reinterpret_cast<char*>( ptr ) + sizeof( void* ) );
-  reinterpret_cast<void**>( begin )[-1] = ptr;
+  void* begin = Alloc::alignUp<char>( static_cast<char*>( ptr ) + sizeof( void* ) );
+  static_cast<void**>( begin )[-1] = ptr;
 
   return begin;
+
+#elif defined( _WIN32 )
+
+  return _aligned_malloc( size, Alloc::ALIGNMENT );
 
 #else
 
@@ -183,16 +183,16 @@ inline static void* aligned_malloc( size_t size )
 #endif
 }
 
-inline static void aligned_free( void* ptr )
+static void aligned_free( void* ptr )
 {
-#if defined( _WIN32 )
+#if defined( __native_client__ ) || defined( __ANDROID__ )
+
+  ptr = static_cast<void**>( ptr )[-1];
+  free( ptr );
+
+#elif defined( _WIN32 )
 
   _aligned_free( ptr );
-
-#elif defined( __ANDROID__ )
-
-  ptr = reinterpret_cast<void**>( ptr )[-1];
-  free( ptr );
 
 #else
 
@@ -204,7 +204,7 @@ inline static void aligned_free( void* ptr )
 static void* allocateObject( void* ptr, size_t size )
 {
 #ifdef OZ_TRACK_LEAKS
-  TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
+  TraceEntry* st = static_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
 # ifdef _WIN32
   EnterCriticalSection( &mutex.id );
@@ -235,8 +235,8 @@ static void* allocateObject( void* ptr, size_t size )
   Alloc::maxCount = max<int>( Alloc::count, Alloc::maxCount );
   Alloc::maxAmount = max<size_t>( Alloc::amount, Alloc::maxAmount );
 
-  ptr = reinterpret_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size_t ) );
-  reinterpret_cast<size_t*>( ptr )[-1] = size;
+  ptr = static_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size_t ) );
+  static_cast<size_t*>( ptr )[-1] = size;
 
   return ptr;
 }
@@ -244,7 +244,7 @@ static void* allocateObject( void* ptr, size_t size )
 static void* allocateArray( void* ptr, size_t size )
 {
 #ifdef OZ_TRACK_LEAKS
-  TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
+  TraceEntry* st = static_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
 # ifdef _WIN32
   EnterCriticalSection( &mutex.id );
@@ -275,16 +275,16 @@ static void* allocateArray( void* ptr, size_t size )
   Alloc::maxCount = max<int>( Alloc::count, Alloc::maxCount );
   Alloc::maxAmount = max<size_t>( Alloc::amount, Alloc::maxAmount );
 
-  ptr = reinterpret_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size_t ) );
-  reinterpret_cast<size_t*>( ptr )[-1] = size;
+  ptr = static_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size_t ) );
+  static_cast<size_t*>( ptr )[-1] = size;
 
   return ptr;
 }
 
 static void deallocateObject( void* ptr )
 {
-  size_t size = reinterpret_cast<size_t*>( ptr )[-1];
-  ptr = reinterpret_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
+  size_t size = static_cast<size_t*>( ptr )[-1];
+  ptr = static_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
 
   --Alloc::count;
   Alloc::amount -= size;
@@ -358,8 +358,8 @@ backtraceFound:
 
 static void deallocateArray( void* ptr )
 {
-  size_t size = reinterpret_cast<size_t*>( ptr )[-1];
-  ptr = reinterpret_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
+  size_t size = static_cast<size_t*>( ptr )[-1];
+  ptr = static_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
 
   --Alloc::count;
   Alloc::amount -= size;
@@ -435,7 +435,7 @@ backtraceFound:
 
 using namespace oz;
 
-#if OZ_GCC == 406
+#if OZ_GCC <= 406
 extern void* operator new ( size_t size ) throw ( std::bad_alloc )
 #else
 extern void* operator new ( size_t size )
@@ -452,7 +452,7 @@ extern void* operator new ( size_t size )
   return allocateObject( ptr, size );
 }
 
-#if OZ_GCC == 406
+#if OZ_GCC <= 406
 extern void* operator new[] ( size_t size ) throw ( std::bad_alloc )
 #else
 extern void* operator new[] ( size_t size )

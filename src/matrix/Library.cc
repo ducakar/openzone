@@ -397,8 +397,12 @@ void Library::initMusicRecurse( const char* path )
     if( file->getType() == File::DIRECTORY ) {
       initMusicRecurse( file->path() );
     }
+#ifdef OZ_NONFREE
     if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) &&
         !file->hasExtension( "mp3" ) && !file->hasExtension( "aac" ) )
+#else
+    if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) )
+#endif
     {
       continue;
     }
@@ -414,10 +418,18 @@ void Library::initMusic()
   const char* userMusicPath = config.get( "dir.music", "" );
 
   if( String::isEmpty( userMusicPath ) ) {
+#ifdef OZ_NONFREE
     log.println( "Music (*.oga, *.ogg, *.mp3, *.aac in 'music') {" );
+#else
+    log.println( "Music (*.oga, *.ogg in 'music') {" );
+#endif
   }
   else {
+#ifdef OZ_NONFREE
     log.println( "Music (*.oga, *.ogg, *.mp3, *.aac in 'music' and '%s') {", userMusicPath );
+#else
+    log.println( "Music (*.oga, *.ogg in 'music' and '%s') {", userMusicPath );
+#endif
   }
   log.indent();
 

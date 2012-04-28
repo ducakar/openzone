@@ -262,7 +262,7 @@ bool File::map()
   }
 
   size = int( GetFileSize( mapping, null ) );
-  data = reinterpret_cast<char*>( MapViewOfFile( mapping, FILE_MAP_READ, 0, 0, 0 ) );
+  data = static_cast<char*>( MapViewOfFile( mapping, FILE_MAP_READ, 0, 0, 0 ) );
   CloseHandle( mapping );
   CloseHandle( file );
 
@@ -284,8 +284,8 @@ bool File::map()
   }
 
   size = int( statInfo.st_size );
-  data = reinterpret_cast<char*>( mmap( null, size_t( statInfo.st_size ),
-                                        PROT_READ, MAP_SHARED, fd, 0 ) );
+  data = static_cast<char*>( mmap( null, size_t( statInfo.st_size ),
+                                   PROT_READ, MAP_SHARED, fd, 0 ) );
   close( fd );
 
   if( data == MAP_FAILED ) {
@@ -552,7 +552,17 @@ DArray<File> File::ls()
     return array;
   }
 
+#ifdef __native_client__
+  closedir( directory );
+  directory = opendir( filePath );
+
+  if( directory == null ) {
+    return array;
+  }
+#else
   rewinddir( directory );
+#endif
+
   array.alloc( count );
 
   for( int i = 0; i < count; ) {

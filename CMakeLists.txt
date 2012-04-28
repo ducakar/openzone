@@ -9,19 +9,33 @@ project( openzone C CXX )
 set( OZ_VERSION "0.2.85" CACHE STRING "" FORCE )
 set( OZ_SOVERSION "0" CACHE STRING "" FORCE )
 
+option( OZ_STATIC_LIB "Create liboz as static library instead of shared." OFF )
 option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory leaks." ON )
 
 set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
 set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
 
+option( OZ_GL_COMPATIBLE "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." OFF )
 option( OZ_NETWORKING "Enable networking (not supported yet)." OFF )
 option( OZ_BUMPMAP "Enable bumpmapping (not supported yet)." OFF )
+option( OZ_NONFREE "Enable support for MP3 and AAC." ON )
 
 option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
 
 #
 # Internal configuration
 #
+
+include( cmake/pch.cmake )
+include( CheckCXXSourceCompiles )
+include( CheckCXXCompilerFlag )
+include( CheckLibraryExists )
+
+if( NACL )
+  set( OZ_STATIC_LIB ON )
+  set( OZ_GL_COMPATIBLE ON )
+  set( OZ_NONFREE OFF )
+endif()
 
 if( NOT CMAKE_BUILD_TYPE )
   set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Debug RelWithDebInfo Release ReleaseGen ReleaseUse" FORCE )
@@ -33,8 +47,12 @@ else()
   set( OZ_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" CACHE STRING "" FORCE )
 endif()
 
+if( NOT OZ_STATIC_LIB )
+  set( BUILD_SHARED_LIBS ON )
+endif()
+
 if( "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64" )
-  set( OZ_LIB_SUFFIX "64" )
+  set( libSuffix "64" )
 endif()
 
 mark_as_advanced( OZ_VERSION )
@@ -43,31 +61,39 @@ mark_as_advanced( OZ_APPLICATION_NAME )
 mark_as_advanced( OZ_APPLICATION_TITLE )
 mark_as_advanced( OZ_SYSTEM_NAME )
 
-# detect clang
-string( REGEX MATCH "clang\\+\\+$" compiler_base "${CMAKE_CXX_COMPILER}" )
-if( "${compiler_base}" STREQUAL "clang++" )
-  set( OZ_CLANG ON )
-endif()
-
 #
 # Libraries
 #
 
-include( cmake/pch.cmake )
-include( CheckLibraryExists )
+if( NACL )
+  find_package( ZLIB REQUIRED )
 
-if( WIN32 )
+  find_library( PEPPER_LIBRARY ppapi )
+  find_library( PEPPER_CXX_LIBRARY ppapi_cpp )
+  find_library( PEPPER_GLES2_LIBRARY ppapi_gles2 )
+  find_library( FREETYPE_LIBRARY freetype )
+  find_library( OGG_LIBRARY ogg )
+  find_library( VORBIS_LIBRARY vorbis )
+
+  mark_as_advanced( PEPPER_LIBRARY )
+  mark_as_advanced( PEPPER_CXX_LIBRARY )
+  mark_as_advanced( PEPPER_GLES2_LIBRARY )
+  mark_as_advanced( FREETYPE_LIBRARY )
+  mark_as_advanced( OGG_LIBRARY )
+  mark_as_advanced( VORBIS_LIBRARY )
+elseif( WIN32 )
+  find_package( OpenGL REQUIRED )
+
   find_library( WINMM_LIBRARY winmm )
 
-  mark_as_advanced( MINGW32_LIBRARY )
   mark_as_advanced( WINMM_LIBRARY )
 else()
+  find_package( OpenGL REQUIRED )
+
   find_library( RT_LIBRARY rt )
-  find_library( PTHREAD_LIBRARY pthread )
   find_library( PULSESIMPLE_LIBRARY pulse-simple )
 
   mark_as_advanced( RT_LIBRARY )
-  mark_as_advanced( PTHREAD_LIBRARY )
   mark_as_advanced( PULSESIMPLE_LIBRARY )
 endif()
 
@@ -75,27 +101,7 @@ find_package( PhysFS REQUIRED )
 find_package( SDL REQUIRED )
 find_package( SDL_ttf REQUIRED )
 find_package( Lua51 REQUIRED )
-find_package( OpenGL REQUIRED )
 find_package( OpenAL REQUIRED )
-
-if( NOT DEFINED FREEIMAGE_INCLUDE_DIR )
-  set( FREEIMAGE_INCLUDE_DIR "" CACHE PATH "" FORCE )
-endif()
-if( NOT DEFINED OGG_INCLUDE_DIR )
-  set( OGG_INCLUDE_DIR "" CACHE PATH "" FORCE )
-endif()
-if( NOT DEFINED VORBIS_INCLUDE_DIR )
-  set( VORBIS_INCLUDE_DIR "" CACHE PATH "" FORCE )
-endif()
-if( NOT DEFINED VORBISFILE_INCLUDE_DIR )
-  set( VORBISFILE_INCLUDE_DIR "" CACHE PATH "" FORCE )
-endif()
-if( NOT DEFINED MAD_INCLUDE_DIR )
-  set( MAD_INCLUDE_DIR "" CACHE PATH "" FORCE )
-endif()
-if( NOT DEFINED FAAD_INCLUDE_DIR )
-  set( FAAD_INCLUDE_DIR "" CACHE PATH "" FORCE )
-endif()
 
 find_library( FREEIMAGE_LIBRARY freeimage )
 find_library( VORBISFILE_LIBRARY vorbisfile )
@@ -107,41 +113,38 @@ mark_as_advanced( SDL_LIBRARY )
 mark_as_advanced( SDLMAIN_LIBRARY )
 mark_as_advanced( SDLTTF_INCLUDE_DIR )
 mark_as_advanced( SDLTTF_LIBRARY )
-mark_as_advanced( FREEIMAGE_INCLUDE_DIR )
 mark_as_advanced( FREEIMAGE_LIBRARY )
-mark_as_advanced( OGG_INCLUDE_DIR )
-mark_as_advanced( VORBIS_INCLUDE_DIR )
-mark_as_advanced( VORBISFILE_INCLUDE_DIR )
 mark_as_advanced( VORBISFILE_LIBRARY )
-mark_as_advanced( MAD_INCLUDE_DIR )
-mark_as_advanced( FAAD_INCLUDE_DIR )
 
-include_directories( ${PHYSFS_INCLUDE_DIR} )
 include_directories( ${SDL_INCLUDE_DIR} )
-include_directories( ${SDLTTF_INCLUDE_DIR} )
-include_directories( ${LUA_INCLUDE_DIR} )
-include_directories( ${OPENGL_INCLUDE_DIR} )
-include_directories( ${OPENAL_INCLUDE_DIR} )
-include_directories( ${FREEIMAGE_INCLUDE_DIR} )
-include_directories( ${OGG_INCLUDE_DIR} )
-include_directories( ${VORBIS_INCLUDE_DIR} )
-include_directories( ${VORBISFILE_INCLUDE_DIR} )
-include_directories( ${MAD_INCLUDE_DIR} )
-include_directories( ${FAAD_INCLUDE_DIR} )
 
-if( WIN32 )
+if( NACL )
+  set( libs_oz "${PHYSFS_LIBRARY}" )
+elseif( ANDROID )
+  set( libs_oz "" )
+elseif( WIN32 )
   set( libs_oz "${WINMM_LIBRARY};${PHYSFS_LIBRARY}" )
 else()
-  set( libs_oz "${RT_LIBRARY};${PTHREAD_LIBRARY};${PULSESIMPLE_LIBRARY};${PHYSFS_LIBRARY}" )
+  set( libs_oz "${RT_LIBRARY};${PULSESIMPLE_LIBRARY};${PHYSFS_LIBRARY}" )
 endif()
 
-set( libs_client "${PHYSFS_LIBRARY}" )
-set( libs_client "${libs_client};${SDL_LIBRARY}" )
+set( libs_client "${SDL_LIBRARY}" )
 set( libs_client "${libs_client};${SDLTTF_LIBRARY}" )
 set( libs_client "${libs_client};${LUA_LIBRARY}" )
-set( libs_client "${libs_client};${OPENGL_gl_LIBRARY}" )
 set( libs_client "${libs_client};${OPENAL_LIBRARY}" )
 set( libs_client "${libs_client};${VORBISFILE_LIBRARY}" )
+
+if( NACL )
+  set( libs_client "${libs_client};${VORBIS_LIBRARY}" )
+  set( libs_client "${libs_client};${OGG_LIBRARY}" )
+  set( libs_client "${libs_client};${FREETYPE_LIBRARY}" )
+  set( libs_client "${libs_client};${ZLIB_LIBRARY}" )
+  set( libs_client "${libs_client};${PEPPER_GLES2_LIBRARY}" )
+  set( libs_client "${libs_client};${PEPPER_CXX_LIBRARY}" )
+  set( libs_client "${libs_client};${PEPPER_LIBRARY}" )
+else()
+  set( libs_client "${libs_client};${OPENGL_gl_LIBRARY}" )
+endif()
 
 if( WIN32 )
   set( libs_client "${libs_client};${MAD_LIBRARY}" )
@@ -154,19 +157,38 @@ set( libs_tools "${libs_client};${FREEIMAGE_LIBRARY}" )
 # Compiler flags
 #
 
-set( flags "-std=c++0x -pedantic -fstrict-enums -ffast-math -pipe" )
+set( flags "-std=c++0x -pedantic -pthread -pipe -ffast-math -fstrict-enums" )
 set( warnings "-Wall -Wextra -Wconversion -Woverloaded-virtual -Wnon-virtual-dtor -Winvalid-pch" )
 set( arch_flags "-msse3 -mfpmath=sse" )
 
-if( OZ_CLANG )
+check_cxx_source_compiles( "
+#ifdef __clang__
+int main( int, char** ) { return 0; }
+#else
+# error Not LLVM/Clang
+#endif
+" isClang )
+
+check_cxx_source_compiles( "
+#if defined( __GNUC__ ) && __GNUC__ == 4 && __GNUC_MINOR__ <= 4
+int main( int, char** ) { return 0; }
+#else
+# error Not an onld GCC
+#endif
+" isLegacyGCC )
+
+if( isClang )
   set( flags "-Qunused-arguments -stdlib=libstdc++ ${flags}" )
+elseif( isLegacyGCC )
+  set( flags "-std=gnu++0x -pthread -pipe -ffast-math" )
+endif()
+
+check_cxx_compiler_flag( "-flto" hasLTO )
+if( hasLTO )
+  set( lto "-flto" )
 endif()
 
 set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release ReleaseGen ReleaseUse" )
-
-if( NOT WIN32 )
-  set( lto "-flto" )
-endif()
 
 set( CMAKE_CXX_FLAGS "${flags} ${arch_flags} ${warnings} ${CMAKE_CXX_FLAGS}" )
 set( CMAKE_CXX_FLAGS_DEBUG "-D_FORTIFY_SOURCE=2 -g3 -O0" CACHE STRING "" FORCE )

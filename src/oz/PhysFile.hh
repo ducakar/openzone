@@ -34,7 +34,7 @@ namespace oz
 {
 
 /**
- * PhysicsFS wrapper, similar to <tt>File</tt> class.
+ * Wrapper for PhysicsFS or a fake VFS, similar to <tt>File</tt> class.
  *
  * Files can only be accessed for reading through this class. Besides from <tt>File</tt> it also
  * provides some PhysicsFS-specific functions.

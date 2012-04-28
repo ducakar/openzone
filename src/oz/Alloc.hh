@@ -128,7 +128,7 @@ class Alloc
  *
  * @ingroup oz
  */
-#if OZ_GCC == 406
+#if OZ_GCC <= 406
 extern void* operator new ( size_t size ) throw ( std::bad_alloc );
 #else
 extern void* operator new ( size_t size );
@@ -144,7 +144,7 @@ extern void* operator new ( size_t size );
  *
  * @ingroup oz
  */
-#if OZ_GCC == 406
+#if OZ_GCC <= 406
 extern void* operator new[] ( size_t size ) throw( std::bad_alloc );
 #else
 extern void* operator new[] ( size_t size );

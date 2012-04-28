@@ -12,5 +12,6 @@
 /Windows-*
 /MacOSX-*
 /Android-*
+/NaCl-*
 
 /*.patch

@@ -339,51 +339,49 @@ void Orbis::read( InputStream* istream )
   for( int i = 0; i < nStructs; ++i ) {
     bspName = istream->readString();
 
-    if( bspName.isEmpty() ) {
-      structs.add( null );
-    }
-    else {
+    Struct* str = null;
+
+    if( !bspName.isEmpty() ) {
       const BSP* bsp = library.bsp( bspName );
       const_cast<BSP*>( bsp )->request();
 
-      Struct* str = new Struct( bsp, istream );
-      structs.add( str );
+      str = new Struct( bsp, istream );
       position( str );
     }
+
+    structs.add( str );
   }
   for( int i = 0; i < nObjects; ++i ) {
     className = istream->readString();
 
-    if( className.isEmpty() ) {
-      objects.add( null );
-    }
-    else {
+    Object* obj = null;
+
+    if( !className.isEmpty() ) {
       const ObjectClass* clazz = library.objClass( className );
 
-      Object* obj = clazz->create( istream );
-      objects.add( obj );
+      obj = clazz->create( istream );
 
-      // no need to register objects since Lua state is being deserialised
+      // No need to register objects since Lua state is being deserialised.
 
       bool isCut = istream->readBool();
       if( !isCut ) {
         position( obj );
       }
     }
+    objects.add( obj );
   }
   for( int i = 0; i < nFrags; ++i ) {
     poolName = istream->readString();
 
-    if( poolName.isEmpty() ) {
-      frags.add( null );
-    }
-    else {
+    Frag* frag = null;
+
+    if( !poolName.isEmpty() ) {
       const FragPool* pool = library.fragPool( poolName );
 
-      Frag* frag = new Frag( pool, istream );
-      frags.add( frag );
+      frag = new Frag( pool, istream );
       position( frag );
     }
+    frags.add( frag );
   }
 
   int n;

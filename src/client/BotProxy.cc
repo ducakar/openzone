@@ -361,9 +361,9 @@ void BotProxy::update()
     return;
   }
 
-  const Bot*      bot   = camera.botObj;
-  const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
-  const Vehicle*  veh   = camera.vehicleObj;
+  const Bot*      bot      = camera.botObj;
+  const BotClass* botClazz = static_cast<const BotClass*>( bot->clazz );
+  const Vehicle*  veh      = camera.vehicleObj;
 
   if( !isExternal ) {
     if( veh == null ) {
@@ -371,9 +371,7 @@ void BotProxy::update()
       camera.v = bot->v;
     }
 
-    if( bot->parent != -1 && orbis.objects[bot->parent] != null ) { // inside vehicle
-      const Vehicle* veh = static_cast<const Vehicle*>( orbis.objects[bot->parent] );
-
+    if( veh != null ) { // inside vehicle
       Mat44 rot = Mat44::rotation( veh->rot );
 
       camera.w = 0.0f;
@@ -390,8 +388,8 @@ void BotProxy::update()
         float phase = bot->step * Math::TAU;
         float sine  = Math::sin( phase );
 
-        bobTheta = sine * clazz->bobRotation;
-        bobBias  = sine*sine * clazz->bobAmplitude;
+        bobTheta = sine * botClazz->bobRotation;
+        bobBias  = sine*sine * botClazz->bobAmplitude;
       }
       else if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
                ( Bot::MOVING_BIT | Bot::SWIMMING_BIT ) )
@@ -399,7 +397,7 @@ void BotProxy::update()
         float sine = Math::sin( bot->step * Math::TAU / 2.0f );
 
         bobTheta = 0.0f;
-        bobBias  = sine*sine * clazz->bobSwimAmplitude;
+        bobBias  = sine*sine * botClazz->bobSwimAmplitude;
       }
       else {
         bobTheta *= BOB_SUPPRESSION_COEF;
@@ -427,11 +425,7 @@ void BotProxy::update()
     Point origin = Point( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
     Vec3  offset;
 
-    if( bot->parent != -1 && orbis.objects[bot->parent] != null ) {
-      const Vehicle* veh = static_cast<const Vehicle*>( orbis.objects[bot->parent] );
-
-      hard_assert( veh->flags & Object::VEHICLE_BIT );
-
+    if( veh != null ) {
       float dist = veh->dim.fastL() * EXTERNAL_CAM_DIST;
       offset = camera.rotMat * Vec3( 0.0f, VEHICLE_CAM_UP_FACTOR * dist, dist );
     }
@@ -470,9 +464,9 @@ void BotProxy::update()
     hvsc[4] = hvsc[2] * hvsc[0];
     hvsc[5] = hvsc[2] * hvsc[1];
 
-    Vec3  at    = Vec3( -hvsc[4], hvsc[5], -hvsc[3] );
+    Vec3  at    = Vec3( -hvsc[4], +hvsc[5], -hvsc[3] );
     Point eye   = bot->p + Vec3( 0.0f, 0.0f, bot->camZ );
-    Vec3  reach = at * clazz->reachDist;
+    Vec3  reach = at * botClazz->reachDist;
 
     collider.mask = ~0;
     collider.translate( eye, reach, bot );

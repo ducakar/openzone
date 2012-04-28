@@ -217,7 +217,7 @@ class Pool
     {
       hard_assert( count != 0 );
 
-      Slot* slot = reinterpret_cast<Slot*>( ptr );
+      Slot* slot = static_cast<Slot*>( ptr );
 
 #ifndef NDEBUG
       __builtin_memset( slot, 0xee, sizeof( Slot ) );

@@ -88,23 +88,18 @@ namespace oz
 
 #ifdef NDEBUG
 
-# define soft_assert( cond ) \
-  static_cast<void>( 0 )
-
-# define hard_assert( cond ) \
-  static_cast<void>( 0 )
+# define soft_assert( cond ) void( 0 )
+# define hard_assert( cond ) void( 0 )
 
 #else
 
 # define soft_assert( cond ) \
   ( ( cond ) ? \
-    static_cast<void>( 0 ) : \
-    oz::_softAssertHelper( #cond, __FILE__, __LINE__, __PRETTY_FUNCTION__ ) )
+    void( 0 ) : oz::_softAssertHelper( #cond, __FILE__, __LINE__, __PRETTY_FUNCTION__ ) )
 
 # define hard_assert( cond ) \
   ( ( cond ) ? \
-    static_cast<void>( 0 ) : \
-    oz::_hardAssertHelper( #cond, __FILE__, __LINE__, __PRETTY_FUNCTION__ ) )
+    void( 0 ) : oz::_hardAssertHelper( #cond, __FILE__, __LINE__, __PRETTY_FUNCTION__ ) )
 
 #endif
 

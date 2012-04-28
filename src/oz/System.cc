@@ -34,14 +34,35 @@
 #include <cstdio>
 #include <cstdlib>
 
-#if defined( _WIN32 )
+#if defined( __native_client__ ) || defined( __ANDROID__ )
+# include <unistd.h>
+#elif defined( _WIN32 )
 # include <windows.h>
 # include <mmsystem.h>
-#elif defined( __ANDROID__ )
 #else
 # include <unistd.h>
 # include <pthread.h>
 # include <pulse/simple.h>
+#endif
+
+#ifdef __native_client__
+
+// Fake implementations for signal() and raise() functions. Missing in newlib library.
+extern "C"
+{
+
+  void ( * signal( int, void ( * )( int ) ) )( int )
+  {
+    return oz::null;
+  }
+
+  int raise( int )
+  {
+    return 0;
+  }
+
+}
+
 #endif
 
 namespace oz
@@ -85,7 +106,8 @@ static const char* const SIGNALS[][2] =
   { "SIGSYS",    "Bad system call"            }  // 31
 };
 
-#if defined( _WIN32 )
+#if defined( __native_client__ ) || defined( __ANDROID__ )
+#elif defined( _WIN32 )
 
 struct Wave
 {
@@ -118,7 +140,6 @@ static const Wave WAVE_SAMPLE = {
 // Needed to protect nBellUsers counter.
 static CRITICAL_SECTION mutex;
 
-#elif defined( __ANDROID__ )
 #else
 
 static const pa_sample_spec BELL_SPEC = { PA_SAMPLE_U8, 11025, 1 };
@@ -179,7 +200,8 @@ static void unexpected()
   System::error( 0, "EXCEPTION SPECIFICATION VIOLATION" );
 }
 
-#if defined( _WIN32 )
+#if defined( __native_client__ ) || defined( __ANDROID__ )
+#elif defined( _WIN32 )
 
 static DWORD WINAPI bellThread( LPVOID )
 {
@@ -192,7 +214,6 @@ static DWORD WINAPI bellThread( LPVOID )
   return 0;
 }
 
-#elif defined( __ANDROID__ )
 #else
 
 static void* bellThread( void* )
@@ -216,25 +237,21 @@ static void* bellThread( void* )
 
 static void waitBell()
 {
-#if defined( _WIN32 )
-
+# ifdef _WIN32
   while( nBellUsers != 0 ) {
     Sleep( 100 );
   }
-
-#elif defined( __ANDROID__ )
-#else
-
+# else
   while( nBellUsers != 0 ) {
     usleep( 100000 );
   }
-
-#endif
+# endif
 }
 
 System::System()
 {
-#ifdef _WIN32
+#if defined( __native_client__ )
+#elif defined( _WIN32 )
   InitializeCriticalSection( &mutex );
 #else
   // Disable default handler for TRAP signal that crashes the process.
@@ -258,13 +275,13 @@ void System::abort( bool preventHalt )
   if( !preventHalt && ( initFlags & HALT_BIT ) ) {
     printf( "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
 
-#ifdef _WIN32
+# ifdef _WIN32
     while( true ) {
       Sleep( 1000 );
     }
-#else
+# else
     while( sleep( 1 ) == 0 );
-#endif
+# endif
   }
 
   waitBell();
@@ -285,7 +302,8 @@ void System::trap()
 
 void System::bell()
 {
-#if defined( _WIN32 )
+#if defined( __native_client__ ) || defined( __ANDROID__ )
+#elif defined( _WIN32 )
 
   EnterCriticalSection( &mutex );
   ++nBellUsers;
@@ -294,7 +312,6 @@ void System::bell()
   HANDLE thread = CreateThread( null, 0, bellThread, null, 0, null );
   CloseHandle( thread );
 
-#elif defined( __ANDROID__ )
 #else
 
   pthread_mutex_lock( &mutex );
@@ -375,6 +392,7 @@ void System::free()
 {
   std::set_unexpected( std::unexpected );
   std::set_terminate( std::terminate );
+
   resetSignals();
 
   initFlags = 0;

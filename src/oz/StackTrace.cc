@@ -28,7 +28,7 @@
 
 #include "arrays.hh"
 
-#if defined( _WIN32 ) || defined( __ANDROID__ )
+#if defined( __native_client__ ) || defined( __ANDROID__ ) || defined( _WIN32 )
 #else
 # include <cstdlib>
 # include <cstring>
@@ -39,7 +39,7 @@
 namespace oz
 {
 
-#if defined( _WIN32 ) || defined( __ANDROID__ )
+#if defined( __native_client__ ) || defined( __ANDROID__ ) || defined( _WIN32 )
 
 StackTrace StackTrace::current( int )
 {
@@ -211,7 +211,7 @@ char** StackTrace::symbols() const
 
   size_t headerSize  = size_t( nFrames ) * sizeof( char* );
   size_t bodySize    = size_t( out - outputBuffer );
-  char** niceSymbols = reinterpret_cast<char**>( realloc( symbols, headerSize + bodySize ) );
+  char** niceSymbols = static_cast<char**>( realloc( symbols, headerSize + bodySize ) );
 
   memcpy( &niceSymbols[nFrames], outputBuffer, bodySize );
 
