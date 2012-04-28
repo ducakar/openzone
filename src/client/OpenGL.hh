@@ -40,7 +40,11 @@
 # define GL_GLEXT_PROTOTYPES
 #endif
 
-#include <GL/gl.h>
+#if defined( __native_client__ ) || defined( __ANDROID__ )
+# include <GLES2/gl2.h>
+#else
+# include <GL/gl.h>
+#endif
 
 namespace oz
 {

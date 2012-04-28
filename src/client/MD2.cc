@@ -245,6 +245,7 @@ void MD2::load()
   nFramePositions = is.readInt();
   weaponTransf    = is.readMat44();
 
+#ifndef OZ_GL_COMPATIBLE
   if( shader.hasVertexTexture ) {
     int vertexBufferSize = nFramePositions * nFrames * int( sizeof( Vec4 ) );
     int normalBufferSize = nFramePositions * nFrames * int( sizeof( Vec4 ) );
@@ -267,7 +268,9 @@ void MD2::load()
 
     mesh.load( &is, GL_STATIC_DRAW, file.path() );
   }
-  else {
+  else
+#endif
+  {
     positions = new Point[nFramePositions * nFrames];
     normals   = new Vec3[nFramePositions * nFrames];
 
@@ -303,13 +306,16 @@ void MD2::drawFrame( int frame ) const
 {
   shader.use( shaderId );
 
+#ifndef OZ_GL_COMPATIBLE
   if( shader.hasVertexTexture ) {
     glActiveTexture( GL_TEXTURE3 );
     glBindTexture( GL_TEXTURE_2D, vertexTexId );
     glActiveTexture( GL_TEXTURE4 );
     glBindTexture( GL_TEXTURE_2D, normalTexId );
   }
-  else {
+  else
+#endif
+  {
     const Point* framePositions = &positions[frame * nFramePositions];
     const Vec3*  frameNormals   = &normals[frame * nFramePositions];
 
@@ -345,6 +351,7 @@ void MD2::draw( const AnimState* anim ) const
   shader.use( shaderId );
   tf.apply();
 
+#ifndef OZ_GL_COMPATIBLE
   if( shader.hasVertexTexture ) {
     glActiveTexture( GL_TEXTURE3 );
     glBindTexture( GL_TEXTURE_2D, vertexTexId );
@@ -356,7 +363,9 @@ void MD2::draw( const AnimState* anim ) const
                  float( anim->nextFrame ) / float( nFrames ),
                  anim->currTime * anim->fps );
   }
-  else {
+  else
+#endif
+  {
     const Point* currFramePositions = &positions[anim->currFrame * nFramePositions];
     const Point* nextFramePositions = &positions[anim->nextFrame * nFramePositions];
     const Vec3*  currFrameNormals   = &normals[anim->currFrame * nFramePositions];

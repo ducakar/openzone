@@ -47,6 +47,8 @@ Sound sound;
 
 const float Sound::MAX_DISTANCE = 160.0f;
 
+#ifdef OZ_NONFREE
+
 OZ_DLDECL( mad_stream_init   );
 OZ_DLDECL( mad_stream_finish );
 OZ_DLDECL( mad_stream_buffer );
@@ -61,16 +63,20 @@ OZ_DLDECL( NeAACDecOpen      );
 OZ_DLDECL( NeAACDecClose     );
 OZ_DLDECL( NeAACDecDecode    );
 
+#endif
+
 static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle );
 static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, null, null, null };
 
 static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle )
 {
-  return size_t( PHYSFS_read( reinterpret_cast<PHYSFS_File*>( handle ), buffer,
+  return size_t( PHYSFS_read( static_cast<PHYSFS_File*>( handle ), buffer,
                               uint( size ), uint( n ) ) );
 }
 
-static inline short madFixedToShort( mad_fixed_t f )
+#ifdef OZ_NONFREE
+
+inline short madFixedToShort( mad_fixed_t f )
 {
   if( f < -MAD_F_ONE ) {
     return std::numeric_limits<short>::min();
@@ -82,6 +88,8 @@ static inline short madFixedToShort( mad_fixed_t f )
     return short( f >> ( MAD_F_FRACBITS - 15 ) );
   }
 }
+
+#endif
 
 int Sound::musicMain( void* )
 {
@@ -120,6 +128,7 @@ void Sound::musicOpen( const char* path )
   if( file.hasExtension( "oga" ) || file.hasExtension( "ogg" ) ) {
     musicStreamType = OGG;
   }
+#ifdef OZ_NONFREE
   else if( file.hasExtension( "mp3" ) ) {
     if( libmad != null ) {
       musicStreamType = MP3;
@@ -136,6 +145,7 @@ void Sound::musicOpen( const char* path )
       musicStreamType = NONE;
     }
   }
+#endif
   else {
     throw Exception( "Unknown extension for file '%s'", path );
   }
@@ -175,6 +185,7 @@ void Sound::musicOpen( const char* path )
 
       break;
     }
+#ifdef OZ_NONFREE
     case MP3: {
       musicFile = PHYSFS_openRead( path );
       if( musicFile == null ) {
@@ -271,6 +282,11 @@ void Sound::musicOpen( const char* path )
 
       break;
     }
+#else
+    default: {
+      break;
+    }
+#endif
   }
 }
 
@@ -286,6 +302,7 @@ void Sound::musicClear()
       PHYSFS_close( musicFile );
       break;
     }
+#ifdef OZ_NONFREE
     case MP3: {
       mad_synth_finish( &madSynth );
       mad_frame_finish( &madFrame );
@@ -300,6 +317,11 @@ void Sound::musicClear()
       PHYSFS_close( musicFile );
       break;
     }
+#else
+    default: {
+      break;
+    }
+#endif
   }
 }
 
@@ -328,6 +350,7 @@ int Sound::musicDecode()
 
       return bytesRead;
     }
+#ifdef OZ_NONFREE
     case MP3: {
       short* musicOutput    = reinterpret_cast<short*>( musicBuffer );
       short* musicOutputEnd = reinterpret_cast<short*>( musicBuffer + MUSIC_BUFFER_SIZE );
@@ -410,7 +433,7 @@ int Sound::musicDecode()
         }
 
         NeAACDecFrameInfo frameInfo;
-        aacOutputBuffer = reinterpret_cast<char*>
+        aacOutputBuffer = static_cast<char*>
                           ( NeAACDecDecode( aacDecoder, &frameInfo, musicInputBuffer, aacInputBytes ) );
 
         if( aacOutputBuffer == null ) {
@@ -431,6 +454,11 @@ int Sound::musicDecode()
       }
       while( true );
     }
+#else
+    default: {
+      return 0;
+    }
+#endif
   }
 }
 
@@ -771,13 +799,15 @@ void Sound::init()
   setVolume( config.getSet( "sound.volume", 1.0f ) );
   setMusicVolume( 0.3f );
 
-#ifdef _WIN32
+#ifdef OZ_NONFREE
+
+# ifdef _WIN32
   libmad  = SDL_LoadObject( "libmad.dll" );
   libfaad = SDL_LoadObject( "libfaad2.dll" );
-#else
+# else
   libmad  = SDL_LoadObject( "libmad.so" );
   libfaad = SDL_LoadObject( "libfaad.so" );
-#endif
+# endif
 
   if( libmad != null ) {
     OZ_DLLOAD( libmad, mad_stream_init   );
@@ -796,6 +826,8 @@ void Sound::init()
     OZ_DLLOAD( libfaad, NeAACDecClose  );
     OZ_DLLOAD( libfaad, NeAACDecDecode );
   }
+
+#endif
 
   isMusicAlive       = true;
   isSoundAlive       = true;
@@ -839,12 +871,14 @@ void Sound::free()
   musicMainSemaphore = null;
   musicThread        = null;
 
+#ifdef OZ_NONFREE
   if( libfaad != null ) {
     SDL_UnloadObject( libfaad );
   }
   if( libmad != null ) {
     SDL_UnloadObject( libmad );
   }
+#endif
 
   if( soundContext != null ) {
     playedStructs.dealloc();

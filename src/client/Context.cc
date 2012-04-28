@@ -138,10 +138,14 @@ uint Context::readTextureLayer( InputStream* stream, const char* path )
   int nMipmaps       = stream->readInt();
   int internalFormat = stream->readInt();
 
+#ifndef OZ_GL_COMPATIBLE
   bool usesS3TC = internalFormat == GL_COMPRESSED_RGB_S3TC_DXT1_EXT ||
                   internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT ||
                   internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT ||
                   internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+#else
+  bool usesS3TC = false;
+#endif
 
   if( !shader.hasS3TC && usesS3TC ) {
     throw Exception( "Texture '%s' uses S3TC but texture compression disabled", path );

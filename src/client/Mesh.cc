@@ -65,28 +65,28 @@ void Vertex::setFormat()
 {
   glEnableVertexAttribArray( Attrib::POSITION );
   glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+                         static_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
 
   glEnableVertexAttribArray( Attrib::TEXCOORD );
   glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+                         static_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
 
   glEnableVertexAttribArray( Attrib::NORMAL );
   glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
+                         static_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 
 #ifdef OZ_BUMPMAP
   glEnableVertexAttribArray( Attrib::TANGENT );
   glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
+                         static_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
 
   glEnableVertexAttribArray( Attrib::BINORMAL );
   glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
+                         static_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
 
   glEnableVertexAttribArray( Attrib::DETAILCOORD );
   glVertexAttribPointer( Attrib::DETAILCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, detailCoord ) );
+                         static_cast<const char*>( 0 ) + offsetof( Vertex, detailCoord ) );
 #endif
 }
 
@@ -131,8 +131,12 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
   int nVertices = istream->readInt();
   int nIndices  = istream->readInt();
 
+#ifdef OZ_GL_COMPATIBLE
+  vao = 1;
+#else
   glGenVertexArrays( 1, &vao );
   glBindVertexArray( vao );
+#endif
 
   int vboSize = nVertices * int( sizeof( Vertex ) );
   int iboSize = nIndices * int( sizeof( ushort ) );
@@ -145,9 +149,11 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
   glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, istream->forward( iboSize ), GL_STATIC_DRAW );
 
+#ifndef OZ_GL_COMPATIBLE
   Vertex::setFormat();
 
   glBindVertexArray( 0 );
+#endif
 
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
@@ -246,7 +252,9 @@ void Mesh::unload()
 
     glDeleteBuffers( 1, &ibo );
     glDeleteBuffers( 1, &vbo );
+#ifndef OZ_GL_COMPATIBLE
     glDeleteVertexArrays( 1, &vao );
+#endif
 
     ibo = 0;
     vbo = 0;
@@ -266,7 +274,14 @@ void Mesh::upload( const Vertex* vertices, int nVertices, uint usage ) const
 void Mesh::bind() const
 {
   if( this != lastMesh ) {
+#ifdef OZ_GL_COMPATIBLE
+    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+
+    Vertex::setFormat();
+#else
     glBindVertexArray( vao );
+#endif
   }
 }
 
@@ -299,7 +314,7 @@ void Mesh::drawComponent( int id, int mask ) const
       glUniform4fv( param.oz_Colour, 1, shader.colour );
 
       glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
-                      reinterpret_cast<const ushort*>( 0 ) + part.firstIndex );
+                      static_cast<const ushort*>( 0 ) + part.firstIndex );
     }
   }
 }
@@ -313,7 +328,14 @@ void Mesh::draw( int mask ) const
   }
 
   if( this != lastMesh ) {
+#ifdef OZ_GL_COMPATIBLE
+    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+
+    Vertex::setFormat();
+#else
     glBindVertexArray( vao );
+#endif
   }
 
   for( int i = 0; i < nParts; ++i ) {
@@ -330,7 +352,7 @@ void Mesh::draw( int mask ) const
       glUniform4fv( param.oz_Colour, 1, shader.colour );
 
       glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
-                      reinterpret_cast<const ushort*>( 0 ) + part.firstIndex );
+                      static_cast<const ushort*>( 0 ) + part.firstIndex );
     }
   }
 }

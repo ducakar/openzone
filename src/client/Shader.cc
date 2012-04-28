@@ -284,7 +284,11 @@ void Shader::init()
 {
   log.print( "Initialising Shader ..." );
 
+#ifndef OZ_GL_COMPATIBLE
   hasVertexTexture = config.getSet( "shader.vertexTexture", true );
+#else
+  hasVertexTexture = false;
+#endif
   doPostprocess    = config.get( "render.postprocess", false );
   isLowDetail      = config.get( "render.lowDetail", false );
 

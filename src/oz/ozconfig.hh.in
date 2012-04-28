@@ -34,7 +34,7 @@
  */
 
 #if defined( _MSC_VER )
-# error GCC >= 4.6 and LLVM/Clang >= 3.0 are the only supported compilers.
+# error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
 # define OZ_MSVC _MSC_VER
 #elif defined( __clang__ )
 # if __clang_major__ < 3
@@ -42,12 +42,12 @@
 # endif
 # define OZ_CLANG ( __clang_major__ * 100 + __clang_minor__ )
 #elif defined( __GNUC__ )
-# if __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 6 )
-#  error Only GCC >= 4.6 is supported.
+# if __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 4 )
+#  error Only GCC >= 4.4 is supported.
 # endif
 # define OZ_GCC ( __GNUC__ * 100 + __GNUC_MINOR__ )
 #else
-# error GCC >= 4.6 and LLVM/Clang >= 3.0 are the only supported compilers.
+# error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
 #endif
 
 #if !defined( __LP64__ ) && !defined( __LLP64__ ) && !defined( _WIN64 )
@@ -65,3 +65,10 @@
 #define OZ_ALWAYS_INLINE             __attribute__(( always_inline ))
 #define OZ_NORETURN                  __attribute__(( noreturn ))
 #define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
+
+#if defined( OZ_GCC ) && OZ_GCC < 406
+# define constexpr const
+# define noexcept throw()
+# define nullptr  0
+  namespace std { typedef decltype( nullptr ) nullptr_t; }
+#endif

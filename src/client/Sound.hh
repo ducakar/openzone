@@ -30,11 +30,14 @@
 // We don't use those callbacks anywhere and they don't compile on MinGW.
 #define OV_EXCLUDE_STATIC_CALLBACKS
 
-#include <AL/alc.h>
 #include <physfs.h>
+#include <AL/alc.h>
 #include <vorbis/vorbisfile.h>
-#include <mad.h>
-#include <neaacdec.h>
+
+#ifdef OZ_NONFREE
+# include <mad.h>
+# include <neaacdec.h>
+#endif
 
 namespace oz
 {
@@ -72,15 +75,22 @@ class Sound
     uint           musicBufferIds[2];
     int            musicBuffersQueued;
     char           musicBuffer[MUSIC_BUFFER_SIZE];
+#ifdef OZ_NONFREE
     ubyte          musicInputBuffer[MUSIC_INPUT_BUFFER_SIZE + MAD_BUFFER_GUARD];
+#else
+    ubyte          musicInputBuffer[MUSIC_INPUT_BUFFER_SIZE];
+#endif
 
+#ifdef OZ_NONFREE
     void*          libmad;
     void*          libfaad;
+#endif
 
     PHYSFS_File*   musicFile;
 
     OggVorbis_File oggStream;
 
+#ifdef OZ_NONFREE
     mad_stream     madStream;
     mad_frame      madFrame;
     mad_synth      madSynth;
@@ -94,6 +104,7 @@ class Sound
     int            aacWrittenBytes;
     int            aacBufferBytes;
     size_t         aacInputBytes;
+#endif
 
     // music track id to switch to, -1 to do nothing, -2 stop playing
     int            selectedTrack;

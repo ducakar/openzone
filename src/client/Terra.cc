@@ -79,9 +79,19 @@ void Terra::draw()
   // we draw column-major (strips along y axis) for better cache performance
   glFrontFace( GL_CW );
 
+#ifdef OZ_GL_COMPATIBLE
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+#endif
+
   for( int i = span.minX; i <= span.maxX; ++i ) {
     for( int j = span.minY; j <= span.maxY; ++j ) {
+#ifdef OZ_GL_COMPATIBLE
+      glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
+
+      Vertex::setFormat();
+#else
       glBindVertexArray( vaos[i][j] );
+#endif
       glDrawElements( GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, 0 );
     }
   }
@@ -117,10 +127,20 @@ void Terra::drawWater()
     glFrontFace( GL_CW );
   }
 
+#ifdef OZ_GL_COMPATIBLE
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+#endif
+
   for( int i = span.minX; i <= span.maxX; ++i ) {
     for( int j = span.minY; j <= span.maxY; ++j ) {
       if( waterTiles.get( i * TILES + j ) ) {
+#ifdef OZ_GL_COMPATIBLE
+        glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
+
+        Vertex::setFormat();
+#else
         glBindVertexArray( vaos[i][j] );
+#endif
         glDrawElements( GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, 0 );
       }
     }
@@ -153,7 +173,9 @@ void Terra::load()
   detailTexId = context.readTextureLayer( &is, path );
   mapTexId    = context.readTextureLayer( &is, path );
 
+#ifndef OZ_GL_COMPATIBLE
   glGenVertexArrays( TILES * TILES, &vaos[0][0] );
+#endif
   glGenBuffers( TILES * TILES, &vbos[0][0] );
   glGenBuffers( 1, &ibo );
 
@@ -167,6 +189,37 @@ void Terra::load()
 
   for( int i = 0; i < TILES; ++i ) {
     for( int j = 0; j < TILES; ++j ) {
+#ifdef OZ_GL_COMPATIBLE
+
+      Vertex* vertices = new Vertex[TILE_VERTICES];
+
+      for( int k = 0; k <= TILE_QUADS; ++k ) {
+        for( int l = 0; l <= TILE_QUADS; ++l ) {
+          int x = i * TILE_QUADS + k;
+          int y = j * TILE_QUADS + l;
+
+          Vertex& vertex = vertices[ k * ( TILE_QUADS + 1 ) + l ];
+
+          vertex.pos[0] = orbis.terra.quads[x][y].vertex.x;
+          vertex.pos[1] = orbis.terra.quads[x][y].vertex.y;
+          vertex.pos[2] = orbis.terra.quads[x][y].vertex.z;
+
+          vertex.texCoord[0] = float( x ) / float( matrix::Terra::VERTS );
+          vertex.texCoord[1] = float( y ) / float( matrix::Terra::VERTS );
+
+          vertex.normal[0] = is.readFloat();
+          vertex.normal[1] = is.readFloat();
+          vertex.normal[2] = is.readFloat();
+        }
+      }
+
+      glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
+      glBufferData( GL_ARRAY_BUFFER, vboSize, vertices, GL_STATIC_DRAW );
+
+      delete[] vertices;
+
+#else
+
       glBindVertexArray( vaos[i][j] );
 
       glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
@@ -174,7 +227,7 @@ void Terra::load()
 
       glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 
-      Vertex* vertices = reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY ) );
+      Vertex* vertices = static_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY ) );
 
       for( int k = 0; k <= TILE_QUADS; ++k ) {
         for( int l = 0; l <= TILE_QUADS; ++l ) {
@@ -201,6 +254,8 @@ void Terra::load()
       Vertex::setFormat();
 
       glBindVertexArray( 0 );
+
+#endif
     }
   }
 
@@ -233,7 +288,9 @@ void Terra::unload()
 
     glDeleteBuffers( 1, &ibo );
     glDeleteBuffers( TILES * TILES, &vbos[0][0] );
+#ifndef OZ_GL_COMPATIBLE
     glDeleteVertexArrays( TILES * TILES, &vaos[0][0] );
+#endif
 
     mapTexId = 0;
     detailTexId = 0;

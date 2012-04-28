@@ -17,8 +17,12 @@ add_subdirectory( matrix )
 add_subdirectory( nirvana )
 add_subdirectory( modules )
 add_subdirectory( client )
-add_subdirectory( build )
-add_subdirectory( tools )
+
+if( NOT OZ_GL_COMPATIBLE AND NOT NACL AND NOT ANDROID )
+  add_subdirectory( build )
+  add_subdirectory( tools )
+endif()
+
 add_subdirectory( tests )
 
 add_library( build_info STATIC ${CMAKE_BINARY_DIR}/src/BuildInfo.cc )

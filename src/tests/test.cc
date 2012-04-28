@@ -66,15 +66,7 @@ struct Foo
   {}
 };
 
-struct Bar : Foo
-{
-  void bar() override;
-};
-
 int main()
 {
-  Pair<int> p;
-
-  printf( "%d\n", noexcept( p.x = p.y ) );
   return 0;
 }
