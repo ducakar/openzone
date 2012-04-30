@@ -263,12 +263,12 @@ void OBJ::loadMaterials( const String& path )
 
 void OBJ::load()
 {
-  int currentMaterial = 0;
+  log.print( "Loading OBJ model '%s' ...", path.cstr() );
 
   PhysFile modelFile( path + "/data.obj" );
   PhysFile configFile( path + "/config.rc" );
 
-  log.print( "Loading OBJ model '%s' ...", modelFile.path().cstr() );
+  int currentMaterial = 0;
 
   Config config;
   config.load( configFile );
@@ -282,9 +282,11 @@ void OBJ::load()
 
   config.clear( true );
 
-  loadMaterials( modelFile.mountPoint() + "/" + path );
+  String realPath = modelFile.realDir() + "/" + path;
 
-  FILE* fs = fopen( modelFile.realPath().cstr(), "r" );
+  loadMaterials( realPath );
+
+  FILE* fs = fopen( realPath + "/data.obj" , "r" );
   if( fs == null ) {
     throw Exception( "Cannot open OBJ data.obj file" );
   }
@@ -390,7 +392,7 @@ void OBJ::save()
 
   log.print( "Writing to '%s' ...", destFile.path().cstr() );
 
-  if( !destFile.write( &os ) ) {
+  if( !destFile.write( os.begin(), os.length() ) ) {
     throw Exception( "Failed to write '%s'", destFile.path().cstr() );
   }
 

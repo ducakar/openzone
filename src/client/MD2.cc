@@ -297,7 +297,7 @@ void MD2::load()
     mesh.load( &is, GL_STREAM_DRAW, file.path() );
   }
 
-  file.clear();
+  file.setPath( "" );
 
   isLoaded = true;
 }

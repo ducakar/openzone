@@ -74,9 +74,11 @@ void Terra::load()
 
   log.print( "Loading terrain heightmap '%s' ...", name.cstr() );
 
-  FIBITMAP* image = FreeImage_Load( FIF_PNG, imageFile.realPath().cstr() );
+  String realPath = imageFile.realDir() + "/" + imageFile.path();
+
+  FIBITMAP* image = FreeImage_Load( FIF_PNG, realPath );
   if( image == null ) {
-    throw Exception( "Failed to load heightmap '%s'", imageFile.realPath().cstr() );
+    throw Exception( "Failed to load heightmap '%s'", realPath.cstr() );
   }
 
   int width  = int( FreeImage_GetWidth( image ) );
@@ -100,11 +102,42 @@ void Terra::load()
     for( int x = 0; x < matrix::Terra::VERTS; ++x ) {
       float value = float( *pixel ) / float( std::numeric_limits<unsigned short>::max() );
 
-      quads[x][y].vertex.x = float( x * matrix::Terra::Quad::SIZE - matrix::Terra::DIM );
-      quads[x][y].vertex.y = float( y * matrix::Terra::Quad::SIZE - matrix::Terra::DIM );
-      quads[x][y].vertex.z = Math::mix( minHeight, maxHeight, value );
+      quads[x][y].vertex.x     = float( x * matrix::Terra::Quad::SIZE - matrix::Terra::DIM );
+      quads[x][y].vertex.y     = float( y * matrix::Terra::Quad::SIZE - matrix::Terra::DIM );
+      quads[x][y].vertex.z     = Math::mix( minHeight, maxHeight, value );
+      quads[x][y].triNormal[0] = Vec3::ZERO;
+      quads[x][y].triNormal[1] = Vec3::ZERO;
 
       pixel += 3;
+    }
+  }
+
+  for( int x = 0; x < matrix::Terra::QUADS; ++x ) {
+    for( int y = 0; y < matrix::Terra::QUADS; ++y ) {
+      if( x != matrix::Terra::QUADS && y != matrix::Terra::QUADS ) {
+        //
+        // 0. triangle -- upper left
+        // 1. triangle -- lower right
+        //
+        //    |  ...  |         D        C
+        //    +---+---+-         o----->o
+        //    |1 /|1 /|          |      ^
+        //    | / | / |          |      |
+        //    |/ 0|/ 0|          |      |
+        //    +---+---+- ...     v      |
+        //    |1 /|1 /|          o<-----o
+        //    | / | / |         A        B
+        //    |/ 0|/ 0|
+        //  (0,0)
+        //
+        const Point& a = quads[x    ][y    ].vertex;
+        const Point& b = quads[x + 1][y    ].vertex;
+        const Point& c = quads[x + 1][y + 1].vertex;
+        const Point& d = quads[x    ][y + 1].vertex;
+
+        quads[x][y].triNormal[0] = ~( ( c - b ) ^ ( a - b ) );
+        quads[x][y].triNormal[1] = ~( ( a - d ) ^ ( c - d ) );
+      }
     }
   }
 
@@ -131,7 +164,7 @@ void Terra::saveMatrix()
 
   os.writeInt( liquid );
 
-  if( !destFile.write( &os ) ) {
+  if( !destFile.write( os.begin(), os.length() ) ) {
     throw Exception( "Failed to write '%s'", destFile.path().cstr() );
   }
 
@@ -221,7 +254,7 @@ void Terra::saveClient()
 
   os.writeVec4( liquidColour );
 
-  if( !destFile.write( &os ) ) {
+  if( !destFile.write( os.begin(), os.length() ) ) {
     throw Exception( "Failed to write '%s'", destFile.path().cstr() );
   }
 
@@ -239,7 +272,7 @@ void Terra::saveClient()
   context.writeLayer( mapTexId, &os );
   glDeleteTextures( 1, &mapTexId );
 
-  if( !minimapFile.write( &os ) ) {
+  if( !minimapFile.write( os.begin(), os.length() ) ) {
     throw Exception( "Minimap texture '%s' writing failed", minimapFile.path().cstr() );
   }
 

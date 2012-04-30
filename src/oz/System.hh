@@ -60,7 +60,8 @@ class System
 
   private:
 
-    static System system; ///< Private instance, takes care for static initialisation/destruction.
+    static void*  appInstance; ///< Application instance pointer for NaCl platform.
+    static System system;      ///< Private instance, takes care for static (de)initialisation.
 
     /**
      * Sets up bell and disables <tt>SIGTRAP</tt> handler on Linux, since the default handler would
@@ -117,6 +118,18 @@ class System
     OZ_NORETURN
     OZ_PRINTF_FORMAT( 2, 3 )
     static void error( int nSkippedFrames, const char* msg, ... );
+
+    /**
+     * Application instance pointer, needed by some platforms.
+     *
+     *
+     */
+    static void* instance();
+
+    /**
+     * Set application instance pointer.
+     */
+    static void setInstance( void* instance );
 
     /**
      * Initialise <tt>System</tt> features.

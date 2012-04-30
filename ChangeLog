@@ -13,10 +13,11 @@
   - OutputStream is readable
   - new BufferStream class (OutputStream with dynamic internal storage)
   - new PhysFile class: version of File class for PhysicsFS
+  - Thread, Mutex and Cowork classes for high-level thread management
   - Vec3, Vec4, Quat don't inherit from each other or Simd class
   - AABB & Bounds moved to liboz from matrix
   - clearmacros.hh header to undefine liboz macros that might conflict other libraries
-  - compiled as shared library by default
+  - compiled as a shared library by default
   - additional dependencies: libpulse on Linux and PhysicsFS
   - fully documented
   - ZLIB licence

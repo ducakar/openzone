@@ -28,7 +28,11 @@
 
 #include "System.hh"
 
-#ifdef _WIN32
+#if defined( __native_client__ )
+# include <ctime>
+# include <unistd.h>
+# include <sys/time.h>
+#elif defined( _WIN32 )
 # include "windefs.h"
 # include <windows.h>
 # include <mmsystem.h>
@@ -68,7 +72,15 @@ PerformanceTimer performanceTimer;
 
 uint Time::clock()
 {
-#ifdef _WIN32
+#if defined( __native_client__ )
+
+  struct timeval now;
+  gettimeofday( &now, null );
+
+  // This wraps around together with uint since (time_t range) * 1000 is a multiple of uint range.
+  return uint( now.tv_sec * 1000 + now.tv_usec / 1000 );
+
+#elif defined( _WIN32 )
 
   LARGE_INTEGER now;
   QueryPerformanceCounter( &now );
@@ -97,7 +109,15 @@ void Time::sleep( uint milliseconds )
 
 uint Time::uclock()
 {
-#ifdef _WIN32
+#if defined( __native_client__ )
+
+  struct timeval now;
+  gettimeofday( &now, null );
+
+  // This wraps around together with uint since (time_t range) * 1000 is a multiple of uint range.
+  return uint( now.tv_sec * 1000000 + now.tv_usec );
+
+#elif defined( _WIN32 )
 
   LARGE_INTEGER now;
   QueryPerformanceCounter( &now );

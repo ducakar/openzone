@@ -55,7 +55,7 @@ const char* const UI::ICON_NAMES[] = {
 
 void UI::buildCursors()
 {
-  if( PhysFile( "ui/cur" ).getType() == File::MISSING ) {
+  if( PhysFile( "ui/cur" ).type() == File::MISSING ) {
     return;
   }
 
@@ -70,10 +70,13 @@ void UI::buildCursors()
 
   for( int i = 0; i < ui::Mouse::CURSORS_MAX; ++i ) {
     PhysFile inFile( String::str( "ui/cur/%s.in", ui::Mouse::NAMES[i] ) );
+    File destFile( String::str( "ui/cur/%s.ozCur", ui::Mouse::NAMES[i] ) );
 
-    FILE* fs = fopen( inFile.realPath(), "r" );
+    String realPath = inFile.realDir() + "/" + inFile.path();
+
+    FILE* fs = fopen( realPath, "r" );
     if( fs == null ) {
-      throw Exception( "Failed to open cursor description '%s'", inFile.realPath().cstr() );
+      throw Exception( "Failed to open cursor description '%s'", realPath.cstr() );
     }
 
     int size, hotspotX, hotspotY;
@@ -99,7 +102,7 @@ void UI::buildCursors()
 
     glDeleteTextures( 1, &texId );
 
-    File( String::str( "ui/cur/%s.ozCur", ui::Mouse::NAMES[i] ) ).write( &os );
+    destFile.write( os.begin(), os.length() );
   }
 
   context.useS3TC = useS3TC;
@@ -110,7 +113,7 @@ void UI::buildCursors()
 
 void UI::buildIcons()
 {
-  if( PhysFile( "ui/icon" ).getType() == File::MISSING ) {
+  if( PhysFile( "ui/icon" ).type() == File::MISSING ) {
     return;
   }
 
@@ -137,7 +140,7 @@ void UI::buildIcons()
 
     glDeleteTextures( 1, &id );
 
-    if( !File( destPath ).write( &os ) ) {
+    if( !File( destPath ).write( os.begin(), os.length() ) ) {
       throw Exception( "Texture writing failed" );
     }
   }

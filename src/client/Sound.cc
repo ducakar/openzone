@@ -65,6 +65,7 @@ OZ_DLDECL( NeAACDecDecode    );
 
 #endif
 
+#ifndef __native_client__
 static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle );
 static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, null, null, null };
 
@@ -73,6 +74,7 @@ static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle )
   return size_t( PHYSFS_read( static_cast<PHYSFS_File*>( handle ), buffer,
                               uint( size ), uint( n ) ) );
 }
+#endif
 
 #ifdef OZ_NONFREE
 
@@ -123,7 +125,7 @@ int Sound::soundMain( void* )
 
 void Sound::musicOpen( const char* path )
 {
-  File file( path );
+  PhysFile file( path );
 
   if( file.hasExtension( "oga" ) || file.hasExtension( "ogg" ) ) {
     musicStreamType = OGG;
@@ -155,6 +157,7 @@ void Sound::musicOpen( const char* path )
       break;
     }
     case OGG: {
+#ifndef __native_client__
       musicFile = PHYSFS_openRead( path );
       if( musicFile == null ) {
         throw Exception( "Failed to open file '%s'", path );
@@ -182,6 +185,7 @@ void Sound::musicOpen( const char* path )
       else {
         throw Exception( "Invalid number of channels in '%s', should be 1 or 2", path );
       }
+#endif
 
       break;
     }
@@ -297,9 +301,11 @@ void Sound::musicClear()
       break;
     }
     case OGG: {
+#ifndef __native_client__
       ov_clear( &oggStream );
 
       PHYSFS_close( musicFile );
+#endif
       break;
     }
 #ifdef OZ_NONFREE
@@ -333,6 +339,7 @@ int Sound::musicDecode()
     }
     case OGG: {
       int bytesRead = 0;
+#ifndef __native_client__
       int result;
       int section;
 
@@ -347,6 +354,7 @@ int Sound::musicDecode()
         }
       }
       while( result > 0 && bytesRead < MUSIC_BUFFER_SIZE );
+#endif
 
       return bytesRead;
     }

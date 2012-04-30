@@ -97,9 +97,15 @@
 /*
  * Error handling.
  */
-#include "System.hh"
 #include "StackTrace.hh"
 #include "Exception.hh"
+
+/*
+ * System.
+ */
+#include "System.hh"
+#include "Thread.hh"
+#include "Time.hh"
 
 /*
  * I/O.
@@ -115,6 +121,5 @@
 /*
  * Utilities.
  */
-#include "Time.hh"
 #include "Log.hh"
 #include "Config.hh"

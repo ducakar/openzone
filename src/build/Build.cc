@@ -109,7 +109,7 @@ void Build::copyFiles( const char* srcDir, const char* destDir, const char* ext,
   foreach( file, dirList.iter() ) {
     String fileName = file->name();
 
-    if( file->getType() == File::DIRECTORY ) {
+    if( file->type() == File::DIRECTORY ) {
       if( recurse ) {
         copyFiles( srcDir + ( "/" + file->name() ), destDir + ( "/" + file->name() ), ext, true );
       }
@@ -120,14 +120,14 @@ void Build::copyFiles( const char* srcDir, const char* destDir, const char* ext,
       log.print( "Copying '%s' ...", fileName.cstr() );
 
       if( !file->map() ) {
-        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
+        throw Exception( "Failed to copy '%s'", file->path().cstr() );
       }
 
       InputStream is = file->inputStream();
       File destFile( String::str( "%s/%s", destDir, fileName.cstr() ) );
 
-      if( !destFile.write( &is ) ) {
-        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
+      if( !destFile.write( is.begin(), is.capacity() ) ) {
+        throw Exception( "Failed to copy '%s'", file->path().cstr() );
       }
 
       file->unmap();
@@ -227,14 +227,14 @@ void Build::buildBSPTextures()
   PhysFile dir( "baseq3/textures" );
   DArray<PhysFile> dirList = dir.ls();
 
-  foreach( subDir, dirList.iter() ) {
-    if( subDir->getType() != File::DIRECTORY ) {
+  foreach( subDir, dirList.citer() ) {
+    if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
 
     DArray<PhysFile> texList = subDir->ls();
 
-    foreach( file, texList.iter() ) {
+    foreach( file, texList.citer() ) {
       String name = file->name();
       String path = file->path();
 
@@ -299,7 +299,7 @@ void Build::buildBSPTextures()
         glDeleteTextures( 1, &normalsId );
       }
 
-      if( !destFile.write( &os ) ) {
+      if( !destFile.write( os.begin(), os.length() ) ) {
         throw Exception( "Failed to write texture '%s'", destFile.path().cstr() );
       }
 
@@ -321,7 +321,7 @@ void Build::buildBSPTextures()
         log.print( "Copying '%s' ...", path.cstr() );
 
         if( !file->map() ) {
-          throw Exception( "Failed to read '%s'", file->realPath().cstr() );
+          throw Exception( "Failed to read '%s'", file->path().cstr() );
         }
 
         InputStream is = file->inputStream();
@@ -330,7 +330,7 @@ void Build::buildBSPTextures()
         File::mkdir( "tex" );
         File::mkdir( "tex/" + subDir.name() );
 
-        if( !destFile.write( &is ) ) {
+        if( !destFile.write( is.begin(), is.capacity() ) ) {
           throw Exception( "Failed to write '%s'", destFile.path().cstr() );
         }
 
@@ -474,13 +474,13 @@ void Build::buildModels()
         log.print( "Copying '%s' ...", path.cstr() );
 
         if( !file->map() ) {
-          throw Exception( "Failed to read '%s'", file->realPath().cstr() );
+          throw Exception( "Failed to read '%s'", file->path().cstr() );
         }
 
         InputStream is = file->inputStream();
         File destFile( path );
 
-        if( !destFile.write( &is ) ) {
+        if( !destFile.write( is.begin(), is.length() ) ) {
           throw Exception( "Failed to write '%s'", destFile.path().cstr() );
         }
 
@@ -491,10 +491,10 @@ void Build::buildModels()
       }
     }
 
-    if( PhysFile( path + "/data.obj" ).getType() != File::MISSING ) {
+    if( PhysFile( path + "/data.obj" ).type() != File::MISSING ) {
       OBJ::build( path );
     }
-    else if( PhysFile( path + "/tris.md2" ).getType() != File::MISSING ) {
+    else if( PhysFile( path + "/tris.md2" ).type() != File::MISSING ) {
       MD2::build( path );
     }
     else {
@@ -516,21 +516,21 @@ void Build::copySounds()
   PhysFile dir( "snd" );
   DArray<PhysFile> dirList = dir.ls();
 
-  foreach( subDir, dirList.iter() ) {
-    if( subDir->getType() != File::DIRECTORY ) {
+  foreach( subDir, dirList.citer() ) {
+    if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
 
-    DArray<PhysFile> texList = subDir->ls();
+    DArray<PhysFile> sndList = subDir->ls();
 
-    foreach( file, texList.iter() ) {
+    foreach( file, sndList.iter() ) {
       String name = file->name();
       String path = file->path();
 
       int dot   = path.lastIndex( '.' );
       int slash = path.lastIndex( '/' );
 
-      if( slash >= dot ) {
+      if( slash == -1 || slash >= dot ) {
         continue;
       }
 
@@ -550,14 +550,14 @@ void Build::copySounds()
       File::mkdir( "snd/" + subDir->name() );
 
       if( !file->map() ) {
-        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
+        throw Exception( "Failed to copy '%s'", file->path().cstr() );
       }
 
       InputStream is = file->inputStream();
 
       File destFile( file->path() );
 
-      if( !destFile.write( &is ) ) {
+      if( !destFile.write( is.begin(), is.capacity() ) ) {
         throw Exception( "Failed to write '%s'", destFile.path().cstr() );
       }
 
@@ -569,7 +569,6 @@ void Build::copySounds()
 
   foreach( subDirPath, usedDirs.citer() ) {
     PhysFile subDir( *subDirPath );
-
     DArray<PhysFile> texList = subDir.ls();
 
     foreach( file, texList.iter() ) {
@@ -580,7 +579,7 @@ void Build::copySounds()
         log.print( "Copying '%s' ...", path.cstr() );
 
         if( !file->map() ) {
-          throw Exception( "Failed to read '%s'", file->realPath().cstr() );
+          throw Exception( "Failed to read '%s'", file->path().cstr() );
         }
 
         InputStream is = file->inputStream();
@@ -589,7 +588,7 @@ void Build::copySounds()
         File::mkdir( "snd" );
         File::mkdir( "snd/" + subDir.name() );
 
-        if( !destFile.write( &is ) ) {
+        if( !destFile.write( is.begin(), is.capacity() ) ) {
           throw Exception( "Failed to write '%s'", destFile.path().cstr() );
         }
 
@@ -630,7 +629,7 @@ void Build::checkLua( const char* path )
       continue;
     }
 
-    String cmdLine = "luac -p " + file->realPath();
+    String cmdLine = "luac -p " + file->realDir() + "/" + file->path();
 
     log.println( "%s", cmdLine.cstr() );
     if( system( cmdLine ) != 0 ) {
@@ -702,12 +701,8 @@ int Build::main( int argc, char** argv )
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "vlugtcbmsafnxorpABC07" ) ) != -1 ) {
+  while( ( opt = getopt( argc, argv, "lugtcbmsafnxorpABC07" ) ) != -1 ) {
     switch( opt ) {
-      case 'v': {
-        log.isVerbose = true;
-        break;
-      }
       case 'l': {
         doCat = true;
         break;
@@ -815,21 +810,20 @@ int Build::main( int argc, char** argv )
     return EXIT_FAILURE;
   }
 
-  String dataDir = String::replace( argv[optind], '\\', '/' );
-  String outDir  = String::replace( argv[optind + 1], '\\', '/' );
+  String srcDir = String::replace( argv[optind], '\\', '/' );
+  String outDir = String::replace( argv[optind + 1], '\\', '/' );
 
-  while( !dataDir.isEmpty() && dataDir.last() == '/' ) {
-    dataDir = dataDir.substring( 0, dataDir.length() - 1 );
+  while( !srcDir.isEmpty() && srcDir.last() == '/' ) {
+    srcDir = srcDir.substring( 0, srcDir.length() - 1 );
   }
-
-  if( dataDir.isEmpty() ) {
+  if( srcDir.isEmpty() ) {
     throw Exception( "Source directory cannot be root ('/')" );
   }
 
-  String pkgName = dataDir.substring( dataDir.lastIndex( '/' ) + 1 );
+  String pkgName = srcDir.substring( srcDir.lastIndex( '/' ) + 1 );
 
-  if( dataDir[0] != '/' ) {
-    dataDir = File::cwd() + "/" + dataDir;
+  if( srcDir[0] != '/' ) {
+    srcDir = File::cwd() + "/" + srcDir;
   }
   if( outDir[0] != '/' ) {
     outDir = File::cwd() + "/" + outDir + "/" + pkgName;
@@ -854,9 +848,7 @@ int Build::main( int argc, char** argv )
   log.println( "}" );
 
   SDL_Init( SDL_INIT_VIDEO );
-  if( !PhysFile::init() ) {
-    throw Exception( "PhysicsFS initialisation failed" );
-  }
+  PhysFile::init();
   FreeImage_Initialise();
 
   File::mkdir( outDir );
@@ -866,9 +858,9 @@ int Build::main( int argc, char** argv )
     throw Exception( "Failed to set working directory '%s'", outDir.cstr() );
   }
 
-  log.println( "Adding source directory '%s' to search path", dataDir.cstr() );
-  if( !PhysFile::mount( dataDir, null, true ) ) {
-    throw Exception( "Failed to add directory '%s' to search path", dataDir.cstr() );
+  log.println( "Adding source directory '%s' to search path", srcDir.cstr() );
+  if( !PhysFile::mount( srcDir, null, true ) ) {
+    throw Exception( "Failed to add directory '%s' to search path", srcDir.cstr() );
   }
 
   int  windowWidth  = 400;
@@ -915,14 +907,14 @@ int Build::main( int argc, char** argv )
       log.print( "Copying '%s' ...", fileName.cstr() );
 
       if( !file->map() ) {
-        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
+        throw Exception( "Failed to copy '%s'", file->path().cstr() );
       }
 
       InputStream is = file->inputStream();
       File destFile( fileName );
 
-      if( !destFile.write( &is ) ) {
-        throw Exception( "Failed to copy '%s'", file->realPath().cstr() );
+      if( !destFile.write( is.begin(), is.capacity() ) ) {
+        throw Exception( "Failed to copy '%s'", file->path().cstr() );
       }
 
       file->unmap();

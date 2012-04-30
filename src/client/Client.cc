@@ -43,8 +43,6 @@
 # include <shlobj.h>
 #endif
 
-// #include "client/icon.h"
-
 namespace oz
 {
 namespace client
@@ -150,7 +148,7 @@ int Client::main( int argc, char** argv )
   while( ( opt = getopt( argc, argv, "vli:t:p:" ) ) != -1 ) {
     switch( opt ) {
       case 'v': {
-        log.isVerbose = true;
+        log.showVerbose = true;
         break;
       }
       case 'l': {
@@ -198,8 +196,8 @@ int Client::main( int argc, char** argv )
     throw Exception( "Failed to access LOCAL_APPDATA directory" );
   }
 
-  File configDir( String::str( "%s\\" OZ_APPLICATION_NAME, configRoot ) );
-  File localDir( String::str( "%s\\" OZ_APPLICATION_NAME, localRoot ) );
+  String configDir = String::str( "%s\\" OZ_APPLICATION_NAME, configRoot );
+  String localDir  = String::str( "%s\\" OZ_APPLICATION_NAME, localRoot );
 
 #else
 
@@ -211,43 +209,35 @@ int Client::main( int argc, char** argv )
     throw Exception( "Cannot determine user home directory from environment" );
   }
 
-  File configDir = configRoot == null ?
-                   File( String::str( "%s/.config/" OZ_APPLICATION_NAME, home ) ) :
-                   File( String::str( "%s/" OZ_APPLICATION_NAME, configRoot ) );
+  String configDir = configRoot == null ?
+                     String::str( "%s/.config/" OZ_APPLICATION_NAME, home ) :
+                     String::str( "%s/" OZ_APPLICATION_NAME, configRoot );
 
-  File localDir = localRoot == null ?
-                  File( String::str( "%s/.local/share/" OZ_APPLICATION_NAME, home ) ) :
-                  File( String::str( "%s/" OZ_APPLICATION_NAME, localRoot ) );
+  String localDir = localRoot == null ?
+                    String::str( "%s/.local/share/" OZ_APPLICATION_NAME, home ) :
+                    String::str( "%s/" OZ_APPLICATION_NAME, localRoot );
 
 #endif
 
-  String dir = configDir.path();
-  if( File::mkdir( dir, 0755 ) ) {
-    log.println( "Profile directory '%s' created", dir.cstr() );
+  if( File::mkdir( configDir ) ) {
+    log.println( "Profile directory '%s' created", configDir.cstr() );
   }
 
-  dir = configDir.path() + "/saves";
-  if( File::mkdir( dir, 0755 ) ) {
-    log.println( "Directory for saved games '%s' created", dir.cstr() );
+  if( File::mkdir( configDir + "/saves" ) ) {
+    log.println( "Directory for saved games '%s/saves' created", configDir.cstr() );
   }
 
-  dir = configDir.path() + "/screenshots";
-  if( File::mkdir( dir, 0755 ) ) {
-    log.println( "Directory for screenshots '%s' created", dir.cstr() );
+  if( File::mkdir( configDir + "/screenshots" ) ) {
+    log.println( "Directory for screenshots '%s/screenshots' created", configDir.cstr() );
   }
 
-  dir = localDir.path();
-  if( File::mkdir( dir, 0755 ) ) {
-    log.println( "Directory for per-user content '%s' created", dir.cstr() );
+  if( File::mkdir( localDir ) ) {
+    log.println( "Directory for per-user content '%s' created", localDir.cstr() );
   }
 
-  String logPath = configDir.path() + "/client.log";
-
-  if( !log.init( logPath, true ) ) {
-    throw Exception( "Can't create/open log file '%s' for writing\n", logPath.cstr() );
+  if( log.init( configDir + "/client.log", true ) ) {
+    log.println( "Log file '%s'", log.logFile() );
   }
-
-  log.println( "Log file '%s'", log.logFile() );
 
   log.print( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " started on " );
   log.printTime();
@@ -258,9 +248,7 @@ int Client::main( int argc, char** argv )
   }
   initFlags |= INIT_SDL;
 
-  if( !PhysFile::init() ) {
-    throw Exception( "PhysicsFS initialisation failed: %s", PHYSFS_getLastError() );
-  }
+  PhysFile::init();
   initFlags |= INIT_PHYSFS;
 
   log.verboseMode = true;
@@ -277,8 +265,7 @@ int Client::main( int argc, char** argv )
   log.println( "}" );
   log.verboseMode = false;
 
-  File configFile( configDir.path() + "/client.rc" );
-
+  File configFile( configDir + "/client.rc" );
   if( config.load( configFile ) ) {
     log.printEnd( "Configuration read from '%s'", configFile.path().cstr() );
 
@@ -299,15 +286,15 @@ int Client::main( int argc, char** argv )
     config.get( "_version", "" );
   }
 
-  config.add( "dir.config", configDir.path() );
-  config.add( "dir.local", localDir.path() );
+  config.add( "dir.config", configDir );
+  config.add( "dir.local", localDir );
 
   // tag variables as used
   config.get( "dir.config", "" );
   config.get( "dir.local", "" );
 
   String prefix = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
-  File dataDir( prefix + "/share/" OZ_APPLICATION_NAME );
+  String dataDir( prefix + "/share/" OZ_APPLICATION_NAME );
 
   // Don't mess with screensaver. In X11 it only makes effect for windowed mode, in fullscreen
   // mode screensaver never starts anyway. Turning off screensaver has a side effect: if the game
@@ -384,10 +371,10 @@ int Client::main( int argc, char** argv )
     log.println( "%s [mounted on /music]", userMusicPath );
   }
 
-  if( PhysFile::mount( localDir.path(), null, true ) ) {
-    log.println( "%s", localDir.path().cstr() );
+  if( PhysFile::mount( localDir, null, true ) ) {
+    log.println( "%s", localDir.cstr() );
 
-    DArray<File> list = localDir.ls();
+    DArray<File> list = File( localDir ).ls();
 
     foreach( file, list.citer() ) {
       if( file->hasExtension( "zip" ) || file->hasExtension( "7z" ) ) {
@@ -399,10 +386,10 @@ int Client::main( int argc, char** argv )
     }
   }
 
-  if( PhysFile::mount( dataDir.path(), null, true ) ) {
-    log.println( "%s", dataDir.path().cstr() );
+  if( PhysFile::mount( dataDir, null, true ) ) {
+    log.println( "%s", dataDir.cstr() );
 
-    DArray<File> list = dataDir.ls();
+    DArray<File> list = File( dataDir ).ls();
 
     foreach( file, list.citer() ) {
       if( file->hasExtension( "zip" ) || file->hasExtension( "7z" ) ) {

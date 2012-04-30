@@ -106,7 +106,6 @@ Shader::Light::Light( const Point& pos_, const Vec4& diffuse_ ) :
 void Shader::compileShader( uint id, const char* path, const char** sources, int* lengths ) const
 {
   PhysFile file( path );
-
   if( !file.map() ) {
     throw Exception( "Shader source '%s' mmap failed", path );
   }

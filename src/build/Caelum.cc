@@ -105,7 +105,7 @@ void Caelum::build( const char* name )
 
   log.print( "Dumping into '%s' ...", destFile.path().cstr() );
 
-  if( !destFile.write( &os ) ) {
+  if( !destFile.write( os.begin(), os.length() ) ) {
     throw Exception( "Failed to write '%s'", destFile.path().cstr() );
   }
 

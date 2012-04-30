@@ -395,26 +395,15 @@ void Render::drawOrbis()
 
     glPopAttrib();
 
-    if( doPostprocess ) {
-      tf.ortho( camera.width, camera.height );
-      tf.camera = Mat44::ID;
+    tf.ortho( camera.width, camera.height );
+    tf.camera = Mat44::ID;
 
-      shader.use( shader.postprocess );
-      tf.applyCamera();
+    shader.use( doPostprocess ? shader.postprocess : shader.plain );
+    tf.applyCamera();
 
-      glBindTexture( GL_TEXTURE_2D, colourBuffer );
-      shape.fill( 0, 0, camera.width, camera.height );
-      glBindTexture( GL_TEXTURE_2D, 0 );
-    }
-    else {
-      glBindFramebuffer( GL_READ_FRAMEBUFFER, mainFrame );
-
-      glBlitFramebuffer( 0, 0, renderWidth, renderHeight,
-                         0, 0, camera.width, camera.height,
-                         GL_COLOR_BUFFER_BIT, renderScaleFilter );
-
-      glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
-    }
+    glBindTexture( GL_TEXTURE_2D, colourBuffer );
+    shape.fill( 0, 0, camera.width, camera.height );
+    glBindTexture( GL_TEXTURE_2D, 0 );
   }
 
   postprocessMicros += Time::uclock() - beginMicros;
@@ -630,7 +619,6 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
   renderWidth  = windowWidth;
   renderHeight = windowHeight;
 
-#ifndef OZ_GL_COMPATIBLE
   if( isOffscreen ) {
     renderWidth  = int( float( windowWidth  ) * renderScale + 0.5f );
     renderHeight = int( float( windowHeight ) * renderScale + 0.5f );
@@ -665,7 +653,6 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
 
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
   }
-#endif
 
   glEnable( GL_CULL_FACE );
   glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -695,13 +682,11 @@ void Render::free( bool isBuild )
   log.println( "Freeing Render {" );
   log.indent();
 
-#ifndef OZ_GL_COMPATIBLE
   if( isOffscreen ) {
     glDeleteFramebuffers( 1, &mainFrame );
     glDeleteTextures( 1, &colourBuffer );
     glDeleteRenderbuffers( 1, &depthBuffer );
   }
-#endif
 
   ui::ui.free();
   shape.unload();

@@ -34,10 +34,9 @@ namespace oz
 {
 
 /**
- * Wrapper for PhysicsFS or a fake VFS, similar to <tt>File</tt> class.
+ * Class for file represenatation and basic operation in Virtual Filesystem (VFS).
  *
- * Files can only be accessed for reading through this class. Besides from <tt>File</tt> it also
- * provides some PhysicsFS-specific functions.
+ * It uses PhysicsFS as an underlaying library, on NaCl it uses a custom implementation.
  *
  * @ingroup oz
  */
@@ -46,14 +45,16 @@ class PhysFile
   private:
 
     String     filePath; ///< %File path.
-    File::Type type;     ///< Cached file type.
+    File::Type fileType; ///< %File type.
     char*      data;     ///< Mapped memory.
     int        size;     ///< Mapped memory size.
 
   public:
 
     /**
-     * Create an empty instance.
+     * Default constructor initialises file to VFS root.
+     *
+     * Path is set to "" and file type to <tt>DIRECTORY</tt>.
      */
     PhysFile();
 
@@ -65,50 +66,50 @@ class PhysFile
     /**
      * Copy constructor.
      *
-     * For mapped files, original stays mapped, copy is not.
+     * Mapped memory is not copied.
      */
     PhysFile( const PhysFile& );
 
     /**
-     * Move constructor, transfers mapped region "ownership".
+     * Move constructor, transfers mapped mempoy.
      */
     PhysFile( PhysFile&& file );
 
     /**
      * Copy operator.
      *
-     * For mapped files, original stays mapped, copy is not.
+     * Mapped memory is not copied.
      */
     PhysFile& operator = ( const PhysFile& );
 
     /**
-     * Move operator, transfers mapped region "ownership".
+     * Move operator, transfers mapped memory.
      */
     PhysFile& operator = ( PhysFile&& file );
 
     /**
-     * Create an instance for the given path.
+     * Create an instance for the given path and detect file type.
      */
     explicit PhysFile( const char* path );
 
     /**
      * Set a new file path.
      *
-     * Cached file type is cleared to <tt>NONE</tt> and file is unmapped if it is currently mapped.
+     * Besides changing path, <tt>unmap()</tt> is called and file type is detected for the new path.
      */
     void setPath( const char* path );
 
     /**
-     * Get file type.
+     * Get (cached) file type.
      *
-     * %File type is cached until one changes the file path.
+     * %File type is detection is performed on construction or <tt>setPath()</tt>.
      */
-    File::Type getType();
+    File::Type type() const;
 
     /**
      * Get file size.
      *
-     * %File size in bytes or -1 if file doesn't exist.
+     * %File size in bytes or -1 if file doesn't exist or is a directory.
      */
     int getSize() const;
 
@@ -118,11 +119,9 @@ class PhysFile
     String path() const;
 
     /**
-     * %File path in real file system.
-     *
-     * If file is inside an archive, looks like <tt>"/path/to/archive.zip/file"</tt>.
+     * %Path in real filesystem to file's archive or top folder that is mouted to VFS.
      */
-    String realPath() const;
+    String realDir() const;
 
     /**
      * Mount point under which file's archive or top directory is mounted.
@@ -157,11 +156,6 @@ class PhysFile
     bool isMapped() const;
 
     /**
-     * Release resources and set default values for internal fields.
-     */
-    void clear();
-
-    /**
      * %Map file into memory.
      *
      * One can use <tt>inputStream()</tt> afterwards to read the contents.
@@ -184,33 +178,62 @@ class PhysFile
     Buffer read() const;
 
     /**
+     * Write a buffer to the file.
+     */
+    bool write( const char* buffer, int size ) const;
+
+    /**
+     * Write buffer contents into a file.
+     */
+    bool write( const Buffer* buffer ) const;
+
+    /**
      * Generate a list of files in directory.
      *
      * Hidden files (in Unix means, so everything starting with '.') are skipped.
-     * On error, empty array is returned.
+     * On error, and empty array is returned.
      */
-    DArray<PhysFile> ls();
+    DArray<PhysFile> ls() const;
 
     /**
-     * Add PhysicsFS search path.
+     * Make a new directory.
+     */
+    static bool mkdir( const char* path );
+
+    /**
+     * Delete a file or an empty directory.
+     */
+    static bool rm( const char* path );
+
+    /**
+     * Mount read-only directoy or archive to VFS.
      *
-     * For more detailed information see PhysicsFS manual for <tt>PHYSFS_mount()</tt>.
-     *
-     * @param source archive or directory in real file system to mount.
-     * @param mountPoint mount point in virtual file system, "" or <tt>null</tt> equals root ("/").
+     * @param path archive or directory in real file system directory to mount.
+     * @param mountPoint mount point in VFS, "" or <tt>null</tt> equals root of VFS.
      * @param append true to add to the end instead to the beginning of the search path.
      */
-    static bool mount( const char* source, const char* mountPoint, bool append );
+    static bool mount( const char* path, const char* mountPoint, bool append );
 
     /**
-     * Initialise PhysicsFS.
+     * Mount read/write local resource directory to root of VFS.
+     *
+     * This function does not fork for NaCl.
+     *
+     * @param path path to directory in real file system.
      */
-    static bool init();
+    static bool mountLocal( const char* path );
 
     /**
-     * Deinitialise PhysicsFS.
+     * Initialise VFS.
+     *
+     * On NaCl <tt>System::instance()</tt> must be set prior to initialisation of VFS.
      */
-    static bool free();
+    static void init();
+
+    /**
+     * Deinitialise VFS.
+     */
+    static void free();
 
 };
 

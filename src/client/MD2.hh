@@ -127,10 +127,10 @@ class MD2
 
   public:
 
-    Mat44   weaponTransf;
+    Mat44    weaponTransf;
 
-    bool    isPreloaded;
-    bool    isLoaded;
+    bool     isPreloaded;
+    bool     isLoaded;
 
     explicit MD2( int id );
     ~MD2();

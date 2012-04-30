@@ -181,7 +181,7 @@ void BSP::load()
 
   mesh.load( &istream, GL_STATIC_DRAW, file.path() );
 
-  file.clear();
+  file.setPath( "" );
 
   isLoaded = true;
 }

@@ -47,19 +47,21 @@
 
 #ifdef __native_client__
 
-// Fake implementations for signal() and raise() functions. Missing in newlib library.
+// Fake implementations for signal() and raise() functions missing in newlib library. signal() is
+// referenced by SDL hence must be present if we link with SDL. Those fake implementations also
+// spare several #ifdefs in this file.
 extern "C"
 {
 
-  void ( * signal( int, void ( * )( int ) ) )( int )
-  {
-    return oz::null;
-  }
+void ( * signal( int, void ( * )( int ) ) )( int )
+{
+  return oz::null;
+}
 
-  int raise( int )
-  {
-    return 0;
-  }
+int raise( int )
+{
+  return 0;
+}
 
 }
 
@@ -68,6 +70,7 @@ extern "C"
 namespace oz
 {
 
+void*  System::appInstance = null;
 System System::system;
 
 static const char* const SIGNALS[][2] =
@@ -273,7 +276,11 @@ void System::abort( bool preventHalt )
   resetSignals();
 
   if( !preventHalt && ( initFlags & HALT_BIT ) ) {
+#if defined( __native_client__ ) || defined( __ANDORID__ )
+    printf( "Program halted, debugger can be attached ...\n" );
+#else
     printf( "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
+#endif
 
 # ifdef _WIN32
     while( true ) {
@@ -285,7 +292,6 @@ void System::abort( bool preventHalt )
   }
 
   waitBell();
-
   ::abort();
 }
 
@@ -365,6 +371,16 @@ void System::error( int nSkippedFrames, const char* msg, ... )
 
   bell();
   abort();
+}
+
+void* System::instance()
+{
+  return appInstance;
+}
+
+void System::setInstance( void* instance )
+{
+  appInstance = instance;
 }
 
 void System::init( int flags )

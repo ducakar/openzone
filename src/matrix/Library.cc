@@ -206,8 +206,8 @@ void Library::initTextures()
   PhysFile dir( "tex" );
   DArray<PhysFile> dirList = dir.ls();
 
-  foreach( file, dirList.iter() ) {
-    if( file->getType() != File::DIRECTORY ) {
+  foreach( file, dirList.citer() ) {
+    if( file->type() != File::DIRECTORY ) {
       continue;
     }
 
@@ -240,8 +240,8 @@ void Library::initSounds()
   PhysFile dir( "snd" );
   DArray<PhysFile> dirList = dir.ls();
 
-  foreach( file, dirList.iter() ) {
-    if( file->getType() != File::DIRECTORY ) {
+  foreach( file, dirList.citer() ) {
+    if( file->type() != File::DIRECTORY ) {
       continue;
     }
 
@@ -306,9 +306,7 @@ void Library::initTerrae()
 
     String name = file->baseName();
 
-    if( log.isVerbose ) {
-      log.println( "%s", name.cstr() );
-    }
+    log.println( "%s", name.cstr() );
 
     terraIndices.add( name, terrae.length() );
     terrae.add( Resource( name, file->path() ) );
@@ -326,7 +324,7 @@ void Library::initBSPs()
   PhysFile dir( "bsp" );
   DArray<PhysFile> dirList = dir.ls();
 
-  foreach( file, dirList.iter() ) {
+  foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozBSP" ) ) {
       continue;
     }
@@ -353,21 +351,21 @@ void Library::initModels()
   PhysFile dir( "mdl" );
   DArray<PhysFile> dirList = dir.ls();
 
-  foreach( file, dirList.iter() ) {
-    if( file->getType() != File::DIRECTORY ) {
+  foreach( file, dirList.citer() ) {
+    if( file->type() != File::DIRECTORY ) {
       continue;
     }
 
     String name = file->name();
     String path;
 
-    if( PhysFile( file->path() + "/data.ozcSMM" ).getType() != File::MISSING ) {
+    if( PhysFile( file->path() + "/data.ozcSMM" ).type() != File::MISSING ) {
       path = file->path() + "/data.ozcSMM";
     }
-    else if( PhysFile( file->path() + "/data.ozcMD2" ).getType() != File::MISSING ) {
+    else if( PhysFile( file->path() + "/data.ozcMD2" ).type() != File::MISSING ) {
       path = file->path() + "/data.ozcMD2";
     }
-    else if( PhysFile( file->path() + "/data.ozcMD3" ).getType() != File::MISSING ) {
+    else if( PhysFile( file->path() + "/data.ozcMD3" ).type() != File::MISSING ) {
       path = file->path() + "/data.ozcMD3";
     }
     else {
@@ -394,7 +392,7 @@ void Library::initMusicRecurse( const char* path )
   DArray<PhysFile> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
-    if( file->getType() == File::DIRECTORY ) {
+    if( file->type() == File::DIRECTORY ) {
       initMusicRecurse( file->path() );
     }
 #ifdef OZ_NONFREE
