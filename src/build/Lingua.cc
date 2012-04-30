@@ -39,7 +39,9 @@ void Lingua::buildCatalogue( const char* lang, const char* category, const char*
   PhysFile srcFile( String::str( "lingua/%s/%s/%s.po", lang, category, name ) );
   File outFile( String::str( "lingua/%s/%s/%s.ozCat", lang, category, name ) );
 
-  FILE* fs = fopen( srcFile.realPath(), "r" );
+  String realSrcPath = srcFile.realDir() + "/" + srcFile.path();
+
+  FILE* fs = fopen( realSrcPath, "r" );
   if( fs == null ) {
     throw Exception( "Cannot read catalogue source '%s'", srcFile.path().cstr() );
   }
@@ -168,7 +170,7 @@ void Lingua::buildCatalogue( const char* lang, const char* category, const char*
     ostream.writeString( messages[i + 1] );
   }
 
-  if( !outFile.write( &ostream ) ) {
+  if( !outFile.write( ostream.begin(), ostream.length() ) ) {
     throw Exception( "Catalogue write failed" );
   }
 
@@ -184,7 +186,7 @@ void Lingua::build()
   DArray<PhysFile> languages = linguaDir.ls();
 
   foreach( langDir, languages.iter() ) {
-    if( langDir->getType() != File::DIRECTORY ) {
+    if( langDir->type() != File::DIRECTORY ) {
       continue;
     }
 

@@ -39,7 +39,9 @@ void MD3::readAnimData()
 {
   PhysFile animFile( sPath + "/animation.cfg" );
 
-  FILE* fs = fopen( animFile.realPath(), "r" );
+  String realPath = animFile.realDir() + "/" + animFile.path();
+
+  FILE* fs = fopen( realPath, "r" );
   if( fs == null ) {
     throw Exception( "Reading animation data failed" );
   }
@@ -59,7 +61,7 @@ void MD3::buildMesh( const char* name, int frame )
 
   PhysFile file( String::str( "%s/%s.md3", sPath.cstr(), name ) );
   if( !file.map() ) {
-    throw Exception( "Cannot mmap MD3 model part file '%s'", file.realPath().cstr() );
+    throw Exception( "Cannot mmap MD3 model part file '%s'", file.path().cstr() );
   }
 
   InputStream is = file.inputStream( Endian::LITTLE );
@@ -398,7 +400,7 @@ void MD3::save()
 
     log.print( "Writing to '%s' ...", destFile.path().cstr() );
 
-    if( !destFile.write( &os ) ) {
+    if( !destFile.write( os.begin(), os.length() ) ) {
       throw Exception( "Failed to write '%s'", destFile.path().cstr() );
     }
 
@@ -409,7 +411,7 @@ void MD3::save()
 
     log.print( "Writing to '%s' ...", destFile.path().cstr() );
 
-    if( !destFile.write( &os ) ) {
+    if( !destFile.write( os.begin(), os.length() ) ) {
       throw Exception( "Failed to write '%s'", destFile.path().cstr() );
     }
 

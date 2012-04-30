@@ -39,7 +39,7 @@ namespace oz
 Log log;
 
 Log::Log() :
-  fileStream( null ), tabs( 0 ), isVerbose( false ), verboseMode( false )
+  fileStream( null ), tabs( 0 ), showVerbose( false ), verboseMode( false )
 {}
 
 Log::~Log()
@@ -81,7 +81,7 @@ void Log::vprintRaw( const char* s, va_list ap ) const
   va_list ap2;
   va_copy( ap2, ap );
 
-  if( !verboseMode || isVerbose ) {
+  if( !verboseMode || showVerbose || file == null ) {
     vprintf( s, ap );
   }
   if( file != null ) {
@@ -97,7 +97,7 @@ void Log::printRaw( const char* s, ... ) const
 
   va_list ap;
 
-  if( !verboseMode || isVerbose ) {
+  if( !verboseMode || showVerbose || file == null ) {
     va_start( ap, s );
 
     vprintf( s, ap );
@@ -121,7 +121,7 @@ void Log::print( const char* s, ... ) const
 
   va_list ap;
 
-  if( !verboseMode || isVerbose ) {
+  if( !verboseMode || showVerbose || file == null ) {
     for( int i = 0; i < tabs; ++i ) {
       printf( "  " );
     }
@@ -153,7 +153,7 @@ void Log::printEnd( const char* s, ... ) const
 
   va_list ap;
 
-  if( !verboseMode || isVerbose ) {
+  if( !verboseMode || showVerbose || file == null ) {
     va_start( ap, s );
 
     vprintf( s, ap );
@@ -177,7 +177,7 @@ void Log::printEnd() const
 {
   FILE* file = static_cast<FILE*>( fileStream );
 
-  if( !verboseMode || isVerbose ) {
+  if( !verboseMode || showVerbose || file == null ) {
     printf( "\n" );
   }
   if( file != null ) {
@@ -193,7 +193,7 @@ void Log::println( const char* s, ... ) const
 
   va_list ap;
 
-  if( !verboseMode || isVerbose ) {
+  if( !verboseMode || showVerbose || file == null ) {
     for( int i = 0; i < tabs; ++i ) {
       printf( "  " );
     }
@@ -225,7 +225,7 @@ void Log::println() const
 {
   FILE* file = static_cast<FILE*>( fileStream );
 
-  if( !verboseMode || isVerbose ) {
+  if( !verboseMode || showVerbose || file == null ) {
     printf( "\n" );
   }
   if( file != null ) {
@@ -241,7 +241,7 @@ void Log::printTime() const
 
   Time time = Time::local();
 
-  if( !verboseMode || isVerbose ) {
+  if( !verboseMode || showVerbose || file == null ) {
     printf( "%04d-%02d-%02d %02d:%02d:%02d",
             time.year, time.month, time.day, time.hour, time.minute, time.second );
   }
@@ -258,7 +258,7 @@ void Log::printTrace( const StackTrace* st ) const
   FILE* file = static_cast<FILE*>( fileStream );
 
   if( st->nFrames == 0 ) {
-    if( !verboseMode || isVerbose ) {
+    if( !verboseMode || showVerbose || file == null ) {
       printf( "    [empty stack trace]\n" );
     }
     if( file != null ) {
@@ -269,7 +269,7 @@ void Log::printTrace( const StackTrace* st ) const
     char** entries = st->symbols();
 
     for( int i = 0; i < st->nFrames; ++i ) {
-      if( !verboseMode || isVerbose ) {
+      if( !verboseMode || showVerbose || file == null ) {
         printf( "    %s\n", entries[i] );
       }
       if( file != null ) {
@@ -292,7 +292,7 @@ void Log::printException( const std::exception* e ) const
   const Exception* oe = dynamic_cast<const Exception*>( e );
 
   if( oe == null ) {
-    if( !verboseMode || isVerbose ) {
+    if( !verboseMode || showVerbose || file == null ) {
       printf( "\n\nEXCEPTION: %s\n", e->what() );
     }
     if( file != null ) {
@@ -302,7 +302,7 @@ void Log::printException( const std::exception* e ) const
     }
   }
   else {
-    if( !verboseMode || isVerbose ) {
+    if( !verboseMode || showVerbose || file == null ) {
       printf( "\n\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
               oe->message, oe->function, oe->file, oe->line );
     }
@@ -313,7 +313,7 @@ void Log::printException( const std::exception* e ) const
 
     printTrace( &oe->stackTrace );
 
-    if( !verboseMode || isVerbose ) {
+    if( !verboseMode || showVerbose || file == null ) {
       printf( "\n" );
     }
     if( file != null ) {
@@ -340,7 +340,6 @@ bool Log::init( const char* filePath_, bool doClear )
     fclose( file );
     fileStream = null;
   }
-
   if( filePath[0] != '\0' ) {
     fileStream = fopen( filePath, doClear ? "w" : "a" );
   }

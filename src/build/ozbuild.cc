@@ -49,7 +49,7 @@ int main( int argc, char** argv )
     oz::System::abort();
   }
 
-  oz::Alloc::printLeaks();
+//   oz::Alloc::printLeaks();
 
   return exitCode;
 }

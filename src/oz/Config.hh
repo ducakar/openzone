@@ -183,6 +183,18 @@ class Config
     bool save( File& file, const char* lineEnd = "\n" );
 
     /**
+     * Write variables to a .rc file.
+     *
+     * The .rc file will have lines with the following format
+     * @code
+     *   name "value"
+     * @endcode
+     *
+     * @return True on success.
+     */
+    bool save( PhysFile& file, const char* lineEnd = "\n" );
+
+    /**
      * Remove unused variables.
      *
      * Variables are tagged used once it is accessed via <tt>get()</tt> or <tt>getSet()</tt>.

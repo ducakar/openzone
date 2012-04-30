@@ -118,7 +118,7 @@ void Terra::read( InputStream* istream )
 
 void Terra::write( BufferStream* ostream ) const
 {
-  const char* name = id == -1 ? "" : library.terrae[id].name;
+  const char* name = id == -1 ? "" : library.terrae[id].name.cstr();
 
   ostream->writeString( name );
 }

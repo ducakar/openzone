@@ -156,9 +156,9 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
   log.print( "Loading image '%s' ...", path );
 
   PhysFile file( path );
-  String realPath = file.realPath();
+  String realPath = file.realDir() + "/" + file.path();
 
-  if( file.getType() == File::MISSING ) {
+  if( file.type() == File::MISSING ) {
     throw Exception( "File '%s' does not exits", realPath.cstr() );
   }
 
@@ -296,34 +296,34 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
   PhysFile normals3( normals3BasePath + IMAGE_EXTENSIONS[0] );
 
   for( int i = 1; i < aLength( IMAGE_EXTENSIONS ); ++i ) {
-    if( diffuse.getType() == File::MISSING ) {
+    if( diffuse.type() == File::MISSING ) {
       diffuse.setPath( diffuseBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( diffuse1.getType() == File::MISSING ) {
+    if( diffuse1.type() == File::MISSING ) {
       diffuse1.setPath( diffuse1BasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( masks.getType() == File::MISSING ) {
+    if( masks.type() == File::MISSING ) {
       masks.setPath( masksBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( normals.getType() == File::MISSING ) {
+    if( normals.type() == File::MISSING ) {
       normals.setPath( normalsBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( specular.getType() == File::MISSING ) {
+    if( specular.type() == File::MISSING ) {
       specular.setPath( specularBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( specular1.getType() == File::MISSING ) {
+    if( specular1.type() == File::MISSING ) {
       specular1.setPath( specular1BasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( emission.getType() == File::MISSING ) {
+    if( emission.type() == File::MISSING ) {
       emission.setPath( emissionBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( normals1.getType() == File::MISSING ) {
+    if( normals1.type() == File::MISSING ) {
       normals1.setPath( normals1BasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( normals2.getType() == File::MISSING ) {
+    if( normals2.type() == File::MISSING ) {
       normals2.setPath( normals2BasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( normals3.getType() == File::MISSING ) {
+    if( normals3.type() == File::MISSING ) {
       normals3.setPath( normals3BasePath + IMAGE_EXTENSIONS[i] );
     }
   }
@@ -331,10 +331,10 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
   Image image, specImage, emissionImage;
   image.dib = 0;
 
-  if( diffuse.getType() == File::REGULAR ) {
+  if( diffuse.type() == File::REGULAR ) {
     image = loadImage( diffuse.path(), 0 );
   }
-  else if( diffuse1.getType() == File::REGULAR ) {
+  else if( diffuse1.type() == File::REGULAR ) {
     image = loadImage( diffuse1.path(), 0 );
   }
   else {
@@ -349,20 +349,20 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
   specImage.dib     = null;
   emissionImage.dib = null;
 
-  if( masks.getType() == File::REGULAR ) {
+  if( masks.type() == File::REGULAR ) {
     image = loadImage( masks.path(), GL_BGR );
   }
-  else if( specular.getType() == File::REGULAR ) {
+  else if( specular.type() == File::REGULAR ) {
     specImage = loadImage( specular.path(), GL_BGR );
 
-    if( emission.getType() == File::REGULAR ) {
+    if( emission.type() == File::REGULAR ) {
       emissionImage = loadImage( emission.path(), GL_LUMINANCE );
     }
   }
-  else if( specular1.getType() == File::REGULAR ) {
+  else if( specular1.type() == File::REGULAR ) {
     specImage = loadImage( specular1.path(), GL_BGR );
 
-    if( emission.getType() == File::REGULAR ) {
+    if( emission.type() == File::REGULAR ) {
       emissionImage = loadImage( emission.path(), GL_LUMINANCE );
     }
   }
@@ -407,16 +407,16 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
   else {
     image.dib = null;
 
-    if( normals.getType() == File::REGULAR ) {
+    if( normals.type() == File::REGULAR ) {
       image = loadImage( normals.path() );
     }
-    else if( normals1.getType() == File::REGULAR ) {
+    else if( normals1.type() == File::REGULAR ) {
       image = loadImage( normals1.path(), GL_BGR );
     }
-    else if( normals2.getType() == File::REGULAR ) {
+    else if( normals2.type() == File::REGULAR ) {
       image = loadImage( normals2.path(), GL_BGR );
     }
-    else if( normals3.getType() == File::REGULAR ) {
+    else if( normals3.type() == File::REGULAR ) {
       image = loadImage( normals3.path(), GL_BGR );
     }
 
@@ -435,60 +435,54 @@ void Context::writeLayer( uint id, BufferStream* stream )
 {
   glBindTexture( GL_TEXTURE_2D, id );
 
-  int wrap, magFilter, minFilter, nMipmaps, internalFormat;
+  int wrap, magFilter, minFilter;
 
   glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, &wrap );
   glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, &magFilter );
   glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, &minFilter );
-  glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, &nMipmaps );
-
-  int width;
-  for( nMipmaps = 0; nMipmaps < 1000; ++nMipmaps ) {
-    glGetTexLevelParameteriv( GL_TEXTURE_2D, nMipmaps, GL_TEXTURE_WIDTH, &width );
-
-    if( width == 0 ) {
-      break;
-    }
-  }
-
-  glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat );
-  OZ_GL_CHECK_ERROR();
 
   stream->writeInt( wrap );
   stream->writeInt( magFilter );
   stream->writeInt( minFilter );
-  stream->writeInt( nMipmaps );
-  stream->writeInt( internalFormat );
 
-  for( int i = 0; i < nMipmaps; ++i ) {
-    int width, height, size;
+  for( int level = 0; ; ++level ) {
+    int width, height, format, size;
 
-    glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_WIDTH, &width );
-    glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_HEIGHT, &height );
+    glGetTexLevelParameteriv( GL_TEXTURE_2D, level, GL_TEXTURE_WIDTH, &width );
+    glGetTexLevelParameteriv( GL_TEXTURE_2D, level, GL_TEXTURE_HEIGHT, &height );
+    glGetTexLevelParameteriv( GL_TEXTURE_2D, level, GL_TEXTURE_INTERNAL_FORMAT, &format );
 
-    if( useS3TC ) {
-      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &size );
-    }
-    else {
-      size = width * height * 4;
+    if( width == 0 ) {
+      break;
     }
 
     stream->writeInt( width );
     stream->writeInt( height );
-    stream->writeInt( size );
+    stream->writeInt( format );
 
-    if( useS3TC ) {
+    if( format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT || format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT ) {
+      glGetTexLevelParameteriv( GL_TEXTURE_2D, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &size );
+
+      stream->writeInt( size );
 #ifdef _WIN32
-      client::glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->forward( size ) );
+      client::glGetCompressedTexImage( GL_TEXTURE_2D, level, stream->forward( size ) );
 #else
-      glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->forward( size ) );
+      glGetCompressedTexImage( GL_TEXTURE_2D, level, stream->forward( size ) );
 #endif
     }
     else {
-      glGetTexImage( GL_TEXTURE_2D, i, uint( internalFormat ),
+      hard_assert( format == GL_RGB || format == GL_RGBA || format == GL_LUMINANCE );
+
+      int sampleSize = format == GL_RGB ? 3 : format == GL_RGBA ? 4 : 1;
+      size = width * height * sampleSize;
+
+      stream->writeInt( size );
+      glGetTexImage( GL_TEXTURE_2D, level, uint( format ),
                      GL_UNSIGNED_BYTE, stream->forward( size ) );
     }
   }
+
+  stream->writeInt( 0 );
 
   OZ_GL_CHECK_ERROR();
 }

@@ -477,15 +477,15 @@ static void quicksort( Elem* first, Elem* last )
 {
   // 8-14 seem as an optimal thresholds for switching to selection sort.
   if( last - first > 10 ) {
-    // Quicksort.
-    Elem* top = first;
+    // Quicksort (last element is pivot).
+    Elem* top    = first;
     Elem* bottom = last - 1;
 
     do {
-      while( top <= bottom && !( *last < *top ) ) {
+      while( !( *last < *top ) && top <= bottom ) {
         ++top;
       }
-      while( top < bottom && *last < *bottom ) {
+      while( *last < *bottom && top < bottom ) {
         --bottom;
       }
       if( top >= bottom ) {
@@ -496,16 +496,17 @@ static void quicksort( Elem* first, Elem* last )
     }
     while( true );
 
-    swap<Elem>( *top, *last );
-
+    if( top != last ) {
+      swap<Elem>( *top, *last );
+      quicksort<Elem>( top + 1, last );
+    }
     quicksort<Elem>( first, top - 1 );
-    quicksort<Elem>( top + 1, last );
   }
   else {
     // Selection sort.
     for( Elem* i = first; i < last; ) {
       Elem* pivot = i;
-      Elem* min = i;
+      Elem* min   = i;
       ++i;
 
       for( Elem* j = i; j <= last; ++j ) {
@@ -513,8 +514,9 @@ static void quicksort( Elem* first, Elem* last )
           min = j;
         }
       }
-
-      swap<Elem>( *pivot, *min );
+      if( min != pivot ) {
+        swap<Elem>( *min, *pivot );
+      }
     }
   }
 }

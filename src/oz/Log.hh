@@ -54,7 +54,7 @@ class Log
 
   public:
 
-    bool  isVerbose;     ///< Do not suppress verbose messages on stdout. Off by default.
+    bool  showVerbose;   ///< Do not suppress verbose messages on stdout. Off by default.
     bool  verboseMode;   ///< While <tt>verboseMode</tt> is on log output is only written to log
                          ///< file unless <tt>isVerbose</tt> is also on. Off by default.
 

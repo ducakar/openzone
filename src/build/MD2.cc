@@ -437,7 +437,7 @@ void MD2::build( const char* path )
 
     log.print( "Writing to '%s' ...", destFile.path().cstr() );
 
-    if( !destFile.write( &os ) ) {
+    if( !destFile.write( os.begin(), os.length() ) ) {
       throw Exception( "Failed to write '%s'", destFile.path().cstr() );
     }
 
@@ -448,7 +448,7 @@ void MD2::build( const char* path )
 
     log.print( "Writing to '%s' ...", destFile.path().cstr() );
 
-    if( !destFile.write( &os ) ) {
+    if( !destFile.write( os.begin(), os.length() ) ) {
       throw Exception( "Failed to write '%s'", destFile.path().cstr() );
     }
 

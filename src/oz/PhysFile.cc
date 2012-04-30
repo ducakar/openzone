@@ -28,7 +28,16 @@
 
 #include "windefs.h"
 #include <cerrno>
-#include <physfs.h>
+
+// TODO implement NaCl
+
+#ifdef __native_client__
+# include <ppapi/cpp/file_system.h>
+# include <ppapi/cpp/file_ref.h>
+# include <ppapi/cpp/file_io.h>
+#else
+# include <physfs.h>
+#endif
 
 namespace oz
 {
@@ -39,7 +48,7 @@ inline bool operator < ( const PhysFile& a, const PhysFile& b )
 }
 
 PhysFile::PhysFile() :
-  type( File::NONE ), data( null ), size( 0 )
+  fileType( File::DIRECTORY ), data( null ), size( 0 )
 {}
 
 PhysFile::~PhysFile()
@@ -48,16 +57,16 @@ PhysFile::~PhysFile()
 }
 
 PhysFile::PhysFile( const PhysFile& file ) :
-  filePath( file.filePath ), type( file.type ), data( null ), size( 0 )
+  filePath( file.filePath ), fileType( file.fileType ), data( null ), size( 0 )
 {}
 
 PhysFile::PhysFile( PhysFile&& file ) :
-  filePath( static_cast<String&&>( file.filePath ) ), type( file.type ),
+  filePath( static_cast<String&&>( file.filePath ) ), fileType( file.fileType ),
   data( file.data ), size( file.size )
 {
-  file.type = File::NONE;
-  file.data = null;
-  file.size = 0;
+  file.fileType = File::DIRECTORY;
+  file.data     = null;
+  file.size     = 0;
 }
 
 PhysFile& PhysFile::operator = ( const PhysFile& file )
@@ -67,7 +76,7 @@ PhysFile& PhysFile::operator = ( const PhysFile& file )
   }
 
   filePath = file.filePath;
-  type     = file.type;
+  fileType = file.fileType;
   data     = null;
   size     = 0;
 
@@ -83,49 +92,83 @@ PhysFile& PhysFile::operator = ( PhysFile&& file )
   delete[] data;
 
   filePath = static_cast<String&&>( file.filePath );
-  type     = file.type;
+  fileType = file.fileType;
   data     = file.data;
   size     = file.size;
 
-  file.type = File::NONE;
-  file.data = null;
-  file.size = 0;
+  file.fileType = File::DIRECTORY;
+  file.data     = null;
+  file.size     = 0;
 
   return *this;
 }
 
 PhysFile::PhysFile( const char* path ) :
-  filePath( path ), type( File::NONE ), data( null ), size( 0 )
-{}
+  filePath( path ), data( null ), size( 0 )
+{
+#ifdef __native_client__
+
+  static_cast<void>( path );
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#else
+
+  if( !PHYSFS_exists( filePath ) ) {
+    fileType = File::MISSING;
+  }
+  else if( PHYSFS_isDirectory( filePath ) ) {
+    fileType = File::DIRECTORY;
+  }
+  else {
+    fileType = File::REGULAR;
+  }
+
+#endif
+}
 
 void PhysFile::setPath( const char* path )
 {
   delete[] data;
 
   filePath = path;
-  type     = File::NONE;
   data     = null;
   size     = 0;
+
+#ifdef __native_client__
+
+  static_cast<void>( path );
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#else
+
+  if( !PHYSFS_exists( filePath ) ) {
+    fileType = File::MISSING;
+  }
+  else if( PHYSFS_isDirectory( filePath ) ) {
+    fileType = File::DIRECTORY;
+  }
+  else {
+    fileType = File::REGULAR;
+  }
+
+#endif
 }
 
-File::Type PhysFile::getType()
+File::Type PhysFile::type() const
 {
-  if( type == File::NONE ) {
-    if( !PHYSFS_exists( filePath ) ) {
-      type = File::MISSING;
-    }
-    else if( PHYSFS_isDirectory( filePath ) ) {
-      type = File::DIRECTORY;
-    }
-    else {
-      type = File::REGULAR;
-    }
-  }
-  return type;
+  return fileType;
 }
 
 int PhysFile::getSize() const
 {
+#ifdef __native_client__
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#else
+
   PHYSFS_File* file = PHYSFS_openRead( filePath );
 
   if( file != null ) {
@@ -134,6 +177,8 @@ int PhysFile::getSize() const
     return size;
   }
   return -1;
+
+#endif
 }
 
 String PhysFile::path() const
@@ -141,16 +186,32 @@ String PhysFile::path() const
   return filePath;
 }
 
-String PhysFile::realPath() const
+String PhysFile::realDir() const
 {
-  const char* mountPoint = PHYSFS_getRealDir( filePath );
-  return mountPoint == null ? filePath : mountPoint + ( "/" + filePath );
+#ifdef __native_client__
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#else
+
+  const char* realDir = PHYSFS_getRealDir( filePath );
+  return realDir == null ? "" : realDir;
+
+#endif
 }
 
 String PhysFile::mountPoint() const
 {
-  const char* mountPoint = PHYSFS_getRealDir( filePath );
+#ifdef __native_client__
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#else
+
+  const char* mountPoint = PHYSFS_getMountPoint( filePath );
   return mountPoint == null ? "" : mountPoint;
+
+#endif
 }
 
 String PhysFile::name() const
@@ -199,21 +260,17 @@ bool PhysFile::isMapped() const
   return data != null;
 }
 
-void PhysFile::clear()
-{
-  if( data != null ) {
-    unmap();
-  }
-
-  filePath = "";
-  type = File::NONE;
-}
-
 bool PhysFile::map()
 {
   if( data != null ) {
     unmap();
   }
+
+#ifdef __native_client__
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#else
 
   PHYSFS_File* file = PHYSFS_openRead( filePath );
   if( file == null ) {
@@ -237,6 +294,8 @@ bool PhysFile::map()
     size = 0;
     return false;
   }
+
+#endif
 
   return true;
 }
@@ -262,6 +321,12 @@ Buffer PhysFile::read() const
 {
   Buffer buffer;
 
+#ifdef __native_client__
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#else
+
   PHYSFS_File* file = PHYSFS_openRead( filePath );
   if( file == null ) {
     return buffer;
@@ -281,16 +346,53 @@ Buffer PhysFile::read() const
     buffer.dealloc();
   }
 
+#endif
+
   return buffer;
 }
 
-DArray<PhysFile> PhysFile::ls()
+bool PhysFile::write( const char* buffer, int size ) const
+{
+#ifdef __native_client__
+
+  static_cast<void>( buffer );
+  static_cast<void>( size );
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#else
+
+  PHYSFS_File* file = PHYSFS_openWrite( filePath );
+  if( file == null ) {
+    return buffer;
+  }
+
+  int result = int( PHYSFS_write( file, buffer, 1, uint( size ) ) );
+  PHYSFS_close( file );
+
+  return result == size;
+
+#endif
+}
+
+bool PhysFile::write( const Buffer* buffer ) const
+{
+  return write( buffer->begin(), buffer->length() );
+}
+
+DArray<PhysFile> PhysFile::ls() const
 {
   DArray<PhysFile> array;
 
-  if( getType() != File::DIRECTORY ) {
+  if( fileType != File::DIRECTORY ) {
     return array;
   }
+
+#ifdef __native_client__
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#else
 
   char** list = PHYSFS_enumerateFiles( filePath );
   if( list == null ) {
@@ -314,44 +416,125 @@ DArray<PhysFile> PhysFile::ls()
 
   array.alloc( count );
 
-  entity = list;
-  for( int i = 0; i < count; ) {
-    if( *entity == null ) {
-      PHYSFS_freeList( list );
-      array.dealloc();
-      return array;
-    }
+  String prefix = filePath.isEmpty() || filePath.equals( "/" ) ? "" : filePath + "/";
 
+  entity = list;
+  for( int i = 0; i < count; ++entity ) {
     if( ( *entity )[0] != '.' ) {
-      array[i].filePath = filePath + "/" + *entity;
+      array[i].setPath( prefix + *entity );
       ++i;
     }
-    ++entity;
   }
 
   PHYSFS_freeList( list );
+
+#endif
 
   array.sort();
   return array;
 }
 
-bool PhysFile::mount( const char* source, const char* mountPoint, bool append )
+bool PhysFile::mkdir( const char* path )
 {
-  return PHYSFS_mount( source, mountPoint, append ) != 0;
-}
+#ifdef __native_client__
 
-bool PhysFile::init()
-{
-#if defined( __native_client__ ) || defined( __ANDROID__ ) || defined( _WIN32 )
-  return PHYSFS_init( null ) != 0;
+  static_cast<void>( path );
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
 #else
-  return PHYSFS_init( program_invocation_name ) != 0;
+
+  return PHYSFS_mkdir( path ) != 0;
+
 #endif
 }
 
-bool PhysFile::free()
+bool PhysFile::rm( const char* path )
 {
-  return PHYSFS_deinit() != 0;
+#ifdef __native_client__
+
+  static_cast<void>( path );
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#else
+
+  return PHYSFS_delete( path );
+
+#endif
+}
+
+bool PhysFile::mount( const char* path, const char* mountPoint, bool append )
+{
+#ifdef __native_client__
+
+  static_cast<void>( path );
+  static_cast<void>( mountPoint );
+  static_cast<void>( append );
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#else
+
+  return PHYSFS_mount( path, mountPoint, append ) != 0;
+
+#endif
+}
+
+bool PhysFile::mountLocal( const char* path )
+{
+#ifdef __native_client__
+
+  static_cast<void>( path );
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#else
+
+  if( PHYSFS_setWriteDir( path ) == 0 ) {
+    return false;
+  }
+  if( PHYSFS_mount( path, null, false ) == 0 ) {
+    PHYSFS_setWriteDir( null );
+    return false;
+  }
+  return true;
+
+#endif
+}
+
+void PhysFile::init()
+{
+#if defined( __native_client__ )
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#elif defined( __ANDROID__ ) || defined( _WIN32 )
+
+  if( PHYSFS_init( null ) == 0 ) {
+    throw Exception( "PHYSFS initialisation failed" );
+  }
+
+#else
+
+  if( PHYSFS_init( program_invocation_name ) == 0 ) {
+    throw Exception( "PHYSFS initialisation failed" );
+  }
+
+#endif
+}
+
+void PhysFile::free()
+{
+#ifdef __native_client__
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#else
+
+  PHYSFS_deinit();
+
+#endif
 }
 
 }

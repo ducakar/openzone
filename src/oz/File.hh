@@ -49,8 +49,8 @@ class File
     enum Type
     {
       NONE,
-      REGULAR,
       DIRECTORY,
+      REGULAR,
       OTHER,
       MISSING
     };
@@ -58,7 +58,7 @@ class File
   private:
 
     String filePath; ///< %File path.
-    Type   type;     ///< Cached file type.
+    Type   fileType; ///< %File type.
     char*  data;     ///< Mapped memory.
     int    size;     ///< Mapped memory size.
 
@@ -66,6 +66,8 @@ class File
 
     /**
      * Create an empty instance.
+     *
+     * Path is set to "" and file type to <tt>NONE</tt>.
      */
     File();
 
@@ -106,16 +108,16 @@ class File
     /**
      * Set a new file path.
      *
-     * Cached file type is cleared to <tt>NONE</tt> and file is unmapped if it is currently mapped.
+     * Besides changing path, <tt>unmap()</tt> is called and file type is detected for the new path.
      */
     void setPath( const char* path );
 
     /**
-     * Stat file to get its type.
+     * Get (cached) file type.
      *
-     * %File type is cached until one changes the file path.
+     * %File type is detection is performed on construction or <tt>setPath()</tt>.
      */
-    Type getType();
+    Type type();
 
     /**
      * Stat file to get its size.
@@ -157,11 +159,6 @@ class File
     bool isMapped() const;
 
     /**
-     * Release resources and set default values for internal fields.
-     */
-    void clear();
-
-    /**
      * %Map file into memory.
      *
      * One can use <tt>inputStream()</tt> afterwards to read the contents.
@@ -194,26 +191,6 @@ class File
     bool write( const Buffer* buffer ) const;
 
     /**
-     * Write all <tt>istream.capacity()</tt> bytes of an input stream to a file.
-     */
-    bool write( const InputStream* istream ) const;
-
-    /**
-     * Write the first <tt>ostream.length()</tt> bytes of an output stream to a file.
-     */
-    bool write( const OutputStream* ostream ) const;
-
-    /**
-     * Write the first <tt>bstream.length()</tt> bytes of an stream buffer to a file.
-     */
-    bool write( const BufferStream* bstream ) const;
-
-    /**
-     * Delete file.
-     */
-    static bool unlink( const char* path );
-
-    /**
      * Return current directory.
      */
     static String cwd();
@@ -224,22 +201,22 @@ class File
     static bool chdir( const char* path );
 
     /**
-     * Make a new directory.
-     */
-    static bool mkdir( const char* path, uint mode = 0755 );
-
-    /**
-     * Delete empty directory.
-     */
-    static bool rmdir( const char* path );
-
-    /**
      * Generate a list of files in directory.
      *
      * Hidden files (in Unix means, so everything starting with '.') are skipped.
      * On error, empty array is returned.
      */
     DArray<File> ls();
+
+    /**
+     * Make a new directory.
+     */
+    static bool mkdir( const char* path );
+
+    /**
+     * Delete a file or an empty directory.
+     */
+    static bool rm( const char* path );
 
 };
 

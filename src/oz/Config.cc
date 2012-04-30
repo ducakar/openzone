@@ -368,7 +368,15 @@ bool Config::save( File& file, const char* lineEnd )
   BufferStream bstream;
   saveConf( &bstream, lineEnd );
 
-  return file.write( &bstream );
+  return file.write( bstream.begin(), bstream.length() );
+}
+
+bool Config::save( PhysFile& file, const char* lineEnd )
+{
+  BufferStream bstream;
+  saveConf( &bstream, lineEnd );
+
+  return file.write( bstream.begin(), bstream.length() );
 }
 
 void Config::removeUnused()

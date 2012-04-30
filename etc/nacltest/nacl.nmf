@@ -1,0 +1,10 @@
+{
+  "program": {
+    "x86-64": {
+      "url": "nacl.x86_64.nexe"
+    },
+    "x86-32": {
+      "url": "nacl.i686.nexe"
+    }
+  }
+}

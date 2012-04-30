@@ -132,24 +132,9 @@ uint Context::readTextureLayer( InputStream* stream, const char* path )
   glGenTextures( 1, &texId );
   glBindTexture( GL_TEXTURE_2D, texId );
 
-  int wrap           = stream->readInt();
-  int magFilter      = stream->readInt();
-  int minFilter      = stream->readInt();
-  int nMipmaps       = stream->readInt();
-  int internalFormat = stream->readInt();
-
-#ifndef OZ_GL_COMPATIBLE
-  bool usesS3TC = internalFormat == GL_COMPRESSED_RGB_S3TC_DXT1_EXT ||
-                  internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT ||
-                  internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT ||
-                  internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-#else
-  bool usesS3TC = false;
-#endif
-
-  if( !shader.hasS3TC && usesS3TC ) {
-    throw Exception( "Texture '%s' uses S3TC but texture compression disabled", path );
-  }
+  int wrap      = stream->readInt();
+  int magFilter = stream->readInt();
+  int minFilter = stream->readInt();
 
   if( !wrap ) {
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
@@ -159,18 +144,27 @@ uint Context::readTextureLayer( InputStream* stream, const char* path )
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
 
-  for( int i = 0; i < nMipmaps; ++i ) {
+  for( int level = 0; ; ++level ) {
     int width  = stream->readInt();
+
+    if( width == 0 ) {
+      break;
+    }
+
     int height = stream->readInt();
+    int format = stream->readInt();
     int size   = stream->readInt();
 
-    if( usesS3TC ) {
-      glCompressedTexImage2D( GL_TEXTURE_2D, i, uint( internalFormat ), width, height, 0,
+#ifndef OZ_GL_COMPATIBLE
+    if( format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT || format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT ) {
+      glCompressedTexImage2D( GL_TEXTURE_2D, level, uint( format ), width, height, 0,
                               size, stream->forward( size ) );
     }
-    else {
-      glTexImage2D( GL_TEXTURE_2D, i, internalFormat, width, height, 0,
-                    uint( internalFormat ), GL_UNSIGNED_BYTE, stream->forward( size ) );
+    else
+#endif
+    {
+      glTexImage2D( GL_TEXTURE_2D, level, format, width, height, 0,
+                    uint( format ), GL_UNSIGNED_BYTE, stream->forward( size ) );
     }
   }
 

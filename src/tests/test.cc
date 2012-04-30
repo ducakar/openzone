@@ -62,8 +62,22 @@ struct Foo
     return *this;
   }
 
-  virtual void bar()
-  {}
+  void foo() const
+  {
+    printf( "Foo::foo()\n" );
+  };
+
+  static Foo bar( bool b )
+  {
+    Foo f;
+
+    if( b ) {
+      return f;
+    }
+    else {
+      return f;
+    }
+  }
 };
 
 int main()

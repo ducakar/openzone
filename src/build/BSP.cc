@@ -1115,7 +1115,7 @@ void BSP::saveMatrix()
 
   os.writeString( demolishSound );
 
-  if( !destFile.write( &os ) ) {
+  if( !destFile.write( os.begin(), os.length() ) ) {
     throw Exception( "Failed to write '%s'", destFile.path().cstr() );
   }
 
@@ -1195,7 +1195,7 @@ void BSP::saveClient()
 
   log.print( "Dumping BSP model to '%s' ...", destFile.path().cstr() );
 
-  if( !destFile.write( &os ) ) {
+  if( !destFile.write( os.begin(), os.length() ) ) {
     throw Exception( "Failed to write '%s'", destFile.path().cstr() );
   }
 

@@ -26,7 +26,9 @@
 
 #include "File.hh"
 
-#ifdef _WIN32
+#if defined( __native_client__ )
+# include "Exception.hh"
+#elif defined( _WIN32 )
 # include "windefs.h"
 # include <windows.h>
 #else
@@ -46,7 +48,7 @@ inline bool operator < ( const File& a, const File& b )
 }
 
 File::File() :
-  type( NONE ), data( null ), size( 0 )
+  fileType( NONE ), data( null ), size( 0 )
 {}
 
 File::~File()
@@ -57,16 +59,16 @@ File::~File()
 }
 
 File::File( const File& file ) :
-  filePath( file.filePath ), type( file.type ), data( null ), size( 0 )
+  filePath( file.filePath ), fileType( file.fileType ), data( null ), size( 0 )
 {}
 
 File::File( File&& file ) :
-  filePath( static_cast<String&&>( file.filePath ) ), type( file.type ),
+  filePath( static_cast<String&&>( file.filePath ) ), fileType( file.fileType ),
   data( file.data ), size( file.size )
 {
-  file.type = NONE;
-  file.data = null;
-  file.size = 0;
+  file.fileType = NONE;
+  file.data     = null;
+  file.size     = 0;
 }
 
 File& File::operator = ( const File& file )
@@ -76,7 +78,7 @@ File& File::operator = ( const File& file )
   }
 
   filePath = file.filePath;
-  type     = file.type;
+  fileType = file.fileType;
   data     = null;
   size     = 0;
 
@@ -94,20 +96,57 @@ File& File::operator = ( File&& file )
   }
 
   filePath = static_cast<String&&>( file.filePath );
-  type     = file.type;
+  fileType = file.fileType;
   data     = file.data;
   size     = file.size;
 
-  file.type = NONE;
-  file.data = null;
-  file.size = 0;
+  file.fileType = NONE;
+  file.data     = null;
+  file.size     = 0;
 
   return *this;
 }
 
 File::File( const char* path ) :
-  filePath( path ), type( NONE ), data( null ), size( 0 )
-{}
+  filePath( path ), data( null ), size( 0 )
+{
+#if defined( __native_client__ )
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#elif defined( _WIN32 )
+
+  DWORD attributes = GetFileAttributes( filePath );
+
+  if( attributes == INVALID_FILE_ATTRIBUTES ) {
+    fileType = MISSING;
+  }
+  else if( attributes & FILE_ATTRIBUTE_DIRECTORY ) {
+    fileType = DIRECTORY;
+  }
+  else {
+    fileType = REGULAR;
+  }
+
+#else
+
+  struct stat info;
+
+  if( stat( filePath, &info ) != 0 ) {
+    fileType = MISSING;
+  }
+  else if( S_ISDIR( info.st_mode ) ) {
+    fileType = DIRECTORY;
+  }
+  else if( S_ISREG( info.st_mode ) ) {
+    fileType = REGULAR;
+  }
+  else {
+    fileType = OTHER;
+  }
+
+#endif
+}
 
 void File::setPath( const char* path )
 {
@@ -116,49 +155,64 @@ void File::setPath( const char* path )
   }
 
   filePath = path;
-  type     = NONE;
   data     = null;
   size     = 0;
-}
 
-File::Type File::getType()
-{
-  if( type == NONE ) {
-#ifdef _WIN32
+  if( String::isEmpty( path ) ) {
+    fileType = NONE;
+  }
+  else {
+#if defined( __native_client__ )
+
+    throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#elif defined( _WIN32 )
+
     DWORD attributes = GetFileAttributes( filePath );
 
     if( attributes == INVALID_FILE_ATTRIBUTES ) {
-      type = MISSING;
+      fileType = MISSING;
     }
     else if( attributes & FILE_ATTRIBUTE_DIRECTORY ) {
-      type = DIRECTORY;
+      fileType = DIRECTORY;
     }
     else {
-      type = REGULAR;
+      fileType = REGULAR;
     }
+
 #else
+
     struct stat info;
 
     if( stat( filePath, &info ) != 0 ) {
-      type = MISSING;
+      fileType = MISSING;
     }
     else if( S_ISDIR( info.st_mode ) ) {
-      type = DIRECTORY;
+      fileType = DIRECTORY;
     }
     else if( S_ISREG( info.st_mode ) ) {
-      type = REGULAR;
+      fileType = REGULAR;
     }
     else {
-      type = OTHER;
+      fileType = OTHER;
     }
+
 #endif
   }
-  return type;
+}
+
+File::Type File::type()
+{
+  return fileType;
 }
 
 int File::getSize() const
 {
-#ifdef _WIN32
+#if defined( __native_client__ )
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#elif defined( _WIN32 )
 
   HANDLE handle = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, null, OPEN_EXISTING,
                               FILE_ATTRIBUTE_NORMAL, null );
@@ -231,23 +285,17 @@ bool File::isMapped() const
   return data != null;
 }
 
-void File::clear()
-{
-  if( data != null ) {
-    unmap();
-  }
-
-  filePath = "";
-  type = NONE;
-}
-
 bool File::map()
 {
   if( data != null ) {
     unmap();
   }
 
-#ifdef _WIN32
+#if defined( __native_client__ )
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#elif defined( _WIN32 )
 
   HANDLE file = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, null, OPEN_EXISTING,
                             FILE_ATTRIBUTE_NORMAL, null );
@@ -267,6 +315,7 @@ bool File::map()
   CloseHandle( file );
 
   if( data == null ) {
+    size = 0;
     return false;
   }
 
@@ -287,7 +336,6 @@ bool File::map()
   data = static_cast<char*>( mmap( null, size_t( statInfo.st_size ),
                                    PROT_READ, MAP_SHARED, fd, 0 ) );
   close( fd );
-
   if( data == MAP_FAILED ) {
     data = null;
     size = 0;
@@ -302,7 +350,9 @@ bool File::map()
 void File::unmap()
 {
   if( data != null ) {
-#ifdef _WIN32
+#if defined( __native_client__ )
+    throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+#elif defined( _WIN32 )
     UnmapViewOfFile( data );
 #else
     munmap( data, size_t( size ) );
@@ -323,7 +373,11 @@ Buffer File::read() const
 {
   Buffer buffer;
 
-#ifdef _WIN32
+#if defined( __native_client__ )
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#elif defined( _WIN32 )
 
   HANDLE file = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, null, OPEN_EXISTING,
                             FILE_ATTRIBUTE_NORMAL, null );
@@ -372,7 +426,14 @@ Buffer File::read() const
 
 bool File::write( const char* buffer, int count ) const
 {
-#ifdef _WIN32
+#if defined( __native_client__ )
+
+  static_cast<void>( buffer );
+  static_cast<void>( count );
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#elif defined( _WIN32 )
 
   HANDLE file = CreateFile( filePath, GENERIC_WRITE, 0, null, CREATE_ALWAYS,
                             FILE_ATTRIBUTE_NORMAL, null );
@@ -406,67 +467,43 @@ bool File::write( const Buffer* buffer ) const
   return write( buffer->begin(), buffer->length() );
 }
 
-bool File::write( const InputStream* istream ) const
-{
-  return write( istream->begin(), istream->capacity() );
-}
-
-bool File::write( const OutputStream* ostream ) const
-{
-  return write( ostream->begin(), ostream->length() );
-}
-
-bool File::write( const BufferStream* bstream ) const
-{
-  return write( bstream->begin(), bstream->length() );
-}
-
-bool File::unlink( const char* path )
-{
-#ifdef _WIN32
-  return DeleteFile( path ) != 0;
-#else
-  return ::unlink( path ) == 0;
-#endif
-}
-
 String File::cwd()
 {
+#if defined( __native_client__ )
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#elif defined( _WIN32 )
+
   char buffer[256];
-#ifdef _WIN32
   bool hasFailed = GetCurrentDirectory( 256, buffer ) == 0;
-#else
-  bool hasFailed = getcwd( buffer, 256 ) == null;
-#endif
   return hasFailed ? "." : buffer;
+
+#else
+
+  char buffer[256];
+  bool hasFailed = getcwd( buffer, 256 ) == null;
+  return hasFailed ? "." : buffer;
+
+#endif
 }
 
 bool File::chdir( const char* path )
 {
-#ifdef _WIN32
+#if defined( __native_client__ )
+
+  static_cast<void>( path );
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#elif defined( _WIN32 )
+
   return SetCurrentDirectory( path ) != 0;
+
 #else
+
   return ::chdir( path ) == 0;
-#endif
-}
 
-bool File::mkdir( const char* path, uint mode )
-{
-#ifdef _WIN32
-  static_cast<void>( mode );
-
-  return CreateDirectory( path, null ) != 0;
-#else
-  return ::mkdir( path, mode ) == 0;
-#endif
-}
-
-bool File::rmdir( const char* path )
-{
-#ifdef _WIN32
-  return RemoveDirectory( path ) != 0;
-#else
-  return ::rmdir( path ) == 0;
 #endif
 }
 
@@ -474,11 +511,15 @@ DArray<File> File::ls()
 {
   DArray<File> array;
 
-  if( getType() != DIRECTORY ) {
+  if( fileType != DIRECTORY ) {
     return array;
   }
 
-#ifdef _WIN32
+#if defined( __native_client__ )
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#elif defined( _WIN32 )
 
   WIN32_FIND_DATA entity;
 
@@ -552,18 +593,11 @@ DArray<File> File::ls()
     return array;
   }
 
-#ifdef __native_client__
-  closedir( directory );
-  directory = opendir( filePath );
-
-  if( directory == null ) {
-    return array;
-  }
-#else
   rewinddir( directory );
-#endif
 
   array.alloc( count );
+
+  String prefix = filePath.isEmpty() || filePath.equals( "/" ) ? "" : filePath + "/";
 
   for( int i = 0; i < count; ) {
     entity = readdir( directory );
@@ -575,7 +609,7 @@ DArray<File> File::ls()
     }
 
     if( entity->d_name[0] != '.' ) {
-      array[i].filePath = filePath + "/" + entity->d_name;
+      array[i].filePath = prefix + entity->d_name;
       ++i;
     }
   }
@@ -586,6 +620,54 @@ DArray<File> File::ls()
 
   array.sort();
   return array;
+}
+
+bool File::mkdir( const char* path )
+{
+#if defined( __native_client__ )
+
+  static_cast<void>( path );
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#elif defined( _WIN32 )
+
+  return CreateDirectory( path, null ) != 0;
+
+#else
+
+  return ::mkdir( path, 0755 ) == 0;
+
+#endif
+}
+
+bool File::rm( const char* path )
+{
+#if defined( __native_client__ )
+
+  static_cast<void>( path );
+
+  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+#elif defined( _WIN32 )
+
+  if( File( path ).fileType == DIRECTORY ) {
+    return RemoveDirectory( path ) != 0;
+  }
+  else {
+    return DeleteFile( path ) != 0;
+  }
+
+#else
+
+  if( File( path ).fileType == DIRECTORY ) {
+    return ::rmdir( path ) == 0;
+  }
+  else {
+    return ::unlink( path ) == 0;
+  }
+
+#endif
 }
 
 }
