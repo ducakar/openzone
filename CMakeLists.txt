@@ -192,7 +192,10 @@ int main( int, char** ) { return 0; }
 if( isClang )
   set( flags "-Qunused-arguments -stdlib=libstdc++ ${flags}" )
 elseif( isLegacyGCC )
-  set( flags "-std=gnu++0x -pthread -pipe -ffast-math" )
+  set( flags "-std=gnu++0x -pipe -ffast-math" )
+endif()
+if( ANDROID )
+  set( flags "${flags} -fexceptions" )
 endif()
 
 check_cxx_compiler_flag( "-flto" hasLTO )

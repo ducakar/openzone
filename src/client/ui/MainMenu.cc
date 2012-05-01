@@ -116,11 +116,11 @@ MainMenu::MainMenu() :
   File autosaveFile( GameStage::AUTOSAVE_FILE );
   File quicksaveFile( GameStage::QUICKSAVE_FILE );
 
-  if( autosaveFile.type() == File::REGULAR ) {
+  if( autosaveFile.stat() ) {
     MainMenu::autosaveFile = autosaveFile.path();
     add( new Button( OZ_GETTEXT( "Continue" ), continueAutosaved, 300, 20 ), 50, -60 );
   }
-  if( quicksaveFile.type() == File::REGULAR ) {
+  if( quicksaveFile.stat() ) {
     MainMenu::quicksaveFile = quicksaveFile.path();
     add( new Button( OZ_GETTEXT( "Load Quicksave" ), continueQuicksaved, 300, 20 ), 50, -90 );
   }

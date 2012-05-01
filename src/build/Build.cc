@@ -109,6 +109,8 @@ void Build::copyFiles( const char* srcDir, const char* destDir, const char* ext,
   foreach( file, dirList.iter() ) {
     String fileName = file->name();
 
+    file->stat();
+
     if( file->type() == File::DIRECTORY ) {
       if( recurse ) {
         copyFiles( srcDir + ( "/" + file->name() ), destDir + ( "/" + file->name() ), ext, true );
@@ -227,7 +229,9 @@ void Build::buildBSPTextures()
   PhysFile dir( "baseq3/textures" );
   DArray<PhysFile> dirList = dir.ls();
 
-  foreach( subDir, dirList.citer() ) {
+  foreach( subDir, dirList.iter() ) {
+    subDir->stat();
+
     if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
@@ -491,10 +495,10 @@ void Build::buildModels()
       }
     }
 
-    if( PhysFile( path + "/data.obj" ).type() != File::MISSING ) {
+    if( PhysFile( path + "/data.obj" ).stat() ) {
       OBJ::build( path );
     }
-    else if( PhysFile( path + "/tris.md2" ).type() != File::MISSING ) {
+    else if( PhysFile( path + "/tris.md2" ).stat() ) {
       MD2::build( path );
     }
     else {
@@ -516,7 +520,9 @@ void Build::copySounds()
   PhysFile dir( "snd" );
   DArray<PhysFile> dirList = dir.ls();
 
-  foreach( subDir, dirList.citer() ) {
+  foreach( subDir, dirList.iter() ) {
+    subDir->stat();
+
     if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
@@ -663,7 +669,7 @@ void Build::packArchive( const char* name, bool useCompression, bool use7zip )
     throw Exception( use7zip ? "Packing 7zip archive failed" : "Packing ZIP archive failed" );
   }
 
-  int size = archive.getSize();
+  int size = archive.size();
 
   if( size >= 0 ) {
     log.println();

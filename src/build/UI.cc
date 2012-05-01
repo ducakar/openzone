@@ -55,7 +55,7 @@ const char* const UI::ICON_NAMES[] = {
 
 void UI::buildCursors()
 {
-  if( PhysFile( "ui/cur" ).type() == File::MISSING ) {
+  if( !PhysFile( "ui/cur" ).stat() ) {
     return;
   }
 
@@ -113,7 +113,7 @@ void UI::buildCursors()
 
 void UI::buildIcons()
 {
-  if( PhysFile( "ui/icon" ).type() == File::MISSING ) {
+  if( !PhysFile( "ui/icon" ).stat() ) {
     return;
   }
 

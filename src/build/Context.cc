@@ -158,7 +158,7 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
   PhysFile file( path );
   String realPath = file.realDir() + "/" + file.path();
 
-  if( file.type() == File::MISSING ) {
+  if( !file.stat() ) {
     throw Exception( "File '%s' does not exits", realPath.cstr() );
   }
 
@@ -296,34 +296,34 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
   PhysFile normals3( normals3BasePath + IMAGE_EXTENSIONS[0] );
 
   for( int i = 1; i < aLength( IMAGE_EXTENSIONS ); ++i ) {
-    if( diffuse.type() == File::MISSING ) {
+    if( !diffuse.stat() ) {
       diffuse.setPath( diffuseBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( diffuse1.type() == File::MISSING ) {
+    if( !diffuse1.stat() ) {
       diffuse1.setPath( diffuse1BasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( masks.type() == File::MISSING ) {
+    if( !masks.stat() ) {
       masks.setPath( masksBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( normals.type() == File::MISSING ) {
+    if( !normals.stat() ) {
       normals.setPath( normalsBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( specular.type() == File::MISSING ) {
+    if( !specular.stat() ) {
       specular.setPath( specularBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( specular1.type() == File::MISSING ) {
+    if( !specular1.stat() ) {
       specular1.setPath( specular1BasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( emission.type() == File::MISSING ) {
+    if( !emission.stat() ) {
       emission.setPath( emissionBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( normals1.type() == File::MISSING ) {
+    if( !normals1.stat() ) {
       normals1.setPath( normals1BasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( normals2.type() == File::MISSING ) {
+    if( !normals2.stat() ) {
       normals2.setPath( normals2BasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( normals3.type() == File::MISSING ) {
+    if( !normals3.stat() ) {
       normals3.setPath( normals3BasePath + IMAGE_EXTENSIONS[i] );
     }
   }
@@ -331,10 +331,10 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
   Image image, specImage, emissionImage;
   image.dib = 0;
 
-  if( diffuse.type() == File::REGULAR ) {
+  if( diffuse.stat() ) {
     image = loadImage( diffuse.path(), 0 );
   }
-  else if( diffuse1.type() == File::REGULAR ) {
+  else if( diffuse1.stat() ) {
     image = loadImage( diffuse1.path(), 0 );
   }
   else {
@@ -349,20 +349,20 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
   specImage.dib     = null;
   emissionImage.dib = null;
 
-  if( masks.type() == File::REGULAR ) {
+  if( masks.stat() ) {
     image = loadImage( masks.path(), GL_BGR );
   }
-  else if( specular.type() == File::REGULAR ) {
+  else if( specular.stat() ) {
     specImage = loadImage( specular.path(), GL_BGR );
 
-    if( emission.type() == File::REGULAR ) {
+    if( emission.stat() ) {
       emissionImage = loadImage( emission.path(), GL_LUMINANCE );
     }
   }
-  else if( specular1.type() == File::REGULAR ) {
+  else if( specular1.stat() ) {
     specImage = loadImage( specular1.path(), GL_BGR );
 
-    if( emission.type() == File::REGULAR ) {
+    if( emission.stat() ) {
       emissionImage = loadImage( emission.path(), GL_LUMINANCE );
     }
   }
@@ -407,16 +407,16 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
   else {
     image.dib = null;
 
-    if( normals.type() == File::REGULAR ) {
+    if( normals.stat() ) {
       image = loadImage( normals.path() );
     }
-    else if( normals1.type() == File::REGULAR ) {
+    else if( normals1.stat() ) {
       image = loadImage( normals1.path(), GL_BGR );
     }
-    else if( normals2.type() == File::REGULAR ) {
+    else if( normals2.stat() ) {
       image = loadImage( normals2.path(), GL_BGR );
     }
-    else if( normals3.type() == File::REGULAR ) {
+    else if( normals3.stat() ) {
       image = loadImage( normals3.path(), GL_BGR );
     }
 
