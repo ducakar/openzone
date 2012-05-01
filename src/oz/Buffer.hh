@@ -88,6 +88,24 @@ class Buffer
     explicit Buffer( int size );
 
     /**
+     * Constant reference to i-th byte.
+     */
+    OZ_ALWAYS_INLINE
+    const char& operator [] ( int i ) const
+    {
+      return data[i];
+    }
+
+    /**
+     * Reference to i-th byte.
+     */
+    OZ_ALWAYS_INLINE
+    char& operator [] ( int i )
+    {
+      return data[i];
+    }
+
+    /**
      * Constant pointer to the beginning of the buffer.
      */
     OZ_ALWAYS_INLINE

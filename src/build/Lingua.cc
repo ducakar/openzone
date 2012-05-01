@@ -186,6 +186,8 @@ void Lingua::build()
   DArray<PhysFile> languages = linguaDir.ls();
 
   foreach( langDir, languages.iter() ) {
+    langDir->stat();
+
     if( langDir->type() != File::DIRECTORY ) {
       continue;
     }

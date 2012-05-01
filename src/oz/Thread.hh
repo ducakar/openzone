@@ -105,6 +105,14 @@ class Mutex
     }
 
     /**
+     * True iff initialised.
+     */
+    bool isValid() const
+    {
+      return descriptor != null;
+    }
+
+    /**
      * Initialise mutex.
      */
     void init();
@@ -194,6 +202,14 @@ class Barrier
     }
 
     /**
+     * True iff initialised.
+     */
+    bool isValid() const
+    {
+      return descriptor != null;
+    }
+
+    /**
      * Initialise barrier.
      */
     void init();
@@ -276,6 +292,14 @@ class Thread
       descriptor   = t.descriptor;
       t.descriptor = null;
       return *this;
+    }
+
+    /**
+     * True iff thread has been started but not yet joined.
+     */
+    bool isValid() const
+    {
+      return descriptor != null;
     }
 
     /**

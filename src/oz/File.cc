@@ -26,8 +26,19 @@
 
 #include "File.hh"
 
+#include <cstring>
+
 #if defined( __native_client__ )
-# include "Exception.hh"
+# include "System.hh"
+# include "Thread.hh"
+
+# include <ppapi/cpp/completion_callback.h>
+# include <ppapi/cpp/core.h>
+# include <ppapi/cpp/file_system.h>
+# include <ppapi/cpp/file_ref.h>
+# include <ppapi/cpp/file_io.h>
+# include <ppapi/c/pp_file_info.h>
+# include <ppapi/c/ppb_file_io.h>
 #elif defined( _WIN32 )
 # include "windefs.h"
 # include <windows.h>
@@ -42,33 +53,113 @@
 namespace oz
 {
 
+#ifdef __native_client__
+
+#define DEFINE_CALLBACK( name, code ) \
+  struct _Callback##name { \
+    static void _main##name( void* _data, int _result ) \
+    { \
+      FileDesc* _fd = static_cast<FileDesc*>( _data ); \
+      static_cast<void>( _fd ); \
+      static_cast<void>( _result ); \
+      code \
+    } \
+  };
+
+#define CALLBACK_OBJECT( name, arg ) \
+  pp::CompletionCallback( _Callback##name::_main##name, arg )
+
+#define MAIN_CALL( code ) \
+  { \
+    DEFINE_CALLBACK( Main, code _fd->mainBarrier.finish(); ) \
+    descriptor->mainBarrier.begin(); \
+    core->CallOnMainThread( 0, CALLBACK_OBJECT( Main, descriptor ) ); \
+    descriptor->mainBarrier.wait(); \
+  }
+
+struct FileDesc
+{
+  Barrier     mainBarrier;
+  Barrier     auxBarrier;
+  File*       file;
+  pp::FileIO* fio;
+  PP_FileInfo info;
+  char*       buffer;
+  int         size;
+  int         offset;
+
+  explicit FileDesc( File* file_ ) :
+    file( file_ )
+  {
+    mainBarrier.init();
+    auxBarrier.init();
+  }
+
+  ~FileDesc()
+  {
+    auxBarrier.free();
+    mainBarrier.free();
+  }
+};
+
+// Some FileDesc members are also useful for static functions.
+static FileDesc staticDesc( null );
+
+static pp::Core*       core       = null;
+static pp::FileSystem* filesystem = null;
+
+DEFINE_CALLBACK( WaitMain, {
+  _fd->mainBarrier.finish();
+} )
+
+DEFINE_CALLBACK( WaitAux, {
+  _fd->auxBarrier.finish();
+} )
+
+#endif // __native_client__
+
 inline bool operator < ( const File& a, const File& b )
 {
   return String::compare( a.path(), b.path() ) < 0;
 }
 
 File::File() :
-  fileType( NONE ), data( null ), size( 0 )
-{}
+  fileType( MISSING ), fileSize( -1 ), data( null )
+{
+#ifdef __native_client__
+  descriptor = new FileDesc( this );
+#endif
+}
 
 File::~File()
 {
-  if( data != null ) {
-    unmap();
-  }
+  unmap();
+
+#ifdef __native_client__
+  delete descriptor;
+#endif
 }
 
 File::File( const File& file ) :
-  filePath( file.filePath ), fileType( file.fileType ), data( null ), size( 0 )
-{}
+  filePath( file.filePath ), fileType( file.fileType ), fileSize( file.fileSize ), data( null )
+{
+#ifdef __native_client__
+  descriptor = new FileDesc( this );
+#endif
+}
 
 File::File( File&& file ) :
   filePath( static_cast<String&&>( file.filePath ) ), fileType( file.fileType ),
-  data( file.data ), size( file.size )
+  fileSize( file.fileSize ), data( file.data )
 {
-  file.fileType = NONE;
+#ifdef __native_client__
+  descriptor = new FileDesc( this );
+#endif
+
+  file.filePath = "";
+  file.fileType = MISSING;
+  file.fileSize = -1;
   file.data     = null;
-  file.size     = 0;
 }
 
 File& File::operator = ( const File& file )
@@ -77,10 +168,12 @@ File& File::operator = ( const File& file )
     return *this;
   }
 
+  unmap();
+
   filePath = file.filePath;
   fileType = file.fileType;
+  fileSize = file.fileSize;
   data     = null;
-  size     = 0;
 
   return *this;
 }
@@ -91,28 +184,89 @@ File& File::operator = ( File&& file )
     return *this;
   }
 
-  if( data != null ) {
-    unmap();
-  }
+  unmap();
 
   filePath = static_cast<String&&>( file.filePath );
   fileType = file.fileType;
+  fileSize = file.fileSize;
   data     = file.data;
-  size     = file.size;
 
-  file.fileType = NONE;
+  file.filePath = "";
+  file.fileType = MISSING;
+  file.fileSize = -1;
   file.data     = null;
-  file.size     = 0;
 
   return *this;
 }
 
 File::File( const char* path ) :
-  filePath( path ), data( null ), size( 0 )
+  filePath( path ), fileType( MISSING ), fileSize( -1 ), data( null )
 {
+#ifdef __native_client__
+  descriptor = new FileDesc( this );
+#endif
+}
+
+void File::setPath( const char* path )
+{
+  unmap();
+
+  filePath = path;
+  fileType = MISSING;
+  fileSize = -1;
+}
+
+bool File::stat()
+{
+  // If file is mapped it had to be successfuly stat'd before. Futhermore fileSize must not change
+  // while file is mapped as it is needed by read() function if mapped and unmap() on POSIX systems.
+  if( data != null ) {
+    return true;
+  }
+
 #if defined( __native_client__ )
 
-  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+  fileType = MISSING;
+  fileSize = -1;
+
+  DEFINE_CALLBACK( Result, {
+    if( _result == PP_OK ) {
+      if( _fd->info.type == PP_FILETYPE_REGULAR ) {
+        _fd->file->fileType = REGULAR;
+        _fd->file->fileSize = int( _fd->info.size );
+      }
+      else if( _fd->info.type == PP_FILETYPE_DIRECTORY ) {
+        _fd->file->fileType = DIRECTORY;
+      }
+    }
+    _fd->auxBarrier.finish();
+  } )
+  DEFINE_CALLBACK( Query, {
+    if( _result == PP_OK ) {
+      _fd->fio->Query( &_fd->info, CALLBACK_OBJECT( Result, _fd ) );
+    }
+    else {
+      _fd->auxBarrier.finish();
+    }
+  } )
+
+  descriptor->auxBarrier.begin();
+
+  MAIN_CALL( {
+    _fd->fio = new pp::FileIO( static_cast<pp::Instance*>( System::instance() ) );
+
+    int ret = _fd->fio->Open( pp::FileRef( *filesystem, _fd->file->filePath ),
+                              0, CALLBACK_OBJECT( Query, _fd ) );
+    if( ret != PP_OK_COMPLETIONPENDING ) {
+      _fd->auxBarrier.finish();
+    }
+  } )
+
+  descriptor->auxBarrier.wait();
+
+  MAIN_CALL( {
+    delete _fd->fio;
+  } )
 
 #elif defined( _WIN32 )
 
@@ -120,118 +274,59 @@ File::File( const char* path ) :
 
   if( attributes == INVALID_FILE_ATTRIBUTES ) {
     fileType = MISSING;
+    fileSize = -1;
   }
   else if( attributes & FILE_ATTRIBUTE_DIRECTORY ) {
     fileType = DIRECTORY;
+    fileSize = -1;
   }
   else {
     fileType = REGULAR;
+    fileSize = -1;
+
+    HANDLE handle = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, null, OPEN_EXISTING,
+                                FILE_ATTRIBUTE_NORMAL, null );
+    if( handle != null ) {
+      fileSize = int( GetFileSize( handle, null ) );
+
+      CloseHandle( handle );
+    }
   }
 
 #else
 
-  struct stat info;
+  struct ::stat info;
 
-  if( stat( filePath, &info ) != 0 ) {
+  if( ::stat( filePath, &info ) != 0 ) {
     fileType = MISSING;
+    fileSize = -1;
   }
   else if( S_ISDIR( info.st_mode ) ) {
     fileType = DIRECTORY;
+    fileSize = -1;
   }
-  else if( S_ISREG( info.st_mode ) ) {
+  else if( !S_ISREG( info.st_mode ) ) {
+    fileType = MISSING;
+    fileSize = -1;
+  }
+  else {
     fileType = REGULAR;
-  }
-  else {
-    fileType = OTHER;
+    fileSize = int( info.st_size );
   }
 
 #endif
+
+  return fileType != MISSING;
 }
 
-void File::setPath( const char* path )
-{
-  if( data != null ) {
-    unmap();
-  }
-
-  filePath = path;
-  data     = null;
-  size     = 0;
-
-  if( String::isEmpty( path ) ) {
-    fileType = NONE;
-  }
-  else {
-#if defined( __native_client__ )
-
-    throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
-
-#elif defined( _WIN32 )
-
-    DWORD attributes = GetFileAttributes( filePath );
-
-    if( attributes == INVALID_FILE_ATTRIBUTES ) {
-      fileType = MISSING;
-    }
-    else if( attributes & FILE_ATTRIBUTE_DIRECTORY ) {
-      fileType = DIRECTORY;
-    }
-    else {
-      fileType = REGULAR;
-    }
-
-#else
-
-    struct stat info;
-
-    if( stat( filePath, &info ) != 0 ) {
-      fileType = MISSING;
-    }
-    else if( S_ISDIR( info.st_mode ) ) {
-      fileType = DIRECTORY;
-    }
-    else if( S_ISREG( info.st_mode ) ) {
-      fileType = REGULAR;
-    }
-    else {
-      fileType = OTHER;
-    }
-
-#endif
-  }
-}
-
-File::Type File::type()
+File::Type File::type() const
 {
   return fileType;
 }
 
-int File::getSize() const
+int File::size() const
 {
-#if defined( __native_client__ )
-
-  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
-
-#elif defined( _WIN32 )
-
-  HANDLE handle = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, null, OPEN_EXISTING,
-                              FILE_ATTRIBUTE_NORMAL, null );
-  if( handle != null ) {
-    int size = int( GetFileSize( handle, null ) );
-    CloseHandle( handle );
-    return size;
-  }
-
-#else
-
-  struct stat info;
-  if( stat( filePath, &info ) == 0 ) {
-    return int( info.st_size );
-  }
-
-#endif
-
-  return -1;
+  return fileSize;
 }
 
 String File::path() const
@@ -288,12 +383,67 @@ bool File::isMapped() const
 bool File::map()
 {
   if( data != null ) {
-    unmap();
+    return true;
   }
 
 #if defined( __native_client__ )
 
-  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+  if( fileSize == -1 ) {
+    stat();
+  }
+
+  data = new char[fileSize];
+
+  descriptor->buffer = data;
+  descriptor->size   = fileSize;
+  descriptor->offset = 0;
+
+  DEFINE_CALLBACK( Read, {
+    if( _result <= 0 ) {
+      _fd->auxBarrier.finish();
+    }
+    else {
+      _fd->offset += _result;
+
+      if( _fd->offset == _fd->size ) {
+        _fd->auxBarrier.finish();
+      }
+      else {
+        _fd->fio->Read( _fd->offset, &_fd->buffer[_fd->offset], _fd->size - _fd->offset,
+                        CALLBACK_OBJECT( Read, _fd ) );
+      }
+    }
+  } )
+  DEFINE_CALLBACK( BeginRead, {
+    _fd->fio->Read( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( Read, _fd ) );
+  } )
+
+  descriptor->auxBarrier.begin();
+
+  MAIN_CALL( {
+    _fd->fio = new pp::FileIO( static_cast<pp::Instance*>( System::instance() ) );
+
+    int ret = _fd->fio->Open( pp::FileRef( *filesystem, _fd->file->filePath ),
+                              PP_FILEOPENFLAG_READ, CALLBACK_OBJECT( BeginRead, _fd ) );
+
+    if( ret != PP_OK_COMPLETIONPENDING ) {
+      _fd->auxBarrier.finish();
+    }
+  } )
+
+  descriptor->auxBarrier.wait();
+
+  MAIN_CALL( {
+    delete _fd->fio;
+  } )
+
+  if( descriptor->offset < fileSize ) {
+    delete[] data;
+    data = null;
+    return false;
+  }
+
+  int size = fileSize;
 
 #elif defined( _WIN32 )
 
@@ -309,13 +459,13 @@ bool File::map()
     return false;
   }
 
-  size = int( GetFileSize( mapping, null ) );
+  int size = int( GetFileSize( mapping, null ) );
   data = static_cast<char*>( MapViewOfFile( mapping, FILE_MAP_READ, 0, 0, 0 ) );
+
   CloseHandle( mapping );
   CloseHandle( file );
 
   if( data == null ) {
-    size = 0;
     return false;
   }
 
@@ -332,18 +482,20 @@ bool File::map()
     return false;
   }
 
-  size = int( statInfo.st_size );
+  int size = int( statInfo.st_size );
   data = static_cast<char*>( mmap( null, size_t( statInfo.st_size ),
                                    PROT_READ, MAP_SHARED, fd, 0 ) );
   close( fd );
+
   if( data == MAP_FAILED ) {
     data = null;
-    size = 0;
     return false;
   }
 
 #endif
 
+  fileType = REGULAR;
+  fileSize = size;
   return true;
 }
 
@@ -351,14 +503,13 @@ void File::unmap()
 {
   if( data != null ) {
 #if defined( __native_client__ )
-    throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+    delete[] data;
 #elif defined( _WIN32 )
     UnmapViewOfFile( data );
 #else
-    munmap( data, size_t( size ) );
+    munmap( data, size_t( fileSize ) );
 #endif
     data = null;
-    size = 0;
   }
 }
 
@@ -366,16 +517,74 @@ InputStream File::inputStream( Endian::Order order ) const
 {
   hard_assert( data != null );
 
-  return InputStream( data, data + size, order );
+  return InputStream( data, data + fileSize, order );
 }
 
-Buffer File::read() const
+Buffer File::read()
 {
   Buffer buffer;
 
+  if( data != null ) {
+    buffer.alloc( fileSize );
+    memcpy( buffer.begin(), data, fileSize );
+    return buffer;
+  }
+
 #if defined( __native_client__ )
 
-  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+  stat();
+
+  buffer.alloc( fileSize );
+
+  descriptor->buffer = buffer.begin();
+  descriptor->size   = fileSize;
+  descriptor->offset = 0;
+
+  DEFINE_CALLBACK( Read, {
+    if( _result <= 0 ) {
+      _fd->auxBarrier.finish();
+    }
+    else {
+      _fd->offset += _result;
+
+      if( _fd->offset == _fd->size ) {
+        _fd->auxBarrier.finish();
+      }
+      else {
+        _fd->fio->Read( _fd->offset, &_fd->buffer[_fd->offset], _fd->size - _fd->offset,
+                        CALLBACK_OBJECT( Read, _fd ) );
+      }
+    }
+  } )
+  DEFINE_CALLBACK( BeginRead, {
+    _fd->fio->Read( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( Read, _fd ) );
+  } )
+
+  descriptor->auxBarrier.begin();
+
+  MAIN_CALL( {
+    _fd->fio = new pp::FileIO( static_cast<pp::Instance*>( System::instance() ) );
+
+    int ret = _fd->fio->Open( pp::FileRef( *filesystem, _fd->file->filePath ),
+                              PP_FILEOPENFLAG_READ, CALLBACK_OBJECT( BeginRead, _fd ) );
+
+    if( ret != PP_OK_COMPLETIONPENDING ) {
+      _fd->auxBarrier.finish();
+    }
+  } )
+
+  descriptor->auxBarrier.wait();
+
+  MAIN_CALL( {
+    delete _fd->fio;
+  } )
+
+  if( descriptor->offset < fileSize ) {
+    buffer.dealloc();
+    return buffer;
+  }
+
+  int size = fileSize;
 
 #elif defined( _WIN32 )
 
@@ -385,15 +594,16 @@ Buffer File::read() const
     return buffer;
   }
 
-  int fileSize = int( GetFileSize( file, null ) );
-  buffer.alloc( fileSize );
+  int size = int( GetFileSize( file, null ) );
+  buffer.alloc( size );
 
   DWORD read;
-  BOOL result = ReadFile( file, buffer.begin(), DWORD( fileSize ), &read, null );
+  BOOL result = ReadFile( file, buffer.begin(), DWORD( size ), &read, null );
   CloseHandle( file );
 
-  if( result == 0 || int( read ) != fileSize ) {
+  if( result == 0 || int( read ) != size ) {
     buffer.dealloc();
+    return buffer;
   }
 
 #else
@@ -403,35 +613,85 @@ Buffer File::read() const
     return buffer;
   }
 
-  struct stat fileStat;
-  if( fstat( fd, &fileStat ) != 0 ) {
+  struct stat statInfo;
+  if( fstat( fd, &statInfo ) != 0 ) {
     close( fd );
     return buffer;
   }
 
-  int fileSize = int( fileStat.st_size );
-  buffer.alloc( fileSize );
+  int size = int( statInfo.st_size );
+  buffer.alloc( size );
 
-  int result = int( ::read( fd, buffer.begin(), size_t( fileSize ) ) );
+  int result = int( ::read( fd, buffer.begin(), size_t( size ) ) );
   close( fd );
 
-  if( result != fileSize ) {
+  if( result != size ) {
     buffer.dealloc();
+    return buffer;
   }
 
 #endif
 
+  fileType = REGULAR;
+  fileSize = size;
   return buffer;
 }
 
-bool File::write( const char* buffer, int count ) const
+bool File::write( const char* buffer, int size )
 {
+  if( data != null ) {
+    return false;
+  }
+
 #if defined( __native_client__ )
 
-  static_cast<void>( buffer );
-  static_cast<void>( count );
+  descriptor->buffer = const_cast<char*>( buffer );
+  descriptor->size   = size;
+  descriptor->offset = 0;
 
-  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+  DEFINE_CALLBACK( Write, {
+    if( _result <= 0 ) {
+      _fd->auxBarrier.finish();
+    }
+    else {
+      _fd->offset += _result;
+
+      if( _fd->offset == _fd->size ) {
+        _fd->auxBarrier.finish();
+      }
+      else {
+        _fd->fio->Write( _fd->offset, &_fd->buffer[_fd->offset], _fd->size - _fd->offset,
+                         CALLBACK_OBJECT( Write, _fd ) );
+      }
+    }
+  } )
+  DEFINE_CALLBACK( BeginWrite, {
+    _fd->fio->Write( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( Write, _fd ) );
+  } )
+
+  descriptor->auxBarrier.begin();
+
+  MAIN_CALL( {
+    _fd->fio = new pp::FileIO( static_cast<pp::Instance*>( System::instance() ) );
+
+    int ret = _fd->fio->Open( pp::FileRef( *filesystem, _fd->file->filePath ),
+                              PP_FILEOPENFLAG_WRITE | PP_FILEOPENFLAG_CREATE | PP_FILEOPENFLAG_TRUNCATE,
+                              CALLBACK_OBJECT( BeginWrite, _fd ) );
+
+    if( ret != PP_OK_COMPLETIONPENDING ) {
+      _fd->auxBarrier.finish();
+    }
+  } )
+
+  descriptor->auxBarrier.wait();
+
+  MAIN_CALL( {
+    delete _fd->fio;
+  } )
+
+  if( descriptor->offset < size ) {
+    return false;
+  }
 
 #elif defined( _WIN32 )
 
@@ -442,10 +702,12 @@ bool File::write( const char* buffer, int count ) const
   }
 
   DWORD written;
-  BOOL result = WriteFile( file, buffer, DWORD( count ), &written, null );
+  BOOL result = WriteFile( file, buffer, DWORD( size ), &written, null );
   CloseHandle( file );
 
-  return result != 0 && int( written ) == count;
+  if( result == 0 || int( written ) != size ) {
+    return false;
+  }
 
 #else
 
@@ -454,15 +716,21 @@ bool File::write( const char* buffer, int count ) const
     return false;
   }
 
-  int result = int( ::write( fd, buffer, size_t( count ) ) );
+  int result = int( ::write( fd, buffer, size_t( size ) ) );
   close( fd );
 
-  return result == count;
+  if( result != size ) {
+    return false;
+  }
 
 #endif
+
+  fileType = REGULAR;
+  fileSize = size;
+  return true;
 }
 
-bool File::write( const Buffer* buffer ) const
+bool File::write( const Buffer* buffer )
 {
   return write( buffer->begin(), buffer->length() );
 }
@@ -471,7 +739,7 @@ String File::cwd()
 {
 #if defined( __native_client__ )
 
-  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+  return "";
 
 #elif defined( _WIN32 )
 
@@ -494,7 +762,7 @@ bool File::chdir( const char* path )
 
   static_cast<void>( path );
 
-  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+  return false;
 
 #elif defined( _WIN32 )
 
@@ -511,14 +779,14 @@ DArray<File> File::ls()
 {
   DArray<File> array;
 
+  if( fileType == MISSING ) {
+    stat();
+  }
   if( fileType != DIRECTORY ) {
     return array;
   }
 
 #if defined( __native_client__ )
-
-  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
-
 #elif defined( _WIN32 )
 
   WIN32_FIND_DATA entity;
@@ -619,6 +887,7 @@ DArray<File> File::ls()
 #endif
 
   array.sort();
+
   return array;
 }
 
@@ -628,7 +897,7 @@ bool File::mkdir( const char* path )
 
   static_cast<void>( path );
 
-  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+  return false;
 
 #elif defined( _WIN32 )
 
@@ -647,7 +916,7 @@ bool File::rm( const char* path )
 
   static_cast<void>( path );
 
-  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+  return false;
 
 #elif defined( _WIN32 )
 
@@ -665,6 +934,70 @@ bool File::rm( const char* path )
   }
   else {
     return ::unlink( path ) == 0;
+  }
+
+#endif
+}
+
+void File::init( FilesystemType type, int size )
+{
+#ifdef __native_client__
+
+  if( System::instance() == null ) {
+    throw Exception( "System::instance() must be set to NaCl module pointer in order to initialise "
+                     "NaCl filesystem" );
+  }
+
+  free();
+
+  staticDesc.mainBarrier.init();
+  staticDesc.auxBarrier.init();
+
+  core = pp::Module::Get()->core();
+
+  // We abuse staticDesc.size and staticDesc.offset variables to pass filesystem type and size to
+  // callback.
+  staticDesc.size   = size;
+  staticDesc.offset = type == PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
+                                           PP_FILESYSTEMTYPE_LOCALTEMPORARY;
+
+  staticDesc.auxBarrier.begin();
+
+  FileDesc* descriptor = &staticDesc;
+  MAIN_CALL( {
+    pp::Instance* instance = static_cast<pp::Instance*>( System::instance() );
+
+    filesystem = new pp::FileSystem( instance, PP_FileSystemType( _fd->offset ) );
+
+    int ret = filesystem->Open( _fd->size, CALLBACK_OBJECT( WaitAux, _fd ) );
+    if( ret != PP_OK_COMPLETIONPENDING ) {
+      _fd->auxBarrier.finish();
+      throw Exception( "Local temporary filesystem open failed" );
+    }
+  } )
+  staticDesc.auxBarrier.wait();
+
+#else
+
+  static_cast<void>( type );
+  static_cast<void>( size );
+
+#endif
+}
+
+void File::free()
+{
+#ifdef __native_client__
+
+  if( filesystem != null ) {
+    FileDesc* descriptor = &staticDesc;
+    MAIN_CALL( {
+      delete filesystem;
+      filesystem = null;
+    } )
+
+    staticDesc.auxBarrier.free();
+    staticDesc.mainBarrier.free();
   }
 
 #endif

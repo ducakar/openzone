@@ -28,6 +28,7 @@
 
 #include "windefs.h"
 #include <cerrno>
+#include <cstring>
 
 // TODO implement NaCl
 
@@ -48,7 +49,7 @@ inline bool operator < ( const PhysFile& a, const PhysFile& b )
 }
 
 PhysFile::PhysFile() :
-  fileType( File::DIRECTORY ), data( null ), size( 0 )
+  fileType( File::MISSING ), fileSize( -1 ), data( null )
 {}
 
 PhysFile::~PhysFile()
@@ -57,16 +58,17 @@ PhysFile::~PhysFile()
 }
 
 PhysFile::PhysFile( const PhysFile& file ) :
-  filePath( file.filePath ), fileType( file.fileType ), data( null ), size( 0 )
+  filePath( file.filePath ), fileType( file.fileType ), fileSize( file.fileSize ), data( null )
 {}
 
 PhysFile::PhysFile( PhysFile&& file ) :
   filePath( static_cast<String&&>( file.filePath ) ), fileType( file.fileType ),
-  data( file.data ), size( file.size )
+  fileSize( file.fileSize ), data( file.data )
 {
+  file.filePath = "";
   file.fileType = File::DIRECTORY;
+  file.fileSize = -1;
   file.data     = null;
-  file.size     = 0;
 }
 
 PhysFile& PhysFile::operator = ( const PhysFile& file )
@@ -77,8 +79,8 @@ PhysFile& PhysFile::operator = ( const PhysFile& file )
 
   filePath = file.filePath;
   fileType = file.fileType;
+  fileSize = file.fileSize;
   data     = null;
-  size     = 0;
 
   return *this;
 }
@@ -93,51 +95,36 @@ PhysFile& PhysFile::operator = ( PhysFile&& file )
 
   filePath = static_cast<String&&>( file.filePath );
   fileType = file.fileType;
+  fileSize = file.fileSize;
   data     = file.data;
-  size     = file.size;
 
-  file.fileType = File::DIRECTORY;
+  file.filePath = "";
+  file.fileType = File::MISSING;
+  file.fileSize = -1;
   file.data     = null;
-  file.size     = 0;
 
   return *this;
 }
 
 PhysFile::PhysFile( const char* path ) :
-  filePath( path ), data( null ), size( 0 )
-{
-#ifdef __native_client__
-
-  static_cast<void>( path );
-
-  throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
-
-#else
-
-  if( !PHYSFS_exists( filePath ) ) {
-    fileType = File::MISSING;
-  }
-  else if( PHYSFS_isDirectory( filePath ) ) {
-    fileType = File::DIRECTORY;
-  }
-  else {
-    fileType = File::REGULAR;
-  }
-
-#endif
-}
+  filePath( path ), fileType( File::MISSING ), fileSize( -1 ), data( null )
+{}
 
 void PhysFile::setPath( const char* path )
 {
   delete[] data;
 
   filePath = path;
+  fileType = File::MISSING;
+  fileSize = -1;
   data     = null;
-  size     = 0;
+}
+
+bool PhysFile::stat()
+{
+  unmap();
 
 #ifdef __native_client__
-
-  static_cast<void>( path );
 
   throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
 
@@ -145,15 +132,28 @@ void PhysFile::setPath( const char* path )
 
   if( !PHYSFS_exists( filePath ) ) {
     fileType = File::MISSING;
+    fileSize = -1;
   }
   else if( PHYSFS_isDirectory( filePath ) ) {
     fileType = File::DIRECTORY;
+    fileSize = -1;
   }
   else {
     fileType = File::REGULAR;
+    fileSize = -1;
+
+    PHYSFS_File* file = PHYSFS_openRead( filePath );
+
+    if( file != null ) {
+      fileSize = int( PHYSFS_fileLength( file ) );
+
+      PHYSFS_close( file );
+    }
   }
 
 #endif
+
+  return fileType != File::MISSING;
 }
 
 File::Type PhysFile::type() const
@@ -161,7 +161,7 @@ File::Type PhysFile::type() const
   return fileType;
 }
 
-int PhysFile::getSize() const
+int PhysFile::size() const
 {
 #ifdef __native_client__
 
@@ -169,14 +169,7 @@ int PhysFile::getSize() const
 
 #else
 
-  PHYSFS_File* file = PHYSFS_openRead( filePath );
-
-  if( file != null ) {
-    int size = int( PHYSFS_fileLength( file ) );
-    PHYSFS_close( file );
-    return size;
-  }
-  return -1;
+  return fileSize;
 
 #endif
 }
@@ -263,12 +256,14 @@ bool PhysFile::isMapped() const
 bool PhysFile::map()
 {
   if( data != null ) {
-    unmap();
+    return true;
   }
 
 #ifdef __native_client__
 
   throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+  int size = -1;
 
 #else
 
@@ -277,11 +272,7 @@ bool PhysFile::map()
     return false;
   }
 
-  size = int( PHYSFS_fileLength( file ) );
-  if( size <= 0 ) {
-    return false;
-  }
-
+  int size = PHYSFS_fileLength( file );
   data = new char[size];
 
   int result = int( PHYSFS_read( file, data, 1, uint( size ) ) );
@@ -289,14 +280,14 @@ bool PhysFile::map()
 
   if( result != size ) {
     delete[] data;
-
     data = null;
-    size = 0;
     return false;
   }
 
 #endif
 
+  fileType = File::REGULAR;
+  fileSize = size;
   return true;
 }
 
@@ -304,9 +295,7 @@ void PhysFile::unmap()
 {
   if( data != null ) {
     delete[] data;
-
     data = null;
-    size = 0;
   }
 }
 
@@ -314,16 +303,24 @@ InputStream PhysFile::inputStream( Endian::Order order ) const
 {
   hard_assert( data != null );
 
-  return InputStream( data, data + size, order );
+  return InputStream( data, data + fileSize, order );
 }
 
-Buffer PhysFile::read() const
+Buffer PhysFile::read()
 {
   Buffer buffer;
+
+  if( data != null ) {
+    buffer.alloc( fileSize );
+    memcpy( buffer.begin(), data, fileSize );
+    return buffer;
+  }
 
 #ifdef __native_client__
 
   throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
+
+  int size = -1;
 
 #else
 
@@ -332,31 +329,33 @@ Buffer PhysFile::read() const
     return buffer;
   }
 
-  int fileSize = int( PHYSFS_fileLength( file ) );
-  if( fileSize <= 0 ) {
-    return buffer;
-  }
+  int size = PHYSFS_fileLength( file );
+  buffer.alloc( size );
 
-  buffer.alloc( fileSize );
-
-  int result = int( PHYSFS_read( file, buffer.begin(), 1, uint( fileSize ) ) );
+  int result = int( PHYSFS_read( file, buffer.begin(), 1, uint( size ) ) );
   PHYSFS_close( file );
 
-  if( result != fileSize ) {
+  if( result != size ) {
     buffer.dealloc();
+    return buffer;
   }
 
 #endif
 
+  fileType = File::REGULAR;
+  fileSize = size;
   return buffer;
 }
 
-bool PhysFile::write( const char* buffer, int size ) const
+bool PhysFile::write( const char* buffer, int size )
 {
+  if( data != null ) {
+    return false;
+  }
+
 #ifdef __native_client__
 
   static_cast<void>( buffer );
-  static_cast<void>( size );
 
   throw Exception( "Not implemented: %s", __PRETTY_FUNCTION__ );
 
@@ -370,19 +369,27 @@ bool PhysFile::write( const char* buffer, int size ) const
   int result = int( PHYSFS_write( file, buffer, 1, uint( size ) ) );
   PHYSFS_close( file );
 
-  return result == size;
+  if( result != size ) {
+    return false;
+  }
 
 #endif
+
+  fileType = File::REGULAR;
+  fileSize = size;
+  return true;
 }
 
-bool PhysFile::write( const Buffer* buffer ) const
+bool PhysFile::write( const Buffer* buffer )
 {
   return write( buffer->begin(), buffer->length() );
 }
 
-DArray<PhysFile> PhysFile::ls() const
+DArray<PhysFile> PhysFile::ls()
 {
   DArray<PhysFile> array;
+
+  stat();
 
   if( fileType != File::DIRECTORY ) {
     return array;

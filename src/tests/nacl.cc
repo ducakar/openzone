@@ -27,28 +27,6 @@
 #include <SDL/SDL.h>
 #include <GLES2/gl2.h>
 
-#include <ppapi/cpp/completion_callback.h>
-#include <ppapi/cpp/core.h>
-#include <ppapi/cpp/file_system.h>
-#include <ppapi/cpp/file_ref.h>
-#include <ppapi/cpp/file_io.h>
-
-#define DEFINE_CALLBACK( name, code ) \
-  struct Callback##name { \
-    static void main##name( void* data, int ) { static_cast<void>( data ); { code } } \
-  };
-
-#define CALLBACK_OBJECT( name, arg ) \
-  pp::CompletionCallback( Callback##name::main##name, arg )
-
-#define MAIN_CALL( core, barrier, code ) \
-  { \
-    DEFINE_CALLBACK( Main, { { code } barrier.finish(); } ) \
-    barrier.begin(); \
-    core->CallOnMainThread( 0, CALLBACK_OBJECT( Main, oz::null ) ); \
-    barrier.wait(); \
-  }
-
 using namespace oz;
 
 static Barrier main;
@@ -58,48 +36,35 @@ int ozMain( int, char** )
 {
   System::init();
 
+  Time t = Time::local();
+  log.println( "[%02d:%02d:%02d] START", t.hour, t.minute, t.second );
+
   main.init();
   aux.init();
 
-  static pp::Core*       core    = pp::Module::Get()->core();
-  static pp::FileSystem* fs      = null;
-  static pp::FileRef*    fileRef = null;
+  File::init( File::TEMPORARY, 1024 );
 
-  MAIN_CALL( core, main, {
-    SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO );
-  } )
+  File file( "/drek.text" );
 
-  DEFINE_CALLBACK( OpenFS, {
-    log.println( "OpenFS" );
-    aux.finish();
-  } )
+  if( file.stat() ) {
+    log.println( "Type: %s", file.type() == File::DIRECTORY ? "DIRECTORY" : "REGULAR" );
+    log.println( "Size: %d", file.size() );
+  }
 
-  aux.begin();
+  Buffer b = file.read();
 
-  MAIN_CALL( core, main, {
-    pp::Instance* instance = static_cast<pp::Instance*>( System::instance() );
+  putchar( '\"' );
+  for( int i = 0; i < b.length(); ++i ) {
+    putchar( b[i] );
+  }
+  puts( "\"" );
 
-    fs      = new pp::FileSystem( instance, PP_FILESYSTEMTYPE_LOCALPERSISTENT );
-    fileRef = new pp::FileRef( *fs, "/drek.txt" );
-
-    int ret = fs->Open( 1024, CALLBACK_OBJECT( OpenFS, null ) );
-    if( ret != PP_OK_COMPLETIONPENDING ) {
-      log.println( "ERRROR" );
-      aux.finish();
-    }
-  } )
-
-  aux.wait();
-
-  MAIN_CALL( core, main, {
-    delete fileRef;
-    delete fs;
-  } )
-  MAIN_CALL( core, main, {
-    SDL_Quit();
-  } )
+  File::free();
 
   aux.free();
   main.free();
+
+  t = Time::local();
+  log.println( "[%02d:%02d:%02d] END", t.hour, t.minute, t.second );
   return 0;
 }

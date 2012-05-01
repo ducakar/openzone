@@ -13,12 +13,10 @@ add_subdirectory( common )
 
 add_pch( pch stable.hh stable.cc )
 
-if( NOT NACL ) # FIXME temporary
 add_subdirectory( matrix )
 add_subdirectory( nirvana )
 add_subdirectory( modules )
-add_subdirectory( client )
-endif()
+# add_subdirectory( client )
 
 if( NOT OZ_GL_COMPATIBLE AND NOT NACL AND NOT ANDROID )
   add_subdirectory( build )

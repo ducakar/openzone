@@ -34,9 +34,7 @@ namespace oz
 {
 
 /**
- * Class for file represenatation and basic operation in Virtual Filesystem (VFS).
- *
- * It uses PhysicsFS as an underlaying library, on NaCl it uses a custom implementation.
+ * PhysicsFS wrapper, similar to <tt>File</tt> class.
  *
  * @ingroup oz
  */
@@ -45,16 +43,14 @@ class PhysFile
   private:
 
     String     filePath; ///< %File path.
-    File::Type fileType; ///< %File type.
+    File::Type fileType; ///< %File type (initially <tt>MISSING</tt>).
+    int        fileSize; ///< %File size (>= 0 if <tt>fileType == REGULAR</tt>, -1 otherwise).
     char*      data;     ///< Mapped memory.
-    int        size;     ///< Mapped memory size.
 
   public:
 
     /**
-     * Default constructor initialises file to VFS root.
-     *
-     * Path is set to "" and file type to <tt>DIRECTORY</tt>.
+     * Create an empty instance (path is set to "" ).
      */
     PhysFile();
 
@@ -71,7 +67,7 @@ class PhysFile
     PhysFile( const PhysFile& );
 
     /**
-     * Move constructor, transfers mapped mempoy.
+     * Move constructor, transfers mapped memory.
      */
     PhysFile( PhysFile&& file );
 
@@ -88,33 +84,40 @@ class PhysFile
     PhysFile& operator = ( PhysFile&& file );
 
     /**
-     * Create an instance for the given path and detect file type.
+     * Create an instance for the given path.
      */
     explicit PhysFile( const char* path );
 
     /**
      * Set a new file path.
-     *
-     * Besides changing path, <tt>unmap()</tt> is called and file type is detected for the new path.
      */
     void setPath( const char* path );
 
     /**
-     * Get (cached) file type.
+     * Access file to get its type and size.
      *
-     * %File type is detection is performed on construction or <tt>setPath()</tt>.
+     * @return true iff stat succeeds, i.e. file exists.
+     */
+    bool stat();
+
+    /**
+     * %File type.
+     *
+     * <tt>stat()</tt> function must be called first to fill type and size properties. Initial
+     * values are <tt>MISSING</tt> and -1 respectively.
      */
     File::Type type() const;
 
     /**
-     * Get file size.
+     * %File size in bytes if regular file, -1 otherwise.
      *
-     * %File size in bytes or -1 if file doesn't exist or is a directory.
+     * <tt>stat()</tt> function must be called first to fill type and size properties. Initial
+     * values are <tt>MISSING</tt> and -1 respectively.
      */
-    int getSize() const;
+    int size() const;
 
     /**
-     * %File path in virtual file system.
+     * %File path.
      */
     String path() const;
 
@@ -156,9 +159,9 @@ class PhysFile
     bool isMapped() const;
 
     /**
-     * %Map file into memory.
+     * %Map file into memory for reading.
      *
-     * One can use <tt>inputStream()</tt> afterwards to read the contents.
+     * It also sets file type on <tt>REGULAR</tt> and updates file size if map succeeds.
      */
     bool map();
 
@@ -175,33 +178,45 @@ class PhysFile
     /**
      * Read file into a buffer.
      */
-    Buffer read() const;
+    Buffer read();
 
     /**
-     * Write a buffer to the file.
+     * Write buffer contents to the file.
+     *
+     * It also sets file type on <tt>REGULAR</tt> and updates file size if it succeeds.
+     * Write operation is not possible while file is mapped.
      */
-    bool write( const char* buffer, int size ) const;
+    bool write( const char* buffer, int size );
 
     /**
      * Write buffer contents into a file.
+     *
+     * It also sets file type on <tt>REGULAR</tt> and updates file size if it succeeds.
+     * Write operation is not possible while file is mapped.
      */
-    bool write( const Buffer* buffer ) const;
+    bool write( const Buffer* buffer );
 
     /**
      * Generate a list of files in directory.
      *
      * Hidden files (in Unix means, so everything starting with '.') are skipped.
-     * On error, and empty array is returned.
+     * On error, empty array is returned.
+     *
+     * Directory listing is not supported on NaCl, so this function always returns an empty list.
      */
-    DArray<PhysFile> ls() const;
+    DArray<PhysFile> ls();
 
     /**
      * Make a new directory.
+     *
+     * This function always fails on NaCl since directories are not supported.
      */
     static bool mkdir( const char* path );
 
     /**
      * Delete a file or an empty directory.
+     *
+     * This function always fails on NaCl since file deletion is not supported.
      */
     static bool rm( const char* path );
 
@@ -224,14 +239,14 @@ class PhysFile
     static bool mountLocal( const char* path );
 
     /**
-     * Initialise VFS.
+     * Initialise PhysicsFS.
      *
      * On NaCl <tt>System::instance()</tt> must be set prior to initialisation of VFS.
      */
     static void init();
 
     /**
-     * Deinitialise VFS.
+     * Deinitialise PhysicsFS.
      */
     static void free();
 

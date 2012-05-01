@@ -35,6 +35,13 @@ namespace oz
 {
 
 /**
+ * Internal structure for NaCl file description that is passed down to callbacks.
+ *
+ * @ingroup oz
+ */
+struct FileDesc;
+
+/**
  * Class for basic file and directory operations.
  *
  * @ingroup oz
@@ -48,26 +55,34 @@ class File
      */
     enum Type
     {
-      NONE,
+      MISSING,
       DIRECTORY,
-      REGULAR,
-      OTHER,
-      MISSING
+      REGULAR
+    };
+
+    /**
+     * NaCl filesystem type.
+     */
+    enum FilesystemType
+    {
+      TEMPORARY,
+      PERSISTENT
     };
 
   private:
 
-    String filePath; ///< %File path.
-    Type   fileType; ///< %File type.
-    char*  data;     ///< Mapped memory.
-    int    size;     ///< Mapped memory size.
+    String    filePath;   ///< %File path.
+    Type      fileType;   ///< %File type (initially <tt>MISSING</tt>).
+    int       fileSize;   ///< %File size (>= 0 if <tt>fileType == REGULAR</tt>, -1 otherwise).
+    char*     data;       ///< Mapped memory.
+#ifdef __native_client__
+    FileDesc* descriptor; ///< Structure for exchanging information with NaCl callbacks.
+#endif
 
   public:
 
     /**
-     * Create an empty instance.
-     *
-     * Path is set to "" and file type to <tt>NONE</tt>.
+     * Create an empty instance (path is set to "" ).
      */
     File();
 
@@ -79,24 +94,24 @@ class File
     /**
      * Copy constructor.
      *
-     * For mapped files, original stays mapped, copy is not.
+     * Mapped memory is not copied.
      */
     File( const File& file );
 
     /**
-     * Move constructor, transfers mapped region "ownership".
+     * Move constructor, transfers mapped memory.
      */
     File( File&& file );
 
     /**
      * Copy operator.
      *
-     * For mapped files, original stays mapped, copy is not.
+     * Mapped memory is not copied.
      */
     File& operator = ( const File& file );
 
     /**
-     * Move operator, transfers mapped region "ownership".
+     * Move operator, transfers mapped memory.
      */
     File& operator = ( File&& file );
 
@@ -107,24 +122,31 @@ class File
 
     /**
      * Set a new file path.
-     *
-     * Besides changing path, <tt>unmap()</tt> is called and file type is detected for the new path.
      */
     void setPath( const char* path );
 
     /**
-     * Get (cached) file type.
+     * Access file to get its type and size.
      *
-     * %File type is detection is performed on construction or <tt>setPath()</tt>.
+     * @return true iff stat succeeds, i.e. file exists.
      */
-    Type type();
+    bool stat();
 
     /**
-     * Stat file to get its size.
+     * %File type.
      *
-     * %File size in bytes or -1 if stat fails.
+     * <tt>stat()</tt> function must be called first to fill type and size properties. Initial
+     * values are <tt>MISSING</tt> and -1 respectively.
      */
-    int getSize() const;
+    Type type() const;
+
+    /**
+     * %File size in bytes if regular file, -1 otherwise.
+     *
+     * <tt>stat()</tt> function must be called first to fill type and size properties. Initial
+     * values are <tt>MISSING</tt> and -1 respectively.
+     */
+    int size() const;
 
     /**
      * %File path.
@@ -159,9 +181,9 @@ class File
     bool isMapped() const;
 
     /**
-     * %Map file into memory.
+     * %Map file into memory for reading.
      *
-     * One can use <tt>inputStream()</tt> afterwards to read the contents.
+     * It also sets file type on <tt>REGULAR</tt> and updates file size if map succeeds.
      */
     bool map();
 
@@ -178,25 +200,35 @@ class File
     /**
      * Read file into a buffer.
      */
-    Buffer read() const;
+    Buffer read();
 
     /**
-     * Write a buffer to the file.
+     * Write buffer contents to the file.
+     *
+     * It also sets file type on <tt>REGULAR</tt> and updates file size if it succeeds.
+     * Write operation is not possible while file is mapped.
      */
-    bool write( const char* buffer, int count ) const;
+    bool write( const char* buffer, int size );
 
     /**
      * Write buffer contents into a file.
+     *
+     * It also sets file type on <tt>REGULAR</tt> and updates file size if it succeeds.
+     * Write operation is not possible while file is mapped.
      */
-    bool write( const Buffer* buffer ) const;
+    bool write( const Buffer* buffer );
 
     /**
      * Return current directory.
+     *
+     * On NaCl, current directory is always root and this function returns an empty string.
      */
     static String cwd();
 
     /**
      * Change current directory.
+     *
+     * Always fails on NaCl.
      */
     static bool chdir( const char* path );
 
@@ -205,18 +237,42 @@ class File
      *
      * Hidden files (in Unix means, so everything starting with '.') are skipped.
      * On error, empty array is returned.
+     *
+     * Directory listing is not supported on NaCl, so this function always returns an empty list.
      */
     DArray<File> ls();
 
     /**
      * Make a new directory.
+     *
+     * This function always fails on NaCl since directories are not supported.
      */
     static bool mkdir( const char* path );
 
     /**
      * Delete a file or an empty directory.
+     *
+     * This function always fails on NaCl since file deletion is not supported.
      */
     static bool rm( const char* path );
+
+    /**
+     * Initialise filesystem.
+     *
+     * This method makes effect on NaCl platform only. Persistent filesystem must be initialised
+     * from JavaScript before NaCl module is loaded.
+     *
+     * @param type local filesystem type, either <tt>TEMPORARY</tt> or <tt>PERSISTENT</tt>.
+     * @param size local filesystem size.
+     */
+    static void init( FilesystemType type, int size );
+
+    /**
+     * Deinitialise filesystem.
+     *
+     * This method makes effect on NaCl platform only.
+     */
+    static void free();
 
 };
 
