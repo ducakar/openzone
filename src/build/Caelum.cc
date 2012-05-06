@@ -39,8 +39,8 @@ const float Caelum::STAR_DIM = 0.10f;
 
 void Caelum::build( const char* name )
 {
-  log.println( "Prebuilding Caelum '%s' {", name );
-  log.indent();
+  Log::println( "Prebuilding Caelum '%s' {", name );
+  Log::indent();
 
   File destFile( String::str( "caelum/%s.ozcCaelum", name ) );
 
@@ -103,18 +103,18 @@ void Caelum::build( const char* name )
   context.writeLayer( texId, &os );
   glDeleteTextures( 1, &texId );
 
-  log.print( "Dumping into '%s' ...", destFile.path().cstr() );
+  Log::print( "Dumping into '%s' ...", destFile.path().cstr() );
 
   if( !destFile.write( os.begin(), os.length() ) ) {
     throw Exception( "Failed to write '%s'", destFile.path().cstr() );
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 
   OZ_GL_CHECK_ERROR();
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 }

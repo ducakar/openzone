@@ -263,7 +263,7 @@ void OBJ::loadMaterials( const String& path )
 
 void OBJ::load()
 {
-  log.print( "Loading OBJ model '%s' ...", path.cstr() );
+  Log::print( "Loading OBJ model '%s' ...", path.cstr() );
 
   PhysFile modelFile( path + "/data.obj" );
   PhysFile configFile( path + "/config.rc" );
@@ -346,7 +346,7 @@ void OBJ::load()
     positions[i] = Point::ORIGIN + translation + scaling * ( positions[i] - Point::ORIGIN );
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void OBJ::save()
@@ -390,13 +390,13 @@ void OBJ::save()
   os.writeString( shader );
   mesh.write( &os );
 
-  log.print( "Writing to '%s' ...", destFile.path().cstr() );
+  Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
   if( !destFile.write( os.begin(), os.length() ) ) {
     throw Exception( "Failed to write '%s'", destFile.path().cstr() );
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 OBJ::OBJ( const char* path_ ) :
@@ -405,16 +405,16 @@ OBJ::OBJ( const char* path_ ) :
 
 void OBJ::build( const char* path )
 {
-  log.println( "Prebuilding OBJ model '%s' {", path );
-  log.indent();
+  Log::println( "Prebuilding OBJ model '%s' {", path );
+  Log::indent();
 
   OBJ* obj = new OBJ( path );
   obj->load();
   obj->save();
   delete obj;
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 }

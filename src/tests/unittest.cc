@@ -22,6 +22,7 @@
  */
 
 #include "oz/oz.hh"
+#include "ozmain/main.hh"
 
 #include <cstdio>
 
@@ -376,7 +377,7 @@ static void ozAllocUnittest()
 
 }
 
-int main()
+int main( int, char** )
 {
   // check first, before any memory allocations are made
   OZ_UNITTEST( ozAlloc );

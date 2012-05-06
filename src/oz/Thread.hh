@@ -23,7 +23,7 @@
 /**
  * @file oz/Thread.hh
  *
- * Thread class.
+ * Classes for thread manipulation and synchronisation.
  */
 
 #pragma once
@@ -33,23 +33,19 @@
 namespace oz
 {
 
-/**
- * Internal structure for mutex description.
- */
+// Internal structure for mutex description.
 struct MutexDesc;
 
-/**
- * Internal structure for barrier description.
- */
-struct BarrierDesc;
+// Internal structure for semaphore description.
+struct SemaphoreDesc;
 
-/**
- * Internal structure for thread description.
- */
+// Internal structure for thread description.
 struct ThreadDesc;
 
 /**
  * %Mutex.
+ *
+ * @ingroup oz
  */
 class Mutex
 {
@@ -72,7 +68,7 @@ class Mutex
      */
     ~Mutex()
     {
-      hard_assert( descriptor == null );
+      soft_assert( descriptor == null );
     }
 
     /**
@@ -120,12 +116,17 @@ class Mutex
     /**
      * Destroy mutex and release resources.
      */
-    void free();
+    void destroy();
 
     /**
      * Lock mutex.
      */
     void lock() const;
+
+    /**
+     * Try to lock mutex.
+     */
+    bool tryLock() const;
 
     /**
      * Unlock mutex.
@@ -135,52 +136,45 @@ class Mutex
 };
 
 /**
- * High-level conditional variable wrapper.
+ * Semaphore.
  *
- * This class can be used if one thread must wait another thread to finish some task. E.g.:
- * @code
- * Barrier bar;
- * bar.init();
- * ...
- * bar.begin();
- * otherThread.start();
- * ...
- * bar.wait(); // Waits until secondary thread has sent signal via bar.finish() call.
- * @endcode
+ * It is implemented as a wrapper for condition variable as it should yield better performance.
+ *
+ * @ingroup oz
  */
-class Barrier
+class Semaphore
 {
   private:
 
-    /// %Barrier descriptor.
-    BarrierDesc* descriptor;
+    /// %Semaphore descriptor.
+    SemaphoreDesc* descriptor;
 
   public:
 
     /**
      * Create uninitialised instance.
      */
-    Barrier() :
+    Semaphore() :
       descriptor( null )
     {}
 
     /**
      * Destructor.
      */
-    ~Barrier()
+    ~Semaphore()
     {
-      hard_assert( descriptor == null );
+      soft_assert( descriptor == null );
     }
 
     /**
      * No copying.
      */
-    Barrier( const Barrier& ) = delete;
+    Semaphore( const Semaphore& ) = delete;
 
     /**
      * Move constructor, transfers ownership.
      */
-    Barrier( Barrier&& b ) :
+    Semaphore( Semaphore&& b ) :
       descriptor( b.descriptor )
     {
       b.descriptor = null;
@@ -189,12 +183,12 @@ class Barrier
     /**
      * No copying.
      */
-    Barrier& operator = ( const Barrier& ) = delete;
+    Semaphore& operator = ( const Semaphore& ) = delete;
 
     /**
      * Move operator, transfers ownership.
      */
-    Barrier& operator = ( Barrier&& b )
+    Semaphore& operator = ( Semaphore&& b )
     {
       descriptor   = b.descriptor;
       b.descriptor = null;
@@ -210,29 +204,29 @@ class Barrier
     }
 
     /**
-     * Initialise barrier.
+     * Initialise semaphore.
      */
-    void init();
+    void init( int counterValue = 0 );
 
     /**
-     * Destroy barrier and release resources.
+     * Destroy semaphore and release resources.
      */
-    void free();
+    void destroy();
 
     /**
-     * Enable block (set conditional variable to false).
+     * Atomically increment counter and signal waiting threads.
      */
-    void begin() const;
+    void post() const;
 
     /**
-     * Release block (set conditional variable to true).
-     */
-    void finish() const;
-
-    /**
-     * Wait until block is released (wait for conditional variable to become true).
+     * Wait until counter becomes positive. Then atomically decrement it and resume.
      */
     void wait() const;
+
+    /**
+     * If counter is positive decrement it and return true, otherwise resume and return false.
+     */
+    bool tryWait() const;
 
 };
 
@@ -244,7 +238,7 @@ class Thread
   public:
 
     /// %Thread's main function.
-    typedef void* Main( void* );
+    typedef void Main();
 
   private:
 
@@ -259,11 +253,6 @@ class Thread
     Thread() :
       descriptor( null )
     {}
-
-    /**
-     * Destructor waits for join() if the thread is still running.
-     */
-    ~Thread();
 
     /**
      * No copying.
@@ -306,17 +295,13 @@ class Thread
      * Run thread.
      *
      * @param main pointer to thread's main function.
-     * @param param parameter to thread's main function.
      */
-    void start( Main* main, void* param = null );
+    void start( Main* main );
 
     /**
      * Wait for thread to finish execution.
-     *
-     * @param result pointer variable in which return value of thread's main function should be
-     * written or null if you wish to throw away the result.
      */
-    void join( void** result = null );
+    void join();
 
 };
 

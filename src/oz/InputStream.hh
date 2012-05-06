@@ -54,6 +54,14 @@ class InputStream
   public:
 
     /**
+     * Create uninitialised instance.
+     */
+    OZ_ALWAYS_INLINE
+    InputStream() :
+      pos( null ), start( null ), end( null ), order( Endian::NATIVE )
+    {}
+
+    /**
      * Create a stream with the given beginning and the end.
      */
     OZ_ALWAYS_INLINE

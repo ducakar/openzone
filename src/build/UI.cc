@@ -59,8 +59,8 @@ void UI::buildCursors()
     return;
   }
 
-  log.println( "Building mouse cursors {" );
-  log.indent();
+  Log::println( "Building mouse cursors {" );
+  Log::indent();
 
   bool useS3TC = context.useS3TC;
   context.useS3TC = false;
@@ -107,8 +107,8 @@ void UI::buildCursors()
 
   context.useS3TC = useS3TC;
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void UI::buildIcons()
@@ -117,8 +117,8 @@ void UI::buildIcons()
     return;
   }
 
-  log.println( "Building UI icons {" );
-  log.indent();
+  Log::println( "Building UI icons {" );
+  Log::indent();
 
   bool useS3TC = context.useS3TC;
   context.useS3TC = false;
@@ -135,7 +135,7 @@ void UI::buildIcons()
 
     BufferStream os;
 
-    log.println( "Compiling '%s'", destPath.cstr() );
+    Log::println( "Compiling '%s'", destPath.cstr() );
     context.writeLayer( id, &os );
 
     glDeleteTextures( 1, &id );
@@ -147,8 +147,8 @@ void UI::buildIcons()
 
   context.useS3TC = useS3TC;
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 }

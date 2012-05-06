@@ -30,8 +30,8 @@
 
 #if defined( __native_client__ )
 # include <ctime>
-# include <unistd.h>
 # include <sys/time.h>
+# include <unistd.h>
 #elif defined( _WIN32 )
 # include "windefs.h"
 # include <windows.h>

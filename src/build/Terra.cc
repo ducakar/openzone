@@ -30,7 +30,7 @@
 #include "build/Context.hh"
 #include "build/MeshData.hh"
 
-#include <limits>
+#include <climits>
 #include <FreeImage.h>
 
 namespace oz
@@ -46,8 +46,8 @@ void Terra::load()
   Config terraConfig;
   terraConfig.load( configFile );
 
-  float minHeight = terraConfig.get( "minHeight", float( std::numeric_limits<short>::min() ) );
-  float maxHeight = terraConfig.get( "maxHeight", float( std::numeric_limits<short>::max() ) );
+  float minHeight = terraConfig.get( "minHeight", -1000.0f );
+  float maxHeight = terraConfig.get( "maxHeight", +1000.0f );
 
   String sLiquid = terraConfig.get( "liquid", "WATER" );
 
@@ -72,7 +72,7 @@ void Terra::load()
 
   terraConfig.clear( true );
 
-  log.print( "Loading terrain heightmap '%s' ...", name.cstr() );
+  Log::print( "Loading terrain heightmap '%s' ...", name.cstr() );
 
   String realPath = imageFile.realDir() + "/" + imageFile.path();
 
@@ -94,13 +94,13 @@ void Terra::load()
                      width, height, bpp, matrix::Terra::VERTS, matrix::Terra::VERTS );
   }
 
-  log.print( "Calculating triangles ..." );
+  Log::print( "Calculating triangles ..." );
 
   for( int y = matrix::Terra::VERTS - 1; y >= 0; --y ) {
     const ushort* pixel = reinterpret_cast<const ushort*>( FreeImage_GetScanLine( image, y ) );
 
     for( int x = 0; x < matrix::Terra::VERTS; ++x ) {
-      float value = float( *pixel ) / float( std::numeric_limits<unsigned short>::max() );
+      float value = float( *pixel ) / float( USHRT_MAX );
 
       quads[x][y].vertex.x     = float( x * matrix::Terra::Quad::SIZE - matrix::Terra::DIM );
       quads[x][y].vertex.y     = float( y * matrix::Terra::Quad::SIZE - matrix::Terra::DIM );
@@ -143,14 +143,14 @@ void Terra::load()
 
   FreeImage_Unload( image );
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Terra::saveMatrix()
 {
   File destFile( "terra/" + name + ".ozTerra" );
 
-  log.print( "Dumping terrain structure to '%s' ...", destFile.path().cstr() );
+  Log::print( "Dumping terrain structure to '%s' ...", destFile.path().cstr() );
 
   BufferStream os;
 
@@ -168,7 +168,7 @@ void Terra::saveMatrix()
     throw Exception( "Failed to write '%s'", destFile.path().cstr() );
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Terra::saveClient()
@@ -176,8 +176,8 @@ void Terra::saveClient()
   File destFile( "terra/" + name + ".ozcTerra" );
   File minimapFile( "terra/" + name + ".ozcTex" );
 
-  log.println( "Compiling terrain model to '%s' {", destFile.path().cstr() );
-  log.indent();
+  Log::println( "Compiling terrain model to '%s' {", destFile.path().cstr() );
+  Log::indent();
 
   uint liquidTexId = context.loadLayer( "terra/" + liquidTexture );
   uint detailTexId = context.loadLayer( "terra/" + detailTexture );
@@ -258,15 +258,15 @@ void Terra::saveClient()
     throw Exception( "Failed to write '%s'", destFile.path().cstr() );
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 
   bool useS3TC = context.useS3TC;
   context.useS3TC = false;
 
   mapTexId = context.loadLayer( "terra/" + mapTexture );
 
-  log.print( "Writing minimap texture '%s' ...", minimapFile.path().cstr() );
+  Log::print( "Writing minimap texture '%s' ...", minimapFile.path().cstr() );
 
   os.reset();
   context.writeLayer( mapTexId, &os );
@@ -276,7 +276,7 @@ void Terra::saveClient()
     throw Exception( "Minimap texture '%s' writing failed", minimapFile.path().cstr() );
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 
   context.useS3TC = useS3TC;
 }

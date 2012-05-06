@@ -129,11 +129,11 @@ void Shader::compileShader( uint id, const char* path, const char** sources, int
 
   if( length != 0 ) {
     if( result == GL_TRUE ) {
-      log.verboseMode = true;
+      Log::verboseMode = true;
     }
 
-    log.printRaw( "\n%s:\n%s", path, logBuffer );
-    log.verboseMode = false;
+    Log::printRaw( "\n%s:\n%s", path, logBuffer );
+    Log::verboseMode = false;
   }
 
   if( result != GL_TRUE ) {
@@ -194,11 +194,11 @@ void Shader::loadProgram( int id )
 
   if( length != 0 ) {
     if( result == GL_TRUE ) {
-      log.verboseMode = true;
+      Log::verboseMode = true;
     }
 
-    log.printRaw( "\n%s:\n%s", name.cstr(), logBuffer );
-    log.verboseMode = false;
+    Log::printRaw( "\n%s:\n%s", name.cstr(), logBuffer );
+    Log::verboseMode = false;
   }
 
   if( result != GL_TRUE ) {
@@ -281,7 +281,7 @@ void Shader::updateLights()
 
 void Shader::init()
 {
-  log.print( "Initialising Shader ..." );
+  Log::print( "Initialising Shader ..." );
 
 #ifndef OZ_GL_COMPATIBLE
   hasVertexTexture = config.getSet( "shader.vertexTexture", true );
@@ -386,12 +386,12 @@ void Shader::init()
     loadProgram( i );
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Shader::free()
 {
-  log.print( "Freeing Shader ..." );
+  Log::print( "Freeing Shader ..." );
 
   for( int i = 0; i < library.shaders.length(); ++i ) {
     if( programs[i].program != 0 ) {
@@ -434,7 +434,7 @@ void Shader::free()
 
   OZ_GL_CHECK_ERROR();
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 }

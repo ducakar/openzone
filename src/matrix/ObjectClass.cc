@@ -255,7 +255,7 @@ void ObjectClass::fillCommonConfig( const Config* config )
       flags &= ~Object::DESTROY_FUNC_BIT;
     }
     else {
-      flags |= Object::DESTROY_FUNC_BIT;;
+      flags |= Object::DESTROY_FUNC_BIT;
     }
   }
   if( !onUse.isEmpty() ) {

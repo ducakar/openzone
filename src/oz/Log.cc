@@ -26,6 +26,8 @@
 
 #include "Log.hh"
 
+#include "arrays.hh"
+#include "Exception.hh"
 #include "Time.hh"
 
 #include "windefs.h"
@@ -36,23 +38,50 @@
 namespace oz
 {
 
-Log log;
-
-Log::Log() :
-  fileStream( null ), tabs( 0 ), showVerbose( false ), verboseMode( false )
-{}
-
-Log::~Log()
+static const char* const SIGNALS[][2] =
 {
-  FILE* file = static_cast<FILE*>( fileStream );
+  { "SIG???",    "[invalid signal number]"    },
+  { "SIGHUP",    "Hangup"                     }, //  1
+  { "SIGINT",    "Interrupt"                  }, //  2
+  { "SIGQUIT",   "Quit"                       }, //  3
+  { "SIGILL",    "Illegal instruction"        }, //  4
+  { "SIGTRAP",   "Trace trap"                 }, //  5
+  { "SIGABRT",   "Abort"                      }, //  6
+  { "SIGBUS",    "BUS error"                  }, //  7
+  { "SIGFPE",    "Floating-point exception"   }, //  8
+  { "SIGKILL",   "Kill, unblockable"          }, //  9
+  { "SIGUSR1",   "User-defined signal 1"      }, // 10
+  { "SIGSEGV",   "Segmentation violation"     }, // 11
+  { "SIGUSR2",   "User-defined signal 2"      }, // 12
+  { "SIGPIPE",   "Broken pipe"                }, // 13
+  { "SIGALRM",   "Alarm clock"                }, // 14
+  { "SIGTERM",   "Termination"                }, // 15
+  { "SIGSTKFLT", "Stack fault"                }, // 16
+  { "SIGCHLD",   "Child status has changed"   }, // 17
+  { "SIGCONT",   "Continue"                   }, // 18
+  { "SIGSTOP",   "Stop, unblockable"          }, // 19
+  { "SIGTSTP",   "Keyboard stop"              }, // 20
+  { "SIGTTIN",   "Background read from tty"   }, // 21
+  { "SIGTTOU",   "Background write to tty"    }, // 22
+  { "SIGURG",    "Urgent condition on socket" }, // 23
+  { "SIGXCPU",   "CPU limit exceeded"         }, // 24
+  { "SIGXFSZ",   "File size limit exceeded"   }, // 25
+  { "SIGVTALRM", "Virtual alarm clock"        }, // 26
+  { "SIGPROF",   "Profiling alarm clock"      }, // 27
+  { "SIGWINCH",  "Window size change"         }, // 28
+  { "SIGIO",     "I/O now possible"           }, // 29
+  { "SIGPWR",    "Power failure restart"      }, // 30
+  { "SIGSYS",    "Bad system call"            }  // 31
+};
 
-  if( file != null ) {
-    fclose( file );
-    file = null;
-  }
-}
+static char  filePath[256];
+static FILE* file = 0;
+static int   tabs = 0;
 
-const char* Log::logFile() const
+bool Log::showVerbose = false;
+bool Log::verboseMode = false;
+
+const char* Log::logFile()
 {
   return filePath;
 }
@@ -74,10 +103,8 @@ void Log::unindent()
   }
 }
 
-void Log::vprintRaw( const char* s, va_list ap ) const
+void Log::vprintRaw( const char* s, va_list ap )
 {
-  FILE* file = static_cast<FILE*>( fileStream );
-
   va_list ap2;
   va_copy( ap2, ap );
 
@@ -91,10 +118,8 @@ void Log::vprintRaw( const char* s, va_list ap ) const
   }
 }
 
-void Log::printRaw( const char* s, ... ) const
+void Log::printRaw( const char* s, ... )
 {
-  FILE* file = static_cast<FILE*>( fileStream );
-
   va_list ap;
 
   if( !verboseMode || showVerbose || file == null ) {
@@ -115,10 +140,8 @@ void Log::printRaw( const char* s, ... ) const
   }
 }
 
-void Log::print( const char* s, ... ) const
+void Log::print( const char* s, ... )
 {
-  FILE* file = static_cast<FILE*>( fileStream );
-
   va_list ap;
 
   if( !verboseMode || showVerbose || file == null ) {
@@ -147,10 +170,8 @@ void Log::print( const char* s, ... ) const
   }
 }
 
-void Log::printEnd( const char* s, ... ) const
+void Log::printEnd( const char* s, ... )
 {
-  FILE* file = static_cast<FILE*>( fileStream );
-
   va_list ap;
 
   if( !verboseMode || showVerbose || file == null ) {
@@ -173,10 +194,8 @@ void Log::printEnd( const char* s, ... ) const
   }
 }
 
-void Log::printEnd() const
+void Log::printEnd()
 {
-  FILE* file = static_cast<FILE*>( fileStream );
-
   if( !verboseMode || showVerbose || file == null ) {
     printf( "\n" );
   }
@@ -187,10 +206,8 @@ void Log::printEnd() const
   }
 }
 
-void Log::println( const char* s, ... ) const
+void Log::println( const char* s, ... )
 {
-  FILE* file = static_cast<FILE*>( fileStream );
-
   va_list ap;
 
   if( !verboseMode || showVerbose || file == null ) {
@@ -221,10 +238,8 @@ void Log::println( const char* s, ... ) const
   }
 }
 
-void Log::println() const
+void Log::println()
 {
-  FILE* file = static_cast<FILE*>( fileStream );
-
   if( !verboseMode || showVerbose || file == null ) {
     printf( "\n" );
   }
@@ -235,10 +250,8 @@ void Log::println() const
   }
 }
 
-void Log::printTime() const
+void Log::printTime()
 {
-  FILE* file = static_cast<FILE*>( fileStream );
-
   Time time = Time::local();
 
   if( !verboseMode || showVerbose || file == null ) {
@@ -253,10 +266,22 @@ void Log::printTime() const
   }
 }
 
-void Log::printTrace( const StackTrace* st ) const
+void Log::printSignal( int signum )
 {
-  FILE* file = static_cast<FILE*>( fileStream );
+  int index = uint( signum ) >= uint( aLength( SIGNALS ) ) ? 0 : signum;
 
+  if( !verboseMode || showVerbose || file == null ) {
+    printf( "\n\nCaught signal %d %s (%s)\n", signum, SIGNALS[index][0], SIGNALS[index][1] );
+  }
+  if( file != null ) {
+    fprintf( file, "\n\nCaught signal %d %s (%s)\n", signum, SIGNALS[index][0], SIGNALS[index][1] );
+
+    fflush( file );
+  }
+}
+
+void Log::printTrace( const StackTrace* st )
+{
   if( st->nFrames == 0 ) {
     if( !verboseMode || showVerbose || file == null ) {
       printf( "    [empty stack trace]\n" );
@@ -277,7 +302,7 @@ void Log::printTrace( const StackTrace* st ) const
       }
     }
 
-    free( entries );
+    ::free( entries );
   }
 
   if( file != null ) {
@@ -285,10 +310,8 @@ void Log::printTrace( const StackTrace* st ) const
   }
 }
 
-void Log::printException( const std::exception* e ) const
+void Log::printException( const std::exception* e )
 {
-  FILE* file = static_cast<FILE*>( fileStream );
-
   const Exception* oe = dynamic_cast<const Exception*>( e );
 
   if( oe == null ) {
@@ -332,19 +355,25 @@ bool Log::init( const char* filePath_, bool doClear )
     filePath[255] = '\0';
   }
 
-  FILE* file = static_cast<FILE*>( fileStream );
-
   tabs = 0;
 
   if( file != null ) {
     fclose( file );
-    fileStream = null;
+    file = null;
   }
   if( filePath[0] != '\0' ) {
-    fileStream = fopen( filePath, doClear ? "w" : "a" );
+    file = fopen( filePath, doClear ? "w" : "a" );
   }
 
-  return fileStream != null;
+  return file != null;
+}
+
+void Log::free()
+{
+  if( file != null ) {
+    fclose( file );
+    file = null;
+  }
 }
 
 }

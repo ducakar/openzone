@@ -89,7 +89,7 @@ void Nirvana::update()
 
 void Nirvana::read( InputStream* istream )
 {
-  log.print( "Reading Nirvana ..." );
+  Log::print( "Reading Nirvana ..." );
 
   lua.read( istream );
 
@@ -116,12 +116,12 @@ void Nirvana::read( InputStream* istream )
     minds.add( index, new Mind( index, istream ) );
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Nirvana::write( BufferStream* ostream ) const
 {
-  log.print( "Writing Nirvana ..." );
+  Log::print( "Writing Nirvana ..." );
 
   lua.write( ostream );
 
@@ -139,18 +139,18 @@ void Nirvana::write( BufferStream* ostream ) const
     mind.value()->write( ostream );
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Nirvana::load()
 {
-  log.print( "Loading Nirvana ..." );
-  log.printEnd( " OK" );
+  Log::print( "Loading Nirvana ..." );
+  Log::printEnd( " OK" );
 }
 
 void Nirvana::unload()
 {
-  log.print( "Unloading Nirvana ..." );
+  Log::print( "Unloading Nirvana ..." );
 
   devices.free();
   devices.dealloc();
@@ -161,13 +161,13 @@ void Nirvana::unload()
   Memo::pool.free();
   Mind::pool.free();
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Nirvana::init()
 {
-  log.println( "Initialising Nirvana {" );
-  log.indent();
+  Log::println( "Initialising Nirvana {" );
+  Log::indent();
 
   OZ_REGISTER_DEVICE( Memo );
 
@@ -175,22 +175,22 @@ void Nirvana::init()
 
   updateModulo = 0;
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Nirvana::free()
 {
-  log.println( "Freeing Nirvana {" );
-  log.indent();
+  Log::println( "Freeing Nirvana {" );
+  Log::indent();
 
   lua.free();
 
   deviceClasses.clear();
   deviceClasses.dealloc();
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 }

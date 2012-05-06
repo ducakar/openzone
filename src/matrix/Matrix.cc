@@ -154,29 +154,29 @@ void Matrix::update()
 
 void Matrix::read( InputStream* istream )
 {
-  log.println( "Reading Matrix {" );
-  log.indent();
+  Log::println( "Reading Matrix {" );
+  Log::indent();
 
   orbis.read( istream );
   physics.gravity = istream->readFloat();
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Matrix::write( BufferStream* ostream ) const
 {
-  log.print( "Writing Matrix ..." );
+  Log::print( "Writing Matrix ..." );
 
   orbis.write( ostream );
   ostream->writeFloat( physics.gravity );
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Matrix::load()
 {
-  log.print( "Loading Matrix ..." );
+  Log::print( "Loading Matrix ..." );
 
   maxStructs  = 0;
   maxEvents   = 0;
@@ -192,60 +192,60 @@ void Matrix::load()
 
   physics.gravity = -9.81f;
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Matrix::unload()
 {
-  log.println( "Unloading Matrix {" );
-  log.indent();
+  Log::println( "Unloading Matrix {" );
+  Log::indent();
 
-  log.println( "Static memory usage  %.2f MiB", float( sizeof( Orbis ) ) / ( 1024.0f * 1024.0f ) );
+  Log::println( "Static memory usage  %.2f MiB", float( sizeof( Orbis ) ) / ( 1024.0f * 1024.0f ) );
 
-  log.println( "Peak instances {" );
-  log.indent();
-  log.println( "%6d  structures",      maxStructs );
-  log.println( "%6d  object events",   maxEvents );
-  log.println( "%6d  static objects",  maxObjects );
-  log.println( "%6d  dynamic objects", maxDynamics );
-  log.println( "%6d  weapon objects",  maxWeapons );
-  log.println( "%6d  bot objects",     maxBots );
-  log.println( "%6d  vehicle objects", maxVehicles );
-  log.println( "%6d  fragments",       maxFrags );
-  log.unindent();
-  log.println( "}" );
+  Log::println( "Peak instances {" );
+  Log::indent();
+  Log::println( "%6d  structures",      maxStructs );
+  Log::println( "%6d  object events",   maxEvents );
+  Log::println( "%6d  static objects",  maxObjects );
+  Log::println( "%6d  dynamic objects", maxDynamics );
+  Log::println( "%6d  weapon objects",  maxWeapons );
+  Log::println( "%6d  bot objects",     maxBots );
+  Log::println( "%6d  vehicle objects", maxVehicles );
+  Log::println( "%6d  fragments",       maxFrags );
+  Log::unindent();
+  Log::println( "}" );
 
   synapse.unload();
   orbis.unload();
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Matrix::init()
 {
-  log.println( "Initialising Matrix {" );
-  log.indent();
+  Log::println( "Initialising Matrix {" );
+  Log::indent();
 
   lua.init();
   namePool.init();
   orbis.init();
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Matrix::free()
 {
-  log.println( "Freeing Matrix {" );
-  log.indent();
+  Log::println( "Freeing Matrix {" );
+  Log::indent();
 
   orbis.free();
   namePool.free();
   lua.free();
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 }

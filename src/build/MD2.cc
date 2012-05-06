@@ -212,8 +212,8 @@ void MD2::build( const char* path )
   PhysFile configFile( sPath + "/config.rc" );
   String skinPath = sPath + "/skin";
 
-  log.println( "Prebuilding MD2 model '%s' {", path );
-  log.indent();
+  Log::println( "Prebuilding MD2 model '%s' {", path );
+  Log::indent();
 
   Config config;
   config.load( configFile );
@@ -435,28 +435,28 @@ void MD2::build( const char* path )
   if( header.nFrames != 1 ) {
     File destFile( sPath + "/data.ozcMD2" );
 
-    log.print( "Writing to '%s' ...", destFile.path().cstr() );
+    Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
     if( !destFile.write( os.begin(), os.length() ) ) {
       throw Exception( "Failed to write '%s'", destFile.path().cstr() );
     }
 
-    log.printEnd( " OK" );
+    Log::printEnd( " OK" );
   }
   else {
     File destFile( sPath + "/data.ozcSMM" );
 
-    log.print( "Writing to '%s' ...", destFile.path().cstr() );
+    Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
     if( !destFile.write( os.begin(), os.length() ) ) {
       throw Exception( "Failed to write '%s'", destFile.path().cstr() );
     }
 
-    log.printEnd( " OK" );
+    Log::printEnd( " OK" );
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 }

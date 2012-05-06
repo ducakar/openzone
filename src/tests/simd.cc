@@ -22,6 +22,7 @@
  */
 
 #include "oz/oz.hh"
+#include "ozmain/main.hh"
 
 #include <cstdio>
 
@@ -130,7 +131,7 @@ VecX c[MAX];
 VecX d[MAX];
 VecX e[MAX];
 
-int main()
+int main( int, char** )
 {
   for( int i = 0; i < MAX; ++i ) {
     a[i] = VecX( Math::rand(), Math::rand(), Math::rand() ) * 100.0f;

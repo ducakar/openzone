@@ -446,7 +446,7 @@ void Render::swap()
 
 void Render::load()
 {
-  log.print( "Loading Render ..." );
+  Log::print( "Loading Render ..." );
 
   OZ_GL_CHECK_ERROR();
 
@@ -468,14 +468,14 @@ void Render::load()
   uiMicros          = 0;
   swapMicros        = 0;
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Render::unload()
 {
   glFinish();
 
-  log.print( "Unloading Render ..." );
+  Log::print( "Unloading Render ..." );
 
   drawnStructs.dealloc();
 
@@ -496,13 +496,13 @@ void Render::unload()
 
   ui::ui.unload();
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool isBuild )
 {
-  log.println( "Initialising Render {" );
-  log.indent();
+  Log::println( "Initialising Render {" );
+  Log::indent();
 
   window = window_;
 
@@ -519,21 +519,21 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
   String sExtensions = String::cstr( glGetString( GL_EXTENSIONS ) );
   DArray<String> extensions = sExtensions.trim().split( ' ' );
 
-  log.println( "OpenGL vendor: %s", vendor.cstr() );
-  log.println( "OpenGL renderer: %s", renderer.cstr() );
-  log.println( "OpenGL version: %s", version.cstr() );
-  log.println( "GLSL version: %s", glslVersion.cstr() );
+  Log::println( "OpenGL vendor: %s", vendor.cstr() );
+  Log::println( "OpenGL renderer: %s", renderer.cstr() );
+  Log::println( "OpenGL version: %s", version.cstr() );
+  Log::println( "GLSL version: %s", glslVersion.cstr() );
 
-  log.verboseMode = true;
+  Log::verboseMode = true;
 
-  log.println( "OpenGL extensions {" );
-  log.indent();
+  Log::println( "OpenGL extensions {" );
+  Log::indent();
 
   if( strstr( vendor, "ATI" ) != null ) {
     isCatalyst = true;
   }
   foreach( extension, extensions.citer() ) {
-    log.println( "%s", extension->cstr() );
+    Log::println( "%s", extension->cstr() );
 
     if( extension->equals( "GL_ARB_vertex_array_object" ) ) {
       hasVAO = true;
@@ -549,10 +549,10 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
     }
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 
-  log.verboseMode = false;
+  Log::verboseMode = false;
 
   int major = atoi( version );
   int minor = atoi( version.cstr() + version.index( '.' ) + 1 );
@@ -584,8 +584,8 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
     config.get( "shader.setSamplerIndices", false );
     config.get( "shader.vertexTexture", false );
 
-    log.unindent();
-    log.println( "}" );
+    Log::unindent();
+    Log::println( "}" );
 
     OZ_GL_CHECK_ERROR();
     return;
@@ -669,8 +669,8 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
 
   OZ_GL_CHECK_ERROR();
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Render::free( bool isBuild )
@@ -679,8 +679,8 @@ void Render::free( bool isBuild )
     return;
   }
 
-  log.println( "Freeing Render {" );
-  log.indent();
+  Log::println( "Freeing Render {" );
+  Log::indent();
 
   if( isOffscreen ) {
     glDeleteFramebuffers( 1, &mainFrame );
@@ -694,8 +694,8 @@ void Render::free( bool isBuild )
 
   OZ_GL_CHECK_ERROR();
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 }

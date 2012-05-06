@@ -58,8 +58,8 @@ void MeshData::write( BufferStream* os, bool embedTextures ) const
   hard_assert( indices.length() > 0 );
   hard_assert( vertices.length() > 0 );
 
-  log.println( "Writing mesh {" );
-  log.indent();
+  Log::println( "Writing mesh {" );
+  Log::indent();
 
   os->writeInt( vertices.length() );
   os->writeInt( indices.length() );
@@ -133,8 +133,8 @@ void MeshData::write( BufferStream* os, bool embedTextures ) const
     os->writeInt( part->firstIndex );
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 }

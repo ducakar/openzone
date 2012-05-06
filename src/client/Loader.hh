@@ -67,11 +67,11 @@ class Loader
 
     static ScreenshotInfo screenshotInfo;
 
-    SDL_Thread* screenshotThread;
-    SDL_Thread* preloadThread;
+    Thread screenshotThread;
+    Thread preloadThread;
 
-    SDL_sem*    preloadMainSemaphore;
-    SDL_sem*    preloadAuxSemaphore;
+    Semaphore preloadMainSemaphore;
+    Semaphore preloadAuxSemaphore;
 
     volatile bool isPreloadAlive;
 
@@ -83,8 +83,8 @@ class Loader
 
   private:
 
-    static int screenshotMain( void* );
-    static int preloadMain( void* );
+    static void screenshotMain();
+    static void preloadMain();
 
     // clean unused imagines and handle screenshots
     void cleanupRender();

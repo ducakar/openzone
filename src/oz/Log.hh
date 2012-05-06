@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Exception.hh"
+#include "StackTrace.hh"
 
 namespace oz
 {
@@ -45,128 +45,111 @@ namespace oz
  */
 class Log
 {
-  private:
-
-    void* fileStream;    ///< %Log file stream, but declared void* because we don't want to
-                         ///< pollute namespace with <tt>\<cstdio\></tt>.
-    char  filePath[256]; ///< Log file name.
-    int   tabs;          ///< Indentation level (one level is represented with two spaces).
-
   public:
 
-    bool  showVerbose;   ///< Do not suppress verbose messages on stdout. Off by default.
-    bool  verboseMode;   ///< While <tt>verboseMode</tt> is on log output is only written to log
-                         ///< file unless <tt>isVerbose</tt> is also on. Off by default.
+    static bool showVerbose; ///< Do not suppress verbose messages on stdout. Off by default.
+    static bool verboseMode; ///< While <tt>verboseMode</tt> is on log output is only written to
+                             ///< log file unless <tt>isVerbose</tt> is also on. Off by default.
 
     /**
-     * Initialise log with default parameters to <tt>init()</tt>.
+     * Singleton.
      */
-    Log();
-
-    /**
-     * Destructor.
-     */
-    ~Log();
-
-    /**
-     * No copying.
-     */
-    Log( const Log& ) = delete;
-
-    /**
-     * No copying.
-     */
-    Log& operator = ( const Log& ) = delete;
+    Log() = delete;
 
     /**
      * Return log file path or an empty string if log is printed to stdout only.
      */
-    const char* logFile() const;
+    static const char* logFile();
 
     /**
      * Set indent to zero.
      */
-    void resetIndent();
+    static void resetIndent();
 
     /**
      * Increase indent.
      */
-    void indent();
+    static void indent();
 
     /**
      * Decrease indent.
      */
-    void unindent();
+    static void unindent();
 
     /**
      * Print the text from argument list.
      */
-    OZ_PRINTF_FORMAT( 2, 0 )
-    void vprintRaw( const char* s, va_list ap ) const;
+    OZ_PRINTF_FORMAT( 1, 0 )
+    static void vprintRaw( const char* s, va_list ap );
 
     /**
      * Print the raw text (without indentation on newline).
      */
-    OZ_PRINTF_FORMAT( 2, 3 )
-    void printRaw( const char* s, ... ) const;
+    OZ_PRINTF_FORMAT( 1, 2 )
+    static void printRaw( const char* s, ... );
 
     /**
      * Indent and print the text.
      */
-    OZ_PRINTF_FORMAT( 2, 3 )
-    void print( const char* s, ... ) const;
+    OZ_PRINTF_FORMAT( 1, 2 )
+    static void print( const char* s, ... );
 
     /**
      * Print the text and terminate the line.
      */
-    OZ_PRINTF_FORMAT( 2, 3 )
-    void printEnd( const char* s, ... ) const;
+    OZ_PRINTF_FORMAT( 1, 2 )
+    static void printEnd( const char* s, ... );
 
     /**
      * Terminate the line.
      */
-    void printEnd() const;
+    static void printEnd();
 
     /**
      * Indent, print the text and terminate the line.
      */
-    OZ_PRINTF_FORMAT( 2, 3 )
-    void println( const char* s, ... ) const;
+    OZ_PRINTF_FORMAT( 1, 2 )
+    static void println( const char* s, ... );
 
     /**
      * Print a blank line.
      */
-    void println() const;
+    static void println();
 
     /**
      * Print current date and time, without indentation or newline.
      */
-    void printTime() const;
+    static void printTime();
+
+    /**
+     * Print 'Caught signal ...' and signal description.
+     *
+     * This method is only required by signal handler since it is unsafe to use print methods with
+     * variable arguments from there.
+     */
+    static void printSignal( int signum );
 
     /**
      * Print stack trace.
      */
-    void printTrace( const StackTrace* st ) const;
+    static void printTrace( const StackTrace* st );
 
     /**
      * Print nicely formatted exception (unindented).
      */
-    void printException( const std::exception* e ) const;
+    static void printException( const std::exception* e );
 
     /**
      * First parameter is file path (if <tt>null</tt> or "", it only writes to terminal), the other
      * tells us if we want to clear its content if the file already exists.
      */
-    bool init( const char* filePath = null, bool clearFile = true );
+    static bool init( const char* filePath = null, bool clearFile = true );
+
+    /**
+     * Close log file.
+     */
+    static void free();
 
 };
-
-/**
- * It is very convenient to have a globally defined log instance and also needed by some classes
- * in liboz.
- *
- * @ingroup oz
- */
-extern Log log;
 
 }

@@ -57,40 +57,39 @@ GameStage gameStage;
 String GameStage::AUTOSAVE_FILE;
 String GameStage::QUICKSAVE_FILE;
 
-int GameStage::auxMain( void* )
+void GameStage::auxMain()
 {
   try {
     gameStage.auxRun();
   }
   catch( const std::exception& e ) {
-    oz::log.verboseMode = false;
-    oz::log.printException( &e );
+    Log::verboseMode = false;
+    Log::printException( &e );
 
-    oz::System::bell();
-    oz::System::abort();
+    System::bell();
+    System::abort();
   }
-  return 0;
 }
 
 bool GameStage::read( const char* path )
 {
-  log.print( "Loading state from '%s' ...", path );
+  Log::print( "Loading state from '%s' ...", path );
 
   File file( path );
   if( !file.map() ) {
-    log.printEnd( " Failed" );
+    Log::printEnd( " Failed" );
     return false;
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 
   InputStream istream = file.inputStream();
 
   matrix.read( &istream );
   nirvana.read( &istream );
 
-  log.println( "Reading Client {" );
-  log.indent();
+  Log::println( "Reading Client {" );
+  Log::indent();
 
   questList.read( &istream );
   camera.read( &istream );
@@ -98,8 +97,8 @@ bool GameStage::read( const char* path )
 
   lua.read( &istream );
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 
   file.unmap();
 
@@ -113,7 +112,7 @@ void GameStage::write( const char* path ) const
   matrix.write( &ostream );
   nirvana.write( &ostream );
 
-  log.print( "Writing Client ..." );
+  Log::print( "Writing Client ..." );
 
   questList.write( &ostream );
   camera.write( &ostream );
@@ -121,24 +120,24 @@ void GameStage::write( const char* path ) const
 
   lua.write( &ostream );
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 
-  log.print( "Saving state to %s ...", path );
+  Log::print( "Saving state to %s ...", path );
 
   if( !File( path ).write( ostream.begin(), ostream.length() ) ) {
-    log.printEnd( " Failed" );
+    Log::printEnd( " Failed" );
   }
   else {
-    log.printEnd( " OK" );
+    Log::printEnd( " OK" );
   }
 }
 
 void GameStage::reload()
 {
-  log.print( "[" );
-  log.printTime();
-  log.printEnd( "] Reloading GameStage {" );
-  log.indent();
+  Log::print( "[" );
+  Log::printTime();
+  Log::printEnd( "] Reloading GameStage {" );
+  Log::indent();
 
   ui::mouse.doShow = false;
   ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Loading ..." ) );
@@ -175,7 +174,7 @@ void GameStage::reload()
   modules.load();
 
   if( stateFile.isEmpty() ) {
-    log.println( "Initialising new world" );
+    Log::println( "Initialising new world" );
 
     lua.create( mission );
   }
@@ -206,17 +205,15 @@ void GameStage::reload()
   ui::ui.prepare();
   ui::ui.showLoadingScreen( false );
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void GameStage::auxRun()
 {
   uint beginMicros;
 
-  SDL_SemPost( mainSemaphore );
-  SDL_SemPost( mainSemaphore );
-  SDL_SemWait( auxSemaphore );
+  auxSemaphore.wait();
 
   while( isAuxAlive ) {
     /*
@@ -234,8 +231,8 @@ void GameStage::auxRun()
 
     loader.hasTime = false;
 
-    SDL_SemPost( mainSemaphore );
-    SDL_SemWait( auxSemaphore );
+    mainSemaphore.post();
+    auxSemaphore.wait();
 
     /*
      * PHASE 3
@@ -256,14 +253,13 @@ void GameStage::auxRun()
 
     // we can now manipulate world from the main thread after synapse lists have been cleared
     // and nirvana is not accessing matrix any more
-    SDL_SemPost( mainSemaphore );
+    mainSemaphore.post();
+    auxSemaphore.wait();
 
     /*
      * PHASE 1
      */
 
-    SDL_SemPost( mainSemaphore );
-    SDL_SemWait( auxSemaphore );
   }
 }
 
@@ -271,7 +267,7 @@ bool GameStage::update()
 {
   uint beginMicros;
 
-  SDL_SemWait( mainSemaphore );
+  mainSemaphore.wait();
 
   /*
    * PHASE 1
@@ -305,8 +301,7 @@ bool GameStage::update()
 
   loader.hasTime = true;
 
-  SDL_SemPost( auxSemaphore );
-  SDL_SemWait( mainSemaphore );
+  auxSemaphore.post();
 
   /*
    * PHASE 2
@@ -320,8 +315,8 @@ bool GameStage::update()
 
   loaderMicros += Time::uclock() - beginMicros;
 
-  SDL_SemPost( auxSemaphore );
-  SDL_SemWait( mainSemaphore );
+  auxSemaphore.post();
+  mainSemaphore.wait();
 
   /*
    * PHASE 3
@@ -367,10 +362,10 @@ void GameStage::wait( uint micros )
 
 void GameStage::load()
 {
-  log.print( "[" );
-  log.printTime();
-  log.printEnd( "] Loading GameStage {" );
-  log.indent();
+  Log::print( "[" );
+  Log::printTime();
+  Log::printEnd( "] Loading GameStage {" );
+  Log::indent();
 
   loadingMicros = Time::uclock();
 
@@ -392,14 +387,14 @@ void GameStage::load()
   matrixMicros  = 0;
   nirvanaMicros = 0;
 
-  log.print( "Starting auxilary thread ..." );
+  Log::print( "Starting auxilary thread ..." );
 
-  isAuxAlive    = true;
-  mainSemaphore = SDL_CreateSemaphore( 0 );
-  auxSemaphore  = SDL_CreateSemaphore( 0 );
-  auxThread     = SDL_CreateThread( auxMain, null );
+  isAuxAlive = true;
+  mainSemaphore.init( 1 );
+  auxSemaphore.init( 0 );
+  auxThread.start( auxMain );
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 
   network.connect();
 
@@ -419,15 +414,15 @@ void GameStage::load()
   modules.load();
 
   if( stateFile.isEmpty() ) {
-    log.println( "Initialising new world" );
+    Log::println( "Initialising new world" );
 
-    log.println( "Loading Client {" );
-    log.indent();
+    Log::println( "Loading Client {" );
+    Log::indent();
 
     lua.create( mission );
 
-    log.unindent();
-    log.println( "}" );
+    Log::unindent();
+    Log::println( "}" );
   }
   else if( !read( stateFile ) ) {
     throw Exception( "Reading saved state '%s' failed", stateFile.cstr() );
@@ -463,16 +458,16 @@ void GameStage::load()
 
   isLoaded = true;
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void GameStage::unload()
 {
-  log.print( "[" );
-  log.printTime();
-  log.printEnd( "] Unloading GameStage {" );
-  log.indent();
+  Log::print( "[" );
+  Log::printTime();
+  Log::printEnd( "] Unloading GameStage {" );
+  Log::indent();
 
   ui::mouse.doShow = false;
   ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Shutting down ..." ) );
@@ -529,73 +524,69 @@ void GameStage::unload()
 
   network.disconnect();
 
-  log.print( "Stopping auxilary thread ..." );
+  Log::print( "Stopping auxilary thread ..." );
 
   isAuxAlive = false;
 
-  SDL_SemPost( auxSemaphore );
-  SDL_WaitThread( auxThread, null );
+  auxSemaphore.post();
+  auxThread.join();
 
-  SDL_DestroySemaphore( auxSemaphore );
-  SDL_DestroySemaphore( mainSemaphore );
+  auxSemaphore.destroy();
+  mainSemaphore.destroy();
 
-  mainSemaphore = null;
-  auxSemaphore  = null;
-  auxThread     = null;
-
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 
   ui::ui.showLoadingScreen( false );
 
-  log.println( "Time statistics {" );
-  log.indent();
-  log.println( "loading time          %8.2f s",         loadingTime                         );
-  log.println( "run time              %8.2f s",         runTime                             );
-  log.println( "game time             %8.2f s",         gameTime                            );
-  log.println( "dropped time          %8.2f s",         droppedTime                         );
-  log.println( "optimal tick/frame rate %6.2f Hz",      1.0f / Timer::TICK_TIME             );
-  log.println( "tick rate in run time   %6.2f Hz",      float( timer.ticks ) / runTime      );
-  log.println( "frame rate in run time  %6.2f Hz",      float( timer.nFrames ) / runTime    );
-  log.println( "frame drop rate         %6.2f %%",      frameDropRate * 100.0f              );
-  log.println( "frame drops             %6d",           nFrameDrops                         );
-  log.println( "Run time usage {" );
-  log.indent();
-  log.println( "%6.2f %%  [M:0] sleep",            sleepTime             / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:1] input & ui",       uiTime                / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:2] loader",           loaderTime            / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] present",          presentTime           / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] + sound",          soundTime             / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3] + render",         renderTime            / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3]   + prepare",      renderPrepareTime     / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3]   + shader setup", renderSetupTime       / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3]   + caelum",       renderCaelumTime      / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3]   + terra",        renderTerraTime       / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3]   + structs",      renderStructsTime     / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3]   + objects",      renderObjectsTime     / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3]   + frags",        renderFragsTime       / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3]   + misc",         renderMiscTime        / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3]   + postprocess",  renderPostprocessTime / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3]   + ui",           renderUITime          / runTime * 100.0f );
-  log.println( "%6.2f %%  [M:3]   + swap",         renderSwapTime        / runTime * 100.0f );
-  log.println( "%6.2f %%  [A:2] matrix",           matrixTime            / runTime * 100.0f );
-  log.println( "%6.2f %%  [A:3] nirvana",          nirvanaTime           / runTime * 100.0f );
-  log.unindent();
-  log.println( "}" );
-  log.unindent();
-  log.println( "}" );
+  Log::println( "Time statistics {" );
+  Log::indent();
+  Log::println( "loading time          %8.2f s",    loadingTime                              );
+  Log::println( "run time              %8.2f s",    runTime                                  );
+  Log::println( "game time             %8.2f s",    gameTime                                 );
+  Log::println( "dropped time          %8.2f s",    droppedTime                              );
+  Log::println( "optimal tick/frame rate %6.2f Hz", 1.0f / Timer::TICK_TIME                  );
+  Log::println( "tick rate in run time   %6.2f Hz", float( timer.ticks ) / runTime           );
+  Log::println( "frame rate in run time  %6.2f Hz", float( timer.nFrames ) / runTime         );
+  Log::println( "frame drop rate         %6.2f %%", frameDropRate * 100.0f                   );
+  Log::println( "frame drops             %6d",      nFrameDrops                              );
+  Log::println( "Run time usage {" );
+  Log::indent();
+  Log::println( "%6.2f %%  [M:0] sleep",            sleepTime             / runTime * 100.0f );
+  Log::println( "%6.2f %%  [M:1] input & ui",       uiTime                / runTime * 100.0f );
+  Log::println( "%6.2f %%  [M:2] loader",           loaderTime            / runTime * 100.0f );
+  Log::println( "%6.2f %%  [M:3] present",          presentTime           / runTime * 100.0f );
+  Log::println( "%6.2f %%  [M:3] + sound",          soundTime             / runTime * 100.0f );
+  Log::println( "%6.2f %%  [M:3] + render",         renderTime            / runTime * 100.0f );
+  Log::println( "%6.2f %%  [M:3]   + prepare",      renderPrepareTime     / runTime * 100.0f );
+  Log::println( "%6.2f %%  [M:3]   + shader setup", renderSetupTime       / runTime * 100.0f );
+  Log::println( "%6.2f %%  [M:3]   + caelum",       renderCaelumTime      / runTime * 100.0f );
+  Log::println( "%6.2f %%  [M:3]   + terra",        renderTerraTime       / runTime * 100.0f );
+  Log::println( "%6.2f %%  [M:3]   + structs",      renderStructsTime     / runTime * 100.0f );
+  Log::println( "%6.2f %%  [M:3]   + objects",      renderObjectsTime     / runTime * 100.0f );
+  Log::println( "%6.2f %%  [M:3]   + frags",        renderFragsTime       / runTime * 100.0f );
+  Log::println( "%6.2f %%  [M:3]   + misc",         renderMiscTime        / runTime * 100.0f );
+  Log::println( "%6.2f %%  [M:3]   + postprocess",  renderPostprocessTime / runTime * 100.0f );
+  Log::println( "%6.2f %%  [M:3]   + ui",           renderUITime          / runTime * 100.0f );
+  Log::println( "%6.2f %%  [M:3]   + swap",         renderSwapTime        / runTime * 100.0f );
+  Log::println( "%6.2f %%  [A:2] matrix",           matrixTime            / runTime * 100.0f );
+  Log::println( "%6.2f %%  [A:3] nirvana",          nirvanaTime           / runTime * 100.0f );
+  Log::unindent();
+  Log::println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 
   isLoaded = false;
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void GameStage::init()
 {
   isLoaded = false;
 
-  log.println( "Initialising GameStage {" );
-  log.indent();
+  Log::println( "Initialising GameStage {" );
+  Log::indent();
 
   AUTOSAVE_FILE = String::str( "%s/saves/autosave.ozState", config.get( "dir.config", "" ) );
   QUICKSAVE_FILE = String::str( "%s/saves/quicksave.ozState", config.get( "dir.config", "" ) );
@@ -606,14 +597,14 @@ void GameStage::init()
   profile.init();
   modules.init();
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void GameStage::free()
 {
-  log.println( "Freeing GameStage {" );
-  log.indent();
+  Log::println( "Freeing GameStage {" );
+  Log::indent();
 
   modules.free();
   profile.free();
@@ -626,8 +617,8 @@ void GameStage::free()
   AUTOSAVE_FILE  = "";
   QUICKSAVE_FILE = "";
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 }

@@ -22,28 +22,62 @@
 
 /**
  * @file oz/Thread.cc
- *
- * Thread class.
  */
 
 #include "Thread.hh"
 
-#include <cstdlib>
-#include <pthread.h>
+#include "Exception.hh"
+
+#ifdef _WIN32
+# include "windefs.h"
+# include <windows.h>
+# include <climits>
+# include <cstdlib>
+#else
+# include <cstdlib>
+# include <pthread.h>
+#endif
 
 namespace oz
 {
+
+#ifdef _WIN32
+
+struct MutexDesc
+{
+  CRITICAL_SECTION mutex;
+};
+
+struct SemaphoreDesc
+{
+  HANDLE        semaphore;
+  volatile long counter;
+};
+
+struct ThreadDesc
+{
+  HANDLE thread;
+};
+
+static DWORD WINAPI winMain( void* data )
+{
+  Thread::Main* main = *reinterpret_cast<Thread::Main**>( &data );
+  main();
+  return 0;
+}
+
+#else
 
 struct MutexDesc
 {
   pthread_mutex_t mutex;
 };
 
-struct BarrierDesc
+struct SemaphoreDesc
 {
   pthread_mutex_t mutex;
   pthread_cond_t  cond;
-  volatile bool   isFinished;
+  volatile int    counter;
 };
 
 struct ThreadDesc
@@ -51,111 +85,245 @@ struct ThreadDesc
   pthread_t thread;
 };
 
-void Mutex::init()
+static void* pthreadMain( void* data )
 {
-  if( descriptor == null ) {
-    descriptor = static_cast<MutexDesc*>( malloc( sizeof( MutexDesc ) ) );
-
-    pthread_mutex_init( &descriptor->mutex, null );
-  }
+  Thread::Main* main = *reinterpret_cast<Thread::Main**>( &data );
+  main();
+  return null;
 }
 
-void Mutex::free()
-{
-  if( descriptor != null ) {
-    pthread_mutex_destroy( &descriptor->mutex );
+#endif
 
-    ::free( descriptor );
-    descriptor = null;
+void Mutex::init()
+{
+  hard_assert( descriptor == null );
+
+  descriptor = static_cast<MutexDesc*>( malloc( sizeof( MutexDesc ) ) );
+  if( descriptor == null ) {
+    throw Exception( "Mutex resource allocation failed" );
   }
+
+#ifdef _WIN32
+  InitializeCriticalSectionAndSpinCount( &descriptor->mutex, 2000 );
+#else
+  if( pthread_mutex_init( &descriptor->mutex, null ) != 0 ) {
+    free( descriptor );
+    throw Exception( "Mutex initialisation failed" );
+  }
+#endif
+}
+
+void Mutex::destroy()
+{
+  hard_assert( descriptor != null );
+
+#ifdef _WIN32
+  DeleteCriticalSection( &descriptor->mutex );
+#else
+  pthread_mutex_destroy( &descriptor->mutex );
+#endif
+
+  free( descriptor );
+  descriptor = null;
 }
 
 void Mutex::lock() const
 {
   hard_assert( descriptor != null );
 
+#ifdef _WIN32
+  EnterCriticalSection( &descriptor->mutex );
+#else
   pthread_mutex_lock( &descriptor->mutex );
+#endif
+}
+
+bool Mutex::tryLock() const
+{
+  hard_assert( descriptor != null );
+
+#ifdef _WIN32
+  EnterCriticalSection( &descriptor->mutex );
+#else
+  return pthread_mutex_trylock( &descriptor->mutex ) == 0;
+#endif
 }
 
 void Mutex::unlock() const
 {
   hard_assert( descriptor != null );
 
+#ifdef _WIN32
+  LeaveCriticalSection( &descriptor->mutex );
+#else
   pthread_mutex_unlock( &descriptor->mutex );
+#endif
 }
 
-void Barrier::init()
+void Semaphore::init( int counterValue )
 {
+  hard_assert( descriptor == null && counterValue >= 0 );
+
+  descriptor = static_cast<SemaphoreDesc*>( malloc( sizeof( SemaphoreDesc ) ) );
   if( descriptor == null ) {
-    descriptor = static_cast<BarrierDesc*>( malloc( sizeof( BarrierDesc ) ) );
-
-    pthread_mutex_init( &descriptor->mutex, null );
-    pthread_cond_init( &descriptor->cond, null );
-    descriptor->isFinished = true;
+    throw Exception( "Semaphore resource allocation failed" );
   }
-}
 
-void Barrier::free()
-{
-  if( descriptor != null ) {
-    pthread_cond_destroy( &descriptor->cond );
+#ifdef _WIN32
+
+  descriptor->semaphore = CreateSemaphore( null, counter, 32 * 1024, null );
+  if( descriptor->semaphore == null ) {
+    free( descriptor );
+    throw Exception( "Semaphore semaphore creation failed" );
+  }
+
+#else
+
+  if( pthread_mutex_init( &descriptor->mutex, null ) != 0 ) {
+    free( descriptor );
+    throw Exception( "Semaphore mutex creation failed" );
+  }
+  if( pthread_cond_init( &descriptor->cond, null ) != 0 ) {
     pthread_mutex_destroy( &descriptor->mutex );
-
-    ::free( descriptor );
-    descriptor = null;
+    free( descriptor );
+    throw Exception( "Semaphore condition variable creation failed" );
   }
+
+#endif
+
+  descriptor->counter = counterValue;
 }
 
-void Barrier::begin() const
+void Semaphore::destroy()
 {
   hard_assert( descriptor != null );
 
-  descriptor->isFinished = false;
+#ifdef _WIN32
+  CloseHandle( &descriptor->semaphore );
+#else
+  pthread_cond_destroy( &descriptor->cond );
+  pthread_mutex_destroy( &descriptor->mutex );
+#endif
+
+  free( descriptor );
+  descriptor = null;
 }
 
-void Barrier::finish() const
+void Semaphore::post() const
 {
   hard_assert( descriptor != null );
+
+#ifdef _WIN32
+
+  InterlockedIncrement( &descriptor->counter );
+  ReleaseSemaphore( &descriptor->semaphore, 1, null );
+
+#else
 
   pthread_mutex_lock( &descriptor->mutex );
-  descriptor->isFinished = true;
-  pthread_cond_signal( &descriptor->cond );
+  ++descriptor->counter;
   pthread_mutex_unlock( &descriptor->mutex );
+  pthread_cond_signal( &descriptor->cond );
+
+#endif
 }
 
-void Barrier::wait() const
+void Semaphore::wait() const
 {
   hard_assert( descriptor != null );
 
+#ifdef _WIN32
+
+  if( WaitForSingleObject( descriptor->semaphore, INFINITE ) != WAIT_OBJECT_0 ) {
+    throw Exception( "Semaphore wait failed" );
+  }
+  InterlockedDecrement( &descriptor->counter );
+
+#else
+
   pthread_mutex_lock( &descriptor->mutex );
-  if( !descriptor->isFinished ) {
+  while( descriptor->counter == 0 ) {
     pthread_cond_wait( &descriptor->cond, &descriptor->mutex );
   }
+  --descriptor->counter;
   pthread_mutex_unlock( &descriptor->mutex );
+
+#endif
 }
 
-Thread::~Thread()
+bool Semaphore::tryWait() const
 {
-  if( descriptor != null ) {
-    join();
+  hard_assert( descriptor != null );
+
+#ifdef _WIN32
+
+  int ret = WaitForSingleObject( descriptor->semaphore, 0 );
+  if( ret == WAIT_TIMEOUT ) {
+    return false;
   }
+  else if( ret != WAIT_OBJECT_0 ) {
+    throw Exception( "Barrier semaphore wait failed" );
+  }
+
+  InterlockedDecrement( &descriptor->counter );
+  return true;
+
+#else
+
+  bool hasSucceeded = false;
+
+  pthread_mutex_lock( &descriptor->mutex );
+  if( descriptor->counter != 0 ) {
+    --descriptor->counter;
+    hasSucceeded = true;
+  }
+  pthread_mutex_unlock( &descriptor->mutex );
+
+  return hasSucceeded;
+
+#endif
 }
 
-void Thread::start( Main* main, void* param )
+void Thread::start( Main* main )
 {
   hard_assert( descriptor == null );
 
   descriptor = static_cast<ThreadDesc*>( malloc( sizeof( ThreadDesc ) ) );
-  pthread_create( &descriptor->thread, null, main, param );
+  if( descriptor == null ) {
+    throw Exception( "Thread resource allocation failed" );
+  }
+
+#ifdef _WIN32
+  descriptor->thread = CreateThread( null, 0, winMain, *reinterpret_cast<void**>( &main ), 0,
+                                     null );
+  if( descriptor->thread == null ) {
+    throw Exception( "Thread creation failed" );
+  }
+#else
+  if( pthread_create( &descriptor->thread, null, pthreadMain,
+                      *reinterpret_cast<void**>( &main ) ) != 0 )
+  {
+    throw Exception( "Thread creation failed" );
+  }
+#endif
 }
 
-void Thread::join( void** result )
+void Thread::join()
 {
   hard_assert( descriptor != null );
 
-  pthread_join( descriptor->thread, result );
+#ifdef _WIN32
+  WaitForSingleObject( descriptor->thread, INFINITE );
+  CloseHandle( descriptor->thread );
+#else
+  if( pthread_join( descriptor->thread, null ) != 0 ) {
+    free( descriptor );
+    descriptor = null;
+    throw Exception( "Thread join failed" );
+  }
+#endif
 
-  ::free( descriptor );
+  free( descriptor );
   descriptor = null;
 }
 

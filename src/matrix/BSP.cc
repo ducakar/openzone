@@ -70,7 +70,7 @@ BSP::~BSP()
 
 void BSP::load()
 {
-  log.print( "Loading BSP structure '%s' ...", name.cstr() );
+  Log::print( "Loading BSP structure '%s' ...", name.cstr() );
 
   String sPath = "bsp/" + name + ".ozBSP";
 
@@ -240,12 +240,12 @@ void BSP::load()
 
   file.unmap();
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void BSP::unload()
 {
-  log.print( "Unloading BSP structure '%s' ...", name.cstr() );
+  Log::print( "Unloading BSP structure '%s' ...", name.cstr() );
 
   if( planes != null ) {
     delete[] reinterpret_cast<char*>( planes );
@@ -275,7 +275,7 @@ void BSP::unload()
     nUsers       = 0;
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void BSP::init()

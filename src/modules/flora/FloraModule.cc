@@ -112,7 +112,7 @@ void FloraModule::seed()
     addTree( x, y );
   }
 
-  log.println( "Flora seeded %d trees", number );
+  Log::println( "Flora seeded %d trees", number );
 }
 
 void FloraModule::load()

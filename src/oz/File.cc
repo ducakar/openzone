@@ -26,34 +26,55 @@
 
 #include "File.hh"
 
-#include <cstring>
-
 #if defined( __native_client__ )
 # include "System.hh"
-# include "Thread.hh"
 
-# include <ppapi/cpp/completion_callback.h>
-# include <ppapi/cpp/core.h>
-# include <ppapi/cpp/file_system.h>
-# include <ppapi/cpp/file_ref.h>
-# include <ppapi/cpp/file_io.h>
+# include <cstring>
 # include <ppapi/c/pp_file_info.h>
 # include <ppapi/c/ppb_file_io.h>
+# include <ppapi/cpp/completion_callback.h>
+# include <ppapi/cpp/core.h>
+# include <ppapi/cpp/file_io.h>
+# include <ppapi/cpp/file_ref.h>
+# include <ppapi/cpp/file_system.h>
 #elif defined( _WIN32 )
 # include "windefs.h"
+# include <cstring>
 # include <windows.h>
 #else
+# include <cstring>
 # include <dirent.h>
 # include <fcntl.h>
-# include <unistd.h>
-# include <sys/stat.h>
 # include <sys/mman.h>
+# include <sys/stat.h>
+# include <unistd.h>
 #endif
 
 namespace oz
 {
 
 #ifdef __native_client__
+
+struct Barrier
+{
+  pthread_mutex_t mutex;
+  pthread_cond_t  cond;
+  volatile int    counter;
+};
+
+#define BARRIER_INCREMENT( barrier ) \
+  pthread_mutex_lock( &barrier.mutex ); \
+  ++barrier.counter; \
+  pthread_mutex_unlock( &barrier.mutex ); \
+  pthread_cond_signal( &barrier.cond );
+
+#define BARRIER_WAIT( barrier ) \
+  pthread_mutex_lock( &barrier.mutex ); \
+  while( barrier.counter == 0 ) { \
+    pthread_cond_wait( &barrier.cond, &barrier.mutex ); \
+  } \
+  --barrier.counter; \
+  pthread_mutex_unlock( &barrier.mutex );
 
 #define DEFINE_CALLBACK( name, code ) \
   struct _Callback##name { \
@@ -71,10 +92,9 @@ namespace oz
 
 #define MAIN_CALL( code ) \
   { \
-    DEFINE_CALLBACK( Main, code _fd->mainBarrier.finish(); ) \
-    descriptor->mainBarrier.begin(); \
-    core->CallOnMainThread( 0, CALLBACK_OBJECT( Main, descriptor ) ); \
-    descriptor->mainBarrier.wait(); \
+    DEFINE_CALLBACK( Main, code BARRIER_INCREMENT( _fd->mainBarrier ) ) \
+    System::core->CallOnMainThread( 0, CALLBACK_OBJECT( Main, descriptor ) ); \
+    BARRIER_WAIT( descriptor->mainBarrier ) \
   }
 
 struct FileDesc
@@ -91,29 +111,36 @@ struct FileDesc
   explicit FileDesc( File* file_ ) :
     file( file_ )
   {
-    mainBarrier.init();
-    auxBarrier.init();
+    pthread_mutex_init( &mainBarrier.mutex, null );
+    pthread_cond_init( &mainBarrier.cond, null );
+    mainBarrier.counter = 0;
+
+    pthread_mutex_init( &auxBarrier.mutex, null );
+    pthread_cond_init( &auxBarrier.cond, null );
+    auxBarrier.counter = 0;
   }
 
   ~FileDesc()
   {
-    auxBarrier.free();
-    mainBarrier.free();
+    pthread_cond_destroy( &auxBarrier.cond );
+    pthread_mutex_destroy( &auxBarrier.mutex );
+
+    pthread_cond_destroy( &mainBarrier.cond );
+    pthread_mutex_destroy( &mainBarrier.mutex );
   }
 };
 
 // Some FileDesc members are also useful for static functions.
 static FileDesc staticDesc( null );
 
-static pp::Core*       core       = null;
 static pp::FileSystem* filesystem = null;
 
 DEFINE_CALLBACK( WaitMain, {
-  _fd->mainBarrier.finish();
+  BARRIER_INCREMENT( _fd->mainBarrier )
 } )
 
 DEFINE_CALLBACK( WaitAux, {
-  _fd->auxBarrier.finish();
+  BARRIER_INCREMENT( _fd->auxBarrier )
 } )
 
 #endif // __native_client__
@@ -239,30 +266,28 @@ bool File::stat()
         _fd->file->fileType = DIRECTORY;
       }
     }
-    _fd->auxBarrier.finish();
+    BARRIER_INCREMENT( _fd->auxBarrier )
   } )
   DEFINE_CALLBACK( Query, {
     if( _result == PP_OK ) {
       _fd->fio->Query( &_fd->info, CALLBACK_OBJECT( Result, _fd ) );
     }
     else {
-      _fd->auxBarrier.finish();
+      BARRIER_INCREMENT( _fd->auxBarrier )
     }
   } )
 
-  descriptor->auxBarrier.begin();
-
   MAIN_CALL( {
-    _fd->fio = new pp::FileIO( static_cast<pp::Instance*>( System::instance() ) );
+    _fd->fio = new pp::FileIO( System::instance );
 
     int ret = _fd->fio->Open( pp::FileRef( *filesystem, _fd->file->filePath ),
                               0, CALLBACK_OBJECT( Query, _fd ) );
     if( ret != PP_OK_COMPLETIONPENDING ) {
-      _fd->auxBarrier.finish();
+      BARRIER_INCREMENT( _fd->auxBarrier )
     }
   } )
 
-  descriptor->auxBarrier.wait();
+  BARRIER_WAIT( descriptor->auxBarrier )
 
   MAIN_CALL( {
     delete _fd->fio;
@@ -391,6 +416,9 @@ bool File::map()
   if( fileSize == -1 ) {
     stat();
   }
+  if( fileSize == -1 ) {
+    return false;
+  }
 
   data = new char[fileSize];
 
@@ -400,38 +428,43 @@ bool File::map()
 
   DEFINE_CALLBACK( Read, {
     if( _result <= 0 ) {
-      _fd->auxBarrier.finish();
+      BARRIER_INCREMENT( _fd->auxBarrier )
     }
     else {
       _fd->offset += _result;
 
       if( _fd->offset == _fd->size ) {
-        _fd->auxBarrier.finish();
+        BARRIER_INCREMENT( _fd->auxBarrier )
       }
       else {
-        _fd->fio->Read( _fd->offset, &_fd->buffer[_fd->offset], _fd->size - _fd->offset,
-                        CALLBACK_OBJECT( Read, _fd ) );
+        int ret = _fd->fio->Read( _fd->offset, &_fd->buffer[_fd->offset], _fd->size - _fd->offset,
+                                  CALLBACK_OBJECT( Read, _fd ) );
+
+        if( ret != PP_OK_COMPLETIONPENDING ) {
+          BARRIER_INCREMENT( _fd->auxBarrier )
+        }
       }
     }
   } )
   DEFINE_CALLBACK( BeginRead, {
-    _fd->fio->Read( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( Read, _fd ) );
+    int ret = _fd->fio->Read( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( Read, _fd ) );
+    if( ret != PP_OK_COMPLETIONPENDING ) {
+      BARRIER_INCREMENT( _fd->auxBarrier )
+    }
   } )
 
-  descriptor->auxBarrier.begin();
-
   MAIN_CALL( {
-    _fd->fio = new pp::FileIO( static_cast<pp::Instance*>( System::instance() ) );
+    _fd->fio = new pp::FileIO( System::instance );
 
     int ret = _fd->fio->Open( pp::FileRef( *filesystem, _fd->file->filePath ),
                               PP_FILEOPENFLAG_READ, CALLBACK_OBJECT( BeginRead, _fd ) );
 
     if( ret != PP_OK_COMPLETIONPENDING ) {
-      _fd->auxBarrier.finish();
+      BARRIER_INCREMENT( _fd->auxBarrier )
     }
   } )
 
-  descriptor->auxBarrier.wait();
+  BARRIER_WAIT( descriptor->auxBarrier )
 
   MAIN_CALL( {
     delete _fd->fio;
@@ -526,13 +559,18 @@ Buffer File::read()
 
   if( data != null ) {
     buffer.alloc( fileSize );
-    memcpy( buffer.begin(), data, fileSize );
+    memcpy( buffer.begin(), data, size_t( fileSize ) );
     return buffer;
   }
 
 #if defined( __native_client__ )
 
-  stat();
+  if( fileSize == -1 ) {
+    stat();
+  }
+  if( fileSize == -1 ) {
+    return buffer;
+  }
 
   buffer.alloc( fileSize );
 
@@ -542,38 +580,44 @@ Buffer File::read()
 
   DEFINE_CALLBACK( Read, {
     if( _result <= 0 ) {
-      _fd->auxBarrier.finish();
+      BARRIER_INCREMENT( _fd->auxBarrier )
     }
     else {
       _fd->offset += _result;
 
       if( _fd->offset == _fd->size ) {
-        _fd->auxBarrier.finish();
+        BARRIER_INCREMENT( _fd->auxBarrier )
       }
       else {
-        _fd->fio->Read( _fd->offset, &_fd->buffer[_fd->offset], _fd->size - _fd->offset,
-                        CALLBACK_OBJECT( Read, _fd ) );
+        int ret = _fd->fio->Read( _fd->offset, &_fd->buffer[_fd->offset], _fd->size - _fd->offset,
+                                  CALLBACK_OBJECT( Read, _fd ) );
+
+        if( ret != PP_OK_COMPLETIONPENDING ) {
+          BARRIER_INCREMENT( _fd->auxBarrier )
+        }
       }
     }
   } )
   DEFINE_CALLBACK( BeginRead, {
-    _fd->fio->Read( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( Read, _fd ) );
+    int ret = _fd->fio->Read( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( Read, _fd ) );
+
+    if( ret != PP_OK_COMPLETIONPENDING ) {
+      BARRIER_INCREMENT( _fd->auxBarrier )
+    }
   } )
 
-  descriptor->auxBarrier.begin();
-
   MAIN_CALL( {
-    _fd->fio = new pp::FileIO( static_cast<pp::Instance*>( System::instance() ) );
+    _fd->fio = new pp::FileIO( System::instance );
 
     int ret = _fd->fio->Open( pp::FileRef( *filesystem, _fd->file->filePath ),
                               PP_FILEOPENFLAG_READ, CALLBACK_OBJECT( BeginRead, _fd ) );
 
     if( ret != PP_OK_COMPLETIONPENDING ) {
-      _fd->auxBarrier.finish();
+      BARRIER_INCREMENT( _fd->auxBarrier )
     }
   } )
 
-  descriptor->auxBarrier.wait();
+  BARRIER_WAIT( descriptor->auxBarrier )
 
   MAIN_CALL( {
     delete _fd->fio;
@@ -651,39 +695,45 @@ bool File::write( const char* buffer, int size )
 
   DEFINE_CALLBACK( Write, {
     if( _result <= 0 ) {
-      _fd->auxBarrier.finish();
+      BARRIER_INCREMENT( _fd->auxBarrier )
     }
     else {
       _fd->offset += _result;
 
       if( _fd->offset == _fd->size ) {
-        _fd->auxBarrier.finish();
+        BARRIER_INCREMENT( _fd->auxBarrier )
       }
       else {
-        _fd->fio->Write( _fd->offset, &_fd->buffer[_fd->offset], _fd->size - _fd->offset,
-                         CALLBACK_OBJECT( Write, _fd ) );
+       int ret =  _fd->fio->Write( _fd->offset, &_fd->buffer[_fd->offset], _fd->size - _fd->offset,
+                                   CALLBACK_OBJECT( Write, _fd ) );
+
+        if( ret != PP_OK_COMPLETIONPENDING ) {
+          BARRIER_INCREMENT( _fd->auxBarrier )
+        }
       }
     }
   } )
   DEFINE_CALLBACK( BeginWrite, {
-    _fd->fio->Write( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( Write, _fd ) );
+    int ret = _fd->fio->Write( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( Write, _fd ) );
+
+    if( ret != PP_OK_COMPLETIONPENDING ) {
+      BARRIER_INCREMENT( _fd->auxBarrier )
+    }
   } )
 
-  descriptor->auxBarrier.begin();
-
   MAIN_CALL( {
-    _fd->fio = new pp::FileIO( static_cast<pp::Instance*>( System::instance() ) );
+    _fd->fio = new pp::FileIO( System::instance );
 
     int ret = _fd->fio->Open( pp::FileRef( *filesystem, _fd->file->filePath ),
                               PP_FILEOPENFLAG_WRITE | PP_FILEOPENFLAG_CREATE | PP_FILEOPENFLAG_TRUNCATE,
                               CALLBACK_OBJECT( BeginWrite, _fd ) );
 
     if( ret != PP_OK_COMPLETIONPENDING ) {
-      _fd->auxBarrier.finish();
+      BARRIER_INCREMENT( _fd->auxBarrier )
     }
   } )
 
-  descriptor->auxBarrier.wait();
+  BARRIER_WAIT( descriptor->auxBarrier )
 
   MAIN_CALL( {
     delete _fd->fio;
@@ -943,17 +993,12 @@ void File::init( FilesystemType type, int size )
 {
 #ifdef __native_client__
 
-  if( System::instance() == null ) {
-    throw Exception( "System::instance() must be set to NaCl module pointer in order to initialise "
-                     "NaCl filesystem" );
+  if( System::instance == null ) {
+    throw Exception( "NaClModule::instance must be set to NaCl module pointer in order to "
+                     "initialise NaCl filesystem" );
   }
 
   free();
-
-  staticDesc.mainBarrier.init();
-  staticDesc.auxBarrier.init();
-
-  core = pp::Module::Get()->core();
 
   // We abuse staticDesc.size and staticDesc.offset variables to pass filesystem type and size to
   // callback.
@@ -961,21 +1006,17 @@ void File::init( FilesystemType type, int size )
   staticDesc.offset = type == PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
                                            PP_FILESYSTEMTYPE_LOCALTEMPORARY;
 
-  staticDesc.auxBarrier.begin();
-
   FileDesc* descriptor = &staticDesc;
   MAIN_CALL( {
-    pp::Instance* instance = static_cast<pp::Instance*>( System::instance() );
-
-    filesystem = new pp::FileSystem( instance, PP_FileSystemType( _fd->offset ) );
+    filesystem = new pp::FileSystem( System::instance, PP_FileSystemType( _fd->offset ) );
 
     int ret = filesystem->Open( _fd->size, CALLBACK_OBJECT( WaitAux, _fd ) );
     if( ret != PP_OK_COMPLETIONPENDING ) {
-      _fd->auxBarrier.finish();
-      throw Exception( "Local temporary filesystem open failed" );
+      BARRIER_INCREMENT( _fd->auxBarrier )
+      throw Exception( "Local filesystem open failed" );
     }
   } )
-  staticDesc.auxBarrier.wait();
+  BARRIER_WAIT( staticDesc.auxBarrier )
 
 #else
 
@@ -995,9 +1036,6 @@ void File::free()
       delete filesystem;
       filesystem = null;
     } )
-
-    staticDesc.auxBarrier.free();
-    staticDesc.mainBarrier.free();
   }
 
 #endif

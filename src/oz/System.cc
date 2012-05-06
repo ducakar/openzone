@@ -35,14 +35,15 @@
 #include <cstdlib>
 
 #if defined( __native_client__ ) || defined( __ANDROID__ )
+# include <ppapi/cpp/module.h>
 # include <unistd.h>
 #elif defined( _WIN32 )
 # include <windows.h>
 # include <mmsystem.h>
 #else
-# include <unistd.h>
 # include <pthread.h>
 # include <pulse/simple.h>
+# include <unistd.h>
 #endif
 
 #ifdef __native_client__
@@ -69,45 +70,6 @@ int raise( int )
 
 namespace oz
 {
-
-void*  System::appInstance = null;
-System System::system;
-
-static const char* const SIGNALS[][2] =
-{
-  { "SIG???",    "[invalid signal number]"    },
-  { "SIGHUP",    "Hangup"                     }, //  1
-  { "SIGINT",    "Interrupt"                  }, //  2
-  { "SIGQUIT",   "Quit"                       }, //  3
-  { "SIGILL",    "Illegal instruction"        }, //  4
-  { "SIGTRAP",   "Trace trap"                 }, //  5
-  { "SIGABRT",   "Abort"                      }, //  6
-  { "SIGBUS",    "BUS error"                  }, //  7
-  { "SIGFPE",    "Floating-point exception"   }, //  8
-  { "SIGKILL",   "Kill, unblockable"          }, //  9
-  { "SIGUSR1",   "User-defined signal 1"      }, // 10
-  { "SIGSEGV",   "Segmentation violation"     }, // 11
-  { "SIGUSR2",   "User-defined signal 2"      }, // 12
-  { "SIGPIPE",   "Broken pipe"                }, // 13
-  { "SIGALRM",   "Alarm clock"                }, // 14
-  { "SIGTERM",   "Termination"                }, // 15
-  { "SIGSTKFLT", "Stack fault"                }, // 16
-  { "SIGCHLD",   "Child status has changed"   }, // 17
-  { "SIGCONT",   "Continue"                   }, // 18
-  { "SIGSTOP",   "Stop, unblockable"          }, // 19
-  { "SIGTSTP",   "Keyboard stop"              }, // 20
-  { "SIGTTIN",   "Background read from tty"   }, // 21
-  { "SIGTTOU",   "Background write to tty"    }, // 22
-  { "SIGURG",    "Urgent condition on socket" }, // 23
-  { "SIGXCPU",   "CPU limit exceeded"         }, // 24
-  { "SIGXFSZ",   "File size limit exceeded"   }, // 25
-  { "SIGVTALRM", "Virtual alarm clock"        }, // 26
-  { "SIGPROF",   "Profiling alarm clock"      }, // 27
-  { "SIGWINCH",  "Window size change"         }, // 28
-  { "SIGIO",     "I/O now possible"           }, // 29
-  { "SIGPWR",    "Power failure restart"      }, // 30
-  { "SIGSYS",    "Bad system call"            }  // 31
-};
 
 #if defined( __native_client__ ) || defined( __ANDROID__ )
 #elif defined( _WIN32 )
@@ -140,9 +102,6 @@ static const Wave WAVE_SAMPLE = {
   }
 };
 
-// Needed to protect nBellUsers counter.
-static CRITICAL_SECTION mutex;
-
 #else
 
 static const pa_sample_spec BELL_SPEC = { PA_SAMPLE_U8, 11025, 1 };
@@ -150,13 +109,17 @@ static const ubyte BELL_SAMPLE[] = {
 # include "bellSample.inc"
 };
 
-// Needed to protect nBellUsers counter.
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
 #endif
 
-static volatile int nBellUsers = 0;
-static int initFlags = 0;
+static bool               isConstructed = false;
+static int                initFlags = 0;
+static volatile int       nBellUsers = 0;
+#if defined( __native_client__ ) || defined( __ANDROID__ )
+#elif defined( _WIN32 )
+static CRITICAL_SECTION   bellCounterLock;
+#else
+static pthread_spinlock_t bellCounterLock;
+#endif
 
 static void resetSignals()
 {
@@ -171,14 +134,12 @@ static void signalHandler( int signum )
 {
   resetSignals();
 
-  int index = uint( signum ) >= uint( aLength( SIGNALS ) ) ? 0 : signum;
-
-  log.verboseMode = false;
-  log.printRaw( "\n\nCaught signal %d %s (%s)\n", signum, SIGNALS[index][0], SIGNALS[index][1] );
+  Log::verboseMode = false;
+  Log::printSignal( signum );
 
   StackTrace st = StackTrace::current( 1 );
-  log.printTrace( &st );
-  log.println();
+  Log::printTrace( &st );
+  Log::println();
 
   System::bell();
   System::abort( signum == SIGINT );
@@ -210,9 +171,9 @@ static DWORD WINAPI bellThread( LPVOID )
 {
   PlaySound( reinterpret_cast<LPCSTR>( &WAVE_SAMPLE ), null, SND_MEMORY | SND_SYNC );
 
-  EnterCriticalSection( &mutex );
+  EnterCriticalSection( &bellCounterLock );
   --nBellUsers;
-  LeaveCriticalSection( &mutex );
+  LeaveCriticalSection( &bellCounterLock );
 
   return 0;
 }
@@ -229,45 +190,48 @@ static void* bellThread( void* )
     pa_simple_free( pa );
   }
 
-  pthread_mutex_lock( &mutex );
+  pthread_spin_lock( &bellCounterLock );
   --nBellUsers;
-  pthread_mutex_unlock( &mutex );
+  pthread_spin_unlock( &bellCounterLock );
 
   return null;
 }
 
 #endif
 
-static void waitBell()
-{
-# ifdef _WIN32
-  while( nBellUsers != 0 ) {
-    Sleep( 100 );
-  }
-# else
-  while( nBellUsers != 0 ) {
-    usleep( 100000 );
-  }
-# endif
-}
+System        System::system;
+pp::Instance* System::instance = null;
+pp::Core*     System::core     = null;
+int           System::width    = 0;
+int           System::height   = 0;
 
 System::System()
 {
-#if defined( __native_client__ )
+#if defined( __native_client__ ) || defined( __ANDROID__ )
+  // Disable default handler for TRAP signal that crashes the process.
+  signal( SIGTRAP, SIG_IGN );
 #elif defined( _WIN32 )
-  InitializeCriticalSection( &mutex );
+  InitializeCriticalSection( &criticalSection );
 #else
   // Disable default handler for TRAP signal that crashes the process.
   signal( SIGTRAP, SIG_IGN );
+
+  pthread_spin_init( &bellCounterLock, PTHREAD_PROCESS_PRIVATE );
 #endif
+
+  isConstructed = true;
 }
 
 System::~System()
 {
-  waitBell();
-
 #ifdef _WIN32
-  DeleteCriticalSection( &mutex );
+  while( nBellUsers != 0 ) {
+    Sleep( 10 );
+  }
+#else
+  while( nBellUsers != 0 ) {
+    usleep( 10 * 1000 );
+  }
 #endif
 }
 
@@ -282,16 +246,16 @@ void System::abort( bool preventHalt )
     printf( "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
 #endif
 
-# ifdef _WIN32
+#ifdef _WIN32
     while( true ) {
       Sleep( 1000 );
     }
-# else
+#else
     while( sleep( 1 ) == 0 );
-# endif
+#endif
   }
 
-  waitBell();
+  system.~System();
   ::abort();
 }
 
@@ -308,21 +272,25 @@ void System::trap()
 
 void System::bell()
 {
+  if( !isConstructed ) {
+    return;
+  }
+
 #if defined( __native_client__ ) || defined( __ANDROID__ )
 #elif defined( _WIN32 )
 
-  EnterCriticalSection( &mutex );
+  EnterCriticalSection( &bellCounterLock );
   ++nBellUsers;
-  LeaveCriticalSection( &mutex );
+  LeaveCriticalSection( &bellCounterLock );
 
   HANDLE thread = CreateThread( null, 0, bellThread, null, 0, null );
   CloseHandle( thread );
 
 #else
 
-  pthread_mutex_lock( &mutex );
+  pthread_spin_lock( &bellCounterLock );
   ++nBellUsers;
-  pthread_mutex_unlock( &mutex );
+  pthread_spin_unlock( &bellCounterLock );
 
   pthread_t thread;
   pthread_create( &thread, null, bellThread, null );
@@ -337,16 +305,16 @@ void System::warning( int nSkippedFrames, const char* msg, ... )
   va_list ap;
   va_start( ap, msg );
 
-  log.verboseMode = false;
-  log.printRaw( "\n\n" );
-  log.vprintRaw( msg, ap );
-  log.printRaw( "\n" );
+  Log::verboseMode = false;
+  Log::printRaw( "\n\n" );
+  Log::vprintRaw( msg, ap );
+  Log::printRaw( "\n" );
 
   va_end( ap );
 
   StackTrace st = StackTrace::current( 1 + nSkippedFrames );
-  log.printTrace( &st );
-  log.println();
+  Log::printTrace( &st );
+  Log::println();
 
   bell();
 }
@@ -358,29 +326,19 @@ void System::error( int nSkippedFrames, const char* msg, ... )
   va_list ap;
   va_start( ap, msg );
 
-  log.verboseMode = false;
-  log.printRaw( "\n\n" );
-  log.vprintRaw( msg, ap );
-  log.printRaw( "\n" );
+  Log::verboseMode = false;
+  Log::printRaw( "\n\n" );
+  Log::vprintRaw( msg, ap );
+  Log::printRaw( "\n" );
 
   va_end( ap );
 
   StackTrace st = StackTrace::current( 1 + nSkippedFrames );
-  log.printTrace( &st );
-  log.println();
+  Log::printTrace( &st );
+  Log::println();
 
   bell();
   abort();
-}
-
-void* System::instance()
-{
-  return appInstance;
-}
-
-void System::setInstance( void* instance )
-{
-  appInstance = instance;
 }
 
 void System::init( int flags )

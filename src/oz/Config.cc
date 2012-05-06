@@ -123,7 +123,7 @@ void Config::loadConf( InputStream* istream )
 
 void Config::saveConf( BufferStream* bstream, const char* lineEnd )
 {
-  log.print( "Writing variables to '%s' ...", filePath.cstr() );
+  Log::print( "Writing variables to '%s' ...", filePath.cstr() );
 
   // Sort all the variables by key.
   int size = vars.length();
@@ -152,7 +152,7 @@ void Config::saveConf( BufferStream* bstream, const char* lineEnd )
     bstream->writeChars( lineEnd, String::length( lineEnd ) );
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 Config::~Config()
@@ -396,7 +396,7 @@ void Config::clear( bool issueWarnings )
   if( issueWarnings ) {
     foreach( var, vars.citer() ) {
       if( !var.value().isUsed ) {
-        log.println( "%s: unused variable '%s'", filePath.cstr(), var.key().cstr() );
+        Log::println( "%s: unused variable '%s'", filePath.cstr(), var.key().cstr() );
         System::bell();
       }
     }

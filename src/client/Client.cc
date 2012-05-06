@@ -95,43 +95,48 @@ void Client::shutdown()
   if( initFlags & INIT_PHYSFS ) {
     PhysFile::free();
   }
+
+#ifdef __native_client__
+  File::free();
+#else
   if( initFlags & INIT_SDL ) {
     SDL_Quit();
   }
+#endif
 
   if( initFlags & INIT_MAIN_LOOP ) {
     Alloc::printSummary();
 
-    log.print( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " finished on " );
-    log.printTime();
-    log.printEnd();
+    Log::print( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " finished on " );
+    Log::printTime();
+    Log::printEnd();
   }
 }
 
 void Client::printUsage()
 {
-  log.println( "Usage:" );
-  log.indent();
-  log.println( OZ_APPLICATION_NAME " [-v] [-l | -i <mission>] [-t <num>] [-p <prefix>]" );
-  log.println();
-  log.println( "-v" );
-  log.println( "\tMore verbose log output." );
-  log.println();
-  log.println( "-l" );
-  log.println( "\tSkip main menu and load the last autosaved state." );
-  log.println();
-  log.println( "-i <mission>" );
-  log.println( "\tSkip main menu and start mission <mission>." );
-  log.println();
-  log.println( "-t <num>" );
-  log.println( "\tExit after <num> seconds (can be a floating-point number) and use 42 as" );
-  log.println( "\tthe random seed. Useful for benchmarking." );
-  log.println();
-  log.println( "-p <prefix>" );
-  log.println( "\tSets data directory to '<prefix>/share/" OZ_APPLICATION_NAME "'." );
-  log.println( "\tDefault: '%s'.", OZ_INSTALL_PREFIX );
-  log.println();
-  log.unindent();
+  Log::println( "Usage:" );
+  Log::indent();
+  Log::println( OZ_APPLICATION_NAME " [-v] [-l | -i <mission>] [-t <num>] [-p <prefix>]" );
+  Log::println();
+  Log::println( "-v" );
+  Log::println( "\tMore verbose log output." );
+  Log::println();
+  Log::println( "-l" );
+  Log::println( "\tSkip main menu and load the last autosaved state." );
+  Log::println();
+  Log::println( "-i <mission>" );
+  Log::println( "\tSkip main menu and start mission <mission>." );
+  Log::println();
+  Log::println( "-t <num>" );
+  Log::println( "\tExit after <num> seconds (can be a floating-point number) and use 42 as" );
+  Log::println( "\tthe random seed. Useful for benchmarking." );
+  Log::println();
+  Log::println( "-p <prefix>" );
+  Log::println( "\tSets data directory to '<prefix>/share/" OZ_APPLICATION_NAME "'." );
+  Log::println( "\tDefault: '%s'.", OZ_INSTALL_PREFIX );
+  Log::println();
+  Log::unindent();
 }
 
 int Client::main( int argc, char** argv )
@@ -148,7 +153,7 @@ int Client::main( int argc, char** argv )
   while( ( opt = getopt( argc, argv, "vli:t:p:" ) ) != -1 ) {
     switch( opt ) {
       case 'v': {
-        log.showVerbose = true;
+        Log::showVerbose = true;
         break;
       }
       case 'l': {
@@ -177,14 +182,21 @@ int Client::main( int argc, char** argv )
         break;
       }
       default: {
-        log.println();
+        Log::println();
         printUsage();
         return EXIT_FAILURE;
       }
     }
   }
 
-#ifdef _WIN32
+#if defined( __native_client__ )
+
+  File::init( File::TEMPORARY, 10 * 1024 );
+
+  String configDir = "";
+  String localDir = "";
+
+#elif defined( _WIN32 )
 
   char configRoot[MAX_PATH];
   char localRoot[MAX_PATH];
@@ -220,68 +232,72 @@ int Client::main( int argc, char** argv )
 #endif
 
   if( File::mkdir( configDir ) ) {
-    log.println( "Profile directory '%s' created", configDir.cstr() );
+    Log::println( "Profile directory '%s' created", configDir.cstr() );
   }
 
   if( File::mkdir( configDir + "/saves" ) ) {
-    log.println( "Directory for saved games '%s/saves' created", configDir.cstr() );
+    Log::println( "Directory for saved games '%s/saves' created", configDir.cstr() );
   }
 
   if( File::mkdir( configDir + "/screenshots" ) ) {
-    log.println( "Directory for screenshots '%s/screenshots' created", configDir.cstr() );
+    Log::println( "Directory for screenshots '%s/screenshots' created", configDir.cstr() );
   }
 
   if( File::mkdir( localDir ) ) {
-    log.println( "Directory for per-user content '%s' created", localDir.cstr() );
+    Log::println( "Directory for per-user content '%s' created", localDir.cstr() );
   }
 
-  if( log.init( configDir + "/client.log", true ) ) {
-    log.println( "Log file '%s'", log.logFile() );
+  if( Log::init( configDir + "/client.log", true ) ) {
+    Log::println( "Log file '%s'", Log::logFile() );
   }
 
-  log.print( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " started on " );
-  log.printTime();
-  log.printEnd();
+  Log::print( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " started on " );
+  Log::printTime();
+  Log::printEnd();
 
+#ifndef __native_client__
   if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
     throw Exception( "Failed to initialise SDL: %s", SDL_GetError() );
   }
   initFlags |= INIT_SDL;
+#endif
 
+#ifndef __native_client__
   PhysFile::init();
   initFlags |= INIT_PHYSFS;
+#endif
 
-  log.verboseMode = true;
-  log.println( "Build details {" );
-  log.indent();
-  log.println( "Date:            %s", BuildInfo::TIME );
-  log.println( "Host system:     %s", BuildInfo::HOST_SYSTEM );
-  log.println( "Target system:   %s", BuildInfo::TARGET_SYSTEM );
-  log.println( "Build type:      %s", BuildInfo::BUILD_TYPE );
-  log.println( "Compiler:        %s", BuildInfo::COMPILER );
-  log.println( "Compiler flags:  %s", BuildInfo::CXX_FLAGS );
-  log.println( "Linker flags:    %s", BuildInfo::EXE_LINKER_FLAGS );
-  log.unindent();
-  log.println( "}" );
-  log.verboseMode = false;
+  Log::verboseMode = true;
+  Log::println( "Build details {" );
+  Log::indent();
+  Log::println( "Date:            %s", BuildInfo::TIME );
+  Log::println( "Host system:     %s", BuildInfo::HOST_SYSTEM );
+  Log::println( "Target system:   %s", BuildInfo::TARGET_SYSTEM );
+  Log::println( "Build type:      %s", BuildInfo::BUILD_TYPE );
+  Log::println( "Compiler:        %s", BuildInfo::COMPILER );
+  Log::println( "Compiler flags:  %s", BuildInfo::CXX_FLAGS );
+  Log::println( "Linker flags:    %s", BuildInfo::EXE_LINKER_FLAGS );
+  Log::unindent();
+  Log::println( "}" );
+  Log::verboseMode = false;
 
   File configFile( configDir + "/client.rc" );
   if( config.load( configFile ) ) {
-    log.printEnd( "Configuration read from '%s'", configFile.path().cstr() );
+    Log::printEnd( "Configuration read from '%s'", configFile.path().cstr() );
 
     if( String::equals( config.get( "_version", "" ), OZ_APPLICATION_VERSION ) ) {
       initFlags |= INIT_CONFIG;
     }
     else {
-      log.println( "Invalid configuration file version, configuration will be cleaned and written "
-                   "on exit" );
+      Log::println( "Invalid configuration file version, configuration will be cleaned and written "
+                    "on exit" );
 
       config.add( "_version", OZ_APPLICATION_VERSION );
       config.get( "_version", "" );
     }
   }
   else {
-    log.println( "No configuration file, default configuration will be used and written on exit" );
+    Log::println( "No configuration file, default configuration will be used and written on exit" );
     config.add( "_version", OZ_APPLICATION_VERSION );
     config.get( "_version", "" );
   }
@@ -317,10 +333,10 @@ int Client::main( int argc, char** argv )
 
   const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
 
-  log.verboseMode = true;
-  log.println( "Desktop video mode: %dx%d-%d",
-               videoInfo->current_w, videoInfo->current_h, videoInfo->vfmt->BitsPerPixel );
-  log.verboseMode = false;
+  Log::verboseMode = true;
+  Log::println( "Desktop video mode: %dx%d-%d",
+                videoInfo->current_w, videoInfo->current_h, videoInfo->vfmt->BitsPerPixel );
+  Log::verboseMode = false;
 
   if( windowWidth == 0 || windowHeight == 0 ) {
     windowWidth  = videoInfo->current_w;
@@ -332,8 +348,8 @@ int Client::main( int argc, char** argv )
 
   SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, enableVSync );
 
-  log.print( "Creating OpenGL window %dx%d-%d [%s] ...",
-             windowWidth, windowHeight, windowBpp, windowFullscreen ? "fullscreen" : "windowed" );
+  Log::print( "Creating OpenGL window %dx%d-%d [%s] ...",
+              windowWidth, windowHeight, windowBpp, windowFullscreen ? "fullscreen" : "windowed" );
 
   if( SDL_VideoModeOK( windowWidth, windowHeight, windowBpp, windowFlags ) == 1 ) {
     throw Exception( "Video mode not supported" );
@@ -352,15 +368,15 @@ int Client::main( int argc, char** argv )
   windowHeight = window->h;
   windowBpp    = window->format->BitsPerPixel;
 
-  log.printEnd( " %dx%d-%d ... OK", windowWidth, windowHeight, windowBpp );
+  Log::printEnd( " %dx%d-%d ... OK", windowWidth, windowHeight, windowBpp );
 
   SDL_ShowCursor( SDL_FALSE );
 
   ui::keyboard.init();
   ui::mouse.init();
 
-  log.println( "Content search path {" );
-  log.indent();
+  Log::println( "Content search path {" );
+  Log::indent();
 
   const char* userMusicPath = config.getSet( "dir.music", "" );
 
@@ -368,11 +384,11 @@ int Client::main( int argc, char** argv )
     if( !PhysFile::mount( userMusicPath, "/music", true ) ) {
       throw Exception( "Failed to mount '%s' on /music in PhysicsFS", userMusicPath );
     }
-    log.println( "%s [mounted on /music]", userMusicPath );
+    Log::println( "%s [mounted on /music]", userMusicPath );
   }
 
   if( PhysFile::mount( localDir, null, true ) ) {
-    log.println( "%s", localDir.cstr() );
+    Log::println( "%s", localDir.cstr() );
 
     DArray<File> list = File( localDir ).ls();
 
@@ -381,13 +397,13 @@ int Client::main( int argc, char** argv )
         if( !PhysFile::mount( file->path(), null, true ) ) {
           throw Exception( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
-        log.println( "%s", file->path().cstr() );
+        Log::println( "%s", file->path().cstr() );
       }
     }
   }
 
   if( PhysFile::mount( dataDir, null, true ) ) {
-    log.println( "%s", dataDir.cstr() );
+    Log::println( "%s", dataDir.cstr() );
 
     DArray<File> list = File( dataDir ).ls();
 
@@ -396,34 +412,34 @@ int Client::main( int argc, char** argv )
         if( !PhysFile::mount( file->path(), null, true ) ) {
           throw Exception( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
-        log.println( "%s", file->path().cstr() );
+        Log::println( "%s", file->path().cstr() );
       }
     }
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 
   if( String::equals( config.getSet( "seed", "TIME" ), "TIME" ) ) {
     int seed = int( Time::uclock() );
     Math::seed( seed );
-    log.println( "Random generator seed set to the current time: %d", seed );
+    Log::println( "Random generator seed set to the current time: %d", seed );
   }
   else {
     int seed = config.get( "seed", 0 );
     Math::seed( seed );
-    log.println( "Random generator seed set to: %d", seed );
+    Log::println( "Random generator seed set to: %d", seed );
   }
 
   const char* locale = config.getSet( "lingua", "en" );
 
-  log.print( "Setting localisation '%s' ...", locale );
+  Log::print( "Setting localisation '%s' ...", locale );
   if( lingua.init( locale ) ) {
-    log.printEnd( " OK" );
+    Log::printEnd( " OK" );
     initFlags |= INIT_LINGUA;
   }
   else {
-    log.printEnd( " Failed" );
+    Log::printEnd( " Failed" );
   }
 
   initFlags |= INIT_LIBRARY;
@@ -476,8 +492,8 @@ int Client::main( int argc, char** argv )
 
   initFlags |= INIT_MAIN_LOOP;
 
-  log.println( "Main loop {" );
-  log.indent();
+  Log::println( "Main loop {" );
+  Log::indent();
 
   // THE MAGNIFICENT MAIN LOOP
   do {
@@ -561,7 +577,7 @@ int Client::main( int argc, char** argv )
           break;
         }
         case SDL_QUIT: {
-          log.println( "Terminal signal or quit event received, exiting ..." );
+          Log::println( "Terminal signal or quit event received, exiting ..." );
           isAlive = false;
           break;
         }
@@ -628,8 +644,8 @@ int Client::main( int argc, char** argv )
   }
   while( isAlive );
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 
   return EXIT_SUCCESS;
 }

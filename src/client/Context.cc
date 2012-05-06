@@ -528,28 +528,28 @@ void Context::load()
 
 void Context::unload()
 {
-  log.println( "Unloading Context {" );
-  log.indent();
+  Log::println( "Unloading Context {" );
+  Log::indent();
 
-  log.println( "Peak instances {" );
-  log.indent();
-  log.println( "%6d  imago objects",                maxImagines );
-  log.println( "%6d  audio objects",                maxAudios );
-  log.println( "%6d  non-continuous sources",       maxSources );
-  log.println( "%6d  structure continuous sources", maxBSPSources );
-  log.println( "%6d  object continuous sources",    maxObjSources );
-  log.println( "%6d  SMM imagines",                 maxSMMImagines );
-  log.println( "%6d  SMMVehicle imagines",          maxSMMVehicleImagines );
-  log.println( "%6d  Explosion imagines",           maxExplosionImagines );
-  log.println( "%6d  MD2 imagines",                 maxMD2Imagines );
-  log.println( "%6d  MD2Weapon imagines",           maxMD2WeaponImagines );
-  log.println( "%6d  MD3 imagines",                 maxMD3Imagines );
-  log.println( "%6d  Basic audios",                 maxBasicAudios );
-  log.println( "%6d  Bot audios",                   maxBotAudios );
-  log.println( "%6d  Vehicle audios",               maxVehicleAudios );
-  log.println( "%6d  fragment pools",               maxFragPools );
-  log.unindent();
-  log.println( "}" );
+  Log::println( "Peak instances {" );
+  Log::indent();
+  Log::println( "%6d  imago objects",                maxImagines );
+  Log::println( "%6d  audio objects",                maxAudios );
+  Log::println( "%6d  non-continuous sources",       maxSources );
+  Log::println( "%6d  structure continuous sources", maxBSPSources );
+  Log::println( "%6d  object continuous sources",    maxObjSources );
+  Log::println( "%6d  SMM imagines",                 maxSMMImagines );
+  Log::println( "%6d  SMMVehicle imagines",          maxSMMVehicleImagines );
+  Log::println( "%6d  Explosion imagines",           maxExplosionImagines );
+  Log::println( "%6d  MD2 imagines",                 maxMD2Imagines );
+  Log::println( "%6d  MD2Weapon imagines",           maxMD2WeaponImagines );
+  Log::println( "%6d  MD3 imagines",                 maxMD3Imagines );
+  Log::println( "%6d  Basic audios",                 maxBasicAudios );
+  Log::println( "%6d  Bot audios",                   maxBotAudios );
+  Log::println( "%6d  Vehicle audios",               maxVehicleAudios );
+  Log::println( "%6d  fragment pools",               maxFragPools );
+  Log::unindent();
+  Log::println( "}" );
 
   imagines.free();
   imagines.dealloc();
@@ -615,7 +615,7 @@ void Context::unload()
     hard_assert( textures[i].nUsers == 0 );
   }
 
-  log.verboseMode = true;
+  Log::verboseMode = true;
 
   for( int i = 0; i < library.sounds.length(); ++i ) {
     if( sounds[i].nUsers == 0 ) {
@@ -624,7 +624,7 @@ void Context::unload()
     hard_assert( sounds[i].nUsers == -1 );
   }
 
-  log.verboseMode = false;
+  Log::verboseMode = false;
 
   hard_assert( glGetError() == AL_NO_ERROR );
   OZ_AL_CHECK_ERROR();
@@ -642,13 +642,13 @@ void Context::unload()
   BotAudio::pool.free();
   VehicleAudio::pool.free();
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Context::init()
 {
-  log.print( "Initialising Context ..." );
+  Log::print( "Initialising Context ..." );
 
   imagoClasses = library.nImagoClasses == 0 ? null : new Imago::CreateFunc*[library.nImagoClasses];
   audioClasses = library.nAudioClasses == 0 ? null : new Audio::CreateFunc*[library.nAudioClasses];
@@ -710,12 +710,12 @@ void Context::init()
     md3s[i].nUsers = 0;
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Context::free()
 {
-  log.print( "Freeing Context ..." );
+  Log::print( "Freeing Context ..." );
 
   delete[] imagoClasses;
   delete[] audioClasses;
@@ -737,7 +737,7 @@ void Context::free()
   md2s         = null;
   md3s         = null;
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 }

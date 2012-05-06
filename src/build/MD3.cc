@@ -57,7 +57,7 @@ void MD3::readAnimData()
 
 void MD3::buildMesh( const char* name, int frame )
 {
-  log.print( "Mesh '%s' ...", name );
+  Log::print( "Mesh '%s' ...", name );
 
   PhysFile file( String::str( "%s/%s.md3", sPath.cstr(), name ) );
   if( !file.map() ) {
@@ -269,7 +269,7 @@ void MD3::buildMesh( const char* name, int frame )
 
   file.unmap();
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void MD3::load()
@@ -398,24 +398,24 @@ void MD3::save()
   if( frame != 1 ) {
     File destFile( sPath + "/data.ozcMD3" );
 
-    log.print( "Writing to '%s' ...", destFile.path().cstr() );
+    Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
     if( !destFile.write( os.begin(), os.length() ) ) {
       throw Exception( "Failed to write '%s'", destFile.path().cstr() );
     }
 
-    log.printEnd( " OK" );
+    Log::printEnd( " OK" );
   }
   else {
     File destFile( sPath + "/data.ozcSMM" );
 
-    log.print( "Writing to '%s' ...", destFile.path().cstr() );
+    Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
     if( !destFile.write( os.begin(), os.length() ) ) {
       throw Exception( "Failed to write '%s'", destFile.path().cstr() );
     }
 
-    log.printEnd( " OK" );
+    Log::printEnd( " OK" );
   }
 }
 
@@ -425,15 +425,15 @@ MD3::MD3( const char* path ) :
 
 void MD3::build( const char* path )
 {
-  log.println( "Prebuilding MD3 model '%s' {", path );
-  log.indent();
+  Log::println( "Prebuilding MD3 model '%s' {", path );
+  Log::indent();
 
   MD3* md3 = new MD3( path );
   md3->load();
   md3->save();
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 }

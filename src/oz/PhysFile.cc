@@ -272,7 +272,7 @@ bool PhysFile::map()
     return false;
   }
 
-  int size = PHYSFS_fileLength( file );
+  int size = int( PHYSFS_fileLength( file ) );
   data = new char[size];
 
   int result = int( PHYSFS_read( file, data, 1, uint( size ) ) );
@@ -312,7 +312,7 @@ Buffer PhysFile::read()
 
   if( data != null ) {
     buffer.alloc( fileSize );
-    memcpy( buffer.begin(), data, fileSize );
+    memcpy( buffer.begin(), data, size_t( fileSize ) );
     return buffer;
   }
 
@@ -329,7 +329,7 @@ Buffer PhysFile::read()
     return buffer;
   }
 
-  int size = PHYSFS_fileLength( file );
+  int size = int( PHYSFS_fileLength( file ) );
   buffer.alloc( size );
 
   int result = int( PHYSFS_read( file, buffer.begin(), 1, uint( size ) ) );

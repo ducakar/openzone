@@ -175,8 +175,8 @@ void Library::freeBSPs()
 
 void Library::initShaders()
 {
-  log.println( "Shader programs (*.rc in 'glsl') {" );
-  log.indent();
+  Log::println( "Shader programs (*.rc in 'glsl') {" );
+  Log::indent();
 
   PhysFile dir( "glsl" );
   DArray<PhysFile> dirList = dir.ls();
@@ -188,20 +188,20 @@ void Library::initShaders()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
+    Log::println( "%s", name.cstr() );
 
     shaderIndices.add( name, shaders.length() );
     shaders.add( Resource( name, "" ) );
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Library::initTextures()
 {
-  log.println( "Textures (*.ozcTex in 'tex/*') {" );
-  log.indent();
+  Log::println( "Textures (*.ozcTex in 'tex/*') {" );
+  Log::indent();
 
   PhysFile dir( "tex" );
   DArray<PhysFile> dirList = dir.ls();
@@ -223,21 +223,21 @@ void Library::initTextures()
 
       String name = subDir.name() + "/" + file->baseName();
 
-      log.println( "%s", name.cstr() );
+      Log::println( "%s", name.cstr() );
 
       textureIndices.add( name, textures.length() );
       textures.add( Resource( name, file->path() ) );
     }
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Library::initSounds()
 {
-  log.println( "Sounds (*.wav in 'snd') {" );
-  log.indent();
+  Log::println( "Sounds (*.wav in 'snd') {" );
+  Log::indent();
 
   PhysFile dir( "snd" );
   DArray<PhysFile> dirList = dir.ls();
@@ -259,21 +259,21 @@ void Library::initSounds()
 
       String name = subDir.name() + "/" + file->baseName();
 
-      log.println( "%s", name.cstr() );
+      Log::println( "%s", name.cstr() );
 
       soundIndices.add( name, sounds.length() );
       sounds.add( Resource( name, file->path() ) );
     }
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Library::initCaela()
 {
-  log.println( "Caela (*.ozcCaelum in 'caelum') {" );
-  log.indent();
+  Log::println( "Caela (*.ozcCaelum in 'caelum') {" );
+  Log::indent();
 
   PhysFile dir( "caelum" );
   DArray<PhysFile> dirList = dir.ls();
@@ -285,20 +285,20 @@ void Library::initCaela()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
+    Log::println( "%s", name.cstr() );
 
     caelumIndices.add( name, caela.length() );
     caela.add( Resource( name, file->path() ) );
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Library::initTerrae()
 {
-  log.println( "Terrae (*.ozTerra/*.ozcTerra in 'terra') {" );
-  log.indent();
+  Log::println( "Terrae (*.ozTerra/*.ozcTerra in 'terra') {" );
+  Log::indent();
 
   PhysFile dir( "terra" );
   DArray<PhysFile> dirList = dir.ls();
@@ -310,20 +310,20 @@ void Library::initTerrae()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
+    Log::println( "%s", name.cstr() );
 
     terraIndices.add( name, terrae.length() );
     terrae.add( Resource( name, file->path() ) );
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Library::initBSPs()
 {
-  log.println( "BSP structures (*.ozBSP/*.ozcBSP in 'bsp') {" );
-  log.indent();
+  Log::println( "BSP structures (*.ozBSP/*.ozcBSP in 'bsp') {" );
+  Log::indent();
 
   PhysFile dir( "bsp" );
   DArray<PhysFile> dirList = dir.ls();
@@ -335,7 +335,7 @@ void Library::initBSPs()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
+    Log::println( "%s", name.cstr() );
 
     BSP* bsp = bsps.add( name, BSP( name, bsps.length() ) );
     bsp->init();
@@ -343,14 +343,14 @@ void Library::initBSPs()
 
   nBSPs = bsps.length();
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Library::initModels()
 {
-  log.println( "Models (directories in 'mdl') {" );
-  log.indent();
+  Log::println( "Models (directories in 'mdl') {" );
+  Log::indent();
 
   PhysFile dir( "mdl" );
   DArray<PhysFile> dirList = dir.ls();
@@ -378,7 +378,7 @@ void Library::initModels()
       throw Exception( "Invalid model '%s'", name.cstr() );
     }
 
-    log.println( "%s", name.cstr() );
+    Log::println( "%s", name.cstr() );
 
     if( modelIndices.contains( name ) ) {
       throw Exception( "Duplicated model '%s'", name.cstr() );
@@ -388,8 +388,8 @@ void Library::initModels()
     models.add( Resource( name, path ) );
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Library::initMusicRecurse( const char* path )
@@ -413,7 +413,7 @@ void Library::initMusicRecurse( const char* path )
       continue;
     }
 
-    log.println( "%s", file->path().cstr() );
+    Log::println( "%s", file->path().cstr() );
 
     musics.add( Resource( file->baseName(), file->path() ) );
   }
@@ -425,30 +425,30 @@ void Library::initMusic()
 
   if( String::isEmpty( userMusicPath ) ) {
 #ifdef OZ_NONFREE
-    log.println( "Music (*.oga, *.ogg, *.mp3, *.aac in 'music') {" );
+    Log::println( "Music (*.oga, *.ogg, *.mp3, *.aac in 'music') {" );
 #else
-    log.println( "Music (*.oga, *.ogg in 'music') {" );
+    Log::println( "Music (*.oga, *.ogg in 'music') {" );
 #endif
   }
   else {
 #ifdef OZ_NONFREE
-    log.println( "Music (*.oga, *.ogg, *.mp3, *.aac in 'music' and '%s') {", userMusicPath );
+    Log::println( "Music (*.oga, *.ogg, *.mp3, *.aac in 'music' and '%s') {", userMusicPath );
 #else
-    log.println( "Music (*.oga, *.ogg in 'music' and '%s') {", userMusicPath );
+    Log::println( "Music (*.oga, *.ogg in 'music' and '%s') {", userMusicPath );
 #endif
   }
-  log.indent();
+  Log::indent();
 
   initMusicRecurse( "music" );
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Library::initNameLists()
 {
-  log.println( "Name lists (*.txt in 'name') {" );
-  log.indent();
+  Log::println( "Name lists (*.txt in 'name') {" );
+  Log::indent();
 
   PhysFile dir( "name" );
   DArray<PhysFile> dirList = dir.ls();
@@ -460,20 +460,20 @@ void Library::initNameLists()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
+    Log::println( "%s", name.cstr() );
 
     nameListIndices.add( name, nameLists.length() );
     nameLists.add( Resource( name, file->path() ) );
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Library::initFragPools()
 {
-  log.println( "Fragment pools (*.rc in 'frag') {" );
-  log.indent();
+  Log::println( "Fragment pools (*.rc in 'frag') {" );
+  Log::indent();
 
   PhysFile dir( "frag" );
   DArray<PhysFile> dirList = dir.ls();
@@ -485,13 +485,13 @@ void Library::initFragPools()
 
     String name = file->baseName();
 
-    log.println( "%s", name.cstr() );
+    Log::println( "%s", name.cstr() );
 
     fragPools.add( name, FragPool( name, fragPools.length() ) );
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Library::initClasses()
@@ -504,8 +504,8 @@ void Library::initClasses()
 
   Config classConfig;
 
-  log.println( "Object classes (*.rc in 'class') {" );
-  log.indent();
+  Log::println( "Object classes (*.rc in 'class') {" );
+  Log::indent();
 
   PhysFile dir( "class" );
   DArray<PhysFile> dirList = dir.ls();
@@ -563,7 +563,7 @@ void Library::initClasses()
 
   // initialise all classes
   foreach( classIter, objClasses.iter() ) {
-    log.println( "%s", classIter.key().cstr() );
+    Log::println( "%s", classIter.key().cstr() );
 
     PhysFile file( "class/" + classIter.key() + ".rc" );
 
@@ -618,14 +618,14 @@ void Library::initClasses()
     }
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Library::init()
 {
-  log.println( "Initialising Library {" );
-  log.indent();
+  Log::println( "Initialising Library {" );
+  Log::indent();
 
   shaders.alloc( 64 );
   textures.alloc( 256 );
@@ -636,10 +636,10 @@ void Library::init()
   musics.alloc( 64 );
   nameLists.alloc( 16 );
 
-  log.verboseMode = true;
+  Log::verboseMode = true;
 
-  log.println( "Mapping resources {" );
-  log.indent();
+  Log::println( "Mapping resources {" );
+  Log::indent();
 
   initShaders();
   initTextures();
@@ -653,31 +653,31 @@ void Library::init()
   initFragPools();
   initClasses();
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 
-  log.verboseMode = false;
+  Log::verboseMode = false;
 
-  log.println( "Summary {" );
-  log.indent();
+  Log::println( "Summary {" );
+  Log::indent();
 
-  log.println( "%5d  shaders", shaders.length() );
-  log.println( "%5d  textures", textures.length() );
-  log.println( "%5d  sounds", sounds.length() );
-  log.println( "%5d  caela", caela.length() );
-  log.println( "%5d  terras", terrae.length() );
-  log.println( "%5d  BSPs", nBSPs );
-  log.println( "%5d  models", models.length() );
-  log.println( "%5d  music tracks", musics.length() );
-  log.println( "%5d  name lists", nameLists.length() );
-  log.println( "%5d  fragment pools", fragPools.length() );
-  log.println( "%5d  object classes", objClasses.length() );
+  Log::println( "%5d  shaders", shaders.length() );
+  Log::println( "%5d  textures", textures.length() );
+  Log::println( "%5d  sounds", sounds.length() );
+  Log::println( "%5d  caela", caela.length() );
+  Log::println( "%5d  terras", terrae.length() );
+  Log::println( "%5d  BSPs", nBSPs );
+  Log::println( "%5d  models", models.length() );
+  Log::println( "%5d  music tracks", musics.length() );
+  Log::println( "%5d  name lists", nameLists.length() );
+  Log::println( "%5d  fragment pools", fragPools.length() );
+  Log::println( "%5d  object classes", objClasses.length() );
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Library::free()

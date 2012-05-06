@@ -50,7 +50,7 @@ const String& NamePool::genName( int list ) const
 
 void NamePool::init()
 {
-  log.print( "Initialising NamePool ..." );
+  Log::print( "Initialising NamePool ..." );
 
   // a default entry, we need it if nothing is read
   names.add( "" );
@@ -89,19 +89,19 @@ void NamePool::init()
 
   hard_assert( listPositions.length() == library.nameLists.length() + 1 );
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void NamePool::free()
 {
-  log.print( "Freeing NamePool ..." );
+  Log::print( "Freeing NamePool ..." );
 
   names.clear();
   names.dealloc();
   listPositions.clear();
   listPositions.dealloc();
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 }

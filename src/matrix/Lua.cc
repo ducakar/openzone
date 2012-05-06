@@ -148,8 +148,8 @@ bool Lua::objectCall( const char* functionName, Object* self_, Bot* user_ )
   l_pcall( 1, 0 );
 
   if( l_gettop() != 1 ) {
-    log.println( "Lua[M] in %s(self = %d, user = %d): %s", functionName, ms.self->index,
-                 ms.user == null ? -1 : ms.user->index, l_tostring( -1 ) );
+    Log::println( "Lua[M] in %s(self = %d, user = %d): %s", functionName, ms.self->index,
+                  ms.user == null ? -1 : ms.user->index, l_tostring( -1 ) );
     System::bell();
 
     l_pop( 1 );
@@ -246,7 +246,7 @@ void Lua::registerConstant( const char* name, const char* value )
 
 void Lua::init()
 {
-  log.print( "Initialising Matrix Lua ..." );
+  Log::print( "Initialising Matrix Lua ..." );
 
   l = luaL_newstate();
   if( l == null ) {
@@ -540,7 +540,7 @@ void Lua::init()
 
   hard_assert( l_gettop() == 1 );
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Lua::free()
@@ -549,7 +549,7 @@ void Lua::free()
     return;
   }
 
-  log.print( "Freeing Matrix Lua ..." );
+  Log::print( "Freeing Matrix Lua ..." );
 
   ms.structs.clear();
   ms.structs.dealloc();
@@ -560,7 +560,7 @@ void Lua::free()
   lua_close( l );
   l = null;
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 }

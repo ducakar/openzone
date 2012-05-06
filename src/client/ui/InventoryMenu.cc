@@ -373,7 +373,7 @@ InventoryMenu::InventoryMenu( const InventoryMenu* master_ ) :
     y = 8 + height + 8;
   }
 
-  log.verboseMode = true;
+  Log::verboseMode = true;
 
   scrollUpTexId   = context.loadTextureLayer( "ui/icon/scrollUp.ozIcon" );
   scrollDownTexId = context.loadTextureLayer( "ui/icon/scrollDown.ozIcon" );
@@ -381,7 +381,7 @@ InventoryMenu::InventoryMenu( const InventoryMenu* master_ ) :
   equipTexId      = context.loadTextureLayer( "ui/icon/equip.ozIcon" );
   unequipTexId    = context.loadTextureLayer( "ui/icon/unequip.ozIcon" );
 
-  log.verboseMode = false;
+  Log::verboseMode = false;
 }
 
 InventoryMenu::~InventoryMenu()

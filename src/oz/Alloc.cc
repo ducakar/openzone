@@ -49,6 +49,9 @@ static_assert( ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
 #ifdef OZ_TRACK_LEAKS
 
 // Holds info about a memory allocation, used to track memory leaks and new/delete mismatches.
+// If we deallocate from two different threads at once with OZ_TRACK_LEAKS, changing the list of
+// allocated blocks while iterating it in another thread can result in a SIGSEGV, so list operations
+// must be protected my a spin lock.
 struct TraceEntry
 {
   TraceEntry* next;
@@ -57,36 +60,16 @@ struct TraceEntry
   StackTrace  stackTrace;
 };
 
-static TraceEntry* firstObjectTraceEntry = null;
-static TraceEntry* firstArrayTraceEntry  = null;
-
-// If we deallocate from two different threads at once with OZ_TRACK_LEAKS, changing the list
-// of allocated blocks while iterating it in another thread can result in a SIGSEGV.
-
-#ifdef _WIN32
-
-struct CriticalSectionWrapper
-{
-  CRITICAL_SECTION id;
-
-  CriticalSectionWrapper()
-  {
-    InitializeCriticalSection( &id );
-  }
-
-  ~CriticalSectionWrapper()
-  {
-    DeleteCriticalSection( &id );
-  }
-};
-
-static CriticalSectionWrapper mutex;
-
-#else
-
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
-#endif
+static bool                 isConstructed         = false;
+static TraceEntry* volatile firstObjectTraceEntry = null;
+static TraceEntry* volatile firstArrayTraceEntry  = null;
+# if defined( __native_client__ )
+static pthread_mutex_t      traceEntryListLock;
+# elif defined( _WIN32 )
+static CRITICAL_SECTION     traceEntryListLock;
+# else
+static pthread_spinlock_t   traceEntryListLock;
+# endif
 
 #endif
 
@@ -101,21 +84,21 @@ size_t Alloc::maxAmount = 0;
 
 void Alloc::printSummary()
 {
-  log.println( "Alloc summary {" );
-  log.indent();
+  Log::println( "Alloc summary {" );
+  Log::indent();
 
-  log.println( "current chunks     %d", count );
-  log.println( "current amount     %.2f MiB (%ld B)",
-               float( amount ) / ( 1024.0f*1024.0f ), ulong( amount ) );
-  log.println( "maximum chunks     %d", maxCount );
-  log.println( "maximum amount     %.2f MiB (%ld B)",
-               float( maxAmount ) / ( 1024.0f*1024.0f ), ulong( maxAmount ) );
-  log.println( "cumulative chunks  %d", sumCount );
-  log.println( "cumulative amount  %.2f MiB (%ld B)",
-               float( sumAmount ) / ( 1024.0f*1024.0f ), ulong( sumAmount ) );
+  Log::println( "current chunks     %d", count );
+  Log::println( "current amount     %.2f MiB (%ld B)",
+                float( amount ) / ( 1024.0f*1024.0f ), ulong( amount ) );
+  Log::println( "maximum chunks     %d", maxCount );
+  Log::println( "maximum amount     %.2f MiB (%ld B)",
+                float( maxAmount ) / ( 1024.0f*1024.0f ), ulong( maxAmount ) );
+  Log::println( "cumulative chunks  %d", sumCount );
+  Log::println( "cumulative amount  %.2f MiB (%ld B)",
+                float( sumAmount ) / ( 1024.0f*1024.0f ), ulong( sumAmount ) );
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 #ifndef OZ_TRACK_LEAKS
@@ -131,20 +114,20 @@ void Alloc::printLeaks()
 
   bt = firstObjectTraceEntry;
   while( bt != null ) {
-    log.println( "Leaked object at %p of size %d B allocated", bt->address, int( bt->size ) );
-    log.indent();
-    log.printTrace( &bt->stackTrace );
-    log.unindent();
+    Log::println( "Leaked object at %p of size %d B allocated", bt->address, int( bt->size ) );
+    Log::indent();
+    Log::printTrace( &bt->stackTrace );
+    Log::unindent();
 
     bt = bt->next;
   }
 
   bt = firstArrayTraceEntry;
   while( bt != null ) {
-    log.println( "Leaked array at %p of size %d B allocated", bt->address, int( bt->size ) );
-    log.indent();
-    log.printTrace( &bt->stackTrace );
-    log.unindent();
+    Log::println( "Leaked array at %p of size %d B allocated", bt->address, int( bt->size ) );
+    Log::indent();
+    Log::printTrace( &bt->stackTrace );
+    Log::unindent();
 
     bt = bt->next;
   }
@@ -204,26 +187,43 @@ static void aligned_free( void* ptr )
 static void* allocateObject( void* ptr, size_t size )
 {
 #ifdef OZ_TRACK_LEAKS
+
+if( !isConstructed ) {
+# if defined( __native_client__ )
+    pthread_mutex_init( &traceEntryListLock, null );
+# elif defined( _WIN32 )
+    InitializeCriticalSection( &traceEntryListLock );
+# else
+    pthread_spin_init( &traceEntryListLock, PTHREAD_PROCESS_PRIVATE );
+# endif
+    isConstructed = true;
+  }
+
   TraceEntry* st = static_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
-# ifdef _WIN32
-  EnterCriticalSection( &mutex.id );
-# else
-  pthread_mutex_lock( &mutex );
-# endif
-
-  st->next       = firstObjectTraceEntry;
   st->address    = ptr;
   st->size       = size;
   st->stackTrace = StackTrace::current( 1 );
 
+# if defined( __native_client__ )
+  pthread_mutex_lock( &traceEntryListLock );
+# elif defined( _WIN32 )
+  EnterCriticalSection( &traceEntryListLock );
+# else
+  pthread_spin_lock( &traceEntryListLock );
+# endif
+
+  st->next = firstObjectTraceEntry;
   firstObjectTraceEntry = st;
 
-# ifdef _WIN32
-  LeaveCriticalSection( &mutex.id );
+# if defined( __native_client__ )
+  pthread_mutex_unlock( &traceEntryListLock );
+# elif defined( _WIN32 )
+  LeaveCriticalSection( &traceEntryListLock );
 # else
-  pthread_mutex_unlock( &mutex );
+  pthread_spin_unlock( &traceEntryListLock );
 # endif
+
 #endif
 
   ++Alloc::count;
@@ -244,26 +244,43 @@ static void* allocateObject( void* ptr, size_t size )
 static void* allocateArray( void* ptr, size_t size )
 {
 #ifdef OZ_TRACK_LEAKS
+
+  if( !isConstructed ) {
+# if defined( __native_client__ )
+    pthread_mutex_init( &traceEntryListLock, null );
+# elif defined( _WIN32 )
+    InitializeCriticalSection( &traceEntryListLock );
+# else
+    pthread_spin_init( &traceEntryListLock, PTHREAD_PROCESS_PRIVATE );
+# endif
+    isConstructed = true;
+  }
+
   TraceEntry* st = static_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
-# ifdef _WIN32
-  EnterCriticalSection( &mutex.id );
-# else
-  pthread_mutex_lock( &mutex );
-# endif
-
-  st->next       = firstArrayTraceEntry;
   st->address    = ptr;
   st->size       = size;
   st->stackTrace = StackTrace::current( 1 );
 
+# if defined( __native_client__ )
+  pthread_mutex_lock( &traceEntryListLock );
+# elif defined( _WIN32 )
+  EnterCriticalSection( &traceEntryListLock );
+# else
+  pthread_spin_lock( &traceEntryListLock );
+# endif
+
+  st->next = firstArrayTraceEntry;
   firstArrayTraceEntry = st;
 
-# ifdef _WIN32
-  LeaveCriticalSection( &mutex.id );
+# if defined( __native_client__ )
+  pthread_mutex_unlock( &traceEntryListLock );
+# elif defined( _WIN32 )
+  LeaveCriticalSection( &traceEntryListLock );
 # else
-  pthread_mutex_unlock( &mutex );
+  pthread_spin_unlock( &traceEntryListLock );
 # endif
+
 #endif
 
   ++Alloc::count;
@@ -294,10 +311,13 @@ static void deallocateObject( void* ptr )
 #endif
 
 #ifdef OZ_TRACK_LEAKS
-# ifdef _WIN32
-  EnterCriticalSection( &mutex.id );
+
+# if defined( __native_client__ )
+  pthread_mutex_lock( &traceEntryListLock );
+# elif defined( _WIN32 )
+  EnterCriticalSection( &traceEntryListLock );
 # else
-  pthread_mutex_lock( &mutex );
+  pthread_spin_lock( &traceEntryListLock );
 # endif
 
   TraceEntry* st   = firstObjectTraceEntry;
@@ -313,7 +333,14 @@ static void deallocateObject( void* ptr )
       else {
         prev->next = st->next;
       }
-      free( st );
+
+# if defined( __native_client__ )
+      pthread_mutex_unlock( &traceEntryListLock );
+# elif defined( _WIN32 )
+      LeaveCriticalSection( &traceEntryListLock );
+# else
+      pthread_spin_unlock( &traceEntryListLock );
+# endif
 
       goto backtraceFound;
     }
@@ -321,10 +348,12 @@ static void deallocateObject( void* ptr )
     st = st->next;
   }
 
-# ifdef _WIN32
-  LeaveCriticalSection( &mutex.id );
+# if defined( __native_client__ )
+  pthread_mutex_unlock( &traceEntryListLock );
+# elif defined( _WIN32 )
+  LeaveCriticalSection( &traceEntryListLock );
 # else
-  pthread_mutex_unlock( &mutex );
+  pthread_spin_unlock( &traceEntryListLock );
 # endif
 
   // Check if allocated as an array.
@@ -346,11 +375,8 @@ static void deallocateObject( void* ptr )
 
 backtraceFound:
 
-# ifdef _WIN32
-  LeaveCriticalSection( &mutex.id );
-# else
-  pthread_mutex_unlock( &mutex );
-# endif
+  free( st );
+
 #endif
 
   aligned_free( ptr );
@@ -369,10 +395,13 @@ static void deallocateArray( void* ptr )
 #endif
 
 #ifdef OZ_TRACK_LEAKS
-# ifdef _WIN32
-  EnterCriticalSection( &mutex.id );
+
+# if defined( __native_client__ )
+  pthread_mutex_lock( &traceEntryListLock );
+# elif defined( _WIN32 )
+  EnterCriticalSection( &traceEntryListLock );
 # else
-  pthread_mutex_lock( &mutex );
+  pthread_spin_lock( &traceEntryListLock );
 # endif
 
   TraceEntry* st   = firstArrayTraceEntry;
@@ -388,7 +417,14 @@ static void deallocateArray( void* ptr )
       else {
         prev->next = st->next;
       }
-      free( st );
+
+# if defined( __native_client__ )
+      pthread_mutex_unlock( &traceEntryListLock );
+# elif defined( _WIN32 )
+      LeaveCriticalSection( &traceEntryListLock );
+# else
+      pthread_spin_unlock( &traceEntryListLock );
+# endif
 
       goto backtraceFound;
     }
@@ -396,10 +432,12 @@ static void deallocateArray( void* ptr )
     st = st->next;
   }
 
-# ifdef _WIN32
-  LeaveCriticalSection( &mutex.id );
+# if defined( __native_client__ )
+  pthread_mutex_unlock( &traceEntryListLock );
+# elif defined( _WIN32 )
+  LeaveCriticalSection( &traceEntryListLock );
 # else
-  pthread_mutex_unlock( &mutex );
+  pthread_spin_unlock( &traceEntryListLock );
 # endif
 
   // Check if allocated as an object.
@@ -421,11 +459,8 @@ static void deallocateArray( void* ptr )
 
 backtraceFound:
 
-# ifdef _WIN32
-  LeaveCriticalSection( &mutex.id );
-# else
-  pthread_mutex_unlock( &mutex );
-# endif
+  free( st );
+
 #endif
 
   aligned_free( ptr );
