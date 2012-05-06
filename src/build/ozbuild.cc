@@ -25,11 +25,15 @@
 
 #include "stable.hh"
 
+#include "ozmain/main.hh"
+
 #include "build/Build.hh"
+
+using namespace oz;
 
 int main( int argc, char** argv )
 {
-  oz::System::init();
+  System::init();
 
   int exitCode = EXIT_FAILURE;
 
@@ -39,17 +43,17 @@ int main( int argc, char** argv )
           "under certain conditions; See COPYING file for details.\n\n" );
 
   try {
-    exitCode = oz::build::build.main( argc, argv );
+    exitCode = build::build.main( argc, argv );
   }
   catch( const std::exception& e ) {
-    oz::log.verboseMode = false;
-    oz::log.printException( &e );
+    Log::verboseMode = false;
+    Log::printException( &e );
 
-    oz::System::bell();
-    oz::System::abort();
+    System::bell();
+    System::abort();
   }
 
-//   oz::Alloc::printLeaks();
+//   Alloc::printLeaks();
 
   return exitCode;
 }

@@ -29,6 +29,9 @@
 // Application version.
 #define OZ_APPLICATION_VERSION  "@OZ_VERSION@"
 
+// System type.
+#define OZ_SYSTEM_NAME          "@OZ_SYSTEM_NAME@"
+
 // Full application name.
 #define OZ_APPLICATION_TITLE    "@OZ_APPLICATION_TITLE@"
 

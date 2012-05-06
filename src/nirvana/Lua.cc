@@ -147,7 +147,7 @@ bool Lua::mindCall( const char* functionName, Bot* self_ )
   l_pcall( 1, 0 );
 
   if( l_gettop() != 1 ) {
-    log.println( "Lua[N] in %s(self = %d): %s", functionName, ms.self->index, l_tostring( -1 ) );
+    Log::println( "Lua[N] in %s(self = %d): %s", functionName, ms.self->index, l_tostring( -1 ) );
     System::bell();
 
     l_pop( 1 );
@@ -240,7 +240,7 @@ void Lua::registerConstant( const char* name, const char* value )
 
 void Lua::init()
 {
-  log.print( "Initialising Nirvana Lua ..." );
+  Log::print( "Initialising Nirvana Lua ..." );
 
   l = luaL_newstate();
   if( l == null ) {
@@ -601,7 +601,7 @@ void Lua::init()
 
   hard_assert( l_gettop() == 1 );
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Lua::free()
@@ -610,7 +610,7 @@ void Lua::free()
     return;
   }
 
-  log.print( "Freeing Nirvana Lua ..." );
+  Log::print( "Freeing Nirvana Lua ..." );
 
   ms.structs.clear();
   ms.structs.dealloc();
@@ -621,7 +621,7 @@ void Lua::free()
   lua_close( l );
   l = null;
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 }

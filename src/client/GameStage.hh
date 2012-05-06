@@ -55,9 +55,9 @@ class GameStage : public Stage
     long64          matrixMicros;
     long64          nirvanaMicros;
 
-    SDL_Thread*     auxThread;
-    SDL_sem*        mainSemaphore;
-    SDL_sem*        auxSemaphore;
+    Thread          auxThread;
+    Semaphore       mainSemaphore;
+    Semaphore       auxSemaphore;
     volatile bool   isAuxAlive;
 
     bool            isLoaded;
@@ -72,7 +72,7 @@ class GameStage : public Stage
 
   private:
 
-    static int auxMain( void* );
+    static void auxMain();
 
     bool read( const char* path );
     void write( const char* path ) const;

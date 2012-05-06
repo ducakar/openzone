@@ -30,7 +30,7 @@ Lingua lingua;
 
 void Lingua::buildCatalogue( const char* lang, const char* category, const char* name )
 {
-  log.print( "%s/%s ...", lang, name );
+  Log::print( "%s/%s ...", lang, name );
 
   File::mkdir( "lingua" );
   File::mkdir( String::str( "lingua/%s", lang ) );
@@ -174,13 +174,13 @@ void Lingua::buildCatalogue( const char* lang, const char* category, const char*
     throw Exception( "Catalogue write failed" );
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Lingua::build()
 {
-  log.println( "Building localisations {" );
-  log.indent();
+  Log::println( "Building localisations {" );
+  Log::indent();
 
   PhysFile linguaDir( "lingua" );
   DArray<PhysFile> languages = linguaDir.ls();
@@ -217,8 +217,8 @@ void Lingua::build()
     }
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 }

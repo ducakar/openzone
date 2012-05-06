@@ -136,10 +136,10 @@ void BSP::load()
       textures[i].name = textures[i].name.substring( 9 );
     }
 
-    log.println( "Texture '%s' flags %x type %x",
-                 textures[i].name.cstr(),
-                 textures[i].flags,
-                 textures[i].type );
+    Log::println( "Texture '%s' flags %x type %x",
+                  textures[i].name.cstr(),
+                  textures[i].flags,
+                  textures[i].type );
   }
 
   nPlanes = lumps[QBSPLump::PLANES].length / int( sizeof( QBSPPlane ) );
@@ -512,8 +512,8 @@ void BSP::load()
 
 void BSP::optimise()
 {
-  log.println( "Optimising BSP structure {" );
-  log.indent();
+  Log::println( "Optimising BSP structure {" );
+  Log::indent();
 
   // remove brushes that lay out of boundaries
   for( int i = 0; i < nBrushes; ) {
@@ -526,7 +526,7 @@ void BSP::optimise()
 
     aRemove( brushes, i, nBrushes );
     --nBrushes;
-    log.print( "outside brush removed " );
+    Log::print( "outside brush removed " );
 
     // adjust brush references (for leaves)
     for( int j = 0; j < nLeafBrushes; ) {
@@ -540,7 +540,7 @@ void BSP::optimise()
       else {
         aRemove( leafBrushes, j, nLeafBrushes );
         --nLeafBrushes;
-        log.printRaw( "." );
+        Log::printRaw( "." );
 
         for( int k = 0; k < nLeaves; ++k ) {
           if( j < leaves[k].firstBrush ) {
@@ -565,11 +565,11 @@ void BSP::optimise()
         --models[j].nBrushes;
       }
     }
-    log.printEnd();
+    Log::printEnd();
   }
 
   // remove model brushes from the static tree (WTF Quake BSP puts them there?)
-  log.print( "removing model brush references " );
+  Log::print( "removing model brush references " );
 
   for( int i = 0; i < nModels; ++i ) {
     for( int j = 0; j < models[i].nBrushes; ++j ) {
@@ -583,7 +583,7 @@ void BSP::optimise()
 
         aRemove( leafBrushes, k, nLeafBrushes );
         --nLeafBrushes;
-        log.printRaw( "." );
+        Log::printRaw( "." );
 
         // adjust leaf references
         for( int l = 0; l < nLeaves; ++l ) {
@@ -600,10 +600,10 @@ void BSP::optimise()
     }
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 
   // remove unreferenced leaves
-  log.print( "removing unreferenced and empty leaves " );
+  Log::print( "removing unreferenced and empty leaves " );
 
   for( int i = 0; i < nLeaves; ) {
     bool isReferenced = false;
@@ -622,7 +622,7 @@ void BSP::optimise()
 
     aRemove( leaves, i, nLeaves );
     --nLeaves;
-    log.printRaw( "." );
+    Log::printRaw( "." );
 
     // update references and tag unnecessary nodes, will be removed in the next pass (index 0 is
     // invalid as the root cannot be referenced)
@@ -643,10 +643,10 @@ void BSP::optimise()
     }
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 
   // collapse unnecessary nodes
-  log.print( "collapsing nodes " );
+  Log::print( "collapsing nodes " );
 
   bool hasCollapsed;
   do {
@@ -671,7 +671,7 @@ void BSP::optimise()
         }
         nodes[0] = nodes[i];
 
-        log.printRaw( "x" );
+        Log::printRaw( "x" );
       }
       else {
         // find parent
@@ -719,16 +719,16 @@ void BSP::optimise()
         }
       }
 
-      log.printRaw( "." );
+      Log::printRaw( "." );
       hasCollapsed = true;
     }
   }
   while( hasCollapsed );
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 
   // remove unused brush sides
-  log.print( "removing unused brush sides " );
+  Log::print( "removing unused brush sides " );
 
   bool* usedBrushSides = new bool[nBrushSides];
   aSet( usedBrushSides, false, nBrushSides );
@@ -748,7 +748,7 @@ void BSP::optimise()
     aRemove( brushSides, i, nBrushSides );
     aRemove( usedBrushSides, i, nBrushSides );
     --nBrushSides;
-    log.printRaw( "." );
+    Log::printRaw( "." );
 
     for( int j = 0; j < nBrushes; ++j ) {
       if( i < brushes[j].firstSide ) {
@@ -763,10 +763,10 @@ void BSP::optimise()
 
   delete[] usedBrushSides;
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 
   // remove unused planes
-  log.print( "removing unused planes " );
+  Log::print( "removing unused planes " );
 
   bool* usedPlanes = new bool[nPlanes];
   aSet( usedPlanes, false, nPlanes );
@@ -787,7 +787,7 @@ void BSP::optimise()
     aRemove( planes, i, nPlanes );
     aRemove( usedPlanes, i, nPlanes );
     --nPlanes;
-    log.printRaw( "." );
+    Log::printRaw( "." );
 
     // adjust plane references
     for( int j = 0; j < nNodes; ++j ) {
@@ -806,12 +806,12 @@ void BSP::optimise()
     }
   }
 
-  delete[] usedPlanes;;
+  delete[] usedPlanes;
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 
   // optimise bounds
-  log.print( "Fitting bounds: " );
+  Log::print( "Fitting bounds: " );
 
   mins = Point( +Math::INF, +Math::INF, +Math::INF );
   maxs = Point( -Math::INF, -Math::INF, -Math::INF );
@@ -842,12 +842,12 @@ void BSP::optimise()
   mins -= 2.0f * EPSILON * Vec3::ONE;
   maxs += 2.0f * EPSILON * Vec3::ONE;
 
-  log.printEnd( "(%g %g %g) (%g %g %g)", mins.x, mins.y, mins.z, maxs.x, maxs.y, maxs.z );
+  Log::printEnd( "(%g %g %g) (%g %g %g)", mins.x, mins.y, mins.z, maxs.x, maxs.y, maxs.z );
 
-  log.unindent();
-  log.println( "}" );
-  log.println( "Optimising BSP model {" );
-  log.indent();
+  Log::unindent();
+  Log::println( "}" );
+  Log::println( "Optimising BSP model {" );
+  Log::indent();
 
   // remove faces that lay out of boundaries
   for( int i = 0; i < nFaces; ) {
@@ -860,7 +860,7 @@ void BSP::optimise()
 
     aRemove( faces, i, nFaces );
     --nFaces;
-    log.println( "outside face removed" );
+    Log::println( "outside face removed" );
 
     // adjust face references
     for( int j = 0; j < nModels + 1; ++j ) {
@@ -875,13 +875,13 @@ void BSP::optimise()
     }
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void BSP::check() const
 {
-  log.print( "Integrity check ..." );
+  Log::print( "Integrity check ..." );
 
   Bitset usedNodes( nNodes );
   Bitset usedLeaves( nLeaves );
@@ -980,27 +980,27 @@ void BSP::check() const
     }
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 
-  log.println( "Statistics {" );
-  log.indent();
-  log.println( "%4d  models",      nModels );
-  log.println( "%4d  nodes",       nNodes );
-  log.println( "%4d  leaves",      nLeaves );
-  log.println( "%4d  brushes",     nBrushes );
-  log.println( "%4d  brush sides", nBrushSides );
-  log.println( "%4d  planes",      nPlanes );
-  log.println( "%4d  faces",       nFaces );
-  log.println( "%4d  textures",    nTextures );
-  log.unindent();
-  log.println( "}" );
+  Log::println( "Statistics {" );
+  Log::indent();
+  Log::println( "%4d  models",      nModels );
+  Log::println( "%4d  nodes",       nNodes );
+  Log::println( "%4d  leaves",      nLeaves );
+  Log::println( "%4d  brushes",     nBrushes );
+  Log::println( "%4d  brush sides", nBrushSides );
+  Log::println( "%4d  planes",      nPlanes );
+  Log::println( "%4d  faces",       nFaces );
+  Log::println( "%4d  textures",    nTextures );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void BSP::saveMatrix()
 {
   File destFile( "bsp/" + name + ".ozBSP" );
 
-  log.print( "Dumping BSP structure to '%s' ...", destFile.path().cstr() );
+  Log::print( "Dumping BSP structure to '%s' ...", destFile.path().cstr() );
 
   Vector<String> sounds;
 
@@ -1119,7 +1119,7 @@ void BSP::saveMatrix()
     throw Exception( "Failed to write '%s'", destFile.path().cstr() );
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void BSP::saveClient()
@@ -1193,13 +1193,13 @@ void BSP::saveClient()
 
   mesh.write( &os, false );
 
-  log.print( "Dumping BSP model to '%s' ...", destFile.path().cstr() );
+  Log::print( "Dumping BSP model to '%s' ...", destFile.path().cstr() );
 
   if( !destFile.write( os.begin(), os.length() ) ) {
     throw Exception( "Failed to write '%s'", destFile.path().cstr() );
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 BSP::BSP( const char* name_ ) :
@@ -1208,7 +1208,7 @@ BSP::BSP( const char* name_ ) :
 
 BSP::~BSP()
 {
-  log.print( "Freeing BSP '%s' ...", name.cstr() );
+  Log::print( "Freeing BSP '%s' ...", name.cstr() );
 
   delete[] textures;
   delete[] planes;
@@ -1248,13 +1248,13 @@ BSP::~BSP()
   nIndices     = 0;
   nFaces       = 0;
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void BSP::build( const char* name )
 {
-  log.println( "Prebuilding BSP '%s' {", name );
-  log.indent();
+  Log::println( "Prebuilding BSP '%s' {", name );
+  Log::indent();
 
   BSP* bsp = new BSP( name );
   bsp->load();
@@ -1264,8 +1264,8 @@ void BSP::build( const char* name )
   bsp->saveClient();
   delete bsp;
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 }

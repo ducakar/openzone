@@ -30,6 +30,15 @@
 
 #include "common.hh"
 
+namespace pp
+{
+
+// Forward declarations for Native Client (NaCl) classes.
+class Instance;
+class Core;
+
+}
+
 namespace oz
 {
 
@@ -60,8 +69,17 @@ class System
 
   private:
 
-    static void*  appInstance; ///< Application instance pointer for NaCl platform.
-    static System system;      ///< Private instance, takes care for static (de)initialisation.
+    static System        system;   ///< Private instance, takes care for static (de)initialisation.
+
+  public:
+
+    static pp::Instance* instance; ///< NaCl module instance.
+    static pp::Core*     core;     ///< NaCl pp::Core class instance.
+    static int           width;    ///< Current width of NaCl module area in browser.
+    static int           height;   ///< Current height of NaCl module in browser.
+
+  private:
+
 
     /**
      * Sets up bell and disables <tt>SIGTRAP</tt> handler on Linux, since the default handler would
@@ -118,18 +136,6 @@ class System
     OZ_NORETURN
     OZ_PRINTF_FORMAT( 2, 3 )
     static void error( int nSkippedFrames, const char* msg, ... );
-
-    /**
-     * Application instance pointer, needed by some platforms.
-     *
-     *
-     */
-    static void* instance();
-
-    /**
-     * Set application instance pointer.
-     */
-    static void setInstance( void* instance );
 
     /**
      * Initialise <tt>System</tt> features.

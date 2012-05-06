@@ -49,7 +49,7 @@ const Font::Info Font::INFOS[MAX] = {
 
 void Font::init()
 {
-  log.print( "Initialising Fonts ..." );
+  Log::print( "Initialising Fonts ..." );
 
   if( TTF_Init() == -1 ) {
     throw Exception( "Failed to initialise SDL_TTF" );
@@ -72,12 +72,12 @@ void Font::init()
 
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Font::free()
 {
-  log.print( "Freeing Font ..." );
+  Log::print( "Freeing Font ..." );
 
   for( int i = 0; i < MAX; ++i ) {
     if( fonts[i] != null ) {
@@ -91,7 +91,7 @@ void Font::free()
 
   TTF_Quit();
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 }

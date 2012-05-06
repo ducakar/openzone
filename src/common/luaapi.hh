@@ -78,7 +78,7 @@ static int ozPrintln( lua_State* l )
 {
   ARG( 1 );
 
-  log.println( "Lua:%s> %s", ls.envName, l_tostring( 1 ) );
+  Log::println( "Lua:%s> %s", ls.envName, l_tostring( 1 ) );
   return 0;
 }
 

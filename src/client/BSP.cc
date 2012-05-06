@@ -44,7 +44,7 @@ void BSP::playDemolish( const Struct* str, int sound ) const
 
   alGenSources( 1, &srcId );
   if( alGetError() != AL_NO_ERROR ) {
-    log.println( "AL: Too many sources" );
+    Log::println( "AL: Too many sources" );
     return;
   }
 
@@ -74,7 +74,7 @@ void BSP::playSound( const Entity* entity, int sound ) const
 
   alGenSources( 1, &srcId );
   if( alGetError() != AL_NO_ERROR ) {
-    log.println( "AL: Too many sources" );
+    Log::println( "AL: Too many sources" );
     return;
   }
 
@@ -111,7 +111,7 @@ void BSP::playContSound( const Entity* entity, int sound ) const
 
     alGenSources( 1, &srcId );
     if( alGetError() != AL_NO_ERROR ) {
-      log.println( "AL: Too many sources" );
+      Log::println( "AL: Too many sources" );
       return;
     }
 

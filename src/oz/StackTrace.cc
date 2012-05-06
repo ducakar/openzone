@@ -28,18 +28,17 @@
 
 #include "arrays.hh"
 
-#if defined( __native_client__ ) || defined( __ANDROID__ ) || defined( _WIN32 )
-#else
+#ifdef __GLIBC__
+# include <execinfo.h>
 # include <cstdlib>
 # include <cstring>
 # include <cxxabi.h>
-# include <execinfo.h>
 #endif
 
 namespace oz
 {
 
-#if defined( __native_client__ ) || defined( __ANDROID__ ) || defined( _WIN32 )
+#ifndef __GLIBC__
 
 StackTrace StackTrace::current( int )
 {
@@ -54,7 +53,7 @@ char** StackTrace::symbols() const
 #else
 
 // Size of internal output buffer where stack trace output string is generated.
-static const int TRACE_BUFFER_SIZE = 4096;
+static const int TRACE_BUFFER_SIZE = 2048;
 
 // Size of internal buffer where function names are demangled.
 static const int STRING_BUFFER_SIZE = 256;
@@ -212,6 +211,11 @@ char** StackTrace::symbols() const
   size_t headerSize  = size_t( nFrames ) * sizeof( char* );
   size_t bodySize    = size_t( out - outputBuffer );
   char** niceSymbols = static_cast<char**>( realloc( symbols, headerSize + bodySize ) );
+
+  if( niceSymbols == null ) {
+    free( symbols );
+    return niceSymbols;
+  }
 
   memcpy( &niceSymbols[nFrames], outputBuffer, bodySize );
 

@@ -56,35 +56,35 @@ Build build;
 
 void Build::printUsage()
 {
-  log.println( "Usage:" );
-  log.indent();
-  log.println( "ozBuild [OPTIONS] <data_src> <out_root>" );
-  log.println();
-  log.println( "<data_src>  Path to directory that includes data to be built. Name of this" );
-  log.println( "            directory name is used as package name." );
-  log.println( "<out_root>  Directory where output directory and archive will be created." );
-  log.println( "-v          More verbose log output." );
-  log.println( "-l          Build translations." );
-  log.println( "-u          Build UI." );
-  log.println( "-g          Copy shaders." );
-  log.println( "-c          Build caela (skies)." );
-  log.println( "-t          Build terrae (terrains)." );
-  log.println( "-b          Compile maps into BSPs and build BPSs with referenced textures." );
-  log.println( "-m          Build models." );
-  log.println( "-s          Copy sounds (only used ones)." );
-  log.println( "-a          Copy object class definitions." );
-  log.println( "-f          Copy fragment pool definitions." );
-  log.println( "-n          Copy name lists." );
-  log.println( "-x          Check and copy Lua scripts." );
-  log.println( "-o          Build modules." );
-  log.println( "-r          Copy music tracks." );
-  log.println( "-p          Pack built files into ZIP archive." );
-  log.println( "-A          Everything above." );
-  log.println( "-B          Build with bumpmap vertex format." );
-  log.println( "-C          Use S3 texture compression." );
-  log.println( "-0          Use no compression for ZIP archive." );
-  log.println( "-7          Create non-solid LZMA-compressed 7zip archive instead of ZIP." );
-  log.unindent();
+  Log::println( "Usage:" );
+  Log::indent();
+  Log::println( "ozBuild [OPTIONS] <data_src> <out_root>" );
+  Log::println();
+  Log::println( "<data_src>  Path to directory that includes data to be built. Name of this" );
+  Log::println( "            directory name is used as package name." );
+  Log::println( "<out_root>  Directory where output directory and archive will be created." );
+  Log::println( "-v          More verbose log output." );
+  Log::println( "-l          Build translations." );
+  Log::println( "-u          Build UI." );
+  Log::println( "-g          Copy shaders." );
+  Log::println( "-c          Build caela (skies)." );
+  Log::println( "-t          Build terrae (terrains)." );
+  Log::println( "-b          Compile maps into BSPs and build BPSs with referenced textures." );
+  Log::println( "-m          Build models." );
+  Log::println( "-s          Copy sounds (only used ones)." );
+  Log::println( "-a          Copy object class definitions." );
+  Log::println( "-f          Copy fragment pool definitions." );
+  Log::println( "-n          Copy name lists." );
+  Log::println( "-x          Check and copy Lua scripts." );
+  Log::println( "-o          Build modules." );
+  Log::println( "-r          Copy music tracks." );
+  Log::println( "-p          Pack built files into ZIP archive." );
+  Log::println( "-A          Everything above." );
+  Log::println( "-B          Build with bumpmap vertex format." );
+  Log::println( "-C          Use S3 texture compression." );
+  Log::println( "-0          Use no compression for ZIP archive." );
+  Log::println( "-7          Create non-solid LZMA-compressed 7zip archive instead of ZIP." );
+  Log::unindent();
 }
 
 void Build::copyFiles( const char* srcDir, const char* destDir, const char* ext, bool recurse )
@@ -98,8 +98,8 @@ void Build::copyFiles( const char* srcDir, const char* destDir, const char* ext,
     return;
   }
 
-  log.println( "Copying *.%s from '%s' to '%s' {", ext, srcDir, destDir );
-  log.indent();
+  Log::println( "Copying *.%s from '%s' to '%s' {", ext, srcDir, destDir );
+  Log::indent();
 
   File::mkdir( destDir );
 
@@ -119,7 +119,7 @@ void Build::copyFiles( const char* srcDir, const char* destDir, const char* ext,
     else if( file->hasExtension( ext ) || fileName.beginsWith( "README" ) ||
              fileName.beginsWith( "COPYING" ) )
     {
-      log.print( "Copying '%s' ...", fileName.cstr() );
+      Log::print( "Copying '%s' ...", fileName.cstr() );
 
       if( !file->map() ) {
         throw Exception( "Failed to copy '%s'", file->path().cstr() );
@@ -134,19 +134,19 @@ void Build::copyFiles( const char* srcDir, const char* destDir, const char* ext,
 
       file->unmap();
 
-      log.printEnd( " OK" );
+      Log::printEnd( " OK" );
       continue;
     }
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Build::buildCaela()
 {
-  log.println( "Building Caela {" );
-  log.indent();
+  Log::println( "Building Caela {" );
+  Log::indent();
 
   String srcDir = "caelum";
   PhysFile dir( srcDir );
@@ -165,14 +165,14 @@ void Build::buildCaela()
     Caelum::build( name );
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Build::buildTerrae()
 {
-  log.println( "Building Terrae {" );
-  log.indent();
+  Log::println( "Building Terrae {" );
+  Log::indent();
 
   String srcDir = "terra";
   PhysFile dir( srcDir );
@@ -189,14 +189,14 @@ void Build::buildTerrae()
     Terra::build( file->baseName() );
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Build::buildBSPs()
 {
-  log.println( "Building BSPs {" );
-  log.indent();
+  Log::println( "Building BSPs {" );
+  Log::indent();
 
   String srcDir = "baseq3/maps";
   String destDir = "bsp";
@@ -215,14 +215,14 @@ void Build::buildBSPs()
     BSP::build( file->baseName() );
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Build::buildBSPTextures()
 {
-  log.println( "Building used BSP textures {" );
-  log.indent();
+  Log::println( "Building used BSP textures {" );
+  Log::indent();
 
   Map<String> usedDirs;
 
@@ -263,8 +263,8 @@ void Build::buildBSPTextures()
         continue;
       }
 
-      log.println( "Building texture '%s' {", name.cstr() );
-      log.indent();
+      Log::println( "Building texture '%s' {", name.cstr() );
+      Log::indent();
 
       usedDirs.include( subDir->path() );
 
@@ -278,7 +278,7 @@ void Build::buildBSPTextures()
 
       BufferStream os;
 
-      log.println( "Compiling into '%s'", destFile.path().cstr() );
+      Log::println( "Compiling into '%s'", destFile.path().cstr() );
 
       int textureFlags = client::Mesh::DIFFUSE_BIT;
 
@@ -307,8 +307,8 @@ void Build::buildBSPTextures()
         throw Exception( "Failed to write texture '%s'", destFile.path().cstr() );
       }
 
-      log.unindent();
-      log.println( "}" );
+      Log::unindent();
+      Log::println( "}" );
     }
   }
 
@@ -322,7 +322,7 @@ void Build::buildBSPTextures()
       String path = file->path();
 
       if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
-        log.print( "Copying '%s' ...", path.cstr() );
+        Log::print( "Copying '%s' ...", path.cstr() );
 
         if( !file->map() ) {
           throw Exception( "Failed to read '%s'", file->path().cstr() );
@@ -340,19 +340,19 @@ void Build::buildBSPTextures()
 
         file->unmap();
 
-        log.printEnd( " OK" );
+        Log::printEnd( " OK" );
         continue;
       }
     }
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Build::tagClassResources()
 {
-  log.print( "Extracting model and sound names form object class definitions ..." );
+  Log::print( "Extracting model and sound names form object class definitions ..." );
 
   String dirName = "class";
   PhysFile dir( dirName );
@@ -419,12 +419,12 @@ void Build::tagClassResources()
     context.usedSounds.include( shot3Sound );
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Build::tagFragResources()
 {
-  log.print( "Extracting model names form fragment pool definitions..." );
+  Log::print( "Extracting model names form fragment pool definitions..." );
 
   String dirName = "frag";
   PhysFile dir( dirName );
@@ -449,13 +449,13 @@ void Build::tagFragResources()
     }
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Build::buildModels()
 {
-  log.println( "Building used models {" );
-  log.indent();
+  Log::println( "Building used models {" );
+  Log::indent();
 
   PhysFile mdlDir( "mdl" );
   File::mkdir( mdlDir.path() );
@@ -475,7 +475,7 @@ void Build::buildModels()
       String path = file->path();
 
       if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
-        log.print( "Copying '%s' ...", path.cstr() );
+        Log::print( "Copying '%s' ...", path.cstr() );
 
         if( !file->map() ) {
           throw Exception( "Failed to read '%s'", file->path().cstr() );
@@ -490,7 +490,7 @@ void Build::buildModels()
 
         file->unmap();
 
-        log.printEnd( " OK" );
+        Log::printEnd( " OK" );
         continue;
       }
     }
@@ -506,14 +506,14 @@ void Build::buildModels()
     }
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Build::copySounds()
 {
-  log.println( "Copying used sounds {" );
-  log.indent();
+  Log::println( "Copying used sounds {" );
+  Log::indent();
 
   Map<String> usedDirs;
 
@@ -548,7 +548,7 @@ void Build::copySounds()
         continue;
       }
 
-      log.print( "Copying '%s' ...", name.cstr() );
+      Log::print( "Copying '%s' ...", name.cstr() );
 
       usedDirs.include( subDir->path() );
 
@@ -569,7 +569,7 @@ void Build::copySounds()
 
       file->unmap();
 
-      log.printEnd( " OK" );
+      Log::printEnd( " OK" );
     }
   }
 
@@ -582,7 +582,7 @@ void Build::copySounds()
       String path = file->path();
 
       if( name.beginsWith( "COPYING" ) || name.beginsWith( "README" ) ) {
-        log.print( "Copying '%s' ...", path.cstr() );
+        Log::print( "Copying '%s' ...", path.cstr() );
 
         if( !file->map() ) {
           throw Exception( "Failed to read '%s'", file->path().cstr() );
@@ -600,29 +600,29 @@ void Build::copySounds()
 
         file->unmap();
 
-        log.printEnd( " OK" );
+        Log::printEnd( " OK" );
         continue;
       }
     }
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Build::buildModules()
 {
-  log.println( "Building Modules {" );
-  log.indent();
+  Log::println( "Building Modules {" );
+  Log::indent();
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Build::checkLua( const char* path )
 {
-  log.println( "Checking Lua scripts '%s' {", path );
-  log.indent();
+  Log::println( "Checking Lua scripts '%s' {", path );
+  Log::indent();
 
   String srcDir = String::str( "%s/", path );
   PhysFile dir( path );
@@ -637,20 +637,20 @@ void Build::checkLua( const char* path )
 
     String cmdLine = "luac -p " + file->realDir() + "/" + file->path();
 
-    log.println( "%s", cmdLine.cstr() );
+    Log::println( "%s", cmdLine.cstr() );
     if( system( cmdLine ) != 0 ) {
       throw Exception( "Lua syntax check failed" );
     }
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Build::packArchive( const char* name, bool useCompression, bool use7zip )
 {
-  log.println( "Packing archive {" );
-  log.indent();
+  Log::println( "Packing archive {" );
+  Log::indent();
 
   File archive( String::str( "../%s.%s", name, use7zip ? "7z" : "zip" ) );
 
@@ -662,8 +662,8 @@ void Build::packArchive( const char* name, bool useCompression, bool use7zip )
                                 useCompression ? "-9" : "-Z store",
                                 archive.path().cstr() );
 
-  log.println( "%s", cmdLine.cstr() );
-  log.println();
+  Log::println( "%s", cmdLine.cstr() );
+  Log::println();
 
   if( system( cmdLine ) != 0 ) {
     throw Exception( use7zip ? "Packing 7zip archive failed" : "Packing ZIP archive failed" );
@@ -672,14 +672,14 @@ void Build::packArchive( const char* name, bool useCompression, bool use7zip )
   int size = archive.size();
 
   if( size >= 0 ) {
-    log.println();
-    log.println( "Archive size: %.1f MiB = %.1f MB",
-                 float( size ) / ( 1024.0f * 1024.0f ),
-                 float( size ) / ( 1000.0f * 1000.0f ) );
+    Log::println();
+    Log::println( "Archive size: %.1f MiB = %.1f MB",
+                  float( size ) / ( 1024.0f * 1024.0f ),
+                  float( size ) / ( 1000.0f * 1000.0f ) );
   }
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 int Build::main( int argc, char** argv )
@@ -804,7 +804,7 @@ int Build::main( int argc, char** argv )
         break;
       }
       default: {
-        log.println();
+        Log::println();
         printUsage();
         return EXIT_FAILURE;
       }
@@ -835,23 +835,23 @@ int Build::main( int argc, char** argv )
     outDir = File::cwd() + "/" + outDir + "/" + pkgName;
   }
 
-  log.print( OZ_APPLICATION_TITLE " Build started on " );
-  log.printTime();
-  log.printEnd();
+  Log::print( OZ_APPLICATION_TITLE " Build started on " );
+  Log::printTime();
+  Log::printEnd();
 
-  log.println( "Build details {" );
-  log.indent();
+  Log::println( "Build details {" );
+  Log::indent();
 
-  log.println( "Date:            %s", BuildInfo::TIME );
-  log.println( "Host system:     %s", BuildInfo::HOST_SYSTEM );
-  log.println( "Target system:   %s", BuildInfo::TARGET_SYSTEM );
-  log.println( "Build type:      %s", BuildInfo::BUILD_TYPE );
-  log.println( "Compiler:        %s", BuildInfo::COMPILER );
-  log.println( "Compiler flags:  %s", BuildInfo::CXX_FLAGS );
-  log.println( "Linker flags:    %s", BuildInfo::EXE_LINKER_FLAGS );
+  Log::println( "Date:            %s", BuildInfo::TIME );
+  Log::println( "Host system:     %s", BuildInfo::HOST_SYSTEM );
+  Log::println( "Target system:   %s", BuildInfo::TARGET_SYSTEM );
+  Log::println( "Build type:      %s", BuildInfo::BUILD_TYPE );
+  Log::println( "Compiler:        %s", BuildInfo::COMPILER );
+  Log::println( "Compiler flags:  %s", BuildInfo::CXX_FLAGS );
+  Log::println( "Linker flags:    %s", BuildInfo::EXE_LINKER_FLAGS );
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 
   SDL_Init( SDL_INIT_VIDEO );
   PhysFile::init();
@@ -859,12 +859,12 @@ int Build::main( int argc, char** argv )
 
   File::mkdir( outDir );
 
-  log.println( "Chdir to output directory '%s'", outDir.cstr() );
+  Log::println( "Chdir to output directory '%s'", outDir.cstr() );
   if( !File::chdir( outDir ) ) {
     throw Exception( "Failed to set working directory '%s'", outDir.cstr() );
   }
 
-  log.println( "Adding source directory '%s' to search path", srcDir.cstr() );
+  Log::println( "Adding source directory '%s' to search path", srcDir.cstr() );
   if( !PhysFile::mount( srcDir, null, true ) ) {
     throw Exception( "Failed to add directory '%s' to search path", srcDir.cstr() );
   }
@@ -873,7 +873,7 @@ int Build::main( int argc, char** argv )
   int  windowHeight = 40;
   uint windowFlags  = SDL_OPENGL;
 
-  log.print( "Creating OpenGL window %dx%d [windowed] ...", windowWidth, windowHeight );
+  Log::print( "Creating OpenGL window %dx%d [windowed] ...", windowWidth, windowHeight );
 
   if( SDL_VideoModeOK( windowWidth, windowHeight, 0, windowFlags ) == 1 ) {
     throw Exception( "Video mode not supported" );
@@ -890,7 +890,7 @@ int Build::main( int argc, char** argv )
   windowWidth  = window->w;
   windowHeight = window->h;
 
-  log.printEnd( " %dx%d-%d ... OK", windowWidth, windowHeight, window->format->BitsPerPixel );
+  Log::printEnd( " %dx%d-%d ... OK", windowWidth, windowHeight, window->format->BitsPerPixel );
 
   client::render.init( window, windowWidth, windowHeight, true );
 
@@ -910,7 +910,7 @@ int Build::main( int argc, char** argv )
     String fileName = file->name();
 
     if( fileName.beginsWith( "README" ) || fileName.beginsWith( "COPYING" ) ) {
-      log.print( "Copying '%s' ...", fileName.cstr() );
+      Log::print( "Copying '%s' ...", fileName.cstr() );
 
       if( !file->map() ) {
         throw Exception( "Failed to copy '%s'", file->path().cstr() );
@@ -925,7 +925,7 @@ int Build::main( int argc, char** argv )
 
       file->unmap();
 
-      log.printEnd( " OK" );
+      Log::printEnd( " OK" );
     }
   }
 
@@ -992,7 +992,7 @@ int Build::main( int argc, char** argv )
   }
 
   uint endTime = Time::clock();
-  log.println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
+  Log::println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
 
   compiler.free();
   context.free();
@@ -1005,9 +1005,9 @@ int Build::main( int argc, char** argv )
 
   Alloc::printSummary();
 
-  log.print( OZ_APPLICATION_TITLE " Build finished on " );
-  log.printTime();
-  log.printEnd();
+  Log::print( OZ_APPLICATION_TITLE " Build finished on " );
+  Log::printTime();
+  Log::printEnd();
 
   return EXIT_SUCCESS;
 }

@@ -30,23 +30,31 @@
 
 #include "oz/oz.hh"
 
-int ozMain( int argc, char** argv );
-
 #ifdef __native_client__
 
+#include <ppapi/cpp/completion_callback.h>
 #include <ppapi/cpp/module.h>
 #include <ppapi/cpp/instance.h>
+#include <ppapi/cpp/graphics_2d.h>
+#include <ppapi/cpp/fullscreen.h>
+#include <ppapi/cpp/mouse_lock.h>
+
+#define main( argc, argv ) ozMain( argc, argv )
+
+int ozMain( int argc, char** argv );
 
 namespace oz
 {
 
-class MainInstance : public pp::Instance
+class MainInstance : public pp::Instance, public pp::MouseLock
 {
   private:
 
-    pthread_t mainThread;
-    int       width;
-    int       height;
+    pp::Fullscreen fullscreen;
+    pp::Graphics2D context;
+    bool           isContextBound;
+    bool           isMouseLocked;
+    pthread_t      mainThread;
 
     static void* mainThreadMain( void* );
 
@@ -55,10 +63,14 @@ class MainInstance : public pp::Instance
     explicit MainInstance( PP_Instance instance );
     virtual ~MainInstance();
 
+    virtual bool Init( uint32_t argc, const char* argn[], const char* argv[] );
     virtual void DidChangeView( const pp::View& view );
     virtual void DidChangeView( const pp::Rect& position, const pp::Rect& clip );
     virtual bool HandleInputEvent( const pp::InputEvent& event );
-    virtual bool Init( uint32_t argc, const char* argn[], const char* argv[] );
+    virtual void MouseLockLost();
+
+    static void Empty( void*, int );
+    static void DidMouseLock( void* data, int result );
 
 };
 
@@ -75,12 +87,8 @@ class MainModule : public pp::Module
 namespace pp
 {
 
-Module* CreateModule();
+pp::Module* CreateModule();
 
 }
 
-#else
-
-int main( int argc, char** argv );
-
-#endif
+#endif // __native_client__

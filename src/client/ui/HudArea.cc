@@ -385,7 +385,7 @@ HudArea::HudArea() :
     vehicleWeaponRounds[i].set( -16, 54 + i * step, ALIGN_RIGHT, Font::LARGE, "∞" );
   }
 
-  log.verboseMode = true;
+  Log::verboseMode = true;
 
   crossTexId    = context.loadTextureLayer( "ui/icon/crosshair.ozIcon" );
   useTexId      = context.loadTextureLayer( "ui/icon/use.ozIcon" );
@@ -399,7 +399,7 @@ HudArea::HudArea() :
   lockedTexId   = context.loadTextureLayer( "ui/icon/locked.ozIcon" );
   unlockedTexId = context.loadTextureLayer( "ui/icon/unlocked.ozIcon" );
 
-  log.verboseMode = false;
+  Log::verboseMode = false;
 
   crossIconX  = ( width - ICON_SIZE ) / 2;
   crossIconY  = ( height - ICON_SIZE ) / 2;

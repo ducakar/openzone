@@ -153,7 +153,7 @@ uint Context::buildTexture( const void* data, int width, int height, int format,
 
 Context::Image Context::loadImage( const char* path, int forceFormat )
 {
-  log.print( "Loading image '%s' ...", path );
+  Log::print( "Loading image '%s' ...", path );
 
   PhysFile file( path );
   String realPath = file.realDir() + "/" + file.path();
@@ -176,7 +176,7 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
   int height = int( FreeImage_GetHeight( dib ) );
   int bpp    = int( FreeImage_GetBPP( dib ) );
 
-  log.printRaw( " %d x %d %d BPP ...", width, height, bpp );
+  Log::printRaw( " %d x %d %d BPP ...", width, height, bpp );
 
   if( height != 1 && ( width * bpp ) % 32 != 0 ) {
     throw Exception( "Image scan line (width * bytesPerPixel) should be a multiple of 4." );
@@ -254,7 +254,7 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
     throw Exception( "Failed to access image data" );
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 
   return { dib, pixels, width, height, bpp, format };
 }

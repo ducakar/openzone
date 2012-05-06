@@ -146,7 +146,7 @@ void Lua::staticCall( const char* functionName )
   l_pcall( 0, 0 );
 
   if( l_gettop() != 0 ) {
-    log.println( "Lua[C] in %s(): %s", functionName, l_tostring( -1 ) );
+    Log::println( "Lua[C] in %s(): %s", functionName, l_tostring( -1 ) );
     System::bell();
 
     l_pop( 1 );
@@ -163,16 +163,16 @@ void Lua::create( const char* mission_ )
   cs.mission = mission_;
   String missionPath = "lua/mission/" + cs.mission + ".lua";
 
-  log.print( "Importing mission catalogue '%s' ...", cs.mission.cstr() );
+  Log::print( "Importing mission catalogue '%s' ...", cs.mission.cstr() );
   if( cs.missionLingua.initDomain( cs.mission ) ) {
-    log.printEnd( " OK" );
+    Log::printEnd( " OK" );
   }
   else {
-    log.printEnd( " Failed" );
+    Log::printEnd( " Failed" );
   }
 
-  log.println( "Executing mission script %s {", cs.mission.cstr() );
-  log.indent();
+  Log::println( "Executing mission script %s {", cs.mission.cstr() );
+  Log::indent();
 
   PhysFile missionFile( missionPath );
   if( !missionFile.map() ) {
@@ -189,8 +189,8 @@ void Lua::create( const char* mission_ )
 
   staticCall( "onCreate" );
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Lua::read( InputStream* istream )
@@ -200,15 +200,15 @@ void Lua::read( InputStream* istream )
   cs.mission = istream->readString();
   String missionPath = "lua/mission/" + cs.mission + ".lua";
 
-  log.print( "Importing mission catalogue '%s' ...", cs.mission.cstr() );
+  Log::print( "Importing mission catalogue '%s' ...", cs.mission.cstr() );
   if( cs.missionLingua.initDomain( cs.mission ) ) {
-    log.printEnd( " OK" );
+    Log::printEnd( " OK" );
   }
   else {
-    log.printEnd( " Failed" );
+    Log::printEnd( " Failed" );
   }
 
-  log.print( "Deserialising mission script %s ...", cs.mission.cstr() );
+  Log::print( "Deserialising mission script %s ...", cs.mission.cstr() );
 
   PhysFile missionFile( missionPath );
   if( !missionFile.map() ) {
@@ -236,7 +236,7 @@ void Lua::read( InputStream* istream )
     ch = istream->readChar();
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Lua::write( BufferStream* ostream )
@@ -306,7 +306,7 @@ void Lua::registerConstant( const char* name, const char* value )
 
 void Lua::init()
 {
-  log.print( "Initialising Client Lua ..." );
+  Log::print( "Initialising Client Lua ..." );
 
   l = luaL_newstate();
   if( l == null ) {
@@ -678,7 +678,7 @@ void Lua::init()
 
   hard_assert( l_gettop() == 0 );
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Lua::free()
@@ -687,7 +687,7 @@ void Lua::free()
     return;
   }
 
-  log.print( "Freeing Client Lua ..." );
+  Log::print( "Freeing Client Lua ..." );
 
   ms.structs.clear();
   ms.structs.dealloc();
@@ -701,7 +701,7 @@ void Lua::free()
   lua_close( l );
   l = null;
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 }

@@ -53,7 +53,7 @@ void Terra::load( int id_ )
     const String& name = library.terrae[id].name;
     const String& path = library.terrae[id].path;
 
-    log.print( "Loading terrain '%s' ...", name.cstr() );
+    Log::print( "Loading terrain '%s' ...", name.cstr() );
 
     PhysFile file( path );
     if( !file.map() ) {
@@ -91,7 +91,7 @@ void Terra::load( int id_ )
 
     file.unmap();
 
-    log.printEnd( " OK" );
+    Log::printEnd( " OK" );
   }
 }
 

@@ -160,7 +160,7 @@ void Terra::load()
   const String& name = library.terrae[id].name;
   String path = "terra/" + name + ".ozcTerra";
 
-  log.print( "Loading terra '%s' ...", name.cstr() );
+  Log::print( "Loading terra '%s' ...", name.cstr() );
 
   PhysFile file( path );
   if( !file.map() ) {
@@ -276,7 +276,7 @@ void Terra::load()
 
   file.unmap();
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Terra::unload()

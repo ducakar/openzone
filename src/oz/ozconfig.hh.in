@@ -68,7 +68,7 @@
 
 #if defined( OZ_GCC ) && OZ_GCC < 406
 # define constexpr const
-# define noexcept throw()
-# define nullptr  0
+# define noexcept  throw()
+# define nullptr   0
   namespace std { typedef decltype( nullptr ) nullptr_t; }
 #endif

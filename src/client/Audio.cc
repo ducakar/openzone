@@ -48,7 +48,7 @@ void Audio::playSound( int sound, float volume, const Object* obj, const Object*
 
   alGenSources( 1, &srcId );
   if( alGetError() != AL_NO_ERROR ) {
-    log.println( "AL: Too many sources" );
+    Log::println( "AL: Too many sources" );
     return;
   }
 
@@ -97,7 +97,7 @@ void Audio::playContSound( int sound, float volume, const Object* obj, const Obj
 
     alGenSources( 1, &srcId );
     if( alGetError() != AL_NO_ERROR ) {
-      log.println( "AL: Too many sources" );
+      Log::println( "AL: Too many sources" );
       return;
     }
 
@@ -148,7 +148,7 @@ void Audio::playEngineSound( int sound, float volume, float pitch, const Vehicle
 
     alGenSources( 1, &srcId );
     if( alGetError() != AL_NO_ERROR ) {
-      log.println( "AL: Too many sources" );
+      Log::println( "AL: Too many sources" );
       return;
     }
 
@@ -184,7 +184,7 @@ Audio::Audio( const Object* obj_ ) :
 {
   const int* sounds = clazz->audioSounds;
 
-  log.verboseMode = true;
+  Log::verboseMode = true;
 
   for( int i = 0; i < ObjectClass::MAX_SOUNDS; ++i ) {
     if( sounds[i] != -1 ) {
@@ -192,7 +192,7 @@ Audio::Audio( const Object* obj_ ) :
     }
   }
 
-  log.verboseMode = false;
+  Log::verboseMode = false;
 
   OZ_AL_CHECK_ERROR();
 }
@@ -201,7 +201,7 @@ Audio::~Audio()
 {
   const int* sounds = clazz->audioSounds;
 
-  log.verboseMode = true;
+  Log::verboseMode = true;
 
   for( int i = 0; i < ObjectClass::MAX_SOUNDS; ++i ) {
     if( sounds[i] != -1 ) {
@@ -209,7 +209,7 @@ Audio::~Audio()
     }
   }
 
-  log.verboseMode = false;
+  Log::verboseMode = false;
 
   OZ_AL_CHECK_ERROR();
 }

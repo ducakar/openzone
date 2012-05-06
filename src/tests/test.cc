@@ -23,6 +23,7 @@
 
 #include "oz/oz.hh"
 #include "oz/windefs.h"
+#include "ozmain/main.hh"
 
 #include <cstdio>
 
@@ -80,7 +81,9 @@ struct Foo
   }
 };
 
-int main()
+int main( int, char** )
 {
+  System::init();
+  Time::sleep( 100000 );
   return 0;
 }

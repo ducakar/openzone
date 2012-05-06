@@ -23,13 +23,15 @@
 
 #include "stable.hh"
 
+#include "ozmain/main.hh"
+
 #include "client/Client.hh"
 
-#include <SDL/SDL_main.h>
+using namespace oz;
 
 int main( int argc, char** argv )
 {
-  oz::System::init();
+  System::init();
 
   int exitCode = EXIT_FAILURE;
 
@@ -39,23 +41,23 @@ int main( int argc, char** argv )
           "under certain conditions; See COPYING file for details.\n\n" );
 
   try {
-    exitCode = oz::client::client.main( argc, argv );
-    oz::client::client.shutdown();
+    exitCode = client::client.main( argc, argv );
+    client::client.shutdown();
   }
   catch( const std::exception& e ) {
-    oz::log.verboseMode = false;
-    oz::log.printException( &e );
+    Log::verboseMode = false;
+    Log::printException( &e );
 
-    oz::System::bell();
-    oz::System::abort();
+    System::bell();
+    System::abort();
   }
 
-  oz::log.verboseMode = true;
-  oz::Alloc::printLeaks();
-  oz::log.verboseMode = false;
+  Log::verboseMode = true;
+  Alloc::printLeaks();
+  Log::verboseMode = false;
 
-  if( oz::Alloc::count != 0 ) {
-    oz::log.println( "There are some memory leaks. See '%s' for details.", oz::log.logFile() );
+  if( Alloc::count != 0 ) {
+    Log::println( "There are some memory leaks. See '%s' for details.", Log::logFile() );
   }
 
   return exitCode;

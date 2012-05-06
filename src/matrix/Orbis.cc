@@ -592,7 +592,7 @@ void Orbis::unload()
 
 void Orbis::init()
 {
-  log.print( "Initialising Orbis ..." );
+  Log::print( "Initialising Orbis ..." );
 
   freeing = 0;
   waiting = 1;
@@ -602,12 +602,12 @@ void Orbis::init()
 
   terra.init();
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Orbis::free()
 {
-  log.println( "Freeing Orbis ... OK" );
+  Log::println( "Freeing Orbis ... OK" );
 }
 
 }

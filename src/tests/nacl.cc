@@ -23,48 +23,73 @@
 
 #include "oz/oz.hh"
 #include "oz/windefs.h"
+#include "ozmain/main.hh"
+
+#include <../../../include/ppapi/cpp/instance.h>
+#include <../../../include/ppapi/cpp/fullscreen.h>
+#include "../../../include/ppapi/cpp/input_event.h"
+#include "../../../include/ppapi/cpp/instance.h"
+#include "../../../include/ppapi/cpp/core.h"
+#include "../../../include/ppapi/cpp/module.h"
+#include "../../../include/ppapi/cpp/completion_callback.h"
+#include "../../../include/ppapi/cpp/graphics_2d.h"
 
 #include <SDL/SDL.h>
 #include <GLES2/gl2.h>
 
+#define DEFINE_CALLBACK( name, code ) \
+  struct _Callback##name { \
+    static void _main##name( void* _data, int _result ) \
+    { \
+      FileDesc* _fd = static_cast<FileDesc*>( _data ); \
+      static_cast<void>( _fd ); \
+      static_cast<void>( _result ); \
+      code \
+    } \
+  };
+
+#define CALLBACK_OBJECT( name, arg ) \
+  pp::CompletionCallback( _Callback##name::_main##name, arg )
+
+#define MAIN_CALL( code ) \
+  { \
+    DEFINE_CALLBACK( Main, code mainBarrier.finish(); ) \
+    mainBarrier.begin(); \
+    System::core->CallOnMainThread( 0, CALLBACK_OBJECT( Main, null ) ); \
+    mainBarrier.wait(); \
+  }
+
 using namespace oz;
 
-static Barrier main;
-static Barrier aux;
+static Semaphore mainSemaphore;
 
-int ozMain( int, char** )
+int main( int, char** )
 {
   System::init();
 
-  Time t = Time::local();
-  log.println( "[%02d:%02d:%02d] START", t.hour, t.minute, t.second );
-
-  main.init();
-  aux.init();
+  Log::print( "[" ); Log::printTime(); Log::printEnd( "] START" );
 
   File::init( File::TEMPORARY, 1024 );
 
-  File file( "/drek.text" );
+  File file( "/drek.txt" );
 
-  if( file.stat() ) {
-    log.println( "Type: %s", file.type() == File::DIRECTORY ? "DIRECTORY" : "REGULAR" );
-    log.println( "Size: %d", file.size() );
+  char s[] = "Drek na palci";
+  if( !file.write( s, String::length( s ) ) ) {
+    printf( "ERROR\n" );
   }
 
-  Buffer b = file.read();
-
-  putchar( '\"' );
-  for( int i = 0; i < b.length(); ++i ) {
-    putchar( b[i] );
+  if( !file.map() ) {
+    printf( "2ERROR\n" );
   }
-  puts( "\"" );
+
+  InputStream is = file.inputStream();
+  while( is.isAvailable() ) {
+    printf( "%c", is.readChar() );
+  }
+  printf( "\n" );
 
   File::free();
 
-  aux.free();
-  main.free();
-
-  t = Time::local();
-  log.println( "[%02d:%02d:%02d] END", t.hour, t.minute, t.second );
+  Log::print( "[" ); Log::printTime(); Log::printEnd( "] END" );
   return 0;
 }

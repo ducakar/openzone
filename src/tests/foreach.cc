@@ -22,6 +22,7 @@
  */
 
 #include "oz/oz.hh"
+#include "ozmain/main.hh"
 
 #include <cstdio>
 
@@ -39,7 +40,7 @@ struct Elem
   {}
 };
 
-int main()
+int main( int, char** )
 {
   List<Elem, 0> l;
   DList<Elem, 0> dl;

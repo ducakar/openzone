@@ -45,7 +45,7 @@ Loader loader;
 
 Loader::ScreenshotInfo Loader::screenshotInfo;
 
-int Loader::screenshotMain( void* )
+void Loader::screenshotMain()
 {
   // flip image
   char* top    = screenshotInfo.pixels;
@@ -72,23 +72,20 @@ int Loader::screenshotMain( void* )
   SDL_FreeSurface( surf );
 
   delete[] screenshotInfo.pixels;
-
-  return 0;
 }
 
-int Loader::preloadMain( void* )
+void Loader::preloadMain()
 {
   try {
     loader.preloadRun();
   }
   catch( const std::exception& e ) {
-    log.verboseMode = false;
-    log.printException( &e );
+    Log::verboseMode = false;
+    Log::printException( &e );
 
     System::bell();
     System::abort();
   }
-  return 0;
 }
 
 void Loader::cleanupRender()
@@ -376,21 +373,20 @@ void Loader::uploadRender()
 
 void Loader::preloadRun()
 {
-  SDL_SemWait( preloadAuxSemaphore );
+  preloadAuxSemaphore.wait();
 
   while( isPreloadAlive ) {
     preloadRender();
 
-    SDL_SemPost( preloadMainSemaphore );
-    SDL_SemWait( preloadAuxSemaphore );
+    preloadMainSemaphore.post();
+    preloadAuxSemaphore.wait();
   }
 }
 
 void Loader::makeScreenshot()
 {
-  if( screenshotThread != null ) {
-    SDL_WaitThread( screenshotThread, null );
-    screenshotThread = null;
+  if( screenshotThread.isValid() ) {
+    screenshotThread.join();
   }
 
   Time time = Time::local();
@@ -400,7 +396,7 @@ void Loader::makeScreenshot()
             config.get( "dir.config", "" ),
             time.year, time.month, time.day, time.hour, time.minute, time.second );
 
-  log.println( "Screenshot to '%s' scheduled in background thread", screenshotInfo.path );
+  Log::println( "Screenshot to '%s' scheduled in background thread", screenshotInfo.path );
 
   screenshotInfo.width  = camera.width;
   screenshotInfo.height = camera.height;
@@ -408,83 +404,77 @@ void Loader::makeScreenshot()
 
   glReadPixels( 0, 0, camera.width, camera.height, GL_RGB, GL_UNSIGNED_BYTE, screenshotInfo.pixels );
 
-  screenshotThread = SDL_CreateThread( screenshotMain, null );
+  screenshotThread.start( screenshotMain );
 }
 
 void Loader::syncUpdate()
 {
-  log.verboseMode = true;
+  Log::verboseMode = true;
 
   hasTime = true;
 
   preloadRender();
   uploadRender();
 
-  log.verboseMode = false;
+  Log::verboseMode = false;
 }
 
 void Loader::update()
 {
-  log.verboseMode = true;
+  Log::verboseMode = true;
 
   cleanupSound();
 
-  log.verboseMode = false;
+  Log::verboseMode = false;
 
-  if( SDL_SemTryWait( preloadMainSemaphore ) != 0 ) {
+  if( !preloadMainSemaphore.tryWait() ) {
     return;
   }
 
-  log.verboseMode = true;
+  Log::verboseMode = true;
 
   cleanupRender();
   uploadRender();
 
-  log.verboseMode = false;
+  Log::verboseMode = false;
 
-  SDL_SemPost( preloadAuxSemaphore );
+  preloadAuxSemaphore.post();
 }
 
 void Loader::load()
 {
   tick = 0;
 
-  SDL_SemPost( preloadAuxSemaphore );
+  preloadAuxSemaphore.post();
 }
 
 void Loader::unload()
 {
-  SDL_SemWait( preloadMainSemaphore );
+  preloadMainSemaphore.wait();
 }
 
 void Loader::init()
 {
-  isPreloadAlive       = true;
+  isPreloadAlive = true;
 
-  preloadMainSemaphore = SDL_CreateSemaphore( 0 );
-  preloadAuxSemaphore  = SDL_CreateSemaphore( 0 );
+  preloadMainSemaphore.init();
+  preloadAuxSemaphore.init();
 
-  screenshotThread     = null;
-  preloadThread        = SDL_CreateThread( preloadMain, null );
+  preloadThread.start( preloadMain );
 }
 
 void Loader::free()
 {
   isPreloadAlive = false;
 
-  SDL_SemPost( preloadAuxSemaphore );
-  SDL_WaitThread( preloadThread, null );
+  preloadAuxSemaphore.post();
+  preloadThread.join();
 
-  SDL_DestroySemaphore( preloadAuxSemaphore );
-  SDL_DestroySemaphore( preloadMainSemaphore );
+  preloadAuxSemaphore.destroy();
+  preloadMainSemaphore.destroy();
 
-  preloadAuxSemaphore  = null;
-  preloadMainSemaphore = null;
-  preloadThread        = null;
-
-  if( screenshotThread != null ) {
-    SDL_WaitThread( screenshotThread, null );
-    screenshotThread = null;
+  if( screenshotThread.isValid() ) {
+    screenshotThread.join();
   }
 }
 

@@ -27,7 +27,7 @@
 
 #include "client/Camera.hh"
 
-#include <limits>
+#include <climits>
 
 #define OZ_DLDECL( name ) \
   static decltype( ::name )* name = null
@@ -65,26 +65,26 @@ OZ_DLDECL( NeAACDecDecode    );
 
 #endif
 
-#ifndef __native_client__
 static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle );
 static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, null, null, null };
 
 static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle )
 {
-  return size_t( PHYSFS_read( static_cast<PHYSFS_File*>( handle ), buffer,
-                              uint( size ), uint( n ) ) );
+  InputStream* istream = static_cast<InputStream*>( handle );
+  int count = min( int( n * size ), istream->available() );
+  memcpy( buffer, istream->forward( count ), size_t( count ) );
+  return size_t( count );
 }
-#endif
 
 #ifdef OZ_NONFREE
 
 inline short madFixedToShort( mad_fixed_t f )
 {
   if( f < -MAD_F_ONE ) {
-    return std::numeric_limits<short>::min();
+    return SHRT_MAX;
   }
   else if( f > MAD_F_ONE ) {
-    return std::numeric_limits<short>::max();
+    return SHRT_MIN;
   }
   else {
     return short( f >> ( MAD_F_FRACBITS - 15 ) );
@@ -93,34 +93,32 @@ inline short madFixedToShort( mad_fixed_t f )
 
 #endif
 
-int Sound::musicMain( void* )
+void Sound::musicMain()
 {
   try {
     sound.musicRun();
   }
   catch( const std::exception& e ) {
-    log.verboseMode = false;
-    log.printException( &e );
+    Log::verboseMode = false;
+    Log::printException( &e );
 
     System::bell();
     System::abort();
   }
-  return 0;
 }
 
-int Sound::soundMain( void* )
+void Sound::soundMain()
 {
   try {
     sound.soundRun();
   }
   catch( const std::exception& e ) {
-    log.verboseMode = false;
-    log.printException( &e );
+    Log::verboseMode = false;
+    Log::printException( &e );
 
     System::bell();
     System::abort();
   }
-  return 0;
 }
 
 void Sound::musicOpen( const char* path )
@@ -157,18 +155,17 @@ void Sound::musicOpen( const char* path )
       break;
     }
     case OGG: {
-#ifndef __native_client__
-      musicFile = PHYSFS_openRead( path );
-      if( musicFile == null ) {
+      musicFile.setPath( path );
+      if( !musicFile.map() ) {
         throw Exception( "Failed to open file '%s'", path );
       }
 
-      if( ov_open_callbacks( musicFile, &oggStream, null, 0, VORBIS_CALLBACKS ) < 0 ) {
+      musicStream = musicFile.inputStream();
+      if( ov_open_callbacks( &musicStream, &oggStream, null, 0, VORBIS_CALLBACKS ) < 0 ) {
         throw Exception( "Failed to open Ogg stream in '%s'", path );
       }
 
       vorbis_info* vorbisInfo = ov_info( &oggStream, -1 );
-
       if( vorbisInfo == null ) {
         throw Exception( "Corrupted Vorbis header in '%s'", path );
       }
@@ -185,33 +182,31 @@ void Sound::musicOpen( const char* path )
       else {
         throw Exception( "Invalid number of channels in '%s', should be 1 or 2", path );
       }
-#endif
 
       break;
     }
 #ifdef OZ_NONFREE
     case MP3: {
-      musicFile = PHYSFS_openRead( path );
-      if( musicFile == null ) {
+      musicFile.setPath( path );
+      if( !musicFile.map() ) {
         throw Exception( "Failed to open file '%s'", path );
       }
+
+      musicStream = musicFile.inputStream();
 
       mad_stream_init( &madStream );
       mad_frame_init( &madFrame );
       mad_synth_init( &madSynth );
 
-      size_t readSize = size_t( PHYSFS_read( musicFile, musicInputBuffer,
-                                             1, MUSIC_INPUT_BUFFER_SIZE ) );
-      if( readSize != size_t( MUSIC_INPUT_BUFFER_SIZE ) ) {
+      if( musicStream.available() < MUSIC_INPUT_BUFFER_SIZE ) {
         throw Exception( "Failed to read MP3 stream in '%s'", path );
       }
 
-      mad_stream_buffer( &madStream, musicInputBuffer, MUSIC_INPUT_BUFFER_SIZE );
+      mad_stream_buffer( &madStream, musicStream.forward( MUSIC_INPUT_BUFFER_SIZE ),
+                         MUSIC_INPUT_BUFFER_SIZE );
 
-      while( mad_frame_decode( &madFrame, &madStream ) != 0 ) {
-        if( !MAD_RECOVERABLE( madStream.error ) ) {
-          throw Exception( "Corrupted MP3 header in '%s'", path );
-        }
+      if( mad_frame_decode( &madFrame, &madStream ) != 0 ) {
+        throw Exception( "Corrupted MP3 header in '%s'", path );
       }
 
       mad_synth_frame( &madSynth, &madFrame );
@@ -235,37 +230,29 @@ void Sound::musicOpen( const char* path )
       break;
     }
     case AAC: {
-      musicFile = PHYSFS_openRead( path );
-      if( musicFile == null ) {
+      musicFile.setPath( path );
+      if( !musicFile.map() ) {
         throw Exception( "Failed to open file '%s'", path );
       }
 
       aacDecoder = NeAACDecOpen();
 
-      size_t readSize = size_t( PHYSFS_read( musicFile, musicInputBuffer,
-                                             1, MUSIC_INPUT_BUFFER_SIZE ) );
-      if( readSize != size_t( MUSIC_INPUT_BUFFER_SIZE ) ) {
+      musicStream = musicFile.inputStream();
+      if( musicStream.available() < MUSIC_INPUT_BUFFER_SIZE ) {
         throw Exception( "Failed to read AAC stream in '%s'", path );
       }
 
       ulong aacRate;
       ubyte aacChannels;
 
-      long skipBytes = NeAACDecInit( aacDecoder, musicInputBuffer, MUSIC_INPUT_BUFFER_SIZE,
-                                     &aacRate, &aacChannels );
+      long skipBytes = NeAACDecInit( aacDecoder, musicStream.forward( MUSIC_INPUT_BUFFER_SIZE ),
+                                     MUSIC_INPUT_BUFFER_SIZE, &aacRate, &aacChannels );
       if( skipBytes < 0 ) {
         throw Exception( "Corrupted AAC header in '%s'", path );
       }
 
-      memmove( musicInputBuffer, musicInputBuffer + skipBytes, size_t( skipBytes ) );
-
-      readSize = size_t( PHYSFS_read( musicFile,
-                                      musicInputBuffer + MUSIC_INPUT_BUFFER_SIZE - skipBytes,
-                                      1, uint( skipBytes ) ) );
-
-      if( readSize != size_t( skipBytes ) ) {
-        throw Exception( "Failed to read AAC stream in '%s'", path );
-      }
+      musicStream.reset();
+      musicStream.forward( skipBytes );
 
       aacBufferBytes  = 0;
       aacWrittenBytes = 0;
@@ -301,11 +288,9 @@ void Sound::musicClear()
       break;
     }
     case OGG: {
-#ifndef __native_client__
       ov_clear( &oggStream );
 
-      PHYSFS_close( musicFile );
-#endif
+      musicFile.unmap();
       break;
     }
 #ifdef OZ_NONFREE
@@ -314,13 +299,13 @@ void Sound::musicClear()
       mad_frame_finish( &madFrame );
       mad_stream_finish( &madStream );
 
-      PHYSFS_close( musicFile );
+      musicFile.unmap();
       break;
     }
     case AAC: {
       NeAACDecClose( aacDecoder );
 
-      PHYSFS_close( musicFile );
+      musicFile.unmap();
       break;
     }
 #else
@@ -339,7 +324,6 @@ int Sound::musicDecode()
     }
     case OGG: {
       int bytesRead = 0;
-#ifndef __native_client__
       int result;
       int section;
 
@@ -354,7 +338,6 @@ int Sound::musicDecode()
         }
       }
       while( result > 0 && bytesRead < MUSIC_BUFFER_SIZE );
-#endif
 
       return bytesRead;
     }
@@ -389,21 +372,20 @@ int Sound::musicDecode()
             }
             else {
               bytesLeft = size_t( madStream.bufend - madStream.next_frame );
-
-              memmove( musicInputBuffer, madStream.next_frame, bytesLeft );
             }
 
-            size_t bytesRead = size_t( PHYSFS_read( musicFile, musicInputBuffer + bytesLeft, 1,
-                                                    uint( MUSIC_INPUT_BUFFER_SIZE - bytesLeft ) ) );
+            int bytesRead = min( musicStream.available(), MUSIC_INPUT_BUFFER_SIZE - bytesLeft );
+            musicStream.forward( bytesRead );
 
             if( bytesRead == 0 ) {
               return int( reinterpret_cast<char*>( musicOutput ) - musicBuffer );
             }
             else if( bytesRead < MUSIC_INPUT_BUFFER_SIZE - bytesLeft ) {
-              memset( musicInputBuffer + bytesLeft + bytesRead, 0, MAD_BUFFER_GUARD );
+//               memset( musicInputBuffer + bytesLeft + bytesRead, 0, MAD_BUFFER_GUARD );
             }
 
-            mad_stream_buffer( &madStream, musicInputBuffer, bytesLeft + bytesRead );
+            mad_stream_buffer( &madStream, musicStream.getPos() - bytesLeft - bytesRead,
+                               bytesLeft + bytesRead );
           }
           else if( !MAD_RECOVERABLE( madStream.error ) ) {
             throw Exception( "Unrecoverable error during MP3 decoding of '%s'",
@@ -441,8 +423,7 @@ int Sound::musicDecode()
         }
 
         NeAACDecFrameInfo frameInfo;
-        aacOutputBuffer = static_cast<char*>
-                          ( NeAACDecDecode( aacDecoder, &frameInfo, musicInputBuffer, aacInputBytes ) );
+        aacOutputBuffer = static_cast<char*>( NeAACDecDecode( aacDecoder, &frameInfo, musicInputBuffer, aacInputBytes ) );
 
         if( aacOutputBuffer == null ) {
           return int( musicOutput - musicBuffer );
@@ -475,8 +456,8 @@ void Sound::musicRun()
   streamedTrack = -1;
 
   while( isMusicAlive ) {
-    SDL_SemPost( musicMainSemaphore );
-    SDL_SemWait( musicAuxSemaphore );
+    musicMainSemaphore.post();
+    musicAuxSemaphore.wait();
 
     if( currentTrack != streamedTrack ) {
       if( streamedTrack != -1 ) {
@@ -524,7 +505,7 @@ void Sound::playCell( int cellX, int cellY )
 
 void Sound::updateMusic()
 {
-  if( SDL_SemTryWait( musicMainSemaphore ) != 0 ) {
+  if( !musicMainSemaphore.tryWait() ) {
     return;
   }
 
@@ -544,15 +525,15 @@ void Sound::updateMusic()
       alSourceUnqueueBuffers( musicSource, nQueued, buffers );
     }
 
-    SDL_SemPost( musicAuxSemaphore );
+    musicAuxSemaphore.post();
   }
   else if( currentTrack == -1 ) {
-    SDL_SemPost( musicMainSemaphore );
+    musicMainSemaphore.post();
   }
   else if( streamedBytes == 0 ) {
     currentTrack = -1;
 
-    SDL_SemPost( musicAuxSemaphore );
+    musicAuxSemaphore.post();
   }
   else {
     bool hasLoaded = false;
@@ -587,10 +568,10 @@ void Sound::updateMusic()
     }
 
     if( hasLoaded ) {
-      SDL_SemPost( musicAuxSemaphore );
+      musicAuxSemaphore.post();
     }
     else {
-      SDL_SemPost( musicMainSemaphore );
+      musicMainSemaphore.post();
     }
   }
 
@@ -599,7 +580,7 @@ void Sound::updateMusic()
 
 void Sound::soundRun()
 {
-  SDL_SemWait( soundAuxSemaphore );
+  soundAuxSemaphore.wait();
 
   while( isSoundAlive ) {
     float orientation[] = {
@@ -630,8 +611,8 @@ void Sound::soundRun()
 
     updateMusic();
 
-    SDL_SemPost( soundMainSemaphore );
-    SDL_SemWait( soundAuxSemaphore );
+    soundMainSemaphore.post();
+    soundAuxSemaphore.wait();
   }
 }
 
@@ -677,36 +658,36 @@ void Sound::suspend() const
 
 void Sound::play()
 {
-  SDL_SemPost( soundAuxSemaphore );
+  soundAuxSemaphore.post();
 }
 
 void Sound::sync()
 {
-  SDL_SemWait( soundMainSemaphore );
+  soundMainSemaphore.wait();
 }
 
 void Sound::init()
 {
-  log.println( "Initialising Sound {" );
-  log.indent();
+  Log::println( "Initialising Sound {" );
+  Log::indent();
 
   const char* deviceSpec = alcGetString( null, ALC_DEVICE_SPECIFIER );
 
-  log.verboseMode = true;
-  log.println( "Available OpenAL devices {" );
-  log.indent();
+  Log::verboseMode = true;
+  Log::println( "Available OpenAL devices {" );
+  Log::indent();
 
   for( const char* s = deviceSpec; *s != '\0'; s += String::length( s ) + 1 ) {
-    log.println( "%s", s );
+    Log::println( "%s", s );
   }
 
-  log.unindent();
-  log.println( "}" );
-  log.verboseMode = false;
+  Log::unindent();
+  Log::println( "}" );
+  Log::verboseMode = false;
 
   const char* deviceName = config.getSet( "sound.device", "" );
 
-  log.print( "Initialising device '%s' ...", deviceName );
+  Log::print( "Initialising device '%s' ...", deviceName );
 
   soundDevice = alcOpenDevice( deviceName );
   if( soundDevice == null ) {
@@ -729,11 +710,11 @@ void Sound::init()
     throw Exception( "Failed to select OpenAL context" );
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 
   OZ_AL_CHECK_ERROR();
 
-  log.println( "OpenAL device: %s", alcGetString( soundDevice, ALC_DEVICE_SPECIFIER ) );
+  Log::println( "OpenAL device: %s", alcGetString( soundDevice, ALC_DEVICE_SPECIFIER ) );
 
   int nAttributes;
   alcGetIntegerv( soundDevice, ALC_ATTRIBUTES_SIZE, 1, &nAttributes );
@@ -741,29 +722,29 @@ void Sound::init()
   int* attributes = new int[nAttributes];
   alcGetIntegerv( soundDevice, ALC_ALL_ATTRIBUTES, nAttributes, attributes );
 
-  log.println( "OpenAL context attributes {" );
-  log.indent();
+  Log::println( "OpenAL context attributes {" );
+  Log::indent();
 
   for( int i = 0; i < nAttributes; i += 2 ) {
     switch( attributes[i] ) {
       case ALC_FREQUENCY: {
-        log.println( "ALC_FREQUENCY: %d Hz", attributes[i + 1] );
+        Log::println( "ALC_FREQUENCY: %d Hz", attributes[i + 1] );
         break;
       }
       case ALC_REFRESH: {
-        log.println( "ALC_REFRESH: %d Hz", attributes[i + 1] );
+        Log::println( "ALC_REFRESH: %d Hz", attributes[i + 1] );
         break;
       }
       case ALC_SYNC: {
-        log.println( "ALC_SYNC: %s", attributes[i + 1] != 0 ? "on" : "off" );
+        Log::println( "ALC_SYNC: %s", attributes[i + 1] != 0 ? "on" : "off" );
         break;
       }
       case ALC_MONO_SOURCES: {
-        log.println( "ALC_MONO_SOURCES: %d", attributes[i + 1] );
+        Log::println( "ALC_MONO_SOURCES: %d", attributes[i + 1] );
         break;
       }
       case ALC_STEREO_SOURCES: {
-        log.println( "ALC_STEREO_SOURCES: %d", attributes[i + 1] );
+        Log::println( "ALC_STEREO_SOURCES: %d", attributes[i + 1] );
         break;
       }
     }
@@ -771,27 +752,27 @@ void Sound::init()
 
   delete[] attributes;
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 
-  log.println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );
-  log.println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );
-  log.println( "OpenAL version: %s", alGetString( AL_VERSION ) );
+  Log::println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );
+  Log::println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );
+  Log::println( "OpenAL version: %s", alGetString( AL_VERSION ) );
 
   String sExtensions = alGetString( AL_EXTENSIONS );
   DArray<String> extensions = sExtensions.trim().split( ' ' );
 
-  log.verboseMode = true;
-  log.println( "OpenAL extensions {" );
-  log.indent();
+  Log::verboseMode = true;
+  Log::println( "OpenAL extensions {" );
+  Log::indent();
 
   foreach( extension, extensions.citer() ) {
-    log.println( "%s", extension->cstr() );
+    Log::println( "%s", extension->cstr() );
   }
 
-  log.unindent();
-  log.println( "}" );
-  log.verboseMode = false;
+  Log::unindent();
+  Log::println( "}" );
+  Log::verboseMode = false;
 
   selectedTrack = -1;
   currentTrack  = -1;
@@ -837,26 +818,26 @@ void Sound::init()
 
 #endif
 
-  isMusicAlive       = true;
-  isSoundAlive       = true;
+  isMusicAlive = true;
+  isSoundAlive = true;
 
-  musicMainSemaphore = SDL_CreateSemaphore( 0 );
-  musicAuxSemaphore  = SDL_CreateSemaphore( 0 );
-  soundMainSemaphore = SDL_CreateSemaphore( 0 );
-  soundAuxSemaphore  = SDL_CreateSemaphore( 0 );
+  musicMainSemaphore.init();
+  musicAuxSemaphore.init();
+  soundMainSemaphore.init();
+  soundAuxSemaphore.init();
 
-  musicThread        = SDL_CreateThread( musicMain, null );
-  soundThread        = SDL_CreateThread( soundMain, null );
+  musicThread.start( musicMain );
+  soundThread.start( soundMain );
 
-  log.unindent();
-  log.println( "}" );
+  Log::unindent();
+  Log::println( "}" );
 
   OZ_AL_CHECK_ERROR();
 }
 
 void Sound::free()
 {
-  log.print( "Freeing Sound ..." );
+  Log::print( "Freeing Sound ..." );
 
   selectedTrack = -1;
   currentTrack  = -1;
@@ -865,19 +846,15 @@ void Sound::free()
   isSoundAlive = false;
   isMusicAlive = false;
 
-  SDL_SemPost( soundAuxSemaphore );
-  SDL_SemPost( musicAuxSemaphore );
-  SDL_WaitThread( soundThread, null );
-  SDL_WaitThread( musicThread, null );
+  soundAuxSemaphore.post();
+  musicAuxSemaphore.post();
+  soundThread.join();
+  musicThread.join();
 
-  SDL_DestroySemaphore( soundAuxSemaphore );
-  SDL_DestroySemaphore( soundMainSemaphore );
-  SDL_DestroySemaphore( musicAuxSemaphore );
-  SDL_DestroySemaphore( musicMainSemaphore );
-
-  musicAuxSemaphore  = null;
-  musicMainSemaphore = null;
-  musicThread        = null;
+  soundAuxSemaphore.destroy();
+  soundMainSemaphore.destroy();
+  musicAuxSemaphore.destroy();
+  musicMainSemaphore.destroy();
 
 #ifdef OZ_NONFREE
   if( libfaad != null ) {
@@ -904,7 +881,7 @@ void Sound::free()
     soundDevice = null;
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 }

@@ -6,14 +6,14 @@ project( openzone C CXX )
 # Configuration
 #
 
-set( OZ_VERSION "0.2.85" CACHE STRING "" FORCE )
-set( OZ_SOVERSION "0" CACHE STRING "" FORCE )
+set( OZ_VERSION "0.2.85" )
+set( OZ_SOVERSION "0" )
 
 option( OZ_STATIC_LIB "Create liboz as static library instead of shared." OFF )
 option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory leaks." ON )
 
-set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
-set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
+set( OZ_APPLICATION_NAME "openzone" )
+set( OZ_APPLICATION_TITLE "OpenZone" )
 
 option( OZ_GL_COMPATIBLE "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." OFF )
 option( OZ_NETWORKING "Enable networking (not supported yet)." OFF )
@@ -37,18 +37,17 @@ if( NACL )
   set( OZ_NONFREE OFF )
 endif()
 
+# FIXME temporary
+if( WIN32 )
+  set( OZ_STATIC_LIB ON )
+endif()
+
 if( NOT CMAKE_BUILD_TYPE )
   set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Debug RelWithDebInfo Release ReleaseGen ReleaseUse" FORCE )
 endif()
 
-if( NACL64 )
+if( NACL )
   set( CMAKE_SYSTEM_NAME "NaCl" )
-  set( CMAKE_SYSTEM_PROCESSOR "x86_64" )
-elseif( NACL32 )
-  set( CMAKE_SYSTEM_NAME "NaCl" )
-  set( CMAKE_SYSTEM_PROCESSOR "i686" )
-elseif( WIN32 )
-  set( CMAKE_SYSTEM_PROCESSOR "i686" )
 endif()
 
 set( OZ_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" CACHE STRING "" FORCE )
@@ -71,10 +70,30 @@ mark_as_advanced( OZ_SYSTEM_NAME )
 # Libraries
 #
 
+find_package( PhysFS REQUIRED )
+find_package( SDL REQUIRED )
+find_package( SDL_ttf REQUIRED )
+find_package( Lua51 REQUIRED )
+find_package( OpenAL REQUIRED )
+
+find_library( PTHREAD_LIBRARY pthread )
+find_library( FREEIMAGE_LIBRARY freeimage )
+find_library( VORBISFILE_LIBRARY vorbisfile )
+
+mark_as_advanced( PTHREAD_LIBRARY )
+mark_as_advanced( PHYSFS_INCLUDE_DIR )
+mark_as_advanced( PHYSFS_LIBRARY )
+mark_as_advanced( SDL_INCLUDE_DIR )
+mark_as_advanced( SDL_LIBRARY )
+mark_as_advanced( SDLMAIN_LIBRARY )
+mark_as_advanced( SDLTTF_INCLUDE_DIR )
+mark_as_advanced( SDLTTF_LIBRARY )
+mark_as_advanced( FREEIMAGE_LIBRARY )
+mark_as_advanced( VORBISFILE_LIBRARY )
+
 if( NACL )
   find_package( ZLIB REQUIRED )
 
-  find_library( PTHREAD_LIBRARY pthread )
   find_library( PEPPER_LIBRARY ppapi )
   find_library( PEPPER_CXX_LIBRARY ppapi_cpp )
   find_library( PEPPER_GLES2_LIBRARY ppapi_gles2 )
@@ -82,7 +101,6 @@ if( NACL )
   find_library( OGG_LIBRARY ogg )
   find_library( VORBIS_LIBRARY vorbis )
 
-  mark_as_advanced( PTHREAD_LIBRARY )
   mark_as_advanced( PEPPER_LIBRARY )
   mark_as_advanced( PEPPER_CXX_LIBRARY )
   mark_as_advanced( PEPPER_GLES2_LIBRARY )
@@ -100,42 +118,21 @@ elseif( WIN32 )
 else()
   find_package( OpenGL REQUIRED )
 
-  find_library( PTHREAD_LIBRARY pthread )
   find_library( RT_LIBRARY rt )
   find_library( PULSESIMPLE_LIBRARY pulse-simple )
 
-  mark_as_advanced( PTHREAD_LIBRARY )
   mark_as_advanced( RT_LIBRARY )
   mark_as_advanced( PULSESIMPLE_LIBRARY )
 endif()
 
-find_package( PhysFS REQUIRED )
-find_package( SDL REQUIRED )
-find_package( SDL_ttf REQUIRED )
-find_package( Lua51 REQUIRED )
-find_package( OpenAL REQUIRED )
-
-find_library( FREEIMAGE_LIBRARY freeimage )
-find_library( VORBISFILE_LIBRARY vorbisfile )
-
-mark_as_advanced( PHYSFS_INCLUDE_DIR )
-mark_as_advanced( PHYSFS_LIBRARY )
-mark_as_advanced( SDL_INCLUDE_DIR )
-mark_as_advanced( SDL_LIBRARY )
-mark_as_advanced( SDLMAIN_LIBRARY )
-mark_as_advanced( SDLTTF_INCLUDE_DIR )
-mark_as_advanced( SDLTTF_LIBRARY )
-mark_as_advanced( FREEIMAGE_LIBRARY )
-mark_as_advanced( VORBISFILE_LIBRARY )
-
 include_directories( ${SDL_INCLUDE_DIR} )
 
 if( NACL )
-  set( libs_oz "${PTHREAD_LIBRARY}" )
+  set( libs_oz "${PTHREAD_LIBRARY};${PEPPER_CXX_LIBRARY};${PEPPER_LIBRARY}" )
 elseif( ANDROID )
-  set( libs_oz "" )
+  set( libs_oz "${PTHREAD_LIBRARY}" )
 elseif( WIN32 )
-  set( libs_oz "${WINMM_LIBRARY};${PHYSFS_LIBRARY}" )
+  set( libs_oz "${PTHREAD_LIBRARY};${WINMM_LIBRARY};${PHYSFS_LIBRARY}" )
 else()
   set( libs_oz "${PTHREAD_LIBRARY};${RT_LIBRARY};${PULSESIMPLE_LIBRARY};${PHYSFS_LIBRARY}" )
 endif()
@@ -214,8 +211,6 @@ set( CMAKE_CXX_FLAGS_RELEASEUSE "-DNDEBUG -O3 ${lto} -fprofile-use" CACHE STRING
 
 mark_as_advanced( CMAKE_CXX_FLAGS_RELEASEGEN )
 mark_as_advanced( CMAKE_CXX_FLAGS_RELEASEUSE )
-mark_as_advanced( CMAKE_EXE_LINKER_FLAGS_RELEASEGEN )
-mark_as_advanced( CMAKE_EXE_LINKER_FLAGS_RELEASEUSE )
 
 # construct flags strings for BuildInfo
 string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" OZ_CXX_FLAGS )

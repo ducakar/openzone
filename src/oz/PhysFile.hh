@@ -241,7 +241,7 @@ class PhysFile
     /**
      * Initialise PhysicsFS.
      *
-     * On NaCl <tt>System::instance()</tt> must be set prior to initialisation of VFS.
+     * On NaCl <tt>NaClModule::instance</tt> must be set prior to initialisation of VFS.
      */
     static void init();
 

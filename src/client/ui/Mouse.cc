@@ -129,7 +129,7 @@ void Mouse::draw() const
 
 void Mouse::load()
 {
-  log.print( "Loading Mouse ..." );
+  Log::print( "Loading Mouse ..." );
 
   x = Area::uiCentreX;
   y = Area::uiCentreY;
@@ -150,19 +150,19 @@ void Mouse::load()
     file.unmap();
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Mouse::unload()
 {
-  log.print( "Unloading Mouse ..." );
+  Log::print( "Unloading Mouse ..." );
 
   for( int i = 0; i < CURSORS_MAX; ++i ) {
     glDeleteTextures( 1, &cursors[i].texId );
     cursors[i].texId = 0;
   }
 
-  log.printEnd( " OK" );
+  Log::printEnd( " OK" );
 }
 
 void Mouse::init()
