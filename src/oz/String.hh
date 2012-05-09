@@ -52,7 +52,12 @@ class String
      * Thrown by parse functions if parsing fails or completes only partially.
      */
     class ParseException : public std::exception
-    {};
+    {
+      public:
+
+        virtual const char* what() const noexcept;
+
+    };
 
   private:
 

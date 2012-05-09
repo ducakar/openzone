@@ -77,7 +77,8 @@ struct Barrier
   pthread_mutex_unlock( &barrier.mutex );
 
 #define DEFINE_CALLBACK( name, code ) \
-  struct _Callback##name { \
+  struct _Callback##name \
+  { \
     static void _main##name( void* _data, int _result ) \
     { \
       FileDesc* _fd = static_cast<FileDesc*>( _data ); \

@@ -21,9 +21,9 @@
  */
 
 /**
- * @file oz/Thread.hh
+ * @file oz/Mutex.hh
  *
- * Thread class.
+ * Mutex class.
  */
 
 #pragma once
@@ -33,64 +33,69 @@
 namespace oz
 {
 
-// Internal structure for thread description.
-struct ThreadDesc;
+// Internal structure for mutex description.
+struct MutexDesc;
 
 /**
- * %Thread.
+ * %Mutex.
+ *
+ * @ingroup oz
  */
-class Thread
+class Mutex
 {
-  public:
-
-    /// %Thread's main function.
-    typedef void Main();
-
   private:
 
-    /// %Thread descriptor.
-    ThreadDesc* descriptor;
+    /// %Mutex descriptor.
+    MutexDesc* descriptor;
 
   public:
 
     /**
-     * Create instance.
+     * Create uninitialised instance.
      */
-    Thread() :
+    Mutex() :
       descriptor( null )
     {}
 
     /**
+     * Destructor.
+     */
+    ~Mutex()
+    {
+      soft_assert( descriptor == null );
+    }
+
+    /**
      * No copying.
      */
-    Thread( const Thread& ) = delete;
+    Mutex( const Mutex& ) = delete;
 
     /**
      * Move constructor, transfers ownership.
      */
-    Thread( Thread&& t ) :
-      descriptor( t.descriptor )
+    Mutex( Mutex&& m ) :
+      descriptor( m.descriptor )
     {
-      t.descriptor = null;
+      m.descriptor = null;
     }
 
     /**
      * No copying.
      */
-    Thread& operator = ( const Thread& ) = delete;
+    Mutex& operator = ( const Mutex& ) = delete;
 
     /**
      * Move operator, transfers ownership.
      */
-    Thread& operator = ( Thread&& t )
+    Mutex& operator = ( Mutex&& m )
     {
-      descriptor   = t.descriptor;
-      t.descriptor = null;
+      descriptor   = m.descriptor;
+      m.descriptor = null;
       return *this;
     }
 
     /**
-     * True iff thread has been started but not yet joined.
+     * True iff initialised.
      */
     bool isValid() const
     {
@@ -98,16 +103,29 @@ class Thread
     }
 
     /**
-     * Run thread.
-     *
-     * @param main pointer to thread's main function.
+     * Initialise mutex.
      */
-    void start( Main* main );
+    void init();
 
     /**
-     * Wait for thread to finish execution.
+     * Destroy mutex and release resources.
      */
-    void join();
+    void destroy();
+
+    /**
+     * Lock mutex.
+     */
+    void lock() const;
+
+    /**
+     * Try to lock mutex.
+     */
+    bool tryLock() const;
+
+    /**
+     * Unlock mutex.
+     */
+    void unlock() const;
 
 };
 

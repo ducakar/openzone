@@ -127,7 +127,7 @@ class Log
      * This method is only required by signal handler since it is unsafe to use print methods with
      * variable arguments from there.
      */
-    static void printSignal( int signum );
+    static void printSignal( int sigNum );
 
     /**
      * Print stack trace.

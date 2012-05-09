@@ -28,6 +28,9 @@
 
 #include "arrays.hh"
 #include "Exception.hh"
+#ifdef __native_client__
+# include "System.hh"
+#endif
 #include "Time.hh"
 
 #include "windefs.h"
@@ -35,44 +38,28 @@
 #include <cstdlib>
 #include <cstring>
 
+#ifdef __native_client__
+
+# include <ppapi/cpp/completion_callback.h>
+# include <ppapi/cpp/instance.h>
+# include <ppapi/cpp/core.h>
+
+# define CONSOLE_PUTS( s ) \
+  struct _Callback \
+  { \
+    static void _main( void* data, int ) \
+    { \
+      System::instance->PostMessage( pp::Var( static_cast<const char*>( data ) ) ); \
+    } \
+  }; \
+  System::core->CallOnMainThread( 0, pp::CompletionCallback( _Callback::_main, s ) )
+
+#endif
+
 namespace oz
 {
 
-static const char* const SIGNALS[][2] =
-{
-  { "SIG???",    "[invalid signal number]"    },
-  { "SIGHUP",    "Hangup"                     }, //  1
-  { "SIGINT",    "Interrupt"                  }, //  2
-  { "SIGQUIT",   "Quit"                       }, //  3
-  { "SIGILL",    "Illegal instruction"        }, //  4
-  { "SIGTRAP",   "Trace trap"                 }, //  5
-  { "SIGABRT",   "Abort"                      }, //  6
-  { "SIGBUS",    "BUS error"                  }, //  7
-  { "SIGFPE",    "Floating-point exception"   }, //  8
-  { "SIGKILL",   "Kill, unblockable"          }, //  9
-  { "SIGUSR1",   "User-defined signal 1"      }, // 10
-  { "SIGSEGV",   "Segmentation violation"     }, // 11
-  { "SIGUSR2",   "User-defined signal 2"      }, // 12
-  { "SIGPIPE",   "Broken pipe"                }, // 13
-  { "SIGALRM",   "Alarm clock"                }, // 14
-  { "SIGTERM",   "Termination"                }, // 15
-  { "SIGSTKFLT", "Stack fault"                }, // 16
-  { "SIGCHLD",   "Child status has changed"   }, // 17
-  { "SIGCONT",   "Continue"                   }, // 18
-  { "SIGSTOP",   "Stop, unblockable"          }, // 19
-  { "SIGTSTP",   "Keyboard stop"              }, // 20
-  { "SIGTTIN",   "Background read from tty"   }, // 21
-  { "SIGTTOU",   "Background write to tty"    }, // 22
-  { "SIGURG",    "Urgent condition on socket" }, // 23
-  { "SIGXCPU",   "CPU limit exceeded"         }, // 24
-  { "SIGXFSZ",   "File size limit exceeded"   }, // 25
-  { "SIGVTALRM", "Virtual alarm clock"        }, // 26
-  { "SIGPROF",   "Profiling alarm clock"      }, // 27
-  { "SIGWINCH",  "Window size change"         }, // 28
-  { "SIGIO",     "I/O now possible"           }, // 29
-  { "SIGPWR",    "Power failure restart"      }, // 30
-  { "SIGSYS",    "Bad system call"            }  // 31
-};
+static const int BUFFER_SIZE = 1024;
 
 static char  filePath[256];
 static FILE* file = 0;
@@ -105,103 +92,104 @@ void Log::unindent()
 
 void Log::vprintRaw( const char* s, va_list ap )
 {
-  va_list ap2;
-  va_copy( ap2, ap );
+  char buffer[BUFFER_SIZE];
+
+  vsnprintf( buffer, BUFFER_SIZE, s, ap );
 
   if( !verboseMode || showVerbose || file == null ) {
-    vprintf( s, ap );
+    fputs( buffer, stdout );
   }
+#ifdef __native_client__
+  CONSOLE_PUTS( buffer );
+#else
   if( file != null ) {
-    vfprintf( file, s, ap2 );
-
+    fputs( buffer, file );
     fflush( file );
   }
+#endif
 }
 
 void Log::printRaw( const char* s, ... )
 {
   va_list ap;
+  char buffer[BUFFER_SIZE];
+
+  va_start( ap, s );
+  vsnprintf( buffer, BUFFER_SIZE, s, ap );
+  va_end( ap );
 
   if( !verboseMode || showVerbose || file == null ) {
-    va_start( ap, s );
-
-    vprintf( s, ap );
-
-    va_end( ap );
+    fputs( buffer, stdout );
   }
+#ifdef __native_client__
+  CONSOLE_PUTS( buffer );
+#else
   if( file != null ) {
-    va_start( ap, s );
-
-    vfprintf( file, s, ap );
-
-    va_end( ap );
-
+    fputs( buffer, file );
     fflush( file );
   }
+#endif
 }
 
 void Log::print( const char* s, ... )
 {
   va_list ap;
+  char buffer[BUFFER_SIZE];
+
+  va_start( ap, s );
+  vsnprintf( buffer, BUFFER_SIZE, s, ap );
+  va_end( ap );
 
   if( !verboseMode || showVerbose || file == null ) {
     for( int i = 0; i < tabs; ++i ) {
-      printf( "  " );
+      fputs( "  ", stdout );
     }
-
-    va_start( ap, s );
-
-    vprintf( s, ap );
-
-    va_end( ap );
+    fputs( buffer, stdout );
   }
+#ifdef __native_client__
+  CONSOLE_PUTS( buffer );
+#else
   if( file != null ) {
     for( int i = 0; i < tabs; ++i ) {
-      fprintf( file, "  " );
+      fputs( "  ", file );
     }
-
-    va_start( ap, s );
-
-    vfprintf( file, s, ap );
-
-    va_end( ap );
-
+    fputs( buffer, file );
     fflush( file );
   }
+#endif
 }
 
 void Log::printEnd( const char* s, ... )
 {
   va_list ap;
+  char buffer[BUFFER_SIZE];
+
+  va_start( ap, s );
+  vsnprintf( buffer, BUFFER_SIZE, s, ap );
+  va_end( ap );
 
   if( !verboseMode || showVerbose || file == null ) {
-    va_start( ap, s );
-
-    vprintf( s, ap );
-    printf( "\n" );
-
-    va_end( ap );
+    fputs( buffer, stdout );
+    fputc( '\n', stdout );
   }
+#ifdef __native_client__
+  CONSOLE_PUTS( buffer );
+#else
   if( file != null ) {
-    va_start( ap, s );
-
-    vfprintf( file, s, ap );
-    fprintf( file, "\n" );
-
-    va_end( ap );
-
+    fputs( buffer, file );
+    fputc( '\n', file );
     fflush( file );
   }
+#endif
 }
 
 void Log::printEnd()
 {
   if( !verboseMode || showVerbose || file == null ) {
-    printf( "\n" );
+    fputc( '\n', stdout );
   }
   if( file != null ) {
-    fprintf( file, "\n" );
-
+    fputc( '\n', file );
     fflush( file );
   }
 }
@@ -209,73 +197,83 @@ void Log::printEnd()
 void Log::println( const char* s, ... )
 {
   va_list ap;
+  char buffer[BUFFER_SIZE];
+
+  va_start( ap, s );
+  vsnprintf( buffer, BUFFER_SIZE, s, ap );
+  va_end( ap );
 
   if( !verboseMode || showVerbose || file == null ) {
     for( int i = 0; i < tabs; ++i ) {
-      printf( "  " );
+      fputs( "  ", stdout );
     }
-
-    va_start( ap, s );
-
-    vprintf( s, ap );
-    printf( "\n" );
-
-    va_end( ap );
+    fputs( buffer, stdout );
+    fputc( '\n', stdout );
   }
+#ifdef __native_client__
+  CONSOLE_PUTS( buffer );
+#else
   if( file != null ) {
     for( int i = 0; i < tabs; ++i ) {
-      fprintf( file, "  " );
+      fputs( "  ", file );
     }
-
-    va_start( ap, s );
-
-    vfprintf( file, s, ap );
-    fprintf( file, "\n" );
-
-    va_end( ap );
-
+    fputs( buffer, file );
+    fputc( '\n', file );
     fflush( file );
   }
+#endif
 }
 
 void Log::println()
 {
   if( !verboseMode || showVerbose || file == null ) {
-    printf( "\n" );
+    fputc( '\n', stdout );
   }
   if( file != null ) {
-    fprintf( file, "\n" );
-
+    fputc( '\n', file );
     fflush( file );
   }
 }
 
 void Log::printTime()
 {
+  char buffer[BUFFER_SIZE];
   Time time = Time::local();
 
-  if( !verboseMode || showVerbose || file == null ) {
-    printf( "%04d-%02d-%02d %02d:%02d:%02d",
+  snprintf( buffer, BUFFER_SIZE, "%04d-%02d-%02d %02d:%02d:%02d",
             time.year, time.month, time.day, time.hour, time.minute, time.second );
-  }
-  if( file != null ) {
-    fprintf( file, "%04d-%02d-%02d %02d:%02d:%02d",
-             time.year, time.month, time.day, time.hour, time.minute, time.second );
 
+  if( !verboseMode || showVerbose || file == null ) {
+    fputs( buffer, stdout );
+  }
+#ifdef __native_client__
+  CONSOLE_PUTS( buffer );
+#else
+  if( file != null ) {
+    fputs( buffer, file );
     fflush( file );
   }
+#endif
 }
 
-void Log::printSignal( int signum )
+void Log::printSignal( int sigNum )
 {
-  int index = uint( signum ) >= uint( aLength( SIGNALS ) ) ? 0 : signum;
+  char buffer[BUFFER_SIZE];
+
+  const char* sigName = strsignal( sigNum );
+#ifndef __linux__
+  if( sigName == null ) {
+    sigName = "Unknown";
+  }
+#endif
+
+  snprintf( buffer, BUFFER_SIZE, "\n\nCaught signal #%d (%s)\n", sigNum, sigName );
 
   if( !verboseMode || showVerbose || file == null ) {
-    printf( "\n\nCaught signal %d %s (%s)\n", signum, SIGNALS[index][0], SIGNALS[index][1] );
+    fputs( buffer, stdout );
   }
   if( file != null ) {
-    fprintf( file, "\n\nCaught signal %d %s (%s)\n", signum, SIGNALS[index][0], SIGNALS[index][1] );
-
+    fputs( buffer, file );
     fflush( file );
   }
 }
@@ -284,21 +282,29 @@ void Log::printTrace( const StackTrace* st )
 {
   if( st->nFrames == 0 ) {
     if( !verboseMode || showVerbose || file == null ) {
-      printf( "    [empty stack trace]\n" );
+      fputs( "    [empty stack trace]\n", stdout );
     }
+#ifdef __native_client__
+      CONSOLE_PUTS( const_cast<char*>( "    [empty stack trace]" ) );
+#else
     if( file != null ) {
-      fprintf( file, "    [empty stack trace]\n" );
+      fputs( "    [empty stack trace]\n", file );
     }
+#endif
   }
   else {
     char** entries = st->symbols();
 
     for( int i = 0; i < st->nFrames; ++i ) {
       if( !verboseMode || showVerbose || file == null ) {
-        printf( "    %s\n", entries[i] );
+        fputs( "    ", stdout );
+        fputs( entries[i], stdout );
+        fputc( '\n', stdout );
       }
       if( file != null ) {
-        fprintf( file, "    %s\n", entries[i] );
+        fputs( "    ", file );
+        fputs( entries[i], file );
+        fputc( '\n', file );
       }
     }
 
@@ -313,40 +319,57 @@ void Log::printTrace( const StackTrace* st )
 void Log::printException( const std::exception* e )
 {
   const Exception* oe = dynamic_cast<const Exception*>( e );
+  char buffer[BUFFER_SIZE];
 
   if( oe == null ) {
-    if( !verboseMode || showVerbose || file == null ) {
-      printf( "\n\nEXCEPTION: %s\n", e->what() );
-    }
-    if( file != null ) {
-      fprintf( file, "\n\nEXCEPTION: %s\n", e->what() );
+    snprintf( buffer, BUFFER_SIZE, "\n\nEXCEPTION: %s\n", e->what() );
 
+    if( !verboseMode || showVerbose || file == null ) {
+      fputs( buffer, stdout );
+    }
+#ifdef __native_client__
+      CONSOLE_PUTS( buffer );
+#else
+    if( file != null ) {
+      fputs( buffer, file );
       fflush( file );
     }
+#endif
   }
   else {
-    if( !verboseMode || showVerbose || file == null ) {
-      printf( "\n\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
+    snprintf( buffer, BUFFER_SIZE, "\n\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
               oe->message, oe->function, oe->file, oe->line );
+
+    if( !verboseMode || showVerbose || file == null ) {
+      fputs( buffer, stdout );
     }
+#ifdef __native_client__
+    CONSOLE_PUTS( buffer );
+#else
     if( file != null ) {
-      fprintf( file, "\n\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
-               oe->message, oe->function, oe->file, oe->line );
+      fputs( buffer, file );
     }
+#endif
 
     printTrace( &oe->stackTrace );
-
-    if( !verboseMode || showVerbose || file == null ) {
-      printf( "\n" );
-    }
-    if( file != null ) {
-      fprintf( file, "\n" );
-    }
   }
 }
 
-bool Log::init( const char* filePath_, bool doClear )
+bool Log::init( const char* filePath_, bool clearFile )
 {
+  tabs = 0;
+
+#ifdef __native_client__
+
+  static_cast<void>( filePath_ );
+  static_cast<void>( clearFile );
+
+  filePath[0] = '\0';
+  file = null;
+  return System::instance != null && System::core != null;
+
+#else
+
   if( filePath_ == null ) {
     filePath[0] = '\0';
   }
@@ -355,17 +378,17 @@ bool Log::init( const char* filePath_, bool doClear )
     filePath[255] = '\0';
   }
 
-  tabs = 0;
-
   if( file != null ) {
     fclose( file );
     file = null;
   }
   if( filePath[0] != '\0' ) {
-    file = fopen( filePath, doClear ? "w" : "a" );
+    file = fopen( filePath, clearFile ? "w" : "a" );
   }
 
   return file != null;
+
+#endif
 }
 
 void Log::free()
