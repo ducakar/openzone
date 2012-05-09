@@ -21,10 +21,10 @@
  */
 
 /**
- * @file oz/Thread.cc
+ * @file oz/Mutex.cc
  */
 
-#include "Thread.hh"
+#include "Mutex.hh"
 
 #include "Exception.hh"
 
@@ -42,75 +42,88 @@ namespace oz
 
 #ifdef _WIN32
 
-struct ThreadDesc
+struct MutexDesc
 {
-  HANDLE thread;
+  HANDLE mutex;
 };
-
-static DWORD WINAPI winMain( void* data )
-{
-  Thread::Main* main = *reinterpret_cast<Thread::Main**>( &data );
-  main();
-  return 0;
-}
 
 #else
 
-struct ThreadDesc
+struct MutexDesc
 {
-  pthread_t thread;
+  pthread_mutex_t mutex;
 };
-
-static void* pthreadMain( void* data )
-{
-  Thread::Main* main = *reinterpret_cast<Thread::Main**>( &data );
-  main();
-  return null;
-}
 
 #endif
 
-void Thread::start( Main* main )
+void Mutex::init()
 {
   hard_assert( descriptor == null );
 
-  descriptor = static_cast<ThreadDesc*>( malloc( sizeof( ThreadDesc ) ) );
+  descriptor = static_cast<MutexDesc*>( malloc( sizeof( MutexDesc ) ) );
   if( descriptor == null ) {
-    throw Exception( "Thread resource allocation failed" );
+    throw Exception( "Mutex resource allocation failed" );
   }
 
 #ifdef _WIN32
-  descriptor->thread = CreateThread( null, 0, winMain, *reinterpret_cast<void**>( &main ), 0,
-                                     null );
-  if( descriptor->thread == null ) {
-    throw Exception( "Thread creation failed" );
+  descriptor->mutex = CreateMutex( null, false, null );
+  if( descriptor->mutex == null ) {
+    free( descriptor );
+    throw Exception( "Mutex initialisation failed" );
   }
 #else
-  if( pthread_create( &descriptor->thread, null, pthreadMain,
-                      *reinterpret_cast<void**>( &main ) ) != 0 )
-  {
-    throw Exception( "Thread creation failed" );
+  if( pthread_mutex_init( &descriptor->mutex, null ) != 0 ) {
+    free( descriptor );
+    throw Exception( "Mutex initialisation failed" );
   }
 #endif
 }
 
-void Thread::join()
+void Mutex::destroy()
 {
   hard_assert( descriptor != null );
 
 #ifdef _WIN32
-  WaitForSingleObject( descriptor->thread, INFINITE );
-  CloseHandle( descriptor->thread );
+  CloseHandle( descriptor->mutex );
 #else
-  if( pthread_join( descriptor->thread, null ) != 0 ) {
-    free( descriptor );
-    descriptor = null;
-    throw Exception( "Thread join failed" );
-  }
+  pthread_mutex_destroy( &descriptor->mutex );
 #endif
 
   free( descriptor );
   descriptor = null;
+}
+
+void Mutex::lock() const
+{
+  hard_assert( descriptor != null );
+
+#ifdef _WIN32
+  WaitForSingleObject( descriptor->mutex, INFINITE );
+#else
+  pthread_mutex_lock( &descriptor->mutex );
+#endif
+}
+
+bool Mutex::tryLock() const
+{
+  hard_assert( descriptor != null );
+
+#ifdef _WIN32
+  return WaitForSingleObject( descriptor->mutex, 0 ) == WAIT_OBJECT_0;
+#else
+  return pthread_mutex_trylock( &descriptor->mutex ) == 0;
+#endif
+}
+
+void Mutex::unlock() const
+{
+  hard_assert( descriptor != null );
+
+#ifdef _WIN32
+  ReleaseMutex( descriptor->mutex );
+#else
+  pthread_mutex_unlock( &descriptor->mutex );
+#endif
 }
 
 }

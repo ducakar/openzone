@@ -6,7 +6,7 @@ project( openzone C CXX )
 # Configuration
 #
 
-set( OZ_VERSION "0.2.85" )
+set( OZ_VERSION "0.2.85" CACHE STRING "" FORCE )
 set( OZ_SOVERSION "0" )
 
 option( OZ_STATIC_LIB "Create liboz as static library instead of shared." OFF )
@@ -37,7 +37,6 @@ if( NACL )
   set( OZ_NONFREE OFF )
 endif()
 
-# FIXME temporary
 if( WIN32 )
   set( OZ_STATIC_LIB ON )
 endif()
@@ -128,9 +127,9 @@ endif()
 include_directories( ${SDL_INCLUDE_DIR} )
 
 if( NACL )
-  set( libs_oz "${PTHREAD_LIBRARY};${PEPPER_CXX_LIBRARY};${PEPPER_LIBRARY}" )
+  set( libs_oz "${PTHREAD_LIBRARY};${PHYSFS_LIBRARY};${PEPPER_CXX_LIBRARY};${PEPPER_LIBRARY}" )
 elseif( ANDROID )
-  set( libs_oz "${PTHREAD_LIBRARY}" )
+  set( libs_oz "${PTHREAD_LIBRARY};${PHYSFS_LIBRARY}" )
 elseif( WIN32 )
   set( libs_oz "${PTHREAD_LIBRARY};${WINMM_LIBRARY};${PHYSFS_LIBRARY}" )
 else()

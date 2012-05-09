@@ -130,19 +130,19 @@ static void resetSignals()
   signal( SIGSEGV, SIG_DFL );
 }
 
-static void signalHandler( int signum )
+static void signalHandler( int sigNum )
 {
   resetSignals();
 
   Log::verboseMode = false;
-  Log::printSignal( signum );
+  Log::printSignal( sigNum );
 
   StackTrace st = StackTrace::current( 1 );
   Log::printTrace( &st );
   Log::println();
 
   System::bell();
-  System::abort( signum == SIGINT );
+  System::abort( sigNum == SIGINT );
 }
 
 static void catchSignals()
@@ -211,7 +211,7 @@ System::System()
   // Disable default handler for TRAP signal that crashes the process.
   signal( SIGTRAP, SIG_IGN );
 #elif defined( _WIN32 )
-  InitializeCriticalSection( &criticalSection );
+  InitializeCriticalSection( &bellCounterLock );
 #else
   // Disable default handler for TRAP signal that crashes the process.
   signal( SIGTRAP, SIG_IGN );

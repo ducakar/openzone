@@ -21,9 +21,9 @@
  */
 
 /**
- * @file oz/Thread.hh
+ * @file oz/Semaphore.hh
  *
- * Thread class.
+ * Semaphore class.
  */
 
 #pragma once
@@ -33,64 +33,71 @@
 namespace oz
 {
 
-// Internal structure for thread description.
-struct ThreadDesc;
+// Internal structure for semaphore description.
+struct SemaphoreDesc;
 
 /**
- * %Thread.
+ * Semaphore.
+ *
+ * It is implemented as a wrapper for condition variable as it should yield better performance.
+ *
+ * @ingroup oz
  */
-class Thread
+class Semaphore
 {
-  public:
-
-    /// %Thread's main function.
-    typedef void Main();
-
   private:
 
-    /// %Thread descriptor.
-    ThreadDesc* descriptor;
+    /// %Semaphore descriptor.
+    SemaphoreDesc* descriptor;
 
   public:
 
     /**
-     * Create instance.
+     * Create uninitialised instance.
      */
-    Thread() :
+    Semaphore() :
       descriptor( null )
     {}
 
     /**
+     * Destructor.
+     */
+    ~Semaphore()
+    {
+      soft_assert( descriptor == null );
+    }
+
+    /**
      * No copying.
      */
-    Thread( const Thread& ) = delete;
+    Semaphore( const Semaphore& ) = delete;
 
     /**
      * Move constructor, transfers ownership.
      */
-    Thread( Thread&& t ) :
-      descriptor( t.descriptor )
+    Semaphore( Semaphore&& b ) :
+      descriptor( b.descriptor )
     {
-      t.descriptor = null;
+      b.descriptor = null;
     }
 
     /**
      * No copying.
      */
-    Thread& operator = ( const Thread& ) = delete;
+    Semaphore& operator = ( const Semaphore& ) = delete;
 
     /**
      * Move operator, transfers ownership.
      */
-    Thread& operator = ( Thread&& t )
+    Semaphore& operator = ( Semaphore&& b )
     {
-      descriptor   = t.descriptor;
-      t.descriptor = null;
+      descriptor   = b.descriptor;
+      b.descriptor = null;
       return *this;
     }
 
     /**
-     * True iff thread has been started but not yet joined.
+     * True iff initialised.
      */
     bool isValid() const
     {
@@ -98,17 +105,31 @@ class Thread
     }
 
     /**
-     * Run thread.
-     *
-     * @param main pointer to thread's main function.
+     * Initialise semaphore.
      */
-    void start( Main* main );
+    void init( int counterValue = 0 );
 
     /**
-     * Wait for thread to finish execution.
+     * Destroy semaphore and release resources.
      */
-    void join();
+    void destroy();
+
+    /**
+     * Atomically increment counter and signal waiting threads.
+     */
+    void post() const;
+
+    /**
+     * Wait until counter becomes positive. Then atomically decrement it and resume.
+     */
+    void wait() const;
+
+    /**
+     * If counter is positive decrement it and return true, otherwise resume and return false.
+     */
+    bool tryWait() const;
 
 };
+
 
 }

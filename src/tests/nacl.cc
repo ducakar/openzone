@@ -53,10 +53,9 @@
 
 #define MAIN_CALL( code ) \
   { \
-    DEFINE_CALLBACK( Main, code mainBarrier.finish(); ) \
-    mainBarrier.begin(); \
+    DEFINE_CALLBACK( Main, code mainSemaphore.post(); ) \
     System::core->CallOnMainThread( 0, CALLBACK_OBJECT( Main, null ) ); \
-    mainBarrier.wait(); \
+    mainSemaphore.wait(); \
   }
 
 using namespace oz;
@@ -66,6 +65,12 @@ static Semaphore mainSemaphore;
 int main( int, char** )
 {
   System::init();
+
+  mainSemaphore.init();
+
+  MAIN_CALL( {
+    System::instance->PostMessage( pp::Var( "drek" ) );
+  } )
 
   Log::print( "[" ); Log::printTime(); Log::printEnd( "] START" );
 
@@ -84,11 +89,13 @@ int main( int, char** )
 
   InputStream is = file.inputStream();
   while( is.isAvailable() ) {
-    printf( "%c", is.readChar() );
+    Log::printRaw( "%c", is.readChar() );
   }
-  printf( "\n" );
+  Log::printEnd();
 
   File::free();
+
+  mainSemaphore.destroy();
 
   Log::print( "[" ); Log::printTime(); Log::printEnd( "] END" );
   return 0;

@@ -192,7 +192,7 @@ if( !isConstructed ) {
 # if defined( __native_client__ )
     pthread_mutex_init( &traceEntryListLock, null );
 # elif defined( _WIN32 )
-    InitializeCriticalSection( &traceEntryListLock );
+    InitializeCriticalSectionAndSpinCount( &traceEntryListLock, 1000 );
 # else
     pthread_spin_init( &traceEntryListLock, PTHREAD_PROCESS_PRIVATE );
 # endif
@@ -249,7 +249,7 @@ static void* allocateArray( void* ptr, size_t size )
 # if defined( __native_client__ )
     pthread_mutex_init( &traceEntryListLock, null );
 # elif defined( _WIN32 )
-    InitializeCriticalSection( &traceEntryListLock );
+    InitializeCriticalSectionAndSpinCount( &traceEntryListLock, 1000 );
 # else
     pthread_spin_init( &traceEntryListLock, PTHREAD_PROCESS_PRIVATE );
 # endif

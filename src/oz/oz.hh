@@ -104,8 +104,10 @@
  * System.
  */
 #include "System.hh"
-#include "Thread.hh"
 #include "Time.hh"
+#include "Thread.hh"
+#include "Mutex.hh"
+#include "Semaphore.hh"
 
 /*
  * I/O.

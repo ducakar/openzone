@@ -36,6 +36,11 @@ namespace oz
 
 static const int LOCAL_BUFFER_SIZE = 4096;
 
+const char* String::ParseException::what() const noexcept
+{
+  return "oz::String::ParseException";
+}
+
 String::String( int count_, int ) :
   count( count_ )
 {
