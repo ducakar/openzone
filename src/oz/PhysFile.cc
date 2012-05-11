@@ -36,6 +36,7 @@
 #include <physfs.h>
 #ifdef __native_client__
 # include <ppapi/c/ppb.h>
+# include <ppapi/cpp/file_system.h>
 # include <ppapi/cpp/module.h>
 # include <ppapi/cpp/instance.h>
 #endif
@@ -398,34 +399,47 @@ bool PhysFile::mountLocal( const char* path )
   return true;
 }
 
-void PhysFile::init()
+void PhysFile::init( File::FilesystemType fsType )
 {
+  static_cast<void>( fsType );
+
+  const char* arg0;
+
 #if defined( __native_client__ )
 
   if( System::instance == null ) {
     throw Exception( "System::instance must be set to initialise PhysicsFS" );
   }
 
-  PPB_GetInterface getInterface = pp::Module::Get()->get_browser_interface();
-  const char* argv0 = *reinterpret_cast<const char* const*>( &getInterface );
+  struct InstanceInfo
+  {
+    PPB_GetInterface  getInterface;
+    PP_Instance       instance;
+    PP_FileSystemType filesystemType;
+  };
 
-  if( PHYSFS_init( argv0 ) == 0 ) {
-    throw Exception( "PhysicsFS initialisation failed" );
-  }
+  InstanceInfo instanceInfo = {
+    pp::Module::Get()->get_browser_interface(),
+    System::instance->pp_instance(),
+    fsType == File::PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
+                                 PP_FILESYSTEMTYPE_LOCALTEMPORARY
+  };
+
+  arg0 = reinterpret_cast<const char*>( &instanceInfo );
 
 #elif defined( __ANDROID__ ) || defined( _WIN32 )
 
-  if( PHYSFS_init( null ) == 0 ) {
-    throw Exception( "PhysicsFS initialisation failed" );
-  }
+  arg0 = null;
 
 #else
 
-  if( PHYSFS_init( program_invocation_name ) == 0 ) {
-    throw Exception( "PhysicsFS initialisation failed" );
-  }
+  arg0 = program_invocation_name;
 
 #endif
+
+  if( PHYSFS_init( arg0 ) == 0 ) {
+    throw Exception( "PhysicsFS initialisation failed: %s", PHYSFS_getLastError() );
+  }
 }
 
 void PhysFile::free()

@@ -27,8 +27,13 @@
 #include "Exception.hh"
 
 #include "System.hh"
+#include "Log.hh"
 
 #include <cstdio>
+
+#ifdef __native_client__
+# include <ppapi/cpp/core.h>
+#endif
 
 #undef Exception
 
@@ -47,11 +52,26 @@ Exception::Exception( const char* file_, int line_, const char* function_,
   va_end( ap );
 
   stackTrace = StackTrace::current( 1 );
+
+#ifdef __native_client__
+  if( System::core->IsMainThread() ) {
+    abortWith( this );
+  }
+#endif
 }
 
 const char* Exception::what() const noexcept
 {
   return message;
+}
+
+void Exception::abortWith( const std::exception* e )
+{
+  Log::verboseMode = false;
+  Log::printException( e );
+
+  System::bell();
+  System::abort();
 }
 
 }

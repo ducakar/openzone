@@ -55,26 +55,26 @@ namespace oz
 
 #ifdef __native_client__
 
-struct Barrier
+struct Semaphore
 {
   pthread_mutex_t mutex;
   pthread_cond_t  cond;
   volatile int    counter;
 };
 
-#define BARRIER_INCREMENT( barrier ) \
-  pthread_mutex_lock( &barrier.mutex ); \
-  ++barrier.counter; \
-  pthread_mutex_unlock( &barrier.mutex ); \
-  pthread_cond_signal( &barrier.cond );
+#define SEMAPHORE_POST() \
+  pthread_mutex_lock( &_fd->semaphore.mutex ); \
+  ++_fd->semaphore.counter; \
+  pthread_mutex_unlock( &_fd->semaphore.mutex ); \
+  pthread_cond_signal( &_fd->semaphore.cond )
 
-#define BARRIER_WAIT( barrier ) \
-  pthread_mutex_lock( &barrier.mutex ); \
-  while( barrier.counter == 0 ) { \
-    pthread_cond_wait( &barrier.cond, &barrier.mutex ); \
+#define SEMAPHORE_WAIT() \
+  pthread_mutex_lock( &descriptor->semaphore.mutex ); \
+  while( descriptor->semaphore.counter == 0 ) { \
+    pthread_cond_wait( &descriptor->semaphore.cond, &descriptor->semaphore.mutex ); \
   } \
-  --barrier.counter; \
-  pthread_mutex_unlock( &barrier.mutex );
+  --descriptor->semaphore.counter; \
+  pthread_mutex_unlock( &descriptor->semaphore.mutex )
 
 #define DEFINE_CALLBACK( name, code ) \
   struct _Callback##name \
@@ -86,48 +86,37 @@ struct Barrier
       static_cast<void>( _result ); \
       code \
     } \
-  };
+  }
 
 #define CALLBACK_OBJECT( name, arg ) \
   pp::CompletionCallback( _Callback##name::_main##name, arg )
 
-#define MAIN_CALL( code ) \
-  { \
-    DEFINE_CALLBACK( Main, code BARRIER_INCREMENT( _fd->mainBarrier ) ) \
-    System::core->CallOnMainThread( 0, CALLBACK_OBJECT( Main, descriptor ) ); \
-    BARRIER_WAIT( descriptor->mainBarrier ) \
-  }
+#define MAIN_CALL( name ) \
+  System::core->CallOnMainThread( 0, CALLBACK_OBJECT( name, descriptor ) )
 
 struct FileDesc
 {
-  Barrier     mainBarrier;
-  Barrier     auxBarrier;
-  File*       file;
-  pp::FileIO* fio;
-  PP_FileInfo info;
-  char*       buffer;
-  int         size;
-  int         offset;
+  Semaphore    semaphore;
+  File*        file;
+  pp::FileRef* fref;
+  pp::FileIO*  fio;
+  PP_FileInfo  info;
+  char*        buffer;
+  int          size;
+  int          offset;
 
   explicit FileDesc( File* file_ ) :
     file( file_ )
   {
-    pthread_mutex_init( &mainBarrier.mutex, null );
-    pthread_cond_init( &mainBarrier.cond, null );
-    mainBarrier.counter = 0;
-
-    pthread_mutex_init( &auxBarrier.mutex, null );
-    pthread_cond_init( &auxBarrier.cond, null );
-    auxBarrier.counter = 0;
+    pthread_mutex_init( &semaphore.mutex, null );
+    pthread_cond_init( &semaphore.cond, null );
+    semaphore.counter = 0;
   }
 
   ~FileDesc()
   {
-    pthread_cond_destroy( &auxBarrier.cond );
-    pthread_mutex_destroy( &auxBarrier.mutex );
-
-    pthread_cond_destroy( &mainBarrier.cond );
-    pthread_mutex_destroy( &mainBarrier.mutex );
+    pthread_cond_destroy( &semaphore.cond );
+    pthread_mutex_destroy( &semaphore.mutex );
   }
 };
 
@@ -135,14 +124,6 @@ struct FileDesc
 static FileDesc staticDesc( null );
 
 static pp::FileSystem* filesystem = null;
-
-DEFINE_CALLBACK( WaitMain, {
-  BARRIER_INCREMENT( _fd->mainBarrier )
-} )
-
-DEFINE_CALLBACK( WaitAux, {
-  BARRIER_INCREMENT( _fd->auxBarrier )
-} )
 
 #endif // __native_client__
 
@@ -254,10 +235,16 @@ bool File::stat()
 
 #if defined( __native_client__ )
 
+  if( filePath.equals( "/" ) ) {
+    fileType = DIRECTORY;
+    fileSize = 0;
+    return true;
+  }
+
   fileType = MISSING;
   fileSize = -1;
 
-  DEFINE_CALLBACK( Result, {
+  DEFINE_CALLBACK( queryResult, {
     if( _result == PP_OK ) {
       if( _fd->info.type == PP_FILETYPE_REGULAR ) {
         _fd->file->fileType = REGULAR;
@@ -267,32 +254,36 @@ bool File::stat()
         _fd->file->fileType = DIRECTORY;
       }
     }
-    BARRIER_INCREMENT( _fd->auxBarrier )
-  } )
-  DEFINE_CALLBACK( Query, {
-    if( _result == PP_OK ) {
-      _fd->fio->Query( &_fd->info, CALLBACK_OBJECT( Result, _fd ) );
-    }
-    else {
-      BARRIER_INCREMENT( _fd->auxBarrier )
-    }
-  } )
 
-  MAIN_CALL( {
+    delete _fd->fio;
+    SEMAPHORE_POST();
+  } );
+  DEFINE_CALLBACK( query, {
+    if( _result == PP_OK ) {
+      int ret = _fd->fio->Query( &_fd->info, CALLBACK_OBJECT( queryResult, _fd ) );
+      if( ret == PP_OK_COMPLETIONPENDING ) {
+        return;
+      }
+    }
+
+    delete _fd->fio;
+    SEMAPHORE_POST();
+  } );
+  DEFINE_CALLBACK( open, {
     _fd->fio = new pp::FileIO( System::instance );
 
-    int ret = _fd->fio->Open( pp::FileRef( *filesystem, _fd->file->filePath ),
-                              0, CALLBACK_OBJECT( Query, _fd ) );
-    if( ret != PP_OK_COMPLETIONPENDING ) {
-      BARRIER_INCREMENT( _fd->auxBarrier )
+    int ret = _fd->fio->Open( pp::FileRef( *filesystem, _fd->file->filePath ), 0,
+                              CALLBACK_OBJECT( query, _fd ) );
+    if( ret == PP_OK_COMPLETIONPENDING ) {
+      return;
     }
-  } )
 
-  BARRIER_WAIT( descriptor->auxBarrier )
-
-  MAIN_CALL( {
     delete _fd->fio;
-  } )
+    SEMAPHORE_POST();
+  } );
+
+  MAIN_CALL( open );
+  SEMAPHORE_WAIT();
 
 #elif defined( _WIN32 )
 
@@ -312,6 +303,7 @@ bool File::stat()
 
     HANDLE handle = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, null, OPEN_EXISTING,
                                 FILE_ATTRIBUTE_NORMAL, null );
+
     if( handle != null ) {
       fileSize = int( GetFileSize( handle, null ) );
 
@@ -427,49 +419,48 @@ bool File::map()
   descriptor->size   = fileSize;
   descriptor->offset = 0;
 
-  DEFINE_CALLBACK( Read, {
-    if( _result <= 0 ) {
-      BARRIER_INCREMENT( _fd->auxBarrier )
-    }
-    else {
+  DEFINE_CALLBACK( read, {
+    if( _result > 0 ) {
       _fd->offset += _result;
 
-      if( _fd->offset == _fd->size ) {
-        BARRIER_INCREMENT( _fd->auxBarrier )
-      }
-      else {
+      if( _fd->offset != _fd->size ) {
         int ret = _fd->fio->Read( _fd->offset, &_fd->buffer[_fd->offset], _fd->size - _fd->offset,
-                                  CALLBACK_OBJECT( Read, _fd ) );
-
-        if( ret != PP_OK_COMPLETIONPENDING ) {
-          BARRIER_INCREMENT( _fd->auxBarrier )
+                                  CALLBACK_OBJECT( read, _fd ) );
+        if( ret == PP_OK_COMPLETIONPENDING ) {
+          return;
         }
       }
     }
-  } )
-  DEFINE_CALLBACK( BeginRead, {
-    int ret = _fd->fio->Read( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( Read, _fd ) );
-    if( ret != PP_OK_COMPLETIONPENDING ) {
-      BARRIER_INCREMENT( _fd->auxBarrier )
-    }
-  } )
 
-  MAIN_CALL( {
+    delete _fd->fio;
+    SEMAPHORE_POST();
+  } );
+  DEFINE_CALLBACK( beginRead, {
+    if( _result == PP_OK ) {
+      int ret = _fd->fio->Read( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( read, _fd ) );
+      if( ret == PP_OK_COMPLETIONPENDING ) {
+        return;
+      }
+    }
+
+    delete _fd->fio;
+    SEMAPHORE_POST();
+  } );
+  DEFINE_CALLBACK( open, {
     _fd->fio = new pp::FileIO( System::instance );
 
-    int ret = _fd->fio->Open( pp::FileRef( *filesystem, _fd->file->filePath ),
-                              PP_FILEOPENFLAG_READ, CALLBACK_OBJECT( BeginRead, _fd ) );
-
-    if( ret != PP_OK_COMPLETIONPENDING ) {
-      BARRIER_INCREMENT( _fd->auxBarrier )
+    int ret = _fd->fio->Open( pp::FileRef( *filesystem, _fd->file->filePath ), PP_FILEOPENFLAG_READ,
+                              CALLBACK_OBJECT( beginRead, _fd ) );
+    if( ret == PP_OK_COMPLETIONPENDING ) {
+      return;
     }
-  } )
 
-  BARRIER_WAIT( descriptor->auxBarrier )
-
-  MAIN_CALL( {
     delete _fd->fio;
-  } )
+    SEMAPHORE_POST();
+  } );
+
+  MAIN_CALL( open );
+  SEMAPHORE_WAIT();
 
   if( descriptor->offset < fileSize ) {
     delete[] data;
@@ -579,50 +570,48 @@ Buffer File::read()
   descriptor->size   = fileSize;
   descriptor->offset = 0;
 
-  DEFINE_CALLBACK( Read, {
-    if( _result <= 0 ) {
-      BARRIER_INCREMENT( _fd->auxBarrier )
-    }
-    else {
+  DEFINE_CALLBACK( read, {
+    if( _result > 0 ) {
       _fd->offset += _result;
 
-      if( _fd->offset == _fd->size ) {
-        BARRIER_INCREMENT( _fd->auxBarrier )
-      }
-      else {
+      if( _fd->offset != _fd->size ) {
         int ret = _fd->fio->Read( _fd->offset, &_fd->buffer[_fd->offset], _fd->size - _fd->offset,
-                                  CALLBACK_OBJECT( Read, _fd ) );
-
-        if( ret != PP_OK_COMPLETIONPENDING ) {
-          BARRIER_INCREMENT( _fd->auxBarrier )
+                                  CALLBACK_OBJECT( read, _fd ) );
+        if( ret == PP_OK_COMPLETIONPENDING ) {
+          return;
         }
       }
     }
-  } )
-  DEFINE_CALLBACK( BeginRead, {
-    int ret = _fd->fio->Read( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( Read, _fd ) );
 
-    if( ret != PP_OK_COMPLETIONPENDING ) {
-      BARRIER_INCREMENT( _fd->auxBarrier )
+    delete _fd->fio;
+    SEMAPHORE_POST();
+  } );
+  DEFINE_CALLBACK( beginRead, {
+    if( _result == PP_OK ) {
+      int ret = _fd->fio->Read( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( read, _fd ) );
+      if( ret == PP_OK_COMPLETIONPENDING ) {
+        return;
+      }
     }
-  } )
 
-  MAIN_CALL( {
+    delete _fd->fio;
+    SEMAPHORE_POST();
+  } );
+  DEFINE_CALLBACK( open, {
     _fd->fio = new pp::FileIO( System::instance );
 
-    int ret = _fd->fio->Open( pp::FileRef( *filesystem, _fd->file->filePath ),
-                              PP_FILEOPENFLAG_READ, CALLBACK_OBJECT( BeginRead, _fd ) );
-
-    if( ret != PP_OK_COMPLETIONPENDING ) {
-      BARRIER_INCREMENT( _fd->auxBarrier )
+    int ret = _fd->fio->Open( pp::FileRef( *filesystem, _fd->file->filePath ), PP_FILEOPENFLAG_READ,
+                              CALLBACK_OBJECT( beginRead, _fd ) );
+    if( ret == PP_OK_COMPLETIONPENDING ) {
+      return;
     }
-  } )
 
-  BARRIER_WAIT( descriptor->auxBarrier )
-
-  MAIN_CALL( {
     delete _fd->fio;
-  } )
+    SEMAPHORE_POST();
+  } );
+
+  MAIN_CALL( open );
+  SEMAPHORE_WAIT();
 
   if( descriptor->offset < fileSize ) {
     buffer.dealloc();
@@ -694,51 +683,49 @@ bool File::write( const char* buffer, int size )
   descriptor->size   = size;
   descriptor->offset = 0;
 
-  DEFINE_CALLBACK( Write, {
-    if( _result <= 0 ) {
-      BARRIER_INCREMENT( _fd->auxBarrier )
-    }
-    else {
+  DEFINE_CALLBACK( write, {
+    if( _result > 0 ) {
       _fd->offset += _result;
 
-      if( _fd->offset == _fd->size ) {
-        BARRIER_INCREMENT( _fd->auxBarrier )
-      }
-      else {
-       int ret =  _fd->fio->Write( _fd->offset, &_fd->buffer[_fd->offset], _fd->size - _fd->offset,
-                                   CALLBACK_OBJECT( Write, _fd ) );
-
-        if( ret != PP_OK_COMPLETIONPENDING ) {
-          BARRIER_INCREMENT( _fd->auxBarrier )
+      if( _fd->offset != _fd->size ) {
+        int ret = _fd->fio->Write( _fd->offset, &_fd->buffer[_fd->offset], _fd->size - _fd->offset,
+                                   CALLBACK_OBJECT( write, _fd ) );
+        if( ret == PP_OK_COMPLETIONPENDING ) {
+          return;
         }
       }
     }
-  } )
-  DEFINE_CALLBACK( BeginWrite, {
-    int ret = _fd->fio->Write( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( Write, _fd ) );
 
-    if( ret != PP_OK_COMPLETIONPENDING ) {
-      BARRIER_INCREMENT( _fd->auxBarrier )
+    delete _fd->fio;
+    SEMAPHORE_POST();
+  } );
+  DEFINE_CALLBACK( beginWrite, {
+    if( _result == PP_OK ) {
+      int ret = _fd->fio->Write( 0, _fd->buffer, _fd->size, CALLBACK_OBJECT( write, _fd ) );
+      if( ret == PP_OK_COMPLETIONPENDING ) {
+        return;
+      }
     }
-  } )
 
-  MAIN_CALL( {
+    delete _fd->fio;
+    SEMAPHORE_POST();
+  } );
+  DEFINE_CALLBACK( open, {
     _fd->fio = new pp::FileIO( System::instance );
 
     int ret = _fd->fio->Open( pp::FileRef( *filesystem, _fd->file->filePath ),
                               PP_FILEOPENFLAG_WRITE | PP_FILEOPENFLAG_CREATE | PP_FILEOPENFLAG_TRUNCATE,
-                              CALLBACK_OBJECT( BeginWrite, _fd ) );
-
-    if( ret != PP_OK_COMPLETIONPENDING ) {
-      BARRIER_INCREMENT( _fd->auxBarrier )
+                              CALLBACK_OBJECT( beginWrite, _fd ) );
+    if( ret == PP_OK_COMPLETIONPENDING ) {
+      return;
     }
-  } )
 
-  BARRIER_WAIT( descriptor->auxBarrier )
-
-  MAIN_CALL( {
     delete _fd->fio;
-  } )
+    SEMAPHORE_POST();
+  } );
+
+  MAIN_CALL( open );
+  SEMAPHORE_WAIT();
 
   if( descriptor->offset < size ) {
     return false;
@@ -946,9 +933,37 @@ bool File::mkdir( const char* path )
 {
 #if defined( __native_client__ )
 
-  static_cast<void>( path );
+  FileDesc localDescriptor( null );
+  FileDesc* descriptor = &localDescriptor;
 
-  return false;
+  // Abuse buffer for file path and size for result.
+  descriptor->buffer = const_cast<char*>( path );
+  descriptor->size = false;
+
+  DEFINE_CALLBACK( mkdirResult, {
+    if( _result == PP_OK ) {
+      _fd->size = true;
+    }
+
+    delete _fd->fref;
+    SEMAPHORE_POST();
+  } );
+  DEFINE_CALLBACK( mkdir, {
+    _fd->fref = new pp::FileRef( *filesystem, _fd->buffer );
+
+    int ret = _fd->fref->MakeDirectory( CALLBACK_OBJECT( mkdirResult, _fd ) );
+    if( ret == PP_OK_COMPLETIONPENDING ) {
+      return;
+    }
+
+    delete _fd->fref;
+    SEMAPHORE_POST();
+  } );
+
+  MAIN_CALL( mkdir );
+  SEMAPHORE_WAIT();
+
+  return descriptor->size;
 
 #elif defined( _WIN32 )
 
@@ -1008,16 +1023,33 @@ void File::init( FilesystemType type, int size )
                                            PP_FILESYSTEMTYPE_LOCALTEMPORARY;
 
   FileDesc* descriptor = &staticDesc;
-  MAIN_CALL( {
+
+  DEFINE_CALLBACK( initResult, {
+    if( _result != PP_OK ) {
+      delete filesystem;
+      filesystem = null;
+    }
+    SEMAPHORE_POST();
+  } );
+  DEFINE_CALLBACK( init, {
     filesystem = new pp::FileSystem( System::instance, PP_FileSystemType( _fd->offset ) );
 
-    int ret = filesystem->Open( _fd->size, CALLBACK_OBJECT( WaitAux, _fd ) );
-    if( ret != PP_OK_COMPLETIONPENDING ) {
-      BARRIER_INCREMENT( _fd->auxBarrier )
-      throw Exception( "Local filesystem open failed" );
+    int ret = filesystem->Open( _fd->size, CALLBACK_OBJECT( initResult, _fd ) );
+    if( ret == PP_OK_COMPLETIONPENDING ) {
+      return;
     }
-  } )
-  BARRIER_WAIT( staticDesc.auxBarrier )
+
+    delete filesystem;
+    filesystem = null;
+    SEMAPHORE_POST();
+  } );
+
+  MAIN_CALL( init );
+  SEMAPHORE_WAIT();
+
+  if( filesystem == null ) {
+    throw Exception( "Local filesystem open failed" );
+  }
 
 #else
 
@@ -1033,10 +1065,16 @@ void File::free()
 
   if( filesystem != null ) {
     FileDesc* descriptor = &staticDesc;
-    MAIN_CALL( {
+
+    DEFINE_CALLBACK( free, {
       delete filesystem;
       filesystem = null;
-    } )
+
+      SEMAPHORE_POST();
+    } );
+
+    MAIN_CALL( free );
+    SEMAPHORE_WAIT();
   }
 
 #endif

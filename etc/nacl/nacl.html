@@ -2,26 +2,41 @@
 <head>
   <title>NaCl Test</title>
   <style>
-    * {
+    body {
       margin: 0px;
+    }
+    div.log {
+      padding: 8px;
+    }
+    div.log pre {
+      font-size: 8pt;
     }
   </style>
   <script type="text/javascript">
+    var log = null;
     window.webkitStorageInfo.requestQuota( PERSISTENT, 1024 );
 
-    function handleMessage(message_event) {
-      console.log( message_event.data );
+    function handleMessage( e ) {
+      log.innerText += e.data;
+    }
+
+    function onLoad()
+    {
+      var module = document.getElementById( 'module' );
+      module.addEventListener( 'message', handleMessage, true );
+
+      log = document.getElementById( 'log' );
+      log.innerText = "";
     }
   </script>
 </head>
-<body>
-  <div id="listener">
-    <script type="text/javascript">
-      var listener = document.getElementById( 'listener' )
-      listener.addEventListener( 'message', handleMessage, true )
-    </script>
-    <embed name="nacl_module" id="nacl" width="100%" height="100%" src="nacl.nmf"
+<body onLoad="onLoad()">
+  <div id="module">
+    <embed name="nacl_module" id="nacl" width="640" height="360" src="nacl.nmf"
            type="application/x-nacl"/>
+  </div>
+  <div class="log">
+    <pre id="log"/>
   </div>
 </body>
 </html>

@@ -46,8 +46,9 @@ MainInstance::MainInstance( PP_Instance instance_ ) :
   pp::Instance( instance_ ), pp::MouseLock( this ), fullscreen( this ), isContextBound( false ),
   isMouseLocked( false ), mainThread( 0 )
 {
+  System::module   = pp::Module::Get();
   System::instance = this;
-  System::core = pp::Module::Get()->core();
+  System::core     = pp::Module::Get()->core();
 
   RequestInputEvents( PP_INPUTEVENT_CLASS_KEYBOARD | PP_INPUTEVENT_CLASS_MOUSE );
 }
