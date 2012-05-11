@@ -25,6 +25,7 @@
 
 #include "client/openzone.hh"
 
+#include "client/NaClGLES2Context.hh"
 #include "client/Client.hh"
 
 #ifdef __native_client__
@@ -41,21 +42,17 @@ void* MainInstance::mainThreadMain( void* )
 
   int exitCode = EXIT_FAILURE;
 
-  printf( "OpenZone  Copyright © 2002-2012 Davorin Učakar\n"
-          "This program comes with ABSOLUTELY NO WARRANTY.\n"
-          "This is free software, and you are welcome to redistribute it\n"
-          "under certain conditions; See COPYING file for details.\n\n" );
+  Log::printRaw( "OpenZone  Copyright © 2002-2012 Davorin Učakar\n"
+                 "This program comes with ABSOLUTELY NO WARRANTY.\n"
+                 "This is free software, and you are welcome to redistribute it\n"
+                 "under certain conditions; See COPYING file for details.\n\n" );
 
   try {
     exitCode = client::client.main( 0, null );
     client::client.shutdown();
   }
   catch( const std::exception& e ) {
-    Log::verboseMode = false;
-    Log::printException( &e );
-
-    System::bell();
-    System::abort();
+    Exception::abortWith( &e );
   }
 
   Log::verboseMode = true;
@@ -65,7 +62,6 @@ void* MainInstance::mainThreadMain( void* )
   if( Alloc::count != 0 ) {
     Log::println( "There are some memory leaks. See '%s' for details.", Log::logFile() );
   }
-
   return null;
 }
 
@@ -73,8 +69,9 @@ MainInstance::MainInstance( PP_Instance instance_ ) :
   pp::Instance( instance_ ), pp::MouseLock( this ), fullscreen( this ), isContextBound( false ),
   isMouseLocked( false ), mainThread( 0 )
 {
+  System::module   = pp::Module::Get();
   System::instance = this;
-  System::core = pp::Module::Get()->core();
+  System::core     = pp::Module::Get()->core();
 
   RequestInputEvents( PP_INPUTEVENT_CLASS_KEYBOARD | PP_INPUTEVENT_CLASS_MOUSE );
 }
@@ -86,10 +83,12 @@ MainInstance::~MainInstance()
     mainThread = null;
 
     SDL_Quit();
+
+    NaClGLES2Context::free();
   }
 }
 
-bool MainInstance::Init( uint32_t, const char*[], const char*[] )
+bool MainInstance::Init( uint32_t, const char**, const char** )
 {
   return true;
 }
@@ -106,13 +105,14 @@ void MainInstance::DidChangeView( const pp::View& view )
   System::width  = width;
   System::height = height;
 
-  context        = pp::Graphics2D( System::instance, pp::Size( width, height ), false );
-  isContextBound = BindGraphics( context );
-  context.Flush( pp::CompletionCallback( &Empty, null ) );
-
   if( mainThread == 0 ) {
+    NaClGLES2Context::init();
+    NaClGLES2Context::makeCurrent();
+
     SDL_NACL_SetInstance( pp_instance(), System::width, System::height );
-    SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO );
+    if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
+      throw Exception( "Failed to initialise SDL" );
+    }
 
     pthread_create( &mainThread, null, mainThreadMain, this );
   }
@@ -209,11 +209,7 @@ int main( int argc, char** argv )
     client::client.shutdown();
   }
   catch( const std::exception& e ) {
-    Log::verboseMode = false;
-    Log::printException( &e );
-
-    System::bell();
-    System::abort();
+    Exception::abortWith( &e );
   }
 
   Log::verboseMode = true;

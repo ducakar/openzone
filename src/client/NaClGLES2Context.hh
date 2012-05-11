@@ -18,38 +18,32 @@
  */
 
 /**
- * @file build/ozBuild.cc
- *
- * Data builder launcher.
+ * @file client/NaClGLES2Context.hh
  */
 
-#include "stable.hh"
+#pragma once
 
-#include "ozmain/main.hh"
+#ifdef __native_client__
 
-#include "build/Build.hh"
+#include "client/common.hh"
 
-using namespace oz;
-
-int main( int argc, char** argv )
+namespace oz
 {
-  System::init();
 
-  int exitCode = EXIT_FAILURE;
+class NaClGLES2Context
+{
+  public:
 
-  printf( "OpenZone  Copyright © 2002-2012 Davorin Učakar\n"
-          "This program comes with ABSOLUTELY NO WARRANTY.\n"
-          "This is free software, and you are welcome to redistribute it\n"
-          "under certain conditions; See COPYING file for details.\n\n" );
+    static void makeCurrent();
+    static void resize();
 
-  try {
-    exitCode = build::build.main( argc, argv );
-  }
-  catch( const std::exception& e ) {
-    Exception::abortWith( &e );
-  }
+    static void swapBuffers();
 
-//   Alloc::printLeaks();
+    static void init();
+    static void free();
 
-  return exitCode;
+};
+
 }
+
+#endif

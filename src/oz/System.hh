@@ -34,6 +34,7 @@ namespace pp
 {
 
 // Forward declarations for Native Client (NaCl) classes.
+class Module;
 class Instance;
 class Core;
 
@@ -73,8 +74,9 @@ class System
 
   public:
 
-    static pp::Instance* instance; ///< NaCl module instance.
-    static pp::Core*     core;     ///< NaCl pp::Core class instance.
+    static pp::Module*   module;   ///< NaCl module.
+    static pp::Instance* instance; ///< NaCl instance.
+    static pp::Core*     core;     ///< NaCl pp::Core interface.
     static int           width;    ///< Current width of NaCl module area in browser.
     static int           height;   ///< Current height of NaCl module in browser.
 

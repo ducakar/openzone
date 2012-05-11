@@ -25,17 +25,17 @@
 #include "oz/windefs.h"
 #include "ozmain/main.hh"
 
-#include <../../../include/ppapi/cpp/instance.h>
-#include <../../../include/ppapi/cpp/fullscreen.h>
-#include "../../../include/ppapi/cpp/input_event.h"
-#include "../../../include/ppapi/cpp/instance.h"
-#include "../../../include/ppapi/cpp/core.h"
-#include "../../../include/ppapi/cpp/module.h"
-#include "../../../include/ppapi/cpp/completion_callback.h"
-#include "../../../include/ppapi/cpp/graphics_2d.h"
+#include <ppapi/cpp/fullscreen.h>
+#include <ppapi/cpp/input_event.h>
+#include <ppapi/cpp/instance.h>
+#include <ppapi/cpp/core.h>
+#include <ppapi/cpp/module.h>
+#include <ppapi/cpp/completion_callback.h>
+#include <ppapi/cpp/graphics_2d.h>
 
 #include <SDL/SDL.h>
 #include <GLES2/gl2.h>
+#include <physfs.h>
 
 #define DEFINE_CALLBACK( name, code ) \
   struct _Callback##name { \
@@ -65,37 +65,23 @@ static Semaphore mainSemaphore;
 int main( int, char** )
 {
   System::init();
-
-  mainSemaphore.init();
-
-  MAIN_CALL( {
-    System::instance->PostMessage( pp::Var( "drek" ) );
-  } )
-
   Log::print( "[" ); Log::printTime(); Log::printEnd( "] START" );
 
-  File::init( File::TEMPORARY, 1024 );
+  try {
+    File::init( File::PERSISTENT, 1024 );
 
-  File file( "/drek.txt" );
+    char content[] = "Drek na palci";
 
-  char s[] = "Drek na palci";
-  if( !file.write( s, String::length( s ) ) ) {
-    printf( "ERROR\n" );
+//     File( "/drek.txt" ).write( content, sizeof( content ) );
+    Buffer b = File( "/drek.txt" ).read();
+
+    Log::println( "%s", b.begin() );
+
+    File::free();
   }
-
-  if( !file.map() ) {
-    printf( "2ERROR\n" );
+  catch( const std::exception& e ) {
+    Exception::abortWith( &e );
   }
-
-  InputStream is = file.inputStream();
-  while( is.isAvailable() ) {
-    Log::printRaw( "%c", is.readChar() );
-  }
-  Log::printEnd();
-
-  File::free();
-
-  mainSemaphore.destroy();
 
   Log::print( "[" ); Log::printTime(); Log::printEnd( "] END" );
   return 0;

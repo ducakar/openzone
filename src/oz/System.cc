@@ -200,6 +200,7 @@ static void* bellThread( void* )
 #endif
 
 System        System::system;
+pp::Module*   System::module   = null;
 pp::Instance* System::instance = null;
 pp::Core*     System::core     = null;
 int           System::width    = 0;
@@ -240,11 +241,7 @@ void System::abort( bool preventHalt )
   resetSignals();
 
   if( !preventHalt && ( initFlags & HALT_BIT ) ) {
-#if defined( __native_client__ ) || defined( __ANDORID__ )
-    printf( "Program halted, debugger can be attached ...\n" );
-#else
-    printf( "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
-#endif
+    Log::printHalt();
 
 #ifdef _WIN32
     while( true ) {

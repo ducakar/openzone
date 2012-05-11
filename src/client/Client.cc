@@ -38,7 +38,10 @@
 
 #include <unistd.h>
 
-#ifdef _WIN32
+#if defined( __native_client__ )
+# include <ppapi/cpp/completion_callback.h>
+# include <ppapi/cpp/core.h>
+#elif defined( _WIN32 )
 # undef WIN32_LEAN_AND_MEAN
 # include <shlobj.h>
 #endif
@@ -96,13 +99,9 @@ void Client::shutdown()
     PhysFile::free();
   }
 
-#ifdef __native_client__
-  File::free();
-#else
   if( initFlags & INIT_SDL ) {
     SDL_Quit();
   }
-#endif
 
   if( initFlags & INIT_MAIN_LOOP ) {
     Alloc::printSummary();
@@ -191,10 +190,10 @@ int Client::main( int argc, char** argv )
 
 #if defined( __native_client__ )
 
-  File::init( File::TEMPORARY, 10 * 1024 );
+  File::init( File::TEMPORARY, 10*1024*1024 );
 
-  String configDir = "";
-  String localDir = "";
+  String configDir = "/config";
+  String localDir = "/data";
 
 #elif defined( _WIN32 )
 
@@ -262,10 +261,8 @@ int Client::main( int argc, char** argv )
   initFlags |= INIT_SDL;
 #endif
 
-#ifndef __native_client__
   PhysFile::init();
   initFlags |= INIT_PHYSFS;
-#endif
 
   Log::verboseMode = true;
   Log::println( "Build details {" );
@@ -290,14 +287,15 @@ int Client::main( int argc, char** argv )
     }
     else {
       Log::println( "Invalid configuration file version, configuration will be cleaned and written "
-                    "on exit" );
+                    "upon exit" );
 
       config.add( "_version", OZ_APPLICATION_VERSION );
       config.get( "_version", "" );
     }
   }
   else {
-    Log::println( "No configuration file, default configuration will be used and written on exit" );
+    Log::println( "No configuration file, default configuration will be used and written upon "
+                  "exit" );
     config.add( "_version", OZ_APPLICATION_VERSION );
     config.get( "_version", "" );
   }
@@ -311,6 +309,15 @@ int Client::main( int argc, char** argv )
 
   String prefix = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
   String dataDir( prefix + "/share/" OZ_APPLICATION_NAME );
+
+#ifdef __native_client__
+
+  SDL_Surface* window = null;
+
+  int windowWidth  = System::width;
+  int windowHeight = System::height;
+
+#else
 
   // Don't mess with screensaver. In X11 it only makes effect for windowed mode, in fullscreen
   // mode screensaver never starts anyway. Turning off screensaver has a side effect: if the game
@@ -372,11 +379,52 @@ int Client::main( int argc, char** argv )
 
   SDL_ShowCursor( SDL_FALSE );
 
+#endif
+
   ui::keyboard.init();
   ui::mouse.init();
 
   Log::println( "Content search path {" );
   Log::indent();
+
+#ifdef __native_client__
+
+  bool createdData = false;
+
+  File ozbaseZip( "/data/ozbase.zip" );
+  File openzoneZip( "/data/openzone.zip" );
+
+  if( !ozbaseZip.stat() ) {
+    ozbaseZip.write( ozbaseZip.path(), ozbaseZip.path().length() );
+
+    Log::println( "Created empty file %s", ozbaseZip.path().cstr() );
+    createdData = true;
+  }
+  if( !openzoneZip.stat() ) {
+    openzoneZip.write( openzoneZip.path(), openzoneZip.path().length() );
+
+    Log::println( "Created empty file %s", openzoneZip.path().cstr() );
+    createdData = true;
+  }
+
+  if( createdData ) {
+    throw Exception( "Empty game data files created" );
+  }
+
+  if( PhysFile::mount( ozbaseZip.path(), null, true ) ) {
+    Log::println( "%s", ozbaseZip.path().cstr() );
+  }
+  else {
+    throw Exception( "Failed to mount '%s' on / in PhysicsFS", ozbaseZip.path().cstr() );
+  }
+  if( PhysFile::mount( openzoneZip.path(), null, true ) ) {
+    Log::println( "%s", openzoneZip.path().cstr() );
+  }
+  else {
+    throw Exception( "Failed to mount '%s' on / in PhysicsFS", openzoneZip.path().cstr() );
+  }
+
+#else
 
   const char* userMusicPath = config.getSet( "dir.music", "" );
 
@@ -416,6 +464,8 @@ int Client::main( int argc, char** argv )
       }
     }
   }
+
+#endif
 
   Log::unindent();
   Log::println( "}" );
@@ -528,6 +578,7 @@ int Client::main( int argc, char** argv )
 
           ui::keyboard.keys[keysym.sym] |= SDL_PRESSED;
 
+#ifndef __native_client__
           if( keysym.sym == SDLK_F11 ) {
             if( keysym.mod == 0 ) {
               loader.makeScreenshot();
@@ -556,6 +607,7 @@ int Client::main( int argc, char** argv )
               isAlive = false;
             }
           }
+#endif
           break;
         }
         case SDL_ACTIVEEVENT: {

@@ -28,9 +28,6 @@
 
 #include "arrays.hh"
 #include "Exception.hh"
-#ifdef __native_client__
-# include "System.hh"
-#endif
 #include "Time.hh"
 
 #include "windefs.h"
@@ -40,19 +37,30 @@
 
 #ifdef __native_client__
 
+# include "System.hh"
+# include "Semaphore.hh"
+
 # include <ppapi/cpp/completion_callback.h>
 # include <ppapi/cpp/instance.h>
 # include <ppapi/cpp/core.h>
 
+# define CHECK_SEMAPHORE() \
+  if( !semaphore.isValid() ) { semaphore.init(); }
+
 # define CONSOLE_PUTS( s ) \
-  struct _Callback \
-  { \
-    static void _main( void* data, int ) \
+  if( !System::core->IsMainThread() ) { \
+    struct _Callback \
     { \
-      System::instance->PostMessage( pp::Var( static_cast<const char*>( data ) ) ); \
-    } \
-  }; \
-  System::core->CallOnMainThread( 0, pp::CompletionCallback( _Callback::_main, s ) )
+      static void _main( void* data, int ) \
+      { \
+        System::instance->PostMessage( pp::Var( static_cast<const char*>( data ) ) ); \
+        semaphore.post(); \
+      } \
+    }; \
+    System::core->CallOnMainThread( 0, pp::CompletionCallback( _Callback::_main, \
+                                                               const_cast<char*>( s ) ) ); \
+    semaphore.wait(); \
+  }
 
 #endif
 
@@ -65,8 +73,13 @@ static char  filePath[256];
 static FILE* file = 0;
 static int   tabs = 0;
 
+#ifdef __native_client__
+static Semaphore semaphore;
+#endif
+
 bool Log::showVerbose = false;
 bool Log::verboseMode = false;
+
 
 const char* Log::logFile()
 {
@@ -99,7 +112,10 @@ void Log::vprintRaw( const char* s, va_list ap )
   if( !verboseMode || showVerbose || file == null ) {
     fputs( buffer, stdout );
   }
+
 #ifdef __native_client__
+  CHECK_SEMAPHORE();
+
   CONSOLE_PUTS( buffer );
 #else
   if( file != null ) {
@@ -121,7 +137,10 @@ void Log::printRaw( const char* s, ... )
   if( !verboseMode || showVerbose || file == null ) {
     fputs( buffer, stdout );
   }
+
 #ifdef __native_client__
+  CHECK_SEMAPHORE();
+
   CONSOLE_PUTS( buffer );
 #else
   if( file != null ) {
@@ -146,7 +165,13 @@ void Log::print( const char* s, ... )
     }
     fputs( buffer, stdout );
   }
+
 #ifdef __native_client__
+  CHECK_SEMAPHORE();
+
+  for( int i = 0; i < tabs; ++i ) {
+    CONSOLE_PUTS( "  " );
+  }
   CONSOLE_PUTS( buffer );
 #else
   if( file != null ) {
@@ -172,8 +197,12 @@ void Log::printEnd( const char* s, ... )
     fputs( buffer, stdout );
     fputc( '\n', stdout );
   }
+
 #ifdef __native_client__
+  CHECK_SEMAPHORE();
+
   CONSOLE_PUTS( buffer );
+  CONSOLE_PUTS( "\n" );
 #else
   if( file != null ) {
     fputs( buffer, file );
@@ -188,10 +217,17 @@ void Log::printEnd()
   if( !verboseMode || showVerbose || file == null ) {
     fputc( '\n', stdout );
   }
+
+#ifdef __native_client__
+  CHECK_SEMAPHORE();
+
+  CONSOLE_PUTS( "\n" );
+#else
   if( file != null ) {
     fputc( '\n', file );
     fflush( file );
   }
+#endif
 }
 
 void Log::println( const char* s, ... )
@@ -210,8 +246,15 @@ void Log::println( const char* s, ... )
     fputs( buffer, stdout );
     fputc( '\n', stdout );
   }
+
 #ifdef __native_client__
+  CHECK_SEMAPHORE();
+
+  for( int i = 0; i < tabs; ++i ) {
+    CONSOLE_PUTS( "  " );
+  }
   CONSOLE_PUTS( buffer );
+  CONSOLE_PUTS( "\n" );
 #else
   if( file != null ) {
     for( int i = 0; i < tabs; ++i ) {
@@ -229,10 +272,17 @@ void Log::println()
   if( !verboseMode || showVerbose || file == null ) {
     fputc( '\n', stdout );
   }
+
+#ifdef __native_client__
+  CHECK_SEMAPHORE();
+
+  CONSOLE_PUTS( "\n" );
+#else
   if( file != null ) {
     fputc( '\n', file );
     fflush( file );
   }
+#endif
 }
 
 void Log::printTime()
@@ -246,7 +296,10 @@ void Log::printTime()
   if( !verboseMode || showVerbose || file == null ) {
     fputs( buffer, stdout );
   }
+
 #ifdef __native_client__
+  CHECK_SEMAPHORE();
+
   CONSOLE_PUTS( buffer );
 #else
   if( file != null ) {
@@ -256,44 +309,28 @@ void Log::printTime()
 #endif
 }
 
-void Log::printSignal( int sigNum )
-{
-  char buffer[BUFFER_SIZE];
-
-  const char* sigName = strsignal( sigNum );
-#ifndef __linux__
-  if( sigName == null ) {
-    sigName = "Unknown";
-  }
-#endif
-
-  snprintf( buffer, BUFFER_SIZE, "\n\nCaught signal #%d (%s)\n", sigNum, sigName );
-
-  if( !verboseMode || showVerbose || file == null ) {
-    fputs( buffer, stdout );
-  }
-  if( file != null ) {
-    fputs( buffer, file );
-    fflush( file );
-  }
-}
-
 void Log::printTrace( const StackTrace* st )
 {
   if( st->nFrames == 0 ) {
     if( !verboseMode || showVerbose || file == null ) {
-      fputs( "    [empty stack trace]\n", stdout );
+      fputs( "    [no stack trace]\n", stdout );
     }
 #ifdef __native_client__
-      CONSOLE_PUTS( const_cast<char*>( "    [empty stack trace]" ) );
+    CHECK_SEMAPHORE();
+
+    CONSOLE_PUTS( "    [no stack trace]\n" );
 #else
     if( file != null ) {
-      fputs( "    [empty stack trace]\n", file );
+      fputs( "    [no stack trace]\n", file );
     }
 #endif
   }
   else {
     char** entries = st->symbols();
+
+#ifdef __native_client__
+    CHECK_SEMAPHORE();
+#endif
 
     for( int i = 0; i < st->nFrames; ++i ) {
       if( !verboseMode || showVerbose || file == null ) {
@@ -301,11 +338,18 @@ void Log::printTrace( const StackTrace* st )
         fputs( entries[i], stdout );
         fputc( '\n', stdout );
       }
+
+#ifdef __native_client__
+      CONSOLE_PUTS( "    " );
+      CONSOLE_PUTS( entries[i] );
+      CONSOLE_PUTS( "\n" );
+#else
       if( file != null ) {
         fputs( "    ", file );
         fputs( entries[i], file );
         fputc( '\n', file );
       }
+#endif
     }
 
     ::free( entries );
@@ -328,7 +372,9 @@ void Log::printException( const std::exception* e )
       fputs( buffer, stdout );
     }
 #ifdef __native_client__
-      CONSOLE_PUTS( buffer );
+    CHECK_SEMAPHORE();
+
+    CONSOLE_PUTS( buffer );
 #else
     if( file != null ) {
       fputs( buffer, file );
@@ -344,6 +390,8 @@ void Log::printException( const std::exception* e )
       fputs( buffer, stdout );
     }
 #ifdef __native_client__
+    CHECK_SEMAPHORE();
+
     CONSOLE_PUTS( buffer );
 #else
     if( file != null ) {
@@ -355,6 +403,57 @@ void Log::printException( const std::exception* e )
   }
 }
 
+void Log::printSignal( int sigNum )
+{
+  char buffer[BUFFER_SIZE];
+
+  const char* sigName = strsignal( sigNum );
+#ifndef __linux__
+  if( sigName == null ) {
+    sigName = "Unknown";
+  }
+#endif
+
+  snprintf( buffer, BUFFER_SIZE, "\n\nCaught signal #%d (%s)\n", sigNum, sigName );
+
+  if( !verboseMode || showVerbose || file == null ) {
+    fputs( buffer, stdout );
+  }
+
+#ifdef __native_client__
+  CHECK_SEMAPHORE();
+
+  CONSOLE_PUTS( buffer );
+#else
+  if( file != null ) {
+    fputs( buffer, file );
+    fflush( file );
+  }
+#endif
+}
+
+void Log::printHalt()
+{
+#if defined( __native_client__ ) || defined( __ANDROID__ )
+  const char* message = "Program halted, debugger can be attached ...\n";
+#else
+  const char* message = "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n";
+#endif
+
+  fputs( message, stdout );
+
+#if defined( __native_client__ )
+  CHECK_SEMAPHORE();
+
+  CONSOLE_PUTS( message );
+#else
+  if( file != null ) {
+    fputs( message, file );
+    fflush( file );
+  }
+#endif
+}
+
 bool Log::init( const char* filePath_, bool clearFile )
 {
   tabs = 0;
@@ -364,8 +463,9 @@ bool Log::init( const char* filePath_, bool clearFile )
   static_cast<void>( filePath_ );
   static_cast<void>( clearFile );
 
-  filePath[0] = '\0';
+  strcpy( filePath, "[JavaScript Messages]" );
   file = null;
+
   return System::instance != null && System::core != null;
 
 #else
@@ -393,10 +493,16 @@ bool Log::init( const char* filePath_, bool clearFile )
 
 void Log::free()
 {
+#ifdef __native_client__
+  if( semaphore.isValid() ) {
+    semaphore.destroy();
+  }
+#else
   if( file != null ) {
     fclose( file );
     file = null;
   }
+#endif
 }
 
 }

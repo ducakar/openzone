@@ -122,14 +122,6 @@ class Log
     static void printTime();
 
     /**
-     * Print 'Caught signal ...' and signal description.
-     *
-     * This method is only required by signal handler since it is unsafe to use print methods with
-     * variable arguments from there.
-     */
-    static void printSignal( int sigNum );
-
-    /**
      * Print stack trace.
      */
     static void printTrace( const StackTrace* st );
@@ -138,6 +130,22 @@ class Log
      * Print nicely formatted exception (unindented).
      */
     static void printException( const std::exception* e );
+
+    /**
+     * Print 'Caught signal ...' and signal description.
+     *
+     * This method is only required by signal handler since it has issues with functions that take
+     * variable arguments.
+     */
+    static void printSignal( int sigNum );
+
+    /**
+     * Print notice to attach debugger.
+     *
+     * This method is only required by signal handler since it has issues with functions that take
+     * variable arguments.
+     */
+    static void printHalt();
 
     /**
      * First parameter is file path (if <tt>null</tt> or "", it only writes to terminal), the other
