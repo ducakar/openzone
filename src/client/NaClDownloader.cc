@@ -17,21 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * celestial.vert
- *
- * Shader for celestial bodies (except stars).
+/**
+ * @file client/NaClDownloader.cc
  */
 
-attribute lowp vec3 inPosition;
-attribute lowp vec2 inTexCoord;
+// #ifdef __native_client__
 
-varying lowp vec2  exTexCoord;
-varying lowp float exAzimuth;
+#include "stable.hh"
 
-void main()
+#include "client/NaClDownloader.hh"
+
+namespace oz
 {
-  gl_Position = oz_Transform.complete * vec4( inPosition, 1.0 );
-  exTexCoord  = inTexCoord;
-  exAzimuth   = ( oz_Transform.model * vec4( inPosition, 1.0 ) ).z;
+namespace client
+{
+
 }
+}
+
+// #endif

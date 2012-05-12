@@ -29,6 +29,13 @@
 
 #include <climits>
 
+#ifdef __native_client__
+# include <ppapi/cpp/module.h>
+# include <ppapi/cpp/instance.h>
+
+extern "C" void alSetPpapiInfo( PP_Instance, PPB_GetInterface );
+#endif
+
 #define OZ_DLDECL( name ) \
   static decltype( ::name )* name = null
 
@@ -70,10 +77,8 @@ static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, null, null, null };
 
 static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle )
 {
-  InputStream* istream = static_cast<InputStream*>( handle );
-  int count = min( int( n * size ), istream->available() );
-  memcpy( buffer, istream->forward( count ), size_t( count ) );
-  return size_t( count );
+  return size_t( PHYSFS_read( static_cast<PHYSFS_File*>( handle ), buffer,
+                              uint( size ), uint( n ) ) );
 }
 
 #ifdef OZ_NONFREE
@@ -99,11 +104,7 @@ void Sound::musicMain()
     sound.musicRun();
   }
   catch( const std::exception& e ) {
-    Log::verboseMode = false;
-    Log::printException( &e );
-
-    System::bell();
-    System::abort();
+    Exception::abortWith( &e );
   }
 }
 
@@ -113,11 +114,7 @@ void Sound::soundMain()
     sound.soundRun();
   }
   catch( const std::exception& e ) {
-    Log::verboseMode = false;
-    Log::printException( &e );
-
-    System::bell();
-    System::abort();
+    Exception::abortWith( &e );
   }
 }
 
@@ -127,6 +124,7 @@ void Sound::musicOpen( const char* path )
 
   if( file.hasExtension( "oga" ) || file.hasExtension( "ogg" ) ) {
     musicStreamType = OGG;
+    printf( "Ogg stream opened\n" );
   }
 #ifdef OZ_NONFREE
   else if( file.hasExtension( "mp3" ) ) {
@@ -155,13 +153,12 @@ void Sound::musicOpen( const char* path )
       break;
     }
     case OGG: {
-      musicFile.setPath( path );
-      if( !musicFile.map() ) {
+      musicFile = PHYSFS_openRead( path );
+      if( musicFile == null ) {
         throw Exception( "Failed to open file '%s'", path );
       }
 
-      musicStream = musicFile.inputStream();
-      if( ov_open_callbacks( &musicStream, &oggStream, null, 0, VORBIS_CALLBACKS ) < 0 ) {
+      if( ov_open_callbacks( musicFile, &oggStream, null, 0, VORBIS_CALLBACKS ) < 0 ) {
         throw Exception( "Failed to open Ogg stream in '%s'", path );
       }
 
@@ -187,26 +184,27 @@ void Sound::musicOpen( const char* path )
     }
 #ifdef OZ_NONFREE
     case MP3: {
-      musicFile.setPath( path );
-      if( !musicFile.map() ) {
+      musicFile = PHYSFS_openRead( path );
+      if( musicFile == null ) {
         throw Exception( "Failed to open file '%s'", path );
       }
-
-      musicStream = musicFile.inputStream();
 
       mad_stream_init( &madStream );
       mad_frame_init( &madFrame );
       mad_synth_init( &madSynth );
 
-      if( musicStream.available() < MUSIC_INPUT_BUFFER_SIZE ) {
+      size_t readSize = size_t( PHYSFS_read( musicFile, musicInputBuffer,
+                                             1, MUSIC_INPUT_BUFFER_SIZE ) );
+      if( readSize != size_t( MUSIC_INPUT_BUFFER_SIZE ) ) {
         throw Exception( "Failed to read MP3 stream in '%s'", path );
       }
 
-      mad_stream_buffer( &madStream, musicStream.forward( MUSIC_INPUT_BUFFER_SIZE ),
-                         MUSIC_INPUT_BUFFER_SIZE );
+      mad_stream_buffer( &madStream, musicInputBuffer, MUSIC_INPUT_BUFFER_SIZE );
 
-      if( mad_frame_decode( &madFrame, &madStream ) != 0 ) {
-        throw Exception( "Corrupted MP3 header in '%s'", path );
+      while( mad_frame_decode( &madFrame, &madStream ) != 0 ) {
+        if( !MAD_RECOVERABLE( madStream.error ) ) {
+          throw Exception( "Corrupted MP3 header in '%s'", path );
+        }
       }
 
       mad_synth_frame( &madSynth, &madFrame );
@@ -230,29 +228,37 @@ void Sound::musicOpen( const char* path )
       break;
     }
     case AAC: {
-      musicFile.setPath( path );
-      if( !musicFile.map() ) {
+      musicFile = PHYSFS_openRead( path );
+      if( musicFile == null ) {
         throw Exception( "Failed to open file '%s'", path );
       }
 
       aacDecoder = NeAACDecOpen();
 
-      musicStream = musicFile.inputStream();
-      if( musicStream.available() < MUSIC_INPUT_BUFFER_SIZE ) {
+      size_t readSize = size_t( PHYSFS_read( musicFile, musicInputBuffer,
+                                             1, MUSIC_INPUT_BUFFER_SIZE ) );
+      if( readSize != size_t( MUSIC_INPUT_BUFFER_SIZE ) ) {
         throw Exception( "Failed to read AAC stream in '%s'", path );
       }
 
       ulong aacRate;
       ubyte aacChannels;
 
-      long skipBytes = NeAACDecInit( aacDecoder, musicStream.forward( MUSIC_INPUT_BUFFER_SIZE ),
-                                     MUSIC_INPUT_BUFFER_SIZE, &aacRate, &aacChannels );
+      long skipBytes = NeAACDecInit( aacDecoder, musicInputBuffer, MUSIC_INPUT_BUFFER_SIZE,
+                                     &aacRate, &aacChannels );
       if( skipBytes < 0 ) {
         throw Exception( "Corrupted AAC header in '%s'", path );
       }
 
-      musicStream.reset();
-      musicStream.forward( skipBytes );
+      memmove( musicInputBuffer, musicInputBuffer + skipBytes, size_t( skipBytes ) );
+
+      readSize = size_t( PHYSFS_read( musicFile,
+                                      musicInputBuffer + MUSIC_INPUT_BUFFER_SIZE - skipBytes,
+                                      1, uint( skipBytes ) ) );
+
+      if( readSize != size_t( skipBytes ) ) {
+        throw Exception( "Failed to read AAC stream in '%s'", path );
+      }
 
       aacBufferBytes  = 0;
       aacWrittenBytes = 0;
@@ -290,7 +296,7 @@ void Sound::musicClear()
     case OGG: {
       ov_clear( &oggStream );
 
-      musicFile.unmap();
+      PHYSFS_close( musicFile );
       break;
     }
 #ifdef OZ_NONFREE
@@ -299,13 +305,13 @@ void Sound::musicClear()
       mad_frame_finish( &madFrame );
       mad_stream_finish( &madStream );
 
-      musicFile.unmap();
+      PHYSFS_close( musicFile );
       break;
     }
     case AAC: {
       NeAACDecClose( aacDecoder );
 
-      musicFile.unmap();
+      PHYSFS_close( musicFile );
       break;
     }
 #else
@@ -323,6 +329,8 @@ int Sound::musicDecode()
       return 0;
     }
     case OGG: {
+      printf( "Streaming Ogg\n" );
+
       int bytesRead = 0;
       int result;
       int section;
@@ -372,20 +380,21 @@ int Sound::musicDecode()
             }
             else {
               bytesLeft = size_t( madStream.bufend - madStream.next_frame );
+
+              memmove( musicInputBuffer, madStream.next_frame, bytesLeft );
             }
 
-            int bytesRead = min( musicStream.available(), MUSIC_INPUT_BUFFER_SIZE - bytesLeft );
-            musicStream.forward( bytesRead );
+            size_t bytesRead = size_t( PHYSFS_read( musicFile, musicInputBuffer + bytesLeft, 1,
+                                                    uint( MUSIC_INPUT_BUFFER_SIZE - bytesLeft ) ) );
 
             if( bytesRead == 0 ) {
               return int( reinterpret_cast<char*>( musicOutput ) - musicBuffer );
             }
             else if( bytesRead < MUSIC_INPUT_BUFFER_SIZE - bytesLeft ) {
-//               memset( musicInputBuffer + bytesLeft + bytesRead, 0, MAD_BUFFER_GUARD );
+              memset( musicInputBuffer + bytesLeft + bytesRead, 0, MAD_BUFFER_GUARD );
             }
 
-            mad_stream_buffer( &madStream, musicStream.getPos() - bytesLeft - bytesRead,
-                               bytesLeft + bytesRead );
+            mad_stream_buffer( &madStream, musicInputBuffer, bytesLeft + bytesRead );
           }
           else if( !MAD_RECOVERABLE( madStream.error ) ) {
             throw Exception( "Unrecoverable error during MP3 decoding of '%s'",
@@ -423,7 +432,8 @@ int Sound::musicDecode()
         }
 
         NeAACDecFrameInfo frameInfo;
-        aacOutputBuffer = static_cast<char*>( NeAACDecDecode( aacDecoder, &frameInfo, musicInputBuffer, aacInputBytes ) );
+        aacOutputBuffer = static_cast<char*>
+                          ( NeAACDecDecode( aacDecoder, &frameInfo, musicInputBuffer, aacInputBytes ) );
 
         if( aacOutputBuffer == null ) {
           return int( musicOutput - musicBuffer );
@@ -611,6 +621,8 @@ void Sound::soundRun()
 
     updateMusic();
 
+    alcProcessContext( soundContext );
+
     soundMainSemaphore.post();
     soundAuxSemaphore.wait();
   }
@@ -670,6 +682,10 @@ void Sound::init()
 {
   Log::println( "Initialising Sound {" );
   Log::indent();
+
+#ifdef __native_client__
+  alSetPpapiInfo( System::instance->pp_instance(), System::module->get_browser_interface() );
+#endif
 
   const char* deviceSpec = alcGetString( null, ALC_DEVICE_SPECIFIER );
 

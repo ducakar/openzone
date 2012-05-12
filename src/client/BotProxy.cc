@@ -123,6 +123,13 @@ void BotProxy::prepare()
    * Camera
    */
 
+  if( keys[SDLK_q] ) {
+    bot->h += camera.keyXSens;
+  }
+  if( keys[SDLK_e] ) {
+    bot->h -= camera.keyXSens;
+  }
+
   if( veh != null ) {
     if( isFreelook ) {
       const VehicleClass* vehClazz = static_cast<const VehicleClass*>( veh->clazz );
@@ -135,8 +142,8 @@ void BotProxy::prepare()
       camera.h = angleWrap( camera.h );
     }
     else {
-      bot->h = angleWrap( bot->h + camera.relH );
-      bot->v = clamp( bot->v + camera.relV, 0.0f, Math::TAU / 2.0f );
+      bot->h += camera.relH;
+      bot->v += camera.relV;
 
       camera.h = 0.0f;
       camera.v = Math::TAU / 4.0f;
@@ -147,12 +154,15 @@ void BotProxy::prepare()
     camera.v = clamp( camera.v + camera.relV, 0.0f, Math::TAU / 2.0f );
   }
   else {
-    bot->h = angleWrap( bot->h + camera.relH );
-    bot->v = clamp( bot->v + camera.relV, 0.0f, Math::TAU / 2.0f );
+    bot->h += camera.relH;
+    bot->v += camera.relV;
 
     camera.h = bot->h;
     camera.v = bot->v;
   }
+
+  bot->h = angleWrap( bot->h );
+  bot->v = clamp( bot->v, 0.0f, Math::TAU / 2.0f );
 
   bot->actions = 0;
 

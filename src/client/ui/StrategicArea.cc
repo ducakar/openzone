@@ -374,11 +374,13 @@ StrategicArea::StrategicArea() :
 {
   flags = UPDATE_BIT | PINNED_BIT;
 
-  glGenTextures( 1, &titleTexId );
-  glBindTexture( GL_TEXTURE_2D, titleTexId );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-  glBindTexture( GL_TEXTURE_2D, 0 );
+  OZ_MAIN_CALL( this, {
+    glGenTextures( 1, &_this->titleTexId );
+    glBindTexture( GL_TEXTURE_2D, _this->titleTexId );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glBindTexture( GL_TEXTURE_2D, 0 );
+  } )
 
   pixelStep = camera.coeff / float( Area::uiHeight / 2 );
   stepPixel = 1.0f / pixelStep;
@@ -386,7 +388,9 @@ StrategicArea::StrategicArea() :
 
 StrategicArea::~StrategicArea()
 {
-  glDeleteTextures( 1, &titleTexId );
+  OZ_MAIN_CALL( this, {
+    glDeleteTextures( 1, &_this->titleTexId );
+  } )
 }
 
 }

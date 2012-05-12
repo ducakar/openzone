@@ -61,10 +61,14 @@ void MenuStage::load()
   ui::mouse.buttons     = 0;
   ui::mouse.currButtons = 0;
 
-  ui::ui.root->add( new ui::MainMenu() );
+  ui::Area* area = new ui::MainMenu();
+  ui::ui.root->add( area );
 
   ui::ui.showLoadingScreen( false );
   ui::mouse.doShow = true;
+
+  sound.setMusicVolume( 1.0f );
+  sound.playMusic( 1 );
 
   render.draw( Render::DRAW_UI_BIT );
   render.draw( Render::DRAW_UI_BIT );

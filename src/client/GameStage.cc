@@ -41,6 +41,7 @@
 #include "client/Profile.hh"
 #include "client/QuestList.hh"
 #include "client/MenuStage.hh"
+#include "client/NaClMainCall.hh"
 
 #include "client/ui/LoadingArea.hh"
 
@@ -153,7 +154,9 @@ void GameStage::reload()
   camera.reset();
 
   modules.unload();
-  context.unload();
+  OZ_MAIN_CALL( this, {
+    context.unload();
+  } )
   render.unload();
   questList.unload();
 
@@ -513,7 +516,9 @@ void GameStage::unload()
 
   camera.reset();
 
-  context.unload();
+  OZ_MAIN_CALL( this, {
+    context.unload();
+  } )
   render.unload();
   questList.unload();
 

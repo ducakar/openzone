@@ -25,15 +25,11 @@
 
 #pragma once
 
-#ifndef __LINE__
-# define __native_client__
-#endif
-
 #ifdef __native_client__
 
 #include "oz/oz.hh"
 
-#include "client/NaClGLES2Context.hh"
+#include "client/NaClGLContext.hh"
 
 #include <ppapi/cpp/completion_callback.h>
 #include <ppapi/cpp/module.h>
@@ -45,6 +41,8 @@
 int ozMain( int argc, char** argv );
 
 namespace oz
+{
+namespace client
 {
 
 class MainInstance : public pp::Instance, public pp::MouseLock
@@ -82,6 +80,7 @@ class MainModule : public pp::Module
 
 };
 
+}
 }
 
 namespace pp

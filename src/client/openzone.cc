@@ -25,21 +25,27 @@
 
 #include "client/openzone.hh"
 
-#include "client/NaClGLES2Context.hh"
 #include "client/Client.hh"
 
 #ifdef __native_client__
 
+#include "client/NaClMainCall.hh"
+#include "client/NaClGLContext.hh"
+
 #include <SDL/SDL.h>
 #include <SDL/SDL_nacl.h>
+#include "ppapi/gles2/gl2ext_ppapi.h"
+#include "ppapi/cpp/graphics_3d.h"
 
 namespace oz
 {
+namespace client
+{
+
+static pp::Graphics3D context;
 
 void* MainInstance::mainThreadMain( void* )
 {
-  System::init();
-
   int exitCode = EXIT_FAILURE;
 
   Log::printRaw( "OpenZone  Copyright © 2002-2012 Davorin Učakar\n"
@@ -66,12 +72,15 @@ void* MainInstance::mainThreadMain( void* )
 }
 
 MainInstance::MainInstance( PP_Instance instance_ ) :
-  pp::Instance( instance_ ), pp::MouseLock( this ), fullscreen( this ), isContextBound( false ),
-  isMouseLocked( false ), mainThread( 0 )
+  pp::Instance( instance_ ), pp::MouseLock( this ), fullscreen( this ), isMouseLocked( false ),
+  mainThread( 0 )
 {
   System::module   = pp::Module::Get();
   System::instance = this;
   System::core     = pp::Module::Get()->core();
+  System::init();
+
+  NaClMainCall::init();
 
   RequestInputEvents( PP_INPUTEVENT_CLASS_KEYBOARD | PP_INPUTEVENT_CLASS_MOUSE );
 }
@@ -81,11 +90,10 @@ MainInstance::~MainInstance()
   if( mainThread != 0 ) {
     pthread_join( mainThread, null );
     mainThread = null;
-
-    SDL_Quit();
-
-    NaClGLES2Context::free();
   }
+
+  NaClGLContext::free();
+  NaClMainCall::free();
 }
 
 bool MainInstance::Init( uint32_t, const char**, const char** )
@@ -98,7 +106,7 @@ void MainInstance::DidChangeView( const pp::View& view )
   int width  = view.GetRect().width();
   int height = view.GetRect().height();
 
-  if( width == System::width && height == System::height && isContextBound ) {
+  if( width == System::width && height == System::height ) {
     return;
   }
 
@@ -106,13 +114,7 @@ void MainInstance::DidChangeView( const pp::View& view )
   System::height = height;
 
   if( mainThread == 0 ) {
-    NaClGLES2Context::init();
-    NaClGLES2Context::makeCurrent();
-
     SDL_NACL_SetInstance( pp_instance(), System::width, System::height );
-    if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
-      throw Exception( "Failed to initialise SDL" );
-    }
 
     pthread_create( &mainThread, null, mainThreadMain, this );
   }
@@ -138,8 +140,6 @@ bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
       if( ( keyEvent.GetKeyCode() == 122 || keyEvent.GetKeyCode() == 13 ) &&
           ( event.GetModifiers() & PP_INPUTEVENT_MODIFIER_ALTKEY ) )
       {
-        isContextBound = false;
-
         if( fullscreen.IsFullscreen() ) {
           fullscreen.SetFullscreen( false );
         }
@@ -178,13 +178,14 @@ pp::Instance* MainModule::CreateInstance( PP_Instance instance )
 }
 
 }
+}
 
 namespace pp
 {
 
 pp::Module* CreateModule()
 {
-  return new oz::MainModule();
+  return new oz::client::MainModule();
 }
 
 }

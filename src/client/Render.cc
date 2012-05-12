@@ -229,12 +229,12 @@ void Render::drawGeometry()
     tf.applyCamera();
     shader.updateLights();
 
+    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+    glUniform1i( param.oz_NightVision, camera.nightVision );
+    glUniform4f( param.oz_Wind, 1.0f, 1.0f, WIND_FACTOR, windPhi );
+
     glUniform1f( param.oz_Fog_dist, visibility );
     glUniform4fv( param.oz_Fog_colour, 1, shader.fogColour );
-
-    glUniform1i( param.oz_NightVision, camera.nightVision );
-
-    glUniform4f( param.oz_Wind, 1.0f, 1.0f, WIND_FACTOR, windPhi );
   }
 
   Mesh::reset();
@@ -421,25 +421,39 @@ void Render::drawUI()
   uiMicros += Time::uclock() - beginMicros;
 }
 
-void Render::draw( int flags )
+void Render::draw( int flags_ )
 {
-  if( flags & DRAW_ORBIS_BIT ) {
-    shader.mode = Shader::SCENE;
+  flags = flags_;
 
-    drawOrbis();
-  }
-  if( flags & DRAW_UI_BIT ) {
-    shader.mode = Shader::UI;
+  OZ_MAIN_CALL( this, {
+    if( render.flags & DRAW_ORBIS_BIT ) {
+      shader.mode = Shader::SCENE;
 
-    drawUI();
-  }
+      render.drawOrbis();
+    }
+    if( render.flags & DRAW_UI_BIT ) {
+      shader.mode = Shader::UI;
+
+      render.drawUI();
+    }
+
+    glFlush();
+
+#ifdef __native_client__
+    NaClGLContext::flush();
+#endif
+  } )
 }
 
 void Render::swap()
 {
   uint beginMicros = Time::uclock();
 
+#ifdef __native_client__
+  NaClGLContext::wait();
+#else
   SDL_GL_SwapBuffers();
+#endif
 
   swapMicros += Time::uclock() - beginMicros;
 }
@@ -506,8 +520,18 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
 
   window = window_;
 
+#ifdef __native_client__
+  NaClGLContext::init();
+  NaClGLContext::activate();
+#endif
+
+  glClearColor( 1.0f, 0.0f, 0.0f, 0.0f );
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
   bool isCatalyst  = false;
+#ifndef OZ_GL_COMPATIBLE
   bool hasVAO      = false;
+#endif
   bool hasFBO      = false;
   bool hasFloatTex = false;
   bool hasS3TC     = false;
@@ -535,9 +559,11 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
   foreach( extension, extensions.citer() ) {
     Log::println( "%s", extension->cstr() );
 
+#ifndef OZ_GL_COMPATIBLE
     if( extension->equals( "GL_ARB_vertex_array_object" ) ) {
       hasVAO = true;
     }
+#endif
     if( extension->equals( "GL_ARB_framebuffer_object" ) ) {
       hasFBO = true;
     }
@@ -554,25 +580,24 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
 
   Log::verboseMode = false;
 
-  int major = atoi( version );
-  int minor = atoi( version.cstr() + version.index( '.' ) + 1 );
-
-  if( major < 2 || ( major == 2 && minor < 1 ) ) {
-    throw Exception( "Too old OpenGL version, at least 2.1 required" );
-  }
-
   if( isCatalyst ) {
     config.include( "shader.vertexTexture", "false" );
     config.include( "shader.setSamplerIndices", "true" );
   }
+#ifndef OZ_GL_COMPATIBLE
   if( !hasVAO ) {
     throw Exception( "GL_ARB_vertex_array_object not supported by OpenGL" );
   }
+#endif
   if( !hasFBO ) {
+#ifndef __native_client__
     throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
+#endif
   }
   if( !hasFloatTex ) {
+#ifndef __native_client__
     throw Exception( "GL_ARB_texture_float not supported by OpenGL" );
+#endif
   }
   if( hasS3TC ) {
     shader.hasS3TC = true;
@@ -603,7 +628,11 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
   showBounds         = config.getSet( "render.showBounds",  false );
   showAim            = config.getSet( "render.showAim",     false );
 
+#ifdef __native_client__
+  isOffscreen        = false;
+#else
   isOffscreen        = doPostprocess || renderScale != 1.0f;
+#endif
   windPhi            = 0.0f;
 
   if( sRenderScaleFilter.equals( "NEAREST" ) ) {
@@ -693,6 +722,10 @@ void Render::free( bool isBuild )
   shader.free();
 
   OZ_GL_CHECK_ERROR();
+
+#ifdef __native_client__
+  NaClGLContext::free();
+#endif
 
   Log::unindent();
   Log::println( "}" );

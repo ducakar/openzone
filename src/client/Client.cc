@@ -35,6 +35,8 @@
 #include "client/Sound.hh"
 #include "client/Render.hh"
 #include "client/Loader.hh"
+#include "client/NaClMainCall.hh"
+#include "client/NaClGLContext.hh"
 
 #include <unistd.h>
 
@@ -63,7 +65,9 @@ void Client::shutdown()
     sound.free();
   }
   if( initFlags & INIT_RENDER ) {
-    render.free();
+    OZ_MAIN_CALL( this, {
+      render.free();
+    } )
   }
   if( initFlags & INIT_CONTEXT ) {
     context.free();
@@ -100,7 +104,9 @@ void Client::shutdown()
   }
 
   if( initFlags & INIT_SDL ) {
-    SDL_Quit();
+    OZ_MAIN_CALL( this, {
+      SDL_Quit();
+    } )
   }
 
   if( initFlags & INIT_MAIN_LOOP ) {
@@ -254,14 +260,14 @@ int Client::main( int argc, char** argv )
   Log::printTime();
   Log::printEnd();
 
-#ifndef __native_client__
-  if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
-    throw Exception( "Failed to initialise SDL: %s", SDL_GetError() );
-  }
+  OZ_MAIN_CALL( this, {
+    if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
+      throw Exception( "Failed to initialise SDL: %s", SDL_GetError() );
+    }
+  } )
   initFlags |= INIT_SDL;
-#endif
 
-  PhysFile::init();
+  PhysFile::init( File::TEMPORARY, 32*1024*1024 );
   initFlags |= INIT_PHYSFS;
 
   Log::verboseMode = true;
@@ -310,14 +316,7 @@ int Client::main( int argc, char** argv )
   String prefix = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
   String dataDir( prefix + "/share/" OZ_APPLICATION_NAME );
 
-#ifdef __native_client__
-
-  SDL_Surface* window = null;
-
-  int windowWidth  = System::width;
-  int windowHeight = System::height;
-
-#else
+#ifndef __native_client__
 
   // Don't mess with screensaver. In X11 it only makes effect for windowed mode, in fullscreen
   // mode screensaver never starts anyway. Turning off screensaver has a side effect: if the game
@@ -389,39 +388,33 @@ int Client::main( int argc, char** argv )
 
 #ifdef __native_client__
 
-  bool createdData = false;
+  // Packages must be hardcoded as dir listing is not supported on NaCl.
+  File pkgs[] = {
+    File( "/data/ozbase.7z" ),
+    File( "/data/openzone.7z" )
+  };
 
-  File ozbaseZip( "/data/ozbase.zip" );
-  File openzoneZip( "/data/openzone.zip" );
+  bool createdPkgs = false;
 
-  if( !ozbaseZip.stat() ) {
-    ozbaseZip.write( ozbaseZip.path(), ozbaseZip.path().length() );
+  foreach( pkg, iter( pkgs ) ) {
+    if( !pkg->stat() ) {
+      pkg->write( pkg->path(), pkg->path().length() );
 
-    Log::println( "Created empty file %s", ozbaseZip.path().cstr() );
-    createdData = true;
+      Log::println( "Created empty file %s", pkg->path().cstr() );
+      createdPkgs = true;
+    }
   }
-  if( !openzoneZip.stat() ) {
-    openzoneZip.write( openzoneZip.path(), openzoneZip.path().length() );
-
-    Log::println( "Created empty file %s", openzoneZip.path().cstr() );
-    createdData = true;
-  }
-
-  if( createdData ) {
+  if( createdPkgs ) {
     throw Exception( "Empty game data files created" );
   }
 
-  if( PhysFile::mount( ozbaseZip.path(), null, true ) ) {
-    Log::println( "%s", ozbaseZip.path().cstr() );
-  }
-  else {
-    throw Exception( "Failed to mount '%s' on / in PhysicsFS", ozbaseZip.path().cstr() );
-  }
-  if( PhysFile::mount( openzoneZip.path(), null, true ) ) {
-    Log::println( "%s", openzoneZip.path().cstr() );
-  }
-  else {
-    throw Exception( "Failed to mount '%s' on / in PhysicsFS", openzoneZip.path().cstr() );
+  foreach( pkg, iter( pkgs ) ) {
+    if( PhysFile::mount( pkg->path(), null, true ) ) {
+      Log::println( "%s", pkg->path().cstr() );
+    }
+    else {
+      throw Exception( "Failed to mount '%s' on / in PhysicsFS", pkg->path().cstr() );
+    }
   }
 
 #else
@@ -473,7 +466,7 @@ int Client::main( int argc, char** argv )
   if( String::equals( config.getSet( "seed", "TIME" ), "TIME" ) ) {
     int seed = int( Time::uclock() );
     Math::seed( seed );
-    Log::println( "Random generator seed set to the current time: %d", seed );
+    Log::println( "Random generator seed set to the current time: %u", seed );
   }
   else {
     int seed = config.get( "seed", 0 );
@@ -499,7 +492,13 @@ int Client::main( int argc, char** argv )
   context.init();
 
   initFlags |= INIT_RENDER;
+#ifdef __native_client__
+  OZ_MAIN_CALL( this, {
+    render.init( null, System::width, System::height );
+  } )
+#else
   render.init( window, windowWidth, windowHeight );
+#endif
 
   initFlags |= INIT_AUDIO;
   sound.init();

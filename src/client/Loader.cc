@@ -80,11 +80,7 @@ void Loader::preloadMain()
     loader.preloadRun();
   }
   catch( const std::exception& e ) {
-    Log::verboseMode = false;
-    Log::printException( &e );
-
-    System::bell();
-    System::abort();
+    Exception::abortWith( &e );
   }
 }
 
@@ -414,7 +410,9 @@ void Loader::syncUpdate()
   hasTime = true;
 
   preloadRender();
-  uploadRender();
+  OZ_MAIN_CALL( this, {
+    loader.uploadRender();
+  } )
 
   Log::verboseMode = false;
 }
@@ -433,8 +431,10 @@ void Loader::update()
 
   Log::verboseMode = true;
 
-  cleanupRender();
-  uploadRender();
+  OZ_MAIN_CALL( this, {
+    loader.cleanupRender();
+    loader.uploadRender();
+  } )
 
   Log::verboseMode = false;
 

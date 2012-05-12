@@ -27,10 +27,10 @@
 
 #include "client/Shader.hh"
 #include "client/Shape.hh"
-#include "client/OpenGL.hh"
 
 #include "client/ui/Area.hh"
 
+#include "client/OpenGL.hh"
 #include <SDL_ttf.h>
 
 namespace oz
@@ -44,34 +44,40 @@ Label::Label() :
   x( 0 ), y( 0 ), align( Area::ALIGN_NONE ), font( Font::MONO ), offsetX( 0 ), offsetY( 0 ),
   width( 0 ), height( 0 ), activeTexId( 0 ), hasChanged( false )
 {
-  glGenTextures( 2, texIds );
+  OZ_MAIN_CALL( this, {
+    glGenTextures( 2, _this->texIds );
 
-  glBindTexture( GL_TEXTURE_2D, texIds[0] );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glBindTexture( GL_TEXTURE_2D, _this->texIds[0] );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
-  glBindTexture( GL_TEXTURE_2D, texIds[1] );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glBindTexture( GL_TEXTURE_2D, _this->texIds[1] );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+  } )
 }
 
 Label::~Label()
 {
-  glDeleteTextures( 2, texIds );
+  OZ_MAIN_CALL( this, {
+    glDeleteTextures( 2, _this->texIds );
+  } )
 }
 
 Label::Label( int x, int y, int align, Font::Type font, const char* s, ... ) :
   offsetX( 0 ), offsetY( 0 ), activeTexId( 0 )
 {
-  glGenTextures( 2, texIds );
+  OZ_MAIN_CALL( this, {
+    glGenTextures( 2, _this->texIds );
 
-  glBindTexture( GL_TEXTURE_2D, texIds[0] );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glBindTexture( GL_TEXTURE_2D, _this->texIds[0] );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
-  glBindTexture( GL_TEXTURE_2D, texIds[1] );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glBindTexture( GL_TEXTURE_2D, _this->texIds[1] );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+  } )
 
   va_list ap;
   va_start( ap, s );
@@ -102,14 +108,18 @@ void Label::vset( int x_, int y_, int align_, Font::Type font_, const char* s, v
     return;
   }
 
-  SDL_Surface* text = TTF_RenderUTF8_Blended( ui::font.fonts[font], buffer, Font::SDL_COLOUR_WHITE );
+  static SDL_Surface* text = null;
+  static uint texId = 0;
 
-  uint texId = activeTexId == texIds[0] ? texIds[1] : texIds[0];
+  text  = TTF_RenderUTF8_Blended( ui::font.fonts[font], buffer, Font::SDL_COLOUR_WHITE );
+  texId = activeTexId == texIds[0] ? texIds[1] : texIds[0];
 
-  glBindTexture( GL_TEXTURE_2D, texId );
-  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                text->pixels );
-  glBindTexture( GL_TEXTURE_2D, 0 );
+  OZ_MAIN_CALL( this, {
+    glBindTexture( GL_TEXTURE_2D, texId );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                  text->pixels );
+    glBindTexture( GL_TEXTURE_2D, 0 );
+  } )
 
   newWidth   = text->w;
   newHeight  = text->h;

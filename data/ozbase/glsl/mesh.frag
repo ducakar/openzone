@@ -23,37 +23,37 @@
  * Generic shader for meshes.
  */
 
-varying vec3 exPosition;
-varying vec2 exTexCoord;
-varying vec3 exNormal;
+varying lowp vec3 exPosition;
+varying lowp vec2 exTexCoord;
+varying lowp vec3 exNormal;
 
 void main()
 {
-  vec3  normal      = normalize( exNormal );
+  lowp vec3  normal      = normalize( exNormal );
 
 #ifdef OZ_LOW_DETAIL
-  float dist        = gl_FragCoord.w / gl_FragCoord.z;
+  lowp float dist        = gl_FragCoord.w / gl_FragCoord.z;
 #else
-  vec3  toCamera    = oz_CameraPosition - exPosition;
-  float dist        = length( toCamera );
+  lowp vec3  toCamera    = oz_CameraPosition - exPosition;
+  lowp float dist        = length( toCamera );
 #endif
 
-  vec4 colourSample = texture2D( oz_Textures[0], exTexCoord );
-  vec4 diffuse      = skyLightColour( normal );
+  lowp vec4 colourSample = texture2D( oz_Textures[0], exTexCoord );
+  lowp vec4 diffuse      = skyLightColour( normal );
 
 #ifdef OZ_LOW_DETAIL
-  vec4 fragColour   = oz_Colour * colourSample * diffuse;
+  lowp vec4 fragColour   = oz_Colour * colourSample * diffuse;
 #else
-  vec4 masksSample  = texture2D( oz_Textures[1], exTexCoord );
+  lowp vec4 masksSample  = texture2D( oz_Textures[1], exTexCoord );
 
-  vec4 emission     = vec4( masksSample.g, masksSample.g, masksSample.g, 0.0 );
-  vec4 specular     = specularColour( masksSample.r, normal, toCamera / dist );
+  lowp vec4 emission     = vec4( masksSample.g, masksSample.g, masksSample.g, 0.0 );
+  lowp vec4 specular     = specularColour( masksSample.r, normal, toCamera / dist );
 
-  vec4 fragColour   = oz_Colour * colourSample * ( diffuse + emission + specular );
+  lowp vec4 fragColour   = oz_Colour * colourSample * ( diffuse + emission + specular );
 #endif
 
   if( oz_NightVision ) {
-    float nvColour = 2.0 * ( fragColour.r + fragColour.g + fragColour.b );
+    lowp float nvColour = 2.0 * ( fragColour.r + fragColour.g + fragColour.b );
 
     gl_FragData[0] = applyFog( vec4( 0.0, nvColour, 0.0, fragColour.a ), dist );
   }

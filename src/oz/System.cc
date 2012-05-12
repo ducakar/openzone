@@ -209,8 +209,6 @@ int           System::height   = 0;
 System::System()
 {
 #if defined( __native_client__ ) || defined( __ANDROID__ )
-  // Disable default handler for TRAP signal that crashes the process.
-  signal( SIGTRAP, SIG_IGN );
 #elif defined( _WIN32 )
   InitializeCriticalSection( &bellCounterLock );
 #else

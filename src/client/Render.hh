@@ -103,6 +103,8 @@ class Render
     float                 visibilityRange;
     float                 visibility;
 
+    int                   flags;
+
     bool                  showBounds;
     bool                  showAim;
 

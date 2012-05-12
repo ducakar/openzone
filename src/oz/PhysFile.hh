@@ -243,7 +243,7 @@ class PhysFile
      *
      * On NaCl <tt>System::instance</tt> must be set prior to initialisation of PhysicsFS.
      */
-    static void init( File::FilesystemType fsType = File::TEMPORARY );
+    static void init( File::FilesystemType type = File::TEMPORARY, int size = 0 );
 
     /**
      * Deinitialise PhysicsFS.

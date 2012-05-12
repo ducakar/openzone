@@ -665,7 +665,7 @@ void Library::init()
   Log::println( "%5d  textures", textures.length() );
   Log::println( "%5d  sounds", sounds.length() );
   Log::println( "%5d  caela", caela.length() );
-  Log::println( "%5d  terras", terrae.length() );
+  Log::println( "%5d  terrae", terrae.length() );
   Log::println( "%5d  BSPs", nBSPs );
   Log::println( "%5d  models", models.length() );
   Log::println( "%5d  music tracks", musics.length() );

@@ -23,15 +23,15 @@
  * Mesh shader that deforms mesh according to the given wind.
  */
 
-uniform vec4 oz_Wind;
+uniform lowp vec4 oz_Wind;
 
-attribute vec3 inPosition;
-attribute vec2 inTexCoord;
-attribute vec3 inNormal;
+attribute lowp vec3 inPosition;
+attribute lowp vec2 inTexCoord;
+attribute lowp vec3 inNormal;
 
-varying vec3 exPosition;
-varying vec2 exTexCoord;
-varying vec3 exNormal;
+varying lowp vec3 exPosition;
+varying lowp vec2 exTexCoord;
+varying lowp vec3 exNormal;
 
 void main()
 {
@@ -39,9 +39,9 @@ void main()
   exTexCoord     = inTexCoord;
   exNormal       = ( oz_Transform.model * vec4( inNormal, 0.0 ) ).xyz;
 
-  float windFact = max( inPosition.z, 0.0 );
-  vec2  windBias = oz_Wind.xy * windFact*windFact * oz_Wind.z *
-      sin( 0.08 * ( exPosition.x + exPosition.y ) + oz_Wind.w );
+  lowp float windFact = max( inPosition.z, 0.0 );
+  lowp vec2  windBias = oz_Wind.xy * windFact*windFact * oz_Wind.z *
+                        sin( 0.08 * ( exPosition.x + exPosition.y ) + oz_Wind.w );
 
   gl_Position    = oz_Transform.complete * vec4( inPosition.xy + windBias.xy, inPosition.z, 1.0 );
 }

@@ -18,83 +18,69 @@
  */
 
 /**
- * @file client/NaClGLES2Context.cc
+ * @file client/NaClGLContext.cc
  */
 
 #include "stable.hh"
 
-#ifndef __LINE__
-# define __native_client__
-#endif
-
 #ifdef __native_client__
 
-#include "client/NaClGLES2Context.hh"
+#include "client/NaClGLContext.hh"
 
 #include <ppapi/c/ppb_opengles2.h>
 #include <ppapi/cpp/completion_callback.h>
 #include <ppapi/cpp/instance.h>
 #include <ppapi/cpp/graphics_3d.h>
-#include <ppapi/cpp/graphics_3d_client.h>
 #include <ppapi/gles2/gl2ext_ppapi.h>
 
 namespace oz
 {
-
-class Graphics3DClient : public pp::Graphics3DClient
+namespace client
 {
-  public:
 
-    explicit Graphics3DClient( pp::Instance* instance ) :
-      pp::Graphics3DClient( instance )
-    {}
-
-    ~Graphics3DClient()
-    {}
-
-    void Graphics3DContextLost()
-    {
-      System::error( 0, "GL context lost" );
-    }
-
-};
-
-static Semaphore            flushSemaphore;
-static pp::Graphics3D       context;
-static const PPB_OpenGLES2* iGLES2;
+static Semaphore      flushSemaphore;
+static pp::Graphics3D context;
 
 static void flushCompleteCallback( void*, int )
 {
   flushSemaphore.post();
 }
 
-void NaClGLES2Context::makeCurrent()
+void NaClGLContext::activate()
 {
+  hard_assert( !context.is_null() );
+
   glSetCurrentContextPPAPI( context.pp_resource() );
 }
 
-void NaClGLES2Context::resize()
+void NaClGLContext::deactivate()
+{
+  glSetCurrentContextPPAPI( 0 );
+}
+
+void NaClGLContext::resize()
 {
   glSetCurrentContextPPAPI( 0 );
   context.ResizeBuffers( System::width, System::height );
 }
 
-void NaClGLES2Context::swapBuffers()
+void NaClGLContext::flush()
 {
   context.SwapBuffers( pp::CompletionCallback( &flushCompleteCallback, null ) );
+}
+
+void NaClGLContext::wait()
+{
   flushSemaphore.wait();
 }
 
-void NaClGLES2Context::init()
+void NaClGLContext::init()
 {
+  hard_assert( context.is_null() );
+
   flushSemaphore.init();
 
-  const void* pGLES2Interface = System::module->GetBrowserInterface( PPB_OPENGLES2_INTERFACE );
-  iGLES2 = static_cast<const PPB_OpenGLES2*>( pGLES2Interface );
-
-  if( iGLES2 == null ) {
-    throw Exception( "Cannot obtain OpenGLES2 browser interface" );
-  }
+  glInitializePPAPI( System::module->get_browser_interface() );
 
   int attribs[] = {
     PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
@@ -112,16 +98,20 @@ void NaClGLES2Context::init()
     throw Exception( "Failed to create OpenGL context" );
   }
 
-  System::instance->BindGraphics( context );
+  if( !System::instance->BindGraphics( context ) ) {
+    throw Exception( "Failed to bind Graphics3D" );
+  }
 }
 
-void NaClGLES2Context::free()
+void NaClGLContext::free()
 {
   glSetCurrentContextPPAPI( 0 );
+  glTerminatePPAPI();
 
   flushSemaphore.destroy();
 }
 
+}
 }
 
 #endif
