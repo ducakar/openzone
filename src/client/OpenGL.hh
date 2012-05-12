@@ -40,6 +40,9 @@
 # define GL_GLEXT_PROTOTYPES
 #endif
 
+#include "NaClMainCall.hh"
+#include "NaClGLContext.hh"
+
 #if defined( __native_client__ ) || defined( __ANDROID__ )
 # include <GLES2/gl2.h>
 #else

@@ -23,25 +23,31 @@
  * Common include file, prepended before all shader sources.
  */
 
-const float TAU = 6.283185307179586;
+#ifndef GL_ES
+# define lowp
+# define mediump
+# define highp
+#endif
+
+const lowp float TAU = 6.283185307179586;
 
 /*
  * Transformation
  */
 struct Transform
 {
-  mat4 model;
-  mat4 complete;
+  lowp mat4 model;
+  lowp mat4 complete;
 };
 
 uniform Transform       oz_Transform;
 
-uniform vec3            oz_CameraPosition;
+uniform lowp vec3       oz_CameraPosition;
 
 /*
  * Colour
  */
-uniform vec4            oz_Colour = vec4( 1.0, 1.0, 1.0, 1.0 );
+uniform lowp vec4       oz_Colour;
 
 /*
  * Texturing { albedo, masks, normals, frames positions, frame normals }
@@ -53,29 +59,29 @@ uniform sampler2D       oz_Textures[5];
  */
 struct CaelumLight
 {
-  vec3 dir;
-  vec4 diffuse;
-  vec4 ambient;
+  lowp vec3 dir;
+  lowp vec4 diffuse;
+  lowp vec4 ambient;
 };
 
 struct Light
 {
-  vec3 pos;
-  vec4 diffuse;
+  lowp vec3 pos;
+  lowp vec4 diffuse;
 };
 
 uniform CaelumLight     oz_CaelumLight;
 uniform Light           oz_PointLights[8];
 
-uniform bool            oz_NightVision = false;
+uniform bool            oz_NightVision;
 
 /*
  * Fog
  */
 struct Fog
 {
-  float dist;
-  vec4  colour;
+  lowp float dist;
+  lowp vec4  colour;
 };
 
 uniform Fog             oz_Fog;
@@ -84,37 +90,31 @@ uniform Fog             oz_Fog;
  * FUNCTIONS
  */
 
-vec4 greyscale( vec4 colour )
+lowp vec4 greyscale( lowp vec4 colour )
 {
-  float avg = dot( colour, vec4( 0.333, 0.333, 0.333, 0.0 ) );
+  lowp float avg = dot( colour, vec4( 0.333, 0.333, 0.333, 0.0 ) );
   return vec4( avg, avg, avg, colour.a );
 }
 
-vec4 skyLightColour( vec3 normal )
+lowp vec4 skyLightColour( lowp vec3 normal )
 {
-  float diffuseFactor = max( dot( -oz_CaelumLight.dir, normal ), 0.0 );
-  vec4 colour = diffuseFactor * oz_CaelumLight.diffuse + oz_CaelumLight.ambient;
+  lowp float diffuseFactor = max( dot( -oz_CaelumLight.dir, normal ), 0.0 );
+  lowp vec4 colour = diffuseFactor * oz_CaelumLight.diffuse + oz_CaelumLight.ambient;
   return min( colour, vec4( 1.0, 1.0, 1.0, 1.0 ) );
 }
 
-vec4 specularColour( float specular, vec3 normal, vec3 toCamera )
+lowp vec4 specularColour( lowp float specular, lowp vec3 normal, lowp vec3 toCamera )
 {
-  vec3 reflectedLight = reflect( oz_CaelumLight.dir, normal );
-  float factor = 2.0 * specular * max( dot( reflectedLight, toCamera ), 0.0 );
+  lowp vec3 reflectedLight = reflect( oz_CaelumLight.dir, normal );
+  lowp float factor = 2.0 * specular * max( dot( reflectedLight, toCamera ), 0.0 );
   return factor * oz_CaelumLight.diffuse;
 }
 
-vec4 applyFog( vec4 colour, float dist )
+lowp vec4 applyFog( lowp vec4 colour, lowp float dist )
 {
-  float ratio = min( dist / oz_Fog.dist, 1.0 );
+  lowp float ratio = min( dist / oz_Fog.dist, 1.0 );
   return mix( colour, oz_Fog.colour, ratio*ratio );
 }
-
-
-
-
-
-
 
 
 

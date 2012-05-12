@@ -69,6 +69,7 @@ void Exception::abortWith( const std::exception* e )
 {
   Log::verboseMode = false;
   Log::printException( e );
+  Log::println();
 
   System::bell();
   System::abort();

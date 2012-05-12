@@ -23,13 +23,13 @@
  * Generic shader for meshes.
  */
 
-attribute vec3 inPosition;
-attribute vec2 inTexCoord;
-attribute vec3 inNormal;
+attribute lowp vec3 inPosition;
+attribute lowp vec2 inTexCoord;
+attribute lowp vec3 inNormal;
 
-varying vec3 exPosition;
-varying vec2 exTexCoord;
-varying vec3 exNormal;
+varying lowp vec3 exPosition;
+varying lowp vec2 exTexCoord;
+varying lowp vec3 exNormal;
 
 void main()
 {

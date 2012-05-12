@@ -23,32 +23,32 @@
  * Terrain (land) shader.
  */
 
-const float TERRA_DETAIL_SCALE = 512.0;
+const lowp float TERRA_DETAIL_SCALE = 512.0;
 
-varying vec3 exPosition;
-varying vec2 exTexCoord;
-varying vec3 exNormal;
+varying lowp vec3 exPosition;
+varying lowp vec2 exTexCoord;
+varying lowp vec3 exNormal;
 
 void main()
 {
-  vec3  normal      = normalize( exNormal );
+  lowp vec3  normal      = normalize( exNormal );
 
 #ifdef OZ_LOW_DETAIL
-  float dist        = gl_FragCoord.w / gl_FragCoord.z;
+  lowp float dist        = gl_FragCoord.w / gl_FragCoord.z;
 #else
-  vec3  toCamera    = oz_CameraPosition - exPosition;
-  float dist        = length( toCamera );
+  lowp vec3  toCamera    = oz_CameraPosition - exPosition;
+  lowp float dist        = length( toCamera );
 #endif
 
-  vec4 detailSample = texture2D( oz_Textures[0], exTexCoord * TERRA_DETAIL_SCALE );
-  vec4 mapSample    = texture2D( oz_Textures[2], exTexCoord );
+  lowp vec4 detailSample = texture2D( oz_Textures[0], exTexCoord * TERRA_DETAIL_SCALE );
+  lowp vec4 mapSample    = texture2D( oz_Textures[2], exTexCoord );
 
-  vec4 diffuse      = skyLightColour( normal );
+  lowp vec4 diffuse      = skyLightColour( normal );
 
-  vec4 fragColour   = detailSample * mapSample * diffuse;
+  lowp vec4 fragColour   = detailSample * mapSample * diffuse;
 
   if( oz_NightVision ) {
-    float nvColour = 2.0 * ( fragColour.r + fragColour.g + fragColour.b );
+    lowp float nvColour = 2.0 * ( fragColour.r + fragColour.g + fragColour.b );
 
     gl_FragData[0] = applyFog( vec4( 0.0, nvColour, 0.0, fragColour.a ), dist );
   }

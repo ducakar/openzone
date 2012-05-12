@@ -399,9 +399,10 @@ bool PhysFile::mountLocal( const char* path )
   return true;
 }
 
-void PhysFile::init( File::FilesystemType fsType )
+void PhysFile::init( File::FilesystemType type, int size )
 {
-  static_cast<void>( fsType );
+  static_cast<void>( type );
+  static_cast<void>( size );
 
   const char* arg0;
 
@@ -416,13 +417,15 @@ void PhysFile::init( File::FilesystemType fsType )
     PPB_GetInterface  getInterface;
     PP_Instance       instance;
     PP_FileSystemType filesystemType;
+    size_t            size;
   };
 
   InstanceInfo instanceInfo = {
     pp::Module::Get()->get_browser_interface(),
     System::instance->pp_instance(),
     fsType == File::PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
-                                 PP_FILESYSTEMTYPE_LOCALTEMPORARY
+                                 PP_FILESYSTEMTYPE_LOCALTEMPORARY,
+    size
   };
 
   arg0 = reinterpret_cast<const char*>( &instanceInfo );

@@ -46,11 +46,6 @@ class Camera
       BOT
     };
 
-    float mouseXSens;
-    float mouseYSens;
-    float keyXSens;
-    float keyYSens;
-
     static StrategicProxy strategicProxy;
     static BotProxy       botProxy;
 
@@ -103,6 +98,11 @@ class Camera
     float         vertPlane;
     float         horizPlane;
     float         maxDist;
+
+    float         mouseXSens;
+    float         mouseYSens;
+    float         keyXSens;
+    float         keyYSens;
 
     bool          isExternal;
     bool          allowReincarnation;

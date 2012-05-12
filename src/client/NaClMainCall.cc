@@ -18,32 +18,47 @@
  */
 
 /**
- * @file client/NaClGLES2Context.hh
+ * @file client/NaClMainCall.cc
  */
-
-#pragma once
 
 #ifdef __native_client__
 
-#include "client/common.hh"
+#include "stable.hh"
+
+#include "client/NaClMainCall.hh"
+
+#include <ppapi/cpp/completion_callback.h>
+#include <ppapi/cpp/core.h>
 
 namespace oz
 {
-
-class NaClGLES2Context
+namespace client
 {
-  public:
 
-    static void makeCurrent();
-    static void resize();
+Semaphore NaClMainCall::semaphore;
 
-    static void swapBuffers();
+bool NaClMainCall::isMainThread()
+{
+  return System::core->IsMainThread();
+}
 
-    static void init();
-    static void free();
+void NaClMainCall::call( Callback* callback, void* caller )
+{
+  System::core->CallOnMainThread( 0, pp::CompletionCallback( callback, caller ) );
+  semaphore.wait();
+}
 
-};
+void NaClMainCall::init()
+{
+  semaphore.init();
+}
 
+void NaClMainCall::free()
+{
+  semaphore.destroy();
+}
+
+}
 }
 
 #endif

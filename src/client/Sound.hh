@@ -30,6 +30,7 @@
 // We don't use those callbacks anywhere and they don't compile on MinGW.
 #define OV_EXCLUDE_STATIC_CALLBACKS
 
+#include <physfs.h>
 #include <AL/alc.h>
 #include <vorbis/vorbisfile.h>
 
@@ -74,14 +75,18 @@ class Sound
     uint           musicBufferIds[2];
     int            musicBuffersQueued;
     char           musicBuffer[MUSIC_BUFFER_SIZE];
+#ifdef OZ_NONFREE
+    ubyte          musicInputBuffer[MUSIC_INPUT_BUFFER_SIZE + MAD_BUFFER_GUARD];
+#else
+    ubyte          musicInputBuffer[MUSIC_INPUT_BUFFER_SIZE];
+#endif
 
 #ifdef OZ_NONFREE
     void*          libmad;
     void*          libfaad;
 #endif
 
-    PhysFile       musicFile;
-    InputStream    musicStream;
+    PHYSFS_File*   musicFile;
 
     OggVorbis_File oggStream;
 

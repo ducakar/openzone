@@ -23,7 +23,7 @@
  * Shader for UI, bounding boxes, aim dot etc.
  */
 
-varying vec2 exTexCoord;
+varying lowp vec2 exTexCoord;
 
 void main()
 {
