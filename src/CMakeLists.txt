@@ -24,6 +24,6 @@ if( NOT NACL AND NOT ANDROID )
   add_subdirectory( tools )
 endif()
 
-# add_subdirectory( tests )
+add_subdirectory( tests )
 
 add_library( build_info STATIC ${CMAKE_BINARY_DIR}/src/BuildInfo.cc )

@@ -74,6 +74,7 @@ class File
     String    filePath;   ///< %File path.
     Type      fileType;   ///< %File type (initially <tt>MISSING</tt>).
     int       fileSize;   ///< %File size (>= 0 if <tt>fileType == REGULAR</tt>, -1 otherwise).
+    long64    fileTime;   ///< Modification or creation time, what is newer.
     char*     data;       ///< Mapped memory.
 #ifdef __native_client__
     FileDesc* descriptor; ///< Structure for exchanging information with NaCl callbacks.
@@ -139,6 +140,13 @@ class File
      * values are <tt>MISSING</tt> and -1 respectively.
      */
     Type type() const;
+
+    /**
+     * Modification or creation (Unix) time, what is newer.
+     *
+     * %File must be stat'd before.
+     */
+    long64 time() const;
 
     /**
      * %File size in bytes if regular file, -1 otherwise.

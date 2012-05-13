@@ -140,7 +140,7 @@ bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
       pp::KeyboardInputEvent keyEvent( event );
 
       if( ( keyEvent.GetKeyCode() == 122 || keyEvent.GetKeyCode() == 13 ) &&
-          ( event.GetModifiers() == 0 ) )
+          event.GetModifiers() == 0 )
       {
         if( fullscreen.IsFullscreen() ) {
           fullscreen.SetFullscreen( false );

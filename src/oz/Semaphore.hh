@@ -60,11 +60,13 @@ class Semaphore
     {}
 
     /**
-     * Destructor.
+     * Destructor, destroys semaphore if initialised.
      */
     ~Semaphore()
     {
-      soft_assert( descriptor == null );
+      if( descriptor != null ) {
+        destroy();
+      }
     }
 
     /**

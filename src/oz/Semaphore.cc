@@ -91,7 +91,7 @@ void Semaphore::wait() const
 
 #ifdef _WIN32
 
-  WaitForSingleObject( descriptor->semaphore, INFINITE ) != WAIT_OBJECT_0 );
+  WaitForSingleObject( descriptor->semaphore, INFINITE );
   InterlockedDecrement( &descriptor->counter );
 
 #else

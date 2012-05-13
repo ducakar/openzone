@@ -50,7 +50,7 @@ inline bool operator < ( const PhysFile& a, const PhysFile& b )
 }
 
 PhysFile::PhysFile() :
-  fileType( File::MISSING ), fileSize( -1 ), data( null )
+  fileType( File::MISSING ), fileSize( -1 ), fileTime( 0 ), data( null )
 {}
 
 PhysFile::~PhysFile()
@@ -59,16 +59,18 @@ PhysFile::~PhysFile()
 }
 
 PhysFile::PhysFile( const PhysFile& file ) :
-  filePath( file.filePath ), fileType( file.fileType ), fileSize( file.fileSize ), data( null )
+  filePath( file.filePath ), fileType( file.fileType ), fileSize( file.fileSize ),
+  fileTime( file.fileTime ), data( null )
 {}
 
 PhysFile::PhysFile( PhysFile&& file ) :
   filePath( static_cast<String&&>( file.filePath ) ), fileType( file.fileType ),
-  fileSize( file.fileSize ), data( file.data )
+  fileSize( file.fileSize ), fileTime( file.fileTime ), data( file.data )
 {
   file.filePath = "";
   file.fileType = File::DIRECTORY;
   file.fileSize = -1;
+  file.fileTime = 0;
   file.data     = null;
 }
 
@@ -81,6 +83,7 @@ PhysFile& PhysFile::operator = ( const PhysFile& file )
   filePath = file.filePath;
   fileType = file.fileType;
   fileSize = file.fileSize;
+  fileTime = file.fileTime;
   data     = null;
 
   return *this;
@@ -97,11 +100,13 @@ PhysFile& PhysFile::operator = ( PhysFile&& file )
   filePath = static_cast<String&&>( file.filePath );
   fileType = file.fileType;
   fileSize = file.fileSize;
+  fileTime = file.fileTime;
   data     = file.data;
 
   file.filePath = "";
   file.fileType = File::MISSING;
   file.fileSize = -1;
+  file.fileTime = 0;
   file.data     = null;
 
   return *this;
@@ -118,6 +123,7 @@ void PhysFile::setPath( const char* path )
   filePath = path;
   fileType = File::MISSING;
   fileSize = -1;
+  fileTime = 0;
   data     = null;
 }
 
@@ -128,14 +134,17 @@ bool PhysFile::stat()
   if( !PHYSFS_exists( filePath ) ) {
     fileType = File::MISSING;
     fileSize = -1;
+    fileTime = 0;
   }
   else if( PHYSFS_isDirectory( filePath ) ) {
     fileType = File::DIRECTORY;
     fileSize = -1;
+    fileTime = PHYSFS_getLastModTime( filePath );
   }
   else {
     fileType = File::REGULAR;
     fileSize = -1;
+    fileTime = PHYSFS_getLastModTime( filePath );
 
     PHYSFS_File* file = PHYSFS_openRead( filePath );
 
@@ -152,6 +161,11 @@ bool PhysFile::stat()
 File::Type PhysFile::type() const
 {
   return fileType;
+}
+
+long64 PhysFile::time() const
+{
+  return fileTime;
 }
 
 int PhysFile::size() const
