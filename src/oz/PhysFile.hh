@@ -45,6 +45,7 @@ class PhysFile
     String     filePath; ///< %File path.
     File::Type fileType; ///< %File type (initially <tt>MISSING</tt>).
     int        fileSize; ///< %File size (>= 0 if <tt>fileType == REGULAR</tt>, -1 otherwise).
+    long64     fileTime; ///< Modification or creation time, what is newer.
     char*      data;     ///< Mapped memory.
 
   public:
@@ -107,6 +108,13 @@ class PhysFile
      * values are <tt>MISSING</tt> and -1 respectively.
      */
     File::Type type() const;
+
+    /**
+     * Modification or creation (Unix) time, what is newer.
+     *
+     * %File must be stat'd before.
+     */
+    long64 time() const;
 
     /**
      * %File size in bytes if regular file, -1 otherwise.

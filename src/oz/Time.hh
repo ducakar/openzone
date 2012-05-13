@@ -42,12 +42,13 @@ class Time
 {
   public:
 
-    int year;   ///< Year, all digits.
-    int month;  ///< Month, from 1 to 12.
-    int day;    ///< Day in month, from 1 to 31.
-    int hour;   ///< Hour.
-    int minute; ///< Minute.
-    int second; ///< Second.
+    long64 epoch;  ///< Seconds since epoch, 1970-01-01 0:00:00.
+    int    year;   ///< Year, all digits.
+    int    month;  ///< Month, from 1 to 12.
+    int    day;    ///< Day in month, from 1 to 31.
+    int    hour;   ///< Hour.
+    int    minute; ///< Minute.
+    int    second; ///< Second.
 
     /**
      * Monotonic clock from an unspecified point in time, with millisecond resolution.
@@ -77,14 +78,29 @@ class Time
     static void usleep( uint microseconds );
 
     /**
+     * Get current Unix time (seconds from epoch, 1970-01-01 0:00:00).
+     */
+    static long64 time();
+
+    /**
      * Return <tt>Time</tt> structure filled with the current UTC time.
      */
     static Time utc();
 
     /**
+     * Fill year, month ... etc. fields from Unix time.
+     */
+    static Time utc( long64 epoch );
+
+    /**
      * Return <tt>Time</tt> structure filled with the current local time.
      */
     static Time local();
+
+    /**
+     * Fill year, month ... etc. fields from Unix time.
+     */
+    static Time local( long64 epoch );
 
 };
 

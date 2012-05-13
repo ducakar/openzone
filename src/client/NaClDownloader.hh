@@ -23,9 +23,16 @@
 
 #pragma once
 
-// #ifdef __native_client__
+#ifdef __native_client__
 
 #include "client/common.hh"
+
+namespace pp
+{
+
+class URLLoader;
+
+};
 
 namespace oz
 {
@@ -34,11 +41,28 @@ namespace client
 
 class NaClDownloader
 {
+  private:
+
+    Semaphore      semaphore;
+    BufferStream   buffer;
+    pp::URLLoader* loader;
+    const char*    url;
+
+    static void readCallback( void* data, int result );
+    static void beginCallback( void* data, int result );
+
+  public:
+
+    ~NaClDownloader();
+
+    bool isComplete() const;
+    BufferStream take();
+
+    void begin( const char* url );
+
 };
 
-extern NaClDownloader naclDownloader;
-
 }
 }
 
-// #endif
+#endif

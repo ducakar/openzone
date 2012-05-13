@@ -58,11 +58,13 @@ class Mutex
     {}
 
     /**
-     * Destructor.
+     * Destructor, destroys mutex if initialised.
      */
     ~Mutex()
     {
-      soft_assert( descriptor == null );
+      if( descriptor != null ) {
+        destroy();
+      }
     }
 
     /**

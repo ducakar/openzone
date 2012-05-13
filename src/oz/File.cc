@@ -133,7 +133,7 @@ inline bool operator < ( const File& a, const File& b )
 }
 
 File::File() :
-  fileType( MISSING ), fileSize( -1 ), data( null )
+  fileType( MISSING ), fileSize( -1 ), fileTime( 0 ), data( null )
 {
 #ifdef __native_client__
   descriptor = new FileDesc( this );
@@ -150,7 +150,8 @@ File::~File()
 }
 
 File::File( const File& file ) :
-  filePath( file.filePath ), fileType( file.fileType ), fileSize( file.fileSize ), data( null )
+  filePath( file.filePath ), fileType( file.fileType ), fileSize( file.fileSize ),
+  fileTime( file.fileTime ), data( null )
 {
 #ifdef __native_client__
   descriptor = new FileDesc( this );
@@ -168,6 +169,7 @@ File::File( File&& file ) :
   file.filePath = "";
   file.fileType = MISSING;
   file.fileSize = -1;
+  file.fileTime = 0;
   file.data     = null;
 }
 
@@ -182,6 +184,7 @@ File& File::operator = ( const File& file )
   filePath = file.filePath;
   fileType = file.fileType;
   fileSize = file.fileSize;
+  fileTime = file.fileTime;
   data     = null;
 
   return *this;
@@ -198,18 +201,20 @@ File& File::operator = ( File&& file )
   filePath = static_cast<String&&>( file.filePath );
   fileType = file.fileType;
   fileSize = file.fileSize;
+  fileTime = file.fileTime;
   data     = file.data;
 
   file.filePath = "";
   file.fileType = MISSING;
   file.fileSize = -1;
+  file.fileTime = 0;
   file.data     = null;
 
   return *this;
 }
 
 File::File( const char* path ) :
-  filePath( path ), fileType( MISSING ), fileSize( -1 ), data( null )
+  filePath( path ), fileType( MISSING ), fileSize( -1 ), fileTime( 0 ), data( null )
 {
 #ifdef __native_client__
   descriptor = new FileDesc( this );
@@ -223,6 +228,7 @@ void File::setPath( const char* path )
   filePath = path;
   fileType = MISSING;
   fileSize = -1;
+  fileTime = 0;
 }
 
 bool File::stat()
@@ -238,20 +244,27 @@ bool File::stat()
   if( filePath.equals( "/" ) ) {
     fileType = DIRECTORY;
     fileSize = 0;
+    fileTime = 0;
     return true;
   }
 
   fileType = MISSING;
   fileSize = -1;
+  fileTime = 0;
 
   DEFINE_CALLBACK( queryResult, {
     if( _result == PP_OK ) {
       if( _fd->info.type == PP_FILETYPE_REGULAR ) {
         _fd->file->fileType = REGULAR;
         _fd->file->fileSize = int( _fd->info.size );
+        _fd->file->fileTime = long64( max( _fd->info.creation_time,
+                                           _fd->info.last_modified_time ) );
       }
       else if( _fd->info.type == PP_FILETYPE_DIRECTORY ) {
         _fd->file->fileType = DIRECTORY;
+        _fd->file->fileSize = 0;
+        _fd->file->fileTime = long64( max( _fd->info.creation_time,
+                                           _fd->info.last_modified_time ) );
       }
     }
 
@@ -287,27 +300,40 @@ bool File::stat()
 
 #elif defined( _WIN32 )
 
-  DWORD attributes = GetFileAttributes( filePath );
+  WIN32_FILE_ATTRIBUTE_DATA info;
 
-  if( attributes == INVALID_FILE_ATTRIBUTES ) {
+  if( GetFileAttributesEx( filePath, GetFileExInfoStandard, &info ) != 0 ) {
     fileType = MISSING;
     fileSize = -1;
-  }
-  else if( attributes & FILE_ATTRIBUTE_DIRECTORY ) {
-    fileType = DIRECTORY;
-    fileSize = -1;
+    fileTime = 0;
   }
   else {
-    fileType = REGULAR;
+    ULARGE_INTEGER creationTime = { {
+      info.ftCreationTime.dwLowDateTime,
+      info.ftCreationTime.dwHighDateTime
+    } };
+    ULARGE_INTEGER modificationTime = { {
+      info.ftLastWriteTime.dwLowDateTime,
+      info.ftLastWriteTime.dwHighDateTime
+    } };
+
+    fileTime = max( creationTime.QuadPart, modificationTime.QuadPart ) / 10000;
     fileSize = -1;
 
-    HANDLE handle = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, null, OPEN_EXISTING,
-                                FILE_ATTRIBUTE_NORMAL, null );
+    if( info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) {
+      fileType = DIRECTORY;
+    }
+    else {
+      fileType = REGULAR;
 
-    if( handle != null ) {
-      fileSize = int( GetFileSize( handle, null ) );
+      HANDLE handle = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, null, OPEN_EXISTING,
+                                  FILE_ATTRIBUTE_NORMAL, null );
 
-      CloseHandle( handle );
+      if( handle != null ) {
+        fileSize = int( GetFileSize( handle, null ) );
+
+        CloseHandle( handle );
+      }
     }
   }
 
@@ -318,18 +344,23 @@ bool File::stat()
   if( ::stat( filePath, &info ) != 0 ) {
     fileType = MISSING;
     fileSize = -1;
+    fileTime = 0;
   }
   else if( S_ISDIR( info.st_mode ) ) {
     fileType = DIRECTORY;
     fileSize = -1;
+    fileTime = long64( max( info.st_ctime, info.st_mtime ) );
   }
-  else if( !S_ISREG( info.st_mode ) ) {
-    fileType = MISSING;
-    fileSize = -1;
-  }
-  else {
+  else if( S_ISREG( info.st_mode ) ) {
     fileType = REGULAR;
     fileSize = int( info.st_size );
+    fileTime = long64( max( info.st_ctime, info.st_mtime ) );
+  }
+  else {
+    // Ignore files other that directories and regular files.
+    fileType = MISSING;
+    fileSize = -1;
+    fileTime = 0;
   }
 
 #endif
@@ -340,6 +371,11 @@ bool File::stat()
 File::Type File::type() const
 {
   return fileType;
+}
+
+long64 File::time() const
+{
+  return fileTime;
 }
 
 int File::size() const

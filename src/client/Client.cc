@@ -37,6 +37,7 @@
 #include "client/Loader.hh"
 #include "client/NaClMainCall.hh"
 #include "client/NaClGLContext.hh"
+#include "NaClDownloader.hh"
 
 #include <unistd.h>
 
@@ -199,8 +200,6 @@ int Client::main( int argc, char** argv )
 #if defined( __native_client__ )
 
   mission = "test";
-  isBenchmark = true;
-  benchmarkTime = 1.0f;
 
   File::init( File::TEMPORARY, 10*1024*1024 );
 
@@ -322,10 +321,10 @@ int Client::main( int argc, char** argv )
   String prefix = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
   String dataDir( prefix + "/share/" OZ_APPLICATION_NAME );
 
-  Log::println( "Content search path {" );
-  Log::indent();
-
 #ifdef __native_client__
+
+  Log::println( "Checking data files {" );
+  Log::indent();
 
   // Packages must be hardcoded as dir listing is not supported on NaCl.
   File pkgs[] = {
@@ -333,19 +332,53 @@ int Client::main( int argc, char** argv )
     File( "/data/openzone.7z" )
   };
 
-  bool createdPkgs = false;
-
   foreach( pkg, iter( pkgs ) ) {
-    if( !pkg->stat() ) {
-      pkg->write( pkg->path(), pkg->path().length() );
+    if( pkg->stat() ) {
+      Time time = Time::local( pkg->time() );
+      Log::print( "%s: timestamp %04d-%02d-%02d %02d:%02d:%02d, ", pkg->path().cstr(),
+                  time.year, time.month, time.day, time.hour, time.minute, time.second );
 
-      Log::println( "Created empty file %s", pkg->path().cstr() );
-      createdPkgs = true;
+      // TODO check if up-to-date
+
+      Log::printEnd( " Up-to-date" );
+      continue;
     }
+
+    String url = pkg->name();
+
+    Log::print( "Downloading '%s' into '%s' ...", url.cstr(), pkg->path().cstr() );
+
+    NaClDownloader downloader;
+
+    downloader.begin( url );
+    do {
+      Time::sleep( 1000 );
+      Log::print( "." );
+    }
+    while( !downloader.isComplete() );
+
+    BufferStream bs = downloader.take();
+
+    if( !bs.isAvailable() ) {
+      throw Exception( "Downloading '%s' failed", url.cstr() );
+    }
+
+    if( !pkg->write( bs.begin(), bs.length() ) ) {
+      throw Exception( "Failed to write '%s' into local storage", url.cstr() );
+    }
+
+    Log::printEnd( " OK" );
   }
-  if( createdPkgs ) {
-    throw Exception( "Empty game data files created" );
-  }
+
+  Log::unindent();
+  Log::println( "}" );
+
+#endif
+
+  Log::println( "Content search path {" );
+  Log::indent();
+
+#ifdef __native_client__
 
   foreach( pkg, iter( pkgs ) ) {
     if( PhysFile::mount( pkg->path(), null, true ) ) {
@@ -508,8 +541,6 @@ int Client::main( int argc, char** argv )
 #endif
   render.swap();
 
-  hard_assert( NaClMainCall::semaphore.counter() == 0 );
-
   initFlags |= INIT_AUDIO;
   OZ_MAIN_CALL( this, {
     sound.init();
@@ -536,6 +567,8 @@ int Client::main( int argc, char** argv )
   stage->load();
 
   ui::mouse.reset();
+
+  sound.playMusic( 6 );
 
   SDL_Event event;
 
@@ -663,17 +696,15 @@ int Client::main( int argc, char** argv )
 
     isAlive &= stage->update();
 
-    if( Stage::nextStage != null || !isAlive ) {
+    if( Stage::nextStage != null ) {
       stage->unload();
 
-      if( isAlive ) {
-        stage = Stage::nextStage;
-        Stage::nextStage = null;
+      stage = Stage::nextStage;
+      Stage::nextStage = null;
 
-        stage->load();
+      stage->load();
 
-        timeLast = Time::uclock();
-      }
+      timeLast = Time::uclock();
       continue;
     }
 
@@ -709,6 +740,8 @@ int Client::main( int argc, char** argv )
 
   Log::unindent();
   Log::println( "}" );
+
+  stage->unload();
 
   return EXIT_SUCCESS;
 }

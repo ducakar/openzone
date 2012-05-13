@@ -71,6 +71,42 @@
 namespace oz
 {
 
+static const char* const SIGNALS[][2] =
+{
+  { "SIG???",    "[invalid signal number]"    },
+  { "SIGHUP",    "Hangup"                     }, //  1
+  { "SIGINT",    "Interrupt"                  }, //  2
+  { "SIGQUIT",   "Quit"                       }, //  3
+  { "SIGILL",    "Illegal instruction"        }, //  4
+  { "SIGTRAP",   "Trace trap"                 }, //  5
+  { "SIGABRT",   "Abort"                      }, //  6
+  { "SIGBUS",    "BUS error"                  }, //  7
+  { "SIGFPE",    "Floating-point exception"   }, //  8
+  { "SIGKILL",   "Kill, unblockable"          }, //  9
+  { "SIGUSR1",   "User-defined signal 1"      }, // 10
+  { "SIGSEGV",   "Segmentation violation"     }, // 11
+  { "SIGUSR2",   "User-defined signal 2"      }, // 12
+  { "SIGPIPE",   "Broken pipe"                }, // 13
+  { "SIGALRM",   "Alarm clock"                }, // 14
+  { "SIGTERM",   "Termination"                }, // 15
+  { "SIGSTKFLT", "Stack fault"                }, // 16
+  { "SIGCHLD",   "Child status has changed"   }, // 17
+  { "SIGCONT",   "Continue"                   }, // 18
+  { "SIGSTOP",   "Stop, unblockable"          }, // 19
+  { "SIGTSTP",   "Keyboard stop"              }, // 20
+  { "SIGTTIN",   "Background read from tty"   }, // 21
+  { "SIGTTOU",   "Background write to tty"    }, // 22
+  { "SIGURG",    "Urgent condition on socket" }, // 23
+  { "SIGXCPU",   "CPU limit exceeded"         }, // 24
+  { "SIGXFSZ",   "File size limit exceeded"   }, // 25
+  { "SIGVTALRM", "Virtual alarm clock"        }, // 26
+  { "SIGPROF",   "Profiling alarm clock"      }, // 27
+  { "SIGWINCH",  "Window size change"         }, // 28
+  { "SIGIO",     "I/O now possible"           }, // 29
+  { "SIGPWR",    "Power failure restart"      }, // 30
+  { "SIGSYS",    "Bad system call"            }  // 31
+};
+
 static const int BUFFER_SIZE = 1024;
 
 static char  filePath[256];
@@ -410,17 +446,10 @@ void Log::printSignal( int sigNum )
 {
   char buffer[BUFFER_SIZE];
 
-#if defined( __native_client__ )
-  const char* sigName = "";
-#else
-  const char* sigName = strsignal( sigNum );
+  int index = uint( sigNum ) >= uint( aLength( SIGNALS ) ) ? 0 : sigNum;
 
-  if( sigName == null ) {
-    sigName = "Unknown";
-  }
-#endif
-
-  snprintf( buffer, BUFFER_SIZE, "\n\nCaught signal #%d (%s)\n", sigNum, sigName );
+  snprintf( buffer, BUFFER_SIZE, "\n\nCaught signal %d %s (%s)\n",
+            sigNum, SIGNALS[index][0], SIGNALS[index][1] );
 
   if( !verboseMode || showVerbose || file == null ) {
     fputs( buffer, stdout );
