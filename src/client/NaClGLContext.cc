@@ -27,11 +27,11 @@
 
 #include "client/NaClGLContext.hh"
 
-#include <ppapi/c/ppb_opengles2.h>
 #include <ppapi/cpp/completion_callback.h>
 #include <ppapi/cpp/instance.h>
 #include <ppapi/cpp/graphics_3d.h>
 #include <ppapi/gles2/gl2ext_ppapi.h>
+#include <GLES2/gl2.h>
 
 namespace oz
 {
@@ -101,6 +101,11 @@ void NaClGLContext::init()
   if( !System::instance->BindGraphics( context ) ) {
     throw Exception( "Failed to bind Graphics3D" );
   }
+
+  glSetCurrentContextPPAPI( context.pp_resource() );
+
+  glClearColor( 1.0f, 0.0f, 1.0f, 1.0f );
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 }
 
 void NaClGLContext::free()

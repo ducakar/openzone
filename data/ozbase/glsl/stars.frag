@@ -21,14 +21,14 @@
  * stars.frag
  */
 
-varying lowp vec3  exPosition;
-varying lowp float exAzimuth;
+varying vec3  exPosition;
+varying float exAzimuth;
 
 void main()
 {
-  lowp float dist    = ( length( exPosition ) - 50.0 ) / 50.0;
-  lowp vec4  diff    = oz_Colour - oz_Fog.colour;
-  lowp vec4  disturb = vec4( sin( exPosition * 100.0 ) * 0.1, 0.0 ) * dot( diff, diff );
+  float dist    = ( length( exPosition ) - 50.0 ) / 50.0;
+  vec4  diff    = oz_Colour - oz_Fog.colour;
+  vec4  disturb = vec4( sin( exPosition * 100.0 ) * 0.1, 0.0 ) * dot( diff, diff );
 
   if( oz_NightVision ) {
     gl_FragData[0] = mix( vec4( 0.0, 1.0, 0.0, 1.0 ), oz_Fog.colour, dist );

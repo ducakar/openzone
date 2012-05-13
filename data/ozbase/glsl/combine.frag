@@ -23,15 +23,15 @@
  * Lighting pass for deferred shading.
  */
 
-varying lowp vec2 exTexCoord;
+varying vec2 exTexCoord;
 
 void main()
 {
-  lowp vec4 colour = texture2D( oz_Textures[0], exTexCoord );
-  lowp vec3 normal = normalize( texture2D( oz_Textures[1], exTexCoord ).xyz );
+  vec4 colour = texture2D( oz_Textures[0], exTexCoord );
+  vec3 normal = normalize( texture2D( oz_Textures[1], exTexCoord ).xyz );
 
-  lowp float diffuseFactor = max( 0.0, dot( -normal, oz_CaelumLight.dir ) );
-  lowp vec4 lighting = oz_CaelumLight.ambient + diffuseFactor * oz_CaelumLight.diffuse;
+  float diffuseFactor = max( 0.0, dot( -normal, oz_CaelumLight.dir ) );
+  vec4 lighting = oz_CaelumLight.ambient + diffuseFactor * oz_CaelumLight.diffuse;
 
   gl_FragColor = colour * lighting;
 }

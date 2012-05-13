@@ -30,12 +30,11 @@
 #ifdef __native_client__
 
 #include "client/NaClMainCall.hh"
-#include "client/NaClGLContext.hh"
 
-#include <SDL/SDL.h>
 #include <SDL/SDL_nacl.h>
-#include "ppapi/gles2/gl2ext_ppapi.h"
 #include "ppapi/cpp/graphics_3d.h"
+
+#include "ppapi/cpp/audio_config.h"
 
 namespace oz
 {
@@ -92,7 +91,7 @@ MainInstance::~MainInstance()
     mainThread = null;
   }
 
-  NaClGLContext::free();
+  SDL_Quit();
   NaClMainCall::free();
 }
 
@@ -115,6 +114,9 @@ void MainInstance::DidChangeView( const pp::View& view )
 
   if( mainThread == 0 ) {
     SDL_NACL_SetInstance( pp_instance(), System::width, System::height );
+    if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
+      throw Exception( "Failed to initialise SDL: %s", SDL_GetError() );
+    }
 
     pthread_create( &mainThread, null, mainThreadMain, this );
   }
@@ -138,7 +140,7 @@ bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
       pp::KeyboardInputEvent keyEvent( event );
 
       if( ( keyEvent.GetKeyCode() == 122 || keyEvent.GetKeyCode() == 13 ) &&
-          ( event.GetModifiers() & PP_INPUTEVENT_MODIFIER_ALTKEY ) )
+          ( event.GetModifiers() == 0 ) )
       {
         if( fullscreen.IsFullscreen() ) {
           fullscreen.SetFullscreen( false );

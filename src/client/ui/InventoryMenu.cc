@@ -386,11 +386,13 @@ InventoryMenu::InventoryMenu( const InventoryMenu* master_ ) :
 
 InventoryMenu::~InventoryMenu()
 {
-  glDeleteTextures( 1, &scrollUpTexId );
-  glDeleteTextures( 1, &scrollDownTexId );
-  glDeleteTextures( 1, &useTexId );
-  glDeleteTextures( 1, &equipTexId );
-  glDeleteTextures( 1, &unequipTexId );
+  OZ_MAIN_CALL( this, {
+    glDeleteTextures( 1, &_this->scrollUpTexId );
+    glDeleteTextures( 1, &_this->scrollDownTexId );
+    glDeleteTextures( 1, &_this->useTexId );
+    glDeleteTextures( 1, &_this->equipTexId );
+    glDeleteTextures( 1, &_this->unequipTexId );
+  } )
 }
 
 }

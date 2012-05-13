@@ -23,11 +23,11 @@
  * Shader for celestial bodies (except stars).
  */
 
-attribute lowp vec3 inPosition;
-attribute lowp vec2 inTexCoord;
+attribute vec3 inPosition;
+attribute vec2 inTexCoord;
 
-varying lowp vec2  exTexCoord;
-varying lowp float exAzimuth;
+varying vec2  exTexCoord;
+varying float exAzimuth;
 
 void main()
 {

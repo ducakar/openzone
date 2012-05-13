@@ -28,6 +28,8 @@
 #include "client/Context.hh"
 #include "client/OpenGL.hh"
 
+#include <GL/gl.h>
+
 namespace oz
 {
 namespace build

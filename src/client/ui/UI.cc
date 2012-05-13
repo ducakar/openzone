@@ -110,9 +110,6 @@ void UI::draw()
 
   shader.use( shader.plain );
 
-  glClear( GL_DEPTH_BUFFER_BIT );
-  glLineWidth( 1.0f / uiScale );
-
   glEnable( GL_BLEND );
 
   root->drawChildren();

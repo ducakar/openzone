@@ -127,7 +127,7 @@ void Caelum::draw()
     glUniform4fv( param.oz_Colour, 1, colour );
     glUniform1i( param.oz_NightVision, camera.nightVision );
 
-#ifdef OZ_GL_COMPATIBLE
+#ifdef OZ_GL_ES
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
 
     glEnableVertexAttribArray( Attrib::POSITION );
@@ -202,7 +202,7 @@ void Caelum::load()
   int vboSize = MAX_STARS * 4 * int( sizeof( float[3] ) );
   int iboSize = MAX_STARS * 6 * int( sizeof( ushort ) );
 
-#ifdef OZ_GL_COMPATIBLE
+#ifdef OZ_GL_ES
   vao = 1;
 #else
   glGenVertexArrays( 1, &vao );
@@ -217,7 +217,7 @@ void Caelum::load()
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
   glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, is.forward( iboSize ), GL_STATIC_DRAW );
 
-#ifndef OZ_GL_COMPATIBLE
+#ifndef OZ_GL_ES
   glEnableVertexAttribArray( Attrib::POSITION );
   glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( float[3] ), null );
 
@@ -254,7 +254,7 @@ void Caelum::unload()
 
     glDeleteBuffers( 1, &ibo );
     glDeleteBuffers( 1, &vbo );
-#ifndef OZ_GL_COMPATIBLE
+#ifndef OZ_GL_ES
     glDeleteVertexArrays( 1, &vao );
 #endif
 

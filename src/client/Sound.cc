@@ -124,7 +124,6 @@ void Sound::musicOpen( const char* path )
 
   if( file.hasExtension( "oga" ) || file.hasExtension( "ogg" ) ) {
     musicStreamType = OGG;
-    printf( "Ogg stream opened\n" );
   }
 #ifdef OZ_NONFREE
   else if( file.hasExtension( "mp3" ) ) {
@@ -329,8 +328,6 @@ int Sound::musicDecode()
       return 0;
     }
     case OGG: {
-      printf( "Streaming Ogg\n" );
-
       int bytesRead = 0;
       int result;
       int section;
@@ -621,8 +618,6 @@ void Sound::soundRun()
 
     updateMusic();
 
-    alcProcessContext( soundContext );
-
     soundMainSemaphore.post();
     soundAuxSemaphore.wait();
   }
@@ -703,7 +698,13 @@ void Sound::init()
 
   const char* deviceName = config.getSet( "sound.device", "" );
 
-  Log::print( "Initialising device '%s' ...", deviceName );
+  if( String::isEmpty( deviceName ) ) {
+    deviceName = null;
+    Log::print( "Initialising default device ..." );
+  }
+  else {
+    Log::print( "Initialising device '%s' ...", deviceName );
+  }
 
   soundDevice = alcOpenDevice( deviceName );
   if( soundDevice == null ) {

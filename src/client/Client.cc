@@ -62,7 +62,9 @@ void Client::shutdown()
     menuStage.free();
   }
   if( initFlags & INIT_AUDIO ) {
-    sound.free();
+    OZ_MAIN_CALL( this, {
+      sound.free();
+    } )
   }
   if( initFlags & INIT_RENDER ) {
     OZ_MAIN_CALL( this, {
@@ -104,9 +106,9 @@ void Client::shutdown()
   }
 
   if( initFlags & INIT_SDL ) {
-    OZ_MAIN_CALL( this, {
-      SDL_Quit();
-    } )
+#ifndef __native_client__
+    SDL_Quit();
+#endif
   }
 
   if( initFlags & INIT_MAIN_LOOP ) {
@@ -196,6 +198,10 @@ int Client::main( int argc, char** argv )
 
 #if defined( __native_client__ )
 
+  mission = "test";
+  isBenchmark = true;
+  benchmarkTime = 1.0f;
+
   File::init( File::TEMPORARY, 10*1024*1024 );
 
   String configDir = "/config";
@@ -260,11 +266,11 @@ int Client::main( int argc, char** argv )
   Log::printTime();
   Log::printEnd();
 
-  OZ_MAIN_CALL( this, {
-    if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
-      throw Exception( "Failed to initialise SDL: %s", SDL_GetError() );
-    }
-  } )
+#ifndef __native_client__
+  if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
+    throw Exception( "Failed to initialise SDL: %s", SDL_GetError() );
+  }
+#endif
   initFlags |= INIT_SDL;
 
   PhysFile::init( File::TEMPORARY, 32*1024*1024 );
@@ -315,73 +321,6 @@ int Client::main( int argc, char** argv )
 
   String prefix = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
   String dataDir( prefix + "/share/" OZ_APPLICATION_NAME );
-
-#ifndef __native_client__
-
-  // Don't mess with screensaver. In X11 it only makes effect for windowed mode, in fullscreen
-  // mode screensaver never starts anyway. Turning off screensaver has a side effect: if the game
-  // crashes, it remains turned off. Besides that, in X11 several programs (e.g. IM clients) rely
-  // on screensaver's counter, so they don't detect that you are away if the screensaver is screwed.
-  static char allowScreensaverEnv[] = "SDL_VIDEO_ALLOW_SCREENSAVER=1";
-  SDL_putenv( allowScreensaverEnv );
-
-  int  windowWidth      = config.getSet( "window.width", 0 );
-  int  windowHeight     = config.getSet( "window.height", 0 );
-  int  windowBpp        = config.getSet( "window.bpp", 0 );
-  bool windowFullscreen = config.getSet( "window.fullscreen", true );
-  bool enableVSync      = config.getSet( "window.vsync", true );
-
-  uint windowFlags = SDL_OPENGL;
-
-  if( windowFullscreen ) {
-    windowFlags |= SDL_FULLSCREEN;
-  }
-
-  const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
-
-  Log::verboseMode = true;
-  Log::println( "Desktop video mode: %dx%d-%d",
-                videoInfo->current_w, videoInfo->current_h, videoInfo->vfmt->BitsPerPixel );
-  Log::verboseMode = false;
-
-  if( windowWidth == 0 || windowHeight == 0 ) {
-    windowWidth  = videoInfo->current_w;
-    windowHeight = videoInfo->current_h;
-  }
-  if( windowBpp == 0 ) {
-    windowBpp = videoInfo->vfmt->BitsPerPixel;
-  }
-
-  SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, enableVSync );
-
-  Log::print( "Creating OpenGL window %dx%d-%d [%s] ...",
-              windowWidth, windowHeight, windowBpp, windowFullscreen ? "fullscreen" : "windowed" );
-
-  if( SDL_VideoModeOK( windowWidth, windowHeight, windowBpp, windowFlags ) == 1 ) {
-    throw Exception( "Video mode not supported" );
-  }
-
-  SDL_Surface* window = SDL_SetVideoMode( windowWidth, windowHeight, windowBpp, windowFlags );
-
-  if( window == null ) {
-    throw Exception( "Window creation failed" );
-  }
-
-  SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION,
-                     OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION );
-
-  windowWidth  = window->w;
-  windowHeight = window->h;
-  windowBpp    = window->format->BitsPerPixel;
-
-  Log::printEnd( " %dx%d-%d ... OK", windowWidth, windowHeight, windowBpp );
-
-  SDL_ShowCursor( SDL_FALSE );
-
-#endif
-
-  ui::keyboard.init();
-  ui::mouse.init();
 
   Log::println( "Content search path {" );
   Log::indent();
@@ -488,6 +427,73 @@ int Client::main( int argc, char** argv )
   initFlags |= INIT_LIBRARY;
   library.init();
 
+  const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
+
+  Log::verboseMode = true;
+  Log::println( "Desktop video mode: %dx%d-%d",
+                videoInfo->current_w, videoInfo->current_h, videoInfo->vfmt->BitsPerPixel );
+  Log::verboseMode = false;
+
+#ifndef __native_client__
+
+  // Don't mess with screensaver. In X11 it only makes effect for windowed mode, in fullscreen
+  // mode screensaver never starts anyway. Turning off screensaver has a side effect: if the game
+  // crashes, it remains turned off. Besides that, in X11 several programs (e.g. IM clients) rely
+  // on screensaver's counter, so they don't detect that you are away if the screensaver is screwed.
+  static char allowScreensaverEnv[] = "SDL_VIDEO_ALLOW_SCREENSAVER=1";
+  SDL_putenv( allowScreensaverEnv );
+
+  int  windowWidth      = config.getSet( "window.width", 0 );
+  int  windowHeight     = config.getSet( "window.height", 0 );
+  int  windowBpp        = config.getSet( "window.bpp", 0 );
+  bool windowFullscreen = config.getSet( "window.fullscreen", true );
+  bool enableVSync      = config.getSet( "window.vsync", true );
+
+  uint windowFlags = SDL_OPENGL;
+
+  if( windowFullscreen ) {
+    windowFlags |= SDL_FULLSCREEN;
+  }
+
+  if( windowWidth == 0 || windowHeight == 0 ) {
+    windowWidth  = videoInfo->current_w;
+    windowHeight = videoInfo->current_h;
+  }
+  if( windowBpp == 0 ) {
+    windowBpp = videoInfo->vfmt->BitsPerPixel;
+  }
+
+  SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, enableVSync );
+
+  Log::print( "Creating OpenGL window %dx%d-%d [%s] ...",
+              windowWidth, windowHeight, windowBpp, windowFullscreen ? "fullscreen" : "windowed" );
+
+  if( SDL_VideoModeOK( windowWidth, windowHeight, windowBpp, windowFlags ) == 1 ) {
+    throw Exception( "Video mode not supported" );
+  }
+
+  SDL_Surface* window = SDL_SetVideoMode( windowWidth, windowHeight, windowBpp, windowFlags );
+
+  if( window == null ) {
+    throw Exception( "Window creation failed" );
+  }
+
+  SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION,
+                     OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION );
+
+  windowWidth  = window->w;
+  windowHeight = window->h;
+  windowBpp    = window->format->BitsPerPixel;
+
+  Log::printEnd( " %dx%d-%d ... OK", windowWidth, windowHeight, windowBpp );
+
+  SDL_ShowCursor( SDL_FALSE );
+
+#endif
+
+  ui::keyboard.init();
+  ui::mouse.init();
+
   initFlags |= INIT_CONTEXT;
   context.init();
 
@@ -496,12 +502,18 @@ int Client::main( int argc, char** argv )
   OZ_MAIN_CALL( this, {
     render.init( null, System::width, System::height );
   } )
+  hard_assert( NaClMainCall::semaphore.counter() == 0 );
 #else
   render.init( window, windowWidth, windowHeight );
 #endif
+  render.swap();
+
+  hard_assert( NaClMainCall::semaphore.counter() == 0 );
 
   initFlags |= INIT_AUDIO;
-  sound.init();
+  OZ_MAIN_CALL( this, {
+    sound.init();
+  } )
 
   initFlags |= INIT_STAGE_INIT;
   menuStage.init();
@@ -580,9 +592,6 @@ int Client::main( int argc, char** argv )
 #ifndef __native_client__
           if( keysym.sym == SDLK_F11 ) {
             if( keysym.mod == 0 ) {
-              loader.makeScreenshot();
-            }
-            else if( keysym.mod & KMOD_ALT ) {
               if( SDL_WM_ToggleFullScreen( window ) != 0 ) {
                 windowFullscreen = !windowFullscreen;
 
@@ -591,6 +600,9 @@ int Client::main( int argc, char** argv )
 
                 SDL_ShowCursor( false );
               }
+            }
+            else if( keysym.mod & KMOD_ALT ) {
+              loader.makeScreenshot();
             }
             else if( keysym.mod & KMOD_CTRL ) {
               ui::mouse.isJailed = !ui::mouse.isJailed;

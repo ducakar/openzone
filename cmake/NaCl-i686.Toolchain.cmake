@@ -1,7 +1,7 @@
 set( NACL ON )
 
 set( PLATFORM_TRIPLET           "i686-nacl" )
-set( PLATFORM_PREFIX            "/home/davorin/Projects/nacl_sdk/pepper_19/toolchain/linux_x86_glibc" )
+set( PLATFORM_PREFIX            "/home/davorin/Projects/nacl_sdk/pepper_18/toolchain/linux_x86_glibc" )
 
 set( CMAKE_SYSTEM_NAME          "Linux" )
 set( CMAKE_SYSTEM_PROCESSOR     "i686" )

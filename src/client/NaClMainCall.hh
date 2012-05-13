@@ -27,24 +27,26 @@
 
 #ifdef __native_client__
 
-#define OZ_MAIN_CALL( this, code ) \
-  { \
-    typedef decltype( this ) _This; \
+#define OZ_MAIN_CALL( t, code ) \
+  if( oz::client::NaClMainCall::isMainThread() ) { \
+    decltype( t ) _this = ( t ); \
+    static_cast<void>( _this ); \
+    { code } \
+  } \
+  else { \
+    typedef decltype( t ) _This; \
     struct _Callback { \
       static void _main( void* data, int ) \
       { \
-        _This _this = static_cast<_This>( data ); \
+        _This _this = reinterpret_cast<_This>( data ); \
         static_cast<void>( _this ); \
         { code } \
         oz::client::NaClMainCall::semaphore.post(); \
       } \
     }; \
-    if( oz::client::NaClMainCall::isMainThread() ) { \
-      _Callback::_main( this, 0 ); \
-    } \
-    else { \
-      oz::client::NaClMainCall::call( _Callback::_main, this ); \
-    } \
+    hard_assert( 0 == oz::client::NaClMainCall::semaphore.counter() ); \
+    oz::client::NaClMainCall::call( _Callback::_main, ( t ) ); \
+    hard_assert( oz::client::NaClMainCall::semaphore.counter() == 0 ); \
   }
 
 namespace oz

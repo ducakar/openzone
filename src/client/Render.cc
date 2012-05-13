@@ -372,7 +372,7 @@ void Render::drawGeometry()
 
 void Render::drawOrbis()
 {
-#ifndef OZ_GL_COMPATIBLE
+#ifndef OZ_GL_ES
   if( isOffscreen ) {
     glPushAttrib( GL_VIEWPORT_BIT );
     glViewport( 0, 0, renderWidth, renderHeight );
@@ -387,7 +387,7 @@ void Render::drawOrbis()
   prepareDraw();
   drawGeometry();
 
-#ifndef OZ_GL_COMPATIBLE
+#ifndef OZ_GL_ES
   uint beginMicros = Time::uclock();
 
   if( isOffscreen ) {
@@ -438,10 +438,6 @@ void Render::draw( int flags_ )
     }
 
     glFlush();
-
-#ifdef __native_client__
-    NaClGLContext::flush();
-#endif
   } )
 }
 
@@ -450,6 +446,9 @@ void Render::swap()
   uint beginMicros = Time::uclock();
 
 #ifdef __native_client__
+  OZ_MAIN_CALL( this, {
+    NaClGLContext::flush();
+  } )
   NaClGLContext::wait();
 #else
   SDL_GL_SwapBuffers();
@@ -461,8 +460,6 @@ void Render::swap()
 void Render::load()
 {
   Log::print( "Loading Render ..." );
-
-  OZ_GL_CHECK_ERROR();
 
   ui::ui.load();
 
@@ -487,14 +484,18 @@ void Render::load()
 
 void Render::unload()
 {
-  glFinish();
-
   Log::print( "Unloading Render ..." );
+
+  OZ_MAIN_CALL( this, {
+    glFinish();
+  } )
 
   drawnStructs.dealloc();
 
-  caelum.unload();
-  terra.unload();
+  OZ_MAIN_CALL( this, {
+    caelum.unload();
+    terra.unload();
+  } )
 
   structs.clear();
   structs.dealloc();
@@ -525,11 +526,16 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
   NaClGLContext::activate();
 #endif
 
-  glClearColor( 1.0f, 0.0f, 0.0f, 0.0f );
+  glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+  glFlush();
+
+#ifdef __native_client__
+  NaClGLContext::flush();
+#endif
 
   bool isCatalyst  = false;
-#ifndef OZ_GL_COMPATIBLE
+#ifndef OZ_GL_ES
   bool hasVAO      = false;
 #endif
   bool hasFBO      = false;
@@ -559,7 +565,7 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
   foreach( extension, extensions.citer() ) {
     Log::println( "%s", extension->cstr() );
 
-#ifndef OZ_GL_COMPATIBLE
+#ifndef OZ_GL_ES
     if( extension->equals( "GL_ARB_vertex_array_object" ) ) {
       hasVAO = true;
     }
@@ -584,7 +590,7 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
     config.include( "shader.vertexTexture", "false" );
     config.include( "shader.setSamplerIndices", "true" );
   }
-#ifndef OZ_GL_COMPATIBLE
+#ifndef OZ_GL_ES
   if( !hasVAO ) {
     throw Exception( "GL_ARB_vertex_array_object not supported by OpenGL" );
   }

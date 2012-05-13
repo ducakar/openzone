@@ -245,7 +245,7 @@ void MD2::load()
   nFramePositions = is.readInt();
   weaponTransf    = is.readMat44();
 
-#ifndef OZ_GL_COMPATIBLE
+#ifndef OZ_GL_ES
   if( shader.hasVertexTexture ) {
     int vertexBufferSize = nFramePositions * nFrames * int( sizeof( Vec4 ) );
     int normalBufferSize = nFramePositions * nFrames * int( sizeof( Vec4 ) );
@@ -306,7 +306,7 @@ void MD2::drawFrame( int frame ) const
 {
   shader.use( shaderId );
 
-#ifndef OZ_GL_COMPATIBLE
+#ifndef OZ_GL_ES
   if( shader.hasVertexTexture ) {
     glActiveTexture( GL_TEXTURE3 );
     glBindTexture( GL_TEXTURE_2D, vertexTexId );
@@ -351,7 +351,7 @@ void MD2::draw( const AnimState* anim ) const
   shader.use( shaderId );
   tf.apply();
 
-#ifndef OZ_GL_COMPATIBLE
+#ifndef OZ_GL_ES
   if( shader.hasVertexTexture ) {
     glActiveTexture( GL_TEXTURE3 );
     glBindTexture( GL_TEXTURE_2D, vertexTexId );

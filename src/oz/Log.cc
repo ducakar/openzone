@@ -43,12 +43,16 @@
 # include <ppapi/cpp/completion_callback.h>
 # include <ppapi/cpp/instance.h>
 # include <ppapi/cpp/core.h>
+# include <ppapi/cpp/var.h>
 
 # define CHECK_SEMAPHORE() \
   if( !semaphore.isValid() ) { semaphore.init(); }
 
 # define CONSOLE_PUTS( s ) \
-  if( !System::core->IsMainThread() ) { \
+  if( System::core->IsMainThread() ) { \
+    System::instance->PostMessage( pp::Var( s ) ); \
+  } \
+  else { \
     struct _Callback \
     { \
       static void _main( void* data, int ) \
@@ -79,7 +83,6 @@ static Semaphore semaphore;
 
 bool Log::showVerbose = false;
 bool Log::verboseMode = false;
-
 
 const char* Log::logFile()
 {
@@ -407,8 +410,11 @@ void Log::printSignal( int sigNum )
 {
   char buffer[BUFFER_SIZE];
 
+#if defined( __native_client__ )
+  const char* sigName = "";
+#else
   const char* sigName = strsignal( sigNum );
-#ifndef __linux__
+
   if( sigName == null ) {
     sigName = "Unknown";
   }

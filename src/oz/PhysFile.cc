@@ -423,8 +423,7 @@ void PhysFile::init( File::FilesystemType type, int size )
   InstanceInfo instanceInfo = {
     pp::Module::Get()->get_browser_interface(),
     System::instance->pp_instance(),
-    fsType == File::PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
-                                 PP_FILESYSTEMTYPE_LOCALTEMPORARY,
+    type == File::PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT : PP_FILESYSTEMTYPE_LOCALTEMPORARY,
     size
   };
 

@@ -36,6 +36,12 @@
 #define GL_ARB_imaging_DEPRECATED
 #define GL_ARB_framebuffer_object_DEPRECATED
 
+#define GL_EXT_texture_compression_s3tc
+#define GL_COMPRESSED_RGB_S3TC_DXT1_EXT   0x83F0
+#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT  0x83F1
+#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT  0x83F2
+#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT  0x83F3
+
 #ifndef _WIN32
 # define GL_GLEXT_PROTOTYPES
 #endif
@@ -43,7 +49,7 @@
 #include "NaClMainCall.hh"
 #include "NaClGLContext.hh"
 
-#if defined( __native_client__ ) || defined( __ANDROID__ )
+#ifdef OZ_GL_ES
 # include <GLES2/gl2.h>
 #else
 # include <GL/gl.h>

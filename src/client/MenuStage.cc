@@ -67,9 +67,6 @@ void MenuStage::load()
   ui::ui.showLoadingScreen( false );
   ui::mouse.doShow = true;
 
-  sound.setMusicVolume( 1.0f );
-  sound.playMusic( 1 );
-
   render.draw( Render::DRAW_UI_BIT );
   render.draw( Render::DRAW_UI_BIT );
   render.swap();
