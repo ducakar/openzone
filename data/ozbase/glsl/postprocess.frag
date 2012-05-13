@@ -23,48 +23,48 @@
  * Postprocess pass.
  */
 
-const lowp int   MS_LEVEL         = 8;
-const lowp float MS_SIZE          = 0.0075;
+const int   MS_LEVEL         = 8;
+const float MS_SIZE          = 0.0075;
 
-const lowp float BLOOM_INTENSITY  = 1.5;
-const lowp float BLOOM_LUMINANCE  = 0.3;
+const float BLOOM_INTENSITY  = 1.5;
+const float BLOOM_LUMINANCE  = 0.3;
 
-const lowp float MS_DIM           = float( MS_LEVEL - 1 ) / 2.0;
-const lowp float MS_SPACING       = MS_SIZE / float( MS_LEVEL - 1 );
-const lowp float MS_SAMPLES       = float( 2 * MS_LEVEL );
+const float MS_DIM           = float( MS_LEVEL - 1 ) / 2.0;
+const float MS_SPACING       = MS_SIZE / float( MS_LEVEL - 1 );
+const float MS_SAMPLES       = float( 2 * MS_LEVEL );
 
-const lowp float BLUR_FACTOR      = 1.0 / MS_SAMPLES;
-const lowp float BLOOM_FACTOR     = BLOOM_INTENSITY / MS_SAMPLES;
-const lowp float LUMINANCE_FACTOR = BLOOM_LUMINANCE / MS_SAMPLES;
+const float BLUR_FACTOR      = 1.0 / MS_SAMPLES;
+const float BLOOM_FACTOR     = BLOOM_INTENSITY / MS_SAMPLES;
+const float LUMINANCE_FACTOR = BLOOM_LUMINANCE / MS_SAMPLES;
 
-varying lowp vec2 exTexCoord;
+varying vec2 exTexCoord;
 
 void main()
 {
-  lowp vec4 multiSample = vec4( 0.0 );
+  vec4 multiSample = vec4( 0.0 );
 
-  lowp float x = -MS_DIM;
+  float x = -MS_DIM;
   for( int i = 0; i < MS_LEVEL; ++i ) {
-    lowp vec2 coords = vec2( exTexCoord.s + MS_SPACING * x, exTexCoord.t );
-    lowp vec4 sample = texture2D( oz_Textures[0], coords );
+    vec2 coords = vec2( exTexCoord.s + MS_SPACING * x, exTexCoord.t );
+    vec4 sample = texture2D( oz_Textures[0], coords );
 
     multiSample += sample;
     x += 1.0;
   }
 
-  lowp float y = -MS_DIM;
+  float y = -MS_DIM;
   for( int i = 0; i < MS_LEVEL; ++i ) {
-    lowp vec2 coords = vec2( exTexCoord.s, exTexCoord.t + MS_SPACING * y );
-    lowp vec4 sample = texture2D( oz_Textures[0], coords );
+    vec2 coords = vec2( exTexCoord.s, exTexCoord.t + MS_SPACING * y );
+    vec4 sample = texture2D( oz_Textures[0], coords );
 
     multiSample += sample;
     y += 1.0;
   }
 
-  lowp vec4  blur      = multiSample * BLUR_FACTOR;
-  lowp vec4  bloom     = multiSample * BLOOM_FACTOR;
-  lowp vec4  sample    = texture2D( oz_Textures[0], exTexCoord );
-  lowp float luminance = clamp( ( multiSample.r + multiSample.g + multiSample.b ) * LUMINANCE_FACTOR, 0.0, 1.0 );
+  vec4  blur      = multiSample * BLUR_FACTOR;
+  vec4  bloom     = multiSample * BLOOM_FACTOR;
+  vec4  sample    = texture2D( oz_Textures[0], exTexCoord );
+  float luminance = clamp( ( multiSample.r + multiSample.g + multiSample.b ) * LUMINANCE_FACTOR, 0.0, 1.0 );
 
 //   gl_FragColor = mix( mix( sample, blur, 0 ), bloom, luminance );
   gl_FragColor = vec4( 1.0 );

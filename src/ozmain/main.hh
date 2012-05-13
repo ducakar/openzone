@@ -35,8 +35,9 @@
 #include <ppapi/cpp/completion_callback.h>
 #include <ppapi/cpp/module.h>
 #include <ppapi/cpp/instance.h>
-#include <ppapi/cpp/graphics_2d.h>
+#include <ppapi/cpp/graphics_3d.h>
 #include <ppapi/cpp/fullscreen.h>
+#include <ppapi/cpp/input_event.h>
 #include <ppapi/cpp/mouse_lock.h>
 
 #define main( argc, argv ) ozMain( argc, argv )
@@ -51,7 +52,7 @@ class MainInstance : public pp::Instance, public pp::MouseLock
   private:
 
     pp::Fullscreen fullscreen;
-    pp::Graphics2D context;
+    pp::Graphics3D context;
     bool           isContextBound;
     bool           isMouseLocked;
     pthread_t      mainThread;

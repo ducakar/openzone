@@ -124,55 +124,60 @@ Context::Context() :
   smms( null ), md2s( null ), md3s( null )
 {}
 
-uint Context::readTextureLayer( InputStream* stream, const char* path )
+uint Context::readTextureLayer( InputStream* stream_, const char* path_ )
 {
-  OZ_GL_CHECK_ERROR();
+  static InputStream* stream;
+  static const char*  path;
+  static uint         texId;
 
-  uint texId;
-  glGenTextures( 1, &texId );
-  glBindTexture( GL_TEXTURE_2D, texId );
+  stream = stream_;
+  path   = path_;
 
-  int wrap      = stream->readInt();
-  int magFilter = stream->readInt();
-  int minFilter = stream->readInt();
+  OZ_MAIN_CALL( null, {
+    OZ_GL_CHECK_ERROR();
 
-  if( !wrap ) {
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-  }
+    glGenTextures( 1, &texId );
+    glBindTexture( GL_TEXTURE_2D, texId );
 
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
+    int wrap      = stream->readInt();
+    int magFilter = stream->readInt();
+    int minFilter = stream->readInt();
 
-  for( int level = 0; ; ++level ) {
-    int width  = stream->readInt();
-
-    if( width == 0 ) {
-      break;
+    if( !wrap ) {
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
     }
 
-    int height = stream->readInt();
-    int format = stream->readInt();
-    int size   = stream->readInt();
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
 
-#ifndef OZ_GL_COMPATIBLE
-    if( format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT || format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT ) {
-      glCompressedTexImage2D( GL_TEXTURE_2D, level, uint( format ), width, height, 0,
-                              size, stream->forward( size ) );
+    for( int level = 0; ; ++level ) {
+      int width  = stream->readInt();
+
+      if( width == 0 ) {
+        break;
+      }
+
+      int height = stream->readInt();
+      int format = stream->readInt();
+      int size   = stream->readInt();
+
+      if( format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT || format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT )
+      {
+        glCompressedTexImage2D( GL_TEXTURE_2D, level, uint( format ), width, height, 0,
+                                size, stream->forward( size ) );
+      }
+      else {
+        glTexImage2D( GL_TEXTURE_2D, level, format, width, height, 0,
+                      uint( format ), GL_UNSIGNED_BYTE, stream->forward( size ) );
+      }
     }
-    else
-#endif
-    {
-      glTexImage2D( GL_TEXTURE_2D, level, format, width, height, 0,
-                    uint( format ), GL_UNSIGNED_BYTE, stream->forward( size ) );
+
+    if( glGetError() != GL_NO_ERROR || !glIsTexture( texId ) ) {
+      glDeleteTextures( 1, &texId );
+      throw Exception( "Texture '%s' loading failed", path );
     }
-  }
-
-  if( glGetError() != GL_NO_ERROR || !glIsTexture( texId ) ) {
-    glDeleteTextures( 1, &texId );
-    throw Exception( "Texture '%s' loading failed", path );
-  }
-
+  } )
   return texId;
 }
 
@@ -236,7 +241,9 @@ void Context::releaseTexture( int id )
   --resource.nUsers;
 
   if( resource.nUsers == 0 ) {
-    resource.id.free();
+    OZ_MAIN_CALL( &resource.id, {
+      _this->free();
+    } )
 
     OZ_GL_CHECK_ERROR();
   }
@@ -551,37 +558,39 @@ void Context::unload()
   Log::unindent();
   Log::println( "}" );
 
-  imagines.free();
-  imagines.dealloc();
-  audios.free();
-  audios.dealloc();
-  fragPools.free();
-  fragPools.dealloc();
+  OZ_MAIN_CALL( this, {
+    _this->imagines.free();
+    _this->imagines.dealloc();
+    _this->audios.free();
+    _this->audios.dealloc();
+    _this->fragPools.free();
+    _this->fragPools.dealloc();
 
-  OZ_AL_CHECK_ERROR();
+    OZ_AL_CHECK_ERROR();
 
-  for( int i = 0; i < library.nBSPs; ++i ) {
-    delete bsps[i].object;
-    bsps[i].object = null;
-    bsps[i].nUsers = 0;
-  }
-  for( int i = 0; i < library.models.length(); ++i ) {
-    hard_assert( smms[i].nUsers == 0 );
-    hard_assert( md2s[i].nUsers == 0 );
-    hard_assert( md3s[i].nUsers == 0 );
+    for( int i = 0; i < library.nBSPs; ++i ) {
+      delete _this->bsps[i].object;
+      _this->bsps[i].object = null;
+      _this->bsps[i].nUsers = 0;
+    }
+    for( int i = 0; i < library.models.length(); ++i ) {
+      hard_assert( _this->smms[i].nUsers == 0 );
+      hard_assert( _this->md2s[i].nUsers == 0 );
+      hard_assert( _this->md3s[i].nUsers == 0 );
 
-    delete smms[i].object;
-    smms[i].object = null;
-    smms[i].nUsers = 0;
+      delete _this->smms[i].object;
+      _this->smms[i].object = null;
+      _this->smms[i].nUsers = 0;
 
-    delete md2s[i].object;
-    md2s[i].object = null;
-    md2s[i].nUsers = 0;
+      delete _this->md2s[i].object;
+      _this->md2s[i].object = null;
+      _this->md2s[i].nUsers = 0;
 
-    delete md3s[i].object;
-    md3s[i].object = null;
-    md3s[i].nUsers = 0;
-  }
+      delete _this->md3s[i].object;
+      _this->md3s[i].object = null;
+      _this->md3s[i].nUsers = 0;
+    }
+  } )
 
   while( !sources.isEmpty() ) {
     alDeleteSources( 1, &sources.first()->id );
@@ -626,7 +635,6 @@ void Context::unload()
 
   Log::verboseMode = false;
 
-  hard_assert( glGetError() == AL_NO_ERROR );
   OZ_AL_CHECK_ERROR();
 
   Source::pool.free();

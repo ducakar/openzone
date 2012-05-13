@@ -145,7 +145,7 @@ class System
      * Set-up crash handlers for cases specified in <tt>flags</tt>. If <tt>HALT_BIT</tt> is also
      * given, crash handlers wait for CTRL-C before exit.
      */
-#ifdef NDEBUG
+#if defined( NDEBUG ) || defined( __native_client__ )
     static void init( int flags = HANDLERS_MASK );
 #else
     static void init( int flags = HANDLERS_MASK | HALT_BIT );

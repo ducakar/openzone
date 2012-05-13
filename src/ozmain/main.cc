@@ -30,8 +30,8 @@
 
 #ifdef __native_client__
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_nacl.h>
+#include <ppapi/gles2/gl2ext_ppapi.h>
+#include <GLES2/gl2.h>
 
 namespace oz
 {
@@ -58,8 +58,6 @@ MainInstance::~MainInstance()
   if( mainThread != 0 ) {
     pthread_join( mainThread, null );
     mainThread = null;
-
-//     SDL_Quit();
   }
 }
 
@@ -67,6 +65,9 @@ bool MainInstance::Init( uint32_t, const char*[], const char*[] )
 {
   return true;
 }
+
+static void flushCallback( void*, int )
+{}
 
 void MainInstance::DidChangeView( const pp::View& view )
 {
@@ -80,14 +81,47 @@ void MainInstance::DidChangeView( const pp::View& view )
   System::width  = width;
   System::height = height;
 
-  context        = pp::Graphics2D( System::instance, pp::Size( width, height ), false );
+  if( !glInitializePPAPI( System::module->get_browser_interface() ) ) {
+    throw Exception( "Failed to initialize PPAPI GLES2" );
+  }
+
+  int attribs[] = {
+    PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
+    PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
+    PP_GRAPHICS3DATTRIB_STENCIL_SIZE, 8,
+    PP_GRAPHICS3DATTRIB_SAMPLES, 0,
+    PP_GRAPHICS3DATTRIB_SAMPLE_BUFFERS, 0,
+    PP_GRAPHICS3DATTRIB_WIDTH, System::width,
+    PP_GRAPHICS3DATTRIB_HEIGHT, System::height,
+    PP_GRAPHICS3DATTRIB_NONE
+  };
+
+  Log::println( "aa\n" );
+
+  context        = pp::Graphics3D( System::instance, pp::Graphics3D(), attribs );
+  if( context.is_null() ) {
+    throw Exception( "Graphics3D surface creation failed" );
+  }
   isContextBound = BindGraphics( context );
-  context.Flush( pp::CompletionCallback( &Empty, null ) );
+
+  glSetCurrentContextPPAPI( context.pp_resource() );
+
+  Log::println( "bb\n" );
+
+  glClearColor( 1.0f, 0.0f, 1.0f, 1.0f );
+  glClear( GL_COLOR_BUFFER_BIT );
+
+  Log::println( "cc\n" );
+
+  glFlush();
+
+  Log::println( "dd\n" );
+
+  context.SwapBuffers( pp::CompletionCallback( &flushCallback, null ) );
+
+  Log::println( "ee\n" );
 
   if( mainThread == 0 ) {
-//     SDL_NACL_SetInstance( pp_instance(), System::width, System::height );
-//     SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO );
-
     pthread_create( &mainThread, null, mainThreadMain, this );
   }
 }

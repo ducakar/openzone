@@ -56,6 +56,39 @@ struct MutexDesc
 
 #endif
 
+void Mutex::lock() const
+{
+  hard_assert( descriptor != null );
+
+#ifdef _WIN32
+  WaitForSingleObject( descriptor->mutex, INFINITE );
+#else
+  pthread_mutex_lock( &descriptor->mutex );
+#endif
+}
+
+bool Mutex::tryLock() const
+{
+  hard_assert( descriptor != null );
+
+#ifdef _WIN32
+  return WaitForSingleObject( descriptor->mutex, 0 ) == WAIT_OBJECT_0;
+#else
+  return pthread_mutex_trylock( &descriptor->mutex ) == 0;
+#endif
+}
+
+void Mutex::unlock() const
+{
+  hard_assert( descriptor != null );
+
+#ifdef _WIN32
+  ReleaseMutex( descriptor->mutex );
+#else
+  pthread_mutex_unlock( &descriptor->mutex );
+#endif
+}
+
 void Mutex::init()
 {
   hard_assert( descriptor == null );
@@ -91,39 +124,6 @@ void Mutex::destroy()
 
   free( descriptor );
   descriptor = null;
-}
-
-void Mutex::lock() const
-{
-  hard_assert( descriptor != null );
-
-#ifdef _WIN32
-  WaitForSingleObject( descriptor->mutex, INFINITE );
-#else
-  pthread_mutex_lock( &descriptor->mutex );
-#endif
-}
-
-bool Mutex::tryLock() const
-{
-  hard_assert( descriptor != null );
-
-#ifdef _WIN32
-  return WaitForSingleObject( descriptor->mutex, 0 ) == WAIT_OBJECT_0;
-#else
-  return pthread_mutex_trylock( &descriptor->mutex ) == 0;
-#endif
-}
-
-void Mutex::unlock() const
-{
-  hard_assert( descriptor != null );
-
-#ifdef _WIN32
-  ReleaseMutex( descriptor->mutex );
-#else
-  pthread_mutex_unlock( &descriptor->mutex );
-#endif
 }
 
 }

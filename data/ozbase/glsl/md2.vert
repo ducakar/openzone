@@ -24,26 +24,26 @@
  */
 
 #ifdef OZ_VERTEX_TEXTURE
-uniform lowp vec3 oz_MD2Anim;
+uniform vec3 oz_MD2Anim;
 #endif
 
-attribute lowp vec3 inPosition;
-attribute lowp vec2 inTexCoord;
-attribute lowp vec3 inNormal;
+attribute vec3 inPosition;
+attribute vec2 inTexCoord;
+attribute vec3 inNormal;
 
-varying lowp vec3 exPosition;
-varying lowp vec2 exTexCoord;
-varying lowp vec3 exNormal;
+varying vec3 exPosition;
+varying vec2 exTexCoord;
+varying vec3 exNormal;
 
 void main()
 {
 #ifdef OZ_VERTEX_TEXTURE
-  lowp vec4 firstPosition  = texture2D( oz_Textures[3], vec2( inPosition.x, oz_MD2Anim[0] ) );
-  lowp vec4 secondPosition = texture2D( oz_Textures[3], vec2( inPosition.x, oz_MD2Anim[1] ) );
-  lowp vec4 firstNormal    = texture2D( oz_Textures[4], vec2( inPosition.x, oz_MD2Anim[0] ) );
-  lowp vec4 secondNormal   = texture2D( oz_Textures[4], vec2( inPosition.x, oz_MD2Anim[1] ) );
-  lowp vec4 localPosition  = mix( firstPosition, secondPosition, oz_MD2Anim[2] );
-  lowp vec4 localNormal    = mix( firstNormal, secondNormal, oz_MD2Anim[2] );
+  vec4 firstPosition  = texture2D( oz_Textures[3], vec2( inPosition.x, oz_MD2Anim[0] ) );
+  vec4 secondPosition = texture2D( oz_Textures[3], vec2( inPosition.x, oz_MD2Anim[1] ) );
+  vec4 firstNormal    = texture2D( oz_Textures[4], vec2( inPosition.x, oz_MD2Anim[0] ) );
+  vec4 secondNormal   = texture2D( oz_Textures[4], vec2( inPosition.x, oz_MD2Anim[1] ) );
+  vec4 localPosition  = mix( firstPosition, secondPosition, oz_MD2Anim[2] );
+  vec4 localNormal    = mix( firstNormal, secondNormal, oz_MD2Anim[2] );
 
   gl_Position   = oz_Transform.complete * localPosition;
   exPosition    = ( oz_Transform.model * localPosition ).xyz;

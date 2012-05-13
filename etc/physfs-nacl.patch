@@ -1,6 +1,6 @@
 diff -r 62256a6a8e4e CMakeLists.txt
 --- a/CMakeLists.txt	Sat Apr 07 21:33:18 2012 -0400
-+++ b/CMakeLists.txt	Fri May 11 05:12:38 2012 +0200
++++ b/CMakeLists.txt	Sat May 12 23:47:02 2012 +0200
 @@ -5,6 +5,9 @@
  
  CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
@@ -32,7 +32,7 @@ diff -r 62256a6a8e4e CMakeLists.txt
          IF(HAVE_UCRED_H)
 diff -r 62256a6a8e4e src/lzma/C/Archive/7z/7zDecode.c
 --- a/src/lzma/C/Archive/7z/7zDecode.c	Sat Apr 07 21:33:18 2012 -0400
-+++ b/src/lzma/C/Archive/7z/7zDecode.c	Fri May 11 05:12:38 2012 +0200
++++ b/src/lzma/C/Archive/7z/7zDecode.c	Sat May 12 23:47:02 2012 +0200
 @@ -1,6 +1,8 @@
  /* 7zDecode.c */
  
@@ -44,7 +44,7 @@ diff -r 62256a6a8e4e src/lzma/C/Archive/7z/7zDecode.c
  #include <string.h>
 diff -r 62256a6a8e4e src/physfs_platforms.h
 --- a/src/physfs_platforms.h	Sat Apr 07 21:33:18 2012 -0400
-+++ b/src/physfs_platforms.h	Fri May 11 05:12:38 2012 +0200
++++ b/src/physfs_platforms.h	Sat May 12 23:47:02 2012 +0200
 @@ -38,6 +38,8 @@
  #  endif
  #elif defined(macintosh)
@@ -56,8 +56,8 @@ diff -r 62256a6a8e4e src/physfs_platforms.h
  #  define PHYSFS_PLATFORM_UNIX 1
 diff -r 62256a6a8e4e src/platform_nacl.c
 --- /dev/null	Thu Jan 01 00:00:00 1970 +0000
-+++ b/src/platform_nacl.c	Fri May 11 05:12:38 2012 +0200
-@@ -0,0 +1,801 @@
++++ b/src/platform_nacl.c	Sat May 12 23:47:02 2012 +0200
+@@ -0,0 +1,800 @@
 +/*
 + * Native Client support routines for PhysicsFS.
 + *
@@ -104,7 +104,6 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +        pthread_cond_wait(&file->sem.cond, &file->sem.mutex); \
 +    } \
 +    pthread_mutex_unlock(&file->sem.mutex);
-+
 +
 +#define DEF_CALLBACK(name, code) \
 +    void _callback_##name(void *_data, int _result) \
@@ -234,6 +233,9 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +int __PHYSFS_platformInit(void)
 +{
 +    fileList = NULL;
++    if (pthread_mutex_init(&fileListMutex, NULL)) {
++        BAIL_MACRO(PHYSFS_ERR_OS_ERROR, 0);
++    } /* if */
 +    return 1;  /* always succeed. */
 +} /* __PHYSFS_platformInit */
 +
@@ -243,7 +245,7 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +    fileSystem = 0;
 +
 +    SEM_POST();
-+})
++}) /* _callback_deinit */
 +
 +int __PHYSFS_platformDeinit(void)
 +{
@@ -258,6 +260,18 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +    SEM_WAIT();
 +
 +    destroyFileDesc(file);
++
++    pthread_mutex_destroy(&fileListMutex);
++
++    file = fileList;
++    while (file) {
++        FileDesc *nextFile = file->next;
++
++        destroyFileDesc(file);
++        file = nextFile;
++    } /* while */
++    fileList = NULL;
++
 +    return 1;
 +} /* __PHYSFS_platformDeinit */
 +
@@ -380,8 +394,6 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +
 +void *__PHYSFS_platformOpenRead(const char *filename)
 +{
-+    printf( "__PHYSFS_platformOpenRead(%s)\n", filename );
-+
 +    /* Check if file is already cached. */
 +    pthread_mutex_lock( &fileListMutex );
 +
@@ -409,8 +421,6 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +
 +    MAIN_CALL(openFileRead_open);
 +    SEM_WAIT();
-+
-+    printf( "+ error: %d\n", file->error );
 +
 +    if (file->error) {
 +        int error = file->error;
@@ -566,8 +576,6 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +
 +int __PHYSFS_platformStat(const char *filename, int *exists, PHYSFS_Stat *st)
 +{
-+    printf( "__PHYSFS_platformStat(%s): ", filename );
-+
 +    /* Root must be handled as a special case as querying it always fails. */
 +    if (filename[0] == '/' && filename[1] == '\0') {
 +        *exists = 1;
@@ -578,8 +586,6 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +        st->readonly = 0;
 +        st->filesize = 0;
 +        st->filetype = PHYSFS_FILETYPE_DIRECTORY;
-+
-+        printf( "exists, 0 B\n" );
 +
 +        return 1;
 +    } /* if */
@@ -596,8 +602,6 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +    *exists = file->error == 0;
 +
 +    if (!file->error) {
-+        printf( "exists, %lld B\n", file->fileInfo.size );
-+
 +        st->createtime = file->fileInfo.creation_time;
 +        st->modtime    = file->fileInfo.last_modified_time;
 +        st->accesstime = file->fileInfo.last_access_time;
@@ -616,9 +620,6 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +                break;
 +        } /* switch */
 +    } /* if */
-+    else {
-+      printf( "missing\n" );
-+    }
 +
 +    destroyFileDesc(file);
 +    return 1;
@@ -726,7 +727,6 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +
 +char *__PHYSFS_platformCalcUserDir(void)
 +{
-+    /* Directories are not supported on NaCl, we only have root dir. */
 +    char *retval = (char *) allocator.Malloc(2);
 +    BAIL_IF_MACRO(!retval, PHYSFS_ERR_OUT_OF_MEMORY, NULL);
 +
@@ -739,7 +739,6 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +
 +char *__PHYSFS_platformCalcPrefDir(const char* org, const char* app)
 +{
-+    /* Directories are not supported on NaCl, we only have root dir. */
 +    char *retval = (char *) allocator.Malloc(2);
 +    BAIL_IF_MACRO(!retval, PHYSFS_ERR_OUT_OF_MEMORY, NULL);
 +

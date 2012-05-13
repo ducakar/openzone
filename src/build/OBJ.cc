@@ -30,6 +30,8 @@
 
 #include "build/Compiler.hh"
 
+#include <GL/gl.h>
+
 namespace oz
 {
 namespace build

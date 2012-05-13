@@ -15,7 +15,7 @@ option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory l
 set( OZ_APPLICATION_NAME "openzone" )
 set( OZ_APPLICATION_TITLE "OpenZone" )
 
-option( OZ_GL_COMPATIBLE "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." OFF )
+option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." OFF )
 option( OZ_NETWORKING "Enable networking (not supported yet)." OFF )
 option( OZ_BUMPMAP "Enable bumpmapping (not supported yet)." OFF )
 option( OZ_NONFREE "Enable support for MP3 and AAC." ON )
@@ -32,13 +32,13 @@ include( CheckCXXCompilerFlag )
 include( CheckLibraryExists )
 
 if( NACL )
-  set( OZ_STATIC_LIB ON )
-  set( OZ_GL_COMPATIBLE ON )
-  set( OZ_NONFREE OFF )
+  set( OZ_STATIC_LIB ON CACHE BOOL "Create liboz as static library instead of shared." FORCE )
+  set( OZ_GL_ES ON CACHE BOOL "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." FORCE )
+  set( OZ_NONFREE OFF CACHE BOOL "Enable support for MP3 and AAC." FORCE )
 endif()
 
 if( WIN32 )
-  set( OZ_STATIC_LIB ON )
+  set( OZ_STATIC_LIB ON CACHE BOOL "Create liboz as static library instead of shared." FORCE )
 endif()
 
 if( NOT CMAKE_BUILD_TYPE )

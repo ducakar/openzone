@@ -159,15 +159,17 @@ GalileoFrame::GalileoFrame( const QuestFrame* questFrame_ ) :
 
 GalileoFrame::~GalileoFrame()
 {
-  if( mapTexId != 0 ) {
-    glDeleteTextures( 1, &mapTexId );
-  }
-  if( arrowTexId != 0 ) {
-    glDeleteTextures( 1, &arrowTexId );
-  }
-  if( markerTexId != 0 ) {
-    glDeleteTextures( 1, &markerTexId );
-  }
+  OZ_MAIN_CALL( this, {
+    if( _this->mapTexId != 0 ) {
+      glDeleteTextures( 1, &_this->mapTexId );
+    }
+    if( _this->arrowTexId != 0 ) {
+      glDeleteTextures( 1, &_this->arrowTexId );
+    }
+    if( _this->markerTexId != 0 ) {
+      glDeleteTextures( 1, &_this->markerTexId );
+    }
+  } )
 }
 
 void GalileoFrame::setMaximised( bool doMaximise )

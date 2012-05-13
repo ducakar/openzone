@@ -174,13 +174,13 @@ void Shader::loadProgram( int id )
   glAttachShader( programs[id].program, programs[id].vertShader );
   glAttachShader( programs[id].program, programs[id].fragShader );
 
-  OZ_REGISTER_ATTRIBUTE( Attrib::POSITION,            "inPosition" );
-  OZ_REGISTER_ATTRIBUTE( Attrib::TEXCOORD,            "inTexCoord" );
-  OZ_REGISTER_ATTRIBUTE( Attrib::NORMAL,              "inNormal" );
+  OZ_REGISTER_ATTRIBUTE( Attrib::POSITION,    "inPosition" );
+  OZ_REGISTER_ATTRIBUTE( Attrib::TEXCOORD,    "inTexCoord" );
+  OZ_REGISTER_ATTRIBUTE( Attrib::NORMAL,      "inNormal" );
 #ifdef OZ_BUMPMAP
-  OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,             "inTangent" );
-  OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL,            "inBinormal" );
-  OZ_REGISTER_ATTRIBUTE( Attrib::DETAILCOORD,         "inDetailCoord" );
+  OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,     "inTangent" );
+  OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL,    "inBinormal" );
+  OZ_REGISTER_ATTRIBUTE( Attrib::DETAILCOORD, "inDetailCoord" );
 #endif
 
   glLinkProgram( programs[id].program );
@@ -207,26 +207,26 @@ void Shader::loadProgram( int id )
 
   glUseProgram( programs[id].program );
 
-  OZ_REGISTER_PARAMETER( oz_Transform_model,          "oz_Transform.model" );
-  OZ_REGISTER_PARAMETER( oz_Transform_complete,       "oz_Transform.complete" );
+  OZ_REGISTER_PARAMETER( oz_Transform_model,     "oz_Transform.model" );
+  OZ_REGISTER_PARAMETER( oz_Transform_complete,  "oz_Transform.complete" );
 
-  OZ_REGISTER_PARAMETER( oz_CameraPosition,           "oz_CameraPosition" );
+  OZ_REGISTER_PARAMETER( oz_CameraPosition,      "oz_CameraPosition" );
 
-  OZ_REGISTER_PARAMETER( oz_Colour,                   "oz_Colour" );
-  OZ_REGISTER_PARAMETER( oz_Textures,                 "oz_Textures" );
+  OZ_REGISTER_PARAMETER( oz_Colour,              "oz_Colour" );
+  OZ_REGISTER_PARAMETER( oz_Textures,            "oz_Textures" );
 
-  OZ_REGISTER_PARAMETER( oz_CaelumLight_dir,          "oz_CaelumLight.dir" );
-  OZ_REGISTER_PARAMETER( oz_CaelumLight_diffuse,      "oz_CaelumLight.diffuse" );
-  OZ_REGISTER_PARAMETER( oz_CaelumLight_ambient,      "oz_CaelumLight.ambient" );
+  OZ_REGISTER_PARAMETER( oz_CaelumLight_dir,     "oz_CaelumLight.dir" );
+  OZ_REGISTER_PARAMETER( oz_CaelumLight_diffuse, "oz_CaelumLight.diffuse" );
+  OZ_REGISTER_PARAMETER( oz_CaelumLight_ambient, "oz_CaelumLight.ambient" );
 
-  OZ_REGISTER_PARAMETER( oz_NightVision,              "oz_NightVision" );
+  OZ_REGISTER_PARAMETER( oz_NightVision,         "oz_NightVision" );
 
-  OZ_REGISTER_PARAMETER( oz_Fog_dist,                 "oz_Fog.dist" );
-  OZ_REGISTER_PARAMETER( oz_Fog_colour,               "oz_Fog.colour" );
+  OZ_REGISTER_PARAMETER( oz_Fog_dist,            "oz_Fog.dist" );
+  OZ_REGISTER_PARAMETER( oz_Fog_colour,          "oz_Fog.colour" );
 
-  OZ_REGISTER_PARAMETER( oz_WaveBias,                 "oz_WaveBias" );
-  OZ_REGISTER_PARAMETER( oz_Wind,                     "oz_Wind" );
-  OZ_REGISTER_PARAMETER( oz_MD2Anim,                  "oz_MD2Anim" );
+  OZ_REGISTER_PARAMETER( oz_WaveBias,            "oz_WaveBias" );
+  OZ_REGISTER_PARAMETER( oz_Wind,                "oz_Wind" );
+  OZ_REGISTER_PARAMETER( oz_MD2Anim,             "oz_MD2Anim" );
 
   param = programs[id].param;
 
@@ -283,7 +283,7 @@ void Shader::init()
 {
   Log::print( "Initialising Shader ..." );
 
-#ifndef OZ_GL_COMPATIBLE
+#ifndef OZ_GL_ES
   hasVertexTexture = config.getSet( "shader.vertexTexture", true );
 #else
   hasVertexTexture = false;
@@ -336,11 +336,7 @@ void Shader::init()
   const char* sources[3];
   int         lengths[3];
 
-#ifdef GL_ES_VERSION_2_0
   defines = "#version 100\n";
-#else
-  defines = "#version 100\n";
-#endif
   defines = defines + ( hasVertexTexture ? "#define OZ_VERTEX_TEXTURE\n" : "\n" );
   defines = defines + ( doPostprocess ?    "#define OZ_POSTPROCESS\n" : "\n" );
   defines = defines + ( isLowDetail ?      "#define OZ_LOW_DETAIL\n" : "\n" );

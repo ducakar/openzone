@@ -105,14 +105,9 @@ class Semaphore
     }
 
     /**
-     * Initialise semaphore.
+     * Get current counter value.
      */
-    void init( int counterValue = 0 );
-
-    /**
-     * Destroy semaphore and release resources.
-     */
-    void destroy();
+    int counter() const;
 
     /**
      * Atomically increment counter and signal waiting threads.
@@ -128,6 +123,18 @@ class Semaphore
      * If counter is positive decrement it and return true, otherwise resume and return false.
      */
     bool tryWait() const;
+
+    /**
+     * Initialise semaphore.
+     *
+     * @param counter initial counter value.
+     */
+    void init( int counter = 0 );
+
+    /**
+     * Destroy semaphore and release resources.
+     */
+    void destroy();
 
 };
 

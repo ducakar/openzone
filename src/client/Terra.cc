@@ -79,13 +79,13 @@ void Terra::draw()
   // we draw column-major (strips along y axis) for better cache performance
   glFrontFace( GL_CW );
 
-#ifdef OZ_GL_COMPATIBLE
+#ifdef OZ_GL_ES
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 #endif
 
   for( int i = span.minX; i <= span.maxX; ++i ) {
     for( int j = span.minY; j <= span.maxY; ++j ) {
-#ifdef OZ_GL_COMPATIBLE
+#ifdef OZ_GL_ES
       glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
 
       Vertex::setFormat();
@@ -127,14 +127,14 @@ void Terra::drawWater()
     glFrontFace( GL_CW );
   }
 
-#ifdef OZ_GL_COMPATIBLE
+#ifdef OZ_GL_ES
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 #endif
 
   for( int i = span.minX; i <= span.maxX; ++i ) {
     for( int j = span.minY; j <= span.maxY; ++j ) {
       if( waterTiles.get( i * TILES + j ) ) {
-#ifdef OZ_GL_COMPATIBLE
+#ifdef OZ_GL_ES
         glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
 
         Vertex::setFormat();
@@ -173,7 +173,7 @@ void Terra::load()
   detailTexId = context.readTextureLayer( &is, path );
   mapTexId    = context.readTextureLayer( &is, path );
 
-#ifndef OZ_GL_COMPATIBLE
+#ifndef OZ_GL_ES
   glGenVertexArrays( TILES * TILES, &vaos[0][0] );
 #endif
   glGenBuffers( TILES * TILES, &vbos[0][0] );
@@ -189,7 +189,7 @@ void Terra::load()
 
   for( int i = 0; i < TILES; ++i ) {
     for( int j = 0; j < TILES; ++j ) {
-#ifdef OZ_GL_COMPATIBLE
+#ifdef OZ_GL_ES
 
       Vertex* vertices = new Vertex[TILE_VERTICES];
 
@@ -288,7 +288,7 @@ void Terra::unload()
 
     glDeleteBuffers( 1, &ibo );
     glDeleteBuffers( TILES * TILES, &vbos[0][0] );
-#ifndef OZ_GL_COMPATIBLE
+#ifndef OZ_GL_ES
     glDeleteVertexArrays( TILES * TILES, &vaos[0][0] );
 #endif
 

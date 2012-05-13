@@ -59,53 +59,11 @@ struct SemaphoreDesc
 
 #endif
 
-void Semaphore::init( int counterValue )
-{
-  hard_assert( descriptor == null && counterValue >= 0 );
-
-  descriptor = static_cast<SemaphoreDesc*>( malloc( sizeof( SemaphoreDesc ) ) );
-  if( descriptor == null ) {
-    throw Exception( "Semaphore resource allocation failed" );
-  }
-
-#ifdef _WIN32
-
-  descriptor->semaphore = CreateSemaphore( null, counterValue, 32 * 1024, null );
-  if( descriptor->semaphore == null ) {
-    free( descriptor );
-    throw Exception( "Semaphore semaphore creation failed" );
-  }
-
-#else
-
-  if( pthread_mutex_init( &descriptor->mutex, null ) != 0 ) {
-    free( descriptor );
-    throw Exception( "Semaphore mutex creation failed" );
-  }
-  if( pthread_cond_init( &descriptor->cond, null ) != 0 ) {
-    pthread_mutex_destroy( &descriptor->mutex );
-    free( descriptor );
-    throw Exception( "Semaphore condition variable creation failed" );
-  }
-
-#endif
-
-  descriptor->counter = counterValue;
-}
-
-void Semaphore::destroy()
+int Semaphore::counter() const
 {
   hard_assert( descriptor != null );
 
-#ifdef _WIN32
-  CloseHandle( &descriptor->semaphore );
-#else
-  pthread_cond_destroy( &descriptor->cond );
-  pthread_mutex_destroy( &descriptor->mutex );
-#endif
-
-  free( descriptor );
-  descriptor = null;
+  return descriptor->counter;
 }
 
 void Semaphore::post() const
@@ -176,6 +134,55 @@ bool Semaphore::tryWait() const
   return hasSucceeded;
 
 #endif
+}
+
+void Semaphore::init( int counter )
+{
+  hard_assert( descriptor == null && counter >= 0 );
+
+  descriptor = static_cast<SemaphoreDesc*>( malloc( sizeof( SemaphoreDesc ) ) );
+  if( descriptor == null ) {
+    throw Exception( "Semaphore resource allocation failed" );
+  }
+
+#ifdef _WIN32
+
+  descriptor->semaphore = CreateSemaphore( null, counter, 32 * 1024, null );
+  if( descriptor->semaphore == null ) {
+    free( descriptor );
+    throw Exception( "Semaphore semaphore creation failed" );
+  }
+
+#else
+
+  if( pthread_mutex_init( &descriptor->mutex, null ) != 0 ) {
+    free( descriptor );
+    throw Exception( "Semaphore mutex creation failed" );
+  }
+  if( pthread_cond_init( &descriptor->cond, null ) != 0 ) {
+    pthread_mutex_destroy( &descriptor->mutex );
+    free( descriptor );
+    throw Exception( "Semaphore condition variable creation failed" );
+  }
+
+#endif
+
+  descriptor->counter = counter;
+}
+
+void Semaphore::destroy()
+{
+  hard_assert( descriptor != null );
+
+#ifdef _WIN32
+  CloseHandle( &descriptor->semaphore );
+#else
+  pthread_cond_destroy( &descriptor->cond );
+  pthread_mutex_destroy( &descriptor->mutex );
+#endif
+
+  free( descriptor );
+  descriptor = null;
 }
 
 }

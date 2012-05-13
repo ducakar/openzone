@@ -42,7 +42,7 @@
 #cmakedefine OZ_NETWORKING
 
 // Enable compatibility with GLES2 and Mesa < 8.0.
-#cmakedefine OZ_GL_COMPATIBLE
+#cmakedefine OZ_GL_ES
 
 // Enable bumpmapping.
 #cmakedefine OZ_BUMPMAP

@@ -36,6 +36,7 @@
 #include "client/BotAudio.hh"
 #include "client/VehicleAudio.hh"
 
+#include <GL/gl.h>
 #include <FreeImage.h>
 
 namespace oz

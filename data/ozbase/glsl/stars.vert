@@ -21,10 +21,10 @@
  * stars.vert
  */
 
-attribute lowp vec3 inPosition;
+attribute vec3 inPosition;
 
-varying lowp vec3  exPosition;
-varying lowp float exAzimuth;
+varying vec3  exPosition;
+varying float exAzimuth;
 
 void main()
 {

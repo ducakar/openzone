@@ -49,10 +49,10 @@ class MainInstance : public pp::Instance, public pp::MouseLock
 {
   private:
 
-    pp::Fullscreen   fullscreen;
-    bool             isContextBound;
-    bool             isMouseLocked;
-    pthread_t        mainThread;
+    pp::Fullscreen fullscreen;
+    bool           isContextBound;
+    bool           isMouseLocked;
+    pthread_t      mainThread;
 
     static void* mainThreadMain( void* );
 

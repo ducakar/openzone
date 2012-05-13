@@ -23,10 +23,10 @@
  * Shader for UI, bounding boxes, aim dot etc.
  */
 
-attribute lowp vec3 inPosition;
-attribute lowp vec2 inTexCoord;
+attribute vec3 inPosition;
+attribute vec2 inTexCoord;
 
-varying lowp vec2 exTexCoord;
+varying vec2 exTexCoord;
 
 void main()
 {

@@ -103,16 +103,6 @@ class Mutex
     }
 
     /**
-     * Initialise mutex.
-     */
-    void init();
-
-    /**
-     * Destroy mutex and release resources.
-     */
-    void destroy();
-
-    /**
      * Lock mutex.
      */
     void lock() const;
@@ -126,6 +116,16 @@ class Mutex
      * Unlock mutex.
      */
     void unlock() const;
+
+    /**
+     * Initialise mutex.
+     */
+    void init();
+
+    /**
+     * Destroy mutex and release resources.
+     */
+    void destroy();
 
 };
 

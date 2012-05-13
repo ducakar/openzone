@@ -154,9 +154,7 @@ void GameStage::reload()
   camera.reset();
 
   modules.unload();
-  OZ_MAIN_CALL( this, {
-    context.unload();
-  } )
+  context.unload();
   render.unload();
   questList.unload();
 
@@ -516,9 +514,7 @@ void GameStage::unload()
 
   camera.reset();
 
-  OZ_MAIN_CALL( this, {
-    context.unload();
-  } )
+  context.unload();
   render.unload();
   questList.unload();
 

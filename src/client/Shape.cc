@@ -166,7 +166,7 @@ Shape::Shape() :
 
 void Shape::bindVertexArray() const
 {
-#ifdef OZ_GL_COMPATIBLE
+#ifdef OZ_GL_ES
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 
@@ -265,7 +265,7 @@ void Shape::box( const AABB& bb )
   tf.model.scale( bb.dim );
   tf.apply();
 
-#ifdef OZ_GL_COMPATIBLE
+#ifdef OZ_GL_ES
   glDrawElements( GL_TRIANGLE_STRIP, 22, GL_UNSIGNED_SHORT, static_cast<const ushort*>( 0 ) + 0 );
 #else
   glDrawRangeElements( GL_TRIANGLE_STRIP, 32, 39, 22, GL_UNSIGNED_SHORT,
@@ -279,7 +279,7 @@ void Shape::wireBox( const AABB& bb )
   tf.model.scale( bb.dim );
   tf.apply();
 
-#ifdef OZ_GL_COMPATIBLE
+#ifdef OZ_GL_ES
   glDrawElements( GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<const ushort*>( 0 ) + 22 );
 #else
   glDrawRangeElements( GL_LINES, 32, 39, 24, GL_UNSIGNED_SHORT,
@@ -289,7 +289,7 @@ void Shape::wireBox( const AABB& bb )
 
 void Shape::load()
 {
-#ifdef OZ_GL_COMPATIBLE
+#ifdef OZ_GL_ES
   vao = 1;
 #else
   glGenVertexArrays( 1, &vao );
@@ -304,7 +304,7 @@ void Shape::load()
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
   glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( INDICES ), INDICES, GL_STATIC_DRAW );
 
-#ifndef OZ_GL_COMPATIBLE
+#ifndef OZ_GL_ES
   glEnableVertexAttribArray( Attrib::POSITION );
   glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                          static_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
@@ -329,7 +329,7 @@ void Shape::unload()
   if( vao != 0 ) {
     glDeleteBuffers( 1, &ibo );
     glDeleteBuffers( 1, &vbo );
-#ifndef OZ_GL_COMPATIBLE
+#ifndef OZ_GL_ES
     glDeleteVertexArrays( 1, &vao );
 #endif
 
