@@ -80,7 +80,7 @@ void Loader::preloadMain()
     loader.preloadRun();
   }
   catch( const std::exception& e ) {
-    Exception::abortWith( &e );
+    System::error( e );
   }
 }
 
@@ -385,12 +385,8 @@ void Loader::makeScreenshot()
     screenshotThread.join();
   }
 
-  Time time = Time::local();
-
-  snprintf( screenshotInfo.path, 256,
-            "%s/screenshots/" OZ_APPLICATION_NAME " %04d-%02d-%02d %02d:%02d:%02d.bmp",
-            config.get( "dir.config", "" ),
-            time.year, time.month, time.day, time.hour, time.minute, time.second );
+  snprintf( screenshotInfo.path, 256, "%s/screenshots/" OZ_APPLICATION_NAME " %s.bmp",
+            config.get( "dir.config", "" ), Time::local().toString().cstr() );
 
   Log::println( "Screenshot to '%s' scheduled in background thread", screenshotInfo.path );
 

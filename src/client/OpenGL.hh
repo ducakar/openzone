@@ -130,7 +130,7 @@ extern PFNGLDELETEVERTEXARRAYSPROC      glDeleteVertexArrays;
 extern PFNGLBINDVERTEXARRAYPROC         glBindVertexArray;
 #endif
 
-#ifdef NDEBUG
+#if defined( NDEBUG ) || defined( __native_client__ )
 # define OZ_GL_CHECK_ERROR() void( 0 )
 #else
 # define OZ_GL_CHECK_ERROR() oz::client::glCheckError( __FILE__, __LINE__, __PRETTY_FUNCTION__ )

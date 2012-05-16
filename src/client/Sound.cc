@@ -104,7 +104,7 @@ void Sound::musicMain()
     sound.musicRun();
   }
   catch( const std::exception& e ) {
-    Exception::abortWith( &e );
+    System::error( e );
   }
 }
 
@@ -114,7 +114,7 @@ void Sound::soundMain()
     sound.soundRun();
   }
   catch( const std::exception& e ) {
-    Exception::abortWith( &e );
+    System::error( e );
   }
 }
 

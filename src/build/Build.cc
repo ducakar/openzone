@@ -836,7 +836,7 @@ int Build::main( int argc, char** argv )
   }
 
   Log::print( OZ_APPLICATION_TITLE " Build started on " );
-  Log::printTime();
+  Log::printTime( Time::local() );
   Log::printEnd();
 
   Log::println( "Build details {" );
@@ -1006,7 +1006,7 @@ int Build::main( int argc, char** argv )
   Alloc::printSummary();
 
   Log::print( OZ_APPLICATION_TITLE " Build finished on " );
-  Log::printTime();
+  Log::printTime( Time::local() );
   Log::printEnd();
 
   return EXIT_SUCCESS;

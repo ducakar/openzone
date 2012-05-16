@@ -33,7 +33,7 @@ namespace oz
 namespace client
 {
 
-const float BotAudio::FOOTSTEP_DISTANCE_SQ = 50.0f*50.0f;
+const float BotAudio::FOOTSTEP_DISTANCE_SQ = 32.0f*32.0f;
 
 Pool<BotAudio, 256> BotAudio::pool;
 

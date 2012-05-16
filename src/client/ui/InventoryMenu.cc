@@ -292,10 +292,10 @@ slotsRendered:
   glEnable( GL_BLEND );
   glDisable( GL_DEPTH_TEST );
 
-  shader.use( shader.plain );
-
   glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, 0 );
+
+  shader.use( shader.plain );
 
   shape.bindVertexArray();
 

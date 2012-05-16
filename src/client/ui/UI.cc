@@ -108,9 +108,11 @@ void UI::draw()
     glUniform1i( param.oz_NightVision, false );
   }
 
-  shader.use( shader.plain );
+  glClear( GL_DEPTH_BUFFER_BIT );
 
   glEnable( GL_BLEND );
+
+  shader.use( shader.plain );
 
   root->drawChildren();
   mouse.draw();

@@ -155,8 +155,8 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
   glBindVertexArray( 0 );
 #endif
 
-  glBindBuffer( GL_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
   DArray<Texture> textures;
 
@@ -276,9 +276,9 @@ void Mesh::bind() const
   if( this != lastMesh ) {
 #ifdef OZ_GL_ES
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-
     Vertex::setFormat();
+
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 #else
     glBindVertexArray( vao );
 #endif

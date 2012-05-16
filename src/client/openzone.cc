@@ -57,7 +57,7 @@ void* MainInstance::mainThreadMain( void* )
     client::client.shutdown();
   }
   catch( const std::exception& e ) {
-    Exception::abortWith( &e );
+    System::error( e );
   }
 
   Log::verboseMode = true;
@@ -212,7 +212,7 @@ int main( int argc, char** argv )
     client::client.shutdown();
   }
   catch( const std::exception& e ) {
-    Exception::abortWith( &e );
+    System::error( e );
   }
 
   Log::verboseMode = true;

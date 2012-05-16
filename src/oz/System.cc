@@ -138,7 +138,7 @@ static void signalHandler( int sigNum )
   Log::printSignal( sigNum );
 
   StackTrace st = StackTrace::current( 1 );
-  Log::printTrace( &st );
+  Log::printTrace( st );
   Log::println();
 
   System::bell();
@@ -308,7 +308,7 @@ void System::warning( int nSkippedFrames, const char* msg, ... )
   va_end( ap );
 
   StackTrace st = StackTrace::current( 1 + nSkippedFrames );
-  Log::printTrace( &st );
+  Log::printTrace( st );
   Log::println();
 
   bell();
@@ -329,7 +329,19 @@ void System::error( int nSkippedFrames, const char* msg, ... )
   va_end( ap );
 
   StackTrace st = StackTrace::current( 1 + nSkippedFrames );
-  Log::printTrace( &st );
+  Log::printTrace( st );
+  Log::println();
+
+  bell();
+  abort();
+}
+
+void System::error( const std::exception& e )
+{
+  trap();
+
+  Log::verboseMode = false;
+  Log::printException( e );
   Log::println();
 
   bell();

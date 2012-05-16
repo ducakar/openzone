@@ -116,7 +116,7 @@ void Alloc::printLeaks()
   while( bt != null ) {
     Log::println( "Leaked object at %p of size %d B allocated", bt->address, int( bt->size ) );
     Log::indent();
-    Log::printTrace( &bt->stackTrace );
+    Log::printTrace( bt->stackTrace );
     Log::unindent();
 
     bt = bt->next;
@@ -126,7 +126,7 @@ void Alloc::printLeaks()
   while( bt != null ) {
     Log::println( "Leaked array at %p of size %d B allocated", bt->address, int( bt->size ) );
     Log::indent();
-    Log::printTrace( &bt->stackTrace );
+    Log::printTrace( bt->stackTrace );
     Log::unindent();
 
     bt = bt->next;

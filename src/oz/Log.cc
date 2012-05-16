@@ -324,10 +324,9 @@ void Log::println()
 #endif
 }
 
-void Log::printTime()
+void Log::printTime( const Time& time )
 {
   char buffer[BUFFER_SIZE];
-  Time time = Time::local();
 
   snprintf( buffer, BUFFER_SIZE, "%04d-%02d-%02d %02d:%02d:%02d",
             time.year, time.month, time.day, time.hour, time.minute, time.second );
@@ -348,9 +347,9 @@ void Log::printTime()
 #endif
 }
 
-void Log::printTrace( const StackTrace* st )
+void Log::printTrace( const StackTrace& st )
 {
-  if( st->nFrames == 0 ) {
+  if( st.nFrames == 0 ) {
     if( !verboseMode || showVerbose || file == null ) {
       fputs( "    [no stack trace]\n", stdout );
     }
@@ -365,13 +364,13 @@ void Log::printTrace( const StackTrace* st )
 #endif
   }
   else {
-    char** entries = st->symbols();
+    char** entries = st.symbols();
 
 #ifdef __native_client__
     CHECK_SEMAPHORE();
 #endif
 
-    for( int i = 0; i < st->nFrames; ++i ) {
+    for( int i = 0; i < st.nFrames; ++i ) {
       if( !verboseMode || showVerbose || file == null ) {
         fputs( "    ", stdout );
         fputs( entries[i], stdout );
@@ -399,13 +398,13 @@ void Log::printTrace( const StackTrace* st )
   }
 }
 
-void Log::printException( const std::exception* e )
+void Log::printException( const std::exception& e )
 {
-  const Exception* oe = dynamic_cast<const Exception*>( e );
+  const Exception* oe = dynamic_cast<const Exception*>( &e );
   char buffer[BUFFER_SIZE];
 
   if( oe == null ) {
-    snprintf( buffer, BUFFER_SIZE, "\n\nEXCEPTION: %s\n", e->what() );
+    snprintf( buffer, BUFFER_SIZE, "\n\nEXCEPTION: %s\n", e.what() );
 
     if( !verboseMode || showVerbose || file == null ) {
       fputs( buffer, stdout );
@@ -438,7 +437,7 @@ void Log::printException( const std::exception* e )
     }
 #endif
 
-    printTrace( &oe->stackTrace );
+    printTrace( oe->stackTrace );
   }
 }
 

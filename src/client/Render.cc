@@ -431,6 +431,8 @@ void Render::draw( int flags_ )
 
       render.drawOrbis();
     }
+    glFlush();
+
     if( render.flags & DRAW_UI_BIT ) {
       shader.mode = Shader::UI;
 
@@ -527,7 +529,7 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
 #endif
 
   glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
   glFlush();
 
 #ifdef __native_client__

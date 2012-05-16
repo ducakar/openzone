@@ -168,7 +168,6 @@ void Shape::bindVertexArray() const
 {
 #ifdef OZ_GL_ES
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 
   glEnableVertexAttribArray( Attrib::POSITION );
   glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
@@ -181,6 +180,8 @@ void Shape::bindVertexArray() const
   glEnableVertexAttribArray( Attrib::NORMAL );
   glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
+
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 #else
   glBindVertexArray( vao );
 #endif
@@ -320,8 +321,8 @@ void Shape::load()
   glBindVertexArray( 0 );
 #endif
 
-  glBindBuffer( GL_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
 }
 
 void Shape::unload()

@@ -140,6 +140,12 @@ class System
     static void error( int nSkippedFrames, const char* msg, ... );
 
     /**
+     * Similar to previous <tt>error()</tt>, exception description is printed as error message.
+     */
+    OZ_NORETURN
+    static void error( const std::exception& e );
+
+    /**
      * Initialise <tt>System</tt> features.
      *
      * Set-up crash handlers for cases specified in <tt>flags</tt>. If <tt>HALT_BIT</tt> is also
