@@ -63,12 +63,6 @@ class Exception : public std::exception
      */
     virtual const char* what() const noexcept;
 
-    /**
-     * Print exception information to log and abort application.
-     */
-    OZ_NORETURN
-    static void abortWith( const std::exception* e );
-
 };
 
 /**

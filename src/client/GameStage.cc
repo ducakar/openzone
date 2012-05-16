@@ -64,11 +64,7 @@ void GameStage::auxMain()
     gameStage.auxRun();
   }
   catch( const std::exception& e ) {
-    Log::verboseMode = false;
-    Log::printException( &e );
-
-    System::bell();
-    System::abort();
+    System::error( e );
   }
 }
 
@@ -136,7 +132,7 @@ void GameStage::write( const char* path ) const
 void GameStage::reload()
 {
   Log::print( "[" );
-  Log::printTime();
+  Log::printTime( Time::local() );
   Log::printEnd( "] Reloading GameStage {" );
   Log::indent();
 
@@ -364,7 +360,7 @@ void GameStage::wait( uint micros )
 void GameStage::load()
 {
   Log::print( "[" );
-  Log::printTime();
+  Log::printTime( Time::local() );
   Log::printEnd( "] Loading GameStage {" );
   Log::indent();
 
@@ -466,7 +462,7 @@ void GameStage::load()
 void GameStage::unload()
 {
   Log::print( "[" );
-  Log::printTime();
+  Log::printTime( Time::local() );
   Log::printEnd( "] Unloading GameStage {" );
   Log::indent();
 

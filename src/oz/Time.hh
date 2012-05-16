@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "common.hh"
+#include "String.hh"
 
 namespace oz
 {
@@ -101,6 +101,11 @@ class Time
      * Fill year, month ... etc. fields from Unix time.
      */
     static Time local( long64 epoch );
+
+    /**
+     * Convert to ISO date/time string (yyyy-mm-dd hh:mm:ss).
+     */
+    String toString() const;
 
 };
 

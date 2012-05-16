@@ -29,6 +29,7 @@
 #pragma once
 
 #include "StackTrace.hh"
+#include "Time.hh"
 
 namespace oz
 {
@@ -119,17 +120,17 @@ class Log
     /**
      * Print current date and time, without indentation or newline.
      */
-    static void printTime();
+    static void printTime( const Time& time );
 
     /**
      * Print stack trace.
      */
-    static void printTrace( const StackTrace* st );
+    static void printTrace( const StackTrace& st );
 
     /**
      * Print nicely formatted exception (unindented).
      */
-    static void printException( const std::exception* e );
+    static void printException( const std::exception& e );
 
     /**
      * Print 'Caught signal ...' and signal description.

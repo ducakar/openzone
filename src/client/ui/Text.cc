@@ -33,7 +33,7 @@
 
 #include <SDL_ttf.h>
 
-#if defined( __native_client__ ) || defined( _WIN32 )
+#ifdef _WIN32
 static char* strchrnul( const char* s, int c )
 {
   while( *s != c && *s != '\0' ) {

@@ -475,7 +475,7 @@ inline void aReverse( Elem* aDest, int count )
 template <typename Elem>
 static void quicksort( Elem* first, Elem* last )
 {
-  // 8-14 seem as an optimal thresholds for switching to selection sort.
+  // 8-14 seem as optimal thresholds for switching to selection sort.
   if( last - first > 10 ) {
     // Quicksort (last element is pivot).
     Elem* top    = first;

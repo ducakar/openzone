@@ -116,7 +116,7 @@ void Client::shutdown()
     Alloc::printSummary();
 
     Log::print( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " finished on " );
-    Log::printTime();
+    Log::printTime( Time::local() );
     Log::printEnd();
   }
 }
@@ -262,7 +262,7 @@ int Client::main( int argc, char** argv )
   }
 
   Log::print( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " started on " );
-  Log::printTime();
+  Log::printTime( Time::local() );
   Log::printEnd();
 
 #ifndef __native_client__
@@ -335,8 +335,7 @@ int Client::main( int argc, char** argv )
   foreach( pkg, iter( pkgs ) ) {
     if( pkg->stat() ) {
       Time time = Time::local( pkg->time() );
-      Log::print( "%s: timestamp %04d-%02d-%02d %02d:%02d:%02d, ", pkg->path().cstr(),
-                  time.year, time.month, time.day, time.hour, time.minute, time.second );
+      Log::print( "%s: timestamp %s, ", pkg->path().cstr(), time.toString().cstr() );
 
       // TODO check if up-to-date
 
@@ -353,18 +352,18 @@ int Client::main( int argc, char** argv )
     downloader.begin( url );
     do {
       Time::sleep( 1000 );
-      Log::print( "." );
+      Log::printRaw( "." );
     }
     while( !downloader.isComplete() );
 
     BufferStream bs = downloader.take();
 
     if( !bs.isAvailable() ) {
-      throw Exception( "Downloading '%s' failed", url.cstr() );
+      throw Exception( "Failed" );
     }
 
     if( !pkg->write( bs.begin(), bs.length() ) ) {
-      throw Exception( "Failed to write '%s' into local storage", url.cstr() );
+      throw Exception( "Cannot write to local storage" );
     }
 
     Log::printEnd( " OK" );
@@ -567,8 +566,6 @@ int Client::main( int argc, char** argv )
   stage->load();
 
   ui::mouse.reset();
-
-  sound.playMusic( 6 );
 
   SDL_Event event;
 

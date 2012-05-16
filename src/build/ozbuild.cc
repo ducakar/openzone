@@ -46,7 +46,7 @@ int main( int argc, char** argv )
     exitCode = build::build.main( argc, argv );
   }
   catch( const std::exception& e ) {
-    Exception::abortWith( &e );
+    System::error( e );
   }
 
 //   Alloc::printLeaks();

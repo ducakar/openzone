@@ -27,7 +27,6 @@
 #include "Exception.hh"
 
 #include "System.hh"
-#include "Log.hh"
 
 #include <cstdio>
 
@@ -42,7 +41,7 @@ namespace oz
 
 Exception::Exception( const char* file_, int line_, const char* function_,
                       const char* message_, ... ) noexcept :
-  file( file_ ), function( function_ ), line( line_ )
+  file( file_ ), function( function_ ), line( line_ ), stackTrace( StackTrace::current( 1 ) )
 {
   System::trap();
 
@@ -51,11 +50,9 @@ Exception::Exception( const char* file_, int line_, const char* function_,
   vsnprintf( message, 256, message_, ap );
   va_end( ap );
 
-  stackTrace = StackTrace::current( 1 );
-
 #ifdef __native_client__
   if( System::core->IsMainThread() ) {
-    abortWith( this );
+    System::error( *this );
   }
 #endif
 }
@@ -63,16 +60,6 @@ Exception::Exception( const char* file_, int line_, const char* function_,
 const char* Exception::what() const noexcept
 {
   return message;
-}
-
-void Exception::abortWith( const std::exception* e )
-{
-  Log::verboseMode = false;
-  Log::printException( e );
-  Log::println();
-
-  System::bell();
-  System::abort();
 }
 
 }

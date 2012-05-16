@@ -325,6 +325,10 @@ void Shader::init()
     glBindTexture( GL_TEXTURE_2D, 0 );
   }
 
+  if( library.shaders.length() == 0 ) {
+    throw Exception( "Shaders missing" );
+  }
+
   programs.alloc( library.shaders.length() );
 
   for( int i = 0; i < library.shaders.length(); ++i ) {

@@ -65,7 +65,7 @@ static Semaphore mainSemaphore;
 int main( int, char** )
 {
   System::init();
-  Log::print( "[" ); Log::printTime(); Log::printEnd( "] START" );
+  Log::print( "[" ); Log::printTime( Time::local() ); Log::printEnd( "] START" );
 
   try {
     File::init( File::PERSISTENT, 1024 );
@@ -80,9 +80,9 @@ int main( int, char** )
     File::free();
   }
   catch( const std::exception& e ) {
-    Exception::abortWith( &e );
+    System::error( e );
   }
 
-  Log::print( "[" ); Log::printTime(); Log::printEnd( "] END" );
+  Log::print( "[" ); Log::printTime( Time::local() ); Log::printEnd( "] END" );
   return 0;
 }

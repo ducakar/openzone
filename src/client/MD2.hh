@@ -67,7 +67,7 @@ class MD2
     {
       int      firstFrame;
       int      lastFrame;
-      float    fps;
+      float    frameTime;
       AnimType nextType;
     };
 
@@ -87,7 +87,6 @@ class MD2
         int        currFrame;
         int        nextFrame;
 
-        float      fps;
         float      frameTime;
         float      currTime;
 

@@ -29,6 +29,7 @@
 #include "System.hh"
 
 #if defined( __native_client__ )
+# include <cstdio>
 # include <ctime>
 # include <sys/time.h>
 # include <unistd.h>
@@ -36,7 +37,9 @@
 # include "windefs.h"
 # include <windows.h>
 # include <mmsystem.h>
+# include <cstdio>
 #else
+# include <cstdio>
 # include <ctime>
 # include <unistd.h>
 #endif
@@ -309,6 +312,15 @@ Time Time::local( long64 epoch )
   };
 
 #endif
+}
+
+String Time::toString() const
+{
+  char* buffer;
+  String r = String::create( 20, &buffer );
+
+  snprintf( buffer, 20, "%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second );
+  return r;
 }
 
 }
