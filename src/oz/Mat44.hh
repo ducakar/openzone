@@ -67,8 +67,8 @@ class Mat44
     {}
 
     /**
-     * Create matrix for base vector images <tt>a</tt>, <tt>b</tt>, <tt>c</tt> and
-     * translation <tt>d</tt>.
+     * Create matrix for base vector images <tt>a</tt>, <tt>b</tt>, <tt>c</tt> and translation
+     * <tt>d</tt>.
      */
     OZ_ALWAYS_INLINE
     explicit Mat44( const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d ) :

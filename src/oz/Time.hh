@@ -36,13 +36,16 @@ namespace oz
 /**
  * %Time structure.
  *
+ * Keep in mind that epoch may differ between platforms (it is 1970-01-01 0:00:00 on POSIX systems
+ * and 1601-01-01 0:00:00 on Windows).
+ *
  * @ingroup oz
  */
 class Time
 {
   public:
 
-    long64 epoch;  ///< Seconds since epoch, 1970-01-01 0:00:00.
+    long64 epoch;  ///< Seconds since platform-dependent epoch.
     int    year;   ///< Year, all digits.
     int    month;  ///< Month, from 1 to 12.
     int    day;    ///< Day in month, from 1 to 31.
@@ -58,7 +61,7 @@ class Time
     static uint clock();
 
     /**
-     * Sleep specified number of milliseconds.
+     * Sleep for given number of milliseconds.
      */
     static void sleep( uint milliseconds );
 
@@ -70,15 +73,12 @@ class Time
     static uint uclock();
 
     /**
-     * Sleep specified number of microseconds.
-     *
-     * On Windows usleep has millisecond granularity; it this case <tt>microseconds</tt> is rounded
-     * to the nearest millisecond value greater than zero.
+     * Sleep for given number of microseconds.
      */
     static void usleep( uint microseconds );
 
     /**
-     * Get current Unix time (seconds from epoch, 1970-01-01 0:00:00).
+     * Get current time in seconds from platform-dependent epoch.
      */
     static long64 time();
 
@@ -88,7 +88,7 @@ class Time
     static Time utc();
 
     /**
-     * Fill year, month ... etc. fields from Unix time.
+     * Fill year, month ... etc. fields from time given as seconds from epoch.
      */
     static Time utc( long64 epoch );
 
@@ -98,7 +98,7 @@ class Time
     static Time local();
 
     /**
-     * Fill year, month ... etc. fields from Unix time.
+     * Fill year, month ... etc. fields from time given as seconds from epoch.
      */
     static Time local( long64 epoch );
 

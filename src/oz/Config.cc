@@ -349,7 +349,7 @@ bool Config::load( File& file )
   return true;
 }
 
-bool Config::load( PhysFile& file )
+bool Config::load( PFile& file )
 {
   filePath = file.path();
   if( !file.map() ) {
@@ -371,7 +371,7 @@ bool Config::save( File& file, const char* lineEnd )
   return file.write( bstream.begin(), bstream.length() );
 }
 
-bool Config::save( PhysFile& file, const char* lineEnd )
+bool Config::save( PFile& file, const char* lineEnd )
 {
   BufferStream bstream;
   saveConf( &bstream, lineEnd );

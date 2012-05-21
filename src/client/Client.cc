@@ -103,7 +103,7 @@ void Client::shutdown()
   config.clear( initFlags & INIT_CONFIG );
 
   if( initFlags & INIT_PHYSFS ) {
-    PhysFile::free();
+    PFile::free();
   }
 
   if( initFlags & INIT_SDL ) {
@@ -272,7 +272,7 @@ int Client::main( int argc, char** argv )
 #endif
   initFlags |= INIT_SDL;
 
-  PhysFile::init( File::TEMPORARY, 32*1024*1024 );
+  PFile::init( File::TEMPORARY, 32*1024*1024 );
   initFlags |= INIT_PHYSFS;
 
   Log::verboseMode = true;
@@ -318,8 +318,8 @@ int Client::main( int argc, char** argv )
   config.get( "dir.config", "" );
   config.get( "dir.local", "" );
 
-  String prefix = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
-  String dataDir( prefix + "/share/" OZ_APPLICATION_NAME );
+  String prefix  = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
+  String dataDir = prefix + "/share/" OZ_APPLICATION_NAME;
 
 #ifdef __native_client__
 
@@ -358,8 +358,14 @@ int Client::main( int argc, char** argv )
 
     BufferStream bs = downloader.take();
 
+    Log::printRaw( " %.2f MiB transferred ...", float( bs.length() ) / ( 1024.0f*1024.0f ) );
+
     if( !bs.isAvailable() ) {
-      throw Exception( "Failed" );
+      throw Exception( "Game data download failed" );
+    }
+
+    if( bs.capacity() < 2 || bs[0] != '7' || bs[1] != 'z' ) {
+      throw Exception( "Downloaded game data archive is not a 7zip archive" );
     }
 
     if( !pkg->write( bs.begin(), bs.length() ) ) {
@@ -380,7 +386,7 @@ int Client::main( int argc, char** argv )
 #ifdef __native_client__
 
   foreach( pkg, iter( pkgs ) ) {
-    if( PhysFile::mount( pkg->path(), null, true ) ) {
+    if( PFile::mount( pkg->path(), null, true ) ) {
       Log::println( "%s", pkg->path().cstr() );
     }
     else {
@@ -393,20 +399,20 @@ int Client::main( int argc, char** argv )
   const char* userMusicPath = config.getSet( "dir.music", "" );
 
   if( !String::isEmpty( userMusicPath ) ) {
-    if( !PhysFile::mount( userMusicPath, "/music", true ) ) {
+    if( !PFile::mount( userMusicPath, "/music", true ) ) {
       throw Exception( "Failed to mount '%s' on /music in PhysicsFS", userMusicPath );
     }
     Log::println( "%s [mounted on /music]", userMusicPath );
   }
 
-  if( PhysFile::mount( localDir, null, true ) ) {
+  if( PFile::mount( localDir, null, true ) ) {
     Log::println( "%s", localDir.cstr() );
 
     DArray<File> list = File( localDir ).ls();
 
     foreach( file, list.citer() ) {
       if( file->hasExtension( "zip" ) || file->hasExtension( "7z" ) ) {
-        if( !PhysFile::mount( file->path(), null, true ) ) {
+        if( !PFile::mount( file->path(), null, true ) ) {
           throw Exception( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
         Log::println( "%s", file->path().cstr() );
@@ -414,14 +420,14 @@ int Client::main( int argc, char** argv )
     }
   }
 
-  if( PhysFile::mount( dataDir, null, true ) ) {
+  if( PFile::mount( dataDir, null, true ) ) {
     Log::println( "%s", dataDir.cstr() );
 
     DArray<File> list = File( dataDir ).ls();
 
     foreach( file, list.citer() ) {
       if( file->hasExtension( "zip" ) || file->hasExtension( "7z" ) ) {
-        if( !PhysFile::mount( file->path(), null, true ) ) {
+        if( !PFile::mount( file->path(), null, true ) ) {
           throw Exception( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
         Log::println( "%s", file->path().cstr() );
@@ -478,7 +484,7 @@ int Client::main( int argc, char** argv )
   int  windowWidth      = config.getSet( "window.width", 0 );
   int  windowHeight     = config.getSet( "window.height", 0 );
   int  windowBpp        = config.getSet( "window.bpp", 0 );
-  bool windowFullscreen = config.getSet( "window.fullscreen", true );
+  bool windowFullscreen = config.getSet( "window.fullscreen", false );
   bool enableVSync      = config.getSet( "window.vsync", true );
 
   uint windowFlags = SDL_OPENGL;

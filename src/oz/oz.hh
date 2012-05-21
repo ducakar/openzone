@@ -49,8 +49,8 @@
 #include "DList.hh"
 #include "Array.hh"
 #include "DArray.hh"
-#include "SVector.hh"
 #include "Vector.hh"
+#include "SVector.hh"
 #include "Map.hh"
 
 /*
@@ -95,16 +95,20 @@
 #include "Bounds.hh"
 
 /*
+ * System.
+ */
+#include "System.hh"
+#include "Time.hh"
+
+/*
  * Error handling.
  */
 #include "StackTrace.hh"
 #include "Exception.hh"
 
 /*
- * System.
+ * Threading.
  */
-#include "System.hh"
-#include "Time.hh"
 #include "Thread.hh"
 #include "Mutex.hh"
 #include "Semaphore.hh"
@@ -118,7 +122,7 @@
 #include "BufferStream.hh"
 #include "Buffer.hh"
 #include "File.hh"
-#include "PhysFile.hh"
+#include "PFile.hh"
 
 /*
  * Utilities.

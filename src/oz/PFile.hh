@@ -21,9 +21,9 @@
  */
 
 /**
- * @file oz/PhysFile.hh
+ * @file oz/PFile.hh
  *
- * PhysFile class.
+ * PFile class.
  */
 
 #pragma once
@@ -38,7 +38,7 @@ namespace oz
  *
  * @ingroup oz
  */
-class PhysFile
+class PFile
 {
   private:
 
@@ -53,41 +53,41 @@ class PhysFile
     /**
      * Create an empty instance (path is set to "" ).
      */
-    PhysFile();
+    PFile();
 
     /**
      * Destructor.
      */
-    ~PhysFile();
+    ~PFile();
 
     /**
      * Copy constructor.
      *
      * Mapped memory is not copied.
      */
-    PhysFile( const PhysFile& );
+    PFile( const PFile& );
 
     /**
      * Move constructor, transfers mapped memory.
      */
-    PhysFile( PhysFile&& file );
+    PFile( PFile&& file );
 
     /**
      * Copy operator.
      *
      * Mapped memory is not copied.
      */
-    PhysFile& operator = ( const PhysFile& );
+    PFile& operator = ( const PFile& );
 
     /**
      * Move operator, transfers mapped memory.
      */
-    PhysFile& operator = ( PhysFile&& file );
+    PFile& operator = ( PFile&& file );
 
     /**
      * Create an instance for the given path.
      */
-    explicit PhysFile( const char* path );
+    explicit PFile( const char* path );
 
     /**
      * Set a new file path.
@@ -212,7 +212,7 @@ class PhysFile
      *
      * Directory listing is not supported on NaCl, so this function always returns an empty list.
      */
-    DArray<PhysFile> ls();
+    DArray<PFile> ls();
 
     /**
      * Make a new directory.

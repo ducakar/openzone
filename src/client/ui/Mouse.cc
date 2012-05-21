@@ -135,7 +135,7 @@ void Mouse::load()
   y = Area::uiCentreY;
 
   for( int i = 0; i < CURSORS_MAX; ++i ) {
-    PhysFile file( String::str( "ui/cur/%s.ozCur", NAMES[i] ) );
+    PFile file( String::str( "ui/cur/%s.ozCur", NAMES[i] ) );
     if( !file.map() ) {
       throw Exception( "Cursor loading failed" );
     }

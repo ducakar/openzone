@@ -120,7 +120,7 @@ void Sound::soundMain()
 
 void Sound::musicOpen( const char* path )
 {
-  PhysFile file( path );
+  PFile file( path );
 
   if( file.hasExtension( "oga" ) || file.hasExtension( "ogg" ) ) {
     musicStreamType = OGG;

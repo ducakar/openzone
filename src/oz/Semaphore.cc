@@ -73,7 +73,7 @@ void Semaphore::post() const
 #ifdef _WIN32
 
   InterlockedIncrement( &descriptor->counter );
-  ReleaseSemaphore( &descriptor->semaphore, 1, null );
+  ReleaseSemaphore( descriptor->semaphore, 1, null );
 
 #else
 
@@ -145,9 +145,11 @@ void Semaphore::init( int counter )
     throw Exception( "Semaphore resource allocation failed" );
   }
 
+  descriptor->counter = counter;
+
 #ifdef _WIN32
 
-  descriptor->semaphore = CreateSemaphore( null, counter, 32 * 1024, null );
+  descriptor->semaphore = CreateSemaphore( null, counter, 0x7fffffff, null );
   if( descriptor->semaphore == null ) {
     free( descriptor );
     throw Exception( "Semaphore semaphore creation failed" );
@@ -166,8 +168,6 @@ void Semaphore::init( int counter )
   }
 
 #endif
-
-  descriptor->counter = counter;
 }
 
 void Semaphore::destroy()

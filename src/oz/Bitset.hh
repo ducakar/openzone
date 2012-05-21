@@ -227,28 +227,6 @@ class Bitset
     }
 
     /**
-     * True iff this bitset is a subset of the given bitset.
-     *
-     * Let say two bitsets are characteristic vectors of two sets. Return true if first set is a
-     * subset of the second one. Other explanation: the result is true iff the following statement
-     * is true: if first bitset has true on the i-th position then the second bitset also has true
-     * on the i-th position.
-     *
-     * Both bitsets must be the same size.
-     */
-    bool isSubset( const Bitset& b ) const
-    {
-      hard_assert( size == b.size );
-
-      for( int i = 0; i < size; ++i ) {
-        if( ( data[i] & ~b.data[i] ) != 0ul ) {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    /**
      * Set the i-th bit to true.
      */
     OZ_ALWAYS_INLINE
@@ -290,6 +268,28 @@ class Bitset
     {
       for( int i = 0; i < size; ++i ) {
         if( data[i] != 0ul ) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    /**
+     * True iff this bitset is a subset of the given bitset.
+     *
+     * Let say two bitsets are characteristic vectors of two sets. Return true if first set is a
+     * subset of the second one. Other explanation: the result is true iff the following statement
+     * is true: if first bitset has true on the i-th position then the second bitset also has true
+     * on the i-th position.
+     *
+     * Both bitsets must be the same size.
+     */
+    bool isSubset( const Bitset& b ) const
+    {
+      hard_assert( size == b.size );
+
+      for( int i = 0; i < size; ++i ) {
+        if( ( data[i] & ~b.data[i] ) != 0ul ) {
           return false;
         }
       }

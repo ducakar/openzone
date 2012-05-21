@@ -174,7 +174,7 @@ void Lua::create( const char* mission_ )
   Log::println( "Executing mission script %s {", cs.mission.cstr() );
   Log::indent();
 
-  PhysFile missionFile( missionPath );
+  PFile missionFile( missionPath );
   if( !missionFile.map() ) {
     throw Exception( "Failed to read mission file '%s'", missionFile.path().cstr() );
   }
@@ -210,7 +210,7 @@ void Lua::read( InputStream* istream )
 
   Log::print( "Deserialising mission script %s ...", cs.mission.cstr() );
 
-  PhysFile missionFile( missionPath );
+  PFile missionFile( missionPath );
   if( !missionFile.map() ) {
     throw Exception( "Failed to read mission script '%s'", missionFile.path().cstr() );
   }

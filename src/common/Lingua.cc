@@ -58,7 +58,7 @@ bool Lingua::initDomain( const char* domain )
 {
   free();
 
-  PhysFile file( String::str( "lingua/%s/domain/%s.ozCat", locale.cstr(), domain ) );
+  PFile file( String::str( "lingua/%s/domain/%s.ozCat", locale.cstr(), domain ) );
 
   if( !file.map() ) {
     return false;
@@ -95,8 +95,8 @@ bool Lingua::init( const char* locale_ )
 
   locale = locale_;
 
-  PhysFile dir( "lingua/" + locale + "/main" );
-  DArray<PhysFile> files = dir.ls();
+  PFile dir( "lingua/" + locale + "/main" );
+  DArray<PFile> files = dir.ls();
 
   foreach( file, files.iter() ) {
     if( !file->hasExtension( "ozCat" ) ) {

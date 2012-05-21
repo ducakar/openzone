@@ -70,7 +70,7 @@ int main( int, char** )
   try {
     File::init( File::PERSISTENT, 1024 );
 
-    char content[] = "Drek na palci";
+//     char content[] = "Drek na palci";
 
 //     File( "/drek.txt" ).write( content, sizeof( content ) );
     Buffer b = File( "/drek.txt" ).read();

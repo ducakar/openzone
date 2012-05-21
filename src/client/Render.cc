@@ -575,10 +575,14 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
     if( extension->equals( "GL_ARB_framebuffer_object" ) ) {
       hasFBO = true;
     }
-    if( extension->equals( "GL_ARB_texture_float" ) ) {
+    if( extension->equals( "GL_ARB_texture_float" ) ||
+        extension->equals( "GL_OES_texture_float" ) )
+    {
       hasFloatTex = true;
     }
-    if( extension->equals( "GL_EXT_texture_compression_s3tc" ) ) {
+    if( extension->equals( "GL_EXT_texture_compression_s3tc" ) ||
+        extension->equals( "GL_CHROMIUM_texture_compression_dxt5" ) )
+    {
       hasS3TC = true;
     }
   }

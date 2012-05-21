@@ -83,14 +83,5 @@ struct Foo
 
 int main( int, char** )
 {
-  System::init();
-  File file( "/etc/fstab" );
-  file.stat();
-
-  Time time = Time::local();
-  time = Time::utc( 0 );
-
-  printf( "%04d-%02d-%02d %02d:%02d:%02d\n",
-          time.year, time.month, time.day, time.hour, time.minute, time.second );
   return 0;
 }

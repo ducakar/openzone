@@ -93,6 +93,8 @@ class Buffer
     OZ_ALWAYS_INLINE
     const char& operator [] ( int i ) const
     {
+      hard_assert( uint( i ) < uint( size ) );
+
       return data[i];
     }
 
@@ -102,6 +104,8 @@ class Buffer
     OZ_ALWAYS_INLINE
     char& operator [] ( int i )
     {
+      hard_assert( uint( i ) < uint( size ) );
+
       return data[i];
     }
 

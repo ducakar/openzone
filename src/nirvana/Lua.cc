@@ -580,8 +580,8 @@ void Lua::init()
   l_setglobal( "ozLocalData" );
   l_getglobal( "ozLocalData" );
 
-  PhysFile luaDir( "lua/nirvana" );
-  DArray<PhysFile> luaFiles = luaDir.ls();
+  PFile luaDir( "lua/nirvana" );
+  DArray<PFile> luaFiles = luaDir.ls();
 
   foreach( file, luaFiles.iter() ) {
     if( file->hasExtension( "lua" ) ) {

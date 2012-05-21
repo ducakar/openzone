@@ -156,7 +156,7 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
 {
   Log::print( "Loading image '%s' ...", path );
 
-  PhysFile file( path );
+  PFile file( path );
   String realPath = file.realDir() + "/" + file.path();
 
   if( !file.stat() ) {
@@ -285,16 +285,16 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
   String normals2BasePath  = basePath + "_normal";
   String normals3BasePath  = basePath + "_local";
 
-  PhysFile diffuse( diffuseBasePath + IMAGE_EXTENSIONS[0] );
-  PhysFile diffuse1( diffuseBasePath + IMAGE_EXTENSIONS[0] );
-  PhysFile masks( masksBasePath + IMAGE_EXTENSIONS[0] );
-  PhysFile specular( specularBasePath + IMAGE_EXTENSIONS[0] );
-  PhysFile specular1( specularBasePath + IMAGE_EXTENSIONS[0] );
-  PhysFile emission( emissionBasePath + IMAGE_EXTENSIONS[0] );
-  PhysFile normals( normalsBasePath + IMAGE_EXTENSIONS[0] );
-  PhysFile normals1( normals1BasePath + IMAGE_EXTENSIONS[0] );
-  PhysFile normals2( normals2BasePath + IMAGE_EXTENSIONS[0] );
-  PhysFile normals3( normals3BasePath + IMAGE_EXTENSIONS[0] );
+  PFile diffuse( diffuseBasePath + IMAGE_EXTENSIONS[0] );
+  PFile diffuse1( diffuseBasePath + IMAGE_EXTENSIONS[0] );
+  PFile masks( masksBasePath + IMAGE_EXTENSIONS[0] );
+  PFile specular( specularBasePath + IMAGE_EXTENSIONS[0] );
+  PFile specular1( specularBasePath + IMAGE_EXTENSIONS[0] );
+  PFile emission( emissionBasePath + IMAGE_EXTENSIONS[0] );
+  PFile normals( normalsBasePath + IMAGE_EXTENSIONS[0] );
+  PFile normals1( normals1BasePath + IMAGE_EXTENSIONS[0] );
+  PFile normals2( normals2BasePath + IMAGE_EXTENSIONS[0] );
+  PFile normals3( normals3BasePath + IMAGE_EXTENSIONS[0] );
 
   for( int i = 1; i < aLength( IMAGE_EXTENSIONS ); ++i ) {
     if( !diffuse.stat() ) {
@@ -437,6 +437,7 @@ void Context::writeLayer( uint id, BufferStream* stream )
   glBindTexture( GL_TEXTURE_2D, id );
 
   int wrap, magFilter, minFilter;
+  bool isS3TC = false;
 
   glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, &wrap );
   glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, &magFilter );
@@ -470,12 +471,17 @@ void Context::writeLayer( uint id, BufferStream* stream )
 #else
       glGetCompressedTexImage( GL_TEXTURE_2D, level, stream->forward( size ) );
 #endif
+
+      isS3TC = true;
+      break;
     }
     else {
       hard_assert( format == GL_RGB || format == GL_RGBA || format == GL_LUMINANCE );
 
       int sampleSize = format == GL_RGB ? 3 : format == GL_RGBA ? 4 : 1;
-      size = width * height * sampleSize;
+      int lineSize = ( ( width * sampleSize - 1 ) / 4 + 1 ) * 4;
+
+      size = height * lineSize;
 
       stream->writeInt( size );
       glGetTexImage( GL_TEXTURE_2D, level, uint( format ),
@@ -483,7 +489,9 @@ void Context::writeLayer( uint id, BufferStream* stream )
     }
   }
 
-  stream->writeInt( 0 );
+  if( !isS3TC ) {
+    stream->writeInt( 0 );
+  }
 
   OZ_GL_CHECK_ERROR();
 }

@@ -162,7 +162,7 @@ void Terra::load()
 
   Log::print( "Loading terra '%s' ...", name.cstr() );
 
-  PhysFile file( path );
+  PFile file( path );
   if( !file.map() ) {
     throw Exception( "Terra file mmap failed" );
   }

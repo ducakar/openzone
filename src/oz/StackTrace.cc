@@ -52,11 +52,11 @@ char** StackTrace::symbols() const
 
 #else
 
-// Size of internal output buffer where stack trace output string is generated.
-static const int TRACE_BUFFER_SIZE = 2048;
+// Size of output buffer where stack trace output string is generated.
+static const int TRACE_BUFFER_SIZE = 4096;
 
-// Size of internal buffer where function names are demangled.
-static const int STRING_BUFFER_SIZE = 256;
+// Maximum size for buffer where function names are demangled.
+static const int SYMBOL_BUFFER_SIZE = 256;
 
 StackTrace StackTrace::current( int nSkippedFrames )
 {
@@ -76,7 +76,6 @@ char** StackTrace::symbols() const
   char outputBuffer[TRACE_BUFFER_SIZE];
 
   char** symbols = backtrace_symbols( frames, nFrames );
-
   if( symbols == null ) {
     return null;
   }
@@ -86,7 +85,8 @@ char** StackTrace::symbols() const
 
   *out = '\0';
 
-  for( int i = 0; i < nFrames; ++i ) {
+  int i;
+  for( i = 0; i < nFrames; ++i ) {
     // File.
     char* file = symbols[i];
 
@@ -124,12 +124,6 @@ char** StackTrace::symbols() const
     char* address = strchr( offset, ')' );
 
     if( address == null ) {
-      --func;
-      *func = '(';
-
-      --offset;
-      *offset = '+';
-
       size_t size = strlen( file ) + 1;
 
       if( out + size > outEnd ) {
@@ -148,16 +142,16 @@ char** StackTrace::symbols() const
 
     // Demangle name.
     char*  demangled;
-    size_t size = STRING_BUFFER_SIZE;
+    size_t size = SYMBOL_BUFFER_SIZE;
     int    status = 0;
 
     demangled = abi::__cxa_demangle( func, null, &size, &status );
-    func      = demangled != null ? demangled : func;
+    func      = demangled == null ? func : demangled;
 
-    size_t fileLen    = strnlen( file, STRING_BUFFER_SIZE );
-    size_t funcLen    = strnlen( func, STRING_BUFFER_SIZE );
-    size_t offsetLen  = strnlen( offset, STRING_BUFFER_SIZE );
-    size_t addressLen = strnlen( address, STRING_BUFFER_SIZE );
+    size_t fileLen    = strlen( file );
+    size_t funcLen    = strlen( func );
+    size_t offsetLen  = strlen( offset );
+    size_t addressLen = strlen( address );
 
     size = fileLen + 2 + addressLen + 1;
     if( funcLen != 0 && offsetLen != 0 ) {
@@ -208,19 +202,21 @@ char** StackTrace::symbols() const
     free( demangled );
   }
 
-  size_t headerSize  = size_t( nFrames ) * sizeof( char* );
+  int nWrittenFrames = i;
+
+  size_t headerSize  = size_t( nWrittenFrames ) * sizeof( char* );
   size_t bodySize    = size_t( out - outputBuffer );
   char** niceSymbols = static_cast<char**>( realloc( symbols, headerSize + bodySize ) );
 
   if( niceSymbols == null ) {
     free( symbols );
-    return niceSymbols;
+    return null;
   }
 
-  memcpy( &niceSymbols[nFrames], outputBuffer, bodySize );
+  memcpy( &niceSymbols[nWrittenFrames], outputBuffer, bodySize );
 
-  char* entry = reinterpret_cast<char*>( &niceSymbols[nFrames] );
-  for( int i = 0; i < nFrames; ++i ) {
+  char* entry = reinterpret_cast<char*>( &niceSymbols[nWrittenFrames] );
+  for( int i = 0; i < nWrittenFrames; ++i ) {
     niceSymbols[i] = entry;
     entry += strlen( entry ) + 1;
   }

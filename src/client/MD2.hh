@@ -106,23 +106,23 @@ class MD2
 
     static Vertex animBuffer[MAX_VERTS];
 
-    int      id;
+    int     id;
 
-    int      nFrames;
-    int      nFrameVertices;
-    int      nFramePositions;
+    int     nFrames;
+    int     nFrameVertices;
+    int     nFramePositions;
 
-    uint     vertexTexId;
-    uint     normalTexId;
-    int      shaderId;
+    uint    vertexTexId;
+    uint    normalTexId;
+    int     shaderId;
 
-    Vertex*  vertices;
-    Point*   positions;
-    Vec3*    normals;
+    Vertex* vertices;
+    Point*  positions;
+    Vec3*   normals;
 
-    Mesh     mesh;
+    Mesh    mesh;
 
-    PhysFile file;
+    PFile   file;
 
   public:
 

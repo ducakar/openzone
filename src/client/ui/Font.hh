@@ -59,7 +59,7 @@ class Font
 
   private:
 
-    PhysFile fontFile[MAX];
+    PFile fontFile[MAX];
 
   public:
 

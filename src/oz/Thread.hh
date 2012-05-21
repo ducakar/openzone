@@ -38,6 +38,8 @@ struct ThreadDesc;
 
 /**
  * %Thread.
+ *
+ * @ingroup oz
  */
 class Thread
 {

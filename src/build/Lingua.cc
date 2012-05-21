@@ -36,7 +36,7 @@ void Lingua::buildCatalogue( const char* lang, const char* category, const char*
   File::mkdir( String::str( "lingua/%s", lang ) );
   File::mkdir( String::str( "lingua/%s/%s", lang, category ) );
 
-  PhysFile srcFile( String::str( "lingua/%s/%s/%s.po", lang, category, name ) );
+  PFile srcFile( String::str( "lingua/%s/%s/%s.po", lang, category, name ) );
   File outFile( String::str( "lingua/%s/%s/%s.ozCat", lang, category, name ) );
 
   String realSrcPath = srcFile.realDir() + "/" + srcFile.path();
@@ -182,8 +182,8 @@ void Lingua::build()
   Log::println( "Building localisations {" );
   Log::indent();
 
-  PhysFile linguaDir( "lingua" );
-  DArray<PhysFile> languages = linguaDir.ls();
+  PFile linguaDir( "lingua" );
+  DArray<PFile> languages = linguaDir.ls();
 
   foreach( langDir, languages.iter() ) {
     langDir->stat();
@@ -194,8 +194,8 @@ void Lingua::build()
 
     String langCode = langDir->baseName();
 
-    PhysFile linguaMainDir( langDir->path() + "/main" );
-    DArray<PhysFile> mainCats = linguaMainDir.ls();
+    PFile linguaMainDir( langDir->path() + "/main" );
+    DArray<PFile> mainCats = linguaMainDir.ls();
 
     foreach( file, mainCats.citer() ) {
       if( !file->hasExtension( "po" ) ) {
@@ -205,8 +205,8 @@ void Lingua::build()
       buildCatalogue( langCode, "main", file->baseName() );
     }
 
-    PhysFile linguaDomainDir( langDir->path() + "/domain" );
-    DArray<PhysFile> domainCats = linguaDomainDir.ls();
+    PFile linguaDomainDir( langDir->path() + "/domain" );
+    DArray<PFile> domainCats = linguaDomainDir.ls();
 
     foreach( file, domainCats.citer() ) {
       if( !file->hasExtension( "po" ) ) {
