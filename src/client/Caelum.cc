@@ -192,7 +192,7 @@ void Caelum::load()
                            Math::sin( orbis.caelum.heading ),
                            0.0f );
 
-  PhysFile file( path );
+  PFile file( path );
   if( !file.map() ) {
     throw Exception( "Caelum file '%s' mmap failed", path.cstr() );
   }

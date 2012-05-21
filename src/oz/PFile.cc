@@ -21,10 +21,10 @@
  */
 
 /**
- * @file oz/PhysFile.cc
+ * @file oz/PFile.cc
  */
 
-#include "PhysFile.hh"
+#include "PFile.hh"
 
 #ifdef __native_client__
 # include "System.hh"
@@ -44,26 +44,26 @@
 namespace oz
 {
 
-inline bool operator < ( const PhysFile& a, const PhysFile& b )
+inline bool operator < ( const PFile& a, const PFile& b )
 {
   return String::compare( a.path(), b.path() ) < 0;
 }
 
-PhysFile::PhysFile() :
+PFile::PFile() :
   fileType( File::MISSING ), fileSize( -1 ), fileTime( 0 ), data( null )
 {}
 
-PhysFile::~PhysFile()
+PFile::~PFile()
 {
   delete[] data;
 }
 
-PhysFile::PhysFile( const PhysFile& file ) :
+PFile::PFile( const PFile& file ) :
   filePath( file.filePath ), fileType( file.fileType ), fileSize( file.fileSize ),
   fileTime( file.fileTime ), data( null )
 {}
 
-PhysFile::PhysFile( PhysFile&& file ) :
+PFile::PFile( PFile&& file ) :
   filePath( static_cast<String&&>( file.filePath ) ), fileType( file.fileType ),
   fileSize( file.fileSize ), fileTime( file.fileTime ), data( file.data )
 {
@@ -74,7 +74,7 @@ PhysFile::PhysFile( PhysFile&& file ) :
   file.data     = null;
 }
 
-PhysFile& PhysFile::operator = ( const PhysFile& file )
+PFile& PFile::operator = ( const PFile& file )
 {
   if( &file == this ) {
     return *this;
@@ -89,7 +89,7 @@ PhysFile& PhysFile::operator = ( const PhysFile& file )
   return *this;
 }
 
-PhysFile& PhysFile::operator = ( PhysFile&& file )
+PFile& PFile::operator = ( PFile&& file )
 {
   if( &file == this ) {
     return *this;
@@ -112,11 +112,11 @@ PhysFile& PhysFile::operator = ( PhysFile&& file )
   return *this;
 }
 
-PhysFile::PhysFile( const char* path ) :
+PFile::PFile( const char* path ) :
   filePath( path ), fileType( File::MISSING ), fileSize( -1 ), data( null )
 {}
 
-void PhysFile::setPath( const char* path )
+void PFile::setPath( const char* path )
 {
   delete[] data;
 
@@ -127,7 +127,7 @@ void PhysFile::setPath( const char* path )
   data     = null;
 }
 
-bool PhysFile::stat()
+bool PFile::stat()
 {
   unmap();
 
@@ -158,46 +158,46 @@ bool PhysFile::stat()
   return fileType != File::MISSING;
 }
 
-File::Type PhysFile::type() const
+File::Type PFile::type() const
 {
   return fileType;
 }
 
-long64 PhysFile::time() const
+long64 PFile::time() const
 {
   return fileTime;
 }
 
-int PhysFile::size() const
+int PFile::size() const
 {
   return fileSize;
 }
 
-String PhysFile::path() const
+String PFile::path() const
 {
   return filePath;
 }
 
-String PhysFile::realDir() const
+String PFile::realDir() const
 {
   const char* realDir = PHYSFS_getRealDir( filePath );
   return realDir == null ? "" : realDir;
 }
 
-String PhysFile::mountPoint() const
+String PFile::mountPoint() const
 {
   const char* mountPoint = PHYSFS_getMountPoint( filePath );
   return mountPoint == null ? "" : mountPoint;
 }
 
-String PhysFile::name() const
+String PFile::name() const
 {
   int slash = filePath.lastIndex( '/' );
 
   return slash == -1 ? filePath : filePath.substring( slash + 1 );
 }
 
-String PhysFile::extension() const
+String PFile::extension() const
 {
   int slash = filePath.lastIndex( '/' );
   int dot   = filePath.lastIndex( '.' );
@@ -205,7 +205,7 @@ String PhysFile::extension() const
   return slash < dot ? filePath.substring( dot + 1 ) : String();
 }
 
-String PhysFile::baseName() const
+String PFile::baseName() const
 {
   int slash = filePath.lastIndex( '/' );
   int dot   = filePath.lastIndex( '.' );
@@ -218,7 +218,7 @@ String PhysFile::baseName() const
   }
 }
 
-bool PhysFile::hasExtension( const char* ext ) const
+bool PFile::hasExtension( const char* ext ) const
 {
   const char* slash = filePath.findLast( '/' );
   const char* dot   = filePath.findLast( '.' );
@@ -231,12 +231,12 @@ bool PhysFile::hasExtension( const char* ext ) const
   }
 }
 
-bool PhysFile::isMapped() const
+bool PFile::isMapped() const
 {
   return data != null;
 }
 
-bool PhysFile::map()
+bool PFile::map()
 {
   if( data != null ) {
     return true;
@@ -264,7 +264,7 @@ bool PhysFile::map()
   return true;
 }
 
-void PhysFile::unmap()
+void PFile::unmap()
 {
   if( data != null ) {
     delete[] data;
@@ -272,14 +272,14 @@ void PhysFile::unmap()
   }
 }
 
-InputStream PhysFile::inputStream( Endian::Order order ) const
+InputStream PFile::inputStream( Endian::Order order ) const
 {
   hard_assert( data != null );
 
   return InputStream( data, data + fileSize, order );
 }
 
-Buffer PhysFile::read()
+Buffer PFile::read()
 {
   Buffer buffer;
 
@@ -310,7 +310,7 @@ Buffer PhysFile::read()
   return buffer;
 }
 
-bool PhysFile::write( const char* buffer, int size )
+bool PFile::write( const char* buffer, int size )
 {
   if( data != null ) {
     return false;
@@ -333,14 +333,14 @@ bool PhysFile::write( const char* buffer, int size )
   return true;
 }
 
-bool PhysFile::write( const Buffer* buffer )
+bool PFile::write( const Buffer* buffer )
 {
   return write( buffer->begin(), buffer->length() );
 }
 
-DArray<PhysFile> PhysFile::ls()
+DArray<PFile> PFile::ls()
 {
-  DArray<PhysFile> array;
+  DArray<PFile> array;
 
   stat();
 
@@ -386,22 +386,22 @@ DArray<PhysFile> PhysFile::ls()
   return array;
 }
 
-bool PhysFile::mkdir( const char* path )
+bool PFile::mkdir( const char* path )
 {
   return PHYSFS_mkdir( path ) != 0;
 }
 
-bool PhysFile::rm( const char* path )
+bool PFile::rm( const char* path )
 {
   return PHYSFS_delete( path );
 }
 
-bool PhysFile::mount( const char* path, const char* mountPoint, bool append )
+bool PFile::mount( const char* path, const char* mountPoint, bool append )
 {
   return PHYSFS_mount( path, mountPoint, append ) != 0;
 }
 
-bool PhysFile::mountLocal( const char* path )
+bool PFile::mountLocal( const char* path )
 {
   if( PHYSFS_setWriteDir( path ) == 0 ) {
     return false;
@@ -413,7 +413,7 @@ bool PhysFile::mountLocal( const char* path )
   return true;
 }
 
-void PhysFile::init( File::FilesystemType type, int size )
+void PFile::init( File::FilesystemType type, int size )
 {
   static_cast<void>( type );
   static_cast<void>( size );
@@ -458,7 +458,7 @@ void PhysFile::init( File::FilesystemType type, int size )
   }
 }
 
-void PhysFile::free()
+void PFile::free()
 {
   PHYSFS_deinit();
 }

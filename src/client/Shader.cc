@@ -105,7 +105,7 @@ Shader::Light::Light( const Point& pos_, const Vec4& diffuse_ ) :
 
 void Shader::compileShader( uint id, const char* path, const char** sources, int* lengths ) const
 {
-  PhysFile file( path );
+  PFile file( path );
   if( !file.map() ) {
     throw Exception( "Shader source '%s' mmap failed", path );
   }
@@ -147,7 +147,7 @@ void Shader::loadProgram( int id )
 {
   const String& name = library.shaders[id].name;
 
-  PhysFile configFile( "glsl/" + name + ".rc" );
+  PFile configFile( "glsl/" + name + ".rc" );
   Config programConfig;
 
   programConfig.load( configFile );
@@ -352,7 +352,7 @@ void Shader::init()
   sources[0] = defines;
   lengths[0] = defines.length();
 
-  Buffer buffer = PhysFile( "glsl/header.glsl" ).read();
+  Buffer buffer = PFile( "glsl/header.glsl" ).read();
   if( buffer.isEmpty() ) {
     throw Exception( "header.glsl reading failed" );
   }
@@ -368,8 +368,8 @@ void Shader::init()
   colour = Vec4::ONE;
   medium = 0;
 
-  PhysFile dir( "glsl" );
-  DArray<PhysFile> shaderFiles = dir.ls();
+  PFile dir( "glsl" );
+  DArray<PFile> shaderFiles = dir.ls();
 
   foreach( file, shaderFiles.citer() ) {
     if( file->hasExtension( "vert" ) ) {

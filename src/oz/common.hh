@@ -53,7 +53,7 @@
 #include <cstdarg>
 
 /*
- * Standard exception definitions (usually included via <new>, but just to be sure).
+ * Standard exception definitions.
  */
 #include <exception>
 

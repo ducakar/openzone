@@ -91,8 +91,8 @@ void Build::copyFiles( const char* srcDir, const char* destDir, const char* ext,
 {
   String sSrcDir = srcDir;
   String sDestDir = destDir;
-  PhysFile dir( sSrcDir );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( sSrcDir );
+  DArray<PFile> dirList = dir.ls();
 
   if( dirList.isEmpty() ) {
     return;
@@ -149,8 +149,8 @@ void Build::buildCaela()
   Log::indent();
 
   String srcDir = "caelum";
-  PhysFile dir( srcDir );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( srcDir );
+  DArray<PFile> dirList = dir.ls();
 
   srcDir = srcDir + "/";
 
@@ -175,8 +175,8 @@ void Build::buildTerrae()
   Log::indent();
 
   String srcDir = "terra";
-  PhysFile dir( srcDir );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( srcDir );
+  DArray<PFile> dirList = dir.ls();
 
   srcDir = srcDir + "/";
 
@@ -200,8 +200,8 @@ void Build::buildBSPs()
 
   String srcDir = "baseq3/maps";
   String destDir = "bsp";
-  PhysFile dir( srcDir );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( srcDir );
+  DArray<PFile> dirList = dir.ls();
 
   srcDir = srcDir + "/";
   destDir = destDir + "/";
@@ -226,8 +226,8 @@ void Build::buildBSPTextures()
 
   Map<String> usedDirs;
 
-  PhysFile dir( "baseq3/textures" );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( "baseq3/textures" );
+  DArray<PFile> dirList = dir.ls();
 
   foreach( subDir, dirList.iter() ) {
     subDir->stat();
@@ -236,7 +236,7 @@ void Build::buildBSPTextures()
       continue;
     }
 
-    DArray<PhysFile> texList = subDir->ls();
+    DArray<PFile> texList = subDir->ls();
 
     foreach( file, texList.citer() ) {
       String name = file->name();
@@ -313,9 +313,9 @@ void Build::buildBSPTextures()
   }
 
   foreach( subDirPath, usedDirs.citer() ) {
-    PhysFile subDir( *subDirPath );
+    PFile subDir( *subDirPath );
 
-    DArray<PhysFile> texList = subDir.ls();
+    DArray<PFile> texList = subDir.ls();
 
     foreach( file, texList.iter() ) {
       String name = file->name();
@@ -355,8 +355,8 @@ void Build::tagClassResources()
   Log::print( "Extracting model and sound names form object class definitions ..." );
 
   String dirName = "class";
-  PhysFile dir( dirName );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( dirName );
+  DArray<PFile> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
     if( !file->hasExtension( "rc" ) ) {
@@ -427,8 +427,8 @@ void Build::tagFragResources()
   Log::print( "Extracting model names form fragment pool definitions..." );
 
   String dirName = "frag";
-  PhysFile dir( dirName );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( dirName );
+  DArray<PFile> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
     if( !file->hasExtension( "rc" ) ) {
@@ -457,9 +457,9 @@ void Build::buildModels()
   Log::println( "Building used models {" );
   Log::indent();
 
-  PhysFile mdlDir( "mdl" );
+  PFile mdlDir( "mdl" );
   File::mkdir( mdlDir.path() );
-  DArray<PhysFile> dirList = mdlDir.ls();
+  DArray<PFile> dirList = mdlDir.ls();
 
   foreach( dir, dirList.iter() ) {
     if( !context.usedModels.contains( dir->name() ) ) {
@@ -468,7 +468,7 @@ void Build::buildModels()
 
     String path = dir->path();
     File::mkdir( path );
-    DArray<PhysFile> fileList = dir->ls();
+    DArray<PFile> fileList = dir->ls();
 
     foreach( file, fileList.iter() ) {
       String name = file->name();
@@ -495,10 +495,10 @@ void Build::buildModels()
       }
     }
 
-    if( PhysFile( path + "/data.obj" ).stat() ) {
+    if( PFile( path + "/data.obj" ).stat() ) {
       OBJ::build( path );
     }
-    else if( PhysFile( path + "/tris.md2" ).stat() ) {
+    else if( PFile( path + "/tris.md2" ).stat() ) {
       MD2::build( path );
     }
     else {
@@ -517,8 +517,8 @@ void Build::copySounds()
 
   Map<String> usedDirs;
 
-  PhysFile dir( "snd" );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( "snd" );
+  DArray<PFile> dirList = dir.ls();
 
   foreach( subDir, dirList.iter() ) {
     subDir->stat();
@@ -527,7 +527,7 @@ void Build::copySounds()
       continue;
     }
 
-    DArray<PhysFile> sndList = subDir->ls();
+    DArray<PFile> sndList = subDir->ls();
 
     foreach( file, sndList.iter() ) {
       String name = file->name();
@@ -574,8 +574,8 @@ void Build::copySounds()
   }
 
   foreach( subDirPath, usedDirs.citer() ) {
-    PhysFile subDir( *subDirPath );
-    DArray<PhysFile> texList = subDir.ls();
+    PFile subDir( *subDirPath );
+    DArray<PFile> texList = subDir.ls();
 
     foreach( file, texList.iter() ) {
       String name = file->name();
@@ -625,8 +625,8 @@ void Build::checkLua( const char* path )
   Log::indent();
 
   String srcDir = String::str( "%s/", path );
-  PhysFile dir( path );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( path );
+  DArray<PFile> dirList = dir.ls();
 
   String sources;
 
@@ -854,7 +854,7 @@ int Build::main( int argc, char** argv )
   Log::println( "}" );
 
   SDL_Init( SDL_INIT_VIDEO );
-  PhysFile::init();
+  PFile::init();
   FreeImage_Initialise();
 
   File::mkdir( outDir );
@@ -865,7 +865,7 @@ int Build::main( int argc, char** argv )
   }
 
   Log::println( "Adding source directory '%s' to search path", srcDir.cstr() );
-  if( !PhysFile::mount( srcDir, null, true ) ) {
+  if( !PFile::mount( srcDir, null, true ) ) {
     throw Exception( "Failed to add directory '%s' to search path", srcDir.cstr() );
   }
 
@@ -904,7 +904,7 @@ int Build::main( int argc, char** argv )
   uint startTime = Time::clock();
 
   // copy package README
-  DArray<PhysFile> dirList = PhysFile( "/" ).ls();
+  DArray<PFile> dirList = PFile( "/" ).ls();
 
   foreach( file, dirList.iter() ) {
     String fileName = file->name();
@@ -1000,7 +1000,7 @@ int Build::main( int argc, char** argv )
   config.clear( true );
 
   FreeImage_DeInitialise();
-  PhysFile::free();
+  PFile::free();
   SDL_Quit();
 
   Alloc::printSummary();

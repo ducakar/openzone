@@ -41,7 +41,7 @@ namespace ui
 
 uint GalileoFrame::loadTexture( const char* path ) const
 {
-  PhysFile file( path );
+  PFile file( path );
   if( !file.map() ) {
     throw Exception( "Failed reading galileo texture '%s'", path );
   }

@@ -40,8 +40,8 @@ namespace build
 
 void Terra::load()
 {
-  PhysFile configFile( "terra/" + name + ".rc" );
-  PhysFile imageFile( "terra/" + name + ".png" );
+  PFile configFile( "terra/" + name + ".rc" );
+  PFile imageFile( "terra/" + name + ".png" );
 
   Config terraConfig;
   terraConfig.load( configFile );

@@ -208,8 +208,8 @@ void MD2::build( const char* path )
 {
   String sPath = path;
 
-  PhysFile modelFile( sPath + "/tris.md2" );
-  PhysFile configFile( sPath + "/config.rc" );
+  PFile modelFile( sPath + "/tris.md2" );
+  PFile configFile( sPath + "/config.rc" );
   String skinPath = sPath + "/skin";
 
   Log::println( "Prebuilding MD2 model '%s' {", path );

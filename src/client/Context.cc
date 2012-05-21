@@ -152,7 +152,7 @@ uint Context::readTextureLayer( InputStream* stream_, const char* path_ )
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
 
     for( int level = 0; ; ++level ) {
-      int width  = stream->readInt();
+      int width = stream->readInt();
 
       if( width == 0 ) {
         break;
@@ -166,10 +166,13 @@ uint Context::readTextureLayer( InputStream* stream_, const char* path_ )
       {
         glCompressedTexImage2D( GL_TEXTURE_2D, level, uint( format ), width, height, 0,
                                 size, stream->forward( size ) );
+        glGenerateMipmap( GL_TEXTURE_2D );
+
+        break;
       }
       else {
-        glTexImage2D( GL_TEXTURE_2D, level, format, width, height, 0,
-                      uint( format ), GL_UNSIGNED_BYTE, stream->forward( size ) );
+        glTexImage2D( GL_TEXTURE_2D, level, format, width, height, 0, uint( format ),
+                      GL_UNSIGNED_BYTE, stream->forward( size ) );
       }
     }
 
@@ -183,7 +186,7 @@ uint Context::readTextureLayer( InputStream* stream_, const char* path_ )
 
 uint Context::loadTextureLayer( const char* path )
 {
-  PhysFile file( path );
+  PFile file( path );
   if( !file.map() ) {
     throw Exception( "Texture file '%s' mmap failed", path );
   }
@@ -200,7 +203,7 @@ Texture Context::loadTexture( const char* path )
 {
   Texture texture;
 
-  PhysFile file( path );
+  PFile file( path );
   if( !file.map() ) {
     throw Exception( "Texture file '%s' mmap failed", path );
   }
@@ -265,7 +268,7 @@ uint Context::requestSound( int id )
   const String& name = library.sounds[id].name;
   const String& path = library.sounds[id].path;
 
-  PhysFile file( path );
+  PFile file( path );
   if( !file.map() ) {
     throw Exception( "Sound file '%s' mmap failed", path.cstr() );
   }

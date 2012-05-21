@@ -45,8 +45,8 @@ const float BSP::GLASS_SPECULAR     = 2.00f;
 
 void BSP::load()
 {
-  PhysFile rcFile( String::str( "baseq3/maps/%s.rc", name.cstr() ) );
-  PhysFile bspFile( String::str( "baseq3/maps/%s.bsp", name.cstr() ) );
+  PFile rcFile( String::str( "baseq3/maps/%s.rc", name.cstr() ) );
+  PFile bspFile( String::str( "baseq3/maps/%s.bsp", name.cstr() ) );
 
   Config bspConfig;
   if( !bspConfig.load( rcFile ) ) {
@@ -127,7 +127,7 @@ void BSP::load()
     textures[i].type  = is.readInt();
 
     if( textures[i].name.equals( "noshader" ) ) {
-      textures[i].name = textures[i].name;
+      textures[i].name = "";
     }
     else if( textures[i].name.length() <= 9 ) {
       throw Exception( "Invalid texture name '%s'", textures[i].name.cstr() );

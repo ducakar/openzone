@@ -29,7 +29,7 @@
 #pragma once
 
 #include "HashString.hh"
-#include "PhysFile.hh"
+#include "PFile.hh"
 
 namespace oz
 {
@@ -168,7 +168,7 @@ class Config
      *
      * @return True on success.
      */
-    bool load( PhysFile& file );
+    bool load( PFile& file );
 
     /**
      * Write variables to a .rc file.
@@ -192,7 +192,7 @@ class Config
      *
      * @return True on success.
      */
-    bool save( PhysFile& file, const char* lineEnd = "\n" );
+    bool save( PFile& file, const char* lineEnd = "\n" );
 
     /**
      * Remove unused variables.

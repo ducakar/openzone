@@ -28,10 +28,10 @@
 
 #pragma once
 
-#include "Exception.hh"
 #include "String.hh"
 #include "Plane.hh"
 #include "Mat44.hh"
+#include "Exception.hh"
 #include "Endian.hh"
 
 namespace oz
@@ -104,6 +104,17 @@ class InputStream
     bool isAvailable() const
     {
       return pos != end;
+    }
+
+    /**
+     * Constant reference to the i-th byte from the beginning of the stream.
+     */
+    OZ_ALWAYS_INLINE
+    const char& operator [] ( int i ) const
+    {
+      hard_assert( uint( i ) < uint( end - start ) );
+
+      return start[i];
     }
 
     /**

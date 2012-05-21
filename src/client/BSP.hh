@@ -38,10 +38,10 @@ class BSP
 
     const matrix::BSP* bsp;
 
-    int      flags;
-    Mesh     mesh;
+    int   flags;
+    Mesh  mesh;
 
-    PhysFile file;
+    PFile file;
 
   public:
 

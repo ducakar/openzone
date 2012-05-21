@@ -178,8 +178,8 @@ void Library::initShaders()
   Log::println( "Shader programs (*.rc in 'glsl') {" );
   Log::indent();
 
-  PhysFile dir( "glsl" );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( "glsl" );
+  DArray<PFile> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
@@ -203,8 +203,8 @@ void Library::initTextures()
   Log::println( "Textures (*.ozcTex in 'tex/*') {" );
   Log::indent();
 
-  PhysFile dir( "tex" );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( "tex" );
+  DArray<PFile> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
     file->stat();
@@ -213,8 +213,8 @@ void Library::initTextures()
       continue;
     }
 
-    PhysFile subDir( file->path() );
-    DArray<PhysFile> subDirList = subDir.ls();
+    PFile subDir( file->path() );
+    DArray<PFile> subDirList = subDir.ls();
 
     foreach( file, subDirList.citer() ) {
       if( !file->hasExtension( "ozcTex" ) ) {
@@ -239,8 +239,8 @@ void Library::initSounds()
   Log::println( "Sounds (*.wav in 'snd') {" );
   Log::indent();
 
-  PhysFile dir( "snd" );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( "snd" );
+  DArray<PFile> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
     file->stat();
@@ -249,8 +249,8 @@ void Library::initSounds()
       continue;
     }
 
-    PhysFile subDir( file->path() );
-    DArray<PhysFile> subDirList = subDir.ls();
+    PFile subDir( file->path() );
+    DArray<PFile> subDirList = subDir.ls();
 
     foreach( file, subDirList.citer() ) {
       if( !file->hasExtension( "wav" ) ) {
@@ -275,8 +275,8 @@ void Library::initCaela()
   Log::println( "Caela (*.ozcCaelum in 'caelum') {" );
   Log::indent();
 
-  PhysFile dir( "caelum" );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( "caelum" );
+  DArray<PFile> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozcCaelum" ) ) {
@@ -300,8 +300,8 @@ void Library::initTerrae()
   Log::println( "Terrae (*.ozTerra/*.ozcTerra in 'terra') {" );
   Log::indent();
 
-  PhysFile dir( "terra" );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( "terra" );
+  DArray<PFile> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozTerra" ) ) {
@@ -325,8 +325,8 @@ void Library::initBSPs()
   Log::println( "BSP structures (*.ozBSP/*.ozcBSP in 'bsp') {" );
   Log::indent();
 
-  PhysFile dir( "bsp" );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( "bsp" );
+  DArray<PFile> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "ozBSP" ) ) {
@@ -352,8 +352,8 @@ void Library::initModels()
   Log::println( "Models (directories in 'mdl') {" );
   Log::indent();
 
-  PhysFile dir( "mdl" );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( "mdl" );
+  DArray<PFile> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
     file->stat();
@@ -365,13 +365,13 @@ void Library::initModels()
     String name = file->name();
     String path;
 
-    if( PhysFile( file->path() + "/data.ozcSMM" ).stat() ) {
+    if( PFile( file->path() + "/data.ozcSMM" ).stat() ) {
       path = file->path() + "/data.ozcSMM";
     }
-    else if( PhysFile( file->path() + "/data.ozcMD2" ).stat() ) {
+    else if( PFile( file->path() + "/data.ozcMD2" ).stat() ) {
       path = file->path() + "/data.ozcMD2";
     }
-    else if( PhysFile( file->path() + "/data.ozcMD3" ).stat() ) {
+    else if( PFile( file->path() + "/data.ozcMD3" ).stat() ) {
       path = file->path() + "/data.ozcMD3";
     }
     else {
@@ -394,8 +394,8 @@ void Library::initModels()
 
 void Library::initMusicRecurse( const char* path )
 {
-  PhysFile dir( path );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( path );
+  DArray<PFile> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
     file->stat();
@@ -450,8 +450,8 @@ void Library::initNameLists()
   Log::println( "Name lists (*.txt in 'name') {" );
   Log::indent();
 
-  PhysFile dir( "name" );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( "name" );
+  DArray<PFile> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "txt" ) ) {
@@ -475,8 +475,8 @@ void Library::initFragPools()
   Log::println( "Fragment pools (*.rc in 'frag') {" );
   Log::indent();
 
-  PhysFile dir( "frag" );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( "frag" );
+  DArray<PFile> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
     if( !file->hasExtension( "rc" ) ) {
@@ -507,8 +507,8 @@ void Library::initClasses()
   Log::println( "Object classes (*.rc in 'class') {" );
   Log::indent();
 
-  PhysFile dir( "class" );
-  DArray<PhysFile> dirList = dir.ls();
+  PFile dir( "class" );
+  DArray<PFile> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
     if( !file->hasExtension( "rc" ) ) {
@@ -565,7 +565,7 @@ void Library::initClasses()
   foreach( classIter, objClasses.iter() ) {
     Log::println( "%s", classIter.key().cstr() );
 
-    PhysFile file( "class/" + classIter.key() + ".rc" );
+    PFile file( "class/" + classIter.key() + ".rc" );
 
     if( !classConfig.load( file ) ) {
       throw Exception( "Class parse error" );

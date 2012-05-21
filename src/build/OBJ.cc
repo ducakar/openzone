@@ -267,8 +267,8 @@ void OBJ::load()
 {
   Log::print( "Loading OBJ model '%s' ...", path.cstr() );
 
-  PhysFile modelFile( path + "/data.obj" );
-  PhysFile configFile( path + "/config.rc" );
+  PFile modelFile( path + "/data.obj" );
+  PFile configFile( path + "/config.rc" );
 
   int currentMaterial = 0;
 

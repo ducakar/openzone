@@ -55,7 +55,7 @@ const char* const UI::ICON_NAMES[] = {
 
 void UI::buildCursors()
 {
-  if( !PhysFile( "ui/cur" ).stat() ) {
+  if( !PFile( "ui/cur" ).stat() ) {
     return;
   }
 
@@ -69,7 +69,7 @@ void UI::buildCursors()
   File::mkdir( "ui/cur" );
 
   for( int i = 0; i < ui::Mouse::CURSORS_MAX; ++i ) {
-    PhysFile inFile( String::str( "ui/cur/%s.in", ui::Mouse::NAMES[i] ) );
+    PFile inFile( String::str( "ui/cur/%s.in", ui::Mouse::NAMES[i] ) );
     File destFile( String::str( "ui/cur/%s.ozCur", ui::Mouse::NAMES[i] ) );
 
     String realPath = inFile.realDir() + "/" + inFile.path();
@@ -113,7 +113,7 @@ void UI::buildCursors()
 
 void UI::buildIcons()
 {
-  if( !PhysFile( "ui/icon" ).stat() ) {
+  if( !PFile( "ui/icon" ).stat() ) {
     return;
   }
 

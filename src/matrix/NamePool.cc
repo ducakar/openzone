@@ -57,7 +57,7 @@ void NamePool::init()
   listPositions.add( names.length() );
 
   for( int i = 0; i < library.nameLists.length(); ++i ) {
-    PhysFile file( library.nameLists[i].path );
+    PFile file( library.nameLists[i].path );
 
     if( !file.map() ) {
       throw Exception( "Reading '%s' failed", library.nameLists[i].path.cstr() );

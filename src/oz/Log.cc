@@ -27,8 +27,8 @@
 #include "Log.hh"
 
 #include "arrays.hh"
-#include "Exception.hh"
 #include "Time.hh"
+#include "Exception.hh"
 
 #include "windefs.h"
 #include <cstdio>

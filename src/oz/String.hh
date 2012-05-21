@@ -55,6 +55,9 @@ class String
     {
       public:
 
+        /**
+         * Exception description ("oz::String::ParseException").
+         */
         virtual const char* what() const noexcept;
 
     };

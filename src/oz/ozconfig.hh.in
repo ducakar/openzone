@@ -66,7 +66,7 @@
 #define OZ_NORETURN                  __attribute__(( noreturn ))
 #define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
 
-#if defined( OZ_GCC ) && OZ_GCC < 406
+#if defined( OZ_GCC ) && OZ_GCC < 406 || defined( OZ_ECLIPSE )
 # define constexpr const
 # define noexcept  throw()
 # define nullptr   0

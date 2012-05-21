@@ -39,8 +39,8 @@
 # include <ppapi/cpp/file_system.h>
 #elif defined( _WIN32 )
 # include "windefs.h"
-# include <cstring>
 # include <windows.h>
+# include <cstring>
 #else
 # include <cstring>
 # include <dirent.h>
@@ -302,7 +302,7 @@ bool File::stat()
 
   WIN32_FILE_ATTRIBUTE_DATA info;
 
-  if( GetFileAttributesEx( filePath, GetFileExInfoStandard, &info ) != 0 ) {
+  if( GetFileAttributesEx( filePath, GetFileExInfoStandard, &info ) == 0 ) {
     fileType = MISSING;
     fileSize = -1;
     fileTime = 0;
