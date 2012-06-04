@@ -470,7 +470,7 @@ backtraceFound:
 
 using namespace oz;
 
-#if OZ_GCC <= 406
+#if defined( OZ_GCC ) && OZ_GCC < 407
 extern void* operator new ( size_t size ) throw ( std::bad_alloc )
 #else
 extern void* operator new ( size_t size )
@@ -487,7 +487,7 @@ extern void* operator new ( size_t size )
   return allocateObject( ptr, size );
 }
 
-#if OZ_GCC <= 406
+#if defined( OZ_GCC ) && OZ_GCC < 407
 extern void* operator new[] ( size_t size ) throw ( std::bad_alloc )
 #else
 extern void* operator new[] ( size_t size )

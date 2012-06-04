@@ -25,8 +25,6 @@
 
 #include "stable.hh"
 
-#include "ozmain/main.hh"
-
 #include "build/Build.hh"
 
 using namespace oz;

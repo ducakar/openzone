@@ -43,12 +43,12 @@ Exception::Exception( const char* file_, int line_, const char* function_,
                       const char* message_, ... ) noexcept :
   file( file_ ), function( function_ ), line( line_ ), stackTrace( StackTrace::current( 1 ) )
 {
-  System::trap();
-
   va_list ap;
   va_start( ap, message_ );
   vsnprintf( message, 256, message_, ap );
   va_end( ap );
+
+  System::trap();
 
 #ifdef __native_client__
   if( System::core->IsMainThread() ) {

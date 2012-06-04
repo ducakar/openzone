@@ -22,7 +22,6 @@
  */
 
 #include "oz/oz.hh"
-#include "ozmain/main.hh"
 
 #include <cstdlib>
 #include <cstdio>

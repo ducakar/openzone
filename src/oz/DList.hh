@@ -315,22 +315,13 @@ class DList
 
     /**
      * Add an element to the beginning of the list.
+     *
+     * For efficiency reasons, elements are added to the beginning of a list in contrast with
+     * vector.
      */
     void add( Elem* e )
     {
-      hard_assert( e != null );
-
-      e->prev[INDEX] = null;
-      e->next[INDEX] = firstElem;
-
-      if( firstElem == null ) {
-        firstElem = e;
-        lastElem = e;
-      }
-      else {
-        firstElem->prev[INDEX] = e;
-        firstElem = e;
-      }
+      pushFirst( e );
     }
 
     /**
@@ -376,20 +367,14 @@ class DList
     }
 
     /**
-     * Remove the last element from the list.
+     * Remove the first element from the list.
+     *
+     * To keep LIFO behaviour for <tt>add()</tt> and <tt>remove()</tt> methods like in vector, the
+     * first element is removed instead of the last one.
      */
     void remove()
     {
-      hard_assert( lastElem != null );
-
-      lastElem = lastElem->prev[INDEX];
-
-      if( lastElem == null ) {
-        firstElem = null;
-      }
-      else {
-        lastElem->next[INDEX] = null;
-      }
+      popFirst();
     }
 
     /**
@@ -458,9 +443,9 @@ class DList
     {
       hard_assert( firstElem != null );
 
-      Elem* p = firstElem;
+      Elem* e = firstElem;
 
-      firstElem = p->next[INDEX];
+      firstElem = firstElem->next[INDEX];
 
       if( firstElem == null ) {
         lastElem = null;
@@ -468,7 +453,7 @@ class DList
       else {
         firstElem->prev[INDEX] = null;
       }
-      return p;
+      return e;
     }
 
     /**
@@ -478,9 +463,9 @@ class DList
     {
       hard_assert( lastElem != null );
 
-      Elem* p = lastElem;
+      Elem* e = lastElem;
 
-      lastElem = p->prev[INDEX];
+      lastElem = lastElem->prev[INDEX];
 
       if( lastElem == null ) {
         firstElem = null;
@@ -488,7 +473,7 @@ class DList
       else {
         lastElem->next[INDEX] = null;
       }
-      return p;
+      return e;
     }
 
     /**

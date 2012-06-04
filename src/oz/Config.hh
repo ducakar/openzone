@@ -220,7 +220,7 @@ class Config
      *
      * @param indentString prepended at the beginning of each line.
      */
-    String toString( const String& indentString = "" );
+    String toString( const char* indentString = "" );
 
 };
 

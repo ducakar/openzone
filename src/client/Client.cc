@@ -340,7 +340,7 @@ int Client::main( int argc, char** argv )
       // TODO check if up-to-date
 
       Log::printEnd( " Up-to-date" );
-      continue;
+//       continue;
     }
 
     String url = pkg->name();
@@ -361,11 +361,13 @@ int Client::main( int argc, char** argv )
     Log::printRaw( " %.2f MiB transferred ...", float( bs.length() ) / ( 1024.0f*1024.0f ) );
 
     if( !bs.isAvailable() ) {
-      throw Exception( "Game data download failed" );
+      Log::printEnd( " Failed" );
+      continue;
     }
 
     if( bs.capacity() < 2 || bs[0] != '7' || bs[1] != 'z' ) {
-      throw Exception( "Downloaded game data archive is not a 7zip archive" );
+      Log::printEnd( " Failed" );
+      continue;
     }
 
     if( !pkg->write( bs.begin(), bs.length() ) ) {

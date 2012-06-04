@@ -2,8 +2,14 @@
 - ui
   * pause menu
 - client
+  * fix h/v in external vehicle view
   * fix bloom
+  * DMesh
+  * mesh render scheduler
+  * two-phase rendering
+  * MD3 animation
   * death camera
+  * distant objects fade out
 - lua
   * finish API transition
 
@@ -18,8 +24,6 @@
   * mission selection
   * advanced HUD for mechanic units and vehicles
 - client
-  * MD3 animation
-  * distant objects fade out
   * BSP rendering per partes
   * decals
   * particle model (smoke, fire ...)

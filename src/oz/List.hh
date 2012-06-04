@@ -328,13 +328,13 @@ class List
 
     /**
      * Add an element to the beginning of the list.
+     *
+     * For efficiency reasons, elements are added to the beginning of a list in contrast with
+     * vector.
      */
     void add( Elem* e )
     {
-      hard_assert( e != null );
-
-      e->next[INDEX] = firstElem;
-      firstElem = e;
+      pushFirst( e );
     }
 
     /**
@@ -349,9 +349,20 @@ class List
     }
 
     /**
+     * Remove the first element from the list.
+     *
+     * To keep LIFO behaviour for <tt>add()</tt> and <tt>remove()</tt> methods like in vector, the
+     * first element is removed instead of the last one.
+     */
+    void remove()
+    {
+      popFirst();
+    }
+
+    /**
      * Remove an element from the list.
      *
-     * Because this is not a double-linked list, one have to provide pointer to the element before.
+     * Because this list is not a double-linked, one have to provide pointer to the preceding element.
      */
     void remove( Elem* e, Elem* prev )
     {
@@ -383,10 +394,10 @@ class List
     {
       hard_assert( firstElem != null );
 
-      Elem* p = firstElem;
+      Elem* e = firstElem;
 
-      firstElem = p->next[INDEX];
-      return p;
+      firstElem = firstElem->next[INDEX];
+      return e;
     }
 
     /**

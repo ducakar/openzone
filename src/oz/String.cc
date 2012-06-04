@@ -348,6 +348,17 @@ bool String::endsWith( const char* sub ) const
   return subEnd < sub;
 }
 
+String String::operator + ( const String& s ) const
+{
+  int    rCount = count + s.count;
+  String r      = String( rCount, 0 );
+
+  aCopy<char>( r.buffer, buffer, count );
+  aCopy<char>( r.buffer + count, s.buffer, s.count + 1 );
+
+  return r;
+}
+
 String String::operator + ( const char* s ) const
 {
   int    sLength = length( s );
@@ -356,17 +367,6 @@ String String::operator + ( const char* s ) const
 
   aCopy<char>( r.buffer, buffer, count );
   aCopy<char>( r.buffer + count, s, sLength + 1 );
-
-  return r;
-}
-
-String String::operator + ( const String& s ) const
-{
-  int    rCount = count + s.count;
-  String r      = String( rCount, 0 );
-
-  aCopy<char>( r.buffer, buffer, count );
-  aCopy<char>( r.buffer + count, s.buffer, s.count + 1 );
 
   return r;
 }
@@ -381,6 +381,31 @@ String operator + ( const char* s, const String& t )
   aCopy<char>( r.buffer + sLength, t.buffer, t.count + 1 );
 
   return r;
+}
+
+String& String::operator += ( const String& s )
+{
+  int oCount = count;
+
+  count += s.count;
+  ensureCapacity();
+
+  aCopy<char>( buffer + oCount, s, s.count + 1 );
+
+  return *this;
+}
+
+String& String::operator += ( const char* s )
+{
+  int oCount  = count;
+  int sLength = length( s );
+
+  count += sLength;
+  ensureCapacity();
+
+  aCopy<char>( buffer + oCount, s, sLength + 1 );
+
+  return *this;
 }
 
 String String::substring( int start ) const

@@ -283,11 +283,7 @@ void Shader::init()
 {
   Log::print( "Initialising Shader ..." );
 
-#ifndef OZ_GL_ES
   hasVertexTexture = config.getSet( "shader.vertexTexture", true );
-#else
-  hasVertexTexture = false;
-#endif
   doPostprocess    = config.get( "render.postprocess", false );
   isLowDetail      = config.get( "render.lowDetail", false );
 
@@ -362,7 +358,6 @@ void Shader::init()
 
   plain       = library.shaderIndex( "plain" );
   mesh        = library.shaderIndex( "mesh" );
-  combine     = library.shaderIndex( "combine" );
   postprocess = library.shaderIndex( "postprocess" );
 
   colour = Vec4::ONE;

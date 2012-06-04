@@ -180,7 +180,6 @@ class Shader
 
     int  plain;
     int  mesh;
-    int  combine;
     int  postprocess;
 
     int  activeProgram;

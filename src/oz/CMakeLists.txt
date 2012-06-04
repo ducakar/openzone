@@ -7,7 +7,7 @@ set_target_properties( oz PROPERTIES VERSION "${OZ_VERSION}" SOVERSION "${OZ_SOV
 target_link_libraries( oz ${libs_oz} )
 
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/liboz.pc COMPONENT liboz
-         DESTINATION lib${OZ_LIB_SUFFIX}/pkgconfig )
+         DESTINATION lib${libSuffix}/pkgconfig )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/ozconfig.hh COMPONENT liboz
          DESTINATION include/oz )
 install( TARGETS oz COMPONENT liboz

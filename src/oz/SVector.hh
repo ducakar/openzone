@@ -38,6 +38,10 @@ namespace oz
  *
  * Fixed capacity vector with static storage.
  *
+ * In contrast with <tt>std::vector</tt> all allocated elements are constructed all the time. This
+ * yields slightly better performance and simplifies implementation. However, on element removal its
+ * destruction is guaranteed (either explicitly or by via move operation).
+ *
  * @ingroup oz
  */
 template <typename Elem, int SIZE>
@@ -310,10 +314,7 @@ class SVector
     template <typename Elem_>
     void add( Elem_&& e )
     {
-      hard_assert( uint( count ) < uint( SIZE ) );
-
-      data[count] = static_cast<Elem_&&>( e );
-      ++count;
+      pushLast( static_cast<Elem_&&>( e ) );
     }
 
     /**
@@ -370,9 +371,7 @@ class SVector
      */
     void remove()
     {
-      hard_assert( count != 0 );
-
-      --count;
+      popLast();
     }
 
     /**
@@ -385,7 +384,16 @@ class SVector
       hard_assert( uint( i ) < uint( count ) );
 
       --count;
-      aMove<Elem>( data + i, data + i + 1, count - i );
+
+      if( i == count ) {
+        // When removing the last element, no shift is performed, so its resources are not
+        // implicitly destroyed by move operation.
+        data[count].~Elem();
+        new( data + count ) Elem;
+      }
+      else {
+        aMove<Elem>( data + i, data + i + 1, count - i );
+      }
     }
 
     /**
@@ -412,7 +420,16 @@ class SVector
 
       if( i != -1 ) {
         --count;
-        aMove<Elem>( data + i, data + i + 1, count - i );
+
+        if( i == count ) {
+          // When removing the last element, no shift is performed, so its resources are not
+          // implicitly destroyed by move operation.
+          data[count].~Elem();
+          new( data + count ) Elem;
+        }
+        else {
+          aMove<Elem>( data + i, data + i + 1, count - i );
+        }
       }
       return i;
     }
