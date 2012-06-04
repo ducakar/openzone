@@ -62,61 +62,66 @@ void Config::loadConf( InputStream* istream )
 
     // Skip comment.
     if( ch == '#' || ch == '/' ) {
-      goto skipLine;
+      while( istream->isAvailable() && ch != '\n' ) {
+        ch = istream->readChar();
+      }
+      continue;
     }
 
+    // Key.
+    const char* begin = istream->getPos() - 1;
+    while( istream->isAvailable() &&
+           ( String::isLetter( ch ) || String::isDigit( ch ) || ch == '_' || ch == '.' ) )
     {
-      // Key.
-      const char* begin = istream->getPos() - 1;
-      while( istream->isAvailable() &&
-             ( String::isLetter( ch ) || String::isDigit( ch ) || ch == '_' || ch == '.' ) )
-      {
-        ch = istream->readChar();
-      }
-      const char* end = istream->getPos() - 1;
-
-      if( begin == end ) {
-        throw Exception( "%s:%d: Key expected", filePath.cstr(), lineNum );
-      }
-
-      String key = String( int( end - begin ), begin );
-
-      // Spaces between name and value.
-      while( istream->isAvailable() && String::isSpace( ch ) ) {
-        ch = istream->readChar();
-      }
-
-      // Value.
-      if( ch != '"' ) {
-        throw Exception( "%s:%d: opening '\"' expected", filePath.cstr(), lineNum );
-      }
-
-      if( !istream->isAvailable() ) {
-        throw Exception( "%s:%d: unexpected end of file", filePath.cstr(), lineNum );
-      }
-
       ch = istream->readChar();
+    }
+    const char* end = istream->getPos() - 1;
 
-      begin = istream->getPos() - 1;
-      while( istream->isAvailable() && ch != '"' && ch != '\n' ) {
-        ch = istream->readChar();
-      }
-      end = istream->getPos() - 1;
-
-      if( ch != '"' ) {
-        throw Exception( "%s:%d: closing '\"' expected", filePath.cstr(), lineNum );
-      }
-
-      String value = String( int( end - begin ), begin );
-
-      include( key, value );
+    if( begin == end ) {
+      throw Exception( "%s:%d: Key expected", filePath.cstr(), lineNum );
     }
 
-  skipLine:
+    String key = String( int( end - begin ), begin );
 
-    // End of line/file.
-    while( istream->isAvailable() && ch != '\n' ) {
+    // Spaces between name and value.
+    while( istream->isAvailable() && String::isSpace( ch ) ) {
       ch = istream->readChar();
+    }
+
+    // Value.
+    if( ch != '"' ) {
+      throw Exception( "%s:%d: opening '\"' expected", filePath.cstr(), lineNum );
+    }
+
+    if( !istream->isAvailable() ) {
+      throw Exception( "%s:%d: unexpected end of file", filePath.cstr(), lineNum );
+    }
+
+    ch = istream->readChar();
+
+    begin = istream->getPos() - 1;
+    while( istream->isAvailable() && ch != '"' ) {
+      ch = istream->readChar();
+    }
+    end = istream->getPos() - 1;
+
+    if( ch != '"' ) {
+      throw Exception( "%s:%d: closing '\"' expected", filePath.cstr(), lineNum );
+    }
+
+    String value = String( int( end - begin ), begin );
+
+    include( key, value );
+
+    while( istream->isAvailable() ) {
+      ch = istream->readChar();
+
+      if( ch == '\n' ) {
+        break;
+      }
+      else if( !String::isSpace( ch ) ) {
+        throw Exception( "%s:%d: newline expected", filePath.cstr(), lineNum );
+      }
     }
   }
 }
@@ -408,7 +413,7 @@ void Config::clear( bool issueWarnings )
   filePath = "";
 }
 
-String Config::toString( const String& indentString )
+String Config::toString( const char* indentString )
 {
   String s = "";
 
@@ -425,7 +430,7 @@ String Config::toString( const String& indentString )
   sortedVars.sort();
 
   for( int i = 0; i < size; ++i ) {
-    s = s + indentString + sortedVars[i].key + " = \"" + sortedVars[i].value + "\"\n";
+    s += String::str( "%s%s = \"%s\"\n", indentString, sortedVars[i].key, sortedVars[i].value );
   }
   return s;
 }

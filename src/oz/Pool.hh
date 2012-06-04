@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Alloc.hh"
+#include "common.hh"
 
 /**
  * @def OZ_STATIC_POOL_ALLOC( pool )

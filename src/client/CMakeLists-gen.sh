@@ -6,7 +6,7 @@ add_dependencies( client pch )
 
 add_executable( openzone openzone.cc )
 add_dependencies( openzone pch )
-target_link_libraries( openzone client modules nirvana matrix common build_info oz \${libs_client} ozmain )
+target_link_libraries( openzone client modules nirvana matrix common build_info oz \${libs_client} )
 
 if( NACL )
   add_custom_command( OUTPUT openzone.nmf openzone.html

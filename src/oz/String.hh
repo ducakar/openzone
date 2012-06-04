@@ -813,19 +813,29 @@ class String
     }
 
     /**
-     * %String concatenation.
-     */
-    String operator + ( const char* s ) const;
-
-    /**
-     * %String concatenation.
+     * Concatenation.
      */
     String operator + ( const String& s ) const;
 
     /**
-     * %String concatenation.
+     * Concatenation.
+     */
+    String operator + ( const char* s ) const;
+
+    /**
+     * Concatenation.
      */
     friend String operator + ( const char* s, const String& t );
+
+    /**
+     * Concatenation.
+     */
+    String& operator += ( const String& s );
+
+    /**
+     * Concatenation.
+     */
+    String& operator += ( const char* s );
 
     /**
      * Substring from <tt>start</tt> character (inclusively).

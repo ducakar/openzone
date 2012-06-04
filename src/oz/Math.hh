@@ -45,11 +45,23 @@ class Math
     /// Floating point epsilon.
     static constexpr float FLOAT_EPS = __FLT_EPSILON__;
 
+#if defined( OZ_GCC ) && OZ_GCC < 406
+
     /// Not a number.
     static constexpr float NaN = 0.0f / 0.0f;
 
     /// \f$ +\infty \f$.
     static constexpr float INF = 1.0f / 0.0f;
+
+#else
+
+    /// Not a number.
+    static constexpr float NaN = __builtin_nanf( "" );
+
+    /// \f$ +\infty \f$.
+    static constexpr float INF = __builtin_inff();
+
+#endif
 
     /// \f$ e \f$.
     static constexpr float E = 2.718281828459045f;

@@ -41,6 +41,9 @@ namespace oz
  * large maps HashIndex/HashString is preferred as it is much faster on average.
  * It can also be used as a set if one omits values.
  *
+ * Like in Vector all allocated elements are constructed all the time and a removed element's
+ * destruction is guaranteed (either explicitly or via move operation).
+ *
  * Memory is allocated when the first element is added.
  *
  * @ingroup oz
@@ -50,7 +53,7 @@ class Map
 {
   private:
 
-    /// Granularity for automatic capacity allocations.
+    /// Granularity for automatic storage allocations and <tt>trim()</tt>.
     static const int GRANULARITY = 8;
 
     /**
@@ -582,7 +585,16 @@ class Map
       hard_assert( uint( i ) < uint( count ) );
 
       --count;
-      aMove<Elem>( data + i, data + i + 1, count - i );
+
+      if( i == count ) {
+        // When removing the last element, no shift is performed, so its resources are not
+        // implicitly destroyed by move operation.
+        data[count].~Elem();
+        new( data + count ) Elem;
+      }
+      else {
+        aMove<Elem>( data + i, data + i + 1, count - i );
+      }
     }
 
     /**

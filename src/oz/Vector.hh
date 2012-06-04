@@ -36,7 +36,9 @@ namespace oz
 /**
  * %Vector (array list).
  *
- * It can also be used as a stack or a small set.
+ * In contrast with <tt>std::vector</tt> all allocated elements are constructed all the time. This
+ * yields slightly better performance and simplifies implementation. However, on element removal its
+ * destruction is guaranteed (either explicitly or by via move operation).
  *
  * Memory is allocated when the first element is added.
  *
@@ -47,7 +49,7 @@ class Vector
 {
   private:
 
-    /// Granularity for automatic capacity allocations.
+    /// Granularity for automatic storage allocations and <tt>trim()</tt>.
     static const int GRANULARITY = 8;
 
   public:
@@ -420,10 +422,7 @@ class Vector
     template <typename Elem_>
     void add( Elem_&& e )
     {
-      ensureCapacity();
-
-      data[count] = static_cast<Elem_&&>( e );
-      ++count;
+      pushLast( static_cast<Elem_&&>( e ) );
     }
 
     /**
@@ -481,9 +480,7 @@ class Vector
      */
     void remove()
     {
-      hard_assert( count != 0 );
-
-      --count;
+      popLast();
     }
 
     /**
@@ -496,7 +493,16 @@ class Vector
       hard_assert( uint( i ) < uint( count ) );
 
       --count;
-      aMove<Elem>( data + i, data + i + 1, count - i );
+
+      if( i == count ) {
+        // When removing the last element, no shift is performed, so its resources are not
+        // implicitly destroyed by move operation.
+        data[count].~Elem();
+        new( data + count ) Elem;
+      }
+      else {
+        aMove<Elem>( data + i, data + i + 1, count - i );
+      }
     }
 
     /**
@@ -523,7 +529,16 @@ class Vector
 
       if( i != -1 ) {
         --count;
-        aMove<Elem>( data + i, data + i + 1, count - i );
+
+        if( i == count ) {
+          // When removing the last element, no shift is performed, so its resources are not
+          // implicitly destroyed by move operation.
+          data[count].~Elem();
+          new( data + count ) Elem;
+        }
+        else {
+          aMove<Elem>( data + i, data + i + 1, count - i );
+        }
       }
       return i;
     }

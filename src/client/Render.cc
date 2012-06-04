@@ -587,10 +587,18 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
     }
   }
 
+#ifdef OZ_GL_ES
+  hasFBO = true;
+#endif
+
   Log::unindent();
   Log::println( "}" );
 
   Log::verboseMode = false;
+
+#ifdef __native_client__
+  config.include( "shader.vertexTexture", "false" );
+#endif
 
   if( isCatalyst ) {
     config.include( "shader.vertexTexture", "false" );
@@ -602,14 +610,10 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
   }
 #endif
   if( !hasFBO ) {
-#ifndef __native_client__
     throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
-#endif
   }
   if( !hasFloatTex ) {
-#ifndef __native_client__
-    throw Exception( "GL_ARB_texture_float not supported by OpenGL" );
-#endif
+    config.include( "shader.vertexTexture", "false" );
   }
   if( hasS3TC ) {
     shader.hasS3TC = true;

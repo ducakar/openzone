@@ -23,7 +23,7 @@
 
 #include "oz/oz.hh"
 #include "oz/windefs.h"
-#include "ozmain/main.hh"
+#include "main.hh"
 
 #include <ppapi/cpp/fullscreen.h>
 #include <ppapi/cpp/input_event.h>

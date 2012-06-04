@@ -36,12 +36,6 @@
 #define GL_ARB_imaging_DEPRECATED
 #define GL_ARB_framebuffer_object_DEPRECATED
 
-#define GL_EXT_texture_compression_s3tc
-#define GL_COMPRESSED_RGB_S3TC_DXT1_EXT   0x83F0
-#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT  0x83F1
-#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT  0x83F2
-#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT  0x83F3
-
 #ifndef _WIN32
 # define GL_GLEXT_PROTOTYPES
 #endif
@@ -53,6 +47,21 @@
 # include <GLES2/gl2.h>
 #else
 # include <GL/gl.h>
+#endif
+
+#ifndef GL_EXT_texture_compression_s3tc
+# define GL_EXT_texture_compression_s3tc
+# define GL_COMPRESSED_RGB_S3TC_DXT1_EXT   0x83F0
+# define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT  0x83F1
+# define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT  0x83F2
+# define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT  0x83F3
+#endif
+
+#ifndef GL_VERSION_3_0
+# define GL_RGBA32F                        0x8814
+# define GL_RGB32F                         0x8815
+# define GL_RGBA16F                        0x881A
+# define GL_RGB16F                         0x881B
 #endif
 
 namespace oz
@@ -130,7 +139,7 @@ extern PFNGLDELETEVERTEXARRAYSPROC      glDeleteVertexArrays;
 extern PFNGLBINDVERTEXARRAYPROC         glBindVertexArray;
 #endif
 
-#if defined( NDEBUG ) || defined( __native_client__ )
+#ifdef NDEBUG
 # define OZ_GL_CHECK_ERROR() void( 0 )
 #else
 # define OZ_GL_CHECK_ERROR() oz::client::glCheckError( __FILE__, __LINE__, __PRETTY_FUNCTION__ )

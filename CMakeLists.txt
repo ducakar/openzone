@@ -42,7 +42,7 @@ if( WIN32 )
 endif()
 
 if( NOT CMAKE_BUILD_TYPE )
-  set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Debug RelWithDebInfo Release ReleaseGen ReleaseUse" FORCE )
+  set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Debug RelWithDebInfo Release RelGenProf RelUseProf" FORCE )
 endif()
 
 if( NACL )
@@ -181,12 +181,12 @@ check_cxx_source_compiles( "
 #if defined( __GNUC__ ) && __GNUC__ == 4 && __GNUC_MINOR__ <= 4
 int main( int, char** ) { return 0; }
 #else
-# error Not an onld GCC
+# error GCC >= 4.5
 #endif
 " isLegacyGCC )
 
 if( isClang )
-  set( flags "-Qunused-arguments -stdlib=libstdc++ ${flags}" )
+  set( flags "-Qunused-arguments ${flags}" )
 elseif( isLegacyGCC )
   set( flags "-std=gnu++0x -pipe -ffast-math" )
 endif()
@@ -199,17 +199,15 @@ if( hasLTO )
   set( lto "-flto" )
 endif()
 
-set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release ReleaseGen ReleaseUse" )
-
 set( CMAKE_CXX_FLAGS "${flags} ${arch_flags} ${warnings} ${CMAKE_CXX_FLAGS}" )
 set( CMAKE_CXX_FLAGS_DEBUG "-D_FORTIFY_SOURCE=2 -g3 -O0" CACHE STRING "" FORCE )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-D_FORTIFY_SOURCE=2 -g3 -O3" CACHE STRING "" FORCE )
 set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 ${lto}" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELEASEGEN "-DNDEBUG -O3 ${lto} -fprofile-generate" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELEASEUSE "-DNDEBUG -O3 ${lto} -fprofile-use" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELGENPROF "-DNDEBUG -O3 ${lto} -fprofile-generate" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELUSEPROF "-DNDEBUG -O3 ${lto} -fprofile-use" CACHE STRING "" FORCE )
 
-mark_as_advanced( CMAKE_CXX_FLAGS_RELEASEGEN )
-mark_as_advanced( CMAKE_CXX_FLAGS_RELEASEUSE )
+mark_as_advanced( CMAKE_CXX_FLAGS_RELGENPROF )
+mark_as_advanced( CMAKE_CXX_FLAGS_RELUSEPROF )
 
 # construct flags strings for BuildInfo
 string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" OZ_CXX_FLAGS )
@@ -273,7 +271,7 @@ endif()
 # CPack
 #
 
-set( CPACK_GENERATOR "TGZ" )
+set( CPACK_GENERATOR "ZIP" )
 
 set( CPACK_PACKAGE_VERSION "${OZ_VERSION}" )
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "A simple cross-platform FPS/RTS game engine" )
