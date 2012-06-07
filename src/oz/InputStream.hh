@@ -224,12 +224,48 @@ class InputStream
     }
 
     /**
+     * Read byte.
+     */
+    OZ_ALWAYS_INLINE
+    byte readByte()
+    {
+      const byte* data = reinterpret_cast<const byte*>( forward( sizeof( byte ) ) );
+      return *data;
+    }
+
+    /**
+     * Read unsigned byte.
+     */
+    OZ_ALWAYS_INLINE
+    ubyte readUByte()
+    {
+      const ubyte* data = reinterpret_cast<const ubyte*>( forward( sizeof( ubyte ) ) );
+      return *data;
+    }
+
+    /**
      * Read short integer.
      */
     OZ_ALWAYS_INLINE
     short readShort()
     {
       const short* data = reinterpret_cast<const short*>( forward( sizeof( short ) ) );
+
+      if( order == Endian::NATIVE ) {
+        return *data;
+      }
+      else {
+        return Endian::bswap16( *data );
+      }
+    }
+
+    /**
+     * Read unsigned short integer.
+     */
+    OZ_ALWAYS_INLINE
+    ushort readUShort()
+    {
+      const ushort* data = reinterpret_cast<const ushort*>( forward( sizeof( ushort ) ) );
 
       if( order == Endian::NATIVE ) {
         return *data;
@@ -256,12 +292,44 @@ class InputStream
     }
 
     /**
+     * Read unsigned integer.
+     */
+    OZ_ALWAYS_INLINE
+    uint readUInt()
+    {
+      const uint* data = reinterpret_cast<const uint*>( forward( sizeof( uint ) ) );
+
+      if( order == Endian::NATIVE ) {
+        return *data;
+      }
+      else {
+        return Endian::bswap32( *data );
+      }
+    }
+
+    /**
      * Read 64-bit integer.
      */
     OZ_ALWAYS_INLINE
     long64 readLong64()
     {
       const long64* data = reinterpret_cast<const long64*>( forward( sizeof( long64 ) ) );
+
+      if( order == Endian::NATIVE ) {
+        return *data;
+      }
+      else {
+        return Endian::bswap64( *data );
+      }
+    }
+
+    /**
+     * Read unsigned 64-bit integer.
+     */
+    OZ_ALWAYS_INLINE
+    ulong64 readULong64()
+    {
+      const ulong64* data = reinterpret_cast<const ulong64*>( forward( sizeof( ulong64 ) ) );
 
       if( order == Endian::NATIVE ) {
         return *data;

@@ -46,7 +46,11 @@
 # include <ppapi/cpp/var.h>
 
 # define CHECK_SEMAPHORE() \
-  if( !semaphore.isValid() ) { semaphore.init(); }
+  if( !isSemaphoreValid ) { \
+    pthread_mutex_init( &semaphoreMutex, null ); \
+    pthread_cond_init( &semaphoreCond, null ); \
+    isSemaphoreValid = true; \
+  }
 
 # define CONSOLE_PUTS( s ) \
   if( System::core->IsMainThread() ) { \
@@ -58,12 +62,20 @@
       static void _main( void* data, int ) \
       { \
         System::instance->PostMessage( pp::Var( static_cast<const char*>( data ) ) ); \
-        semaphore.post(); \
+        pthread_mutex_lock( &semaphoreMutex ); \
+        ++semaphoreCounter; \
+        pthread_mutex_unlock( &semaphoreMutex ); \
+        pthread_cond_signal( &semaphoreCond ); \
       } \
     }; \
     System::core->CallOnMainThread( 0, pp::CompletionCallback( _Callback::_main, \
                                                                const_cast<char*>( s ) ) ); \
-    semaphore.wait(); \
+    pthread_mutex_lock( &semaphoreMutex ); \
+    while( semaphoreCounter == 0 ) { \
+      pthread_cond_wait( &semaphoreCond, &semaphoreMutex ); \
+    } \
+    --semaphoreCounter; \
+    pthread_mutex_unlock( &semaphoreMutex ); \
   }
 
 #endif
@@ -109,16 +121,19 @@ static const char* const SIGNALS[][2] =
 
 static const int BUFFER_SIZE = 1024;
 
-static char  filePath[256];
-static FILE* file = 0;
-static int   tabs = 0;
+static char  filePath[256]; // = ""
+static FILE* file;          // = null
+static int   tabs;          // = 0
 
 #ifdef __native_client__
-static Semaphore semaphore;
+static bool            isSemaphoreValid;
+static pthread_mutex_t semaphoreMutex;
+static pthread_cond_t  semaphoreCond;
+static volatile int    semaphoreCounter;
 #endif
 
-bool Log::showVerbose = false;
-bool Log::verboseMode = false;
+bool Log::showVerbose; // = false
+bool Log::verboseMode; // = false
 
 const char* Log::logFile()
 {
@@ -498,7 +513,6 @@ bool Log::init( const char* filePath_, bool clearFile )
   static_cast<void>( clearFile );
 
   strcpy( filePath, "[JavaScript Messages]" );
-  file = null;
 
   return System::instance != null && System::core != null;
 
@@ -527,11 +541,7 @@ bool Log::init( const char* filePath_, bool clearFile )
 
 void Log::free()
 {
-#ifdef __native_client__
-  if( semaphore.isValid() ) {
-    semaphore.destroy();
-  }
-#else
+#ifndef __native_client__
   if( file != null ) {
     fclose( file );
     file = null;

@@ -285,6 +285,46 @@ class OutputStream
     }
 
     /**
+     * Read byte.
+     */
+    OZ_ALWAYS_INLINE
+    byte readByte()
+    {
+      const byte* data = reinterpret_cast<const byte*>( forward( sizeof( byte ) ) );
+      return *data;
+    }
+
+    /**
+     * Write byte.
+     */
+    OZ_ALWAYS_INLINE
+    void writeByte( byte b )
+    {
+      byte* data = reinterpret_cast<byte*>( forward( sizeof( byte ) ) );
+      *data = b;
+    }
+
+    /**
+     * Read unsigned byte.
+     */
+    OZ_ALWAYS_INLINE
+    ubyte readUByte()
+    {
+      const ubyte* data = reinterpret_cast<const ubyte*>( forward( sizeof( ubyte ) ) );
+      return *data;
+    }
+
+    /**
+     * Write unsigned byte.
+     */
+    OZ_ALWAYS_INLINE
+    void writeUByte( ubyte b )
+    {
+      ubyte* data = reinterpret_cast<ubyte*>( forward( sizeof( ubyte ) ) );
+      *data = b;
+    }
+
+    /**
      * Read short integer.
      */
     OZ_ALWAYS_INLINE
@@ -307,6 +347,38 @@ class OutputStream
     void writeShort( short s )
     {
       short* data = reinterpret_cast<short*>( forward( sizeof( short ) ) );
+
+      if( order == Endian::NATIVE ) {
+        *data = s;
+      }
+      else {
+        *data = Endian::bswap16( s );
+      }
+    }
+
+    /**
+     * Read unsigned short integer.
+     */
+    OZ_ALWAYS_INLINE
+    ushort readUShort()
+    {
+      const ushort* data = reinterpret_cast<const ushort*>( forward( sizeof( ushort ) ) );
+
+      if( order == Endian::NATIVE ) {
+        return *data;
+      }
+      else {
+        return Endian::bswap16( *data );
+      }
+    }
+
+    /**
+     * Write unsigned short integer.
+     */
+    OZ_ALWAYS_INLINE
+    void writeUShort( ushort s )
+    {
+      ushort* data = reinterpret_cast<ushort*>( forward( sizeof( ushort ) ) );
 
       if( order == Endian::NATIVE ) {
         *data = s;
@@ -349,6 +421,38 @@ class OutputStream
     }
 
     /**
+     * Read unsigned integer.
+     */
+    OZ_ALWAYS_INLINE
+    uint readUInt()
+    {
+      const uint* data = reinterpret_cast<const uint*>( forward( sizeof( uint ) ) );
+
+      if( order == Endian::NATIVE ) {
+        return *data;
+      }
+      else {
+        return Endian::bswap32( *data );
+      }
+    }
+
+    /**
+     * Write unsigned integer.
+     */
+    OZ_ALWAYS_INLINE
+    void writeUInt( uint i )
+    {
+      uint* data = reinterpret_cast<uint*>( forward( sizeof( uint ) ) );
+
+      if( order == Endian::NATIVE ) {
+        *data = i;
+      }
+      else {
+        *data = Endian::bswap32( i );
+      }
+    }
+
+    /**
      * Read 64-bit integer.
      */
     OZ_ALWAYS_INLINE
@@ -371,6 +475,38 @@ class OutputStream
     void writeLong64( long64 l )
     {
       long64* data = reinterpret_cast<long64*>( forward( sizeof( long64 ) ) );
+
+      if( order == Endian::NATIVE ) {
+        *data = l;
+      }
+      else {
+        *data = Endian::bswap64( l );
+      }
+    }
+
+    /**
+     * Read unsigned 64-bit integer.
+     */
+    OZ_ALWAYS_INLINE
+    ulong64 readULong64()
+    {
+      const ulong64* data = reinterpret_cast<const ulong64*>( forward( sizeof( ulong64 ) ) );
+
+      if( order == Endian::NATIVE ) {
+        return *data;
+      }
+      else {
+        return Endian::bswap64( *data );
+      }
+    }
+
+    /**
+     * Write unsigned 64-bit integer.
+     */
+    OZ_ALWAYS_INLINE
+    void writeULong64( ulong64 l )
+    {
+      ulong64* data = reinterpret_cast<ulong64*>( forward( sizeof( ulong64 ) ) );
 
       if( order == Endian::NATIVE ) {
         *data = l;

@@ -111,9 +111,9 @@ static const ubyte BELL_SAMPLE[] = {
 
 #endif
 
-static bool               isConstructed = false;
-static int                initFlags = 0;
-static volatile int       nBellUsers = 0;
+static bool               isConstructed; // = false
+static int                initFlags;     // = 0
+static volatile int       nBellUsers;    // = 0
 #if defined( __native_client__ ) || defined( __ANDROID__ )
 #elif defined( _WIN32 )
 static CRITICAL_SECTION   bellCounterLock;
@@ -199,14 +199,7 @@ static void* bellThread( void* )
 
 #endif
 
-System        System::system;
-pp::Module*   System::module   = null;
-pp::Instance* System::instance = null;
-pp::Core*     System::core     = null;
-int           System::width    = 0;
-int           System::height   = 0;
-
-System::System()
+static void construct()
 {
 #if defined( __native_client__ ) || defined( __ANDROID__ )
 #elif defined( _WIN32 )
@@ -217,8 +210,21 @@ System::System()
 
   pthread_spin_init( &bellCounterLock, PTHREAD_PROCESS_PRIVATE );
 #endif
-
   isConstructed = true;
+}
+
+System        System::system;
+pp::Module*   System::module   = null;
+pp::Instance* System::instance = null;
+pp::Core*     System::core     = null;
+int           System::width    = 0;
+int           System::height   = 0;
+
+System::System()
+{
+  if( !isConstructed ) {
+    construct();
+  }
 }
 
 System::~System()
@@ -256,6 +262,10 @@ void System::abort( bool preventHalt )
 
 void System::trap()
 {
+  if( !isConstructed ) {
+    construct();
+  }
+
 #ifdef _WIN32
   if( IsDebuggerPresent() ) {
     DebugBreak();
@@ -268,7 +278,7 @@ void System::trap()
 void System::bell()
 {
   if( !isConstructed ) {
-    return;
+    construct();
   }
 
 #if defined( __native_client__ ) || defined( __ANDROID__ )
@@ -350,6 +360,10 @@ void System::error( const std::exception& e )
 
 void System::init( int flags )
 {
+  if( !isConstructed ) {
+    construct();
+  }
+
   if( initFlags & SIGNAL_HANDLER_BIT ) {
     resetSignals();
   }

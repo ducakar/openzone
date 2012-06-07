@@ -60,9 +60,9 @@ struct TraceEntry
   StackTrace  stackTrace;
 };
 
-static bool                 isConstructed         = false;
-static TraceEntry* volatile firstObjectTraceEntry = null;
-static TraceEntry* volatile firstArrayTraceEntry  = null;
+static bool                 isConstructed;         // = false
+static TraceEntry* volatile firstObjectTraceEntry; // = null
+static TraceEntry* volatile firstArrayTraceEntry;  // = null
 # if defined( __native_client__ )
 static pthread_mutex_t      traceEntryListLock;
 # elif defined( _WIN32 )
@@ -73,14 +73,14 @@ static pthread_spinlock_t   traceEntryListLock;
 
 #endif
 
-int    Alloc::count     = 0;
-size_t Alloc::amount    = 0;
+int    Alloc::count;     // = 0
+size_t Alloc::amount;    // = 0
 
-int    Alloc::sumCount  = 0;
-size_t Alloc::sumAmount = 0;
+int    Alloc::sumCount;  // = 0
+size_t Alloc::sumAmount; // = 0
 
-int    Alloc::maxCount  = 0;
-size_t Alloc::maxAmount = 0;
+int    Alloc::maxCount;  // = 0
+size_t Alloc::maxAmount; // = 0
 
 void Alloc::printSummary()
 {
@@ -303,13 +303,6 @@ static void deallocateObject( void* ptr )
   size_t size = static_cast<size_t*>( ptr )[-1];
   ptr = static_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
 
-  --Alloc::count;
-  Alloc::amount -= size;
-
-#ifndef NDEBUG
-  memset( ptr, 0xee, size );
-#endif
-
 #ifdef OZ_TRACK_LEAKS
 
 # if defined( __native_client__ )
@@ -379,6 +372,13 @@ backtraceFound:
 
 #endif
 
+  --Alloc::count;
+  Alloc::amount -= size;
+
+#ifndef NDEBUG
+  memset( ptr, 0xee, size );
+#endif
+
   aligned_free( ptr );
 }
 
@@ -386,13 +386,6 @@ static void deallocateArray( void* ptr )
 {
   size_t size = static_cast<size_t*>( ptr )[-1];
   ptr = static_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
-
-  --Alloc::count;
-  Alloc::amount -= size;
-
-#ifndef NDEBUG
-  memset( ptr, 0xee, size );
-#endif
 
 #ifdef OZ_TRACK_LEAKS
 
@@ -463,6 +456,13 @@ backtraceFound:
 
 #endif
 
+  --Alloc::count;
+  Alloc::amount -= size;
+
+#ifndef NDEBUG
+  memset( ptr, 0xee, size );
+#endif
+
   aligned_free( ptr );
 }
 
@@ -471,7 +471,7 @@ backtraceFound:
 using namespace oz;
 
 #if defined( OZ_GCC ) && OZ_GCC < 407
-extern void* operator new ( size_t size ) throw ( std::bad_alloc )
+extern void* operator new ( size_t size ) throw( std::bad_alloc )
 #else
 extern void* operator new ( size_t size )
 #endif
@@ -488,7 +488,7 @@ extern void* operator new ( size_t size )
 }
 
 #if defined( OZ_GCC ) && OZ_GCC < 407
-extern void* operator new[] ( size_t size ) throw ( std::bad_alloc )
+extern void* operator new[] ( size_t size ) throw( std::bad_alloc )
 #else
 extern void* operator new[] ( size_t size )
 #endif

@@ -50,9 +50,9 @@ class Endian
       LITTLE = 0,
       BIG    = 1,
 #ifdef OZ_BIG_ENDIAN
-      NATIVE = 1
+      NATIVE = BIG
 #else
-      NATIVE = 0
+      NATIVE = LITTLE
 #endif
     };
 
@@ -74,6 +74,15 @@ class Endian
      * Swap byte order.
      */
     OZ_ALWAYS_INLINE
+    static ushort bswap16( ushort s )
+    {
+      return ushort( s << 8 | s >> 8 );
+    }
+
+    /**
+     * Swap byte order.
+     */
+    OZ_ALWAYS_INLINE
     static int bswap32( int i )
     {
       return int( __builtin_bswap32( uint( i ) ) );
@@ -83,9 +92,27 @@ class Endian
      * Swap byte order.
      */
     OZ_ALWAYS_INLINE
+    static uint bswap32( uint i )
+    {
+      return __builtin_bswap32( i );
+    }
+
+    /**
+     * Swap byte order.
+     */
+    OZ_ALWAYS_INLINE
     static long64 bswap64( long64 l )
     {
       return long64( __builtin_bswap64( ulong64( l ) ) );
+    }
+
+    /**
+     * Swap byte order.
+     */
+    OZ_ALWAYS_INLINE
+    static ulong64 bswap64( ulong64 l )
+    {
+      return __builtin_bswap64( l );
     }
 
 };
