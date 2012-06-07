@@ -129,7 +129,7 @@ class Alloc
  * @ingroup oz
  */
 #if defined( OZ_GCC ) && OZ_GCC < 407
-extern void* operator new ( size_t size ) throw ( std::bad_alloc );
+extern void* operator new ( size_t size ) throw( std::bad_alloc );
 #else
 extern void* operator new ( size_t size );
 #endif
