@@ -99,11 +99,11 @@ function predator( localData )
 
   while ozBindNextObj() do
     if not ozObjIsSelf() and ozObjHasFlag( OZ_BOT_BIT ) and ozObjGetClassName() == "goblin" then
-      local distance = ozObjDistanceFromObj( self )
+      local distance = ozObjDistanceFromSelf()
 
       if distance < minDistance then
         minDistance = distance
-        heading = ozObjHeadingFromEye( self )
+        heading = ozObjHeadingFromSelfEye()
       end
     end
   end

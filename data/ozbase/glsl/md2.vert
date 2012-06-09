@@ -45,14 +45,14 @@ void main()
   vec4 localPosition  = mix( firstPosition, secondPosition, oz_MD2Anim[2] );
   vec4 localNormal    = mix( firstNormal, secondNormal, oz_MD2Anim[2] );
 
-  gl_Position   = oz_Transform.complete * localPosition;
-  exPosition    = ( oz_Transform.model * localPosition ).xyz;
+  gl_Position   = oz_ProjModelTransform * localPosition;
+  exPosition    = ( oz_ModelTransform * localPosition ).xyz;
   exTexCoord    = inTexCoord;
-  exNormal      = ( oz_Transform.model * localNormal ).xyz;
+  exNormal      = ( oz_ModelTransform * localNormal ).xyz;
 #else
-  gl_Position = oz_Transform.complete * vec4( inPosition, 1.0 );
-  exPosition  = ( oz_Transform.model * vec4( inPosition, 1.0 ) ).xyz;
+  gl_Position = oz_ProjModelTransform * vec4( inPosition, 1.0 );
+  exPosition  = ( oz_ModelTransform * vec4( inPosition, 1.0 ) ).xyz;
   exTexCoord  = inTexCoord;
-  exNormal    = ( oz_Transform.model * vec4( inNormal, 0.0 ) ).xyz;
+  exNormal    = ( oz_ModelTransform * vec4( inNormal, 0.0 ) ).xyz;
 #endif
 }

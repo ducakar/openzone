@@ -31,7 +31,7 @@ varying float exAzimuth;
 
 void main()
 {
-  gl_Position = oz_Transform.complete * vec4( inPosition, 1.0 );
+  gl_Position = oz_ProjModelTransform * vec4( inPosition, 1.0 );
   exTexCoord  = inTexCoord;
-  exAzimuth   = ( oz_Transform.model * vec4( inPosition, 1.0 ) ).z;
+  exAzimuth   = ( oz_ModelTransform * vec4( inPosition, 1.0 ) ).z;
 }

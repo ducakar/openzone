@@ -39,7 +39,8 @@ struct Vertex
   Vec3     normal;
   Vec3     tangent;
   Vec3     binormal;
-  TexCoord detailCoord;
+  int      bones[2];
+  float    blend;
 
   bool operator == ( const Vertex& v ) const;
 

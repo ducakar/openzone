@@ -64,10 +64,12 @@ void Compiler::beginMesh()
 
   vert.pos            = Point::ORIGIN;
   vert.texCoord       = TexCoord( 0.0f, 0.0f );
-  vert.detailCoord    = TexCoord( 0.0f, 0.0f );
   vert.normal         = Vec3::ZERO;
   vert.tangent        = Vec3::ZERO;
   vert.binormal       = Vec3::ZERO;
+  vert.bones[0]       = 0;
+  vert.bones[1]       = 0;
+  vert.blend          = 0.0f;
 }
 
 void Compiler::endMesh()
@@ -196,26 +198,24 @@ void Compiler::end()
     }
   }
 
-#ifdef OZ_BUMPMAP
   // generate tangents and binormals
-  if( caps & CAP_BUMPMAP ) {
-    int nVertices = part.indices.length();
-
-    for( int i = 0; i < nVertices; ++i ) {
-      const Vertex& v0 = vertices[ part.indices[i] ];
-      const Vertex& v1 = vertices[ part.indices[ ( i + 1 ) % nVertices ] ];
-      const Vertex& v2 = vertices[ part.indices[ ( i + nVertices - 1 ) % nVertices ] ];
-
-      Vec3 a = Point( v1.pos ) - Point( v0.pos );
-      Vec3 b = Point( v2.pos ) - Point( v0.pos );
-
-      float s0 = v1.texCoord.u - v0.texCoord.u;
-      float s1 = v1.texCoord.v - v0.texCoord.v;
-      float t0 = v2.texCoord.u - v0.texCoord.u;
-      float t1 = v2.texCoord.v - v0.texCoord.v;
-    }
-  }
-#endif
+//   if( caps & CAP_BUMPMAP ) {
+//     int nVertices = part.indices.length();
+//
+//     for( int i = 0; i < nVertices; ++i ) {
+//       const Vertex& v0 = vertices[ part.indices[i] ];
+//       const Vertex& v1 = vertices[ part.indices[ ( i + 1 ) % nVertices ] ];
+//       const Vertex& v2 = vertices[ part.indices[ ( i + nVertices - 1 ) % nVertices ] ];
+//
+//       Vec3 a = Point( v1.pos ) - Point( v0.pos );
+//       Vec3 b = Point( v2.pos ) - Point( v0.pos );
+//
+//       float s0 = v1.texCoord.u - v0.texCoord.u;
+//       float s1 = v1.texCoord.v - v0.texCoord.v;
+//       float t0 = v2.texCoord.u - v0.texCoord.u;
+//       float t1 = v2.texCoord.v - v0.texCoord.v;
+//     }
+//   }
 
   int partIndex = parts.index( part );
 
@@ -247,19 +247,6 @@ void Compiler::texCoord( const float* v )
   texCoord( v[0], v[1] );
 }
 
-void Compiler::detailCoord( float u, float v )
-{
-  hard_assert( flags & MESH_BIT );
-
-  vert.detailCoord.u = u;
-  vert.detailCoord.v = v;
-}
-
-void Compiler::detailCoord( const float* v )
-{
-  detailCoord( v[0], v[1] );
-}
-
 void Compiler::normal( float nx, float ny, float nz )
 {
   hard_assert( flags & MESH_BIT );
@@ -272,6 +259,13 @@ void Compiler::normal( float nx, float ny, float nz )
 void Compiler::normal( const float* v )
 {
   normal( v[0], v[1], v[2] );
+}
+
+void Compiler::bones( int first, int second, float blend )
+{
+  vert.bones[0] = first;
+  vert.bones[1] = second;
+  vert.blend    = blend;
 }
 
 void Compiler::vertex( float x, float y, float z )

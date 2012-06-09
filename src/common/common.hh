@@ -38,6 +38,7 @@
 
 // We want to use C++ wrapped C headers, not vanilla ones that are included via SDL.
 #include <cctype>
+#include <climits>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>

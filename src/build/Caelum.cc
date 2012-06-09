@@ -87,12 +87,12 @@ void Caelum::build( const char* name )
   }
 
   for( int i = 0; i < client::Caelum::MAX_STARS; ++i ) {
-    os.writeShort( short( i * 4 + 0 ) );
-    os.writeShort( short( i * 4 + 0 ) );
-    os.writeShort( short( i * 4 + 1 ) );
-    os.writeShort( short( i * 4 + 2 ) );
-    os.writeShort( short( i * 4 + 3 ) );
-    os.writeShort( short( i * 4 + 3 ) );
+    os.writeUShort( ushort( i * 4 + 0 ) );
+    os.writeUShort( ushort( i * 4 + 0 ) );
+    os.writeUShort( ushort( i * 4 + 1 ) );
+    os.writeUShort( ushort( i * 4 + 2 ) );
+    os.writeUShort( ushort( i * 4 + 3 ) );
+    os.writeUShort( ushort( i * 4 + 3 ) );
   }
 
   uint texId = context.loadLayer( "caelum/sun.png", false );

@@ -669,6 +669,7 @@ void Build::packArchive( const char* name, bool useCompression, bool use7zip )
     throw Exception( use7zip ? "Packing 7zip archive failed" : "Packing ZIP archive failed" );
   }
 
+  archive.stat();
   int size = archive.size();
 
   if( size >= 0 ) {

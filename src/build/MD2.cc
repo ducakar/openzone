@@ -238,9 +238,9 @@ void MD2::build( const char* path )
     throw Exception( "Wrong Quake 2 MD2 format" );
   }
 
-  header.skinWidth       = is.readInt();
-  header.skinHeight      = is.readInt();
-  header.frameSize       = is.readInt();
+  header.skinWidth  = is.readInt();
+  header.skinHeight = is.readInt();
+  header.frameSize  = is.readInt();
 
   // MD2Header::nSkins
   is.readInt();
@@ -252,14 +252,14 @@ void MD2::build( const char* path )
   // MD2Header::nGLCmds
   is.readInt();
 
-  header.nFrames         = is.readInt();
+  header.nFrames = is.readInt();
 
   // MD2Header::offSkins
   is.readInt();
 
-  header.offTexCoords    = is.readInt();
-  header.offTriangles    = is.readInt();
-  header.offFrames       = is.readInt();
+  header.offTexCoords = is.readInt();
+  header.offTriangles = is.readInt();
+  header.offFrames    = is.readInt();
 
   // MD2Header::offGLCmds
   is.readInt();

@@ -35,7 +35,7 @@ namespace oz
 {
 
 /**
- * Internal structure for NaCl file description that is passed down to callbacks.
+ * Internal structure for NaCl file description that is passed to callbacks.
  *
  * @ingroup oz
  */
@@ -77,7 +77,7 @@ class File
     long64    fileTime;   ///< Modification or creation time, what is newer.
     char*     data;       ///< Mapped memory.
 #ifdef __native_client__
-    FileDesc* descriptor; ///< Structure for exchanging information with NaCl callbacks.
+    FileDesc* descriptor; ///< Structure for control and data exchange with NaCl callbacks.
 #endif
 
   public:

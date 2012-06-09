@@ -30,16 +30,25 @@ namespace oz
 namespace client
 {
 
+inline byte quantifyToByte( float x )
+{
+  return byte( x < 0.0f ? x * -SCHAR_MIN - 0.5f : x * SCHAR_MAX + 0.5f );
+}
+
+inline ubyte quantifyToUByte( float x )
+{
+  return ubyte( x * UCHAR_MAX + 0.5f );
+}
+
 struct Vertex
 {
   float pos[3];
   float texCoord[2];
-  float normal[3];
-#ifdef OZ_BUMPMAP
-  float tangent[3];
-  float binormal[3];
-  float detailCoord[2];
-#endif
+  byte  normal[3];
+  byte  tangent[3];
+  byte  binormal[3];
+  byte  bones[2];
+  ubyte blend;
 
   void read( InputStream* istream );
 

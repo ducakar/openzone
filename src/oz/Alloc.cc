@@ -509,7 +509,6 @@ void operator delete ( void* ptr ) noexcept
   if( ptr == null ) {
     return;
   }
-
   deallocateObject( ptr );
 }
 
@@ -518,7 +517,6 @@ void operator delete[] ( void* ptr ) noexcept
   if( ptr == null ) {
     return;
   }
-
   deallocateArray( ptr );
 }
 
@@ -553,7 +551,6 @@ void operator delete ( void* ptr, const std::nothrow_t& ) noexcept
   if( ptr == null ) {
     return;
   }
-
   deallocateObject( ptr );
 }
 
@@ -562,6 +559,5 @@ void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept
   if( ptr == null ) {
     return;
   }
-
   deallocateArray( ptr );
 }

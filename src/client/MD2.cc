@@ -275,10 +275,7 @@ void MD2::load()
     is.readInt();
 
     vertices = new Vertex[nFrameVertices];
-    for( int i = 0; i < nFrameVertices; ++i ) {
-      vertices[i].read( &is );
-    }
-
+    is.readChars( reinterpret_cast<char*>( vertices ), nFrameVertices * int( sizeof( Vertex ) ) );
     is.setPos( meshStart );
 
     mesh.load( &is, GL_STREAM_DRAW, file.path() );
@@ -316,9 +313,9 @@ void MD2::drawFrame( int frame ) const
       animBuffer[i].texCoord[0] = vertices[i].texCoord[0];
       animBuffer[i].texCoord[1] = vertices[i].texCoord[1];
 
-      animBuffer[i].normal[0] = normal.x;
-      animBuffer[i].normal[1] = normal.y;
-      animBuffer[i].normal[2] = normal.z;
+      animBuffer[i].normal[0] = quantifyToByte( normal.x );
+      animBuffer[i].normal[1] = quantifyToByte( normal.y );
+      animBuffer[i].normal[2] = quantifyToByte( normal.z );
     }
 
     mesh.upload( animBuffer, nFrameVertices, GL_STREAM_DRAW );
@@ -367,9 +364,9 @@ void MD2::draw( const AnimState* anim ) const
       animBuffer[i].texCoord[0] = vertices[i].texCoord[0];
       animBuffer[i].texCoord[1] = vertices[i].texCoord[1];
 
-      animBuffer[i].normal[0] = normal.x;
-      animBuffer[i].normal[1] = normal.y;
-      animBuffer[i].normal[2] = normal.z;
+      animBuffer[i].normal[0] = quantifyToByte( normal.x );
+      animBuffer[i].normal[1] = quantifyToByte( normal.y );
+      animBuffer[i].normal[2] = quantifyToByte( normal.z );
     }
 
     mesh.upload( animBuffer, nFrameVertices, GL_STREAM_DRAW );

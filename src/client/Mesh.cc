@@ -27,39 +27,13 @@
 
 #include "client/Colours.hh"
 #include "client/Context.hh"
+#include "client/Terra.hh"
 #include "client/OpenGL.hh"
 
 namespace oz
 {
 namespace client
 {
-
-void Vertex::read( InputStream* istream )
-{
-  pos[0] = istream->readFloat();
-  pos[1] = istream->readFloat();
-  pos[2] = istream->readFloat();
-
-  texCoord[0] = istream->readFloat();
-  texCoord[1] = istream->readFloat();
-
-  normal[0] = istream->readFloat();
-  normal[1] = istream->readFloat();
-  normal[2] = istream->readFloat();
-
-#ifdef OZ_BUMPMAP
-  tangent[0] = istream->readFloat();
-  tangent[1] = istream->readFloat();
-  tangent[2] = istream->readFloat();
-
-  binormal[0] = istream->readFloat();
-  binormal[1] = istream->readFloat();
-  binormal[2] = istream->readFloat();
-
-  detailCoord[0] = istream->readFloat();
-  detailCoord[1] = istream->readFloat();
-#endif
-}
 
 void Vertex::setFormat()
 {
@@ -72,22 +46,24 @@ void Vertex::setFormat()
                          static_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
 
   glEnableVertexAttribArray( Attrib::NORMAL );
-  glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+  glVertexAttribPointer( Attrib::NORMAL, 3, GL_BYTE, GL_TRUE, sizeof( Vertex ),
                          static_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 
-#ifdef OZ_BUMPMAP
   glEnableVertexAttribArray( Attrib::TANGENT );
-  glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+  glVertexAttribPointer( Attrib::TANGENT, 3, GL_BYTE, GL_TRUE, sizeof( Vertex ),
                          static_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
 
   glEnableVertexAttribArray( Attrib::BINORMAL );
-  glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+  glVertexAttribPointer( Attrib::BINORMAL, 3, GL_BYTE, GL_TRUE, sizeof( Vertex ),
                          static_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
 
-  glEnableVertexAttribArray( Attrib::DETAILCOORD );
-  glVertexAttribPointer( Attrib::DETAILCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         static_cast<const char*>( 0 ) + offsetof( Vertex, detailCoord ) );
-#endif
+  glEnableVertexAttribArray( Attrib::BONES );
+  glVertexAttribPointer( Attrib::BONES, 2, GL_BYTE, GL_FALSE, sizeof( Vertex ),
+                         static_cast<const char*>( 0 ) + offsetof( Vertex, bones ) );
+
+  glEnableVertexAttribArray( Attrib::BLEND );
+  glVertexAttribPointer( Attrib::BLEND, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof( Vertex ),
+                         static_cast<const char*>( 0 ) + offsetof( Vertex, blend ) );
 }
 
 void Texture::free()
@@ -198,7 +174,13 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
 
       if( name.isEmpty() ) {
         texIds[i]           = -1;
-        textures[i].diffuse  = 0;
+        textures[i].diffuse = 0;
+        textures[i].masks   = shader.defaultMasks;
+        textures[i].normals = shader.defaultNormals;
+      }
+      else if( name.beginsWith( "@sea:" ) ) {
+        texIds[i]           = -1;
+        textures[i].diffuse = terra.waterTexId;
         textures[i].masks   = shader.defaultMasks;
         textures[i].normals = shader.defaultNormals;
       }
@@ -214,7 +196,7 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
 
   for( int i = 0; i < nParts; ++i ) {
     parts[i].flags      = istream->readInt();
-    parts[i].mode       = uint( istream->readInt() );
+    parts[i].mode       = istream->readUInt();
     parts[i].texture    = textures[ istream->readInt() ];
 
     parts[i].nIndices   = istream->readInt();

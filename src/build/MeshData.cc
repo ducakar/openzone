@@ -34,22 +34,35 @@ namespace build
 
 bool Vertex::operator == ( const Vertex& v ) const
 {
-  return pos == v.pos && texCoord == v.texCoord && normal == v.normal;
+  return pos == v.pos && texCoord == v.texCoord &&
+         normal == v.normal && tangent == v.tangent && binormal == v.binormal &&
+         bones[0] == v.bones[0] && bones[1] == v.bones[1] && blend == v.blend;
 }
 
 void Vertex::write( BufferStream* ostream ) const
 {
-  ostream->writePoint( pos );
+  ostream->writeFloat( pos.x );
+  ostream->writeFloat( pos.y );
+  ostream->writeFloat( pos.z );
+
   ostream->writeFloat( texCoord.u );
   ostream->writeFloat( texCoord.v );
-  ostream->writeVec3( normal );
 
-  if( context.bumpmap ) {
-    ostream->writeVec3( tangent );
-    ostream->writeVec3( binormal );
-    ostream->writeFloat( detailCoord.u );
-    ostream->writeFloat( detailCoord.v );
-  }
+  ostream->writeByte( quantifyToByte( normal.x ) );
+  ostream->writeByte( quantifyToByte( normal.y ) );
+  ostream->writeByte( quantifyToByte( normal.z ) );
+
+  ostream->writeByte( quantifyToByte( tangent.x ) );
+  ostream->writeByte( quantifyToByte( tangent.y ) );
+  ostream->writeByte( quantifyToByte( tangent.z ) );
+
+  ostream->writeByte( quantifyToByte( binormal.x ) );
+  ostream->writeByte( quantifyToByte( binormal.y ) );
+  ostream->writeByte( quantifyToByte( binormal.z ) );
+
+  ostream->writeByte( byte( bones[0] ) );
+  ostream->writeByte( byte( bones[1] ) );
+  ostream->writeUByte( quantifyToUByte( blend ) );
 }
 
 void MeshData::write( BufferStream* os, bool embedTextures ) const
@@ -68,7 +81,7 @@ void MeshData::write( BufferStream* os, bool embedTextures ) const
     vertex->write( os );
   }
   foreach( index, indices.citer() ) {
-    os->writeShort( short( *index ) );
+    os->writeUShort( *index );
   }
 
   Vector<String> textures;
@@ -125,7 +138,7 @@ void MeshData::write( BufferStream* os, bool embedTextures ) const
 
   foreach( part, parts.citer() ) {
     os->writeInt( part->component | part->material );
-    os->writeInt( int( part->mode ) );
+    os->writeUInt( part->mode );
 
     os->writeInt( textures.index( part->texture ) );
 

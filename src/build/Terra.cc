@@ -30,7 +30,6 @@
 #include "build/Context.hh"
 #include "build/MeshData.hh"
 
-#include <climits>
 #include <FreeImage.h>
 
 namespace oz
@@ -197,15 +196,15 @@ void Terra::saveClient()
   int index = 0;
   for( int x = 0; x < client::Terra::TILE_QUADS; ++x ) {
     if( x != 0 ) {
-      os.writeShort( short( index + client::Terra::TILE_QUADS + 1 ) );
+      os.writeUShort( ushort( index + client::Terra::TILE_QUADS + 1 ) );
     }
     for( int y = 0; y <= client::Terra::TILE_QUADS; ++y ) {
-      os.writeShort( short( index + client::Terra::TILE_QUADS + 1 ) );
-      os.writeShort( short( index ) );
+      os.writeUShort( ushort( index + client::Terra::TILE_QUADS + 1 ) );
+      os.writeUShort( ushort( index ) );
       ++index;
     }
     if( x != client::Terra::TILE_QUADS - 1 ) {
-      os.writeShort( short( index - 1 ) );
+      os.writeUShort( ushort( index - 1 ) );
     }
   }
 
@@ -237,19 +236,22 @@ void Terra::saveClient()
           if( x < matrix::Terra::QUADS && y > 0 ) {
             normal += quads[x][y - 1].triNormal[1];
           }
+          normal = ~normal;
 
           if( quads[x][y].vertex.z < 0.0f ) {
             waterTiles.set( i * client::Terra::TILES + j );
           }
 
-          os.writeVec3( normal );
+          os.writeByte( quantifyToByte( normal.x ) );
+          os.writeByte( quantifyToByte( normal.y ) );
+          os.writeByte( quantifyToByte( normal.z ) );
         }
       }
     }
   }
 
   for( int i = 0; i < waterTiles.length(); ++i ) {
-    os.writeChar( waterTiles.get( i ) );
+    os.writeBool( waterTiles.get( i ) );
   }
 
   os.writeVec4( liquidColour );

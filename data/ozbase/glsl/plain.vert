@@ -30,6 +30,6 @@ varying vec2 exTexCoord;
 
 void main()
 {
-  gl_Position = oz_Transform.complete * vec4( inPosition, 1.0 );
+  gl_Position = oz_ProjModelTransform * vec4( inPosition, 1.0 );
   exTexCoord  = inTexCoord;
 }

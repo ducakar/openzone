@@ -27,8 +27,6 @@
 
 #include "client/Camera.hh"
 
-#include <climits>
-
 #ifdef __native_client__
 # include <ppapi/cpp/module.h>
 # include <ppapi/cpp/instance.h>

@@ -40,7 +40,7 @@ const float Terra::WAVE_BIAS_INC = 2.0f;
 Terra terra;
 
 Terra::Terra() :
-  ibo( 0 ), waterTexId( 0 ), detailTexId( 0 ), mapTexId( 0 ), id( -1 )
+  ibo( 0 ), id( -1 ), waterTexId( 0 ), detailTexId( 0 ), mapTexId( 0 )
 {
   for( int i = 0; i < TILES; ++i ) {
     for( int j = 0; j < TILES; ++j ) {
@@ -207,9 +207,9 @@ void Terra::load()
           vertex.texCoord[0] = float( x ) / float( matrix::Terra::VERTS );
           vertex.texCoord[1] = float( y ) / float( matrix::Terra::VERTS );
 
-          vertex.normal[0] = is.readFloat();
-          vertex.normal[1] = is.readFloat();
-          vertex.normal[2] = is.readFloat();
+          vertex.normal[0] = is.readByte();
+          vertex.normal[1] = is.readByte();
+          vertex.normal[2] = is.readByte();
         }
       }
 
@@ -243,9 +243,9 @@ void Terra::load()
           vertex.texCoord[0] = float( x ) / float( matrix::Terra::VERTS );
           vertex.texCoord[1] = float( y ) / float( matrix::Terra::VERTS );
 
-          vertex.normal[0] = is.readFloat();
-          vertex.normal[1] = is.readFloat();
-          vertex.normal[2] = is.readFloat();
+          vertex.normal[0] = is.readByte();
+          vertex.normal[1] = is.readByte();
+          vertex.normal[2] = is.readByte();
         }
       }
 
@@ -264,7 +264,7 @@ void Terra::load()
 
   waterTiles.clearAll();
   for( int i = 0; i < waterTiles.length(); ++i ) {
-    if( is.readChar() ) {
+    if( is.readBool() ) {
       waterTiles.set( i );
     }
   }
@@ -273,6 +273,8 @@ void Terra::load()
   waterShaderId = library.shaderIndex( "terraWater" );
 
   liquidFogColour = is.readVec4();
+
+  hard_assert( !is.isAvailable() );
 
   file.unmap();
 

@@ -136,7 +136,7 @@ function init_stressTest()
     local z = ozTerraHeight( x, y )
 
     if z > 0 then
-      ozOrbisAddObj( OZ_TRY, "goblin", x, y, z + 0.75 )
+--       ozOrbisAddObj( OZ_TRY, "goblin", x, y, z + 0.75 )
     end
   end
 

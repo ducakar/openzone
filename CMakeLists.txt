@@ -17,7 +17,6 @@ set( OZ_APPLICATION_TITLE "OpenZone" )
 
 option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." OFF )
 option( OZ_NETWORKING "Enable networking (not supported yet)." OFF )
-option( OZ_BUMPMAP "Enable bumpmapping (not supported yet)." OFF )
 option( OZ_NONFREE "Enable support for MP3 and AAC." ON )
 
 option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
