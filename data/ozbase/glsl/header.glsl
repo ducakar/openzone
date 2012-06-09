@@ -31,13 +31,9 @@ const float TAU = 6.283185307179586;
 /*
  * Transformation
  */
-struct Transform
-{
-  mat4 model;
-  mat4 complete;
-};
-
-uniform Transform       oz_Transform;
+uniform mat4            oz_ProjModelTransform;
+uniform mat4            oz_ModelTransform;
+uniform mat4            oz_BoneTransforms[16];
 
 uniform vec3            oz_CameraPosition;
 
@@ -112,6 +108,20 @@ vec4 applyFog( vec4 colour, float dist )
   float ratio = min( dist / oz_Fog.dist, 1.0 );
   return mix( colour, oz_Fog.colour, ratio*ratio );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

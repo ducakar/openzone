@@ -35,13 +35,13 @@ varying vec3 exNormal;
 
 void main()
 {
-  exPosition     = ( oz_Transform.model * vec4( inPosition, 1.0 ) ).xyz;
+  exPosition     = ( oz_ModelTransform * vec4( inPosition, 1.0 ) ).xyz;
   exTexCoord     = inTexCoord;
-  exNormal       = ( oz_Transform.model * vec4( inNormal, 0.0 ) ).xyz;
+  exNormal       = ( oz_ModelTransform * vec4( inNormal, 0.0 ) ).xyz;
 
   float windFact = max( inPosition.z, 0.0 );
   vec2  windBias = oz_Wind.xy * windFact*windFact * oz_Wind.z *
                         sin( 0.08 * ( exPosition.x + exPosition.y ) + oz_Wind.w );
 
-  gl_Position    = oz_Transform.complete * vec4( inPosition.xy + windBias.xy, inPosition.z, 1.0 );
+  gl_Position    = oz_ProjModelTransform * vec4( inPosition.xy + windBias.xy, inPosition.z, 1.0 );
 }

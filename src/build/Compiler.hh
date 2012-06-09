@@ -89,11 +89,10 @@ class Compiler
     void texCoord( float u, float v );
     void texCoord( const float* v );
 
-    void detailCoord( float u, float v );
-    void detailCoord( const float* v );
-
     void normal( float nx, float ny, float nz );
     void normal( const float* v );
+
+    void bones( int first, int second, float blend );
 
     void vertex( float x, float y, float z );
     void vertex( const float* v );

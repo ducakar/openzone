@@ -40,9 +40,9 @@ void main()
 {
   float z        = 0.15 * sin( oz_WaveBias + inPosition.x + inPosition.y );
   vec4  localPos = vec4( inPosition.x, inPosition.y, z, 1.0 );
-  vec3  position = ( oz_Transform.model * localPos ).xyz;
+  vec3  position = ( oz_ModelTransform * localPos ).xyz;
 
-  gl_Position = oz_Transform.complete * localPos;
+  gl_Position = oz_ProjModelTransform * localPos;
   exPosition  = position;
   exTexCoord  = inTexCoord * TERRA_WATER_SCALE;
   exNormal    = NORMAL;

@@ -88,13 +88,13 @@ void Transform::applyCamera()
 
 void Transform::applyModel() const
 {
-  glUniformMatrix4fv( param.oz_Transform_model, 1, GL_FALSE, model );
+  glUniformMatrix4fv( param.oz_ModelTransform, 1, GL_FALSE, model );
 }
 
 void Transform::apply() const
 {
-  glUniformMatrix4fv( param.oz_Transform_model, 1, GL_FALSE, model );
-  glUniformMatrix4fv( param.oz_Transform_complete, 1, GL_FALSE, projCamera * model );
+  glUniformMatrix4fv( param.oz_ProjModelTransform, 1, GL_FALSE, projCamera * model );
+  glUniformMatrix4fv( param.oz_ModelTransform, 1, GL_FALSE, model );
 }
 
 const Shader::Light Shader::Light::NONE = Light( Point::ORIGIN, Vec4::ZERO );
@@ -174,14 +174,13 @@ void Shader::loadProgram( int id )
   glAttachShader( programs[id].program, programs[id].vertShader );
   glAttachShader( programs[id].program, programs[id].fragShader );
 
-  OZ_REGISTER_ATTRIBUTE( Attrib::POSITION,    "inPosition" );
-  OZ_REGISTER_ATTRIBUTE( Attrib::TEXCOORD,    "inTexCoord" );
-  OZ_REGISTER_ATTRIBUTE( Attrib::NORMAL,      "inNormal" );
-#ifdef OZ_BUMPMAP
-  OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,     "inTangent" );
-  OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL,    "inBinormal" );
-  OZ_REGISTER_ATTRIBUTE( Attrib::DETAILCOORD, "inDetailCoord" );
-#endif
+  OZ_REGISTER_ATTRIBUTE( Attrib::POSITION, "inPosition" );
+  OZ_REGISTER_ATTRIBUTE( Attrib::TEXCOORD, "inTexCoord" );
+  OZ_REGISTER_ATTRIBUTE( Attrib::NORMAL,   "inNormal"   );
+  OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,  "inTangent"  );
+  OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL, "inBinormal" );
+  OZ_REGISTER_ATTRIBUTE( Attrib::BONES,    "inBones"    );
+  OZ_REGISTER_ATTRIBUTE( Attrib::BLEND,    "inBlend"    );
 
   glLinkProgram( programs[id].program );
 
@@ -207,26 +206,27 @@ void Shader::loadProgram( int id )
 
   glUseProgram( programs[id].program );
 
-  OZ_REGISTER_PARAMETER( oz_Transform_model,     "oz_Transform.model" );
-  OZ_REGISTER_PARAMETER( oz_Transform_complete,  "oz_Transform.complete" );
+  OZ_REGISTER_PARAMETER( oz_ProjModelTransform,  "oz_ProjModelTransform"  );
+  OZ_REGISTER_PARAMETER( oz_ModelTransform,      "oz_ModelTransform"      );
+  OZ_REGISTER_PARAMETER( oz_BoneTransforms,      "oz_BoneTransforms"      );
 
-  OZ_REGISTER_PARAMETER( oz_CameraPosition,      "oz_CameraPosition" );
+  OZ_REGISTER_PARAMETER( oz_CameraPosition,      "oz_CameraPosition"      );
 
-  OZ_REGISTER_PARAMETER( oz_Colour,              "oz_Colour" );
-  OZ_REGISTER_PARAMETER( oz_Textures,            "oz_Textures" );
+  OZ_REGISTER_PARAMETER( oz_Colour,              "oz_Colour"              );
+  OZ_REGISTER_PARAMETER( oz_Textures,            "oz_Textures"            );
 
-  OZ_REGISTER_PARAMETER( oz_CaelumLight_dir,     "oz_CaelumLight.dir" );
+  OZ_REGISTER_PARAMETER( oz_CaelumLight_dir,     "oz_CaelumLight.dir"     );
   OZ_REGISTER_PARAMETER( oz_CaelumLight_diffuse, "oz_CaelumLight.diffuse" );
   OZ_REGISTER_PARAMETER( oz_CaelumLight_ambient, "oz_CaelumLight.ambient" );
 
-  OZ_REGISTER_PARAMETER( oz_NightVision,         "oz_NightVision" );
+  OZ_REGISTER_PARAMETER( oz_NightVision,         "oz_NightVision"         );
 
-  OZ_REGISTER_PARAMETER( oz_Fog_dist,            "oz_Fog.dist" );
-  OZ_REGISTER_PARAMETER( oz_Fog_colour,          "oz_Fog.colour" );
+  OZ_REGISTER_PARAMETER( oz_Fog_dist,            "oz_Fog.dist"            );
+  OZ_REGISTER_PARAMETER( oz_Fog_colour,          "oz_Fog.colour"          );
 
-  OZ_REGISTER_PARAMETER( oz_WaveBias,            "oz_WaveBias" );
-  OZ_REGISTER_PARAMETER( oz_Wind,                "oz_Wind" );
-  OZ_REGISTER_PARAMETER( oz_MD2Anim,             "oz_MD2Anim" );
+  OZ_REGISTER_PARAMETER( oz_WaveBias,            "oz_WaveBias"            );
+  OZ_REGISTER_PARAMETER( oz_Wind,                "oz_Wind"                );
+  OZ_REGISTER_PARAMETER( oz_MD2Anim,             "oz_MD2Anim"             );
 
   param = programs[id].param;
 
@@ -234,6 +234,15 @@ void Shader::loadProgram( int id )
     int textureIds[4] = { 0, 1, 2, 3 };
     glUniform1iv( param.oz_Textures, 4, textureIds );
   }
+
+  Mat44 bones[] = {
+    Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID,
+    Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID,
+    Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID,
+    Mat44::ID, Mat44::ID, Mat44::ID, Mat44::ID
+  };
+
+  glUniformMatrix4fv( param.oz_BoneTransforms, 16, GL_FALSE, bones[0] );
 
   OZ_GL_CHECK_ERROR();
 }

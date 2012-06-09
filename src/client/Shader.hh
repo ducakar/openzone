@@ -34,8 +34,9 @@ namespace client
 
 struct Param
 {
-  int oz_Transform_model;
-  int oz_Transform_complete;
+  int oz_ProjModelTransform;
+  int oz_ModelTransform;
+  int oz_BoneTransforms;
 
   int oz_CameraPosition;
 
@@ -101,18 +102,13 @@ struct Attrib
 {
   enum Type
   {
-#ifdef OZ_BUMPMAP
     POSITION,
     TEXCOORD,
     NORMAL,
     TANGENT,
     BINORMAL,
-    DETAILCOORD
-#else
-    POSITION,
-    TEXCOORD,
-    NORMAL
-#endif
+    BONES,
+    BLEND
   };
 };
 

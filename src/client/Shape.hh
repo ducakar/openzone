@@ -36,14 +36,14 @@ class Shape
 {
   private:
 
-    struct ShapeVertex
+    struct Vertex
     {
       float pos[3];
       float texCoord[2];
       float normal[3];
     };
 
-    static const ShapeVertex VERTICES[];
+    static const Vertex VERTICES[];
     static const ushort INDICES[];
 
     uint vao;

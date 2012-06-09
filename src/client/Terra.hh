@@ -49,10 +49,6 @@ class Terra
     uint  vbos[TILES][TILES];
     uint  ibo;
 
-    uint  waterTexId;
-    uint  detailTexId;
-    uint  mapTexId;
-
     int   landShaderId;
     int   waterShaderId;
 
@@ -63,8 +59,13 @@ class Terra
 
   public:
 
-    int   id;
-    Vec4  liquidFogColour;
+    int  id;
+
+    uint waterTexId;
+    uint detailTexId;
+    uint mapTexId;
+
+    Vec4 liquidFogColour;
 
     Terra();
 

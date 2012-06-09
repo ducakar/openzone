@@ -18,14 +18,16 @@
  */
 
 /*
- * mesh.vert
+ * skeletalMesh.vert
  *
- * Generic shader for meshes.
+ * Mesh shader with support for skeletal animation.
  */
 
-attribute vec3 inPosition;
-attribute vec2 inTexCoord;
-attribute vec3 inNormal;
+attribute vec3  inPosition;
+attribute vec2  inTexCoord;
+attribute vec3  inNormal;
+attribute vec2  inBones;
+attribute float inBlend;
 
 varying vec3 exPosition;
 varying vec2 exTexCoord;
@@ -33,8 +35,19 @@ varying vec3 exNormal;
 
 void main()
 {
-  gl_Position = oz_ProjModelTransform * vec4( inPosition, 1.0 );
-  exPosition  = ( oz_ModelTransform * vec4( inPosition, 1.0 ) ).xyz;
+  int bone0 = int( inBones.x );
+  int bone1 = int( inBones.y );
+
+  vec4 localPos    = vec4( inPosition, 1.0 );
+  vec4 localNormal = vec4( inNormal, 0.0 );
+
+  localPos = 0.5 * ( oz_BoneTransforms[ bone0 ] * localPos +
+                     oz_BoneTransforms[ bone1 ] * localPos );
+  localNormal = 0.5 * ( oz_BoneTransforms[ bone0 ] * localNormal +
+                        oz_BoneTransforms[ bone1 ] * localNormal );
+
+  gl_Position = oz_ProjModelTransform * localPos;
+  exPosition  = ( oz_ModelTransform * localPos ).xyz;
   exTexCoord  = inTexCoord;
-  exNormal    = ( oz_ModelTransform * vec4( inNormal, 0.0 ) ).xyz;
+  exNormal    = ( oz_ModelTransform * localNormal ).xyz;
 }

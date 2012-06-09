@@ -136,6 +136,10 @@ void BSP::load()
       textures[i].name = textures[i].name.substring( 9 );
     }
 
+    if( textures[i].type & QBSP_SEA_TYPE_BIT ) {
+      textures[i].name = "@sea:" + textures[i].name;
+    }
+
     Log::println( "Texture '%s' flags %x type %x",
                   textures[i].name.cstr(),
                   textures[i].flags,
@@ -1137,13 +1141,14 @@ void BSP::saveClient()
     compiler.component( i );
 
     for( int j = 0; j < modelFaces[i].nFaces; ++j ) {
-      const Face& face = faces[ modelFaces[i].firstFace + j ];
+      const Face&    face = faces[ modelFaces[i].firstFace + j ];
+      const Texture& tex  = textures[face.texture];
 
-      if( textures[face.texture].name.isEmpty() ) {
+      if( tex.name.isEmpty() ) {
         throw Exception( "BSP has a visible face without texture" );
       }
 
-      if( textures[face.texture].type & QBSP_ALPHA_TYPE_BIT ) {
+      if( tex.type & QBSP_ALPHA_TYPE_BIT ) {
         flags |= Mesh::ALPHA_BIT;
         compiler.blend( true );
       }
@@ -1152,9 +1157,9 @@ void BSP::saveClient()
         compiler.blend( false );
       }
 
-      context.usedTextures.include( textures[face.texture].name );
+      context.usedTextures.include( tex.name );
 
-      compiler.texture( textures[face.texture].name );
+      compiler.texture( tex.name );
       compiler.begin( GL_TRIANGLES );
 
       for( int k = 0; k < face.nIndices; ++k ) {
