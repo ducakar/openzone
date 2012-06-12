@@ -72,10 +72,10 @@ class VehicleClass : public DynamicClass
 
     static ObjectClass* createClass();
 
-    virtual void initClass( const Config* config );
+    void initClass( const Config* config ) override;
 
-    virtual Object* create( int index, const Point& pos, Heading heading ) const;
-    virtual Object* create( InputStream* istream ) const;
+    Object* create( int index, const Point& pos, Heading heading ) const override;
+    Object* create( InputStream* istream ) const override;
 
 };
 

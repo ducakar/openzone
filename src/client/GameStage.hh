@@ -82,15 +82,15 @@ class GameStage : public Stage
 
   public:
 
-    virtual bool update();
-    virtual void present( bool full );
-    virtual void wait( uint micros );
+    bool update() override;
+    void present( bool full ) override;
+    void wait( uint micros ) override;
 
-    virtual void load();
-    virtual void unload();
+    void load() override;
+    void unload() override;
 
-    virtual void init();
-    virtual void free();
+    void init() override;
+    void free() override;
 
 };
 

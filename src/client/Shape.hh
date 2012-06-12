@@ -46,7 +46,6 @@ class Shape
     static const Vertex VERTICES[];
     static const ushort INDICES[];
 
-    uint vao;
     uint vbo;
     uint ibo;
 
@@ -54,7 +53,7 @@ class Shape
 
     Shape();
 
-    void bindVertexArray() const;
+    void bind() const;
 
     static void fill( float x, float y, float width, float height );
     static void fill( int x, int y, int width, int height );

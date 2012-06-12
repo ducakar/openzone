@@ -39,8 +39,10 @@ class Frame : public Area
 
     Label title;
 
-    virtual bool onMouseEvent();
-    virtual void onDraw();
+  protected:
+
+    bool onMouseEvent() override;
+    void onDraw() override;
 
   public:
 

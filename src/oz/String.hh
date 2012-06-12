@@ -58,7 +58,7 @@ class String
         /**
          * Exception description ("oz::String::ParseException").
          */
-        virtual const char* what() const noexcept;
+        const char* what() const noexcept override;
 
     };
 
@@ -288,7 +288,7 @@ class String
     OZ_ALWAYS_INLINE
     static bool isBlank( char c )
     {
-      return c == ' ' || c == '\t' || c == '\n';
+      return c == ' ' || c == '\t' || c == '\n' || c == '\r';
     }
 
     /**

@@ -368,10 +368,10 @@ inline void aFree( Elem* aDest, int count )
  *
  * @ingroup oz
  */
-template <typename Elem, size_t SIZE>
+template <typename Elem, int SIZE>
 inline int aLength( const Elem ( & )[SIZE] )
 {
-  return int( SIZE );
+  return SIZE;
 }
 
 /**

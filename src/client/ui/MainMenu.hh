@@ -43,12 +43,14 @@ class MainMenu : public Frame
 
     Text copyright;
 
-    MainMenu();
-    ~MainMenu();
-
   protected:
 
-    virtual void onDraw();
+    void onDraw() override;
+
+  public:
+
+    MainMenu();
+    ~MainMenu() override;
 
 };
 

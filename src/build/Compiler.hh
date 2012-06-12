@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "build/MeshData.hh"
+#include "build/Mesh.hh"
 
 namespace oz
 {
@@ -99,7 +99,7 @@ class Compiler
 
     void animVertex( int i );
 
-    void getMeshData( MeshData* mesh ) const;
+    void getMeshData( Mesh* mesh ) const;
 
     void init();
     void free();

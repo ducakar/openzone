@@ -18,31 +18,60 @@
  */
 
 /**
- * @file client/Colours.hh
+ * @file build/Mesh.hh
  */
 
 #pragma once
 
-#include "client/common.hh"
+#include "client/Mesh.hh"
+
+#include "build/common.hh"
 
 namespace oz
 {
-namespace client
+namespace build
 {
 
-struct Colours
+struct Vertex
 {
-  static const Vec4 GLOBAL_AMBIENT;
-  static const Vec4 WATER;
-  static const Vec4 LAVA;
+  Point    pos;
+  TexCoord texCoord;
+  Vec3     normal;
+  Vec3     tangent;
+  Vec3     binormal;
+  int      bones[2];
+  float    blend;
 
-  static Vec4 diffuse;
-  static Vec4 ambient;
-  static Vec4 caelum;
-  static Vec4 liquid;
+  bool operator == ( const Vertex& v ) const;
 
-  static Vec4 waterBlend1;
-  static Vec4 waterBlend2;
+  void write( BufferStream* ostream ) const;
+};
+
+class Mesh
+{
+  friend class Compiler;
+
+  public:
+
+    struct Part
+    {
+      int    component;
+      uint   mode;
+
+      int    material;
+      String texture;
+
+      int    nIndices;
+      int    firstIndex;
+    };
+
+    Vector<Part>   parts;
+
+    DArray<ushort> indices;
+    DArray<Vertex> vertices;
+
+    void write( BufferStream* os, bool embedTextures = true ) const;
+
 };
 
 }

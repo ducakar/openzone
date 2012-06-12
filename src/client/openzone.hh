@@ -59,13 +59,13 @@ class MainInstance : public pp::Instance, public pp::MouseLock
   public:
 
     explicit MainInstance( PP_Instance instance );
-    virtual ~MainInstance();
+    ~MainInstance() override;
 
-    virtual bool Init( uint32_t argc, const char** argn, const char** argv );
-    virtual void DidChangeView( const pp::View& view );
-    virtual void DidChangeView( const pp::Rect& position, const pp::Rect& clip );
-    virtual bool HandleInputEvent( const pp::InputEvent& event );
-    virtual void MouseLockLost();
+    bool Init( uint32_t argc, const char** argn, const char** argv ) override;
+    void DidChangeView( const pp::View& view ) override;
+    void DidChangeView( const pp::Rect& position, const pp::Rect& clip ) override;
+    bool HandleInputEvent( const pp::InputEvent& event ) override;
+    void MouseLockLost() override;
 
     static void Empty( void*, int );
     static void DidMouseLock( void* data, int result );
@@ -76,7 +76,7 @@ class MainModule : public pp::Module
 {
   public:
 
-    virtual pp::Instance* CreateInstance( PP_Instance instance );
+    pp::Instance* CreateInstance( PP_Instance instance ) override;
 
 };
 

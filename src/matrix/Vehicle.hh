@@ -92,10 +92,11 @@ class Vehicle : public Dynamic
     int   nRounds[MAX_WEAPONS];
     float shotTime[MAX_WEAPONS];
 
-  protected:
+  public:
 
     void exit();
     void eject();
+    void service();
 
     void staticHandler( const Mat44& rotMat );
     void wheeledHandler( const Mat44& rotMat );
@@ -104,23 +105,19 @@ class Vehicle : public Dynamic
     void hoverHandler( const Mat44& rotMat );
     void airHandler( const Mat44& rotMat );
 
-    virtual void onDestroy();
-    virtual void onUpdate();
-    virtual bool onUse( Bot* user );
-
-  public:
-
-    void service();
+    void onDestroy() override;
+    void onUpdate() override;
+    bool onUse( Bot* user ) override;
 
   public:
 
     explicit Vehicle( const VehicleClass* clazz, int index, const Point& p, Heading heading );
     explicit Vehicle( const VehicleClass* clazz, InputStream* istream );
 
-    virtual void write( BufferStream* ostream ) const;
+    void write( BufferStream* ostream ) const override;
 
-    virtual void readUpdate( InputStream* istream );
-    virtual void writeUpdate( BufferStream* ostream ) const;
+    void readUpdate( InputStream* istream ) override;
+    void writeUpdate( BufferStream* ostream ) const override;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

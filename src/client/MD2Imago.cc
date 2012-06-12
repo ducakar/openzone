@@ -25,7 +25,6 @@
 
 #include "client/MD2Imago.hh"
 
-#include "client/Colours.hh"
 #include "client/Context.hh"
 #include "client/Camera.hh"
 #include "client/OpenGL.hh"

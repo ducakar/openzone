@@ -23,7 +23,7 @@
 
 #include "stable.hh"
 
-#include "build/MeshData.hh"
+#include "build/Mesh.hh"
 
 #include "build/Context.hh"
 
@@ -65,7 +65,7 @@ void Vertex::write( BufferStream* ostream ) const
   ostream->writeUByte( quantifyToUByte( blend ) );
 }
 
-void MeshData::write( BufferStream* os, bool embedTextures ) const
+void Mesh::write( BufferStream* os, bool embedTextures ) const
 {
   hard_assert( parts.length() > 0 );
   hard_assert( indices.length() > 0 );
@@ -101,13 +101,13 @@ void MeshData::write( BufferStream* os, bool embedTextures ) const
       int textureFlags = 0;
 
       if( diffuseId != 0 ) {
-        textureFlags |= Mesh::DIFFUSE_BIT;
+        textureFlags |= client::Mesh::DIFFUSE_BIT;
       }
       if( masksId != 0 ) {
-        textureFlags |= Mesh::MASKS_BIT;
+        textureFlags |= client::Mesh::MASKS_BIT;
       }
       if( normalsId != 0 ) {
-        textureFlags |= Mesh::NORMALS_BIT;
+        textureFlags |= client::Mesh::NORMALS_BIT;
       }
 
       os->writeInt( textureFlags );

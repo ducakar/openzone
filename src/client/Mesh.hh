@@ -91,7 +91,6 @@ class Mesh
 
     static const Mesh* lastMesh;
 
-    uint         vao;
     uint         vbo;
     uint         ibo;
 

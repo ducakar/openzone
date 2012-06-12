@@ -32,9 +32,10 @@ namespace oz
 namespace matrix
 {
 
-Terra::Terra() :
-  id( -1 )
-{}
+void Terra::reset()
+{
+  load( -1 );
+}
 
 void Terra::load( int id_ )
 {
@@ -101,9 +102,6 @@ void Terra::init()
     for( int y = 0; y < VERTS; ++y ) {
       quads[x][y].vertex.x     = float( x * Quad::SIZE - DIM );
       quads[x][y].vertex.y     = float( y * Quad::SIZE - DIM );
-      quads[x][y].vertex.z     = 0.0f;
-      quads[x][y].triNormal[0] = Vec3( 0.0f, 0.0f, 1.0f );
-      quads[x][y].triNormal[1] = Vec3( 0.0f, 0.0f, 1.0f );
     }
   }
 }

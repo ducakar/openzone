@@ -384,7 +384,7 @@ void OBJ::save()
 
   compiler.endMesh();
 
-  MeshData mesh;
+  Mesh mesh;
   compiler.getMeshData( &mesh );
 
   BufferStream os;

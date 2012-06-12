@@ -49,15 +49,15 @@ class Camera
     static StrategicProxy strategicProxy;
     static BotProxy       botProxy;
 
-    Proxy* proxy;
+    Proxy*        proxy;
 
   public:
 
     Point         p;
-    Point         newP;
-    Point         oldP;
+    Vec3          velocity;
 
-    // relative to the object the camera is bound to
+    // Absolute rotation except when in a vehicle it is relative to vehicle orientation (when
+    // looking forward).
     float         h;
     float         v;
     float         w;
@@ -159,25 +159,24 @@ class Camera
 
     void move( const Point& pos )
     {
-      p    = Math::mix( oldP, pos, SMOOTHING_COEF );
-      newP = pos;
-      oldP = p;
+      Point oldP = p;
+
+      p        = pos;
+      velocity = ( p - oldP ) / Timer::TICK_TIME;
+    }
+
+    void smoothMove( const Point& pos )
+    {
+      Point oldP = p;
+
+      p        = Math::mix( p, pos, SMOOTHING_COEF );
+      velocity = ( p - oldP ) / Timer::TICK_TIME;
     }
 
     void warp( const Point& pos )
     {
-      oldP = pos;
-      newP = pos;
-      p    = pos;
-    }
-
-    void warpMoveZ( const Point& pos )
-    {
-      p.x  = pos.x;
-      p.y  = pos.y;
-      p.z  = Math::mix( oldP.z, pos.z, SMOOTHING_COEF );
-      newP = pos;
-      oldP = p;
+      p        = pos;
+      velocity = Vec3::ZERO;
     }
 
     void updateReferences();

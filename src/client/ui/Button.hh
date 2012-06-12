@@ -39,15 +39,17 @@ class Button : public Area
 
     typedef void Callback( Button* sender );
 
-  protected:
+  private:
 
     Label     label;
     Callback* callback;
     bool      isHighlighted;
     bool      isClicked;
 
-    virtual bool onMouseEvent();
-    virtual void onDraw();
+  protected:
+
+    bool onMouseEvent() override;
+    void onDraw() override;
 
   public:
 

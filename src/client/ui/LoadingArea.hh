@@ -39,14 +39,14 @@ class LoadingArea : public Area
 
   protected:
 
-    virtual void onDraw();
+    void onDraw() override;
 
   public:
 
     Label status;
 
     LoadingArea();
-    virtual ~LoadingArea();
+    ~LoadingArea() override;
 
 };
 

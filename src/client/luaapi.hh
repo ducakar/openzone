@@ -163,17 +163,6 @@ static int ozCameraGetPos( lua_State* l )
   return 3;
 }
 
-static int ozCameraGetDest( lua_State* l )
-{
-  ARG( 0 );
-
-  l_pushfloat( camera.newP.x );
-  l_pushfloat( camera.newP.y );
-  l_pushfloat( camera.newP.z );
-
-  return 3;
-}
-
 static int ozCameraGetH( lua_State* l )
 {
   ARG( 0 );
@@ -212,6 +201,16 @@ static int ozCameraMoveTo( lua_State* l )
 
   Point pos = Point( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
   camera.move( pos );
+
+  return 3;
+}
+
+static int ozCameraSmoothMoveTo( lua_State* l )
+{
+  ARG( 3 );
+
+  Point pos = Point( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
+  camera.smoothMove( pos );
 
   return 3;
 }

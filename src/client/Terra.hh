@@ -45,7 +45,6 @@ class Terra
 
     static const float WAVE_BIAS_INC;
 
-    uint  vaos[TILES][TILES];
     uint  vbos[TILES][TILES];
     uint  ibo;
 

@@ -48,18 +48,18 @@ class Weapon : public Dynamic
 
   protected:
 
-    virtual void onUpdate();
-    virtual bool onUse( Bot* user );
+    void onUpdate() override;
+    bool onUse( Bot* user ) override;
 
   public:
 
     explicit Weapon( const WeaponClass* clazz, int index, const Point& p, Heading heading );
     explicit Weapon( const WeaponClass* clazz, InputStream* istream );
 
-    virtual void write( BufferStream* ostream ) const;
+    void write( BufferStream* ostream ) const override;
 
-    virtual void readUpdate( InputStream* istream );
-    virtual void writeUpdate( BufferStream* ostream ) const;
+    void readUpdate( InputStream* istream ) override;
+    void writeUpdate( BufferStream* ostream ) const override;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

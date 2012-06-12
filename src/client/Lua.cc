@@ -367,6 +367,7 @@ void Lua::init()
   IMPORT_FUNC( ozCaelumGetTime );
   IMPORT_FUNC( ozCaelumSetTime );
   IMPORT_FUNC( ozCaelumAddTime );
+  IMPORT_FUNC( ozCaelumSetRealTime );
 
   /*
    * Terra
@@ -656,12 +657,12 @@ void Lua::init()
    */
 
   IMPORT_FUNC( ozCameraGetPos );
-  IMPORT_FUNC( ozCameraGetDest );
   IMPORT_FUNC( ozCameraGetH );
   IMPORT_FUNC( ozCameraSetH );
   IMPORT_FUNC( ozCameraGetV );
   IMPORT_FUNC( ozCameraSetV );
   IMPORT_FUNC( ozCameraMoveTo );
+  IMPORT_FUNC( ozCameraSmoothMoveTo );
   IMPORT_FUNC( ozCameraWarpTo );
 
   IMPORT_FUNC( ozCameraAllowReincarnation );

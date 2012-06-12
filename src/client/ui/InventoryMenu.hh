@@ -46,33 +46,33 @@ class InventoryMenu : public Frame
 
     const InventoryMenu* const master;
 
-    uint   scrollUpTexId;
-    uint   scrollDownTexId;
-    uint   useTexId;
-    uint   equipTexId;
-    uint   unequipTexId;
+    uint  scrollUpTexId;
+    uint  scrollDownTexId;
+    uint  useTexId;
+    uint  equipTexId;
+    uint  unequipTexId;
 
-    Label  itemDesc;
+    Label itemDesc;
 
-    int    cachedContainerIndex;
-    int    cachedTaggedItemIndex;
+    int   cachedContainerIndex;
+    int   cachedTaggedItemIndex;
 
-    int    tagged;
-    int    scroll;
+    int   tagged;
+    int   scroll;
 
-    bool   isMouseOver;
+    bool  isMouseOver;
 
   protected:
 
-    virtual void onVisibilityChange();
-    virtual bool onMouseEvent();
-    virtual void onUpdate();
-    virtual void onDraw();
+    void onVisibilityChange() override;
+    bool onMouseEvent() override;
+    void onUpdate() override;
+    void onDraw() override;
 
   public:
 
     InventoryMenu( const InventoryMenu* master );
-    virtual ~InventoryMenu();
+    ~InventoryMenu() override;
 
 };
 

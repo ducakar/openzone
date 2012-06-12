@@ -26,7 +26,6 @@
 #include "client/ExplosionImago.hh"
 
 #include "client/Context.hh"
-#include "client/Colours.hh"
 #include "client/OpenGL.hh"
 
 namespace oz

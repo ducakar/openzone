@@ -361,6 +361,18 @@ static int ozCaelumAddTime( lua_State* l )
   return 0;
 }
 
+static int ozCaelumSetRealTime( lua_State* l )
+{
+  ARG( 0 );
+
+  Time  localTime = Time::local();
+  float daySecs   = float( localTime.hour * 60*60 + localTime.minute * 60 + localTime.second );
+
+  // caelum.time = 0 means 6:00 (beginning of a Roman day), so shift for one quarter of a day.
+  orbis.caelum.time = Math::fmod( daySecs / 86400.0f + 0.75f, 1.0f ) * orbis.caelum.period;
+  return 0;
+}
+
 /*
  * Terra
  */

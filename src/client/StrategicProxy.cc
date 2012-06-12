@@ -50,6 +50,8 @@ StrategicProxy::StrategicProxy() :
 
 void StrategicProxy::begin()
 {
+  desiredPos = camera.p;
+
   camera.v = isFree || camera.state == Camera::NONE ? camera.v : Math::rad( DEFAULT_ANGLE );
   camera.w = 0.0f;
   camera.mag = 1.0f;
@@ -147,8 +149,6 @@ void StrategicProxy::update()
 
   camera.align();
 
-  Point p = camera.newP;
-
   if( isFree ) {
     // free camera mode
     if( keys[SDLK_LSHIFT] && !oldKeys[SDLK_LSHIFT] ) {
@@ -158,27 +158,27 @@ void StrategicProxy::update()
     float speed = ( isFreeFast ? FREE_HIGH_SPEED : FREE_LOW_SPEED ) * Timer::TICK_TIME;
 
     if( keys[SDLK_w] ) {
-      p += camera.at * speed;
+      desiredPos += camera.at * speed;
     }
     if( keys[SDLK_s] ) {
-      p -= camera.at * speed;
+      desiredPos -= camera.at * speed;
     }
     if( keys[SDLK_d] ) {
-      p += camera.right * speed;
+      desiredPos += camera.right * speed;
     }
     if( keys[SDLK_a] ) {
-      p -= camera.right * speed;
+      desiredPos -= camera.right * speed;
     }
     if( keys[SDLK_SPACE] ) {
-      p.z += speed;
+      desiredPos.z += speed;
     }
     if( keys[SDLK_LCTRL] ) {
-      p.z -= speed;
+      desiredPos.z -= speed;
     }
 
-    p.x = clamp<float>( p.x, -Orbis::DIM, +Orbis::DIM );
-    p.y = clamp<float>( p.y, -Orbis::DIM, +Orbis::DIM );
-    p.z = clamp<float>( p.z, -Orbis::DIM, +Orbis::DIM );
+    desiredPos.x = clamp<float>( desiredPos.x, -Orbis::DIM, +Orbis::DIM );
+    desiredPos.y = clamp<float>( desiredPos.y, -Orbis::DIM, +Orbis::DIM );
+    desiredPos.z = clamp<float>( desiredPos.z, -Orbis::DIM, +Orbis::DIM );
   }
   else {
     // RTS camera mode
@@ -191,16 +191,16 @@ void StrategicProxy::update()
     float speed = ( isRTSFast ? RTS_HIGH_SPEED : RTS_LOW_SPEED ) * Timer::TICK_TIME * logHeight;
 
     if( keys[SDLK_w] ) {
-      p += up * speed;
+      desiredPos += up * speed;
     }
     if( keys[SDLK_s] ) {
-      p -= up * speed;
+      desiredPos -= up * speed;
     }
     if( keys[SDLK_d] ) {
-      p += camera.right * speed;
+      desiredPos += camera.right * speed;
     }
     if( keys[SDLK_a] ) {
-      p -= camera.right * speed;
+      desiredPos -= camera.right * speed;
     }
     if( keys[SDLK_SPACE] ) {
       height = min( MAX_HEIGHT, height + logHeight * ZOOM_FACTOR );
@@ -219,12 +219,12 @@ void StrategicProxy::update()
       height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
     }
 
-    p.x = clamp<float>( p.x, -Orbis::DIM, +Orbis::DIM );
-    p.y = clamp<float>( p.y, -Orbis::DIM, +Orbis::DIM );
-    p.z = max( 0.0f, orbis.terra.height( p.x, p.y ) ) + height;
+    desiredPos.x = clamp<float>( desiredPos.x, -Orbis::DIM, +Orbis::DIM );
+    desiredPos.y = clamp<float>( desiredPos.y, -Orbis::DIM, +Orbis::DIM );
+    desiredPos.z = max( 0.0f, orbis.terra.height( desiredPos.x, desiredPos.y ) ) + height;
   }
 
-  camera.move( p );
+  camera.smoothMove( desiredPos );
 }
 
 void StrategicProxy::reset()

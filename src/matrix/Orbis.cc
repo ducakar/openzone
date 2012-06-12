@@ -528,9 +528,6 @@ void Orbis::load()
   strAvailableIndices.alloc( 16 );
   objAvailableIndices.alloc( 256 );
   fragAvailableIndices.alloc( 512 );
-
-  terra.id = -1;
-  caelum.id = -1;
 }
 
 void Orbis::unload()
@@ -549,36 +546,14 @@ void Orbis::unload()
     }
   }
 
-  structs.free();
-  objects.free();
   frags.free();
+  objects.free();
+  structs.free();
 
-  Struct::overlappingObjs.clear();
-  Struct::overlappingObjs.dealloc();
+  terra.reset();
+  caelum.reset();
 
-  library.freeBSPs();
-
-  strFreedIndices[0].clear();
-  strFreedIndices[0].dealloc();
-  strFreedIndices[1].clear();
-  strFreedIndices[1].dealloc();
-  objFreedIndices[0].clear();
-  objFreedIndices[0].dealloc();
-  objFreedIndices[1].clear();
-  objFreedIndices[1].dealloc();
-  fragFreedIndices[0].clear();
-  fragFreedIndices[0].dealloc();
-  fragFreedIndices[1].clear();
-  fragFreedIndices[1].dealloc();
-
-  strAvailableIndices.clear();
-  strAvailableIndices.dealloc();
-  objAvailableIndices.clear();
-  objAvailableIndices.dealloc();
-  fragAvailableIndices.clear();
-  fragAvailableIndices.dealloc();
-
-  Struct::pool.free();
+  Frag::mpool.free();
 
   Object::Event::pool.free();
   Object::pool.free();
@@ -587,7 +562,31 @@ void Orbis::unload()
   Bot::pool.free();
   Vehicle::pool.free();
 
-  Frag::mpool.free();
+  Struct::pool.free();
+  Struct::overlappingObjs.clear();
+  Struct::overlappingObjs.dealloc();
+
+  library.freeBSPs();
+
+  fragFreedIndices[0].clear();
+  fragFreedIndices[0].dealloc();
+  fragFreedIndices[1].clear();
+  fragFreedIndices[1].dealloc();
+  objFreedIndices[0].clear();
+  objFreedIndices[0].dealloc();
+  objFreedIndices[1].clear();
+  objFreedIndices[1].dealloc();
+  strFreedIndices[0].clear();
+  strFreedIndices[0].dealloc();
+  strFreedIndices[1].clear();
+  strFreedIndices[1].dealloc();
+
+  fragAvailableIndices.clear();
+  fragAvailableIndices.dealloc();
+  objAvailableIndices.clear();
+  objAvailableIndices.dealloc();
+  strAvailableIndices.clear();
+  strAvailableIndices.dealloc();
 }
 
 void Orbis::init()
@@ -598,9 +597,11 @@ void Orbis::init()
   waiting = 1;
 
   mins = Point( -Orbis::DIM, -Orbis::DIM, -Orbis::DIM );
-  maxs = Point(  Orbis::DIM,  Orbis::DIM,  Orbis::DIM );
+  maxs = Point( +Orbis::DIM, +Orbis::DIM, +Orbis::DIM );
 
+  caelum.reset();
   terra.init();
+  terra.reset();
 
   Log::printEnd( " OK" );
 }

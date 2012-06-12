@@ -30,9 +30,14 @@ namespace oz
 namespace matrix
 {
 
-Caelum::Caelum() :
-  id( -1 ), heading( 0.0f ), period( 86400.0f ), time( 0.0f )
-{}
+void Caelum::reset()
+{
+  id      = -1;
+
+  heading = 0.0f;
+  period  = 86400.0f;
+  time    = 0.0f;
+}
 
 void Caelum::update()
 {

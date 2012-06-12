@@ -325,7 +325,7 @@ void MD3::save()
 
     compiler.endMesh();
 
-    MeshData mesh;
+    Mesh mesh;
     compiler.getMeshData( &mesh );
     mesh.write( &os );
   }
@@ -351,7 +351,7 @@ void MD3::save()
 
     compiler.endMesh();
 
-    MeshData mesh;
+    Mesh mesh;
     compiler.getMeshData( &mesh );
     mesh.write( &os );
   }
@@ -388,7 +388,7 @@ void MD3::save()
       os.writeQuat( joints[i][client::MD3::JOINT_WEAPON].rot );
     }
 
-    MeshData mesh;
+    Mesh mesh;
     compiler.getMeshData( &mesh );
     mesh.write( &os );
   }

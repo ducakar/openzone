@@ -173,11 +173,6 @@ class Bot : public Dynamic
     String name;
     String mindFunc;
 
-  protected:
-
-    virtual void onDestroy();
-    virtual void onUpdate();
-
   public:
 
     bool hasAttribute( int attribute ) const;
@@ -205,15 +200,20 @@ class Bot : public Dynamic
     void enter( int vehicle );
     void exit();
 
+  protected:
+
+    void onDestroy() override;
+    void onUpdate() override;
+
   public:
 
     explicit Bot( const BotClass* clazz, int index, const Point& p, Heading heading );
     explicit Bot( const BotClass* clazz, InputStream* istream );
 
-    virtual void write( BufferStream* ostream ) const;
+    void write( BufferStream* ostream ) const override;
 
-    virtual void readUpdate( InputStream* istream );
-    virtual void writeUpdate( BufferStream* ostream ) const;
+    void readUpdate( InputStream* istream ) override;
+    void writeUpdate( BufferStream* ostream ) const override;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

@@ -35,6 +35,8 @@ namespace oz
 namespace client
 {
 
+const float BotProxy::CAMERA_Z_SMOOTHING       = 0.35f;
+const float BotProxy::CAMERA_Z_TOLERANCE       = 0.20f;
 const float BotProxy::EXTERNAL_CAM_DIST        = 2.75f;
 const float BotProxy::EXTERNAL_CAM_CLIP_DIST   = 0.10f;
 const float BotProxy::SHOULDER_CAM_RIGHT       = 0.25f;
@@ -55,21 +57,23 @@ void BotProxy::begin()
 
   Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
-  bobTheta   = 0.0f;
-  bobBias    = 0.0f;
-
   camera.h = bot->h;
   camera.v = bot->v;
   camera.isExternal = isExternal;
   camera.setTaggedObj( null );
   camera.setTaggedEnt( null );
 
-  ui::mouse.doShow = false;
-
   hud       = new ui::HudArea();
   infoFrame = new ui::InfoFrame();
   inventory = new ui::InventoryMenu( null );
   container = new ui::InventoryMenu( inventory );
+
+  botEye    = bot->p;
+  botEye.z += bot->camZ;
+  bobTheta  = 0.0f;
+  bobBias   = 0.0f;
+
+  ui::mouse.doShow = false;
 
   ui::ui.root->add( hud );
   ui::ui.root->add( infoFrame );
@@ -247,20 +251,8 @@ void BotProxy::prepare()
   }
 
   if( !alt && keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) {
-    camera.h = bot->h;
-    camera.v = bot->v;
-
     isExternal = !isExternal;
     camera.isExternal = isExternal;
-
-    if( !isExternal ) {
-      if( bot->parent != -1 ) {
-        camera.warp( bot->p + camera.up * bot->camZ );
-      }
-      else {
-        camera.warp( bot->p + Vec3( 0.0f, 0.0f, bot->camZ ) );
-      }
-    }
   }
   if( !alt && keys[SDLK_KP_MULTIPLY] && !oldKeys[SDLK_KP_MULTIPLY] &&
       ( isExternal || veh != null ) )
@@ -375,21 +367,27 @@ void BotProxy::update()
   const BotClass* botClazz = static_cast<const BotClass*>( bot->clazz );
   const Vehicle*  veh      = camera.vehicleObj;
 
+  if( veh != null ) {
+    botEye = bot->p + Mat44::rotation( veh->rot ).z * bot->camZ;
+  }
+  else {
+    botEye.x = bot->p.x;
+    botEye.y = bot->p.y;
+
+    float actualZ = bot->p.z + bot->camZ;
+
+    botEye.z = Math::mix( botEye.z, actualZ, CAMERA_Z_SMOOTHING );
+    botEye.z = clamp( botEye.z, actualZ - CAMERA_Z_TOLERANCE, actualZ + CAMERA_Z_TOLERANCE );
+  }
+
   if( !isExternal ) {
-    if( veh == null ) {
-      camera.h = bot->h;
-      camera.v = bot->v;
-    }
-
     if( veh != null ) { // inside vehicle
-      Mat44 rot = Mat44::rotation( veh->rot );
-
-      camera.w = 0.0f;
-      camera.align();
-      camera.warp( bot->p + rot.z * bot->camZ );
-
       bobTheta = 0.0f;
       bobBias  = 0.0f;
+
+      camera.w = 0.0f;
+      camera.move( botEye );
+      camera.align();
     }
     else { // 1st person, not in vehicle
       if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
@@ -414,26 +412,26 @@ void BotProxy::update()
         bobBias  *= BOB_SUPPRESSION_COEF;
       }
 
+      camera.h = bot->h;
+      camera.v = bot->v;
       camera.w = bobTheta;
+      camera.move( Point( botEye.x, botEye.y, botEye.z + bobBias ) );
       camera.align();
-
-      camera.warpMoveZ( Point( bot->p.x, bot->p.y, bot->p.z + bot->camZ + bobBias ) );
     }
   }
   else { // external
+    bobTheta = 0.0f;
+    bobBias  = 0.0f;
+
     if( !isFreelook ) {
       camera.h = bot->h;
       camera.v = bot->v;
     }
 
-    bobTheta = 0.0f;
-    bobBias  = 0.0f;
-
     camera.w = 0.0f;
     camera.align();
 
-    Point origin = Point( bot->p.x, bot->p.y, bot->p.z + bot->camZ );
-    Vec3  offset;
+    Vec3 offset;
 
     if( veh != null ) {
       float dist = veh->dim.fastL() * EXTERNAL_CAM_DIST;
@@ -444,7 +442,7 @@ void BotProxy::update()
       offset = camera.rotMat * Vec3( SHOULDER_CAM_RIGHT, SHOULDER_CAM_UP, dist );
     }
 
-    collider.translate( origin, offset, bot );
+    collider.translate( botEye, offset, bot );
     offset *= collider.hit.ratio;
 
     float dist = !offset;
@@ -455,7 +453,7 @@ void BotProxy::update()
       offset = Vec3::ZERO;
     }
 
-    camera.warpMoveZ( origin + offset );
+    camera.move( botEye + offset );
   }
 
   if( bot->parent != -1 ) {

@@ -43,7 +43,7 @@ class SettingsFrame : public Frame
 
   protected:
 
-    virtual void onDraw();
+    void onDraw() override;
 
   public:
 

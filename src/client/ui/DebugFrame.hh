@@ -34,7 +34,7 @@ namespace ui
 
 class DebugFrame : public Frame
 {
-  protected:
+  private:
 
     Label camPosRot;
     Label botPosRot;
@@ -44,7 +44,9 @@ class DebugFrame : public Frame
     Label tagVelMom;
     Label tagFlags;
 
-    virtual void onDraw();
+  protected:
+
+    void onDraw() override;
 
   public:
 

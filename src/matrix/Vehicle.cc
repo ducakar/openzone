@@ -52,6 +52,71 @@ const Vehicle::Handler Vehicle::HANDLERS[] = {
   &Vehicle::airHandler
 };
 
+void Vehicle::exit()
+{
+  if( pilot != -1 ) {
+    Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
+
+    if( bot != null ) {
+      float hsc[2];
+      Math::sincos( h, &hsc[0], &hsc[1] );
+
+      float handle = !( dim + bot->dim ) + EXIT_EPSILON;
+      Point exitPos = Point( p.x - hsc[0] * handle, p.y + hsc[1] * handle, p.z + dim.z );
+
+      if( !collider.overlaps( AABB( exitPos, bot->dim ) ) ) {
+        pilot = -1;
+
+        bot->p = exitPos;
+        bot->exit();
+      }
+    }
+  }
+}
+
+void Vehicle::eject()
+{
+  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+
+  if( pilot != -1 ) {
+    Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
+
+    if( bot != null ) {
+      Mat44 rotMat = Mat44::rotation( rot );
+
+      bot->p    = p + rotMat * clazz->pilotPos;
+      bot->p.z += bot->dim.z + dim.z + EJECT_EPSILON;
+
+      // kill bot if eject path is blocked
+      if( collider.overlaps( *bot, this ) ) {
+        bot->exit();
+        bot->kill();
+      }
+      else {
+        float hsc[2];
+        Math::sincos( h, &hsc[0], &hsc[1] );
+
+        bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
+        bot->exit();
+      }
+    }
+  }
+}
+
+void Vehicle::service()
+{
+  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+
+  life = clazz->life;
+  fuel = clazz->fuel;
+
+  for( int i = 0; i < clazz->nWeapons; ++i ) {
+    if( nRounds[i] != clazz->nRounds[i] ) {
+      nRounds[i] = clazz->nRounds[i];
+    }
+  }
+}
+
 void Vehicle::staticHandler( const Mat44& )
 {}
 
@@ -157,57 +222,6 @@ void Vehicle::airHandler( const Mat44& rotMat )
   momentum   += move * clazz->moveMomentum;
   momentum.z -= physics.gravity * Timer::TICK_TIME;
   momentum   *= 1.0f - AIR_FRICTION;
-}
-
-void Vehicle::exit()
-{
-  if( pilot != -1 ) {
-    Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
-
-    if( bot != null ) {
-      float hsc[2];
-      Math::sincos( h, &hsc[0], &hsc[1] );
-
-      float handle = !( dim + bot->dim ) + EXIT_EPSILON;
-      Point exitPos = Point( p.x - hsc[0] * handle, p.y + hsc[1] * handle, p.z + dim.z );
-
-      if( !collider.overlaps( AABB( exitPos, bot->dim ) ) ) {
-        pilot = -1;
-
-        bot->p = exitPos;
-        bot->exit();
-      }
-    }
-  }
-}
-
-void Vehicle::eject()
-{
-  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
-
-  if( pilot != -1 ) {
-    Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
-
-    if( bot != null ) {
-      Mat44 rotMat = Mat44::rotation( rot );
-
-      bot->p    = p + rotMat * clazz->pilotPos;
-      bot->p.z += bot->dim.z + dim.z + EJECT_EPSILON;
-
-      // kill bot if eject path is blocked
-      if( collider.overlaps( *bot, this ) ) {
-        bot->exit();
-        bot->kill();
-      }
-      else {
-        float hsc[2];
-        Math::sincos( h, &hsc[0], &hsc[1] );
-
-        bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
-        bot->exit();
-      }
-    }
-  }
 }
 
 void Vehicle::onDestroy()
@@ -379,20 +393,6 @@ bool Vehicle::onUse( Bot* user )
     return true;
   }
   return false;
-}
-
-void Vehicle::service()
-{
-  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
-
-  life = clazz->life;
-  fuel = clazz->fuel;
-
-  for( int i = 0; i < clazz->nWeapons; ++i ) {
-    if( nRounds[i] != clazz->nRounds[i] ) {
-      nRounds[i] = clazz->nRounds[i];
-    }
-  }
 }
 
 Vehicle::Vehicle( const VehicleClass* clazz_, int index_, const Point& p_, Heading heading ) :

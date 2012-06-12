@@ -27,7 +27,7 @@
 
 #include "client/Caelum.hh"
 
-#include "build/MeshData.hh"
+#include "build/Mesh.hh"
 #include "build/Context.hh"
 
 namespace oz

@@ -61,7 +61,7 @@ MainInstance::~MainInstance()
   }
 }
 
-bool MainInstance::Init( uint32_t, const char*[], const char*[] )
+bool MainInstance::Init( uint32_t, const char**, const char** )
 {
   return true;
 }
@@ -98,7 +98,7 @@ void MainInstance::DidChangeView( const pp::View& view )
 
   Log::println( "aa\n" );
 
-  context        = pp::Graphics3D( System::instance, pp::Graphics3D(), attribs );
+  context = pp::Graphics3D( System::instance, pp::Graphics3D(), attribs );
   if( context.is_null() ) {
     throw Exception( "Graphics3D surface creation failed" );
   }

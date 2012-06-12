@@ -26,7 +26,6 @@
 #include "client/ui/StrategicArea.hh"
 
 #include "client/Camera.hh"
-#include "client/Colours.hh"
 #include "client/Shader.hh"
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"

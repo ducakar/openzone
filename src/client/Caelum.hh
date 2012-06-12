@@ -34,7 +34,9 @@ class Caelum
 {
   public:
 
-    static const int MAX_STARS = 2048;
+    static const int   MAX_STARS = 2048;
+
+    static const Vec4  GLOBAL_AMBIENT_COLOUR;
 
   private:
 
@@ -45,11 +47,10 @@ class Caelum
     static const float GREEN_COEF;
     static const float BLUE_COEF;
 
-    static const float DAY_COLOUR[4];
-    static const float NIGHT_COLOUR[4];
-    static const float STAR_COLOUR[4];
+    static const Vec4  DAY_COLOUR;
+    static const Vec4  NIGHT_COLOUR;
+    static const Vec4  STAR_COLOUR;
 
-    uint  vao;
     uint  vbo;
     uint  ibo;
 
@@ -68,6 +69,9 @@ class Caelum
 
     Vec3  lightDir;
 
+    Vec4  diffuseColour;
+    Vec4  ambientColour;
+    Vec4  caelumColour;
     Vec4  nightColour;
     float nightLuminance;
 
