@@ -35,8 +35,8 @@ namespace client
 Camera camera;
 
 const float Camera::ROT_LIMIT      = Math::TAU / 2.0f;
-const float Camera::MIN_DISTANCE   = 0.1f;
-const float Camera::SMOOTHING_COEF = 0.5f;
+const float Camera::MIN_DISTANCE   = 0.10f;
+const float Camera::SMOOTHING_COEF = 0.35f;
 
 StrategicProxy Camera::strategicProxy;
 BotProxy       Camera::botProxy;
@@ -201,8 +201,8 @@ void Camera::update()
 void Camera::reset()
 {
   p          = Point::ORIGIN;
-  oldP       = Point::ORIGIN;
-  newP       = Point::ORIGIN;
+  velocity   = Vec3::ZERO;
+
   h          = 0.0f;
   v          = Math::TAU / 4.0f;
   w          = 0.0f;
@@ -247,13 +247,13 @@ void Camera::reset()
 void Camera::read( InputStream* istream )
 {
   p          = istream->readPoint();
-  oldP       = p;
-  newP       = p;
+  velocity   = istream->readVec3();
 
   h          = istream->readFloat();
   v          = istream->readFloat();
   w          = istream->readFloat();
   mag        = istream->readFloat();
+
   relH       = istream->readFloat();
   relV       = istream->readFloat();
 
@@ -308,7 +308,8 @@ void Camera::read( InputStream* istream )
 
 void Camera::write( BufferStream* ostream ) const
 {
-  ostream->writePoint( newP );
+  ostream->writePoint( p );
+  ostream->writeVec3( velocity );
 
   ostream->writeFloat( h );
   ostream->writeFloat( v );

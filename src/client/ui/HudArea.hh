@@ -91,13 +91,13 @@ class HudArea : public Area
 
   protected:
 
-    virtual void onUpdate();
-    virtual void onDraw();
+    void onUpdate() override;
+    void onDraw() override;
 
   public:
 
     HudArea();
-    virtual ~HudArea();
+    ~HudArea() override;
 
 };
 

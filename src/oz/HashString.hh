@@ -298,7 +298,6 @@ class HashString
 
     Elem*            data[SIZE]; ///< %Array of lists.
     Pool<Elem, SIZE> pool;       ///< Memory pool for elements.
-    int              count;      ///< Number of elements.
 
     /**
      * True iff chains have same length and respective elements are equal.
@@ -367,8 +366,7 @@ class HashString
     /**
      * Create an empty hashtable.
      */
-    HashString() :
-      count( 0 )
+    HashString()
     {
       aSet<Elem*>( data, null, SIZE );
     }
@@ -385,8 +383,7 @@ class HashString
     /**
      * Copy constructor, copies elements and storage.
      */
-    HashString( const HashString& t ) :
-      count( t.count )
+    HashString( const HashString& t )
     {
       for( int i = 0; i < SIZE; ++i ) {
         data[i] = cloneChain( t.data[i] );
@@ -397,12 +394,10 @@ class HashString
      * Move constructor, moves storage.
      */
     HashString( HashString&& t ) :
-      pool( static_cast< Pool<Elem, SIZE>&& >( t.pool ) ), count( t.count )
+      pool( static_cast< Pool<Elem, SIZE>&& >( t.pool ) )
     {
       aCopy<Elem*>( data, t.data, SIZE );
-
       aSet<Elem*>( t.data, null, SIZE );
-      t.count = 0;
     }
 
     /**
@@ -418,8 +413,6 @@ class HashString
         clearChain( data[i] );
         data[i] = cloneChain( t.data[i] );
       }
-      count = t.count;
-
       return *this;
     }
 
@@ -435,12 +428,9 @@ class HashString
       clear();
 
       aCopy<Elem*>( data, t.data, SIZE );
-      pool  = static_cast< Pool<Elem, SIZE>&& >( t.pool );
-      count = t.count;
+      pool = static_cast< Pool<Elem, SIZE>&& >( t.pool );
 
       aSet<Elem*>( t.data, null, SIZE );
-      t.count = 0;
-
       return *this;
     }
 
@@ -449,9 +439,10 @@ class HashString
      */
     bool operator == ( const HashString& t ) const
     {
-      if( count != t.count ) {
+      if( pool.length() != t.pool.length() ) {
         return false;
       }
+
       for( int i = 0; i < SIZE; ++i ) {
         if( !areChainsEqual( data[i], t.data[i] ) ) {
           return false;
@@ -465,9 +456,10 @@ class HashString
      */
     bool operator != ( const HashString& t ) const
     {
-      if( count != t.count ) {
+      if( pool.length() != t.pool.length() ) {
         return true;
       }
+
       for( int i = 0; i < SIZE; ++i ) {
         if( !areChainsEqual( data[i], t.data[i] ) ) {
           return true;
@@ -500,7 +492,7 @@ class HashString
     OZ_ALWAYS_INLINE
     int length() const
     {
-      return count;
+      return pool.length();
     }
 
     /**
@@ -509,24 +501,24 @@ class HashString
     OZ_ALWAYS_INLINE
     bool isEmpty() const
     {
-      return count == 0;
+      return pool.isEmpty();
     }
 
     /**
-     * Number of allocated elements.
+     * Current size of memory pool for elements.
      */
     OZ_ALWAYS_INLINE
     int capacity() const
     {
-      return SIZE;
+      return pool.capacity();
     }
 
     /**
-     * Length divided by capacity.
+     * Number of elements divided by hashtable index size.
      */
     float loadFactor() const
     {
-      return float( count ) / float( SIZE );
+      return float( pool.length() ) / float( SIZE );
     }
 
     /**
@@ -604,7 +596,6 @@ class HashString
       }
 
       data[i] = new( pool ) Elem( data[i], key, static_cast<Value_&&>( value ) );
-      ++count;
 
       soft_assert( loadFactor() < 0.75f );
 
@@ -631,7 +622,6 @@ class HashString
       }
 
       data[i] = new( pool ) Elem( data[i], key, static_cast<Value_&&>( value ) );
-      ++count;
 
       soft_assert( loadFactor() < 0.75f );
 
@@ -652,7 +642,6 @@ class HashString
       while( p != null ) {
         if( p->key.equals( key ) ) {
           *prev = p->next;
-          --count;
 
           p->~Elem();
           pool.dealloc( p );
@@ -675,7 +664,6 @@ class HashString
         clearChain( data[i] );
         data[i] = null;
       }
-      count = 0;
     }
 
     /**
@@ -687,7 +675,6 @@ class HashString
         freeChain( data[i] );
         data[i] = null;
       }
-      count = 0;
     }
 
     /**
@@ -695,7 +682,7 @@ class HashString
      */
     void dealloc()
     {
-      hard_assert( count == 0 );
+      hard_assert( pool.isEmpty() );
 
       pool.free();
     }

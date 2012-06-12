@@ -69,15 +69,15 @@ class StrategicArea : public Area
 
   protected:
 
-    virtual void onUpdate();
-    virtual void onVisibilityChange();
-    virtual bool onMouseEvent();
-    virtual void onDraw();
+    void onUpdate() override;
+    void onVisibilityChange() override;
+    bool onMouseEvent() override;
+    void onDraw() override;
 
   public:
 
     StrategicArea();
-    virtual ~StrategicArea();
+    ~StrategicArea() override;
 
 };
 

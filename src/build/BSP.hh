@@ -27,7 +27,7 @@
 
 #include "client/Mesh.hh"
 
-#include "build/MeshData.hh"
+#include "build/Mesh.hh"
 
 namespace oz
 {

@@ -25,7 +25,6 @@
 
 #include "client/Mesh.hh"
 
-#include "client/Colours.hh"
 #include "client/Context.hh"
 #include "client/Terra.hh"
 #include "client/OpenGL.hh"
@@ -90,12 +89,12 @@ void Mesh::reset()
 }
 
 Mesh::Mesh() :
-  vao( 0 ), parts( null )
+  vbo( 0 ), ibo( 0 ), parts( null )
 {}
 
 Mesh::~Mesh()
 {
-  hard_assert( vao == 0 );
+  hard_assert( vbo == 0 );
 
   delete[] parts;
 }
@@ -107,32 +106,18 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
   int nVertices = istream->readInt();
   int nIndices  = istream->readInt();
 
-#ifdef OZ_GL_ES
-  vao = 1;
-#else
-  glGenVertexArrays( 1, &vao );
-  glBindVertexArray( vao );
-#endif
-
   int vboSize = nVertices * int( sizeof( Vertex ) );
   int iboSize = nIndices * int( sizeof( ushort ) );
 
   glGenBuffers( 1, &vbo );
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
   glBufferData( GL_ARRAY_BUFFER, vboSize, istream->forward( vboSize ), usage );
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
   glGenBuffers( 1, &ibo );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
   glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, istream->forward( iboSize ), GL_STATIC_DRAW );
-
-#ifndef OZ_GL_ES
-  Vertex::setFormat();
-
-  glBindVertexArray( 0 );
-#endif
-
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-  glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
   DArray<Texture> textures;
 
@@ -212,7 +197,7 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
 
 void Mesh::unload()
 {
-  if( vao != 0 ) {
+  if( vbo != 0 ) {
     if( flags & EMBEDED_TEX_BIT ) {
       foreach( texId, texIds.citer() ) {
         uint id = uint( *texId );
@@ -234,13 +219,9 @@ void Mesh::unload()
 
     glDeleteBuffers( 1, &ibo );
     glDeleteBuffers( 1, &vbo );
-#ifndef OZ_GL_ES
-    glDeleteVertexArrays( 1, &vao );
-#endif
 
     ibo = 0;
     vbo = 0;
-    vao = 0;
   }
 
   OZ_GL_CHECK_ERROR();
@@ -256,14 +237,10 @@ void Mesh::upload( const Vertex* vertices, int nVertices, uint usage ) const
 void Mesh::bind() const
 {
   if( this != lastMesh ) {
-#ifdef OZ_GL_ES
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    Vertex::setFormat();
-
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-#else
-    glBindVertexArray( vao );
-#endif
+
+    Vertex::setFormat();
   }
 }
 
@@ -310,14 +287,10 @@ void Mesh::draw( int mask ) const
   }
 
   if( this != lastMesh ) {
-#ifdef OZ_GL_ES
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 
     Vertex::setFormat();
-#else
-    glBindVertexArray( vao );
-#endif
   }
 
   for( int i = 0; i < nParts; ++i ) {

@@ -103,9 +103,9 @@ void FloraModule::seed()
 {
   float area = 4.0f * Orbis::DIM * Orbis::DIM * DENSITY;
 
-  number = int( area * DENSITY );
+  int n = int( area * DENSITY );
 
-  for( int i = 0; i < number; ++i ) {
+  for( int i = 0; i < n; ++i ) {
     float x = Math::rand() * 2.0f * Orbis::DIM - Orbis::DIM;
     float y = Math::rand() * 2.0f * Orbis::DIM - Orbis::DIM;
 

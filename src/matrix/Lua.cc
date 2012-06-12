@@ -302,6 +302,7 @@ void Lua::init()
   IMPORT_FUNC( ozCaelumGetTime );
   IMPORT_FUNC( ozCaelumSetTime );
   IMPORT_FUNC( ozCaelumAddTime );
+  IMPORT_FUNC( ozCaelumSetRealTime );
 
   /*
    * Terra

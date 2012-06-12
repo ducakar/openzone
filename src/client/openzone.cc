@@ -215,12 +215,12 @@ int main( int argc, char** argv )
     System::error( e );
   }
 
-  Log::verboseMode = true;
-  Alloc::printLeaks();
-  Log::verboseMode = false;
-
   if( Alloc::count != 0 ) {
     Log::println( "There are some memory leaks. See '%s' for details.", Log::logFile() );
+
+    Log::verboseMode = true;
+    Alloc::printLeaks();
+    Log::verboseMode = false;
   }
 
   return exitCode;

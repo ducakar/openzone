@@ -55,6 +55,314 @@ const float Bot::CLIMB_MOVE_AHEAD   =  0.40f;
 
 Pool<Bot, 1024> Bot::pool;
 
+bool Bot::hasAttribute( int attribute ) const
+{
+  if( clazz->attributes & attribute ) {
+    return true;
+  }
+
+  if( parent != -1 ) {
+    const Object* vehicle = orbis.objects[parent];
+
+    if( vehicle != null && ( vehicle->clazz->attributes & attribute ) ) {
+      return true;
+    }
+  }
+
+  for( int i = 0; i < items.length(); ++i ) {
+    const Object* item = orbis.objects[ items[i] ];
+
+    if( item != null && ( item->clazz->attributes & attribute ) ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool Bot::canReach( const Entity* ent ) const
+{
+  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+
+  Point eye   = Point( p.x, p.y, p.z + camZ );
+  Vec3  reach = Vec3( clazz->reachDist, clazz->reachDist, clazz->reachDist );
+
+  return collider.overlapsEntity( AABB( eye, reach ), ent );
+}
+
+bool Bot::canReach( const Object* obj ) const
+{
+  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+
+  Point eye   = Point( p.x, p.y, p.z + camZ );
+  Vec3  reach = Vec3( clazz->reachDist, clazz->reachDist, clazz->reachDist );
+
+  return AABB( eye, reach ).overlaps( *obj );
+}
+
+bool Bot::invUse( const Dynamic* item, const Object* source )
+{
+  hard_assert( item != null && source != null );
+
+  if( ( item->flags & USE_FUNC_BIT ) && source->items.contains( item->index ) &&
+      canReach( source ) )
+  {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_INV_USE;
+    instrument = item->index;
+    container  = source->index;
+
+    return true;
+  }
+  return false;
+}
+
+bool Bot::invTake( const Dynamic* item, const Object* source )
+{
+  hard_assert( item != null && source != null );
+
+  if( source->items.contains( item->index ) && canReach( source ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_INV_TAKE;
+    instrument = item->index;
+    container  = source->index;
+
+    return true;
+  }
+  return false;
+}
+
+bool Bot::invGive( const Dynamic* item, const Object* target )
+{
+  hard_assert( item != null && target != null );
+
+  if( items.contains( item->index ) && canReach( target ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_INV_GIVE;
+    instrument = item->index;
+    container  = target->index;
+
+    return true;
+  }
+  return false;
+}
+
+bool Bot::invDrop( const Dynamic* item )
+{
+  hard_assert( item != null );
+
+  if( items.contains( item->index ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_INV_DROP;
+    instrument = item->index;
+    container  = -1;
+
+    return true;
+  }
+  return false;
+}
+
+bool Bot::invGrab( const Dynamic* item )
+{
+  hard_assert( item != null );
+
+  if( items.contains( item->index ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_INV_GRAB;
+    instrument = item->index;
+    container  = -1;
+    cargo      = -1;
+
+    return true;
+  }
+  return false;
+}
+
+bool Bot::trigger( const Entity* entity )
+{
+  hard_assert( entity != null );
+
+  if( entity->model->target != -1 && entity->key >= 0 && canReach( entity ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_TRIGGER;
+    instrument = entity->str->index * Struct::MAX_ENTITIES + int( entity - entity->str->entities );
+    container  = -1;
+
+    return true;
+  }
+  return false;
+}
+
+bool Bot::lock( const Entity* entity )
+{
+  hard_assert( entity != null );
+
+  if( entity->key != 0 && canReach( entity ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_LOCK;
+    instrument = entity->str->index * Struct::MAX_ENTITIES + int( entity - entity->str->entities );
+    container  = -1;
+
+    return true;
+  }
+  return false;
+}
+
+bool Bot::use( const Object* object )
+{
+  hard_assert( object != null );
+
+  if( ( object->flags & USE_FUNC_BIT ) && canReach( object ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_USE;
+    instrument = object->index;
+    container  = -1;
+
+    return true;
+  }
+  return false;
+}
+
+bool Bot::take( const Dynamic* item )
+{
+  hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) );
+
+  if( ( item->flags & ITEM_BIT ) && canReach( item ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_TAKE;
+    instrument = item->index;
+    container  = -1;
+
+    return true;
+  }
+  return false;
+}
+
+bool Bot::grab( const Dynamic* dynamic )
+{
+  hard_assert( dynamic == null || ( dynamic->flags & DYNAMIC_BIT ) );
+
+  if( dynamic == null || canReach( dynamic ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_GRAB;
+    instrument = dynamic == null ? -1 : dynamic->index;
+    container  = -1;
+    cargo      = -1;
+
+    return true;
+  }
+  return false;
+}
+
+bool Bot::rotateCargo()
+{
+  if( cargo != -1 ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_ROTATE;
+    instrument = -1;
+    container  = -1;
+
+    return true;
+  }
+  return false;
+}
+
+bool Bot::throwCargo()
+{
+  if( cargo != -1 ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_THROW;
+    instrument = -1;
+    container  = -1;
+
+    return true;
+  }
+  return false;
+}
+
+void Bot::heal()
+{
+  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+
+  life    = clazz->life;
+  stamina = clazz->stamina;
+}
+
+void Bot::rearm()
+{
+  for( int i = 0; i < items.length(); ++i ) {
+    if( items[i] != -1 ) {
+      Weapon* weaponObj = static_cast<Weapon*>( orbis.objects[ items[i] ] );
+
+      if( weaponObj != null && ( weaponObj->flags & Object::WEAPON_BIT ) ) {
+        const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weaponObj->clazz );
+
+        weaponObj->nRounds = weaponClazz->nRounds;
+      }
+    }
+  }
+}
+
+void Bot::kill()
+{
+  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+
+  p.z       -= dim.z - clazz->corpseDim.z - EPSILON;
+  dim.z      = clazz->corpseDim.z;
+  flags     |= WIDE_CULL_BIT;
+  flags     &= ~SOLID_BIT;
+  life       = clazz->life / 2.0f - EPSILON;
+  resistance = Math::INF;
+
+  actions    = 0;
+  instrument = -1;
+  container  = -1;
+
+  state     |= DEAD_BIT;
+  cargo      = -1;
+
+  if( clazz->nItems != 0 ) {
+    flags |= BROWSABLE_BIT;
+  }
+
+  addEvent( EVENT_DEATH, 1.0f );
+}
+
+void Bot::enter( int vehicle_ )
+{
+  hard_assert( cell != null && vehicle_ != -1 );
+
+  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+
+  parent     = vehicle_;
+
+  dim        = clazz->dim;
+
+  actions    = 0;
+  instrument = -1;
+  container  = vehicle_;
+
+  camZ       = clazz->camZ;
+  state     &= ~CROUCHING_BIT;
+  step       = 0.0f;
+  cargo      = -1;
+
+  synapse.cut( this );
+}
+
+void Bot::exit()
+{
+  hard_assert( cell == null && parent != -1 );
+  hard_assert( cargo == -1 );
+
+  parent     = -1;
+  actions    = 0;
+  instrument = -1;
+  container  = -1;
+
+  synapse.put( this );
+}
+
 void Bot::onDestroy()
 {
   // only play death sound when an alive bot is destroyed but not when a body is destroyed
@@ -768,314 +1076,6 @@ void Bot::onUpdate()
   oldState   = state;
   instrument = -1;
   container  = -1;
-}
-
-bool Bot::hasAttribute( int attribute ) const
-{
-  if( clazz->attributes & attribute ) {
-    return true;
-  }
-
-  if( parent != -1 ) {
-    const Object* vehicle = orbis.objects[parent];
-
-    if( vehicle != null && ( vehicle->clazz->attributes & attribute ) ) {
-      return true;
-    }
-  }
-
-  for( int i = 0; i < items.length(); ++i ) {
-    const Object* item = orbis.objects[ items[i] ];
-
-    if( item != null && ( item->clazz->attributes & attribute ) ) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-bool Bot::canReach( const Entity* ent ) const
-{
-  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
-
-  Point eye   = Point( p.x, p.y, p.z + camZ );
-  Vec3  reach = Vec3( clazz->reachDist, clazz->reachDist, clazz->reachDist );
-
-  return collider.overlapsEntity( AABB( eye, reach ), ent );
-}
-
-bool Bot::canReach( const Object* obj ) const
-{
-  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
-
-  Point eye   = Point( p.x, p.y, p.z + camZ );
-  Vec3  reach = Vec3( clazz->reachDist, clazz->reachDist, clazz->reachDist );
-
-  return AABB( eye, reach ).overlaps( *obj );
-}
-
-bool Bot::invUse( const Dynamic* item, const Object* source )
-{
-  hard_assert( item != null && source != null );
-
-  if( ( item->flags & USE_FUNC_BIT ) && source->items.contains( item->index ) &&
-      canReach( source ) )
-  {
-    actions   &= ~INSTRUMENT_ACTIONS;
-    actions   |= ACTION_INV_USE;
-    instrument = item->index;
-    container  = source->index;
-
-    return true;
-  }
-  return false;
-}
-
-bool Bot::invTake( const Dynamic* item, const Object* source )
-{
-  hard_assert( item != null && source != null );
-
-  if( source->items.contains( item->index ) && canReach( source ) ) {
-    actions   &= ~INSTRUMENT_ACTIONS;
-    actions   |= ACTION_INV_TAKE;
-    instrument = item->index;
-    container  = source->index;
-
-    return true;
-  }
-  return false;
-}
-
-bool Bot::invGive( const Dynamic* item, const Object* target )
-{
-  hard_assert( item != null && target != null );
-
-  if( items.contains( item->index ) && canReach( target ) ) {
-    actions   &= ~INSTRUMENT_ACTIONS;
-    actions   |= ACTION_INV_GIVE;
-    instrument = item->index;
-    container  = target->index;
-
-    return true;
-  }
-  return false;
-}
-
-bool Bot::invDrop( const Dynamic* item )
-{
-  hard_assert( item != null );
-
-  if( items.contains( item->index ) ) {
-    actions   &= ~INSTRUMENT_ACTIONS;
-    actions   |= ACTION_INV_DROP;
-    instrument = item->index;
-    container  = -1;
-
-    return true;
-  }
-  return false;
-}
-
-bool Bot::invGrab( const Dynamic* item )
-{
-  hard_assert( item != null );
-
-  if( items.contains( item->index ) ) {
-    actions   &= ~INSTRUMENT_ACTIONS;
-    actions   |= ACTION_INV_GRAB;
-    instrument = item->index;
-    container  = -1;
-    cargo      = -1;
-
-    return true;
-  }
-  return false;
-}
-
-bool Bot::trigger( const Entity* entity )
-{
-  hard_assert( entity != null );
-
-  if( entity->model->target != -1 && entity->key >= 0 && canReach( entity ) ) {
-    actions   &= ~INSTRUMENT_ACTIONS;
-    actions   |= ACTION_TRIGGER;
-    instrument = entity->str->index * Struct::MAX_ENTITIES + int( entity - entity->str->entities );
-    container  = -1;
-
-    return true;
-  }
-  return false;
-}
-
-bool Bot::lock( const Entity* entity )
-{
-  hard_assert( entity != null );
-
-  if( entity->key != 0 && canReach( entity ) ) {
-    actions   &= ~INSTRUMENT_ACTIONS;
-    actions   |= ACTION_LOCK;
-    instrument = entity->str->index * Struct::MAX_ENTITIES + int( entity - entity->str->entities );
-    container  = -1;
-
-    return true;
-  }
-  return false;
-}
-
-bool Bot::use( const Object* object )
-{
-  hard_assert( object != null );
-
-  if( ( object->flags & USE_FUNC_BIT ) && canReach( object ) ) {
-    actions   &= ~INSTRUMENT_ACTIONS;
-    actions   |= ACTION_USE;
-    instrument = object->index;
-    container  = -1;
-
-    return true;
-  }
-  return false;
-}
-
-bool Bot::take( const Dynamic* item )
-{
-  hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) );
-
-  if( ( item->flags & ITEM_BIT ) && canReach( item ) ) {
-    actions   &= ~INSTRUMENT_ACTIONS;
-    actions   |= ACTION_TAKE;
-    instrument = item->index;
-    container  = -1;
-
-    return true;
-  }
-  return false;
-}
-
-bool Bot::grab( const Dynamic* dynamic )
-{
-  hard_assert( dynamic == null || ( dynamic->flags & DYNAMIC_BIT ) );
-
-  if( dynamic == null || canReach( dynamic ) ) {
-    actions   &= ~INSTRUMENT_ACTIONS;
-    actions   |= ACTION_GRAB;
-    instrument = dynamic == null ? -1 : dynamic->index;
-    container  = -1;
-    cargo      = -1;
-
-    return true;
-  }
-  return false;
-}
-
-bool Bot::rotateCargo()
-{
-  if( cargo != -1 ) {
-    actions   &= ~INSTRUMENT_ACTIONS;
-    actions   |= ACTION_ROTATE;
-    instrument = -1;
-    container  = -1;
-
-    return true;
-  }
-  return false;
-}
-
-bool Bot::throwCargo()
-{
-  if( cargo != -1 ) {
-    actions   &= ~INSTRUMENT_ACTIONS;
-    actions   |= ACTION_THROW;
-    instrument = -1;
-    container  = -1;
-
-    return true;
-  }
-  return false;
-}
-
-void Bot::heal()
-{
-  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
-
-  life    = clazz->life;
-  stamina = clazz->stamina;
-}
-
-void Bot::rearm()
-{
-  for( int i = 0; i < items.length(); ++i ) {
-    if( items[i] != -1 ) {
-      Weapon* weaponObj = static_cast<Weapon*>( orbis.objects[ items[i] ] );
-
-      if( weaponObj != null && ( weaponObj->flags & Object::WEAPON_BIT ) ) {
-        const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weaponObj->clazz );
-
-        weaponObj->nRounds = weaponClazz->nRounds;
-      }
-    }
-  }
-}
-
-void Bot::kill()
-{
-  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
-
-  p.z       -= dim.z - clazz->corpseDim.z - EPSILON;
-  dim.z      = clazz->corpseDim.z;
-  flags     |= WIDE_CULL_BIT;
-  flags     &= ~SOLID_BIT;
-  life       = clazz->life / 2.0f - EPSILON;
-  resistance = Math::INF;
-
-  actions    = 0;
-  instrument = -1;
-  container  = -1;
-
-  state     |= DEAD_BIT;
-  cargo      = -1;
-
-  if( clazz->nItems != 0 ) {
-    flags |= BROWSABLE_BIT;
-  }
-
-  addEvent( EVENT_DEATH, 1.0f );
-}
-
-void Bot::enter( int vehicle_ )
-{
-  hard_assert( cell != null && vehicle_ != -1 );
-
-  const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
-
-  parent     = vehicle_;
-
-  dim        = clazz->dim;
-
-  actions    = 0;
-  instrument = -1;
-  container  = vehicle_;
-
-  camZ       = clazz->camZ;
-  state     &= ~CROUCHING_BIT;
-  step       = 0.0f;
-  cargo      = -1;
-
-  synapse.cut( this );
-}
-
-void Bot::exit()
-{
-  hard_assert( cell == null && parent != -1 );
-  hard_assert( cargo == -1 );
-
-  parent     = -1;
-  actions    = 0;
-  instrument = -1;
-  container  = -1;
-
-  synapse.put( this );
 }
 
 Bot::Bot( const BotClass* clazz_, int index, const Point& p_, Heading heading ) :

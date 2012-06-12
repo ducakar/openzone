@@ -1149,11 +1149,11 @@ void BSP::saveClient()
       }
 
       if( tex.type & QBSP_ALPHA_TYPE_BIT ) {
-        flags |= Mesh::ALPHA_BIT;
+        flags |= client::Mesh::ALPHA_BIT;
         compiler.blend( true );
       }
       else {
-        flags |= Mesh::SOLID_BIT;
+        flags |= client::Mesh::SOLID_BIT;
         compiler.blend( false );
       }
 
@@ -1186,7 +1186,7 @@ void BSP::saveClient()
 
   compiler.endMesh();
 
-  MeshData mesh;
+  Mesh mesh;
   compiler.getMeshData( &mesh );
 
   BufferStream os;

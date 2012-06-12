@@ -50,17 +50,17 @@ class Dynamic : public Object
 
   protected:
 
-    virtual void onDestroy();
+    void onDestroy() override;
 
   public:
 
     explicit Dynamic( const DynamicClass* clazz, int index, const Point& p, Heading heading );
     explicit Dynamic( const DynamicClass* clazz, InputStream* istream );
 
-    virtual void write( BufferStream* ostream ) const;
+    void write( BufferStream* ostream ) const override;
 
-    virtual void readUpdate( InputStream* istream );
-    virtual void writeUpdate( BufferStream* ostream ) const;
+    void readUpdate( InputStream* istream ) override;
+    void writeUpdate( BufferStream* ostream ) const override;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

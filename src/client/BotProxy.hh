@@ -37,6 +37,8 @@ class BotProxy : public Proxy
 {
   private:
 
+    static const float CAMERA_Z_SMOOTHING;
+    static const float CAMERA_Z_TOLERANCE;
     static const float EXTERNAL_CAM_DIST;
     // leave this much space between obstacle and camera, if camera is brought closer to the eyes
     // because of an obstacle
@@ -52,6 +54,7 @@ class BotProxy : public Proxy
     ui::InventoryMenu* inventory;
     ui::InventoryMenu* container;
 
+    Point botEye;
     float bobTheta;
     float bobBias;
 
@@ -62,16 +65,16 @@ class BotProxy : public Proxy
 
     BotProxy();
 
-    virtual void begin();
-    virtual void end();
+    void begin() override;
+    void end() override;
 
-    virtual void prepare();
-    virtual void update();
+    void prepare() override;
+    void update() override;
 
-    virtual void reset();
+    void reset() override;
 
-    virtual void read( InputStream* istream );
-    virtual void write( BufferStream* ostream ) const;
+    void read( InputStream* istream ) override;
+    void write( BufferStream* ostream ) const override;
 
 };
 

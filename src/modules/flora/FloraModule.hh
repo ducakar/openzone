@@ -51,9 +51,9 @@ class FloraModule : public Module
 
     void seed();
 
-    virtual void load();
+    void load() override;
 
-    virtual void registerLua() const;
+    void registerLua() const override;
 
   private:
 

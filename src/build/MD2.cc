@@ -27,7 +27,6 @@
 
 #include "client/MD2.hh"
 #include "client/Context.hh"
-#include "client/Colours.hh"
 
 #include "build/Compiler.hh"
 
@@ -382,7 +381,7 @@ void MD2::build( const char* path )
   triangles.dealloc();
   texCoords.dealloc();
 
-  MeshData mesh;
+  Mesh mesh;
   compiler.getMeshData( &mesh );
 
   int nFrameVertices = mesh.vertices.length();

@@ -59,7 +59,7 @@ void Compiler::beginMesh()
   parts.clear();
 
   part.component      = 0;
-  part.material       = Mesh::SOLID_BIT;
+  part.material       = client::Mesh::SOLID_BIT;
   part.texture        = "";
 
   vert.pos            = Point::ORIGIN;
@@ -93,7 +93,7 @@ void Compiler::blend( bool doBlend )
   hard_assert( flags & MESH_BIT );
   hard_assert( !( flags & PART_BIT ) );
 
-  part.material = doBlend ? int( Mesh::ALPHA_BIT ) : int( Mesh::SOLID_BIT );
+  part.material = doBlend ? int( client::Mesh::ALPHA_BIT ) : int( client::Mesh::SOLID_BIT );
 }
 
 void Compiler::texture( const char* texture )
@@ -321,7 +321,7 @@ void Compiler::animVertex( int i )
   vertex( float( i ), 0.0f, 0.0f );
 }
 
-void Compiler::getMeshData( MeshData* mesh ) const
+void Compiler::getMeshData( Mesh* mesh ) const
 {
   hard_assert( !( flags & MESH_BIT ) );
   hard_assert( !( flags & PART_BIT ) );

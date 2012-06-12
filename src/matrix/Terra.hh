@@ -70,13 +70,12 @@ class Terra
                               ///< <tt>matrix::Medium::GLOBAL_LAVA_BIT</tt>
     int  id;
 
-    Terra();
-
     Span getInters( float minX, float minY, float maxX, float maxY, float epsilon = 0.0f ) const;
     // indices of TerraQuad and index of the triangle inside the TerraQuad
     Pair<int> getIndices( float x, float y ) const;
     float height( float x, float y ) const;
 
+    void reset();
     void load( int id );
     void init();
 

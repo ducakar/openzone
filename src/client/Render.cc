@@ -26,7 +26,6 @@
 #include "client/Render.hh"
 
 #include "client/Frustum.hh"
-#include "client/Colours.hh"
 #include "client/Shape.hh"
 
 #include "client/Caelum.hh"
@@ -111,7 +110,7 @@ void Render::prepareDraw()
     visibility = orbis.terra.liquid & Medium::WATER_BIT ? WATER_VISIBILITY : LAVA_VISIBILITY;
   }
   else {
-    shader.fogColour = Colours::caelum;
+    shader.fogColour = caelum.caelumColour;
     visibility = visibilityRange;
   }
 
@@ -219,8 +218,8 @@ void Render::drawGeometry()
   tf.projection();
   tf.camera.translate( Point::ORIGIN - camera.p );
 
-  shader.setAmbientLight( Colours::GLOBAL_AMBIENT + Colours::ambient );
-  shader.setCaelumLight( caelum.lightDir, Colours::diffuse );
+  shader.setAmbientLight( Caelum::GLOBAL_AMBIENT_COLOUR + caelum.ambientColour );
+  shader.setCaelumLight( caelum.lightDir, caelum.diffuseColour );
 
   // set shaders
   for( int i = 0; i < library.shaders.length(); ++i ) {
@@ -317,12 +316,11 @@ void Render::drawGeometry()
   structsMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
+  shape.bind();
   shader.use( shader.plain );
 
   glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, 0 );
-
-  shape.bindVertexArray();
 
   if( showAim ) {
     Vec3 move = camera.at * 32.0f;
@@ -372,28 +370,26 @@ void Render::drawGeometry()
 
 void Render::drawOrbis()
 {
-#ifndef OZ_GL_ES
   if( isOffscreen ) {
-    glPushAttrib( GL_VIEWPORT_BIT );
     glViewport( 0, 0, renderWidth, renderHeight );
 
-    uint dbos[] = { GL_COLOR_ATTACHMENT0 };
-
     glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
+
+#ifndef OZ_GL_ES
+    uint dbos[] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers( 1, dbos );
-  }
 #endif
+  }
 
   prepareDraw();
   drawGeometry();
 
-#ifndef OZ_GL_ES
   uint beginMicros = Time::uclock();
 
   if( isOffscreen ) {
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    glViewport( 0, 0, camera.width, camera.height );
 
-    glPopAttrib();
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
     tf.ortho( camera.width, camera.height );
     tf.camera = Mat44::ID;
@@ -407,7 +403,6 @@ void Render::drawOrbis()
   }
 
   postprocessMicros += Time::uclock() - beginMicros;
-#endif
 
   OZ_GL_CHECK_ERROR();
 }
@@ -537,9 +532,6 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
 #endif
 
   bool isCatalyst  = false;
-#ifndef OZ_GL_ES
-  bool hasVAO      = false;
-#endif
   bool hasFBO      = false;
   bool hasFloatTex = false;
   bool hasS3TC     = false;
@@ -561,17 +553,16 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
   Log::println( "OpenGL extensions {" );
   Log::indent();
 
+#ifdef OZ_GL_ES
+  hasFBO = true;
+#endif
+
   if( strstr( vendor, "ATI" ) != null ) {
     isCatalyst = true;
   }
   foreach( extension, extensions.citer() ) {
     Log::println( "%s", extension->cstr() );
 
-#ifndef OZ_GL_ES
-    if( extension->equals( "GL_ARB_vertex_array_object" ) ) {
-      hasVAO = true;
-    }
-#endif
     if( extension->equals( "GL_ARB_framebuffer_object" ) ) {
       hasFBO = true;
     }
@@ -587,10 +578,6 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
     }
   }
 
-#ifdef OZ_GL_ES
-  hasFBO = true;
-#endif
-
   Log::unindent();
   Log::println( "}" );
 
@@ -604,11 +591,6 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
     config.include( "shader.vertexTexture", "false" );
     config.include( "shader.setSamplerIndices", "true" );
   }
-#ifndef OZ_GL_ES
-  if( !hasVAO ) {
-    throw Exception( "GL_ARB_vertex_array_object not supported by OpenGL" );
-  }
-#endif
   if( !hasFBO ) {
     throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
   }
@@ -707,10 +689,11 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
   camera.init( windowWidth, windowHeight );
   ui::ui.init();
 
+  shape.bind();
   shader.use( shader.plain );
 
+  glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, 0 );
-  shape.bindVertexArray();
 
   OZ_GL_CHECK_ERROR();
 

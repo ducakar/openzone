@@ -46,7 +46,7 @@ class BasicAudio : public Audio
 
     static Audio* create( const Object* obj );
 
-    virtual void play( const Audio* parent );
+    void play( const Audio* parent ) override;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

@@ -38,15 +38,15 @@ class MenuStage : public Stage
 
     bool doExit;
 
-    virtual bool update();
-    virtual void present( bool isFull );
-    virtual void wait( uint micros );
+    bool update() override;
+    void present( bool isFull ) override;
+    void wait( uint micros ) override;
 
-    virtual void load();
-    virtual void unload();
+    void load() override;
+    void unload() override;
 
-    virtual void init();
-    virtual void free();
+    void init() override;
+    void free() override;
 
 };
 

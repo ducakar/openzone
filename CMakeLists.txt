@@ -16,7 +16,6 @@ set( OZ_APPLICATION_NAME "openzone" )
 set( OZ_APPLICATION_TITLE "OpenZone" )
 
 option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." OFF )
-option( OZ_NETWORKING "Enable networking (not supported yet)." OFF )
 option( OZ_NONFREE "Enable support for MP3 and AAC." ON )
 
 option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
@@ -70,9 +69,12 @@ mark_as_advanced( OZ_SYSTEM_NAME )
 
 find_package( PhysFS REQUIRED )
 find_package( SDL REQUIRED )
+find_package( SDL_net )
 find_package( SDL_ttf REQUIRED )
 find_package( Lua51 REQUIRED )
+find_package( OpenGL )
 find_package( OpenAL REQUIRED )
+find_package( ZLIB )
 
 find_library( PTHREAD_LIBRARY pthread )
 find_library( FREEIMAGE_LIBRARY freeimage )
@@ -84,14 +86,14 @@ mark_as_advanced( PHYSFS_LIBRARY )
 mark_as_advanced( SDL_INCLUDE_DIR )
 mark_as_advanced( SDL_LIBRARY )
 mark_as_advanced( SDLMAIN_LIBRARY )
+mark_as_advanced( SDLNET_INCLUDE_DIR )
+mark_as_advanced( SDLNET_LIBRARY )
 mark_as_advanced( SDLTTF_INCLUDE_DIR )
 mark_as_advanced( SDLTTF_LIBRARY )
 mark_as_advanced( FREEIMAGE_LIBRARY )
 mark_as_advanced( VORBISFILE_LIBRARY )
 
 if( NACL )
-  find_package( ZLIB REQUIRED )
-
   find_library( PEPPER_LIBRARY ppapi )
   find_library( PEPPER_CXX_LIBRARY ppapi_cpp )
   find_library( PEPPER_GLES2_LIBRARY ppapi_gles2 )
@@ -106,16 +108,12 @@ if( NACL )
   mark_as_advanced( OGG_LIBRARY )
   mark_as_advanced( VORBIS_LIBRARY )
 elseif( WIN32 )
-  find_package( OpenGL REQUIRED )
-
   find_library( WINMM_LIBRARY winmm )
 
   mark_as_advanced( WINMM_LIBRARY )
 
   include_directories( ./include )
 else()
-  find_package( OpenGL REQUIRED )
-
   find_library( RT_LIBRARY rt )
   find_library( PULSESIMPLE_LIBRARY pulse-simple )
 
@@ -123,7 +121,7 @@ else()
   mark_as_advanced( PULSESIMPLE_LIBRARY )
 endif()
 
-include_directories( ${SDL_INCLUDE_DIR} )
+include_directories( "${SDL_INCLUDE_DIR}" )
 
 if( NACL )
   set( libs_oz "${PTHREAD_LIBRARY};${PHYSFS_LIBRARY};${PEPPER_CXX_LIBRARY};${PEPPER_LIBRARY}" )
@@ -150,6 +148,7 @@ if( NACL )
   set( libs_client "${libs_client};${PEPPER_CXX_LIBRARY}" )
   set( libs_client "${libs_client};${PEPPER_LIBRARY}" )
 else()
+  set( libs_client "${libs_client};${SDLNET_LIBRARY}" )
   set( libs_client "${libs_client};${OPENGL_gl_LIBRARY}" )
 endif()
 

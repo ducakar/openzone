@@ -54,14 +54,14 @@ class MusicPlayer : public Frame
 
   protected:
 
-    virtual void onUpdate();
-    virtual bool onMouseEvent();
-    virtual void onDraw();
+    void onUpdate() override;
+    bool onMouseEvent() override;
+    void onDraw() override;
 
   public:
 
     MusicPlayer();
-    virtual ~MusicPlayer();
+    ~MusicPlayer() override;
 
 };
 

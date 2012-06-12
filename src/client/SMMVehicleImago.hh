@@ -41,7 +41,7 @@ class SMMVehicleImago : public Imago
       Imago( obj )
     {}
 
-    virtual ~SMMVehicleImago();
+    ~SMMVehicleImago() override;
 
   public:
 
@@ -49,7 +49,7 @@ class SMMVehicleImago : public Imago
 
     static Imago* create( const Object* obj );
 
-    virtual void draw( const Imago* parent, int mask );
+    void draw( const Imago* parent, int mask ) override;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

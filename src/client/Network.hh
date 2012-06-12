@@ -25,10 +25,6 @@
 
 #include "client/common.hh"
 
-#ifdef OZ_NETWORKING
-# include <SDL_net.h>
-#endif
-
 namespace oz
 {
 namespace client
@@ -36,18 +32,12 @@ namespace client
 
 class Network
 {
-  private:
-
-#ifdef OZ_NETWORKING
-    TCPsocket socket;
-#endif
-
   public:
 
-    bool connect();
-    void disconnect();
+    static bool connect();
+    static void disconnect();
 
-    void update();
+    static void update();
 
 };
 

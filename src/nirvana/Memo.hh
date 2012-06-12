@@ -44,11 +44,11 @@ class Memo : public Device
 
     explicit Memo( const char* text );
 
-    virtual const char* type() const;
+    const char* type() const override;
 
-    virtual const char* getMemo() const;
+    const char* getMemo() const override;
 
-    virtual void write( BufferStream* ostream ) const;
+    void write( BufferStream* ostream ) const override;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

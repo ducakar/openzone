@@ -239,7 +239,7 @@ class DList
     }
 
     /**
-     * Number of elements.
+     * Iterate through the list and count elements.
      */
     int length() const
     {

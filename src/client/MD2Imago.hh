@@ -53,13 +53,13 @@ class MD2Imago : public Imago
       flags |= Imago::MD2MODEL_BIT;
     }
 
-    virtual ~MD2Imago();
+    ~MD2Imago() override;
 
   public:
 
     static Imago* create( const Object* obj );
 
-    virtual void draw( const Imago* parent, int mask );
+    void draw( const Imago* parent, int mask ) override;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

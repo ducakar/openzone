@@ -61,7 +61,7 @@ class Exception : public std::exception
     /**
      * Message string (no file, stack trace etc.).
      */
-    virtual const char* what() const noexcept;
+    const char* what() const noexcept override;
 
 };
 

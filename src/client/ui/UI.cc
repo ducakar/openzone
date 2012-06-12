@@ -26,7 +26,6 @@
 #include "client/ui/UI.hh"
 
 #include "client/Camera.hh"
-#include "client/Colours.hh"
 #include "client/Context.hh"
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"

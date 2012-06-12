@@ -47,6 +47,7 @@ class StrategicProxy : public Proxy
 
     ui::StrategicArea* strategicArea;
 
+    Point desiredPos;
     float height;
     bool  isFree;
     bool  isFreeFast;
@@ -56,16 +57,16 @@ class StrategicProxy : public Proxy
 
     StrategicProxy();
 
-    virtual void begin();
-    virtual void end();
+    void begin() override;
+    void end() override;
 
-    virtual void prepare();
-    virtual void update();
+    void prepare() override;
+    void update() override;
 
-    virtual void reset();
+    void reset() override;
 
-    virtual void read( InputStream* istream );
-    virtual void write( BufferStream* ostream ) const;
+    void read( InputStream* istream ) override;
+    void write( BufferStream* ostream ) const override;
 
 };
 

@@ -66,9 +66,12 @@
 #define OZ_NORETURN                  __attribute__(( noreturn ))
 #define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
 
-#if defined( OZ_GCC ) && OZ_GCC < 406 || defined( OZ_ECLIPSE )
+#if ( defined( OZ_GCC ) && OZ_GCC < 406 ) || defined( OZ_ECLIPSE )
 # define constexpr const
 # define noexcept  throw()
 # define nullptr   0
   namespace std { typedef decltype( nullptr ) nullptr_t; }
+#endif
+#if ( defined( OZ_GCC ) && OZ_GCC < 407 ) || defined( OZ_ECLIPSE )
+# define override
 #endif

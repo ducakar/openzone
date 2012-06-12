@@ -40,8 +40,7 @@ class Caelum
     float period;
     float time;
 
-    Caelum();
-
+    void reset();
     void update();
 
     void read( InputStream* istream );

@@ -66,13 +66,13 @@ class GalileoFrame : public Frame
 
   protected:
 
-    virtual bool onMouseEvent();
-    virtual void onDraw();
+    bool onMouseEvent() override;
+    void onDraw() override;
 
   public:
 
     GalileoFrame( const QuestFrame* questFrame );
-    virtual ~GalileoFrame();
+    ~GalileoFrame() override;
 
     void setMaximised( bool doMaximise );
 

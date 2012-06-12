@@ -25,6 +25,11 @@
 
 #include "client/Network.hh"
 
+#ifdef __native_client__
+#else
+# include <SDL_net.h>
+#endif
+
 namespace oz
 {
 namespace client
@@ -32,7 +37,7 @@ namespace client
 
 Network network;
 
-#ifndef OZ_NETWORKING
+#ifdef __native_client__
 
 bool Network::connect()
 {
@@ -47,30 +52,32 @@ void Network::update()
 
 #else
 
+static TCPsocket socket;
+
 bool Network::connect()
 {
-//    const char* host = config.getSet( "net.server", "localhost" );
-//    int port = config.getSet( "net.port", 6666 );
-//
-//    Log::print( "Connecting to %s:%d ...", host, port );
-//
-//    IPaddress ip;
-//    SDLNet_ResolveHost( &ip, host, port );
-//    socket = SDLNet_TCP_Open( &ip );
-//
-//    if( socket == null ) {
-//      Log::printEnd( " Failed" );
-//      return false;
-//    }
-//
-//    Log::printEnd( " OK" );
+  const char* host = config.getSet( "net.server", "localhost" );
+  ushort port = ushort( config.getSet( "net.port", 6666 ) );
+
+  Log::print( "Connecting to %s:%d ...", host, port );
+
+  IPaddress ip;
+  SDLNet_ResolveHost( &ip, host, port );
+  socket = SDLNet_TCP_Open( &ip );
+
+  if( socket == null ) {
+    Log::printEnd( " Failed" );
+    return false;
+  }
+
+  Log::printEnd( " OK" );
   return true;
 }
 
 void Network::disconnect()
 {
-//    SDLNet_TCP_Close( socket );
-//    socket = null;
+  SDLNet_TCP_Close( socket );
+  socket = null;
 }
 
 void Network::update()

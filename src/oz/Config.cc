@@ -56,7 +56,7 @@ void Config::loadConf( InputStream* istream )
     char ch = istream->readChar();
 
     // Skip initial spaces.
-    while( istream->isAvailable() && ( String::isSpace( ch ) || ch == '\n' ) ) {
+    while( istream->isAvailable() && String::isBlank( ch ) ) {
       ch = istream->readChar();
     }
 
@@ -119,7 +119,7 @@ void Config::loadConf( InputStream* istream )
       if( ch == '\n' ) {
         break;
       }
-      else if( !String::isSpace( ch ) ) {
+      else if( !String::isSpace( ch ) && ch != '\r' ) {
         throw Exception( "%s:%d: newline expected", filePath.cstr(), lineNum );
       }
     }

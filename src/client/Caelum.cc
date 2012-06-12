@@ -28,7 +28,6 @@
 #include "client/Context.hh"
 #include "client/Camera.hh"
 #include "client/Terra.hh"
-#include "client/Colours.hh"
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"
 
@@ -39,19 +38,23 @@ namespace client
 
 Caelum caelum;
 
-const float Caelum::DAY_BIAS       = 0.40f;
-const float Caelum::AMBIENT_COEF   = 0.60f;
+const Vec4  Caelum::GLOBAL_AMBIENT_COLOUR = Vec4( 0.20f, 0.20f, 0.25f, 1.00f );
 
-const float Caelum::RED_COEF       = +0.05f;
-const float Caelum::GREEN_COEF     = -0.05f;
-const float Caelum::BLUE_COEF      = -0.10f;
+const float Caelum::DAY_BIAS              = 0.40f;
+const float Caelum::AMBIENT_COEF          = 0.60f;
 
-const float Caelum::DAY_COLOUR[]   = { 0.45f, 0.60f, 0.90f, 1.0f };
-const float Caelum::NIGHT_COLOUR[] = { 0.02f, 0.02f, 0.05f, 1.0f };
-const float Caelum::STAR_COLOUR[]  = { 0.80f, 0.80f, 0.80f, 1.0f };
+const float Caelum::RED_COEF              = +0.05f;
+const float Caelum::GREEN_COEF            = -0.05f;
+const float Caelum::BLUE_COEF             = -0.10f;
+
+const Vec4  Caelum::DAY_COLOUR            = Vec4( 0.45f, 0.60f, 0.90f, 1.0f );
+const Vec4  Caelum::NIGHT_COLOUR          = Vec4( 0.02f, 0.02f, 0.05f, 1.0f );
+const Vec4  Caelum::STAR_COLOUR           = Vec4( 0.80f, 0.80f, 0.80f, 1.0f );
 
 Caelum::Caelum() :
-  vao( 0 ), vbo( 0 ), sunTexId( 0 ), moonTexId( 0 ), lightDir( Vec3( 0.0f, 0.0f, 1.0f ) ), id( -1 )
+  vbo( 0 ), ibo( 0 ), sunTexId( 0 ), moonTexId( 0 ), lightDir( 0.0f, 0.0f, 1.0f ),
+  diffuseColour( 1.0f, 1.0f, 1.0f, 1.0f ), ambientColour( 1.0f, 1.0f, 1.0f, 1.0f ),
+  caelumColour( 1.0f, 1.0f, 1.0f, 1.0f ), id( -1 )
 {}
 
 void Caelum::update()
@@ -68,33 +71,25 @@ void Caelum::update()
   ratio = clamp( -dir.z + DAY_BIAS, 0.0f, 1.0f );
   float ratioDiff = ( 1.0f - Math::fabs( 1.0f - 2.0f * ratio ) );
 
-  Colours::caelum.x = Math::mix( NIGHT_COLOUR[0], DAY_COLOUR[0], ratio ) + RED_COEF   * ratioDiff;
-  Colours::caelum.y = Math::mix( NIGHT_COLOUR[1], DAY_COLOUR[1], ratio ) + GREEN_COEF * ratioDiff;
-  Colours::caelum.z = Math::mix( NIGHT_COLOUR[2], DAY_COLOUR[2], ratio ) + BLUE_COEF  * ratioDiff;
-
-  Colours::liquid.x = Math::mix( NIGHT_COLOUR[0], terra.liquidFogColour.x, ratio );
-  Colours::liquid.y = Math::mix( NIGHT_COLOUR[1], terra.liquidFogColour.y, ratio );
-  Colours::liquid.z = Math::mix( NIGHT_COLOUR[2], terra.liquidFogColour.z, ratio );
+  caelumColour.x = Math::mix( NIGHT_COLOUR.x, DAY_COLOUR.x, ratio ) + RED_COEF   * ratioDiff;
+  caelumColour.y = Math::mix( NIGHT_COLOUR.y, DAY_COLOUR.y, ratio ) + GREEN_COEF * ratioDiff;
+  caelumColour.z = Math::mix( NIGHT_COLOUR.z, DAY_COLOUR.z, ratio ) + BLUE_COEF  * ratioDiff;
 
   if( camera.nightVision ) {
-    Colours::caelum.x = 0.0f;
-    Colours::caelum.y = Colours::caelum.x + Colours::caelum.y + Colours::caelum.z;
-    Colours::caelum.z = 0.0f;
-
-    Colours::liquid.x = 0.0f;
-    Colours::liquid.y = Colours::liquid.x + Colours::liquid.y + Colours::liquid.z;
-    Colours::liquid.z = 0.0f;
+    caelumColour.x = 0.0f;
+    caelumColour.y = caelumColour.x + caelumColour.y + caelumColour.z;
+    caelumColour.z = 0.0f;
   }
 
   lightDir = dir;
 
-  Colours::diffuse[0] = ratio + RED_COEF   * ratioDiff;
-  Colours::diffuse[1] = ratio + GREEN_COEF * ratioDiff;
-  Colours::diffuse[2] = ratio + BLUE_COEF  * ratioDiff;
+  diffuseColour.x = ratio + RED_COEF   * ratioDiff;
+  diffuseColour.y = ratio + GREEN_COEF * ratioDiff;
+  diffuseColour.z = ratio + BLUE_COEF  * ratioDiff;
 
-  Colours::ambient[0] = AMBIENT_COEF * Colours::diffuse[0];
-  Colours::ambient[1] = AMBIENT_COEF * Colours::diffuse[1];
-  Colours::ambient[2] = AMBIENT_COEF * Colours::diffuse[2];
+  ambientColour.x = AMBIENT_COEF * diffuseColour.x;
+  ambientColour.y = AMBIENT_COEF * diffuseColour.y;
+  ambientColour.z = AMBIENT_COEF * diffuseColour.z;
 }
 
 void Caelum::draw()
@@ -123,25 +118,20 @@ void Caelum::draw()
     tf.model = transf;
     tf.apply();
 
-    glUniform4fv( param.oz_Fog_colour, 1, Colours::caelum );
+    glUniform4fv( param.oz_Fog_colour, 1, caelum.caelumColour );
     glUniform4fv( param.oz_Colour, 1, colour );
     glUniform1i( param.oz_NightVision, camera.nightVision );
 
-#ifdef OZ_GL_ES
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 
     glEnableVertexAttribArray( Attrib::POSITION );
     glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( float[3] ), null );
 
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-#else
-    glBindVertexArray( vao );
-#endif
-
     glDrawElements( GL_TRIANGLE_STRIP, MAX_STARS * 6, GL_UNSIGNED_SHORT, null );
   }
 
-  shape.bindVertexArray();
+  shape.bind();
 
   shader.use( celestialShaderId );
   tf.applyCamera();
@@ -149,9 +139,9 @@ void Caelum::draw()
   glEnable( GL_BLEND );
 
   glUniform4f( param.oz_Colour,
-               2.0f * Colours::diffuse[0] + Colours::ambient[0],
-               Colours::diffuse[1] + Colours::ambient[1],
-               Colours::diffuse[2] + Colours::ambient[2],
+               caelum.ambientColour.x + 2.0f * caelum.diffuseColour.x,
+               caelum.ambientColour.y + caelum.diffuseColour.y,
+               caelum.ambientColour.z + caelum.diffuseColour.z,
                1.0f );
   glUniform1i( param.oz_NightVision, camera.nightVision );
   glBindTexture( GL_TEXTURE_2D, sunTexId );
@@ -202,29 +192,14 @@ void Caelum::load()
   int vboSize = MAX_STARS * 4 * int( sizeof( float[3] ) );
   int iboSize = MAX_STARS * 6 * int( sizeof( ushort ) );
 
-#ifdef OZ_GL_ES
-  vao = 1;
-#else
-  glGenVertexArrays( 1, &vao );
-  glBindVertexArray( vao );
-#endif
-
   glGenBuffers( 1, &vbo );
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
   glBufferData( GL_ARRAY_BUFFER, vboSize, is.forward( vboSize ), GL_STATIC_DRAW );
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
   glGenBuffers( 1, &ibo );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
   glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, is.forward( iboSize ), GL_STATIC_DRAW );
-
-#ifndef OZ_GL_ES
-  glEnableVertexAttribArray( Attrib::POSITION );
-  glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( float[3] ), null );
-
-  glBindVertexArray( 0 );
-#endif
-
-  glBindBuffer( GL_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
   sunTexId  = context.readTextureLayer( &is, path );
@@ -233,7 +208,6 @@ void Caelum::load()
   starShaderId      = library.shaderIndex( "stars" );
   celestialShaderId = library.shaderIndex( "celestial" );
 
-//   nightColour = is.readVec4();
   nightColour = Vec4( NIGHT_COLOUR );
   nightLuminance = ( nightColour.x + nightColour.y + nightColour.z ) / 3.0f;
 
@@ -254,23 +228,18 @@ void Caelum::unload()
 
     glDeleteBuffers( 1, &ibo );
     glDeleteBuffers( 1, &vbo );
-#ifndef OZ_GL_ES
-    glDeleteVertexArrays( 1, &vao );
-#endif
 
     sunTexId = 0;
     moonTexId = 0;
 
     ibo = 0;
     vbo = 0;
-    vao = 0;
 
-    Colours::diffuse = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
-    Colours::ambient = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
-    Colours::caelum  = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
-    Colours::liquid  = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+    lightDir      = Vec3( 0.0f, 0.0f, 1.0f );
 
-    lightDir = Vec3( 0.0f, 0.0f, 1.0f );
+    diffuseColour = Vec4::ONE;
+    ambientColour = Vec4::ONE;
+    caelumColour  = Vec4::ONE;
 
     id = -1;
   }

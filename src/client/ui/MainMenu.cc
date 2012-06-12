@@ -101,6 +101,16 @@ static void exit( Button* sender )
   menuStage.doExit = true;
 }
 
+void MainMenu::onDraw()
+{
+  glUniform4f( param.oz_Colour, 0.1f, 0.1f, 0.1f, 1.0f );
+  shape.fill( 0, 0, Area::uiWidth, Area::uiHeight );
+
+  Frame::onDraw();
+
+  copyright.draw( this );
+}
+
 MainMenu::MainMenu() :
   Frame( 0, 0, 400, 450, OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " " OZ_SYSTEM_NAME ),
   copyright( 10, 10, 380, 9, Font::SANS )
@@ -139,16 +149,6 @@ MainMenu::~MainMenu()
 {
   autosaveFile  = "";
   quicksaveFile = "";
-}
-
-void MainMenu::onDraw()
-{
-  glUniform4f( param.oz_Colour, 0.1f, 0.1f, 0.1f, 1.0f );
-  shape.fill( 0, 0, Area::uiWidth, Area::uiHeight );
-
-  Frame::onDraw();
-
-  copyright.draw( this );
 }
 
 }

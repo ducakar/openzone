@@ -593,12 +593,10 @@ void Sound::soundRun()
       camera.up.x, camera.up.y, camera.up.z
     };
 
-    Vec3 velocity = ( camera.p - camera.oldP ) / Timer::TICK_TIME;
-
     // add new sounds
     alListenerfv( AL_ORIENTATION, orientation );
     alListenerfv( AL_POSITION, camera.p );
-    alListenerfv( AL_VELOCITY, velocity );
+    alListenerfv( AL_VELOCITY, camera.velocity );
 
     if( playedStructs.length() < orbis.structs.length() ) {
       playedStructs.dealloc();

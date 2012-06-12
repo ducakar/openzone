@@ -28,7 +28,6 @@
 #include "client/Camera.hh"
 #include "client/Context.hh"
 #include "client/Shape.hh"
-#include "client/Colours.hh"
 #include "client/OpenGL.hh"
 
 namespace oz
@@ -292,12 +291,11 @@ slotsRendered:
   glEnable( GL_BLEND );
   glDisable( GL_DEPTH_TEST );
 
-  glActiveTexture( GL_TEXTURE0 );
-  glBindTexture( GL_TEXTURE_2D, 0 );
-
+  shape.bind();
   shader.use( shader.plain );
 
-  shape.bindVertexArray();
+  glActiveTexture( GL_TEXTURE0 );
+  glBindTexture( GL_TEXTURE_2D, 0 );
 
   tf.camera = Mat44::ID;
   tf.applyCamera();
