@@ -197,7 +197,10 @@ bool Physics::handleObjFriction()
 
           deltaVelX -= entity.velocity.x;
           deltaVelY -= entity.velocity.y;
-          systemMom += ENTITY_BOND_G_RATIO * gravity;
+
+          if( !( dyn->flags & Object::IN_LIQUID_BIT ) ) {
+            systemMom += ENTITY_BOND_G_RATIO * gravity;
+          }
         }
       }
       else {

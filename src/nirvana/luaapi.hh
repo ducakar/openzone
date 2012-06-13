@@ -112,20 +112,35 @@ static int ozSelfGetDim( lua_State* l )
   return 3;
 }
 
-static int ozSelfGetFlags( lua_State* l )
+static int ozSelfHasFlag( lua_State* l )
 {
   ARG( 1 );
 
-  int mask = l_toint( 1 );
-  l_pushint( ns.self->flags & mask );
+  l_pushbool( ns.self->flags & l_toint( 1 ) );
   return 1;
 }
 
-static int ozSelfGetTypeName( lua_State* l )
+static int ozSelfGetHeading( lua_State* l )
+{
+  ARG( 0 );
+
+  l_pushint( ns.self->flags & Object::HEADING_MASK );
+  return 1;
+}
+
+static int ozSelfGetClassName( lua_State* l )
 {
   ARG( 0 );
 
   l_pushstring( ns.self->clazz->name );
+  return 1;
+}
+
+static int ozSelfMaxLife( lua_State* l )
+{
+  ARG( 0 );
+
+  l_pushfloat( ns.self->clazz->life );
   return 1;
 }
 
@@ -134,6 +149,31 @@ static int ozSelfGetLife( lua_State* l )
   ARG( 0 );
 
   l_pushfloat( ns.self->life );
+  return 1;
+}
+
+static int ozSelfDefaultResistance( lua_State* l )
+{
+  ARG( 0 );
+
+  l_pushfloat( ns.self->clazz->resistance );
+  return 1;
+}
+
+static int ozSelfGetResistance( lua_State* l )
+{
+  ARG( 0 );
+
+  l_pushfloat( ns.self->resistance );
+  return 1;
+}
+
+static int ozSelfGetParent( lua_State* l )
+{
+  ARG( 0 );
+
+  int parent = ns.self->parent;
+  l_pushint( parent != -1 && orbis.objects[parent] == null ? -1 : parent );
   return 1;
 }
 
@@ -181,12 +221,19 @@ static int ozSelfGetName( lua_State* l )
   return 1;
 }
 
-static int ozSelfGetState( lua_State* l )
+static int ozSelfGetMind( lua_State* l )
+{
+  ARG( 0 );
+
+  l_pushstring( ns.self->mindFunc );
+  return 1;
+}
+
+static int ozSelfHasState( lua_State* l )
 {
   ARG( 1 );
 
-  int mask = l_toint( 1 );
-  l_pushbool( ns.self->state & mask );
+  l_pushbool( ns.self->state & l_toint( 1 ) );
   return 1;
 }
 
@@ -272,6 +319,16 @@ static int ozSelfGetDir( lua_State* l )
   return 3;
 }
 
+static int ozSelfMaxStamina( lua_State* l )
+{
+  ARG( 0 );
+
+  const BotClass* clazz = static_cast<const BotClass*>( ns.self->clazz );
+
+  l_pushfloat( clazz->stamina );
+  return 1;
+}
+
 static int ozSelfGetStamina( lua_State* l )
 {
   ARG( 0 );
@@ -280,154 +337,95 @@ static int ozSelfGetStamina( lua_State* l )
   return 1;
 }
 
-static int ozSelfActionForward( lua_State* l )
+static int ozSelfGetCargo( lua_State* l )
 {
   ARG( 0 );
 
-  ns.self->actions |= Bot::ACTION_FORWARD;
-  return 0;
-}
-
-static int ozSelfActionBackward( lua_State* l )
-{
-  ARG( 0 );
-
-  ns.self->actions |= Bot::ACTION_BACKWARD;
-  return 0;
-}
-
-static int ozSelfActionRight( lua_State* l )
-{
-  ARG( 0 );
-
-  ns.self->actions |= Bot::ACTION_RIGHT;
-  return 0;
-}
-
-static int ozSelfActionLeft( lua_State* l )
-{
-  ARG( 0 );
-
-  ns.self->actions |= Bot::ACTION_LEFT;
-  return 0;
-}
-
-static int ozSelfActionJump( lua_State* l )
-{
-  ARG( 0 );
-
-  ns.self->actions |= Bot::ACTION_JUMP;
-  return 0;
-}
-
-static int ozSelfActionCrouch( lua_State* l )
-{
-  ARG( 0 );
-
-  ns.self->actions |= Bot::ACTION_CROUCH;
-  return 0;
-}
-
-static int ozSelfActionUse( lua_State* l )
-{
-  ARG( 0 );
-
-  ns.self->actions |= Bot::ACTION_USE;
-  return 0;
-}
-
-static int ozSelfActionTake( lua_State* l )
-{
-  ARG( 0 );
-
-  ns.self->actions |= Bot::ACTION_TAKE;
-  return 0;
-}
-
-static int ozSelfActionGrab( lua_State* l )
-{
-  ARG( 0 );
-
-  ns.self->actions |= Bot::ACTION_GRAB;
-  return 0;
-}
-
-static int ozSelfActionThrow( lua_State* l )
-{
-  ARG( 0 );
-
-  ns.self->actions |= Bot::ACTION_THROW;
-  return 0;
-}
-
-static int ozSelfActionAttack( lua_State* l )
-{
-  ARG( 0 );
-
-  ns.self->actions |= Bot::ACTION_ATTACK;
-  return 0;
-}
-
-static int ozSelfActionExit( lua_State* l )
-{
-  ARG( 0 );
-
-  ns.self->actions |= Bot::ACTION_EXIT;
-  return 0;
-}
-
-static int ozSelfActionEject( lua_State* l )
-{
-  ARG( 0 );
-
-  ns.self->actions |= Bot::ACTION_EJECT;
-  return 0;
-}
-
-static int ozSelfActionSuicide( lua_State* l )
-{
-  ARG( 0 );
-
-  ns.self->actions |= Bot::ACTION_SUICIDE;
-  return 0;
-}
-
-static int ozSelfIsRunning( lua_State* l )
-{
-  ARG( 0 );
-
-  lua_pushboolean( l, ns.self->state & Bot::RUNNING_BIT );
+  int cargo = ns.self->cargo;
+  l_pushint( cargo != -1 && orbis.objects[cargo] == null ? -1 : cargo );
   return 1;
 }
 
-static int ozSelfSetRunning( lua_State* l )
-{
-  ARG( 1 );
-
-  if( lua_toboolean( l, 1 ) ) {
-    ns.self->state |= Bot::RUNNING_BIT;
-  }
-  else {
-    ns.self->state &= ~Bot::RUNNING_BIT;
-  }
-  return 0;
-}
-
-static int ozSelfToggleRunning( lua_State* l )
+static int ozSelfGetWeapon( lua_State* l )
 {
   ARG( 0 );
 
-  ns.self->state ^= Bot::RUNNING_BIT;
-  return 0;
+  int weapon = ns.self->weapon;
+  l_pushint( weapon != -1 && orbis.objects[weapon] == null ? -1 : weapon );
+  return 1;
 }
 
-static int ozSelfSetGesture( lua_State* l )
+static int ozSelfSetWeaponItem( lua_State* l )
 {
   ARG( 1 );
-  OBJ();
 
-  ns.self->state &= ~Bot::GESTURE_MASK;
-  ns.self->state |= l_toint( 1 );
+  int item = l_toint( 1 );
+  if( item == -1 ) {
+    ns.self->weapon = -1;
+  }
+  else {
+    if( uint( item ) >= uint( ns.self->items.length() ) ) {
+      ERROR( "Invalid item number (out of range)" );
+    }
+
+    int index = ns.self->items[item];
+    Weapon* weapon = static_cast<Weapon*>( orbis.objects[index] );
+
+    if( weapon == null ) {
+      l_pushbool( false );
+      return 1;
+    }
+
+    if( !( weapon->flags & Object::WEAPON_BIT ) ) {
+      ERROR( "Invalid item number (not a weapon)" );
+    }
+
+    const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
+    if( ns.self->clazz->name.beginsWith( clazz->userBase ) ) {
+      ns.self->weapon = index;
+    }
+  }
+
+  l_pushbool( true );
+  return 1;
+}
+
+static int ozSelfCanReachEntity( lua_State* l )
+{
+  ARG( 2 );
+  STR_INDEX( l_toint( 1 ) );
+  ENT_INDEX( l_toint( 2 ) );
+
+  l_pushbool( ns.self->canReach( ent ) );
+  return 1;
+}
+
+static int ozSelfCanReachObj( lua_State* l )
+{
+  ARG( 1 );
+  OBJ_INDEX( l_toint( 1 ) );
+
+  l_pushbool( ns.self->canReach( obj ) );
+  return 1;
+}
+
+static int ozSelfAction( lua_State* l )
+{
+  VARG( 1, 3 );
+
+  int action = l_toint( 1 );
+  int arg1   = l_toint( 2 );
+  int arg2   = l_toint( 3 );
+
+  if( action & Bot::INSTRUMENT_ACTIONS ) {
+    ns.self->actions   &= ~Bot::INSTRUMENT_ACTIONS;
+    ns.self->actions   |= action;
+    ns.self->instrument = arg1;
+    ns.self->container  = arg2;
+  }
+  else {
+    ns.self->actions |= action;
+  }
   return 0;
 }
 
@@ -435,67 +433,82 @@ static int ozSelfBindItems( lua_State* l )
 {
   ARG( 0 );
 
+  ms.objIndex = 0;
   ms.objects.clear();
+
   foreach( item, ns.self->items.citer() ) {
+    hard_assert( *item != -1 );
+
     ms.objects.add( orbis.objects[*item] );
   }
-  ms.objIndex = 0;
   return 0;
 }
 
-static int ozSelfBindAllOverlaps( lua_State* l )
+static int ozSelfBindItem( lua_State* l )
 {
-  ARG( 3 );
+  ARG( 1 );
 
-  AABB aabb = AABB( ns.self->p,
-                    Vec3( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) ) );
+  int index = l_toint( 1 );
 
-  ms.objects.clear();
-  ms.structs.clear();
-  collider.getOverlaps( aabb, &ms.structs, &ms.objects );
-  ms.objIndex = 0;
-  ms.strIndex = 0;
-  return 0;
-}
-
-static int ozSelfBindStrOverlaps( lua_State* l )
-{
-  ARG( 3 );
-
-  AABB aabb = AABB( ns.self->p,
-                    Vec3( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) ) );
-
-  ms.structs.clear();
-  collider.getOverlaps( aabb, &ms.structs, null );
-  ms.strIndex = 0;
-  return 0;
-}
-
-static int ozSelfBindObjOverlaps( lua_State* l )
-{
-  ARG( 3 );
-
-  AABB aabb = AABB( ns.self->p,
-                    Vec3( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) ) );
-
-  ms.objects.clear();
-  collider.getOverlaps( aabb, null, &ms.objects );
-  ms.objIndex = 0;
-  return 0;
-}
-
-static int ozSelfBindParent( lua_State* l )
-{
-  ARG( 0 );
-
-  if( ns.self->parent != -1 && orbis.objects[ns.self->parent] != null ) {
-    ms.obj = orbis.objects[ns.self->parent];
-    l_pushbool( true );
+  if( uint( index ) >= uint( ns.self->items.length() ) ) {
+    ERROR( "Invalid inventory item index" );
   }
-  else {
-    l_pushbool( false );
+
+  ms.obj = orbis.objects[ ns.self->items[index] ];
+  return 0;
+}
+
+static int ozSelfOverlaps( lua_State* l )
+{
+  ARG( 2 );
+
+  int  flags = l_toint( 1 );
+  AABB aabb  = AABB( *ns.self, l_tofloat( 2 ) );
+
+  if( flags & COLLIDE_ALL_OBJECTS_BIT ) {
+    collider.mask = ~0;
   }
+
+  bool overlaps = collider.overlaps( aabb, ns.self );
+  collider.mask = Object::SOLID_BIT;
+
+  l_pushbool( overlaps );
   return 1;
+}
+
+static int ozSelfBindOverlaps( lua_State* l )
+{
+  ARG( 2 );
+
+  int  flags = l_toint( 1 );
+  AABB aabb  = AABB( *ns.self, l_tofloat( 2 ) );
+
+  if( !( flags & ( COLLIDE_STRUCTS_BIT | COLLIDE_OBJECTS_BIT | COLLIDE_ALL_OBJECTS_BIT ) ) ) {
+    ERROR( "At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
+  }
+
+  Vector<Struct*>* structs = null;
+  Vector<Object*>* objects = null;
+
+  if( flags & COLLIDE_STRUCTS_BIT ) {
+    structs = &ms.structs;
+
+    ms.strIndex = 0;
+    ms.structs.clear();
+  }
+  if( flags & ( COLLIDE_OBJECTS_BIT | COLLIDE_ALL_OBJECTS_BIT ) ) {
+    objects = &ms.objects;
+
+    ms.objIndex = 0;
+    ms.objects.clear();
+  }
+  if( flags & COLLIDE_ALL_OBJECTS_BIT ) {
+    collider.mask = ~0;
+  }
+
+  collider.getOverlaps( aabb, structs, objects );
+  collider.mask = Object::SOLID_BIT;
+  return 0;
 }
 
 /*

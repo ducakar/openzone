@@ -519,6 +519,10 @@ void Bot::onUpdate()
         state |= CROUCHING_BIT;
       }
     }
+    if( actions & ~oldActions & ACTION_RUN ) {
+      state ^= RUNNING_BIT;
+    }
+
     if( stamina < clazz->staminaRunDrain || life < WOUNDED_THRESHOLD * clazz->life ) {
       state &= ~RUNNING_BIT;
     }

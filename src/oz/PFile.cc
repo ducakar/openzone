@@ -41,6 +41,13 @@
 # include <ppapi/cpp/instance.h>
 #endif
 
+#if PHYSFS_VER_MAJOR < 2
+# error PhysicsFS version must be at least 2.0.
+#elif PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
+# define PHYSFS_readBytes( handle, buffer, len )  PHYSFS_read( handle, buffer, 1, uint( len ) )
+# define PHYSFS_writeBytes( handle, buffer, len ) PHYSFS_write( handle, buffer, 1, uint( len ) )
+#endif
+
 namespace oz
 {
 
@@ -131,6 +138,8 @@ bool PFile::stat()
 {
   unmap();
 
+#if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
+
   if( !PHYSFS_exists( filePath ) ) {
     fileType = File::MISSING;
     fileSize = -1;
@@ -142,18 +151,48 @@ bool PFile::stat()
     fileTime = PHYSFS_getLastModTime( filePath );
   }
   else {
-    fileType = File::REGULAR;
-    fileSize = -1;
-    fileTime = PHYSFS_getLastModTime( filePath );
-
     PHYSFS_File* file = PHYSFS_openRead( filePath );
 
-    if( file != null ) {
+    if( file == null ) {
+      fileType = File::MISSING;
+      fileSize = -1;
+      fileTime = 0;
+    }
+    else {
+      fileType = File::REGULAR;
       fileSize = int( PHYSFS_fileLength( file ) );
+      fileTime = PHYSFS_getLastModTime( filePath );
 
       PHYSFS_close( file );
     }
   }
+
+#else
+
+  PHYSFS_Stat info;
+
+  if( !PHYSFS_stat( filePath, &info ) ) {
+    fileType = File::MISSING;
+    fileSize = -1;
+    fileTime = 0;
+  }
+  else if( info.filetype == PHYSFS_FILETYPE_DIRECTORY ) {
+    fileType = File::DIRECTORY;
+    fileSize = -1;
+    fileTime = max( info.createtime, info.modtime );
+  }
+  else if( info.filetype == PHYSFS_FILETYPE_REGULAR ) {
+    fileType = File::REGULAR;
+    fileSize = int( info.filesize );
+    fileTime = max( info.createtime, info.modtime );
+  }
+  else {
+    fileType = File::MISSING;
+    fileSize = -1;
+    fileTime = 0;
+  }
+
+#endif
 
   return fileType != File::MISSING;
 }
@@ -250,7 +289,7 @@ bool PFile::map()
   int size = int( PHYSFS_fileLength( file ) );
   data = new char[size];
 
-  int result = int( PHYSFS_read( file, data, 1, uint( size ) ) );
+  int result = int( PHYSFS_readBytes( file, data, ulong64( size ) ) );
   PHYSFS_close( file );
 
   if( result != size ) {
@@ -297,7 +336,7 @@ Buffer PFile::read()
   int size = int( PHYSFS_fileLength( file ) );
   buffer.alloc( size );
 
-  int result = int( PHYSFS_read( file, buffer.begin(), 1, uint( size ) ) );
+  int result = int( PHYSFS_readBytes( file, buffer.begin(), ulong64( size ) ) );
   PHYSFS_close( file );
 
   if( result != size ) {
@@ -321,7 +360,7 @@ bool PFile::write( const char* buffer, int size )
     return buffer;
   }
 
-  int result = int( PHYSFS_write( file, buffer, 1, uint( size ) ) );
+  int result = int( PHYSFS_writeBytes( file, buffer, ulong64( size ) ) );
   PHYSFS_close( file );
 
   if( result != size ) {

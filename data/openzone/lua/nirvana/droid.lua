@@ -36,7 +36,7 @@ end
 
 function droid_followCommander( l )
   if not l.commander then
-    ozSelfBindObjOverlaps( 50, 50, 50 )
+    ozSelfBindObjOverlaps( OZ_OBJECTS_BIT, 50 )
     while ozBindNextObj() do
       if not ozObjIsSelf() and ozObjHasFlag( OZ_BOT_BIT ) and ozObjGetClassName() == "droid.OOM-9" then
         l.commander = ozObjGetIndex()
@@ -51,7 +51,7 @@ function droid_followCommander( l )
   end
 
   if l.commander then
-    local distance = ozObjDistanceFromSelf()
+    local distance = ozObjDistFromSelf()
 
     if distance < 4 then
       l.nearCommander = true
@@ -81,7 +81,7 @@ function droid_huntTarget( l )
   if ozObjIsNull() or not ozObjHasFlag( OZ_BOT_BIT ) then
     l.target = nil
   else
-    local distance = ozObjDistanceFromSelf()
+    local distance = ozObjDistFromSelf()
 
     if distance < 60 then
       ozSelfSetH( ozObjHeadingFromSelf() )
@@ -104,12 +104,12 @@ function droid( l )
   if not l.target then
     local minDistance = 100
 
-    ozSelfBindObjOverlaps( 50, 50, 50 )
+    ozSelfBindObjOverlaps( OZ_OBJECTS_BIT, 50 )
 
     while ozBindNextObj() do
       local typeName = ozObjGetClassName()
       if ozObjHasFlag( OZ_BOT_BIT ) and not ozObjIsSelf() and string.sub( typeName, 1, 5 ) ~= "droid" then
-        local distance = ozObjDistanceFromSelf()
+        local distance = ozObjDistFromSelf()
 
         if distance < minDistance then
           l.target = ozObjGetIndex()

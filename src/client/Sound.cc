@@ -34,6 +34,10 @@
 extern "C" void alSetPpapiInfo( PP_Instance, PPB_GetInterface );
 #endif
 
+#if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
+# define PHYSFS_readBytes( handle, buffer, len ) PHYSFS_read( handle, buffer, 1, uint( len ) )
+#endif
+
 #define OZ_DLDECL( name ) \
   static decltype( ::name )* name = null
 
@@ -75,8 +79,8 @@ static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, null, null, null };
 
 static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle )
 {
-  return size_t( PHYSFS_read( static_cast<PHYSFS_File*>( handle ), buffer,
-                              uint( size ), uint( n ) ) );
+  return size_t( PHYSFS_readBytes( static_cast<PHYSFS_File*>( handle ), buffer,
+                                   ulong64( size * n ) ) );
 }
 
 #ifdef OZ_NONFREE
@@ -190,8 +194,8 @@ void Sound::musicOpen( const char* path )
       mad_frame_init( &madFrame );
       mad_synth_init( &madSynth );
 
-      size_t readSize = size_t( PHYSFS_read( musicFile, musicInputBuffer,
-                                             1, MUSIC_INPUT_BUFFER_SIZE ) );
+      size_t readSize = size_t( PHYSFS_readBytes( musicFile, musicInputBuffer,
+                                                  ulong64( MUSIC_INPUT_BUFFER_SIZE ) ) );
       if( readSize != size_t( MUSIC_INPUT_BUFFER_SIZE ) ) {
         throw Exception( "Failed to read MP3 stream in '%s'", path );
       }
@@ -232,8 +236,8 @@ void Sound::musicOpen( const char* path )
 
       aacDecoder = NeAACDecOpen();
 
-      size_t readSize = size_t( PHYSFS_read( musicFile, musicInputBuffer,
-                                             1, MUSIC_INPUT_BUFFER_SIZE ) );
+      size_t readSize = size_t( PHYSFS_readBytes( musicFile, musicInputBuffer,
+                                                  ulong64( MUSIC_INPUT_BUFFER_SIZE ) ) );
       if( readSize != size_t( MUSIC_INPUT_BUFFER_SIZE ) ) {
         throw Exception( "Failed to read AAC stream in '%s'", path );
       }
@@ -249,9 +253,9 @@ void Sound::musicOpen( const char* path )
 
       memmove( musicInputBuffer, musicInputBuffer + skipBytes, size_t( skipBytes ) );
 
-      readSize = size_t( PHYSFS_read( musicFile,
-                                      musicInputBuffer + MUSIC_INPUT_BUFFER_SIZE - skipBytes,
-                                      1, uint( skipBytes ) ) );
+      readSize = size_t( PHYSFS_readBytes( musicFile,
+                                           musicInputBuffer + MUSIC_INPUT_BUFFER_SIZE - skipBytes,
+                                           ulong64( skipBytes ) ) );
 
       if( readSize != size_t( skipBytes ) ) {
         throw Exception( "Failed to read AAC stream in '%s'", path );
@@ -379,8 +383,8 @@ int Sound::musicDecode()
               memmove( musicInputBuffer, madStream.next_frame, bytesLeft );
             }
 
-            size_t bytesRead = size_t( PHYSFS_read( musicFile, musicInputBuffer + bytesLeft, 1,
-                                                    uint( MUSIC_INPUT_BUFFER_SIZE - bytesLeft ) ) );
+            size_t bytesRead = size_t( PHYSFS_readBytes( musicFile, musicInputBuffer + bytesLeft,
+                                                         ulong64( MUSIC_INPUT_BUFFER_SIZE - bytesLeft ) ) );
 
             if( bytesRead == 0 ) {
               return int( reinterpret_cast<char*>( musicOutput ) - musicBuffer );
@@ -441,8 +445,8 @@ int Sound::musicDecode()
 
         memmove( musicInputBuffer, musicInputBuffer + bytesConsumed, aacInputBytes );
 
-        size_t bytesRead = size_t( PHYSFS_read( musicFile, musicInputBuffer + aacInputBytes, 1,
-                                                uint( MUSIC_INPUT_BUFFER_SIZE - aacInputBytes ) ) );
+        size_t bytesRead = size_t( PHYSFS_readBytes( musicFile, musicInputBuffer + aacInputBytes,
+                                                     ulong64( MUSIC_INPUT_BUFFER_SIZE - aacInputBytes ) ) );
 
         aacInputBytes += bytesRead;
       }
@@ -799,7 +803,7 @@ void Sound::init()
   alSourcei( musicSource, AL_SOURCE_RELATIVE, AL_TRUE );
 
   setVolume( config.getSet( "sound.volume", 1.0f ) );
-  setMusicVolume( 0.3f );
+  setMusicVolume( 0.5f );
 
 #ifdef OZ_NONFREE
 

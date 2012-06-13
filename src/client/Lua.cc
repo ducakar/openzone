@@ -407,13 +407,17 @@ void Lua::init()
   IMPORT_FUNC( ozStrNumEnts );
   IMPORT_FUNC( ozStrBindEnt );
 
+  IMPORT_FUNC( ozStrOverlaps );
+  IMPORT_FUNC( ozStrBindOverlaps );
+
   IGNORE_FUNC( ozStrVectorFromSelf );
   IGNORE_FUNC( ozStrVectorFromSelfEye );
-  IGNORE_FUNC( ozStrDirectionFromSelf );
-  IGNORE_FUNC( ozStrDirectionFromSelfEye );
-  IGNORE_FUNC( ozStrDistanceFromSelf );
-  IGNORE_FUNC( ozStrDistanceFromSelfEye );
+  IGNORE_FUNC( ozStrDirFromSelf );
+  IGNORE_FUNC( ozStrDirFromSelfEye );
+  IGNORE_FUNC( ozStrDistFromSelf );
+  IGNORE_FUNC( ozStrDistFromSelfEye );
   IGNORE_FUNC( ozStrHeadingFromSelfEye );
+  IGNORE_FUNC( ozStrRelHeadingFromSelfEye );
   IGNORE_FUNC( ozStrPitchFromSelfEye );
   IGNORE_FUNC( ozStrIsVisibleFromSelf );
   IGNORE_FUNC( ozStrIsVisibleFromSelfEye );
@@ -427,6 +431,21 @@ void Lua::init()
   IMPORT_FUNC( ozEntGetLock );
   IMPORT_FUNC( ozEntSetLock );
   IMPORT_FUNC( ozEntTrigger );
+
+  IMPORT_FUNC( ozEntOverlaps );
+  IMPORT_FUNC( ozEntBindOverlaps );
+
+  IGNORE_FUNC( ozEntVectorFromSelf );
+  IGNORE_FUNC( ozEntVectorFromSelfEye );
+  IGNORE_FUNC( ozEntDirFromSelf );
+  IGNORE_FUNC( ozEntDirFromSelfEye );
+  IGNORE_FUNC( ozEntDistFromSelf );
+  IGNORE_FUNC( ozEntDistFromSelfEye );
+  IGNORE_FUNC( ozEntHeadingFromSelfEye );
+  IGNORE_FUNC( ozEntRelHeadingFromSelfEye );
+  IGNORE_FUNC( ozEntPitchFromSelfEye );
+  IGNORE_FUNC( ozEntIsVisibleFromSelf );
+  IGNORE_FUNC( ozEntIsVisibleFromSelfEye );
 
   /*
    * Object
@@ -470,16 +489,20 @@ void Lua::init()
   IMPORT_FUNC( ozObjDamage );
   IMPORT_FUNC( ozObjDestroy );
 
-  IMPORT_FUNC( ozObjVectorFromSelf );
-  IMPORT_FUNC( ozObjVectorFromSelfEye );
-  IMPORT_FUNC( ozObjDirectionFromSelf );
-  IMPORT_FUNC( ozObjDirectionFromSelfEye );
-  IMPORT_FUNC( ozObjDistanceFromSelf );
-  IMPORT_FUNC( ozObjDistanceFromSelfEye );
-  IMPORT_FUNC( ozObjHeadingFromSelfEye );
-  IMPORT_FUNC( ozObjPitchFromSelfEye );
-  IMPORT_FUNC( ozObjIsVisibleFromSelf );
-  IMPORT_FUNC( ozObjIsVisibleFromSelfEye );
+  IMPORT_FUNC( ozObjOverlaps );
+  IMPORT_FUNC( ozObjBindOverlaps );
+
+  IGNORE_FUNC( ozObjVectorFromSelf );
+  IGNORE_FUNC( ozObjVectorFromSelfEye );
+  IGNORE_FUNC( ozObjDirFromSelf );
+  IGNORE_FUNC( ozObjDirFromSelfEye );
+  IGNORE_FUNC( ozObjDistFromSelf );
+  IGNORE_FUNC( ozObjDistFromSelfEye );
+  IGNORE_FUNC( ozObjHeadingFromSelfEye );
+  IGNORE_FUNC( ozObjRelHeadingFromSelfEye );
+  IGNORE_FUNC( ozObjPitchFromSelfEye );
+  IGNORE_FUNC( ozObjIsVisibleFromSelf );
+  IGNORE_FUNC( ozObjIsVisibleFromSelfEye );
 
   /*
    * Dynamic object
@@ -522,23 +545,23 @@ void Lua::init()
   IMPORT_FUNC( ozBotAddV );
   IMPORT_FUNC( ozBotGetDir );
 
-  IMPORT_FUNC( ozBotGetCargo );
-  IMPORT_FUNC( ozBotGetWeapon );
-  IMPORT_FUNC( ozBotSetWeaponItem );
-
   IMPORT_FUNC( ozBotMaxStamina );
   IMPORT_FUNC( ozBotGetStamina );
   IMPORT_FUNC( ozBotSetStamina );
   IMPORT_FUNC( ozBotAddStamina );
+
+  IMPORT_FUNC( ozBotGetCargo );
+  IMPORT_FUNC( ozBotGetWeapon );
+  IMPORT_FUNC( ozBotSetWeaponItem );
+
+  IMPORT_FUNC( ozBotCanReachEntity );
+  IMPORT_FUNC( ozBotCanReachObj );
 
   IMPORT_FUNC( ozBotAction );
 
   IMPORT_FUNC( ozBotHeal );
   IMPORT_FUNC( ozBotRearm );
   IMPORT_FUNC( ozBotKill );
-
-  IMPORT_FUNC( ozBotCanReachEntity );
-  IMPORT_FUNC( ozBotCanReachObj );
 
   /*
    * Vehicle
@@ -579,6 +602,21 @@ void Lua::init()
 
   IMPORT_FUNC( ozFragRemove );
 
+  IMPORT_FUNC( ozFragOverlaps );
+  IMPORT_FUNC( ozFragBindOverlaps );
+
+  IGNORE_FUNC( ozFragVectorFromSelf );
+  IGNORE_FUNC( ozFragVectorFromSelfEye );
+  IGNORE_FUNC( ozFragDirFromSelf );
+  IGNORE_FUNC( ozFragDirFromSelfEye );
+  IGNORE_FUNC( ozFragDistFromSelf );
+  IGNORE_FUNC( ozFragDistFromSelfEye );
+  IGNORE_FUNC( ozFragHeadingFromSelfEye );
+  IGNORE_FUNC( ozFragRelHeadingFromSelfEye );
+  IGNORE_FUNC( ozFragPitchFromSelfEye );
+  IGNORE_FUNC( ozFragIsVisibleFromSelf );
+  IGNORE_FUNC( ozFragIsVisibleFromSelfEye );
+
   /*
    * Mind's bot
    */
@@ -588,9 +626,18 @@ void Lua::init()
   IGNORE_FUNC( ozSelfGetIndex );
   IGNORE_FUNC( ozSelfGetPos );
   IGNORE_FUNC( ozSelfGetDim );
-  IGNORE_FUNC( ozSelfGetFlags );
-  IGNORE_FUNC( ozSelfGetTypeName );
+  IGNORE_FUNC( ozSelfHasFlag );
+  IGNORE_FUNC( ozSelfGetHeading );
+  IGNORE_FUNC( ozSelfGetClassName );
+  IGNORE_FUNC( ozSelfMaxLife );
   IGNORE_FUNC( ozSelfGetLife );
+  IGNORE_FUNC( ozSelfDefaultResistance );
+  IGNORE_FUNC( ozSelfGetResistance );
+
+  IGNORE_FUNC( ozSelfBindItems );
+  IGNORE_FUNC( ozSelfBindItem );
+
+  IGNORE_FUNC( ozSelfGetParent );
 
   IGNORE_FUNC( ozSelfGetVelocity );
   IGNORE_FUNC( ozSelfGetMomentum );
@@ -598,8 +645,8 @@ void Lua::init()
   IGNORE_FUNC( ozSelfGetLift );
 
   IGNORE_FUNC( ozSelfGetName );
-
-  IGNORE_FUNC( ozSelfGetState );
+  IGNORE_FUNC( ozSelfGetMind );
+  IGNORE_FUNC( ozSelfHasState );
   IGNORE_FUNC( ozSelfGetEyePos );
   IGNORE_FUNC( ozSelfGetH );
   IGNORE_FUNC( ozSelfSetH );
@@ -608,35 +655,24 @@ void Lua::init()
   IGNORE_FUNC( ozSelfSetV );
   IGNORE_FUNC( ozSelfAddV );
   IGNORE_FUNC( ozSelfGetDir );
+
   IGNORE_FUNC( ozSelfGetStamina );
+  IGNORE_FUNC( ozSelfMaxStamina );
 
-  IGNORE_FUNC( ozSelfActionForward );
-  IGNORE_FUNC( ozSelfActionBackward );
-  IGNORE_FUNC( ozSelfActionRight );
-  IGNORE_FUNC( ozSelfActionLeft );
-  IGNORE_FUNC( ozSelfActionJump );
-  IGNORE_FUNC( ozSelfActionCrouch );
-  IGNORE_FUNC( ozSelfActionUse );
-  IGNORE_FUNC( ozSelfActionTake );
-  IGNORE_FUNC( ozSelfActionGrab );
-  IGNORE_FUNC( ozSelfActionThrow );
-  IGNORE_FUNC( ozSelfActionAttack );
-  IGNORE_FUNC( ozSelfActionExit );
-  IGNORE_FUNC( ozSelfActionEject );
-  IGNORE_FUNC( ozSelfActionSuicide );
+  IGNORE_FUNC( ozSelfGetCargo );
+  IGNORE_FUNC( ozSelfGetWeapon );
+  IGNORE_FUNC( ozSelfSetWeaponItem );
 
-  IGNORE_FUNC( ozSelfIsRunning );
-  IGNORE_FUNC( ozSelfSetRunning );
-  IGNORE_FUNC( ozSelfToggleRunning );
+  IGNORE_FUNC( ozSelfCanReachEntity );
+  IGNORE_FUNC( ozSelfCanReachObj );
 
-  IGNORE_FUNC( ozSelfSetGesture );
+  IGNORE_FUNC( ozSelfAction );
 
   IGNORE_FUNC( ozSelfBindItems );
-  IGNORE_FUNC( ozSelfBindParent );
+  IGNORE_FUNC( ozSelfBindItem );
 
-  IGNORE_FUNC( ozSelfBindAllOverlaps );
-  IGNORE_FUNC( ozSelfBindStrOverlaps );
-  IGNORE_FUNC( ozSelfBindObjOverlaps );
+  IGNORE_FUNC( ozSelfOverlaps );
+  IGNORE_FUNC( ozSelfBindOverlaps );
 
   /*
    * Nirvana

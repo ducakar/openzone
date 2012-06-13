@@ -141,17 +141,32 @@ class Bounds
     }
 
     /**
+     * Compute centre point.
+     */
+    Point p() const
+    {
+      return Point( ( mins.x + maxs.x ) * 0.5f,
+                    ( mins.y + maxs.y ) * 0.5f,
+                    ( mins.z + maxs.z ) * 0.5f );
+    }
+
+    /**
+     * Compute extents from centre (same as <tt>dim</tt> member in <tt>AABB</tt>).
+     */
+    Vec3 dim( float eps = 0.0f ) const
+    {
+      return Vec3( ( maxs.x - mins.x ) * 0.5f + eps,
+                   ( maxs.y - mins.y ) * 0.5f + eps,
+                   ( maxs.z - mins.z ) * 0.5f + eps );
+    }
+
+    /**
      * Create <tt>AABB</tt> that describes the same set as this <tt>Bounds</tt>.
      */
     OZ_ALWAYS_INLINE
     AABB toAABB( float eps = 0.0f ) const
     {
-      return AABB( Point( ( mins.x + maxs.x ) * 0.5f,
-                          ( mins.y + maxs.y ) * 0.5f,
-                          ( mins.z + maxs.z ) * 0.5f ),
-                   Vec3( ( maxs.x - mins.x ) * 0.5f + eps,
-                         ( maxs.y - mins.y ) * 0.5f + eps,
-                         ( maxs.z - mins.z ) * 0.5f + eps ) );
+      return AABB( p(), dim( eps ) );
     }
 
     /**

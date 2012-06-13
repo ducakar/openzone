@@ -106,7 +106,7 @@ function test_cvicekQuest()
 end
 
 function test_farmQuest()
-  ozOrbisBindStrOverlaps( 82.5, -25.0, 70.0, 5.0, 5.0, 5.0 )
+  ozOrbisBindOverlaps( OZ_STRUCTS_BIT, 82.5, -25.0, 70.0, 5.0, 5.0, 5.0 )
 
   if not ozBindNextStr() then
     ozQuestEnd( oz_farmQuest, true )

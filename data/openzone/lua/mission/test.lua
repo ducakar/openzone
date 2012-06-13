@@ -41,7 +41,7 @@ function onCreate()
   ozCameraWarpTo( 141.0, -12.0, 84.75 )
   ozCameraSetV( 35.0 )
 
-  ozOrbisAddPlayer( OZ_TRY, 137, -6, 73, OZ_SOUTH )
+  ozOrbisAddPlayer( OZ_FORCE, 137, -6, 73, OZ_SOUTH )
 
   init_sample()
 

@@ -342,13 +342,17 @@ void Lua::init()
   IMPORT_FUNC( ozStrNumEnts );
   IMPORT_FUNC( ozStrBindEnt );
 
+  IMPORT_FUNC( ozStrOverlaps );
+  IMPORT_FUNC( ozStrBindOverlaps );
+
   IMPORT_FUNC( ozStrVectorFromSelf );
   IMPORT_FUNC( ozStrVectorFromSelfEye );
-  IMPORT_FUNC( ozStrDirectionFromSelf );
-  IMPORT_FUNC( ozStrDirectionFromSelfEye );
-  IMPORT_FUNC( ozStrDistanceFromSelf );
-  IMPORT_FUNC( ozStrDistanceFromSelfEye );
+  IMPORT_FUNC( ozStrDirFromSelf );
+  IMPORT_FUNC( ozStrDirFromSelfEye );
+  IMPORT_FUNC( ozStrDistFromSelf );
+  IMPORT_FUNC( ozStrDistFromSelfEye );
   IMPORT_FUNC( ozStrHeadingFromSelfEye );
+  IMPORT_FUNC( ozStrRelHeadingFromSelfEye );
   IMPORT_FUNC( ozStrPitchFromSelfEye );
   IMPORT_FUNC( ozStrIsVisibleFromSelf );
   IMPORT_FUNC( ozStrIsVisibleFromSelfEye );
@@ -362,6 +366,21 @@ void Lua::init()
   IMPORT_FUNC( ozEntGetLock );
   IMPORT_FUNC( ozEntSetLock );
   IMPORT_FUNC( ozEntTrigger );
+
+  IMPORT_FUNC( ozEntOverlaps );
+  IMPORT_FUNC( ozEntBindOverlaps );
+
+  IMPORT_FUNC( ozEntVectorFromSelf );
+  IMPORT_FUNC( ozEntVectorFromSelfEye );
+  IMPORT_FUNC( ozEntDirFromSelf );
+  IMPORT_FUNC( ozEntDirFromSelfEye );
+  IMPORT_FUNC( ozEntDistFromSelf );
+  IMPORT_FUNC( ozEntDistFromSelfEye );
+  IMPORT_FUNC( ozEntHeadingFromSelfEye );
+  IMPORT_FUNC( ozEntRelHeadingFromSelfEye );
+  IMPORT_FUNC( ozEntPitchFromSelfEye );
+  IMPORT_FUNC( ozEntIsVisibleFromSelf );
+  IMPORT_FUNC( ozEntIsVisibleFromSelfEye );
 
   /*
    * Object
@@ -405,13 +424,17 @@ void Lua::init()
   IMPORT_FUNC( ozObjDamage );
   IMPORT_FUNC( ozObjDestroy );
 
+  IMPORT_FUNC( ozObjOverlaps );
+  IMPORT_FUNC( ozObjBindOverlaps );
+
   IMPORT_FUNC( ozObjVectorFromSelf );
   IMPORT_FUNC( ozObjVectorFromSelfEye );
-  IMPORT_FUNC( ozObjDirectionFromSelf );
-  IMPORT_FUNC( ozObjDirectionFromSelfEye );
-  IMPORT_FUNC( ozObjDistanceFromSelf );
-  IMPORT_FUNC( ozObjDistanceFromSelfEye );
+  IMPORT_FUNC( ozObjDirFromSelf );
+  IMPORT_FUNC( ozObjDirFromSelfEye );
+  IMPORT_FUNC( ozObjDistFromSelf );
+  IMPORT_FUNC( ozObjDistFromSelfEye );
   IMPORT_FUNC( ozObjHeadingFromSelfEye );
+  IMPORT_FUNC( ozObjRelHeadingFromSelfEye );
   IMPORT_FUNC( ozObjPitchFromSelfEye );
   IMPORT_FUNC( ozObjIsVisibleFromSelf );
   IMPORT_FUNC( ozObjIsVisibleFromSelfEye );
@@ -513,6 +536,21 @@ void Lua::init()
   IMPORT_FUNC( ozFragAddLife );
 
   IMPORT_FUNC( ozFragRemove );
+
+  IMPORT_FUNC( ozFragOverlaps );
+  IMPORT_FUNC( ozFragBindOverlaps );
+
+  IMPORT_FUNC( ozFragVectorFromSelf );
+  IMPORT_FUNC( ozFragVectorFromSelfEye );
+  IMPORT_FUNC( ozFragDirFromSelf );
+  IMPORT_FUNC( ozFragDirFromSelfEye );
+  IMPORT_FUNC( ozFragDistFromSelf );
+  IMPORT_FUNC( ozFragDistFromSelfEye );
+  IMPORT_FUNC( ozFragHeadingFromSelfEye );
+  IMPORT_FUNC( ozFragRelHeadingFromSelfEye );
+  IMPORT_FUNC( ozFragPitchFromSelfEye );
+  IMPORT_FUNC( ozFragIsVisibleFromSelf );
+  IMPORT_FUNC( ozFragIsVisibleFromSelfEye );
 
   importLuaConstants( l );
 

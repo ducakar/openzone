@@ -232,7 +232,7 @@ bool Collider::overlapsEntityOrbis()
       const Cell& cell = orbis.cells[x][y];
 
       for( const Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
-        if( trace.overlaps( *sObj, 0.0f ) ) {
+        if( trace.overlaps( *sObj ) ) {
           startPos = str->toStructCS( sObj->p ) - entity->offset;
           localDim = str->swapDimCS( sObj->dim + Vec3( margin, margin, margin ) );
 
@@ -708,7 +708,7 @@ void Collider::trimAABBOrbis()
       endPos   = originalEndPos;
 
       for( const Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
-        if( sObj != exclObj && ( sObj->flags & mask ) && trace.overlaps( *sObj, 0.0f ) ) {
+        if( sObj != exclObj && ( sObj->flags & mask ) && trace.overlaps( *sObj ) ) {
           trimAABBObj( sObj );
         }
       }
@@ -760,7 +760,7 @@ void Collider::getOrbisOverlaps( Vector<Struct*>* structs, Vector<Object*>* obje
 
       if( objects != null ) {
         for( Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
-          if( ( sObj->flags & mask ) && trace.overlaps( *sObj, 0.0f ) ) {
+          if( ( sObj->flags & mask ) && trace.overlaps( *sObj ) ) {
             objects->add( sObj );
           }
         }
@@ -778,7 +778,7 @@ void Collider::getOrbisIncludes( Vector<Object*>* objects ) const
       const Cell& cell = orbis.cells[x][y];
 
       for( Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
-        if( ( sObj->flags & mask ) && trace.includes( *sObj, 0.0f ) ) {
+        if( ( sObj->flags & mask ) && trace.includes( *sObj ) ) {
           objects->add( sObj );
         }
       }
@@ -793,7 +793,7 @@ void Collider::touchOrbisOverlaps() const
       const Cell& cell = orbis.cells[x][y];
 
       for( Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
-        if( ( sObj->flags & Object::DYNAMIC_BIT ) && trace.overlaps( *sObj, 0.0f ) ) {
+        if( ( sObj->flags & Object::DYNAMIC_BIT ) && trace.overlaps( *sObj ) ) {
           Dynamic* sDyn = static_cast<Dynamic*>( sObj );
 
           sDyn->flags &= ~Object::DISABLED_BIT;
@@ -813,7 +813,7 @@ void Collider::getEntityOverlaps( Vector<Object*>* objects )
       const Cell& cell = orbis.cells[x][y];
 
       for( Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
-        if( ( sObj->flags & mask ) && trace.overlaps( *sObj, 0.0f ) ) {
+        if( ( sObj->flags & mask ) && trace.overlaps( *sObj ) ) {
           startPos = str->toStructCS( sObj->p ) - entity->offset;
           localDim = str->swapDimCS( sObj->dim + Vec3( margin, margin, margin ) );
 

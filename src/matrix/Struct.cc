@@ -613,30 +613,6 @@ Bounds Struct::toStructCS( const Bounds& bb ) const
   }
 }
 
-Bounds Struct::rotate( const Bounds& in, Heading heading )
-{
-  Point p = in.mins + ( in.maxs - in.mins ) * 0.5f;
-
-  switch( heading ) {
-    case NORTH: {
-      return Bounds( p + Vec3( +in.mins.x, +in.mins.y, +in.mins.z ),
-                     p + Vec3( +in.maxs.x, +in.maxs.y, +in.maxs.z ) );
-    }
-    case WEST: {
-      return Bounds( p + Vec3( -in.maxs.y, +in.mins.x, +in.mins.z ),
-                     p + Vec3( -in.mins.y, +in.maxs.x, +in.maxs.z ) );
-    }
-    case SOUTH: {
-      return Bounds( p + Vec3( -in.maxs.x, -in.maxs.y, +in.mins.z ),
-                     p + Vec3( -in.mins.x, -in.mins.y, +in.maxs.z ) );
-    }
-    case EAST: {
-      return Bounds( p + Vec3( +in.mins.y, -in.maxs.x, +in.mins.z ),
-                     p + Vec3( +in.maxs.y, -in.mins.x, +in.maxs.z ) );
-    }
-  }
-}
-
 Bounds Struct::toAbsoluteCS( const Bounds& bb ) const
 {
   switch( heading ) {
@@ -655,6 +631,30 @@ Bounds Struct::toAbsoluteCS( const Bounds& bb ) const
     case EAST: {
       return Bounds( p + Vec3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
                      p + Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
+    }
+  }
+}
+
+Bounds Struct::rotate( const Bounds& in, Heading heading )
+{
+  Point p = in.p();
+
+  switch( heading ) {
+    case NORTH: {
+      return Bounds( p + Vec3( +in.mins.x, +in.mins.y, +in.mins.z ),
+                     p + Vec3( +in.maxs.x, +in.maxs.y, +in.maxs.z ) );
+    }
+    case WEST: {
+      return Bounds( p + Vec3( -in.maxs.y, +in.mins.x, +in.mins.z ),
+                     p + Vec3( -in.mins.y, +in.maxs.x, +in.maxs.z ) );
+    }
+    case SOUTH: {
+      return Bounds( p + Vec3( -in.maxs.x, -in.maxs.y, +in.mins.z ),
+                     p + Vec3( -in.mins.x, -in.mins.y, +in.maxs.z ) );
+    }
+    case EAST: {
+      return Bounds( p + Vec3( +in.mins.y, -in.maxs.x, +in.mins.z ),
+                     p + Vec3( +in.maxs.y, -in.mins.x, +in.maxs.z ) );
     }
   }
 }

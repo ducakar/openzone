@@ -26,41 +26,37 @@
 ]]--
 
 function randomWalk( localData )
-  ozSelfActionForward()
+  ozSelfAction( OZ_ACTION_FORWARD )
 
   if math.random( 3 ) == 1 then
     ozSelfAddH( math.random() * 120.0 - 60.0 )
   end
   if math.random( 10 ) == 1 then
-    ozSelfActionJump()
+    ozSelfAction( OZ_ACTION_JUMP )
   end
   if math.random( 10 ) == 1 then
-    ozSelfToggleRunning()
+    ozSelfAction( OZ_ACTION_RUN );
   end
 end
 
 function randomRampage( localData )
-  ozSelfActionForward()
+  ozSelfAction( OZ_ACTION_FORWARD )
   if math.random( 3 ) == 1 then
     ozSelfAddH( math.random() * 120.0 - 60.0 )
   end
 end
 
 function beastie( localData )
-  if math.random( 3 ) == 1 then
-    if localData.run then
-      localData.run = false
-      ozSelfAddH( math.random( 180 ) - 90 )
-    else
-      localData.run = true
-      ozSelfSetRunning( true )
-      if math.random( 2 ) == 1 then
-        ozSelfActionJump()
-      end
-    end
+  if ozSelfHasState( OZ_BOT_RUNNING_BIT ) then
+    ozSelfAction( OZ_ACTION_FORWARD )
   end
-  if localData.run then
-    ozSelfActionForward()
+  if math.random( 3 ) == 1 then
+    if ozSelfHasState( OZ_BOT_RUNNING_BIT ) then
+      ozSelfAddH( math.random( 180 ) - 90 )
+    elseif math.random( 2 ) == 1 then
+      ozSelfAction( OZ_ACTION_JUMP )
+    end
+    ozSelfAction( OZ_ACTION_RUN )
   end
 end
 
@@ -68,11 +64,11 @@ function prey( localData )
   local minDistance = 100
   local heading
 
-  ozSelfBindObjOverlaps( 20, 20, 20 )
+  ozSelfBindOverlaps( OZ_OBJECTS_BIT, 20 )
 
   while ozBindNextObj() do
     if not ozObjIsSelf() and ozObjHasFlag( OZ_BOT_BIT ) and ozObjGetClassName() ~= "goblin" then
-      local distance = ozObjDistanceFromSelf()
+      local distance = ozObjDistFromSelf()
 
       if distance < minDistance then
         minDistance = distance
@@ -83,8 +79,11 @@ function prey( localData )
 
   if heading then
     ozSelfSetH( heading + 180 )
-    ozSelfSetRunning( true )
-    ozSelfActionForward()
+    ozSelfAction( OZ_ACTION_FORWARD )
+
+    if not ozSelfHasState( OZ_BOT_RUNNING_BIT ) then
+      ozSelfAction( OZ_ACTION_RUN )
+    end
   elseif math.random( 3 ) == 1 then
     ozSelfAddH( math.random( 120 ) - 60 )
   end
@@ -95,11 +94,11 @@ function predator( localData )
   local minDistance = 100
   local heading
 
-  ozSelfBindObjOverlaps( 20, 20, 20 )
+  ozSelfBindOverlaps( OZ_OBJECTS_BIT, 20 )
 
   while ozBindNextObj() do
     if not ozObjIsSelf() and ozObjHasFlag( OZ_BOT_BIT ) and ozObjGetClassName() == "goblin" then
-      local distance = ozObjDistanceFromSelf()
+      local distance = ozObjDistFromSelf()
 
       if distance < minDistance then
         minDistance = distance
@@ -109,12 +108,16 @@ function predator( localData )
   end
   if heading then
     ozSelfSetH( heading )
-    ozSelfSetRunning( true )
+    if not ozSelfHasState( OZ_BOT_RUNNING_BIT ) then
+      ozSelfAction( OZ_ACTION_RUN )
+    end
   else
-    ozSelfSetRunning( false )
     if math.random( 100 ) == 1 then
       ozSelfAddH( math.random( 120 ) - 60 )
     end
+    if ozSelfHasState( OZ_BOT_RUNNING_BIT ) then
+      ozSelfAction( OZ_ACTION_RUN )
+    end
   end
-  ozSelfActionForward()
+  ozSelfAction( OZ_ACTION_FORWARD )
 end

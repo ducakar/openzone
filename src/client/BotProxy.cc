@@ -123,9 +123,16 @@ void BotProxy::prepare()
   Bot*     bot = camera.botObj;
   Vehicle* veh = camera.vehicleObj;
 
+  bot->actions = 0;
+
   /*
    * Camera
    */
+
+  if( !isFreelook || ( veh == null && !isExternal ) ) {
+    bot->h += camera.relH;
+    bot->v += camera.relV;
+  }
 
   if( keys[SDLK_q] ) {
     bot->h += camera.keyXSens;
@@ -134,41 +141,8 @@ void BotProxy::prepare()
     bot->h -= camera.keyXSens;
   }
 
-  if( veh != null ) {
-    if( isFreelook ) {
-      const VehicleClass* vehClazz = static_cast<const VehicleClass*>( veh->clazz );
-
-      camera.h = angleDiff( camera.h, 0.0f );
-
-      camera.h = clamp( camera.h + camera.relH, vehClazz->lookHMin, vehClazz->lookHMax );
-      camera.v = clamp( camera.v + camera.relV, vehClazz->lookVMin, vehClazz->lookVMax );
-
-      camera.h = angleWrap( camera.h );
-    }
-    else {
-      bot->h += camera.relH;
-      bot->v += camera.relV;
-
-      camera.h = 0.0f;
-      camera.v = Math::TAU / 4.0f;
-    }
-  }
-  else if( isFreelook && isExternal ) {
-    camera.h = angleWrap( camera.h + camera.relH );
-    camera.v = clamp( camera.v + camera.relV, 0.0f, Math::TAU / 2.0f );
-  }
-  else {
-    bot->h += camera.relH;
-    bot->v += camera.relV;
-
-    camera.h = bot->h;
-    camera.v = bot->v;
-  }
-
   bot->h = angleWrap( bot->h );
   bot->v = clamp( bot->v, 0.0f, Math::TAU / 2.0f );
-
-  bot->actions = 0;
 
   /*
    * Movement
@@ -198,7 +172,7 @@ void BotProxy::prepare()
     bot->actions |= Bot::ACTION_CROUCH | Bot::ACTION_VEH_DOWN;
   }
   if( keys[SDLK_LSHIFT] && !oldKeys[SDLK_LSHIFT] ) {
-    bot->state ^= Bot::RUNNING_BIT;
+    bot->actions |= Bot::ACTION_RUN;
   }
 
   if( !alt && keys[SDLK_x] && !oldKeys[SDLK_x] ) {
@@ -254,9 +228,7 @@ void BotProxy::prepare()
     isExternal = !isExternal;
     camera.isExternal = isExternal;
   }
-  if( !alt && keys[SDLK_KP_MULTIPLY] && !oldKeys[SDLK_KP_MULTIPLY] &&
-      ( isExternal || veh != null ) )
-  {
+  if( !alt && keys[SDLK_KP_MULTIPLY] && !oldKeys[SDLK_KP_MULTIPLY] ) {
     isFreelook = !isFreelook;
 
     if( veh != null ) {
@@ -363,69 +335,37 @@ void BotProxy::update()
     return;
   }
 
-  const Bot*      bot      = camera.botObj;
-  const BotClass* botClazz = static_cast<const BotClass*>( bot->clazz );
-  const Vehicle*  veh      = camera.vehicleObj;
+  const Bot*          bot      = camera.botObj;
+  const BotClass*     botClazz = static_cast<const BotClass*>( bot->clazz );
+  const Vehicle*      veh      = camera.vehicleObj;
+  const VehicleClass* vehClazz = null;
 
   if( veh != null ) {
+    vehClazz = static_cast<const VehicleClass*>( veh->clazz );
+
     botEye = bot->p + Mat44::rotation( veh->rot ).z * bot->camZ;
   }
   else {
-    botEye.x = bot->p.x;
-    botEye.y = bot->p.y;
-
     float actualZ = bot->p.z + bot->camZ;
 
+    botEye.x = bot->p.x;
+    botEye.y = bot->p.y;
     botEye.z = Math::mix( botEye.z, actualZ, CAMERA_Z_SMOOTHING );
     botEye.z = clamp( botEye.z, actualZ - CAMERA_Z_TOLERANCE, actualZ + CAMERA_Z_TOLERANCE );
   }
 
-  if( !isExternal ) {
-    if( veh != null ) { // inside vehicle
-      bobTheta = 0.0f;
-      bobBias  = 0.0f;
-
-      camera.w = 0.0f;
-      camera.move( botEye );
-      camera.align();
-    }
-    else { // 1st person, not in vehicle
-      if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
-          Bot::MOVING_BIT )
-      {
-        float phase = bot->step * Math::TAU;
-        float sine  = Math::sin( phase );
-
-        bobTheta = sine * botClazz->bobRotation;
-        bobBias  = sine*sine * botClazz->bobAmplitude;
-      }
-      else if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
-               ( Bot::MOVING_BIT | Bot::SWIMMING_BIT ) )
-      {
-        float sine = Math::sin( bot->step * Math::TAU / 2.0f );
-
-        bobTheta = 0.0f;
-        bobBias  = sine*sine * botClazz->bobSwimAmplitude;
-      }
-      else {
-        bobTheta *= BOB_SUPPRESSION_COEF;
-        bobBias  *= BOB_SUPPRESSION_COEF;
-      }
-
-      camera.h = bot->h;
-      camera.v = bot->v;
-      camera.w = bobTheta;
-      camera.move( Point( botEye.x, botEye.y, botEye.z + bobBias ) );
-      camera.align();
-    }
-  }
-  else { // external
+  // external
+  if( isExternal ) {
     bobTheta = 0.0f;
     bobBias  = 0.0f;
 
-    if( !isFreelook ) {
-      camera.h = bot->h;
-      camera.v = bot->v;
+    if( veh != null && !isFreelook ) {
+      camera.h = 0.0f;
+      camera.v = Math::TAU / 4.0f;
+    }
+    else {
+      camera.h = angleWrap( camera.h + camera.relH );
+      camera.v = clamp( camera.v + camera.relV, 0.0f, Math::TAU / 2.0f );
     }
 
     camera.w = 0.0f;
@@ -454,6 +394,60 @@ void BotProxy::update()
     }
 
     camera.move( botEye + offset );
+  }
+  else {
+    // internal, vehicle
+    if( veh != null ) {
+      bobTheta = 0.0f;
+      bobBias  = 0.0f;
+
+      if( isFreelook ) {
+        camera.h = angleDiff( camera.h, 0.0f );
+
+        camera.h = clamp( camera.h + camera.relH, vehClazz->lookHMin, vehClazz->lookHMax );
+        camera.v = clamp( camera.v + camera.relV, vehClazz->lookVMin, vehClazz->lookVMax );
+
+        camera.h = angleWrap( camera.h );
+      }
+      else {
+        camera.h = 0.0f;
+        camera.v = Math::TAU / 4.0f;
+      }
+
+      camera.w = 0.0f;
+      camera.move( botEye );
+      camera.align();
+    }
+    // internal, bot
+    else {
+      if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
+          Bot::MOVING_BIT )
+      {
+        float phase = bot->step * Math::TAU;
+        float sine  = Math::sin( phase );
+
+        bobTheta = sine * botClazz->bobRotation;
+        bobBias  = sine*sine * botClazz->bobAmplitude;
+      }
+      else if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
+               ( Bot::MOVING_BIT | Bot::SWIMMING_BIT ) )
+      {
+        float sine = Math::sin( bot->step * Math::TAU / 2.0f );
+
+        bobTheta = 0.0f;
+        bobBias  = sine*sine * botClazz->bobSwimAmplitude;
+      }
+      else {
+        bobTheta *= BOB_SUPPRESSION_COEF;
+        bobBias  *= BOB_SUPPRESSION_COEF;
+      }
+
+      camera.h = bot->h;
+      camera.v = bot->v;
+      camera.w = bobTheta;
+      camera.move( Point( botEye.x, botEye.y, botEye.z + bobBias ) );
+      camera.align();
+    }
   }
 
   if( bot->parent != -1 ) {

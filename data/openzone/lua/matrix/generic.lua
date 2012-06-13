@@ -66,14 +66,12 @@ function smallExplosion_onUpdate( l )
   else
     l.ticks = 25
 
-    local pX, pY, pZ = ozObjGetPos()
-
-    ozObjAddEvent( OZ_EVENT_CREATE, 1.0 )
-    ozOrbisBindOverlaps( OZ_OBJECTS_BIT, pX, pY, pZ, 8, 8, 8 )
+    ozObjAddEvent( OZ_EVENT_CREATE, 1 )
+    ozObjBindOverlaps( OZ_OBJECTS_BIT, 8 )
 
     while ozBindNextObj() do
       if not ozObjIsSelf() then
-        local distance = ozObjDistanceFromSelf()
+        local distance = ozObjDistFromSelf()
 
         if distance < 8 then
           distance = 8 - distance
@@ -82,7 +80,7 @@ function smallExplosion_onUpdate( l )
             ozObjDamage( 100 + 4*distance )
 
             if distance < 7.9 and ozObjHasFlag( OZ_DYNAMIC_BIT ) then
-              local dirX, dirY, dirZ = ozObjDirectionFromSelf()
+              local dirX, dirY, dirZ = ozObjDirFromSelf()
               distance = 2 * distance
 
               ozDynAddMomentum( dirX * distance, dirY * distance, dirZ * distance )
@@ -104,10 +102,8 @@ function bigExplosion_onUpdate( l )
   else
     l.ticks = 25
 
-    local pX, pY, pZ = ozObjGetPos()
-
-    ozObjAddEvent( OZ_EVENT_CREATE, 1.0 )
-    ozOrbisBindOverlaps( OZ_STRUCTS_BIT + OZ_OBJECTS_BIT, pX, pY, pZ, 20, 20, 20 )
+    ozObjAddEvent( OZ_EVENT_CREATE, 1 )
+    ozObjBindOverlaps( OZ_STRUCTS_BIT + OZ_OBJECTS_BIT, 20 )
 
     while ozBindNextStr() do
       ozStrDamage( 1000 )
@@ -115,7 +111,7 @@ function bigExplosion_onUpdate( l )
 
     while ozBindNextObj() do
       if not ozObjIsSelf() then
-        local distance = ozObjDistanceFromSelf()
+        local distance = ozObjDistFromSelf()
 
         if distance < 20 then
           distance = 20 - distance
@@ -126,7 +122,7 @@ function bigExplosion_onUpdate( l )
             ozObjDamage( 100 + 4*distance )
 
             if distance < 19.9 and ozObjHasFlag( OZ_DYNAMIC_BIT ) then
-              local dirX, dirY, dirZ = ozObjDirectionFromSelf()
+              local dirX, dirY, dirZ = ozObjDirFromSelf()
               distance = 2 * distance
 
               ozDynAddMomentum( dirX * distance, dirY * distance, dirZ * distance )
