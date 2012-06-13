@@ -337,13 +337,17 @@ void Lua::init()
   IMPORT_FUNC( ozStrNumEnts );
   IMPORT_FUNC( ozStrBindEnt );
 
+  IMPORT_FUNC( ozStrOverlaps );
+  IMPORT_FUNC( ozStrBindOverlaps );
+
   IMPORT_FUNC( ozStrVectorFromSelf );
   IMPORT_FUNC( ozStrVectorFromSelfEye );
-  IMPORT_FUNC( ozStrDirectionFromSelf );
-  IMPORT_FUNC( ozStrDirectionFromSelfEye );
-  IMPORT_FUNC( ozStrDistanceFromSelf );
-  IMPORT_FUNC( ozStrDistanceFromSelfEye );
+  IMPORT_FUNC( ozStrDirFromSelf );
+  IMPORT_FUNC( ozStrDirFromSelfEye );
+  IMPORT_FUNC( ozStrDistFromSelf );
+  IMPORT_FUNC( ozStrDistFromSelfEye );
   IMPORT_FUNC( ozStrHeadingFromSelfEye );
+  IMPORT_FUNC( ozStrRelHeadingFromSelfEye );
   IMPORT_FUNC( ozStrPitchFromSelfEye );
   IMPORT_FUNC( ozStrIsVisibleFromSelf );
   IMPORT_FUNC( ozStrIsVisibleFromSelfEye );
@@ -357,6 +361,21 @@ void Lua::init()
   IMPORT_FUNC( ozEntGetLock );
   IGNORE_FUNC( ozEntSetLock );
   IGNORE_FUNC( ozEntTrigger );
+
+  IMPORT_FUNC( ozEntOverlaps );
+  IMPORT_FUNC( ozEntBindOverlaps );
+
+  IMPORT_FUNC( ozEntVectorFromSelf );
+  IMPORT_FUNC( ozEntVectorFromSelfEye );
+  IMPORT_FUNC( ozEntDirFromSelf );
+  IMPORT_FUNC( ozEntDirFromSelfEye );
+  IMPORT_FUNC( ozEntDistFromSelf );
+  IMPORT_FUNC( ozEntDistFromSelfEye );
+  IMPORT_FUNC( ozEntHeadingFromSelfEye );
+  IMPORT_FUNC( ozEntRelHeadingFromSelfEye );
+  IMPORT_FUNC( ozEntPitchFromSelfEye );
+  IMPORT_FUNC( ozEntIsVisibleFromSelf );
+  IMPORT_FUNC( ozEntIsVisibleFromSelfEye );
 
   /*
    * Object
@@ -400,13 +419,17 @@ void Lua::init()
   IGNORE_FUNC( ozObjDamage );
   IGNORE_FUNC( ozObjDestroy );
 
+  IMPORT_FUNC( ozObjOverlaps );
+  IMPORT_FUNC( ozObjBindOverlaps );
+
   IMPORT_FUNC( ozObjVectorFromSelf );
   IMPORT_FUNC( ozObjVectorFromSelfEye );
-  IMPORT_FUNC( ozObjDirectionFromSelf );
-  IMPORT_FUNC( ozObjDirectionFromSelfEye );
-  IMPORT_FUNC( ozObjDistanceFromSelf );
-  IMPORT_FUNC( ozObjDistanceFromSelfEye );
+  IMPORT_FUNC( ozObjDirFromSelf );
+  IMPORT_FUNC( ozObjDirFromSelfEye );
+  IMPORT_FUNC( ozObjDistFromSelf );
+  IMPORT_FUNC( ozObjDistFromSelfEye );
   IMPORT_FUNC( ozObjHeadingFromSelfEye );
+  IMPORT_FUNC( ozObjRelHeadingFromSelfEye );
   IMPORT_FUNC( ozObjPitchFromSelfEye );
   IMPORT_FUNC( ozObjIsVisibleFromSelf );
   IMPORT_FUNC( ozObjIsVisibleFromSelfEye );
@@ -452,23 +475,23 @@ void Lua::init()
   IGNORE_FUNC( ozBotAddV );
   IMPORT_FUNC( ozBotGetDir );
 
-  IMPORT_FUNC( ozBotGetCargo );
-  IMPORT_FUNC( ozBotGetWeapon );
-  IGNORE_FUNC( ozBotSetWeaponItem );
-
   IMPORT_FUNC( ozBotMaxStamina );
   IMPORT_FUNC( ozBotGetStamina );
   IGNORE_FUNC( ozBotSetStamina );
   IGNORE_FUNC( ozBotAddStamina );
+
+  IMPORT_FUNC( ozBotGetCargo );
+  IMPORT_FUNC( ozBotGetWeapon );
+  IGNORE_FUNC( ozBotSetWeaponItem );
+
+  IMPORT_FUNC( ozBotCanReachEntity );
+  IMPORT_FUNC( ozBotCanReachObj );
 
   IGNORE_FUNC( ozBotAction );
 
   IGNORE_FUNC( ozBotHeal );
   IGNORE_FUNC( ozBotRearm );
   IGNORE_FUNC( ozBotKill );
-
-  IMPORT_FUNC( ozBotCanReachEntity );
-  IMPORT_FUNC( ozBotCanReachObj );
 
   /*
    * Vehicle
@@ -509,6 +532,21 @@ void Lua::init()
 
   IGNORE_FUNC( ozFragRemove );
 
+  IMPORT_FUNC( ozFragOverlaps );
+  IMPORT_FUNC( ozFragBindOverlaps );
+
+  IMPORT_FUNC( ozFragVectorFromSelf );
+  IMPORT_FUNC( ozFragVectorFromSelfEye );
+  IMPORT_FUNC( ozFragDirFromSelf );
+  IMPORT_FUNC( ozFragDirFromSelfEye );
+  IMPORT_FUNC( ozFragDistFromSelf );
+  IMPORT_FUNC( ozFragDistFromSelfEye );
+  IMPORT_FUNC( ozFragHeadingFromSelfEye );
+  IMPORT_FUNC( ozFragRelHeadingFromSelfEye );
+  IMPORT_FUNC( ozFragPitchFromSelfEye );
+  IMPORT_FUNC( ozFragIsVisibleFromSelf );
+  IMPORT_FUNC( ozFragIsVisibleFromSelfEye );
+
   /*
    * Mind's bot
    */
@@ -518,18 +556,23 @@ void Lua::init()
   IMPORT_FUNC( ozSelfGetIndex );
   IMPORT_FUNC( ozSelfGetPos );
   IMPORT_FUNC( ozSelfGetDim );
-  IMPORT_FUNC( ozSelfGetFlags );
-  IMPORT_FUNC( ozSelfGetTypeName );
+  IMPORT_FUNC( ozSelfHasFlag );
+  IMPORT_FUNC( ozSelfGetHeading );
+  IMPORT_FUNC( ozSelfGetClassName );
+  IMPORT_FUNC( ozSelfMaxLife );
   IMPORT_FUNC( ozSelfGetLife );
+  IMPORT_FUNC( ozSelfDefaultResistance );
+  IMPORT_FUNC( ozSelfGetResistance );
 
+  IMPORT_FUNC( ozSelfGetParent );
   IMPORT_FUNC( ozSelfGetVelocity );
   IMPORT_FUNC( ozSelfGetMomentum );
   IMPORT_FUNC( ozSelfGetMass );
   IMPORT_FUNC( ozSelfGetLift );
 
   IMPORT_FUNC( ozSelfGetName );
-
-  IMPORT_FUNC( ozSelfGetState );
+  IMPORT_FUNC( ozSelfGetMind );
+  IMPORT_FUNC( ozSelfHasState );
   IMPORT_FUNC( ozSelfGetEyePos );
   IMPORT_FUNC( ozSelfGetH );
   IMPORT_FUNC( ozSelfSetH );
@@ -538,35 +581,24 @@ void Lua::init()
   IMPORT_FUNC( ozSelfSetV );
   IMPORT_FUNC( ozSelfAddV );
   IMPORT_FUNC( ozSelfGetDir );
+
   IMPORT_FUNC( ozSelfGetStamina );
+  IMPORT_FUNC( ozSelfMaxStamina );
 
-  IMPORT_FUNC( ozSelfActionForward );
-  IMPORT_FUNC( ozSelfActionBackward );
-  IMPORT_FUNC( ozSelfActionRight );
-  IMPORT_FUNC( ozSelfActionLeft );
-  IMPORT_FUNC( ozSelfActionJump );
-  IMPORT_FUNC( ozSelfActionCrouch );
-  IMPORT_FUNC( ozSelfActionUse );
-  IMPORT_FUNC( ozSelfActionTake );
-  IMPORT_FUNC( ozSelfActionGrab );
-  IMPORT_FUNC( ozSelfActionThrow );
-  IMPORT_FUNC( ozSelfActionAttack );
-  IMPORT_FUNC( ozSelfActionExit );
-  IMPORT_FUNC( ozSelfActionEject );
-  IMPORT_FUNC( ozSelfActionSuicide );
+  IMPORT_FUNC( ozSelfGetCargo );
+  IMPORT_FUNC( ozSelfGetWeapon );
+  IMPORT_FUNC( ozSelfSetWeaponItem );
 
-  IMPORT_FUNC( ozSelfIsRunning );
-  IMPORT_FUNC( ozSelfSetRunning );
-  IMPORT_FUNC( ozSelfToggleRunning );
+  IMPORT_FUNC( ozSelfCanReachEntity );
+  IMPORT_FUNC( ozSelfCanReachObj );
 
-  IMPORT_FUNC( ozSelfSetGesture );
+  IMPORT_FUNC( ozSelfAction );
 
   IMPORT_FUNC( ozSelfBindItems );
-  IMPORT_FUNC( ozSelfBindParent );
+  IMPORT_FUNC( ozSelfBindItem );
 
-  IMPORT_FUNC( ozSelfBindAllOverlaps );
-  IMPORT_FUNC( ozSelfBindStrOverlaps );
-  IMPORT_FUNC( ozSelfBindObjOverlaps );
+  IMPORT_FUNC( ozSelfOverlaps );
+  IMPORT_FUNC( ozSelfBindOverlaps );
 
   /*
    * Nirvana

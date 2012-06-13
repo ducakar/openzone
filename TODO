@@ -2,7 +2,6 @@
 - ui
   * pause menu
 - client
-  * fix h/v in external vehicle view
   * fix bloom
   * DMesh
   * mesh render scheduler
@@ -10,8 +9,6 @@
   * MD3 animation
   * death camera
   * distant objects fade out
-- lua
-  * finish API transition
 
 0.4
 - new löök

@@ -142,15 +142,6 @@
   }
 
 /**
- * @def ENT
- * Exits %Lua API function call with an error if there is no structure entity bound.
- */
-#define ENT() \
-  if( ms.ent == null ) { \
-    ERROR( "No structure entity bound" ); \
-  }
-
-/**
  * @def STR_INDEX
  * Initialises variable <tt>str</tt> to structure with the given index or returns with error for
  * invalid indices.
@@ -163,6 +154,26 @@
   if( str == null ) { \
     ERROR( "Invalid structures index (null)" ); \
   }
+
+/**
+ * @def ENT
+ * Exits %Lua API function call with an error if there is no structure entity bound.
+ */
+#define ENT() \
+  if( ms.ent == null ) { \
+    ERROR( "No structure entity bound" ); \
+  }
+
+/**
+ * @def ENT_INDEX
+ * Initialises variable <tt>ent</tt> to structure entity with the given index (i.e.
+ * structureIndex * 128 + entityIndex)or returns with error for invalid indices.
+ */
+#define ENT_INDEX( index ) \
+  if( uint( index ) >= uint( ms.str->nEntities ) ) { \
+    ERROR( "Invalid structure entity index (out of range)" ); \
+  } \
+  Entity* ent = &ms.str->entities[index];
 
 /**
  * @def OBJ

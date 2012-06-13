@@ -44,6 +44,7 @@ void MusicPlayer::prevTrack( Button* sender )
     musicPlayer->currentTrack = ( nTracks + musicPlayer->currentTrack - 1 ) % nTracks;
 
     sound.stopMusic();
+    sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
     sound.playMusic( musicPlayer->currentTrack );
 
     musicPlayer->title.setText( "%s", library.musics[musicPlayer->currentTrack].name.cstr() );
@@ -61,6 +62,7 @@ void MusicPlayer::nextTrack( Button* sender )
     musicPlayer->currentTrack = ( musicPlayer->currentTrack + 1 ) % nTracks;
 
     sound.stopMusic();
+    sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
     sound.playMusic( musicPlayer->currentTrack );
 
     musicPlayer->title.setText( "%s", library.musics[musicPlayer->currentTrack].name.cstr() );
@@ -76,6 +78,7 @@ void MusicPlayer::playTrack( Button* sender )
 
   if( nTracks != 0 ) {
     sound.stopMusic();
+    sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
     sound.playMusic( musicPlayer->currentTrack );
 
     musicPlayer->title.setText( "%s", library.musics[musicPlayer->currentTrack].name.cstr() );
@@ -175,7 +178,7 @@ MusicPlayer::MusicPlayer() :
   title( width / 2, 32, ALIGN_HCENTRE, Font::SMALL, " " ),
   trackLabel( 39, 14, ALIGN_CENTRE, Font::SMALL, "0" ),
   volumeLabel( 201, 14, ALIGN_CENTRE, Font::SMALL, " " ),
-  currentTrack( 0 ), volume( 3 ), isPlaying( false ), isVisible( true )
+  currentTrack( 0 ), volume( 5 ), isPlaying( false ), isVisible( true )
 {
   flags = UPDATE_BIT;
 

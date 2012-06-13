@@ -2,7 +2,7 @@
 
 rm -rf Linux-{x86_64,x86_64-Clang,i686,i686-Clang}
 rm -rf Windows-i686
-rm -rf NaCl-{x86_64,x86_64-newlib,i686,i686-newlib}
+rm -rf NaCl-{x86_64,i686}
 
 echo ================================================================
 echo
@@ -87,67 +87,36 @@ echo
 echo                           Windows-i686
 echo
 echo ================================================================
-#echo
-#echo ================================================================
-#echo
-#echo                           NaCl-x86_64
-#echo
-#echo ----------------------------------------------------------------
-#
-#mkdir -p NaCl-x86_64
-#( cd NaCl-x86_64 && cmake .. \
-#  -DCMAKE_TOOLCHAIN_FILE=../cmake/NaCl-x86_64.Toolchain.cmake )
-#
-#echo ----------------------------------------------------------------
-#echo
-#echo                           NaCl-x86_64
-#echo
-#echo ================================================================
 echo
 echo ================================================================
 echo
-echo                       NaCl-x86_64-newlib
+echo                           NaCl-x86_64
 echo
 echo ----------------------------------------------------------------
 
-mkdir -p NaCl-x86_64-newlib
-( cd NaCl-x86_64-newlib && cmake .. \
-  -DCMAKE_TOOLCHAIN_FILE=../cmake/NaCl-x86_64-newlib.Toolchain.cmake )
+mkdir -p NaCl-x86_64
+( cd NaCl-x86_64 && cmake .. \
+  -DCMAKE_TOOLCHAIN_FILE=../cmake/NaCl-x86_64.Toolchain.cmake )
 
 echo ----------------------------------------------------------------
 echo
-echo                       NaCl-x86_64-newlib
+echo                           NaCl-x86_64
 echo
 echo ================================================================
-#echo
-#echo ================================================================
-#echo
-#echo                            NaCl-i686
-#echo
-#echo ----------------------------------------------------------------
-#
-#mkdir -p NaCl-i686
-#( cd NaCl-i686 && cmake .. \
-#  -DCMAKE_TOOLCHAIN_FILE=../cmake/NaCl-i686.Toolchain.cmake )
-#
-#echo ----------------------------------------------------------------
-#echo
-#echo                            NaCl-i686
-#echo
-#echo ================================================================
-#echo
-#echo ================================================================
-#echo
-#echo                        NaCl-i686-newlib
-#echo
-#echo ----------------------------------------------------------------
-#
-#mkdir -p NaCl-i686-newlib
-#( cd NaCl-i686-newlib && cmake .. \
-#  -DCMAKE_TOOLCHAIN_FILE=../cmake/NaCl-i686-newlib.Toolchain.cmake )
-#
-#echo ----------------------------------------------------------------
-#echo
-#echo                        NaCl-i686-newlib
-#echo
-#echo ================================================================
+echo
+echo ================================================================
+echo
+echo                            NaCl-i686
+echo
+echo ----------------------------------------------------------------
+
+mkdir -p NaCl-i686
+( cd NaCl-i686 && cmake .. \
+  -DCMAKE_TOOLCHAIN_FILE=../cmake/NaCl-i686.Toolchain.cmake )
+
+echo ----------------------------------------------------------------
+echo
+echo                            NaCl-i686
+echo
+echo ================================================================
+echo

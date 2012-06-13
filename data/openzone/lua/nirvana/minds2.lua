@@ -30,42 +30,25 @@ function test()
 end
 
 function beast_nervous( l )
-  if l.ticks then
-    if l.ticks == 0 then
-      ozSelfSetGesture( 0 )
-      l.ticks = nil
-    else
-      l.ticks = l.ticks - 1
-    end
-  elseif math.random( 200 ) == 1 then
-    ozSelfSetGesture( OZ_BOT_GESTURE4_BIT )
-    l.ticks = 2
+  if math.random( 200 ) == 1 then
+    ozSelfAction( OZ_ACTION_FLIP )
   end
 end
 
 function beast_happy( l )
-  if l.ticks then
-    if l.ticks == 0 then
-      ozSelfSetGesture( 0 )
-      l.ticks = nil
-    else
-      l.ticks = l.ticks - 1
-    end
-  elseif math.random( 10 ) == 1 then
-    ozSelfSetGesture( OZ_BOT_GESTURE1_BIT )
-    l.ticks = 2
+  if math.random( 10 ) == 1 then
+    ozSelfAction( OZ_ACTION_WAVE )
   end
 end
 
 function droid_guard( l )
-  local self = ozObjGetIndex()
-
   if l.target then
     ozBindObj( l.target )
-    if ozObjHasFlag( OZ_BOT_BIT ) and ozObjIsVisibleFromEye( self ) then
-      local dX, dY, dZ = ozObjVectorFromEye( self )
+
+    if ozObjHasFlag( OZ_BOT_BIT ) and ozObjHasFlag( OZ_OBJ_SOLID_BIT ) and ozObjIsVisibleFromSelfEye() then
+      local dX, dY, dZ = ozObjVectorFromSelfEye()
       local vX, vY, xZ = ozDynGetVelocity()
-      local dist = ozObjDistanceFromEye( self )
+      local dist = ozObjDistFromSelfEye()
       local estimatedBulletTime = dist / 300.0
 
       dX = dX + estimatedBulletTime * vX
@@ -74,12 +57,12 @@ function droid_guard( l )
       local heading = math.atan2( -dX, dY ) * 180.0 / math.pi
 
       ozSelfSetH( heading + ( 0.5 - math.random() ) * 4.0 )
-      ozSelfSetV( ozObjPitchFromEye( self ) + ( 0.5 - math.random() ) * 4.0 )
+      ozSelfSetV( ozObjPitchFromSelfEye() + ( 0.5 - math.random() ) * 4.0 )
 
       if not l.aimed then
         l.aimed = true
       else
-        ozSelfActionAttack()
+        ozSelfAction( OZ_ACTION_ATTACK )
       end
     else
       l.target = nil
@@ -87,12 +70,13 @@ function droid_guard( l )
 
     return
   else
-    ozSelfBindObjOverlaps( 100, 100, 100 )
+    ozSelfBindOverlaps( OZ_OBJECTS_BIT, 100 )
 
     while ozBindNextObj() do
-      if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
-         ( ozObjDistanceFromEye( self ) < 4 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
-         ozObjIsVisibleFromEye( self )
+      if ozObjHasFlag( OZ_BOT_BIT ) and ozObjHasFlag( OZ_OBJ_SOLID_BIT ) and
+         string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
+         ( ozObjDistFromSelfEye() < 4 or math.abs( 180.0 - ozObjRelHeadingFromSelfEye() ) > 60.0 ) and
+         ozObjIsVisibleFromSelfEye()
       then
         l.target = ozObjGetIndex()
         l.aimed = nil
@@ -107,15 +91,13 @@ function droid_guard( l )
 end
 
 function droid_sniper( l )
-  local self = ozObjGetIndex()
-
   if l.target then
     ozBindObj( l.target )
 
-    if ozObjHasFlag( OZ_BOT_BIT ) and ozObjIsVisibleFromEye( self ) then
-      local dX, dY, dZ = ozObjVectorFromEye( self )
+    if ozObjHasFlag( OZ_BOT_BIT ) and ozObjHasFlag( OZ_OBJ_SOLID_BIT ) and ozObjIsVisibleFromSelfEye() then
+      local dX, dY, dZ = ozObjVectorFromSelfEye()
       local vX, vY, xZ = ozDynGetVelocity()
-      local dist = ozObjDistanceFromEye( self )
+      local dist = ozObjDistFromSelfEye()
       local estimatedBulletTime = dist / 300.0
 
       dX = dX + estimatedBulletTime * vX
@@ -124,12 +106,12 @@ function droid_sniper( l )
       local heading = math.atan2( -dX, dY ) * 180.0 / math.pi
 
       ozSelfSetH( heading )
-      ozSelfSetV( ozObjPitchFromEye( self ) )
+      ozSelfSetV( ozObjPitchFromSelfEye() )
 
       if not l.aimed then
         l.aimed = true
       else
-        ozSelfActionAttack()
+        ozSelfAction( OZ_ACTION_ATTACK )
       end
     else
       l.target = nil
@@ -137,12 +119,13 @@ function droid_sniper( l )
 
     return
   else
-    ozSelfBindObjOverlaps( 200, 200, 200 )
+    ozSelfBindOverlaps( OZ_OBJECTS_BIT, 200 )
 
     while ozBindNextObj() do
-      if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
-         ( ozObjDistanceFromEye( self ) < 4 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
-         ozObjIsVisibleFromEye( self )
+      if ozObjHasFlag( OZ_BOT_BIT ) and ozObjHasFlag( OZ_OBJ_SOLID_BIT ) and
+         string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
+         ( ozObjDistFromSelfEye() < 4 or math.abs( 180.0 - ozObjRelHeadingFromSelfEye() ) > 60.0 ) and
+         ozObjIsVisibleFromSelfEye()
       then
         l.target = ozObjGetIndex()
         l.aimed = nil
@@ -157,19 +140,21 @@ function droid_sniper( l )
 end
 
 function droid_patrol( l )
-  local self = ozObjGetIndex()
-
   if not l.pivotX then
     l.pivotX, l.pivotY, l.pivotZ = ozSelfGetPos()
-    ozSelfSetRunning( false )
+
+    if not ozSelfHasState( OZ_BOT_RUNNING_BIT ) then
+      ozSelfAction( OZ_ACTION_RUN )
+    end
   end
 
   if l.target then
     ozBindObj( l.target )
-    if ozObjHasFlag( OZ_BOT_BIT ) and ozObjIsVisibleFromEye( self ) then
-      local dX, dY, dZ = ozObjVectorFromEye( self )
+
+    if ozObjHasFlag( OZ_BOT_BIT ) and ozObjHasFlag( OZ_OBJ_SOLID_BIT ) and ozObjIsVisibleFromSelfEye() then
+      local dX, dY, dZ = ozObjVectorFromSelfEye()
       local vX, vY, xZ = ozDynGetVelocity()
-      local dist = ozObjDistanceFromEye( self )
+      local dist = ozObjDistFromSelfEye()
       local estimatedBulletTime = dist / 300.0
 
       dX = dX + estimatedBulletTime * vX
@@ -178,12 +163,12 @@ function droid_patrol( l )
       local heading = math.atan2( -dX, dY ) * 180.0 / math.pi
 
       ozSelfSetH( heading + ( 0.5 - math.random() ) * 4.0 )
-      ozSelfSetV( ozObjPitchFromEye( self ) + ( 0.5 - math.random() ) * 4.0 )
+      ozSelfSetV( ozObjPitchFromSelfEye() + ( 0.5 - math.random() ) * 4.0 )
 
       if not l.aimed then
         l.aimed = true
       else
-        ozSelfActionAttack()
+        ozSelfAction( OZ_ACTION_ATTACK )
       end
     else
       l.target = nil
@@ -191,12 +176,13 @@ function droid_patrol( l )
 
     return
   else
-    ozSelfBindObjOverlaps( 100, 100, 100 )
+    ozSelfBindOverlaps( OZ_OBJECTS_BIT, 100 )
 
     while ozBindNextObj() do
-      if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
-         ( ozObjDistanceFromEye( self ) < 4 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
-         ozObjIsVisibleFromEye( self )
+      if ozObjHasFlag( OZ_BOT_BIT ) and ozObjHasFlag( OZ_OBJ_SOLID_BIT ) and
+         string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
+         ( ozObjDistFromSelfEye() < 4 or math.abs( 180.0 - ozObjRelHeadingFromSelfEye() ) > 60.0 ) and
+         ozObjIsVisibleFromSelfEye()
       then
         l.target = ozObjGetIndex()
         l.aimed = nil
@@ -217,26 +203,27 @@ function droid_patrol( l )
     ozSelfAddH( math.random( -60, 60 ) )
   end
 
-  ozSelfActionForward()
+  ozSelfAction( OZ_ACTION_FORWARD )
 end
 
 function droid_armouredPatrol( l )
-  local self = ozObjGetIndex()
-
   if not l.pivotX then
     l.pivotX, l.pivotY, l.pivotZ = ozSelfGetPos()
-    ozSelfSetRunning( false )
+
+    if not ozSelfHasState( OZ_BOT_RUNNING_BIT ) then
+      ozSelfAction( OZ_ACTION_RUN )
+    end
   end
 
   if l.target then
     ozBindObj( l.target )
 
-    if ( ozObjHasFlag( OZ_BOT_BIT ) and ozObjIsVisibleFromEye( self ) ) or
-       ( ozObjHasFlag( OZ_VEHICLE_BIT ) and ozObjIsVisibleFromEye( self ) )
+    if ( ozObjHasFlag( OZ_BOT_BIT ) and ozObjHasFlag( OZ_OBJ_SOLID_BIT ) and ozObjIsVisibleFromSelfEye() ) or
+       ( ozObjHasFlag( OZ_VEHICLE_BIT ) and ozObjIsVisibleFromSelfEye() )
     then
-      local dX, dY, dZ = ozObjVectorFromEye( self )
+      local dX, dY, dZ = ozObjVectorFromSelfEye()
       local vX, vY, xZ = ozDynGetVelocity()
-      local dist = ozObjDistanceFromEye( self )
+      local dist = ozObjDistFromSelfEye()
       local estimatedBulletTime = dist / 300.0
 
       dX = dX + estimatedBulletTime * vX
@@ -245,12 +232,12 @@ function droid_armouredPatrol( l )
       local heading = math.atan2( -dX, dY ) * 180.0 / math.pi
 
       ozSelfSetH( heading )
-      ozSelfSetV( ozObjPitchFromEye( self ) )
+      ozSelfSetV( ozObjPitchFromSelfEye() )
 
       if not l.aimed then
         l.aimed = true
       else
-        ozSelfActionAttack()
+        ozSelfAction( OZ_ACTION_ATTACK )
       end
     else
       l.target = nil
@@ -258,21 +245,23 @@ function droid_armouredPatrol( l )
 
     return
   else
-    ozSelfBindObjOverlaps( 200, 200, 200 )
+    ozSelfBindOverlaps( OZ_OBJECTS_BIT, 200 )
+
     while ozBindNextObj() do
-      if ozObjIsBot() and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
-         ( ozObjDistanceFromSelf() < 100 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
-         ozBotIsVisibleFromSelfEyeToEye()
+      if ozObjHasFlag( OZ_BOT_BIT ) and ozObjHasFlag( OZ_OBJ_SOLID_BIT ) and
+         string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" and
+         ( ozObjDistFromSelf() < 100 or math.abs( 180.0 - ozObjRelHeadingFromSelfEye() ) > 60.0 ) and
+         ozObjIsVisibleFromSelfEye()
       then
         l.target = ozObjGetIndex()
         l.aimed = nil
         return
       elseif ozObjHasFlag( OZ_VEHICLE_BIT ) and
-          ( ozObjDistanceFromSelf() < 100 or math.abs( 180.0 - ozObjRelativeHeadingFromSelf() ) > 60.0 ) and
+          ( ozObjDistFromSelf() < 100 or math.abs( 180.0 - ozObjRelHeadingFromSelfEye() ) > 60.0 ) and
           ozObjIsVisibleFromSelfEye()
       then
         local vehicleIndex = ozObjGetIndex()
-        ozBindPilot()
+        ozBindObj( ozVehicleGetPilot() )
 
         if not ozObjIsNull() and string.sub( ozObjGetClassName(), 1, 5 ) ~= "droid" then
           l.target = vehicleIndex
@@ -296,7 +285,7 @@ function droid_armouredPatrol( l )
   end
 
   if not l.forward then
-    ozSelfActionForward()
+    ozSelfAction( OZ_ACTION_FORWARD )
     l.forward = true
   else
     l.forward = nil
@@ -304,33 +293,35 @@ function droid_armouredPatrol( l )
 end
 
 function goblin_defend( l )
-  local self = ozObjGetIndex()
-
   if l.target then
     ozBindObj( l.target )
 
-    if ozObjHasFlag( OZ_BOT_BIT ) and ozObjIsVisibleFromEye( self ) then
-      ozSelfSetH( ozObjHeadingFromEye( self ) )
-      ozSelfSetV( ozObjPitchFromEye( self ) )
+    if ozObjHasFlag( OZ_BOT_BIT ) and ozObjHasFlag( OZ_OBJ_SOLID_BIT ) and ozObjIsVisibleFromSelfEye() then
+      ozSelfSetH( ozObjHeadingFromSelfEye() )
+      ozSelfSetV( ozObjPitchFromSelfEye() )
 
-      local dist = ozObjDistanceFromEye( self )
+      local dist = ozObjDistFromSelfEye()
 
       if dist > 30 then
         l.target = nil
       elseif dist > 2 then
-        ozSelfSetRunning( true )
-        ozSelfActionForward()
+        if not ozSelfHasState( OZ_BOT_RUNNING_BIT ) then
+          ozSelfAction( OZ_ACTION_RUN )
+        end
+        ozSelfActionForward( OZ_ACTION_FORWARD )
       else
-        ozSelfActionAttack()
+        ozSelfAction( OZ_ACTION_ATTACK )
       end
     else
       l.target = nil
     end
   else
-    ozSelfBindObjOverlaps( 10, 10, 10 )
+    ozSelfBindOverlaps( OZ_OBJECTS_BIT, 10 )
+
     while ozBindNextObj() do
-      if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( ozObjGetClassName(), 1, 7 ) ~= "goblin" and
-         ozObjIsVisibleFromEye( self )
+      if ozObjHasFlag( OZ_BOT_BIT ) and ozObjHasFlag( OZ_OBJ_SOLID_BIT ) and
+         string.sub( ozObjGetClassName(), 1, 7 ) ~= "goblin" and
+         ozObjIsVisibleFromSelfEye()
       then
         l.target = ozObjGetIndex()
       end

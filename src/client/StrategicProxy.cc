@@ -82,9 +82,6 @@ void StrategicProxy::prepare()
 
   bool alt = keys[SDLK_LALT] || keys[SDLK_RALT];
 
-  camera.h = angleWrap( camera.h + camera.relH );
-  camera.v = clamp( camera.v + camera.relV, 0.0f, Math::TAU / 2.0f );
-
   if( !alt && keys[SDLK_n] && !oldKeys[SDLK_n] ) {
     camera.nightVision = !camera.nightVision;
   }
@@ -93,14 +90,9 @@ void StrategicProxy::prepare()
   }
 
   if( keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) {
-    isFree = !isFree;
-
-    if( isFree ) {
-      isRTSFast = false;
-    }
-    else {
-      isFreeFast = true;
-    }
+    isFree     = !isFree;
+    isRTSFast  = false;
+    isFreeFast = true;
   }
 
   if( !alt && keys[SDLK_o] ) {
@@ -147,6 +139,8 @@ void StrategicProxy::update()
   const ubyte* keys    = ui::keyboard.keys;
   const ubyte* oldKeys = ui::keyboard.oldKeys;
 
+  camera.h = angleWrap( camera.h + camera.relH );
+  camera.v = clamp( camera.v + camera.relV, 0.0f, Math::TAU / 2.0f );
   camera.align();
 
   if( isFree ) {

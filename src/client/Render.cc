@@ -71,9 +71,8 @@ void Render::scheduleCell( int cellX, int cellY )
       drawnStructs.set( cell.structs[i] );
 
       Struct* str    = orbis.structs[ cell.structs[i] ];
-      Vec3    dim    = str->maxs - str->mins;
-      Point   p      = str->mins + 0.5f * dim;
-      float   radius = dim.fastL();
+      Point   p      = str->p;
+      float   radius = str->dim().fastL();
 
       if( frustum.isVisible( p, radius ) ) {
         structs.add( ModelEntry( ( p - camera.p ).sqL(), str ) );

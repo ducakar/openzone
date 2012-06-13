@@ -158,6 +158,7 @@ void importLuaConstants( lua_State* l )
   registerLuaConstant( l, "OZ_ACTION_LEFT",                 Bot::ACTION_LEFT );
   registerLuaConstant( l, "OZ_ACTION_JUMP",                 Bot::ACTION_JUMP );
   registerLuaConstant( l, "OZ_ACTION_CROUCH",               Bot::ACTION_CROUCH );
+  registerLuaConstant( l, "OZ_ACTION_RUN",                  Bot::ACTION_RUN );
   registerLuaConstant( l, "OZ_ACTION_ATTACK",               Bot::ACTION_ATTACK );
   registerLuaConstant( l, "OZ_ACTION_EXIT",                 Bot::ACTION_EXIT );
   registerLuaConstant( l, "OZ_ACTION_EJECT",                Bot::ACTION_EJECT );
