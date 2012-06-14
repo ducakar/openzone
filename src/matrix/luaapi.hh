@@ -909,15 +909,8 @@ static int ozEntBindOverlaps( lua_State* l )
     ERROR( "At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
   }
 
-  Vector<Struct*>* structs = null;
   Vector<Object*>* objects = null;
 
-  if( flags & COLLIDE_STRUCTS_BIT ) {
-    structs = &ms.structs;
-
-    ms.strIndex = 0;
-    ms.structs.clear();
-  }
   if( flags & ( COLLIDE_OBJECTS_BIT | COLLIDE_ALL_OBJECTS_BIT ) ) {
     objects = &ms.objects;
 

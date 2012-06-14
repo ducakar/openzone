@@ -83,16 +83,6 @@ class Time
     static long64 time();
 
     /**
-     * Return <tt>Time</tt> structure filled with the current UTC time.
-     */
-    static Time utc();
-
-    /**
-     * Fill year, month ... etc. fields from time given as seconds from epoch.
-     */
-    static Time utc( long64 epoch );
-
-    /**
      * Return <tt>Time</tt> structure filled with the current local time.
      */
     static Time local();
@@ -101,6 +91,11 @@ class Time
      * Fill year, month ... etc. fields from time given as seconds from epoch.
      */
     static Time local( long64 epoch );
+
+    /**
+     * Get seconds from epoch for the given year, month ... etc. fields in local time zone.
+     */
+    long64 toEpoch() const;
 
     /**
      * Convert to ISO date/time string (yyyy-mm-dd hh:mm:ss).

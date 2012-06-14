@@ -30,7 +30,7 @@ function test()
 end
 
 function beast_nervous( l )
-  if math.random( 200 ) == 1 then
+  if math.random( 100 ) == 1 then
     ozSelfAction( OZ_ACTION_FLIP )
   end
 end
