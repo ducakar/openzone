@@ -161,82 +161,11 @@ long64 Time::time()
   largeInteger.LowPart  = fileTime.dwLowDateTime;
   largeInteger.HighPart = fileTime.dwHighDateTime;
 
-  return largeInteger.QuadPart / 10000;
+  return long64( largeInteger.QuadPart / 10000 );
 
 #else
 
   return ::time( null );
-
-#endif
-}
-
-Time Time::utc()
-{
-#ifdef _WIN32
-
-  SYSTEMTIME     timeStruct;
-  FILETIME       fileTime;
-  ULARGE_INTEGER largeInteger;
-
-  GetSystemTime( &timeStruct );
-  SystemTimeToFileTime( &timeStruct, &fileTime );
-
-  largeInteger.LowPart  = fileTime.dwLowDateTime;
-  largeInteger.HighPart = fileTime.dwHighDateTime;
-
-  return {
-    largeInteger.QuadPart / 10000,
-    timeStruct.wYear, timeStruct.wMonth, timeStruct.wDay, timeStruct.wHour,
-    timeStruct.wMinute, timeStruct.wSecond
-  };
-
-#else
-
-  time_t currentTime = ::time( null );
-  struct tm timeStruct;
-  gmtime_r( &currentTime, &timeStruct );
-
-  return {
-    currentTime,
-    1900 + timeStruct.tm_year, 1 + timeStruct.tm_mon, timeStruct.tm_mday,
-    timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec
-  };
-
-#endif
-}
-
-Time Time::utc( long64 epoch )
-{
-#ifdef _WIN32
-
-  ULARGE_INTEGER largeInteger;
-  FILETIME       fileTime;
-  SYSTEMTIME     timeStruct;
-
-  largeInteger.QuadPart = epoch * 10000;
-
-  fileTime.dwLowDateTime  = largeInteger.LowPart;
-  fileTime.dwHighDateTime = largeInteger.HighPart;
-
-  FileTimeToSystemTime( &fileTime, &timeStruct );
-
-  return {
-    epoch,
-    timeStruct.wYear, timeStruct.wMonth, timeStruct.wDay, timeStruct.wHour,
-    timeStruct.wMinute, timeStruct.wSecond
-  };
-
-#else
-
-  time_t ctime = time_t( epoch );
-  struct tm timeStruct;
-  gmtime_r( &ctime, &timeStruct );
-
-  return {
-    epoch,
-    1900 + timeStruct.tm_year, 1 + timeStruct.tm_mon, timeStruct.tm_mday,
-    timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec
-  };
 
 #endif
 }
@@ -256,7 +185,7 @@ Time Time::local()
   largeInteger.HighPart = fileTime.dwHighDateTime;
 
   return {
-    largeInteger.QuadPart / 10000,
+    long64( largeInteger.QuadPart / 10000 ),
     timeStruct.wYear, timeStruct.wMonth, timeStruct.wDay, timeStruct.wHour,
     timeStruct.wMinute, timeStruct.wSecond
   };
@@ -285,7 +214,7 @@ Time Time::local( long64 epoch )
   FILETIME       localFileTime;
   SYSTEMTIME     timeStruct;
 
-  largeInteger.QuadPart = epoch * 10000;
+  largeInteger.QuadPart = ulong64( epoch * 10000 );
 
   fileTime.dwLowDateTime  = largeInteger.LowPart;
   fileTime.dwHighDateTime = largeInteger.HighPart;
@@ -310,6 +239,48 @@ Time Time::local( long64 epoch )
     1900 + timeStruct.tm_year, 1 + timeStruct.tm_mon, timeStruct.tm_mday,
     timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec
   };
+
+#endif
+}
+
+long64 Time::toEpoch() const
+{
+#ifdef _WIN32
+
+  SYSTEMTIME     timeStruct;
+  FILETIME       localFileTime;
+  FILETIME       fileTime;
+  ULARGE_INTEGER largeInteger;
+
+  timeStruct.wYear         = ushort( year );
+  timeStruct.wMonth        = ushort( month );
+  timeStruct.wDay          = ushort( day );
+  timeStruct.wHour         = ushort( hour );
+  timeStruct.wMinute       = ushort( minute );
+  timeStruct.wSecond       = ushort( second );
+  timeStruct.wMilliseconds = 0;
+
+  SystemTimeToFileTime( &timeStruct, &localFileTime );
+  LocalFileTimeToFileTime( &localFileTime, &fileTime );
+
+  largeInteger.LowPart  = fileTime.dwLowDateTime;
+  largeInteger.HighPart = fileTime.dwHighDateTime;
+
+  return long64( largeInteger.QuadPart / 10000 );
+
+#else
+
+  struct tm timeStruct;
+
+  timeStruct.tm_sec   = second;
+  timeStruct.tm_min   = minute;
+  timeStruct.tm_hour  = hour;
+  timeStruct.tm_mday  = day;
+  timeStruct.tm_mon   = month - 1;
+  timeStruct.tm_year  = year - 1900;
+  timeStruct.tm_isdst = -1;
+
+  return long64( mktime( &timeStruct ) );
 
 #endif
 }

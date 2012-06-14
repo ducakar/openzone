@@ -36,12 +36,12 @@ function onCreate()
   ozCaelumSetPeriod( 3600 )
   ozCaelumSetTime( 450 )
 
-  local me = ozOrbisAddObj( OZ_FORCE, "beast", 78, -90, 65.55 )
+  local me = ozOrbisAddObj( OZ_FORCE, "beast", 78, -90, 66.40 )
   ozBotSetName( ozProfileGetName() )
   ozBotSetMind( "" )
   ozObjRemoveAllItems()
 
-  local oX, oY, oZ = 80, -80, 69
+  local oX, oY, oZ = 80, -80, 69.7
   ozOrbisAddStr( OZ_FORCE, "tutorial_movement", oX, oY, oZ, OZ_NORTH )
 
   local infoMove = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 2, oY - 9, oZ - 3 )
@@ -70,7 +70,7 @@ function onCreate()
     ozGettext( "5. STAMINA\n\nYou probably noticed the blue bar in bottom left corner starts to drain if you are running, jumping, climbing, throwing objects or swimming under water. That is you stamina. If it runs out, you are not able to perform those actions any more.\n\nBe careful it doesn't run out while you are under water or you will start to drawn.\n\nYour stamina is restoring while you are still or walking." )
   )
 
-  local oX, oY, oZ = 60, -92, 69
+  local oX, oY, oZ = 60, -92, 69.7
   ozOrbisAddStr( OZ_FORCE, "tutorial_carrying", oX, oY, oZ, OZ_WEST )
 
   ozOrbisAddObj( OZ_FORCE, "metalCrate", oX + 3.2, oY - 4.5, oZ - 3 )
@@ -98,7 +98,7 @@ function onCreate()
     ozGettext( "8. PUSHING IN WATER\n\nYou will need a create from the previous room for this one. Bring it here, throw it in the water and push it under water to the other side. There you will need the crate to jump on it to climb on a ledge.\n\nYou can also push an object upwards or downwards with side-pushing while the object is in the water." )
   )
 
-  local oX, oY, oZ = 82, -55, 69.2
+  local oX, oY, oZ = 82, -55, 69.5
   ozOrbisAddStr( OZ_FORCE, "forum", oX, oY, oZ, OZ_NORTH )
 
   ozOrbisAddObj( OZ_FORCE, "firstAid", oX - 4.5, oY - 3.2, oZ - 1.5 )
@@ -145,7 +145,7 @@ function onCreate()
   ozOrbisAddObj( OZ_FORCE, "bomb", oX + 25, oY + 17, oZ - 2 )
   ozOrbisAddObj( OZ_FORCE, "bomb", oX + 25, oY + 18, oZ - 2 )
 
-  local infoBombs = ozOrbisAddObj( OZ_FORCE, "datacube", oX + 23, oY + 17.5, oZ - 2 )
+  local infoBombs = ozOrbisAddObj( OZ_FORCE, "datacube", oX + 23, oY + 17.5, oZ - 1.5 )
 
   ozNirvanaAddMemo( infoBombs,
     ozGettext( "15. BOMBS\n\nSome objects like this bombs are dangerous. They will explode when destroyed or 5 s after activation (they can also be deactivated by right clicking them again)." )
@@ -211,8 +211,8 @@ function onCreate()
   ozBotSetMind( "" )
   ozBotSetH( 270 )
 
-  local infoReincarnation = ozOrbisAddObj( OZ_FORCE, "datacube", 60, -50, 69 )
-  local infoQuests = ozOrbisAddObj( OZ_FORCE, "datacube", 60, -55, 68.5 )
+  local infoReincarnation = ozOrbisAddObj( OZ_FORCE, "datacube", 60, -50, 69.6 )
+  local infoQuests = ozOrbisAddObj( OZ_FORCE, "datacube", 60, -55, 69.3 )
 
   ozNirvanaAddMemo( infoReincarnation,
     ozGettext( "21. STRATEGIC MODE\n\n(Read to the end before you try it.)\n\nYou can exit the bot you are controlling by pressing I key. That puts you in strategic mode. You move the camera the same way you move your bot. By pressing NUMPAD ENTER you switch between strategic camera (top-down) and free camera. In both modes you can still use TAB key to toggle between user interface mode and freelook mode.\n\nTo incarnate into a bot select it by left clicking and press I.\n\nReincarnation and strategic mode are not always available. Depending on a mission, reincarnation can be limited to specific bots only or completely disabled (including strategic mode)." )

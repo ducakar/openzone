@@ -158,7 +158,7 @@ void MD2::AnimState::advance()
                       clazz->stepRunInc : clazz->stepWalkInc;
 
       nextFrame = firstFrame + int( frame + 1.0f ) % nFrames;
-      frameTime = Timer::TICK_TIME / float( nFrames ) * stepInc;
+      frameTime = Timer::TICK_TIME / ( float( nFrames ) * stepInc );
     }
     else if( ( type == ANIM_ATTACK && nextType == ANIM_ATTACK ) ||
              ( type == ANIM_CROUCH_ATTACK && nextType == ANIM_CROUCH_ATTACK ) )
