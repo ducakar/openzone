@@ -157,6 +157,7 @@ void MD2::AnimState::advance()
       float stepInc = ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT ) ) == Bot::RUNNING_BIT ?
                       clazz->stepRunInc : clazz->stepWalkInc;
 
+      currFrame = firstFrame + int( frame + 0.0f ) % nFrames;
       nextFrame = firstFrame + int( frame + 1.0f ) % nFrames;
       frameTime = Timer::TICK_TIME / ( float( nFrames ) * stepInc );
     }
@@ -194,7 +195,7 @@ void MD2::AnimState::advance()
 }
 
 MD2::MD2( int id_ ) :
-  id( id_ ), vertices( null ), positions( null ), normals( 0 ),
+  id( id_ ), vertices( null ), positions( null ), normals( null ),
   isPreloaded( false ), isLoaded( false )
 {}
 

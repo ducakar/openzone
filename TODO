@@ -2,7 +2,7 @@
 - ui
   * pause menu
 - client
-  * fix bloom
+  * bloom++
   * DMesh
   * mesh render scheduler
   * two-phase rendering

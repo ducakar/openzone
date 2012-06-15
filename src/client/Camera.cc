@@ -150,6 +150,7 @@ void Camera::prepare()
     }
 
     switch( newState ) {
+      default:
       case NONE: {
         proxy = null;
         break;
@@ -285,6 +286,7 @@ void Camera::read( InputStream* istream )
   botProxy.read( istream );
 
   switch( newState ) {
+    default:
     case NONE: {
       proxy = null;
       break;

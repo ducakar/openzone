@@ -202,6 +202,9 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
   }
 
   switch( forceFormat ) {
+    default: {
+      hard_assert( false );
+    }
     case GL_LUMINANCE: {
       bpp    = 8;
       format = GL_LUMINANCE;
@@ -242,10 +245,6 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
       FreeImage_Unload( dib );
       dib = newDIB;
 
-      break;
-    }
-    default: {
-      hard_assert( false );
       break;
     }
   }
@@ -330,7 +329,7 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
   }
 
   Image image, specImage, emissionImage;
-  image.dib = 0;
+  image.dib = null;
 
   if( diffuse.stat() ) {
     image = loadImage( diffuse.path(), 0 );

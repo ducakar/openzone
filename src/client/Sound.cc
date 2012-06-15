@@ -150,6 +150,7 @@ void Sound::musicOpen( const char* path )
   }
 
   switch( musicStreamType ) {
+    default:
     case NONE: {
       break;
     }
@@ -280,10 +281,6 @@ void Sound::musicOpen( const char* path )
 
       break;
     }
-#else
-    default: {
-      break;
-    }
 #endif
   }
 }
@@ -291,6 +288,7 @@ void Sound::musicOpen( const char* path )
 void Sound::musicClear()
 {
   switch( musicStreamType ) {
+    default:
     case NONE: {
       break;
     }
@@ -315,10 +313,6 @@ void Sound::musicClear()
       PHYSFS_close( musicFile );
       break;
     }
-#else
-    default: {
-      break;
-    }
 #endif
   }
 }
@@ -326,6 +320,7 @@ void Sound::musicClear()
 int Sound::musicDecode()
 {
   switch( musicStreamType ) {
+    default:
     case NONE: {
       return 0;
     }
@@ -451,10 +446,6 @@ int Sound::musicDecode()
         aacInputBytes += bytesRead;
       }
       while( true );
-    }
-#else
-    default: {
-      return 0;
     }
 #endif
   }
@@ -762,6 +753,9 @@ void Sound::init()
       }
       case ALC_STEREO_SOURCES: {
         Log::println( "ALC_STEREO_SOURCES: %d", attributes[i + 1] );
+        break;
+      }
+      default: {
         break;
       }
     }

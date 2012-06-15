@@ -69,12 +69,9 @@ mark_as_advanced( OZ_SYSTEM_NAME )
 
 find_package( PhysFS REQUIRED )
 find_package( SDL REQUIRED )
-find_package( SDL_net )
 find_package( SDL_ttf REQUIRED )
 find_package( Lua51 REQUIRED )
-find_package( OpenGL )
 find_package( OpenAL REQUIRED )
-find_package( ZLIB )
 
 find_library( PTHREAD_LIBRARY pthread )
 find_library( FREEIMAGE_LIBRARY freeimage )
@@ -86,8 +83,6 @@ mark_as_advanced( PHYSFS_LIBRARY )
 mark_as_advanced( SDL_INCLUDE_DIR )
 mark_as_advanced( SDL_LIBRARY )
 mark_as_advanced( SDLMAIN_LIBRARY )
-mark_as_advanced( SDLNET_INCLUDE_DIR )
-mark_as_advanced( SDLNET_LIBRARY )
 mark_as_advanced( SDLTTF_INCLUDE_DIR )
 mark_as_advanced( SDLTTF_LIBRARY )
 mark_as_advanced( FREEIMAGE_LIBRARY )
@@ -108,15 +103,25 @@ if( NACL )
   mark_as_advanced( OGG_LIBRARY )
   mark_as_advanced( VORBIS_LIBRARY )
 elseif( WIN32 )
+  find_package( SDL_net REQUIRED )
+  find_package( OpenGL REQUIRED )
+
   find_library( WINMM_LIBRARY winmm )
 
+  mark_as_advanced( SDLNET_INCLUDE_DIR )
+  mark_as_advanced( SDLNET_LIBRARY )
   mark_as_advanced( WINMM_LIBRARY )
 
   include_directories( ./include )
 else()
+  find_package( SDL_net REQUIRED )
+  find_package( OpenGL REQUIRED )
+
   find_library( RT_LIBRARY rt )
   find_library( PULSESIMPLE_LIBRARY pulse-simple )
 
+  mark_as_advanced( SDLNET_INCLUDE_DIR )
+  mark_as_advanced( SDLNET_LIBRARY )
   mark_as_advanced( RT_LIBRARY )
   mark_as_advanced( PULSESIMPLE_LIBRARY )
 endif()
@@ -163,31 +168,16 @@ set( libs_tools "${libs_client};${FREEIMAGE_LIBRARY}" )
 # Compiler flags
 #
 
-set( flags "-std=c++0x -pedantic -pipe -ffast-math -fstrict-enums" )
-set( warnings "-Wall -Wextra -Wconversion -Woverloaded-virtual -Wnon-virtual-dtor -Winvalid-pch" )
-set( arch_flags "-msse3 -mfpmath=sse" )
+set( flags "-pipe -std=c++0x -pedantic -msse3 -ffast-math" )
+set( warnings "-Wall -Wextra -Winvalid-pch -Wconversion " )
 
-check_cxx_source_compiles( "
-#ifdef __clang__
-int main( int, char** ) { return 0; }
-#else
-# error Not LLVM/Clang
-#endif
-" isClang )
+# Additional warnings, enabled only once in a while to check code quality.
+# set( warnings "${warnings} -Wswitch-default -Wmissing-declarations -Wmissing-format-attribute" )
+# set( warnings "${warnings} -Wnon-virtual-dtor -Woverloaded-virtual -Wcast-align -Wundef" )
+# set( warnings "${warnings} -Winit-self -Wformat=2" )
+# Following warnings don't work with Clang.
+# set( warnings "${warnings} -Wlogical-op -Wzero-as-null-pointer-constant" )
 
-check_cxx_source_compiles( "
-#if defined( __GNUC__ ) && __GNUC__ == 4 && __GNUC_MINOR__ <= 4
-int main( int, char** ) { return 0; }
-#else
-# error GCC >= 4.5
-#endif
-" isLegacyGCC )
-
-if( isClang )
-  set( flags "-Qunused-arguments ${flags}" )
-elseif( isLegacyGCC )
-  set( flags "-std=gnu++0x -pipe -ffast-math" )
-endif()
 if( ANDROID )
   set( flags "${flags} -fexceptions" )
 endif()
@@ -197,7 +187,7 @@ if( hasLTO )
   set( lto "-flto" )
 endif()
 
-set( CMAKE_CXX_FLAGS "${flags} ${arch_flags} ${warnings} ${CMAKE_CXX_FLAGS}" )
+set( CMAKE_CXX_FLAGS "${flags} ${warnings} ${CMAKE_CXX_FLAGS}" )
 set( CMAKE_CXX_FLAGS_DEBUG "-D_FORTIFY_SOURCE=2 -g3 -O0" CACHE STRING "" FORCE )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-D_FORTIFY_SOURCE=2 -g3 -O3" CACHE STRING "" FORCE )
 set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 ${lto}" CACHE STRING "" FORCE )

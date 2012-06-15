@@ -682,6 +682,9 @@ int Client::main( int argc, char** argv )
           isAlive = false;
           break;
         }
+        default: {
+          break;
+        }
       }
     }
 

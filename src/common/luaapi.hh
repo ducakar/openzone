@@ -64,7 +64,7 @@ static int ozException( lua_State* l )
   ARG( 1 );
 
   const char* message = l_tostring( 1 );
-  throw Exception( message );
+  throw Exception( "%s", message );
 }
 
 /**

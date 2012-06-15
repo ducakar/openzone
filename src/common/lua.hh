@@ -371,7 +371,14 @@
  * Shorthand for lua_tostring
  */
 #define l_tostring( i ) \
-  lua_tostring( l, i )
+  lua_tolstring( l, i, null )
+
+/**
+ * @def l_tolstring
+ * Shorthand for lua_tolstring
+ */
+#define l_tolstring( i, len ) \
+  lua_tolstring( l, i, len )
 
 /**
  * @def l_pushnil
