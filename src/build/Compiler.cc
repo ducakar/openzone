@@ -144,6 +144,9 @@ void Compiler::end()
   }
 
   switch( mode ) {
+    default: {
+      hard_assert( false );
+    }
     case GL_POINTS: {
       hard_assert( vertNum >= 1 );
       break;

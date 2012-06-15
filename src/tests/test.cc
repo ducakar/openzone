@@ -25,11 +25,8 @@
 #include "oz/windefs.h"
 
 #include <cstdio>
-#include <limits>
-#include <iostream>
 
 using namespace oz;
-using namespace std;
 
 struct Foo
 {

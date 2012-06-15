@@ -57,7 +57,7 @@
 # define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT  0x83F3
 #endif
 
-#ifndef GL_VERSION_3_0
+#ifdef OZ_GL_ES
 # define GL_RGBA32F                        0x8814
 # define GL_RGB32F                         0x8815
 # define GL_RGBA16F                        0x881A

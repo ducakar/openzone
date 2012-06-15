@@ -137,6 +137,7 @@ void Entity::manualDoorHandler()
   time += Timer::TICK_TIME;
 
   switch( state ) {
+    default:
     case CLOSED: {
       return;
     }
@@ -190,6 +191,7 @@ void Entity::autoDoorHandler()
   time += Timer::TICK_TIME;
 
   switch( state ) {
+    default:
     case CLOSED: {
       if( ( timer.ticks + uint( str->index ) ) % 8 != 0 ) {
         return;
@@ -264,6 +266,7 @@ void Entity::ignoringBlockHandler()
   time += Timer::TICK_TIME;
 
   switch( state ) {
+    default:
     case CLOSED: {
       if( time >= model->timeout ) {
         state = OPENING;
@@ -310,6 +313,7 @@ void Entity::crushingBlockHandler()
   time += Timer::TICK_TIME;
 
   switch( state ) {
+    default:
     case CLOSED: {
       if( time >= model->timeout ) {
         state = OPENING;
@@ -424,6 +428,7 @@ void Entity::elevatorHandler()
   time += Timer::TICK_TIME;
 
   switch( state ) {
+    default:
     case CLOSED: {
       return;
     }
@@ -594,6 +599,7 @@ Struct::~Struct()
 Bounds Struct::toStructCS( const Bounds& bb ) const
 {
   switch( heading ) {
+    default:
     case NORTH: {
       return Bounds( Point( +bb.mins.x - p.x, +bb.mins.y - p.y, +bb.mins.z - p.z ),
                      Point( +bb.maxs.x - p.x, +bb.maxs.y - p.y, +bb.maxs.z - p.z ) );
@@ -616,6 +622,7 @@ Bounds Struct::toStructCS( const Bounds& bb ) const
 Bounds Struct::toAbsoluteCS( const Bounds& bb ) const
 {
   switch( heading ) {
+    default:
     case NORTH: {
       return Bounds( p + Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
                      p + Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
@@ -640,6 +647,7 @@ Bounds Struct::rotate( const Bounds& in, Heading heading )
   Point p = in.p();
 
   switch( heading ) {
+    default:
     case NORTH: {
       return Bounds( p + Vec3( +in.mins.x, +in.mins.y, +in.mins.z ),
                      p + Vec3( +in.maxs.x, +in.maxs.y, +in.maxs.z ) );
