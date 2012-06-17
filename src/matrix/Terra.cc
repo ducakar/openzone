@@ -41,7 +41,7 @@ void Terra::load( int id_ )
 {
   id = id_;
 
-  if( id == -1 ) {
+  if( id < 0 ) {
     for( int x = 0; x < VERTS; ++x ) {
       for( int y = 0; y < VERTS; ++y ) {
         quads[x][y].vertex.z     = 0.0f;
@@ -116,7 +116,7 @@ void Terra::read( InputStream* istream )
 
 void Terra::write( BufferStream* ostream ) const
 {
-  const char* name = id == -1 ? "" : library.terrae[id].name.cstr();
+  const char* name = id < 0 ? "" : library.terrae[id].name.cstr();
 
   ostream->writeString( name );
 }

@@ -58,7 +58,7 @@ GameStage gameStage;
 String GameStage::AUTOSAVE_FILE;
 String GameStage::QUICKSAVE_FILE;
 
-void GameStage::auxMain()
+void GameStage::auxMain( void* )
 {
   try {
     gameStage.auxRun();

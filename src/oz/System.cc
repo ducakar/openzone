@@ -130,6 +130,7 @@ static void resetSignals()
   signal( SIGSEGV, SIG_DFL );
 }
 
+OZ_NORETURN
 static void signalHandler( int sigNum )
 {
   resetSignals();
@@ -154,11 +155,13 @@ static void catchSignals()
   signal( SIGSEGV, signalHandler );
 }
 
+OZ_NORETURN
 static void terminate()
 {
   System::error( 0, "EXCEPTION HANDLING ABORTED" );
 }
 
+OZ_NORETURN
 static void unexpected()
 {
   System::error( 0, "EXCEPTION SPECIFICATION VIOLATION" );

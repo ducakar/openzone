@@ -63,10 +63,10 @@ void SMMVehicleImago::draw( const Imago*, int mask )
   const VehicleClass* clazz = static_cast<const VehicleClass*>( obj->clazz );
 
   if( shader.mode == Shader::SCENE ) {
-    tf.model = Mat44::translation( obj->p - Point::ORIGIN );
-    tf.model.rotate( veh->rot );
+    tf.model = Mat44::translation( obj->p - Point::ORIGIN ) * veh->rot;
+    tf.model.rotateX( -Math::TAU / 4.0f );
 
-    if( veh->pilot != -1 && ( veh->state & Vehicle::CREW_VISIBLE_BIT ) ) {
+    if( veh->pilot >= 0 && ( veh->state & Vehicle::CREW_VISIBLE_BIT ) ) {
       const Bot* bot = static_cast<const Bot*>( orbis.objects[veh->pilot] );
 
       tf.push();

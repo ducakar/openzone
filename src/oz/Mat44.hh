@@ -540,6 +540,27 @@ class Mat44
     }
 
     /**
+     * <tt>rotationZ( heading ) * rotationX( pitch ) * rotationZ( roll ).</tt>
+     */
+    OZ_ALWAYS_INLINE
+    static Mat44 rotationZXZ( float heading, float pitch, float roll )
+    {
+      float hs, hc, ps, pc, rs, rc;
+
+      Math::sincos( heading, &hs, &hc );
+      Math::sincos( pitch, &ps, &pc );
+      Math::sincos( roll, &rs, &rc );
+
+      float hspc = hs*pc;
+      float hcpc = hc*pc;
+
+      return Mat44(  hc*rc - hspc*rs,  hs*rc + hcpc*rs, ps*rs, 0.0f,
+                    -hc*rs - hspc*rc, -hs*rs + hcpc*rc, ps*rc, 0.0f,
+                               hs*ps,           -hc*ps,    pc, 0.0f,
+                                0.0f,             0.0f,  0.0f, 1.0f );
+    }
+
+    /**
      * Create matrix for scaling.
      */
     OZ_ALWAYS_INLINE

@@ -34,32 +34,20 @@ class Module
 {
   public:
 
-    virtual ~Module()
-    {}
+    virtual ~Module();
 
-    virtual void update()
-    {}
+    virtual void update();
 
-    virtual void read( InputStream* )
-    {}
+    virtual void load();
+    virtual void unload();
 
-    virtual void write( BufferStream* ) const
-    {}
+    virtual void registerLua() const;
 
-    virtual void load()
-    {}
+    virtual void init();
+    virtual void free();
 
-    virtual void unload()
-    {}
-
-    virtual void registerLua() const
-    {}
-
-    virtual void init()
-    {}
-
-    virtual void free()
-    {}
+    virtual void read( InputStream* );
+    virtual void write( BufferStream* ) const;
 
 };
 

@@ -50,7 +50,7 @@ Terra::Terra() :
 
 void Terra::draw()
 {
-  if( id == -1 ) {
+  if( id < 0 ) {
     return;
   }
 
@@ -99,7 +99,7 @@ void Terra::draw()
 
 void Terra::drawWater()
 {
-  if( id == -1 ) {
+  if( id < 0 ) {
     return;
   }
 
@@ -224,7 +224,7 @@ void Terra::load()
 
 void Terra::unload()
 {
-  if( id != -1 ) {
+  if( id >= 0 ) {
     glDeleteTextures( 1, &mapTexId );
     glDeleteTextures( 1, &detailTexId );
     glDeleteTextures( 1, &waterTexId );

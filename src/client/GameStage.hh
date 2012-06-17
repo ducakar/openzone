@@ -72,7 +72,7 @@ class GameStage : public Stage
 
   private:
 
-    static void auxMain();
+    static void auxMain( void* );
 
     bool read( const char* path );
     void write( const char* path ) const;

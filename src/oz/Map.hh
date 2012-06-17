@@ -490,7 +490,7 @@ class Map
      */
     bool contains( const Key& key ) const
     {
-      return aBisectFind<Elem>( data, key, count ) != -1;
+      return aBisectFind<Elem>( data, key, count ) >= 0;
     }
 
     /**
@@ -507,7 +507,7 @@ class Map
     const Value* find( const Key& key ) const
     {
       int i = aBisectFind<Elem>( data, key, count );
-      return i == -1 ? null : &data[i].value;
+      return i < 0 ? null : &data[i].value;
     }
 
     /**
@@ -516,7 +516,7 @@ class Map
     Value* find( const Key& key )
     {
       int i = aBisectFind<Elem>( data, key, count );
-      return i == -1 ? null : &data[i].value;
+      return i < 0 ? null : &data[i].value;
     }
 
     /**
@@ -606,7 +606,7 @@ class Map
     {
       int i = aBisectFind<Elem>( data, key, count );
 
-      if( i != -1 ) {
+      if( i >= 0 ) {
         remove( i );
       }
       return i;

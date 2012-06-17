@@ -45,7 +45,7 @@ Loader loader;
 
 Loader::ScreenshotInfo Loader::screenshotInfo;
 
-void Loader::screenshotMain()
+void Loader::screenshotMain( void* )
 {
   // flip image
   char* top    = screenshotInfo.pixels;
@@ -74,7 +74,7 @@ void Loader::screenshotMain()
   delete[] screenshotInfo.pixels;
 }
 
-void Loader::preloadMain()
+void Loader::preloadMain( void* )
 {
   try {
     loader.preloadRun();

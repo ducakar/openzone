@@ -25,11 +25,13 @@
 
 #include "client/OpenGL.hh"
 
-#define OZ_REGISTER_GLFUNC( func, type ) \
-  *reinterpret_cast<void**>( &func ) = SDL_GL_GetProcAddress( #func ); \
+#ifdef _WIN32
+# define OZ_REGISTER_GLFUNC( func ) \
+  *( void** ) &func = SDL_GL_GetProcAddress( #func ); \
   if( func == null ) { \
     throw Exception( "Failed to link OpenGL function '" #func "'" ); \
   }
+#endif
 
 namespace oz
 {
@@ -165,73 +167,73 @@ void glCheckError( const char* file, int line, const char* function )
 void glInit()
 {
 #ifdef _WIN32
-  OZ_REGISTER_GLFUNC( glUniform1i,               PFNGLUNIFORM1IPROC               );
-  OZ_REGISTER_GLFUNC( glUniform2i,               PFNGLUNIFORM2IPROC               );
-  OZ_REGISTER_GLFUNC( glUniform3i,               PFNGLUNIFORM3IPROC               );
-  OZ_REGISTER_GLFUNC( glUniform4i,               PFNGLUNIFORM4IPROC               );
-  OZ_REGISTER_GLFUNC( glUniform1iv,              PFNGLUNIFORM1IVPROC              );
-  OZ_REGISTER_GLFUNC( glUniform2iv,              PFNGLUNIFORM2IVPROC              );
-  OZ_REGISTER_GLFUNC( glUniform3iv,              PFNGLUNIFORM3IVPROC              );
-  OZ_REGISTER_GLFUNC( glUniform4iv,              PFNGLUNIFORM4IVPROC              );
-  OZ_REGISTER_GLFUNC( glUniform1f,               PFNGLUNIFORM1FPROC               );
-  OZ_REGISTER_GLFUNC( glUniform2f,               PFNGLUNIFORM2FPROC               );
-  OZ_REGISTER_GLFUNC( glUniform3f,               PFNGLUNIFORM3FPROC               );
-  OZ_REGISTER_GLFUNC( glUniform4f,               PFNGLUNIFORM4FPROC               );
-  OZ_REGISTER_GLFUNC( glUniform1fv,              PFNGLUNIFORM1FVPROC              );
-  OZ_REGISTER_GLFUNC( glUniform2fv,              PFNGLUNIFORM2FVPROC              );
-  OZ_REGISTER_GLFUNC( glUniform3fv,              PFNGLUNIFORM3FVPROC              );
-  OZ_REGISTER_GLFUNC( glUniform4fv,              PFNGLUNIFORM4FVPROC              );
-  OZ_REGISTER_GLFUNC( glUniformMatrix4fv,        PFNGLUNIFORMMATRIX4FVPROC        );
+  OZ_REGISTER_GLFUNC( glUniform1i               );
+  OZ_REGISTER_GLFUNC( glUniform2i               );
+  OZ_REGISTER_GLFUNC( glUniform3i               );
+  OZ_REGISTER_GLFUNC( glUniform4i               );
+  OZ_REGISTER_GLFUNC( glUniform1iv              );
+  OZ_REGISTER_GLFUNC( glUniform2iv              );
+  OZ_REGISTER_GLFUNC( glUniform3iv              );
+  OZ_REGISTER_GLFUNC( glUniform4iv              );
+  OZ_REGISTER_GLFUNC( glUniform1f               );
+  OZ_REGISTER_GLFUNC( glUniform2f               );
+  OZ_REGISTER_GLFUNC( glUniform3f               );
+  OZ_REGISTER_GLFUNC( glUniform4f               );
+  OZ_REGISTER_GLFUNC( glUniform1fv              );
+  OZ_REGISTER_GLFUNC( glUniform2fv              );
+  OZ_REGISTER_GLFUNC( glUniform3fv              );
+  OZ_REGISTER_GLFUNC( glUniform4fv              );
+  OZ_REGISTER_GLFUNC( glUniformMatrix4fv        );
 
-  OZ_REGISTER_GLFUNC( glEnableVertexAttribArray, PFNGLENABLEVERTEXATTRIBARRAYPROC );
-  OZ_REGISTER_GLFUNC( glVertexAttribPointer,     PFNGLVERTEXATTRIBPOINTERPROC     );
-  OZ_REGISTER_GLFUNC( glDrawRangeElements,       PFNGLDRAWRANGEELEMENTSPROC       );
+  OZ_REGISTER_GLFUNC( glEnableVertexAttribArray );
+  OZ_REGISTER_GLFUNC( glVertexAttribPointer     );
+  OZ_REGISTER_GLFUNC( glDrawRangeElements       );
 
-  OZ_REGISTER_GLFUNC( glGenBuffers,              PFNGLGENBUFFERSPROC              );
-  OZ_REGISTER_GLFUNC( glDeleteBuffers,           PFNGLDELETEBUFFERSPROC           );
-  OZ_REGISTER_GLFUNC( glBindBuffer,              PFNGLBINDBUFFERPROC              );
-  OZ_REGISTER_GLFUNC( glBufferData,              PFNGLBUFFERDATAPROC              );
-  OZ_REGISTER_GLFUNC( glMapBuffer,               PFNGLMAPBUFFERPROC               );
-  OZ_REGISTER_GLFUNC( glUnmapBuffer,             PFNGLUNMAPBUFFERPROC             );
+  OZ_REGISTER_GLFUNC( glGenBuffers              );
+  OZ_REGISTER_GLFUNC( glDeleteBuffers           );
+  OZ_REGISTER_GLFUNC( glBindBuffer              );
+  OZ_REGISTER_GLFUNC( glBufferData              );
+  OZ_REGISTER_GLFUNC( glMapBuffer               );
+  OZ_REGISTER_GLFUNC( glUnmapBuffer             );
 
-  OZ_REGISTER_GLFUNC( glGenRenderbuffers,        PFNGLGENRENDERBUFFERSPROC        );
-  OZ_REGISTER_GLFUNC( glDeleteRenderbuffers,     PFNGLDELETERENDERBUFFERSPROC     );
-  OZ_REGISTER_GLFUNC( glBindRenderbuffer,        PFNGLBINDRENDERBUFFERPROC        );
-  OZ_REGISTER_GLFUNC( glRenderbufferStorage,     PFNGLRENDERBUFFERSTORAGEPROC     );
-  OZ_REGISTER_GLFUNC( glGenFramebuffers,         PFNGLGENFRAMEBUFFERSPROC         );
-  OZ_REGISTER_GLFUNC( glDeleteFramebuffers,      PFNGLDELETEFRAMEBUFFERSPROC      );
-  OZ_REGISTER_GLFUNC( glBindFramebuffer,         PFNGLBINDFRAMEBUFFERPROC         );
-  OZ_REGISTER_GLFUNC( glFramebufferRenderbuffer, PFNGLFRAMEBUFFERRENDERBUFFERPROC );
-  OZ_REGISTER_GLFUNC( glFramebufferTexture2D,    PFNGLFRAMEBUFFERTEXTURE2DPROC    );
-  OZ_REGISTER_GLFUNC( glCheckFramebufferStatus,  PFNGLCHECKFRAMEBUFFERSTATUSPROC  );
-  OZ_REGISTER_GLFUNC( glBlitFramebuffer,         PFNGLBLITFRAMEBUFFERPROC         );
-  OZ_REGISTER_GLFUNC( glDrawBuffers,             PFNGLDRAWBUFFERSPROC             );
+  OZ_REGISTER_GLFUNC( glGenRenderbuffers        );
+  OZ_REGISTER_GLFUNC( glDeleteRenderbuffers     );
+  OZ_REGISTER_GLFUNC( glBindRenderbuffer        );
+  OZ_REGISTER_GLFUNC( glRenderbufferStorage     );
+  OZ_REGISTER_GLFUNC( glGenFramebuffers         );
+  OZ_REGISTER_GLFUNC( glDeleteFramebuffers      );
+  OZ_REGISTER_GLFUNC( glBindFramebuffer         );
+  OZ_REGISTER_GLFUNC( glFramebufferRenderbuffer );
+  OZ_REGISTER_GLFUNC( glFramebufferTexture2D    );
+  OZ_REGISTER_GLFUNC( glCheckFramebufferStatus  );
+  OZ_REGISTER_GLFUNC( glBlitFramebuffer         );
+  OZ_REGISTER_GLFUNC( glDrawBuffers             );
 
-  OZ_REGISTER_GLFUNC( glCreateShader,            PFNGLCREATESHADERPROC            );
-  OZ_REGISTER_GLFUNC( glDeleteShader,            PFNGLDELETESHADERPROC            );
-  OZ_REGISTER_GLFUNC( glShaderSource,            PFNGLSHADERSOURCEPROC            );
-  OZ_REGISTER_GLFUNC( glCompileShader,           PFNGLCOMPILESHADERPROC           );
-  OZ_REGISTER_GLFUNC( glGetShaderiv,             PFNGLGETSHADERIVPROC             );
-  OZ_REGISTER_GLFUNC( glGetShaderInfoLog,        PFNGLGETSHADERINFOLOGPROC        );
-  OZ_REGISTER_GLFUNC( glCreateProgram,           PFNGLCREATEPROGRAMPROC           );
-  OZ_REGISTER_GLFUNC( glDeleteProgram,           PFNGLDELETEPROGRAMPROC           );
-  OZ_REGISTER_GLFUNC( glAttachShader,            PFNGLATTACHSHADERPROC            );
-  OZ_REGISTER_GLFUNC( glDetachShader,            PFNGLDETACHSHADERPROC            );
-  OZ_REGISTER_GLFUNC( glLinkProgram,             PFNGLLINKPROGRAMPROC             );
-  OZ_REGISTER_GLFUNC( glGetProgramiv,            PFNGLGETPROGRAMIVPROC            );
-  OZ_REGISTER_GLFUNC( glGetProgramInfoLog,       PFNGLGETPROGRAMINFOLOGPROC       );
-  OZ_REGISTER_GLFUNC( glGetUniformLocation,      PFNGLGETUNIFORMLOCATIONPROC      );
-  OZ_REGISTER_GLFUNC( glBindAttribLocation,      PFNGLBINDFRAGDATALOCATIONPROC    );
-  OZ_REGISTER_GLFUNC( glUseProgram,              PFNGLUSEPROGRAMPROC              );
+  OZ_REGISTER_GLFUNC( glCreateShader            );
+  OZ_REGISTER_GLFUNC( glDeleteShader            );
+  OZ_REGISTER_GLFUNC( glShaderSource            );
+  OZ_REGISTER_GLFUNC( glCompileShader           );
+  OZ_REGISTER_GLFUNC( glGetShaderiv             );
+  OZ_REGISTER_GLFUNC( glGetShaderInfoLog        );
+  OZ_REGISTER_GLFUNC( glCreateProgram           );
+  OZ_REGISTER_GLFUNC( glDeleteProgram           );
+  OZ_REGISTER_GLFUNC( glAttachShader            );
+  OZ_REGISTER_GLFUNC( glDetachShader            );
+  OZ_REGISTER_GLFUNC( glLinkProgram             );
+  OZ_REGISTER_GLFUNC( glGetProgramiv            );
+  OZ_REGISTER_GLFUNC( glGetProgramInfoLog       );
+  OZ_REGISTER_GLFUNC( glGetUniformLocation      );
+  OZ_REGISTER_GLFUNC( glBindAttribLocation      );
+  OZ_REGISTER_GLFUNC( glUseProgram              );
 
-  OZ_REGISTER_GLFUNC( glActiveTexture,           PFNGLACTIVETEXTUREPROC           );
-  OZ_REGISTER_GLFUNC( glCompressedTexImage2D,    PFNGLCOMPRESSEDTEXIMAGE2DPROC    );
-  OZ_REGISTER_GLFUNC( glGetCompressedTexImage,   PFNGLGETCOMPRESSEDTEXIMAGEPROC   );
-  OZ_REGISTER_GLFUNC( glGenerateMipmap,          PFNGLGENERATEMIPMAPPROC          );
+  OZ_REGISTER_GLFUNC( glActiveTexture           );
+  OZ_REGISTER_GLFUNC( glCompressedTexImage2D    );
+  OZ_REGISTER_GLFUNC( glGetCompressedTexImage   );
+  OZ_REGISTER_GLFUNC( glGenerateMipmap          );
 
-  OZ_REGISTER_GLFUNC( glGenVertexArrays,         PFNGLGENVERTEXARRAYSPROC         );
-  OZ_REGISTER_GLFUNC( glDeleteVertexArrays,      PFNGLDELETEVERTEXARRAYSPROC      );
-  OZ_REGISTER_GLFUNC( glBindVertexArray,         PFNGLBINDVERTEXARRAYPROC         );
+  OZ_REGISTER_GLFUNC( glGenVertexArrays         );
+  OZ_REGISTER_GLFUNC( glDeleteVertexArrays      );
+  OZ_REGISTER_GLFUNC( glBindVertexArray         );
 #endif
 }
 

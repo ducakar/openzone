@@ -54,7 +54,7 @@ bool InventoryMenu::onMouseEvent()
   Bot* bot = camera.botObj;
   const Object* container = null;
 
-  if( bot != null && bot->parent != -1 ) {
+  if( bot != null && bot->parent >= 0 ) {
     container = orbis.objects[bot->parent];
   }
   else if( camera.objectObj != null && ( camera.objectObj->flags & Object::BROWSABLE_BIT ) ) {
@@ -89,7 +89,7 @@ bool InventoryMenu::onMouseEvent()
               if( container != null ) {
                 bot->invGive( item, container );
               }
-              else if( bot->cargo == -1 ) {
+              else if( bot->cargo < 0 ) {
                 bot->invDrop( item );
               }
             }
@@ -174,7 +174,7 @@ void InventoryMenu::onDraw()
   if( master == null ) {
     container = camera.botObj;
   }
-  else if( camera.botObj != null && camera.botObj->parent != -1 ) {
+  else if( camera.botObj != null && camera.botObj->parent >= 0 ) {
     container = orbis.objects[camera.botObj->parent];
   }
   else if( camera.objectObj != null && ( camera.objectObj->flags & Object::BROWSABLE_BIT ) ) {

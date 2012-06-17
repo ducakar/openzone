@@ -125,8 +125,8 @@ class Sound
     volatile bool  isMusicAlive;
     volatile bool  isSoundAlive;
 
-    static void musicMain();
-    static void soundMain();
+    static void musicMain( void* );
+    static void soundMain( void* );
 
     void musicOpen( const char* path );
     void musicClear();

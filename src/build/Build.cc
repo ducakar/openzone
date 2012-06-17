@@ -536,7 +536,7 @@ void Build::copySounds()
       int dot   = path.lastIndex( '.' );
       int slash = path.lastIndex( '/' );
 
-      if( slash == -1 || slash >= dot ) {
+      if( slash < 0 || slash >= dot ) {
         continue;
       }
 
@@ -708,7 +708,7 @@ int Build::main( int argc, char** argv )
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "lugtcbmsafnxorpABC07" ) ) != -1 ) {
+  while( ( opt = getopt( argc, argv, "lugtcbmsafnxorpABC07" ) ) >= 0 ) {
     switch( opt ) {
       case 'l': {
         doCat = true;

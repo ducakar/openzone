@@ -222,7 +222,7 @@ void Compiler::end()
 
   int partIndex = parts.index( part );
 
-  if( partIndex == -1 ) {
+  if( partIndex < 0 ) {
     parts.add( part );
   }
   else {

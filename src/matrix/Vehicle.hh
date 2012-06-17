@@ -70,7 +70,7 @@ class Vehicle : public Dynamic
     static const float EJECT_EPSILON;
     static const float EJECT_MOMENTUM;
 
-    typedef void ( Vehicle::* Handler )( const Mat44& rotMat );
+    typedef void ( Vehicle::* Handler )();
 
     static const Handler HANDLERS[];
 
@@ -78,11 +78,11 @@ class Vehicle : public Dynamic
 
     static Pool<Vehicle, 256> pool;
 
-    float h, v;
+    float h, v, w;
     float rotVelH, rotVelV;
     int   actions, oldActions;
 
-    Quat  rot;
+    Mat44 rot;
     int   state, oldState;
     float fuel;
 
@@ -98,12 +98,12 @@ class Vehicle : public Dynamic
     void eject();
     void service();
 
-    void staticHandler( const Mat44& rotMat );
-    void wheeledHandler( const Mat44& rotMat );
-    void trackedHandler( const Mat44& rotMat );
-    void mechHandler( const Mat44& rotMat );
-    void hoverHandler( const Mat44& rotMat );
-    void airHandler( const Mat44& rotMat );
+    void staticHandler();
+    void wheeledHandler();
+    void trackedHandler();
+    void mechHandler();
+    void hoverHandler();
+    void airHandler();
 
     void onDestroy() override;
     void onUpdate() override;

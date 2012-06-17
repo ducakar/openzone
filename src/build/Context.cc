@@ -74,6 +74,9 @@ uint Context::buildTexture( const void* data, int width, int height, int format,
   int internalFormat;
 
   switch( format ) {
+    default: {
+      hard_assert( false );
+    }
     case GL_BGR:
     case GL_RGB: {
       internalFormat = useS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_RGB;
@@ -87,9 +90,6 @@ uint Context::buildTexture( const void* data, int width, int height, int format,
     case GL_LUMINANCE: {
       internalFormat = useS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_LUMINANCE;
       break;
-    }
-    default: {
-      throw Exception( "Internal format resolution fall-through" );
     }
   }
 
@@ -190,7 +190,7 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
   }
 
   bool isPalettised = FreeImage_GetColorsUsed( dib ) != 0;
-  bool isOpaque     = FreeImage_GetTransparentIndex( dib ) == -1;
+  bool isOpaque     = FreeImage_GetTransparentIndex( dib ) < 0;
 
   if( forceFormat == 0 ) {
     if( isPalettised ) {
@@ -332,10 +332,10 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
   image.dib = null;
 
   if( diffuse.stat() ) {
-    image = loadImage( diffuse.path(), 0 );
+    image = loadImage( diffuse.path() );
   }
   else if( diffuse1.stat() ) {
-    image = loadImage( diffuse1.path(), 0 );
+    image = loadImage( diffuse1.path() );
   }
   else {
     throw Exception( "Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.cstr() );

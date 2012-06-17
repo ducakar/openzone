@@ -157,6 +157,18 @@ class Camera
       hard_assert( botObj == null || ( botObj->flags & Object::BOT_BIT ) );
     }
 
+    void rotate( float h_, float v_ )
+    {
+      h = h_;
+      v = v_;
+    }
+
+    void smoothRotate( float h_, float v_ )
+    {
+      h = Math::mix( h, h_, SMOOTHING_COEF );
+      v = Math::mix( v, v_, SMOOTHING_COEF );
+    }
+
     void move( const Point& pos )
     {
       Point oldP = p;
@@ -182,7 +194,7 @@ class Camera
     void updateReferences();
 
     /**
-     * Re-calculate quaternions, transformation matrices and <tt>at</tt>, <tt>up</tt>, <tt>left</tt>
+     * Re-calculate rotation quaternion, matrices and <tt>at</tt>, <tt>up</tt>, <tt>left</tt>
      * vectors.
      */
     void align();

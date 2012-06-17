@@ -314,10 +314,10 @@ bool StrategicArea::onMouseEvent()
 
 void StrategicArea::onDraw()
 {
-  const Struct* str = hoverStr == -1 ? null : orbis.structs[hoverStr];
-  const Entity* ent = hoverEnt == -1 ? null : &orbis.structs[hoverEnt / Struct::MAX_ENTITIES]->
+  const Struct* str = hoverStr < 0 ? null : orbis.structs[hoverStr];
+  const Entity* ent = hoverEnt < 0 ? null : &orbis.structs[hoverEnt / Struct::MAX_ENTITIES]->
                       entities[hoverEnt % Struct::MAX_ENTITIES];
-  const Object* obj = hoverObj == -1 ? null : orbis.objects[hoverObj];
+  const Object* obj = hoverObj < 0 ? null : orbis.objects[hoverObj];
 
   Span span;
 

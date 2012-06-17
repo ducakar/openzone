@@ -54,7 +54,7 @@ const Vehicle::Handler Vehicle::HANDLERS[] = {
 
 void Vehicle::exit()
 {
-  if( pilot != -1 ) {
+  if( pilot >= 0 ) {
     Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
 
     if( bot != null ) {
@@ -78,13 +78,11 @@ void Vehicle::eject()
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-  if( pilot != -1 ) {
+  if( pilot >= 0 ) {
     Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
 
     if( bot != null ) {
-      Mat44 rotMat = Mat44::rotation( rot );
-
-      bot->p    = p + rotMat * clazz->pilotPos;
+      bot->p    = p + rot * clazz->pilotPos;
       bot->p.z += bot->dim.z + dim.z + EJECT_EPSILON;
 
       // kill bot if eject path is blocked
@@ -117,19 +115,19 @@ void Vehicle::service()
   }
 }
 
-void Vehicle::staticHandler( const Mat44& )
+void Vehicle::staticHandler()
 {}
 
-void Vehicle::wheeledHandler( const Mat44& )
+void Vehicle::wheeledHandler()
 {}
 
-void Vehicle::trackedHandler( const Mat44& )
+void Vehicle::trackedHandler()
 {}
 
-void Vehicle::mechHandler( const Mat44& )
+void Vehicle::mechHandler()
 {}
 
-void Vehicle::hoverHandler( const Mat44& )
+void Vehicle::hoverHandler()
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
@@ -189,13 +187,13 @@ void Vehicle::hoverHandler( const Mat44& )
   }
 }
 
-void Vehicle::airHandler( const Mat44& rotMat )
+void Vehicle::airHandler()
 {
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-  Vec3 right = rotMat.x;
-  Vec3 at    = rotMat.y;
-  Vec3 up    = rotMat.z;
+  Vec3 right = rot.x;
+  Vec3 at    = rot.y;
+  Vec3 up    = rot.z;
 
   // controls
   Vec3 move = Vec3::ZERO;
@@ -226,7 +224,7 @@ void Vehicle::airHandler( const Mat44& rotMat )
 
 void Vehicle::onDestroy()
 {
-  if( pilot != -1 ) {
+  if( pilot >= 0 ) {
     Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
 
     if( bot != null ) {
@@ -249,10 +247,10 @@ void Vehicle::onUpdate()
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
   // clean invalid pilot reference and throw him out if dead
-  if( pilot != -1 ) {
+  if( pilot >= 0 ) {
     Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
 
-    if( bot == null || bot->parent == -1 ) {
+    if( bot == null || bot->parent < 0 ) {
       pilot = -1;
     }
     else if( bot->state & Bot::DEAD_BIT ) {
@@ -265,7 +263,7 @@ void Vehicle::onUpdate()
 
   Bot* bot = null;
 
-  if( pilot != -1 ) {
+  if( pilot >= 0 ) {
     bot = static_cast<Bot*>( orbis.objects[pilot] );
 
     // TODO Limit rotational velocity.
@@ -314,17 +312,16 @@ void Vehicle::onUpdate()
     h = bot->h;
     v = bot->v;
 
-    rot     = Quat::rotZXZ( h, v - Math::TAU / 4.0f, 0.0f );
     actions = bot->actions;
     flags  &= ~DISABLED_BIT;
   }
 
-  Mat44 rotMat = Mat44::rotation( rot );
+  rot = Mat44::rotationZXZ( h, v, w );
 
-  if( pilot != -1 && fuel > 0.0f ) {
+  if( pilot >= 0 && fuel > 0.0f ) {
     fuel -= clazz->fuelConsumption;
 
-    ( this->*HANDLERS[clazz->type] )( rotMat );
+    ( this->*HANDLERS[clazz->type] )();
   }
 
   // move forwards (predicted movement) to prevent our bullets hitting us in the back when we are
@@ -363,7 +360,7 @@ void Vehicle::onUpdate()
   }
 
   if( bot != null ) {
-    bot->p = p + rotMat * clazz->pilotPos + momentum * Timer::TICK_TIME;
+    bot->p = p + rot * clazz->pilotPos + momentum * Timer::TICK_TIME;
     bot->momentum = velocity;
     bot->velocity = velocity;
 
@@ -383,7 +380,7 @@ void Vehicle::onUpdate()
 
 bool Vehicle::onUse( Bot* user )
 {
-  if( pilot == -1 ) {
+  if( pilot < 0 ) {
     pilot = user->index;
 
     user->h = h;
@@ -400,12 +397,13 @@ Vehicle::Vehicle( const VehicleClass* clazz_, int index_, const Point& p_, Headi
 {
   h          = 0.0f;
   v          = Math::TAU / 4.0f;
+  w          = 0.0f;
   rotVelH    = 0.0f;
   rotVelV    = 0.0f;
   actions    = 0;
   oldActions = 0;
 
-  rot        = Quat::ID;
+  rot        = Mat44::rotationZXZ( h, v, w );
   state      = clazz_->state;
   oldState   = clazz_->state;
   fuel       = clazz_->fuel;
@@ -424,12 +422,13 @@ Vehicle::Vehicle( const VehicleClass* clazz_, InputStream* istream ) :
 {
   h          = istream->readFloat();
   v          = istream->readFloat();
+  w          = istream->readFloat();
   rotVelH    = istream->readFloat();
   rotVelV    = istream->readFloat();
   actions    = istream->readInt();
   oldActions = istream->readInt();
 
-  rot        = istream->readQuat();
+  rot        = Mat44::rotationZXZ( h, v, w );
   state      = istream->readInt();
   oldState   = istream->readInt();
   fuel       = istream->readFloat();
@@ -449,12 +448,12 @@ void Vehicle::write( BufferStream* ostream ) const
 
   ostream->writeFloat( h );
   ostream->writeFloat( v );
+  ostream->writeFloat( w );
   ostream->writeFloat( rotVelH );
   ostream->writeFloat( rotVelV );
   ostream->writeInt( actions );
   ostream->writeInt( oldActions );
 
-  ostream->writeQuat( rot );
   ostream->writeInt( state );
   ostream->writeInt( oldState );
   ostream->writeFloat( fuel );

@@ -45,8 +45,8 @@ void HudArea::drawBotCrosshair()
   const Bot*      me      = camera.botObj;
   const BotClass* myClazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
-  float dx     = me->parent == -1 ? angleDiff( camera.h, me->h ) : angleDiff( camera.h, 0.0f );
-  float dy     = me->parent == -1 ? camera.v - me->v : camera.v - Math::TAU / 4.0f;
+  float dx     = me->parent < 0 ? angleDiff( camera.h, me->h ) : angleDiff( camera.h, 0.0f );
+  float dy     = me->parent < 0 ? camera.v - me->v : camera.v - Math::TAU / 4.0f;
   float alpha  = 1.0f - CROSS_FADE_COEFF * Math::sqrt( dx*dx + dy*dy );
   float life   = max( 2.0f * me->life / myClazz->life - 1.0f, 0.0f );
   Vec3  colour = Math::mix( Vec3( 1.00f, 0.50f, 0.25f ), Vec3( 1.0f, 1.0f, 1.0f ), life );
@@ -56,7 +56,7 @@ void HudArea::drawBotCrosshair()
   shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
   glBindTexture( GL_TEXTURE_2D, 0 );
 
-  if( me->parent == -1 && ( camera.object != -1 || camera.entity != -1 ) ) {
+  if( me->parent < 0 && ( camera.object >= 0 || camera.entity >= 0 ) ) {
     const Object*      obj   = camera.objectObj;
     const ObjectClass* clazz = obj == null ? null : obj->clazz;
     const Dynamic*     dyn   = static_cast<const Dynamic*>( obj );
@@ -79,7 +79,7 @@ void HudArea::drawBotCrosshair()
 
       title.draw( this, false );
 
-      if( model->target != -1 && ent->key >= 0 ) {
+      if( model->target >= 0 && ent->key >= 0 ) {
         glBindTexture( GL_TEXTURE_2D, useTexId );
         shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
       }
@@ -144,7 +144,7 @@ void HudArea::drawBotCrosshair()
       if( obj->flags & Object::VEHICLE_BIT ) {
         const Vehicle* vehicle = static_cast<const Vehicle*>( obj );
 
-        if( vehicle->pilot == -1 ) {
+        if( vehicle->pilot < 0 ) {
           glBindTexture( GL_TEXTURE_2D, mountTexId );
           shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
         }
@@ -163,12 +163,12 @@ void HudArea::drawBotCrosshair()
         shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
       }
 
-      if( me->cargo == -1 && me->weapon == -1 &&
+      if( me->cargo < 0 && me->weapon < 0 &&
         ( obj->flags & Object::DYNAMIC_BIT ) && dyn->mass <= myClazz->grabMass &&
           // not swimming or on ladder
           !( me->state & ( Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) &&
           // if it is not a bot that is holding something
-          ( !( obj->flags & Object::BOT_BIT ) || bot->cargo == -1 ) )
+          ( !( obj->flags & Object::BOT_BIT ) || bot->cargo < 0 ) )
       {
         float dimX = bot->dim.x + dyn->dim.x;
         float dimY = bot->dim.y + dyn->dim.y;
@@ -179,7 +179,7 @@ void HudArea::drawBotCrosshair()
           shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
         }
       }
-      if( camera.botObj->cargo != -1 ) {
+      if( camera.botObj->cargo >= 0 ) {
         glBindTexture( GL_TEXTURE_2D, grabTexId );
         shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
       }
@@ -211,7 +211,7 @@ void HudArea::drawBotStatus()
   rect( 8, 30, 200, 14 );
   rect( 8, 8, 200, 14 );
 
-  if( bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
+  if( bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
     const Weapon* weaponObj = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
     glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.3f );
@@ -224,7 +224,7 @@ void HudArea::drawBotStatus()
     if( lastWeaponRounds != weaponObj->nRounds ) {
       lastWeaponRounds = weaponObj->nRounds;
 
-      if( weaponObj->nRounds == -1 ) {
+      if( weaponObj->nRounds < 0 ) {
         weaponRounds.setText( "∞" );
       }
       else {
@@ -316,7 +316,7 @@ void HudArea::drawVehicleStatus()
     if( lastVehicleWeaponRounds[labelIndex] != vehicle->nRounds[i] ) {
       lastVehicleWeaponRounds[labelIndex] = vehicle->nRounds[i];
 
-      if( vehicle->nRounds[i] == -1 ) {
+      if( vehicle->nRounds[i] < 0 ) {
         vehicleWeaponRounds[labelIndex].setText( "∞" );
       }
       else {
@@ -341,22 +341,22 @@ void HudArea::onUpdate()
   if( camera.entity != lastEntityId ) {
     lastEntityId = -1;
   }
-  if( camera.state != Camera::BOT || camera.bot == -1 ) {
+  if( camera.state != Camera::BOT || camera.bot < 0 ) {
     lastWeaponId = -1;
   }
-  else if( bot->parent == -1 || orbis.objects[bot->parent] == null ) {
+  else if( bot->parent < 0 || orbis.objects[bot->parent] == null ) {
     lastVehicleId = -1;
   }
 }
 
 void HudArea::onDraw()
 {
-  if( camera.bot != -1 ) {
+  if( camera.bot >= 0 ) {
     drawBotCrosshair();
     drawBotStatus();
 
     int parent = camera.botObj->parent;
-    if( parent != -1 && orbis.objects[parent] != null ) {
+    if( parent >= 0 && orbis.objects[parent] != null ) {
       drawVehicleStatus();
     }
   }

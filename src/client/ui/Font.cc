@@ -51,7 +51,7 @@ void Font::init()
 {
   Log::print( "Initialising Fonts ..." );
 
-  if( TTF_Init() == -1 ) {
+  if( TTF_Init() < 0 ) {
     throw Exception( "Failed to initialise SDL_TTF" );
   }
 

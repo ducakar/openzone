@@ -69,7 +69,7 @@ bool Weapon::onUse( Bot* user )
     user->items.add( index );
     user->weapon = index;
 
-    if( parent == -1 ) {
+    if( parent < 0 ) {
       parent = user->index;
       synapse.cut( this );
     }

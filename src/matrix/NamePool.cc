@@ -40,7 +40,7 @@ const String& NamePool::genName( int list ) const
 {
   hard_assert( names.length() > 0 );
 
-  if( list == -1 ) {
+  if( list < 0 ) {
     return names[0];
   }
 

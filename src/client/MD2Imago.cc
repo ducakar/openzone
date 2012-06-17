@@ -75,7 +75,7 @@ void MD2Imago::draw( const Imago* parent, int mask )
       if( bot->index == camera.bot && !camera.isExternal ) {
         h = bot->h;
 
-        if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
+        if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
           tf.model = Mat44::translation( obj->p - Point::ORIGIN );
           tf.model.rotateZ( bot->h );
 
@@ -104,7 +104,7 @@ void MD2Imago::draw( const Imago* parent, int mask )
 
         md2->draw( &anim );
 
-        if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
+        if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
           context.drawImago( orbis.objects[bot->weapon], this, Mesh::SOLID_BIT );
         }
       }
@@ -122,7 +122,7 @@ void MD2Imago::draw( const Imago* parent, int mask )
     md2->draw( &anim );
 
     // FIXME Enable if no buggy models (with mismatched death animation for weapon) are used.
-//     if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
+//     if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
 //       context.drawImago( orbis.objects[bot->weapon], this, Mesh::SOLID_BIT );
 //     }
 

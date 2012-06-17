@@ -40,6 +40,7 @@ class BuildButton : public Button
     String className;
 
     explicit BuildButton( const char* className, Callback* callback, int width, int height );
+    ~BuildButton() override;
 
 };
 
@@ -52,6 +53,7 @@ class BuildMenu : public Frame
   public:
 
     BuildMenu();
+    ~BuildMenu() override;
 
 };
 

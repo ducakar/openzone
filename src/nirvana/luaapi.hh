@@ -84,7 +84,7 @@ static int ozSelfGetPos( lua_State* l )
   ARG( 0 );
 
   if( ns.self->cell == null ) {
-    if( ns.self->parent != -1 ) {
+    if( ns.self->parent >= 0 ) {
       Object* parent = orbis.objects[ns.self->parent];
 
       if( parent != null ) {
@@ -173,7 +173,7 @@ static int ozSelfGetParent( lua_State* l )
   ARG( 0 );
 
   int parent = ns.self->parent;
-  l_pushint( parent != -1 && orbis.objects[parent] == null ? -1 : parent );
+  l_pushint( parent >= 0 && orbis.objects[parent] == null ? -1 : parent );
   return 1;
 }
 
@@ -342,7 +342,7 @@ static int ozSelfGetCargo( lua_State* l )
   ARG( 0 );
 
   int cargo = ns.self->cargo;
-  l_pushint( cargo != -1 && orbis.objects[cargo] == null ? -1 : cargo );
+  l_pushint( cargo >= 0 && orbis.objects[cargo] == null ? -1 : cargo );
   return 1;
 }
 
@@ -351,7 +351,7 @@ static int ozSelfGetWeapon( lua_State* l )
   ARG( 0 );
 
   int weapon = ns.self->weapon;
-  l_pushint( weapon != -1 && orbis.objects[weapon] == null ? -1 : weapon );
+  l_pushint( weapon >= 0 && orbis.objects[weapon] == null ? -1 : weapon );
   return 1;
 }
 
@@ -360,7 +360,7 @@ static int ozSelfSetWeaponItem( lua_State* l )
   ARG( 1 );
 
   int item = l_toint( 1 );
-  if( item == -1 ) {
+  if( item < 0 ) {
     ns.self->weapon = -1;
   }
   else {
@@ -437,7 +437,7 @@ static int ozSelfBindItems( lua_State* l )
   ms.objects.clear();
 
   foreach( item, ns.self->items.citer() ) {
-    hard_assert( *item != -1 );
+    hard_assert( *item >= 0 );
 
     ms.objects.add( orbis.objects[*item] );
   }

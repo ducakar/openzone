@@ -57,7 +57,7 @@ void Synapse::lock( Bot* user, Entity* target )
 
 void Synapse::put( Dynamic* obj )
 {
-  hard_assert( obj->index != -1 && obj->cell == null && obj->parent == -1 );
+  hard_assert( obj->index >= 0 && obj->cell == null && obj->parent == -1 );
 
   orbis.position( obj );
 
@@ -66,7 +66,7 @@ void Synapse::put( Dynamic* obj )
 
 void Synapse::cut( Dynamic* obj )
 {
-  hard_assert( obj->index != -1 && obj->cell != null && obj->parent != -1 );
+  hard_assert( obj->index >= 0 && obj->cell != null && obj->parent >= 0 );
 
   obj->flags   &= ~( Object::TICK_CLEAR_MASK | Object::MOVE_CLEAR_MASK );
   obj->lower    = -1;
@@ -212,7 +212,7 @@ void Synapse::genFrags( const char* poolName, int nFrags, const Bounds& bb, cons
 
 void Synapse::remove( Struct* str )
 {
-  hard_assert( str->index != -1 );
+  hard_assert( str->index >= 0 );
 
   for( int i = 0; i < str->boundObjects.length(); ++i ) {
     Object* boundObj = orbis.objects[ str->boundObjects[i] ];
@@ -231,7 +231,7 @@ void Synapse::remove( Struct* str )
 
 void Synapse::remove( Object* obj )
 {
-  hard_assert( obj->index != -1 );
+  hard_assert( obj->index >= 0 );
 
   for( int i = 0; i < obj->items.length(); ++i ) {
     Object* item = orbis.objects[ obj->items[i] ];
@@ -257,7 +257,7 @@ void Synapse::remove( Object* obj )
 
 void Synapse::remove( Frag* frag )
 {
-  hard_assert( frag->index != -1 );
+  hard_assert( frag->index >= 0 );
 
   removedFrags.add( frag->index );
 
@@ -267,7 +267,7 @@ void Synapse::remove( Frag* frag )
 
 void Synapse::removeStruct( int index )
 {
-  hard_assert( index != -1 );
+  hard_assert( index >= 0 );
 
   Struct* str = orbis.structs[index];
 
@@ -278,7 +278,7 @@ void Synapse::removeStruct( int index )
 
 void Synapse::removeObject( int index )
 {
-  hard_assert( index != -1 );
+  hard_assert( index >= 0 );
 
   Object* obj = orbis.objects[index];
 
@@ -289,7 +289,7 @@ void Synapse::removeObject( int index )
 
 void Synapse::removeFrag( int index )
 {
-  hard_assert( index != -1 );
+  hard_assert( index >= 0 );
 
   Frag* frag = orbis.frags[index];
 

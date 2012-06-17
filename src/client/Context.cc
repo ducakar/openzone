@@ -42,7 +42,7 @@
 #define OZ_REGISTER_IMAGOCLASS( name ) \
   { \
     int id = library.imagoIndex( #name ); \
-    if( id != -1 ) { \
+    if( id >= 0 ) { \
       imagoClasses[id] = name##Imago::create; \
     } \
   }
@@ -50,7 +50,7 @@
 #define OZ_REGISTER_AUDIOCLASS( name ) \
   { \
     int id = library.audioIndex( #name ); \
-    if( id != -1 ) { \
+    if( id >= 0 ) { \
       audioClasses[id] = name##Audio::create; \
     } \
   }

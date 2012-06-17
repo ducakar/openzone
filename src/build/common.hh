@@ -25,5 +25,13 @@
 
 #include "client/common.hh"
 
+namespace oz
+{
+namespace build
+{
+
 using namespace oz::matrix;
 using namespace oz::client;
+
+}
+}

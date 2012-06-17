@@ -369,7 +369,7 @@ class Quat
     /**
      * Create quaternion for rotation around the given axis.
      */
-    static Quat rotAxis( const Vec3& axis, float theta )
+    static Quat rotationAxis( const Vec3& axis, float theta )
     {
       float s, c;
       Math::sincos( theta * 0.5f, &s, &c );
@@ -379,7 +379,7 @@ class Quat
     /**
      * Create quaternion for rotation around x axis.
      */
-    static Quat rotX( float theta )
+    static Quat rotationX( float theta )
     {
       float s, c;
       Math::sincos( theta * 0.5f, &s, &c );
@@ -389,7 +389,7 @@ class Quat
     /**
      * Create quaternion for rotation around y axis.
      */
-    static Quat rotY( float theta )
+    static Quat rotationY( float theta )
     {
       float s, c;
       Math::sincos( theta * 0.5f, &s, &c );
@@ -399,7 +399,7 @@ class Quat
     /**
      * Create quaternion for rotation around z axis.
      */
-    static Quat rotZ( float theta )
+    static Quat rotationZ( float theta )
     {
       float s, c;
       Math::sincos( theta * 0.5f, &s, &c );
@@ -407,9 +407,9 @@ class Quat
     }
 
     /**
-     * rotZ ^ rotX ^ rotZ
+     * <tt>rotationZ( heading ) * rotationX( pitch ) * rotationZ( roll ).</tt>
      */
-    static Quat rotZXZ( float heading, float pitch, float roll )
+    static Quat rotationZXZ( float heading, float pitch, float roll )
     {
       float hs, hc, ps, pc, rs, rc;
 
@@ -437,7 +437,7 @@ class Quat
       float angle = 2.0f * Math::acos( diff.w );
       float k     = Math::fastInvSqrt( 1.0f - diff.w*diff.w );
 
-      return rotAxis( Vec3( diff.x * k, diff.y * k, diff.z * k ), t * angle );
+      return rotationAxis( Vec3( diff.x * k, diff.y * k, diff.z * k ), t * angle );
     }
 
     /**

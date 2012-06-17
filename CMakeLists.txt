@@ -67,63 +67,84 @@ mark_as_advanced( OZ_SYSTEM_NAME )
 # Libraries
 #
 
-find_package( PhysFS REQUIRED )
-find_package( SDL REQUIRED )
-find_package( SDL_ttf REQUIRED )
-find_package( Lua51 REQUIRED )
-find_package( OpenAL REQUIRED )
+if( NACL )
+  find_library( PTHREAD_LIBRARY pthread )
+  find_library( PEPPER_LIBRARY ppapi )
+  find_library( PEPPER_CXX_LIBRARY ppapi_cpp )
+  find_package( PhysFS REQUIRED )
 
-find_library( PTHREAD_LIBRARY pthread )
-find_library( FREEIMAGE_LIBRARY freeimage )
-find_library( VORBISFILE_LIBRARY vorbisfile )
+  find_package( Lua51 REQUIRED )
+  find_package( SDL REQUIRED )
+  find_package( SDL_ttf REQUIRED )
+  find_package( Freetype REQUIRED )
+  find_package( ZLIB REQUIRED )
+  find_library( PEPPER_GLES2_LIBRARY ppapi_gles2 )
+  find_package( OpenAL REQUIRED )
+  find_library( OGG_LIBRARY ogg )
+  find_library( VORBIS_LIBRARY vorbis )
+  find_library( VORBISFILE_LIBRARY vorbisfile )
+
+  find_library( FREEIMAGE_LIBRARY freeimage )
+elseif( WIN32 )
+  find_library( WINMM_LIBRARY winmm )
+  find_package( PhysFS REQUIRED )
+
+  find_package( Lua51 REQUIRED )
+  find_package( SDL REQUIRED )
+  find_package( SDL_net REQUIRED )
+  find_package( SDL_ttf REQUIRED )
+  find_package( OpenGL REQUIRED )
+  find_package( OpenAL REQUIRED )
+  find_library( VORBISFILE_LIBRARY vorbisfile )
+  find_library( MAD_LIBRARY mad )
+  find_library( FAAD_LIBRARY faad )
+
+  find_library( FREEIMAGE_LIBRARY freeimage )
+else()
+  find_library( PTHREAD_LIBRARY pthread )
+  find_library( RT_LIBRARY rt )
+  find_library( PULSESIMPLE_LIBRARY pulse-simple )
+  find_package( PhysFS REQUIRED )
+
+  find_package( Lua51 REQUIRED )
+  find_package( SDL REQUIRED )
+  find_package( SDL_net REQUIRED )
+  find_package( SDL_ttf REQUIRED )
+  find_package( OpenGL REQUIRED )
+  find_package( OpenAL REQUIRED )
+  find_library( VORBISFILE_LIBRARY vorbisfile )
+
+  find_library( FREEIMAGE_LIBRARY freeimage )
+endif()
 
 mark_as_advanced( PTHREAD_LIBRARY )
+mark_as_advanced( RT_LIBRARY )
+mark_as_advanced( PULSESIMPLE_LIBRARY )
+mark_as_advanced( MINGW32_LIBRARY )
+mark_as_advanced( WINMM_LIBRARY )
+mark_as_advanced( PEPPER_LIBRARY )
+mark_as_advanced( PEPPER_CXX_LIBRARY )
 mark_as_advanced( PHYSFS_INCLUDE_DIR )
 mark_as_advanced( PHYSFS_LIBRARY )
+#
 mark_as_advanced( SDL_INCLUDE_DIR )
 mark_as_advanced( SDL_LIBRARY )
 mark_as_advanced( SDLMAIN_LIBRARY )
+mark_as_advanced( SDLNET_INCLUDE_DIR )
+mark_as_advanced( SDLNET_LIBRARY )
 mark_as_advanced( SDLTTF_INCLUDE_DIR )
 mark_as_advanced( SDLTTF_LIBRARY )
-mark_as_advanced( FREEIMAGE_LIBRARY )
+mark_as_advanced( PEPPER_GLES2_LIBRARY )
+mark_as_advanced( OGG_LIBRARY )
+mark_as_advanced( VORBIS_LIBRARY )
 mark_as_advanced( VORBISFILE_LIBRARY )
+mark_as_advanced( MAD_LIBRARY )
+mark_as_advanced( FAAD_LIBRARY )
+#
+mark_as_advanced( FREEIMAGE_LIBRARY )
 
-if( NACL )
-  find_library( PEPPER_LIBRARY ppapi )
-  find_library( PEPPER_CXX_LIBRARY ppapi_cpp )
-  find_library( PEPPER_GLES2_LIBRARY ppapi_gles2 )
-  find_library( FREETYPE_LIBRARY freetype )
-  find_library( OGG_LIBRARY ogg )
-  find_library( VORBIS_LIBRARY vorbis )
-
-  mark_as_advanced( PEPPER_LIBRARY )
-  mark_as_advanced( PEPPER_CXX_LIBRARY )
-  mark_as_advanced( PEPPER_GLES2_LIBRARY )
-  mark_as_advanced( FREETYPE_LIBRARY )
-  mark_as_advanced( OGG_LIBRARY )
-  mark_as_advanced( VORBIS_LIBRARY )
-elseif( WIN32 )
-  find_package( SDL_net REQUIRED )
-  find_package( OpenGL REQUIRED )
-
-  find_library( WINMM_LIBRARY winmm )
-
-  mark_as_advanced( SDLNET_INCLUDE_DIR )
-  mark_as_advanced( SDLNET_LIBRARY )
-  mark_as_advanced( WINMM_LIBRARY )
-
+if( WIN32 )
   include_directories( ./include )
-else()
-  find_package( SDL_net REQUIRED )
-  find_package( OpenGL REQUIRED )
-
-  find_library( RT_LIBRARY rt )
-  find_library( PULSESIMPLE_LIBRARY pulse-simple )
-
-  mark_as_advanced( SDLNET_INCLUDE_DIR )
-  mark_as_advanced( SDLNET_LIBRARY )
-  mark_as_advanced( RT_LIBRARY )
-  mark_as_advanced( PULSESIMPLE_LIBRARY )
 endif()
 
 include_directories( "${SDL_INCLUDE_DIR}" )
@@ -138,46 +159,73 @@ else()
   set( libs_oz "${PTHREAD_LIBRARY};${RT_LIBRARY};${PULSESIMPLE_LIBRARY};${PHYSFS_LIBRARY}" )
 endif()
 
-set( libs_client "${SDL_LIBRARY}" )
-set( libs_client "${libs_client};${SDLTTF_LIBRARY}" )
-set( libs_client "${libs_client};${LUA_LIBRARY}" )
-set( libs_client "${libs_client};${OPENAL_LIBRARY}" )
-set( libs_client "${libs_client};${VORBISFILE_LIBRARY}" )
-
 if( NACL )
-  set( libs_client "${libs_client};${VORBIS_LIBRARY}" )
-  set( libs_client "${libs_client};${OGG_LIBRARY}" )
+  set( libs_client "${LUA_LIBRARY}" )
+  set( libs_client "${libs_client};${SDL_LIBRARY}" )
+  set( libs_client "${libs_client};${SDLTTF_LIBRARY}" )
   set( libs_client "${libs_client};${FREETYPE_LIBRARY}" )
   set( libs_client "${libs_client};${ZLIB_LIBRARY}" )
   set( libs_client "${libs_client};${PEPPER_GLES2_LIBRARY}" )
-  set( libs_client "${libs_client};${PEPPER_CXX_LIBRARY}" )
-  set( libs_client "${libs_client};${PEPPER_LIBRARY}" )
+  set( libs_client "${libs_client};${OPENAL_LIBRARY}" )
+  set( libs_client "${libs_client};${VORBISFILE_LIBRARY}" )
+  set( libs_client "${libs_client};${VORBIS_LIBRARY}" )
+  set( libs_client "${libs_client};${OGG_LIBRARY}" )
 else()
+  set( libs_client "${LUA_LIBRARY}" )
+  set( libs_client "${libs_client};${SDL_LIBRARY}" )
   set( libs_client "${libs_client};${SDLNET_LIBRARY}" )
+  set( libs_client "${libs_client};${SDLTTF_LIBRARY}" )
   set( libs_client "${libs_client};${OPENGL_gl_LIBRARY}" )
-endif()
+  set( libs_client "${libs_client};${OPENAL_LIBRARY}" )
+  set( libs_client "${libs_client};${VORBISFILE_LIBRARY}" )
 
-if( WIN32 )
-  set( libs_client "${libs_client};${MAD_LIBRARY}" )
-  set( libs_client "${libs_client};${FAAD_LIBRARY}" )
-endif()
+  if( WIN32 )
+    set( libs_client "${libs_client};${MAD_LIBRARY}" )
+    set( libs_client "${libs_client};${FAAD_LIBRARY}" )
+  endif()
 
-set( libs_tools "${libs_client};${FREEIMAGE_LIBRARY}" )
+  set( libs_tools "${libs_client};${FREEIMAGE_LIBRARY}" )
+endif()
 
 #
 # Compiler flags
 #
 
-set( flags "-pipe -std=c++0x -pedantic -msse3 -ffast-math" )
+set( flags "-pipe -std=c++0x -pedantic -msse3 -fstrict-enums -ffast-math" )
 set( warnings "-Wall -Wextra -Winvalid-pch -Wconversion " )
 
-# Additional warnings, enabled only once in a while to check code quality.
-# set( warnings "${warnings} -Wswitch-default -Wmissing-declarations -Wmissing-format-attribute" )
+# Additional warnings, enabled only once in a while to check code quality (for GCC).
+# set( warnings "${warnings} -Wmissing-declarations -Wmissing-format-attribute" )
 # set( warnings "${warnings} -Wnon-virtual-dtor -Woverloaded-virtual -Wcast-align -Wundef" )
 # set( warnings "${warnings} -Winit-self -Wformat=2" )
-# Following warnings don't work with Clang.
 # set( warnings "${warnings} -Wlogical-op -Wzero-as-null-pointer-constant" )
 
+# Additional warnings (for Clang).
+# set( warnings "${warnings} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic" )
+# set( warnings "${warnings} -Wno-global-constructors -Wno-exit-time-destructors -Wno-float-equal " )
+# set( warnings "${warnings} -Wno-shadow -Wno-padded -Wno-disabled-macro-expansion" )
+
+check_cxx_source_compiles( "
+#ifdef __clang__
+int main( int, char** ) { return 0; }
+#else
+# error Not LLVM/Clang
+#endif
+" isClang )
+
+check_cxx_source_compiles( "
+#if defined( __GNUC__ ) && __GNUC__ == 4 && __GNUC_MINOR__ <= 4
+int main( int, char** ) { return 0; }
+#else
+# error GCC >= 4.5
+#endif
+" isLegacyGCC )
+
+if( isClang )
+  set( flags "-Qunused-arguments ${flags}" )
+elseif( isLegacyGCC )
+  set( flags "-pipe -std=gnu++0x -msse3 -ffast-math" )
+endif()
 if( ANDROID )
   set( flags "${flags} -fexceptions" )
 endif()

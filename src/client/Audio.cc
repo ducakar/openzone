@@ -134,7 +134,7 @@ void Audio::playEngineSound( int sound, float volume, float pitch, const Vehicle
 {
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 
-  if( !camera.isExternal && veh->pilot != -1 && veh->pilot == camera.bot ) {
+  if( !camera.isExternal && veh->pilot >= 0 && veh->pilot == camera.bot ) {
     volume *= COCKPIT_GAIN_FACTOR;
     pitch  *= COCKPIT_PITCH_FACTOR;
   }
@@ -187,7 +187,7 @@ Audio::Audio( const Object* obj_ ) :
   Log::verboseMode = true;
 
   for( int i = 0; i < ObjectClass::MAX_SOUNDS; ++i ) {
-    if( sounds[i] != -1 ) {
+    if( sounds[i] >= 0 ) {
       context.requestSound( sounds[i] );
     }
   }
@@ -204,7 +204,7 @@ Audio::~Audio()
   Log::verboseMode = true;
 
   for( int i = 0; i < ObjectClass::MAX_SOUNDS; ++i ) {
-    if( sounds[i] != -1 ) {
+    if( sounds[i] >= 0 ) {
       context.releaseSound( sounds[i] );
     }
   }

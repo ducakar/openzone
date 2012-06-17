@@ -116,7 +116,7 @@ void StrategicProxy::prepare()
         else if( tagged->flags & Object::VEHICLE_BIT ) {
           const Vehicle* veh = static_cast<const Vehicle*>( tagged );
 
-          if( veh->pilot != -1 && orbis.objects[veh->pilot] != null ) {
+          if( veh->pilot >= 0 && orbis.objects[veh->pilot] != null ) {
             me = static_cast<const Bot*>( orbis.objects[veh->pilot] );
           }
         }

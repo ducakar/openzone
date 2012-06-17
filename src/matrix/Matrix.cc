@@ -117,7 +117,7 @@ void Matrix::update()
       if( obj->flags & Object::DYNAMIC_BIT ) {
         Dynamic* dyn = static_cast<Dynamic*>( obj );
 
-        hard_assert( ( dyn->parent != -1 ) == ( dyn->cell == null ) );
+        hard_assert( ( dyn->parent >= 0 ) == ( dyn->cell == null ) );
         hard_assert( dyn->parent == -1 || orbis.objects[dyn->parent] != null );
 
         if( dyn->cell != null ) {

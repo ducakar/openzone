@@ -392,7 +392,7 @@ String File::name() const
 {
   int slash = filePath.lastIndex( '/' );
 
-  return slash == -1 ? filePath : filePath.substring( slash + 1 );
+  return slash < 0 ? filePath : filePath.substring( slash + 1 );
 }
 
 String File::extension() const
@@ -442,10 +442,10 @@ bool File::map()
 
 #if defined( __native_client__ )
 
-  if( fileSize == -1 ) {
+  if( fileSize < 0 ) {
     stat();
   }
-  if( fileSize == -1 ) {
+  if( fileSize < 0 ) {
     return false;
   }
 
@@ -533,7 +533,7 @@ bool File::map()
 #else
 
   int fd = open( filePath, O_RDONLY );
-  if( fd == -1 ) {
+  if( fd < 0 ) {
     return false;
   }
 
@@ -593,10 +593,10 @@ Buffer File::read()
 
 #if defined( __native_client__ )
 
-  if( fileSize == -1 ) {
+  if( fileSize < 0 ) {
     stat();
   }
-  if( fileSize == -1 ) {
+  if( fileSize < 0 ) {
     return buffer;
   }
 
@@ -679,7 +679,7 @@ Buffer File::read()
 #else
 
   int fd = open( filePath, O_RDONLY );
-  if( fd == -1 ) {
+  if( fd < 0 ) {
     return buffer;
   }
 
@@ -786,7 +786,7 @@ bool File::write( const char* buffer, int size )
 #else
 
   int fd = open( filePath, O_WRONLY | O_CREAT | O_TRUNC, 0644 );
-  if( fd == -1 ) {
+  if( fd < 0 ) {
     return false;
   }
 

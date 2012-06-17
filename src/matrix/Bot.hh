@@ -181,11 +181,6 @@ class Bot : public Dynamic
     bool canReach( const Entity* ent ) const;
     bool canReach( const Object* obj ) const;
 
-    bool invUse( const Dynamic* item, const Object* source );
-    bool invTake( const Dynamic* item, const Object* source );
-    bool invGive( const Dynamic* item, const Object* target );
-    bool invDrop( const Dynamic* item );
-    bool invGrab( const Dynamic* item );
     bool trigger( const Entity* entity );
     bool lock( const Entity* entity );
     bool use( const Object* object );
@@ -193,6 +188,11 @@ class Bot : public Dynamic
     bool grab( const Dynamic* dynamic = null );
     bool rotateCargo();
     bool throwCargo();
+    bool invUse( const Dynamic* item, const Object* source );
+    bool invTake( const Dynamic* item, const Object* source );
+    bool invGive( const Dynamic* item, const Object* target );
+    bool invDrop( const Dynamic* item );
+    bool invGrab( const Dynamic* item );
 
     void heal();
     void rearm();

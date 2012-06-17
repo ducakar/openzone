@@ -8,13 +8,13 @@ url="http://github.com/ducakar/openzone/"
 license=('GPL3')
 arch=('i686' 'x86_64')
 makedepends=('cmake' 'doxygen' 'faad2' 'freeimage' 'gcc' 'git' 'graphviz'
-             'libmad' 'libpulse' 'lua' 'openal' 'physfs' 'sdl_ttf')
+             'libmad' 'libpulse' 'lua' 'openal' 'physfs' 'sdl_net' 'sdl_ttf')
 source=("openzone-src-${pkgver}.tar.xz"
         "openzone-data-ozbase-${pkgver}.tar.xz"
         "openzone-data-openzone-${pkgver}.tar.xz")
 sha1sums=('6d98d4d95530bbbc53f0eae6d804a9b5183f2597'
-	  '8cbab779654b0c0b2662feb6133b7093c2c51631'
-	  '425abd0477fc04c15eb57d5367da18663b37470c')
+          '8cbab779654b0c0b2662feb6133b7093c2c51631'
+          '425abd0477fc04c15eb57d5367da18663b37470c')
 
 build()
 {
@@ -52,10 +52,10 @@ package_liboz()
 package_openzone()
 {
   pkgdesc='Simple cross-platform FPS/RTS game'
-  depends=('freeimage' 'libgl' 'liboz' 'lua' 'openal' 'sdl_ttf')
+  depends=('freeimage' 'libgl' 'liboz' 'lua' 'openal' 'sdl_net' 'sdl_ttf')
   optdepends=('openzone-data: game data'
-	      'zip: for building ZIP game data archives'
-	      'p7zip: for building 7zip game data archives')
+              'zip: for building ZIP game data archives'
+              'p7zip: for building 7zip game data archives')
 
   cd ${srcdir}/build
 

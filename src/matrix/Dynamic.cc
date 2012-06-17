@@ -43,7 +43,7 @@ void Dynamic::onDestroy()
 
   if( clazz->fragPool != null ) {
     if( cell == null ) {
-      hard_assert( parent != -1 );
+      hard_assert( parent >= 0 );
 
       const Object* container = orbis.objects[parent];
       if( container == null ) {

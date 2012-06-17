@@ -106,7 +106,7 @@ void QuestFrame::prev( Button* sender )
 
 void QuestFrame::onDraw()
 {
-  if( currentQuest == -1 ) {
+  if( currentQuest < 0 ) {
     if( !questList.quests.isEmpty() ) {
       currentQuest = 0;
       updateTask();

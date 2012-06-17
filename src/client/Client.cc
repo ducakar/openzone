@@ -158,7 +158,7 @@ int Client::main( int argc, char** argv )
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "vli:t:p:" ) ) != -1 ) {
+  while( ( opt = getopt( argc, argv, "vli:t:p:" ) ) >= 0 ) {
     switch( opt ) {
       case 'v': {
         Log::showVerbose = true;
