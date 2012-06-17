@@ -38,31 +38,31 @@ void Vertex::setFormat()
 {
   glEnableVertexAttribArray( Attrib::POSITION );
   glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         static_cast<const char*>( null ) + offsetof( Vertex, pos ) );
+                         static_cast<char*>( null ) + offsetof( Vertex, pos ) );
 
   glEnableVertexAttribArray( Attrib::TEXCOORD );
   glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         static_cast<const char*>( null ) + offsetof( Vertex, texCoord ) );
+                         static_cast<char*>( null ) + offsetof( Vertex, texCoord ) );
 
   glEnableVertexAttribArray( Attrib::NORMAL );
   glVertexAttribPointer( Attrib::NORMAL, 3, GL_BYTE, GL_TRUE, sizeof( Vertex ),
-                         static_cast<const char*>( null ) + offsetof( Vertex, normal ) );
+                         static_cast<char*>( null ) + offsetof( Vertex, normal ) );
 
   glEnableVertexAttribArray( Attrib::TANGENT );
   glVertexAttribPointer( Attrib::TANGENT, 3, GL_BYTE, GL_TRUE, sizeof( Vertex ),
-                         static_cast<const char*>( null ) + offsetof( Vertex, tangent ) );
+                         static_cast<char*>( null ) + offsetof( Vertex, tangent ) );
 
   glEnableVertexAttribArray( Attrib::BINORMAL );
   glVertexAttribPointer( Attrib::BINORMAL, 3, GL_BYTE, GL_TRUE, sizeof( Vertex ),
-                         static_cast<const char*>( null ) + offsetof( Vertex, binormal ) );
+                         static_cast<char*>( null ) + offsetof( Vertex, binormal ) );
 
   glEnableVertexAttribArray( Attrib::BONES );
   glVertexAttribPointer( Attrib::BONES, 2, GL_BYTE, GL_FALSE, sizeof( Vertex ),
-                         static_cast<const char*>( null ) + offsetof( Vertex, bones ) );
+                         static_cast<char*>( null ) + offsetof( Vertex, bones ) );
 
   glEnableVertexAttribArray( Attrib::BLEND );
   glVertexAttribPointer( Attrib::BLEND, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof( Vertex ),
-                         static_cast<const char*>( null ) + offsetof( Vertex, blend ) );
+                         static_cast<char*>( null ) + offsetof( Vertex, blend ) );
 }
 
 void Texture::free()
@@ -209,7 +209,7 @@ void Mesh::unload()
     }
     else {
       foreach( id, texIds.citer() ) {
-        if( *id != -1 ) {
+        if( *id >= 0 ) {
           context.releaseTexture( *id );
         }
       }
@@ -273,7 +273,7 @@ void Mesh::drawComponent( int id, int mask ) const
       glUniform4fv( param.oz_Colour, 1, shader.colour );
 
       glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
-                      static_cast<const ushort*>( null ) + part.firstIndex );
+                      static_cast<ushort*>( null ) + part.firstIndex );
     }
   }
 }
@@ -307,7 +307,7 @@ void Mesh::draw( int mask ) const
       glUniform4fv( param.oz_Colour, 1, shader.colour );
 
       glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
-                      static_cast<const ushort*>( null ) + part.firstIndex );
+                      static_cast<ushort*>( null ) + part.firstIndex );
     }
   }
 }

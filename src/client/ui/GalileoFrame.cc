@@ -60,7 +60,7 @@ bool GalileoFrame::onMouseEvent()
 
 void GalileoFrame::onDraw()
 {
-  if( orbis.terra.id == -1 || ( camera.state == Camera::BOT && camera.botObj != null &&
+  if( orbis.terra.id < 0 || ( camera.state == Camera::BOT && camera.botObj != null &&
       !camera.botObj->hasAttribute( ObjectClass::GALILEO_BIT ) ) )
   {
     isVisible = false;
@@ -100,7 +100,7 @@ void GalileoFrame::onDraw()
   float fWidth  = float( width );
   float fHeight = float( height );
 
-  if( questFrame != null && questFrame->currentQuest != -1 ) {
+  if( questFrame != null && questFrame->currentQuest >= 0 ) {
     const Quest& quest = questList.quests[questFrame->currentQuest];
 
     glBindTexture( GL_TEXTURE_2D, markerTexId );

@@ -38,14 +38,16 @@ extern "C" void alSetPpapiInfo( PP_Instance, PPB_GetInterface );
 # define PHYSFS_readBytes( handle, buffer, len ) PHYSFS_read( handle, buffer, 1, uint( len ) )
 #endif
 
-#define OZ_DLDECL( name ) \
+#ifdef OZ_NONFREE
+# define OZ_DLDECL( name ) \
   static decltype( ::name )* name = null
 
-#define OZ_DLLOAD( l, name ) \
-  *reinterpret_cast<void**>( &name ) = SDL_LoadFunction( l, #name ); \
+# define OZ_DLLOAD( l, name ) \
+  *( void** ) &name = SDL_LoadFunction( l, #name ); \
   if( name == null ) { \
     throw Exception( "Failed loading " #name " from libmad" ); \
   }
+#endif
 
 namespace oz
 {
@@ -100,7 +102,7 @@ inline short madFixedToShort( mad_fixed_t f )
 
 #endif
 
-void Sound::musicMain()
+void Sound::musicMain( void* )
 {
   try {
     sound.musicRun();
@@ -110,7 +112,7 @@ void Sound::musicMain()
   }
 }
 
-void Sound::soundMain()
+void Sound::soundMain( void* )
 {
   try {
     sound.soundRun();
@@ -150,7 +152,6 @@ void Sound::musicOpen( const char* path )
   }
 
   switch( musicStreamType ) {
-    default:
     case NONE: {
       break;
     }
@@ -281,6 +282,11 @@ void Sound::musicOpen( const char* path )
 
       break;
     }
+#else
+    case MP3:
+    case AAC: {
+      break;
+    }
 #endif
   }
 }
@@ -288,7 +294,6 @@ void Sound::musicOpen( const char* path )
 void Sound::musicClear()
 {
   switch( musicStreamType ) {
-    default:
     case NONE: {
       break;
     }
@@ -313,6 +318,11 @@ void Sound::musicClear()
       PHYSFS_close( musicFile );
       break;
     }
+#else
+    case MP3:
+    case AAC: {
+      break;
+    }
 #endif
   }
 }
@@ -320,7 +330,6 @@ void Sound::musicClear()
 int Sound::musicDecode()
 {
   switch( musicStreamType ) {
-    default:
     case NONE: {
       return 0;
     }
@@ -447,6 +456,11 @@ int Sound::musicDecode()
       }
       while( true );
     }
+#else
+    case MP3:
+    case AAC: {
+      return 0;
+    }
 #endif
   }
 }
@@ -460,18 +474,18 @@ void Sound::musicRun()
     musicAuxSemaphore.wait();
 
     if( currentTrack != streamedTrack ) {
-      if( streamedTrack != -1 ) {
+      if( streamedTrack >= 0 ) {
         musicClear();
       }
 
       streamedTrack = currentTrack;
 
-      if( streamedTrack != -1 ) {
+      if( streamedTrack >= 0 ) {
         musicOpen( library.musics[streamedTrack].path );
       }
     }
 
-    if( streamedTrack != -1 ) {
+    if( streamedTrack >= 0 ) {
       streamedBytes = musicDecode();
     }
   }
@@ -509,7 +523,7 @@ void Sound::updateMusic()
     return;
   }
 
-  if( selectedTrack != -1 && selectedTrack != currentTrack ) {
+  if( selectedTrack >= 0 && selectedTrack != currentTrack ) {
     currentTrack = selectedTrack == -2 ? -1 : selectedTrack;
     selectedTrack = -1;
 
@@ -527,7 +541,7 @@ void Sound::updateMusic()
 
     musicAuxSemaphore.post();
   }
-  else if( currentTrack == -1 ) {
+  else if( currentTrack < 0 ) {
     musicMainSemaphore.post();
   }
   else if( streamedBytes == 0 ) {
@@ -639,7 +653,7 @@ void Sound::stopMusic()
 
 bool Sound::isMusicPlaying() const
 {
-  return currentTrack != -1 || selectedTrack != -1;
+  return currentTrack >= 0 || selectedTrack >= 0;
 }
 
 void Sound::resume() const

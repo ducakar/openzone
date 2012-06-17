@@ -595,7 +595,7 @@ void Library::initClasses()
     if( objClazz->flags & Object::BOT_BIT ) {
       const BotClass* botClazz = static_cast<const BotClass*>( objClazz );
 
-      if( botClazz->weaponItem != -1 ) {
+      if( botClazz->weaponItem >= 0 ) {
         if( uint( botClazz->weaponItem ) >= uint( botClazz->defaultItems.length() ) ) {
           throw Exception( "Invalid weaponItem for '%s'", botClazz->name.cstr() );
         }

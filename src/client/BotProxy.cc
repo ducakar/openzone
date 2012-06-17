@@ -51,7 +51,7 @@ BotProxy::BotProxy() :
 
 void BotProxy::begin()
 {
-  if( camera.bot == -1 ) {
+  if( camera.bot < 0 ) {
     return;
   }
 
@@ -70,8 +70,12 @@ void BotProxy::begin()
 
   botEye    = bot->p;
   botEye.z += bot->camZ;
+
   bobTheta  = 0.0f;
   bobBias   = 0.0f;
+
+  headH     = 0.0f;
+  headV     = 0.0f;
 
   ui::mouse.doShow = false;
 
@@ -111,7 +115,7 @@ void BotProxy::end()
 
 void BotProxy::prepare()
 {
-  if( camera.bot == -1 ) {
+  if( camera.bot < 0 ) {
     return;
   }
 
@@ -230,15 +234,6 @@ void BotProxy::prepare()
   }
   if( !alt && keys[SDLK_KP_MULTIPLY] && !oldKeys[SDLK_KP_MULTIPLY] ) {
     isFreelook = !isFreelook;
-
-    if( veh != null ) {
-      camera.h = 0.0f;
-      camera.v = Math::TAU / 4.0f;
-    }
-    else {
-      camera.h = bot->h;
-      camera.v = bot->v;
-    }
   }
 
   /*
@@ -251,12 +246,12 @@ void BotProxy::prepare()
     }
 
     if( ui::mouse.leftClick ) {
-      if( bot->cargo != -1 ) {
+      if( bot->cargo >= 0 ) {
         bot->rotateCargo();
       }
     }
     if( ui::mouse.rightClick ) {
-      if( bot->parent != -1 ) {
+      if( bot->parent >= 0 ) {
         bot->actions |= Bot::ACTION_VEH_NEXT_WEAPON;
       }
       else if( camera.entityObj != null ) {
@@ -267,13 +262,13 @@ void BotProxy::prepare()
       }
     }
     else if( ui::mouse.middleClick ) {
-      if( bot->cargo != -1 ) {
+      if( bot->cargo >= 0 ) {
         bot->grab();
       }
-      else if( camera.entity != -1 ) {
+      else if( camera.entity >= 0 ) {
         bot->lock( camera.entityObj );
       }
-      else if( camera.object != -1 ) {
+      else if( camera.object >= 0 ) {
         Dynamic* dyn = static_cast<Dynamic*>( const_cast<Object*>( camera.objectObj ) );
 
         if( dyn->flags & Object::DYNAMIC_BIT ) {
@@ -296,7 +291,7 @@ void BotProxy::prepare()
       }
     }
     else if( ui::mouse.wheelUp ) {
-      if( bot->cargo != -1 ) {
+      if( bot->cargo >= 0 ) {
         bot->throwCargo();
       }
     }
@@ -330,7 +325,7 @@ void BotProxy::prepare()
 
 void BotProxy::update()
 {
-  if( camera.bot == -1 ) {
+  if( camera.bot < 0 ) {
     camera.setState( Camera::STRATEGIC );
     return;
   }
@@ -343,7 +338,7 @@ void BotProxy::update()
   if( veh != null ) {
     vehClazz = static_cast<const VehicleClass*>( veh->clazz );
 
-    botEye = bot->p + Mat44::rotation( veh->rot ).z * bot->camZ;
+    botEye = bot->p + veh->rot.z * bot->camZ;
   }
   else {
     float actualZ = bot->p.z + bot->camZ;
@@ -359,13 +354,13 @@ void BotProxy::update()
     bobTheta = 0.0f;
     bobBias  = 0.0f;
 
-    if( veh != null && !isFreelook ) {
-      camera.h = 0.0f;
-      camera.v = Math::TAU / 4.0f;
-    }
-    else {
+    if( isFreelook ) {
       camera.h = angleWrap( camera.h + camera.relH );
       camera.v = clamp( camera.v + camera.relV, 0.0f, Math::TAU / 2.0f );
+    }
+    else {
+      camera.h = bot->h;
+      camera.v = bot->v;
     }
 
     camera.w = 0.0f;
@@ -402,21 +397,19 @@ void BotProxy::update()
       bobBias  = 0.0f;
 
       if( isFreelook ) {
-        camera.h = angleDiff( camera.h, 0.0f );
-
-        camera.h = clamp( camera.h + camera.relH, vehClazz->lookHMin, vehClazz->lookHMax );
-        camera.v = clamp( camera.v + camera.relV, vehClazz->lookVMin, vehClazz->lookVMax );
-
-        camera.h = angleWrap( camera.h );
+        headH = clamp( headH + camera.relH, vehClazz->lookHMin, vehClazz->lookHMax );
+        headV = clamp( headV + camera.relV, vehClazz->lookVMin, vehClazz->lookVMax );
       }
       else {
-        camera.h = 0.0f;
-        camera.v = Math::TAU / 4.0f;
+        headH = 0.0f;
+        headV = 0.0f;
       }
 
-      camera.w = 0.0f;
-      camera.move( botEye );
+      camera.h = veh->h;
+      camera.v = veh->v;
+      camera.w = veh->w;
       camera.align();
+      camera.move( botEye );
     }
     // internal, bot
     else {
@@ -445,15 +438,15 @@ void BotProxy::update()
       camera.h = bot->h;
       camera.v = bot->v;
       camera.w = bobTheta;
-      camera.move( Point( botEye.x, botEye.y, botEye.z + bobBias ) );
       camera.align();
+      camera.move( Point( botEye.x, botEye.y, botEye.z + bobBias ) );
     }
   }
 
-  if( bot->parent != -1 ) {
+  if( bot->parent >= 0 ) {
     camera.setTaggedObj( null );
   }
-  else if( bot->cargo != -1 ) {
+  else if( bot->cargo >= 0 ) {
     camera.setTaggedObj( orbis.objects[bot->cargo] );
   }
   else {
@@ -481,14 +474,23 @@ void BotProxy::update()
 
 void BotProxy::reset()
 {
+  bobTheta   = 0.0f;
+  bobBias    = 0.0f;
+
+  headH      = 0.0f;
+  headV      = 0.0f;
+
   isExternal = false;
   isFreelook = false;
 }
 
 void BotProxy::read( InputStream* istream )
 {
-  bobTheta = 0.0f;
-  bobBias  = 0.0f;
+  bobTheta   = 0.0f;
+  bobBias    = 0.0f;
+
+  headH      = 0.0f;
+  headV      = 0.0f;
 
   isExternal = istream->readBool();
   isFreelook = istream->readBool();

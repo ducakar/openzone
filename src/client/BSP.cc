@@ -208,7 +208,7 @@ void BSP::play( const Struct* str ) const
   if( str->life <= 0.0f && str->demolishing == 0.0f ) {
     int demolishSound = str->bsp->demolishSound;
 
-    if( demolishSound != -1 ) {
+    if( demolishSound >= 0 ) {
       playDemolish( str, demolishSound );
     }
   }
@@ -217,18 +217,18 @@ void BSP::play( const Struct* str ) const
     const Entity& entity = str->entities[i];
 
     if( entity.state == Entity::OPENING ) {
-      if( entity.time == 0.0f && entity.model->openSound != -1 ) {
+      if( entity.time == 0.0f && entity.model->openSound >= 0 ) {
         playSound( &entity, entity.model->openSound );
       }
-      if( entity.model->frictSound != -1 ) {
+      if( entity.model->frictSound >= 0 ) {
         playContSound( &entity, entity.model->frictSound );
       }
     }
     else if( entity.state == Entity::CLOSING ) {
-      if( entity.time == 0.0f && entity.model->closeSound != -1 ) {
+      if( entity.time == 0.0f && entity.model->closeSound >= 0 ) {
         playSound( &entity, entity.model->closeSound );
       }
-      if( entity.model->frictSound != -1 ) {
+      if( entity.model->frictSound >= 0 ) {
         playContSound( &entity, entity.model->frictSound );
       }
     }

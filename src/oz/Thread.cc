@@ -40,6 +40,12 @@
 namespace oz
 {
 
+struct ThreadMainData
+{
+  Thread::Main* main;
+  void*         data;
+};
+
 #ifdef _WIN32
 
 struct ThreadDesc
@@ -49,8 +55,11 @@ struct ThreadDesc
 
 static DWORD WINAPI winMain( void* data )
 {
-  Thread::Main* main = *reinterpret_cast<Thread::Main**>( &data );
-  main();
+  ThreadMainData* threadData = static_cast<ThreadMainData*>( data );
+
+  threadData->main( threadData->data );
+
+  free( threadData );
   return 0;
 }
 
@@ -63,14 +72,17 @@ struct ThreadDesc
 
 static void* pthreadMain( void* data )
 {
-  Thread::Main* main = *reinterpret_cast<Thread::Main**>( &data );
-  main();
+  ThreadMainData* threadData = static_cast<ThreadMainData*>( data );
+
+  threadData->main( threadData->data );
+
+  free( threadData );
   return null;
 }
 
 #endif
 
-void Thread::start( Main* main )
+void Thread::start( Main* main, void* data )
 {
   hard_assert( descriptor == null );
 
@@ -79,16 +91,21 @@ void Thread::start( Main* main )
     throw Exception( "Thread resource allocation failed" );
   }
 
+  ThreadMainData* threadData = static_cast<ThreadMainData*>( malloc( sizeof( ThreadMainData ) ) );
+  if( threadData == null ) {
+    throw Exception( "Thread resource allocation failed" );
+  }
+
+  threadData->main = main;
+  threadData->data = data;
+
 #ifdef _WIN32
-  descriptor->thread = CreateThread( null, 0, winMain, *reinterpret_cast<void**>( &main ), 0,
-                                     null );
+  descriptor->thread = CreateThread( null, 0, winMain, threadData, 0, null );
   if( descriptor->thread == null ) {
     throw Exception( "Thread creation failed" );
   }
 #else
-  if( pthread_create( &descriptor->thread, null, pthreadMain,
-                      *reinterpret_cast<void**>( &main ) ) != 0 )
-  {
+  if( pthread_create( &descriptor->thread, null, pthreadMain, threadData ) != 0 ) {
     throw Exception( "Thread creation failed" );
   }
 #endif

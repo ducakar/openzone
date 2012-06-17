@@ -448,7 +448,7 @@ class Vector
     {
       int i = aIndex<Elem>( data, e, count );
 
-      if( i == -1 ) {
+      if( i < 0 ) {
         ensureCapacity();
 
         data[count] = static_cast<Elem_&&>( e );
@@ -527,7 +527,7 @@ class Vector
     {
       int i = aIndex<Elem>( data, e, count );
 
-      if( i != -1 ) {
+      if( i >= 0 ) {
         --count;
 
         if( i == count ) {
@@ -554,7 +554,7 @@ class Vector
     {
       int i = aIndex<Elem>( data, e, count );
 
-      if( i != -1 ) {
+      if( i >= 0 ) {
         --count;
         data[i] = static_cast<Elem&&>( data[count] );
       }

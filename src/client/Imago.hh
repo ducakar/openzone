@@ -57,8 +57,7 @@ class Imago
 
   public:
 
-    virtual ~Imago()
-    {}
+    virtual ~Imago();
 
     virtual void draw( const Imago* parent, int mask ) = 0;
 

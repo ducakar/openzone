@@ -118,7 +118,7 @@ void OBJ::readFace( char* pos, int part )
   // find slashes and determine whether we have vert, vert/tex, vert//norm or vert/tex/norm
   for( int i = 0; i < wordLength; ++i ) {
     if( pos[i] == '/' ) {
-      if( firstSlash == -1 ) {
+      if( firstSlash < 0 ) {
         firstSlash = i;
       }
       else {
@@ -128,7 +128,7 @@ void OBJ::readFace( char* pos, int part )
   }
 
   // vert
-  if( firstSlash == -1 ) {
+  if( firstSlash < 0 ) {
     do {
       if( sscanf( pos, "%5d", &vertIndex ) != 1 ) {
         throw Exception( "Invalid OBJ face specification ('v')" );
@@ -141,7 +141,7 @@ void OBJ::readFace( char* pos, int part )
     while( end - pos > 0 );
   }
   // vert/tex
-  else if( lastSlash == -1 ) {
+  else if( lastSlash < 0 ) {
     do {
       if( sscanf( pos, "%5d/%5d", &vertIndex, &texCoordIndex ) != 2 ) {
         throw Exception( "Invalid OBJ face specification ('v/t')" );
@@ -241,7 +241,7 @@ void OBJ::loadMaterials( const String& path )
           *end = '\0';
 
           int dot = String::index( pos, '.' );
-          String name = dot == -1 ? pos : String( dot, pos );
+          String name = dot < 0 ? pos : String( dot, pos );
 
           part.texture = name;
         }
@@ -371,7 +371,7 @@ void OBJ::save()
       for( int k = 0; k < face.vertices.length(); ++k ) {
         const FaceVertex& vertex = face.vertices[k];
 
-        if( vertex.texCoord != -1 ) {
+        if( vertex.texCoord >= 0 ) {
           compiler.texCoord( texCoords[vertex.texCoord].u, texCoords[vertex.texCoord].v );
         }
         compiler.normal( normals[vertex.normal] );

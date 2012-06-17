@@ -62,7 +62,7 @@ Vertex MD2::animBuffer[MAX_VERTS];
 
 MD2::AnimType MD2::AnimState::extractAnim() const
 {
-  const Weapon* weapon = bot->weapon == -1 ?
+  const Weapon* weapon = bot->weapon < 0 ?
                          null : static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
   if( bot->state & Bot::DEAD_BIT ) {
@@ -91,7 +91,7 @@ MD2::AnimType MD2::AnimState::extractAnim() const
       return ANIM_RUN;
     }
   }
-  else if( bot->cargo == -1 ) {
+  else if( bot->cargo < 0 ) {
     if( weapon != null && weapon->shotTime != 0.0f ) {
       return bot->state & Bot::CROUCHING_BIT ? ANIM_CROUCH_ATTACK : ANIM_ATTACK;
     }
@@ -164,7 +164,7 @@ void MD2::AnimState::advance()
     else if( ( type == ANIM_ATTACK && nextType == ANIM_ATTACK ) ||
              ( type == ANIM_CROUCH_ATTACK && nextType == ANIM_CROUCH_ATTACK ) )
     {
-      if( bot->weapon == -1 ) {
+      if( bot->weapon < 0 ) {
         goto normalAnim;
       }
 

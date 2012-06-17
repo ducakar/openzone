@@ -151,11 +151,11 @@ void MD3Imago::draw( const Imago* parent, int mask )
 //       md3->draw( &anim );
     md3->drawFrame( 0 );
 
-    if( parent == null && bot->weapon!= -1 && orbis.objects[bot->weapon] != null ) {
+    if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
       context.drawImago( orbis.objects[bot->weapon], this, mask );
     }
   }
-  else if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
+  else if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
     tf.model.translate( Vec3( 0.0f, 0.0f,  bot->camZ ) );
     tf.model.rotateX( bot->v - Math::TAU / 4.0f );
     tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );

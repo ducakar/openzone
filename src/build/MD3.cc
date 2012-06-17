@@ -254,7 +254,7 @@ void MD3::buildMesh( const char* name, int frame )
     for( int i = 0; i < surfaceTriangles.length(); ++i ) {
       for( int j = 0; j < 3; ++j ) {
         int k = surfaceTriangles[i].vertices[j];
-        int l = frame == -1 ? k : frame * surface.nVertices + k;
+        int l = frame < 0 ? k : frame * surface.nVertices + k;
 
         compiler.texCoord( surfaceTexCoords[k] );
         compiler.normal( meshTransf * normals[l] );
@@ -286,7 +286,7 @@ void MD3::load()
   frame      = config.get( "frame", -1 );
   lowerFrame = config.get( "lowerFrame", -1 );
   upperFrame = config.get( "upperFrame", -1 );
-  shaderName = config.get( "shader", frame == -1 ? "md3" : "mesh" );
+  shaderName = config.get( "shader", frame < 0 ? "md3" : "mesh" );
 
   Vec3 weaponTransl = Vec3( config.get( "weaponTranslate.x", 0.00f ),
                             config.get( "weaponTranslate.y", 0.00f ),
@@ -310,7 +310,7 @@ void MD3::save()
   os.writeString( shaderName );
 
   if( !String::isEmpty( model ) ) {
-    if( frame == -1 ) {
+    if( frame < 0 ) {
       throw Exception( "Custom models can only be static. Must specify frame" );
     }
 
@@ -329,7 +329,7 @@ void MD3::save()
     compiler.getMeshData( &mesh );
     mesh.write( &os );
   }
-  else if( frame != -1 ) {
+  else if( frame >= 0 ) {
     compiler.beginMesh();
 
     compiler.enable( CAP_UNIQUE );

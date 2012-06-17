@@ -18,69 +18,44 @@
  */
 
 /**
- * @file tests/test.cc
+ * @file modules/Module.cc
  */
 
-#include "oz/oz.hh"
-#include "oz/windefs.h"
+#include "stable.hh"
 
-#include <cstdio>
+#include "modules/Module.hh"
 
-using namespace oz;
-
-struct Foo
+namespace oz
 {
-  Foo()
-  {
-    printf( "Foo()\n" );
-  }
-
-  ~Foo()
-  {
-    printf( "~Foo()\n" );
-  }
-
-  Foo( const Foo& )
-  {
-    printf( "Foo( const Foo& )\n" );
-  }
-
-  Foo( Foo&& )
-  {
-    printf( "Foo( Foo&& )\n" );
-  }
-
-  Foo& operator = ( const Foo& )
-  {
-    printf( "Foo& operator = ( const Foo& )\n" );
-    return *this;
-  }
-
-  Foo& operator = ( Foo&& )
-  {
-    printf( "Foo& operator = ( Foo&& )\n" );
-    return *this;
-  }
-
-  void foo() const
-  {
-    printf( "Foo::foo()\n" );
-  };
-
-  static Foo bar( bool b )
-  {
-    Foo f;
-
-    if( b ) {
-      return f;
-    }
-    else {
-      return f;
-    }
-  }
-};
-
-int main( int, char** )
+namespace module
 {
-  return 0;
+
+Module::~Module()
+{}
+
+void Module::update()
+{}
+
+void Module::load()
+{}
+
+void Module::unload()
+{}
+
+void Module::registerLua() const
+{}
+
+void Module::init()
+{}
+
+void Module::free()
+{}
+
+void Module::read( InputStream* )
+{}
+
+void Module::write( BufferStream* ) const
+{}
+
+}
 }

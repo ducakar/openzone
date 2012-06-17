@@ -340,7 +340,7 @@ class SVector
     {
       int i = aIndex<Elem>( data, e, count );
 
-      if( i == -1 ) {
+      if( i < 0 ) {
         hard_assert( uint( count ) < uint( SIZE ) );
 
         data[count] = static_cast<Elem_&&>( e );
@@ -418,7 +418,7 @@ class SVector
     {
       int i = aIndex<Elem>( data, e, count );
 
-      if( i != -1 ) {
+      if( i >= 0 ) {
         --count;
 
         if( i == count ) {
@@ -445,7 +445,7 @@ class SVector
     {
       int i = aIndex<Elem>( data, e, count );
 
-      if( i != -1 ) {
+      if( i >= 0 ) {
         --count;
         data[i] = static_cast<Elem&&>( data[count] );
       }

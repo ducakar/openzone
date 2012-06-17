@@ -233,7 +233,7 @@ String PFile::name() const
 {
   int slash = filePath.lastIndex( '/' );
 
-  return slash == -1 ? filePath : filePath.substring( slash + 1 );
+  return slash < 0 ? filePath : filePath.substring( slash + 1 );
 }
 
 String PFile::extension() const

@@ -63,7 +63,7 @@ void BotAudio::play( const Audio* parent )
   foreach( event, obj->events.citer() ) {
     hard_assert( event->id < ObjectClass::MAX_SOUNDS );
 
-    if( event->id >= 0 && sounds[event->id] != -1 && recent[event->id] == 0 ) {
+    if( event->id >= 0 && sounds[event->id] >= 0 && recent[event->id] == 0 ) {
       hard_assert( 0.0f <= event->intensity );
 
       recent[event->id] = RECENT_TICKS;
@@ -93,18 +93,18 @@ void BotAudio::play( const Audio* parent )
 
     if( currStep != prevStep ) {
       if( bot->state & Bot::SWIMMING_BIT ) {
-        if( !( bot->state & Bot::SUBMERGED_BIT ) && sounds[Bot::EVENT_SWIM] != -1 ) {
+        if( !( bot->state & Bot::SUBMERGED_BIT ) && sounds[Bot::EVENT_SWIM] >= 0 ) {
           playSound( sounds[Bot::EVENT_SWIM], 1.0f, bot, bot );
         }
       }
       else if( recent[Object::EVENT_FRICTING] != 0 ) {
         if( bot->depth != 0.0f ) {
-          if( sounds[Bot::EVENT_WATERSTEP] != -1 ) {
+          if( sounds[Bot::EVENT_WATERSTEP] >= 0 ) {
             playSound( sounds[Bot::EVENT_WATERSTEP], 1.0f, bot, bot );
           }
         }
         else {
-          if( sounds[Bot::EVENT_STEP] != -1 ) {
+          if( sounds[Bot::EVENT_STEP] >= 0 ) {
             playSound( sounds[Bot::EVENT_STEP], 1.0f, bot, bot );
           }
         }

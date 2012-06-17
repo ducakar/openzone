@@ -42,7 +42,6 @@ class VehicleClass : public DynamicClass
     int    type;
 
     Vec3   pilotPos;
-    Quat   pilotRot;
 
     float  lookHMin;
     float  lookHMax;

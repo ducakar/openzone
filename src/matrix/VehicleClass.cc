@@ -54,7 +54,7 @@ void VehicleClass::initClass( const Config* config )
 
   fillCommonConfig( config );
 
-  if( audioType != -1 ) {
+  if( audioType >= 0 ) {
     const char* soundName;
     int         soundIndex;
 
@@ -134,9 +134,6 @@ void VehicleClass::initClass( const Config* config )
   pilotPos = Vec3( config->get( "pilotPos.x", 0.0f ),
                    config->get( "pilotPos.y", 0.0f ),
                    config->get( "pilotPos.z", 0.0f ) );
-  pilotRot = Quat::rotZXZ( config->get( "pilotRot.z", 0.0f ),
-                           config->get( "pilotRot.x", 0.0f ),
-                           0.0f );
 
   lookHMin = config->get( "lookHMin", -120.0f );
   lookHMax = config->get( "lookHMax", +120.0f );

@@ -54,7 +54,7 @@ void BotClass::initClass( const Config* config )
 
   fillCommonConfig( config );
 
-  if( audioType != -1 ) {
+  if( audioType >= 0 ) {
     const char* soundName;
     int         soundIndex;
 

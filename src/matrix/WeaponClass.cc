@@ -51,7 +51,7 @@ void WeaponClass::initClass( const Config* config )
 
   fillCommonConfig( config );
 
-  if( audioType != -1 ) {
+  if( audioType >= 0 ) {
     const char* soundName;
     int         soundIndex;
 
@@ -76,7 +76,7 @@ void WeaponClass::initClass( const Config* config )
 
   int underscore = name.index( '_' );
 
-  if( underscore == -1 ) {
+  if( underscore < 0 ) {
     throw Exception( "%s: Weapon name should be of the form botName_weapon.weaponName",
                      name.cstr() );
   }

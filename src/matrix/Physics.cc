@@ -185,7 +185,7 @@ bool Physics::handleObjFriction()
     float deltaVelX = dyn->momentum.x;
     float deltaVelY = dyn->momentum.y;
 
-    if( dyn->lower != -1 ) {
+    if( dyn->lower >= 0 ) {
       if( dyn->flags & Object::ON_FLOOR_BIT ) {
         int structIndex = dyn->lower / Struct::MAX_ENTITIES;
         int entityIndex = dyn->lower % Struct::MAX_ENTITIES;
@@ -216,7 +216,7 @@ bool Physics::handleObjFriction()
     }
 
     // on floor or on a still object
-    if( ( dyn->flags & Object::ON_FLOOR_BIT ) || dyn->lower != -1  ) {
+    if( ( dyn->flags & Object::ON_FLOOR_BIT ) || dyn->lower >= 0  ) {
       float deltaVel2 = deltaVelX*deltaVelX + deltaVelY*deltaVelY;
       float friction  = FLOOR_FRICTION;
       float stickVel  = STICK_VELOCITY;
@@ -339,7 +339,7 @@ void Physics::handleObjHit()
         sDyn->damage( dyn->mass / sDyn->mass * WEIGHT_DAMAGE_FACTOR );
       }
 
-      if( !( sDyn->flags & Object::ON_FLOOR_BIT ) && sDyn->lower == -1 ) {
+      if( !( sDyn->flags & Object::ON_FLOOR_BIT ) && sDyn->lower < 0 ) {
         sDyn->flags     &= ~Object::DISABLED_BIT;
         sDyn->momentum.z = momentum.z;
       }
@@ -486,7 +486,7 @@ void Physics::updateObj( Dynamic* dyn_ )
 
   dyn->flags &= ~Object::TICK_CLEAR_MASK;
 
-  if( dyn->lower != -1 ) {
+  if( dyn->lower >= 0 ) {
     if( dyn->flags & Object::ON_FLOOR_BIT ) {
       int structIndex = dyn->lower / Struct::MAX_ENTITIES;
       int entityIndex = dyn->lower % Struct::MAX_ENTITIES;

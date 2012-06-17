@@ -46,7 +46,7 @@ class Thread
   public:
 
     /// %Thread's main function.
-    typedef void Main();
+    typedef void Main( void* data );
 
   private:
 
@@ -104,7 +104,7 @@ class Thread
      *
      * @param main pointer to thread's main function.
      */
-    void start( Main* main );
+    void start( Main* main, void* data = null );
 
     /**
      * Wait for thread to finish execution.

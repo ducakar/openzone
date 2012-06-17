@@ -59,7 +59,7 @@ void BasicAudio::play( const Audio* parent )
   foreach( event, obj->events.citer() ) {
     hard_assert( event->id < ObjectClass::MAX_SOUNDS );
 
-    if( event->id >= 0 && sounds[event->id] != -1 && recent[event->id] == 0 ) {
+    if( event->id >= 0 && sounds[event->id] >= 0 && recent[event->id] == 0 ) {
       hard_assert( 0.0f <= event->intensity );
 
       recent[event->id] = RECENT_TICKS;
@@ -69,12 +69,12 @@ void BasicAudio::play( const Audio* parent )
 
   // friction
   if( parent == null && ( obj->flags & Object::DYNAMIC_BIT ) &&
-      sounds[Object::EVENT_FRICTING] != -1 )
+      sounds[Object::EVENT_FRICTING] >= 0 )
   {
     const Dynamic* dyn = static_cast<const Dynamic*>( obj );
 
     if( ( dyn->flags & ( Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) == Object::FRICTING_BIT &&
-        ( ( dyn->flags & Object::ON_FLOOR_BIT ) || dyn->lower != -1 ) )
+        ( ( dyn->flags & Object::ON_FLOOR_BIT ) || dyn->lower >= 0 ) )
     {
       recent[Object::EVENT_FRICTING] = RECENT_TICKS;
     }
@@ -83,7 +83,7 @@ void BasicAudio::play( const Audio* parent )
       float dvx = dyn->velocity.x;
       float dvy = dyn->velocity.y;
 
-      if( dyn->lower != -1 ) {
+      if( dyn->lower >= 0 ) {
         const Dynamic* sDyn = static_cast<const Dynamic*>( orbis.objects[dyn->lower] );
 
         if( sDyn != null ) {

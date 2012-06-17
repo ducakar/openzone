@@ -44,12 +44,15 @@ BuildButton::BuildButton( const char* className, Callback* callback, int width, 
   className( className )
 {}
 
+BuildButton::~BuildButton()
+{}
+
 void BuildMenu::createObject( Button* button_ )
 {
   const BuildButton* button = static_cast<const BuildButton*>( button_ );
   const ObjectClass* clazz = library.objClass( button->className );
 
-  Point p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
+  Point p = camera.bot < 0 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
   p += camera.at * 2.0f;
   AABB bb = AABB( p, clazz->dim );
 
@@ -82,6 +85,9 @@ BuildMenu::BuildMenu() :
   add( new BuildButton( "raptor", createObject, 110, 15 ), -115, -160 );
   add( new BuildButton( "hoverTank", createObject, 110, 15 ), -115, -180 );
 }
+
+BuildMenu::~BuildMenu()
+{}
 
 }
 }

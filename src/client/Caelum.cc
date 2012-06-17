@@ -59,13 +59,13 @@ Caelum::Caelum() :
 
 void Caelum::update()
 {
-  if( id == -1 ) {
+  if( id < 0 ) {
     return;
   }
 
   angle = Math::TAU * ( orbis.caelum.time / orbis.caelum.period );
 
-  Mat44 rot = Mat44::rotation( Quat::rotAxis( axis, angle ) );
+  Mat44 rot = Mat44::rotation( Quat::rotationAxis( axis, angle ) );
   Vec3  dir = rot * originalLightDir;
 
   ratio = clamp( -dir.z + DAY_BIAS, 0.0f, 1.0f );
@@ -94,7 +94,7 @@ void Caelum::update()
 
 void Caelum::draw()
 {
-  if( id == -1 ) {
+  if( id < 0 ) {
     return;
   }
 
@@ -222,7 +222,7 @@ void Caelum::load()
 
 void Caelum::unload()
 {
-  if( id != -1 ) {
+  if( id >= 0 ) {
     glDeleteTextures( 1, &sunTexId );
     glDeleteTextures( 1, &moonTexId );
 

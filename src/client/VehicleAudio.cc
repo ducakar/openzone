@@ -51,7 +51,7 @@ void VehicleAudio::play( const Audio* parent )
   const int ( &sounds )[ObjectClass::MAX_SOUNDS] = obj->clazz->audioSounds;
 
   // engine sound
-  if( ( vehicle->pilot != -1 ) && sounds[Vehicle::EVENT_ENGINE] != -1 ) {
+  if( ( vehicle->pilot >= 0 ) && sounds[Vehicle::EVENT_ENGINE] >= 0 ) {
     float pitch = clazz->enginePitchBias + min( vehicle->momentum.sqL() * clazz->enginePitchRatio,
                                                 clazz->enginePitchLimit );
 
@@ -62,7 +62,7 @@ void VehicleAudio::play( const Audio* parent )
   for( const Object::Event* event = obj->events.first(); event != null; event = event->next[0] ) {
     hard_assert( event->id < ObjectClass::MAX_SOUNDS );
 
-    if( event->id >= 0 && sounds[event->id] != -1 ) {
+    if( event->id >= 0 && sounds[event->id] >= 0 ) {
       hard_assert( 0.0f <= event->intensity );
 
       playSound( sounds[event->id], event->intensity, obj, parent == null ? obj : parent->obj );
@@ -79,7 +79,7 @@ void VehicleAudio::play( const Audio* parent )
   }
 
   // pilot
-  if( vehicle->pilot != -1 && camera.bot == vehicle->pilot ) {
+  if( vehicle->pilot >= 0 && camera.bot == vehicle->pilot ) {
     const Bot* bot = static_cast<const Bot*>( orbis.objects[vehicle->pilot] );
 
     hard_assert( bot->flags & Object::BOT_BIT );

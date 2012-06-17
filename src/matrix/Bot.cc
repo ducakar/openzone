@@ -61,7 +61,7 @@ bool Bot::hasAttribute( int attribute ) const
     return true;
   }
 
-  if( parent != -1 ) {
+  if( parent >= 0 ) {
     const Object* vehicle = orbis.objects[parent];
 
     if( vehicle != null && ( vehicle->clazz->attributes & attribute ) ) {
@@ -100,89 +100,11 @@ bool Bot::canReach( const Object* obj ) const
   return AABB( eye, reach ).overlaps( *obj );
 }
 
-bool Bot::invUse( const Dynamic* item, const Object* source )
-{
-  hard_assert( item != null && source != null );
-
-  if( ( item->flags & USE_FUNC_BIT ) && source->items.contains( item->index ) &&
-      canReach( source ) )
-  {
-    actions   &= ~INSTRUMENT_ACTIONS;
-    actions   |= ACTION_INV_USE;
-    instrument = item->index;
-    container  = source->index;
-
-    return true;
-  }
-  return false;
-}
-
-bool Bot::invTake( const Dynamic* item, const Object* source )
-{
-  hard_assert( item != null && source != null );
-
-  if( source->items.contains( item->index ) && canReach( source ) ) {
-    actions   &= ~INSTRUMENT_ACTIONS;
-    actions   |= ACTION_INV_TAKE;
-    instrument = item->index;
-    container  = source->index;
-
-    return true;
-  }
-  return false;
-}
-
-bool Bot::invGive( const Dynamic* item, const Object* target )
-{
-  hard_assert( item != null && target != null );
-
-  if( items.contains( item->index ) && canReach( target ) ) {
-    actions   &= ~INSTRUMENT_ACTIONS;
-    actions   |= ACTION_INV_GIVE;
-    instrument = item->index;
-    container  = target->index;
-
-    return true;
-  }
-  return false;
-}
-
-bool Bot::invDrop( const Dynamic* item )
-{
-  hard_assert( item != null );
-
-  if( items.contains( item->index ) ) {
-    actions   &= ~INSTRUMENT_ACTIONS;
-    actions   |= ACTION_INV_DROP;
-    instrument = item->index;
-    container  = -1;
-
-    return true;
-  }
-  return false;
-}
-
-bool Bot::invGrab( const Dynamic* item )
-{
-  hard_assert( item != null );
-
-  if( items.contains( item->index ) ) {
-    actions   &= ~INSTRUMENT_ACTIONS;
-    actions   |= ACTION_INV_GRAB;
-    instrument = item->index;
-    container  = -1;
-    cargo      = -1;
-
-    return true;
-  }
-  return false;
-}
-
 bool Bot::trigger( const Entity* entity )
 {
   hard_assert( entity != null );
 
-  if( entity->model->target != -1 && entity->key >= 0 && canReach( entity ) ) {
+  if( entity->key >= 0 && entity->model->target >= 0 && canReach( entity ) ) {
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_TRIGGER;
     instrument = entity->str->index * Struct::MAX_ENTITIES + int( entity - entity->str->entities );
@@ -256,7 +178,7 @@ bool Bot::grab( const Dynamic* dynamic )
 
 bool Bot::rotateCargo()
 {
-  if( cargo != -1 ) {
+  if( cargo >= 0 ) {
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_ROTATE;
     instrument = -1;
@@ -269,11 +191,89 @@ bool Bot::rotateCargo()
 
 bool Bot::throwCargo()
 {
-  if( cargo != -1 ) {
+  if( cargo >= 0 ) {
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_THROW;
     instrument = -1;
     container  = -1;
+
+    return true;
+  }
+  return false;
+}
+
+bool Bot::invUse( const Dynamic* item, const Object* source )
+{
+  hard_assert( item != null && source != null );
+
+  if( ( item->flags & USE_FUNC_BIT ) && source->items.contains( item->index ) &&
+    canReach( source ) )
+  {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_INV_USE;
+    instrument = item->index;
+    container  = source->index;
+
+    return true;
+  }
+  return false;
+}
+
+bool Bot::invTake( const Dynamic* item, const Object* source )
+{
+  hard_assert( item != null && source != null );
+
+  if( source->items.contains( item->index ) && canReach( source ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_INV_TAKE;
+    instrument = item->index;
+    container  = source->index;
+
+    return true;
+  }
+  return false;
+}
+
+bool Bot::invGive( const Dynamic* item, const Object* target )
+{
+  hard_assert( item != null && target != null );
+
+  if( items.contains( item->index ) && canReach( target ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_INV_GIVE;
+    instrument = item->index;
+    container  = target->index;
+
+    return true;
+  }
+  return false;
+}
+
+bool Bot::invDrop( const Dynamic* item )
+{
+  hard_assert( item != null );
+
+  if( items.contains( item->index ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_INV_DROP;
+    instrument = item->index;
+    container  = -1;
+
+    return true;
+  }
+  return false;
+}
+
+bool Bot::invGrab( const Dynamic* item )
+{
+  hard_assert( item != null );
+
+  if( items.contains( item->index ) ) {
+    actions   &= ~INSTRUMENT_ACTIONS;
+    actions   |= ACTION_INV_GRAB;
+    instrument = item->index;
+    container  = -1;
+    cargo      = -1;
 
     return true;
   }
@@ -291,7 +291,7 @@ void Bot::heal()
 void Bot::rearm()
 {
   for( int i = 0; i < items.length(); ++i ) {
-    if( items[i] != -1 ) {
+    if( items[i] >= 0 ) {
       Weapon* weaponObj = static_cast<Weapon*>( orbis.objects[ items[i] ] );
 
       if( weaponObj != null && ( weaponObj->flags & Object::WEAPON_BIT ) ) {
@@ -330,7 +330,7 @@ void Bot::kill()
 
 void Bot::enter( int vehicle_ )
 {
-  hard_assert( cell != null && vehicle_ != -1 );
+  hard_assert( cell != null && vehicle_ >= 0 );
 
   const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
@@ -352,7 +352,7 @@ void Bot::enter( int vehicle_ )
 
 void Bot::exit()
 {
-  hard_assert( cell == null && parent != -1 );
+  hard_assert( cell == null && parent >= 0 );
   hard_assert( cargo == -1 );
 
   parent     = -1;
@@ -377,8 +377,8 @@ void Bot::onUpdate()
 {
   const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
-  Dynamic* cargoObj  = cargo  == -1 ? null : static_cast<Dynamic*>( orbis.objects[cargo] );
-  Weapon*  weaponObj = weapon == -1 ? null : static_cast<Weapon*>( orbis.objects[weapon] );
+  Dynamic* cargoObj  = cargo  < 0 ? null : static_cast<Dynamic*>( orbis.objects[cargo] );
+  Weapon*  weaponObj = weapon < 0 ? null : static_cast<Weapon*>( orbis.objects[weapon] );
 
   if( weaponObj == null ) {
     weapon = -1;
@@ -422,7 +422,7 @@ void Bot::onUpdate()
   life    = min( life + clazz->regeneration, clazz->life );
   stamina = min( stamina + clazz->staminaGain, clazz->stamina );
 
-  if( parent != -1 ) {
+  if( parent >= 0 ) {
     Object* vehicle = orbis.objects[parent];
 
     if( vehicle == null ) {
@@ -436,14 +436,14 @@ void Bot::onUpdate()
     state &= ~( GROUNDED_BIT | ON_STAIRS_BIT | CLIMBING_BIT | SWIMMING_BIT | SUBMERGED_BIT |
                 ATTACKING_BIT );
 
-    if( cargo != -1 ) {
+    if( cargo >= 0 ) {
       flags &= ~ON_LADDER_BIT;
     }
 
-    state |= lower != -1 || ( flags & ON_FLOOR_BIT ) ? GROUNDED_BIT  : 0;
-    state |= ( flags & ON_LADDER_BIT )               ? CLIMBING_BIT  : 0;
-    state |= depth > dim.z                           ? SWIMMING_BIT  : 0;
-    state |= depth > dim.z + camZ                    ? SUBMERGED_BIT : 0;
+    state |= lower >= 0 || ( flags & ON_FLOOR_BIT ) ? GROUNDED_BIT  : 0;
+    state |= ( flags & ON_LADDER_BIT )              ? CLIMBING_BIT  : 0;
+    state |= depth > dim.z                          ? SWIMMING_BIT  : 0;
+    state |= depth > dim.z + camZ                   ? SUBMERGED_BIT : 0;
 
     if( state & SUBMERGED_BIT ) {
       stamina -= clazz->staminaWaterDrain;
@@ -471,7 +471,7 @@ void Bot::onUpdate()
         state |= JUMP_SCHED_BIT;
       }
       if( ( state & JUMP_SCHED_BIT ) && ( state & ( GROUNDED_BIT | SWIMMING_BIT ) ) &&
-          cargo == -1 && stamina >= clazz->staminaJumpDrain )
+          cargo < 0 && stamina >= clazz->staminaJumpDrain )
       {
         flags     &= ~( DISABLED_BIT | ON_FLOOR_BIT );
         lower      = -1;
@@ -727,7 +727,7 @@ void Bot::onUpdate()
         desiredMomentum *= clazz->crouchMomentum;
         step            += clazz->stepWalkInc;
       }
-      else if( ( state & RUNNING_BIT ) && cargo == -1 ) {
+      else if( ( state & RUNNING_BIT ) && cargo < 0 ) {
         desiredMomentum *= clazz->runMomentum;
         stamina         -= clazz->staminaRunDrain;
         step            += clazz->stepRunInc;
@@ -751,7 +751,7 @@ void Bot::onUpdate()
       else if( state & SWIMMING_BIT ) {
         // not on static ground
         if( !( flags & ON_FLOOR_BIT ) &&
-            !( lower != -1 && ( orbis.objects[lower]->flags & Object::DISABLED_BIT ) ) )
+            !( lower >= 0 && ( orbis.objects[lower]->flags & Object::DISABLED_BIT ) ) )
         {
           desiredMomentum *= clazz->waterControl;
         }
@@ -776,7 +776,7 @@ void Bot::onUpdate()
      * ATTACK & GESTURES
      */
 
-    if( !( state & MOVING_BIT ) && cargo == -1 &&
+    if( !( state & MOVING_BIT ) && cargo < 0 &&
         ( !( actions & ACTION_JUMP ) || ( state & ( Bot::GROUNDED_BIT | Bot::CLIMBING_BIT ) ) ) )
     {
       if( actions & ACTION_ATTACK ) {
@@ -830,13 +830,13 @@ void Bot::onUpdate()
      * GRAB MOVEMENT
      */
 
-    if( cargo != -1 ) {
+    if( cargo >= 0 ) {
       const Bot* cargoBot = static_cast<const Bot*>( cargoObj );
 
       if( cargoObj == null || cargoObj->cell == null || ( cargoObj->flags & BELOW_BIT ) ||
           ( state & SWIMMING_BIT ) || ( actions & ACTION_JUMP ) ||
           ( ( cargoBot->flags & BOT_BIT ) &&
-            ( ( cargoBot->actions & ACTION_JUMP ) || ( cargoBot->cargo != -1 ) ) ) )
+            ( ( cargoBot->actions & ACTION_JUMP ) || ( cargoBot->cargo >= 0 ) ) ) )
       {
         cargo    = -1;
         cargoObj = null;
@@ -930,7 +930,7 @@ void Bot::onUpdate()
         }
       }
     }
-    else if( parent == -1 ) { // not applicable in vehicles
+    else if( parent < 0 ) { // not applicable in vehicles
       if( actions & ~oldActions & ( ACTION_TRIGGER | ACTION_LOCK ) ) {
         int strIndex = instrument / Struct::MAX_ENTITIES;
         int entIndex = instrument % Struct::MAX_ENTITIES;
@@ -1004,14 +1004,14 @@ void Bot::onUpdate()
         }
       }
       else if( actions & ~oldActions & ACTION_GRAB ) {
-        if( instrument == -1 || weapon != -1 || ( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) ) {
+        if( instrument < 0 || weapon >= 0 || ( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) ) {
           cargo = -1;
         }
         else {
           Bot* dyn = static_cast<Bot*>( orbis.objects[instrument] );
 
           if( dyn != null && dyn->mass <= clazz->grabMass &&
-              !( ( dyn->flags & BOT_BIT ) && dyn->cargo != -1 ) && canReach( dyn ) )
+              !( ( dyn->flags & BOT_BIT ) && dyn->cargo >= 0 ) && canReach( dyn ) )
           {
             hard_assert( dyn->flags & DYNAMIC_BIT );
 
@@ -1031,7 +1031,7 @@ void Bot::onUpdate()
       else if( actions & ~oldActions & ( ACTION_INV_GRAB | ACTION_INV_DROP ) ) {
         Dynamic* item = static_cast<Dynamic*>( orbis.objects[instrument] );
 
-        if( item != null && cargo == -1 && items.contains( instrument ) ) {
+        if( item != null && cargo < 0 && items.contains( instrument ) ) {
           hard_assert( ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
           // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
@@ -1063,7 +1063,7 @@ void Bot::onUpdate()
             item->momentum = velocity;
 
             if( ( actions & ~oldActions & ACTION_INV_GRAB ) &&
-                !( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) && weapon == -1 )
+                !( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) && weapon < 0 )
             {
               cargo      = instrument;
               grabHandle = dist;

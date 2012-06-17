@@ -1207,7 +1207,7 @@ static int ozObjGetPos( lua_State* l )
 
     const Dynamic* dyn = static_cast<const Dynamic*>( ms.obj );
 
-    if( dyn->parent != -1 ) {
+    if( dyn->parent >= 0 ) {
       Object* parent = orbis.objects[dyn->parent];
 
       if( parent != null ) {
@@ -1415,7 +1415,7 @@ static int ozObjBindItems( lua_State* l )
   ms.objects.clear();
 
   foreach( item, ms.obj->items.citer() ) {
-    hard_assert( *item != -1 );
+    hard_assert( *item >= 0 );
 
     ms.objects.add( orbis.objects[*item] );
   }
@@ -1450,7 +1450,7 @@ static int ozObjAddItem( lua_State* l )
   ITEM_INDEX( l_toint( 1 ) );
 
   if( item->cell == null ) {
-    hard_assert( item->parent != -1 );
+    hard_assert( item->parent >= 0 );
 
     Object* container = orbis.objects[item->parent];
     if( container != null ) {
@@ -1713,7 +1713,7 @@ static int ozDynGetParent( lua_State* l )
   OBJ();
   OBJ_DYNAMIC();
 
-  l_pushint( dyn->parent != -1 && orbis.objects[dyn->parent] == null ? -1 : dyn->parent );
+  l_pushint( dyn->parent >= 0 && orbis.objects[dyn->parent] == null ? -1 : dyn->parent );
   return 1;
 }
 
@@ -1833,7 +1833,7 @@ static int ozWeaponAddRounds( lua_State* l )
 
   const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weapon->clazz );
 
-  if( weapon->nRounds != -1 ) {
+  if( weapon->nRounds >= 0 ) {
     weapon->nRounds = min( weapon->nRounds + l_toint( 1 ), weaponClazz->nRounds );
   }
   return 1;
@@ -2043,7 +2043,7 @@ static int ozBotGetCargo( lua_State* l )
   OBJ();
   OBJ_BOT();
 
-  l_pushint( bot->cargo != -1 && orbis.objects[bot->cargo] == null ? -1 : bot->cargo );
+  l_pushint( bot->cargo >= 0 && orbis.objects[bot->cargo] == null ? -1 : bot->cargo );
   return 1;
 }
 
@@ -2053,7 +2053,7 @@ static int ozBotGetWeapon( lua_State* l )
   OBJ();
   OBJ_BOT();
 
-  l_pushint( bot->weapon != -1 && orbis.objects[bot->weapon] == null ? -1 : bot->weapon );
+  l_pushint( bot->weapon >= 0 && orbis.objects[bot->weapon] == null ? -1 : bot->weapon );
   return 1;
 }
 
@@ -2064,7 +2064,7 @@ static int ozBotSetWeaponItem( lua_State* l )
   OBJ_BOT();
 
   int item = l_toint( 1 );
-  if( item == -1 ) {
+  if( item < 0 ) {
     bot->weapon = -1;
   }
   else {
@@ -2179,7 +2179,7 @@ static int ozVehicleGetPilot( lua_State* l )
   OBJ();
   OBJ_VEHICLE();
 
-  l_pushint( veh->pilot != -1 && orbis.objects[veh->pilot] == null ? -1 : veh->pilot );
+  l_pushint( veh->pilot >= 0 && orbis.objects[veh->pilot] == null ? -1 : veh->pilot );
   return 1;
 }
 
@@ -2202,7 +2202,7 @@ static int ozVehicleSetH( lua_State* l )
   veh->h = Math::rad( l_tofloat( 1 ) );
   veh->h = angleWrap( veh->h );
 
-  veh->rot = Quat::rotZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
+  veh->rot = Mat44::rotationZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
   return 0;
 }
 
@@ -2215,7 +2215,7 @@ static int ozVehicleAddH( lua_State* l )
   veh->h += Math::rad( l_tofloat( 1 ) );
   veh->h  = angleWrap( veh->h );
 
-  veh->rot = Quat::rotZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
+  veh->rot = Mat44::rotationZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
   return 0;
 }
 
@@ -2238,7 +2238,7 @@ static int ozVehicleSetV( lua_State* l )
   veh->v = Math::rad( l_tofloat( 1 ) );
   veh->v = clamp( veh->v, 0.0f, Math::TAU / 2.0f );
 
-  veh->rot = Quat::rotZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
+  veh->rot = Mat44::rotationZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
   return 0;
 }
 
@@ -2251,7 +2251,7 @@ static int ozVehicleAddV( lua_State* l )
   veh->v += Math::rad( l_tofloat( 1 ) );
   veh->v  = clamp( veh->v, 0.0f, Math::TAU / 2.0f );
 
-  veh->rot = Quat::rotZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
+  veh->rot = Mat44::rotationZXZ( veh->h, veh->v - Math::TAU / 4.0f, 0.0f );
   return 0;
 }
 
@@ -2283,7 +2283,7 @@ static int ozVehicleEmbarkBot( lua_State* l )
   OBJ();
   OBJ_VEHICLE();
 
-  if( veh->pilot != -1 ) {
+  if( veh->pilot >= 0 ) {
     ERROR( "Vehicle already has a pilot" );
   }
 
@@ -2304,7 +2304,7 @@ static int ozVehicleDisembarkBot( lua_State* l )
   OBJ();
   OBJ_VEHICLE();
 
-  if( veh->pilot == -1 ) {
+  if( veh->pilot < 0 ) {
     return 0;
   }
 

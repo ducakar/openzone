@@ -58,6 +58,9 @@ class BotProxy : public Proxy
     float bobTheta;
     float bobBias;
 
+    float headH;
+    float headV;
+
     bool  isExternal;
     bool  isFreelook;
 

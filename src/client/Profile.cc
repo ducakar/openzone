@@ -78,7 +78,7 @@ void Profile::init()
 
   weaponItem = config.getSet( "profile.weaponItem", -1 );
 
-  if( weaponItem != -1 ) {
+  if( weaponItem >= 0 ) {
     if( uint( weaponItem ) >= uint( items.length() ) ) {
       throw Exception( "Invalid profile.weaponItem %d", weaponItem );
     }

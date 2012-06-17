@@ -43,7 +43,7 @@ BotProxy       Camera::botProxy;
 
 void Camera::updateReferences()
 {
-  if( object == -1 ) {
+  if( object < 0 ) {
     objectObj = null;
   }
   else {
@@ -51,7 +51,7 @@ void Camera::updateReferences()
     object = objectObj == null ? -1 : object;
   }
 
-  if( entity == -1 ) {
+  if( entity < 0 ) {
     entityObj = null;
   }
   else {
@@ -69,7 +69,7 @@ void Camera::updateReferences()
     }
   }
 
-  if( bot == -1 ) {
+  if( bot < 0 ) {
     botObj = null;
   }
   else {
@@ -81,7 +81,7 @@ void Camera::updateReferences()
     }
   }
 
-  if( botObj == null || botObj->parent == -1 ) {
+  if( botObj == null || botObj->parent < 0 ) {
     vehicle    = -1;
     vehicleObj = null;
   }
@@ -101,9 +101,7 @@ void Camera::align()
   hard_assert( 0.0f <= h && h < Math::TAU );
   hard_assert( 0.0f <= v && v <= Math::TAU / 2.0f );
 
-  rot     = Quat::rotZ( h ) * Quat::rotX( v ) * Quat::rotZ( w );
-  rot     = vehicleObj == null ? rot : vehicleObj->rot * rot;
-  rotMat  = Mat44::rotation( rot );
+  rotMat  = Mat44::rotationZXZ( h, v, w );
   rotTMat = ~rotMat;
 
   right   = +rotMat.x;
@@ -150,7 +148,6 @@ void Camera::prepare()
     }
 
     switch( newState ) {
-      default:
       case NONE: {
         proxy = null;
         break;
@@ -212,8 +209,7 @@ void Camera::reset()
   relH       = 0.0f;
   relV       = 0.0f;
 
-  rot        = Quat::ID;
-  rotMat     = Mat44::rotation( rot );
+  rotMat     = Mat44::rotationZXZ( h, v, w );
   rotTMat    = ~rotTMat;
 
   right      = rotMat.x;
@@ -258,8 +254,7 @@ void Camera::read( InputStream* istream )
   relH       = istream->readFloat();
   relV       = istream->readFloat();
 
-  rot        = Quat::rotZ( h ) * Quat::rotX( v ) * Quat::rotZ( w );
-  rotMat     = Mat44::rotation( rot );
+  rotMat     = Mat44::rotationZXZ( h, v, w );
   rotTMat    = ~rotMat;
 
   right      = rotMat.x;
@@ -271,9 +266,9 @@ void Camera::read( InputStream* istream )
   entity     = -1;
   entityObj  = null;
   bot        =  istream->readInt();
-  botObj     = bot == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
+  botObj     = bot < 0 ? null : static_cast<Bot*>( orbis.objects[bot] );
   vehicle    = istream->readInt();
-  vehicleObj = vehicle == -1 ? null : static_cast<Vehicle*>( orbis.objects[vehicle] );
+  vehicleObj = vehicle < 0 ? null : static_cast<Vehicle*>( orbis.objects[vehicle] );
 
   isExternal         = istream->readBool();
   allowReincarnation = istream->readBool();
@@ -286,7 +281,6 @@ void Camera::read( InputStream* istream )
   botProxy.read( istream );
 
   switch( newState ) {
-    default:
     case NONE: {
       proxy = null;
       break;

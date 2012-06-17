@@ -83,8 +83,8 @@ class Loader
 
   private:
 
-    static void screenshotMain();
-    static void preloadMain();
+    static void screenshotMain( void* );
+    static void preloadMain( void* );
 
     // clean unused imagines and handle screenshots
     void cleanupRender();
