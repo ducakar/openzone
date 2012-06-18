@@ -163,36 +163,22 @@ static int ozCameraGetPos( lua_State* l )
   return 3;
 }
 
-static int ozCameraGetH( lua_State* l )
+static int ozCameraRotateTo( lua_State* l )
 {
-  ARG( 0 );
+  ARG( 2 );
 
-  l_pushfloat( Math::deg( camera.h ) );
-  return 1;
+  Quat rot = Quat::rotationZXZ( Math::rad( l_tofloat( 1 ) ), Math::rad( l_tofloat( 2 ) ), 0.0f );
+  camera.rotateTo( rot );
+  return 3;
 }
 
-static int ozCameraSetH( lua_State* l )
+static int ozCameraSmoothRotateTo( lua_State* l )
 {
-  ARG( 1 );
+  ARG( 2 );
 
-  camera.h = Math::rad( l_tofloat( 1 ) );
-  return 0;
-}
-
-static int ozCameraGetV( lua_State* l )
-{
-  ARG( 0 );
-
-  l_pushfloat( Math::deg( camera.v ) );
-  return 1;
-}
-
-static int ozCameraSetV( lua_State* l )
-{
-  ARG( 1 );
-
-  camera.v = Math::rad( l_tofloat( 1 ) );
-  return 0;
+  Quat rot = Quat::rotationZXZ( Math::rad( l_tofloat( 1 ) ), Math::rad( l_tofloat( 2 ) ), 0.0f );
+  camera.smoothRotateTo( rot );
+  return 3;
 }
 
 static int ozCameraMoveTo( lua_State* l )
@@ -200,8 +186,7 @@ static int ozCameraMoveTo( lua_State* l )
   ARG( 3 );
 
   Point pos = Point( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
-  camera.move( pos );
-
+  camera.moveTo( pos );
   return 3;
 }
 
@@ -210,8 +195,7 @@ static int ozCameraSmoothMoveTo( lua_State* l )
   ARG( 3 );
 
   Point pos = Point( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
-  camera.smoothMove( pos );
-
+  camera.smoothMoveTo( pos );
   return 3;
 }
 
@@ -220,8 +204,7 @@ static int ozCameraWarpTo( lua_State* l )
   ARG( 3 );
 
   Point pos = Point( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
-  camera.warp( pos );
-
+  camera.warpTo( pos );
   return 3;
 }
 

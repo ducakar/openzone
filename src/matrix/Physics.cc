@@ -71,7 +71,7 @@ const float Physics::FRAG_FIXED_DAMAGE       =  0.75f;
 void Physics::handleFragHit()
 {
   Vec3  fragVelocity = frag->velocity;
-  float velocity2    = frag->velocity.sqL();
+  float velocity2    = frag->velocity.sqN();
 
   frag->velocity *= frag->restitution;
   frag->velocity -= ( 2.0f * ( frag->velocity * collider.hit.normal ) ) * collider.hit.normal;
@@ -165,7 +165,7 @@ bool Physics::handleObjFriction()
   }
 
   if( dyn->flags & Object::ON_LADDER_BIT ) {
-    float momentum2 = dyn->momentum.sqL();
+    float momentum2 = dyn->momentum.sqN();
 
     if( momentum2 <= STICK_VELOCITY ) {
       dyn->momentum = Vec3::ZERO;
@@ -256,7 +256,7 @@ bool Physics::handleObjFriction()
       dyn->momentum.z += systemMom;
 
       if( Math::fabs( systemMom ) <= FLOAT_STICK_VELOCITY &&
-          dyn->momentum.sqL() <= FLOAT_STICK_VELOCITY )
+          dyn->momentum.sqN() <= FLOAT_STICK_VELOCITY )
       {
         dyn->momentum = Vec3::ZERO;
 
@@ -429,10 +429,10 @@ void Physics::handleObjMove()
 
       if( dot < 0.0f ) {
         Vec3  cross    = collider.hit.normal ^ lastNormals[0];
-        float crossSqL = cross.sqL();
+        float crossSqN = cross.sqN();
 
-        if( crossSqL != 0.0f ) {
-          cross /= Math::sqrt( crossSqL );
+        if( crossSqN != 0.0f ) {
+          cross /= Math::sqrt( crossSqN );
           move   = ( move * cross ) * cross;
           move  += MOVE_BOUNCE * ( collider.hit.normal + lastNormals[0] );
         }
@@ -447,10 +447,10 @@ void Physics::handleObjMove()
 
         if( dot < 0.0f ) {
           Vec3  cross    = collider.hit.normal ^ lastNormals[1];
-          float crossSqL = cross.sqL();
+          float crossSqN = cross.sqN();
 
-          if( crossSqL != 0.0f ) {
-            cross /= Math::sqrt( crossSqL );
+          if( crossSqN != 0.0f ) {
+            cross /= Math::sqrt( crossSqN );
             move   = ( move * cross ) * cross;
             move  += MOVE_BOUNCE * ( collider.hit.normal + lastNormals[1] );
           }

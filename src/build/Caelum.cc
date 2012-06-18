@@ -48,13 +48,13 @@ void Caelum::build( const char* name )
 
   for( int i = 0; i < client::Caelum::MAX_STARS; ++i ) {
     Vec3 p;
-    float length;
+    float norm;
 
     do {
       p = 100.0f * Vec3( Math::centralRand(), Math::centralRand(), Math::centralRand() );
-      length = p.sqL();
+      norm = p.sqN();
     }
-    while( Math::isnan( length ) || length < 2500.0f || length > 10000.0f );
+    while( Math::isnan( norm ) || norm < 2500.0f || norm > 10000.0f );
 
     Vec3 z = ~p;
     Vec3 x = ~Vec3( z.z, 0.0f, -z.x );

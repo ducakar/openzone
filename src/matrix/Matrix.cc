@@ -124,7 +124,7 @@ void Matrix::update()
           physics.updateObj( dyn );
 
           // remove on velocity overflow
-          if( dyn->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
+          if( dyn->velocity.sqN() > Matrix::MAX_VELOCITY2 ) {
             synapse.remove( obj );
           }
         }
@@ -139,7 +139,7 @@ void Matrix::update()
       continue;
     }
 
-    if( frag->life <= 0.0f || frag->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
+    if( frag->life <= 0.0f || frag->velocity.sqN() > Matrix::MAX_VELOCITY2 ) {
       synapse.remove( frag );
     }
     else {

@@ -45,24 +45,24 @@ const float StrategicProxy::RTS_HIGH_SPEED  = 45.0f;
 const float StrategicProxy::ZOOM_FACTOR     = 0.15f;
 
 StrategicProxy::StrategicProxy() :
-  strategicArea( null ), height( DEFAULT_HEIGHT )
-{}
+  strategicArea( null )
+{
+  reset();
+}
 
 void StrategicProxy::begin()
 {
-  desiredPos = camera.p;
-
-  camera.v = isFree || camera.state == Camera::NONE ? camera.v : Math::rad( DEFAULT_ANGLE );
-  camera.w = 0.0f;
-  camera.mag = 1.0f;
   camera.setTaggedObj( null );
   camera.setTaggedEnt( null );
+  camera.isExternal = true;
 
   ui::mouse.doShow = true;
 
   strategicArea = new ui::StrategicArea();
   ui::ui.root->add( strategicArea );
   strategicArea->sink();
+
+  desiredPos = camera.p;
 }
 
 void StrategicProxy::end()
@@ -139,8 +139,10 @@ void StrategicProxy::update()
   const ubyte* keys    = ui::keyboard.keys;
   const ubyte* oldKeys = ui::keyboard.oldKeys;
 
-  camera.h = angleWrap( camera.h + camera.relH );
-  camera.v = clamp( camera.v + camera.relV, 0.0f, Math::TAU / 2.0f );
+  h = angleWrap( h + camera.relH );
+  v = clamp( v + camera.relV, 0.0f, Math::TAU / 2.0f );
+
+  camera.smoothRotateTo( Quat::rotationZXZ( h, v, 0.0f ) );
   camera.align();
 
   if( isFree ) {
@@ -218,12 +220,16 @@ void StrategicProxy::update()
     desiredPos.z = max( 0.0f, orbis.terra.height( desiredPos.x, desiredPos.y ) ) + height;
   }
 
-  camera.smoothMove( desiredPos );
+  camera.smoothMoveTo( desiredPos );
 }
 
 void StrategicProxy::reset()
 {
+  h          = 0.0f;
+  v          = 0.0f;
+  desiredPos = Point::ORIGIN;
   height     = DEFAULT_HEIGHT;
+
   isFree     = false;
   isFreeFast = true;
   isRTSFast  = false;
@@ -231,7 +237,11 @@ void StrategicProxy::reset()
 
 void StrategicProxy::read( InputStream* istream )
 {
+  h          = istream->readFloat();
+  v          = istream->readFloat();
+  desiredPos = istream->readPoint();
   height     = istream->readFloat();
+
   isFree     = istream->readBool();
   isFreeFast = istream->readBool();
   isRTSFast  = istream->readBool();
@@ -239,7 +249,11 @@ void StrategicProxy::read( InputStream* istream )
 
 void StrategicProxy::write( BufferStream* ostream ) const
 {
+  ostream->writeFloat( h );
+  ostream->writeFloat( v );
+  ostream->writePoint( desiredPos );
   ostream->writeFloat( height );
+
   ostream->writeBool( isFree );
   ostream->writeBool( isFreeFast );
   ostream->writeBool( isRTSFast );

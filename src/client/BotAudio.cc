@@ -84,7 +84,7 @@ void BotAudio::play( const Audio* parent )
   }
 
   // footsteps
-  if( ( bot->state & Bot::MOVING_BIT ) && ( bot->p - camera.p ).sqL() < FOOTSTEP_DISTANCE_SQ ) {
+  if( ( bot->state & Bot::MOVING_BIT ) && ( bot->p - camera.p ).sqN() < FOOTSTEP_DISTANCE_SQ ) {
     if( bot->flags & Object::FRICTING_BIT ) {
       recent[Object::EVENT_FRICTING] = RECENT_TICKS;
     }

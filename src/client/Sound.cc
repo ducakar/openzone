@@ -508,7 +508,7 @@ void Sound::playCell( int cellX, int cellY )
 
   foreach( obj, cell.objects.citer() ) {
     if( obj->flags & Object::AUDIO_BIT ) {
-      if( ( camera.p - obj->p ).sqL() < MAX_DISTANCE*MAX_DISTANCE ) {
+      if( ( camera.p - obj->p ).sqN() < MAX_DISTANCE*MAX_DISTANCE ) {
         context.playAudio( obj, null );
       }
     }

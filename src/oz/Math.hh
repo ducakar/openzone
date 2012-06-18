@@ -377,8 +377,7 @@ class Math
     OZ_ALWAYS_INLINE
     static float fastSqrt( float x )
     {
-      float y = fromBits( 0x5f3759df - ( toBits( x ) >> 1 ) );
-      return x * y * ( 1.5f - 0.5f * x * y*y );
+      return x * fastInvSqrt( x );
     }
 
     /**
@@ -406,7 +405,7 @@ class Math
     }
 
     /**
-     * Linear interpolation.
+     * Convex combination.
      */
     template <typename Value>
     OZ_ALWAYS_INLINE

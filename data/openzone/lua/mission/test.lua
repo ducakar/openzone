@@ -38,8 +38,8 @@ function onCreate()
 --   ozCaelumSetPeriod( 1440 )
   ozCaelumSetRealTime()
 
+  ozCameraRotateTo( 0.0, 35.0 )
   ozCameraWarpTo( 141.0, -12.0, 84.75 )
-  ozCameraSetV( 35.0 )
 
   ozOrbisAddPlayer( OZ_FORCE, 137, -6, 73, OZ_SOUTH )
 

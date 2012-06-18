@@ -60,9 +60,9 @@ void DebugFrame::onDraw()
 {
   Frame::onDraw();
 
-  camPosRot.setText( "cam.p(%+.2f %+.2f %+.2f) cam.relRot(%+.2f %+.2f)",
+  camPosRot.setText( "cam.p(%+.2f %+.2f %+.2f) cam.rot(%+.2f %+.2f %+.2f %+.2f)",
                      camera.p.x, camera.p.y, camera.p.z,
-                     Math::deg( camera.h ), Math::deg( camera.v ) );
+                     camera.rot.x, camera.rot.y, camera.rot.z, camera.rot.w );
   camPosRot.draw( this, true );
 
   if( camera.bot >= 0 ) {

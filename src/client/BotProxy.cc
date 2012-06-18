@@ -57,25 +57,14 @@ void BotProxy::begin()
 
   Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
-  camera.h = bot->h;
-  camera.v = bot->v;
-  camera.isExternal = isExternal;
   camera.setTaggedObj( null );
   camera.setTaggedEnt( null );
+  camera.isExternal = isExternal;
 
   hud       = new ui::HudArea();
   infoFrame = new ui::InfoFrame();
   inventory = new ui::InventoryMenu( null );
   container = new ui::InventoryMenu( inventory );
-
-  botEye    = bot->p;
-  botEye.z += bot->camZ;
-
-  bobTheta  = 0.0f;
-  bobBias   = 0.0f;
-
-  headH     = 0.0f;
-  headV     = 0.0f;
 
   ui::mouse.doShow = false;
 
@@ -85,10 +74,19 @@ void BotProxy::begin()
   ui::ui.root->add( container );
 
   hud->sink();
-
-  infoFrame->show( true );
   inventory->show( false );
   container->show( false );
+
+  baseRot   = Quat::rotationZXZ( bot->h, bot->v, 0.0f );
+  headRot   = Quat::ID;
+  headH     = 0.0f;
+  headV     = 0.0f;
+
+  botEye    = bot->p;
+  botEye.z += bot->camZ;
+
+  bobTheta  = 0.0f;
+  bobBias   = 0.0f;
 }
 
 void BotProxy::end()
@@ -231,9 +229,27 @@ void BotProxy::prepare()
   if( !alt && keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) {
     isExternal = !isExternal;
     camera.isExternal = isExternal;
+
+    if( isExternal && isFreelook ) {
+      headH = bot->h;
+      headV = bot->v;
+    }
+    else {
+      headH = 0.0f;
+      headV = 0.0f;
+    }
   }
   if( !alt && keys[SDLK_KP_MULTIPLY] && !oldKeys[SDLK_KP_MULTIPLY] ) {
     isFreelook = !isFreelook;
+
+    if( isExternal && isFreelook ) {
+      headH = bot->h;
+      headV = bot->v;
+    }
+    else {
+      headH = 0.0f;
+      headV = 0.0f;
+    }
   }
 
   /*
@@ -351,29 +367,40 @@ void BotProxy::update()
 
   // external
   if( isExternal ) {
+    if( isFreelook ) {
+      headH = angleWrap( headH + camera.relH );
+      headV = clamp( headV + camera.relV, 0.0f, +Math::TAU / 2.0f );
+
+      Quat completeRot = Quat::rotationZXZ( headH, headV, 0.0f );
+
+      baseRot = Quat::rotationZXZ( bot->h, bot->v, 0.0f );
+      headRot = *baseRot * completeRot;
+
+      camera.smoothRotateTo( completeRot );
+    }
+    else {
+      headH = 0.0f;
+      headV = 0.0f;
+
+      baseRot = Quat::rotationZXZ( bot->h, bot->v, 0.0f );
+      headRot = Quat::ID;
+
+      camera.smoothRotateTo( baseRot );
+    }
+
     bobTheta = 0.0f;
     bobBias  = 0.0f;
 
-    if( isFreelook ) {
-      camera.h = angleWrap( camera.h + camera.relH );
-      camera.v = clamp( camera.v + camera.relV, 0.0f, Math::TAU / 2.0f );
-    }
-    else {
-      camera.h = bot->h;
-      camera.v = bot->v;
-    }
-
-    camera.w = 0.0f;
     camera.align();
 
     Vec3 offset;
 
     if( veh != null ) {
-      float dist = veh->dim.fastL() * EXTERNAL_CAM_DIST;
+      float dist = veh->dim.fastN() * EXTERNAL_CAM_DIST;
       offset = camera.rotMat * Vec3( 0.0f, VEHICLE_CAM_UP_FACTOR * dist, dist );
     }
     else {
-      float dist = bot->dim.fastL() * EXTERNAL_CAM_DIST;
+      float dist = bot->dim.fastN() * EXTERNAL_CAM_DIST;
       offset = camera.rotMat * Vec3( SHOULDER_CAM_RIGHT, SHOULDER_CAM_UP, dist );
     }
 
@@ -388,14 +415,11 @@ void BotProxy::update()
       offset = Vec3::ZERO;
     }
 
-    camera.move( botEye + offset );
+    camera.moveTo( botEye + offset );
   }
   else {
     // internal, vehicle
     if( veh != null ) {
-      bobTheta = 0.0f;
-      bobBias  = 0.0f;
-
       if( isFreelook ) {
         headH = clamp( headH + camera.relH, vehClazz->lookHMin, vehClazz->lookHMax );
         headV = clamp( headV + camera.relV, vehClazz->lookVMin, vehClazz->lookVMax );
@@ -405,11 +429,15 @@ void BotProxy::update()
         headV = 0.0f;
       }
 
-      camera.h = veh->h;
-      camera.v = veh->v;
-      camera.w = veh->w;
+      bobTheta = 0.0f;
+      bobBias  = 0.0f;
+
+      baseRot = Quat::rotationZXZ( veh->h, veh->v, veh->w );
+      headRot = Quat::rotationY( headH ) * Quat::rotationX( headV );
+
+      camera.rotateTo( baseRot * headRot );
       camera.align();
-      camera.move( botEye );
+      camera.moveTo( botEye );
     }
     // internal, bot
     else {
@@ -435,11 +463,14 @@ void BotProxy::update()
         bobBias  *= BOB_SUPPRESSION_COEF;
       }
 
-      camera.h = bot->h;
-      camera.v = bot->v;
-      camera.w = bobTheta;
+      baseRot = Quat::rotationZXZ( bot->h, bot->v, bobTheta );
+      headRot = Quat::ID;
+      headH   = 0.0f;
+      headV   = 0.0f;
+
+      camera.rotateTo( baseRot );
       camera.align();
-      camera.move( Point( botEye.x, botEye.y, botEye.z + bobBias ) );
+      camera.moveTo( Point( botEye.x, botEye.y, botEye.z + bobBias ) );
     }
   }
 
@@ -474,11 +505,13 @@ void BotProxy::update()
 
 void BotProxy::reset()
 {
-  bobTheta   = 0.0f;
-  bobBias    = 0.0f;
-
+  baseRot    = Quat::ID;
+  headRot    = Quat::ID;
   headH      = 0.0f;
   headV      = 0.0f;
+
+  bobTheta   = 0.0f;
+  bobBias    = 0.0f;
 
   isExternal = false;
   isFreelook = false;
@@ -486,11 +519,13 @@ void BotProxy::reset()
 
 void BotProxy::read( InputStream* istream )
 {
-  bobTheta   = 0.0f;
-  bobBias    = 0.0f;
-
+  baseRot    = Quat::ID;
+  headRot    = Quat::ID;
   headH      = 0.0f;
   headV      = 0.0f;
+
+  bobTheta   = 0.0f;
+  bobBias    = 0.0f;
 
   isExternal = istream->readBool();
   isFreelook = istream->readBool();

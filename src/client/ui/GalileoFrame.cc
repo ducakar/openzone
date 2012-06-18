@@ -74,20 +74,9 @@ void GalileoFrame::onDraw()
     mapTexId = loadTexture( "terra/" + library.terrae[orbis.terra.id].name + ".ozcTex" );
   }
 
-  float pX;
-  float pY;
-  float h;
-
-  if( camera.state == Camera::BOT && camera.botObj != null ) {
-    pX = camera.botObj->p.x;
-    pY = camera.botObj->p.y;
-    h  = camera.botObj->h;
-  }
-  else {
-    pX = camera.p.x;
-    pY = camera.p.y;
-    h  = camera.h;
-  }
+  float pX = camera.p.x;
+  float pY = camera.p.y;
+  float h  = Math::atan2( camera.at.y, -camera.at.x );
 
   glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, isMaximised ? 0.8f : 0.6f );
   glBindTexture( GL_TEXTURE_2D, mapTexId );

@@ -98,15 +98,18 @@ void Camera::updateReferences()
 
 void Camera::align()
 {
-  hard_assert( 0.0f <= h && h < Math::TAU );
-  hard_assert( 0.0f <= v && v <= Math::TAU / 2.0f );
+  rot      = ~Quat::slerp( rot, desiredRot, SMOOTHING_COEF );
+  mag      = Math::mix( mag, desiredMag, SMOOTHING_COEF );
+  p        = Math::mix( p, desiredPos, SMOOTHING_COEF );
+  velocity = ( p - oldPos ) / Timer::TICK_TIME;
+  oldPos   = p;
 
-  rotMat  = Mat44::rotationZXZ( h, v, w );
-  rotTMat = ~rotMat;
+  rotMat   = Mat44::rotation( rot );
+  rotTMat  = ~rotMat;
 
-  right   = +rotMat.x;
-  up      = +rotMat.y;
-  at      = -rotMat.z;
+  right    = +rotMat.x;
+  up       = +rotMat.y;
+  at       = -rotMat.z;
 }
 
 void Camera::prepare()
@@ -141,8 +144,6 @@ void Camera::prepare()
   }
 
   if( newState != state ) {
-    isExternal = true;
-
     if( proxy != null ) {
       proxy->end();
     }
@@ -198,18 +199,20 @@ void Camera::update()
 
 void Camera::reset()
 {
+  rot        = Quat::ID;
+  mag        = 1.0f;
   p          = Point::ORIGIN;
   velocity   = Vec3::ZERO;
 
-  h          = 0.0f;
-  v          = Math::TAU / 4.0f;
-  w          = 0.0f;
-  mag        = 1.0f;
+  desiredRot = Quat::ID;
+  desiredMag = 1.0f;
+  desiredPos = Point::ORIGIN;
+  oldPos     = Point::ORIGIN;
 
   relH       = 0.0f;
   relV       = 0.0f;
 
-  rotMat     = Mat44::rotationZXZ( h, v, w );
+  rotMat     = Mat44::rotation( rot );
   rotTMat    = ~rotTMat;
 
   right      = rotMat.x;
@@ -225,9 +228,9 @@ void Camera::reset()
   vehicle    = -1;
   vehicleObj = null;
 
-  isExternal         = false;
   allowReincarnation = true;
   nightVision        = false;
+  isExternal         = true;
 
   state    = NONE;
   newState = NONE;
@@ -243,18 +246,20 @@ void Camera::reset()
 
 void Camera::read( InputStream* istream )
 {
-  p          = istream->readPoint();
-  velocity   = istream->readVec3();
-
-  h          = istream->readFloat();
-  v          = istream->readFloat();
-  w          = istream->readFloat();
+  rot        = istream->readQuat();
   mag        = istream->readFloat();
+  p          = istream->readPoint();
+  velocity   = Vec3::ZERO;
+
+  desiredRot = rot;
+  desiredMag = mag;
+  desiredPos = p;
+  oldPos     = p;
 
   relH       = istream->readFloat();
   relV       = istream->readFloat();
 
-  rotMat     = Mat44::rotationZXZ( h, v, w );
+  rotMat     = Mat44::rotation( rot );
   rotTMat    = ~rotMat;
 
   right      = rotMat.x;
@@ -270,9 +275,9 @@ void Camera::read( InputStream* istream )
   vehicle    = istream->readInt();
   vehicleObj = vehicle < 0 ? null : static_cast<Vehicle*>( orbis.objects[vehicle] );
 
-  isExternal         = istream->readBool();
   allowReincarnation = istream->readBool();
   nightVision        = istream->readBool();
+  isExternal         = istream->readBool();
 
   state     = NONE;
   newState  = State( istream->readInt() );
@@ -304,13 +309,9 @@ void Camera::read( InputStream* istream )
 
 void Camera::write( BufferStream* ostream ) const
 {
-  ostream->writePoint( p );
-  ostream->writeVec3( velocity );
-
-  ostream->writeFloat( h );
-  ostream->writeFloat( v );
-  ostream->writeFloat( w );
-  ostream->writeFloat( mag );
+  ostream->writeQuat( desiredRot );
+  ostream->writeFloat( desiredMag );
+  ostream->writePoint( desiredPos );
 
   ostream->writeFloat( relH );
   ostream->writeFloat( relV );
@@ -318,9 +319,9 @@ void Camera::write( BufferStream* ostream ) const
   ostream->writeInt( bot );
   ostream->writeInt( vehicle );
 
-  ostream->writeBool( isExternal );
   ostream->writeBool( allowReincarnation );
   ostream->writeBool( nightVision );
+  ostream->writeBool( isExternal );
 
   ostream->writeInt( state );
 
@@ -345,10 +346,6 @@ void Camera::init( int screenWidth, int screenHeight )
 
   aspect        = aspect != 0.0f ? aspect : float( width ) / float( height );
   coeff         = Math::tan( angle / 2.0f );
-
-  isExternal         = false;
-  allowReincarnation = true;
-  nightVision        = false;
 
   state    = NONE;
   newState = NONE;

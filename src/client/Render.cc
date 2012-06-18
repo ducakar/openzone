@@ -72,26 +72,26 @@ void Render::scheduleCell( int cellX, int cellY )
 
       Struct* str    = orbis.structs[ cell.structs[i] ];
       Point   p      = str->p;
-      float   radius = str->dim().fastL();
+      float   radius = str->dim().fastN();
 
       if( frustum.isVisible( p, radius ) ) {
-        structs.add( ModelEntry( ( p - camera.p ).sqL(), str ) );
+        structs.add( ModelEntry( ( p - camera.p ).sqN(), str ) );
       }
     }
   }
 
   foreach( obj, cell.objects.citer() ) {
     float radius = obj->flags & Object::WIDE_CULL_BIT ?
-        WIDE_CULL_FACTOR * obj->dim.fastL() : obj->dim.fastL();
+        WIDE_CULL_FACTOR * obj->dim.fastN() : obj->dim.fastN();
 
     if( frustum.isVisible( obj->p, radius ) ) {
-      objects.add( ModelEntry( ( obj->p - camera.p ).sqL(), obj ) );
+      objects.add( ModelEntry( ( obj->p - camera.p ).sqN(), obj ) );
     }
   }
 
   foreach( frag, cell.frags.citer() ) {
     if( frustum.isVisible( frag->p, FragPool::FRAG_RADIUS ) ) {
-      frags.add( ModelEntry( ( frag->p - camera.p ).sqL(), frag ) );
+      frags.add( ModelEntry( ( frag->p - camera.p ).sqN(), frag ) );
     }
   }
 }

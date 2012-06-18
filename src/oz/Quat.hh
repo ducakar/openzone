@@ -167,28 +167,10 @@ class Quat
     }
 
     /**
-     * Length.
+     * Norm.
      */
     OZ_ALWAYS_INLINE
     float operator ! () const
-    {
-      return Math::sqrt( x*x + y*y + z*z + w*w );
-    }
-
-    /**
-     * Approximate length.
-     */
-    OZ_ALWAYS_INLINE
-    float fastL() const
-    {
-      return Math::fastSqrt( x*x + y*y + z*z + w*w );
-    }
-
-    /**
-     * Square of length.
-     */
-    OZ_ALWAYS_INLINE
-    float sqL() const
     {
       return x*x + y*y + z*z + w*w;
     }
@@ -277,11 +259,35 @@ class Quat
     OZ_ALWAYS_INLINE
     Quat operator * ( const Quat& q ) const
     {
-
       return Quat( w*q.x + x*q.w + y*q.z - z*q.y,
                    w*q.y + y*q.w + z*q.x - x*q.z,
                    w*q.z + z*q.w + x*q.y - y*q.x,
                    w*q.w - x*q.x - y*q.y - z*q.z );
+    }
+
+    /**
+     * Vector rotation.
+     */
+    Vec3 operator * ( const Vec3& v ) const
+    {
+      float x2  = x + x;
+      float y2  = y + y;
+      float z2  = z + z;
+      float xx2 = x2 * x;
+      float yy2 = y2 * y;
+      float zz2 = z2 * z;
+      float xy2 = x2 * y;
+      float xz2 = x2 * z;
+      float xw2 = x2 * w;
+      float yz2 = y2 * z;
+      float yw2 = y2 * w;
+      float zw2 = z2 * w;
+      float yy1 = 1.0f - yy2;
+      float xx1 = 1.0f - xx2;
+
+      return Vec3( ( yy1 - zz2 ) * v.x + ( xy2 - zw2 ) * v.y + ( xz2 + yw2 ) * v.z,
+                   ( xy2 + zw2 ) * v.x + ( xx1 - zz2 ) * v.y + ( yz2 - xw2 ) * v.z,
+                   ( xz2 - yw2 ) * v.x + ( yz2 + xw2 ) * v.y + ( xx1 - yy2 ) * v.z );
     }
 
     /**
@@ -294,6 +300,30 @@ class Quat
 
       k = 1.0f / k;
       return Quat( x * k, y * k, z * k, w * k );
+    }
+
+    /**
+     * Quotient.
+     */
+    OZ_ALWAYS_INLINE
+    friend Quat operator / ( float k, const Quat& q )
+    {
+      k = k / ( q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w );
+      float nk = -k;
+      return Quat( q.x * nk, q.y * nk, q.z * nk, q.w * k );
+    }
+
+    /**
+     * Quaternion quotient.
+     */
+    OZ_ALWAYS_INLINE
+    Quat operator / ( const Quat& q ) const
+    {
+      float k = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
+      return Quat( k * ( x*q.w - w*q.x + z*q.y - y*q.z ),
+                   k * ( y*q.w - w*q.y + x*q.z - z*q.x ),
+                   k * ( z*q.w - w*q.z + y*q.x - x*q.y ),
+                   k * ( w*q.w + x*q.x + y*q.y + z*q.z ) );
     }
 
     /**
@@ -367,6 +397,25 @@ class Quat
     }
 
     /**
+     * Quaternion division.
+     */
+    OZ_ALWAYS_INLINE
+    Quat& operator /= ( const Quat& q )
+    {
+      float k = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
+      Quat  t = Quat( k * ( x*q.w - w*q.x + z*q.y - y*q.z ),
+                      k * ( y*q.w - w*q.y + x*q.z - z*q.x ),
+                      k * ( z*q.w - w*q.z + y*q.x - x*q.y ),
+                      k * ( w*q.w + x*q.x + y*q.y + z*q.z ) );
+
+      x = t.x;
+      y = t.y;
+      z = t.z;
+      w = t.w;
+      return *this;
+    }
+
+    /**
      * Create quaternion for rotation around the given axis.
      */
     static Quat rotationAxis( const Vec3& axis, float theta )
@@ -407,7 +456,7 @@ class Quat
     }
 
     /**
-     * <tt>rotationZ( heading ) * rotationX( pitch ) * rotationZ( roll ).</tt>
+     * <tt>rotationZ( heading ) * rotationX( pitch ) * rotationZ( roll )</tt>.
      */
     static Quat rotationZXZ( float heading, float pitch, float roll )
     {
@@ -429,15 +478,42 @@ class Quat
     }
 
     /**
+     * Get rotation axis and angle.
+     */
+    void toAxisAngle( Vec3* axis, float* angle ) const
+    {
+      *angle = 2.0f * Math::acos( w );
+
+      float k = Math::sqrt( 1.0f - w*w );
+      if( k == 0.0f ) {
+        *axis = Vec3::ZERO;
+      }
+      else {
+        k = 1.0f / k;
+        *axis = Vec3( x * k, y * k, z * k );
+      }
+    }
+
+    /**
      * Spherical linear interpolation between two rotations.
      */
     static Quat slerp( const Quat& a, const Quat& b, float t )
     {
-      Quat  diff  = *a * b;
-      float angle = 2.0f * Math::acos( diff.w );
-      float k     = Math::fastInvSqrt( 1.0f - diff.w*diff.w );
+      hard_assert( 0.0f <= t && t <= 1.0f );
 
-      return rotationAxis( Vec3( diff.x * k, diff.y * k, diff.z * k ), t * angle );
+      Quat  diff = ~( *a * b );
+      float s    = Math::sqrt( 1.0f - diff.w*diff.w );
+
+      if( s == 0.0f ) {
+        return a;
+      }
+
+      float angle = 2.0f * Math::acos( diff.w );
+      float theta = t * angle;
+      float s1    = Math::sin( angle - theta );
+      float s2    = Math::sin( theta );
+
+      return ( s1*a + s2*b ) / s;
     }
 
     /**
@@ -445,6 +521,8 @@ class Quat
      */
     static Quat fastSlerp( const Quat& a, const Quat& b, float t )
     {
+      hard_assert( 0.0f <= t && t <= 1.0f );
+
       Quat  diff = *a * b;
       float k    = diff.w < 0.0f ? -t : t;
 
