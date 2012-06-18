@@ -157,8 +157,8 @@ void VehicleClass::initClass( const Config* config )
 
   lookHMin = Math::rad( lookHMin );
   lookHMax = Math::rad( lookHMax );
-  lookVMin = Math::rad( lookVMin + 90.0f );
-  lookVMax = Math::rad( lookVMax + 90.0f );
+  lookVMin = Math::rad( lookVMin );
+  lookVMax = Math::rad( lookVMax );
 
   rotVelLimit            = Math::rad( config->get( "rotVelLimit", 60.0f ) ) * Timer::TICK_TIME;
 

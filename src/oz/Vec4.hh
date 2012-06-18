@@ -177,7 +177,7 @@ class Vec4
     }
 
     /**
-     * Length.
+     * Norm.
      */
     OZ_ALWAYS_INLINE
     float operator ! () const
@@ -186,19 +186,19 @@ class Vec4
     }
 
     /**
-     * Approximate length.
+     * Approximate norm.
      */
     OZ_ALWAYS_INLINE
-    float fastL() const
+    float fastN() const
     {
       return Math::fastSqrt( x*x + y*y + z*z + w*w );
     }
 
     /**
-     * Square of length.
+     * Squared norm.
      */
     OZ_ALWAYS_INLINE
-    float sqL() const
+    float sqN() const
     {
       return x*x + y*y + z*z + w*w;
     }

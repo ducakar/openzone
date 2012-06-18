@@ -45,9 +45,8 @@ void HudArea::drawBotCrosshair()
   const Bot*      me      = camera.botObj;
   const BotClass* myClazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
-  float dx     = me->parent < 0 ? angleDiff( camera.h, me->h ) : angleDiff( camera.h, 0.0f );
-  float dy     = me->parent < 0 ? camera.v - me->v : camera.v - Math::TAU / 4.0f;
-  float alpha  = 1.0f - CROSS_FADE_COEFF * Math::sqrt( dx*dx + dy*dy );
+  float delta  = max( 1.0f - Math::fabs( camera.botProxy.headRot.w ), 0.0f );
+  float alpha  = 1.0f - CROSS_FADE_COEFF * Math::sqrt( delta );
   float life   = max( 2.0f * me->life / myClazz->life - 1.0f, 0.0f );
   Vec3  colour = Math::mix( Vec3( 1.00f, 0.50f, 0.25f ), Vec3( 1.0f, 1.0f, 1.0f ), life );
 
@@ -246,7 +245,7 @@ void HudArea::drawVehicleStatus()
   glEnable( GL_DEPTH_TEST );
   glDisable( GL_BLEND );
 
-  float size = vehicle->dim.fastL();
+  float size = vehicle->dim.fastN();
   float scale = VEHICLE_DIM / size;
   int x = Area::uiWidth - 208 + VEHICLE_SIZE / 2;
   int y = 52 + vehClazz->nWeapons * ( Font::INFOS[Font::LARGE].height + 8 ) + VEHICLE_SIZE / 2;

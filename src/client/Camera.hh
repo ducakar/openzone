@@ -53,22 +53,23 @@ class Camera
 
   public:
 
+    // Rotation, magnification, position and velocity.
+    Quat          rot;
+    float         mag;
     Point         p;
     Vec3          velocity;
 
-    // Absolute rotation except when in a vehicle it is relative to vehicle orientation (when
-    // looking forward).
-    float         h;
-    float         v;
-    float         w;
-    float         mag;
+    // Current rotation, magnification and position are smoothly changed to match desired ones.
+    Quat          desiredRot;
+    float         desiredMag;
+    Point         desiredPos;
+    Point         oldPos;
 
-    // camera rotation change (from input)
+    // Camera rotation change (from input).
     float         relH;
     float         relV;
 
-    // global rotation quaternion, matrix and it's inverse
-    Quat          rot;
+    // Global rotation quaternion, matrix and it's inverse.
     Mat44         rotMat;
     Mat44         rotTMat;
 
@@ -104,9 +105,9 @@ class Camera
     float         keyXSens;
     float         keyYSens;
 
-    bool          isExternal;
     bool          allowReincarnation;
     bool          nightVision;
+    bool          isExternal;
 
     State         state;
     State         newState;
@@ -157,38 +158,33 @@ class Camera
       hard_assert( botObj == null || ( botObj->flags & Object::BOT_BIT ) );
     }
 
-    void rotate( float h_, float v_ )
+    void rotateTo( const Quat& q )
     {
-      h = h_;
-      v = v_;
+      rot        = q;
+      desiredRot = q;
     }
 
-    void smoothRotate( float h_, float v_ )
+    void smoothRotateTo( const Quat& q )
     {
-      h = Math::mix( h, h_, SMOOTHING_COEF );
-      v = Math::mix( v, v_, SMOOTHING_COEF );
+      desiredRot = q;
     }
 
-    void move( const Point& pos )
+    void moveTo( const Point& p_ )
     {
-      Point oldP = p;
-
-      p        = pos;
-      velocity = ( p - oldP ) / Timer::TICK_TIME;
+      p          = p_;
+      desiredPos = p_;
     }
 
-    void smoothMove( const Point& pos )
+    void smoothMoveTo( const Point& p_ )
     {
-      Point oldP = p;
-
-      p        = Math::mix( p, pos, SMOOTHING_COEF );
-      velocity = ( p - oldP ) / Timer::TICK_TIME;
+      desiredPos = p_;
     }
 
-    void warp( const Point& pos )
+    void warpTo( const Point& p_ )
     {
-      p        = pos;
-      velocity = Vec3::ZERO;
+      p          = p_;
+      desiredPos = p_;
+      oldPos     = p_;
     }
 
     void updateReferences();

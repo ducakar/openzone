@@ -103,6 +103,7 @@ class Thread
      * Run thread.
      *
      * @param main pointer to thread's main function.
+     * @param data pointer to user data, passed to thread's main function.
      */
     void start( Main* main, void* data = null );
 

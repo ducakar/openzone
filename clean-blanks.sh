@@ -1,6 +1,6 @@
 #!/bin/sh
 
-files=`git ls-files | grep -v '^include' | grep -v 'README' | grep -v 'header\.glsl'`
+files=`git ls-files | grep -v '^include/\|^doc/licences' | grep -v 'README' | grep -v 'header\.glsl'`
 
 # We want to remove duplicated blank lines and blank lines at the end of a file (in Unix means).
 # The latter cannot be directly performed by sed, so we add additional blank line at the end of

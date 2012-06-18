@@ -54,12 +54,16 @@ class BotProxy : public Proxy
     ui::InventoryMenu* inventory;
     ui::InventoryMenu* container;
 
+  public:
+
+    Quat  baseRot;
+    Quat  headRot;
+    float headH;
+    float headV;
+
     Point botEye;
     float bobTheta;
     float bobBias;
-
-    float headH;
-    float headV;
 
     bool  isExternal;
     bool  isFreelook;

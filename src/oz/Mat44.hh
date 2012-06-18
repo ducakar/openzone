@@ -478,20 +478,22 @@ class Mat44
       float x2 = q.x + q.x;
       float y2 = q.y + q.y;
       float z2 = q.z + q.z;
-      float xx1 = 1.0f - x2 * q.x;
-      float yy = y2 * q.y;
-      float zz = z2 * q.z;
-      float xy = x2 * q.y;
-      float xz = x2 * q.z;
-      float xw = x2 * q.w;
-      float yz = y2 * q.z;
-      float yw = y2 * q.w;
-      float zw = z2 * q.w;
+      float xx2 = x2 * q.x;
+      float yy2 = y2 * q.y;
+      float zz2 = z2 * q.z;
+      float xy2 = x2 * q.y;
+      float xz2 = x2 * q.z;
+      float xw2 = x2 * q.w;
+      float yz2 = y2 * q.z;
+      float yw2 = y2 * q.w;
+      float zw2 = z2 * q.w;
+      float xx1 = 1.0f - xx2;
+      float yy1 = 1.0f - yy2;
 
-      return Mat44( 1.0f - yy - zz,  xy + zw,  xz - yw, 0.0f,
-                           xy - zw, xx1 - zz,  yz + xw, 0.0f,
-                           xz + yw,  yz - xw, xx1 - yy, 0.0f,
-                              0.0f,     0.0f,     0.0f, 1.0f );
+      return Mat44( yy1 - zz2, xy2 + zw2, xz2 - yw2, 0.0f,
+                    xy2 - zw2, xx1 - zz2, yz2 + xw2, 0.0f,
+                    xz2 + yw2, yz2 - xw2, xx1 - yy2, 0.0f,
+                         0.0f,      0.0f,      0.0f, 1.0f );
     }
 
     /**
@@ -540,7 +542,7 @@ class Mat44
     }
 
     /**
-     * <tt>rotationZ( heading ) * rotationX( pitch ) * rotationZ( roll ).</tt>
+     * <tt>rotationZ( heading ) * rotationX( pitch ) * rotationZ( roll )</tt>.
      */
     OZ_ALWAYS_INLINE
     static Mat44 rotationZXZ( float heading, float pitch, float roll )

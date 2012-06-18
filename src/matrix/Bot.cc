@@ -849,7 +849,7 @@ void Bot::onUpdate()
         handle.z    = min( handle.z, dim.z - camZ );
         Vec3 string = p + Vec3( 0.0f, 0.0f, camZ ) + handle - cargoObj->p;
 
-        if( string.sqL() > GRAB_HANDLE_TOL * grabHandle*grabHandle ) {
+        if( string.sqN() > GRAB_HANDLE_TOL * grabHandle*grabHandle ) {
           cargo    = -1;
           cargoObj = null;
         }
@@ -857,11 +857,11 @@ void Bot::onUpdate()
           Vec3 desiredMom     = string * GRAB_STRING_RATIO;
           Vec3 momDiff        = ( desiredMom - cargoObj->momentum ) * GRAB_MOM_RATIO;
 
-          float momDiffSqL    = momDiff.sqL();
+          float momDiffSqN    = momDiff.sqN();
           momDiff.z          += physics.gravity * Timer::TICK_TIME;
 
-          if( momDiffSqL > GRAB_MOM_MAX_SQ ) {
-            momDiff *= GRAB_MOM_MAX / Math::sqrt( momDiffSqL );
+          if( momDiffSqN > GRAB_MOM_MAX_SQ ) {
+            momDiff *= GRAB_MOM_MAX / Math::sqrt( momDiffSqN );
           }
 
           momDiff.z          -= physics.gravity * Timer::TICK_TIME;

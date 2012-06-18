@@ -47,8 +47,11 @@ class StrategicProxy : public Proxy
 
     ui::StrategicArea* strategicArea;
 
+    float h;
+    float v;
     Point desiredPos;
     float height;
+
     bool  isFree;
     bool  isFreeFast;
     bool  isRTSFast;

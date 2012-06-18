@@ -82,7 +82,6 @@ class System
 
   private:
 
-
     /**
      * Sets up bell and disables <tt>SIGTRAP</tt> handler on Linux, since the default handler would
      * crash the application on <tt>trap()</tt> call.

@@ -9,14 +9,14 @@ project( openzone C CXX )
 set( OZ_VERSION "0.2.85" CACHE STRING "" FORCE )
 set( OZ_SOVERSION "0" )
 
-option( OZ_STATIC_LIB "Create liboz as static library instead of shared." OFF )
+option( OZ_SHARED_LIBOZ "Build liboz as a shared library." OFF )
 option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory leaks." ON )
 
 set( OZ_APPLICATION_NAME "openzone" )
 set( OZ_APPLICATION_TITLE "OpenZone" )
 
-option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." OFF )
-option( OZ_NONFREE "Enable support for MP3 and AAC." ON )
+option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." ON )
+option( OZ_NONFREE "Enable support for MP3 and AAC." OFF )
 
 option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
 
@@ -30,13 +30,8 @@ include( CheckCXXCompilerFlag )
 include( CheckLibraryExists )
 
 if( NACL )
-  set( OZ_STATIC_LIB ON CACHE BOOL "Create liboz as static library instead of shared." FORCE )
   set( OZ_GL_ES ON CACHE BOOL "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." FORCE )
   set( OZ_NONFREE OFF CACHE BOOL "Enable support for MP3 and AAC." FORCE )
-endif()
-
-if( WIN32 )
-  set( OZ_STATIC_LIB ON CACHE BOOL "Create liboz as static library instead of shared." FORCE )
 endif()
 
 if( NOT CMAKE_BUILD_TYPE )
@@ -49,7 +44,7 @@ endif()
 
 set( OZ_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" CACHE STRING "" FORCE )
 
-if( NOT OZ_STATIC_LIB )
+if( OZ_SHARED_LIBOZ )
   set( BUILD_SHARED_LIBS ON )
 endif()
 
@@ -194,13 +189,13 @@ endif()
 set( flags "-pipe -std=c++0x -pedantic -msse3 -fstrict-enums -ffast-math" )
 set( warnings "-Wall -Wextra -Winvalid-pch -Wconversion " )
 
-# Additional warnings, enabled only once in a while to check code quality (for GCC).
+# Additional warnings, enabled only once in a while to check code quality (GCC specific).
 # set( warnings "${warnings} -Wmissing-declarations -Wmissing-format-attribute" )
 # set( warnings "${warnings} -Wnon-virtual-dtor -Woverloaded-virtual -Wcast-align -Wundef" )
 # set( warnings "${warnings} -Winit-self -Wformat=2" )
 # set( warnings "${warnings} -Wlogical-op -Wzero-as-null-pointer-constant" )
 
-# Additional warnings (for Clang).
+# Additional warnings (Clang specific).
 # set( warnings "${warnings} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic" )
 # set( warnings "${warnings} -Wno-global-constructors -Wno-exit-time-destructors -Wno-float-equal " )
 # set( warnings "${warnings} -Wno-shadow -Wno-padded -Wno-disabled-macro-expansion" )

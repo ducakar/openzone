@@ -268,7 +268,7 @@ slotsRendered:
 
     hard_assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 
-    float size = item->dim.fastL();
+    float size = item->dim.fastN();
     float scale = SLOT_OBJ_DIM / size;
 
     Mat44 originalCamera = tf.camera;
