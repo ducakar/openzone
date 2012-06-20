@@ -607,7 +607,7 @@ void Lua::init()
   IMPORT_FUNC( ozNirvanaRemoveDevice );
   IMPORT_FUNC( ozNirvanaAddMemo );
 
-  importLuaConstants( l );
+  importMatrixConstants( l );
 
   l_newtable();
   l_setglobal( "ozLocalData" );

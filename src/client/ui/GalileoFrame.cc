@@ -60,7 +60,7 @@ bool GalileoFrame::onMouseEvent()
 
 void GalileoFrame::onDraw()
 {
-  if( orbis.terra.id < 0 || ( camera.state == Camera::BOT && camera.botObj != null &&
+  if( orbis.terra.id < 0 || ( camera.state == Camera::UNIT && camera.botObj != null &&
       !camera.botObj->hasAttribute( ObjectClass::GALILEO_BIT ) ) )
   {
     isVisible = false;
@@ -76,7 +76,7 @@ void GalileoFrame::onDraw()
 
   float pX = camera.p.x;
   float pY = camera.p.y;
-  float h  = Math::atan2( camera.at.y, -camera.at.x );
+  float h  = camera.botObj == null ? camera.strategic.h : camera.botObj->h;
 
   glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, isMaximised ? 0.8f : 0.6f );
   glBindTexture( GL_TEXTURE_2D, mapTexId );
@@ -125,7 +125,6 @@ GalileoFrame::GalileoFrame( const QuestFrame* questFrame_ ) :
   Frame( 8, -8, 240, 232 - Font::INFOS[Font::LARGE].height, "" ),
   questFrame( questFrame_ ), mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ),
   isVisible( true ), isMaximised( false )
-
 {
   flags = PINNED_BIT;
 

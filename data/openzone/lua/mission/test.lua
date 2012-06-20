@@ -38,10 +38,17 @@ function onCreate()
 --   ozCaelumSetPeriod( 1440 )
   ozCaelumSetRealTime()
 
-  ozCameraRotateTo( 0.0, 35.0 )
-  ozCameraWarpTo( 141.0, -12.0, 84.75 )
+  ozCameraWarpTo( 141.0, -12.0, 84.75, 0.0, 35.0 )
 
-  ozOrbisAddPlayer( OZ_FORCE, 137, -6, 73, OZ_SOUTH )
+  local me = ozOrbisAddPlayer( OZ_FORCE, 137, -6, 73, OZ_SOUTH )
+  ozCameraAddSwitchableUnit( me )
+
+--   ozCameraSetState( OZ_CAMERA_CINEMATIC )
+--   ozCameraAddMove( 131, -12, 85, 0, 90, 1 )
+--   ozCameraAddMove( 131, -12, 85, 0, 0, 1 )
+--   ozCameraAddMove( 141, -12, 85, 0, 90, 1 )
+--   ozCameraAddMove( 141, -12, 85, 0, 0, 1 )
+--   ozCameraAddStateSwitch( OZ_CAMERA_STRATEGIC )
 
   init_sample()
 
@@ -58,8 +65,9 @@ function init_sample()
   ozNirvanaAddMemo( lord, "Buahahahaha" )
 
   ozOrbisAddObj( OZ_FORCE, "droid.OOM-9", 140, -11, 73, OZ_WEST )
-  ozOrbisAddObj( OZ_FORCE, "cyborg", 140, -13, 73, OZ_WEST )
+  local cyborg = ozOrbisAddObj( OZ_FORCE, "cyborg", 140, -13, 73, OZ_WEST )
   ozBotSetMind( "" )
+  ozCameraAddSwitchableUnit( cyborg )
 
 --   ozOrbisAddObj( "reaper", 145, -15, 73 )
 

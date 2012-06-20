@@ -692,15 +692,18 @@ void Lua::init()
    * Camera
    */
 
-  IMPORT_FUNC( ozCameraGetPos );
-  IMPORT_FUNC( ozCameraRotateTo );
-  IMPORT_FUNC( ozCameraSmoothRotateTo );
   IMPORT_FUNC( ozCameraMoveTo );
-  IMPORT_FUNC( ozCameraSmoothMoveTo );
   IMPORT_FUNC( ozCameraWarpTo );
 
+  IMPORT_FUNC( ozCameraAddSwitchableUnit );
+  IMPORT_FUNC( ozCameraClearSwitchableUnits );
+  IMPORT_FUNC( ozCameraSwitchTo );
   IMPORT_FUNC( ozCameraAllowReincarnation );
-  IMPORT_FUNC( ozCameraIncarnate );
+  IMPORT_FUNC( ozCameraSetState );
+
+  IMPORT_FUNC( ozCameraAddStateSwitch );
+  IMPORT_FUNC( ozCameraAddWait );
+  IMPORT_FUNC( ozCameraAddMove );
 
   /*
    * Profile
@@ -709,7 +712,8 @@ void Lua::init()
   IMPORT_FUNC( ozProfileGetName );
   IMPORT_FUNC( ozProfileGetBot );
 
-  importLuaConstants( l );
+  importMatrixConstants( l );
+  importClientConstants( l );
 
   hard_assert( l_gettop() == 0 );
 

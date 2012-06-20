@@ -246,9 +246,10 @@ slotsRendered:
   glEnable( GL_DEPTH_TEST );
   glDisable( GL_BLEND );
 
-  tf.camera = Mat44::ID;
-  tf.camera.translate( Vec3( float( x + SLOT_SIZE / 2 ), float( y + SLOT_SIZE / 2 + FOOTER_SIZE ), 0.0f ) );
-  tf.camera.scale( Vec3( 1.0f, 1.0f, 0.01f ) );
+  tf.camera = Mat44::translation( Vec3( float( x + SLOT_SIZE / 2 ),
+                                        float( y + SLOT_SIZE / 2 + FOOTER_SIZE ),
+                                        0.0f ) );
+  tf.camera.scale( Vec3( 1.0f, 1.0f, 0.001f ) );
 
   const Vector<int>& items = container->items;
 
@@ -273,10 +274,9 @@ slotsRendered:
 
     Mat44 originalCamera = tf.camera;
 
-    tf.model = Mat44::ID;
-    tf.camera.rotateX( Math::rad( -45.0f ) );
-    tf.camera.rotateZ( Math::rad( +70.0f ) );
-    tf.camera.scale( Vec3( scale, scale, scale ) );
+    tf.model = Mat44::scaling( Vec3( scale, scale, scale ) );
+    tf.model.rotateX( Math::rad( -45.0f ) );
+    tf.model.rotateZ( Math::rad( +70.0f ) );
     tf.applyCamera();
 
     context.drawImago( item, null, Mesh::SOLID_BIT | Mesh::ALPHA_BIT );

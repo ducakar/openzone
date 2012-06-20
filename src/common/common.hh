@@ -101,8 +101,8 @@ typedef int LuaAPI( lua_State* );
 /**
  * Wrap angle to interval \f$ [0, \tau) \f$.
  *
- * This adjustment should be made after each angle addition/subtraction. It assumes that input angle
- * lies on interval \f$ (-\tau, 2 \tau) \f$.
+ * This adjustment should be made after each angle addition/subtraction. It assumes the input angle
+ * lies on interval \f$ [-\tau, \infty) \f$.
  */
 OZ_ALWAYS_INLINE
 inline float angleWrap( float x )
@@ -113,12 +113,12 @@ inline float angleWrap( float x )
 /**
  * Difference between two angles, maps to interval \f$ [-\frac{\tau}{2}, +\frac{\tau}{2}) \f$.
  *
- * This function assumes that both angles lie on interval \f$ [-\tau, \tau) \f$.
+ * This function assumes that both angles lie on interval \f$ [0, \tau) \f$.
  */
 OZ_ALWAYS_INLINE
 inline float angleDiff( float x, float y )
 {
-  return Math::fmod( x - y + 2.5f*Math::TAU, Math::TAU ) - 0.5f*Math::TAU;
+  return Math::fmod( x - y + 1.5f*Math::TAU, Math::TAU ) - 0.5f*Math::TAU;
 }
 
 }

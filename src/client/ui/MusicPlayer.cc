@@ -120,7 +120,7 @@ void MusicPlayer::volumeUp( Button* sender )
 
 void MusicPlayer::onUpdate()
 {
-  if( camera.state == Camera::BOT && camera.botObj != null &&
+  if( camera.state == Camera::UNIT && camera.botObj != null &&
       !camera.botObj->hasAttribute( ObjectClass::MUSIC_PLAYER_BIT ) )
   {
     if( isPlaying ) {

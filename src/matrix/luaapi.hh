@@ -2672,7 +2672,7 @@ static int ozFragIsVisibleFromSelfEye( lua_State* l )
  *
  * @ingroup matrix
  */
-void importLuaConstants( lua_State* l );
+void importMatrixConstants( lua_State* l );
 
 }
 }

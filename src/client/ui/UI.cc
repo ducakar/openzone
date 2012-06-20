@@ -93,8 +93,8 @@ void UI::draw()
   tf.camera = Mat44::ID;
 
   // set shaders
-  shader.setAmbientLight( Vec4( 0.6f, 0.5f, 0.6f, 1.0f ) );
-  shader.setCaelumLight( ~Vec3( 0.6f, -0.3f, -0.8f ), Vec4( 0.6f, 0.6f, 0.6f, 1.0f ) );
+  shader.setAmbientLight( Vec4( 0.55f, 0.55f, 0.55f, 1.00f ) );
+  shader.setCaelumLight( ~Vec3( 0.6f, -0.3f, -0.8f ), Vec4( 0.45f, 0.45f, 0.45f, 1.00f ) );
 
   for( int i = 0; i < library.shaders.length(); ++i ) {
     shader.use( i );

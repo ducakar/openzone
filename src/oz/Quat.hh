@@ -495,43 +495,21 @@ class Quat
     }
 
     /**
-     * Spherical linear interpolation between two rotations.
+     * Approximate spherical linear interpolation between two rotations.
      */
     static Quat slerp( const Quat& a, const Quat& b, float t )
     {
       hard_assert( 0.0f <= t && t <= 1.0f );
 
-      Quat  diff = ~( *a * b );
-      float s    = Math::sqrt( 1.0f - diff.w*diff.w );
+      Quat  d = *a * b;
+      float k = d.w < 0.0f ? -t : t;
 
-      if( s == 0.0f ) {
-        return a;
-      }
+      d.x *= k;
+      d.y *= k;
+      d.z *= k;
+      d.w  = Math::fastSqrt( 1.0f - d.x*d.x - d.y*d.y - d.z*d.z );
 
-      float angle = 2.0f * Math::acos( diff.w );
-      float theta = t * angle;
-      float s1    = Math::sin( angle - theta );
-      float s2    = Math::sin( theta );
-
-      return ( s1*a + s2*b ) / s;
-    }
-
-    /**
-     * Approximate spherical linear interpolation between two similar rotations.
-     */
-    static Quat fastSlerp( const Quat& a, const Quat& b, float t )
-    {
-      hard_assert( 0.0f <= t && t <= 1.0f );
-
-      Quat  diff = *a * b;
-      float k    = diff.w < 0.0f ? -t : t;
-
-      diff.x *= k;
-      diff.y *= k;
-      diff.z *= k;
-      diff.w  = Math::fastSqrt( 1.0f - diff.x*diff.x - diff.y*diff.y - diff.z*diff.z );
-
-      return a * diff;
+      return a * d;
     }
 
 };

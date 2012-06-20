@@ -552,7 +552,7 @@ void Lua::init()
   IMPORT_FUNC( ozFragIsVisibleFromSelf );
   IMPORT_FUNC( ozFragIsVisibleFromSelfEye );
 
-  importLuaConstants( l );
+  importMatrixConstants( l );
 
   l_newtable();
   l_setglobal( "ozLocalData" );

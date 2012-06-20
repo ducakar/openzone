@@ -49,19 +49,19 @@
 # include <GL/gl.h>
 #endif
 
+#ifndef GL_VERSION_3_0
+# define GL_RGBA32F                        0x8814
+# define GL_RGB32F                         0x8815
+# define GL_RGBA16F                        0x881A
+# define GL_RGB16F                         0x881B
+#endif
+
 #ifndef GL_EXT_texture_compression_s3tc
 # define GL_EXT_texture_compression_s3tc
 # define GL_COMPRESSED_RGB_S3TC_DXT1_EXT   0x83F0
 # define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT  0x83F1
 # define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT  0x83F2
 # define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT  0x83F3
-#endif
-
-#ifdef OZ_GL_ES
-# define GL_RGBA32F                        0x8814
-# define GL_RGB32F                         0x8815
-# define GL_RGBA16F                        0x881A
-# define GL_RGB16F                         0x881B
 #endif
 
 namespace oz

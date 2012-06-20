@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/BotProxy.hh
+ * @file client/UnitProxy.hh
  */
 
 #pragma once
@@ -33,7 +33,7 @@ namespace oz
 namespace client
 {
 
-class BotProxy : public Proxy
+class UnitProxy : public Proxy
 {
   private:
 
@@ -70,7 +70,7 @@ class BotProxy : public Proxy
 
   public:
 
-    BotProxy();
+    UnitProxy();
 
     void begin() override;
     void end() override;

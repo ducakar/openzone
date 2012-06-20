@@ -152,69 +152,65 @@ static int ozQuestEnd( lua_State* l )
  * Camera
  */
 
-static int ozCameraGetPos( lua_State* l )
-{
-  ARG( 0 );
-
-  l_pushfloat( camera.p.x );
-  l_pushfloat( camera.p.y );
-  l_pushfloat( camera.p.z );
-
-  return 3;
-}
-
-static int ozCameraRotateTo( lua_State* l )
-{
-  ARG( 2 );
-
-  Quat rot = Quat::rotationZXZ( Math::rad( l_tofloat( 1 ) ), Math::rad( l_tofloat( 2 ) ), 0.0f );
-  camera.rotateTo( rot );
-  return 3;
-}
-
-static int ozCameraSmoothRotateTo( lua_State* l )
-{
-  ARG( 2 );
-
-  Quat rot = Quat::rotationZXZ( Math::rad( l_tofloat( 1 ) ), Math::rad( l_tofloat( 2 ) ), 0.0f );
-  camera.smoothRotateTo( rot );
-  return 3;
-}
-
 static int ozCameraMoveTo( lua_State* l )
 {
-  ARG( 3 );
+  ARG( 5 );
 
-  Point pos = Point( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
-  camera.moveTo( pos );
-  return 3;
-}
+  float h = Math::rad( l_tofloat( 4 ) );
+  float v = Math::rad( l_tofloat( 5 ) );
+  Point p = Point( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
 
-static int ozCameraSmoothMoveTo( lua_State* l )
-{
-  ARG( 3 );
+  camera.strategic.h = h;
+  camera.strategic.v = v;
+  camera.strategic.desiredPos = p;
 
-  Point pos = Point( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
-  camera.smoothMoveTo( pos );
-  return 3;
+  return 0;
 }
 
 static int ozCameraWarpTo( lua_State* l )
 {
-  ARG( 3 );
+  ARG( 5 );
 
-  Point pos = Point( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
-  camera.warpTo( pos );
-  return 3;
+  float h   = Math::rad( l_tofloat( 4 ) );
+  float v   = Math::rad( l_tofloat( 5 ) );
+  Quat  rot = Quat::rotationZXZ( h, v, 0.0f );
+  Point p   = Point( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
+
+  camera.rotateTo( rot );
+  camera.moveTo( p );
+  camera.strategic.h = h;
+  camera.strategic.v = v;
+  camera.strategic.desiredPos = p;
+
+  return 0;
 }
 
-static int ozCameraIncarnate( lua_State* l )
+static int ozCameraAddSwitchableUnit( lua_State* l )
+{
+  ARG( 1 );
+  BOT_INDEX( l_toint( 1 ) );
+
+  camera.switchableUnits.add( bot->index );
+  return 0;
+}
+
+static int ozCameraClearSwitchableUnits( lua_State* l )
+{
+  ARG( 1 );
+  BOT_INDEX( l_toint( 1 ) );
+
+  camera.switchableUnits.clear();
+  camera.switchableUnits.dealloc();
+  return 0;
+}
+
+static int ozCameraSwitchTo( lua_State* l )
 {
   ARG( 1 );
   BOT_INDEX( l_toint( 1 ) );
 
   camera.setBot( bot );
-  camera.setState( Camera::BOT );
+  camera.setState( Camera::UNIT );
   return 0;
 }
 
@@ -223,6 +219,46 @@ static int ozCameraAllowReincarnation( lua_State* l )
   ARG( 1 );
 
   camera.allowReincarnation = l_tobool( 1 );
+  return 0;
+}
+
+static int ozCameraSetState( lua_State* l )
+{
+  ARG( 1 );
+
+  camera.setState( Camera::State( l_toint( 1 ) ) );
+  return 0;
+}
+
+static int ozCameraAddStateSwitch( lua_State* l )
+{
+  ARG( 1 );
+
+  Camera::State state = Camera::State( l_toint( 1 ) );
+
+  camera.cinematic.addStateSwitch( state );
+  return 0;
+}
+
+static int ozCameraAddWait( lua_State* l )
+{
+  ARG( 1 );
+
+  float time = l_tofloat( 1 );
+
+  camera.cinematic.addWait( time );
+  return 0;
+}
+
+static int ozCameraAddMove( lua_State* l )
+{
+  ARG( 6 );
+
+  Point p    = Point( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
+  Quat  rot  = Quat::rotationZXZ( Math::rad( l_tofloat( 4 ) ), Math::rad( l_tofloat( 5 ) ), 0.0f );
+  float time = l_tofloat( 6 );
+
+  camera.cinematic.addMove( rot, p, time );
   return 0;
 }
 
@@ -247,6 +283,13 @@ static int ozProfileGetBot( lua_State* l )
 }
 
 /// @}
+
+/**
+ * Register client-specific %Lua constants with the given %Lua VM.
+ *
+ * @ingroup client
+ */
+void importClientConstants( lua_State* l );
 
 }
 }

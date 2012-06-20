@@ -64,7 +64,7 @@ void SMMVehicleImago::draw( const Imago*, int mask )
 
   if( shader.mode == Shader::SCENE ) {
     tf.model = Mat44::translation( obj->p - Point::ORIGIN ) * veh->rot;
-    tf.model.rotateX( -Math::TAU / 4.0f );
+    tf.model.rotateX( Math::TAU / -4.0f );
 
     if( veh->pilot >= 0 && ( veh->state & Vehicle::CREW_VISIBLE_BIT ) ) {
       const Bot* bot = static_cast<const Bot*>( orbis.objects[veh->pilot] );
