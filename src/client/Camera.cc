@@ -34,12 +34,20 @@ namespace client
 
 Camera camera;
 
-const float Camera::ROT_LIMIT      = Math::TAU / 2.0f;
-const float Camera::MIN_DISTANCE   = 0.10f;
-const float Camera::SMOOTHING_COEF = 0.35f;
+const float  Camera::ROT_LIMIT          = Math::TAU / 2.0f;
+const float  Camera::MIN_DISTANCE       = 0.10f;
+const float  Camera::SMOOTHING_COEF     = 0.35f;
+const float  Camera::ROT_SMOOTHING_COEF = 0.50f;
+Proxy* const Camera::PROXIES[] = {
+  null,
+  &strategic,
+  &unit,
+  &cinematic
+};
 
-StrategicProxy Camera::strategicProxy;
-BotProxy       Camera::botProxy;
+StrategicProxy Camera::strategic;
+UnitProxy      Camera::unit;
+CinematicProxy Camera::cinematic;
 
 void Camera::updateReferences()
 {
@@ -94,11 +102,22 @@ void Camera::updateReferences()
       vehicleObj = null;
     }
   }
+
+  for( int i = 0; i < switchableUnits.length(); ) {
+    const Object* unit = orbis.objects[ switchableUnits[i] ];
+
+    if( unit == null ) {
+      switchableUnits.remove( i );
+    }
+    else {
+      ++i;
+    }
+  }
 }
 
 void Camera::align()
 {
-  rot      = ~Quat::slerp( rot, desiredRot, SMOOTHING_COEF );
+  rot      = ~Quat::slerp( rot, desiredRot, ROT_SMOOTHING_COEF );
   mag      = Math::mix( mag, desiredMag, SMOOTHING_COEF );
   p        = Math::mix( p, desiredPos, SMOOTHING_COEF );
   velocity = ( p - oldPos ) / Timer::TICK_TIME;
@@ -148,20 +167,7 @@ void Camera::prepare()
       proxy->end();
     }
 
-    switch( newState ) {
-      case NONE: {
-        proxy = null;
-        break;
-      }
-      case STRATEGIC: {
-        proxy = &strategicProxy;
-        break;
-      }
-      case BOT: {
-        proxy = &botProxy;
-        break;
-      }
-    }
+    proxy = PROXIES[newState];
 
     if( proxy != null ) {
       proxy->begin();
@@ -228,6 +234,9 @@ void Camera::reset()
   vehicle    = -1;
   vehicleObj = null;
 
+  switchableUnits.clear();
+  switchableUnits.dealloc();
+
   allowReincarnation = true;
   nightVision        = false;
   isExternal         = true;
@@ -235,8 +244,9 @@ void Camera::reset()
   state    = NONE;
   newState = NONE;
 
-  strategicProxy.reset();
-  botProxy.reset();
+  strategic.reset();
+  unit.reset();
+  cinematic.reset();
 
   if( proxy != null ) {
     proxy->end();
@@ -275,6 +285,13 @@ void Camera::read( InputStream* istream )
   vehicle    = istream->readInt();
   vehicleObj = vehicle < 0 ? null : static_cast<Vehicle*>( orbis.objects[vehicle] );
 
+  hard_assert( switchableUnits.isEmpty() );
+
+  int nSwitchableUnits = istream->readInt();
+  for( int i = 0; i < nSwitchableUnits; ++i ) {
+    switchableUnits.add( istream->readInt() );
+  }
+
   allowReincarnation = istream->readBool();
   nightVision        = istream->readBool();
   isExternal         = istream->readBool();
@@ -282,23 +299,11 @@ void Camera::read( InputStream* istream )
   state     = NONE;
   newState  = State( istream->readInt() );
 
-  strategicProxy.read( istream );
-  botProxy.read( istream );
+  strategic.read( istream );
+  unit.read( istream );
+  cinematic.read( istream );
 
-  switch( newState ) {
-    case NONE: {
-      proxy = null;
-      break;
-    }
-    case STRATEGIC: {
-      proxy = &strategicProxy;
-      break;
-    }
-    case BOT: {
-      proxy = &botProxy;
-      break;
-    }
-  }
+  proxy = PROXIES[newState];
 
   if( proxy != null ) {
     proxy->begin();
@@ -319,14 +324,20 @@ void Camera::write( BufferStream* ostream ) const
   ostream->writeInt( bot );
   ostream->writeInt( vehicle );
 
+  ostream->writeInt( switchableUnits.length() );
+  for( int i = 0; i < switchableUnits.length(); ++i ) {
+    ostream->writeInt( switchableUnits[i] );
+  }
+
   ostream->writeBool( allowReincarnation );
   ostream->writeBool( nightVision );
   ostream->writeBool( isExternal );
 
   ostream->writeInt( state );
 
-  strategicProxy.write( ostream );
-  botProxy.write( ostream );
+  strategic.write( ostream );
+  unit.write( ostream );
+  cinematic.write( ostream );
 }
 
 void Camera::init( int screenWidth, int screenHeight )

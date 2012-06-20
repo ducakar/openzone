@@ -56,10 +56,13 @@ void StrategicProxy::begin()
   camera.setTaggedEnt( null );
   camera.isExternal = true;
 
+  strategicArea = new ui::StrategicArea();
+
   ui::mouse.doShow = true;
 
-  strategicArea = new ui::StrategicArea();
+  ui::ui.galileoFrame->show( true );
   ui::ui.root->add( strategicArea );
+
   strategicArea->sink();
 
   desiredPos = camera.p;
@@ -124,8 +127,17 @@ void StrategicProxy::prepare()
 
       if( me != null && !( me->state & Bot::DEAD_BIT ) ) {
         camera.setBot( const_cast<Bot*>( me ) );
-        camera.setState( Camera::BOT );
+        camera.setState( Camera::UNIT );
       }
+    }
+  }
+
+  if( !alt && keys[SDLK_y] && !oldKeys[SDLK_y] ) {
+    if( !camera.switchableUnits.isEmpty() ) {
+      Bot* bot = static_cast<Bot*>( orbis.objects[ camera.switchableUnits.first() ] );
+
+      camera.setBot( bot );
+      camera.setState( Camera::UNIT );
     }
   }
 

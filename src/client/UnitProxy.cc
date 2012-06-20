@@ -18,38 +18,38 @@
  */
 
 /**
- * @file client/BotProxy.cc
+ * @file client/UnitProxy.cc
  */
 
 #include "stable.hh"
 
-#include "client/BotProxy.hh"
+#include "client/UnitProxy.hh"
 
 #include "client/Camera.hh"
 
-#include "client/ui/UI.hh"
 #include "client/ui/GalileoFrame.hh"
+#include "client/ui/UI.hh"
 
 namespace oz
 {
 namespace client
 {
 
-const float BotProxy::CAMERA_Z_SMOOTHING       = 0.35f;
-const float BotProxy::CAMERA_Z_TOLERANCE       = 0.20f;
-const float BotProxy::EXTERNAL_CAM_DIST        = 2.75f;
-const float BotProxy::EXTERNAL_CAM_CLIP_DIST   = 0.10f;
-const float BotProxy::SHOULDER_CAM_RIGHT       = 0.25f;
-const float BotProxy::SHOULDER_CAM_UP          = 0.25f;
-const float BotProxy::VEHICLE_CAM_UP_FACTOR    = 0.15f;
-const float BotProxy::BOB_SUPPRESSION_COEF     = 0.80f;
-const float BotProxy::BINOCULARS_MAGNIFICATION = 0.20f;
+const float UnitProxy::CAMERA_Z_SMOOTHING       = 0.35f;
+const float UnitProxy::CAMERA_Z_TOLERANCE       = 0.20f;
+const float UnitProxy::EXTERNAL_CAM_DIST        = 2.75f;
+const float UnitProxy::EXTERNAL_CAM_CLIP_DIST   = 0.10f;
+const float UnitProxy::SHOULDER_CAM_RIGHT       = 0.25f;
+const float UnitProxy::SHOULDER_CAM_UP          = 0.25f;
+const float UnitProxy::VEHICLE_CAM_UP_FACTOR    = 0.15f;
+const float UnitProxy::BOB_SUPPRESSION_COEF     = 0.80f;
+const float UnitProxy::BINOCULARS_MAGNIFICATION = 0.20f;
 
-BotProxy::BotProxy() :
+UnitProxy::UnitProxy() :
   hud( null ), infoFrame( null ), inventory( null ), container( null )
 {}
 
-void BotProxy::begin()
+void UnitProxy::begin()
 {
   if( camera.bot < 0 ) {
     return;
@@ -68,6 +68,7 @@ void BotProxy::begin()
 
   ui::mouse.doShow = false;
 
+  ui::ui.galileoFrame->show( true );
   ui::ui.root->add( hud );
   ui::ui.root->add( infoFrame );
   ui::ui.root->add( inventory );
@@ -89,7 +90,7 @@ void BotProxy::begin()
   bobBias   = 0.0f;
 }
 
-void BotProxy::end()
+void UnitProxy::end()
 {
   if( container != null ) {
     ui::ui.root->remove( container );
@@ -111,7 +112,7 @@ void BotProxy::end()
   ui::mouse.doShow = true;
 }
 
-void BotProxy::prepare()
+void UnitProxy::prepare()
 {
   if( camera.bot < 0 ) {
     return;
@@ -325,6 +326,28 @@ void BotProxy::prepare()
     }
   }
 
+  if( !alt && keys[SDLK_y] && !oldKeys[SDLK_y] ) {
+    int nSwitchableunits = camera.switchableUnits.length();
+
+    if( nSwitchableunits != 0 ) {
+      int currUnit = -1;
+
+      for( int i = 0; i < nSwitchableunits; ++i ) {
+        if( camera.bot == camera.switchableUnits[i] ) {
+          currUnit = i;
+          break;
+        }
+      }
+
+      currUnit = ( currUnit + 1 ) % nSwitchableunits;
+
+      Bot* unit = static_cast<Bot*>( orbis.objects[ camera.switchableUnits[currUnit] ] );
+
+      bot->actions = 0;
+      camera.setBot( unit );
+    }
+  }
+
   if( !alt && keys[SDLK_o] ) {
     if( keys[SDLK_LSHIFT] || keys[SDLK_RSHIFT] ) {
       orbis.caelum.time -= 0.1f * Timer::TICK_TIME * orbis.caelum.period;
@@ -339,7 +362,7 @@ void BotProxy::prepare()
   }
 }
 
-void BotProxy::update()
+void UnitProxy::update()
 {
   if( camera.bot < 0 ) {
     camera.setState( Camera::STRATEGIC );
@@ -354,7 +377,11 @@ void BotProxy::update()
   if( veh != null ) {
     vehClazz = static_cast<const VehicleClass*>( veh->clazz );
 
-    botEye = bot->p + veh->rot.z * bot->camZ;
+    // Rotation for -90°, faster than matrix multiplication.
+    Mat44 rotMat = veh->rot;
+    rotMat.rotateX( Math::TAU / -4.0f );
+
+    botEye = veh->p + rotMat * vehClazz->pilotPos;
   }
   else {
     float actualZ = bot->p.z + bot->camZ;
@@ -503,7 +530,7 @@ void BotProxy::update()
   }
 }
 
-void BotProxy::reset()
+void UnitProxy::reset()
 {
   baseRot    = Quat::ID;
   headRot    = Quat::ID;
@@ -517,7 +544,7 @@ void BotProxy::reset()
   isFreelook = false;
 }
 
-void BotProxy::read( InputStream* istream )
+void UnitProxy::read( InputStream* istream )
 {
   baseRot    = Quat::ID;
   headRot    = Quat::ID;
@@ -531,7 +558,7 @@ void BotProxy::read( InputStream* istream )
   isFreelook = istream->readBool();
 }
 
-void BotProxy::write( BufferStream* ostream ) const
+void UnitProxy::write( BufferStream* ostream ) const
 {
   ostream->writeBool( isExternal );
   ostream->writeBool( isFreelook );

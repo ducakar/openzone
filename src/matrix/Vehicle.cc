@@ -192,8 +192,8 @@ void Vehicle::airHandler()
   const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
   Vec3 right = rot.x;
-  Vec3 at    = rot.y;
-  Vec3 up    = rot.z;
+  Vec3 at    = -rot.z;
+  Vec3 up    = rot.y;
 
   // controls
   Vec3 move = Vec3::ZERO;

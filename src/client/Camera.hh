@@ -24,7 +24,8 @@
 #pragma once
 
 #include "client/StrategicProxy.hh"
-#include "client/BotProxy.hh"
+#include "client/UnitProxy.hh"
+#include "client/CinematicProxy.hh"
 
 namespace oz
 {
@@ -35,19 +36,23 @@ class Camera
 {
   public:
 
-    static const float ROT_LIMIT;
-    static const float MIN_DISTANCE;
-    static const float SMOOTHING_COEF;
+    static const float  ROT_LIMIT;
+    static const float  MIN_DISTANCE;
+    static const float  SMOOTHING_COEF;
+    static const float  ROT_SMOOTHING_COEF;
+    static Proxy* const PROXIES[];
 
     enum State
     {
       NONE,
       STRATEGIC,
-      BOT
+      UNIT,
+      CINEMATIC
     };
 
-    static StrategicProxy strategicProxy;
-    static BotProxy       botProxy;
+    static StrategicProxy strategic;
+    static UnitProxy      unit;
+    static CinematicProxy cinematic;
 
     Proxy*        proxy;
 
@@ -77,18 +82,6 @@ class Camera
     Vec3          up;
     Vec3          at;
 
-    int           object;
-    const Object* objectObj;
-
-    int           entity;
-    const Entity* entityObj;
-
-    int           bot;
-    Bot*          botObj;
-
-    int           vehicle;
-    Vehicle*      vehicleObj;
-
     int           width;
     int           height;
     int           centreX;
@@ -104,6 +97,20 @@ class Camera
     float         mouseYSens;
     float         keyXSens;
     float         keyYSens;
+
+    int           object;
+    const Object* objectObj;
+
+    int           entity;
+    const Entity* entityObj;
+
+    int           bot;
+    Bot*          botObj;
+
+    int           vehicle;
+    Vehicle*      vehicleObj;
+
+    Vector<int>   switchableUnits;
 
     bool          allowReincarnation;
     bool          nightVision;

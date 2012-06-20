@@ -45,7 +45,7 @@ void HudArea::drawBotCrosshair()
   const Bot*      me      = camera.botObj;
   const BotClass* myClazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
-  float delta  = max( 1.0f - Math::fabs( camera.botProxy.headRot.w ), 0.0f );
+  float delta  = max( 1.0f - Math::fabs( camera.unit.headRot.w ), 0.0f );
   float alpha  = 1.0f - CROSS_FADE_COEFF * Math::sqrt( delta );
   float life   = max( 2.0f * me->life / myClazz->life - 1.0f, 0.0f );
   Vec3  colour = Math::mix( Vec3( 1.00f, 0.50f, 0.25f ), Vec3( 1.0f, 1.0f, 1.0f ), life );
@@ -250,13 +250,12 @@ void HudArea::drawVehicleStatus()
   int x = Area::uiWidth - 208 + VEHICLE_SIZE / 2;
   int y = 52 + vehClazz->nWeapons * ( Font::INFOS[Font::LARGE].height + 8 ) + VEHICLE_SIZE / 2;
 
-  tf.model = Mat44::ID;
-  tf.camera = Mat44::ID;
-  tf.camera.translate( Vec3( float( x ), float( y ), 0.0f ) );
+  tf.camera = Mat44::translation( Vec3( float( x ), float( y ), 0.0f ) );
   tf.camera.scale( Vec3( 1.0f, 1.0f, 0.001f ) );
-  tf.camera.rotateX( Math::rad( -45.0f ) );
-  tf.camera.rotateZ( Math::rad( 160.0f ) );
-  tf.camera.scale( Vec3( scale, scale, scale ) );
+
+  tf.model = Mat44::scaling( Vec3( scale, scale, scale ) );
+  tf.model.rotateX( Math::rad( -45.0f ) );
+  tf.model.rotateZ( Math::rad( +160.0f ) );
   tf.applyCamera();
 
   context.drawImago( vehicle, null, Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
@@ -340,7 +339,7 @@ void HudArea::onUpdate()
   if( camera.entity != lastEntityId ) {
     lastEntityId = -1;
   }
-  if( camera.state != Camera::BOT || camera.bot < 0 ) {
+  if( camera.state != Camera::UNIT || camera.bot < 0 ) {
     lastWeaponId = -1;
   }
   else if( bot->parent < 0 || orbis.objects[bot->parent] == null ) {

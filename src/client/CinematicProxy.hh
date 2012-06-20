@@ -18,49 +18,52 @@
  */
 
 /**
- * @file client/StrategicProxy.hh
+ * @file client/CinematicProxy.hh
  */
 
 #pragma once
 
 #include "client/Proxy.hh"
-#include "client/ui/StrategicArea.hh"
 
 namespace oz
 {
 namespace client
 {
 
-class StrategicProxy : public Proxy
+class CinematicProxy : public Proxy
+
 {
   private:
 
-    static const float MIN_HEIGHT;
-    static const float MAX_HEIGHT;
-    static const float DEFAULT_HEIGHT;
-    static const float DEFAULT_ANGLE;
-    static const float FREE_LOW_SPEED;
-    static const float FREE_HIGH_SPEED;
-    static const float RTS_LOW_SPEED;
-    static const float RTS_HIGH_SPEED;
-    static const float ZOOM_FACTOR;
+    struct Step
+    {
+      enum Type
+      {
+        SWITCH,
+        WAIT,
+        MOVE
+      };
 
-    ui::StrategicArea* strategicArea;
+      Quat  rot;
+      Point p;
+      float time;
+      int   endState;
+      Type  type;
+    };
+
+    Vector<Step> steps;
+
+    Quat  beginRot;
+    Point beginPos;
+    float stepTime;
 
   public:
 
-    float h;
-    float v;
-    Point desiredPos;
-    float height;
+    CinematicProxy();
 
-    bool  isFree;
-    bool  isFreeFast;
-    bool  isRTSFast;
-
-  public:
-
-    StrategicProxy();
+    void addStateSwitch( int endState );
+    void addWait( float time );
+    void addMove( const Quat& rot, const Point& p, float time );
 
     void begin() override;
     void end() override;
