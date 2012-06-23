@@ -45,7 +45,7 @@ uniform vec4            oz_Colour;
 /*
  * Texturing { albedo, masks, normals, frames positions, frame normals }
  */
-uniform sampler2D       oz_Textures[5];
+uniform sampler2D       oz_Textures[6];
 
 /*
  * Lighting

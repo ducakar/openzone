@@ -68,20 +68,17 @@ function shell_onUpdate( l )
 end
 
 function serviceStation_onUse( l )
-  local pX, pY, pZ = ozObjGetPos()
+  ozObjBindOverlaps( OZ_OBJECTS_BIT, 5 )
+  while ozBindNextObj() do
+    if ozObjHasFlag( OZ_VEHICLE_BIT ) then
+      ozVehicleService()
+    end
+  end
 
   ozBindUser()
   ozBotRearm()
 
   if ozBotHasState( OZ_BOT_MECHANICAL_BIT ) then
     ozBotHeal()
-  end
-
-  ozOrbisBindOverlaps( OZ_OBJECTS_BIT, posX, posY, posZ, 5, 5, 2 )
-
-  while ozBindNextObj() do
-    if ozObjHasFlag( OZ_VEHICLE_BIT ) then
-      ozVehicleService()
-    end
   end
 end

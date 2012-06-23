@@ -7,7 +7,6 @@ project( openzone C CXX )
 #
 
 set( OZ_VERSION "0.2.85" CACHE STRING "" FORCE )
-set( OZ_SOVERSION "0" )
 
 option( OZ_SHARED_LIBOZ "Build liboz as a shared library." OFF )
 option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory leaks." ON )
@@ -15,7 +14,7 @@ option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory l
 set( OZ_APPLICATION_NAME "openzone" )
 set( OZ_APPLICATION_TITLE "OpenZone" )
 
-option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." ON )
+option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." OFF )
 option( OZ_NONFREE "Enable support for MP3 and AAC." OFF )
 
 option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
@@ -186,7 +185,7 @@ endif()
 # Compiler flags
 #
 
-set( flags "-pipe -std=c++0x -pedantic -msse3 -fstrict-enums -ffast-math" )
+set( flags "-pipe -std=c++0x -pedantic -fstrict-enums -ffast-math -msse3 -mfpmath=sse" )
 set( warnings "-Wall -Wextra -Winvalid-pch -Wconversion " )
 
 # Additional warnings, enabled only once in a while to check code quality (GCC specific).
@@ -217,7 +216,8 @@ int main( int, char** ) { return 0; }
 " isLegacyGCC )
 
 if( isClang )
-  set( flags "-Qunused-arguments ${flags}" )
+  set( flags "-Qunused-arguments -stdlib=libc++ ${flags}" )
+  set( libs_oz "${libs_oz};c++abi" )
 elseif( isLegacyGCC )
   set( flags "-pipe -std=gnu++0x -msse3 -ffast-math" )
 endif()

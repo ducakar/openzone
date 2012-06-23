@@ -59,7 +59,7 @@ class Bot : public Dynamic
     static const int ACTION_LEFT            = 0x00000008;
     static const int ACTION_JUMP            = 0x00000010;
     static const int ACTION_CROUCH          = 0x00000020;
-    static const int ACTION_RUN             = 0x00000040;
+    static const int ACTION_WALK            = 0x00000040;
 
     static const int ACTION_ATTACK          = 0x00000080;
     static const int ACTION_EXIT            = 0x00000100;
@@ -110,7 +110,7 @@ class Bot : public Dynamic
 
     static const int MOVING_BIT             = 0x00000010;
     static const int CROUCHING_BIT          = 0x00000020;
-    static const int RUNNING_BIT            = 0x00000040;
+    static const int WALKING_BIT            = 0x00000040;
     static const int ATTACKING_BIT          = 0x00000080;
 
     // current state bits

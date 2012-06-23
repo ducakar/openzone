@@ -530,6 +530,7 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
   NaClGLContext::flush();
 #endif
 
+  bool isMesa      = false;
   bool isCatalyst  = false;
   bool hasFBO      = false;
   bool hasFloatTex = false;
@@ -556,6 +557,9 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
   hasFBO = true;
 #endif
 
+  if( strstr( vendor, "X.Org" ) != null ) {
+    isMesa = true;
+  }
   if( strstr( vendor, "ATI" ) != null ) {
     isCatalyst = true;
   }
@@ -586,9 +590,11 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
   config.include( "shader.vertexTexture", "false" );
 #endif
 
+  if( isMesa ) {
+    config.include( "shader.setSamplerMap", "false" );
+  }
   if( isCatalyst ) {
     config.include( "shader.vertexTexture", "false" );
-    config.include( "shader.setSamplerIndices", "true" );
   }
   if( !hasFBO ) {
     throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
@@ -603,7 +609,7 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
   glInit();
 
   if( isBuild ) {
-    config.get( "shader.setSamplerIndices", false );
+    config.get( "shader.setSamplerMap", false );
     config.get( "shader.vertexTexture", false );
 
     Log::unindent();

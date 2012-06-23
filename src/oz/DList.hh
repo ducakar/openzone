@@ -80,15 +80,14 @@ class DList
 
       private:
 
-        /// Base class type, convenience definition to make code cleaner.
-        typedef CIteratorBase<Elem> B;
+        using CIteratorBase<Elem>::elem;
 
         /**
          * %Iterator for the given container, points to the first element.
          */
         OZ_ALWAYS_INLINE
         explicit CIterator( const DList& l ) :
-          B( l.firstElem )
+          CIteratorBase<Elem>( l.firstElem )
         {}
 
       public:
@@ -98,7 +97,7 @@ class DList
          */
         OZ_ALWAYS_INLINE
         CIterator() :
-          B( null )
+          CIteratorBase<Elem>( null )
         {}
 
         /**
@@ -107,9 +106,9 @@ class DList
         OZ_ALWAYS_INLINE
         CIterator& operator ++ ()
         {
-          hard_assert( B::elem != null );
+          hard_assert( elem != null );
 
-          B::elem = B::elem->next[INDEX];
+          elem = elem->next[INDEX];
           return *this;
         }
 
@@ -124,15 +123,14 @@ class DList
 
       private:
 
-        /// Base class type, convenience definition to make code cleaner.
-        typedef IteratorBase<Elem> B;
+        using IteratorBase<Elem>::elem;
 
         /**
          * %Iterator for the given container, points to the first element.
          */
         OZ_ALWAYS_INLINE
         explicit Iterator( const DList& l ) :
-          B( l.firstElem )
+          IteratorBase<Elem>( l.firstElem )
         {}
 
       public:
@@ -142,7 +140,7 @@ class DList
          */
         OZ_ALWAYS_INLINE
         Iterator() :
-          B( null )
+          IteratorBase<Elem>( null )
         {}
 
         /**
@@ -151,9 +149,9 @@ class DList
         OZ_ALWAYS_INLINE
         Iterator& operator ++ ()
         {
-          hard_assert( B::elem != null );
+          hard_assert( elem != null );
 
-          B::elem = B::elem->next[INDEX];
+          elem = elem->next[INDEX];
           return *this;
         }
 

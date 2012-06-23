@@ -55,15 +55,14 @@ class DArray
 
       private:
 
-        /// Base class type, convenience definition to make code cleaner.
-        typedef oz::CIterator<Elem> B;
+        using oz::CIterator<Elem>::elem;
 
         /**
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
         explicit CIterator( const DArray& a ) :
-          B( a.data, a.data + a.size )
+          oz::CIterator<Elem>( a.data, a.data + a.size )
         {}
 
       public:
@@ -73,7 +72,7 @@ class DArray
          */
         OZ_ALWAYS_INLINE
         CIterator() :
-          B( null, null )
+          oz::CIterator<Elem>( null, null )
         {}
 
     };
@@ -87,15 +86,14 @@ class DArray
 
       private:
 
-        /// Base class type, convenience definition to make code cleaner.
-        typedef oz::Iterator<Elem> B;
+        using oz::Iterator<Elem>::elem;
 
         /**
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
         explicit Iterator( const DArray& a ) :
-          B( a.data, a.data + a.size )
+          oz::Iterator<Elem>( a.data, a.data + a.size )
         {}
 
       public:
@@ -105,7 +103,7 @@ class DArray
          */
         OZ_ALWAYS_INLINE
         Iterator() :
-          B( null, null )
+          oz::Iterator<Elem>( null, null )
         {}
 
     };

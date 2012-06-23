@@ -52,16 +52,17 @@ function onCreate()
 
   init_sample()
 
-  ozFloraSeed()
+--   ozFloraSeed()
 
-  init_stressTest()
+--   init_stressTest()
 end
 
 function init_sample()
   local lord = ozOrbisAddObj( OZ_FORCE, "bauul", 138, -11, 73, OZ_EAST )
 
   local memo = ozOrbisAddObj( OZ_FORCE, "datacube", 134, -6, 73 )
-  ozNirvanaAddMemo( memo, "ds a sda dasd a dw eqfeqwikfp weiofhowue hfuh weuiwhfuw h" )
+  ozNirvanaAddMemo( memo, "Simulations are like miniskirts, they show a lot but hide the " ..
+                          "essentials.\n\n        -- Hubert Kirrman" )
   ozNirvanaAddMemo( lord, "Buahahahaha" )
 
   ozOrbisAddObj( OZ_FORCE, "droid.OOM-9", 140, -11, 73, OZ_WEST )

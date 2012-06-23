@@ -54,9 +54,9 @@ class Client
   public:
 
     void shutdown();
-    void printUsage();
+    void printUsage( const char* invocationName );
 
-    int  main( int argc, char** argv );
+    int main( int argc, char** argv );
 
 };
 

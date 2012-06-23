@@ -175,7 +175,7 @@ void UnitProxy::prepare()
     bot->actions |= Bot::ACTION_CROUCH | Bot::ACTION_VEH_DOWN;
   }
   if( keys[SDLK_LSHIFT] && !oldKeys[SDLK_LSHIFT] ) {
-    bot->actions |= Bot::ACTION_RUN;
+    bot->actions |= Bot::ACTION_WALK;
   }
 
   if( !alt && keys[SDLK_x] && !oldKeys[SDLK_x] ) {

@@ -108,15 +108,14 @@ class Map
 
       private:
 
-        /// Base class type, convenience definition to make code cleaner.
-        typedef oz::CIterator<Elem> B;
+        using oz::CIterator<Elem>::elem;
 
         /**
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
         explicit CIterator( const Map& m ) :
-          B( m.data, m.data + m.count )
+          oz::CIterator<Elem>( m.data, m.data + m.count )
         {}
 
       public:
@@ -126,7 +125,7 @@ class Map
          */
         OZ_ALWAYS_INLINE
         CIterator() :
-          B( null, null )
+          oz::CIterator<Elem>( null, null )
         {}
 
         /**
@@ -135,7 +134,7 @@ class Map
         OZ_ALWAYS_INLINE
         operator const Key* () const
         {
-          return &B::elem->key;
+          return &elem->key;
         }
 
         /**
@@ -144,7 +143,7 @@ class Map
         OZ_ALWAYS_INLINE
         const Key& operator * () const
         {
-          return B::elem->key;
+          return elem->key;
         }
 
         /**
@@ -153,7 +152,7 @@ class Map
         OZ_ALWAYS_INLINE
         const Key* operator -> () const
         {
-          return &B::elem->key;
+          return &elem->key;
         }
 
         /**
@@ -162,7 +161,7 @@ class Map
         OZ_ALWAYS_INLINE
         const Key& key() const
         {
-          return B::elem->key;
+          return elem->key;
         }
 
         /**
@@ -171,7 +170,7 @@ class Map
         OZ_ALWAYS_INLINE
         const Value& value() const
         {
-          return B::elem->value;
+          return elem->value;
         }
 
     };
@@ -185,15 +184,14 @@ class Map
 
       private:
 
-        /// Base class type, convenience definition to make code cleaner.
-        typedef oz::Iterator<Elem> B;
+        using oz::Iterator<Elem>::elem;
 
         /**
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
         explicit Iterator( const Map& m ) :
-          B( m.data, m.data + m.count )
+          oz::Iterator<Elem>( m.data, m.data + m.count )
         {}
 
       public:
@@ -203,7 +201,7 @@ class Map
          */
         OZ_ALWAYS_INLINE
         Iterator() :
-          B( null, null )
+          oz::Iterator<Elem>( null, null )
         {}
 
         /**
@@ -212,7 +210,7 @@ class Map
         OZ_ALWAYS_INLINE
         operator const Key* () const
         {
-          return &B::elem->key;
+          return &elem->key;
         }
 
         /**
@@ -221,7 +219,7 @@ class Map
         OZ_ALWAYS_INLINE
         const Key& operator * () const
         {
-          return B::elem->key;
+          return elem->key;
         }
 
         /**
@@ -230,7 +228,7 @@ class Map
         OZ_ALWAYS_INLINE
         const Key* operator -> () const
         {
-          return &B::elem->key;
+          return &elem->key;
         }
 
         /**
@@ -239,7 +237,7 @@ class Map
         OZ_ALWAYS_INLINE
         const Key& key() const
         {
-          return B::elem->key;
+          return elem->key;
         }
 
         /**
@@ -248,7 +246,7 @@ class Map
         OZ_ALWAYS_INLINE
         const Value& value() const
         {
-          return B::elem->value;
+          return elem->value;
         }
 
         /**
@@ -257,7 +255,7 @@ class Map
         OZ_ALWAYS_INLINE
         Value& value()
         {
-          return B::elem->value;
+          return elem->value;
         }
 
     };

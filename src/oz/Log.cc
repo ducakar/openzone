@@ -119,8 +119,6 @@ static const char* const SIGNALS[][2] =
   { "SIGSYS",    "Bad system call"            }  // 31
 };
 
-static const int BUFFER_SIZE = 1024;
-
 static char  filePath[256]; // = ""
 static FILE* file;          // = null
 static int   tabs;          // = 0
@@ -159,9 +157,9 @@ void Log::unindent()
 
 void Log::vprintRaw( const char* s, va_list ap )
 {
-  char buffer[BUFFER_SIZE];
+  char buffer[OUT_BUFFER_SIZE];
 
-  vsnprintf( buffer, BUFFER_SIZE, s, ap );
+  vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
 
   if( !verboseMode || showVerbose || file == null ) {
     fputs( buffer, stdout );
@@ -181,11 +179,11 @@ void Log::vprintRaw( const char* s, va_list ap )
 
 void Log::printRaw( const char* s, ... )
 {
-  va_list ap;
-  char buffer[BUFFER_SIZE];
+  char buffer[OUT_BUFFER_SIZE];
 
+  va_list ap;
   va_start( ap, s );
-  vsnprintf( buffer, BUFFER_SIZE, s, ap );
+  vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
   va_end( ap );
 
   if( !verboseMode || showVerbose || file == null ) {
@@ -206,11 +204,11 @@ void Log::printRaw( const char* s, ... )
 
 void Log::print( const char* s, ... )
 {
-  va_list ap;
-  char buffer[BUFFER_SIZE];
+  char buffer[OUT_BUFFER_SIZE];
 
+  va_list ap;
   va_start( ap, s );
-  vsnprintf( buffer, BUFFER_SIZE, s, ap );
+  vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
   va_end( ap );
 
   if( !verboseMode || showVerbose || file == null ) {
@@ -240,11 +238,11 @@ void Log::print( const char* s, ... )
 
 void Log::printEnd( const char* s, ... )
 {
-  va_list ap;
-  char buffer[BUFFER_SIZE];
+  char buffer[OUT_BUFFER_SIZE];
 
+  va_list ap;
   va_start( ap, s );
-  vsnprintf( buffer, BUFFER_SIZE, s, ap );
+  vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
   va_end( ap );
 
   if( !verboseMode || showVerbose || file == null ) {
@@ -286,11 +284,11 @@ void Log::printEnd()
 
 void Log::println( const char* s, ... )
 {
-  va_list ap;
-  char buffer[BUFFER_SIZE];
+  char buffer[OUT_BUFFER_SIZE];
 
+  va_list ap;
   va_start( ap, s );
-  vsnprintf( buffer, BUFFER_SIZE, s, ap );
+  vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
   va_end( ap );
 
   if( !verboseMode || showVerbose || file == null ) {
@@ -341,9 +339,9 @@ void Log::println()
 
 void Log::printTime( const Time& time )
 {
-  char buffer[BUFFER_SIZE];
+  char buffer[OUT_BUFFER_SIZE];
 
-  snprintf( buffer, BUFFER_SIZE, "%04d-%02d-%02d %02d:%02d:%02d",
+  snprintf( buffer, OUT_BUFFER_SIZE, "%04d-%02d-%02d %02d:%02d:%02d",
             time.year, time.month, time.day, time.hour, time.minute, time.second );
 
   if( !verboseMode || showVerbose || file == null ) {
@@ -415,11 +413,12 @@ void Log::printTrace( const StackTrace& st )
 
 void Log::printException( const std::exception& e )
 {
+  char buffer[OUT_BUFFER_SIZE];
+
   const Exception* oe = dynamic_cast<const Exception*>( &e );
-  char buffer[BUFFER_SIZE];
 
   if( oe == null ) {
-    snprintf( buffer, BUFFER_SIZE, "\n\nEXCEPTION: %s\n", e.what() );
+    snprintf( buffer, OUT_BUFFER_SIZE, "\n\nEXCEPTION: %s\n", e.what() );
 
     if( !verboseMode || showVerbose || file == null ) {
       fputs( buffer, stdout );
@@ -436,7 +435,7 @@ void Log::printException( const std::exception& e )
 #endif
   }
   else {
-    snprintf( buffer, BUFFER_SIZE, "\n\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
+    snprintf( buffer, OUT_BUFFER_SIZE, "\n\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
               oe->message, oe->function, oe->file, oe->line );
 
     if( !verboseMode || showVerbose || file == null ) {
@@ -458,11 +457,11 @@ void Log::printException( const std::exception& e )
 
 void Log::printSignal( int sigNum )
 {
-  char buffer[BUFFER_SIZE];
+  char buffer[OUT_BUFFER_SIZE];
 
   int index = uint( sigNum ) >= uint( aLength( SIGNALS ) ) ? 0 : sigNum;
 
-  snprintf( buffer, BUFFER_SIZE, "\n\nCaught signal %d %s (%s)\n",
+  snprintf( buffer, OUT_BUFFER_SIZE, "\n\nCaught signal %d %s (%s)\n",
             sigNum, SIGNALS[index][0], SIGNALS[index][1] );
 
   if( !verboseMode || showVerbose || file == null ) {

@@ -67,7 +67,7 @@ class MD2
     {
       int      firstFrame;
       int      lastFrame;
-      float    frameTime;
+      float    frameFreq;
       AnimType nextType;
     };
 
@@ -79,7 +79,7 @@ class MD2
 
         const Bot* bot;
 
-        AnimType   type;
+        AnimType   currType;
         AnimType   nextType;
 
         int        firstFrame;
@@ -87,11 +87,11 @@ class MD2
         int        currFrame;
         int        nextFrame;
 
-        float      frameTime;
-        float      currTime;
+        float      frameFreq;
+        float      frameRatio;
 
         AnimType extractAnim() const;
-        void set( AnimType type );
+        void setAnim();
 
       public:
 

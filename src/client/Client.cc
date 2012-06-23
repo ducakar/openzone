@@ -121,35 +121,29 @@ void Client::shutdown()
   }
 }
 
-void Client::printUsage()
+void Client::printUsage( const char* invocationName )
 {
-  Log::println( "Usage:" );
-  Log::indent();
-  Log::println( OZ_APPLICATION_NAME " [-v] [-l | -i <mission>] [-t <num>] [-p <prefix>]" );
-  Log::println();
-  Log::println( "-v" );
-  Log::println( "\tMore verbose log output." );
-  Log::println();
-  Log::println( "-l" );
-  Log::println( "\tSkip main menu and load the last autosaved state." );
-  Log::println();
-  Log::println( "-i <mission>" );
-  Log::println( "\tSkip main menu and start mission <mission>." );
-  Log::println();
-  Log::println( "-t <num>" );
-  Log::println( "\tExit after <num> seconds (can be a floating-point number) and use 42 as" );
-  Log::println( "\tthe random seed. Useful for benchmarking." );
-  Log::println();
-  Log::println( "-p <prefix>" );
-  Log::println( "\tSets data directory to '<prefix>/share/" OZ_APPLICATION_NAME "'." );
-  Log::println( "\tDefault: '%s'.", OZ_INSTALL_PREFIX );
-  Log::println();
-  Log::unindent();
+  Log::printRaw(
+    "Usage:\n"
+    "  %s [-v] [-l | -i <mission>] [-t <num>] [-p <prefix>]\n"
+    "\n"
+    "  -v            More verbose log output.\n"
+    "  -l            Skip main menu and load the last autosaved state.\n"
+    "  -i <mission>  Skip main menu and start mission <mission>.\n"
+    "  -t <num>      Exit after <num> seconds (can be a floating-point number) and\n"
+    "                use 42 as the random seed. Useful for benchmarking.\n"
+    "  -p <prefix>   Sets data directory to '<prefix>/share/" OZ_APPLICATION_NAME "'.\n"
+    "                Defaults to '%s'.\n"
+    "\n",
+    invocationName,
+    OZ_INSTALL_PREFIX );
 }
 
 int Client::main( int argc, char** argv )
 {
   initFlags = 0;
+
+  String invocationName = File( argv[0] ).baseName();
 
   bool   doAutoload    = false;
   bool   isBenchmark   = false;
@@ -158,7 +152,7 @@ int Client::main( int argc, char** argv )
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "vli:t:p:" ) ) >= 0 ) {
+  while( ( opt = getopt( argc, argv, "vli:t:p:h?" ) ) >= 0 ) {
     switch( opt ) {
       case 'v': {
         Log::showVerbose = true;
@@ -177,7 +171,7 @@ int Client::main( int argc, char** argv )
           benchmarkTime = String::parseFloat( optarg );
         }
         catch( const String::ParseException& ) {
-          printUsage();
+          printUsage( invocationName );
           return EXIT_FAILURE;
         }
 
@@ -190,8 +184,7 @@ int Client::main( int argc, char** argv )
         break;
       }
       default: {
-        Log::println();
-        printUsage();
+        printUsage( invocationName );
         return EXIT_FAILURE;
       }
     }

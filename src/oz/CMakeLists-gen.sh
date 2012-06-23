@@ -6,7 +6,7 @@ configure_file( ozconfig.hh.in ozconfig.hh )
 
 add_library( oz `echo *.cc` )
 set_target_properties( oz PROPERTIES PUBLIC_HEADER "`echo *.hh | tr ' ' ';'`" )
-set_target_properties( oz PROPERTIES VERSION "\${OZ_VERSION}" SOVERSION "\${OZ_SOVERSION}" )
+set_target_properties( oz PROPERTIES VERSION "\${OZ_VERSION}" SOVERSION "0" )
 target_link_libraries( oz \${libs_oz} )
 
 install( FILES "\${CMAKE_CURRENT_BINARY_DIR}/liboz.pc" COMPONENT liboz
