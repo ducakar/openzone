@@ -46,24 +46,22 @@
 # include <unistd.h>
 #endif
 
-#ifdef __native_client__
+#if defined( __native_client__ ) && !defined( __GLIBC__ )
 
 // Fake implementations for signal() and raise() functions missing in newlib library. signal() is
-// referenced by SDL hence must be present if we link with SDL. Those fake implementations also
-// spare several #ifdefs in this file.
-extern "C"
-{
+// referenced by SDL hence must be present if we link with it. Those fake implementations also spare
+// us several #ifdefs in this file.
 
+extern "C"
 void ( * signal( int, void ( * )( int ) ) )( int )
 {
   return oz::null;
 }
 
+extern "C"
 int raise( int )
 {
   return 0;
-}
-
 }
 
 #endif
@@ -95,9 +93,9 @@ struct Wave
 };
 
 static const Wave WAVE_SAMPLE = {
-  { 'R', 'I', 'F', 'F' }, 36 + 4410, { 'W', 'A', 'V', 'E' },
+  { 'R', 'I', 'F', 'F' }, 36 + 3087, { 'W', 'A', 'V', 'E' },
   { 'f', 'm', 't', ' ' }, 16, 1, 1, 11025, 11025, 1, 8,
-  { 'd', 'a', 't', 'a' }, 4410, {
+  { 'd', 'a', 't', 'a' }, 3087, {
 # include "bellSample.inc"
   }
 };
@@ -112,13 +110,13 @@ static const ubyte BELL_SAMPLE[] = {
 #endif
 
 static bool               isConstructed; // = false
+static volatile bool      isBellPlaying; // = false
 static int                initFlags;     // = 0
-static volatile int       nBellUsers;    // = 0
 #if defined( __native_client__ ) || defined( __ANDROID__ )
 #elif defined( _WIN32 )
-static CRITICAL_SECTION   bellCounterLock;
+static CRITICAL_SECTION   bellLock;
 #else
-static pthread_spinlock_t bellCounterLock;
+static pthread_spinlock_t bellLock;
 #endif
 
 static void resetSignals()
@@ -174,10 +172,7 @@ static DWORD WINAPI bellThread( LPVOID )
 {
   PlaySound( reinterpret_cast<LPCSTR>( &WAVE_SAMPLE ), null, SND_MEMORY | SND_SYNC );
 
-  EnterCriticalSection( &bellCounterLock );
-  --nBellUsers;
-  LeaveCriticalSection( &bellCounterLock );
-
+  isBellPlaying = false;
   return 0;
 }
 
@@ -189,13 +184,19 @@ static void* bellThread( void* )
                                  null, null, null );
   if( pa != null ) {
     pa_simple_write( pa, BELL_SAMPLE, sizeof( BELL_SAMPLE ), null );
+
+    // pa_simple_drain() takes much longer (~ 1-2 s) than the sample is actually playing, so we use
+    // this sleep to ensure the sample has finished playing, message that it has finished and only
+    // then flush and close PulseAudio connection.
+    usleep( uint( float( sizeof( BELL_SAMPLE ) * 1000000 ) / float( BELL_SPEC.rate ) ) );
+  }
+
+  isBellPlaying = false;
+
+  if( pa != null ) {
     pa_simple_drain( pa, null );
     pa_simple_free( pa );
   }
-
-  pthread_spin_lock( &bellCounterLock );
-  --nBellUsers;
-  pthread_spin_unlock( &bellCounterLock );
 
   return null;
 }
@@ -206,12 +207,12 @@ static void construct()
 {
 #if defined( __native_client__ ) || defined( __ANDROID__ )
 #elif defined( _WIN32 )
-  InitializeCriticalSection( &bellCounterLock );
+  InitializeCriticalSection( &bellLock );
 #else
   // Disable default handler for TRAP signal that crashes the process.
   signal( SIGTRAP, SIG_IGN );
 
-  pthread_spin_init( &bellCounterLock, PTHREAD_PROCESS_PRIVATE );
+  pthread_spin_init( &bellLock, PTHREAD_PROCESS_PRIVATE );
 #endif
   isConstructed = true;
 }
@@ -232,12 +233,13 @@ System::System()
 
 System::~System()
 {
+  // Delay termination until bell finishes.
 #ifdef _WIN32
-  while( nBellUsers != 0 ) {
+  while( isBellPlaying ) {
     Sleep( 10 );
   }
 #else
-  while( nBellUsers != 0 ) {
+  while( isBellPlaying ) {
     usleep( 10 * 1000 );
   }
 #endif
@@ -287,21 +289,35 @@ void System::bell()
 #if defined( __native_client__ ) || defined( __ANDROID__ )
 #elif defined( _WIN32 )
 
-  EnterCriticalSection( &bellCounterLock );
-  ++nBellUsers;
-  LeaveCriticalSection( &bellCounterLock );
+  EnterCriticalSection( &bellLock );
 
-  HANDLE thread = CreateThread( null, 0, bellThread, null, 0, null );
-  CloseHandle( thread );
+  if( isBellPlaying ) {
+    LeaveCriticalSection( &bellLock );
+  }
+  else {
+    isBellPlaying = true;
+
+    LeaveCriticalSection( &bellLock );
+
+    HANDLE thread = CreateThread( null, 0, bellThread, null, 0, null );
+    CloseHandle( thread );
+  }
 
 #else
 
-  pthread_spin_lock( &bellCounterLock );
-  ++nBellUsers;
-  pthread_spin_unlock( &bellCounterLock );
+  pthread_spin_lock( &bellLock );
 
-  pthread_t thread;
-  pthread_create( &thread, null, bellThread, null );
+  if( isBellPlaying ) {
+    pthread_spin_unlock( &bellLock );
+  }
+  else {
+    isBellPlaying = true;
+
+    pthread_spin_unlock( &bellLock );
+
+    pthread_t thread;
+    pthread_create( &thread, null, bellThread, null );
+  }
 
 #endif
 }
@@ -313,10 +329,14 @@ void System::warning( int nSkippedFrames, const char* msg, ... )
   va_list ap;
   va_start( ap, msg );
 
+  bool verboseMode = Log::verboseMode;
+
   Log::verboseMode = false;
   Log::printRaw( "\n\n" );
   Log::vprintRaw( msg, ap );
   Log::printRaw( "\n" );
+
+  Log::verboseMode = verboseMode;
 
   va_end( ap );
 

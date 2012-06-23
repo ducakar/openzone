@@ -54,37 +54,39 @@ namespace build
 
 Build build;
 
-void Build::printUsage()
+void Build::printUsage( const char* invocationName )
 {
-  Log::println( "Usage:" );
-  Log::indent();
-  Log::println( "ozBuild [OPTIONS] <data_src> <out_root>" );
-  Log::println();
-  Log::println( "<data_src>  Path to directory that includes data to be built. Name of this" );
-  Log::println( "            directory name is used as package name." );
-  Log::println( "<out_root>  Directory where output directory and archive will be created." );
-  Log::println( "-v          More verbose log output." );
-  Log::println( "-l          Build translations." );
-  Log::println( "-u          Build UI." );
-  Log::println( "-g          Copy shaders." );
-  Log::println( "-c          Build caela (skies)." );
-  Log::println( "-t          Build terrae (terrains)." );
-  Log::println( "-b          Compile maps into BSPs and build BPSs with referenced textures." );
-  Log::println( "-m          Build models." );
-  Log::println( "-s          Copy sounds (only used ones)." );
-  Log::println( "-a          Copy object class definitions." );
-  Log::println( "-f          Copy fragment pool definitions." );
-  Log::println( "-n          Copy name lists." );
-  Log::println( "-x          Check and copy Lua scripts." );
-  Log::println( "-o          Build modules." );
-  Log::println( "-r          Copy music tracks." );
-  Log::println( "-p          Pack built files into ZIP archive." );
-  Log::println( "-A          Everything above." );
-  Log::println( "-B          Build with bumpmap vertex format." );
-  Log::println( "-C          Use S3 texture compression." );
-  Log::println( "-0          Use no compression for ZIP archive." );
-  Log::println( "-7          Create non-solid LZMA-compressed 7zip archive instead of ZIP." );
-  Log::unindent();
+  Log::printRaw(
+    "Usage:\n"
+    "  %s [OPTIONS] <src_dir> [<out_dir>]\n"
+    "\n"
+    "  <src_dir>  Path to directory that includes data to be built. Name of this\n"
+    "             directory name is used as package name.\n"
+    "  <out_dir>  Directory where output directory and archive will be created.\n"
+    "             Defaults to './share/" OZ_APPLICATION_NAME "'.\n"
+    "  -v         More verbose log output.\n"
+    "  -l         Build translations.\n"
+    "  -u         Build UI.\n"
+    "  -g         Copy shaders.\n"
+    "  -c         Build caela (skies).\n"
+    "  -t         Build terrae (terrains).\n"
+    "  -b         Compile maps into BSPs and build BPSs with referenced textures.\n"
+    "  -m         Build models.\n"
+    "  -s         Copy sounds (only used ones).\n"
+    "  -a         Copy object class definitions.\n"
+    "  -f         Copy fragment pool definitions.\n"
+    "  -n         Copy name lists.\n"
+    "  -x         Check and copy Lua scripts.\n"
+    "  -o         Build modules.\n"
+    "  -r         Copy music tracks.\n"
+    "  -p         Pack built files into ZIP archive.\n"
+    "  -A         Everything above.\n"
+    "  -B         Build with bumpmap vertex format.\n"
+    "  -C         Use S3 texture compression.\n"
+    "  -0         Use no compression for ZIP archive.\n"
+    "  -7         Create non-solid LZMA-compressed 7zip archive instead of ZIP.\n"
+    "\n",
+    invocationName );
 }
 
 void Build::copyFiles( const char* srcDir, const char* destDir, const char* ext, bool recurse )
@@ -685,6 +687,8 @@ void Build::packArchive( const char* name, bool useCompression, bool use7zip )
 
 int Build::main( int argc, char** argv )
 {
+  String invocationName = File( argv[0] ).baseName();
+
   bool doCat          = false;
   bool doUI           = false;
   bool doShaders      = false;
@@ -708,7 +712,7 @@ int Build::main( int argc, char** argv )
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "lugtcbmsafnxorpABC07" ) ) >= 0 ) {
+  while( ( opt = getopt( argc, argv, "lugtcbmsafnxorpABC07h?" ) ) >= 0 ) {
     switch( opt ) {
       case 'l': {
         doCat = true;
@@ -805,20 +809,20 @@ int Build::main( int argc, char** argv )
         break;
       }
       default: {
-        Log::println();
-        printUsage();
+        printUsage( invocationName );
         return EXIT_FAILURE;
       }
     }
   }
 
-  if( optind != argc - 2 ) {
-    printUsage();
+  if( optind != argc - 2 && optind != argc - 1 ) {
+    printUsage( invocationName );
     return EXIT_FAILURE;
   }
 
   String srcDir = String::replace( argv[optind], '\\', '/' );
-  String outDir = String::replace( argv[optind + 1], '\\', '/' );
+  String outDir = optind == argc - 1 ? "share/" OZ_APPLICATION_NAME :
+                                       String::replace( argv[optind + 1], '\\', '/' );
 
   while( !srcDir.isEmpty() && srcDir.last() == '/' ) {
     srcDir = srcDir.substring( 0, srcDir.length() - 1 );

@@ -98,7 +98,7 @@ void BotClass::initClass( const Config* config )
     throw Exception( "%s: Invalid object lift. Should be >= 0.", name.cstr() );
   }
 
-  state = Bot::RUNNING_BIT;
+  state = 0;
 
   OZ_CLASS_SET_STATE( Bot::MECHANICAL_BIT, "state.mechanical", false );
 
@@ -123,7 +123,6 @@ void BotClass::initClass( const Config* config )
 
   walkMomentum      = config->get( "walkMomentum", 1.0f );
   runMomentum       = config->get( "runMomentum", 2.0f );
-  crouchMomentum    = config->get( "crouchMomentum", 1.0f );
   jumpMomentum      = config->get( "jumpMomentum", 5.0f );
 
   airControl        = config->get( "airControl", 0.025f );

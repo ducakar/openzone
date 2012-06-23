@@ -60,15 +60,14 @@ class SVector
 
       private:
 
-        /// Base class type, convenience definition to make code cleaner.
-        typedef oz::CIterator<Elem> B;
+        using oz::CIterator<Elem>::elem;
 
         /**
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
         explicit CIterator( const SVector& v ) :
-          B( v.data, v.data + v.count )
+          oz::CIterator<Elem>( v.data, v.data + v.count )
         {}
 
       public:
@@ -78,7 +77,7 @@ class SVector
          */
         OZ_ALWAYS_INLINE
         CIterator() :
-          B( null, null )
+          oz::CIterator<Elem>( null, null )
         {}
 
     };
@@ -92,15 +91,14 @@ class SVector
 
       private:
 
-        /// Base class type, convenience definition to make code cleaner.
-        typedef oz::Iterator<Elem> B;
+        using oz::Iterator<Elem>::elem;
 
         /**
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
         explicit Iterator( SVector& v ) :
-          B( v.data, v.data + v.count )
+          oz::Iterator<Elem>( v.data, v.data + v.count )
         {}
 
       public:
@@ -110,7 +108,7 @@ class SVector
          */
         OZ_ALWAYS_INLINE
         Iterator() :
-          B( null, null )
+          oz::Iterator<Elem>( null, null )
         {}
 
     };

@@ -153,7 +153,8 @@ class Shader
       explicit Light( const Point& pos, const Vec4& diffuse );
     };
 
-    static const int LOG_BUFFER_SIZE = 8192;
+    static const int  LOG_BUFFER_SIZE = 8192;
+    static const int  SAMPLER_MAP[];
 
     static char       logBuffer[LOG_BUFFER_SIZE];
 
@@ -189,6 +190,7 @@ class Shader
     int  medium;
     bool hasS3TC;
     bool hasVertexTexture;
+    bool setSamplerMap;
     bool doPostprocess;
     bool isLowDetail;
 

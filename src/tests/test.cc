@@ -24,6 +24,7 @@
 #include "oz/oz.hh"
 #include "oz/windefs.h"
 
+#include <cmath>
 #include <cstdio>
 
 using namespace oz;
@@ -79,6 +80,9 @@ struct Foo
     }
   }
 };
+
+using std::sin;
+using std::cos;
 
 int main( int, char** )
 {

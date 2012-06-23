@@ -47,8 +47,9 @@ Param     param;
 Transform tf;
 Shader    shader;
 
-char   Shader::logBuffer[LOG_BUFFER_SIZE];
-String Shader::defines;
+const int Shader::SAMPLER_MAP[] = { 0, 1, 2, 3, 4, 5 };
+char      Shader::logBuffer[LOG_BUFFER_SIZE];
+String    Shader::defines;
 
 void Transform::ortho( int width, int height )
 {
@@ -230,9 +231,8 @@ void Shader::loadProgram( int id )
 
   param = programs[id].param;
 
-  if( config.getSet( "shader.setSamplerIndices", false ) ) {
-    int textureIds[4] = { 0, 1, 2, 3 };
-    glUniform1iv( param.oz_Textures, 4, textureIds );
+  if( setSamplerMap ) {
+    glUniform1iv( param.oz_Textures, aLength( SAMPLER_MAP ), SAMPLER_MAP );
   }
 
   Mat44 bones[] = {
@@ -293,6 +293,7 @@ void Shader::init()
   Log::print( "Initialising Shader ..." );
 
   hasVertexTexture = config.getSet( "shader.vertexTexture", true );
+  setSamplerMap    = config.getSet( "shader.setSamplerMap", true );
   doPostprocess    = config.get( "render.postprocess", false );
   isLowDetail      = config.get( "render.lowDetail", false );
 

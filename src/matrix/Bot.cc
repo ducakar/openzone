@@ -519,12 +519,12 @@ void Bot::onUpdate()
         state |= CROUCHING_BIT;
       }
     }
-    if( actions & ~oldActions & ACTION_RUN ) {
-      state ^= RUNNING_BIT;
+    if( actions & ~oldActions & ACTION_WALK ) {
+      state ^= WALKING_BIT;
     }
 
     if( stamina < clazz->staminaRunDrain || life < WOUNDED_THRESHOLD * clazz->life ) {
-      state &= ~RUNNING_BIT;
+      state |= WALKING_BIT;
     }
 
     /*
@@ -723,18 +723,14 @@ void Bot::onUpdate()
 
       Vec3 desiredMomentum = move;
 
-      if( state & CROUCHING_BIT ) {
-        desiredMomentum *= clazz->crouchMomentum;
+      if( state & ( CROUCHING_BIT | WALKING_BIT ) || cargo >= 0 ) {
         step            += clazz->stepWalkInc;
-      }
-      else if( ( state & RUNNING_BIT ) && cargo < 0 ) {
-        desiredMomentum *= clazz->runMomentum;
-        stamina         -= clazz->staminaRunDrain;
-        step            += clazz->stepRunInc;
+        desiredMomentum *= clazz->walkMomentum;
       }
       else {
-        desiredMomentum *= clazz->walkMomentum;
-        step            += clazz->stepWalkInc;
+        stamina         -= clazz->staminaRunDrain;
+        step            += clazz->stepRunInc;
+        desiredMomentum *= clazz->runMomentum;
       }
 
       if( flags & ON_SLICK_BIT ) {

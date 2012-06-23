@@ -80,8 +80,7 @@ class HashString
 
       private:
 
-        /// Base class type, convenience definition to make code cleaner.
-        typedef CIteratorBase<Elem> B;
+        using CIteratorBase<Elem>::elem;
 
         const Elem* const* data;  ///< Pointer to hashtable slots.
         int                index; ///< Index of the current slot.
@@ -90,11 +89,11 @@ class HashString
          * %Iterator for the given container, points to its first element.
          */
         explicit CIterator( const HashString& t ) :
-          B( t.data[0] ), data( t.data ), index( 0 )
+          CIteratorBase<Elem>( t.data[0] ), data( t.data ), index( 0 )
         {
-          while( B::elem == null && index < SIZE - 1 ) {
+          while( elem == null && index < SIZE - 1 ) {
             ++index;
-            B::elem = data[index];
+            elem = data[index];
           }
         }
 
@@ -105,7 +104,7 @@ class HashString
          */
         OZ_ALWAYS_INLINE
         CIterator() :
-          B( null )
+          CIteratorBase<Elem>( null )
         {}
 
         /**
@@ -114,7 +113,7 @@ class HashString
         OZ_ALWAYS_INLINE
         operator const String* () const
         {
-          return &B::elem->key;
+          return &elem->key;
         }
 
         /**
@@ -123,7 +122,7 @@ class HashString
         OZ_ALWAYS_INLINE
         const String& operator * () const
         {
-          return B::elem->key;
+          return elem->key;
         }
 
         /**
@@ -132,7 +131,7 @@ class HashString
         OZ_ALWAYS_INLINE
         const String* operator -> () const
         {
-          return &B::elem->key;
+          return &elem->key;
         }
 
         /**
@@ -141,7 +140,7 @@ class HashString
         OZ_ALWAYS_INLINE
         const String& key() const
         {
-          return B::elem->key;
+          return elem->key;
         }
 
         /**
@@ -150,7 +149,7 @@ class HashString
         OZ_ALWAYS_INLINE
         const Value& value() const
         {
-          return B::elem->value;
+          return elem->value;
         }
 
         /**
@@ -158,20 +157,20 @@ class HashString
          */
         CIterator& operator ++ ()
         {
-          hard_assert( B::elem != null );
+          hard_assert( elem != null );
 
-          if( B::elem->next != null ) {
-            B::elem = B::elem->next;
+          if( elem->next != null ) {
+            elem = elem->next;
           }
           else if( index == SIZE - 1 ) {
-            B::elem = null;
+            elem = null;
           }
           else {
             do {
               ++index;
-              B::elem = data[index];
+              elem = data[index];
             }
-            while( B::elem == null && index < SIZE - 1 );
+            while( elem == null && index < SIZE - 1 );
           }
           return *this;
         }
@@ -187,8 +186,7 @@ class HashString
 
       private:
 
-        /// Base class type, convenience definition to make code cleaner.
-        typedef IteratorBase<Elem> B;
+        using IteratorBase<Elem>::elem;
 
         Elem* const* data;  ///< Pointer to hashtable slots.
         int          index; ///< Index of the current slot.
@@ -197,11 +195,11 @@ class HashString
          * %Iterator for the given container, points to its first element.
          */
         explicit Iterator( const HashString& t ) :
-          B( t.data[0] ), data( t.data ), index( 0 )
+          IteratorBase<Elem>( t.data[0] ), data( t.data ), index( 0 )
         {
-          while( B::elem == null && index < SIZE - 1 ) {
+          while( elem == null && index < SIZE - 1 ) {
             ++index;
-            B::elem = data[index];
+            elem = data[index];
           }
         }
 
@@ -212,7 +210,7 @@ class HashString
          */
         OZ_ALWAYS_INLINE
         Iterator() :
-          B( null )
+          IteratorBase<Elem>( null )
         {}
 
         /**
@@ -221,7 +219,7 @@ class HashString
         OZ_ALWAYS_INLINE
         operator const String* () const
         {
-          return &B::elem->key;
+          return &elem->key;
         }
 
         /**
@@ -230,7 +228,7 @@ class HashString
         OZ_ALWAYS_INLINE
         const String& operator * () const
         {
-          return B::elem->key;
+          return elem->key;
         }
 
         /**
@@ -239,7 +237,7 @@ class HashString
         OZ_ALWAYS_INLINE
         const String* operator -> () const
         {
-          return &B::elem->key;
+          return &elem->key;
         }
 
         /**
@@ -248,7 +246,7 @@ class HashString
         OZ_ALWAYS_INLINE
         const String& key() const
         {
-          return B::elem->key;
+          return elem->key;
         }
 
         /**
@@ -257,7 +255,7 @@ class HashString
         OZ_ALWAYS_INLINE
         const Value& value() const
         {
-          return B::elem->value;
+          return elem->value;
         }
 
         /**
@@ -266,7 +264,7 @@ class HashString
         OZ_ALWAYS_INLINE
         Value& value()
         {
-          return B::elem->value;
+          return elem->value;
         }
 
         /**
@@ -274,20 +272,20 @@ class HashString
          */
         Iterator& operator ++ ()
         {
-          hard_assert( B::elem != null );
+          hard_assert( elem != null );
 
-          if( B::elem->next != null ) {
-            B::elem = B::elem->next;
+          if( elem->next != null ) {
+            elem = elem->next;
           }
           else if( index == SIZE - 1 ) {
-            B::elem = null;
+            elem = null;
           }
           else {
             do {
               ++index;
-              B::elem = data[index];
+              elem = data[index];
             }
-            while( B::elem == null && index < SIZE - 1 );
+            while( elem == null && index < SIZE - 1 );
           }
           return *this;
         }

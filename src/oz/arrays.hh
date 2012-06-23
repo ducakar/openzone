@@ -49,12 +49,9 @@ class CIterator : public CIteratorBase<Elem>
 {
   friend CIterator citer<Elem>( const Elem* array, int count );
 
-  private:
-
-    /// Base class type, convenience definition to make code cleaner.
-    typedef CIteratorBase<Elem> B;
-
   protected:
+
+    using CIteratorBase<Elem>::elem;
 
     /// Successor of the last element, used to determine when the iterator becomes invalid.
     const Elem* past;
@@ -67,7 +64,7 @@ class CIterator : public CIteratorBase<Elem>
      */
     OZ_ALWAYS_INLINE
     explicit CIterator( const Elem* start, const Elem* past_ ) :
-      B( start ), past( past_ )
+      CIteratorBase<Elem>( start ), past( past_ )
     {}
 
   public:
@@ -77,7 +74,7 @@ class CIterator : public CIteratorBase<Elem>
      */
     OZ_ALWAYS_INLINE
     CIterator() :
-      B( null ), past( null )
+      CIteratorBase<Elem>( null ), past( null )
     {}
 
     /**
@@ -86,7 +83,7 @@ class CIterator : public CIteratorBase<Elem>
     OZ_ALWAYS_INLINE
     bool isValid() const
     {
-      return B::elem != past;
+      return elem != past;
     }
 
     /**
@@ -95,9 +92,9 @@ class CIterator : public CIteratorBase<Elem>
     OZ_ALWAYS_INLINE
     CIterator& operator ++ ()
     {
-      hard_assert( B::elem != past );
+      hard_assert( elem != past );
 
-      ++B::elem;
+      ++elem;
       return *this;
     }
 
@@ -119,12 +116,9 @@ class Iterator : public IteratorBase<Elem>
 {
   friend Iterator iter<Elem>( Elem* array, int count );
 
-  private:
-
-    /// Base class type, convenience definition to make code cleaner.
-    typedef IteratorBase<Elem> B;
-
   protected:
+
+    using IteratorBase<Elem>::elem;
 
     /// Successor of the last element, used to determine when the iterator becomes invalid.
     const Elem* past;
@@ -137,7 +131,7 @@ class Iterator : public IteratorBase<Elem>
      */
     OZ_ALWAYS_INLINE
     explicit Iterator( Elem* start, const Elem* past_ ) :
-      B( start ), past( past_ )
+      IteratorBase<Elem>( start ), past( past_ )
     {}
 
   public:
@@ -147,7 +141,7 @@ class Iterator : public IteratorBase<Elem>
      */
     OZ_ALWAYS_INLINE
     Iterator() :
-      B( null ), past( null )
+      IteratorBase<Elem>( null ), past( null )
     {}
 
     /**
@@ -156,7 +150,7 @@ class Iterator : public IteratorBase<Elem>
     OZ_ALWAYS_INLINE
     bool isValid() const
     {
-      return B::elem != past;
+      return elem != past;
     }
 
     /**
@@ -165,9 +159,9 @@ class Iterator : public IteratorBase<Elem>
     OZ_ALWAYS_INLINE
     Iterator& operator ++ ()
     {
-      hard_assert( B::elem != past );
+      hard_assert( elem != past );
 
-      ++B::elem;
+      ++elem;
       return *this;
     }
 

@@ -14,10 +14,6 @@ Source2:        openzone-data-openzone-%{version}.tar.xz
 Requires:       %{name}-client = %{version}
 Requires:       %{name}-data = %{version}
 
-%define         shared_liboz 0
-
-%if %{shared_liboz}
-
 %package -n liboz
 Summary:        OpenZone core library
 License:        zlib
@@ -28,8 +24,6 @@ Summary:        Headers and documentation for OpenZone core library
 License:        zlib
 Group:          Development/Libraries
 Requires:       liboz = %{version}
-
-%endif
 
 %package client
 Summary:        Simple cross-platform FPS/RTS game engine
@@ -57,8 +51,6 @@ simulated world.
 This package only includes engine and essential data needed for engine to run.
 Game data and missions packages must be installed separately.
 
-%if %{shared_liboz}
-
 %description -n liboz
 Library provides facilities like container templates, array utilities,
 string class, memory manager with memory leak tracing, crash handlers,
@@ -70,8 +62,6 @@ Library is primarily intended for use in OpenZone game engine.
 %description -n liboz-devel
 This package contains doxygen-generated documentation, header files and
 pkg-config configuration needed for develipment using liboz.
-
-%endif
 
 %description client
 OpenZone is a relatively simple cross-platform game engine, suitable for FPS,
@@ -102,7 +92,7 @@ mkdir -p build && cd build
 cmake \
   -D CMAKE_BUILD_TYPE=RelWithDebInfo \
   -D CMAKE_INSTALL_PREFIX=/usr \
-  -D OZ_SHARED_LIBOZ=%{shared_liboz} \
+  -D OZ_SHARED_LIBOZ=1 \
   ..
 
 make %{?_smp_mflags} doc
@@ -117,16 +107,8 @@ make install DESTDIR=$RPM_BUILD_ROOT
 install -Dm644 %{_builddir}/ozbase.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/ozbase.zip
 install -Dm644 %{_builddir}/openzone.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/openzone.zip
 
-%if !%{shared_liboz}
-rm -rf $RPM_BUILD_ROOT/%{_includedir}/oz
-rm -rf $RPM_BUILD_ROOT/%{_libdir}/liboz.a
-rm -rf $RPM_BUILD_ROOT/%{_libdir}/pkgconfig
-%endif
-
 %files
 %defattr(-, root, root)
-
-%if %{shared_liboz}
 
 %files -n liboz
 %defattr(-, root, root)
@@ -138,8 +120,6 @@ rm -rf $RPM_BUILD_ROOT/%{_libdir}/pkgconfig
 %{_includedir}/oz
 %{_libdir}/pkgconfig
 %doc AUTHORS src/oz/COPYING doc/doxygen.liboz/html
-
-%endif
 
 %files client
 %defattr(-, root, root)

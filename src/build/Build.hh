@@ -32,7 +32,7 @@ class Build
 {
   private:
 
-    void printUsage();
+    void printUsage( const char* invocationName );
 
     void copyFiles( const char* srcDir, const char* destDir, const char* ext, bool recurse );
     void buildTextures( const char* srcDir, const char* destDir, bool wrap,

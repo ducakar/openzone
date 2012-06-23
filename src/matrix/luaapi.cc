@@ -126,7 +126,7 @@ void importMatrixConstants( lua_State* l )
 
   registerLuaConstant( l, "OZ_BOT_MOVING_BIT",              Bot::MOVING_BIT );
   registerLuaConstant( l, "OZ_BOT_CROUCHING_BIT",           Bot::CROUCHING_BIT );
-  registerLuaConstant( l, "OZ_BOT_RUNNING_BIT",             Bot::RUNNING_BIT );
+  registerLuaConstant( l, "OZ_BOT_WALKING_BIT",             Bot::WALKING_BIT );
   registerLuaConstant( l, "OZ_BOT_ATTACKING_BIT",           Bot::ATTACKING_BIT );
 
   registerLuaConstant( l, "OZ_BOT_JUMP_SCHED_BIT",          Bot::JUMP_SCHED_BIT );
@@ -158,7 +158,7 @@ void importMatrixConstants( lua_State* l )
   registerLuaConstant( l, "OZ_ACTION_LEFT",                 Bot::ACTION_LEFT );
   registerLuaConstant( l, "OZ_ACTION_JUMP",                 Bot::ACTION_JUMP );
   registerLuaConstant( l, "OZ_ACTION_CROUCH",               Bot::ACTION_CROUCH );
-  registerLuaConstant( l, "OZ_ACTION_RUN",                  Bot::ACTION_RUN );
+  registerLuaConstant( l, "OZ_ACTION_WALK",                 Bot::ACTION_WALK );
   registerLuaConstant( l, "OZ_ACTION_ATTACK",               Bot::ACTION_ATTACK );
   registerLuaConstant( l, "OZ_ACTION_EXIT",                 Bot::ACTION_EXIT );
   registerLuaConstant( l, "OZ_ACTION_EJECT",                Bot::ACTION_EJECT );

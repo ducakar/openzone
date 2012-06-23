@@ -399,12 +399,17 @@ void Config::removeUnused()
 void Config::clear( bool issueWarnings )
 {
   if( issueWarnings ) {
+    bool verboseMode = Log::verboseMode;
+    Log::verboseMode = false;
+
     foreach( var, vars.citer() ) {
       if( !var.value().isUsed ) {
         Log::println( "%s: unused variable '%s'", filePath.cstr(), var.key().cstr() );
         System::bell();
       }
     }
+
+    Log::verboseMode = verboseMode;
   }
 
   vars.clear();

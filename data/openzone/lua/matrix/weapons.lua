@@ -84,11 +84,11 @@ function chaingun_onShot( l )
 
   local pX, pY, pZ = ozBotGetEyePos()
   local vX, vY, vZ = ozBotGetDir()
-  local dX, dY, dZ = 4 - math.random() * 8,
-                     4 - math.random() * 8,
-                     4 - math.random() * 8
+  local dX, dY, dZ = 2 - math.random() * 4,
+                     2 - math.random() * 4,
+                     2 - math.random() * 4
 
-  ozOrbisAddFrag( OZ_FORCE, "chaingunBullet", pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ );
+  ozOrbisAddFrag( OZ_FORCE, "chaingunBullet", pX, pY, pZ, vX * 250 + dX, vY * 250 + dY, vZ * 250 + dZ );
 end
 
 function grenadeLauncher_onShot( l )

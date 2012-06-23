@@ -35,27 +35,27 @@ namespace client
 
 const MD2::AnimInfo MD2::ANIM_LIST[] =
 {
-  // first, last, frameTime (1.0 / fps), nextAnim
-  {   0,  39, 1.0f /  9.0f, ANIM_STAND         }, // STAND
-  {  40,  45, 1.0f / 10.0f, ANIM_RUN           }, // RUN
-  {  46,  53, 1.0f / 16.0f, ANIM_NONE          }, // ATTACK
-  {  54,  57, 1.0f /  7.0f, ANIM_STAND         }, // PAIN_A
-  {  58,  61, 1.0f /  7.0f, ANIM_STAND         }, // PAIN_B
-  {  62,  65, 1.0f /  7.0f, ANIM_STAND         }, // PAIN_C
-  {  67,  67, 1.0f /  9.0f, ANIM_NONE          }, // JUMP
-  {  72,  83, 1.0f /  7.0f, ANIM_STAND         }, // FLIP
-  {  84,  94, 1.0f /  7.0f, ANIM_STAND         }, // SALUTE
-  {  95, 111, 1.0f / 10.0f, ANIM_STAND         }, // WAVE
-  { 112, 122, 1.0f /  7.0f, ANIM_STAND         }, // FALLBACK
-  { 123, 134, 1.0f /  6.0f, ANIM_STAND         }, // POINT
-  { 135, 153, 1.0f / 10.0f, ANIM_CROUCH_STAND  }, // CROUCH_STAND
-  { 154, 159, 1.0f /  7.0f, ANIM_CROUCH_WALK   }, // CROUCH_WALK
-  { 160, 168, 1.0f / 18.0f, ANIM_CROUCH_ATTACK }, // CROUCH_ATTACK
-  { 169, 172, 1.0f /  7.0f, ANIM_CROUCH_STAND  }, // CROUCH_PAIN
-  { 173, 177, 1.0f /  5.0f, ANIM_NONE          }, // CROUCH_DEATH
-  { 178, 183, 1.0f /  7.0f, ANIM_NONE          }, // DEATH_FALLBACK
-  { 184, 189, 1.0f /  7.0f, ANIM_NONE          }, // DEATH_FALLFORWARD
-  { 190, 197, 1.0f /  7.0f, ANIM_NONE          }  // DEATH_FALLBACKSLOW
+  // first, last, frequency (FPS), nextAnim
+  {   0,  39,  9.0f, ANIM_STAND         }, // STAND
+  {  40,  45, 10.0f, ANIM_RUN           }, // RUN
+  {  46,  53, 16.0f, ANIM_NONE          }, // ATTACK
+  {  54,  57,  7.0f, ANIM_STAND         }, // PAIN_A
+  {  58,  61,  7.0f, ANIM_STAND         }, // PAIN_B
+  {  62,  65,  7.0f, ANIM_STAND         }, // PAIN_C
+  {  67,  67,  9.0f, ANIM_NONE          }, // JUMP
+  {  72,  83,  7.0f, ANIM_STAND         }, // FLIP
+  {  84,  94,  7.0f, ANIM_STAND         }, // SALUTE
+  {  95, 111, 10.0f, ANIM_STAND         }, // WAVE
+  { 112, 122,  7.0f, ANIM_STAND         }, // FALLBACK
+  { 123, 134,  6.0f, ANIM_STAND         }, // POINT
+  { 135, 153, 10.0f, ANIM_CROUCH_STAND  }, // CROUCH_STAND
+  { 154, 159,  7.0f, ANIM_CROUCH_WALK   }, // CROUCH_WALK
+  { 160, 168, 18.0f, ANIM_CROUCH_ATTACK }, // CROUCH_ATTACK
+  { 169, 172,  7.0f, ANIM_CROUCH_STAND  }, // CROUCH_PAIN
+  { 173, 177,  5.0f, ANIM_NONE          }, // CROUCH_DEATH
+  { 178, 183,  7.0f, ANIM_NONE          }, // DEATH_FALLBACK
+  { 184, 189,  7.0f, ANIM_NONE          }, // DEATH_FALLFORWARD
+  { 190, 197,  7.0f, ANIM_NONE          }  // DEATH_FALLBACKSLOW
 };
 
 Vertex MD2::animBuffer[MAX_VERTS];
@@ -66,10 +66,8 @@ MD2::AnimType MD2::AnimState::extractAnim() const
                          null : static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
   if( bot->state & Bot::DEAD_BIT ) {
-    if( type == ANIM_DEATH_FALLBACK || type == ANIM_DEATH_FALLBACKSLOW ||
-        type == ANIM_DEATH_FALLFORWARD )
-    {
-      return type;
+    if( ANIM_DEATH_FALLBACK <= currType && currType <= ANIM_DEATH_FALLBACKSLOW ) {
+      return nextType;
     }
     else {
       return AnimType( ANIM_DEATH_FALLBACK + Math::rand( 3 ) );
@@ -79,7 +77,7 @@ MD2::AnimType MD2::AnimState::extractAnim() const
     return ANIM_CROUCH_STAND;
   }
   else if( ( bot->actions & Bot::ACTION_JUMP ) &&
-    !( bot->state & ( Bot::GROUNDED_BIT | Bot::CLIMBING_BIT ) ) )
+           !( bot->state & ( Bot::GROUNDED_BIT | Bot::CLIMBING_BIT ) ) )
   {
     return ANIM_JUMP;
   }
@@ -98,100 +96,102 @@ MD2::AnimType MD2::AnimState::extractAnim() const
     else if( bot->state & Bot::CROUCHING_BIT ) {
       return ANIM_CROUCH_STAND;
     }
-    else if( bot->state & Bot::GESTURE_POINT_BIT ) {
-      return ANIM_POINT;
-    }
-    else if( bot->state & Bot::GESTURE_BACK_BIT ) {
-      return ANIM_FALLBACK;
-    }
-    else if( bot->state & Bot::GESTURE_SALUTE_BIT ) {
-      return ANIM_SALUTE;
-    }
-    else if( bot->state & Bot::GESTURE_WAVE_BIT ) {
-      return ANIM_WAVE;
-    }
-    else if( bot->state & Bot::GESTURE_FLIP_BIT ) {
-      return ANIM_FLIP;
+    else if( bot->state & Bot::GESTURE_MASK ) {
+      if( bot->state & Bot::GESTURE_POINT_BIT ) {
+        return ANIM_POINT;
+      }
+      else if( bot->state & Bot::GESTURE_BACK_BIT ) {
+        return ANIM_FALLBACK;
+      }
+      else if( bot->state & Bot::GESTURE_SALUTE_BIT ) {
+        return ANIM_SALUTE;
+      }
+      else if( bot->state & Bot::GESTURE_WAVE_BIT ) {
+        return ANIM_WAVE;
+      }
+      else {
+        return ANIM_FLIP;
+      }
     }
   }
-  return bot->state & Bot::CROUCHING_BIT ? ANIM_CROUCH_STAND : ANIM_STAND;
+
+  if( ANIM_FLIP <= currType && currType <= ANIM_POINT ) {
+    return nextType;
+  }
+  else {
+    return bot->state & Bot::CROUCHING_BIT ? ANIM_CROUCH_STAND : ANIM_STAND;
+  }
 }
 
 MD2::AnimState::AnimState( const Bot* bot_ ) :
-  bot( bot_ ), type( ANIM_STAND ), nextType( ANIM_STAND )
+  bot( bot_ ), nextType( ANIM_STAND ), frameRatio( 0.0f )
 {
-  set( ANIM_STAND );
+  setAnim();
 
-  currFrame  = lastFrame;
-  nextFrame  = lastFrame;
+  currFrame = lastFrame;
+  nextFrame = lastFrame;
 }
 
-void MD2::AnimState::set( AnimType newType )
+void MD2::AnimState::setAnim()
 {
-  type       = newType;
-  nextType   = ANIM_LIST[type].nextType;
-  firstFrame = ANIM_LIST[type].firstFrame;
-  lastFrame  = ANIM_LIST[type].lastFrame;
-  nextFrame  = min( firstFrame + 1, lastFrame );
-  frameTime  = ANIM_LIST[type].frameTime;
-  currTime   = 0.0f;
+  currType   = nextType;
+  firstFrame = ANIM_LIST[nextType].firstFrame;
+  lastFrame  = ANIM_LIST[nextType].lastFrame;
+  frameFreq  = ANIM_LIST[nextType].frameFreq;
 }
 
 void MD2::AnimState::advance()
 {
-  nextType = extractAnim();
+  AnimType inferredType = extractAnim();
 
-  currTime += timer.frameTime;
+  if( inferredType == ANIM_RUN || inferredType == ANIM_CROUCH_WALK ) {
+    const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-  while( currTime > frameTime ) {
-    currTime -= frameTime;
+    float nFrames = float( lastFrame - firstFrame + 1 );
+    float stepInc = clazz->stepRunInc;
+
+    if( ( bot->state & ( Bot::CROUCHING_BIT | Bot::WALKING_BIT ) ) || bot->cargo >= 0 ) {
+      stepInc = clazz->stepWalkInc;
+    }
+
+    frameFreq = nFrames * stepInc / Timer::TICK_TIME;
+  }
+
+  frameRatio += timer.frameTime * frameFreq;
+
+  if( frameRatio >= 1.0f ) {
+    currType  = nextType;
+    nextType  = inferredType;
     currFrame = nextFrame;
 
-    if( ( type == ANIM_RUN || type == ANIM_CROUCH_WALK ) &&
-        ( nextType == ANIM_RUN || nextType == ANIM_CROUCH_WALK ) )
-    {
-      const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
+    do {
+      frameRatio -= 1.0f;
 
-      int   nFrames = lastFrame - firstFrame + 1;
-      float frame   = bot->step * float( nFrames );
-      float stepInc = ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT ) ) == Bot::RUNNING_BIT ?
-                      clazz->stepRunInc : clazz->stepWalkInc;
-
-      currFrame = firstFrame + int( frame + 0.0f ) % nFrames;
-      nextFrame = firstFrame + int( frame + 1.0f ) % nFrames;
-      frameTime = Timer::TICK_TIME / ( float( nFrames ) * stepInc );
-    }
-    else if( ( type == ANIM_ATTACK && nextType == ANIM_ATTACK ) ||
-             ( type == ANIM_CROUCH_ATTACK && nextType == ANIM_CROUCH_ATTACK ) )
-    {
-      if( bot->weapon < 0 ) {
-        goto normalAnim;
+      if( inferredType != currType ) {
+        nextType = inferredType;
+        setAnim();
+        nextFrame = firstFrame;
       }
-
-      const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
-      if( weapon == null ) {
-        goto normalAnim;
+      else if( firstFrame <= nextFrame && nextFrame < lastFrame ) {
+        ++nextFrame;
       }
+      else {
+        AnimType newType = ANIM_LIST[currType].nextType;
 
-      const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
-
-      int   nFrames = lastFrame - firstFrame + 1;
-      float frame   = weapon->shotTime / clazz->shotInterval * float( nFrames );
-
-      nextFrame = firstFrame + int( frame + 1.0f ) % nFrames;
-      frameTime = clazz->shotInterval / float( nFrames );
+        if( newType == currType ) {
+          nextFrame = firstFrame;
+        }
+        else if( newType != ANIM_NONE ) {
+          nextType = newType;
+          setAnim();
+          nextFrame = firstFrame;
+        }
+      }
     }
-    else if( nextType == ANIM_NONE ) {
-      nextFrame = min( nextFrame + 1, lastFrame );
-    }
-    else if( nextType == type ) {
-    normalAnim:
-      nextFrame = nextFrame == lastFrame ? firstFrame : nextFrame + 1;
-    }
-    else {
-      set( nextType );
-    }
+    while( frameRatio >= 1.0f );
   }
+
+  hard_assert( 0.0f <= frameRatio && frameRatio < 1.0f );
 }
 
 MD2::MD2( int id_ ) :
@@ -342,7 +342,7 @@ void MD2::draw( const AnimState* anim ) const
     glUniform3f( param.oz_MD2Anim,
                  float( anim->currFrame ) / float( nFrames ),
                  float( anim->nextFrame ) / float( nFrames ),
-                 anim->currTime / anim->frameTime );
+                 anim->frameRatio );
   }
   else {
     const Point* currFramePositions = &positions[anim->currFrame * nFramePositions];
@@ -350,13 +350,11 @@ void MD2::draw( const AnimState* anim ) const
     const Vec3*  currFrameNormals   = &normals[anim->currFrame * nFramePositions];
     const Vec3*  nextFrameNormals   = &normals[anim->nextFrame * nFramePositions];
 
-    float t = anim->currTime / anim->frameTime;
-
     for( int i = 0; i < nFrameVertices; ++i ) {
       int j = int( vertices[i].pos[0] * float( nFramePositions - 1 ) + 0.5f );
 
-      Point pos    = Math::mix( currFramePositions[j], nextFramePositions[j], t );
-      Vec3  normal = Math::mix( currFrameNormals[j],   nextFrameNormals[j],   t );
+      Point pos    = Math::mix( currFramePositions[j], nextFramePositions[j], anim->frameRatio );
+      Vec3  normal = Math::mix( currFrameNormals[j],   nextFrameNormals[j],   anim->frameRatio );
 
       animBuffer[i].pos[0] = pos.x;
       animBuffer[i].pos[1] = pos.y;

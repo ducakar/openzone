@@ -1,6 +1,5 @@
 - MD2 animation issues: strange run animation on suboptimal frame rates, gestures are not played
-  completely, death loops ...
-- External camera rotation for vehicle is not sync'ed with bot (because relative to vehicle).
+  completely, death animation loops ...
 - MD3 builder uses some uninitialised data, sometimes generates broken models.
 - NaCl port doesn't render anything.
 - When building textures with Mesa 8.0.0 through 8.0.2 and S3 texture compression turned on, mipmaps
