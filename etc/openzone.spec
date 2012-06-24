@@ -132,7 +132,8 @@ install -Dm644 %{_builddir}/openzone.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/op
 
 %files tools
 %defattr(-, root, root)
-%{_bindir}/ozbuild
+%{_bindir}/ozBuild
+%{_bindir}/ozGettext
 %doc AUTHORS COPYING
 
 %files data

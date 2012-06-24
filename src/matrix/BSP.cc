@@ -192,8 +192,7 @@ void BSP::load()
     models[i].mins        = is.readPoint();
     models[i].maxs        = is.readPoint();
 
-    models[i].name        = is.readString();
-    models[i].title       = lingua.get( models[i].name );
+    models[i].title       = lingua.get( is.readString() );
     models[i].bsp         = this;
     models[i].move        = is.readVec3();
 

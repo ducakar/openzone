@@ -253,7 +253,7 @@ void BSP::load()
       keyBuffer[6] = char( '0' + i % 10 );
       String keyName = keyBuffer;
 
-      models[i].name = bspConfig.get( keyName + ".name", "" );
+      models[i].title = bspConfig.get( keyName + ".title", "" );
 
       models[i].move.x = bspConfig.get( keyName + ".move.x", 0.0f );
       models[i].move.y = bspConfig.get( keyName + ".move.y", 0.0f );
@@ -1085,7 +1085,7 @@ void BSP::saveMatrix()
     os.writePoint( models[i].mins );
     os.writePoint( models[i].maxs );
 
-    os.writeString( models[i].name );
+    os.writeString( models[i].title );
     os.writeVec3( models[i].move );
 
     os.writeInt( models[i].firstBrush );

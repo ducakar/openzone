@@ -64,7 +64,7 @@ class VehicleClass : public DynamicClass
     float  fuelConsumption;
 
     int    nWeapons;
-    String weaponNames[MAX_WEAPONS];
+    String weaponTitles[MAX_WEAPONS];
     String onShot[MAX_WEAPONS];
     int    nRounds[MAX_WEAPONS];
     float  shotInterval[MAX_WEAPONS];

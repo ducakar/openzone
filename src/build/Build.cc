@@ -820,9 +820,14 @@ int Build::main( int argc, char** argv )
     return EXIT_FAILURE;
   }
 
+#ifdef _WIN32
   String srcDir = String::replace( argv[optind], '\\', '/' );
   String outDir = optind == argc - 1 ? "share/" OZ_APPLICATION_NAME :
                                        String::replace( argv[optind + 1], '\\', '/' );
+#else
+  String srcDir = argv[optind];
+  String outDir = optind == argc - 1 ? "share/" OZ_APPLICATION_NAME : argv[optind + 1];
+#endif
 
   while( !srcDir.isEmpty() && srcDir.last() == '/' ) {
     srcDir = srcDir.substring( 0, srcDir.length() - 1 );

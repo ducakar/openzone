@@ -25,7 +25,6 @@
 
 #include "oz/oz.hh"
 
-#include <cstdio>
 #include <cstdlib>
 
 static const int   RATE      = 11025;
@@ -37,7 +36,7 @@ using namespace oz;
 
 int main( int, char** )
 {
-  printf(
+  Log::printRaw(
     "/*\n"
     " * Sine wave at %g Hz with square root attenuation, lasting %g s.\n"
     " * U8 mono %d Hz, %d samples.\n"
@@ -51,20 +50,20 @@ int main( int, char** )
     float amplitude = Math::sqrt( float( SAMPLES - 1 - i ) / float( SAMPLES - 1 ) );
     ubyte sample    = ubyte( ( 1.0f + amplitude * value ) * 128.0f + 0.5f );
 
-    printf( "%3d", sample );
+    Log::printRaw( "%3d", sample );
 
     if( i != SAMPLES - 1 ) {
-      printf( "," );
+      Log::printRaw( "," );
 
       if( i % COLS == COLS - 1 ) {
-        printf( "\n" );
+        Log::println();
       }
       else {
-        printf( " " );
+        Log::printRaw( " " );
       }
     }
   }
-  printf( "\n" );
+  Log::println();
 
   return EXIT_SUCCESS;
 }

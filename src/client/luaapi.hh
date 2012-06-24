@@ -209,6 +209,8 @@ static int ozCameraSwitchTo( lua_State* l )
   ARG( 1 );
   BOT_INDEX( l_toint( 1 ) );
 
+  camera.rotateTo( Quat::rotationZXZ( bot->h, bot->v, 0.0f ) );
+  camera.moveTo( Point( bot->p.x, bot->p.y, bot->p.z + bot->camZ ) );
   camera.setBot( bot );
   camera.setState( Camera::UNIT );
   return 0;
