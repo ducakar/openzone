@@ -291,10 +291,10 @@ if( OZ_STANDALONE )
 
   if( WIN32 )
     install( FILES support/openzone.bat COMPONENT client DESTINATION . )
-    install( FILES support/ozbuild.bat COMPONENT tools DESTINATION . )
+    install( FILES support/ozBuild.bat COMPONENT tools DESTINATION . )
   else()
     install( FILES support/openzone.sh COMPONENT client DESTINATION . )
-    install( FILES support/ozbuild.sh COMPONENT tools DESTINATION . )
+    install( FILES support/ozBuild.sh COMPONENT tools DESTINATION . )
   endif()
 endif()
 
@@ -313,7 +313,7 @@ set( CPACK_SYSTEM_NAME "${OZ_SYSTEM_NAME}" )
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING" )
 set( CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/doc/README.html" )
 set( CPACK_PACKAGE_EXECUTABLES "bin/openzone" "OpenZone" ) # start menu entry
-set( CPACK_STRIP_FILES "bin/openzone;bin/ozbuild" )
+set( CPACK_STRIP_FILES "bin/openzone;bin/ozBuild" )
 set( CPACK_PACKAGE_INSTALL_DIRECTORY "${OZ_APPLICATION_NAME}" )
 set( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "${OZ_APPLICATION_NAME}" )
 

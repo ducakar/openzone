@@ -296,7 +296,7 @@ void HudArea::drawVehicleStatus()
     for( int i = 0; i < vehClazz->nWeapons; ++i ) {
       int labelIndex = vehClazz->nWeapons - i - 1;
 
-      vehicleWeaponNames[labelIndex].setText( "%s", vehClazz->weaponNames[i].cstr() );
+      vehicleWeaponNames[labelIndex].setText( "%s", vehClazz->weaponTitles[i].cstr() );
     }
   }
 

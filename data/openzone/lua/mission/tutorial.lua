@@ -50,25 +50,38 @@ function onCreate()
   local infoSwim = ozOrbisAddObj( OZ_FORCE, "datacube", oX + 4, oY + 5, oZ + 2 )
   local infoStamina = ozOrbisAddObj( OZ_FORCE, "datacube", oX + 2, oY - 7, oZ + 2 )
 
-  ozNirvanaAddMemo( infoMove,
-    ozGettext( "1. MOVEMENT\n\nUse W, A, S, D to move and mouse to look around.\n\nYou can jump with SPACEBAR, toggle crouch with LCTRL and toggle running with LSHIFT.\n\nIf you crouch you are a bit lower, so you can go under some obstacles, but you cannot run." )
-  )
+  ozNirvanaAddMemo( infoMove, ozGettext(
+    "1. MOVEMENT\n\n" ..
+    "Use W, A, S, D to move and mouse to look around.\n\n" ..
+    "You can jump with SPACEBAR, toggle crouch with LCTRL and toggle running with LSHIFT.\n\n" ..
+    "If you crouch you are a bit lower, so you can go under some obstacles, but you cannot run." ) )
 
-  ozNirvanaAddMemo( infoClimb,
-    ozGettext( "2. LEDGE CLIMBING\n\nYou can climb on a ledge if you hold SPACEBAR and W simultaneously." )
-  )
+  ozNirvanaAddMemo( infoClimb, ozGettext(
+    "2. LEDGE CLIMBING\n\n" ..
+    "You can climb on a ledge if you hold SPACEBAR and W simultaneously." ) )
 
-  ozNirvanaAddMemo( infoLadder,
-    ozGettext( "3. LADDERS\n\nTo move up or down a ladder just look in the desired direction while you are touching the ladder.\n\nIf you move away from the ladder, you will fall from it.\n\nBe careful when you want to go down the ladder. Approach the ladder slowly or you may miss it and fall.\n\nNote that you cannot climb a ladder when you are carrying some object in your hands." )
-  )
+  ozNirvanaAddMemo( infoLadder, ozGettext(
+    "3. LADDERS\n\n" ..
+    "To move up or down a ladder just look in the desired direction while you are touching the " ..
+    "ladder.\n\n" ..
+    "If you move away from the ladder, you will fall from it.\n\n" ..
+    "Be careful when you want to go down the ladder. Approach the ladder slowly or you may miss " ..
+    "it and fall.\n\n" ..
+    "Note that you cannot climb a ladder when you are carrying some object in your hands." ) )
 
-  ozNirvanaAddMemo( infoSwim,
-    ozGettext( "4. SWIMMING\n\nFor swimming you use the same controls as for basic movement.\n\nTo dive, just look down and move forwards. You must only watch that you are running (and not crouching), as you must swim fast enough to dive." )
-  )
+  ozNirvanaAddMemo( infoSwim, ozGettext(
+    "4. SWIMMING\n\n" ..
+    "For swimming you use the same controls as for basic movement.\n\n" ..
+    "To dive, just look down and move forwards. You must only watch that you are running (and " ..
+    "not crouching), as you must swim fast enough to dive." ) )
 
-  ozNirvanaAddMemo( infoStamina,
-    ozGettext( "5. STAMINA\n\nYou probably noticed the blue bar in bottom left corner starts to drain if you are running, jumping, climbing, throwing objects or swimming under water. That is you stamina. If it runs out, you are not able to perform those actions any more.\n\nBe careful it doesn't run out while you are under water or you will start to drawn.\n\nYour stamina is restoring while you are still or walking." )
-  )
+  ozNirvanaAddMemo( infoStamina, ozGettext(
+    "5. STAMINA\n\n" ..
+    "You probably noticed the blue bar in bottom left corner starts to drain if you are " ..
+    "running, jumping, climbing, throwing objects or swimming under water. That is you stamina. " ..
+    "If it runs out, you are not able to perform those actions any more.\n\n" ..
+    "Be careful it doesn't run out while you are under water or you will start to drawn.\n\n" ..
+    "Your stamina is restoring while you are still or walking." ) )
 
   local oX, oY, oZ = 60, -92, 69.7
   ozOrbisAddStr( OZ_FORCE, "tutorial_carrying", oX, oY, oZ, OZ_WEST )
@@ -86,17 +99,31 @@ function onCreate()
   local infoCarry = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 4, oY - 2.5, oZ - 2.5 )
   local infoWaterPush = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 6, oY, oZ + 1.5 )
 
-  ozNirvanaAddMemo( infoPush,
-    ozGettext( "6. PUSHING\n\nYou can push around many object you see. It's also possible to push them to the side if you don't walk into them directly, but slightly to one side (diagonally)." )
-  )
+  ozNirvanaAddMemo( infoPush, ozGettext(
+    "6. PUSHING\n\n" ..
+    "You can push around many object you see. It's also possible to push them to the side if " ..
+    "you don't walk into them directly, but slightly to one side (diagonally)." ) )
 
-  ozNirvanaAddMemo( infoCarry,
-    ozGettext( "7. CARRYING\n\nYou can also carry around objects that you are strong enough to lift. Press middle mouse button to lift/drop an object when you see the 'lift' or 'carrying' icon under your crosshair. To throw the object you are carrying roll your mouse weel up.\n\nThere are some limitations though. E.g. you cannot lift objects while swimming, climbing a ladder or holding a weapon. You also cannot lift somebody who is already carrying something and you cannot run while carrying an object.\n\nThe object you carry will fall from your hands if you jump of if it touches some other object above (so you cannot carry several objects stacked on one another).\n\nIf somebody else carries you, you can free yourself with jumping.\n\nNow use the available boxes to get to the next room." )
-  )
+  ozNirvanaAddMemo( infoCarry, ozGettext(
+    "7. CARRYING\n\n" ..
+    "You can also carry around objects that you are strong enough to lift. Press middle mouse " ..
+    "button to lift/drop an object when you see the 'lift' or 'carrying' icon under your " ..
+    "crosshair. To throw the object you are carrying roll your mouse weel up.\n\n" ..
+    "There are some limitations though. E.g. you cannot lift objects while swimming, climbing a " ..
+    "ladder or holding a weapon. You also cannot lift somebody who is already carrying " ..
+    "something and you cannot run while carrying an object.\n\n" ..
+    "The object you carry will fall from your hands if you jump of if it touches some other " ..
+    "object above (so you cannot carry several objects stacked on one another).\n\n" ..
+    "If somebody else carries you, you can free yourself with jumping.\n\n" ..
+    "Now use the available boxes to get to the next room." ) )
 
-  ozNirvanaAddMemo( infoWaterPush,
-    ozGettext( "8. PUSHING IN WATER\n\nYou will need a create from the previous room for this one. Bring it here, throw it in the water and push it under water to the other side. There you will need the crate to jump on it to climb on a ledge.\n\nYou can also push an object upwards or downwards with side-pushing while the object is in the water." )
-  )
+  ozNirvanaAddMemo( infoWaterPush, ozGettext(
+    "8. PUSHING IN WATER\n\n" ..
+    "You will need a create from the previous room for this one. Bring it here, throw it in the " ..
+    "water and push it under water to the other side. There you will need the crate to jump on " ..
+    "it to climb on a ledge.\n\n" ..
+    "You can also push an object upwards or downwards with side-pushing while the object is in " ..
+    "the water." ) )
 
   local oX, oY, oZ = 82, -55, 69.5
   ozOrbisAddStr( OZ_FORCE, "forum", oX, oY, oZ, OZ_NORTH )
@@ -118,38 +145,69 @@ function onCreate()
   local infoSpecial = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 4, oY + 4, oZ - 1 )
   local infoSaving = ozOrbisAddObj( OZ_FORCE, "datacube", oX + 4, oY + 3, oZ - 1 )
 
-  ozNirvanaAddMemo( infoUI,
-    ozGettext( "9. USER INTERFACE\n\nUse TAB key to toggle between freelook and UI mode. In UI mode you see several other windows (depending on situation) and manage your inventory.\n\nYou can still look around in UI mode by pushing mouse cursor into edges of the screen.\n\nWindows can be dragged around with left mouse button while holding the ALT key." )
-  )
+  ozNirvanaAddMemo( infoUI, ozGettext(
+    "9. USER INTERFACE\n\n" ..
+    "Use TAB key to toggle between freelook and UI mode. In UI mode you see several other " ..
+    "windows (depending on situation) and manage your inventory.\n\n" ..
+    "You can still look around in UI mode by pushing mouse cursor into edges of the screen.\n\n" ..
+    "Windows can be dragged around with left mouse button while holding the ALT key." ) )
 
-  ozNirvanaAddMemo( infoItem,
-    ozGettext( "10. INVENTORY\n\nIf you see a blue hand icon right to your crosshair, it means you can activate the object with right click.\n\nPurple icon left to your crosshair means the item can be put into your inventory if you roll mouse wheel down. You can only put items into your inventory if you have enough room.\n\nBy left clicking an item in you inventory interface you will drop it and with middle click you will start to carry it like boxes in previous tutorial. For both actions you need enough room in front of you.\n\nYou can still activate items while they are in your inventory (blue hand is shown at the bottom of inventory window if the selected item can be activated)." )
-  )
+  ozNirvanaAddMemo( infoItem, ozGettext(
+    "10. INVENTORY\n\n" ..
+    "If you see a blue hand icon right to your crosshair, it means you can activate the object " ..
+    "with right click.\n\n" ..
+    "Purple icon left to your crosshair means the item can be put into your inventory if you " ..
+    "roll mouse wheel down. You can only put items into your inventory if you have enough " ..
+    "room.\n\n" ..
+    "By left clicking an item in you inventory interface you will drop it and with middle click " ..
+    "you will start to carry it like boxes in previous tutorial. For both actions you need " ..
+    "enough room in front of you.\n\n" ..
+    "You can still activate items while they are in your inventory (blue hand is shown at the " ..
+    "bottom of inventory window if the selected item can be activated)." ) )
 
-  ozNirvanaAddMemo( infoExchange,
-    ozGettext( "11. TRANSFER BETWEEN INVENTORIES\n\nIf you see two arrows left of you crosshair, you can browse object in front of you and swap items between it and your inventory.\n\nIf you roll your mouse wheel down, both inventories will be shown. With left click you can transfer items between the inventories.\n\nSometimes inventory is to big for all slots to be shown. In such case you can scroll slots in the inventory windows with your mouse wheel. Arrows on top left and/or bottom left side are shown when the inventory can be scrolled up and/or down." )
-  )
+  ozNirvanaAddMemo( infoExchange, ozGettext(
+    "11. TRANSFER BETWEEN INVENTORIES\n\n" ..
+    "If you see two arrows left of you crosshair, you can browse object in front of you and " ..
+    "swap items between it and your inventory.\n\n" ..
+    "If you roll your mouse wheel down, both inventories will be shown. With left click you can " ..
+    "transfer items between the inventories.\n\n" ..
+    "Sometimes inventory is to big for all slots to be shown. In such case you can scroll slots " ..
+    "in the inventory windows with your mouse wheel. Arrows on top left and/or bottom left side " ..
+    "are shown when the inventory can be scrolled up and/or down." ) )
 
-  ozNirvanaAddMemo( infoHealth,
-    ozGettext( "12. HEALTH\n\nFirst aid kits are disposable, you can only use them once. If you are not seriously hurt it's probably best to spare first aid for a later time. There's also a bonus if you are a beast (which you currently are): your health regenerates slowly.\n\nOne first aid kit restores 100 units of health. Beasts like you have 150 units of health.\n\nYour health is show in a green bar above stamina (becomes red when your health drops). If you are heavily wounded, you are unable to run." )
-  )
+  ozNirvanaAddMemo( infoHealth, ozGettext(
+    "12. HEALTH\n\n" ..
+    "First aid kits are disposable, you can only use them once. If you are not seriously hurt " ..
+    "it's probably best to spare first aid for a later time. There's also a bonus if you are a " ..
+    "beast (which you currently are): your health regenerates slowly.\n\n" ..
+    "One first aid kit restores 100 units of health. Beasts like you have 150 units of " ..
+    "health.\n\n" ..
+    "Your health is show in a green bar above stamina (becomes red when your health drops). If " ..
+    "you are heavily wounded, you are unable to run." ) )
 
-  ozNirvanaAddMemo( infoSpecial,
-    ozGettext( "13. SPECIAL ITEMS\n\nThere are also some items that give you special abilities when in your inventory. Music player and Galileo satellite navigation are such examples. When you poses them a music player interface and a minimap windows will be shown." )
-  )
+  ozNirvanaAddMemo( infoSpecial, ozGettext(
+    "13. SPECIAL ITEMS\n\n" ..
+    "There are also some items that give you special abilities when in your inventory. Music " ..
+    "player and Galileo satellite navigation are such examples. When you poses them a music " ..
+    "player interface and a minimap windows will be shown." ) )
 
-  ozNirvanaAddMemo( infoSaving,
-    ozGettext( "14. SAVING AND CAMERA\n\nThere are some dangers ahead. You can quick-save with F5 and quick-load with F7.\n\nEvery time you exit the level, it is auto-saved. To load last auto-saved state press F8.\n\nTo toggle to 3rd person view use NUMPAD ENTER and to toggle free camera rotation press NUMPAD *." )
-  )
+  ozNirvanaAddMemo( infoSaving, ozGettext(
+    "14. SAVING AND CAMERA\n\n" ..
+    "There are some dangers ahead. You can quick-save with F5 and quick-load with F7.\n\n" ..
+    "Every time you exit the level, it is auto-saved. To load last auto-saved state press " ..
+    "F8.\n\n" ..
+    "To toggle to 3rd person view use NUMPAD ENTER and to toggle free camera rotation press " ..
+    "NUMPAD *." ) )
 
   ozOrbisAddObj( OZ_FORCE, "bomb", oX + 25, oY + 17, oZ - 2 )
   ozOrbisAddObj( OZ_FORCE, "bomb", oX + 25, oY + 18, oZ - 2 )
 
   local infoBombs = ozOrbisAddObj( OZ_FORCE, "datacube", oX + 23, oY + 17.5, oZ - 1.5 )
 
-  ozNirvanaAddMemo( infoBombs,
-    ozGettext( "15. BOMBS\n\nSome objects like this bombs are dangerous. They will explode when destroyed or 5 s after activation (they can also be deactivated by right clicking them again)." )
-  )
+  ozNirvanaAddMemo( infoBombs, ozGettext(
+    "15. BOMBS\n\n" ..
+    "Some objects like this bombs are dangerous. They will explode when destroyed or 5 s after " ..
+    "activation (they can also be deactivated by right clicking them again)." ) )
 
   local cvicek = ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 )
   local firstAid = ozOrbisAddObj( OZ_FORCE, "firstAid", 0, 0, 0 )
@@ -176,13 +234,21 @@ function onCreate()
   local infoWeapon = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 6, oY + 20, oZ - 0.5 )
   local infoCorpse = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 6, oY + 30, oZ )
 
-  ozNirvanaAddMemo( infoWeapon,
-    ozGettext( "16. WEAPONS\n\nTo use a weapon you first need to put in in your inventory. By right clicking it in you inventory interface you can arm (red fist icon) and disarm it (grey fist icon).\n\nThere's also a shortcut: when you right click a weapon laying on the floor you will both put it in your inventory and arm it at the same time.\n\nYou are only able to use weapons suitable for your bot class (e.g. if you are a beast you cannot use droid weapons and vice versa).\n\nTo fire your current weapon press left mouse button.\n\nTest that plasma gun on objects ahead and those two droids." )
-  )
+  ozNirvanaAddMemo( infoWeapon, ozGettext(
+    "16. WEAPONS\n\n" ..
+    "To use a weapon you first need to put in in your inventory. By right clicking it in you " ..
+    "inventory interface you can arm (red fist icon) and disarm it (grey fist icon).\n\n" ..
+    "There's also a shortcut: when you right click a weapon laying on the floor you will both " ..
+    "put it in your inventory and arm it at the same time.\n\n" ..
+    "You are only able to use weapons suitable for your bot class (e.g. if you are a beast you " ..
+    "cannot use droid weapons and vice versa).\n\n" ..
+    "To fire your current weapon press left mouse button.\n\n" ..
+    "Test that plasma gun on objects ahead and those two droids." ) )
 
-  ozNirvanaAddMemo( infoCorpse,
-    ozGettext( "17. CORPSES\n\nCorpses can also be searched for items. Use them like the metal container before.\n\nBut don't wait too long. Corpses disappear some time after death." )
-  )
+  ozNirvanaAddMemo( infoCorpse, ozGettext(
+    "17. CORPSES\n\n" ..
+    "Corpses can also be searched for items. Use them like the metal container before.\n\n" ..
+    "But don't wait too long. Corpses disappear some time after death." ) )
 
   ozOrbisAddObj( OZ_FORCE, "hoverTank", 55, -30, 72 )
   ozOrbisAddObj( OZ_FORCE, "raptor", 45, -30, 73 )
@@ -192,17 +258,25 @@ function onCreate()
   local infoRaptor = ozOrbisAddObj( OZ_FORCE, "datacube", 50, -35, 72 )
   local infoService = ozOrbisAddObj( OZ_FORCE, "datacube", 35, -35, 73 )
 
-  ozNirvanaAddMemo( infoVehicle,
-    ozGettext( "18. VEHICLES\n\nYou can use the same keys to control vehicle as for movement.\n\nTo switch weapons use right mouse button.\n\nTo exit the vehicle press X and to eject press ALT + X. On destruction the vehicle automatically ejects you." )
-  )
+  ozNirvanaAddMemo( infoVehicle, ozGettext(
+    "18. VEHICLES\n\n" ..
+    "You can use the same keys to control vehicle as for movement.\n\n" ..
+    "To switch weapons use right mouse button.\n\n" ..
+    "To exit the vehicle press X and to eject press ALT + X. On destruction some vehicles " ..
+    "automatically eject you." ) )
 
-  ozNirvanaAddMemo( infoRaptor,
-    ozGettext( "19. TRUNK\n\nSome vehicles also have a trunk. In that case you can swap items between your inventory and the vehicle as you did for that metal crate. It also works once you are in the vehicle (just press TAB key to open inventory window)." )
-  )
+  ozNirvanaAddMemo( infoRaptor, ozGettext(
+    "19. TRUNK\n\n" ..
+    "Some vehicles also have a trunk. In that case you can swap items between your inventory " ..
+    "and the vehicle as you did for that metal crate. It also works once you are in the vehicle " ..
+    "(just press TAB key to open inventory window)." ) )
 
-  ozNirvanaAddMemo( infoService,
-    ozGettext( "20. SERVICE STATION\n\nYou can repair and rearm vehicles at a service station. Park a vehicle close enough, go out and use the service station.\n\nService station will also reload all weapons in your inventory. For mechanical units, it will also heal (repair) them and refill their stamina." )
-  )
+  ozNirvanaAddMemo( infoService, ozGettext(
+    "20. SERVICE STATION\n\n" ..
+    "You can repair and rearm vehicles at a service station. Park a vehicle close enough, go " ..
+    "out and use the service station.\n\n" ..
+    "Service station will also reload all weapons in your inventory. For mechanical units, it " ..
+    "will also heal (repair) them and refill their stamina." ) )
 
   ozOrbisAddObj( OZ_FORCE, "goblin", 58, -52, 70 )
   ozBotSetMind( "" )
@@ -214,13 +288,25 @@ function onCreate()
   local infoReincarnation = ozOrbisAddObj( OZ_FORCE, "datacube", 60, -50, 69.6 )
   local infoQuests = ozOrbisAddObj( OZ_FORCE, "datacube", 60, -55, 69.3 )
 
-  ozNirvanaAddMemo( infoReincarnation,
-    ozGettext( "21. STRATEGIC MODE\n\n(Read to the end before you try it.)\n\nYou can exit the bot you are controlling by pressing I key. That puts you in strategic mode. You move the camera the same way you move your bot. By pressing NUMPAD ENTER you switch between strategic camera (top-down) and free camera. In both modes you can still use TAB key to toggle between user interface mode and freelook mode.\n\nTo incarnate into a bot select it by left clicking and press I.\n\nReincarnation and strategic mode are not always available. Depending on a mission, reincarnation can be limited to specific bots only or completely disabled (including strategic mode)." )
-  )
+  ozNirvanaAddMemo( infoReincarnation, ozGettext(
+    "21. STRATEGIC MODE\n\n" ..
+    "(Read to the end before you try it.)\n\n" ..
+    "You can exit the bot you are controlling by pressing I key. That puts you in strategic " ..
+    "mode. You move the camera the same way you move your bot. By pressing NUMPAD ENTER you " ..
+    "switch between strategic camera (top-down) and free camera. In both modes you can still " ..
+    "use TAB key to toggle between user interface mode and freelook mode.\n\n" ..
+    "To incarnate into a bot select it by left clicking and press I.\n\n" ..
+    "Reincarnation and strategic mode are not always available. Depending on a mission, " ..
+    "reincarnation can be limited to specific bots only or completely disabled (including " ..
+    "strategic mode)." ) )
 
-  ozNirvanaAddMemo( infoQuests,
-    ozGettext( "22. OBJECTIVES\n\nWhen in the user interface mode, you see your current objective on top of the screen. By clicking '+' you can open or close objective description and by clicking '<' and '>' you cycle between all available objectives for the current mission.\n\nIf you posses Galileo gadget, you also see your current objective position on your minimap." )
-  )
+  ozNirvanaAddMemo( infoQuests, ozGettext(
+    "22. OBJECTIVES\n\n" ..
+    "When in the user interface mode, you see your current objective on top of the screen. By " ..
+    "clicking '+' you can open or close objective description and by clicking '<' and '>' you " ..
+    "cycle between all available objectives for the current mission.\n\n" ..
+    "If you posses Galileo gadget, you also see your current objective position on your " ..
+    "minimap." ) )
 
   ozOrbisAddObj( OZ_FORCE, "beast", 100, -100, 71 )
   ozBotSetH( 0 )
@@ -240,6 +326,5 @@ function onCreate()
 
   ozBindObj( me )
   ozCameraAllowReincarnation( true )
-  ozCameraIncarnate( me )
-  ozCameraWarpTo( ozBotGetEyePos() )
+  ozCameraSwitchTo( me )
 end

@@ -93,6 +93,16 @@ class System
      */
     ~System();
 
+    /**
+     * Singleton, no copying.
+     */
+    System( const System& s ) = delete;
+
+    /**
+     * Singleton, no copying.
+     */
+    System& operator = ( const System& s ) = delete;
+
   public:
 
     /**

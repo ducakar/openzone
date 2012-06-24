@@ -180,7 +180,7 @@ void VehicleClass::initClass( const Config* config )
                      " rather set fuelConsumption to zero.", name.cstr() );
   }
 
-  char weaponNameBuffer[]   = "weapon  .name";
+  char weaponTitleBuffer[]  = "weapon  .title";
   char onShotBuffer[]       = "weapon  .onShot";
   char nRoundsBuffer[]      = "weapon  .nRounds";
   char shotIntervalBuffer[] = "weapon  .shotInterval";
@@ -189,8 +189,8 @@ void VehicleClass::initClass( const Config* config )
   for( int i = 0; i < MAX_WEAPONS; ++i ) {
     hard_assert( i < 100 );
 
-    weaponNameBuffer[6] = char( '0' + ( i / 10 ) );
-    weaponNameBuffer[7] = char( '0' + ( i % 10 ) );
+    weaponTitleBuffer[6] = char( '0' + ( i / 10 ) );
+    weaponTitleBuffer[7] = char( '0' + ( i % 10 ) );
 
     onShotBuffer[6] = char( '0' + ( i / 10 ) );
     onShotBuffer[7] = char( '0' + ( i % 10 ) );
@@ -201,12 +201,12 @@ void VehicleClass::initClass( const Config* config )
     shotIntervalBuffer[6] = char( '0' + ( i / 10 ) );
     shotIntervalBuffer[7] = char( '0' + ( i % 10 ) );
 
-    weaponNames[i]  = lingua.get( config->get( weaponNameBuffer, "" ) );
+    weaponTitles[i] = lingua.get( config->get( weaponTitleBuffer, "" ) );
     onShot[i]       = config->get( onShotBuffer, "" );
     nRounds[i]      = config->get( nRoundsBuffer, -1 );
     shotInterval[i] = config->get( shotIntervalBuffer, 0.5f );
 
-    if( weaponNames[i].isEmpty() && nWeapons > i ) {
+    if( weaponTitles[i].isEmpty() && nWeapons > i ) {
       nWeapons = i;
     }
     if( !String::isEmpty( onShot[i] ) ) {

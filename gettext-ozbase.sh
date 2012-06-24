@@ -5,8 +5,6 @@ if [[ ! -d data/ozbase ]]; then
   exit
 fi
 
-sources='src/*/*.hh src/*/*/*.hh src/*/*.cc src/*/*/*.cc'
-output='data/ozbase/lingua/ozbase.pot'
-
-rm -rf $output
-xgettext --omit-header -C -s -kOZ_GETTEXT -d ozbase -o $output $sources
+rm -rf data/ozbase/lingua/ozbase.pot
+xgettext --omit-header -C -s -kOZ_GETTEXT -o data/ozbase/lingua/ozbase.pot \
+         src/*/*.{hh,cc} src/*/*/*.{hh,cc}

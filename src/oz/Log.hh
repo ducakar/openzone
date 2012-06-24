@@ -57,10 +57,26 @@ class Log
     static bool verboseMode; ///< While <tt>verboseMode</tt> is on log output is only written to
                              ///< log file unless <tt>isVerbose</tt> is also on. Off by default.
 
+    static Log  out;         ///< Similar to <tt>std::cout</tt>, for use with <tt>operator <<</tt>.
+
+  private:
+
     /**
-     * Singleton.
+     * Default constructor, does nothing since Log has no non-static fields.
      */
-    Log() = delete;
+    Log() = default;
+
+    /**
+     * Singleton, no copying.
+     */
+    Log( const Log& l ) = delete;
+
+    /**
+     * Singleton, no copying.
+     */
+    Log& operator = ( const Log& l ) = delete;
+
+  public:
 
     /**
      * Return log file path or an empty string if log is printed to stdout only.
@@ -89,7 +105,7 @@ class Log
     static void vprintRaw( const char* s, va_list ap );
 
     /**
-     * Print the raw text (without indentation on newline).
+     * Print the raw text (without indentation or newline).
      */
     OZ_PRINTF_FORMAT( 1, 2 )
     static void printRaw( const char* s, ... );
@@ -163,6 +179,86 @@ class Log
      * Close log file.
      */
     static void free();
+
+    /**
+     * Same as <tt>printRaw( b ? "true" : "false" )</tt>.
+     */
+    const Log& operator << ( bool b ) const;
+
+    /**
+     * Same as <tt>printRaw( "%c", c )</tt>.
+     */
+    const Log& operator << ( char c ) const;
+
+    /**
+     * Same as <tt>printRaw( "%d", b )</tt>.
+     */
+    const Log& operator << ( byte b ) const;
+
+    /**
+     * Same as <tt>printRaw( "%ud", b )</tt>.
+     */
+    const Log& operator << ( ubyte b ) const;
+
+    /**
+     * Same as <tt>printRaw( "%d", s )</tt>.
+     */
+    const Log& operator << ( short s ) const;
+
+    /**
+     * Same as <tt>printRaw( "%ud", s )</tt>.
+     */
+    const Log& operator << ( ushort s ) const;
+
+    /**
+     * Same as <tt>printRaw( "%d", i )</tt>.
+     */
+    const Log& operator << ( int i ) const;
+
+    /**
+     * Same as <tt>printRaw( "%ud", i )</tt>.
+     */
+    const Log& operator << ( uint i ) const;
+
+    /**
+     * Same as <tt>printRaw( "%ld", l )</tt>.
+     */
+    const Log& operator << ( long l ) const;
+
+    /**
+     * Same as <tt>printRaw( "%lud", l )</tt>.
+     */
+    const Log& operator << ( ulong l ) const;
+
+    /**
+     * Same as <tt>printRaw( "%lld", l )</tt>.
+     */
+    const Log& operator << ( long64 l ) const;
+
+    /**
+     * Same as <tt>printRaw( "%llud", l )</tt>.
+     */
+    const Log& operator << ( ulong64 l ) const;
+
+    /**
+     * Same as <tt>printRaw( "%g", f )</tt>.
+     */
+    const Log& operator << ( float f ) const;
+
+    /**
+     * Same as <tt>printRaw( "%g", d )</tt>.
+     */
+    const Log& operator << ( double d ) const;
+
+    /**
+     * Same as <tt>printRaw( "%s", s.cstr() )</tt>.
+     */
+    const Log& operator << ( const String& s ) const;
+
+    /**
+     * Same as <tt>printRaw( "%s", s )</tt>.
+     */
+    const Log& operator << ( const char* s ) const;
 
 };
 

@@ -132,6 +132,7 @@ static volatile int    semaphoreCounter;
 
 bool Log::showVerbose; // = false
 bool Log::verboseMode; // = false
+Log  Log::out;
 
 const char* Log::logFile()
 {
@@ -546,6 +547,102 @@ void Log::free()
     file = null;
   }
 #endif
+}
+
+const Log& Log::operator << ( bool b ) const
+{
+  printRaw( b ? "true" : "false" );
+  return *this;
+}
+
+const Log& Log::operator << ( char c ) const
+{
+  printRaw( "%c", c );
+  return *this;
+}
+
+const Log& Log::operator << ( byte b ) const
+{
+  printRaw( "%d", b );
+  return *this;
+}
+
+const Log& Log::operator << ( ubyte b ) const
+{
+  printRaw( "%ud", b );
+  return *this;
+}
+
+const Log& Log::operator << ( short s ) const
+{
+  printRaw( "%d", s );
+  return *this;
+}
+
+const Log& Log::operator << ( ushort s ) const
+{
+  printRaw( "%ud", s );
+  return *this;
+}
+
+const Log& Log::operator << ( int i ) const
+{
+  printRaw( "%d", i );
+  return *this;
+}
+
+const Log& Log::operator << ( uint i ) const
+{
+  printRaw( "%ud", i );
+  return *this;
+}
+
+const Log& Log::operator << ( long l ) const
+{
+  printRaw( "%ld", l );
+  return *this;
+}
+
+const Log& Log::operator << ( ulong l ) const
+{
+  printRaw( "%lud", l );
+  return *this;
+}
+
+const Log& Log::operator << ( long64 l ) const
+{
+  printRaw( "%lld", l );
+  return *this;
+}
+
+const Log& Log::operator << ( ulong64 l ) const
+{
+  printRaw( "%llud", l );
+  return *this;
+}
+
+const Log& Log::operator << ( float f ) const
+{
+  printRaw( "%g", f );
+  return *this;
+}
+
+const Log& Log::operator << ( double d ) const
+{
+  printRaw( "%g", d );
+  return *this;
+}
+
+const Log& Log::operator << ( const String& s ) const
+{
+  printRaw( "%s", s.cstr() );
+  return *this;
+}
+
+const Log& Log::operator << ( const char* s ) const
+{
+  printRaw( "%s", s );
+  return *this;
 }
 
 }

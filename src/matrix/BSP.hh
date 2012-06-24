@@ -49,7 +49,6 @@ struct Model : Bounds
     ELEVATOR
   };
 
-  String name;       ///< Model name.
   String title;      ///< Model title.
 
   Vec3   move;       ///< Move vector (destination - original position), in %BSP

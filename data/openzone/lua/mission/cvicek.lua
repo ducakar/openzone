@@ -80,27 +80,19 @@ function test_cvicekQuest()
     end
 
     if oz_beasts[1] ~= -1 then
-      ozNirvanaAddMemo( oz_beasts[1],
-        ozGettext( "Good job!" )
-      )
+      ozNirvanaAddMemo( oz_beasts[1], ozGettext( "Good job!" ) )
     end
 
     if oz_beasts[2] ~= -1 then
-      ozNirvanaAddMemo( oz_beasts[2],
-        ozGettext( "Yeeha! Cvicek!" )
-      )
+      ozNirvanaAddMemo( oz_beasts[2], ozGettext( "Yeeha! Cvicek!" ) )
     end
 
     if oz_beasts[3] ~= -1 then
-      ozNirvanaAddMemo( oz_beasts[3],
-        "Več kot spijemo, boljši smo\nin lepše zgledamo!"
-      )
+      ozNirvanaAddMemo( oz_beasts[3], "Več kot spijemo, boljši smo\nin lepše zgledamo!" )
     end
 
     if oz_beasts[4] ~= -1 then
-      ozNirvanaAddMemo( oz_beasts[4],
-        ozGettext( "No more thirst!" )
-      )
+      ozNirvanaAddMemo( oz_beasts[4], ozGettext( "No more thirst!" ) )
     end
   end
 end
@@ -115,9 +107,7 @@ function test_farmQuest()
     if oz_beasts[5] ~= -1 then
       ozNirvanaRemoveDevice( oz_beasts[5] )
 
-      ozNirvanaAddMemo( oz_beasts[5],
-        ozGettext( "Good riddance! Finally some decent TV programme." )
-      )
+      ozNirvanaAddMemo( oz_beasts[5], ozGettext( "Good riddance! Finally some decent TV programme." ) )
     end
   end
 end
@@ -451,46 +441,51 @@ function onCreate()
   ozBotSetH( 200 )
   ozBotSetMind( "beast_nervous" )
 
-  ozNirvanaAddMemo( oz_beasts[1],
-    ozGettext( "Well, is cvicek coming anytime soon?" )
-  )
+  ozNirvanaAddMemo( oz_beasts[1], ozGettext( "Well, is cvicek coming anytime soon?" ) )
 
-  ozNirvanaAddMemo( oz_beasts[2],
-    ozGettext( "I'm sooo thirsty. I've been drinking only water for the past week." )
-  )
+  ozNirvanaAddMemo( oz_beasts[2], ozGettext( "I'm sooo thirsty. I've been drinking only water " ..
+                                             "for the past week." ) )
 
-  ozNirvanaAddMemo( oz_beasts[3],
-    ozGettext( "Cvicek, cvicek, cvicek ... Where is cvicek?" )
-  )
+  ozNirvanaAddMemo( oz_beasts[3], ozGettext( "Cvicek, cvicek, cvicek ... Where is cvicek?" ) )
 
-  ozNirvanaAddMemo( oz_beasts[4],
-    ozGettext( "How's your mission going? I can't imagine how we will live without cvicek." )
-  )
+  ozNirvanaAddMemo( oz_beasts[4], ozGettext( "How's your mission going? I can't imagine how we " ..
+                                             "will live without cvicek." ) )
 
-  ozNirvanaAddMemo( oz_beasts[5],
-    ozGettext( "Is the Farm still standing? Please destroy it, maybe then there might be something better on TV." )
-  )
+  ozNirvanaAddMemo( oz_beasts[5], ozGettext( "Is the Farm still standing? Please destroy it, " ..
+                                             "maybe then there might be something better on TV." ) )
 
   ozFloraSeed()
 
-  oz_escapeQuest = ozQuestAdd(
-    ozGettext( "Escape" ),
-    ozGettext( "You have been caught by a Colonial patrol and they currently hold you in that Colonial outpost. Tomorrow you are being transferred to a Colonial detention camp for terrorist suspects. If you don't find a way to escape, say goodbye to freedom till the end of your life.\n\nIt would be extremely helpful if you can get a Galileo gadget, it will will show you destinations of your tasks and help you with navigation a lot." ),
+  oz_escapeQuest = ozQuestAdd( ozGettext( "Escape" ), ozGettext(
+    "You have been caught by a Colonial patrol and they currently hold you in that Colonial " ..
+    "outpost. Tomorrow you are being transferred to a Colonial detention camp for terrorist " ..
+    "suspects. If you don't find a way to escape, say goodbye to freedom till the end of your " ..
+    "life.\n\n" ..
+    "It would be extremely helpful if you can get a Galileo gadget, it will will show you " ..
+    "destinations of your tasks and help you with navigation a lot." ),
     785, 1000, 124 )
 
-  oz_cvicekQuest = ozQuestAdd(
-    ozGettext( "Steal cvicek" ),
-    ozGettext( "Steal at least 20 bottles of cvicek from Colonial military base and transport them back to Beast Lair.\n\nThe base is heavily defended so you will need some heavy armour to attack it.\n\nBeware not to use explosives there, cvicek bottles are very fragile and there is a explosives storage in that base.\n\nQuest will be complete one you unload 20 bottles of cvicek in the Lair." ),
+  oz_cvicekQuest = ozQuestAdd( ozGettext( "Steal cvicek" ), ozGettext(
+    "Steal at least 20 bottles of cvicek from Colonial military base and transport them back " ..
+    "to Beast Lair.\n\n" ..
+    "The base is heavily defended so you will need some heavy armour to attack it.\n\n" ..
+    "Beware not to use explosives there, cvicek bottles are very fragile and there is a " ..
+    "explosives storage in that base.\n\nQuest will be complete one you unload 20 bottles of " ..
+    "cvicek in the Lair." ),
     20, -940, 140 )
 
-  oz_farmQuest = ozQuestAdd(
-    ozGettext( "The Farm" ),
-    ozGettext( "That farm is a stage of an annoying reality show called 'The Farm'. It wouldn't do much harm to blow it up.\n\nThe farmhouses are not very robust, so a dozen of bombs should be more then enough to demolish them. And don't expect any welcome from participants of the show." ),
+  oz_farmQuest = ozQuestAdd( ozGettext( "The Farm" ), ozGettext(
+    "That farm is a stage of an annoying reality show called 'The Farm'. It wouldn't do much " ..
+    "harm to blow it up.\n\nThe farmhouses are not very robust, so a dozen of bombs should be " ..
+    "more then enough to demolish them. And don't expect any welcome from participants of the " ..
+    "show." ),
     80, -20, 70 )
 
-  local lairQuest = ozQuestAdd(
-    ozGettext( "Beast Lair" ),
-    ozGettext( "Beast Lair is your home base, hidden on an island, still safe from Colonial Army.\n\nHowever, supplies are low and there's a terrible shortage of beasts' favourite drink, cvicek.\n\nYou can visit the base anytime during the mission for any supplies you need." ),
+  local lairQuest = ozQuestAdd( ozGettext( "Beast Lair" ), ozGettext(
+    "Beast Lair is your home base, hidden on an island, still safe from Colonial Army.\n\n" ..
+    "However, supplies are low and there's a terrible shortage of beasts' favourite drink, " ..
+    "cvicek.\n\n" ..
+    "You can visit the base anytime during the mission for any supplies you need." ),
     -1015, 608, 50 )
   ozQuestEnd( lairQuest, true )
 

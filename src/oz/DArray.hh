@@ -383,8 +383,6 @@ class DArray
      */
     void sort()
     {
-      hard_assert( size > 0 );
-
       aSort<Elem>( data, size );
     }
 

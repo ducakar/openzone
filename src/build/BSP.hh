@@ -235,7 +235,7 @@ class BSP : public Bounds
     /// Temporary structure for model.
     struct Model : Bounds
     {
-      String name;
+      String title;
 
       Vec3   move;
 
