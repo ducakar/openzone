@@ -1,4 +1,7 @@
 #!/bin/sh
+#
+# Generate SLOC statistics with sloccount and cloc.
+#
 
 files=`git ls-files | grep -v '^include'`
 

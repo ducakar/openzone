@@ -25,7 +25,4 @@ else()
   add_executable( test test.cc )
   target_link_libraries( test oz )
 
-  add_executable( unittest unittest.cc )
-  target_link_libraries( unittest oz )
-
 endif()

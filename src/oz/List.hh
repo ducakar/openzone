@@ -137,7 +137,7 @@ class List
          */
         OZ_ALWAYS_INLINE
         Iterator() :
-          CIteratorBase<Elem>( null )
+          IteratorBase<Elem>( null )
         {}
 
         /**

@@ -99,7 +99,12 @@ class Log
     static void unindent();
 
     /**
-     * Print the text from argument list.
+     * Print the raw text (without indentation or newline).
+     */
+    static void putsRaw( const char* s );
+
+    /**
+     * Print the raw text (without indentation or newline).
      */
     OZ_PRINTF_FORMAT( 1, 0 )
     static void vprintRaw( const char* s, va_list ap );
@@ -181,7 +186,7 @@ class Log
     static void free();
 
     /**
-     * Same as <tt>printRaw( b ? "true" : "false" )</tt>.
+     * Same as <tt>putsRaw( b ? "true" : "false" )</tt>.
      */
     const Log& operator << ( bool b ) const;
 
@@ -251,12 +256,12 @@ class Log
     const Log& operator << ( double d ) const;
 
     /**
-     * Same as <tt>printRaw( "%s", s.cstr() )</tt>.
+     * Same as <tt>putsRaw( s )</tt>.
      */
     const Log& operator << ( const String& s ) const;
 
     /**
-     * Same as <tt>printRaw( "%s", s )</tt>.
+     * Same as <tt>putsRaw( s )</tt>.
      */
     const Log& operator << ( const char* s ) const;
 

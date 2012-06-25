@@ -5,13 +5,15 @@
 /.cproject
 /.settings
 
+/*.patch
+
+/doc/doxygen*
+
+/data/*/*
+!/data/netradiant
+!/data/*/lua
+!/data/*/glsl
+
 /share
 /support
-
-/Linux-*
-/Windows-*
-/MacOSX-*
-/Android-*
-/NaCl-*
-
-/*.patch
+/build

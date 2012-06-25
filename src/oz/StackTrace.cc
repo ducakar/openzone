@@ -28,7 +28,7 @@
 
 #include "arrays.hh"
 
-#ifdef __GLIBC__
+#if defined( __GLIBC__ ) || defined( _LIBCPP_VERSION )
 # include <execinfo.h>
 # include <cstdlib>
 # include <cstring>
@@ -38,7 +38,7 @@
 namespace oz
 {
 
-#ifndef __GLIBC__
+#if !defined( __GLIBC__ ) && !defined( _LIBCPP_VERSION )
 
 StackTrace StackTrace::current( int )
 {

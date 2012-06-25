@@ -385,7 +385,7 @@ class Vector
      */
     bool contains( const Elem& e ) const
     {
-      return aContains<Elem>( data, e, count );
+      return aContains<Elem, Elem>( data, e, count );
     }
 
     /**
@@ -393,7 +393,7 @@ class Vector
      */
     int index( const Elem& e ) const
     {
-      return aIndex<Elem>( data, e, count );
+      return aIndex<Elem, Elem>( data, e, count );
     }
 
     /**
@@ -401,7 +401,7 @@ class Vector
      */
     int lastIndex( const Elem& e ) const
     {
-      return aLastIndex<Elem>( data, e, count );
+      return aLastIndex<Elem, Elem>( data, e, count );
     }
 
     /**
@@ -444,7 +444,7 @@ class Vector
     template <typename Elem_>
     int include( Elem_&& e )
     {
-      int i = aIndex<Elem>( data, e, count );
+      int i = aIndex<Elem, Elem>( data, e, count );
 
       if( i < 0 ) {
         ensureCapacity();
@@ -523,7 +523,7 @@ class Vector
      */
     int exclude( const Elem& e )
     {
-      int i = aIndex<Elem>( data, e, count );
+      int i = aIndex<Elem, Elem>( data, e, count );
 
       if( i >= 0 ) {
         --count;
@@ -550,7 +550,7 @@ class Vector
      */
     int excludeUO( const Elem& e )
     {
-      int i = aIndex<Elem>( data, e, count );
+      int i = aIndex<Elem, Elem>( data, e, count );
 
       if( i >= 0 ) {
         --count;

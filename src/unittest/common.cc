@@ -21,24 +21,45 @@
  */
 
 /**
- * @file oz/common.cc
+ * @file unittest/common.cc
  */
 
-#include "common.hh"
+#include "unittest/unittest.hh"
 
-#include "System.hh"
+using namespace oz;
 
-namespace oz
+void test_common()
 {
+  Log::out << "+ common\n";
 
-void _softAssertHelper( const char* message, const char* file, int line, const char* function )
-{
-  System::warning( 1, "Soft assertion '%s' failed at %s:%d: %s", message, file, line, function );
-}
+  Foo a = 1;
+  Foo b = 2;
+  Foo c = 2;
+  Foo d = 2;
+  Foo e = 3;
 
-void _hardAssertHelper( const char* message, const char* file, int line, const char* function )
-{
-  System::error( 1, "Hard assertion '%s' failed at %s:%d: %s", message, file, line, function );
-}
+  Foo::allowCopy = false;
 
+  swap( a, b );
+  OZ_CHECK( a == 2 && b == 1 );
+
+  swap( a, b );
+  OZ_CHECK( a == 1 && b == 2 );
+
+  Foo::allowCopy = true;
+
+  OZ_CHECK( &min( a, b ) == &a );
+  OZ_CHECK( &min( b, a ) == &a );
+  OZ_CHECK( &min( b, c ) == &b );
+
+  OZ_CHECK( &max( a, b ) == &b );
+  OZ_CHECK( &max( b, a ) == &b );
+  OZ_CHECK( &max( b, c ) == &b );
+
+  OZ_CHECK( &clamp( c, a, e ) == &c );
+  OZ_CHECK( &clamp( c, b, e ) == &c );
+  OZ_CHECK( &clamp( c, a, d ) == &c );
+  OZ_CHECK( &clamp( a, b, e ) == &b );
+  OZ_CHECK( &clamp( a, b, d ) == &b );
+  OZ_CHECK( &clamp( e, b, d ) == &d );
 }

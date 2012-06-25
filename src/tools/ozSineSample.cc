@@ -34,7 +34,7 @@ static const float FREQUENCY = 800.0f;
 
 using namespace oz;
 
-int main( int, char** )
+int main()
 {
   Log::printRaw(
     "/*\n"

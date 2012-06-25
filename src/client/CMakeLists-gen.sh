@@ -19,5 +19,5 @@ if( NACL )
   set_target_properties( openzone PROPERTIES OUTPUT_NAME "openzone.\${CMAKE_SYSTEM_PROCESSOR}.nexe" )
 endif()
 
-install( TARGETS openzone COMPONENT client RUNTIME DESTINATION bin )
+install( TARGETS openzone RUNTIME DESTINATION bin )
 EOF

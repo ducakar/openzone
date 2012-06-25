@@ -70,7 +70,7 @@ bool Lingua::initDomain( const char* domain )
 
   nMessages = ( 4 * length ) / 3;
   messages = new Message*[nMessages];
-  aSet<Message*>( messages, null, nMessages );
+  aSet<Message*, Message*>( messages, null, nMessages );
 
   for( int i = 0; i < length; ++i ) {
     uint index = uint( is.readInt() ) % uint( nMessages );
@@ -120,7 +120,7 @@ bool Lingua::init( const char* locale_ )
 
   nMessages = ( 4 * nMessages ) / 3;
   messages = new Message*[nMessages];
-  aSet<Message*>( messages, null, nMessages );
+  aSet<Message*, Message*>( messages, null, nMessages );
 
   foreach( file, files.iter() ) {
     if( !file->hasExtension( "ozCat" ) ) {

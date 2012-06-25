@@ -156,6 +156,24 @@ void Log::unindent()
   }
 }
 
+void Log::putsRaw( const char* s )
+{
+  if( !verboseMode || showVerbose || file == null ) {
+    fputs( s, stdout );
+  }
+
+#ifdef __native_client__
+  CHECK_SEMAPHORE();
+
+  CONSOLE_PUTS( s );
+#else
+  if( file != null ) {
+    fputs( s, file );
+    fflush( file );
+  }
+#endif
+}
+
 void Log::vprintRaw( const char* s, va_list ap )
 {
   char buffer[OUT_BUFFER_SIZE];
@@ -551,7 +569,7 @@ void Log::free()
 
 const Log& Log::operator << ( bool b ) const
 {
-  printRaw( b ? "true" : "false" );
+  putsRaw( b ? "true" : "false" );
   return *this;
 }
 
@@ -569,19 +587,19 @@ const Log& Log::operator << ( byte b ) const
 
 const Log& Log::operator << ( ubyte b ) const
 {
-  printRaw( "%ud", b );
+  printRaw( "%u", b );
   return *this;
 }
 
 const Log& Log::operator << ( short s ) const
 {
-  printRaw( "%d", s );
+  printRaw( "%hd", s );
   return *this;
 }
 
 const Log& Log::operator << ( ushort s ) const
 {
-  printRaw( "%ud", s );
+  printRaw( "%hu", s );
   return *this;
 }
 
@@ -593,7 +611,7 @@ const Log& Log::operator << ( int i ) const
 
 const Log& Log::operator << ( uint i ) const
 {
-  printRaw( "%ud", i );
+  printRaw( "%u", i );
   return *this;
 }
 
@@ -605,19 +623,27 @@ const Log& Log::operator << ( long l ) const
 
 const Log& Log::operator << ( ulong l ) const
 {
-  printRaw( "%lud", l );
+  printRaw( "%lu", l );
   return *this;
 }
 
 const Log& Log::operator << ( long64 l ) const
 {
+#ifdef _WIN32
+  printRaw( "%ld", long( l ) );
+#else
   printRaw( "%lld", l );
+#endif
   return *this;
 }
 
 const Log& Log::operator << ( ulong64 l ) const
 {
-  printRaw( "%llud", l );
+#ifdef _WIN32
+  printRaw( "%lu", ulong( l ) );
+#else
+  printRaw( "%llu", l );
+#endif
   return *this;
 }
 
@@ -635,13 +661,13 @@ const Log& Log::operator << ( double d ) const
 
 const Log& Log::operator << ( const String& s ) const
 {
-  printRaw( "%s", s.cstr() );
+  putsRaw( s );
   return *this;
 }
 
 const Log& Log::operator << ( const char* s ) const
 {
-  printRaw( "%s", s );
+  putsRaw( s );
   return *this;
 }
 

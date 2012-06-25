@@ -295,7 +295,7 @@ int main( int argc, char** argv )
   }
 
 #ifdef _WIN32
-  String pkgDir = String::replace( argv[1], "\\", "/" );
+  String pkgDir = String::replace( argv[1], '\\', '/' );
 #else
   String pkgDir = argv[1];
 #endif

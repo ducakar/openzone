@@ -39,7 +39,7 @@ struct Elem
   {}
 };
 
-int main( int, char** )
+int main()
 {
   List<Elem, 0> l;
   DList<Elem, 0> dl;

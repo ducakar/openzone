@@ -1,20 +1,18 @@
 #!/bin/sh
 
-build_type=Debug
+buildType=Debug
 
 Linux_x86_64=1
 Linux_x86_64_Clang=1
-Linux_i686=0
-Linux_i686_Clang=0
+Linux_i686=1
+Linux_i686_Clang=1
 Windows_i686=1
 NaCl_x86_64=1
-NaCl_i686=0
+NaCl_i686=1
 
-(( $is_build )) && return
+(( $isBuild )) && return
 
-rm -rf Linux-{x86_64,x86_64-Clang,i686,i686-Clang}
-rm -rf Windows-i686
-rm -rf NaCl-{x86_64,i686}
+rm -rf build
 
 if (( $Linux_x86_64 )); then
   echo ================================================================
@@ -23,9 +21,9 @@ if (( $Linux_x86_64 )); then
   echo
   echo ----------------------------------------------------------------
 
-  mkdir -p Linux-x86_64
-  ( cd Linux-x86_64 && cmake .. \
-    -DCMAKE_BUILD_TYPE=$build_type )
+  mkdir -p build/Linux-x86_64
+  ( cd build/Linux-x86_64 && cmake ../.. \
+    -DCMAKE_BUILD_TYPE=$buildType )
 
   echo ----------------------------------------------------------------
   echo
@@ -42,9 +40,9 @@ if (( $Linux_x86_64_Clang )); then
   echo
   echo ----------------------------------------------------------------
 
-  mkdir -p Linux-x86_64-Clang
-  ( cd Linux-x86_64-Clang && cmake .. \
-    -DCMAKE_BUILD_TYPE=$build_type \
+  mkdir -p build/Linux-x86_64-Clang
+  ( cd build/Linux-x86_64-Clang && cmake ../.. \
+    -DCMAKE_BUILD_TYPE=$buildType \
     -DCMAKE_C_COMPILER=/usr/bin/clang \
     -DCMAKE_CXX_COMPILER=/usr/bin/clang++ )
 
@@ -63,9 +61,9 @@ if (( $Linux_i686 )); then
   echo
   echo ----------------------------------------------------------------
 
-  mkdir -p Linux-i686
-  ( cd Linux-i686 && cmake .. \
-    -DCMAKE_BUILD_TYPE=$build_type \
+  mkdir -p build/Linux-i686
+  ( cd build/Linux-i686 && cmake ../.. \
+    -DCMAKE_BUILD_TYPE=$buildType \
     -DCMAKE_C_FLAGS=-m32 \
     -DCMAKE_CXX_FLAGS=-m32 )
 
@@ -84,9 +82,9 @@ if (( $Linux_i686_Clang )); then
   echo
   echo ----------------------------------------------------------------
 
-  mkdir -p Linux-i686-Clang
-  ( cd Linux-i686-Clang && cmake .. \
-    -DCMAKE_BUILD_TYPE=$build_type \
+  mkdir -p build/Linux-i686-Clang
+  ( cd build/Linux-i686-Clang && cmake ../.. \
+    -DCMAKE_BUILD_TYPE=$buildType \
     -DCMAKE_C_COMPILER=/usr/bin/clang \
     -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
     -DCMAKE_C_FLAGS=-m32 \
@@ -107,10 +105,10 @@ if (( $Windows_i686 )); then
   echo
   echo ----------------------------------------------------------------
 
-  mkdir -p Windows-i686
-  ( cd Windows-i686 && cmake .. \
-    -DCMAKE_BUILD_TYPE=$build_type \
-    -DCMAKE_TOOLCHAIN_FILE=../cmake/MinGW32.Toolchain.cmake )
+  mkdir -p build/Windows-i686
+  ( cd build/Windows-i686 && cmake ../.. \
+    -DCMAKE_BUILD_TYPE=$buildType \
+    -DCMAKE_TOOLCHAIN_FILE=../../cmake/MinGW32.Toolchain.cmake )
 
   echo ----------------------------------------------------------------
   echo
@@ -127,10 +125,10 @@ if (( $NaCl_x86_64 )); then
   echo
   echo ----------------------------------------------------------------
 
-  mkdir -p NaCl-x86_64
-  ( cd NaCl-x86_64 && cmake .. \
-    -DCMAKE_BUILD_TYPE=$build_type \
-    -DCMAKE_TOOLCHAIN_FILE=../cmake/NaCl-x86_64.Toolchain.cmake )
+  mkdir -p build/NaCl-x86_64
+  ( cd build/NaCl-x86_64 && cmake ../.. \
+    -DCMAKE_BUILD_TYPE=$buildType \
+    -DCMAKE_TOOLCHAIN_FILE=../../cmake/NaCl-x86_64.Toolchain.cmake )
 
   echo ----------------------------------------------------------------
   echo
@@ -147,10 +145,10 @@ if (( $NaCl_i686 )); then
   echo
   echo ----------------------------------------------------------------
 
-  mkdir -p NaCl-i686
-  ( cd NaCl-i686 && cmake .. \
-    -DCMAKE_BUILD_TYPE=$build_type \
-    -DCMAKE_TOOLCHAIN_FILE=../cmake/NaCl-i686.Toolchain.cmake )
+  mkdir -p build/NaCl-i686
+  ( cd build/NaCl-i686 && cmake ../.. \
+    -DCMAKE_BUILD_TYPE=$buildType \
+    -DCMAKE_TOOLCHAIN_FILE=../../cmake/NaCl-i686.Toolchain.cmake )
 
   echo ----------------------------------------------------------------
   echo

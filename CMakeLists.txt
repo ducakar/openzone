@@ -6,7 +6,7 @@ project( openzone C CXX )
 # Configuration
 #
 
-set( OZ_VERSION "0.2.85" CACHE STRING "" FORCE )
+set( OZ_VERSION "0.2.90" CACHE STRING "" FORCE )
 
 option( OZ_SHARED_LIBOZ "Build liboz as a shared library." OFF )
 option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory leaks." ON )
@@ -28,17 +28,18 @@ include( CheckCXXSourceCompiles )
 include( CheckCXXCompilerFlag )
 include( CheckLibraryExists )
 
-if( NACL )
-  set( OZ_GL_ES ON CACHE BOOL "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." FORCE )
-  set( OZ_NONFREE OFF CACHE BOOL "Enable support for MP3 and AAC." FORCE )
-endif()
-
 if( NOT CMAKE_BUILD_TYPE )
   set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Debug RelWithDebInfo Release RelGenProf RelUseProf" FORCE )
 endif()
 
 if( NACL )
+  set( OZ_GL_ES ON CACHE BOOL "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." FORCE )
+  set( OZ_NONFREE OFF CACHE BOOL "Enable support for MP3 and AAC." FORCE )
   set( CMAKE_SYSTEM_NAME "NaCl" )
+endif()
+
+if( WIN32 AND NOT CMAKE_INSTALL_PREFIX )
+  set( CMAKE_INSTALL_PREFIX "../share/openzone" CACHE PATH "Path to data files" FORCE )
 endif()
 
 set( OZ_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" CACHE STRING "" FORCE )
@@ -52,7 +53,6 @@ if( "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64" )
 endif()
 
 mark_as_advanced( OZ_VERSION )
-mark_as_advanced( OZ_SOVERSION )
 mark_as_advanced( OZ_APPLICATION_NAME )
 mark_as_advanced( OZ_APPLICATION_TITLE )
 mark_as_advanced( OZ_SYSTEM_NAME )
@@ -196,7 +196,7 @@ set( warnings "-Wall -Wextra -Winvalid-pch -Wconversion " )
 
 # Additional warnings (Clang specific).
 # set( warnings "${warnings} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic" )
-# set( warnings "${warnings} -Wno-global-constructors -Wno-exit-time-destructors -Wno-float-equal " )
+# set( warnings "${warnings} -Wno-global-constructors -Wno-exit-time-destructors -Wno-float-equal" )
 # set( warnings "${warnings} -Wno-shadow -Wno-padded -Wno-disabled-macro-expansion" )
 
 check_cxx_source_compiles( "
@@ -216,8 +216,13 @@ int main( int, char** ) { return 0; }
 " isLegacyGCC )
 
 if( isClang )
-  set( flags "-Qunused-arguments -stdlib=libc++ ${flags}" )
+  set( flags "-Qunused-arguments ${flags}" )
+
+  # libc++
+  set( flags "${flags} -stdlib=libc++" )
   set( libs_oz "${libs_oz};c++abi" )
+  # libstdc++
+  # set( flags "${flags} -stdlib=libstdc++" )
 elseif( isLegacyGCC )
   set( flags "-pipe -std=gnu++0x -msse3 -ffast-math" )
 endif()
@@ -272,29 +277,36 @@ add_subdirectory( doc )
 #
 
 # icons
-install( DIRECTORY share/applications share/pixmaps COMPONENT client DESTINATION share )
+install( DIRECTORY share/applications share/pixmaps DESTINATION share )
 
 # info files and documentation
 if( WIN32 OR OZ_STANDALONE )
-  file( GLOB readmes doc/*.html )
+  file( GLOB readmes "doc/*.html" )
 
-  install( FILES AUTHORS COPYING ChangeLog BUGS TODO COMPONENT client DESTINATION . )
-  install( FILES ${readmes} COMPONENT client DESTINATION doc )
-  install( DIRECTORY doc/licences COMPONENT client DESTINATION doc )
-  install( DIRECTORY doc/doxygen/html/ COMPONENT documentation DESTINATION doc/doxygen )
+  install( FILES AUTHORS COPYING ChangeLog BUGS TODO DESTINATION . )
+  install( FILES ${readmes} DESTINATION doc )
+  install( DIRECTORY doc/licences DESTINATION doc )
+  install( DIRECTORY doc/doxygen/html/ DESTINATION doc/doxygen )
 endif()
 
 # libraries and launchers for standalone package
 if( OZ_STANDALONE )
-#   install( DIRECTORY support/${OZ_SYSTEM_NAME}-client/ COMPONENT client DESTINATION . )
-#   install( DIRECTORY support/${OZ_SYSTEM_NAME}-tools/ COMPONENT tools DESTINATION . )
+  file( GLOB dataFiles "share/openzone/*.zip" )
+
+  install( FILES ${dataFiles} DESTINATION share/openzone )
 
   if( WIN32 )
-    install( FILES support/openzone.bat COMPONENT client DESTINATION . )
-    install( FILES support/ozBuild.bat COMPONENT tools DESTINATION . )
+    install( DIRECTORY support/${OZ_SYSTEM_NAME}/ DESTINATION bin )
   else()
-    install( FILES support/openzone.sh COMPONENT client DESTINATION . )
-    install( FILES support/ozBuild.sh COMPONENT tools DESTINATION . )
+    install( DIRECTORY support/${OZ_SYSTEM_NAME}/ DESTINATION lib${libSuffix} )
+  endif()
+
+  if( WIN32 )
+    install( FILES etc/launchers/openzone.bat DESTINATION . )
+    install( FILES etc/launchers/ozBuild.bat DESTINATION . )
+  else()
+    install( FILES etc/launchers/openzone.sh DESTINATION . )
+    install( FILES etc/launchers/ozBuild.sh DESTINATION . )
   endif()
 endif()
 

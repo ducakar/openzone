@@ -36,16 +36,16 @@
 #include "common.hh"
 
 /*
- * Memory management.
- */
-#include "Alloc.hh"
-#include "Pool.hh"
-
-/*
  * Iterators and containers utilities.
  */
 #include "iterables.hh"
 #include "arrays.hh"
+
+/*
+ * Memory management.
+ */
+#include "Alloc.hh"
+#include "Pool.hh"
 
 /*
  * Containers.

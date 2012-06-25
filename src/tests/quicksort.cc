@@ -168,7 +168,7 @@ static void oaSort( Type* array, int begin, int end )
 #define MAX 10000
 #define TESTS 2000
 
-int main( int, char** )
+int main()
 {
   System::init();
 

@@ -355,7 +355,7 @@ class DArray
     {
       hard_assert( size > 0 );
 
-      return aContains<Elem>( data, e, size );
+      return aContains<Elem, Elem>( data, e, size );
     }
 
     /**
@@ -365,7 +365,7 @@ class DArray
     {
       hard_assert( size > 0 );
 
-      return aIndex<Elem>( data, e, size );
+      return aIndex<Elem, Elem>( data, e, size );
     }
 
     /**
@@ -375,7 +375,7 @@ class DArray
     {
       hard_assert( size > 0 );
 
-      return aLastIndex<Elem>( data, e, size );
+      return aLastIndex<Elem, Elem>( data, e, size );
     }
 
     /**

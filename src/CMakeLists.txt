@@ -9,6 +9,7 @@ include_directories( "${CMAKE_BINARY_DIR}/src" )
 include_directories( . )
 
 add_subdirectory( oz )
+add_subdirectory( unittest )
 
 add_subdirectory( common )
 

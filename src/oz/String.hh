@@ -419,9 +419,59 @@ class String
     explicit String( bool b );
 
     /**
+     * Create string that contain a single character.
+     */
+    explicit String( char c );
+
+    /**
+     * Create string from a byte value.
+     */
+    explicit String( byte b );
+
+    /**
+     * Create string from an unsigned byte value.
+     */
+    explicit String( ubyte b );
+
+    /**
+     * Create string from a short integer value.
+     */
+    explicit String( short s );
+
+    /**
+     * Create string from an unsigned short integer value.
+     */
+    explicit String( ushort s );
+
+    /**
      * Create string from an integer value.
      */
     explicit String( int i );
+
+    /**
+     * Create string from an unsigned integer value.
+     */
+    explicit String( uint i );
+
+    /**
+     * Create string from a long integer value.
+     */
+    explicit String( long l );
+
+    /**
+     * Create string from an unsigned long integer value.
+     */
+    explicit String( ulong l );
+
+    /**
+     * Create string from a 64-bit integer value.
+     */
+    explicit String( long64 l );
+
+    /**
+     * Create string from an unsigned 64-bit integer value.
+     */
+    explicit String( ulong64 l );
 
     /**
      * Create string from a float value.
@@ -813,27 +863,27 @@ class String
     }
 
     /**
-     * Concatenation.
+     * Create concatenated string.
      */
     String operator + ( const String& s ) const;
 
     /**
-     * Concatenation.
+     * Create concatenated string.
      */
     String operator + ( const char* s ) const;
 
     /**
-     * Concatenation.
+     * Create concatenated string.
      */
     friend String operator + ( const char* s, const String& t );
 
     /**
-     * Concatenation.
+     * Replace with concatenated string.
      */
     String& operator += ( const String& s );
 
     /**
-     * Concatenation.
+     * Replace with concatenated string.
      */
     String& operator += ( const char* s );
 

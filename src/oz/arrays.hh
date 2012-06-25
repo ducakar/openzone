@@ -272,8 +272,8 @@ inline void aReverseMove( Elem* aDest, Elem* aSrc, int count )
  *
  * @ingroup oz
  */
-template <typename Elem>
-inline void aSet( Elem* aDest, const Elem& value, int count )
+template <typename Elem, typename Value>
+inline void aSet( Elem* aDest, const Value& value, int count )
 {
   for( int i = 0; i < count; ++i ) {
     aDest[i] = value;
@@ -289,10 +289,14 @@ template <typename Elem>
 inline bool aEquals( const Elem* aSrcA, const Elem* aSrcB, int count )
 {
   int i = 0;
-  while( i < count && aSrcA[i] == aSrcB[i] ) {
+
+  while( i < count ) {
+    if( !( aSrcA[i] == aSrcB[i] ) ) {
+      return false;
+    }
     ++i;
   }
-  return i == count;
+  return true;
 }
 
 /**
@@ -300,14 +304,56 @@ inline bool aEquals( const Elem* aSrcA, const Elem* aSrcB, int count )
  *
  * @ingroup oz
  */
-template <typename Elem>
-inline bool aContains( const Elem* aSrc, const Elem& value, int count )
+template <typename Elem, typename Value>
+inline bool aContains( const Elem* aSrc, const Value& value, int count )
 {
   int i = 0;
-  while( i < count && !( aSrc[i] == value ) ) {
+
+  while( i < count ) {
+    if( aSrc[i] == value ) {
+      return true;
+    }
     ++i;
   }
-  return i != count;
+  return false;
+}
+
+/**
+ * Pointer to the first occurrence or null pointer if not found.
+ *
+ * @ingroup oz
+ */
+template <typename Elem, typename Value>
+inline Elem* aFind( Elem* aSrc, const Value& value, int count )
+{
+  int i = 0;
+
+  while( i < count ) {
+    if( aSrc[i] == value ) {
+      return &aSrc[i];
+    }
+    ++i;
+  }
+  return null;
+}
+
+/**
+ * Pointer to the last occurrence or null pointer if not found.
+ *
+ * @ingroup oz
+ */
+template <typename Elem, typename Value>
+inline Elem* aFindLast( Elem* aSrc, const Value& value, int count )
+{
+  int i = count - 1;
+
+  while( i >= 0 ) {
+    if( aSrc[i] == value ) {
+      return &aSrc[i];
+    }
+    --i;
+  }
+  return null;
 }
 
 /**
@@ -315,14 +361,18 @@ inline bool aContains( const Elem* aSrc, const Elem& value, int count )
  *
  * @ingroup oz
  */
-template <typename Elem>
-inline int aIndex( const Elem* aSrc, const Elem& value, int count )
+template <typename Elem, typename Value>
+inline int aIndex( const Elem* aSrc, const Value& value, int count )
 {
   int i = 0;
-  while( i < count && !( aSrc[i] == value ) ) {
+
+  while( i < count ) {
+    if( aSrc[i] == value ) {
+      return i;
+    }
     ++i;
   }
-  return i == count ? -1 : i;
+  return -1;
 }
 
 /**
@@ -330,21 +380,22 @@ inline int aIndex( const Elem* aSrc, const Elem& value, int count )
  *
  * @ingroup oz
  */
-template <typename Elem>
-inline int aLastIndex( const Elem* aSrc, const Elem& value, int count )
+template <typename Elem, typename Value>
+inline int aLastIndex( const Elem* aSrc, const Value& value, int count )
 {
   int i = count - 1;
-  while( i >= 0 && !( aSrc[i] == value ) ) {
+
+  while( i >= 0 ) {
+    if( aSrc[i] == value ) {
+      return i;
+    }
     --i;
   }
-  return i;
+  return -1;
 }
 
 /**
- * Delete objects referenced by elements and set all elements to <tt>null</tt>.
- *
- * If array elements are pointers to objects, delete all referenced objects and set all array
- * elements to <tt>null</tt>.
+ * Delete objects referenced by elements and set all elements to null pointer.
  *
  * @ingroup oz
  */
@@ -403,15 +454,15 @@ inline Elem* aRealloc( Elem* aSrc, int count, int newCount )
  *
  * @ingroup oz
  */
-template <typename Elem, typename Elem_>
-inline void aInsert( Elem* aDest, Elem_&& value, int index, int count )
+template <typename Elem, typename Value>
+inline void aInsert( Elem* aDest, Value&& value, int index, int count )
 {
   hard_assert( uint( index ) < uint( count ) );
 
   for( int i = count - 1; i > index; --i ) {
     aDest[i] = static_cast<Elem&&>( aDest[i - 1] );
   }
-  aDest[index] = static_cast<Elem_&&>( value );
+  aDest[index] = static_cast<Value&&>( value );
 }
 
 /**

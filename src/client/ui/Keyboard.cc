@@ -36,8 +36,8 @@ Keyboard keyboard;
 
 void Keyboard::init()
 {
-  aSet<ubyte>( keys, 0, SDLK_LAST );
-  aSet<ubyte>( oldKeys, 0, SDLK_LAST );
+  memset( keys, 0, SDLK_LAST );
+  memset( oldKeys, 0, SDLK_LAST );
   currKeys = SDL_GetKeyState( null );
 }
 

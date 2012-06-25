@@ -3,7 +3,7 @@
 pkgbase=openzone
 # pkgname=('liboz' 'openzone' 'openzone-data' 'openzone-doc')
 pkgname=('openzone' 'openzone-data' 'openzone-doc')
-pkgver=0.2.85
+pkgver=0.2.90
 pkgrel=1
 url="http://github.com/ducakar/openzone/"
 license=('GPL3')
