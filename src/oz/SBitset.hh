@@ -259,7 +259,7 @@ class SBitset
      */
     void setAll()
     {
-      aSet<ulong>( data, ~0ul, SIZE );
+      aSet<ulong, ulong>( data, ~0ul, SIZE );
     }
 
     /**
@@ -267,7 +267,7 @@ class SBitset
      */
     void clearAll()
     {
-      aSet<ulong>( data, 0ul, SIZE );
+      aSet<ulong, ulong>( data, 0ul, SIZE );
     }
 
     /**

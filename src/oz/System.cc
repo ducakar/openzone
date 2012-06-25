@@ -332,9 +332,9 @@ void System::warning( int nSkippedFrames, const char* msg, ... )
   bool verboseMode = Log::verboseMode;
 
   Log::verboseMode = false;
-  Log::printRaw( "\n\n" );
+  Log::putsRaw( "\n\n" );
   Log::vprintRaw( msg, ap );
-  Log::printRaw( "\n" );
+  Log::putsRaw( "\n" );
 
   Log::verboseMode = verboseMode;
 
@@ -355,9 +355,9 @@ void System::error( int nSkippedFrames, const char* msg, ... )
   va_start( ap, msg );
 
   Log::verboseMode = false;
-  Log::printRaw( "\n\n" );
+  Log::putsRaw( "\n\n" );
   Log::vprintRaw( msg, ap );
-  Log::printRaw( "\n" );
+  Log::putsRaw( "\n" );
 
   va_end( ap );
 

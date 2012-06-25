@@ -22,10 +22,6 @@
  */
 
 #include "oz/oz.hh"
-#include "oz/windefs.h"
-
-#include <cmath>
-#include <cstdio>
 
 using namespace oz;
 
@@ -33,39 +29,39 @@ struct Foo
 {
   Foo()
   {
-    printf( "Foo()\n" );
+    Log::out << "Foo()\n";
   }
 
   ~Foo()
   {
-    printf( "~Foo()\n" );
+    Log::out << "~Foo()\n";
   }
 
   Foo( const Foo& )
   {
-    printf( "Foo( const Foo& )\n" );
+    Log::out << "Foo( const Foo& )\n";
   }
 
   Foo( Foo&& )
   {
-    printf( "Foo( Foo&& )\n" );
+    Log::out << "Foo( Foo&& )\n";
   }
 
   Foo& operator = ( const Foo& )
   {
-    printf( "Foo& operator = ( const Foo& )\n" );
+    Log::out << "Foo& operator = ( const Foo& )\n";
     return *this;
   }
 
   Foo& operator = ( Foo&& )
   {
-    printf( "Foo& operator = ( Foo&& )\n" );
+    Log::out << "Foo& operator = ( Foo&& )\n";
     return *this;
   }
 
   void foo() const
   {
-    printf( "Foo::foo()\n" );
+    Log::out << "Foo::foo()\n";
   };
 
   static Foo bar( bool b )
@@ -81,10 +77,7 @@ struct Foo
   }
 };
 
-using std::sin;
-using std::cos;
-
-int main( int, char** )
+int main()
 {
   return 0;
 }

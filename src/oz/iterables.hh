@@ -251,6 +251,8 @@ class IteratorBase
 template <class IteratorA, class CIteratorB>
 inline void iCopy( IteratorA iDest, CIteratorB iSrc )
 {
+  hard_assert( static_cast<void*>( &iDest ) != static_cast<void*>( &iSrc ) );
+
   while( iDest.isValid() ) {
     hard_assert( iSrc.isValid() );
 
@@ -268,6 +270,8 @@ inline void iCopy( IteratorA iDest, CIteratorB iSrc )
 template <class IteratorA, class IteratorB>
 inline void iMove( IteratorA iDest, IteratorB iSrc )
 {
+  hard_assert( static_cast<void*>( &iDest ) != static_cast<void*>( &iSrc ) );
+
   typedef typename IteratorB::ElemType ElemB;
 
   while( iDest.isValid() ) {
@@ -301,7 +305,7 @@ inline void iSet( Iterator iDest, const Value& value )
 template <class CIteratorA, class CIteratorB>
 inline bool iEquals( CIteratorA iSrcA, CIteratorB iSrcB )
 {
-  hard_assert( iSrcA != iSrcB );
+  hard_assert( static_cast<void*>( &iSrcA ) != static_cast<void*>( &iSrcB ) );
 
   while( iSrcA.isValid() && iSrcB.isValid() && *iSrcA == *iSrcB ) {
     ++iSrcA;
@@ -325,7 +329,7 @@ inline bool iContains( CIterator iSrc, const Value& value )
 }
 
 /**
- * %Iterator to the first element with the given value or an invalid iterator if not found.
+ * %Iterator for the first occurrence or an invalid iterator if not found.
  *
  * @ingroup oz
  */
@@ -339,15 +343,15 @@ inline Iterator iFind( Iterator iSrc, const Value& value )
 }
 
 /**
- * %Iterator to the last element with the given value or an invalid iterator if not found.
+ * %Iterator for the last occurrence or an invalid iterator if not found.
  *
  * @ingroup oz
  */
-template <class CIterator, typename Value>
-inline CIterator iFindLast( CIterator iSrc, const Value& value )
+template <class Iterator, typename Value>
+inline Iterator iFindLast( Iterator iSrc, const Value& value )
 {
   // Default constructor creates an invalid, passed iterator.
-  CIterator lastOccurence;
+  Iterator lastOccurence;
 
   while( iSrc.isValid() ) {
     if( *iSrc == value ) {

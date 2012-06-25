@@ -366,7 +366,7 @@ class HashString
      */
     HashString()
     {
-      aSet<Elem*>( data, null, SIZE );
+      aSet<Elem*, Elem*>( data, null, SIZE );
     }
 
     /**
@@ -395,7 +395,7 @@ class HashString
       pool( static_cast< Pool<Elem, SIZE>&& >( t.pool ) )
     {
       aCopy<Elem*>( data, t.data, SIZE );
-      aSet<Elem*>( t.data, null, SIZE );
+      aSet<Elem*, Elem*>( t.data, null, SIZE );
     }
 
     /**
@@ -428,7 +428,7 @@ class HashString
       aCopy<Elem*>( data, t.data, SIZE );
       pool = static_cast< Pool<Elem, SIZE>&& >( t.pool );
 
-      aSet<Elem*>( t.data, null, SIZE );
+      aSet<Elem*, Elem*>( t.data, null, SIZE );
       return *this;
     }
 

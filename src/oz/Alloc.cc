@@ -88,13 +88,13 @@ void Alloc::printSummary()
   Log::indent();
 
   Log::println( "current chunks     %d", count );
-  Log::println( "current amount     %.2f MiB (%ld B)",
+  Log::println( "current amount     %.2f MiB (%lu B)",
                 float( amount ) / ( 1024.0f * 1024.0f ), ulong( amount ) );
   Log::println( "maximum chunks     %d", maxCount );
-  Log::println( "maximum amount     %.2f MiB (%ld B)",
+  Log::println( "maximum amount     %.2f MiB (%lu B)",
                 float( maxAmount ) / ( 1024.0f * 1024.0f ), ulong( maxAmount ) );
   Log::println( "cumulative chunks  %d", sumCount );
-  Log::println( "cumulative amount  %.2f MiB (%ld B)",
+  Log::println( "cumulative amount  %.2f MiB (%lu B)",
                 float( sumAmount ) / ( 1024.0f * 1024.0f ), ulong( sumAmount ) );
 
   Log::unindent();
@@ -114,7 +114,7 @@ void Alloc::printLeaks()
 
   bt = firstObjectTraceEntry;
   while( bt != null ) {
-    Log::println( "Leaked object at %p of size %d B allocated", bt->address, int( bt->size ) );
+    Log::println( "Leaked object at %p of size %lu B allocated", bt->address, ulong( bt->size ) );
     Log::indent();
     Log::printTrace( bt->stackTrace );
     Log::unindent();
@@ -124,7 +124,7 @@ void Alloc::printLeaks()
 
   bt = firstArrayTraceEntry;
   while( bt != null ) {
-    Log::println( "Leaked array at %p of size %d B allocated", bt->address, int( bt->size ) );
+    Log::println( "Leaked array at %p of size %lu B allocated", bt->address, ulong( bt->size ) );
     Log::indent();
     Log::printTrace( bt->stackTrace );
     Log::unindent();

@@ -621,7 +621,12 @@ int Client::main( int argc, char** argv )
           ui::keyboard.keys[keysym.sym] |= SDL_PRESSED;
 
 #ifndef __native_client__
-          if( keysym.sym == SDLK_F11 ) {
+          if( keysym.sym == SDLK_F10 ) {
+            if( keysym.mod == 0 ) {
+              loader.makeScreenshot();
+            }
+          }
+          else if( keysym.sym == SDLK_F11 ) {
             if( keysym.mod == 0 ) {
               if( SDL_WM_ToggleFullScreen( window ) != 0 ) {
                 windowFullscreen = !windowFullscreen;
@@ -631,9 +636,6 @@ int Client::main( int argc, char** argv )
 
                 SDL_ShowCursor( false );
               }
-            }
-            else if( keysym.mod & KMOD_ALT ) {
-              loader.makeScreenshot();
             }
             else if( keysym.mod & KMOD_CTRL ) {
               ui::mouse.isJailed = !ui::mouse.isJailed;

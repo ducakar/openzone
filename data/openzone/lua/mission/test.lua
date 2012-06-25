@@ -52,9 +52,9 @@ function onCreate()
 
   init_sample()
 
---   ozFloraSeed()
+  ozFloraSeed()
 
---   init_stressTest()
+  init_stressTest()
 end
 
 function init_sample()

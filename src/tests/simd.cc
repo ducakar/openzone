@@ -130,7 +130,7 @@ VecX c[MAX];
 VecX d[MAX];
 VecX e[MAX];
 
-int main( int, char** )
+int main()
 {
   for( int i = 0; i < MAX; ++i ) {
     a[i] = VecX( Math::rand(), Math::rand(), Math::rand() ) * 100.0f;

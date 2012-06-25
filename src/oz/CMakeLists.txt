@@ -6,11 +6,9 @@ set_target_properties( oz PROPERTIES PUBLIC_HEADER "AABB.hh;Alloc.hh;Array.hh;ar
 set_target_properties( oz PROPERTIES VERSION "${OZ_VERSION}" SOVERSION "0" )
 target_link_libraries( oz ${libs_oz} )
 
-install( FILES "${CMAKE_CURRENT_BINARY_DIR}/liboz.pc" COMPONENT liboz
-         DESTINATION lib${libSuffix}/pkgconfig )
-install( FILES "${CMAKE_CURRENT_BINARY_DIR}/ozconfig.hh" COMPONENT liboz
-         DESTINATION include/oz )
-install( TARGETS oz COMPONENT liboz
+install( FILES "${CMAKE_CURRENT_BINARY_DIR}/liboz.pc" DESTINATION lib${libSuffix}/pkgconfig )
+install( FILES "${CMAKE_CURRENT_BINARY_DIR}/ozconfig.hh" DESTINATION include/oz )
+install( TARGETS oz
          RUNTIME DESTINATION bin
          LIBRARY DESTINATION lib${libSuffix}
          ARCHIVE DESTINATION lib${libSuffix}

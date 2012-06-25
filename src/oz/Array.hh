@@ -261,7 +261,7 @@ class Array
      */
     bool contains( const Elem& e ) const
     {
-      return aContains<Elem>( data, e, SIZE );
+      return aContains<Elem, Elem>( data, e, SIZE );
     }
 
     /**
@@ -269,7 +269,7 @@ class Array
      */
     int index( const Elem& e ) const
     {
-      return aIndex<Elem>( data, e, SIZE );
+      return aIndex<Elem, Elem>( data, e, SIZE );
     }
 
     /**
@@ -277,7 +277,7 @@ class Array
      */
     int lastIndex( const Elem& e ) const
     {
-      return aLastIndex<Elem>( data, e, SIZE );
+      return aLastIndex<Elem, Elem>( data, e, SIZE );
     }
 
     /**
