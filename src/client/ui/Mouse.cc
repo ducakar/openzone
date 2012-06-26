@@ -120,7 +120,7 @@ void Mouse::draw() const
   const Cursor& cur = cursors[icon];
 
   if( doShow ) {
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+    shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
     glBindTexture( GL_TEXTURE_2D, cur.texId );
     shape.fill( x - cur.hotspotX, y + 1 + cur.hotspotY - cur.size, cur.size, cur.size );
     glBindTexture( GL_TEXTURE_2D, 0 );

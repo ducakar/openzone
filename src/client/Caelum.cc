@@ -75,12 +75,6 @@ void Caelum::update()
   caelumColour.y = Math::mix( NIGHT_COLOUR.y, DAY_COLOUR.y, ratio ) + GREEN_COEF * ratioDiff;
   caelumColour.z = Math::mix( NIGHT_COLOUR.z, DAY_COLOUR.z, ratio ) + BLUE_COEF  * ratioDiff;
 
-  if( camera.nightVision ) {
-    caelumColour.x = 0.0f;
-    caelumColour.y = caelumColour.x + caelumColour.y + caelumColour.z;
-    caelumColour.z = 0.0f;
-  }
-
   lightDir = dir;
 
   diffuseColour.x = ratio + RED_COEF   * ratioDiff;
@@ -105,22 +99,19 @@ void Caelum::draw()
   Mat44::rotationY( angle - Math::TAU / 4.0f );
 
   if( !shader.isLowDetail ) {
-    float colour[4] = {
-      Math::mix( STAR_COLOUR[0], DAY_COLOUR[0], ratio ),
-      Math::mix( STAR_COLOUR[1], DAY_COLOUR[1], ratio ),
-      Math::mix( STAR_COLOUR[2], DAY_COLOUR[2], ratio ),
-      1.0f
-    };
+    Vec4 colour = Vec4( Math::mix( STAR_COLOUR[0], DAY_COLOUR[0], ratio ),
+                        Math::mix( STAR_COLOUR[1], DAY_COLOUR[1], ratio ),
+                        Math::mix( STAR_COLOUR[2], DAY_COLOUR[2], ratio ),
+                        1.0f );
 
-    shader.use( starShaderId );
+    shader.program( starShaderId );
     tf.applyCamera();
 
     tf.model = transf;
     tf.apply();
 
     glUniform4fv( param.oz_Fog_colour, 1, caelum.caelumColour );
-    glUniform4fv( param.oz_Colour, 1, colour );
-    glUniform1i( param.oz_NightVision, camera.nightVision );
+    shader.colour( colour );
 
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
@@ -133,17 +124,16 @@ void Caelum::draw()
 
   shape.bind();
 
-  shader.use( celestialShaderId );
+  shader.program( celestialShaderId );
   tf.applyCamera();
 
   glEnable( GL_BLEND );
 
-  glUniform4f( param.oz_Colour,
-               caelum.ambientColour.x + 2.0f * caelum.diffuseColour.x,
-               caelum.ambientColour.y + caelum.diffuseColour.y,
-               caelum.ambientColour.z + caelum.diffuseColour.z,
-               1.0f );
-  glUniform1i( param.oz_NightVision, camera.nightVision );
+  shader.colour( Vec4( caelum.ambientColour.x + 2.0f * caelum.diffuseColour.x,
+                       caelum.ambientColour.y + caelum.diffuseColour.y,
+                       caelum.ambientColour.z + caelum.diffuseColour.z,
+                       1.0f ) );
+
   glBindTexture( GL_TEXTURE_2D, sunTexId );
 
   glDisable( GL_CULL_FACE );
@@ -153,7 +143,7 @@ void Caelum::draw()
 
   shape.quad( 1.0f, 1.0f );
 
-  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+  shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
   glBindTexture( GL_TEXTURE_2D, moonTexId );
 
   tf.model = transf;

@@ -59,7 +59,7 @@ void Terra::draw()
   span.maxX = min( int( ( camera.p.x + frustum.radius + matrix::Terra::DIM ) / TILE_SIZE ), TILES - 1 );
   span.maxY = min( int( ( camera.p.y + frustum.radius + matrix::Terra::DIM ) / TILE_SIZE ), TILES - 1 );
 
-  shader.use( landShaderId );
+  shader.program( landShaderId );
 
   tf.model = Mat44::ID;
   tf.apply();
@@ -105,7 +105,7 @@ void Terra::drawWater()
 
   waveBias = Math::fmod( waveBias + WAVE_BIAS_INC * Timer::TICK_TIME, Math::TAU );
 
-  shader.use( waterShaderId );
+  shader.program( waterShaderId );
 
   glUniform1f( param.oz_WaveBias, waveBias );
   tf.model = Mat44::ID;

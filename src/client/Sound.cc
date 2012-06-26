@@ -43,7 +43,7 @@ extern "C" void alSetPpapiInfo( PP_Instance, PPB_GetInterface );
   static decltype( ::name )* name = null
 
 # define OZ_DLLOAD( l, name ) \
-  *( void** ) &name = SDL_LoadFunction( l, #name ); \
+  name = ( decltype( name ) ) SDL_LoadFunction( l, #name ); \
   if( name == null ) { \
     throw Exception( "Failed loading " #name " from libmad" ); \
   }
@@ -819,8 +819,8 @@ void Sound::init()
   libmad  = SDL_LoadObject( "libmad.dll" );
   libfaad = SDL_LoadObject( "libfaad2.dll" );
 # else
-  libmad  = SDL_LoadObject( "libmad.so" );
-  libfaad = SDL_LoadObject( "libfaad.so" );
+  libmad  = SDL_LoadObject( "libmad.so.0" );
+  libfaad = SDL_LoadObject( "libfaad.so.2" );
 # endif
 
   if( libmad != null ) {

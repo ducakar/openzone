@@ -152,9 +152,9 @@ void Label::draw( const Area* area, bool allowChanged )
     int posX = area->x + ( x < 0 ? area->width  + offsetX : offsetX );
     int posY = area->y + ( y < 0 ? area->height + offsetY : offsetY );
 
-    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
+    shader.colour( Vec4( 0.0f, 0.0f, 0.0f, 1.0f ) );
     shape.fillInv( posX + 1, posY - 1, width, height );
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+    shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
     shape.fillInv( posX, posY, width, height );
 
     glBindTexture( GL_TEXTURE_2D, 0 );

@@ -91,27 +91,26 @@ void UI::draw()
 {
   tf.ortho( Area::uiWidth, Area::uiHeight );
   tf.camera = Mat44::ID;
+  shader.colourTransform = Mat44::ID;
 
   // set shaders
   shader.setAmbientLight( Vec4( 0.55f, 0.55f, 0.55f, 1.00f ) );
   shader.setCaelumLight( ~Vec3( 0.6f, -0.3f, -0.8f ), Vec4( 0.45f, 0.45f, 0.45f, 1.00f ) );
 
   for( int i = 0; i < library.shaders.length(); ++i ) {
-    shader.use( i );
+    shader.program( i );
 
     tf.applyCamera();
     shader.updateLights();
 
     glUniform1f( param.oz_Fog_dist, 1.0e6f );
-
-    glUniform1i( param.oz_NightVision, false );
   }
 
   glClear( GL_DEPTH_BUFFER_BIT );
 
   glEnable( GL_BLEND );
 
-  shader.use( shader.plain );
+  shader.program( shader.plain );
 
   root->drawChildren();
   mouse.draw();

@@ -75,7 +75,7 @@ void FragPool::draw( const Frag* frag )
     tf.model.rotateY( frag->p.y );
     tf.model.rotateZ( frag->p.z );
 
-    shader.colour.w = flags & FADEOUT_BIT ? clamp( frag->life, 0.0f, 1.0f ) : 1.0f;
+    shader.colourTransform.w.w = flags & FADEOUT_BIT ? clamp( frag->life, 0.0f, 1.0f ) : 1.0f;
 
     model->draw( Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
   }

@@ -40,7 +40,7 @@ uniform vec3            oz_CameraPosition;
 /*
  * Colour
  */
-uniform vec4            oz_Colour;
+uniform mat4            oz_ColourTransform;
 
 /*
  * Texturing { albedo, masks, normals, frames positions, frame normals }
@@ -65,8 +65,6 @@ struct Light
 
 uniform CaelumLight     oz_CaelumLight;
 uniform Light           oz_PointLights[8];
-
-uniform bool            oz_NightVision;
 
 /*
  * Fog
@@ -108,6 +106,8 @@ vec4 applyFog( vec4 colour, float dist )
   float ratio = min( dist / oz_Fog.dist, 1.0 );
   return mix( colour, oz_Fog.colour, ratio*ratio );
 }
+
+
 
 
 

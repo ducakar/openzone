@@ -42,17 +42,8 @@ void main()
 
   vec4 detailSample = texture2D( oz_Textures[0], exTexCoord * TERRA_DETAIL_SCALE );
   vec4 mapSample    = texture2D( oz_Textures[2], exTexCoord );
-
   vec4 diffuse      = skyLightColour( normal );
+  vec4 fragColour   = oz_ColourTransform * detailSample * mapSample * diffuse;
 
-  vec4 fragColour   = detailSample * mapSample * diffuse;
-
-  if( oz_NightVision ) {
-    float nvColour = 2.0 * ( fragColour.r + fragColour.g + fragColour.b );
-
-    gl_FragData[0] = applyFog( vec4( 0.0, nvColour, 0.0, fragColour.a ), dist );
-  }
-  else {
-    gl_FragData[0] = applyFog( fragColour, dist );
-  }
+  gl_FragData[0]    = applyFog( fragColour, dist );
 }

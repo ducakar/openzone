@@ -27,5 +27,5 @@ varying vec2 exTexCoord;
 
 void main()
 {
-  gl_FragData[0] = oz_Colour * texture2D( oz_Textures[0], exTexCoord );
+  gl_FragData[0] = oz_ColourTransform * texture2D( oz_Textures[0], exTexCoord );
 }

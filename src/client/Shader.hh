@@ -40,14 +40,12 @@ struct Param
 
   int oz_CameraPosition;
 
-  int oz_Colour;
+  int oz_ColourTransform;
   int oz_Textures;
 
   int oz_CaelumLight_dir;
   int oz_CaelumLight_diffuse;
   int oz_CaelumLight_ambient;
-
-  int oz_NightVision;
 
   int oz_Fog_dist;
   int oz_Fog_colour;
@@ -173,30 +171,32 @@ class Shader
 
   public:
 
-    Mode mode;
+    Mode  mode;
 
-    int  plain;
-    int  mesh;
-    int  postprocess;
+    int   plain;
+    int   mesh;
+    int   postprocess;
 
-    int  activeProgram;
+    int   activeProgram;
 
-    Vec4 colour;
-    Vec4 fogColour;
+    Mat44 colourTransform;
+    Vec4  fogColour;
 
-    uint defaultMasks;
-    uint defaultNormals;
+    uint  defaultMasks;
+    uint  defaultNormals;
 
-    int  medium;
-    bool hasS3TC;
-    bool hasVertexTexture;
-    bool setSamplerMap;
-    bool doPostprocess;
-    bool isLowDetail;
+    int   medium;
+    bool  hasS3TC;
+    bool  hasVertexTexture;
+    bool  setSamplerMap;
+    bool  doPostprocess;
+    bool  isLowDetail;
 
     Shader();
 
-    void use( int id );
+    void program( int id );
+    void colour( const Vec4& colour );
+    void colour( const Mat44& colourTransform );
 
     void setLightingDistance( float distance );
     void setAmbientLight( const Vec4& colour );

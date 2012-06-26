@@ -56,13 +56,13 @@ bool Button::onMouseEvent()
 void Button::onDraw()
 {
   if( isClicked ) {
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+    shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
   }
   else if( isHighlighted ) {
-    glUniform4f( param.oz_Colour, 0.8f, 0.8f, 0.8f, 0.4f );
+    shader.colour( Vec4( 0.8f, 0.8f, 0.8f, 0.4f ) );
   }
   else {
-    glUniform4f( param.oz_Colour, 0.6f, 0.6f, 0.6f, 0.4f );
+    shader.colour( Vec4( 0.6f, 0.6f, 0.6f, 0.4f ) );
   }
 
   fill( 0, 0, width, height );

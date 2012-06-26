@@ -127,9 +127,9 @@ void StrategicArea::printName( int baseX, int baseY, const char* s, ... )
 
   SDL_FreeSurface( text );
 
-  glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
+  shader.colour( Vec4( 0.0f, 0.0f, 0.0f, 1.0f ) );
   shape.fillInv( x + 1, y - 1, width, height );
-  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+  shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
   shape.fillInv( x, y, width, height );
 
   glBindTexture( GL_TEXTURE_2D, 0 );
@@ -175,13 +175,13 @@ void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const 
     float lifeWidth = life * barWidth;
     float lifeWidthLeft = barWidth - lifeWidth;
 
-    glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.8f );
+    shader.colour( Vec4( 1.0f - life, life, 0.0f, 0.8f ) );
     shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
 
-    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.15f );
+    shader.colour( Vec4( 0.0f, 0.0f, 0.0f, 0.15f ) );
     shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
 
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.8f );
+    shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 0.8f ) );
     shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
   }
 }
@@ -195,7 +195,7 @@ void StrategicArea::drawTaggedRect( const Span& span, const Struct* str, const O
   float maxY = float( span.maxY );
 
   if( isHovered ) {
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.8f );
+    shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 0.8f ) );
     shape.tag( minX, minY, maxX, maxY );
   }
   else {
@@ -220,13 +220,13 @@ void StrategicArea::drawTaggedRect( const Span& span, const Struct* str, const O
 
     hard_assert( 0.0f <= life && life <= 1.0f );
 
-    glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
+    shader.colour( Vec4( 1.0f - life, life, 0.0f, 0.6f ) );
     shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
 
-    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.15f );
+    shader.colour( Vec4( 0.0f, 0.0f, 0.0f, 0.15f ) );
     shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
 
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.8f );
+    shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 0.8f ) );
     shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
     shape.tag( minX, minY, maxX, maxY );
   }

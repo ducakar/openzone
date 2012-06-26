@@ -103,7 +103,7 @@ static void exit( Button* sender )
 
 void MainMenu::onDraw()
 {
-  glUniform4f( param.oz_Colour, 0.1f, 0.1f, 0.1f, 1.0f );
+  shader.colour( Vec4( 0.1f, 0.1f, 0.1f, 1.0f ) );
   shape.fill( 0, 0, Area::uiWidth, Area::uiHeight );
 
   Frame::onDraw();
