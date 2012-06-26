@@ -209,10 +209,10 @@ void InventoryMenu::onDraw()
 
       if( index < containerClazz->nItems ) {
         if( index == tagged ) {
-          glUniform4f( param.oz_Colour, 0.6f, 0.6f, 0.6f, 0.6f );
+          shader.colour( Vec4( 0.6f, 0.6f, 0.6f, 0.6f ) );
         }
         else {
-          glUniform4f( param.oz_Colour, 0.3f, 0.3f, 0.3f, 0.6f );
+          shader.colour( Vec4( 0.3f, 0.3f, 0.3f, 0.6f ) );
         }
 
         fill( j * SLOT_SIZE + PADDING_SIZE,
@@ -231,13 +231,13 @@ slotsRendered:
   int nScrollRows = max( 0, containerClazz->nItems - ( ROWS - 1 ) * COLS - 1 ) / COLS;
 
   if( scroll != 0 ) {
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+    shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
     glBindTexture( GL_TEXTURE_2D, scrollUpTexId );
     fill( 16, FOOTER_SIZE + ROWS * SLOT_SIZE, 16, 16 );
     glBindTexture( GL_TEXTURE_2D, 0 );
   }
   if( scroll != nScrollRows ) {
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+    shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
     glBindTexture( GL_TEXTURE_2D, scrollDownTexId );
     fill( 16, FOOTER_SIZE - 16, 16, 16 );
     glBindTexture( GL_TEXTURE_2D, 0 );
@@ -292,7 +292,7 @@ slotsRendered:
   glDisable( GL_DEPTH_TEST );
 
   shape.bind();
-  shader.use( shader.plain );
+  shader.program( shader.plain );
 
   glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, 0 );
@@ -311,10 +311,10 @@ slotsRendered:
 
     hard_assert( 0.0f <= life && life <= 1.0f );
 
-    glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
+    shader.colour( Vec4( 1.0f - life, life, 0.0f, 0.6f ) );
     fill( -51, -15, lifeWidth, 10 );
 
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.6f );
+    shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 0.6f ) );
     rect( -52, -16, 48, 12 );
 
     if( taggedItem->flags & Object::USE_FUNC_BIT ) {
@@ -330,7 +330,7 @@ slotsRendered:
         texId = taggedItem->index == camera.botObj->weapon ? unequipTexId : equipTexId;
       }
 
-      glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+      shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
       glBindTexture( GL_TEXTURE_2D, texId );
       shape.fill( x + width - ICON_SIZE - 4, y + 4, ICON_SIZE, ICON_SIZE );
       glBindTexture( GL_TEXTURE_2D, 0 );

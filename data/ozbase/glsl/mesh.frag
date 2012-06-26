@@ -42,22 +42,13 @@ void main()
   vec4 diffuse      = skyLightColour( normal );
 
 #ifdef OZ_LOW_DETAIL
-  vec4 fragColour   = oz_Colour * colourSample * diffuse;
+  vec4 fragColour   = oz_ColourTransform * colourSample * diffuse;
 #else
   vec4 masksSample  = texture2D( oz_Textures[1], exTexCoord );
-
   vec4 emission     = vec4( masksSample.g, masksSample.g, masksSample.g, 0.0 );
   vec4 specular     = specularColour( masksSample.r, normal, toCamera / dist );
-
-  vec4 fragColour   = oz_Colour * colourSample * ( diffuse + emission + specular );
+  vec4 fragColour   = oz_ColourTransform * colourSample * ( diffuse + emission + specular );
 #endif
 
-  if( oz_NightVision ) {
-    float nvColour = 2.0 * ( fragColour.r + fragColour.g + fragColour.b );
-
-    gl_FragData[0] = applyFog( vec4( 0.0, nvColour, 0.0, fragColour.a ), dist );
-  }
-  else {
-    gl_FragData[0] = applyFog( fragColour, dist );
-  }
+  gl_FragData[0]    = applyFog( fragColour, dist );
 }

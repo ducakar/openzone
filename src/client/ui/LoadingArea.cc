@@ -47,7 +47,7 @@ LoadingArea::~LoadingArea()
 
 void LoadingArea::onDraw()
 {
-  glUniform4f( param.oz_Colour, 0.1f, 0.1f, 0.1f, 1.0f );
+  shader.colour( Vec4( 0.1f, 0.1f, 0.1f, 1.0f ) );
   fill( 0, 0, width, height );
 
   status.draw( this, false );

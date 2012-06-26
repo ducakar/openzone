@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "Plane.hh"
 #include "Quat.hh"
 
 namespace oz
@@ -275,7 +276,7 @@ class Mat44
     }
 
     /**
-     * Product, transformation of a vector (no translation is applied).
+     * Transformed 3D vector (no translation is applied).
      */
     OZ_ALWAYS_INLINE
     Vec3 operator * ( const Vec3& v ) const
@@ -286,7 +287,7 @@ class Mat44
     }
 
     /**
-     * Product, transformation of a point (translation is applied).
+     * Transformed point (translation is applied).
      */
     OZ_ALWAYS_INLINE
     Point operator * ( const Point& p ) const
@@ -294,6 +295,34 @@ class Mat44
       return Point( x.x * p.x + y.x * p.y + z.x * p.z + w.x,
                     x.y * p.x + y.y * p.y + z.y * p.z + w.y,
                     x.z * p.x + y.z * p.y + z.z * p.z + w.z );
+    }
+
+    /**
+     * Transformed plane.
+     */
+    OZ_ALWAYS_INLINE
+    Plane operator * ( const Plane& p ) const
+    {
+      Plane tp;
+
+      tp.n = Vec3( x.x * p.n.x + y.x * p.n.y + z.x * p.n.z,
+                   x.y * p.n.x + y.y * p.n.y + z.y * p.n.z,
+                   x.z * p.n.x + y.z * p.n.y + z.z * p.n.z );
+      tp.d = p.d + tp.n.x * w.x + tp.n.y * w.y + tp.n.z * w.z;
+
+      return tp;
+    }
+
+    /**
+     * Product with a four-component vector.
+     */
+    OZ_ALWAYS_INLINE
+    Vec4 operator * ( const Vec4& v ) const
+    {
+      return Vec4( x.x * v.x + y.x * v.y + z.x * v.z + w.x * v.w,
+                   x.y * v.x + y.y * v.y + z.y * v.z + w.y * v.w,
+                   x.z * v.x + y.z * v.y + z.z * v.z + w.z * v.w,
+                   x.w * v.x + y.w * v.y + z.w * v.z + w.w * v.w );
     }
 
     /**

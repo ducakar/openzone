@@ -41,6 +41,7 @@
 # include <windows.h>
 # include <mmsystem.h>
 #else
+# include <dlfcn.h>
 # include <pthread.h>
 # include <pulse/simple.h>
 # include <unistd.h>
@@ -103,9 +104,14 @@ static const Wave WAVE_SAMPLE = {
 #else
 
 static const pa_sample_spec BELL_SPEC = { PA_SAMPLE_U8, 11025, 1 };
-static const ubyte BELL_SAMPLE[] = {
+static const ubyte          BELL_SAMPLE[] = {
 # include "bellSample.inc"
 };
+
+static decltype( ::pa_simple_new )*   pa_simple_new;   // = null
+static decltype( ::pa_simple_free )*  pa_simple_free;  // = null
+static decltype( ::pa_simple_write )* pa_simple_write; // = null
+static decltype( ::pa_simple_drain )* pa_simple_drain; // = null
 
 #endif
 
@@ -207,13 +213,37 @@ static void construct()
 {
 #if defined( __native_client__ ) || defined( __ANDROID__ )
 #elif defined( _WIN32 )
+
   InitializeCriticalSection( &bellLock );
+
 #else
+
   // Disable default handler for TRAP signal that crashes the process.
   signal( SIGTRAP, SIG_IGN );
 
   pthread_spin_init( &bellLock, PTHREAD_PROCESS_PRIVATE );
+
+  void* library = dlopen( "libpulse-simple.so.0", RTLD_NOW );
+  if( library != null ) {
+    pa_simple_new   = ( decltype( ::pa_simple_new   )* ) dlsym( library, "pa_simple_new" );
+    pa_simple_free  = ( decltype( ::pa_simple_free  )* ) dlsym( library, "pa_simple_free" );
+    pa_simple_write = ( decltype( ::pa_simple_write )* ) dlsym( library, "pa_simple_write" );
+    pa_simple_drain = ( decltype( ::pa_simple_drain )* ) dlsym( library, "pa_simple_drain" );
+
+    if( pa_simple_new == null || pa_simple_free == null || pa_simple_write == null ||
+        pa_simple_drain == null )
+    {
+      pa_simple_new   = null;
+      pa_simple_free  = null;
+      pa_simple_write = null;
+      pa_simple_drain = null;
+
+      dlclose( library );
+    }
+  }
+
 #endif
+
   isConstructed = true;
 }
 
@@ -304,6 +334,10 @@ void System::bell()
   }
 
 #else
+
+  if( pa_simple_new == null ) {
+    return;
+  }
 
   pthread_spin_lock( &bellLock );
 

@@ -71,7 +71,7 @@ void SMM::load()
 
 void SMM::draw( int mask ) const
 {
-  shader.use( shaderId );
+  shader.program( shaderId );
   tf.apply();
 
   mesh.draw( mask );

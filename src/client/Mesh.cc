@@ -270,7 +270,7 @@ void Mesh::drawComponent( int id, int mask ) const
       glActiveTexture( GL_TEXTURE2 );
       glBindTexture( GL_TEXTURE_2D, part.texture.normals );
 
-      glUniform4fv( param.oz_Colour, 1, shader.colour );
+      glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, shader.colourTransform );
 
       glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
                       static_cast<ushort*>( null ) + part.firstIndex );
@@ -304,7 +304,7 @@ void Mesh::draw( int mask ) const
       glActiveTexture( GL_TEXTURE2 );
       glBindTexture( GL_TEXTURE_2D, part.texture.normals );
 
-      glUniform4fv( param.oz_Colour, 1, shader.colour );
+      glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, shader.colourTransform );
 
       glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
                       static_cast<ushort*>( null ) + part.firstIndex );

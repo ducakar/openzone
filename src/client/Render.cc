@@ -57,10 +57,15 @@ const float Render::LAVA_VISIBILITY  = 4.0f;
 const float Render::WIND_FACTOR      = 0.0008f;
 const float Render::WIND_PHI_INC     = 0.04f;
 
-const Vec4 Render::STRUCT_AABB       = Vec4( 0.20f, 0.50f, 1.00f, 0.30f );
-const Vec4 Render::ENTITY_AABB       = Vec4( 1.00f, 0.40f, 0.60f, 0.30f );
-const Vec4 Render::SOLID_AABB        = Vec4( 0.60f, 0.90f, 0.20f, 0.30f );
-const Vec4 Render::NONSOLID_AABB     = Vec4( 0.70f, 0.80f, 0.90f, 0.30f );
+const Vec4  Render::STRUCT_AABB       = Vec4( 0.20f, 0.50f, 1.00f, 0.30f );
+const Vec4  Render::ENTITY_AABB       = Vec4( 1.00f, 0.40f, 0.60f, 0.30f );
+const Vec4  Render::SOLID_AABB        = Vec4( 0.60f, 0.90f, 0.20f, 0.30f );
+const Vec4  Render::NONSOLID_AABB     = Vec4( 0.70f, 0.80f, 0.90f, 0.30f );
+
+const Mat44 Render::NIGHT_COLOUR      = Mat44( 0.0f, 2.0f, 0.0f, 0.0f,
+                                               0.0f, 2.0f, 0.0f, 0.0f,
+                                               0.0f, 2.0f, 0.0f, 0.0f,
+                                               0.0f, 0.0f, 0.0f, 1.0f );
 
 void Render::scheduleCell( int cellX, int cellY )
 {
@@ -141,9 +146,11 @@ void Render::prepareDraw()
   }
 
   if( camera.nightVision ) {
-    shader.fogColour.x = 0.0f;
-    shader.fogColour.y = shader.fogColour.x + shader.fogColour.y + shader.fogColour.z;
-    shader.fogColour.z = 0.0f;
+    shader.colourTransform = NIGHT_COLOUR;
+    shader.fogColour = shader.colourTransform * shader.fogColour;
+  }
+  else {
+    shader.colourTransform = Mat44::ID;
   }
 
   windPhi = Math::fmod( windPhi + WIND_PHI_INC, Math::TAU );
@@ -222,13 +229,12 @@ void Render::drawGeometry()
 
   // set shaders
   for( int i = 0; i < library.shaders.length(); ++i ) {
-    shader.use( i );
+    shader.program( i );
 
     tf.applyCamera();
     shader.updateLights();
 
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
-    glUniform1i( param.oz_NightVision, camera.nightVision );
+    shader.colour( shader.colourTransform );
     glUniform4f( param.oz_Wind, 1.0f, 1.0f, WIND_FACTOR, windPhi );
 
     glUniform1f( param.oz_Fog_dist, visibility );
@@ -244,7 +250,7 @@ void Render::drawGeometry()
   beginMicros = currentMicros;
 
   // draw structures
-  shader.use( shader.mesh );
+  shader.program( shader.mesh );
 
   for( int i = 0; i < structs.length(); ++i ) {
     context.drawBSP( structs[i].str, Mesh::SOLID_BIT );
@@ -271,7 +277,7 @@ void Render::drawGeometry()
 
   // draw fragments
   glEnable( GL_BLEND );
-  shader.use( shader.mesh );
+  shader.program( shader.mesh );
 
   glBindTexture( GL_TEXTURE_2D, 0 );
 
@@ -280,7 +286,7 @@ void Render::drawGeometry()
   }
 
   // draw transparent parts of objects
-  shader.colour.w = 1.0f;
+  shader.colourTransform.w.w = 1.0f;
 
   currentMicros = Time::uclock();
   fragsMicros += currentMicros - beginMicros;
@@ -303,7 +309,7 @@ void Render::drawGeometry()
   beginMicros = currentMicros;
 
   // draw structures' alpha parts
-  shader.use( shader.mesh );
+  shader.program( shader.mesh );
 
   for( int i = structs.length() - 1; i >= 0; --i ) {
     context.drawBSP( structs[i].str, Mesh::ALPHA_BIT );
@@ -316,7 +322,7 @@ void Render::drawGeometry()
   beginMicros = currentMicros;
 
   shape.bind();
-  shader.use( shader.plain );
+  shader.program( shader.plain );
 
   glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, 0 );
@@ -326,7 +332,7 @@ void Render::drawGeometry()
     collider.translate( camera.p, move, camera.botObj );
     move *= collider.hit.ratio;
 
-    glUniform4f( param.oz_Colour, 0.0f, 1.0f, 0.0f, 1.0f );
+    shader.colour( Vec4( 0.0f, 1.0f, 0.0f, 1.0f ) );
     shape.box( AABB( camera.p + move, Vec3( 0.05f, 0.05f, 0.05f ) ) );
   }
 
@@ -334,22 +340,21 @@ void Render::drawGeometry()
     glLineWidth( 1.0f );
 
     for( int i = 0; i < objects.length(); ++i ) {
-      glUniform4fv( param.oz_Colour, 1,
-                    objects[i].obj->flags & Object::SOLID_BIT ? SOLID_AABB : NONSOLID_AABB );
+      shader.colour( objects[i].obj->flags & Object::SOLID_BIT ? SOLID_AABB : NONSOLID_AABB );
       shape.wireBox( *objects[i].obj );
     }
 
     for( int i = 0; i < structs.length(); ++i ) {
       const Struct* str = structs[i].str;
 
-      glUniform4fv( param.oz_Colour, 1, ENTITY_AABB );
+      shader.colour( ENTITY_AABB );
 
       foreach( entity, citer( str->entities, str->nEntities ) ) {
         Bounds bb = str->toAbsoluteCS( *entity->model + entity->offset );
         shape.wireBox( bb.toAABB() );
       }
 
-      glUniform4fv( param.oz_Colour, 1, STRUCT_AABB );
+      shader.colour( STRUCT_AABB );
       shape.wireBox( str->toAABB() );
     }
   }
@@ -393,7 +398,7 @@ void Render::drawOrbis()
     tf.ortho( camera.width, camera.height );
     tf.camera = Mat44::ID;
 
-    shader.use( doPostprocess ? shader.postprocess : shader.plain );
+    shader.program( doPostprocess ? shader.postprocess : shader.plain );
     tf.applyCamera();
 
     glBindTexture( GL_TEXTURE_2D, colourBuffer );
@@ -695,7 +700,7 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
   ui::ui.init();
 
   shape.bind();
-  shader.use( shader.plain );
+  shader.program( shader.plain );
 
   glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, 0 );

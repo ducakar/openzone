@@ -28,12 +28,5 @@ varying float exAzimuth;
 
 void main()
 {
-  vec4 sampleColour = oz_Colour * texture2D( oz_Textures[0], exTexCoord );
-
-  if( oz_NightVision ) {
-    gl_FragData[0] = vec4( 0.0, sampleColour.r + sampleColour.g + sampleColour.b, 0.0, sampleColour.a );
-  }
-  else {
-    gl_FragData[0] = sampleColour;
-  }
+  gl_FragData[0] = oz_ColourTransform * texture2D( oz_Textures[0], exTexCoord );
 }

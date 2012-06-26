@@ -111,7 +111,7 @@ void MD2Imago::draw( const Imago* parent, int mask )
     }
   }
   else if( bot->state & Bot::DEAD_BIT ) {
-    shader.colour.w = min( bot->life * 8.0f / clazz->life, 1.0f );
+    shader.colourTransform.w.w = min( bot->life * 8.0f / clazz->life, 1.0f );
 
     if( shader.mode == Shader::SCENE && parent == null ) {
       tf.model = Mat44::translation( obj->p - Point::ORIGIN );
@@ -126,7 +126,7 @@ void MD2Imago::draw( const Imago* parent, int mask )
 //       context.drawImago( orbis.objects[bot->weapon], this, Mesh::SOLID_BIT );
 //     }
 
-    shader.colour.w = 1.0f;
+    shader.colourTransform.w.w = 1.0f;
   }
 }
 

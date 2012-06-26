@@ -289,7 +289,7 @@ void MD2::load()
 
 void MD2::drawFrame( int frame ) const
 {
-  shader.use( shaderId );
+  shader.program( shaderId );
 
   if( shader.hasVertexTexture ) {
     glActiveTexture( GL_TEXTURE3 );
@@ -330,7 +330,7 @@ void MD2::drawFrame( int frame ) const
 
 void MD2::draw( const AnimState* anim ) const
 {
-  shader.use( shaderId );
+  shader.program( shaderId );
   tf.apply();
 
   if( shader.hasVertexTexture ) {

@@ -48,9 +48,11 @@ void HudArea::drawBotCrosshair()
   float delta  = max( 1.0f - Math::fabs( camera.unit.headRot.w ), 0.0f );
   float alpha  = 1.0f - CROSS_FADE_COEFF * Math::sqrt( delta );
   float life   = max( 2.0f * me->life / myClazz->life - 1.0f, 0.0f );
-  Vec3  colour = Math::mix( Vec3( 1.00f, 0.50f, 0.25f ), Vec3( 1.0f, 1.0f, 1.0f ), life );
+  Vec4  colour = Math::mix( Vec4( 1.00f, 0.50f, 0.25f, alpha ),
+                            Vec4( 1.00f, 1.00f, 1.00f, alpha ),
+                            life );
 
-  glUniform4f( param.oz_Colour, colour.x, colour.y, colour.z, alpha );
+  shader.colour( colour );
   glBindTexture( GL_TEXTURE_2D, crossTexId );
   shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
   glBindTexture( GL_TEXTURE_2D, 0 );
@@ -103,13 +105,13 @@ void HudArea::drawBotCrosshair()
 
       int lifeWidth = int( life * float( ICON_SIZE + 14 ) );
 
-      glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
+      shader.colour( Vec4( 1.0f - life, life, 0.0f, 0.6f ) );
       fill( healthBarX + 1, healthBarY + 11, lifeWidth, 10 );
 
-      glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.15f );
+      shader.colour( Vec4( 0.0f, 0.0f, 0.0f, 0.15f ) );
       fill( healthBarX + 1 + lifeWidth, healthBarY + 11, ICON_SIZE + 14 - lifeWidth, 10 );
 
-      glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.8f );
+      shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 0.8f ) );
       rect( healthBarX, healthBarY + 10, ICON_SIZE + 16, 12 );
 
       if( lastObjectId != camera.object ) {
@@ -197,23 +199,23 @@ void HudArea::drawBotStatus()
   int   lifeWidth    = max( int( life * 198.0f ), 0 );
   int   staminaWidth = max( int( stamina * 198.0f ), 0 );
 
-  glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
+  shader.colour( Vec4( 1.0f - life, life, 0.0f, 0.6f ) );
   fill( 9, 31, lifeWidth, 12 );
-  glUniform4f( param.oz_Colour, 0.7f - 0.7f * stamina, 0.3f, 0.5f + 0.5f * stamina, 0.6f );
+  shader.colour( Vec4( 0.7f - 0.7f * stamina, 0.3f, 0.5f + 0.5f * stamina, 0.6f ) );
   fill( 9, 9, staminaWidth, 12 );
 
-  glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.15f );
+  shader.colour( Vec4( 0.0f, 0.0f, 0.0f, 0.15f ) );
   fill( 9 + lifeWidth, 31, 198 - lifeWidth, 12 );
   fill( 9 + staminaWidth, 9, 198 - staminaWidth, 12 );
 
-  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.6f );
+  shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 0.6f ) );
   rect( 8, 30, 200, 14 );
   rect( 8, 8, 200, 14 );
 
   if( bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
     const Weapon* weaponObj = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
-    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.3f );
+    shader.colour( Vec4( 0.0f, 0.0f, 0.0f, 0.3f ) );
     fill( 8, 52, 200, Font::INFOS[Font::LARGE].height + 8 );
 
     if( lastWeaponId != bot->weapon ) {
@@ -264,7 +266,7 @@ void HudArea::drawVehicleStatus()
   glDisable( GL_DEPTH_TEST );
 
   shape.bind();
-  shader.use( shader.plain );
+  shader.program( shader.plain );
 
   glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, 0 );
@@ -277,16 +279,16 @@ void HudArea::drawVehicleStatus()
   float fuel      = vehicle->fuel / vehClazz->fuel;
   int   fuelWidth = int( fuel * 198.0f );
 
-  glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
+  shader.colour( Vec4( 1.0f - life, life, 0.0f, 0.6f ) );
   fill( -207, 31, lifeWidth, 12 );
-  glUniform4f( param.oz_Colour, 0.7f - 0.7f * fuel, 0.3f, 0.5f + 0.5f * fuel, 0.6f );
+  shader.colour( Vec4( 0.7f - 0.7f * fuel, 0.3f, 0.5f + 0.5f * fuel, 0.6f ) );
   fill( -207, 9, fuelWidth, 12 );
 
-  glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.15f );
+  shader.colour( Vec4( 0.0f, 0.0f, 0.0f, 0.15f ) );
   fill( -207 + lifeWidth, 31, 198 - lifeWidth, 12 );
   fill( -207 + fuelWidth, 9, 198 - fuelWidth, 12 );
 
-  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.6f );
+  shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 0.6f ) );
   rect( -208, 30, 200, 14 );
   rect( -208, 8, 200, 14 );
 
@@ -304,7 +306,7 @@ void HudArea::drawVehicleStatus()
     if( i == vehicle->weapon ) {
       int step = font.INFOS[Font::LARGE].height + 8;
 
-      glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.3f );
+      shader.colour( Vec4( 0.0f, 0.0f, 0.0f, 0.3f ) );
       fill( -208, 52 + ( vehClazz->nWeapons - 1 - i ) * step,
             200, Font::INFOS[Font::LARGE].height + 8 );
     }

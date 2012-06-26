@@ -78,11 +78,10 @@ void GalileoFrame::onDraw()
   float pY = camera.p.y;
   float h  = camera.botObj == null ? camera.strategic.h : camera.botObj->h;
 
-  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, isMaximised ? 0.8f : 0.6f );
+  shader.colour( Vec4( 1.0f, 1.0f, 1.0f, isMaximised ? 0.8f : 0.6f ) );
   glBindTexture( GL_TEXTURE_2D, mapTexId );
   fill( 0, 0, width, height );
-
-  glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+  shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
 
   float oX      = float( x );
   float oY      = float( y );

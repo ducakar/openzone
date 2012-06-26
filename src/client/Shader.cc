@@ -213,14 +213,12 @@ void Shader::loadProgram( int id )
 
   OZ_REGISTER_PARAMETER( oz_CameraPosition,      "oz_CameraPosition"      );
 
-  OZ_REGISTER_PARAMETER( oz_Colour,              "oz_Colour"              );
+  OZ_REGISTER_PARAMETER( oz_ColourTransform,     "oz_ColourTransform"     );
   OZ_REGISTER_PARAMETER( oz_Textures,            "oz_Textures"            );
 
   OZ_REGISTER_PARAMETER( oz_CaelumLight_dir,     "oz_CaelumLight.dir"     );
   OZ_REGISTER_PARAMETER( oz_CaelumLight_diffuse, "oz_CaelumLight.diffuse" );
   OZ_REGISTER_PARAMETER( oz_CaelumLight_ambient, "oz_CaelumLight.ambient" );
-
-  OZ_REGISTER_PARAMETER( oz_NightVision,         "oz_NightVision"         );
 
   OZ_REGISTER_PARAMETER( oz_Fog_dist,            "oz_Fog.dist"            );
   OZ_REGISTER_PARAMETER( oz_Fog_colour,          "oz_Fog.colour"          );
@@ -251,7 +249,7 @@ Shader::Shader() :
   mode( UI ), plain( -1 ), defaultMasks( 0 )
 {}
 
-void Shader::use( int id )
+void Shader::program( int id )
 {
   if( id == activeProgram ) {
     return;
@@ -263,6 +261,21 @@ void Shader::use( int id )
   param = programs[id].param;
 
   OZ_GL_CHECK_ERROR();
+}
+
+void Shader::colour( const Vec4& colour )
+{
+  Mat44 colourTransform( Vec4( colour.x, 0.0f, 0.0f, 0.0f ),
+                         Vec4( 0.0f, colour.y, 0.0f, 0.0f ),
+                         Vec4( 0.0f, 0.0f, colour.z, 0.0f ),
+                         Vec4( 0.0f, 0.0f, 0.0f, colour.w ) );
+
+  glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, colourTransform );
+}
+
+void Shader::colour( const Mat44& colourTransform )
+{
+  glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, colourTransform );
 }
 
 void Shader::setLightingDistance( float distance )
@@ -370,7 +383,7 @@ void Shader::init()
   mesh        = library.shaderIndex( "mesh" );
   postprocess = library.shaderIndex( "postprocess" );
 
-  colour = Vec4::ONE;
+  colourTransform = Mat44::ID;
   medium = 0;
 
   PFile dir( "glsl" );

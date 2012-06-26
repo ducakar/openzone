@@ -21,6 +21,8 @@ if (( $Linux_x86_64 || $Linux_x86_64_Clang )); then
      "$prefix/libogg.so.0" \
      "$prefix/libvorbis.so.0" \
      "$prefix/libvorbisfile.so.3" \
+     "$prefix/libmad.so.0" \
+     "$prefix/libfaad.so.2" \
      "$prefix/libfreeimage.so.3" \
      "$outDir"
 fi
@@ -43,6 +45,8 @@ if (( $Linux_i686 || $Linux_i686_Clang )); then
      "$prefix/libogg.so.0" \
      "$prefix/libvorbis.so.0" \
      "$prefix/libvorbisfile.so.3" \
+     "$prefix/libmad.so.0" \
+     "$prefix/libfaad.so.2" \
      "$prefix/libfreeimage.so.3" \
      "$outDir"
 fi

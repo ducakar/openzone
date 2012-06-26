@@ -26,14 +26,8 @@ varying float exAzimuth;
 
 void main()
 {
-  float dist    = ( length( exPosition ) - 50.0 ) / 50.0;
-  vec4  diff    = oz_Colour - oz_Fog.colour;
-  vec4  disturb = vec4( sin( exPosition * 100.0 ) * 0.1, 0.0 ) * dot( diff, diff );
+  float dist     = ( length( exPosition ) - 50.0 ) / 50.0;
+  vec4  colour   = vec4( sin( exPosition * 100.0 ) * 0.2, 0.0 );
 
-  if( oz_NightVision ) {
-    gl_FragData[0] = mix( vec4( 0.0, 1.0, 0.0, 1.0 ), oz_Fog.colour, dist );
-  }
-  else {
-    gl_FragData[0] = mix( oz_Colour + disturb, oz_Fog.colour, dist );
-  }
+  gl_FragData[0] = oz_ColourTransform * mix( colour, oz_Fog.colour, dist );
 }
