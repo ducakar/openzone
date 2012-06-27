@@ -135,11 +135,11 @@ GalileoFrame::GalileoFrame( const QuestFrame* questFrame_ ) :
   normalWidth  = width;
   normalHeight = height;
 
-  int maxSize = Area::uiWidth - 2 * ( width + 8 );
-  maxSize = Area::uiHeight < maxSize ? Area::uiHeight - 64 : maxSize - 64;
+  int maxSize = camera.width - 2 * ( width + 8 );
+  maxSize = camera.height < maxSize ? camera.height - 64 : maxSize - 64;
 
-  maximisedX      = Area::uiCentreX - maxSize / 2;
-  maximisedY      = Area::uiCentreY - maxSize / 2;
+  maximisedX      = camera.centreX - maxSize / 2;
+  maximisedY      = camera.centreY - maxSize / 2;
   maximisedWidth  = maxSize;
   maximisedHeight = maxSize;
 }

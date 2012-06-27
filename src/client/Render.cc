@@ -57,15 +57,15 @@ const float Render::LAVA_VISIBILITY  = 4.0f;
 const float Render::WIND_FACTOR      = 0.0008f;
 const float Render::WIND_PHI_INC     = 0.04f;
 
-const Vec4  Render::STRUCT_AABB       = Vec4( 0.20f, 0.50f, 1.00f, 0.30f );
-const Vec4  Render::ENTITY_AABB       = Vec4( 1.00f, 0.40f, 0.60f, 0.30f );
-const Vec4  Render::SOLID_AABB        = Vec4( 0.60f, 0.90f, 0.20f, 0.30f );
-const Vec4  Render::NONSOLID_AABB     = Vec4( 0.70f, 0.80f, 0.90f, 0.30f );
+const Vec4  Render::STRUCT_AABB      = Vec4( 0.20f, 0.50f, 1.00f, 0.30f );
+const Vec4  Render::ENTITY_AABB      = Vec4( 1.00f, 0.40f, 0.60f, 0.30f );
+const Vec4  Render::SOLID_AABB       = Vec4( 0.60f, 0.90f, 0.20f, 0.30f );
+const Vec4  Render::NONSOLID_AABB    = Vec4( 0.70f, 0.80f, 0.90f, 0.30f );
 
-const Mat44 Render::NIGHT_COLOUR      = Mat44( 0.0f, 2.0f, 0.0f, 0.0f,
-                                               0.0f, 2.0f, 0.0f, 0.0f,
-                                               0.0f, 2.0f, 0.0f, 0.0f,
-                                               0.0f, 0.0f, 0.0f, 1.0f );
+const Mat44 Render::NIGHT_COLOUR     = Mat44( 0.25f, 1.75f, 0.25f, 0.00f,
+                                              0.25f, 1.75f, 0.25f, 0.00f,
+                                              0.25f, 1.75f, 0.25f, 0.00f,
+                                              0.00f, 0.00f, 0.00f, 1.00f );
 
 void Render::scheduleCell( int cellX, int cellY )
 {
@@ -177,7 +177,6 @@ void Render::prepareDraw()
   float x = minXCentre;
   for( int i = span.minX; i <= span.maxX; ++i, x += Cell::SIZE ) {
     float y = minYCentre;
-
     for( int j = span.minY; j <= span.maxY; ++j, y += Cell::SIZE ) {
       if( frustum.isVisible( x, y, CELL_WIDE_RADIUS ) ) {
         scheduleCell( i, j );
@@ -384,6 +383,9 @@ void Render::drawOrbis()
     glDrawBuffers( 1, dbos );
 #endif
   }
+  else {
+    glViewport( 0, 0, camera.width, camera.height );
+  }
 
   prepareDraw();
   drawGeometry();
@@ -515,7 +517,7 @@ void Render::unload()
   Log::printEnd( " OK" );
 }
 
-void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool isBuild )
+void Render::init( SDL_Surface* window_, bool isBuild )
 {
   Log::println( "Initialising Render {" );
   Log::indent();
@@ -653,12 +655,12 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
     throw Exception( "render.scaleFilter should be either NEAREST or LINEAR." );
   }
 
-  renderWidth  = windowWidth;
-  renderHeight = windowHeight;
+  renderWidth  = System::width;
+  renderHeight = System::height;
 
   if( isOffscreen ) {
-    renderWidth  = int( float( windowWidth  ) * renderScale + 0.5f );
-    renderHeight = int( float( windowHeight ) * renderScale + 0.5f );
+    renderWidth  = int( float( System::width  ) * renderScale + 0.5f );
+    renderHeight = int( float( System::height ) * renderScale + 0.5f );
 
     glGenRenderbuffers( 1, &depthBuffer );
     glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
@@ -696,7 +698,7 @@ void Render::init( SDL_Surface* window_, int windowWidth, int windowHeight, bool
 
   shader.init();
   shape.load();
-  camera.init( windowWidth, windowHeight );
+  camera.init();
   ui::ui.init();
 
   shape.bind();

@@ -223,6 +223,7 @@ void Shader::loadProgram( int id )
   OZ_REGISTER_PARAMETER( oz_Fog_dist,            "oz_Fog.dist"            );
   OZ_REGISTER_PARAMETER( oz_Fog_colour,          "oz_Fog.colour"          );
 
+  OZ_REGISTER_PARAMETER( oz_StarsColour,         "oz_StarsColour"         );
   OZ_REGISTER_PARAMETER( oz_WaveBias,            "oz_WaveBias"            );
   OZ_REGISTER_PARAMETER( oz_Wind,                "oz_Wind"                );
   OZ_REGISTER_PARAMETER( oz_MD2Anim,             "oz_MD2Anim"             );

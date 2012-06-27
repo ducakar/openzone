@@ -74,11 +74,12 @@ class System
 
   public:
 
+    static int           width;    ///< Current width application surface.
+    static int           height;   ///< Current height of application surface.
+
     static pp::Module*   module;   ///< NaCl module.
     static pp::Instance* instance; ///< NaCl instance.
     static pp::Core*     core;     ///< NaCl pp::Core interface.
-    static int           width;    ///< Current width of NaCl module area in browser.
-    static int           height;   ///< Current height of NaCl module in browser.
 
   private:
 

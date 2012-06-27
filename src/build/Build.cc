@@ -902,7 +902,10 @@ int Build::main( int argc, char** argv )
 
   Log::printEnd( " %dx%d-%d ... OK", windowWidth, windowHeight, window->format->BitsPerPixel );
 
-  client::render.init( window, windowWidth, windowHeight, true );
+  System::width  = windowWidth;
+  System::height = windowHeight;
+
+  client::render.init( window, true );
 
   if( !client::shader.hasS3TC && context.useS3TC ) {
     throw Exception( "S3 texture compression enabled but not supported" );

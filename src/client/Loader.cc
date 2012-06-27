@@ -306,8 +306,6 @@ void Loader::preloadRender()
 
 void Loader::uploadRender()
 {
-  tick = ( tick + 1 ) % TICK_PERIOD;
-
   if( terra.id != orbis.terra.id ) {
     terra.unload();
     terra.load();
@@ -323,10 +321,7 @@ void Loader::uploadRender()
 
     if( bsp != null && !bsp->isLoaded && bsp->isPreloaded ) {
       bsp->load();
-
-      if( !hasTime ) {
-        return;
-      }
+      return;
     }
   }
 
@@ -335,10 +330,7 @@ void Loader::uploadRender()
 
     if( smm != null && !smm->isLoaded && smm->isPreloaded ) {
       smm->load();
-
-      if( !hasTime ) {
-        return;
-      }
+      return;
     }
   }
 
@@ -347,10 +339,7 @@ void Loader::uploadRender()
 
     if( md2 != null && !md2->isLoaded && md2->isPreloaded ) {
       md2->load();
-
-      if( !hasTime ) {
-        return;
-      }
+      return;
     }
   }
 
@@ -359,10 +348,7 @@ void Loader::uploadRender()
 
     if( md3 != null && !md3->isLoaded && md3->isPreloaded ) {
       md3->load();
-
-      if( !hasTime ) {
-        return;
-      }
+      return;
     }
   }
 }
@@ -403,8 +389,6 @@ void Loader::syncUpdate()
 {
   Log::verboseMode = true;
 
-  hasTime = true;
-
   preloadRender();
   OZ_MAIN_CALL( this, {
     loader.uploadRender();
@@ -431,6 +415,8 @@ void Loader::update()
     loader.cleanupRender();
     loader.uploadRender();
   } )
+
+  tick = ( tick + 1 ) % TICK_PERIOD;
 
   Log::verboseMode = false;
 

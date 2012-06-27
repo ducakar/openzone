@@ -249,7 +249,7 @@ void HudArea::drawVehicleStatus()
 
   float size = vehicle->dim.fastN();
   float scale = VEHICLE_DIM / size;
-  int x = Area::uiWidth - 208 + VEHICLE_SIZE / 2;
+  int x = camera.width - 208 + VEHICLE_SIZE / 2;
   int y = 52 + vehClazz->nWeapons * ( Font::INFOS[Font::LARGE].height + 8 ) + VEHICLE_SIZE / 2;
 
   tf.camera = Mat44::translation( Vec3( float( x ), float( y ), 0.0f ) );
@@ -365,7 +365,7 @@ void HudArea::onDraw()
 }
 
 HudArea::HudArea() :
-  Area( Area::uiWidth, Area::uiHeight ),
+  Area( camera.width, camera.height ),
   weaponName( 16, 54, ALIGN_LEFT, Font::LARGE, " " ),
   weaponRounds( 200, 54, ALIGN_RIGHT, Font::LARGE, "∞" ),
   lastObjectId( -1 ),

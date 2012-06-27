@@ -104,9 +104,9 @@ void Camera::updateReferences()
   }
 
   for( int i = 0; i < switchableUnits.length(); ) {
-    const Object* unit = orbis.objects[ switchableUnits[i] ];
+    const Bot* unit = static_cast<const Bot*>( orbis.objects[ switchableUnits[i] ] );
 
-    if( unit == null ) {
+    if( unit == null || ( unit->state & Bot::DEAD_BIT ) ) {
       switchableUnits.remove( i );
     }
     else {
@@ -134,6 +134,14 @@ void Camera::align()
 void Camera::prepare()
 {
   updateReferences();
+
+  width      = System::width;
+  height     = System::height;
+
+  centreX    = System::width / 2;
+  centreY    = System::height / 2;
+
+  aspect     = isFixedAspect ? aspect : float( width ) / float( height );
 
   relH = float( -ui::mouse.overEdgeX ) * mouseXSens * mag;
   relV = float( +ui::mouse.overEdgeY ) * mouseYSens * mag;
@@ -195,12 +203,12 @@ void Camera::update()
 {
   updateReferences();
 
-  horizPlane = coeff * mag * MIN_DISTANCE;
-  vertPlane  = aspect * horizPlane;
-
   if( proxy != null ) {
     proxy->update();
   }
+
+  horizPlane = coeff * mag * MIN_DISTANCE;
+  vertPlane  = aspect * horizPlane;
 }
 
 void Camera::reset()
@@ -340,12 +348,12 @@ void Camera::write( BufferStream* ostream ) const
   cinematic.write( ostream );
 }
 
-void Camera::init( int screenWidth, int screenHeight )
+void Camera::init()
 {
-  width         = screenWidth;
-  height        = screenHeight;
-  centreX       = width  / 2;
-  centreY       = height / 2;
+  width         = System::width;
+  height        = System::height;
+  centreX       = System::width / 2;
+  centreY       = System::height / 2;
 
   aspect        = config.getSet( "camera.aspect",     0.0f );
   mouseXSens    = config.getSet( "camera.mouseXSens", 1.0f ) * 0.004f;
@@ -355,7 +363,8 @@ void Camera::init( int screenWidth, int screenHeight )
 
   float angle   = Math::rad( config.getSet( "camera.angle", 80.0f ) );
 
-  aspect        = aspect != 0.0f ? aspect : float( width ) / float( height );
+  isFixedAspect = aspect != 0.0f;
+  aspect        = isFixedAspect ? aspect : float( width ) / float( height );
   coeff         = Math::tan( angle / 2.0f );
 
   state    = NONE;

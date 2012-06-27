@@ -124,8 +124,10 @@ MD2::AnimType MD2::AnimState::extractAnim() const
 }
 
 MD2::AnimState::AnimState( const Bot* bot_ ) :
-  bot( bot_ ), nextType( ANIM_STAND ), frameRatio( 0.0f )
+  bot( bot_ ), currType( ANIM_STAND ), nextType( ANIM_STAND ), frameRatio( 0.0f )
 {
+  nextType = extractAnim();
+
   setAnim();
 
   currFrame = lastFrame;
@@ -147,14 +149,14 @@ void MD2::AnimState::advance()
   if( inferredType == ANIM_RUN || inferredType == ANIM_CROUCH_WALK ) {
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-    float nFrames = float( lastFrame - firstFrame + 1 );
+    int   nFrames = lastFrame - firstFrame + 1;
     float stepInc = clazz->stepRunInc;
 
     if( ( bot->state & ( Bot::CROUCHING_BIT | Bot::WALKING_BIT ) ) || bot->cargo >= 0 ) {
       stepInc = clazz->stepWalkInc;
     }
 
-    frameFreq = nFrames * stepInc / Timer::TICK_TIME;
+    frameFreq = float( nFrames ) * stepInc / Timer::TICK_TIME;
   }
 
   frameRatio += timer.frameTime * frameFreq;

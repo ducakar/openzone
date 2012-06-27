@@ -72,6 +72,7 @@ uint Context::buildTexture( const void* data, int width, int height, int format,
 
   bool generateMipmaps = false;
   int internalFormat;
+  int surface = width * height;
 
   switch( format ) {
     default: {
@@ -79,16 +80,16 @@ uint Context::buildTexture( const void* data, int width, int height, int format,
     }
     case GL_BGR:
     case GL_RGB: {
-      internalFormat = useS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_RGB;
+      internalFormat = useS3TC && surface > 64 ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_RGB;
       break;
     }
     case GL_BGRA:
     case GL_RGBA: {
-      internalFormat = useS3TC ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_RGBA;
+      internalFormat = useS3TC && surface > 64 ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_RGBA;
       break;
     }
     case GL_LUMINANCE: {
-      internalFormat = useS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_LUMINANCE;
+      internalFormat = useS3TC && surface > 64 ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_LUMINANCE;
       break;
     }
   }
@@ -436,7 +437,6 @@ void Context::writeLayer( uint id, BufferStream* stream )
   glBindTexture( GL_TEXTURE_2D, id );
 
   int wrap, magFilter, minFilter;
-  bool isS3TC = false;
 
   glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, &wrap );
   glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, &magFilter );
@@ -465,14 +465,12 @@ void Context::writeLayer( uint id, BufferStream* stream )
       glGetTexLevelParameteriv( GL_TEXTURE_2D, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &size );
 
       stream->writeInt( size );
+
 #ifdef _WIN32
       client::glGetCompressedTexImage( GL_TEXTURE_2D, level, stream->forward( size ) );
 #else
       glGetCompressedTexImage( GL_TEXTURE_2D, level, stream->forward( size ) );
 #endif
-
-      isS3TC = true;
-      break;
     }
     else {
       hard_assert( format == GL_RGB || format == GL_RGBA || format == GL_LUMINANCE );
@@ -488,9 +486,7 @@ void Context::writeLayer( uint id, BufferStream* stream )
     }
   }
 
-  if( !isS3TC ) {
-    stream->writeInt( 0 );
-  }
+  stream->writeInt( 0 );
 
   OZ_GL_CHECK_ERROR();
 }

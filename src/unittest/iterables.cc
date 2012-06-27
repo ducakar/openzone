@@ -67,14 +67,14 @@ void test_iterables()
   v.add( 0 );
 
   iMove( v.iter(), l.iter() );
-  iMove( l.iter(), l.iter() );
+  iMove( iter( l ), l.iter() );
   iMove( invalid, invalid );
   foreach( i, l.citer() ) {
     OZ_CHECK( *i == -1 );
   }
-  OZ_CHECK( v[0] == 1 && v[1] == 2 && v[2] == 3 && v[3] == 2 );
+  OZ_CHECK_CONTENTS( v, 1, 2, 3, 2 );
   OZ_CHECK( !iEquals( l.citer(), v.citer() ) );
-  OZ_CHECK( iEquals( l.citer(), l.citer() ) );
+  OZ_CHECK( iEquals( citer( l ), citer( l ) ) );
 
   iSet( l.iter(), 0 );
   iSet( invalid, static_cast<Foo*>( null ) );
@@ -87,13 +87,13 @@ void test_iterables()
   OZ_CHECK( iEquals( l.citer(), v.citer() ) );
 
   iCopy( l.iter(), l.citer() );
-  OZ_CHECK( iEquals( l.citer(), v.citer() ) );
+  OZ_CHECK( iEquals( citer( l ), v.citer() ) );
 
   v.add();
-  OZ_CHECK( !iEquals( l.citer(), v.citer() ) );
+  OZ_CHECK( !iEquals( l.citer(), citer( v ) ) );
 
   v.remove();
-  OZ_CHECK( iEquals( l.citer(), v.citer() ) );
+  OZ_CHECK( iEquals( citer( l ), citer( v ) ) );
 
   OZ_CHECK( !iContains( l.citer(), 0 ) );
   OZ_CHECK( !iContains( v.citer(), 0 ) );
@@ -171,7 +171,7 @@ void test_iterables()
 
   iFree( pv.iter() );
   iFree( invalid );
-  OZ_CHECK( pv[0] == null && pv[1] == null );
+  OZ_CHECK_CONTENTS( pv, null, null );
 
   l.free();
 

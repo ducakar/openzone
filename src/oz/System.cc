@@ -225,10 +225,10 @@ static void construct()
 
   void* library = dlopen( "libpulse-simple.so.0", RTLD_NOW );
   if( library != null ) {
-    pa_simple_new   = ( decltype( ::pa_simple_new   )* ) dlsym( library, "pa_simple_new" );
-    pa_simple_free  = ( decltype( ::pa_simple_free  )* ) dlsym( library, "pa_simple_free" );
-    pa_simple_write = ( decltype( ::pa_simple_write )* ) dlsym( library, "pa_simple_write" );
-    pa_simple_drain = ( decltype( ::pa_simple_drain )* ) dlsym( library, "pa_simple_drain" );
+    *reinterpret_cast<void**>( &pa_simple_new )   = dlsym( library, "pa_simple_new" );
+    *reinterpret_cast<void**>( &pa_simple_free )  = dlsym( library, "pa_simple_free" );
+    *reinterpret_cast<void**>( &pa_simple_write ) = dlsym( library, "pa_simple_write" );
+    *reinterpret_cast<void**>( &pa_simple_drain ) = dlsym( library, "pa_simple_drain" );
 
     if( pa_simple_new == null || pa_simple_free == null || pa_simple_write == null ||
         pa_simple_drain == null )
@@ -248,11 +248,13 @@ static void construct()
 }
 
 System        System::system;
-pp::Module*   System::module   = null;
-pp::Instance* System::instance = null;
-pp::Core*     System::core     = null;
-int           System::width    = 0;
-int           System::height   = 0;
+
+int           System::width;    // = 0
+int           System::height;   // = 0
+
+pp::Module*   System::module;   // = null
+pp::Instance* System::instance; // = null
+pp::Core*     System::core;     // = null
 
 System::System()
 {

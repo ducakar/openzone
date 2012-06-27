@@ -53,7 +53,9 @@ void* MainInstance::mainThreadMain( void* )
                  "under certain conditions; See COPYING file for details.\n\n" );
 
   try {
-    exitCode = client::client.main( 0, null );
+    char* argv[] = { const_cast<char*>( OZ_APPLICATION_NAME ) };
+
+    exitCode = client::client.main( aLength( argv ), argv );
     client::client.shutdown();
   }
   catch( const std::exception& e ) {

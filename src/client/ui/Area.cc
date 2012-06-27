@@ -25,6 +25,7 @@
 
 #include "client/ui/Area.hh"
 
+#include "client/Camera.hh"
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"
 
@@ -39,13 +40,6 @@ namespace ui
 
 Vector<Area*> Area::updateAreas;
 
-float Area::uiScaleX;
-float Area::uiScaleY;
-int   Area::uiWidth;
-int   Area::uiHeight;
-int   Area::uiCentreX;
-int   Area::uiCentreY;
-
 Area::Area( int width_, int height_ ) :
   flags( 0 ), parent( null ), x( 0 ), y( 0 ), width( width_ ), height( height_ )
 {}
@@ -53,8 +47,8 @@ Area::Area( int width_, int height_ ) :
 Area::Area( int x_, int y_, int width_, int height_ ) :
   flags( 0 ), parent( null ), x( x_ ), y( y_ ), width( width_ ), height( height_ )
 {
-  x = x < 0 ? Area::uiWidth  - width  + x : x;
-  y = y < 0 ? Area::uiHeight - height + y : y;
+  x = x < 0 ? camera.width  - width  + x : x;
+  y = y < 0 ? camera.height - height + y : y;
 }
 
 Area::~Area()

@@ -35,51 +35,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#ifdef __native_client__
-
-# include "System.hh"
-# include "Semaphore.hh"
-
-# include <ppapi/cpp/completion_callback.h>
-# include <ppapi/cpp/instance.h>
-# include <ppapi/cpp/core.h>
-# include <ppapi/cpp/var.h>
-
-# define CHECK_SEMAPHORE() \
-  if( !isSemaphoreValid ) { \
-    pthread_mutex_init( &semaphoreMutex, null ); \
-    pthread_cond_init( &semaphoreCond, null ); \
-    isSemaphoreValid = true; \
-  }
-
-# define CONSOLE_PUTS( s ) \
-  if( System::core->IsMainThread() ) { \
-    System::instance->PostMessage( pp::Var( s ) ); \
-  } \
-  else { \
-    struct _Callback \
-    { \
-      static void _main( void* data, int ) \
-      { \
-        System::instance->PostMessage( pp::Var( static_cast<const char*>( data ) ) ); \
-        pthread_mutex_lock( &semaphoreMutex ); \
-        ++semaphoreCounter; \
-        pthread_mutex_unlock( &semaphoreMutex ); \
-        pthread_cond_signal( &semaphoreCond ); \
-      } \
-    }; \
-    System::core->CallOnMainThread( 0, pp::CompletionCallback( _Callback::_main, \
-                                                               const_cast<char*>( s ) ) ); \
-    pthread_mutex_lock( &semaphoreMutex ); \
-    while( semaphoreCounter == 0 ) { \
-      pthread_cond_wait( &semaphoreCond, &semaphoreMutex ); \
-    } \
-    --semaphoreCounter; \
-    pthread_mutex_unlock( &semaphoreMutex ); \
-  }
-
-#endif
-
 namespace oz
 {
 
@@ -123,13 +78,6 @@ static char  filePath[256]; // = ""
 static FILE* file;          // = null
 static int   tabs;          // = 0
 
-#ifdef __native_client__
-static bool            isSemaphoreValid;
-static pthread_mutex_t semaphoreMutex;
-static pthread_cond_t  semaphoreCond;
-static volatile int    semaphoreCounter;
-#endif
-
 bool Log::showVerbose; // = false
 bool Log::verboseMode; // = false
 Log  Log::out;
@@ -162,16 +110,10 @@ void Log::putsRaw( const char* s )
     fputs( s, stdout );
   }
 
-#ifdef __native_client__
-  CHECK_SEMAPHORE();
-
-  CONSOLE_PUTS( s );
-#else
   if( file != null ) {
     fputs( s, file );
     fflush( file );
   }
-#endif
 }
 
 void Log::vprintRaw( const char* s, va_list ap )
@@ -184,16 +126,10 @@ void Log::vprintRaw( const char* s, va_list ap )
     fputs( buffer, stdout );
   }
 
-#ifdef __native_client__
-  CHECK_SEMAPHORE();
-
-  CONSOLE_PUTS( buffer );
-#else
   if( file != null ) {
     fputs( buffer, file );
     fflush( file );
   }
-#endif
 }
 
 void Log::printRaw( const char* s, ... )
@@ -209,16 +145,10 @@ void Log::printRaw( const char* s, ... )
     fputs( buffer, stdout );
   }
 
-#ifdef __native_client__
-  CHECK_SEMAPHORE();
-
-  CONSOLE_PUTS( buffer );
-#else
   if( file != null ) {
     fputs( buffer, file );
     fflush( file );
   }
-#endif
 }
 
 void Log::print( const char* s, ... )
@@ -237,14 +167,6 @@ void Log::print( const char* s, ... )
     fputs( buffer, stdout );
   }
 
-#ifdef __native_client__
-  CHECK_SEMAPHORE();
-
-  for( int i = 0; i < tabs; ++i ) {
-    CONSOLE_PUTS( "  " );
-  }
-  CONSOLE_PUTS( buffer );
-#else
   if( file != null ) {
     for( int i = 0; i < tabs; ++i ) {
       fputs( "  ", file );
@@ -252,7 +174,6 @@ void Log::print( const char* s, ... )
     fputs( buffer, file );
     fflush( file );
   }
-#endif
 }
 
 void Log::printEnd( const char* s, ... )
@@ -269,18 +190,11 @@ void Log::printEnd( const char* s, ... )
     fputc( '\n', stdout );
   }
 
-#ifdef __native_client__
-  CHECK_SEMAPHORE();
-
-  CONSOLE_PUTS( buffer );
-  CONSOLE_PUTS( "\n" );
-#else
   if( file != null ) {
     fputs( buffer, file );
     fputc( '\n', file );
     fflush( file );
   }
-#endif
 }
 
 void Log::printEnd()
@@ -289,16 +203,10 @@ void Log::printEnd()
     fputc( '\n', stdout );
   }
 
-#ifdef __native_client__
-  CHECK_SEMAPHORE();
-
-  CONSOLE_PUTS( "\n" );
-#else
   if( file != null ) {
     fputc( '\n', file );
     fflush( file );
   }
-#endif
 }
 
 void Log::println( const char* s, ... )
@@ -318,15 +226,6 @@ void Log::println( const char* s, ... )
     fputc( '\n', stdout );
   }
 
-#ifdef __native_client__
-  CHECK_SEMAPHORE();
-
-  for( int i = 0; i < tabs; ++i ) {
-    CONSOLE_PUTS( "  " );
-  }
-  CONSOLE_PUTS( buffer );
-  CONSOLE_PUTS( "\n" );
-#else
   if( file != null ) {
     for( int i = 0; i < tabs; ++i ) {
       fputs( "  ", file );
@@ -335,7 +234,6 @@ void Log::println( const char* s, ... )
     fputc( '\n', file );
     fflush( file );
   }
-#endif
 }
 
 void Log::println()
@@ -344,16 +242,10 @@ void Log::println()
     fputc( '\n', stdout );
   }
 
-#ifdef __native_client__
-  CHECK_SEMAPHORE();
-
-  CONSOLE_PUTS( "\n" );
-#else
   if( file != null ) {
     fputc( '\n', file );
     fflush( file );
   }
-#endif
 }
 
 void Log::printTime( const Time& time )
@@ -367,16 +259,10 @@ void Log::printTime( const Time& time )
     fputs( buffer, stdout );
   }
 
-#ifdef __native_client__
-  CHECK_SEMAPHORE();
-
-  CONSOLE_PUTS( buffer );
-#else
   if( file != null ) {
     fputs( buffer, file );
     fflush( file );
   }
-#endif
 }
 
 void Log::printTrace( const StackTrace& st )
@@ -385,22 +271,13 @@ void Log::printTrace( const StackTrace& st )
     if( !verboseMode || showVerbose || file == null ) {
       fputs( "    [no stack trace]\n", stdout );
     }
-#ifdef __native_client__
-    CHECK_SEMAPHORE();
 
-    CONSOLE_PUTS( "    [no stack trace]\n" );
-#else
     if( file != null ) {
       fputs( "    [no stack trace]\n", file );
     }
-#endif
   }
   else {
     char** entries = st.symbols();
-
-#ifdef __native_client__
-    CHECK_SEMAPHORE();
-#endif
 
     for( int i = 0; i < st.nFrames; ++i ) {
       if( !verboseMode || showVerbose || file == null ) {
@@ -409,17 +286,11 @@ void Log::printTrace( const StackTrace& st )
         fputc( '\n', stdout );
       }
 
-#ifdef __native_client__
-      CONSOLE_PUTS( "    " );
-      CONSOLE_PUTS( entries[i] );
-      CONSOLE_PUTS( "\n" );
-#else
       if( file != null ) {
         fputs( "    ", file );
         fputs( entries[i], file );
         fputc( '\n', file );
       }
-#endif
     }
 
     ::free( entries );
@@ -442,16 +313,11 @@ void Log::printException( const std::exception& e )
     if( !verboseMode || showVerbose || file == null ) {
       fputs( buffer, stdout );
     }
-#ifdef __native_client__
-    CHECK_SEMAPHORE();
 
-    CONSOLE_PUTS( buffer );
-#else
     if( file != null ) {
       fputs( buffer, file );
       fflush( file );
     }
-#endif
   }
   else {
     snprintf( buffer, OUT_BUFFER_SIZE, "\n\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
@@ -460,15 +326,10 @@ void Log::printException( const std::exception& e )
     if( !verboseMode || showVerbose || file == null ) {
       fputs( buffer, stdout );
     }
-#ifdef __native_client__
-    CHECK_SEMAPHORE();
 
-    CONSOLE_PUTS( buffer );
-#else
     if( file != null ) {
       fputs( buffer, file );
     }
-#endif
 
     printTrace( oe->stackTrace );
   }
@@ -487,16 +348,10 @@ void Log::printSignal( int sigNum )
     fputs( buffer, stdout );
   }
 
-#ifdef __native_client__
-  CHECK_SEMAPHORE();
-
-  CONSOLE_PUTS( buffer );
-#else
   if( file != null ) {
     fputs( buffer, file );
     fflush( file );
   }
-#endif
 }
 
 void Log::printHalt()
@@ -509,16 +364,10 @@ void Log::printHalt()
 
   fputs( message, stdout );
 
-#if defined( __native_client__ )
-  CHECK_SEMAPHORE();
-
-  CONSOLE_PUTS( message );
-#else
   if( file != null ) {
     fputs( message, file );
     fflush( file );
   }
-#endif
 }
 
 bool Log::init( const char* filePath_, bool clearFile )
@@ -530,9 +379,7 @@ bool Log::init( const char* filePath_, bool clearFile )
   static_cast<void>( filePath_ );
   static_cast<void>( clearFile );
 
-  strcpy( filePath, "[JavaScript Messages]" );
-
-  return System::instance != null && System::core != null;
+  return false;
 
 #else
 
@@ -559,12 +406,10 @@ bool Log::init( const char* filePath_, bool clearFile )
 
 void Log::free()
 {
-#ifndef __native_client__
   if( file != null ) {
     fclose( file );
     file = null;
   }
-#endif
 }
 
 const Log& Log::operator << ( bool b ) const

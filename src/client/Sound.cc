@@ -43,7 +43,7 @@ extern "C" void alSetPpapiInfo( PP_Instance, PPB_GetInterface );
   static decltype( ::name )* name = null
 
 # define OZ_DLLOAD( l, name ) \
-  name = ( decltype( name ) ) SDL_LoadFunction( l, #name ); \
+  *reinterpret_cast<void**>( &name ) = SDL_LoadFunction( l, #name ); \
   if( name == null ) { \
     throw Exception( "Failed loading " #name " from libmad" ); \
   }

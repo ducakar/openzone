@@ -19,6 +19,8 @@
 
 /**
  * @file client/Imago.hh
+ *
+ * Imago class.
  */
 
 #pragma once

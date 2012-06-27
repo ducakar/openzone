@@ -365,7 +365,7 @@ InventoryMenu::InventoryMenu( const InventoryMenu* master_ ) :
 {
   flags |= UPDATE_BIT;
 
-  x = ( Area::uiWidth - width ) / 2;
+  x = ( camera.width - width ) / 2;
 
   if( master != null ) {
     y = 8 + height + 8;

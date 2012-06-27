@@ -38,6 +38,14 @@
     ::hasPassed = false; \
   }
 
+#define OZ_CHECK_CONTENTS( container, ... ) \
+  { \
+    auto i = citer( container ); \
+    typedef decltype( i ) CIterator; \
+    CIterator::ElemType array[] = { __VA_ARGS__ }; \
+    OZ_CHECK( iEquals( i, citer( array ) ) ); \
+  }
+
 extern bool hasPassed;
 
 struct Foo

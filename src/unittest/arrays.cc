@@ -41,8 +41,8 @@ void test_arrays()
   aMove( b, a, 4 );
   aMove( b, b, 4 );
   aMove( b, a, 0 );
-  OZ_CHECK( a[0] == -1 && a[1] == -1 && a[2] == -1 && a[3] == -1 );
-  OZ_CHECK( b[0] == 1 && b[1] == 2 && b[2] == 3 && b[3] == 2 );
+  OZ_CHECK_CONTENTS( a, -1, -1, -1, -1 );
+  OZ_CHECK_CONTENTS( b, 1, 2, 3, 2 );
   OZ_CHECK( !aEquals( a, b, 4 ) );
   OZ_CHECK( aEquals( a, b, 0 ) );
 
@@ -50,17 +50,17 @@ void test_arrays()
   aReverseMove( a, a, 4 );
   aReverseMove( a, b, 0 );
   aMove( b, a, 4 );
-  OZ_CHECK( a[0] == -1 && a[1] == -1 && a[2] == -1 && a[3] == -1 );
-  OZ_CHECK( b[0] == 1 && b[1] == 2 && b[2] == 3 && b[3] == 2 );
+  OZ_CHECK_CONTENTS( a, -1, -1, -1, -1 );
+  OZ_CHECK_CONTENTS( b, 1, 2, 3, 2 );
   OZ_CHECK( !aEquals( a, b, 4 ) );
   OZ_CHECK( aEquals( a, b, 0 ) );
 
   aSet( a, 0, 4 );
   aSet( a, -1, 0 );
-  OZ_CHECK( a[0] == 0 && a[1] == 0 && a[2] == 0 && a[3] == 0 );
+  OZ_CHECK_CONTENTS( a, 0, 0, 0, 0 );
 
   iSet( iter( a ), 1 );
-  OZ_CHECK( a[0] == 1 && a[1] == 1 && a[2] == 1 && a[3] == 1 );
+  OZ_CHECK_CONTENTS( a, 1, 1, 1, 1 );
 
   aCopy( a, b, 4 );
   aCopy( a, b, 0 );
@@ -122,8 +122,8 @@ void test_arrays()
   aRemove( b, 0, 3 );
   aRemove( b, 0, 1 );
 
-  OZ_CHECK( a[0] == 1 && a[1] == 3 && a[2] == -1 && a[3] == 2 );
-  OZ_CHECK( b[0] == 3 && b[1] == 2 && b[2] == -1 && b[3] == -1 );
+  OZ_CHECK_CONTENTS( a, 1, 3, -1, 2 );
+  OZ_CHECK_CONTENTS( b, 3, 2, -1, -1 );
 
   aInsert( a, 2, 1, 3 );
   aInsert( a, 2, 3, 4 );
@@ -131,8 +131,8 @@ void test_arrays()
   aInsert( b, 1, 0, 4 );
   aInsert( b, 2, 3, 4 );
 
-  OZ_CHECK( a[0] == 1 && a[1] == 2 && a[2] == 3 && a[3] == 2 );
-  OZ_CHECK( b[0] == 1 && b[1] == 2 && b[2] == 3 && b[3] == 2 );
+  OZ_CHECK_CONTENTS( a, 1, 2, 3, 2 );
+  OZ_CHECK_CONTENTS( b, 1, 2, 3, 2 );
 
   Foo** c = new Foo*[5];
   foreach( i, iter( c, 5 ) ) {

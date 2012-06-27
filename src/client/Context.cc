@@ -166,9 +166,6 @@ uint Context::readTextureLayer( InputStream* stream_, const char* path_ )
       {
         glCompressedTexImage2D( GL_TEXTURE_2D, level, uint( format ), width, height, 0,
                                 size, stream->forward( size ) );
-        glGenerateMipmap( GL_TEXTURE_2D );
-
-        break;
       }
       else {
         glTexImage2D( GL_TEXTURE_2D, level, format, width, height, 0, uint( format ),

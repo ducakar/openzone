@@ -160,7 +160,7 @@ class Render
     void load();
     void unload();
 
-    void init( SDL_Surface* window, int windowWidth, int windowHeight, bool isBuild = false );
+    void init( SDL_Surface* window_, bool isBuild = false );
     void free( bool isBuild = false );
 
 };
