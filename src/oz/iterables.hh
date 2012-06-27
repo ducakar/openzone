@@ -220,28 +220,27 @@ class IteratorBase
 };
 
 /**
- * @def foreach
- * Macro to shorten common foreach loops.
- *
- * It can be used like
- * @code
- * Vector<int> v;
- * foreach( i, v.citer() ) {
- *   printf( "%d ", *i );
- * }
- * @endcode
- * to replace a longer piece of code, like:
- * @code
- * Vector<int> v;
- * for( auto i = v.citer(); i.isValid(); ++i )
- *   printf( "%d ", *i );
- * }
- * @endcode
+ * Iterator with constant element access for a container (same as <tt>container.citer()</tt>).
  *
  * @ingroup oz
  */
-#define foreach( i, iterator ) \
-  for( auto i = iterator; i.isValid(); ++i )
+template <class Container>
+OZ_ALWAYS_INLINE
+inline typename Container::CIterator citer( const Container& container )
+{
+  return container.citer();
+}
+
+/**
+ * Iterator with non-constant element access for a container (same as <tt>container.iter()</tt>).
+ *
+ * @ingroup oz
+ */
+template <class Container>
+inline typename Container::Iterator iter( Container& container )
+{
+  return container.iter();
+}
 
 /**
  * Copy elements.
@@ -418,5 +417,29 @@ inline void iFree( Iterator iDest )
     elem = null;
   }
 }
+
+/**
+ * @def foreach
+ * Macro to shorten common foreach loops.
+ *
+ * It can be used like
+ * @code
+ * Vector<int> v;
+ * foreach( i, v.citer() ) {
+ *   printf( "%d ", *i );
+ * }
+ * @endcode
+ * to replace a longer piece of code, like:
+ * @code
+ * Vector<int> v;
+ * for( auto i = v.citer(); i.isValid(); ++i )
+ *   printf( "%d ", *i );
+ * }
+ * @endcode
+ *
+ * @ingroup oz
+ */
+#define foreach( i, iterator ) \
+  for( auto i = iterator; i.isValid(); ++i )
 
 }

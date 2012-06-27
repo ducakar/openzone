@@ -33,19 +33,19 @@ namespace client
 
 class MD2Imago : public Imago
 {
+  friend class MD2WeaponImago;
+
   private:
 
     static const float TURN_SMOOTHING_COEF;
 
-  public:
+  private:
 
     MD2*           md2;
     float          h;
     MD2::AnimState anim;
 
-    static Pool<MD2Imago, 256> pool;
-
-  protected:
+  private:
 
     explicit MD2Imago( const Object* obj ) :
       Imago( obj ), anim( static_cast<const Bot*>( obj ) )
@@ -56,6 +56,8 @@ class MD2Imago : public Imago
     ~MD2Imago() override;
 
   public:
+
+    static Pool<MD2Imago, 256> pool;
 
     static Imago* create( const Object* obj );
 

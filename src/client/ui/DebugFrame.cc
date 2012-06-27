@@ -41,7 +41,7 @@ DebugFrame::DebugFrame() :
 {
   flags = PINNED_BIT;
 
-  x = ( Area::uiWidth - width ) / 2;
+  x = ( camera.width - width ) / 2;
 
   int height = Font::INFOS[Font::MONO].height + 2;
 

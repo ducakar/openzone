@@ -522,6 +522,9 @@ int Client::main( int argc, char** argv )
 
   SDL_ShowCursor( SDL_FALSE );
 
+  System::width  = windowWidth;
+  System::height = windowHeight;
+
 #endif
 
   ui::keyboard.init();
@@ -533,11 +536,10 @@ int Client::main( int argc, char** argv )
   initFlags |= INIT_RENDER;
 #ifdef __native_client__
   OZ_MAIN_CALL( this, {
-    render.init( null, System::width, System::height );
+    render.init( null );
   } )
-  hard_assert( NaClMainCall::semaphore.counter() == 0 );
 #else
-  render.init( window, windowWidth, windowHeight );
+  render.init( window );
 #endif
   render.swap();
 
@@ -589,10 +591,6 @@ int Client::main( int argc, char** argv )
 
   // THE MAGNIFICENT MAIN LOOP
   do {
-    if( isBenchmark && float( timer.micros / 1000000 ) >= benchmarkTime ) {
-      isAlive = false;
-    }
-
     // read input & events
     ui::keyboard.prepare();
     ui::mouse.prepare();
@@ -697,6 +695,7 @@ int Client::main( int argc, char** argv )
 
     timer.tick();
 
+    isAlive &= !isBenchmark || timer.time < benchmarkTime;
     isAlive &= stage->update();
 
     if( Stage::nextStage != null ) {

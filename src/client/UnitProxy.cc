@@ -80,8 +80,15 @@ void UnitProxy::begin()
 
   baseRot   = Quat::rotationZXZ( bot->h, bot->v, 0.0f );
   headRot   = Quat::ID;
-  headH     = 0.0f;
-  headV     = 0.0f;
+
+  if( isFreelook ) {
+    headH = bot->h;
+    headV = bot->v;
+  }
+  else {
+    headH = 0.0f;
+    headV = 0.0f;
+  }
 
   botEye    = bot->p;
   botEye.z += bot->camZ;
@@ -214,7 +221,12 @@ void UnitProxy::prepare()
     camera.nightVision = !camera.nightVision;
   }
   if( !alt && keys[SDLK_b] && !oldKeys[SDLK_b] ) {
-    camera.mag = camera.mag == 1.0f ? BINOCULARS_MAGNIFICATION : 1.0f;
+    if( camera.desiredMag == 1.0f ) {
+      camera.smoothMagnify( BINOCULARS_MAGNIFICATION );
+    }
+    else {
+      camera.smoothMagnify( 1.0f );
+    }
   }
   if( !alt && keys[SDLK_m] && !oldKeys[SDLK_m] ) {
     ui::ui.galileoFrame->setMaximised( !ui::ui.galileoFrame->isMaximised );
@@ -223,8 +235,8 @@ void UnitProxy::prepare()
   if( camera.nightVision && !bot->hasAttribute( ObjectClass::NIGHT_VISION_BIT ) ) {
     camera.nightVision = false;
   }
-  if( camera.mag != 1.0f && !bot->hasAttribute( ObjectClass::BINOCULARS_BIT ) ) {
-    camera.mag = 1.0f;
+  if( camera.desiredMag != 1.0f && !bot->hasAttribute( ObjectClass::BINOCULARS_BIT ) ) {
+    camera.desiredMag = 1.0f;
   }
 
   if( !alt && keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) {

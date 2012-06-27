@@ -33,7 +33,7 @@ namespace client
 
 class SMMImago : public Imago
 {
-  protected:
+  private:
 
     SMM* smm;
 

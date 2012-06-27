@@ -36,6 +36,11 @@ namespace client
 
 Pool<MD2WeaponImago, 256> MD2WeaponImago::pool;
 
+MD2WeaponImago::~MD2WeaponImago()
+{
+  context.releaseMD2( clazz->imagoModel );
+}
+
 Imago* MD2WeaponImago::create( const Object* obj )
 {
   hard_assert( obj->flags & Object::DYNAMIC_BIT );

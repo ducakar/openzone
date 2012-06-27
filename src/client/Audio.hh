@@ -20,7 +20,7 @@
 /**
  * @file client/Audio.hh
  *
- * Audio analogue to Imago class.
+ * Audio class.
  */
 
 #pragma once

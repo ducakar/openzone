@@ -77,10 +77,6 @@ class Loader
 
     uint tick;
 
-  public:
-
-    volatile bool hasTime;
-
   private:
 
     static void screenshotMain( void* );

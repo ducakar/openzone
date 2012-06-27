@@ -8,38 +8,12 @@
     div.module {
       text-align: center;
     }
-    div.log {
-      padding: 8px;
-    }
-    div.log pre {
-      font-size: 8pt;
-    }
   </style>
-  <script type="text/javascript">
-    var log = null;
-//     window.webkitStorageInfo.requestQuota( PERSISTENT, 32*1024*1024 );
-
-    function handleMessage( e ) {
-      log.innerText += e.data;
-    }
-
-    function onLoad()
-    {
-      var module = document.getElementById( 'module' );
-      module.addEventListener( 'message', handleMessage, true );
-
-      log = document.getElementById( 'log' );
-      log.innerText = "";
-    }
-  </script>
 </head>
 <body onLoad="onLoad()">
   <div id="module" class="module">
     <embed name="nacl_module" id="nacl" width="1280" height="720" src="openzone.nmf"
            type="application/x-nacl"/>
-  </div>
-  <div class="log">
-    <pre id="log"/>
   </div>
 </body>
 </html>

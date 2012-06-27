@@ -49,7 +49,7 @@ class Caelum
 
     static const Vec4  DAY_COLOUR;
     static const Vec4  NIGHT_COLOUR;
-    static const Vec4  STAR_COLOUR;
+    static const Vec4  STARS_COLOUR;
 
     uint  vbo;
     uint  ibo;

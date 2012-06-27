@@ -50,6 +50,7 @@ struct Param
   int oz_Fog_dist;
   int oz_Fog_colour;
 
+  int oz_StarsColour;
   int oz_WaveBias;
   int oz_Wind;
   int oz_MD2Anim;

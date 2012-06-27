@@ -30,13 +30,17 @@ namespace oz
 namespace client
 {
 
-class MD2WeaponImago : public MD2Imago
+class MD2WeaponImago : public Imago
 {
-  protected:
+  private:
+
+    MD2* md2;
 
     explicit MD2WeaponImago( const Object* obj ) :
-      MD2Imago( obj )
+      Imago( obj )
     {}
+
+    ~MD2WeaponImago() override;
 
   public:
 

@@ -168,7 +168,7 @@ class Iterator : public IteratorBase<Elem>
 };
 
 /**
- * Create array iterator with constant access to elements.
+ * Create array iterator with constant element access.
  *
  * @ingroup oz
  */
@@ -180,7 +180,7 @@ inline CIterator<Elem> citer( const Elem* array, int count )
 }
 
 /**
- * Create array iterator with non-constant access to elements.
+ * Create array iterator with non-constant element access.
  *
  * @ingroup oz
  */
@@ -192,7 +192,7 @@ inline Iterator<Elem> iter( Elem* array, int count )
 }
 
 /**
- * Create static array iterator with constant access to elements.
+ * Create static array iterator with element constant access.
  *
  * @ingroup oz
  */
@@ -204,7 +204,7 @@ inline CIterator<Elem> citer( const Elem ( &array )[SIZE] )
 }
 
 /**
- * Create static array iterator with non-constant access to elements.
+ * Create static array iterator with non-constant element access.
  *
  * @ingroup oz
  */

@@ -92,15 +92,15 @@ void Mouse::update( bool hasFocus )
     int desiredX = x + relX;
     int desiredY = y + relY;
 
-    x = clamp( desiredX, 0, Area::uiWidth  - 1 );
-    y = clamp( desiredY, 0, Area::uiHeight - 1 );
+    x = clamp( desiredX, 0, camera.width  - 1 );
+    y = clamp( desiredY, 0, camera.height - 1 );
 
     overEdgeX = x != desiredX ? desiredX - x : 0;
     overEdgeY = y != desiredY ? desiredY - y : 0;
   }
   else {
-    x = Area::uiCentreX;
-    y = Area::uiCentreY;
+    x = camera.centreX;
+    y = camera.centreY;
 
     overEdgeX = relX;
     overEdgeY = relY;
@@ -131,8 +131,8 @@ void Mouse::load()
 {
   Log::print( "Loading Mouse ..." );
 
-  x = Area::uiCentreX;
-  y = Area::uiCentreY;
+  x = camera.centreX;
+  y = camera.centreY;
 
   for( int i = 0; i < CURSORS_MAX; ++i ) {
     PFile file( String::str( "ui/cur/%s.ozCur", NAMES[i] ) );

@@ -89,7 +89,9 @@ void UI::update()
 
 void UI::draw()
 {
-  tf.ortho( Area::uiWidth, Area::uiHeight );
+  glViewport( 0, 0, camera.width, camera.height );
+
+  tf.ortho( camera.width, camera.height );
   tf.camera = Mat44::ID;
   shader.colourTransform = Mat44::ID;
 
@@ -181,27 +183,16 @@ void UI::init()
 {
   isFreelook = false;
 
-  uiScale   = config.getSet( "ui.scale",     1.0f  );
-  uiAspect  = config.getSet( "ui.aspect",    0.0f  );
   showFPS   = config.getSet( "ui.showFPS",   false );
   showBuild = config.getSet( "ui.showBuild", false );
   showDebug = config.getSet( "ui.showDebug", false );
 
   fps = 1.0f / Timer::TICK_TIME;
 
-  float aspect = float( camera.width ) / float( camera.height );
-
-  Area::uiScaleX  = uiAspect == 0.0f ? uiScale : uiScale * uiAspect / aspect;
-  Area::uiScaleY  = uiScale;
-  Area::uiWidth   = int( float( camera.width  ) * Area::uiScaleX + 0.5f );
-  Area::uiHeight  = int( float( camera.height ) * Area::uiScaleY + 0.5f );
-  Area::uiCentreX = Area::uiWidth  / 2;
-  Area::uiCentreY = Area::uiHeight / 2;
-
   font.init();
   mouse.load();
 
-  root = new Area( Area::uiWidth, Area::uiHeight );
+  root = new Area( camera.width, camera.height );
   loadingScreen = new LoadingArea();
 
   if( showFPS ) {

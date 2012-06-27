@@ -21,13 +21,15 @@
  * stars.frag
  */
 
+uniform vec4  oz_StarsColour;
+
 varying vec3  exPosition;
 varying float exAzimuth;
 
 void main()
 {
-  float dist     = ( length( exPosition ) - 50.0 ) / 50.0;
-  vec4  colour   = vec4( sin( exPosition * 100.0 ) * 0.2, 0.0 );
+  float dist       = ( length( exPosition ) - 50.0 ) / 50.0;
+  vec4  colour     = oz_StarsColour + vec4( sin( exPosition * 100.0 ) * 0.1, 0.0 );
 
   gl_FragData[0] = oz_ColourTransform * mix( colour, oz_Fog.colour, dist );
 }

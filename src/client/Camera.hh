@@ -112,6 +112,7 @@ class Camera
 
     Vector<int>   switchableUnits;
 
+    bool          isFixedAspect;
     bool          allowReincarnation;
     bool          nightVision;
     bool          isExternal;
@@ -182,6 +183,17 @@ class Camera
       desiredPos = p_;
     }
 
+    void magnify( float mag_ )
+    {
+      mag        = mag_;
+      desiredMag = mag_;
+    };
+
+    void smoothMagnify( float mag_ )
+    {
+      desiredMag = mag_;
+    }
+
     void smoothMoveTo( const Point& p_ )
     {
       desiredPos = p_;
@@ -222,7 +234,7 @@ class Camera
     void read( InputStream* istream );
     void write( BufferStream* ostream ) const;
 
-    void init( int screenWidth, int screenHeight );
+    void init();
 
 };
 

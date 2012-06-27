@@ -25,6 +25,7 @@
 
 #include "client/ui/LoadingArea.hh"
 
+#include "client/Camera.hh"
 #include "client/Shader.hh"
 #include "client/OpenGL.hh"
 
@@ -36,7 +37,7 @@ namespace ui
 {
 
 LoadingArea::LoadingArea() :
-  Area( Area::uiWidth, Area::uiHeight ),
+  Area( camera.width, camera.height ),
   status( width / 2, height / 5, ALIGN_CENTRE, Font::LARGE, " " )
 {
   flags = PINNED_BIT;

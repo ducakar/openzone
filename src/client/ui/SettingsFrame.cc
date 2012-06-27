@@ -25,6 +25,7 @@
 
 #include "client/ui/SettingsFrame.hh"
 
+#include "client/Camera.hh"
 #include "client/Shader.hh"
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"
@@ -48,7 +49,7 @@ static void closeFrame( Button* sender )
 void SettingsFrame::onDraw()
 {
   shader.colour( Vec4( 0.1f, 0.1f, 0.1f, 1.0f ) );
-  shape.fill( 0, 0, Area::uiWidth, Area::uiHeight );
+  shape.fill( 0, 0, camera.width, camera.height );
 
   Frame::onDraw();
 
@@ -59,8 +60,8 @@ SettingsFrame::SettingsFrame() :
   Frame( 0, 0, 400, 28 + 8 * font.INFOS[Font::SANS].height, OZ_GETTEXT( "Settings" ) ),
   message( 4, 24, 392, 8, Font::SANS )
 {
-  x = ( Area::uiWidth  - width ) / 2;
-  y = ( Area::uiHeight - height ) / 2;
+  x = ( camera.width  - width ) / 2;
+  y = ( camera.height - height ) / 2;
 
   message.setText( OZ_GETTEXT( "NOT IMPLEMENTED YET\n\n"
                                "You can change your settings by manually editing '%s' file." ),

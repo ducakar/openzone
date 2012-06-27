@@ -189,10 +189,6 @@ void GameStage::reload()
 
   render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
   loader.syncUpdate();
-
-  render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
-  loader.syncUpdate();
-
   sound.play();
   render.swap();
   sound.sync();
@@ -225,8 +221,6 @@ void GameStage::auxRun()
     matrix.update();
 
     matrixMicros += Time::uclock() - beginMicros;
-
-    loader.hasTime = false;
 
     mainSemaphore.post();
     auxSemaphore.wait();
@@ -294,8 +288,6 @@ bool GameStage::update()
   lua.update();
 
   uiMicros += Time::uclock() - beginMicros;
-
-  loader.hasTime = true;
 
   auxSemaphore.post();
 
@@ -437,10 +429,6 @@ void GameStage::load()
 
   render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
   loader.syncUpdate();
-
-  render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
-  loader.syncUpdate();
-
   sound.play();
   render.swap();
   sound.sync();
