@@ -26,8 +26,10 @@
 #include "client/StrategicProxy.hh"
 
 #include "client/Camera.hh"
-#include "client/ui/UI.hh"
+
+#include "client/ui/StrategicArea.hh"
 #include "client/ui/GalileoFrame.hh"
+#include "client/ui/UI.hh"
 
 namespace oz
 {
@@ -44,8 +46,7 @@ const float StrategicProxy::RTS_LOW_SPEED   = 15.0f;
 const float StrategicProxy::RTS_HIGH_SPEED  = 45.0f;
 const float StrategicProxy::ZOOM_FACTOR     = 0.15f;
 
-StrategicProxy::StrategicProxy() :
-  strategicArea( null )
+StrategicProxy::StrategicProxy()
 {
   reset();
 }
@@ -56,26 +57,17 @@ void StrategicProxy::begin()
   camera.setTaggedEnt( null );
   camera.isExternal = true;
 
-  strategicArea = new ui::StrategicArea();
-
   ui::mouse.doShow = true;
-
+  ui::ui.strategicArea->show( true );
   ui::ui.galileoFrame->show( true );
-  ui::ui.root->add( strategicArea );
-
-  strategicArea->sink();
 
   desiredPos = camera.p;
 }
 
 void StrategicProxy::end()
 {
-  if( strategicArea != null ) {
-    ui::ui.root->remove( strategicArea );
-    strategicArea = null;
-  }
-
   ui::mouse.doShow = true;
+  ui::ui.strategicArea->show( false );
 }
 
 void StrategicProxy::prepare()
@@ -108,8 +100,8 @@ void StrategicProxy::prepare()
   }
 
   if( !alt && keys[SDLK_i] && !oldKeys[SDLK_i] && camera.allowReincarnation ) {
-    if( strategicArea->taggedObjs.length() == 1 ) {
-      const Object* tagged = orbis.objects[ strategicArea->taggedObjs.first() ];
+    if( ui::ui.strategicArea->taggedObjs.length() == 1 ) {
+      const Object* tagged = orbis.objects[ ui::ui.strategicArea->taggedObjs.first() ];
       const Bot*    me     = null;
 
       if( tagged != null ) {

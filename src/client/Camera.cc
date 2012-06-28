@@ -25,6 +25,7 @@
 
 #include "client/Camera.hh"
 
+#include "client/ui/Area.hh"
 #include "client/ui/UI.hh"
 
 namespace oz
@@ -135,14 +136,6 @@ void Camera::prepare()
 {
   updateReferences();
 
-  width      = System::width;
-  height     = System::height;
-
-  centreX    = System::width / 2;
-  centreY    = System::height / 2;
-
-  aspect     = isFixedAspect ? aspect : float( width ) / float( height );
-
   relH = float( -ui::mouse.overEdgeX ) * mouseXSens * mag;
   relV = float( +ui::mouse.overEdgeY ) * mouseYSens * mag;
 
@@ -196,6 +189,22 @@ void Camera::prepare()
 
   if( proxy != null ) {
     proxy->prepare();
+  }
+
+  ui::ui.update();
+
+  if( System::width != width || System::height != height ) {
+    width   = System::width;
+    height  = System::height;
+
+    centreX = System::width / 2;
+    centreY = System::height / 2;
+
+    aspect  = isFixedAspect ? aspect : float( width ) / float( height );
+
+    ui::ui.root->width  = camera.width;
+    ui::ui.root->height = camera.height;
+    ui::ui.root->reposition();
   }
 }
 

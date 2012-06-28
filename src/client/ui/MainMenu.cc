@@ -93,7 +93,7 @@ static void loadCvicek( Button* sender )
 static void settings( Button* sender )
 {
   ui.root->remove( sender->parent );
-  ui.root->add( new SettingsFrame() );
+  ui.root->add( new SettingsFrame(), 100, 100 );
 }
 
 static void exit( Button* sender )
@@ -113,7 +113,7 @@ void MainMenu::onDraw()
 }
 
 MainMenu::MainMenu() :
-  Frame( 0, 0, 400, 450, OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " " OZ_SYSTEM_NAME ),
+  Frame( 400, 450, OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " " OZ_SYSTEM_NAME ),
   copyright( 10, 10, 380, 9, Font::SANS )
 {
   x = ( camera.width  - width ) / 2;
@@ -131,19 +131,19 @@ MainMenu::MainMenu() :
 
   if( autosaveFile.stat() ) {
     MainMenu::autosaveFile = autosaveFile.path();
-    add( new Button( OZ_GETTEXT( "Continue" ), continueAutosaved, 300, 20 ), 50, -60 );
+    add( new Button( OZ_GETTEXT( "Continue" ), continueAutosaved, 300, 20 ), 50, -40 );
   }
   if( quicksaveFile.stat() ) {
     MainMenu::quicksaveFile = quicksaveFile.path();
-    add( new Button( OZ_GETTEXT( "Load Quicksave" ), continueQuicksaved, 300, 20 ), 50, -90 );
+    add( new Button( OZ_GETTEXT( "Load Quicksave" ), continueQuicksaved, 300, 20 ), 50, -70 );
   }
 
-  add( new Button( OZ_GETTEXT( "Tutorial" ), loadTutorial, 300, 20 ), 50, -150 );
-  add( new Button( OZ_GETTEXT( "Test World" ), loadTest, 300, 20 ), 50, -180 );
-  add( new Button( OZ_GETTEXT( "Mission 1: Cvicek" ), loadCvicek, 300, 20 ), 50, -210 );
+  add( new Button( OZ_GETTEXT( "Tutorial" ), loadTutorial, 300, 20 ), 50, -130 );
+  add( new Button( OZ_GETTEXT( "Test World" ), loadTest, 300, 20 ), 50, -160 );
+  add( new Button( OZ_GETTEXT( "Mission 1: Cvicek" ), loadCvicek, 300, 20 ), 50, -190 );
 
-  add( new Button( OZ_GETTEXT( "Settings" ), settings, 300, 20 ), 50, -270 );
-  add( new Button( OZ_GETTEXT( "Exit" ), exit, 300, 20 ), 50, -300 );
+  add( new Button( OZ_GETTEXT( "Settings" ), settings, 300, 20 ), 50, -250 );
+  add( new Button( OZ_GETTEXT( "Exit" ), exit, 300, 20 ), 50, -280 );
 }
 
 MainMenu::~MainMenu()

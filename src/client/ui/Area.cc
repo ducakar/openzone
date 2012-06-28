@@ -41,15 +41,9 @@ namespace ui
 Vector<Area*> Area::updateAreas;
 
 Area::Area( int width_, int height_ ) :
-  flags( 0 ), parent( null ), x( 0 ), y( 0 ), width( width_ ), height( height_ )
+  flags( 0 ), parent( null ), x( 0 ), y( 0 ), width( width_ ), height( height_ ),
+  defaultX( 0 ), defaultY( 0 )
 {}
-
-Area::Area( int x_, int y_, int width_, int height_ ) :
-  flags( 0 ), parent( null ), x( x_ ), y( y_ ), width( width_ ), height( height_ )
-{
-  x = x < 0 ? camera.width  - width  + x : x;
-  y = y < 0 ? camera.height - height + y : y;
-}
 
 Area::~Area()
 {
@@ -72,25 +66,31 @@ void Area::rect( int x, int y, int width, int height ) const
   shape.rect( x, y, width, height );
 }
 
-void Area::realign( int newX, int newY )
+void Area::reposition()
 {
-  newX = newX < 0 ? parent->width  - width  + newX : newX;
-  newY = newY < 0 ? parent->height - height + newY : newY;
+  if( parent != null ) {
+    x = defaultX == CENTRE ? parent->x + ( parent->width - width ) / 2 :
+        defaultX < 0 ? parent->x + parent->width - width + defaultX :
+                       parent->x + defaultX;
 
-  int dx = newX - x;
-  int dy = newY - y;
+    y = defaultY == CENTRE ? parent->y + ( parent->height + height ) / 2 :
+        defaultY < 0 ? parent->y + parent->height - height + defaultY :
+                       parent->y + defaultY;
+  }
 
-  x = newX;
-  y = newY;
+  onReposition();
 
   foreach( child, children.iter() ) {
-    child->x += dx;
-    child->y += dy;
+    child->reposition();
   }
 }
 
 void Area::move( int moveX, int moveY )
 {
+  if( parent == null ) {
+    return;
+  }
+
   moveX = clamp( moveX, parent->x - x, parent->x + parent->width  - x - width  );
   moveY = clamp( moveY, parent->y - y, parent->y + parent->height - y - height );
 
@@ -147,6 +147,9 @@ void Area::update()
 void Area::onVisibilityChange()
 {}
 
+void Area::onReposition()
+{}
+
 bool Area::onMouseEvent()
 {
   return false;
@@ -172,30 +175,22 @@ void Area::show( bool doShow )
   onVisibilityChange();
 }
 
-void Area::add( Area* area, int relativeX, int relativeY )
+void Area::add( Area* area, int localX, int localY )
 {
   area->width  = clamp( area->width,  1, width  );
   area->height = clamp( area->height, 1, height );
 
-  relativeX = relativeX < 0 ? width  + relativeX : relativeX;
-  relativeY = relativeY < 0 ? height + relativeY : relativeY;
+  area->defaultX = localX;
+  area->defaultY = localY;
 
-  relativeX = clamp( relativeX, 0, width  - area->width  );
-  relativeY = clamp( relativeY, 0, height - area->height );
-
-  area->realign( x + relativeX, y + relativeY );
   area->parent = this;
+  area->reposition();
 
   children.pushFirst( area );
 
   if( area->flags & UPDATE_BIT ) {
     updateAreas.add( area );
   }
-}
-
-void Area::add( Area* area )
-{
-  add( area, area->x, area->y );
 }
 
 void Area::remove( Area* area )

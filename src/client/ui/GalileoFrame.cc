@@ -53,6 +53,17 @@ uint GalileoFrame::loadTexture( const char* path ) const
   return texId;
 }
 
+void GalileoFrame::onReposition()
+{
+  int maxSize = camera.width - 2 * ( width + 8 );
+  maxSize = camera.height < maxSize ? camera.height - 64 : maxSize - 64;
+
+  maximisedX      = camera.centreX - maxSize / 2;
+  maximisedY      = camera.centreY - maxSize / 2;
+  maximisedWidth  = maxSize;
+  maximisedHeight = maxSize;
+}
+
 bool GalileoFrame::onMouseEvent()
 {
   return isVisible ? Frame::onMouseEvent() : false;
@@ -121,7 +132,7 @@ void GalileoFrame::onDraw()
 }
 
 GalileoFrame::GalileoFrame( const QuestFrame* questFrame_ ) :
-  Frame( 8, -8, 240, 232 - Font::INFOS[Font::LARGE].height, "" ),
+  Frame( 240, 232 - Font::INFOS[Font::LARGE].height, "" ),
   questFrame( questFrame_ ), mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ),
   isVisible( true ), isMaximised( false )
 {
@@ -135,13 +146,7 @@ GalileoFrame::GalileoFrame( const QuestFrame* questFrame_ ) :
   normalWidth  = width;
   normalHeight = height;
 
-  int maxSize = camera.width - 2 * ( width + 8 );
-  maxSize = camera.height < maxSize ? camera.height - 64 : maxSize - 64;
-
-  maximisedX      = camera.centreX - maxSize / 2;
-  maximisedY      = camera.centreY - maxSize / 2;
-  maximisedWidth  = maxSize;
-  maximisedHeight = maxSize;
+  onReposition();
 }
 
 GalileoFrame::~GalileoFrame()

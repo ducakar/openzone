@@ -283,7 +283,6 @@ bool GameStage::update()
 
   camera.prepare();
 
-  ui::ui.update();
   modules.update();
   lua.update();
 
@@ -361,7 +360,6 @@ void GameStage::load()
   ui::ui.loadingScreen->status.setText( "%s", OZ_GETTEXT( "Loading ..." ) );
   ui::ui.loadingScreen->show( true );
 
-  render.draw( Render::DRAW_UI_BIT );
   render.draw( Render::DRAW_UI_BIT );
   render.swap();
 

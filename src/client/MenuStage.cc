@@ -28,6 +28,7 @@
 #include "client/GameStage.hh"
 #include "client/Render.hh"
 #include "client/Sound.hh"
+#include "Camera.hh"
 
 namespace oz
 {
@@ -38,7 +39,8 @@ MenuStage menuStage;
 
 bool MenuStage::update()
 {
-  ui::ui.update();
+  camera.prepare();
+  camera.update();
 
   return !doExit;
 }
@@ -61,8 +63,8 @@ void MenuStage::load()
   ui::mouse.buttons     = 0;
   ui::mouse.currButtons = 0;
 
-  ui::Area* area = new ui::MainMenu();
-  ui::ui.root->add( area );
+  ui::Area* menu = new ui::MainMenu();
+  ui::ui.root->add( menu, camera.centreX - menu->width / 2, camera.centreY - menu->height / 2 );
 
   ui::ui.showLoadingScreen( false );
   ui::mouse.doShow = true;

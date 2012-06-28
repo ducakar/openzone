@@ -40,6 +40,9 @@ class Area
 
   public:
 
+    // Special value for x and y.
+    static const int CENTRE          = 0x10000000;
+
     // if onUpdate should be called
     static const int UPDATE_BIT      = 0x01;
     // ignore when passing events
@@ -83,6 +86,9 @@ class Area
 
   protected:
 
+    int defaultX;
+    int defaultY;
+
     void fill( int x, int y, int width, int height ) const;
     void rect( int x, int y, int width, int height ) const;
 
@@ -91,6 +97,7 @@ class Area
     void drawChildren();
 
     virtual void onVisibilityChange();
+    virtual void onReposition();
     // return true if event has been caught
     virtual bool onMouseEvent();
     virtual void onUpdate();
@@ -101,16 +108,14 @@ class Area
   public:
 
     explicit Area( int width, int height );
-    explicit Area( int x, int y, int width, int height );
     virtual ~Area();
 
-    void realign( int newX, int newY );
+    void reposition();
     void move( int moveX, int moveY );
 
     void show( bool doShow );
 
-    void add( Area* area, int relativeX, int relativeY );
-    void add( Area* area );
+    void add( Area* area, int localX, int localY );
     void remove( Area* area );
     void raise();
     void sink();

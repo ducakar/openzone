@@ -47,7 +47,6 @@ class Frame : public Area
   public:
 
     explicit Frame( int width, int height, const char* title );
-    explicit Frame( int x, int y, int width, int height, const char* title );
 
 };
 

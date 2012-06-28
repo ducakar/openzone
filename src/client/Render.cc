@@ -595,6 +595,7 @@ void Render::init( SDL_Surface* window_, bool isBuild )
 
 #ifdef __native_client__
   config.include( "shader.vertexTexture", "false" );
+  config.include( "shader.setSamplerMap", "false" );
 #endif
 
   if( isMesa ) {

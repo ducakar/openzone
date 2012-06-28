@@ -329,6 +329,25 @@ void HudArea::drawVehicleStatus()
   }
 }
 
+void HudArea::onReposition()
+{
+  width       = camera.width;
+  height      = camera.height;
+
+  crossIconX  = ( width - ICON_SIZE ) / 2;
+  crossIconY  = ( height - ICON_SIZE ) / 2;
+  leftIconX   = crossIconX - ICON_SIZE;
+  leftIconY   = crossIconY;
+  rightIconX  = crossIconX + ICON_SIZE;
+  rightIconY  = crossIconY;
+  bottomIconX = crossIconX;
+  bottomIconY = crossIconY - ICON_SIZE;
+  healthBarX  = crossIconX - 8;
+  healthBarY  = crossIconY + ICON_SIZE;
+  descTextX   = width / 2;
+  descTextY   = crossIconY + ICON_SIZE + 36;
+}
+
 void HudArea::onUpdate()
 {
   const Bot* bot = camera.botObj;
@@ -400,18 +419,7 @@ HudArea::HudArea() :
 
   Log::verboseMode = false;
 
-  crossIconX  = ( width - ICON_SIZE ) / 2;
-  crossIconY  = ( height - ICON_SIZE ) / 2;
-  leftIconX   = crossIconX - ICON_SIZE;
-  leftIconY   = crossIconY;
-  rightIconX  = crossIconX + ICON_SIZE;
-  rightIconY  = crossIconY;
-  bottomIconX = crossIconX;
-  bottomIconY = crossIconY - ICON_SIZE;
-  healthBarX  = crossIconX - 8;
-  healthBarY  = crossIconY + ICON_SIZE;
-  descTextX   = width / 2;
-  descTextY   = crossIconY + ICON_SIZE + 36;
+  onReposition();
 
   title.set( descTextX, descTextY, ALIGN_CENTRE, Font::LARGE, " " );
 }

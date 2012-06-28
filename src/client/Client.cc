@@ -325,24 +325,12 @@ int Client::main( int argc, char** argv )
     File( "/data/openzone.7z" )
   };
 
-  foreach( pkg, iter( pkgs ) ) {
-    if( pkg->stat() ) {
-      Time time = Time::local( pkg->time() );
-      Log::print( "%s: timestamp %s, ", pkg->path().cstr(), time.toString().cstr() );
+  NaClDownloader downloader;
 
-      // TODO check if up-to-date
+  Log::print( "Checking for updates ..." );
 
-      Log::printEnd( " Up-to-date" );
-//       continue;
-    }
-
-    String url = pkg->name();
-
-    Log::print( "Downloading '%s' into '%s' ...", url.cstr(), pkg->path().cstr() );
-
-    NaClDownloader downloader;
-
-    downloader.begin( url );
+  {
+    downloader.begin( "/manifest.txt" );
     do {
       Time::sleep( 1000 );
       Log::printRaw( "." );
@@ -351,24 +339,66 @@ int Client::main( int argc, char** argv )
 
     BufferStream bs = downloader.take();
 
-    Log::printRaw( " %.2f MiB transferred ...", float( bs.length() ) / ( 1024.0f*1024.0f ) );
-
-    if( !bs.isAvailable() ) {
+    if( bs.length() < 11 || !String::beginsWith( bs.begin(), "ozManifest" ) ) {
       Log::printEnd( " Failed" );
-      continue;
+      goto updateEnd;
     }
 
-    if( bs.capacity() < 2 || bs[0] != '7' || bs[1] != 'z' ) {
-      Log::printEnd( " Failed" );
-      continue;
+    String sTime = String( bs.length() - 10, bs.begin() + 10 );
+    Time   time;
+
+    time.epoch = -1;
+
+    try {
+      time.epoch = sTime.parseLong();
+    }
+    catch( const String::ParseException& ) {
+      goto updateEnd;
     }
 
-    if( !pkg->write( bs.begin(), bs.length() ) ) {
-      throw Exception( "Cannot write to local storage" );
-    }
+    time = Time::local( time.epoch );
 
-    Log::printEnd( " OK" );
+    Log::printRaw( " Latest: " );
+    Log::printTime( time );
+    Log::printEnd();
+
+    foreach( pkg, iter( pkgs ) ) {
+      if( pkg->stat() ) {
+        Time time = Time::local( pkg->time() );
+        Log::print( "%s: timestamp %s, ", pkg->path().cstr(), time.toString().cstr() );
+
+        Log::printEnd( " Up-to-date" );
+        continue;
+      }
+
+      String url = pkg->name();
+
+      Log::print( "Downloading '%s' into '%s' ...", url.cstr(), pkg->path().cstr() );
+
+      downloader.begin( url );
+      do {
+        Time::sleep( 1000 );
+        Log::printRaw( "." );
+      }
+      while( !downloader.isComplete() );
+
+      bs = downloader.take();
+
+      Log::printRaw( " %.2f MiB transferred ...", float( bs.length() ) / ( 1024.0f*1024.0f ) );
+
+      if( bs.length() < 2 || bs[0] != '7' || bs[1] != 'z' ) {
+        Log::printEnd( " Failed" );
+        continue;
+      }
+
+      if( !pkg->write( bs.begin(), bs.length() ) ) {
+        throw Exception( "Cannot write to local storage" );
+      }
+
+      Log::printEnd( " OK" );
+    }
   }
+updateEnd:
 
   Log::unindent();
   Log::println( "}" );
@@ -482,7 +512,7 @@ int Client::main( int argc, char** argv )
   bool windowFullscreen = config.getSet( "window.fullscreen", false );
   bool enableVSync      = config.getSet( "window.vsync", true );
 
-  uint windowFlags = SDL_OPENGL;
+  uint windowFlags = SDL_OPENGL | SDL_RESIZABLE;
 
   if( windowFullscreen ) {
     windowFlags |= SDL_FULLSCREEN;
@@ -670,8 +700,21 @@ int Client::main( int argc, char** argv )
           }
           break;
         }
+        case SDL_VIDEORESIZE: {
+          System::width  = event.resize.w;
+          System::height = event.resize.h;
+
+#ifndef __native_client__
+          SDL_Surface* window = SDL_SetVideoMode( System::width, System::height,
+                                                  windowBpp, windowFlags );
+
+          if( window == null ) {
+            throw Exception( "Failed to resize surface after window resize" );
+          }
+#endif
+          break;
+        }
         case SDL_QUIT: {
-          Log::println( "Terminal signal or quit event received, exiting ..." );
           isAlive = false;
           break;
         }

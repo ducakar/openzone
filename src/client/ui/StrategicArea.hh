@@ -71,6 +71,7 @@ class StrategicArea : public Area
 
     void onUpdate() override;
     void onVisibilityChange() override;
+    void onReposition() override;
     bool onMouseEvent() override;
     void onDraw() override;
 

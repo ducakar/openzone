@@ -37,9 +37,13 @@ namespace ui
 class Label;
 class Area;
 class LoadingArea;
+class HudArea;
+class StrategicArea;
 class QuestFrame;
 class GalileoFrame;
 class MusicPlayer;
+class InventoryMenu;
+class InfoFrame;
 class BuildMenu;
 class DebugFrame;
 
@@ -61,13 +65,18 @@ class UI
 
   public:
 
-    Area*         root;
-    LoadingArea*  loadingScreen;
-    QuestFrame*   questFrame;
-    GalileoFrame* galileoFrame;
-    MusicPlayer*  musicPlayer;
-    BuildMenu*    buildMenu;
-    DebugFrame*   debugFrame;
+    Area*          root;
+    LoadingArea*   loadingScreen;
+    StrategicArea* strategicArea;
+    HudArea*       hudArea;
+    QuestFrame*    questFrame;
+    GalileoFrame*  galileoFrame;
+    MusicPlayer*   musicPlayer;
+    InventoryMenu* inventory;
+    InventoryMenu* container;
+    InfoFrame*     infoFrame;
+    BuildMenu*     buildMenu;
+    DebugFrame*    debugFrame;
 
     UI();
 
