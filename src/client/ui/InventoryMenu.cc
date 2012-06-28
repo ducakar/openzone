@@ -30,6 +30,8 @@
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"
 
+#include "client/ui/Keyboard.hh"
+
 namespace oz
 {
 namespace client
@@ -67,6 +69,10 @@ bool InventoryMenu::onMouseEvent()
   }
 
   Frame::onMouseEvent();
+
+  if( keyboard.keys[SDLK_LALT] || keyboard.keys[SDLK_RALT] ) {
+    return true;
+  }
 
   int minY = y + FOOTER_SIZE;
   int maxY = y + FOOTER_SIZE + ROWS * SLOT_SIZE;
@@ -354,7 +360,7 @@ slotsRendered:
 }
 
 InventoryMenu::InventoryMenu( const InventoryMenu* master_ ) :
-  Frame( 0, 8, COLS*SLOT_SIZE, ROWS*SLOT_SIZE + FOOTER_SIZE, " " ),
+  Frame( COLS*SLOT_SIZE, ROWS*SLOT_SIZE + FOOTER_SIZE, " " ),
   master( master_ ),
   itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " " ),
   cachedContainerIndex( -1 ),

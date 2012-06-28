@@ -43,7 +43,7 @@ namespace ui
 static void closeFrame( Button* sender )
 {
   ui.root->remove( sender->parent );
-  ui.root->add( new MainMenu() );
+  ui.root->add( new MainMenu(), 0, 0 );
 }
 
 void SettingsFrame::onDraw()
@@ -57,7 +57,7 @@ void SettingsFrame::onDraw()
 }
 
 SettingsFrame::SettingsFrame() :
-  Frame( 0, 0, 400, 28 + 8 * font.INFOS[Font::SANS].height, OZ_GETTEXT( "Settings" ) ),
+  Frame( 400, 28 + 8 * font.INFOS[Font::SANS].height, OZ_GETTEXT( "Settings" ) ),
   message( 4, 24, 392, 8, Font::SANS )
 {
   x = ( camera.width  - width ) / 2;

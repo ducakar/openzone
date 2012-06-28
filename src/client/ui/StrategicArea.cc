@@ -241,6 +241,15 @@ void StrategicArea::onVisibilityChange()
   hoverObj = -1;
 }
 
+void StrategicArea::onReposition()
+{
+  width     = camera.width;
+  height    = camera.height;
+
+  pixelStep = camera.coeff / float( camera.height / 2 );
+  stepPixel = 1.0f / pixelStep;
+}
+
 void StrategicArea::onUpdate()
 {
   for( int i = 0; i < taggedStrs.length(); ) {
@@ -381,8 +390,7 @@ StrategicArea::StrategicArea() :
     glBindTexture( GL_TEXTURE_2D, 0 );
   } )
 
-  pixelStep = camera.coeff / float( camera.height / 2 );
-  stepPixel = 1.0f / pixelStep;
+  onReposition();
 }
 
 StrategicArea::~StrategicArea()

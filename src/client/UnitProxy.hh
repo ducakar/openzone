@@ -24,9 +24,6 @@
 #pragma once
 
 #include "client/Proxy.hh"
-#include "client/ui/HudArea.hh"
-#include "client/ui/InfoFrame.hh"
-#include "client/ui/InventoryMenu.hh"
 
 namespace oz
 {
@@ -49,11 +46,6 @@ class UnitProxy : public Proxy
     static const float BOB_SUPPRESSION_COEF;
     static const float BINOCULARS_MAGNIFICATION;
 
-    ui::HudArea*       hud;
-    ui::InfoFrame*     infoFrame;
-    ui::InventoryMenu* inventory;
-    ui::InventoryMenu* container;
-
   public:
 
     Quat  baseRot;
@@ -69,8 +61,6 @@ class UnitProxy : public Proxy
     bool  isFreelook;
 
   public:
-
-    UnitProxy();
 
     void begin() override;
     void end() override;

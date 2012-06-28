@@ -91,6 +91,7 @@ class HudArea : public Area
 
   protected:
 
+    void onReposition() override;
     void onUpdate() override;
     void onDraw() override;
 

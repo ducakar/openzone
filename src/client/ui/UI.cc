@@ -31,9 +31,13 @@
 #include "client/OpenGL.hh"
 
 #include "client/ui/LoadingArea.hh"
+#include "client/ui/StrategicArea.hh"
+#include "client/ui/HudArea.hh"
 #include "client/ui/QuestFrame.hh"
 #include "client/ui/GalileoFrame.hh"
 #include "client/ui/MusicPlayer.hh"
+#include "client/ui/InventoryMenu.hh"
+#include "client/ui/InfoFrame.hh"
 #include "client/ui/BuildMenu.hh"
 #include "client/ui/DebugFrame.hh"
 
@@ -47,8 +51,9 @@ namespace ui
 UI ui;
 
 UI::UI() :
-  fpsLabel( null ), root( null ), loadingScreen( null ), questFrame( null ), galileoFrame( null ),
-  musicPlayer( null ), buildMenu( null ), debugFrame( null )
+  fpsLabel( null ), root( null ), loadingScreen( null ), strategicArea( null ), hudArea( null ),
+  questFrame( null ), galileoFrame( null ), musicPlayer( null ), inventory( null ),
+  container( null ), buildMenu( null ), debugFrame( null )
 {}
 
 void UI::showLoadingScreen( bool doShow )
@@ -135,22 +140,38 @@ void UI::load()
 {
   isFreelook = false;
 
-  questFrame   = new QuestFrame();
-  galileoFrame = new GalileoFrame( questFrame );
-  musicPlayer  = new MusicPlayer();
-  buildMenu    = showBuild ? new BuildMenu() : null;
-  debugFrame   = showDebug ? new DebugFrame() : null;
+  strategicArea = new StrategicArea();
+  hudArea       = new HudArea();
+  galileoFrame  = new GalileoFrame( questFrame );
+  musicPlayer   = new MusicPlayer();
+  inventory     = new InventoryMenu( null );
+  container     = new InventoryMenu( inventory );
+  questFrame    = new QuestFrame();
+  infoFrame     = new InfoFrame();
+  buildMenu     = showBuild ? new BuildMenu() : null;
+  debugFrame    = showDebug ? new DebugFrame() : null;
 
-  root->add( galileoFrame );
-  root->add( musicPlayer );
-  root->add( questFrame );
+  root->add( strategicArea, 0, 0 );
+  root->add( hudArea, 0, 0 );
+  root->add( galileoFrame, 8, -8 );
+  root->add( musicPlayer, 8, -16 - galileoFrame->height );
+  root->add( inventory, Area::CENTRE, 8 );
+  root->add( container, Area::CENTRE, 16 + inventory->height );
+  root->add( questFrame, Area::CENTRE, -8 );
+  root->add( infoFrame, -8, -8 );
 
   if( showBuild ) {
-    root->add( buildMenu );
+    root->add( buildMenu, 8, -24 - galileoFrame->height - musicPlayer->height );
   }
   if( showDebug ) {
-    root->add( debugFrame );
+    root->add( debugFrame, Area::CENTRE, -16 - questFrame->height );
   }
+
+  strategicArea->show( false );
+  hudArea->show( false );
+  inventory->show( false );
+  container->show( false );
+  infoFrame->show( false );
 
   loadingScreen->raise();
 }
@@ -165,6 +186,18 @@ void UI::unload()
     root->remove( buildMenu );
     buildMenu = null;
   }
+  if( infoFrame != null ) {
+    root->remove( infoFrame );
+    infoFrame = null;
+  }
+  if( container != null ) {
+    root->remove( container );
+    container = null;
+  }
+  if( inventory != null ) {
+    root->remove( inventory );
+    inventory = null;
+  }
   if( musicPlayer != null ) {
     root->remove( musicPlayer );
     musicPlayer = null;
@@ -176,6 +209,14 @@ void UI::unload()
   if( questFrame != null ) {
     root->remove( questFrame );
     questFrame = null;
+  }
+  if( hudArea != null ) {
+    root->remove( hudArea );
+    hudArea = null;
+  }
+  if( strategicArea != null ) {
+    root->remove( strategicArea );
+    strategicArea = null;
   }
 }
 
@@ -199,7 +240,7 @@ void UI::init()
     fpsLabel = new Label( -4, -4, Area::ALIGN_RIGHT | Area::ALIGN_TOP, Font::MONO, " " );
   }
 
-  root->add( loadingScreen );
+  root->add( loadingScreen, 0, 0 );
 }
 
 void UI::free()

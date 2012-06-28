@@ -24,7 +24,6 @@
 #pragma once
 
 #include "client/Proxy.hh"
-#include "client/ui/StrategicArea.hh"
 
 namespace oz
 {
@@ -44,8 +43,6 @@ class StrategicProxy : public Proxy
     static const float RTS_LOW_SPEED;
     static const float RTS_HIGH_SPEED;
     static const float ZOOM_FACTOR;
-
-    ui::StrategicArea* strategicArea;
 
   public:
 

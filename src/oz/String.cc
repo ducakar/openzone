@@ -102,6 +102,18 @@ int String::parseInt( const char* s )
   return i;
 }
 
+long String::parseLong( const char* s )
+{
+  char* end;
+  errno = 0;
+  long l = strtol( s, &end, 0 );
+
+  if( errno != 0 || *end != '\0' || s[0] == '\0' ) {
+    throw ParseException();
+  }
+  return l;
+}
+
 float String::parseFloat( const char* s )
 {
   char* end;

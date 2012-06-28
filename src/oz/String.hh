@@ -342,6 +342,13 @@ class String
     static int parseInt( const char* s );
 
     /**
+     * Parse long integer value.
+     *
+     * If parsing fails, a ParseException is thrown.
+     */
+    static long parseLong( const char* s );
+
+    /**
      * Parse float value.
      *
      * If parsing fails, a ParseException is thrown.
@@ -840,6 +847,16 @@ class String
     int parseInt() const
     {
       return parseInt( buffer );
+    }
+
+    /**
+     * Parse long integer value.
+     *
+     * If parsing fails, a ParseException is thrown.
+     */
+    long parseLong() const
+    {
+      return parseLong( buffer );
     }
 
     /**

@@ -27,7 +27,10 @@
 
 #include "client/Camera.hh"
 
+#include "client/ui/HudArea.hh"
 #include "client/ui/GalileoFrame.hh"
+#include "client/ui/InventoryMenu.hh"
+#include "client/ui/InfoFrame.hh"
 #include "client/ui/UI.hh"
 
 namespace oz
@@ -45,10 +48,6 @@ const float UnitProxy::VEHICLE_CAM_UP_FACTOR    = 0.15f;
 const float UnitProxy::BOB_SUPPRESSION_COEF     = 0.80f;
 const float UnitProxy::BINOCULARS_MAGNIFICATION = 0.20f;
 
-UnitProxy::UnitProxy() :
-  hud( null ), infoFrame( null ), inventory( null ), container( null )
-{}
-
 void UnitProxy::begin()
 {
   if( camera.bot < 0 ) {
@@ -61,25 +60,14 @@ void UnitProxy::begin()
   camera.setTaggedEnt( null );
   camera.isExternal = isExternal;
 
-  hud       = new ui::HudArea();
-  infoFrame = new ui::InfoFrame();
-  inventory = new ui::InventoryMenu( null );
-  container = new ui::InventoryMenu( inventory );
-
   ui::mouse.doShow = false;
+  ui::ui.hudArea->show( true );
+  ui::ui.inventory->show( true );
+  ui::ui.container->show( true );
+  ui::ui.infoFrame->show( true );
 
-  ui::ui.galileoFrame->show( true );
-  ui::ui.root->add( hud );
-  ui::ui.root->add( infoFrame );
-  ui::ui.root->add( inventory );
-  ui::ui.root->add( container );
-
-  hud->sink();
-  inventory->show( false );
-  container->show( false );
-
-  baseRot   = Quat::rotationZXZ( bot->h, bot->v, 0.0f );
-  headRot   = Quat::ID;
+  baseRot = Quat::rotationZXZ( bot->h, bot->v, 0.0f );
+  headRot = Quat::ID;
 
   if( isFreelook ) {
     headH = bot->h;
@@ -99,24 +87,11 @@ void UnitProxy::begin()
 
 void UnitProxy::end()
 {
-  if( container != null ) {
-    ui::ui.root->remove( container );
-    container = null;
-  }
-  if( inventory != null ) {
-    ui::ui.root->remove( inventory );
-    inventory = null;
-  }
-  if( infoFrame != null ) {
-    ui::ui.root->remove( infoFrame );
-    infoFrame = null;
-  }
-  if( hud != null ) {
-    ui::ui.root->remove( hud );
-    hud = null;
-  }
-
   ui::mouse.doShow = true;
+  ui::ui.hudArea->show( false );
+  ui::ui.inventory->show( false );
+  ui::ui.container->show( false );
+  ui::ui.infoFrame->show( false );
 }
 
 void UnitProxy::prepare()

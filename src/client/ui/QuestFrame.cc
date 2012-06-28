@@ -128,7 +128,7 @@ void QuestFrame::onDraw()
 }
 
 QuestFrame::QuestFrame() :
-  Frame( 0, -8, 500, 0, OZ_GETTEXT( "Quests" ) ),
+  Frame( 500, 0, OZ_GETTEXT( "Quests" ) ),
   description( 6, 4, 488, 10, Font::SANS ),
   lastState( Quest::PENDING ),
   isOpened( false ),
@@ -144,9 +144,9 @@ QuestFrame::QuestFrame() :
   title.set( 16, -font.INFOS[Font::LARGE].height - 6, ALIGN_NONE, Font::LARGE, "%s",
              OZ_GETTEXT( "No quest" ) );
 
-  add( new Button( " + ", open, 16, 14 ), -20, -18 );
-  add( new Button( " > ", next, 16, 14 ), -44, -18 );
-  add( new Button( " < ", prev, 16, 14 ), -64, -18 );
+  add( new Button( " + ", open, 16, 14 ), -4, -4 );
+  add( new Button( " > ", next, 16, 14 ), -28, -4 );
+  add( new Button( " < ", prev, 16, 14 ), -48, -4 );
 
   y += contentHeight;
   height -= contentHeight;
