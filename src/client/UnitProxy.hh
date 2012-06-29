@@ -57,6 +57,8 @@ class UnitProxy : public Proxy
     float bobTheta;
     float bobBias;
 
+    int   oldBot;
+
     bool  isExternal;
     bool  isFreelook;
 

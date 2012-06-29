@@ -58,6 +58,11 @@ void GalileoFrame::onReposition()
   int maxSize = camera.width - 2 * ( width + 8 );
   maxSize = camera.height < maxSize ? camera.height - 64 : maxSize - 64;
 
+  normalX         = x;
+  normalY         = y;
+  normalWidth     = width;
+  normalHeight    = height;
+
   maximisedX      = camera.centreX - maxSize / 2;
   maximisedY      = camera.centreY - maxSize / 2;
   maximisedWidth  = maxSize;
@@ -66,7 +71,7 @@ void GalileoFrame::onReposition()
 
 bool GalileoFrame::onMouseEvent()
 {
-  return isVisible ? Frame::onMouseEvent() : false;
+  return flags & HIDDEN_BIT ? false : Frame::onMouseEvent();
 }
 
 void GalileoFrame::onDraw()
@@ -74,12 +79,12 @@ void GalileoFrame::onDraw()
   if( orbis.terra.id < 0 || ( camera.state == Camera::UNIT && camera.botObj != null &&
       !camera.botObj->hasAttribute( ObjectClass::GALILEO_BIT ) ) )
   {
-    isVisible = false;
+    flags |= HIDDEN_BIT;
     setMaximised( false );
     return;
   }
 
-  isVisible = true;
+  flags &= ~HIDDEN_BIT;
 
   if( mapTexId == 0 ) {
     mapTexId = loadTexture( "terra/" + library.terrae[orbis.terra.id].name + ".ozcTex" );
@@ -133,18 +138,12 @@ void GalileoFrame::onDraw()
 
 GalileoFrame::GalileoFrame( const QuestFrame* questFrame_ ) :
   Frame( 240, 232 - Font::INFOS[Font::LARGE].height, "" ),
-  questFrame( questFrame_ ), mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ),
-  isVisible( true ), isMaximised( false )
+  questFrame( questFrame_ ), mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ), isMaximised( false )
 {
   flags = PINNED_BIT;
 
   arrowTexId = loadTexture( "ui/icon/arrow.ozIcon" );
   markerTexId = loadTexture( "ui/icon/marker.ozIcon" );
-
-  normalX      = x;
-  normalY      = y;
-  normalWidth  = width;
-  normalHeight = height;
 
   onReposition();
 }

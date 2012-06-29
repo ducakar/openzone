@@ -90,10 +90,10 @@ static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle )
 inline short madFixedToShort( mad_fixed_t f )
 {
   if( f < -MAD_F_ONE ) {
-    return SHRT_MAX;
-  }
-  else if( f > MAD_F_ONE ) {
     return SHRT_MIN;
+  }
+  else if( f > +MAD_F_ONE ) {
+    return SHRT_MAX;
   }
   else {
     return short( f >> ( MAD_F_FRACBITS - 15 ) );
@@ -523,7 +523,7 @@ void Sound::updateMusic()
     return;
   }
 
-  if( selectedTrack >= 0 && selectedTrack != currentTrack ) {
+  if( selectedTrack != -1 && selectedTrack != currentTrack ) {
     currentTrack = selectedTrack == -2 ? -1 : selectedTrack;
     selectedTrack = -1;
 

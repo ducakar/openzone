@@ -5,10 +5,10 @@ buildType=Debug
 Linux_x86_64=1
 Linux_x86_64_Clang=1
 Linux_i686=1
-Linux_i686_Clang=1
+Linux_i686_Clang=0
 Windows_i686=1
 NaCl_x86_64=1
-NaCl_i686=1
+NaCl_i686=0
 
 (( $isBuild )) && return
 

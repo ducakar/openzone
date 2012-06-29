@@ -128,12 +128,14 @@ void MusicPlayer::onUpdate()
       title.setText( " " );
       sound.stopMusic();
     }
-
-    isVisible = false;
+    if( !( flags & HIDDEN_BIT ) ) {
+      show( false );
+    }
     return;
   }
-
-  isVisible = true;
+  else if( mouse.doShow && ( flags & HIDDEN_BIT ) ) {
+    show( true );
+  }
 
   if( isPlaying && !sound.isMusicPlaying() ) {
     int nTracks = library.musics.length();
@@ -150,22 +152,8 @@ void MusicPlayer::onUpdate()
   }
 }
 
-bool MusicPlayer::onMouseEvent()
-{
-  if( !isVisible ) {
-    return false;
-  }
-  else {
-    return Frame::onMouseEvent();
-  }
-}
-
 void MusicPlayer::onDraw()
 {
-  if( !isVisible ) {
-    return;
-  }
-
   Frame::onDraw();
 
   title.draw( this, false );
@@ -178,7 +166,7 @@ MusicPlayer::MusicPlayer() :
   title( width / 2, 32, ALIGN_HCENTRE, Font::SMALL, " " ),
   trackLabel( 39, 14, ALIGN_CENTRE, Font::SMALL, "0" ),
   volumeLabel( 201, 14, ALIGN_CENTRE, Font::SMALL, " " ),
-  currentTrack( 0 ), volume( 5 ), isPlaying( false ), isVisible( true )
+  currentTrack( 0 ), volume( 5 ), isPlaying( false )
 {
   flags = UPDATE_BIT;
 

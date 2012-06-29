@@ -18,42 +18,51 @@
  */
 
 /**
- * @file client/ui/Frame.hh
+ * @file client/NaClUpdater.hh
  */
 
 #pragma once
 
-#include "client/ui/Area.hh"
-#include "client/ui/Label.hh"
+#ifdef __native_client__
+
+#include "client/common.hh"
 
 namespace oz
 {
 namespace client
 {
-namespace ui
-{
 
-class Frame : public Area
+class NaClUpdater
 {
   public:
 
-    static const int HEADER_SIZE = 22;
+    struct Package
+    {
+      String name;
+      long64 time;
+    };
 
-  protected:
+  private:
 
-    Label title;
+    Vector<Package> readManifest( InputStream* is ) const;
 
-  protected:
-
-    bool onMouseEvent() override;
-    void onDraw() override;
+    bool checkUpdates();
+    void downloadUpdates();
 
   public:
 
-    explicit Frame( int width, int height, const char* text );
+    Vector<Package> packages;
+
+    void update();
+
+    void init();
+    void free();
 
 };
 
+extern NaClUpdater naclUpdater;
+
 }
 }
-}
+
+#endif

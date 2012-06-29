@@ -44,6 +44,9 @@ namespace oz
  */
 class InputStream
 {
+  friend class OutputStream;
+  friend class BufferStream;
+
   private:
 
     const char*   pos;   ///< Current position.

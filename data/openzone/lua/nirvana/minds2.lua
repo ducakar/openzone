@@ -143,8 +143,8 @@ function droid_patrol( l )
   if not l.pivotX then
     l.pivotX, l.pivotY, l.pivotZ = ozSelfGetPos()
 
-    if not ozSelfHasState( OZ_BOT_RUNNING_BIT ) then
-      ozSelfAction( OZ_ACTION_RUN )
+    if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
+      ozSelfAction( OZ_ACTION_WALK )
     end
   end
 
@@ -210,8 +210,8 @@ function droid_armouredPatrol( l )
   if not l.pivotX then
     l.pivotX, l.pivotY, l.pivotZ = ozSelfGetPos()
 
-    if not ozSelfHasState( OZ_BOT_RUNNING_BIT ) then
-      ozSelfAction( OZ_ACTION_RUN )
+    if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
+      ozSelfAction( OZ_ACTION_WALK )
     end
   end
 
@@ -305,8 +305,8 @@ function goblin_defend( l )
       if dist > 30 then
         l.target = nil
       elseif dist > 2 then
-        if not ozSelfHasState( OZ_BOT_RUNNING_BIT ) then
-          ozSelfAction( OZ_ACTION_RUN )
+        if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
+          ozSelfAction( OZ_ACTION_WALK )
         end
         ozSelfActionForward( OZ_ACTION_FORWARD )
       else

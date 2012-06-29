@@ -306,14 +306,14 @@ void Loader::preloadRender()
 
 void Loader::uploadRender()
 {
-  if( terra.id != orbis.terra.id ) {
-    terra.unload();
-    terra.load();
-  }
-
   if( caelum.id != orbis.caelum.id ) {
     caelum.unload();
     caelum.load();
+  }
+
+  if( terra.id != orbis.terra.id ) {
+    terra.unload();
+    terra.load();
   }
 
   for( int i = 0; i < library.nBSPs; ++i ) {

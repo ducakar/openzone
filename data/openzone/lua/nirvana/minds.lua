@@ -35,7 +35,7 @@ function randomWalk( localData )
     ozSelfAction( OZ_ACTION_JUMP )
   end
   if math.random( 10 ) == 1 then
-    ozSelfAction( OZ_ACTION_RUN );
+    ozSelfAction( OZ_ACTION_WALK );
   end
 end
 
@@ -47,16 +47,16 @@ function randomRampage( localData )
 end
 
 function beastie( localData )
-  if ozSelfHasState( OZ_BOT_RUNNING_BIT ) then
+  if not ozSelfHasState( OZ_BOT_WALKING_BIT ) then
     ozSelfAction( OZ_ACTION_FORWARD )
   end
   if math.random( 3 ) == 1 then
-    if ozSelfHasState( OZ_BOT_RUNNING_BIT ) then
+    if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
       ozSelfAddH( math.random( 180 ) - 90 )
     elseif math.random( 2 ) == 1 then
       ozSelfAction( OZ_ACTION_JUMP )
     end
-    ozSelfAction( OZ_ACTION_RUN )
+    ozSelfAction( OZ_ACTION_WALK )
   end
 end
 
@@ -81,8 +81,8 @@ function prey( localData )
     ozSelfSetH( heading + 180 )
     ozSelfAction( OZ_ACTION_FORWARD )
 
-    if not ozSelfHasState( OZ_BOT_RUNNING_BIT ) then
-      ozSelfAction( OZ_ACTION_RUN )
+    if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
+      ozSelfAction( OZ_ACTION_WALK )
     end
   elseif math.random( 3 ) == 1 then
     ozSelfAddH( math.random( 120 ) - 60 )
@@ -108,15 +108,15 @@ function predator( localData )
   end
   if heading then
     ozSelfSetH( heading )
-    if not ozSelfHasState( OZ_BOT_RUNNING_BIT ) then
-      ozSelfAction( OZ_ACTION_RUN )
+    if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
+      ozSelfAction( OZ_ACTION_WALK )
     end
   else
     if math.random( 100 ) == 1 then
       ozSelfAddH( math.random( 120 ) - 60 )
     end
-    if ozSelfHasState( OZ_BOT_RUNNING_BIT ) then
-      ozSelfAction( OZ_ACTION_RUN )
+    if not ozSelfHasState( OZ_BOT_WALKING_BIT ) then
+      ozSelfAction( OZ_ACTION_WALK )
     end
   end
   ozSelfAction( OZ_ACTION_FORWARD )

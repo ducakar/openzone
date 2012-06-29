@@ -361,6 +361,7 @@ void GameStage::load()
   ui::ui.loadingScreen->show( true );
 
   render.draw( Render::DRAW_UI_BIT );
+  render.draw( Render::DRAW_UI_BIT );
   render.swap();
 
   timer.reset();

@@ -54,8 +54,6 @@ class GalileoFrame : public Frame
     int  maximisedWidth;
     int  maximisedHeight;
 
-    bool isVisible;
-
   public:
 
     bool isMaximised;

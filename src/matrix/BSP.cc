@@ -110,21 +110,21 @@ void BSP::load()
 
   size_t size = 0;
 
-  size += size_t( nPlanes )       * sizeof( Plane );
+  size += size_t( nPlanes )       * sizeof( planes[0] );
   size  = Alloc::alignUp( size );
-  size += size_t( nNodes )        * sizeof( Node );
+  size += size_t( nNodes )        * sizeof( nodes[0] );
   size  = Alloc::alignUp( size );
-  size += size_t( nLeaves )       * sizeof( Leaf );
+  size += size_t( nLeaves )       * sizeof( leaves[0] );
   size  = Alloc::alignUp( size );
-  size += size_t( nLeafBrushes )  * sizeof( int );
+  size += size_t( nLeafBrushes )  * sizeof( leafBrushes[0] );
   size  = Alloc::alignUp( size );
-  size += size_t( nBrushes )      * sizeof( Brush );
+  size += size_t( nBrushes )      * sizeof( brushes[0] );
   size  = Alloc::alignUp( size );
-  size += size_t( nBrushSides )   * sizeof( int );
+  size += size_t( nBrushSides )   * sizeof( brushSides[0] );
   size  = Alloc::alignUp( size );
-  size += size_t( nModels )       * sizeof( Model );
+  size += size_t( nModels )       * sizeof( models[0] );
   size  = Alloc::alignUp( size );
-  size += size_t( nBoundObjects ) * sizeof( BoundObject );
+  size += size_t( nBoundObjects ) * sizeof( boundObjects[0] );
 
   char* data = new char[size];
 
@@ -134,7 +134,7 @@ void BSP::load()
   for( int i = 0; i < nPlanes; ++i ) {
     planes[i] = is.readPlane();
   }
-  data += nPlanes * int( sizeof( Plane ) );
+  data += nPlanes * int( sizeof( planes[0] ) );
 
   data = Alloc::alignUp( data );
 
@@ -144,7 +144,7 @@ void BSP::load()
     nodes[i].front = is.readInt();
     nodes[i].back  = is.readInt();
   }
-  data += nNodes * int( sizeof( Node ) );
+  data += nNodes * int( sizeof( nodes[0] ) );
 
   data = Alloc::alignUp( data );
 
@@ -153,7 +153,7 @@ void BSP::load()
     leaves[i].firstBrush = is.readInt();
     leaves[i].nBrushes   = is.readInt();
   }
-  data += nLeaves * int( sizeof( Leaf ) );
+  data += nLeaves * int( sizeof( leaves[0] ) );
 
   data = Alloc::alignUp( data );
 
@@ -161,7 +161,7 @@ void BSP::load()
   for( int i = 0; i < nLeafBrushes; ++i ) {
     leafBrushes[i] = is.readInt();
   }
-  data += nLeafBrushes * int( sizeof( int ) );
+  data += nLeafBrushes * int( sizeof( leafBrushes[0] ) );
 
   data = Alloc::alignUp( data );
 
@@ -175,7 +175,7 @@ void BSP::load()
       brushes[i].flags |= orbis.terra.liquid & Medium::LIQUID_MASK;
     }
   }
-  data += nBrushes * int( sizeof( Brush ) );
+  data += nBrushes * int( sizeof( brushes[0] ) );
 
   data = Alloc::alignUp( data );
 
@@ -183,7 +183,7 @@ void BSP::load()
   for( int i = 0; i < nBrushSides; ++i ) {
     brushSides[i] = is.readInt();
   }
-  data += nBrushSides * int( sizeof( int ) );
+  data += nBrushSides * int( sizeof( brushSides[0] ) );
 
   data = Alloc::alignUp( data );
 
@@ -215,7 +215,7 @@ void BSP::load()
     models[i].closeSound  = sCloseSound.isEmpty() ? -1 : library.soundIndex( sCloseSound );
     models[i].frictSound  = sFrictSound.isEmpty() ? -1 : library.soundIndex( sFrictSound );
   }
-  data += nModels * int( sizeof( Model ) );
+  data += nModels * int( sizeof( models[0] ) );
 
   data = Alloc::alignUp( data );
 

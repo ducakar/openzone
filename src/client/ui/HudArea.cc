@@ -370,14 +370,17 @@ void HudArea::onUpdate()
 
 void HudArea::onDraw()
 {
-  if( camera.bot >= 0 ) {
-    drawBotCrosshair();
-    drawBotStatus();
+  if( camera.bot < 0 ) {
+    show( false );
+    return;
+  }
 
-    int parent = camera.botObj->parent;
-    if( parent >= 0 && orbis.objects[parent] != null ) {
-      drawVehicleStatus();
-    }
+  drawBotCrosshair();
+  drawBotStatus();
+
+  int parent = camera.botObj->parent;
+  if( parent >= 0 && orbis.objects[parent] != null ) {
+    drawVehicleStatus();
   }
 
   drawChildren();

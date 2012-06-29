@@ -43,7 +43,6 @@ class MusicPlayer : public Frame
     int   currentTrack;
     int   volume;
     bool  isPlaying;
-    bool  isVisible;
 
     static void prevTrack( Button* sender );
     static void nextTrack( Button* sender );
@@ -55,7 +54,6 @@ class MusicPlayer : public Frame
   protected:
 
     void onUpdate() override;
-    bool onMouseEvent() override;
     void onDraw() override;
 
   public:

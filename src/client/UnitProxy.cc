@@ -62,8 +62,6 @@ void UnitProxy::begin()
 
   ui::mouse.doShow = false;
   ui::ui.hudArea->show( true );
-  ui::ui.inventory->show( true );
-  ui::ui.container->show( true );
   ui::ui.infoFrame->show( true );
 
   baseRot = Quat::rotationZXZ( bot->h, bot->v, 0.0f );
@@ -80,17 +78,16 @@ void UnitProxy::begin()
 
   botEye    = bot->p;
   botEye.z += bot->camZ;
-
   bobTheta  = 0.0f;
   bobBias   = 0.0f;
+
+  oldBot    = -1;
 }
 
 void UnitProxy::end()
 {
   ui::mouse.doShow = true;
   ui::ui.hudArea->show( false );
-  ui::ui.inventory->show( false );
-  ui::ui.container->show( false );
   ui::ui.infoFrame->show( false );
 }
 
@@ -375,8 +372,14 @@ void UnitProxy::update()
 
     botEye.x = bot->p.x;
     botEye.y = bot->p.y;
-    botEye.z = Math::mix( botEye.z, actualZ, CAMERA_Z_SMOOTHING );
-    botEye.z = clamp( botEye.z, actualZ - CAMERA_Z_TOLERANCE, actualZ + CAMERA_Z_TOLERANCE );
+
+    if( oldBot != camera.bot ) {
+      botEye.z = actualZ;
+    }
+    else {
+      botEye.z = Math::mix( botEye.z, actualZ, CAMERA_Z_SMOOTHING );
+      botEye.z = clamp( botEye.z, actualZ - CAMERA_Z_TOLERANCE, actualZ + CAMERA_Z_TOLERANCE );
+    }
   }
 
   // external
@@ -515,6 +518,8 @@ void UnitProxy::update()
     camera.setTaggedObj( collider.hit.obj );
     camera.setTaggedEnt( collider.hit.entity );
   }
+
+  oldBot = camera.bot;
 }
 
 void UnitProxy::reset()

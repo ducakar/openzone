@@ -200,7 +200,7 @@ void Matrix::unload()
   Log::println( "Unloading Matrix {" );
   Log::indent();
 
-  Log::println( "Static memory usage  %.2f MiB", float( sizeof( Orbis ) ) / ( 1024.0f * 1024.0f ) );
+  Log::println( "Static memory usage  %.2f MiB", float( sizeof( orbis ) ) / ( 1024.0f * 1024.0f ) );
 
   Log::println( "Peak instances {" );
   Log::indent();

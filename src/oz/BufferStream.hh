@@ -28,11 +28,7 @@
 
 #pragma once
 
-#include "String.hh"
-#include "Plane.hh"
-#include "Mat44.hh"
-#include "Exception.hh"
-#include "Endian.hh"
+#include "OutputStream.hh"
 
 namespace oz
 {
@@ -159,6 +155,30 @@ class BufferStream
     explicit BufferStream( int size ) :
       pos( new char[size] ), start( pos ), end( start + size ), order( Endian::NATIVE )
     {}
+
+    /**
+     * Create <tt>InputStream</tt> for reading this stream (position is not reset).
+     */
+    OZ_ALWAYS_INLINE
+    InputStream inputStream() const
+    {
+      InputStream is( start, end, order );
+
+      is.pos = pos;
+      return is;
+    }
+
+    /**
+     * Create <tt>OutputStream</tt> for reading/writing to this stream (position is not reset).
+     */
+    OZ_ALWAYS_INLINE
+    OutputStream outputStream()
+    {
+      OutputStream os( start, end, order );
+
+      os.pos = pos;
+      return os;
+    }
 
     /**
      * Number of bytes from the beginning of the stream.
