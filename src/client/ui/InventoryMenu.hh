@@ -36,15 +36,17 @@ class InventoryMenu : public Frame
 {
   private:
 
-    static const int COLS         = 8;
-    static const int ROWS         = 1;
-    static const int PADDING_SIZE = 2;
-    static const int FOOTER_SIZE  = 32;
-    static const int ICON_SIZE    = 32;
-    static const int SLOT_SIZE    = 68;
-    static const int SLOT_OBJ_DIM = ( SLOT_SIZE - 2*PADDING_SIZE ) / 2;
+    static const int COLS          = 8;
+    static const int ROWS          = 1;
+    static const int PADDING_SIZE  = 2;
+    static const int FOOTER_SIZE   = 32;
+    static const int ICON_SIZE     = 32;
+    static const int SLOT_SIZE     = 68;
+    static const int SLOT_OBJ_DIM  = ( SLOT_SIZE - 2*PADDING_SIZE ) / 2;
+    static const int SINGLE_HEIGHT = FOOTER_SIZE + ROWS * SLOT_SIZE;
 
-    const InventoryMenu* const master;
+    const Object* owner;
+    const Object* other;
 
     uint  scrollUpTexId;
     uint  scrollDownTexId;
@@ -57,10 +59,17 @@ class InventoryMenu : public Frame
     int   cachedContainerIndex;
     int   cachedTaggedItemIndex;
 
-    int   tagged;
-    int   scroll;
+    int   taggedOwner;
+    int   taggedOther;
+    int   scrollOwner;
+    int   scrollOther;
 
     bool  isMouseOver;
+
+  private:
+
+    void handleComponent( int height, const Object* container, int* tagged, int* scroll );
+    void drawComponent( int height, const Object* container, int tagged, int scroll );
 
   protected:
 
@@ -71,7 +80,7 @@ class InventoryMenu : public Frame
 
   public:
 
-    InventoryMenu( const InventoryMenu* master );
+    InventoryMenu();
     ~InventoryMenu() override;
 
 };

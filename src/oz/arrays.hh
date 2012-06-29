@@ -272,7 +272,7 @@ inline void aReverseMove( Elem* aDest, Elem* aSrc, int count )
  *
  * @ingroup oz
  */
-template <typename Elem, typename Value>
+template <typename Elem, typename Value = Elem>
 inline void aSet( Elem* aDest, const Value& value, int count )
 {
   for( int i = 0; i < count; ++i ) {
@@ -304,7 +304,7 @@ inline bool aEquals( const Elem* aSrcA, const Elem* aSrcB, int count )
  *
  * @ingroup oz
  */
-template <typename Elem, typename Value>
+template <typename Elem, typename Value = Elem>
 inline bool aContains( const Elem* aSrc, const Value& value, int count )
 {
   int i = 0;
@@ -323,7 +323,7 @@ inline bool aContains( const Elem* aSrc, const Value& value, int count )
  *
  * @ingroup oz
  */
-template <typename Elem, typename Value>
+template <typename Elem, typename Value = Elem>
 inline Elem* aFind( Elem* aSrc, const Value& value, int count )
 {
   int i = 0;
@@ -342,7 +342,7 @@ inline Elem* aFind( Elem* aSrc, const Value& value, int count )
  *
  * @ingroup oz
  */
-template <typename Elem, typename Value>
+template <typename Elem, typename Value = Elem>
 inline Elem* aFindLast( Elem* aSrc, const Value& value, int count )
 {
   int i = count - 1;
@@ -361,7 +361,7 @@ inline Elem* aFindLast( Elem* aSrc, const Value& value, int count )
  *
  * @ingroup oz
  */
-template <typename Elem, typename Value>
+template <typename Elem, typename Value = Elem>
 inline int aIndex( const Elem* aSrc, const Value& value, int count )
 {
   int i = 0;
@@ -380,7 +380,7 @@ inline int aIndex( const Elem* aSrc, const Value& value, int count )
  *
  * @ingroup oz
  */
-template <typename Elem, typename Value>
+template <typename Elem, typename Value = Elem>
 inline int aLastIndex( const Elem* aSrc, const Value& value, int count )
 {
   int i = count - 1;
@@ -454,7 +454,7 @@ inline Elem* aRealloc( Elem* aSrc, int count, int newCount )
  *
  * @ingroup oz
  */
-template <typename Elem, typename Value>
+template <typename Elem, typename Value = Elem>
 inline void aInsert( Elem* aDest, Value&& value, int index, int count )
 {
   hard_assert( uint( index ) < uint( count ) );
@@ -594,7 +594,7 @@ inline void aSort( Elem* aSrc, int count )
  *
  * @ingroup oz
  */
-template <typename Elem, typename Key>
+template <typename Elem, typename Key = Elem>
 inline int aBisectFind( Elem* aSrc, const Key& key, int count )
 {
   hard_assert( count >= 0 );
@@ -638,7 +638,7 @@ inline int aBisectFind( Elem* aSrc, const Key& key, int count )
  *
  * @ingroup oz
  */
-template <typename Elem, typename Key>
+template <typename Elem, typename Key = Elem>
 inline int aBisectPosition( Elem* aSrc, const Key& key, int count )
 {
   hard_assert( count >= 0 );

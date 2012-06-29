@@ -51,7 +51,7 @@ class Area
     static const int GRAB_BIT        = 0x04;
     // do not draw
     static const int HIDDEN_BIT      = 0x08;
-    // pin (show in both freelook and interface mode)
+    // show in both freelook and interface mode
     static const int PINNED_BIT      = 0x10;
 
     // text alignment

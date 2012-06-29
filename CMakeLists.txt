@@ -14,7 +14,7 @@ option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory l
 set( OZ_APPLICATION_NAME "openzone" )
 set( OZ_APPLICATION_TITLE "OpenZone" )
 
-option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." OFF )
+option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." ON )
 option( OZ_NONFREE "Enable support for MP3 and AAC." OFF )
 
 option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
@@ -33,9 +33,17 @@ if( NOT CMAKE_BUILD_TYPE )
 endif()
 
 if( NACL )
-  set( OZ_GL_ES ON CACHE BOOL "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." FORCE )
-  set( OZ_NONFREE OFF CACHE BOOL "Enable support for MP3 and AAC." FORCE )
   set( CMAKE_SYSTEM_NAME "NaCl" )
+
+  if( OZ_SHARED_LIBOZ )
+    message( FATAL_ERROR "Shared libraries are not supported on NaCl/newlib." )
+  endif()
+  if( NOT OZ_GL_ES )
+    message( FATAL_ERROR "Only OpenGL ES is supported on NaCl." )
+  endif()
+  if( OZ_NONFREE )
+    message( FATAL_ERROR "Non-free music formats are not supported for NaCl." )
+  endif()
 endif()
 
 if( WIN32 AND NOT CMAKE_INSTALL_PREFIX )

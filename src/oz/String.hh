@@ -36,8 +36,8 @@ namespace oz
 /**
  * Immutable string.
  *
- * Class has static storage of <tt>BUFFER_SIZE</tt> bytes, if string is larger it is stored in
- * a dynamically allocated storage. For storage allocation <tt>std::malloc()</tt> is used, so it
+ * Class has static storage of <tt>BUFFER_SIZE</tt> bytes, if string is larger it is stored in a
+ * dynamically allocated storage. For storage allocation <tt>std::malloc()</tt> is used, so it
  * bypasses <tt>Alloc</tt> memory manager.
  *
  * To deallocate storage just assign an empty string.

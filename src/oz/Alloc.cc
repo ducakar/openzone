@@ -146,7 +146,7 @@ static void* aligned_malloc( size_t size )
     return null;
   }
 
-  void* begin = Alloc::alignUp<char>( static_cast<char*>( ptr ) + sizeof( void* ) );
+  void* begin = Alloc::alignUp<char>( static_cast<char*>( ptr ) + sizeof( ptr ) );
   static_cast<void**>( begin )[-1] = ptr;
 
   return begin;
@@ -235,7 +235,7 @@ if( !isConstructed ) {
   Alloc::maxCount = max<int>( Alloc::count, Alloc::maxCount );
   Alloc::maxAmount = max<size_t>( Alloc::amount, Alloc::maxAmount );
 
-  ptr = static_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size_t ) );
+  ptr = static_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size ) );
   static_cast<size_t*>( ptr )[-1] = size;
 
   return ptr;
@@ -292,7 +292,7 @@ static void* allocateArray( void* ptr, size_t size )
   Alloc::maxCount = max<int>( Alloc::count, Alloc::maxCount );
   Alloc::maxAmount = max<size_t>( Alloc::amount, Alloc::maxAmount );
 
-  ptr = static_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size_t ) );
+  ptr = static_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size ) );
   static_cast<size_t*>( ptr )[-1] = size;
 
   return ptr;
@@ -301,7 +301,7 @@ static void* allocateArray( void* ptr, size_t size )
 static void deallocateObject( void* ptr )
 {
   size_t size = static_cast<size_t*>( ptr )[-1];
-  ptr = static_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
+  ptr = static_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size ) );
 
 #ifdef OZ_TRACK_LEAKS
 
@@ -385,7 +385,7 @@ backtraceFound:
 static void deallocateArray( void* ptr )
 {
   size_t size = static_cast<size_t*>( ptr )[-1];
-  ptr = static_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
+  ptr = static_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size ) );
 
 #ifdef OZ_TRACK_LEAKS
 
@@ -476,7 +476,7 @@ extern void* operator new ( size_t size ) throw( std::bad_alloc )
 extern void* operator new ( size_t size )
 #endif
 {
-  size += Alloc::alignUp( sizeof( size_t ) );
+  size += Alloc::alignUp( sizeof( size ) );
 
   void* ptr = aligned_malloc( size );
 
@@ -493,7 +493,7 @@ extern void* operator new[] ( size_t size ) throw( std::bad_alloc )
 extern void* operator new[] ( size_t size )
 #endif
 {
-  size += Alloc::alignUp( sizeof( size_t ) );
+  size += Alloc::alignUp( sizeof( size ) );
 
   void* ptr = aligned_malloc( size );
 
@@ -522,7 +522,7 @@ void operator delete[] ( void* ptr ) noexcept
 
 void* operator new ( size_t size, const std::nothrow_t& ) noexcept
 {
-  size += Alloc::alignUp( sizeof( size_t ) );
+  size += Alloc::alignUp( sizeof( size ) );
 
   void* ptr = aligned_malloc( size );
 
@@ -535,7 +535,7 @@ void* operator new ( size_t size, const std::nothrow_t& ) noexcept
 
 void* operator new[] ( size_t size, const std::nothrow_t& ) noexcept
 {
-  size += Alloc::alignUp( sizeof( size_t ) );
+  size += Alloc::alignUp( sizeof( size ) );
 
   void* ptr = aligned_malloc( size );
 

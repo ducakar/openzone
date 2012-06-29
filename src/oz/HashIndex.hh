@@ -62,7 +62,7 @@ class HashIndex
       /**
        * Initialise a new element.
        */
-      template <typename Value_>
+      template <typename Value_ = Value>
       OZ_ALWAYS_INLINE
       explicit Elem( Elem* next_, int key_, Value_&& value_ ) :
         next( next_ ), key( key_ ), value( static_cast<Value_&&>( value_ ) )

@@ -37,7 +37,7 @@
 #include "client/Loader.hh"
 #include "client/NaClMainCall.hh"
 #include "client/NaClGLContext.hh"
-#include "NaClDownloader.hh"
+#include "client/NaClUpdater.hh"
 
 #include <unistd.h>
 
@@ -197,28 +197,35 @@ int Client::main( int argc, char** argv )
   File::init( File::TEMPORARY, 10*1024*1024 );
 
   String configDir = "/config";
-  String localDir = "/data";
+  String localDir = "/local/share";
+  String musicDir = "/music";
 
 #elif defined( _WIN32 )
 
   char configRoot[MAX_PATH];
   char localRoot[MAX_PATH];
+  char musicRoot[MAX_PATH];
 
   if( !SHGetSpecialFolderPath( null, configRoot, CSIDL_APPDATA, false ) ) {
-    throw Exception( "Failed to access APPDATA directory" );
+    throw Exception( "Failed to obtain APPDATA directory" );
   }
   if( !SHGetSpecialFolderPath( null, localRoot, CSIDL_LOCAL_APPDATA, false ) ) {
-    throw Exception( "Failed to access LOCAL_APPDATA directory" );
+    throw Exception( "Failed to obtain LOCAL_APPDATA directory" );
+  }
+  if( !SHGetSpecialFolderPath( null, musicRoot, CSIDL_MYMUSIC, false ) ) {
+    throw Exception( "Failed to obtain MYMUSIC directory" );
   }
 
   String configDir = String::str( "%s\\" OZ_APPLICATION_NAME, configRoot );
   String localDir  = String::str( "%s\\" OZ_APPLICATION_NAME, localRoot );
+  String musicDir  = musicDir;
 
 #else
 
   const char* home       = SDL_getenv( "HOME" );
   const char* configRoot = SDL_getenv( "XDG_CONFIG_HOME" );
   const char* localRoot  = SDL_getenv( "XDG_LOCAL_HOME" );
+  const char* musicRoot  = SDL_getenv( "XDG_MUSIC_DIR" );
 
   if( home == null ) {
     throw Exception( "Cannot determine user home directory from environment" );
@@ -231,6 +238,8 @@ int Client::main( int argc, char** argv )
   String localDir = localRoot == null ?
                     String::str( "%s/.local/share/" OZ_APPLICATION_NAME, home ) :
                     String::str( "%s/" OZ_APPLICATION_NAME, localRoot );
+
+  String musicDir = musicRoot == null ? String::str( "%s/Music", home ) : String( musicRoot );
 
 #endif
 
@@ -316,92 +325,8 @@ int Client::main( int argc, char** argv )
 
 #ifdef __native_client__
 
-  Log::println( "Checking data files {" );
-  Log::indent();
-
-  // Packages must be hardcoded as dir listing is not supported on NaCl.
-  File pkgs[] = {
-    File( "/data/ozbase.7z" ),
-    File( "/data/openzone.7z" )
-  };
-
-  NaClDownloader downloader;
-
-  Log::print( "Checking for updates ..." );
-
-  {
-    downloader.begin( "/manifest.txt" );
-    do {
-      Time::sleep( 1000 );
-      Log::printRaw( "." );
-    }
-    while( !downloader.isComplete() );
-
-    BufferStream bs = downloader.take();
-
-    if( bs.length() < 11 || !String::beginsWith( bs.begin(), "ozManifest" ) ) {
-      Log::printEnd( " Failed" );
-      goto updateEnd;
-    }
-
-    String sTime = String( bs.length() - 10, bs.begin() + 10 );
-    Time   time;
-
-    time.epoch = -1;
-
-    try {
-      time.epoch = sTime.parseLong();
-    }
-    catch( const String::ParseException& ) {
-      goto updateEnd;
-    }
-
-    time = Time::local( time.epoch );
-
-    Log::printRaw( " Latest: " );
-    Log::printTime( time );
-    Log::printEnd();
-
-    foreach( pkg, iter( pkgs ) ) {
-      if( pkg->stat() ) {
-        Time time = Time::local( pkg->time() );
-        Log::print( "%s: timestamp %s, ", pkg->path().cstr(), time.toString().cstr() );
-
-        Log::printEnd( " Up-to-date" );
-        continue;
-      }
-
-      String url = pkg->name();
-
-      Log::print( "Downloading '%s' into '%s' ...", url.cstr(), pkg->path().cstr() );
-
-      downloader.begin( url );
-      do {
-        Time::sleep( 1000 );
-        Log::printRaw( "." );
-      }
-      while( !downloader.isComplete() );
-
-      bs = downloader.take();
-
-      Log::printRaw( " %.2f MiB transferred ...", float( bs.length() ) / ( 1024.0f*1024.0f ) );
-
-      if( bs.length() < 2 || bs[0] != '7' || bs[1] != 'z' ) {
-        Log::printEnd( " Failed" );
-        continue;
-      }
-
-      if( !pkg->write( bs.begin(), bs.length() ) ) {
-        throw Exception( "Cannot write to local storage" );
-      }
-
-      Log::printEnd( " OK" );
-    }
-  }
-updateEnd:
-
-  Log::unindent();
-  Log::println( "}" );
+  naclUpdater.init();
+  naclUpdater.update();
 
 #endif
 
@@ -410,23 +335,24 @@ updateEnd:
 
 #ifdef __native_client__
 
-  foreach( pkg, iter( pkgs ) ) {
-    if( PFile::mount( pkg->path(), null, true ) ) {
-      Log::println( "%s", pkg->path().cstr() );
+  foreach( pkg, naclUpdater.packages.citer() ) {
+    File pkgFile( "/local/share/" + pkg->name );
+
+    if( PFile::mount( pkgFile.path(), null, true ) ) {
+      Log::println( "%s", pkgFile.path().cstr() );
     }
     else {
-      throw Exception( "Failed to mount '%s' on / in PhysicsFS", pkg->path().cstr() );
+      throw Exception( "Failed to mount '%s' on / in PhysicsFS", pkgFile.path().cstr() );
     }
   }
 
+  naclUpdater.free();
+
 #else
 
-  const char* userMusicPath = config.getSet( "dir.music", "" );
+  const char* userMusicPath = config.getSet( "dir.music", musicDir );
 
-  if( !String::isEmpty( userMusicPath ) ) {
-    if( !PFile::mount( userMusicPath, "/music", true ) ) {
-      throw Exception( "Failed to mount '%s' on /music in PhysicsFS", userMusicPath );
-    }
+  if( PFile::mount( userMusicPath, "/music", true ) ) {
     Log::println( "%s [mounted on /music]", userMusicPath );
   }
 

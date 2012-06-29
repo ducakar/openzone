@@ -27,6 +27,14 @@ using namespace oz;
 
 struct Foo
 {
+  const char* s = "";
+
+  explicit Foo( const char* s_ ) :
+    s( s_ )
+  {
+    Log::out << "Foo(" << s << ")\n";
+  }
+
   Foo()
   {
     Log::out << "Foo()\n";
@@ -34,7 +42,7 @@ struct Foo
 
   ~Foo()
   {
-    Log::out << "~Foo()\n";
+    Log::out << "~Foo(" << s << ")\n";
   }
 
   Foo( const Foo& )
@@ -58,26 +66,16 @@ struct Foo
     Log::out << "Foo& operator = ( Foo&& )\n";
     return *this;
   }
+};
 
-  void foo() const
-  {
-    Log::out << "Foo::foo()\n";
-  };
-
-  static Foo bar( bool b )
-  {
-    Foo f;
-
-    if( b ) {
-      return f;
-    }
-    else {
-      return f;
-    }
-  }
+struct Bar
+{
+  Foo f;
 };
 
 int main()
 {
+  Vector<Bar> v;
+  v.add( { Foo( "temp" ) } );
   return 0;
 }

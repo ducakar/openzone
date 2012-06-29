@@ -417,7 +417,7 @@ class Vector
     /**
      * Add an element to the end.
      */
-    template <typename Elem_>
+    template <typename Elem_ = Elem>
     void add( Elem_&& e )
     {
       pushLast( static_cast<Elem_&&>( e ) );
@@ -441,7 +441,7 @@ class Vector
      *
      * @return Position of the inserted or the existing equal element.
      */
-    template <typename Elem_>
+    template <typename Elem_ = Elem>
     int include( Elem_&& e )
     {
       int i = aIndex<Elem, Elem>( data, e, count );
@@ -461,7 +461,7 @@ class Vector
      *
      * All later elements are shifted to make the gap.
      */
-    template <typename Elem_>
+    template <typename Elem_ = Elem>
     void insert( int i, Elem_&& e )
     {
       hard_assert( uint( i ) <= uint( count ) );
@@ -564,7 +564,7 @@ class Vector
      *
      * All elements are shifted to make a gap.
      */
-    template <typename Elem_>
+    template <typename Elem_ = Elem>
     void pushFirst( Elem_&& e )
     {
       ensureCapacity();
@@ -577,7 +577,7 @@ class Vector
     /**
      * Add an element to the end.
      */
-    template <typename Elem_>
+    template <typename Elem_ = Elem>
     void pushLast( Elem_&& e )
     {
       ensureCapacity();

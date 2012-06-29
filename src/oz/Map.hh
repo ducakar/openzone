@@ -72,7 +72,7 @@ class Map
       /**
        * Initialise a new element.
        */
-      template <typename Key_, typename Value_>
+      template <typename Key_ = Key, typename Value_ = Value>
       OZ_ALWAYS_INLINE
       explicit Elem( Key_&& key_, Value_&& value_ ) :
         key( static_cast<Key_&&>( key_ ) ), value( static_cast<Value_&&>( value_ ) )
@@ -522,7 +522,7 @@ class Map
      *
      * @return Position of the inserted or the existing element.
      */
-    template <typename Key_, typename Value_ = Value>
+    template <typename Key_ = Key, typename Value_ = Value>
     int add( Key_&& key, Value_&& value = Value() )
     {
       int i = aBisectPosition<Elem>( data, key, count );
@@ -541,7 +541,7 @@ class Map
      *
      * @return Position of the inserted or the existing element with the same key.
      */
-    template <typename Key_, typename Value_ = Value>
+    template <typename Key_ = Key, typename Value_ = Value>
     int include( Key_&& key, Value_&& value = Value() )
     {
       int i = aBisectPosition<Elem>( data, key, count );
@@ -559,7 +559,7 @@ class Map
      * Use only when you are sure you are inserting at the right position to preserve order of the
      * element.
      */
-    template <typename Key_, typename Value_ = Value>
+    template <typename Key_ = Key, typename Value_ = Value>
     void insert( int i, Key_&& key, Value_&& value = Value() )
     {
       hard_assert( uint( i ) <= uint( count ) );

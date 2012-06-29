@@ -5,7 +5,10 @@
     - defaulted & deleted functions
     - constexpr for float constants
     - new exception specification
+    - explicit overrides
+    - limited initialiser lists
   - better Win32 support, POSIX API replaced with Win32 API where possible
+  - ported to NaCl
   - System::bell() method
   - String class has more consistent members, parsing functions added
   - new Time class
@@ -18,8 +21,8 @@
   - Vec3, Vec4, Quat don't inherit from each other or Simd class
   - AABB & Bounds moved to liboz from matrix
   - clearmacros.hh header to undefine liboz macros that might conflict other libraries
-  - compiled as shared library by default
-  - additional dependencies: libpulse on Linux and PhysicsFS
+  - can be compiled as a shared library
+  - additional dependency: PhysicsFS, optional dependency for Linux: libpulse
   - fully documented
   - ZLIB licence
 * common:
@@ -39,16 +42,16 @@
     - object tracks lower entity: when an entity moves horizontally it also moves objects on top
     - sliding damage
     - configurable gravity
-    - fine-tuning of constants and many other small improvements
+    - fine-tuning of constants and many small improvements and bugfixes
   - structures
     - crushing: structures fall into terrain, and crush objects in their way
     - bound objects: objects that are created together with a structure and destroyed with it;
       useful for defence turrets
-    - air brushes to tag certain structure areas that should not be filled with water when a
+    - air brushes to tag certain structure areas that should not be filled with water when the
       structure is under sea
     - sea brushes tag areas with the same content as terrain sea (including fog colour)
     - no more need for hull around BSPs
-    - triggers: some entities can be used; upon usage trigger themselves or other entities
+    - triggers: some entities can be activated; they can trigger themselves or other entities
     - entities can be locked/unlocked with appropriate key
     - manual doors
     - elevators
@@ -58,26 +61,34 @@
     thread and upload to graphic card that has to be synchronous with rendering
   - textures have 3 components: diffuse (base colour), masks (per-pixel specular and emission masks)
     and normal map
+  - initial skeletal animation support
   - offscreen rendering support
   - postprocessing
   - bloom postprocess effect
+  - smoothing of camera movement and rotation
   - camera bob, walk/run animations and footsteps sounds are synchronised to a counter in Bot class
   - *Audio classes
     - footstep and swim sounds
     - filtering of high-frequency events
-    - velocity is set for sound sources
+    - velocity is set for sound sources and listener
   - Sound class
     - sounds are played asynchronously, parallel to rendering
     - asynchronous streaming of tracks
     - support for music in MP3 and AAC formats
     - a user-specified directory can be searched for music
+  - resizable main window
 * build:
   - prebuilding entirely split from the runtime part of the engine
   - SDL_image replaced by FreeImage, wider range of image formats supported as prebuilding source
   - 16-bit colour components for terrain heightmap
+* tools:
+  - ozGettext tool for extracting structure, entity, object names and strings from mission scripts
+    for translation
 * general:
   - PhysicsFS used for accessing game data, so they can be loaded directly from archives
   - game data can be modularised into packages
   - Lua API redesigned
   - Lua classes share API code - no more code triplication of Lua API implementations
   - ported to SDL 2.0
+  - ported to NaCl
+  - PKGBUILD for Arch Linux and RPM spec file

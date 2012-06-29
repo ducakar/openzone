@@ -60,7 +60,7 @@ class HashString
       /**
        * Initialise a new element.
        */
-      template <typename Key_, typename Value_>
+      template <typename Key_, typename Value_ = Value>
       OZ_ALWAYS_INLINE
       explicit Elem( Elem* next_, Key_&& key_, Value_&& value_ ) :
         next( next_ ), key( static_cast<Key_&&>( key_ ) ), value( static_cast<Value_&&>( value_ ) )

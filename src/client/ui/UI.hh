@@ -73,7 +73,6 @@ class UI
     GalileoFrame*  galileoFrame;
     MusicPlayer*   musicPlayer;
     InventoryMenu* inventory;
-    InventoryMenu* container;
     InfoFrame*     infoFrame;
     BuildMenu*     buildMenu;
     DebugFrame*    debugFrame;

@@ -287,7 +287,7 @@ inline void iMove( IteratorA iDest, IteratorB iSrc )
  *
  * @ingroup oz
  */
-template <class Iterator, typename Value>
+template <class Iterator, typename Value = typename Iterator::ElemType>
 inline void iSet( Iterator iDest, const Value& value )
 {
   while( iDest.isValid() ) {
@@ -318,7 +318,7 @@ inline bool iEquals( CIteratorA iSrcA, CIteratorB iSrcB )
  *
  * @ingroup oz
  */
-template <class CIterator, typename Value>
+template <class CIterator, typename Value = typename CIterator::ElemType>
 inline bool iContains( CIterator iSrc, const Value& value )
 {
   while( iSrc.isValid() && !( *iSrc == value ) ) {
@@ -332,7 +332,7 @@ inline bool iContains( CIterator iSrc, const Value& value )
  *
  * @ingroup oz
  */
-template <class Iterator, typename Value>
+template <class Iterator, typename Value = typename Iterator::ElemType>
 inline Iterator iFind( Iterator iSrc, const Value& value )
 {
   while( iSrc.isValid() && !( *iSrc == value ) ) {
@@ -346,7 +346,7 @@ inline Iterator iFind( Iterator iSrc, const Value& value )
  *
  * @ingroup oz
  */
-template <class Iterator, typename Value>
+template <class Iterator, typename Value = typename Iterator::ElemType>
 inline Iterator iFindLast( Iterator iSrc, const Value& value )
 {
   // Default constructor creates an invalid, passed iterator.
@@ -366,7 +366,7 @@ inline Iterator iFindLast( Iterator iSrc, const Value& value )
  *
  * @ingroup oz
  */
-template <class CIterator, typename Value>
+template <class CIterator, typename Value = typename CIterator::ElemType>
 inline int iIndex( CIterator iSrc, const Value& value )
 {
   int index = 0;
@@ -383,7 +383,7 @@ inline int iIndex( CIterator iSrc, const Value& value )
  *
  * @ingroup oz
  */
-template <class CIterator, typename Value>
+template <class CIterator, typename Value = typename CIterator::ElemType>
 inline int iLastIndex( CIterator iSrc, const Value& value )
 {
   int index = 0;
