@@ -62,8 +62,13 @@ class NaCl
 
     static Semaphore semaphore;
 
-    static int       width;
-    static int       height;
+    static int       width;  ///< Module area width.
+    static int       height; ///< Module area height.
+
+    static int       moveX;  ///< Mouse X axis.
+    static int       moveY;  ///< Mouse Y axis.
+    static int       moveZ;  ///< Mouse wheel (horizontal scroll).
+    static int       moveW;  ///< Mouse wheel (vertical scroll).
 
     NaCl() = delete;
 

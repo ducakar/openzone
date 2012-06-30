@@ -882,7 +882,7 @@ int Build::main( int argc, char** argv )
 
   config.add( "window.width", "400" );
   config.add( "window.height", "40" );
-  config.add( "window.full", "false" );
+  config.add( "window.fullscreen", "false" );
 
   window.init();
 

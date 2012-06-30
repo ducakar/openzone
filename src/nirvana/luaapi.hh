@@ -465,6 +465,8 @@ static int ozSelfOverlaps( lua_State* l )
   int  flags = l_toint( 1 );
   AABB aabb  = AABB( *ns.self, l_tofloat( 2 ) );
 
+  hard_assert( collider.mask == Object::SOLID_BIT );
+
   if( flags & COLLIDE_ALL_OBJECTS_BIT ) {
     collider.mask = ~0;
   }
@@ -490,6 +492,8 @@ static int ozSelfBindOverlaps( lua_State* l )
   Vector<Struct*>* structs = null;
   Vector<Object*>* objects = null;
 
+  hard_assert( collider.mask == Object::SOLID_BIT );
+
   if( flags & COLLIDE_STRUCTS_BIT ) {
     structs = &ms.structs;
 
@@ -508,6 +512,7 @@ static int ozSelfBindOverlaps( lua_State* l )
 
   collider.getOverlaps( aabb, structs, objects );
   collider.mask = Object::SOLID_BIT;
+
   return 0;
 }
 

@@ -416,7 +416,7 @@ int Client::main( int argc, char** argv )
     Log::println( "Random generator seed set to: %d", seed );
   }
 
-  const char* locale = config.getSet( "lingua", "sl" );
+  const char* locale = config.getSet( "lingua", "en" );
 
   Log::print( "Setting localisation '%s' ...", locale );
   if( lingua.init( locale ) ) {
@@ -515,7 +515,7 @@ int Client::main( int argc, char** argv )
           ui::keyboard.keys[keysym.sym] |= SDL_PRESSED;
 
 #ifndef __native_client__
-          if( keysym.sym == SDLK_F10 ) {
+          if( keysym.sym == SDLK_F9 ) {
             if( keysym.mod == 0 ) {
               loader.makeScreenshot();
             }

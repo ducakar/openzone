@@ -38,16 +38,18 @@ end
 
 function droid_followCommander( l )
   if not l.commander then
-    ozSelfBindObjOverlaps( OZ_OBJECTS_BIT, 50 )
+    ozSelfBindOverlaps( OZ_OBJECTS_BIT, 50 )
+
     while ozBindNextObj() do
-      if not ozObjIsSelf() and ozObjHasFlag( OZ_BOT_BIT ) and ozObjGetClassName() == "droid.OOM-9" then
+      if ozObjHasFlag( OZ_BOT_BIT ) and ozObjGetClassName() == "droid.OOM-9" then
         l.commander = ozObjGetIndex()
         break
       end
     end
   else
     ozBindObj( l.commander )
-    if ozObjIsNull() or not ozObjHasFlag( OZ_BOT_BIT ) or ozObjGetClassName() ~= "droid.OOM-9" then
+
+    if ozObjIsNull() or ozBotHasState( OZ_BOT_DEAD_BIT ) then
       l.commander = nil
     end
   end
@@ -82,7 +84,7 @@ end
 function droid_huntTarget( l )
   ozBindObj( l.target )
 
-  if ozObjIsNull() or not ozObjHasFlag( OZ_BOT_BIT ) or ozBotHasState( OZ_BOT_DEAD_BIT ) then
+  if ozObjIsNull() or ozBotHasState( OZ_BOT_DEAD_BIT ) then
     l.target = nil
   else
     local distance = ozObjDistFromSelf()
@@ -111,9 +113,7 @@ function droid( l )
 
     while ozBindNextObj() do
       local typeName = ozObjGetClassName()
-      if ozObjHasFlag( OZ_BOT_BIT ) and not ozObjIsSelf() and not ozBotHasState( OZ_BOT_DEAD_BIT ) and
-         string.sub( typeName, 1, 5 ) ~= "droid"
-      then
+      if ozObjHasFlag( OZ_BOT_BIT ) and string.sub( typeName, 1, 5 ) ~= "droid" then
         local distance = ozObjDistFromSelf()
 
         if distance < minDistance then

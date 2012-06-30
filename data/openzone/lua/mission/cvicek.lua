@@ -495,8 +495,6 @@ function onCreate()
   ozBotSetH( 270 )
   ozObjRemoveAllItems()
 
-  ozCameraIncarnate( oz_me )
-  ozCameraWarpTo( ozBotGetEyePos() )
-  ozCameraWarpTo( -1005.96, 603.80, 50.40 )
+  ozCameraSwitchTo( oz_me )
   ozCameraAllowReincarnation( false )
 end

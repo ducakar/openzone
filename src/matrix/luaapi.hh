@@ -243,6 +243,8 @@ static int ozOrbisOverlaps( lua_State* l )
     exclObj = orbis.objects[index];
   }
 
+  hard_assert( collider.mask == Object::SOLID_BIT );
+
   if( flags & COLLIDE_ALL_OBJECTS_BIT ) {
     collider.mask = ~0;
   }
@@ -268,6 +270,8 @@ static int ozOrbisBindOverlaps( lua_State* l )
 
   Vector<Struct*>* structs = null;
   Vector<Object*>* objects = null;
+
+  hard_assert( collider.mask == Object::SOLID_BIT );
 
   if( flags & COLLIDE_STRUCTS_BIT ) {
     structs = &ms.structs;
@@ -612,6 +616,8 @@ static int ozStrOverlaps( lua_State* l )
   int  flags = l_toint( 1 );
   AABB aabb  = ms.str->toAABB( l_tofloat( 2 ) );
 
+  hard_assert( collider.mask == Object::SOLID_BIT );
+
   if( flags & COLLIDE_ALL_OBJECTS_BIT ) {
     collider.mask = ~0;
   }
@@ -637,6 +643,8 @@ static int ozStrBindOverlaps( lua_State* l )
 
   Vector<Struct*>* structs = null;
   Vector<Object*>* objects = null;
+
+  hard_assert( collider.mask == Object::SOLID_BIT );
 
   if( flags & COLLIDE_STRUCTS_BIT ) {
     structs = &ms.structs;
@@ -886,6 +894,8 @@ static int ozEntOverlaps( lua_State* l )
   int   flags  = l_toint( 1 );
   float margin = l_tofloat( 2 );
 
+  hard_assert( collider.mask == Object::SOLID_BIT );
+
   if( flags & COLLIDE_ALL_OBJECTS_BIT ) {
     collider.mask = ~0;
   }
@@ -910,6 +920,8 @@ static int ozEntBindOverlaps( lua_State* l )
   }
 
   Vector<Object*>* objects = null;
+
+  hard_assert( collider.mask == Object::SOLID_BIT );
 
   if( flags & ( COLLIDE_OBJECTS_BIT | COLLIDE_ALL_OBJECTS_BIT ) ) {
     objects = &ms.objects;
@@ -1503,6 +1515,8 @@ static int ozObjOverlaps( lua_State* l )
   int  flags = l_toint( 1 );
   AABB aabb  = AABB( *ms.obj, l_tofloat( 2 ) );
 
+  hard_assert( collider.mask == Object::SOLID_BIT );
+
   if( flags & COLLIDE_ALL_OBJECTS_BIT ) {
     collider.mask = ~0;
   }
@@ -1528,6 +1542,8 @@ static int ozObjBindOverlaps( lua_State* l )
 
   Vector<Struct*>* structs = null;
   Vector<Object*>* objects = null;
+
+  hard_assert( collider.mask == Object::SOLID_BIT );
 
   if( flags & COLLIDE_STRUCTS_BIT ) {
     structs = &ms.structs;
@@ -2464,6 +2480,8 @@ static int ozFragOverlaps( lua_State* l )
   float dim   = l_tofloat( 2 );
   AABB  aabb  = AABB( ms.frag->p, Vec3( dim, dim, dim ) );
 
+  hard_assert( collider.mask == Object::SOLID_BIT );
+
   if( flags & COLLIDE_ALL_OBJECTS_BIT ) {
     collider.mask = ~0;
   }
@@ -2490,6 +2508,8 @@ static int ozFragBindOverlaps( lua_State* l )
 
   Vector<Struct*>* structs = null;
   Vector<Object*>* objects = null;
+
+  hard_assert( collider.mask == Object::SOLID_BIT );
 
   if( flags & COLLIDE_STRUCTS_BIT ) {
     structs = &ms.structs;

@@ -150,7 +150,7 @@ void UnitProxy::prepare()
   if( keys[SDLK_SPACE] ) {
     bot->actions |= Bot::ACTION_JUMP | Bot::ACTION_VEH_UP;
   }
-  if( keys[SDLK_LCTRL] ) {
+  if( keys[SDLK_LCTRL] || keys[SDLK_c] ) {
     bot->actions |= Bot::ACTION_CROUCH | Bot::ACTION_VEH_DOWN;
   }
   if( keys[SDLK_LSHIFT] && !oldKeys[SDLK_LSHIFT] ) {

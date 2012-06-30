@@ -27,7 +27,6 @@
 #include "String.hh"
 
 #include "windefs.h"
-#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -93,10 +92,9 @@ bool String::parseBool( const char* s )
 int String::parseInt( const char* s )
 {
   char* end;
-  errno = 0;
   int i = int( strtol( s, &end, 0 ) );
 
-  if( errno != 0 || *end != '\0' || s[0] == '\0' ) {
+  if( *end != '\0' || s[0] == '\0' ) {
     throw ParseException();
   }
   return i;
@@ -105,10 +103,9 @@ int String::parseInt( const char* s )
 long String::parseLong( const char* s )
 {
   char* end;
-  errno = 0;
   long l = strtol( s, &end, 0 );
 
-  if( errno != 0 || *end != '\0' || s[0] == '\0' ) {
+  if( *end != '\0' || s[0] == '\0' ) {
     throw ParseException();
   }
   return l;
@@ -117,10 +114,9 @@ long String::parseLong( const char* s )
 float String::parseFloat( const char* s )
 {
   char* end;
-  errno = 0;
   float f = strtof( s, &end );
 
-  if( errno != 0 || *end != '\0' || s[0] == '\0' ) {
+  if( *end != '\0' || s[0] == '\0' ) {
     throw ParseException();
   }
   return f;
@@ -129,10 +125,9 @@ float String::parseFloat( const char* s )
 double String::parseDouble( const char* s )
 {
   char* end;
-  errno = 0;
   double d = strtod( s, &end );
 
-  if( errno != 0 || *end != '\0' || s[0] == '\0' ) {
+  if( *end != '\0' || s[0] == '\0' ) {
     throw ParseException();
   }
   return d;

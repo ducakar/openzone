@@ -63,7 +63,7 @@ bool Frame::onMouseEvent()
     return true;
   }
   return true;
-};
+}
 
 void Frame::onDraw()
 {

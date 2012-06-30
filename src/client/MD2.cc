@@ -204,8 +204,10 @@ MD2::MD2( int id_ ) :
 MD2::~MD2()
 {
   if( shader.hasVertexTexture ) {
-    glDeleteTextures( 1, &vertexTexId );
-    glDeleteTextures( 1, &normalTexId );
+    if( isLoaded ) {
+      glDeleteTextures( 1, &vertexTexId );
+      glDeleteTextures( 1, &normalTexId );
+    }
   }
   else {
     delete[] vertices;

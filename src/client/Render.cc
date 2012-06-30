@@ -63,9 +63,9 @@ const Vec4  Render::ENTITY_AABB      = Vec4( 1.00f, 0.40f, 0.60f, 0.30f );
 const Vec4  Render::SOLID_AABB       = Vec4( 0.60f, 0.90f, 0.20f, 0.30f );
 const Vec4  Render::NONSOLID_AABB    = Vec4( 0.70f, 0.80f, 0.90f, 0.30f );
 
-const Mat44 Render::NIGHT_COLOUR     = Mat44( 0.25f, 1.75f, 0.25f, 0.00f,
-                                              0.25f, 1.75f, 0.25f, 0.00f,
-                                              0.25f, 1.75f, 0.25f, 0.00f,
+const Mat44 Render::NIGHT_COLOUR     = Mat44( 0.25f, 2.00f, 0.25f, 0.00f,
+                                              0.25f, 2.00f, 0.25f, 0.00f,
+                                              0.25f, 2.00f, 0.25f, 0.00f,
                                               0.00f, 0.00f, 0.00f, 1.00f );
 
 void Render::scheduleCell( int cellX, int cellY )
@@ -538,7 +538,7 @@ void Render::init( bool isBuild )
   Log::println( "Initialising Render {" );
   Log::indent();
 
-  bool isMesa      = false;
+  bool isMesa7     = false;
   bool isCatalyst  = false;
   bool hasFBO      = false;
   bool hasFloatTex = false;
@@ -565,8 +565,8 @@ void Render::init( bool isBuild )
   hasFBO = true;
 #endif
 
-  if( strstr( vendor, "X.Org" ) != null ) {
-    isMesa = true;
+  if( strstr( version, "Mesa 7" ) != null ) {
+    isMesa7 = true;
   }
   if( strstr( vendor, "ATI" ) != null ) {
     isCatalyst = true;
@@ -596,10 +596,9 @@ void Render::init( bool isBuild )
 
 #ifdef __native_client__
   config.include( "shader.vertexTexture", "false" );
-  config.include( "shader.setSamplerMap", "false" );
 #endif
 
-  if( isMesa ) {
+  if( isMesa7 ) {
     config.include( "shader.setSamplerMap", "false" );
   }
   if( isCatalyst ) {
@@ -629,11 +628,6 @@ void Render::init( bool isBuild )
   }
 
   String sRenderScaleFilter;
-
-#ifdef __native_client__
-  config.include( "render.lowDetail", "true" );
-  config.include( "render.distance", "100.0" );
-#endif
 
   doPostprocess      = config.getSet( "render.postprocess", true );
   isLowDetail        = config.getSet( "render.lowDetail",   false );

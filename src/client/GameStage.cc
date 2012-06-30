@@ -183,10 +183,8 @@ void GameStage::reload()
 
     lua.create( mission );
   }
-  else {
-    if( !read( stateFile ) ) {
-      throw Exception( "Reading saved state '%s' failed", stateFile.cstr() );
-    }
+  else if( !read( stateFile ) ) {
+    throw Exception( "Reading saved state '%s' failed", stateFile.cstr() );
   }
 
   nirvana.sync();
@@ -274,6 +272,8 @@ bool GameStage::update()
 
   beginMicros = Time::uclock();
 
+#ifndef __native_client__
+
   if( ui::keyboard.keys[SDLK_F5] && !ui::keyboard.oldKeys[SDLK_F5] ) {
     write( QUICKSAVE_FILE );
   }
@@ -285,9 +285,11 @@ bool GameStage::update()
     stateFile = AUTOSAVE_FILE;
     reload();
   }
-  if( ui::keyboard.keys[SDLK_ESCAPE] ) {
+  if( ui::keyboard.keys[SDLK_F10] || ui::keyboard.keys[SDLK_ESCAPE] ) {
     Stage::nextStage = &menuStage;
   }
+
+#endif
 
   camera.prepare();
 

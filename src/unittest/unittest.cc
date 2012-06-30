@@ -85,7 +85,7 @@ bool MainInstance::Init( uint32_t, const char**, const char** )
   return true;
 }
 
-void MainInstance::DidChangeView( const pp::View& view )
+void MainInstance::DidChangeView( const pp::View& )
 {
   if( !mainThread.isValid() ) {
     mainThread.start( mainThreadMain, null );

@@ -395,7 +395,7 @@ void MD3::save()
 
   File::mkdir( sPath );
 
-  if( frame != 1 ) {
+  if( frame < 0 ) {
     File destFile( sPath + "/data.ozcMD3" );
 
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
