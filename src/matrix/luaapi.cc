@@ -31,6 +31,8 @@ namespace oz
 namespace matrix
 {
 
+void importMatrixConstants( lua_State* l );
+
 void importMatrixConstants( lua_State* l )
 {
   enum AddMode

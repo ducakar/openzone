@@ -73,7 +73,7 @@ class InventoryMenu : public Frame
 
   protected:
 
-    void onVisibilityChange() override;
+    void onVisibilityChange( bool doShow ) override;
     bool onMouseEvent() override;
     void onUpdate() override;
     void onDraw() override;

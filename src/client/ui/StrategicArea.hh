@@ -70,7 +70,7 @@ class StrategicArea : public Area
   protected:
 
     void onUpdate() override;
-    void onVisibilityChange() override;
+    void onVisibilityChange( bool doShow ) override;
     void onReposition() override;
     bool onMouseEvent() override;
     void onDraw() override;

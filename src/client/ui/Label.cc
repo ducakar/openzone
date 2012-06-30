@@ -44,40 +44,34 @@ Label::Label() :
   x( 0 ), y( 0 ), align( Area::ALIGN_NONE ), font( Font::MONO ), offsetX( 0 ), offsetY( 0 ),
   width( 0 ), height( 0 ), activeTexId( 0 ), hasChanged( false )
 {
-  OZ_MAIN_CALL( this, {
-    glGenTextures( 2, _this->texIds );
+  glGenTextures( 2, texIds );
 
-    glBindTexture( GL_TEXTURE_2D, _this->texIds[0] );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+  glBindTexture( GL_TEXTURE_2D, texIds[0] );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
-    glBindTexture( GL_TEXTURE_2D, _this->texIds[1] );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-  } )
+  glBindTexture( GL_TEXTURE_2D, texIds[1] );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 }
 
 Label::~Label()
 {
-  OZ_MAIN_CALL( this, {
-    glDeleteTextures( 2, _this->texIds );
-  } )
+  glDeleteTextures( 2, texIds );
 }
 
 Label::Label( int x, int y, int align, Font::Type font, const char* s, ... ) :
   offsetX( 0 ), offsetY( 0 ), activeTexId( 0 )
 {
-  OZ_MAIN_CALL( this, {
-    glGenTextures( 2, _this->texIds );
+  glGenTextures( 2, texIds );
 
-    glBindTexture( GL_TEXTURE_2D, _this->texIds[0] );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+  glBindTexture( GL_TEXTURE_2D, texIds[0] );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
-    glBindTexture( GL_TEXTURE_2D, _this->texIds[1] );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-  } )
+  glBindTexture( GL_TEXTURE_2D, texIds[1] );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
   va_list ap;
   va_start( ap, s );

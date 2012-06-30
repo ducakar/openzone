@@ -40,7 +40,7 @@ namespace ui
 using namespace oz::nirvana;
 using oz::nirvana::nirvana;
 
-void InfoFrame::onVisibilityChange()
+void InfoFrame::onVisibilityChange( bool )
 {
   lastId = -1;
 }

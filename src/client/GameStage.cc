@@ -41,7 +41,7 @@
 #include "client/Profile.hh"
 #include "client/QuestList.hh"
 #include "client/MenuStage.hh"
-#include "client/NaClMainCall.hh"
+#include "client/NaCl.hh"
 
 #include "client/ui/LoadingArea.hh"
 
@@ -150,8 +150,12 @@ void GameStage::reload()
   camera.reset();
 
   modules.unload();
-  context.unload();
-  render.unload();
+
+  OZ_MAIN_CALL( this, {
+    context.unload();
+    render.unload();
+  } )
+
   questList.unload();
 
   lua.free();
@@ -166,8 +170,12 @@ void GameStage::reload()
   modules.registerLua();
 
   questList.load();
-  render.load();
-  context.load();
+
+  OZ_MAIN_CALL( this, {
+    render.load();
+    context.load();
+  } )
+
   modules.load();
 
   if( stateFile.isEmpty() ) {
@@ -392,8 +400,11 @@ void GameStage::load()
   modules.registerLua();
 
   questList.load();
-  render.load();
-  context.load();
+
+  OZ_MAIN_CALL( this, {
+    render.load();
+    context.load();
+  } )
 
   camera.reset();
   camera.setState( Camera::STRATEGIC );
@@ -496,8 +507,11 @@ void GameStage::unload()
 
   camera.reset();
 
-  context.unload();
-  render.unload();
+  OZ_MAIN_CALL( this, {
+    context.unload();
+    render.unload();
+  } )
+
   questList.unload();
 
   lua.free();

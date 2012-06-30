@@ -999,7 +999,7 @@ bool File::mkdir( const char* path )
   MAIN_CALL( mkdir );
   SEMAPHORE_WAIT();
 
-  return descriptor->size;
+  return descriptor->size != 0;
 
 #elif defined( _WIN32 )
 
@@ -1016,9 +1016,37 @@ bool File::rm( const char* path )
 {
 #if defined( __native_client__ )
 
-  static_cast<void>( path );
+  FileDesc localDescriptor( null );
+  FileDesc* descriptor = &localDescriptor;
 
-  return false;
+  // Abuse buffer for file path and size for result.
+  descriptor->buffer = const_cast<char*>( path );
+  descriptor->size = false;
+
+  DEFINE_CALLBACK( rmResult, {
+    if( _result == PP_OK ) {
+      _fd->size = true;
+    }
+
+    delete _fd->fref;
+    SEMAPHORE_POST();
+  } );
+  DEFINE_CALLBACK( rm, {
+    _fd->fref = new pp::FileRef( *filesystem, _fd->buffer );
+
+    int ret = _fd->fref->Delete( CALLBACK_OBJECT( rmResult, _fd ) );
+    if( ret == PP_OK_COMPLETIONPENDING ) {
+      return;
+    }
+
+    delete _fd->fref;
+    SEMAPHORE_POST();
+  } );
+
+  MAIN_CALL( rm );
+  SEMAPHORE_WAIT();
+
+  return descriptor->size != 0;
 
 #elif defined( _WIN32 )
 

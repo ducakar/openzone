@@ -25,6 +25,7 @@
 
 #include "client/Render.hh"
 
+#include "client/Window.hh"
 #include "client/Frustum.hh"
 #include "client/Shape.hh"
 
@@ -424,6 +425,10 @@ void Render::drawUI()
 
 void Render::draw( int flags_ )
 {
+#ifdef __native_client__
+  hard_assert( !NaCl::isMainThread() );
+#endif
+
   flags = flags_;
 
   OZ_MAIN_CALL( this, {
@@ -446,13 +451,17 @@ void Render::draw( int flags_ )
 
 void Render::swap()
 {
+#ifdef __native_client__
+  hard_assert( !NaCl::isMainThread() );
+#endif
+
   uint beginMicros = Time::uclock();
 
 #ifdef __native_client__
   OZ_MAIN_CALL( this, {
-    NaClGLContext::flush();
+    NaCl::flushGLContext();
   } )
-  NaClGLContext::wait();
+  NaCl::waitGLContext();
 #else
   SDL_GL_SwapBuffers();
 #endif
@@ -462,6 +471,10 @@ void Render::swap()
 
 void Render::load()
 {
+#ifdef __native_client__
+  hard_assert( NaCl::isMainThread() );
+#endif
+
   Log::print( "Loading Render ..." );
 
   ui::ui.load();
@@ -487,18 +500,16 @@ void Render::load()
 
 void Render::unload()
 {
+#ifdef __native_client__
+  hard_assert( NaCl::isMainThread() );
+#endif
+
   Log::print( "Unloading Render ..." );
 
-  OZ_MAIN_CALL( this, {
-    glFinish();
-  } )
+  glFinish();
 
-  drawnStructs.dealloc();
-
-  OZ_MAIN_CALL( this, {
-    caelum.unload();
-    terra.unload();
-  } )
+  caelum.unload();
+  terra.unload();
 
   structs.clear();
   structs.dealloc();
@@ -509,6 +520,7 @@ void Render::unload()
   frags.clear();
   frags.dealloc();
 
+  drawnStructs.dealloc();
   waterStructs.clear();
   waterStructs.dealloc();
 
@@ -517,25 +529,14 @@ void Render::unload()
   Log::printEnd( " OK" );
 }
 
-void Render::init( SDL_Surface* window_, bool isBuild )
+void Render::init( bool isBuild )
 {
+#ifdef __native_client__
+  hard_assert( NaCl::isMainThread() );
+#endif
+
   Log::println( "Initialising Render {" );
   Log::indent();
-
-  window = window_;
-
-#ifdef __native_client__
-  NaClGLContext::init();
-  NaClGLContext::activate();
-#endif
-
-  glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
-  glFlush();
-
-#ifdef __native_client__
-  NaClGLContext::flush();
-#endif
 
   bool isMesa      = false;
   bool isCatalyst  = false;
@@ -629,6 +630,11 @@ void Render::init( SDL_Surface* window_, bool isBuild )
 
   String sRenderScaleFilter;
 
+#ifdef __native_client__
+  config.include( "render.lowDetail", "true" );
+  config.include( "render.distance", "100.0" );
+#endif
+
   doPostprocess      = config.getSet( "render.postprocess", true );
   isLowDetail        = config.getSet( "render.lowDetail",   false );
 
@@ -656,12 +662,12 @@ void Render::init( SDL_Surface* window_, bool isBuild )
     throw Exception( "render.scaleFilter should be either NEAREST or LINEAR." );
   }
 
-  renderWidth  = System::width;
-  renderHeight = System::height;
+  renderWidth  = window.width;
+  renderHeight = window.height;
 
   if( isOffscreen ) {
-    renderWidth  = int( float( System::width  ) * renderScale + 0.5f );
-    renderHeight = int( float( System::height ) * renderScale + 0.5f );
+    renderWidth  = int( float( renderWidth  ) * renderScale + 0.5f );
+    renderHeight = int( float( renderHeight ) * renderScale + 0.5f );
 
     glGenRenderbuffers( 1, &depthBuffer );
     glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
@@ -716,6 +722,10 @@ void Render::init( SDL_Surface* window_, bool isBuild )
 
 void Render::free( bool isBuild )
 {
+#ifdef __native_client__
+  hard_assert( NaCl::isMainThread() );
+#endif
+
   if( isBuild ) {
     return;
   }
@@ -734,10 +744,6 @@ void Render::free( bool isBuild )
   shader.free();
 
   OZ_GL_CHECK_ERROR();
-
-#ifdef __native_client__
-  NaClGLContext::free();
-#endif
 
   Log::unindent();
   Log::println( "}" );

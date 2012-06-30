@@ -37,6 +37,12 @@ namespace client
 namespace ui
 {
 
+void Button::onVisibilityChange( bool )
+{
+  isHighlighted = false;
+  isClicked     = false;
+}
+
 bool Button::onMouseEvent()
 {
   if( !keyboard.keys[SDLK_LALT] && !keyboard.keys[SDLK_RALT] ) {

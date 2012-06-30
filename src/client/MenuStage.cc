@@ -25,10 +25,11 @@
 
 #include "client/MenuStage.hh"
 
-#include "client/GameStage.hh"
+#include "client/Camera.hh"
 #include "client/Render.hh"
 #include "client/Sound.hh"
-#include "Camera.hh"
+#include "client/GameStage.hh"
+#include "client/NaCl.hh"
 
 namespace oz
 {
@@ -60,14 +61,27 @@ void MenuStage::wait( uint micros )
 
 void MenuStage::load()
 {
-  ui::mouse.buttons     = 0;
-  ui::mouse.currButtons = 0;
+  File autosaveFile( GameStage::AUTOSAVE_FILE );
+  File quicksaveFile( GameStage::QUICKSAVE_FILE );
 
-  ui::Area* menu = new ui::MainMenu();
-  ui::ui.root->add( menu, camera.centreX - menu->width / 2, camera.centreY - menu->height / 2 );
+  if( autosaveFile.stat() ) {
+    showAutosaved = true;
+  }
+  if( quicksaveFile.stat() ) {
+    showQuicksaved = true;
+  }
 
-  ui::ui.showLoadingScreen( false );
-  ui::mouse.doShow = true;
+  OZ_MAIN_CALL( this, {
+    ui::mouse.buttons     = 0;
+    ui::mouse.currButtons = 0;
+
+    _this->mainMenu = new ui::MainMenu( _this->showAutosaved, _this->showQuicksaved );
+    ui::ui.root->add( _this->mainMenu, camera.centreX - _this->mainMenu->width / 2,
+                      camera.centreY - _this->mainMenu->height / 2 );
+
+    ui::ui.showLoadingScreen( false );
+    ui::mouse.doShow = true;
+  } )
 
   render.draw( Render::DRAW_UI_BIT );
   render.draw( Render::DRAW_UI_BIT );
@@ -76,7 +90,10 @@ void MenuStage::load()
 
 void MenuStage::unload()
 {
-  ui::mouse.doShow = false;
+  OZ_MAIN_CALL( this, {
+    ui::mouse.doShow = false;
+    ui::ui.root->remove( _this->mainMenu );
+  } )
 }
 
 void MenuStage::init()

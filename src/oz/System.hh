@@ -72,14 +72,15 @@ class System
 
     static System        system;   ///< Private instance, takes care for static (de)initialisation.
 
-  public:
+#ifdef __native_client__
 
-    static int           width;    ///< Current width application surface.
-    static int           height;   ///< Current height of application surface.
+  public:
 
     static pp::Module*   module;   ///< NaCl module.
     static pp::Instance* instance; ///< NaCl instance.
     static pp::Core*     core;     ///< NaCl pp::Core interface.
+
+#endif
 
   private:
 

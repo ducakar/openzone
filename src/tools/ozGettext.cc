@@ -48,7 +48,7 @@ static void printUsage( const char* invocationName )
     "Usage: %s <data_dir>\n"
     "\n"
     "<data_dir>  Package directory that contains source game data. The output POT\n"
-    "            files will be written into <data_dir>/lingua.",
+    "            files will be written into <data_dir>/lingua.\n\n",
     invocationName );
 }
 

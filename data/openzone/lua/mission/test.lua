@@ -70,6 +70,8 @@ function init_sample()
   ozBotSetMind( "" )
   ozCameraAddSwitchableUnit( cyborg )
 
+  ozCameraSwitchTo( me )
+
 --   ozOrbisAddObj( "reaper", 145, -15, 73 )
 
   ozOrbisAddObj( OZ_FORCE, "musicPlayer", 135, -4, 73 )

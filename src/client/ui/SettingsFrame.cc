@@ -42,8 +42,10 @@ namespace ui
 
 static void closeFrame( Button* sender )
 {
-  ui.root->remove( sender->parent );
-  ui.root->add( new MainMenu(), 0, 0 );
+  SettingsFrame* settings = static_cast<SettingsFrame*>( sender->parent );
+
+  settings->show( false );
+  settings->mainMenu->show( true );
 }
 
 void SettingsFrame::onDraw()
@@ -56,9 +58,9 @@ void SettingsFrame::onDraw()
   message.draw( this );
 }
 
-SettingsFrame::SettingsFrame() :
+SettingsFrame::SettingsFrame( Frame* mainMenu_ ) :
   Frame( 400, 28 + 8 * font.INFOS[Font::SANS].height, OZ_GETTEXT( "Settings" ) ),
-  message( 4, 24, 392, 8, Font::SANS )
+  message( 4, 24, 392, 8, Font::SANS ), mainMenu( mainMenu_ )
 {
   x = ( camera.width  - width ) / 2;
   y = ( camera.height - height ) / 2;
@@ -67,7 +69,7 @@ SettingsFrame::SettingsFrame() :
                                "You can change your settings by manually editing '%s' file." ),
                    String::str( "%s/client.rc", config.get( "dir.config", "" ) ).cstr() );
 
-  add( new Button( OZ_GETTEXT( "Close" ), closeFrame, 40, 16 ), -44, 4 );
+  add( new Button( OZ_GETTEXT( "Close" ), closeFrame, 40, 16 ), -4, 4 );
 }
 
 }

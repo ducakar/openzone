@@ -232,7 +232,7 @@ void StrategicArea::drawTaggedRect( const Span& span, const Struct* str, const O
   }
 }
 
-void StrategicArea::onVisibilityChange()
+void StrategicArea::onVisibilityChange( bool )
 {
   taggedStrs.clear();
   taggedObjs.clear();
@@ -382,22 +382,18 @@ StrategicArea::StrategicArea() :
 {
   flags = UPDATE_BIT | PINNED_BIT;
 
-  OZ_MAIN_CALL( this, {
-    glGenTextures( 1, &_this->titleTexId );
-    glBindTexture( GL_TEXTURE_2D, _this->titleTexId );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glBindTexture( GL_TEXTURE_2D, 0 );
-  } )
+  glGenTextures( 1, &titleTexId );
+  glBindTexture( GL_TEXTURE_2D, titleTexId );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+  glBindTexture( GL_TEXTURE_2D, 0 );
 
   onReposition();
 }
 
 StrategicArea::~StrategicArea()
 {
-  OZ_MAIN_CALL( this, {
-    glDeleteTextures( 1, &_this->titleTexId );
-  } )
+  glDeleteTextures( 1, &titleTexId );
 }
 
 }

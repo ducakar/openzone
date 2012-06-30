@@ -96,11 +96,11 @@ class Area
     bool passMouseEvents();
     void drawChildren();
 
-    virtual void onVisibilityChange();
+    virtual void onVisibilityChange( bool doShow );
     virtual void onReposition();
+    virtual void onUpdate();
     // return true if event has been caught
     virtual bool onMouseEvent();
-    virtual void onUpdate();
     virtual void onDraw();
 
     static void update();

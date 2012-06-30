@@ -55,6 +55,7 @@ void StrategicProxy::begin()
 {
   camera.setTaggedObj( null );
   camera.setTaggedEnt( null );
+  camera.smoothMagnify( 1.0f );
   camera.isExternal = true;
 
   ui::mouse.doShow = true;

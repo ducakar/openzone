@@ -27,7 +27,7 @@
 
 #ifdef _WIN32
 # define OZ_REGISTER_GLFUNC( func ) \
-  *( void** ) &func = SDL_GL_GetProcAddress( #func ); \
+  *( void** )( &func ) = SDL_GL_GetProcAddress( #func ); \
   if( func == null ) { \
     throw Exception( "Failed to link OpenGL function '" #func "'" ); \
   }

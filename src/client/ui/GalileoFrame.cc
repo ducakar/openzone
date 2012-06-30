@@ -69,6 +69,19 @@ void GalileoFrame::onReposition()
   maximisedHeight = maxSize;
 }
 
+void GalileoFrame::onUpdate()
+{
+  if( orbis.terra.id < 0 || ( camera.state == Camera::UNIT && camera.botObj != null &&
+    !camera.botObj->hasAttribute( ObjectClass::GALILEO_BIT ) ) )
+  {
+    flags |= HIDDEN_BIT;
+    setMaximised( false );
+  }
+  else {
+    flags &= ~HIDDEN_BIT;
+  }
+}
+
 bool GalileoFrame::onMouseEvent()
 {
   return flags & HIDDEN_BIT ? false : Frame::onMouseEvent();
@@ -76,16 +89,6 @@ bool GalileoFrame::onMouseEvent()
 
 void GalileoFrame::onDraw()
 {
-  if( orbis.terra.id < 0 || ( camera.state == Camera::UNIT && camera.botObj != null &&
-      !camera.botObj->hasAttribute( ObjectClass::GALILEO_BIT ) ) )
-  {
-    flags |= HIDDEN_BIT;
-    setMaximised( false );
-    return;
-  }
-
-  flags &= ~HIDDEN_BIT;
-
   if( mapTexId == 0 ) {
     mapTexId = loadTexture( "terra/" + library.terrae[orbis.terra.id].name + ".ozcTex" );
   }
@@ -137,10 +140,10 @@ void GalileoFrame::onDraw()
 }
 
 GalileoFrame::GalileoFrame( const QuestFrame* questFrame_ ) :
-  Frame( 240, 232 - Font::INFOS[Font::LARGE].height, "" ),
-  questFrame( questFrame_ ), mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ), isMaximised( false )
+  Frame( 240, 232 - HEADER_SIZE, "" ), questFrame( questFrame_ ),
+  mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ), isMaximised( false )
 {
-  flags = PINNED_BIT;
+  flags = PINNED_BIT | UPDATE_BIT;
 
   arrowTexId = loadTexture( "ui/icon/arrow.ozIcon" );
   markerTexId = loadTexture( "ui/icon/marker.ozIcon" );
@@ -150,17 +153,15 @@ GalileoFrame::GalileoFrame( const QuestFrame* questFrame_ ) :
 
 GalileoFrame::~GalileoFrame()
 {
-  OZ_MAIN_CALL( this, {
-    if( _this->mapTexId != 0 ) {
-      glDeleteTextures( 1, &_this->mapTexId );
-    }
-    if( _this->arrowTexId != 0 ) {
-      glDeleteTextures( 1, &_this->arrowTexId );
-    }
-    if( _this->markerTexId != 0 ) {
-      glDeleteTextures( 1, &_this->markerTexId );
-    }
-  } )
+  if( mapTexId != 0 ) {
+    glDeleteTextures( 1, &mapTexId );
+  }
+  if( arrowTexId != 0 ) {
+    glDeleteTextures( 1, &arrowTexId );
+  }
+  if( markerTexId != 0 ) {
+    glDeleteTextures( 1, &markerTexId );
+  }
 }
 
 void GalileoFrame::setMaximised( bool doMaximise )

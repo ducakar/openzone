@@ -73,7 +73,7 @@ void Area::reposition()
         defaultX < 0 ? parent->x + parent->width - width + defaultX :
                        parent->x + defaultX;
 
-    y = defaultY == CENTRE ? parent->y + ( parent->height + height ) / 2 :
+    y = defaultY == CENTRE ? parent->y + ( parent->height - height ) / 2 :
         defaultY < 0 ? parent->y + parent->height - height + defaultY :
                        parent->y + defaultY;
   }
@@ -144,20 +144,20 @@ void Area::update()
   }
 }
 
-void Area::onVisibilityChange()
+void Area::onVisibilityChange( bool )
 {}
 
 void Area::onReposition()
 {}
 
-bool Area::onMouseEvent()
-{
-  return false;
-}
-
 void Area::onUpdate()
 {
   hard_assert( false );
+}
+
+bool Area::onMouseEvent()
+{
+  return false;
 }
 
 void Area::onDraw()
@@ -172,7 +172,10 @@ void Area::show( bool doShow )
     flags |= IGNORE_BIT | HIDDEN_BIT;
   }
 
-  onVisibilityChange();
+  foreach( child, children.iter() ) {
+    child->onVisibilityChange( doShow );
+  }
+  onVisibilityChange( doShow );
 }
 
 void Area::add( Area* area, int localX, int localY )

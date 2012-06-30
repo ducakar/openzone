@@ -27,7 +27,7 @@
 
 #include "client/NaClDownloader.hh"
 
-#include "client/NaClMainCall.hh"
+#include "client/NaCl.hh"
 
 #include <ppapi/cpp/completion_callback.h>
 #include <ppapi/cpp/url_request_info.h>

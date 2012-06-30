@@ -34,6 +34,13 @@ namespace client
 
 class MenuStage : public Stage
 {
+  private:
+
+    ui::MainMenu* mainMenu;
+
+    bool showQuicksaved;
+    bool showAutosaved;
+
   public:
 
     bool doExit;

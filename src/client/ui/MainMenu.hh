@@ -36,12 +36,13 @@ namespace ui
 
 class MainMenu : public Frame
 {
+  private:
+
+    Text   copyright;
+
   public:
 
-    static String autosaveFile;
-    static String quicksaveFile;
-
-    Text copyright;
+    Frame* settingsFrame;
 
   protected:
 
@@ -49,7 +50,7 @@ class MainMenu : public Frame
 
   public:
 
-    MainMenu();
+    MainMenu( bool showAutosaved, bool showQuicksaved );
     ~MainMenu() override;
 
 };
