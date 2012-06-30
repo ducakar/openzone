@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/NaClMainCall.hh
+ * @file client/NaCl.hh
  */
 
 #pragma once
@@ -28,7 +28,7 @@
 #ifdef __native_client__
 
 #define OZ_MAIN_CALL( t, code ) \
-  if( oz::client::NaClMainCall::isMainThread() ) { \
+  if( oz::client::NaCl::isMainThread() ) { \
     decltype( t ) _this = ( t ); \
     static_cast<void>( _this ); \
     { code } \
@@ -41,12 +41,12 @@
         _This _this = reinterpret_cast<_This>( data ); \
         static_cast<void>( _this ); \
         { code } \
-        oz::client::NaClMainCall::semaphore.post(); \
+        oz::client::NaCl::semaphore.post(); \
       } \
     }; \
-    hard_assert( 0 == oz::client::NaClMainCall::semaphore.counter() ); \
-    oz::client::NaClMainCall::call( _Callback::_main, ( t ) ); \
-    hard_assert( oz::client::NaClMainCall::semaphore.counter() == 0 ); \
+    hard_assert( 0 == oz::client::NaCl::semaphore.counter() ); \
+    oz::client::NaCl::call( _Callback::_main, ( t ) ); \
+    hard_assert( oz::client::NaCl::semaphore.counter() == 0 ); \
   }
 
 namespace oz
@@ -54,7 +54,7 @@ namespace oz
 namespace client
 {
 
-class NaClMainCall
+class NaCl
 {
   public:
 
@@ -62,8 +62,28 @@ class NaClMainCall
 
     static Semaphore semaphore;
 
-    NaClMainCall() = delete;
+    static int       width;
+    static int       height;
 
+    NaCl() = delete;
+
+    /*
+     * GL ES Context.
+     */
+    static void activateGLContext();
+    static void deactivateGLContext();
+
+    static void resizeGLContext();
+
+    static void flushGLContext();
+    static void waitGLContext();
+
+    static void initGLContext();
+    static void freeGLContext();
+
+    /*
+     * Main thread call.
+     */
     static bool isMainThread();
     static void call( Callback* callback, void* caller );
 

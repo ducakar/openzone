@@ -29,8 +29,6 @@
 
 #include "oz/oz.hh"
 
-#include "client/NaClGLContext.hh"
-
 #include <ppapi/cpp/completion_callback.h>
 #include <ppapi/cpp/module.h>
 #include <ppapi/cpp/instance.h>

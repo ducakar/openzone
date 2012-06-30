@@ -25,6 +25,8 @@
 
 #include "client/Camera.hh"
 
+#include "client/Window.hh"
+
 #include "client/ui/Area.hh"
 #include "client/ui/UI.hh"
 
@@ -193,12 +195,12 @@ void Camera::prepare()
 
   ui::ui.update();
 
-  if( System::width != width || System::height != height ) {
-    width   = System::width;
-    height  = System::height;
+  if( window.width != width || window.height != height ) {
+    width   = window.width;
+    height  = window.height;
 
-    centreX = System::width / 2;
-    centreY = System::height / 2;
+    centreX = window.width / 2;
+    centreY = window.height / 2;
 
     aspect  = isFixedAspect ? aspect : float( width ) / float( height );
 
@@ -359,10 +361,10 @@ void Camera::write( BufferStream* ostream ) const
 
 void Camera::init()
 {
-  width         = System::width;
-  height        = System::height;
-  centreX       = System::width / 2;
-  centreY       = System::height / 2;
+  width         = window.width;
+  height        = window.height;
+  centreX       = window.width / 2;
+  centreY       = window.height / 2;
 
   aspect        = config.getSet( "camera.aspect",     0.0f );
   mouseXSens    = config.getSet( "camera.mouseXSens", 1.0f ) * 0.004f;

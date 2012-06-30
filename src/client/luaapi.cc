@@ -30,6 +30,8 @@ namespace oz
 namespace client
 {
 
+void importClientConstants( lua_State* l );
+
 void importClientConstants( lua_State* l )
 {
   registerLuaConstant( l, "OZ_CAMERA_NONE",                 Camera::NONE );

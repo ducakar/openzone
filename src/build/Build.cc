@@ -29,6 +29,7 @@
 
 #include "BuildInfo.hh"
 
+#include "client/Window.hh"
 #include "client/Render.hh"
 
 #include "build/Lingua.hh"
@@ -879,33 +880,13 @@ int Build::main( int argc, char** argv )
     throw Exception( "Failed to add directory '%s' to search path", srcDir.cstr() );
   }
 
-  int  windowWidth  = 400;
-  int  windowHeight = 40;
-  uint windowFlags  = SDL_OPENGL;
+  config.add( "window.width", "400" );
+  config.add( "window.height", "40" );
+  config.add( "window.full", "false" );
 
-  Log::print( "Creating OpenGL window %dx%d [windowed] ...", windowWidth, windowHeight );
+  window.init();
 
-  if( SDL_VideoModeOK( windowWidth, windowHeight, 0, windowFlags ) == 1 ) {
-    throw Exception( "Video mode not supported" );
-  }
-
-  SDL_Surface* window = SDL_SetVideoMode( windowWidth, windowHeight, 0, windowFlags );
-
-  if( window == null ) {
-    throw Exception( "Window creation failed" );
-  }
-
-  SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " :: Building data ...", null );
-
-  windowWidth  = window->w;
-  windowHeight = window->h;
-
-  Log::printEnd( " %dx%d-%d ... OK", windowWidth, windowHeight, window->format->BitsPerPixel );
-
-  System::width  = windowWidth;
-  System::height = windowHeight;
-
-  client::render.init( window, true );
+  client::render.init( true );
 
   if( !client::shader.hasS3TC && context.useS3TC ) {
     throw Exception( "S3 texture compression enabled but not supported" );
@@ -1010,6 +991,7 @@ int Build::main( int argc, char** argv )
   compiler.free();
   context.free();
   client::render.free( true );
+  window.free();
   config.clear( true );
 
   FreeImage_DeInitialise();

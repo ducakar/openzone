@@ -87,12 +87,6 @@ bool MainInstance::Init( uint32_t, const char**, const char** )
 
 void MainInstance::DidChangeView( const pp::View& view )
 {
-  int width  = view.GetRect().width();
-  int height = view.GetRect().height();
-
-  System::width  = width;
-  System::height = height;
-
   if( !mainThread.isValid() ) {
     mainThread.start( mainThreadMain, null );
   }

@@ -157,12 +157,10 @@ void Mouse::unload()
 {
   Log::print( "Unloading Mouse ..." );
 
-  OZ_MAIN_CALL( this, {
-    for( int i = 0; i < CURSORS_MAX; ++i ) {
-      glDeleteTextures( 1, &_this->cursors[i].texId );
-      _this->cursors[i].texId = 0;
-    }
-  } )
+  for( int i = 0; i < CURSORS_MAX; ++i ) {
+    glDeleteTextures( 1, &cursors[i].texId );
+    cursors[i].texId = 0;
+  }
 
   Log::printEnd( " OK" );
 }

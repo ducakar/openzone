@@ -30,8 +30,12 @@
 
 #ifdef __native_client__
 
+#include "client/Window.hh"
+
 #include <ppapi/gles2/gl2ext_ppapi.h>
 #include <GLES2/gl2.h>
+
+using oz::client::window;
 
 namespace oz
 {
@@ -66,60 +70,60 @@ bool MainInstance::Init( uint32_t, const char**, const char** )
   return true;
 }
 
-static void flushCallback( void*, int )
-{}
+// static void flushCallback( void*, int )
+// {}
 
-void MainInstance::DidChangeView( const pp::View& view )
+void MainInstance::DidChangeView( const pp::View& )
 {
-  int width  = view.GetRect().width();
-  int height = view.GetRect().height();
-
-  if( width == System::width && height == System::height && isContextBound ) {
-    return;
-  }
-
-  System::width  = width;
-  System::height = height;
-
-  if( !glInitializePPAPI( System::module->get_browser_interface() ) ) {
-    throw Exception( "Failed to initialize PPAPI GLES2" );
-  }
-
-  int attribs[] = {
-    PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
-    PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
-    PP_GRAPHICS3DATTRIB_STENCIL_SIZE, 8,
-    PP_GRAPHICS3DATTRIB_SAMPLES, 0,
-    PP_GRAPHICS3DATTRIB_SAMPLE_BUFFERS, 0,
-    PP_GRAPHICS3DATTRIB_WIDTH, System::width,
-    PP_GRAPHICS3DATTRIB_HEIGHT, System::height,
-    PP_GRAPHICS3DATTRIB_NONE
-  };
-
-  Log::println( "aa\n" );
-
-  context = pp::Graphics3D( System::instance, pp::Graphics3D(), attribs );
-  if( context.is_null() ) {
-    throw Exception( "Graphics3D surface creation failed" );
-  }
-  isContextBound = BindGraphics( context );
-
-  glSetCurrentContextPPAPI( context.pp_resource() );
-
-  Log::println( "bb\n" );
-
-  glClearColor( 1.0f, 0.0f, 1.0f, 1.0f );
-  glClear( GL_COLOR_BUFFER_BIT );
-
-  Log::println( "cc\n" );
-
-  glFlush();
-
-  Log::println( "dd\n" );
-
-  context.SwapBuffers( pp::CompletionCallback( &flushCallback, null ) );
-
-  Log::println( "ee\n" );
+//   int width  = view.GetRect().width();
+//   int height = view.GetRect().height();
+//
+//   if( width == window.width && height == window.height && isContextBound ) {
+//     return;
+//   }
+//
+//   window.width  = width;
+//   window.height = height;
+//
+//   if( !glInitializePPAPI( System::module->get_browser_interface() ) ) {
+//     throw Exception( "Failed to initialize PPAPI GLES2" );
+//   }
+//
+//   int attribs[] = {
+//     PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
+//     PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
+//     PP_GRAPHICS3DATTRIB_STENCIL_SIZE, 8,
+//     PP_GRAPHICS3DATTRIB_SAMPLES, 0,
+//     PP_GRAPHICS3DATTRIB_SAMPLE_BUFFERS, 0,
+//     PP_GRAPHICS3DATTRIB_WIDTH, window.width,
+//     PP_GRAPHICS3DATTRIB_HEIGHT, window.height,
+//     PP_GRAPHICS3DATTRIB_NONE
+//   };
+//
+//   Log::println( "aa\n" );
+//
+//   context = pp::Graphics3D( System::instance, pp::Graphics3D(), attribs );
+//   if( context.is_null() ) {
+//     throw Exception( "Graphics3D surface creation failed" );
+//   }
+//   isContextBound = BindGraphics( context );
+//
+//   glSetCurrentContextPPAPI( context.pp_resource() );
+//
+//   Log::println( "bb\n" );
+//
+//   glClearColor( 1.0f, 0.0f, 1.0f, 1.0f );
+//   glClear( GL_COLOR_BUFFER_BIT );
+//
+//   Log::println( "cc\n" );
+//
+//   glFlush();
+//
+//   Log::println( "dd\n" );
+//
+//   context.SwapBuffers( pp::CompletionCallback( &flushCallback, null ) );
+//
+//   Log::println( "ee\n" );
 
   if( mainThread == 0 ) {
     pthread_create( &mainThread, null, mainThreadMain, this );

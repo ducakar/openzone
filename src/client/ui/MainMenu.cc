@@ -44,47 +44,36 @@ namespace client
 namespace ui
 {
 
-String MainMenu::autosaveFile;
-String MainMenu::quicksaveFile;
-
-static void continueAutosaved( Button* sender )
+static void continueAutosaved( Button* )
 {
-  ui.root->remove( sender->parent );
-
   Stage::nextStage = &gameStage;
   gameStage.stateFile = GameStage::AUTOSAVE_FILE;
+  gameStage.mission = "";
 }
 
-static void continueQuicksaved( Button* sender )
+static void continueQuicksaved( Button* )
 {
-  ui.root->remove( sender->parent );
-
   Stage::nextStage = &gameStage;
   gameStage.stateFile = GameStage::QUICKSAVE_FILE;
+  gameStage.mission = "";
 }
 
-static void loadTutorial( Button* sender )
+static void loadTutorial( Button* )
 {
-  ui.root->remove( sender->parent );
-
   Stage::nextStage = &gameStage;
   gameStage.stateFile = "";
   gameStage.mission = "tutorial";
 }
 
-static void loadTest( Button* sender )
+static void loadTest( Button* )
 {
-  ui.root->remove( sender->parent );
-
   Stage::nextStage = &gameStage;
   gameStage.stateFile = "";
   gameStage.mission = "test";
 }
 
-static void loadCvicek( Button* sender )
+static void loadCvicek( Button* )
 {
-  ui.root->remove( sender->parent );
-
   Stage::nextStage = &gameStage;
   gameStage.stateFile = "";
   gameStage.mission = "cvicek";
@@ -92,13 +81,14 @@ static void loadCvicek( Button* sender )
 
 static void settings( Button* sender )
 {
-  ui.root->remove( sender->parent );
-  ui.root->add( new SettingsFrame(), 100, 100 );
+  MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
+
+  mainMenu->show( false );
+  mainMenu->settingsFrame->show( true );
 }
 
-static void exit( Button* sender )
+static void exit( Button* )
 {
-  ui.root->remove( sender->parent );
   menuStage.doExit = true;
 }
 
@@ -112,7 +102,7 @@ void MainMenu::onDraw()
   copyright.draw( this );
 }
 
-MainMenu::MainMenu() :
+MainMenu::MainMenu( bool showAutosaved, bool showQuicksaved ) :
   Frame( 400, 450, OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " " OZ_SYSTEM_NAME ),
   copyright( 10, 10, 380, 9, Font::SANS )
 {
@@ -126,15 +116,10 @@ MainMenu::MainMenu() :
                                  "Data files come form different sources. See respective README and COPYING "
                                  "files for details about copyrights and licences." ) );
 
-  File autosaveFile( GameStage::AUTOSAVE_FILE );
-  File quicksaveFile( GameStage::QUICKSAVE_FILE );
-
-  if( autosaveFile.stat() ) {
-    MainMenu::autosaveFile = autosaveFile.path();
+  if( showAutosaved ) {
     add( new Button( OZ_GETTEXT( "Continue" ), continueAutosaved, 300, 20 ), 50, -40 );
   }
-  if( quicksaveFile.stat() ) {
-    MainMenu::quicksaveFile = quicksaveFile.path();
+  if( showQuicksaved ) {
     add( new Button( OZ_GETTEXT( "Load Quicksave" ), continueQuicksaved, 300, 20 ), 50, -70 );
   }
 
@@ -144,12 +129,16 @@ MainMenu::MainMenu() :
 
   add( new Button( OZ_GETTEXT( "Settings" ), settings, 300, 20 ), 50, -250 );
   add( new Button( OZ_GETTEXT( "Exit" ), exit, 300, 20 ), 50, -280 );
+
+  settingsFrame = new SettingsFrame( this );
+
+  ui.root->add( settingsFrame, CENTRE, CENTRE );
+  settingsFrame->show( false );
 }
 
 MainMenu::~MainMenu()
 {
-  autosaveFile  = "";
-  quicksaveFile = "";
+  ui.root->remove( settingsFrame );
 }
 
 }

@@ -18,47 +18,43 @@
  */
 
 /**
- * @file client/NaClMainCall.cc
+ * @file client/Window.hh
  */
 
-#ifdef __native_client__
+#pragma once
 
-#include "stable.hh"
-
-#include "client/NaClMainCall.hh"
-
-#include <ppapi/cpp/completion_callback.h>
-#include <ppapi/cpp/core.h>
+#include "client/common.hh"
 
 namespace oz
 {
 namespace client
 {
 
-Semaphore NaClMainCall::semaphore;
-
-bool NaClMainCall::isMainThread()
+class Window
 {
-  return System::core->IsMainThread();
-}
+  private:
 
-void NaClMainCall::call( Callback* callback, void* caller )
-{
-  System::core->CallOnMainThread( 0, pp::CompletionCallback( callback, caller ) );
-  semaphore.wait();
-}
+    SDL_Surface* descriptor;
 
-void NaClMainCall::init()
-{
-  semaphore.init();
-}
+  public:
 
-void NaClMainCall::free()
-{
-  semaphore.destroy();
-}
+    int  width;
+    int  height;
+    int  bpp;
+    uint flags;
+    bool isFull;
+
+    Window();
+
+    void resize();
+    void toggleFull();
+
+    void init();
+    void free();
+
+};
+
+extern Window window;
 
 }
 }
-
-#endif

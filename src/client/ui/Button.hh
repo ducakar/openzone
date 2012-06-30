@@ -48,6 +48,7 @@ class Button : public Area
 
   protected:
 
+    void onVisibilityChange( bool doShow ) override;
     bool onMouseEvent() override;
     void onDraw() override;
 

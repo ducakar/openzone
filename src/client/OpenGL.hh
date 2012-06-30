@@ -40,8 +40,7 @@
 # define GL_GLEXT_PROTOTYPES
 #endif
 
-#include "NaClMainCall.hh"
-#include "NaClGLContext.hh"
+#include "NaCl.hh"
 
 #ifdef OZ_GL_ES
 # include <GLES2/gl2.h>

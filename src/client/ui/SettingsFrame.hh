@@ -41,13 +41,17 @@ class SettingsFrame : public Frame
     Text    message;
     Button* close;
 
+  public:
+
+    Frame*  mainMenu;
+
   protected:
 
     void onDraw() override;
 
   public:
 
-    SettingsFrame();
+    SettingsFrame( Frame* mainMenu );
 
 };
 

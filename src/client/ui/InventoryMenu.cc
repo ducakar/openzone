@@ -99,7 +99,7 @@ void InventoryMenu::handleComponent( int height, const Object* container, int* t
         if( uint( *tagged ) < uint( bot->items.length() ) ) {
           item = static_cast<const Dynamic*>( orbis.objects[ bot->items[*tagged] ] );
 
-          if( item != null && container == owner ) {
+          if( item != null && container == owner && bot->cargo < 0 ) {
             ui::mouse.doShow = false;
 
             bot->invGrab( item );
@@ -257,7 +257,7 @@ noIcon:
   itemDesc.draw( this, false );
 }
 
-void InventoryMenu::onVisibilityChange()
+void InventoryMenu::onVisibilityChange( bool )
 {
   cachedContainerIndex  = -1;
   cachedTaggedItemIndex = -1;
@@ -325,7 +325,7 @@ bool InventoryMenu::onMouseEvent()
   }
 
   return true;
-};
+}
 
 void InventoryMenu::onDraw()
 {
@@ -383,13 +383,11 @@ InventoryMenu::InventoryMenu() :
 
 InventoryMenu::~InventoryMenu()
 {
-  OZ_MAIN_CALL( this, {
-    glDeleteTextures( 1, &_this->scrollUpTexId );
-    glDeleteTextures( 1, &_this->scrollDownTexId );
-    glDeleteTextures( 1, &_this->useTexId );
-    glDeleteTextures( 1, &_this->equipTexId );
-    glDeleteTextures( 1, &_this->unequipTexId );
-  } )
+  glDeleteTextures( 1, &scrollUpTexId );
+  glDeleteTextures( 1, &scrollDownTexId );
+  glDeleteTextures( 1, &useTexId );
+  glDeleteTextures( 1, &equipTexId );
+  glDeleteTextures( 1, &unequipTexId );
 }
 
 }

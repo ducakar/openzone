@@ -29,14 +29,14 @@
 
 #include "BuildInfo.hh"
 
+#include "client/Window.hh"
 #include "client/Camera.hh"
 #include "client/MenuStage.hh"
 #include "client/GameStage.hh"
 #include "client/Sound.hh"
 #include "client/Render.hh"
 #include "client/Loader.hh"
-#include "client/NaClMainCall.hh"
-#include "client/NaClGLContext.hh"
+#include "client/NaCl.hh"
 #include "client/NaClUpdater.hh"
 
 #include <unistd.h>
@@ -81,6 +81,9 @@ void Client::shutdown()
   if( initFlags & INIT_LINGUA ) {
     lingua.free();
   }
+  if( initFlags & INIT_WINDOW ) {
+    window.free();
+  }
 
   if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
     String configDir = config.get( "dir.config", "" );
@@ -107,9 +110,9 @@ void Client::shutdown()
   }
 
   if( initFlags & INIT_SDL ) {
-#ifndef __native_client__
-    SDL_Quit();
-#endif
+    OZ_MAIN_CALL( this, {
+      SDL_Quit();
+    } )
   }
 
   if( initFlags & INIT_MAIN_LOOP ) {
@@ -196,9 +199,13 @@ int Client::main( int argc, char** argv )
 
   File::init( File::TEMPORARY, 10*1024*1024 );
 
-  String configDir = "/config";
-  String localDir = "/local/share";
+  String configDir = "/config/openzone";
+  String localDir = "/local/share/openzone";
   String musicDir = "/music";
+
+  File::mkdir( "/config" );
+  File::mkdir( "/local" );
+  File::mkdir( "/local/share" );
 
 #elif defined( _WIN32 )
 
@@ -267,12 +274,14 @@ int Client::main( int argc, char** argv )
   Log::printTime( Time::local() );
   Log::printEnd();
 
-#ifndef __native_client__
-  if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
+  OZ_MAIN_CALL( this, {
+    if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) == 0 ) {
+      _this->initFlags |= INIT_SDL;
+    }
+  } )
+  if( !( initFlags & INIT_SDL ) ) {
     throw Exception( "Failed to initialise SDL: %s", SDL_GetError() );
   }
-#endif
-  initFlags |= INIT_SDL;
 
   PFile::init( File::TEMPORARY, 32*1024*1024 );
   initFlags |= INIT_PHYSFS;
@@ -320,13 +329,18 @@ int Client::main( int argc, char** argv )
   config.get( "dir.config", "" );
   config.get( "dir.local", "" );
 
+  window.init();
+  initFlags |= INIT_WINDOW;
+
+  ui::keyboard.init();
+  ui::mouse.init();
+
   String prefix  = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
   String dataDir = prefix + "/share/" OZ_APPLICATION_NAME;
 
 #ifdef __native_client__
 
-  naclUpdater.init();
-  naclUpdater.update();
+  DArray<String> packages = naclUpdater.update();
 
 #endif
 
@@ -335,8 +349,8 @@ int Client::main( int argc, char** argv )
 
 #ifdef __native_client__
 
-  foreach( pkg, naclUpdater.packages.citer() ) {
-    File pkgFile( "/local/share/" + pkg->name );
+  foreach( pkg, packages.citer() ) {
+    File pkgFile( localDir + "/" + *pkg );
 
     if( PFile::mount( pkgFile.path(), null, true ) ) {
       Log::println( "%s", pkgFile.path().cstr() );
@@ -346,7 +360,7 @@ int Client::main( int argc, char** argv )
     }
   }
 
-  naclUpdater.free();
+  packages.dealloc();
 
 #else
 
@@ -402,7 +416,7 @@ int Client::main( int argc, char** argv )
     Log::println( "Random generator seed set to: %d", seed );
   }
 
-  const char* locale = config.getSet( "lingua", "en" );
+  const char* locale = config.getSet( "lingua", "sl" );
 
   Log::print( "Setting localisation '%s' ...", locale );
   if( lingua.init( locale ) ) {
@@ -416,87 +430,13 @@ int Client::main( int argc, char** argv )
   initFlags |= INIT_LIBRARY;
   library.init();
 
-  const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
-
-  Log::verboseMode = true;
-  Log::println( "Desktop video mode: %dx%d-%d",
-                videoInfo->current_w, videoInfo->current_h, videoInfo->vfmt->BitsPerPixel );
-  Log::verboseMode = false;
-
-#ifndef __native_client__
-
-  // Don't mess with screensaver. In X11 it only makes effect for windowed mode, in fullscreen
-  // mode screensaver never starts anyway. Turning off screensaver has a side effect: if the game
-  // crashes, it remains turned off. Besides that, in X11 several programs (e.g. IM clients) rely
-  // on screensaver's counter, so they don't detect that you are away if the screensaver is screwed.
-  static char allowScreensaverEnv[] = "SDL_VIDEO_ALLOW_SCREENSAVER=1";
-  SDL_putenv( allowScreensaverEnv );
-
-  int  windowWidth      = config.getSet( "window.width", 0 );
-  int  windowHeight     = config.getSet( "window.height", 0 );
-  int  windowBpp        = config.getSet( "window.bpp", 0 );
-  bool windowFullscreen = config.getSet( "window.fullscreen", false );
-  bool enableVSync      = config.getSet( "window.vsync", true );
-
-  uint windowFlags = SDL_OPENGL | SDL_RESIZABLE;
-
-  if( windowFullscreen ) {
-    windowFlags |= SDL_FULLSCREEN;
-  }
-
-  if( windowWidth == 0 || windowHeight == 0 ) {
-    windowWidth  = videoInfo->current_w;
-    windowHeight = videoInfo->current_h;
-  }
-  if( windowBpp == 0 ) {
-    windowBpp = videoInfo->vfmt->BitsPerPixel;
-  }
-
-  SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, enableVSync );
-
-  Log::print( "Creating OpenGL window %dx%d-%d [%s] ...",
-              windowWidth, windowHeight, windowBpp, windowFullscreen ? "fullscreen" : "windowed" );
-
-  if( SDL_VideoModeOK( windowWidth, windowHeight, windowBpp, windowFlags ) == 1 ) {
-    throw Exception( "Video mode not supported" );
-  }
-
-  SDL_Surface* window = SDL_SetVideoMode( windowWidth, windowHeight, windowBpp, windowFlags );
-
-  if( window == null ) {
-    throw Exception( "Window creation failed" );
-  }
-
-  SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION,
-                     OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION );
-
-  windowWidth  = window->w;
-  windowHeight = window->h;
-  windowBpp    = window->format->BitsPerPixel;
-
-  Log::printEnd( " %dx%d-%d ... OK", windowWidth, windowHeight, windowBpp );
-
-  SDL_ShowCursor( SDL_FALSE );
-
-  System::width  = windowWidth;
-  System::height = windowHeight;
-
-#endif
-
-  ui::keyboard.init();
-  ui::mouse.init();
-
   initFlags |= INIT_CONTEXT;
   context.init();
 
   initFlags |= INIT_RENDER;
-#ifdef __native_client__
   OZ_MAIN_CALL( this, {
-    render.init( null );
+    render.init();
   } )
-#else
-  render.init( window );
-#endif
   render.swap();
 
   initFlags |= INIT_AUDIO;
@@ -582,14 +522,7 @@ int Client::main( int argc, char** argv )
           }
           else if( keysym.sym == SDLK_F11 ) {
             if( keysym.mod == 0 ) {
-              if( SDL_WM_ToggleFullScreen( window ) != 0 ) {
-                windowFullscreen = !windowFullscreen;
-
-                ui::mouse.isJailed = true;
-                ui::mouse.reset();
-
-                SDL_ShowCursor( false );
-              }
+              window.toggleFull();
             }
             else if( keysym.mod & KMOD_CTRL ) {
               ui::mouse.isJailed = !ui::mouse.isJailed;
@@ -627,17 +560,9 @@ int Client::main( int argc, char** argv )
           break;
         }
         case SDL_VIDEORESIZE: {
-          System::width  = event.resize.w;
-          System::height = event.resize.h;
-
-#ifndef __native_client__
-          SDL_Surface* window = SDL_SetVideoMode( System::width, System::height,
-                                                  windowBpp, windowFlags );
-
-          if( window == null ) {
-            throw Exception( "Failed to resize surface after window resize" );
-          }
-#endif
+          window.width  = event.resize.w;
+          window.height = event.resize.h;
+          window.resize();
           break;
         }
         case SDL_QUIT: {
@@ -649,6 +574,12 @@ int Client::main( int argc, char** argv )
         }
       }
     }
+
+#ifdef __native_client__
+    if( NaCl::width != window.width || NaCl::height != window.height ) {
+      window.resize();
+    }
+#endif
 
     ui::mouse.update( hasMouseFocus );
 

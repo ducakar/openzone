@@ -18,20 +18,20 @@
  */
 
 /**
- * @file client/NaClGLContext.cc
+ * @file client/NaCl.cc
  */
-
-#include "stable.hh"
 
 #ifdef __native_client__
 
-#include "client/NaClGLContext.hh"
+#include "stable.hh"
+
+#include "client/NaCl.hh"
 
 #include <ppapi/cpp/completion_callback.h>
 #include <ppapi/cpp/instance.h>
+#include <ppapi/cpp/core.h>
 #include <ppapi/cpp/graphics_3d.h>
 #include <ppapi/gles2/gl2ext_ppapi.h>
-#include <GLES2/gl2.h>
 
 namespace oz
 {
@@ -41,40 +41,56 @@ namespace client
 static Semaphore      flushSemaphore;
 static pp::Graphics3D context;
 
+Semaphore NaCl::semaphore;
+int       NaCl::width  = 0;
+int       NaCl::height = 0;
+
+bool NaCl::isMainThread()
+{
+  return System::core->IsMainThread();
+}
+
+void NaCl::call( Callback* callback, void* caller )
+{
+  System::core->CallOnMainThread( 0, pp::CompletionCallback( callback, caller ) );
+  semaphore.wait();
+}
+
 static void flushCompleteCallback( void*, int )
 {
   flushSemaphore.post();
 }
 
-void NaClGLContext::activate()
+void NaCl::activateGLContext()
 {
   hard_assert( !context.is_null() );
 
   glSetCurrentContextPPAPI( context.pp_resource() );
 }
 
-void NaClGLContext::deactivate()
+void NaCl::deactivateGLContext()
 {
   glSetCurrentContextPPAPI( 0 );
 }
 
-void NaClGLContext::resize()
+void NaCl::resizeGLContext()
 {
   glSetCurrentContextPPAPI( 0 );
-  context.ResizeBuffers( System::width, System::height );
+  context.ResizeBuffers( width, height );
+  glSetCurrentContextPPAPI( context.pp_resource() );
 }
 
-void NaClGLContext::flush()
+void NaCl::flushGLContext()
 {
   context.SwapBuffers( pp::CompletionCallback( &flushCompleteCallback, null ) );
 }
 
-void NaClGLContext::wait()
+void NaCl::waitGLContext()
 {
   flushSemaphore.wait();
 }
 
-void NaClGLContext::init()
+void NaCl::initGLContext()
 {
   hard_assert( context.is_null() );
 
@@ -88,8 +104,8 @@ void NaClGLContext::init()
     PP_GRAPHICS3DATTRIB_STENCIL_SIZE, 8,
     PP_GRAPHICS3DATTRIB_SAMPLES, 0,
     PP_GRAPHICS3DATTRIB_SAMPLE_BUFFERS, 0,
-    PP_GRAPHICS3DATTRIB_WIDTH, System::width,
-    PP_GRAPHICS3DATTRIB_HEIGHT, System::height,
+    PP_GRAPHICS3DATTRIB_WIDTH, width,
+    PP_GRAPHICS3DATTRIB_HEIGHT, height,
     PP_GRAPHICS3DATTRIB_NONE
   };
 
@@ -105,12 +121,22 @@ void NaClGLContext::init()
   glSetCurrentContextPPAPI( context.pp_resource() );
 }
 
-void NaClGLContext::free()
+void NaCl::freeGLContext()
 {
   glSetCurrentContextPPAPI( 0 );
   glTerminatePPAPI();
 
   flushSemaphore.destroy();
+}
+
+void NaCl::init()
+{
+  semaphore.init();
+}
+
+void NaCl::free()
+{
+  semaphore.destroy();
 }
 
 }

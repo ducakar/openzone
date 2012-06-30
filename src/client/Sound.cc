@@ -26,13 +26,7 @@
 #include "client/Sound.hh"
 
 #include "client/Camera.hh"
-
-#ifdef __native_client__
-# include <ppapi/cpp/module.h>
-# include <ppapi/cpp/instance.h>
-
-extern "C" void alSetPpapiInfo( PP_Instance, PPB_GetInterface );
-#endif
+#include "client/NaCl.hh"
 
 #if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
 # define PHYSFS_readBytes( handle, buffer, len ) PHYSFS_read( handle, buffer, 1, uint( len ) )
@@ -43,7 +37,7 @@ extern "C" void alSetPpapiInfo( PP_Instance, PPB_GetInterface );
   static decltype( ::name )* name = null
 
 # define OZ_DLLOAD( l, name ) \
-  *reinterpret_cast<void**>( &name ) = SDL_LoadFunction( l, #name ); \
+  *(void**)( &name ) = SDL_LoadFunction( l, #name ); \
   if( name == null ) { \
     throw Exception( "Failed loading " #name " from libmad" ); \
   }
@@ -680,12 +674,12 @@ void Sound::sync()
 
 void Sound::init()
 {
+#ifdef __native_client__
+  hard_assert( NaCl::isMainThread() );
+#endif
+
   Log::println( "Initialising Sound {" );
   Log::indent();
-
-#ifdef __native_client__
-  alSetPpapiInfo( System::instance->pp_instance(), System::module->get_browser_interface() );
-#endif
 
   const char* deviceSpec = alcGetString( null, ALC_DEVICE_SPECIFIER );
 
@@ -862,6 +856,10 @@ void Sound::init()
 
 void Sound::free()
 {
+#ifdef __native_client__
+  hard_assert( NaCl::isMainThread() );
+#endif
+
   Log::print( "Freeing Sound ..." );
 
   selectedTrack = -1;

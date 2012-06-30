@@ -34,35 +34,78 @@ namespace oz
 namespace client
 {
 
+const char MANIFEST_MAGIC[]  = "ozManifest";
+const char LOCAL_MANIFEST[]  = "/local/share/openzone/packages.ozManifest";
+const char REMOTE_MANIFEST[] = "packages.ozManifest";
+
 NaClUpdater naclUpdater;
 
-Vector<NaClUpdater::Package> NaClUpdater::readManifest( InputStream* is ) const
+DArray<NaClUpdater::Package> NaClUpdater::readManifest( InputStream* is ) const
 {
-  Vector<Package> packages;
-  int lineLen;
+  DArray<Package> packages;
 
-  while( ( lineLen = String::index( is->getPos(), '\n' ) ) != -1 ) {
-    String line = String( lineLen, is->forward( lineLen ) ).trim();
-
-    int space = max( line.lastIndex( ' ' ), line.lastIndex( '\t' ) );
-
-    String pkgName   = line.substring( 0, space ).trim();
-    String pkgStamp  = line.substring( space + 1 );
-    long64 timeStamp = pkgStamp.parseLong();
-
-    packages.add( Package( { pkgName, timeStamp } ) );
+  if( is->available() < int( sizeof( MANIFEST_MAGIC ) ) ||
+      !String::beginsWith( is->begin(), MANIFEST_MAGIC ) )
+  {
+    return packages;
   }
 
+  is->forward( int( sizeof( MANIFEST_MAGIC ) ) );
+
+  int nPackages = is->readInt();
+  if( nPackages == 0 ) {
+    return packages;
+  }
+
+  packages.alloc( nPackages );
+
+  for( int i = 0; i < nPackages; ++i ) {
+    packages[i].name = is->readString();
+    packages[i].time = is->readLong64();
+  }
   return packages;
+}
+
+void NaClUpdater::writeLocalManifest() const
+{
+  Log::print( "Writing local manifest '%s' ...", LOCAL_MANIFEST );
+
+  BufferStream bs;
+
+  bs.writeString( "ozManifest" );
+  bs.writeInt( remotePackages.length() );
+
+  foreach( pkg, remotePackages.citer() ) {
+    bs.writeString( pkg->name );
+    bs.writeLong64( pkg->time );
+  }
+
+  File localManifest( LOCAL_MANIFEST );
+
+  if( !localManifest.write( bs.begin(), bs.length() ) ) {
+    throw Exception( "Failed to write local manifest" );
+  }
+
+  Log::printEnd( " OK" );
 }
 
 bool NaClUpdater::checkUpdates()
 {
   Log::print( "Checking for updates ..." );
 
-  NaClDownloader downloader;
+  localPackages.dealloc();
+  remotePackages.dealloc();
 
-  downloader.begin( "/manifest.txt" );
+  File localManifest( LOCAL_MANIFEST );
+
+  if( localManifest.map() ) {
+    InputStream is = localManifest.inputStream();
+    localPackages = readManifest( &is );
+  }
+
+  NaClDownloader downloader;
+  downloader.begin( REMOTE_MANIFEST );
+
   do {
     Time::sleep( 1000 );
     Log::printRaw( "." );
@@ -70,41 +113,48 @@ bool NaClUpdater::checkUpdates()
   while( !downloader.isComplete() );
 
   BufferStream bs = downloader.take();
+  InputStream  is = bs.inputStream();
 
-  if( bs.length() < 11 || !String::beginsWith( bs.begin(), "ozManifest" ) ) {
-    Log::printEnd( " Failed to download manifest file" );
+  is.reset();
+
+  remotePackages = readManifest( &is );
+
+  if( remotePackages.isEmpty() ) {
+    Log::printEnd( " Failed" );
     return false;
   }
 
-  try {
-    int nEntries = bs.readInt();
-    for( int i = 0; i < nEntries; ++i ) {
-      Time time = Time::local( time.epoch );
-
-      Log::printRaw( " Latest: " );
-      Log::printTime( time );
-      Log::printEnd();
-    }
-  }
-  catch( const std::exception& ) {
-    Log::printEnd( " Error reading manifest file" );
-    return false;
-  }
+  Log::printEnd( " OK" );
+  return true;
 }
 
 void NaClUpdater::downloadUpdates()
 {
   NaClDownloader downloader;
 
-  foreach( pkg, packages.citer() ) {
-    File pkgFile( "/local/share/" + pkg->name );
+  foreach( pkg, remotePackages.citer() ) {
+    File pkgFile( "/local/share/openzone/" + pkg->name );
 
     if( pkgFile.stat() ) {
-      Time time = Time::local( pkgFile.time() );
-      Log::print( "%s: timestamp %s, ", pkg->name.cstr(), time.toString().cstr() );
+      long64 localTime = 0;
 
-      Log::printEnd( " Up-to-date" );
-      continue;
+      foreach( localPkg, localPackages.citer() ) {
+        if( localPkg->name.equals( pkg->name ) ) {
+          localTime = localPkg->time;
+          break;
+        }
+      }
+
+      Log::print( "%s: timestamp %s, ", pkg->name.cstr(),
+                  Time::local( localTime ).toString().cstr() );
+
+      if( localTime == pkg->time ) {
+        Log::printEnd( " Up-to-date" );
+        continue;
+      }
+      else {
+        Log::printEnd( " Out-of-date" );
+      }
     }
 
     String url = pkg->name;
@@ -122,7 +172,9 @@ void NaClUpdater::downloadUpdates()
 
     Log::printRaw( " %.2f MiB transferred ...", float( bs.length() ) / ( 1024.0f*1024.0f ) );
 
-    if( bs.length() < 2 || bs[0] != '7' || bs[1] != 'z' ) {
+    if( bs.length() < 2 || ( ( bs[0] != 'P' || bs[1] != 'K' ) &&
+                             ( bs[0] != '7' || bs[1] != 'z' ) ) )
+    {
       Log::printEnd( " Failed" );
       continue;
     }
@@ -133,27 +185,57 @@ void NaClUpdater::downloadUpdates()
 
     Log::printEnd( " OK" );
   }
+
+  foreach( localPkg, localPackages.citer() ) {
+    bool isOrphan = true;
+
+    foreach( remotePkg, remotePackages.citer() ) {
+      if( remotePkg->name.equals( localPkg->name ) ) {
+        isOrphan = false;
+        break;
+      }
+    }
+
+    if( isOrphan ) {
+      File pkgFile( "/local/share/openzone/" + localPkg->name );
+
+      Log::print( "Deleting obsolete package '%s' ...", pkgFile.path().cstr() );
+      if( File::rm( pkgFile.path() ) ) {
+        Log::printEnd( " OK" );
+      }
+      else {
+        Log::printEnd( " Failed" );
+      }
+    }
+  }
+
+  writeLocalManifest();
 }
 
-void NaClUpdater::update()
+DArray<String> NaClUpdater::update()
 {
+  DArray<String> packages;
+
   Log::println( "Updating game data files {" );
   Log::indent();
 
   if( checkUpdates() ) {
     downloadUpdates();
+
+    packages.alloc( remotePackages.length() );
+
+    for( int i = 0; i < packages.length(); ++i ) {
+      packages[i] = static_cast<String&&>( remotePackages[i].name );
+    }
   }
+
+  localPackages.dealloc();
+  remotePackages.dealloc();
 
   Log::unindent();
   Log::println( "}" );
-}
 
-void NaClUpdater::init()
-{}
-
-void NaClUpdater::free()
-{
-  packages.dealloc();
+  return packages;
 }
 
 }

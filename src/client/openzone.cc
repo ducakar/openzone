@@ -26,22 +26,19 @@
 #include "client/openzone.hh"
 
 #include "client/Client.hh"
+#include "client/NaCl.hh"
 
 #ifdef __native_client__
 
-#include "client/NaClMainCall.hh"
-
 #include <SDL/SDL_nacl.h>
-#include "ppapi/cpp/graphics_3d.h"
 
-#include "ppapi/cpp/audio_config.h"
+extern "C"
+void alSetPpapiInfo( PP_Instance, PPB_GetInterface );
 
 namespace oz
 {
 namespace client
 {
-
-static pp::Graphics3D context;
 
 void* MainInstance::mainThreadMain( void* )
 {
@@ -82,7 +79,7 @@ MainInstance::MainInstance( PP_Instance instance_ ) :
   System::core     = pp::Module::Get()->core();
   System::init();
 
-  NaClMainCall::init();
+  NaCl::init();
 
   RequestInputEvents( PP_INPUTEVENT_CLASS_KEYBOARD | PP_INPUTEVENT_CLASS_MOUSE );
 }
@@ -94,8 +91,7 @@ MainInstance::~MainInstance()
     mainThread = null;
   }
 
-  SDL_Quit();
-  NaClMainCall::free();
+  NaCl::free();
 }
 
 bool MainInstance::Init( uint32_t, const char**, const char** )
@@ -108,18 +104,16 @@ void MainInstance::DidChangeView( const pp::View& view )
   int width  = view.GetRect().width();
   int height = view.GetRect().height();
 
-  if( width == System::width && height == System::height ) {
+  if( width == NaCl::width && height == NaCl::height ) {
     return;
   }
 
-  System::width  = width;
-  System::height = height;
+  NaCl::width  = width;
+  NaCl::height = height;
 
   if( mainThread == 0 ) {
-    SDL_NACL_SetInstance( pp_instance(), System::width, System::height );
-    if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) != 0 ) {
-      throw Exception( "Failed to initialise SDL: %s", SDL_GetError() );
-    }
+    SDL_NACL_SetInstance( pp_instance(), NaCl::width, NaCl::height );
+    alSetPpapiInfo( pp_instance(), System::module->get_browser_interface() );
 
     pthread_create( &mainThread, null, mainThreadMain, this );
   }

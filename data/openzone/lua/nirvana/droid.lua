@@ -26,8 +26,10 @@
 ]]--
 
 function droid_randomWalk( l )
-  ozSelfSetRunning( false )
-  ozSelfActionForward()
+  if not ozSelfHasState( OZ_BOT_WALKING_BIT ) then
+    ozSelfAction( OZ_ACTION_WALK )
+  end
+  ozSelfAction( OZ_ACTION_FORWARD )
 
   if math.random( 10 ) == 1 then
     ozSelfAddH( math.random( 120 ) - 60 )
@@ -56,17 +58,19 @@ function droid_followCommander( l )
     if distance < 4 then
       l.nearCommander = true
     elseif distance > 10 or not l.nearCommander then
-      ozSelfSetH( ozObjHeadingFromSelf() )
-      ozSelfActionForward()
+      ozSelfSetH( ozObjHeadingFromSelfEye() )
+      ozSelfAction( OZ_ACTION_FORWARD )
 
       if distance > 100 then
         l.commander = nil
         l.nearCommander = false
       elseif distance > 10 then
-        ozSelfSetRunning( true )
         l.nearCommander = false
-      else
-        ozSelfSetRunning( false )
+        if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
+          ozSelfAction( OZ_ACTION_WALK )
+        end
+      elseif not ozSelfHasState( OZ_BOT_WALKING_BIT ) then
+        ozSelfAction( OZ_ACTION_WALK )
       end
     end
     return true
@@ -78,21 +82,20 @@ end
 function droid_huntTarget( l )
   ozBindObj( l.target )
 
-  if ozObjIsNull() or not ozObjHasFlag( OZ_BOT_BIT ) then
+  if ozObjIsNull() or not ozObjHasFlag( OZ_BOT_BIT ) or ozBotHasState( OZ_BOT_DEAD_BIT ) then
     l.target = nil
   else
     local distance = ozObjDistFromSelf()
 
     if distance < 60 then
-      ozSelfSetH( ozObjHeadingFromSelf() )
+      ozSelfSetH( ozObjHeadingFromSelfEye() )
       ozSelfSetV( ozObjPitchFromSelfEye() )
 
       if distance < 30 then
-        ozSelfActionAttack()
+        ozSelfAction( OZ_ACTION_ATTACK )
         ozForceUpdate()
       else
-        ozSelfSetRunning( true )
-        ozSelfActionForward()
+        ozSelfAction( OZ_ACTION_FORWARD )
       end
     else
       l.target = nil
@@ -104,11 +107,13 @@ function droid( l )
   if not l.target then
     local minDistance = 100
 
-    ozSelfBindObjOverlaps( OZ_OBJECTS_BIT, 50 )
+    ozSelfBindOverlaps( OZ_OBJECTS_BIT, 50 )
 
     while ozBindNextObj() do
       local typeName = ozObjGetClassName()
-      if ozObjHasFlag( OZ_BOT_BIT ) and not ozObjIsSelf() and string.sub( typeName, 1, 5 ) ~= "droid" then
+      if ozObjHasFlag( OZ_BOT_BIT ) and not ozObjIsSelf() and not ozBotHasState( OZ_BOT_DEAD_BIT ) and
+         string.sub( typeName, 1, 5 ) ~= "droid"
+      then
         local distance = ozObjDistFromSelf()
 
         if distance < minDistance then

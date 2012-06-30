@@ -34,7 +34,7 @@ namespace client
 
 class NaClUpdater
 {
-  public:
+  private:
 
     struct Package
     {
@@ -42,21 +42,17 @@ class NaClUpdater
       long64 time;
     };
 
-  private:
+    DArray<Package> localPackages;
+    DArray<Package> remotePackages;
 
-    Vector<Package> readManifest( InputStream* is ) const;
-
+    DArray<Package> readManifest( InputStream* is ) const;
+    void writeLocalManifest() const;
     bool checkUpdates();
     void downloadUpdates();
 
   public:
 
-    Vector<Package> packages;
-
-    void update();
-
-    void init();
-    void free();
+    DArray<String> update();
 
 };
 

@@ -120,7 +120,7 @@ void HudArea::drawBotCrosshair()
         String sTitle = ( obj->flags & Object::BOT_BIT ) && !bot->name.isEmpty() ?
                         bot->name + " (" + clazz->title + ")" : clazz->title;
 
-        title.setText( "%s", sTitle.cstr() );
+        title.set( descTextX, descTextY, ALIGN_CENTRE, Font::LARGE, "%s", sTitle.cstr() );
       }
 
       title.draw( this, false );
