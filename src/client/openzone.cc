@@ -81,7 +81,8 @@ MainInstance::MainInstance( PP_Instance instance_ ) :
 
   NaCl::init();
 
-  RequestInputEvents( PP_INPUTEVENT_CLASS_KEYBOARD | PP_INPUTEVENT_CLASS_MOUSE );
+  RequestInputEvents( PP_INPUTEVENT_CLASS_KEYBOARD | PP_INPUTEVENT_CLASS_MOUSE |
+                      PP_INPUTEVENT_CLASS_WHEEL );
 }
 
 MainInstance::~MainInstance()
@@ -127,9 +128,29 @@ void MainInstance::DidChangeView( const pp::Rect&, const pp::Rect& )
 bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
 {
   switch( event.GetType() ) {
+    case PP_INPUTEVENT_TYPE_MOUSEMOVE: {
+      pp::MouseInputEvent mouseEvent( event );
+      pp::Point move = mouseEvent.GetMovement();
+
+      NaCl::moveX += move.x();
+      NaCl::moveY += move.y();
+      break;
+    }
+    case PP_INPUTEVENT_TYPE_WHEEL: {
+      pp::WheelInputEvent wheelEvent( event );
+      pp::FloatPoint move = wheelEvent.GetDelta();
+
+      NaCl::moveZ += int( Math::round( move.x() ) );
+      NaCl::moveW += int( Math::round( move.y() ) );
+      break;
+    }
     case PP_INPUTEVENT_TYPE_MOUSEDOWN: {
-      if( !isMouseLocked && fullscreen.IsFullscreen() ) {
+      if( !fullscreen.IsFullscreen() ) {
+        fullscreen.SetFullscreen( true );
+      }
+      if( !isMouseLocked ) {
         LockMouse( pp::CompletionCallback( &DidMouseLock, this ) );
+        return true;
       }
       break;
     }
@@ -139,11 +160,12 @@ bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
       if( ( keyEvent.GetKeyCode() == 122 || keyEvent.GetKeyCode() == 13 ) &&
           event.GetModifiers() == 0 )
       {
-        if( fullscreen.IsFullscreen() ) {
-          fullscreen.SetFullscreen( false );
+        if( !fullscreen.IsFullscreen() ) {
+          fullscreen.SetFullscreen( true );
         }
-        else if( fullscreen.SetFullscreen( true ) && !isMouseLocked ) {
+        if( !isMouseLocked ) {
           LockMouse( pp::CompletionCallback( &DidMouseLock, this ) );
+          return true;
         }
       }
       break;

@@ -89,7 +89,7 @@ table.settings td {
     <td>gor / povečaj višino</td>
   </tr>
   <tr>
-    <th>LCtrl</th>
+    <th>LCtrl, c</th>
     <td>dol / zmanjšaj višino</td>
   </tr>
   <tr>
@@ -147,7 +147,7 @@ table.settings td {
     <td>preklopi tek</td>
   </tr>
   <tr>
-    <th>LCtrl</th>
+    <th>LCtrl, c</th>
     <td>preklopi počep</td>
   </tr>
   <tr>
@@ -297,10 +297,6 @@ table.settings td {
     <td class="header" colspan="2">Razno</td>
   </tr>
   <tr>
-    <th>Esc</th>
-    <td>izhod v glavni meni</td>
-  </tr>
-  <tr>
     <th>Alt + vleka</th>
     <td>premikanje oken uporabniškega vmesnika</td>
   </tr>
@@ -325,8 +321,12 @@ table.settings td {
     <td>naloži zadnje samodejno shranjeno stanje</td>
   </tr>
   <tr>
-    <th>F10</th>
+    <th>F9</th>
     <td>zajem zaslona</td>
+  </tr>
+  <tr>
+    <th>F10, Esc</th>
+    <td>izhod v glavni meni (samo F10 na NaCl)</td>
   </tr>
   <tr>
     <th>F11</th>
@@ -537,14 +537,6 @@ table.settings td {
     </td>
   </tr>
   <tr>
-    <th>render.vsync [bool] true</th>
-  </tr>
-  <tr>
-    <td>
-      Skušaj vklopiti sinhronizacijo upodabljanja z osveževanjem zaslona (vertical synchronisation).
-    </td>
-  </tr>
-  <tr>
     <th>seed [int | "TIME"] "TIME"</th>
   </tr>
   <tr>
@@ -554,13 +546,13 @@ table.settings td {
     </td>
   </tr>
   <tr>
-    <th>shader.setSamplerIndices [bool] false</th>
+    <th>shader.setSamplerMap [bool] false</th>
   </tr>
   <tr>
     <td>
       Nastavi indekse samplerjev tekstur. Če je vklopljeno, teksture prenehajo delovati na
-      gonilnikih Gallium3D, pa je je izklopljeno, teksture ne delujejo pravilno na starejših
-      gonilnikih ATI/AMD Catalyst.
+      gonilnikih Gallium3D z Meso &lt; 8.0, če pa je izklopljeno, teksture ne delujejo pravilno na
+      starejših gonilnikih ATI/AMD Catalyst.
     </td>
   </tr>
   <tr>
@@ -590,27 +582,11 @@ table.settings td {
     </td>
   </tr>
   <tr>
-    <th>ui.aspect [float] 0.0</th>
-  </tr>
-  <tr>
-    <td>
-      Razmerje uporabniškega vmesnika. Če je 0.0 se določi iz razmerja ločljivosti.
-    </td>
-  </tr>
-  <tr>
-    <th>ui.scale [float] 1.0</th>
-  </tr>
-  <tr>
-    <td>
-      Pomanjšava uporabniškega vmesnika.
-    </td>
-  </tr>
-  <tr>
     <th>ui.showBuild [bool] false</th>
   </tr>
   <tr>
     <td>
-      Prikaži okno z gumbi za dodajanje raznih predmetov v svet. Za namene razvoja.
+      Prikaži okno z gumbi za dodajanje raznih predmetov v svet. Za potrebe razvoja.
     </td>
   </tr>
   <tr>
@@ -619,7 +595,7 @@ table.settings td {
   <tr>
     <td>
       Prikaži okno, ki prikazuje koordinate, usmeritev in druge podatke o kameri, nadzorovanem botu,
-      označenem predmetu ... Za namene razvoje.
+      označenem predmetu ... Za potrebe razvoja.
     </td>
   </tr>
   <tr>
@@ -654,6 +630,14 @@ table.settings td {
     <td>
       Navpična ločljivost zaslona. Če je <span class="settings">window.width</span> ali
       <span class="settings">window.height</span> enaka nič, se uporabi ločljivost namizja.
+    </td>
+  </tr>
+  <tr>
+    <th>window.vsync [bool] true</th>
+  </tr>
+  <tr>
+    <td>
+      Skušaj vklopiti sinhronizacijo upodabljanja z osveževanjem zaslona (vertical synchronisation).
     </td>
   </tr>
   <tr>
@@ -743,7 +727,7 @@ table.settings td {
 
 <h2><a name="vfs" href="#">Navidezni datotečni sistem</a></h2>
 <p>
-  Podatki za igre se preberejo iz notranjega navideznega datotečnega sistema, ki je unija naslednjih
+  Podatki za igro se preberejo iz notranjega navideznega datotečnega sistema, ki je unija naslednjih
   mest:
 </p>
 <ol>
@@ -769,11 +753,11 @@ table.settings td {
   odvisnost. Naslednje knjižnice so neposredne odvisnosti, potrebne za poganjanje:
 </p>
 <ul>
-  <li>libpulse (samo na Linuxu)</li>
+  <li>libpulse (neobvezno, za opozorilni ton na Linuxu)</li>
   <li>PhysFS 2.0</li>
-  <li>SDL 1.2 (ali 2.0, odvisno od gradnje)</li>
-  <li>Lua 5.1 (ali 5.2, odvisno od gradnje)</li>
-  <li>OpenGL 2.1+ (za odprtokodne gonilnike na Linuxu je potrebna Mesa 8.0+)</li>
+  <li>SDL 1.2 (ali 2.0, odvisno od builda)</li>
+  <li>Lua 5.1 (ali 5.2, odvisno od builda)</li>
+  <li>OpenGL 2.1+</li>
   <li>OpenAL 1.1</li>
   <li>FreeImage (neobvezno, za orodje ozBuild)</li>
   <li>libvorbis</li>
@@ -784,8 +768,7 @@ table.settings td {
 <h2><a name="troubleshooting" href="#">Problemi</a></h2>
 <ul>
   <li>
-    Prepričaj se, da imaš <b>NAJNOVEJŠE</b> gonilnike za grafično kartico. Če uporabljaš odprtokodne
-    gonilnike na Linuxu, mora biti različica Mese vsaj 8.0.
+    Prepričaj se, da imaš <b>NAJNOVEJŠE</b> gonilnike za grafično kartico.
   </li>
   <li>
     Izklop namiznih učinkov ali preklop v celozaslonski način utegne precej pohitriti grafiko.
@@ -802,7 +785,7 @@ table.settings td {
         GL_ARB_framebuffer_object in
       </li>
       <li>
-        GL_EXT_texture_compression_s3tc.
+        GL_EXT_texture_compression_s3tc (le če podatki uporabljajo kompresijo tekstur).
       </li>
     </ul>
     Kartica s popolno podporo za DirectX 9.0c bi morala zadostovati. Na Linuxu pogon deluje tako na
@@ -858,14 +841,13 @@ table.settings td {
 <h3>Podatki</h3>
 <p>
   Podatki za igre so pridobljeni iz različnih virov in so pod več različnimi licencami. Za
-  podrobnosti glejte posamezne datoteke README* and COPYING* v imenikih in arhivih s podatki za
-  igre.
+  podrobnosti glejte posamezne datoteke README* and COPYING* v imenikih in arhivih s podatki igre.
 </p>
 
 <h3>Tretje knjižnice</h3>
 <p>
-  Vkolikor OpenZone ni razpečevan kot paket za katero od distribucij Linuxa, vsebuje tudi (nekatere)
-  naslednje tretje knjižnice, ki jih potrebuje za delovanje:
+  V kolikor OpenZone ni razpečevan kot paket za katero od distribucij Linuxa, vsebuje tudi
+  (nekatere) naslednje tretje knjižnice, ki jih potrebuje za delovanje:
 </p>
 
 <h4>PhysFS</h4>

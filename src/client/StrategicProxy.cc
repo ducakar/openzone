@@ -173,7 +173,7 @@ void StrategicProxy::update()
     if( keys[SDLK_SPACE] ) {
       desiredPos.z += speed;
     }
-    if( keys[SDLK_LCTRL] ) {
+    if( keys[SDLK_LCTRL] || keys[SDLK_c] ) {
       desiredPos.z -= speed;
     }
 
@@ -206,7 +206,7 @@ void StrategicProxy::update()
     if( keys[SDLK_SPACE] ) {
       height = min( MAX_HEIGHT, height + logHeight * ZOOM_FACTOR );
     }
-    if( keys[SDLK_LCTRL] ) {
+    if( keys[SDLK_LCTRL] || keys[SDLK_c] ) {
       height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR );
     }
     if( ui::mouse.wheelDown ) {

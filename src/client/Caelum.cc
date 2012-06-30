@@ -38,7 +38,7 @@ namespace client
 
 Caelum caelum;
 
-const Vec4  Caelum::GLOBAL_AMBIENT_COLOUR = Vec4( 0.20f, 0.20f, 0.25f, 1.00f );
+const Vec4  Caelum::GLOBAL_AMBIENT_COLOUR = Vec4( 0.12f, 0.12f, 0.15f, 1.00f );
 
 const float Caelum::DAY_BIAS              = 0.40f;
 const float Caelum::AMBIENT_COEF          = 0.60f;

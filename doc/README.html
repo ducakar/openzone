@@ -89,7 +89,7 @@ table.settings td {
     <td>up / increase height</td>
   </tr>
   <tr>
-    <th>LCtrl</th>
+    <th>LCtrl, c</th>
     <td>down / decrease height</td>
   </tr>
   <tr>
@@ -147,7 +147,7 @@ table.settings td {
     <td>toggle run</td>
   </tr>
   <tr>
-    <th>LCtrl</th>
+    <th>LCtrl, c</th>
     <td>toggle crouch</td>
   </tr>
   <tr>
@@ -297,10 +297,6 @@ table.settings td {
     <td class="header" colspan="2">Miscellaneous</td>
   </tr>
   <tr>
-    <th>Esc</th>
-    <td>exit to main menu</td>
-  </tr>
-  <tr>
     <th>Alt + drag</th>
     <td>move UI windows</td>
   </tr>
@@ -325,8 +321,12 @@ table.settings td {
     <td>load autosaved state</td>
   </tr>
   <tr>
-    <th>F10</th>
+    <th>F9</th>
     <td>save screenshot</td>
+  </tr>
+  <tr>
+    <th>F10, Esc</th>
+    <td>exit to main menu (on NaCl only F10)</td>
   </tr>
   <tr>
     <th>F11</th>
@@ -537,14 +537,6 @@ table.settings td {
     </td>
   </tr>
   <tr>
-    <th>render.vsync [bool] true</th>
-  </tr>
-  <tr>
-    <td>
-      Try to turn on vertical synchronisation.
-    </td>
-  </tr>
-  <tr>
     <th>seed [int | "TIME"] "TIME"</th>
   </tr>
   <tr>
@@ -554,12 +546,12 @@ table.settings td {
     </td>
   </tr>
   <tr>
-    <th>shader.setSamplerIndices [bool] false</th>
+    <th>shader.setSamplerMap [bool] false</th>
   </tr>
   <tr>
     <td>
-      Set indices for texture samplers. If set, breaks textures on Gallium3D driver. If not set,
-      breaks textures on older ATI/AMD Catalyst drivers.
+      Set indices for texture samplers. If set, breaks textures on Gallium3D drivers with Mesa &lt;
+      8.0. If not set, breaks textures on older ATI/AMD Catalyst drivers.
     </td>
   </tr>
   <tr>
@@ -586,22 +578,6 @@ table.settings td {
   <tr>
     <td>
       Sound volume. 1.0 means full (original) intensity.
-    </td>
-  </tr>
-  <tr>
-    <th>ui.aspect [float] 0.0</th>
-  </tr>
-  <tr>
-    <td>
-      Aspect ratio for UI. If 0.0, it is determined from screen resolution.
-    </td>
-  </tr>
-  <tr>
-    <th>ui.scale [float] 1.0</th>
-  </tr>
-  <tr>
-    <td>
-      Scale for UI resolution.
     </td>
   </tr>
   <tr>
@@ -653,6 +629,14 @@ table.settings td {
     <td>
       Vertical screen resolution. If either <span class="settings">window.width</span> or
       <span class="settings">window.height</span> is zero, desktop resolution is used.
+    </td>
+  </tr>
+  <tr>
+    <th>window.vsync [bool] true</th>
+  </tr>
+  <tr>
+    <td>
+      Try to turn on vertical synchronisation.
     </td>
   </tr>
   <tr>
@@ -767,11 +751,11 @@ table.settings td {
   following libraries are direct dependencies required in run-time:
 </p>
 <ul>
-  <li>libpulse (for Linux only)</li>
+  <li>libpulse (optional, for warning bell on Linux)</li>
   <li>PhysFS 2.0</li>
-  <li>SDL 1.2 or 2.0</li>
-  <li>Lua 5.1 or 5.2</li>
-  <li>OpenGL 2.1+ (Mesa 8.0+ required open-source Linux drivers)</li>
+  <li>SDL 1.2 (or 2.0, depends on build)</li>
+  <li>Lua 5.1 (or 5.2, depends on build)</li>
+  <li>OpenGL 2.1+</li>
   <li>OpenAL 1.1+</li>
   <li>FreeImage (optional, for ozBuild tool)</li>
   <li>libvorbis</li>
@@ -782,8 +766,7 @@ table.settings td {
 <h2><a name="troubleshooting" href="#">Troubleshooting</a></h2>
 <ul>
   <li>
-    Make sure you have the <b>LATEST</b> display drivers. If you use open-source drivers on Linux,
-    Mesa library should be 8.0 or newer.
+    Make sure you have the <b>LATEST</b> display drivers.
   </li>
   <li>
     Turning off desktop effects or switching to fullscreen mode significantly improves performance
@@ -801,7 +784,7 @@ table.settings td {
         GL_ARB_framebuffer_object and
       </li>
       <li>
-        GL_EXT_texture_compression_s3tc.
+        GL_EXT_texture_compression_s3tc (only if game data use texture compression).
       </li>
     </ul>
     Cards with complete DirectX 9.0c support should do. On Linux, the engine works with both

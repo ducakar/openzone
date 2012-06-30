@@ -42,8 +42,14 @@ static Semaphore      flushSemaphore;
 static pp::Graphics3D context;
 
 Semaphore NaCl::semaphore;
+
 int       NaCl::width  = 0;
 int       NaCl::height = 0;
+
+int       NaCl::moveX  = 0;
+int       NaCl::moveY  = 0;
+int       NaCl::moveZ  = 0;
+int       NaCl::moveW  = 0;
 
 bool NaCl::isMainThread()
 {
@@ -99,11 +105,7 @@ void NaCl::initGLContext()
   glInitializePPAPI( System::module->get_browser_interface() );
 
   int attribs[] = {
-    PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
-    PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
-    PP_GRAPHICS3DATTRIB_STENCIL_SIZE, 8,
-    PP_GRAPHICS3DATTRIB_SAMPLES, 0,
-    PP_GRAPHICS3DATTRIB_SAMPLE_BUFFERS, 0,
+    PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 16,
     PP_GRAPHICS3DATTRIB_WIDTH, width,
     PP_GRAPHICS3DATTRIB_HEIGHT, height,
     PP_GRAPHICS3DATTRIB_NONE
@@ -132,6 +134,22 @@ void NaCl::freeGLContext()
 void NaCl::init()
 {
   semaphore.init();
+
+  // Hacks
+  config.include( "lingua", "sl" );
+  config.include( "render.distance", "100.0" );
+  config.include( "ui.showBuild", "true" );
+  config.include( "ui.showFPS", "true" );
+
+  config.include( "profile.class", "beast" );
+  config.include( "profile.item00", "beast_weapon.plasmagun" );
+  config.include( "profile.item01", "nvGoggles" );
+  config.include( "profile.item02", "binoculars" );
+  config.include( "profile.item03", "galileo" );
+  config.include( "profile.item04", "musicPlayer" );
+  config.include( "profile.item05", "cvicek" );
+  config.include( "profile.name", "Jst" );
+  config.include( "profile.weaponItem", "0" );
 }
 
 void NaCl::free()

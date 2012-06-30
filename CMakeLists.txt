@@ -28,8 +28,13 @@ include( CheckCXXSourceCompiles )
 include( CheckCXXCompilerFlag )
 include( CheckLibraryExists )
 
-if( NOT CMAKE_BUILD_TYPE )
-  set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Debug RelWithDebInfo Release RelGenProf RelUseProf" FORCE )
+if( NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND
+    NOT CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" AND
+    NOT CMAKE_BUILD_TYPE STREQUAL "Release" AND
+    NOT CMAKE_BUILD_TYPE STREQUAL "RelGenProf" AND
+    NOT CMAKE_BUILD_TYPE STREQUAL "RelUseProf" )
+  message( FATAL_ERROR "CMAKE_BUILT_TYPE must be either Debug, RelWithDebInfo, Release, RelGenProf "
+           "or RelUseProf." )
 endif()
 
 if( NACL )
@@ -199,8 +204,9 @@ set( warnings "-Wall -Wextra -Winvalid-pch -Wconversion " )
 # Additional warnings, enabled only once in a while to check code quality (GCC specific).
 # set( warnings "${warnings} -Wmissing-declarations -Wmissing-format-attribute" )
 # set( warnings "${warnings} -Wnon-virtual-dtor -Woverloaded-virtual -Wcast-align -Wundef" )
-# set( warnings "${warnings} -Winit-self -Wformat=2" )
-# set( warnings "${warnings} -Wlogical-op -Wzero-as-null-pointer-constant" )
+# set( warnings "${warnings} -Winit-self -Wformat=2 -Wlogical-op" )
+# GCC >= 4.7
+# set( warnings "${warnings} -Wzero-as-null-pointer-constant" )
 
 # Additional warnings (Clang specific).
 # set( warnings "${warnings} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic" )
@@ -338,8 +344,11 @@ set( CPACK_PACKAGE_INSTALL_DIRECTORY "${OZ_APPLICATION_NAME}" )
 set( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "${OZ_APPLICATION_NAME}" )
 
 set( CPACK_NSIS_DISPLAY_NAME "${OZ_APPLICATION_TITLE}" )
-set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "WriteRegStr HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\" \\\"0\\\"" )
-set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS};ExecWait '\\\"$INSTDIR\\\\support\\\\oalinst.exe\\\"'" )
-set( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "DeleteRegValue HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\"" )
+set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "WriteRegStr HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\"
+     "Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\" \\\"0\\\"" )
+set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS};"
+     "ExecWait '\\\"$INSTDIR\\\\support\\\\oalinst.exe\\\"'" )
+set( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "DeleteRegValue HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\"
+     "Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\"" )
 
 include( CPack )

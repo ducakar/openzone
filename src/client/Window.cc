@@ -138,6 +138,9 @@ void Window::init()
     bpp = videoInfo->vfmt->BitsPerPixel;
   }
 
+  SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,   0 );
+  SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE,   16 );
+  SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 0 );
   SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, enableVSync );
 
   Log::print( "Creating OpenGL window %dx%d-%d [%s] ...",
