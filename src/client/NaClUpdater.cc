@@ -27,6 +27,7 @@
 
 #include "client/NaClUpdater.hh"
 
+#include "client/NaCl.hh"
 #include "client/NaClDownloader.hh"
 
 namespace oz
@@ -107,7 +108,7 @@ bool NaClUpdater::checkUpdates()
   downloader.begin( REMOTE_MANIFEST );
 
   do {
-    Time::sleep( 1000 );
+    Time::sleep( 100 );
     Log::printRaw( "." );
   }
   while( !downloader.isComplete() );
@@ -131,6 +132,9 @@ bool NaClUpdater::checkUpdates()
 void NaClUpdater::downloadUpdates()
 {
   NaClDownloader downloader;
+
+  int nRemotePackages = remotePackages.length();
+  int packageNum      = 1;
 
   foreach( pkg, remotePackages.citer() ) {
     File pkgFile( "/local/share/openzone/" + pkg->name );
@@ -163,8 +167,18 @@ void NaClUpdater::downloadUpdates()
 
     downloader.begin( url );
     do {
-      Time::sleep( 1000 );
+      Time::sleep( 100 );
       Log::printRaw( "." );
+
+      float progress = downloader.progress() * 100.0f;
+
+      if( Math::isnan( progress ) ) {
+        NaCl::send( String::str( "load:Posodabljam<br/>%d/%d", packageNum, nRemotePackages ) );
+      }
+      else {
+        NaCl::send( String::str( "load:Posodabljam<br/>%d/%d: %.0f %%",
+                                 packageNum, nRemotePackages, progress ) );
+      }
     }
     while( !downloader.isComplete() );
 
@@ -182,6 +196,8 @@ void NaClUpdater::downloadUpdates()
     if( !pkgFile.write( bs.begin(), bs.length() ) ) {
       throw Exception( "Cannot write to local storage" );
     }
+
+    ++packageNum;
 
     Log::printEnd( " OK" );
   }
@@ -219,6 +235,8 @@ DArray<String> NaClUpdater::update()
   Log::println( "Updating game data files {" );
   Log::indent();
 
+  NaCl::send( "load:Preverjam posodobitve" );
+
   if( checkUpdates() ) {
     downloadUpdates();
 
@@ -231,6 +249,8 @@ DArray<String> NaClUpdater::update()
 
   localPackages.dealloc();
   remotePackages.dealloc();
+
+  NaCl::send( "load:Zaganjam" );
 
   Log::unindent();
   Log::println( "}" );

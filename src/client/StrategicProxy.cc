@@ -76,7 +76,7 @@ void StrategicProxy::prepare()
   const ubyte* keys    = ui::keyboard.keys;
   const ubyte* oldKeys = ui::keyboard.oldKeys;
 
-  bool alt = keys[SDLK_LALT] || keys[SDLK_RALT];
+  bool alt = ( keys[SDLK_LALT] | keys[SDLK_RALT] ) != 0;
 
   if( !alt && keys[SDLK_n] && !oldKeys[SDLK_n] ) {
     camera.nightVision = !camera.nightVision;
@@ -85,19 +85,12 @@ void StrategicProxy::prepare()
     ui::ui.galileoFrame->setMaximised( !ui::ui.galileoFrame->isMaximised );
   }
 
-  if( keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) {
+  if( !alt && ( ( keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) ||
+                ( keys[SDLK_RETURN] && !oldKeys[SDLK_RETURN] ) ) )
+  {
     isFree     = !isFree;
     isRTSFast  = false;
     isFreeFast = true;
-  }
-
-  if( !alt && keys[SDLK_o] ) {
-    if( keys[SDLK_LSHIFT] || keys[SDLK_RSHIFT] ) {
-      orbis.caelum.time -= 0.1f * Timer::TICK_TIME * orbis.caelum.period;
-    }
-    else {
-      orbis.caelum.time += 0.1f * Timer::TICK_TIME * orbis.caelum.period;
-    }
   }
 
   if( !alt && keys[SDLK_i] && !oldKeys[SDLK_i] && camera.allowReincarnation ) {

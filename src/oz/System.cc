@@ -240,16 +240,16 @@ static void bellInitCallback( void* info_, int )
   SampleInfo* info = static_cast<SampleInfo*>( info_ );
 
   PP_AudioSampleRate rate = pp::AudioConfig::RecommendSampleRate( System::instance );
-  uint nSamples = pp::AudioConfig::RecommendSampleFrameCount( System::instance, rate, 4096 );
+  uint nFrameSamples = pp::AudioConfig::RecommendSampleFrameCount( System::instance, rate, 4096 );
 
-  pp::AudioConfig config( System::instance, rate, nSamples );
+  pp::AudioConfig config( System::instance, rate, nFrameSamples );
 
   void* audioPtr = malloc( sizeof( pp::Audio ) );
   if( audioPtr == null ) {
     System::error( 0, "pp::Audio object allocation failed" );
   }
 
-  info->nFrameSamples = int( nSamples );
+  info->nFrameSamples = int( nFrameSamples );
   info->nSamples      = int( SAMPLE_LENGTH * float( rate ) + 0.5f );
   info->quotient      = SAMPLE_FREQUENCY * Math::TAU / float( rate );
   info->end           = info->nSamples + int( SAMPLE_GUARD * float( rate ) + 0.5f );
@@ -369,13 +369,13 @@ static void construct()
   isConstructed = true;
 }
 
-System        System::system;
-
 #ifdef __native_client__
 pp::Module*   System::module;   // = null
 pp::Instance* System::instance; // = null
 pp::Core*     System::core;     // = null
 #endif
+
+System System::system;
 
 System::System()
 {

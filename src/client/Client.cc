@@ -448,6 +448,10 @@ int Client::main( int argc, char** argv )
   menuStage.init();
   gameStage.init();
 
+#ifdef __native_client__
+  NaCl::send( "load:" );
+#endif
+
   Stage::nextStage = null;
 
   if( !mission.isEmpty() ) {

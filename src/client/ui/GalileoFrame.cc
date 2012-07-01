@@ -55,18 +55,19 @@ uint GalileoFrame::loadTexture( const char* path ) const
 
 void GalileoFrame::onReposition()
 {
-  int maxSize = camera.width - 2 * ( width + 8 );
-  maxSize = camera.height < maxSize ? camera.height - 64 : maxSize - 64;
+  int maxSize = camera.height < camera.width ? camera.height - 64 : camera.width - 64;
 
-  normalX         = x;
-  normalY         = y;
-  normalWidth     = width;
-  normalHeight    = height;
+  normalX         = defaultX < 0 ? parent->x + parent->width - normalWidth + defaultX :
+                                   parent->x + defaultX;
+  normalY         = defaultY < 0 ? parent->y + parent->height - normalHeight + defaultY :
+                                   parent->y + defaultY;
 
   maximisedX      = camera.centreX - maxSize / 2;
   maximisedY      = camera.centreY - maxSize / 2;
   maximisedWidth  = maxSize;
   maximisedHeight = maxSize;
+
+  setMaximised( isMaximised );
 }
 
 void GalileoFrame::onUpdate()
@@ -148,7 +149,8 @@ GalileoFrame::GalileoFrame( const QuestFrame* questFrame_ ) :
   arrowTexId = loadTexture( "ui/icon/arrow.ozIcon" );
   markerTexId = loadTexture( "ui/icon/marker.ozIcon" );
 
-  onReposition();
+  normalWidth  = width;
+  normalHeight = height;
 }
 
 GalileoFrame::~GalileoFrame()

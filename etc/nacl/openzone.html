@@ -2,23 +2,65 @@
 <head>
   <title>OpenZone 0.2.90</title>
   <style>
-    h3 {
-      text-align: center;
-    }
     div.module {
       text-align: center;
     }
+    div.logArea {
+      background-color: #ffffc0;
+    }
+    div#loadProgress {
+      position: absolute;
+      top: 30%;
+      width: 100%;
+      color: #a0a0a0;
+      font-weight: bold;
+      font-size: 16pt;
+    }
   </style>
+  <script type="text/javascript">
+    var module       = null;
+    var logArea      = null;
+    var loadProgress = null;
+
+    function handleMessage( e )
+    {
+      if( e.data.substring( 0, 4 ) == "log:" ) {
+        var text = e.data.substring( 4 );
+
+        logArea.style.padding = text == "" ? "0px" : "10px";
+        logArea.innerText = text;
+      }
+      else if( e.data.substring( 0, 5 ) == "load:" ) {
+        var text = e.data.substring( 5 );
+
+        loadProgress.style.visibility = text == "" ? "hidden" : "visible";
+        loadProgress.innerHTML = text;
+      }
+    }
+
+    function onLoad()
+    {
+      module = document.getElementById( 'nacl' );
+      module.addEventListener( 'message', handleMessage, true );
+
+      logArea = document.getElementById( 'logArea' );
+      logArea.innerText = "";
+
+      loadProgress = document.getElementById( 'loadProgress' );
+      loadProgress.innerHTML = "Nalagam modul";
+    }
+  </script>
 </head>
 <body onLoad="onLoad()">
-  <h3>OpenZone 0.2.90</h3>
-  <div id="module" class="module">
-    <embed name="nacl_module" id="nacl" width="853" height="480" src="openzone.nmf"
+  <div class="module">
+    <embed id="nacl" width="960" height="540" src="openzone.nmf"
            type="application/x-nacl"/>
+    <div class="logArea">
+      <pre id="logArea"/>
+    </div>
+    <div id="loadProgress">Loading</div>
   </div>
   <div>
-    <p>Prvi zagon utegne trajati dolgo, ker se mora prenesti 30 MB. Prosimo za potrpljenje ob
-    občudovanju črnega pravokotnika.</p>
     <p>Ko se naloži, je potreben klik na igro za fokus miške in tipkovnice. Pri tem igra samodejno
     preklopi v celozaslonski način. Za izhod pritisni F11 ali Escape.</p>
     <h4>Osnovne kontrole</h4>

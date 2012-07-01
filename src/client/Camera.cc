@@ -138,31 +138,42 @@ void Camera::prepare()
 {
   updateReferences();
 
+  const ubyte* keys = ui::keyboard.keys;
+
+  bool alt = ( keys[SDLK_LALT] | keys[SDLK_RALT] ) != 0;
+
   relH = float( -ui::mouse.overEdgeX ) * mouseXSens * mag;
   relV = float( +ui::mouse.overEdgeY ) * mouseYSens * mag;
 
   relH = clamp( relH, -ROT_LIMIT, +ROT_LIMIT );
   relV = clamp( relV, -ROT_LIMIT, +ROT_LIMIT );
 
-  if( ui::keyboard.keys[SDLK_LEFT] | ui::keyboard.keys[SDLK_KP1] |
-      ui::keyboard.keys[SDLK_KP4] | ui::keyboard.keys[SDLK_KP7] )
+  if( keys[SDLK_KP1] | keys[SDLK_KP4] | keys[SDLK_KP7] |
+      keys[SDLK_END] | keys[SDLK_LEFT] | keys[SDLK_HOME] )
   {
-    relH += keyYSens;
+    relH += keyXSens;
   }
-  if( ui::keyboard.keys[SDLK_RIGHT] | ui::keyboard.keys[SDLK_KP3] |
-      ui::keyboard.keys[SDLK_KP6] | ui::keyboard.keys[SDLK_KP9] )
+  if( keys[SDLK_KP3] | keys[SDLK_KP6] | keys[SDLK_KP9] |
+      keys[SDLK_PAGEDOWN] | keys[SDLK_RIGHT] | keys[SDLK_PAGEUP] )
   {
-    relH -= keyYSens;
+    relH -= keyXSens;
   }
-  if( ui::keyboard.keys[SDLK_DOWN] | ui::keyboard.keys[SDLK_KP1] |
-      ui::keyboard.keys[SDLK_KP2] | ui::keyboard.keys[SDLK_KP3] )
+  if( keys[SDLK_KP1] | keys[SDLK_KP2] | keys[SDLK_KP3] |
+      keys[SDLK_END] | keys[SDLK_DOWN] | keys[SDLK_PAGEDOWN] )
   {
-    relV -= keyXSens;
+    relV -= keyYSens;
   }
-  if( ui::keyboard.keys[SDLK_UP] | ui::keyboard.keys[SDLK_KP7] |
-      ui::keyboard.keys[SDLK_KP8] | ui::keyboard.keys[SDLK_KP9] )
+  if( keys[SDLK_KP7] | keys[SDLK_KP8] | keys[SDLK_KP9] |
+      keys[SDLK_HOME] | keys[SDLK_UP] | keys[SDLK_PAGEUP] )
   {
-    relV += keyXSens;
+    relV += keyYSens;
+  }
+
+  if( !alt && keys[SDLK_p] ) {
+    orbis.caelum.time += 0.1f * Timer::TICK_TIME * orbis.caelum.period;
+  }
+  if( !alt && keys[SDLK_o] ) {
+    orbis.caelum.time -= 0.1f * Timer::TICK_TIME * orbis.caelum.period;
   }
 
   if( newState != state ) {

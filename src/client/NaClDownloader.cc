@@ -53,6 +53,17 @@ void NaClDownloader::readCallback( void* data, int result )
 
     if( result != 0 ) {
       pp::URLLoader* loader = downloader->loader;
+
+      long64 received, total;
+      int hasProgress = loader->GetDownloadProgress( &received, &total );
+
+      if( hasProgress && total >= 0 ) {
+        downloader->downloadProgress = float( received ) / float( total );
+      }
+      else {
+        downloader->downloadProgress = Math::NaN;
+      }
+
       int ret = loader->ReadResponseBody( downloader->buffer.forward( 4096 ), 4096,
                                           pp::CompletionCallback( readCallback, downloader ) );
       if( ret == PP_OK_COMPLETIONPENDING ) {
@@ -60,6 +71,8 @@ void NaClDownloader::readCallback( void* data, int result )
       }
     }
   }
+
+  delete downloader->loader;
 
   downloader->semaphore.post();
 }
@@ -77,6 +90,8 @@ void NaClDownloader::beginCallback( void* data, int result )
     }
   }
 
+  delete downloader->loader;
+
   downloader->buffer.dealloc();
   downloader->semaphore.post();
 }
@@ -84,6 +99,7 @@ void NaClDownloader::beginCallback( void* data, int result )
 NaClDownloader::~NaClDownloader()
 {
   if( semaphore.isValid() ) {
+    semaphore.wait();
     semaphore.destroy();
   }
 }
@@ -93,23 +109,22 @@ bool NaClDownloader::isComplete() const
   return semaphore.counter() == 1;
 }
 
-BufferStream NaClDownloader::take()
+float NaClDownloader::progress() const
 {
-  semaphore.wait();
-  semaphore.destroy();
-
-  return static_cast<BufferStream&&>( buffer );
+  return downloadProgress;
 }
 
-void NaClDownloader::begin( const char* _url )
+void NaClDownloader::begin( const char* url_ )
 {
-  url = _url;
+  url = url_;
 
   semaphore.init();
 
   OZ_MAIN_CALL( this, {
     pp::URLRequestInfo request( System::instance );
-    request.SetProperty( PP_URLREQUESTPROPERTY_URL, pp::Var( _this->url ) );
+    request.SetURL( _this->url );
+    request.SetMethod( "GET" );
+    request.SetRecordDownloadProgress( true );
 
     _this->loader = new pp::URLLoader( System::instance );
     if( _this->loader == null ) {
@@ -124,6 +139,14 @@ void NaClDownloader::begin( const char* _url )
       return;
     }
   } )
+}
+
+BufferStream NaClDownloader::take()
+{
+  semaphore.wait();
+  semaphore.destroy();
+
+  return static_cast<BufferStream&&>( buffer );
 }
 
 }
