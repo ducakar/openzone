@@ -79,6 +79,16 @@ class Lingua
     Lingua();
 
     /**
+     * No copying.
+     */
+    Lingua( const Lingua& ) = delete;
+
+    /**
+     * No copying.
+     */
+    Lingua& operator = ( const Lingua& ) = delete;
+
+    /**
      * Obtain translation from the loaded catalogue.
      */
     const char* get( const char* message ) const;

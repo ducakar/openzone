@@ -38,7 +38,7 @@
     struct _Callback { \
       static void _main( void* data, int ) \
       { \
-        _This _this = reinterpret_cast<_This>( data ); \
+        _This _this = static_cast<_This>( data ); \
         static_cast<void>( _this ); \
         { code } \
         oz::client::NaCl::semaphore.post(); \
@@ -73,7 +73,18 @@ class NaCl
     NaCl() = delete;
 
     /*
-     * GL ES Context.
+     * Main thread call.
+     */
+    static bool isMainThread();
+    static void call( Callback* callback, void* caller );
+
+    /*
+     * JavaScript messages.
+     */
+    static void send( const char* message );
+
+    /*
+     * GL ES context.
      */
     static void activateGLContext();
     static void deactivateGLContext();
@@ -87,11 +98,8 @@ class NaCl
     static void freeGLContext();
 
     /*
-     * Main thread call.
+     * General
      */
-    static bool isMainThread();
-    static void call( Callback* callback, void* caller );
-
     static void init();
     static void free();
 

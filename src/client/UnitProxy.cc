@@ -100,7 +100,7 @@ void UnitProxy::prepare()
   const ubyte* keys    = ui::keyboard.keys;
   const ubyte* oldKeys = ui::keyboard.oldKeys;
 
-  bool alt = keys[SDLK_LALT] || keys[SDLK_RALT];
+  bool alt = ( keys[SDLK_LALT] | keys[SDLK_RALT] ) != 0;
 
   Bot*     bot = camera.botObj;
   Vehicle* veh = camera.vehicleObj;
@@ -211,7 +211,9 @@ void UnitProxy::prepare()
     camera.desiredMag = 1.0f;
   }
 
-  if( !alt && keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) {
+  if( !alt && ( ( keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) ||
+                ( keys[SDLK_RETURN] && !oldKeys[SDLK_RETURN] ) ) )
+  {
     isExternal = !isExternal;
     camera.isExternal = isExternal;
 
@@ -329,15 +331,6 @@ void UnitProxy::prepare()
 
       bot->actions = 0;
       camera.setBot( unit );
-    }
-  }
-
-  if( !alt && keys[SDLK_o] ) {
-    if( keys[SDLK_LSHIFT] || keys[SDLK_RSHIFT] ) {
-      orbis.caelum.time -= 0.1f * Timer::TICK_TIME * orbis.caelum.period;
-    }
-    else {
-      orbis.caelum.time += 0.1f * Timer::TICK_TIME * orbis.caelum.period;
     }
   }
 

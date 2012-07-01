@@ -210,8 +210,8 @@ set( warnings "-Wall -Wextra -Winvalid-pch -Wconversion " )
 
 # Additional warnings (Clang specific).
 # set( warnings "${warnings} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic" )
-# set( warnings "${warnings} -Wno-global-constructors -Wno-exit-time-destructors -Wno-float-equal" )
-# set( warnings "${warnings} -Wno-shadow -Wno-padded -Wno-disabled-macro-expansion" )
+# set( warnings "${warnings} -Wno-disabled-macro-expansion -Wno-exit-time-destructors" )
+# set( warnings "${warnings} -Wno-float-equal -Wno-global-constructors -Wno-padded -Wno-shadow " )
 
 check_cxx_source_compiles( "
 #ifdef __clang__

@@ -59,23 +59,6 @@ class Log
 
     static Log  out;         ///< Similar to <tt>std::cout</tt>, for use with <tt>operator <<</tt>.
 
-  private:
-
-    /**
-     * Default constructor, does nothing since Log has no non-static fields.
-     */
-    Log() = default;
-
-    /**
-     * Singleton, no copying.
-     */
-    Log( const Log& l ) = delete;
-
-    /**
-     * Singleton, no copying.
-     */
-    Log& operator = ( const Log& l ) = delete;
-
   public:
 
     /**

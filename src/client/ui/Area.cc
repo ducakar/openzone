@@ -70,12 +70,10 @@ void Area::reposition()
 {
   if( parent != null ) {
     x = defaultX == CENTRE ? parent->x + ( parent->width - width ) / 2 :
-        defaultX < 0 ? parent->x + parent->width - width + defaultX :
-                       parent->x + defaultX;
+        defaultX < 0 ? parent->x + parent->width - width + defaultX : parent->x + defaultX;
 
     y = defaultY == CENTRE ? parent->y + ( parent->height - height ) / 2 :
-        defaultY < 0 ? parent->y + parent->height - height + defaultY :
-                       parent->y + defaultY;
+        defaultY < 0 ? parent->y + parent->height - height + defaultY : parent->y + defaultY;
   }
 
   onReposition();

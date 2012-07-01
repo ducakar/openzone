@@ -51,6 +51,11 @@ int       NaCl::moveY  = 0;
 int       NaCl::moveZ  = 0;
 int       NaCl::moveW  = 0;
 
+static void flushCompleteCallback( void*, int )
+{
+  flushSemaphore.post();
+}
+
 bool NaCl::isMainThread()
 {
   return System::core->IsMainThread();
@@ -62,9 +67,13 @@ void NaCl::call( Callback* callback, void* caller )
   semaphore.wait();
 }
 
-static void flushCompleteCallback( void*, int )
+void NaCl::send( const char* message )
 {
-  flushSemaphore.post();
+  OZ_MAIN_CALL( const_cast<char*>( message ), {
+    const char* message = reinterpret_cast<const char*>( _this );
+
+    System::instance->PostMessage( pp::Var( message ) );
+  } )
 }
 
 void NaCl::activateGLContext()

@@ -68,13 +68,7 @@ class System
     /// Handlers bitmask.
     static const int HANDLERS_MASK = 0xf0;
 
-  private:
-
-    static System        system;   ///< Private instance, takes care for static (de)initialisation.
-
 #ifdef __native_client__
-
-  public:
 
     static pp::Module*   module;   ///< NaCl module.
     static pp::Instance* instance; ///< NaCl instance.
@@ -83,6 +77,8 @@ class System
 #endif
 
   private:
+
+    static System system; ///< Private instance, takes care for static (de)initialisation.
 
     /**
      * Sets up bell and disables <tt>SIGTRAP</tt> handler on Linux, since the default handler would
@@ -94,16 +90,6 @@ class System
      * Destructor delays normal process termination until the bell finishes playing.
      */
     ~System();
-
-    /**
-     * Singleton, no copying.
-     */
-    System( const System& s ) = delete;
-
-    /**
-     * Singleton, no copying.
-     */
-    System& operator = ( const System& s ) = delete;
 
   public:
 
