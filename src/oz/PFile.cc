@@ -37,8 +37,8 @@
 #ifdef __native_client__
 # include <ppapi/c/ppb.h>
 # include <ppapi/cpp/file_system.h>
-# include <ppapi/cpp/module.h>
 # include <ppapi/cpp/instance.h>
+# include <ppapi/cpp/module.h>
 #endif
 
 #if PHYSFS_VER_MAJOR < 2

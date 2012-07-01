@@ -26,7 +26,7 @@
 
 #include "Mutex.hh"
 
-#include "Exception.hh"
+#include "System.hh"
 
 #ifdef _WIN32
 # include "windefs.h"
@@ -93,22 +93,26 @@ void Mutex::init()
 {
   hard_assert( descriptor == null );
 
-  descriptor = static_cast<MutexDesc*>( malloc( sizeof( MutexDesc ) ) );
-  if( descriptor == null ) {
-    throw Exception( "Mutex resource allocation failed" );
+  void* descriptorPtr = malloc( sizeof( MutexDesc ) );
+  if( descriptorPtr == null ) {
+    System::error( 0, "Mutex resource allocation failed" );
   }
 
+  descriptor = new( descriptorPtr ) MutexDesc();
+
 #ifdef _WIN32
+
   descriptor->mutex = CreateMutex( null, false, null );
   if( descriptor->mutex == null ) {
-    free( descriptor );
-    throw Exception( "Mutex initialisation failed" );
+    System::error( 0, "Mutex initialisation failed" );
   }
+
 #else
+
   if( pthread_mutex_init( &descriptor->mutex, null ) != 0 ) {
-    free( descriptor );
-    throw Exception( "Mutex initialisation failed" );
+    System::error( 0, "Mutex initialisation failed" );
   }
+
 #endif
 }
 
@@ -122,6 +126,7 @@ void Mutex::destroy()
   pthread_mutex_destroy( &descriptor->mutex );
 #endif
 
+  descriptor->~MutexDesc();
   free( descriptor );
   descriptor = null;
 }

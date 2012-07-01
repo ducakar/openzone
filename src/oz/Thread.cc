@@ -26,7 +26,7 @@
 
 #include "Thread.hh"
 
-#include "Exception.hh"
+#include "System.hh"
 
 #ifdef _WIN32
 # include "windefs.h"
@@ -59,6 +59,7 @@ static DWORD WINAPI winMain( void* data )
 
   threadData->main( threadData->data );
 
+  threadData->~ThreadMainData();
   free( threadData );
   return 0;
 }
@@ -76,6 +77,7 @@ static void* pthreadMain( void* data )
 
   threadData->main( threadData->data );
 
+  threadData->~ThreadMainData();
   free( threadData );
   return null;
 }
@@ -86,28 +88,36 @@ void Thread::start( Main* main, void* data )
 {
   hard_assert( descriptor == null );
 
-  descriptor = static_cast<ThreadDesc*>( malloc( sizeof( ThreadDesc ) ) );
-  if( descriptor == null ) {
-    throw Exception( "Thread resource allocation failed" );
+  void* descriptorPtr = malloc( sizeof( ThreadDesc ) );
+  if( descriptorPtr == null ) {
+    System::error( 0, "Thread resource allocation failed" );
   }
 
-  ThreadMainData* threadData = static_cast<ThreadMainData*>( malloc( sizeof( ThreadMainData ) ) );
-  if( threadData == null ) {
-    throw Exception( "Thread resource allocation failed" );
+  descriptor = new( descriptorPtr ) ThreadDesc();
+
+  void* threadDataPtr = malloc( sizeof( ThreadMainData ) );
+  if( threadDataPtr == null ) {
+    System::error( 0, "Thread resource allocation failed" );
   }
+
+  ThreadMainData* threadData = new( threadDataPtr ) ThreadMainData();
 
   threadData->main = main;
   threadData->data = data;
 
 #ifdef _WIN32
+
   descriptor->thread = CreateThread( null, 0, winMain, threadData, 0, null );
   if( descriptor->thread == null ) {
-    throw Exception( "Thread creation failed" );
+    System::error( 0, "Thread creation failed" );
   }
+
 #else
+
   if( pthread_create( &descriptor->thread, null, pthreadMain, threadData ) != 0 ) {
-    throw Exception( "Thread creation failed" );
+    System::error( 0, "Thread creation failed" );
   }
+
 #endif
 }
 
@@ -116,16 +126,19 @@ void Thread::join()
   hard_assert( descriptor != null );
 
 #ifdef _WIN32
+
   WaitForSingleObject( descriptor->thread, INFINITE );
   CloseHandle( descriptor->thread );
+
 #else
+
   if( pthread_join( descriptor->thread, null ) != 0 ) {
-    free( descriptor );
-    descriptor = null;
-    throw Exception( "Thread join failed" );
+    System::error( 0, "Thread join failed" );
   }
+
 #endif
 
+  descriptor->~ThreadDesc();
   free( descriptor );
   descriptor = null;
 }

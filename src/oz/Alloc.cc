@@ -199,7 +199,12 @@ if( !isConstructed ) {
     isConstructed = true;
   }
 
-  TraceEntry* st = static_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
+  void* stPtr = malloc( sizeof( TraceEntry ) );
+  if( stPtr == null ) {
+    System::error( 1, "TraceEntry allocation failed" );
+  }
+
+  TraceEntry* st = new( stPtr ) TraceEntry();
 
   st->address    = ptr;
   st->size       = size;
@@ -256,7 +261,12 @@ static void* allocateArray( void* ptr, size_t size )
     isConstructed = true;
   }
 
-  TraceEntry* st = static_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
+  void* stPtr = malloc( sizeof( TraceEntry ) );
+  if( stPtr == null ) {
+    System::error( 1, "TraceEntry allocation failed" );
+  }
+
+  TraceEntry* st = new( stPtr ) TraceEntry();
 
   st->address    = ptr;
   st->size       = size;
@@ -368,6 +378,7 @@ static void deallocateObject( void* ptr )
 
 backtraceFound:
 
+  st->~TraceEntry();
   free( st );
 
 #endif
@@ -452,6 +463,7 @@ static void deallocateArray( void* ptr )
 
 backtraceFound:
 
+  st->~TraceEntry();
   free( st );
 
 #endif

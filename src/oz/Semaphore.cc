@@ -26,7 +26,7 @@
 
 #include "Semaphore.hh"
 
-#include "Exception.hh"
+#include "System.hh"
 
 #ifdef _WIN32
 # include "windefs.h"
@@ -140,31 +140,28 @@ void Semaphore::init( int counter )
 {
   hard_assert( descriptor == null && counter >= 0 );
 
-  descriptor = static_cast<SemaphoreDesc*>( malloc( sizeof( SemaphoreDesc ) ) );
-  if( descriptor == null ) {
-    throw Exception( "Semaphore resource allocation failed" );
+  void* descriptorPtr = malloc( sizeof( SemaphoreDesc ) );
+  if( descriptorPtr == null ) {
+    System::error( 0, "Semaphore resource allocation failed" );
   }
 
+  descriptor = new( descriptorPtr ) SemaphoreDesc();
   descriptor->counter = counter;
 
 #ifdef _WIN32
 
   descriptor->semaphore = CreateSemaphore( null, counter, 0x7fffffff, null );
   if( descriptor->semaphore == null ) {
-    free( descriptor );
-    throw Exception( "Semaphore semaphore creation failed" );
+    System::error( 0, "Semaphore semaphore creation failed" );
   }
 
 #else
 
   if( pthread_mutex_init( &descriptor->mutex, null ) != 0 ) {
-    free( descriptor );
-    throw Exception( "Semaphore mutex creation failed" );
+    System::error( 0, "Semaphore mutex creation failed" );
   }
   if( pthread_cond_init( &descriptor->cond, null ) != 0 ) {
-    pthread_mutex_destroy( &descriptor->mutex );
-    free( descriptor );
-    throw Exception( "Semaphore condition variable creation failed" );
+    System::error( 0, "Semaphore condition variable creation failed" );
   }
 
 #endif
@@ -181,6 +178,7 @@ void Semaphore::destroy()
   pthread_mutex_destroy( &descriptor->mutex );
 #endif
 
+  descriptor->~SemaphoreDesc();
   free( descriptor );
   descriptor = null;
 }

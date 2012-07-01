@@ -26,6 +26,8 @@
 
 #include "String.hh"
 
+#include "System.hh"
+
 #include "windefs.h"
 #include <cstdio>
 #include <cstdlib>
@@ -49,7 +51,16 @@ String::String( int count_, int ) :
 
 void String::ensureCapacity()
 {
-  buffer = count < BUFFER_SIZE ? baseBuffer : static_cast<char*>( malloc( size_t( count + 1 ) ) );
+  if( count < BUFFER_SIZE ) {
+    buffer = baseBuffer;
+  }
+  else {
+    buffer = static_cast<char*>( malloc( size_t( count + 1 ) ) );
+
+    if( buffer == null ) {
+      System::error( 0, "String allocation failed" );
+    }
+  }
 }
 
 void String::dealloc()
