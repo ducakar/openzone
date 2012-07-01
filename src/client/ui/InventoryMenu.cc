@@ -298,6 +298,10 @@ void InventoryMenu::onUpdate()
     show( true );
   }
   else {
+    if( other == null ) {
+      taggedOther = -1;
+      scrollOther = 0;
+    }
     if( !isMouseOver ) {
       taggedOwner = -1;
       taggedOther = -1;

@@ -27,16 +27,21 @@
 #include "System.hh"
 
 #include "arrays.hh"
+#include "Math.hh"
 #include "Log.hh"
 
 #include "windefs.h"
 #include <csignal>
-#include <cstdio>
 #include <cstdlib>
 
-#if defined( __native_client__ ) || defined( __ANDROID__ )
-# include <ppapi/cpp/module.h>
+#if defined( __native_client__ )
+# include <climits>
+# include <ppapi/cpp/audio.h>
+# include <ppapi/cpp/completion_callback.h>
+# include <ppapi/cpp/core.h>
+# include <pthread.h>
 # include <unistd.h>
+#elif defined( __ANDROID__ )
 #elif defined( _WIN32 )
 # include <windows.h>
 # include <mmsystem.h>
@@ -70,7 +75,23 @@ int raise( int )
 namespace oz
 {
 
-#if defined( __native_client__ ) || defined( __ANDROID__ )
+#if defined( __native_client__ )
+
+const float SAMPLE_LENGTH    = 0.28f;
+const float SAMPLE_GUARD     = 0.28f;
+const float SAMPLE_FREQUENCY = 800.0f;
+
+struct SampleInfo
+{
+  pp::Audio* audio;
+  int        nFrameSamples;
+  int        nSamples;
+  float      quotient;
+  int        end;
+  int        offset;
+};
+
+#elif defined( __ANDROID__ )
 #elif defined( _WIN32 )
 
 struct Wave
@@ -118,7 +139,9 @@ static decltype( ::pa_simple_drain )* pa_simple_drain; // = null
 static bool               isConstructed; // = false
 static volatile bool      isBellPlaying; // = false
 static int                initFlags;     // = 0
-#if defined( __native_client__ ) || defined( __ANDROID__ )
+#if defined( __native_client__ )
+static pthread_mutex_t    bellLock;
+#elif defined( __ANDROID__ )
 #elif defined( _WIN32 )
 static CRITICAL_SECTION   bellLock;
 #else
@@ -171,7 +194,98 @@ static void unexpected()
   System::error( 0, "EXCEPTION SPECIFICATION VIOLATION" );
 }
 
-#if defined( __native_client__ ) || defined( __ANDROID__ )
+#if defined( __native_client__ )
+
+static void stopBellCallback( void* info_, int )
+{
+  SampleInfo* info = static_cast<SampleInfo*>( info_ );
+
+  info->audio->StopPlayback();
+  info->audio->~Audio();
+  free( info->audio );
+
+  isBellPlaying = false;
+}
+
+static void bellPlayCallback( void* buffer, uint size, void* info_ )
+{
+  static_cast<void>( size );
+
+  SampleInfo* info    = static_cast<SampleInfo*>( info_ );
+  short*      samples = static_cast<short*>( buffer );
+
+  hard_assert( size / uint( sizeof( short[2] ) ) >= uint( info->nFrameSamples ) );
+
+  if( info->offset >= info->end ) {
+    System::core->CallOnMainThread( 0, pp::CompletionCallback( stopBellCallback, info ) );
+  }
+
+  int begin = info->offset;
+  info->offset += info->nFrameSamples;
+
+  for( int i = begin; i < info->offset; ++i ) {
+    float position  = float( info->nSamples - 1 - i ) / float( info->nSamples - 1 );
+    float amplitude = Math::fastSqrt( max( position, 0.0f ) );
+    float value     = amplitude * Math::sin( float( i ) * info->quotient );
+    short sample    = short( float( SHRT_MAX ) * value );
+
+    samples[0] = sample;
+    samples[1] = sample;
+    samples += 2;
+  }
+}
+
+static void bellInitCallback( void* info_, int )
+{
+  SampleInfo* info = static_cast<SampleInfo*>( info_ );
+
+  PP_AudioSampleRate rate = pp::AudioConfig::RecommendSampleRate( System::instance );
+  uint nSamples = pp::AudioConfig::RecommendSampleFrameCount( System::instance, rate, 4096 );
+
+  pp::AudioConfig config( System::instance, rate, nSamples );
+
+  void* audioPtr = malloc( sizeof( pp::Audio ) );
+  if( audioPtr == null ) {
+    System::error( 0, "pp::Audio object allocation failed" );
+  }
+
+  info->nFrameSamples = int( nSamples );
+  info->nSamples      = int( SAMPLE_LENGTH * float( rate ) + 0.5f );
+  info->quotient      = SAMPLE_FREQUENCY * Math::TAU / float( rate );
+  info->end           = info->nSamples + int( SAMPLE_GUARD * float( rate ) + 0.5f );
+  info->offset        = 0;
+
+  info->audio = new( audioPtr ) pp::Audio( System::instance, config, bellPlayCallback, info );
+  if( info->audio->StartPlayback() == PP_FALSE ) {
+    info->audio->~Audio();
+    free( info->audio );
+
+    isBellPlaying = false;
+  }
+}
+
+static void* bellThread( void* )
+{
+  void* infoPtr = malloc( sizeof( SampleInfo ) );
+  if( infoPtr == null ) {
+    System::error( 0, "Sound sample descriptor allocation failed" );
+  }
+
+  SampleInfo* info = new( infoPtr ) SampleInfo();
+  System::core->CallOnMainThread( 0, pp::CompletionCallback( bellInitCallback, info ) );
+
+  while( isBellPlaying ) {
+    usleep( 10 * 1000 );
+  }
+
+
+  info->~SampleInfo();
+  free( info );
+
+  return null;
+}
+
+#elif defined( __ANDROID__ )
 #elif defined( _WIN32 )
 
 static DWORD WINAPI bellThread( LPVOID )
@@ -211,7 +325,13 @@ static void* bellThread( void* )
 
 static void construct()
 {
-#if defined( __native_client__ ) || defined( __ANDROID__ )
+#if defined( __native_client__ )
+
+  if( pthread_mutex_init( &bellLock, null ) != 0 ) {
+    System::error( 0, "Bell mutex creation failed" );
+  }
+
+#elif defined( __ANDROID__ )
 #elif defined( _WIN32 )
 
   InitializeCriticalSection( &bellLock );
@@ -221,7 +341,9 @@ static void construct()
   // Disable default handler for TRAP signal that crashes the process.
   signal( SIGTRAP, SIG_IGN );
 
-  pthread_spin_init( &bellLock, PTHREAD_PROCESS_PRIVATE );
+  if( pthread_spin_init( &bellLock, PTHREAD_PROCESS_PRIVATE ) != 0 ) {
+    System::error( 0, "Bell spin lock creation failed" );
+  }
 
   void* library = dlopen( "libpulse-simple.so.0", RTLD_NOW );
   if( library != null ) {
@@ -317,7 +439,25 @@ void System::bell()
     construct();
   }
 
-#if defined( __native_client__ ) || defined( __ANDROID__ )
+#if defined( __native_client__ )
+
+  if( instance == null || core == null || pthread_mutex_trylock( &bellLock ) != 0 ) {
+    return;
+  }
+  if( isBellPlaying ) {
+    pthread_mutex_unlock( &bellLock );
+  }
+  else {
+    isBellPlaying = true;
+    pthread_mutex_unlock( &bellLock );
+
+    pthread_t thread;
+    if( pthread_create( &thread, null, bellThread, null ) != 0 ) {
+      System::error( 0, "Bell thread creation failed" );
+    }
+  }
+
+#elif defined( __ANDROID__ )
 #elif defined( _WIN32 )
 
   EnterCriticalSection( &bellLock );
@@ -327,31 +467,31 @@ void System::bell()
   }
   else {
     isBellPlaying = true;
-
     LeaveCriticalSection( &bellLock );
 
     HANDLE thread = CreateThread( null, 0, bellThread, null, 0, null );
+    if( thread == null ) {
+      System::error( 0, "Bell thread creation failed" );
+    }
     CloseHandle( thread );
   }
 
 #else
 
-  if( pa_simple_new == null ) {
+  if( pa_simple_new == null || pthread_spin_trylock( &bellLock ) != 0 ) {
     return;
   }
-
-  pthread_spin_lock( &bellLock );
-
   if( isBellPlaying ) {
     pthread_spin_unlock( &bellLock );
   }
   else {
     isBellPlaying = true;
-
     pthread_spin_unlock( &bellLock );
 
     pthread_t thread;
-    pthread_create( &thread, null, bellThread, null );
+    if( pthread_create( &thread, null, bellThread, null ) != 0 ) {
+      System::error( 0, "Bell thread creation failed" );
+    }
   }
 
 #endif

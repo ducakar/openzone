@@ -25,6 +25,7 @@
 
 #include "oz/oz.hh"
 
+#include <climits>
 #include <cstdlib>
 
 static const int   RATE      = 11025;
@@ -46,9 +47,9 @@ int main()
     FREQUENCY, float( SAMPLES ) / float( RATE ), RATE, SAMPLES );
 
   for( int i = 0; i < SAMPLES; ++i ) {
-    float value     = Math::sin( float( i ) / RATE * FREQUENCY * Math::TAU );
     float amplitude = Math::sqrt( float( SAMPLES - 1 - i ) / float( SAMPLES - 1 ) );
-    ubyte sample    = ubyte( ( 1.0f + amplitude * value ) * 128.0f + 0.5f );
+    float value     = amplitude * Math::sin( float( i ) / RATE * FREQUENCY * Math::TAU );
+    ubyte sample    = ubyte( float( UCHAR_MAX / 2 ) + float( SCHAR_MAX ) * value + 0.5f );
 
     Log::printRaw( "%3d", sample );
 

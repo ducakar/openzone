@@ -61,7 +61,7 @@ struct PerformanceTimer
 
     LARGE_INTEGER frequency;
     if( QueryPerformanceFrequency( &frequency ) == 0 || frequency.QuadPart == 0 ) {
-      System::error( 0, "PANIC: High-performance timer initialisation failed" );
+      System::error( 0, "High-performance timer initialisation failed" );
     }
 
     resolution = ( 1000 + frequency.QuadPart / 2 ) / frequency.QuadPart;
