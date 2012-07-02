@@ -51,7 +51,6 @@ class Physics
     static const float STICK_VELOCITY;
     static const float SLICK_STICK_VELOCITY;
     static const float FLOAT_STICK_VELOCITY;
-    static const float LADDER_SLIP_MOMENTUM;
     static const float WATER_FRICTION;
     static const float LADDER_FRICTION;
     static const float FLOOR_FRICTION;

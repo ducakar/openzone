@@ -1,0 +1,165 @@
+<html>
+<head>
+  <title>OpenZone 0.2.90</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+    div.module {
+      text-align: center;
+    }
+    table {
+      width: 100%;
+    }
+    table td {
+      padding: 10px;
+    }
+    table td.side {
+      width: 10%;
+      background-color: #ffffff;
+    }
+    table#hudArea {
+      position: absolute;
+      top: 100px;
+      width: 100%;
+    }
+    table#hudArea td#hudText {
+      width: 600px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.5em;
+      color: #808080;
+    }
+  </style>
+  <script type="text/javascript">
+    var module    = null;
+    var hudArea   = null;
+    var hudText   = null;
+    var hasLoaded = false;
+    var hasEnded  = false;
+
+    window.onload   = onLoad;
+    window.onresize = onResize;
+
+    function handleMessage( e )
+    {
+      var type = e.data.substring( 0, 5 );
+      var text = e.data.substring( 5 );
+
+      if( type == "quit:" ) {
+        hasEnded = true;
+
+        window.onbeforeunload = null;
+        module.style.visibility = "hidden";
+
+        hudArea.style.display = "inline";
+        hudText.innerHTML = "Končano<br/>Sedaj lahko varno zapreš to stran.";
+      }
+      else if( type == "none:" ) {
+        hudArea.style.display = "none";
+        hudText.innerHTML = "";
+      }
+      else if( type == "init:" ) {
+        window.onbeforeunload = onBeforeUnload;
+
+        hudArea.style.display = "inline";
+        hudText.innerHTML = "Inicializiram ...";
+      }
+      else if( type == "upd0:" ) {
+        hudArea.style.display = "inline";
+        hudText.innerHTML = "Preverjam posodobitve ...";
+      }
+      else if( type == "upd1:" ) {
+        hudArea.style.display = "inline";
+        hudText.innerHTML = "Prenašam posodobitve<br/>" + text;
+      }
+      else if( type == "lang:" ) {
+        module.postMessage( "lang:sl" );
+      }
+    }
+
+    function updateLoadProgress()
+    {
+      hasLoaded = true;
+
+      if( event.lengthComputable && event.total > 0 ) {
+        var percent = Math.round( event.loaded / event.total * 100.0 );
+
+        hudText.innerHTML = "Nalagam<br/>" + percent + " %";
+      }
+      else {
+        hudText.innerHTML = "Nalagam";
+      }
+    }
+
+    function onLoadEnd( e )
+    {
+      hasLoaded = true;
+
+      hudText.innerHTML = "Zaganjam<br/>" +
+                          "<span style='font-size: 0.6em; font-weight: normal'>" +
+                          "Če to traja predolgo, imaš slabo grafično ali pa moraš iti na " +
+                          "<tt>chrome://flags/</tt> in vklopiti možnost " +
+                          "<b>Preglasi seznam programskega upodabljanja</b>.</span>";
+    }
+
+    function onResize()
+    {
+      if( hasLoaded && hasEnded ) {
+        module.style.visibility = "hidden";
+      }
+    }
+
+    function onLoad()
+    {
+      module  = document.getElementById( "nacl" );
+      hudArea = document.getElementById( "hudArea" );
+      hudText = document.getElementById( "hudText" );
+
+      module.addEventListener( "message", handleMessage, true );
+      module.addEventListener( "progress", updateLoadProgress, true );
+      module.addEventListener( "loadend", onLoadEnd, true );
+    }
+
+    function onBeforeUnload()
+    {
+      module.postMessage( "quit:" );
+
+      return "Če je to sporočilo prikazano nekaj sekund, je igra verjetno že shranjena, " +
+             "zato lahko varno zapustiš to stran.";
+    }
+  </script>
+</head>
+<body>
+  <table id="hudArea">
+    <tr>
+      <td/>
+      <td id="hudText">
+        Nalagam<br/><span style="font-size: 0.6em; font-weight: normal">
+        Deluje samo v brskalniku Google Chrome/Chromium 19 ali novejšem.
+        Če se vstavek ne naloži (v doglednem času), nimaš omogočene tehnologije NaCl.
+        V navigacijsko vrstico vnesi <tt>chrome://flags/</tt> in vklopi možnost
+        <b>Tehnologija Native Client</b> ter ponovno zaženi brskalnik.
+      </td>
+      <td/>
+    </tr>
+  </table>
+  <div class="module">
+    <embed id="nacl" width="960" height="540" src="openzone.nmf" type="application/x-nacl"/>
+  </div>
+  <div>
+    <p>Ko se naloži, je potreben klik na igro za fokus. Pri tem igra preklopi v celozaslonski
+    način in začne zajemati miško.</p>
+    <h4>Osnovni nadzor</h4>
+    <p>Premikanje: W, A, S, D<br/>
+    Skok: Space<br/>
+    Počep: C<br/>
+    Uporabniški vmesnik: Tab<br/>
+    Preklopi v naslednjo enoto: Y<br/>
+    Preklopi v strateški način / preklopi v izbrano enoto: I<br/>
+    <p>Zaradi tehničnih omejitev NaCl utegne igra delovati precej slabše od verzij za Linux in
+    Windows.</p>
+    <p><a href="doc/PREBERI.html">Več informacij</a></p>
+</body>
+</html>

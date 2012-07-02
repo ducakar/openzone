@@ -90,9 +90,6 @@ void Mouse::update( bool hasFocus )
 #ifdef __native_client__
     inputX = NaCl::moveX;
     inputY = NaCl::moveY;
-
-    NaCl::moveX = 0;
-    NaCl::moveY = 0;
 #else
     SDL_GetRelativeMouseState( &inputX, &inputY );
 #endif

@@ -134,6 +134,7 @@ class Bot : public Dynamic
                                               GESTURE_FLIP_BIT;
 
     static const float AIR_FRICTION;
+    static const float LADDER_SLIP_MOMENTUM;
 
     static const float WOUNDED_THRESHOLD;
     static const float CORPSE_FADE_FACTOR;

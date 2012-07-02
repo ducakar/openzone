@@ -40,7 +40,7 @@ namespace oz
 namespace client
 {
 
-void* MainInstance::mainThreadMain( void* )
+void MainInstance::mainThreadMain( void* )
 {
   int exitCode = EXIT_FAILURE;
 
@@ -48,6 +48,8 @@ void* MainInstance::mainThreadMain( void* )
                  "This program comes with ABSOLUTELY NO WARRANTY.\n"
                  "This is free software, and you are welcome to redistribute it\n"
                  "under certain conditions; See COPYING file for details.\n\n" );
+
+  NaCl::post( "init:" );
 
   try {
     char  argv0[] = OZ_APPLICATION_NAME;
@@ -60,19 +62,21 @@ void* MainInstance::mainThreadMain( void* )
     System::error( e );
   }
 
-  Log::verboseMode = true;
-  Alloc::printLeaks();
-  Log::verboseMode = false;
-
   if( Alloc::count != 0 ) {
-    Log::println( "There are some memory leaks. See '%s' for details.", Log::logFile() );
+    Log::verboseMode = true;
+    bool isOutput = Alloc::printLeaks();
+    Log::verboseMode = false;
+
+    if( isOutput ) {
+      Log::println( "There are some memory leaks. See '%s' for details.", Log::logFile() );
+    }
   }
-  return null;
+
+  NaCl::post( "quit:" );
 }
 
 MainInstance::MainInstance( PP_Instance instance_ ) :
-  pp::Instance( instance_ ), pp::MouseLock( this ), fullscreen( this ), isMouseLocked( false ),
-  mainThread( 0 )
+  pp::Instance( instance_ ), pp::MouseLock( this ), fullscreen( this ), isMouseLocked( false )
 {
   System::module   = pp::Module::Get();
   System::instance = this;
@@ -87,9 +91,8 @@ MainInstance::MainInstance( PP_Instance instance_ ) :
 
 MainInstance::~MainInstance()
 {
-  if( mainThread != 0 ) {
-    pthread_join( mainThread, null );
-    mainThread = null;
+  if( mainThread.isValid() ) {
+    mainThread.join();
   }
 
   NaCl::free();
@@ -112,17 +115,22 @@ void MainInstance::DidChangeView( const pp::View& view )
   NaCl::width  = width;
   NaCl::height = height;
 
-  if( mainThread == 0 ) {
+  if( !mainThread.isValid() ) {
     SDL_NACL_SetInstance( pp_instance(), NaCl::width, NaCl::height );
     alSetPpapiInfo( pp_instance(), System::module->get_browser_interface() );
 
-    pthread_create( &mainThread, null, mainThreadMain, this );
+    mainThread.start( mainThreadMain );
   }
 }
 
 void MainInstance::DidChangeView( const pp::Rect&, const pp::Rect& )
 {
   PP_NOTREACHED();
+}
+
+void MainInstance::HandleMessage( const pp::Var& message )
+{
+  NaCl::push( message.AsString().c_str() );
 }
 
 bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
@@ -235,11 +243,13 @@ int main( int argc, char** argv )
   }
 
   if( Alloc::count != 0 ) {
-    Log::println( "There are some memory leaks. See '%s' for details.", Log::logFile() );
-
     Log::verboseMode = true;
-    Alloc::printLeaks();
+    bool isOutput = Alloc::printLeaks();
     Log::verboseMode = false;
+
+    if( isOutput ) {
+      Log::println( "There are some memory leaks. See '%s' for details.", Log::logFile() );
+    }
   }
 
   return exitCode;

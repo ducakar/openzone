@@ -38,10 +38,12 @@ namespace oz
 namespace client
 {
 
+static Mutex          messageMutex;
+static Vector<String> messageQueue;
 static Semaphore      flushSemaphore;
 static pp::Graphics3D context;
 
-Semaphore NaCl::semaphore;
+Semaphore NaCl::mainCallSemaphore;
 
 int       NaCl::width  = 0;
 int       NaCl::height = 0;
@@ -64,16 +66,32 @@ bool NaCl::isMainThread()
 void NaCl::call( Callback* callback, void* caller )
 {
   System::core->CallOnMainThread( 0, pp::CompletionCallback( callback, caller ) );
-  semaphore.wait();
+  mainCallSemaphore.wait();
 }
 
-void NaCl::send( const char* message )
+void NaCl::post( const char* message )
 {
   OZ_MAIN_CALL( const_cast<char*>( message ), {
     const char* message = reinterpret_cast<const char*>( _this );
 
     System::instance->PostMessage( pp::Var( message ) );
   } )
+}
+
+String NaCl::poll()
+{
+  messageMutex.lock();
+  String s = messageQueue.isEmpty() ? String() : messageQueue.popFirst();
+  messageMutex.unlock();
+
+  return s;
+}
+
+void NaCl::push( const char* message )
+{
+  messageMutex.lock();
+  messageQueue.pushLast( message );
+  messageMutex.unlock();
 }
 
 void NaCl::activateGLContext()
@@ -109,8 +127,6 @@ void NaCl::initGLContext()
 {
   hard_assert( context.is_null() );
 
-  flushSemaphore.init();
-
   glInitializePPAPI( System::module->get_browser_interface() );
 
   int attribs[] = {
@@ -136,16 +152,15 @@ void NaCl::freeGLContext()
 {
   glSetCurrentContextPPAPI( 0 );
   glTerminatePPAPI();
-
-  flushSemaphore.destroy();
 }
 
 void NaCl::init()
 {
-  semaphore.init();
+  messageMutex.init();
+  flushSemaphore.init();
+  mainCallSemaphore.init();
 
   // Hacks
-  config.include( "lingua", "sl" );
   config.include( "render.distance", "100.0" );
   config.include( "ui.showBuild", "true" );
   config.include( "ui.showFPS", "true" );
@@ -163,7 +178,12 @@ void NaCl::init()
 
 void NaCl::free()
 {
-  semaphore.destroy();
+  messageQueue.clear();
+  messageQueue.dealloc();
+
+  mainCallSemaphore.destroy();
+  flushSemaphore.destroy();
+  messageMutex.destroy();
 }
 
 }

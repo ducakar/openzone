@@ -109,11 +109,11 @@ void Client::shutdown()
     PFile::free();
   }
 
+#ifndef __native_client__
   if( initFlags & INIT_SDL ) {
-    OZ_MAIN_CALL( this, {
-      SDL_Quit();
-    } )
+    SDL_Quit();
   }
+#endif
 
   if( initFlags & INIT_MAIN_LOOP ) {
     Alloc::printSummary();
@@ -416,6 +416,25 @@ int Client::main( int argc, char** argv )
     Log::println( "Random generator seed set to: %d", seed );
   }
 
+#ifdef __native_client__
+
+  NaCl::post( "lang:" );
+
+  for( String message = NaCl::poll(); ; message = NaCl::poll() ) {
+    if( message.isEmpty() ) {
+      Time::sleep( 10 );
+    }
+    else if( message.beginsWith( "lang:" ) ) {
+      config.add( "lingua", message.substring( 5 ) );
+      break;
+    }
+    else {
+      NaCl::push( message );
+    }
+  }
+
+#endif
+
   const char* locale = config.getSet( "lingua", "en" );
 
   Log::print( "Setting localisation '%s' ...", locale );
@@ -449,7 +468,7 @@ int Client::main( int argc, char** argv )
   gameStage.init();
 
 #ifdef __native_client__
-  NaCl::send( "load:" );
+  NaCl::post( "none:" );
 #endif
 
   Stage::nextStage = null;
@@ -580,9 +599,21 @@ int Client::main( int argc, char** argv )
     }
 
 #ifdef __native_client__
+
     if( NaCl::width != window.width || NaCl::height != window.height ) {
       window.resize();
     }
+    for( String message = NaCl::poll(); !message.isEmpty(); message = NaCl::poll() ) {
+      if( message.equals( "quit:" ) ) {
+        isAlive = false;
+      }
+    }
+
+    ui::keyboard.keys[SDLK_LCTRL] = 0;
+    ui::keyboard.keys[SDLK_RCTRL] = 0;
+    ui::keyboard.keys[SDLK_LALT] = 0;
+    ui::keyboard.keys[SDLK_RALT] = 0;
+
 #endif
 
     ui::mouse.update( hasMouseFocus );
@@ -607,6 +638,10 @@ int Client::main( int argc, char** argv )
 
       stage = Stage::nextStage;
       Stage::nextStage = null;
+
+      ui::keyboard.prepare();
+      ui::mouse.prepare();
+      ui::mouse.update( hasMouseFocus );
 
       stage->load();
 

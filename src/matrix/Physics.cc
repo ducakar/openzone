@@ -47,9 +47,8 @@ const float Physics::SLIDE_DAMAGE_COEF       =  0.06f;
 const float Physics::STICK_VELOCITY          =  0.03f;
 const float Physics::SLICK_STICK_VELOCITY    =  0.003f;
 const float Physics::FLOAT_STICK_VELOCITY    =  0.0005f;
-const float Physics::LADDER_SLIP_MOMENTUM    =  8.0f;
 const float Physics::WATER_FRICTION          =  0.09f;
-const float Physics::LADDER_FRICTION         =  0.20f;
+const float Physics::LADDER_FRICTION         =  0.15f;
 const float Physics::FLOOR_FRICTION          =  0.30f;
 const float Physics::SLICK_FRICTION          =  0.03f;
 
@@ -172,11 +171,8 @@ bool Physics::handleObjFriction()
 
       return dyn->flags & Object::ENABLE_BIT;
     }
-    else if( momentum2 <= LADDER_SLIP_MOMENTUM ) {
-      dyn->momentum *= 1.0f - LADDER_FRICTION;
-    }
     else {
-      dyn->momentum.z += systemMom;
+      dyn->momentum *= 1.0f - LADDER_FRICTION;
     }
   }
   else {

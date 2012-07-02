@@ -27,6 +27,7 @@
 #pragma once
 
 #include "client/ui/Area.hh"
+#include "client/ui/Label.hh"
 
 namespace oz
 {
@@ -43,6 +44,11 @@ class StrategicArea : public Area
     static const float TAG_CLAMP_LIMIT;
     static const float TAG_MIN_PIXEL_SIZE;
     static const float TAG_MAX_COEFF_SIZE;
+
+    Label unitName;
+    int   cachedStructIndex;
+    int   cachedEntityIndex;
+    int   cachedObjectIndex;
 
     uint  titleTexId;
     float pixelStep;

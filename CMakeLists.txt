@@ -9,7 +9,7 @@ project( openzone C CXX )
 set( OZ_VERSION "0.2.90" CACHE STRING "" FORCE )
 
 option( OZ_SHARED_LIBOZ "Build liboz as a shared library." OFF )
-option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory leaks." ON )
+option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory leaks." OFF )
 
 set( OZ_APPLICATION_NAME "openzone" )
 set( OZ_APPLICATION_TITLE "OpenZone" )

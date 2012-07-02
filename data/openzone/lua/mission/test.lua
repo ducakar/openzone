@@ -35,13 +35,14 @@ function onCreate()
 
   ozCaelumLoad( "earth" )
   ozCaelumSetHeading( math.pi / 8 )
-  ozCaelumSetPeriod( 1440 )
---   ozCaelumSetRealTime()
+--   ozCaelumSetPeriod( 1440 )
+  ozCaelumSetRealTime()
 
   ozCameraWarpTo( 141.0, -12.0, 84.75, 0.0, 35.0 )
 
   local me = ozOrbisAddPlayer( OZ_FORCE, 137, -6, 73, OZ_SOUTH )
   ozCameraAddSwitchableUnit( me )
+--   ozCameraSwitchTo( me )
 
 --   ozCameraSetState( OZ_CAMERA_CINEMATIC )
 --   ozCameraAddMove( 131, -12, 85, 0, 90, 1 )
@@ -69,8 +70,6 @@ function init_sample()
   local cyborg = ozOrbisAddObj( OZ_FORCE, "cyborg", 140, -13, 73, OZ_WEST )
   ozBotSetMind( "" )
   ozCameraAddSwitchableUnit( cyborg )
-
-  ozCameraSwitchTo( me )
 
 --   ozOrbisAddObj( "reaper", 145, -15, 73 )
 

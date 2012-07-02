@@ -39,6 +39,7 @@ class LoadingArea : public Area
 
   protected:
 
+    void onReposition() override;
     void onDraw() override;
 
   public:

@@ -94,47 +94,6 @@ bool StrategicArea::projectBounds( Span* span, const AABB& bb ) const
   return true;
 }
 
-void StrategicArea::printName( int baseX, int baseY, const char* s, ... )
-{
-  char buffer[1024];
-  va_list ap;
-
-  va_start( ap, s );
-  vsnprintf( buffer, 1024, s, ap );
-  va_end( ap );
-  buffer[1023] = '\0';
-
-  if( buffer[0] == '\0' ) {
-    return;
-  }
-
-  SDL_Surface* text = TTF_RenderUTF8_Blended( font.fonts[Font::SANS], buffer,
-                                              Font::SDL_COLOUR_WHITE );
-
-  int x = baseX - text->w / 2;
-  int y = baseY - text->h / 2;
-  int width = text->w;
-  int height = text->h;
-
-  if( x < 0 || x + width >= camera.width - 1 || y < 1 || y + height >= camera.height ) {
-    SDL_FreeSurface( text );
-    return;
-  }
-
-  glBindTexture( GL_TEXTURE_2D, titleTexId );
-  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                text->pixels );
-
-  SDL_FreeSurface( text );
-
-  shader.colour( Vec4( 0.0f, 0.0f, 0.0f, 1.0f ) );
-  shape.fillInv( x + 1, y - 1, width, height );
-  shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
-  shape.fillInv( x, y, width, height );
-
-  glBindTexture( GL_TEXTURE_2D, 0 );
-}
-
 void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const Entity* ent,
                                      const Object* obj )
 {
@@ -145,29 +104,72 @@ void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const 
   float life = 1.0f;
 
   if( str != null ) {
+    int labelX = ( span.minX + span.maxX ) / 2;
+    int labelY = span.maxY + 12;
+
     if( ent != null ) {
-      const String& title = ent->model->title;
-      printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 8 ), "%s", title.cstr() );
+      int entIndex = str->index * Struct::MAX_ENTITIES + int( ent - str->entities );
+
+      if( entIndex != cachedEntityIndex ) {
+        const String& title = ent->model->title;
+
+        cachedStructIndex = -1;
+        cachedEntityIndex = entIndex;
+        cachedObjectIndex = -1;
+
+        unitName.set( labelX, labelY, "%s", title.cstr() );
+      }
+      else {
+        unitName.set( labelX, labelY );
+      }
+
+      unitName.draw( this, false );
     }
     else {
+      if( str->index != cachedStructIndex ) {
+        const String& title = str->bsp->title;
+
+        cachedStructIndex = str->index;
+        cachedEntityIndex = -1;
+        cachedObjectIndex = -1;
+
+        unitName.set( labelX, labelY, "%s", title.cstr() );
+      }
+      else {
+        unitName.set( labelX, labelY );
+      }
+
       life = str->life / str->bsp->life;
 
-      const String& title = str->bsp->title;
-      printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", title.cstr() );
+      unitName.draw( this, false );
     }
   }
   else {
     const Bot*         bot   = static_cast<const Bot*>( obj );
     const ObjectClass* clazz = obj->clazz;
 
-    String title = ( obj->flags & Object::BOT_BIT ) && !bot->name.isEmpty() ?
-                   bot->name + " (" + clazz->title + ")" : clazz->title;
+    int labelX = ( span.minX + span.maxX ) / 2;
+    int labelY = span.maxY + 12;
 
-    printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", title.cstr() );
+    if( obj->index != cachedObjectIndex ) {
+      String title = ( obj->flags & Object::BOT_BIT ) && !bot->name.isEmpty() ?
+                     bot->name + " (" + clazz->title + ")" : clazz->title;
+
+      cachedStructIndex = -1;
+      cachedEntityIndex = -1;
+      cachedObjectIndex = obj->index;
+
+      unitName.set( labelX, labelY, "%s", title.cstr() );
+    }
+    else {
+      unitName.set( labelX, labelY );
+    }
 
     life = obj->flags & Object::BOT_BIT ?
            max( 0.0f, ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
            obj->life / clazz->life;
+
+    unitName.draw( this, false );
   }
 
   if( ent == null ) {
@@ -330,22 +332,27 @@ void StrategicArea::onDraw()
 
   Span span;
 
-  if( str != null ) {
-    if( projectBounds( &span, str->toAABB() ) ) {
-      drawHoveredRect( span, str, null, null );
+  if( obj != null ) {
+    if( projectBounds( &span, *obj ) ) {
+      drawHoveredRect( span, null, null, obj );
     }
   }
-  if( ent != null ) {
+  else if( ent != null ) {
     str = ent->str;
 
     if( projectBounds( &span, str->toAbsoluteCS( *ent->model + ent->offset ).toAABB() ) ) {
       drawHoveredRect( span, str, ent, null );
     }
   }
-  if( obj != null ) {
-    if( projectBounds( &span, *obj ) ) {
-      drawHoveredRect( span, null, null, obj );
+  else if( str != null ) {
+    if( projectBounds( &span, str->toAABB() ) ) {
+      drawHoveredRect( span, str, null, null );
     }
+  }
+  else {
+    cachedStructIndex = -1;
+    cachedEntityIndex = -1;
+    cachedObjectIndex = -1;
   }
 
   for( int i = 0; i < taggedStrs.length(); ++i ) {
@@ -378,7 +385,10 @@ void StrategicArea::onDraw()
 }
 
 StrategicArea::StrategicArea() :
-  Area( camera.width, camera.height ), hoverStr( -1 ), hoverEnt( -1 ), hoverObj( -1 )
+  Area( camera.width, camera.height ),
+  unitName( 0, 0, ALIGN_HCENTRE, Font::SANS, " " ),
+  cachedStructIndex( -1 ), cachedEntityIndex( -1 ), cachedObjectIndex( -1 ),
+  hoverStr( -1 ), hoverEnt( -1 ), hoverObj( -1 )
 {
   flags = UPDATE_BIT | PINNED_BIT;
 

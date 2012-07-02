@@ -61,7 +61,7 @@ Label::~Label()
 }
 
 Label::Label( int x, int y, int align, Font::Type font, const char* s, ... ) :
-  offsetX( 0 ), offsetY( 0 ), activeTexId( 0 )
+  offsetX( 0 ), offsetY( 0 ), activeTexId( 0 ), hasChanged( false )
 {
   glGenTextures( 2, texIds );
 
@@ -92,7 +92,7 @@ void Label::vset( int x_, int y_, int align_, Font::Type font_, const char* s, v
   vsnprintf( buffer, 1024, s, ap );
   buffer[1023] = '\0';
 
-  if( buffer[0] == '\0' ) {
+  if( buffer[0] == '\0' || ( buffer[0] == ' ' && buffer[1] == '\0' ) ) {
     offsetX = 0;
     offsetY = 0;
     width   = 0;
@@ -130,7 +130,38 @@ void Label::set( int x, int y, int align, Font::Type font, const char* s, ... )
   va_end( ap );
 }
 
-void Label::setText( const char* s, ... )
+void Label::set( int x, int y, const char* s, ... )
+{
+  va_list ap;
+  va_start( ap, s );
+  vset( x, y, align, font, s, ap );
+  va_end( ap );
+}
+
+void Label::set( int x_, int y_ )
+{
+  x       = x_;
+  y       = y_;
+  offsetX = x_;
+  offsetY = y_;
+  width   = newWidth;
+  height  = newHeight;
+
+  if( align & Area::ALIGN_RIGHT ) {
+    offsetX -= width;
+  }
+  else if( align & Area::ALIGN_HCENTRE ) {
+    offsetX -= width / 2;
+  }
+  if( align & Area::ALIGN_TOP ) {
+    offsetY -= height;
+  }
+  else if( align & Area::ALIGN_VCENTRE ) {
+    offsetY -= height / 2;
+  }
+}
+
+void Label::set( const char* s, ... )
 {
   va_list ap;
   va_start( ap, s );

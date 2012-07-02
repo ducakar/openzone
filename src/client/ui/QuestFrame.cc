@@ -50,8 +50,8 @@ void QuestFrame::updateTask()
     stateText = OZ_GETTEXT( "failed" );
   }
 
-  title.setText( "%s  [%s]", quest.title.cstr(), stateText.cstr() );
-  description.setText( "%s", quest.description.cstr() );
+  title.set( "%s  [%s]", quest.title.cstr(), stateText.cstr() );
+  description.set( "%s", quest.description.cstr() );
 
   lastState = quest.state;
 }
@@ -80,7 +80,7 @@ void QuestFrame::next( Button* sender )
 
   if( nQuests == 0 ) {
     questFrame->currentQuest = -1;
-    questFrame->description.setText( " " );
+    questFrame->description.set( " " );
   }
   else {
     questFrame->currentQuest = ( questFrame->currentQuest + 1 + nQuests ) % nQuests;
@@ -96,7 +96,7 @@ void QuestFrame::prev( Button* sender )
 
   if( nQuests == 0 ) {
     questFrame->currentQuest = -1;
-    questFrame->description.setText( " " );
+    questFrame->description.set( " " );
   }
   else {
     questFrame->currentQuest = ( questFrame->currentQuest - 1 + nQuests + nQuests ) % nQuests;

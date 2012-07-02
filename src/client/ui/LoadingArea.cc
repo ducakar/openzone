@@ -46,6 +46,14 @@ LoadingArea::LoadingArea() :
 LoadingArea::~LoadingArea()
 {}
 
+void LoadingArea::onReposition()
+{
+  width  = camera.width;
+  height = camera.height;
+
+  status.set( width / 2, height / 5 );
+}
+
 void LoadingArea::onDraw()
 {
   shader.colour( Vec4( 0.1f, 0.1f, 0.1f, 1.0f ) );

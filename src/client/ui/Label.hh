@@ -68,8 +68,13 @@ class Label
     OZ_PRINTF_FORMAT( 6, 7 )
     void set( int x, int y, int align, Font::Type font, const char* s, ... );
 
+    OZ_PRINTF_FORMAT( 4, 5 )
+    void set( int x, int y, const char* s, ... );
+
+    void set( int x, int y );
+
     OZ_PRINTF_FORMAT( 2, 3 )
-    void setText( const char* s, ... );
+    void set( const char* s, ... );
 
     void draw( const Area* area, bool allowChanged );
 

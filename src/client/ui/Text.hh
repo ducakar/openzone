@@ -54,7 +54,7 @@ class Text
     ~Text();
 
     OZ_PRINTF_FORMAT( 2, 3 )
-    void setText( const char* s, ... );
+    void set( const char* s, ... );
 
     void clear();
 
