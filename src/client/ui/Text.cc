@@ -68,7 +68,7 @@ Text::~Text()
   delete[] labels;
 }
 
-void Text::setText( const char* s, ... )
+void Text::set( const char* s, ... )
 {
   va_list ap;
   va_start( ap, s );
@@ -108,7 +108,7 @@ void Text::setText( const char* s, ... )
     char ch = *end;
     *end = '\0';
 
-    labels[line].setText( "%s", pos );
+    labels[line].set( "%s", pos );
 
     *end = ch;
 
@@ -118,11 +118,11 @@ void Text::setText( const char* s, ... )
     ++line;
   }
 
-  labels[line].setText( "%s", pos );
+  labels[line].set( "%s", pos );
   ++line;
 
   while( line < nLines ) {
-    labels[line].setText( " " );
+    labels[line].set( " " );
     ++line;
   }
 }
@@ -130,7 +130,7 @@ void Text::setText( const char* s, ... )
 void Text::clear()
 {
   for( int i = 0; i < nLines; ++i ) {
-    labels[i].setText( " " );
+    labels[i].set( " " );
   }
 }
 

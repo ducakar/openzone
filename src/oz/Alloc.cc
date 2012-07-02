@@ -103,13 +103,17 @@ void Alloc::printSummary()
 
 #ifndef OZ_TRACK_LEAKS
 
-void Alloc::printLeaks()
-{}
+bool Alloc::printLeaks()
+{
+  return false;
+}
 
 #else
 
-void Alloc::printLeaks()
+bool Alloc::printLeaks()
 {
+  bool hasOutput = false;
+
   const TraceEntry* bt;
 
   bt = firstObjectTraceEntry;
@@ -120,6 +124,7 @@ void Alloc::printLeaks()
     Log::unindent();
 
     bt = bt->next;
+    hasOutput = true;
   }
 
   bt = firstArrayTraceEntry;
@@ -130,7 +135,10 @@ void Alloc::printLeaks()
     Log::unindent();
 
     bt = bt->next;
+    hasOutput = true;
   }
+
+  return hasOutput;
 }
 
 #endif

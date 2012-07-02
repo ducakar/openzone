@@ -342,10 +342,10 @@ void InventoryMenu::onDraw()
     if( container->flags & Object::BOT_BIT ) {
       const Bot* bot = static_cast<const Bot*>( container );
 
-      title.setText( "%s (%s)", bot->name.cstr(), containerClazz->title.cstr() );
+      title.set( "%s (%s)", bot->name.cstr(), containerClazz->title.cstr() );
     }
     else {
-      title.setText( "%s", containerClazz->title.cstr() );
+      title.set( "%s", containerClazz->title.cstr() );
     }
   }
 

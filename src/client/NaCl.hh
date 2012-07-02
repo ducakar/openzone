@@ -35,18 +35,17 @@
   } \
   else { \
     typedef decltype( t ) _This; \
-    struct _Callback { \
+    struct _Callback \
+    { \
       static void _main( void* data, int ) \
       { \
         _This _this = static_cast<_This>( data ); \
         static_cast<void>( _this ); \
         { code } \
-        oz::client::NaCl::semaphore.post(); \
+        oz::client::NaCl::mainCallSemaphore.post(); \
       } \
     }; \
-    hard_assert( 0 == oz::client::NaCl::semaphore.counter() ); \
     oz::client::NaCl::call( _Callback::_main, ( t ) ); \
-    hard_assert( oz::client::NaCl::semaphore.counter() == 0 ); \
   }
 
 namespace oz
@@ -60,7 +59,7 @@ class NaCl
 
     typedef void Callback( void*, int );
 
-    static Semaphore semaphore;
+    static Semaphore mainCallSemaphore;
 
     static int       width;  ///< Module area width.
     static int       height; ///< Module area height.
@@ -81,7 +80,9 @@ class NaCl
     /*
      * JavaScript messages.
      */
-    static void send( const char* message );
+    static void post( const char* message );
+    static String poll();
+    static void push( const char* message );
 
     /*
      * GL ES context.

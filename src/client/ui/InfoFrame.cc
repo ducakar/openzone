@@ -74,13 +74,13 @@ void InfoFrame::onDraw()
 
     const Bot* tagged = static_cast<const Bot*>( camera.objectObj );
 
-    text.setText( "%s", ( *device )->getMemo() );
+    text.set( "%s", ( *device )->getMemo() );
 
     if( tagged->flags & Object::BOT_BIT ) {
-      title.setText( "%s (%s)", tagged->name.cstr(), tagged->clazz->title.cstr() );
+      title.set( "%s (%s)", tagged->name.cstr(), tagged->clazz->title.cstr() );
     }
     else {
-      title.setText( "%s", tagged->clazz->title.cstr() );
+      title.set( "%s", tagged->clazz->title.cstr() );
     }
   }
 

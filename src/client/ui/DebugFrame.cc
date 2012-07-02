@@ -60,59 +60,59 @@ void DebugFrame::onDraw()
 {
   Frame::onDraw();
 
-  camPosRot.setText( "cam.p(%+.2f %+.2f %+.2f) cam.rot(%+.2f %+.2f %+.2f %+.2f)",
-                     camera.p.x, camera.p.y, camera.p.z,
-                     camera.rot.x, camera.rot.y, camera.rot.z, camera.rot.w );
+  camPosRot.set( "cam.p(%+.2f %+.2f %+.2f) cam.rot(%+.2f %+.2f %+.2f %+.2f)",
+                 camera.p.x, camera.p.y, camera.p.z,
+                 camera.rot.x, camera.rot.y, camera.rot.z, camera.rot.w );
   camPosRot.draw( this, true );
 
   if( camera.bot >= 0 ) {
     const Bot* bot = static_cast<const Bot*>( camera.botObj );
 
-    botPosRot.setText( "bot.pos(%+.2f %+.2f %+.2f) bot.rot(%+.2f %+.2f)",
-                       bot->p.x, bot->p.y, bot->p.z,
-                       Math::deg( bot->h ), Math::deg( bot->v ) );
+    botPosRot.set( "bot.pos(%+.2f %+.2f %+.2f) bot.rot(%+.2f %+.2f)",
+                   bot->p.x, bot->p.y, bot->p.z,
+                   Math::deg( bot->h ), Math::deg( bot->v ) );
     botPosRot.draw( this, true );
 
-    botVelMom.setText( "bot.vel(%+.2f %+.2f %+.2f) bot.mom(%+.2f %+.2f %+.2f) bot.wd %+.2f",
-                       bot->velocity.x, bot->velocity.y, bot->velocity.z,
-                       bot->momentum.x, bot->momentum.y, bot->momentum.z,
-                       bot->depth );
+    botVelMom.set( "bot.vel(%+.2f %+.2f %+.2f) bot.mom(%+.2f %+.2f %+.2f) bot.wd %+.2f",
+                   bot->velocity.x, bot->velocity.y, bot->velocity.z,
+                   bot->momentum.x, bot->momentum.y, bot->momentum.z,
+                   bot->depth );
     botVelMom.draw( this, true );
 
-    botFlagsState.setText( "d %d fl %d lw %d fr %d bl %d lq %d sl %d ld %d ovlp %d sr %+.3f",
-                           ( bot->flags & Object::DISABLED_BIT ) != 0,
-                           ( bot->flags & Object::ON_FLOOR_BIT ) != 0,
-                           bot->lower,
-                           ( bot->flags & Object::FRICTING_BIT ) != 0,
-                           ( bot->flags & Object::BELOW_BIT ) != 0,
-                           ( bot->flags & Object::IN_LIQUID_BIT ) != 0,
-                           ( bot->flags & Object::ON_SLICK_BIT ) != 0,
-                           ( bot->flags & Object::ON_LADDER_BIT ) != 0,
-                           collider.overlaps( bot, bot ),
-                           bot->stairRate );
+    botFlagsState.set( "d %d fl %d lw %d fr %d bl %d lq %d sl %d ld %d ovlp %d sr %+.3f",
+                       ( bot->flags & Object::DISABLED_BIT ) != 0,
+                       ( bot->flags & Object::ON_FLOOR_BIT ) != 0,
+                       bot->lower,
+                       ( bot->flags & Object::FRICTING_BIT ) != 0,
+                       ( bot->flags & Object::BELOW_BIT ) != 0,
+                       ( bot->flags & Object::IN_LIQUID_BIT ) != 0,
+                       ( bot->flags & Object::ON_SLICK_BIT ) != 0,
+                       ( bot->flags & Object::ON_LADDER_BIT ) != 0,
+                       collider.overlaps( bot, bot ),
+                       bot->stairRate );
     botFlagsState.draw( this, true );
   }
 
   if( camera.object >= 0 && ( camera.objectObj->flags & Object::DYNAMIC_BIT ) ) {
     const Dynamic* dyn = static_cast<const Dynamic*>( camera.objectObj );
 
-    tagPos.setText( "tagDyn.pos(%+.2f %+.2f %+.2f)", dyn->p.x, dyn->p.y, dyn->p.z );
+    tagPos.set( "tagDyn.pos(%+.2f %+.2f %+.2f)", dyn->p.x, dyn->p.y, dyn->p.z );
     tagPos.draw( this, true );
 
-    tagVelMom.setText( "tagDyn.vel(%+.2f %+.2f %+.2f) tagDyn.mom(%+.2f %+.2f %+.2f)",
-                       dyn->velocity.x, dyn->velocity.y, dyn->velocity.z,
-                       dyn->momentum.x, dyn->momentum.y, dyn->momentum.z );
+    tagVelMom.set( "tagDyn.vel(%+.2f %+.2f %+.2f) tagDyn.mom(%+.2f %+.2f %+.2f)",
+                   dyn->velocity.x, dyn->velocity.y, dyn->velocity.z,
+                   dyn->momentum.x, dyn->momentum.y, dyn->momentum.z );
     tagVelMom.draw( this, true );
 
-    tagFlags.setText( "d %d fl %d lw %d fr %d bl %d lq %d sl %d ld %d",
-                      ( dyn->flags & Object::DISABLED_BIT ) != 0,
-                      ( dyn->flags & Object::ON_FLOOR_BIT ) != 0,
-                      dyn->lower,
-                      ( dyn->flags & Object::FRICTING_BIT ) != 0,
-                      ( dyn->flags & Object::BELOW_BIT ) != 0,
-                      ( dyn->flags & Object::IN_LIQUID_BIT ) != 0,
-                      ( dyn->flags & Object::ON_SLICK_BIT ) != 0,
-                      ( dyn->flags & Object::ON_LADDER_BIT ) != 0 );
+    tagFlags.set( "d %d fl %d lw %d fr %d bl %d lq %d sl %d ld %d",
+                  ( dyn->flags & Object::DISABLED_BIT ) != 0,
+                  ( dyn->flags & Object::ON_FLOOR_BIT ) != 0,
+                  dyn->lower,
+                  ( dyn->flags & Object::FRICTING_BIT ) != 0,
+                  ( dyn->flags & Object::BELOW_BIT ) != 0,
+                  ( dyn->flags & Object::IN_LIQUID_BIT ) != 0,
+                  ( dyn->flags & Object::ON_SLICK_BIT ) != 0,
+                  ( dyn->flags & Object::ON_LADDER_BIT ) != 0 );
     tagFlags.draw( this, true );
   }
 }

@@ -35,23 +35,24 @@ namespace oz
 namespace matrix
 {
 
-const float Bot::AIR_FRICTION       =  0.01f;
+const float Bot::AIR_FRICTION         =  0.01f;
+const float Bot::LADDER_SLIP_MOMENTUM =  16.0f;
 
-const float Bot::WOUNDED_THRESHOLD  =  0.70f;
-const float Bot::CORPSE_FADE_FACTOR =  0.50f / 100.0f;
+const float Bot::WOUNDED_THRESHOLD    =  0.70f;
+const float Bot::CORPSE_FADE_FACTOR   =  0.50f / 100.0f;
 
-const float Bot::INSTRUMENT_DIST    =  2.00f;
-const float Bot::INSTRUMENT_DOT_MIN =  0.80f;
+const float Bot::INSTRUMENT_DIST      =  2.00f;
+const float Bot::INSTRUMENT_DOT_MIN   =  0.80f;
 
-const float Bot::GRAB_EPSILON       =  0.20f;
-const float Bot::GRAB_STRING_RATIO  =  10.0f;
-const float Bot::GRAB_HANDLE_TOL    =  1.60f;
-const float Bot::GRAB_MOM_RATIO     =  0.30f;
-const float Bot::GRAB_MOM_MAX       =  1.00f; // must be < abs( Physics::HIT_THRESHOLD )
-const float Bot::GRAB_MOM_MAX_SQ    =  1.00f;
+const float Bot::GRAB_EPSILON         =  0.20f;
+const float Bot::GRAB_STRING_RATIO    =  10.0f;
+const float Bot::GRAB_HANDLE_TOL      =  1.60f;
+const float Bot::GRAB_MOM_RATIO       =  0.30f;
+const float Bot::GRAB_MOM_MAX         =  1.00f; // must be < abs( Physics::HIT_THRESHOLD )
+const float Bot::GRAB_MOM_MAX_SQ      =  1.00f;
 
-const float Bot::STEP_MOVE_AHEAD    =  0.20f;
-const float Bot::CLIMB_MOVE_AHEAD   =  0.40f;
+const float Bot::STEP_MOVE_AHEAD      =  0.20f;
+const float Bot::CLIMB_MOVE_AHEAD     =  0.40f;
 
 Pool<Bot, 1024> Bot::pool;
 
@@ -436,7 +437,7 @@ void Bot::onUpdate()
     state &= ~( GROUNDED_BIT | ON_STAIRS_BIT | CLIMBING_BIT | SWIMMING_BIT | SUBMERGED_BIT |
                 ATTACKING_BIT );
 
-    if( cargo >= 0 ) {
+    if( cargo >= 0 || velocity.sqN() > LADDER_SLIP_MOMENTUM ) {
       flags &= ~ON_LADDER_BIT;
     }
 
@@ -449,8 +450,14 @@ void Bot::onUpdate()
       stamina -= clazz->staminaWaterDrain;
 
       if( stamina < 0.0f ) {
+        float oldLife = life;
+
         life += stamina;
         stamina = 0.0f;
+
+        if( int( life ) / 8 != int( oldLife ) / 8 ) {
+          addEvent( EVENT_DAMAGE, 1.0f );
+        }
       }
     }
 
@@ -579,6 +586,10 @@ void Bot::onUpdate()
     if( actions & ACTION_LEFT ) {
       move.x -= hvsc[1];
       move.y -= hvsc[0];
+    }
+
+    if( state & CLIMBING_BIT ) {
+      move.z *= 2.0f;
     }
 
     if( move == Vec3::ZERO ) {
@@ -737,12 +748,7 @@ void Bot::onUpdate()
         desiredMomentum *= clazz->slickControl;
       }
       else if( state & CLIMBING_BIT ) {
-        if( actions & ACTION_JUMP ) {
-          desiredMomentum = Vec3::ZERO;
-        }
-        else {
-          desiredMomentum *= clazz->climbControl;
-        }
+        desiredMomentum *= clazz->climbControl;
       }
       else if( state & SWIMMING_BIT ) {
         // not on static ground

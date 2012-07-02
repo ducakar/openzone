@@ -270,7 +270,7 @@ class Object : public AABB
      * @param intensity
      */
     OZ_ALWAYS_INLINE
-    void addEvent( int id, float intensity = 1.0f )
+    void addEvent( int id, float intensity )
     {
       events.add( new Event( id, intensity ) );
     }

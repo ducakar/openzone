@@ -127,7 +127,7 @@ void UI::draw()
       fps = Math::mix( fps, 1.0f / timer.frameTime, 0.04f );
     }
 
-    fpsLabel->setText( "%.1f", fps );
+    fpsLabel->set( "%.1f", fps );
     fpsLabel->draw( root, true );
   }
 

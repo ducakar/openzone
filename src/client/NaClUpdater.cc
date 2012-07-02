@@ -173,10 +173,10 @@ void NaClUpdater::downloadUpdates()
       float progress = downloader.progress() * 100.0f;
 
       if( Math::isnan( progress ) ) {
-        NaCl::send( String::str( "load:Posodabljam<br/>%d/%d", packageNum, nRemotePackages ) );
+        NaCl::post( String::str( "upd1:%d/%d", packageNum, nRemotePackages ) );
       }
       else {
-        NaCl::send( String::str( "load:Posodabljam<br/>%d/%d: %.0f %%",
+        NaCl::post( String::str( "upd1:%d/%d: %.0f %%",
                                  packageNum, nRemotePackages, progress ) );
       }
     }
@@ -235,7 +235,7 @@ DArray<String> NaClUpdater::update()
   Log::println( "Updating game data files {" );
   Log::indent();
 
-  NaCl::send( "load:Preverjam posodobitve" );
+  NaCl::post( "upd0:" );
 
   if( checkUpdates() ) {
     downloadUpdates();
@@ -250,7 +250,7 @@ DArray<String> NaClUpdater::update()
   localPackages.dealloc();
   remotePackages.dealloc();
 
-  NaCl::send( "load:Zaganjam" );
+  NaCl::post( "none:" );
 
   Log::unindent();
   Log::println( "}" );

@@ -112,7 +112,7 @@ class Alloc
     /**
      * Print memory leaks using the global log.
      */
-    static void printLeaks();
+    static bool printLeaks();
 
 };
 

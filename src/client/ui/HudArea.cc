@@ -75,7 +75,7 @@ void HudArea::drawBotCrosshair()
       if( lastEntityId != camera.entity ) {
         lastEntityId = camera.entity;
 
-        title.setText( "%s", model->title.cstr() );
+        title.set( descTextX, descTextY, ALIGN_CENTRE, Font::LARGE, "%s", model->title.cstr() );
       }
 
       title.draw( this, false );
@@ -220,16 +220,16 @@ void HudArea::drawBotStatus()
 
     if( lastWeaponId != bot->weapon ) {
       lastWeaponId = bot->weapon;
-      weaponName.setText( "%s", weaponObj->clazz->title.cstr() );
+      weaponName.set( "%s", weaponObj->clazz->title.cstr() );
     }
     if( lastWeaponRounds != weaponObj->nRounds ) {
       lastWeaponRounds = weaponObj->nRounds;
 
       if( weaponObj->nRounds < 0 ) {
-        weaponRounds.setText( "∞" );
+        weaponRounds.set( "∞" );
       }
       else {
-        weaponRounds.setText( "%d", weaponObj->nRounds );
+        weaponRounds.set( "%d", weaponObj->nRounds );
       }
     }
 
@@ -298,7 +298,7 @@ void HudArea::drawVehicleStatus()
     for( int i = 0; i < vehClazz->nWeapons; ++i ) {
       int labelIndex = vehClazz->nWeapons - i - 1;
 
-      vehicleWeaponNames[labelIndex].setText( "%s", vehClazz->weaponTitles[i].cstr() );
+      vehicleWeaponNames[labelIndex].set( "%s", vehClazz->weaponTitles[i].cstr() );
     }
   }
 
@@ -317,10 +317,10 @@ void HudArea::drawVehicleStatus()
       lastVehicleWeaponRounds[labelIndex] = vehicle->nRounds[i];
 
       if( vehicle->nRounds[i] < 0 ) {
-        vehicleWeaponRounds[labelIndex].setText( "∞" );
+        vehicleWeaponRounds[labelIndex].set( "∞" );
       }
       else {
-        vehicleWeaponRounds[labelIndex].setText( "%d", vehicle->nRounds[i] );
+        vehicleWeaponRounds[labelIndex].set( "%d", vehicle->nRounds[i] );
       }
     }
 

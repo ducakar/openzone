@@ -75,11 +75,18 @@ int raise( int )
 namespace oz
 {
 
+static const int CATCHABLE_SIGNALS[] = {
+  SIGILL,
+  SIGABRT,
+  SIGFPE,
+  SIGSEGV
+};
+
 #if defined( __native_client__ )
 
-const float SAMPLE_LENGTH    = 0.28f;
-const float SAMPLE_GUARD     = 0.28f;
-const float SAMPLE_FREQUENCY = 800.0f;
+static const float SAMPLE_LENGTH    = 0.28f;
+static const float SAMPLE_GUARD     = 0.28f;
+static const float SAMPLE_FREQUENCY = 800.0f;
 
 struct SampleInfo
 {
@@ -150,11 +157,9 @@ static pthread_spinlock_t bellLock;
 
 static void resetSignals()
 {
-  signal( SIGINT,  SIG_DFL );
-  signal( SIGILL,  SIG_DFL );
-  signal( SIGABRT, SIG_DFL );
-  signal( SIGFPE,  SIG_DFL );
-  signal( SIGSEGV, SIG_DFL );
+  for( int i = 0; i < aLength( CATCHABLE_SIGNALS ); ++i ) {
+    signal( CATCHABLE_SIGNALS[i], SIG_DFL );
+  }
 }
 
 OZ_NORETURN
@@ -175,11 +180,9 @@ static void signalHandler( int sigNum )
 
 static void catchSignals()
 {
-  signal( SIGINT,  signalHandler );
-  signal( SIGILL,  signalHandler );
-  signal( SIGABRT, signalHandler );
-  signal( SIGFPE,  signalHandler );
-  signal( SIGSEGV, signalHandler );
+  for( int i = 0; i < aLength( CATCHABLE_SIGNALS ); ++i ) {
+    signal( CATCHABLE_SIGNALS[i], signalHandler );
+  }
 }
 
 OZ_NORETURN
@@ -387,6 +390,12 @@ System::System()
 System::~System()
 {
   // Delay termination until bell finishes.
+#if defined( __native_client__ )
+  if( core->IsMainThread() ) {
+    return;
+  }
+#endif
+
 #ifdef _WIN32
   while( isBellPlaying ) {
     Sleep( 10 );
@@ -558,6 +567,10 @@ void System::error( const std::exception& e )
 
 void System::init( int flags )
 {
+#ifdef __native_client__
+  flags &= ~HALT_BIT;
+#endif
+
   if( !isConstructed ) {
     construct();
   }
