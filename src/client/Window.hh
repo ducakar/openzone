@@ -53,11 +53,15 @@ class Window
 
 #endif
 
+    int  desktopWidth;
+    int  desktopHeight;
+    int  desiredWidth;
+    int  desiredHeight;
+
   public:
 
     int  width;
     int  height;
-    int  bpp;
     uint flags;
     bool isFull;
 

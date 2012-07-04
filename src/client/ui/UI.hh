@@ -79,7 +79,6 @@ class UI
     UI();
 
     void showLoadingScreen( bool doShow );
-    void prepare();
 
     void update();
     void draw();

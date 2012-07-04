@@ -29,10 +29,10 @@
 #include "matrix/BotClass.hh"
 #include "matrix/WeaponClass.hh"
 
-#ifndef __clang__
+// #ifndef __clang__
 // GCC bug, issues a false warning.
 # pragma GCC diagnostic ignored "-Wconversion"
-#endif
+// #endif
 
 namespace oz
 {
@@ -43,20 +43,35 @@ Profile profile;
 
 void Profile::init()
 {
-  const char* userName = SDL_getenv( "USER" );
-  userName = userName == null ? "Player" : userName;
+  if( !config.contains( "profile.name" ) ) {
+    const char* userName = SDL_getenv( "USER" );
+    userName = userName == null ? "Player" : userName;
 
-  char playerName[64];
-  strncpy( playerName, userName, 64 );
-  playerName[63] = '\0';
+    char playerName[64];
+    strncpy( playerName, userName, 64 );
+    playerName[63] = '\0';
 
-  if( 'a' <= playerName[0] && playerName[0] <= 'z' ) {
-    playerName[0] += char( 'A' - 'a' );
+    if( 'a' <= playerName[0] && playerName[0] <= 'z' ) {
+      playerName[0] += char( 'A' - 'a' );
+    }
+
+    config.add( "profile.name", playerName );
   }
 
-  const ObjectClass* objClazz = library.objClass( config.getSet( "profile.class", "beast" ) );
+  name = config.get( "profile.name", "" );
 
-  name  = config.getSet( "profile.name", playerName );
+  if( !config.contains( "profile.class" ) ) {
+    config.add( "profile.class", "beast" );
+    config.add( "profile.item00", "beast_weapon.plasmagun" );
+    config.add( "profile.item01", "nvGoggles" );
+    config.add( "profile.item02", "binoculars" );
+    config.add( "profile.item03", "galileo" );
+    config.add( "profile.item04", "musicPlayer" );
+    config.add( "profile.item05", "cvicek" );
+    config.add( "profile.weaponItem", "0" );
+  }
+
+  const ObjectClass* objClazz = library.objClass( config.get( "profile.class", "" ) );
   clazz = static_cast<const BotClass*>( objClazz );
 
   char buffer[] = "profile.item  ";

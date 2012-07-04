@@ -49,11 +49,11 @@ void InventoryMenu::handleComponent( int height, const Object* container, int* t
   if( ( container == owner && mouse.y < y + SINGLE_HEIGHT ) ||
     ( container == other && mouse.y >= y + SINGLE_HEIGHT ) )
   {
-    if( mouse.wheelDown ) {
+    if( input.wheelDown ) {
       int nScrollRows = max( 0, container->clazz->nItems - ( ROWS - 1 ) * COLS - 1 ) / COLS;
       *scroll = clamp( *scroll + 1,  0, nScrollRows );
     }
-    if( mouse.wheelUp ) {
+    if( input.wheelUp ) {
       int nScrollRows = max( 0, container->clazz->nItems - ( ROWS - 1 ) * COLS - 1 ) / COLS;
       *scroll = clamp( *scroll - 1,  0, nScrollRows );
     }
@@ -68,7 +68,7 @@ void InventoryMenu::handleComponent( int height, const Object* container, int* t
 
       const Dynamic* item;
 
-      if( mouse.leftClick ) {
+      if( input.leftClick ) {
         if( uint( *tagged ) < uint( container->items.length() ) ) {
           item = static_cast<const Dynamic*>( orbis.objects[ container->items[*tagged] ] );
 
@@ -85,7 +85,7 @@ void InventoryMenu::handleComponent( int height, const Object* container, int* t
           }
         }
       }
-      else if( mouse.rightClick ) {
+      else if( input.rightClick ) {
         if( uint( *tagged ) < uint( container->items.length() ) ) {
           item = static_cast<const Dynamic*>( orbis.objects[ container->items[*tagged] ] );
 
@@ -94,7 +94,7 @@ void InventoryMenu::handleComponent( int height, const Object* container, int* t
           }
         }
       }
-      else if( mouse.middleClick ) {
+      else if( input.middleClick ) {
         if( uint( *tagged ) < uint( bot->items.length() ) ) {
           item = static_cast<const Dynamic*>( orbis.objects[ bot->items[*tagged] ] );
 

@@ -26,6 +26,7 @@
 #include "client/Input.hh"
 
 #include "client/Window.hh"
+#include "client/NaCl.hh"
 
 namespace oz
 {
@@ -115,6 +116,14 @@ void Input::update()
   mouseX = +inputX;
   mouseY = -inputY;
 
+  int clickedButtons = input.buttons & ~input.oldButtons;
+
+  leftClick   = clickedButtons & Input::LEFT_BUTTON;
+  middleClick = clickedButtons & Input::MIDDLE_BUTTON;
+  rightClick  = clickedButtons & Input::RIGHT_BUTTON;
+  wheelUp     = input.mouseW > 0;
+  wheelDown   = input.mouseW < 0;
+
   // If input is not grabbed we must centre mouse so it cannot move out of the window.
   if( isLocked ) {
     reset();
@@ -131,6 +140,12 @@ void Input::init()
   buttons     = 0;
   oldButtons  = 0;
   currButtons = 0;
+
+  leftClick   = false;
+  middleClick = false;
+  rightClick  = false;
+  wheelUp     = false;
+  wheelDown   = false;
 
   hasFocus    = true;
   isLocked    = true;

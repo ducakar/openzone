@@ -246,12 +246,12 @@ void UnitProxy::prepare()
       bot->actions |= Bot::ACTION_ATTACK;
     }
 
-    if( ui::mouse.leftClick ) {
+    if( input.leftClick ) {
       if( bot->cargo >= 0 ) {
         bot->rotateCargo();
       }
     }
-    if( ui::mouse.rightClick ) {
+    if( input.rightClick ) {
       if( bot->parent >= 0 ) {
         bot->actions |= Bot::ACTION_VEH_NEXT_WEAPON;
       }
@@ -262,7 +262,7 @@ void UnitProxy::prepare()
         bot->use( camera.objectObj );
       }
     }
-    else if( ui::mouse.middleClick ) {
+    else if( input.middleClick ) {
       if( bot->cargo >= 0 ) {
         bot->grab();
       }
@@ -277,7 +277,7 @@ void UnitProxy::prepare()
         }
       }
     }
-    else if( ui::mouse.wheelDown ) {
+    else if( input.wheelDown ) {
       if( camera.objectObj != null ) {
         if( camera.objectObj->flags & Object::BROWSABLE_BIT ) {
           ui::mouse.doShow = true;
@@ -291,7 +291,7 @@ void UnitProxy::prepare()
         }
       }
     }
-    else if( ui::mouse.wheelUp ) {
+    else if( input.wheelUp ) {
       if( bot->cargo >= 0 ) {
         bot->throwCargo();
       }

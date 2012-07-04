@@ -677,7 +677,7 @@ void Build::packArchive( const char* name, bool useCompression, bool use7zip )
 
   if( size >= 0 ) {
     Log::println();
-    Log::println( "Archive size: %.1f MiB = %.1f MB",
+    Log::println( "Archive size: %.2f MiB = %.2f MB",
                   float( size ) / ( 1024.0f * 1024.0f ),
                   float( size ) / ( 1000.0f * 1000.0f ) );
   }

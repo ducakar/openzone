@@ -28,6 +28,7 @@
 #include "client/Camera.hh"
 #include "client/Shader.hh"
 #include "client/Shape.hh"
+#include "client/Input.hh"
 #include "client/OpenGL.hh"
 
 #include <SDL_ttf.h>
@@ -297,7 +298,7 @@ bool StrategicArea::onMouseEvent()
       hoverEnt = str->index * Struct::MAX_ENTITIES + int( ent - str->entities );
     }
 
-    if( ui::mouse.leftClick ) {
+    if( input.leftClick ) {
       taggedStrs.clear();
       taggedObjs.clear();
       taggedStrs.add( hoverStr );
@@ -306,14 +307,14 @@ bool StrategicArea::onMouseEvent()
   else if( obj != null ) {
     hoverObj = obj->index;
 
-    if( ui::mouse.leftClick ) {
+    if( input.leftClick ) {
       taggedStrs.clear();
       taggedObjs.clear();
       taggedObjs.add( hoverObj );
     }
   }
   else {
-    if( ui::mouse.leftClick ) {
+    if( input.leftClick ) {
       taggedStrs.clear();
       taggedObjs.clear();
     }

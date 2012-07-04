@@ -28,6 +28,7 @@
 #include "client/Camera.hh"
 #include "client/Context.hh"
 #include "client/Shape.hh"
+#include "client/Window.hh"
 #include "client/Input.hh"
 #include "client/OpenGL.hh"
 
@@ -56,8 +57,26 @@ void Mouse::update()
   if( doShow ) {
     icon = ARROW;
 
-    int desiredX = x + input.mouseX;
-    int desiredY = y + input.mouseY;
+    int moveX = input.mouseX;
+    int moveY = input.mouseY;
+
+#ifdef __linux__
+
+    // Compensate lack of mouse acceleration in fullscreen mode on X server. This code is not based
+    // on actual code from X.Org, but experimentally tuned to match default X server acceleration
+    // as closely as possible.
+    if( window.isFull ) {
+      float move2  = Math::sqrt( float( moveX*moveX + moveY*moveY ) );
+      float factor = min( 0.5f + max( move2 - 8.0f, 0.0f ) * 0.04f, 2.0f );
+
+      moveX = int( float( input.mouseX ) * factor );
+      moveY = int( float( input.mouseY ) * factor );
+    }
+
+#endif
+
+    int desiredX = x + moveX;
+    int desiredY = y + moveY;
 
     x = clamp( desiredX, 0, camera.width  - 1 );
     y = clamp( desiredY, 0, camera.height - 1 );
@@ -72,14 +91,6 @@ void Mouse::update()
     overEdgeX = input.mouseX;
     overEdgeY = input.mouseY;
   }
-
-  int clickedButtons = input.buttons & ~input.oldButtons;
-
-  leftClick   = ( clickedButtons & Input::LEFT_BUTTON ) != 0;
-  middleClick = ( clickedButtons & Input::MIDDLE_BUTTON ) != 0;
-  rightClick  = ( clickedButtons & Input::RIGHT_BUTTON ) != 0;
-  wheelUp     = input.mouseW > 0;
-  wheelDown   = input.mouseW < 0;
 }
 
 void Mouse::draw() const
@@ -134,20 +145,14 @@ void Mouse::unload()
 
 void Mouse::init()
 {
-  x           = 0;
-  y           = 0;
+  x         = 0;
+  y         = 0;
 
-  overEdgeX   = 0;
-  overEdgeY   = 0;
+  overEdgeX = 0;
+  overEdgeY = 0;
 
-  leftClick   = false;
-  middleClick = false;
-  rightClick  = false;
-  wheelUp     = false;
-  wheelDown   = false;
-
-  icon        = ARROW;
-  doShow      = false;
+  icon      = ARROW;
+  doShow    = false;
 }
 
 }

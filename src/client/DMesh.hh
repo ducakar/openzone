@@ -52,11 +52,11 @@ class DMesh : public Mesh
 
     DMesh();
 
-    void load( InputStream* istream, const char* path );
-    void unload();
-
     void drawFrame( int mask, int frame ) const;
     void drawAnim( int mask, int firstFrame, int secondFrame, float interpolation ) const;
+
+    void load( InputStream* istream, const char* path );
+    void unload();
 
     static void free();
 

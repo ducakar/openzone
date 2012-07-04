@@ -106,14 +106,14 @@ class Mesh
     Mesh();
     ~Mesh();
 
-    void load( InputStream* istream, uint usage, const char* path );
-    void unload();
-
-    void upload( const Vertex* vertices, int nVertices, uint usage ) const;
-
     void bind() const;
     void drawComponent( int id, int mask ) const;
     void draw( int mask ) const;
+
+    void upload( const Vertex* vertices, int nVertices, uint usage ) const;
+
+    void load( InputStream* istream, uint usage, const char* path );
+    void unload();
 
 };
 

@@ -197,12 +197,12 @@ void StrategicProxy::update()
     if( input.keys[SDLK_LCTRL] || input.keys[SDLK_c] ) {
       height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR );
     }
-    if( ui::mouse.wheelDown ) {
+    if( input.wheelDown ) {
       float wheelFactor = float( input.mouseW ) * 10.0f;
 
       height = min( MAX_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
     }
-    if( ui::mouse.wheelUp ) {
+    if( input.wheelUp ) {
       float wheelFactor = float( input.mouseW ) * 10.0f;
 
       height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
