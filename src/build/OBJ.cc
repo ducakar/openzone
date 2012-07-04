@@ -357,7 +357,7 @@ void OBJ::save()
   File destFile( path + "/data.ozcSMM" );
 
   compiler.beginMesh();
-  compiler.enable( CAP_UNIQUE );
+  compiler.enable( Compiler::UNIQUE );
 
   for( int i = 0; i < parts.length(); ++i ) {
     compiler.texture( path + "/" + parts[i].texture );
@@ -366,7 +366,7 @@ void OBJ::save()
     for( int j = 0; j < parts[i].faces.length(); ++j ) {
       const Face& face = parts[i].faces[j];
 
-      compiler.begin( GL_POLYGON );
+      compiler.begin( Compiler::POLYGON );
 
       for( int k = 0; k < face.vertices.length(); ++k ) {
         const FaceVertex& vertex = face.vertices[k];
@@ -384,13 +384,10 @@ void OBJ::save()
 
   compiler.endMesh();
 
-  Mesh mesh;
-  compiler.getMeshData( &mesh );
-
   BufferStream os;
 
   os.writeString( shader );
-  mesh.write( &os );
+  compiler.writeMesh( &os );
 
   Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 

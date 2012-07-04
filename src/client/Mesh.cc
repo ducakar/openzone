@@ -142,8 +142,10 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
       int flags = istream->readInt();
 
       textures[i].diffuse = flags & DIFFUSE_BIT ? context.readTextureLayer( istream, path ) : 0;
-      textures[i].masks   = flags & MASKS_BIT   ? context.readTextureLayer( istream, path ) : shader.defaultMasks;
-      textures[i].normals = flags & NORMALS_BIT ? context.readTextureLayer( istream, path ) : shader.defaultNormals;
+      textures[i].masks   = flags & MASKS_BIT   ? context.readTextureLayer( istream, path ) :
+                                                  shader.defaultMasks;
+      textures[i].normals = flags & NORMALS_BIT ? context.readTextureLayer( istream, path ) :
+                                                  shader.defaultNormals;
 
       texIds[i*3 + 0] = int( textures[i].diffuse );
       texIds[i*3 + 1] = int( textures[i].masks );
@@ -197,32 +199,34 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
 
 void Mesh::unload()
 {
-  if( vbo != 0 ) {
-    if( flags & EMBEDED_TEX_BIT ) {
-      foreach( texId, texIds.citer() ) {
-        uint id = uint( *texId );
-
-        if( id != 0 && id != shader.defaultMasks && id != shader.defaultNormals ) {
-          glDeleteTextures( 1, &id );
-        }
-      }
-    }
-    else {
-      foreach( id, texIds.citer() ) {
-        if( *id >= 0 ) {
-          context.releaseTexture( *id );
-        }
-      }
-    }
-
-    texIds.dealloc();
-
-    glDeleteBuffers( 1, &ibo );
-    glDeleteBuffers( 1, &vbo );
-
-    ibo = 0;
-    vbo = 0;
+  if( vbo == 0 ) {
+    return;
   }
+
+  if( flags & EMBEDED_TEX_BIT ) {
+    foreach( texId, texIds.citer() ) {
+      uint id = uint( *texId );
+
+      if( id != 0 && id != shader.defaultMasks && id != shader.defaultNormals ) {
+        glDeleteTextures( 1, &id );
+      }
+    }
+  }
+  else {
+    foreach( id, texIds.citer() ) {
+      if( *id >= 0 ) {
+        context.releaseTexture( *id );
+      }
+    }
+  }
+
+  texIds.dealloc();
+
+  glDeleteBuffers( 1, &ibo );
+  glDeleteBuffers( 1, &vbo );
+
+  ibo = 0;
+  vbo = 0;
 
   OZ_GL_CHECK_ERROR();
 }

@@ -121,7 +121,7 @@ void MD2Imago::draw( const Imago* parent, int mask )
 
     md2->draw( &anim );
 
-    // FIXME Enable if no buggy models (with mismatched death animation for weapon) are used.
+    // HACK Enable when no buggy models are used (no mismatched death animation for weapons).
 //     if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
 //       context.drawImago( orbis.objects[bot->weapon], this, Mesh::SOLID_BIT );
 //     }

@@ -1,7 +1,8 @@
 #!/bin/sh
 
 cat << EOF > CMakeLists.txt
-add_executable( unittest `echo *.cc` )
+add_executable( unittest
+  `echo *.cc | sed 's/ /\n  /g'` )
 target_link_libraries( unittest oz \${libs_oz} )
 
 if( NACL )

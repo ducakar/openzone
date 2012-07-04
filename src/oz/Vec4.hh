@@ -120,14 +120,6 @@ class Vec4
     }
 
     /**
-     * Cast to 3D vector.
-     */
-    operator Vec3 () const
-    {
-      return Vec3( x, y, z );
-    }
-
-    /**
      * Constant float pointer to the members.
      */
     OZ_ALWAYS_INLINE
@@ -165,6 +157,26 @@ class Vec4
       hard_assert( 0 <= i && i < 4 );
 
       return ( &x )[i];
+    }
+
+    /**
+     * Return the 3D vector this vector represents (last component should be 0).
+     */
+    Vec3 vec3() const
+    {
+      hard_assert( w == 0.0f );
+
+      return Vec3( x, y, z );
+    }
+
+    /**
+     * Return the point vector represents (last component should be 1).
+     */
+    Point point() const
+    {
+      hard_assert( w == 1.0f );
+
+      return Point( x, y, z );
     }
 
     /**

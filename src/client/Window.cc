@@ -29,6 +29,13 @@
 
 #include "client/ui/Mouse.hh"
 
+#ifdef __native_client__
+# include <ppapi/cpp/completion_callback.h>
+# include <ppapi/cpp/instance.h>
+# include <ppapi/cpp/graphics_3d.h>
+# include <ppapi/gles2/gl2ext_ppapi.h>
+#endif
+
 namespace oz
 {
 namespace client
@@ -36,8 +43,40 @@ namespace client
 
 Window window;
 
+#ifdef __native_client__
+
+void Window::flushCompleteCallback( void* data, int )
+{
+  Window* window = static_cast<Window*>( data );
+
+  window->flushSemaphore.post();
+}
+
+// Because of array initialiser this code cannot reside inside OZ_MAIN_CALL macro, so it has been
+// separated into a new function.
+void Window::createContext()
+{
+  int attribs[] = {
+    PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 16,
+    PP_GRAPHICS3DATTRIB_WIDTH, width,
+    PP_GRAPHICS3DATTRIB_HEIGHT, height,
+    PP_GRAPHICS3DATTRIB_NONE
+  };
+
+  context = new pp::Graphics3D( System::instance, pp::Graphics3D(), attribs );
+  if( context->is_null() ) {
+    throw Exception( "Failed to create OpenGL context" );
+  }
+
+  if( !System::instance->BindGraphics( *context ) ) {
+    throw Exception( "Failed to bind Graphics3D" );
+  }
+}
+
+#endif
+
 Window::Window() :
-  descriptor( null ), width( 0 ), height( 0 ), bpp( 0 ), flags( 0 ), isFull( 0 )
+  width( 0 ), height( 0 ), bpp( 0 ), flags( 0 ), isFull( 0 )
 {}
 
 void Window::resize()
@@ -48,7 +87,9 @@ void Window::resize()
   height = NaCl::height;
 
   OZ_MAIN_CALL( this, {
-    NaCl::resizeGLContext();
+    glSetCurrentContextPPAPI( 0 );
+    _this->context->ResizeBuffers( _this->width, _this->height );
+    glSetCurrentContextPPAPI( _this->context->pp_resource() );
   } )
 
 #else
@@ -82,9 +123,27 @@ void Window::toggleFull()
 #endif
 }
 
+void Window::swapBuffers()
+{
+#ifdef __native_client__
+
+  OZ_MAIN_CALL( this, {
+    _this->context->SwapBuffers( pp::CompletionCallback( &_this->flushCompleteCallback, _this ) );
+  } )
+  flushSemaphore.wait();
+
+#else
+
+  SDL_GL_SwapBuffers();
+
+#endif
+}
+
 void Window::init()
 {
 #ifdef __native_client__
+
+  flushSemaphore.init();
 
   width  = NaCl::width;
   height = NaCl::height;
@@ -93,15 +152,17 @@ void Window::init()
   isFull = false;
 
   OZ_MAIN_CALL( this, {
-    NaCl::initGLContext();
-    NaCl::activateGLContext();
+    glInitializePPAPI( System::module->get_browser_interface() );
+    _this->createContext();
+    glSetCurrentContextPPAPI( _this->context->pp_resource() );
 
     glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
     glFlush();
 
-    NaCl::flushGLContext();
+    _this->context->SwapBuffers( pp::CompletionCallback( &_this->flushCompleteCallback, _this ) );
   } )
+  flushSemaphore.wait();
 
 #else
 
@@ -109,7 +170,7 @@ void Window::init()
   // mode screensaver never starts anyway. Turning off screensaver has a side effect: if the game
   // crashes, it remains turned off. Besides that, in X11 several programs (e.g. IM clients) rely
   // on screensaver's counter, so they don't detect that you are away if the screensaver is screwed.
-  static char allowScreensaverEnv[] = "SDL_VIDEO_ALLOW_SCREENSAVER=1";
+  char allowScreensaverEnv[] = "SDL_VIDEO_ALLOW_SCREENSAVER=1";
   SDL_putenv( allowScreensaverEnv );
 
   width            = config.getSet( "window.width", 0 );
@@ -179,7 +240,15 @@ void Window::init()
 void Window::free()
 {
 #ifdef __native_client__
-  NaCl::freeGLContext();
+
+  OZ_MAIN_CALL( this, {
+    glSetCurrentContextPPAPI( 0 );
+    delete _this->context;
+    glTerminatePPAPI();
+  } )
+
+  flushSemaphore.destroy();
+
 #endif
 }
 

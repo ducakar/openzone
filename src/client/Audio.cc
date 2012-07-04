@@ -48,7 +48,7 @@ void Audio::playSound( int sound, float volume, const Object* obj, const Object*
 
   alGenSources( 1, &srcId );
   if( alGetError() != AL_NO_ERROR ) {
-    Log::println( "AL: Too many sources" );
+    Log::println( "OpenAL: Too many sound sources" );
     return;
   }
 

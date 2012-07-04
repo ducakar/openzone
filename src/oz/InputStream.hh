@@ -190,8 +190,7 @@ class InputStream
       pos += count;
 
       if( pos > end ) {
-        throw Exception( "Buffer overrun for %d B during a read of %d B",
-                         int( pos + count - end ), count );
+        throw Exception( "Buffer overrun for %d B during a read of %d B", int( pos - end ), count );
       }
       return oldPos;
     }

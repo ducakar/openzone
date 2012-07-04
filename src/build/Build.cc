@@ -283,13 +283,13 @@ void Build::buildBSPTextures()
 
       Log::println( "Compiling into '%s'", destFile.path().cstr() );
 
-      int textureFlags = client::Mesh::DIFFUSE_BIT;
+      int textureFlags = Mesh::DIFFUSE_BIT;
 
       if( masksId != 0 ) {
-        textureFlags |= client::Mesh::MASKS_BIT;
+        textureFlags |= Mesh::MASKS_BIT;
       }
       if( normalsId != 0 ) {
-        textureFlags |= client::Mesh::NORMALS_BIT;
+        textureFlags |= Mesh::NORMALS_BIT;
       }
 
       os.writeInt( textureFlags );

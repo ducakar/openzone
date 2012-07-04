@@ -25,10 +25,9 @@
 
 #include "build/Compiler.hh"
 
-#include "client/Context.hh"
 #include "client/OpenGL.hh"
 
-#include <GL/gl.h>
+#include "build/Context.hh"
 
 namespace oz
 {
@@ -37,12 +36,45 @@ namespace build
 
 Compiler compiler;
 
-void Compiler::enable( int cap )
+bool Vertex::operator == ( const Vertex& v ) const
+{
+  return pos == v.pos && texCoord == v.texCoord &&
+         normal == v.normal && tangent == v.tangent && binormal == v.binormal &&
+         bones[0] == v.bones[0] && bones[1] == v.bones[1] && blend == v.blend;
+}
+
+void Vertex::write( BufferStream* ostream ) const
+{
+  ostream->writeFloat( pos.x );
+  ostream->writeFloat( pos.y );
+  ostream->writeFloat( pos.z );
+
+  ostream->writeFloat( texCoord.u );
+  ostream->writeFloat( texCoord.v );
+
+  ostream->writeByte( quantifyToByte( normal.x ) );
+  ostream->writeByte( quantifyToByte( normal.y ) );
+  ostream->writeByte( quantifyToByte( normal.z ) );
+
+  ostream->writeByte( quantifyToByte( tangent.x ) );
+  ostream->writeByte( quantifyToByte( tangent.y ) );
+  ostream->writeByte( quantifyToByte( tangent.z ) );
+
+  ostream->writeByte( quantifyToByte( binormal.x ) );
+  ostream->writeByte( quantifyToByte( binormal.y ) );
+  ostream->writeByte( quantifyToByte( binormal.z ) );
+
+  ostream->writeByte( byte( bones[0] ) );
+  ostream->writeByte( byte( bones[1] ) );
+  ostream->writeUByte( quantifyToUByte( blend ) );
+}
+
+void Compiler::enable( Capability cap )
 {
   caps |= cap;
 }
 
-void Compiler::disable( int cap )
+void Compiler::disable( Capability cap )
 {
   caps &= ~cap;
 }
@@ -55,11 +87,13 @@ void Compiler::beginMesh()
   flags |= MESH_BIT;
   caps = 0;
 
-  vertices.clear();
   parts.clear();
+  vertices.clear();
+  positions.dealloc();
+  normals.dealloc();
 
   part.component      = 0;
-  part.material       = client::Mesh::SOLID_BIT;
+  part.material       = Mesh::SOLID_BIT;
   part.texture        = "";
 
   vert.pos            = Point::ORIGIN;
@@ -70,6 +104,9 @@ void Compiler::beginMesh()
   vert.bones[0]       = 0;
   vert.bones[1]       = 0;
   vert.blend          = 0.0f;
+
+  nFrames             = 0;
+  nFramePositions     = 0;
 }
 
 void Compiler::endMesh()
@@ -78,6 +115,28 @@ void Compiler::endMesh()
   hard_assert( !( flags & PART_BIT ) );
 
   flags &= ~MESH_BIT;
+}
+
+void Compiler::anim( int nFrames_, int nFramePositions_ )
+{
+  hard_assert( flags & MESH_BIT );
+  hard_assert( !( flags & PART_BIT ) );
+
+  if( nFrames <= 1 ) {
+    nFrames         = 0;
+    nFramePositions = 0;
+  }
+
+  nFrames         = nFrames_;
+  nFramePositions = nFramePositions_;
+
+  positions.dealloc();
+  normals.dealloc();
+
+  if( nFrames != 0 ) {
+    positions.alloc( nFrames * nFramePositions );
+    normals.alloc( nFrames * nFramePositions );
+  }
 }
 
 void Compiler::component( int id )
@@ -93,7 +152,7 @@ void Compiler::blend( bool doBlend )
   hard_assert( flags & MESH_BIT );
   hard_assert( !( flags & PART_BIT ) );
 
-  part.material = doBlend ? int( client::Mesh::ALPHA_BIT ) : int( client::Mesh::SOLID_BIT );
+  part.material = doBlend ? Mesh::ALPHA_BIT : Mesh::SOLID_BIT;
 }
 
 void Compiler::texture( const char* texture )
@@ -104,7 +163,7 @@ void Compiler::texture( const char* texture )
   part.texture = texture;
 }
 
-void Compiler::begin( uint mode_ )
+void Compiler::begin( PolyMode mode_ )
 {
   hard_assert( flags & MESH_BIT );
   hard_assert( !( flags & PART_BIT ) );
@@ -117,12 +176,12 @@ void Compiler::begin( uint mode_ )
   part.component = componentId;
 
   switch( mode ) {
-    case GL_QUADS: {
-      part.mode = GL_TRIANGLE_STRIP;
+    case QUADS: {
+      part.mode = TRIANGLE_STRIP;
       break;
     }
-    case GL_POLYGON: {
-      part.mode = GL_TRIANGLES;
+    case POLYGON: {
+      part.mode = TRIANGLES;
       break;
     }
     default: {
@@ -139,31 +198,24 @@ void Compiler::end()
 
   flags &= ~PART_BIT;
 
-  if( caps & CAP_CW ) {
-    aReverse<int>( part.indices, part.indices.length() );
+  if( caps & CLOCKWISE ) {
+    aReverse<ushort>( part.indices, part.indices.length() );
   }
 
   switch( mode ) {
-    default: {
-      hard_assert( false );
-    }
-    case GL_POINTS: {
-      hard_assert( vertNum >= 1 );
-      break;
-    }
-    case GL_TRIANGLE_STRIP: {
+    case TRIANGLE_STRIP: {
       hard_assert( vertNum >= 3 );
       break;
     }
-    case GL_TRIANGLE_FAN: {
+    case TRIANGLE_FAN: {
       hard_assert( vertNum >= 3 );
       break;
     }
-    case GL_TRIANGLES: {
+    case TRIANGLES: {
       hard_assert( vertNum >= 3 && vertNum % 3 == 0 );
       break;
     }
-    case GL_QUADS: {
+    case QUADS: {
       hard_assert( vertNum >= 4 && vertNum % 4 == 0 );
 
       for( int i = 0; i < vertNum; i += 4 ) {
@@ -171,10 +223,10 @@ void Compiler::end()
       }
       break;
     }
-    case GL_POLYGON: {
+    case POLYGON: {
       hard_assert( vertNum >= 3 );
 
-      Vector<int> polyIndices = static_cast< Vector<int>&& >( part.indices );
+      Vector<ushort> polyIndices = static_cast< Vector<ushort>&& >( part.indices );
       part.indices.clear();
 
       int last[2] = { 0, 1 };
@@ -197,6 +249,10 @@ void Compiler::end()
           last[0] = vertNum - j;
         }
       }
+      break;
+    }
+    default: {
+      hard_assert( false );
       break;
     }
   }
@@ -226,7 +282,7 @@ void Compiler::end()
     parts.add( part );
   }
   else {
-    if( part.mode == GL_TRIANGLE_STRIP ) {
+    if( part.mode == TRIANGLE_STRIP ) {
       // reset triangle strip
       parts[partIndex].indices.add( parts[partIndex].indices.last() );
       parts[partIndex].indices.add( part.indices.first() );
@@ -253,6 +309,7 @@ void Compiler::texCoord( const float* v )
 void Compiler::normal( float nx, float ny, float nz )
 {
   hard_assert( flags & MESH_BIT );
+  hard_assert( nFrames == 0 );
 
   vert.normal.x = nx;
   vert.normal.y = ny;
@@ -274,6 +331,7 @@ void Compiler::bones( int first, int second, float blend )
 void Compiler::vertex( float x, float y, float z )
 {
   hard_assert( flags & MESH_BIT );
+  hard_assert( nFrames == 0 || ( y == 0.0f && z == 0.0f ) );
 
   vert.pos.x = x;
   vert.pos.y = y;
@@ -285,7 +343,7 @@ void Compiler::vertex( float x, float y, float z )
   else {
     bool doRestart = false;
 
-    if( mode == GL_QUADS && vertNum != 0 && vertNum % 4 == 0 ) {
+    if( mode == QUADS && vertNum != 0 && vertNum % 4 == 0 ) {
       doRestart = true;
     }
 
@@ -295,19 +353,19 @@ void Compiler::vertex( float x, float y, float z )
 
     int index;
 
-    if( caps & CAP_UNIQUE ) {
+    if( caps & UNIQUE ) {
       index = vertices.include( vert );
-      part.indices.add( index );
+      part.indices.add( ushort( index ) );
     }
     else {
       index = vertices.length();
 
       vertices.add( vert );
-      part.indices.add( index );
+      part.indices.add( ushort( index ) );
     }
 
     if( doRestart ) {
-      part.indices.add( index );
+      part.indices.add( ushort( index ) );
     }
 
     ++vertNum;
@@ -321,43 +379,167 @@ void Compiler::vertex( const float* v )
 
 void Compiler::animVertex( int i )
 {
+  hard_assert( nFrames != 0 );
+  hard_assert( nFrames > 1 && uint( i ) < uint( positions.length() ) );
+
   vertex( float( i ), 0.0f, 0.0f );
 }
 
-void Compiler::getMeshData( Mesh* mesh ) const
+void Compiler::animPositions( const float* positions_ )
 {
-  hard_assert( !( flags & MESH_BIT ) );
-  hard_assert( !( flags & PART_BIT ) );
+  hard_assert( nFrames != 0 );
 
+  for( int i = 0; i < positions.length(); ++i ) {
+    positions[i].x = *positions_++;
+    positions[i].y = *positions_++;
+    positions[i].z = *positions_++;
+  }
+}
+
+void Compiler::animNormals( const float* normals_ )
+{
+  hard_assert( nFrames != 0 );
+
+  for( int i = 0; i < normals.length(); ++i ) {
+    normals[i].x = *normals_++;
+    normals[i].y = *normals_++;
+    normals[i].z = *normals_++;
+  }
+}
+
+void Compiler::writeMesh( BufferStream* os, bool embedTextures )
+{
+  hard_assert( !( flags & MESH_BIT ) && !( flags & PART_BIT ) );
+  hard_assert( parts.length() > 0 && vertices.length() > 0 );
+  hard_assert( positions.length() == normals.length() );
+
+  Log::println( "Writing mesh {" );
+  Log::indent();
+
+  Vector<String> textures;
+  Vector<ushort> indices;
   int nIndices = 0;
 
+  textures.add( "" ); // No texture.
+
   for( int i = 0; i < parts.length(); ++i ) {
-    mesh->parts.add();
+    textures.include( parts[i].texture );
 
-    mesh->parts[i].component  = parts[i].component;
-    mesh->parts[i].mode       = parts[i].mode;
+    parts[i].nIndices   = parts[i].indices.length();
+    parts[i].firstIndex = nIndices;
 
-    mesh->parts[i].material   = parts[i].material;
-    mesh->parts[i].texture    = parts[i].texture;
-
-    mesh->parts[i].nIndices   = parts[i].indices.length();
-    mesh->parts[i].firstIndex = nIndices;
-
+    indices.addAll( parts[i].indices, parts[i].indices.length() );
     nIndices += parts[i].indices.length();
   }
 
-  mesh->indices.alloc( nIndices );
-  ushort* currIndex = mesh->indices;
+  os->writeInt( vertices.length() );
+  os->writeInt( indices.length() );
 
-  foreach( part, parts.citer() ) {
-    foreach( i, part->indices.citer() ) {
-      *currIndex = ushort( *i );
-      ++currIndex;
+  foreach( vertex, vertices.iter() ) {
+    if( nFrames != 0 ) {
+      vertex->pos[0] = ( vertex->pos[0] + 0.5f ) / float( nFramePositions );
+      vertex->pos[1] = 0.0f;
+      vertex->pos[2] = 0.0f;
+    }
+    vertex->write( os );
+  }
+  foreach( index, indices.citer() ) {
+    os->writeUShort( *index );
+  }
+
+  if( embedTextures ) {
+    os->writeInt( ~textures.length() );
+
+    for( int i = 1; i < textures.length(); ++i ) {
+      uint diffuseId, masksId, normalsId;
+      context.loadTexture( &diffuseId, &masksId, &normalsId, textures[i] );
+
+      int textureFlags = 0;
+
+      if( diffuseId != 0 ) {
+        textureFlags |= Mesh::DIFFUSE_BIT;
+      }
+      if( masksId != 0 ) {
+        textureFlags |= Mesh::MASKS_BIT;
+      }
+      if( normalsId != 0 ) {
+        textureFlags |= Mesh::NORMALS_BIT;
+      }
+
+      os->writeInt( textureFlags );
+
+      if( diffuseId != 0 ) {
+        context.writeLayer( diffuseId, os );
+        glDeleteTextures( 1, &diffuseId );
+      }
+      if( masksId != 0 ) {
+        context.writeLayer( masksId, os );
+        glDeleteTextures( 1, &masksId );
+      }
+      if( normalsId != 0 ) {
+        context.writeLayer( normalsId, os );
+        glDeleteTextures( 1, &normalsId );
+      }
+    }
+  }
+  else {
+    os->writeInt( textures.length() );
+
+    foreach( texture, textures.citer() ) {
+      os->writeString( *texture );
     }
   }
 
-  mesh->vertices.alloc( vertices.length() );
-  aCopy<Vertex>( mesh->vertices, vertices, vertices.length() );
+  os->writeInt( parts.length() );
+
+  foreach( part, parts.citer() ) {
+    os->writeInt( part->component | part->material );
+
+    uint mode = 0;
+    switch( part->mode ) {
+      case TRIANGLE_STRIP: {
+        mode = GL_TRIANGLE_STRIP;
+        break;
+      }
+      case TRIANGLE_FAN: {
+        mode = GL_TRIANGLE_FAN;
+        break;
+      }
+      case TRIANGLES: {
+        mode = GL_TRIANGLES;
+        break;
+      }
+      default: {
+        hard_assert( false );
+        break;
+      }
+    }
+
+    os->writeUInt( mode );
+    os->writeInt( textures.index( part->texture ) );
+
+    os->writeInt( part->nIndices );
+    os->writeInt( part->firstIndex );
+  }
+
+  if( nFrames != 0 ) {
+    os->writeInt( nFrames );
+    os->writeInt( nFramePositions );
+    os->writeInt( vertices.length() );
+
+    hard_assert( positions.length() == nFrames * nFramePositions );
+    hard_assert( normals.length() == nFrames * nFramePositions );
+
+    foreach( position, positions.citer() ) {
+      os->writePoint( *position );
+    }
+    foreach( normal, normals.citer() ) {
+      os->writeVec3( *normal );
+    }
+  }
+
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Compiler::init()
@@ -365,15 +547,18 @@ void Compiler::init()
 
 void Compiler::free()
 {
-  vertices.clear();
-  vertices.dealloc();
-
   parts.clear();
   parts.dealloc();
 
   part.texture = "";
   part.indices.clear();
   part.indices.dealloc();
+
+  vertices.clear();
+  vertices.dealloc();
+
+  positions.dealloc();
+  normals.dealloc();
 }
 
 }

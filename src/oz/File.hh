@@ -159,7 +159,7 @@ class File
     /**
      * %File path.
      */
-    String path() const;
+    const String& path() const;
 
     /**
      * %File name.

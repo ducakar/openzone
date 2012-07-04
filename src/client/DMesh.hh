@@ -18,59 +18,47 @@
  */
 
 /**
- * @file build/Mesh.hh
+ * @file client/DMesh.hh
  */
 
 #pragma once
 
 #include "client/Mesh.hh"
 
-#include "build/common.hh"
-
 namespace oz
 {
-namespace build
+namespace client
 {
 
-struct Vertex
+class DMesh : public Mesh
 {
-  Point    pos;
-  TexCoord texCoord;
-  Vec3     normal;
-  Vec3     tangent;
-  Vec3     binormal;
-  int      bones[2];
-  float    blend;
+  private:
 
-  bool operator == ( const Vertex& v ) const;
+    static Vertex* vertexAnimBuffer;
+    static int     vertexAnimBufferLength;
 
-  void write( BufferStream* ostream ) const;
-};
+    uint    positionsTexId;
+    uint    normalsTexId;
 
-class Mesh
-{
-  friend class Compiler;
+    int     nFrames;
+    int     nFramePositions;
+    int     nFrameVertices;
+
+    Vertex* vertices;
+    Point*  positions;
+    Vec3*   normals;
 
   public:
 
-    struct Part
-    {
-      int    component;
-      uint   mode;
+    DMesh();
 
-      int    material;
-      String texture;
+    void load( InputStream* istream, const char* path );
+    void unload();
 
-      int    nIndices;
-      int    firstIndex;
-    };
+    void drawFrame( int mask, int frame ) const;
+    void drawAnim( int mask, int firstFrame, int secondFrame, float interpolation ) const;
 
-    Vector<Part>   parts;
-
-    DArray<ushort> indices;
-    DArray<Vertex> vertices;
-
-    void write( BufferStream* os, bool embedTextures = true ) const;
+    static void free();
 
 };
 

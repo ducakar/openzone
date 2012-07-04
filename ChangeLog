@@ -9,7 +9,7 @@
     - limited initialiser lists
   - better Win32 support, POSIX API replaced with Win32 API where possible
   - ported to NaCl
-  - System::bell() method
+  - System::bell()
   - String class has more consistent members, parsing functions added
   - new Time class
   - new StackTrace class (split from System class)

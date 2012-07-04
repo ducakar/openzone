@@ -127,7 +127,7 @@ class PFile
     /**
      * %File path.
      */
-    String path() const;
+    const String& path() const;
 
     /**
      * %Path in real filesystem to file's archive or top folder that is mouted to VFS.

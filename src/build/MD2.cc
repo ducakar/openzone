@@ -272,7 +272,7 @@ void MD2::build( const char* path )
   if( config.get( "forceStatic", false ) ) {
     header.nFrames = 1;
   }
-  String shaderName   = config.get( "shader", header.nFrames == 1 ? "mesh" : "md2" );
+  String shaderName   = config.get( "shader", header.nFrames == 1 ? "mesh" : "dmesh" );
   float  scale        = config.get( "scale", 0.04f );
 
   Vec3   translation  = Vec3( config.get( "translate.x", +0.00f ),
@@ -298,7 +298,7 @@ void MD2::build( const char* path )
   DArray<TexCoord>    texCoords( header.nTexCoords );
   DArray<MD2Triangle> triangles( header.nTriangles );
   DArray<Vec3>        normals( header.nFrames * header.nFramePositions );
-  DArray<Point>       vertices( header.nFrames * header.nFramePositions );
+  DArray<Point>       positions( header.nFrames * header.nFramePositions );
 
   is.reset();
   is.forward( header.offFrames );
@@ -310,22 +310,22 @@ void MD2::build( const char* path )
 
     for( int j = 0; j < header.nFramePositions; ++j ) {
       Vec3&  normal = normals[i * header.nFramePositions + j];
-      Point& vertex = vertices[i * header.nFramePositions + j];
+      Point& position = positions[i * header.nFramePositions + j];
 
-      normal   = NORMALS[ frame.verts[j].normal ];
+      normal = NORMALS[ frame.verts[j].normal ];
 
-      vertex.x = float( frame.verts[j].p[1] ) * -frame.scale[1] - frame.translate[1];
-      vertex.y = float( frame.verts[j].p[0] ) *  frame.scale[0] + frame.translate[0];
-      vertex.z = float( frame.verts[j].p[2] ) *  frame.scale[2] + frame.translate[2];
+      position.x = float( frame.verts[j].p[1] ) * -frame.scale[1] - frame.translate[1];
+      position.y = float( frame.verts[j].p[0] ) *  frame.scale[0] + frame.translate[0];
+      position.z = float( frame.verts[j].p[2] ) *  frame.scale[2] + frame.translate[2];
 
-      vertex.x = vertex.x * scale + translation.x;
-      vertex.y = vertex.y * scale + translation.y;
-      vertex.z = vertex.z * scale + translation.z;
+      position.x = position.x * scale + translation.x;
+      position.y = position.y * scale + translation.y;
+      position.z = position.z * scale + translation.z;
 
       if( client::MD2::ANIM_LIST[client::MD2::ANIM_JUMP].firstFrame <= i &&
           i <= client::MD2::ANIM_LIST[client::MD2::ANIM_JUMP].lastFrame )
       {
-        vertex += jumpTransl;
+        position += jumpTransl;
       }
     }
   }
@@ -353,12 +353,18 @@ void MD2::build( const char* path )
   modelFile.unmap();
 
   compiler.beginMesh();
-  compiler.enable( CAP_UNIQUE );
-  compiler.enable( CAP_CW );
+  compiler.enable( Compiler::UNIQUE );
+  compiler.enable( Compiler::CLOCKWISE );
+
+  if( header.nFrames != 1 ) {
+    compiler.anim( header.nFrames, header.nFramePositions );
+    compiler.animPositions( positions[0] );
+    compiler.animNormals( normals[0] );
+  }
 
   compiler.texture( skinPath );
 
-  compiler.begin( GL_TRIANGLES );
+  compiler.begin( Compiler::TRIANGLES );
 
   for( int i = 0; i < header.nTriangles; ++i ) {
     for( int j = 0; j < 3; ++j ) {
@@ -366,7 +372,7 @@ void MD2::build( const char* path )
 
       if( header.nFrames == 1 ) {
         compiler.normal( normals[ triangles[i].vertices[j] ] );
-        compiler.vertex( vertices[ triangles[i].vertices[j] ] );
+        compiler.vertex( positions[ triangles[i].vertices[j] ] );
       }
       else {
         // vertex index in vertex animation buffer
@@ -378,17 +384,10 @@ void MD2::build( const char* path )
   compiler.end();
   compiler.endMesh();
 
-  triangles.dealloc();
   texCoords.dealloc();
-
-  Mesh mesh;
-  compiler.getMeshData( &mesh );
-
-  int nFrameVertices = mesh.vertices.length();
-
-  if( nFrameVertices > client::MD2::MAX_VERTS ) {
-    throw Exception( "MD2 model has too many vertices" );
-  }
+  triangles.dealloc();
+  normals.dealloc();
+  positions.dealloc();
 
   BufferStream os;
 
@@ -396,38 +395,10 @@ void MD2::build( const char* path )
 
   // generate vertex data for animated MD2s
   if( header.nFrames != 1 ) {
-    os.writeInt( header.nFrames );
-    os.writeInt( nFrameVertices );
-    os.writeInt( header.nFramePositions );
     os.writeMat44( weaponTransf );
-
-    // write vertex positions for all frames
-    for( int i = 0; i < header.nFrames; ++i ) {
-      for( int j = 0; j < header.nFramePositions; ++j ) {
-        os.writeVec4( Vec4( vertices[i * header.nFramePositions + j] ) );
-      }
-    }
-
-    // write vertex normals for all frames
-    for( int i = 0; i < header.nFrames; ++i ) {
-      for( int j = 0; j < header.nFramePositions; ++j ) {
-        os.writeVec4( Vec4( normals[i * header.nFramePositions + j] ) );
-      }
-    }
-
-    // if we have an animated model, we use vertex position to save texture coordinate for vertex
-    // texture to fetch the positions in both frames and interpolate them in vertex shader
-    foreach( vertex, mesh.vertices.iter() ) {
-      vertex->pos[0] = ( vertex->pos[0] + 0.5f ) / float( header.nFramePositions );
-      vertex->pos[1] = 0.0f;
-      vertex->pos[2] = 0.0f;
-    }
   }
 
-  normals.dealloc();
-  vertices.dealloc();
-
-  mesh.write( &os );
+  compiler.writeMesh( &os );
 
   File::mkdir( sPath );
 

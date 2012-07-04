@@ -25,7 +25,7 @@
 
 #include "matrix/Bot.hh"
 
-#include "client/Mesh.hh"
+#include "client/DMesh.hh"
 
 namespace oz
 {
@@ -35,8 +35,6 @@ namespace client
 class MD2
 {
   public:
-
-    static const int MAX_VERTS = 2048;
 
     enum AnimType
     {
@@ -77,6 +75,8 @@ class MD2
 
       private:
 
+        static const float MIN_SHOT_INTERVAL_SYNC;
+
         const Bot* bot;
 
         AnimType   currType;
@@ -89,8 +89,9 @@ class MD2
 
         float      frameFreq;
         float      frameRatio;
+        bool       prevAttack;
 
-        AnimType extractAnim() const;
+        AnimType extractAnim();
         void setAnim();
 
       public:
@@ -104,24 +105,10 @@ class MD2
 
   private:
 
-    static Vertex animBuffer[MAX_VERTS];
-
     int     id;
 
-    int     nFrames;
-    int     nFrameVertices;
-    int     nFramePositions;
-
-    uint    vertexTexId;
-    uint    normalTexId;
     int     shaderId;
-
-    Vertex* vertices;
-    Point*  positions;
-    Vec3*   normals;
-
-    Mesh    mesh;
-
+    DMesh   dmesh;
     PFile   file;
 
   public:

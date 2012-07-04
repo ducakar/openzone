@@ -210,6 +210,7 @@ void Shader::loadProgram( int id )
   OZ_REGISTER_PARAMETER( oz_ProjModelTransform,  "oz_ProjModelTransform"  );
   OZ_REGISTER_PARAMETER( oz_ModelTransform,      "oz_ModelTransform"      );
   OZ_REGISTER_PARAMETER( oz_BoneTransforms,      "oz_BoneTransforms"      );
+  OZ_REGISTER_PARAMETER( oz_MeshAnimation,       "oz_MeshAnimation"       );
 
   OZ_REGISTER_PARAMETER( oz_CameraPosition,      "oz_CameraPosition"      );
 
@@ -226,7 +227,6 @@ void Shader::loadProgram( int id )
   OZ_REGISTER_PARAMETER( oz_StarsColour,         "oz_StarsColour"         );
   OZ_REGISTER_PARAMETER( oz_WaveBias,            "oz_WaveBias"            );
   OZ_REGISTER_PARAMETER( oz_Wind,                "oz_Wind"                );
-  OZ_REGISTER_PARAMETER( oz_MD2Anim,             "oz_MD2Anim"             );
 
   param = programs[id].param;
 

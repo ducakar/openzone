@@ -37,6 +37,7 @@ struct Param
   int oz_ProjModelTransform;
   int oz_ModelTransform;
   int oz_BoneTransforms;
+  int oz_MeshAnimation;
 
   int oz_CameraPosition;
 
@@ -53,7 +54,6 @@ struct Param
   int oz_StarsColour;
   int oz_WaveBias;
   int oz_Wind;
-  int oz_MD2Anim;
 };
 
 extern Param param;

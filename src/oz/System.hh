@@ -30,15 +30,19 @@
 
 #include "common.hh"
 
+#ifdef __native_client__
+
 namespace pp
 {
 
-// Forward declarations for Native Client (NaCl) classes.
+// Forward declarations for NaCl classes.
 class Module;
 class Instance;
 class Core;
 
 }
+
+#endif
 
 namespace oz
 {

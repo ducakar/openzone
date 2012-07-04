@@ -1,11 +1,8 @@
 0.3
 - matrix
   * documentation
-- ui
-  * pause menu
 - client
   * bloom++
-  * DMesh
   * mesh render scheduler
   * two-phase rendering
   * MD3 animation

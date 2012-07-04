@@ -229,7 +229,7 @@ class OutputStream
 
       if( pos > end ) {
         throw Exception( "Buffer overrun for %d B during a read or write of %d B",
-                         int( pos + count - end ), count );
+                         int( pos - end ), count );
       }
       return oldPos;
     }

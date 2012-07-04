@@ -1,4 +1,9 @@
-add_executable( unittest Alloc.cc arrays.cc common.cc iterables.cc unittest.cc )
+add_executable( unittest
+  Alloc.cc
+  arrays.cc
+  common.cc
+  iterables.cc
+  unittest.cc )
 target_link_libraries( unittest oz ${libs_oz} )
 
 if( NACL )

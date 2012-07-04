@@ -26,7 +26,6 @@
 #include "build/BSP.hh"
 
 #include "build/Context.hh"
-#include "build/Compiler.hh"
 
 namespace oz
 {
@@ -1134,8 +1133,8 @@ void BSP::saveClient()
 
   compiler.beginMesh();
 
-  compiler.enable( CAP_UNIQUE );
-  compiler.enable( CAP_CW );
+  compiler.enable( Compiler::UNIQUE );
+  compiler.enable( Compiler::CLOCKWISE );
 
   for( int i = 0; i < nModels + 1; ++i ) {
     compiler.component( i );
@@ -1149,18 +1148,18 @@ void BSP::saveClient()
       }
 
       if( tex.type & QBSP_ALPHA_TYPE_BIT ) {
-        flags |= client::Mesh::ALPHA_BIT;
+        flags |= Mesh::ALPHA_BIT;
         compiler.blend( true );
       }
       else {
-        flags |= client::Mesh::SOLID_BIT;
+        flags |= Mesh::SOLID_BIT;
         compiler.blend( false );
       }
 
       context.usedTextures.include( tex.name );
 
       compiler.texture( tex.name );
-      compiler.begin( GL_TRIANGLES );
+      compiler.begin( Compiler::TRIANGLES );
 
       for( int k = 0; k < face.nIndices; ++k ) {
         const Vertex& vertex = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
@@ -1186,17 +1185,13 @@ void BSP::saveClient()
 
   compiler.endMesh();
 
-  Mesh mesh;
-  compiler.getMeshData( &mesh );
-
   BufferStream os;
 
   os.writeInt( flags );
-
   os.writeVec4( waterFogColour );
   os.writeVec4( lavaFogColour );
 
-  mesh.write( &os, false );
+  compiler.writeMesh( &os, false );
 
   Log::print( "Dumping BSP model to '%s' ...", destFile.path().cstr() );
 
