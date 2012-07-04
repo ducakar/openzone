@@ -31,6 +31,7 @@
 #include "client/MD2Imago.hh"
 #include "client/MD2WeaponImago.hh"
 #include "client/MD3Imago.hh"
+#include "client/DMesh.hh"
 
 #include "client/BasicAudio.hh"
 #include "client/BotAudio.hh"
@@ -636,8 +637,6 @@ void Context::unload()
 
   OZ_AL_CHECK_ERROR();
 
-  Source::pool.free();
-
   SMMImago::pool.free();
   SMMVehicleImago::pool.free();
   ExplosionImago::pool.free();
@@ -648,6 +647,9 @@ void Context::unload()
   BasicAudio::pool.free();
   BotAudio::pool.free();
   VehicleAudio::pool.free();
+
+  DMesh::free();
+  Source::pool.free();
 
   Log::unindent();
   Log::println( "}" );

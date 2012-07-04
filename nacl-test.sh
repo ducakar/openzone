@@ -17,9 +17,9 @@ prefix=`pwd`
 mkdir -p build/NaCl-test
 
 # Just create symlinks instead of copying.
-for i in share/openzone/*.7z share/openzone/packages.ozManifest \
+for i in share/openzone/*.{7z,zip} share/openzone/packages.ozManifest \
 	 build/NaCl-*/src/client/openzone.*.nexe etc/nacl/openzone.nmf \
-	 etc/nacl/openzone.??.html
+	 etc/nacl/openzone.??.html doc
 do
   [[ -e "$prefix/$i" ]] && ln -sf "$prefix/$i" build/NaCl-test
 done
@@ -35,4 +35,4 @@ if [[ "$1" == "strip" ]]; then
     "$nacl64Root/bin/i686-nacl-strip" "build/NaCl-test/openzone.i686.nexe"
 fi
 
-chromium "http://localhost:8000/openzone.en.html"
+chromium "http://localhost:8000/openzone.sl.html"

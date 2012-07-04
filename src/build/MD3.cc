@@ -249,7 +249,7 @@ void MD3::buildMesh( const char* name, int frame )
 
     compiler.texture( sPath + "/" + texture );
 
-    compiler.begin( GL_TRIANGLES );
+    compiler.begin( Compiler::TRIANGLES );
 
     for( int i = 0; i < surfaceTriangles.length(); ++i ) {
       for( int j = 0; j < 3; ++j ) {
@@ -316,24 +316,21 @@ void MD3::save()
 
     compiler.beginMesh();
 
-    compiler.enable( CAP_UNIQUE );
-    compiler.enable( CAP_CW );
+    compiler.enable( Compiler::UNIQUE );
+    compiler.enable( Compiler::CLOCKWISE );
 
     meshTransf = Mat44::ID;
 
     buildMesh( model, frame );
 
     compiler.endMesh();
-
-    Mesh mesh;
-    compiler.getMeshData( &mesh );
-    mesh.write( &os );
+    compiler.writeMesh( &os );
   }
   else if( frame >= 0 ) {
     compiler.beginMesh();
 
-    compiler.enable( CAP_UNIQUE );
-    compiler.enable( CAP_CW );
+    compiler.enable( Compiler::UNIQUE );
+    compiler.enable( Compiler::CLOCKWISE );
 
     meshTransf = Mat44::ID;
 
@@ -350,16 +347,13 @@ void MD3::save()
     buildMesh( "head", 0 );
 
     compiler.endMesh();
-
-    Mesh mesh;
-    compiler.getMeshData( &mesh );
-    mesh.write( &os );
+    compiler.writeMesh( &os );
   }
   else {
     compiler.beginMesh();
 
-    compiler.enable( CAP_UNIQUE );
-    compiler.enable( CAP_CW );
+    compiler.enable( Compiler::UNIQUE );
+    compiler.enable( Compiler::CLOCKWISE );
 
     compiler.component( 0 );
     buildMesh( "lower", frame );
@@ -388,9 +382,7 @@ void MD3::save()
       os.writeQuat( joints[i][client::MD3::JOINT_WEAPON].rot );
     }
 
-    Mesh mesh;
-    compiler.getMeshData( &mesh );
-    mesh.write( &os );
+    compiler.writeMesh( &os );
   }
 
   File::mkdir( sPath );

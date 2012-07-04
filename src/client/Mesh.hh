@@ -77,7 +77,7 @@ class Mesh
     static const int MASKS_BIT       = 0x2000; ///< Texture has specular and emission masks.
     static const int NORMALS_BIT     = 0x4000; ///< Texture has normal map.
 
-  private:
+  protected:
 
     struct Part
     {

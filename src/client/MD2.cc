@@ -38,7 +38,7 @@ const MD2::AnimInfo MD2::ANIM_LIST[] =
   // first, last, frequency (FPS), nextAnim
   {   0,  39,  9.0f, ANIM_STAND         }, // STAND
   {  40,  45, 10.0f, ANIM_RUN           }, // RUN
-  {  46,  53, 16.0f, ANIM_NONE          }, // ATTACK
+  {  46,  53, 16.0f, ANIM_ATTACK        }, // ATTACK
   {  54,  57,  7.0f, ANIM_STAND         }, // PAIN_A
   {  58,  61,  7.0f, ANIM_STAND         }, // PAIN_B
   {  62,  65,  7.0f, ANIM_STAND         }, // PAIN_C
@@ -58,9 +58,9 @@ const MD2::AnimInfo MD2::ANIM_LIST[] =
   { 190, 197,  7.0f, ANIM_NONE          }  // DEATH_FALLBACKSLOW
 };
 
-Vertex MD2::animBuffer[MAX_VERTS];
+const float MD2::AnimState::MIN_SHOT_INTERVAL_SYNC = 0.2f;
 
-MD2::AnimType MD2::AnimState::extractAnim() const
+MD2::AnimType MD2::AnimState::extractAnim()
 {
   const Weapon* weapon = bot->weapon < 0 ?
                          null : static_cast<const Weapon*>( orbis.objects[bot->weapon] );
@@ -90,7 +90,9 @@ MD2::AnimType MD2::AnimState::extractAnim() const
     }
   }
   else if( bot->cargo < 0 ) {
-    if( weapon != null && weapon->shotTime != 0.0f ) {
+    if( weapon != null && ( prevAttack || weapon->shotTime != 0.0f ) ) {
+      prevAttack = weapon->shotTime != 0.0f;
+
       return bot->state & Bot::CROUCHING_BIT ? ANIM_CROUCH_ATTACK : ANIM_ATTACK;
     }
     else if( bot->state & Bot::CROUCHING_BIT ) {
@@ -124,7 +126,8 @@ MD2::AnimType MD2::AnimState::extractAnim() const
 }
 
 MD2::AnimState::AnimState( const Bot* bot_ ) :
-  bot( bot_ ), currType( ANIM_STAND ), nextType( ANIM_STAND ), frameRatio( 0.0f )
+  bot( bot_ ), currType( ANIM_STAND ), nextType( ANIM_STAND ),
+  frameRatio( 0.0f ), prevAttack( false )
 {
   nextType = extractAnim();
 
@@ -146,6 +149,8 @@ void MD2::AnimState::advance()
 {
   AnimType inferredType = extractAnim();
 
+  frameFreq = ANIM_LIST[inferredType].frameFreq;
+
   if( inferredType == ANIM_RUN || inferredType == ANIM_CROUCH_WALK ) {
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
@@ -158,6 +163,22 @@ void MD2::AnimState::advance()
 
     frameFreq = float( nFrames ) * stepInc / Timer::TICK_TIME;
   }
+  else if( ( inferredType == ANIM_ATTACK || inferredType == ANIM_CROUCH_ATTACK ) &&
+           bot->weapon >= 0 )
+  {
+    const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
+
+    if( weapon != null ) {
+      const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
+
+      if( clazz->shotInterval >= MIN_SHOT_INTERVAL_SYNC ) {
+        int nFrames = lastFrame - firstFrame + 1;
+
+        frameFreq = float( nFrames ) / clazz->shotInterval;
+      }
+    }
+  }
+
 
   frameRatio += timer.frameTime * frameFreq;
 
@@ -197,25 +218,12 @@ void MD2::AnimState::advance()
 }
 
 MD2::MD2( int id_ ) :
-  id( id_ ), vertices( null ), positions( null ), normals( null ),
-  isPreloaded( false ), isLoaded( false )
+  id( id_ ), isPreloaded( false ), isLoaded( false )
 {}
 
 MD2::~MD2()
 {
-  if( shader.hasVertexTexture ) {
-    if( isLoaded ) {
-      glDeleteTextures( 1, &vertexTexId );
-      glDeleteTextures( 1, &normalTexId );
-    }
-  }
-  else {
-    delete[] vertices;
-    delete[] positions;
-    delete[] normals;
-  }
-
-  mesh.unload();
+  dmesh.unload();
 }
 
 void MD2::preload()
@@ -234,57 +242,11 @@ void MD2::load()
   InputStream is  = file.inputStream();
 
   shaderId        = library.shaderIndex( is.readString() );
-
-  nFrames         = is.readInt();
-  nFrameVertices  = is.readInt();
-  nFramePositions = is.readInt();
   weaponTransf    = is.readMat44();
 
-  if( shader.hasVertexTexture ) {
-    int vertexBufferSize = nFramePositions * nFrames * int( sizeof( Vec4 ) );
-    int normalBufferSize = nFramePositions * nFrames * int( sizeof( Vec4 ) );
+  dmesh.load( &is, file.path() );
 
-    glGenTextures( 1, &vertexTexId );
-    glBindTexture( GL_TEXTURE_2D, vertexTexId );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, nFramePositions, nFrames, 0, GL_RGBA, GL_FLOAT,
-                  is.forward( vertexBufferSize ) );
-    glBindTexture( GL_TEXTURE_2D, 0 );
-
-    glGenTextures( 1, &normalTexId );
-    glBindTexture( GL_TEXTURE_2D, normalTexId );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, nFramePositions, nFrames, 0, GL_RGBA, GL_FLOAT,
-                  is.forward( normalBufferSize ) );
-    glBindTexture( GL_TEXTURE_2D, 0 );
-
-    mesh.load( &is, GL_STATIC_DRAW, file.path() );
-  }
-  else {
-    positions = new Point[nFramePositions * nFrames];
-    normals   = new Vec3[nFramePositions * nFrames];
-
-    for( int i = 0; i < nFramePositions * nFrames; ++i ) {
-      positions[i] = Point::ORIGIN + is.readVec4();
-    }
-
-    for( int i = 0; i < nFramePositions * nFrames; ++i ) {
-      normals[i] = is.readVec4();
-    }
-
-    const char* meshStart = is.getPos();
-
-    is.readInt();
-    is.readInt();
-
-    vertices = new Vertex[nFrameVertices];
-    is.readChars( reinterpret_cast<char*>( vertices ), nFrameVertices * int( sizeof( Vertex ) ) );
-    is.setPos( meshStart );
-
-    mesh.load( &is, GL_STREAM_DRAW, file.path() );
-  }
+  hard_assert( !is.isAvailable() );
 
   file.setPath( "" );
 
@@ -294,42 +256,9 @@ void MD2::load()
 void MD2::drawFrame( int frame ) const
 {
   shader.program( shaderId );
-
-  if( shader.hasVertexTexture ) {
-    glActiveTexture( GL_TEXTURE3 );
-    glBindTexture( GL_TEXTURE_2D, vertexTexId );
-    glActiveTexture( GL_TEXTURE4 );
-    glBindTexture( GL_TEXTURE_2D, normalTexId );
-  }
-  else {
-    const Point* framePositions = &positions[frame * nFramePositions];
-    const Vec3*  frameNormals   = &normals[frame * nFramePositions];
-
-    for( int i = 0; i < nFrameVertices; ++i ) {
-      int j = int( vertices[i].pos[0] * float( nFramePositions - 1 ) + 0.5f );
-
-      Point pos    = framePositions[j];
-      Vec3  normal = frameNormals[j];
-
-      animBuffer[i].pos[0] = pos.x;
-      animBuffer[i].pos[1] = pos.y;
-      animBuffer[i].pos[2] = pos.z;
-
-      animBuffer[i].texCoord[0] = vertices[i].texCoord[0];
-      animBuffer[i].texCoord[1] = vertices[i].texCoord[1];
-
-      animBuffer[i].normal[0] = quantifyToByte( normal.x );
-      animBuffer[i].normal[1] = quantifyToByte( normal.y );
-      animBuffer[i].normal[2] = quantifyToByte( normal.z );
-    }
-
-    mesh.upload( animBuffer, nFrameVertices, GL_STREAM_DRAW );
-  }
-
-  glUniform3f( param.oz_MD2Anim, float( frame ) / float( nFrames ), 0.0f, 0.0f );
   tf.apply();
 
-  mesh.draw( Mesh::SOLID_BIT );
+  dmesh.drawFrame( Mesh::SOLID_BIT, frame );
 }
 
 void MD2::draw( const AnimState* anim ) const
@@ -337,45 +266,7 @@ void MD2::draw( const AnimState* anim ) const
   shader.program( shaderId );
   tf.apply();
 
-  if( shader.hasVertexTexture ) {
-    glActiveTexture( GL_TEXTURE3 );
-    glBindTexture( GL_TEXTURE_2D, vertexTexId );
-    glActiveTexture( GL_TEXTURE4 );
-    glBindTexture( GL_TEXTURE_2D, normalTexId );
-
-    glUniform3f( param.oz_MD2Anim,
-                 float( anim->currFrame ) / float( nFrames ),
-                 float( anim->nextFrame ) / float( nFrames ),
-                 anim->frameRatio );
-  }
-  else {
-    const Point* currFramePositions = &positions[anim->currFrame * nFramePositions];
-    const Point* nextFramePositions = &positions[anim->nextFrame * nFramePositions];
-    const Vec3*  currFrameNormals   = &normals[anim->currFrame * nFramePositions];
-    const Vec3*  nextFrameNormals   = &normals[anim->nextFrame * nFramePositions];
-
-    for( int i = 0; i < nFrameVertices; ++i ) {
-      int j = int( vertices[i].pos[0] * float( nFramePositions - 1 ) + 0.5f );
-
-      Point pos    = Math::mix( currFramePositions[j], nextFramePositions[j], anim->frameRatio );
-      Vec3  normal = Math::mix( currFrameNormals[j],   nextFrameNormals[j],   anim->frameRatio );
-
-      animBuffer[i].pos[0] = pos.x;
-      animBuffer[i].pos[1] = pos.y;
-      animBuffer[i].pos[2] = pos.z;
-
-      animBuffer[i].texCoord[0] = vertices[i].texCoord[0];
-      animBuffer[i].texCoord[1] = vertices[i].texCoord[1];
-
-      animBuffer[i].normal[0] = quantifyToByte( normal.x );
-      animBuffer[i].normal[1] = quantifyToByte( normal.y );
-      animBuffer[i].normal[2] = quantifyToByte( normal.z );
-    }
-
-    mesh.upload( animBuffer, nFrameVertices, GL_STREAM_DRAW );
-  }
-
-  mesh.draw( Mesh::SOLID_BIT );
+  dmesh.drawAnim( Mesh::SOLID_BIT, anim->currFrame, anim->nextFrame, anim->frameRatio );
 }
 
 }

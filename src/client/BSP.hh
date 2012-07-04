@@ -34,8 +34,6 @@ class BSP
 {
   private:
 
-    static const float DEMOLISH_SOUND_GAIN;
-
     const matrix::BSP* bsp;
 
     int   flags;

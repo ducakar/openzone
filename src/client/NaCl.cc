@@ -40,7 +40,6 @@ namespace client
 
 static Mutex          messageMutex;
 static Vector<String> messageQueue;
-static Semaphore      flushSemaphore;
 static pp::Graphics3D context;
 
 Semaphore NaCl::mainCallSemaphore;
@@ -52,11 +51,6 @@ int       NaCl::moveX  = 0;
 int       NaCl::moveY  = 0;
 int       NaCl::moveZ  = 0;
 int       NaCl::moveW  = 0;
-
-static void flushCompleteCallback( void*, int )
-{
-  flushSemaphore.post();
-}
 
 bool NaCl::isMainThread()
 {
@@ -94,70 +88,9 @@ void NaCl::push( const char* message )
   messageMutex.unlock();
 }
 
-void NaCl::activateGLContext()
-{
-  hard_assert( !context.is_null() );
-
-  glSetCurrentContextPPAPI( context.pp_resource() );
-}
-
-void NaCl::deactivateGLContext()
-{
-  glSetCurrentContextPPAPI( 0 );
-}
-
-void NaCl::resizeGLContext()
-{
-  glSetCurrentContextPPAPI( 0 );
-  context.ResizeBuffers( width, height );
-  glSetCurrentContextPPAPI( context.pp_resource() );
-}
-
-void NaCl::flushGLContext()
-{
-  context.SwapBuffers( pp::CompletionCallback( &flushCompleteCallback, null ) );
-}
-
-void NaCl::waitGLContext()
-{
-  flushSemaphore.wait();
-}
-
-void NaCl::initGLContext()
-{
-  hard_assert( context.is_null() );
-
-  glInitializePPAPI( System::module->get_browser_interface() );
-
-  int attribs[] = {
-    PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 16,
-    PP_GRAPHICS3DATTRIB_WIDTH, width,
-    PP_GRAPHICS3DATTRIB_HEIGHT, height,
-    PP_GRAPHICS3DATTRIB_NONE
-  };
-
-  context = pp::Graphics3D( System::instance, pp::Graphics3D(), attribs );
-  if( context.is_null() ) {
-    throw Exception( "Failed to create OpenGL context" );
-  }
-
-  if( !System::instance->BindGraphics( context ) ) {
-    throw Exception( "Failed to bind Graphics3D" );
-  }
-
-  glSetCurrentContextPPAPI( context.pp_resource() );
-}
-
-void NaCl::freeGLContext()
-{
-  glSetCurrentContextPPAPI( 0 );
-  glTerminatePPAPI();
-}
-
 void NaCl::init()
 {
   messageMutex.init();
-  flushSemaphore.init();
   mainCallSemaphore.init();
 
   // Hacks
@@ -182,7 +115,6 @@ void NaCl::free()
   messageQueue.dealloc();
 
   mainCallSemaphore.destroy();
-  flushSemaphore.destroy();
   messageMutex.destroy();
 }
 

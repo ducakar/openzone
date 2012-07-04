@@ -4,8 +4,11 @@ cat << EOF > CMakeLists.txt
 configure_file( liboz.pc.in liboz.pc )
 configure_file( ozconfig.hh.in ozconfig.hh )
 
-add_library( oz `echo *.cc` )
-set_target_properties( oz PROPERTIES PUBLIC_HEADER "`echo *.hh | tr ' ' ';'`" )
+set( ozHeaders
+  `echo *.hh | sed 's/ /\n  /g'` )
+add_library( oz
+  `echo *.cc | sed 's/ /\n  /g'` )
+set_target_properties( oz PROPERTIES PUBLIC_HEADER "\${ozHeaders}" )
 set_target_properties( oz PROPERTIES VERSION "\${OZ_VERSION}" SOVERSION "0" )
 target_link_libraries( oz \${libs_oz} )
 

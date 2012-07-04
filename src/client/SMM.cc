@@ -64,6 +64,8 @@ void SMM::load()
   shaderId = library.shaderIndex( is.readString() );
   mesh.load( &is, GL_STATIC_DRAW, file.path() );
 
+  hard_assert( !is.isAvailable() );
+
   file.setPath( "" );
 
   isLoaded = true;

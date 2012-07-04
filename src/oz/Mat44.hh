@@ -418,14 +418,14 @@ class Mat44
     OZ_ALWAYS_INLINE
     void rotateX( float theta )
     {
-      Vec3 j = y;
-      Vec3 k = z;
+      Vec4 j = y;
+      Vec4 k = z;
 
       float s, c;
       Math::sincos( theta, &s, &c );
 
-      y = Vec4( j * c + k * s, 0.0f );
-      z = Vec4( k * c - j * s, 0.0f );
+      y = j * c + k * s;
+      z = k * c - j * s;
     }
 
     /**
@@ -434,14 +434,14 @@ class Mat44
     OZ_ALWAYS_INLINE
     void rotateY( float theta )
     {
-      Vec3 i = x;
-      Vec3 k = z;
+      Vec4 i = x;
+      Vec4 k = z;
 
       float s, c;
       Math::sincos( theta, &s, &c );
 
-      x = Vec4( i * c - k * s, 0.0f );
-      z = Vec4( k * c + i * s, 0.0f );
+      x = i * c - k * s;
+      z = k * c + i * s;
     }
 
     /**
@@ -450,14 +450,14 @@ class Mat44
     OZ_ALWAYS_INLINE
     void rotateZ( float theta )
     {
-      Vec3 i = x;
-      Vec3 j = y;
+      Vec4 i = x;
+      Vec4 j = y;
 
       float s, c;
       Math::sincos( theta, &s, &c );
 
-      x = Vec4( i * c + j * s, 0.0f );
-      y = Vec4( j * c - i * s, 0.0f );
+      x = i * c + j * s;
+      y = j * c - i * s;
     }
 
     /**

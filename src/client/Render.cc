@@ -202,7 +202,7 @@ void Render::drawGeometry()
 
   // clear buffer
   glClearColor( shader.fogColour.x, shader.fogColour.y, shader.fogColour.z, shader.fogColour.w );
-  glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
+  glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
   currentMicros = Time::uclock();
   swapMicros += currentMicros - beginMicros;
@@ -457,14 +457,7 @@ void Render::swap()
 
   uint beginMicros = Time::uclock();
 
-#ifdef __native_client__
-  OZ_MAIN_CALL( this, {
-    NaCl::flushGLContext();
-  } )
-  NaCl::waitGLContext();
-#else
-  SDL_GL_SwapBuffers();
-#endif
+  window.swapBuffers();
 
   swapMicros += Time::uclock() - beginMicros;
 }

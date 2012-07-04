@@ -212,7 +212,7 @@ int PFile::size() const
   return fileSize;
 }
 
-String PFile::path() const
+const String& PFile::path() const
 {
   return filePath;
 }

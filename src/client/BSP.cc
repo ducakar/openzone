@@ -34,8 +34,6 @@ namespace oz
 namespace client
 {
 
-const float BSP::DEMOLISH_SOUND_GAIN = 8.0f;
-
 void BSP::playDemolish( const Struct* str, int sound ) const
 {
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
@@ -51,7 +49,6 @@ void BSP::playDemolish( const Struct* str, int sound ) const
   alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].id ) );
   alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
 
-  alSourcef( srcId, AL_GAIN, DEMOLISH_SOUND_GAIN );
   alSourcefv( srcId, AL_POSITION, str->p );
 
   alSourcePlay( srcId );
@@ -80,7 +77,6 @@ void BSP::playSound( const Entity* entity, int sound ) const
   alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].id ) );
   alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
 
-  alSourcef( srcId, AL_GAIN, 1.0f );
   alSourcefv( srcId, AL_POSITION, p );
   alSourcefv( srcId, AL_VELOCITY, velocity );
 
@@ -112,10 +108,9 @@ void BSP::playContSound( const Entity* entity, int sound ) const
     }
 
     alSourcei( srcId, AL_BUFFER, int( context.sounds[sound].id ) );
-    alSourcei( srcId, AL_LOOPING, AL_TRUE );
-    alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
+    alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
 
-    alSourcef( srcId, AL_GAIN, 1.0f );
+    alSourcei( srcId, AL_LOOPING, AL_TRUE );
     alSourcefv( srcId, AL_POSITION, p );
     alSourcefv( srcId, AL_VELOCITY, velocity );
     alSourcePlay( srcId );
@@ -171,6 +166,8 @@ void BSP::load()
   lavaFogColour = istream.readVec4();
 
   mesh.load( &istream, GL_STATIC_DRAW, file.path() );
+
+  hard_assert( !istream.isAvailable() );
 
   file.setPath( "" );
 

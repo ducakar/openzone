@@ -383,7 +383,7 @@ int File::size() const
   return fileSize;
 }
 
-String File::path() const
+const String& File::path() const
 {
   return filePath;
 }

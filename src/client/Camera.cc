@@ -129,9 +129,9 @@ void Camera::align()
   rotMat   = Mat44::rotation( rot );
   rotTMat  = ~rotMat;
 
-  right    = +rotMat.x;
-  up       = +rotMat.y;
-  at       = -rotMat.z;
+  right    = +rotMat.x.vec3();
+  up       = +rotMat.y.vec3();
+  at       = -rotMat.z.vec3();
 }
 
 void Camera::prepare()
@@ -251,9 +251,9 @@ void Camera::reset()
   rotMat     = Mat44::rotation( rot );
   rotTMat    = ~rotTMat;
 
-  right      = rotMat.x;
-  up         = rotMat.y;
-  at         = -rotMat.z;
+  right      = rotMat.x.vec3();
+  up         = rotMat.y.vec3();
+  at         = -rotMat.z.vec3();
 
   object     = -1;
   objectObj  = null;
@@ -302,9 +302,9 @@ void Camera::read( InputStream* istream )
   rotMat     = Mat44::rotation( rot );
   rotTMat    = ~rotMat;
 
-  right      = rotMat.x;
-  up         = rotMat.y;
-  at         = -rotMat.z;
+  right      = rotMat.x.vec3();
+  up         = rotMat.y.vec3();
+  at         = -rotMat.z.vec3();
 
   object     = -1;
   objectObj  = null;

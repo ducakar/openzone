@@ -64,7 +64,11 @@
         window.onbeforeunload = onBeforeUnload;
 
         hudArea.style.display = "inline";
-        hudText.innerHTML = "Inicializiram ...";
+        hudText.innerHTML = "Inicializiram ...<br/>" +
+                            "<span style='font-size: 0.6em; font-weight: normal'>" +
+                            "Če traja dovolj dolgo, da lahko to bereš, imaš preslabo grafično " +
+                            "kartico ali pa moraš iti na <tt>chrome://flags</tt> in vklopiti " +
+                            "možnost <b>Preglasi seznam programskega upodabljanja</b>.</span>";
       }
       else if( type == "upd0:" ) {
         hudArea.style.display = "inline";
@@ -97,11 +101,10 @@
     {
       hasLoaded = true;
 
-      hudText.innerHTML = "Zaganjam<br/>" +
+      hudText.innerHTML = "Zaganjam NaCl<br/>" +
                           "<span style='font-size: 0.6em; font-weight: normal'>" +
-                          "Če to traja predolgo, imaš slabo grafično ali pa moraš iti na " +
-                          "<tt>chrome://flags/</tt> in vklopiti možnost " +
-                          "<b>Preglasi seznam programskega upodabljanja</b>.</span>";
+                          "Če traja dovolj dolgo, da lahko to bereš, je šlo narobe " +
+                          "nekaj nepredvidenega.</span>";
     }
 
     function onResize()
@@ -139,7 +142,7 @@
         Nalagam<br/><span style="font-size: 0.6em; font-weight: normal">
         Deluje samo v brskalniku Google Chrome/Chromium 19 ali novejšem.
         Če se vstavek ne naloži (v doglednem času), nimaš omogočene tehnologije NaCl.
-        V navigacijsko vrstico vnesi <tt>chrome://flags/</tt> in vklopi možnost
+        V navigacijsko vrstico vnesi <tt>chrome://flags</tt> in vklopi možnost
         <b>Tehnologija Native Client</b> ter ponovno zaženi brskalnik.
       </td>
       <td/>

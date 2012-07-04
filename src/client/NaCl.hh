@@ -85,20 +85,6 @@ class NaCl
     static void push( const char* message );
 
     /*
-     * GL ES context.
-     */
-    static void activateGLContext();
-    static void deactivateGLContext();
-
-    static void resizeGLContext();
-
-    static void flushGLContext();
-    static void waitGLContext();
-
-    static void initGLContext();
-    static void freeGLContext();
-
-    /*
      * General
      */
     static void init();

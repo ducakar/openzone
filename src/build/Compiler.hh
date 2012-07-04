@@ -23,20 +23,51 @@
 
 #pragma once
 
-#include "build/Mesh.hh"
+#include "build/common.hh"
+
+#include "client/Mesh.hh"
 
 namespace oz
 {
 namespace build
 {
 
-static const int CAP_UNIQUE  = 0x01;
-static const int CAP_BUMPMAP = 0x02;
-static const int CAP_BLEND   = 0x04;
-static const int CAP_CW      = 0x08;
+struct Vertex
+{
+  Point    pos;
+  TexCoord texCoord;
+  Vec3     normal;
+  Vec3     tangent;
+  Vec3     binormal;
+  int      bones[2];
+  float    blend;
+
+  bool operator == ( const Vertex& v ) const;
+
+  void write( BufferStream* ostream ) const;
+};
 
 class Compiler
 {
+  public:
+
+    enum PolyMode
+    {
+      TRIANGLE_STRIP,
+      TRIANGLE_FAN,
+      TRIANGLES,
+      QUADS,
+      POLYGON,
+    };
+
+    enum Capability
+    {
+      UNIQUE    = 0x01,
+      BUMPMAP   = 0x02,
+      BLEND     = 0x04,
+      CLOCKWISE = 0x08
+    };
+
   private:
 
     static const int MESH_BIT = 0x00000001;
@@ -44,13 +75,15 @@ class Compiler
 
     struct Part
     {
-      int    component;
-      uint   mode;
+      int            component;
+      PolyMode       mode;
 
-      int    material;
-      String texture;
+      int            material;
+      String         texture;
 
-      Vector<int> indices;
+      int            firstIndex;
+      int            nIndices;
+      Vector<ushort> indices;
 
       bool operator == ( const Part& part ) const
       {
@@ -59,8 +92,10 @@ class Compiler
       }
     };
 
-    Vector<Vertex> vertices;
     Vector<Part>   parts;
+    Vector<Vertex> vertices;
+    DArray<Point>  positions;
+    DArray<Vec3>   normals;
 
     Vertex         vert;
     Part           part;
@@ -68,22 +103,26 @@ class Compiler
     int            caps;
     int            flags;
     int            componentId;
-    uint           mode;
+    PolyMode       mode;
     int            vertNum;
+
+    int            nFrames;
+    int            nFramePositions;
 
   public:
 
-    void enable( int cap );
-    void disable( int cap );
+    void enable( Capability cap );
+    void disable( Capability cap );
 
     void beginMesh();
     void endMesh();
 
+    void anim( int nFrames, int nPositions );
     void component( int id );
     void blend( bool doBlend );
     void texture( const char* texture );
 
-    void begin( uint mode );
+    void begin( PolyMode mode );
     void end();
 
     void texCoord( float u, float v );
@@ -99,7 +138,10 @@ class Compiler
 
     void animVertex( int i );
 
-    void getMeshData( Mesh* mesh ) const;
+    void animPositions( const float* positions );
+    void animNormals( const float* normals );
+
+    void writeMesh( BufferStream* os, bool embedTextures = true );
 
     void init();
     void free();

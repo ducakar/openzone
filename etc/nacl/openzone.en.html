@@ -64,7 +64,12 @@
         window.onbeforeunload = onBeforeUnload;
 
         hudArea.style.display = "inline";
-        hudText.innerHTML = "Initialising ...";
+        hudText.innerHTML = "Initialising ...<br/>" +
+                            "<span style='font-size: 0.6em; font-weight: normal'>" +
+                            "If it takes long enough that you can read this, you don't have " +
+                            "good enough graphics card or you have to navigate to " +
+                            "<tt>chrome://flags</tt> and turn on " +
+                            "<b>Override software rendering list</b>.</span>";
       }
       else if( type == "upd0:" ) {
         hudArea.style.display = "inline";
@@ -97,11 +102,10 @@
     {
       hasLoaded = true;
 
-      hudText.innerHTML = "Starting<br/>" +
+      hudText.innerHTML = "Starting NaCl<br/>" +
                           "<span style='font-size: 0.6em; font-weight: normal'>" +
-                          "If this lasts too long, you don't have appropriate graphics card or " +
-                          "you have to navigate to <tt>chrome://flags/</tt> and turn on " +
-                          "<b>Override software rendering list</b>.</span>";
+                          "If it takes long enough that you can read this some unexpected error " +
+                          "occurred.</span>";
     }
 
     function onResize()
@@ -137,9 +141,9 @@
       <td/>
       <td id="hudText">
         Loading<br/><span style="font-size: 0.6em; font-weight: normal">
-        Google Chrome/Chromium 19 or newer required.
+        Google Chrome/Chromium 19 or newer is required.
         If module doesn't load in a reasonable time you probably haven't enabled Native Client.
-        Navigate to <tt>chrome://flags/</tt>, turn on <b>Native Client</b> and restart your browser.
+        Navigate to <tt>chrome://flags</tt>, turn on <b>Native Client</b> and restart your browser.
       </td>
       <td/>
     </tr>

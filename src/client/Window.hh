@@ -25,6 +25,10 @@
 
 #include "client/common.hh"
 
+#ifdef __native_client__
+namespace pp { class Graphics3D; }
+#endif
+
 namespace oz
 {
 namespace client
@@ -34,7 +38,20 @@ class Window
 {
   private:
 
-    SDL_Surface* descriptor;
+#ifdef __native_client__
+
+    pp::Graphics3D* context;
+    Semaphore       flushSemaphore;
+
+    static void flushCompleteCallback( void* data, int );
+
+    void createContext();
+
+#else
+
+    SDL_Surface*    descriptor;
+
+#endif
 
   public:
 
@@ -48,6 +65,7 @@ class Window
 
     void resize();
     void toggleFull();
+    void swapBuffers();
 
     void init();
     void free();

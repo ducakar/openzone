@@ -36,7 +36,7 @@ function onCreate()
   ozCaelumSetPeriod( 3600 )
   ozCaelumSetTime( 450 )
 
-  local me = ozOrbisAddObj( OZ_FORCE, "beast", 78, -90, 66.40 )
+  local me = ozOrbisAddObj( OZ_FORCE, "beast", 78, -90, 66.40, OZ_NORTH )
   ozBotSetName( ozProfileGetName() )
   ozBotSetMind( "" )
   ozObjRemoveAllItems()

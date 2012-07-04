@@ -416,10 +416,10 @@ void System::abort( bool preventHalt )
 
 #ifdef _WIN32
     while( true ) {
-      Sleep( 1000 );
+      Sleep( 10 );
     }
 #else
-    while( sleep( 1 ) == 0 );
+    while( usleep( 10 * 1000 ) == 0 );
 #endif
   }
 
@@ -518,7 +518,7 @@ void System::warning( int nSkippedFrames, const char* msg, ... )
   Log::verboseMode = false;
   Log::putsRaw( "\n\n" );
   Log::vprintRaw( msg, ap );
-  Log::putsRaw( "\n" );
+  Log::putsRaw( "\n  stack trace:\n" );
 
   Log::verboseMode = verboseMode;
 
@@ -541,7 +541,7 @@ void System::error( int nSkippedFrames, const char* msg, ... )
   Log::verboseMode = false;
   Log::putsRaw( "\n\n" );
   Log::vprintRaw( msg, ap );
-  Log::putsRaw( "\n" );
+  Log::putsRaw( "\n  stack trace:\n" );
 
   va_end( ap );
 
