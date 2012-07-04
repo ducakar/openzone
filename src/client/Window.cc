@@ -24,6 +24,7 @@
 #include "stable.hh"
 
 #include "client/Window.hh"
+#include "client/Input.hh"
 #include "client/OpenGL.hh"
 #include "client/NaCl.hh"
 
@@ -114,8 +115,8 @@ void Window::toggleFull()
     isFull = !isFull;
     flags ^= SDL_FULLSCREEN;
 
-    ui::mouse.isJailed = true;
-    ui::mouse.reset();
+    input.isLocked = true;
+    input.reset();
 
     SDL_ShowCursor( false );
   }

@@ -25,10 +25,9 @@
 
 #include "client/ui/Button.hh"
 
+#include "client/Input.hh"
 #include "client/Shader.hh"
 #include "client/OpenGL.hh"
-
-#include "client/ui/Keyboard.hh"
 
 namespace oz
 {
@@ -45,7 +44,7 @@ void Button::onVisibilityChange( bool )
 
 bool Button::onMouseEvent()
 {
-  if( !keyboard.keys[SDLK_LALT] && !keyboard.keys[SDLK_RALT] ) {
+  if( !input.keys[SDLK_LALT] && !input.keys[SDLK_RALT] ) {
     isHighlighted = true;
 
     if( mouse.leftClick ) {

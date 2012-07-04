@@ -29,6 +29,7 @@
 #include "client/Render.hh"
 #include "client/Sound.hh"
 #include "client/GameStage.hh"
+#include "client/Input.hh"
 #include "client/NaCl.hh"
 
 namespace oz
@@ -72,8 +73,8 @@ void MenuStage::load()
   }
 
   OZ_MAIN_CALL( this, {
-    ui::mouse.buttons     = 0;
-    ui::mouse.currButtons = 0;
+    input.buttons     = 0;
+    input.currButtons = 0;
 
     _this->mainMenu = new ui::MainMenu( _this->showAutosaved, _this->showQuicksaved );
     ui::ui.root->add( _this->mainMenu, ui::Area::CENTRE, ui::Area::CENTRE );

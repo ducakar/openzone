@@ -25,10 +25,9 @@
 
 #include "client/ui/Frame.hh"
 
+#include "client/Input.hh"
 #include "client/Shader.hh"
 #include "client/OpenGL.hh"
-
-#include "client/ui/Keyboard.hh"
 
 namespace oz
 {
@@ -39,20 +38,20 @@ namespace ui
 
 bool Frame::onMouseEvent()
 {
-  if( mouse.buttons & ( SDL_BUTTON_LMASK | SDL_BUTTON_MMASK | SDL_BUTTON_RMASK ) ) {
+  if( input.buttons != 0 ) {
     raise();
   }
 
-  if( keyboard.keys[SDLK_LALT] || keyboard.keys[SDLK_RALT] ) {
+  if( input.keys[SDLK_LALT] || input.keys[SDLK_RALT] ) {
     mouse.icon = Mouse::OPENHAND;
 
-    if( mouse.buttons & SDL_BUTTON_LMASK ) {
+    if( input.buttons & Input::LEFT_BUTTON ) {
       if( mouse.leftClick ) {
         flags |= GRAB_BIT;
       }
       if( flags & GRAB_BIT ) {
         mouse.icon = Mouse::CLOSEDHAND;
-        move( mouse.relX, mouse.relY );
+        move( input.mouseX, input.mouseY );
       }
     }
     else {

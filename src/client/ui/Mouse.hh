@@ -66,19 +66,8 @@ class Mouse
     int   x;
     int   y;
 
-    int   relX;
-    int   relY;
-    int   relZ;
-    int   relW;
-
-    char  buttons;
-    char  oldButtons;
-    char  currButtons;
-
     int   overEdgeX;
     int   overEdgeY;
-
-    float accelFactor;
 
     bool  leftClick;
     bool  rightClick;
@@ -86,15 +75,10 @@ class Mouse
     bool  wheelUp;
     bool  wheelDown;
 
-    bool  doShow;
-    bool  isJailed;
-
     Icon  icon;
+    bool  doShow;
 
-    void reset();
-
-    void prepare();
-    void update( bool hasFocus );
+    void update();
 
     void draw() const;
 

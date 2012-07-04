@@ -24,7 +24,6 @@
 #pragma once
 
 #include "client/ui/Font.hh"
-#include "client/ui/Keyboard.hh"
 #include "client/ui/Mouse.hh"
 
 namespace oz

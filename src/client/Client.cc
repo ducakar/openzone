@@ -29,7 +29,6 @@
 
 #include "BuildInfo.hh"
 
-#include "client/Window.hh"
 #include "client/Camera.hh"
 #include "client/MenuStage.hh"
 #include "client/GameStage.hh"
@@ -38,6 +37,8 @@
 #include "client/Loader.hh"
 #include "client/NaCl.hh"
 #include "client/NaClUpdater.hh"
+#include "client/Window.hh"
+#include "client/Input.hh"
 
 #include <unistd.h>
 
@@ -332,7 +333,7 @@ int Client::main( int argc, char** argv )
   window.init();
   initFlags |= INIT_WINDOW;
 
-  ui::keyboard.init();
+  input.init();
   ui::mouse.init();
 
   String prefix  = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
@@ -487,13 +488,12 @@ int Client::main( int argc, char** argv )
 
   stage->load();
 
-  ui::mouse.reset();
+  input.reset();
 
   SDL_Event event;
 
   bool isAlive        = true;
   bool isActive       = true;
-  bool hasMouseFocus  = true;
 
   // time passed form start of the frame
   uint timeSpent;
@@ -511,33 +511,21 @@ int Client::main( int argc, char** argv )
   // THE MAGNIFICENT MAIN LOOP
   do {
     // read input & events
-    ui::keyboard.prepare();
-    ui::mouse.prepare();
+    input.prepare();
 
     while( SDL_PollEvent( &event ) != 0 ) {
       switch( event.type ) {
-        case SDL_MOUSEBUTTONUP: {
-          ui::mouse.currButtons &= char( ~SDL_BUTTON( event.button.button ) );
-          break;
-        }
+        case SDL_MOUSEBUTTONUP:
         case SDL_MOUSEBUTTONDOWN: {
-          ui::mouse.buttons     |= char( SDL_BUTTON( event.button.button ) );
-          ui::mouse.currButtons |= char( SDL_BUTTON( event.button.button ) );
-
-          if( ui::mouse.buttons & SDL_BUTTON( SDL_BUTTON_WHEELUP ) ) {
-            ++ui::mouse.relW;
-          }
-          if( ui::mouse.buttons & SDL_BUTTON( SDL_BUTTON_WHEELDOWN ) ) {
-            --ui::mouse.relW;
-          }
+          input.readEvent( &event );
           break;
         }
         case SDL_KEYDOWN: {
-          const SDL_keysym& keysym = event.key.keysym;
-
-          ui::keyboard.keys[keysym.sym] |= SDL_PRESSED;
+          input.readEvent( &event );
 
 #ifndef __native_client__
+          const SDL_keysym& keysym = event.key.keysym;
+
           if( keysym.sym == SDLK_F9 ) {
             if( keysym.mod == 0 ) {
               loader.makeScreenshot();
@@ -548,9 +536,9 @@ int Client::main( int argc, char** argv )
               window.toggleFull();
             }
             else if( keysym.mod & KMOD_CTRL ) {
-              ui::mouse.isJailed = !ui::mouse.isJailed;
+              input.isLocked = !input.isLocked;
 
-              SDL_ShowCursor( !ui::mouse.isJailed );
+              SDL_ShowCursor( !input.isLocked );
             }
           }
           else if( keysym.sym == SDLK_F12 ) {
@@ -566,11 +554,11 @@ int Client::main( int argc, char** argv )
         }
         case SDL_ACTIVEEVENT: {
           if( event.active.state & SDL_APPMOUSEFOCUS ) {
-            hasMouseFocus = event.active.gain != 0;
+            input.hasFocus = event.active.gain != 0;
           }
           if( event.active.state & SDL_APPACTIVE ) {
             if( event.active.gain ) {
-              ui::mouse.reset();
+              input.reset();
 
               sound.resume();
               isActive = true;
@@ -609,14 +597,14 @@ int Client::main( int argc, char** argv )
       }
     }
 
-    ui::keyboard.keys[SDLK_LCTRL] = 0;
-    ui::keyboard.keys[SDLK_RCTRL] = 0;
-    ui::keyboard.keys[SDLK_LALT] = 0;
-    ui::keyboard.keys[SDLK_RALT] = 0;
+    input.keys[SDLK_LCTRL] = 0;
+    input.keys[SDLK_RCTRL] = 0;
+    input.keys[SDLK_LALT] = 0;
+    input.keys[SDLK_RALT] = 0;
 
 #endif
 
-    ui::mouse.update( hasMouseFocus );
+    input.update();
 
     // Waste time when iconified.
     if( !isActive ) {
@@ -639,9 +627,8 @@ int Client::main( int argc, char** argv )
       stage = Stage::nextStage;
       Stage::nextStage = null;
 
-      ui::keyboard.prepare();
-      ui::mouse.prepare();
-      ui::mouse.update( hasMouseFocus );
+      input.prepare();
+      input.update();
 
       stage->load();
 

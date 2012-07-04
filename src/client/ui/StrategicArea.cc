@@ -30,8 +30,6 @@
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"
 
-#include "client/ui/Keyboard.hh"
-
 #include <SDL_ttf.h>
 
 namespace oz

@@ -28,9 +28,8 @@
 #include "client/Camera.hh"
 #include "client/Context.hh"
 #include "client/Shape.hh"
+#include "client/Input.hh"
 #include "client/OpenGL.hh"
-
-#include "client/ui/Keyboard.hh"
 
 namespace oz
 {
@@ -314,7 +313,7 @@ bool InventoryMenu::onMouseEvent()
 {
   Frame::onMouseEvent();
 
-  if( keyboard.keys[SDLK_LALT] || keyboard.keys[SDLK_RALT] ) {
+  if( input.keys[SDLK_LALT] || input.keys[SDLK_RALT] ) {
     return true;
   }
 
