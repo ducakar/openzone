@@ -139,6 +139,8 @@ void Camera::prepare()
 {
   updateReferences();
 
+  ui::mouse.update();
+
   bool alt = ( input.keys[SDLK_LALT] | input.keys[SDLK_RALT] ) != 0;
 
   relH = float( -ui::mouse.overEdgeX ) * mouseXSens * mag;

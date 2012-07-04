@@ -99,6 +99,91 @@ Mesh::~Mesh()
   delete[] parts;
 }
 
+void Mesh::bind() const
+{
+  if( this != lastMesh ) {
+    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+
+    Vertex::setFormat();
+  }
+}
+
+void Mesh::drawComponent( int id, int mask ) const
+{
+  mask &= flags;
+
+  if( mask == 0 ) {
+    return;
+  }
+
+  for( int i = 0; i < nParts; ++i ) {
+    const Part& part = parts[i];
+
+    int component = part.flags & COMPONENT_MASK;
+    if( component < id ) {
+      continue;
+    }
+    else if( component > id ) {
+      break;
+    }
+    else if( part.flags & mask ) {
+      glActiveTexture( GL_TEXTURE0 );
+      glBindTexture( GL_TEXTURE_2D, part.texture.diffuse );
+      glActiveTexture( GL_TEXTURE1 );
+      glBindTexture( GL_TEXTURE_2D, part.texture.masks );
+      glActiveTexture( GL_TEXTURE2 );
+      glBindTexture( GL_TEXTURE_2D, part.texture.normals );
+
+      glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, shader.colourTransform );
+
+      glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
+                      static_cast<ushort*>( null ) + part.firstIndex );
+    }
+  }
+}
+
+void Mesh::draw( int mask ) const
+{
+  mask &= flags;
+
+  if( mask == 0 ) {
+    return;
+  }
+
+  if( this != lastMesh ) {
+    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+
+    Vertex::setFormat();
+  }
+
+  for( int i = 0; i < nParts; ++i ) {
+    const Part& part = parts[i];
+
+    if( part.flags & mask ) {
+      glActiveTexture( GL_TEXTURE0 );
+      glBindTexture( GL_TEXTURE_2D, part.texture.diffuse );
+      glActiveTexture( GL_TEXTURE1 );
+      glBindTexture( GL_TEXTURE_2D, part.texture.masks );
+      glActiveTexture( GL_TEXTURE2 );
+      glBindTexture( GL_TEXTURE_2D, part.texture.normals );
+
+      glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, shader.colourTransform );
+
+      glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
+                      static_cast<ushort*>( null ) + part.firstIndex );
+    }
+  }
+}
+
+void Mesh::upload( const Vertex* vertices, int nVertices, uint usage ) const
+{
+  glBindBuffer( GL_ARRAY_BUFFER, vbo );
+  glBufferData( GL_ARRAY_BUFFER, nVertices * int( sizeof( Vertex ) ), vertices, usage );
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+}
+
 void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
 {
   flags = 0;
@@ -229,91 +314,6 @@ void Mesh::unload()
   vbo = 0;
 
   OZ_GL_CHECK_ERROR();
-}
-
-void Mesh::upload( const Vertex* vertices, int nVertices, uint usage ) const
-{
-  glBindBuffer( GL_ARRAY_BUFFER, vbo );
-  glBufferData( GL_ARRAY_BUFFER, nVertices * int( sizeof( Vertex ) ), vertices, usage );
-  glBindBuffer( GL_ARRAY_BUFFER, 0 );
-}
-
-void Mesh::bind() const
-{
-  if( this != lastMesh ) {
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-
-    Vertex::setFormat();
-  }
-}
-
-void Mesh::drawComponent( int id, int mask ) const
-{
-  mask &= flags;
-
-  if( mask == 0 ) {
-    return;
-  }
-
-  for( int i = 0; i < nParts; ++i ) {
-    const Part& part = parts[i];
-
-    int component = part.flags & COMPONENT_MASK;
-    if( component < id ) {
-      continue;
-    }
-    else if( component > id ) {
-      break;
-    }
-    else if( part.flags & mask ) {
-      glActiveTexture( GL_TEXTURE0 );
-      glBindTexture( GL_TEXTURE_2D, part.texture.diffuse );
-      glActiveTexture( GL_TEXTURE1 );
-      glBindTexture( GL_TEXTURE_2D, part.texture.masks );
-      glActiveTexture( GL_TEXTURE2 );
-      glBindTexture( GL_TEXTURE_2D, part.texture.normals );
-
-      glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, shader.colourTransform );
-
-      glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
-                      static_cast<ushort*>( null ) + part.firstIndex );
-    }
-  }
-}
-
-void Mesh::draw( int mask ) const
-{
-  mask &= flags;
-
-  if( mask == 0 ) {
-    return;
-  }
-
-  if( this != lastMesh ) {
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-
-    Vertex::setFormat();
-  }
-
-  for( int i = 0; i < nParts; ++i ) {
-    const Part& part = parts[i];
-
-    if( part.flags & mask ) {
-      glActiveTexture( GL_TEXTURE0 );
-      glBindTexture( GL_TEXTURE_2D, part.texture.diffuse );
-      glActiveTexture( GL_TEXTURE1 );
-      glBindTexture( GL_TEXTURE_2D, part.texture.masks );
-      glActiveTexture( GL_TEXTURE2 );
-      glBindTexture( GL_TEXTURE_2D, part.texture.normals );
-
-      glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, shader.colourTransform );
-
-      glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
-                      static_cast<ushort*>( null ) + part.firstIndex );
-    }
-  }
 }
 
 }

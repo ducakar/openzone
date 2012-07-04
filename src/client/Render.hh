@@ -116,10 +116,12 @@ class Render
 
     float                 windPhi;
 
-    float                 renderScale;
-    uint                  renderScaleFilter;
-    int                   renderWidth;
-    int                   renderHeight;
+    int                   windowWidth;
+    int                   windowHeight;
+    int                   frameWidth;
+    int                   frameHeight;
+    float                 scale;
+    int                   scaleFilter;
 
     uint                  mainFrame;
     uint                  depthBuffer;
@@ -154,6 +156,8 @@ class Render
 
     void draw( int flags );
     void swap();
+
+    void resize();
 
     void load();
     void unload();

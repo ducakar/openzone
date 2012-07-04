@@ -66,7 +66,7 @@ void main()
   vec4  sample    = texture2D( oz_Textures[0], exTexCoord );
   float luminance = clamp( ( multiSample.r + multiSample.g + multiSample.b ) * LUMINANCE_FACTOR, 0.0, 1.0 );
 
-//   vec4 blurred = mix( sample, blur, 0 );
-//   gl_FragColor = mix( blurred, bloom, luminance );
-  gl_FragColor = vec4( 1.0 );
+  vec4 blurred = mix( sample, blur, 0.5 );
+  gl_FragColor = mix( blurred, bloom, luminance );
+//   gl_FragColor = mix( sample, bloom, luminance );
 }

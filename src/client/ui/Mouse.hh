@@ -63,20 +63,14 @@ class Mouse
 
   public:
 
-    int   x;
-    int   y;
+    int  x;
+    int  y;
 
-    int   overEdgeX;
-    int   overEdgeY;
+    int  overEdgeX;
+    int  overEdgeY;
 
-    bool  leftClick;
-    bool  rightClick;
-    bool  middleClick;
-    bool  wheelUp;
-    bool  wheelDown;
-
-    Icon  icon;
-    bool  doShow;
+    Icon icon;
+    bool doShow;
 
     void update();
 

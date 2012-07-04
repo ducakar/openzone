@@ -40,92 +40,6 @@ DMesh::DMesh() :
   positionsTexId( 0 ), normalsTexId( 0 ), vertices( null ), positions( null ), normals( null )
 {}
 
-void DMesh::load( InputStream* istream, const char* path )
-{
-  if( shader.hasVertexTexture ) {
-    Mesh::load( istream, GL_STATIC_DRAW, path );
-
-    nFrames         = istream->readInt();
-    nFramePositions = istream->readInt();
-    nFrameVertices  = istream->readInt();
-
-    int vertexBufferSize = nFramePositions * nFrames * int( sizeof( Point ) );
-    int normalBufferSize = nFramePositions * nFrames * int( sizeof( Vec3 ) );
-
-    glGenTextures( 1, &positionsTexId );
-    glBindTexture( GL_TEXTURE_2D, positionsTexId );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, nFramePositions, nFrames, 0, GL_RGB, GL_FLOAT,
-                  istream->forward( vertexBufferSize ) );
-    glBindTexture( GL_TEXTURE_2D, 0 );
-
-    glGenTextures( 1, &normalsTexId );
-    glBindTexture( GL_TEXTURE_2D, normalsTexId );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, nFramePositions, nFrames, 0, GL_RGB, GL_FLOAT,
-                  istream->forward( normalBufferSize ) );
-    glBindTexture( GL_TEXTURE_2D, 0 );
-  }
-  else {
-    const char* meshStart = istream->getPos();
-
-    Mesh::load( istream, GL_STREAM_DRAW, path );
-
-    nFrames         = istream->readInt();
-    nFramePositions = istream->readInt();
-    nFrameVertices  = istream->readInt();
-
-    vertices  = new Vertex[nFrameVertices];
-    positions = new Point[nFramePositions * nFrames];
-    normals   = new Vec3[nFramePositions * nFrames];
-
-    for( int i = 0; i < nFramePositions * nFrames; ++i ) {
-      positions[i] = istream->readPoint();
-    }
-    for( int i = 0; i < nFramePositions * nFrames; ++i ) {
-      normals[i] = istream->readVec3();
-    }
-
-    const char* meshEnd = istream->getPos();
-
-    istream->setPos( meshStart );
-
-    istream->readInt();
-    istream->readInt();
-
-    istream->readChars( reinterpret_cast<char*>( vertices ),
-                        nFrameVertices * int( sizeof( Vertex ) ) );
-
-    istream->setPos( meshEnd );
-
-    if( nFrameVertices > vertexAnimBufferLength ) {
-      delete[] vertexAnimBuffer;
-
-      vertexAnimBuffer = new Vertex[nFrameVertices];
-      vertexAnimBufferLength = nFrameVertices;
-    }
-  }
-}
-
-void DMesh::unload()
-{
-  if( vbo != 0 ) {
-    if( shader.hasVertexTexture ) {
-      glDeleteTextures( 1, &normalsTexId );
-      glDeleteTextures( 1, &positionsTexId );
-    }
-    else {
-      delete[] normals;
-      delete[] positions;
-      delete[] vertices;
-    }
-
-    Mesh::unload();
-  }
-}
-
 void DMesh::drawFrame( int mask, int frame ) const
 {
   if( shader.hasVertexTexture ) {
@@ -205,6 +119,94 @@ void DMesh::drawAnim( int mask, int firstFrame, int secondFrame, float interpola
   }
 
   Mesh::draw( mask );
+}
+
+void DMesh::load( InputStream* istream, const char* path )
+{
+  if( shader.hasVertexTexture ) {
+    Mesh::load( istream, GL_STATIC_DRAW, path );
+
+    nFrames         = istream->readInt();
+    nFramePositions = istream->readInt();
+    nFrameVertices  = istream->readInt();
+
+    int vertexBufferSize = nFramePositions * nFrames * int( sizeof( Point ) );
+    int normalBufferSize = nFramePositions * nFrames * int( sizeof( Vec3 ) );
+
+    glGenTextures( 1, &positionsTexId );
+    glBindTexture( GL_TEXTURE_2D, positionsTexId );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, nFramePositions, nFrames, 0, GL_RGB, GL_FLOAT,
+                  istream->forward( vertexBufferSize ) );
+    glBindTexture( GL_TEXTURE_2D, 0 );
+
+    glGenTextures( 1, &normalsTexId );
+    glBindTexture( GL_TEXTURE_2D, normalsTexId );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, nFramePositions, nFrames, 0, GL_RGB, GL_FLOAT,
+                  istream->forward( normalBufferSize ) );
+    glBindTexture( GL_TEXTURE_2D, 0 );
+  }
+  else {
+    const char* meshStart = istream->getPos();
+
+    Mesh::load( istream, GL_STREAM_DRAW, path );
+
+    nFrames         = istream->readInt();
+    nFramePositions = istream->readInt();
+    nFrameVertices  = istream->readInt();
+
+    vertices  = new Vertex[nFrameVertices];
+    positions = new Point[nFramePositions * nFrames];
+    normals   = new Vec3[nFramePositions * nFrames];
+
+    for( int i = 0; i < nFramePositions * nFrames; ++i ) {
+      positions[i] = istream->readPoint();
+    }
+    for( int i = 0; i < nFramePositions * nFrames; ++i ) {
+      normals[i] = istream->readVec3();
+    }
+
+    const char* meshEnd = istream->getPos();
+
+    istream->setPos( meshStart );
+
+    istream->readInt();
+    istream->readInt();
+
+    istream->readChars( reinterpret_cast<char*>( vertices ),
+                        nFrameVertices * int( sizeof( Vertex ) ) );
+
+    istream->setPos( meshEnd );
+
+    if( nFrameVertices > vertexAnimBufferLength ) {
+      delete[] vertexAnimBuffer;
+
+      vertexAnimBuffer = new Vertex[nFrameVertices];
+      vertexAnimBufferLength = nFrameVertices;
+    }
+  }
+
+  OZ_GL_CHECK_ERROR();
+}
+
+void DMesh::unload()
+{
+  if( vbo != 0 ) {
+    if( shader.hasVertexTexture ) {
+      glDeleteTextures( 1, &normalsTexId );
+      glDeleteTextures( 1, &positionsTexId );
+    }
+    else {
+      delete[] normals;
+      delete[] positions;
+      delete[] vertices;
+    }
+
+    Mesh::unload();
+  }
 }
 
 void DMesh::free()

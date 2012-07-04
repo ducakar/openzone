@@ -152,7 +152,7 @@ void Compiler::blend( bool doBlend )
   hard_assert( flags & MESH_BIT );
   hard_assert( !( flags & PART_BIT ) );
 
-  part.material = doBlend ? Mesh::ALPHA_BIT : Mesh::SOLID_BIT;
+  part.material = doBlend ? int( Mesh::ALPHA_BIT ) : int( Mesh::SOLID_BIT );
 }
 
 void Compiler::texture( const char* texture )

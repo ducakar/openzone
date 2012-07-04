@@ -97,8 +97,8 @@ void VehicleClass::initClass( const Config* config )
     throw Exception( "%s: Vehicle has state.autoEject but not state.hasEject.", name.cstr() );
   }
 
-  mass = config->get( "mass", 100.0f );
-  lift = config->get( "lift", 13.0f );
+  mass = config->get( "mass", 0.0f );
+  lift = config->get( "lift", -1.0f );
 
   if( mass < 0.01f ) {
     throw Exception( "%s: Invalid object mass. Should be >= 0.01.", name.cstr() );

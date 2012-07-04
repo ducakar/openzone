@@ -53,6 +53,12 @@ class Input
     char  oldButtons;
     char  currButtons;
 
+    bool  leftClick;
+    bool  rightClick;
+    bool  middleClick;
+    bool  wheelUp;
+    bool  wheelDown;
+
     bool  hasFocus;
     bool  isLocked;
 

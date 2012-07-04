@@ -47,7 +47,7 @@ bool Button::onMouseEvent()
   if( !input.keys[SDLK_LALT] && !input.keys[SDLK_RALT] ) {
     isHighlighted = true;
 
-    if( mouse.leftClick ) {
+    if( input.leftClick ) {
       isClicked = true;
 
       if( callback != null ) {

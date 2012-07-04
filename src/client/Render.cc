@@ -375,7 +375,11 @@ void Render::drawGeometry()
 void Render::drawOrbis()
 {
   if( isOffscreen ) {
-    glViewport( 0, 0, renderWidth, renderHeight );
+    if( window.width != windowWidth || windowHeight != window.height ) {
+      resize();
+    }
+
+    glViewport( 0, 0, frameWidth, frameHeight );
 
     glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
 
@@ -394,18 +398,19 @@ void Render::drawOrbis()
   uint beginMicros = Time::uclock();
 
   if( isOffscreen ) {
-    glViewport( 0, 0, camera.width, camera.height );
+    glViewport( 0, 0, windowWidth, windowHeight );
 
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
-    tf.ortho( camera.width, camera.height );
+    tf.ortho( windowWidth, windowHeight );
     tf.camera = Mat44::ID;
 
     shader.program( doPostprocess ? shader.postprocess : shader.plain );
+    shader.colour( Mat44::ID );
     tf.applyCamera();
 
     glBindTexture( GL_TEXTURE_2D, colourBuffer );
-    shape.fill( 0, 0, camera.width, camera.height );
+    shape.fill( 0, 0, windowWidth, windowHeight );
     glBindTexture( GL_TEXTURE_2D, 0 );
   }
 
@@ -460,6 +465,59 @@ void Render::swap()
   window.swapBuffers();
 
   swapMicros += Time::uclock() - beginMicros;
+}
+
+void Render::resize()
+{
+  windowWidth  = window.width;
+  windowHeight = window.height;
+
+  if( !isOffscreen ) {
+    return;
+  }
+
+  frameWidth  = int( float( window.width  ) * scale + 0.5f );
+  frameHeight = int( float( window.height ) * scale + 0.5f );
+
+  if( mainFrame != 0 ) {
+    glDeleteFramebuffers( 1, &mainFrame );
+    glDeleteTextures( 1, &colourBuffer );
+    glDeleteRenderbuffers( 1, &depthBuffer );
+  }
+
+  glGenRenderbuffers( 1, &depthBuffer );
+  glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
+#ifdef __native_client__
+  glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, frameWidth, frameHeight );
+#else
+  glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, frameWidth, frameHeight );
+#endif
+  glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+
+  glGenTextures( 1, &colourBuffer );
+  glBindTexture( GL_TEXTURE_2D, colourBuffer );
+
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, scaleFilter );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, scaleFilter );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB,
+                GL_UNSIGNED_BYTE, null );
+
+  glBindTexture( GL_TEXTURE_2D, 0 );
+
+  glGenFramebuffers( 1, &mainFrame );
+  glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
+
+  glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer );
+  glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourBuffer, 0 );
+
+  if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE ) {
+    throw Exception( "Main framebuffer creation failed" );
+  }
+
+  glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 }
 
 void Render::load()
@@ -620,72 +678,31 @@ void Render::init( bool isBuild )
     return;
   }
 
-  String sRenderScaleFilter;
-
-  doPostprocess      = config.getSet( "render.postprocess", true );
-  isLowDetail        = config.getSet( "render.lowDetail",   false );
-
-  renderScale        = config.getSet( "render.scale",       1.0f );
-  sRenderScaleFilter = config.getSet( "render.scaleFilter", "NEAREST" );
-
-  visibilityRange    = config.getSet( "render.distance",    300.0f );
-  showBounds         = config.getSet( "render.showBounds",  false );
-  showAim            = config.getSet( "render.showAim",     false );
+  String sScaleFilter;
 
 #ifdef __native_client__
-  isOffscreen        = false;
-#else
-  isOffscreen        = doPostprocess || renderScale != 1.0f;
+  config.include( "render.distance", "100.0" );
 #endif
-  windPhi            = 0.0f;
 
-  if( sRenderScaleFilter.equals( "NEAREST" ) ) {
-    renderScaleFilter = GL_NEAREST;
-  }
-  else if( sRenderScaleFilter.equals( "LINEAR" ) ) {
-    renderScaleFilter = GL_LINEAR;
-  }
-  else {
-    throw Exception( "render.scaleFilter should be either NEAREST or LINEAR." );
-  }
+  doPostprocess   = config.getSet( "render.postprocess", false );
+  isLowDetail     = config.getSet( "render.lowDetail",   false );
 
-  renderWidth  = window.width;
-  renderHeight = window.height;
+  scale           = config.getSet( "render.scale",       1.0f );
+  sScaleFilter    = config.getSet( "render.scaleFilter", "NEAREST" );
 
-  if( isOffscreen ) {
-    renderWidth  = int( float( renderWidth  ) * renderScale + 0.5f );
-    renderHeight = int( float( renderHeight ) * renderScale + 0.5f );
+  visibilityRange = config.getSet( "render.distance",    300.0f );
+  showBounds      = config.getSet( "render.showBounds",  false );
+  showAim         = config.getSet( "render.showAim",     false );
 
-    glGenRenderbuffers( 1, &depthBuffer );
-    glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
-    glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, renderWidth, renderHeight );
-    glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+  isOffscreen     = doPostprocess || scale != 1.0f;
+  windPhi         = 0.0f;
 
-    glGenTextures( 1, &colourBuffer );
-    glBindTexture( GL_TEXTURE_2D, colourBuffer );
+  scaleFilter     = sScaleFilter.equals( "NEAREST" ) ? GL_NEAREST :
+                    sScaleFilter.equals( "LINEAR" ) ? GL_LINEAR :
+                    throw Exception( "render.scaleFilter should be either NEAREST or LINEAR." );
 
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, renderWidth, renderHeight, 0,
-                  GL_RGB, GL_UNSIGNED_BYTE, null );
-
-    glBindTexture( GL_TEXTURE_2D, 0 );
-
-    glGenFramebuffers( 1, &mainFrame );
-    glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
-
-    glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer );
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourBuffer, 0 );
-
-    if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE ) {
-      throw Exception( "Main framebuffer creation failed" );
-    }
-
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-  }
+  mainFrame = 0;
+  resize();
 
   glEnable( GL_CULL_FACE );
   glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -720,10 +737,12 @@ void Render::free( bool isBuild )
   Log::println( "Freeing Render {" );
   Log::indent();
 
-  if( isOffscreen ) {
+  if( mainFrame != 0 ) {
     glDeleteFramebuffers( 1, &mainFrame );
     glDeleteTextures( 1, &colourBuffer );
     glDeleteRenderbuffers( 1, &depthBuffer );
+
+    mainFrame = 0;
   }
 
   ui::ui.free();

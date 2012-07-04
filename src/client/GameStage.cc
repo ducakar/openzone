@@ -202,7 +202,7 @@ void GameStage::reload()
 
   loader.load();
 
-  ui::ui.prepare();
+//   ui::ui.prepare();
   ui::ui.showLoadingScreen( false );
 
   Log::unindent();
@@ -448,7 +448,7 @@ void GameStage::load()
 
   loader.load();
 
-  ui::ui.prepare();
+//   ui::ui.prepare();
   ui::ui.showLoadingScreen( false );
 
   loadingMicros = Time::uclock() - loadingMicros;

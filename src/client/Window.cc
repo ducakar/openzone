@@ -28,8 +28,6 @@
 #include "client/OpenGL.hh"
 #include "client/NaCl.hh"
 
-#include "client/ui/Mouse.hh"
-
 #ifdef __native_client__
 # include <ppapi/cpp/completion_callback.h>
 # include <ppapi/cpp/instance.h>
@@ -77,7 +75,7 @@ void Window::createContext()
 #endif
 
 Window::Window() :
-  width( 0 ), height( 0 ), bpp( 0 ), flags( 0 ), isFull( 0 )
+  width( 0 ), height( 0 ), flags( 0 ), isFull( 0 )
 {}
 
 void Window::resize()
@@ -95,10 +93,11 @@ void Window::resize()
 
 #else
 
-  descriptor = SDL_SetVideoMode( width, height, bpp, flags );
+  SDL_FreeSurface( descriptor );
+  descriptor = SDL_SetVideoMode( width, height, 0, flags );
 
   if( descriptor == null ) {
-    throw Exception( "Failed to resize surface after window resize" );
+    throw Exception( "Failed to create OpenGL window surface" );
   }
 
   width  = descriptor->w;
@@ -111,15 +110,17 @@ void Window::toggleFull()
 {
 #ifndef __native_client__
 
-  if( SDL_WM_ToggleFullScreen( descriptor ) != 0 ) {
-    isFull = !isFull;
+    width  = isFull ? desiredWidth  : desktopWidth;
+    height = isFull ? desiredHeight : desktopHeight;
     flags ^= SDL_FULLSCREEN;
+    isFull = !isFull;
+
+    resize();
 
     input.isLocked = true;
     input.reset();
 
     SDL_ShowCursor( false );
-  }
 
 #endif
 }
@@ -148,7 +149,6 @@ void Window::init()
 
   width  = NaCl::width;
   height = NaCl::height;
-  bpp    = 32;
   flags  = 0;
   isFull = false;
 
@@ -174,9 +174,8 @@ void Window::init()
   char allowScreensaverEnv[] = "SDL_VIDEO_ALLOW_SCREENSAVER=1";
   SDL_putenv( allowScreensaverEnv );
 
-  width            = config.getSet( "window.width", 0 );
-  height           = config.getSet( "window.height", 0 );
-  bpp              = config.getSet( "window.bpp", 0 );
+  desiredWidth     = config.getSet( "window.width", 0 );
+  desiredHeight    = config.getSet( "window.height", 0 );
   flags            = SDL_OPENGL | SDL_RESIZABLE;
   isFull           = config.getSet( "window.fullscreen", false );
   bool enableVSync = config.getSet( "window.vsync", true );
@@ -192,40 +191,30 @@ void Window::init()
                 videoInfo->vfmt->BitsPerPixel );
   Log::verboseMode = false;
 
-  if( width == 0 || height == 0 ) {
-    width  = videoInfo->current_w;
-    height = videoInfo->current_h;
-  }
-  if( bpp == 0 ) {
-    bpp = videoInfo->vfmt->BitsPerPixel;
+  desktopWidth  = videoInfo->current_w;
+  desktopHeight = videoInfo->current_h;
+
+  if( desiredWidth == 0 || desiredHeight == 0 ) {
+    desiredWidth  = desktopWidth;
+    desiredHeight = desktopHeight;
   }
 
+  width  = isFull ? desktopWidth  : desiredWidth;
+  height = isFull ? desktopHeight : desiredHeight;
+
   SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,   0 );
-  SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE,   16 );
   SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 0 );
   SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, enableVSync );
 
-  Log::print( "Creating OpenGL window %dx%d-%d [%s] ...",
-              width, height, bpp, isFull ? "fullscreen" : "windowed" );
+  Log::print( "Creating OpenGL window %dx%d [%s] ...",
+              width, height, isFull ? "fullscreen" : "windowed" );
 
-  if( SDL_VideoModeOK( width, height, bpp, flags ) == 0 ) {
-    throw Exception( "Video mode not supported" );
-  }
-
-  descriptor = SDL_SetVideoMode( width, height, bpp, flags );
-
-  if( descriptor == null ) {
-    throw Exception( "Window creation failed" );
-  }
+  resize();
 
   SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION,
                      OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION );
 
-  width  = descriptor->w;
-  height = descriptor->h;
-  bpp    = descriptor->format->BitsPerPixel;
-
-  Log::printEnd( " %dx%d-%d ... OK", width, height, bpp );
+  Log::printEnd( " %dx%d ... OK", width, height );
 
   SDL_ShowCursor( SDL_FALSE );
 

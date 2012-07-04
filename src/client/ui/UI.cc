@@ -62,21 +62,8 @@ void UI::showLoadingScreen( bool doShow )
   loadingScreen->show( doShow );
 }
 
-void UI::prepare()
-{
-  isFreelook = !mouse.doShow;
-
-  foreach( area, root->children.iter() ) {
-    if( !( area->flags & Area::PINNED_BIT ) ) {
-      area->show( mouse.doShow );
-    }
-  }
-}
-
 void UI::update()
 {
-  mouse.update();
-
   if( mouse.doShow == isFreelook ) {
     isFreelook = !mouse.doShow;
 

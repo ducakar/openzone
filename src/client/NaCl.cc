@@ -94,19 +94,8 @@ void NaCl::init()
   mainCallSemaphore.init();
 
   // Hacks
-  config.include( "render.distance", "100.0" );
   config.include( "ui.showBuild", "true" );
   config.include( "ui.showFPS", "true" );
-
-  config.include( "profile.class", "beast" );
-  config.include( "profile.item00", "beast_weapon.plasmagun" );
-  config.include( "profile.item01", "nvGoggles" );
-  config.include( "profile.item02", "binoculars" );
-  config.include( "profile.item03", "galileo" );
-  config.include( "profile.item04", "musicPlayer" );
-  config.include( "profile.item05", "cvicek" );
-  config.include( "profile.name", "Jst" );
-  config.include( "profile.weaponItem", "0" );
 }
 
 void NaCl::free()
