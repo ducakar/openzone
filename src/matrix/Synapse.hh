@@ -74,13 +74,13 @@ class Synapse
     void cut( Dynamic* obj );
 
     // create an object, schedule for addition in the world and return predicted world index
-    Struct* add( const BSP* bsp, const Point& p, Heading heading );
-    Object* add( const ObjectClass* clazz, const Point& p, Heading heading );
+    Struct* add( const BSP* bsp, const Point& p, Heading heading, bool empty );
+    Object* add( const ObjectClass* clazz, const Point& p, Heading heading, bool empty );
     Frag*   add( const FragPool* pool, const Point& p, const Vec3& velocity );
     void    gen( const FragPool* pool, int nFrags, const Bounds& bb, const Vec3& velocity );
 
-    Struct* addStruct( const char* bspName, const Point& p, Heading heading );
-    Object* addObject( const char* className, const Point& p, Heading heading );
+    Struct* addStruct( const char* bspName, const Point& p, Heading heading, bool empty );
+    Object* addObject( const char* className, const Point& p, Heading heading, bool empty );
     Frag*   addFrag( const char* poolName, const Point& p, const Vec3& velocity );
     void    genFrags( const char* poolName, int nFrags, const Bounds& bb, const Vec3& velocity );
 

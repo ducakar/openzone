@@ -78,7 +78,7 @@ void Synapse::cut( Dynamic* obj )
   cutObjects.add( obj->index );
 }
 
-Struct* Synapse::add( const BSP* bsp, const Point& p, Heading heading )
+Struct* Synapse::add( const BSP* bsp, const Point& p, Heading heading, bool empty )
 {
   Struct* str = orbis.add( bsp, p, heading );
   if( str == null ) {
@@ -93,7 +93,7 @@ Struct* Synapse::add( const BSP* bsp, const Point& p, Heading heading )
 
   addedStructs.add( str->index );
 
-  if( str->bsp->nBoundObjects != 0 ) {
+  if( !empty && str->bsp->nBoundObjects != 0 ) {
     str->boundObjects.alloc( bsp->nBoundObjects );
 
     for( int i = 0; i < str->bsp->nBoundObjects; ++i ) {
@@ -117,7 +117,7 @@ Struct* Synapse::add( const BSP* bsp, const Point& p, Heading heading )
   return str;
 }
 
-Object* Synapse::add( const ObjectClass* clazz, const Point& p, Heading heading )
+Object* Synapse::add( const ObjectClass* clazz, const Point& p, Heading heading, bool empty )
 {
   Object* obj = orbis.add( clazz, p, heading );
   if( obj == null ) {
@@ -128,28 +128,30 @@ Object* Synapse::add( const ObjectClass* clazz, const Point& p, Heading heading 
 
   addedObjects.add( obj->index );
 
-  const Vector<const ObjectClass*>& defaultItems = obj->clazz->defaultItems;
+  if( !empty ) {
+    const Vector<const ObjectClass*>& defaultItems = obj->clazz->defaultItems;
 
-  for( int i = 0; i < defaultItems.length(); ++i ) {
-    Heading heading = Heading( Math::rand( 4 ) );
-    Dynamic* item = static_cast<Dynamic*>( orbis.add( defaultItems[i], Point::ORIGIN, heading ) );
+    for( int i = 0; i < defaultItems.length(); ++i ) {
+      Heading heading = Heading( Math::rand( 4 ) );
+      Dynamic* item = static_cast<Dynamic*>( orbis.add( defaultItems[i], Point::ORIGIN, heading ) );
 
-    if( item == null ) {
-      continue;
+      if( item == null ) {
+        continue;
+      }
+
+      obj->items.add( item->index );
+      item->parent = obj->index;
+
+      addedObjects.add( item->index );
     }
 
-    obj->items.add( item->index );
-    item->parent = obj->index;
+    if( obj->flags & Object::BOT_BIT ) {
+      const BotClass* botClazz = static_cast<const BotClass*>( obj->clazz );
+      Bot* bot = static_cast<Bot*>( obj );
 
-    addedObjects.add( item->index );
-  }
-
-  if( obj->flags & Object::BOT_BIT ) {
-    const BotClass* botClazz = static_cast<const BotClass*>( obj->clazz );
-    Bot* bot = static_cast<Bot*>( obj );
-
-    if( uint( botClazz->weaponItem ) < uint( obj->items.length() ) ) {
-      bot->weapon = bot->items[botClazz->weaponItem];
+      if( uint( botClazz->weaponItem ) < uint( obj->items.length() ) ) {
+        bot->weapon = bot->items[botClazz->weaponItem];
+      }
     }
   }
 
@@ -190,14 +192,14 @@ void Synapse::gen( const FragPool* pool, int nFrags, const Bounds& bb, const Vec
   }
 }
 
-Struct* Synapse::addStruct( const char* bspName, const Point& p, Heading heading )
+Struct* Synapse::addStruct( const char* bspName, const Point& p, Heading heading, bool empty )
 {
-  return add( library.bsp( bspName ), p, heading );
+  return add( library.bsp( bspName ), p, heading, empty );
 }
 
-Object* Synapse::addObject( const char* className, const Point& p, Heading heading )
+Object* Synapse::addObject( const char* className, const Point& p, Heading heading, bool empty )
 {
-  return add( library.objClass( className ), p, heading );
+  return add( library.objClass( className ), p, heading, empty );
 }
 
 Frag* Synapse::addFrag( const char* poolName, const Point& p, const Vec3& velocity )

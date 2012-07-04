@@ -65,11 +65,22 @@ static int ozGettext( lua_State* l )
 
 static int ozOrbisAddPlayer( lua_State* l )
 {
-  VARG( 4, 5 );
+  VARG( 4, 6 );
 
   AddMode mode    = AddMode( l_toint( 1 ) );
   Point   p       = Point( l_tofloat( 2 ), l_tofloat( 3 ), l_tofloat( 4 ) );
-  Heading heading = Heading( l_gettop() == 5 ? l_toint( 5 ) : Math::rand( 4 ) );
+  Heading heading = Heading( Math::rand( 4 ) );
+  bool    empty   = false;
+
+  int nParams = l_gettop();
+  for( int i = 5; i <= nParams; ++i ) {
+    if( l_type( i ) == LUA_TBOOLEAN ) {
+      empty = l_tobool( i );
+    }
+    else {
+      heading = Heading( l_toint( i ) );
+    }
+  }
 
   if( mode != ADD_FORCE ) {
     AABB aabb = AABB( p, profile.clazz->dim );
@@ -85,7 +96,7 @@ static int ozOrbisAddPlayer( lua_State* l )
     }
   }
 
-  ms.obj = synapse.add( profile.clazz, p, heading );
+  ms.obj = synapse.add( profile.clazz, p, heading, true );
   l_pushint( ms.obj == null ? -1 : ms.obj->index );
 
   if( ms.obj != null ) {
@@ -94,24 +105,21 @@ static int ozOrbisAddPlayer( lua_State* l )
     player->name = profile.name;
     player->mindFunc = "";
 
-    foreach( i, player->items.citer() ) {
-      synapse.removeObject( *i );
-    }
-    player->items.clear();
-    player->weapon = -1;
+    if( !empty ) {
+      int invMax = min( player->clazz->nItems, profile.items.length() );
 
-    int iMax = min( player->clazz->nItems, profile.items.length() );
+      for( int i = 0; i < invMax; ++i ) {
+        Object*  obj  = synapse.add( profile.items[i], Point::ORIGIN, Heading( Math::rand( 4 ) ),
+                                    true );
+        Dynamic* item = static_cast<Dynamic*>( obj );
 
-    for( int i = 0; i < iMax; ++i ) {
-      Object*  obj  = synapse.add( profile.items[i], Point::ORIGIN, Heading( Math::rand( 4 ) ) );
-      Dynamic* item = static_cast<Dynamic*>( obj );
+        player->items.add( item->index );
+        item->parent = player->index;
+        synapse.cut( item );
 
-      player->items.add( item->index );
-      item->parent = player->index;
-      synapse.cut( item );
-
-      if( i == profile.weaponItem ) {
-        player->weapon = item->index;
+        if( i == profile.weaponItem ) {
+          player->weapon = item->index;
+        }
       }
     }
   }

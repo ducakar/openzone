@@ -76,7 +76,7 @@ void FloraModule::addTree( float x, float y )
 
   if( !client::collider.overlaps( bounds ) ) {
     pos.z -= TREE_DEPTH;
-    synapse.addObject( type, pos, Heading( Math::rand( 4 ) ) );
+    synapse.addObject( type, pos, Heading( Math::rand( 4 ) ), true );
     ++number;
   }
 }
@@ -94,7 +94,7 @@ void FloraModule::addPlant( const char* type, float x, float y )
 
   if( !client::collider.overlaps( bounds ) ) {
     pos.z -= TREE_DEPTH;
-    synapse.addObject( type, pos, Heading( Math::rand( 4 ) ) );
+    synapse.addObject( type, pos, Heading( Math::rand( 4 ) ), true );
     ++number;
   }
 }
