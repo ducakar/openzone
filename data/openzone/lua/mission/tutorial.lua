@@ -36,10 +36,9 @@ function onCreate()
   ozCaelumSetPeriod( 3600 )
   ozCaelumSetTime( 450 )
 
-  local me = ozOrbisAddObj( OZ_FORCE, "beast", 78, -90, 66.40, OZ_NORTH )
+  local me = ozOrbisAddObj( OZ_FORCE, "beast", 78, -90, 66.40, OZ_NORTH, true )
   ozBotSetName( ozProfileGetName() )
   ozBotSetMind( "" )
-  ozObjRemoveAllItems()
 
   local oX, oY, oZ = 80, -80, 69.7
   ozOrbisAddStr( OZ_FORCE, "tutorial_movement", oX, oY, oZ, OZ_NORTH )
@@ -87,8 +86,6 @@ function onCreate()
   ozOrbisAddStr( OZ_FORCE, "tutorial_carrying", oX, oY, oZ, OZ_WEST )
 
   ozOrbisAddObj( OZ_FORCE, "metalCrate", oX + 3.2, oY - 4.5, oZ - 3 )
-  ozObjRemoveAllItems()
-
   ozOrbisAddObj( OZ_FORCE, "bigCrate", oX + 1, oY - 3, oZ - 3 )
   ozOrbisAddObj( OZ_FORCE, "bigCrate", oX, oY - 1, oZ - 3 )
   ozOrbisAddObj( OZ_FORCE, "smallCrate", oX + 1.1, oY - 3, oZ - 2 )
@@ -216,20 +213,17 @@ function onCreate()
   ozOrbisAddObj( OZ_FORCE, "metalBarrel", oX - 10, oY + 30, oZ )
   ozOrbisAddObj( OZ_FORCE, "metalBarrel", oX - 8, oY + 30, oZ )
 
-  ozOrbisAddObj( OZ_FORCE, "droid", oX - 5, oY + 30, oZ )
-  ozObjRemoveAllItems()
+  ozOrbisAddObj( OZ_FORCE, "droid", oX - 5, oY + 30, oZ, true )
   ozObjAddItem( cvicek )
   ozBotSetH( 180 )
   ozBotSetMind( "" )
 
-  ozOrbisAddObj( OZ_FORCE, "droid.OOM-9", oX - 2.5, oY + 30, oZ )
-  ozObjRemoveAllItems()
+  ozOrbisAddObj( OZ_FORCE, "droid.OOM-9", oX - 2.5, oY + 30, oZ, true )
   ozObjAddItem( firstAid )
   ozBotSetH( 180 )
   ozBotSetMind( "" )
 
   ozOrbisAddObj( OZ_FORCE, "metalCrate", oX, oY + 30, oZ - 1 )
-  ozObjRemoveAllItems()
 
   local infoWeapon = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 6, oY + 20, oZ - 0.5 )
   local infoCorpse = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 6, oY + 30, oZ )

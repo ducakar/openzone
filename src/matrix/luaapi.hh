@@ -108,7 +108,7 @@ static int ozOrbisSetGravity( lua_State* l )
 
 static int ozOrbisAddStr( lua_State* l )
 {
-  VARG( 5, 6 );
+  VARG( 5, 7 );
 
   const BSP* bsp = null;
   try {
@@ -120,7 +120,18 @@ static int ozOrbisAddStr( lua_State* l )
 
   AddMode mode    = AddMode( l_toint( 1 ) );
   Point   p       = Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
-  Heading heading = Heading( l_gettop() == 6 ? l_toint( 6 ) : Math::rand( 4 ) );
+  Heading heading = Heading( Math::rand( 4 ) );
+  bool    empty   = false;
+
+  int nParams = l_gettop();
+  for( int i = 6; i <= nParams; ++i ) {
+    if( l_type( i ) == LUA_TBOOLEAN ) {
+      empty = l_tobool( i );
+    }
+    else {
+      heading = Heading( l_toint( i ) );
+    }
+  }
 
   if( mode != ADD_FORCE ) {
     Bounds bounds = *bsp;
@@ -133,14 +144,14 @@ static int ozOrbisAddStr( lua_State* l )
     }
   }
 
-  ms.str = synapse.add( bsp, p, heading );
+  ms.str = synapse.add( bsp, p, heading, empty );
   l_pushint( ms.str == null ? -1 : ms.str->index );
   return 1;
 }
 
 static int ozOrbisAddObj( lua_State* l )
 {
-  VARG( 5, 6 );
+  VARG( 5, 7 );
 
   const ObjectClass* clazz = null;
   try {
@@ -152,7 +163,18 @@ static int ozOrbisAddObj( lua_State* l )
 
   AddMode mode    = AddMode( l_toint( 1 ) );
   Point   p       = Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
-  Heading heading = Heading( l_gettop() == 6 ? l_toint( 6 ) : Math::rand( 4 ) );
+  Heading heading = Heading( Math::rand( 4 ) );
+  bool    empty   = false;
+
+  int nParams = l_gettop();
+  for( int i = 6; i <= nParams; ++i ) {
+    if( l_type( i ) == LUA_TBOOLEAN ) {
+      empty = l_tobool( i );
+    }
+    else {
+      heading = Heading( l_toint( i ) );
+    }
+  }
 
   if( mode != ADD_FORCE ) {
     AABB aabb = AABB( p, clazz->dim );
@@ -168,7 +190,7 @@ static int ozOrbisAddObj( lua_State* l )
     }
   }
 
-  ms.obj = synapse.add( clazz, p, heading );
+  ms.obj = synapse.add( clazz, p, heading, empty );
   l_pushint( ms.obj == null ? -1 : ms.obj->index );
   return 1;
 }
