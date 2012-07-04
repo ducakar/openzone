@@ -15,6 +15,7 @@ add_library( client STATIC
   Frustum.cc
   GameStage.cc
   Imago.cc
+  Input.cc
   Loader.cc
   luaapi.cc
   Lua.cc
@@ -58,7 +59,6 @@ add_library( client STATIC
   ui/HudArea.cc
   ui/InfoFrame.cc
   ui/InventoryMenu.cc
-  ui/Keyboard.cc
   ui/Label.cc
   ui/LoadingArea.cc
   ui/MainMenu.cc

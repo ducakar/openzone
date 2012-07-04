@@ -26,6 +26,7 @@
 #include "client/Camera.hh"
 
 #include "client/Window.hh"
+#include "client/Input.hh"
 
 #include "client/ui/Area.hh"
 #include "client/ui/UI.hh"
@@ -138,9 +139,7 @@ void Camera::prepare()
 {
   updateReferences();
 
-  const ubyte* keys = ui::keyboard.keys;
-
-  bool alt = ( keys[SDLK_LALT] | keys[SDLK_RALT] ) != 0;
+  bool alt = ( input.keys[SDLK_LALT] | input.keys[SDLK_RALT] ) != 0;
 
   relH = float( -ui::mouse.overEdgeX ) * mouseXSens * mag;
   relV = float( +ui::mouse.overEdgeY ) * mouseYSens * mag;
@@ -148,31 +147,31 @@ void Camera::prepare()
   relH = clamp( relH, -ROT_LIMIT, +ROT_LIMIT );
   relV = clamp( relV, -ROT_LIMIT, +ROT_LIMIT );
 
-  if( keys[SDLK_KP1] | keys[SDLK_KP4] | keys[SDLK_KP7] |
-      keys[SDLK_END] | keys[SDLK_LEFT] | keys[SDLK_HOME] )
+  if( input.keys[SDLK_KP1] | input.keys[SDLK_KP4] | input.keys[SDLK_KP7] |
+      input.keys[SDLK_END] | input.keys[SDLK_LEFT] | input.keys[SDLK_HOME] )
   {
     relH += keyXSens;
   }
-  if( keys[SDLK_KP3] | keys[SDLK_KP6] | keys[SDLK_KP9] |
-      keys[SDLK_PAGEDOWN] | keys[SDLK_RIGHT] | keys[SDLK_PAGEUP] )
+  if( input.keys[SDLK_KP3] | input.keys[SDLK_KP6] | input.keys[SDLK_KP9] |
+      input.keys[SDLK_PAGEDOWN] | input.keys[SDLK_RIGHT] | input.keys[SDLK_PAGEUP] )
   {
     relH -= keyXSens;
   }
-  if( keys[SDLK_KP1] | keys[SDLK_KP2] | keys[SDLK_KP3] |
-      keys[SDLK_END] | keys[SDLK_DOWN] | keys[SDLK_PAGEDOWN] )
+  if( input.keys[SDLK_KP1] | input.keys[SDLK_KP2] | input.keys[SDLK_KP3] |
+      input.keys[SDLK_END] | input.keys[SDLK_DOWN] | input.keys[SDLK_PAGEDOWN] )
   {
     relV -= keyYSens;
   }
-  if( keys[SDLK_KP7] | keys[SDLK_KP8] | keys[SDLK_KP9] |
-      keys[SDLK_HOME] | keys[SDLK_UP] | keys[SDLK_PAGEUP] )
+  if( input.keys[SDLK_KP7] | input.keys[SDLK_KP8] | input.keys[SDLK_KP9] |
+      input.keys[SDLK_HOME] | input.keys[SDLK_UP] | input.keys[SDLK_PAGEUP] )
   {
     relV += keyYSens;
   }
 
-  if( !alt && keys[SDLK_p] ) {
+  if( !alt && input.keys[SDLK_p] ) {
     orbis.caelum.time += 0.1f * Timer::TICK_TIME * orbis.caelum.period;
   }
-  if( !alt && keys[SDLK_o] ) {
+  if( !alt && input.keys[SDLK_o] ) {
     orbis.caelum.time -= 0.1f * Timer::TICK_TIME * orbis.caelum.period;
   }
 

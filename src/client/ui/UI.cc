@@ -75,6 +75,8 @@ void UI::prepare()
 
 void UI::update()
 {
+  mouse.update();
+
   if( mouse.doShow == isFreelook ) {
     isFreelook = !mouse.doShow;
 

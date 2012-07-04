@@ -26,6 +26,7 @@
 #include "client/StrategicProxy.hh"
 
 #include "client/Camera.hh"
+#include "client/Input.hh"
 
 #include "client/ui/StrategicArea.hh"
 #include "client/ui/GalileoFrame.hh"
@@ -73,27 +74,24 @@ void StrategicProxy::end()
 
 void StrategicProxy::prepare()
 {
-  const ubyte* keys    = ui::keyboard.keys;
-  const ubyte* oldKeys = ui::keyboard.oldKeys;
+  bool alt = ( input.keys[SDLK_LALT] | input.keys[SDLK_RALT] ) != 0;
 
-  bool alt = ( keys[SDLK_LALT] | keys[SDLK_RALT] ) != 0;
-
-  if( !alt && keys[SDLK_n] && !oldKeys[SDLK_n] ) {
+  if( !alt && input.keys[SDLK_n] && !input.oldKeys[SDLK_n] ) {
     camera.nightVision = !camera.nightVision;
   }
-  if( !alt && keys[SDLK_m] && !oldKeys[SDLK_m] ) {
+  if( !alt && input.keys[SDLK_m] && !input.oldKeys[SDLK_m] ) {
     ui::ui.galileoFrame->setMaximised( !ui::ui.galileoFrame->isMaximised );
   }
 
-  if( !alt && ( ( keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) ||
-                ( keys[SDLK_RETURN] && !oldKeys[SDLK_RETURN] ) ) )
+  if( !alt && ( ( input.keys[SDLK_KP_ENTER] && !input.oldKeys[SDLK_KP_ENTER] ) ||
+                ( input.keys[SDLK_RETURN] && !input.oldKeys[SDLK_RETURN] ) ) )
   {
     isFree     = !isFree;
     isRTSFast  = false;
     isFreeFast = true;
   }
 
-  if( !alt && keys[SDLK_i] && !oldKeys[SDLK_i] && camera.allowReincarnation ) {
+  if( !alt && input.keys[SDLK_i] && !input.oldKeys[SDLK_i] && camera.allowReincarnation ) {
     if( ui::ui.strategicArea->taggedObjs.length() == 1 ) {
       const Object* tagged = orbis.objects[ ui::ui.strategicArea->taggedObjs.first() ];
       const Bot*    me     = null;
@@ -118,7 +116,7 @@ void StrategicProxy::prepare()
     }
   }
 
-  if( !alt && keys[SDLK_y] && !oldKeys[SDLK_y] ) {
+  if( !alt && input.keys[SDLK_y] && !input.oldKeys[SDLK_y] ) {
     if( !camera.switchableUnits.isEmpty() ) {
       Bot* bot = static_cast<Bot*>( orbis.objects[ camera.switchableUnits.first() ] );
 
@@ -127,16 +125,13 @@ void StrategicProxy::prepare()
     }
   }
 
-  if( keys[SDLK_TAB] && !oldKeys[SDLK_TAB] ) {
+  if( input.keys[SDLK_TAB] && !input.oldKeys[SDLK_TAB] ) {
     ui::mouse.doShow = !ui::mouse.doShow;
   }
 }
 
 void StrategicProxy::update()
 {
-  const ubyte* keys    = ui::keyboard.keys;
-  const ubyte* oldKeys = ui::keyboard.oldKeys;
-
   h = angleWrap( h + camera.relH );
   v = clamp( v + camera.relV, 0.0f, Math::TAU / 2.0f );
 
@@ -145,28 +140,28 @@ void StrategicProxy::update()
 
   if( isFree ) {
     // free camera mode
-    if( keys[SDLK_LSHIFT] && !oldKeys[SDLK_LSHIFT] ) {
+    if( input.keys[SDLK_LSHIFT] && !input.oldKeys[SDLK_LSHIFT] ) {
       isFreeFast = !isFreeFast;
     }
 
     float speed = ( isFreeFast ? FREE_HIGH_SPEED : FREE_LOW_SPEED ) * Timer::TICK_TIME;
 
-    if( keys[SDLK_w] ) {
+    if( input.keys[SDLK_w] ) {
       desiredPos += camera.at * speed;
     }
-    if( keys[SDLK_s] ) {
+    if( input.keys[SDLK_s] ) {
       desiredPos -= camera.at * speed;
     }
-    if( keys[SDLK_d] ) {
+    if( input.keys[SDLK_d] ) {
       desiredPos += camera.right * speed;
     }
-    if( keys[SDLK_a] ) {
+    if( input.keys[SDLK_a] ) {
       desiredPos -= camera.right * speed;
     }
-    if( keys[SDLK_SPACE] ) {
+    if( input.keys[SDLK_SPACE] ) {
       desiredPos.z += speed;
     }
-    if( keys[SDLK_LCTRL] || keys[SDLK_c] ) {
+    if( input.keys[SDLK_LCTRL] || input.keys[SDLK_c] ) {
       desiredPos.z -= speed;
     }
 
@@ -176,7 +171,7 @@ void StrategicProxy::update()
   }
   else {
     // RTS camera mode
-    if( keys[SDLK_LSHIFT] && !oldKeys[SDLK_LSHIFT] ) {
+    if( input.keys[SDLK_LSHIFT] && !input.oldKeys[SDLK_LSHIFT] ) {
       isRTSFast = !isRTSFast;
     }
 
@@ -184,31 +179,31 @@ void StrategicProxy::update()
     float logHeight = Math::log( height );
     float speed = ( isRTSFast ? RTS_HIGH_SPEED : RTS_LOW_SPEED ) * Timer::TICK_TIME * logHeight;
 
-    if( keys[SDLK_w] ) {
+    if( input.keys[SDLK_w] ) {
       desiredPos += up * speed;
     }
-    if( keys[SDLK_s] ) {
+    if( input.keys[SDLK_s] ) {
       desiredPos -= up * speed;
     }
-    if( keys[SDLK_d] ) {
+    if( input.keys[SDLK_d] ) {
       desiredPos += camera.right * speed;
     }
-    if( keys[SDLK_a] ) {
+    if( input.keys[SDLK_a] ) {
       desiredPos -= camera.right * speed;
     }
-    if( keys[SDLK_SPACE] ) {
+    if( input.keys[SDLK_SPACE] ) {
       height = min( MAX_HEIGHT, height + logHeight * ZOOM_FACTOR );
     }
-    if( keys[SDLK_LCTRL] || keys[SDLK_c] ) {
+    if( input.keys[SDLK_LCTRL] || input.keys[SDLK_c] ) {
       height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR );
     }
     if( ui::mouse.wheelDown ) {
-      float wheelFactor = float( ui::mouse.relW ) * 10.0f;
+      float wheelFactor = float( input.mouseW ) * 10.0f;
 
       height = min( MAX_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
     }
     if( ui::mouse.wheelUp ) {
-      float wheelFactor = float( ui::mouse.relW ) * 10.0f;
+      float wheelFactor = float( input.mouseW ) * 10.0f;
 
       height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
     }

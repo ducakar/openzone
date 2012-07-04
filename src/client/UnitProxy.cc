@@ -26,6 +26,7 @@
 #include "client/UnitProxy.hh"
 
 #include "client/Camera.hh"
+#include "client/Input.hh"
 
 #include "client/ui/HudArea.hh"
 #include "client/ui/GalileoFrame.hh"
@@ -97,10 +98,7 @@ void UnitProxy::prepare()
     return;
   }
 
-  const ubyte* keys    = ui::keyboard.keys;
-  const ubyte* oldKeys = ui::keyboard.oldKeys;
-
-  bool alt = ( keys[SDLK_LALT] | keys[SDLK_RALT] ) != 0;
+  bool alt = ( input.keys[SDLK_LALT] | input.keys[SDLK_RALT] ) != 0;
 
   Bot*     bot = camera.botObj;
   Vehicle* veh = camera.vehicleObj;
@@ -116,10 +114,10 @@ void UnitProxy::prepare()
     bot->v += camera.relV;
   }
 
-  if( keys[SDLK_q] ) {
+  if( input.keys[SDLK_q] ) {
     bot->h += camera.keyXSens;
   }
-  if( keys[SDLK_e] ) {
+  if( input.keys[SDLK_e] ) {
     bot->h -= camera.keyXSens;
   }
 
@@ -130,16 +128,16 @@ void UnitProxy::prepare()
    * Movement
    */
 
-  if( keys[SDLK_w] ) {
+  if( input.keys[SDLK_w] ) {
     bot->actions |= Bot::ACTION_FORWARD;
   }
-  if( keys[SDLK_s] ) {
+  if( input.keys[SDLK_s] ) {
     bot->actions |= Bot::ACTION_BACKWARD;
   }
-  if( keys[SDLK_d] ) {
+  if( input.keys[SDLK_d] ) {
     bot->actions |= Bot::ACTION_RIGHT;
   }
-  if( keys[SDLK_a] ) {
+  if( input.keys[SDLK_a] ) {
     bot->actions |= Bot::ACTION_LEFT;
   }
 
@@ -147,41 +145,41 @@ void UnitProxy::prepare()
    * Actions
    */
 
-  if( keys[SDLK_SPACE] ) {
+  if( input.keys[SDLK_SPACE] ) {
     bot->actions |= Bot::ACTION_JUMP | Bot::ACTION_VEH_UP;
   }
-  if( keys[SDLK_LCTRL] || keys[SDLK_c] ) {
+  if( input.keys[SDLK_LCTRL] || input.keys[SDLK_c] ) {
     bot->actions |= Bot::ACTION_CROUCH | Bot::ACTION_VEH_DOWN;
   }
-  if( keys[SDLK_LSHIFT] && !oldKeys[SDLK_LSHIFT] ) {
+  if( input.keys[SDLK_LSHIFT] && !input.oldKeys[SDLK_LSHIFT] ) {
     bot->actions |= Bot::ACTION_WALK;
   }
 
-  if( !alt && keys[SDLK_x] && !oldKeys[SDLK_x] ) {
+  if( !alt && input.keys[SDLK_x] && !input.oldKeys[SDLK_x] ) {
     bot->actions |= Bot::ACTION_EXIT;
   }
-  if( alt && keys[SDLK_x] && !oldKeys[SDLK_x] ) {
+  if( alt && input.keys[SDLK_x] && !input.oldKeys[SDLK_x] ) {
     bot->actions |= Bot::ACTION_EJECT;
   }
-  if( alt && keys[SDLK_k] && !oldKeys[SDLK_k] ) {
+  if( alt && input.keys[SDLK_k] && !input.oldKeys[SDLK_k] ) {
     if( bot->hasAttribute( ObjectClass::SUICIDE_BIT ) ) {
       bot->actions |= Bot::ACTION_SUICIDE;
     }
   }
 
-  if( !alt && keys[SDLK_f] ) {
+  if( !alt && input.keys[SDLK_f] ) {
     bot->actions |= Bot::ACTION_POINT;
   }
-  if( !alt && keys[SDLK_g] ) {
+  if( !alt && input.keys[SDLK_g] ) {
     bot->actions |= Bot::ACTION_BACK;
   }
-  if( !alt && keys[SDLK_h] ) {
+  if( !alt && input.keys[SDLK_h] ) {
     bot->actions |= Bot::ACTION_SALUTE;
   }
-  if( !alt && keys[SDLK_j] ) {
+  if( !alt && input.keys[SDLK_j] ) {
     bot->actions |= Bot::ACTION_WAVE;
   }
-  if( !alt && keys[SDLK_k] ) {
+  if( !alt && input.keys[SDLK_k] ) {
     bot->actions |= Bot::ACTION_FLIP;
   }
 
@@ -189,10 +187,10 @@ void UnitProxy::prepare()
    * View
    */
 
-  if( !alt && keys[SDLK_n] && !oldKeys[SDLK_n] ) {
+  if( !alt && input.keys[SDLK_n] && !input.oldKeys[SDLK_n] ) {
     camera.nightVision = !camera.nightVision;
   }
-  if( !alt && keys[SDLK_b] && !oldKeys[SDLK_b] ) {
+  if( !alt && input.keys[SDLK_b] && !input.oldKeys[SDLK_b] ) {
     if( camera.desiredMag == 1.0f ) {
       camera.smoothMagnify( BINOCULARS_MAGNIFICATION );
     }
@@ -200,7 +198,7 @@ void UnitProxy::prepare()
       camera.smoothMagnify( 1.0f );
     }
   }
-  if( !alt && keys[SDLK_m] && !oldKeys[SDLK_m] ) {
+  if( !alt && input.keys[SDLK_m] && !input.oldKeys[SDLK_m] ) {
     ui::ui.galileoFrame->setMaximised( !ui::ui.galileoFrame->isMaximised );
   }
 
@@ -211,8 +209,8 @@ void UnitProxy::prepare()
     camera.desiredMag = 1.0f;
   }
 
-  if( !alt && ( ( keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) ||
-                ( keys[SDLK_RETURN] && !oldKeys[SDLK_RETURN] ) ) )
+  if( !alt && ( ( input.keys[SDLK_KP_ENTER] && !input.oldKeys[SDLK_KP_ENTER] ) ||
+                ( input.keys[SDLK_RETURN] && !input.oldKeys[SDLK_RETURN] ) ) )
   {
     isExternal = !isExternal;
     camera.isExternal = isExternal;
@@ -226,7 +224,7 @@ void UnitProxy::prepare()
       headV = 0.0f;
     }
   }
-  if( !alt && keys[SDLK_KP_MULTIPLY] && !oldKeys[SDLK_KP_MULTIPLY] ) {
+  if( !alt && input.keys[SDLK_KP_MULTIPLY] && !input.oldKeys[SDLK_KP_MULTIPLY] ) {
     isFreelook = !isFreelook;
 
     if( isExternal && isFreelook ) {
@@ -244,7 +242,7 @@ void UnitProxy::prepare()
    */
 
   if( !ui::mouse.doShow ) {
-    if( ui::mouse.buttons & SDL_BUTTON_LMASK ) {
+    if( input.buttons & SDL_BUTTON_LMASK ) {
       bot->actions |= Bot::ACTION_ATTACK;
     }
 
@@ -304,7 +302,7 @@ void UnitProxy::prepare()
    * Other
    */
 
-  if( !alt && keys[SDLK_i] && !oldKeys[SDLK_i] ) {
+  if( !alt && input.keys[SDLK_i] && !input.oldKeys[SDLK_i] ) {
     if( camera.allowReincarnation ) {
       bot->actions = 0;
       camera.setBot( null );
@@ -312,7 +310,7 @@ void UnitProxy::prepare()
     }
   }
 
-  if( !alt && keys[SDLK_y] && !oldKeys[SDLK_y] ) {
+  if( !alt && input.keys[SDLK_y] && !input.oldKeys[SDLK_y] ) {
     int nSwitchableunits = camera.switchableUnits.length();
 
     if( nSwitchableunits != 0 ) {
@@ -334,7 +332,7 @@ void UnitProxy::prepare()
     }
   }
 
-  if( keys[SDLK_TAB] && !oldKeys[SDLK_TAB] ) {
+  if( input.keys[SDLK_TAB] && !input.oldKeys[SDLK_TAB] ) {
     ui::mouse.doShow = !ui::mouse.doShow;
   }
 }

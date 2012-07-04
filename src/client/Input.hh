@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/ui/Keyboard.hh
+ * @file client/Input.hh
  */
 
 #pragma once
@@ -29,27 +29,48 @@ namespace oz
 {
 namespace client
 {
-namespace ui
-{
 
-class Keyboard
+class Input
 {
+  public:
+
+    static const int LEFT_BUTTON   = 0x01;
+    static const int MIDDLE_BUTTON = 0x02;
+    static const int RIGHT_BUTTON  = 0x04;
+
   private:
 
     ubyte* currKeys;
 
   public:
 
+    int   mouseX;
+    int   mouseY;
+    int   mouseZ;
+    int   mouseW;
+
+    char  buttons;
+    char  oldButtons;
+    char  currButtons;
+
+    bool  hasFocus;
+    bool  isLocked;
+
     ubyte keys[SDLK_LAST];
     ubyte oldKeys[SDLK_LAST];
 
-    void init();
+    void readEvent( SDL_Event* event );
+
+    void reset();
     void prepare();
+    void update();
+
+    void init();
+    void free();
 
 };
 
-extern Keyboard keyboard;
+extern Input input;
 
-}
 }
 }

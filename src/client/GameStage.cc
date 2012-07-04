@@ -41,6 +41,7 @@
 #include "client/Profile.hh"
 #include "client/QuestList.hh"
 #include "client/MenuStage.hh"
+#include "client/Input.hh"
 #include "client/NaCl.hh"
 
 #include "client/ui/LoadingArea.hh"
@@ -274,18 +275,18 @@ bool GameStage::update()
 
 #ifndef __native_client__
 
-  if( ui::keyboard.keys[SDLK_F5] && !ui::keyboard.oldKeys[SDLK_F5] ) {
+  if( input.keys[SDLK_F5] && !input.oldKeys[SDLK_F5] ) {
     write( QUICKSAVE_FILE );
   }
-  if( ui::keyboard.keys[SDLK_F7] && !ui::keyboard.oldKeys[SDLK_F7] ) {
+  if( input.keys[SDLK_F7] && !input.oldKeys[SDLK_F7] ) {
     stateFile = QUICKSAVE_FILE;
     reload();
   }
-  if( ui::keyboard.keys[SDLK_F8] && !ui::keyboard.oldKeys[SDLK_F8] ) {
+  if( input.keys[SDLK_F8] && !input.oldKeys[SDLK_F8] ) {
     stateFile = AUTOSAVE_FILE;
     reload();
   }
-  if( ui::keyboard.keys[SDLK_F10] || ui::keyboard.keys[SDLK_ESCAPE] ) {
+  if( input.keys[SDLK_F10] || input.keys[SDLK_ESCAPE] ) {
     Stage::nextStage = &menuStage;
   }
 
@@ -431,8 +432,8 @@ void GameStage::load()
   nirvana.sync();
   synapse.update();
 
-  ui::mouse.buttons = 0;
-  ui::mouse.currButtons = 0;
+  input.buttons = 0;
+  input.currButtons = 0;
 
   camera.prepare();
   camera.update();
