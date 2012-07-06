@@ -404,7 +404,7 @@ BSP* Context::getBSP( const Struct* str )
   return resource.object != null && resource.object->isLoaded ? resource.object : null;
 }
 
-void Context::drawBSP( const Struct* str, int mask )
+void Context::drawBSP( const Struct* str )
 {
   Resource<BSP*>& resource = bsps[str->bsp->id];
 
@@ -415,7 +415,7 @@ void Context::drawBSP( const Struct* str, int mask )
     resource.object = new BSP( str->bsp );
   }
   else if( resource.object->isLoaded ) {
-    resource.object->draw( str, mask );
+    resource.object->draw( str );
   }
 }
 
@@ -433,7 +433,7 @@ void Context::playBSP( const Struct* str )
   resource.object->play( str );
 }
 
-void Context::drawImago( const Object* obj, const Imago* parent, int mask )
+void Context::drawImago( const Object* obj, const Imago* parent )
 {
   hard_assert( obj->flags & Object::IMAGO_BIT );
 
@@ -447,7 +447,7 @@ void Context::drawImago( const Object* obj, const Imago* parent, int mask )
 
   Imago* imago = *value;
 
-  imago->draw( parent, mask );
+  imago->draw( parent );
 
   hard_assert( imago->flags & Imago::UPDATED_BIT );
 }

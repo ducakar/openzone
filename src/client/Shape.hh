@@ -52,6 +52,7 @@ class Shape
     Shape();
 
     void bind() const;
+    void unbind() const;
 
     static void colour( const Vec4& c );
     static void colour( float r, float g, float b, float a = 1.0f );

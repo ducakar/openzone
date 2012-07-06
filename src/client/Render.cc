@@ -81,7 +81,11 @@ void Render::scheduleCell( int cellX, int cellY )
       float   radius = str->dim().fastN();
 
       if( frustum.isVisible( p, radius ) ) {
-        structs.add( ModelEntry( ( p - camera.p ).sqN(), str ) );
+        context.drawBSP( str );
+
+        if( showBounds ) {
+          structs.add( str );
+        }
       }
     }
   }
@@ -91,13 +95,17 @@ void Render::scheduleCell( int cellX, int cellY )
         WIDE_CULL_FACTOR * obj->dim.fastN() : obj->dim.fastN();
 
     if( frustum.isVisible( obj->p, radius ) ) {
-      objects.add( ModelEntry( ( obj->p - camera.p ).sqN(), obj ) );
+      context.drawImago( obj, null );
+
+      if( showBounds ) {
+        objects.add( obj );
+      }
     }
   }
 
   foreach( frag, cell.frags.citer() ) {
     if( frustum.isVisible( frag->p, FragPool::FRAG_RADIUS ) ) {
-      frags.add( ModelEntry( ( frag->p - camera.p ).sqN(), frag ) );
+      context.drawFrag( frag );
     }
   }
 }
@@ -185,10 +193,6 @@ void Render::prepareDraw()
     }
   }
 
-  structs.sort();
-  objects.sort();
-  frags.sort();
-
   currentMicros = Time::uclock();
   prepareMicros += currentMicros - beginMicros;
 }
@@ -218,7 +222,6 @@ void Render::drawGeometry()
 
   currentMicros = Time::uclock();
   caelumMicros += currentMicros - beginMicros;
-  beginMicros = currentMicros;
 
   // camera transformation
   tf.projection();
@@ -242,19 +245,6 @@ void Render::drawGeometry()
 
   glEnable( GL_DEPTH_TEST );
 
-  currentMicros = Time::uclock();
-  setupMicros += currentMicros - beginMicros;
-  beginMicros = currentMicros;
-
-  // draw structures
-  shader.program( shader.mesh );
-
-  for( int i = 0; i < structs.length(); ++i ) {
-    context.drawBSP( structs[i].str, Mesh::SOLID_BIT );
-  }
-
-  currentMicros = Time::uclock();
-  structsMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
   terra.draw();
@@ -263,38 +253,10 @@ void Render::drawGeometry()
   terraMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
-  // draw objects
-  for( int i = 0; i < objects.length(); ++i ) {
-    context.drawImago( objects[i].obj, null, Mesh::SOLID_BIT );
-  }
+  Mesh::drawScheduled( Mesh::SOLID_BIT );
 
   currentMicros = Time::uclock();
-  objectsMicros += currentMicros - beginMicros;
-  beginMicros = currentMicros;
-
-  // draw fragments
-  glEnable( GL_BLEND );
-  shader.program( shader.mesh );
-
-  glBindTexture( GL_TEXTURE_2D, 0 );
-
-  for( int i = frags.length() - 1; i >= 0; --i ) {
-    context.drawFrag( frags[i].frag );
-  }
-
-  // draw transparent parts of objects
-  tf.colour.w.w = 1.0f;
-
-  currentMicros = Time::uclock();
-  fragsMicros += currentMicros - beginMicros;
-  beginMicros = currentMicros;
-
-  for( int i = objects.length() - 1; i >= 0; --i ) {
-    context.drawImago( objects[i].obj, null, Mesh::ALPHA_BIT );
-  }
-
-  currentMicros = Time::uclock();
-  objectsMicros += currentMicros - beginMicros;
+  meshesMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
   terra.drawWater();
@@ -303,22 +265,13 @@ void Render::drawGeometry()
   terraMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
-  // draw structures' alpha parts
-  shader.program( shader.mesh );
-
-  for( int i = structs.length() - 1; i >= 0; --i ) {
-    context.drawBSP( structs[i].str, Mesh::ALPHA_BIT );
-  }
-
-  Mesh::drawScheduled();
-
-  glDisable( GL_BLEND );
+  Mesh::drawScheduled( Mesh::ALPHA_BIT );
+  Mesh::clearScheduled();
 
   OZ_GL_CHECK_ERROR();
 
   currentMicros = Time::uclock();
-  structsMicros += currentMicros - beginMicros;
-  beginMicros = currentMicros;
+  meshesMicros += currentMicros - beginMicros;
 
   shape.bind();
   shader.program( shader.plain );
@@ -339,12 +292,14 @@ void Render::drawGeometry()
     glLineWidth( 1.0f );
 
     for( int i = 0; i < objects.length(); ++i ) {
-      shape.colour( objects[i].obj->flags & Object::SOLID_BIT ? SOLID_AABB : NONSOLID_AABB );
-      shape.wireBox( *objects[i].obj );
+      const Object* obj = objects[i];
+
+      shape.colour( obj->flags & Object::SOLID_BIT ? SOLID_AABB : NONSOLID_AABB );
+      shape.wireBox( *obj );
     }
 
     for( int i = 0; i < structs.length(); ++i ) {
-      const Struct* str = structs[i].str;
+      const Struct* str = structs[i];
 
       shape.colour( ENTITY_AABB );
 
@@ -358,17 +313,14 @@ void Render::drawGeometry()
     }
   }
 
+  shape.unbind();
+
   glDisable( GL_DEPTH_TEST );
 
   OZ_GL_CHECK_ERROR();
 
   structs.clear();
-  waterStructs.clear();
   objects.clear();
-  frags.clear();
-
-  currentMicros = Time::uclock();
-  miscMicros += currentMicros - beginMicros;
 }
 
 void Render::drawOrbis()
@@ -531,16 +483,11 @@ void Render::load()
 
   structs.alloc( 64 );
   objects.alloc( 8192 );
-  frags.alloc( 1024 );
 
   prepareMicros     = 0;
-  setupMicros       = 0;
   caelumMicros      = 0;
   terraMicros       = 0;
-  structsMicros     = 0;
-  objectsMicros     = 0;
-  fragsMicros       = 0;
-  miscMicros        = 0;
+  meshesMicros      = 0;
   postprocessMicros = 0;
   uiMicros          = 0;
   swapMicros        = 0;
@@ -561,18 +508,13 @@ void Render::unload()
   caelum.unload();
   terra.unload();
 
+  drawnStructs.dealloc();
+
   structs.clear();
   structs.dealloc();
 
   objects.clear();
   objects.dealloc();
-
-  frags.clear();
-  frags.dealloc();
-
-  drawnStructs.dealloc();
-  waterStructs.clear();
-  waterStructs.dealloc();
 
   ui::ui.unload();
 
@@ -699,19 +641,14 @@ void Render::init( bool isBuild )
   mainFrame = 0;
   resize();
 
-  glEnable( GL_CULL_FACE );
   glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+  glEnable( GL_CULL_FACE );
+  glEnable( GL_BLEND );
 
   shader.init();
   shape.load();
   camera.init();
   ui::ui.init();
-
-  shape.bind();
-  shader.program( shader.plain );
-
-  glActiveTexture( GL_TEXTURE0 );
-  glBindTexture( GL_TEXTURE_2D, 0 );
 
   OZ_GL_CHECK_ERROR();
 

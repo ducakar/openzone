@@ -92,20 +92,19 @@ class Mesh
       Mat44 transform;
       float alpha;
       int   component;
-      int   mask;
       int   firstFrame;
       int   secondFrame;
       float interpolation;
 
       Instance() = default;
 
-      explicit Instance( const Mat44& transform_, float alpha_, int component_, int mask_ ) :
-        transform( transform_ ), alpha( alpha_ ), component( component_ ), mask( mask_ )
+      explicit Instance( const Mat44& transform_, float alpha_, int component_ ) :
+        transform( transform_ ), alpha( alpha_ ), component( component_ )
       {}
 
-      explicit Instance( const Mat44& transform_, float alpha_, int component_, int mask_,
+      explicit Instance( const Mat44& transform_, float alpha_, int component_,
                          int firstFrame_, int secondFrame_, float interpolation_ ) :
-        transform( transform_ ), alpha( alpha_ ), component( component_ ), mask( mask_ ),
+        transform( transform_ ), alpha( alpha_ ), component( component_ ),
         firstFrame( firstFrame_ ), secondFrame( secondFrame_ ), interpolation( interpolation_ )
       {}
     };
@@ -138,30 +137,31 @@ class Mesh
     Vector<Instance>  instances;
 
     void animate( const Instance* instance );
-    void draw( const Instance* instance );
+    void draw( const Instance* instance, int mask );
 
   public:
 
-    static void drawScheduled();
+    static void drawScheduled( int mask );
+    static void clearScheduled();
+
     static void dealloc();
 
     Mesh();
     ~Mesh();
 
-    void schedule( int component, int mask )
+    void schedule( int component )
     {
-      instances.add( Instance( tf.model, tf.colour.w.w, component, mask ) );
+      instances.add( Instance( tf.model, tf.colour.w.w, component ) );
     }
 
-    void scheduleFrame( int component, int mask, int frame )
+    void scheduleFrame( int component, int frame )
     {
-      instances.add( Instance( tf.model, tf.colour.w.w, component, mask, frame, 0, 0.0f ) );
+      instances.add( Instance( tf.model, tf.colour.w.w, component, frame, 0, 0.0f ) );
     }
 
-    void scheduleAnimated( int component, int mask,
-                           int firstFrame, int secondFrame, float interpolation )
+    void scheduleAnimated( int component, int firstFrame, int secondFrame, float interpolation )
     {
-      instances.add( Instance( tf.model, tf.colour.w.w, component, mask,
+      instances.add( Instance( tf.model, tf.colour.w.w, component,
                                firstFrame, secondFrame, interpolation ) );
     }
 

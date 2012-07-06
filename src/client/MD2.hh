@@ -124,13 +124,12 @@ class MD2
 
     void scheduleFrame( int frame )
     {
-      mesh.scheduleFrame( -1, Mesh::SOLID_BIT | Mesh::ALPHA_BIT, frame );
+      mesh.scheduleFrame( -1, frame );
     }
 
     void scheduleAnim( const AnimState* anim )
     {
-      mesh.scheduleAnimated( -1, Mesh::SOLID_BIT | Mesh::ALPHA_BIT,
-                             anim->currFrame, anim->nextFrame, anim->frameRatio );
+      mesh.scheduleAnimated( -1, anim->currFrame, anim->nextFrame, anim->frameRatio );
     }
 
 };

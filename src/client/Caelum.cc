@@ -118,13 +118,13 @@ void Caelum::draw()
     glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( float[3] ), null );
 
     glDrawElements( GL_TRIANGLE_STRIP, MAX_STARS * 6, GL_UNSIGNED_SHORT, null );
+
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
   }
 
   shape.bind();
-
   shader.program( celestialShaderId );
-
-  glEnable( GL_BLEND );
 
   Vec4 sunColour = Vec4( ambientColour.x + 2.0f * diffuseColour.x,
                          ambientColour.y + diffuseColour.y,
@@ -152,9 +152,9 @@ void Caelum::draw()
 
   shape.quad( 1.0f, 1.0f );
 
-  glDisable( GL_BLEND );
-
   glEnable( GL_CULL_FACE );
+
+  shape.unbind();
 
   OZ_GL_CHECK_ERROR();
 }

@@ -59,47 +59,10 @@ class Render
 
     static const Mat44 NIGHT_COLOUR;
 
-    struct ModelEntry
-    {
-      float dist2;
-      union
-      {
-        const Struct* str;
-        const Object* obj;
-        const Frag*   frag;
-      };
-
-      ModelEntry() = default;
-
-      OZ_ALWAYS_INLINE
-      explicit ModelEntry( float dist2_, const Struct* str_ ) :
-        dist2( dist2_ ), str( str_ )
-      {}
-
-      OZ_ALWAYS_INLINE
-      explicit ModelEntry( float dist2_, const Object* obj_ ) :
-        dist2( dist2_ ), obj( obj_ )
-      {}
-
-      OZ_ALWAYS_INLINE
-      explicit ModelEntry( float dist2_, const Frag* frag_ ) :
-        dist2( dist2_ ), frag( frag_ )
-      {}
-
-      OZ_ALWAYS_INLINE
-      bool operator < ( const ModelEntry& me ) const
-      {
-        return dist2 < me.dist2;
-      }
-    };
-
     Bitset                drawnStructs;
 
-    Vector<ModelEntry>    structs;
-    Vector<ModelEntry>    objects;
-    Vector<ModelEntry>    frags;
-
-    Vector<const Struct*> waterStructs;
+    Vector<const Struct*> structs;
+    Vector<const Object*> objects;
 
     float                 visibilityRange;
     float                 visibility;
@@ -131,13 +94,9 @@ class Render
   public:
 
     ulong64               prepareMicros;
-    ulong64               setupMicros;
     ulong64               caelumMicros;
     ulong64               terraMicros;
-    ulong64               structsMicros;
-    ulong64               objectsMicros;
-    ulong64               fragsMicros;
-    ulong64               miscMicros;
+    ulong64               meshesMicros;
     ulong64               postprocessMicros;
     ulong64               uiMicros;
     ulong64               swapMicros;

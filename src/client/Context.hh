@@ -167,10 +167,10 @@ class Context
     void releaseMD3( int id );
 
     BSP* getBSP( const Struct* str );
-    void drawBSP( const Struct* str, int mask );
+    void drawBSP( const Struct* str );
     void playBSP( const Struct* str );
 
-    void drawImago( const Object* obj, const Imago* parent, int mask );
+    void drawImago( const Object* obj, const Imago* parent );
     void playAudio( const Object* obj, const Audio* parent );
 
     void drawFrag( const Frag* frag );

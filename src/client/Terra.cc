@@ -54,6 +54,10 @@ void Terra::draw()
     return;
   }
 
+  // to match strip triangles with matrix terrain we have to make them clockwise since
+  // we draw column-major (strips along y axis) for better cache performance
+  glFrontFace( GL_CW );
+
   span.minX = max( int( ( camera.p.x - frustum.radius + matrix::Terra::DIM ) / TILE_SIZE ), 0 );
   span.minY = max( int( ( camera.p.y - frustum.radius + matrix::Terra::DIM ) / TILE_SIZE ), 0 );
   span.maxX = min( int( ( camera.p.x + frustum.radius + matrix::Terra::DIM ) / TILE_SIZE ), TILES - 1 );
@@ -76,10 +80,6 @@ void Terra::draw()
 
   OZ_GL_CHECK_ERROR();
 
-  // to match strip triangles with matrix terrain we have to make them clockwise since
-  // we draw column-major (strips along y axis) for better cache performance
-  glFrontFace( GL_CW );
-
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 
   for( int i = span.minX; i <= span.maxX; ++i ) {
@@ -92,10 +92,15 @@ void Terra::draw()
     }
   }
 
-  glFrontFace( GL_CCW );
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-  glBindTexture( GL_TEXTURE_2D, 0 );
-  glActiveTexture( GL_TEXTURE0 );
+  for( int i = 2; i >= 0; --i ) {
+    glActiveTexture( GL_TEXTURE0 + uint( i ) );
+    glBindTexture( GL_TEXTURE_2D, 0 );
+  }
+
+  glFrontFace( GL_CCW );
 
   OZ_GL_CHECK_ERROR();
 }
@@ -104,6 +109,10 @@ void Terra::drawWater()
 {
   if( id < 0 ) {
     return;
+  }
+
+  if( camera.p.z >= 0.0f ) {
+    glFrontFace( GL_CW );
   }
 
   waveBias = Math::fmod( waveBias + WAVE_BIAS_INC * Timer::TICK_TIME, Math::TAU );
@@ -123,10 +132,6 @@ void Terra::drawWater()
   glActiveTexture( GL_TEXTURE1 );
   glBindTexture( GL_TEXTURE_2D, shader.defaultMasks );
 
-  if( camera.p.z >= 0.0f ) {
-    glFrontFace( GL_CW );
-  }
-
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 
   for( int i = span.minX; i <= span.maxX; ++i ) {
@@ -139,6 +144,14 @@ void Terra::drawWater()
         glDrawElements( GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, null );
       }
     }
+  }
+
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+  for( int i = 1; i >= 0; --i ) {
+    glActiveTexture( GL_TEXTURE0 + uint( i ) );
+    glBindTexture( GL_TEXTURE_2D, 0 );
   }
 
   if( camera.p.z >= 0.0f ) {

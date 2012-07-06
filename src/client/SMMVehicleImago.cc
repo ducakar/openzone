@@ -51,7 +51,7 @@ SMMVehicleImago::~SMMVehicleImago()
   context.releaseSMM( clazz->imagoModel );
 }
 
-void SMMVehicleImago::draw( const Imago*, int mask )
+void SMMVehicleImago::draw( const Imago* )
 {
   flags |= UPDATED_BIT;
 
@@ -72,13 +72,13 @@ void SMMVehicleImago::draw( const Imago*, int mask )
       tf.push();
       tf.model.translate( clazz->pilotPos );
 
-      context.drawImago( bot, this, mask );
+      context.drawImago( bot, this );
 
       tf.pop();
     }
   }
 
-  smm->schedule( -1, mask );
+  smm->schedule( -1 );
 }
 
 }

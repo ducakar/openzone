@@ -49,7 +49,7 @@ class SMMImago : public Imago
 
     static Imago* create( const Object* obj );
 
-    void draw( const Imago* parent, int mask ) override;
+    void draw( const Imago* parent ) override;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

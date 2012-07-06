@@ -84,13 +84,16 @@ void UI::update()
 void UI::draw()
 {
   glViewport( 0, 0, camera.width, camera.height );
+  glClear( GL_DEPTH_BUFFER_BIT );
+
+  shape.bind();
 
   tf.ortho( camera.width, camera.height );
   tf.camera = Mat44::ID;
 
   // set shaders
-  shader.setAmbientLight( Vec4( 0.55f, 0.55f, 0.55f, 1.00f ) );
-  shader.setCaelumLight( ~Vec3( 0.60f, -0.30f, -0.80f ), Vec4( 0.45f, 0.45f, 0.45f, 1.00f ) );
+  shader.setAmbientLight( Vec4( 0.5f, 0.5f, 0.5f, 1.00f ) );
+  shader.setCaelumLight( ~Vec3( 1.0f, -1.0f, -1.5f ), Vec4( 0.5f, 0.5f, 0.5f, 1.0f ) );
 
   for( int i = 0; i < library.shaders.length(); ++i ) {
     shader.program( i );
@@ -100,10 +103,6 @@ void UI::draw()
 
     glUniform1f( param.oz_Fog_dist, 1.0e6f );
   }
-
-  glClear( GL_DEPTH_BUFFER_BIT );
-
-  glEnable( GL_BLEND );
 
   shader.program( shader.plain );
 
@@ -119,7 +118,7 @@ void UI::draw()
     fpsLabel->draw( root, true );
   }
 
-  glDisable( GL_BLEND );
+  shape.unbind();
 
   OZ_GL_CHECK_ERROR();
 }
