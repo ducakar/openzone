@@ -33,7 +33,7 @@
 
 #define OZ_CHECK( cond ) \
   if( !( cond ) ) { \
-    oz::Log::printRaw( "  Check '%s' failed\n    at %s:%d\n", #cond, __FILE__, __LINE__ ); \
+    oz::Log::printRaw( "  Check '%s' failed\n    at %s:%d\n", #cond, __BASE_FILE__, __LINE__ ); \
     oz::System::bell(); \
     ::hasPassed = false; \
   }
