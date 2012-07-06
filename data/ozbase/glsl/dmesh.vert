@@ -38,6 +38,7 @@ varying vec3 exNormal;
 void main()
 {
 #ifdef OZ_VERTEX_TEXTURE
+
   vec4 firstPosition  = texture2D( oz_Textures[3], vec2( inPosition.x, oz_MeshAnimation[0] ) );
   vec4 secondPosition = texture2D( oz_Textures[3], vec2( inPosition.x, oz_MeshAnimation[1] ) );
   vec4 firstNormal    = texture2D( oz_Textures[4], vec2( inPosition.x, oz_MeshAnimation[0] ) );
@@ -49,10 +50,13 @@ void main()
   exPosition    = ( oz_ModelTransform * localPosition ).xyz;
   exTexCoord    = inTexCoord;
   exNormal      = ( oz_ModelTransform * localNormal ).xyz;
+
 #else
+
   gl_Position = oz_ProjModelTransform * vec4( inPosition, 1.0 );
   exPosition  = ( oz_ModelTransform * vec4( inPosition, 1.0 ) ).xyz;
   exTexCoord  = inTexCoord;
   exNormal    = ( oz_ModelTransform * vec4( inNormal, 0.0 ) ).xyz;
+
 #endif
 }

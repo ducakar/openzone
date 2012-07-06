@@ -35,8 +35,6 @@ uniform mat4            oz_ProjModelTransform;
 uniform mat4            oz_ModelTransform;
 uniform mat4            oz_BoneTransforms[16];
 
-uniform vec3            oz_CameraPosition;
-
 /*
  * Colour
  */
@@ -65,6 +63,7 @@ struct Light
 
 uniform CaelumLight     oz_CaelumLight;
 uniform Light           oz_PointLights[8];
+uniform vec3            oz_CameraPosition;
 
 /*
  * Fog
@@ -106,6 +105,7 @@ vec4 applyFog( vec4 colour, float dist )
   float ratio = min( dist / oz_Fog.dist, 1.0 );
   return mix( colour, oz_Fog.colour, ratio*ratio );
 }
+
 
 
 

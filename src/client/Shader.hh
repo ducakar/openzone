@@ -39,14 +39,13 @@ struct Param
   int oz_BoneTransforms;
   int oz_MeshAnimation;
 
-  int oz_CameraPosition;
-
   int oz_ColourTransform;
   int oz_Textures;
 
   int oz_CaelumLight_dir;
   int oz_CaelumLight_diffuse;
   int oz_CaelumLight_ambient;
+  int oz_CameraPosition;
 
   int oz_Fog_dist;
   int oz_Fog_colour;

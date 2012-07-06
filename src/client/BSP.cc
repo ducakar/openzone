@@ -96,7 +96,7 @@ void BSP::playContSound( const Entity* entity, int sound ) const
   Point         p        = str->toAbsoluteCS( entity->model->p() + entity->offset );
   Vec3          velocity = str->toAbsoluteCS( entity->velocity );
 
-  Context::ContSource* contSource = context.bspSources.find( key );
+  Context::ContSource* contSource = context.contSources.find( key );
 
   if( contSource == null ) {
     uint srcId;
@@ -115,7 +115,7 @@ void BSP::playContSound( const Entity* entity, int sound ) const
     alSourcefv( srcId, AL_VELOCITY, velocity );
     alSourcePlay( srcId );
 
-    context.addBSPSource( srcId, sound, key );
+    context.addContSource( srcId, sound, key );
   }
   else {
     alSourcefv( contSource->id, AL_POSITION, p );

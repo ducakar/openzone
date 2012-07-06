@@ -106,7 +106,8 @@ void Time::sleep( uint milliseconds )
 #ifdef _WIN32
   Sleep( milliseconds );
 #else
-  ::usleep( milliseconds * 1000 );
+  struct timespec ts = { milliseconds / 1000, ( milliseconds % 1000 ) * 1000000 };
+  nanosleep( &ts, null );
 #endif
 }
 
@@ -143,7 +144,8 @@ void Time::usleep( uint microseconds )
 #ifdef _WIN32
   Sleep( max<uint>( ( microseconds + 500 ) / 1000, 1 ) );
 #else
-  ::usleep( microseconds );
+  struct timespec ts = { microseconds / 1000000, ( microseconds % 1000000 ) * 1000 };
+  nanosleep( &ts, null );
 #endif
 }
 

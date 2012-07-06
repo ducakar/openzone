@@ -35,8 +35,8 @@ function onCreate()
 
   ozCaelumLoad( "earth" )
   ozCaelumSetHeading( math.pi / 8 )
---   ozCaelumSetPeriod( 1440 )
-  ozCaelumSetRealTime()
+  ozCaelumSetPeriod( 1440 )
+--   ozCaelumSetRealTime()
 
   ozCameraWarpTo( 141.0, -12.0, 84.75, 0.0, 35.0 )
 

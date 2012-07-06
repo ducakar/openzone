@@ -140,17 +140,23 @@ void Loader::cleanupRender()
       Context::Resource<MD2*>& md2 = context.md2s[i];
       Context::Resource<MD3*>& md3 = context.md3s[i];
 
-      if( smm.object != null && smm.nUsers == 0 ) {
+      if( smm.nUsers == 0 ) {
         delete smm.object;
+
         smm.object = null;
+        smm.nUsers = -1;
       }
-      if( md2.object != null && md2.nUsers == 0 ) {
+      if( md2.nUsers == 0 ) {
         delete md2.object;
+
         md2.object = null;
+        md2.nUsers = -1;
       }
-      if( md3.object != null && md3.nUsers == 0 ) {
+      if( md3.nUsers == 0 ) {
         delete md3.object;
+
         md3.object = null;
+        md3.nUsers = -1;
       }
     }
   }
@@ -165,7 +171,9 @@ void Loader::cleanupRender()
       }
       else {
         delete bsp.object;
+
         bsp.object = null;
+        bsp.nUsers = -1;
       }
     }
   }
@@ -182,17 +190,16 @@ void Loader::cleanupSound()
     auto audio = i;
     ++i;
 
-    // We can afford to do this as orbis.objects[key] will remain null at least one whole tick
-    // after the object has been removed (because matrix also needs to clear references to this
-    // object).
+    // We can afford to do this as orbis.objects[key] will remain null at least one whole tick after
+    // the object has been removed (because matrix also needs to clear references to this object).
     if( orbis.objects[ audio.key() ] == null ) {
       delete audio.value();
       context.audios.exclude( audio.key() );
     }
   }
 
-  // remove continuous sounds that are not played any more
-  for( auto i = context.bspSources.iter(); i.isValid(); ) {
+  // Remove continuous sounds that are not played any more.
+  for( auto i = context.contSources.iter(); i.isValid(); ) {
     auto src = i;
     ++i;
 
@@ -201,20 +208,7 @@ void Loader::cleanupSound()
     }
     else {
       alDeleteSources( 1, &src.value().id );
-      context.removeBSPSource( &src.value(), src.key() );
-    }
-  }
-
-  for( auto i = context.objSources.iter(); i.isValid(); ) {
-    auto src = i;
-    ++i;
-
-    if( src.value().isUpdated ) {
-      src.value().isUpdated = false;
-    }
-    else {
-      alDeleteSources( 1, &src.value().id );
-      context.removeObjSource( &src.value(), src.key() );
+      context.removeContSource( &src.value(), src.key() );
     }
   }
 
