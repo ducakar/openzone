@@ -61,7 +61,7 @@ class Imago
 
     virtual ~Imago();
 
-    virtual void draw( const Imago* parent, int mask ) = 0;
+    virtual void draw( const Imago* parent ) = 0;
 
 };
 

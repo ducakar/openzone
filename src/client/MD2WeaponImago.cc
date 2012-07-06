@@ -53,7 +53,7 @@ Imago* MD2WeaponImago::create( const Object* obj )
   return imago;
 }
 
-void MD2WeaponImago::draw( const Imago* parent, int )
+void MD2WeaponImago::draw( const Imago* parent )
 {
   flags |= UPDATED_BIT;
 

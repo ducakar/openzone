@@ -148,7 +148,7 @@ void Mesh::animate( const Instance* instance )
   }
 }
 
-void Mesh::draw( const Instance* instance )
+void Mesh::draw( const Instance* instance, int mask )
 {
   tf.model = instance->transform;
   tf.apply();
@@ -167,7 +167,7 @@ void Mesh::draw( const Instance* instance )
   for( int i = firstPart; i < pastPart; ++i ) {
     const Part& part = parts[i];
 
-    if( part.flags & instance->mask ) {
+    if( part.flags & mask ) {
       glActiveTexture( GL_TEXTURE0 );
       glBindTexture( GL_TEXTURE_2D, part.texture.diffuse );
       glActiveTexture( GL_TEXTURE1 );
@@ -181,7 +181,7 @@ void Mesh::draw( const Instance* instance )
   }
 }
 
-void Mesh::drawScheduled()
+void Mesh::drawScheduled( int mask )
 {
   foreach( i, loadedMeshes.iter() ) {
     Mesh* mesh = *i;
@@ -194,7 +194,7 @@ void Mesh::drawScheduled()
     shader.program( mesh->shaderId );
 
     foreach( instance, mesh->instances.citer() ) {
-      if( !( instance->mask & mesh->flags ) ) {
+      if( !( mesh->flags & mask ) ) {
         continue;
       }
 
@@ -202,8 +202,23 @@ void Mesh::drawScheduled()
         mesh->animate( instance );
       }
 
-      mesh->draw( instance );
+      mesh->draw( instance, mask );
     }
+  }
+
+  for( int i = 4; i >= 0; --i ) {
+    glActiveTexture( GL_TEXTURE0 + uint( i ) );
+    glBindTexture( GL_TEXTURE_2D, 0 );
+  }
+
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+}
+
+void Mesh::clearScheduled()
+{
+  foreach( i, loadedMeshes.iter() ) {
+    Mesh* mesh = *i;
 
     mesh->instances.clear();
   }

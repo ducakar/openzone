@@ -50,9 +50,9 @@ class SMM
 
     explicit SMM( int id );
 
-    void schedule( int component, int mask )
+    void schedule( int component )
     {
-      mesh.schedule( component, mask );
+      mesh.schedule( component );
     }
 
     void preload();

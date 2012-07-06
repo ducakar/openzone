@@ -244,35 +244,29 @@ void HudArea::drawVehicleStatus()
   const Vehicle*      vehicle  = static_cast<const Vehicle*>( orbis.objects[bot->parent] );
   const VehicleClass* vehClazz = static_cast<const VehicleClass*>( vehicle->clazz );
 
-  glEnable( GL_DEPTH_TEST );
-  glDisable( GL_BLEND );
-
   float size = vehicle->dim.fastN();
   float scale = VEHICLE_DIM / size;
   int x = camera.width - 208 + VEHICLE_SIZE / 2;
   int y = 52 + vehClazz->nWeapons * ( Font::INFOS[Font::LARGE].height + 8 ) + VEHICLE_SIZE / 2;
 
-  tf.camera = Mat44::translation( Vec3( float( x ), float( y ), 0.0f ) );
-  tf.camera.scale( Vec3( 1.0f, 1.0f, 0.001f ) );
-
-  tf.model = Mat44::scaling( Vec3( scale, scale, scale ) );
+  tf.model = Mat44::translation( Vec3( float( x ), float( y ), 0.0f ) );
+  tf.model.scale( Vec3( scale, scale, scale ) );
   tf.model.rotateX( Math::rad( -45.0f ) );
   tf.model.rotateZ( Math::rad( +160.0f ) );
-  tf.applyCamera();
 
-  context.drawImago( vehicle, null, Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
+  context.drawImago( vehicle, null );
 
-  glEnable( GL_BLEND );
+  shape.unbind();
+
+  glEnable( GL_DEPTH_TEST );
+
+  Mesh::drawScheduled( Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
+  Mesh::clearScheduled();
+
   glDisable( GL_DEPTH_TEST );
 
   shape.bind();
   shader.program( shader.plain );
-
-  glActiveTexture( GL_TEXTURE0 );
-  glBindTexture( GL_TEXTURE_2D, 0 );
-
-  tf.camera = Mat44::ID;
-  tf.applyCamera();
 
   float life      = vehicle->life / vehClazz->life;
   int   lifeWidth = max( int( life * 198.0f ), 0 );

@@ -77,7 +77,7 @@ void FragPool::draw( const Frag* frag )
 
     tf.colour.w.w = flags & FADEOUT_BIT ? clamp( frag->life, 0.0f, 1.0f ) : 1.0f;
 
-    model->schedule( -1, Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
+    model->schedule( -1 );
   }
 }
 

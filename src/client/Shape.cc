@@ -183,6 +183,12 @@ void Shape::bind() const
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 }
 
+void Shape::unbind() const
+{
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+}
+
 void Shape::colour( const Vec4& c )
 {
   glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, Mat44::scaling( c ) );

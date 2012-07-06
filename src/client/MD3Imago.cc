@@ -91,7 +91,7 @@ MD3Imago::~MD3Imago()
 //     }
 //   }
 
-void MD3Imago::draw( const Imago* parent, int mask )
+void MD3Imago::draw( const Imago* parent )
 {
   flags |= UPDATED_BIT;
 
@@ -127,9 +127,6 @@ void MD3Imago::draw( const Imago* parent, int mask )
 
   if( bot->state & Bot::DEAD_BIT ) {
     tf.colour.w.w = min( bot->life * 8.0f / clazz->life, 1.0f );
-    if( tf.colour.w.w != 1.0f ) {
-      glEnable( GL_BLEND );
-    }
 
     tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->corpseDim.z ) );
 
@@ -137,9 +134,6 @@ void MD3Imago::draw( const Imago* parent, int mask )
 //       md3->draw( &anim );
     md3->drawFrame( 0 );
 
-    if( tf.colour.w.w != 1.0f ) {
-      glDisable( GL_BLEND );
-    }
     tf.colour.w.w = 1.0f;
   }
   else if( bot->index != camera.bot || camera.isExternal ) {
@@ -152,7 +146,7 @@ void MD3Imago::draw( const Imago* parent, int mask )
     md3->drawFrame( 0 );
 
     if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
-      context.drawImago( orbis.objects[bot->weapon], this, mask );
+      context.drawImago( orbis.objects[bot->weapon], this );
     }
   }
   else if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
@@ -161,7 +155,7 @@ void MD3Imago::draw( const Imago* parent, int mask )
     tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );
 
 //       md2->advance( &anim, timer.frameTime );
-    context.drawImago( orbis.objects[bot->weapon], this, mask );
+    context.drawImago( orbis.objects[bot->weapon], this );
   }
 }
 

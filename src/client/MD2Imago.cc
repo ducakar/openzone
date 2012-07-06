@@ -57,7 +57,7 @@ Imago* MD2Imago::create( const Object* obj )
   return imago;
 }
 
-void MD2Imago::draw( const Imago* parent, int mask )
+void MD2Imago::draw( const Imago* parent )
 {
   flags |= UPDATED_BIT;
 
@@ -68,7 +68,24 @@ void MD2Imago::draw( const Imago* parent, int mask )
   const Bot*      bot   = static_cast<const Bot*>( obj );
   const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-  if( mask & Mesh::SOLID_BIT ) {
+  if( bot->state & Bot::DEAD_BIT ) {
+    if( shader.mode == Shader::SCENE && parent == null ) {
+      Vec3 t = Vec3( obj->p.x, obj->p.y, obj->p.z + clazz->dim.z - clazz->corpseDim.z );
+
+      tf.model = Mat44::translation( t );
+      tf.model.rotateZ( h );
+
+      tf.colour.w.w = min( bot->life * 8.0f / clazz->life, 1.0f );
+    }
+
+    md2->scheduleAnim( &anim );
+
+    // HACK Enable when no buggy models are used (no mismatched death animation for weapons).
+//     if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
+//       context.drawImago( orbis.objects[bot->weapon], this, Mesh::SOLID_BIT );
+//     }
+  }
+  else {
     anim.advance();
 
     if( !( bot->state & Bot::DEAD_BIT ) ) {
@@ -85,7 +102,7 @@ void MD2Imago::draw( const Imago* parent, int mask )
 
           glDepthFunc( GL_ALWAYS );
 
-          context.drawImago( orbis.objects[bot->weapon], this, Mesh::SOLID_BIT );
+          context.drawImago( orbis.objects[bot->weapon], this );
 
           glDepthFunc( GL_LEQUAL );
         }
@@ -105,27 +122,10 @@ void MD2Imago::draw( const Imago* parent, int mask )
         md2->scheduleAnim( &anim );
 
         if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
-          context.drawImago( orbis.objects[bot->weapon], this, Mesh::SOLID_BIT );
+          context.drawImago( orbis.objects[bot->weapon], this );
         }
       }
     }
-  }
-  else if( bot->state & Bot::DEAD_BIT ) {
-    if( shader.mode == Shader::SCENE && parent == null ) {
-      Vec3 t = Vec3( obj->p.x, obj->p.y, obj->p.z + clazz->dim.z - clazz->corpseDim.z );
-
-      tf.model = Mat44::translation( t );
-      tf.model.rotateZ( h );
-
-      tf.colour.w.w = min( bot->life * 8.0f / clazz->life, 1.0f );
-    }
-
-    md2->scheduleAnim( &anim );
-
-    // HACK Enable when no buggy models are used (no mismatched death animation for weapons).
-//     if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
-//       context.drawImago( orbis.objects[bot->weapon], this, Mesh::SOLID_BIT );
-//     }
   }
 }
 

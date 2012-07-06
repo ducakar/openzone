@@ -48,7 +48,7 @@ SMMImago::~SMMImago()
   context.releaseSMM( clazz->imagoModel );
 }
 
-void SMMImago::draw( const Imago*, int mask )
+void SMMImago::draw( const Imago* )
 {
   flags |= UPDATED_BIT;
 
@@ -63,7 +63,7 @@ void SMMImago::draw( const Imago*, int mask )
     tf.colour.w.w = 1.0f;
   }
 
-  smm->schedule( -1, mask );
+  smm->schedule( -1 );
 }
 
 }

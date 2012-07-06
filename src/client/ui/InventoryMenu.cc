@@ -152,13 +152,9 @@ slotsRendered:
     glBindTexture( GL_TEXTURE_2D, 0 );
   }
 
-  tf.camera = Mat44::translation( Vec3( float( x + SLOT_SIZE / 2 ),
-                                        float( y + height + SLOT_SIZE / 2 ),
-                                        0.0f ) );
-  tf.camera.scale( Vec3( 1.0f, 1.0f, 0.001f ) );
-  tf.applyCamera();
-
-  tf.model = Mat44::ID;
+  tf.model = Mat44::translation( Vec3( float( x + SLOT_SIZE / 2 ),
+                                       float( y + height + SLOT_SIZE / 2 ),
+                                       0.0f ) );
 
   const Vector<int>& items = container->items;
 
@@ -187,7 +183,7 @@ slotsRendered:
     tf.model.rotateX( Math::rad( -45.0f ) );
     tf.model.rotateZ( Math::rad( +70.0f ) );
 
-    context.drawImago( item, null, Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
+    context.drawImago( item, null );
 
     tf.pop();
 
@@ -197,22 +193,17 @@ slotsRendered:
     }
   }
 
+  shape.unbind();
+
   glEnable( GL_DEPTH_TEST );
-  glDisable( GL_BLEND );
 
-  Mesh::drawScheduled();
+  Mesh::drawScheduled( Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
+  Mesh::clearScheduled();
 
-  glEnable( GL_BLEND );
   glDisable( GL_DEPTH_TEST );
 
   shape.bind();
   shader.program( shader.plain );
-
-  glActiveTexture( GL_TEXTURE0 );
-  glBindTexture( GL_TEXTURE_2D, 0 );
-
-  tf.camera = Mat44::ID;
-  tf.applyCamera();
 
   if( taggedItem == null ) {
     return;

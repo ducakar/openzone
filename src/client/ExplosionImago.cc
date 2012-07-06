@@ -54,11 +54,11 @@ ExplosionImago::~ExplosionImago()
   context.releaseSMM( modelId );
 }
 
-void ExplosionImago::draw( const Imago*, int mask )
+void ExplosionImago::draw( const Imago* )
 {
   flags |= UPDATED_BIT;
 
-  if( !smm->isLoaded || !( mask & Mesh::ALPHA_BIT ) ) {
+  if( !smm->isLoaded ) {
     return;
   }
 
@@ -73,7 +73,7 @@ void ExplosionImago::draw( const Imago*, int mask )
     tf.colour.w.w = alpha*alpha;
   }
 
-  smm->schedule( -1, Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
+  smm->schedule( -1 );
 }
 
 }
