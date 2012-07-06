@@ -29,10 +29,10 @@
 #include "matrix/BotClass.hh"
 #include "matrix/WeaponClass.hh"
 
-// #ifndef __clang__
-// GCC bug, issues a false warning.
+#ifndef __clang__
+// GCC bug, a false positive warning.
 # pragma GCC diagnostic ignored "-Wconversion"
-// #endif
+#endif
 
 namespace oz
 {

@@ -29,10 +29,10 @@
 #include "arrays.hh"
 
 #if defined( __GLIBC__ ) || defined( _LIBCPP_VERSION )
-# include <execinfo.h>
 # include <cstdlib>
 # include <cstring>
 # include <cxxabi.h>
+# include <execinfo.h>
 #endif
 
 namespace oz
@@ -92,114 +92,53 @@ char** StackTrace::symbols() const
 
     // Mangled function name.
     char* func = strrchr( symbols[i], '(' );
+    char* end  = null;
 
-    if( func == null ) {
-      size_t size = strlen( file ) + 1;
+    if( func != null ) {
+      *func++ = '\0';
 
-      if( out + size > outEnd ) {
-        break;
+      end = strrchr( func, '+' );
+
+      if( end != null ) {
+        *end = '\0';
       }
-
-      memcpy( out, file, size );
-      out[size - 1] = '\0';
-      out += size;
-
-      continue;
     }
 
-    *func = '\0';
-    ++func;
-
-    // Offset.
-    char* offset = strchr( func, '+' );
-
-    if( offset == null ) {
-      offset = func - 1;
-    }
-
-    *offset = '\0';
-    ++offset;
-
-    // Address (plus a leading space).
-    char* address = strchr( offset, ')' );
-
-    if( address == null ) {
-      size_t size = strlen( file ) + 1;
-
-      if( out + size > outEnd ) {
-        break;
-      }
-
-      memcpy( out, file, size );
-      out[size - 1] = '\0';
-      out += size;
-
-      continue;
-    }
-
-    *address = '\0';
-    ++address;
-
-    // Demangle name.
-    char*  demangled;
-    size_t size = SYMBOL_BUFFER_SIZE;
-    int    status = 0;
-
-    demangled = abi::__cxa_demangle( func, null, &size, &status );
-    func      = demangled == null ? func : demangled;
-
-    size_t fileLen    = strlen( file );
-    size_t funcLen    = strlen( func );
-    size_t offsetLen  = strlen( offset );
-    size_t addressLen = strlen( address );
-
-    size = fileLen + 2 + addressLen + 1;
-    if( funcLen != 0 && offsetLen != 0 ) {
-      size += 1 + funcLen + 3 + offsetLen + 1;
-    }
-
-    if( out + size > outEnd ) {
-      free( demangled );
+    size_t fileLen = strlen( file );
+    if( out + fileLen + 3 > outEnd ) {
       break;
     }
 
     memcpy( out, file, fileLen );
     out += fileLen;
 
-    *out = '(';
-    ++out;
+    *out++ = '(';
 
-    if( funcLen != 0 && offsetLen != 0 ) {
-      *out = ' ';
-      ++out;
+    if( func != null && func < end ) {
+      // Demangle name.
+      char*  demangled;
+      size_t size = SYMBOL_BUFFER_SIZE;
+      int    status = 0;
 
-      memcpy( out, func, funcLen );
-      out += funcLen;
+      demangled = abi::__cxa_demangle( func, null, &size, &status );
+      func      = demangled == null ? func : demangled;
 
-      *out = ' ';
-      ++out;
-      *out = '+';
-      ++out;
-      *out = ' ';
-      ++out;
+      size_t funcLen = strlen( func );
 
-      memcpy( out, offset, offsetLen );
-      out += offsetLen;
+      if( funcLen != 0 && out + funcLen + 4 <= outEnd ) {
+        *out++ = ' ';
 
-      *out = ' ';
-      ++out;
+        memcpy( out, func, funcLen );
+        out += funcLen;
+
+        *out++ = ' ';
+      }
+
+      free( demangled );
     }
 
-    *out = ')';
-    ++out;
-
-    memcpy( out, address, addressLen );
-    out += addressLen;
-
-    *out = '\0';
-    ++out;
-
-    free( demangled );
+    *out++ = ')';
+    *out++ = '\0';
   }
 
   int nWrittenFrames = i;

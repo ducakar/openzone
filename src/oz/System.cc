@@ -75,13 +75,6 @@ int raise( int )
 namespace oz
 {
 
-static const int CATCHABLE_SIGNALS[] = {
-  SIGILL,
-  SIGABRT,
-  SIGFPE,
-  SIGSEGV
-};
-
 #if defined( __native_client__ )
 
 static const float SAMPLE_LENGTH    = 0.28f;
@@ -157,9 +150,11 @@ static pthread_spinlock_t bellLock;
 
 static void resetSignals()
 {
-  for( int i = 0; i < aLength( CATCHABLE_SIGNALS ); ++i ) {
-    signal( CATCHABLE_SIGNALS[i], SIG_DFL );
-  }
+  signal( SIGINT,  SIG_DFL );
+  signal( SIGILL,  SIG_DFL );
+  signal( SIGABRT, SIG_DFL );
+  signal( SIGFPE,  SIG_DFL );
+  signal( SIGSEGV, SIG_DFL );
 }
 
 OZ_NORETURN
@@ -180,9 +175,11 @@ static void signalHandler( int sigNum )
 
 static void catchSignals()
 {
-  for( int i = 0; i < aLength( CATCHABLE_SIGNALS ); ++i ) {
-    signal( CATCHABLE_SIGNALS[i], signalHandler );
-  }
+  signal( SIGINT,  signalHandler );
+  signal( SIGILL,  signalHandler );
+  signal( SIGABRT, signalHandler );
+  signal( SIGFPE,  signalHandler );
+  signal( SIGSEGV, signalHandler );
 }
 
 OZ_NORETURN

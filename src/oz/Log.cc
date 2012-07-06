@@ -341,7 +341,7 @@ void Log::printSignal( int sigNum )
 
   int index = uint( sigNum ) >= uint( aLength( SIGNALS ) ) ? 0 : sigNum;
 
-  snprintf( buffer, OUT_BUFFER_SIZE, "\n\nCaught signal %d %s (%s)\n",
+  snprintf( buffer, OUT_BUFFER_SIZE, "\n\nCaught signal %d %s (%s)\n  stack trace:\n",
             sigNum, SIGNALS[index][0], SIGNALS[index][1] );
 
   if( !verboseMode || showVerbose || file == null ) {

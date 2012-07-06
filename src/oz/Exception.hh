@@ -72,6 +72,6 @@ class Exception : public std::exception
  * @ingroup oz
  */
 #define Exception( ... ) \
-  oz::Exception( __FILE__, __LINE__, __PRETTY_FUNCTION__, __VA_ARGS__ )
+  oz::Exception( __BASE_FILE__, __LINE__, __PRETTY_FUNCTION__, __VA_ARGS__ )
 
 }
