@@ -64,6 +64,9 @@ void Terra::draw()
   tf.model = Mat44::ID;
   tf.apply();
 
+  tf.colour = Mat44::ID;
+  tf.applyColour();
+
   glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, detailTexId );
   glActiveTexture( GL_TEXTURE1 );
@@ -107,9 +110,13 @@ void Terra::drawWater()
 
   shader.program( waterShaderId );
 
-  glUniform1f( param.oz_WaveBias, waveBias );
   tf.model = Mat44::ID;
   tf.apply();
+
+  tf.colour = Mat44::ID;
+  tf.applyColour();
+
+  glUniform1f( param.oz_WaveBias, waveBias );
 
   glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, waterTexId );

@@ -9,7 +9,6 @@ add_library( client STATIC
   Client.cc
   common.cc
   Context.cc
-  DMesh.cc
   ExplosionImago.cc
   FragPool.cc
   Frustum.cc

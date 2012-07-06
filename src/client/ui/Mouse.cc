@@ -25,9 +25,9 @@
 
 #include "client/ui/Mouse.hh"
 
+#include "client/Shape.hh"
 #include "client/Camera.hh"
 #include "client/Context.hh"
-#include "client/Shape.hh"
 #include "client/Window.hh"
 #include "client/Input.hh"
 #include "client/OpenGL.hh"
@@ -98,7 +98,7 @@ void Mouse::draw() const
   if( doShow ) {
     const Cursor& cur = cursors[icon];
 
-    shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
+    shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
     glBindTexture( GL_TEXTURE_2D, cur.texId );
     shape.fill( x - cur.hotspotX, y + 1 + cur.hotspotY - cur.size, cur.size, cur.size );
     glBindTexture( GL_TEXTURE_2D, 0 );
@@ -107,10 +107,16 @@ void Mouse::draw() const
 
 void Mouse::load()
 {
-  Log::print( "Loading Mouse ..." );
+  Log::print( "Loading mouse cursors ..." );
 
   x = camera.centreX;
   y = camera.centreY;
+
+  overEdgeX = 0;
+  overEdgeY = 0;
+
+  icon   = ARROW;
+  doShow = false;
 
   for( int i = 0; i < CURSORS_MAX; ++i ) {
     PFile file( String::str( "ui/cur/%s.ozCur", NAMES[i] ) );
@@ -133,7 +139,7 @@ void Mouse::load()
 
 void Mouse::unload()
 {
-  Log::print( "Unloading Mouse ..." );
+  Log::print( "Unloading mouse cursors ..." );
 
   for( int i = 0; i < CURSORS_MAX; ++i ) {
     glDeleteTextures( 1, &cursors[i].texId );
@@ -141,18 +147,6 @@ void Mouse::unload()
   }
 
   Log::printEnd( " OK" );
-}
-
-void Mouse::init()
-{
-  x         = 0;
-  y         = 0;
-
-  overEdgeX = 0;
-  overEdgeY = 0;
-
-  icon      = ARROW;
-  doShow    = false;
 }
 
 }

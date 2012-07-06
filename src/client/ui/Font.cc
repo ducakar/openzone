@@ -47,9 +47,9 @@ const Font::Info Font::INFOS[MAX] = {
   { "ui/font/DroidSans.ttf",     14 },
 };
 
-void Font::init()
+void Font::load()
 {
-  Log::print( "Initialising Fonts ..." );
+  Log::print( "Loading fonts ..." );
 
   if( TTF_Init() < 0 ) {
     throw Exception( "Failed to initialise SDL_TTF" );
@@ -75,9 +75,9 @@ void Font::init()
   Log::printEnd( " OK" );
 }
 
-void Font::free()
+void Font::unload()
 {
-  Log::print( "Freeing Font ..." );
+  Log::print( "Unloading fonts ..." );
 
   for( int i = 0; i < MAX; ++i ) {
     if( fonts[i] != null ) {

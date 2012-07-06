@@ -96,13 +96,13 @@ void MD2Imago::draw( const Imago* parent, int mask )
 
           tf.model = Mat44::translation( obj->p - Point::ORIGIN );
           tf.model.rotateZ( h );
+
+          if( bot->state & Bot::CROUCHING_BIT ) {
+            tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->crouchDim.z ) );
+          }
         }
 
-        if( bot->state & Bot::CROUCHING_BIT ) {
-          tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->crouchDim.z ) );
-        }
-
-        md2->draw( &anim );
+        md2->scheduleAnim( &anim );
 
         if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
           context.drawImago( orbis.objects[bot->weapon], this, Mesh::SOLID_BIT );
@@ -111,22 +111,21 @@ void MD2Imago::draw( const Imago* parent, int mask )
     }
   }
   else if( bot->state & Bot::DEAD_BIT ) {
-    shader.colourTransform.w.w = min( bot->life * 8.0f / clazz->life, 1.0f );
-
     if( shader.mode == Shader::SCENE && parent == null ) {
-      tf.model = Mat44::translation( obj->p - Point::ORIGIN );
-      tf.model.rotateZ( h );
-    }
-    tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->corpseDim.z ) );
+      Vec3 t = Vec3( obj->p.x, obj->p.y, obj->p.z + clazz->dim.z - clazz->corpseDim.z );
 
-    md2->draw( &anim );
+      tf.model = Mat44::translation( t );
+      tf.model.rotateZ( h );
+
+      tf.colour.w.w = min( bot->life * 8.0f / clazz->life, 1.0f );
+    }
+
+    md2->scheduleAnim( &anim );
 
     // HACK Enable when no buggy models are used (no mismatched death animation for weapons).
 //     if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
 //       context.drawImago( orbis.objects[bot->weapon], this, Mesh::SOLID_BIT );
 //     }
-
-    shader.colourTransform.w.w = 1.0f;
   }
 }
 

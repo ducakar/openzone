@@ -221,11 +221,6 @@ MD2::MD2( int id_ ) :
   id( id_ ), isPreloaded( false ), isLoaded( false )
 {}
 
-MD2::~MD2()
-{
-  dmesh.unload();
-}
-
 void MD2::preload()
 {
   file.setPath( library.models[id].path );
@@ -239,34 +234,17 @@ void MD2::preload()
 
 void MD2::load()
 {
-  InputStream is  = file.inputStream();
+  InputStream is = file.inputStream();
 
-  shaderId        = library.shaderIndex( is.readString() );
-  weaponTransf    = is.readMat44();
+  weaponTransf = is.readMat44();
 
-  dmesh.load( &is, file.path() );
+  mesh.load( &is, shader.hasVertexTexture ? GL_STATIC_DRAW : GL_STREAM_DRAW, file.path() );
 
   hard_assert( !is.isAvailable() );
 
   file.setPath( "" );
 
   isLoaded = true;
-}
-
-void MD2::drawFrame( int frame ) const
-{
-  shader.program( shaderId );
-  tf.apply();
-
-  dmesh.drawFrame( Mesh::SOLID_BIT, frame );
-}
-
-void MD2::draw( const AnimState* anim ) const
-{
-  shader.program( shaderId );
-  tf.apply();
-
-  dmesh.drawAnim( Mesh::SOLID_BIT, anim->currFrame, anim->nextFrame, anim->frameRatio );
 }
 
 }

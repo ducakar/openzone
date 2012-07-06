@@ -25,12 +25,12 @@
 
 #include "client/Render.hh"
 
-#include "client/Window.hh"
-#include "client/Frustum.hh"
 #include "client/Shape.hh"
-
+#include "client/Frustum.hh"
 #include "client/Caelum.hh"
 #include "client/Terra.hh"
+#include "client/Context.hh"
+#include "client/Window.hh"
 
 #include "client/SMMImago.hh"
 #include "client/SMMVehicleImago.hh"
@@ -147,11 +147,11 @@ void Render::prepareDraw()
   }
 
   if( camera.nightVision ) {
-    shader.colourTransform = NIGHT_COLOUR;
-    shader.fogColour = shader.colourTransform * shader.fogColour;
+    tf.colour = NIGHT_COLOUR;
+    shader.fogColour = tf.colour * shader.fogColour;
   }
   else {
-    shader.colourTransform = Mat44::ID;
+    tf.colour = Mat44::ID;
   }
 
   windPhi = Math::fmod( windPhi + WIND_PHI_INC, Math::TAU );
@@ -234,14 +234,11 @@ void Render::drawGeometry()
     tf.applyCamera();
     shader.updateLights();
 
-    shader.colour( shader.colourTransform );
     glUniform4f( param.oz_Wind, 1.0f, 1.0f, WIND_FACTOR, windPhi );
 
     glUniform1f( param.oz_Fog_dist, visibility );
     glUniform4fv( param.oz_Fog_colour, 1, shader.fogColour );
   }
-
-  Mesh::reset();
 
   glEnable( GL_DEPTH_TEST );
 
@@ -286,7 +283,7 @@ void Render::drawGeometry()
   }
 
   // draw transparent parts of objects
-  shader.colourTransform.w.w = 1.0f;
+  tf.colour.w.w = 1.0f;
 
   currentMicros = Time::uclock();
   fragsMicros += currentMicros - beginMicros;
@@ -295,8 +292,6 @@ void Render::drawGeometry()
   for( int i = objects.length() - 1; i >= 0; --i ) {
     context.drawImago( objects[i].obj, null, Mesh::ALPHA_BIT );
   }
-
-  OZ_GL_CHECK_ERROR();
 
   currentMicros = Time::uclock();
   objectsMicros += currentMicros - beginMicros;
@@ -315,7 +310,11 @@ void Render::drawGeometry()
     context.drawBSP( structs[i].str, Mesh::ALPHA_BIT );
   }
 
+  Mesh::drawScheduled();
+
   glDisable( GL_BLEND );
+
+  OZ_GL_CHECK_ERROR();
 
   currentMicros = Time::uclock();
   structsMicros += currentMicros - beginMicros;
@@ -332,7 +331,7 @@ void Render::drawGeometry()
     collider.translate( camera.p, move, camera.botObj );
     move *= collider.hit.ratio;
 
-    shader.colour( Vec4( 0.0f, 1.0f, 0.0f, 1.0f ) );
+    shape.colour( 0.0f, 1.0f, 0.0f, 1.0f );
     shape.box( AABB( camera.p + move, Vec3( 0.05f, 0.05f, 0.05f ) ) );
   }
 
@@ -340,21 +339,21 @@ void Render::drawGeometry()
     glLineWidth( 1.0f );
 
     for( int i = 0; i < objects.length(); ++i ) {
-      shader.colour( objects[i].obj->flags & Object::SOLID_BIT ? SOLID_AABB : NONSOLID_AABB );
+      shape.colour( objects[i].obj->flags & Object::SOLID_BIT ? SOLID_AABB : NONSOLID_AABB );
       shape.wireBox( *objects[i].obj );
     }
 
     for( int i = 0; i < structs.length(); ++i ) {
       const Struct* str = structs[i].str;
 
-      shader.colour( ENTITY_AABB );
+      shape.colour( ENTITY_AABB );
 
       foreach( entity, citer( str->entities, str->nEntities ) ) {
         Bounds bb = str->toAbsoluteCS( *entity->model + entity->offset );
         shape.wireBox( bb.toAABB() );
       }
 
-      shader.colour( STRUCT_AABB );
+      shape.colour( STRUCT_AABB );
       shape.wireBox( str->toAABB() );
     }
   }
@@ -406,7 +405,7 @@ void Render::drawOrbis()
     tf.camera = Mat44::ID;
 
     shader.program( doPostprocess ? shader.postprocess : shader.plain );
-    shader.colour( Mat44::ID );
+    shape.colour( 1.0f, 1.0f, 1.0f );
     tf.applyCamera();
 
     glBindTexture( GL_TEXTURE_2D, colourBuffer );
@@ -679,10 +678,6 @@ void Render::init( bool isBuild )
   }
 
   String sScaleFilter;
-
-#ifdef __native_client__
-  config.include( "render.distance", "100.0" );
-#endif
 
   doPostprocess   = config.getSet( "render.postprocess", false );
   isLowDetail     = config.getSet( "render.lowDetail",   false );

@@ -25,9 +25,9 @@
 
 #include "client/ui/InventoryMenu.hh"
 
+#include "client/Shape.hh"
 #include "client/Camera.hh"
 #include "client/Context.hh"
-#include "client/Shape.hh"
 #include "client/Input.hh"
 #include "client/OpenGL.hh"
 
@@ -119,16 +119,16 @@ void InventoryMenu::drawComponent( int height, const Object* container, int tagg
 
       if( index < containerClazz->nItems ) {
         if( index == tagged ) {
-          shader.colour( Vec4( 0.6f, 0.6f, 0.6f, 0.6f ) );
+          shape.colour( 0.6f, 0.6f, 0.6f, 0.6f );
         }
         else {
-          shader.colour( Vec4( 0.3f, 0.3f, 0.3f, 0.6f ) );
+          shape.colour( 0.3f, 0.3f, 0.3f, 0.6f );
         }
 
-        fill( j * SLOT_SIZE + PADDING_SIZE,
-              height + ( ROWS - i - 1 ) * SLOT_SIZE + PADDING_SIZE,
-              SLOT_SIZE - 2*PADDING_SIZE,
-              SLOT_SIZE - 2*PADDING_SIZE );
+        shape.fill( x + j * SLOT_SIZE + PADDING_SIZE,
+                    y + height + ( ROWS - i - 1 ) * SLOT_SIZE + PADDING_SIZE,
+                    SLOT_SIZE - 2*PADDING_SIZE,
+                    SLOT_SIZE - 2*PADDING_SIZE );
       }
       else {
         goto slotsRendered;
@@ -140,25 +140,25 @@ slotsRendered:
   int nScrollRows = max( 0, containerClazz->nItems - ( ROWS - 1 ) * COLS - 1 ) / COLS;
 
   if( scroll != 0 ) {
-    shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
+    shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
     glBindTexture( GL_TEXTURE_2D, scrollUpTexId );
-    fill( 16, height + ROWS * SLOT_SIZE, 16, 16 );
+    shape.fill( x + 16, y + height + ROWS * SLOT_SIZE, 16, 16 );
     glBindTexture( GL_TEXTURE_2D, 0 );
   }
   if( scroll != nScrollRows ) {
-    shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
+    shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
     glBindTexture( GL_TEXTURE_2D, scrollDownTexId );
-    fill( 16, height - 16, 16, 16 );
+    shape.fill( x + 16, y + height - 16, 16, 16 );
     glBindTexture( GL_TEXTURE_2D, 0 );
   }
-
-  glEnable( GL_DEPTH_TEST );
-  glDisable( GL_BLEND );
 
   tf.camera = Mat44::translation( Vec3( float( x + SLOT_SIZE / 2 ),
                                         float( y + height + SLOT_SIZE / 2 ),
                                         0.0f ) );
   tf.camera.scale( Vec3( 1.0f, 1.0f, 0.001f ) );
+  tf.applyCamera();
+
+  tf.model = Mat44::ID;
 
   const Vector<int>& items = container->items;
 
@@ -181,21 +181,26 @@ slotsRendered:
     float size = item->dim.fastN();
     float scale = SLOT_OBJ_DIM / size;
 
-    Mat44 originalCamera = tf.camera;
+    tf.push();
 
-    tf.model = Mat44::scaling( Vec3( scale, scale, scale ) );
+    tf.model.scale( Vec3( scale, scale, scale ) );
     tf.model.rotateX( Math::rad( -45.0f ) );
     tf.model.rotateZ( Math::rad( +70.0f ) );
-    tf.applyCamera();
 
     context.drawImago( item, null, Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
 
-    tf.camera = originalCamera;
-    tf.camera.translate( Vec3( float( SLOT_SIZE ), 0.0f, 0.0f ) );
+    tf.pop();
+
+    tf.model.translate( Vec3( float( SLOT_SIZE ), 0.0f, 0.0f ) );
     if( ( i + 1 ) % COLS == 0 ) {
-      tf.camera.translate( Vec3( -COLS * SLOT_SIZE, -SLOT_SIZE, 0.0f ) );
+      tf.model.translate( Vec3( -COLS * SLOT_SIZE, -SLOT_SIZE, 0.0f ) );
     }
   }
+
+  glEnable( GL_DEPTH_TEST );
+  glDisable( GL_BLEND );
+
+  Mesh::drawScheduled();
 
   glEnable( GL_BLEND );
   glDisable( GL_DEPTH_TEST );
@@ -220,11 +225,11 @@ slotsRendered:
 
   hard_assert( 0.0f <= life && life <= 1.0f );
 
-  shader.colour( Vec4( 1.0f - life, life, 0.0f, 0.6f ) );
-  fill( -51, height + SLOT_SIZE + 5, lifeWidth, 10 );
+  shape.colour( 1.0f - life, life, 0.0f, 0.6f );
+  shape.fill( x + width - 51, y + height + SLOT_SIZE + 5, lifeWidth, 10 );
 
-  shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 0.6f ) );
-  rect( -52, height + SLOT_SIZE + 4, 48, 12 );
+  shape.colour( 1.0f, 1.0f, 1.0f, 0.6f );
+  shape.rect( x + width - 52, y + height + SLOT_SIZE + 4, 48, 12 );
 
   if( taggedItem->flags & Object::USE_FUNC_BIT ) {
     uint texId = useTexId;
@@ -239,7 +244,7 @@ slotsRendered:
       texId = taggedItem->index == camera.botObj->weapon ? unequipTexId : equipTexId;
     }
 
-    shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
+    shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
     glBindTexture( GL_TEXTURE_2D, texId );
     shape.fill( x + width - ICON_SIZE - 4, y + height - FOOTER_SIZE + 4, ICON_SIZE, ICON_SIZE );
     glBindTexture( GL_TEXTURE_2D, 0 );

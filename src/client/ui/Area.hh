@@ -89,9 +89,6 @@ class Area
     int defaultX;
     int defaultY;
 
-    void fill( int x, int y, int width, int height ) const;
-    void rect( int x, int y, int width, int height ) const;
-
     // return true if event has been caught
     bool passMouseEvents();
     void drawChildren();

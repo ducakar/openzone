@@ -74,6 +74,8 @@ class Transform
 
     Mat44 projCamera;
 
+    Mat44 colour;
+
     OZ_ALWAYS_INLINE
     void push()
     {
@@ -92,6 +94,12 @@ class Transform
     void applyCamera();
     void applyModel() const;
     void apply() const;
+
+    void applyColour() const;
+
+    void setColour( const Mat44& colour ) const;
+    void setColour( const Vec4& colour ) const;
+    void setColour( float r, float g, float b, float a = 1.0f ) const;
 
 };
 
@@ -180,7 +188,6 @@ class Shader
 
     int   activeProgram;
 
-    Mat44 colourTransform;
     Vec4  fogColour;
 
     uint  defaultMasks;
@@ -196,8 +203,6 @@ class Shader
     Shader();
 
     void program( int id );
-    void colour( const Vec4& colour );
-    void colour( const Mat44& colourTransform );
 
     void setLightingDistance( float distance );
     void setAmbientLight( const Vec4& colour );

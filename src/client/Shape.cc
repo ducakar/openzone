@@ -183,6 +183,16 @@ void Shape::bind() const
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 }
 
+void Shape::colour( const Vec4& c )
+{
+  glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, Mat44::scaling( c ) );
+}
+
+void Shape::colour( float r, float g, float b, float a )
+{
+  glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, Mat44::scaling( Vec4( r, g, b, a ) ) );
+}
+
 void Shape::fill( float x, float y, float width, float height )
 {
   tf.model = Mat44::translation( Vec3( x, y, 0.0f ) );

@@ -63,7 +63,7 @@ class BSP
     void preload();
     void load();
 
-    void draw( const Struct* str, int mask ) const;
+    void draw( const Struct* str, int mask );
     void play( const Struct* str ) const;
 
 };

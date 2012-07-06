@@ -104,6 +104,7 @@ class Compiler
     int            flags;
     int            componentId;
     PolyMode       mode;
+    String         shaderName;
     int            vertNum;
 
     int            nFrames;
@@ -120,6 +121,7 @@ class Compiler
     void anim( int nFrames, int nPositions );
     void component( int id );
     void blend( bool doBlend );
+    void shader( const char* shaderName );
     void texture( const char* texture );
 
     void begin( PolyMode mode );

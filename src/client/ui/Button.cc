@@ -26,7 +26,7 @@
 #include "client/ui/Button.hh"
 
 #include "client/Input.hh"
-#include "client/Shader.hh"
+#include "client/Shape.hh"
 #include "client/OpenGL.hh"
 
 namespace oz
@@ -61,16 +61,16 @@ bool Button::onMouseEvent()
 void Button::onDraw()
 {
   if( isClicked ) {
-    shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
+    shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
   }
   else if( isHighlighted ) {
-    shader.colour( Vec4( 0.8f, 0.8f, 0.8f, 0.4f ) );
+    shape.colour( 0.8f, 0.8f, 0.8f, 0.4f );
   }
   else {
-    shader.colour( Vec4( 0.6f, 0.6f, 0.6f, 0.4f ) );
+    shape.colour( 0.6f, 0.6f, 0.6f, 0.4f );
   }
 
-  fill( 0, 0, width, height );
+  shape.fill( x, y, width, height );
   label.draw( this, true );
 
   isHighlighted = false;

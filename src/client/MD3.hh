@@ -137,7 +137,6 @@ class MD3
     bool  isLoaded;
 
     explicit MD3( int id );
-    ~MD3();
 
     void preload();
     void load();

@@ -126,8 +126,8 @@ void MD3Imago::draw( const Imago* parent, int mask )
   }
 
   if( bot->state & Bot::DEAD_BIT ) {
-    shader.colourTransform.w.w = min( bot->life * 8.0f / clazz->life, 1.0f );
-    if( shader.colourTransform.w.w != 1.0f ) {
+    tf.colour.w.w = min( bot->life * 8.0f / clazz->life, 1.0f );
+    if( tf.colour.w.w != 1.0f ) {
       glEnable( GL_BLEND );
     }
 
@@ -137,10 +137,10 @@ void MD3Imago::draw( const Imago* parent, int mask )
 //       md3->draw( &anim );
     md3->drawFrame( 0 );
 
-    if( shader.colourTransform.w.w != 1.0f ) {
+    if( tf.colour.w.w != 1.0f ) {
       glDisable( GL_BLEND );
     }
-    shader.colourTransform.w.w = 1.0f;
+    tf.colour.w.w = 1.0f;
   }
   else if( bot->index != camera.bot || camera.isExternal ) {
     if( bot->state & Bot::CROUCHING_BIT ) {

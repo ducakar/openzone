@@ -50,22 +50,6 @@ Area::~Area()
   children.free();
 }
 
-void Area::fill( int x, int y, int width, int height ) const
-{
-  x = x < 0 ? this->x + this->width  + x : this->x + x;
-  y = y < 0 ? this->y + this->height + y : this->y + y;
-
-  shape.fill( x, y, width, height );
-}
-
-void Area::rect( int x, int y, int width, int height ) const
-{
-  x = x < 0 ? this->x + this->width  + x : this->x + x;
-  y = y < 0 ? this->y + this->height + y : this->y + y;
-
-  shape.rect( x, y, width, height );
-}
-
 void Area::reposition()
 {
   if( parent != null ) {

@@ -25,6 +25,7 @@
 
 #include "client/ui/GalileoFrame.hh"
 
+#include "client/Shape.hh"
 #include "client/Camera.hh"
 #include "client/Context.hh"
 #include "client/QuestList.hh"
@@ -98,10 +99,10 @@ void GalileoFrame::onDraw()
   float pY = camera.p.y;
   float h  = camera.botObj == null ? camera.strategic.h : camera.botObj->h;
 
-  shader.colour( Vec4( 1.0f, 1.0f, 1.0f, isMaximised ? 0.8f : 0.6f ) );
+  shape.colour( 1.0f, 1.0f, 1.0f, isMaximised ? 0.8f : 0.6f );
   glBindTexture( GL_TEXTURE_2D, mapTexId );
-  fill( 0, 0, width, height );
-  shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
+  shape.fill( x, y, width, height );
+  shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
 
   float oX      = float( x );
   float oY      = float( y );

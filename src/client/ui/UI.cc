@@ -87,7 +87,6 @@ void UI::draw()
 
   tf.ortho( camera.width, camera.height );
   tf.camera = Mat44::ID;
-  shader.colourTransform = Mat44::ID;
 
   // set shaders
   shader.setAmbientLight( Vec4( 0.55f, 0.55f, 0.55f, 1.00f ) );
@@ -212,7 +211,7 @@ void UI::init()
 
   fps = 1.0f / Timer::TICK_TIME;
 
-  font.init();
+  font.load();
   mouse.load();
 
   root = new Area( camera.width, camera.height );
@@ -237,7 +236,7 @@ void UI::free()
   Area::updateAreas.dealloc();
 
   mouse.unload();
-  font.free();
+  font.unload();
 }
 
 }

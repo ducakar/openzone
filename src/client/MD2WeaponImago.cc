@@ -67,14 +67,17 @@ void MD2WeaponImago::draw( const Imago* parent, int )
       tf.model.rotateZ( float( obj->flags & Object::HEADING_MASK ) * Math::TAU / 4.0f );
     }
 
+    tf.push();
     tf.model = tf.model * md2->weaponTransf;
 
-    md2->drawFrame( 0 );
+    md2->scheduleFrame( 0 );
+
+    tf.pop();
   }
   else if( parent->flags & Imago::MD2MODEL_BIT ) {
     const MD2Imago* parentImago = static_cast<const MD2Imago*>( parent );
 
-    md2->draw( &parentImago->anim );
+    md2->scheduleAnim( &parentImago->anim );
   }
 }
 

@@ -69,15 +69,15 @@ void FragPool::draw( const Frag* frag )
   int  index = frag->index % models.length();
   SMM* model = models[index];
 
-  if( model->isLoaded ) {
+  if( !model->isLoaded ) {
     tf.model = Mat44::translation( frag->p - Point::ORIGIN );
     tf.model.rotateX( frag->p.x );
     tf.model.rotateY( frag->p.y );
     tf.model.rotateZ( frag->p.z );
 
-    shader.colourTransform.w.w = flags & FADEOUT_BIT ? clamp( frag->life, 0.0f, 1.0f ) : 1.0f;
+    tf.colour.w.w = flags & FADEOUT_BIT ? clamp( frag->life, 0.0f, 1.0f ) : 1.0f;
 
-    model->draw( Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
+    model->schedule( -1, Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
   }
 }
 

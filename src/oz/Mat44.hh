@@ -461,7 +461,7 @@ class Mat44
     }
 
     /**
-     * Compose with a scale from the right.
+     * Compose with a scale from the right (fourth vector component is assumed 1.0).
      */
     OZ_ALWAYS_INLINE
     void scale( const Vec3& v )
@@ -477,6 +477,33 @@ class Mat44
       z.x *= v.z;
       z.y *= v.z;
       z.z *= v.z;
+    }
+
+    /**
+     * Compose with a scale from the right.
+     */
+    OZ_ALWAYS_INLINE
+    void scale( const Vec4& v )
+    {
+      x.x *= v.x;
+      x.y *= v.x;
+      x.z *= v.x;
+      x.w *= v.x;
+
+      y.x *= v.y;
+      y.y *= v.y;
+      y.z *= v.y;
+      y.w *= v.y;
+
+      z.x *= v.z;
+      z.y *= v.z;
+      z.z *= v.z;
+      z.w *= v.z;
+
+      w.x *= v.w;
+      w.y *= v.w;
+      w.z *= v.w;
+      w.w *= v.w;
     }
 
     /**
@@ -592,7 +619,7 @@ class Mat44
     }
 
     /**
-     * Create matrix for scaling.
+     * Create matrix for scaling (fourth vector component is assumed 1.0).
      */
     OZ_ALWAYS_INLINE
     static Mat44 scaling( const Vec3& v )
@@ -601,6 +628,18 @@ class Mat44
                     0.0f,  v.y, 0.0f, 0.0f,
                     0.0f, 0.0f,  v.z, 0.0f,
                     0.0f, 0.0f, 0.0f, 1.0f );
+    }
+
+    /**
+     * Create matrix for scaling.
+     */
+    OZ_ALWAYS_INLINE
+    static Mat44 scaling( const Vec4& v )
+    {
+      return Mat44(  v.x, 0.0f, 0.0f, 0.0f,
+                    0.0f,  v.y, 0.0f, 0.0f,
+                    0.0f, 0.0f,  v.z, 0.0f,
+                    0.0f, 0.0f, 0.0f,  v.w );
     }
 
 };

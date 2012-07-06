@@ -28,7 +28,6 @@
 #include "BuildInfo.hh"
 
 #include "client/Camera.hh"
-#include "client/Shader.hh"
 #include "client/Shape.hh"
 #include "client/GameStage.hh"
 #include "client/MenuStage.hh"
@@ -94,7 +93,7 @@ static void exit( Button* )
 
 void MainMenu::onDraw()
 {
-  shader.colour( Vec4( 0.1f, 0.1f, 0.1f, 1.0f ) );
+  shape.colour( 0.1f, 0.1f, 0.1f, 1.0f );
   shape.fill( 0, 0, camera.width, camera.height );
 
   Frame::onDraw();

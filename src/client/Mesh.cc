@@ -48,21 +48,21 @@ void Vertex::setFormat()
   glVertexAttribPointer( Attrib::NORMAL, 3, GL_BYTE, GL_TRUE, sizeof( Vertex ),
                          static_cast<char*>( null ) + offsetof( Vertex, normal ) );
 
-  glEnableVertexAttribArray( Attrib::TANGENT );
-  glVertexAttribPointer( Attrib::TANGENT, 3, GL_BYTE, GL_TRUE, sizeof( Vertex ),
-                         static_cast<char*>( null ) + offsetof( Vertex, tangent ) );
-
-  glEnableVertexAttribArray( Attrib::BINORMAL );
-  glVertexAttribPointer( Attrib::BINORMAL, 3, GL_BYTE, GL_TRUE, sizeof( Vertex ),
-                         static_cast<char*>( null ) + offsetof( Vertex, binormal ) );
-
-  glEnableVertexAttribArray( Attrib::BONES );
-  glVertexAttribPointer( Attrib::BONES, 2, GL_BYTE, GL_FALSE, sizeof( Vertex ),
-                         static_cast<char*>( null ) + offsetof( Vertex, bones ) );
-
-  glEnableVertexAttribArray( Attrib::BLEND );
-  glVertexAttribPointer( Attrib::BLEND, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof( Vertex ),
-                         static_cast<char*>( null ) + offsetof( Vertex, blend ) );
+//   glEnableVertexAttribArray( Attrib::TANGENT );
+//   glVertexAttribPointer( Attrib::TANGENT, 3, GL_BYTE, GL_TRUE, sizeof( Vertex ),
+//                          static_cast<char*>( null ) + offsetof( Vertex, tangent ) );
+//
+//   glEnableVertexAttribArray( Attrib::BINORMAL );
+//   glVertexAttribPointer( Attrib::BINORMAL, 3, GL_BYTE, GL_TRUE, sizeof( Vertex ),
+//                          static_cast<char*>( null ) + offsetof( Vertex, binormal ) );
+//
+//   glEnableVertexAttribArray( Attrib::BONES );
+//   glVertexAttribPointer( Attrib::BONES, 2, GL_BYTE, GL_FALSE, sizeof( Vertex ),
+//                          static_cast<char*>( null ) + offsetof( Vertex, bones ) );
+//
+//   glEnableVertexAttribArray( Attrib::BLEND );
+//   glVertexAttribPointer( Attrib::BLEND, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof( Vertex ),
+//                          static_cast<char*>( null ) + offsetof( Vertex, blend ) );
 }
 
 void Texture::free()
@@ -81,53 +81,93 @@ void Texture::free()
   }
 }
 
-const Mesh* Mesh::lastMesh = null;
+Map<Mesh*> Mesh::loadedMeshes;
+Vertex*    Mesh::vertexAnimBuffer       = null;
+int        Mesh::vertexAnimBufferLength = 0;
 
-void Mesh::reset()
+void Mesh::animate( const Instance* instance )
 {
-  lastMesh = null;
-}
+  if( shader.hasVertexTexture ) {
+    glActiveTexture( GL_TEXTURE3 );
+    glBindTexture( GL_TEXTURE_2D, positionsTexId );
+    glActiveTexture( GL_TEXTURE4 );
+    glBindTexture( GL_TEXTURE_2D, normalsTexId );
 
-Mesh::Mesh() :
-  vbo( 0 ), ibo( 0 ), parts( null )
-{}
+    glUniform3f( param.oz_MeshAnimation,
+                 float( instance->firstFrame ) / float( nFrames ),
+                 float( instance->secondFrame ) / float( nFrames ),
+                 instance->interpolation );
+  }
+  else {
+    const Point* currFramePositions = &positions[instance->firstFrame * nFramePositions];
+    const Vec3*  currFrameNormals   = &normals[instance->firstFrame * nFramePositions];
 
-Mesh::~Mesh()
-{
-  hard_assert( vbo == 0 );
+    if( instance->interpolation == 0.0f ) {
+      for( int i = 0; i < nFrameVertices; ++i ) {
+        int j = int( vertices[i].pos[0] * float( nFramePositions - 1 ) + 0.5f );
 
-  delete[] parts;
-}
+        Point pos    = currFramePositions[j];
+        Vec3  normal = currFrameNormals[j];
 
-void Mesh::bind() const
-{
-  if( this != lastMesh ) {
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+        vertexAnimBuffer[i].pos[0] = pos.x;
+        vertexAnimBuffer[i].pos[1] = pos.y;
+        vertexAnimBuffer[i].pos[2] = pos.z;
 
-    Vertex::setFormat();
+        vertexAnimBuffer[i].texCoord[0] = vertices[i].texCoord[0];
+        vertexAnimBuffer[i].texCoord[1] = vertices[i].texCoord[1];
+
+        vertexAnimBuffer[i].normal[0] = quantifyToByte( normal.x );
+        vertexAnimBuffer[i].normal[1] = quantifyToByte( normal.y );
+        vertexAnimBuffer[i].normal[2] = quantifyToByte( normal.z );
+      }
+    }
+    else {
+      const Point* nextFramePositions = &positions[instance->secondFrame * nFramePositions];
+      const Vec3*  nextFrameNormals   = &normals[instance->secondFrame * nFramePositions];
+
+      for( int i = 0; i < nFrameVertices; ++i ) {
+        int j = int( vertices[i].pos[0] * float( nFramePositions - 1 ) + 0.5f );
+
+        Point pos    = Math::mix( currFramePositions[j], nextFramePositions[j], instance->interpolation );
+        Vec3  normal = Math::mix( currFrameNormals[j],   nextFrameNormals[j],   instance->interpolation );
+
+        vertexAnimBuffer[i].pos[0] = pos.x;
+        vertexAnimBuffer[i].pos[1] = pos.y;
+        vertexAnimBuffer[i].pos[2] = pos.z;
+
+        vertexAnimBuffer[i].texCoord[0] = vertices[i].texCoord[0];
+        vertexAnimBuffer[i].texCoord[1] = vertices[i].texCoord[1];
+
+        vertexAnimBuffer[i].normal[0] = quantifyToByte( normal.x );
+        vertexAnimBuffer[i].normal[1] = quantifyToByte( normal.y );
+        vertexAnimBuffer[i].normal[2] = quantifyToByte( normal.z );
+      }
+    }
+
+    upload( vertexAnimBuffer, nFrameVertices, GL_STREAM_DRAW );
   }
 }
 
-void Mesh::drawComponent( int id, int mask ) const
+void Mesh::draw( const Instance* instance )
 {
-  mask &= flags;
+  tf.model = instance->transform;
+  tf.apply();
 
-  if( mask == 0 ) {
-    return;
+  tf.colour.w.w = instance->alpha;
+  tf.applyColour();
+
+  int firstPart = 0;
+  int pastPart  = parts.length();
+
+  if( instance->component >= 0 ) {
+    firstPart = componentIndices[instance->component];
+    pastPart  = componentIndices[instance->component + 1];
   }
 
-  for( int i = 0; i < nParts; ++i ) {
+  for( int i = firstPart; i < pastPart; ++i ) {
     const Part& part = parts[i];
 
-    int component = part.flags & COMPONENT_MASK;
-    if( component < id ) {
-      continue;
-    }
-    else if( component > id ) {
-      break;
-    }
-    else if( part.flags & mask ) {
+    if( part.flags & instance->mask ) {
       glActiveTexture( GL_TEXTURE0 );
       glBindTexture( GL_TEXTURE_2D, part.texture.diffuse );
       glActiveTexture( GL_TEXTURE1 );
@@ -135,12 +175,57 @@ void Mesh::drawComponent( int id, int mask ) const
       glActiveTexture( GL_TEXTURE2 );
       glBindTexture( GL_TEXTURE_2D, part.texture.normals );
 
-      glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, shader.colourTransform );
-
       glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
                       static_cast<ushort*>( null ) + part.firstIndex );
     }
   }
+}
+
+void Mesh::drawScheduled()
+{
+  foreach( i, loadedMeshes.iter() ) {
+    Mesh* mesh = *i;
+
+    glBindBuffer( GL_ARRAY_BUFFER, mesh->vbo );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, mesh->ibo );
+
+    Vertex::setFormat();
+
+    shader.program( mesh->shaderId );
+
+    foreach( instance, mesh->instances.citer() ) {
+      if( !( instance->mask & mesh->flags ) ) {
+        continue;
+      }
+
+      if( mesh->nFrames != 0 ) {
+        mesh->animate( instance );
+      }
+
+      mesh->draw( instance );
+    }
+
+    mesh->instances.clear();
+  }
+}
+
+void Mesh::dealloc()
+{
+  loadedMeshes.dealloc();
+
+  delete[] vertexAnimBuffer;
+  vertexAnimBufferLength = 0;
+}
+
+Mesh::Mesh() :
+  vbo( 0 ), ibo( 0 ), positionsTexId( 0 ), normalsTexId( 0 ),
+  vertices( null ), positions( null ), normals( null ),
+  instances( 8 )
+{}
+
+Mesh::~Mesh()
+{
+  unload();
 }
 
 void Mesh::draw( int mask ) const
@@ -151,14 +236,7 @@ void Mesh::draw( int mask ) const
     return;
   }
 
-  if( this != lastMesh ) {
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-
-    Vertex::setFormat();
-  }
-
-  for( int i = 0; i < nParts; ++i ) {
+  for( int i = 0; i < parts.length(); ++i ) {
     const Part& part = parts[i];
 
     if( part.flags & mask ) {
@@ -169,7 +247,7 @@ void Mesh::draw( int mask ) const
       glActiveTexture( GL_TEXTURE2 );
       glBindTexture( GL_TEXTURE_2D, part.texture.normals );
 
-      glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, shader.colourTransform );
+      glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, tf.colour );
 
       glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
                       static_cast<ushort*>( null ) + part.firstIndex );
@@ -194,9 +272,11 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
   int vboSize = nVertices * int( sizeof( Vertex ) );
   int iboSize = nIndices * int( sizeof( ushort ) );
 
+  const void* vertexBuffer = istream->forward( vboSize );
+
   glGenBuffers( 1, &vbo );
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
-  glBufferData( GL_ARRAY_BUFFER, vboSize, istream->forward( vboSize ), usage );
+  glBufferData( GL_ARRAY_BUFFER, vboSize, vertexBuffer, usage );
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
   glGenBuffers( 1, &ibo );
@@ -204,8 +284,58 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
   glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, istream->forward( iboSize ), GL_STATIC_DRAW );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
-  DArray<Texture> textures;
+  nFrames = istream->readInt();
 
+  if( nFrames != 0 ) {
+    nFramePositions = istream->readInt();
+    nFrameVertices  = istream->readInt();
+
+    if( shader.hasVertexTexture ) {
+      int vertexBufferSize = nFramePositions * nFrames * int( sizeof( Point ) );
+      int normalBufferSize = nFramePositions * nFrames * int( sizeof( Vec3 ) );
+
+      glGenTextures( 1, &positionsTexId );
+      glBindTexture( GL_TEXTURE_2D, positionsTexId );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, nFramePositions, nFrames, 0, GL_RGB, GL_FLOAT,
+                    istream->forward( vertexBufferSize ) );
+      glBindTexture( GL_TEXTURE_2D, 0 );
+
+      glGenTextures( 1, &normalsTexId );
+      glBindTexture( GL_TEXTURE_2D, normalsTexId );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, nFramePositions, nFrames, 0, GL_RGB, GL_FLOAT,
+                    istream->forward( normalBufferSize ) );
+      glBindTexture( GL_TEXTURE_2D, 0 );
+    }
+    else {
+      vertices  = new Vertex[nFrameVertices];
+      positions = new Point[nFramePositions * nFrames];
+      normals   = new Vec3[nFramePositions * nFrames];
+
+      for( int i = 0; i < nFramePositions * nFrames; ++i ) {
+        positions[i] = istream->readPoint();
+      }
+      for( int i = 0; i < nFramePositions * nFrames; ++i ) {
+        normals[i] = istream->readVec3();
+      }
+
+      memcpy( vertices, vertexBuffer, size_t( nFrameVertices ) * sizeof( Vertex ) );
+
+      if( nFrameVertices > vertexAnimBufferLength ) {
+        delete[] vertexAnimBuffer;
+
+        vertexAnimBuffer = new Vertex[nFrameVertices];
+        vertexAnimBufferLength = nFrameVertices;
+      }
+    }
+  }
+
+  shaderId = library.shaderIndex( istream->readString() );
+
+  DArray<Texture> textures;
   int nTextures = istream->readInt();
 
   if( nTextures < 0 ) {
@@ -263,8 +393,17 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
     }
   }
 
-  nParts = istream->readInt();
-  parts = new Part[nParts];
+  int nComponents = istream->readInt();
+  componentIndices.alloc( nComponents + 1 );
+
+  int nParts = istream->readInt();
+  parts.alloc( nParts );
+
+  int lastComponent = 0;
+  if( nComponents != 0 ) {
+    componentIndices[0] = 0;
+    componentIndices[nComponents] = nParts;
+  }
 
   for( int i = 0; i < nParts; ++i ) {
     parts[i].flags      = istream->readInt();
@@ -274,10 +413,22 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
     parts[i].nIndices   = istream->readInt();
     parts[i].firstIndex = istream->readInt();
 
-    flags              |= parts[i].flags & ( SOLID_BIT | ALPHA_BIT );
+    int j = parts[i].flags & COMPONENT_MASK;
+    if( j != lastComponent ) {
+      hard_assert( j == lastComponent + 1 && j < nComponents );
+
+      componentIndices[j] = i;
+      lastComponent = j;
+    }
+
+    flags |= parts[i].flags & ( SOLID_BIT | ALPHA_BIT );
   }
 
+  hard_assert( nComponents == 0 || lastComponent == nComponents - 1 );
+
   textures.dealloc();
+
+  loadedMeshes.add( this );
 
   OZ_GL_CHECK_ERROR();
 }
@@ -287,6 +438,9 @@ void Mesh::unload()
   if( vbo == 0 ) {
     return;
   }
+
+  componentIndices.dealloc();
+  parts.dealloc();
 
   if( flags & EMBEDED_TEX_BIT ) {
     foreach( texId, texIds.citer() ) {
@@ -307,11 +461,23 @@ void Mesh::unload()
 
   texIds.dealloc();
 
+  if( shader.hasVertexTexture ) {
+    glDeleteTextures( 1, &normalsTexId );
+    glDeleteTextures( 1, &positionsTexId );
+  }
+  else {
+    delete[] normals;
+    delete[] positions;
+    delete[] vertices;
+  }
+
   glDeleteBuffers( 1, &ibo );
   glDeleteBuffers( 1, &vbo );
 
   ibo = 0;
   vbo = 0;
+
+  loadedMeshes.exclude( this );
 
   OZ_GL_CHECK_ERROR();
 }
