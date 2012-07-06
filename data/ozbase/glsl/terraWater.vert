@@ -42,8 +42,8 @@ void main()
   vec4  localPos = vec4( inPosition.x, inPosition.y, z, 1.0 );
   vec3  position = ( oz_ModelTransform * localPos ).xyz;
 
-  gl_Position = oz_ProjModelTransform * localPos;
-  exPosition  = position;
-  exTexCoord  = inTexCoord * TERRA_WATER_SCALE;
-  exNormal    = NORMAL;
+  gl_Position    = oz_ProjModelTransform * localPos;
+  exPosition     = position;
+  exTexCoord     = inTexCoord * TERRA_WATER_SCALE;
+  exNormal       = NORMAL;
 }

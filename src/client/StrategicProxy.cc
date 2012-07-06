@@ -45,7 +45,7 @@ const float StrategicProxy::FREE_LOW_SPEED  = 2.40f;
 const float StrategicProxy::FREE_HIGH_SPEED = 30.0f;
 const float StrategicProxy::RTS_LOW_SPEED   = 15.0f;
 const float StrategicProxy::RTS_HIGH_SPEED  = 45.0f;
-const float StrategicProxy::ZOOM_FACTOR     = 0.15f;
+const float StrategicProxy::ZOOM_FACTOR     = 0.10f;
 
 StrategicProxy::StrategicProxy()
 {
@@ -191,21 +191,15 @@ void StrategicProxy::update()
     if( input.keys[SDLK_a] ) {
       desiredPos -= camera.right * speed;
     }
-    if( input.keys[SDLK_SPACE] ) {
-      height = min( MAX_HEIGHT, height + logHeight * ZOOM_FACTOR );
-    }
-    if( input.keys[SDLK_LCTRL] || input.keys[SDLK_c] ) {
-      height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR );
+    if( input.wheelUp ) {
+      float wheelFactor = float( input.mouseW ) * 10.0f;
+
+      height = min( MAX_HEIGHT, height + logHeight * ZOOM_FACTOR * wheelFactor );
     }
     if( input.wheelDown ) {
       float wheelFactor = float( input.mouseW ) * 10.0f;
 
-      height = min( MAX_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
-    }
-    if( input.wheelUp ) {
-      float wheelFactor = float( input.mouseW ) * 10.0f;
-
-      height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
+      height = max( MIN_HEIGHT, height + logHeight * ZOOM_FACTOR * wheelFactor );
     }
 
     desiredPos.x = clamp<float>( desiredPos.x, -Orbis::DIM, +Orbis::DIM );

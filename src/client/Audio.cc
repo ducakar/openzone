@@ -87,9 +87,9 @@ void Audio::playContSound( int sound, float volume, const Object* obj, const Obj
 {
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 
-  int key = obj->index * ObjectClass::MAX_SOUNDS + sound;
+  int key = ~( obj->index * ObjectClass::MAX_SOUNDS + sound );
 
-  Context::ContSource* contSource = context.objSources.find( key );
+  Context::ContSource* contSource = context.contSources.find( key );
   const Dynamic*       dynParent  = static_cast<const Dynamic*>( parent );
 
   if( contSource == null ) {
@@ -113,7 +113,7 @@ void Audio::playContSound( int sound, float volume, const Object* obj, const Obj
 
     alSourcePlay( srcId );
 
-    context.addObjSource( srcId, sound, key );
+    context.addContSource( srcId, sound, key );
   }
   else {
     uint srcId = contSource->id;
@@ -139,9 +139,9 @@ void Audio::playEngineSound( int sound, float volume, float pitch, const Vehicle
     pitch  *= COCKPIT_PITCH_FACTOR;
   }
 
-  int key = veh->index * ObjectClass::MAX_SOUNDS + sound;
+  int key = ~( veh->index * ObjectClass::MAX_SOUNDS + sound );
 
-  Context::ContSource* contSource = context.objSources.find( key );
+  Context::ContSource* contSource = context.contSources.find( key );
 
   if( contSource == null ) {
     uint srcId;
@@ -163,7 +163,7 @@ void Audio::playEngineSound( int sound, float volume, float pitch, const Vehicle
 
     alSourcePlay( srcId );
 
-    context.addObjSource( srcId, sound, key );
+    context.addContSource( srcId, sound, key );
   }
   else {
     uint srcId = contSource->id;

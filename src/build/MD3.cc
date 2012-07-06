@@ -307,31 +307,22 @@ void MD3::save()
 {
   BufferStream os;
 
-  os.writeString( shaderName );
+  compiler.beginMesh();
+
+  compiler.enable( Compiler::UNIQUE );
+  compiler.enable( Compiler::CLOCKWISE );
+  compiler.shader( shaderName );
 
   if( !String::isEmpty( model ) ) {
     if( frame < 0 ) {
       throw Exception( "Custom models can only be static. Must specify frame" );
     }
 
-    compiler.beginMesh();
-
-    compiler.enable( Compiler::UNIQUE );
-    compiler.enable( Compiler::CLOCKWISE );
-
     meshTransf = Mat44::ID;
 
     buildMesh( model, frame );
-
-    compiler.endMesh();
-    compiler.writeMesh( &os );
   }
   else if( frame >= 0 ) {
-    compiler.beginMesh();
-
-    compiler.enable( Compiler::UNIQUE );
-    compiler.enable( Compiler::CLOCKWISE );
-
     meshTransf = Mat44::ID;
 
     buildMesh( "lower", frame );
@@ -345,16 +336,8 @@ void MD3::save()
     meshTransf = meshTransf * Mat44::rotation( joints[frame][client::MD3::JOINT_NECK].rot );
 
     buildMesh( "head", 0 );
-
-    compiler.endMesh();
-    compiler.writeMesh( &os );
   }
   else {
-    compiler.beginMesh();
-
-    compiler.enable( Compiler::UNIQUE );
-    compiler.enable( Compiler::CLOCKWISE );
-
     compiler.component( 0 );
     buildMesh( "lower", frame );
 
@@ -363,8 +346,6 @@ void MD3::save()
 
     compiler.component( 2 );
     buildMesh( "head", 0 );
-
-    compiler.endMesh();
 
     os.writeInt( nLowerFrames );
     os.writeInt( nUpperFrames );
@@ -381,9 +362,10 @@ void MD3::save()
       os.writeVec3( joints[i][client::MD3::JOINT_WEAPON].transl );
       os.writeQuat( joints[i][client::MD3::JOINT_WEAPON].rot );
     }
-
-    compiler.writeMesh( &os );
   }
+
+  compiler.endMesh();
+  compiler.writeMesh( &os );
 
   File::mkdir( sPath );
 

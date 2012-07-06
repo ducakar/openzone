@@ -72,51 +72,33 @@ void Context::addSource( uint srcId, int sound )
   sources.add( new Source( srcId, sound ) );
 }
 
-void Context::addBSPSource( uint srcId, int sound, int key )
-{
-  hard_assert( sounds[sound].nUsers > 0 );
-
-  ++sounds[sound].nUsers;
-  bspSources.add( key, ContSource( srcId, sound ) );
-}
-
-void Context::addObjSource( uint srcId, int sound, int key )
-{
-  hard_assert( sounds[sound].nUsers > 0 );
-
-  ++sounds[sound].nUsers;
-  objSources.add( key, ContSource( srcId, sound ) );
-}
-
 void Context::removeSource( Source* source, Source* prev )
 {
   int sound = source->sound;
 
   hard_assert( sounds[sound].nUsers > 0 );
 
+  --sounds[sound].nUsers;
   sources.remove( source, prev );
   delete source;
-  releaseSound( sound );
 }
 
-void Context::removeBSPSource( ContSource* contSource, int key )
+void Context::addContSource( uint srcId, int sound, int key )
+{
+  hard_assert( sounds[sound].nUsers > 0 );
+
+  ++sounds[sound].nUsers;
+  contSources.add( key, ContSource( srcId, sound ) );
+}
+
+void Context::removeContSource( ContSource* contSource, int key )
 {
   int sound = contSource->sound;
 
   hard_assert( sounds[sound].nUsers > 0 );
 
-  bspSources.exclude( key );
-  releaseSound( sound );
-}
-
-void Context::removeObjSource( ContSource* contSource, int key )
-{
-  int sound = contSource->sound;
-
-  hard_assert( sounds[sound].nUsers > 0 );
-
-  objSources.exclude( key );
-  releaseSound( sound );
+  --sounds[sound].nUsers;
+  contSources.exclude( key );
 }
 
 Context::Context() :
@@ -220,7 +202,7 @@ Texture Context::requestTexture( int id )
 {
   Resource<Texture>& resource = textures[id];
 
-  if( resource.nUsers != 0 ) {
+  if( resource.nUsers >= 0 ) {
     ++resource.nUsers;
     return resource.id;
   }
@@ -240,6 +222,7 @@ void Context::releaseTexture( int id )
   --resource.nUsers;
 
   if( resource.nUsers == 0 ) {
+    resource.nUsers = -1;
     resource.id.free();
 
     OZ_GL_CHECK_ERROR();
@@ -250,8 +233,8 @@ uint Context::requestSound( int id )
 {
   Resource<uint>& resource = sounds[id];
 
-  if( resource.nUsers != -1 ) {
-    resource.nUsers = max( resource.nUsers + 1, 1 );
+  if( resource.nUsers >= 0 ) {
+    ++resource.nUsers;
     return resource.id;
   }
 
@@ -332,10 +315,9 @@ SMM* Context::requestSMM( int id )
 {
   Resource<SMM*>& resource = smms[id];
 
-  if( resource.object == null ) {
+  if( resource.nUsers < 0 ) {
     resource.object = new SMM( id );
-
-    hard_assert( resource.nUsers == 0 );
+    resource.nUsers = 1;
   }
 
   ++resource.nUsers;
@@ -355,10 +337,9 @@ MD2* Context::requestMD2( int id )
 {
   Resource<MD2*>& resource = md2s[id];
 
-  if( resource.object == null ) {
+  if( resource.nUsers < 0 ) {
     resource.object = new MD2( id );
-
-    hard_assert( resource.nUsers == 0 );
+    resource.nUsers = 1;
   }
 
   ++resource.nUsers;
@@ -378,10 +359,9 @@ MD3* Context::requestMD3( int id )
 {
   Resource<MD3*>& resource = md3s[id];
 
-  if( resource.object == null ) {
+  if( resource.nUsers < 0 ) {
     resource.object = new MD3( id );
-
-    hard_assert( resource.nUsers == 0 );
+    resource.nUsers = 1;
   }
 
   ++resource.nUsers;
@@ -491,8 +471,7 @@ void Context::updateLoad()
   maxImagines           = max( maxImagines,           imagines.length() );
   maxAudios             = max( maxAudios,             audios.length() );
   maxSources            = max( maxSources,            Source::pool.length() );
-  maxBSPSources         = max( maxBSPSources,         bspSources.length() );
-  maxObjSources         = max( maxObjSources,         objSources.length() );
+  maxContSources        = max( maxContSources,        contSources.length() );
 
   maxSMMImagines        = max( maxSMMImagines,        SMMImago::pool.length() );
   maxSMMVehicleImagines = max( maxSMMVehicleImagines, SMMVehicleImago::pool.length() );
@@ -513,8 +492,7 @@ void Context::load()
   maxImagines           = 0;
   maxAudios             = 0;
   maxSources            = 0;
-  maxBSPSources         = 0;
-  maxObjSources         = 0;
+  maxContSources        = 0;
 
   maxSMMImagines        = 0;
   maxSMMVehicleImagines = 0;
@@ -541,21 +519,20 @@ void Context::unload()
 
   Log::println( "Peak instances {" );
   Log::indent();
-  Log::println( "%6d  imago objects",                maxImagines );
-  Log::println( "%6d  audio objects",                maxAudios );
-  Log::println( "%6d  non-continuous sources",       maxSources );
-  Log::println( "%6d  structure continuous sources", maxBSPSources );
-  Log::println( "%6d  object continuous sources",    maxObjSources );
-  Log::println( "%6d  SMM imagines",                 maxSMMImagines );
-  Log::println( "%6d  SMMVehicle imagines",          maxSMMVehicleImagines );
-  Log::println( "%6d  Explosion imagines",           maxExplosionImagines );
-  Log::println( "%6d  MD2 imagines",                 maxMD2Imagines );
-  Log::println( "%6d  MD2Weapon imagines",           maxMD2WeaponImagines );
-  Log::println( "%6d  MD3 imagines",                 maxMD3Imagines );
-  Log::println( "%6d  Basic audios",                 maxBasicAudios );
-  Log::println( "%6d  Bot audios",                   maxBotAudios );
-  Log::println( "%6d  Vehicle audios",               maxVehicleAudios );
-  Log::println( "%6d  fragment pools",               maxFragPools );
+  Log::println( "%6d  imago objects",          maxImagines );
+  Log::println( "%6d  audio objects",          maxAudios );
+  Log::println( "%6d  non-continuous sources", maxSources );
+  Log::println( "%6d  continuous sources",     maxContSources );
+  Log::println( "%6d  SMM imagines",           maxSMMImagines );
+  Log::println( "%6d  SMMVehicle imagines",    maxSMMVehicleImagines );
+  Log::println( "%6d  Explosion imagines",     maxExplosionImagines );
+  Log::println( "%6d  MD2 imagines",           maxMD2Imagines );
+  Log::println( "%6d  MD2Weapon imagines",     maxMD2WeaponImagines );
+  Log::println( "%6d  MD3 imagines",           maxMD3Imagines );
+  Log::println( "%6d  Basic audios",           maxBasicAudios );
+  Log::println( "%6d  Bot audios",             maxBotAudios );
+  Log::println( "%6d  Vehicle audios",         maxVehicleAudios );
+  Log::println( "%6d  fragment pools",         maxFragPools );
   Log::unindent();
   Log::println( "}" );
 
@@ -566,75 +543,34 @@ void Context::unload()
   fragPools.free();
   fragPools.dealloc();
 
+  BasicAudio::pool.free();
+  BotAudio::pool.free();
+  VehicleAudio::pool.free();
+
   OZ_AL_CHECK_ERROR();
 
   for( int i = 0; i < library.nBSPs; ++i ) {
     delete bsps[i].object;
+
     bsps[i].object = null;
-    bsps[i].nUsers = 0;
+    bsps[i].nUsers = -1;
   }
   for( int i = 0; i < library.models.length(); ++i ) {
-    hard_assert( smms[i].nUsers == 0 );
-    hard_assert( md2s[i].nUsers == 0 );
-    hard_assert( md3s[i].nUsers == 0 );
-
     delete smms[i].object;
+
     smms[i].object = null;
-    smms[i].nUsers = 0;
+    smms[i].nUsers = -1;
 
     delete md2s[i].object;
+
     md2s[i].object = null;
-    md2s[i].nUsers = 0;
+    md2s[i].nUsers = -1;
 
     delete md3s[i].object;
-    md3s[i].object = null;
-    md3s[i].nUsers = 0;
+
+    md2s[i].object = null;
+    md3s[i].nUsers = -1;
   }
-
-  while( !sources.isEmpty() ) {
-    alDeleteSources( 1, &sources.first()->id );
-    removeSource( sources.first(), null );
-    OZ_AL_CHECK_ERROR();
-  }
-  for( auto i = bspSources.iter(); i.isValid(); ) {
-    auto src = i;
-    ++i;
-
-    alDeleteSources( 1, &src.value().id );
-    removeBSPSource( &src.value(), src.key() );
-    OZ_AL_CHECK_ERROR();
-  }
-  for( auto i = objSources.iter(); i.isValid(); ) {
-    auto src = i;
-    ++i;
-
-    alDeleteSources( 1, &src.value().id );
-    removeObjSource( &src.value(), src.key() );
-    OZ_AL_CHECK_ERROR();
-  }
-
-  sources.free();
-  bspSources.clear();
-  bspSources.dealloc();
-  objSources.clear();
-  objSources.dealloc();
-
-  for( int i = 0; i < library.textures.length(); ++i ) {
-    hard_assert( textures[i].nUsers == 0 );
-  }
-
-  Log::verboseMode = true;
-
-  for( int i = 0; i < library.sounds.length(); ++i ) {
-    if( sounds[i].nUsers == 0 ) {
-      freeSound( i );
-    }
-    hard_assert( sounds[i].nUsers == -1 );
-  }
-
-  Log::verboseMode = false;
-
-  OZ_AL_CHECK_ERROR();
 
   SMMImago::pool.free();
   SMMVehicleImago::pool.free();
@@ -643,12 +579,39 @@ void Context::unload()
   MD2WeaponImago::pool.free();
   MD3Imago::pool.free();
 
-  BasicAudio::pool.free();
-  BotAudio::pool.free();
-  VehicleAudio::pool.free();
-
   Mesh::dealloc();
+
+  while( !sources.isEmpty() ) {
+    alDeleteSources( 1, &sources.first()->id );
+    removeSource( sources.first(), null );
+    OZ_AL_CHECK_ERROR();
+  }
+  for( auto i = contSources.iter(); i.isValid(); ) {
+    auto src = i;
+    ++i;
+
+    alDeleteSources( 1, &src.value().id );
+    removeContSource( &src.value(), src.key() );
+    OZ_AL_CHECK_ERROR();
+  }
+
+  sources.free();
   Source::pool.free();
+  contSources.clear();
+  contSources.dealloc();
+
+  for( int i = 0; i < library.textures.length(); ++i ) {
+    hard_assert( textures[i].nUsers == -1 );
+  }
+
+  for( int i = 0; i < library.sounds.length(); ++i ) {
+    if( sounds[i].nUsers == 0 ) {
+      freeSound( i );
+    }
+    hard_assert( sounds[i].nUsers == -1 );
+  }
+
+  OZ_AL_CHECK_ERROR();
 
   Log::unindent();
   Log::println( "}" );
@@ -698,24 +661,24 @@ void Context::init()
   md3s     = nModels   == 0 ? null : new Resource<MD3*>[nModels];
 
   for( int i = 0; i < nTextures; ++i ) {
-    textures[i].nUsers = 0;
+    textures[i].nUsers = -1;
   }
   for( int i = 0; i < nSounds; ++i ) {
     sounds[i].nUsers = -1;
   }
   for( int i = 0; i < nBSPs; ++i ) {
     bsps[i].object = null;
-    bsps[i].nUsers = 0;
+    bsps[i].nUsers = -1;
   }
   for( int i = 0; i < nModels; ++i ) {
     smms[i].object = null;
-    smms[i].nUsers = 0;
+    smms[i].nUsers = -1;
 
     md2s[i].object = null;
-    md2s[i].nUsers = 0;
+    md2s[i].nUsers = -1;
 
     md3s[i].object = null;
-    md3s[i].nUsers = 0;
+    md3s[i].nUsers = -1;
   }
 
   Log::printEnd( " OK" );

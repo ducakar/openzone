@@ -58,14 +58,14 @@ class Context
     struct Resource
     {
       Type id;
-      int  nUsers;
+      int  nUsers; ///< Number of users or -1 if not loaded.
     };
 
     template <typename Type>
     struct Resource<Type*>
     {
       Type* object;
-      int   nUsers;
+      int   nUsers; ///< Number of users or -1 if not loaded.
     };
 
     struct Source
@@ -94,53 +94,49 @@ class Context
       {}
     };
 
-    Imago::CreateFunc**               imagoClasses;
-    Audio::CreateFunc**               audioClasses;
+    Imago::CreateFunc**        imagoClasses;
+    Audio::CreateFunc**        audioClasses;
 
-    Resource<Texture>*                textures;
-    Resource<uint>*                   sounds;
+    Resource<Texture>*         textures;
+    Resource<uint>*            sounds;
 
     // non-looping sources
-    List<Source>                      sources;
+    List<Source>               sources;
     // looping sources
-    HashIndex<ContSource, 64>         bspSources;
-    HashIndex<ContSource, 256>        objSources;
+    HashIndex<ContSource, 128> contSources;
 
-    Resource<BSP*>*                   bsps;
-    Resource<SMM*>*                   smms;
-    Resource<MD2*>*                   md2s;
-    Resource<MD3*>*                   md3s;
+    Resource<BSP*>*            bsps;
+    Resource<SMM*>*            smms;
+    Resource<MD2*>*            md2s;
+    Resource<MD3*>*            md3s;
 
-    HashIndex<Imago*, 10223>          imagines;  // currently loaded graphics models
-    HashIndex<Audio*, 6143>           audios;    // currently loaded audio models
-    HashIndex<FragPool*, 32>          fragPools; // currently loaded frag pools representations
+    HashIndex<Imago*, 10223>   imagines;  // currently loaded graphics models
+    HashIndex<Audio*, 6143>    audios;    // currently loaded audio models
+    HashIndex<FragPool*, 32>   fragPools; // currently loaded frag pools representations
 
-    int                               maxImagines;
-    int                               maxAudios;
-    int                               maxSources;
-    int                               maxBSPSources;
-    int                               maxObjSources;
+    int                        maxImagines;
+    int                        maxAudios;
+    int                        maxSources;
+    int                        maxContSources;
 
-    int                               maxSMMImagines;
-    int                               maxSMMVehicleImagines;
-    int                               maxExplosionImagines;
-    int                               maxMD2Imagines;
-    int                               maxMD2WeaponImagines;
-    int                               maxMD3Imagines;
+    int                        maxSMMImagines;
+    int                        maxSMMVehicleImagines;
+    int                        maxExplosionImagines;
+    int                        maxMD2Imagines;
+    int                        maxMD2WeaponImagines;
+    int                        maxMD3Imagines;
 
-    int                               maxBasicAudios;
-    int                               maxBotAudios;
-    int                               maxVehicleAudios;
+    int                        maxBasicAudios;
+    int                        maxBotAudios;
+    int                        maxVehicleAudios;
 
-    int                               maxFragPools;
+    int                        maxFragPools;
 
     void addSource( uint srcId, int sound );
-    void addBSPSource( uint srcId, int sound, int key );
-    void addObjSource( uint srcId, int sound, int key );
-
     void removeSource( Source* source, Source* prev );
-    void removeBSPSource( ContSource* contSource, int key );
-    void removeObjSource( ContSource* contSource, int key );
+
+    void addContSource( uint srcId, int sound, int key );
+    void removeContSource( ContSource* contSource, int key );
 
   public:
 

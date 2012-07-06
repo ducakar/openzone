@@ -77,9 +77,10 @@ namespace oz
 
 #if defined( __native_client__ )
 
-static const float SAMPLE_LENGTH    = 0.28f;
-static const float SAMPLE_GUARD     = 0.28f;
-static const float SAMPLE_FREQUENCY = 800.0f;
+static const timespec TIMESPEC_10MS    = { 0, 10 * 1000000 };
+static const float    SAMPLE_LENGTH    = 0.28f;
+static const float    SAMPLE_GUARD     = 0.28f;
+static const float    SAMPLE_FREQUENCY = 800.0f;
 
 struct SampleInfo
 {
@@ -124,9 +125,13 @@ static const Wave WAVE_SAMPLE = {
 
 #else
 
-static const pa_sample_spec BELL_SPEC = { PA_SAMPLE_U8, 11025, 1 };
+static const timespec       TIMESPEC_10MS = { 0, 10 * 1000000 };
+static const pa_sample_spec BELL_SPEC     = { PA_SAMPLE_U8, 11025, 1 };
 static const ubyte          BELL_SAMPLE[] = {
 # include "bellSample.inc"
+};
+static const timespec       BELL_TIMESPEC = {
+  0, long( float( sizeof( BELL_SAMPLE ) ) / float( BELL_SPEC.rate ) * 1e6f )
 };
 
 static decltype( ::pa_simple_new )*   pa_simple_new;   // = null
@@ -275,9 +280,8 @@ static void* bellThread( void* )
   System::core->CallOnMainThread( 0, pp::CompletionCallback( bellInitCallback, info ) );
 
   while( isBellPlaying ) {
-    usleep( 10 * 1000 );
+    nanosleep( &TIMESPEC_10MS, null );
   }
-
 
   info->~SampleInfo();
   free( info );
@@ -308,7 +312,7 @@ static void* bellThread( void* )
     // pa_simple_drain() takes much longer (~ 1-2 s) than the sample is actually playing, so we use
     // this sleep to ensure the sample has finished playing, message that it has finished and only
     // then flush and close PulseAudio connection.
-    usleep( uint( float( sizeof( BELL_SAMPLE ) * 1000000 ) / float( BELL_SPEC.rate ) ) );
+    nanosleep( &BELL_TIMESPEC, null );
   }
 
   isBellPlaying = false;
@@ -399,7 +403,7 @@ System::~System()
   }
 #else
   while( isBellPlaying ) {
-    usleep( 10 * 1000 );
+    nanosleep( &TIMESPEC_10MS, null );
   }
 #endif
 }
@@ -416,7 +420,7 @@ void System::abort( bool preventHalt )
       Sleep( 10 );
     }
 #else
-    while( usleep( 10 * 1000 ) == 0 );
+    while( nanosleep( &TIMESPEC_10MS, null ) == 0 );
 #endif
   }
 

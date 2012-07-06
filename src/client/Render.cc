@@ -46,27 +46,29 @@ namespace client
 
 Render render;
 
-const float Render::WIDE_CULL_FACTOR = 6.0f;
-const float Render::CELL_WIDE_RADIUS =
+const float Render::WIDE_CULL_FACTOR       = 6.0f;
+const float Render::CELL_WIDE_RADIUS       =
   ( Cell::SIZE / 2 + Object::MAX_DIM * WIDE_CULL_FACTOR ) * Math::sqrt( 2.0f );
+const float Render::OBJECT_VISIBILITY_COEF = 0.003f;
+const float Render::FRAG_VISIBILITY_RANGE2 = 200.0f;
 
-const float Render::NIGHT_FOG_COEFF  = 2.0f;
-const float Render::NIGHT_FOG_DIST   = 0.3f;
-const float Render::WATER_VISIBILITY = 32.0f;
-const float Render::LAVA_VISIBILITY  = 4.0f;
+const float Render::NIGHT_FOG_COEFF        = 2.0f;
+const float Render::NIGHT_FOG_DIST         = 0.3f;
+const float Render::WATER_VISIBILITY       = 32.0f;
+const float Render::LAVA_VISIBILITY        = 4.0f;
 
-const float Render::WIND_FACTOR      = 0.0008f;
-const float Render::WIND_PHI_INC     = 0.04f;
+const float Render::WIND_FACTOR            = 0.0008f;
+const float Render::WIND_PHI_INC           = 0.04f;
 
-const Vec4  Render::STRUCT_AABB      = Vec4( 0.20f, 0.50f, 1.00f, 0.30f );
-const Vec4  Render::ENTITY_AABB      = Vec4( 1.00f, 0.40f, 0.60f, 0.30f );
-const Vec4  Render::SOLID_AABB       = Vec4( 0.60f, 0.90f, 0.20f, 0.30f );
-const Vec4  Render::NONSOLID_AABB    = Vec4( 0.70f, 0.80f, 0.90f, 0.30f );
+const Vec4  Render::STRUCT_AABB            = Vec4( 0.20f, 0.50f, 1.00f, 0.30f );
+const Vec4  Render::ENTITY_AABB            = Vec4( 1.00f, 0.40f, 0.60f, 0.30f );
+const Vec4  Render::SOLID_AABB             = Vec4( 0.60f, 0.90f, 0.20f, 0.30f );
+const Vec4  Render::NONSOLID_AABB          = Vec4( 0.70f, 0.80f, 0.90f, 0.30f );
 
-const Mat44 Render::NIGHT_COLOUR     = Mat44( 0.25f, 2.00f, 0.25f, 0.00f,
-                                              0.25f, 2.00f, 0.25f, 0.00f,
-                                              0.25f, 2.00f, 0.25f, 0.00f,
-                                              0.00f, 0.00f, 0.00f, 1.00f );
+const Mat44 Render::NIGHT_COLOUR           = Mat44( 0.25f, 2.00f, 0.25f, 0.00f,
+                                                    0.25f, 2.00f, 0.25f, 0.00f,
+                                                    0.25f, 2.00f, 0.25f, 0.00f,
+                                                    0.00f, 0.00f, 0.00f, 1.00f );
 
 void Render::scheduleCell( int cellX, int cellY )
 {
@@ -91,10 +93,15 @@ void Render::scheduleCell( int cellX, int cellY )
   }
 
   foreach( obj, cell.objects.citer() ) {
-    float radius = obj->flags & Object::WIDE_CULL_BIT ?
-        WIDE_CULL_FACTOR * obj->dim.fastN() : obj->dim.fastN();
+    float dist2  = ( obj->p - camera.p ).sqN();
+    float dist_1 = Math::fastInvSqrt( camera.mag*camera.mag * dist2 );
+    float radius = obj->dim.fastN();
 
-    if( frustum.isVisible( obj->p, radius ) ) {
+    if( obj->flags & Object::WIDE_CULL_BIT ) {
+      radius *= WIDE_CULL_FACTOR;
+    }
+
+    if( radius * dist_1 >= OBJECT_VISIBILITY_COEF && frustum.isVisible( obj->p, radius ) ) {
       context.drawImago( obj, null );
 
       if( showBounds ) {
@@ -104,7 +111,9 @@ void Render::scheduleCell( int cellX, int cellY )
   }
 
   foreach( frag, cell.frags.citer() ) {
-    if( frustum.isVisible( frag->p, FragPool::FRAG_RADIUS ) ) {
+    float dist2  = ( frag->p - camera.p ).sqN();
+
+    if( dist2 <= FRAG_VISIBILITY_RANGE2 && frustum.isVisible( frag->p, FragPool::FRAG_RADIUS ) ) {
       context.drawFrag( frag );
     }
   }
@@ -220,6 +229,8 @@ void Render::drawGeometry()
     caelum.draw();
   }
 
+  glEnable( GL_DEPTH_TEST );
+
   currentMicros = Time::uclock();
   caelumMicros += currentMicros - beginMicros;
 
@@ -237,15 +248,13 @@ void Render::drawGeometry()
     tf.applyCamera();
     shader.updateLights();
 
-    glUniform4f( param.oz_Wind, 1.0f, 1.0f, WIND_FACTOR, windPhi );
-
     glUniform1f( param.oz_Fog_dist, visibility );
     glUniform4fv( param.oz_Fog_colour, 1, shader.fogColour );
+
+    glUniform4f( param.oz_Wind, 1.0f, 1.0f, WIND_FACTOR, windPhi );
   }
 
-  glEnable( GL_DEPTH_TEST );
-
-  beginMicros = currentMicros;
+  currentMicros = Time::uclock();
 
   terra.draw();
 
@@ -254,6 +263,8 @@ void Render::drawGeometry()
   beginMicros = currentMicros;
 
   Mesh::drawScheduled( Mesh::SOLID_BIT );
+  Mesh::drawScheduled( Mesh::ALPHA_BIT );
+  Mesh::clearScheduled();
 
   currentMicros = Time::uclock();
   meshesMicros += currentMicros - beginMicros;
@@ -263,15 +274,6 @@ void Render::drawGeometry()
 
   currentMicros = Time::uclock();
   terraMicros += currentMicros - beginMicros;
-  beginMicros = currentMicros;
-
-  Mesh::drawScheduled( Mesh::ALPHA_BIT );
-  Mesh::clearScheduled();
-
-  OZ_GL_CHECK_ERROR();
-
-  currentMicros = Time::uclock();
-  meshesMicros += currentMicros - beginMicros;
 
   shape.bind();
   shader.program( shader.plain );
@@ -627,7 +629,7 @@ void Render::init( bool isBuild )
   scale           = config.getSet( "render.scale",       1.0f );
   sScaleFilter    = config.getSet( "render.scaleFilter", "NEAREST" );
 
-  visibilityRange = config.getSet( "render.distance",    300.0f );
+  visibilityRange = config.getSet( "render.distance",    400.0f );
   showBounds      = config.getSet( "render.showBounds",  false );
   showAim         = config.getSet( "render.showAim",     false );
 

@@ -232,14 +232,13 @@ void Shader::loadProgram( int id )
   OZ_REGISTER_PARAMETER( oz_BoneTransforms,      "oz_BoneTransforms"      );
   OZ_REGISTER_PARAMETER( oz_MeshAnimation,       "oz_MeshAnimation"       );
 
-  OZ_REGISTER_PARAMETER( oz_CameraPosition,      "oz_CameraPosition"      );
-
   OZ_REGISTER_PARAMETER( oz_ColourTransform,     "oz_ColourTransform"     );
   OZ_REGISTER_PARAMETER( oz_Textures,            "oz_Textures"            );
 
   OZ_REGISTER_PARAMETER( oz_CaelumLight_dir,     "oz_CaelumLight.dir"     );
   OZ_REGISTER_PARAMETER( oz_CaelumLight_diffuse, "oz_CaelumLight.diffuse" );
   OZ_REGISTER_PARAMETER( oz_CaelumLight_ambient, "oz_CaelumLight.ambient" );
+  OZ_REGISTER_PARAMETER( oz_CameraPosition,      "oz_CameraPosition"      );
 
   OZ_REGISTER_PARAMETER( oz_Fog_dist,            "oz_Fog.dist"            );
   OZ_REGISTER_PARAMETER( oz_Fog_colour,          "oz_Fog.colour"          );
