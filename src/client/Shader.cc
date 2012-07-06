@@ -98,6 +98,26 @@ void Transform::apply() const
   glUniformMatrix4fv( param.oz_ModelTransform, 1, GL_FALSE, model );
 }
 
+void Transform::applyColour() const
+{
+  setColour( colour );
+}
+
+inline void Transform::setColour( const Mat44& colour_ ) const
+{
+  glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, colour_ );
+}
+
+void Transform::setColour( const Vec4& colour_ ) const
+{
+  setColour( Mat44::scaling( colour_ ) );
+}
+
+void Transform::setColour( float r, float g, float b, float a ) const
+{
+  setColour( Mat44::scaling( Vec4( r, g, b, a ) ) );
+}
+
 const Shader::Light Shader::Light::NONE = Light( Point::ORIGIN, Vec4::ZERO );
 
 Shader::Light::Light( const Point& pos_, const Vec4& diffuse_ ) :
@@ -264,21 +284,6 @@ void Shader::program( int id )
   OZ_GL_CHECK_ERROR();
 }
 
-void Shader::colour( const Vec4& colour )
-{
-  Mat44 colourTransform( Vec4( colour.x, 0.0f, 0.0f, 0.0f ),
-                         Vec4( 0.0f, colour.y, 0.0f, 0.0f ),
-                         Vec4( 0.0f, 0.0f, colour.z, 0.0f ),
-                         Vec4( 0.0f, 0.0f, 0.0f, colour.w ) );
-
-  glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, colourTransform );
-}
-
-void Shader::colour( const Mat44& colourTransform )
-{
-  glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, colourTransform );
-}
-
 void Shader::setLightingDistance( float distance )
 {
   lightingDistance = distance;
@@ -384,7 +389,6 @@ void Shader::init()
   mesh        = library.shaderIndex( "mesh" );
   postprocess = library.shaderIndex( "postprocess" );
 
-  colourTransform = Mat44::ID;
   medium = 0;
 
   PFile dir( "glsl" );

@@ -25,9 +25,8 @@
 
 #include "client/ui/SettingsFrame.hh"
 
-#include "client/Camera.hh"
-#include "client/Shader.hh"
 #include "client/Shape.hh"
+#include "client/Camera.hh"
 #include "client/OpenGL.hh"
 
 #include "client/ui/MainMenu.hh"
@@ -50,7 +49,7 @@ static void closeFrame( Button* sender )
 
 void SettingsFrame::onDraw()
 {
-  shader.colour( Vec4( 0.1f, 0.1f, 0.1f, 1.0f ) );
+  shape.colour( 0.1f, 0.1f, 0.1f, 1.0f );
   shape.fill( 0, 0, camera.width, camera.height );
 
   Frame::onDraw();

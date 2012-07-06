@@ -102,12 +102,12 @@ void Caelum::draw()
     Vec4 starsColour = Math::mix( STARS_COLOUR, caelumColour, ratio );
 
     shader.program( starShaderId );
-    tf.applyCamera();
 
     tf.model = transf;
+    tf.applyCamera();
     tf.apply();
+    tf.applyColour();
 
-    shader.colour( shader.colourTransform );
     glUniform4fv( param.oz_Fog_colour, 1, caelumColour );
     glUniform4fv( param.oz_StarsColour, 1, starsColour );
 
@@ -123,7 +123,6 @@ void Caelum::draw()
   shape.bind();
 
   shader.program( celestialShaderId );
-  tf.applyCamera();
 
   glEnable( GL_BLEND );
 
@@ -132,7 +131,9 @@ void Caelum::draw()
                          ambientColour.z + diffuseColour.z,
                          1.0f );
 
-  shader.colour( shader.colourTransform * sunColour );
+  tf.applyCamera();
+  tf.apply();
+  tf.setColour( tf.colour * sunColour );
 
   glBindTexture( GL_TEXTURE_2D, sunTexId );
 
@@ -143,11 +144,11 @@ void Caelum::draw()
 
   shape.quad( 1.0f, 1.0f );
 
-  shader.colour( shader.colourTransform );
   glBindTexture( GL_TEXTURE_2D, moonTexId );
 
   tf.model = transf;
   tf.model.translate( Vec3( 0.0f, 0.0f, -15.0f ) );
+  tf.applyColour();
 
   shape.quad( 1.0f, 1.0f );
 

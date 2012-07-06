@@ -38,24 +38,25 @@ class SMM
 {
   private:
 
-    int   id;
     Mesh  mesh;
-    int   shaderId;
 
     PFile file;
+    int   id;
 
   public:
 
-    bool isPreloaded;
-    bool isLoaded;
+    bool  isPreloaded;
+    bool  isLoaded;
 
     explicit SMM( int id );
-    ~SMM();
+
+    void schedule( int component, int mask )
+    {
+      mesh.schedule( component, mask );
+    }
 
     void preload();
     void load();
-
-    void draw( int mask ) const;
 
 };
 

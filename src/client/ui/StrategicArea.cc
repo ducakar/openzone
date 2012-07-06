@@ -25,9 +25,8 @@
 
 #include "client/ui/StrategicArea.hh"
 
-#include "client/Camera.hh"
-#include "client/Shader.hh"
 #include "client/Shape.hh"
+#include "client/Camera.hh"
 #include "client/Input.hh"
 #include "client/OpenGL.hh"
 
@@ -176,13 +175,13 @@ void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const 
     float lifeWidth = life * barWidth;
     float lifeWidthLeft = barWidth - lifeWidth;
 
-    shader.colour( Vec4( 1.0f - life, life, 0.0f, 0.8f ) );
+    shape.colour( 1.0f - life, life, 0.0f, 0.8f );
     shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
 
-    shader.colour( Vec4( 0.0f, 0.0f, 0.0f, 0.15f ) );
+    shape.colour( 0.0f, 0.0f, 0.0f, 0.15f );
     shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
 
-    shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 0.8f ) );
+    shape.colour( 1.0f, 1.0f, 1.0f, 0.8f );
     shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
   }
 }
@@ -196,7 +195,7 @@ void StrategicArea::drawTaggedRect( const Span& span, const Struct* str, const O
   float maxY = float( span.maxY );
 
   if( isHovered ) {
-    shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 0.8f ) );
+    shape.colour( 1.0f, 1.0f, 1.0f, 0.8f );
     shape.tag( minX, minY, maxX, maxY );
   }
   else {
@@ -221,13 +220,13 @@ void StrategicArea::drawTaggedRect( const Span& span, const Struct* str, const O
 
     hard_assert( 0.0f <= life && life <= 1.0f );
 
-    shader.colour( Vec4( 1.0f - life, life, 0.0f, 0.6f ) );
+    shape.colour( 1.0f - life, life, 0.0f, 0.6f );
     shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
 
-    shader.colour( Vec4( 0.0f, 0.0f, 0.0f, 0.15f ) );
+    shape.colour( 0.0f, 0.0f, 0.0f, 0.15f );
     shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
 
-    shader.colour( Vec4( 1.0f, 1.0f, 1.0f, 0.8f ) );
+    shape.colour( 1.0f, 1.0f, 1.0f, 0.8f );
     shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
     shape.tag( minX, minY, maxX, maxY );
   }

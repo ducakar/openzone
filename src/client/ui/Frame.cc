@@ -26,7 +26,7 @@
 #include "client/ui/Frame.hh"
 
 #include "client/Input.hh"
-#include "client/Shader.hh"
+#include "client/Shape.hh"
 #include "client/OpenGL.hh"
 
 namespace oz
@@ -66,8 +66,8 @@ bool Frame::onMouseEvent()
 
 void Frame::onDraw()
 {
-  shader.colour( Vec4( 0.0f, 0.0f, 0.0f, 0.3f ) );
-  fill( 0, 0, width, height );
+  shape.colour( 0.0f, 0.0f, 0.0f, 0.3f );
+  shape.fill( x, y, width, height );
 
   title.draw( this, false );
 

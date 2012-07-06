@@ -83,6 +83,7 @@ void Client::shutdown()
     lingua.free();
   }
   if( initFlags & INIT_WINDOW ) {
+    input.free();
     window.free();
   }
 
@@ -334,7 +335,6 @@ int Client::main( int argc, char** argv )
   initFlags |= INIT_WINDOW;
 
   input.init();
-  ui::mouse.init();
 
   String prefix  = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
   String dataDir = prefix + "/share/" OZ_APPLICATION_NAME;

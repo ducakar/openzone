@@ -62,24 +62,18 @@ void ExplosionImago::draw( const Imago*, int mask )
     return;
   }
 
-  float time   = float( uint( timer.micros ) - startMicros ) * 1.0e-6f;
-  float radius = 4.0f * time * obj->dim.z;
-  float alpha  = 1.0f - 2.0f * time;
-
   if( shader.mode == Shader::SCENE ) {
+    float time   = float( uint( timer.micros ) - startMicros ) * 1.0e-6f;
+    float radius = 4.0f * time * obj->dim.z;
+    float alpha  = 1.0f - 2.0f * time;
+
     tf.model = Mat44::translation( obj->p - Point::ORIGIN );
     tf.model.scale( Vec3( radius, radius, radius ) );
+
+    tf.colour.w.w = alpha*alpha;
   }
 
-  glDisable( GL_CULL_FACE );
-
-  shader.colourTransform.w.w = alpha*alpha;
-
-  smm->draw( Mesh::SOLID_BIT );
-
-  shader.colourTransform.w.w = 1.0f;
-
-  glEnable( GL_CULL_FACE );
+  smm->schedule( -1, Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
 }
 
 }

@@ -25,8 +25,8 @@
 
 #include "client/ui/LoadingArea.hh"
 
+#include "client/Shape.hh"
 #include "client/Camera.hh"
-#include "client/Shader.hh"
 #include "client/OpenGL.hh"
 
 namespace oz
@@ -56,8 +56,8 @@ void LoadingArea::onReposition()
 
 void LoadingArea::onDraw()
 {
-  shader.colour( Vec4( 0.1f, 0.1f, 0.1f, 1.0f ) );
-  fill( 0, 0, width, height );
+  shape.colour( 0.1f, 0.1f, 0.1f, 1.0f );
+  shape.fill( 0, 0, width, height );
 
   status.draw( this, false );
 }

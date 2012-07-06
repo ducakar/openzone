@@ -59,7 +59,7 @@ void SMMVehicleImago::draw( const Imago*, int mask )
     return;
   }
 
-  const Vehicle* veh = static_cast<const Vehicle*>( obj );
+  const Vehicle*      veh   = static_cast<const Vehicle*>( obj );
   const VehicleClass* clazz = static_cast<const VehicleClass*>( obj->clazz );
 
   if( shader.mode == Shader::SCENE ) {
@@ -78,7 +78,7 @@ void SMMVehicleImago::draw( const Imago*, int mask )
     }
   }
 
-  smm->draw( mask );
+  smm->schedule( -1, mask );
 }
 
 }

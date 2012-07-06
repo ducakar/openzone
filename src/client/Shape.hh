@@ -23,9 +23,7 @@
 
 #pragma once
 
-#include "matrix/Frag.hh"
-
-#include "client/Mesh.hh"
+#include "client/common.hh"
 
 namespace oz
 {
@@ -54,6 +52,9 @@ class Shape
     Shape();
 
     void bind() const;
+
+    static void colour( const Vec4& c );
+    static void colour( float r, float g, float b, float a = 1.0f );
 
     static void fill( float x, float y, float width, float height );
     static void fill( int x, int y, int width, int height );

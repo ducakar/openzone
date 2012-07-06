@@ -59,9 +59,11 @@ void SMMImago::draw( const Imago*, int mask )
   if( shader.mode == Shader::SCENE ) {
     tf.model = Mat44::translation( obj->p - Point::ORIGIN );
     tf.model.rotateZ( float( obj->flags & Object::HEADING_MASK ) * Math::TAU / 4.0f );
+
+    tf.colour.w.w = 1.0f;
   }
 
-  smm->draw( mask );
+  smm->schedule( -1, mask );
 }
 
 }

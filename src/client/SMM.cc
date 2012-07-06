@@ -41,11 +41,6 @@ SMM::SMM( int id_ ) :
   id( id_ ), isPreloaded( false ), isLoaded( false )
 {}
 
-SMM::~SMM()
-{
-  mesh.unload();
-}
-
 void SMM::preload()
 {
   file.setPath( library.models[id].path );
@@ -61,7 +56,6 @@ void SMM::load()
 {
   InputStream is = file.inputStream();
 
-  shaderId = library.shaderIndex( is.readString() );
   mesh.load( &is, GL_STATIC_DRAW, file.path() );
 
   hard_assert( !is.isAvailable() );
@@ -69,14 +63,6 @@ void SMM::load()
   file.setPath( "" );
 
   isLoaded = true;
-}
-
-void SMM::draw( int mask ) const
-{
-  shader.program( shaderId );
-  tf.apply();
-
-  mesh.draw( mask );
 }
 
 }

@@ -174,7 +174,7 @@ void BSP::load()
   isLoaded = true;
 }
 
-void BSP::draw( const Struct* str, int mask ) const
+void BSP::draw( const Struct* str, int mask )
 {
   mask &= flags;
 
@@ -184,17 +184,14 @@ void BSP::draw( const Struct* str, int mask ) const
 
   tf.model = Mat44::translation( str->p - Point::ORIGIN );
   tf.model.rotateZ( float( str->heading ) * Math::TAU / 4.0f );
-  tf.apply();
 
-  mesh.bind();
-  mesh.drawComponent( 0, mask );
+  mesh.schedule( 0, mask );
 
   for( int i = 0; i < str->nEntities; ++i ) {
     tf.push();
     tf.model.translate( str->entities[i].offset );
-    tf.apply();
 
-    mesh.drawComponent( i + 1, mask );
+    mesh.schedule( i + 1, mask );
 
     tf.pop();
   }

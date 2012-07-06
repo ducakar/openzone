@@ -79,8 +79,6 @@ class Mouse
     void load();
     void unload();
 
-    void init();
-
 };
 
 extern Mouse mouse;

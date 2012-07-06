@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "client/common.hh"
+#include "client/Shader.hh"
 
 namespace oz
 {
@@ -49,8 +49,6 @@ struct Vertex
   byte  binormal[3];
   byte  bones[2];
   ubyte blend;
-
-  void read( InputStream* istream );
 
   static void setFormat();
 };
@@ -89,28 +87,86 @@ class Mesh
       int     firstIndex;
     };
 
-    static const Mesh* lastMesh;
+    struct Instance
+    {
+      Mat44 transform;
+      float alpha;
+      int   component;
+      int   mask;
+      int   firstFrame;
+      int   secondFrame;
+      float interpolation;
 
-    uint         vbo;
-    uint         ibo;
+      Instance() = default;
 
-    int          flags;
-    int          nParts;
-    Part*        parts;
-    DArray<int>  texIds;
+      explicit Instance( const Mat44& transform_, float alpha_, int component_, int mask_ ) :
+        transform( transform_ ), alpha( alpha_ ), component( component_ ), mask( mask_ )
+      {}
+
+      explicit Instance( const Mat44& transform_, float alpha_, int component_, int mask_,
+                         int firstFrame_, int secondFrame_, float interpolation_ ) :
+        transform( transform_ ), alpha( alpha_ ), component( component_ ), mask( mask_ ),
+        firstFrame( firstFrame_ ), secondFrame( secondFrame_ ), interpolation( interpolation_ )
+      {}
+    };
+
+    static Map<Mesh*> loadedMeshes;
+
+    static Vertex*    vertexAnimBuffer;
+    static int        vertexAnimBufferLength;
+
+    uint              vbo;
+    uint              ibo;
+    int               shaderId;
+
+    int               flags;
+    DArray<Part>      parts;
+    DArray<int>       componentIndices;
+    DArray<int>       texIds;
+
+    uint              positionsTexId;
+    uint              normalsTexId;
+
+    int               nFrames;
+    int               nFramePositions;
+    int               nFrameVertices;
+
+    Vertex*           vertices;
+    Point*            positions;
+    Vec3*             normals;
+
+    Vector<Instance>  instances;
+
+    void animate( const Instance* instance );
+    void draw( const Instance* instance );
 
   public:
 
-    static void reset();
+    static void drawScheduled();
+    static void dealloc();
 
     Mesh();
     ~Mesh();
 
-    void bind() const;
-    void drawComponent( int id, int mask ) const;
-    void draw( int mask ) const;
+    void schedule( int component, int mask )
+    {
+      instances.add( Instance( tf.model, tf.colour.w.w, component, mask ) );
+    }
+
+    void scheduleFrame( int component, int mask, int frame )
+    {
+      instances.add( Instance( tf.model, tf.colour.w.w, component, mask, frame, 0, 0.0f ) );
+    }
+
+    void scheduleAnimated( int component, int mask,
+                           int firstFrame, int secondFrame, float interpolation )
+    {
+      instances.add( Instance( tf.model, tf.colour.w.w, component, mask,
+                               firstFrame, secondFrame, interpolation ) );
+    }
 
     void upload( const Vertex* vertices, int nVertices, uint usage ) const;
+    void draw( int mask ) const;
 
     void load( InputStream* istream, uint usage, const char* path );
     void unload();

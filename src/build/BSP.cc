@@ -474,13 +474,13 @@ void BSP::load()
     keyBuffer[ sizeof( keyBuffer ) - 3 ] = char( '0' + ( i / 10 ) );
     keyBuffer[ sizeof( keyBuffer ) - 2 ] = char( '0' + ( i % 10 ) );
 
-    String key     = keyBuffer;
-    String objName = bspConfig.get( key + ".name", "" );
+    String key   = keyBuffer;
+    String clazz = bspConfig.get( key + ".class", "" );
 
-    if( !objName.isEmpty() ) {
+    if( !clazz.isEmpty() ) {
       BoundObject object;
 
-      object.clazz   = objName;
+      object.clazz   = clazz;
       object.pos.x   = bspConfig.get( key + ".pos.x", 0.0f );
       object.pos.y   = bspConfig.get( key + ".pos.y", 0.0f );
       object.pos.z   = bspConfig.get( key + ".pos.z", 0.0f );

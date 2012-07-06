@@ -362,6 +362,7 @@ void MD2::build( const char* path )
     compiler.animNormals( normals[0] );
   }
 
+  compiler.shader( shaderName );
   compiler.texture( skinPath );
 
   compiler.begin( Compiler::TRIANGLES );
@@ -390,8 +391,6 @@ void MD2::build( const char* path )
   positions.dealloc();
 
   BufferStream os;
-
-  os.writeString( shaderName );
 
   // generate vertex data for animated MD2s
   if( header.nFrames != 1 ) {

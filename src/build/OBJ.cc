@@ -30,8 +30,6 @@
 
 #include "build/Compiler.hh"
 
-#include <GL/gl.h>
-
 namespace oz
 {
 namespace build
@@ -386,7 +384,6 @@ void OBJ::save()
 
   BufferStream os;
 
-  os.writeString( shader );
   compiler.writeMesh( &os );
 
   Log::print( "Writing to '%s' ...", destFile.path().cstr() );

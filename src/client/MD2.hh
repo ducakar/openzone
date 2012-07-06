@@ -25,7 +25,7 @@
 
 #include "matrix/Bot.hh"
 
-#include "client/DMesh.hh"
+#include "client/Mesh.hh"
 
 namespace oz
 {
@@ -105,27 +105,33 @@ class MD2
 
   private:
 
-    int     id;
+    Mesh  mesh;
 
-    int     shaderId;
-    DMesh   dmesh;
-    PFile   file;
+    PFile file;
+    int   id;
 
   public:
 
-    Mat44    weaponTransf;
+    Mat44 weaponTransf;
 
-    bool     isPreloaded;
-    bool     isLoaded;
+    bool  isPreloaded;
+    bool  isLoaded;
 
     explicit MD2( int id );
-    ~MD2();
 
     void preload();
     void load();
 
-    void drawFrame( int frame ) const;
-    void draw( const AnimState* anim ) const;
+    void scheduleFrame( int frame )
+    {
+      mesh.scheduleFrame( -1, Mesh::SOLID_BIT | Mesh::ALPHA_BIT, frame );
+    }
+
+    void scheduleAnim( const AnimState* anim )
+    {
+      mesh.scheduleAnimated( -1, Mesh::SOLID_BIT | Mesh::ALPHA_BIT,
+                             anim->currFrame, anim->nextFrame, anim->frameRatio );
+    }
 
 };
 

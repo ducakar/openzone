@@ -84,29 +84,32 @@ void Compiler::beginMesh()
   hard_assert( !( flags & MESH_BIT ) );
   hard_assert( !( flags & PART_BIT ) );
 
-  flags |= MESH_BIT;
-  caps = 0;
-
   parts.clear();
   vertices.clear();
   positions.dealloc();
   normals.dealloc();
 
-  part.component      = 0;
-  part.material       = Mesh::SOLID_BIT;
-  part.texture        = "";
+  part.component  = 0;
+  part.material   = Mesh::SOLID_BIT;
+  part.texture    = "";
 
-  vert.pos            = Point::ORIGIN;
-  vert.texCoord       = TexCoord( 0.0f, 0.0f );
-  vert.normal         = Vec3::ZERO;
-  vert.tangent        = Vec3::ZERO;
-  vert.binormal       = Vec3::ZERO;
-  vert.bones[0]       = 0;
-  vert.bones[1]       = 0;
-  vert.blend          = 0.0f;
+  vert.pos        = Point::ORIGIN;
+  vert.texCoord   = TexCoord( 0.0f, 0.0f );
+  vert.normal     = Vec3::ZERO;
+  vert.tangent    = Vec3::ZERO;
+  vert.binormal   = Vec3::ZERO;
+  vert.bones[0]   = 0;
+  vert.bones[1]   = 0;
+  vert.blend      = 0.0f;
 
-  nFrames             = 0;
-  nFramePositions     = 0;
+  caps            = 0;
+  flags          |= MESH_BIT;
+  componentId     = 0;
+  mode            = TRIANGLES;
+  shaderName      = "mesh";
+  vertNum         = 0;
+  nFrames         = 0;
+  nFramePositions = 0;
 }
 
 void Compiler::endMesh()
@@ -144,6 +147,10 @@ void Compiler::component( int id )
   hard_assert( flags & MESH_BIT );
   hard_assert( !( flags & PART_BIT ) );
 
+  if( id != componentId && id != componentId + 1 ) {
+    throw Exception( "Non-consecutive components %d and %d\n", componentId, id );
+  }
+
   componentId = id;
 }
 
@@ -153,6 +160,14 @@ void Compiler::blend( bool doBlend )
   hard_assert( !( flags & PART_BIT ) );
 
   part.material = doBlend ? int( Mesh::ALPHA_BIT ) : int( Mesh::SOLID_BIT );
+}
+
+void Compiler::shader( const char* shaderName_ )
+{
+  hard_assert( flags & MESH_BIT );
+  hard_assert( !( flags & PART_BIT ) );
+
+  shaderName = shaderName_;
 }
 
 void Compiler::texture( const char* texture )
@@ -419,6 +434,7 @@ void Compiler::writeMesh( BufferStream* os, bool embedTextures )
   Vector<String> textures;
   Vector<ushort> indices;
   int nIndices = 0;
+  int nComponents = 0;
 
   textures.add( "" ); // No texture.
 
@@ -430,6 +446,12 @@ void Compiler::writeMesh( BufferStream* os, bool embedTextures )
 
     indices.addAll( parts[i].indices, parts[i].indices.length() );
     nIndices += parts[i].indices.length();
+
+    nComponents = max( nComponents, parts[i].component + 1 );
+  }
+
+  if( nComponents == 0 ) {
+    throw Exception( "Model should have at least one component" );
   }
 
   os->writeInt( vertices.length() );
@@ -446,6 +468,25 @@ void Compiler::writeMesh( BufferStream* os, bool embedTextures )
   foreach( index, indices.citer() ) {
     os->writeUShort( *index );
   }
+
+  os->writeInt( nFrames );
+
+  if( nFrames != 0 ) {
+    os->writeInt( nFramePositions );
+    os->writeInt( vertices.length() );
+
+    hard_assert( positions.length() == nFrames * nFramePositions );
+    hard_assert( normals.length() == nFrames * nFramePositions );
+
+    foreach( position, positions.citer() ) {
+      os->writePoint( *position );
+    }
+    foreach( normal, normals.citer() ) {
+      os->writeVec3( *normal );
+    }
+  }
+
+  os->writeString( shaderName );
 
   if( embedTextures ) {
     os->writeInt( ~textures.length() );
@@ -490,6 +531,7 @@ void Compiler::writeMesh( BufferStream* os, bool embedTextures )
     }
   }
 
+  os->writeInt( nComponents );
   os->writeInt( parts.length() );
 
   foreach( part, parts.citer() ) {
@@ -520,22 +562,6 @@ void Compiler::writeMesh( BufferStream* os, bool embedTextures )
 
     os->writeInt( part->nIndices );
     os->writeInt( part->firstIndex );
-  }
-
-  if( nFrames != 0 ) {
-    os->writeInt( nFrames );
-    os->writeInt( nFramePositions );
-    os->writeInt( vertices.length() );
-
-    hard_assert( positions.length() == nFrames * nFramePositions );
-    hard_assert( normals.length() == nFrames * nFramePositions );
-
-    foreach( position, positions.citer() ) {
-      os->writePoint( *position );
-    }
-    foreach( normal, normals.citer() ) {
-      os->writeVec3( *normal );
-    }
   }
 
   Log::unindent();

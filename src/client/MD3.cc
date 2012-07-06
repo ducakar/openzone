@@ -37,11 +37,6 @@ MD3::MD3( int id_ ) :
   id( id_ ), isPreloaded( false ), isLoaded( false )
 {}
 
-MD3::~MD3()
-{
-  OZ_GL_CHECK_ERROR();
-}
-
 void MD3::preload()
 {
   isPreloaded = true;

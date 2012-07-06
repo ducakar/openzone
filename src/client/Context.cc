@@ -31,7 +31,6 @@
 #include "client/MD2Imago.hh"
 #include "client/MD2WeaponImago.hh"
 #include "client/MD3Imago.hh"
-#include "client/DMesh.hh"
 
 #include "client/BasicAudio.hh"
 #include "client/BotAudio.hh"
@@ -648,7 +647,7 @@ void Context::unload()
   BotAudio::pool.free();
   VehicleAudio::pool.free();
 
-  DMesh::free();
+  Mesh::dealloc();
   Source::pool.free();
 
   Log::unindent();
