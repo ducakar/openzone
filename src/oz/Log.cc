@@ -269,15 +269,23 @@ void Log::printTrace( const StackTrace& st )
 {
   if( st.nFrames == 0 ) {
     if( !verboseMode || showVerbose || file == null ) {
-      fputs( "    [no stack trace]\n", stdout );
+      fputs( "  stack trace:\n    [no stack trace]\n", stdout );
     }
 
     if( file != null ) {
-      fputs( "    [no stack trace]\n", file );
+      fputs( "  stack trace:\n    [no stack trace]\n", file );
     }
   }
   else {
     char** entries = st.symbols();
+
+    if( !verboseMode || showVerbose || file == null ) {
+      fputs( "  stack trace:\n", stdout );
+    }
+
+    if( file != null ) {
+      fputs( "  stack trace:\n", file );
+    }
 
     for( int i = 0; i < st.nFrames; ++i ) {
       if( !verboseMode || showVerbose || file == null ) {
@@ -320,7 +328,7 @@ void Log::printException( const std::exception& e )
     }
   }
   else {
-    snprintf( buffer, OUT_BUFFER_SIZE, "\n\nEXCEPTION: %s\n  in %s\n  at %s:%d\n  stack trace:\n",
+    snprintf( buffer, OUT_BUFFER_SIZE, "\n\nEXCEPTION: %s\n  in %s\n  at %s:%d\n",
               oe->message, oe->function, oe->file, oe->line );
 
     if( !verboseMode || showVerbose || file == null ) {
@@ -341,7 +349,7 @@ void Log::printSignal( int sigNum )
 
   int index = uint( sigNum ) >= uint( aLength( SIGNALS ) ) ? 0 : sigNum;
 
-  snprintf( buffer, OUT_BUFFER_SIZE, "\n\nCaught signal %d %s (%s)\n  stack trace:\n",
+  snprintf( buffer, OUT_BUFFER_SIZE, "\n\nCaught signal %d %s (%s)\n",
             sigNum, SIGNALS[index][0], SIGNALS[index][1] );
 
   if( !verboseMode || showVerbose || file == null ) {

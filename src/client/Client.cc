@@ -597,10 +597,19 @@ int Client::main( int argc, char** argv )
       }
     }
 
-    input.keys[SDLK_LCTRL] = 0;
-    input.keys[SDLK_RCTRL] = 0;
-    input.keys[SDLK_LALT] = 0;
-    input.keys[SDLK_RALT] = 0;
+    input.keys[SDLK_LCTRL]     = 0;
+    input.keys[SDLK_RCTRL]     = 0;
+    input.keys[SDLK_RCTRL]     = 0;
+    input.keys[SDLK_LALT]      = 0;
+    input.keys[SDLK_RALT]      = 0;
+    input.keys[SDLK_ESCAPE]    = 0;
+
+    input.oldKeys[SDLK_LCTRL]  = 0;
+    input.oldKeys[SDLK_RCTRL]  = 0;
+    input.oldKeys[SDLK_RCTRL]  = 0;
+    input.oldKeys[SDLK_LALT]   = 0;
+    input.oldKeys[SDLK_RALT]   = 0;
+    input.oldKeys[SDLK_ESCAPE] = 0;
 
 #endif
 

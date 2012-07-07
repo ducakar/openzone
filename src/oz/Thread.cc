@@ -48,7 +48,7 @@ struct ThreadMainData
 
 #ifdef _WIN32
 
-struct ThreadDesc
+struct Thread::Descriptor
 {
   HANDLE thread;
 };
@@ -66,7 +66,7 @@ static DWORD WINAPI winMain( void* data )
 
 #else
 
-struct ThreadDesc
+struct Thread::Descriptor
 {
   pthread_t thread;
 };
@@ -88,12 +88,12 @@ void Thread::start( Main* main, void* data )
 {
   hard_assert( descriptor == null );
 
-  void* descriptorPtr = malloc( sizeof( ThreadDesc ) );
+  void* descriptorPtr = malloc( sizeof( Descriptor ) );
   if( descriptorPtr == null ) {
     System::error( 0, "Thread resource allocation failed" );
   }
 
-  descriptor = new( descriptorPtr ) ThreadDesc();
+  descriptor = new( descriptorPtr ) Descriptor();
 
   void* threadDataPtr = malloc( sizeof( ThreadMainData ) );
   if( threadDataPtr == null ) {
@@ -138,7 +138,7 @@ void Thread::join()
 
 #endif
 
-  descriptor->~ThreadDesc();
+  descriptor->~Descriptor();
   free( descriptor );
   descriptor = null;
 }

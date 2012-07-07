@@ -272,8 +272,6 @@ bool GameStage::update()
 
   beginMicros = Time::uclock();
 
-#ifndef __native_client__
-
   if( input.keys[SDLK_F5] && !input.oldKeys[SDLK_F5] ) {
     write( QUICKSAVE_FILE );
   }
@@ -288,8 +286,6 @@ bool GameStage::update()
   if( input.keys[SDLK_F10] || input.keys[SDLK_ESCAPE] ) {
     Stage::nextStage = &menuStage;
   }
-
-#endif
 
   camera.prepare();
 

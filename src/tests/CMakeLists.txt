@@ -23,6 +23,6 @@ else()
   target_link_libraries( simd oz )
 
   add_executable( test test.cc )
-  target_link_libraries( test oz )
+  target_link_libraries( test oz SDL )
 
 endif()

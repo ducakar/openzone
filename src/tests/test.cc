@@ -23,6 +23,8 @@
 
 #include "oz/oz.hh"
 
+#include <SDL.h>
+
 using namespace oz;
 
 struct Foo
@@ -68,14 +70,21 @@ struct Foo
   }
 };
 
-struct Bar
-{
-  Foo f;
-};
-
 int main()
 {
-  Vector<Bar> v;
-  v.add( { Foo( "temp" ) } );
+  System::init();
+
+  File file( "/home/davorin/drek.json" );
+
+  JSON json;
+  if( !json.load( file ) ) {
+    Log::out << "Loading failed\n";
+  }
+
+  Log::out << json.root.toString() << "\n";
+  json.clear();
+  Log::out << json.root.toString() << "\n";
+
+  Alloc::printLeaks();
   return 0;
 }

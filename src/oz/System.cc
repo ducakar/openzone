@@ -131,7 +131,7 @@ static const ubyte          BELL_SAMPLE[] = {
 # include "bellSample.inc"
 };
 static const timespec       BELL_TIMESPEC = {
-  0, long( float( sizeof( BELL_SAMPLE ) ) / float( BELL_SPEC.rate ) * 1e6f )
+  0, long( float( sizeof( BELL_SAMPLE ) ) / float( BELL_SPEC.rate ) * 1e9f )
 };
 
 static decltype( ::pa_simple_new )*   pa_simple_new;   // = null
@@ -519,7 +519,7 @@ void System::warning( int nSkippedFrames, const char* msg, ... )
   Log::verboseMode = false;
   Log::putsRaw( "\n\n" );
   Log::vprintRaw( msg, ap );
-  Log::putsRaw( "\n  stack trace:\n" );
+  Log::putsRaw( "\n" );
 
   Log::verboseMode = verboseMode;
 
@@ -542,7 +542,7 @@ void System::error( int nSkippedFrames, const char* msg, ... )
   Log::verboseMode = false;
   Log::putsRaw( "\n\n" );
   Log::vprintRaw( msg, ap );
-  Log::putsRaw( "\n  stack trace:\n" );
+  Log::putsRaw( "\n" );
 
   va_end( ap );
 
