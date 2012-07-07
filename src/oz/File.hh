@@ -35,13 +35,6 @@ namespace oz
 {
 
 /**
- * Internal structure for NaCl file description that is passed to callbacks.
- *
- * @ingroup oz
- */
-struct FileDesc;
-
-/**
  * Class for basic file and directory operations.
  *
  * @ingroup oz
@@ -49,6 +42,9 @@ struct FileDesc;
 class File
 {
   public:
+
+    /// Internal structure for NaCl file description that is passed to callbacks.
+    struct Descriptor;
 
     /**
      * %File type classification.
@@ -71,13 +67,13 @@ class File
 
   private:
 
-    String    filePath;   ///< %File path.
-    Type      fileType;   ///< %File type (initially <tt>MISSING</tt>).
-    int       fileSize;   ///< %File size (>= 0 if <tt>fileType == REGULAR</tt>, -1 otherwise).
-    long64    fileTime;   ///< Modification or creation time, what is newer.
-    char*     data;       ///< Mapped memory.
+    String      filePath;   ///< %File path.
+    Type        fileType;   ///< %File type (initially <tt>MISSING</tt>).
+    int         fileSize;   ///< %File size (>= 0 if <tt>fileType == REGULAR</tt>, -1 otherwise).
+    long64      fileTime;   ///< Modification or creation time, what is newer.
+    char*       data;       ///< Mapped memory.
 #ifdef __native_client__
-    FileDesc* descriptor; ///< Structure for control and data exchange with NaCl callbacks.
+    Descriptor* descriptor; ///< Structure for control and data exchange with NaCl callbacks.
 #endif
 
   public:

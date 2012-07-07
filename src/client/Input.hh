@@ -38,6 +38,34 @@ class Input
     static const int MIDDLE_BUTTON = 0x02;
     static const int RIGHT_BUTTON  = 0x04;
 
+    enum Key
+    {
+      KEY_KP_1,
+      KEY_KP_2,
+      KEY_KP_3,
+      KEY_KP_4,
+      KEY_KP_6,
+      KEY_KP_7,
+      KEY_KP_8,
+      KEY_KP_9,
+      KEY_FREELOOK_TOGGLE,
+      KEY_CAMERA_TOGGLE,
+      KEY_TURN_RIGHT,
+      KEY_TURN_LEFT,
+      KEY_STRAFE_LEFT,
+      KEY_STRAFE_RIGHT,
+      KEY_FORWARD,
+      KEY_BACKWARD,
+      KEY_UP,
+      KEY_DOWN,
+      KEY_WALK_TOGGLE,
+      KEY_CROUCH_TOGGLE,
+      KEY_JUMP,
+      KEY_UI_TOGGLE,
+
+      KEY_MAX
+    };
+
   private:
 
     ubyte* currKeys;

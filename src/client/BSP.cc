@@ -136,12 +136,12 @@ BSP::BSP( const matrix::BSP* bsp_ ) :
 
 BSP::~BSP()
 {
-  if( isLoaded ) {
-    mesh.unload();
-  }
-
   for( int i = 0; i < bsp->sounds.length(); ++i ) {
     context.releaseSound( bsp->sounds[i] );
+  }
+
+  if( isLoaded ) {
+    mesh.unload();
   }
 }
 

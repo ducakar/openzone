@@ -33,9 +33,6 @@
 namespace oz
 {
 
-// Internal structure for semaphore description.
-struct SemaphoreDesc;
-
 /**
  * Semaphore.
  *
@@ -47,8 +44,11 @@ class Semaphore
 {
   private:
 
+    /// Internal structure for platform-dependent semaphore description.
+    struct Descriptor;
+
     /// %Semaphore descriptor.
-    SemaphoreDesc* descriptor;
+    Descriptor* descriptor;
 
   public:
 
@@ -70,11 +70,6 @@ class Semaphore
     }
 
     /**
-     * No copying.
-     */
-    Semaphore( const Semaphore& ) = delete;
-
-    /**
      * Move constructor, transfers ownership.
      */
     Semaphore( Semaphore&& b ) :
@@ -82,11 +77,6 @@ class Semaphore
     {
       b.descriptor = null;
     }
-
-    /**
-     * No copying.
-     */
-    Semaphore& operator = ( const Semaphore& ) = delete;
 
     /**
      * Move operator, transfers ownership.

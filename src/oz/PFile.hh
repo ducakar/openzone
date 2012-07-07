@@ -51,7 +51,7 @@ class PFile
   public:
 
     /**
-     * Create an empty instance (path is set to "" ).
+     * Create an empty instance (path is set to "").
      */
     PFile();
 

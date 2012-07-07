@@ -42,14 +42,14 @@ namespace oz
 
 #ifdef _WIN32
 
-struct MutexDesc
+struct Mutex::Descriptor
 {
   HANDLE mutex;
 };
 
 #else
 
-struct MutexDesc
+struct Mutex::Descriptor
 {
   pthread_mutex_t mutex;
 };
@@ -93,12 +93,12 @@ void Mutex::init()
 {
   hard_assert( descriptor == null );
 
-  void* descriptorPtr = malloc( sizeof( MutexDesc ) );
+  void* descriptorPtr = malloc( sizeof( Descriptor ) );
   if( descriptorPtr == null ) {
     System::error( 0, "Mutex resource allocation failed" );
   }
 
-  descriptor = new( descriptorPtr ) MutexDesc();
+  descriptor = new( descriptorPtr ) Descriptor();
 
 #ifdef _WIN32
 
@@ -126,7 +126,7 @@ void Mutex::destroy()
   pthread_mutex_destroy( &descriptor->mutex );
 #endif
 
-  descriptor->~MutexDesc();
+  descriptor->~Descriptor();
   free( descriptor );
   descriptor = null;
 }

@@ -128,4 +128,5 @@
  * Utilities.
  */
 #include "Log.hh"
+#include "JSON.hh"
 #include "Config.hh"

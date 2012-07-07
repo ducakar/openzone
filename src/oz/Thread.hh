@@ -33,9 +33,6 @@
 namespace oz
 {
 
-// Internal structure for thread description.
-struct ThreadDesc;
-
 /**
  * %Thread.
  *
@@ -50,8 +47,11 @@ class Thread
 
   private:
 
+    /// Internal structure for platform-dependent thread description.
+    struct Descriptor;
+
     /// %Thread descriptor.
-    ThreadDesc* descriptor;
+    Descriptor* descriptor;
 
   public:
 
@@ -63,11 +63,6 @@ class Thread
     {}
 
     /**
-     * No copying.
-     */
-    Thread( const Thread& ) = delete;
-
-    /**
      * Move constructor, transfers ownership.
      */
     Thread( Thread&& t ) :
@@ -75,11 +70,6 @@ class Thread
     {
       t.descriptor = null;
     }
-
-    /**
-     * No copying.
-     */
-    Thread& operator = ( const Thread& ) = delete;
 
     /**
      * Move operator, transfers ownership.

@@ -42,7 +42,7 @@ namespace oz
 
 #ifdef _WIN32
 
-struct SemaphoreDesc
+struct Semaphore::Descriptor
 {
   HANDLE        semaphore;
   volatile long counter;
@@ -50,7 +50,7 @@ struct SemaphoreDesc
 
 #else
 
-struct SemaphoreDesc
+struct Semaphore::Descriptor
 {
   pthread_mutex_t mutex;
   pthread_cond_t  cond;
@@ -140,12 +140,12 @@ void Semaphore::init( int counter )
 {
   hard_assert( descriptor == null && counter >= 0 );
 
-  void* descriptorPtr = malloc( sizeof( SemaphoreDesc ) );
+  void* descriptorPtr = malloc( sizeof( Descriptor ) );
   if( descriptorPtr == null ) {
     System::error( 0, "Semaphore resource allocation failed" );
   }
 
-  descriptor = new( descriptorPtr ) SemaphoreDesc();
+  descriptor = new( descriptorPtr ) Descriptor();
   descriptor->counter = counter;
 
 #ifdef _WIN32
@@ -178,7 +178,7 @@ void Semaphore::destroy()
   pthread_mutex_destroy( &descriptor->mutex );
 #endif
 
-  descriptor->~SemaphoreDesc();
+  descriptor->~Descriptor();
   free( descriptor );
   descriptor = null;
 }

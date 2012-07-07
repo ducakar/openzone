@@ -22,6 +22,7 @@ set( ozHeaders
   HashString.hh
   InputStream.hh
   iterables.hh
+  JSON.hh
   List.hh
   Log.hh
   Map.hh
@@ -55,6 +56,7 @@ add_library( oz
   Config.cc
   Exception.cc
   File.cc
+  JSON.cc
   Log.cc
   Mat44.cc
   Math.cc

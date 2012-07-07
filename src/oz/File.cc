@@ -81,7 +81,7 @@ struct Semaphore
   { \
     static void _main##name( void* _data, int _result ) \
     { \
-      FileDesc* _fd = static_cast<FileDesc*>( _data ); \
+      Descriptor* _fd = static_cast<Descriptor*>( _data ); \
       static_cast<void>( _fd ); \
       static_cast<void>( _result ); \
       code \
@@ -94,7 +94,7 @@ struct Semaphore
 #define MAIN_CALL( name ) \
   System::core->CallOnMainThread( 0, CALLBACK_OBJECT( name, descriptor ) )
 
-struct FileDesc
+struct File::Descriptor
 {
   Semaphore    semaphore;
   File*        file;
@@ -105,7 +105,7 @@ struct FileDesc
   int          size;
   int          offset;
 
-  explicit FileDesc( File* file_ ) :
+  explicit Descriptor( File* file_ ) :
     file( file_ )
   {
     pthread_mutex_init( &semaphore.mutex, null );
@@ -113,15 +113,15 @@ struct FileDesc
     semaphore.counter = 0;
   }
 
-  ~FileDesc()
+  ~Descriptor()
   {
     pthread_cond_destroy( &semaphore.cond );
     pthread_mutex_destroy( &semaphore.mutex );
   }
 };
 
-// Some FileDesc members are also useful for static functions.
-static FileDesc staticDesc( null );
+// Some Descriptor members are also useful for static functions.
+static File::Descriptor staticDesc( null );
 
 static pp::FileSystem* filesystem = null;
 
@@ -136,7 +136,7 @@ File::File() :
   fileType( MISSING ), fileSize( -1 ), fileTime( 0 ), data( null )
 {
 #ifdef __native_client__
-  descriptor = new FileDesc( this );
+  descriptor = new Descriptor( this );
 #endif
 }
 
@@ -154,7 +154,7 @@ File::File( const File& file ) :
   fileTime( file.fileTime ), data( null )
 {
 #ifdef __native_client__
-  descriptor = new FileDesc( this );
+  descriptor = new Descriptor( this );
 #endif
 }
 
@@ -163,7 +163,7 @@ File::File( File&& file ) :
   fileSize( file.fileSize ), data( file.data )
 {
 #ifdef __native_client__
-  descriptor = new FileDesc( this );
+  descriptor = new Descriptor( this );
 #endif
 
   file.filePath = "";
@@ -217,7 +217,7 @@ File::File( const char* path ) :
   filePath( path ), fileType( MISSING ), fileSize( -1 ), fileTime( 0 ), data( null )
 {
 #ifdef __native_client__
-  descriptor = new FileDesc( this );
+  descriptor = new Descriptor( this );
 #endif
 }
 
@@ -969,8 +969,8 @@ bool File::mkdir( const char* path )
 {
 #if defined( __native_client__ )
 
-  FileDesc localDescriptor( null );
-  FileDesc* descriptor = &localDescriptor;
+  Descriptor localDescriptor( null );
+  Descriptor* descriptor = &localDescriptor;
 
   // Abuse buffer for file path and size for result.
   descriptor->buffer = const_cast<char*>( path );
@@ -1016,8 +1016,8 @@ bool File::rm( const char* path )
 {
 #if defined( __native_client__ )
 
-  FileDesc localDescriptor( null );
-  FileDesc* descriptor = &localDescriptor;
+  Descriptor localDescriptor( null );
+  Descriptor* descriptor = &localDescriptor;
 
   // Abuse buffer for file path and size for result.
   descriptor->buffer = const_cast<char*>( path );
@@ -1086,7 +1086,7 @@ void File::init( FilesystemType type, int size )
   staticDesc.offset = type == PERSISTENT ? PP_FILESYSTEMTYPE_LOCALPERSISTENT :
                                            PP_FILESYSTEMTYPE_LOCALTEMPORARY;
 
-  FileDesc* descriptor = &staticDesc;
+  Descriptor* descriptor = &staticDesc;
 
   DEFINE_CALLBACK( initResult, {
     if( _result != PP_OK ) {
@@ -1128,7 +1128,7 @@ void File::free()
 #ifdef __native_client__
 
   if( filesystem != null ) {
-    FileDesc* descriptor = &staticDesc;
+    Descriptor* descriptor = &staticDesc;
 
     DEFINE_CALLBACK( free, {
       delete filesystem;

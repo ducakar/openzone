@@ -233,6 +233,11 @@ uint Context::requestSound( int id )
 {
   Resource<uint>& resource = sounds[id];
 
+  if( id == 12 ) {
+    Log::printRaw( "REQUESTING(%d) '%s'\n", resource.nUsers, library.sounds[id].name.cstr() );
+    Log::printTrace( StackTrace::current( 0 ) );
+  }
+
   if( resource.nUsers >= 0 ) {
     ++resource.nUsers;
     return resource.id;
@@ -296,6 +301,11 @@ void Context::releaseSound( int id )
 
   hard_assert( resource.nUsers > 0 );
 
+  if( id == 12 ) {
+    Log::printRaw( "RELEASING(%d) '%s'\n", resource.nUsers, library.sounds[id].name.cstr() );
+    Log::printTrace( StackTrace::current( 0 ) );
+  }
+
   --resource.nUsers;
 }
 
@@ -304,6 +314,11 @@ void Context::freeSound( int id )
   Resource<uint>& resource = sounds[id];
 
   hard_assert( resource.nUsers == 0 );
+
+  if( id == 12 ) {
+    Log::printRaw( "FREEING(%d) '%s'\n", resource.nUsers, library.sounds[id].name.cstr() );
+    Log::printTrace( StackTrace::current( 0 ) );
+  }
 
   --resource.nUsers;
   alDeleteBuffers( 1, &resource.id );
@@ -506,6 +521,21 @@ void Context::load()
   maxVehicleAudios      = 0;
 
   maxFragPools          = 0;
+
+  for( int i = 0; i < library.textures.length(); ++i ) {
+    hard_assert( textures[i].nUsers == -1 );
+  }
+  for( int i = 0; i < library.sounds.length(); ++i ) {
+    hard_assert( sounds[i].nUsers == -1 );
+  }
+  for( int i = 0; i < library.nBSPs; ++i ) {
+    hard_assert( bsps[i].nUsers == -1 );
+  }
+  for( int i = 0; i < library.models.length(); ++i ) {
+    hard_assert( smms[i].nUsers == -1 );
+    hard_assert( md2s[i].nUsers == -1 );
+    hard_assert( md3s[i].nUsers == -1 );
+  }
 }
 
 void Context::unload()
@@ -568,7 +598,7 @@ void Context::unload()
 
     delete md3s[i].object;
 
-    md2s[i].object = null;
+    md3s[i].object = null;
     md3s[i].nUsers = -1;
   }
 

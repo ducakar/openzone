@@ -33,9 +33,6 @@
 namespace oz
 {
 
-// Internal structure for mutex description.
-struct MutexDesc;
-
 /**
  * %Mutex.
  *
@@ -45,8 +42,11 @@ class Mutex
 {
   private:
 
+    /// Internal structure for platform-dependent mutex description.
+    struct Descriptor;
+
     /// %Mutex descriptor.
-    MutexDesc* descriptor;
+    Descriptor* descriptor;
 
   public:
 
@@ -68,11 +68,6 @@ class Mutex
     }
 
     /**
-     * No copying.
-     */
-    Mutex( const Mutex& ) = delete;
-
-    /**
      * Move constructor, transfers ownership.
      */
     Mutex( Mutex&& m ) :
@@ -80,11 +75,6 @@ class Mutex
     {
       m.descriptor = null;
     }
-
-    /**
-     * No copying.
-     */
-    Mutex& operator = ( const Mutex& ) = delete;
 
     /**
      * Move operator, transfers ownership.

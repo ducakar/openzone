@@ -393,7 +393,7 @@ String::String( float f ) :
   static_assert( BUFFER_SIZE >= 17,
                  "String::BUFFER_SIZE too small for float representation." );
 
-  count = snprintf( baseBuffer, BUFFER_SIZE, "%#.8g", f );
+  count = snprintf( baseBuffer, BUFFER_SIZE, "%.8g", f );
 }
 
 String::String( double d ) :
@@ -403,7 +403,7 @@ String::String( double d ) :
   static_assert( BUFFER_SIZE >= 26,
                  "String::BUFFER_SIZE too small for double representation." );
 
-  count = snprintf( baseBuffer, BUFFER_SIZE, "%#.16g", d );
+  count = snprintf( baseBuffer, BUFFER_SIZE, "%.16g", d );
 }
 
 String String::str( const char* s, ... )

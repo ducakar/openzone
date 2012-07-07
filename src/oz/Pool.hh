@@ -143,11 +143,6 @@ class Pool
     }
 
     /**
-     * No copying.
-     */
-    Pool( const Pool& ) = delete;
-
-    /**
      * Move constructor, moves storage.
      */
     Pool( Pool&& p ) :
@@ -158,11 +153,6 @@ class Pool
       p.size       = 0;
       p.count      = 0;
     }
-
-    /**
-     * No copying.
-     */
-    Pool& operator = ( const Pool& ) = delete;
 
     /**
      * Move operator, moves storage.
