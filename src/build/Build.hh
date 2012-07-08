@@ -42,7 +42,7 @@ class Build
     void buildTerrae();
     void buildBSPs();
     void buildBSPTextures();
-    void tagClassResources();
+    void buildClasses( const String& pkgName );
     void tagFragResources();
     void buildModels();
     void copySounds();

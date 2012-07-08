@@ -26,7 +26,6 @@
 #include "matrix/WeaponClass.hh"
 
 #include "matrix/Weapon.hh"
-#include "matrix/Library.hh"
 
 namespace oz
 {
@@ -38,59 +37,16 @@ ObjectClass* WeaponClass::createClass()
   return new WeaponClass();
 }
 
-void WeaponClass::initClass( const Config* config )
+void WeaponClass::init( InputStream* is, const char* name )
 {
-  flags = Object::DYNAMIC_BIT | Object::WEAPON_BIT | Object::ITEM_BIT |
-          Object::UPDATE_FUNC_BIT | Object::USE_FUNC_BIT;
+  DynamicClass::init( is, name );
 
-  OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",    true  );
-  OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,    "flag.onUpdate",     false );
-  OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",        true  );
-  OZ_CLASS_SET_FLAG( Object::CYLINDER_BIT,       "flag.cylinder",     true  );
-  OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
+  userBase     = is->readString();
 
-  fillCommonConfig( config );
+  nRounds      = is->readInt();
+  shotInterval = is->readFloat();
 
-  if( audioType >= 0 ) {
-    const char* soundName;
-    int         soundIndex;
-
-    soundName  = config->get( "audioSound.shot", "" );
-    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
-    audioSounds[Weapon::EVENT_SHOT] = soundIndex;
-
-    soundName  = config->get( "audioSound.shotEmpty", "" );
-    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
-    audioSounds[Weapon::EVENT_SHOT_EMPTY] = soundIndex;
-  }
-
-  mass = config->get( "mass", 100.0f );
-  lift = config->get( "lift", 12.0f );
-
-  if( mass < 0.01f ) {
-    throw Exception( "%s: Invalid object mass. Should be >= 0.01.", name.cstr() );
-  }
-  if( lift < 0.0f ) {
-    throw Exception( "%s: Invalid object lift. Should be >= 0.", name.cstr() );
-  }
-
-  int underscore = name.index( '_' );
-
-  if( underscore < 0 ) {
-    throw Exception( "%s: Weapon name should be of the form botName_weapon.weaponName",
-                     name.cstr() );
-  }
-
-  userBase = name.substring( 0, underscore );
-
-  onShot = config->get( "onShot", "" );
-
-  if( !String::isEmpty( onShot ) ) {
-    flags |= Object::LUA_BIT;
-  }
-
-  nRounds      = config->get( "nRounds", -1 );
-  shotInterval = config->get( "shotInterval", 0.5f );
+  onShot       = is->readString();
 }
 
 Object* WeaponClass::create( int index, const Point& pos, Heading heading ) const

@@ -504,76 +504,121 @@ void Library::initClasses()
 
   Config classConfig;
 
-  Log::println( "Object classes (*.rc in 'class') {" );
+  Log::println( "Object classes (*.ozClass in 'class') {" );
   Log::indent();
 
   PFile dir( "class" );
   DArray<PFile> dirList = dir.ls();
 
   foreach( file, dirList.iter() ) {
-    if( !file->hasExtension( "rc" ) ) {
+    if( !file->hasExtension( "ozClasses" ) ) {
       continue;
     }
 
-    String name = file->baseName();
-
-    if( objClasses.contains( name ) ) {
-      throw Exception( "Duplicated class '%s'", name.cstr() );
-    }
-    if( !classConfig.load( *file ) ) {
-      throw Exception( "%s: Class parse error", name.cstr() );
+    if( !file->map() ) {
+      throw Exception( "Failed to map '%s'", file->path().cstr() );
     }
 
-    const char* base = classConfig.get( "base", "" );
-    if( String::isEmpty( base ) ) {
-      throw Exception( "%s: 'base' missing in class description", name.cstr() );
+    InputStream is = file->inputStream();
+
+    int nClasses  = is.readInt();
+    int nDevices  = is.readInt();
+    int nImagines = is.readInt();
+    int nAudios   = is.readInt();
+
+    for( int i = 0; i < nClasses; ++i ) {
+      const char* name = is.readString();
+      const char* base = is.readString();
+
+      if( objClasses.contains( name ) ) {
+        throw Exception( "Duplicated class '%s'", name );
+      }
+
+      if( String::isEmpty( base ) ) {
+        throw Exception( "%s: 'base' missing in class description", name );
+      }
+
+      ObjectClass::CreateFunc* const* createFunc = baseClasses.find( base );
+      if( createFunc == null ) {
+        throw Exception( "%s: Invalid class base '%s'", name, base );
+      }
+
+      // First we only add class instances, we don't initialise them as each class may have
+      // references to other classes that have not been created yet.
+      objClasses.add( name, ( *createFunc )() );
     }
 
-    ObjectClass::CreateFunc* const* createFunc = baseClasses.find( base );
-    if( createFunc == null ) {
-      throw Exception( "%s: Invalid class base '%s'", name.cstr(), base );
+    // Map integer indices to all referenced Device, Imago and Audio classes.
+    for( int i = 0; i < nDevices; ++i ) {
+      const char* sDevice = is.readString();
+
+      if( !String::isEmpty( sDevice ) ) {
+        deviceIndices.include( sDevice, deviceIndices.length() );
+      }
     }
 
-    // First we only add class instances, we don't initialise them as each class may have references
-    // to other classes that have not been created yet.
-    objClasses.add( name, ( *createFunc )() );
+    for( int i = 0; i < nImagines; ++i ) {
+      const char* sImago = is.readString();
 
-    // index device, imago and audio classes
-    const char* sDevice = classConfig.get( "deviceType", "" );
-    if( !String::isEmpty( sDevice ) ) {
-      deviceIndices.include( sDevice, deviceIndices.length() );
+      if( !String::isEmpty( sImago ) ) {
+        imagoIndices.include( sImago, imagoIndices.length() );
+      }
     }
 
-    const char* sImago = classConfig.get( "imagoType", "" );
-    if( !String::isEmpty( sImago ) ) {
-      imagoIndices.include( sImago, imagoIndices.length() );
+    for( int i = 0; i < nAudios; ++i ) {
+      const char* sAudio = is.readString();
+
+      if( !String::isEmpty( sAudio ) ) {
+        audioIndices.include( sAudio, audioIndices.length() );
+      }
     }
 
-    const char* sAudio = classConfig.get( "audioType", "" );
-    if( !String::isEmpty( sAudio ) ) {
-      audioIndices.include( sAudio, audioIndices.length() );
-    }
-
-    classConfig.clear();
+    file->unmap();
   }
 
   nDeviceClasses = deviceIndices.length();
   nImagoClasses  = imagoIndices.length();
   nAudioClasses  = audioIndices.length();
 
-  // initialise all classes
-  foreach( classIter, objClasses.iter() ) {
-    Log::println( "%s", classIter.key().cstr() );
-
-    PFile file( "class/" + classIter.key() + ".rc" );
-
-    if( !classConfig.load( file ) ) {
-      throw Exception( "Class parse error" );
+  // Initialise all classes.
+  foreach( file, dirList.iter() ) {
+    if( !file->hasExtension( "ozClasses" ) ) {
+      continue;
     }
 
-    classConfig.add( "name", classIter.key() );
-    classIter.value()->initClass( &classConfig );
-    classConfig.clear( true );
+    if( !file->map() ) {
+      throw Exception( "Failed to map '%s'", file->path().cstr() );
+    }
+
+    InputStream is = file->inputStream();
+
+    int nClasses  = is.readInt();
+    int nDevices  = is.readInt();
+    int nImagines = is.readInt();
+    int nAudios   = is.readInt();
+
+    int nStrings  = nClasses * 2 + nDevices + nImagines + nAudios;
+
+    // Forward to class data.
+    for( int i = 0; i < nStrings; ++i ) {
+      is.readString();
+    }
+
+    for( int i = 0; i < nClasses; ++i ) {
+      const char* name = is.readString();
+
+      Log::println( "%s", name );
+
+      ObjectClass* const* clazz = objClasses.find( name );
+      if( clazz == null ) {
+        throw Exception( "Class '%s' body missing in corrupted class file '%s'",
+                         name, file->path().cstr() );
+      }
+
+      ( *clazz )->init( &is, name );
+    }
+
+    file->unmap();
   }
 
   foreach( classIter, objClasses.citer() ) {
@@ -584,9 +629,9 @@ void Library::initClasses()
       const ObjectClass* itemClazz = objClazz->defaultItems[i];
 
       if( ( itemClazz->flags & ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) ) !=
-        ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) )
+          ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) )
       {
-        throw Exception( "Invalid item class '%s' in '%s'",
+        throw Exception( "Invalid item class '%s' in '%s', must be dynamic and have item flag",
                          itemClazz->name.cstr(), objClazz->name.cstr() );
       }
     }
@@ -597,7 +642,7 @@ void Library::initClasses()
 
       if( botClazz->weaponItem >= 0 ) {
         if( uint( botClazz->weaponItem ) >= uint( botClazz->defaultItems.length() ) ) {
-          throw Exception( "Invalid weaponItem for '%s'", botClazz->name.cstr() );
+          throw Exception( "Invalid weaponItem index for '%s'", botClazz->name.cstr() );
         }
 
         // we already checked it the previous loop it's non-null and a valid item

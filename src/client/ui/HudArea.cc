@@ -25,6 +25,8 @@
 
 #include "client/ui/HudArea.hh"
 
+#include "matrix/Physics.hh"
+
 #include "client/Shape.hh"
 #include "client/Camera.hh"
 #include "client/Context.hh"
@@ -165,7 +167,8 @@ void HudArea::drawBotCrosshair()
       }
 
       if( me->cargo < 0 && me->weapon < 0 &&
-        ( obj->flags & Object::DYNAMIC_BIT ) && dyn->mass <= myClazz->grabMass &&
+        ( obj->flags & Object::DYNAMIC_BIT ) &&
+          Math::fabs( dyn->mass * physics.gravity ) <= myClazz->grabWeight &&
           // not swimming or on ladder
           !( me->state & ( Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) &&
           // if it is not a bot that is holding something

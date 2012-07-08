@@ -39,6 +39,7 @@
 #include "build/Caelum.hh"
 #include "build/Terra.hh"
 #include "build/BSP.hh"
+#include "build/Class.hh"
 #include "build/OBJ.hh"
 #include "build/MD2.hh"
 #include "build/MD3.hh"
@@ -224,6 +225,10 @@ void Build::buildBSPs()
 
 void Build::buildBSPTextures()
 {
+  if( context.usedTextures.isEmpty() ) {
+    return;
+  }
+
   Log::println( "Building used BSP textures {" );
   Log::indent();
 
@@ -353,76 +358,78 @@ void Build::buildBSPTextures()
   Log::println( "}" );
 }
 
-void Build::tagClassResources()
+void Build::buildClasses( const String& pkgName )
 {
-  Log::print( "Extracting model and sound names form object class definitions ..." );
+  Log::println( "Building object classes {" );
+  Log::indent();
 
   String dirName = "class";
   PFile dir( dirName );
   DArray<PFile> dirList = dir.ls();
 
+  BufferStream os;
+
   foreach( file, dirList.iter() ) {
-    if( !file->hasExtension( "rc" ) ) {
+    if( !file->hasExtension( "json" ) ) {
       continue;
     }
 
-    Config classConfig;
-    classConfig.load( *file );
+    String name = file->baseName();
 
-    const char* imagoModel      = classConfig.get( "imagoModel", "" );
+    Log::print( "%s ...", name.cstr() );
 
-    const char* createSound     = classConfig.get( "audioSound.create", "" );
-    const char* destroySound    = classConfig.get( "audioSound.destroy", "" );
-    const char* useSound        = classConfig.get( "audioSound.use", "" );
-    const char* damageSound     = classConfig.get( "audioSound.damage", "" );
-    const char* hitSound        = classConfig.get( "audioSound.hit", "" );
-    const char* splashSound     = classConfig.get( "audioSound.splash", "" );
-    const char* frictingSound   = classConfig.get( "audioSound.fricting", "" );
-    const char* shotSound       = classConfig.get( "audioSound.shot", "" );
-    const char* shotEmptySound  = classConfig.get( "audioSound.shotEmpty", "" );
-    const char* hitHardSound    = classConfig.get( "audioSound.hitHard", "" );
-    const char* landSound       = classConfig.get( "audioSound.land", "" );
-    const char* jumpSound       = classConfig.get( "audioSound.jump", "" );
-    const char* flipSound       = classConfig.get( "audioSound.flip", "" );
-    const char* deathSound      = classConfig.get( "audioSound.death", "" );
-    const char* stepSound       = classConfig.get( "audioSound.step", "" );
-    const char* waterStepSound  = classConfig.get( "audioSound.waterStep", "" );
-    const char* swimSound       = classConfig.get( "audioSound.swim", "" );
-    const char* engineSound     = classConfig.get( "audioSound.engine", "" );
-    const char* nextWeaponSound = classConfig.get( "audioSound.nextWeapon", "" );
-    const char* shot0Sound      = classConfig.get( "audioSound.shot0", "" );
-    const char* shot1Sound      = classConfig.get( "audioSound.shot1", "" );
-    const char* shot2Sound      = classConfig.get( "audioSound.shot2", "" );
-    const char* shot3Sound      = classConfig.get( "audioSound.shot3", "" );
+    clazz.build( &os, name.cstr() );
 
-    context.usedModels.include( imagoModel );
-
-    context.usedSounds.include( createSound );
-    context.usedSounds.include( destroySound );
-    context.usedSounds.include( useSound );
-    context.usedSounds.include( damageSound );
-    context.usedSounds.include( hitSound );
-    context.usedSounds.include( splashSound );
-    context.usedSounds.include( frictingSound );
-    context.usedSounds.include( shotSound );
-    context.usedSounds.include( shotEmptySound );
-    context.usedSounds.include( hitHardSound );
-    context.usedSounds.include( landSound );
-    context.usedSounds.include( jumpSound );
-    context.usedSounds.include( flipSound );
-    context.usedSounds.include( deathSound );
-    context.usedSounds.include( stepSound );
-    context.usedSounds.include( waterStepSound );
-    context.usedSounds.include( swimSound );
-    context.usedSounds.include( engineSound );
-    context.usedSounds.include( nextWeaponSound );
-    context.usedSounds.include( shot0Sound );
-    context.usedSounds.include( shot1Sound );
-    context.usedSounds.include( shot2Sound );
-    context.usedSounds.include( shot3Sound );
+    Log::printEnd( " OK" );
   }
 
+  if( !clazz.names.isEmpty() ) {
+    BufferStream headerStream;
+
+    headerStream.writeInt( clazz.names.length() );
+    headerStream.writeInt( clazz.devices.length() );
+    headerStream.writeInt( clazz.imagines.length() );
+    headerStream.writeInt( clazz.audios.length() );
+
+    for( int i = 0; i < clazz.names.length(); ++i ) {
+      headerStream.writeString( clazz.names[i] );
+      headerStream.writeString( clazz.bases[i] );
+    }
+    foreach( device, clazz.devices.citer() ) {
+      headerStream.writeString( *device );
+    }
+    foreach( imago, clazz.imagines.citer() ) {
+      headerStream.writeString( *imago );
+    }
+    foreach( audio, clazz.audios.citer() ) {
+      headerStream.writeString( *audio );
+    }
+
+    int headerSize = headerStream.length();
+    int bodySize   = os.length();
+
+    os.forward( headerSize );
+    memmove( os.begin() + headerSize, os.begin(), size_t( bodySize ) );
+    memcpy( os.begin(), headerStream.begin(), size_t( headerSize ) );
+
+    headerStream.dealloc();
+
+    File::mkdir( "class" );
+    File outFile( "class/" + pkgName + ".ozClasses" );
+
+    Log::print( "Writing to '%s' ...", outFile.path().cstr() );
+
+    if( !outFile.write( os.begin(), os.length() ) ) {
+      throw Exception( "Failed to write object class file '%s'", outFile.path().cstr() );
+    }
+  }
+
+  clazz.free();
+
   Log::printEnd( " OK" );
+
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Build::tagFragResources()
@@ -457,6 +464,10 @@ void Build::tagFragResources()
 
 void Build::buildModels()
 {
+  if( context.usedModels.isEmpty() ) {
+    return;
+  }
+
   Log::println( "Building used models {" );
   Log::indent();
 
@@ -515,6 +526,10 @@ void Build::buildModels()
 
 void Build::copySounds()
 {
+  if( context.usedSounds.isEmpty() ) {
+    return;
+  }
+
   Log::println( "Copying used sounds {" );
   Log::indent();
 
@@ -951,8 +966,8 @@ int Build::main( int argc, char** argv )
     buildBSPTextures();
   }
   if( doClasses ) {
-    tagClassResources();
-    copyFiles( "class", "class", "rc", false );
+    buildClasses( pkgName );
+    copyFiles( "class", "class", "txt", false );
   }
   if( doFrags ) {
     tagFragResources();

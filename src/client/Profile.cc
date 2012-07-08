@@ -75,9 +75,7 @@ void Profile::init()
   clazz = static_cast<const BotClass*>( objClazz );
 
   char buffer[] = "profile.item  ";
-  for( int i = 0; i < ObjectClass::MAX_ITEMS; ++i ) {
-    hard_assert( i < 100 );
-
+  for( int i = 0; i < 100; ++i ) {
     buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
     buffer[ sizeof( buffer ) - 2 ] = char( '0' + ( i % 10 ) );
 

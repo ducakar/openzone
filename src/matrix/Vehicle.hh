@@ -35,16 +35,6 @@ class Vehicle : public Dynamic
 {
   public:
 
-    enum Type
-    {
-      STATIC,
-      WHEELED,
-      TRACKED,
-      MECH,
-      HOVER,
-      AIR
-    };
-
     static const int   MAX_WEAPONS       = 4;
 
     // not in use, used to reserve a slot for engine sound sample

@@ -32,14 +32,22 @@ namespace matrix
 
 class VehicleClass : public DynamicClass
 {
-  private:
+  public:
 
     static const int MAX_WEAPONS = 4;
 
-  public:
+    enum Type
+    {
+      STATIC,
+      WHEELED,
+      TRACKED,
+      MECH,
+      HOVER,
+      AIR
+    };
 
+    Type   type;
     int    state;
-    int    type;
 
     Vec3   pilotPos;
 
@@ -65,13 +73,13 @@ class VehicleClass : public DynamicClass
 
     int    nWeapons;
     String weaponTitles[MAX_WEAPONS];
-    String onShot[MAX_WEAPONS];
-    int    nRounds[MAX_WEAPONS];
-    float  shotInterval[MAX_WEAPONS];
+    String onWeaponShot[MAX_WEAPONS];
+    int    nWeaponRounds[MAX_WEAPONS];
+    float  weaponShotIntervals[MAX_WEAPONS];
 
     static ObjectClass* createClass();
 
-    void initClass( const Config* config ) override;
+    void init( InputStream* is, const char* name ) override;
 
     Object* create( int index, const Point& pos, Heading heading ) const override;
     Object* create( InputStream* istream ) const override;

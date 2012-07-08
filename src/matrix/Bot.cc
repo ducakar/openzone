@@ -1012,7 +1012,7 @@ void Bot::onUpdate()
         else {
           Bot* dyn = static_cast<Bot*>( orbis.objects[instrument] );
 
-          if( dyn != null && dyn->mass <= clazz->grabMass &&
+          if( dyn != null && Math::fabs( dyn->mass * physics.gravity ) <= clazz->grabWeight &&
               !( ( dyn->flags & BOT_BIT ) && dyn->cargo >= 0 ) && canReach( dyn ) )
           {
             hard_assert( dyn->flags & DYNAMIC_BIT );

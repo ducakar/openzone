@@ -39,7 +39,7 @@ class DynamicClass : public ObjectClass
 
     static ObjectClass* createClass();
 
-    void initClass( const Config* config ) override;
+    void init( InputStream* is, const char* name ) override;
 
     Object* create( int index, const Point& pos, Heading heading ) const override;
     Object* create( InputStream* istream ) const override;
