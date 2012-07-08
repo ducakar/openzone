@@ -158,7 +158,7 @@ void Build::buildCaela()
   srcDir = srcDir + "/";
 
   foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "rc" ) ) {
+    if( !file->hasExtension( "json" ) ) {
       continue;
     }
 
@@ -184,7 +184,7 @@ void Build::buildTerrae()
   srcDir = srcDir + "/";
 
   foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "rc" ) ) {
+    if( !file->hasExtension( "json" ) ) {
       continue;
     }
 
@@ -210,7 +210,7 @@ void Build::buildBSPs()
   destDir = destDir + "/";
 
   foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "rc" ) ) {
+    if( !file->hasExtension( "json" ) ) {
       continue;
     }
 
@@ -938,7 +938,7 @@ int Build::main( int argc, char** argv )
     copyFiles( "glsl", "glsl", "glsl", false );
     copyFiles( "glsl", "glsl", "vert", false );
     copyFiles( "glsl", "glsl", "frag", false );
-    copyFiles( "glsl", "glsl", "rc", false );
+    copyFiles( "glsl", "glsl", "json", false );
   }
   if( doCaela ) {
     buildCaela();

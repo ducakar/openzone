@@ -81,9 +81,10 @@ int main()
     Log::out << "Loading failed\n";
   }
 
-  Log::out << json.root.toString() << "\n";
+  Log::out << json.toString() << "\n";
   json.clear();
-  Log::out << json.root.toString() << "\n";
+  Log::out << json.isNull() << "\n";
+  Log::out << json.toString() << "\n";
 
   Alloc::printLeaks();
   return 0;

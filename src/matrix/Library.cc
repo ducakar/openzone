@@ -175,14 +175,14 @@ void Library::freeBSPs()
 
 void Library::initShaders()
 {
-  Log::println( "Shader programs (*.rc in 'glsl') {" );
+  Log::println( "Shader programs (*.json in 'glsl') {" );
   Log::indent();
 
   PFile dir( "glsl" );
   DArray<PFile> dirList = dir.ls();
 
   foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "rc" ) ) {
+    if( !file->hasExtension( "json" ) ) {
       continue;
     }
 

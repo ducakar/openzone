@@ -47,8 +47,6 @@ class BSP : public Bounds
     static const float DEFAULT_RESISTANCE;
     static const float DEFAULT_MARGIN;
 
-    static const int   BOUND_OBJECTS          = 100;
-
     static const float LIQUID_ALPHA;
     static const float LIQUID_SPECULAR;
     static const float GLASS_ALPHA;

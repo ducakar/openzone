@@ -208,13 +208,13 @@ void MD2::build( const char* path )
   String sPath = path;
 
   PFile modelFile( sPath + "/tris.md2" );
-  PFile configFile( sPath + "/config.rc" );
+  PFile configFile( sPath + "/config.json" );
   String skinPath = sPath + "/skin";
 
   Log::println( "Prebuilding MD2 model '%s' {", path );
   Log::indent();
 
-  Config config;
+  JSON config;
   config.load( configFile );
 
   if( !modelFile.map() ) {
@@ -269,24 +269,24 @@ void MD2::build( const char* path )
     throw Exception( "MD2 model loading error" );
   }
 
-  if( config.get( "forceStatic", false ) ) {
+  if( config["forceStatic"].get( false ) ) {
     header.nFrames = 1;
   }
-  String shaderName   = config.get( "shader", header.nFrames == 1 ? "mesh" : "dmesh" );
-  float  scale        = config.get( "scale", 0.04f );
+  String shaderName   = config["shader"].get( header.nFrames == 1 ? "mesh" : "dmesh" );
+  float  scale        = config["scale"].get( 0.04f );
 
-  Vec3   translation  = Vec3( config.get( "translate.x", +0.00f ),
-                              config.get( "translate.y", +0.00f ),
-                              config.get( "translate.z", -0.04f ) );
-  Vec3   jumpTransl   = Vec3( config.get( "jumpTranslate.x", 0.00f ),
-                              config.get( "jumpTranslate.y", 0.00f ),
-                              config.get( "jumpTranslate.z", 0.00f ) );
-  Vec3   weaponTransl = Vec3( config.get( "weaponTranslate.x", 0.00f ),
-                              config.get( "weaponTranslate.y", 0.00f ),
-                              config.get( "weaponTranslate.z", 0.00f ) );
-  Vec3   weaponRot    = Vec3( config.get( "weaponRotate.x", 0.00f ),
-                              config.get( "weaponRotate.y", 0.00f ),
-                              config.get( "weaponRotate.z", 0.00f ) );
+  Vec3   translation  = Vec3( config["translate.x"].get( +0.00f ),
+                              config["translate.y"].get( +0.00f ),
+                              config["translate.z"].get( -0.04f ) );
+  Vec3   jumpTransl   = Vec3( config["jumpTranslate.x"].get( 0.00f ),
+                              config["jumpTranslate.y"].get( 0.00f ),
+                              config["jumpTranslate.z"].get( 0.00f ) );
+  Vec3   weaponTransl = Vec3( config["weaponTranslate.x"].get( 0.00f ),
+                              config["weaponTranslate.y"].get( 0.00f ),
+                              config["weaponTranslate.z"].get( 0.00f ) );
+  Vec3   weaponRot    = Vec3( config["weaponRotate.x"].get( 0.00f ),
+                              config["weaponRotate.y"].get( 0.00f ),
+                              config["weaponRotate.z"].get( 0.00f ) );
 
   config.clear( true );
 

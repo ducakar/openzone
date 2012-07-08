@@ -28,7 +28,8 @@
 
 #include <cstdlib>
 
-using namespace oz;
+namespace oz
+{
 
 enum LuaSyntaxState
 {
@@ -54,11 +55,13 @@ static void printUsage( const char* invocationName )
 
 static void readBSP( File* file )
 {
+  JSON config;
+
   if( !config.load( *file ) ) {
     throw Exception( "Failed to load '%s'", file->path().cstr() );
   }
 
-  const char* title = config.get( "title", "" );
+  const char* title = config["title"].get( "" );
 
   if( String::isEmpty( title ) ) {
     titles.include( file->baseName(), file->path() );
@@ -69,13 +72,15 @@ static void readBSP( File* file )
     titles.include( title, file->path() );
   }
 
-  char keyBuffer[] = "model  .title";
+  const JSON& models = config["models"];
+  int nModels = models.length();
 
-  for( int i = 0; i < 100; ++i ) {
-    keyBuffer[5] = char( '0' + i / 10 );
-    keyBuffer[6] = char( '0' + i % 10 );
+  if( !models.isNull() && models.type() != JSON::ARRAY ) {
+    throw Exception( "'models' entry in '%s' is not an array", file->path().cstr() );
+  }
 
-    const char* modelTitle = config.get( keyBuffer, "" );
+  for( int i = 0; i < nModels; ++i ) {
+    const char* modelTitle = models[i]["title"].get( "" );
 
     if( !String::isEmpty( modelTitle ) ) {
       titles.include( modelTitle, file->path() );
@@ -317,7 +322,7 @@ int main( int argc, char** argv )
   DArray<File> files = bspDir.ls();
 
   foreach( file, files.iter() ) {
-    if( !file->hasExtension( "rc" ) ) {
+    if( !file->hasExtension( "json" ) ) {
       continue;
     }
 
@@ -328,14 +333,14 @@ int main( int argc, char** argv )
   files = classDir.ls();
 
   foreach( file, files.iter() ) {
-    if( !file->hasExtension( "rc" ) ) {
+    if( !file->hasExtension( "json" ) ) {
       continue;
     }
 
     readClass( file );
   }
 
-  String mainPOT = String::str( "%s/lingua/%s.pot.new", pkgDir.cstr(), pkgName.cstr() );
+  String mainPOT = String::str( "%s/lingua/%s.pot", pkgDir.cstr(), pkgName.cstr() );
   writePOT( &titles, mainPOT );
 
   titles.clear();
@@ -351,7 +356,7 @@ int main( int argc, char** argv )
 
     readLua( file );
 
-    String missionPOT = String::str( "%s/lingua/%s.pot.new", pkgDir.cstr(),
+    String missionPOT = String::str( "%s/lingua/%s.pot", pkgDir.cstr(),
                                      file->baseName().cstr() );
     writePOT( &messages, missionPOT );
 
@@ -360,4 +365,17 @@ int main( int argc, char** argv )
   }
 
   return EXIT_SUCCESS;
+}
+
+}
+
+int main( int argc, char** argv )
+{
+  try {
+    return oz::main( argc, argv );
+  }
+  catch( const std::exception& e ) {
+    oz::System::error( e );
+  }
+  return EXIT_FAILURE;
 }
