@@ -109,8 +109,8 @@ void Vehicle::service()
   fuel = clazz->fuel;
 
   for( int i = 0; i < clazz->nWeapons; ++i ) {
-    if( nRounds[i] != clazz->nRounds[i] ) {
-      nRounds[i] = clazz->nRounds[i];
+    if( nRounds[i] != clazz->nWeaponRounds[i] ) {
+      nRounds[i] = clazz->nWeaponRounds[i];
     }
   }
 }
@@ -336,7 +336,7 @@ void Vehicle::onUpdate()
     }
     if( actions & Bot::ACTION_ATTACK ) {
       if( shotTime[weapon] == 0.0f ) {
-        shotTime[weapon] = clazz->shotInterval[weapon];
+        shotTime[weapon] = clazz->weaponShotIntervals[weapon];
 
         if( nRounds[weapon] == 0 ) {
           addEvent( EVENT_SHOT_EMPTY, 1.0f );
@@ -345,7 +345,7 @@ void Vehicle::onUpdate()
           nRounds[weapon] = max( -1, nRounds[weapon] - 1 );
 
           addEvent( EVENT_SHOT0 + weapon, 1.0f );
-          lua.objectCall( clazz->onShot[weapon], this, bot );
+          lua.objectCall( clazz->onWeaponShot[weapon], this, bot );
         }
       }
     }
@@ -412,7 +412,7 @@ Vehicle::Vehicle( const VehicleClass* clazz_, int index_, const Point& p_, Headi
 
   weapon     = 0;
   for( int i = 0; i < MAX_WEAPONS; ++i ) {
-    nRounds[i]  = clazz_->nRounds[i];
+    nRounds[i]  = clazz_->nWeaponRounds[i];
     shotTime[i] = 0.0f;
   }
 }

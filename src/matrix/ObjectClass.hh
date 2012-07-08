@@ -25,11 +25,6 @@
 
 #include "matrix/common.hh"
 
-#define OZ_CLASS_SET_FLAG( flagBit, varName, defValue ) \
-  if( config->get( varName, defValue ) ) { \
-    flags |= flagBit; \
-  }
-
 namespace oz
 {
 namespace matrix
@@ -42,7 +37,6 @@ class ObjectClass
 {
   public:
 
-    static const int MAX_ITEMS        = 100;
     static const int MAX_SOUNDS       = 16;
 
     static const int NIGHT_VISION_BIT = 0x01;
@@ -53,36 +47,35 @@ class ObjectClass
 
     typedef ObjectClass* CreateFunc();
 
-    String          name;
-    String          title;
-    String          description;
+    String                     name;
+    String                     title;
+    String                     description;
 
-    Vec3            dim;
-    int             flags;
-    float           life;
-    float           resistance;
+    Vec3                       dim;
+    int                        flags;
+    float                      life;
+    float                      resistance;
 
-    int             attributes;
-    int             key;
+    const FragPool*            fragPool;
+    int                        nFrags;
 
-    const FragPool* fragPool;
-    int             nFrags;
+    int                        attributes;
+    int                        key;
 
-    int             nItems;
-
+    int                        nItems;
     Vector<const ObjectClass*> defaultItems;
 
-    int             deviceType;
+    int                        deviceType;
 
-    int             imagoType;
-    int             imagoModel;
+    int                        imagoType;
+    int                        imagoModel;
 
-    int             audioType;
-    int             audioSounds[MAX_SOUNDS];
+    int                        audioType;
+    int                        audioSounds[MAX_SOUNDS];
 
-    String          onDestroy;
-    String          onUse;
-    String          onUpdate;
+    String                     onDestroy;
+    String                     onUse;
+    String                     onUpdate;
 
   protected:
 
@@ -94,7 +87,7 @@ class ObjectClass
 
     static ObjectClass* createClass();
 
-    virtual void initClass( const Config* config );
+    virtual void init( InputStream* is, const char* name );
 
     virtual Object* create( int index, const Point& pos, Heading heading ) const;
     virtual Object* create( InputStream* istream ) const;

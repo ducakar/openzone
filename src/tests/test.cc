@@ -83,8 +83,6 @@ int main()
 
   Log::out << json.toString() << "\n";
   json.clear();
-  Log::out << json.isNull() << "\n";
-  Log::out << json.toString() << "\n";
 
   Alloc::printLeaks();
   return 0;

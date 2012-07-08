@@ -28,11 +28,6 @@
 #include "matrix/Library.hh"
 #include "matrix/Bot.hh"
 
-#define OZ_CLASS_SET_STATE( stateBit, varName, defValue ) \
-  if( config->get( varName, defValue ) ) { \
-    state |= stateBit; \
-  }
-
 namespace oz
 {
 namespace matrix
@@ -43,135 +38,63 @@ ObjectClass* BotClass::createClass()
   return new BotClass();
 }
 
-void BotClass::initClass( const Config* config )
+void BotClass::init( InputStream* is, const char* name )
 {
-  flags = Object::DYNAMIC_BIT | Object::BOT_BIT | Object::CYLINDER_BIT | Object::UPDATE_FUNC_BIT;
+  DynamicClass::init( is, name );
 
-  OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",    true  );
-  OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.onUse",        false );
-  OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",        true  );
-  OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
+  state             = is->readInt();
 
-  fillCommonConfig( config );
+  crouchDim         = is->readVec3();
+  corpseDim         = is->readVec3();
 
-  if( audioType >= 0 ) {
-    const char* soundName;
-    int         soundIndex;
+  camZ              = is->readFloat();
+  crouchCamZ        = is->readFloat();
 
-    soundName  = config->get( "audioSound.jump", "" );
-    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
-    audioSounds[Bot::EVENT_JUMP] = soundIndex;
+  walkMomentum      = is->readFloat();
+  runMomentum       = is->readFloat();
+  jumpMomentum      = is->readFloat();
 
-    soundName  = config->get( "audioSound.flip", "" );
-    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
-    audioSounds[Bot::EVENT_FLIP] = soundIndex;
+  airControl        = is->readFloat();
+  climbControl      = is->readFloat();
+  waterControl      = is->readFloat();
+  slickControl      = is->readFloat();
 
-    soundName  = config->get( "audioSound.death", "" );
-    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
-    audioSounds[Bot::EVENT_DEATH] = soundIndex;
+  stepWalkInc       = is->readFloat();
+  stepRunInc        = is->readFloat();
 
-    soundName  = config->get( "audioSound.step", "" );
-    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
-    audioSounds[Bot::EVENT_STEP] = soundIndex;
+  stairInc          = is->readFloat();
+  stairMax          = is->readFloat();
+  stairRateLimit    = is->readFloat();
+  stairRateSupp     = is->readFloat();
 
-    soundName  = config->get( "audioSound.waterStep", "" );
-    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
-    audioSounds[Bot::EVENT_WATERSTEP] = soundIndex;
+  climbInc          = is->readFloat();
+  climbMax          = is->readFloat();
+  climbMomentum     = is->readFloat();
 
-    soundName  = config->get( "audioSound.swim", "" );
-    soundIndex = String::isEmpty( soundName ) ? -1 : library.soundIndex( soundName );
-    audioSounds[Bot::EVENT_SWIM] = soundIndex;
-  }
+  stamina           = is->readFloat();
+  staminaGain       = is->readFloat();
+  staminaRunDrain   = is->readFloat();
+  staminaWaterDrain = is->readFloat();
+  staminaClimbDrain = is->readFloat();
+  staminaJumpDrain  = is->readFloat();
+  staminaThrowDrain = is->readFloat();
 
-  // we don't allow browsing bots' inventory as long as they are alive
-  flags &= ~Object::BROWSABLE_BIT;
+  regeneration      = is->readFloat();
 
-  life *= 2.0f;
+  reachDist         = is->readFloat();
+  grabWeight        = is->readFloat();
+  throwMomentum     = is->readFloat();
 
-  mass = config->get( "mass", 0.0f );
-  lift = config->get( "lift", -1.0f );
+  weaponItem        = is->readInt();
 
-  if( mass < 0.01f ) {
-    throw Exception( "%s: Invalid object mass. Should be >= 0.01.", name.cstr() );
-  }
-  if( lift < 0.0f ) {
-    throw Exception( "%s: Invalid object lift. Should be >= 0.", name.cstr() );
-  }
+  const char* sNameList = is->readString();
+  nameList = String::isEmpty( sNameList ) ? -1 : library.nameListIndex( sNameList );
 
-  state = 0;
+  mindFunc          = is->readString();
 
-  OZ_CLASS_SET_STATE( Bot::MECHANICAL_BIT, "state.mechanical", false );
-
-  crouchDim.x = dim.x;
-  crouchDim.y = dim.y;
-  crouchDim.z = config->get( "crouchDim.z", 0.80f );
-
-  if( crouchDim.z < 0.0f ) {
-    throw Exception( "%s: Invalid bot crouch dimensions. Should be >= 0.", name.cstr() );
-  }
-
-  corpseDim.x = config->get( "corpseDim.x", 2.0f * dim.x );
-  corpseDim.y = config->get( "corpseDim.y", 2.0f * dim.y );
-  corpseDim.z = config->get( "corpseDim.z", 0.20f );
-
-  if( corpseDim.x < 0.0f || corpseDim.y < 0.0f || corpseDim.z < 0.0f ) {
-    throw Exception( "%s: Invalid bot corpse dimensions. Should be >= 0.", name.cstr() );
-  }
-
-  camZ              = config->get( "camZ", 0.79f );
-  crouchCamZ        = config->get( "crouchCamZ", 0.69f );
-
-  walkMomentum      = config->get( "walkMomentum", 1.0f );
-  runMomentum       = config->get( "runMomentum", 2.0f );
-  jumpMomentum      = config->get( "jumpMomentum", 5.0f );
-
-  airControl        = config->get( "airControl", 0.025f );
-  climbControl      = config->get( "climbControl", 0.20f );
-  waterControl      = config->get( "waterControl", 0.07f );
-  slickControl      = config->get( "slickControl", 0.07f );
-
-  stepWalkInc       = config->get( "stepWalkInc", 6.0f / 6.0f ) * Timer::TICK_TIME;
-  stepRunInc        = config->get( "stepRunInc", 10.0f / 6.0f ) * Timer::TICK_TIME;
-
-  stairInc          = config->get( "stairInc", 0.20f );
-  stairMax          = config->get( "stairMax", 0.40f );
-  stairRateLimit    = config->get( "stairRateLimit", 0.15f );
-  stairRateSupp     = config->get( "stairRateSupp", 0.80f );
-
-  climbInc          = config->get( "climbInc", 0.25f );
-  climbMax          = config->get( "climbMax", 2.0f );
-  climbMomentum     = config->get( "climbMomentum", 2.0f );
-
-  stamina           = config->get( "stamina", 100.0f );
-
-  if( stamina <= 0.0f || !Math::isnormal( stamina ) ) {
-    throw Exception( "%s: Invalid stamina value. Should be > 0 and finite. If you want infinite "
-                     " stamina rather set stamina*Drain variables to zero.", name.cstr() );
-  }
-
-  staminaGain       = config->get( "staminaGain", 2.5f ) * Timer::TICK_TIME;
-  staminaRunDrain   = config->get( "staminaRunDrain", 4.0f ) * Timer::TICK_TIME;
-  staminaWaterDrain = config->get( "staminaWaterDrain", 4.0f ) * Timer::TICK_TIME;
-  staminaClimbDrain = config->get( "staminaClimbDrain", 10.0f ) * Timer::TICK_TIME;
-  staminaJumpDrain  = config->get( "staminaJumpDrain", 5.0f );
-  staminaThrowDrain = config->get( "staminaThrowDrain", 8.0f );
-
-  regeneration      = config->get( "regeneration", 0.0f ) * Timer::TICK_TIME;
-
-  reachDist         = config->get( "reachDist", 2.0f );
-  grabMass          = config->get( "grabMass", 50.0f );
-  throwMomentum     = config->get( "throwMomentum", 6.0f );
-
-  weaponItem        = config->get( "weaponItem", -1 );
-
-  const char* sNameList = config->get( "nameList", "" );
-  nameList          = String::isEmpty( sNameList ) ? -1 : library.nameListIndex( sNameList );
-
-  mindFunc          = config->get( "mindFunc", "" );
-
-  bobRotation       = Math::rad( config->get( "bobRotation", 0.35f ) );
-  bobAmplitude      = config->get( "bobAmplitude", 0.07f );
-  bobSwimAmplitude  = config->get( "bobSwimAmplitude", 0.07f );
+  bobRotation       = is->readFloat();
+  bobAmplitude      = is->readFloat();
+  bobSwimAmplitude  = is->readFloat();
 }
 
 Object* BotClass::create( int index, const Point& pos, Heading heading ) const
