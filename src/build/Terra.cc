@@ -38,16 +38,18 @@ namespace build
 
 void Terra::load()
 {
-  PFile configFile( "terra/" + name + ".rc" );
+  PFile configFile( "terra/" + name + ".json" );
   PFile imageFile( "terra/" + name + ".png" );
 
-  Config terraConfig;
-  terraConfig.load( configFile );
+  JSON config;
+  if( !config.load( configFile ) ) {
+    throw Exception( "Failed to loa terra configuration '%s'", configFile.path().cstr() );
+  }
 
-  float minHeight = terraConfig.get( "minHeight", -1000.0f );
-  float maxHeight = terraConfig.get( "maxHeight", +1000.0f );
+  float minHeight = config["minHeight"].get( -1000.0f );
+  float maxHeight = config["maxHeight"].get( +1000.0f );
 
-  String sLiquid = terraConfig.get( "liquid", "WATER" );
+  String sLiquid = config["liquid"].get( "WATER" );
 
   if( sLiquid.equals( "WATER" ) ) {
     liquid = Medium::WATER_BIT | Medium::SEA_BIT;
@@ -59,16 +61,16 @@ void Terra::load()
     throw Exception( "Liquid should be either WATER or LAVA" );
   }
 
-  liquidColour.x = terraConfig.get( "liquidFogColour.r", 0.00f );
-  liquidColour.y = terraConfig.get( "liquidFogColour.g", 0.05f );
-  liquidColour.z = terraConfig.get( "liquidFogColour.b", 0.20f );
+  liquidColour.x = config["liquidFogColour.r"].get( 0.00f );
+  liquidColour.y = config["liquidFogColour.g"].get( 0.05f );
+  liquidColour.z = config["liquidFogColour.b"].get( 0.20f );
   liquidColour.w = 1.0f;
 
-  liquidTexture  = terraConfig.get( "liquidTexture", "" );
-  detailTexture  = terraConfig.get( "detailTexture", "" );
-  mapTexture     = terraConfig.get( "mapTexture", "" );
+  liquidTexture  = config["liquidTexture"].get( "" );
+  detailTexture  = config["detailTexture"].get( "" );
+  mapTexture     = config["mapTexture"].get( "" );
 
-  terraConfig.clear( true );
+  config.clear( true );
 
   Log::print( "Loading terrain heightmap '%s' ...", name.cstr() );
 

@@ -168,13 +168,15 @@ void Shader::loadProgram( int id )
 {
   const String& name = library.shaders[id].name;
 
-  PFile configFile( "glsl/" + name + ".rc" );
-  Config programConfig;
+  PFile configFile( "glsl/" + name + ".json" );
+  JSON programConfig;
 
-  programConfig.load( configFile );
+  if( !programConfig.load( configFile ) ) {
+    throw Exception( "Failed to read shader program configuration '%s'", configFile.path().cstr() );
+  }
 
-  const char* vertName = programConfig.get( "vertex", "" );
-  const char* fragName = programConfig.get( "fragment", "" );
+  const char* vertName = programConfig[0].asString();
+  const char* fragName = programConfig[1].asString();
 
   const uint* vertId = vertShaders.find( vertName );
   const uint* fragId = fragShaders.find( fragName );

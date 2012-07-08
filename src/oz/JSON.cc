@@ -26,6 +26,9 @@
 
 #include "JSON.hh"
 
+#include "System.hh"
+#include "Log.hh"
+
 #include <stdlib.h>
 
 namespace oz
@@ -47,20 +50,15 @@ static char skipBlanks( InputStream* is )
   return ch;
 }
 
-const char* JSON::TypeException::what() const noexcept
-{
-  return "oz::JSON::TypeException";
-}
-
 const char* JSON::ParseException::what() const noexcept
 {
   return "oz::JSON::ParseException";
 }
 
-struct JSON::Value::Data
+struct JSON::Data
 {};
 
-struct JSON::Value::BooleanData : JSON::Value::Data
+struct JSON::BooleanData : JSON::Data
 {
   bool value;
 
@@ -69,7 +67,7 @@ struct JSON::Value::BooleanData : JSON::Value::Data
   {}
 };
 
-struct JSON::Value::NumberData : JSON::Value::Data
+struct JSON::NumberData : JSON::Data
 {
   float value;
   int   intValue;
@@ -79,7 +77,7 @@ struct JSON::Value::NumberData : JSON::Value::Data
   {}
 };
 
-struct JSON::Value::StringData : JSON::Value::Data
+struct JSON::StringData : JSON::Data
 {
   String value;
 
@@ -88,19 +86,19 @@ struct JSON::Value::StringData : JSON::Value::Data
   {}
 };
 
-struct JSON::Value::ArrayData : JSON::Value::Data
+struct JSON::ArrayData : JSON::Data
 {
-  Vector<Value> array;
+  Vector<JSON> array;
 };
 
-struct JSON::Value::ObjectData : JSON::Value::Data
+struct JSON::ObjectData : JSON::Data
 {
-  HashString<Value> table;
+  HashString<JSON> table;
 };
 
-const JSON::Value JSON::Value::nil;
+const JSON JSON::nil;
 
-JSON::Value JSON::Value::parseValue( InputStream* is )
+JSON JSON::parseValue( InputStream* is )
 {
   char ch = skipBlanks( is );
 
@@ -112,7 +110,7 @@ JSON::Value JSON::Value::parseValue( InputStream* is )
         throw ParseException();
       }
 
-      return Value( null, NIL );
+      return JSON( null, NIL );
     }
     case 'f': {
       if( is->available() < 4 || is->readChar() != 'a' || is->readChar() != 'l' ||
@@ -121,7 +119,7 @@ JSON::Value JSON::Value::parseValue( InputStream* is )
         throw ParseException();
       }
 
-      return Value( new BooleanData( false ), BOOLEAN );
+      return JSON( new BooleanData( false ), BOOLEAN );
     }
     case 't': {
       if( is->available() < 4 || is->readChar() != 'r' || is->readChar() != 'u' ||
@@ -130,7 +128,7 @@ JSON::Value JSON::Value::parseValue( InputStream* is )
         throw ParseException();
       }
 
-      return Value( new BooleanData( true ), BOOLEAN );
+      return JSON( new BooleanData( true ), BOOLEAN );
     }
     default: { // number
       Vector<char> chars;
@@ -154,10 +152,10 @@ JSON::Value JSON::Value::parseValue( InputStream* is )
         throw ParseException();
       }
 
-      return Value( new NumberData( number ), NUMBER );
+      return JSON( new NumberData( number ), NUMBER );
     }
     case '"': {
-      return Value( new StringData( parseString( is ) ), STRING );
+      return JSON( new StringData( parseString( is ) ), STRING );
     }
     case '{': {
       return parseObject( is );
@@ -168,7 +166,7 @@ JSON::Value JSON::Value::parseValue( InputStream* is )
   }
 }
 
-String JSON::Value::parseString( oz::InputStream* is )
+String JSON::parseString( oz::InputStream* is )
 {
   Vector<char> chars;
   char prevChar;
@@ -227,17 +225,17 @@ String JSON::Value::parseString( oz::InputStream* is )
   return String( chars.length() - 1, chars );
 }
 
-JSON::Value JSON::Value::parseArray( InputStream* is )
+JSON JSON::parseArray( InputStream* is )
 {
-  Value arrayValue( new ArrayData(), ARRAY );
-  Vector<Value>& array = static_cast<ArrayData*>( arrayValue.data )->array;
+  JSON arrayValue( new ArrayData(), ARRAY );
+  Vector<JSON>& array = static_cast<ArrayData*>( arrayValue.data )->array;
 
   char ch = skipBlanks( is );
   is->setPos( is->getPos() - 1 );
 
   while( ch != ']' ) {
-    Value value = parseValue( is );
-    array.add( static_cast<Value&&>( value ) );
+    JSON value = parseValue( is );
+    array.add( static_cast<JSON&&>( value ) );
 
     ch = skipBlanks( is );
 
@@ -249,10 +247,10 @@ JSON::Value JSON::Value::parseArray( InputStream* is )
   return arrayValue;
 }
 
-JSON::Value JSON::Value::parseObject( InputStream* is )
+JSON JSON::parseObject( InputStream* is )
 {
-  Value objectValue( new ObjectData(), OBJECT );
-  HashString<Value>& table = static_cast<ObjectData*>( objectValue.data )->table;
+  JSON objectValue( new ObjectData(), OBJECT );
+  HashString<JSON>& table = static_cast<ObjectData*>( objectValue.data )->table;
 
   char ch = skipBlanks( is );
   is->setPos( is->getPos() - 1 );
@@ -270,8 +268,13 @@ JSON::Value JSON::Value::parseObject( InputStream* is )
       throw ParseException();
     }
 
-    Value value = parseValue( is );
-    table.add( static_cast<String&&>( key ), static_cast<Value&&>( value ) );
+    JSON value = parseValue( is );
+
+    if( key.beginsWith( "//" ) ) {
+      value.wasAccessed = true;
+    }
+
+    table.add( static_cast<String&&>( key ), static_cast<JSON&&>( value ) );
 
     ch = skipBlanks( is );
 
@@ -283,65 +286,43 @@ JSON::Value JSON::Value::parseObject( InputStream* is )
   return objectValue;
 }
 
-inline JSON::Value::Value( Data* data_, Type valueType_ ) :
-  data( data_ ), valueType( valueType_ )
+inline JSON::JSON( Data* data_, Type valueType_ ) :
+  data( data_ ), valueType( valueType_ ), wasAccessed( false )
 {}
 
-inline JSON::Value::Value() :
-  data( null ), valueType( NIL )
+inline JSON::JSON() :
+  data( null ), valueType( NIL ), wasAccessed( true )
 {}
 
-JSON::Value::~Value()
+JSON::~JSON()
 {
-  switch( valueType ) {
-    case NIL: {
-      hard_assert( data == null );
-      break;
-    }
-    case BOOLEAN: {
-      delete static_cast<BooleanData*>( data );
-      break;
-    }
-    case NUMBER: {
-      delete static_cast<NumberData*>( data );
-      break;
-    }
-    case STRING: {
-      delete static_cast<StringData*>( data );
-      break;
-    }
-    case OBJECT: {
-      delete static_cast<ObjectData*>( data );
-      break;
-    }
-    case ARRAY: {
-      delete static_cast<ArrayData*>( data );
-      break;
-    }
-  }
+  clear();
 }
 
-inline JSON::Value::Value( Value&& v ) :
-  data( v.data ), valueType( v.valueType )
+inline JSON::JSON( JSON&& v ) :
+  data( v.data ), valueType( v.valueType ), wasAccessed( v.wasAccessed )
 {
-  v.data      = null;
-  v.valueType = NIL;
+  v.data        = null;
+  v.valueType   = NIL;
+  v.wasAccessed = true;
 }
 
-inline JSON::Value& JSON::Value::operator = ( Value&& v )
+inline JSON& JSON::operator = ( JSON&& v )
 {
-  this->~Value();
+  clear();
 
-  data      = v.data;
-  valueType = v.valueType;
+  data        = v.data;
+  valueType   = v.valueType;
+  wasAccessed = v.wasAccessed;
 
-  v.data      = null;
-  v.valueType = NIL;
+  v.data        = null;
+  v.valueType   = NIL;
+  v.wasAccessed = true;
 
   return *this;
 }
 
-int JSON::Value::length() const
+int JSON::length() const
 {
   switch( valueType ) {
     case ARRAY: {
@@ -356,143 +337,164 @@ int JSON::Value::length() const
   }
 }
 
-bool JSON::Value::asBool() const
+bool JSON::asBool() const
 {
   if( valueType == BOOLEAN ) {
+    wasAccessed = true;
     return static_cast<BooleanData*>( data )->value;
   }
   else {
-    throw TypeException();
+    throw Exception( "JSON value %s accessed as a BOOLEAN", toString().cstr() );
   }
 }
 
-int JSON::Value::asInt() const
+int JSON::asInt() const
 {
   if( valueType == NUMBER ) {
+    wasAccessed = true;
     return static_cast<NumberData*>( data )->intValue;
   }
   else {
-    throw TypeException();
+    throw Exception( "JSON value %s accessed as a NUMBER", toString().cstr() );
   }
 }
 
-float JSON::Value::asFloat() const
+float JSON::asFloat() const
 {
   if( valueType == NUMBER ) {
+    wasAccessed = true;
     return static_cast<NumberData*>( data )->value;
   }
   else {
-    throw TypeException();
+    throw Exception( "JSON value %s accessed as a NUMBER", toString().cstr() );
   }
 }
 
-const String JSON::Value::asString() const
+const String& JSON::asString() const
 {
   if( valueType == STRING ) {
+    wasAccessed = true;
     return static_cast<StringData*>( data )->value;
   }
   else {
-    throw TypeException();
+    throw Exception( "JSON value %s accessed as a STRING", toString().cstr() );
   }
 }
 
-bool JSON::Value::get( bool defaultValue ) const
+bool JSON::get( bool defaultValue ) const
 {
   if( valueType == BOOLEAN ) {
+    wasAccessed = true;
     return static_cast<BooleanData*>( data )->value;
   }
   else if( valueType == NIL ) {
     return defaultValue;
   }
   else {
-    throw TypeException();
+    throw Exception( "JSON value %s accessed as a BOOLEAN", toString().cstr() );
   }
 }
 
-int JSON::Value::get( int defaultValue ) const
+int JSON::get( int defaultValue ) const
 {
   if( valueType == NUMBER ) {
+    wasAccessed = true;
     return static_cast<NumberData*>( data )->intValue;
   }
   else if( valueType == NIL ) {
     return defaultValue;
   }
   else {
-    throw TypeException();
+    throw Exception( "JSON value %s accessed as a NUMBER", toString().cstr() );
   }
 }
 
-float JSON::Value::get( float defaultValue ) const
+float JSON::get( float defaultValue ) const
 {
   if( valueType == NUMBER ) {
+    wasAccessed = true;
     return static_cast<NumberData*>( data )->value;
   }
   else if( valueType == NIL ) {
     return defaultValue;
   }
   else {
-    throw TypeException();
+    throw Exception( "JSON value %s accessed as a NUMBER", toString().cstr() );
   }
 }
 
-const String& JSON::Value::get( const String& defaultValue ) const
+const String& JSON::get( const String& defaultValue ) const
 {
   if( valueType == STRING ) {
+    wasAccessed = true;
     return static_cast<StringData*>( data )->value;
   }
   else if( valueType == NIL ) {
     return defaultValue;
   }
   else {
-    throw TypeException();
+    throw Exception( "JSON value %s accessed as a NUMBER", toString().cstr() );
   }
 }
 
-const char* JSON::Value::get( const char* defaultValue ) const
+const char* JSON::get( const char* defaultValue ) const
 {
   if( valueType == STRING ) {
+    wasAccessed = true;
     return static_cast<StringData*>( data )->value;
   }
   else if( valueType == NIL ) {
     return defaultValue;
   }
   else {
-    throw TypeException();
+    throw Exception( "JSON value %s accessed as a STRING", toString().cstr() );
   }
 }
 
-const JSON::Value& JSON::Value::operator [] ( int i ) const
+const JSON& JSON::operator [] ( int i ) const
 {
   if( valueType != ARRAY ) {
-    throw TypeException();
+    if( valueType == NIL ) {
+      return nil;
+    }
+    throw Exception( "JSON value %s accessed as an ARRAY", toString().cstr() );
   }
 
-  const Vector<Value>& array = static_cast<ArrayData*>( data )->array;
+  wasAccessed = true;
+
+  const Vector<JSON>& array = static_cast<ArrayData*>( data )->array;
 
   if( uint( i ) >= uint( array.length() ) ) {
     return nil;
   }
 
+  array[i].wasAccessed = true;
   return array[i];
 }
 
-const JSON::Value& JSON::Value::operator[]( const char* key ) const
+const JSON& JSON::operator [] ( const char* key ) const
 {
   if( valueType != OBJECT ) {
-    throw TypeException();
+    if( valueType == NIL ) {
+      return nil;
+    }
+    throw Exception( "JSON value %s accessed as an OBJECT", toString().cstr() );
   }
 
-  const HashString<Value>& table = static_cast<ObjectData*>( data )->table;
-  const Value* value = table.find( key );
+  wasAccessed = true;
+
+  const HashString<JSON>& table = static_cast<ObjectData*>( data )->table;
+  const JSON* value = table.find( key );
 
   if( value == null ) {
     return nil;
   }
 
+  value->wasAccessed = true;
   return *value;
 }
 
-String JSON::Value::toString() const
+String JSON::toString() const
 {
   switch( valueType ) {
     default:
@@ -509,7 +511,7 @@ String JSON::Value::toString() const
       return String::str( "\"%s\"", static_cast<StringData*>( data )->value.cstr() );
     }
     case ARRAY: {
-      const Vector<Value>& array = static_cast<ArrayData*>( data )->array;
+      const Vector<JSON>& array = static_cast<ArrayData*>( data )->array;
 
       if( array.isEmpty() ) {
         return "[]";
@@ -528,7 +530,7 @@ String JSON::Value::toString() const
       return s + " ]";
     }
     case OBJECT: {
-      const HashString<Value>& table = static_cast<ObjectData*>( data )->table;
+      const HashString<JSON>& table = static_cast<ObjectData*>( data )->table;
 
       if( table.isEmpty() ) {
         return "{}";
@@ -554,13 +556,15 @@ bool JSON::load( File file )
     return false;
   }
 
+  clear();
+
   InputStream is = file.inputStream();
 
   try {
-    root = Value::parseValue( &is );
+    *this = parseValue( &is );
   }
   catch( const ParseException& ) {
-    return false;
+    throw Exception( "Failed to parse JSON file '%s'", file.path().cstr() );
   }
   return true;
 }
@@ -571,20 +575,72 @@ bool JSON::load( PFile file )
     return false;
   }
 
+  clear();
+
   InputStream is = file.inputStream();
 
   try {
-    root = Value::parseValue( &is );
+    *this = parseValue( &is );
   }
   catch( const ParseException& ) {
-    return false;
+    throw Exception( "Failed to parse JSON file '%s'", file.path().cstr() );
   }
   return true;
 }
 
-void JSON::clear()
+void JSON::clear( bool unusedWarnings )
 {
-  root = Value();
+  if( unusedWarnings && !wasAccessed ) {
+    Log::println( "Unused JSON value %s", toString().cstr() );
+    System::bell();
+  }
+
+  switch( valueType ) {
+    case NIL: {
+      hard_assert( data == null );
+      break;
+    }
+    case BOOLEAN: {
+      delete static_cast<BooleanData*>( data );
+      break;
+    }
+    case NUMBER: {
+      delete static_cast<NumberData*>( data );
+      break;
+    }
+    case STRING: {
+      delete static_cast<StringData*>( data );
+      break;
+    }
+    case ARRAY: {
+      ArrayData* arrayData = static_cast<ArrayData*>( data );
+
+      if( unusedWarnings ) {
+        foreach( i, arrayData->array.iter() ) {
+          i->clear( true );
+        }
+      }
+
+      delete arrayData;
+      break;
+    }
+    case OBJECT: {
+      ObjectData* objectData = static_cast<ObjectData*>( data );
+
+      if( unusedWarnings ) {
+        foreach( i, objectData->table.iter() ) {
+          i.value().clear( true );
+        }
+      }
+
+      delete objectData;
+      break;
+    }
+  }
+
+  data        = null;
+  valueType   = NIL;
+  wasAccessed = true;
 }
 
 }

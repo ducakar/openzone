@@ -44,30 +44,30 @@ const float BSP::GLASS_SPECULAR     = 2.00f;
 
 void BSP::load()
 {
-  PFile rcFile( String::str( "baseq3/maps/%s.rc", name.cstr() ) );
+  PFile configFile( String::str( "baseq3/maps/%s.json", name.cstr() ) );
   PFile bspFile( String::str( "baseq3/maps/%s.bsp", name.cstr() ) );
 
-  Config bspConfig;
-  if( !bspConfig.load( rcFile ) ) {
+  JSON config;
+  if( !config.load( configFile ) ) {
     throw Exception( "BSP config loading failed" );
   }
 
-  title = bspConfig.get( "title", name );
-  description = bspConfig.get( "description", "" );
+  title = config["title"].get( name );
+  description = config["description"].get( "" );
 
-  float scale = bspConfig.get( "scale", DEFAULT_SCALE );
+  float scale = config["scale"].get( DEFAULT_SCALE );
 
-  life = bspConfig.get( "life", DEFAULT_LIFE );
-  resistance = bspConfig.get( "resistance", DEFAULT_RESISTANCE );
+  life = config["life"].get( DEFAULT_LIFE );
+  resistance = config["resistance"].get( DEFAULT_RESISTANCE );
 
-  waterFogColour.x = bspConfig.get( "waterFogColour.r", 0.00f );
-  waterFogColour.y = bspConfig.get( "waterFogColour.g", 0.05f );
-  waterFogColour.z = bspConfig.get( "waterFogColour.b", 0.20f );
+  waterFogColour.x = config["waterFogColour.r"].get( 0.00f );
+  waterFogColour.y = config["waterFogColour.g"].get( 0.05f );
+  waterFogColour.z = config["waterFogColour.b"].get( 0.20f );
   waterFogColour.w = 1.0f;
 
-  lavaFogColour.x = bspConfig.get( "lavaFogColour.r", 0.30f );
-  lavaFogColour.y = bspConfig.get( "lavaFogColour.g", 0.20f );
-  lavaFogColour.z = bspConfig.get( "lavaFogColour.b", 0.00f );
+  lavaFogColour.x = config["lavaFogColour.r"].get( 0.30f );
+  lavaFogColour.y = config["lavaFogColour.g"].get( 0.20f );
+  lavaFogColour.z = config["lavaFogColour.b"].get( 0.00f );
   lavaFogColour.w = 1.0f;
 
   if( life <= 0.0f || !Math::isnormal( life ) ) {
@@ -78,10 +78,10 @@ void BSP::load()
     throw Exception( "%s: Invalid resistance. Should be >= 0.", name.cstr() );
   }
 
-  fragPool = bspConfig.get( "fragPool", "" );
-  nFrags   = bspConfig.get( "nFrags", 0 );
+  fragPool = config["fragPool"].get( "" );
+  nFrags   = config["nFrags"].get( 0 );
 
-  demolishSound = bspConfig.get( "demolishSound", "" );
+  demolishSound = config["demolishSound"].get( "" );
 
   mins = Point( -Math::INF, -Math::INF, -Math::INF );
   maxs = Point( +Math::INF, +Math::INF, +Math::INF );
@@ -225,13 +225,18 @@ void BSP::load()
     is.reset();
     is.forward( lumps[QBSPLump::MODELS].offset );
 
-    hard_assert( nModels < 100 );
-    char keyBuffer[] = "model  ";
+    const JSON& modelsConfig = config["models"];
+
+    if( !modelsConfig.isNull() && modelsConfig.type() != JSON::ARRAY ) {
+      throw Exception( "'models' entry in '%s' is not an array", configFile.path().cstr() );
+    }
 
     // skip model 0 (whole BSP)
     is.forward( int( sizeof( QBSPModel ) ) );
 
     for( int i = 0; i < nModels; ++i ) {
+      const JSON& modelConfig = modelsConfig[i];
+
       models[i].mins.x = is.readFloat() * scale - 4.0f * EPSILON;
       models[i].mins.y = is.readFloat() * scale - 4.0f * EPSILON;
       models[i].mins.z = is.readFloat() * scale - 4.0f * EPSILON;
@@ -248,17 +253,13 @@ void BSP::load()
       models[i].firstBrush = is.readInt();
       models[i].nBrushes   = is.readInt();
 
-      keyBuffer[5] = char( '0' + i / 10 );
-      keyBuffer[6] = char( '0' + i % 10 );
-      String keyName = keyBuffer;
+      models[i].title = modelConfig["title"].get( "" );
 
-      models[i].title = bspConfig.get( keyName + ".title", "" );
+      models[i].move.x = modelConfig["move.x"].get( 0.0f );
+      models[i].move.y = modelConfig["move.y"].get( 0.0f );
+      models[i].move.z = modelConfig["move.z"].get( 0.0f );
 
-      models[i].move.x = bspConfig.get( keyName + ".move.x", 0.0f );
-      models[i].move.y = bspConfig.get( keyName + ".move.y", 0.0f );
-      models[i].move.z = bspConfig.get( keyName + ".move.z", 0.0f );
-
-      String sType = bspConfig.get( keyName + ".type", "" );
+      String sType = modelConfig["type"].get( "" );
 
       if( sType.equals( "STATIC" ) ) {
         models[i].type = matrix::Model::STATIC;
@@ -290,16 +291,16 @@ void BSP::load()
                          i, models[i].move.x, models[i].move.y, models[i].move.z );
       }
 
-      models[i].margin     = bspConfig.get( keyName + ".margin", DEFAULT_MARGIN );
-      models[i].timeout    = bspConfig.get( keyName + ".timeout", 6.0f );
-      models[i].ratioInc   = Timer::TICK_TIME / bspConfig.get( keyName + ".slideTime", 1.0f );
+      models[i].margin     = modelConfig["margin"].get( DEFAULT_MARGIN );
+      models[i].timeout    = modelConfig["timeout"].get( 6.0f );
+      models[i].ratioInc   = Timer::TICK_TIME / modelConfig["slideTime"].get( 1.0f );
 
-      models[i].target     = bspConfig.get( keyName + ".target", -1 );
-      models[i].key        = bspConfig.get( keyName + ".key", 0 );
+      models[i].target     = modelConfig["target"].get( -1 );
+      models[i].key        = modelConfig["key"].get( 0 );
 
-      models[i].openSound  = bspConfig.get( keyName + ".openSound", "" );
-      models[i].closeSound = bspConfig.get( keyName + ".closeSound", "" );
-      models[i].frictSound = bspConfig.get( keyName + ".frictSound", "" );
+      models[i].openSound  = modelConfig["openSound"].get( "" );
+      models[i].closeSound = modelConfig["closeSound"].get( "" );
+      models[i].frictSound = modelConfig["frictSound"].get( "" );
     }
   }
 
@@ -467,25 +468,23 @@ void BSP::load()
     is.readInt();
   }
 
-  char keyBuffer[] = "object  ";
-  for( int i = 0; i < BOUND_OBJECTS; ++i ) {
-    hard_assert( i < 100 );
+  const JSON& objectsConfig = config["boundObjects"];
+  int nBoundObjects = objectsConfig.length();
 
-    keyBuffer[ sizeof( keyBuffer ) - 3 ] = char( '0' + ( i / 10 ) );
-    keyBuffer[ sizeof( keyBuffer ) - 2 ] = char( '0' + ( i % 10 ) );
+  for( int i = 0; i < nBoundObjects; ++i ) {
+    const JSON& objectConfig = objectsConfig[i];
 
-    String key   = keyBuffer;
-    String clazz = bspConfig.get( key + ".class", "" );
+    String clazz = objectConfig["class"].get( "" );
 
     if( !clazz.isEmpty() ) {
       BoundObject object;
 
       object.clazz   = clazz;
-      object.pos.x   = bspConfig.get( key + ".pos.x", 0.0f );
-      object.pos.y   = bspConfig.get( key + ".pos.y", 0.0f );
-      object.pos.z   = bspConfig.get( key + ".pos.z", 0.0f );
+      object.pos.x   = objectConfig["pos.x"].get( 0.0f );
+      object.pos.y   = objectConfig["pos.y"].get( 0.0f );
+      object.pos.z   = objectConfig["pos.z"].get( 0.0f );
 
-      String sHeading = bspConfig.get( key + ".heading", "" );
+      String sHeading = objectConfig["heading"].get( "" );
       if( sHeading.equals( "NORTH" ) ) {
         object.heading = NORTH;
       }
@@ -510,7 +509,7 @@ void BSP::load()
   }
 
   bspFile.unmap();
-  bspConfig.clear( true );
+  config.clear( true );
 }
 
 void BSP::optimise()

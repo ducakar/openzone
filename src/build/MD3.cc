@@ -274,26 +274,26 @@ void MD3::buildMesh( const char* name, int frame )
 
 void MD3::load()
 {
-  PFile configFile( sPath + "/config.rc" );
+  PFile configFile( sPath + "/config.json" );
 
-  Config config;
+  JSON config;
   config.load( configFile );
 
-  scale      = config.get( "scale", 0.04f );
-  skin       = config.get( "skin", "" );
+  scale      = config["scale"].get( 0.04f );
+  skin       = config["skin"].get( "" );
 
-  model      = config.get( "model", "" );
-  frame      = config.get( "frame", -1 );
-  lowerFrame = config.get( "lowerFrame", -1 );
-  upperFrame = config.get( "upperFrame", -1 );
-  shaderName = config.get( "shader", frame < 0 ? "md3" : "mesh" );
+  model      = config["model"].get( "" );
+  frame      = config["frame"].get( -1 );
+  lowerFrame = config["lowerFrame"].get( -1 );
+  upperFrame = config["upperFrame"].get( -1 );
+  shaderName = config["shader"].get( frame < 0 ? "md3" : "mesh" );
 
-  Vec3 weaponTransl = Vec3( config.get( "weaponTranslate.x", 0.00f ),
-                            config.get( "weaponTranslate.y", 0.00f ),
-                            config.get( "weaponTranslate.z", 0.00f ) );
-  Vec3 weaponRot    = Vec3( config.get( "weaponRotate.x", 0.00f ),
-                            config.get( "weaponRotate.y", 0.00f ),
-                            config.get( "weaponRotate.z", 0.00f ) );
+  Vec3 weaponTransl = Vec3( config["weaponTranslate.x"].get( 0.00f ),
+                            config["weaponTranslate.y"].get( 0.00f ),
+                            config["weaponTranslate.z"].get( 0.00f ) );
+  Vec3 weaponRot    = Vec3( config["weaponRotate.x"].get( 0.00f ),
+                            config["weaponRotate.y"].get( 0.00f ),
+                            config["weaponRotate.z"].get( 0.00f ) );
 
   Mat44 weaponTransf = Mat44::translation( weaponTransl );
   weaponTransf.rotateX( Math::rad( weaponRot.x ) );

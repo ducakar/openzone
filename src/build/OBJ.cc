@@ -266,19 +266,19 @@ void OBJ::load()
   Log::print( "Loading OBJ model '%s' ...", path.cstr() );
 
   PFile modelFile( path + "/data.obj" );
-  PFile configFile( path + "/config.rc" );
+  PFile configFile( path + "/config.json" );
 
   int currentMaterial = 0;
 
-  Config config;
+  JSON config;
   config.load( configFile );
 
-  float  scaling     = config.get( "scale", 1.0f );
-  Vec3   translation = Vec3( config.get( "translate.x", 0.0f ),
-                             config.get( "translate.y", 0.0f ),
-                             config.get( "translate.z", 0.0f ) );
+  float  scaling     = config["scale"].get( 1.0f );
+  Vec3   translation = Vec3( config["translate.x"].get( 0.0f ),
+                             config["translate.y"].get( 0.0f ),
+                             config["translate.z"].get( 0.0f ) );
 
-  shader = config.get( "shader", "mesh" );
+  shader = config["shader"].get( "mesh" );
 
   config.clear( true );
 
