@@ -228,7 +228,7 @@ int Client::main( int argc, char** argv )
 
   String configDir = String::str( "%s\\" OZ_APPLICATION_NAME, configRoot );
   String localDir  = String::str( "%s\\" OZ_APPLICATION_NAME, localRoot );
-  String musicDir  = musicDir;
+  String musicDir  = musicRoot;
 
 #else
 
@@ -443,11 +443,23 @@ int Client::main( int argc, char** argv )
 
 #endif
 
-  const char* locale = config.include( "lingua", "en" ).asString();
 
-  Log::print( "Setting localisation '%s' ...", locale );
-  if( lingua.init( locale ) ) {
+  String language = config["lingua"].get( "" );
+
+  if( language.isEmpty() ) {
+    language = Lingua::detectLanguage( null );
+
+    if( language.isEmpty() ) {
+      System::bell();
+      language = "en";
+    }
+    config.add( "lingua", language );
+  }
+
+  Log::print( "Setting language '%s' ...", language.cstr() );
+  if( lingua.init( language ) ) {
     Log::printEnd( " OK" );
+
     initFlags |= INIT_LINGUA;
   }
   else {

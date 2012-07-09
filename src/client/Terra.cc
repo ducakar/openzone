@@ -67,8 +67,6 @@ void Terra::draw()
 
   tf.model = Mat44::ID;
   tf.apply();
-
-  tf.colour = Mat44::ID;
   tf.applyColour();
 
   glActiveTexture( GL_TEXTURE0 );
@@ -121,8 +119,6 @@ void Terra::drawWater()
 
   tf.model = Mat44::ID;
   tf.apply();
-
-  tf.colour = Mat44::ID;
   tf.applyColour();
 
   glUniform1f( param.oz_WaveBias, waveBias );

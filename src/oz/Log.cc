@@ -524,4 +524,10 @@ const Log& Log::operator << ( const char* s ) const
   return *this;
 }
 
+const Log& Log::operator << ( volatile const void* p ) const
+{
+  printRaw( "%p", p );
+  return *this;
+}
+
 }

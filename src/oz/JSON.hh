@@ -219,7 +219,7 @@ class JSON
     /**
      * Clear existing value and set to null.
      */
-    void set( nullptr_t );
+    void setNull();
 
     /**
      * Clear existing value and set to a boolean.
@@ -261,7 +261,7 @@ class JSON
      *
      * If current value is not an array, <tt>Exception</tt> is thrown.
      */
-    JSON& add( nullptr_t );
+    JSON& addNull();
 
     /**
      * Add a boolean value to array.
@@ -270,7 +270,7 @@ class JSON
      */
     JSON& add( bool value )
     {
-      JSON& elem = add( null );
+      JSON& elem = addNull();
 
       elem.set( value );
       return elem;
@@ -283,7 +283,7 @@ class JSON
      */
     JSON& add( int value )
     {
-      JSON& elem = add( null );
+      JSON& elem = addNull();
 
       elem.set( value );
       return elem;
@@ -296,7 +296,7 @@ class JSON
      */
     JSON& add( float value )
     {
-      JSON& elem = add( null );
+      JSON& elem = addNull();
 
       elem.set( value );
       return elem;
@@ -309,7 +309,7 @@ class JSON
      */
     JSON& add( const String& value )
     {
-      JSON& elem = add( null );
+      JSON& elem = addNull();
 
       elem.set( value );
       return elem;
@@ -322,7 +322,7 @@ class JSON
      */
     JSON& add( const char* value )
     {
-      JSON& elem = add( null );
+      JSON& elem = addNull();
 
       elem.set( value );
       return elem;
@@ -335,7 +335,7 @@ class JSON
      */
     JSON& addArray()
     {
-      JSON& elem = add( null );
+      JSON& elem = addNull();
 
       elem.setArray();
       return elem;
@@ -348,7 +348,7 @@ class JSON
      */
     JSON& addObject()
     {
-      JSON& elem = add( null );
+      JSON& elem = addNull();
 
       elem.setObject();
       return elem;
@@ -360,7 +360,7 @@ class JSON
      *
      * If current value is not an object, <tt>Exception</tt> is thrown.
      */
-    JSON& add( const char* key, nullptr_t );
+    JSON& addNull( const char* key );
 
     /**
      * Add a boolean value with the given key to the object, overwriting any existing entry with
@@ -370,7 +370,7 @@ class JSON
      */
     JSON& add( const char* key, bool value )
     {
-      JSON& elem = add( key, null );
+      JSON& elem = addNull( key );
 
       elem.set( value );
       return elem;
@@ -384,7 +384,7 @@ class JSON
      */
     JSON& add( const char* key, int value )
     {
-      JSON& elem = add( key, null );
+      JSON& elem = addNull( key );
 
       elem.set( value );
       return elem;
@@ -398,7 +398,7 @@ class JSON
      */
     JSON& add( const char* key, float value )
     {
-      JSON& elem = add( key, null );
+      JSON& elem = addNull( key );
 
       elem.set( value );
       return elem;
@@ -412,7 +412,7 @@ class JSON
      */
     JSON& add( const char* key, const String& value )
     {
-      JSON& elem = add( key, null );
+      JSON& elem = addNull( key );
 
       elem.set( value );
       return elem;
@@ -426,7 +426,7 @@ class JSON
      */
     JSON& add( const char* key, const char* value )
     {
-      JSON& elem = add( key, null );
+      JSON& elem = addNull( key );
 
       elem.set( value );
       return elem;
@@ -440,7 +440,7 @@ class JSON
      */
     JSON& addArray( const char* key )
     {
-      JSON& elem = add( key, null );
+      JSON& elem = addNull( key );
 
       elem.setArray();
       return elem;
@@ -454,7 +454,7 @@ class JSON
      */
     JSON& addObject( const char* key )
     {
-      JSON& elem = add( key, null );
+      JSON& elem = addNull( key );
 
       elem.setObject();
       return elem;
@@ -465,7 +465,7 @@ class JSON
      *
      * If current value is not an object, <tt>Exception</tt> is thrown.
      */
-    JSON& include( const char* key, nullptr_t );
+    JSON& includeNull( const char* key );
 
     /**
      * Add a boolean value with the given key to the object if the key does not exist in the object.

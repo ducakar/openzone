@@ -720,6 +720,8 @@ int Build::main( int argc, char** argv )
 {
   String invocationName = File( argv[0] ).baseName();
 
+  config.setObject();
+
   bool doCat          = false;
   bool doUI           = false;
   bool doShaders      = false;
@@ -910,9 +912,9 @@ int Build::main( int argc, char** argv )
     throw Exception( "Failed to add directory '%s' to search path", srcDir.cstr() );
   }
 
-  config.add( "window.width", "400" );
-  config.add( "window.height", "40" );
-  config.add( "window.fullscreen", "false" );
+  config.add( "window.width", 400 );
+  config.add( "window.height", 40 );
+  config.add( "window.fullscreen", false );
 
   window.init();
 

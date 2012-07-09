@@ -396,7 +396,7 @@ table.settings td {
 
 <h2><a name="settings" href="#">Settings</a></h2>
 <p>
-  Settings file is located in <a href="#dirs">&lt;config&gt;</a>/client.rc.
+  Settings file is located in <a href="#dirs">&lt;config&gt;</a>/client.json.
 </p>
 
 <h4>Configuration variables</h4>
@@ -701,7 +701,7 @@ table.settings td {
   <tr>
     <td>Windows XP</td>
     <td>%LOCAL_APPDATA%\openzone</td>
-    <td>C:\Documents and Settings\&lt;username&gt;\Local Settings\openzone</td>
+    <td>C:\Documents and Settings\&lt;username&gt;\Local Settings\Application Data\openzone</td>
   </tr>
   <tr>
     <td>Windows 7</td>
@@ -803,17 +803,18 @@ table.settings td {
   <li>
     If you are using Gallium3D-based drivers and textures are (mostly) missing, set
     <span class="config">shader.setSamplerIndices</span> to "false" in <a href="#dirs">
-    &lt;config&gt;</a>/client.rc file.
+    &lt;config&gt;</a>/client.json file.
   </li>
   <li>
     If you are using AMD/ATI Catalyst driver and terrain looks white/grey, set
     <span class="settings">shader.setSamplerIndices</span> to "true" in <a href="#dirs">
-    &lt;config&gt;</a>/client.rc file.
+    &lt;config&gt;</a>/client.json file.
   </li>
   <li>
     If you are using some old graphics card or AMD/ATI Catalyst drivers and MD2 models are missing
     set <span class="settings">shader.vertexTexture</span> to "false" in <a href="#dirs">
-    &lt;config&gt;</a>/client.rc file. Otherwise set it to "true" for better rendering performance.
+    &lt;config&gt;</a>/client.json file. Otherwise set it to "true" for better rendering
+    performance.
   </li>
 </ul>
 

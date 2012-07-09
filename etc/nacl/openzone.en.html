@@ -80,7 +80,7 @@
         hudText.innerHTML = "Downloading updates<br/>" + text;
       }
       else if( type == "lang:" ) {
-        module.postMessage( "lang:en" );
+        module.postMessage( "lang:" + navigator.language );
       }
     }
 

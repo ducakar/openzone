@@ -92,10 +92,6 @@ void NaCl::init()
 {
   messageMutex.init();
   mainCallSemaphore.init();
-
-  // Hacks
-  config.include( "ui.showBuild", "true" );
-  config.include( "ui.showFPS", "true" );
 }
 
 void NaCl::free()

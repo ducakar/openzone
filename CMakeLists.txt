@@ -234,10 +234,10 @@ if( isClang )
   set( flags "-Qunused-arguments ${flags}" )
 
   # libc++
-  set( flags "${flags} -stdlib=libc++" )
-  set( libs_oz "${libs_oz};c++abi" )
+#   set( flags "${flags} -stdlib=libc++" )
+#   set( libs_oz "${libs_oz};c++abi" )
   # libstdc++
-  # set( flags "${flags} -stdlib=libstdc++" )
+  set( flags "${flags} -stdlib=libstdc++" )
 elseif( isLegacyGCC )
   set( flags "-pipe -std=gnu++0x -msse3 -ffast-math" )
 endif()

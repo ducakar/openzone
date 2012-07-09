@@ -23,7 +23,7 @@
 
 #include "oz/oz.hh"
 
-#include <SDL.h>
+#include <cstdio>
 
 using namespace oz;
 
@@ -90,13 +90,17 @@ int main()
   System::init();
 
   try {
-    File file( "data/openzone/class/hoverTank.json" );
+    File file( "/home/davorin/drek.json" );
 
     JSON json;
 
     if( !json.load( &file ) ) {
       Log::out << "Loading failed\n";
     }
+
+    Log::out << json["text"].asString() << "\n";
+
+    json.add( "fak\na", "aa\"\nsasa\\sa" );
 
     BufferStream os;
     json.write( &os );

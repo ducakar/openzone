@@ -396,7 +396,7 @@ table.settings td {
 
 <h2><a name="settings" href="#">Nastavitve</a></h2>
 <p>
-  Datoteka z nastavitvami se nahaja v <a href="#dirs">&lt;config&gt;</a>/client.rc.
+  Datoteka z nastavitvami se nahaja v <a href="#dirs">&lt;config&gt;</a>/client.json.
 </p>
 
 <h4>Nastavitvene spremenljivke</h4>
@@ -702,7 +702,7 @@ table.settings td {
   <tr>
     <td>Windows XP</td>
     <td>%LOCAL_APPDATA%\openzone</td>
-    <td>C:\Documents and Settings\&lt;uporabniško_ime&gt;\Local Settings\openzone</td>
+    <td>C:\Documents and Settings\&lt;uporabniško_ime&gt;\Local Settings\Application Data\openzone</td>
   </tr>
   <tr>
     <td>Windows 7</td>
@@ -804,17 +804,17 @@ table.settings td {
   <li>
     Če uporabljaš gonilnike osnovane na Gallium3D in teksture manjkajo, nastavi
     <span class="config">shader.setSamplerIndices</span> na "false" v datoteki
-    <a href="#dirs">&lt;config&gt;</a>/client.rc.
+    <a href="#dirs">&lt;config&gt;</a>/client.json.
   </li>
   <li>
     Če uporabljaš gonilnike AMD/ATI Catalyst in je teren bel/siv nastavi <span class="config">
     shader.setSamplerIndices</span> na "true" v datoteki <a href="#dirs">&lt;config&gt;</a>
-    /client.rc.
+    /client.json.
   </li>
   <li>
     Če imaš staro grafično kartico ali gonilnike AMD/ATI Catalyst in manjkajo
     modeli MD2, nastavi <span class="config">shader.vertexTexture</span> na "false" v datoteki
-    <a href="#dirs">&lt;config&gt;</a>/client.rc, sicer pa na "true" za hitrejše izrisovanje.
+    <a href="#dirs">&lt;config&gt;</a>/client.json, sicer pa na "true" za hitrejše izrisovanje.
   </li>
 </ul>
 

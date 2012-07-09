@@ -23,20 +23,63 @@
 
 #include "common/Lingua.hh"
 
+#include <SDL.h>
+
 namespace oz
 {
 
 Lingua lingua;
 
-String Lingua::locale;
+String Lingua::language;
 
 Lingua::Lingua() :
   messages( null ), nMessages( 0 )
 {}
 
+String Lingua::detectLanguage( const char* language_ )
+{
+  String language = language_;
+
+  if( !language.isEmpty() ) {
+    if( !PFile( "lingua/" + language + "/main" ).stat() ) {
+      language = "";
+    }
+    return language;
+  }
+
+  language = SDL_getenv( "LANGUAGE" );
+
+  if( !language.isEmpty() && PFile( "lingua/" + language + "/main" ).stat() ) {
+    return language;
+  }
+
+  language = SDL_getenv( "LC_MESSAGES" );
+
+  if( language.length() >= 5 ) {
+    language = language.substring( 0, 2 );
+
+    if( PFile( "lingua/" + language + "/main" ).stat() ) {
+      return language;
+    }
+  }
+
+  language = SDL_getenv( "LANG" );
+
+  if( language.length() >= 5 ) {
+    language = language.substring( 0, 2 );
+
+    if( PFile( "lingua/" + language + "/main" ).stat() ) {
+      return language;
+    }
+  }
+
+  language = "";
+  return language;
+}
+
 const char* Lingua::get( const char* message ) const
 {
-  if( nMessages == 0 ) {
+  if( nMessages == 0 || String::isEmpty( message ) ) {
     return message;
   }
 
@@ -58,7 +101,7 @@ bool Lingua::initDomain( const char* domain )
 {
   free();
 
-  PFile file( String::str( "lingua/%s/domain/%s.ozCat", locale.cstr(), domain ) );
+  PFile file( String::str( "lingua/%s/domain/%s.ozCat", language.cstr(), domain ) );
 
   if( !file.map() ) {
     return false;
@@ -89,13 +132,18 @@ bool Lingua::initDomain( const char* domain )
   return true;
 }
 
-bool Lingua::init( const char* locale_ )
+bool Lingua::init( const char* language_ )
 {
   free();
 
-  locale = locale_;
+  language = language_;
 
-  PFile dir( "lingua/" + locale + "/main" );
+  PFile dir( "lingua/" + language + "/main" );
+  if( !dir.stat() ) {
+    throw Exception( "Invalid locale '%s', does not match any subdirectory in lingua/",
+                     language.cstr() );
+  }
+
   DArray<PFile> files = dir.ls();
 
   foreach( file, files.iter() ) {

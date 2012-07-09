@@ -227,16 +227,11 @@ String::String( int count_, const char* s ) :
 
 String::String( const char* s )
 {
-  if( s == null ) {
-    buffer = baseBuffer;
-    count = 0;
-    baseBuffer[0] = '\0';
-  }
-  else {
-    count = length( s );
-    ensureCapacity();
-    memcpy( buffer, s, size_t( count + 1 ) );
-  }
+  count = s == null ? 0 : length( s );
+  ensureCapacity();
+
+  memcpy( buffer, s, size_t( count ) );
+  buffer[count] = '\0';
 }
 
 String::String( bool b ) :
@@ -455,13 +450,15 @@ String& String::operator = ( const char* s )
     return *this;
   }
 
-  count = length( s );
+  count = s == null ? 0 : length( s );
 
   if( buffer != baseBuffer ) {
     free( buffer );
   }
   ensureCapacity();
-  memcpy( buffer, s, size_t( count + 1 ) );
+
+  memcpy( buffer, s, size_t( count ) );
+  buffer[count] = '\0';
 
   return *this;
 }

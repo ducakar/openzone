@@ -3,8 +3,6 @@
   * documentation
 - client
   * bloom++
-  * mesh render scheduler
-  * two-phase rendering
   * MD3 animation
   * death camera
   * distant objects fade out

@@ -69,7 +69,7 @@ void VehicleClass::init( InputStream* is, const char* name )
   nWeapons               = is->readInt();
 
   for( int i = 0; i < nWeapons; ++i ) {
-    weaponTitles[i]        = is->readString();
+    weaponTitles[i]        = lingua.get( is->readString() );
     onWeaponShot[i]        = is->readString();
     nWeaponRounds[i]       = is->readInt();
     weaponShotIntervals[i] = is->readFloat();
