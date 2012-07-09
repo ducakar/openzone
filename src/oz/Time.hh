@@ -43,6 +43,17 @@ namespace oz
  */
 class Time
 {
+#ifdef _WIN32
+
+  private:
+
+    /// Internal helper struct for initialisation of WIN32 performance counter.
+    struct PerformanceTimer;
+
+    static PerformanceTimer performanceTimer; ///< Static initialiser for <tt>PerformanceTimer</tt>.
+
+#endif
+
   public:
 
     long64 epoch;  ///< Seconds since platform-dependent epoch.

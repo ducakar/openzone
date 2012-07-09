@@ -63,6 +63,7 @@
 #endif
 
 #define OZ_ALWAYS_INLINE             __attribute__(( always_inline ))
+#define OZ_HIDDEN                    __attribute__(( visibility( "hidden" ) ))
 #define OZ_NORETURN                  __attribute__(( noreturn ))
 #define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
 

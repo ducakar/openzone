@@ -81,11 +81,6 @@ class String
      */
     void ensureCapacity();
 
-    /**
-     * Deallocate storage (needed by destructor to avoid including <tt>\<cstdlib\></tt>).
-     */
-    void dealloc();
-
   public:
 
     /*
@@ -378,12 +373,7 @@ class String
     /**
      * Destructor.
      */
-    ~String()
-    {
-      if( buffer != baseBuffer ) {
-        dealloc();
-      }
-    }
+    ~String();
 
     /**
      * Copy constructor.

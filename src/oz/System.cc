@@ -379,8 +379,10 @@ pp::Instance* System::instance; // = null
 pp::Core*     System::core;     // = null
 #endif
 
+OZ_HIDDEN
 System System::system;
 
+OZ_HIDDEN
 System::System()
 {
   if( !isConstructed ) {
@@ -388,6 +390,7 @@ System::System()
   }
 }
 
+OZ_HIDDEN
 System::~System()
 {
   // Delay termination until bell finishes.

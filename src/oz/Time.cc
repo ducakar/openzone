@@ -55,21 +55,25 @@ struct PerformanceTimer
   ulong64 resolution;
   ulong64 uresolution;
 
-  PerformanceTimer()
-  {
-    timeBeginPeriod( 1 );
-
-    LARGE_INTEGER frequency;
-    if( QueryPerformanceFrequency( &frequency ) == 0 || frequency.QuadPart == 0 ) {
-      System::error( 0, "High-performance timer initialisation failed" );
-    }
-
-    resolution = ( 1000 + frequency.QuadPart / 2 ) / frequency.QuadPart;
-    uresolution = ( 1000000 + frequency.QuadPart / 2 ) / frequency.QuadPart;
-  }
+  PerformanceTimer();
 };
 
-PerformanceTimer performanceTimer;
+OZ_HIDDEN
+PerformanceTimer::PerformanceTimer()
+{
+  timeBeginPeriod( 1 );
+
+  LARGE_INTEGER frequency;
+  if( QueryPerformanceFrequency( &frequency ) == 0 || frequency.QuadPart == 0 ) {
+    System::error( 0, "High-performance timer initialisation failed" );
+  }
+
+  resolution = ( 1000 + frequency.QuadPart / 2 ) / frequency.QuadPart;
+  uresolution = ( 1000000 + frequency.QuadPart / 2 ) / frequency.QuadPart;
+}
+
+OZ_HIDDEN
+PerformanceTimer Time::performanceTimer;
 
 #endif
 

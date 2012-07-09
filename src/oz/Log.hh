@@ -59,8 +59,6 @@ class Log
 
     static Log  out;         ///< Similar to <tt>std::cout</tt>, for use with <tt>operator <<</tt>.
 
-  public:
-
     /**
      * Return log file path or an empty string if log is printed to stdout only.
      */
