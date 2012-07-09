@@ -246,6 +246,11 @@ class Log
      */
     const Log& operator << ( const char* s ) const;
 
+    /**
+     * Same as <tt>printfRaw( "%p", p )</tt>.
+     */
+    const Log& operator << ( volatile const void* p ) const;
+
 };
 
 }

@@ -577,7 +577,7 @@ void Context::unload()
   audios.dealloc();
 
   aFree( fragPools, library.nFragPools );
-  aSet( fragPools, null, library.nFragPools );
+  aSet<FragPool*, FragPool*>( fragPools, null, library.nFragPools );
 
   BasicAudio::pool.free();
   BotAudio::pool.free();
@@ -672,7 +672,7 @@ void Context::init()
   OZ_REGISTER_AUDIOCLASS( Bot );
   OZ_REGISTER_AUDIOCLASS( Vehicle );
 
-  aSet( fragPools, null, library.nFragPools );
+  aSet<FragPool*, FragPool*>( fragPools, null, library.nFragPools );
 
   int nTextures = library.textures.length();
   int nSounds   = library.sounds.length();

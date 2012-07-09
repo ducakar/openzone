@@ -47,10 +47,8 @@ class Time
 
   private:
 
-    /// Internal helper struct for initialisation of WIN32 performance counter.
+    /// Internal helper struct used for static initialisation of WIN32 performance counter.
     struct PerformanceTimer;
-
-    static PerformanceTimer performanceTimer; ///< Static initialiser for <tt>PerformanceTimer</tt>.
 
 #endif
 

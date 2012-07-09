@@ -18,6 +18,8 @@
   - File class: file type and size setting changed, added support for NaCl local filesystems
   - new PFile class: version of File class to act as PhysicsFS wrapper
   - Mutex, Semaphore and Thread classes for high-level thread management
+  - new JSON class for manipulating JSON files
+  - Config class removed
   - Vec3, Vec4, Quat don't inherit from each other or Simd class
   - AABB & Bounds moved to liboz from matrix
   - clearmacros.hh header to undefine liboz macros that might conflict other libraries

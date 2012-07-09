@@ -199,17 +199,14 @@ OZ_HIDDEN
 String JSON::Parser::parseString()
 {
   Vector<char> chars;
-  char prevChar;
   char ch = '"';
 
   do {
-    prevChar = ch;
     ch = pos.readChar();
 
     if( ch == '\\' ) {
-      continue;
-    }
-    if( prevChar == '\\' ) {
+      ch = pos.readChar();
+
       switch( ch ) {
         case 'b': {
           ch = '\b';
@@ -239,6 +236,7 @@ String JSON::Parser::parseString()
     else if( ch == '"' ) {
       break;
     }
+
     chars.add( ch );
   }
   while( pos.isAvailable() );
@@ -417,11 +415,70 @@ class JSON::Formatter
     int           lineEndLength;
     int           indentLevel;
 
+    int writeString( const String& string );
     void writeValue( const JSON& value );
     void writeArray( const JSON& value );
     void writeObject( const JSON& value );
 
 };
+
+OZ_HIDDEN
+int JSON::Formatter::writeString( const String& string )
+{
+  int length = string.length() + 2;
+
+  ostream->writeChar( '"' );
+
+  for( int i = 0; i < string.length(); ++i ) {
+    char ch = string[i];
+
+    switch( ch ) {
+      case '\\': {
+        ostream->writeChars( "\\\\", 2 );
+        ++length;
+        break;
+      }
+      case '"': {
+        ostream->writeChars( "\\\"", 2 );
+        ++length;
+        break;
+      }
+      case '\b': {
+        ostream->writeChars( "\\b", 2 );
+        ++length;
+        break;
+      }
+      case '\f': {
+        ostream->writeChars( "\\f", 2 );
+        ++length;
+        break;
+      }
+      case '\n': {
+        ostream->writeChars( "\\n", 2 );
+        ++length;
+        break;
+      }
+      case '\r': {
+        ostream->writeChars( "\\r", 2 );
+        ++length;
+        break;
+      }
+      case '\t': {
+        ostream->writeChars( "\\t", 2 );
+        ++length;
+        break;
+      }
+      default: {
+        ostream->writeChar( ch );
+        break;
+      }
+    }
+  }
+
+  ostream->writeChar( '"' );
+
+  return length;
+}
 
 OZ_HIDDEN
 void JSON::Formatter::writeValue( const JSON& value )
@@ -452,9 +509,7 @@ void JSON::Formatter::writeValue( const JSON& value )
     case STRING: {
       const StringData* stringData = static_cast<const StringData*>( value.data );
 
-      ostream->writeChar( '"' );
-      ostream->writeChars( stringData->value, stringData->value.length() );
-      ostream->writeChar( '"' );
+      writeString( stringData->value );
       break;
     }
     case ARRAY: {
@@ -538,9 +593,8 @@ void JSON::Formatter::writeObject( const JSON& value )
     const String& key   = sortedEntries[i];
     const JSON*   value = sortedEntries.value( i );
 
-    ostream->writeChar( '"' );
-    ostream->writeChars( key, key.length() );
-    ostream->writeChars( "\":", 2 );
+    int keyLength = writeString( key );
+    ostream->writeChar( ':' );
 
     if( value->valueType == ARRAY || value->valueType == OBJECT ) {
       ostream->writeChars( lineEnd, lineEndLength );
@@ -550,7 +604,7 @@ void JSON::Formatter::writeObject( const JSON& value )
       }
     }
     else {
-      int column = indentLevel * 2 + key.length() + 3;
+      int column = indentLevel * 2 + keyLength + 1;
 
       // Align to 24-th column.
       for( int i = column; i < ALIGNMENT_COLUMN; ++i ) {
@@ -786,7 +840,7 @@ const char* JSON::get( const char* defaultValue ) const
   }
 }
 
-void JSON::set( nullptr_t )
+void JSON::setNull()
 {
   clear();
 }
@@ -847,10 +901,10 @@ void JSON::setObject()
   valueType = OBJECT;
 }
 
-JSON& JSON::add( nullptr_t )
+JSON& JSON::addNull()
 {
   if( valueType != ARRAY ) {
-    throw Exception( "Tried to add a value to a non-array JSON value." );
+    throw Exception( "Tried to add a value to a non-array JSON value: %s", toString().cstr() );
   }
 
   ArrayData* array = static_cast<ArrayData*>( data );
@@ -859,10 +913,11 @@ JSON& JSON::add( nullptr_t )
   return array->array.last();
 }
 
-JSON& JSON::add( const char* key, nullptr_t )
+JSON& JSON::addNull( const char* key )
 {
   if( valueType != OBJECT ) {
-    throw Exception( "Tried to add a key-value pair to a non-object JSON value." );
+    throw Exception( "Tried to add a key-value pair '%s' to a non-object JSON value: %s",
+                     key, toString().cstr() );
   }
 
   ObjectData* table = static_cast<ObjectData*>( data );
@@ -870,10 +925,11 @@ JSON& JSON::add( const char* key, nullptr_t )
   return *table->table.add( key, JSON( null, NIL ) );
 }
 
-JSON& JSON::include( const char* key, nullptr_t )
+JSON& JSON::includeNull( const char* key )
 {
   if( valueType != OBJECT ) {
-    throw Exception( "Tried to include a key-value pair in a non-object JSON value." );
+    throw Exception( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
+                     key, toString().cstr() );
   }
 
   ObjectData* table = static_cast<ObjectData*>( data );
@@ -890,7 +946,8 @@ JSON& JSON::include( const char* key, nullptr_t )
 JSON& JSON::include( const char* key, bool value )
 {
   if( valueType != OBJECT ) {
-    throw Exception( "Tried to include a key-value pair in a non-object JSON value." );
+    throw Exception( "Tried to include a key-value '%s' pair in a non-object JSON value: %s",
+                     key, toString().cstr() );
   }
 
   ObjectData* table = static_cast<ObjectData*>( data );
@@ -907,7 +964,8 @@ JSON& JSON::include( const char* key, bool value )
 JSON& JSON::include( const char* key, int value )
 {
   if( valueType != OBJECT ) {
-    throw Exception( "Tried to include a key-value pair in a non-object JSON value." );
+    throw Exception( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
+                     key, toString().cstr() );
   }
 
   ObjectData* table = static_cast<ObjectData*>( data );
@@ -924,7 +982,8 @@ JSON& JSON::include( const char* key, int value )
 JSON& JSON::include( const char* key, float value )
 {
   if( valueType != OBJECT ) {
-    throw Exception( "Tried to include a key-value pair in a non-object JSON value." );
+    throw Exception( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
+                     key, toString().cstr() );
   }
 
   ObjectData* table = static_cast<ObjectData*>( data );
@@ -941,7 +1000,26 @@ JSON& JSON::include( const char* key, float value )
 JSON& JSON::include( const char* key, const String& value )
 {
   if( valueType != OBJECT ) {
-    throw Exception( "Tried to include a key-value pair in a non-object JSON value." );
+    throw Exception( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
+                     key, toString().cstr() );
+  }
+
+  ObjectData* table = static_cast<ObjectData*>( data );
+
+  JSON* entry = table->table.find( key );
+
+  if( entry == null ) {
+    entry = table->table.add( key, JSON( new StringData( value ), STRING ) );
+  }
+
+  return *entry;
+}
+
+JSON& JSON::include( const char* key, const char* value )
+{
+  if( valueType != OBJECT ) {
+    throw Exception( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
+                     key, toString().cstr() );
   }
 
   ObjectData* table = static_cast<ObjectData*>( data );
@@ -958,7 +1036,8 @@ JSON& JSON::include( const char* key, const String& value )
 JSON& JSON::includeArray( const char* key )
 {
   if( valueType != OBJECT ) {
-    throw Exception( "Tried to include a key-value pair in a non-object JSON value." );
+    throw Exception( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
+                     key, toString().cstr() );
   }
 
   ObjectData* table = static_cast<ObjectData*>( data );
@@ -975,7 +1054,8 @@ JSON& JSON::includeArray( const char* key )
 JSON& JSON::includeObject( const char* key )
 {
   if( valueType != OBJECT ) {
-    throw Exception( "Tried to include a key-value pair in a non-object JSON value." );
+    throw Exception( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
+                     key, toString().cstr() );
   }
 
   ObjectData* table = static_cast<ObjectData*>( data );
@@ -989,27 +1069,10 @@ JSON& JSON::includeObject( const char* key )
   return *entry;
 }
 
-JSON& JSON::include( const char* key, const char* value )
-{
-  if( valueType != OBJECT ) {
-    throw Exception( "Tried to include a key-value pair in a non-object JSON value." );
-  }
-
-  ObjectData* table = static_cast<ObjectData*>( data );
-
-  JSON* entry = table->table.find( key );
-
-  if( entry == null ) {
-    entry = table->table.add( key, JSON( new StringData( value ), STRING ) );
-  }
-
-  return *entry;
-}
-
 bool JSON::remove( int index )
 {
   if( valueType != ARRAY ) {
-    throw Exception( "Tried to remove a value from a non-array JSON value." );
+    throw Exception( "Tried to remove a value from a non-array JSON value: %s", toString().cstr() );
   }
 
   ArrayData* array = static_cast<ArrayData*>( data );
@@ -1025,7 +1088,8 @@ bool JSON::remove( int index )
 bool JSON::exclude( const char* key )
 {
   if( valueType != OBJECT ) {
-    throw Exception( "Tried to exclude and entry form a non-object JSON value." );
+    throw Exception( "Tried to exclude and entry form a non-object JSON value: %s",
+                     toString().cstr() );
   }
 
   ObjectData* table = static_cast<ObjectData*>( data );

@@ -44,8 +44,8 @@ ObjectClass* ObjectClass::createClass()
 void ObjectClass::init( InputStream* is, const char* name_ )
 {
   name        = name_;
-  title       = is->readString();
-  description = is->readString();
+  title       = lingua.get( is->readString() );
+  description = lingua.get( is->readString() );
 
   dim         = is->readVec3();
   flags       = is->readInt();

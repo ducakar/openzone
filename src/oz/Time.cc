@@ -50,8 +50,10 @@ namespace oz
 #ifdef _WIN32
 
 // The following struct is used to initialise and Windows high-resolution timer.
-struct PerformanceTimer
+struct Time::PerformanceTimer
 {
+  static PerformanceTimer performanceTimer;
+
   ulong64 resolution;
   ulong64 uresolution;
 
@@ -59,7 +61,10 @@ struct PerformanceTimer
 };
 
 OZ_HIDDEN
-PerformanceTimer::PerformanceTimer()
+Time::PerformanceTimer Time::PerformanceTimer::performanceTimer;
+
+OZ_HIDDEN
+Time::PerformanceTimer::PerformanceTimer()
 {
   timeBeginPeriod( 1 );
 
@@ -71,9 +76,6 @@ PerformanceTimer::PerformanceTimer()
   resolution = ( 1000 + frequency.QuadPart / 2 ) / frequency.QuadPart;
   uresolution = ( 1000000 + frequency.QuadPart / 2 ) / frequency.QuadPart;
 }
-
-OZ_HIDDEN
-PerformanceTimer Time::performanceTimer;
 
 #endif
 
@@ -92,7 +94,7 @@ uint Time::clock()
   LARGE_INTEGER now;
   QueryPerformanceCounter( &now );
 
-  return uint( now.QuadPart * performanceTimer.resolution );
+  return uint( now.QuadPart * PerformanceTimer::performanceTimer.resolution );
 
 #else
 
@@ -110,7 +112,10 @@ void Time::sleep( uint milliseconds )
 #ifdef _WIN32
   Sleep( milliseconds );
 #else
-  struct timespec ts = { milliseconds / 1000, ( milliseconds % 1000 ) * 1000000 };
+  struct timespec ts = {
+    time_t( milliseconds / 1000 ),
+    long( ( milliseconds % 1000 ) * 1000000 )
+  };
   nanosleep( &ts, null );
 #endif
 }
@@ -130,7 +135,7 @@ uint Time::uclock()
   LARGE_INTEGER now;
   QueryPerformanceCounter( &now );
 
-  return uint( now.QuadPart * performanceTimer.uresolution );
+  return uint( now.QuadPart * PerformanceTimer::performanceTimer.uresolution );
 
 #else
 
@@ -148,7 +153,10 @@ void Time::usleep( uint microseconds )
 #ifdef _WIN32
   Sleep( max<uint>( ( microseconds + 500 ) / 1000, 1 ) );
 #else
-  struct timespec ts = { microseconds / 1000000, ( microseconds % 1000000 ) * 1000 };
+  struct timespec ts = {
+    time_t( microseconds / 1000000 ),
+    long( ( microseconds % 1000000 ) * 1000 )
+  };
   nanosleep( &ts, null );
 #endif
 }
@@ -192,8 +200,8 @@ Time Time::local()
 
   return {
     long64( largeInteger.QuadPart / 10000 ),
-    timeStruct.wYear, timeStruct.wMonth, timeStruct.wDay, timeStruct.wHour,
-    timeStruct.wMinute, timeStruct.wSecond
+    int( timeStruct.wYear ), int( timeStruct.wMonth ), int( timeStruct.wDay ),
+    int( timeStruct.wHour ), int( timeStruct.wMinute ), int( timeStruct.wSecond )
   };
 
 #else
@@ -203,9 +211,9 @@ Time Time::local()
   localtime_r( &currentTime, &timeStruct );
 
   return {
-    currentTime,
-    1900 + timeStruct.tm_year, 1 + timeStruct.tm_mon, timeStruct.tm_mday,
-    timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec
+    long64( currentTime ),
+    int( 1900 + timeStruct.tm_year ), int( 1 + timeStruct.tm_mon ), int( timeStruct.tm_mday ),
+    int( timeStruct.tm_hour ), int( timeStruct.tm_min ), int( timeStruct.tm_sec )
   };
 
 #endif
@@ -230,8 +238,8 @@ Time Time::local( long64 epoch )
 
   return {
     epoch,
-    timeStruct.wYear, timeStruct.wMonth, timeStruct.wDay, timeStruct.wHour,
-    timeStruct.wMinute, timeStruct.wSecond
+    int( timeStruct.wYear ), int( timeStruct.wMonth ), int( timeStruct.wDay ),
+    int( timeStruct.wHour ), int( timeStruct.wMinute ), int( timeStruct.wSecond )
   };
 
 #else
@@ -242,8 +250,8 @@ Time Time::local( long64 epoch )
 
   return {
     epoch,
-    1900 + timeStruct.tm_year, 1 + timeStruct.tm_mon, timeStruct.tm_mday,
-    timeStruct.tm_hour, timeStruct.tm_min, timeStruct.tm_sec
+    int( 1900 + timeStruct.tm_year ), int( 1 + timeStruct.tm_mon ), int( timeStruct.tm_mday ),
+    int( timeStruct.tm_hour ), int( timeStruct.tm_min ), int( timeStruct.tm_sec )
   };
 
 #endif

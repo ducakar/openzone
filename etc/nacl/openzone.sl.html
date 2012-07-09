@@ -79,7 +79,7 @@
         hudText.innerHTML = "Prenašam posodobitve<br/>" + text;
       }
       else if( type == "lang:" ) {
-        module.postMessage( "lang:sl" );
+        module.postMessage( "lang:" + navigator.language );
       }
     }
 

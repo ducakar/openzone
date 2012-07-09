@@ -25,6 +25,9 @@
 
 #include "client/common.hh"
 
+// We need OpenGL-specific stuff for building textures.
+#undef OZ_GL_ES
+
 namespace oz
 {
 namespace build

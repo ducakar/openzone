@@ -108,7 +108,9 @@ void Window::resize()
 
 void Window::toggleFull()
 {
-#ifndef __native_client__
+#if defined( __native_client__ )
+#elif defined( _WIN32 )
+#else
 
     width  = isFull ? desiredWidth  : desktopWidth;
     height = isFull ? desiredHeight : desktopHeight;
@@ -238,6 +240,12 @@ void Window::free()
   } )
 
   flushSemaphore.destroy();
+
+#else
+
+  SDL_FreeSurface( descriptor );
+
+  descriptor = null;
 
 #endif
 }
