@@ -66,7 +66,7 @@ MD2::AnimType MD2::AnimState::extractAnim()
                          null : static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
   if( bot->state & Bot::DEAD_BIT ) {
-    if( ANIM_DEATH_FALLBACK <= currType && currType <= ANIM_DEATH_FALLBACKSLOW ) {
+    if( ANIM_DEATH_FALLBACK <= currType && nextType <= ANIM_DEATH_FALLBACKSLOW ) {
       return nextType;
     }
     else {
@@ -129,6 +129,11 @@ MD2::AnimState::AnimState( const Bot* bot_ ) :
   bot( bot_ ), currType( ANIM_STAND ), nextType( ANIM_STAND ),
   frameRatio( 0.0f ), prevAttack( false )
 {
+  if( bot->state & Bot::DEAD_BIT ) {
+    currType = AnimType( ANIM_DEATH_FALLBACK + Math::rand( 3 ) );
+    nextType = currType;
+  }
+
   nextType = extractAnim();
 
   setAnim();

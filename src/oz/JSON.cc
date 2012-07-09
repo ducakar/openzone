@@ -26,29 +26,17 @@
 
 #include "JSON.hh"
 
+#include "Exception.hh"
 #include "System.hh"
 #include "Log.hh"
 
 #include <stdlib.h>
 
+#define PARSE_EXCEPTION( message ) \
+  throw Exception( "JSON: " message " at %s:%d", pos.path, pos.line );
+
 namespace oz
 {
-
-static char skipBlanks( InputStream* is )
-{
-  char ch;
-
-  do {
-    if( !is->isAvailable() ) {
-      throw JSON::ParseException();
-    }
-
-    ch = is->readChar();
-  }
-  while( String::isBlank( ch ) );
-
-  return ch;
-}
 
 const char* JSON::ParseException::what() const noexcept
 {
@@ -96,89 +84,94 @@ struct JSON::ObjectData : JSON::Data
   HashString<JSON> table;
 };
 
-const JSON JSON::nil;
-
-JSON JSON::parseValue( InputStream* is )
+class JSON::Parser
 {
-  char ch = skipBlanks( is );
+  private:
 
-  switch( ch ) {
-    case 'n': {
-      if( is->available() < 3 || is->readChar() != 'u' || is->readChar() != 'l' ||
-          is->readChar() != 'l' )
-      {
-        throw ParseException();
-      }
+    struct Position
+    {
+      InputStream* istream;
+      const char*  path;
+      int          line;
 
-      return JSON( null, NIL );
-    }
-    case 'f': {
-      if( is->available() < 4 || is->readChar() != 'a' || is->readChar() != 'l' ||
-          is->readChar() != 's' || is->readChar() != 'e' )
-      {
-        throw ParseException();
-      }
+      bool isAvailable();
+      int  available();
+      char readChar();
+      void back();
+    };
 
-      return JSON( new BooleanData( false ), BOOLEAN );
-    }
-    case 't': {
-      if( is->available() < 4 || is->readChar() != 'r' || is->readChar() != 'u' ||
-          is->readChar() != 'e' )
-      {
-        throw ParseException();
-      }
+    Position pos;
 
-      return JSON( new BooleanData( true ), BOOLEAN );
-    }
-    default: { // number
-      Vector<char> chars;
-      chars.add( ch );
+    Parser( InputStream* istream, const char* file );
 
-      while( is->isAvailable() ) {
-        ch = is->readChar();
+    char skipBlanks();
+    String parseString();
+    JSON parseValue();
+    JSON parseArray();
+    JSON parseObject();
 
-        if( String::isBlank( ch ) || ch == ',' || ch == '}' || ch == ']' ) {
-          is->setPos( is->getPos() - 1 );
-          break;
-        }
-        chars.add( ch );
-      }
-      chars.add( '\0' );
+  public:
 
-      char* end;
-      double number = strtod( chars, &end );
+    static JSON parse( InputStream* istream, const char* file );
 
-      if( end != &chars.last() ) {
-        throw ParseException();
-      }
+};
 
-      return JSON( new NumberData( number ), NUMBER );
-    }
-    case '"': {
-      return JSON( new StringData( parseString( is ) ), STRING );
-    }
-    case '{': {
-      return parseObject( is );
-    }
-    case '[': {
-      return parseArray( is );
-    }
-  }
+inline bool JSON::Parser::Position::isAvailable()
+{
+  return istream->isAvailable();
 }
 
-String JSON::parseString( oz::InputStream* is )
+int JSON::Parser::Position::available()
+{
+  return istream->available();
+}
+
+inline char JSON::Parser::Position::readChar()
+{
+  if( !istream->isAvailable() ) {
+    const Position& pos = *this;
+    PARSE_EXCEPTION( "Unexpected end of file" );
+  }
+
+  char ch = istream->readChar();
+
+  if( ch == '\n' ) {
+    ++line;
+  }
+  return ch;
+}
+
+void JSON::Parser::Position::back()
+{
+  hard_assert( istream->length() > 0 );
+
+  istream->setPos( istream->getPos() - 1 );
+}
+
+JSON::Parser::Parser( InputStream* istream, const char* file ) :
+  pos( { istream, file, 1 } )
+{}
+
+char JSON::Parser::skipBlanks()
+{
+  char ch;
+  do {
+    ch = pos.readChar();
+  }
+  while( String::isBlank( ch ) );
+
+  return ch;
+}
+
+String JSON::Parser::parseString()
 {
   Vector<char> chars;
   char prevChar;
   char ch = '"';
 
-  if( !is->isAvailable() ) {
-    throw ParseException();
-  }
-
   do {
     prevChar = ch;
-    ch = is->readChar();
+    ch = pos.readChar();
 
     if( ch == '\\' ) {
       continue;
@@ -215,60 +208,128 @@ String JSON::parseString( oz::InputStream* is )
     }
     chars.add( ch );
   }
-  while( is->isAvailable() );
+  while( pos.isAvailable() );
 
   if( ch != '"' ) {
-    throw ParseException();
+    PARSE_EXCEPTION( "End of string expected" );
   }
   chars.add( '\0' );
 
   return String( chars.length() - 1, chars );
 }
 
-JSON JSON::parseArray( InputStream* is )
+JSON JSON::Parser::parseValue()
+{
+  char ch = skipBlanks();
+
+  switch( ch ) {
+    case 'n': {
+      if( pos.available() < 3 || pos.readChar() != 'u' || pos.readChar() != 'l' ||
+          pos.readChar() != 'l' )
+      {
+        PARSE_EXCEPTION( "Unknown value type" );
+      }
+
+      return JSON( null, NIL );
+    }
+    case 'f': {
+      if( pos.available() < 4 || pos.readChar() != 'a' || pos.readChar() != 'l' ||
+          pos.readChar() != 's' || pos.readChar() != 'e' )
+      {
+        PARSE_EXCEPTION( "Unknown value type" );
+      }
+
+      return JSON( new BooleanData( false ), BOOLEAN );
+    }
+    case 't': {
+      if( pos.available() < 4 || pos.readChar() != 'r' || pos.readChar() != 'u' ||
+          pos.readChar() != 'e' )
+      {
+        PARSE_EXCEPTION( "Unknown value type" );
+      }
+
+      return JSON( new BooleanData( true ), BOOLEAN );
+    }
+    default: { // number
+      Vector<char> chars;
+      chars.add( ch );
+
+      while( pos.isAvailable() ) {
+        ch = pos.readChar();
+
+        if( String::isBlank( ch ) || ch == ',' || ch == '}' || ch == ']' ) {
+          pos.back();
+          break;
+        }
+        chars.add( ch );
+      }
+      chars.add( '\0' );
+
+      char* end;
+      double number = strtod( chars, &end );
+
+      if( end != &chars.last() ) {
+        PARSE_EXCEPTION( "Unknown value type" );
+      }
+
+      return JSON( new NumberData( number ), NUMBER );
+    }
+    case '"': {
+      return JSON( new StringData( parseString() ), STRING );
+    }
+    case '{': {
+      return parseObject();
+    }
+    case '[': {
+      return parseArray();
+    }
+  }
+}
+
+JSON JSON::Parser::parseArray()
 {
   JSON arrayValue( new ArrayData(), ARRAY );
   Vector<JSON>& array = static_cast<ArrayData*>( arrayValue.data )->array;
 
-  char ch = skipBlanks( is );
-  is->setPos( is->getPos() - 1 );
+  char ch = skipBlanks();
+  pos.back();
 
   while( ch != ']' ) {
-    JSON value = parseValue( is );
+    JSON value = parseValue();
     array.add( static_cast<JSON&&>( value ) );
 
-    ch = skipBlanks( is );
+    ch = skipBlanks();
 
     if( ch != ',' && ch != ']' ) {
-      throw ParseException();
+      PARSE_EXCEPTION( "Expected ',' or ']' while parsing array" );
     }
   }
 
   return arrayValue;
 }
 
-JSON JSON::parseObject( InputStream* is )
+JSON JSON::Parser::parseObject()
 {
   JSON objectValue( new ObjectData(), OBJECT );
   HashString<JSON>& table = static_cast<ObjectData*>( objectValue.data )->table;
 
-  char ch = skipBlanks( is );
-  is->setPos( is->getPos() - 1 );
+  char ch = skipBlanks();
+  pos.back();
 
   while( ch != '}' ) {
-    ch = skipBlanks( is );
+    ch = skipBlanks();
     if( ch != '"' ) {
-      throw ParseException();
+      PARSE_EXCEPTION( "Expected string key while parsing object" );
     }
 
-    String key = parseString( is );
+    String key = parseString();
 
-    ch = skipBlanks( is );
+    ch = skipBlanks();
     if( ch != ':' ) {
-      throw ParseException();
+      PARSE_EXCEPTION( "Expected ':' after key in object" );
     }
 
-    JSON value = parseValue( is );
+    JSON value = parseValue();
 
     if( key.beginsWith( "//" ) ) {
       value.wasAccessed = true;
@@ -276,15 +337,23 @@ JSON JSON::parseObject( InputStream* is )
 
     table.add( static_cast<String&&>( key ), static_cast<JSON&&>( value ) );
 
-    ch = skipBlanks( is );
+    ch = skipBlanks();
 
     if( ch != ',' && ch != '}' ) {
-      throw ParseException();
+      PARSE_EXCEPTION( "Expected ',' or '}' while parsing object" );
     }
   }
 
   return objectValue;
 }
+
+JSON JSON::Parser::parse( InputStream* istream, const char* file )
+{
+  Parser parser( istream, file );
+  return parser.parseValue();
+}
+
+const JSON JSON::nil;
 
 inline JSON::JSON( Data* data_, Type valueType_ ) :
   data( data_ ), valueType( valueType_ ), wasAccessed( false )
@@ -344,7 +413,7 @@ bool JSON::asBool() const
     return static_cast<BooleanData*>( data )->value;
   }
   else {
-    throw Exception( "JSON value %s accessed as a BOOLEAN", toString().cstr() );
+    throw Exception( "JSON value accessed as a boolean: %s", toString().cstr() );
   }
 }
 
@@ -355,7 +424,7 @@ int JSON::asInt() const
     return static_cast<NumberData*>( data )->intValue;
   }
   else {
-    throw Exception( "JSON value %s accessed as a NUMBER", toString().cstr() );
+    throw Exception( "JSON value accessed as a number: %s", toString().cstr() );
   }
 }
 
@@ -366,7 +435,7 @@ float JSON::asFloat() const
     return static_cast<NumberData*>( data )->value;
   }
   else {
-    throw Exception( "JSON value %s accessed as a NUMBER", toString().cstr() );
+    throw Exception( "JSON value accessed as a number: %s", toString().cstr() );
   }
 }
 
@@ -377,7 +446,7 @@ const String& JSON::asString() const
     return static_cast<StringData*>( data )->value;
   }
   else {
-    throw Exception( "JSON value %s accessed as a STRING", toString().cstr() );
+    throw Exception( "JSON value accessed as a string: %s", toString().cstr() );
   }
 }
 
@@ -391,7 +460,7 @@ bool JSON::get( bool defaultValue ) const
     return defaultValue;
   }
   else {
-    throw Exception( "JSON value %s accessed as a BOOLEAN", toString().cstr() );
+    throw Exception( "JSON value accessed as a boolean: %s", toString().cstr() );
   }
 }
 
@@ -405,7 +474,7 @@ int JSON::get( int defaultValue ) const
     return defaultValue;
   }
   else {
-    throw Exception( "JSON value %s accessed as a NUMBER", toString().cstr() );
+    throw Exception( "JSON value accessed as a number: %s", toString().cstr() );
   }
 }
 
@@ -419,7 +488,7 @@ float JSON::get( float defaultValue ) const
     return defaultValue;
   }
   else {
-    throw Exception( "JSON value %s accessed as a NUMBER", toString().cstr() );
+    throw Exception( "JSON value accessed as a number: %s", toString().cstr() );
   }
 }
 
@@ -433,7 +502,7 @@ const String& JSON::get( const String& defaultValue ) const
     return defaultValue;
   }
   else {
-    throw Exception( "JSON value %s accessed as a NUMBER", toString().cstr() );
+    throw Exception( "JSON value accessed as a string: %s", toString().cstr() );
   }
 }
 
@@ -447,7 +516,7 @@ const char* JSON::get( const char* defaultValue ) const
     return defaultValue;
   }
   else {
-    throw Exception( "JSON value %s accessed as a STRING", toString().cstr() );
+    throw Exception( "JSON value accessed as a string: %s", toString().cstr() );
   }
 }
 
@@ -457,7 +526,7 @@ const JSON& JSON::operator [] ( int i ) const
     if( valueType == NIL ) {
       return nil;
     }
-    throw Exception( "JSON value %s accessed as an ARRAY", toString().cstr() );
+    throw Exception( "JSON value accessed as an array: %s", toString().cstr() );
   }
 
   wasAccessed = true;
@@ -478,7 +547,7 @@ const JSON& JSON::operator [] ( const char* key ) const
     if( valueType == NIL ) {
       return nil;
     }
-    throw Exception( "JSON value %s accessed as an OBJECT", toString().cstr() );
+    throw Exception( "JSON value accessed as an object: %s", toString().cstr() );
   }
 
   wasAccessed = true;
@@ -560,12 +629,9 @@ bool JSON::load( File file )
 
   InputStream is = file.inputStream();
 
-  try {
-    *this = parseValue( &is );
-  }
-  catch( const ParseException& ) {
-    throw Exception( "Failed to parse JSON file '%s'", file.path().cstr() );
-  }
+  *this = Parser::parse( &is, file.path() );
+
+  file.unmap();
   return true;
 }
 
@@ -579,12 +645,9 @@ bool JSON::load( PFile file )
 
   InputStream is = file.inputStream();
 
-  try {
-    *this = parseValue( &is );
-  }
-  catch( const ParseException& ) {
-    throw Exception( "Failed to parse JSON file '%s'", file.path().cstr() );
-  }
+  *this = Parser::parse( &is, file.path() );
+
+  file.unmap();
   return true;
 }
 

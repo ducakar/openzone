@@ -62,6 +62,9 @@ class JSON
     /// Internal struct for Object representation.
     struct ObjectData;
 
+    /// Class that wraps internal parser functions.
+    class Parser;
+
   public:
 
     /**
@@ -98,26 +101,6 @@ class JSON
     Data*             data;        ///< Pointer to internal data struct.
     Type              valueType;   ///< Value type, <tt>JSON::Type</tt>.
     mutable bool      wasAccessed; ///< For warnings about unused variables.
-
-    /**
-     * Internal function for parsing.
-     */
-    static JSON parseValue( InputStream* is );
-
-    /**
-     * Internal function for parsing a string.
-     */
-    static String parseString( InputStream* is );
-
-    /**
-     * Internal function for parsing an array.
-     */
-    static JSON parseArray( InputStream* is );
-
-    /**
-     * Internal function to parsing an object.
-     */
-    static JSON parseObject( InputStream* is );
 
     /**
      * Internal constructor.
