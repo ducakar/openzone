@@ -43,12 +43,14 @@ const char* String::ParseException::what() const noexcept
   return "oz::String::ParseException";
 }
 
+OZ_HIDDEN
 String::String( int count_, int ) :
   count( count_ )
 {
   ensureCapacity();
 }
 
+OZ_HIDDEN
 void String::ensureCapacity()
 {
   if( count < BUFFER_SIZE ) {
@@ -61,11 +63,6 @@ void String::ensureCapacity()
       System::error( 0, "String allocation failed" );
     }
   }
-}
-
-void String::dealloc()
-{
-  free( buffer );
 }
 
 bool String::endsWith( const char* s, const char* sub )
@@ -142,6 +139,13 @@ double String::parseDouble( const char* s )
     throw ParseException();
   }
   return d;
+}
+
+String::~String()
+{
+  if( buffer != baseBuffer ) {
+    free( buffer );
+  }
 }
 
 String::String( const String& s ) :

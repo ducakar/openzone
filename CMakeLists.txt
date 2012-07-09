@@ -198,7 +198,8 @@ endif()
 # Compiler flags
 #
 
-set( flags "-pipe -std=c++0x -pedantic -fstrict-enums -ffast-math -msse3 -mfpmath=sse" )
+set( flags "-pipe -std=c++0x -pedantic -fstrict-enums -fvisibility-inlines-hidden -ffast-math" )
+set( flags "${flags} -msse3 -mfpmath=sse" )
 set( warnings "-Wall -Wextra -Winvalid-pch -Wconversion " )
 
 # Additional warnings, enabled only once in a while to check code quality (GCC specific).

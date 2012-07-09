@@ -80,20 +80,6 @@ class JSON
       OBJECT
     };
 
-    /**
-     * Thrown by read function on parse errors.
-     */
-    class ParseException : public std::exception
-    {
-      public:
-
-        /**
-         * Exception description ("oz::JSON::ParseException").
-         */
-        const char* what() const noexcept override;
-
-    };
-
   private:
 
     static const JSON nil;         ///< A null value, required by <tt>operator []</tt> functions.
@@ -179,6 +165,22 @@ class JSON
     const String& asString() const;
 
     /**
+     * Returns value at position <tt>i</tt> in an array.
+     *
+     * If the index is out of bounds or the value is null, a null value is returned.
+     * If the value is not either an array or a null, <tt>Exception</tt> is thrown.
+     */
+    const JSON& operator [] ( int i ) const;
+
+    /**
+     * Returns value for <tt>key</tt> in an object.
+     *
+     * If the key does not exist or the value is null, a null value is returned.
+     * If value is not either an object or a null, <tt>Exception</tt> is thrown.
+     */
+    const JSON& operator [] ( const char* key ) const;
+
+    /**
      * Return boolean value or <tt>defaultValue</tt> if null.
      *
      * If value is not either a boolean or a null <tt>Exception</tt> is thrown.
@@ -200,6 +202,292 @@ class JSON
     float get( float defaultValue ) const;
 
     /**
+     * Clear existing value and set to null.
+     */
+    void set( nullptr_t );
+
+    /**
+     * Clear existing value and set to a boolean.
+     */
+    void set( bool value );
+
+    /**
+     * Clear existing value and set to a number.
+     */
+    void set( int value );
+
+    /**
+     * Clear existing value and set to a number.
+     */
+    void set( float value );
+
+    /**
+     * Clear existing value and set to a string.
+     */
+    void set( const String& value );
+
+    /**
+     * Clear existing value and set to a string.
+     */
+    void set( const char* value );
+
+    /**
+     * Clear existing value and set to an empty array.
+     */
+    void setArray();
+
+    /**
+     * Clear existing value and set to an empty object.
+     */
+    void setObject();
+
+    /**
+     * Add a null value to array.
+     *
+     * If current value is not an array, <tt>Exception</tt> is thrown.
+     */
+    JSON& add( nullptr_t );
+
+    /**
+     * Add a boolean value to array.
+     *
+     * If current value is not an array, <tt>Exception</tt> is thrown.
+     */
+    JSON& add( bool value )
+    {
+      JSON& elem = add( null );
+
+      elem.set( value );
+      return elem;
+    }
+
+    /**
+     * Add a number value to array.
+     *
+     * If current value is not an array, <tt>Exception</tt> is thrown.
+     */
+    JSON& add( int value )
+    {
+      JSON& elem = add( null );
+
+      elem.set( value );
+      return elem;
+    }
+
+    /**
+     * Add a number value to array.
+     *
+     * If current value is not an array, <tt>Exception</tt> is thrown.
+     */
+    JSON& add( float value )
+    {
+      JSON& elem = add( null );
+
+      elem.set( value );
+      return elem;
+    }
+
+    /**
+     * Add a string value to array.
+     *
+     * If current value is not an array, <tt>Exception</tt> is thrown.
+     */
+    JSON& add( const String& value )
+    {
+      JSON& elem = add( null );
+
+      elem.set( value );
+      return elem;
+    }
+
+    /**
+     * Add a string value to array.
+     *
+     * If current value is not an array, <tt>Exception</tt> is thrown.
+     */
+    JSON& add( const char* value )
+    {
+      JSON& elem = add( null );
+
+      elem.set( value );
+      return elem;
+    }
+
+    /**
+     * Add an empty array value to array.
+     *
+     * If current value is not an array, <tt>Exception</tt> is thrown.
+     */
+    JSON& addArray()
+    {
+      JSON& elem = add( null );
+
+      elem.setArray();
+      return elem;
+    }
+
+    /**
+     * Add an empty object value to array.
+     *
+     * If current value is not an array, <tt>Exception</tt> is thrown.
+     */
+    JSON& addObject()
+    {
+      JSON& elem = add( null );
+
+      elem.setObject();
+      return elem;
+    }
+
+    /**
+     * Add a null value with the given key to the object, overwriting any existing entry with that
+     * key.
+     *
+     * If current value is not an object, <tt>Exception</tt> is thrown.
+     */
+    JSON& add( const char* key, nullptr_t );
+
+    /**
+     * Add a boolean value with the given key to the object, overwriting any existing entry with
+     * that key.
+     *
+     * If current value is not an object, <tt>Exception</tt> is thrown.
+     */
+    JSON& add( const char* key, bool value )
+    {
+      JSON& elem = add( key, null );
+
+      elem.set( value );
+      return elem;
+    }
+
+    /**
+     * Add a number value with the given key to the object, overwriting any existing entry with that
+     * key.
+     *
+     * If current value is not an object, <tt>Exception</tt> is thrown.
+     */
+    JSON& add( const char* key, int value )
+    {
+      JSON& elem = add( key, null );
+
+      elem.set( value );
+      return elem;
+    }
+
+    /**
+     * Add a number value with the given key to the object, overwriting any existing entry with that
+     * key.
+     *
+     * If current value is not an object, <tt>Exception</tt> is thrown.
+     */
+    JSON& add( const char* key, float value )
+    {
+      JSON& elem = add( key, null );
+
+      elem.set( value );
+      return elem;
+    }
+
+    /**
+     * Add a string value with the given key to the object, overwriting any existing entry with that
+     * key.
+     *
+     * If current value is not an object, <tt>Exception</tt> is thrown.
+     */
+    JSON& add( const char* key, const String& value )
+    {
+      JSON& elem = add( key, null );
+
+      elem.set( value );
+      return elem;
+    }
+
+    /**
+     * Add a string value with the given key to the object, overwriting any existing entry with that
+     * key.
+     *
+     * If current value is not an object, <tt>Exception</tt> is thrown.
+     */
+    JSON& add( const char* key, const char* value )
+    {
+      JSON& elem = add( key, null );
+
+      elem.set( value );
+      return elem;
+    }
+
+    /**
+     * Add an empty array value with the given key to the object, overwriting any existing entry
+     * with that key.
+     *
+     * If current value is not an object, <tt>Exception</tt> is thrown.
+     */
+    JSON& addArray( const char* key )
+    {
+      JSON& elem = add( key, null );
+
+      elem.setArray();
+      return elem;
+    }
+
+    /**
+     * Add an empty object value with the given key to the object, overwriting any existing entry
+     * with that key.
+     *
+     * If current value is not an object, <tt>Exception</tt> is thrown.
+     */
+    JSON& addObject( const char* key )
+    {
+      JSON& elem = add( key, null );
+
+      elem.setObject();
+      return elem;
+    }
+
+    /**
+     * Add a null value with the given key to the object if the key does not exist in the object.
+     *
+     * If current value is not an object, <tt>Exception</tt> is thrown.
+     */
+    JSON& include( const char* key, nullptr_t );
+
+    /**
+     * Add a boolean value with the given key to the object if the key does not exist in the object.
+     *
+     * If current value is not an object, <tt>Exception</tt> is thrown.
+     */
+    JSON& include( const char* key, bool value );
+
+    /**
+     * Add a number value with the given key to the object if the key does not exist in the object.
+     *
+     * If current value is not an object, <tt>Exception</tt> is thrown.
+     */
+    JSON& include( const char* key, int value );
+
+    /**
+     * Add a number value with the given key to the object if the key does not exist in the object.
+     *
+     * If current value is not an object, <tt>Exception</tt> is thrown.
+     */
+    JSON& include( const char* key, float value );
+
+    /**
+     * Add a string value with the given key to the object if the key does not exist in the object.
+     *
+     * If current value is not an object, <tt>Exception</tt> is thrown.
+     */
+    JSON& include( const char* key, const String& value );
+
+    /**
+     * Add a string value with the given key to the object if the key does not exist in the object.
+     *
+     * If current value is not an object, <tt>Exception</tt> is thrown.
+     */
+    JSON& include( const char* key, const char* value );
+
+    /**
      * Return string value or <tt>defaultValue</tt> if null.
      *
      * If value is not either a string or a null <tt>Exception</tt> is thrown.
@@ -212,22 +500,6 @@ class JSON
      * If value is not either a string or a null <tt>Exception</tt> is thrown.
      */
     const char* get( const char* defaultValue ) const;
-
-    /**
-     * Returns value at position <tt>i</tt> in an array.
-     *
-     * If the index is out of bounds or the value is null, a null value is returned.
-     * If the value is not either an array or a null, <tt>Exception</tt> is thrown.
-     */
-    const JSON& operator [] ( int i ) const;
-
-    /**
-     * Returns value for <tt>key</tt> in an object.
-     *
-     * If the key does not exist or the value is null, a null value is returned.
-     * If value is not either an object or a null, <tt>Exception</tt> is thrown.
-     */
-    const JSON& operator [] ( const char* key ) const;
 
     /**
      * Format value as a string.

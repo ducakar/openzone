@@ -38,11 +38,6 @@
 namespace oz
 {
 
-const char* JSON::ParseException::what() const noexcept
-{
-  return "oz::JSON::ParseException";
-}
-
 struct JSON::Data
 {};
 
@@ -50,6 +45,7 @@ struct JSON::BooleanData : JSON::Data
 {
   bool value;
 
+  OZ_HIDDEN
   explicit BooleanData( bool value_ ) :
     value( value_ )
   {}
@@ -60,8 +56,19 @@ struct JSON::NumberData : JSON::Data
   float value;
   int   intValue;
 
+  OZ_HIDDEN
   explicit NumberData( double value_ ) :
     value( float( value_ ) ), intValue( int( value_ ) )
+  {}
+
+  OZ_HIDDEN
+  explicit NumberData( int value_ ) :
+    value( float( value_ ) ), intValue( value_ )
+  {}
+
+  OZ_HIDDEN
+  explicit NumberData( float value_ ) :
+    value( value_ ), intValue( int( value_ ) )
   {}
 };
 
@@ -69,8 +76,19 @@ struct JSON::StringData : JSON::Data
 {
   String value;
 
+  OZ_HIDDEN
+  explicit StringData( const String& value_ ) :
+    value( value_ )
+  {}
+
+  OZ_HIDDEN
   explicit StringData( String&& value_ ) :
     value( static_cast<String&&>( value_ ) )
+  {}
+
+  OZ_HIDDEN
+  explicit StringData( const char* value_ ) :
+    value( value_ )
   {}
 };
 
@@ -116,16 +134,19 @@ class JSON::Parser
 
 };
 
+OZ_HIDDEN
 inline bool JSON::Parser::Position::isAvailable()
 {
   return istream->isAvailable();
 }
 
-int JSON::Parser::Position::available()
+OZ_HIDDEN
+inline int JSON::Parser::Position::available()
 {
   return istream->available();
 }
 
+OZ_HIDDEN
 inline char JSON::Parser::Position::readChar()
 {
   if( !istream->isAvailable() ) {
@@ -141,17 +162,20 @@ inline char JSON::Parser::Position::readChar()
   return ch;
 }
 
-void JSON::Parser::Position::back()
+OZ_HIDDEN
+inline void JSON::Parser::Position::back()
 {
   hard_assert( istream->length() > 0 );
 
   istream->setPos( istream->getPos() - 1 );
 }
 
+OZ_HIDDEN
 JSON::Parser::Parser( InputStream* istream, const char* file ) :
   pos( { istream, file, 1 } )
 {}
 
+OZ_HIDDEN
 char JSON::Parser::skipBlanks()
 {
   char ch;
@@ -163,6 +187,7 @@ char JSON::Parser::skipBlanks()
   return ch;
 }
 
+OZ_HIDDEN
 String JSON::Parser::parseString()
 {
   Vector<char> chars;
@@ -218,6 +243,7 @@ String JSON::Parser::parseString()
   return String( chars.length() - 1, chars );
 }
 
+OZ_HIDDEN
 JSON JSON::Parser::parseValue()
 {
   char ch = skipBlanks();
@@ -286,6 +312,7 @@ JSON JSON::Parser::parseValue()
   }
 }
 
+OZ_HIDDEN
 JSON JSON::Parser::parseArray()
 {
   JSON arrayValue( new ArrayData(), ARRAY );
@@ -308,6 +335,7 @@ JSON JSON::Parser::parseArray()
   return arrayValue;
 }
 
+OZ_HIDDEN
 JSON JSON::Parser::parseObject()
 {
   JSON objectValue( new ObjectData(), OBJECT );
@@ -347,19 +375,22 @@ JSON JSON::Parser::parseObject()
   return objectValue;
 }
 
+OZ_HIDDEN
 JSON JSON::Parser::parse( InputStream* istream, const char* file )
 {
   Parser parser( istream, file );
   return parser.parseValue();
 }
 
+OZ_HIDDEN
 const JSON JSON::nil;
 
+OZ_HIDDEN
 inline JSON::JSON( Data* data_, Type valueType_ ) :
   data( data_ ), valueType( valueType_ ), wasAccessed( false )
 {}
 
-inline JSON::JSON() :
+JSON::JSON() :
   data( null ), valueType( NIL ), wasAccessed( true )
 {}
 
@@ -450,6 +481,49 @@ const String& JSON::asString() const
   }
 }
 
+const JSON& JSON::operator [] ( int i ) const
+{
+  if( valueType != ARRAY ) {
+    if( valueType == NIL ) {
+      return nil;
+    }
+    throw Exception( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  wasAccessed = true;
+
+  const Vector<JSON>& array = static_cast<ArrayData*>( data )->array;
+
+  if( uint( i ) >= uint( array.length() ) ) {
+    return nil;
+  }
+
+  array[i].wasAccessed = true;
+  return array[i];
+}
+
+const JSON& JSON::operator [] ( const char* key ) const
+{
+  if( valueType != OBJECT ) {
+    if( valueType == NIL ) {
+      return nil;
+    }
+    throw Exception( "JSON value accessed as an object: %s", toString().cstr() );
+  }
+
+  wasAccessed = true;
+
+  const HashString<JSON>& table = static_cast<ObjectData*>( data )->table;
+  const JSON* value = table.find( key );
+
+  if( value == null ) {
+    return nil;
+  }
+
+  value->wasAccessed = true;
+  return *value;
+}
+
 bool JSON::get( bool defaultValue ) const
 {
   if( valueType == BOOLEAN ) {
@@ -520,47 +594,190 @@ const char* JSON::get( const char* defaultValue ) const
   }
 }
 
-const JSON& JSON::operator [] ( int i ) const
+void JSON::set( nullptr_t )
 {
-  if( valueType != ARRAY ) {
-    if( valueType == NIL ) {
-      return nil;
-    }
-    throw Exception( "JSON value accessed as an array: %s", toString().cstr() );
-  }
-
-  wasAccessed = true;
-
-  const Vector<JSON>& array = static_cast<ArrayData*>( data )->array;
-
-  if( uint( i ) >= uint( array.length() ) ) {
-    return nil;
-  }
-
-  array[i].wasAccessed = true;
-  return array[i];
+  clear();
 }
 
-const JSON& JSON::operator [] ( const char* key ) const
+void JSON::set( bool value )
+{
+  clear();
+
+  data      = new BooleanData( value );
+  valueType = BOOLEAN;
+}
+
+void JSON::set( int value )
+{
+  clear();
+
+  data      = new NumberData( value );
+  valueType = NUMBER;
+}
+
+void JSON::set( float value )
+{
+  clear();
+
+  data      = new NumberData( value );
+  valueType = NUMBER;
+}
+
+void JSON::set( const String& value )
+{
+  clear();
+
+  data      = new StringData( value );
+  valueType = STRING;
+}
+
+void JSON::set( const char* value )
+{
+  clear();
+
+  data      = new StringData( value );
+  valueType = STRING;
+}
+
+void JSON::setArray()
+{
+  clear();
+
+  data      = new ArrayData();
+  valueType = ARRAY;
+}
+
+void JSON::setObject()
+{
+  clear();
+
+  data      = new ObjectData();
+  valueType = OBJECT;
+}
+
+JSON& JSON::add( nullptr_t )
+{
+  if( valueType != ARRAY ) {
+    throw Exception( "Tried to add a value to a non-array JSON value." );
+  }
+
+  ArrayData* array = static_cast<ArrayData*>( data );
+
+  array->array.add( JSON( null, NIL ) );
+  return array->array.last();
+}
+
+JSON& JSON::add( const char* key, nullptr_t )
 {
   if( valueType != OBJECT ) {
-    if( valueType == NIL ) {
-      return nil;
-    }
-    throw Exception( "JSON value accessed as an object: %s", toString().cstr() );
+    throw Exception( "Tried to add a key-value pair to a non-object JSON value." );
   }
 
-  wasAccessed = true;
+  ObjectData* table = static_cast<ObjectData*>( data );
 
-  const HashString<JSON>& table = static_cast<ObjectData*>( data )->table;
-  const JSON* value = table.find( key );
+  return *table->table.add( key, JSON( null, NIL ) );
+}
 
-  if( value == null ) {
-    return nil;
+JSON& JSON::include( const char* key, nullptr_t )
+{
+  if( valueType != OBJECT ) {
+    throw Exception( "Tried to include a key-value pair in a non-object JSON value." );
   }
 
-  value->wasAccessed = true;
-  return *value;
+  ObjectData* table = static_cast<ObjectData*>( data );
+
+  JSON* entry = table->table.find( key );
+
+  if( entry == null ) {
+    entry = table->table.add( key, JSON( null, NIL ) );
+  }
+
+  return *entry;
+}
+
+JSON& JSON::include( const char* key, bool value )
+{
+  if( valueType != OBJECT ) {
+    throw Exception( "Tried to include a key-value pair in a non-object JSON value." );
+  }
+
+  ObjectData* table = static_cast<ObjectData*>( data );
+
+  JSON* entry = table->table.find( key );
+
+  if( entry == null ) {
+    entry = table->table.add( key, JSON( new BooleanData( value ), BOOLEAN ) );
+  }
+
+  return *entry;
+}
+
+JSON& JSON::include( const char* key, int value )
+{
+  if( valueType != OBJECT ) {
+    throw Exception( "Tried to include a key-value pair in a non-object JSON value." );
+  }
+
+  ObjectData* table = static_cast<ObjectData*>( data );
+
+  JSON* entry = table->table.find( key );
+
+  if( entry == null ) {
+    entry = table->table.add( key, JSON( new NumberData( value ), NUMBER ) );
+  }
+
+  return *entry;
+}
+
+JSON& JSON::include( const char* key, float value )
+{
+  if( valueType != OBJECT ) {
+    throw Exception( "Tried to include a key-value pair in a non-object JSON value." );
+  }
+
+  ObjectData* table = static_cast<ObjectData*>( data );
+
+  JSON* entry = table->table.find( key );
+
+  if( entry == null ) {
+    entry = table->table.add( key, JSON( new NumberData( value ), NUMBER ) );
+  }
+
+  return *entry;
+}
+
+JSON& JSON::include( const char* key, const String& value )
+{
+  if( valueType != OBJECT ) {
+    throw Exception( "Tried to include a key-value pair in a non-object JSON value." );
+  }
+
+  ObjectData* table = static_cast<ObjectData*>( data );
+
+  JSON* entry = table->table.find( key );
+
+  if( entry == null ) {
+    entry = table->table.add( key, JSON( new StringData( value ), STRING ) );
+  }
+
+  return *entry;
+}
+
+JSON& JSON::include( const char* key, const char* value )
+{
+  if( valueType != OBJECT ) {
+    throw Exception( "Tried to include a key-value pair in a non-object JSON value." );
+  }
+
+  ObjectData* table = static_cast<ObjectData*>( data );
+
+  JSON* entry = table->table.find( key );
+
+  if( entry == null ) {
+    entry = table->table.add( key, JSON( new StringData( value ), STRING ) );
+  }
+
+  return *entry;
 }
 
 String JSON::toString() const
