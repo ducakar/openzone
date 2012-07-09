@@ -36,10 +36,10 @@ class Profile
 {
   public:
 
-    String                     name;
-    const BotClass*            clazz;
-    Vector<const ObjectClass*> items;
-    int                        weaponItem;
+    String                      name;
+    const BotClass*             clazz;
+    Vector<const DynamicClass*> items;
+    int                         weaponItem;
 
     void init();
     void free();

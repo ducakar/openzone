@@ -56,8 +56,8 @@ static TCPsocket socket;
 
 bool Network::connect()
 {
-  const char* host = config.getSet( "net.server", "localhost" );
-  ushort port = ushort( config.getSet( "net.port", 6666 ) );
+  const char* host = config.include( "net.server", "localhost" ).asString();
+  ushort port = ushort( config.include( "net.port", 6666 ).asInt() );
 
   Log::print( "Connecting to %s:%d ...", host, port );
 

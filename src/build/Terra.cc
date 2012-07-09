@@ -42,7 +42,7 @@ void Terra::load()
   PFile imageFile( "terra/" + name + ".png" );
 
   JSON config;
-  if( !config.load( configFile ) ) {
+  if( !config.load( &configFile ) ) {
     throw Exception( "Failed to loa terra configuration '%s'", configFile.path().cstr() );
   }
 

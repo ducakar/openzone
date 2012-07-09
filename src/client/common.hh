@@ -88,6 +88,7 @@ struct TexCoord
 };
 
 extern Collider collider;
+extern JSON     config;
 
 }
 }

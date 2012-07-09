@@ -419,11 +419,9 @@ void Library::initMusicRecurse( const char* path )
   }
 }
 
-void Library::initMusic()
+void Library::initMusic( const char* userMusicPath )
 {
-  const char* userMusicPath = config.get( "dir.music", "" );
-
-  if( String::isEmpty( userMusicPath ) ) {
+  if( userMusicPath == null || String::isEmpty( userMusicPath ) ) {
 #ifdef OZ_NONFREE
     Log::println( "Music (*.oga, *.ogg, *.mp3, *.aac in 'music') {" );
 #else
@@ -513,8 +511,6 @@ void Library::initClasses()
   OZ_REGISTER_BASECLASS( Weapon );
   OZ_REGISTER_BASECLASS( Bot );
   OZ_REGISTER_BASECLASS( Vehicle );
-
-  Config classConfig;
 
   Log::println( "Object classes (*.ozClass in 'class') {" );
   Log::indent();
@@ -679,7 +675,7 @@ void Library::initClasses()
   Log::println( "}" );
 }
 
-void Library::init()
+void Library::init( const char* userMusicPath )
 {
   Log::println( "Initialising Library {" );
   Log::indent();
@@ -705,7 +701,7 @@ void Library::init()
   initTerrae();
   initBSPs();
   initModels();
-  initMusic();
+  initMusic( userMusicPath );
   initNameLists();
   initFragPools();
   initClasses();

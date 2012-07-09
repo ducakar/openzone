@@ -574,8 +574,8 @@ void GameStage::init()
   Log::println( "Initialising GameStage {" );
   Log::indent();
 
-  AUTOSAVE_FILE = String::str( "%s/saves/autosave.ozState", config.get( "dir.config", "" ) );
-  QUICKSAVE_FILE = String::str( "%s/saves/quicksave.ozState", config.get( "dir.config", "" ) );
+  AUTOSAVE_FILE = String::str( "%s/saves/autosave.ozState", config["dir.config"].get( "" ) );
+  QUICKSAVE_FILE = String::str( "%s/saves/quicksave.ozState", config["dir.config"].get( "" ) );
 
   matrix.init();
   nirvana.init();

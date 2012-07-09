@@ -277,7 +277,7 @@ void MD3::load()
   PFile configFile( sPath + "/config.json" );
 
   JSON config;
-  config.load( configFile );
+  config.load( &configFile );
 
   scale      = config["scale"].get( 0.04f );
   skin       = config["skin"].get( "" );

@@ -42,7 +42,7 @@ void FragPool::build( BufferStream* os, const char* className )
   PFile configFile( String::str( "frag/%s.json", className ) );
 
   JSON config;
-  if( !config.load( configFile ) ) {
+  if( !config.load( &configFile ) ) {
     throw Exception( "Failed to load '%s'", configFile.path().cstr() );
   }
 

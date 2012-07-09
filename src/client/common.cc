@@ -33,6 +33,7 @@ namespace client
 const TexCoord TexCoord::ZERO = TexCoord( 0.0f, 0.0f );
 
 Collider collider;
+JSON     config;
 
 }
 }

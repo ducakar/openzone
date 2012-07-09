@@ -174,11 +174,11 @@ void Window::init()
   char allowScreensaverEnv[] = "SDL_VIDEO_ALLOW_SCREENSAVER=1";
   SDL_putenv( allowScreensaverEnv );
 
-  desiredWidth     = config.getSet( "window.width", 0 );
-  desiredHeight    = config.getSet( "window.height", 0 );
+  desiredWidth     = config.include( "window.width",      0     ).asInt();
+  desiredHeight    = config.include( "window.height",     0     ).asInt();
   flags            = SDL_OPENGL | SDL_RESIZABLE;
-  isFull           = config.getSet( "window.fullscreen", false );
-  bool enableVSync = config.getSet( "window.vsync", true );
+  isFull           = config.include( "window.fullscreen", false ).asBool();
+  bool enableVSync = config.include( "window.vsync",      true  ).asBool();
 
   if( isFull ) {
     flags |= SDL_FULLSCREEN;

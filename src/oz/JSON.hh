@@ -42,6 +42,21 @@ namespace oz
  */
 class JSON
 {
+  public:
+
+    /**
+     * Value types.
+     */
+    enum Type
+    {
+      NIL,
+      BOOLEAN,
+      NUMBER,
+      STRING,
+      ARRAY,
+      OBJECT
+    };
+
   private:
 
     /// Internal base struct for value data representation.
@@ -65,24 +80,10 @@ class JSON
     /// Class that wraps internal parser functions.
     class Parser;
 
-  public:
+    /// Class that wraps internal formatter functions.
+    class Formatter;
 
-    /**
-     * Value types.
-     */
-    enum Type
-    {
-      NIL,
-      BOOLEAN,
-      NUMBER,
-      STRING,
-      ARRAY,
-      OBJECT
-    };
-
-  private:
-
-    static const JSON nil;         ///< A null value, required by <tt>operator []</tt> functions.
+    static const JSON nil;         ///< A null value, required by <tt>operator []</tt>.
 
     Data*             data;        ///< Pointer to internal data struct.
     Type              valueType;   ///< Value type, <tt>JSON::Type</tt>.
@@ -200,6 +201,20 @@ class JSON
      * If value is not either a number or a null <tt>Exception</tt> is thrown.
      */
     float get( float defaultValue ) const;
+
+    /**
+     * Return string value or <tt>defaultValue</tt> if null.
+     *
+     * If value is not either a string or a null <tt>Exception</tt> is thrown.
+     */
+    const String& get( const String& defaultValue ) const;
+
+    /**
+     * Return string value or <tt>defaultValue</tt> if null.
+     *
+     * If value is not either a string or a null <tt>Exception</tt> is thrown.
+     */
+    const char* get( const char* defaultValue ) const;
 
     /**
      * Clear existing value and set to null.
@@ -488,41 +503,38 @@ class JSON
     JSON& include( const char* key, const char* value );
 
     /**
-     * Return string value or <tt>defaultValue</tt> if null.
+     * Add an empty array value with the given key to the object if the key does not exist in the
+     * object.
      *
-     * If value is not either a string or a null <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>Exception</tt> is thrown.
      */
-    const String& get( const String& defaultValue ) const;
+    JSON& includeArray( const char* key );
 
     /**
-     * Return string value or <tt>defaultValue</tt> if null.
+     * Add an empty object value with the given key to the object if the key does not exist in the
+     * object.
      *
-     * If value is not either a string or a null <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>Exception</tt> is thrown.
      */
-    const char* get( const char* defaultValue ) const;
+    JSON& includeObject( const char* key );
 
     /**
-     * Format value as a string.
+     * Remove element at the given index from an array.
      *
-     * This effectively creates a JSON output.
+     * If current value is not an array, <tt>Exception</tt> is thrown.
      *
-     * Note that this function adds double-quotes around a string value.
+     * @return false iff an invalid index was given.
      */
-    String toString() const;
+    bool remove( int index );
 
     /**
-     * Clear node and load a JSON file into it.
+     * Remove element with the given key from an object.
      *
-     * @return true iff file is successfully read and parsed.
-     */
-    bool load( File file );
-
-    /**
-     * Clear node and load a JSON file into it.
+     * If current value is not an object, <tt>Exception</tt> is thrown.
      *
-     * @return true iff file is successfully read and parsed.
+     * @return true iff key was found (and removed).
      */
-    bool load( PFile file );
+    bool exclude( const char* key );
 
     /**
      * Recursively clear node and its children.
@@ -530,6 +542,54 @@ class JSON
      * @param unusedWarnings warn about unused variables.
      */
     void clear( bool unusedWarnings = false );
+
+    /**
+     * String representation of a value.
+     *
+     * This function does not format the string or sort object entries.
+     */
+    String toString() const;
+
+    /**
+     * Clear existing value and read new contents from a stream.
+     *
+     * @param istream input stream.
+     * @param path optional file path, used for error messages.
+     */
+    void read( InputStream* istream, const char* path = "InputStream" );
+
+    /**
+     * Write formatted JSON to a stream.
+     */
+    void write( BufferStream* ostream, const char* lineEnd = "\n" );
+
+    /**
+     * Clear existing value and read new contents from a JSON file.
+     *
+     * If file open fails, existing value is kept intact.
+     *
+     * @return true iff file is successfully read and parsed.
+     */
+    bool load( File* file );
+
+    /**
+     * Clear existing value and read new contents from a JSON file.
+     *
+     * If file open fails, existing value is kept intact.
+     *
+     * @return true iff file is successfully read and parsed.
+     */
+    bool load( PFile* file );
+
+    /**
+     * Write to a file.
+     */
+    bool save( File* file, const char* lineEnd = "\n" );
+
+    /**
+     * Write to a file.
+     */
+    bool save( PFile* file, const char* lineEnd = "\n" );
 
 };
 

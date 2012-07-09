@@ -12,7 +12,6 @@ set( ozHeaders
   BufferStream.hh
   clearmacros.hh
   common.hh
-  Config.hh
   DArray.hh
   DList.hh
   Endian.hh
@@ -53,7 +52,6 @@ add_library( oz
   Alloc.cc
   Buffer.cc
   common.cc
-  Config.cc
   Exception.cc
   File.cc
   JSON.cc

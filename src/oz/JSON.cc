@@ -26,14 +26,15 @@
 
 #include "JSON.hh"
 
+#include "Map.hh"
 #include "Exception.hh"
 #include "System.hh"
 #include "Log.hh"
 
 #include <stdlib.h>
 
-#define PARSE_EXCEPTION( message ) \
-  throw Exception( "JSON: " message " at %s:%d", pos.path, pos.line );
+#define PARSE_EXCEPTION( charBias, message ) \
+  throw Exception( "JSON: " message " at %s:%d:%d", pos.path, pos.line, pos.column + ( charBias ) );
 
 namespace oz
 {
@@ -111,6 +112,7 @@ class JSON::Parser
       InputStream* istream;
       const char*  path;
       int          line;
+      int          column;
 
       bool isAvailable();
       int  available();
@@ -120,7 +122,7 @@ class JSON::Parser
 
     Position pos;
 
-    Parser( InputStream* istream, const char* file );
+    Parser( InputStream* istream, const char* path );
 
     char skipBlanks();
     String parseString();
@@ -130,7 +132,9 @@ class JSON::Parser
 
   public:
 
-    static JSON parse( InputStream* istream, const char* file );
+    void finish();
+
+    static JSON parse( InputStream* istream, const char* path );
 
 };
 
@@ -151,13 +155,17 @@ inline char JSON::Parser::Position::readChar()
 {
   if( !istream->isAvailable() ) {
     const Position& pos = *this;
-    PARSE_EXCEPTION( "Unexpected end of file" );
+    PARSE_EXCEPTION( 0, "Unexpected end of file" );
   }
 
   char ch = istream->readChar();
 
   if( ch == '\n' ) {
     ++line;
+    column = 0;
+  }
+  else {
+    ++column;
   }
   return ch;
 }
@@ -171,8 +179,8 @@ inline void JSON::Parser::Position::back()
 }
 
 OZ_HIDDEN
-JSON::Parser::Parser( InputStream* istream, const char* file ) :
-  pos( { istream, file, 1 } )
+JSON::Parser::Parser( InputStream* istream, const char* path ) :
+  pos( { istream, path, 1, 0 } )
 {}
 
 OZ_HIDDEN
@@ -236,7 +244,7 @@ String JSON::Parser::parseString()
   while( pos.isAvailable() );
 
   if( ch != '"' ) {
-    PARSE_EXCEPTION( "End of string expected" );
+    PARSE_EXCEPTION( 0, "End of file while looking for end of string (Is ending \" missing?)" );
   }
   chars.add( '\0' );
 
@@ -253,7 +261,7 @@ JSON JSON::Parser::parseValue()
       if( pos.available() < 3 || pos.readChar() != 'u' || pos.readChar() != 'l' ||
           pos.readChar() != 'l' )
       {
-        PARSE_EXCEPTION( "Unknown value type" );
+        PARSE_EXCEPTION( -3, "Unknown value type" );
       }
 
       return JSON( null, NIL );
@@ -262,7 +270,7 @@ JSON JSON::Parser::parseValue()
       if( pos.available() < 4 || pos.readChar() != 'a' || pos.readChar() != 'l' ||
           pos.readChar() != 's' || pos.readChar() != 'e' )
       {
-        PARSE_EXCEPTION( "Unknown value type" );
+        PARSE_EXCEPTION( -4, "Unknown value type" );
       }
 
       return JSON( new BooleanData( false ), BOOLEAN );
@@ -271,7 +279,7 @@ JSON JSON::Parser::parseValue()
       if( pos.available() < 4 || pos.readChar() != 'r' || pos.readChar() != 'u' ||
           pos.readChar() != 'e' )
       {
-        PARSE_EXCEPTION( "Unknown value type" );
+        PARSE_EXCEPTION( -3, "Unknown value type" );
       }
 
       return JSON( new BooleanData( true ), BOOLEAN );
@@ -295,7 +303,7 @@ JSON JSON::Parser::parseValue()
       double number = strtod( chars, &end );
 
       if( end != &chars.last() ) {
-        PARSE_EXCEPTION( "Unknown value type" );
+        PARSE_EXCEPTION( -chars.length(), "Unknown value type" );
       }
 
       return JSON( new NumberData( number ), NUMBER );
@@ -328,7 +336,7 @@ JSON JSON::Parser::parseArray()
     ch = skipBlanks();
 
     if( ch != ',' && ch != ']' ) {
-      PARSE_EXCEPTION( "Expected ',' or ']' while parsing array" );
+      PARSE_EXCEPTION( 0, "Expected ',' or ']' while parsing array (Is ',' is missing?)" );
     }
   }
 
@@ -347,14 +355,14 @@ JSON JSON::Parser::parseObject()
   while( ch != '}' ) {
     ch = skipBlanks();
     if( ch != '"' ) {
-      PARSE_EXCEPTION( "Expected string key while parsing object" );
+      PARSE_EXCEPTION( 0, "Expected key while parsing object (Is there ',' after last entry?)" );
     }
 
     String key = parseString();
 
     ch = skipBlanks();
     if( ch != ':' ) {
-      PARSE_EXCEPTION( "Expected ':' after key in object" );
+      PARSE_EXCEPTION( 0, "Expected ':' after key in object entry" );
     }
 
     JSON value = parseValue();
@@ -368,7 +376,7 @@ JSON JSON::Parser::parseObject()
     ch = skipBlanks();
 
     if( ch != ',' && ch != '}' ) {
-      PARSE_EXCEPTION( "Expected ',' or '}' while parsing object" );
+      PARSE_EXCEPTION( 0, "Expected ',' or '}' while parsing object entry" );
     }
   }
 
@@ -376,10 +384,194 @@ JSON JSON::Parser::parseObject()
 }
 
 OZ_HIDDEN
-JSON JSON::Parser::parse( InputStream* istream, const char* file )
+void JSON::Parser::finish()
 {
-  Parser parser( istream, file );
-  return parser.parseValue();
+  while( pos.isAvailable() ) {
+    char ch = pos.readChar();
+
+    if( !String::isBlank( ch ) ) {
+      PARSE_EXCEPTION( 0, "End of file expected but some content found after" );
+    }
+  }
+}
+
+OZ_HIDDEN
+JSON JSON::Parser::parse( InputStream* istream, const char* path )
+{
+  Parser parser( istream, path );
+
+  JSON root = parser.parseValue();
+
+  parser.finish();
+  return root;
+}
+
+class JSON::Formatter
+{
+  public:
+
+    static const int ALIGNMENT_COLUMN = 32;
+
+    BufferStream* ostream;
+    const char*   lineEnd;
+    int           lineEndLength;
+    int           indentLevel;
+
+    void writeValue( const JSON& value );
+    void writeArray( const JSON& value );
+    void writeObject( const JSON& value );
+
+};
+
+OZ_HIDDEN
+void JSON::Formatter::writeValue( const JSON& value )
+{
+  switch( value.valueType ) {
+    case NIL: {
+      ostream->writeChars( "null", 4 );
+      break;
+    }
+    case BOOLEAN: {
+      const BooleanData* booleanData = static_cast<const BooleanData*>( value.data );
+
+      if( booleanData->value ) {
+        ostream->writeChars( "true", 4 );
+      }
+      else {
+        ostream->writeChars( "false", 5 );
+      }
+      break;
+    }
+    case NUMBER: {
+      const NumberData* numberData = static_cast<const NumberData*>( value.data );
+
+      String sNumber = String( numberData->value );
+      ostream->writeChars( sNumber, sNumber.length() );
+      break;
+    }
+    case STRING: {
+      const StringData* stringData = static_cast<const StringData*>( value.data );
+
+      ostream->writeChar( '"' );
+      ostream->writeChars( stringData->value, stringData->value.length() );
+      ostream->writeChar( '"' );
+      break;
+    }
+    case ARRAY: {
+      writeArray( value );
+      break;
+    }
+    case OBJECT: {
+      writeObject( value );
+      break;
+    }
+  }
+}
+
+void JSON::Formatter::writeArray( const JSON& value )
+{
+  const Vector<JSON>& array = static_cast<const ArrayData*>( value.data )->array;
+
+  if( array.isEmpty() ) {
+    ostream->writeChars( "[]", 2 );
+    return;
+  }
+
+  ostream->writeChar( '[' );
+  ostream->writeChars( lineEnd, lineEndLength );
+
+  ++indentLevel;
+
+  for( int i = 0; i < array.length(); ++i ) {
+    if( i != 0 ) {
+      ostream->writeChar( ',' );
+      ostream->writeChars( lineEnd, lineEndLength );
+    }
+
+    for( int j = 0; j < indentLevel; ++j ) {
+      ostream->writeChars( "  ", 2 );
+    }
+
+    writeValue( array[i] );
+  }
+
+  ostream->writeChars( lineEnd, lineEndLength );
+
+  --indentLevel;
+  for( int j = 0; j < indentLevel; ++j ) {
+    ostream->writeChars( "  ", 2 );
+  }
+
+  ostream->writeChar( ']' );
+}
+
+void JSON::Formatter::writeObject( const JSON& value )
+{
+  const HashString<JSON>& table = static_cast<const ObjectData*>( value.data )->table;
+
+  if( table.isEmpty() ) {
+    ostream->writeChars( "{}", 2 );
+    return;
+  }
+
+  ostream->writeChar( '{' );
+  ostream->writeChars( lineEnd, lineEndLength );
+
+  ++indentLevel;
+
+  Map<String, const JSON*> sortedEntries;
+
+  foreach( entry, table.citer() ) {
+    sortedEntries.add( entry.key(), &entry.value() );
+  }
+
+  for( int i = 0; i < sortedEntries.length(); ++i ) {
+    if( i != 0 ) {
+      ostream->writeChar( ',' );
+      ostream->writeChars( lineEnd, lineEndLength );
+    }
+
+    for( int j = 0; j < indentLevel; ++j ) {
+      ostream->writeChars( "  ", 2 );
+    }
+
+    const String& key   = sortedEntries[i];
+    const JSON*   value = sortedEntries.value( i );
+
+    ostream->writeChar( '"' );
+    ostream->writeChars( key, key.length() );
+    ostream->writeChars( "\":", 2 );
+
+    if( value->valueType == ARRAY || value->valueType == OBJECT ) {
+      ostream->writeChars( lineEnd, lineEndLength );
+
+      for( int j = 0; j < indentLevel; ++j ) {
+        ostream->writeChars( "  ", 2 );
+      }
+    }
+    else {
+      int column = indentLevel * 2 + key.length() + 3;
+
+      // Align to 24-th column.
+      for( int i = column; i < ALIGNMENT_COLUMN; ++i ) {
+        ostream->writeChar( ' ' );
+      }
+    }
+
+    writeValue( *value );
+  }
+
+  sortedEntries.clear();
+  sortedEntries.dealloc();
+
+  ostream->writeChars( lineEnd, lineEndLength );
+
+  --indentLevel;
+  for( int j = 0; j < indentLevel; ++j ) {
+    ostream->writeChars( "  ", 2 );
+  }
+
+  ostream->writeChar( '}' );
 }
 
 OZ_HIDDEN
@@ -763,6 +955,40 @@ JSON& JSON::include( const char* key, const String& value )
   return *entry;
 }
 
+JSON& JSON::includeArray( const char* key )
+{
+  if( valueType != OBJECT ) {
+    throw Exception( "Tried to include a key-value pair in a non-object JSON value." );
+  }
+
+  ObjectData* table = static_cast<ObjectData*>( data );
+
+  JSON* entry = table->table.find( key );
+
+  if( entry == null ) {
+    entry = table->table.add( key, JSON( new ArrayData(), STRING ) );
+  }
+
+  return *entry;
+}
+
+JSON& JSON::includeObject( const char* key )
+{
+  if( valueType != OBJECT ) {
+    throw Exception( "Tried to include a key-value pair in a non-object JSON value." );
+  }
+
+  ObjectData* table = static_cast<ObjectData*>( data );
+
+  JSON* entry = table->table.find( key );
+
+  if( entry == null ) {
+    entry = table->table.add( key, JSON( new ObjectData(), STRING ) );
+  }
+
+  return *entry;
+}
+
 JSON& JSON::include( const char* key, const char* value )
 {
   if( valueType != OBJECT ) {
@@ -778,6 +1004,88 @@ JSON& JSON::include( const char* key, const char* value )
   }
 
   return *entry;
+}
+
+bool JSON::remove( int index )
+{
+  if( valueType != ARRAY ) {
+    throw Exception( "Tried to remove a value from a non-array JSON value." );
+  }
+
+  ArrayData* array = static_cast<ArrayData*>( data );
+
+  if( uint( index ) >= uint( array->array.length() ) ) {
+    return false;
+  }
+
+  array->array.remove( index );
+  return true;
+}
+
+bool JSON::exclude( const char* key )
+{
+  if( valueType != OBJECT ) {
+    throw Exception( "Tried to exclude and entry form a non-object JSON value." );
+  }
+
+  ObjectData* table = static_cast<ObjectData*>( data );
+
+  return table->table.exclude( key );
+}
+
+void JSON::clear( bool unusedWarnings )
+{
+  if( unusedWarnings && !wasAccessed ) {
+    Log::println( "JSON: unused value: %s", toString().cstr() );
+    System::bell();
+  }
+
+  switch( valueType ) {
+    case NIL: {
+      hard_assert( data == null );
+      break;
+    }
+    case BOOLEAN: {
+      delete static_cast<BooleanData*>( data );
+      break;
+    }
+    case NUMBER: {
+      delete static_cast<NumberData*>( data );
+      break;
+    }
+    case STRING: {
+      delete static_cast<StringData*>( data );
+      break;
+    }
+    case ARRAY: {
+      ArrayData* arrayData = static_cast<ArrayData*>( data );
+
+      if( unusedWarnings ) {
+        foreach( i, arrayData->array.iter() ) {
+          i->clear( true );
+        }
+      }
+
+      delete arrayData;
+      break;
+    }
+    case OBJECT: {
+      ObjectData* objectData = static_cast<ObjectData*>( data );
+
+      if( unusedWarnings ) {
+        foreach( i, objectData->table.iter() ) {
+          i.value().clear( true );
+        }
+      }
+
+      delete objectData;
+      break;
+    }
+  }
+
+  data        = null;
+  valueType   = NIL;
+  wasAccessed = true;
 }
 
 String JSON::toString() const
@@ -836,91 +1144,63 @@ String JSON::toString() const
   }
 }
 
-bool JSON::load( File file )
+void JSON::read( InputStream* istream, const char* path )
 {
-  if( !file.map() ) {
+  *this = Parser::parse( istream, path );
+}
+
+void JSON::write( BufferStream* ostream, const char* lineEnd )
+{
+  Formatter formatter = { ostream, lineEnd, String::length( lineEnd ), 0 };
+
+  formatter.writeValue( *this );
+  ostream->writeChars( lineEnd, formatter.lineEndLength );
+}
+
+bool JSON::load( File* file )
+{
+  if( !file->map() ) {
     return false;
   }
 
-  clear();
+  InputStream is = file->inputStream();
 
-  InputStream is = file.inputStream();
+  read( &is, file->path() );
 
-  *this = Parser::parse( &is, file.path() );
-
-  file.unmap();
+  file->unmap();
   return true;
 }
 
-bool JSON::load( PFile file )
+bool JSON::load( PFile* file )
 {
-  if( !file.map() ) {
+  if( !file->map() ) {
     return false;
   }
 
-  clear();
+  InputStream is = file->inputStream();
 
-  InputStream is = file.inputStream();
+  read( &is, file->path() );
 
-  *this = Parser::parse( &is, file.path() );
-
-  file.unmap();
+  file->unmap();
   return true;
 }
 
-void JSON::clear( bool unusedWarnings )
+bool JSON::save( File* file, const char* lineEnd )
 {
-  if( unusedWarnings && !wasAccessed ) {
-    Log::println( "Unused JSON value %s", toString().cstr() );
-    System::bell();
-  }
+  BufferStream ostream;
 
-  switch( valueType ) {
-    case NIL: {
-      hard_assert( data == null );
-      break;
-    }
-    case BOOLEAN: {
-      delete static_cast<BooleanData*>( data );
-      break;
-    }
-    case NUMBER: {
-      delete static_cast<NumberData*>( data );
-      break;
-    }
-    case STRING: {
-      delete static_cast<StringData*>( data );
-      break;
-    }
-    case ARRAY: {
-      ArrayData* arrayData = static_cast<ArrayData*>( data );
+  write( &ostream, lineEnd );
 
-      if( unusedWarnings ) {
-        foreach( i, arrayData->array.iter() ) {
-          i->clear( true );
-        }
-      }
+  return file->write( ostream.begin(), ostream.length() );
+}
 
-      delete arrayData;
-      break;
-    }
-    case OBJECT: {
-      ObjectData* objectData = static_cast<ObjectData*>( data );
+bool JSON::save( PFile* file, const char* lineEnd )
+{
+  BufferStream ostream;
 
-      if( unusedWarnings ) {
-        foreach( i, objectData->table.iter() ) {
-          i.value().clear( true );
-        }
-      }
+  write( &ostream, lineEnd );
 
-      delete objectData;
-      break;
-    }
-  }
-
-  data        = null;
-  valueType   = NIL;
-  wasAccessed = true;
+  return file->write( ostream.begin(), ostream.length() );
 }
 
 }
