@@ -18,45 +18,27 @@
  */
 
 /**
- * @file build/Build.hh
- *
- * Data builder.
+ * @file build/FragPool.hh
  */
+
+#pragma once
+
+#include "build/common.hh"
 
 namespace oz
 {
 namespace build
 {
 
-class Build
+class FragPool
 {
-  private:
-
-    void printUsage( const char* invocationName );
-
-    void copyFiles( const char* srcDir, const char* destDir, const char* ext, bool recurse );
-    void buildTextures( const char* srcDir, const char* destDir, bool wrap,
-                        int magFilter, int minFilter );
-
-    void buildCaela();
-    void buildTerrae();
-    void buildBSPs();
-    void buildBSPTextures();
-    void buildClasses( const String& pkgName );
-    void buildFragPools( const String& pkgName );
-    void buildModels();
-    void copySounds();
-    void buildModules();
-    void checkLua( const char* path );
-    void packArchive( const char* name, bool useCompresion, bool use7zip );
-
   public:
 
-    int main( int argc, char** argv );
+    void build( BufferStream* os, const char* className );
 
 };
 
-extern Build build;
+extern FragPool fragPool;
 
 }
 }

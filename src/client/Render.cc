@@ -50,7 +50,7 @@ const float Render::WIDE_CULL_FACTOR       = 6.0f;
 const float Render::CELL_WIDE_RADIUS       =
   ( Cell::SIZE / 2 + Object::MAX_DIM * WIDE_CULL_FACTOR ) * Math::sqrt( 2.0f );
 const float Render::OBJECT_VISIBILITY_COEF = 0.003f;
-const float Render::FRAG_VISIBILITY_RANGE2 = 200.0f;
+const float Render::FRAG_VISIBILITY_RANGE2 = 150.0f*150.0f;
 
 const float Render::NIGHT_FOG_COEFF        = 2.0f;
 const float Render::NIGHT_FOG_DIST         = 0.3f;

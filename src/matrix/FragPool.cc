@@ -28,68 +28,32 @@
 #include "matrix/Frag.hh"
 #include "matrix/Library.hh"
 
-#define OZ_FRAG_SET_FLAG( flagBit, varName, defValue ) \
-  if( fragConfig.get( varName, defValue ) ) { \
-    flags |= flagBit; \
-  }
-
 namespace oz
 {
 namespace matrix
 {
 
-FragPool::FragPool( const char* name_, int id_ ) :
+FragPool::FragPool( InputStream* is, const char* name_, int id_ ) :
   name( name_ ), id( id_ )
 {
-  PFile file( "frag/" + name + ".rc" );
+  flags          = is->readInt();
 
-  Config fragConfig;
-  if( !fragConfig.load( file ) ) {
-    throw Exception( "Failed to read config from '%s'", file.path().cstr() );
+  velocitySpread = is->readFloat();
+
+  life           = is->readFloat();
+  lifeSpread     = is->readFloat();
+
+  mass           = is->readFloat();
+  restitution    = is->readFloat();
+
+  int nModels    = is->readInt();
+  models.alloc( nModels );
+
+  for( int i = 0; i < nModels; ++i ) {
+    const char* sModel = is->readString();
+
+    models.add( library.modelIndex( sModel ) );
   }
-
-  flags = 0;
-
-  OZ_FRAG_SET_FLAG( FADEOUT_BIT, "flag.fadeout", true );
-
-  velocitySpread = fragConfig.get( "velocitySpread", 4.0f );
-
-  if( velocitySpread < 0.0f ) {
-    throw Exception( "%s: Frag velocitySpread must be >= 0.0", name.cstr() );
-  }
-
-  life        = fragConfig.get( "life", 4.0f );
-  lifeSpread  = fragConfig.get( "lifeSpread", 1.0f );
-  mass        = fragConfig.get( "mass", 0.0f );
-  restitution = fragConfig.get( "restitution", 1.5f );
-
-  if( life <= 0.0f ) {
-    throw Exception( "%s: Frag life must be > 0.0", name.cstr() );
-  }
-  if( lifeSpread < 0.0f ) {
-    throw Exception( "%s: Frag lifeSpread must be >= 0.0", name.cstr() );
-  }
-  if( mass < 0.0f ) {
-    throw Exception( "%s: Frag mass must be >= 0.0", name.cstr() );
-  }
-  if( restitution < 0.0f || 1.0f < restitution ) {
-    throw Exception( "%s: Frag restitution must lie on interval [0, 1]", name.cstr() );
-  }
-
-  char buffer[] = "model  ";
-  for( int i = 0; i < MAX_MODELS; ++i ) {
-    hard_assert( i < 100 );
-
-    buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
-    buffer[ sizeof( buffer ) - 2 ] = char( '0' + ( i % 10 ) );
-
-    const char* modelName = fragConfig.get( buffer, "" );
-    if( !String::isEmpty( modelName ) ) {
-      models.add( library.modelIndex( modelName ) );
-    }
-  }
-
-  fragConfig.clear( true );
 }
 
 Frag* FragPool::create( int index, const Point& pos, const Vec3& velocity ) const

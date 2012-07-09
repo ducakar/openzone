@@ -64,13 +64,10 @@ void ObjectClass::init( InputStream* is, const char* name_ )
 
   int nDefaultItems = is->readInt();
   if( nDefaultItems != 0 ) {
-    printf( "%s items:\n", name.cstr() );
-
     defaultItems.alloc( nDefaultItems );
 
     for( int i = 0; i < nDefaultItems; ++i ) {
       const char* sItemClass = is->readString();
-      printf( "+ %s\n", sItemClass );
 
       defaultItems.add( library.objClass( sItemClass ) );
     }

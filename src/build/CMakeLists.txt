@@ -5,6 +5,7 @@ add_executable( ozBuild
   Class.cc
   Compiler.cc
   Context.cc
+  FragPool.cc
   Lingua.cc
   MD2.cc
   MD3.cc

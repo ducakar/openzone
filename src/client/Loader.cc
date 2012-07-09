@@ -120,16 +120,19 @@ void Loader::cleanupRender()
 
   if( tick % FRAG_CLEAR_INTERVAL == FRAG_CLEAR_LAG ) {
     // remove unused frag pools
-    for( auto i = context.fragPools.citer(); i.isValid(); ) {
-      auto pool = i;
-      ++i;
+    for( int i = 0; i < library.nFragPools; ++i ) {
+      FragPool* pool = context.fragPools[i];
 
-      if( pool.value()->flags & FragPool::UPDATED_BIT ) {
-        pool.value()->flags &= ~FragPool::UPDATED_BIT;
+      if( pool == null ) {
+        continue;
+      }
+
+      if( pool->flags & FragPool::UPDATED_BIT ) {
+        pool->flags &= ~FragPool::UPDATED_BIT;
       }
       else {
-        delete pool.value();
-        context.fragPools.exclude( pool.key() );
+        delete pool;
+        context.fragPools[i] = null;
       }
     }
   }

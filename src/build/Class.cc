@@ -88,11 +88,11 @@ void Class::fillObject( const char* className )
       dim.y < 0.0f || dim.y > Object::REAL_MAX_DIM ||
       dim.z < 0.0f )
   {
-    throw Exception( "%s: Invalid dimensions. Should be >= 0 and <= 3.99.", name.cstr() );
+    throw Exception( "%s: Invalid dimensions. Should be >= 0 and <= 3.99.", className );
   }
 
   if( ( flags & Object::CYLINDER_BIT ) && dim.x != dim.y ) {
-    throw Exception( "%s: Cylindrical object must have dim.x == dim.y", name.cstr() );
+    throw Exception( "%s: Cylindrical object must have dim.x == dim.y", className );
   }
 
   /*
@@ -104,10 +104,10 @@ void Class::fillObject( const char* className )
 
   if( life <= 0.0f || !Math::isnormal( life ) ) {
     throw Exception( "%s: Invalid life value. Should be > 0 and finite. If you want infinite life"
-                     " rather set resistance to infinity (\"inf\" or \"INF\").", name.cstr() );
+                     " rather set resistance to infinity (\"inf\" or \"INF\").", className );
   }
   if( resistance < 0.0f ) {
-    throw Exception( "%s: Invalid resistance. Should be >= 0.", name.cstr() );
+    throw Exception( "%s: Invalid resistance. Should be >= 0.", className );
   }
 
   /*
@@ -145,10 +145,10 @@ void Class::fillObject( const char* className )
   }
 
   if( nItems < 0 ) {
-    throw Exception( "%s: Inventory size must be a non-negative integer", name.cstr() );
+    throw Exception( "%s: Inventory size must be a non-negative integer", className );
   }
   if( ( flags & Object::ITEM_BIT ) && nItems != 0 ) {
-    throw Exception( "%s: Item cannot have an inventory", name.cstr() );
+    throw Exception( "%s: Item cannot have an inventory", className );
   }
 
   // default inventory
@@ -159,11 +159,15 @@ void Class::fillObject( const char* className )
     for( int i = 0; i < nDefaultItems; ++i ) {
       const char* itemName = defaultItemsConfig[i].get( "" );
 
+      if( String::isEmpty( itemName ) ) {
+        throw Exception( "%s: Empty name for default item #%d", className, i );
+      }
+
       defaultItems.add( itemName );
     }
 
     if( defaultItems.length() > nItems ) {
-      throw Exception( "%s: Too many items in the default inventory", name.cstr() );
+      throw Exception( "%s: Too many items in the default inventory", className );
     }
   }
 
@@ -175,7 +179,7 @@ void Class::fillObject( const char* className )
 
   if( !deviceType.isEmpty() ) {
     if( flags & Object::USE_FUNC_BIT ) {
-      throw Exception( "%s: Device cannot have onUse handler", name.cstr() );
+      throw Exception( "%s: Device cannot have onUse handler", className );
     }
 
     devices.include( deviceType );
@@ -297,10 +301,10 @@ void Class::fillDynamic( const char* className )
   lift = config["lift"].get( -1.0f );
 
   if( mass < 0.01f ) {
-    throw Exception( "%s: Invalid object mass. Should be >= 0.01.", name.cstr() );
+    throw Exception( "%s: Invalid object mass. Should be >= 0.01.", className );
   }
   if( lift < 0.0f ) {
-    throw Exception( "%s: Invalid object lift. Should be >= 0.", name.cstr() );
+    throw Exception( "%s: Invalid object lift. Should be >= 0.", className );
   }
 }
 
@@ -323,7 +327,7 @@ void Class::fillWeapon( const char* className )
   int underscore = name.index( '_' );
   if( underscore < 0 ) {
     throw Exception( "%s: Weapon name should be of the form botName_weapon.weaponName",
-                     name.cstr() );
+                     className );
   }
 
   userBase     = name.substring( 0, underscore );
@@ -375,7 +379,7 @@ void Class::fillBot( const char* className )
   crouchDim.z = config["crouchDim.z"].get( 0.80f );
 
   if( crouchDim.z < 0.0f ) {
-    throw Exception( "%s: Invalid bot crouch dimensions. Should be >= 0.", name.cstr() );
+    throw Exception( "%s: Invalid bot crouch dimensions. Should be >= 0.", className );
   }
 
   corpseDim.x = config["corpseDim.x"].get( 2.0f * dim.x );
@@ -383,7 +387,7 @@ void Class::fillBot( const char* className )
   corpseDim.z = config["corpseDim.z"].get( 0.20f );
 
   if( corpseDim.x < 0.0f || corpseDim.y < 0.0f || corpseDim.z < 0.0f ) {
-    throw Exception( "%s: Invalid bot corpse dimensions. Should be >= 0.", name.cstr() );
+    throw Exception( "%s: Invalid bot corpse dimensions. Should be >= 0.", className );
   }
 
   camZ              = config["camZ"].get( 0.79f );
@@ -414,7 +418,7 @@ void Class::fillBot( const char* className )
 
   if( stamina <= 0.0f || !Math::isnormal( stamina ) ) {
     throw Exception( "%s: Invalid stamina value. Should be > 0 and finite. If you want infinite "
-                     " stamina rather set stamina*Drain variables to zero.", name.cstr() );
+                     " stamina rather set stamina*Drain variables to zero.", className );
   }
 
   staminaGain       = config["staminaGain"].get( 2.5f ) * Timer::TICK_TIME;
@@ -474,7 +478,7 @@ void Class::fillVehicle( const char* className )
   SET_STATE( Vehicle::AUTO_EJECT_BIT,   "state.autoEject",   false );
 
   if( ( state & Vehicle::AUTO_EJECT_BIT ) && !( state & Vehicle::HAS_EJECT_BIT ) ) {
-    throw Exception( "%s: Vehicle has state.autoEject but not state.hasEject.", name.cstr() );
+    throw Exception( "%s: Vehicle has state.autoEject but not state.hasEject.", className );
   }
 
   const char* sType = config["type"].get( "" );
@@ -498,7 +502,7 @@ void Class::fillVehicle( const char* className )
   }
   else {
     throw Exception( "%s: Invalid vehicle type, should be either STATIC, WHEELED, TRACKED, MECH, "
-                     "HOVER or AIR", name.cstr() );
+                     "HOVER or AIR", className );
   }
 
   pilotPos = Vec3( config["pilotPos.x"].get( 0.0f ),
@@ -511,18 +515,18 @@ void Class::fillVehicle( const char* className )
   lookVMax = config["lookVMax"].get( +60.0f );
 
   if( lookHMin < -180.0f || lookHMin > 0.0f ) {
-    throw Exception( "%s: lookHMin must lie on interval [-180.0, 0.0]", name.cstr() );
+    throw Exception( "%s: lookHMin must lie on interval [-180.0, 0.0]", className );
   }
   if( lookHMax < 0.0f || lookHMax > 180.0f ) {
-    throw Exception( "%s: lookHMax must lie on interval [0.0, 180.0]", name.cstr() );
+    throw Exception( "%s: lookHMax must lie on interval [0.0, 180.0]", className );
   }
   if( lookVMin < -90.0f || lookVMin > 90.0f || lookVMin > lookVMax ) {
     throw Exception( "%s: lookVMin must lie on interval [-90.0, 90.0] and must not be greater than "
-                     "lookVMax", name.cstr() );
+                     "lookVMax", className );
   }
   if( lookVMax < -90.0f || lookVMax > 90.0f ) {
     throw Exception( "%s: lookVMax must lie on interval [-90.0, 90.0] and must not be less than "
-                     "lookVMin", name.cstr() );
+                     "lookVMin", className );
   }
 
   lookHMin = Math::rad( lookHMin );
@@ -538,23 +542,23 @@ void Class::fillVehicle( const char* className )
   hoverHeightStiffness   = config["hoverHeightStiffness"].get( 40.0f );
   hoverMomentumStiffness = config["hoverMomentumStiffness"].get( 160.0f );
 
-  enginePitchBias  = config["enginePitchBias"].get( 1.0f );
-  enginePitchRatio = config["enginePitchRatio"].get( 0.001f );
-  enginePitchLimit = config["enginePitchLimit"].get( 2.00f );
+  enginePitchBias        = config["enginePitchBias"].get( 1.0f );
+  enginePitchRatio       = config["enginePitchRatio"].get( 0.001f );
+  enginePitchLimit       = config["enginePitchLimit"].get( 2.00f );
 
-  fuel             = config["fuel"].get( 100.0f );
-  fuelConsumption  = config["fuelConsumption"].get( 0.0f ) * Timer::TICK_TIME;
+  fuel                   = config["fuel"].get( 100.0f );
+  fuelConsumption        = config["fuelConsumption"].get( 0.0f ) * Timer::TICK_TIME;
 
   if( fuel <= 0.0f || !Math::isnormal( fuel ) ) {
     throw Exception( "%s: Invalid fuel value. Should be > 0 and finite. If you want infinite fuel"
-                     " rather set fuelConsumption to zero.", name.cstr() );
+                     " rather set fuelConsumption to zero.", className );
   }
 
   const JSON& weaponsConfig = config["weapons"];
   nWeapons = max( weaponsConfig.length(), 0 );
 
   if( nWeapons > VehicleClass::MAX_WEAPONS ) {
-    throw Exception( "%s: Vehicle must have between 0 and %d weapons.", name.cstr(),
+    throw Exception( "%s: Vehicle must have between 0 and %d weapons.", className,
                      VehicleClass::MAX_WEAPONS );
   }
 
@@ -572,10 +576,10 @@ void Class::fillVehicle( const char* className )
     weaponShotIntervals[i] = weaponsConfig[i]["shotInterval"].get( 0.5f );
 
     if( weaponTitles[i].isEmpty() ) {
-      throw Exception( "%s: Missing weapon #%d title.", name.cstr(), i );
+      throw Exception( "%s: Missing weapon #%d title.", className, i );
     }
     if( onWeaponShot[i].isEmpty() ) {
-      throw Exception( "%s: Missing weapon #%d handler function.", name.cstr(), i );
+      throw Exception( "%s: Missing weapon #%d handler function.", className, i );
     }
 
     flags |= Object::LUA_BIT;
