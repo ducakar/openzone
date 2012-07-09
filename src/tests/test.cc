@@ -27,47 +27,62 @@
 
 using namespace oz;
 
-struct Foo
+class Foo
 {
-  const char* s = "";
+  private:
 
-  explicit Foo( const char* s_ ) :
-    s( s_ )
-  {
-    Log::out << "Foo(" << s << ")\n";
-  }
+    int p;
 
-  Foo()
-  {
-    Log::out << "Foo()\n";
-  }
+  public:
 
-  ~Foo()
-  {
-    Log::out << "~Foo(" << s << ")\n";
-  }
+    struct Bar
+    {
+      void bar( Foo f )
+      {
+        printf( "%d\n", f.p );
+      }
+    };
 
-  Foo( const Foo& )
-  {
-    Log::out << "Foo( const Foo& )\n";
-  }
+    const char* s = "";
 
-  Foo( Foo&& )
-  {
-    Log::out << "Foo( Foo&& )\n";
-  }
+    explicit Foo( const char* s_ ) :
+      s( s_ )
+    {
+      Log::out << "Foo(" << s << ")\n";
+    }
 
-  Foo& operator = ( const Foo& )
-  {
-    Log::out << "Foo& operator = ( const Foo& )\n";
-    return *this;
-  }
+    Foo()
+    {
+      Log::out << "Foo()\n";
+    }
 
-  Foo& operator = ( Foo&& )
-  {
-    Log::out << "Foo& operator = ( Foo&& )\n";
-    return *this;
-  }
+    ~Foo()
+    {
+      Log::out << "~Foo(" << s << ")\n";
+    }
+
+    Foo( const Foo& )
+    {
+      Log::out << "Foo( const Foo& )\n";
+    }
+
+    Foo( Foo&& )
+    {
+      Log::out << "Foo( Foo&& )\n";
+    }
+
+    Foo& operator = ( const Foo& )
+    {
+      Log::out << "Foo& operator = ( const Foo& )\n";
+      return *this;
+    }
+
+    Foo& operator = ( Foo&& )
+    {
+      Log::out << "Foo& operator = ( Foo&& )\n";
+      return *this;
+    }
+
 };
 
 int main()
@@ -77,8 +92,14 @@ int main()
   File file( "/home/davorin/drek.json" );
 
   JSON json;
-  if( !json.load( file ) ) {
-    Log::out << "Loading failed\n";
+
+  try {
+    if( !json.load( file ) ) {
+      Log::out << "Loading failed\n";
+    }
+  }
+  catch( const std::exception& e ) {
+    System::error( e );
   }
 
   Log::out << json.toString() << "\n";
