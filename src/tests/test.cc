@@ -90,30 +90,19 @@ int main()
   System::init();
 
   try {
-    File file( "/home/davorin/drek.json" );
+    File file( "data/openzone/class/hoverTank.json" );
 
     JSON json;
 
-    json.setArray();
-    json.add( 1.0f );
-    json.add( "Drek" );
-    json.add( null );
-
-    json.setObject();
-    json.add( "drek", 1 );
-    json.add( "sa", "aaaa" );
-
-    json.add( "drek", "pekec" );
-    json.include( "drek", null );
-
-    Log::out << json.toString() << "\n";
-
-    if( !json.load( file ) ) {
+    if( !json.load( &file ) ) {
       Log::out << "Loading failed\n";
     }
 
-    Log::out << json.toString() << "\n";
-    json.clear();
+    BufferStream os;
+    json.write( &os );
+    os.writeChar( '\0' );
+
+    Log::out << os.begin() << "\n";
   }
   catch( const std::exception& e ) {
     System::error( e );

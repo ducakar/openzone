@@ -43,7 +43,18 @@ Profile profile;
 
 void Profile::init()
 {
-  if( !config.contains( "profile.name" ) ) {
+  File profileFile( config["dir.config"].asString() + "/profile.json" );
+
+  JSON profileConfig;
+  bool configExists = profileConfig.load( &profileFile );
+
+  if( profileConfig.isNull() ) {
+    profileConfig.setObject();
+  }
+
+  name = profileConfig["name"].get( "" );
+
+  if( name.isEmpty() ) {
     const char* userName = SDL_getenv( "USER" );
     userName = userName == null ? "Player" : userName;
 
@@ -55,45 +66,60 @@ void Profile::init()
       playerName[0] += char( 'A' - 'a' );
     }
 
-    config.add( "profile.name", playerName );
+    profileConfig.add( "name", playerName );
+
+    name = playerName;
+    configExists = false;
   }
 
-  name = config.get( "profile.name", "" );
+  // HACK default profile
+  if( !configExists ) {
+    profileConfig.add( "class", "beast" );
+    profileConfig.add( "weaponItem", 0 );
 
-  if( !config.contains( "profile.class" ) ) {
-    config.add( "profile.class", "beast" );
-    config.add( "profile.item00", "beast_weapon.plasmagun" );
-    config.add( "profile.item01", "nvGoggles" );
-    config.add( "profile.item02", "binoculars" );
-    config.add( "profile.item03", "galileo" );
-    config.add( "profile.item04", "musicPlayer" );
-    config.add( "profile.item05", "cvicek" );
-    config.add( "profile.weaponItem", "0" );
+    JSON& itemsConfig = profileConfig.addArray( "items" );
+
+    itemsConfig.add( "beast_weapon.plasmagun" );
+    itemsConfig.add( "nvGoggles" );
+    itemsConfig.add( "binoculars" );
+    itemsConfig.add( "galileo" );
+    itemsConfig.add( "musicPlayer" );
+    itemsConfig.add( "cvicek" );
   }
 
-  const ObjectClass* objClazz = library.objClass( config.get( "profile.class", "" ) );
+  const char*        sClazz   = profileConfig["class"].asString();
+  const ObjectClass* objClazz = library.objClass( sClazz );
+
   clazz = static_cast<const BotClass*>( objClazz );
 
-  char buffer[] = "profile.item  ";
-  for( int i = 0; i < 100; ++i ) {
-    buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
-    buffer[ sizeof( buffer ) - 2 ] = char( '0' + ( i % 10 ) );
+  const JSON& itemsConfig = profileConfig["items"];
+  int nItems = itemsConfig.length();
 
-    const char* itemName = config.get( buffer, "" );
-    if( !String::isEmpty( itemName ) ) {
-      items.add( library.objClass( itemName ) );
+  if( nItems > clazz->nItems ) {
+    throw Exception( "Too many items for player class '%s' in profile", clazz->name.cstr() );
+  }
+
+  items.clear();
+  items.dealloc();
+
+  for( int i = 0; i < nItems; ++i ) {
+    const char* sItem = itemsConfig[i].asString();
+
+    const ObjectClass* itemClazz = library.objClass( sItem );
+    if( ( itemClazz->flags & ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) ) !=
+        ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) )
+    {
+      throw Exception( "Invalid item '%s' in profile", sItem );
     }
+
+    items.add( static_cast<const DynamicClass*>( itemClazz ) );
   }
 
-  if( items.length() > clazz->nItems ) {
-    throw Exception( "Too many items for player profile" );
-  }
-
-  weaponItem = config.getSet( "profile.weaponItem", -1 );
+  weaponItem = profileConfig["weaponItem"].get( -1 );
 
   if( weaponItem >= 0 ) {
     if( uint( weaponItem ) >= uint( items.length() ) ) {
-      throw Exception( "Invalid profile.weaponItem %d", weaponItem );
+      throw Exception( "Invalid weaponItem #%d in profile", weaponItem );
     }
 
     const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( items[weaponItem] );
@@ -102,6 +128,10 @@ void Profile::init()
       throw Exception( "Invalid weapon class '%s' for player class '%s' in profile",
                        weaponClazz->name.cstr(), clazz->name.cstr() );
     }
+  }
+
+  if( !configExists ) {
+    profileConfig.save( &profileFile );
   }
 }
 

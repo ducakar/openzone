@@ -744,7 +744,7 @@ void Class::build( BufferStream* os, const char* className )
 {
   PFile configFile( String::str( "class/%s.json", className ) );
 
-  if( !config.load( configFile ) ) {
+  if( !config.load( &configFile ) ) {
     throw Exception( "Failed to load '%s'", configFile.path().cstr() );
   }
 

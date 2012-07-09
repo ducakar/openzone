@@ -378,13 +378,13 @@ void Camera::init()
   centreX       = window.width / 2;
   centreY       = window.height / 2;
 
-  aspect        = config.getSet( "camera.aspect",     0.0f );
-  mouseXSens    = config.getSet( "camera.mouseXSens", 1.0f ) * 0.004f;
-  mouseYSens    = config.getSet( "camera.mouseYSens", 1.0f ) * 0.004f;
-  keyXSens      = config.getSet( "camera.keysXSens",  1.0f ) * 0.04f;
-  keyYSens      = config.getSet( "camera.keysYSens",  1.0f ) * 0.04f;
+  aspect        = config.include( "camera.aspect",     0.0f ).asFloat();
+  mouseXSens    = config.include( "camera.mouseXSens", 1.0f ).asFloat() * 0.004f;
+  mouseYSens    = config.include( "camera.mouseYSens", 1.0f ).asFloat() * 0.004f;
+  keyXSens      = config.include( "camera.keysXSens",  1.0f ).asFloat() * 0.04f;
+  keyYSens      = config.include( "camera.keysYSens",  1.0f ).asFloat() * 0.04f;
 
-  float angle   = Math::rad( config.getSet( "camera.angle", 80.0f ) );
+  float angle   = Math::rad( config.include( "camera.angle", 80.0f ).asFloat() );
 
   isFixedAspect = aspect != 0.0f;
   aspect        = isFixedAspect ? aspect : float( width ) / float( height );

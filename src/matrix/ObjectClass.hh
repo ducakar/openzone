@@ -77,10 +77,6 @@ class ObjectClass
     String                     onUse;
     String                     onUpdate;
 
-  protected:
-
-    void fillCommonConfig( const Config* config );
-
   public:
 
     virtual ~ObjectClass();

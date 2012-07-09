@@ -589,20 +589,20 @@ void Render::init( bool isBuild )
   Log::verboseMode = false;
 
 #ifdef __native_client__
-  config.include( "shader.vertexTexture", "false" );
+  config.include( "shader.vertexTexture", false );
 #endif
 
   if( isMesa7 ) {
-    config.include( "shader.setSamplerMap", "false" );
+    config.include( "shader.setSamplerMap", false );
   }
   if( isCatalyst ) {
-    config.include( "shader.vertexTexture", "false" );
+    config.include( "shader.vertexTexture", false );
   }
   if( !hasFBO ) {
     throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
   }
   if( !hasFloatTex ) {
-    config.include( "shader.vertexTexture", "false" );
+    config.include( "shader.vertexTexture", false );
   }
   if( hasS3TC ) {
     shader.hasS3TC = true;
@@ -611,9 +611,6 @@ void Render::init( bool isBuild )
   glInit();
 
   if( isBuild ) {
-    config.get( "shader.setSamplerMap", false );
-    config.get( "shader.vertexTexture", false );
-
     Log::unindent();
     Log::println( "}" );
 
@@ -623,15 +620,15 @@ void Render::init( bool isBuild )
 
   String sScaleFilter;
 
-  doPostprocess   = config.getSet( "render.postprocess", false );
-  isLowDetail     = config.getSet( "render.lowDetail",   false );
+  doPostprocess   = config.include( "render.postprocess", false ).asBool();
+  isLowDetail     = config.include( "render.lowDetail",   false ).asBool();
 
-  scale           = config.getSet( "render.scale",       1.0f );
-  sScaleFilter    = config.getSet( "render.scaleFilter", "NEAREST" );
+  scale           = config.include( "render.scale",       1.0f ).asFloat();
+  sScaleFilter    = config.include( "render.scaleFilter", "NEAREST" ).asString();
 
-  visibilityRange = config.getSet( "render.distance",    400.0f );
-  showBounds      = config.getSet( "render.showBounds",  false );
-  showAim         = config.getSet( "render.showAim",     false );
+  visibilityRange = config.include( "render.distance",    400.0f ).asFloat();
+  showBounds      = config.include( "render.showBounds",  false ).asBool();
+  showAim         = config.include( "render.showAim",     false ).asBool();
 
   isOffscreen     = doPostprocess || scale != 1.0f;
   windPhi         = 0.0f;

@@ -271,7 +271,7 @@ void OBJ::load()
   int currentMaterial = 0;
 
   JSON config;
-  config.load( configFile );
+  config.load( &configFile );
 
   float  scaling     = config["scale"].get( 1.0f );
   Vec3   translation = Vec3( config["translate.x"].get( 0.0f ),

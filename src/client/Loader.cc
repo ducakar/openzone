@@ -369,7 +369,7 @@ void Loader::makeScreenshot()
   }
 
   snprintf( screenshotInfo.path, 256, "%s/screenshots/" OZ_APPLICATION_NAME " %s.bmp",
-            config.get( "dir.config", "" ), Time::local().toString().cstr() );
+            config["dir.config"].get( "" ), Time::local().toString().cstr() );
 
   Log::println( "Screenshot to '%s' scheduled in background thread", screenshotInfo.path );
 

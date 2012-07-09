@@ -114,14 +114,14 @@ class Library
     void initBSPs();
     void initModels();
     void initMusicRecurse( const char* path );
-    void initMusic();
+    void initMusic( const char* userMusicPath );
     void initNameLists();
     void initFragPools();
     void initClasses();
 
   public:
 
-    void init();
+    void init( const char* userMusicPath );
     void free();
 
 };

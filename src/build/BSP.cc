@@ -48,7 +48,7 @@ void BSP::load()
   PFile bspFile( String::str( "baseq3/maps/%s.bsp", name.cstr() ) );
 
   JSON config;
-  if( !config.load( configFile ) ) {
+  if( !config.load( &configFile ) ) {
     throw Exception( "BSP config loading failed" );
   }
 

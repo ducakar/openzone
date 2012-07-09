@@ -215,7 +215,7 @@ void MD2::build( const char* path )
   Log::indent();
 
   JSON config;
-  config.load( configFile );
+  config.load( &configFile );
 
   if( !modelFile.map() ) {
     throw Exception( "MD2 reading failed" );

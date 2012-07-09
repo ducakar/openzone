@@ -57,7 +57,7 @@ static void readBSP( File* file )
 {
   JSON config;
 
-  if( !config.load( *file ) ) {
+  if( !config.load( file ) ) {
     throw Exception( "Failed to load '%s'", file->path().cstr() );
   }
 
@@ -92,15 +92,13 @@ static void readBSP( File* file )
 
 static void readClass( File* file )
 {
-  if( !config.load( *file ) ) {
+  JSON config;
+
+  if( !config.load( file ) ) {
     throw Exception( "Failed to read '%s'", file->path().cstr() );
   }
 
-  const char* title    = config.get( "title", "" );
-  const char* weapon00 = config.get( "weapon00.title", "" );
-  const char* weapon01 = config.get( "weapon01.title", "" );
-  const char* weapon02 = config.get( "weapon02.title", "" );
-  const char* weapon03 = config.get( "weapon03.title", "" );
+  const char* title = config["title"].get( "" );
 
   if( String::isEmpty( title ) ) {
     titles.include( file->baseName(), file->path() );
@@ -111,17 +109,14 @@ static void readClass( File* file )
     titles.include( title, file->path() );
   }
 
-  if( !String::isEmpty( weapon00 ) ) {
-    titles.include( weapon00, file->path() );
-  }
-  if( !String::isEmpty( weapon01 ) ) {
-    titles.include( weapon01, file->path() );
-  }
-  if( !String::isEmpty( weapon02 ) ) {
-    titles.include( weapon02, file->path() );
-  }
-  if( !String::isEmpty( weapon03 ) ) {
-    titles.include( weapon03, file->path() );
+  const JSON& weaponsConfig = config["weapons"];
+
+  for( int i = 0; i < weaponsConfig.length(); ++i ) {
+    const char* weaponTitle = weaponsConfig[i]["title"].get( "" );
+
+    if( !String::isEmpty( weaponTitle ) ) {
+      titles.include( weaponTitle, file->path() );
+    }
   }
 
   config.clear();

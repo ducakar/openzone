@@ -88,19 +88,20 @@ void Client::shutdown()
   }
 
   if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
-    String configDir = config.get( "dir.config", "" );
+    String configDir = config["dir.config"].get( "" );
 
     if( !configDir.isEmpty() ) {
-      File configFile( configDir + "/client.rc" );
+      File configFile( configDir + "/client.json" );
 
       config.exclude( "dir.config" );
       config.exclude( "dir.local" );
-      config.removeUnused();
+      // TODO
+//       config.removeUnused();
 
 #ifdef _WIN32
-      config.save( configFile, "\r\n" );
+      config.save( &configFile, "\r\n" );
 #else
-      config.save( configFile );
+      config.save( &configFile );
 #endif
     }
   }
@@ -302,41 +303,45 @@ int Client::main( int argc, char** argv )
   Log::println( "}" );
   Log::verboseMode = false;
 
-  File configFile( configDir + "/client.rc" );
-  if( config.load( configFile ) ) {
+  File configFile( configDir + "/client.json" );
+  if( config.load( &configFile ) ) {
     Log::printEnd( "Configuration read from '%s'", configFile.path().cstr() );
 
-    if( String::equals( config.get( "_version", "" ), OZ_APPLICATION_VERSION ) ) {
+    if( String::equals( config["_version"].get( "" ), OZ_APPLICATION_VERSION ) ) {
       initFlags |= INIT_CONFIG;
     }
     else {
       Log::println( "Invalid configuration file version, configuration will be cleaned and written "
                     "upon exit" );
 
+      config.clear();
+      config.setObject();
       config.add( "_version", OZ_APPLICATION_VERSION );
-      config.get( "_version", "" );
+      config["_version"];
     }
   }
   else {
     Log::println( "No configuration file, default configuration will be used and written upon "
                   "exit" );
+
+    config.setObject();
     config.add( "_version", OZ_APPLICATION_VERSION );
-    config.get( "_version", "" );
+    config["_version"];
   }
 
   config.add( "dir.config", configDir );
   config.add( "dir.local", localDir );
 
   // tag variables as used
-  config.get( "dir.config", "" );
-  config.get( "dir.local", "" );
+  config["dir.config"];
+  config["dir.local"];
 
   window.init();
   initFlags |= INIT_WINDOW;
 
   input.init();
 
-  String prefix  = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
+  String prefix  = config.include( "dir.prefix", OZ_INSTALL_PREFIX ).asString();
   String dataDir = prefix + "/share/" OZ_APPLICATION_NAME;
 
 #ifdef __native_client__
@@ -365,7 +370,7 @@ int Client::main( int argc, char** argv )
 
 #else
 
-  const char* userMusicPath = config.getSet( "dir.music", musicDir );
+  const char* userMusicPath = config.include( "dir.music", musicDir ).asString();
 
   if( PFile::mount( userMusicPath, "/music", true ) ) {
     Log::println( "%s [mounted on /music]", userMusicPath );
@@ -406,13 +411,15 @@ int Client::main( int argc, char** argv )
   Log::unindent();
   Log::println( "}" );
 
-  if( String::equals( config.getSet( "seed", "TIME" ), "TIME" ) ) {
+  config.include( "seed", "TIME" );
+
+  if( config["seed"].type() == JSON::STRING && config["seed"].asString().equals( "TIME" ) ) {
     int seed = int( Time::uclock() );
     Math::seed( seed );
     Log::println( "Random generator seed set to the current time: %u", seed );
   }
   else {
-    int seed = config.get( "seed", 0 );
+    int seed = config["seed"].asInt();
     Math::seed( seed );
     Log::println( "Random generator seed set to: %d", seed );
   }
@@ -436,7 +443,7 @@ int Client::main( int argc, char** argv )
 
 #endif
 
-  const char* locale = config.getSet( "lingua", "en" );
+  const char* locale = config.include( "lingua", "en" ).asString();
 
   Log::print( "Setting localisation '%s' ...", locale );
   if( lingua.init( locale ) ) {
@@ -448,7 +455,7 @@ int Client::main( int argc, char** argv )
   }
 
   initFlags |= INIT_LIBRARY;
-  library.init();
+  library.init( config["dir.music"].get( "" ) );
 
   initFlags |= INIT_CONTEXT;
   context.init();

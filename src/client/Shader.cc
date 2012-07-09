@@ -171,7 +171,7 @@ void Shader::loadProgram( int id )
   PFile configFile( "glsl/" + name + ".json" );
   JSON programConfig;
 
-  if( !programConfig.load( configFile ) ) {
+  if( !programConfig.load( &configFile ) ) {
     throw Exception( "Failed to read shader program configuration '%s'", configFile.path().cstr() );
   }
 
@@ -312,10 +312,10 @@ void Shader::init()
 {
   Log::print( "Initialising Shader ..." );
 
-  hasVertexTexture = config.getSet( "shader.vertexTexture", true );
-  setSamplerMap    = config.getSet( "shader.setSamplerMap", true );
-  doPostprocess    = config.get( "render.postprocess", false );
-  isLowDetail      = config.get( "render.lowDetail", false );
+  hasVertexTexture = config.include( "shader.vertexTexture", true ).asBool();
+  setSamplerMap    = config.include( "shader.setSamplerMap", true ).asBool();
+  doPostprocess    = config["render.postprocess"].asBool();
+  isLowDetail      = config["render.lowDetail"].asBool();
 
   // bind white texture to id 0 to emulate fixed functionality (in fixed functionality sampler
   // always returns white colour when texture 0 is bound)

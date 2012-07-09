@@ -695,7 +695,7 @@ void Sound::init()
   Log::println( "}" );
   Log::verboseMode = false;
 
-  const char* deviceName = config.getSet( "sound.device", "" );
+  const char* deviceName = config.include( "sound.device", "" ).asString();
 
   if( String::isEmpty( deviceName ) ) {
     deviceName = null;
@@ -804,7 +804,7 @@ void Sound::init()
 
   alSourcei( musicSource, AL_SOURCE_RELATIVE, AL_TRUE );
 
-  setVolume( config.getSet( "sound.volume", 1.0f ) );
+  setVolume( config.include( "sound.volume", 1.0f ).asFloat() );
   setMusicVolume( 0.5f );
 
 #ifdef OZ_NONFREE
