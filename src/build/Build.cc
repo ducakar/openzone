@@ -40,6 +40,7 @@
 #include "build/Terra.hh"
 #include "build/BSP.hh"
 #include "build/Class.hh"
+#include "build/FragPool.hh"
 #include "build/OBJ.hh"
 #include "build/MD2.hh"
 #include "build/MD3.hh"
@@ -378,7 +379,7 @@ void Build::buildClasses( const String& pkgName )
 
     Log::print( "%s ...", name.cstr() );
 
-    clazz.build( &os, name.cstr() );
+    clazz.build( &os, name );
 
     Log::printEnd( " OK" );
   }
@@ -432,34 +433,48 @@ void Build::buildClasses( const String& pkgName )
   Log::println( "}" );
 }
 
-void Build::tagFragResources()
+void Build::buildFragPools( const String& pkgName )
 {
-  Log::print( "Extracting model names form fragment pool definitions..." );
+  Log::println( "Building fragment pools ..." );
+  Log::indent();
 
   String dirName = "frag";
   PFile dir( dirName );
   DArray<PFile> dirList = dir.ls();
 
+  BufferStream os;
+
   foreach( file, dirList.iter() ) {
-    if( !file->hasExtension( "rc" ) ) {
+    if( !file->hasExtension( "json" ) ) {
       continue;
     }
 
-    Config fragConfig;
-    fragConfig.load( *file );
+    String name = file->baseName();
 
-    char buffer[] = "model  ";
-    for( int i = 0; i < matrix::FragPool::MAX_MODELS; ++i ) {
-      hard_assert( i < 100 );
+    Log::print( "%s ...", name.cstr() );
 
-      buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
-      buffer[ sizeof( buffer ) - 2 ] = char( '0' + ( i % 10 ) );
+    fragPool.build( &os, name );
 
-      context.usedModels.include( fragConfig.get( buffer, "" ) );
+    Log::printEnd( " OK" );
+  }
+
+  if( os.length() != 0 ) {
+    File::mkdir( "frag" );
+    File outFile( "frag/" + pkgName + ".ozFragPools" );
+
+    Log::print( "Writing to '%s' ...", outFile.path().cstr() );
+
+    if( !outFile.write( os.begin(), os.length() ) ) {
+      throw Exception( "Failed to write fragment pool file '%s'", outFile.path().cstr() );
     }
   }
 
+  clazz.free();
+
   Log::printEnd( " OK" );
+
+  Log::unindent();
+  Log::println( "}" );
 }
 
 void Build::buildModels()
@@ -970,8 +985,8 @@ int Build::main( int argc, char** argv )
     copyFiles( "class", "class", "txt", false );
   }
   if( doFrags ) {
-    tagFragResources();
-    copyFiles( "frag", "frag", "rc", false );
+    buildFragPools( pkgName );
+    copyFiles( "frag", "frag", "txt", false );
   }
   if( doModels ) {
     buildModels();

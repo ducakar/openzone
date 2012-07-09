@@ -112,7 +112,7 @@ class Context
 
     HashIndex<Imago*, 10223>   imagines;  // currently loaded graphics models
     HashIndex<Audio*, 6143>    audios;    // currently loaded audio models
-    HashIndex<FragPool*, 32>   fragPools; // currently loaded frag pools representations
+    FragPool**                 fragPools; // frag pool representations
 
     int                        maxImagines;
     int                        maxAudios;

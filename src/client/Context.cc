@@ -468,13 +468,13 @@ void Context::playAudio( const Object* obj, const Audio* parent )
 
 void Context::drawFrag( const Frag* frag )
 {
-  FragPool* const* value = fragPools.find( frag->pool->id );
+  FragPool* pool = fragPools[frag->poolId];
 
-  if( value == null ) {
-    value = fragPools.add( frag->pool->id, new FragPool( frag->pool ) );
+  if( pool == null ) {
+    pool = new FragPool( frag->pool );
+
+    fragPools[frag->poolId] = pool;
   }
-
-  FragPool* pool = *value;
 
   pool->draw( frag );
 
@@ -483,6 +483,11 @@ void Context::drawFrag( const Frag* frag )
 
 void Context::updateLoad()
 {
+  int nFragPools = 0;
+  for( int i = 0; i < library.nFragPools; ++i ) {
+    nFragPools += fragPools[i] != null;
+  }
+
   maxImagines           = max( maxImagines,           imagines.length() );
   maxAudios             = max( maxAudios,             audios.length() );
   maxSources            = max( maxSources,            Source::pool.length() );
@@ -499,7 +504,7 @@ void Context::updateLoad()
   maxBotAudios          = max( maxBotAudios,          BotAudio::pool.length() );
   maxVehicleAudios      = max( maxVehicleAudios,      VehicleAudio::pool.length() );
 
-  maxFragPools          = max( maxFragPools,          fragPools.length() );
+  maxFragPools          = max( maxFragPools,          nFragPools );
 }
 
 void Context::load()
@@ -570,8 +575,9 @@ void Context::unload()
   imagines.dealloc();
   audios.free();
   audios.dealloc();
-  fragPools.free();
-  fragPools.dealloc();
+
+  aFree( fragPools, library.nFragPools );
+  aSet( fragPools, null, library.nFragPools );
 
   BasicAudio::pool.free();
   BotAudio::pool.free();
@@ -653,6 +659,7 @@ void Context::init()
 
   imagoClasses = library.nImagoClasses == 0 ? null : new Imago::CreateFunc*[library.nImagoClasses];
   audioClasses = library.nAudioClasses == 0 ? null : new Audio::CreateFunc*[library.nAudioClasses];
+  fragPools    = library.nFragPools    == 0 ? null : new FragPool*[library.nFragPools];
 
   OZ_REGISTER_IMAGOCLASS( SMM );
   OZ_REGISTER_IMAGOCLASS( SMMVehicle );
@@ -665,23 +672,12 @@ void Context::init()
   OZ_REGISTER_AUDIOCLASS( Bot );
   OZ_REGISTER_AUDIOCLASS( Vehicle );
 
+  aSet( fragPools, null, library.nFragPools );
+
   int nTextures = library.textures.length();
   int nSounds   = library.sounds.length();
   int nBSPs     = library.nBSPs;
   int nModels   = library.models.length();
-
-  if( nTextures == 0 ) {
-    throw Exception( "Context: textures missing!" );
-  }
-  if( nSounds == 0 ) {
-    throw Exception( "Context: sounds missing!" );
-  }
-  if( nBSPs == 0 ) {
-    throw Exception( "Context: BSPs missing!" );
-  }
-  if( nModels == 0 ) {
-    throw Exception( "Context: models missing!" );
-  }
 
   textures = nTextures == 0 ? null : new Resource<Texture>[nTextures];
   sounds   = nSounds   == 0 ? null : new Resource<uint>[nSounds];
@@ -720,6 +716,7 @@ void Context::free()
 
   delete[] imagoClasses;
   delete[] audioClasses;
+  delete[] fragPools;
 
   delete[] textures;
   delete[] sounds;
@@ -730,6 +727,7 @@ void Context::free()
 
   imagoClasses = null;
   audioClasses = null;
+  fragPools    = null;
 
   textures     = null;
   sounds       = null;

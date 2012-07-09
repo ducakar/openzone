@@ -478,17 +478,29 @@ void Library::initFragPools()
   PFile dir( "frag" );
   DArray<PFile> dirList = dir.ls();
 
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "rc" ) ) {
+  foreach( file, dirList.iter() ) {
+    if( !file->hasExtension( "ozFragPools" ) ) {
       continue;
     }
 
-    String name = file->baseName();
+    if( !file->map() ) {
+      throw Exception( "Failed to map '%s'", file->path().cstr() );
+    }
 
-    Log::println( "%s", name.cstr() );
+    InputStream is = file->inputStream();
 
-    fragPools.add( name, FragPool( name, fragPools.length() ) );
+    while( is.isAvailable() ) {
+      const char* name = is.readString();
+
+      Log::println( "%s", name );
+
+      fragPools.add( name, FragPool( &is, name, fragPools.length() ) );
+    }
+
+    file->unmap();
   }
+
+  nFragPools = fragPools.length();
 
   Log::unindent();
   Log::println( "}" );

@@ -53,6 +53,7 @@ class Frag
     Cell*           cell;
     int             index;         // position in world.objects vector
 
+    int             poolId;
     const FragPool* pool;
 
     Point           p;

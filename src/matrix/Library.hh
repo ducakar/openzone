@@ -81,6 +81,7 @@ class Library
     Vector<Resource> musics;
 
     int nBSPs;
+    int nFragPools;
     int nDeviceClasses;
     int nImagoClasses;
     int nAudioClasses;
