@@ -54,6 +54,8 @@ class Mat44
     Vec4 z; ///< Third column (image of k base vector).
     Vec4 w; ///< Fourth column (translation).
 
+  public:
+
     /**
      * Create an uninitialised instance.
      */

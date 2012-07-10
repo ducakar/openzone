@@ -35,7 +35,7 @@ namespace ui
 
 class Area
 {
-  friend class DList<Area>;
+  friend class DChain<Area>;
   friend class UI;
 
   public:
@@ -66,7 +66,7 @@ class Area
 
   protected:
 
-    static Vector<Area*> updateAreas;
+    static List<Area*> updateAreas;
 
     Area* prev[1];
     Area* next[1];
@@ -76,7 +76,7 @@ class Area
   public:
 
     Area* parent;
-    DList<Area> children;
+    DChain<Area> children;
 
     // absolute x and y, not relative to parent
     int x;

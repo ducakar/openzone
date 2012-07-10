@@ -129,7 +129,7 @@ Object* Synapse::add( const ObjectClass* clazz, const Point& p, Heading heading,
   addedObjects.add( obj->index );
 
   if( !empty ) {
-    const Vector<const ObjectClass*>& defaultItems = obj->clazz->defaultItems;
+    const List<const ObjectClass*>& defaultItems = obj->clazz->defaultItems;
 
     for( int i = 0; i < defaultItems.length(); ++i ) {
       Heading heading = Heading( Math::rand( 4 ) );

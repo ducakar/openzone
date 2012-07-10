@@ -51,11 +51,11 @@ class CinematicProxy : public Proxy
       Type  type;
     };
 
-    Vector<Step> steps;
+    List<Step> steps;
 
-    Quat  beginRot;
-    Point beginPos;
-    float stepTime;
+    Quat       beginRot;
+    Point      beginPos;
+    float      stepTime;
 
   public:
 

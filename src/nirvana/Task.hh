@@ -48,9 +48,9 @@ class Task
 
   private:
 
-    Mind*       mind;
-    Task*       parent;
-    DList<Task> children;
+    Mind*        mind;
+    Task*        parent;
+    DChain<Task> children;
 
   public:
 

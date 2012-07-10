@@ -10,10 +10,11 @@ set( ozHeaders
   Bounds.hh
   Buffer.hh
   BufferStream.hh
+  Chain.hh
   clearmacros.hh
   common.hh
   DArray.hh
-  DList.hh
+  DChain.hh
   Endian.hh
   Exception.hh
   File.hh
@@ -39,15 +40,14 @@ set( ozHeaders
   SBitset.hh
   Semaphore.hh
   Simd.hh
+  SList.hh
   StackTrace.hh
   String.hh
-  SVector.hh
   System.hh
   Thread.hh
   Time.hh
   Vec3.hh
-  Vec4.hh
-  Vector.hh )
+  Vec4.hh )
 add_library( oz
   Alloc.cc
   Buffer.cc

@@ -53,7 +53,7 @@ class QuestList
 {
   public:
 
-    Vector<Quest> quests;
+    List<Quest> quests;
 
     void read( InputStream* istream );
     void write( BufferStream* ostream ) const;

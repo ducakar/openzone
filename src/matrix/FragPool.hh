@@ -41,21 +41,21 @@ class FragPool
     // OR'ed to the client::FragPoo::flags, so we must assure bits don't overlap
     static const int FADEOUT_BIT = 0x0100;
 
-    String      name;
-    int         id;
+    String    name;
+    int       id;
 
-    int         flags;
+    int       flags;
 
-    float       velocitySpread; ///< Used when generating multiple frags in <tt>Object::onDestroy()</tt>
-                                ///< or <tt>Struct::destroy()</tt>.
+    float     velocitySpread; ///< Used when generating multiple frags in <tt>Object::onDestroy()</tt>
+                              ///< or <tt>Struct::destroy()</tt>.
 
-    float       life;
-    float       lifeSpread;
+    float     life;
+    float     lifeSpread;
 
-    float       mass;
-    float       restitution;
+    float     mass;
+    float     restitution;
 
-    Vector<int> models;
+    List<int> models;
 
   public:
 

@@ -28,63 +28,49 @@
 
 #pragma once
 
-#include "iterables.hh"
+#include "arrays.hh"
 
 namespace oz
 {
 
 /**
- * Linked list.
+ * %Array list.
  *
- * It can only be applied on classes that have a <tt>next[]</tt> member.
- * Example:
- * @code
- * struct C
- * {
- *   C*  next[2];
- *   int value;
- * };
- * ...
- * List<C, 0> list1;
- * List<C, 1> list2;
- * @endcode
+ * In contrast with <tt>std::vector</tt> all allocated elements are constructed all the time. This
+ * yields slightly better performance and simplifies implementation. However, on element removal its
+ * destruction is guaranteed (either explicitly or by via move operation).
  *
- * That way the objects of the same class can be in two separate lists at once.
- * <tt>next[0]</tt> points to next element in <tt>list1</tt> and
- * <tt>next[1]</tt> points to next element in <tt>list2</tt>.
- *
- * <tt>next[INDEX]</tt> pointer is not cleared when element is removed from the list,
- * it may still point to elements in the list or to invalid locations!
- *
- * <tt>List</tt> is not a real container but merely binds together already existing elements.
- * So, copy operator does not copy the elements, to make a copy of a list including its elements,
- * use <tt>clone()</tt> instead. It also doesn't delete removed elements (except for <tt>free()</tt>
- * method).
+ * Memory is allocated when the first element is added.
  *
  * @ingroup oz
  */
-template <class Elem, int INDEX = 0>
+template <typename Elem>
 class List
 {
+  private:
+
+    /// Granularity for automatic storage allocations and <tt>trim()</tt>.
+    static const int GRANULARITY = 8;
+
   public:
 
     /**
      * %Iterator with constant access to container elements.
      */
-    class CIterator : public CIteratorBase<Elem>
+    class CIterator : public oz::CIterator<Elem>
     {
       friend class List;
 
       private:
 
-        using CIteratorBase<Elem>::elem;
+        using oz::CIterator<Elem>::elem;
 
         /**
-         * %Iterator for the given container, points to the first element.
+         * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
         explicit CIterator( const List& l ) :
-          CIteratorBase<Elem>( l.firstElem )
+          oz::CIterator<Elem>( l.data, l.data + l.count )
         {}
 
       public:
@@ -94,40 +80,28 @@ class List
          */
         OZ_ALWAYS_INLINE
         CIterator() :
-          CIteratorBase<Elem>( null )
+          oz::CIterator<Elem>( null, null )
         {}
-
-        /**
-         * Advance to the next element.
-         */
-        OZ_ALWAYS_INLINE
-        CIterator& operator ++ ()
-        {
-          hard_assert( elem != null );
-
-          elem = elem->next[INDEX];
-          return *this;
-        }
 
     };
 
     /**
      * %Iterator with non-constant access to container elements.
      */
-    class Iterator : public IteratorBase<Elem>
+    class Iterator : public oz::Iterator<Elem>
     {
       friend class List;
 
       private:
 
-        using IteratorBase<Elem>::elem;
+        using oz::Iterator<Elem>::elem;
 
         /**
-         * %Iterator for the given container, points to the first element.
+         * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
         explicit Iterator( const List& l ) :
-          CIteratorBase<Elem>( l.firstElem )
+          oz::Iterator<Elem>( l.data, l.data + l.count )
         {}
 
       public:
@@ -137,26 +111,39 @@ class List
          */
         OZ_ALWAYS_INLINE
         Iterator() :
-          IteratorBase<Elem>( null )
+          oz::Iterator<Elem>( null, null )
         {}
-
-        /**
-         * Advance to the next element.
-         */
-        OZ_ALWAYS_INLINE
-        Iterator& operator ++ ()
-        {
-          hard_assert( elem != null );
-
-          elem = elem->next[INDEX];
-          return *this;
-        }
 
     };
 
   private:
 
-    Elem* firstElem; ///< Pointer to the first element in the list.
+    Elem* data;  ///< Element storage.
+    int   size;  ///< Capacity, number of elements in storage.
+    int   count; ///< Number of elements.
+
+    /**
+     * Double capacity if there is not enough space to add another element.
+     */
+    void ensureCapacity()
+    {
+      if( size == count ) {
+        size = size == 0 ? GRANULARITY : 2 * size;
+        data = aRealloc<Elem>( data, count, size );
+      }
+    }
+
+    /**
+     * Enlarge capacity to the smallest multiple of GRANULARITY able to hold requested number of
+     * elements.
+     */
+    void ensureCapacity( int desiredSize )
+    {
+      if( size < desiredSize ) {
+        size = ( ( desiredSize - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
+        data = aRealloc<Elem>( data, count, size );
+      }
+    }
 
   public:
 
@@ -164,52 +151,104 @@ class List
      * Create an empty list.
      */
     List() :
-      firstElem( null )
+      data( null ), size( 0 ), count( 0 )
     {}
 
     /**
-     * Clone the list.
-     *
-     * Create a new list from copies of all elements of the original list.
+     * Destructor.
      */
-    List clone() const
+    ~List()
     {
-      List clone;
-
-      Elem* prev = null;
-      Elem* elem = firstElem;
-
-      while( elem != null ) {
-        Elem* last = new Elem( *elem );
-
-        if( prev == null ) {
-          clone.firstElem = last;
-        }
-        else {
-          prev->next[INDEX] = last;
-        }
-        prev = last;
-      }
-
-      return clone;
+      delete[] data;
     }
 
     /**
-     * True iff same size and respective elements are equal.
-     *
-     * <tt>Elem</tt> type should implement <tt>operator ==</tt>, otherwise comparison doesn't make
-     * sense as two copies always differ in <tt>prev[INDEX]</tt> and <tt>next[INDEX]</tt> members.
+     * Copy constructor, copies elements.
      */
-    bool equals( const List& l ) const
+    List( const List& l ) :
+      data( l.size == 0 ? null : new Elem[l.size] ), size( l.size ), count( l.count )
     {
-      Elem* e1 = firstElem;
-      Elem* e2 = l.firstElem;
+      aCopy<Elem>( data, l.data, l.count );
+    }
 
-      while( e1 != null && e2 != null && *e1 == *e2 ) {
-        e1 = e1->next[INDEX];
-        e2 = e2->next[INDEX];
+    /**
+     * Move constructor, moves element storage.
+     */
+    List( List&& l ) :
+      data( l.data ), size( l.size ), count( l.count )
+    {
+      l.data  = null;
+      l.size  = 0;
+      l.count = 0;
+    }
+
+    /**
+     * Copy operator, copies elements.
+     *
+     * Reuse existing storage if it suffices.
+     */
+    List& operator = ( const List& l )
+    {
+      if( &l == this ) {
+        return *this;
       }
-      return e1 == e2;
+
+      if( size < l.count ) {
+        delete[] data;
+
+        data = new Elem[l.size];
+        size = l.size;
+      }
+
+      aCopy<Elem>( data, l.data, l.count );
+      count = l.count;
+
+      return *this;
+    }
+
+    /**
+     * Move operator, moves element storage.
+     */
+    List& operator = ( List&& l )
+    {
+      if( &l == this ) {
+        return *this;
+      }
+
+      delete[] data;
+
+      data  = l.data;
+      size  = l.size;
+      count = l.count;
+
+      l.data  = null;
+      l.size  = 0;
+      l.count = 0;
+
+      return *this;
+    }
+
+    /**
+     * Create an empty list with the given initial capacity.
+     */
+    explicit List( int size_ ) :
+      data( new Elem[size_] ), size( size_ ), count( 0 )
+    {}
+
+    /**
+     * True iff respective elements are equal.
+     */
+    bool operator == ( const List& l ) const
+    {
+      return count == l.count && aEquals<Elem>( data, l.data, count );
+    }
+
+    /**
+     * False iff respective elements are equal.
+     */
+    bool operator != ( const List& l ) const
+    {
+      return count != l.count || !aEquals<Elem>( data, l.data, count );
     }
 
     /**
@@ -231,196 +270,418 @@ class List
     }
 
     /**
-     * Iterate through the list and count elements.
-     */
-    int length() const
-    {
-      int i = 0;
-      Elem* p = firstElem;
-
-      while( p != null ) {
-        p = p->next[INDEX];
-        ++i;
-      }
-      return i;
-    }
-
-    /**
-     * True iff the list has no elements.
+     * Constant pointer to the first element.
      */
     OZ_ALWAYS_INLINE
-    bool isEmpty() const
+    operator const Elem* () const
     {
-      return firstElem == null;
+      return data;
     }
 
     /**
      * Pointer to the first element.
      */
     OZ_ALWAYS_INLINE
-    Elem* first() const
+    operator Elem* ()
     {
-      return firstElem;
+      return data;
     }
 
     /**
-     * Pointer to the last element.
+     * Number of elements.
      */
-    Elem* last() const
+    OZ_ALWAYS_INLINE
+    int length() const
     {
-      Elem* last = firstElem;
-
-      while( last != null ) {
-        last = last->next[INDEX];
-      }
-      return last;
+      return count;
     }
 
     /**
-     * Pointer to the element before the given one.
+     * True iff empty.
      */
-    Elem* before( const Elem* e ) const
+    OZ_ALWAYS_INLINE
+    bool isEmpty() const
     {
-      Elem* current = firstElem;
-      Elem* before = null;
-
-      while( current != e ) {
-        before = current;
-        current = current->next[INDEX];
-      }
-      return before;
+      return count == 0;
     }
 
     /**
-     * True iff the given element is in the list.
+     * Number of allocated elements.
      */
-    bool has( const Elem* e ) const
+    OZ_ALWAYS_INLINE
+    int capacity() const
     {
-      hard_assert( e != null );
-
-      Elem* p = firstElem;
-
-      while( p != null && p != e ) {
-        p = p->next[INDEX];
-      }
-      return p != null;
+      return size;
     }
 
     /**
-     * True iff an element equal to the given one is in the list.
+     * Constant reference to the i-th element.
+     */
+    OZ_ALWAYS_INLINE
+    const Elem& operator [] ( int i ) const
+    {
+      hard_assert( uint( i ) < uint( count ) );
+
+      return data[i];
+    }
+
+    /**
+     * Reference to the i-th element.
+     */
+    OZ_ALWAYS_INLINE
+    Elem& operator [] ( int i )
+    {
+      hard_assert( uint( i ) < uint( count ) );
+
+      return data[i];
+    }
+
+    /**
+     * Constant reference to the first element.
+     */
+    OZ_ALWAYS_INLINE
+    const Elem& first() const
+    {
+      hard_assert( count != 0 );
+
+      return data[0];
+    }
+
+    /**
+     * Reference to the first element.
+     */
+    OZ_ALWAYS_INLINE
+    Elem& first()
+    {
+      hard_assert( count != 0 );
+
+      return data[0];
+    }
+
+    /**
+     * Constant reference to the last element.
+     */
+    OZ_ALWAYS_INLINE
+    const Elem& last() const
+    {
+      hard_assert( count != 0 );
+
+      return data[count - 1];
+    }
+
+    /**
+     * Reference to the last element.
+     */
+    OZ_ALWAYS_INLINE
+    Elem& last()
+    {
+      hard_assert( count != 0 );
+
+      return data[count - 1];
+    }
+
+    /**
+     * True iff the given value is found in the list.
+     */
+    bool contains( const Elem& e ) const
+    {
+      return aContains<Elem, Elem>( data, e, count );
+    }
+
+    /**
+     * Index of the first occurrence of the value or -1 if not found.
+     */
+    int index( const Elem& e ) const
+    {
+      return aIndex<Elem, Elem>( data, e, count );
+    }
+
+    /**
+     * Index of the last occurrence of the value or -1 if not found.
+     */
+    int lastIndex( const Elem& e ) const
+    {
+      return aLastIndex<Elem, Elem>( data, e, count );
+    }
+
+    /**
+     * Create slot for a new element at the end.
+     */
+    void add()
+    {
+      ensureCapacity();
+
+      ++count;
+    }
+
+    /**
+     * Add an element to the end.
+     */
+    template <typename Elem_ = Elem>
+    void add( Elem_&& e )
+    {
+      pushLast( static_cast<Elem_&&>( e ) );
+    }
+
+    /**
+     * Add elements from the array to the end.
+     */
+    void addAll( const Elem* array, int arrayCount )
+    {
+      int newCount = count + arrayCount;
+
+      ensureCapacity( newCount );
+
+      aCopy<Elem>( data + count, array, arrayCount );
+      count = newCount;
+    }
+
+    /**
+     * Add an element to the end if there is no equal element in the list.
      *
-     * <tt>Elem</tt> type should implement <tt>operator ==</tt>, otherwise comparison doesn't make
-     * sense as two copies always differ in <tt>prev[INDEX]</tt> and <tt>next[INDEX]</tt> members.
+     * @return Position of the inserted or the existing equal element.
      */
-    bool contains( const Elem* e ) const
+    template <typename Elem_ = Elem>
+    int include( Elem_&& e )
     {
-      hard_assert( e != null );
+      int i = aIndex<Elem, Elem>( data, e, count );
 
-      Elem* p = firstElem;
+      if( i < 0 ) {
+        ensureCapacity();
 
-      while( p != null && !( *p == *e ) ) {
-        p = p->next[INDEX];
+        data[count] = static_cast<Elem_&&>( e );
+        i = count;
+        ++count;
       }
-      return p != null;
+      return i;
     }
 
     /**
-     * Add an element to the beginning of the list.
+     * Insert an element at the given position.
      *
-     * For efficiency reasons, elements are added to the beginning of a list in contrast with
-     * vector.
+     * All later elements are shifted to make the gap.
      */
-    void add( Elem* e )
+    template <typename Elem_ = Elem>
+    void insert( int i, Elem_&& e )
     {
-      pushFirst( e );
+      hard_assert( uint( i ) <= uint( count ) );
+
+      ensureCapacity();
+
+      aReverseMove<Elem>( data + i + 1, data + i, count - i );
+      data[i] = static_cast<Elem_&&>( e );
+      ++count;
     }
 
     /**
-     * Insert an element after some given element in the list.
-     */
-    void insertAfter( Elem* e, Elem* p )
-    {
-      hard_assert( e != null && p != null );
-
-      e->next[INDEX] = p->next[INDEX];
-      p->next[INDEX] = e;
-    }
-
-    /**
-     * Remove the first element from the list.
-     *
-     * To keep LIFO behaviour for <tt>add()</tt> and <tt>remove()</tt> methods like in vector, the
-     * first element is removed instead of the last one.
+     * Remove the last element.
      */
     void remove()
     {
-      popFirst();
+      popLast();
     }
 
     /**
-     * Remove an element from the list.
+     * Remove the element at the given position.
      *
-     * Because this list is not a double-linked, one have to provide pointer to the preceding element.
+     * All later elements are shifted to fill the gap.
      */
-    void remove( Elem* e, Elem* prev )
+    void remove( int i )
     {
-      hard_assert( prev == null || prev->next[INDEX] == e );
+      hard_assert( uint( i ) < uint( count ) );
 
-      if( prev == null ) {
-        firstElem = e->next[INDEX];
+      --count;
+
+      if( i == count ) {
+        // When removing the last element, no shift is performed, so its resources are not
+        // implicitly destroyed by move operation.
+        data[count].~Elem();
+        new( data + count ) Elem;
       }
       else {
-        prev->next[INDEX] = e->next[INDEX];
+        aMove<Elem>( data + i, data + i + 1, count - i );
       }
     }
 
     /**
-     * Add an element to the beginning of the list.
+     * Remove the element at the given position from an unordered list.
+     *
+     * The last element is moved to its place.
      */
-    void pushFirst( Elem* e )
+    void removeUO( int i )
     {
-      hard_assert( e != null );
+      hard_assert( uint( i ) < uint( count ) );
 
-      e->next[INDEX] = firstElem;
-      firstElem = e;
+      --count;
+      data[i] = static_cast<Elem&&>( data[count] );
     }
 
     /**
-     * Pop the first element from the list.
+     * Find and remove the first element with the given value.
+     *
+     * @return Index of the removed element or -1 if not found.
      */
-    Elem* popFirst()
+    int exclude( const Elem& e )
     {
-      hard_assert( firstElem != null );
+      int i = aIndex<Elem, Elem>( data, e, count );
 
-      Elem* e = firstElem;
+      if( i >= 0 ) {
+        --count;
 
-      firstElem = firstElem->next[INDEX];
+        if( i == count ) {
+          // When removing the last element, no shift is performed, so its resources are not
+          // implicitly destroyed by move operation.
+          data[count].~Elem();
+          new( data + count ) Elem;
+        }
+        else {
+          aMove<Elem>( data + i, data + i + 1, count - i );
+        }
+      }
+      return i;
+    }
+
+    /**
+     * Find and remove the first element with the given value from an unordered list.
+     *
+     * The last element is moved to its place.
+     *
+     * @return Index of the removed element or -1 if not found.
+     */
+    int excludeUO( const Elem& e )
+    {
+      int i = aIndex<Elem, Elem>( data, e, count );
+
+      if( i >= 0 ) {
+        --count;
+        data[i] = static_cast<Elem&&>( data[count] );
+      }
+      return i;
+    }
+
+    /**
+     * Add an element to the beginning.
+     *
+     * All elements are shifted to make a gap.
+     */
+    template <typename Elem_ = Elem>
+    void pushFirst( Elem_&& e )
+    {
+      ensureCapacity();
+
+      aReverseMove<Elem>( data + 1, data, count );
+      data[0] = static_cast<Elem_&&>( e );
+      ++count;
+    }
+
+    /**
+     * Add an element to the end.
+     */
+    template <typename Elem_ = Elem>
+    void pushLast( Elem_&& e )
+    {
+      ensureCapacity();
+
+      data[count] = static_cast<Elem_&&>( e );
+      ++count;
+    }
+
+    /**
+     * Remove the first element.
+     *
+     * All elements are shifted to fill the gap.
+     *
+     * @return Value of the removed element.
+     */
+    Elem popFirst()
+    {
+      Elem e = static_cast<Elem&&>( data[0] );
+
+      --count;
+      aMove<Elem>( data, data + 1, count );
+
       return e;
     }
 
     /**
-     * Empty the list but do not delete the elements.
+     * Remove the last element.
+     *
+     * @return Value of the removed element.
      */
-    void clear()
+    Elem popLast()
     {
-      firstElem = null;
+      hard_assert( count != 0 );
+
+      --count;
+
+      return static_cast<Elem&&>( data[count] );
     }
 
     /**
-     * Empty the list and delete all elements.
+     * Sort elements with quicksort.
+     */
+    void sort()
+    {
+      aSort<Elem>( data, count );
+    }
+
+    /**
+     * Empty the list.
+     */
+    void clear()
+    {
+      for( int i = 0; i < count; ++i ) {
+        data[i].~Elem();
+        new( data + i ) Elem;
+      }
+
+      count = 0;
+    }
+
+    /**
+     * Delete all objects referenced by elements and empty the list.
      */
     void free()
     {
-      Elem* p = firstElem;
+      aFree<Elem>( data, count );
+      clear();
+    }
 
-      while( p != null ) {
-        Elem* next = p->next[INDEX];
+    /**
+     * For an empty list with no allocated storage, allocate capacity for <tt>size_</tt> elements.
+     */
+    void alloc( int size_ )
+    {
+      hard_assert( size == 0 && size_ > 0 );
 
-        delete p;
-        p = next;
+      data = new Elem[size_];
+      size = size_;
+    }
+
+    /**
+     * Deallocate storage of an empty list.
+     */
+    void dealloc()
+    {
+      hard_assert( count == 0 );
+
+      delete[] data;
+
+      data = null;
+      size = 0;
+    }
+
+    /**
+     * Trim list capacity to the least multiple of <tt>GRANULARITY</tt> that can hold the elements.
+     */
+    void trim()
+    {
+      int newSize = ( ( count - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
+
+      if( newSize < size ) {
+        size = newSize;
+        data = aRealloc<Elem>( data, count, size );
       }
-
-      firstElem = null;
     }
 
 };

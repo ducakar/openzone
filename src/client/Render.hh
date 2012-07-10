@@ -61,47 +61,47 @@ class Render
 
     static const Mat44 NIGHT_COLOUR;
 
-    Bitset                drawnStructs;
+    Bitset              drawnStructs;
 
-    Vector<const Struct*> structs;
-    Vector<const Object*> objects;
+    List<const Struct*> structs;
+    List<const Object*> objects;
 
-    float                 visibilityRange;
-    float                 visibility;
+    float               visibilityRange;
+    float               visibility;
 
-    int                   flags;
+    int                 flags;
 
-    bool                  showBounds;
-    bool                  showAim;
+    bool                showBounds;
+    bool                showAim;
 
-    bool                  isOffscreen;
-    bool                  doPostprocess;
-    bool                  isLowDetail;
+    bool                isOffscreen;
+    bool                doPostprocess;
+    bool                isLowDetail;
 
-    float                 windPhi;
+    float               windPhi;
 
-    int                   windowWidth;
-    int                   windowHeight;
-    int                   frameWidth;
-    int                   frameHeight;
-    float                 scale;
-    int                   scaleFilter;
+    int                 windowWidth;
+    int                 windowHeight;
+    int                 frameWidth;
+    int                 frameHeight;
+    float               scale;
+    int                 scaleFilter;
 
-    uint                  mainFrame;
-    uint                  depthBuffer;
-    uint                  colourBuffer;
-    uint                  normalBuffer;
-    uint                  specularBuffer;
+    uint                mainFrame;
+    uint                depthBuffer;
+    uint                colourBuffer;
+    uint                normalBuffer;
+    uint                specularBuffer;
 
   public:
 
-    ulong64               prepareMicros;
-    ulong64               caelumMicros;
-    ulong64               terraMicros;
-    ulong64               meshesMicros;
-    ulong64               postprocessMicros;
-    ulong64               uiMicros;
-    ulong64               swapMicros;
+    ulong64             prepareMicros;
+    ulong64             caelumMicros;
+    ulong64             terraMicros;
+    ulong64             meshesMicros;
+    ulong64             postprocessMicros;
+    ulong64             uiMicros;
+    ulong64             swapMicros;
 
   private:
 

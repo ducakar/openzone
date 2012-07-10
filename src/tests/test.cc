@@ -89,28 +89,12 @@ int main()
 {
   System::init();
 
-  try {
-    File file( "/home/davorin/drek.json" );
-
-    JSON json;
-
-    if( !json.load( &file ) ) {
-      Log::out << "Loading failed\n";
-    }
-
-    Log::out << json["text"].asString() << "\n";
-
-    json.add( "fak\na", "aa\"\nsasa\\sa" );
-
-    BufferStream os;
-    json.write( &os );
-    os.writeChar( '\0' );
-
-    Log::out << os.begin() << "\n";
-  }
-  catch( const std::exception& e ) {
-    System::error( e );
-  }
+  SList<int, 8> l;
+  l.add();
+  Log::out << l[0] << "\n";
+  l.clear();
+  l.add();
+  Log::out << l[0] << "\n";
 
   Alloc::printLeaks();
   return 0;

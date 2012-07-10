@@ -41,20 +41,20 @@ struct Elem
 
 int main()
 {
-  List<Elem, 0> l;
-  DList<Elem, 0> dl;
+  Chain<Elem, 0> l;
+  DChain<Elem, 0> dl;
   Array<int, 5> a;
-  Vector<int> v;
-  SVector<int, 5> sv;
+  List<int> v;
+  SList<int, 5> sv;
   Map<int> m;
   HashIndex<int, 7> hi;
   HashString<int, 7> hs;
 
-  List<Elem, 0> l1;
-  DList<Elem, 0> dl1;
+  Chain<Elem, 0> l1;
+  DChain<Elem, 0> dl1;
   Array<int, 5> a1;
-  Vector<int> v1;
-  SVector<int, 5> sv1;
+  List<int> v1;
+  SList<int, 5> sv1;
   Map<int> m1;
   HashIndex<int, 7> hi1;
   HashString<int, 7> hs1;

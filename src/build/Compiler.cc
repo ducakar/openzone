@@ -241,7 +241,7 @@ void Compiler::end()
     case POLYGON: {
       hard_assert( vertNum >= 3 );
 
-      Vector<ushort> polyIndices = static_cast< Vector<ushort>&& >( part.indices );
+      List<ushort> polyIndices = static_cast< List<ushort>&& >( part.indices );
       part.indices.clear();
 
       int last[2] = { 0, 1 };
@@ -431,8 +431,9 @@ void Compiler::writeMesh( BufferStream* os, bool embedTextures )
   Log::println( "Writing mesh {" );
   Log::indent();
 
-  Vector<String> textures;
-  Vector<ushort> indices;
+  List<String> textures;
+  List<ushort> indices;
+
   int nIndices = 0;
   int nComponents = 0;
 

@@ -38,7 +38,7 @@ namespace client
 namespace ui
 {
 
-Vector<Area*> Area::updateAreas;
+List<Area*> Area::updateAreas;
 
 Area::Area( int width_, int height_ ) :
   flags( 0 ), parent( null ), x( 0 ), y( 0 ), width( width_ ), height( height_ ),

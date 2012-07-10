@@ -48,6 +48,8 @@ class Pair
     ValueX x; ///< First element.
     ValueY y; ///< Second element.
 
+  public:
+
     /**
      * Per-member equality operator.
      */

@@ -112,7 +112,7 @@ class Camera
     int           vehicle;
     Vehicle*      vehicleObj;
 
-    Vector<int>   switchableUnits;
+    List<int>     switchableUnits;
 
     bool          isFixedAspect;
     bool          allowReincarnation;

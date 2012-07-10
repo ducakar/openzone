@@ -32,18 +32,18 @@ void test_iterables()
 {
   Log::out << "+ iterables\n";
 
-  List<Foo>::CIterator       icl;
-  List<Foo>::Iterator        il;
-  DList<Foo>::CIterator      icdl;
-  DList<Foo>::Iterator       idl;
+  Chain<Foo>::CIterator      icl;
+  Chain<Foo>::Iterator       il;
+  DChain<Foo>::CIterator     icdl;
+  DChain<Foo>::Iterator      idl;
   Array<Foo, 1>::CIterator   ica;
   Array<Foo, 1>::Iterator    ia;
   DArray<Foo>::CIterator     icda;
   DArray<Foo>::Iterator      ida;
-  Vector<Foo>::CIterator     icv;
-  Vector<Foo>::Iterator      iv;
-  SVector<Foo, 1>::CIterator icsv;
-  SVector<Foo, 1>::Iterator  isv;
+  List<Foo>::CIterator       icv;
+  List<Foo>::Iterator        iv;
+  SList<Foo, 1>::CIterator   icsv;
+  SList<Foo, 1>::Iterator    isv;
   Map<Foo>::CIterator        icm;
   Map<Foo>::Iterator         im;
   HashIndex<Foo>::CIterator  ichi;
@@ -51,10 +51,10 @@ void test_iterables()
   HashString<Foo>::CIterator ichs;
   HashString<Foo>::Iterator  ihs;
 
-  Vector<Foo*>::Iterator invalid;
+  List<Foo*>::Iterator       invalid;
 
-  DList<Foo> l;
-  Vector<Foo> v;
+  DChain<Foo> l;
+  List<Foo> v;
 
   l.add( new Foo( 2 ) );
   l.add( new Foo( 3 ) );
@@ -165,7 +165,7 @@ void test_iterables()
   OZ_CHECK( iLastIndex( v.citer(), 3 ) == 2 );
   OZ_CHECK( iLastIndex( invalid, static_cast<Foo*>( null ) ) == -1 );
 
-  Vector<Foo*> pv;
+  List<Foo*> pv;
   pv.add( new Foo( 1 ) );
   pv.add( new Foo( 2 ) );
 

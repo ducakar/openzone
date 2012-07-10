@@ -722,13 +722,14 @@ void Collider::trimAABBOrbis()
 
   hard_assert( 0.0f <= hit.ratio && hit.ratio <= 1.0f );
   hard_assert( ( ( hit.material & Material::OBJECT_BIT ) != 0 ) == ( hit.obj != null ) );
+  hard_assert( hit.depth >= 0.0f );
 }
 
 //***********************************
 //*          OVERLAPPING            *
 //***********************************
 
-void Collider::getOrbisOverlaps( Vector<Struct*>* structs, Vector<Object*>* objects )
+void Collider::getOrbisOverlaps( List<Struct*>* structs, List<Object*>* objects )
 {
   hard_assert( structs != null || objects != null );
 
@@ -769,7 +770,7 @@ void Collider::getOrbisOverlaps( Vector<Struct*>* structs, Vector<Object*>* obje
   }
 }
 
-void Collider::getOrbisIncludes( Vector<Object*>* objects ) const
+void Collider::getOrbisIncludes( List<Object*>* objects ) const
 {
   hard_assert( objects != null );
 
@@ -804,7 +805,7 @@ void Collider::touchOrbisOverlaps() const
   }
 }
 
-void Collider::getEntityOverlaps( Vector<Object*>* objects )
+void Collider::getEntityOverlaps( List<Object*>* objects )
 {
   hard_assert( objects != null );
 
@@ -897,7 +898,7 @@ bool Collider::overlapsEntity( const AABB& aabb_, const Entity* entity_, float m
   return overlapsAABBEntity();
 }
 
-void Collider::getOverlaps( const AABB& aabb_, Vector<Struct*>* structs, Vector<Object*>* objects,
+void Collider::getOverlaps( const AABB& aabb_, List<Struct*>* structs, List<Object*>* objects,
                             float eps )
 {
   aabb   = aabb_;
@@ -909,7 +910,7 @@ void Collider::getOverlaps( const AABB& aabb_, Vector<Struct*>* structs, Vector<
   getOrbisOverlaps( structs, objects );
 }
 
-void Collider::getIncludes( const AABB& aabb_, Vector<Object*>* objects, float eps )
+void Collider::getIncludes( const AABB& aabb_, List<Object*>* objects, float eps )
 {
   aabb    = aabb_;
   exclObj = null;
@@ -931,7 +932,7 @@ void Collider::touchOverlaps( const AABB& aabb_, float eps )
   touchOrbisOverlaps();
 }
 
-void Collider::getOverlaps( const Entity* entity_, Vector<Object*>* objects, float margin_ )
+void Collider::getOverlaps( const Entity* entity_, List<Object*>* objects, float margin_ )
 {
   str    = entity_->str;
   entity = entity_;

@@ -52,6 +52,8 @@ class Vec3
     float y; ///< Y component.
     float z; ///< Z component.
 
+  public:
+
     /**
      * Create an uninitialised instance.
      */

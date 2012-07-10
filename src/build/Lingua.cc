@@ -46,7 +46,7 @@ void Lingua::buildCatalogue( const char* lang, const char* category, const char*
     throw Exception( "Cannot read catalogue source '%s'", srcFile.path().cstr() );
   }
 
-  Vector<String> messages;
+  List<String> messages;
 
   String lastOriginal;
   String lastTranslation;

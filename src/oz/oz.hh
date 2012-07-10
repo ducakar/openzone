@@ -51,12 +51,12 @@
  * Containers.
  */
 #include "Pair.hh"
-#include "List.hh"
-#include "DList.hh"
+#include "Chain.hh"
+#include "DChain.hh"
 #include "Array.hh"
 #include "DArray.hh"
-#include "Vector.hh"
-#include "SVector.hh"
+#include "List.hh"
+#include "SList.hh"
 #include "Map.hh"
 
 /*

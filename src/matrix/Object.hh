@@ -241,9 +241,9 @@ class Object : public AABB
 
     // events are used for reporting hits, friction & stuff and are cleared at the beginning of
     // the matrix tick
-    List<Event>        events;
+    Chain<Event>       events;
     // inventory of an object
-    Vector<int>        items;
+    List<int>          items;
 
   protected:
 

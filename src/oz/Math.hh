@@ -69,6 +69,8 @@ class Math
     /// \f$ 2\pi \f$.
     static constexpr float TAU = 6.283185307179586f;
 
+  public:
+
     /**
      * Singleton.
      */

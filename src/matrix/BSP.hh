@@ -126,7 +126,7 @@ class BSP : public Bounds
     String          name;        ///< Name.
     String          title;       ///< Title.
     String          description; ///< Description.
-    Vector<int>     sounds;      ///< Set of used sound samples.
+    List<int>       sounds;      ///< Set of used sound samples.
 
     float           life;
     float           resistance;

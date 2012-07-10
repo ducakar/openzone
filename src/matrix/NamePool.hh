@@ -36,10 +36,10 @@ class NamePool
 
     static const int LINE_LENGTH = 64;
 
-    static char    buffer[LINE_LENGTH];
+    static char  buffer[LINE_LENGTH];
 
-    Vector<String> names;
-    Vector<int>    listPositions;
+    List<String> names;
+    List<int>    listPositions;
 
   public:
 

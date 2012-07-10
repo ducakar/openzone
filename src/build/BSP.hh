@@ -262,47 +262,47 @@ class BSP : public Bounds
       Heading heading;
     };
 
-    String                  name;
-    String                  title;
-    String                  description;
+    String              name;
+    String              title;
+    String              description;
 
-    float                   life;
-    float                   resistance;
+    float               life;
+    float               resistance;
 
-    int                     nTextures;
-    int                     nPlanes;
-    int                     nNodes;
-    int                     nLeaves;
-    int                     nLeafBrushes;
-    int                     nModels;
-    int                     nBrushes;
-    int                     nBrushSides;
-    int                     nVertices;
-    int                     nIndices;
-    int                     nFaces;
+    int                 nTextures;
+    int                 nPlanes;
+    int                 nNodes;
+    int                 nLeaves;
+    int                 nLeafBrushes;
+    int                 nModels;
+    int                 nBrushes;
+    int                 nBrushSides;
+    int                 nVertices;
+    int                 nIndices;
+    int                 nFaces;
 
-    Texture*                textures;
-    Plane*                  planes;
-    matrix::BSP::Node*      nodes;
-    matrix::BSP::Leaf*      leaves;
-    int*                    leafBrushes;
-    Model*                  models;
-    matrix::BSP::Brush*     brushes;
-    int*                    brushSides;
-    ModelFaces*             modelFaces;
-    Vertex*                 vertices;
-    int*                    indices;
-    Face*                   faces;
+    Texture*            textures;
+    Plane*              planes;
+    matrix::BSP::Node*  nodes;
+    matrix::BSP::Leaf*  leaves;
+    int*                leafBrushes;
+    Model*              models;
+    matrix::BSP::Brush* brushes;
+    int*                brushSides;
+    ModelFaces*         modelFaces;
+    Vertex*             vertices;
+    int*                indices;
+    Face*               faces;
 
-    String                  fragPool;
-    int                     nFrags;
+    String              fragPool;
+    int                 nFrags;
 
-    String                  demolishSound;
+    String              demolishSound;
 
-    Vector<BoundObject>     boundObjects;
+    List<BoundObject>   boundObjects;
 
-    Vec4                    waterFogColour;
-    Vec4                    lavaFogColour;
+    Vec4                waterFogColour;
+    Vec4                lavaFogColour;
 
     void load();
     void optimise();

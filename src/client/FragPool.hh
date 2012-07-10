@@ -44,7 +44,7 @@ class FragPool
 
     const matrix::FragPool* pool;
 
-    Vector<SMM*> models;
+    List<SMM*> models;
 
   public:
 

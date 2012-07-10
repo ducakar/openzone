@@ -58,7 +58,7 @@ class Class
     int                key;
 
     int                nItems;
-    Vector<String>     defaultItems;
+    List<String>       defaultItems;
 
     String             deviceType;
 
@@ -183,11 +183,11 @@ class Class
 
   public:
 
-    Vector<String>     names;
-    Vector<String>     bases;
-    Vector<String>     devices;
-    Vector<String>     imagines;
-    Vector<String>     audios;
+    List<String>       names;
+    List<String>       bases;
+    List<String>       devices;
+    List<String>       imagines;
+    List<String>       audios;
 
   private:
 

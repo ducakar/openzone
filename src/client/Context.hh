@@ -101,7 +101,7 @@ class Context
     Resource<uint>*            sounds;
 
     // non-looping sources
-    List<Source>               sources;
+    Chain<Source>              sources;
     // looping sources
     HashIndex<ContSource, 128> contSources;
 

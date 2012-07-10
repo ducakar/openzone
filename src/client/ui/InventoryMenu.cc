@@ -156,7 +156,7 @@ slotsRendered:
                                        float( y + height + SLOT_SIZE / 2 ),
                                        0.0f ) );
 
-  const Vector<int>& items = container->items;
+  const List<int>& items = container->items;
 
   int minIndex = scroll * COLS;
   int maxIndex = min( minIndex + COLS * ROWS, items.length() );

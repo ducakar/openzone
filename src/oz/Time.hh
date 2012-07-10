@@ -62,6 +62,8 @@ class Time
     int    minute; ///< Minute.
     int    second; ///< Second.
 
+  public:
+
     /**
      * Monotonic clock from an unspecified point in time, with millisecond resolution.
      *

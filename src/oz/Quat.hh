@@ -53,6 +53,8 @@ class Quat
     float z; ///< Z component.
     float w; ///< W component.
 
+  public:
+
     /**
      * Create an uninitialised instance.
      */
