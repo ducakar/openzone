@@ -121,6 +121,8 @@ void Class::fillObject( const char* className )
    * attributes
    */
 
+  attributes = 0;
+
   SET_ATTRIB( ObjectClass::NIGHT_VISION_BIT, "attrib.nightVision", false );
   SET_ATTRIB( ObjectClass::BINOCULARS_BIT,   "attrib.binoculars",  false );
   SET_ATTRIB( ObjectClass::GALILEO_BIT,      "attrib.galileo",     false );

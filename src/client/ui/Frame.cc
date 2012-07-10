@@ -42,7 +42,7 @@ bool Frame::onMouseEvent()
     raise();
   }
 
-  if( input.keys[SDLK_LALT] || input.keys[SDLK_RALT] ) {
+  if( input.keys[Input::KEY_UI_DRAG] ) {
     mouse.icon = Mouse::OPENHAND;
 
     if( input.buttons & Input::LEFT_BUTTON ) {

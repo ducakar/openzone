@@ -325,7 +325,9 @@ JSON JSON::Parser::parseArray()
   List<JSON>& list = static_cast<ArrayData*>( arrayValue.data )->list;
 
   char ch = skipBlanks();
-  pos.back();
+  if( ch != ']' ) {
+    pos.back();
+  }
 
   while( ch != ']' ) {
     JSON value = parseValue();
@@ -348,7 +350,9 @@ JSON JSON::Parser::parseObject()
   HashString<JSON>& table = static_cast<ObjectData*>( objectValue.data )->table;
 
   char ch = skipBlanks();
-  pos.back();
+  if( ch != '}' ) {
+    pos.back();
+  }
 
   while( ch != '}' ) {
     ch = skipBlanks();

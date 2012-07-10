@@ -95,11 +95,6 @@ class Camera
     float         horizPlane;
     float         maxDist;
 
-    float         mouseXSens;
-    float         mouseYSens;
-    float         keyXSens;
-    float         keyYSens;
-
     int           object;
     const Object* objectObj;
 

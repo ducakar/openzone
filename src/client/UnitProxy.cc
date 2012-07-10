@@ -29,9 +29,8 @@
 #include "client/Input.hh"
 
 #include "client/ui/HudArea.hh"
-#include "client/ui/GalileoFrame.hh"
-#include "client/ui/InventoryMenu.hh"
 #include "client/ui/InfoFrame.hh"
+#include "client/ui/GalileoFrame.hh"
 #include "client/ui/UI.hh"
 
 namespace oz
@@ -62,8 +61,10 @@ void UnitProxy::begin()
   camera.isExternal = isExternal;
 
   ui::mouse.doShow = false;
+
   ui::ui.hudArea->show( true );
   ui::ui.infoFrame->show( true );
+  ui::ui.galileoFrame->show( true );
 
   baseRot = Quat::rotationZXZ( bot->h, bot->v, 0.0f );
   headRot = Quat::ID;
@@ -88,8 +89,10 @@ void UnitProxy::begin()
 void UnitProxy::end()
 {
   ui::mouse.doShow = true;
-  ui::ui.hudArea->show( false );
+
+  ui::ui.galileoFrame->show( false );
   ui::ui.infoFrame->show( false );
+  ui::ui.hudArea->show( false );
 }
 
 void UnitProxy::prepare()
@@ -97,8 +100,6 @@ void UnitProxy::prepare()
   if( camera.bot < 0 ) {
     return;
   }
-
-  bool alt = ( input.keys[SDLK_LALT] | input.keys[SDLK_RALT] ) != 0;
 
   Bot*     bot = camera.botObj;
   Vehicle* veh = camera.vehicleObj;
@@ -114,11 +115,11 @@ void UnitProxy::prepare()
     bot->v += camera.relV;
   }
 
-  if( input.keys[SDLK_q] ) {
-    bot->h += camera.keyXSens;
+  if( input.keys[Input::KEY_TURN_LEFT] ) {
+    bot->h += input.keySensH;
   }
-  if( input.keys[SDLK_e] ) {
-    bot->h -= camera.keyXSens;
+  if( input.keys[Input::KEY_TURN_RIGHT] ) {
+    bot->h -= input.keySensV;
   }
 
   bot->h = angleWrap( bot->h );
@@ -128,16 +129,16 @@ void UnitProxy::prepare()
    * Movement
    */
 
-  if( input.keys[SDLK_w] ) {
+  if( input.keys[Input::KEY_MOVE_FORWARD] ) {
     bot->actions |= Bot::ACTION_FORWARD;
   }
-  if( input.keys[SDLK_s] ) {
+  if( input.keys[Input::KEY_MOVE_BACKWARD] ) {
     bot->actions |= Bot::ACTION_BACKWARD;
   }
-  if( input.keys[SDLK_d] ) {
+  if( input.keys[Input::KEY_MOVE_RIGHT] ) {
     bot->actions |= Bot::ACTION_RIGHT;
   }
-  if( input.keys[SDLK_a] ) {
+  if( input.keys[Input::KEY_MOVE_LEFT] ) {
     bot->actions |= Bot::ACTION_LEFT;
   }
 
@@ -145,41 +146,48 @@ void UnitProxy::prepare()
    * Actions
    */
 
-  if( input.keys[SDLK_SPACE] ) {
-    bot->actions |= Bot::ACTION_JUMP | Bot::ACTION_VEH_UP;
+  if( input.keys[Input::KEY_JUMP] ) {
+    bot->actions |= Bot::ACTION_JUMP;
   }
-  if( input.keys[SDLK_LCTRL] || input.keys[SDLK_c] ) {
-    bot->actions |= Bot::ACTION_CROUCH | Bot::ACTION_VEH_DOWN;
+  if( input.keys[Input::KEY_CROUCH_TOGGLE] && !input.oldKeys[Input::KEY_CROUCH_TOGGLE] ) {
+    bot->actions |= Bot::ACTION_CROUCH;
   }
-  if( input.keys[SDLK_LSHIFT] && !input.oldKeys[SDLK_LSHIFT] ) {
+  if( input.keys[Input::KEY_SPEED_TOGGLE] && !input.oldKeys[Input::KEY_SPEED_TOGGLE] ) {
     bot->actions |= Bot::ACTION_WALK;
   }
 
-  if( !alt && input.keys[SDLK_x] && !input.oldKeys[SDLK_x] ) {
+  if( input.keys[Input::KEY_MOVE_UP] ) {
+    bot->actions |= Bot::ACTION_VEH_UP;
+  }
+  if( input.keys[Input::KEY_MOVE_DOWN] ) {
+    bot->actions |= Bot::ACTION_VEH_DOWN;
+  }
+
+  if( input.keys[Input::KEY_EXIT] && !input.oldKeys[Input::KEY_EXIT] ) {
     bot->actions |= Bot::ACTION_EXIT;
   }
-  if( alt && input.keys[SDLK_x] && !input.oldKeys[SDLK_x] ) {
+  if( input.keys[Input::KEY_EJECT] && !input.oldKeys[Input::KEY_EJECT] ) {
     bot->actions |= Bot::ACTION_EJECT;
   }
-  if( alt && input.keys[SDLK_k] && !input.oldKeys[SDLK_k] ) {
+  if( input.keys[Input::KEY_SUICIDE] && !input.oldKeys[Input::KEY_SUICIDE] ) {
     if( bot->hasAttribute( ObjectClass::SUICIDE_BIT ) ) {
       bot->actions |= Bot::ACTION_SUICIDE;
     }
   }
 
-  if( !alt && input.keys[SDLK_f] ) {
+  if( input.keys[Input::KEY_GESTURE_POINT] ) {
     bot->actions |= Bot::ACTION_POINT;
   }
-  if( !alt && input.keys[SDLK_g] ) {
+  if( input.keys[Input::KEY_GESTURE_BACK] ) {
     bot->actions |= Bot::ACTION_BACK;
   }
-  if( !alt && input.keys[SDLK_h] ) {
+  if( input.keys[Input::KEY_GESTURE_SALUTE] ) {
     bot->actions |= Bot::ACTION_SALUTE;
   }
-  if( !alt && input.keys[SDLK_j] ) {
+  if( input.keys[Input::KEY_GESTURE_WAVE] ) {
     bot->actions |= Bot::ACTION_WAVE;
   }
-  if( !alt && input.keys[SDLK_k] ) {
+  if( input.keys[Input::KEY_GESTURE_FLIP] ) {
     bot->actions |= Bot::ACTION_FLIP;
   }
 
@@ -187,10 +195,11 @@ void UnitProxy::prepare()
    * View
    */
 
-  if( !alt && input.keys[SDLK_n] && !input.oldKeys[SDLK_n] ) {
+  if( input.keys[Input::KEY_NV_TOGGLE] && !input.oldKeys[Input::KEY_NV_TOGGLE] ) {
     camera.nightVision = !camera.nightVision;
   }
-  if( !alt && input.keys[SDLK_b] && !input.oldKeys[SDLK_b] ) {
+
+  if( input.keys[Input::KEY_BINOCULARS_TOGGLE] && !input.oldKeys[Input::KEY_BINOCULARS_TOGGLE] ) {
     if( camera.desiredMag == 1.0f ) {
       camera.smoothMagnify( BINOCULARS_MAGNIFICATION );
     }
@@ -198,20 +207,20 @@ void UnitProxy::prepare()
       camera.smoothMagnify( 1.0f );
     }
   }
-  if( !alt && input.keys[SDLK_m] && !input.oldKeys[SDLK_m] ) {
+
+  if( input.keys[Input::KEY_MAP_TOGGLE] && !input.oldKeys[Input::KEY_MAP_TOGGLE] ) {
     ui::ui.galileoFrame->setMaximised( !ui::ui.galileoFrame->isMaximised );
   }
 
   if( camera.nightVision && !bot->hasAttribute( ObjectClass::NIGHT_VISION_BIT ) ) {
     camera.nightVision = false;
   }
+
   if( camera.desiredMag != 1.0f && !bot->hasAttribute( ObjectClass::BINOCULARS_BIT ) ) {
     camera.desiredMag = 1.0f;
   }
 
-  if( !alt && ( ( input.keys[SDLK_KP_ENTER] && !input.oldKeys[SDLK_KP_ENTER] ) ||
-                ( input.keys[SDLK_RETURN] && !input.oldKeys[SDLK_RETURN] ) ) )
-  {
+  if( input.keys[Input::KEY_CAMERA_TOGGLE] && !input.oldKeys[Input::KEY_CAMERA_TOGGLE] ) {
     isExternal = !isExternal;
     camera.isExternal = isExternal;
 
@@ -224,7 +233,7 @@ void UnitProxy::prepare()
       headV = 0.0f;
     }
   }
-  if( !alt && input.keys[SDLK_KP_MULTIPLY] && !input.oldKeys[SDLK_KP_MULTIPLY] ) {
+  if( input.keys[Input::KEY_FREELOOK_TOGGLE] && !input.oldKeys[Input::KEY_FREELOOK_TOGGLE] ) {
     isFreelook = !isFreelook;
 
     if( isExternal && isFreelook ) {
@@ -302,7 +311,7 @@ void UnitProxy::prepare()
    * Other
    */
 
-  if( !alt && input.keys[SDLK_i] && !input.oldKeys[SDLK_i] ) {
+  if( input.keys[Input::KEY_SWITCH_TO_UNIT] && !input.oldKeys[Input::KEY_SWITCH_TO_UNIT] ) {
     if( camera.allowReincarnation ) {
       bot->actions = 0;
       camera.setBot( null );
@@ -310,7 +319,7 @@ void UnitProxy::prepare()
     }
   }
 
-  if( !alt && input.keys[SDLK_y] && !input.oldKeys[SDLK_y] ) {
+  if( input.keys[Input::KEY_CIRCLE_UNITS] && !input.oldKeys[Input::KEY_CIRCLE_UNITS] ) {
     int nSwitchableunits = camera.switchableUnits.length();
 
     if( nSwitchableunits != 0 ) {
@@ -330,10 +339,6 @@ void UnitProxy::prepare()
       bot->actions = 0;
       camera.setBot( unit );
     }
-  }
-
-  if( input.keys[SDLK_TAB] && !input.oldKeys[SDLK_TAB] ) {
-    ui::mouse.doShow = !ui::mouse.doShow;
   }
 }
 

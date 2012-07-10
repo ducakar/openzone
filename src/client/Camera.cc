@@ -141,40 +141,34 @@ void Camera::prepare()
 
   ui::mouse.update();
 
-  bool alt = ( input.keys[SDLK_LALT] | input.keys[SDLK_RALT] ) != 0;
-
-  relH = float( -ui::mouse.overEdgeX ) * mouseXSens * mag;
-  relV = float( +ui::mouse.overEdgeY ) * mouseYSens * mag;
+  relH = float( -ui::mouse.overEdgeX ) * input.mouseSensH * mag;
+  relV = float( +ui::mouse.overEdgeY ) * input.mouseSensV * mag;
 
   relH = clamp( relH, -ROT_LIMIT, +ROT_LIMIT );
   relV = clamp( relV, -ROT_LIMIT, +ROT_LIMIT );
 
-  if( input.keys[SDLK_KP1] | input.keys[SDLK_KP4] | input.keys[SDLK_KP7] |
-      input.keys[SDLK_END] | input.keys[SDLK_LEFT] | input.keys[SDLK_HOME] )
-  {
-    relH += keyXSens;
+  if( input.keys[Input::KEY_KP1] | input.keys[Input::KEY_KP4] | input.keys[Input::KEY_KP7] ) {
+    relH += input.keySensH;
   }
-  if( input.keys[SDLK_KP3] | input.keys[SDLK_KP6] | input.keys[SDLK_KP9] |
-      input.keys[SDLK_PAGEDOWN] | input.keys[SDLK_RIGHT] | input.keys[SDLK_PAGEUP] )
-  {
-    relH -= keyXSens;
+  if( input.keys[Input::KEY_KP3] | input.keys[Input::KEY_KP6] | input.keys[Input::KEY_KP9] ) {
+    relH -= input.keySensH;
   }
-  if( input.keys[SDLK_KP1] | input.keys[SDLK_KP2] | input.keys[SDLK_KP3] |
-      input.keys[SDLK_END] | input.keys[SDLK_DOWN] | input.keys[SDLK_PAGEDOWN] )
-  {
-    relV -= keyYSens;
+  if( input.keys[Input::KEY_KP1] | input.keys[Input::KEY_KP2] | input.keys[Input::KEY_KP3] ) {
+    relV -= input.keySensV;
   }
-  if( input.keys[SDLK_KP7] | input.keys[SDLK_KP8] | input.keys[SDLK_KP9] |
-      input.keys[SDLK_HOME] | input.keys[SDLK_UP] | input.keys[SDLK_PAGEUP] )
-  {
-    relV += keyYSens;
+  if( input.keys[Input::KEY_KP7] | input.keys[Input::KEY_KP8] | input.keys[Input::KEY_KP9] ) {
+    relV += input.keySensV;
   }
 
-  if( !alt && input.keys[SDLK_p] ) {
+  if( input.keys[Input::KEY_CHEAT_SKY_FORWARD] ) {
     orbis.caelum.time += 0.1f * Timer::TICK_TIME * orbis.caelum.period;
   }
-  if( !alt && input.keys[SDLK_o] ) {
+  if( input.keys[Input::KEY_CHEAT_SKY_BACKWARD] ) {
     orbis.caelum.time -= 0.1f * Timer::TICK_TIME * orbis.caelum.period;
+  }
+
+  if( input.keys[Input::KEY_UI_TOGGLE] && !input.oldKeys[Input::KEY_UI_TOGGLE] ) {
+    ui::mouse.doShow = !ui::mouse.doShow;
   }
 
   if( newState != state ) {
@@ -378,14 +372,8 @@ void Camera::init()
   centreX       = window.width / 2;
   centreY       = window.height / 2;
 
-  aspect        = config.include( "camera.aspect",     0.0f ).asFloat();
-  mouseXSens    = config.include( "camera.mouseXSens", 1.0f ).asFloat() * 0.004f;
-  mouseYSens    = config.include( "camera.mouseYSens", 1.0f ).asFloat() * 0.004f;
-  keyXSens      = config.include( "camera.keysXSens",  1.0f ).asFloat() * 0.04f;
-  keyYSens      = config.include( "camera.keysYSens",  1.0f ).asFloat() * 0.04f;
-
   float angle   = Math::rad( config.include( "camera.angle", 80.0f ).asFloat() );
-
+  aspect        = config.include( "camera.aspect", 0.0f ).asFloat();
   isFixedAspect = aspect != 0.0f;
   aspect        = isFixedAspect ? aspect : float( width ) / float( height );
   coeff         = Math::tan( angle / 2.0f );

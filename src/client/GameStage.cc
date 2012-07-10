@@ -272,18 +272,18 @@ bool GameStage::update()
 
   beginMicros = Time::uclock();
 
-  if( input.keys[SDLK_F5] && !input.oldKeys[SDLK_F5] ) {
+  if( input.keys[Input::KEY_QUICKSAVE] && !input.oldKeys[Input::KEY_QUICKSAVE] ) {
     write( QUICKSAVE_FILE );
   }
-  if( input.keys[SDLK_F7] && !input.oldKeys[SDLK_F7] ) {
+  if( input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD] ) {
     stateFile = QUICKSAVE_FILE;
     reload();
   }
-  if( input.keys[SDLK_F8] && !input.oldKeys[SDLK_F8] ) {
+  if( input.keys[Input::KEY_AUTOLOAD] && !input.oldKeys[Input::KEY_AUTOLOAD] ) {
     stateFile = AUTOSAVE_FILE;
     reload();
   }
-  if( input.keys[SDLK_F10] || input.keys[SDLK_ESCAPE] ) {
+  if( input.keys[Input::KEY_QUIT] ) {
     Stage::nextStage = &menuStage;
   }
 
