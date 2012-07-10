@@ -309,7 +309,7 @@ bool InventoryMenu::onMouseEvent()
 {
   Frame::onMouseEvent();
 
-  if( input.keys[SDLK_LALT] || input.keys[SDLK_RALT] ) {
+  if( input.keys[Input::KEY_UI_DRAG] ) {
     return true;
   }
 

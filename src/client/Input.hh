@@ -38,60 +38,119 @@ class Input
     static const int MIDDLE_BUTTON = 0x02;
     static const int RIGHT_BUTTON  = 0x04;
 
+    static const int MOD_OFF_BIT   = 0x10000000;
+    static const int MOD_ON_BIT    = 0x20000000;
+    static const int MOD_MASK      = 0x30000000;
+
     enum Key
     {
-      KEY_KP_1,
-      KEY_KP_2,
-      KEY_KP_3,
-      KEY_KP_4,
-      KEY_KP_6,
-      KEY_KP_7,
-      KEY_KP_8,
-      KEY_KP_9,
-      KEY_FREELOOK_TOGGLE,
+      KEY_NONE,
+
+      KEY_UI_DRAG,
+      KEY_UI_TOGGLE,
+
+      KEY_KP1,
+      KEY_KP2,
+      KEY_KP3,
+      KEY_KP4,
+      KEY_KP6,
+      KEY_KP7,
+      KEY_KP8,
+      KEY_KP9,
+
+      KEY_NV_TOGGLE,
+      KEY_BINOCULARS_TOGGLE,
+      KEY_MAP_TOGGLE,
+
       KEY_CAMERA_TOGGLE,
-      KEY_TURN_RIGHT,
+      KEY_FREELOOK_TOGGLE,
+
       KEY_TURN_LEFT,
-      KEY_STRAFE_LEFT,
-      KEY_STRAFE_RIGHT,
-      KEY_FORWARD,
-      KEY_BACKWARD,
-      KEY_UP,
-      KEY_DOWN,
-      KEY_WALK_TOGGLE,
+      KEY_TURN_RIGHT,
+      KEY_MOVE_RIGHT,
+      KEY_MOVE_LEFT,
+      KEY_MOVE_FORWARD,
+      KEY_MOVE_BACKWARD,
+      KEY_MOVE_UP,
+      KEY_MOVE_DOWN,
+      KEY_SPEED_TOGGLE,
+
       KEY_CROUCH_TOGGLE,
       KEY_JUMP,
-      KEY_UI_TOGGLE,
+      KEY_EXIT,
+      KEY_EJECT,
+      KEY_SUICIDE,
+      KEY_FIRE,
+      KEY_NEXT_WEAPON,
+
+      KEY_GESTURE_POINT,
+      KEY_GESTURE_BACK,
+      KEY_GESTURE_SALUTE,
+      KEY_GESTURE_WAVE,
+      KEY_GESTURE_FLIP,
+
+      KEY_SWITCH_TO_UNIT,
+      KEY_CIRCLE_UNITS,
+
+      KEY_CHEAT_SKY_FORWARD,
+      KEY_CHEAT_SKY_BACKWARD,
+
+      KEY_QUICKSAVE,
+      KEY_QUICKLOAD,
+      KEY_AUTOLOAD,
+      KEY_QUIT,
 
       KEY_MAX
     };
 
   private:
 
-    ubyte* currKeys;
+    static const char* KEY_NAMES[KEY_MAX];
+
+    SDLKey modifier0;
+    SDLKey modifier1;
+
+    ubyte* sdlCurrKeys;
+    ubyte  sdlKeys[SDLK_LAST];
+    ubyte  sdlOldKeys[SDLK_LAST];
+
+    int    keyMap[KEY_MAX][2];
 
   public:
 
-    int   mouseX;
-    int   mouseY;
-    int   mouseZ;
-    int   mouseW;
+    int    mouseX;
+    int    mouseY;
+    int    mouseZ;
+    int    mouseW;
 
-    char  buttons;
-    char  oldButtons;
-    char  currButtons;
+    char   buttons;
+    char   oldButtons;
+    char   currButtons;
 
-    bool  leftClick;
-    bool  rightClick;
-    bool  middleClick;
-    bool  wheelUp;
-    bool  wheelDown;
+    bool   leftClick;
+    bool   rightClick;
+    bool   middleClick;
+    bool   wheelUp;
+    bool   wheelDown;
 
-    bool  hasFocus;
-    bool  isLocked;
+    bool   hasFocus;
+    bool   isLocked;
 
-    ubyte keys[SDLK_LAST];
-    ubyte oldKeys[SDLK_LAST];
+    bool   keys[KEY_MAX];
+    bool   oldKeys[KEY_MAX];
+
+    float  mouseSensH;
+    float  mouseSensV;
+    float  keySensH;
+    float  keySensV;
+
+  private:
+
+    void loadDefaultKeyMap();
+    void loadKeyMap( const JSON& keyConfig );
+    JSON keyMapToJSON() const;
+
+  public:
 
     void readEvent( SDL_Event* event );
 

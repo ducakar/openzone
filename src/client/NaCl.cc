@@ -39,7 +39,7 @@ namespace client
 {
 
 static Mutex          messageMutex;
-static Vector<String> messageQueue;
+static List<String>   messageQueue;
 static pp::Graphics3D context;
 
 Semaphore NaCl::mainCallSemaphore;
