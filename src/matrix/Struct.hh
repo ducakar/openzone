@@ -98,30 +98,30 @@ class Struct : public Bounds
 
   public:
 
-    static Vector<Object*> overlappingObjs;
-    static Pool<Struct>    pool;
+    static List<Object*> overlappingObjs;
+    static Pool<Struct>  pool;
 
   private:
 
-    Mat44       transf;
-    Mat44       invTransf;
+    Mat44      transf;
+    Mat44      invTransf;
 
   public:
 
-    const BSP*  bsp;
+    const BSP* bsp;
 
-    Point       p;
-    int         index;
-    Heading     heading;
+    Point      p;
+    int        index;
+    Heading    heading;
 
-    float       life;
-    float       resistance;
-    float       demolishing;
+    float      life;
+    float      resistance;
+    float      demolishing;
 
-    int         nEntities;
-    Entity*     entities;
+    int        nEntities;
+    Entity*    entities;
 
-    Vector<int> boundObjects;
+    List<int>  boundObjects;
 
   private:
 

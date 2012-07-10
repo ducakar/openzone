@@ -75,15 +75,15 @@ class Compiler
 
     struct Part
     {
-      int            component;
-      PolyMode       mode;
+      int          component;
+      PolyMode     mode;
 
-      int            material;
-      String         texture;
+      int          material;
+      String       texture;
 
-      int            firstIndex;
-      int            nIndices;
-      Vector<ushort> indices;
+      int          firstIndex;
+      int          nIndices;
+      List<ushort> indices;
 
       bool operator == ( const Part& part ) const
       {
@@ -92,23 +92,23 @@ class Compiler
       }
     };
 
-    Vector<Part>   parts;
-    Vector<Vertex> vertices;
-    DArray<Point>  positions;
-    DArray<Vec3>   normals;
+    List<Part>    parts;
+    List<Vertex>  vertices;
+    DArray<Point> positions;
+    DArray<Vec3>  normals;
 
-    Vertex         vert;
-    Part           part;
+    Vertex        vert;
+    Part          part;
 
-    int            caps;
-    int            flags;
-    int            componentId;
-    PolyMode       mode;
-    String         shaderName;
-    int            vertNum;
+    int           caps;
+    int           flags;
+    int           componentId;
+    PolyMode      mode;
+    String        shaderName;
+    int           vertNum;
 
-    int            nFrames;
-    int            nFramePositions;
+    int           nFrames;
+    int           nFramePositions;
 
   public:
 

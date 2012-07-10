@@ -424,15 +424,15 @@ inline void iFree( Iterator iDest )
  *
  * It can be used like
  * @code
- * Vector<int> v;
- * foreach( i, v.citer() ) {
+ * List<int> l;
+ * foreach( i, l.citer() ) {
  *   printf( "%d ", *i );
  * }
  * @endcode
  * to replace a longer piece of code, like:
  * @code
- * Vector<int> v;
- * for( auto i = v.citer(); i.isValid(); ++i )
+ * List<int> l;
+ * for( auto i = l.citer(); i.isValid(); ++i )
  *   printf( "%d ", *i );
  * }
  * @endcode

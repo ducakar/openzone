@@ -45,6 +45,8 @@ class Bounds
     Point mins; ///< Minimums.
     Point maxs; ///< Maximums.
 
+  public:
+
     /**
      * Create uninitialised instance.
      */

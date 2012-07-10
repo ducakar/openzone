@@ -34,14 +34,14 @@ namespace oz
 {
 
 /**
- * %Map.
+ * Sorted array list of key-value pairs.
  *
- * %Map is implemented as a sorted vector that supports binding values to its elements (keys).
+ * %Map is implemented as a sorted array list that supports binding values to its elements (keys).
  * Better worst case performance than hashtable and it can use an arbitrary type as a key. For
  * large maps HashIndex/HashString is preferred as it is much faster on average.
  * It can also be used as a set if one omits values.
  *
- * Like in Vector all allocated elements are constructed all the time and a removed element's
+ * Like in List all allocated elements are constructed all the time and a removed element's
  * destruction is guaranteed (either explicitly or via move operation).
  *
  * Memory is allocated when the first element is added.
@@ -615,6 +615,11 @@ class Map
      */
     void clear()
     {
+      for( int i = 0; i < count; ++i ) {
+        data[i].~Elem();
+        new( data + i ) Elem;
+      }
+
       count = 0;
     }
 

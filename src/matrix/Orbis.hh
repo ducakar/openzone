@@ -38,9 +38,9 @@ struct Cell
 {
   static const int SIZE = 16;
 
-  SVector<short, 6> structs;
-  List<Object>      objects;
-  List<Frag>        frags;
+  SList<short, 6> structs;
+  Chain<Object>   objects;
+  Chain<Frag>     frags;
 };
 
 /**
@@ -68,9 +68,9 @@ class Orbis : public Bounds
     Caelum caelum;
     Terra  terra;
 
-    SVector<Struct*, MAX_STRUCTS> structs;
-    SVector<Object*, MAX_OBJECTS> objects;
-    SVector<Frag*,   MAX_FRAGS>   frags;
+    SList<Struct*, MAX_STRUCTS> structs;
+    SList<Object*, MAX_OBJECTS> objects;
+    SList<Frag*,   MAX_FRAGS>   frags;
 
     Cell cells[Orbis::CELLS][Orbis::CELLS];
 
@@ -96,14 +96,14 @@ class Orbis : public Bounds
 
     // [freeing]: vector for indices that are currently being freed
     // [waiting]: indices that have been freed previous cycle; those can be reused next time
-    Vector<int> strFreedIndices[2];
-    Vector<int> objFreedIndices[2];
-    Vector<int> fragFreedIndices[2];
+    List<int> strFreedIndices[2];
+    List<int> objFreedIndices[2];
+    List<int> fragFreedIndices[2];
 
     // indices of slots that can be reused
-    Vector<int> strAvailableIndices;
-    Vector<int> objAvailableIndices;
-    Vector<int> fragAvailableIndices;
+    List<int> strAvailableIndices;
+    List<int> objAvailableIndices;
+    List<int> fragAvailableIndices;
 
   private:
 

@@ -95,7 +95,7 @@ struct JSON::StringData : JSON::Data
 
 struct JSON::ArrayData : JSON::Data
 {
-  Vector<JSON> array;
+  List<JSON> list;
 };
 
 struct JSON::ObjectData : JSON::Data
@@ -198,7 +198,7 @@ char JSON::Parser::skipBlanks()
 OZ_HIDDEN
 String JSON::Parser::parseString()
 {
-  Vector<char> chars;
+  List<char> chars;
   char ch = '"';
 
   do {
@@ -283,7 +283,7 @@ JSON JSON::Parser::parseValue()
       return JSON( new BooleanData( true ), BOOLEAN );
     }
     default: { // number
-      Vector<char> chars;
+      List<char> chars;
       chars.add( ch );
 
       while( pos.isAvailable() ) {
@@ -322,14 +322,14 @@ OZ_HIDDEN
 JSON JSON::Parser::parseArray()
 {
   JSON arrayValue( new ArrayData(), ARRAY );
-  Vector<JSON>& array = static_cast<ArrayData*>( arrayValue.data )->array;
+  List<JSON>& list = static_cast<ArrayData*>( arrayValue.data )->list;
 
   char ch = skipBlanks();
   pos.back();
 
   while( ch != ']' ) {
     JSON value = parseValue();
-    array.add( static_cast<JSON&&>( value ) );
+    list.add( static_cast<JSON&&>( value ) );
 
     ch = skipBlanks();
 
@@ -525,9 +525,9 @@ void JSON::Formatter::writeValue( const JSON& value )
 
 void JSON::Formatter::writeArray( const JSON& value )
 {
-  const Vector<JSON>& array = static_cast<const ArrayData*>( value.data )->array;
+  const List<JSON>& list = static_cast<const ArrayData*>( value.data )->list;
 
-  if( array.isEmpty() ) {
+  if( list.isEmpty() ) {
     ostream->writeChars( "[]", 2 );
     return;
   }
@@ -537,7 +537,7 @@ void JSON::Formatter::writeArray( const JSON& value )
 
   ++indentLevel;
 
-  for( int i = 0; i < array.length(); ++i ) {
+  for( int i = 0; i < list.length(); ++i ) {
     if( i != 0 ) {
       ostream->writeChar( ',' );
       ostream->writeChars( lineEnd, lineEndLength );
@@ -547,7 +547,7 @@ void JSON::Formatter::writeArray( const JSON& value )
       ostream->writeChars( "  ", 2 );
     }
 
-    writeValue( array[i] );
+    writeValue( list[i] );
   }
 
   ostream->writeChars( lineEnd, lineEndLength );
@@ -672,7 +672,7 @@ int JSON::length() const
 {
   switch( valueType ) {
     case ARRAY: {
-      return static_cast<const ArrayData*>( data )->array.length();
+      return static_cast<const ArrayData*>( data )->list.length();
     }
     case OBJECT: {
       return static_cast<const ObjectData*>( data )->table.length();
@@ -738,14 +738,14 @@ const JSON& JSON::operator [] ( int i ) const
 
   wasAccessed = true;
 
-  const Vector<JSON>& array = static_cast<ArrayData*>( data )->array;
+  const List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
-  if( uint( i ) >= uint( array.length() ) ) {
+  if( uint( i ) >= uint( list.length() ) ) {
     return nil;
   }
 
-  array[i].wasAccessed = true;
-  return array[i];
+  list[i].wasAccessed = true;
+  return list[i];
 }
 
 const JSON& JSON::operator [] ( const char* key ) const
@@ -909,8 +909,8 @@ JSON& JSON::addNull()
 
   ArrayData* array = static_cast<ArrayData*>( data );
 
-  array->array.add( JSON( null, NIL ) );
-  return array->array.last();
+  array->list.add( JSON( null, NIL ) );
+  return array->list.last();
 }
 
 JSON& JSON::addNull( const char* key )
@@ -1075,13 +1075,13 @@ bool JSON::remove( int index )
     throw Exception( "Tried to remove a value from a non-array JSON value: %s", toString().cstr() );
   }
 
-  ArrayData* array = static_cast<ArrayData*>( data );
+  List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
-  if( uint( index ) >= uint( array->array.length() ) ) {
+  if( uint( index ) >= uint( list.length() ) ) {
     return false;
   }
 
-  array->array.remove( index );
+  list.remove( index );
   return true;
 }
 
@@ -1092,9 +1092,9 @@ bool JSON::exclude( const char* key )
                      toString().cstr() );
   }
 
-  ObjectData* table = static_cast<ObjectData*>( data );
+  HashString<JSON>& table = static_cast<ObjectData*>( data )->table;
 
-  return table->table.exclude( key );
+  return table.exclude( key );
 }
 
 void JSON::clear( bool unusedWarnings )
@@ -1125,7 +1125,7 @@ void JSON::clear( bool unusedWarnings )
       ArrayData* arrayData = static_cast<ArrayData*>( data );
 
       if( unusedWarnings ) {
-        foreach( i, arrayData->array.iter() ) {
+        foreach( i, arrayData->list.iter() ) {
           i->clear( true );
         }
       }
@@ -1169,20 +1169,20 @@ String JSON::toString() const
       return String::str( "\"%s\"", static_cast<StringData*>( data )->value.cstr() );
     }
     case ARRAY: {
-      const Vector<JSON>& array = static_cast<ArrayData*>( data )->array;
+      const List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
-      if( array.isEmpty() ) {
+      if( list.isEmpty() ) {
         return "[]";
       }
 
       String s = "[ ";
 
-      for( int i = 0; i < array.length(); ++i ) {
+      for( int i = 0; i < list.length(); ++i ) {
         if( i != 0 ) {
           s += ", ";
         }
 
-        s += array[i].toString();
+        s += list[i].toString();
       }
 
       return s + " ]";

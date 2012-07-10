@@ -52,21 +52,21 @@ enum CollideMode
 
 struct MatrixLuaState
 {
-  Object*         self;
-  Bot*            user;
+  Object*       self;
+  Bot*          user;
 
-  Struct*         str;
-  Entity*         ent;
-  Object*         obj;
-  Frag*           frag;
+  Struct*       str;
+  Entity*       ent;
+  Object*       obj;
+  Frag*         frag;
 
-  int             strIndex;
-  int             objIndex;
+  int           strIndex;
+  int           objIndex;
 
-  Vector<Struct*> structs;
-  Vector<Object*> objects;
+  List<Struct*> structs;
+  List<Object*> objects;
 
-  bool            hasUseFailed;
+  bool          hasUseFailed;
 };
 
 static MatrixLuaState ms;
@@ -290,8 +290,8 @@ static int ozOrbisBindOverlaps( lua_State* l )
     ERROR( "At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
   }
 
-  Vector<Struct*>* structs = null;
-  Vector<Object*>* objects = null;
+  List<Struct*>* structs = null;
+  List<Object*>* objects = null;
 
   hard_assert( collider.mask == Object::SOLID_BIT );
 
@@ -663,8 +663,8 @@ static int ozStrBindOverlaps( lua_State* l )
     ERROR( "At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
   }
 
-  Vector<Struct*>* structs = null;
-  Vector<Object*>* objects = null;
+  List<Struct*>* structs = null;
+  List<Object*>* objects = null;
 
   hard_assert( collider.mask == Object::SOLID_BIT );
 
@@ -941,7 +941,7 @@ static int ozEntBindOverlaps( lua_State* l )
     ERROR( "At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
   }
 
-  Vector<Object*>* objects = null;
+  List<Object*>* objects = null;
 
   hard_assert( collider.mask == Object::SOLID_BIT );
 
@@ -1562,8 +1562,8 @@ static int ozObjBindOverlaps( lua_State* l )
     ERROR( "At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
   }
 
-  Vector<Struct*>* structs = null;
-  Vector<Object*>* objects = null;
+  List<Struct*>* structs = null;
+  List<Object*>* objects = null;
 
   hard_assert( collider.mask == Object::SOLID_BIT );
 
@@ -2528,8 +2528,8 @@ static int ozFragBindOverlaps( lua_State* l )
     ERROR( "At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
   }
 
-  Vector<Struct*>* structs = null;
-  Vector<Object*>* objects = null;
+  List<Struct*>* structs = null;
+  List<Object*>* objects = null;
 
   hard_assert( collider.mask == Object::SOLID_BIT );
 

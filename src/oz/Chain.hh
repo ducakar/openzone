@@ -21,9 +21,9 @@
  */
 
 /**
- * @file oz/DList.hh
+ * @file oz/Chain.hh
  *
- * DList template class.
+ * Chain template class.
  */
 
 #pragma once
@@ -34,40 +34,37 @@ namespace oz
 {
 
 /**
- * Double-linked list.
+ * Linked list.
  *
- * It can only be applied on classes that have <tt>next[]</tt> and <tt>prev[]</tt> members.
+ * It can only be applied on classes that have a <tt>next[]</tt> member.
  * Example:
  * @code
  * struct C
  * {
- *   C*  prev[2];
  *   C*  next[2];
  *   int value;
  * };
  * ...
- * DList<C, 0> list1;
- * DList<C, 1> list2;
+ * Chain<C, 0> chain1;
+ * Chain<C, 1> chain2;
  * @endcode
  *
- * That way the objects of the same class can be in two separate lists at once.
- * <tt>prev[0]</tt> and <tt>next[0]</tt> point to previous and next element respectively
- * in <tt>list1</tt> and
- * <tt>prev[1]</tt> and <tt>next[1]</tt> point to previous and next element respectively
- * in <tt>list2</tt>.
+ * That way the objects of the same class can be in two separate chains at once.
+ * <tt>next[0]</tt> points to next element in <tt>chain1</tt> and
+ * <tt>next[1]</tt> points to next element in <tt>chain2</tt>.
  *
- * <tt>prev[INDEX]</tt> and <tt>next[INDEX]</tt> pointers are not cleared when element is
- * removed from the list, they may still point to elements in the list or to invalid locations!
+ * <tt>next[INDEX]</tt> pointer is not cleared when element is removed from the chain,
+ * it may still point to elements in the chain or to invalid locations!
  *
- * <tt>DList</tt> is not a real container but merely binds together already existing elements.
- * So, copy operator does not copy the elements, to make a copy of a list including its elements,
+ * <tt>Chain</tt> is not a real container but merely binds together already existing elements.
+ * So, copy operator does not copy the elements, to make a copy of a chain including its elements,
  * use <tt>clone()</tt> instead. It also doesn't delete removed elements (except for <tt>free()</tt>
  * method).
  *
  * @ingroup oz
  */
 template <class Elem, int INDEX = 0>
-class DList
+class Chain
 {
   public:
 
@@ -76,7 +73,7 @@ class DList
      */
     class CIterator : public CIteratorBase<Elem>
     {
-      friend class DList;
+      friend class Chain;
 
       private:
 
@@ -86,8 +83,8 @@ class DList
          * %Iterator for the given container, points to the first element.
          */
         OZ_ALWAYS_INLINE
-        explicit CIterator( const DList& l ) :
-          CIteratorBase<Elem>( l.firstElem )
+        explicit CIterator( const Chain& c ) :
+          CIteratorBase<Elem>( c.firstElem )
         {}
 
       public:
@@ -119,7 +116,7 @@ class DList
      */
     class Iterator : public IteratorBase<Elem>
     {
-      friend class DList;
+      friend class Chain;
 
       private:
 
@@ -129,8 +126,8 @@ class DList
          * %Iterator for the given container, points to the first element.
          */
         OZ_ALWAYS_INLINE
-        explicit Iterator( const DList& l ) :
-          IteratorBase<Elem>( l.firstElem )
+        explicit Iterator( const Chain& c ) :
+          CIteratorBase<Elem>( c.firstElem )
         {}
 
       public:
@@ -159,33 +156,31 @@ class DList
 
   private:
 
-    Elem* firstElem; ///< Pointer to the first element in the list.
-    Elem* lastElem;  ///< Pointer to the last element in the list.
+    Elem* firstElem; ///< Pointer to the first element in the chain.
 
   public:
 
     /**
-     * Create an empty list.
+     * Create an empty chain.
      */
-    DList() :
-      firstElem( null ), lastElem( null )
+    Chain() :
+      firstElem( null )
     {}
 
     /**
-     * Clone the list.
+     * Clone the chain.
      *
-     * Create a new list from copies of all elements of the original list.
+     * Create a new chain from copies of all elements of the original chain.
      */
-    DList clone() const
+    Chain clone() const
     {
-      DList clone;
+      Chain clone;
 
       Elem* prev = null;
       Elem* elem = firstElem;
 
       while( elem != null ) {
         Elem* last = new Elem( *elem );
-        last->prev[INDEX] = prev;
 
         if( prev == null ) {
           clone.firstElem = last;
@@ -195,7 +190,6 @@ class DList
         }
         prev = last;
       }
-      clone.lastElem = prev;
 
       return clone;
     }
@@ -206,10 +200,10 @@ class DList
      * <tt>Elem</tt> type should implement <tt>operator ==</tt>, otherwise comparison doesn't make
      * sense as two copies always differ in <tt>prev[INDEX]</tt> and <tt>next[INDEX]</tt> members.
      */
-    bool equals( const DList& l ) const
+    bool equals( const Chain& c ) const
     {
       Elem* e1 = firstElem;
-      Elem* e2 = l.firstElem;
+      Elem* e2 = c.firstElem;
 
       while( e1 != null && e2 != null && *e1 == *e2 ) {
         e1 = e1->next[INDEX];
@@ -237,7 +231,7 @@ class DList
     }
 
     /**
-     * Iterate through the list and count elements.
+     * Iterate through the chain and count elements.
      */
     int length() const
     {
@@ -252,7 +246,7 @@ class DList
     }
 
     /**
-     * True iff the list has no elements.
+     * True iff the chain has no elements.
      */
     OZ_ALWAYS_INLINE
     bool isEmpty() const
@@ -272,14 +266,33 @@ class DList
     /**
      * Pointer to the last element.
      */
-    OZ_ALWAYS_INLINE
     Elem* last() const
     {
-      return lastElem;
+      Elem* last = firstElem;
+
+      while( last != null ) {
+        last = last->next[INDEX];
+      }
+      return last;
     }
 
     /**
-     * True iff the given element is in the list.
+     * Pointer to the element before the given one.
+     */
+    Elem* before( const Elem* e ) const
+    {
+      Elem* current = firstElem;
+      Elem* before = null;
+
+      while( current != e ) {
+        before = current;
+        current = current->next[INDEX];
+      }
+      return before;
+    }
+
+    /**
+     * True iff the given element is in the chain.
      */
     bool has( const Elem* e ) const
     {
@@ -294,7 +307,7 @@ class DList
     }
 
     /**
-     * True iff an element equal to the given one is in the list.
+     * True iff an element equal to the given one is in the chain.
      *
      * <tt>Elem</tt> type should implement <tt>operator ==</tt>, otherwise comparison doesn't make
      * sense as two copies always differ in <tt>prev[INDEX]</tt> and <tt>next[INDEX]</tt> members.
@@ -312,10 +325,10 @@ class DList
     }
 
     /**
-     * Add an element to the beginning of the list.
+     * Add an element to the beginning of the chain.
      *
-     * For efficiency reasons, elements are added to the beginning of a list in contrast with
-     * vector.
+     * For efficiency reasons, elements are added to the beginning of a chain in contrast with array
+     * lists.
      */
     void add( Elem* e )
     {
@@ -323,52 +336,21 @@ class DList
     }
 
     /**
-     * Insert an element after some given element in the list.
+     * Insert an element after some given element in the chain.
      */
     void insertAfter( Elem* e, Elem* p )
     {
       hard_assert( e != null && p != null );
 
-      Elem* next = p->next[INDEX];
-
-      e->prev[INDEX] = p;
       e->next[INDEX] = p->next[INDEX];
       p->next[INDEX] = e;
-
-      if( next == null ) {
-        lastElem = e;
-      }
-      else {
-        next->prev[INDEX] = e;
-      }
     }
 
     /**
-     * Insert an element before some given element in the list.
-     */
-    void insertBefore( Elem* e, Elem* p )
-    {
-      hard_assert( e != null && p != null );
-
-      Elem* prev = p->prev[INDEX];
-
-      e->next[INDEX] = p;
-      e->prev[INDEX] = prev;
-      p->prev[INDEX] = e;
-
-      if( prev == null ) {
-        firstElem = e;
-      }
-      else {
-        p->prev[INDEX] = e;
-      }
-    }
-
-    /**
-     * Remove the first element from the list.
+     * Remove the first element from the chain.
      *
-     * To keep LIFO behaviour for <tt>add()</tt> and <tt>remove()</tt> methods like in vector, the
-     * first element is removed instead of the last one.
+     * To keep LIFO behaviour for <tt>add()</tt> and <tt>remove()</tt> methods like in array lists,
+     * the first element is removed instead of the last one.
      */
     void remove()
     {
@@ -376,66 +358,36 @@ class DList
     }
 
     /**
-     * Remove the given element from the list.
+     * Remove an element from the chain.
+     *
+     * Because this chain is not a double-linked, one have to provide pointer to the preceding
+     * element.
      */
-    void remove( Elem* e )
+    void remove( Elem* e, Elem* prev )
     {
-      if( e->prev[INDEX] == null ) {
+      hard_assert( prev == null || prev->next[INDEX] == e );
+
+      if( prev == null ) {
         firstElem = e->next[INDEX];
       }
       else {
-        e->prev[INDEX]->next[INDEX] = e->next[INDEX];
-      }
-      if( e->next[INDEX] == null ) {
-        lastElem = e->prev[INDEX];
-      }
-      else {
-        e->next[INDEX]->prev[INDEX] = e->prev[INDEX];
+        prev->next[INDEX] = e->next[INDEX];
       }
     }
 
     /**
-     * Add an element to the beginning of the list.
+     * Add an element to the beginning of the chain.
      */
     void pushFirst( Elem* e )
     {
       hard_assert( e != null );
 
-      e->prev[INDEX] = null;
       e->next[INDEX] = firstElem;
-
-      if( firstElem == null ) {
-        firstElem = e;
-        lastElem = e;
-      }
-      else {
-        firstElem->prev[INDEX] = e;
-        firstElem = e;
-      }
+      firstElem = e;
     }
 
     /**
-     * Add an element to the end of the list.
-     */
-    void pushLast( Elem* e )
-    {
-      hard_assert( e != null );
-
-      e->prev[INDEX] = lastElem;
-      e->next[INDEX] = null;
-
-      if( lastElem == null ) {
-        firstElem = e;
-        lastElem = e;
-      }
-      else {
-        lastElem->next[INDEX] = e;
-        lastElem = e;
-      }
-    }
-
-    /**
-     * Pop the first element from the list.
+     * Pop the first element from the chain.
      */
     Elem* popFirst()
     {
@@ -444,47 +396,19 @@ class DList
       Elem* e = firstElem;
 
       firstElem = firstElem->next[INDEX];
-
-      if( firstElem == null ) {
-        lastElem = null;
-      }
-      else {
-        firstElem->prev[INDEX] = null;
-      }
       return e;
     }
 
     /**
-     * Pop the last element from the list.
-     */
-    Elem* popLast()
-    {
-      hard_assert( lastElem != null );
-
-      Elem* e = lastElem;
-
-      lastElem = lastElem->prev[INDEX];
-
-      if( lastElem == null ) {
-        firstElem = null;
-      }
-      else {
-        lastElem->next[INDEX] = null;
-      }
-      return e;
-    }
-
-    /**
-     * Empty the list but do not delete the elements.
+     * Empty the chain but do not delete the elements.
      */
     void clear()
     {
       firstElem = null;
-      lastElem = null;
     }
 
     /**
-     * Empty the list and delete all elements.
+     * Empty the chain and delete all elements.
      */
     void free()
     {
@@ -498,7 +422,6 @@ class DList
       }
 
       firstElem = null;
-      lastElem = null;
     }
 
 };

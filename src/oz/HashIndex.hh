@@ -278,7 +278,7 @@ class HashIndex
 
   private:
 
-    Elem*            data[SIZE]; ///< %Array of lists.
+    Elem*            data[SIZE]; ///< %Array of linked lists.
     Pool<Elem, SIZE> pool;       ///< Memory pool for elements.
 
     /**

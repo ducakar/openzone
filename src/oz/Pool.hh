@@ -120,8 +120,8 @@ class Pool
       }
     };
 
-    Block* firstBlock; ///< List of the allocated blocks.
-    Slot*  freeSlot;   ///< List of free slots or null if none.
+    Block* firstBlock; ///< Linked list of the allocated blocks.
+    Slot*  freeSlot;   ///< Linked list of free slots or null if none.
     int    size;       ///< Capacity.
     int    count;      ///< Number of occupied slots in the pool.
 

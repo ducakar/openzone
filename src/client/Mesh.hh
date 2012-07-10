@@ -134,7 +134,7 @@ class Mesh
     Point*            positions;
     Vec3*             normals;
 
-    Vector<Instance>  instances;
+    List<Instance>    instances;
 
     void animate( const Instance* instance );
     void draw( const Instance* instance, int mask );

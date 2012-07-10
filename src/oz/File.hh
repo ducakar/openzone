@@ -43,9 +43,6 @@ class File
 {
   public:
 
-    /// Internal structure for NaCl file description that is passed to callbacks.
-    struct Descriptor;
-
     /**
      * %File type classification.
      */
@@ -66,6 +63,9 @@ class File
     };
 
   private:
+
+    /// Internal structure for NaCl file description that is passed to callbacks.
+    struct Descriptor;
 
     String      filePath;   ///< %File path.
     Type        fileType;   ///< %File type (initially <tt>MISSING</tt>).

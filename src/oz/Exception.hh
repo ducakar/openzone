@@ -48,6 +48,8 @@ class Exception : public std::exception
     int         line;         ///< Source file line.
     StackTrace  stackTrace;   ///< Stack trace.
 
+  public:
+
     /**
      * <tt>Exception</tt> constructor.
      *

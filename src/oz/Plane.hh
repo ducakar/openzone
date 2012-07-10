@@ -45,6 +45,8 @@ class Plane
     Vec3  n; ///< Normal.
     float d; ///< Distance from origin.
 
+  public:
+
     /**
      * Create an uninitialised instance.
      */

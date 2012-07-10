@@ -98,6 +98,8 @@ void BotAudio::play( const Audio* parent )
         }
       }
       else if( recent[Object::EVENT_FRICTING] != 0 ) {
+        hard_assert( bot->depth >= 0.0f );
+
         if( bot->depth != 0.0f ) {
           if( sounds[Bot::EVENT_WATERSTEP] >= 0 ) {
             playSound( sounds[Bot::EVENT_WATERSTEP], 1.0f, bot, bot );

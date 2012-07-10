@@ -56,8 +56,8 @@ class StrategicArea : public Area
 
   public:
 
-    Vector<int> taggedStrs;
-    Vector<int> taggedObjs;
+    List<int> taggedStrs;
+    List<int> taggedObjs;
 
     int hoverStr;
     int hoverEnt;

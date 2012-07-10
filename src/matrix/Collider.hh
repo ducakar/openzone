@@ -128,10 +128,10 @@ class Collider
     void trimAABBTerra();
     void trimAABBOrbis();
 
-    void getOrbisOverlaps( Vector<Struct*>* structs, Vector<Object*>* objects );
-    void getOrbisIncludes( Vector<Object*>* objects ) const;
+    void getOrbisOverlaps( List<Struct*>* structs, List<Object*>* objects );
+    void getOrbisIncludes( List<Object*>* objects ) const;
     void touchOrbisOverlaps() const;
-    void getEntityOverlaps( Vector<Object*>* objects );
+    void getEntityOverlaps( List<Object*>* objects );
 
   public:
 
@@ -150,15 +150,15 @@ class Collider
     bool overlapsEntity( const AABB& aabb, const Entity* entity, float margin = 0.0f );
 
     // fill given vectors with objects and structures overlapping with the AABB
-    // if either vector is null the respecitve test is not performed
-    void getOverlaps( const AABB& aabb, Vector<Struct*>* structs, Vector<Object*>* objects,
+    // if either vector is null the respective test is not performed
+    void getOverlaps( const AABB& aabb, List<Struct*>* structs, List<Object*>* objects,
                       float eps = EPSILON );
     // fill given vector with objects included in the AABB
-    void getIncludes( const AABB& aabb, Vector<Object*>* objects, float eps = EPSILON );
+    void getIncludes( const AABB& aabb, List<Object*>* objects, float eps = EPSILON );
     // un-disable all dynamic objects that overlap (does not respect mask)
     void touchOverlaps( const AABB& aabb, float eps = EPSILON );
 
-    void getOverlaps( const Entity* entity, Vector<Object*>* objects, float margin = 0.0f );
+    void getOverlaps( const Entity* entity, List<Object*>* objects, float margin = 0.0f );
 
     void translate( const Point& point, const Vec3& move, const Object* exclObj = null );
     void translate( const AABB& aabb, const Vec3& move, const Object* exclObj = null );

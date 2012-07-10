@@ -77,7 +77,7 @@ void FragPool::build( BufferStream* os, const char* className )
   const JSON& modelsConfig = config["models"];
   int nModels = modelsConfig.length();
 
-  Vector<String> models;
+  List<String> models;
 
   for( int i = 0; i < nModels; ++i ) {
     const char* modelName = modelsConfig[i].get( "" );

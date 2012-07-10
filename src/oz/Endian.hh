@@ -56,6 +56,8 @@ class Endian
 #endif
     };
 
+  public:
+
     /**
      * Singleton.
      */

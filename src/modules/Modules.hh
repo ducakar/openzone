@@ -32,7 +32,7 @@ class Modules
 {
   private:
 
-    Vector<module::Module*> modules;
+    List<module::Module*> modules;
 
   public:
 

@@ -48,16 +48,16 @@ class Synapse
               ///< be ordered by the server.
     };
 
-    Vector<int> putObjects;
-    Vector<int> cutObjects;
+    List<int> putObjects;
+    List<int> cutObjects;
 
-    Vector<int> addedStructs;
-    Vector<int> addedObjects;
-    Vector<int> addedFrags;
+    List<int> addedStructs;
+    List<int> addedObjects;
+    List<int> addedFrags;
 
-    Vector<int> removedStructs;
-    Vector<int> removedObjects;
-    Vector<int> removedFrags;
+    List<int> removedStructs;
+    List<int> removedObjects;
+    List<int> removedFrags;
 
     Mode mode;
 

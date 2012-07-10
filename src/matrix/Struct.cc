@@ -72,8 +72,8 @@ const Entity::Handler Entity::HANDLERS[] = {
   &Entity::elevatorHandler
 };
 
-Vector<Object*> Struct::overlappingObjs;
-Pool<Struct>    Struct::pool;
+List<Object*> Struct::overlappingObjs;
+Pool<Struct>  Struct::pool;
 
 void Entity::trigger()
 {

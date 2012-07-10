@@ -1004,7 +1004,7 @@ void BSP::saveMatrix()
 
   Log::print( "Dumping BSP structure to '%s' ...", destFile.path().cstr() );
 
-  Vector<String> sounds;
+  List<String> sounds;
 
   if( !demolishSound.isEmpty() ) {
     sounds.add( demolishSound );

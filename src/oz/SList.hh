@@ -21,9 +21,9 @@
  */
 
 /**
- * @file oz/Vector.hh
+ * @file oz/SList.hh
  *
- * Vector template class.
+ * SList template class.
  */
 
 #pragma once
@@ -34,23 +34,18 @@ namespace oz
 {
 
 /**
- * %Vector (array list).
+ * %Array list with static storage (fixed capacity).
  *
  * In contrast with <tt>std::vector</tt> all allocated elements are constructed all the time. This
  * yields slightly better performance and simplifies implementation. However, on element removal its
  * destruction is guaranteed (either explicitly or by via move operation).
  *
- * Memory is allocated when the first element is added.
- *
  * @ingroup oz
  */
-template <typename Elem>
-class Vector
+template <typename Elem, int SIZE>
+class SList
 {
-  private:
-
-    /// Granularity for automatic storage allocations and <tt>trim()</tt>.
-    static const int GRANULARITY = 8;
+  static_assert( SIZE > 0, "SList size must be at least 1" );
 
   public:
 
@@ -59,7 +54,7 @@ class Vector
      */
     class CIterator : public oz::CIterator<Elem>
     {
-      friend class Vector;
+      friend class SList;
 
       private:
 
@@ -69,8 +64,8 @@ class Vector
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
-        explicit CIterator( const Vector& v ) :
-          oz::CIterator<Elem>( v.data, v.data + v.count )
+        explicit CIterator( const SList& l ) :
+          oz::CIterator<Elem>( l.data, l.data + l.count )
         {}
 
       public:
@@ -90,7 +85,7 @@ class Vector
      */
     class Iterator : public oz::Iterator<Elem>
     {
-      friend class Vector;
+      friend class SList;
 
       private:
 
@@ -100,8 +95,8 @@ class Vector
          * %Iterator for the given container, points to its first element.
          */
         OZ_ALWAYS_INLINE
-        explicit Iterator( const Vector& v ) :
-          oz::Iterator<Elem>( v.data, v.data + v.count )
+        explicit Iterator( SList& l ) :
+          oz::Iterator<Elem>( l.data, l.data + l.count )
         {}
 
       public:
@@ -118,137 +113,32 @@ class Vector
 
   private:
 
-    Elem* data;  ///< Element storage.
-    int   size;  ///< Capacity, number of elements in storage.
-    int   count; ///< Number of elements.
-
-    /**
-     * Double capacity if there is not enough space to add another element.
-     */
-    void ensureCapacity()
-    {
-      if( size == count ) {
-        size = size == 0 ? GRANULARITY : 2 * size;
-        data = aRealloc<Elem>( data, count, size );
-      }
-    }
-
-    /**
-     * Enlarge capacity to the smallest multiple of GRANULARITY able to hold requested number of
-     * elements.
-     */
-    void ensureCapacity( int desiredSize )
-    {
-      if( size < desiredSize ) {
-        size = ( ( desiredSize - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
-        data = aRealloc<Elem>( data, count, size );
-      }
-    }
+    Elem data[SIZE]; ///< Element storage.
+    int  count;      ///< Number of elements.
 
   public:
 
     /**
-     * Create an empty vector.
+     * Create an empty list with capacity SIZE.
      */
-    Vector() :
-      data( null ), size( 0 ), count( 0 )
-    {}
-
-    /**
-     * Destructor.
-     */
-    ~Vector()
-    {
-      delete[] data;
-    }
-
-    /**
-     * Copy constructor, copies elements.
-     */
-    Vector( const Vector& v ) :
-      data( v.size == 0 ? null : new Elem[v.size] ), size( v.size ), count( v.count )
-    {
-      aCopy<Elem>( data, v.data, v.count );
-    }
-
-    /**
-     * Move constructor, moves element storage.
-     */
-    Vector( Vector&& v ) :
-      data( v.data ), size( v.size ), count( v.count )
-    {
-      v.data  = null;
-      v.size  = 0;
-      v.count = 0;
-    }
-
-    /**
-     * Copy operator, copies elements.
-     *
-     * Reuse existing storage if it suffices.
-     */
-    Vector& operator = ( const Vector& v )
-    {
-      if( &v == this ) {
-        return *this;
-      }
-
-      if( size < v.count ) {
-        delete[] data;
-
-        data = new Elem[v.size];
-        size = v.size;
-      }
-
-      aCopy<Elem>( data, v.data, v.count );
-      count = v.count;
-
-      return *this;
-    }
-
-    /**
-     * Move operator, moves element storage.
-     */
-    Vector& operator = ( Vector&& v )
-    {
-      if( &v == this ) {
-        return *this;
-      }
-
-      delete[] data;
-
-      data  = v.data;
-      size  = v.size;
-      count = v.count;
-
-      v.data  = null;
-      v.size  = 0;
-      v.count = 0;
-
-      return *this;
-    }
-
-    /**
-     * Create an empty vector with the given initial capacity.
-     */
-    explicit Vector( int size_ ) :
-      data( new Elem[size_] ), size( size_ ), count( 0 )
+    SList() :
+      count( 0 )
     {}
 
     /**
      * True iff respective elements are equal.
      */
-    bool operator == ( const Vector& v ) const
+    bool operator == ( const SList& l ) const
     {
-      return count == v.count && aEquals<Elem>( data, v.data, count );
+      return count == l.count && aEquals<Elem>( data, l.data, count );
     }
 
     /**
-     * False iff respective elements are equal.
+     * False if respective elements are equal.
      */
-    bool operator != ( const Vector& v ) const
+    bool operator != ( const SList& l ) const
     {
-      return count != v.count || !aEquals<Elem>( data, v.data, count );
+      return count != l.count || !aEquals<Elem>( data, l.data, count );
     }
 
     /**
@@ -264,7 +154,7 @@ class Vector
      * %Iterator with non-constant access, initially points to the first element.
      */
     OZ_ALWAYS_INLINE
-    Iterator iter() const
+    Iterator iter()
     {
       return Iterator( *this );
     }
@@ -306,12 +196,12 @@ class Vector
     }
 
     /**
-     * Number of allocated elements.
+     * Size of storage.
      */
     OZ_ALWAYS_INLINE
     int capacity() const
     {
-      return size;
+      return SIZE;
     }
 
     /**
@@ -381,7 +271,7 @@ class Vector
     }
 
     /**
-     * True iff the given value is found in the vector.
+     * True iff the given value is found in the list.
      */
     bool contains( const Elem& e ) const
     {
@@ -409,7 +299,7 @@ class Vector
      */
     void add()
     {
-      ensureCapacity();
+      hard_assert( uint( count ) < uint( SIZE ) );
 
       ++count;
     }
@@ -430,14 +320,14 @@ class Vector
     {
       int newCount = count + arrayCount;
 
-      ensureCapacity( newCount );
+      hard_assert( uint( newCount ) <= uint( SIZE ) );
 
       aCopy<Elem>( data + count, array, arrayCount );
       count = newCount;
     }
 
     /**
-     * Add an element to the end if there is no equal element in the vector.
+     * Add an element to the end if there is no equal element in the list.
      *
      * @return Position of the inserted or the existing equal element.
      */
@@ -447,7 +337,7 @@ class Vector
       int i = aIndex<Elem, Elem>( data, e, count );
 
       if( i < 0 ) {
-        ensureCapacity();
+        hard_assert( uint( count ) < uint( SIZE ) );
 
         data[count] = static_cast<Elem_&&>( e );
         i = count;
@@ -465,8 +355,7 @@ class Vector
     void insert( int i, Elem_&& e )
     {
       hard_assert( uint( i ) <= uint( count ) );
-
-      ensureCapacity();
+      hard_assert( uint( count ) < uint( SIZE ) );
 
       aReverseMove<Elem>( data + i + 1, data + i, count - i );
       data[i] = static_cast<Elem_&&>( e );
@@ -504,7 +393,7 @@ class Vector
     }
 
     /**
-     * Remove the element at the given position from an unordered vector.
+     * Remove the element at the given position from an unordered list.
      *
      * The last element is moved to its place.
      */
@@ -542,7 +431,7 @@ class Vector
     }
 
     /**
-     * Find and remove the first element with the given value from an unordered vector.
+     * Find and remove the first element with the given value from an unordered list.
      *
      * The last element is moved to its place.
      *
@@ -567,7 +456,7 @@ class Vector
     template <typename Elem_ = Elem>
     void pushFirst( Elem_&& e )
     {
-      ensureCapacity();
+      hard_assert( uint( count ) < uint( SIZE ) );
 
       aReverseMove<Elem>( data + 1, data, count );
       data[0] = static_cast<Elem_&&>( e );
@@ -580,7 +469,7 @@ class Vector
     template <typename Elem_ = Elem>
     void pushLast( Elem_&& e )
     {
-      ensureCapacity();
+      hard_assert( uint( count ) < uint( SIZE ) );
 
       data[count] = static_cast<Elem_&&>( e );
       ++count;
@@ -626,58 +515,26 @@ class Vector
     }
 
     /**
-     * Empty the vector.
+     * Empty the list.
      */
     void clear()
     {
+      // Ensure destruction of all elements.
+      for( int i = 0; i < count; ++i ) {
+        data[i].~Elem();
+        new( data + i ) Elem;
+      }
+
       count = 0;
     }
 
     /**
-     * Delete all objects referenced by elements and empty the vector.
+     * Delete all objects referenced by elements and empty the list.
      */
     void free()
     {
       aFree<Elem>( data, count );
       clear();
-    }
-
-    /**
-     * For an empty vector with no allocated storage, allocate capacity for <tt>size_</tt> elements.
-     */
-    void alloc( int size_ )
-    {
-      hard_assert( size == 0 && size_ > 0 );
-
-      data = new Elem[size_];
-      size = size_;
-    }
-
-    /**
-     * Deallocate storage of an empty vector.
-     */
-    void dealloc()
-    {
-      hard_assert( count == 0 );
-
-      delete[] data;
-
-      data = null;
-      size = 0;
-    }
-
-    /**
-     * Trim vector capacity to the least multiple of <tt>GRANULARITY</tt> that can hold the
-     * elements.
-     */
-    void trim()
-    {
-      int newSize = ( ( count - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
-
-      if( newSize < size ) {
-        size = newSize;
-        data = aRealloc<Elem>( data, count, size );
-      }
     }
 
 };

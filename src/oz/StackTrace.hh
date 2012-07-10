@@ -48,6 +48,8 @@ class StackTrace
     int   nFrames;            ///< Number of stack frames.
     void* frames[MAX_FRAMES]; ///< Pointers to stack frames.
 
+  public:
+
     /**
      * Generates array of frame pointers and return it in <tt>StackTrace</tt> struct.
      *

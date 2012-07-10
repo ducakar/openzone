@@ -45,6 +45,8 @@ class AABB
     Point p;   ///< Position of centre.
     Vec3  dim; ///< Extents (dimension halves).
 
+  public:
+
     /**
      * Create uninitialised instance.
      */

@@ -489,8 +489,8 @@ static int ozSelfBindOverlaps( lua_State* l )
     ERROR( "At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
   }
 
-  Vector<Struct*>* structs = null;
-  Vector<Object*>* objects = null;
+  List<Struct*>* structs = null;
+  List<Object*>* objects = null;
 
   hard_assert( collider.mask == Object::SOLID_BIT );
 

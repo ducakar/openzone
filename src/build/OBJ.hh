@@ -63,25 +63,25 @@ class OBJ
 
     struct Face
     {
-      Vector<FaceVertex> vertices;
+      List<FaceVertex> vertices;
     };
 
     struct Part
     {
-      Vector<Face> faces;
+      List<Face> faces;
 
-      String texture;
-      String masks;
-      float  alpha;
+      String     texture;
+      String     masks;
+      float      alpha;
     };
 
-    String           path;
-    String           shader;
-    Vector<Point>    positions;
-    Vector<Vec3>     normals;
-    Vector<TexCoord> texCoords;
-    Vector<Part>     parts;
-    HashString<int>  materialIndices;
+    String          path;
+    String          shader;
+    List<Point>     positions;
+    List<Vec3>      normals;
+    List<TexCoord>  texCoords;
+    List<Part>      parts;
+    HashString<int> materialIndices;
 
     static char* skipSpaces( char* pos );
     static char* readWord( char* pos );

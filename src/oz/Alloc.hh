@@ -61,6 +61,8 @@ class Alloc
     static int    maxCount;  ///< Top number to memory allocations.
     static size_t maxAmount; ///< Top amount of allocated memory.
 
+  public:
+
     /**
      * Singleton.
      */

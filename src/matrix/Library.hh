@@ -71,14 +71,14 @@ class Library
 
   public:
 
-    Vector<Resource> shaders;
-    Vector<Resource> textures;
-    Vector<Resource> sounds;
-    Vector<Resource> caela;
-    Vector<Resource> terrae;
-    Vector<Resource> models;
-    Vector<Resource> nameLists;
-    Vector<Resource> musics;
+    List<Resource> shaders;
+    List<Resource> textures;
+    List<Resource> sounds;
+    List<Resource> caela;
+    List<Resource> terrae;
+    List<Resource> models;
+    List<Resource> nameLists;
+    List<Resource> musics;
 
     int nBSPs;
     int nFragPools;

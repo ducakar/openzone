@@ -56,6 +56,8 @@ class Vec4
     float z; ///< Z component.
     float w; ///< W component.
 
+  public:
+
     /**
      * Create an uninitialised instance.
      */

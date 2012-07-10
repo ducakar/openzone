@@ -63,7 +63,7 @@ class Transform
 
   private:
 
-    SVector<Mat44, 8> stack;
+    SList<Mat44, 8> stack;
 
   public:
 
@@ -169,7 +169,7 @@ class Shader
     Map<String, uint> vertShaders;
     Map<String, uint> fragShaders;
     DArray<Program>   programs;
-    SVector<int, 8>   programStack;
+    SList<int, 8>     programStack;
 
     float             lightingDistance;
     CaelumLight       caelumLight;

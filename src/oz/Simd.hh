@@ -79,183 +79,188 @@ typedef uint uint4 __attribute__(( vector_size( 16 ) )) ;
  *
  * @ingroup oz
  */
-struct Simd
+class Simd
 {
-  union
-  {
-    uint4  u4;   ///< Unsigned integer SIMD vector.
-    uint   u[4]; ///< Unsigned integer component of SIMD vector.
+  public:
 
-    float4 f4;   ///< Float SIMD vector.
-    float  f[4]; ///< Float components of SIMD vector.
-  };
+    union
+    {
+      uint4  u4;   ///< Unsigned integer SIMD vector.
+      uint   u[4]; ///< Unsigned integer component of SIMD vector.
 
-  /**
-   * Create an uninitialised instance.
-   */
-  Simd() = default;
+      float4 f4;   ///< Float SIMD vector.
+      float  f[4]; ///< Float components of SIMD vector.
+    };
 
-  /**
-   * Create from a float SIMD vector.
-   */
-  OZ_ALWAYS_INLINE
-  Simd( float4 f4_ ) :
-    f4( f4_ )
-  {}
+  public:
 
-  /**
-   * Initialise all SIMD components to the given float value.
-   */
-  OZ_ALWAYS_INLINE
-  Simd( float f ) :
-    f4( float4( f, f, f, f ) )
-  {}
+    /**
+     * Create an uninitialised instance.
+     */
+    Simd() = default;
 
-  /**
-   * Create from an uint SIMD vector.
-   */
-  OZ_ALWAYS_INLINE
-  Simd( uint4 u4_ ) :
-    u4( u4_ )
-  {}
+    /**
+     * Create from a float SIMD vector.
+     */
+    OZ_ALWAYS_INLINE
+    Simd( float4 f4_ ) :
+      f4( f4_ )
+    {}
 
-  /**
-   * Initialise all SIMD components to the given unsigned integer value.
-   */
-  OZ_ALWAYS_INLINE
-  Simd( uint u ) :
-    u4( uint4( u, u, u, u ) )
-  {}
+    /**
+     * Initialise all SIMD components to the given float value.
+     */
+    OZ_ALWAYS_INLINE
+    Simd( float f ) :
+      f4( float4( f, f, f, f ) )
+    {}
 
-  /**
-   * Create from <tt>Vec3</tt>.
-   */
-  OZ_ALWAYS_INLINE
-  Simd( const Vec3& v ) :
-    f4( float4( v.x, v.y, v.z, 0.0f ) )
-  {}
+    /**
+     * Create from an uint SIMD vector.
+     */
+    OZ_ALWAYS_INLINE
+    Simd( uint4 u4_ ) :
+      u4( u4_ )
+    {}
 
-  /**
-   * Create from <tt>Point</tt>.
-   */
-  OZ_ALWAYS_INLINE
-  Simd( const Point& p ) :
-    f4( float4( p.x, p.y, p.z, 1.0f ) )
-  {}
+    /**
+     * Initialise all SIMD components to the given unsigned integer value.
+     */
+    OZ_ALWAYS_INLINE
+    Simd( uint u ) :
+      u4( uint4( u, u, u, u ) )
+    {}
 
-  /**
-   * Create from <tt>Plane</tt>.
-   */
-  OZ_ALWAYS_INLINE
-  Simd( const Plane& p ) :
-    f4( float4( p.n.x, p.n.y, p.n.z, p.d ) )
-  {}
+    /**
+     * Create from <tt>Vec3</tt>.
+     */
+    OZ_ALWAYS_INLINE
+    Simd( const Vec3& v ) :
+      f4( float4( v.x, v.y, v.z, 0.0f ) )
+    {}
 
-  /**
-   * Create from <tt>Vec4</tt>.
-   */
-  OZ_ALWAYS_INLINE
-  Simd( const Vec4& v ) :
-    f4( float4( v.x, v.y, v.z, v.w ) )
-  {}
+    /**
+     * Create from <tt>Point</tt>.
+     */
+    OZ_ALWAYS_INLINE
+    Simd( const Point& p ) :
+      f4( float4( p.x, p.y, p.z, 1.0f ) )
+    {}
 
-  /**
-   * Create from <tt>Quat</tt>.
-   */
-  OZ_ALWAYS_INLINE
-  Simd( const Quat& q ) :
-    f4( float4( q.x, q.y, q.z, q.w ) )
-  {}
+    /**
+     * Create from <tt>Plane</tt>.
+     */
+    OZ_ALWAYS_INLINE
+    Simd( const Plane& p ) :
+      f4( float4( p.n.x, p.n.y, p.n.z, p.d ) )
+    {}
 
-  /**
-   * Equality (compared per floats).
-   */
-  OZ_ALWAYS_INLINE
-  bool operator == ( const Simd& s ) const
-  {
-    return f[0] == s.f[0] && f[1] == s.f[1] && f[2] == s.f[2] && f[3] == s.f[3];
-  }
+    /**
+     * Create from <tt>Vec4</tt>.
+     */
+    OZ_ALWAYS_INLINE
+    Simd( const Vec4& v ) :
+      f4( float4( v.x, v.y, v.z, v.w ) )
+    {}
 
-  /**
-   * Inequality (compared per floats).
-   */
-  OZ_ALWAYS_INLINE
-  bool operator != ( const Simd& s ) const
-  {
-    return f[0] != s.f[0] && f[1] != s.f[1] && f[2] != s.f[2] && f[3] != s.f[3];
-  }
+    /**
+     * Create from <tt>Quat</tt>.
+     */
+    OZ_ALWAYS_INLINE
+    Simd( const Quat& q ) :
+      f4( float4( q.x, q.y, q.z, q.w ) )
+    {}
 
-  /**
-   * Absolute value.
-   */
-  OZ_ALWAYS_INLINE
-  Simd abs() const
-  {
-    return Simd( u4 & uint4( 0x7fffffff, 0x7fffffff, 0x7fffffff, 0x7fffffff ) );
-  }
+    /**
+     * Equality (compared per floats).
+     */
+    OZ_ALWAYS_INLINE
+    bool operator == ( const Simd& s ) const
+    {
+      return f[0] == s.f[0] && f[1] == s.f[1] && f[2] == s.f[2] && f[3] == s.f[3];
+    }
 
-  /**
-   * Construct <tt>Vec3</tt> from SIMD components.
-   */
-  OZ_ALWAYS_INLINE
-  Vec3 vec3() const
-  {
-    return Vec3( f[0], f[1], f[2] );
-  }
+    /**
+     * Inequality (compared per floats).
+     */
+    OZ_ALWAYS_INLINE
+    bool operator != ( const Simd& s ) const
+    {
+      return f[0] != s.f[0] && f[1] != s.f[1] && f[2] != s.f[2] && f[3] != s.f[3];
+    }
 
-  /**
-   * Construct <tt>Point</tt> from SIMD components.
-   */
-  OZ_ALWAYS_INLINE
-  Point point() const
-  {
-    return Point( f[0], f[1], f[2] );
-  }
+    /**
+     * Absolute value.
+     */
+    OZ_ALWAYS_INLINE
+    Simd abs() const
+    {
+      return Simd( u4 & uint4( 0x7fffffff, 0x7fffffff, 0x7fffffff, 0x7fffffff ) );
+    }
 
-  /**
-   * Construct <tt>Plane</tt> from SIMD components.
-   */
-  OZ_ALWAYS_INLINE
-  Plane plane() const
-  {
-    return Plane( f[0], f[1], f[2], f[3] );
-  }
+    /**
+     * Construct <tt>Vec3</tt> from SIMD components.
+     */
+    OZ_ALWAYS_INLINE
+    Vec3 vec3() const
+    {
+      return Vec3( f[0], f[1], f[2] );
+    }
 
-  /**
-   * Construct <tt>Vec4</tt> from SIMD components.
-   */
-  OZ_ALWAYS_INLINE
-  Vec4 vec4() const
-  {
-    return Vec4( f[0], f[1], f[2], f[3] );
-  }
+    /**
+     * Construct <tt>Point</tt> from SIMD components.
+     */
+    OZ_ALWAYS_INLINE
+    Point point() const
+    {
+      return Point( f[0], f[1], f[2] );
+    }
 
-  /**
-   * Construct <tt>Quat</tt> from SIMD components.
-   */
-  OZ_ALWAYS_INLINE
-  Quat quat() const
-  {
-    return Quat( f[0], f[1], f[2], f[3] );
-  }
+    /**
+     * Construct <tt>Plane</tt> from SIMD components.
+     */
+    OZ_ALWAYS_INLINE
+    Plane plane() const
+    {
+      return Plane( f[0], f[1], f[2], f[3] );
+    }
 
-  /**
-   * Dot product (only first three components).
-   */
-  OZ_ALWAYS_INLINE
-  float dot3( const Simd& s ) const
-  {
-    return f[0]*s.f[0] + f[1]*s.f[1] + f[2]*s.f[2];
-  }
+    /**
+     * Construct <tt>Vec4</tt> from SIMD components.
+     */
+    OZ_ALWAYS_INLINE
+    Vec4 vec4() const
+    {
+      return Vec4( f[0], f[1], f[2], f[3] );
+    }
 
-  /**
-   * Dot product (all four components).
-   */
-  OZ_ALWAYS_INLINE
-  float dot4( const Simd& s ) const
-  {
-    return f[0]*s.f[0] + f[1]*s.f[1] + f[2]*s.f[2] + f[3]*s.f[3];
-  }
+    /**
+     * Construct <tt>Quat</tt> from SIMD components.
+     */
+    OZ_ALWAYS_INLINE
+    Quat quat() const
+    {
+      return Quat( f[0], f[1], f[2], f[3] );
+    }
+
+    /**
+     * Dot product (only first three components).
+     */
+    OZ_ALWAYS_INLINE
+    float dot3( const Simd& s ) const
+    {
+      return f[0]*s.f[0] + f[1]*s.f[1] + f[2]*s.f[2];
+    }
+
+    /**
+     * Dot product (all four components).
+     */
+    OZ_ALWAYS_INLINE
+    float dot4( const Simd& s ) const
+    {
+      return f[0]*s.f[0] + f[1]*s.f[1] + f[2]*s.f[2] + f[3]*s.f[3];
+    }
+
 };
 
 }
