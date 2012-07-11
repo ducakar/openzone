@@ -56,7 +56,6 @@
 # undef far
 #endif
 
-#define SDL_NO_COMPAT
 #include <SDL.h>
 
 #endif // OZ_DOXYGEN

@@ -36,20 +36,27 @@ namespace client
 
 class Window
 {
+  friend class Input;
+
   private:
 
-#ifdef __native_client__
+#if defined( __native_client__ )
 
-    pp::Graphics3D* context;
     Semaphore       flushSemaphore;
+    pp::Graphics3D* context;
 
     static void flushCompleteCallback( void* data, int );
 
     void createContext();
 
-#else
+#elif SDL_MAJOR_VERSION < 2
 
     SDL_Surface*    descriptor;
+
+#else
+
+    SDL_Window*     descriptor;
+    SDL_GLContext   context;
 
 #endif
 
@@ -60,16 +67,23 @@ class Window
 
   public:
 
+    int  display;
     int  width;
     int  height;
     uint flags;
     bool isFull;
 
+    bool hasFocus;
+    bool hasGrab;
+
     Window();
 
-    void resize();
-    void toggleFull();
+    void warpMouse();
     void swapBuffers();
+
+    void minimise();
+    void resize();
+    void setFullscreen( bool fullscreen );
 
     void init();
     void free();

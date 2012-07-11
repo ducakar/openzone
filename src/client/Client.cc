@@ -39,6 +39,7 @@
 #include "client/NaClUpdater.hh"
 #include "client/Window.hh"
 #include "client/Input.hh"
+#include "client/Network.hh"
 
 #include <unistd.h>
 
@@ -82,8 +83,13 @@ void Client::shutdown()
   if( initFlags & INIT_LINGUA ) {
     lingua.free();
   }
-  if( initFlags & INIT_WINDOW ) {
+  if( initFlags & INIT_NETWORK ) {
+    network.free();
+  }
+  if( initFlags & INIT_INPUT ) {
     input.free();
+  }
+  if( initFlags & INIT_WINDOW ) {
     window.free();
   }
 
@@ -95,8 +101,6 @@ void Client::shutdown()
 
       config.exclude( "dir.config" );
       config.exclude( "dir.local" );
-      // TODO
-//       config.removeUnused();
 
 #ifdef _WIN32
       config.save( &configFile, "\r\n" );
@@ -150,11 +154,11 @@ int Client::main( int argc, char** argv )
   initFlags = 0;
 
   String invocationName = File( argv[0] ).baseName();
-
-  bool   doAutoload    = false;
-  bool   isBenchmark   = false;
-  float  benchmarkTime = 0.0f;
+  String prefix;
   String mission;
+  bool   doAutoload     = false;
+  bool   isBenchmark    = false;
+  float  benchmarkTime  = 0.0f;
 
   optind = 1;
   int opt;
@@ -181,12 +185,11 @@ int Client::main( int argc, char** argv )
           return EXIT_FAILURE;
         }
 
-        config.add( "seed", "42" );
         isBenchmark = true;
         break;
       }
       case 'p': {
-        config.add( "dir.prefix", optarg );
+        prefix = optarg;
         break;
       }
       default: {
@@ -197,8 +200,6 @@ int Client::main( int argc, char** argv )
   }
 
 #if defined( __native_client__ )
-
-  mission = "test";
 
   File::init( File::TEMPORARY, 10*1024*1024 );
 
@@ -340,8 +341,17 @@ int Client::main( int argc, char** argv )
   initFlags |= INIT_WINDOW;
 
   input.init();
+  initFlags |= INIT_INPUT;
 
-  String prefix  = config.include( "dir.prefix", OZ_INSTALL_PREFIX ).asString();
+  network.init();
+  initFlags |= INIT_NETWORK;
+
+  config["dir.prefix"];
+
+  if( prefix.isEmpty() ) {
+    prefix = config.include( "dir.prefix", OZ_INSTALL_PREFIX ).asString();
+  }
+
   String dataDir = prefix + "/share/" OZ_APPLICATION_NAME;
 
 #ifdef __native_client__
@@ -412,17 +422,25 @@ int Client::main( int argc, char** argv )
   Log::println( "}" );
 
   config.include( "seed", "TIME" );
+  int seed;
 
-  if( config["seed"].type() == JSON::STRING && config["seed"].asString().equals( "TIME" ) ) {
-    int seed = int( Time::uclock() );
-    Math::seed( seed );
-    Log::println( "Random generator seed set to the current time: %u", seed );
+  if( config["seed"].type() == JSON::STRING ) {
+    if( !config["seed"].asString().equals( "TIME" ) ) {
+      throw Exception( "Configuration variable 'sees' must be either \"TIME\" or an integer" );
+    }
+
+    seed = int( Time::uclock() );
   }
   else {
-    int seed = config["seed"].asInt();
-    Math::seed( seed );
-    Log::println( "Random generator seed set to: %d", seed );
+    seed = config["seed"].asInt();
   }
+
+  if( isBenchmark ) {
+    seed = 42;
+  }
+
+  Math::seed( seed );
+  Log::println( "Random generator seed set to: %d", seed );
 
 #ifdef __native_client__
 
@@ -507,7 +525,7 @@ int Client::main( int argc, char** argv )
 
   stage->load();
 
-  input.reset();
+  window.warpMouse();
 
   SDL_Event event;
 
@@ -534,16 +552,13 @@ int Client::main( int argc, char** argv )
 
     while( SDL_PollEvent( &event ) != 0 ) {
       switch( event.type ) {
-        case SDL_MOUSEBUTTONUP:
-        case SDL_MOUSEBUTTONDOWN: {
-          input.readEvent( &event );
-          break;
-        }
         case SDL_KEYDOWN: {
-          input.readEvent( &event );
-
 #ifndef __native_client__
+# if SDL_MAJOR_VERSION < 2
           const SDL_keysym& keysym = event.key.keysym;
+# else
+          const SDL_Keysym& keysym = event.key.keysym;
+# endif
 
           if( keysym.sym == SDLK_F9 ) {
             if( keysym.mod == 0 ) {
@@ -552,32 +567,41 @@ int Client::main( int argc, char** argv )
           }
           else if( keysym.sym == SDLK_F11 ) {
             if( keysym.mod == 0 ) {
-              window.toggleFull();
+              window.setFullscreen( !window.isFull );
             }
             else if( keysym.mod & KMOD_CTRL ) {
-              input.isLocked = !input.isLocked;
+              window.hasGrab = !window.hasGrab;
 
-              SDL_ShowCursor( !input.isLocked );
+              SDL_ShowCursor( !window.hasGrab );
             }
           }
           else if( keysym.sym == SDLK_F12 ) {
             if( keysym.mod == 0 ) {
-              SDL_WM_IconifyWindow();
+              window.minimise();
             }
             else if( keysym.mod & KMOD_CTRL ) {
               isAlive = false;
             }
           }
 #endif
+        }
+#if SDL_MAJOR_VERSION >= 2
+        case SDL_MOUSEWHEEL:
+#endif
+        case SDL_MOUSEBUTTONUP:
+        case SDL_MOUSEBUTTONDOWN: {
+          input.readEvent( &event );
           break;
         }
+#if defined( __native_client__ )
+#elif SDL_MAJOR_VERSION < 2
         case SDL_ACTIVEEVENT: {
           if( event.active.state & SDL_APPMOUSEFOCUS ) {
-            input.hasFocus = event.active.gain != 0;
+            window.hasFocus = event.active.gain != 0;
           }
           if( event.active.state & SDL_APPACTIVE ) {
             if( event.active.gain ) {
-              input.reset();
+              window.warpMouse();
 
               sound.resume();
               isActive = true;
@@ -595,6 +619,37 @@ int Client::main( int argc, char** argv )
           window.resize();
           break;
         }
+#else
+        case SDL_WINDOWEVENT: {
+          switch( event.window.event ) {
+            case SDL_WINDOWEVENT_ENTER: {
+              window.hasFocus = true;
+              break;
+            }
+            case SDL_WINDOWEVENT_LEAVE: {
+              window.hasFocus = false;
+              break;
+            }
+            case SDL_WINDOWEVENT_RESTORED: {
+              window.warpMouse();
+
+              sound.resume();
+              isActive = true;
+              break;
+            }
+            case SDL_WINDOWEVENT_MINIMIZED: {
+              sound.suspend();
+              isActive = false;
+              break;
+            }
+            case SDL_WINDOWEVENT_CLOSE: {
+              isAlive = false;
+              break;
+            }
+          }
+          break;
+        }
+#endif
         case SDL_QUIT: {
           isAlive = false;
           break;

@@ -147,16 +147,16 @@ void Camera::prepare()
   relH = clamp( relH, -ROT_LIMIT, +ROT_LIMIT );
   relV = clamp( relV, -ROT_LIMIT, +ROT_LIMIT );
 
-  if( input.keys[Input::KEY_KP1] | input.keys[Input::KEY_KP4] | input.keys[Input::KEY_KP7] ) {
+  if( input.keys[Input::KEY_DIR_1] | input.keys[Input::KEY_DIR_4] | input.keys[Input::KEY_DIR_7] ) {
     relH += input.keySensH;
   }
-  if( input.keys[Input::KEY_KP3] | input.keys[Input::KEY_KP6] | input.keys[Input::KEY_KP9] ) {
+  if( input.keys[Input::KEY_DIR_3] | input.keys[Input::KEY_DIR_6] | input.keys[Input::KEY_DIR_9] ) {
     relH -= input.keySensH;
   }
-  if( input.keys[Input::KEY_KP1] | input.keys[Input::KEY_KP2] | input.keys[Input::KEY_KP3] ) {
+  if( input.keys[Input::KEY_DIR_1] | input.keys[Input::KEY_DIR_2] | input.keys[Input::KEY_DIR_3] ) {
     relV -= input.keySensV;
   }
-  if( input.keys[Input::KEY_KP7] | input.keys[Input::KEY_KP8] | input.keys[Input::KEY_KP9] ) {
+  if( input.keys[Input::KEY_DIR_7] | input.keys[Input::KEY_DIR_8] | input.keys[Input::KEY_DIR_9] ) {
     relV += input.keySensV;
   }
 

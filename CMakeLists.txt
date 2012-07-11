@@ -8,16 +8,15 @@ project( openzone C CXX )
 
 set( OZ_VERSION "0.2.90" CACHE STRING "" FORCE )
 
-option( OZ_SHARED_LIBOZ "Build liboz as a shared library." OFF )
-option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory leaks." OFF )
+if( NOT NACL )
+  option( OZ_SHARED_LIBOZ "Build liboz as a shared library." OFF )
+  option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory leaks." OFF )
 
-set( OZ_APPLICATION_NAME "openzone" )
-set( OZ_APPLICATION_TITLE "OpenZone" )
+  option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." OFF )
+  option( OZ_NONFREE "Enable support for MP3 and AAC." OFF )
 
-option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." ON )
-option( OZ_NONFREE "Enable support for MP3 and AAC." OFF )
-
-option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
+  option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
+endif()
 
 #
 # Internal configuration
@@ -39,21 +38,15 @@ endif()
 
 if( NACL )
   set( CMAKE_SYSTEM_NAME "NaCl" )
-
-  if( OZ_SHARED_LIBOZ )
-    message( FATAL_ERROR "Shared libraries are not supported on NaCl/newlib." )
-  endif()
-  if( NOT OZ_GL_ES )
-    message( FATAL_ERROR "Only OpenGL ES is supported on NaCl." )
-  endif()
-  if( OZ_NONFREE )
-    message( FATAL_ERROR "Non-free music formats are not supported on NaCl." )
-  endif()
+  set( OZ_GL_ES ON )
 endif()
 
 if( WIN32 AND NOT CMAKE_INSTALL_PREFIX )
   set( CMAKE_INSTALL_PREFIX "../share/openzone" CACHE PATH "Path to data files" FORCE )
 endif()
+
+set( OZ_APPLICATION_NAME "openzone" )
+set( OZ_APPLICATION_TITLE "OpenZone" )
 
 set( OZ_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" CACHE STRING "" FORCE )
 
@@ -98,7 +91,7 @@ elseif( WIN32 )
 
   find_package( Lua51 REQUIRED )
   find_package( SDL REQUIRED )
-  find_package( SDL_net REQUIRED )
+#   find_package( SDL_net REQUIRED )
   find_package( SDL_ttf REQUIRED )
   find_package( OpenGL REQUIRED )
   find_package( OpenAL REQUIRED )
@@ -115,7 +108,7 @@ else()
 
   find_package( Lua51 REQUIRED )
   find_package( SDL REQUIRED )
-  find_package( SDL_net REQUIRED )
+#   find_package( SDL_net REQUIRED )
   find_package( SDL_ttf REQUIRED )
   find_package( OpenGL REQUIRED )
   find_package( OpenAL REQUIRED )

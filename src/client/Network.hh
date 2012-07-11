@@ -32,12 +32,20 @@ namespace client
 
 class Network
 {
+  private:
+
+    String host;
+    ushort port;
+
   public:
 
-    static bool connect();
-    static void disconnect();
+    bool connect();
+    void disconnect();
 
-    static void update();
+    void update();
+
+    void init();
+    void free();
 
 };
 
