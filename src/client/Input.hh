@@ -49,14 +49,14 @@ class Input
       KEY_UI_DRAG,
       KEY_UI_TOGGLE,
 
-      KEY_KP1,
-      KEY_KP2,
-      KEY_KP3,
-      KEY_KP4,
-      KEY_KP6,
-      KEY_KP7,
-      KEY_KP8,
-      KEY_KP9,
+      KEY_DIR_1,
+      KEY_DIR_2,
+      KEY_DIR_3,
+      KEY_DIR_4,
+      KEY_DIR_6,
+      KEY_DIR_7,
+      KEY_DIR_8,
+      KEY_DIR_9,
 
       KEY_NV_TOGGLE,
       KEY_BINOCULARS_TOGGLE,
@@ -90,7 +90,7 @@ class Input
       KEY_GESTURE_FLIP,
 
       KEY_SWITCH_TO_UNIT,
-      KEY_CIRCLE_UNITS,
+      KEY_CYCLE_UNITS,
 
       KEY_CHEAT_SKY_FORWARD,
       KEY_CHEAT_SKY_BACKWARD,
@@ -105,7 +105,10 @@ class Input
 
   private:
 
-    static const char* KEY_NAMES[KEY_MAX];
+    static const char* const KEY_NAMES[KEY_MAX];
+    static const char* const BACKEND;
+
+#if SDL_MAJOR_VERSION < 2
 
     SDLKey modifier0;
     SDLKey modifier1;
@@ -114,7 +117,20 @@ class Input
     ubyte  sdlKeys[SDLK_LAST];
     ubyte  sdlOldKeys[SDLK_LAST];
 
+#else
+
+    SDL_Scancode modifier0;
+    SDL_Scancode modifier1;
+
+    ubyte* sdlCurrKeys;
+    ubyte  sdlKeys[SDL_NUM_SCANCODES];
+    ubyte  sdlOldKeys[SDL_NUM_SCANCODES];
+
+#endif
+
     int    keyMap[KEY_MAX][2];
+
+    bool   configExists;
 
   public:
 
@@ -132,9 +148,6 @@ class Input
     bool   middleClick;
     bool   wheelUp;
     bool   wheelDown;
-
-    bool   hasFocus;
-    bool   isLocked;
 
     bool   keys[KEY_MAX];
     bool   oldKeys[KEY_MAX];
@@ -154,7 +167,6 @@ class Input
 
     void readEvent( SDL_Event* event );
 
-    void reset();
     void prepare();
     void update();
 

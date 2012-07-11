@@ -35,7 +35,7 @@ namespace client
 
 Input input;
 
-const char* Input::KEY_NAMES[] = {
+const char* const Input::KEY_NAMES[] = {
   "None",
 
   "Drag UI windows",
@@ -82,7 +82,7 @@ const char* Input::KEY_NAMES[] = {
   "'Flip out' gesture",
 
   "Switch to selected unit",
-  "Circle units",
+  "Cycle switchable units",
 
   "Fast forward sky (cheat)",
   "Fast backward sky (cheat)",
@@ -94,31 +94,39 @@ const char* Input::KEY_NAMES[] = {
   "Quit"
 };
 
+#if SDL_MAJOR_VERSION < 2
+const char* const Input::BACKEND = "SDL1";
+#else
+const char* const Input::BACKEND = "SDL2";
+#endif
+
 void Input::loadDefaultKeyMap()
 {
-  modifier0 = SDLK_LALT;
-  modifier1 = SDLK_RALT;
+#if SDL_MAJOR_VERSION < 2
+
+  modifier0                         = SDLK_LALT;
+  modifier1                         = SDLK_RALT;
 
   keyMap[KEY_UI_DRAG][0]            = MOD_MASK    | SDLK_LALT;
   keyMap[KEY_UI_DRAG][1]            = MOD_MASK    | SDLK_RALT;
   keyMap[KEY_UI_TOGGLE][0]          = MOD_MASK    | SDLK_TAB;
 
-  keyMap[KEY_KP1][0]                = MOD_MASK    | SDLK_KP1;
-  keyMap[KEY_KP1][1]                = MOD_MASK    | SDLK_END;
-  keyMap[KEY_KP2][0]                = MOD_MASK    | SDLK_KP2;
-  keyMap[KEY_KP2][1]                = MOD_MASK    | SDLK_DOWN;
-  keyMap[KEY_KP3][0]                = MOD_MASK    | SDLK_KP3;
-  keyMap[KEY_KP3][1]                = MOD_MASK    | SDLK_PAGEDOWN;
-  keyMap[KEY_KP4][0]                = MOD_MASK    | SDLK_KP4;
-  keyMap[KEY_KP4][1]                = MOD_MASK    | SDLK_LEFT;
-  keyMap[KEY_KP6][0]                = MOD_MASK    | SDLK_KP6;
-  keyMap[KEY_KP6][1]                = MOD_MASK    | SDLK_RIGHT;
-  keyMap[KEY_KP7][0]                = MOD_MASK    | SDLK_KP7;
-  keyMap[KEY_KP7][1]                = MOD_MASK    | SDLK_HOME;
-  keyMap[KEY_KP8][0]                = MOD_MASK    | SDLK_KP8;
-  keyMap[KEY_KP8][1]                = MOD_MASK    | SDLK_UP;
-  keyMap[KEY_KP9][0]                = MOD_MASK    | SDLK_KP9;
-  keyMap[KEY_KP9][1]                = MOD_MASK    | SDLK_PAGEUP;
+  keyMap[KEY_DIR_1][0]              = MOD_MASK    | SDLK_KP1;
+  keyMap[KEY_DIR_1][1]              = MOD_MASK    | SDLK_END;
+  keyMap[KEY_DIR_2][0]              = MOD_MASK    | SDLK_KP2;
+  keyMap[KEY_DIR_2][1]              = MOD_MASK    | SDLK_DOWN;
+  keyMap[KEY_DIR_3][0]              = MOD_MASK    | SDLK_KP3;
+  keyMap[KEY_DIR_3][1]              = MOD_MASK    | SDLK_PAGEDOWN;
+  keyMap[KEY_DIR_4][0]              = MOD_MASK    | SDLK_KP4;
+  keyMap[KEY_DIR_4][1]              = MOD_MASK    | SDLK_LEFT;
+  keyMap[KEY_DIR_6][0]              = MOD_MASK    | SDLK_KP6;
+  keyMap[KEY_DIR_6][1]              = MOD_MASK    | SDLK_RIGHT;
+  keyMap[KEY_DIR_7][0]              = MOD_MASK    | SDLK_KP7;
+  keyMap[KEY_DIR_7][1]              = MOD_MASK    | SDLK_HOME;
+  keyMap[KEY_DIR_8][0]              = MOD_MASK    | SDLK_KP8;
+  keyMap[KEY_DIR_8][1]              = MOD_MASK    | SDLK_UP;
+  keyMap[KEY_DIR_9][0]              = MOD_MASK    | SDLK_KP9;
+  keyMap[KEY_DIR_9][1]              = MOD_MASK    | SDLK_PAGEUP;
 
   keyMap[KEY_NV_TOGGLE][0]          = MOD_OFF_BIT | SDLK_n;
   keyMap[KEY_BINOCULARS_TOGGLE][0]  = MOD_OFF_BIT | SDLK_b;
@@ -152,7 +160,7 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_GESTURE_FLIP][0]       = MOD_OFF_BIT | SDLK_k;
 
   keyMap[KEY_SWITCH_TO_UNIT][0]     = MOD_OFF_BIT | SDLK_i;
-  keyMap[KEY_CIRCLE_UNITS][0]       = MOD_OFF_BIT | SDLK_y;
+  keyMap[KEY_CYCLE_UNITS][0]        = MOD_OFF_BIT | SDLK_y;
 
   keyMap[KEY_CHEAT_SKY_FORWARD][0]  = MOD_OFF_BIT | SDLK_p;
   keyMap[KEY_CHEAT_SKY_BACKWARD][0] = MOD_OFF_BIT | SDLK_o;
@@ -162,10 +170,83 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_AUTOLOAD][0]           = MOD_MASK    | SDLK_F8;
   keyMap[KEY_QUIT][0]               = MOD_MASK    | SDLK_F10;
   keyMap[KEY_QUIT][1]               = MOD_MASK    | SDLK_ESCAPE;
+
+#else
+
+  modifier0                         = SDL_SCANCODE_LALT;
+  modifier1                         = SDL_SCANCODE_RALT;
+
+  keyMap[KEY_UI_DRAG][0]            = MOD_MASK    | SDL_SCANCODE_LALT;
+  keyMap[KEY_UI_DRAG][1]            = MOD_MASK    | SDL_SCANCODE_RALT;
+  keyMap[KEY_UI_TOGGLE][0]          = MOD_MASK    | SDL_SCANCODE_TAB;
+
+  keyMap[KEY_DIR_1][0]              = MOD_MASK    | SDL_SCANCODE_KP_1;
+  keyMap[KEY_DIR_1][1]              = MOD_MASK    | SDL_SCANCODE_END;
+  keyMap[KEY_DIR_2][0]              = MOD_MASK    | SDL_SCANCODE_KP_2;
+  keyMap[KEY_DIR_2][1]              = MOD_MASK    | SDL_SCANCODE_DOWN;
+  keyMap[KEY_DIR_3][0]              = MOD_MASK    | SDL_SCANCODE_KP_3;
+  keyMap[KEY_DIR_3][1]              = MOD_MASK    | SDL_SCANCODE_PAGEDOWN;
+  keyMap[KEY_DIR_4][0]              = MOD_MASK    | SDL_SCANCODE_KP_4;
+  keyMap[KEY_DIR_4][1]              = MOD_MASK    | SDL_SCANCODE_LEFT;
+  keyMap[KEY_DIR_6][0]              = MOD_MASK    | SDL_SCANCODE_KP_6;
+  keyMap[KEY_DIR_6][1]              = MOD_MASK    | SDL_SCANCODE_RIGHT;
+  keyMap[KEY_DIR_7][0]              = MOD_MASK    | SDL_SCANCODE_KP_7;
+  keyMap[KEY_DIR_7][1]              = MOD_MASK    | SDL_SCANCODE_HOME;
+  keyMap[KEY_DIR_8][0]              = MOD_MASK    | SDL_SCANCODE_KP_8;
+  keyMap[KEY_DIR_8][1]              = MOD_MASK    | SDL_SCANCODE_UP;
+  keyMap[KEY_DIR_9][0]              = MOD_MASK    | SDL_SCANCODE_KP_9;
+  keyMap[KEY_DIR_9][1]              = MOD_MASK    | SDL_SCANCODE_PAGEUP;
+
+  keyMap[KEY_NV_TOGGLE][0]          = MOD_OFF_BIT | SDL_SCANCODE_N;
+  keyMap[KEY_BINOCULARS_TOGGLE][0]  = MOD_OFF_BIT | SDL_SCANCODE_B;
+  keyMap[KEY_MAP_TOGGLE][0]         = MOD_OFF_BIT | SDL_SCANCODE_M;
+
+  keyMap[KEY_CAMERA_TOGGLE][0]      = MOD_MASK    | SDL_SCANCODE_KP_ENTER;
+  keyMap[KEY_CAMERA_TOGGLE][1]      = MOD_MASK    | SDL_SCANCODE_RETURN;
+  keyMap[KEY_FREELOOK_TOGGLE][0]    = MOD_MASK    | SDL_SCANCODE_KP_MULTIPLY;
+
+  keyMap[KEY_TURN_LEFT][0]          = MOD_MASK    | SDL_SCANCODE_Q;
+  keyMap[KEY_TURN_RIGHT][0]         = MOD_MASK    | SDL_SCANCODE_E;
+  keyMap[KEY_MOVE_RIGHT][0]         = MOD_MASK    | SDL_SCANCODE_D;
+  keyMap[KEY_MOVE_LEFT][0]          = MOD_MASK    | SDL_SCANCODE_A;
+  keyMap[KEY_MOVE_FORWARD][0]       = MOD_MASK    | SDL_SCANCODE_W;
+  keyMap[KEY_MOVE_BACKWARD][0]      = MOD_MASK    | SDL_SCANCODE_S;
+  keyMap[KEY_MOVE_UP][0]            = MOD_MASK    | SDL_SCANCODE_SPACE;
+  keyMap[KEY_MOVE_DOWN][0]          = MOD_MASK    | SDL_SCANCODE_LCTRL;
+  keyMap[KEY_MOVE_DOWN][1]          = MOD_MASK    | SDL_SCANCODE_C;
+  keyMap[KEY_SPEED_TOGGLE][0]       = MOD_MASK    | SDL_SCANCODE_LSHIFT;
+
+  keyMap[KEY_CROUCH_TOGGLE][0]      = MOD_MASK    | SDL_SCANCODE_LCTRL;
+  keyMap[KEY_JUMP][0]               = MOD_MASK    | SDL_SCANCODE_SPACE;
+  keyMap[KEY_EXIT][0]               = MOD_OFF_BIT | SDL_SCANCODE_X;
+  keyMap[KEY_EJECT][0]              = MOD_ON_BIT  | SDL_SCANCODE_X;
+  keyMap[KEY_SUICIDE][0]            = MOD_ON_BIT  | SDL_SCANCODE_K;
+
+  keyMap[KEY_GESTURE_POINT][0]      = MOD_OFF_BIT | SDL_SCANCODE_F;
+  keyMap[KEY_GESTURE_BACK][0]       = MOD_OFF_BIT | SDL_SCANCODE_G;
+  keyMap[KEY_GESTURE_SALUTE][0]     = MOD_OFF_BIT | SDL_SCANCODE_H;
+  keyMap[KEY_GESTURE_WAVE][0]       = MOD_OFF_BIT | SDL_SCANCODE_J;
+  keyMap[KEY_GESTURE_FLIP][0]       = MOD_OFF_BIT | SDL_SCANCODE_K;
+
+  keyMap[KEY_SWITCH_TO_UNIT][0]     = MOD_OFF_BIT | SDL_SCANCODE_I;
+  keyMap[KEY_CYCLE_UNITS][0]        = MOD_OFF_BIT | SDL_SCANCODE_Y;
+
+  keyMap[KEY_CHEAT_SKY_FORWARD][0]  = MOD_OFF_BIT | SDL_SCANCODE_P;
+  keyMap[KEY_CHEAT_SKY_BACKWARD][0] = MOD_OFF_BIT | SDL_SCANCODE_O;
+
+  keyMap[KEY_QUICKSAVE][0]          = MOD_MASK    | SDL_SCANCODE_F5;
+  keyMap[KEY_QUICKLOAD][0]          = MOD_MASK    | SDL_SCANCODE_F7;
+  keyMap[KEY_AUTOLOAD][0]           = MOD_MASK    | SDL_SCANCODE_F8;
+  keyMap[KEY_QUIT][0]               = MOD_MASK    | SDL_SCANCODE_F10;
+  keyMap[KEY_QUIT][1]               = MOD_MASK    | SDL_SCANCODE_ESCAPE;
+
+#endif
 }
 
 void Input::loadKeyMap( const JSON& keyConfig )
 {
+#if SDL_MAJOR_VERSION < 2
+
   HashString<SDLKey, 512> sdlKeyNames;
 
   for( int i = 0; i < SDLK_LAST; ++i ) {
@@ -173,6 +254,19 @@ void Input::loadKeyMap( const JSON& keyConfig )
 
     sdlKeyNames.add( name, SDLKey( i ) );
   }
+
+  const SDLKey* pModifier0 = sdlKeyNames.find( keyConfig["modifier0"].get( "" ) );
+  const SDLKey* pModifier1 = sdlKeyNames.find( keyConfig["modifier1"].get( "" ) );
+
+  modifier0 = pModifier0 == null ? SDLK_UNKNOWN : *pModifier0;
+  modifier1 = pModifier1 == null ? SDLK_UNKNOWN : *pModifier1;
+
+#else
+
+  modifier0 = SDL_GetScancodeFromName( keyConfig["modifier0"].get( "" ) );
+  modifier1 = SDL_GetScancodeFromName( keyConfig["modifier1"].get( "" ) );
+
+#endif
 
   for( int i = KEY_NONE + 1; i < KEY_MAX; ++i ) {
     const JSON& keyBindings = keyConfig[ KEY_NAMES[i] ];
@@ -190,15 +284,25 @@ void Input::loadKeyMap( const JSON& keyConfig )
         throw Exception( "Empty key description string for '%s'", KEY_NAMES[i] );
       }
 
-      const SDLKey* sdlKey = sdlKeyNames.find( &keyDesc[1] );
       int mod = keyDesc[0] == '_' ? int( MOD_OFF_BIT ) :
                 keyDesc[0] == '!' ? int( MOD_ON_BIT ) : int( MOD_MASK );
 
+#if SDL_MAJOR_VERSION < 2
+
+      const SDLKey* sdlKey = sdlKeyNames.find( &keyDesc[1] );
       if( sdlKey == null ) {
         throw Exception( "Cannot resolve SDL key name '%s'", &keyDesc[1] );
       }
 
       keyMap[i][j] = mod | *sdlKey;
+
+#else
+
+      SDL_Scancode sdlKey = SDL_GetScancodeFromName( &keyDesc[1] );
+
+      keyMap[i][j] = mod | sdlKey;
+
+#endif
     }
   }
 }
@@ -208,14 +312,28 @@ JSON Input::keyMapToJSON() const
   JSON keyConfig;
   keyConfig.setObject();
 
+#if SDL_MAJOR_VERSION < 2
+  keyConfig.add( "modifier0", SDL_GetKeyName( modifier0 ) );
+  keyConfig.add( "modifier1", SDL_GetKeyName( modifier1 ) );
+#else
+  keyConfig.add( "modifier0", SDL_GetScancodeName( modifier0 ) );
+  keyConfig.add( "modifier1", SDL_GetScancodeName( modifier1 ) );
+#endif
+
   for( int i = KEY_NONE + 1; i < KEY_MAX; ++i ) {
     JSON& key = keyConfig.addArray( KEY_NAMES[i] );
 
     for( int j = 0; j < 2; ++j ) {
       if( keyMap[i][j] != KEY_NONE ) {
-        String sdlName = SDL_GetKeyName( SDLKey( keyMap[i][j] & ~MOD_MASK ) );
+        int mod  = keyMap[i][j] & MOD_MASK;
+        int code = keyMap[i][j] & ~MOD_MASK ;
 
-        int mod = keyMap[i][j] & MOD_MASK;
+#if SDL_MAJOR_VERSION < 2
+        String sdlName = SDL_GetKeyName( SDLKey( code ) );
+#else
+        String sdlName = SDL_GetScancodeName( SDL_Scancode( code ) );
+#endif
+
         key.add( ( mod == MOD_OFF_BIT ? "_" : mod == MOD_ON_BIT ? "!" : "&" ) + sdlName );
       }
     }
@@ -247,12 +365,17 @@ void Input::readEvent( SDL_Event* event )
     }
 #if SDL_MAJOR_VERSION >= 2
     case SDL_MOUSEWHEEL: {
-      mouseW -= event->wheel.y;
+      mouseZ += event->wheel.x;
+      mouseW += event->wheel.y;
       break;
     }
 #endif
     case SDL_KEYDOWN: {
+#if SDL_MAJOR_VERSION < 2
       sdlKeys[event->key.keysym.sym] |= SDL_PRESSED;
+#else
+      sdlKeys[event->key.keysym.scancode] |= SDL_PRESSED;
+#endif
       break;
     }
     default: {
@@ -260,29 +383,6 @@ void Input::readEvent( SDL_Event* event )
       break;
     }
   }
-}
-
-void Input::reset()
-{
-#ifdef __native_client__
-
-  NaCl::moveX = 0;
-  NaCl::moveY = 0;
-  NaCl::moveZ = 0;
-  NaCl::moveW = 0;
-
-#else
-
-#if SDL_VERSION_MAJOR < 2
-  SDL_WarpMouse( ushort( window.width / 2 ), ushort( window.height / 2 ) );
-#else
-  SDL_WarpMouseInWindow( window.descriptor, window.width / 2, window.height / 2 );
-#endif
-  // Suppress mouse motion event generated by SDL_WarpMouse().
-  SDL_PumpEvents();
-  SDL_GetRelativeMouseState( null, null );
-
-#endif
 }
 
 void Input::prepare()
@@ -301,7 +401,7 @@ void Input::prepare()
 
 void Input::update()
 {
-  if( !hasFocus ) {
+  if( !window.hasFocus ) {
     return;
   }
 
@@ -325,10 +425,7 @@ void Input::update()
   wheelUp     = input.mouseW > 0;
   wheelDown   = input.mouseW < 0;
 
-  // If input is not grabbed we must centre mouse so it cannot move out of the window.
-  if( isLocked ) {
-    reset();
-  }
+  window.warpMouse();
 
   memcpy( oldKeys, keys, sizeof( keys ) );
   memset( keys, 0, sizeof( keys ) );
@@ -352,7 +449,17 @@ void Input::init()
   Log::print( "Initialising Input from '%s' ...", configFile.path().cstr() );
 
   JSON inputConfig;
-  bool configExists = inputConfig.load( &configFile );
+  configExists = inputConfig.load( &configFile );
+
+  if( !String::equals( inputConfig["_version"].get( "" ), OZ_APPLICATION_VERSION ) ) {
+    configExists = false;
+    inputConfig.setNull();
+  }
+
+  if( !String::equals( inputConfig["_backend"].get( "" ), BACKEND ) ) {
+    configExists = false;
+    inputConfig.setNull();
+  }
 
   const JSON& mouseConfig    = inputConfig["mouse"];
   const JSON& keyboardConfig = inputConfig["keyboard"];
@@ -360,7 +467,12 @@ void Input::init()
 
   memset( sdlKeys, 0, sizeof( sdlKeys ) );
   memset( sdlOldKeys, 0, sizeof( sdlOldKeys ) );
+
+#if SDL_MAJOR_VERSION < 2
   sdlCurrKeys = SDL_GetKeyState( null );
+#else
+  sdlCurrKeys = SDL_GetKeyboardState( null );
+#endif
 
   memset( keyMap, 0, sizeof( keyMap ) );
 
@@ -368,6 +480,8 @@ void Input::init()
     loadKeyMap( keyMapConfig );
   }
   else {
+    Log::printRaw( " Non-existent or invalid, loading defaults ..." );
+
     loadDefaultKeyMap();
   }
 
@@ -386,9 +500,6 @@ void Input::init()
   wheelUp     = false;
   wheelDown   = false;
 
-  hasFocus    = true;
-  isLocked    = true;
-
   memset( keys, 0, sizeof( keys ) );
   memset( oldKeys, 0, sizeof( oldKeys ) );
 
@@ -402,12 +513,19 @@ void Input::init()
 
 void Input::free()
 {
+  if( configExists ) {
+    return;
+  }
+
   File configFile( config["dir.config"].asString() + "/input.json" );
 
-  Log::print( "Writing current Input configuration to '%s' ...", configFile.path().cstr() );
+  Log::print( "Writing Input configuration to '%s' ...", configFile.path().cstr() );
 
   JSON inputConfig;
   inputConfig.setObject();
+
+  inputConfig.add( "_version", OZ_APPLICATION_VERSION );
+  inputConfig.add( "_backend", BACKEND );
 
   JSON& mouseConfig    = inputConfig.addObject( "mouse" );
   JSON& keyboardConfig = inputConfig.addObject( "keyboard" );

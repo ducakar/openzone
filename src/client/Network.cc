@@ -25,8 +25,7 @@
 
 #include "client/Network.hh"
 
-#ifdef __native_client__
-#else
+#if 0
 # include <SDL_net.h>
 #endif
 
@@ -37,7 +36,7 @@ namespace client
 
 Network network;
 
-#ifdef __native_client__
+#if 1
 
 bool Network::connect()
 {
@@ -56,10 +55,7 @@ static TCPsocket socket;
 
 bool Network::connect()
 {
-  const char* host = config.include( "net.server", "localhost" ).asString();
-  ushort port = ushort( config.include( "net.port", 6666 ).asInt() );
-
-  Log::print( "Connecting to %s:%d ...", host, port );
+  Log::print( "Connecting to %s:%d ...", host.cstr(), port );
 
   IPaddress ip;
   SDLNet_ResolveHost( &ip, host, port );
@@ -84,6 +80,15 @@ void Network::update()
 {}
 
 #endif
+
+void Network::init()
+{
+  host = config.include( "net.server", "localhost" ).asString();
+  port = ushort( config.include( "net.port", 6666 ).asInt() );
+}
+
+void Network::free()
+{}
 
 }
 }

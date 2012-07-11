@@ -319,7 +319,7 @@ void UnitProxy::prepare()
     }
   }
 
-  if( input.keys[Input::KEY_CIRCLE_UNITS] && !input.oldKeys[Input::KEY_CIRCLE_UNITS] ) {
+  if( input.keys[Input::KEY_CYCLE_UNITS] && !input.oldKeys[Input::KEY_CYCLE_UNITS] ) {
     int nSwitchableunits = camera.switchableUnits.length();
 
     if( nSwitchableunits != 0 ) {
