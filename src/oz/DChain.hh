@@ -36,6 +36,8 @@ namespace oz
 /**
  * Double-linked list.
  *
+ * This is not a real container but merely a way of binding existing elements into a linked list.
+ *
  * It can only be applied on classes that have <tt>next[]</tt> and <tt>prev[]</tt> members.
  * Example:
  * @code
@@ -50,19 +52,19 @@ namespace oz
  * DChain<C, 1> chain2;
  * @endcode
  *
- * That way the objects of the same class can be in two separate chains at once.
+ * That way the objects of the same class can be in two separate chains at once;
  * <tt>prev[0]</tt> and <tt>next[0]</tt> point to previous and next element respectively
  * in <tt>chain1</tt> and
  * <tt>prev[1]</tt> and <tt>next[1]</tt> point to previous and next element respectively
  * in <tt>chain2</tt>.
  *
- * <tt>prev[INDEX]</tt> and <tt>next[INDEX]</tt> pointers are not cleared when element is
- * removed from the chain, they may still point to elements in the chain or to invalid locations!
- *
- * <tt>DChain</tt> is not a real container but merely binds together already existing elements.
- * So, copy operator does not copy the elements, to make a copy of a chain including its elements,
- * use <tt>clone()</tt> instead. It also doesn't delete removed elements (except for <tt>free()</tt>
- * method).
+ * Notes:
+ * \li Copy operations do not copy elements, to make a copy of a chain including its elements, use
+ * <tt>clone()</tt> instead.
+ * \li Removal operations (except for <tt>free()</tt> do not actually remove elements but only
+ * decouples them from the chain.
+ * \li <tt>prev[INDEX]</tt> and <tt>next[INDEX]</tt> pointers are not cleared when an element is
+ * removed from the chain, they may still point to elements in the chain or to invalid locations.
  *
  * @ingroup oz
  */

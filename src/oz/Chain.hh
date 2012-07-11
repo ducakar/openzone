@@ -36,6 +36,8 @@ namespace oz
 /**
  * Linked list.
  *
+ * This is not a real container but merely a way of binding existing elements into a linked list.
+ *
  * It can only be applied on classes that have a <tt>next[]</tt> member.
  * Example:
  * @code
@@ -49,17 +51,17 @@ namespace oz
  * Chain<C, 1> chain2;
  * @endcode
  *
- * That way the objects of the same class can be in two separate chains at once.
+ * That way the objects of the same class can be in two separate chains at once;
  * <tt>next[0]</tt> points to next element in <tt>chain1</tt> and
  * <tt>next[1]</tt> points to next element in <tt>chain2</tt>.
  *
- * <tt>next[INDEX]</tt> pointer is not cleared when element is removed from the chain,
- * it may still point to elements in the chain or to invalid locations!
- *
- * <tt>Chain</tt> is not a real container but merely binds together already existing elements.
- * So, copy operator does not copy the elements, to make a copy of a chain including its elements,
- * use <tt>clone()</tt> instead. It also doesn't delete removed elements (except for <tt>free()</tt>
- * method).
+ * Notes:
+ * \li Copy operations do not copy elements, to make a copy of a chain including its elements, use
+ * <tt>clone()</tt> instead.
+ * \li Removal operations (except for <tt>free()</tt> do not actually remove elements but only
+ * decouples them from the chain.
+ * \li <tt>next[INDEX]</tt> pointer is not cleared when an element is removed from the chain, it may
+ * still point to elements in the chain or to invalid locations.
  *
  * @ingroup oz
  */

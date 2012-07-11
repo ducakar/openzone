@@ -69,6 +69,8 @@ void StrategicProxy::begin()
 
 void StrategicProxy::end()
 {
+  camera.colour = Mat44::ID;
+
   ui::mouse.doShow = true;
 
   ui::ui.galileoFrame->show( false );
@@ -206,6 +208,8 @@ void StrategicProxy::update()
   }
 
   camera.smoothMoveTo( desiredPos );
+
+  camera.colour = camera.nightVision ? Camera::NV_COLOUR : Mat44::ID;
 }
 
 void StrategicProxy::reset()

@@ -59,8 +59,6 @@ class Render
     static const Vec4  SOLID_AABB;
     static const Vec4  NONSOLID_AABB;
 
-    static const Mat44 NIGHT_COLOUR;
-
     Bitset              drawnStructs;
 
     List<const Struct*> structs;

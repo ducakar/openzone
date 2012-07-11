@@ -65,11 +65,6 @@ const Vec4  Render::ENTITY_AABB            = Vec4( 1.00f, 0.40f, 0.60f, 0.30f );
 const Vec4  Render::SOLID_AABB             = Vec4( 0.60f, 0.90f, 0.20f, 0.30f );
 const Vec4  Render::NONSOLID_AABB          = Vec4( 0.70f, 0.80f, 0.90f, 0.30f );
 
-const Mat44 Render::NIGHT_COLOUR           = Mat44( 0.25f, 2.00f, 0.25f, 0.00f,
-                                                    0.25f, 2.00f, 0.25f, 0.00f,
-                                                    0.25f, 2.00f, 0.25f, 0.00f,
-                                                    0.00f, 0.00f, 0.00f, 1.00f );
-
 void Render::scheduleCell( int cellX, int cellY )
 {
   const Cell& cell = orbis.cells[cellX][cellY];
@@ -163,13 +158,8 @@ void Render::prepareDraw()
     shader.fogColour.z *= colourRatio;
   }
 
-  if( camera.nightVision ) {
-    tf.colour = NIGHT_COLOUR;
-    shader.fogColour = tf.colour * shader.fogColour;
-  }
-  else {
-    tf.colour = Mat44::ID;
-  }
+  tf.colour        = camera.colour;
+  shader.fogColour = tf.colour * shader.fogColour;
 
   windPhi = Math::fmod( windPhi + WIND_PHI_INC, Math::TAU );
 

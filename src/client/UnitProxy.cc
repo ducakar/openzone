@@ -46,7 +46,12 @@ const float UnitProxy::SHOULDER_CAM_RIGHT       = 0.25f;
 const float UnitProxy::SHOULDER_CAM_UP          = 0.25f;
 const float UnitProxy::VEHICLE_CAM_UP_FACTOR    = 0.15f;
 const float UnitProxy::BOB_SUPPRESSION_COEF     = 0.80f;
+const float UnitProxy::INJURY_SUPPRESSION_COEF  = 0.98f;
 const float UnitProxy::BINOCULARS_MAGNIFICATION = 0.20f;
+const Mat44 UnitProxy::INJURY_COLOUR            = Mat44( 1.0f, 0.0f, 0.0f, 0.0f,
+                                                         0.5f, 0.5f, 0.0f, 0.0f,
+                                                         0.5f, 0.0f, 0.5f, 0.0f,
+                                                         0.5f, 0.0f, 0.0f, 1.0f );
 
 void UnitProxy::begin()
 {
@@ -59,6 +64,8 @@ void UnitProxy::begin()
   camera.setTaggedObj( null );
   camera.setTaggedEnt( null );
   camera.isExternal = isExternal;
+
+  camera.colour = camera.nightVision ? Camera::NV_COLOUR : Mat44::ID;
 
   ui::mouse.doShow = false;
 
@@ -78,16 +85,20 @@ void UnitProxy::begin()
     headV = 0.0f;
   }
 
-  botEye    = bot->p;
-  botEye.z += bot->camZ;
-  bobTheta  = 0.0f;
-  bobBias   = 0.0f;
+  botEye      = bot->p;
+  botEye.z   += bot->camZ;
+  bobTheta    = 0.0f;
+  bobBias     = 0.0f;
 
-  oldBot    = -1;
+  injuryRatio = 0.0f;
+
+  oldBot      = -1;
 }
 
 void UnitProxy::end()
 {
+  camera.colour = Mat44::ID;
+
   ui::mouse.doShow = true;
 
   ui::ui.galileoFrame->show( false );
@@ -515,35 +526,50 @@ void UnitProxy::update()
     camera.setTaggedEnt( collider.hit.entity );
   }
 
+  foreach( event, bot->events.citer() ) {
+    if( event->id == Object::EVENT_DAMAGE ) {
+      injuryRatio = max( injuryRatio, event->intensity );
+    }
+  }
+
+  camera.colour = Math::mix( Mat44::ID, INJURY_COLOUR, injuryRatio ) *
+                  ( camera.nightVision ? Camera::NV_COLOUR : Mat44::ID );
+
+  injuryRatio *= INJURY_SUPPRESSION_COEF;
+
   oldBot = camera.bot;
 }
 
 void UnitProxy::reset()
 {
-  baseRot    = Quat::ID;
-  headRot    = Quat::ID;
-  headH      = 0.0f;
-  headV      = 0.0f;
+  baseRot     = Quat::ID;
+  headRot     = Quat::ID;
+  headH       = 0.0f;
+  headV       = 0.0f;
 
-  bobTheta   = 0.0f;
-  bobBias    = 0.0f;
+  bobTheta    = 0.0f;
+  bobBias     = 0.0f;
 
-  isExternal = false;
-  isFreelook = false;
+  injuryRatio = 0.0f;
+
+  isExternal  = false;
+  isFreelook  = false;
 }
 
 void UnitProxy::read( InputStream* istream )
 {
-  baseRot    = Quat::ID;
-  headRot    = Quat::ID;
-  headH      = 0.0f;
-  headV      = 0.0f;
+  baseRot     = Quat::ID;
+  headRot     = Quat::ID;
+  headH       = 0.0f;
+  headV       = 0.0f;
 
-  bobTheta   = 0.0f;
-  bobBias    = 0.0f;
+  bobTheta    = 0.0f;
+  bobBias     = 0.0f;
 
-  isExternal = istream->readBool();
-  isFreelook = istream->readBool();
+  injuryRatio = 0.0f;
+
+  isExternal  = istream->readBool();
+  isFreelook  = istream->readBool();
 }
 
 void UnitProxy::write( BufferStream* ostream ) const

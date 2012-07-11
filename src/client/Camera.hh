@@ -42,6 +42,7 @@ class Camera
     static const float  MIN_DISTANCE;
     static const float  SMOOTHING_COEF;
     static const float  ROT_SMOOTHING_COEF;
+    static const Mat44  NV_COLOUR;
     static Proxy* const PROXIES[];
 
     enum State
@@ -79,6 +80,9 @@ class Camera
     // Global rotation quaternion, matrix and it's inverse.
     Mat44         rotMat;
     Mat44         rotTMat;
+
+    // Global colour transformation.
+    Mat44         colour;
 
     Vec3          right;
     Vec3          up;
