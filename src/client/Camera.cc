@@ -42,6 +42,10 @@ const float  Camera::ROT_LIMIT          = Math::TAU / 2.0f;
 const float  Camera::MIN_DISTANCE       = 0.10f;
 const float  Camera::SMOOTHING_COEF     = 0.35f;
 const float  Camera::ROT_SMOOTHING_COEF = 0.50f;
+const Mat44  Camera::NV_COLOUR          = Mat44( 0.25f, 2.00f, 0.25f, 0.00f,
+                                                 0.25f, 2.00f, 0.25f, 0.00f,
+                                                 0.25f, 2.00f, 0.25f, 0.00f,
+                                                 0.00f, 0.00f, 0.00f, 1.00f );
 Proxy* const Camera::PROXIES[] = {
   null,
   &strategic,
@@ -297,6 +301,8 @@ void Camera::read( InputStream* istream )
   rotMat     = Mat44::rotation( rot );
   rotTMat    = ~rotMat;
 
+  colour     = istream->readMat44();
+
   right      = rotMat.x.vec3();
   up         = rotMat.y.vec3();
   at         = -rotMat.z.vec3();
@@ -346,6 +352,8 @@ void Camera::write( BufferStream* ostream ) const
   ostream->writeFloat( relH );
   ostream->writeFloat( relV );
 
+  ostream->writeMat44( colour );
+
   ostream->writeInt( bot );
   ostream->writeInt( vehicle );
 
@@ -371,6 +379,8 @@ void Camera::init()
   height        = window.height;
   centreX       = window.width / 2;
   centreY       = window.height / 2;
+
+  colour        = Mat44::ID;
 
   float angle   = Math::rad( config.include( "camera.angle", 80.0f ).asFloat() );
   aspect        = config.include( "camera.aspect", 0.0f ).asFloat();

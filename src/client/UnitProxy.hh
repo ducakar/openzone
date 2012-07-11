@@ -44,7 +44,9 @@ class UnitProxy : public Proxy
     static const float SHOULDER_CAM_UP;
     static const float VEHICLE_CAM_UP_FACTOR;
     static const float BOB_SUPPRESSION_COEF;
+    static const float INJURY_SUPPRESSION_COEF;
     static const float BINOCULARS_MAGNIFICATION;
+    static const Mat44 INJURY_COLOUR;
 
   public:
 
@@ -56,6 +58,8 @@ class UnitProxy : public Proxy
     Point botEye;
     float bobTheta;
     float bobBias;
+
+    float injuryRatio;
 
     int   oldBot;
 

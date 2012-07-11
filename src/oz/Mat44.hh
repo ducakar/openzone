@@ -266,6 +266,15 @@ class Mat44
     }
 
     /**
+     * Product.
+     */
+    OZ_ALWAYS_INLINE
+    friend Mat44 operator * ( float k, const Mat44& m )
+    {
+      return Mat44( k * m.x, k * m.y, k * m.z, k * m.w );
+    }
+
+    /**
      * Product, compositum of linear transformations.
      */
     OZ_ALWAYS_INLINE
