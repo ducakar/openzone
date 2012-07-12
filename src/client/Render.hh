@@ -59,47 +59,49 @@ class Render
     static const Vec4  SOLID_AABB;
     static const Vec4  NONSOLID_AABB;
 
-    Bitset              drawnStructs;
+    struct DrawEntry;
 
-    List<const Struct*> structs;
-    List<const Object*> objects;
+    Bitset          drawnStructs;
 
-    float               visibilityRange;
-    float               visibility;
+    List<DrawEntry> structs;
+    List<DrawEntry> objects;
 
-    int                 flags;
+    float           visibilityRange;
+    float           visibility;
 
-    bool                showBounds;
-    bool                showAim;
+    int             flags;
 
-    bool                isOffscreen;
-    bool                doPostprocess;
-    bool                isLowDetail;
+    bool            showBounds;
+    bool            showAim;
 
-    float               windPhi;
+    bool            isOffscreen;
+    bool            doPostprocess;
+    bool            isLowDetail;
 
-    int                 windowWidth;
-    int                 windowHeight;
-    int                 frameWidth;
-    int                 frameHeight;
-    float               scale;
-    int                 scaleFilter;
+    float           windPhi;
 
-    uint                mainFrame;
-    uint                depthBuffer;
-    uint                colourBuffer;
-    uint                normalBuffer;
-    uint                specularBuffer;
+    int             windowWidth;
+    int             windowHeight;
+    int             frameWidth;
+    int             frameHeight;
+    float           scale;
+    int             scaleFilter;
+
+    uint            mainFrame;
+    uint            depthBuffer;
+    uint            colourBuffer;
+    uint            normalBuffer;
+    uint            specularBuffer;
 
   public:
 
-    ulong64             prepareMicros;
-    ulong64             caelumMicros;
-    ulong64             terraMicros;
-    ulong64             meshesMicros;
-    ulong64             postprocessMicros;
-    ulong64             uiMicros;
-    ulong64             swapMicros;
+    ulong64         prepareMicros;
+    ulong64         caelumMicros;
+    ulong64         terraMicros;
+    ulong64         meshesMicros;
+    ulong64         postprocessMicros;
+    ulong64         uiMicros;
+    ulong64         swapMicros;
 
   private:
 

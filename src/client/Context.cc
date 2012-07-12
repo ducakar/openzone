@@ -233,11 +233,6 @@ uint Context::requestSound( int id )
 {
   Resource<uint>& resource = sounds[id];
 
-  if( id == 12 ) {
-    Log::printRaw( "REQUESTING(%d) '%s'\n", resource.nUsers, library.sounds[id].name.cstr() );
-    Log::printTrace( StackTrace::current( 0 ) );
-  }
-
   if( resource.nUsers >= 0 ) {
     ++resource.nUsers;
     return resource.id;
@@ -301,11 +296,6 @@ void Context::releaseSound( int id )
 
   hard_assert( resource.nUsers > 0 );
 
-  if( id == 12 ) {
-    Log::printRaw( "RELEASING(%d) '%s'\n", resource.nUsers, library.sounds[id].name.cstr() );
-    Log::printTrace( StackTrace::current( 0 ) );
-  }
-
   --resource.nUsers;
 }
 
@@ -314,11 +304,6 @@ void Context::freeSound( int id )
   Resource<uint>& resource = sounds[id];
 
   hard_assert( resource.nUsers == 0 );
-
-  if( id == 12 ) {
-    Log::printRaw( "FREEING(%d) '%s'\n", resource.nUsers, library.sounds[id].name.cstr() );
-    Log::printTrace( StackTrace::current( 0 ) );
-  }
 
   --resource.nUsers;
   alDeleteBuffers( 1, &resource.id );
@@ -401,7 +386,7 @@ BSP* Context::getBSP( const Struct* str )
 
 void Context::drawBSP( const Struct* str )
 {
-  Resource<BSP*>& resource = bsps[str->bsp->id];
+  volatile Resource<BSP*>& resource = bsps[str->bsp->id];
 
   // we don't count users, just to show there is at least one
   resource.nUsers = 1;
@@ -416,13 +401,13 @@ void Context::drawBSP( const Struct* str )
 
 void Context::playBSP( const Struct* str )
 {
-  Resource<BSP*>& resource = bsps[str->bsp->id];
+  Resource<BSPAudio*>& resource = bspAudios[str->bsp->id];
 
   // we don't count users, just to show there is at least one
   resource.nUsers = 1;
 
   if( resource.object == null ) {
-    resource.object = new BSP( str->bsp );
+    resource.object = new BSPAudio( str->bsp );
   }
 
   resource.object->play( str );
@@ -590,6 +575,11 @@ void Context::unload()
 
     bsps[i].object = null;
     bsps[i].nUsers = -1;
+
+    delete bspAudios[i].object;
+
+    bspAudios[i].object = null;
+    bspAudios[i].nUsers = -1;
   }
   for( int i = 0; i < library.models.length(); ++i ) {
     delete smms[i].object;
@@ -679,12 +669,15 @@ void Context::init()
   int nBSPs     = library.nBSPs;
   int nModels   = library.models.length();
 
-  textures = nTextures == 0 ? null : new Resource<Texture>[nTextures];
-  sounds   = nSounds   == 0 ? null : new Resource<uint>[nSounds];
-  bsps     = nBSPs     == 0 ? null : new Resource<BSP*>[nBSPs];
-  smms     = nModels   == 0 ? null : new Resource<SMM*>[nModels];
-  md2s     = nModels   == 0 ? null : new Resource<MD2*>[nModels];
-  md3s     = nModels   == 0 ? null : new Resource<MD3*>[nModels];
+  textures  = nTextures == 0 ? null : new Resource<Texture>[nTextures];
+  sounds    = nSounds   == 0 ? null : new Resource<uint>[nSounds];
+
+  bsps      = nBSPs     == 0 ? null : new Resource<BSP*>[nBSPs];
+  bspAudios = nBSPs     == 0 ? null : new Resource<BSPAudio*>[nBSPs];
+
+  smms      = nModels   == 0 ? null : new Resource<SMM*>[nModels];
+  md2s      = nModels   == 0 ? null : new Resource<MD2*>[nModels];
+  md3s      = nModels   == 0 ? null : new Resource<MD3*>[nModels];
 
   for( int i = 0; i < nTextures; ++i ) {
     textures[i].nUsers = -1;
@@ -695,6 +688,9 @@ void Context::init()
   for( int i = 0; i < nBSPs; ++i ) {
     bsps[i].object = null;
     bsps[i].nUsers = -1;
+
+    bspAudios[i].object = null;
+    bspAudios[i].nUsers = -1;
   }
   for( int i = 0; i < nModels; ++i ) {
     smms[i].object = null;
@@ -720,7 +716,10 @@ void Context::free()
 
   delete[] textures;
   delete[] sounds;
+
   delete[] bsps;
+  delete[] bspAudios;
+
   delete[] smms;
   delete[] md2s;
   delete[] md3s;
@@ -731,7 +730,10 @@ void Context::free()
 
   textures     = null;
   sounds       = null;
+
   bsps         = null;
+  bspAudios    = null;
+
   smms         = null;
   md2s         = null;
   md3s         = null;

@@ -263,6 +263,23 @@ void Loader::cleanupSound()
     }
   }
 
+  if( tick % BSPAUDIO_CLEAR_INTERVAL == BSPAUDIO_CLEAR_LAG ) {
+    // remove unused BSPAudios
+    for( int i = 0; i < library.nBSPs; ++i ) {
+      Context::Resource<BSPAudio*>& bspAudio = context.bspAudios[i];
+
+      if( bspAudio.nUsers != 0 ) {
+        bspAudio.nUsers = 0;
+      }
+      else {
+        delete bspAudio.object;
+
+        bspAudio.object = null;
+        bspAudio.nUsers = -1;
+      }
+    }
+  }
+
   OZ_AL_CHECK_ERROR();
 }
 

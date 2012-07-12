@@ -104,7 +104,7 @@ class HashString
          */
         OZ_ALWAYS_INLINE
         CIterator() :
-          CIteratorBase<Elem>( null )
+          CIteratorBase<Elem>( null ), data( null ), index( 0 )
         {}
 
         /**
@@ -210,7 +210,7 @@ class HashString
          */
         OZ_ALWAYS_INLINE
         Iterator() :
-          IteratorBase<Elem>( null )
+          IteratorBase<Elem>( null ), data( null ), index( 0 )
         {}
 
         /**

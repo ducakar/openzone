@@ -611,6 +611,29 @@ static int ozStrRemove( lua_State* l )
   return 0;
 }
 
+static int ozStrNumBoundObjs( lua_State* l )
+{
+  ARG( 0 );
+  STR();
+
+  l_pushint( ms.str->boundObjects.length() );
+  return 1;
+}
+
+static int ozStrBindBoundObj( lua_State* l )
+{
+  ARG( 1 );
+  STR();
+
+  int index = l_toint( 1 );
+  if( uint( index ) >= uint( ms.str->boundObjects.length() ) ) {
+    ERROR( "Invalid structure bound object index (out of range)" );
+  }
+
+  ms.obj = orbis.objects[ ms.str->boundObjects[index] ];
+  return 0;
+}
+
 static int ozStrNumEnts( lua_State* l )
 {
   ARG( 0 );

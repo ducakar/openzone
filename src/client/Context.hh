@@ -27,6 +27,7 @@
 
 #include "client/Shader.hh"
 #include "client/BSP.hh"
+#include "client/BSPAudio.hh"
 #include "client/Imago.hh"
 #include "client/Audio.hh"
 #include "client/FragPool.hh"
@@ -44,6 +45,7 @@ class Context
 {
   friend class Loader;
   friend class BSP;
+  friend class BSPAudio;
   friend class Audio;
   friend class Render;
   friend class Sound;
@@ -100,12 +102,12 @@ class Context
     Resource<Texture>*         textures;
     Resource<uint>*            sounds;
 
-    // non-looping sources
-    Chain<Source>              sources;
-    // looping sources
-    HashIndex<ContSource, 128> contSources;
+    Chain<Source>              sources;     // non-looping sources
+    HashIndex<ContSource, 128> contSources; // looping sources
 
     Resource<BSP*>*            bsps;
+    Resource<BSPAudio*>*       bspAudios;
+
     Resource<SMM*>*            smms;
     Resource<MD2*>*            md2s;
     Resource<MD3*>*            md3s;

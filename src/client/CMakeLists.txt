@@ -2,6 +2,7 @@ add_library( client STATIC
   Audio.cc
   BasicAudio.cc
   BotAudio.cc
+  BSPAudio.cc
   BSP.cc
   Caelum.cc
   Camera.cc

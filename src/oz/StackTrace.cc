@@ -105,16 +105,20 @@ char** StackTrace::symbols() const
     }
 
     size_t fileLen = strlen( file );
-    if( out + fileLen + 3 > outEnd ) {
+    if( out + fileLen + 4 > outEnd ) {
       break;
     }
 
     memcpy( out, file, fileLen );
     out += fileLen;
 
-    *out++ = '(';
+    *out++ = ':';
+    *out++ = ' ';
 
-    if( func != null && func < end ) {
+    if( func == null || func >= end ) {
+      *out++ = '?';
+    }
+    else {
       // Demangle name.
       char*  demangled;
       size_t size = SYMBOL_BUFFER_SIZE;
@@ -125,19 +129,17 @@ char** StackTrace::symbols() const
 
       size_t funcLen = strlen( func );
 
-      if( funcLen != 0 && out + funcLen + 4 <= outEnd ) {
-        *out++ = ' ';
-
+      if( funcLen != 0 && out + funcLen + 1 <= outEnd ) {
         memcpy( out, func, funcLen );
         out += funcLen;
-
-        *out++ = ' ';
+      }
+      else {
+        *out++ = '?';
       }
 
       free( demangled );
     }
 
-    *out++ = ')';
     *out++ = '\0';
   }
 

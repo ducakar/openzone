@@ -49,7 +49,7 @@ Render render;
 const float Render::WIDE_CULL_FACTOR       = 6.0f;
 const float Render::CELL_WIDE_RADIUS       =
   ( Cell::SIZE / 2 + Object::MAX_DIM * WIDE_CULL_FACTOR ) * Math::sqrt( 2.0f );
-const float Render::OBJECT_VISIBILITY_COEF = 0.003f;
+const float Render::OBJECT_VISIBILITY_COEF = 0.004f;
 const float Render::FRAG_VISIBILITY_RANGE2 = 150.0f*150.0f;
 
 const float Render::NIGHT_FOG_COEFF        = 2.0f;
@@ -65,6 +65,31 @@ const Vec4  Render::ENTITY_AABB            = Vec4( 1.00f, 0.40f, 0.60f, 0.30f );
 const Vec4  Render::SOLID_AABB             = Vec4( 0.60f, 0.90f, 0.20f, 0.30f );
 const Vec4  Render::NONSOLID_AABB          = Vec4( 0.70f, 0.80f, 0.90f, 0.30f );
 
+struct Render::DrawEntry
+{
+  float dist;
+  union
+  {
+    const Struct* str;
+    const Object* obj;
+  };
+
+  DrawEntry() = default;
+
+  explicit DrawEntry( float dist_, const Struct* str_ ) :
+    dist( dist_ ), str( str_ )
+  {}
+
+  explicit DrawEntry( float dist_, const Object* obj_ ) :
+    dist( dist_ ), obj( obj_ )
+  {}
+
+  bool operator < ( const DrawEntry& de )
+  {
+    return dist < de.dist;
+  }
+};
+
 void Render::scheduleCell( int cellX, int cellY )
 {
   const Cell& cell = orbis.cells[cellX][cellY];
@@ -74,41 +99,34 @@ void Render::scheduleCell( int cellX, int cellY )
       drawnStructs.set( cell.structs[i] );
 
       Struct* str    = orbis.structs[ cell.structs[i] ];
-      Point   p      = str->p;
+      float   dist   = ( str->p - camera.p ) * camera.at;
       float   radius = str->dim().fastN();
 
-      if( frustum.isVisible( p, radius ) ) {
-        context.drawBSP( str );
-
-        if( showBounds ) {
-          structs.add( str );
-        }
+      if( frustum.isVisible( str->p, radius ) ) {
+        structs.add( DrawEntry( dist, str ) );
       }
     }
   }
 
   foreach( obj, cell.objects.citer() ) {
-    float dist2  = ( obj->p - camera.p ).sqN();
-    float dist_1 = Math::fastInvSqrt( camera.mag*camera.mag * dist2 );
+    float dist   = ( obj->p - camera.p ) * camera.at;
     float radius = obj->dim.fastN();
 
     if( obj->flags & Object::WIDE_CULL_BIT ) {
       radius *= WIDE_CULL_FACTOR;
     }
 
-    if( radius * dist_1 >= OBJECT_VISIBILITY_COEF && frustum.isVisible( obj->p, radius ) ) {
-      context.drawImago( obj, null );
-
-      if( showBounds ) {
-        objects.add( obj );
-      }
+    if( radius / ( dist * camera.mag ) >= OBJECT_VISIBILITY_COEF &&
+        frustum.isVisible( obj->p, radius ) )
+    {
+      objects.add( DrawEntry( dist, obj ) );
     }
   }
 
   foreach( frag, cell.frags.citer() ) {
-    float dist2  = ( frag->p - camera.p ).sqN();
+    float dist = ( frag->p - camera.p ) * camera.at;
 
-    if( dist2 <= FRAG_VISIBILITY_RANGE2 && frustum.isVisible( frag->p, FragPool::FRAG_RADIUS ) ) {
+    if( dist <= FRAG_VISIBILITY_RANGE2 && frustum.isVisible( frag->p, FragPool::FRAG_RADIUS ) ) {
       context.drawFrag( frag );
     }
   }
@@ -190,6 +208,16 @@ void Render::prepareDraw()
         scheduleCell( i, j );
       }
     }
+  }
+
+  structs.sort();
+  for( int i = 0; i < structs.length(); ++i ) {
+    context.drawBSP( structs[i].str );
+  }
+
+  objects.sort();
+  for( int i = 0; i < objects.length(); ++i ) {
+    context.drawImago( objects[i].obj, null );
   }
 
   currentMicros = Time::uclock();
@@ -284,14 +312,14 @@ void Render::drawGeometry()
     glLineWidth( 1.0f );
 
     for( int i = 0; i < objects.length(); ++i ) {
-      const Object* obj = objects[i];
+      const Object* obj = objects[i].obj;
 
       shape.colour( obj->flags & Object::SOLID_BIT ? SOLID_AABB : NONSOLID_AABB );
       shape.wireBox( *obj );
     }
 
     for( int i = 0; i < structs.length(); ++i ) {
-      const Struct* str = structs[i];
+      const Struct* str = structs[i].str;
 
       shape.colour( ENTITY_AABB );
 
@@ -616,7 +644,7 @@ void Render::init( bool isBuild )
   scale           = config.include( "render.scale",       1.0f ).asFloat();
   sScaleFilter    = config.include( "render.scaleFilter", "NEAREST" ).asString();
 
-  visibilityRange = config.include( "render.distance",    400.0f ).asFloat();
+  visibilityRange = config.include( "render.distance",    300.0f ).asFloat();
   showBounds      = config.include( "render.showBounds",  false ).asBool();
   showAim         = config.include( "render.showAim",     false ).asBool();
 

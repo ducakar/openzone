@@ -334,6 +334,9 @@ void Lua::init()
   IGNORE_FUNC( ozStrDestroy );
   IGNORE_FUNC( ozStrRemove );
 
+  IMPORT_FUNC( ozStrNumBoundObjs );
+  IMPORT_FUNC( ozStrBindBoundObj );
+
   IMPORT_FUNC( ozStrNumEnts );
   IMPORT_FUNC( ozStrBindEnt );
 

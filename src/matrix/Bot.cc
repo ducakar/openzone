@@ -734,7 +734,7 @@ void Bot::onUpdate()
 
       Vec3 desiredMomentum = move;
 
-      if( state & ( CROUCHING_BIT | WALKING_BIT ) || cargo >= 0 ) {
+      if( ( state & ( CROUCHING_BIT | WALKING_BIT ) ) || cargo >= 0 ) {
         step            += clazz->stepWalkInc;
         desiredMomentum *= clazz->walkMomentum;
       }
