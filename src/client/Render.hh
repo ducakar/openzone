@@ -42,9 +42,9 @@ class Render
   private:
 
     static const float WIDE_CULL_FACTOR;
-    static const float CELL_WIDE_RADIUS;
     static const float OBJECT_VISIBILITY_COEF;
     static const float FRAG_VISIBILITY_RANGE2;
+    static const float CELL_RADIUS;
 
     static const float NIGHT_FOG_COEFF;
     static const float NIGHT_FOG_DIST;

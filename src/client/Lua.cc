@@ -161,10 +161,10 @@ void Lua::update()
 void Lua::create( const char* mission_ )
 {
   cs.mission = mission_;
-  String missionPath = "lua/mission/" + cs.mission + ".lua";
+  String missionPath = "mission/" + cs.mission + "/script.lua";
 
   Log::print( "Importing mission catalogue '%s' ...", cs.mission.cstr() );
-  if( cs.missionLingua.initDomain( cs.mission ) ) {
+  if( cs.missionLingua.initMission( cs.mission ) ) {
     Log::printEnd( " OK" );
   }
   else {
@@ -198,10 +198,10 @@ void Lua::read( InputStream* istream )
   hard_assert( l_gettop() == 0 );
 
   cs.mission = istream->readString();
-  String missionPath = "lua/mission/" + cs.mission + ".lua";
+  String missionPath = "mission/" + cs.mission + "/script.lua";
 
   Log::print( "Importing mission catalogue '%s' ...", cs.mission.cstr() );
-  if( cs.missionLingua.initDomain( cs.mission ) ) {
+  if( cs.missionLingua.initMission( cs.mission ) ) {
     Log::printEnd( " OK" );
   }
   else {
@@ -707,6 +707,9 @@ void Lua::init()
   IMPORT_FUNC( ozCameraAddStateSwitch );
   IMPORT_FUNC( ozCameraAddWait );
   IMPORT_FUNC( ozCameraAddMove );
+
+  IMPORT_FUNC( ozCameraBaseColour );
+  IMPORT_FUNC( ozCameraNVColour );
 
   /*
    * Profile

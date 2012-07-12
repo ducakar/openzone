@@ -455,7 +455,8 @@ static int ozSelfBindItem( lua_State* l )
   }
 
   ms.obj = orbis.objects[ ns.self->items[index] ];
-  return 0;
+  l_pushbool( ms.obj != null );
+  return 1;
 }
 
 static int ozSelfOverlaps( lua_State* l )

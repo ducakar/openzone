@@ -427,15 +427,13 @@ void Build::buildClasses( const String& pkgName )
 
   clazz.free();
 
-  Log::printEnd( " OK" );
-
   Log::unindent();
   Log::println( "}" );
 }
 
 void Build::buildFragPools( const String& pkgName )
 {
-  Log::println( "Building fragment pools ..." );
+  Log::println( "Building fragment pools {" );
   Log::indent();
 
   String dirName = "frag";
@@ -470,8 +468,6 @@ void Build::buildFragPools( const String& pkgName )
   }
 
   clazz.free();
-
-  Log::printEnd( " OK" );
 
   Log::unindent();
   Log::println( "}" );
@@ -1002,9 +998,14 @@ int Build::main( int argc, char** argv )
   if( doLua ) {
     checkLua( "lua/matrix" );
     checkLua( "lua/nirvana" );
-    checkLua( "lua/mission" );
+
+    DArray<PFile> missions = PFile( "mission" ).ls();
+    foreach( mission, missions.citer() ) {
+      checkLua( mission->path() );
+    }
 
     copyFiles( "lua", "lua", "lua", true );
+    copyFiles( "mission", "mission", "lua", true );
   }
   if( doModules ) {
     buildModules();

@@ -1,0 +1,121 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenZone 0.2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2012-01-15 18:07+0100\n"
+"Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
+"Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: Slovenian\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: share/openzone/lua/mission/cvicek.lua:492
+msgid "Beast Lair"
+msgstr "Beštji brlog"
+
+#: share/openzone/lua/mission/cvicek.lua:493
+msgid ""
+"Beast Lair is your home base, hidden on an island, still safe from Colonial Army.\n"
+"\n"
+"However, supplies are low and there's a terrible shortage of beasts' favourite drink, cvicek.\n"
+"\n"
+"You can visit the base anytime during the mission for any supplies you need."
+msgstr ""
+"Beštji brlog je tvoja domača baza, skrita na otoku, kamor noga kolonialne vojske še ni stopila.\n"
+"\n"
+"V bazi primanjkuje zalog, predvsem kritično je pomanjkanje cvička, najljubše pijače beštij.\n"
+"\n"
+"Bazo lahko obiščeš kadarkoli med misijo, da se okrepčaš ali vzameš kakšne stvari, ki jih potrebuješ."
+
+#: share/openzone/lua/mission/cvicek.lua:463
+msgid "Cvicek, cvicek, cvicek ... Where is cvicek?"
+msgstr "Cviček, cviček, cviček ... kje je cviček?"
+
+#: share/openzone/lua/mission/cvicek.lua:477
+msgid "Escape"
+msgstr "Pobeg"
+
+#: share/openzone/lua/mission/cvicek.lua:84
+msgid "Good job!"
+msgstr "Čestitam, dobro opravljeno!"
+
+#: share/openzone/lua/mission/cvicek.lua:119
+msgid "Good riddance! Finally some decent TV programme."
+msgstr "Kmetija je šla v luft, hehe! Končno imamo gledljiv TV spored."
+
+#: share/openzone/lua/mission/cvicek.lua:467
+msgid "How's your mission going? I can't imagine how we will live without cvicek."
+msgstr "Kako napreduje misija? Ne vem, kako bomo preživeli brez cvička."
+
+#: share/openzone/lua/mission/cvicek.lua:459
+msgid "I'm sooo thirsty. I've been drinking only water for the past week."
+msgstr "Kako sem žejen. Že cel teden pijem samo vodo."
+
+#: share/openzone/lua/mission/cvicek.lua:471
+msgid "Is the Farm still standing? Please destroy it, maybe then there might be something better on TV."
+msgstr "A Kmetija še stoji? Daj jo uniči, bo mogoče potem kaj bolj pametnega po televiziji."
+
+#: share/openzone/lua/mission/cvicek.lua:102
+msgid "No more thirst!"
+msgstr "Moja žeja je končno pogašena."
+
+#: share/openzone/lua/mission/cvicek.lua:483
+msgid ""
+"Steal at least 20 bottles of cvicek from Colonial military base and transport them back to Beast Lair.\n"
+"\n"
+"The base is heavily defended so you will need some heavy armour to attack it.\n"
+"\n"
+"Beware not to use explosives there, cvicek bottles are very fragile and there is a explosives storage in that base.\n"
+"\n"
+"Quest will be complete one you unload 20 bottles of cvicek in the Lair."
+msgstr ""
+"Ukradi vsaj 20 steklenic cvička iz kolonialne vojaške baze in jih prepelji v Beštji brlog.\n"
+"\n"
+"Baza je močno varovana, zato boš za napad potreboval tank.\n"
+"\n"
+"Pazi, da v bazi ne uporabljaš eksploziva zaradi tamkajšnjega skladišča eksploziva in krhkih steklenic cvička.\n"
+"\n"
+"Naloga se zaključi, ko v Brlogu raztovoriš 20 steklenic cvička."
+
+#: share/openzone/lua/mission/cvicek.lua:482
+msgid "Steal cvicek"
+msgstr "Kraja cvička"
+
+#: share/openzone/lua/mission/cvicek.lua:488
+msgid ""
+"That farm is a stage of an annoying reality show called 'The Farm'. It wouldn't do much harm to blow it up.\n"
+"\n"
+"The farmhouses are not very robust, so a dozen of bombs should be more then enough to demolish them. And don't expect any welcome from participants of the show."
+msgstr ""
+"Ta kmetija je prizorišče neumnega resničnostnega šova najbolj gledane komercialne televizije. Ne bo dosti škode, če jo razstreliš.\n"
+"\n"
+"Kmetijska poslopja niso preveč trdna, kakšen ducat dobro postavljenih bomb bi zagotovo moral zadostovati. Pazi se udeležencev šova; gotovo te ne bodo veseli."
+
+#: share/openzone/lua/mission/cvicek.lua:487
+msgid "The Farm"
+msgstr "Kmetija"
+
+#: share/openzone/lua/mission/cvicek.lua:455
+msgid "Well, is cvicek coming anytime soon?"
+msgstr "Bo cviček kaj kmalu?"
+
+#: share/openzone/lua/mission/cvicek.lua:90
+msgid "Yeeha! Cvicek!"
+msgstr "Juhuhu! Cviček!"
+
+#: share/openzone/lua/mission/cvicek.lua:478
+msgid ""
+"You have been caught by a Colonial patrol and they currently hold you in that Colonial outpost. Tomorrow you are being transferred to a Colonial detention camp for terrorist suspects. If you don't find a way to escape, say goodbye to freedom till the end of your life.\n"
+"\n"
+"It would be extremely helpful if you can get a Galileo gadget, it will will show you destinations of your tasks and help you with navigation a lot."
+msgstr ""
+"Zajela te je kolonialna patrulja in zdaj si zaprt v tej kolonialni postojanki. Jutri te bodo poslali v taborišče za osumljene terorizma in verjetno ne boš nikoli več ugledal luči svobode, zato ti ne preostane drugega, kot da poskušaš pobegniti.\n"
+"\n"
+"Če ti uspe najti navigacijo Galileo, ti bo to v izjemno pomoč, saj med drugim prikazuje tudi položaje posameznih nalog."
+

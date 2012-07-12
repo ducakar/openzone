@@ -71,7 +71,7 @@ uint Context::buildTexture( const void* data, int width, int height, int format,
   }
 
   bool generateMipmaps = false;
-  int internalFormat;
+  int internalFormat = -1;
   int surface = width * height;
 
   switch( format ) {

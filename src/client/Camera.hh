@@ -84,6 +84,9 @@ class Camera
     // Global colour transformation.
     Mat44         colour;
 
+    Mat44         baseColour;
+    Mat44         nvColour;
+
     Vec3          right;
     Vec3          up;
     Vec3          at;

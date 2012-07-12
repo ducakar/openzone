@@ -66,8 +66,6 @@ void UnitProxy::begin()
   camera.setTaggedEnt( null );
   camera.isExternal = isExternal;
 
-  camera.colour = camera.nightVision ? Camera::NV_COLOUR : Mat44::ID;
-
   ui::mouse.doShow = false;
 
   ui::ui.hudArea->show( true );
@@ -98,7 +96,7 @@ void UnitProxy::begin()
 
 void UnitProxy::end()
 {
-  camera.colour = Mat44::ID;
+  camera.colour = camera.baseColour;
 
   ui::mouse.doShow = true;
 
@@ -535,7 +533,7 @@ void UnitProxy::update()
 
   injuryRatio   = min( injuryRatio, INJURY_CLAMP );
   camera.colour = Math::mix( Mat44::ID, INJURY_COLOUR, min( injuryRatio, 1.0f ) ) *
-                  ( camera.nightVision ? Camera::NV_COLOUR : Mat44::ID );
+                  ( camera.nightVision ? camera.nvColour : camera.baseColour );
   injuryRatio  *= INJURY_SUPPRESSION_COEF;
 
   oldBot = camera.bot;

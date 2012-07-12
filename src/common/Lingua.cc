@@ -36,12 +36,17 @@ Lingua::Lingua() :
   messages( null ), nMessages( 0 )
 {}
 
+Lingua::~Lingua()
+{
+  free();
+}
+
 String Lingua::detectLanguage( const char* language_ )
 {
   String language = language_;
 
   if( !language.isEmpty() ) {
-    if( !PFile( "lingua/" + language + "/main" ).stat() ) {
+    if( !PFile( "lingua/" + language ).stat() ) {
       language = "";
     }
     return language;
@@ -49,7 +54,7 @@ String Lingua::detectLanguage( const char* language_ )
 
   language = SDL_getenv( "LANGUAGE" );
 
-  if( !language.isEmpty() && PFile( "lingua/" + language + "/main" ).stat() ) {
+  if( !language.isEmpty() && PFile( "lingua/" + language ).stat() ) {
     return language;
   }
 
@@ -58,7 +63,7 @@ String Lingua::detectLanguage( const char* language_ )
   if( language.length() >= 5 ) {
     language = language.substring( 0, 2 );
 
-    if( PFile( "lingua/" + language + "/main" ).stat() ) {
+    if( PFile( "lingua/" + language ).stat() ) {
       return language;
     }
   }
@@ -68,7 +73,7 @@ String Lingua::detectLanguage( const char* language_ )
   if( language.length() >= 5 ) {
     language = language.substring( 0, 2 );
 
-    if( PFile( "lingua/" + language + "/main" ).stat() ) {
+    if( PFile( "lingua/" + language ).stat() ) {
       return language;
     }
   }
@@ -97,11 +102,11 @@ const char* Lingua::get( const char* message ) const
   return message;
 }
 
-bool Lingua::initDomain( const char* domain )
+bool Lingua::initMission( const char* mission )
 {
-  free();
+  hard_assert( messages == null );
 
-  PFile file( String::str( "lingua/%s/domain/%s.ozCat", language.cstr(), domain ) );
+  PFile file( String::str( "mission/%s/lingua/%s.ozCat", mission, language.cstr() ) );
 
   if( !file.map() ) {
     return false;
@@ -134,11 +139,11 @@ bool Lingua::initDomain( const char* domain )
 
 bool Lingua::init( const char* language_ )
 {
-  free();
+  hard_assert( messages == null );
 
   language = language_;
 
-  PFile dir( "lingua/" + language + "/main" );
+  PFile dir( "lingua/" + language );
   if( !dir.stat() ) {
     throw Exception( "Invalid locale '%s', does not match any subdirectory in lingua/",
                      language.cstr() );

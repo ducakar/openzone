@@ -1,0 +1,200 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenZone 0.2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2012-02-24 16:10+0100\n"
+"Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
+"Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: English\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#
+# BSP names
+#
+msgid "atlantis"
+msgstr "atlantis"
+
+#
+# BSP names
+#
+msgid "beast bunker"
+msgstr "beast bunker"
+
+msgid "bunker"
+msgstr "bunker"
+
+msgid "forum"
+msgstr "forum"
+
+msgid "house"
+msgstr "house"
+
+msgid "pool"
+msgstr "pool"
+
+msgid "test castle"
+msgstr "test castle"
+
+msgid "tower"
+msgstr "tower"
+
+msgid "tutorial - carying"
+msgstr "tutorial - carying"
+
+msgid "tutorial - movement"
+msgstr "tutorial - movement"
+
+#
+# BSP model names
+#
+msgid "crusher"
+msgstr "crusher"
+
+msgid "ignorant"
+msgstr "ignorant"
+
+msgid "auto door"
+msgstr "auto door"
+
+msgid "manual door"
+msgstr "manual door"
+
+msgid "elevator"
+msgstr "elevator"
+
+msgid "switch"
+msgstr "switch"
+
+#
+# share/class/*.rc
+#
+msgid "bauul"
+msgstr "bauul"
+
+msgid "skull"
+msgstr "skull"
+
+msgid "beast"
+msgstr "beast"
+
+msgid "plasma gun"
+msgstr "plasma gun"
+
+msgid "crate"
+msgstr "crate"
+
+msgid "explosion"
+msgstr "explosion"
+
+msgid "binoculars"
+msgstr "binoculars"
+
+msgid "bomb"
+msgstr "bomb"
+
+msgid "box"
+msgstr "box"
+
+msgid "console"
+msgstr "console"
+
+msgid "cvicek"
+msgstr "cvicek"
+
+msgid "cyborg"
+msgstr "cyborg"
+
+msgid "chaingun"
+msgstr "chaingun"
+
+msgid "data cube"
+msgstr "data cube"
+
+msgid "droid OOM-9"
+msgstr "droid OOM-9"
+
+msgid "droid"
+msgstr "droid"
+
+msgid "blaster"
+msgstr "blaster"
+
+msgid "grenade launcher"
+msgstr "grenade launcher"
+
+msgid "hyperblaster"
+msgstr "hyperblaster"
+
+msgid "barrel"
+msgstr "barrel"
+
+msgid "first aid"
+msgstr "first aid"
+
+msgid "Galileo SatNav"
+msgstr "Galileo SatNav"
+
+msgid "goblin"
+msgstr "goblin"
+
+msgid "axe"
+msgstr "axe"
+
+msgid "grenade"
+msgstr "grenade"
+
+msgid "hover tank"
+msgstr "hover tank"
+
+msgid "key"
+msgstr "key"
+
+msgid "knight"
+msgstr "knight"
+
+msgid "mace"
+msgstr "mace"
+
+msgid "music player"
+msgstr "music player"
+
+msgid "night vision goggles"
+msgstr "night vision goggles"
+
+msgid "palm"
+msgstr "palm"
+
+msgid "pine"
+msgstr "pine"
+
+msgid "raptor"
+msgstr "raptor"
+
+msgid "reaper"
+msgstr "reaper"
+
+msgid "service station"
+msgstr "service station"
+
+msgid "shell"
+msgstr "shell"
+
+msgid "tree"
+msgstr "tree"
+
+msgid "heavy blaster"
+msgstr "heavy blaster"
+
+msgid "gatling gun"
+msgstr "gatling gun"
+
+msgid "cannon"
+msgstr "cannon"
+

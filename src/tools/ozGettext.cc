@@ -226,7 +226,7 @@ static void readLua( File* file )
   }
 }
 
-static void writePOT( const HashString<String>* hs, const char* filePath  )
+static void writePOT( const HashString<String>* hs, const char* filePath )
 {
   BufferStream bs;
   String s;
@@ -335,28 +335,50 @@ int main( int argc, char** argv )
     readClass( file );
   }
 
-  String mainPOT = String::str( "%s/lingua/%s.pot", pkgDir.cstr(), pkgName.cstr() );
-  writePOT( &titles, mainPOT );
+  if( !titles.isEmpty() ) {
+    String mainPOT = String::str( "%s/lingua/%s.pot", pkgDir.cstr(), pkgName.cstr() );
+    Log::print( "%s ...", mainPOT.cstr() );
 
-  titles.clear();
-  titles.dealloc();
+    writePOT( &titles, mainPOT );
 
-  File missionDir( pkgDir + "/lua/mission" );
-  files = missionDir.ls();
+    titles.clear();
+    titles.dealloc();
 
-  foreach( file, files.iter() ) {
-    if( !file->hasExtension( "lua" ) ) {
+    Log::printEnd( " OK" );
+  }
+
+  File missionsDir( pkgDir + "/mission" );
+  DArray<File> missions = missionsDir.ls();
+
+  foreach( mission, missions.iter() ) {
+    mission->stat();
+
+    if( mission->type() != File::DIRECTORY ) {
       continue;
     }
 
-    readLua( file );
+    files = mission->ls();
 
-    String missionPOT = String::str( "%s/lingua/%s.pot", pkgDir.cstr(),
-                                     file->baseName().cstr() );
-    writePOT( &messages, missionPOT );
+    foreach( file, files.iter() ) {
+      if( !file->hasExtension( "lua" ) ) {
+        continue;
+      }
 
-    messages.clear();
-    messages.dealloc();
+      readLua( file );
+
+      if( !messages.isEmpty() ) {
+        String missionPOT = mission->path() + "/lingua/messages.pot";
+        Log::print( "%s ...", missionPOT.cstr() );
+
+        File::mkdir( mission->path() + "/lingua" );
+        writePOT( &messages, mission->path() + "/lingua/messages.pot" );
+
+        messages.clear();
+        messages.dealloc();
+
+        Log::printEnd( " OK" );
+      }
+    }
   }
 
   return EXIT_SUCCESS;
