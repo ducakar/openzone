@@ -42,7 +42,7 @@ function onCreate()
 
   local me = ozOrbisAddPlayer( OZ_FORCE, 137, -6, 73, OZ_SOUTH )
   ozCameraAddSwitchableUnit( me )
---   ozCameraSwitchTo( me )
+  ozCameraSwitchTo( me )
 
 --   ozCameraSetState( OZ_CAMERA_CINEMATIC )
 --   ozCameraAddMove( 131, -12, 85, 0, 90, 1 )

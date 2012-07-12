@@ -57,6 +57,9 @@ class Loader
     static const uint AUDIO_CLEAR_INTERVAL      = 5   * Timer::TICKS_PER_SEC;  //   5 s (+ 3 s)
     static const uint AUDIO_CLEAR_LAG           = 3   * Timer::TICKS_PER_SEC;
 
+    static const uint BSPAUDIO_CLEAR_INTERVAL   = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 80 s)
+    static const uint BSPAUDIO_CLEAR_LAG        = 80  * Timer::TICKS_PER_SEC;
+
     struct ScreenshotInfo
     {
       char  path[256];

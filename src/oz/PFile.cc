@@ -120,7 +120,7 @@ PFile& PFile::operator = ( PFile&& file )
 }
 
 PFile::PFile( const char* path ) :
-  filePath( path ), fileType( File::MISSING ), fileSize( -1 ), data( null )
+  filePath( path ), fileType( File::MISSING ), fileSize( -1 ), fileTime( 0 ), data( null )
 {}
 
 void PFile::setPath( const char* path )

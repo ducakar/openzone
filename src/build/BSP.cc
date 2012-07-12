@@ -1128,8 +1128,6 @@ void BSP::saveClient()
 {
   File destFile( "bsp/" + name + ".ozcBSP" );
 
-  int flags = 0;
-
   compiler.beginMesh();
 
   compiler.enable( Compiler::UNIQUE );
@@ -1147,11 +1145,9 @@ void BSP::saveClient()
       }
 
       if( tex.type & QBSP_ALPHA_TYPE_BIT ) {
-        flags |= Mesh::ALPHA_BIT;
         compiler.blend( true );
       }
       else {
-        flags |= Mesh::SOLID_BIT;
         compiler.blend( false );
       }
 
@@ -1186,7 +1182,6 @@ void BSP::saveClient()
 
   BufferStream os;
 
-  os.writeInt( flags );
   os.writeVec4( waterFogColour );
   os.writeVec4( lavaFogColour );
 

@@ -75,9 +75,6 @@ uint Context::buildTexture( const void* data, int width, int height, int format,
   int surface = width * height;
 
   switch( format ) {
-    default: {
-      hard_assert( false );
-    }
     case GL_BGR:
     case GL_RGB: {
       internalFormat = useS3TC && surface > 64 ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_RGB;
@@ -90,6 +87,10 @@ uint Context::buildTexture( const void* data, int width, int height, int format,
     }
     case GL_LUMINANCE: {
       internalFormat = useS3TC && surface > 64 ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_LUMINANCE;
+      break;
+    }
+    default: {
+      hard_assert( false );
       break;
     }
   }
@@ -203,9 +204,6 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
   }
 
   switch( forceFormat ) {
-    default: {
-      hard_assert( false );
-    }
     case GL_LUMINANCE: {
       bpp    = 8;
       format = GL_LUMINANCE;
@@ -246,6 +244,10 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
       FreeImage_Unload( dib );
       dib = newDIB;
 
+      break;
+    }
+    default: {
+      hard_assert( false );
       break;
     }
   }

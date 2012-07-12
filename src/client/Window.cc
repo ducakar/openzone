@@ -168,7 +168,12 @@ void Window::setFullscreen( bool fullscreen )
     isFull  = !isFull;
     hasGrab = true;
 
-    resize();
+    SDL_FreeSurface( descriptor );
+    descriptor = SDL_SetVideoMode( width, height, 0, flags );
+
+    if( descriptor == null ) {
+      throw Exception( "Fullscreen mode switch failed" );
+    }
 
 # endif
 #else
@@ -239,11 +244,11 @@ void Window::init()
   SDL_EnableScreenSaver();
 #endif
 
-  display          = config.include( "window.display",    0     ).asInt();
-  desiredWidth     = config.include( "window.width",      0     ).asInt();
-  desiredHeight    = config.include( "window.height",     0     ).asInt();
-  isFull           = config.include( "window.fullscreen", false ).asBool();
-  bool enableVSync = config.include( "window.vsync",      true  ).asBool();
+  display          = config.include( "window.display",    0    ).asInt();
+  desiredWidth     = config.include( "window.width",      0    ).asInt();
+  desiredHeight    = config.include( "window.height",     0    ).asInt();
+  isFull           = config.include( "window.fullscreen", true ).asBool();
+  bool enableVSync = config.include( "window.vsync",      true ).asBool();
 
 #if SDL_MAJOR_VERSION < 2
 
@@ -290,7 +295,7 @@ void Window::init()
 
 #if SDL_MAJOR_VERSION < 2
 
-  resize();
+  descriptor = SDL_SetVideoMode( width, height, 0, flags );
 
   SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION,
                      OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION );

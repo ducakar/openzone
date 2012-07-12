@@ -60,11 +60,11 @@ void Mouse::update()
     int moveX = input.mouseX;
     int moveY = input.mouseY;
 
-#ifdef __linux__
+#if defined( __linux__ ) && SDL_MAJOR_VERSION < 2
 
-    // Compensate lack of mouse acceleration in fullscreen mode on X server. This code is not based
-    // on actual code from X.Org, but experimentally tuned to match default X server acceleration
-    // as closely as possible.
+    // Compensate lack of mouse acceleration on X server when input is grabbed. This code is not
+    // based on actual code from X.Org, but experimentally tuned to match default X server
+    // acceleration as closely as possible.
     if( window.isFull ) {
       float move2  = Math::sqrt( float( moveX*moveX + moveY*moveY ) );
       float factor = min( 0.5f + max( move2 - 8.0f, 0.0f ) * 0.04f, 2.0f );

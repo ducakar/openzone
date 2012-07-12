@@ -46,12 +46,13 @@ const float UnitProxy::SHOULDER_CAM_RIGHT       = 0.25f;
 const float UnitProxy::SHOULDER_CAM_UP          = 0.25f;
 const float UnitProxy::VEHICLE_CAM_UP_FACTOR    = 0.15f;
 const float UnitProxy::BOB_SUPPRESSION_COEF     = 0.80f;
-const float UnitProxy::INJURY_SUPPRESSION_COEF  = 0.98f;
 const float UnitProxy::BINOCULARS_MAGNIFICATION = 0.20f;
-const Mat44 UnitProxy::INJURY_COLOUR            = Mat44( 1.0f, 0.0f, 0.0f, 0.0f,
-                                                         0.5f, 0.5f, 0.0f, 0.0f,
-                                                         0.5f, 0.0f, 0.5f, 0.0f,
-                                                         0.5f, 0.0f, 0.0f, 1.0f );
+const float UnitProxy::INJURY_SUPPRESSION_COEF  = 0.98f;
+const float UnitProxy::INJURY_CLAMP             = 2.00f;
+const Mat44 UnitProxy::INJURY_COLOUR            = Mat44( 0.4f, 0.2f, 0.2f, 0.0f,
+                                                         0.4f, 0.2f, 0.2f, 0.0f,
+                                                         0.4f, 0.2f, 0.2f, 0.0f,
+                                                         0.2f, 0.0f, 0.0f, 1.0f );
 
 void UnitProxy::begin()
 {
@@ -528,14 +529,14 @@ void UnitProxy::update()
 
   foreach( event, bot->events.citer() ) {
     if( event->id == Object::EVENT_DAMAGE ) {
-      injuryRatio = max( injuryRatio, event->intensity );
+      injuryRatio += event->intensity;
     }
   }
 
-  camera.colour = Math::mix( Mat44::ID, INJURY_COLOUR, injuryRatio ) *
+  injuryRatio   = min( injuryRatio, INJURY_CLAMP );
+  camera.colour = Math::mix( Mat44::ID, INJURY_COLOUR, min( injuryRatio, 1.0f ) ) *
                   ( camera.nightVision ? Camera::NV_COLOUR : Mat44::ID );
-
-  injuryRatio *= INJURY_SUPPRESSION_COEF;
+  injuryRatio  *= INJURY_SUPPRESSION_COEF;
 
   oldBot = camera.bot;
 }

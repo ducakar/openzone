@@ -18,45 +18,36 @@
  */
 
 /**
- * @file client/BSP.hh
+ * @file client/BSPAudio.hh
  */
 
 #pragma once
 
-#include "client/Mesh.hh"
+#include "client/common.hh"
 
 namespace oz
 {
 namespace client
 {
 
-class BSP
+class BSPAudio
 {
   private:
 
     const matrix::BSP* bsp;
 
-    Mesh  mesh;
+  private:
 
-    PFile file;
-
-  public:
-
-    Vec4 waterFogColour;
-    Vec4 lavaFogColour;
-
-    bool isPreloaded;
-    bool isLoaded;
+    void playDemolish( const Struct* str, int sound ) const;
+    void playSound( const Entity* entity, int sound ) const;
+    void playContSound( const Entity* entity, int sound ) const;
 
   public:
 
-    explicit BSP( const matrix::BSP* bsp );
-    ~BSP();
+    explicit BSPAudio( const matrix::BSP* bsp );
+    ~BSPAudio();
 
-    void preload();
-    void load();
-
-    void draw( const Struct* str );
+    void play( const Struct* str ) const;
 
 };
 
