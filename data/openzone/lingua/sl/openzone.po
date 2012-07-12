@@ -1,0 +1,200 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenZone 0.2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2012-02-24 16:10+0100\n"
+"Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
+"Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: Slovenian\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#
+# BSP names
+#
+msgid "atlantis"
+msgstr "atlantida"
+
+#
+# BSP names
+#
+msgid "beast bunker"
+msgstr "beštji bunker"
+
+msgid "bunker"
+msgstr "bunker"
+
+msgid "forum"
+msgstr "forum"
+
+msgid "house"
+msgstr "hiša"
+
+msgid "pool"
+msgstr "bazen"
+
+msgid "test castle"
+msgstr "testni grad"
+
+msgid "tower"
+msgstr "stolp"
+
+msgid "tutorial - carying"
+msgstr "vpeljava - prenašanje"
+
+msgid "tutorial - movement"
+msgstr "vpeljava - premikanje"
+
+#
+# BSP model names
+#
+msgid "crusher"
+msgstr "speštalnik"
+
+msgid "ignorant"
+msgstr "ignorant"
+
+msgid "auto door"
+msgstr "samodejna vrata"
+
+msgid "manual door"
+msgstr "vrata"
+
+msgid "elevator"
+msgstr "dvigalo"
+
+msgid "switch"
+msgstr "stikalo"
+
+#
+# Class names
+#
+msgid "bauul"
+msgstr "bauul"
+
+msgid "skull"
+msgstr "lobanja"
+
+msgid "beast"
+msgstr "beštija"
+
+msgid "plasma gun"
+msgstr "plazemska puška"
+
+msgid "crate"
+msgstr "zaboj"
+
+msgid "explosion"
+msgstr "eksplozija"
+
+msgid "binoculars"
+msgstr "daljnogled"
+
+msgid "bomb"
+msgstr "bomba"
+
+msgid "box"
+msgstr "škatla"
+
+msgid "console"
+msgstr "konzola"
+
+msgid "cvicek"
+msgstr "cviček"
+
+msgid "cyborg"
+msgstr "kiborg"
+
+msgid "chaingun"
+msgstr "strojnica"
+
+msgid "data cube"
+msgstr "podatkovna kocka"
+
+msgid "droid OOM-9"
+msgstr "droid OOM-9"
+
+msgid "droid"
+msgstr "droid"
+
+msgid "blaster"
+msgstr "udarnik"
+
+msgid "grenade launcher"
+msgstr "granatomet"
+
+msgid "hyperblaster"
+msgstr "težki udarnik"
+
+msgid "barrel"
+msgstr "sod"
+
+msgid "first aid"
+msgstr "prva pomoč"
+
+msgid "Galileo SatNav"
+msgstr "navigacija Galileo"
+
+msgid "goblin"
+msgstr "škrat"
+
+msgid "axe"
+msgstr "sekira"
+
+msgid "grenade"
+msgstr "granata"
+
+msgid "hover tank"
+msgstr "lebdeči tank"
+
+msgid "key"
+msgstr "ključ"
+
+msgid "knight"
+msgstr "vitez"
+
+msgid "mace"
+msgstr "buzdovan"
+
+msgid "music player"
+msgstr "predvajalnik glasbe"
+
+msgid "night vision goggles"
+msgstr "očala za nočno gledanje"
+
+msgid "palm"
+msgstr "palma"
+
+msgid "pine"
+msgstr "smreka"
+
+msgid "raptor"
+msgstr "raptor"
+
+msgid "reaper"
+msgstr "kosec"
+
+msgid "service station"
+msgstr "servisna postaja"
+
+msgid "shell"
+msgstr "granata"
+
+msgid "tree"
+msgstr "drevo"
+
+msgid "heavy blaster"
+msgstr "težki udarnik"
+
+msgid "gatling gun"
+msgstr "Gatlingova strojnica"
+
+msgid "cannon"
+msgstr "top"
+

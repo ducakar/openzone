@@ -34,7 +34,7 @@ class Lingua
 {
   private:
 
-    void buildCatalogue( const char* lang, const char* category, const char* name );
+    void buildCatalogue( const char* directory, const char* catalogue );
 
   public:
 

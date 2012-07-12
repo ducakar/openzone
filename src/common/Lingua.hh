@@ -33,8 +33,8 @@
  * Wrapper macro for <tt>lingua.get()</tt>.
  *
  * This macro is needed so that standard <tt>xgettext</tt> command can be used to extract strings
- * for translation from source. Sadly <tt>xgettext</tt> is not capable of recognising C++ constructs
- * like <tt>oz::lingua.get()</tt>, that's why we need this macro.
+ * for translation from source. Unfortunately <tt>xgettext</tt> is not capable of recognising C++
+ * constructs like <tt>oz::lingua.get()</tt>, that's why we need this macro.
  *
  * @ingroup common
  */
@@ -74,9 +74,28 @@ class Lingua
   public:
 
     /**
+     * Check given language or, if null/empty string, try to detect it.
+     *
+     * If given <tt>language</tt> is a non-empty string, check if translations exist for that
+     * language, i.e. it checks for PhysicsFS directory <tt>lingua/\<language\>/</tt>. If
+     * translations exist <tt>language</tt> is returned, if don't, an empty string is returned.
+     *
+     * If <tt>language</tt> is null or en empty string, it tries to derive language from environment
+     * variables (currently this only test Linux-specific variables LANGUAGE, LC_MESSAGES and LANG
+     * in that order). The first derived language code for which translations exist is returned.
+     * If none is valid, an empty string is returned.
+     */
+    static String detectLanguage( const char* language );
+
+    /**
      * Default constructor, creates uninitialised instance.
      */
     Lingua();
+
+    /**
+     * Destructor.
+     */
+    ~Lingua();
 
     /**
      * No copying.
@@ -89,37 +108,23 @@ class Lingua
     Lingua& operator = ( const Lingua& ) = delete;
 
     /**
-     * Check given language or, if null/empty string, try to detect it.
-     *
-     * If given <tt>language</tt> is a non-empty string, check if translations exist for that
-     * language, i.e. it checks for PhysicsFS directory lingua/\<language\>/main. If translations
-     * exist <tt>language</tt> is returned, if don't, an empty string is returned.
-     *
-     * If <tt>language</tt> is null or en empty string, it tries to derive language from environment
-     * variables (currently this only test Linux-specific variables LANGUAGE, LC_MESSAGES and LANG
-     * in that order). The first derived language code for which translations exist is returned.
-     * If none is valid, an empty string is returned.
-     */
-    static String detectLanguage( const char* language );
-
-    /**
      * Obtain translation from the loaded catalogue.
      */
     const char* get( const char* message ) const;
 
     /**
-     * Initialise per-mission Lingua instance from the given catalogue.
+     * Initialise per-mission Lingua instance.
      *
-     * This function loads catalogue from <tt>lingua/\<language\>/domain/\<domain\>.ozCat</tt> that
-     * contains translations of strings that appear inside mission scripts.
+     * This function loads catalogue from <tt>mission/\<mission\>/lingua/\<language\>.ozCat</tt>
+     * that contains translations of strings that appear inside mission scripts.
      */
-    bool initDomain( const char* domain );
+    bool initMission( const char* mission );
 
     /**
      * Initialise global Lingua instance.
      *
      * The global instance must be initialised first so that <tt>language</tt> member is set
-     * properly. This function loads all catalogues from <tt>lingua/\<language\>/main</tt>
+     * properly. This function loads all catalogues from <tt>lingua/\<language\>/</tt>
      * directory.
      *
      * The global Lingua instance contains translations for strings that appear in the engine (UI)

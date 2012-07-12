@@ -11,8 +11,11 @@
 
 /data/*/*
 !/data/netradiant
-!/data/*/lua
 !/data/*/glsl
+!/data/*/lingua
+!/data/*/lua
+!/data/*/mission
+*.pot
 
 /share
 /support

@@ -682,9 +682,11 @@ void Struct::destroy()
 Struct::Struct( const BSP* bsp_, int index_, const Point& p_, Heading heading_ )
 {
   bsp         = bsp_;
+
   p           = p_;
-  index       = index_;
   heading     = heading_;
+
+  index       = index_;
 
   life        = bsp->life;
   resistance  = bsp->resistance;
@@ -724,9 +726,11 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
   invTransf   = istream->readMat44();
 
   bsp         = bsp_;
+
   p           = istream->readPoint();
-  index       = istream->readInt();
   heading     = Heading( istream->readInt() );
+
+  index       = istream->readInt();
 
   life        = istream->readFloat();
   resistance  = bsp->resistance;
@@ -777,8 +781,9 @@ void Struct::write( BufferStream* ostream )
   ostream->writeMat44( invTransf );
 
   ostream->writePoint( p );
-  ostream->writeInt( index );
   ostream->writeInt( heading );
+
+  ostream->writeInt( index );
 
   ostream->writeFloat( life );
   ostream->writeFloat( demolishing );

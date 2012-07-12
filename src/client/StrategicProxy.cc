@@ -69,7 +69,7 @@ void StrategicProxy::begin()
 
 void StrategicProxy::end()
 {
-  camera.colour = Mat44::ID;
+  camera.colour = camera.baseColour;
 
   ui::mouse.doShow = true;
 
@@ -209,7 +209,7 @@ void StrategicProxy::update()
 
   camera.smoothMoveTo( desiredPos );
 
-  camera.colour = camera.nightVision ? Camera::NV_COLOUR : Mat44::ID;
+  camera.colour = camera.nightVision ? camera.nvColour : camera.baseColour;
 }
 
 void StrategicProxy::reset()

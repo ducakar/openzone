@@ -631,7 +631,8 @@ static int ozStrBindBoundObj( lua_State* l )
   }
 
   ms.obj = orbis.objects[ ms.str->boundObjects[index] ];
-  return 0;
+  l_pushbool( ms.obj != null );
+  return 1;
 }
 
 static int ozStrNumEnts( lua_State* l )
@@ -650,7 +651,8 @@ static int ozStrBindEnt( lua_State* l )
   ENT_INDEX( l_toint( 1 ) );
 
   ms.ent = ent;
-  return 0;
+  l_pushbool( ms.ent != null );
+  return 1;
 }
 
 static int ozStrOverlaps( lua_State* l )
@@ -1491,7 +1493,8 @@ static int ozObjBindItem( lua_State* l )
   }
 
   ms.obj = orbis.objects[ ms.obj->items[index] ];
-  return 0;
+  l_pushbool( ms.obj != null );
+  return 1;
 }
 
 static int ozObjAddItem( lua_State* l )
@@ -1523,7 +1526,7 @@ static int ozObjAddItem( lua_State* l )
   }
 
   l_pushbool( true );
-  return 0;
+  return 1;
 }
 
 static int ozObjRemoveItem( lua_State* l )

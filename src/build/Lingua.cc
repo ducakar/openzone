@@ -28,16 +28,14 @@ namespace build
 
 Lingua lingua;
 
-void Lingua::buildCatalogue( const char* lang, const char* category, const char* name )
+void Lingua::buildCatalogue( const char* directory, const char* catalogue )
 {
-  Log::print( "%s/%s ...", lang, name );
+  Log::print( "%s/%s ...", directory, catalogue );
 
-  File::mkdir( "lingua" );
-  File::mkdir( String::str( "lingua/%s", lang ) );
-  File::mkdir( String::str( "lingua/%s/%s", lang, category ) );
+  File::mkdir( String::str( "%s", directory ) );
 
-  PFile srcFile( String::str( "lingua/%s/%s/%s.po", lang, category, name ) );
-  File outFile( String::str( "lingua/%s/%s/%s.ozCat", lang, category, name ) );
+  PFile srcFile( String::str( "%s/%s.po", directory, catalogue ) );
+  File outFile( String::str( "%s/%s.ozCat", directory, catalogue ) );
 
   String realSrcPath = srcFile.realDir() + "/" + srcFile.path();
 
@@ -185,6 +183,10 @@ void Lingua::build()
   PFile linguaDir( "lingua" );
   DArray<PFile> languages = linguaDir.ls();
 
+  if( !languages.isEmpty() ) {
+    File::mkdir( linguaDir.path() );
+  }
+
   foreach( langDir, languages.iter() ) {
     langDir->stat();
 
@@ -192,28 +194,38 @@ void Lingua::build()
       continue;
     }
 
-    String langCode = langDir->baseName();
+    DArray<PFile> catalogues = langDir->ls();
 
-    PFile linguaMainDir( langDir->path() + "/main" );
-    DArray<PFile> mainCats = linguaMainDir.ls();
-
-    foreach( file, mainCats.citer() ) {
-      if( !file->hasExtension( "po" ) ) {
-        continue;
-      }
-
-      buildCatalogue( langCode, "main", file->baseName() );
+    if( !catalogues.isEmpty() ) {
+      File::mkdir( langDir->path() );
     }
 
-    PFile linguaDomainDir( langDir->path() + "/domain" );
-    DArray<PFile> domainCats = linguaDomainDir.ls();
-
-    foreach( file, domainCats.citer() ) {
-      if( !file->hasExtension( "po" ) ) {
+    foreach( catalogue, catalogues.citer() ) {
+      if( !catalogue->hasExtension( "po" ) ) {
         continue;
       }
 
-      buildCatalogue( langCode, "domain", file->baseName() );
+      buildCatalogue( langDir->path(), catalogue->baseName() );
+    }
+  }
+
+  PFile missionsDir( "mission" );
+  DArray<PFile> missions = missionsDir.ls();
+
+  foreach( mission, missions.citer() ) {
+    linguaDir.setPath( mission->path() + "/lingua" );
+    languages = linguaDir.ls();
+
+    foreach( catalogue, languages.citer() ) {
+      if( !catalogue->hasExtension( "po" ) ) {
+        continue;
+      }
+
+      File::mkdir( "mission" );
+      File::mkdir( mission->path() );
+      File::mkdir( linguaDir.path() );
+
+      buildCatalogue( linguaDir.path(), catalogue->baseName() );
     }
   }
 

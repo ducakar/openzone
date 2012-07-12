@@ -47,10 +47,10 @@ namespace client
 Render render;
 
 const float Render::WIDE_CULL_FACTOR       = 6.0f;
-const float Render::CELL_WIDE_RADIUS       =
-  ( Cell::SIZE / 2 + Object::MAX_DIM * WIDE_CULL_FACTOR ) * Math::sqrt( 2.0f );
 const float Render::OBJECT_VISIBILITY_COEF = 0.004f;
 const float Render::FRAG_VISIBILITY_RANGE2 = 150.0f*150.0f;
+const float Render::CELL_RADIUS            =
+  ( Cell::SIZE / 2 + Object::MAX_DIM * WIDE_CULL_FACTOR ) * Math::sqrt( 2.0f );
 
 const float Render::NIGHT_FOG_COEFF        = 2.0f;
 const float Render::NIGHT_FOG_DIST         = 0.3f;
@@ -67,7 +67,7 @@ const Vec4  Render::NONSOLID_AABB          = Vec4( 0.70f, 0.80f, 0.90f, 0.30f );
 
 struct Render::DrawEntry
 {
-  float dist;
+  float distance;
   union
   {
     const Struct* str;
@@ -76,17 +76,17 @@ struct Render::DrawEntry
 
   DrawEntry() = default;
 
-  explicit DrawEntry( float dist_, const Struct* str_ ) :
-    dist( dist_ ), str( str_ )
+  explicit DrawEntry( float distance_, const Struct* str_ ) :
+    distance( distance_ ), str( str_ )
   {}
 
-  explicit DrawEntry( float dist_, const Object* obj_ ) :
-    dist( dist_ ), obj( obj_ )
+  explicit DrawEntry( float distance_, const Object* obj_ ) :
+    distance( distance_ ), obj( obj_ )
   {}
 
   bool operator < ( const DrawEntry& de )
   {
-    return dist < de.dist;
+    return distance < de.distance;
   }
 };
 
@@ -99,27 +99,29 @@ void Render::scheduleCell( int cellX, int cellY )
       drawnStructs.set( cell.structs[i] );
 
       Struct* str    = orbis.structs[ cell.structs[i] ];
-      float   dist   = ( str->p - camera.p ) * camera.at;
       float   radius = str->dim().fastN();
 
       if( frustum.isVisible( str->p, radius ) ) {
-        structs.add( DrawEntry( dist, str ) );
+        float distance = ( str->p - camera.p ).fastN();
+
+        structs.add( DrawEntry( distance, str ) );
       }
     }
   }
 
   foreach( obj, cell.objects.citer() ) {
-    float dist   = ( obj->p - camera.p ) * camera.at;
     float radius = obj->dim.fastN();
 
     if( obj->flags & Object::WIDE_CULL_BIT ) {
-      radius *= WIDE_CULL_FACTOR;
+      radius *= Object::WIDE_CULL_BIT;
     }
 
-    if( radius / ( dist * camera.mag ) >= OBJECT_VISIBILITY_COEF &&
-        frustum.isVisible( obj->p, radius ) )
-    {
-      objects.add( DrawEntry( dist, obj ) );
+    if( frustum.isVisible( obj->p, radius ) ) {
+      float distance = ( obj->p - camera.p ).fastN();
+
+      if( radius / ( distance * camera.mag ) >= OBJECT_VISIBILITY_COEF ) {
+        objects.add( DrawEntry( distance, obj ) );
+      }
     }
   }
 
@@ -204,7 +206,7 @@ void Render::prepareDraw()
   for( int i = span.minX; i <= span.maxX; ++i, x += Cell::SIZE ) {
     float y = minYCentre;
     for( int j = span.minY; j <= span.maxY; ++j, y += Cell::SIZE ) {
-      if( frustum.isVisible( x, y, CELL_WIDE_RADIUS ) ) {
+      if( frustum.isVisible( x, y, CELL_RADIUS ) ) {
         scheduleCell( i, j );
       }
     }

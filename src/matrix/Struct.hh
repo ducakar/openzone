@@ -111,8 +111,9 @@ class Struct : public Bounds
     const BSP* bsp;
 
     Point      p;
-    int        index;
     Heading    heading;
+
+    int        index;
 
     float      life;
     float      resistance;

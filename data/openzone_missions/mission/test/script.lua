@@ -25,7 +25,30 @@
  * Test world.
 ]]--
 
+oz_ticks = 300
+oz_direction = 1
+
 function onUpdate()
+  if oz_direction == 1 then
+    oz_ticks = oz_ticks - 1
+
+    if oz_ticks == 0 then
+      oz_direction = 0
+    end
+  else
+    oz_ticks = oz_ticks + 1
+
+    if oz_ticks == 600 then
+      oz_direction = 1
+    end
+  end
+
+  local t = ( 300 - oz_ticks ) / 300.0
+
+  ozCameraBaseColour( 0.4 + t*0.6, 0.5 - t*0.5, 0.4 - t*0.4, 0.0,
+                      0.4 - t*0.4, 0.5 + t*0.5, 0.4 - t*0.4, 0.0,
+                      0.4 - t*0.4, 0.5 - t*0.5, 0.4 + t*0.6, 0.0,
+                              0.0,         0.5,         0.4, 1.0 )
 end
 
 function onCreate()
@@ -50,6 +73,11 @@ function onCreate()
 --   ozCameraAddMove( 141, -12, 85, 0, 90, 1 )
 --   ozCameraAddMove( 141, -12, 85, 0, 0, 1 )
 --   ozCameraAddStateSwitch( OZ_CAMERA_STRATEGIC )
+
+  ozCameraBaseColour( 0.3, 0.5, 0.4, 0.0,
+                      0.3, 0.5, 0.4, 0.0,
+                      0.3, 0.5, 0.4, 0.0,
+                      0.3, 0.5, 0.4, 1.0 )
 
   init_sample()
 

@@ -468,7 +468,6 @@ int Client::main( int argc, char** argv )
     language = Lingua::detectLanguage( null );
 
     if( language.isEmpty() ) {
-      System::bell();
       language = "en";
     }
     config.add( "lingua", language );

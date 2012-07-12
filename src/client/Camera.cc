@@ -250,6 +250,10 @@ void Camera::reset()
   rotMat     = Mat44::rotation( rot );
   rotTMat    = ~rotTMat;
 
+  colour        = Mat44::ID;
+  baseColour    = Mat44::ID;
+  nvColour      = NV_COLOUR;
+
   right      = rotMat.x.vec3();
   up         = rotMat.y.vec3();
   at         = -rotMat.z.vec3();
@@ -302,6 +306,8 @@ void Camera::read( InputStream* istream )
   rotTMat    = ~rotMat;
 
   colour     = istream->readMat44();
+  baseColour = istream->readMat44();
+  nvColour   = istream->readMat44();
 
   right      = rotMat.x.vec3();
   up         = rotMat.y.vec3();
@@ -353,6 +359,8 @@ void Camera::write( BufferStream* ostream ) const
   ostream->writeFloat( relV );
 
   ostream->writeMat44( colour );
+  ostream->writeMat44( baseColour );
+  ostream->writeMat44( nvColour );
 
   ostream->writeInt( bot );
   ostream->writeInt( vehicle );
@@ -379,8 +387,6 @@ void Camera::init()
   height        = window.height;
   centreX       = window.width / 2;
   centreY       = window.height / 2;
-
-  colour        = Mat44::ID;
 
   float angle   = Math::rad( config.include( "camera.angle", 80.0f ).asFloat() );
   aspect        = config.include( "camera.aspect", 0.0f ).asFloat();
