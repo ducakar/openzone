@@ -63,7 +63,9 @@ class Library
     HashString<int, 16>  caelumIndices;
     HashString<int, 16>  terraIndices;
     HashString<int, 256> modelIndices;
+
     HashString<int, 16>  nameListIndices;
+    HashString<int, 64>  musicIndices;
 
     HashString<int, 8>   deviceIndices;
     HashString<int, 16>  imagoIndices;
@@ -96,6 +98,8 @@ class Library
     int caelumIndex( const char* name ) const;
     int terraIndex( const char* name ) const;
     int modelIndex( const char* name ) const;
+
+    int musicIndex( const char* name ) const;
     int nameListIndex( const char* name ) const;
 
     int deviceIndex( const char* name ) const;

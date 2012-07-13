@@ -45,6 +45,7 @@ const Font::Info Font::INFOS[MAX] = {
   { "ui/font/DroidSans.ttf",     13 },
   { "ui/font/DroidSans.ttf",     11 },
   { "ui/font/DroidSans.ttf",     14 },
+  { "ui/font/DroidSans.ttf",     18 },
 };
 
 void Font::load()

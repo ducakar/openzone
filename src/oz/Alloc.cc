@@ -196,7 +196,7 @@ static void* allocateObject( void* ptr, size_t size )
 {
 #ifdef OZ_TRACK_LEAKS
 
-if( !isConstructed ) {
+  if( !isConstructed ) {
 # if defined( __native_client__ )
     pthread_mutex_init( &traceEntryListLock, null );
 # elif defined( _WIN32 )

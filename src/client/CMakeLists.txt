@@ -52,6 +52,7 @@ add_library( client STATIC
   ui/Area.cc
   ui/BuildMenu.cc
   ui/Button.cc
+  ui/CinematicText.cc
   ui/DebugFrame.cc
   ui/Font.cc
   ui/Frame.cc

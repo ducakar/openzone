@@ -40,19 +40,16 @@ class Area
 
   public:
 
-    // Special value for x and y.
-    static const int CENTRE          = 0x10000000;
+    static const int CENTRE          = 0x10000000; ///< Special value for x and y.
 
-    // if onUpdate should be called
-    static const int UPDATE_BIT      = 0x01;
-    // ignore when passing events
-    static const int IGNORE_BIT      = 0x02;
-    // a child with GRAB_BIT get exclusive focus for events
-    static const int GRAB_BIT        = 0x04;
-    // do not draw
-    static const int HIDDEN_BIT      = 0x08;
-    // show in both freelook and interface mode
-    static const int PINNED_BIT      = 0x10;
+    static const int UPDATE_BIT      = 0x01;       ///< If <tt>onUpdate()</tt> should be called.
+    static const int IGNORE_BIT      = 0x02;       ///< Ignore when passing events.
+    static const int GRAB_BIT        = 0x04;       ///< A child with GRAB_BIT get exclusive focus
+                                                   ///< for events
+    static const int HIDDEN_BIT      = 0x08;       ///< Do not draw.
+    static const int PINNED_BIT      = 0x10;       ///< Show in both freelook and interface mode.
+    static const int DISABLED_BIT    = 0x20;       ///< Hide and disable both <tt>onUpdate()</tt>
+                                                   ///< and <tt>show()</tt> methods.
 
     // text alignment
     static const int ALIGN_LEFT      = 0x00;
@@ -111,6 +108,7 @@ class Area
     void move( int moveX, int moveY );
 
     void show( bool doShow );
+    void enable( bool doEnable );
 
     void add( Area* area, int localX, int localY );
     void remove( Area* area );

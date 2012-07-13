@@ -153,10 +153,10 @@ void UI::load()
     root->add( debugFrame, Area::CENTRE, -16 - questFrame->height );
   }
 
-  strategicArea->show( false );
-  hudArea->show( false );
-  inventory->show( false );
-  infoFrame->show( false );
+  strategicArea->enable( false );
+  hudArea->enable( false );
+  inventory->enable( false );
+  infoFrame->enable( false );
 
   loadingScreen->raise();
 }

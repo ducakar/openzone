@@ -200,10 +200,6 @@ void Shader::loadProgram( int id )
   OZ_REGISTER_ATTRIBUTE( Attrib::POSITION, "inPosition" );
   OZ_REGISTER_ATTRIBUTE( Attrib::TEXCOORD, "inTexCoord" );
   OZ_REGISTER_ATTRIBUTE( Attrib::NORMAL,   "inNormal"   );
-  OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,  "inTangent"  );
-  OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL, "inBinormal" );
-  OZ_REGISTER_ATTRIBUTE( Attrib::BONES,    "inBones"    );
-  OZ_REGISTER_ATTRIBUTE( Attrib::BLEND,    "inBlend"    );
 
   glLinkProgram( programs[id].program );
 

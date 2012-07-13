@@ -36,26 +36,6 @@ namespace client
 namespace ui
 {
 
-DebugFrame::DebugFrame() :
-  Frame( 560, 10 + 7 * ( Font::INFOS[Font::MONO].height + 2 ), OZ_GETTEXT( "Debug" ) )
-{
-  flags = PINNED_BIT;
-
-  x = ( camera.width - width ) / 2;
-
-  int height = Font::INFOS[Font::MONO].height + 2;
-
-  camPosRot.set( 5, 5 + height * 6, ALIGN_NONE, Font::MONO, " " );
-
-  botPosRot.set( 5, 5 + height * 5, ALIGN_NONE, Font::MONO, " " );
-  botVelMom.set( 5, 5 + height * 4, ALIGN_NONE, Font::MONO, " " );
-  botFlagsState.set( 5, 5 + height * 3, ALIGN_NONE, Font::MONO, " " );
-
-  tagPos.set( 5, 5 + height * 2, ALIGN_NONE, Font::MONO, " " );
-  tagVelMom.set( 5, 5 + height * 1, ALIGN_NONE, Font::MONO, " " );
-  tagFlags.set( 5, 5 + height * 0, ALIGN_NONE, Font::MONO, " " );
-}
-
 void DebugFrame::onDraw()
 {
   Frame::onDraw();
@@ -115,6 +95,26 @@ void DebugFrame::onDraw()
                   ( dyn->flags & Object::ON_LADDER_BIT ) != 0 );
     tagFlags.draw( this, true );
   }
+}
+
+DebugFrame::DebugFrame() :
+  Frame( 560, 10 + 7 * ( Font::INFOS[Font::MONO].height + 2 ), OZ_GETTEXT( "Debug" ) )
+{
+  flags = PINNED_BIT;
+
+  x = ( camera.width - width ) / 2;
+
+  int height = Font::INFOS[Font::MONO].height + 2;
+
+  camPosRot.set( 5, 5 + height * 6, ALIGN_NONE, Font::MONO, " " );
+
+  botPosRot.set( 5, 5 + height * 5, ALIGN_NONE, Font::MONO, " " );
+  botVelMom.set( 5, 5 + height * 4, ALIGN_NONE, Font::MONO, " " );
+  botFlagsState.set( 5, 5 + height * 3, ALIGN_NONE, Font::MONO, " " );
+
+  tagPos.set( 5, 5 + height * 2, ALIGN_NONE, Font::MONO, " " );
+  tagVelMom.set( 5, 5 + height * 1, ALIGN_NONE, Font::MONO, " " );
+  tagFlags.set( 5, 5 + height * 0, ALIGN_NONE, Font::MONO, " " );
 }
 
 }

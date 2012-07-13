@@ -205,9 +205,9 @@ void Terra::load()
           vertex.texCoord[0] = float( x ) / float( matrix::Terra::VERTS );
           vertex.texCoord[1] = float( y ) / float( matrix::Terra::VERTS );
 
-          vertex.normal[0] = is.readByte();
-          vertex.normal[1] = is.readByte();
-          vertex.normal[2] = is.readByte();
+          vertex.normal[0] = is.readFloat();
+          vertex.normal[1] = is.readFloat();
+          vertex.normal[2] = is.readFloat();
         }
       }
 

@@ -142,9 +142,11 @@ class Sound
     void setVolume( float volume );
     void setMusicVolume( float volume ) const;
 
+    bool isMusicPlaying() const;
+    int  getCurrentTrack() const;
+
     void playMusic( int track );
     void stopMusic();
-    bool isMusicPlaying() const;
 
     void resume() const;
     void suspend() const;

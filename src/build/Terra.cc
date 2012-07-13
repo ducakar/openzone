@@ -243,9 +243,9 @@ void Terra::saveClient()
             waterTiles.set( i * client::Terra::TILES + j );
           }
 
-          os.writeByte( quantifyToByte( normal.x ) );
-          os.writeByte( quantifyToByte( normal.y ) );
-          os.writeByte( quantifyToByte( normal.z ) );
+          os.writeFloat( normal.x );
+          os.writeFloat( normal.y );
+          os.writeFloat( normal.z );
         }
       }
     }

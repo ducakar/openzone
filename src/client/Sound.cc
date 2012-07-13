@@ -37,7 +37,7 @@
   static decltype( ::name )* name = null
 
 # define OZ_DLLOAD( l, name ) \
-  *(void**)( &name ) = SDL_LoadFunction( l, #name ); \
+  *( void** )( &name ) = SDL_LoadFunction( l, #name ); \
   if( name == null ) { \
     throw Exception( "Failed loading " #name " from libmad" ); \
   }
@@ -633,6 +633,16 @@ void Sound::setMusicVolume( float volume ) const
   alSourcef( musicSource, AL_GAIN, 0.5f * volume );
 }
 
+bool Sound::isMusicPlaying() const
+{
+  return currentTrack >= 0 || selectedTrack >= 0;
+}
+
+int Sound::getCurrentTrack() const
+{
+  return currentTrack;
+}
+
 void Sound::playMusic( int track )
 {
   hard_assert( track >= 0 );
@@ -643,11 +653,6 @@ void Sound::playMusic( int track )
 void Sound::stopMusic()
 {
   selectedTrack = -2;
-}
-
-bool Sound::isMusicPlaying() const
-{
-  return currentTrack >= 0 || selectedTrack >= 0;
 }
 
 void Sound::resume() const

@@ -32,33 +32,33 @@ namespace client
 namespace ui
 {
 
-class Area;
-
 class Text
 {
   private:
 
-    int    x;
-    int    y;
-    int    width;
-    int    nLines;
+    int         x;
+    int         y;
+    int         width;
+    int         nLines;
 
-    TTF_Font* font;
-    Label* labels;
+    TTF_Font*   font;
+    Label*      labels;
 
     static char buffer[2048];
 
   public:
 
-    explicit Text( int x, int y, int width, int nLines, Font::Type font );
+    explicit Text( int x, int y, int width, int nLines, Font::Type font, int alignment );
     ~Text();
+
+    void resize( int width );
 
     OZ_PRINTF_FORMAT( 2, 3 )
     void set( const char* s, ... );
 
     void clear();
 
-    void draw( const Area* area ) const;
+    void draw( const Area* area, bool allowChanged ) const;
 
 };
 

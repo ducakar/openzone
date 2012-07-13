@@ -60,10 +60,10 @@ const float Render::LAVA_VISIBILITY        = 4.0f;
 const float Render::WIND_FACTOR            = 0.0008f;
 const float Render::WIND_PHI_INC           = 0.04f;
 
-const Vec4  Render::STRUCT_AABB            = Vec4( 0.20f, 0.50f, 1.00f, 0.30f );
-const Vec4  Render::ENTITY_AABB            = Vec4( 1.00f, 0.40f, 0.60f, 0.30f );
-const Vec4  Render::SOLID_AABB             = Vec4( 0.60f, 0.90f, 0.20f, 0.30f );
-const Vec4  Render::NONSOLID_AABB          = Vec4( 0.70f, 0.80f, 0.90f, 0.30f );
+const Vec4  Render::STRUCT_AABB            = Vec4( 0.20f, 0.50f, 1.00f, 1.00f );
+const Vec4  Render::ENTITY_AABB            = Vec4( 1.00f, 0.20f, 0.50f, 1.00f );
+const Vec4  Render::SOLID_AABB             = Vec4( 0.50f, 0.80f, 0.20f, 1.00f );
+const Vec4  Render::NONSOLID_AABB          = Vec4( 0.70f, 0.80f, 0.90f, 1.00f );
 
 struct Render::DrawEntry
 {
@@ -646,7 +646,7 @@ void Render::init( bool isBuild )
   scale           = config.include( "render.scale",       1.0f ).asFloat();
   sScaleFilter    = config.include( "render.scaleFilter", "NEAREST" ).asString();
 
-  visibilityRange = config.include( "render.distance",    300.0f ).asFloat();
+  visibilityRange = config.include( "render.distance",    350.0f ).asFloat();
   showBounds      = config.include( "render.showBounds",  false ).asBool();
   showAim         = config.include( "render.showAim",     false ).asBool();
 

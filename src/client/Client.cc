@@ -382,8 +382,8 @@ int Client::main( int argc, char** argv )
 
   const char* userMusicPath = config.include( "dir.music", musicDir ).asString();
 
-  if( PFile::mount( userMusicPath, "/music", true ) ) {
-    Log::println( "%s [mounted on /music]", userMusicPath );
+  if( PFile::mount( userMusicPath, "/userMusic", true ) ) {
+    Log::println( "%s [mounted on /userMusic]", userMusicPath );
   }
 
   if( PFile::mount( localDir, null, true ) ) {
@@ -460,7 +460,6 @@ int Client::main( int argc, char** argv )
   }
 
 #endif
-
 
   String language = config["lingua"].get( "" );
 

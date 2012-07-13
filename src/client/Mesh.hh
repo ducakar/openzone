@@ -30,25 +30,11 @@ namespace oz
 namespace client
 {
 
-inline byte quantifyToByte( float x )
-{
-  return byte( x < 0.0f ? x * -SCHAR_MIN - 0.5f : x * SCHAR_MAX + 0.5f );
-}
-
-inline ubyte quantifyToUByte( float x )
-{
-  return ubyte( x * UCHAR_MAX + 0.5f );
-}
-
 struct Vertex
 {
   float pos[3];
   float texCoord[2];
-  byte  normal[3];
-  byte  tangent[3];
-  byte  binormal[3];
-  byte  bones[2];
-  ubyte blend;
+  float normal[3];
 
   static void setFormat();
 };

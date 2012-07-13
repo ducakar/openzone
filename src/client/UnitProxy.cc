@@ -29,8 +29,10 @@
 #include "client/Input.hh"
 
 #include "client/ui/HudArea.hh"
+#include "client/ui/InventoryMenu.hh"
 #include "client/ui/InfoFrame.hh"
 #include "client/ui/GalileoFrame.hh"
+#include "client/ui/MusicPlayer.hh"
 #include "client/ui/UI.hh"
 
 namespace oz
@@ -68,9 +70,10 @@ void UnitProxy::begin()
 
   ui::mouse.doShow = false;
 
-  ui::ui.hudArea->show( true );
-  ui::ui.infoFrame->show( true );
-  ui::ui.galileoFrame->show( true );
+  ui::ui.hudArea->enable( true );
+  ui::ui.inventory->enable( true );
+  ui::ui.infoFrame->enable( true );
+  ui::ui.musicPlayer->show( false );
 
   baseRot = Quat::rotationZXZ( bot->h, bot->v, 0.0f );
   headRot = Quat::ID;
@@ -100,9 +103,9 @@ void UnitProxy::end()
 
   ui::mouse.doShow = true;
 
-  ui::ui.galileoFrame->show( false );
-  ui::ui.infoFrame->show( false );
-  ui::ui.hudArea->show( false );
+  ui::ui.hudArea->enable( false );
+  ui::ui.inventory->enable( false );
+  ui::ui.infoFrame->enable( false );
 }
 
 void UnitProxy::prepare()

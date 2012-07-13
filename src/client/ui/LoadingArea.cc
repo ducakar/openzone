@@ -36,16 +36,6 @@ namespace client
 namespace ui
 {
 
-LoadingArea::LoadingArea() :
-  Area( camera.width, camera.height ),
-  status( width / 2, height / 5, ALIGN_CENTRE, Font::LARGE, " " )
-{
-  flags = PINNED_BIT;
-}
-
-LoadingArea::~LoadingArea()
-{}
-
 void LoadingArea::onReposition()
 {
   width  = camera.width;
@@ -60,6 +50,13 @@ void LoadingArea::onDraw()
   shape.fill( 0, 0, width, height );
 
   status.draw( this, false );
+}
+
+LoadingArea::LoadingArea() :
+  Area( camera.width, camera.height ),
+  status( width / 2, height / 5, ALIGN_CENTRE, Font::LARGE, " " )
+{
+  flags = PINNED_BIT;
 }
 
 }

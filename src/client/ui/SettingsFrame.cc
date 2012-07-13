@@ -54,12 +54,12 @@ void SettingsFrame::onDraw()
 
   Frame::onDraw();
 
-  message.draw( this );
+  message.draw( this, false );
 }
 
 SettingsFrame::SettingsFrame( Frame* mainMenu_ ) :
   Frame( 400, 28 + 8 * font.INFOS[Font::SANS].height, OZ_GETTEXT( "Settings" ) ),
-  message( 4, 24, 392, 8, Font::SANS ), mainMenu( mainMenu_ )
+  message( 4, 24, 392, 8, Font::SANS, Area::ALIGN_NONE ), mainMenu( mainMenu_ )
 {
   x = ( camera.width  - width ) / 2;
   y = ( camera.height - height ) / 2;

@@ -18,13 +18,14 @@
  */
 
 /**
- * @file client/ui/LoadingArea.hh
+ * @file client/ui/CinematicText.cc
  */
 
-#pragma once
+#include "stable.hh"
 
-#include "client/ui/Area.hh"
-#include "client/ui/Label.hh"
+#include "client/ui/CinematicText.hh"
+
+#include "client/Camera.hh"
 
 namespace oz
 {
@@ -33,22 +34,30 @@ namespace client
 namespace ui
 {
 
-class LoadingArea : public Area
+void CinematicText::onReposition()
 {
-  friend class UI;
+  x     = camera.width / 8;
+  y     = camera.height / 8;
+  width = ( camera.width * 3 ) / 4;
 
-  protected:
+  text.resize( width );
+}
 
-    void onReposition() override;
-    void onDraw() override;
+void CinematicText::onDraw()
+{
+  text.draw( this, true );
+}
 
-  public:
+CinematicText::CinematicText() :
+  Area( 600, 400 ), text( 0, 0, 600, 8, Font::TITLE, Area::ALIGN_NONE )
+{
+  flags = PINNED_BIT | IGNORE_BIT;
+}
 
-    Label status;
-
-    LoadingArea();
-
-};
+void CinematicText::set( const char* title )
+{
+  text.set( "%s", title );
+}
 
 }
 }
