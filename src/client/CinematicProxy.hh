@@ -63,8 +63,10 @@ class CinematicProxy : public Proxy
     Point      beginPos;
     Mat44      beginColour;
 
-    float      stepTime;
+    String     title;
+    int        nTitleChars;
 
+    float      stepTime;
     int        prevState;
 
     ui::CinematicText* cinematicText;

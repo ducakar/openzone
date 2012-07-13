@@ -118,11 +118,6 @@ void MusicPlayer::volumeUp( Button* sender )
   sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
 }
 
-void MusicPlayer::onVisibilityChange( bool doShow )
-{
-  oz::client::ui::Area::onVisibilityChange( doShow );
-}
-
 void MusicPlayer::onUpdate()
 {
   if( camera.state == Camera::UNIT && camera.botObj != null &&

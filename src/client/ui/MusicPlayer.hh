@@ -53,7 +53,6 @@ class MusicPlayer : public Frame
 
   protected:
 
-    virtual void onVisibilityChange( bool doShow );
     void onUpdate() override;
     void onDraw() override;
 

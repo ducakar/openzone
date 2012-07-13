@@ -47,7 +47,6 @@ class UnitProxy : public Proxy
     static const float BINOCULARS_MAGNIFICATION;
     static const float INJURY_SUPPRESSION_COEF;
     static const float INJURY_CLAMP;
-    static const Mat44 INJURY_COLOUR;
 
   public:
 

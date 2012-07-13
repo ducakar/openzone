@@ -87,6 +87,10 @@ class BotClass : public DynamicClass
     float  bobAmplitude;
     float  bobSwimAmplitude;
 
+    Mat44  baseColour;
+    Mat44  nvColour;
+    Mat44  injuryColour;
+
     static ObjectClass* createClass();
 
     void init( InputStream* is, const char* name ) override;

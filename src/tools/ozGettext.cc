@@ -226,6 +226,23 @@ static void readLua( File* file )
   }
 }
 
+static void readSequence( File* file )
+{
+  JSON sequence;
+  sequence.load( file );
+
+  int nSteps = sequence.length();
+  for( int i = 0; i < nSteps; ++i ) {
+    const char* title = sequence[i]["title"].get( "" );
+
+    if( !String::isEmpty( title ) ) {
+      String locationInfo = String::str( "%s:step #%d", file->path().cstr(), i + 1 );
+
+      messages.include( title, locationInfo );
+    }
+  }
+}
+
 static void writePOT( const HashString<String>* hs, const char* filePath )
 {
   BufferStream bs;
@@ -360,24 +377,25 @@ int main( int argc, char** argv )
     files = mission->ls();
 
     foreach( file, files.iter() ) {
-      if( !file->hasExtension( "lua" ) ) {
-        continue;
+      if( file->hasExtension( "lua" ) ) {
+        readLua( file );
       }
-
-      readLua( file );
-
-      if( !messages.isEmpty() ) {
-        String missionPOT = mission->path() + "/lingua/messages.pot";
-        Log::print( "%s ...", missionPOT.cstr() );
-
-        File::mkdir( mission->path() + "/lingua" );
-        writePOT( &messages, mission->path() + "/lingua/messages.pot" );
-
-        messages.clear();
-        messages.dealloc();
-
-        Log::printEnd( " OK" );
+      else if( file->hasExtension( "json" ) ) {
+        readSequence( file );
       }
+    }
+
+    if( !messages.isEmpty() ) {
+      String missionPOT = mission->path() + "/lingua/messages.pot";
+      Log::print( "%s ...", missionPOT.cstr() );
+
+      File::mkdir( mission->path() + "/lingua" );
+      writePOT( &messages, mission->path() + "/lingua/messages.pot" );
+
+      messages.clear();
+      messages.dealloc();
+
+      Log::printEnd( " OK" );
     }
   }
 
