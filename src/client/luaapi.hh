@@ -240,38 +240,6 @@ static int ozCameraSetState( lua_State* l )
   return 0;
 }
 
-static int ozCameraAddStateSwitch( lua_State* l )
-{
-  ARG( 1 );
-
-  Camera::State state = Camera::State( l_toint( 1 ) );
-
-  camera.cinematic.addStateSwitch( state );
-  return 0;
-}
-
-static int ozCameraAddWait( lua_State* l )
-{
-  ARG( 1 );
-
-  float time = l_tofloat( 1 );
-
-  camera.cinematic.addWait( time );
-  return 0;
-}
-
-static int ozCameraAddMove( lua_State* l )
-{
-  ARG( 6 );
-
-  Point p    = Point( l_tofloat( 1 ), l_tofloat( 2 ), l_tofloat( 3 ) );
-  Quat  rot  = Quat::rotationZXZ( Math::rad( l_tofloat( 4 ) ), Math::rad( l_tofloat( 5 ) ), 0.0f );
-  float time = l_tofloat( 6 );
-
-  camera.cinematic.addMove( rot, p, time );
-  return 0;
-}
-
 static int ozCameraBaseColour( lua_State* l )
 {
   ARG( 16 );
@@ -291,6 +259,16 @@ static int ozCameraNVColour( lua_State* l )
                            l_tofloat(  2 ), l_tofloat(  6 ), l_tofloat( 10 ), l_tofloat( 14 ),
                            l_tofloat(  3 ), l_tofloat(  7 ), l_tofloat( 11 ), l_tofloat( 15 ),
                            l_tofloat(  4 ), l_tofloat(  8 ), l_tofloat( 12 ), l_tofloat( 16 ) );
+  return 0;
+}
+
+static int ozCameraExecuteSequence( lua_State* l )
+{
+  ARG( 1 );
+
+  camera.setState( Camera::CINEMATIC );
+  camera.cinematic.executeSequence( String::str( "mission/%s/%s.json",
+                                                 cs.mission.cstr(), l_tostring( 1 ) ) );
   return 0;
 }
 

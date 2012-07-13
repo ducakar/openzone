@@ -103,26 +103,24 @@ class Struct : public Bounds
 
   private:
 
-    Mat44      transf;
-    Mat44      invTransf;
+    Mat44          transf;
+    Mat44          invTransf;
 
   public:
 
-    const BSP* bsp;
+    const BSP*     bsp;
 
-    Point      p;
-    Heading    heading;
+    Point          p;
+    Heading        heading;
 
-    int        index;
+    int            index;
 
-    float      life;
-    float      resistance;
-    float      demolishing;
+    float          life;
+    float          resistance;
+    float          demolishing;
 
-    int        nEntities;
-    Entity*    entities;
-
-    List<int>  boundObjects;
+    DArray<Entity> entities;
+    List<int>      boundObjects;
 
   private:
 
@@ -130,8 +128,6 @@ class Struct : public Bounds
     void onUpdate();
 
   public:
-
-    ~Struct();
 
     // no copying
     Struct( const Struct& ) = delete;
@@ -241,7 +237,7 @@ inline void Struct::hit( float mass, float energy )
 OZ_ALWAYS_INLINE
 inline void Struct::update()
 {
-  if( nEntities != 0 || !boundObjects.isEmpty() || life <= 0.0f ) {
+  if( !entities.isEmpty() || !boundObjects.isEmpty() || life <= 0.0f ) {
     onUpdate();
   }
 }

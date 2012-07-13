@@ -78,7 +78,7 @@ void BSP::draw( const Struct* str )
 
   mesh.schedule( 0 );
 
-  for( int i = 0; i < str->nEntities; ++i ) {
+  for( int i = 0; i < str->entities.length(); ++i ) {
     tf.push();
     tf.model.translate( str->entities[i].offset );
 

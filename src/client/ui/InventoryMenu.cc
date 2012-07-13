@@ -122,7 +122,7 @@ void InventoryMenu::drawComponent( int height, const Object* container, int tagg
           shape.colour( 0.6f, 0.6f, 0.6f, 0.6f );
         }
         else {
-          shape.colour( 0.3f, 0.3f, 0.3f, 0.6f );
+          shape.colour( 0.4f, 0.4f, 0.4f, 0.6f );
         }
 
         shape.fill( x + j * SLOT_SIZE + PADDING_SIZE,

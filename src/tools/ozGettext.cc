@@ -309,8 +309,6 @@ int main( int argc, char** argv )
 
   String pkgName = pkgDir.substring( pkgDir.lastIndex( '/' ) + 1 );
 
-  File::mkdir( pkgDir + "/lingua" );
-
   BufferStream bs;
 
   File bspDir( pkgDir + "/baseq3/maps" );
@@ -338,6 +336,8 @@ int main( int argc, char** argv )
   if( !titles.isEmpty() ) {
     String mainPOT = String::str( "%s/lingua/%s.pot", pkgDir.cstr(), pkgName.cstr() );
     Log::print( "%s ...", mainPOT.cstr() );
+
+    File::mkdir( pkgDir + "/lingua" );
 
     writePOT( &titles, mainPOT );
 

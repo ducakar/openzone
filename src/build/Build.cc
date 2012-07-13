@@ -1006,6 +1006,7 @@ int Build::main( int argc, char** argv )
 
     copyFiles( "lua", "lua", "lua", true );
     copyFiles( "mission", "mission", "lua", true );
+    copyFiles( "mission", "mission", "json", true );
   }
   if( doModules ) {
     buildModules();

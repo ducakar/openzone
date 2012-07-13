@@ -161,7 +161,6 @@ void Lua::update()
 void Lua::create( const char* mission_ )
 {
   cs.mission = mission_;
-  String missionPath = "mission/" + cs.mission + "/script.lua";
 
   Log::print( "Importing mission catalogue '%s' ...", cs.mission.cstr() );
   if( cs.missionLingua.initMission( cs.mission ) ) {
@@ -171,21 +170,29 @@ void Lua::create( const char* mission_ )
     Log::printEnd( " Failed" );
   }
 
-  Log::println( "Executing mission script %s {", cs.mission.cstr() );
+  Log::println( "Executing scripts for mission %s {", cs.mission.cstr() );
   Log::indent();
 
-  PFile missionFile( missionPath );
-  if( !missionFile.map() ) {
-    throw Exception( "Failed to read mission file '%s'", missionFile.path().cstr() );
+  PFile missionDir( "mission/" + cs.mission );
+  DArray<PFile> files = missionDir.ls();
+
+  foreach( file, files.iter() ) {
+    if( !file->hasExtension( "lua" ) ) {
+      continue;
+    }
+
+    if( !file->map() ) {
+      throw Exception( "Failed to read mission script '%s'", file->path().cstr() );
+    }
+
+    InputStream is = file->inputStream();
+
+    if( IMPORT_BUFFER( is.begin(), is.capacity(), file->path() ) != 0 ) {
+      throw Exception( "Client Lua script error in %s", file->path().cstr() );
+    }
+
+    file->unmap();
   }
-
-  InputStream istream = missionFile.inputStream();
-
-  if( IMPORT_BUFFER( istream.begin(), istream.capacity(), missionPath ) != 0 ) {
-    throw Exception( "Client Lua script error" );
-  }
-
-  missionFile.unmap();
 
   staticCall( "onCreate" );
 
@@ -198,7 +205,6 @@ void Lua::read( InputStream* istream )
   hard_assert( l_gettop() == 0 );
 
   cs.mission = istream->readString();
-  String missionPath = "mission/" + cs.mission + "/script.lua";
 
   Log::print( "Importing mission catalogue '%s' ...", cs.mission.cstr() );
   if( cs.missionLingua.initMission( cs.mission ) ) {
@@ -208,20 +214,28 @@ void Lua::read( InputStream* istream )
     Log::printEnd( " Failed" );
   }
 
-  Log::print( "Deserialising mission script %s ...", cs.mission.cstr() );
+  Log::print( "Deserialising scripts for mission %s ...", cs.mission.cstr() );
 
-  PFile missionFile( missionPath );
-  if( !missionFile.map() ) {
-    throw Exception( "Failed to read mission script '%s'", missionFile.path().cstr() );
+  PFile missionDir( "mission/" + cs.mission );
+  DArray<PFile> files = missionDir.ls();
+
+  foreach( file, files.iter() ) {
+    if( !file->hasExtension( "lua" ) ) {
+      continue;
+    }
+
+    if( !file->map() ) {
+      throw Exception( "Failed to read mission script '%s'", file->path().cstr() );
+    }
+
+    InputStream is = file->inputStream();
+
+    if( IMPORT_BUFFER( is.begin(), is.capacity(), file->path() ) != 0 ) {
+      throw Exception( "Client Lua script error in %s", file->path().cstr() );
+    }
+
+    file->unmap();
   }
-
-  InputStream is = missionFile.inputStream();
-
-  if( IMPORT_BUFFER( is.begin(), is.capacity(), missionPath ) != 0 ) {
-    throw Exception( "Client Lua script error" );
-  }
-
-  missionFile.unmap();
 
   char ch = istream->readChar();
 
@@ -702,14 +716,12 @@ void Lua::init()
   IMPORT_FUNC( ozCameraClearSwitchableUnits );
   IMPORT_FUNC( ozCameraSwitchTo );
   IMPORT_FUNC( ozCameraAllowReincarnation );
+
   IMPORT_FUNC( ozCameraSetState );
-
-  IMPORT_FUNC( ozCameraAddStateSwitch );
-  IMPORT_FUNC( ozCameraAddWait );
-  IMPORT_FUNC( ozCameraAddMove );
-
   IMPORT_FUNC( ozCameraBaseColour );
   IMPORT_FUNC( ozCameraNVColour );
+
+  IMPORT_FUNC( ozCameraExecuteSequence );
 
   /*
    * Profile

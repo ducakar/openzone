@@ -129,6 +129,8 @@ function onCreate()
   ozOrbisAddObj( OZ_FORCE, "firstAid", oX - 4.5, oY - 2.5, oZ - 1.5 )
   ozOrbisAddObj( OZ_FORCE, "cvicek", oX - 4.5, oY - 2, oZ - 1.5 )
   ozOrbisAddObj( OZ_FORCE, "metalCrate", oX + 4.5, oY - 3, oZ - 1.5 )
+  ozObjAddItem( "nvGoggles" )
+  ozObjAddItem( "binoculars" )
   ozOrbisAddObj( OZ_FORCE, "firstAid", oX - 4.5, oY + 2, oZ - 1.5 )
   ozOrbisAddObj( OZ_FORCE, "firstAid", oX - 4.5, oY + 2, oZ - 1.1 )
   ozOrbisAddObj( OZ_FORCE, "cvicek", oX - 4.5, oY + 2, oZ - 0.5 )
@@ -206,20 +208,17 @@ function onCreate()
     "Some objects like this bombs are dangerous. They will explode when destroyed or 5 s after " ..
     "activation (they can also be deactivated by right clicking them again)." ) )
 
-  local cvicek = ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 )
-  local firstAid = ozOrbisAddObj( OZ_FORCE, "firstAid", 0, 0, 0 )
-
   ozOrbisAddObj( OZ_FORCE, "beast_weapon.plasmagun", oX - 5, oY + 20, oZ - 2 )
   ozOrbisAddObj( OZ_FORCE, "metalBarrel", oX - 10, oY + 30, oZ )
   ozOrbisAddObj( OZ_FORCE, "metalBarrel", oX - 8, oY + 30, oZ )
 
   ozOrbisAddObj( OZ_FORCE, "droid", oX - 5, oY + 30, oZ, true )
-  ozObjAddItem( cvicek )
+  ozObjAddItem( "cvicek" )
   ozBotSetH( 180 )
   ozBotSetMind( "" )
 
   ozOrbisAddObj( OZ_FORCE, "droid.OOM-9", oX - 2.5, oY + 30, oZ, true )
-  ozObjAddItem( firstAid )
+  ozObjAddItem( "firstAid" )
   ozBotSetH( 180 )
   ozBotSetMind( "" )
 

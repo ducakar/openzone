@@ -46,24 +46,30 @@ class CinematicProxy : public Proxy
 
       Quat  rot;
       Point p;
+      Mat44 colour;
+
       float time;
       int   endState;
-      Type  type;
     };
 
     List<Step> steps;
 
     Quat       beginRot;
     Point      beginPos;
+    Mat44      beginColour;
+
     float      stepTime;
+
+    int        prevState;
 
   public:
 
     CinematicProxy();
 
     void addStateSwitch( int endState );
-    void addWait( float time );
-    void addMove( const Quat& rot, const Point& p, float time );
+    void addTransform( const Quat& rot, const Point& p, const Mat44& colour, float time );
+
+    void executeSequence( const char* path );
 
     void begin() override;
     void end() override;
