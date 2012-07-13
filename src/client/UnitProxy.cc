@@ -51,10 +51,6 @@ const float UnitProxy::BOB_SUPPRESSION_COEF     = 0.80f;
 const float UnitProxy::BINOCULARS_MAGNIFICATION = 0.20f;
 const float UnitProxy::INJURY_SUPPRESSION_COEF  = 0.98f;
 const float UnitProxy::INJURY_CLAMP             = 2.00f;
-const Mat44 UnitProxy::INJURY_COLOUR            = Mat44( 0.4f, 0.2f, 0.2f, 0.0f,
-                                                         0.4f, 0.2f, 0.2f, 0.0f,
-                                                         0.4f, 0.2f, 0.2f, 0.0f,
-                                                         0.2f, 0.0f, 0.0f, 1.0f );
 
 void UnitProxy::begin()
 {
@@ -528,15 +524,20 @@ void UnitProxy::update()
     camera.setTaggedEnt( collider.hit.entity );
   }
 
-  foreach( event, bot->events.citer() ) {
-    if( event->id == Object::EVENT_DAMAGE ) {
-      injuryRatio += event->intensity;
+  if( camera.bot != oldBot ) {
+    injuryRatio = 0.0f;
+  }
+  else {
+    foreach( event, bot->events.citer() ) {
+      if( event->id == Object::EVENT_DAMAGE ) {
+        injuryRatio += event->intensity;
+      }
     }
   }
 
   injuryRatio   = min( injuryRatio, INJURY_CLAMP );
-  camera.colour = Math::mix( Mat44::ID, INJURY_COLOUR, min( injuryRatio, 1.0f ) ) *
-                  ( camera.nightVision ? camera.nvColour : camera.baseColour );
+  camera.colour = Math::mix( Mat44::ID, botClazz->injuryColour, min( injuryRatio, 1.0f ) ) *
+                  ( camera.nightVision ? botClazz->nvColour : botClazz->baseColour );
   injuryRatio  *= INJURY_SUPPRESSION_COEF;
 
   oldBot = camera.bot;

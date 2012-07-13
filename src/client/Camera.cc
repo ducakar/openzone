@@ -46,6 +46,7 @@ const Mat44  Camera::NV_COLOUR          = Mat44( 0.25f, 2.00f, 0.25f, 0.00f,
                                                  0.25f, 2.00f, 0.25f, 0.00f,
                                                  0.25f, 2.00f, 0.25f, 0.00f,
                                                  0.00f, 0.00f, 0.00f, 1.00f );
+
 Proxy* const Camera::PROXIES[] = {
   null,
   &strategic,

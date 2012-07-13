@@ -190,6 +190,8 @@ void CinematicProxy::begin()
   beginColour = camera.colour;
 
   stepTime    = 0.0f;
+
+  cinematicText->set( title.substring( 0, nTitleChars ) );
 }
 
 void CinematicProxy::end()
@@ -198,6 +200,9 @@ void CinematicProxy::end()
 
   ui::ui.musicPlayer->enable( true );
   ui::ui.galileoFrame->enable( true );
+
+  title       = "";
+  nTitleChars = 0;
 
   steps.clear();
   steps.dealloc();
@@ -227,6 +232,12 @@ void CinematicProxy::update()
   camera.colour = Math::mix( beginColour, step.colour, t );
   camera.align();
 
+  if( nTitleChars < title.length() ) {
+    nTitleChars = min( nTitleChars + int( timer.frameTicks ), title.length() );
+
+    cinematicText->set( title.substring( 0, nTitleChars ) );
+  }
+
   if( t == 1.0f ) {
     beginPos    = step.p;
     beginRot    = step.rot;
@@ -243,8 +254,11 @@ void CinematicProxy::update()
       sound.playMusic( step.track );
     }
 
-    if( !String::isEmpty( step.title ) ) {
-      cinematicText->set( step.title );
+    if( !step.title.isEmpty() ) {
+      title       = step.title;
+      nTitleChars = 0;
+
+      cinematicText->set( " " );
     }
   }
   else {
@@ -258,7 +272,10 @@ void CinematicProxy::reset()
   beginPos    = Point::ORIGIN;
   beginColour = Mat44::ID;
 
-  stepTime = 0.0f;
+  title       = "";
+  nTitleChars = 0;
+
+  stepTime    = 0.0f;
 
   camera.colour = camera.baseColour;
 
@@ -272,7 +289,11 @@ void CinematicProxy::read( InputStream* istream )
   beginPos    = istream->readPoint();
   beginColour = istream->readMat44();
 
-  stepTime = istream->readFloat();
+  title       = istream->readString();
+  nTitleChars = istream->readInt();
+
+  stepTime    = istream->readFloat();
+  prevState   = istream->readInt();
 
   int nSteps = istream->readInt();
   for( int i = 0; i < nSteps; ++i ) {
@@ -281,6 +302,10 @@ void CinematicProxy::read( InputStream* istream )
     step.rot      = istream->readQuat();
     step.p        = istream->readPoint();
     step.colour   = istream->readMat44();
+
+    step.track    = istream->readInt();
+    step.title    = istream->readString();
+
     step.time     = istream->readFloat();
     step.endState = istream->readInt();
 
@@ -294,7 +319,11 @@ void CinematicProxy::write( BufferStream* ostream ) const
   ostream->writePoint( beginPos );
   ostream->writeMat44( beginColour );
 
+  ostream->writeString( title );
+  ostream->writeInt( nTitleChars );
+
   ostream->writeFloat( stepTime );
+  ostream->writeInt( prevState );
 
   ostream->writeInt( steps.length() );
   for( int i = 0; i < steps.length(); ++i ) {
@@ -303,6 +332,10 @@ void CinematicProxy::write( BufferStream* ostream ) const
     ostream->writeQuat( step.rot );
     ostream->writePoint( step.p );
     ostream->writeMat44( step.colour );
+
+    ostream->writeInt( step.track );
+    ostream->writeString( step.title );
+
     ostream->writeFloat( step.time );
     ostream->writeInt( step.endState );
   }

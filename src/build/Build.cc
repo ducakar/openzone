@@ -423,6 +423,8 @@ void Build::buildClasses( const String& pkgName )
     if( !outFile.write( os.begin(), os.length() ) ) {
       throw Exception( "Failed to write object class file '%s'", outFile.path().cstr() );
     }
+
+    Log::printEnd( " OK" );
   }
 
   clazz.free();

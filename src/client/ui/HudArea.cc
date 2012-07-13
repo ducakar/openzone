@@ -376,7 +376,6 @@ void HudArea::onUpdate()
 void HudArea::onDraw()
 {
   if( camera.bot < 0 ) {
-    show( false );
     return;
   }
 

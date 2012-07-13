@@ -36,6 +36,8 @@ class Class
 {
   private:
 
+    static const Mat44 INJURY_COLOUR;
+
     JSON               config;
 
     /*
@@ -146,6 +148,10 @@ class Class
     float              bobRotation;
     float              bobAmplitude;
     float              bobSwimAmplitude;
+
+    Mat44              baseColour;
+    Mat44              nvColour;
+    Mat44              injuryColour;
 
     /*
      * Vehicle

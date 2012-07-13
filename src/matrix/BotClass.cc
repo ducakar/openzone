@@ -95,6 +95,10 @@ void BotClass::init( InputStream* is, const char* name )
   bobRotation       = is->readFloat();
   bobAmplitude      = is->readFloat();
   bobSwimAmplitude  = is->readFloat();
+
+  baseColour        = is->readMat44();
+  nvColour          = is->readMat44();
+  injuryColour      = is->readMat44();
 }
 
 Object* BotClass::create( int index, const Point& pos, Heading heading ) const
