@@ -52,20 +52,24 @@ namespace ui
 
 char Text::buffer[2048];
 
-Text::Text( int x_, int y_, int width_, int nLines_, Font::Type font_ ) :
+Text::Text( int x_, int y_, int width_, int nLines_, Font::Type font_, int alignment ) :
   x( x_ ), y( y_ ), width( width_ ), nLines( nLines_ ), font( ui::font.fonts[font_] )
 {
   labels = new Label[nLines];
 
   for( int i = 0; i < nLines; ++i ) {
-    labels[i].set( x, y + ( nLines - i - 1 ) * Font::INFOS[font_].height,
-                   Area::ALIGN_NONE, font_, " " );
+    labels[i].set( x, y + ( nLines - i - 1 ) * Font::INFOS[font_].height, alignment, font_, " " );
   }
 }
 
 Text::~Text()
 {
   delete[] labels;
+}
+
+void Text::resize( int width_ )
+{
+  width = width_;
 }
 
 void Text::set( const char* s, ... )
@@ -134,10 +138,10 @@ void Text::clear()
   }
 }
 
-void Text::draw( const Area* area ) const
+void Text::draw( const Area* area, bool allowChanged ) const
 {
   for( int i = 0; i < nLines; ++i ) {
-    labels[i].draw( area, false );
+    labels[i].draw( area, allowChanged );
   }
 }
 

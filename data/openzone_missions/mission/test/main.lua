@@ -61,8 +61,6 @@ function onCreate()
   ozCaelumSetPeriod( 1440 )
 --   ozCaelumSetRealTime()
 
-  ozCameraWarpTo( 141.0, -12.0, 84.75, 0.0, 35.0 )
-
   local me = ozOrbisAddPlayer( OZ_FORCE, 137, -6, 73, OZ_SOUTH )
   ozCameraAddSwitchableUnit( me )
   ozCameraSwitchTo( me )
@@ -79,6 +77,7 @@ function onCreate()
 --                       0.3, 0.3, 0.5, 0.0,
 --                       0.0, 0.0, 0.0, 1.0 )
 
+  ozCameraWarpTo( 141.0, -12.0, 84.75, 0.0, 35.0 )
   ozCameraExecuteSequence( "intro" )
 
   init_sample()

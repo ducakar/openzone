@@ -25,9 +25,13 @@
 
 #include "client/CinematicProxy.hh"
 
+#include "matrix/Library.hh"
+
 #include "client/Camera.hh"
+#include "client/Sound.hh"
 
 #include "client/ui/GalileoFrame.hh"
+#include "client/ui/MusicPlayer.hh"
 #include "client/ui/UI.hh"
 
 namespace oz
@@ -42,14 +46,14 @@ CinematicProxy::CinematicProxy()
 
 void CinematicProxy::addStateSwitch( int endState )
 {
-  Step step = { Quat::ID, Point::ORIGIN, Mat44::ID, 0.0f, endState };
+  Step step = { Quat::ID, Point::ORIGIN, Mat44::ID, -1, null, 0.0f, endState };
   steps.add( step );
 }
 
-void CinematicProxy::addTransform( const Quat& rot, const Point& p, const Mat44& colour,
-                                   float time )
+void CinematicProxy::addTransform( const Quat& rot, const Point& p, const Mat44& colour, int track,
+                                   const char* title, float time )
 {
-  Step step = { rot, p, colour, time, Camera::CINEMATIC };
+  Step step = { rot, p, colour, track, title, time, Camera::CINEMATIC };
   steps.add( step );
 }
 
@@ -67,7 +71,7 @@ void CinematicProxy::executeSequence( const char* path )
     return;
   }
 
-  Step step = { camera.rot, camera.p, camera.colour, 0.0f, Camera::CINEMATIC };
+  Step step = { camera.rot, camera.p, camera.colour, -1, null, 0.0f, Camera::CINEMATIC };
 
   steps.alloc( nSteps );
 
@@ -120,6 +124,28 @@ void CinematicProxy::executeSequence( const char* path )
                            m14, m24, m34, m44 );
     }
 
+    const JSON& trackConfig = stepConfig["track"];
+    if( trackConfig.isNull() ) {
+      step.track = -1;
+    }
+    else if( trackConfig.asString().isEmpty() ) {
+      step.track = -2;
+    }
+    else {
+      step.track = library.musicIndex( trackConfig.asString() );
+    }
+
+    const JSON& titleConfig = stepConfig["title"];
+    if( titleConfig.isNull() ) {
+      step.title = "";
+    }
+    else if( titleConfig.asString().isEmpty() ) {
+      step.title = " ";
+    }
+    else {
+      step.title = titleConfig.asString();
+    }
+
     step.time = stepConfig["time"].get( 0.0f );
 
     const JSON& stateConfig = stepConfig["state"];
@@ -151,7 +177,12 @@ void CinematicProxy::executeSequence( const char* path )
 
 void CinematicProxy::begin()
 {
-  ui::ui.galileoFrame->show( false );
+  ui::ui.galileoFrame->enable( false );
+  ui::ui.musicPlayer->enable( false );
+
+  cinematicText = new ui::CinematicText();
+  ui::ui.root->add( cinematicText, ui::Area::CENTRE, 200 );
+
   ui::mouse.doShow = false;
 
   beginRot    = camera.rot;
@@ -163,6 +194,11 @@ void CinematicProxy::begin()
 
 void CinematicProxy::end()
 {
+  ui::ui.root->remove( cinematicText );
+
+  ui::ui.musicPlayer->enable( true );
+  ui::ui.galileoFrame->enable( true );
+
   steps.clear();
   steps.dealloc();
 }
@@ -199,6 +235,17 @@ void CinematicProxy::update()
     stepTime    = 0.0f;
 
     steps.popFirst();
+
+    if( step.track == -2 ) {
+      sound.stopMusic();
+    }
+    else if( step.track != -1 ) {
+      sound.playMusic( step.track );
+    }
+
+    if( !String::isEmpty( step.title ) ) {
+      cinematicText->set( step.title );
+    }
   }
   else {
     stepTime += Timer::TICK_TIME;

@@ -239,6 +239,10 @@ void StrategicArea::onVisibilityChange( bool )
 
   hoverStr = -1;
   hoverObj = -1;
+
+  cachedStructIndex = -1;
+  cachedEntityIndex = -1;
+  cachedObjectIndex = -1;
 }
 
 void StrategicArea::onReposition()

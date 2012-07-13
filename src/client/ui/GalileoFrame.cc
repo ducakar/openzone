@@ -76,11 +76,11 @@ void GalileoFrame::onUpdate()
   if( orbis.terra.id < 0 || ( camera.state == Camera::UNIT && camera.botObj != null &&
     !camera.botObj->hasAttribute( ObjectClass::GALILEO_BIT ) ) )
   {
-    flags |= HIDDEN_BIT;
+    flags |= HIDDEN_BIT | IGNORE_BIT;
     setMaximised( false );
   }
   else {
-    flags &= ~HIDDEN_BIT;
+    flags &= ~( HIDDEN_BIT | IGNORE_BIT );
   }
 }
 

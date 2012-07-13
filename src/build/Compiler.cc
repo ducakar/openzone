@@ -38,9 +38,7 @@ Compiler compiler;
 
 bool Vertex::operator == ( const Vertex& v ) const
 {
-  return pos == v.pos && texCoord == v.texCoord &&
-         normal == v.normal && tangent == v.tangent && binormal == v.binormal &&
-         bones[0] == v.bones[0] && bones[1] == v.bones[1] && blend == v.blend;
+  return pos == v.pos && texCoord == v.texCoord && normal == v.normal;
 }
 
 void Vertex::write( BufferStream* ostream ) const
@@ -52,21 +50,9 @@ void Vertex::write( BufferStream* ostream ) const
   ostream->writeFloat( texCoord.u );
   ostream->writeFloat( texCoord.v );
 
-  ostream->writeByte( quantifyToByte( normal.x ) );
-  ostream->writeByte( quantifyToByte( normal.y ) );
-  ostream->writeByte( quantifyToByte( normal.z ) );
-
-  ostream->writeByte( quantifyToByte( tangent.x ) );
-  ostream->writeByte( quantifyToByte( tangent.y ) );
-  ostream->writeByte( quantifyToByte( tangent.z ) );
-
-  ostream->writeByte( quantifyToByte( binormal.x ) );
-  ostream->writeByte( quantifyToByte( binormal.y ) );
-  ostream->writeByte( quantifyToByte( binormal.z ) );
-
-  ostream->writeByte( byte( bones[0] ) );
-  ostream->writeByte( byte( bones[1] ) );
-  ostream->writeUByte( quantifyToUByte( blend ) );
+  ostream->writeFloat( normal.x );
+  ostream->writeFloat( normal.y );
+  ostream->writeFloat( normal.z );
 }
 
 void Compiler::enable( Capability cap )
@@ -96,11 +82,6 @@ void Compiler::beginMesh()
   vert.pos        = Point::ORIGIN;
   vert.texCoord   = TexCoord( 0.0f, 0.0f );
   vert.normal     = Vec3::ZERO;
-  vert.tangent    = Vec3::ZERO;
-  vert.binormal   = Vec3::ZERO;
-  vert.bones[0]   = 0;
-  vert.bones[1]   = 0;
-  vert.blend      = 0.0f;
 
   caps            = 0;
   flags          |= MESH_BIT;
@@ -272,25 +253,6 @@ void Compiler::end()
     }
   }
 
-  // generate tangents and binormals
-//   if( caps & CAP_BUMPMAP ) {
-//     int nVertices = part.indices.length();
-//
-//     for( int i = 0; i < nVertices; ++i ) {
-//       const Vertex& v0 = vertices[ part.indices[i] ];
-//       const Vertex& v1 = vertices[ part.indices[ ( i + 1 ) % nVertices ] ];
-//       const Vertex& v2 = vertices[ part.indices[ ( i + nVertices - 1 ) % nVertices ] ];
-//
-//       Vec3 a = Point( v1.pos ) - Point( v0.pos );
-//       Vec3 b = Point( v2.pos ) - Point( v0.pos );
-//
-//       float s0 = v1.texCoord.u - v0.texCoord.u;
-//       float s1 = v1.texCoord.v - v0.texCoord.v;
-//       float t0 = v2.texCoord.u - v0.texCoord.u;
-//       float t1 = v2.texCoord.v - v0.texCoord.v;
-//     }
-//   }
-
   int partIndex = parts.index( part );
 
   if( partIndex < 0 ) {
@@ -334,13 +296,6 @@ void Compiler::normal( float nx, float ny, float nz )
 void Compiler::normal( const float* v )
 {
   normal( v[0], v[1], v[2] );
-}
-
-void Compiler::bones( int first, int second, float blend )
-{
-  vert.bones[0] = first;
-  vert.bones[1] = second;
-  vert.blend    = blend;
 }
 
 void Compiler::vertex( float x, float y, float z )

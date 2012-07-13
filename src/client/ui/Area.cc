@@ -98,7 +98,7 @@ bool Area::passMouseEvents()
     {
       // If event is passed to a child, we won't handle it on parent. Of course we assume
       // children do not overlap, so event can only be passed to one of them.
-      if( !( child->flags & IGNORE_BIT ) && child->onMouseEvent() ) {
+      if( !( child->flags & ( IGNORE_BIT | DISABLED_BIT ) ) && child->onMouseEvent() ) {
         return true;
       }
     }
@@ -108,10 +108,9 @@ bool Area::passMouseEvents()
 
 void Area::drawChildren()
 {
-  // render in opposite order; last added child (the first one in the list) should be rendered
-  // last
+  // Render in opposite order; last added child (the first one in the list) should be rendered last.
   for( Area* child = children.last(); child != null; child = child->prev[0] ) {
-    if( !( child->flags & HIDDEN_BIT ) ) {
+    if( !( child->flags & ( HIDDEN_BIT | DISABLED_BIT ) ) ) {
       child->onDraw();
     }
   }
@@ -120,7 +119,7 @@ void Area::drawChildren()
 void Area::update()
 {
   for( int i = 0; i < updateAreas.length(); ++i ) {
-    if( updateAreas[i]->flags & UPDATE_BIT ) {
+    if( ( updateAreas[i]->flags & ( UPDATE_BIT | DISABLED_BIT ) ) == UPDATE_BIT ) {
       updateAreas[i]->onUpdate();
     }
   }
@@ -147,12 +146,33 @@ void Area::onDraw()
 
 void Area::show( bool doShow )
 {
+  if( flags & DISABLED_BIT ) {
+    return;
+  }
+
   if( doShow ) {
     flags &= ~( IGNORE_BIT | HIDDEN_BIT );
   }
   else {
     flags |= IGNORE_BIT | HIDDEN_BIT;
   }
+
+  foreach( child, children.iter() ) {
+    child->onVisibilityChange( doShow );
+  }
+  onVisibilityChange( doShow );
+}
+
+void Area::enable( bool doEnable )
+{
+  if( doEnable ) {
+    flags &= ~DISABLED_BIT;
+  }
+  else {
+    flags |= DISABLED_BIT;
+  }
+
+  bool doShow = doEnable && !( flags & HIDDEN_BIT );
 
   foreach( child, children.iter() ) {
     child->onVisibilityChange( doShow );

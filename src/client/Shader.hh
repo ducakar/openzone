@@ -110,11 +110,7 @@ struct Attrib
   {
     POSITION,
     TEXCOORD,
-    NORMAL,
-    TANGENT,
-    BINORMAL,
-    BONES,
-    BLEND
+    NORMAL
   };
 };
 

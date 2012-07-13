@@ -45,24 +45,8 @@ void Vertex::setFormat()
                          static_cast<char*>( null ) + offsetof( Vertex, texCoord ) );
 
   glEnableVertexAttribArray( Attrib::NORMAL );
-  glVertexAttribPointer( Attrib::NORMAL, 3, GL_BYTE, GL_TRUE, sizeof( Vertex ),
+  glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                          static_cast<char*>( null ) + offsetof( Vertex, normal ) );
-
-//   glEnableVertexAttribArray( Attrib::TANGENT );
-//   glVertexAttribPointer( Attrib::TANGENT, 3, GL_BYTE, GL_TRUE, sizeof( Vertex ),
-//                          static_cast<char*>( null ) + offsetof( Vertex, tangent ) );
-//
-//   glEnableVertexAttribArray( Attrib::BINORMAL );
-//   glVertexAttribPointer( Attrib::BINORMAL, 3, GL_BYTE, GL_TRUE, sizeof( Vertex ),
-//                          static_cast<char*>( null ) + offsetof( Vertex, binormal ) );
-//
-//   glEnableVertexAttribArray( Attrib::BONES );
-//   glVertexAttribPointer( Attrib::BONES, 2, GL_BYTE, GL_FALSE, sizeof( Vertex ),
-//                          static_cast<char*>( null ) + offsetof( Vertex, bones ) );
-//
-//   glEnableVertexAttribArray( Attrib::BLEND );
-//   glVertexAttribPointer( Attrib::BLEND, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof( Vertex ),
-//                          static_cast<char*>( null ) + offsetof( Vertex, blend ) );
 }
 
 void Texture::free()
@@ -116,9 +100,9 @@ void Mesh::animate( const Instance* instance )
         vertexAnimBuffer[i].texCoord[0] = vertices[i].texCoord[0];
         vertexAnimBuffer[i].texCoord[1] = vertices[i].texCoord[1];
 
-        vertexAnimBuffer[i].normal[0] = quantifyToByte( normal.x );
-        vertexAnimBuffer[i].normal[1] = quantifyToByte( normal.y );
-        vertexAnimBuffer[i].normal[2] = quantifyToByte( normal.z );
+        vertexAnimBuffer[i].normal[0] = normal.x;
+        vertexAnimBuffer[i].normal[1] = normal.y;
+        vertexAnimBuffer[i].normal[2] = normal.z;
       }
     }
     else {
@@ -138,9 +122,9 @@ void Mesh::animate( const Instance* instance )
         vertexAnimBuffer[i].texCoord[0] = vertices[i].texCoord[0];
         vertexAnimBuffer[i].texCoord[1] = vertices[i].texCoord[1];
 
-        vertexAnimBuffer[i].normal[0] = quantifyToByte( normal.x );
-        vertexAnimBuffer[i].normal[1] = quantifyToByte( normal.y );
-        vertexAnimBuffer[i].normal[2] = quantifyToByte( normal.z );
+        vertexAnimBuffer[i].normal[0] = normal.x;
+        vertexAnimBuffer[i].normal[1] = normal.y;
+        vertexAnimBuffer[i].normal[2] = normal.z;
       }
     }
 

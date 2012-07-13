@@ -45,6 +45,7 @@ class Font
       SANS,
       SMALL,
       LARGE,
+      TITLE,
       MAX
     };
 

@@ -91,6 +91,7 @@ class HudArea : public Area
 
   protected:
 
+    void onVisibilityChange( bool doShow ) override;
     void onReposition() override;
     void onUpdate() override;
     void onDraw() override;

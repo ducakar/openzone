@@ -85,12 +85,12 @@ void InfoFrame::onDraw()
   }
 
   Frame::onDraw();
-  text.draw( this );
+  text.draw( this, false );
 }
 
 InfoFrame::InfoFrame() :
   Frame( 360, 12 + 24 * Font::INFOS[Font::SANS].height, "" ),
-  text( 6, 4, 348, 24, Font::SANS ), lastId( -1 )
+  text( 6, 4, 348, 24, Font::SANS, Area::ALIGN_NONE ), lastId( -1 )
 {
   flags = PINNED_BIT;
 }

@@ -176,6 +176,13 @@ void Lua::create( const char* mission_ )
   PFile missionDir( "mission/" + cs.mission );
   DArray<PFile> files = missionDir.ls();
 
+  if( missionDir.type() != File::DIRECTORY ) {
+    throw Exception( "Mission directory '%s' does not exist", missionDir.path().cstr() );
+  }
+  if( files.isEmpty() ) {
+    throw Exception( "Mission directory '%s' contains no Lua scripts", missionDir.path().cstr() );
+  }
+
   foreach( file, files.iter() ) {
     if( !file->hasExtension( "lua" ) ) {
       continue;
@@ -218,6 +225,13 @@ void Lua::read( InputStream* istream )
 
   PFile missionDir( "mission/" + cs.mission );
   DArray<PFile> files = missionDir.ls();
+
+  if( missionDir.type() != File::DIRECTORY ) {
+    throw Exception( "Mission directory '%s' does not exist", missionDir.path().cstr() );
+  }
+  if( files.isEmpty() ) {
+    throw Exception( "Mission directory '%s' contains no Lua scripts", missionDir.path().cstr() );
+  }
 
   foreach( file, files.iter() ) {
     if( !file->hasExtension( "lua" ) ) {

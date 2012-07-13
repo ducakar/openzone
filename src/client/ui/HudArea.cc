@@ -345,6 +345,14 @@ void HudArea::onReposition()
   descTextY   = crossIconY + ICON_SIZE + 36;
 }
 
+void HudArea::onVisibilityChange( bool )
+{
+  lastObjectId  = -1;
+  lastEntityId  = -1;
+  lastWeaponId  = -1;
+  lastVehicleId = -1;
+}
+
 void HudArea::onUpdate()
 {
   const Bot* bot = camera.botObj;

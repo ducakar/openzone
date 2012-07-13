@@ -73,6 +73,16 @@ const FragPool* Library::fragPool( const char* name ) const
   return value;
 }
 
+int Library::shaderIndex( const char* name ) const
+{
+  const int* value = shaderIndices.find( name );
+
+  if( value == null ) {
+    throw Exception( "Invalid shader requested '%s'", name );
+  }
+  return *value;
+}
+
 int Library::textureIndex( const char* name ) const
 {
   const int* value = textureIndices.find( name );
@@ -89,16 +99,6 @@ int Library::soundIndex( const char* name ) const
 
   if( value == null ) {
     throw Exception( "Invalid sound requested '%s'", name );
-  }
-  return *value;
-}
-
-int Library::shaderIndex( const char* name ) const
-{
-  const int* value = shaderIndices.find( name );
-
-  if( value == null ) {
-    throw Exception( "Invalid shader requested '%s'", name );
   }
   return *value;
 }
@@ -129,6 +129,16 @@ int Library::modelIndex( const char* name ) const
 
   if( value == null ) {
     throw Exception( "Invalid model index requested '%s'", name );
+  }
+  return *value;
+}
+
+int Library::musicIndex( const char* name ) const
+{
+  const int* value = musicIndices.find( name );
+
+  if( value == null ) {
+    throw Exception( "Invalid music track index requested '%s'", name );
   }
   return *value;
 }
@@ -438,6 +448,12 @@ void Library::initMusic( const char* userMusicPath )
   Log::indent();
 
   initMusicRecurse( "music" );
+
+  for( int i = 0; i < musics.length(); ++i ) {
+    musicIndices.add( musics[i].name, i );
+  }
+
+  initMusicRecurse( "userMusic" );
 
   Log::unindent();
   Log::println( "}" );

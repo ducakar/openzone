@@ -61,8 +61,7 @@ void StrategicProxy::begin()
 
   ui::mouse.doShow = true;
 
-  ui::ui.strategicArea->show( true );
-  ui::ui.galileoFrame->show( true );
+  ui::ui.strategicArea->enable( true );
 
   desiredPos = camera.p;
 }
@@ -73,8 +72,7 @@ void StrategicProxy::end()
 
   ui::mouse.doShow = true;
 
-  ui::ui.galileoFrame->show( false );
-  ui::ui.strategicArea->show( false );
+  ui::ui.strategicArea->enable( false );
 }
 
 void StrategicProxy::prepare()

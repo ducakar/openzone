@@ -98,12 +98,12 @@ void MainMenu::onDraw()
 
   Frame::onDraw();
 
-  copyright.draw( this );
+  copyright.draw( this, false );
 }
 
 MainMenu::MainMenu( bool showAutosaved, bool showQuicksaved ) :
   Frame( 400, 450, OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " " OZ_SYSTEM_NAME ),
-  copyright( 10, 10, 380, 9, Font::SANS )
+  copyright( 10, 10, 380, 9, Font::SANS, Area::ALIGN_NONE )
 {
   x = ( camera.width  - width ) / 2;
   y = ( camera.height - height ) / 2;

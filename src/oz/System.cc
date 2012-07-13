@@ -351,10 +351,10 @@ static void construct()
 
   void* library = dlopen( "libpulse-simple.so.0", RTLD_NOW );
   if( library != null ) {
-    *(void**)( &pa_simple_new )   = dlsym( library, "pa_simple_new" );
-    *(void**)( &pa_simple_free )  = dlsym( library, "pa_simple_free" );
-    *(void**)( &pa_simple_write ) = dlsym( library, "pa_simple_write" );
-    *(void**)( &pa_simple_drain ) = dlsym( library, "pa_simple_drain" );
+    *( void** )( &pa_simple_new )   = dlsym( library, "pa_simple_new" );
+    *( void** )( &pa_simple_free )  = dlsym( library, "pa_simple_free" );
+    *( void** )( &pa_simple_write ) = dlsym( library, "pa_simple_write" );
+    *( void** )( &pa_simple_drain ) = dlsym( library, "pa_simple_drain" );
 
     if( pa_simple_new == null || pa_simple_free == null || pa_simple_write == null ||
         pa_simple_drain == null )

@@ -37,10 +37,6 @@ struct Vertex
   Point    pos;
   TexCoord texCoord;
   Vec3     normal;
-  Vec3     tangent;
-  Vec3     binormal;
-  int      bones[2];
-  float    blend;
 
   bool operator == ( const Vertex& v ) const;
 
@@ -132,8 +128,6 @@ class Compiler
 
     void normal( float nx, float ny, float nz );
     void normal( const float* v );
-
-    void bones( int first, int second, float blend );
 
     void vertex( float x, float y, float z );
     void vertex( const float* v );

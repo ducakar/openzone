@@ -18,13 +18,13 @@
  */
 
 /**
- * @file client/ui/LoadingArea.hh
+ * @file client/ui/CinematicText.hh
  */
 
 #pragma once
 
 #include "client/ui/Area.hh"
-#include "client/ui/Label.hh"
+#include "client/ui/Text.hh"
 
 namespace oz
 {
@@ -33,9 +33,11 @@ namespace client
 namespace ui
 {
 
-class LoadingArea : public Area
+class CinematicText : public Area
 {
-  friend class UI;
+  private:
+
+    Text text;
 
   protected:
 
@@ -44,9 +46,9 @@ class LoadingArea : public Area
 
   public:
 
-    Label status;
+    CinematicText();
 
-    LoadingArea();
+    void set( const char* title );
 
 };
 

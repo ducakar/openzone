@@ -123,13 +123,13 @@ void QuestFrame::onDraw()
   Frame::onDraw();
 
   if( isOpened ) {
-    description.draw( this );
+    description.draw( this, false );
   }
 }
 
 QuestFrame::QuestFrame() :
   Frame( 500, 0, OZ_GETTEXT( "Quests" ) ),
-  description( 6, 4, 488, 10, Font::SANS ),
+  description( 6, 4, 488, 10, Font::SANS, Area::ALIGN_NONE ),
   lastState( Quest::PENDING ),
   isOpened( false ),
   currentQuest( -1 )

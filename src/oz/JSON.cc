@@ -204,6 +204,10 @@ String JSON::Parser::parseString()
   do {
     ch = pos.readChar();
 
+    if( ch == '\n' || ch == '\r' ) {
+      continue;
+    }
+
     if( ch == '\\' ) {
       ch = pos.readChar();
 

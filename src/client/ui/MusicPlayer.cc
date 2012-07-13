@@ -118,6 +118,11 @@ void MusicPlayer::volumeUp( Button* sender )
   sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
 }
 
+void MusicPlayer::onVisibilityChange( bool doShow )
+{
+  oz::client::ui::Area::onVisibilityChange( doShow );
+}
+
 void MusicPlayer::onUpdate()
 {
   if( camera.state == Camera::UNIT && camera.botObj != null &&
@@ -129,12 +134,26 @@ void MusicPlayer::onUpdate()
       sound.stopMusic();
     }
     if( !( flags & HIDDEN_BIT ) ) {
-      show( false );
+      flags |= HIDDEN_BIT | IGNORE_BIT;
     }
     return;
   }
   else if( mouse.doShow && ( flags & HIDDEN_BIT ) ) {
-    show( true );
+    flags &= ~( HIDDEN_BIT | IGNORE_BIT );
+  }
+
+  if( sound.getCurrentTrack() != currentTrack ) {
+    int soundTrack = sound.getCurrentTrack();
+
+    if( soundTrack == -1 ) {
+      title.set( " " );
+    }
+    else {
+      currentTrack = sound.getCurrentTrack();
+
+      title.set( "%s", library.musics[currentTrack].name.cstr() );
+      trackLabel.set( "%d", currentTrack + 1 );
+    }
   }
 
   if( isPlaying && !sound.isMusicPlaying() ) {

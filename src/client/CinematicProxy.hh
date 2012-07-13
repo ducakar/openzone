@@ -24,6 +24,7 @@
 #pragma once
 
 #include "client/Proxy.hh"
+#include "client/ui/CinematicText.hh"
 
 namespace oz
 {
@@ -44,12 +45,16 @@ class CinematicProxy : public Proxy
         MOVE
       };
 
-      Quat  rot;
-      Point p;
-      Mat44 colour;
+      Quat   rot;
+      Point  p;
+      Mat44  colour;
 
-      float time;
-      int   endState;
+      int    track;
+
+      String title;
+
+      float  time;
+      int    endState;
     };
 
     List<Step> steps;
@@ -62,12 +67,15 @@ class CinematicProxy : public Proxy
 
     int        prevState;
 
+    ui::CinematicText* cinematicText;
+
   public:
 
     CinematicProxy();
 
     void addStateSwitch( int endState );
-    void addTransform( const Quat& rot, const Point& p, const Mat44& colour, float time );
+    void addTransform( const Quat& rot, const Point& p, const Mat44& colour, int track,
+                       const char* title, float time );
 
     void executeSequence( const char* path );
 
