@@ -640,7 +640,7 @@ static int ozStrNumEnts( lua_State* l )
   ARG( 0 );
   STR();
 
-  l_pushint( ms.str->nEntities );
+  l_pushint( ms.str->entities.length() );
   return 1;
 }
 
@@ -1507,22 +1507,43 @@ static int ozObjAddItem( lua_State* l )
     return 1;
   }
 
-  ITEM_INDEX( l_toint( 1 ) );
+  Dynamic* newItem;
 
-  if( item->cell == null ) {
-    hard_assert( item->parent >= 0 );
+  if( l_type( 1 ) == LUA_TNUMBER ) {
+    ITEM_INDEX( l_toint( 1 ) );
 
-    Object* container = orbis.objects[item->parent];
-    if( container != null ) {
-      container->items.exclude( item->index );
+    if( item->cell == null ) {
+      hard_assert( item->parent >= 0 );
+
+      Object* container = orbis.objects[item->parent];
+      if( container != null ) {
+        container->items.exclude( item->index );
+      }
     }
+
+    newItem = item;
+  }
+  else {
+    const char* sClazz = l_tostring( 1 );
+
+    Object* obj = synapse.addObject( sClazz, Point::ORIGIN, Heading( Math::rand( 4 ) ), false );
+    if( obj == null ) {
+      l_pushbool( false );
+      return 1;
+    }
+
+    if( !( obj->flags & Object::ITEM_BIT ) ) {
+      ERROR( "Tried to add non-item object to inventory" );
+    }
+
+    newItem = static_cast<Dynamic*>( obj );
   }
 
-  item->parent = ms.obj->index;
-  ms.obj->items.add( item->index );
+  newItem->parent = ms.obj->index;
+  ms.obj->items.add( newItem->index );
 
-  if( item->cell != null ) {
-    synapse.cut( item );
+  if( newItem->cell != null ) {
+    synapse.cut( newItem );
   }
 
   l_pushbool( true );

@@ -150,23 +150,21 @@ void BSPAudio::play( const Struct* str ) const
     }
   }
 
-  for( int i = 0; i < str->nEntities; ++i ) {
-    const Entity& entity = str->entities[i];
-
-    if( entity.state == Entity::OPENING ) {
-      if( entity.time == 0.0f && entity.model->openSound >= 0 ) {
-        playSound( &entity, entity.model->openSound );
+  foreach( entity, str->entities.citer() ) {
+    if( entity->state == Entity::OPENING ) {
+      if( entity->time == 0.0f && entity->model->openSound >= 0 ) {
+        playSound( entity, entity->model->openSound );
       }
-      if( entity.model->frictSound >= 0 ) {
-        playContSound( &entity, entity.model->frictSound );
+      if( entity->model->frictSound >= 0 ) {
+        playContSound( entity, entity->model->frictSound );
       }
     }
-    else if( entity.state == Entity::CLOSING ) {
-      if( entity.time == 0.0f && entity.model->closeSound >= 0 ) {
-        playSound( &entity, entity.model->closeSound );
+    else if( entity->state == Entity::CLOSING ) {
+      if( entity->time == 0.0f && entity->model->closeSound >= 0 ) {
+        playSound( entity, entity->model->closeSound );
       }
-      if( entity.model->frictSound >= 0 ) {
-        playContSound( &entity, entity.model->frictSound );
+      if( entity->model->frictSound >= 0 ) {
+        playContSound( entity, entity->model->frictSound );
       }
     }
   }

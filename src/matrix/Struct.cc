@@ -576,7 +576,7 @@ void Struct::onUpdate()
     onDemolish();
   }
   else {
-    for( int i = 0; i < nEntities; ++i ) {
+    for( int i = 0; i < entities.length(); ++i ) {
       Entity& entity = entities[i];
 
       hard_assert( 0.0f <= entity.ratio && entity.ratio <= 1.0f );
@@ -584,11 +584,6 @@ void Struct::onUpdate()
       ( entity.*Entity::HANDLERS[entity.model->type] )();
     }
   }
-}
-
-Struct::~Struct()
-{
-  delete[] entities;
 }
 
 Bounds Struct::toStructCS( const Bounds& bb ) const
@@ -701,20 +696,21 @@ Struct::Struct( const BSP* bsp_, int index_, const Point& p_, Heading heading_ )
   mins        = bb.mins;
   maxs        = bb.maxs;
 
-  nEntities   = bsp->nModels;
-  entities    = nEntities == 0 ? null : new Entity[nEntities];
+  if( bsp->nModels != 0 ) {
+    entities.alloc( bsp->nModels );
 
-  for( int i = 0; i < nEntities; ++i ) {
-    Entity& entity = entities[i];
+    for( int i = 0; i < entities.length(); ++i ) {
+      Entity& entity = entities[i];
 
-    entity.model    = &bsp->models[i];
-    entity.str      = this;
-    entity.offset   = Vec3::ZERO;
-    entity.key      = bsp->models[i].key;
-    entity.state    = Entity::CLOSED;
-    entity.ratio    = 0.0f;
-    entity.time     = 0.0f;
-    entity.velocity = Vec3::ZERO;
+      entity.model    = &bsp->models[i];
+      entity.str      = this;
+      entity.offset   = Vec3::ZERO;
+      entity.key      = bsp->models[i].key;
+      entity.state    = Entity::CLOSED;
+      entity.ratio    = 0.0f;
+      entity.time     = 0.0f;
+      entity.velocity = Vec3::ZERO;
+    }
   }
 }
 
@@ -736,28 +732,29 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
   resistance  = bsp->resistance;
   demolishing = istream->readFloat();
 
-  nEntities   = bsp->nModels;
-  entities    = nEntities == 0 ? null : new Entity[nEntities];
+  if( bsp->nModels != 0 ) {
+    entities.alloc( bsp->nModels );
 
-  for( int i = 0; i < nEntities; ++i ) {
-    Entity& entity = entities[i];
+    for( int i = 0; i < entities.length(); ++i ) {
+      Entity& entity = entities[i];
 
-    entity.offset = istream->readVec3();
-    entity.model  = &bsp->models[i];
-    entity.str    = this;
-    entity.key    = istream->readInt();
-    entity.state  = Entity::State( istream->readInt() );
-    entity.ratio  = istream->readFloat();
-    entity.time   = istream->readFloat();
+      entity.offset = istream->readVec3();
+      entity.model  = &bsp->models[i];
+      entity.str    = this;
+      entity.key    = istream->readInt();
+      entity.state  = Entity::State( istream->readInt() );
+      entity.ratio  = istream->readFloat();
+      entity.time   = istream->readFloat();
 
-    if( entity.state == Entity::OPENING ) {
-      entity.velocity = +entity.model->move * entity.model->ratioInc / Timer::TICK_TIME;
-    }
-    else if( entity.state == Entity::CLOSING ) {
-      entity.velocity = -entity.model->move * entity.model->ratioInc / Timer::TICK_TIME;
-    }
-    else {
-      entity.velocity = Vec3::ZERO;
+      if( entity.state == Entity::OPENING ) {
+        entity.velocity = +entity.model->move * entity.model->ratioInc / Timer::TICK_TIME;
+      }
+      else if( entity.state == Entity::CLOSING ) {
+        entity.velocity = -entity.model->move * entity.model->ratioInc / Timer::TICK_TIME;
+      }
+      else {
+        entity.velocity = Vec3::ZERO;
+      }
     }
   }
 
@@ -788,7 +785,7 @@ void Struct::write( BufferStream* ostream )
   ostream->writeFloat( life );
   ostream->writeFloat( demolishing );
 
-  for( int i = 0; i < nEntities; ++i ) {
+  for( int i = 0; i < entities.length(); ++i ) {
     ostream->writeVec3( entities[i].offset );
     ostream->writeInt( entities[i].key );
     ostream->writeInt( entities[i].state );

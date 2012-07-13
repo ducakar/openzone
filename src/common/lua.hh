@@ -170,7 +170,7 @@
  * structureIndex * 128 + entityIndex)or returns with error for invalid indices.
  */
 #define ENT_INDEX( index ) \
-  if( uint( index ) >= uint( ms.str->nEntities ) ) { \
+  if( uint( index ) >= uint( ms.str->entities.length() ) ) { \
     ERROR( "Invalid structure entity index (out of range)" ); \
   } \
   Entity* ent = &ms.str->entities[index];

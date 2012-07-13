@@ -325,7 +325,7 @@ void Render::drawGeometry()
 
       shape.colour( ENTITY_AABB );
 
-      foreach( entity, citer( str->entities, str->nEntities ) ) {
+      foreach( entity, str->entities.citer() ) {
         Bounds bb = str->toAbsoluteCS( *entity->model + entity->offset );
         shape.wireBox( bb.toAABB() );
       }

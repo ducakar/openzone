@@ -174,9 +174,8 @@ function onCreate()
   ozOrbisAddObj( OZ_FORCE, "bomb", 789.50, 1001.00, 127.91 )
   ozOrbisAddObj( OZ_FORCE, "bomb", 789.50, 1000.00, 127.91 )
 
-  local items = { ozOrbisAddObj( OZ_FORCE, "droid_weapon.chaingun", 0, 0, 0 ) }
   ozOrbisAddObj( OZ_FORCE, "droid", 780.15, 1004.64, 123.39 )
-  ozObjAddItem( items[1] )
+  ozObjAddItem( "droid_weapon.chaingun" )
   ozBotSetH( 180.0 )
   ozBotSetMind( "droid_guard" )
   ozBotSetWeaponItem( 3 )
@@ -185,29 +184,20 @@ function onCreate()
   ozBotSetH( 90.0 )
   ozBotSetMind( "droid_guard" )
 
-  local items = {
-    ozOrbisAddObj( OZ_FORCE, "beast_weapon.plasmagun", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "musicPlayer", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "galileo", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "firstAid", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "firstAid", 0, 0, 0 )
-  }
   ozOrbisAddObj( OZ_FORCE, "metalCrate", 810.41, 989.71, 124.33 )
-  for i = 1, #items do
-    ozObjAddItem( items[i] )
-  end
+  ozObjAddItem( "beast_weapon.plasmagun" )
+  ozObjAddItem( "musicPlayer" )
+  ozObjAddItem( "musicPlayer" )
+  ozObjAddItem( "galileo" )
+  ozObjAddItem( "firstAid" )
+  ozObjAddItem( "firstAid" )
 
-  local items = {
-    ozOrbisAddObj( OZ_FORCE, "droid_weapon.hyperblaster", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "droid_weapon.hyperblaster", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "galileo", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 )
-  }
   ozOrbisAddObj( OZ_FORCE, "metalCrate", 810.04, 991.14, 124.51 )
-  for i = 1, #items do
-    ozObjAddItem( items[i] )
-  end
+  ozObjAddItem( "droid_weapon.hyperblaster" )
+  ozObjAddItem( "droid_weapon.hyperblaster" )
+  ozObjAddItem( "binoculars" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
 
   ozOrbisAddObj( OZ_FORCE, "metalBarrel", 811.61, 990.85, 124.47 )
   ozOrbisAddObj( OZ_FORCE, "hoverTank", 815.22, 991.62, 124.76 )
@@ -224,101 +214,74 @@ function onCreate()
   ozOrbisAddObj( OZ_FORCE, "smallCrate", -33.20, -942.65, 138.84 )
   ozOrbisAddObj( OZ_FORCE, "smallCrate", -32.26, -937.67, 137.63 )
 
-  local items = { ozOrbisAddObj( OZ_FORCE, "musicPlayer", 0, 0, 0 ) }
   ozOrbisAddObj( OZ_FORCE, "metalCrate", -37.57, -939.23, 137.93 )
-  for i = 1, #items do
-    ozObjAddItem( items[i] )
-  end
+  ozObjAddItem( "musicPlayer" )
 
-  local items = {
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 )
-  }
   ozOrbisAddObj( OZ_FORCE, "metalCrate", -22.53, -941.39, 137.93 )
-  for i = 1, #items do
-    ozObjAddItem( items[i] )
-  end
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
 
-  local items = {
-    ozOrbisAddObj( OZ_FORCE, "firstAid", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "firstAid", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 )
-  }
   ozOrbisAddObj( OZ_FORCE, "metalCrate", -22.26, -940.07, 137.93 )
-  for i = 1, #items do
-    ozObjAddItem( items[i] )
-  end
+  ozObjAddItem( "firstAid" )
+  ozObjAddItem( "firstAid" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
 
-  local items = {
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "cvicek", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 )
-  }
   ozOrbisAddObj( OZ_FORCE, "metalCrate", -17.61, -940.49, 137.93 )
-  for i = 1, #items do
-    ozObjAddItem( items[i] )
-  end
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
 
-  local items = {
-    ozOrbisAddObj( OZ_FORCE, "galileo", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "musicPlayer", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "beast_weapon.plasmagun", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "beast_weapon.plasmagun", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 )
-  }
   ozOrbisAddObj( OZ_FORCE, "metalCrate", -17.61, -942.49, 137.93 )
-  for i = 1, #items do
-    ozObjAddItem( items[i] )
-  end
+  ozObjAddItem( "galileo" )
+  ozObjAddItem( "musicPlayer" )
+  ozObjAddItem( "beast_weapon.plasmagun" )
+  ozObjAddItem( "beast_weapon.plasmagun" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
 
   ozOrbisAddObj( OZ_FORCE, "metalBarrel", -17.60, -914.44, 137.83 )
   ozOrbisAddObj( OZ_FORCE, "metalBarrel", -17.55, -915.66, 137.83 )
   ozOrbisAddObj( OZ_FORCE, "metalBarrel", -18.23, -915.13, 137.83 )
 
-  local items = {
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 ),
-    ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 )
-  }
   ozOrbisAddObj( OZ_FORCE, "metalCrate", -22.30, -912.60, 137.83 )
-  for i = 1, #items do
-    ozObjAddItem( items[i] )
-  end
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
 
   ozOrbisAddObj( OZ_FORCE, "serviceStation", -30.00, -916.00, 139.30 )
 
@@ -331,9 +294,8 @@ function onCreate()
   ozOrbisAddObj( OZ_FORCE, "droid", -36.83, -937.20, 142.27 )
   ozBotSetMind( "droid_sniper" )
 
-  local items = { ozOrbisAddObj( OZ_FORCE, "droid_weapon.chaingun", 0, 0, 0 ) }
   ozOrbisAddObj( OZ_FORCE, "droid", -24.16, -945.10, 138.14 )
-  ozObjAddItem( items[1] )
+  ozObjAddItem( "droid_weapon.chaingun" )
   ozBotSetMind( "droid_guard" )
   ozBotSetH( 0 )
   ozBotSetWeaponItem( 3 )
@@ -346,9 +308,8 @@ function onCreate()
   ozBotSetMind( "droid_patrol" )
   ozBotSetH( 0 )
 
-  local items = { ozOrbisAddObj( OZ_FORCE, "droid_weapon.grenadeLauncher", 0, 0, 0 ) }
   ozOrbisAddObj( OZ_FORCE,  "droid", -22.47, -917.67, 138.33 )
-  ozObjAddItem( items[1] )
+  ozObjAddItem( "droid_weapon.grenadeLauncher" )
   ozBotSetMind( "droid_guard" )
   ozBotSetH( 270 )
   ozBotSetWeaponItem( 3 )
@@ -389,35 +350,23 @@ function onCreate()
   ozOrbisAddStr( OZ_FORCE, "beastBunker", -1029.0, 610.0, 51.5, OZ_WEST )
   ozOrbisAddStr( OZ_FORCE, "beastBunker", -1010.0, 595.0, 53.0, OZ_SOUTH )
 
-  local musicPlayer1 = ozOrbisAddObj( OZ_FORCE, "musicPlayer", 0, 0, 0 )
-  local musicPlayer2 = ozOrbisAddObj( OZ_FORCE, "musicPlayer", 0, 0, 0 )
-  local plasmagun1 = ozOrbisAddObj( OZ_FORCE, "beast_weapon.plasmagun", 0, 0, 0 )
-  local plasmagun2 = ozOrbisAddObj( OZ_FORCE, "beast_weapon.plasmagun", 0, 0, 0 )
-  local galileo = ozOrbisAddObj( OZ_FORCE, "galileo", 0, 0, 0 )
-  local firstAid1 = ozOrbisAddObj( OZ_FORCE, "firstAid", 0, 0, 0 )
-  local firstAid2 = ozOrbisAddObj( OZ_FORCE, "firstAid", 0, 0, 0 )
-  local firstAid3 = ozOrbisAddObj( OZ_FORCE, "firstAid", 0, 0, 0 )
-  local firstAid4 = ozOrbisAddObj( OZ_FORCE, "firstAid", 0, 0, 0 )
-  local bomb1 = ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 )
-  local bomb2 = ozOrbisAddObj( OZ_FORCE, "bomb", 0, 0, 0 )
-
   ozOrbisAddObj( OZ_FORCE, "smallCrate", -1022.49, 596.83, 51.93 )
   ozOrbisAddObj( OZ_FORCE, "smallCrate", -1021.96, 597.80, 51.86 )
   ozOrbisAddObj( OZ_FORCE, "smallCrate", -1023.41, 596.91, 50.71 )
   ozOrbisAddObj( OZ_FORCE, "bigCrate", -1022.41, 596.65, 51.02 )
   ozOrbisAddObj( OZ_FORCE, "bigCrate", -1023.38, 597.93, 50.94 )
   ozOrbisAddObj( OZ_FORCE, "metalCrate", -1021.95, 597.90, 50.94 )
-  ozObjAddItem( musicPlayer1 )
-  ozObjAddItem( musicPlayer2 )
-  ozObjAddItem( plasmagun1 )
-  ozObjAddItem( plasmagun2 )
-  ozObjAddItem( galileo )
-  ozObjAddItem( firstAid1 )
-  ozObjAddItem( firstAid2 )
-  ozObjAddItem( firstAid3 )
-  ozObjAddItem( firstAid4 )
-  ozObjAddItem( bomb1 )
-  ozObjAddItem( bomb2 )
+  ozObjAddItem( "musicPlayer" )
+  ozObjAddItem( "musicPlayer" )
+  ozObjAddItem( "beast_weapon.plasmagun" )
+  ozObjAddItem( "beast_weapon.plasmagun" )
+  ozObjAddItem( "galileo" )
+  ozObjAddItem( "firstAid" )
+  ozObjAddItem( "firstAid" )
+  ozObjAddItem( "firstAid" )
+  ozObjAddItem( "firstAid" )
+  ozObjAddItem( "bomb" )
+  ozObjAddItem( "bomb" )
 
   oz_beasts[1] = ozOrbisAddObj( OZ_FORCE, "beast", -1005.96, 603.80, 51.10 )
   ozBotSetH( 20 )
