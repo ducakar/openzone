@@ -68,7 +68,7 @@ SettingsFrame::SettingsFrame( Frame* mainMenu_ ) :
                            "You can change your settings by manually editing '%s' file." ),
                String::str( "%s/client.rc", config["dir.config"].asString().cstr() ).cstr() );
 
-  add( new Button( OZ_GETTEXT( "Close" ), closeFrame, 40, 16 ), -4, 4 );
+  add( new Button( OZ_GETTEXT( "Close" ), closeFrame, 60, 26 ), -4, 4 );
 }
 
 }

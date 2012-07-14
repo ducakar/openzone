@@ -64,25 +64,25 @@ void BuildMenu::createObject( Button* button_ )
 BuildMenu::BuildMenu() :
   Frame( 240, 250, OZ_GETTEXT( "Create" ) )
 {
-  add( new BuildButton( "smallCrate", createObject, 110, 15 ), 5, -40 );
-  add( new BuildButton( "bigCrate", createObject, 110, 15 ), 5, -60 );
-  add( new BuildButton( "metalBarrel", createObject, 110, 15 ), 5, -80 );
-  add( new BuildButton( "firstAid", createObject, 110, 15 ), 5, -100 );
-  add( new BuildButton( "cvicek", createObject, 110, 15 ), 5, -120 );
-  add( new BuildButton( "bomb", createObject, 110, 15 ), 5, -140 );
-  add( new BuildButton( "droid_weapon.blaster", createObject, 110, 15 ), 5, -160 );
-  add( new BuildButton( "droid_weapon.hyperblaster", createObject, 110, 15 ), 5, -180 );
-  add( new BuildButton( "droid_weapon.chaingun", createObject, 110, 15 ), 5, -200 );
-  add( new BuildButton( "droid_weapon.grenadeLauncher", createObject, 110, 15 ), 5, -220 );
+  add( new BuildButton( "smallCrate", createObject, 110, 18 ), 5, -40 );
+  add( new BuildButton( "bigCrate", createObject, 110, 18 ), 5, -60 );
+  add( new BuildButton( "metalBarrel", createObject, 110, 18 ), 5, -80 );
+  add( new BuildButton( "firstAid", createObject, 110, 18 ), 5, -100 );
+  add( new BuildButton( "cvicek", createObject, 110, 18 ), 5, -120 );
+  add( new BuildButton( "bomb", createObject, 110, 18 ), 5, -140 );
+  add( new BuildButton( "droid_weapon.blaster", createObject, 110, 18 ), 5, -160 );
+  add( new BuildButton( "droid_weapon.hyperblaster", createObject, 110, 18 ), 5, -180 );
+  add( new BuildButton( "droid_weapon.chaingun", createObject, 110, 18 ), 5, -200 );
+  add( new BuildButton( "droid_weapon.grenadeLauncher", createObject, 110, 18 ), 5, -220 );
 
-  add( new BuildButton( "goblin", createObject, 110, 15 ), -5, -40 );
-  add( new BuildButton( "knight", createObject, 110, 15 ), -5, -60 );
-  add( new BuildButton( "bauul", createObject, 110, 15 ), -5, -80 );
-  add( new BuildButton( "beast", createObject, 110, 15 ), -5, -100 );
-  add( new BuildButton( "droid", createObject, 110, 15 ), -5, -120 );
-  add( new BuildButton( "droid.OOM-9", createObject, 110, 15 ), -5, -140 );
-  add( new BuildButton( "raptor", createObject, 110, 15 ), -5, -160 );
-  add( new BuildButton( "hoverTank", createObject, 110, 15 ), -5, -180 );
+  add( new BuildButton( "goblin", createObject, 110, 18 ), -5, -40 );
+  add( new BuildButton( "knight", createObject, 110, 18 ), -5, -60 );
+  add( new BuildButton( "bauul", createObject, 110, 18 ), -5, -80 );
+  add( new BuildButton( "beast", createObject, 110, 18 ), -5, -100 );
+  add( new BuildButton( "droid", createObject, 110, 18 ), -5, -120 );
+  add( new BuildButton( "droid.OOM-9", createObject, 110, 18 ), -5, -140 );
+  add( new BuildButton( "raptor", createObject, 110, 18 ), -5, -160 );
+  add( new BuildButton( "hoverTank", createObject, 110, 18 ), -5, -180 );
 }
 
 BuildMenu::~BuildMenu()

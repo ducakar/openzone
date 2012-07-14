@@ -64,10 +64,10 @@ void Button::onDraw()
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
   }
   else if( isHighlighted ) {
-    shape.colour( 0.8f, 0.8f, 0.8f, 0.4f );
+    shape.colour( 0.6f, 0.6f, 0.6f, 0.4f );
   }
   else {
-    shape.colour( 0.6f, 0.6f, 0.6f, 0.4f );
+    shape.colour( 0.2f, 0.2f, 0.2f, 0.4f );
   }
 
   shape.fill( x, y, width, height );

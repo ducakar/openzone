@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: OpenZone 0.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-02-24 16:10+0100\n"
+"PO-Revision-Date: 2012-07-14 17:53+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: \n"
@@ -15,186 +15,227 @@ msgstr ""
 "X-Poedit-Language: Slovenian\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#
-# BSP names
-#
-msgid "atlantis"
-msgstr "atlantida"
-
-#
-# BSP names
-#
-msgid "beast bunker"
-msgstr "beštji bunker"
-
-msgid "bunker"
-msgstr "bunker"
-
-msgid "forum"
-msgstr "forum"
-
-msgid "house"
-msgstr "hiša"
-
-msgid "pool"
-msgstr "bazen"
-
-msgid "test castle"
-msgstr "testni grad"
-
-msgid "tower"
-msgstr "stolp"
-
-msgid "tutorial - carying"
-msgstr "vpeljava - prenašanje"
-
-msgid "tutorial - movement"
-msgstr "vpeljava - premikanje"
-
-#
-# BSP model names
-#
-msgid "crusher"
-msgstr "speštalnik"
-
-msgid "ignorant"
-msgstr "ignorant"
-
-msgid "auto door"
-msgstr "samodejna vrata"
-
-msgid "manual door"
-msgstr "vrata"
-
-msgid "elevator"
-msgstr "dvigalo"
-
-msgid "switch"
-msgstr "stikalo"
-
-#
-# Class names
-#
-msgid "bauul"
-msgstr "bauul"
-
-msgid "skull"
-msgstr "lobanja"
-
-msgid "beast"
-msgstr "beštija"
-
-msgid "plasma gun"
-msgstr "plazemska puška"
-
-msgid "crate"
-msgstr "zaboj"
-
-msgid "explosion"
-msgstr "eksplozija"
-
-msgid "binoculars"
-msgstr "daljnogled"
-
-msgid "bomb"
-msgstr "bomba"
-
-msgid "box"
-msgstr "škatla"
-
-msgid "console"
-msgstr "konzola"
-
-msgid "cvicek"
-msgstr "cviček"
-
-msgid "cyborg"
-msgstr "kiborg"
-
-msgid "chaingun"
-msgstr "strojnica"
-
-msgid "data cube"
-msgstr "podatkovna kocka"
-
-msgid "droid OOM-9"
-msgstr "droid OOM-9"
-
-msgid "droid"
-msgstr "droid"
-
-msgid "blaster"
-msgstr "udarnik"
-
-msgid "grenade launcher"
-msgstr "granatomet"
-
-msgid "hyperblaster"
-msgstr "težki udarnik"
-
-msgid "barrel"
-msgstr "sod"
-
-msgid "first aid"
-msgstr "prva pomoč"
-
-msgid "Galileo SatNav"
-msgstr "navigacija Galileo"
-
+#: data/openzone/class/goblin.json
 msgid "goblin"
 msgstr "škrat"
 
-msgid "axe"
-msgstr "sekira"
+#: data/openzone/baseq3/maps/forum.json
+msgid "forum"
+msgstr "forum"
 
-msgid "grenade"
-msgstr "granata"
+#: data/openzone/baseq3/maps/testCastle.json
+msgid "auto door"
+msgstr "samodejna vrata"
 
-msgid "hover tank"
-msgstr "lebdeči tank"
+#: data/openzone/class/datacube.json
+msgid "data cube"
+msgstr "podatkovna kocka"
 
-msgid "key"
-msgstr "ključ"
-
-msgid "knight"
-msgstr "vitez"
-
-msgid "mace"
-msgstr "buzdovan"
-
-msgid "music player"
-msgstr "predvajalnik glasbe"
-
+#: data/openzone/class/nvGoggles.json
 msgid "night vision goggles"
 msgstr "očala za nočno gledanje"
 
-msgid "palm"
-msgstr "palma"
+#: data/openzone/baseq3/maps/testCastle.json
+msgid "crusher"
+msgstr "speštalnik"
 
+#: data/openzone/baseq3/maps/testCastle.json
+msgid "elevator"
+msgstr "dvigalo"
+
+#: data/openzone/class/droid_weapon.grenadeLauncher.json
+msgid "grenade launcher"
+msgstr "granatomet"
+
+#: data/openzone/class/pine.json
 msgid "pine"
 msgstr "smreka"
 
-msgid "raptor"
-msgstr "raptor"
+#: data/openzone/class/bigCrate.json
+msgid "crate"
+msgstr "zaboj"
 
-msgid "reaper"
-msgstr "kosec"
-
-msgid "service station"
-msgstr "servisna postaja"
-
-msgid "shell"
+#: data/openzone/class/grenade.json
+msgid "grenade"
 msgstr "granata"
 
-msgid "tree"
-msgstr "drevo"
+#: data/openzone/baseq3/maps/beastBunker.json
+msgid "beast bunker"
+msgstr "beštji bunker"
 
+#: data/openzone/class/hoverTank.json
+msgid "cannon"
+msgstr "top"
+
+#: data/openzone/class/bomb.json
+msgid "bomb"
+msgstr "bomba"
+
+#: data/openzone/class/knight.json
+msgid "knight"
+msgstr "vitez"
+
+#: data/openzone/class/beast_weapon.plasmagun.json
+msgid "plasma gun"
+msgstr "plazemska puška"
+
+#: data/openzone/baseq3/maps/tower.json
+msgid "tower"
+msgstr "stolp"
+
+#: data/openzone/baseq3/maps/testCastle.json
+msgid "manual door"
+msgstr "vrata"
+
+#: data/openzone/class/console.json
+msgid "console"
+msgstr "konzola"
+
+#: data/openzone/baseq3/maps/testCastle.json
+msgid "test castle"
+msgstr "testni grad"
+
+#: data/openzone/class/goblin_weapon.axe.json
+msgid "axe"
+msgstr "sekira"
+
+#: data/openzone/class/cyborg.json
+msgid "cyborg"
+msgstr "kiborg"
+
+#: data/openzone/class/hoverTank.json
 msgid "heavy blaster"
 msgstr "težki udarnik"
 
+#: data/openzone/baseq3/maps/tutorial_movement.json
+msgid "tutorial - movement"
+msgstr "vpeljava - premikanje"
+
+#: data/openzone/baseq3/maps/testCastle.json
+msgid "switch"
+msgstr "stikalo"
+
+#: data/openzone/class/shell.json
+msgid "shell"
+msgstr "granata"
+
+#: data/openzone/class/bauul.json
+msgid "bauul"
+msgstr "bauul"
+
+#: data/openzone/baseq3/maps/testCastle.json
+msgid "ignorant"
+msgstr "ignorant"
+
+#: data/openzone/class/droid.OOM-9.json
+msgid "droid OOM-9"
+msgstr "droid OOM-9"
+
+#: data/openzone/baseq3/maps/house.json
+msgid "house"
+msgstr "hiša"
+
+#: data/openzone/class/key.json
+msgid "key"
+msgstr "ključ"
+
+#: data/openzone/class/box.json
+msgid "box"
+msgstr "škatla"
+
+#: data/openzone/class/droid_weapon.blaster.json
+msgid "blaster"
+msgstr "udarnik"
+
+#: data/openzone/class/binoculars.json
+msgid "binoculars"
+msgstr "daljnogled"
+
+#: data/openzone/class/serviceStation.json
+msgid "service station"
+msgstr "servisna postaja"
+
+#: data/openzone/class/knight_weapon.mace.json
+msgid "mace"
+msgstr "buzdovan"
+
+#: data/openzone/baseq3/maps/atlantis.json
+msgid "atlantis"
+msgstr "atlantida"
+
+#: data/openzone/class/cvicek.json
+msgid "cviček"
+msgstr "cviček"
+
+#: data/openzone/baseq3/maps/bunker.json
+msgid "bunker"
+msgstr "bunker"
+
+#: data/openzone/class/galileo.json
+msgid "Galileo SatNav"
+msgstr "navigacija Galileo"
+
+#: data/openzone/class/bauul_weapon.skull.json
+msgid "skull"
+msgstr "lobanja"
+
+#: data/openzone/class/cyborg_weapon.chaingun.json
+msgid "chaingun"
+msgstr "strojnica"
+
+#: data/openzone/class/musicPlayer.json
+msgid "music player"
+msgstr "predvajalnik glasbe"
+
+#: data/openzone/baseq3/maps/tutorial_carrying.json
+msgid "tutorial - carying"
+msgstr "vpeljava - prenašanje"
+
+#: data/openzone/class/beast.json
+msgid "beast"
+msgstr "beštija"
+
+#: data/openzone/class/firstAid.json
+msgid "first aid"
+msgstr "prva pomoč"
+
+#: data/openzone/class/bigExplosion.json
+msgid "explosion"
+msgstr "eksplozija"
+
+#: data/openzone/class/tree.json
+msgid "tree"
+msgstr "drevo"
+
+#: data/openzone/class/droid.json
+msgid "droid"
+msgstr "droid"
+
+#: data/openzone/class/droid_weapon.hyperblaster.json
+msgid "hyperblaster"
+msgstr "težki udarnik"
+
+#: data/openzone/class/explosiveBarrel.json
+msgid "barrel"
+msgstr "sod"
+
+#: data/openzone/baseq3/maps/pool.json
+msgid "pool"
+msgstr "bazen"
+
+#: data/openzone/class/palm.json
+msgid "palm"
+msgstr "palma"
+
+#: data/openzone/class/hoverTank.json
 msgid "gatling gun"
 msgstr "Gatlingova strojnica"
 
-msgid "cannon"
-msgstr "top"
+#: data/openzone/class/hoverTank.json
+msgid "hover tank"
+msgstr "lebdeči tank"
+
+#: data/openzone/class/raptor.json
+msgid "raptor"
+msgstr "raptor"
 

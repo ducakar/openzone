@@ -370,11 +370,21 @@ void Input::readEvent( SDL_Event* event )
       break;
     }
 #endif
+    case SDL_KEYUP: {
+#if SDL_MAJOR_VERSION < 2
+      sdlCurrKeys[event->key.keysym.sym] = false;
+#else
+      sdlCurrKeys[event->key.keysym.scancode] = false;
+#endif
+      break;
+    }
     case SDL_KEYDOWN: {
 #if SDL_MAJOR_VERSION < 2
-      sdlKeys[event->key.keysym.sym] |= SDL_PRESSED;
+      sdlKeys[event->key.keysym.sym]     = true;
+      sdlCurrKeys[event->key.keysym.sym] = true;
 #else
-      sdlKeys[event->key.keysym.scancode] |= SDL_PRESSED;
+      sdlKeys[event->key.keysym.scancode]     = true;
+      sdlCurrKeys[event->key.keysym.scancode] = true;
 #endif
       break;
     }
@@ -383,6 +393,22 @@ void Input::readEvent( SDL_Event* event )
       break;
     }
   }
+}
+
+void Input::reset()
+{
+  mouseX      = 0;
+  mouseY      = 0;
+  mouseZ      = 0;
+  mouseW      = 0;
+
+  buttons     = 0;
+  oldButtons  = 0;
+  currButtons = 0;
+
+  memset( sdlKeys, 0, sizeof( sdlKeys ) );
+  memset( sdlOldKeys, 0, sizeof( sdlOldKeys ) );
+  memset( sdlCurrKeys, 0, sizeof( sdlCurrKeys ) );
 }
 
 void Input::prepare()
@@ -467,12 +493,7 @@ void Input::init()
 
   memset( sdlKeys, 0, sizeof( sdlKeys ) );
   memset( sdlOldKeys, 0, sizeof( sdlOldKeys ) );
-
-#if SDL_MAJOR_VERSION < 2
-  sdlCurrKeys = SDL_GetKeyState( null );
-#else
-  sdlCurrKeys = SDL_GetKeyboardState( null );
-#endif
+  memset( sdlCurrKeys, 0, sizeof( sdlCurrKeys ) );
 
   memset( keyMap, 0, sizeof( keyMap ) );
 

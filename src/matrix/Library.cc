@@ -782,6 +782,8 @@ void Library::free()
   modelIndices.dealloc();
   nameListIndices.clear();
   nameListIndices.dealloc();
+  musicIndices.clear();
+  musicIndices.dealloc();
 
   deviceIndices.clear();
   deviceIndices.dealloc();

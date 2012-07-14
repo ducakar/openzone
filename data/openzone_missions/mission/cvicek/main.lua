@@ -84,7 +84,7 @@ function test_cvicekQuest()
     end
 
     if oz_beasts[2] ~= -1 then
-      ozNirvanaAddMemo( oz_beasts[2], ozGettext( "Yeeha! Cvicek!" ) )
+      ozNirvanaAddMemo( oz_beasts[2], ozGettext( "Yeeha! Cviček!" ) )
     end
 
     if oz_beasts[3] ~= -1 then
@@ -388,15 +388,15 @@ function onCreate()
   ozBotSetH( 200 )
   ozBotSetMind( "beast_nervous" )
 
-  ozNirvanaAddMemo( oz_beasts[1], ozGettext( "Well, is cvicek coming anytime soon?" ) )
+  ozNirvanaAddMemo( oz_beasts[1], ozGettext( "Well, is cviček coming anytime soon?" ) )
 
   ozNirvanaAddMemo( oz_beasts[2], ozGettext( "I'm sooo thirsty. I've been drinking only water " ..
                                              "for the past week." ) )
 
-  ozNirvanaAddMemo( oz_beasts[3], ozGettext( "Cvicek, cvicek, cvicek ... Where is cvicek?" ) )
+  ozNirvanaAddMemo( oz_beasts[3], ozGettext( "Cviček, cviček, cviček ... Where is cviček?" ) )
 
   ozNirvanaAddMemo( oz_beasts[4], ozGettext( "How's your mission going? I can't imagine how we " ..
-                                             "will live without cvicek." ) )
+                                             "will live without cviček." ) )
 
   ozNirvanaAddMemo( oz_beasts[5], ozGettext( "Is the Farm still standing? Please destroy it, " ..
                                              "maybe then there might be something better on TV." ) )
@@ -412,13 +412,13 @@ function onCreate()
     "destinations of your tasks and help you with navigation a lot." ),
     785, 1000, 124 )
 
-  oz_cvicekQuest = ozQuestAdd( ozGettext( "Steal cvicek" ), ozGettext(
-    "Steal at least 20 bottles of cvicek from Colonial military base and transport them back " ..
+  oz_cvicekQuest = ozQuestAdd( ozGettext( "Steal cviček" ), ozGettext(
+    "Steal at least 20 bottles of cviček from Colonial military base and transport them back " ..
     "to Beast Lair.\n\n" ..
     "The base is heavily defended so you will need some heavy armour to attack it.\n\n" ..
-    "Beware not to use explosives there, cvicek bottles are very fragile and there is a " ..
+    "Beware not to use explosives there, cviček bottles are very fragile and there is a " ..
     "explosives storage in that base.\n\nQuest will be complete one you unload 20 bottles of " ..
-    "cvicek in the Lair." ),
+    "cviček in the Lair." ),
     20, -940, 140 )
 
   oz_farmQuest = ozQuestAdd( ozGettext( "The Farm" ), ozGettext(
@@ -431,7 +431,7 @@ function onCreate()
   local lairQuest = ozQuestAdd( ozGettext( "Beast Lair" ), ozGettext(
     "Beast Lair is your home base, hidden on an island, still safe from Colonial Army.\n\n" ..
     "However, supplies are low and there's a terrible shortage of beasts' favourite drink, " ..
-    "cvicek.\n\n" ..
+    "cviček.\n\n" ..
     "You can visit the base anytime during the mission for any supplies you need." ),
     -1015, 608, 50 )
   ozQuestEnd( lairQuest, true )

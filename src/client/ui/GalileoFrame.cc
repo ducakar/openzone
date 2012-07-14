@@ -74,7 +74,8 @@ void GalileoFrame::onReposition()
 void GalileoFrame::onUpdate()
 {
   if( orbis.terra.id < 0 || ( camera.state == Camera::UNIT && camera.botObj != null &&
-    !camera.botObj->hasAttribute( ObjectClass::GALILEO_BIT ) ) )
+      !( camera.botObj->state & Bot::DEAD_BIT ) &&
+      !camera.botObj->hasAttribute( ObjectClass::GALILEO_BIT ) ) )
   {
     flags |= HIDDEN_BIT | IGNORE_BIT;
     setMaximised( false );

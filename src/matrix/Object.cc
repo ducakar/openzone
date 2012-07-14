@@ -38,7 +38,7 @@ const float Object::REAL_MAX_DIM            = MAX_DIM - 0.01f;
 
 const float Object::MOMENTUM_DAMAGE_COEF    = 1.00f;
 const float Object::MOMENTUM_INTENSITY_COEF = 0.02f;
-const float Object::DAMAGE_BASE_INTENSITY   = 0.50f;
+const float Object::DAMAGE_BASE_INTENSITY   = 0.30f;
 const float Object::DAMAGE_INTENSITY_COEF   = 0.01f;
 const Vec3  Object::DESTRUCT_FRAG_VELOCITY  = Vec3( 0.0f, 0.0f, 2.0f );
 
