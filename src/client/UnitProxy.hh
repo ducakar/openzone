@@ -47,6 +47,7 @@ class UnitProxy : public Proxy
     static const float BINOCULARS_MAGNIFICATION;
     static const float INJURY_SUPPRESSION_COEF;
     static const float INJURY_CLAMP;
+    static const float DEATH_CAM_DIST;
 
   public:
 
@@ -54,6 +55,8 @@ class UnitProxy : public Proxy
     Quat  headRot;
     float headH;
     float headV;
+
+  private:
 
     Point botEye;
     float bobTheta;

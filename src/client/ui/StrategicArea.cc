@@ -220,10 +220,10 @@ void StrategicArea::drawTaggedRect( const Span& span, const Struct* str, const O
 
     hard_assert( 0.0f <= life && life <= 1.0f );
 
-    shape.colour( 1.0f - life, life, 0.0f, 0.6f );
+    shape.colour( 1.0f - life, life, 0.0f, 0.5f );
     shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
 
-    shape.colour( 0.0f, 0.0f, 0.0f, 0.15f );
+    shape.colour( 0.0f, 0.0f, 0.0f, 0.1f );
     shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
 
     shape.colour( 1.0f, 1.0f, 1.0f, 0.8f );

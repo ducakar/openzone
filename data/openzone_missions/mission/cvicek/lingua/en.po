@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: OpenZone 0.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-02-11 19:38+0100\n"
+"PO-Revision-Date: 2012-07-14 18:02+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: \n"
@@ -15,65 +15,63 @@ msgstr ""
 "X-Poedit-Language: English\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: data/openzone/lua/mission/cvicek.lua:492
-msgid "Beast Lair"
-msgstr "Beast Lair"
+#: data/openzone_missions/mission/cvicek/main.lua:393
+msgid "I'm sooo thirsty. I've been drinking only water for the past week."
+msgstr "I'm sooo thirsty. I've been drinking only water for the past week."
 
-#: data/openzone/lua/mission/cvicek.lua:493
+#: data/openzone_missions/mission/cvicek/main.lua:431
 msgid ""
 "Beast Lair is your home base, hidden on an island, still safe from Colonial Army.\n"
 "\n"
-"However, supplies are low and there's a terrible shortage of beasts' favourite drink, cvicek.\n"
+"However, supplies are low and there's a terrible shortage of beasts' favourite drink, cviček.\n"
 "\n"
 "You can visit the base anytime during the mission for any supplies you need."
 msgstr ""
 "Beast Lair is your home base, hidden on an island, still safe from Colonial Army.\n"
 "\n"
-"However, supplies are low and there's a terrible shortage of beasts' favourite drink, cvicek.\n"
+"However, supplies are low and there's a terrible shortage of beasts' favourite drink, cviček.\n"
 "\n"
 "You can visit the base anytime during the mission for any supplies you need."
 
-#: data/openzone/lua/mission/cvicek.lua:463
-msgid "Cvicek, cvicek, cvicek ... Where is cvicek?"
-msgstr "Cviček, cviček, cviček ... Where is cviček?"
-
-#: data/openzone/lua/mission/cvicek.lua:477
-msgid "Escape"
-msgstr "Escape"
-
-#: data/openzone/lua/mission/cvicek.lua:84
-msgid "Good job!"
-msgstr "Good job!"
-
-#: data/openzone/lua/mission/cvicek.lua:119
-msgid "Good riddance! Finally some decent TV programme."
-msgstr "Good riddance! Finally some decent TV programme."
-
-#: data/openzone/lua/mission/cvicek.lua:467
-msgid "How's your mission going? I can't imagine how we will live without cvicek."
-msgstr "How's your mission going? I can't imagine how we will live without cviček."
-
-#: data/openzone/lua/mission/cvicek.lua:459
-msgid "I'm sooo thirsty. I've been drinking only water for the past week."
-msgstr "I'm sooo thirsty. I've been drinking only water for the past week."
-
-#: data/openzone/lua/mission/cvicek.lua:471
-msgid "Is the Farm still standing? Please destroy it, maybe then there might be something better on TV."
-msgstr "Is the Farm still standing? Please destroy it, maybe then there might be something better on TV."
-
-#: data/openzone/lua/mission/cvicek.lua:102
+#: data/openzone_missions/mission/cvicek/main.lua:95
 msgid "No more thirst!"
 msgstr "No more thirst!"
 
-#: data/openzone/lua/mission/cvicek.lua:483
+#: data/openzone_missions/mission/cvicek/main.lua:406
+msgid "Escape"
+msgstr "Escape"
+
+#: data/openzone_missions/mission/cvicek/main.lua:424
+msgid "The Farm"
+msgstr "The Farm"
+
+#: data/openzone_missions/mission/cvicek/main.lua:83
+msgid "Good job!"
+msgstr "Good job!"
+
+#: data/openzone_missions/mission/cvicek/main.lua:401
+msgid "Is the Farm still standing? Please destroy it, maybe then there might be something better on TV."
+msgstr "Is the Farm still standing? Please destroy it, maybe then there might be something better on TV."
+
+#: data/openzone_missions/mission/cvicek/main.lua:406
 msgid ""
-"Steal at least 20 bottles of cvicek from Colonial military base and transport them back to Beast Lair.\n"
+"You have been caught by a Colonial patrol and they currently hold you in that Colonial outpost. Tomorrow you are being transferred to a Colonial detention camp for terrorist suspects. If you don't find a way to escape, say goodbye to freedom till the end of your life.\n"
+"\n"
+"It would be extremely helpful if you can get a Galileo gadget, it will will show you destinations of your tasks and help you with navigation a lot."
+msgstr ""
+"You have been caught by a Colonial patrol and they currently hold you in that Colonial outpost. Tomorrow you are being transferred to a Colonial detention camp for terrorist suspects. If you don't find a way to escape, say goodbye to freedom till the end of your life.\n"
+"\n"
+"It would be extremely helpful if you can get a Galileo gadget, it will will show you destinations of your tasks and help you with navigation a lot."
+
+#: data/openzone_missions/mission/cvicek/main.lua:415
+msgid ""
+"Steal at least 20 bottles of cviček from Colonial military base and transport them back to Beast Lair.\n"
 "\n"
 "The base is heavily defended so you will need some heavy armour to attack it.\n"
 "\n"
-"Beware not to use explosives there, cvicek bottles are very fragile and there is a explosives storage in that base.\n"
+"Beware not to use explosives there, cviček bottles are very fragile and there is a explosives storage in that base.\n"
 "\n"
-"Quest will be complete one you unload 20 bottles of cvicek in the Lair."
+"Quest will be complete one you unload 20 bottles of cviček in the Lair."
 msgstr ""
 "Steal at least 20 bottles of cviček from Colonial military base and transport them back to Beast Lair.\n"
 "\n"
@@ -83,39 +81,41 @@ msgstr ""
 "\n"
 "Quest will be complete one you unload 20 bottles of cviček in the Lair."
 
-#: data/openzone/lua/mission/cvicek.lua:482
-msgid "Steal cvicek"
-msgstr "Steal cviček"
+#: data/openzone_missions/mission/cvicek/main.lua:110
+msgid "Good riddance! Finally some decent TV programme."
+msgstr "Good riddance! Finally some decent TV programme."
 
-#: data/openzone/lua/mission/cvicek.lua:488
-msgid ""
-"That farm is a stage of an annoying reality show called 'The Farm'. It wouldn't do much harm to blow it up.\n"
-"\n"
-"The farmhouses are not very robust, so a dozen of bombs should be more then enough to demolish them. And don't expect any welcome from participants of the show."
-msgstr ""
-"That farm is a stage of an annoying reality show called 'The Farm'. It wouldn't do much harm to blow it up.\n"
-"\n"
-"The farmhouses are not very robust, so a dozen of bombs should be more then enough to demolish them. And don't expect any welcome from participants of the show."
+#: data/openzone_missions/mission/cvicek/main.lua:431
+msgid "Beast Lair"
+msgstr "Beast Lair"
 
-#: data/openzone/lua/mission/cvicek.lua:487
-msgid "The Farm"
-msgstr "The Farm"
+#: data/openzone_missions/mission/cvicek/main.lua:396
+msgid "Cviček, cviček, cviček ... Where is cviček?"
+msgstr "Cviček, cviček, cviček ... Where is cviček?"
 
-#: data/openzone/lua/mission/cvicek.lua:455
-msgid "Well, is cvicek coming anytime soon?"
+#: data/openzone_missions/mission/cvicek/main.lua:391
+msgid "Well, is cviček coming anytime soon?"
 msgstr "Well, is cviček coming anytime soon?"
 
-#: data/openzone/lua/mission/cvicek.lua:90
-msgid "Yeeha! Cvicek!"
+#: data/openzone_missions/mission/cvicek/main.lua:398
+msgid "How's your mission going? I can't imagine how we will live without cviček."
+msgstr "How's your mission going? I can't imagine how we will live without cviček."
+
+#: data/openzone_missions/mission/cvicek/main.lua:415
+msgid "Steal cviček"
+msgstr "Steal cviček"
+
+#: data/openzone_missions/mission/cvicek/main.lua:87
+msgid "Yeeha! Cviček!"
 msgstr "Yeeha! Cviček!"
 
-#: data/openzone/lua/mission/cvicek.lua:478
+#: data/openzone_missions/mission/cvicek/main.lua:424
 msgid ""
-"You have been caught by a Colonial patrol and they currently hold you in that Colonial outpost. Tomorrow you are being transferred to a Colonial detention camp for terrorist suspects. If you don't find a way to escape, say goodbye to freedom till the end of your life.\n"
+"That farm is a stage of an annoying reality show called 'The Farm'. It wouldn't do much harm to blow it up.\n"
 "\n"
-"It would be extremely helpful if you can get a Galileo gadget, it will will show you destinations of your tasks and help you with navigation a lot."
+"The farmhouses are not very robust, so a dozen of bombs should be more then enough to demolish them. And don't expect any welcome from participants of the show."
 msgstr ""
-"You have been caught by a Colonial patrol and they currently hold you in that Colonial outpost. Tomorrow you are being transferred to a Colonial detention camp for terrorist suspects. If you don't find a way to escape, say goodbye to freedom till the end of your life.\n"
+"That farm is a stage of an annoying reality show called 'The Farm'. It wouldn't do much harm to blow it up.\n"
 "\n"
-"It would be extremely helpful if you can get a Galileo gadget, it will will show you destinations of your tasks and help you with navigation a lot."
+"The farmhouses are not very robust, so a dozen of bombs should be more then enough to demolish them. And don't expect any welcome from participants of the show."
 

@@ -107,10 +107,10 @@ void HudArea::drawBotCrosshair()
 
       int lifeWidth = int( life * float( ICON_SIZE + 14 ) );
 
-      shape.colour( 1.0f - life, life, 0.0f, 0.6f );
+      shape.colour( 1.0f - life, life, 0.0f, 0.5f );
       shape.fill( healthBarX + 1, healthBarY + 11, lifeWidth, 10 );
 
-      shape.colour( 0.0f, 0.0f, 0.0f, 0.15f );
+      shape.colour( 0.0f, 0.0f, 0.0f, 0.1f );
       shape.fill( healthBarX + 1 + lifeWidth, healthBarY + 11, ICON_SIZE + 14 - lifeWidth, 10 );
 
       shape.colour( 1.0f, 1.0f, 1.0f, 0.8f );
@@ -202,16 +202,16 @@ void HudArea::drawBotStatus()
   int   lifeWidth    = max( int( life * 198.0f ), 0 );
   int   staminaWidth = max( int( stamina * 198.0f ), 0 );
 
-  shape.colour( 1.0f - life, life, 0.0f, 0.6f );
+  shape.colour( 1.0f - life, life, 0.0f, 0.5f );
   shape.fill( 9, 31, lifeWidth, 12 );
-  shape.colour( 0.7f - 0.7f * stamina, 0.3f, 0.5f + 0.5f * stamina, 0.6f );
+  shape.colour( 0.7f - 0.7f * stamina, 0.3f, 0.5f + 0.5f * stamina, 0.5f );
   shape.fill( 9, 9, staminaWidth, 12 );
 
-  shape.colour( 0.0f, 0.0f, 0.0f, 0.15f );
+  shape.colour( 0.0f, 0.0f, 0.0f, 0.1f );
   shape.fill( 9 + lifeWidth, 31, 198 - lifeWidth, 12 );
   shape.fill( 9 + staminaWidth, 9, 198 - staminaWidth, 12 );
 
-  shape.colour( 1.0f, 1.0f, 1.0f, 0.6f );
+  shape.colour( 1.0f, 1.0f, 1.0f, 0.5f );
   shape.rect( 8, 30, 200, 14 );
   shape.rect( 8, 8, 200, 14 );
 
@@ -276,16 +276,16 @@ void HudArea::drawVehicleStatus()
   float fuel      = vehicle->fuel / vehClazz->fuel;
   int   fuelWidth = int( fuel * 198.0f );
 
-  shape.colour( 1.0f - life, life, 0.0f, 0.6f );
+  shape.colour( 1.0f - life, life, 0.0f, 0.5f );
   shape.fill( width - 207, 31, lifeWidth, 12 );
-  shape.colour( 0.7f - 0.7f * fuel, 0.3f, 0.5f + 0.5f * fuel, 0.6f );
+  shape.colour( 0.7f - 0.7f * fuel, 0.3f, 0.5f + 0.5f * fuel, 0.5f );
   shape.fill( width - 207, 9, fuelWidth, 12 );
 
-  shape.colour( 0.0f, 0.0f, 0.0f, 0.15f );
+  shape.colour( 0.0f, 0.0f, 0.0f, 0.1f );
   shape.fill( width - 207 + lifeWidth, 31, 198 - lifeWidth, 12 );
   shape.fill( width - 207 + fuelWidth, 9, 198 - fuelWidth, 12 );
 
-  shape.colour( 1.0f, 1.0f, 1.0f, 0.6f );
+  shape.colour( 1.0f, 1.0f, 1.0f, 0.5f );
   shape.rect( width - 208, 30, 200, 14 );
   shape.rect( width - 208, 8, 200, 14 );
 
@@ -375,7 +375,7 @@ void HudArea::onUpdate()
 
 void HudArea::onDraw()
 {
-  if( camera.bot < 0 ) {
+  if( camera.botObj == null || ( camera.botObj->state & Bot::DEAD_BIT ) ) {
     return;
   }
 

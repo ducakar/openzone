@@ -103,7 +103,7 @@ void StrategicProxy::prepare()
         }
       }
 
-      if( me != null && !( me->state & Bot::DEAD_BIT ) ) {
+      if( me != null ) {
         camera.setBot( const_cast<Bot*>( me ) );
         camera.setState( Camera::UNIT );
       }

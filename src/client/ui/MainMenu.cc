@@ -116,18 +116,18 @@ MainMenu::MainMenu( bool showAutosaved, bool showQuicksaved ) :
                              "files for details about copyrights and licences." ) );
 
   if( showAutosaved ) {
-    add( new Button( OZ_GETTEXT( "Continue" ), continueAutosaved, 300, 20 ), 50, -40 );
+    add( new Button( OZ_GETTEXT( "Continue" ), continueAutosaved, 300, 26 ), 50, -40 );
   }
   if( showQuicksaved ) {
-    add( new Button( OZ_GETTEXT( "Load Quicksave" ), continueQuicksaved, 300, 20 ), 50, -70 );
+    add( new Button( OZ_GETTEXT( "Load Quicksave" ), continueQuicksaved, 300, 26 ), 50, -70 );
   }
 
-  add( new Button( OZ_GETTEXT( "Tutorial" ), loadTutorial, 300, 20 ), 50, -130 );
-  add( new Button( OZ_GETTEXT( "Test World" ), loadTest, 300, 20 ), 50, -160 );
-  add( new Button( OZ_GETTEXT( "Mission 1: Cvicek" ), loadCvicek, 300, 20 ), 50, -190 );
+  add( new Button( OZ_GETTEXT( "Tutorial" ), loadTutorial, 300, 26 ), 50, -130 );
+  add( new Button( OZ_GETTEXT( "Test World" ), loadTest, 300, 26 ), 50, -160 );
+  add( new Button( OZ_GETTEXT( "Mission 1: Cvicek" ), loadCvicek, 300, 26 ), 50, -190 );
 
-  add( new Button( OZ_GETTEXT( "Settings" ), settings, 300, 20 ), 50, -250 );
-  add( new Button( OZ_GETTEXT( "Exit" ), exit, 300, 20 ), 50, -280 );
+  add( new Button( OZ_GETTEXT( "Settings" ), settings, 300, 26 ), 50, -250 );
+  add( new Button( OZ_GETTEXT( "Exit" ), exit, 300, 26 ), 50, -280 );
 
   settingsFrame = new SettingsFrame( this );
 

@@ -51,6 +51,7 @@ const float UnitProxy::BOB_SUPPRESSION_COEF     = 0.80f;
 const float UnitProxy::BINOCULARS_MAGNIFICATION = 0.20f;
 const float UnitProxy::INJURY_SUPPRESSION_COEF  = 0.98f;
 const float UnitProxy::INJURY_CLAMP             = 2.00f;
+const float UnitProxy::DEATH_CAM_DIST           = 4.00f;
 
 void UnitProxy::begin()
 {
@@ -106,14 +107,50 @@ void UnitProxy::end()
 
 void UnitProxy::prepare()
 {
-  if( camera.bot < 0 ) {
-    return;
-  }
-
   Bot*     bot = camera.botObj;
   Vehicle* veh = camera.vehicleObj;
 
-  bot->actions = 0;
+  if( bot != null ) {
+    bot->actions = 0;
+  }
+
+  if( input.keys[Input::KEY_SWITCH_TO_UNIT] && !input.oldKeys[Input::KEY_SWITCH_TO_UNIT] ) {
+    if( camera.allowReincarnation ) {
+      camera.setBot( null );
+      camera.setState( Camera::STRATEGIC );
+      return;
+    }
+  }
+
+  if( input.keys[Input::KEY_CYCLE_UNITS] && !input.oldKeys[Input::KEY_CYCLE_UNITS] ) {
+    int nSwitchableunits = camera.switchableUnits.length();
+
+    if( nSwitchableunits != 0 ) {
+      int currUnit = -1;
+
+      for( int i = 0; i < nSwitchableunits; ++i ) {
+        if( camera.bot == camera.switchableUnits[i] ) {
+          currUnit = i;
+          break;
+        }
+      }
+
+      currUnit = ( currUnit + 1 ) % nSwitchableunits;
+
+      Bot* unit = static_cast<Bot*>( orbis.objects[ camera.switchableUnits[currUnit] ] );
+
+      if( unit->state & Bot::DEAD_BIT ) {
+        botEye    = unit->p;
+        botEye.z += unit->camZ;
+      }
+      camera.setBot( unit );
+      return;
+    }
+  }
+
+  if( bot == null || ( bot->state & Bot::DEAD_BIT ) ) {
+    return;
+  }
 
   /*
    * Camera
@@ -315,46 +352,45 @@ void UnitProxy::prepare()
       }
     }
   }
-
-  /*
-   * Other
-   */
-
-  if( input.keys[Input::KEY_SWITCH_TO_UNIT] && !input.oldKeys[Input::KEY_SWITCH_TO_UNIT] ) {
-    if( camera.allowReincarnation ) {
-      bot->actions = 0;
-      camera.setBot( null );
-      return;
-    }
-  }
-
-  if( input.keys[Input::KEY_CYCLE_UNITS] && !input.oldKeys[Input::KEY_CYCLE_UNITS] ) {
-    int nSwitchableunits = camera.switchableUnits.length();
-
-    if( nSwitchableunits != 0 ) {
-      int currUnit = -1;
-
-      for( int i = 0; i < nSwitchableunits; ++i ) {
-        if( camera.bot == camera.switchableUnits[i] ) {
-          currUnit = i;
-          break;
-        }
-      }
-
-      currUnit = ( currUnit + 1 ) % nSwitchableunits;
-
-      Bot* unit = static_cast<Bot*>( orbis.objects[ camera.switchableUnits[currUnit] ] );
-
-      bot->actions = 0;
-      camera.setBot( unit );
-    }
-  }
 }
 
 void UnitProxy::update()
 {
-  if( camera.bot < 0 ) {
-    camera.setState( Camera::STRATEGIC );
+  if( camera.botObj == null || ( camera.botObj->state & Bot::DEAD_BIT ) ) {
+    ui::ui.galileoFrame->setMaximised( false );
+
+    camera.rotateTo( Quat::ID );
+    camera.magnify( 1.0f );
+    camera.nightVision = false;
+    camera.align();
+
+    if( camera.botObj != null ) {
+      botEye    = camera.botObj->p;
+      botEye.z += camera.botObj->camZ;
+    }
+
+    bobTheta = 0.0f;
+    bobBias  = 0.0f;
+
+    Vec3 offset = Vec3( 0.0f, 0.0f, DEATH_CAM_DIST );
+
+    collider.translate( botEye, offset );
+    offset *= collider.hit.ratio;
+
+    float dist = !offset;
+    if( dist > EXTERNAL_CAM_CLIP_DIST ) {
+      offset *= ( dist - EXTERNAL_CAM_CLIP_DIST ) / dist;
+    }
+    else {
+      offset = Vec3::ZERO;
+    }
+
+    camera.moveTo( botEye + offset );
+
+    camera.colour = Math::mix( camera.baseColour, camera.colour, min( injuryRatio, 1.0f ) );
+    injuryRatio  *= INJURY_SUPPRESSION_COEF;
+
+    oldBot = camera.bot;
     return;
   }
 
@@ -366,7 +402,6 @@ void UnitProxy::update()
   if( veh != null ) {
     vehClazz = static_cast<const VehicleClass*>( veh->clazz );
 
-    // Rotation for -90°, faster than matrix multiplication.
     Mat44 rotMat = veh->rot;
     rotMat.rotateX( Math::TAU / -4.0f );
 
@@ -550,6 +585,7 @@ void UnitProxy::reset()
   headH       = 0.0f;
   headV       = 0.0f;
 
+  botEye      = Point::ORIGIN;
   bobTheta    = 0.0f;
   bobBias     = 0.0f;
 
@@ -566,6 +602,7 @@ void UnitProxy::read( InputStream* istream )
   headH       = 0.0f;
   headV       = 0.0f;
 
+  botEye      = istream->readPoint();
   bobTheta    = 0.0f;
   bobBias     = 0.0f;
 
@@ -577,6 +614,8 @@ void UnitProxy::read( InputStream* istream )
 
 void UnitProxy::write( BufferStream* ostream ) const
 {
+  ostream->writePoint( botEye );
+
   ostream->writeBool( isExternal );
   ostream->writeBool( isFreelook );
 }

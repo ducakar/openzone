@@ -1,12 +1,6 @@
 0.3
-- matrix
-  * documentation
 - client
   * bloom++
-  * MD3 animation
-  * death camera
-- unittest
-  * write missing tests
 
 0.4
 - new löök
@@ -20,12 +14,15 @@
   * advanced HUD for mechanic units and vehicles
 - client
   * BSP rendering per partes
+  * MD3 animation
   * decals
   * particle model (smoke, fire ...)
   * animated textures
   * video to texture
   * better sky
   * weather
+- unittest
+  * write missing tests
 - missions
   * new tutorial missions
 - homepage

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: OpenZone 0.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-02-24 16:10+0100\n"
+"PO-Revision-Date: 2012-07-14 17:52+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: \n"
@@ -15,186 +15,227 @@ msgstr ""
 "X-Poedit-Language: English\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#
-# BSP names
-#
-msgid "atlantis"
-msgstr "atlantis"
-
-#
-# BSP names
-#
-msgid "beast bunker"
-msgstr "beast bunker"
-
-msgid "bunker"
-msgstr "bunker"
-
-msgid "forum"
-msgstr "forum"
-
-msgid "house"
-msgstr "house"
-
-msgid "pool"
-msgstr "pool"
-
-msgid "test castle"
-msgstr "test castle"
-
-msgid "tower"
-msgstr "tower"
-
-msgid "tutorial - carying"
-msgstr "tutorial - carying"
-
-msgid "tutorial - movement"
-msgstr "tutorial - movement"
-
-#
-# BSP model names
-#
-msgid "crusher"
-msgstr "crusher"
-
-msgid "ignorant"
-msgstr "ignorant"
-
-msgid "auto door"
-msgstr "auto door"
-
-msgid "manual door"
-msgstr "manual door"
-
-msgid "elevator"
-msgstr "elevator"
-
-msgid "switch"
-msgstr "switch"
-
-#
-# share/class/*.rc
-#
-msgid "bauul"
-msgstr "bauul"
-
-msgid "skull"
-msgstr "skull"
-
-msgid "beast"
-msgstr "beast"
-
-msgid "plasma gun"
-msgstr "plasma gun"
-
-msgid "crate"
-msgstr "crate"
-
-msgid "explosion"
-msgstr "explosion"
-
-msgid "binoculars"
-msgstr "binoculars"
-
-msgid "bomb"
-msgstr "bomb"
-
-msgid "box"
-msgstr "box"
-
-msgid "console"
-msgstr "console"
-
-msgid "cvicek"
-msgstr "cvicek"
-
-msgid "cyborg"
-msgstr "cyborg"
-
-msgid "chaingun"
-msgstr "chaingun"
-
-msgid "data cube"
-msgstr "data cube"
-
-msgid "droid OOM-9"
-msgstr "droid OOM-9"
-
-msgid "droid"
-msgstr "droid"
-
-msgid "blaster"
-msgstr "blaster"
-
-msgid "grenade launcher"
-msgstr "grenade launcher"
-
-msgid "hyperblaster"
-msgstr "hyperblaster"
-
-msgid "barrel"
-msgstr "barrel"
-
-msgid "first aid"
-msgstr "first aid"
-
-msgid "Galileo SatNav"
-msgstr "Galileo SatNav"
-
+#: data/openzone/class/goblin.json
 msgid "goblin"
 msgstr "goblin"
 
-msgid "axe"
-msgstr "axe"
+#: data/openzone/baseq3/maps/forum.json
+msgid "forum"
+msgstr "forum"
 
-msgid "grenade"
-msgstr "grenade"
+#: data/openzone/baseq3/maps/testCastle.json
+msgid "auto door"
+msgstr "auto door"
 
-msgid "hover tank"
-msgstr "hover tank"
+#: data/openzone/class/datacube.json
+msgid "data cube"
+msgstr "data cube"
 
-msgid "key"
-msgstr "key"
-
-msgid "knight"
-msgstr "knight"
-
-msgid "mace"
-msgstr "mace"
-
-msgid "music player"
-msgstr "music player"
-
+#: data/openzone/class/nvGoggles.json
 msgid "night vision goggles"
 msgstr "night vision goggles"
 
-msgid "palm"
-msgstr "palm"
+#: data/openzone/baseq3/maps/testCastle.json
+msgid "crusher"
+msgstr "crusher"
 
+#: data/openzone/baseq3/maps/testCastle.json
+msgid "elevator"
+msgstr "elevator"
+
+#: data/openzone/class/droid_weapon.grenadeLauncher.json
+msgid "grenade launcher"
+msgstr "grenade launcher"
+
+#: data/openzone/class/pine.json
 msgid "pine"
 msgstr "pine"
 
-msgid "raptor"
-msgstr "raptor"
+#: data/openzone/class/bigCrate.json
+msgid "crate"
+msgstr "crate"
 
-msgid "reaper"
-msgstr "reaper"
+#: data/openzone/class/grenade.json
+msgid "grenade"
+msgstr "grenade"
 
-msgid "service station"
-msgstr "service station"
+#: data/openzone/baseq3/maps/beastBunker.json
+msgid "beast bunker"
+msgstr "beast bunker"
 
-msgid "shell"
-msgstr "shell"
+#: data/openzone/class/hoverTank.json
+msgid "cannon"
+msgstr "cannon"
 
-msgid "tree"
-msgstr "tree"
+#: data/openzone/class/bomb.json
+msgid "bomb"
+msgstr "bomb"
 
+#: data/openzone/class/knight.json
+msgid "knight"
+msgstr "knight"
+
+#: data/openzone/class/beast_weapon.plasmagun.json
+msgid "plasma gun"
+msgstr "plasma gun"
+
+#: data/openzone/baseq3/maps/tower.json
+msgid "tower"
+msgstr "tower"
+
+#: data/openzone/baseq3/maps/testCastle.json
+msgid "manual door"
+msgstr "manual door"
+
+#: data/openzone/class/console.json
+msgid "console"
+msgstr "console"
+
+#: data/openzone/baseq3/maps/testCastle.json
+msgid "test castle"
+msgstr "test castle"
+
+#: data/openzone/class/goblin_weapon.axe.json
+msgid "axe"
+msgstr "axe"
+
+#: data/openzone/class/cyborg.json
+msgid "cyborg"
+msgstr "cyborg"
+
+#: data/openzone/class/hoverTank.json
 msgid "heavy blaster"
 msgstr "heavy blaster"
 
+#: data/openzone/baseq3/maps/tutorial_movement.json
+msgid "tutorial - movement"
+msgstr "tutorial - movement"
+
+#: data/openzone/baseq3/maps/testCastle.json
+msgid "switch"
+msgstr "switch"
+
+#: data/openzone/class/shell.json
+msgid "shell"
+msgstr "shell"
+
+#: data/openzone/class/bauul.json
+msgid "bauul"
+msgstr "bauul"
+
+#: data/openzone/baseq3/maps/testCastle.json
+msgid "ignorant"
+msgstr "ignorant"
+
+#: data/openzone/class/droid.OOM-9.json
+msgid "droid OOM-9"
+msgstr "droid OOM-9"
+
+#: data/openzone/baseq3/maps/house.json
+msgid "house"
+msgstr "house"
+
+#: data/openzone/class/key.json
+msgid "key"
+msgstr "key"
+
+#: data/openzone/class/box.json
+msgid "box"
+msgstr "box"
+
+#: data/openzone/class/droid_weapon.blaster.json
+msgid "blaster"
+msgstr "blaster"
+
+#: data/openzone/class/binoculars.json
+msgid "binoculars"
+msgstr "binoculars"
+
+#: data/openzone/class/serviceStation.json
+msgid "service station"
+msgstr "service station"
+
+#: data/openzone/class/knight_weapon.mace.json
+msgid "mace"
+msgstr "mace"
+
+#: data/openzone/baseq3/maps/atlantis.json
+msgid "atlantis"
+msgstr "atlantis"
+
+#: data/openzone/class/cvicek.json
+msgid "cviček"
+msgstr "cviček"
+
+#: data/openzone/baseq3/maps/bunker.json
+msgid "bunker"
+msgstr "bunker"
+
+#: data/openzone/class/galileo.json
+msgid "Galileo SatNav"
+msgstr "Galileo SatNav"
+
+#: data/openzone/class/bauul_weapon.skull.json
+msgid "skull"
+msgstr "skull"
+
+#: data/openzone/class/cyborg_weapon.chaingun.json
+msgid "chaingun"
+msgstr "chaingun"
+
+#: data/openzone/class/musicPlayer.json
+msgid "music player"
+msgstr "music player"
+
+#: data/openzone/baseq3/maps/tutorial_carrying.json
+msgid "tutorial - carying"
+msgstr "tutorial - carying"
+
+#: data/openzone/class/beast.json
+msgid "beast"
+msgstr "beast"
+
+#: data/openzone/class/firstAid.json
+msgid "first aid"
+msgstr "first aid"
+
+#: data/openzone/class/bigExplosion.json
+msgid "explosion"
+msgstr "explosion"
+
+#: data/openzone/class/tree.json
+msgid "tree"
+msgstr "tree"
+
+#: data/openzone/class/droid.json
+msgid "droid"
+msgstr "droid"
+
+#: data/openzone/class/droid_weapon.hyperblaster.json
+msgid "hyperblaster"
+msgstr "hyperblaster"
+
+#: data/openzone/class/explosiveBarrel.json
+msgid "barrel"
+msgstr "barrel"
+
+#: data/openzone/baseq3/maps/pool.json
+msgid "pool"
+msgstr "pool"
+
+#: data/openzone/class/palm.json
+msgid "palm"
+msgstr "palm"
+
+#: data/openzone/class/hoverTank.json
 msgid "gatling gun"
 msgstr "gatling gun"
 
-msgid "cannon"
-msgstr "cannon"
+#: data/openzone/class/hoverTank.json
+msgid "hover tank"
+msgstr "hover tank"
+
+#: data/openzone/class/raptor.json
+msgid "raptor"
+msgstr "raptor"
 

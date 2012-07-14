@@ -113,18 +113,18 @@ class Input
     SDLKey modifier0;
     SDLKey modifier1;
 
-    ubyte* sdlCurrKeys;
     ubyte  sdlKeys[SDLK_LAST];
     ubyte  sdlOldKeys[SDLK_LAST];
+    ubyte  sdlCurrKeys[SDLK_LAST];
 
 #else
 
     SDL_Scancode modifier0;
     SDL_Scancode modifier1;
 
-    ubyte* sdlCurrKeys;
     ubyte  sdlKeys[SDL_NUM_SCANCODES];
     ubyte  sdlOldKeys[SDL_NUM_SCANCODES];
+    ubyte  sdlCurrKeys[SDL_NUM_SCANCODES];
 
 #endif
 
@@ -167,6 +167,7 @@ class Input
 
     void readEvent( SDL_Event* event );
 
+    void reset();
     void prepare();
     void update();
 

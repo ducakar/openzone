@@ -92,7 +92,7 @@ void Camera::updateReferences()
   else {
     botObj = static_cast<Bot*>( orbis.objects[bot] );
 
-    if( botObj == null || ( botObj->state & Bot::DEAD_BIT ) ) {
+    if( botObj == null ) {
       bot    = -1;
       botObj = null;
     }
@@ -115,7 +115,7 @@ void Camera::updateReferences()
   for( int i = 0; i < switchableUnits.length(); ) {
     const Bot* unit = static_cast<const Bot*>( orbis.objects[ switchableUnits[i] ] );
 
-    if( unit == null || ( unit->state & Bot::DEAD_BIT ) ) {
+    if( unit == null ) {
       switchableUnits.remove( i );
     }
     else {

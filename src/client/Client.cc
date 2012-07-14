@@ -550,7 +550,10 @@ int Client::main( int argc, char** argv )
 
     while( SDL_PollEvent( &event ) != 0 ) {
       switch( event.type ) {
+        case SDL_KEYUP:
         case SDL_KEYDOWN: {
+          input.readEvent( &event );
+
 #ifndef __native_client__
 # if SDL_MAJOR_VERSION < 2
           const SDL_keysym& keysym = event.key.keysym;
@@ -582,6 +585,7 @@ int Client::main( int argc, char** argv )
             }
           }
 #endif
+          break;
         }
 #if SDL_MAJOR_VERSION >= 2
         case SDL_MOUSEWHEEL:
@@ -600,12 +604,15 @@ int Client::main( int argc, char** argv )
           if( event.active.state & SDL_APPACTIVE ) {
             if( event.active.gain ) {
               window.warpMouse();
+              input.reset();
 
               sound.resume();
               isActive = true;
             }
             else {
               sound.suspend();
+
+              input.reset();
               isActive = false;
             }
           }
@@ -622,14 +629,17 @@ int Client::main( int argc, char** argv )
           switch( event.window.event ) {
             case SDL_WINDOWEVENT_ENTER: {
               window.hasFocus = true;
+              input.reset();
               break;
             }
             case SDL_WINDOWEVENT_LEAVE: {
               window.hasFocus = false;
+              input.reset();
               break;
             }
             case SDL_WINDOWEVENT_RESTORED: {
               window.warpMouse();
+              input.reset();
 
               sound.resume();
               isActive = true;
@@ -637,7 +647,15 @@ int Client::main( int argc, char** argv )
             }
             case SDL_WINDOWEVENT_MINIMIZED: {
               sound.suspend();
+
+              input.reset();
               isActive = false;
+              break;
+            }
+            case SDL_WINDOWEVENT_RESIZED: {
+              window.width  = event.window.data1;
+              window.height = event.window.data2;
+              window.resize();
               break;
             }
             case SDL_WINDOWEVENT_CLOSE: {
