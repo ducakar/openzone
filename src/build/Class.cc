@@ -228,17 +228,19 @@ void Class::fillObject( const char* className )
 
     const JSON& soundsConfig = config["audioSounds"];
 
-    audioSounds[Object::EVENT_CREATE]  = soundsConfig["create"].get( "" );
-    audioSounds[Object::EVENT_DESTROY] = soundsConfig["destroy"].get( "" );
-    audioSounds[Object::EVENT_DAMAGE]  = soundsConfig["damage"].get( "" );
-    audioSounds[Object::EVENT_HIT]     = soundsConfig["hit"].get( "" );
-    audioSounds[Object::EVENT_USE]     = soundsConfig["use"].get( "" );
+    audioSounds[Object::EVENT_CREATE]     = soundsConfig["create"].get( "" );
+    audioSounds[Object::EVENT_DESTROY]    = soundsConfig["destroy"].get( "" );
+    audioSounds[Object::EVENT_DAMAGE]     = soundsConfig["damage"].get( "" );
+    audioSounds[Object::EVENT_HIT]        = soundsConfig["hit"].get( "" );
+    audioSounds[Object::EVENT_USE]        = soundsConfig["use"].get( "" );
+    audioSounds[Object::EVENT_USE_FAILED] = soundsConfig["useFailed"].get( "" );
 
     context.usedSounds.include( audioSounds[Object::EVENT_CREATE] );
     context.usedSounds.include( audioSounds[Object::EVENT_DESTROY] );
     context.usedSounds.include( audioSounds[Object::EVENT_DAMAGE] );
     context.usedSounds.include( audioSounds[Object::EVENT_HIT] );
     context.usedSounds.include( audioSounds[Object::EVENT_USE] );
+    context.usedSounds.include( audioSounds[Object::EVENT_USE_FAILED] );
 
     audios.include( audioType );
   }

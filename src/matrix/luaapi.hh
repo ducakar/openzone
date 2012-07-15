@@ -2169,8 +2169,7 @@ static int ozBotSetWeaponItem( lua_State* l )
       ERROR( "Invalid item number (not a weapon)" );
     }
 
-    const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
-    if( bot->clazz->name.beginsWith( clazz->userBase ) ) {
+    if( bot->canEquip( weapon ) ) {
       bot->weapon = index;
     }
   }

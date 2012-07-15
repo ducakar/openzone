@@ -42,10 +42,10 @@ function healUser100_disposable( l )
     ozUseFailed()
   else
     ozObjAddLife( 100.0 )
-
-    ozBindSelf()
-    ozObjDestroy( true )
   end
+
+  ozBindSelf()
+  ozObjDestroy( true )
 end
 
 function spawnSmallExplosion( l )

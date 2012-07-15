@@ -48,6 +48,7 @@ class Build
     void copySounds();
     void buildModules();
     void checkLua( const char* path );
+    void buildMissions();
     void packArchive( const char* name, bool useCompresion, bool use7zip );
 
   public:

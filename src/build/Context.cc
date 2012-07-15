@@ -66,27 +66,29 @@ struct Context::Image
 uint Context::buildTexture( const void* data, int width, int height, int format, bool wrap,
                             int magFilter, int minFilter )
 {
-  if( useS3TC && !( Math::isPow2( width ) && Math::isPow2( height ) ) ) {
-    throw Exception( "Texture must be of dimensions 2^n x 2^m to use S3 texture compression." );
+  bool largeEnoughForS3TC = width > 8 && height > 8;
+
+  if( useS3TC && largeEnoughForS3TC && ( width % 8 != 0 || height % 8 != 0 ) ) {
+    throw Exception( "Texture dimensions must be multiples of 8 to use S3 texture compression." );
   }
 
   bool generateMipmaps = false;
   int internalFormat = -1;
-  int surface = width * height;
 
   switch( format ) {
     case GL_BGR:
     case GL_RGB: {
-      internalFormat = useS3TC && surface > 64 ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_RGB;
+      internalFormat = useS3TC && largeEnoughForS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_RGB;
       break;
     }
     case GL_BGRA:
     case GL_RGBA: {
-      internalFormat = useS3TC && surface > 64 ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_RGBA;
+      internalFormat = useS3TC && largeEnoughForS3TC ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_RGBA;
       break;
     }
     case GL_LUMINANCE: {
-      internalFormat = useS3TC && surface > 64 ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_LUMINANCE;
+      internalFormat = useS3TC && largeEnoughForS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT :
+                                                       GL_LUMINANCE;
       break;
     }
     default: {

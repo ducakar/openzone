@@ -33,9 +33,9 @@
 #include "client/MenuStage.hh"
 #include "client/OpenGL.hh"
 
+#include "client/ui/MissionMenu.hh"
 #include "client/ui/SettingsFrame.hh"
 #include "client/ui/UI.hh"
-#include "MissionMenu.hh"
 
 namespace oz
 {
@@ -60,9 +60,12 @@ static void continueQuicksaved( Button* )
 
 static void openMissions( Button* sender )
 {
-  MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
+  OZ_MAIN_CALL( sender, {
+    Button*   sender   = static_cast<Button*>( _this );
+    MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
 
-  mainMenu->add( new MissionMenu(), 0, 0 );
+    mainMenu->add( new MissionMenu(), 0, 0 );
+  } )
 }
 
 static void settings( Button* sender )
@@ -114,7 +117,7 @@ void MainMenu::onDraw()
 
 MainMenu::MainMenu() :
   Area( camera.width, camera.height ),
-  copyright( 20, 10, 360, 2, Font::SMALL, Area::ALIGN_NONE )
+  copyright( 20, 10, 360, 3, Font::SMALL, Area::ALIGN_NONE )
 {
   onReposition();
 

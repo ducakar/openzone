@@ -40,14 +40,14 @@ class Bot : public Dynamic
      * EVENTS
      */
 
-    static const int EVENT_JUMP             = 8;
-    static const int EVENT_FLIP             = 9;
-    static const int EVENT_DEATH            = 10;
+    static const int EVENT_JUMP             = 9;
+    static const int EVENT_FLIP             = 10;
+    static const int EVENT_DEATH            = 11;
 
     // Step and swim events are not in use but merely reserve sound slots.
-    static const int EVENT_STEP             = 11;
-    static const int EVENT_WATERSTEP        = 12;
-    static const int EVENT_SWIM             = 13;
+    static const int EVENT_STEP             = 12;
+    static const int EVENT_WATERSTEP        = 13;
+    static const int EVENT_SWIM             = 14;
 
     /*
      * ACTIONS
@@ -181,6 +181,7 @@ class Bot : public Dynamic
 
     bool canReach( const Entity* ent ) const;
     bool canReach( const Object* obj ) const;
+    bool canEquip( const Weapon* weapon ) const;
 
     bool trigger( const Entity* entity );
     bool lock( const Entity* entity );

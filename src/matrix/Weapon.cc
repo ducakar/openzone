@@ -54,15 +54,10 @@ void Weapon::onUpdate()
 
 bool Weapon::onUse( Bot* user )
 {
-  const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
-
-  if( !user->clazz->name.beginsWith( clazz->userBase ) ) {
-    hard_assert( user->weapon != index );
-    return false;
-  }
+  hard_assert( user->canEquip( this ) );
 
   if( parent == user->index ) {
-    user->weapon = user->weapon == index  ? -1 : index;
+    user->weapon = user->weapon == index ? -1 : index;
     return true;
   }
   else if( user->items.length() < user->clazz->nItems ) {

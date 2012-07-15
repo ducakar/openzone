@@ -190,15 +190,16 @@ class Object : public AABB
      */
 
     // EVENT_CREATE must be invoked manually
-    static const int EVENT_CREATE   = 0;
-    static const int EVENT_DESTROY  = 1;
-    static const int EVENT_DAMAGE   = 2;
-    static const int EVENT_HIT      = 3;
-    static const int EVENT_LAND     = 4;
-    static const int EVENT_SPLASH   = 5;
+    static const int EVENT_CREATE     = 0;
+    static const int EVENT_DESTROY    = 1;
+    static const int EVENT_DAMAGE     = 2;
+    static const int EVENT_HIT        = 3;
+    static const int EVENT_LAND       = 4;
+    static const int EVENT_SPLASH     = 5;
     // EVENT_FRICTING is not in use, it only reserves a slot for friction sound
-    static const int EVENT_FRICTING = 6;
-    static const int EVENT_USE      = 7;
+    static const int EVENT_FRICTING   = 6;
+    static const int EVENT_USE        = 7;
+    static const int EVENT_USE_FAILED = 8;
 
     struct Event
     {
@@ -328,9 +329,8 @@ class Object : public AABB
     void use( Bot* user )
     {
       if( flags & USE_FUNC_BIT ) {
-        if( onUse( user ) ) {
-          addEvent( EVENT_USE, 1.0f );
-        }
+        bool success = onUse( user );
+        addEvent( EVENT_USE_FAILED - success, 1.0f );
       }
     }
 

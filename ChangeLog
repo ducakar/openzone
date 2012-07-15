@@ -63,12 +63,15 @@
     thread and upload to graphic card that has to be synchronous with rendering
   - textures have 3 components: diffuse (base colour), masks (per-pixel specular and emission masks)
     and normal map
-  - initial skeletal animation support
   - offscreen rendering support
-  - postprocessing
-  - bloom postprocess effect
-  - smoothing of camera movement and rotation
-  - camera bob, walk/run animations and footsteps sounds are synchronised to a counter in Bot class
+  - postprocessing, bloom postprocess effect
+  - Camera
+    - smoothing of movement and rotation
+    - colour transformation matrix, used for visual effects like injuries, night vision,
+      black-and-white sequences ...
+    - camera bob, walk/run animations and footsteps sounds are synchronised to a counter in Bot
+      class
+    - CinematicProxy class for scripted camera movements, colours settings, music track setting ...
   - *Audio classes
     - footstep and swim sounds
     - filtering of high-frequency events
@@ -79,6 +82,7 @@
     - support for music in MP3 and AAC formats
     - a user-specified directory can be searched for music
   - resizable main window
+  - new main menu, mission selection menu
 * build:
   - prebuilding entirely split from the runtime part of the engine
   - SDL_image replaced by FreeImage, wider range of image formats supported as prebuilding source
@@ -86,6 +90,8 @@
 * tools:
   - ozGettext tool for extracting structure, entity, object names and strings from mission scripts
     for translation
+  - ozManifest for generating package manifests for NaCl port
+  - ozSineSample for generating src/oz/bellSample.inc file
 * general:
   - PhysicsFS used for accessing game data, so they can be loaded directly from archives
   - game data can be modularised into packages

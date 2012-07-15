@@ -103,7 +103,7 @@ void Build::copyFiles( const char* srcDir, const char* destDir, const char* ext,
     return;
   }
 
-  Log::println( "Copying *.%s from '%s' to '%s' {", ext, srcDir, destDir );
+  Log::println( "Copying '%s/*.%s' -> '%s' {", srcDir, ext, destDir );
   Log::indent();
 
   File::mkdir( destDir );
@@ -467,6 +467,8 @@ void Build::buildFragPools( const String& pkgName )
     if( !outFile.write( os.begin(), os.length() ) ) {
       throw Exception( "Failed to write fragment pool file '%s'", outFile.path().cstr() );
     }
+
+    Log::printEnd( " OK" );
   }
 
   clazz.free();
@@ -678,6 +680,49 @@ void Build::checkLua( const char* path )
   Log::println( "}" );
 }
 
+void Build::buildMissions()
+{
+  Log::println( "Building missions {" );
+  Log::indent();
+
+  DArray<PFile> missions = PFile( "mission" ).ls();
+  foreach( mission, missions.citer() ) {
+    checkLua( mission->path() );
+
+    copyFiles( mission->path(), mission->path(), "lua", false );
+    copyFiles( mission->path(), mission->path(), "json", false );
+
+    PFile srcFile( mission->path() + "/description.png" );
+    File outFile( mission->path() + "/description.ozThumbnail" );
+
+    if( !srcFile.stat() ) {
+      continue;
+    }
+
+    Log::println( "Building thumbnail {" );
+    Log::indent();
+
+    uint imageId = context.loadLayer( srcFile.path(), false, GL_LINEAR, GL_LINEAR );
+
+    BufferStream os;
+    context.writeLayer( imageId, &os );
+
+    glDeleteTextures( 1, &imageId );
+
+    if( !outFile.write( os.begin(), os.length() ) ) {
+      throw Exception( "Failed to write '%s'", outFile.path().cstr() );
+    }
+
+    Log::unindent();
+    Log::println( "}" );
+  }
+
+  lingua.buildMissions();
+
+  Log::unindent();
+  Log::println( "}" );
+}
+
 void Build::packArchive( const char* name, bool useCompression, bool use7zip )
 {
   Log::println( "Packing archive {" );
@@ -734,6 +779,7 @@ int Build::main( int argc, char** argv )
   bool doLua          = false;
   bool doModules      = false;
   bool doMusic        = false;
+  bool doMissions     = false;
   bool doPack         = false;
   bool useCompression = true;
   bool use7zip        = false;
@@ -743,7 +789,7 @@ int Build::main( int argc, char** argv )
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "lugtcbmsafnxorpABC07h?" ) ) >= 0 ) {
+  while( ( opt = getopt( argc, argv, "lugctbmsafnxoripAC07h?" ) ) >= 0 ) {
     switch( opt ) {
       case 'l': {
         doCat = true;
@@ -801,30 +847,31 @@ int Build::main( int argc, char** argv )
         doMusic = true;
         break;
       }
+      case 'i': {
+        doMissions = true;
+        break;
+      }
       case 'p': {
         doPack = true;
         break;
       }
       case 'A': {
-        doCat     = true;
-        doUI      = true;
-        doShaders = true;
-        doCaela   = true;
-        doTerrae  = true;
-        doBSPs    = true;
-        doModels  = true;
-        doSounds  = true;
-        doClasses = true;
-        doFrags   = true;
-        doNames   = true;
-        doLua     = true;
-        doModules = true;
-        doMusic   = true;
-        doPack    = true;
-        break;
-      }
-      case 'B': {
-        context.bumpmap = true;
+        doCat      = true;
+        doUI       = true;
+        doShaders  = true;
+        doCaela    = true;
+        doTerrae   = true;
+        doBSPs     = true;
+        doModels   = true;
+        doSounds   = true;
+        doClasses  = true;
+        doFrags    = true;
+        doNames    = true;
+        doLua      = true;
+        doModules  = true;
+        doMusic    = true;
+        doMissions = true;
+        doPack     = true;
         break;
       }
       case 'C': {
@@ -1001,14 +1048,11 @@ int Build::main( int argc, char** argv )
     checkLua( "lua/matrix" );
     checkLua( "lua/nirvana" );
 
-    DArray<PFile> missions = PFile( "mission" ).ls();
-    foreach( mission, missions.citer() ) {
-      checkLua( mission->path() );
-    }
-
-    copyFiles( "lua", "lua", "lua", true );
-    copyFiles( "mission", "mission", "lua", true );
-    copyFiles( "mission", "mission", "json", true );
+    copyFiles( "lua/matrix", "lua/matrix", "lua", false );
+    copyFiles( "lua/nirvana", "lua/nirvana", "lua", false );
+  }
+  if( doMissions ) {
+    buildMissions();
   }
   if( doModules ) {
     buildModules();

@@ -33,10 +33,10 @@ function cvicek_onUse( l )
   else
     ozObjAddLife( 50 )
     ozBotAddStamina( 30 )
-
-    ozBindSelf()
-    ozObjDestroy( true )
   end
+
+  ozBindSelf()
+  ozObjDestroy( true )
 end
 
 function bomb_onUse( l )
