@@ -1,0 +1,27 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenZone\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
+"Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Slovenian\n"
+"X-Poedit-Country: SLOVENIA\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: data/openzone_missions/mission/test/description.json
+msgid "Test"
+msgstr "Test"
+
+#: data/openzone_missions/mission/test/description.json
+msgid "Test of various engine capabilities."
+msgstr "Test zmožnosti pogona OpenZone."
+
+#: data/openzone_missions/mission/test/intro.sequence.json:step
+#: #3
+msgid "Intro dasd das d ad ad asdsa dadsad as d as d as da s d dsadasdada   das d as d dasd dad  dsa d asd as dsad  asdada d asd as d as ds ad dsadasdadasdasd  das das dsa das d asd asda s das d asd a d asdasd as d as d sa dasdadasdas d as d as dsa ds d a d asd asdsa d sa d sa dasdas"
+msgstr "Intro dasd das d ad ad asdsa dadsad as d as d as da s d dsadasdada   das d as d dasd dad  dsa d asd as dsad  asdada d asd as d as ds ad dsadasdadasdasd  das das dsa das d asd asda s das d asd a d asdasd as d as d sa dasdadasdas d as d as dsa ds d a d asd asdsa d sa d sa dasdas"
+

@@ -1,21 +1,19 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenZone 0.2.0\n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: OpenZone\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-07-14 17:55+0100\n"
+"PO-Revision-Date: 2012-07-15 17:00+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
-"X-Poedit-Basepath: .\n"
 "X-Poedit-Language: English\n"
 "X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Country: UNITED KINGDOM\n"
 
-#: data/openzone_missions/mission/tutorial/main.lua:167
+#: data/openzone_missions/mission/00_tutorial/main.lua:167
 msgid ""
 "11. TRANSFER BETWEEN INVENTORIES\n"
 "\n"
@@ -33,7 +31,7 @@ msgstr ""
 "\n"
 "Sometimes inventory is to big for all slots to be shown. In such case you can scroll slots in the inventory windows with your mouse wheel. Arrows on top left and/or bottom left side are shown when the inventory can be scrolled up and/or down."
 
-#: data/openzone_missions/mission/tutorial/main.lua:104
+#: data/openzone_missions/mission/00_tutorial/main.lua:104
 msgid ""
 "7. CARRYING\n"
 "\n"
@@ -59,7 +57,7 @@ msgstr ""
 "\n"
 "Now use the available boxes to get to the next room."
 
-#: data/openzone_missions/mission/tutorial/main.lua:99
+#: data/openzone_missions/mission/00_tutorial/main.lua:99
 msgid ""
 "6. PUSHING\n"
 "\n"
@@ -69,7 +67,7 @@ msgstr ""
 "\n"
 "You can push around many object you see. It's also possible to push them to the side if you don't walk into them directly, but slightly to one side (diagonally)."
 
-#: data/openzone_missions/mission/tutorial/main.lua:58
+#: data/openzone_missions/mission/00_tutorial/main.lua:58
 msgid ""
 "2. LEDGE CLIMBING\n"
 "\n"
@@ -79,7 +77,7 @@ msgstr ""
 "\n"
 "You can climb on a ledge if you hold SPACEBAR and W simultaneously."
 
-#: data/openzone_missions/mission/tutorial/main.lua:117
+#: data/openzone_missions/mission/00_tutorial/main.lua:117
 msgid ""
 "8. PUSHING IN WATER\n"
 "\n"
@@ -93,7 +91,7 @@ msgstr ""
 "\n"
 "You can also push an object upwards or downwards with side-pushing while the object is in the water."
 
-#: data/openzone_missions/mission/tutorial/main.lua:187
+#: data/openzone_missions/mission/00_tutorial/main.lua:187
 msgid ""
 "13. SPECIAL ITEMS\n"
 "\n"
@@ -103,7 +101,7 @@ msgstr ""
 "\n"
 "There are also some items that give you special abilities when in your inventory. Music player and Galileo satellite navigation are such examples. When you poses them a music player interface and a minimap windows will be shown."
 
-#: data/openzone_missions/mission/tutorial/main.lua:71
+#: data/openzone_missions/mission/00_tutorial/main.lua:71
 msgid ""
 "4. SWIMMING\n"
 "\n"
@@ -117,7 +115,7 @@ msgstr ""
 "\n"
 "To dive, just look down and move forwards. You must only watch that you are running (and not crouching), as you must swim fast enough to dive."
 
-#: data/openzone_missions/mission/tutorial/main.lua:77
+#: data/openzone_missions/mission/00_tutorial/main.lua:77
 msgid ""
 "5. STAMINA\n"
 "\n"
@@ -135,7 +133,7 @@ msgstr ""
 "\n"
 "Your stamina is restoring while you are still or walking."
 
-#: data/openzone_missions/mission/tutorial/main.lua:62
+#: data/openzone_missions/mission/00_tutorial/main.lua:62
 msgid ""
 "3. LADDERS\n"
 "\n"
@@ -157,7 +155,7 @@ msgstr ""
 "\n"
 "Note that you cannot climb a ladder when you are carrying some object in your hands."
 
-#: data/openzone_missions/mission/tutorial/main.lua:241
+#: data/openzone_missions/mission/00_tutorial/main.lua:241
 msgid ""
 "17. CORPSES\n"
 "\n"
@@ -171,11 +169,15 @@ msgstr ""
 "\n"
 "But don't wait too long. Corpses disappear some time after death."
 
-#: data/openzone_missions/mission/tutorial/main.lua:312
+#: data/openzone_missions/mission/00_tutorial/description.json
+msgid "In this mission player should learn how to play OpenZone and get familiar with all aspects of the game."
+msgstr "In this mission player should learn how to play OpenZone and get familiar with all aspects of the game."
+
+#: data/openzone_missions/mission/00_tutorial/description.json
 msgid "Tutorial"
 msgstr "Tutorial"
 
-#: data/openzone_missions/mission/tutorial/main.lua:254
+#: data/openzone_missions/mission/00_tutorial/main.lua:254
 msgid ""
 "18. VEHICLES\n"
 "\n"
@@ -193,7 +195,7 @@ msgstr ""
 "\n"
 "To exit the vehicle press X and to eject press ALT + X. On destruction some vehicles automatically eject you."
 
-#: data/openzone_missions/mission/tutorial/main.lua:230
+#: data/openzone_missions/mission/00_tutorial/main.lua:230
 msgid ""
 "16. WEAPONS\n"
 "\n"
@@ -219,7 +221,7 @@ msgstr ""
 "\n"
 "Test that plasma gun on objects ahead and those two droids."
 
-#: data/openzone_missions/mission/tutorial/main.lua:296
+#: data/openzone_missions/mission/00_tutorial/main.lua:296
 msgid ""
 "22. OBJECTIVES\n"
 "\n"
@@ -233,7 +235,7 @@ msgstr ""
 "\n"
 "If you posses Galileo gadget, you also see your current objective position on your minimap."
 
-#: data/openzone_missions/mission/tutorial/main.lua:193
+#: data/openzone_missions/mission/00_tutorial/main.lua:193
 msgid ""
 "14. SAVING AND CAMERA\n"
 "\n"
@@ -251,7 +253,7 @@ msgstr ""
 "\n"
 "To toggle to 3rd person view use NUMPAD ENTER and to toggle free camera rotation press NUMPAD *."
 
-#: data/openzone_missions/mission/tutorial/main.lua:147
+#: data/openzone_missions/mission/00_tutorial/main.lua:147
 msgid ""
 "9. USER INTERFACE\n"
 "\n"
@@ -269,7 +271,7 @@ msgstr ""
 "\n"
 "Windows can be dragged around with left mouse button while holding the ALT key."
 
-#: data/openzone_missions/mission/tutorial/main.lua:267
+#: data/openzone_missions/mission/00_tutorial/main.lua:267
 msgid ""
 "20. SERVICE STATION\n"
 "\n"
@@ -283,7 +285,7 @@ msgstr ""
 "\n"
 "Service station will also reload all weapons in your inventory. For mechanical units, it will also heal (repair) them and refill their stamina."
 
-#: data/openzone_missions/mission/tutorial/main.lua:206
+#: data/openzone_missions/mission/00_tutorial/main.lua:206
 msgid ""
 "15. BOMBS\n"
 "\n"
@@ -293,7 +295,7 @@ msgstr ""
 "\n"
 "Some objects like this bombs are dangerous. They will explode when destroyed or 5 s after activation (they can also be deactivated by right clicking them again)."
 
-#: data/openzone_missions/mission/tutorial/main.lua:177
+#: data/openzone_missions/mission/00_tutorial/main.lua:177
 msgid ""
 "12. HEALTH\n"
 "\n"
@@ -311,7 +313,7 @@ msgstr ""
 "\n"
 "Your health is show in a green bar above stamina (becomes red when your health drops). If you are heavily wounded, you are unable to run."
 
-#: data/openzone_missions/mission/tutorial/main.lua:154
+#: data/openzone_missions/mission/00_tutorial/main.lua:154
 msgid ""
 "10. INVENTORY\n"
 "\n"
@@ -333,7 +335,7 @@ msgstr ""
 "\n"
 "You can still activate items while they are in your inventory (blue hand is shown at the bottom of inventory window if the selected item can be activated)."
 
-#: data/openzone_missions/mission/tutorial/main.lua:284
+#: data/openzone_missions/mission/00_tutorial/main.lua:284
 msgid ""
 "21. STRATEGIC MODE\n"
 "\n"
@@ -355,7 +357,7 @@ msgstr ""
 "\n"
 "Reincarnation and strategic mode are not always available. Depending on a mission, reincarnation can be limited to specific bots only or completely disabled (including strategic mode)."
 
-#: data/openzone_missions/mission/tutorial/main.lua:261
+#: data/openzone_missions/mission/00_tutorial/main.lua:261
 msgid ""
 "19. TRUNK\n"
 "\n"
@@ -365,11 +367,11 @@ msgstr ""
 "\n"
 "Some vehicles also have a trunk. In that case you can swap items between your inventory and the vehicle as you did for that metal crate. It also works once you are in the vehicle (just press TAB key to open inventory window)."
 
-#: data/openzone_missions/mission/tutorial/main.lua:313
+#: data/openzone_missions/mission/00_tutorial/main.lua:313
 msgid "Get familiar with all aspects of OpenZone game."
 msgstr "Get familiar with all aspects of OpenZone game."
 
-#: data/openzone_missions/mission/tutorial/main.lua:52
+#: data/openzone_missions/mission/00_tutorial/main.lua:52
 msgid ""
 "1. MOVEMENT\n"
 "\n"

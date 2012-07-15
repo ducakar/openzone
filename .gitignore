@@ -16,6 +16,8 @@
 !/data/*/lua
 !/data/*/mission
 *.pot
+*.png
+*.bmp
 
 /share
 /support

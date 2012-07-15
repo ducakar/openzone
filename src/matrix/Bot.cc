@@ -101,6 +101,15 @@ bool Bot::canReach( const Object* obj ) const
   return AABB( eye, reach ).overlaps( *obj );
 }
 
+bool Bot::canEquip( const Weapon* weapon ) const
+{
+  hard_assert( weapon->flags & WEAPON_BIT );
+
+  const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weapon->clazz );
+
+  return weaponClazz->userBase.beginsWith( clazz->name );
+}
+
 bool Bot::trigger( const Entity* entity )
 {
   hard_assert( entity != null );
@@ -136,6 +145,10 @@ bool Bot::use( const Object* object )
   hard_assert( object != null );
 
   if( ( object->flags & USE_FUNC_BIT ) && canReach( object ) ) {
+    if( ( object->flags & WEAPON_BIT ) && !canEquip( static_cast<const Weapon*>( object  ) ) ) {
+      return false;
+    }
+
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_USE;
     instrument = object->index;
@@ -208,8 +221,12 @@ bool Bot::invUse( const Dynamic* item, const Object* source )
   hard_assert( item != null && source != null );
 
   if( ( item->flags & USE_FUNC_BIT ) && source->items.contains( item->index ) &&
-    canReach( source ) )
+      canReach( source ) )
   {
+    if( ( item->flags & WEAPON_BIT ) && !canEquip( static_cast<const Weapon*>( item ) ) ) {
+      return false;
+    }
+
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_INV_USE;
     instrument = item->index;

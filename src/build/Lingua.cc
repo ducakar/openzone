@@ -177,7 +177,7 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
 
 void Lingua::build()
 {
-  Log::println( "Building localisations {" );
+  Log::println( "Building package localisations {" );
   Log::indent();
 
   PFile linguaDir( "lingua" );
@@ -215,6 +215,35 @@ void Lingua::build()
   foreach( mission, missions.citer() ) {
     linguaDir.setPath( mission->path() + "/lingua" );
     languages = linguaDir.ls();
+
+    foreach( catalogue, languages.citer() ) {
+      if( !catalogue->hasExtension( "po" ) ) {
+        continue;
+      }
+
+      File::mkdir( "mission" );
+      File::mkdir( mission->path() );
+      File::mkdir( linguaDir.path() );
+
+      buildCatalogue( linguaDir.path(), catalogue->baseName() );
+    }
+  }
+
+  Log::unindent();
+  Log::println( "}" );
+}
+
+void Lingua::buildMissions()
+{
+  Log::println( "Building mission localisations {" );
+  Log::indent();
+
+  PFile missionsDir( "mission" );
+  DArray<PFile> missions = missionsDir.ls();
+
+  foreach( mission, missions.citer() ) {
+    PFile linguaDir( mission->path() + "/lingua" );
+    DArray<PFile> languages = linguaDir.ls();
 
     foreach( catalogue, languages.citer() ) {
       if( !catalogue->hasExtension( "po" ) ) {

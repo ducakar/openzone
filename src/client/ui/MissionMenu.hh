@@ -67,6 +67,7 @@ class MissionMenu : public Area
       String name;
       String title;
       String description;
+      uint   imageId;
     };
 
     List<MissionInfo> missions;
@@ -75,6 +76,12 @@ class MissionMenu : public Area
     int               scroll;
 
     Text              description;
+
+    uint              imageId;
+    int               imageX;
+    int               imageY;
+    int               imageWidth;
+    int               imageHeight;
 
     static void loadMission( Button* sender );
 
@@ -87,6 +94,7 @@ class MissionMenu : public Area
   public:
 
     MissionMenu();
+    ~MissionMenu() override;
 
 };
 

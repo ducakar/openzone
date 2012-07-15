@@ -243,6 +243,22 @@ static void readSequence( File* file )
   }
 }
 
+static void readDescription( File* file )
+{
+  JSON descriptionConfig;
+  descriptionConfig.load( file );
+
+  const char* title       = descriptionConfig["title"].get( "" );
+  const char* description = descriptionConfig["description"].get( "" );
+
+  if( !String::isEmpty( title ) ) {
+    messages.include( title, file->path() );
+  }
+  if( !String::isEmpty( description ) ) {
+    messages.include( description, file->path() );
+  }
+}
+
 static void writePOT( const HashString<String>* hs, const char* filePath )
 {
   BufferStream bs;
@@ -381,7 +397,12 @@ int main( int argc, char** argv )
         readLua( file );
       }
       else if( file->hasExtension( "json" ) ) {
-        readSequence( file );
+        if( file->path().endsWith( ".sequence.json" ) ) {
+          readSequence( file );
+        }
+        else {
+          readDescription( file );
+        }
       }
     }
 

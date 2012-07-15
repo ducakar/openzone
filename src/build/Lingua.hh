@@ -39,6 +39,7 @@ class Lingua
   public:
 
     void build();
+    void buildMissions();
 };
 
 extern Lingua lingua;

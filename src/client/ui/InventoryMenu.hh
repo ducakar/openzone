@@ -68,6 +68,7 @@ class InventoryMenu : public Frame
 
   private:
 
+    void updateReferences();
     void handleComponent( int height, const Object* container, int* tagged, int* scroll );
     void drawComponent( int height, const Object* container, int tagged, int scroll );
 

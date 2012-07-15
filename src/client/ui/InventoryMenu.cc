@@ -38,6 +38,19 @@ namespace client
 namespace ui
 {
 
+void InventoryMenu::updateReferences()
+{
+  owner = camera.botObj;
+  other = null;
+
+  if( camera.botObj != null && camera.botObj->parent >= 0 ) {
+    other = orbis.objects[camera.botObj->parent];
+  }
+  else if( camera.objectObj != null && ( camera.objectObj->flags & Object::BROWSABLE_BIT ) ) {
+    other = camera.objectObj;
+  }
+}
+
 void InventoryMenu::handleComponent( int height, const Object* container, int* tagged, int* scroll )
 {
   Bot* bot = camera.botObj;
@@ -226,9 +239,7 @@ slotsRendered:
     uint texId = useTexId;
 
     if( taggedItem->flags & Object::WEAPON_BIT ) {
-      const WeaponClass* clazz = static_cast<const WeaponClass*>( taggedClazz );
-
-      if( !camera.botObj->clazz->name.beginsWith( clazz->userBase ) ) {
+      if( !camera.botObj->canEquip( static_cast<const Weapon*>( taggedItem ) ) ) {
         goto noIcon;
       }
 
@@ -272,15 +283,7 @@ void InventoryMenu::onUpdate()
     return;
   }
 
-  owner = camera.botObj;
-  other = null;
-
-  if( camera.botObj != null && camera.botObj->parent >= 0 ) {
-    other = orbis.objects[camera.botObj->parent];
-  }
-  else if( camera.objectObj != null && ( camera.objectObj->flags & Object::BROWSABLE_BIT ) ) {
-    other = camera.objectObj;
-  }
+  updateReferences();
 
   height = HEADER_SIZE + ( other == null ? SINGLE_HEIGHT : 2 * SINGLE_HEIGHT );
 
@@ -328,6 +331,8 @@ bool InventoryMenu::onMouseEvent()
 
 void InventoryMenu::onDraw()
 {
+  updateReferences();
+
   const Object*      container      = other == null ? owner : other;
   const ObjectClass* containerClazz = container->clazz;
 
