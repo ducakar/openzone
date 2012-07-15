@@ -76,8 +76,8 @@ void MenuStage::load()
     input.buttons     = 0;
     input.currButtons = 0;
 
-    _this->mainMenu = new ui::MainMenu( _this->showAutosaved, _this->showQuicksaved );
-    ui::ui.root->add( _this->mainMenu, ui::Area::CENTRE, ui::Area::CENTRE );
+    _this->mainMenu = new ui::MainMenu();
+    ui::ui.root->add( _this->mainMenu, 0, 0 );
 
     ui::ui.showLoadingScreen( false );
     ui::mouse.doShow = true;

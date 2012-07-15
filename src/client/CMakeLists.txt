@@ -63,6 +63,7 @@ add_library( client STATIC
   ui/Label.cc
   ui/LoadingArea.cc
   ui/MainMenu.cc
+  ui/MissionMenu.cc
   ui/Mouse.cc
   ui/MusicPlayer.cc
   ui/QuestFrame.cc

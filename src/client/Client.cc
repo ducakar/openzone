@@ -550,10 +550,7 @@ int Client::main( int argc, char** argv )
 
     while( SDL_PollEvent( &event ) != 0 ) {
       switch( event.type ) {
-        case SDL_KEYUP:
         case SDL_KEYDOWN: {
-          input.readEvent( &event );
-
 #ifndef __native_client__
 # if SDL_MAJOR_VERSION < 2
           const SDL_keysym& keysym = event.key.keysym;
@@ -585,8 +582,8 @@ int Client::main( int argc, char** argv )
             }
           }
 #endif
-          break;
         }
+        case SDL_KEYUP:
 #if SDL_MAJOR_VERSION >= 2
         case SDL_MOUSEWHEEL:
 #endif

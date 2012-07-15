@@ -1028,7 +1028,7 @@ int Build::main( int argc, char** argv )
   context.free();
   client::render.free( true );
   window.free();
-  config.clear( true );
+  config.clear();
 
   FreeImage_DeInitialise();
   PFile::free();

@@ -79,7 +79,7 @@ class CinematicProxy : public Proxy
     void addTransform( const Quat& rot, const Point& p, const Mat44& colour, int track,
                        const char* title, float time );
 
-    void executeSequence( const char* path );
+    void executeSequence( const char* path, const Lingua* lingua );
 
     void begin() override;
     void end() override;

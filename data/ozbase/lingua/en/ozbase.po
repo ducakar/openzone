@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: OpenZone 0.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-02-11 19:36+0100\n"
+"PO-Revision-Date: 2012-07-15 02:14+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: \n"
@@ -15,53 +15,54 @@ msgstr ""
 "X-Poedit-Language: English\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: src/client/ui/SettingsFrame.cc:69
+#: src/client/ui/MissionMenu.cc:91
+msgid "Back"
+msgstr "Close"
+
+#: src/client/ui/SettingsFrame.cc:72
 msgid "Close"
 msgstr "Close"
 
-#: src/client/ui/MainMenu.cc:121
+#: src/client/ui/MainMenu.cc:117
 msgid "Continue"
 msgstr "Continue"
 
-#: src/client/ui/BuildMenu.cc:63
+#: src/client/ui/BuildMenu.cc:65
 msgid "Create"
 msgstr "Create"
 
-#: src/client/ui/DebugFrame.cc:40
+#: src/client/ui/DebugFrame.cc:101
 msgid "Debug"
 msgstr "Debug"
 
-#: src/client/ui/MainMenu.cc:133
+#: src/client/ui/MainMenu.cc:121
 msgid "Exit"
 msgstr "Exit"
 
-#: src/client/ui/MainMenu.cc:125
-msgid "Load Quicksave"
-msgstr "Load Quicksave"
+#: src/client/ui/MainMenu.cc:112
+msgid "Licensed under GNU GPL 3.0. Data files and libraries distributed with OpenZone are work of various authors and use separate licences. See doc/README.html and/or respective README.txt and COPYING.txt files in game data archives for details."
+msgstr "Licensed under GNU GPL 3.0. Data files and libraries distributed with OpenZone are work of various authors and use separate licences. See doc/README.html and/or respective README.txt and COPYING.txt files in game data archives for details."
 
-#: src/client/GameStage.cc:143
-#: src/client/GameStage.cc:369
+#: src/client/GameStage.cc:141
+#: src/client/GameStage.cc:366
 msgid "Loading ..."
 msgstr "Loading ..."
 
-#: src/client/ui/MainMenu.cc:130
-msgid "Mission 1: Cvicek"
-msgstr "Mission 1: Cviček"
+#: src/client/ui/MainMenu.cc:119
+msgid "Missions"
+msgstr "Missions"
 
-#: src/client/ui/MusicPlayer.cc:194
+#: src/client/ui/MusicPlayer.cc:179
 msgid "Music Player"
 msgstr "Music Player"
 
-#: src/client/ui/SettingsFrame.cc:65
-#, c-format
+#: src/client/ui/SettingsFrame.cc:66
 msgid ""
-"NOT IMPLEMENTED YET\n"
-"\n"
-"You can change your settings by manually editing '%s' file."
+"NOT IMPLEMENTED.\n"
+"You can change your settings by manually editing the following files:"
 msgstr ""
-"NOT IMPLEMENTED YET\n"
-"\n"
-"You can change your settings by manually editing '%s' file."
+"NOT IMPLEMENTED.\n"
+"You can change your settings by manually editing the following files:"
 
 #: src/client/ui/QuestFrame.cc:145
 msgid "No quest"
@@ -71,32 +72,18 @@ msgstr "No quest"
 msgid "Quests"
 msgstr "Quests"
 
-#: src/client/ui/MainMenu.cc:132
-#: src/client/ui/SettingsFrame.cc:59
+#: src/client/ui/MainMenu.cc:118
+msgid "Quickload"
+msgstr "Quickload"
+
+#: src/client/ui/MainMenu.cc:120
+#: src/client/ui/SettingsFrame.cc:57
 msgid "Settings"
 msgstr "Settings"
 
-#: src/client/GameStage.cc:468
+#: src/client/GameStage.cc:464
 msgid "Shutting down ..."
 msgstr "Shutting down ..."
-
-#: src/client/ui/MainMenu.cc:129
-msgid "Test World"
-msgstr "Test World"
-
-#: src/client/ui/MainMenu.cc:110
-msgid ""
-"This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; See COPYING file for details.\n"
-"\n"
-"Data files come form different sources. See respective README and COPYING files for details about copyrights and licences."
-msgstr ""
-"This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; See COPYING file for details.\n"
-"\n"
-"Data files come form different sources. See respective README and COPYING files for details about copyrights and licences."
-
-#: src/client/ui/MainMenu.cc:128
-msgid "Tutorial"
-msgstr "Tutorial"
 
 #: src/client/ui/QuestFrame.cc:50
 msgid "failed"

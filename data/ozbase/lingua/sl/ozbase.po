@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: OpenZone 0.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-02-11 19:37+0100\n"
+"PO-Revision-Date: 2012-07-15 02:19+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: \n"
@@ -15,53 +15,54 @@ msgstr ""
 "X-Poedit-Language: Slovenian\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: src/client/ui/SettingsFrame.cc:69
+#: src/client/ui/MissionMenu.cc:91
+msgid "Back"
+msgstr "Nazaj"
+
+#: src/client/ui/SettingsFrame.cc:72
 msgid "Close"
 msgstr "Zapri"
 
-#: src/client/ui/MainMenu.cc:121
+#: src/client/ui/MainMenu.cc:117
 msgid "Continue"
 msgstr "Nadaljevanje"
 
-#: src/client/ui/BuildMenu.cc:63
+#: src/client/ui/BuildMenu.cc:65
 msgid "Create"
 msgstr "Umesti"
 
-#: src/client/ui/DebugFrame.cc:40
+#: src/client/ui/DebugFrame.cc:101
 msgid "Debug"
 msgstr "Razhroščevanje"
 
-#: src/client/ui/MainMenu.cc:133
+#: src/client/ui/MainMenu.cc:121
 msgid "Exit"
 msgstr "Izhod"
 
-#: src/client/ui/MainMenu.cc:125
-msgid "Load Quicksave"
-msgstr "Naloži hitro shranjeno igro"
+#: src/client/ui/MainMenu.cc:112
+msgid "Licensed under GNU GPL 3.0. Data files and libraries distributed with OpenZone are work of various authors and use separate licences. See doc/README.html and/or respective README.txt and COPYING.txt files in game data archives for details."
+msgstr "Pogon OpenZone je pod licenco GNU GPL 3.0. Podatkovni arhivi in knjižnice distribuirane skupaj z OpenZone so delo različnih avtorjev in so pod drugačnimi licencami. Za več podrobnosti glej doc/PREBERI.html ter datoteke z imeni COPYING.txt in README.txt v podatkovnih arhivih."
 
-#: src/client/GameStage.cc:143
-#: src/client/GameStage.cc:369
+#: src/client/GameStage.cc:141
+#: src/client/GameStage.cc:366
 msgid "Loading ..."
 msgstr "Nalagam ..."
 
-#: src/client/ui/MainMenu.cc:130
-msgid "Mission 1: Cvicek"
-msgstr "Misija 1: Cviček"
+#: src/client/ui/MainMenu.cc:119
+msgid "Missions"
+msgstr "Misije"
 
-#: src/client/ui/MusicPlayer.cc:194
+#: src/client/ui/MusicPlayer.cc:179
 msgid "Music Player"
 msgstr "Predvajalnik"
 
-#: src/client/ui/SettingsFrame.cc:65
-#, c-format
+#: src/client/ui/SettingsFrame.cc:66
 msgid ""
-"NOT IMPLEMENTED YET\n"
-"\n"
-"You can change your settings by manually editing '%s' file."
+"NOT IMPLEMENTED.\n"
+"You can change your settings by manually editing the following files:"
 msgstr ""
-"ŠE NI IMPLEMENTIRANO\n"
-"\n"
-"Nastavitve lahko spreminjaš ročno v datoteki '%s'."
+"NI IMPLEMENTIRANO\n"
+"Nastavitve lahko spreminjaš v naslednjih datotekah:"
 
 #: src/client/ui/QuestFrame.cc:145
 msgid "No quest"
@@ -71,32 +72,18 @@ msgstr "Ni naloge"
 msgid "Quests"
 msgstr "Naloge"
 
-#: src/client/ui/MainMenu.cc:132
-#: src/client/ui/SettingsFrame.cc:59
+#: src/client/ui/MainMenu.cc:118
+msgid "Quickload"
+msgstr "Zadnje shranjeno"
+
+#: src/client/ui/MainMenu.cc:120
+#: src/client/ui/SettingsFrame.cc:57
 msgid "Settings"
 msgstr "Nastavitve"
 
-#: src/client/GameStage.cc:468
+#: src/client/GameStage.cc:464
 msgid "Shutting down ..."
 msgstr "Zaustavljam ..."
-
-#: src/client/ui/MainMenu.cc:129
-msgid "Test World"
-msgstr "Testni svet"
-
-#: src/client/ui/MainMenu.cc:110
-msgid ""
-"This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; See COPYING file for details.\n"
-"\n"
-"Data files come form different sources. See respective README and COPYING files for details about copyrights and licences."
-msgstr ""
-"Ta program je POPOLNOMA BREZ GARANCIJE. To je prosto programje, ki se lahko razpečuje pod določenimi pogoji; za podrobnosti glejte datoteko COPYING.\n"
-"\n"
-"Podatkovne datoteke prihajajo iz različnih virov. Za informacije o avtorskih pravicah in licencah glejte pripadajoče datoteke README in COPYING."
-
-#: src/client/ui/MainMenu.cc:128
-msgid "Tutorial"
-msgstr "Vpeljava"
 
 #: src/client/ui/QuestFrame.cc:50
 msgid "failed"

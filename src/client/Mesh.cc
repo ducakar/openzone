@@ -213,6 +213,7 @@ void Mesh::dealloc()
   loadedMeshes.dealloc();
 
   delete[] vertexAnimBuffer;
+  vertexAnimBuffer = null;
   vertexAnimBufferLength = 0;
 }
 

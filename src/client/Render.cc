@@ -565,6 +565,9 @@ void Render::init( bool isBuild )
   String sExtensions = String::cstr( glGetString( GL_EXTENSIONS ) );
   DArray<String> extensions = sExtensions.trim().split( ' ' );
 
+  // glGetString( GL_EXTENSIONS ) generates an error when using OpenGL 3.2+ Core Profile.
+  glGetError();
+
   Log::println( "OpenGL vendor: %s", vendor.cstr() );
   Log::println( "OpenGL renderer: %s", renderer.cstr() );
   Log::println( "OpenGL version: %s", version.cstr() );
