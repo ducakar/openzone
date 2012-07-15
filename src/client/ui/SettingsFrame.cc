@@ -43,30 +43,31 @@ static void closeFrame( Button* sender )
 {
   SettingsFrame* settings = static_cast<SettingsFrame*>( sender->parent );
 
-  settings->show( false );
-  settings->mainMenu->show( true );
+  settings->parent->remove( settings );
 }
 
 void SettingsFrame::onDraw()
 {
-  shape.colour( 0.1f, 0.1f, 0.1f, 1.0f );
-  shape.fill( 0, 0, camera.width, camera.height );
-
   Frame::onDraw();
 
   message.draw( this, false );
 }
 
-SettingsFrame::SettingsFrame( Frame* mainMenu_ ) :
-  Frame( 400, 28 + 8 * font.INFOS[Font::SANS].height, OZ_GETTEXT( "Settings" ) ),
-  message( 4, 24, 392, 8, Font::SANS, Area::ALIGN_NONE ), mainMenu( mainMenu_ )
+SettingsFrame::SettingsFrame() :
+  Frame( 400, 40 + 8 * font.INFOS[Font::SANS].height, OZ_GETTEXT( "Settings" ) ),
+  message( 4, 24, 392, 8, Font::SANS, Area::ALIGN_NONE )
 {
   x = ( camera.width  - width ) / 2;
   y = ( camera.height - height ) / 2;
 
-  message.set( OZ_GETTEXT( "NOT IMPLEMENTED YET\n\n"
-                           "You can change your settings by manually editing '%s' file." ),
-               String::str( "%s/client.rc", config["dir.config"].asString().cstr() ).cstr() );
+  const String& configDirPath = config["dir.config"].asString();
+
+  message.set( "%s\n\n  %s\n  %s\n  %s",
+               OZ_GETTEXT( "NOT IMPLEMENTED.\nYou can change your settings by manually editing the"
+                           " following files:" ),
+               ( configDirPath + "/config.json" ).cstr(),
+               ( configDirPath + "/input.json" ).cstr(),
+               ( configDirPath + "/profile.json" ).cstr() );
 
   add( new Button( OZ_GETTEXT( "Close" ), closeFrame, 60, 26 ), -4, 4 );
 }

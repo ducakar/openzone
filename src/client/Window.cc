@@ -310,8 +310,11 @@ void Window::init()
                                  SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                  width, height, flags );
 
-  SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,   0 );
-  SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 0 );
+  SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,            0 );
+  SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE,          0 );
+//   SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
+//   SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 2 );
+
   SDL_GL_SetSwapInterval( enableVSync );
 
   context = SDL_GL_CreateContext( descriptor );

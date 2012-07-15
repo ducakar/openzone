@@ -18,12 +18,11 @@
  */
 
 /**
- * @file client/ui/MainMenu.hh
+ * @file client/ui/MissionMenu.hh
  */
 
 #pragma once
 
-#include "client/ui/Frame.hh"
 #include "client/ui/Button.hh"
 #include "client/ui/Text.hh"
 
@@ -34,11 +33,50 @@ namespace client
 namespace ui
 {
 
-class MainMenu : public Area
+class MissionMenu;
+
+class MissionButton : public Button
 {
   private:
 
-    Text copyright;
+    MissionMenu* missionMenu;
+
+  public:
+
+    const int index;
+
+  protected:
+
+    bool onMouseEvent() override;
+
+  public:
+
+    explicit MissionButton( const char* text, Callback* callback, MissionMenu* missionMenu,
+                            int index, int width, int height );
+
+};
+
+class MissionMenu : public Area
+{
+  friend MissionButton;
+
+  private:
+
+    struct MissionInfo
+    {
+      String name;
+      String title;
+      String description;
+    };
+
+    List<MissionInfo> missions;
+    int               nSelections;
+    int               selection;
+    int               scroll;
+
+    Text              description;
+
+    static void loadMission( Button* sender );
 
   protected:
 
@@ -48,7 +86,7 @@ class MainMenu : public Area
 
   public:
 
-    MainMenu();
+    MissionMenu();
 
 };
 

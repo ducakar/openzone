@@ -35,6 +35,7 @@
 
 #include "client/ui/SettingsFrame.hh"
 #include "client/ui/UI.hh"
+#include "MissionMenu.hh"
 
 namespace oz
 {
@@ -57,87 +58,77 @@ static void continueQuicksaved( Button* )
   gameStage.mission = "";
 }
 
-static void loadTutorial( Button* )
+static void openMissions( Button* sender )
 {
-  Stage::nextStage = &gameStage;
-  gameStage.stateFile = "";
-  gameStage.mission = "tutorial";
-}
+  MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
 
-static void loadTest( Button* )
-{
-  Stage::nextStage = &gameStage;
-  gameStage.stateFile = "";
-  gameStage.mission = "test";
-}
-
-static void loadCvicek( Button* )
-{
-  Stage::nextStage = &gameStage;
-  gameStage.stateFile = "";
-  gameStage.mission = "cvicek";
+  mainMenu->add( new MissionMenu(), 0, 0 );
 }
 
 static void settings( Button* sender )
 {
   MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
 
-  mainMenu->show( false );
-  mainMenu->settingsFrame->show( true );
+  mainMenu->add( new SettingsFrame(), Area::CENTRE, Area::CENTRE );
 }
 
-static void exit( Button* )
+static void quit( Button* )
 {
   menuStage.doExit = true;
 }
 
+void MainMenu::onReposition()
+{
+  width  = camera.width;
+  height = camera.height;
+
+  copyright.resize( width - 280 );
+  copyright.set( "OpenZone Engine © 2012 Davorin Učakar. %s",
+                 OZ_GETTEXT( "Licensed under GNU GPL 3.0. Data files and libraries distributed with"
+                             " OpenZone are work of various authors and use separate licences."
+                             " See doc/README.html and/or respective README.txt and COPYING.txt"
+                             " files in game data archives for details." ) );
+
+  foreach( child, children.iter() ) {
+    child->reposition();
+  }
+}
+
+bool MainMenu::onMouseEvent()
+{
+  return passMouseEvents();
+}
+
 void MainMenu::onDraw()
 {
-  shape.colour( 0.1f, 0.1f, 0.1f, 1.0f );
+  shape.colour( 0.05f, 0.05f, 0.05f, 1.0f );
   shape.fill( 0, 0, camera.width, camera.height );
 
-  Frame::onDraw();
+  shape.colour( 0.0f, 0.0f, 0.0f, 1.0f );
+  shape.fill( camera.width - 240, 0, 240, camera.height );
 
   copyright.draw( this, false );
+
+  drawChildren();
 }
 
-MainMenu::MainMenu( bool showAutosaved, bool showQuicksaved ) :
-  Frame( 400, 450, OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " " OZ_SYSTEM_NAME ),
-  copyright( 10, 10, 380, 9, Font::SANS, Area::ALIGN_NONE )
+MainMenu::MainMenu() :
+  Area( camera.width, camera.height ),
+  copyright( 20, 10, 360, 2, Font::SMALL, Area::ALIGN_NONE )
 {
-  x = ( camera.width  - width ) / 2;
-  y = ( camera.height - height ) / 2;
+  onReposition();
 
-  copyright.set( "OpenZone  Copyright © 2002-2012 Davorin Učakar\n\n%s",
-                 OZ_GETTEXT( "This program comes with ABSOLUTELY NO WARRANTY. "
-                             "This is free software, and you are welcome to redistribute it "
-                             "under certain conditions; See COPYING file for details.\n\n"
-                             "Data files come form different sources. See respective README and COPYING "
-                             "files for details about copyrights and licences." ) );
+  Button* continueButton  = new Button( OZ_GETTEXT( "Continue" ),  continueAutosaved,  200, 30 );
+  Button* quickLoadButton = new Button( OZ_GETTEXT( "Quickload" ), continueQuicksaved, 200, 30 );
+  Button* missionsButton  = new Button( OZ_GETTEXT( "Missions" ),  openMissions,       200, 30 );
+  Button* settingsButton  = new Button( OZ_GETTEXT( "Settings" ),  settings,           200, 30 );
+  Button* quitButton      = new Button( OZ_GETTEXT( "Exit" ),      quit,               200, 30 );
 
-  if( showAutosaved ) {
-    add( new Button( OZ_GETTEXT( "Continue" ), continueAutosaved, 300, 26 ), 50, -40 );
-  }
-  if( showQuicksaved ) {
-    add( new Button( OZ_GETTEXT( "Load Quicksave" ), continueQuicksaved, 300, 26 ), 50, -70 );
-  }
-
-  add( new Button( OZ_GETTEXT( "Tutorial" ), loadTutorial, 300, 26 ), 50, -130 );
-  add( new Button( OZ_GETTEXT( "Test World" ), loadTest, 300, 26 ), 50, -160 );
-  add( new Button( OZ_GETTEXT( "Mission 1: Cvicek" ), loadCvicek, 300, 26 ), 50, -190 );
-
-  add( new Button( OZ_GETTEXT( "Settings" ), settings, 300, 26 ), 50, -250 );
-  add( new Button( OZ_GETTEXT( "Exit" ), exit, 300, 26 ), 50, -280 );
-
-  settingsFrame = new SettingsFrame( this );
-
-  ui.root->add( settingsFrame, CENTRE, CENTRE );
-  settingsFrame->show( false );
-}
-
-MainMenu::~MainMenu()
-{
-  ui.root->remove( settingsFrame );
+  add( continueButton,  -20, 270 );
+  add( quickLoadButton, -20, 230 );
+  add( missionsButton,  -20, 170 );
+  add( settingsButton,  -20, 110 );
+  add( quitButton,      -20,  70 );
 }
 
 }

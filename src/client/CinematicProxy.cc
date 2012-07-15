@@ -57,7 +57,7 @@ void CinematicProxy::addTransform( const Quat& rot, const Point& p, const Mat44&
   steps.add( step );
 }
 
-void CinematicProxy::executeSequence( const char* path )
+void CinematicProxy::executeSequence( const char* path, const Lingua* lingua )
 {
   JSON sequence;
   PFile file( path );
@@ -143,7 +143,7 @@ void CinematicProxy::executeSequence( const char* path )
       step.title = " ";
     }
     else {
-      step.title = titleConfig.asString();
+      step.title = lingua->get( titleConfig.asString() );
     }
 
     step.time = stepConfig["time"].get( 0.0f );
