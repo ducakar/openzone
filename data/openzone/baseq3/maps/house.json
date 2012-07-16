@@ -1,4 +1,6 @@
 {
+  "life":           2000,
+  "resistance":     200,
   "fragPool":       "ruins",
   "nFrags":         20,
   "models":

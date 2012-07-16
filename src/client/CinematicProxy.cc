@@ -167,8 +167,8 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* lingua )
         step.endState = Camera::UNIT;
       }
       else {
-        throw Exception( "Invalid state '%s' for sequence step; should be either CINEMATIC, "
-                         "STRATEGIC or UNIT.", sEndState );
+        throw Exception( "Invalid state '%s' for sequence step; should be either CINEMATIC,"
+                         " STRATEGIC or UNIT.", sEndState );
       }
     }
 
@@ -243,6 +243,8 @@ void CinematicProxy::update()
     cinematicText->set( title.substring( 0, nTitleChars ) );
   }
 
+  stepTime += Timer::TICK_TIME;
+
   if( t == 1.0f ) {
     beginPos    = step.p;
     beginRot    = step.rot;
@@ -251,7 +253,8 @@ void CinematicProxy::update()
     stepTime    = 0.0f;
 
     steps.popFirst();
-
+  }
+  else if( t == 0.0f ) {
     if( step.track == -2 ) {
       sound.stopMusic();
     }
@@ -265,9 +268,6 @@ void CinematicProxy::update()
 
       cinematicText->set( " " );
     }
-  }
-  else {
-    stepTime += Timer::TICK_TIME;
   }
 }
 

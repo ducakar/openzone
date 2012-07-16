@@ -120,8 +120,8 @@ void Lua::writeVariable( BufferStream* ostream )
       break;
     }
     default: {
-      throw Exception( "Serialisation is only supported for LUA_TNIL, LUA_TBOOLEAN, LUA_TNUMBER, "
-                       "LUA_TSTRING and LUA_TTABLE data types" );
+      throw Exception( "Serialisation is only supported for LUA_TNIL, LUA_TBOOLEAN, LUA_TNUMBER,"
+                       " LUA_TSTRING and LUA_TTABLE data types" );
     }
   }
 }

@@ -77,8 +77,8 @@ function onCreate()
 --                       0.3, 0.3, 0.5, 0.0,
 --                       0.0, 0.0, 0.0, 1.0 )
 
-  ozCameraWarpTo( 141.0, -12.0, 84.75, 0.0, 35.0 )
-  ozCameraExecuteSequence( "intro" )
+--   ozCameraWarpTo( 141.0, -12.0, 84.75, 0.0, 35.0 )
+--   ozCameraExecuteSequence( "intro" )
 
   init_sample()
 
@@ -156,6 +156,7 @@ function init_sample()
   ozOrbisAddStr( OZ_FORCE, "pool", 112, -7, 70 )
   ozOrbisAddStr( OZ_FORCE, "tower", 106, -7, 75, OZ_WEST )
   ozOrbisAddStr( OZ_FORCE, "atlantis", -160, 220, -5 )
+  ozOrbisAddStr( OZ_FORCE, "house", 126, -30, 70.5 )
 
   ozOrbisAddObj( OZ_FORCE, "serviceStation", 110, -25, 69.6, OZ_WEST )
   ozOrbisAddObj( OZ_FORCE, "console", 107, -24, 68.0, OZ_EAST )

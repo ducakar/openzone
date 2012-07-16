@@ -247,10 +247,6 @@ void Compiler::end()
       }
       break;
     }
-    default: {
-      hard_assert( false );
-      break;
-    }
   }
 
   int partIndex = parts.index( part );

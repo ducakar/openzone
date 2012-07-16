@@ -37,7 +37,7 @@ namespace ui
 void CinematicText::onReposition()
 {
   x     = camera.width / 8;
-  y     = camera.height / 8;
+  y     = 40;
   width = ( camera.width * 3 ) / 4;
 
   text.resize( width );

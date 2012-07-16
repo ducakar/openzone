@@ -32,8 +32,8 @@ if( NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND
     NOT CMAKE_BUILD_TYPE STREQUAL "Release" AND
     NOT CMAKE_BUILD_TYPE STREQUAL "RelGenProf" AND
     NOT CMAKE_BUILD_TYPE STREQUAL "RelUseProf" )
-  message( FATAL_ERROR "CMAKE_BUILT_TYPE must be either Debug, RelWithDebInfo, Release, RelGenProf "
-           "or RelUseProf." )
+  message( FATAL_ERROR "CMAKE_BUILT_TYPE must be either Debug, RelWithDebInfo, Release, RelGenProf"
+                       " or RelUseProf." )
 endif()
 
 if( NACL )

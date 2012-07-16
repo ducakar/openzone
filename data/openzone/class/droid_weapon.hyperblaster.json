@@ -10,7 +10,6 @@
   "dim.z":              0.05,
 
   "life":               100,
-  "resistance":         100,
 
   "mass":               10,
   "lift":               0.8,
