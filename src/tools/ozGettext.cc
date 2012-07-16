@@ -316,7 +316,7 @@ static void writePOT( const HashString<String>* hs, const char* filePath )
   }
 }
 
-int main( int argc, char** argv )
+static int main( int argc, char** argv )
 {
   System::init();
 

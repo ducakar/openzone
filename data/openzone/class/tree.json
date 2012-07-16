@@ -8,7 +8,6 @@
   "dim.z":              3.8,
 
   "life":               100,
-  "resistance":         100,
 
   "fragPool":           "tree",
   "nFrags":             10,

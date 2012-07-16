@@ -23,50 +23,31 @@
  * Postprocess pass.
  */
 
-const int   MS_LEVEL         = 8;
-const float MS_SIZE          = 0.0075;
+const int   MS_LEVEL         = 16;
+const float MS_SIZE          = 0.04;
 
-const float BLOOM_INTENSITY  = 1.5;
-const float BLOOM_LUMINANCE  = 0.3;
+const float BLOOM_THRESHOLD  = 2.0;
+const float BLOOM_INTENSITY  = 0.5 / float( MS_LEVEL );
 
 const float MS_DIM           = float( MS_LEVEL - 1 ) / 2.0;
 const float MS_SPACING       = MS_SIZE / float( MS_LEVEL - 1 );
-const float MS_SAMPLES       = float( 2 * MS_LEVEL );
-
-const float BLUR_FACTOR      = 1.0 / MS_SAMPLES;
-const float BLOOM_FACTOR     = BLOOM_INTENSITY / MS_SAMPLES;
-const float LUMINANCE_FACTOR = BLOOM_LUMINANCE / MS_SAMPLES;
 
 varying vec2 exTexCoord;
 
 void main()
 {
-  vec4 multiSample = vec4( 0.0 );
+  vec3 multiSample = vec3( 0.0 );
 
-  float x = -MS_DIM;
-  for( int i = 0; i < MS_LEVEL; ++i ) {
-    vec2 coords = vec2( exTexCoord.s + MS_SPACING * x, exTexCoord.t );
-    vec4 sample = texture2D( oz_Textures[0], coords );
+  for( float x = -MS_DIM; x <= MS_DIM; x += 1.0 ) {
+    vec2  coords    = vec2( exTexCoord.s + MS_SPACING * x, exTexCoord.t );
+    vec4  sample    = texture2D( oz_Textures[0], coords );
+    float luminance = sample.r + sample.g + sample.b;
 
-    multiSample += sample;
-    x += 1.0;
+    multiSample += vec3( max( luminance - BLOOM_THRESHOLD, 0.0 ) );
   }
 
-  float y = -MS_DIM;
-  for( int i = 0; i < MS_LEVEL; ++i ) {
-    vec2 coords = vec2( exTexCoord.s, exTexCoord.t + MS_SPACING * y );
-    vec4 sample = texture2D( oz_Textures[0], coords );
+  vec4 sample = texture2D( oz_Textures[0], exTexCoord );
+  vec3 bloom  = multiSample * BLOOM_INTENSITY;
 
-    multiSample += sample;
-    y += 1.0;
-  }
-
-  vec4  blur      = multiSample * BLUR_FACTOR;
-  vec4  bloom     = multiSample * BLOOM_FACTOR;
-  vec4  sample    = texture2D( oz_Textures[0], exTexCoord );
-  float luminance = clamp( ( multiSample.r + multiSample.g + multiSample.b ) * LUMINANCE_FACTOR, 0.0, 1.0 );
-
-  vec4 blurred = mix( sample, blur, 0.5 );
-  gl_FragColor = mix( blurred, bloom, luminance );
-//   gl_FragColor = mix( sample, bloom, luminance );
+  gl_FragColor = sample + vec4( bloom, 0.0 );
 }

@@ -7,10 +7,9 @@
   "dim.y":              0.6,
   "dim.z":              0.6,
 
-  "life":               70,
-  "resistance":         100,
+  "life":               100,
 
-  "mass":               30,
+  "mass":               50,
   "lift":               1.2,
 
   "nItems":             12,

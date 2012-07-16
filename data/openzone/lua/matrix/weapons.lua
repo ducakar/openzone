@@ -177,5 +177,5 @@ function vehicle_cannon_onShot( l )
   local vX, vY, vZ = ozBotGetDir()
 
   ozOrbisAddObj( OZ_FORCE, "shell", pX, pY, pZ )
-  ozDynSetMomentum( vX * 200, vY * 200, vZ * 200 )
+  ozDynSetMomentum( vX * 150, vY * 150, vZ * 150 )
 end

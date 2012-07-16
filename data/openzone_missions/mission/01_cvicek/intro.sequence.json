@@ -1,6 +1,85 @@
 [
   {
-    "time":             3.0
+    "pos":              [ -1000, 608, 57 ],
+    "rot":              [ 90, 75, 0 ],
+    "track":            "Fanatic - Unreleased Rage",
+    "time":             4
+  },
+  {
+    "time":             8,
+    "title":
+"Beštji Brlog. Tvoja domača vas.\n\n
+Trenutno njegovi prebivalci trpijo hudo pomanjkanje svoje najljubše pijače, cvička."
+  },
+  {
+    "rot":              [ -30, 65, 0 ],
+    "pos":              [ -1025, 590, 60 ],
+    "time":             2
+  },
+  {
+    "time":             8,
+    "title":
+"A našel se je junak, ki je odšel na dolgo in nevarno misijo, da bi svoji vasi priskrbel zalogo
+ cvička."
+  },
+  {
+    "rot":              [ 180, 75, 0 ],
+    "pos":              [ -1025, 590, 200 ],
+    "time":             1
+  },
+  {
+    "pos":              [ 5, -940, 200 ],
+    "time":             3
+  },
+  {
+    "rot":              [ 50, 60, 0 ],
+    "pos":              [ 5, -940, 160 ],
+    "time":             1
+  },
+  {
+    "time":             8,
+    "title":
+"Junaška beštija se je namreč odločila oropati kar vojaško bazo visoko v gorah, kjer hranijo
+ zasežene zaloge cvička ..."
+  },
+  {
+    "rot":              [ 145, 60, 0 ],
+    "pos":              [ -17.5, -938, 140 ],
+    "time":             1
+  },
+  {
+    "time":             8,
+    "title":
+"... te pa bodo kmalu odposlane na uničenje.\n\n
+To bi bila velika škoda, nobena prava beštija ne bi dopustila, da bi šlo v nič toliko žlahtnih
+ kapljic."
+  },
+  {
+    "rot":              [ 0, 75, 0 ],
+    "pos":              [ -17.5, -938, 200 ],
+    "time":             1
+  },
+  {
+    "rot":              [ 75, 55, 0 ],
+    "pos":              [ 820, 990, 135 ],
+    "time":             3
+  },
+  {
+    "time":             10,
+    "title":
+"A ni šlo vse po načrtu.\n\n
+Junaka je zajela kolonialna patrulja in sedaj zaprt v postojanki čaka na deportacijo v skrivni zapor
+ za teroristične osumljence."
+  },
+  {
+    "time":             4,
+    "title":
+"Za pobeg in dokončanje naloge bo potreboval nekaj iznajdljivosti ..."
+  },
+  {
+    "rot":              [ -90, 90, 0 ],
+    "pos":              [ 786.5, 999.6, 125.5 ],
+    "time":             2
   },
   {
     "state":            "UNIT"

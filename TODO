@@ -1,18 +1,16 @@
-0.3
-- client
-  * bloom++
-
 0.4
 - new löök
 - matrix
   * Vehicle: turret, wheeled, tracked, mech warrior
   * improve Vehicle rotation
 - ui
+  * credits screen
   * tutorial tips
   * options menu
-  * mission selection
   * advanced HUD for mechanic units and vehicles
 - client
+  * editor
+  * layout files
   * BSP rendering per partes
   * MD3 animation
   * decals

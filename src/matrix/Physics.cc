@@ -34,6 +34,7 @@ Physics physics;
 
 const float Physics::FLOOR_NORMAL_Z          =  0.60f;
 const float Physics::MOVE_BOUNCE             =  1.5f * EPSILON;
+const float Physics::MAX_HIT_MASS            =  100.0f;
 const float Physics::ENTITY_BOND_G_RATIO     =  0.10f;
 const float Physics::SIDE_PUSH_RATIO         =  0.40f;
 
@@ -41,7 +42,7 @@ const float Physics::HIT_THRESHOLD           = -3.0f;
 const float Physics::SPLASH_THRESHOLD        = -2.0f;
 const float Physics::WEIGHT_DAMAGE_THRESHOLD =  1000.0f;
 const float Physics::WEIGHT_DAMAGE_FACTOR    =  20.0f;
-const float Physics::SLIDE_DAMAGE_THRESHOLD  =  25.0f;
+const float Physics::SLIDE_DAMAGE_THRESHOLD  =  100.0f;
 const float Physics::SLIDE_DAMAGE_COEF       =  0.06f;
 
 const float Physics::STICK_VELOCITY          =  0.03f;
@@ -59,8 +60,7 @@ const int   Physics::LAVA_DAMAGE_INTERVAL    =  Timer::TICKS_PER_SEC / 2;
 
 const float Physics::FRAG_HIT_VELOCITY2      =  100.0f;
 const float Physics::FRAG_DESTROY_VELOCITY2  =  300.0f;
-const float Physics::FRAG_STR_DAMAGE_COEF    =  0.05f;
-const float Physics::FRAG_OBJ_DAMAGE_COEF    =  0.05f;
+const float Physics::FRAG_DAMAGE_COEF        =  0.05f;
 const float Physics::FRAG_FIXED_DAMAGE       =  0.75f;
 
 //***********************************
@@ -79,7 +79,7 @@ void Physics::handleFragHit()
     if( frag->mass != 0.0f ) {
       if( collider.hit.str != null ) {
         Struct* str = collider.hit.str;
-        float damage = FRAG_STR_DAMAGE_COEF * velocity2 * frag->mass;
+        float damage = FRAG_DAMAGE_COEF * velocity2 * frag->mass;
 
         if( damage > str->resistance ) {
           damage *= FRAG_FIXED_DAMAGE + ( 1.0f - FRAG_FIXED_DAMAGE ) * Math::rand();
@@ -88,12 +88,13 @@ void Physics::handleFragHit()
       }
       else if( collider.hit.obj != null ) {
         Object* obj = collider.hit.obj;
-        float damage = FRAG_OBJ_DAMAGE_COEF * velocity2 * frag->mass;
+        float damage = FRAG_DAMAGE_COEF * velocity2 * frag->mass;
 
         if( damage > obj->resistance ) {
           damage *= FRAG_FIXED_DAMAGE + ( 1.0f - FRAG_FIXED_DAMAGE ) * Math::rand();
           obj->damage( damage );
         }
+
         if( obj->flags & Object::DYNAMIC_BIT ) {
           Dynamic* dyn = static_cast<Dynamic*>( obj );
 
@@ -230,8 +231,8 @@ bool Physics::handleObjFriction()
       if( deltaVel2 > stickVel ) {
         dyn->flags |= Object::FRICTING_BIT;
 
-        if( deltaVel2 > SLIDE_DAMAGE_THRESHOLD && !( dyn->flags & Object::ON_SLICK_BIT ) ) {
-          dyn->damage( SLIDE_DAMAGE_COEF * deltaVel2 * -gravity );
+        if( deltaVel2 > 100.0f && !( dyn->flags & Object::ON_SLICK_BIT ) ) {
+          dyn->hit( MAX_HIT_MASS, SLIDE_DAMAGE_COEF * deltaVel2 * -gravity );
         }
       }
       else if( isLowerStill ) {
@@ -280,8 +281,8 @@ void Physics::handleObjHit()
       float energy = hitMomentum*hitMomentum;
 
       // Since it can only be -1, 0 or +1, it's enough to test for sign.
-      dyn->hit( energy, hit.normal.z > 0.0f );
-      sDyn->hit( energy );
+      dyn->hit( min( sDyn->mass, MAX_HIT_MASS ), energy, hit.normal.z > 0.0f );
+      sDyn->hit( min( dyn->mass, MAX_HIT_MASS ), energy );
     }
 
     if( hit.normal.z == 0.0f ) {
@@ -348,13 +349,13 @@ void Physics::handleObjHit()
     if( hitMomentum < HIT_THRESHOLD && hitVelocity < HIT_THRESHOLD ) {
       float energy = hitMomentum*hitMomentum;
 
-      dyn->hit( energy, hit.normal.z >= FLOOR_NORMAL_Z );
+      dyn->hit( MAX_HIT_MASS, energy, hit.normal.z >= FLOOR_NORMAL_Z );
 
       if( hit.obj != null ) {
-        hit.obj->hit( energy );
+        hit.obj->hit( min( dyn->mass, MAX_HIT_MASS ), energy );
       }
       else if( hit.str != null ) {
-        hit.str->hit( dyn->mass, energy );
+        hit.str->hit( min( dyn->mass, MAX_HIT_MASS ), energy );
       }
     }
 

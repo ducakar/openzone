@@ -238,6 +238,9 @@ int Client::init( int argc, char** argv )
   Log::println( "}" );
   Log::verboseMode = false;
 
+  // Clean up after previous versions.
+  File::rm( configDir + "/client.rc" );
+
   File configFile( configDir + "/client.json" );
   if( config.load( &configFile ) ) {
     Log::printEnd( "Configuration read from '%s'", configFile.path().cstr() );
@@ -246,8 +249,8 @@ int Client::init( int argc, char** argv )
       initFlags |= INIT_CONFIG;
     }
     else {
-      Log::println( "Invalid configuration file version, configuration will be cleaned and written "
-                    "upon exit" );
+      Log::println( "Invalid configuration file version, configuration will be cleaned and written"
+                    " upon exit" );
 
       config.clear();
       config.setObject();
@@ -256,8 +259,8 @@ int Client::init( int argc, char** argv )
     }
   }
   else {
-    Log::println( "No configuration file, default configuration will be used and written upon "
-                  "exit" );
+    Log::println( "No configuration file, default configuration will be used and written upon"
+                  " exit" );
 
     config.setObject();
     config.add( "_version", OZ_APPLICATION_VERSION );

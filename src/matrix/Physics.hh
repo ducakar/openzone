@@ -38,6 +38,7 @@ class Physics
 
     static const float FLOOR_NORMAL_Z;
     static const float MOVE_BOUNCE;
+    static const float MAX_HIT_MASS;
     static const float ENTITY_BOND_G_RATIO;
     static const float SIDE_PUSH_RATIO;
 
@@ -63,8 +64,7 @@ class Physics
 
     static const float FRAG_HIT_VELOCITY2;
     static const float FRAG_DESTROY_VELOCITY2;
-    static const float FRAG_STR_DAMAGE_COEF;
-    static const float FRAG_OBJ_DAMAGE_COEF;
+    static const float FRAG_DAMAGE_COEF;
     static const float FRAG_FIXED_DAMAGE;
 
   private:

@@ -9,10 +9,9 @@
   "dim.y":              0.3,
   "dim.z":              0.3,
 
-  "life":               50,
-  "resistance":         100,
+  "life":               70,
 
-  "mass":               20,
+  "mass":               30,
   "lift":               1.2,
 
   "fragPool":           "wood",

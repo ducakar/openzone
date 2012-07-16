@@ -42,7 +42,7 @@ void main()
   vec4 diffuse      = skyLightColour( normal );
 
 #ifdef OZ_LOW_DETAIL
-  vec4 fragColour   = oz_ColourTransform * colourSample * diffuse;
+  vec4 fragColour   = oz_ColourTransform * min( colourSample * diffuse, 1.0 );
 #else
   vec4 masksSample  = texture2D( oz_Textures[1], exTexCoord );
   vec4 emission     = vec4( masksSample.g, masksSample.g, masksSample.g, 0.0 );

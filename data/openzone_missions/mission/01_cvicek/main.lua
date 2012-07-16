@@ -246,6 +246,10 @@ function onCreate()
   ozObjAddItem( "cvicek" )
   ozObjAddItem( "cvicek" )
 
+  ozOrbisAddObj( OZ_FORCE, "cvicek", -17.27, -940.64, 138.79 )
+  ozOrbisAddObj( OZ_FORCE, "cvicek", -22.79, -941.41, 138.79 )
+  ozOrbisAddObj( OZ_FORCE, "cvicek", -22.45, -939.19, 137.58 )
+
   ozOrbisAddObj( OZ_FORCE, "metalCrate", -17.61, -940.49, 137.93 )
   ozObjAddItem( "cvicek" )
   ozObjAddItem( "cvicek" )
@@ -436,9 +440,10 @@ function onCreate()
     -1015, 608, 50 )
   ozQuestEnd( lairQuest, true )
 
---   ozCameraSwitchTo( oz_me )
+  ozCameraAddSwitchableUnit( oz_me )
+  ozCameraSwitchTo( oz_me )
 --   ozCameraAllowReincarnation( false )
 
-  ozCameraWarpTo( -1025, 608, 60, 270.0, 35.0 )
+  ozCameraWarpTo( -600, 608, 80, 90.0, 90.0 )
   ozCameraExecuteSequence( "intro" )
 end

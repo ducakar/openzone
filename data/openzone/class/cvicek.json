@@ -10,9 +10,9 @@
   "dim.z":              0.25,
 
   "life":               10,
-  "resistance":         100,
+  "resistance":         40,
 
-  "mass":               1,
+  "mass":               1.5,
   "lift":               1.2,
 
   "onUse":              "cvicek_onUse",
