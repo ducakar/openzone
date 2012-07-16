@@ -1,0 +1,92 @@
+{
+  "title":            "test castle",
+  "life":             20000,
+  "fragPool":         "ruins",
+  "nFrags":           100,
+
+  "demolishSound":    "free/explode",
+
+  "waterFogColour.r": 0.15,
+  "waterFogColour.g": 0.00,
+  "waterFogColour.b": 0.15,
+
+  "boundObjects":
+  [
+    {
+      "class":        "bauul",
+      "pos.x":        0.0,
+      "pos.y":        0.0,
+      "pos.z":        10.0,
+      "heading":      "NORTH"
+    }
+  ],
+  "models":
+  [
+    {
+      "title":        "crusher",
+      "type":         "CRUSHING_BLOCK",
+      "move.x":       0.0,
+      "move.y":       7.68,
+      "move.z":       0.0,
+      "slideTime":    2.0,
+      "timeout":      3.0,
+      "openSound":    "free/rumble",
+      "closeSound":   "free/rumble",
+      "frictSound":   "kaiser_fx/hum6"
+    },
+    {
+      "title":        "ignorant",
+      "type":         "IGNORING_BLOCK",
+      "move.x":       0.0,
+      "move.y":       7.68,
+      "move.z":       0.0,
+      "slideTime":    2.0,
+      "timeout":      4.0,
+      "openSound":    "free/rumble",
+      "closeSound":   "free/rumble",
+      "frictSound":   "kaiser_fx/hum6"
+    },
+    {
+      "title":        "auto door",
+      "type":         "AUTO_DOOR",
+      "move.x":       2.55,
+      "move.y":       0.0,
+      "move.z":       0.0,
+      "slideTime":    2.0,
+      "timeout":      2.0,
+      "openSound":    "free/itemback",
+      "closeSound":   "free/itemback",
+      "frictSound":   "",
+      "target":       2
+    },
+    {
+      "title":        "manual door",
+      "type":         "MANUAL_DOOR",
+      "move.x":       5.0,
+      "move.y":       0.0,
+      "move.z":       0.0,
+      "slideTime":    2.0,
+      "openSound":    "free/itemback",
+      "closeSound":   "free/itemback",
+      "frictSound":   "",
+      "target":       3,
+      "key":          1
+    },
+    {
+      "title":        "elevator",
+      "type":         "ELEVATOR",
+      "move.z":       3.0,
+      "slideTime":    2.5,
+      "openSound":    "",
+      "closeSound":   "",
+      "frictSound":   "kaiser_fx/hum6",
+      "target":       4
+    },
+    {
+      "title":        "switch",
+      "type":         "STATIC",
+      "target":       3,
+      "openSound":    "openarena/clack"
+    }
+  ]
+}

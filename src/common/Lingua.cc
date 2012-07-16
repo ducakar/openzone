@@ -60,8 +60,9 @@ String Lingua::detectLanguage( const char* language_ )
 
   language = SDL_getenv( "LC_MESSAGES" );
 
-  if( language.length() >= 5 ) {
-    language = language.substring( 0, 2 );
+  int underscore = language.index( '_' );
+  if( underscore >= 2 ) {
+    language = language.substring( 0, underscore );
 
     if( PFile( "lingua/" + language ).stat() ) {
       return language;
@@ -70,8 +71,9 @@ String Lingua::detectLanguage( const char* language_ )
 
   language = SDL_getenv( "LANG" );
 
-  if( language.length() >= 5 ) {
-    language = language.substring( 0, 2 );
+  underscore = language.index( '_' );
+  if( underscore >= 2 ) {
+    language = language.substring( 0, underscore );
 
     if( PFile( "lingua/" + language ).stat() ) {
       return language;

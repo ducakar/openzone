@@ -70,9 +70,12 @@ static void openMissions( Button* sender )
 
 static void settings( Button* sender )
 {
-  MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
+  OZ_MAIN_CALL( sender, {
+    Button*   sender   = static_cast<Button*>( _this );
+    MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
 
-  mainMenu->add( new SettingsFrame(), Area::CENTRE, Area::CENTRE );
+    mainMenu->add( new SettingsFrame(), Area::CENTRE, Area::CENTRE );
+  } )
 }
 
 static void quit( Button* )
@@ -110,14 +113,16 @@ void MainMenu::onDraw()
   shape.colour( 0.0f, 0.0f, 0.0f, 1.0f );
   shape.fill( camera.width - 240, 0, 240, camera.height );
 
-  copyright.draw( this, false );
+  copyright.draw( this, true );
+  title.draw( this, true );
 
   drawChildren();
 }
 
 MainMenu::MainMenu() :
   Area( camera.width, camera.height ),
-  copyright( 20, 10, 360, 3, Font::SMALL, Area::ALIGN_NONE )
+  copyright( 20, 10, 360, 3, Font::SMALL, Area::ALIGN_NONE ),
+  title( -120, -20, ALIGN_HCENTRE | ALIGN_VCENTRE, Font::LARGE, "OpenZone " OZ_APPLICATION_VERSION )
 {
   onReposition();
 

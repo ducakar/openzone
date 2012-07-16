@@ -1,0 +1,19 @@
+{
+  "title":          "beast bunker",
+  "fragPool":       "ruins",
+  "nFrags":         40,
+  "models":
+  [
+    {
+      "type":       "AUTO_DOOR",
+      "move.x":     1.84,
+      "move.y":     0.0,
+      "move.z":     0.0,
+      "slideTime":  0.5,
+      "timeout":    3.0,
+      "margin":     0.1,
+      "openSound":  "free/itemback",
+      "closeSound": "free/itemback"
+    }
+  ]
+}

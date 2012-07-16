@@ -1,0 +1,34 @@
+{
+  "base":               "Dynamic",
+
+  "title":              "barrel",
+
+  "dim.x":              0.4,
+  "dim.y":              0.4,
+  "dim.z":              0.6,
+
+  "life":               100,
+  "resistance":         100,
+
+  "mass":               50,
+  "lift":               0.8,
+
+  "onDestroy":          "spawnSmallExplosion",
+
+  "fragPool":           "metal",
+  "nFrags":             4,
+
+  "imagoType":          "SMM",
+  "imagoModel":         "barrel",
+
+  "audioType":          "Basic",
+  "audioSounds":
+  {
+    "destroy":          "oz/destroy_metal1",
+    "damage":           "oz/hit_metal1",
+    "hit":              "oz/hit_metal1",
+    "land":             "oz/hit_metal1",
+    "splash":           "free/splash2",
+    "fricting":         "oz/friction1"
+  }
+}

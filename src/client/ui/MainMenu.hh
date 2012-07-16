@@ -38,7 +38,8 @@ class MainMenu : public Area
 {
   private:
 
-    Text copyright;
+    Text  copyright;
+    Label title;
 
   protected:
 

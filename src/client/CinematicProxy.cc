@@ -29,6 +29,7 @@
 
 #include "client/Camera.hh"
 #include "client/Sound.hh"
+#include "client/NaCl.hh"
 
 #include "client/ui/GalileoFrame.hh"
 #include "client/ui/MusicPlayer.hh"
@@ -180,8 +181,10 @@ void CinematicProxy::begin()
   ui::ui.galileoFrame->enable( false );
   ui::ui.musicPlayer->enable( false );
 
-  cinematicText = new ui::CinematicText();
-  ui::ui.root->add( cinematicText, ui::Area::CENTRE, 200 );
+  OZ_MAIN_CALL( this, {
+    _this->cinematicText = new ui::CinematicText();
+    ui::ui.root->add( _this->cinematicText, ui::Area::CENTRE, 200 );
+  } )
 
   ui::mouse.doShow = false;
 
@@ -196,7 +199,9 @@ void CinematicProxy::begin()
 
 void CinematicProxy::end()
 {
-  ui::ui.root->remove( cinematicText );
+  OZ_MAIN_CALL( this, {
+    ui::ui.root->remove( _this->cinematicText );
+  } )
 
   ui::ui.musicPlayer->enable( true );
   ui::ui.galileoFrame->enable( true );

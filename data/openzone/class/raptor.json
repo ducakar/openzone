@@ -1,0 +1,55 @@
+{
+  "base":               "Vehicle",
+
+  "flag.wideCull":      true,
+
+  "state.crewVisible":  true,
+
+  "dim.x":              2.99,
+  "dim.y":              2.99,
+  "dim.z":              1.99,
+
+  "life":               2000,
+  "resistance":         150,
+
+  "mass":               5000,
+  "lift":               1.5,
+
+  "type":               "AIR",
+
+  "pilotPos.x":         0,
+  "pilotPos.y":         2.5,
+  "pilotPos.z":         -0.2,
+
+  "rotVelLimit":        60,
+
+  "moveMomentum":       0.8,
+
+  "enginePitchBias":    1,
+  "enginePitchRatio":   0.001,
+  "enginePitchLimit":   2,
+
+  "fuel":               100,
+  "fuelConsumption":    0.08,
+
+  "nItems":             24,
+
+  "attrib.galileo":     true,
+  "attrib.musicPlayer": true,
+
+  "fragPool":           "metal",
+  "nFrags":             20,
+
+  "imagoType":          "SMMVehicle",
+  "imagoModel":         "raptor",
+
+  "audioType":          "Vehicle",
+  "audioSounds":
+  {
+    "destroy":          "oz/destroy_metal1",
+    "damage":           "oz/hit_metal1",
+    "hit":              "oz/hit_metal1",
+    "land":             "oz/hit_metal1",
+    "splash":           "free/splash2"
+  }
+}

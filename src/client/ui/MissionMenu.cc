@@ -85,7 +85,7 @@ void MissionMenu::loadMission( Button* sender )
 void MissionMenu::onReposition()
 {
   width  = camera.width;
-  height = camera.height;
+  height = camera.height - 40;
 
   description.resize( width - 320 );
 
@@ -96,7 +96,7 @@ void MissionMenu::onReposition()
   imageX      = 40;
   imageY      = 100 + 8 * Font::INFOS[Font::SANS].height;
   imageWidth  = width - 320;
-  imageHeight = height - 40 - imageY;
+  imageHeight = height - imageY;
 
   float aspect = float( imageWidth ) / float( imageHeight );
   if( aspect < 16.0f / 9.0f ) {
@@ -116,7 +116,7 @@ bool MissionMenu::onMouseEvent()
 void MissionMenu::onDraw()
 {
   shape.colour( 0.0f, 0.0f, 0.0f, 1.0f );
-  shape.fill( camera.width - 240, 0, 240, camera.height );
+  shape.fill( width - 240, 0, 240, height );
 
   if( imageId != 0 ) {
     glBindTexture( GL_TEXTURE_2D, imageId );

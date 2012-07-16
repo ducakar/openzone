@@ -1,0 +1,21 @@
+{
+  "base":               "Dynamic",
+
+  "flag.cylinder":      false,
+
+  "dim.x":              0.05,
+  "dim.y":              0.05,
+  "dim.z":              0.05,
+
+  "life":               1,
+  "resistance":         0,
+
+  "mass":               0.5,
+  "lift":               1.2,
+
+  "onDestroy":          "spawnSmallExplosion",
+  "onUpdate":           "shell_onUpdate",
+
+  "imagoType":          "SMM",
+  "imagoModel":         "shell"
+}

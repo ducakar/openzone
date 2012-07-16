@@ -1,0 +1,16 @@
+{
+  "velocitySpread":     4.0,
+
+  "life":               4.0,
+  "lifeSpread":         1.0,
+  "mass":               0.0,
+  "restitution":        0.3,
+
+  "models":
+  [
+                        "metalDebris01",
+                        "metalDebris02",
+                        "metalDebris03",
+                        "metalDebris04"
+  ]
+}

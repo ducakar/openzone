@@ -1,0 +1,15 @@
+{
+  "velocitySpread":     5.0,
+
+  "life":               4.0,
+  "lifeSpread":         1.0,
+  "mass":               0.0,
+  "restitution":        0.3,
+
+  "models":
+  [
+                        "woodFrag01",
+                        "woodFrag02",
+                        "woodFrag03"
+  ]
+}

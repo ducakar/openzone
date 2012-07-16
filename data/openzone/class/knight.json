@@ -1,0 +1,52 @@
+{
+  "base":               "Bot",
+
+  "dim.x":              0.45,
+  "dim.y":              0.45,
+  "dim.z":              1,
+
+  "crouchDim.z":        0.8,
+
+  "life":               150,
+
+  "mass":               100,
+  "lift":               1.3,
+
+  "camZ":               0.79,
+  "crouchCamZ":         0.69,
+
+  "nameList":           "wesnoth.human-male",
+
+  "mindFunc":           "predator",
+
+  "nItems":             8,
+  "defaultItems":
+  [
+                        "knight_weapon.mace",
+                        "firstAid",
+                        "cvicek",
+                        "cvicek"
+  ],
+  "weaponItem":         0,
+
+  "fragPool":           "gibs",
+  "nFrags":             5,
+
+  "imagoType":          "MD2",
+  "imagoModel":         "knight",
+
+  "audioType":          "Bot",
+  "audioSounds":
+  {
+    "damage":           "ppm/pains",
+    "hit":              "oz/land",
+    "land":             "oz/land",
+    "splash":           "free/splash1",
+    "jump":             "aard/jump",
+    "flip":             "ppm/deathb",
+    "death":            "ppm/deathb",
+    "step":             "openarena/boot4",
+    "waterStep":        "openarena/splash1",
+    "swim":             "openarena/watr_in"
+  }
+}

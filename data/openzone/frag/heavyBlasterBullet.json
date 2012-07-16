@@ -1,0 +1,10 @@
+{
+  "flag.fadeout":       false,
+  "life":               3.0,
+  "mass":               0.15,
+  "restitution":        0.9,
+  "models":
+  [
+                        "heavyBlasterBullet"
+  ]
+}

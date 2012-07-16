@@ -1,0 +1,79 @@
+{
+  "base":               "Bot",
+
+  "dim.x":              0.45,
+  "dim.y":              0.45,
+  "dim.z":              1,
+
+  "crouchDim.z":        0.80,
+
+  "life":               250,
+
+  "mass":               150,
+  "lift":               0.8,
+
+  "camZ":               0.80,
+  "crouchCamZ":         0.60,
+
+  "jumpMomentum":       6.0,
+
+  "stamina":            250,
+  "regeneration":       0.8,
+
+  "staminaWaterDrain":  0,
+
+  "grabWeight":         1500,
+  "throwMomentum":      9,
+
+  "nameList":           "wesnoth.troll-male",
+
+  "mindFunc":           "beastie",
+
+  "nItems":             8,
+  "defaultItems":
+  [
+                        "cyborg_weapon.chaingun",
+                        "galileo",
+                        "musicPlayer"
+  ],
+  "weaponItem":         0,
+
+  "attrib.nightVision": true,
+  "attrib.binoculars":  true,
+
+  "baseColour":         [ 0.5, 0.3, 0.3, 0.0,
+                          0.3, 0.5, 0.3, 0.0,
+                          0.3, 0.3, 0.5, 0.0,
+                          0.0, 0.0, 0.0, 1.0 ],
+  "nvColour":           [ 3.0, 2.0, 2.5, 0.0,
+                          0.5, 2.0, 0.0, 0.0,
+                          0.0, 0.0, 0.0, 0.0,
+                          0.0, 0.0, 0.0, 1.0 ],
+  "injuryColour":       [ 0.8, 0.4, 0.4, 0.2,
+                          0.8, 0.4, 0.4, 0.1,
+                          0.8, 0.4, 0.4, 0.1,
+                          0.0, 0.0, 0.0, 1.0 ],
+
+  "state.mechanical":   true,
+
+  "fragPool":           "gibs",
+  "nFrags":             8,
+
+  "imagoType":          "MD2",
+  "imagoModel":         "rat",
+
+  "audioType":          "Bot",
+  "audioSounds":
+  {
+    "damage":           "ppm/pains",
+    "hit":              "oz/land",
+    "land":             "oz/land",
+    "splash":           "free/splash1",
+    "jump":             "aard/jump",
+    "flip":             "ppm/deathb",
+    "death":            "ppm/deathb",
+    "step":             "openarena/boot4",
+    "waterStep":        "openarena/splash1",
+    "swim":             "openarena/watr_in"
+  }
+}

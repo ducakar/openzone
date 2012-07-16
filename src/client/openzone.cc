@@ -55,22 +55,19 @@ void MainInstance::mainThreadMain( void* )
     char  argv0[] = OZ_APPLICATION_NAME;
     char* argv[]  = { argv0 };
 
-    exitCode = client::client.main( 1, argv );
+    exitCode = client::client.init( 1, argv );
+
+    if( exitCode == EXIT_SUCCESS ) {
+      exitCode = client::client.main();
+    }
+
     client::client.shutdown();
   }
   catch( const std::exception& e ) {
     System::error( e );
   }
 
-  if( Alloc::count != 0 ) {
-    Log::verboseMode = true;
-    bool isOutput = Alloc::printLeaks();
-    Log::verboseMode = false;
-
-    if( isOutput ) {
-      Log::println( "There are some memory leaks. See '%s' for details.", Log::logFile() );
-    }
-  }
+  Alloc::printLeaks();
 
   NaCl::post( "quit:" );
 }
@@ -235,7 +232,12 @@ int main( int argc, char** argv )
           "under certain conditions; See COPYING file for details.\n\n" );
 
   try {
-    exitCode = client::client.main( argc, argv );
+    exitCode = client::client.init( argc, argv );
+
+    if( exitCode == EXIT_SUCCESS ) {
+      exitCode = client::client.main();
+    }
+
     client::client.shutdown();
   }
   catch( const std::exception& e ) {

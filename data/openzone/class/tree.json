@@ -1,0 +1,24 @@
+{
+  "base":               "Object",
+
+  "flag.wideCull":      true,
+
+  "dim.x":              0.7,
+  "dim.y":              0.7,
+  "dim.z":              3.8,
+
+  "life":               100,
+  "resistance":         100,
+
+  "fragPool":           "tree",
+  "nFrags":             10,
+
+  "imagoType":          "SMM",
+  "imagoModel":         "tree2",
+
+  "audioType":          "Basic",
+  "audioSounds":
+  {
+    "destroy":          "oz/destroy_wood1"
+  }
+}

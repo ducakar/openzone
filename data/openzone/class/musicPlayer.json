@@ -1,0 +1,36 @@
+{
+  "base":               "Dynamic",
+
+  "title":              "music player",
+
+  "flag.item":          true,
+  "flag.cylinder":      false,
+
+  "dim.x":              0.1,
+  "dim.y":              0.2,
+  "dim.z":              0.04,
+
+  "life":               30,
+  "resistance":         100,
+
+  "mass":               1,
+  "lift":               1.2,
+
+  "attrib.musicPlayer": true,
+
+  "fragPool":           "metal",
+  "nFrags":             2,
+
+  "imagoType":          "SMM",
+  "imagoModel":         "musicPlayer",
+
+  "audioType":          "Basic",
+  "audioSounds":
+  {
+    "destroy":          "grsites/hit2",
+    "damage":           "grsites/hit2",
+    "hit":              "grsites/hit2",
+    "land":             "grsites/hit2",
+    "splash":           "free/splash1"
+  }
+}

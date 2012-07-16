@@ -248,7 +248,6 @@ void Window::init()
   desiredWidth     = config.include( "window.width",      0    ).asInt();
   desiredHeight    = config.include( "window.height",     0    ).asInt();
   isFull           = config.include( "window.fullscreen", true ).asBool();
-  bool enableVSync = config.include( "window.vsync",      true ).asBool();
 
 #if SDL_MAJOR_VERSION < 2
 
@@ -302,7 +301,7 @@ void Window::init()
 
   SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,   0 );
   SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 0 );
-  SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, enableVSync );
+  SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, 1 );
 
 #else
 
@@ -315,7 +314,7 @@ void Window::init()
 //   SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
 //   SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 2 );
 
-  SDL_GL_SetSwapInterval( enableVSync );
+  SDL_GL_SetSwapInterval( 1 );
 
   context = SDL_GL_CreateContext( descriptor );
 

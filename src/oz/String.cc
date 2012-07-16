@@ -388,9 +388,8 @@ String::String( ulong64 l ) :
 String::String( float f ) :
   buffer( baseBuffer )
 {
-  // Worst case: sign + 8 digits + dot + exponent (at most e-xx) + optional '.0' + '\0'.
-  static_assert( BUFFER_SIZE >= 17,
-                 "String::BUFFER_SIZE too small for float representation." );
+  // Worst case: sign + "0.000" + 8 digits + exponent (at most e-xx) + '\0'.
+  static_assert( BUFFER_SIZE >= 19, "String::BUFFER_SIZE is too small for float representation." );
 
   count = snprintf( baseBuffer, BUFFER_SIZE, "%.8g", f );
 }
@@ -398,9 +397,8 @@ String::String( float f ) :
 String::String( double d ) :
   buffer( baseBuffer )
 {
-  // Worst case: sign + 16 digits + dot + exponent (at most e-xxx) + optional '.0' + '\0'.
-  static_assert( BUFFER_SIZE >= 26,
-                 "String::BUFFER_SIZE too small for double representation." );
+  // Worst case: sign + "0.000" + 16 digits + exponent (at most e-xxx) + '\0'.
+  static_assert( BUFFER_SIZE >= 28, "String::BUFFER_SIZE is too small for double representation." );
 
   count = snprintf( baseBuffer, BUFFER_SIZE, "%.16g", d );
 }

@@ -55,12 +55,6 @@ const float UnitProxy::DEATH_CAM_DIST           = 4.00f;
 
 void UnitProxy::begin()
 {
-  if( camera.bot < 0 ) {
-    return;
-  }
-
-  Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
-
   camera.setTaggedObj( null );
   camera.setTaggedEnt( null );
   camera.isExternal = isExternal;
@@ -72,20 +66,13 @@ void UnitProxy::begin()
   ui::ui.infoFrame->enable( true );
   ui::ui.musicPlayer->show( false );
 
-  baseRot = Quat::rotationZXZ( bot->h, bot->v, 0.0f );
-  headRot = Quat::ID;
+  baseRot     = camera.rot;
+  headRot     = Quat::ID;
 
-  if( isFreelook ) {
-    headH = bot->h;
-    headV = bot->v;
-  }
-  else {
-    headH = 0.0f;
-    headV = 0.0f;
-  }
+  headH       = 0.0f;
+  headV       = 0.0f;
 
-  botEye      = bot->p;
-  botEye.z   += bot->camZ;
+  botEye      = camera.p;
   bobTheta    = 0.0f;
   bobBias     = 0.0f;
 
