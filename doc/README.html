@@ -358,7 +358,7 @@ table.settings td {
 
 <h2><a name="cmdline" href="#">Command Line</a></h2>
 <p class="config">
-    openzone [-v] [-l | -i &lt;mission&gt;] [-t &lt;num&gt;] [-p &lt;prefix&gt;]
+    openzone [-v] [-l | -i &lt;mission&gt;] [-t &lt;num&gt;] [-L &lt;lang&gt;] [-p &lt;prefix&gt;]
 </p>
 <table class="args">
   <tr>
@@ -387,9 +387,15 @@ table.settings td {
     </td>
   </tr>
   <tr>
+    <th>-L &lt;lang&gt;</th>
+    <td>
+      Use language &lt;lang&gt;. Should match a subdirectory of 'lingua/' directory in game data.
+    </td>
+  </tr>
+  <tr>
     <th>-p &lt;prefix&gt;</th>
     <td>
-      Sets data directory to '&lt;prefix&gt;/share/openzone'. Default: '/usr'.
+      Sets data directory to '&lt;prefix&gt;/share/openzone'. Defaults to '/usr'.
     </td>
   </tr>
 </table>
@@ -427,38 +433,6 @@ table.settings td {
     </td>
   </tr>
   <tr>
-    <th>camera.keysXSens [float] 1.0</th>
-  </tr>
-  <tr>
-    <td>
-      Key sensitivity for left/right arrow keys.
-    </td>
-  </tr>
-  <tr>
-    <th>camera.keysYSens [float] 1.0</th>
-  </tr>
-  <tr>
-    <td>
-      Key sensitivity for up/down arrow keys.
-    </td>
-  </tr>
-  <tr>
-    <th>camera.mouseXSens [float] 1.0</th>
-  </tr>
-  <tr>
-    <td>
-      Horizontal mouse sensitivity.
-    </td>
-  </tr>
-  <tr>
-    <th>camera.mouseYSens [float] 1.0</th>
-  </tr>
-  <tr>
-    <td>
-      Vertical mouse sensitivity.
-    </td>
-  </tr>
-  <tr>
     <th>dir.music [string] ""</th>
   </tr>
   <tr>
@@ -484,14 +458,6 @@ table.settings td {
     <td>
       Language code for translations. Language code must correspond to a subdirectory of "lingua"
       directory in one of game data archives.
-    </td>
-  </tr>
-  <tr>
-    <th>profile.playerName [string] "&lt;user&gt;"</th>
-  </tr>
-  <tr>
-    <td>
-      Name of the player. Capitalised username of the current user by default.
     </td>
   </tr>
   <tr>
@@ -521,6 +487,16 @@ table.settings td {
     </td>
   </tr>
   <tr>
+    <th>render.scaleFilter ["NEAREST" | "LINEAR"] "NEAREST"</th>
+  </tr>
+  <tr>
+    <td>
+      When using offscreen rendering, this specifies which filter to use when rendering offscreen
+      buffer into the main buffer. "NEAREST" produces sharp edges but blocky image while "LINEAR"
+      produces more smooth but blurry image.
+    </td>
+  </tr>
+  <tr>
     <th>render.showAim [bool] false</th>
   </tr>
   <tr>
@@ -539,7 +515,7 @@ table.settings td {
     </td>
   </tr>
   <tr>
-    <th>render.visibilityRange [float] 300.0</th>
+    <th>render.visibilityRange [float] 350.0</th>
   </tr>
   <tr>
     <td>
@@ -617,14 +593,6 @@ table.settings td {
     </td>
   </tr>
   <tr>
-    <th>window.bpp [int] 0</th>
-  </tr>
-  <tr>
-    <td>
-      Colour depth (bits per pixel). If zero, desktop depth is used.
-    </td>
-  </tr>
-  <tr>
     <th>window.fullscreen [bool] false</th>
   </tr>
   <tr>
@@ -639,14 +607,6 @@ table.settings td {
     <td>
       Vertical screen resolution. If either <span class="settings">window.width</span> or
       <span class="settings">window.height</span> is zero, desktop resolution is used.
-    </td>
-  </tr>
-  <tr>
-    <th>window.vsync [bool] true</th>
-  </tr>
-  <tr>
-    <td>
-      Try to turn on vertical synchronisation.
     </td>
   </tr>
   <tr>

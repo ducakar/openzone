@@ -1,0 +1,67 @@
+{
+  "base":               "Bot",
+
+  "dim.x":              0.25,
+  "dim.y":              0.25,
+  "dim.z":              0.65,
+
+  "crouchDim.z":        0.49,
+
+  "life":               100,
+
+  "mass":               30,
+  "lift":               1.3,
+
+  "camZ":               0.54,
+  "crouchCamZ":         0.39,
+
+  "walkMomentum":       1.0,
+  "runMomentum":        2.0,
+
+  "stamina":            100,
+  "staminaGain":        2.5,
+  "staminaRunDrain":    5,
+  "staminaWaterDrain":  5,
+  "staminaClimbDrain":  10,
+  "staminaJumpDrain":   8,
+  "staminaThrowDrain":  12,
+
+  "regeneration":       0,
+
+  "reachDist":          2,
+  "grabWeight":         500,
+  "throwMomentum":      6,
+
+  "nameList":           "wesnoth.lizard-male",
+
+  "mindFunc":           "prey",
+
+  "nItems":             4,
+  "defaultItems":
+  [
+                        "goblin_weapon.axe",
+                        "cvicek"
+  ],
+  "weaponItem":         0,
+
+  "fragPool":           "gibs",
+  "nFrags":             5,
+
+  "imagoType":          "MD2",
+  "imagoModel":         "goblin",
+
+  "audioType":          "Bot",
+  "audioSounds":
+  {
+    "damage":           "ppm/paind",
+    "hit":              "oz/land",
+    "land":             "oz/land",
+    "splash":           "free/splash1",
+    "jump":             "aard/jump",
+    "flip":             "ppm/deathd",
+    "death":            "ppm/deathd",
+    "step":             "openarena/boot4",
+    "waterStep":        "openarena/splash1",
+    "swim":             "openarena/watr_in"
+  }
+}

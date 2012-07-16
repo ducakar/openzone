@@ -54,12 +54,17 @@ class Client
     Stage* stage;
     int    initFlags;
 
-  public:
+    float  benchmarkTime;
+    bool   isBenchmark;
 
-    void shutdown();
     void printUsage( const char* invocationName );
 
-    int main( int argc, char** argv );
+  public:
+
+    int init( int argc, char** argv );
+    void shutdown();
+
+    int main();
 
 };
 

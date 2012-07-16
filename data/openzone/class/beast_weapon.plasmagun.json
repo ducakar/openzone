@@ -1,0 +1,44 @@
+{
+  "base":               "Weapon",
+
+  "title":              "plasma gun",
+
+  "flag.onUpdate":      false,
+  "flag.cylinder":      false,
+
+  "dim.x":              0.17,
+  "dim.y":              0.75,
+  "dim.z":              0.08,
+
+  "life":               100,
+  "resistance":         100,
+
+  "mass":               5,
+  "lift":               0.8,
+
+  "nRounds":            160,
+  "shotInterval":       0.12,
+
+  "onUpdate":           "plasmagun_onUpdate",
+  "onShot":             "plasmagun_onShot",
+
+  "attrib.suicide":     true,
+
+  "fragPool":           "metal",
+  "nFrags":             4,
+
+  "imagoType":          "MD2Weapon",
+  "imagoModel":         "hobgoblin_weapon.plasmagun",
+
+  "audioType":          "Basic",
+  "audioSounds":
+  {
+    "destroy":          "grsites/hit2",
+    "damage":           "grsites/hit2",
+    "hit":              "grsites/hit2",
+    "land":             "grsites/hit2",
+    "splash":           "free/splash1",
+    "shot":             "awesund/cg2",
+    "shotEmpty":        "aard/outofammo"
+  }
+}

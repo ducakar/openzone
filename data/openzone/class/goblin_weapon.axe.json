@@ -1,0 +1,39 @@
+{
+  "base":               "Weapon",
+
+  "title":              "axe",
+
+  "flag.cylinder":      false,
+
+  "dim.x":              0.18,
+  "dim.y":              0.42,
+  "dim.z":              0.04,
+
+  "life":               100,
+  "resistance":         100,
+
+  "mass":               10,
+  "lift":               0.7,
+
+  "nRounds":            -1,
+  "shotInterval":       0.5,
+
+  "onShot":             "axe_onShot",
+
+  "fragPool":           "metal",
+  "nFrags":             2,
+
+  "imagoType":          "MD2Weapon",
+  "imagoModel":         "goblin_weapon.axe",
+
+  "audioType":          "Basic",
+  "audioSounds":
+  {
+    "destroy":          "grsites/hit2",
+    "damage":           "grsites/hit2",
+    "hit":              "grsites/hit2",
+    "land":             "grsites/hit2",
+    "splash":           "free/splash1",
+    "shot":             "aard/tak"
+  }
+}

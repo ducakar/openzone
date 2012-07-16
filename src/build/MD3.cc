@@ -403,8 +403,11 @@ void MD3::build( const char* path )
   Log::indent();
 
   MD3* md3 = new MD3( path );
+
   md3->load();
   md3->save();
+
+  delete md3;
 
   Log::unindent();
   Log::println( "}" );

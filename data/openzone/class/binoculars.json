@@ -1,0 +1,34 @@
+{
+  "base":               "Dynamic",
+
+  "flag.item":          true,
+  "flag.cylinder":      false,
+
+  "dim.x":              0.15,
+  "dim.y":              0.09,
+  "dim.z":              0.06,
+
+  "life":               30,
+  "resistance":         100,
+
+  "mass":               1,
+  "lift":               1.2,
+
+  "attrib.binoculars":  true,
+
+  "fragPool":           "metal",
+  "nFrags":             2,
+
+  "imagoType":          "SMM",
+  "imagoModel":         "binoculars",
+
+  "audioType":          "Basic",
+  "audioSounds":
+  {
+    "destroy":          "grsites/hit2",
+    "damage":           "grsites/hit2",
+    "hit":              "grsites/hit2",
+    "land":             "grsites/hit2",
+    "splash":           "free/splash1"
+  }
+}

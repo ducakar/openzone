@@ -1,0 +1,34 @@
+{
+  "base":               "Dynamic",
+
+  "title":              "crate",
+
+  "flag.cylinder":      false,
+
+  "dim.x":              0.6,
+  "dim.y":              0.6,
+  "dim.z":              0.6,
+
+  "life":               100,
+  "resistance":         100,
+
+  "mass":               50,
+  "lift":               1.1,
+
+  "fragPool":           "wood",
+  "nFrags":             6,
+
+  "imagoType":          "SMM",
+  "imagoModel":         "bigCrate",
+
+  "audioType":          "Basic",
+  "audioSounds":
+  {
+    "destroy":          "oz/destroy_wood1",
+    "damage":           "oz/hit_wood2",
+    "hit":              "oz/hit_wood2",
+    "land":             "oz/hit_wood2",
+    "splash":           "free/splash2",
+    "fricting":         "oz/friction1"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "velocitySpread":     8.0,
+
+  "life":               8.0,
+  "lifeSpread":         1.0,
+  "mass":               20.0,
+  "restitution":        0.3,
+
+  "models":
+  [
+                        "debris01",
+                        "debris02",
+                        "debris03",
+                        "debris04"
+  ]
+}

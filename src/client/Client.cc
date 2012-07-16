@@ -58,90 +58,19 @@ namespace client
 
 Client client;
 
-void Client::shutdown()
-{
-  if( initFlags & INIT_STAGE_INIT ) {
-    gameStage.free();
-    menuStage.free();
-  }
-  if( initFlags & INIT_AUDIO ) {
-    OZ_MAIN_CALL( this, {
-      sound.free();
-    } )
-  }
-  if( initFlags & INIT_RENDER ) {
-    OZ_MAIN_CALL( this, {
-      render.free();
-    } )
-  }
-  if( initFlags & INIT_CONTEXT ) {
-    context.free();
-  }
-  if( initFlags & INIT_LIBRARY ) {
-    library.free();
-  }
-  if( initFlags & INIT_LINGUA ) {
-    lingua.free();
-  }
-  if( initFlags & INIT_NETWORK ) {
-    network.free();
-  }
-  if( initFlags & INIT_INPUT ) {
-    input.free();
-  }
-  if( initFlags & INIT_WINDOW ) {
-    window.free();
-  }
-
-  if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
-    String configDir = config["dir.config"].get( "" );
-
-    if( !configDir.isEmpty() ) {
-      File configFile( configDir + "/client.json" );
-
-      config.exclude( "dir.config" );
-      config.exclude( "dir.local" );
-
-#ifdef _WIN32
-      config.save( &configFile, "\r\n" );
-#else
-      config.save( &configFile );
-#endif
-    }
-  }
-
-  config.clear( initFlags & INIT_CONFIG );
-
-  if( initFlags & INIT_PHYSFS ) {
-    PFile::free();
-  }
-
-#ifndef __native_client__
-  if( initFlags & INIT_SDL ) {
-    SDL_Quit();
-  }
-#endif
-
-  if( initFlags & INIT_MAIN_LOOP ) {
-    Alloc::printSummary();
-
-    Log::print( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " finished on " );
-    Log::printTime( Time::local() );
-    Log::printEnd();
-  }
-}
-
 void Client::printUsage( const char* invocationName )
 {
   Log::printRaw(
     "Usage:\n"
-    "  %s [-v] [-l | -i <mission>] [-t <num>] [-p <prefix>]\n"
+    "  %s [-v] [-l | -i <mission>] [-t <num>] [-L <lang>] [-p <prefix>]\n"
     "\n"
     "  -v            More verbose log output.\n"
     "  -l            Skip main menu and load the last autosaved state.\n"
     "  -i <mission>  Skip main menu and start mission <mission>.\n"
     "  -t <num>      Exit after <num> seconds (can be a floating-point number) and\n"
     "                use 42 as the random seed. Useful for benchmarking.\n"
+    "  -L <lang>     Use language <lang>. Should match a subdirectory of 'lingua/'\n"
+    "                directory in game data.\n"
     "  -p <prefix>   Sets data directory to '<prefix>/share/" OZ_APPLICATION_NAME "'.\n"
     "                Defaults to '%s'.\n"
     "\n",
@@ -149,20 +78,21 @@ void Client::printUsage( const char* invocationName )
     OZ_INSTALL_PREFIX );
 }
 
-int Client::main( int argc, char** argv )
+int Client::init( int argc, char** argv )
 {
-  initFlags = 0;
+  initFlags     = 0;
+  isBenchmark   = false;
+  benchmarkTime = 0.0f;
 
   String invocationName = File( argv[0] ).baseName();
   String prefix;
+  String language;
   String mission;
-  bool   doAutoload     = false;
-  bool   isBenchmark    = false;
-  float  benchmarkTime  = 0.0f;
+  bool   doAutoload = false;
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "vli:t:p:h?" ) ) >= 0 ) {
+  while( ( opt = getopt( argc, argv, "vli:t:L:p:h?" ) ) >= 0 ) {
     switch( opt ) {
       case 'v': {
         Log::showVerbose = true;
@@ -186,6 +116,10 @@ int Client::main( int argc, char** argv )
         }
 
         isBenchmark = true;
+        break;
+      }
+      case 'L': {
+        language = optarg;
         break;
       }
       case 'p': {
@@ -451,7 +385,7 @@ int Client::main( int argc, char** argv )
       Time::sleep( 10 );
     }
     else if( message.beginsWith( "lang:" ) ) {
-      config.add( "lingua", message.substring( 5 ) );
+      language = message.substring( 5 );
       break;
     }
     else {
@@ -461,14 +395,18 @@ int Client::main( int argc, char** argv )
 
 #endif
 
-  String language = config["lingua"].get( "" );
+  if( language.isEmpty() ) {
+    language = config["lingua"].get( "" );
+  }
+  else {
+    // Just tag as used.
+    config["lingua"];
+  }
+
+  language = Lingua::detectLanguage( language );
 
   if( language.isEmpty() ) {
-    language = Lingua::detectLanguage( null );
-
-    if( language.isEmpty() ) {
-      language = "en";
-    }
+    language = "en";
     config.add( "lingua", language );
   }
 
@@ -525,6 +463,84 @@ int Client::main( int argc, char** argv )
 
   window.warpMouse();
 
+  return EXIT_SUCCESS;
+}
+
+void Client::shutdown()
+{
+  if( initFlags & INIT_STAGE_INIT ) {
+    gameStage.free();
+    menuStage.free();
+  }
+  if( initFlags & INIT_AUDIO ) {
+    OZ_MAIN_CALL( this, {
+      sound.free();
+    } )
+  }
+  if( initFlags & INIT_RENDER ) {
+    OZ_MAIN_CALL( this, {
+      render.free();
+    } )
+  }
+  if( initFlags & INIT_CONTEXT ) {
+    context.free();
+  }
+  if( initFlags & INIT_LIBRARY ) {
+    library.free();
+  }
+  if( initFlags & INIT_LINGUA ) {
+    lingua.free();
+  }
+  if( initFlags & INIT_NETWORK ) {
+    network.free();
+  }
+  if( initFlags & INIT_INPUT ) {
+    input.free();
+  }
+  if( initFlags & INIT_WINDOW ) {
+    window.free();
+  }
+
+  if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
+    File configFile( config["dir.config"].asString() + "/client.json" );
+
+    config.exclude( "dir.config" );
+    config.exclude( "dir.local" );
+
+    Log::print( "Writing configuration to '%s' ...", configFile.path().cstr() );
+
+#ifdef _WIN32
+    config.save( &configFile, "\r\n" );
+#else
+    config.save( &configFile );
+#endif
+
+    Log::printEnd( " OK" );
+  }
+
+  config.clear( initFlags & INIT_CONFIG );
+
+  if( initFlags & INIT_PHYSFS ) {
+    PFile::free();
+  }
+
+#ifndef __native_client__
+  if( initFlags & INIT_SDL ) {
+    SDL_Quit();
+  }
+#endif
+
+  if( initFlags & INIT_MAIN_LOOP ) {
+    Alloc::printSummary();
+
+    Log::print( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " finished on " );
+    Log::printTime( Time::local() );
+    Log::printEnd();
+  }
+}
+
+int Client::main()
+{
   SDL_Event event;
 
   bool isAlive        = true;
@@ -624,11 +640,13 @@ int Client::main( int argc, char** argv )
 #else
         case SDL_WINDOWEVENT: {
           switch( event.window.event ) {
+            case SDL_WINDOWEVENT_FOCUS_GAINED:
             case SDL_WINDOWEVENT_ENTER: {
               window.hasFocus = true;
               input.reset();
               break;
             }
+            case SDL_WINDOWEVENT_FOCUS_LOST:
             case SDL_WINDOWEVENT_LEAVE: {
               window.hasFocus = false;
               input.reset();
@@ -684,18 +702,7 @@ int Client::main( int argc, char** argv )
       }
     }
 
-    input.keys[SDLK_LCTRL]     = 0;
-    input.keys[SDLK_RCTRL]     = 0;
-    input.keys[SDLK_RCTRL]     = 0;
-    input.keys[SDLK_LALT]      = 0;
-    input.keys[SDLK_RALT]      = 0;
     input.keys[SDLK_ESCAPE]    = 0;
-
-    input.oldKeys[SDLK_LCTRL]  = 0;
-    input.oldKeys[SDLK_RCTRL]  = 0;
-    input.oldKeys[SDLK_RCTRL]  = 0;
-    input.oldKeys[SDLK_LALT]   = 0;
-    input.oldKeys[SDLK_RALT]   = 0;
     input.oldKeys[SDLK_ESCAPE] = 0;
 
 #endif

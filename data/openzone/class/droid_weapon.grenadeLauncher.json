@@ -1,0 +1,42 @@
+{
+  "base":               "Weapon",
+
+  "title":              "grenade launcher",
+
+  "flag.cylinder":      false,
+
+  "dim.x":              0.14,
+  "dim.y":              0.32,
+  "dim.z":              0.11,
+
+  "life":               100,
+  "resistance":         100,
+
+  "mass":               10,
+  "lift":               0.8,
+
+  "nRounds":            120,
+  "shotInterval":       0.5,
+
+  "onShot":             "grenadeLauncher_onShot",
+
+  "attrib.suicide":     true,
+
+  "fragPool":           "metal",
+  "nFrags":             2,
+
+  "imagoType":          "MD2Weapon",
+  "imagoModel":         "droid_weapon.grenadeLauncher",
+
+  "audioType":          "Basic",
+  "audioSounds":
+  {
+    "destroy":          "grsites/hit2",
+    "damage":           "grsites/hit2",
+    "hit":              "grsites/hit2",
+    "land":             "grsites/hit2",
+    "splash":           "free/splash1",
+    "shot":             "awesund/cg2",
+    "shotEmpty":        "aard/outofammo"
+  }
+}

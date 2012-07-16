@@ -358,7 +358,7 @@ table.settings td {
 
 <h2><a name="cmdline" href="#">Ukazna vrstica</a></h2>
 <p class="config">
-    openzone [-v] [-l | -i &lt;misija&gt;] [-t &lt;št&gt;] [-p &lt;predpona&gt;]
+    openzone [-v] [-l | -i &lt;misija&gt;] [-t &lt;št&gt;] [-L &lt;jezik&gt;] [-p &lt;predpona&gt;]
 </p>
 <table class="args">
   <tr>
@@ -384,6 +384,13 @@ table.settings td {
     <td>
       Končaj po &lt;št&gt; sekundah (lahko je decimalno število) in kot naključnostno seme uporabi
       42. Uporabno za benchmark.
+    </td>
+  </tr>
+  <tr>
+    <th>-L &lt;jezik&gt;</th>
+    <td>
+      Nastavi jezik »&lt;jezik&gt;. Mora sovpadati s podimenikom imenika »lingua/« v podatkovnih
+      arhivih.
     </td>
   </tr>
   <tr>
@@ -428,38 +435,6 @@ table.settings td {
     </td>
   </tr>
   <tr>
-    <th>camera.keysXSens [float] 1.0</th>
-  </tr>
-  <tr>
-    <td>
-      Občutljivost za tipki levo/desno.
-    </td>
-  </tr>
-  <tr>
-    <th>camera.keysYSens [float] 1.0</th>
-  </tr>
-  <tr>
-    <td>
-      Občutljivost za tipki gor/dol.
-    </td>
-  </tr>
-  <tr>
-    <th>camera.mouseXSens [float] 1.0</th>
-  </tr>
-  <tr>
-    <td>
-      Občutljivost miške v vodoravni smeri.
-    </td>
-  </tr>
-  <tr>
-    <th>camera.mouseYSens [float] 1.0</th>
-  </tr>
-  <tr>
-    <td>
-      Občutljivost miške v navpični smeri.
-    </td>
-  </tr>
-  <tr>
     <th>dir.music [string] ""</th>
   </tr>
   <tr>
@@ -484,14 +459,6 @@ table.settings td {
     <td>
       Koda jezika, za katerega naj se naložijo prevodi. Ta mora ustrezati imenu katerega od
       podimenikov imenika »lingua«, ki se nahaja v katerem od arhivov s podatki.
-    </td>
-  </tr>
-  <tr>
-    <th>profile.playerName [string] "&lt;user&gt;"</th>
-  </tr>
-  <tr>
-    <td>
-      Ime igralca. Privzeto se uporabi uporabniško ime z veliko začetnico.
     </td>
   </tr>
   <tr>
@@ -521,6 +488,16 @@ table.settings td {
     </td>
   </tr>
   <tr>
+    <th>render.scaleFilter ["NEAREST" | "LINEAR"] "NEAREST"</th>
+  </tr>
+  <tr>
+    <td>
+      Če je vklopljeno upodabljanje v medpomnilnik, ta nastavitev poda filter, ki se uporabi pri
+      izrisu tega medpomnilnika na zaslon. "NEAREST" izrisuje ostro, vendar kockasto sliko, medtem
+      ko "LINEAR" izriše gladko, vendar bolj medlo sliko.
+    </td>
+  </tr>
+  <tr>
     <th>render.showAim [bool] false</th>
   </tr>
   <tr>
@@ -539,7 +516,7 @@ table.settings td {
     </td>
   </tr>
   <tr>
-    <th>render.visibilityRange [float] 300.0</th>
+    <th>render.visibilityRange [float] 350.0</th>
   </tr>
   <tr>
     <td>
@@ -618,14 +595,6 @@ table.settings td {
     </td>
   </tr>
   <tr>
-    <th>window.bpp [int] 0</th>
-  </tr>
-  <tr>
-    <td>
-      Globina barv (biti na piksel). Če je nič, se uporabi ista globina kot za namizje.
-    </td>
-  </tr>
-  <tr>
     <th>window.fullscreen [bool] false</th>
   </tr>
   <tr>
@@ -640,14 +609,6 @@ table.settings td {
     <td>
       Navpična ločljivost zaslona. Če je <span class="settings">window.width</span> ali
       <span class="settings">window.height</span> enaka nič, se uporabi ločljivost namizja.
-    </td>
-  </tr>
-  <tr>
-    <th>window.vsync [bool] true</th>
-  </tr>
-  <tr>
-    <td>
-      Skušaj vklopiti sinhronizacijo upodabljanja z osveževanjem zaslona (vertical synchronisation).
     </td>
   </tr>
   <tr>

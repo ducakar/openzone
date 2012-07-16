@@ -1,0 +1,38 @@
+{
+  "base":               "Dynamic",
+
+  "title":              "first aid",
+
+  "flag.item":          true,
+  "flag.cylinder":      false,
+
+  "dim.x":              0.25,
+  "dim.y":              0.25,
+  "dim.z":              0.15,
+
+  "life":               30,
+  "resistance":         100,
+
+  "mass":               2,
+  "lift":               1.2,
+
+  "onUse":              "healUser100_disposable",
+
+  "fragPool":           "metal",
+  "nFrags":             2,
+
+  "imagoType":          "SMM",
+  "imagoModel":         "health",
+
+  "audioType":          "Basic",
+  "audioSounds":
+  {
+    "destroy":          "grsites/hit2",
+    "damage":           "grsites/hit2",
+    "hit":              "grsites/hit2",
+    "land":             "grsites/hit2",
+    "splash":           "free/splash1",
+    "use":              "aard/tak",
+    "useFailed":        "free/tick"
+  }
+}

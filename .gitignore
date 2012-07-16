@@ -11,10 +11,18 @@
 
 /data/*/*
 !/data/netradiant
+!/data/*/baseq3
+/data/*/baseq3/*
+!/data/*/baseq3/maps
+/data/*/baseq3/maps/*
+!/data/*/baseq3/maps/*.json
+!/data/*/class
+!/data/*/frag
 !/data/*/glsl
 !/data/*/lingua
 !/data/*/lua
 !/data/*/mission
+DISABLED
 *.pot
 *.png
 *.bmp

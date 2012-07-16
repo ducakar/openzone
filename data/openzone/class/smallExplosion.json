@@ -1,0 +1,26 @@
+{
+  "base":               "Object",
+
+  "title":              "explosion",
+
+  "flag.solid":         false,
+  "flag.wideCull":      true,
+
+  "dim.x":              1.6,
+  "dim.y":              1.6,
+  "dim.z":              1.6,
+
+  "life":               1,
+  "resistance":         inf,
+
+  "onUpdate":           "smallExplosion_onUpdate",
+
+  "imagoType":          "Explosion",
+  "imagoModel":         "explosion",
+
+  "audioType":          "Basic",
+  "audioSounds":
+  {
+    "create":           "free/explode"
+  }
+}

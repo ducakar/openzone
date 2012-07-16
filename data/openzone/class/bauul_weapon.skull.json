@@ -1,0 +1,39 @@
+{
+  "base":               "Weapon",
+
+  "title":              "skull",
+
+  "flag.cylinder":      false,
+
+  "dim.x":              0.15,
+  "dim.y":              0.5,
+  "dim.z":              0.12,
+
+  "life":               100,
+  "resistance":         100,
+
+  "mass":               10,
+  "lift":               0.2,
+
+  "nRounds":            -1,
+  "shotInterval":       0.5,
+
+  "onShot":             "skull_onShot",
+
+  "fragPool":           "metal",
+  "nFrags":             2,
+
+  "imagoType":          "MD2Weapon",
+  "imagoModel":         "bauul_weapon.skull",
+
+  "audioType":          "Basic",
+  "audioSounds":
+  {
+    "destroy":          "grsites/hit2",
+    "damage":           "grsites/hit2",
+    "hit":              "grsites/hit2",
+    "land":             "grsites/hit2",
+    "splash":           "free/splash1",
+    "shot":             "aard/tak"
+  }
+}

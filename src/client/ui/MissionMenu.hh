@@ -58,7 +58,7 @@ class MissionButton : public Button
 
 class MissionMenu : public Area
 {
-  friend MissionButton;
+  friend class MissionButton;
 
   private:
 
