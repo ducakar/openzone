@@ -1,4 +1,6 @@
 <?xml version="1.0"?>
 <classes>
-<group name="entity" color="1 0 1">BSP model, represents a structure entity. It must be configured in a corresponding .rc file.</group>
+<group name="entity" color="1 0 1">
+  BSP model, represents a structure entity. It must be configured in a corresponding .json file.
+</group>
 </classes>

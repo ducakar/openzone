@@ -134,10 +134,10 @@ static int ozQuestAdd( lua_State* l )
 {
   ARG( 5 );
 
-  questList.quests.add( Quest( l_tostring( 1 ),
-                               l_tostring( 2 ),
-                               Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) ),
-                               Quest::PENDING ) );
+  questList.add( l_tostring( 1 ),
+                 l_tostring( 2 ),
+                 Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) ),
+                 Quest::PENDING );
 
   l_pushint( questList.quests.length() - 1 );
   return 1;

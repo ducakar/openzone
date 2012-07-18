@@ -34,36 +34,65 @@ namespace client
 
 QuestList questList;
 
-Quest::Quest( const char* title_, const char* description_, const Point& place_, int state_ ) :
-  title( title_ ), description( description_ ), place( place_ ), state( state_ )
-{}
+void QuestList::add( const char* title, const char* description, const Point& place,
+                     Quest::State state )
+{
+  if( quests.isEmpty() ) {
+    activeQuest = 0;
+  }
+
+  Quest quest = { title, description, place, state };
+  quests.add( static_cast<Quest&&>( quest ) );
+}
+
+void QuestList::remove( int index )
+{
+  quests.remove( index );
+
+  if( index < activeQuest ) {
+    --activeQuest;
+
+    if( quests.isEmpty() ) {
+      activeQuest = -1;
+    }
+  }
+}
 
 void QuestList::read( InputStream* istream )
 {
   int nQuests = istream->readInt();
-  for( int i = 0; i < nQuests; ++i ) {
-    String title       = istream->readString();
-    String description = istream->readString();
-    Point  place       = istream->readPoint();
-    int    state       = istream->readInt();
 
-    quests.add( Quest( title, description, place, state ) );
+  for( int i = 0; i < nQuests; ++i ) {
+    quests.add();
+    Quest& quest = quests.last();
+
+    quest.title       = istream->readString();
+    quest.description = istream->readString();
+    quest.place       = istream->readPoint();
+    quest.state       = Quest::State( istream->readInt() );
   }
+
+  activeQuest = istream->readInt();
 }
 
 void QuestList::write( BufferStream* ostream ) const
 {
   ostream->writeInt( quests.length() );
+
   foreach( quest, quests.citer() ) {
     ostream->writeString( quest->title );
     ostream->writeString( quest->description );
     ostream->writePoint( quest->place );
     ostream->writeInt( quest->state );
   }
+
+  ostream->writeInt( activeQuest );
 }
 
 void QuestList::load()
-{}
+{
+  activeQuest = -1;
+}
 
 void QuestList::unload()
 {

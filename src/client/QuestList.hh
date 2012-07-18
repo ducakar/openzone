@@ -34,19 +34,16 @@ struct Quest
 {
   enum State
   {
-    PENDING    = 0,
-    SUCCESSFUL = 1,
-    FAILED     = 2
+    NONE,
+    PENDING,
+    SUCCESSFUL,
+    FAILED
   };
 
   String title;
   String description;
   Point  place;
-  int    state;
-
-  Quest() = default;
-
-  explicit Quest( const char* title, const char* description, const Point& place, int state );
+  State  state;
 };
 
 class QuestList
@@ -54,6 +51,10 @@ class QuestList
   public:
 
     List<Quest> quests;
+    int         activeQuest;
+
+    void add( const char* title, const char* description, const Point& place, Quest::State state );
+    void remove( int index );
 
     void read( InputStream* istream );
     void write( BufferStream* ostream ) const;

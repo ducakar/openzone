@@ -54,8 +54,8 @@ class Physics
     static const float FLOAT_STICK_VELOCITY;
     static const float WATER_FRICTION;
     static const float LADDER_FRICTION;
-    static const float FLOOR_FRICTION;
-    static const float SLICK_FRICTION;
+    static const float FLOOR_FRICTION_COEF;
+    static const float SLICK_FRICTION_COEF;
 
     static const float LAVA_LIFT;
     static const float LAVA_DAMAGE_ABSOLUTE;

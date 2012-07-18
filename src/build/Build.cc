@@ -1048,8 +1048,7 @@ int Build::main( int argc, char** argv )
     checkLua( "lua/matrix" );
     checkLua( "lua/nirvana" );
 
-    copyFiles( "lua/matrix", "lua/matrix", "lua", false );
-    copyFiles( "lua/nirvana", "lua/nirvana", "lua", false );
+    copyFiles( "lua", "lua", "lua", true );
   }
   if( doMissions ) {
     buildMissions();

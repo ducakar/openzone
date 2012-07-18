@@ -26,7 +26,6 @@
 #include "client/ui/QuestFrame.hh"
 
 #include "client/Camera.hh"
-#include "client/QuestList.hh"
 
 namespace oz
 {
@@ -37,23 +36,40 @@ namespace ui
 
 void QuestFrame::updateTask()
 {
-  const Quest& quest = questList.quests[currentQuest];
+  if( questList.activeQuest < 0 ) {
+    title.set( "%s", OZ_GETTEXT( "No quest" ) );
+    description.set( " " );
 
-  String stateText;
-  if( quest.state == Quest::PENDING ) {
-    stateText = OZ_GETTEXT( "in progress" );
-  }
-  else if( quest.state == Quest::SUCCESSFUL ) {
-    stateText = OZ_GETTEXT( "successful" );
+    lastQuest = questList.activeQuest;
+    lastState = Quest::NONE;
   }
   else {
-    stateText = OZ_GETTEXT( "failed" );
+    const Quest& quest = questList.quests[questList.activeQuest];
+
+    if( quest.state == Quest::NONE ) {
+      title.set( "%s", quest.title.cstr() );
+    }
+    else {
+      const char* stateText;
+
+      if( quest.state == Quest::PENDING ) {
+        stateText = OZ_GETTEXT( "in progress" );
+      }
+      else if( quest.state == Quest::SUCCESSFUL ) {
+        stateText = OZ_GETTEXT( "successful" );
+      }
+      else {
+        stateText = OZ_GETTEXT( "failed" );
+      }
+
+      title.set( "%s  [%s]", quest.title.cstr(), stateText );
+    }
+
+    description.set( "%s", quest.description.cstr() );
+
+    lastQuest = questList.activeQuest;
+    lastState = quest.state;
   }
-
-  title.set( "%s  [%s]", quest.title.cstr(), stateText.cstr() );
-  description.set( "%s", quest.description.cstr() );
-
-  lastState = quest.state;
 }
 
 void QuestFrame::open( Button* sender )
@@ -78,12 +94,8 @@ void QuestFrame::next( Button* sender )
 
   int nQuests = questList.quests.length();
 
-  if( nQuests == 0 ) {
-    questFrame->currentQuest = -1;
-    questFrame->description.set( " " );
-  }
-  else {
-    questFrame->currentQuest = ( questFrame->currentQuest + 1 + nQuests ) % nQuests;
+  if( nQuests > 1 ) {
+    questList.activeQuest = ( questList.activeQuest + 1 ) % nQuests;
     questFrame->updateTask();
   }
 }
@@ -94,32 +106,23 @@ void QuestFrame::prev( Button* sender )
 
   int nQuests = questList.quests.length();
 
-  if( nQuests == 0 ) {
-    questFrame->currentQuest = -1;
-    questFrame->description.set( " " );
-  }
-  else {
-    questFrame->currentQuest = ( questFrame->currentQuest - 1 + nQuests + nQuests ) % nQuests;
+  if( nQuests > 1 ) {
+    questList.activeQuest = ( questList.activeQuest + nQuests - 1 ) % nQuests;
     questFrame->updateTask();
+  }
+}
+
+void QuestFrame::onUpdate()
+{
+  if( lastQuest != questList.activeQuest ||
+      ( lastQuest >= 0 && lastState != questList.quests[lastQuest].state ) )
+  {
+    updateTask();
   }
 }
 
 void QuestFrame::onDraw()
 {
-  if( currentQuest < 0 ) {
-    if( !questList.quests.isEmpty() ) {
-      currentQuest = 0;
-      updateTask();
-    }
-  }
-  else {
-    const Quest& quest = questList.quests[currentQuest];
-
-    if( quest.state != lastState ) {
-      updateTask();
-    }
-  }
-
   Frame::onDraw();
 
   if( isOpened ) {
@@ -128,33 +131,24 @@ void QuestFrame::onDraw()
 }
 
 QuestFrame::QuestFrame() :
-  Frame( 500, 2, OZ_GETTEXT( "Quests" ) ),
+  Frame( 500, 2, OZ_GETTEXT( "No quest" ) ),
   description( 6, 4, 488, 10, Font::SANS, Area::ALIGN_NONE ),
-  lastState( Quest::PENDING ),
-  isOpened( false ),
-  currentQuest( -1 )
+  contentHeight( 8 + 10 * font.INFOS[Font::SANS].height ),
+  isOpened( false ), lastQuest( -1 ), lastState( Quest::NONE )
 {
-  contentHeight = 8 + 10 * font.INFOS[Font::SANS].height;
+  flags |= UPDATE_BIT;
 
-  x = ( camera.width - width ) / 2;
-
-  y -= contentHeight;
   height += contentHeight;
-
-  title.set( 16, -font.INFOS[Font::LARGE].height - 6, ALIGN_NONE, Font::LARGE, "%s",
-             OZ_GETTEXT( "No quest" ) );
 
   add( new Button( " + ", open, 24, 16 ), -4, 4 );
   add( new Button( " > ", next, 24, 16 ), -36, 4 );
   add( new Button( " < ", prev, 24, 16 ), -64, 4 );
 
-  y += contentHeight;
   height -= contentHeight;
 }
 
 void QuestFrame::clear()
 {
-  currentQuest = -1;
   description.clear();
 }
 

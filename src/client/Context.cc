@@ -124,10 +124,8 @@ uint Context::readTextureLayer( InputStream* stream_, const char* path_ )
   int magFilter = stream->readInt();
   int minFilter = stream->readInt();
 
-  if( !wrap ) {
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-  }
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap );
 
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );

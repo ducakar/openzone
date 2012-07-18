@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include "client/QuestList.hh"
+
 #include "client/ui/Frame.hh"
 #include "client/ui/Button.hh"
 #include "client/ui/Text.hh"
@@ -38,16 +40,12 @@ class QuestFrame : public Frame
 {
   private:
 
-    static const String statusMessages[];
+    Text         description;
+    int          contentHeight;
+    bool         isOpened;
 
-    Text description;
-    int  lastState;
-    int  contentHeight;
-    bool isOpened;
-
-  public:
-
-    int  currentQuest;
+    int          lastQuest;
+    Quest::State lastState;
 
   private:
 
@@ -59,6 +57,7 @@ class QuestFrame : public Frame
 
   protected:
 
+    void onUpdate() override;
     void onDraw() override;
 
   public:

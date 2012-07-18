@@ -42,16 +42,16 @@ const float Physics::HIT_THRESHOLD           = -3.0f;
 const float Physics::SPLASH_THRESHOLD        = -2.0f;
 const float Physics::WEIGHT_DAMAGE_THRESHOLD =  1000.0f;
 const float Physics::WEIGHT_DAMAGE_FACTOR    =  20.0f;
-const float Physics::SLIDE_DAMAGE_THRESHOLD  =  100.0f;
-const float Physics::SLIDE_DAMAGE_COEF       =  0.06f;
+const float Physics::SLIDE_DAMAGE_THRESHOLD  =  50.0f;
+const float Physics::SLIDE_DAMAGE_COEF       = -2.5f;
 
 const float Physics::STICK_VELOCITY          =  0.03f;
 const float Physics::SLICK_STICK_VELOCITY    =  0.003f;
 const float Physics::FLOAT_STICK_VELOCITY    =  0.0005f;
 const float Physics::WATER_FRICTION          =  0.09f;
 const float Physics::LADDER_FRICTION         =  0.15f;
-const float Physics::FLOOR_FRICTION          =  0.30f;
-const float Physics::SLICK_FRICTION          =  0.03f;
+const float Physics::FLOOR_FRICTION_COEF     =  0.30f;
+const float Physics::SLICK_FRICTION_COEF     =  0.03f;
 
 const float Physics::LAVA_LIFT               =  1.2f;
 const float Physics::LAVA_DAMAGE_ABSOLUTE    =  175.0f;
@@ -215,11 +215,11 @@ bool Physics::handleObjFriction()
     // on floor or on a still object
     if( ( dyn->flags & Object::ON_FLOOR_BIT ) || dyn->lower >= 0  ) {
       float deltaVel2 = deltaVelX*deltaVelX + deltaVelY*deltaVelY;
-      float friction  = FLOOR_FRICTION;
+      float friction  = FLOOR_FRICTION_COEF;
       float stickVel  = STICK_VELOCITY;
 
       if( dyn->flags & Object::ON_SLICK_BIT ) {
-        friction = SLICK_FRICTION;
+        friction = SLICK_FRICTION_COEF;
         stickVel = SLICK_STICK_VELOCITY;
       }
 
@@ -231,8 +231,8 @@ bool Physics::handleObjFriction()
       if( deltaVel2 > stickVel ) {
         dyn->flags |= Object::FRICTING_BIT;
 
-        if( deltaVel2 > 100.0f && !( dyn->flags & Object::ON_SLICK_BIT ) ) {
-          dyn->hit( MAX_HIT_MASS, SLIDE_DAMAGE_COEF * deltaVel2 * -gravity );
+        if( deltaVel2 > SLIDE_DAMAGE_THRESHOLD ) {
+          dyn->damage( SLIDE_DAMAGE_COEF * Math::fastSqrt( deltaVel2 ) * friction * gravity );
         }
       }
       else if( isLowerStill ) {
