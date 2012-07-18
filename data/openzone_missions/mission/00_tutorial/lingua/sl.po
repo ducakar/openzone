@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenZone\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-07-15 17:00+0100\n"
+"PO-Revision-Date: 2012-07-18 12:15+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: \n"
@@ -171,7 +171,7 @@ msgstr ""
 
 #: data/openzone_missions/mission/00_tutorial/description.json
 msgid "In this mission player should learn how to play OpenZone and get familiar with all aspects of the game."
-msgstr "Ta misija je namenjena seznanitvami z osnovami igre OpenZone."
+msgstr "Ta misija je namenjena seznanjenju z osnovami igre OpenZone."
 
 #: data/openzone_missions/mission/00_tutorial/description.json
 msgid "Tutorial"

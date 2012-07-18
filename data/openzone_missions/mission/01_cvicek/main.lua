@@ -413,7 +413,8 @@ function onCreate()
     "life.\n\n" ..
     "It would be extremely helpful if you can get a Galileo gadget, it will will show you " ..
     "destinations of your tasks and help you with navigation a lot." ),
-    785, 1000, 124 )
+    785, 1000, 124,
+    OZ_QUEST_PENDING )
 
   oz_cvicekQuest = ozQuestAdd( ozGettext( "Steal cviček" ), ozGettext(
     "Steal at least 20 bottles of cviček from Colonial military base and transport them back " ..
@@ -422,22 +423,23 @@ function onCreate()
     "Beware not to use explosives there, cviček bottles are very fragile and there is a " ..
     "explosives storage in that base.\n\nQuest will be complete one you unload 20 bottles of " ..
     "cviček in the Lair." ),
-    20, -940, 140 )
+    20, -940, 140,
+    OZ_QUEST_PENDING )
 
   oz_farmQuest = ozQuestAdd( ozGettext( "The Farm" ), ozGettext(
     "That farm is a stage of an annoying reality show called 'The Farm'. It wouldn't do much " ..
     "harm to blow it up.\n\nThe farmhouses are not very robust, so a dozen of bombs should be " ..
     "more then enough to demolish them. And don't expect any welcome from participants of the " ..
     "show." ),
-    80, -20, 70 )
+    80, -20, 70, OZ_QUEST_PENDING )
 
-  local lairQuest = ozQuestAdd( ozGettext( "Beast Lair" ), ozGettext(
+  ozQuestAdd( ozGettext( "Beast Lair" ), ozGettext(
     "Beast Lair is your home base, hidden on an island, still safe from Colonial Army.\n\n" ..
     "However, supplies are low and there's a terrible shortage of beasts' favourite drink, " ..
     "cviček.\n\n" ..
     "You can visit the base anytime during the mission for any supplies you need." ),
-    -1015, 608, 50 )
-  ozQuestEnd( lairQuest, true )
+    -1015, 608, 50,
+    OZ_QUEST_NONE )
 
   ozCameraAddSwitchableUnit( oz_me )
   ozCameraSwitchTo( oz_me )

@@ -44,13 +44,15 @@ static pp::Graphics3D context;
 
 Semaphore NaCl::mainCallSemaphore;
 
-int       NaCl::width  = 0;
-int       NaCl::height = 0;
+int       NaCl::width    = 0;
+int       NaCl::height   = 0;
 
-int       NaCl::moveX  = 0;
-int       NaCl::moveY  = 0;
-int       NaCl::moveZ  = 0;
-int       NaCl::moveW  = 0;
+int       NaCl::moveX    = 0;
+int       NaCl::moveY    = 0;
+int       NaCl::moveZ    = 0;
+int       NaCl::moveW    = 0;
+
+bool      NaCl::hasFocus = false;
 
 bool NaCl::isMainThread()
 {

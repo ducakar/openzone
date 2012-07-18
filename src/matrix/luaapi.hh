@@ -2169,7 +2169,11 @@ static int ozBotSetWeaponItem( lua_State* l )
       ERROR( "Invalid item number (not a weapon)" );
     }
 
-    if( bot->canEquip( weapon ) ) {
+    if( !bot->canEquip( weapon ) ) {
+      l_pushbool( false );
+      return 1;
+    }
+    else {
       bot->weapon = index;
     }
   }

@@ -93,7 +93,6 @@ class Struct : public Bounds
 
     static const Vec3  DESTRUCT_FRAG_VELOCITY;
     static const float DEMOLISH_SPEED;
-    static const float MOMENTUM_DAMAGE_COEF;
 
   public:
 
@@ -171,7 +170,6 @@ class Struct : public Bounds
 
     void destroy();
     void damage( float damage );
-    void hit( float mass, float velocity2 );
     void update();
 
   public:
@@ -223,12 +221,6 @@ inline void Struct::damage( float damage )
   if( damage > 0.0f ) {
     life -= damage;
   }
-}
-
-OZ_ALWAYS_INLINE
-inline void Struct::hit( float mass, float velocity2 )
-{
-  damage( mass * velocity2 * MOMENTUM_DAMAGE_COEF );
 }
 
 OZ_ALWAYS_INLINE

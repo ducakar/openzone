@@ -11,8 +11,9 @@
   "dim.z":              0.15,
 
   "life":               50,
+  "resistance":         30,
 
-  "mass":               2,
+  "mass":               10,
   "lift":               1.2,
 
   "onUse":              "healUser100_disposable",

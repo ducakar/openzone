@@ -611,8 +611,10 @@ int Client::main()
           input.readEvent( &event );
           break;
         }
+
 #if defined( __native_client__ )
 #elif SDL_MAJOR_VERSION < 2
+
         case SDL_ACTIVEEVENT: {
           if( event.active.state & SDL_APPMOUSEFOCUS ) {
             window.hasFocus = event.active.gain != 0;
@@ -640,7 +642,9 @@ int Client::main()
           window.resize();
           break;
         }
+
 #else
+
         case SDL_WINDOWEVENT: {
           switch( event.window.event ) {
             case SDL_WINDOWEVENT_FOCUS_GAINED:
@@ -683,7 +687,9 @@ int Client::main()
           }
           break;
         }
+
 #endif
+
         case SDL_QUIT: {
           isAlive = false;
           break;
@@ -699,14 +705,18 @@ int Client::main()
     if( NaCl::width != window.width || NaCl::height != window.height ) {
       window.resize();
     }
+    if( window.hasFocus != NaCl::hasFocus ) {
+      window.hasFocus = NaCl::hasFocus;
+      input.reset();
+    }
     for( String message = NaCl::poll(); !message.isEmpty(); message = NaCl::poll() ) {
       if( message.equals( "quit:" ) ) {
         isAlive = false;
       }
     }
 
-    input.keys[SDLK_ESCAPE]    = 0;
-    input.oldKeys[SDLK_ESCAPE] = 0;
+    input.keys[SDLK_ESCAPE]    = false;
+    input.oldKeys[SDLK_ESCAPE] = false;
 
 #endif
 

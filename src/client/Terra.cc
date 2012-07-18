@@ -164,8 +164,6 @@ void Terra::load()
   const String& name = library.terrae[id].name;
   String path = "terra/" + name + ".ozcTerra";
 
-  Log::print( "Loading terra '%s' ...", name.cstr() );
-
   PFile file( path );
   if( !file.map() ) {
     throw Exception( "Terra file mmap failed" );
@@ -234,8 +232,6 @@ void Terra::load()
   hard_assert( !is.isAvailable() );
 
   file.unmap();
-
-  Log::printEnd( " OK" );
 }
 
 void Terra::unload()

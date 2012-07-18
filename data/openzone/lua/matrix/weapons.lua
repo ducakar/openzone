@@ -64,7 +64,7 @@ function blaster_onShot( l )
                      2 - math.random() * 4,
                      2 - math.random() * 4
 
-  ozOrbisAddFrag( OZ_FORCE, "blasterBullet", pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ );
+  ozOrbisAddFrag( OZ_FORCE, "blasterBullet", pX, pY, pZ, vX * 220 + dX, vY * 220 + dY, vZ * 220 + dZ );
 end
 
 function hyperblaster_onShot( l )

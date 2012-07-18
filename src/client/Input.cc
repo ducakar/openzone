@@ -397,6 +397,8 @@ void Input::readEvent( SDL_Event* event )
 
 void Input::reset()
 {
+  window.warpMouse();
+
   mouseX      = 0;
   mouseY      = 0;
   mouseZ      = 0;

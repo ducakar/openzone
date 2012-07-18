@@ -49,7 +49,6 @@ class MainInstance : public pp::Instance, public pp::MouseLock
 
     pp::Fullscreen fullscreen;
     bool           isContextBound;
-    bool           isMouseLocked;
     Thread         mainThread;
 
     static void mainThreadMain( void* );
@@ -66,8 +65,7 @@ class MainInstance : public pp::Instance, public pp::MouseLock
     bool HandleInputEvent( const pp::InputEvent& event ) override;
     void MouseLockLost() override;
 
-    static void Empty( void*, int );
-    static void DidMouseLock( void* data, int result );
+    static void onMouseLocked( void*, int result );
 
 };
 

@@ -34,12 +34,16 @@ Physics physics;
 
 const float Physics::FLOOR_NORMAL_Z          =  0.60f;
 const float Physics::MOVE_BOUNCE             =  1.5f * EPSILON;
-const float Physics::MAX_HIT_MASS            =  100.0f;
 const float Physics::ENTITY_BOND_G_RATIO     =  0.10f;
 const float Physics::SIDE_PUSH_RATIO         =  0.40f;
 
+const float Physics::MAX_HIT_MASS            =  100.0f;
 const float Physics::HIT_THRESHOLD           = -3.0f;
+const float Physics::HIT_INTENSITY_COEF      =  0.02f;
+const float Physics::HIT_ENERGY_COEF         =  0.01f;
 const float Physics::SPLASH_THRESHOLD        = -2.0f;
+const float Physics::SPLASH_INTENSITY_COEF   =  0.02f;
+
 const float Physics::WEIGHT_DAMAGE_THRESHOLD =  1000.0f;
 const float Physics::WEIGHT_DAMAGE_FACTOR    =  20.0f;
 const float Physics::SLIDE_DAMAGE_THRESHOLD  =  50.0f;
@@ -278,11 +282,18 @@ void Physics::handleObjHit()
     float hitVelocity = dyn->velocity * hit.normal;
 
     if( hitMomentum < HIT_THRESHOLD && hitVelocity < HIT_THRESHOLD ) {
-      float energy = hitMomentum*hitMomentum;
-
+      float momentum2 = hitMomentum*hitMomentum;
+      float energy    = min( dyn->mass, MAX_HIT_MASS ) * momentum2;
+      float intensity = momentum2 * HIT_INTENSITY_COEF;
+      float damage    = energy * HIT_ENERGY_COEF;
       // Since it can only be -1, 0 or +1, it's enough to test for sign.
-      dyn->hit( min( sDyn->mass, MAX_HIT_MASS ), energy, hit.normal.z > 0.0f );
-      sDyn->hit( min( dyn->mass, MAX_HIT_MASS ), energy );
+      bool  hasLanded = hit.normal.z > 0.0f;
+
+      dyn->addEvent( Object::EVENT_HIT + hasLanded, intensity );
+      dyn->damage( damage );
+
+      sDyn->addEvent( Object::EVENT_HIT, intensity );
+      sDyn->damage( damage );
     }
 
     if( hit.normal.z == 0.0f ) {
@@ -347,15 +358,22 @@ void Physics::handleObjHit()
     float hitVelocity = dyn->velocity * hit.normal;
 
     if( hitMomentum < HIT_THRESHOLD && hitVelocity < HIT_THRESHOLD ) {
-      float energy = hitMomentum*hitMomentum;
+      float momentum2 = hitMomentum*hitMomentum;
+      float energy    = min( dyn->mass, MAX_HIT_MASS ) * momentum2;
+      float intensity = momentum2 * HIT_INTENSITY_COEF;
+      float damage    = energy * HIT_ENERGY_COEF;
+      // Since it can only be -1, 0 or +1, it's enough to test for sign.
+      bool  hasLanded = hit.normal.z >= FLOOR_NORMAL_Z;
 
-      dyn->hit( MAX_HIT_MASS, energy, hit.normal.z >= FLOOR_NORMAL_Z );
+      dyn->addEvent( Object::EVENT_HIT + hasLanded, intensity );
+      dyn->damage( damage );
 
       if( hit.obj != null ) {
-        hit.obj->hit( min( dyn->mass, MAX_HIT_MASS ), energy );
+        hit.obj->addEvent( Object::EVENT_HIT, intensity );
+        hit.obj->damage( damage );
       }
       else if( hit.str != null ) {
-        hit.str->hit( min( dyn->mass, MAX_HIT_MASS ), energy );
+        hit.str->damage( damage );
       }
     }
 
@@ -536,7 +554,10 @@ void Physics::updateObj( Dynamic* dyn_ )
         dyn->flags |= Object::IN_LIQUID_BIT;
 
         if( !( oldFlags & Object::IN_LIQUID_BIT ) && dyn->velocity.z <= SPLASH_THRESHOLD ) {
-          dyn->splash( dyn->velocity.z*dyn->velocity.z );
+          float momentum2 = dyn->velocity.z*dyn->velocity.z;
+          float intensity = momentum2 * SPLASH_INTENSITY_COEF;
+
+          dyn->addEvent( Object::EVENT_SPLASH, intensity );
         }
       }
       if( collider.hit.medium & Medium::LAVA_BIT ) {

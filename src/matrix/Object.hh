@@ -177,8 +177,6 @@ class Object : public AABB
 
   protected:
 
-    static const float MOMENTUM_DAMAGE_COEF;
-    static const float MOMENTUM_INTENSITY_COEF;
     static const float DAMAGE_BASE_INTENSITY;
     static const float DAMAGE_INTENSITY_COEF;
     static const Vec3  DESTRUCT_FRAG_VELOCITY;
@@ -304,27 +302,6 @@ class Object : public AABB
         life -= damage;
         addEvent( EVENT_DAMAGE, DAMAGE_BASE_INTENSITY + damage * DAMAGE_INTENSITY_COEF );
       }
-    }
-
-    /**
-     * Called by physics engine when object hits something.
-     *
-     * @param energy momentum square (usually projected to the hit normal).
-     * @param hasLanded whether EVENT_LAND should be issued instead of EVENT_HIT.
-     */
-    OZ_ALWAYS_INLINE
-    void hit( float mass, float velocity2, bool hasLanded = false )
-    {
-      float energy = mass * velocity2;
-
-      addEvent( EVENT_HIT + hasLanded, energy * MOMENTUM_INTENSITY_COEF );
-      damage( energy * MOMENTUM_DAMAGE_COEF );
-    }
-
-    OZ_ALWAYS_INLINE
-    void splash( float energy )
-    {
-      addEvent( EVENT_SPLASH, energy * MOMENTUM_INTENSITY_COEF );
     }
 
     OZ_ALWAYS_INLINE

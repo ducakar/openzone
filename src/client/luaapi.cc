@@ -23,6 +23,7 @@
 
 #include "common/lua.hh"
 
+#include "client/QuestList.hh"
 #include "client/Camera.hh"
 
 namespace oz
@@ -34,6 +35,11 @@ void importClientConstants( lua_State* l );
 
 void importClientConstants( lua_State* l )
 {
+  registerLuaConstant( l, "OZ_QUEST_NONE",                  Quest::NONE );
+  registerLuaConstant( l, "OZ_QUEST_PENDING",               Quest::PENDING );
+  registerLuaConstant( l, "OZ_QUEST_SUCCESSFUL",            Quest::SUCCESSFUL );
+  registerLuaConstant( l, "OZ_QUEST_FAILED",                Quest::FAILED );
+
   registerLuaConstant( l, "OZ_CAMERA_NONE",                 Camera::NONE );
   registerLuaConstant( l, "OZ_CAMERA_STRATEGIC",            Camera::STRATEGIC );
   registerLuaConstant( l, "OZ_CAMERA_UNIT",                 Camera::UNIT );

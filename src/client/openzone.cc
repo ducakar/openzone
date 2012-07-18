@@ -73,7 +73,7 @@ void MainInstance::mainThreadMain( void* )
 }
 
 MainInstance::MainInstance( PP_Instance instance_ ) :
-  pp::Instance( instance_ ), pp::MouseLock( this ), fullscreen( this ), isMouseLocked( false )
+  pp::Instance( instance_ ), pp::MouseLock( this ), fullscreen( this )
 {
   System::module   = pp::Module::Get();
   System::instance = this;
@@ -153,8 +153,8 @@ bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
       if( !fullscreen.IsFullscreen() ) {
         fullscreen.SetFullscreen( true );
       }
-      if( !isMouseLocked ) {
-        LockMouse( pp::CompletionCallback( &DidMouseLock, this ) );
+      if( !NaCl::hasFocus ) {
+        LockMouse( pp::CompletionCallback( &onMouseLocked, this ) );
         return true;
       }
       break;
@@ -168,8 +168,8 @@ bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
         if( !fullscreen.IsFullscreen() ) {
           fullscreen.SetFullscreen( true );
         }
-        if( !isMouseLocked ) {
-          LockMouse( pp::CompletionCallback( &DidMouseLock, this ) );
+        if( !NaCl::hasFocus ) {
+          LockMouse( pp::CompletionCallback( &onMouseLocked, this ) );
           return true;
         }
       }
@@ -186,16 +186,13 @@ bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
 
 void MainInstance::MouseLockLost()
 {
-  isMouseLocked = false;
+  NaCl::hasFocus = false;
+  fullscreen.SetFullscreen( false );
 }
 
-void MainInstance::Empty( void*, int )
-{}
-
-void MainInstance::DidMouseLock( void* data, int result )
+void MainInstance::onMouseLocked( void*, int result )
 {
-  MainInstance* instance = static_cast<MainInstance*>( data );
-  instance->isMouseLocked = result == PP_OK;
+  NaCl::hasFocus = result == PP_OK;
 }
 
 pp::Instance* MainModule::CreateInstance( PP_Instance instance )
