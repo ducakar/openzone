@@ -42,10 +42,10 @@ function healUser100_disposable( l )
     ozUseFailed()
   else
     ozObjAddLife( 100.0 )
-  end
 
-  ozBindSelf()
-  ozObjDestroy( true )
+    ozBindSelf()
+    ozObjDestroy( true )
+  end
 end
 
 function spawnSmallExplosion( l )
@@ -77,7 +77,7 @@ function smallExplosion_onUpdate( l )
           distance = 8 - distance
 
           if ozObjIsVisibleFromSelf() then
-            ozObjDamage( 100 + 4*distance )
+            ozObjDamage( 100 + 12*distance )
 
             if distance < 7.9 and ozObjHasFlag( OZ_DYNAMIC_BIT ) then
               local dirX, dirY, dirZ = ozObjDirFromSelf()

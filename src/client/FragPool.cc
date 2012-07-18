@@ -40,26 +40,18 @@ const float FragPool::FRAG_RADIUS = 1.0f;
 FragPool::FragPool( const matrix::FragPool* pool_ ) :
   pool( pool_ ), flags( pool_->flags )
 {
-  Log::print( "Loading FragPool '%s' ...", pool->name.cstr() );
-
   models.alloc( pool->models.length() );
 
   for( int i = 0; i < pool->models.length(); ++i ) {
     models.add( context.requestSMM( pool->models[i] ) );
   }
-
-  Log::printEnd( " OK" );
 }
 
 FragPool::~FragPool()
 {
-  Log::print( "Unloading FragPool '%s' ...", pool->name.cstr() );
-
   for( int i = 0; i < pool->models.length(); ++i ) {
     context.releaseSMM( pool->models[i] );
   }
-
-  Log::printEnd( " OK" );
 }
 
 void FragPool::draw( const Frag* frag )

@@ -308,12 +308,11 @@ function onCreate()
   ozOrbisAddObj( OZ_FORCE, "beast", 60, -80, 69 )
   ozBotSetH( 270 )
 
-  local tutorialQuest = ozQuestAdd(
+  ozQuestAdd(
     ozGettext( "Tutorial" ),
     ozGettext( "Get familiar with all aspects of OpenZone game." ),
-    60, -46, 69.5
-  )
-  ozQuestEnd( tutorialQuest, true )
+    60, -46, 69.5,
+    OZ_QUEST_NONE )
 
   ozFloraSeed()
 

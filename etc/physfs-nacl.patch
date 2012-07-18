@@ -1,6 +1,6 @@
-diff -r 62256a6a8e4e CMakeLists.txt
---- a/CMakeLists.txt	Sat Apr 07 21:33:18 2012 -0400
-+++ b/CMakeLists.txt	Sat May 12 23:47:02 2012 +0200
+diff -r 990c1cf58bfa CMakeLists.txt
+--- a/CMakeLists.txt	Mon Jun 25 15:50:20 2012 -0400
++++ b/CMakeLists.txt	Wed Jul 18 20:00:49 2012 +0200
 @@ -5,6 +5,9 @@
  
  CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
@@ -30,9 +30,9 @@ diff -r 62256a6a8e4e CMakeLists.txt
      ELSE(BEOS)
          CHECK_INCLUDE_FILE(sys/ucred.h HAVE_UCRED_H)
          IF(HAVE_UCRED_H)
-diff -r 62256a6a8e4e src/lzma/C/Archive/7z/7zDecode.c
---- a/src/lzma/C/Archive/7z/7zDecode.c	Sat Apr 07 21:33:18 2012 -0400
-+++ b/src/lzma/C/Archive/7z/7zDecode.c	Sat May 12 23:47:02 2012 +0200
+diff -r 990c1cf58bfa src/lzma/C/Archive/7z/7zDecode.c
+--- a/src/lzma/C/Archive/7z/7zDecode.c	Mon Jun 25 15:50:20 2012 -0400
++++ b/src/lzma/C/Archive/7z/7zDecode.c	Wed Jul 18 20:00:49 2012 +0200
 @@ -1,6 +1,8 @@
  /* 7zDecode.c */
  
@@ -42,11 +42,11 @@ diff -r 62256a6a8e4e src/lzma/C/Archive/7z/7zDecode.c
  
  /* BEGIN PHYSFS CHANGE */
  #include <string.h>
-diff -r 62256a6a8e4e src/physfs_platforms.h
---- a/src/physfs_platforms.h	Sat Apr 07 21:33:18 2012 -0400
-+++ b/src/physfs_platforms.h	Sat May 12 23:47:02 2012 +0200
-@@ -38,6 +38,8 @@
- #  endif
+diff -r 990c1cf58bfa src/physfs_platforms.h
+--- a/src/physfs_platforms.h	Mon Jun 25 15:50:20 2012 -0400
++++ b/src/physfs_platforms.h	Wed Jul 18 20:00:49 2012 +0200
+@@ -35,6 +35,8 @@
+ #  define PHYSFS_PLATFORM_POSIX 1
  #elif defined(macintosh)
  #  error Classic Mac OS support was dropped from PhysicsFS 2.0. Move to OS X.
 +#elif defined(__native_client__)
@@ -54,10 +54,10 @@ diff -r 62256a6a8e4e src/physfs_platforms.h
  #elif defined(__linux)
  #  define PHYSFS_PLATFORM_LINUX 1
  #  define PHYSFS_PLATFORM_UNIX 1
-diff -r 62256a6a8e4e src/platform_nacl.c
+diff -r 990c1cf58bfa src/platform_nacl.c
 --- /dev/null	Thu Jan 01 00:00:00 1970 +0000
-+++ b/src/platform_nacl.c	Sat May 12 23:47:02 2012 +0200
-@@ -0,0 +1,800 @@
++++ b/src/platform_nacl.c	Wed Jul 18 20:00:49 2012 +0200
+@@ -0,0 +1,833 @@
 +/*
 + * Native Client support routines for PhysicsFS.
 + *
@@ -96,7 +96,6 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +    _file->sem.counter++; \
 +    pthread_mutex_unlock(&_file->sem.mutex); \
 +    pthread_cond_signal(&_file->sem.cond);
-+
 +
 +#define SEM_WAIT() \
 +    pthread_mutex_lock(&file->sem.mutex); \
@@ -148,9 +147,7 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +
 +    char                path[256];
 +    char               *buffer;
-+    char               *bufcur; /* Current position in file, points to a memory location
-+                                   inside buffer. */
-+    char               *bufend; /* Points to buffer position where file ends. */
++//     char               *bufend; /* Points to buffer position where file ends. */
 +    size_t              buflen; /* Buffer size, does not necessarily match file size when
 +                                   it's opened for writing/appending, that's why we also
 +                                   need bufend pointer. */
@@ -162,6 +159,12 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +    struct FileDesc    *next;
 +} FileDesc;
 +
++typedef struct
++{
++    FileDesc *file;
++    size_t    bufpos;           /* Current position in file, points to a memory location
++                                   inside buffer. */
++} HandleDesc;
 +
 +static PPB_GetInterface  getInterface;
 +static PP_Instance       instance;
@@ -207,13 +210,12 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +
 +    file->path[0] = '\0';
 +    file->fileRef = 0;
-+    file->fileIO = 0;
-+    file->buffer = NULL;
-+    file->bufcur = NULL;
-+    file->buflen = 0;
-+    file->offset = 0;
-+    file->error = PHYSFS_ERR_OK;
-+    file->next = NULL;
++    file->fileIO  = 0;
++    file->buffer  = NULL;
++    file->buflen  = 0;
++    file->offset  = 0;
++    file->error   = PHYSFS_ERR_OK;
++    file->next    = NULL;
 +
 +    return file;
 +} /* createFileDesc */
@@ -228,6 +230,24 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +
 +    allocator.Free(file);
 +} /* destroyFileDesc */
++
++
++static HandleDesc *createHandleDesc(FileDesc* file)
++{
++    HandleDesc *handle = (HandleDesc* ) allocator.Malloc(sizeof (HandleDesc));
++    BAIL_IF_MACRO(!handle, PHYSFS_ERR_OUT_OF_MEMORY, NULL);
++
++    handle->file   = file;
++    handle->bufpos = 0;
++
++    return handle;
++} /* createHandleDesc */
++
++
++static void destroyHandleDesc(HandleDesc* handle)
++{
++    allocator.Free(handle);
++} /* destroyHandleDesc */
 +
 +
 +int __PHYSFS_platformInit(void)
@@ -395,9 +415,9 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +void *__PHYSFS_platformOpenRead(const char *filename)
 +{
 +    /* Check if file is already cached. */
-+    pthread_mutex_lock( &fileListMutex );
++    pthread_mutex_lock(&fileListMutex);
 +
-+    FileDesc* file = fileList;
++    FileDesc *file = fileList;
 +    while( file != NULL ) {
 +      if( strcmp( file->path, filename ) == 0 ) {
 +        break;
@@ -405,10 +425,9 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +      file = file->next;
 +    }
 +
-+    pthread_mutex_unlock( &fileListMutex );
-+
 +    if( file != NULL ) {
-+      return file;
++      pthread_mutex_unlock(&fileListMutex);
++      return createHandleDesc(file);
 +    }
 +
 +    file = createFileDesc();
@@ -428,18 +447,15 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +        BAIL_MACRO(error, NULL);
 +    }
 +
-+    /* Set cursors for current file position and EOF. */
-+    file->bufcur = file->buffer;
-+    file->bufend = file->buffer + file->buflen;
-+
-+    pthread_mutex_lock( &fileListMutex );
++    /* Set cursors EOF cursor. */
++//     file->bufend = file->buffer + file->buflen;
 +
 +    file->next = fileList;
 +    fileList = file;
 +
-+    pthread_mutex_unlock( &fileListMutex );
++    pthread_mutex_unlock(&fileListMutex);
 +
-+    return file;
++    return createHandleDesc(file);
 +} /* __PHYSFS_platformOpenRead */
 +
 +
@@ -458,15 +474,16 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +PHYSFS_sint64 __PHYSFS_platformRead(void *opaque, void *buffer,
 +                                    PHYSFS_uint64 len)
 +{
-+    FileDesc *file = (FileDesc* ) opaque;
++    HandleDesc *handle = (HandleDesc *) opaque;
 +
-+    PHYSFS_uint64 bytesLeft = file->bufend - file->bufcur;
++    PHYSFS_uint64 bytesLeft = handle->file->buflen - handle->bufpos;
 +    if (len > bytesLeft) {
 +        len = bytesLeft;
 +    } /* if */
 +
-+    memcpy(buffer, file->bufcur, len);
-+    file->bufcur += len;
++    memcpy(buffer, handle->file->buffer + handle->bufpos, len);
++    handle->bufpos += len;
++
 +    return len;
 +} /* __PHYSFS_platformRead */
 +
@@ -474,33 +491,51 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +PHYSFS_sint64 __PHYSFS_platformWrite(void *opaque, const void *buffer,
 +                                     PHYSFS_uint64 len)
 +{
++//     FileDesc *file = (FileDesc *) opaque;
++//
++//     PHYSFS_uint64 bytesLeft = file->buflen - (file->bufcur - file->buffer);
++//     if (len > bytesLeft) {
++//         file->buflen += len - bytesLeft + 4096;
++//
++//         void *newBuf = allocator.Malloc(file->buflen);
++//         memcpy(newBuf, file->buffer, file->bufend - file->buffer);
++//         allocator.Free(file->buffer);
++//
++//         file->bufcur = newBuf + (file->bufcur - file->buffer);
++//         file->bufend = newBuf + (file->bufend - file->buffer);
++//         file->buffer = newBuf;
++//     } /* if */
++//
++//     file->bufcur += len;
++//     file->bufend = file->bufcur > file->bufend ? file->bufcur : file->bufend;
++//     return len;
 +    return 0;
 +} /* __PHYSFS_platformWrite */
 +
 +
 +int __PHYSFS_platformSeek(void *opaque, PHYSFS_uint64 pos)
 +{
-+    FileDesc *file = (FileDesc* ) opaque;
++    HandleDesc *handle = (HandleDesc *) opaque;
 +
-+    PHYSFS_uint64 len = file->bufend - file->buffer;
++    PHYSFS_uint64 len = handle->file->buflen;
 +    BAIL_IF_MACRO(pos > len, PHYSFS_ERR_PAST_EOF, 0);
 +
-+    file->bufcur = file->buffer + pos;
++    handle->bufpos = pos;
 +    return 1;
 +} /* __PHYSFS_platformSeek */
 +
 +
 +PHYSFS_sint64 __PHYSFS_platformTell(void *opaque)
 +{
-+    FileDesc *file = (FileDesc* ) opaque;
-+    return file->bufcur - file->buffer;
++    HandleDesc *handle = (HandleDesc *) opaque;
++    return handle->bufpos;
 +} /* __PHYSFS_platformTell */
 +
 +
 +PHYSFS_sint64 __PHYSFS_platformFileLength(void *opaque)
 +{
-+    FileDesc *file = (FileDesc *) opaque;
-+    return file->bufend - file->buffer;
++    HandleDesc *handle = (HandleDesc *) opaque;
++    return handle->file->buflen;
 +} /* __PHYSFS_platformFileLength */
 +
 +
@@ -634,8 +669,8 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +
 +void __PHYSFS_platformClose(void *opaque)
 +{
-+//     FileDesc *file = (FileDesc *) opaque;
-+//     destroyFileDesc(file);
++    HandleDesc *handle = (HandleDesc *) opaque;
++    destroyHandleDesc(handle);
 +} /* __PHYSFS_platformClose */
 +
 +
@@ -767,14 +802,12 @@ diff -r 62256a6a8e4e src/platform_nacl.c
 +
 +int __PHYSFS_platformMkDir(const char *path)
 +{
-+    /* Directories are not supported on NaCl. */
 +    return 0;
 +} /* __PHYSFS_platformMkDir */
 +
 +
 +int __PHYSFS_platformDelete(const char *path)
 +{
-+    /* Deleting files is not supported on NaCl. */
 +    return 0;
 +} /* __PHYSFS_platformDelete */
 +

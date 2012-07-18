@@ -11,7 +11,7 @@
   "life":               100,
   "resistance":         200,
 
-  "mass":               1,
+  "mass":               10,
   "lift":               0.7,
 
   "key":                1,

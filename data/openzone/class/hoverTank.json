@@ -19,8 +19,8 @@
   "type":               "HOVER",
 
   "pilotPos.x":         0,
-  "pilotPos.y":         0.3,
-  "pilotPos.z":         -0.3,
+  "pilotPos.y":         0.5,
+  "pilotPos.z":         0.5,
 
   "rotVelLimit":        120,
 

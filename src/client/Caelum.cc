@@ -163,10 +163,7 @@ void Caelum::load()
 {
   id = orbis.caelum.id;
 
-  const String& name = library.caela[id].name;
   const String& path = library.caela[id].path;
-
-  Log::print( "Loading Caelum '%s' ...", name.cstr() );
 
   axis = Vec3( -Math::sin( orbis.caelum.heading ), Math::cos( orbis.caelum.heading ), 0.0f );
   originalLightDir = Vec3( Math::cos( orbis.caelum.heading ),
@@ -207,8 +204,6 @@ void Caelum::load()
   OZ_GL_CHECK_ERROR();
 
   update();
-
-  Log::printEnd( " OK" );
 }
 
 void Caelum::unload()

@@ -107,7 +107,7 @@ bool Bot::canEquip( const Weapon* weapon ) const
 
   const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weapon->clazz );
 
-  return weaponClazz->userBase.beginsWith( clazz->name );
+  return clazz->name.beginsWith( weaponClazz->userBase );
 }
 
 bool Bot::trigger( const Entity* entity )
