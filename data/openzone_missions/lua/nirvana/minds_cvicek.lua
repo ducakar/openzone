@@ -304,7 +304,7 @@ function goblin_defend( l )
         if ozSelfHasState( OZ_BOT_WALKING_BIT ) then
           ozSelfAction( OZ_ACTION_WALK )
         end
-        ozSelfActionForward( OZ_ACTION_FORWARD )
+        ozSelfAction( OZ_ACTION_FORWARD )
       else
         ozSelfAction( OZ_ACTION_ATTACK )
       end

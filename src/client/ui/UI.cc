@@ -130,20 +130,20 @@ void UI::load()
 
   strategicArea = new StrategicArea();
   hudArea       = new HudArea();
-  galileoFrame  = new GalileoFrame( questFrame );
+  questFrame    = new QuestFrame();
+  galileoFrame  = new GalileoFrame();
   musicPlayer   = new MusicPlayer();
   inventory     = new InventoryMenu();
-  questFrame    = new QuestFrame();
   infoFrame     = new InfoFrame();
   buildMenu     = showBuild ? new BuildMenu() : null;
   debugFrame    = showDebug ? new DebugFrame() : null;
 
   root->add( strategicArea, 0, 0 );
   root->add( hudArea, 0, 0 );
+  root->add( questFrame, Area::CENTRE, -8 );
   root->add( galileoFrame, 8, -8 );
   root->add( musicPlayer, 8, -16 - galileoFrame->height );
   root->add( inventory, Area::CENTRE, 8 );
-  root->add( questFrame, Area::CENTRE, -8 );
   root->add( infoFrame, -8, -8 );
 
   if( showBuild ) {

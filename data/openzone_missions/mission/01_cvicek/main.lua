@@ -172,7 +172,6 @@ function onCreate()
 
   ozOrbisAddObj( OZ_FORCE, "bomb", 789.50, 1002.00, 127.91 )
   ozOrbisAddObj( OZ_FORCE, "bomb", 789.50, 1001.00, 127.91 )
-  ozOrbisAddObj( OZ_FORCE, "bomb", 789.50, 1000.00, 127.91 )
 
   ozOrbisAddObj( OZ_FORCE, "droid", 780.15, 1004.64, 123.39 )
   ozObjAddItem( "droid_weapon.chaingun" )
@@ -442,7 +441,7 @@ function onCreate()
 
   ozCameraAddSwitchableUnit( oz_me )
   ozCameraSwitchTo( oz_me )
---   ozCameraAllowReincarnation( false )
+  ozCameraAllowReincarnation( false )
 
   ozCameraWarpTo( -600, 608, 80, 90.0, 90.0 )
   ozCameraExecuteSequence( "intro" )

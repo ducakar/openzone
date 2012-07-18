@@ -31,8 +31,6 @@
 #include "client/QuestList.hh"
 #include "client/OpenGL.hh"
 
-#include "client/ui/QuestFrame.hh"
-
 namespace oz
 {
 namespace client
@@ -110,8 +108,8 @@ void GalileoFrame::onDraw()
   float fWidth  = float( width );
   float fHeight = float( height );
 
-  if( questFrame != null && questFrame->currentQuest >= 0 ) {
-    const Quest& quest = questList.quests[questFrame->currentQuest];
+  if( questList.activeQuest >= 0 ) {
+    const Quest& quest = questList.quests[questList.activeQuest];
 
     glBindTexture( GL_TEXTURE_2D, markerTexId );
 
@@ -142,8 +140,8 @@ void GalileoFrame::onDraw()
   glBindTexture( GL_TEXTURE_2D, 0 );
 }
 
-GalileoFrame::GalileoFrame( const QuestFrame* questFrame_ ) :
-  Frame( 240, 232 - HEADER_SIZE, "" ), questFrame( questFrame_ ),
+GalileoFrame::GalileoFrame() :
+  Frame( 240, 232 - HEADER_SIZE, "" ),
   mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ), isMaximised( false )
 {
   flags = PINNED_BIT | UPDATE_BIT;

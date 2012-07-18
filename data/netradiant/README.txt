@@ -1,2 +1,2 @@
-Put 'openzone.game' and 'games/openzone.game' into your netradiant directory
-to add support for OpenZone.
+Put 'openzone.game' and 'games/openzone.game' into your gtk/zero/netradiant
+directory to add support for OpenZone.

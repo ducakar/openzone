@@ -7,7 +7,7 @@
   "dim.y":              0.7,
   "dim.z":              3.8,
 
-  "life":               100,
+  "life":               500,
 
   "fragPool":           "tree",
   "nFrags":             10,

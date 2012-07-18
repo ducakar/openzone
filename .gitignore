@@ -10,7 +10,7 @@
 /doc/doxygen*
 
 /data/*/*
-!/data/netradiant
+!/data/radiant/*
 !/data/*/baseq3
 /data/*/baseq3/*
 !/data/*/baseq3/maps

@@ -38,8 +38,6 @@ class GalileoFrame : public Frame
 {
   private:
 
-    const QuestFrame* questFrame;
-
     uint mapTexId;
     uint arrowTexId;
     uint markerTexId;
@@ -71,7 +69,7 @@ class GalileoFrame : public Frame
 
   public:
 
-    GalileoFrame( const QuestFrame* questFrame );
+    GalileoFrame();
     ~GalileoFrame() override;
 
     void setMaximised( bool doMaximise );

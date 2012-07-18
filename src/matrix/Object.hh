@@ -313,10 +313,12 @@ class Object : public AABB
      * @param hasLanded whether EVENT_LAND should be issued instead of EVENT_HIT.
      */
     OZ_ALWAYS_INLINE
-    void hit( float mass, float energy, bool hasLanded = false )
+    void hit( float mass, float velocity2, bool hasLanded = false )
     {
+      float energy = mass * velocity2;
+
       addEvent( EVENT_HIT + hasLanded, energy * MOMENTUM_INTENSITY_COEF );
-      damage( mass * energy * MOMENTUM_DAMAGE_COEF );
+      damage( energy * MOMENTUM_DAMAGE_COEF );
     }
 
     OZ_ALWAYS_INLINE
