@@ -120,8 +120,10 @@ void MusicPlayer::volumeUp( Button* sender )
 
 void MusicPlayer::onUpdate()
 {
-  if( camera.state == Camera::UNIT && camera.botObj != null &&
-      !camera.botObj->hasAttribute( ObjectClass::MUSIC_PLAYER_BIT ) )
+  const Bot* bot = camera.botObj;
+
+  if( camera.state == Camera::UNIT && ( bot == null || ( bot->state & Bot::DEAD_BIT ) ||
+        !bot->hasAttribute( ObjectClass::MUSIC_PLAYER_BIT ) ) )
   {
     if( isPlaying ) {
       isPlaying = false;
@@ -129,12 +131,14 @@ void MusicPlayer::onUpdate()
       sound.stopMusic();
     }
     if( !( flags & HIDDEN_BIT ) ) {
-      flags |= HIDDEN_BIT | IGNORE_BIT;
+      show( false );
     }
     return;
   }
-  else if( mouse.doShow && ( flags & HIDDEN_BIT ) ) {
-    flags &= ~( HIDDEN_BIT | IGNORE_BIT );
+  else {
+    if( mouse.doShow && ( flags & HIDDEN_BIT ) ) {
+      show( true );
+    }
   }
 
   if( sound.getCurrentTrack() != currentTrack ) {

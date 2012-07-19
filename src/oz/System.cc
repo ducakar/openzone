@@ -31,6 +31,7 @@
 #include "Log.hh"
 
 #include "windefs.h"
+#include <clocale>
 #include <csignal>
 #include <cstdlib>
 
@@ -153,6 +154,54 @@ static CRITICAL_SECTION   bellLock;
 static pthread_spinlock_t bellLock;
 #endif
 
+static void construct()
+{
+  setlocale( LC_CTYPE, "" );
+
+#if defined( __native_client__ )
+
+  if( pthread_mutex_init( &bellLock, null ) != 0 ) {
+    System::error( 0, "Bell mutex creation failed" );
+  }
+
+#elif defined( __ANDROID__ )
+#elif defined( _WIN32 )
+
+  InitializeCriticalSection( &bellLock );
+
+#else
+
+  // Disable default handler for TRAP signal that crashes the process.
+  signal( SIGTRAP, SIG_IGN );
+
+  if( pthread_spin_init( &bellLock, PTHREAD_PROCESS_PRIVATE ) != 0 ) {
+    System::error( 0, "Bell spin lock creation failed" );
+  }
+
+  void* library = dlopen( "libpulse-simple.so.0", RTLD_NOW );
+  if( library != null ) {
+    *( void** )( &pa_simple_new )   = dlsym( library, "pa_simple_new" );
+    *( void** )( &pa_simple_free )  = dlsym( library, "pa_simple_free" );
+    *( void** )( &pa_simple_write ) = dlsym( library, "pa_simple_write" );
+    *( void** )( &pa_simple_drain ) = dlsym( library, "pa_simple_drain" );
+
+    if( pa_simple_new == null || pa_simple_free == null || pa_simple_write == null ||
+        pa_simple_drain == null )
+    {
+      pa_simple_new   = null;
+      pa_simple_free  = null;
+      pa_simple_write = null;
+      pa_simple_drain = null;
+
+      dlclose( library );
+    }
+  }
+
+#endif
+
+  isConstructed = true;
+}
+
 static void resetSignals()
 {
   signal( SIGINT,  SIG_DFL );
@@ -165,6 +214,10 @@ static void resetSignals()
 OZ_NORETURN
 static void signalHandler( int sigNum )
 {
+  if( !isConstructed ) {
+    construct();
+  }
+
   resetSignals();
 
   Log::verboseMode = false;
@@ -326,52 +379,6 @@ static void* bellThread( void* )
 }
 
 #endif
-
-static void construct()
-{
-#if defined( __native_client__ )
-
-  if( pthread_mutex_init( &bellLock, null ) != 0 ) {
-    System::error( 0, "Bell mutex creation failed" );
-  }
-
-#elif defined( __ANDROID__ )
-#elif defined( _WIN32 )
-
-  InitializeCriticalSection( &bellLock );
-
-#else
-
-  // Disable default handler for TRAP signal that crashes the process.
-  signal( SIGTRAP, SIG_IGN );
-
-  if( pthread_spin_init( &bellLock, PTHREAD_PROCESS_PRIVATE ) != 0 ) {
-    System::error( 0, "Bell spin lock creation failed" );
-  }
-
-  void* library = dlopen( "libpulse-simple.so.0", RTLD_NOW );
-  if( library != null ) {
-    *( void** )( &pa_simple_new )   = dlsym( library, "pa_simple_new" );
-    *( void** )( &pa_simple_free )  = dlsym( library, "pa_simple_free" );
-    *( void** )( &pa_simple_write ) = dlsym( library, "pa_simple_write" );
-    *( void** )( &pa_simple_drain ) = dlsym( library, "pa_simple_drain" );
-
-    if( pa_simple_new == null || pa_simple_free == null || pa_simple_write == null ||
-        pa_simple_drain == null )
-    {
-      pa_simple_new   = null;
-      pa_simple_free  = null;
-      pa_simple_write = null;
-      pa_simple_drain = null;
-
-      dlclose( library );
-    }
-  }
-
-#endif
-
-  isConstructed = true;
-}
 
 #ifdef __native_client__
 pp::Module*   System::module;   // = null

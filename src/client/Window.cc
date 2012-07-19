@@ -294,14 +294,14 @@ void Window::init()
 
 #if SDL_MAJOR_VERSION < 2
 
+  SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,   0 );
+  SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 0 );
+  SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, 1 );
+
   descriptor = SDL_SetVideoMode( width, height, 0, flags );
 
   SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION,
                      OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION );
-
-  SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,   0 );
-  SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 0 );
-  SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, 1 );
 
 #else
 

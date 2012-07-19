@@ -123,6 +123,8 @@ void MD2Imago::draw( const Imago* parent )
       context.drawImago( orbis.objects[bot->weapon], this );
     }
   }
+
+  tf.colour.w.w = 1.0f;
 }
 
 }

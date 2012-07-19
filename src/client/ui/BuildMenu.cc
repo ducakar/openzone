@@ -52,9 +52,8 @@ void BuildMenu::createObject( Button* button_ )
   const BuildButton* button = static_cast<const BuildButton*>( button_ );
   const ObjectClass* clazz = library.objClass( button->className );
 
-  Point p = camera.bot < 0 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
-  p += camera.at * 2.0f;
-  AABB bb = AABB( p, clazz->dim );
+  Point p  = camera.p + ( 2.0f + clazz->dim.fastN() ) * camera.at;
+  AABB  bb = AABB( p, clazz->dim );
 
   if( !collider.overlaps( bb ) ) {
     synapse.addObject( button->className, p, NORTH, false );

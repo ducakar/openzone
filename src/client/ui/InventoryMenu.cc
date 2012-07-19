@@ -276,7 +276,11 @@ void InventoryMenu::onVisibilityChange( bool )
 
 void InventoryMenu::onUpdate()
 {
-  if( camera.state != Camera::UNIT || !mouse.doShow ) {
+  const Bot* bot = camera.botObj;
+
+  if( camera.state != Camera::UNIT || !mouse.doShow || bot == null ||
+      ( bot->state & Bot::DEAD_BIT ) )
+  {
     if( !( flags & HIDDEN_BIT ) ) {
       show( false );
     }

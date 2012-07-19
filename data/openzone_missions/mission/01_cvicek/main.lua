@@ -215,6 +215,8 @@ function onCreate()
 
   ozOrbisAddObj( OZ_FORCE, "metalCrate", -37.57, -939.23, 137.93 )
   ozObjAddItem( "musicPlayer" )
+  ozObjAddItem( "nvGoggles" )
+  ozObjAddItem( "binoculars" )
 
   ozOrbisAddObj( OZ_FORCE, "metalCrate", -22.53, -941.39, 137.93 )
   ozObjAddItem( "cvicek" )
@@ -262,6 +264,7 @@ function onCreate()
   ozOrbisAddObj( OZ_FORCE, "metalCrate", -17.61, -942.49, 137.93 )
   ozObjAddItem( "galileo" )
   ozObjAddItem( "musicPlayer" )
+  ozObjAddItem( "nvGoggles" )
   ozObjAddItem( "beast_weapon.plasmagun" )
   ozObjAddItem( "beast_weapon.plasmagun" )
   ozObjAddItem( "bomb" )
@@ -331,8 +334,8 @@ function onCreate()
   ozVehicleEmbarkBot( pilot )
 
   -- kmetija
-  ozOrbisAddStr( OZ_FORCE, "house", 80.0, -20.0, 70.7, OZ_NORTH )
-  ozOrbisAddStr( OZ_FORCE, "house", 85.0, -30.0, 69.7, OZ_WEST )
+  ozOrbisAddStr( OZ_FORCE, "house", 80.0, -20.0, 70.2, OZ_NORTH )
+  ozOrbisAddStr( OZ_FORCE, "house", 85.0, -30.0, 69.4, OZ_WEST )
 
   ozOrbisAddObj( OZ_FORCE, "goblin", 80.0, -20.0, 70.0 )
   ozBotSetMind( "goblin_defend" )
@@ -363,6 +366,7 @@ function onCreate()
   ozObjAddItem( "musicPlayer" )
   ozObjAddItem( "beast_weapon.plasmagun" )
   ozObjAddItem( "beast_weapon.plasmagun" )
+  ozObjAddItem( "nvGoggles" )
   ozObjAddItem( "galileo" )
   ozObjAddItem( "firstAid" )
   ozObjAddItem( "firstAid" )
@@ -428,8 +432,8 @@ function onCreate()
 
   oz_farmQuest = ozQuestAdd( ozGettext( "The Farm" ), ozGettext(
     "That farm is a stage of an annoying reality show called 'The Farm'. It wouldn't do much " ..
-    "harm to blow it up.\n\nThe farmhouses are not very robust, so a dozen of bombs should be " ..
-    "more then enough to demolish them. And don't expect any welcome from participants of the " ..
+    "harm to blow it up.\n\nThe farmhouses are not very robust, so a few bombs or a heavier " ..
+    "weapon should do the trick. And don't expect any welcome from participants of the " ..
     "show." ),
     80, -20, 70, OZ_QUEST_PENDING )
 

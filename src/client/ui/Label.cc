@@ -92,12 +92,13 @@ void Label::vset( int x_, int y_, int align_, Font::Type font_, const char* s, v
   buffer[1023] = '\0';
 
   if( buffer[0] == '\0' || ( buffer[0] == ' ' && buffer[1] == '\0' ) ) {
-    offsetX = 0;
-    offsetY = 0;
-    width   = 0;
-    height  = 0;
+    offsetX     = 0;
+    offsetY     = 0;
+    width       = 0;
+    height      = 0;
 
     activeTexId = 0;
+    hasChanged  = false;
     return;
   }
 

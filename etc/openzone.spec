@@ -1,5 +1,5 @@
 Name:           openzone
-Version:        0.2.99
+Version:        0.3.0
 Release:        1
 Summary:        Simple cross-platform FPS/RTS game (meta package)
 URL:            https://github.com/ducakar/openzone/

@@ -23,9 +23,17 @@
 
 #include "oz/oz.hh"
 
+#include "oz/windefs.h"
+#include <fcntl.h>
+
+#include <clocale>
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cwchar>
 
 using namespace oz;
+using namespace std;
 
 class Foo
 {
@@ -89,13 +97,19 @@ int main()
 {
   System::init();
 
-  SList<int, 8> l;
-  l.add();
-  Log::out << l[0] << "\n";
-  l.clear();
-  l.add();
-  Log::out << l[0] << "\n";
+  wchar_t wcs[20];
+  mbstowcs( wcs, "ångštröm", 20 );
 
-  Alloc::printLeaks();
+  wprintf( L"%ls\n", wcs );
+  wprintf( L"\n" );
+
+  wprintf( L"----------\n" );
+
+  char mbs[25];
+  wcstombs( mbs, wcs, 25 );
+  wprintf( L"%s\n", mbs );
+
+  printf( "dsadada\n" );
+
   return 0;
 }

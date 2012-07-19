@@ -7,7 +7,7 @@
 # Additionaly this scripts also updates version numbers in variout files.
 #
 
-version="0.2.99"
+version="0.3.0"
 components="oz common matrix nirvana modules client build unittest"
 
 # Generate CMakeLists.txt files.

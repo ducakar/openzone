@@ -33,7 +33,7 @@ namespace matrix
 Physics physics;
 
 const float Physics::FLOOR_NORMAL_Z          =  0.60f;
-const float Physics::MOVE_BOUNCE             =  1.5f * EPSILON;
+const float Physics::MOVE_BOUNCE             =  EPSILON;
 const float Physics::ENTITY_BOND_G_RATIO     =  0.10f;
 const float Physics::SIDE_PUSH_RATIO         =  0.40f;
 
@@ -446,10 +446,15 @@ void Physics::handleObjMove()
         Vec3  cross    = collider.hit.normal ^ lastNormals[0];
         float crossSqN = cross.sqN();
 
-        if( crossSqN != 0.0f ) {
-          cross /= Math::sqrt( crossSqN );
+        if( crossSqN == 0.0f ) {
+          move = Vec3::ZERO;
+        }
+        else {
+          float length_1 = Math::fastInvSqrt( crossSqN );
+
+          cross *= length_1;
           move   = ( move * cross ) * cross;
-          move  += MOVE_BOUNCE * ( collider.hit.normal + lastNormals[0] );
+          move  += 3.0f * MOVE_BOUNCE * length_1 * ( collider.hit.normal + lastNormals[0] );
         }
       }
 
@@ -464,10 +469,15 @@ void Physics::handleObjMove()
           Vec3  cross    = collider.hit.normal ^ lastNormals[1];
           float crossSqN = cross.sqN();
 
-          if( crossSqN != 0.0f ) {
-            cross /= Math::sqrt( crossSqN );
+          if( crossSqN == 0.0f ) {
+            move = Vec3::ZERO;
+          }
+          else {
+            float length_1 = Math::fastInvSqrt( crossSqN );
+
+            cross /= length_1;
             move   = ( move * cross ) * cross;
-            move  += MOVE_BOUNCE * ( collider.hit.normal + lastNormals[1] );
+            move  += 3.0f * MOVE_BOUNCE * length_1 * ( collider.hit.normal + lastNormals[1] );
           }
         }
       }

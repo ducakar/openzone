@@ -63,6 +63,8 @@
     thread and upload to graphic card that has to be synchronous with rendering
   - textures have 3 components: diffuse (base colour), masks (per-pixel specular and emission masks)
     and normal map
+  - meshes are not rendered immediately but lists are created for each mesh and all instances of a
+    mesh are rendered together
   - offscreen rendering support
   - postprocessing, bloom postprocess effect
   - Camera

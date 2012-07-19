@@ -51,6 +51,14 @@ void Object::onDestroy()
     lua.objectCall( clazz->onDestroy, this );
   }
 
+  foreach( i, items.citer() ) {
+    Object* item = orbis.objects[*i];
+
+    if( item != null ) {
+      item->destroy();
+    }
+  }
+
   if( clazz->fragPool != null ) {
     synapse.gen( clazz->fragPool,
                  clazz->nFrags,
