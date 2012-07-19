@@ -116,7 +116,7 @@ function bigExplosion_onUpdate( l )
         if distance < 20 then
           distance = 20 - distance
 
-          ozObjDamage( 100 + 4*distance )
+          ozObjDamage( 100 + 2*distance )
 
           if ozObjIsVisibleFromSelf() then
             ozObjDamage( 100 + 4*distance )

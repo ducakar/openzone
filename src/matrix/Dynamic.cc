@@ -41,19 +41,15 @@ void Dynamic::onDestroy()
     lua.objectCall( clazz->onDestroy, this );
   }
 
-  if( clazz->fragPool != null ) {
-    if( cell == null ) {
-      hard_assert( parent >= 0 );
+  foreach( i, items.citer() ) {
+    Dynamic* item = static_cast<Dynamic*>( orbis.objects[*i] );
 
-      const Object* container = orbis.objects[parent];
-      if( container == null ) {
-        return;
-      }
-      else {
-        p = container->p;
-      }
+    if( item != null ) {
+      item->destroy();
     }
+  }
 
+  if( cell != null && clazz->fragPool != null ) {
     synapse.gen( clazz->fragPool,
                  clazz->nFrags,
                  Bounds( Point( p.x - dim.x, p.y - dim.y, p.z ),

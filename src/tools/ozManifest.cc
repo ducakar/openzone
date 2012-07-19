@@ -67,7 +67,7 @@ int main( int argc, char** argv )
   Log::indent();
 
   BufferStream bs;
-  bs.writeString( "ozManifest" );
+  bs.writeChars( "ozManifest", sizeof( "ozManifest" ) );
 
   File outDir( outDirPath );
   DArray<File> files = outDir.ls();

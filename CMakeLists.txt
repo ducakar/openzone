@@ -6,7 +6,7 @@ project( openzone C CXX )
 # Configuration
 #
 
-set( OZ_VERSION "0.2.99" CACHE STRING "" FORCE )
+set( OZ_VERSION "0.3.0" CACHE STRING "" FORCE )
 
 if( NOT NACL )
   option( OZ_SHARED_LIBOZ "Build liboz as a shared library." OFF )

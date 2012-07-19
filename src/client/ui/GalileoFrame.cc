@@ -71,21 +71,21 @@ void GalileoFrame::onReposition()
 
 void GalileoFrame::onUpdate()
 {
-  if( orbis.terra.id < 0 || ( camera.state == Camera::UNIT && camera.botObj != null &&
-      !( camera.botObj->state & Bot::DEAD_BIT ) &&
-      !camera.botObj->hasAttribute( ObjectClass::GALILEO_BIT ) ) )
+  const Bot* bot = camera.botObj;
+
+  if( orbis.terra.id < 0 || ( camera.state == Camera::UNIT && ( bot == null ||
+        ( bot->state & Bot::DEAD_BIT ) || !bot->hasAttribute( ObjectClass::GALILEO_BIT ) ) ) )
   {
-    flags |= HIDDEN_BIT | IGNORE_BIT;
-    setMaximised( false );
+    if( !( flags & HIDDEN_BIT ) ) {
+      setMaximised( false );
+      show( false );
+    }
   }
   else {
-    flags &= ~( HIDDEN_BIT | IGNORE_BIT );
+    if( flags & HIDDEN_BIT ) {
+      show( true );
+    }
   }
-}
-
-bool GalileoFrame::onMouseEvent()
-{
-  return flags & HIDDEN_BIT ? false : Frame::onMouseEvent();
 }
 
 void GalileoFrame::onDraw()

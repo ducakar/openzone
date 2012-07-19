@@ -29,10 +29,7 @@
 #include "matrix/BotClass.hh"
 #include "matrix/WeaponClass.hh"
 
-#ifndef __clang__
-// GCC bug, a false positive warning.
-# pragma GCC diagnostic ignored "-Wconversion"
-#endif
+#include <cwctype>
 
 namespace oz
 {
@@ -56,20 +53,22 @@ void Profile::init()
 
   if( name.isEmpty() ) {
     const char* userName = SDL_getenv( "USER" );
-    userName = userName == null ? "Player" : userName;
 
-    char playerName[64];
-    strncpy( playerName, userName, 64 );
-    playerName[63] = '\0';
-
-    if( 'a' <= playerName[0] && playerName[0] <= 'z' ) {
-      playerName[0] += char( 'A' - 'a' );
+    if( userName == null || String::isEmpty( userName ) ) {
+      name = "Player";
     }
+    else {
+      wchar_t wcUserName[64];
+      mbstowcs( wcUserName, userName, 64 );
 
-    profileConfig.add( "name", playerName );
+      wcUserName[0] = wchar_t( towupper( wint_t( wcUserName[0] ) ) );
 
-    name = playerName;
-    configExists = false;
+      char mbUserName[64];
+      wcstombs( mbUserName, wcUserName, 64 );
+
+      name = mbUserName;
+      configExists = false;
+    }
   }
 
   // HACK default profile

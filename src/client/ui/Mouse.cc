@@ -67,7 +67,7 @@ void Mouse::update()
     // acceleration as closely as possible.
     if( window.isFull ) {
       float move2  = Math::sqrt( float( moveX*moveX + moveY*moveY ) );
-      float factor = min( 0.5f + max( move2 - 8.0f, 0.0f ) * 0.04f, 2.0f );
+      float factor = min( 1.0f + max( move2 - 8.0f, 0.0f ) * 0.04f, 2.0f );
 
       moveX = int( float( input.mouseX ) * factor );
       moveY = int( float( input.mouseY ) * factor );

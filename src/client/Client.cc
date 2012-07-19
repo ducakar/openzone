@@ -139,7 +139,8 @@ int Client::init( int argc, char** argv )
 
   String configDir = "/config/openzone";
   String localDir = "/local/share/openzone";
-  String musicDir = "/music";
+//   String musicDir = "/music";
+  String musicDir = "";
 
   File::mkdir( "/config" );
   File::mkdir( "/local" );
@@ -149,7 +150,7 @@ int Client::init( int argc, char** argv )
 
   char configRoot[MAX_PATH];
   char localRoot[MAX_PATH];
-  char musicRoot[MAX_PATH];
+//   char musicRoot[MAX_PATH];
 
   if( !SHGetSpecialFolderPath( null, configRoot, CSIDL_APPDATA, false ) ) {
     throw Exception( "Failed to obtain APPDATA directory" );
@@ -157,20 +158,21 @@ int Client::init( int argc, char** argv )
   if( !SHGetSpecialFolderPath( null, localRoot, CSIDL_LOCAL_APPDATA, false ) ) {
     throw Exception( "Failed to obtain LOCAL_APPDATA directory" );
   }
-  if( !SHGetSpecialFolderPath( null, musicRoot, CSIDL_MYMUSIC, false ) ) {
-    throw Exception( "Failed to obtain MYMUSIC directory" );
-  }
+//   if( !SHGetSpecialFolderPath( null, musicRoot, CSIDL_MYMUSIC, false ) ) {
+//     throw Exception( "Failed to obtain MYMUSIC directory" );
+//   }
 
   String configDir = String::str( "%s\\" OZ_APPLICATION_NAME, configRoot );
   String localDir  = String::str( "%s\\" OZ_APPLICATION_NAME, localRoot );
-  String musicDir  = musicRoot;
+//   String musicDir  = musicRoot;
+  String musicDir = "";
 
 #else
 
   const char* home       = SDL_getenv( "HOME" );
   const char* configRoot = SDL_getenv( "XDG_CONFIG_HOME" );
   const char* localRoot  = SDL_getenv( "XDG_LOCAL_HOME" );
-  const char* musicRoot  = SDL_getenv( "XDG_MUSIC_DIR" );
+//   const char* musicRoot  = SDL_getenv( "XDG_MUSIC_DIR" );
 
   if( home == null ) {
     throw Exception( "Cannot determine user home directory from environment" );
@@ -184,7 +186,8 @@ int Client::init( int argc, char** argv )
                     String::str( "%s/.local/share/" OZ_APPLICATION_NAME, home ) :
                     String::str( "%s/" OZ_APPLICATION_NAME, localRoot );
 
-  String musicDir = musicRoot == null ? String::str( "%s/Music", home ) : String( musicRoot );
+//   String musicDir = musicRoot == null ? String::str( "%s/Music", home ) : String( musicRoot );
+  String musicDir = "";
 
 #endif
 
@@ -212,18 +215,6 @@ int Client::init( int argc, char** argv )
   Log::printTime( Time::local() );
   Log::printEnd();
 
-  OZ_MAIN_CALL( this, {
-    if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) == 0 ) {
-      _this->initFlags |= INIT_SDL;
-    }
-  } )
-  if( !( initFlags & INIT_SDL ) ) {
-    throw Exception( "Failed to initialise SDL: %s", SDL_GetError() );
-  }
-
-  PFile::init( File::TEMPORARY, 32*1024*1024 );
-  initFlags |= INIT_PHYSFS;
-
   Log::verboseMode = true;
   Log::println( "Build details {" );
   Log::indent();
@@ -237,6 +228,18 @@ int Client::init( int argc, char** argv )
   Log::unindent();
   Log::println( "}" );
   Log::verboseMode = false;
+
+  OZ_MAIN_CALL( this, {
+    if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) == 0 ) {
+      _this->initFlags |= INIT_SDL;
+    }
+  } )
+  if( !( initFlags & INIT_SDL ) ) {
+    throw Exception( "Failed to initialise SDL: %s", SDL_GetError() );
+  }
+
+  PFile::init( File::TEMPORARY, 32*1024*1024 );
+  initFlags |= INIT_PHYSFS;
 
   // Clean up after previous versions.
   File::rm( configDir + "/client.rc" );
@@ -329,7 +332,7 @@ int Client::init( int argc, char** argv )
     DArray<File> list = File( localDir ).ls();
 
     foreach( file, list.citer() ) {
-      if( file->hasExtension( "zip" ) || file->hasExtension( "7z" ) ) {
+      if( file->hasExtension( "7z" ) || file->hasExtension( "zip" ) ) {
         if( !PFile::mount( file->path(), null, true ) ) {
           throw Exception( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
@@ -344,7 +347,7 @@ int Client::init( int argc, char** argv )
     DArray<File> list = File( dataDir ).ls();
 
     foreach( file, list.citer() ) {
-      if( file->hasExtension( "zip" ) || file->hasExtension( "7z" ) ) {
+      if( file->hasExtension( "7z" ) || file->hasExtension( "zip" ) ) {
         if( !PFile::mount( file->path(), null, true ) ) {
           throw Exception( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
@@ -366,7 +369,7 @@ int Client::init( int argc, char** argv )
       throw Exception( "Configuration variable 'sees' must be either \"TIME\" or an integer" );
     }
 
-    seed = int( Time::uclock() );
+    seed = int( Time::time() );
   }
   else {
     seed = config["seed"].asInt();
@@ -578,26 +581,26 @@ int Client::main()
 # endif
 
           if( keysym.sym == SDLK_F9 ) {
-            if( keysym.mod == 0 ) {
+            if( !( keysym.mod & KMOD_CTRL ) ) {
               loader.makeScreenshot();
             }
           }
           else if( keysym.sym == SDLK_F11 ) {
-            if( keysym.mod == 0 ) {
-              window.setFullscreen( !window.isFull );
-            }
-            else if( keysym.mod & KMOD_CTRL ) {
+            if( keysym.mod & KMOD_CTRL ) {
               window.hasGrab = !window.hasGrab;
 
               SDL_ShowCursor( !window.hasGrab );
             }
+            else  {
+              window.setFullscreen( !window.isFull );
+            }
           }
           else if( keysym.sym == SDLK_F12 ) {
-            if( keysym.mod == 0 ) {
-              window.minimise();
-            }
-            else if( keysym.mod & KMOD_CTRL ) {
+            if( keysym.mod & KMOD_CTRL ) {
               isAlive = false;
+            }
+            else {
+              window.minimise();
             }
           }
 #endif
@@ -611,10 +614,8 @@ int Client::main()
           input.readEvent( &event );
           break;
         }
-
 #if defined( __native_client__ )
 #elif SDL_MAJOR_VERSION < 2
-
         case SDL_ACTIVEEVENT: {
           if( event.active.state & SDL_APPMOUSEFOCUS ) {
             window.hasFocus = event.active.gain != 0;
@@ -636,15 +637,7 @@ int Client::main()
           }
           break;
         }
-        case SDL_VIDEORESIZE: {
-          window.width  = event.resize.w;
-          window.height = event.resize.h;
-          window.resize();
-          break;
-        }
-
 #else
-
         case SDL_WINDOWEVENT: {
           switch( event.window.event ) {
             case SDL_WINDOWEVENT_FOCUS_GAINED:
@@ -674,12 +667,6 @@ int Client::main()
               isActive = false;
               break;
             }
-            case SDL_WINDOWEVENT_RESIZED: {
-              window.width  = event.window.data1;
-              window.height = event.window.data2;
-              window.resize();
-              break;
-            }
             case SDL_WINDOWEVENT_CLOSE: {
               isAlive = false;
               break;
@@ -687,9 +674,7 @@ int Client::main()
           }
           break;
         }
-
 #endif
-
         case SDL_QUIT: {
           isAlive = false;
           break;

@@ -64,7 +64,6 @@ class GalileoFrame : public Frame
 
     void onUpdate() override;
     void onReposition() override;
-    bool onMouseEvent() override;
     void onDraw() override;
 
   public:

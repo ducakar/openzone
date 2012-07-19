@@ -74,6 +74,8 @@ void ExplosionImago::draw( const Imago* )
   }
 
   smm->schedule( -1 );
+
+  tf.colour.w.w = 1.0f;
 }
 
 }

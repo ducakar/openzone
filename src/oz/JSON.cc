@@ -653,7 +653,7 @@ JSON::~JSON()
   clear();
 }
 
-inline JSON::JSON( JSON&& v ) :
+JSON::JSON( JSON&& v ) :
   data( v.data ), valueType( v.valueType ), wasAccessed( v.wasAccessed )
 {
   v.data        = null;
@@ -661,7 +661,7 @@ inline JSON::JSON( JSON&& v ) :
   v.wasAccessed = true;
 }
 
-inline JSON& JSON::operator = ( JSON&& v )
+JSON& JSON::operator = ( JSON&& v )
 {
   clear();
 

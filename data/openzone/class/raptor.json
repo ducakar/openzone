@@ -18,8 +18,8 @@
   "type":               "AIR",
 
   "pilotPos.x":         0,
-  "pilotPos.y":         2.5,
-  "pilotPos.z":         -0.2,
+  "pilotPos.y":         2.4,
+  "pilotPos.z":         0.1,
 
   "rotVelLimit":        60,
 

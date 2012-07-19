@@ -39,8 +39,11 @@ function onCreate()
 --   ozCaelumSetRealTime()
 
   local me = ozOrbisAddPlayer( OZ_FORCE, 137, -6, 73, OZ_SOUTH )
+--   local me = ozOrbisAddPlayer( OZ_FORCE, 2000, -2002, 100, OZ_SOUTH )
   ozCameraAddSwitchableUnit( me )
   ozCameraSwitchTo( me )
+
+--   ozOrbisAddStr( OZ_FORCE, "testCastle", 2000, -2000, 100, OZ_NORTH )
 
 --   ozCameraSetState( OZ_CAMERA_CINEMATIC )
 --   ozCameraAddMove( 131, -12, 85, 0, 90, 1 )

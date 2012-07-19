@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenZone\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-07-18 12:14+0100\n"
+"PO-Revision-Date: 2012-07-20 17:39+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: \n"
@@ -25,7 +25,7 @@ msgstr "Zapri"
 msgid "Continue"
 msgstr "Nadaljevanje"
 
-#: src/client/ui/BuildMenu.cc:65
+#: src/client/ui/BuildMenu.cc:64
 msgid "Create"
 msgstr "Umesti"
 
@@ -50,7 +50,7 @@ msgstr "Nalagam ..."
 msgid "Missions"
 msgstr "Misije"
 
-#: src/client/ui/MusicPlayer.cc:179
+#: src/client/ui/MusicPlayer.cc:183
 msgid "Music Player"
 msgstr "Predvajalnik"
 
