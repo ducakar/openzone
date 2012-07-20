@@ -159,6 +159,67 @@ void UnitProxy::prepare()
   bot->v = clamp( bot->v, 0.0f, Math::TAU / 2.0f );
 
   /*
+   * Mouse
+   */
+
+  if( !ui::mouse.doShow ) {
+    if( input.buttons & SDL_BUTTON_LMASK ) {
+      bot->actions |= Bot::ACTION_ATTACK;
+    }
+
+    if( input.leftClick ) {
+      if( bot->cargo >= 0 ) {
+        bot->rotateCargo();
+      }
+    }
+    if( input.rightClick ) {
+      if( bot->parent >= 0 ) {
+        bot->actions |= Bot::ACTION_VEH_NEXT_WEAPON;
+      }
+      else if( camera.entityObj != null ) {
+        bot->trigger( camera.entityObj );
+      }
+      else if( camera.objectObj != null ) {
+        bot->use( camera.objectObj );
+      }
+    }
+    else if( input.middleClick ) {
+      if( bot->cargo >= 0 ) {
+        bot->grab();
+      }
+      else if( camera.entity >= 0 ) {
+        bot->lock( camera.entityObj );
+      }
+      else if( camera.object >= 0 ) {
+        Dynamic* dyn = static_cast<Dynamic*>( const_cast<Object*>( camera.objectObj ) );
+
+        if( dyn->flags & Object::DYNAMIC_BIT ) {
+          bot->grab( dyn );
+        }
+      }
+    }
+    else if( input.wheelDown ) {
+      if( camera.objectObj != null ) {
+        if( camera.objectObj->flags & Object::BROWSABLE_BIT ) {
+          ui::mouse.doShow = true;
+        }
+        else {
+          Dynamic* dyn = static_cast<Dynamic*>( const_cast<Object*>( camera.objectObj ) );
+
+          if( dyn->flags & Object::DYNAMIC_BIT ) {
+            bot->take( dyn );
+          }
+        }
+      }
+    }
+    else if( input.wheelUp ) {
+      if( bot->cargo >= 0 ) {
+        bot->throwCargo();
+      }
+    }
+  }
+
+  /*
    * Movement
    */
 
@@ -279,65 +340,15 @@ void UnitProxy::prepare()
     }
   }
 
-  /*
-   * Mouse
-   */
+  if( input.keys[Input::KEY_CHEAT_SKY_FORWARD] ) {
+    orbis.caelum.time += 0.1f * Timer::TICK_TIME * orbis.caelum.period;
+  }
+  if( input.keys[Input::KEY_CHEAT_SKY_BACKWARD] ) {
+    orbis.caelum.time -= 0.1f * Timer::TICK_TIME * orbis.caelum.period;
+  }
 
-  if( !ui::mouse.doShow ) {
-    if( input.buttons & SDL_BUTTON_LMASK ) {
-      bot->actions |= Bot::ACTION_ATTACK;
-    }
-
-    if( input.leftClick ) {
-      if( bot->cargo >= 0 ) {
-        bot->rotateCargo();
-      }
-    }
-    if( input.rightClick ) {
-      if( bot->parent >= 0 ) {
-        bot->actions |= Bot::ACTION_VEH_NEXT_WEAPON;
-      }
-      else if( camera.entityObj != null ) {
-        bot->trigger( camera.entityObj );
-      }
-      else if( camera.objectObj != null ) {
-        bot->use( camera.objectObj );
-      }
-    }
-    else if( input.middleClick ) {
-      if( bot->cargo >= 0 ) {
-        bot->grab();
-      }
-      else if( camera.entity >= 0 ) {
-        bot->lock( camera.entityObj );
-      }
-      else if( camera.object >= 0 ) {
-        Dynamic* dyn = static_cast<Dynamic*>( const_cast<Object*>( camera.objectObj ) );
-
-        if( dyn->flags & Object::DYNAMIC_BIT ) {
-          bot->grab( dyn );
-        }
-      }
-    }
-    else if( input.wheelDown ) {
-      if( camera.objectObj != null ) {
-        if( camera.objectObj->flags & Object::BROWSABLE_BIT ) {
-          ui::mouse.doShow = true;
-        }
-        else {
-          Dynamic* dyn = static_cast<Dynamic*>( const_cast<Object*>( camera.objectObj ) );
-
-          if( dyn->flags & Object::DYNAMIC_BIT ) {
-            bot->take( dyn );
-          }
-        }
-      }
-    }
-    else if( input.wheelUp ) {
-      if( bot->cargo >= 0 ) {
-        bot->throwCargo();
-      }
-    }
+  if( input.keys[Input::KEY_UI_TOGGLE] && !input.oldKeys[Input::KEY_UI_TOGGLE] ) {
+    ui::mouse.doShow = !ui::mouse.doShow;
   }
 }
 

@@ -57,26 +57,8 @@ void Mouse::update()
   if( doShow ) {
     icon = ARROW;
 
-    int moveX = input.mouseX;
-    int moveY = input.mouseY;
-
-#if defined( __linux__ ) && SDL_MAJOR_VERSION < 2
-
-    // Compensate lack of mouse acceleration on X server when input is grabbed. This code is not
-    // based on actual code from X.Org, but experimentally tuned to match default X server
-    // acceleration as closely as possible.
-    if( window.isFull ) {
-      float move2  = Math::sqrt( float( moveX*moveX + moveY*moveY ) );
-      float factor = min( 1.0f + max( move2 - 8.0f, 0.0f ) * 0.04f, 2.0f );
-
-      moveX = int( float( input.mouseX ) * factor );
-      moveY = int( float( input.mouseY ) * factor );
-    }
-
-#endif
-
-    int desiredX = x + moveX;
-    int desiredY = y + moveY;
+    int desiredX = x + input.mouseX;
+    int desiredY = y + input.mouseY;
 
     x = clamp( desiredX, 0, camera.width  - 1 );
     y = clamp( desiredY, 0, camera.height - 1 );

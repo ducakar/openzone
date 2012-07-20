@@ -84,11 +84,12 @@ const int MAX_WORLD_COORD = 2048;
  * When we translate an object additional errors are introduces.
  * <tt>position += collider.hit.ratio * move</tt> can introduce at most
  * \f$ 2 \cdot |maxWorldCoord| \cdot \varepsilon \sqrt 3 \f$ error.
- * Sum of all those errors should be less than <tt>|maxWorldCoord| * 3.0f * Math::FLOAT_EPS</tt>.
+ * Sum of all those errors should be less than <tt>|maxWorldCoord| * 3.0f * Math::FLOAT_EPS</tt> or,
+ * just in case, a little more.
  *
  * @ingroup common
  */
-const float EPSILON = 2048.0f * 3.0f * Math::FLOAT_EPS;
+const float EPSILON = 2048.0f * 4.0f * Math::FLOAT_EPS;
 
 /**
  * Lua C API.

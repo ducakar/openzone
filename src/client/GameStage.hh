@@ -83,7 +83,7 @@ class GameStage : public Stage
   public:
 
     bool update() override;
-    void present( bool full ) override;
+    void present( bool isFull ) override;
     void wait( uint micros ) override;
 
     void load() override;

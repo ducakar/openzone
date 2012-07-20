@@ -433,17 +433,36 @@ void Input::update()
     return;
   }
 
-  int inputX, inputY;
-
 #ifdef __native_client__
-  inputX = NaCl::moveX;
-  inputY = NaCl::moveY;
-#else
-  SDL_GetRelativeMouseState( &inputX, &inputY );
-#endif
 
-  mouseX = +inputX;
-  mouseY = -inputY;
+  mouseX = +NaCl::moveX;
+  mouseY = -NaCl::moveY;
+
+#else
+
+  SDL_GetRelativeMouseState( &mouseX, &mouseY );
+
+  // Compensate lack of mouse acceleration when receiving raw (non-accelerated) mouse input. This
+  // code is not based on actual code from X.Org, but experimentally tuned to match default X server
+  // mouse acceleration as closely as possible.
+  float move2  = Math::sqrt( float( mouseX*mouseX + mouseY*mouseY ) );
+  float factor = min( 1.0f + max( move2 - 4.0f, 0.0f ) * 0.04f, 2.0f );
+
+# if SDL_MAJOR_VERSION < 2
+  if( window.isFull ) {
+    mouseX = +int( float( mouseX ) * factor );
+    mouseY = -int( float( mouseY ) * factor );
+  }
+  else {
+    mouseX = +mouseX;
+    mouseY = -mouseY;
+  }
+# else
+  mouseX = +int( float( mouseX ) * factor );
+  mouseY = -int( float( mouseY ) * factor );
+# endif
+
+#endif
 
   int clickedButtons = input.buttons & ~input.oldButtons;
 

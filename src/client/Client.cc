@@ -570,6 +570,8 @@ int Client::main()
     // read input & events
     input.prepare();
 
+    SDL_PumpEvents();
+
     while( SDL_PollEvent( &event ) != 0 ) {
       switch( event.type ) {
         case SDL_KEYDOWN: {
@@ -587,9 +589,7 @@ int Client::main()
           }
           else if( keysym.sym == SDLK_F11 ) {
             if( keysym.mod & KMOD_CTRL ) {
-              window.hasGrab = !window.hasGrab;
-
-              SDL_ShowCursor( !window.hasGrab );
+              window.setGrab( !window.hasGrab );
             }
             else  {
               window.setFullscreen( !window.isFull );
