@@ -320,7 +320,7 @@ bool GameStage::update()
   return true;
 }
 
-void GameStage::present( bool full )
+void GameStage::present( bool isFull )
 {
   uint beginMicros = Time::uclock();
   uint currentMicros;
@@ -331,7 +331,7 @@ void GameStage::present( bool full )
   soundMicros += currentMicros - beginMicros;
   beginMicros = currentMicros;
 
-  if( full ) {
+  if( isFull ) {
     render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
     render.swap();
 

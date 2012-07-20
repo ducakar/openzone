@@ -83,6 +83,8 @@ class Window
 
     void minimise();
     void resize();
+
+    void setGrab( bool grab );
     void setFullscreen( bool fullscreen );
 
     void init();

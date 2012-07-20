@@ -47,11 +47,15 @@ bool MenuStage::update()
   return !doExit;
 }
 
-void MenuStage::present( bool )
+void MenuStage::present( bool isFull )
 {
-  render.draw( Render::DRAW_UI_BIT );
   sound.play();
-  render.swap();
+
+  if( isFull ) {
+    render.draw( Render::DRAW_UI_BIT );
+    render.swap();
+  }
+
   sound.sync();
 }
 

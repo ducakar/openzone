@@ -165,17 +165,6 @@ void Camera::prepare()
     relV += input.keySensV;
   }
 
-  if( input.keys[Input::KEY_CHEAT_SKY_FORWARD] ) {
-    orbis.caelum.time += 0.1f * Timer::TICK_TIME * orbis.caelum.period;
-  }
-  if( input.keys[Input::KEY_CHEAT_SKY_BACKWARD] ) {
-    orbis.caelum.time -= 0.1f * Timer::TICK_TIME * orbis.caelum.period;
-  }
-
-  if( input.keys[Input::KEY_UI_TOGGLE] && !input.oldKeys[Input::KEY_UI_TOGGLE] ) {
-    ui::mouse.doShow = !ui::mouse.doShow;
-  }
-
   if( newState != state ) {
     if( proxy != null ) {
       proxy->end();
