@@ -30,6 +30,10 @@
 #include "client/QuestList.hh"
 #include "client/Camera.hh"
 #include "client/Profile.hh"
+#include "client/NaCl.hh"
+
+#include "client/ui/BuildMenu.hh"
+#include "client/ui/UI.hh"
 
 namespace oz
 {
@@ -291,6 +295,33 @@ static int ozProfileGetBot( lua_State* l )
 
   l_pushstring( profile.clazz->name );
   return 1;
+}
+
+/*
+ * UI
+ */
+
+static int ozUIShowBuild( lua_State* l )
+{
+  ARG( 1 );
+
+  bool doShow = l_tobool( 1 );
+
+  if( doShow && ui::ui.buildMenu == null ) {
+    OZ_MAIN_CALL( static_cast<void*>( null ), {
+      ui::ui.buildMenu = new ui::BuildMenu();
+    } )
+
+    ui::ui.buildMenu->show( ui::mouse.doShow );
+    ui::ui.root->add( ui::ui.buildMenu, 8, -24 - 210 - 47 - 22 - 22 );
+  }
+  else if( !doShow && ui::ui.buildMenu != null ) {
+    OZ_MAIN_CALL( static_cast<void*>( null ), {
+      ui::ui.root->remove( ui::ui.buildMenu );
+      ui::ui.buildMenu = null;
+    } )
+  }
+  return 0;
 }
 
 /// @}

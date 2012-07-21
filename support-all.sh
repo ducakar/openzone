@@ -12,6 +12,8 @@ if (( $Linux_x86_64 )); then
 
   cp "$prefix/libz.so.1" \
      "$prefix/libphysfs.so.1" \
+     "$prefix/libSDL-1.2.so.0" \
+     "$prefix/libSDL_ttf-2.0.so.0" \
      "$prefix/liblua.so.5.1" \
      "$prefix/libbz2.so.1.0" \
      "$prefix/libfreetype.so.6" \
@@ -27,16 +29,6 @@ if (( $Linux_x86_64 )); then
   fi
   if [[ -e "$prefix/libfaad.so.2" ]]; then
     cp "$prefix/libfaad.so.2" \
-       "$outDir"
-  fi
-
-  if grep SDL2 build/Linux-x86_64/CMakeCache.txt &> /dev/null; then
-    cp "$prefix/libSDL2-2.0.so.0" \
-       "$prefix/libSDL2_ttf-2.0.so.0" \
-       "$outDir"
-  else
-    cp "$prefix/libSDL-1.2.so.0" \
-       "$prefix/libSDL_ttf-2.0.so.0" \
        "$outDir"
   fi
 fi
@@ -50,6 +42,8 @@ if (( $Linux_x86_32 )); then
 
   cp "$prefix/libz.so.1" \
      "$prefix/libphysfs.so.1" \
+     "$prefix/libSDL-1.2.so.0" \
+     "$prefix/libSDL_ttf-2.0.so.0" \
      "$prefix/liblua.so.5.1" \
      "$prefix/libbz2.so.1.0" \
      "$prefix/libfreetype.so.6" \
@@ -65,16 +59,6 @@ if (( $Linux_x86_32 )); then
   fi
   if [[ -e "$prefix/libfaad.so.2" ]]; then
     cp "$prefix/libfaad.so.2" \
-       "$outDir"
-  fi
-
-  if grep SDL2 build/Linux-x86_32/CMakeCache.txt &> /dev/null; then
-    cp "$prefix/libSDL2-2.0.so.0" \
-       "$prefix/libSDL2_ttf-2.0.so.0" \
-       "$outDir"
-  else
-    cp "$prefix/libSDL-1.2.so.0" \
-       "$prefix/libSDL_ttf-2.0.so.0" \
        "$outDir"
   fi
 fi
@@ -90,6 +74,8 @@ if (( $Windows_x86_32 )); then
      "$prefix/libstdc++-6.dll" \
      "$prefix/zlib1.dll" \
      "$prefix/libphysfs.dll" \
+     "$prefix/SDL.dll" \
+     "$prefix/SDL_ttf.dll" \
      "$prefix/lua52.dll" \
      "$prefix/libfreetype-6.dll" \
      "$prefix/libogg-0.dll" \
@@ -97,14 +83,4 @@ if (( $Windows_x86_32 )); then
      "$prefix/libvorbisfile-3.dll" \
      "$prefix/FreeImage.dll" \
      "$outDir"
-
-  if grep SDL2 build/Windows-x86_32/CMakeCache.txt &> /dev/null; then
-    cp "$prefix/SDL2.dll" \
-       "$prefix/SDL2_ttf.dll" \
-       "$outDir"
-  else
-    cp "$prefix/SDL.dll" \
-       "$prefix/SDL_ttf.dll" \
-       "$outDir"
-  fi
 fi

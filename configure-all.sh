@@ -65,7 +65,8 @@ if (( $Linux_x86_32 )); then
   ( cd build/Linux-x86_32 && cmake ../.. \
     -DCMAKE_BUILD_TYPE=$buildType \
     -DCMAKE_C_FLAGS=-m32 \
-    -DCMAKE_CXX_FLAGS=-m32 )
+    -DCMAKE_CXX_FLAGS=-m32 \
+    -DOZ_SYSTEM_PROCESSOR="i686" )
 
   echo ----------------------------------------------------------------
   echo
@@ -88,7 +89,8 @@ if (( $Linux_x86_32_Clang )); then
     -DCMAKE_C_COMPILER=/usr/bin/clang \
     -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
     -DCMAKE_C_FLAGS=-m32 \
-    -DCMAKE_CXX_FLAGS=-m32 )
+    -DCMAKE_CXX_FLAGS=-m32 \
+    -DOZ_SYSTEM_PROCESSOR="i686" )
 
   echo ----------------------------------------------------------------
   echo

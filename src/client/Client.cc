@@ -467,7 +467,7 @@ int Client::init( int argc, char** argv )
 
   stage->load();
 
-  window.warpMouse();
+  input.reset();
 
   return EXIT_SUCCESS;
 }
@@ -515,11 +515,7 @@ void Client::shutdown()
 
     Log::print( "Writing configuration to '%s' ...", configFile.path().cstr() );
 
-#ifdef _WIN32
-    config.save( &configFile, "\r\n" );
-#else
     config.save( &configFile );
-#endif
 
     Log::printEnd( " OK" );
   }

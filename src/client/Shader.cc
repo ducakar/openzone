@@ -362,7 +362,11 @@ void Shader::init()
   const char* sources[3];
   int         lengths[3];
 
+#ifdef OZ_GL_ES
   defines = "#version 100\n";
+#else
+  defines = "#version 120\n";
+#endif
   defines = defines + ( hasVertexTexture ? "#define OZ_VERTEX_TEXTURE\n" : "\n" );
   defines = defines + ( doPostprocess ?    "#define OZ_POSTPROCESS\n" : "\n" );
   defines = defines + ( isLowDetail ?      "#define OZ_LOW_DETAIL\n" : "\n" );

@@ -23,8 +23,10 @@
  * Common include file, prepended before all shader sources.
  */
 
+#ifdef GL_ES
 precision lowp int;
 precision lowp float;
+#endif
 
 const float TAU = 6.283185307179586;
 
@@ -105,8 +107,6 @@ vec4 applyFog( vec4 colour, float dist )
   float ratio = min( dist / oz_Fog.dist, 1.0 );
   return mix( colour, oz_Fog.colour, ratio*ratio );
 }
-
-
 
 
 
