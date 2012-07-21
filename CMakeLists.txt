@@ -48,19 +48,25 @@ endif()
 set( OZ_APPLICATION_NAME "openzone" )
 set( OZ_APPLICATION_TITLE "OpenZone" )
 
-set( OZ_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" CACHE STRING "" FORCE )
+if( NOT OZ_SYSTEM_PROCESSOR )
+  set( OZ_SYSTEM_PROCESSOR "${CMAKE_SYSTEM_PROCESSOR}" )
+endif()
+set( OZ_SYSTEM_PROCESSOR "${OZ_SYSTEM_PROCESSOR}" CACHE STRING "" FORCE )
+
+set( OZ_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${OZ_SYSTEM_PROCESSOR}" CACHE STRING "" FORCE )
 
 if( OZ_SHARED_LIBOZ )
   set( BUILD_SHARED_LIBS ON )
 endif()
 
-if( "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64" )
+if( "${OZ_SYSTEM_PROCESSOR}" STREQUAL "x86_64" )
   set( libSuffix "64" )
 endif()
 
 mark_as_advanced( OZ_VERSION )
 mark_as_advanced( OZ_APPLICATION_NAME )
 mark_as_advanced( OZ_APPLICATION_TITLE )
+mark_as_advanced( OZ_SYSTEM_PROCESSOR )
 mark_as_advanced( OZ_SYSTEM_NAME )
 
 #
@@ -239,7 +245,8 @@ if( ANDROID )
 endif()
 
 check_cxx_compiler_flag( "-flto" hasLTO )
-if( hasLTO )
+if( hasLTO AND NOT WIN32 )
+  # On Win32+LTO glCompileShaders() sets shaderFiles.data to null in loop at Shader.cc:394. WTF???
   set( ltoFlag "-flto" )
 endif()
 
@@ -285,36 +292,33 @@ add_subdirectory( doc )
 #
 
 # icons
-install( DIRECTORY share/applications share/pixmaps DESTINATION share )
-
-# info files and documentation
-if( WIN32 OR OZ_STANDALONE )
-  file( GLOB readmes "doc/*.html" )
-
-  install( FILES AUTHORS COPYING ChangeLog BUGS TODO DESTINATION . )
-  install( FILES ${readmes} DESTINATION doc )
-  install( DIRECTORY doc/licences DESTINATION doc )
-  install( DIRECTORY doc/doxygen/html/ DESTINATION doc/doxygen )
+if( NOT OZ_STANDALONE AND NOT WIN32 )
+  install( DIRECTORY share/applications share/pixmaps DESTINATION share )
 endif()
 
-# libraries and launchers for standalone package
-if( OZ_STANDALONE )
+# READMEs, launchers and libraries for standalone packages
+if( OZ_STANDALONE OR WIN32 )
+  file( GLOB readmes "doc/*.html" )
+
+  install( FILES AUTHORS BUGS ChangeLog COPYING TODO DESTINATION . )
+  install( FILES ${readmes} DESTINATION . )
+  install( DIRECTORY doc/licences DESTINATION . )
+
   file( GLOB dataFiles "share/openzone/*.zip" )
 
   install( FILES ${dataFiles} DESTINATION share/openzone )
 
   if( WIN32 )
-    install( DIRECTORY support/${OZ_SYSTEM_NAME}/ DESTINATION bin )
+    install( DIRECTORY support/${OZ_SYSTEM_NAME}/ DESTINATION bin/${OZ_SYSTEM_NAME} )
+    install( FILES support/oalinst.exe DESTINATION . )
   else()
-    install( DIRECTORY support/${OZ_SYSTEM_NAME}/ DESTINATION lib${libSuffix} )
+    install( DIRECTORY support/${OZ_SYSTEM_NAME}/ DESTINATION lib/${OZ_SYSTEM_NAME} )
   endif()
 
   if( WIN32 )
     install( FILES etc/launchers/openzone.bat DESTINATION . )
-    install( FILES etc/launchers/ozBuild.bat DESTINATION . )
   else()
     install( FILES etc/launchers/openzone.sh DESTINATION . )
-    install( FILES etc/launchers/ozBuild.sh DESTINATION . )
   endif()
 endif()
 

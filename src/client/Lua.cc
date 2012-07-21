@@ -744,6 +744,12 @@ void Lua::init()
   IMPORT_FUNC( ozProfileGetName );
   IMPORT_FUNC( ozProfileGetBot );
 
+  /*
+   * UI
+   */
+
+  IMPORT_FUNC( ozUIShowBuild );
+
   importMatrixConstants( l );
   importClientConstants( l );
 

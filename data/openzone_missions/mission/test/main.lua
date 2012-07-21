@@ -26,6 +26,7 @@
 ]]--
 
 function onUpdate()
+  ozUIShowBuild( true )
 end
 
 function onCreate()

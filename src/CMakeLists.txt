@@ -20,7 +20,7 @@ add_subdirectory( nirvana )
 add_subdirectory( modules )
 add_subdirectory( client )
 
-if( NOT NACL AND NOT ANDROID )
+if( NOT OZ_STANDALONE AND NOT NACL AND NOT ANDROID )
   add_subdirectory( build )
   add_subdirectory( tools )
 endif()

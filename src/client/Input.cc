@@ -148,6 +148,7 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_SPEED_TOGGLE][0]       = MOD_MASK    | SDLK_LSHIFT;
 
   keyMap[KEY_CROUCH_TOGGLE][0]      = MOD_MASK    | SDLK_LCTRL;
+  keyMap[KEY_CROUCH_TOGGLE][1]      = MOD_MASK    | SDLK_c;
   keyMap[KEY_JUMP][0]               = MOD_MASK    | SDLK_SPACE;
   keyMap[KEY_EXIT][0]               = MOD_OFF_BIT | SDLK_x;
   keyMap[KEY_EJECT][0]              = MOD_ON_BIT  | SDLK_x;
@@ -217,6 +218,7 @@ void Input::loadDefaultKeyMap()
   keyMap[KEY_SPEED_TOGGLE][0]       = MOD_MASK    | SDL_SCANCODE_LSHIFT;
 
   keyMap[KEY_CROUCH_TOGGLE][0]      = MOD_MASK    | SDL_SCANCODE_LCTRL;
+  keyMap[KEY_CROUCH_TOGGLE][1]      = MOD_MASK    | SDL_SCANCODE_C;
   keyMap[KEY_JUMP][0]               = MOD_MASK    | SDL_SCANCODE_SPACE;
   keyMap[KEY_EXIT][0]               = MOD_OFF_BIT | SDL_SCANCODE_X;
   keyMap[KEY_EJECT][0]              = MOD_ON_BIT  | SDL_SCANCODE_X;
@@ -399,6 +401,9 @@ void Input::reset()
 {
   window.warpMouse();
 
+  SDL_PumpEvents();
+  SDL_GetRelativeMouseState( null, null );
+
   mouseX      = 0;
   mouseY      = 0;
   mouseZ      = 0;
@@ -433,10 +438,17 @@ void Input::update()
     return;
   }
 
-#ifdef __native_client__
+#if defined( __native_client__ )
 
   mouseX = +NaCl::moveX;
   mouseY = -NaCl::moveY;
+
+#elif defined( _WIN32 )
+
+  SDL_GetRelativeMouseState( &mouseX, &mouseY );
+
+  mouseX = +mouseX;
+  mouseY = -mouseY;
 
 #else
 
