@@ -290,7 +290,7 @@ void Shape::wireBox( const AABB& bb )
   glDrawElements( GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<ushort*>( null ) + 22 );
 }
 
-void Shape::load()
+void Shape::init()
 {
   glGenBuffers( 1, &vbo );
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
@@ -303,7 +303,7 @@ void Shape::load()
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 }
 
-void Shape::unload()
+void Shape::free()
 {
   if( vbo != 0 ) {
     glDeleteBuffers( 1, &ibo );

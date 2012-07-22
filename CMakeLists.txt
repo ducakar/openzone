@@ -36,13 +36,13 @@ if( NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND
                        " or RelUseProf." )
 endif()
 
+if( WIN32 )
+  set( OZ_STANDALONE ON )
+endif()
+
 if( NACL )
   set( CMAKE_SYSTEM_NAME "NaCl" )
   set( OZ_GL_ES ON )
-endif()
-
-if( WIN32 AND NOT CMAKE_INSTALL_PREFIX )
-  set( CMAKE_INSTALL_PREFIX "../share/openzone" CACHE PATH "Path to data files" FORCE )
 endif()
 
 set( OZ_APPLICATION_NAME "openzone" )
@@ -233,10 +233,10 @@ if( isClang )
   set( flags "-Qunused-arguments ${flags}" )
 
   # libc++
-#   set( flags "${flags} -stdlib=libc++" )
-#   set( libs_oz "${libs_oz};c++abi" )
+  set( flags "${flags} -stdlib=libc++" )
+  set( libs_oz "${libs_oz};c++abi" )
   # libstdc++
-  set( flags "${flags} -stdlib=libstdc++" )
+  # set( flags "${flags} -stdlib=libstdc++" )
 elseif( isLegacyGCC )
   set( flags "-pipe -std=gnu++0x -msse3 -ffast-math" )
 endif()
@@ -292,15 +292,14 @@ add_subdirectory( doc )
 #
 
 # icons
-if( NOT OZ_STANDALONE AND NOT WIN32 )
+if( NOT OZ_STANDALONE )
   install( DIRECTORY share/applications share/pixmaps DESTINATION share )
 endif()
 
 # READMEs, launchers and libraries for standalone packages
-if( OZ_STANDALONE OR WIN32 )
+if( OZ_STANDALONE )
   file( GLOB readmes "doc/*.html" )
 
-  install( FILES AUTHORS BUGS ChangeLog COPYING TODO DESTINATION . )
   install( FILES ${readmes} DESTINATION . )
   install( DIRECTORY doc/licences DESTINATION . )
 

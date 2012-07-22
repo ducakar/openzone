@@ -87,9 +87,9 @@ void Mouse::draw() const
   }
 }
 
-void Mouse::load()
+void Mouse::init()
 {
-  Log::print( "Loading mouse cursors ..." );
+  Log::print( "Initialising Mouse ..." );
 
   x = camera.centreX;
   y = camera.centreY;
@@ -119,9 +119,9 @@ void Mouse::load()
   Log::printEnd( " OK" );
 }
 
-void Mouse::unload()
+void Mouse::free()
 {
-  Log::print( "Unloading mouse cursors ..." );
+  Log::print( "Freeing Mouse ..." );
 
   for( int i = 0; i < CURSORS_MAX; ++i ) {
     glDeleteTextures( 1, &cursors[i].texId );

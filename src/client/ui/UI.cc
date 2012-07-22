@@ -211,8 +211,8 @@ void UI::init()
 
   fps = 1.0f / Timer::TICK_TIME;
 
-  font.load();
-  mouse.load();
+  font.init();
+  mouse.init();
 
   root = new Area( camera.width, camera.height );
   loadingScreen = new LoadingArea();
@@ -235,8 +235,8 @@ void UI::free()
   Area::updateAreas.clear();
   Area::updateAreas.dealloc();
 
-  mouse.unload();
-  font.unload();
+  mouse.free();
+  font.free();
 }
 
 }

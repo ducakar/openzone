@@ -486,7 +486,7 @@ void Library::initNameLists()
 
 void Library::initFragPools()
 {
-  Log::println( "Fragment pools (*.rc in 'frag') {" );
+  Log::println( "Fragment pools (*.ozFragPools in 'frag') {" );
   Log::indent();
 
   PFile dir( "frag" );
@@ -528,7 +528,7 @@ void Library::initClasses()
   OZ_REGISTER_BASECLASS( Bot );
   OZ_REGISTER_BASECLASS( Vehicle );
 
-  Log::println( "Object classes (*.ozClass in 'class') {" );
+  Log::println( "Object classes (*.ozClasses in 'class') {" );
   Log::indent();
 
   PFile dir( "class" );

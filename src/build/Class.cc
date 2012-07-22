@@ -409,7 +409,7 @@ void Class::fillBot( const char* className )
   jumpMomentum      = config["jumpMomentum"].get( 5.0f );
 
   airControl        = config["airControl"].get( 0.025f );
-  climbControl      = config["climbControl"].get( 0.20f );
+  ladderControl     = config["ladderControl"].get( 0.20f );
   waterControl      = config["waterControl"].get( 0.07f );
   slickControl      = config["slickControl"].get( 0.07f );
 
@@ -752,7 +752,7 @@ void Class::writeBot( BufferStream* os )
   os->writeFloat( jumpMomentum );
 
   os->writeFloat( airControl );
-  os->writeFloat( climbControl );
+  os->writeFloat( ladderControl );
   os->writeFloat( waterControl );
   os->writeFloat( slickControl );
 

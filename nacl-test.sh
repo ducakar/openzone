@@ -10,7 +10,7 @@
 # Extract path to NaCl SDK from CMake toolchain files.
 nacl64Root=`grep '^set( PLATFORM_PREFIX' cmake/NaCl-x86_64.Toolchain.cmake | \
 	    sed 's/^set( PLATFORM_PREFIX *"\(.*\)\" )/\1/'`
-nacl32Root=`grep '^set( PLATFORM_PREFIX' cmake/NaCl-x86_32.Toolchain.cmake | \
+nacl32Root=`grep '^set( PLATFORM_PREFIX' cmake/NaCl-i686.Toolchain.cmake | \
 	    sed 's/^set( PLATFORM_PREFIX *"\(.*\)\" )/\1/'`
 prefix=`pwd`
 

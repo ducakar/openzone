@@ -117,9 +117,10 @@ class Bot : public Dynamic
     static const int JUMP_SCHED_BIT         = 0x00000100;
     // on floor or an another object
     static const int GROUNDED_BIT           = 0x00000200;
-    static const int ON_STAIRS_BIT          = 0x00000400;
-    // climbing a ledge or a ladder
-    static const int CLIMBING_BIT           = 0x00001000;
+    // climbing a ladder
+    static const int LADDER_BIT             = 0x00000800;
+    // climbing a ledge
+    static const int LEDGE_BIT              = 0x00001000;
     static const int SWIMMING_BIT           = 0x00002000;
     static const int SUBMERGED_BIT          = 0x00004000;
 

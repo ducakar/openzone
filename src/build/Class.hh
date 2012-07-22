@@ -109,7 +109,7 @@ class Class
     float              jumpMomentum;
 
     float              airControl;
-    float              climbControl;
+    float              ladderControl;
     float              waterControl;
     float              slickControl;
 

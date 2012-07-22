@@ -1,0 +1,41 @@
+0.4
+
+- new löök
+- matrix
+    * Vehicle: turret, wheeled, tracked, mech warrior
+    * improve Vehicle rotation
+- ui
+    * credits screen
+    * tutorial tips
+    * options menu
+    * advanced HUD for mechanic units and vehicles
+- client
+    * editor
+    * layout files
+    * BSP rendering per partes
+    * MD3 animation
+    * decals
+    * particle model (smoke, fire ...)
+    * animated textures
+    * video to texture
+    * better sky
+    * weather
+- unittest
+    * write missing tests
+- missions
+    * new tutorial missions
+- homepage
+- documentation
+
+0.5
+
+- networking
+- plug-ins
+
+0.6
+
+- RTS interface
+- commanding units
+- AI tasks
+- improve AI
+- building

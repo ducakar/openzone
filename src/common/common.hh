@@ -36,7 +36,7 @@
 #include "common/Timer.hh"
 #include "common/Lingua.hh"
 
-// We want to use C++ wrapped C headers, not vanilla ones that are included via SDL.
+// We want to use C++ wrapped C headers, not pure C ones that are included via SDL.
 #include <cctype>
 #include <climits>
 #include <cmath>

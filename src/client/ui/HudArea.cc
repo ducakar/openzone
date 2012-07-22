@@ -168,7 +168,7 @@ void HudArea::drawBotCrosshair()
         ( obj->flags & Object::DYNAMIC_BIT ) &&
           Math::fabs( dyn->mass * physics.gravity ) <= myClazz->grabWeight &&
           // not swimming or on ladder
-          !( me->state & ( Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) &&
+          !( me->state & ( Bot::SWIMMING_BIT | Bot::LADDER_BIT | Bot::LEDGE_BIT ) ) &&
           // if it is not a bot that is holding something
           ( !( obj->flags & Object::BOT_BIT ) || bot->cargo < 0 ) )
       {

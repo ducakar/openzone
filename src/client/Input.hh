@@ -154,6 +154,12 @@ class Input
 
     float  mouseSensH;
     float  mouseSensV;
+    float  mouseAccelThreshold;
+    float  mouseMaxAccel;
+    float  mouseAccelC0;
+    float  mouseAccelC1;
+    float  mouseAccelC2;
+
     float  keySensH;
     float  keySensV;
 

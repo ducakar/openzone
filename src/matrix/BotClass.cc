@@ -55,7 +55,7 @@ void BotClass::init( InputStream* is, const char* name )
   jumpMomentum      = is->readFloat();
 
   airControl        = is->readFloat();
-  climbControl      = is->readFloat();
+  ladderControl     = is->readFloat();
   waterControl      = is->readFloat();
   slickControl      = is->readFloat();
 

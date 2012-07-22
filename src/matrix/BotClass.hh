@@ -47,7 +47,7 @@ class BotClass : public DynamicClass
     float  jumpMomentum;
 
     float  airControl;
-    float  climbControl;
+    float  ladderControl;
     float  waterControl;
     float  slickControl;
 

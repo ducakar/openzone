@@ -77,7 +77,7 @@ MD2::AnimType MD2::AnimState::extractAnim()
     return ANIM_CROUCH_STAND;
   }
   else if( ( bot->actions & Bot::ACTION_JUMP ) &&
-           !( bot->state & ( Bot::GROUNDED_BIT | Bot::CLIMBING_BIT ) ) )
+           !( bot->state & ( Bot::GROUNDED_BIT | Bot::LADDER_BIT | Bot::LEDGE_BIT ) ) )
   {
     return ANIM_JUMP;
   }
