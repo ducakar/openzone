@@ -2,36 +2,28 @@
 
 pkgbase=openzone
 # pkgname=('liboz' 'openzone' 'openzone-data' 'openzone-doc')
-pkgname=('openzone' 'openzone-data' 'openzone-doc')
+pkgname=('openzone' 'openzone-data')
 pkgver=0.3.0
 pkgrel=1
 url="http://github.com/ducakar/openzone/"
 license=('GPL3')
 arch=('i686' 'x86_64')
 makedepends=('cmake' 'doxygen' 'faad2' 'freeimage' 'gcc' 'git' 'graphviz'
-             'libmad' 'lua' 'openal' 'physfs' 'sdl_net' 'sdl_ttf')
+             'libmad' 'libvorbis' 'lua' 'openal' 'physfs' 'sdl_ttf')
 source=("openzone-src-${pkgver}.tar.xz"
-        "openzone-data-ozbase-${pkgver}.tar.xz"
-        "openzone-data-openzone-${pkgver}.tar.xz")
-sha1sums=('6d98d4d95530bbbc53f0eae6d804a9b5183f2597'
-          '8cbab779654b0c0b2662feb6133b7093c2c51631'
-          '425abd0477fc04c15eb57d5367da18663b37470c')
+        "openzone-data-${pkgver}.tar.xz")
+sha1sums=()
 
 build()
 {
   mkdir -p ${srcdir}/build && cd ${srcdir}/build
 
-#   cmake \
-#     -D CMAKE_BUILD_TYPE=RelWithDebInfo \
-#     -D CMAKE_INSTALL_PREFIX=/usr \
-#     -D OZ_SHARED_LIBOZ=ON \
-#     ../openzone
-
-  cmake \
-    -D CMAKE_BUILD_TYPE=RelWithDebInfo \
-    -D CMAKE_INSTALL_PREFIX=/usr \
-    -D OZ_SHARED_LIBOZ=OFF \
-    ../openzone
+   cmake \
+     -D CMAKE_BUILD_TYPE=Release \
+     -D CMAKE_INSTALL_PREFIX=/usr \
+     -D OZ_SHARED_LIBOZ=0 \
+     -D OZ_NONFREE=1 \
+     ../openzone
 
   make doc
   make
@@ -65,10 +57,13 @@ build()
 package_openzone()
 {
   pkgdesc='Simple cross-platform FPS/RTS game'
-#   depends=('freeimage' 'libgl' 'liboz' 'lua' 'openal' 'sdl_net' 'sdl_ttf')
-  depends=('freeimage' 'libgl' 'lua' 'openal' 'physfs' 'sdl_net' 'sdl_ttf')
+#   depends=('freeimage' 'libgl' 'liboz' 'libvorbis' 'lua' 'openal' 'sdl_ttf')
+#   optdepends=('openzone-data: game data'
+#               'zip: for building ZIP game data archives'
+#               'p7zip: for building 7zip game data archives')
+  depends=('freeimage' 'libgl' 'libvorbis' 'lua' 'openal' 'physfs' 'sdl_ttf')
   optdepends=('pulseaudio: warning bell for liboz'
-	      'openzone-data: game data'
+              'openzone-data: game data'
               'zip: for building ZIP game data archives'
               'p7zip: for building 7zip game data archives')
 
@@ -78,13 +73,10 @@ package_openzone()
 
   rm -rf ${pkgdir}/usr/{include,lib,lib64}
 
-  install -Dm644 ../ozbase.zip ${pkgdir}/usr/share/openzone/ozbase.zip
-  install -Dm644 ../openzone/AUTHORS ${pkgdir}/usr/share/doc/openzone/AUTHORS
-  install -Dm644 ../openzone/ChangeLog ${pkgdir}/usr/share/doc/openzone/ChangeLog
-  install -Dm644 ../openzone/BUGS ${pkgdir}/usr/share/doc/openzone/BUGS
-  install -Dm644 ../openzone/TODO ${pkgdir}/usr/share/doc/openzone/TODO
-  install -Dm644 ../openzone/doc/README.html ${pkgdir}/usr/share/doc/openzone/README.html
-  install -Dm644 ../openzone/doc/PREBERI.html ${pkgdir}/usr/share/doc/openzone/PREBERI.html
+  cd ${srcdir}/openzone
+
+  install -dm755 ${pkgdir}/usr/share/doc/openzone
+  install -m644 AUTHORS *.md doc/*.html ${pkgdir}/usr/share/doc/openzone
 }
 
 package_openzone-data()
@@ -93,16 +85,15 @@ package_openzone-data()
   license=('CCPL:by-nc-sa')
   arch=('any')
 
-  cd ${srcdir}/build
-
-  install -Dm644 ${srcdir}/openzone.zip ${pkgdir}/usr/share/openzone/openzone.zip
+  install -dm755 ${pkgdir}/usr/share/openzone
+  install -m644 ${srcdir}/openzone/*.zip ${pkgdir}/usr/share/openzone
 }
 
-package_openzone-doc()
-{
-  pkgdesc='OpenZone engine documentation'
-  arch=('any')
-
-  mkdir -p ${pkgdir}/usr/share/doc/openzone
-  cp -r ${srcdir}/openzone/doc/doxygen/html ${pkgdir}/usr/share/doc/openzone/doxygen
-}
+# package_openzone-doc()
+# {
+#   pkgdesc='OpenZone engine documentation'
+#   arch=('any')
+#
+#   install -dm755 ${pkgdir}/usr/share/doc/openzone
+#   cp -r ${srcdir}/openzone/doc/doxygen/html ${pkgdir}/usr/share/doc/openzone/doxygen
+# }

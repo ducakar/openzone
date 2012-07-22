@@ -16,4 +16,8 @@ add_executable( ozBuild
 add_dependencies( ozBuild pch )
 target_link_libraries( ozBuild client modules nirvana matrix common build_info oz ${libs_tools} )
 
-install( TARGETS ozBuild RUNTIME DESTINATION bin )
+if( OZ_STANDALONE )
+  install( TARGETS ozBuild RUNTIME DESTINATION bin/${OZ_SYSTEM_NAME} )
+else()
+  install( TARGETS ozBuild RUNTIME DESTINATION bin )
+endif()

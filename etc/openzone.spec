@@ -8,8 +8,7 @@ Group:          Amusements/Games
 Packager:       Davorin Učakar <davorin.ucakar@gmail.com>
 
 Source:         openzone-src-%{version}.tar.xz
-Source1:        openzone-data-ozbase-%{version}.tar.xz
-Source2:        openzone-data-openzone-%{version}.tar.xz
+Source1:        openzone-data-%{version}.tar.xz
 
 Requires:       %{name}-client = %{version}
 Requires:       %{name}-data = %{version}
@@ -84,15 +83,16 @@ Doxygen-generated documentation for OpenZone engine and PDF articles describing
 concepts and algorithms used in the engine.
 
 %prep
-%setup -q -b 1 -b 2 -n openzone
+%setup -q -b 1 -n openzone
 
 %build
 mkdir -p build && cd build
 
 cmake \
-  -D CMAKE_BUILD_TYPE=RelWithDebInfo \
+  -D CMAKE_BUILD_TYPE=Release \
   -D CMAKE_INSTALL_PREFIX=/usr \
   -D OZ_SHARED_LIBOZ=1 \
+  -D OZ_NONFREE=1 \
   ..
 
 make %{?_smp_mflags} doc
@@ -104,8 +104,10 @@ cd build
 
 make install DESTDIR=$RPM_BUILD_ROOT
 
-install -Dm644 %{_builddir}/ozbase.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/ozbase.zip
-install -Dm644 %{_builddir}/openzone.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/openzone.zip
+cd ..
+
+install -dm755 $RPM_BUILD_ROOT/%{_datadir}/openzone
+install -m644 *.zip $RPM_BUILD_ROOT/%{_datadir}/openzone
 
 %files
 %defattr(-, root, root)
@@ -126,20 +128,18 @@ install -Dm644 %{_builddir}/openzone.zip $RPM_BUILD_ROOT/%{_datadir}/openzone/op
 %{_bindir}/openzone
 %{_datadir}/applications
 %{_datadir}/pixmaps
-%dir %{_datadir}/openzone
-%{_datadir}/openzone/ozbase.zip
-%doc AUTHORS COPYING ChangeLog BUGS TODO doc/*.html
+%doc AUTHORS COPYING ChangeLog.md BUGS.md TODO.md doc/*.html
 
 %files tools
 %defattr(-, root, root)
 %{_bindir}/ozBuild
 %{_bindir}/ozGettext
+%{_bindir}/ozManifest
 %doc AUTHORS COPYING
 
 %files data
 %defattr(-, root, root)
-%dir %{_datadir}/openzone
-%{_datadir}/openzone/openzone.zip
+%{_datadir}/openzone
 
 %files doc
 %defattr(-, root, root)

@@ -496,16 +496,14 @@ void UnitProxy::update()
     }
     // internal, bot
     else {
-      if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
-          Bot::MOVING_BIT )
-      {
+      if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT ) ) == Bot::MOVING_BIT ) {
         float phase = bot->step * Math::TAU;
         float sine  = Math::sin( phase );
 
         bobTheta = sine * botClazz->bobRotation;
         bobBias  = sine*sine * botClazz->bobAmplitude;
       }
-      else if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
+      else if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT ) ) ==
                ( Bot::MOVING_BIT | Bot::SWIMMING_BIT ) )
       {
         float sine = Math::sin( bot->step * Math::TAU / 2.0f );

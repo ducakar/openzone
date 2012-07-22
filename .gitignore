@@ -6,6 +6,7 @@
 /.settings
 
 /*.patch
+/*.trace
 
 /doc/doxygen*
 

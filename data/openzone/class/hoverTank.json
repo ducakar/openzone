@@ -61,6 +61,8 @@
 
   "nItems":             8,
 
+  "attrib.binoculars":  true,
+  "attrib.galileo":     true,
   "attrib.musicPlayer": true,
 
   "fragPool":           "metal",

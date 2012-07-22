@@ -69,8 +69,8 @@ class Shape
     static void box( const AABB& bb );
     static void wireBox( const AABB& bb );
 
-    void load();
-    void unload();
+    void init();
+    void free();
 
 };
 

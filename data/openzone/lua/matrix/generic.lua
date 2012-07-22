@@ -119,11 +119,10 @@ function bigExplosion_onUpdate( l )
           ozObjDamage( 100 + 2*distance )
 
           if ozObjIsVisibleFromSelf() then
-            ozObjDamage( 100 + 4*distance )
+            ozObjDamage( 100 + 6*distance )
 
             if distance < 19.9 and ozObjHasFlag( OZ_DYNAMIC_BIT ) then
               local dirX, dirY, dirZ = ozObjDirFromSelf()
-              distance = 2 * distance
 
               ozDynAddMomentum( dirX * distance, dirY * distance, dirZ * distance )
             end

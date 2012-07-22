@@ -133,8 +133,8 @@ void importMatrixConstants( lua_State* l )
 
   registerLuaConstant( l, "OZ_BOT_JUMP_SCHED_BIT",          Bot::JUMP_SCHED_BIT );
   registerLuaConstant( l, "OZ_BOT_GROUNDED_BIT",            Bot::GROUNDED_BIT );
-  registerLuaConstant( l, "OZ_BOT_ON_STAIRS_BIT",           Bot::ON_STAIRS_BIT );
-  registerLuaConstant( l, "OZ_BOT_CLIMBING_BIT",            Bot::CLIMBING_BIT );
+  registerLuaConstant( l, "OZ_BOT_LADDER_BIT",              Bot::LADDER_BIT );
+  registerLuaConstant( l, "OZ_BOT_LEDGE_BIT",               Bot::LEDGE_BIT );
   registerLuaConstant( l, "OZ_BOT_SWIMMING_BIT",            Bot::SWIMMING_BIT );
   registerLuaConstant( l, "OZ_BOT_SUBMERGED_BIT",           Bot::SUBMERGED_BIT );
 

@@ -457,8 +457,9 @@ void Input::update()
   // Compensate lack of mouse acceleration when receiving raw (non-accelerated) mouse input. This
   // code is not based on actual code from X.Org, but experimentally tuned to match default X server
   // mouse acceleration as closely as possible.
-  float move2  = Math::sqrt( float( mouseX*mouseX + mouseY*mouseY ) );
-  float factor = min( 1.0f + max( move2 - 4.0f, 0.0f ) * 0.04f, 2.0f );
+  float move2  = max( float( mouseX*mouseX + mouseY*mouseY ) - mouseAccelThreshold, 0.0f );
+  float move   = Math::fastSqrt( move2 );
+  float factor = min( mouseAccelC0 + mouseAccelC1 * move + mouseAccelC2 * move2, mouseMaxAccel );
 
 # if SDL_MAJOR_VERSION < 2
   if( window.isFull ) {
@@ -557,10 +558,23 @@ void Input::init()
   memset( keys, 0, sizeof( keys ) );
   memset( oldKeys, 0, sizeof( oldKeys ) );
 
-  mouseSensH = mouseConfig["sensitivityH"].get( 0.004f );
-  mouseSensV = mouseConfig["sensitivityV"].get( 0.004f );
-  keySensH   = keyboardConfig["sensitivityH"].get( 0.04f );
-  keySensV   = keyboardConfig["sensitivityV"].get( 0.04f );
+  mouseSensH          = mouseConfig["sensitivity.h"].get( 0.004f );
+  mouseSensV          = mouseConfig["sensitivity.v"].get( 0.004f );
+
+  mouseAccelThreshold = mouseConfig["acceleration.threshold"].get( 0.0f );
+  mouseMaxAccel       = mouseConfig["acceleration.max"].get( 2.0f );
+  mouseAccelC0        = mouseConfig["acceleration.c0"].get( 1.0f );
+  mouseAccelC1        = mouseConfig["acceleration.c1"].get( 0.0f );
+  mouseAccelC2        = mouseConfig["acceleration.c2"].get( 0.0004f );
+
+  keySensH            = keyboardConfig["sensitivity.h"].get( 0.04f );
+  keySensV            = keyboardConfig["sensitivity.v"].get( 0.04f );
+
+#if SDL_MAJOR_VERSION < 2
+  SDL_ShowCursor( false );
+#else
+  SDL_SetRelativeMouseMode( SDL_TRUE );
+#endif
 
   Log::printEnd( " OK" );
 }
@@ -585,10 +599,16 @@ void Input::free()
   JSON& keyboardConfig = inputConfig.addObject( "keyboard" );
   JSON& keyMapConfig   = inputConfig.addObject( "bindings" );
 
-  mouseConfig.add( "sensitivityH", mouseSensH );
-  mouseConfig.add( "sensitivityV", mouseSensV );
-  keyboardConfig.add( "sensitivityH", keySensH );
-  keyboardConfig.add( "sensitivityV", keySensV );
+  mouseConfig.add( "sensitivity.h",          mouseSensH );
+  mouseConfig.add( "sensitivity.v",          mouseSensV );
+  mouseConfig.add( "acceleration.threshold", mouseAccelThreshold );
+  mouseConfig.add( "acceleration.max",       mouseMaxAccel );
+  mouseConfig.add( "acceleration.c0",        mouseAccelC0 );
+  mouseConfig.add( "acceleration.c1",        mouseAccelC1 );
+  mouseConfig.add( "acceleration.c2",        mouseAccelC2 );
+
+  keyboardConfig.add( "sensitivity.h", keySensH );
+  keyboardConfig.add( "sensitivity.v", keySensV );
   keyMapConfig = keyMapToJSON();
 
   if( !inputConfig.save( &configFile ) ) {

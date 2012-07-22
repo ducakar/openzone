@@ -20,7 +20,7 @@
 ]]--
 
 --[[
- * nirvana/minds2.lua
+ * nirvana/minds_cvicek.lua
  *
  * AIs for cvicek mission.
 ]]--

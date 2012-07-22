@@ -668,7 +668,7 @@ void Render::init( bool isBuild )
   glEnable( GL_BLEND );
 
   shader.init();
-  shape.load();
+  shape.init();
   camera.init();
   ui::ui.init();
 
@@ -700,7 +700,7 @@ void Render::free( bool isBuild )
   }
 
   ui::ui.free();
-  shape.unload();
+  shape.free();
   shader.free();
 
   OZ_GL_CHECK_ERROR();

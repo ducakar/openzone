@@ -451,7 +451,7 @@ void Bot::onUpdate()
     /*
      * STATE
      */
-    state &= ~( GROUNDED_BIT | ON_STAIRS_BIT | CLIMBING_BIT | SWIMMING_BIT | SUBMERGED_BIT |
+    state &= ~( GROUNDED_BIT | LADDER_BIT | LEDGE_BIT | SWIMMING_BIT | SUBMERGED_BIT |
                 ATTACKING_BIT );
 
     if( cargo >= 0 || velocity.sqN() > LADDER_SLIP_MOMENTUM ) {
@@ -459,7 +459,7 @@ void Bot::onUpdate()
     }
 
     state |= lower >= 0 || ( flags & ON_FLOOR_BIT ) ? GROUNDED_BIT  : 0;
-    state |= ( flags & ON_LADDER_BIT )              ? CLIMBING_BIT  : 0;
+    state |= ( flags & ON_LADDER_BIT )              ? LADDER_BIT    : 0;
     state |= depth > dim.z                          ? SWIMMING_BIT  : 0;
     state |= depth > dim.z + camZ                   ? SUBMERGED_BIT : 0;
 
@@ -573,9 +573,7 @@ void Bot::onUpdate()
     state &= ~MOVING_BIT;
 
     if( actions & ACTION_FORWARD ) {
-      // for now CLIMBING_BIT is equivalent to ON_LADDER_BIT in flags since ledge climbing has not
-      // been processed yet
-      if( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) {
+      if( state & ( LADDER_BIT | SWIMMING_BIT ) ) {
         move.x -= hvsc[4];
         move.y += hvsc[5];
         move.z -= hvsc[3];
@@ -586,7 +584,7 @@ void Bot::onUpdate()
       }
     }
     if( actions & ACTION_BACKWARD ) {
-      if( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) {
+      if( state & ( LADDER_BIT | SWIMMING_BIT ) ) {
         move.x += hvsc[4];
         move.y -= hvsc[5];
         move.z += hvsc[3];
@@ -605,7 +603,7 @@ void Bot::onUpdate()
       move.y -= hvsc[0];
     }
 
-    if( state & CLIMBING_BIT ) {
+    if( state & LADDER_BIT ) {
       move.z *= 2.0f;
     }
 
@@ -640,7 +638,7 @@ void Bot::onUpdate()
        * it hits a relatively horizontal surface (Physics::FLOOR_NORMAL_Z), proceed with climbing.
        */
       if( ( actions & ( ACTION_FORWARD | ACTION_JUMP ) ) == ( ACTION_FORWARD | ACTION_JUMP ) &&
-          !( state & CLIMBING_BIT ) && stamina > clazz->staminaClimbDrain )
+          !( state & LADDER_BIT ) && stamina > clazz->staminaClimbDrain )
       {
         // check if bot's gonna hit a wall soon
         Vec3 desiredMove = CLIMB_MOVE_AHEAD * Vec3( move.x, move.y, 0.0f );
@@ -681,7 +679,7 @@ void Bot::onUpdate()
                 momentum.z  = max( momentum.z, clazz->climbMomentum );
 
                 cargo       = -1;
-                state      |= CLIMBING_BIT;
+                state      |= LEDGE_BIT;
                 state      &= ~JUMP_SCHED_BIT;
                 stamina    -= clazz->staminaClimbDrain;
 
@@ -714,7 +712,7 @@ void Bot::onUpdate()
        *              \x<------o
        *               \----------
        */
-      if( !( state & CLIMBING_BIT ) && stairRate <= clazz->stairRateLimit ) {
+      if( !( state & ( LADDER_BIT | LEDGE_BIT ) ) && stairRate <= clazz->stairRateLimit ) {
         // check if bot's gonna hit a stair in the next frame
         Vec3 desiredMove = STEP_MOVE_AHEAD * move;
 
@@ -764,8 +762,11 @@ void Bot::onUpdate()
       if( flags & ON_SLICK_BIT ) {
         desiredMomentum *= clazz->slickControl;
       }
-      else if( state & CLIMBING_BIT ) {
-        desiredMomentum *= clazz->climbControl;
+      else if( state & LADDER_BIT ) {
+        desiredMomentum *= clazz->ladderControl;
+      }
+      else if( state & LEDGE_BIT ) {
+        desiredMomentum *= clazz->airControl;
       }
       else if( state & SWIMMING_BIT ) {
         // not on static ground
@@ -796,7 +797,7 @@ void Bot::onUpdate()
      */
 
     if( !( state & MOVING_BIT ) && cargo < 0 &&
-        ( !( actions & ACTION_JUMP ) || ( state & ( Bot::GROUNDED_BIT | Bot::CLIMBING_BIT ) ) ) )
+        ( !( actions & ACTION_JUMP ) || ( state & ( Bot::GROUNDED_BIT | Bot::LADDER_BIT ) ) ) )
     {
       if( actions & ACTION_ATTACK ) {
         if( weaponObj != null ) {
@@ -1023,7 +1024,8 @@ void Bot::onUpdate()
         }
       }
       else if( actions & ~oldActions & ACTION_GRAB ) {
-        if( instrument < 0 || weapon >= 0 || ( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) ) {
+        if( instrument < 0 || weapon >= 0 || ( state & ( LADDER_BIT | LEDGE_BIT | SWIMMING_BIT ) ) )
+        {
           cargo = -1;
         }
         else {
@@ -1082,7 +1084,7 @@ void Bot::onUpdate()
             item->momentum = velocity;
 
             if( ( actions & ~oldActions & ACTION_INV_GRAB ) &&
-                !( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) && weapon < 0 )
+                !( state & ( LADDER_BIT | LEDGE_BIT | SWIMMING_BIT ) ) && weapon < 0 )
             {
               cargo      = instrument;
               grabHandle = dist;

@@ -89,7 +89,11 @@ void Window::warpMouse()
   NaCl::moveY = 0;
   NaCl::moveZ = 0;
   NaCl::moveW = 0;
-#elif SDL_MAJOR_VERSION >= 2
+#elif SDL_MAJOR_VERSION < 2
+  SDL_WarpMouse( ushort( width / 2 ), ushort( height / 2 ) );
+  SDL_PumpEvents();
+  SDL_GetRelativeMouseState( null, null );
+#else
   SDL_WarpMouseInWindow( descriptor, width / 2, height / 2 );
 #endif
 }
@@ -299,15 +303,11 @@ void Window::init()
   SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION,
                      OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION );
 
-  SDL_ShowCursor( SDL_FALSE );
-
 #else
 
   descriptor = SDL_CreateWindow( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION,
                                  SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                  width, height, flags );
-
-  SDL_SetRelativeMouseMode( SDL_TRUE );
 
   SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,            0 );
   SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE,          0 );
@@ -320,6 +320,7 @@ void Window::init()
 
   Log::printEnd( " %dx%d ... OK", width, height );
 
+  glViewport( 0, 0, width, height );
   glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
   glFlush();

@@ -33,7 +33,7 @@ if (( $Linux_x86_64 )); then
   fi
 fi
 
-if (( $Linux_x86_32 )); then
+if (( $Linux_i686 )); then
   outDir="support/Linux-i686"
   prefix="/usr/lib32"
 
@@ -63,7 +63,7 @@ if (( $Linux_x86_32 )); then
   fi
 fi
 
-if (( $Windows_x86_32 )); then
+if (( $Windows_i686 )); then
   outDir="support/Windows-i686"
   prefix="/usr/i486-mingw32/bin"
 
