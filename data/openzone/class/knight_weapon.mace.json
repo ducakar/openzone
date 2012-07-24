@@ -24,7 +24,7 @@
   "nFrags":             2,
 
   "imagoType":          "MD2Weapon",
-  "imagoModel":         "knight_weapon.mace",
+  "imagoModel":         "pknight_weapon.mace",
 
   "audioType":          "Basic",
   "audioSounds":

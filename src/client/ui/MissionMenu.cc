@@ -29,7 +29,9 @@
 #include "client/Shape.hh"
 #include "client/Context.hh"
 #include "client/GameStage.hh"
+#include "client/Input.hh"
 #include "client/OpenGL.hh"
+#include "client/NaCl.hh"
 
 namespace oz
 {
@@ -55,13 +57,8 @@ bool MissionButton::onMouseEvent()
   if( missionMenu->selection != selection ) {
     missionMenu->selection = selection;
 
-    if( selection == -1 ) {
-      missionMenu->description.set( " " );
-    }
-    else {
-      missionMenu->description.set( "%s", missionMenu->missions[selection].description.cstr() );
-      missionMenu->imageId = missionMenu->missions[selection].imageId;
-    }
+    missionMenu->description.set( "%s", missionMenu->missions[selection].description.cstr() );
+    missionMenu->imageId = missionMenu->missions[selection].imageId;
   }
 
   return Button::onMouseEvent();
@@ -84,19 +81,23 @@ void MissionMenu::loadMission( Button* sender )
 
 void MissionMenu::onReposition()
 {
-  width  = camera.width;
-  height = camera.height - 40;
+  width       = camera.width;
+  height      = camera.height - 40;
+
+  nSelections = min( ( height - 150 ) / 40, missions.length() );
+  selection   = -1;
+  scroll      = 0;
+
+  imageX      = 40;
+  imageY      = 100 + 8 * Font::INFOS[Font::SANS].height;
+  imageWidth  = width - 320;
+  imageHeight = height - imageY;
 
   description.resize( width - 320 );
 
   if( selection != -1 ) {
     description.set( "%s", missions[selection].description.cstr() );
   }
-
-  imageX      = 40;
-  imageY      = 100 + 8 * Font::INFOS[Font::SANS].height;
-  imageWidth  = width - 320;
-  imageHeight = height - imageY;
 
   float aspect = float( imageWidth ) / float( imageHeight );
   if( aspect < 16.0f / 9.0f ) {
@@ -106,10 +107,37 @@ void MissionMenu::onReposition()
     imageWidth = int( float( imageHeight ) / 9.0f * 16.0f );
     imageX = ( width - 240 - imageWidth ) / 2;
   }
+
+  OZ_MAIN_CALL( this, {
+    while( _this->children.first() != _this->children.last() ) {
+      _this->remove( _this->children.first() );
+    }
+
+    for( int i = 0; i < _this->nSelections; ++i ) {
+      Button* missionButton = new MissionButton( _this->missions[i].title, loadMission, _this, i,
+                                                 200, 30 );
+      _this->add( missionButton, -20, -( i + 1 ) * 40 );
+    }
+  } )
 }
 
 bool MissionMenu::onMouseEvent()
 {
+  if( mouse.x >= width - 240 && input.mouseW != 0 ) {
+    if( input.mouseW < 0 ) {
+      scroll = min( scroll + 1, missions.length() - nSelections );
+    }
+    else {
+      scroll = max( scroll - 1, 0 );
+    }
+
+    for( auto i = children.iter(); i != children.last(); ++i ) {
+      MissionButton* button = static_cast<MissionButton*>( &*i );
+
+      button->setLabel( missions[scroll + button->index].title );
+    }
+  }
+
   return passMouseEvents();
 }
 
@@ -118,12 +146,23 @@ void MissionMenu::onDraw()
   shape.colour( 0.0f, 0.0f, 0.0f, 1.0f );
   shape.fill( width - 240, 0, 240, height );
 
+  shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
+
+  if( scroll > 0 ) {
+    glBindTexture( GL_TEXTURE_2D, scrollUpTexId );
+    shape.fill( width - 128, height - 32, 16, 16 );
+  }
+  if( scroll < missions.length() - nSelections ) {
+    glBindTexture( GL_TEXTURE_2D, scrollDownTexId );
+    shape.fill( width - 128, height - nSelections * 40 - 54, 16, 16 );
+  }
+
   if( imageId != 0 ) {
     glBindTexture( GL_TEXTURE_2D, imageId );
-    shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
     shape.fill( imageX, imageY, imageWidth, imageHeight );
-    glBindTexture( GL_TEXTURE_2D, 0 );
   }
+
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
   description.draw( this, true );
 
@@ -170,15 +209,8 @@ MissionMenu::MissionMenu() :
     lingua.free();
   }
 
-  nSelections    = ( camera.height - 150 ) / 40;
-  nSelections    = min( nSelections, missions.length() );
-  selection      = -1;
-  scroll         = 0;
-
-  for( int i = 0; i < nSelections; ++i ) {
-    Button* missionButton = new MissionButton( missions[i].title, loadMission, this, i, 200, 30 );
-    add( missionButton, -20, -( i + 1 ) * 40 );
-  }
+  scrollUpTexId   = context.loadTextureLayer( "ui/icon/scrollUp.ozIcon" );
+  scrollDownTexId = context.loadTextureLayer( "ui/icon/scrollDown.ozIcon" );
 
   onReposition();
 }
@@ -188,6 +220,9 @@ MissionMenu::~MissionMenu()
   for( int i = 0; i < missions.length(); ++i ) {
     glDeleteTextures( 1, &missions[i].imageId );
   }
+
+  glDeleteTextures( 1, &scrollDownTexId );
+  glDeleteTextures( 1, &scrollUpTexId );
 }
 
 }

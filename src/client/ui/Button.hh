@@ -56,6 +56,7 @@ class Button : public Area
 
     explicit Button( const char* text, Callback* callback, int width, int height );
 
+    void setLabel( const char* text );
     void setCallback( Callback* callback );
 
 };

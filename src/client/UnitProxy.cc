@@ -40,8 +40,8 @@ namespace oz
 namespace client
 {
 
-const float UnitProxy::CAMERA_Z_SMOOTHING       = 0.35f;
-const float UnitProxy::CAMERA_Z_TOLERANCE       = 0.20f;
+const float UnitProxy::CAMERA_Z_SMOOTHING       = 0.40f;
+const float UnitProxy::CAMERA_Z_TOLERANCE       = 0.30f;
 const float UnitProxy::EXTERNAL_CAM_DIST        = 2.75f;
 const float UnitProxy::EXTERNAL_CAM_CLIP_DIST   = 0.10f;
 const float UnitProxy::SHOULDER_CAM_RIGHT       = 0.25f;

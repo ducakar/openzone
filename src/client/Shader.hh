@@ -185,6 +185,7 @@ class Shader
 
     Vec4  fogColour;
 
+    uint  defaultTexture;
     uint  defaultMasks;
     uint  defaultNormals;
 

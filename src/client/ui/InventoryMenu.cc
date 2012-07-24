@@ -156,13 +156,13 @@ slotsRendered:
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
     glBindTexture( GL_TEXTURE_2D, scrollUpTexId );
     shape.fill( x + 16, y + height + ROWS * SLOT_SIZE, 16, 16 );
-    glBindTexture( GL_TEXTURE_2D, 0 );
+    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
   if( scroll != nScrollRows ) {
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
     glBindTexture( GL_TEXTURE_2D, scrollDownTexId );
     shape.fill( x + 16, y + height - 16, 16, 16 );
-    glBindTexture( GL_TEXTURE_2D, 0 );
+    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
 
   tf.model = Mat44::translation( Vec3( float( x + SLOT_SIZE / 2 ),
@@ -249,7 +249,7 @@ slotsRendered:
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
     glBindTexture( GL_TEXTURE_2D, texId );
     shape.fill( x + width - ICON_SIZE - 4, y + height - FOOTER_SIZE + 4, ICON_SIZE, ICON_SIZE );
-    glBindTexture( GL_TEXTURE_2D, 0 );
+    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
 noIcon:
 

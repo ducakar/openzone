@@ -77,6 +77,9 @@ class MissionMenu : public Area
 
     Text              description;
 
+    uint              scrollUpTexId;
+    uint              scrollDownTexId;
+
     uint              imageId;
     int               imageX;
     int               imageY;

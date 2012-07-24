@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenZone\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-07-20 17:39+0100\n"
+"PO-Revision-Date: 2012-07-24 17:15+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: \n"
@@ -211,7 +211,7 @@ msgstr "droid"
 
 #: data/openzone/class/droid_weapon.hyperblaster.json
 msgid "hyperblaster"
-msgstr "težki udarnik"
+msgstr "nadudarnik"
 
 #: data/openzone/class/explosiveBarrel.json
 msgid "barrel"

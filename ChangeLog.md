@@ -3,7 +3,7 @@
 - client
     * credits screen
 - general
-    * Win32 port fixed, bugfixes ...
+    * Win32 port fixed, bugfixes, polishing ...
 
 0.3.0
 
@@ -71,6 +71,7 @@
       new thread and upload to graphic card that has to be synchronous with rendering
     * textures have 3 components: diffuse (base colour), masks (per-pixel specular and emission
       masks) and normal map
+    * objects are filtered from rendering if aspect angle from eye is too small
     * configurable fog colour for both terrain and structure water/lava
     * Mesh class
         + meshes are not rendered immediately but lists are created for each mesh and all instances

@@ -317,7 +317,8 @@ void Shader::init()
   // always returns white colour when texture 0 is bound)
   ubyte whitePixel[] = { 0xff, 0xff, 0xff, 0xff };
 
-  glBindTexture( GL_TEXTURE_2D, 0 );
+  glGenTextures( 1, &defaultTexture );
+  glBindTexture( GL_TEXTURE_2D, defaultTexture );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, whitePixel );
@@ -340,11 +341,11 @@ void Shader::init()
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, normalsPixel );
 
-  glBindTexture( GL_TEXTURE_2D, 0 );
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
   for( int i = 2; i >= 0; --i ) {
     glActiveTexture( GL_TEXTURE0 + uint( i ) );
-    glBindTexture( GL_TEXTURE_2D, 0 );
+    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
 
   if( library.shaders.length() == 0 ) {
@@ -452,9 +453,9 @@ void Shader::free()
     glDeleteTextures( 1, &defaultMasks );
     defaultMasks = 0;
   }
-  if( glIsTexture( 0 ) ) {
-    uint zero = 0;
-    glDeleteTextures( 1, &zero );
+  if( defaultTexture != 0 ) {
+    glDeleteTextures( 1, &defaultTexture );
+    defaultTexture = 0;
   }
 
   plain = -1;

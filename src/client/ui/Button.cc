@@ -83,6 +83,11 @@ Button::Button( const char* text, Callback* callback, int width, int height ) :
   callback( callback ), isHighlighted( false ), isClicked( false )
 {}
 
+void Button::setLabel( const char* text )
+{
+  label.set( "%s", text );
+}
+
 void Button::setCallback( Callback* callback_ )
 {
   callback = callback_;

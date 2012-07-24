@@ -1,5 +1,8 @@
 {
-  "title":    "tutorial - movement",
-  "fragPool": "ruins",
-  "nFrags":   60
+  "title":              "tutorial - movement",
+
+  "fragPool":           "ruins",
+  "nFrags":             60,
+
+  "demolishSound":      "free/explode"
 }

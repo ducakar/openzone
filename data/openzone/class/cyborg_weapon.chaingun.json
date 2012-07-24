@@ -27,7 +27,7 @@
   "nFrags":             4,
 
   "imagoType":          "MD2Weapon",
-  "imagoModel":         "rat_weapon.chaingun",
+  "imagoModel":         "ratamahatta_weapon.chaingun",
 
   "audioType":          "Basic",
   "audioSounds":

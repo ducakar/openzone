@@ -83,7 +83,7 @@ void Mouse::draw() const
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
     glBindTexture( GL_TEXTURE_2D, cur.texId );
     shape.fill( x - cur.hotspotX, y + 1 + cur.hotspotY - cur.size, cur.size, cur.size );
-    glBindTexture( GL_TEXTURE_2D, 0 );
+    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
 }
 

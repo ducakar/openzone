@@ -46,8 +46,6 @@ function onCreate()
 
 --   ozOrbisAddStr( OZ_FORCE, "testCastle", 2000, -2000, 100, OZ_NORTH )
 
---   ozCameraWarpTo( 141.0, -12.0, 84.75, 0.0, 35.0 )
-
   init_sample()
 
   ozFloraSeed()

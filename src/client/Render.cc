@@ -299,7 +299,7 @@ void Render::drawGeometry()
   shader.program( shader.plain );
 
   glActiveTexture( GL_TEXTURE0 );
-  glBindTexture( GL_TEXTURE_2D, 0 );
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
   if( showAim ) {
     Vec3 move = camera.at * 32.0f;
@@ -379,12 +379,19 @@ void Render::drawOrbis()
     tf.camera = Mat44::ID;
 
     shader.program( doPostprocess ? shader.postprocess : shader.plain );
-    shape.colour( 1.0f, 1.0f, 1.0f );
     tf.applyCamera();
+    shape.colour( 1.0f, 1.0f, 1.0f );
 
+#ifdef OZ_GL_ES
     glBindTexture( GL_TEXTURE_2D, colourBuffer );
     shape.fill( 0, 0, windowWidth, windowHeight );
-    glBindTexture( GL_TEXTURE_2D, 0 );
+    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+#else
+    glBindFramebuffer( GL_READ_FRAMEBUFFER, mainFrame );
+    glBlitFramebuffer( 0, 0, frameWidth, frameHeight, 0, 0, windowWidth, windowHeight,
+                       GL_COLOR_BUFFER_BIT, GLenum( scaleFilter ) );
+    glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
+#endif
   }
 
   postprocessMicros += Time::uclock() - beginMicros;
@@ -415,15 +422,12 @@ void Render::draw( int flags_ )
 
       render.drawOrbis();
     }
-    glFlush();
 
     if( render.flags & DRAW_UI_BIT ) {
       shader.mode = Shader::UI;
 
       render.drawUI();
     }
-
-    glFlush();
   } )
 }
 
@@ -460,7 +464,7 @@ void Render::resize()
 
   glGenRenderbuffers( 1, &depthBuffer );
   glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
-#ifdef __native_client__
+#ifdef OZ_GL_ES
   glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, frameWidth, frameHeight );
 #else
   glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, frameWidth, frameHeight );
@@ -478,7 +482,7 @@ void Render::resize()
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB,
                 GL_UNSIGNED_BYTE, null );
 
-  glBindTexture( GL_TEXTURE_2D, 0 );
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
   glGenFramebuffers( 1, &mainFrame );
   glBindFramebuffer( GL_FRAMEBUFFER, mainFrame );
@@ -649,7 +653,7 @@ void Render::init( bool isBuild )
   scale           = config.include( "render.scale",       1.0f ).asFloat();
   sScaleFilter    = config.include( "render.scaleFilter", "NEAREST" ).asString();
 
-  visibilityRange = config.include( "render.distance",    350.0f ).asFloat();
+  visibilityRange = config.include( "render.distance",    400.0f ).asFloat();
   showBounds      = config.include( "render.showBounds",  false ).asBool();
   showAim         = config.include( "render.showAim",     false ).asBool();
 

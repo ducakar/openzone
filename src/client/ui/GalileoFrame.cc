@@ -137,7 +137,7 @@ void GalileoFrame::onDraw()
 
   glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 
-  glBindTexture( GL_TEXTURE_2D, 0 );
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 }
 
 GalileoFrame::GalileoFrame() :

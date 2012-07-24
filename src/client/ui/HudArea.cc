@@ -57,7 +57,7 @@ void HudArea::drawBotCrosshair()
   shape.colour( colour );
   glBindTexture( GL_TEXTURE_2D, crossTexId );
   shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
-  glBindTexture( GL_TEXTURE_2D, 0 );
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
   if( me->parent < 0 && ( camera.object >= 0 || camera.entity >= 0 ) ) {
     const Object*      obj   = camera.objectObj;
@@ -140,7 +140,7 @@ void HudArea::drawBotCrosshair()
       }
 
       if( !( obj->flags & Object::SOLID_BIT ) ) {
-        glBindTexture( GL_TEXTURE_2D, 0 );
+        glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
         return;
       }
 
@@ -186,7 +186,7 @@ void HudArea::drawBotCrosshair()
         shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
       }
     }
-    glBindTexture( GL_TEXTURE_2D, 0 );
+    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
 }
 

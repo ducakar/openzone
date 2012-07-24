@@ -95,7 +95,7 @@ void Terra::draw()
 
   for( int i = 2; i >= 0; --i ) {
     glActiveTexture( GL_TEXTURE0 + uint( i ) );
-    glBindTexture( GL_TEXTURE_2D, 0 );
+    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
 
   glFrontFace( GL_CCW );
@@ -147,7 +147,7 @@ void Terra::drawWater()
 
   for( int i = 1; i >= 0; --i ) {
     glActiveTexture( GL_TEXTURE0 + uint( i ) );
-    glBindTexture( GL_TEXTURE_2D, 0 );
+    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
 
   if( camera.p.z >= 0.0f ) {

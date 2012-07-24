@@ -1,4 +1,6 @@
 {
-  "fragPool": "ruins",
-  "nFrags":   30
+  "fragPool":           "ruins",
+  "nFrags":             30,
+
+  "demolishSound":      "free/explode"
 }

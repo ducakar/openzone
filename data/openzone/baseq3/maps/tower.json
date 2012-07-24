@@ -1,29 +1,32 @@
 {
-  "fragPool":       "ruins",
-  "nFrags":         40,
+  "fragPool":           "ruins",
+  "nFrags":             40,
+
+  "demolishSound":      "free/explode",
+
   "models":
   [
     {
-      "type":       "AUTO_DOOR",
-      "move.x":     0.0,
-      "move.y":     -1.27,
-      "move.z":     0.0,
-      "slideTime":  0.4,
-      "timeout":    3.0,
-      "margin":     0.3,
-      "openSound":  "free/itemback",
-      "closeSound": "free/itemback"
+      "type":           "AUTO_DOOR",
+      "move.x":         0.0,
+      "move.y":         -1.27,
+      "move.z":         0.0,
+      "slideTime":      0.4,
+      "timeout":        3.0,
+      "margin":         0.3,
+      "openSound":      "free/itemback",
+      "closeSound":     "free/itemback"
     },
     {
-      "type":       "AUTO_DOOR",
-      "move.x":     0.0,
-      "move.y":     1.43,
-      "move.z":     0.0,
-      "slideTime":  0.4,
-      "timeout":    3.0,
-      "margin":     0.1,
-      "openSound":  "free/itemback",
-      "closeSound": "free/itemback"
+      "type":           "AUTO_DOOR",
+      "move.x":         0.0,
+      "move.y":         1.43,
+      "move.z":         0.0,
+      "slideTime":      0.4,
+      "timeout":        3.0,
+      "margin":         0.1,
+      "openSound":      "free/itemback",
+      "closeSound":     "free/itemback"
     }
   ]
 }

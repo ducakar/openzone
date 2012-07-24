@@ -8,7 +8,7 @@
   "dim.z":              0.52,
 
   "life":               100,
-  "resistance":         50,
+  "resistance":         100,
 
   "mass":               50,
   "lift":               0.7,

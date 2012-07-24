@@ -192,7 +192,7 @@ void Mesh::drawScheduled( int mask )
 
   for( int i = 4; i >= 0; --i ) {
     glActiveTexture( GL_TEXTURE0 + uint( i ) );
-    glBindTexture( GL_TEXTURE_2D, 0 );
+    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
 
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
@@ -300,7 +300,7 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
       glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, nFramePositions, nFrames, 0, GL_RGB, GL_FLOAT,
                     istream->forward( vertexBufferSize ) );
-      glBindTexture( GL_TEXTURE_2D, 0 );
+      glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
       glGenTextures( 1, &normalsTexId );
       glBindTexture( GL_TEXTURE_2D, normalsTexId );
@@ -308,7 +308,7 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
       glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, nFramePositions, nFrames, 0, GL_RGB, GL_FLOAT,
                     istream->forward( normalBufferSize ) );
-      glBindTexture( GL_TEXTURE_2D, 0 );
+      glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
     }
     else {
       vertices  = new Vertex[nFrameVertices];

@@ -25,6 +25,7 @@
 
 #include "client/ui/Label.hh"
 
+#include "client/Shader.hh"
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"
 
@@ -112,7 +113,7 @@ void Label::vset( int x_, int y_, int align_, Font::Type font_, const char* s, v
     glBindTexture( GL_TEXTURE_2D, texId );
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                   text->pixels );
-    glBindTexture( GL_TEXTURE_2D, 0 );
+    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   } )
 
   newWidth   = text->w;
@@ -182,7 +183,7 @@ void Label::draw( const Area* area, bool allowChanged )
     shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
     shape.fillInv( posX, posY, width, height );
 
-    glBindTexture( GL_TEXTURE_2D, 0 );
+    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
 
   if( hasChanged ) {

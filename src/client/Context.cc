@@ -152,10 +152,7 @@ uint Context::readTextureLayer( InputStream* stream_, const char* path_ )
     }
   }
 
-  if( glGetError() != GL_NO_ERROR || !glIsTexture( texId ) ) {
-    glDeleteTextures( 1, &texId );
-    throw Exception( "Texture '%s' loading failed", path );
-  }
+  OZ_GL_CHECK_ERROR();
 
   return texId;
 }

@@ -416,8 +416,8 @@ void Class::fillBot( const char* className )
   stepWalkInc       = config["stepWalkInc"].get( 6.0f / 6.0f ) * Timer::TICK_TIME;
   stepRunInc        = config["stepRunInc"].get( 10.0f / 6.0f ) * Timer::TICK_TIME;
 
-  stairInc          = config["stairInc"].get( 0.20f );
-  stairMax          = config["stairMax"].get( 0.40f );
+  stairInc          = config["stairInc"].get( 11.0f / 64.0f );
+  stairMax          = config["stairMax"].get( 22.0f / 64.0f );
   stairRateLimit    = config["stairRateLimit"].get( 0.15f );
   stairRateSupp     = config["stairRateSupp"].get( 0.80f );
 
