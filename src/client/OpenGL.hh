@@ -141,9 +141,9 @@ extern PFNGLBINDVERTEXARRAYPROC         glBindVertexArray;
 #ifdef NDEBUG
 # define OZ_GL_CHECK_ERROR() void( 0 )
 #else
-# define OZ_GL_CHECK_ERROR() oz::client::glCheckError( __BASE_FILE__, __LINE__, __PRETTY_FUNCTION__ )
+# define OZ_GL_CHECK_ERROR() oz::client::glCheckError( __PRETTY_FUNCTION__, __FILE__, __LINE__ )
 
-void glCheckError( const char* file, int line, const char* function );
+void glCheckError( const char* function, const char* file, int line );
 
 #endif
 

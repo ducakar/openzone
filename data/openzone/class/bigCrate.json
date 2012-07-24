@@ -10,10 +10,12 @@
   "dim.z":              0.6,
 
   "life":               100,
-  "resistance":         50,
+  "resistance":         100,
 
   "mass":               50,
   "lift":               1.1,
+
+  "nItems":             6,
 
   "fragPool":           "wood",
   "nFrags":             6,

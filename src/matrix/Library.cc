@@ -133,22 +133,22 @@ int Library::modelIndex( const char* name ) const
   return *value;
 }
 
-int Library::musicIndex( const char* name ) const
-{
-  const int* value = musicIndices.find( name );
-
-  if( value == null ) {
-    throw Exception( "Invalid music track index requested '%s'", name );
-  }
-  return *value;
-}
-
 int Library::nameListIndex( const char* name ) const
 {
   const int* value = nameListIndices.find( name );
 
   if( value == null ) {
     throw Exception( "Invalid name list index requested '%s'", name );
+  }
+  return *value;
+}
+
+int Library::musicTrackIndex( const char* name ) const
+{
+  const int* value = musicTrackIndices.find( name );
+
+  if( value == null ) {
+    throw Exception( "Invalid music track index requested '%s'", name );
   }
   return *value;
 }
@@ -188,6 +188,8 @@ void Library::initShaders()
   Log::println( "Shader programs (*.json in 'glsl') {" );
   Log::indent();
 
+  List<Resource> shadersList;
+
   PFile dir( "glsl" );
   DArray<PFile> dirList = dir.ls();
 
@@ -200,9 +202,12 @@ void Library::initShaders()
 
     Log::println( "%s", name.cstr() );
 
-    shaderIndices.add( name, shaders.length() );
-    shaders.add( Resource( name, "" ) );
+    shaderIndices.add( name, shadersList.length() );
+    shadersList.add( Resource( name, "" ) );
   }
+
+  shaders.alloc( shadersList.length() );
+  aMove<Resource>( shaders, shadersList, shadersList.length() );
 
   Log::unindent();
   Log::println( "}" );
@@ -212,6 +217,8 @@ void Library::initTextures()
 {
   Log::println( "Textures (*.ozcTex in 'tex/*') {" );
   Log::indent();
+
+  List<Resource> texturesList;
 
   PFile dir( "tex" );
   DArray<PFile> dirList = dir.ls();
@@ -235,10 +242,13 @@ void Library::initTextures()
 
       Log::println( "%s", name.cstr() );
 
-      textureIndices.add( name, textures.length() );
-      textures.add( Resource( name, file->path() ) );
+      textureIndices.add( name, texturesList.length() );
+      texturesList.add( Resource( name, file->path() ) );
     }
   }
+
+  textures.alloc( texturesList.length() );
+  aMove<Resource>( textures, texturesList, texturesList.length() );
 
   Log::unindent();
   Log::println( "}" );
@@ -248,6 +258,8 @@ void Library::initSounds()
 {
   Log::println( "Sounds (*.wav in 'snd') {" );
   Log::indent();
+
+  List<Resource> soundsList;
 
   PFile dir( "snd" );
   DArray<PFile> dirList = dir.ls();
@@ -271,10 +283,13 @@ void Library::initSounds()
 
       Log::println( "%s", name.cstr() );
 
-      soundIndices.add( name, sounds.length() );
-      sounds.add( Resource( name, file->path() ) );
+      soundIndices.add( name, soundsList.length() );
+      soundsList.add( Resource( name, file->path() ) );
     }
   }
+
+  sounds.alloc( soundsList.length() );
+  aMove<Resource>( sounds, soundsList, soundsList.length() );
 
   Log::unindent();
   Log::println( "}" );
@@ -284,6 +299,8 @@ void Library::initCaela()
 {
   Log::println( "Caela (*.ozcCaelum in 'caelum') {" );
   Log::indent();
+
+  List<Resource> caelaList;
 
   PFile dir( "caelum" );
   DArray<PFile> dirList = dir.ls();
@@ -297,9 +314,12 @@ void Library::initCaela()
 
     Log::println( "%s", name.cstr() );
 
-    caelumIndices.add( name, caela.length() );
-    caela.add( Resource( name, file->path() ) );
+    caelumIndices.add( name, caelaList.length() );
+    caelaList.add( Resource( name, file->path() ) );
   }
+
+  caela.alloc( caelaList.length() );
+  aMove<Resource>( caela, caelaList, caelaList.length() );
 
   Log::unindent();
   Log::println( "}" );
@@ -309,6 +329,8 @@ void Library::initTerrae()
 {
   Log::println( "Terrae (*.ozTerra/*.ozcTerra in 'terra') {" );
   Log::indent();
+
+  List<Resource> terraeList;
 
   PFile dir( "terra" );
   DArray<PFile> dirList = dir.ls();
@@ -322,9 +344,12 @@ void Library::initTerrae()
 
     Log::println( "%s", name.cstr() );
 
-    terraIndices.add( name, terrae.length() );
-    terrae.add( Resource( name, file->path() ) );
+    terraIndices.add( name, terraeList.length() );
+    terraeList.add( Resource( name, file->path() ) );
   }
+
+  terrae.alloc( terraeList.length() );
+  aMove<Resource>( terrae, terraeList, terraeList.length() );
 
   Log::unindent();
   Log::println( "}" );
@@ -362,6 +387,8 @@ void Library::initModels()
   Log::println( "Models (directories in 'mdl') {" );
   Log::indent();
 
+  List<Resource> modelsList;
+
   PFile dir( "mdl" );
   DArray<PFile> dirList = dir.ls();
 
@@ -394,15 +421,48 @@ void Library::initModels()
       throw Exception( "Duplicated model '%s'", name.cstr() );
     }
 
-    modelIndices.add( name, models.length() );
-    models.add( Resource( name, path ) );
+    modelIndices.add( name, modelsList.length() );
+    modelsList.add( Resource( name, path ) );
   }
+
+  models.alloc( modelsList.length() );
+  aMove<Resource>( models, modelsList, modelsList.length() );
 
   Log::unindent();
   Log::println( "}" );
 }
 
-void Library::initMusicRecurse( const char* path )
+void Library::initNameLists()
+{
+  Log::println( "Name lists (*.txt in 'name') {" );
+  Log::indent();
+
+  List<Resource> nameListsList;
+
+  PFile dir( "name" );
+  DArray<PFile> dirList = dir.ls();
+
+  foreach( file, dirList.citer() ) {
+    if( !file->hasExtension( "txt" ) ) {
+      continue;
+    }
+
+    String name = file->baseName();
+
+    Log::println( "%s", name.cstr() );
+
+    nameListIndices.add( name, nameListsList.length() );
+    nameListsList.add( Resource( name, file->path() ) );
+  }
+
+  nameLists.alloc( nameListsList.length() );
+  aMove<Resource>( nameLists, nameListsList, nameListsList.length() );
+
+  Log::unindent();
+  Log::println( "}" );
+}
+
+void Library::initMusicRecurse( const char* path, List<Resource>* musicTracksList )
 {
   PFile dir( path );
   DArray<PFile> dirList = dir.ls();
@@ -411,7 +471,7 @@ void Library::initMusicRecurse( const char* path )
     file->stat();
 
     if( file->type() == File::DIRECTORY ) {
-      initMusicRecurse( file->path() );
+      initMusicRecurse( file->path(), musicTracksList );
     }
 #ifdef OZ_NONFREE
     if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) &&
@@ -425,7 +485,7 @@ void Library::initMusicRecurse( const char* path )
 
     Log::println( "%s", file->path().cstr() );
 
-    musics.add( Resource( file->baseName(), file->path() ) );
+    musicTracksList->add( Resource( file->baseName(), file->path() ) );
   }
 }
 
@@ -447,38 +507,18 @@ void Library::initMusic( const char* userMusicPath )
   }
   Log::indent();
 
-  initMusicRecurse( "music" );
+  List<Resource> musicTracksList;
 
-  for( int i = 0; i < musics.length(); ++i ) {
-    musicIndices.add( musics[i].name, i );
+  initMusicRecurse( "music", &musicTracksList );
+
+  for( int i = 0; i < musicTracksList.length(); ++i ) {
+    musicTrackIndices.add( musicTracksList[i].name, i );
   }
 
-  initMusicRecurse( "userMusic" );
+  initMusicRecurse( "userMusic", &musicTracksList );
 
-  Log::unindent();
-  Log::println( "}" );
-}
-
-void Library::initNameLists()
-{
-  Log::println( "Name lists (*.txt in 'name') {" );
-  Log::indent();
-
-  PFile dir( "name" );
-  DArray<PFile> dirList = dir.ls();
-
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "txt" ) ) {
-      continue;
-    }
-
-    String name = file->baseName();
-
-    Log::println( "%s", name.cstr() );
-
-    nameListIndices.add( name, nameLists.length() );
-    nameLists.add( Resource( name, file->path() ) );
-  }
+  musicTracks.alloc( musicTracksList.length() );
+  aMove<Resource>( musicTracks, musicTracksList, musicTracksList.length() );
 
   Log::unindent();
   Log::println( "}" );
@@ -696,15 +736,6 @@ void Library::init( const char* userMusicPath )
   Log::println( "Initialising Library {" );
   Log::indent();
 
-  shaders.alloc( 64 );
-  textures.alloc( 256 );
-  sounds.alloc( 256 );
-  caela.alloc( 16 );
-  terrae.alloc( 16 );
-  models.alloc( 256 );
-  musics.alloc( 64 );
-  nameLists.alloc( 16 );
-
   Log::verboseMode = true;
 
   Log::println( "Mapping resources {" );
@@ -737,7 +768,7 @@ void Library::init( const char* userMusicPath )
   Log::println( "%5d  terrae", terrae.length() );
   Log::println( "%5d  BSPs", nBSPs );
   Log::println( "%5d  models", models.length() );
-  Log::println( "%5d  music tracks", musics.length() );
+  Log::println( "%5d  music tracks", musicTracks.length() );
   Log::println( "%5d  name lists", nameLists.length() );
   Log::println( "%5d  fragment pools", fragPools.length() );
   Log::println( "%5d  object classes", objClasses.length() );
@@ -751,22 +782,14 @@ void Library::init( const char* userMusicPath )
 
 void Library::free()
 {
-  shaders.clear();
   shaders.dealloc();
-  textures.clear();
   textures.dealloc();
-  sounds.clear();
   sounds.dealloc();
-  caela.clear();
   caela.dealloc();
-  terrae.clear();
   terrae.dealloc();
-  models.clear();
   models.dealloc();
-  nameLists.clear();
   nameLists.dealloc();
-  musics.clear();
-  musics.dealloc();
+  musicTracks.dealloc();
 
   shaderIndices.clear();
   shaderIndices.dealloc();
@@ -782,8 +805,8 @@ void Library::free()
   modelIndices.dealloc();
   nameListIndices.clear();
   nameListIndices.dealloc();
-  musicIndices.clear();
-  musicIndices.dealloc();
+  musicTrackIndices.clear();
+  musicTrackIndices.dealloc();
 
   deviceIndices.clear();
   deviceIndices.dealloc();

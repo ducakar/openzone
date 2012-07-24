@@ -8,7 +8,7 @@
   "life":               1,
   "resistance":         0,
 
-  "mass":               0.01,
+  "mass":               1,
   "lift":               1.2,
 
   "onDestroy":          "spawnSmallExplosion",

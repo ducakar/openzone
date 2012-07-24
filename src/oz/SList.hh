@@ -134,7 +134,7 @@ class SList
     }
 
     /**
-     * False if respective elements are equal.
+     * False iff respective elements are equal.
      */
     bool operator != ( const SList& l ) const
     {

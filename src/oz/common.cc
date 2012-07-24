@@ -31,13 +31,13 @@
 namespace oz
 {
 
-void _softAssertHelper( const char* message, const char* file, int line, const char* function )
+void _softAssertHelper( const char* message, const char* function, const char* file, int line )
 {
   System::warning( 1, "Soft assertion '%s' failed\n  in %s\n  at %s:%d",
                    message, function, file, line );
 }
 
-void _hardAssertHelper( const char* message, const char* file, int line, const char* function )
+void _hardAssertHelper( const char* message, const char* function, const char* file, int line )
 {
   System::error( 1, "Hard assertion '%s' failed\n  in %s\n  at %s:%d",
                  message, function, file, line );

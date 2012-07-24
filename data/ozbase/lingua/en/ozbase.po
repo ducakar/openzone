@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenZone\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-07-20 17:39+0100\n"
+"PO-Revision-Date: 2012-07-23 17:54+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: \n"
@@ -66,6 +66,10 @@ msgstr ""
 #: src/client/ui/QuestFrame.cc:134
 msgid "No quest"
 msgstr "No quest"
+
+#: src/client/Profile.cc:58
+msgid "Player"
+msgstr "Me"
 
 #: src/client/ui/MainMenu.cc:130
 msgid "Quickload"

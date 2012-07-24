@@ -608,23 +608,26 @@ class OutputStream
     /**
      * Read string.
      */
-    OZ_ALWAYS_INLINE
     String readString()
     {
-      int length = 0;
-      while( pos + length < end && pos[length] != '\0' ) {
-        ++length;
+      const char* begin = pos;
+
+      while( pos < end && *pos != '\0' ) {
+        ++pos;
       }
-      if( pos + length == end ) {
+      if( pos == end ) {
         throw Exception( "End of buffer reached while looking for the end of a string." );
       }
-      return String( length, forward( length + 1 ) );
+
+      int length = int( pos - begin );
+
+      ++pos;
+      return String( length, begin );
     }
 
     /**
      * Write string.
      */
-    OZ_ALWAYS_INLINE
     void writeString( const String& s )
     {
       int size = s.length() + 1;
@@ -636,7 +639,6 @@ class OutputStream
     /**
      * Write C string.
      */
-    OZ_ALWAYS_INLINE
     void writeString( const char* s )
     {
       int size = String::length( s ) + 1;
@@ -947,6 +949,55 @@ class OutputStream
         data[14] = Endian::bswap32( Math::toBits( m.w.z ) );
         data[15] = Endian::bswap32( Math::toBits( m.w.w ) );
       }
+    }
+
+    /**
+     * Read line from a text file.
+     *
+     * Line delimiting character is not part of returned string.
+     */
+    String readLine()
+    {
+      const char* begin = pos;
+
+      while( pos < end && *pos != '\n' && *pos != '\r' ) {
+        ++pos;
+      }
+
+      int length = int( pos - begin );
+
+      pos += 1 + ( pos < end - 1 && pos[0] == '\r' && pos[1] == '\n' );
+      return String( length, begin );
+    }
+
+    /**
+     * Write line in a text file.
+     *
+     * This writes the given string but replaces terminating null character with a UNIX newline.
+     */
+    OZ_ALWAYS_INLINE
+    void writeLine( const String& s )
+    {
+      int   length = s.length();
+      char* data   = forward( length + 1 );
+
+      aCopy<char>( data, s, length );
+      data[length] = '\n';
+    }
+
+    /**
+     * Write line in a text file.
+     *
+     * This writes the given string but replaces terminating null character with a UNIX newline.
+     */
+    OZ_ALWAYS_INLINE
+    void writeLine( const char* s )
+    {
+      int   length = String::length( s );
+      char* data   = forward( length + 1 );
+
+      aCopy<char>( data, s, length );
+      data[length] = '\n';
     }
 
 };

@@ -115,7 +115,7 @@ class JSON::Parser
       int          column;
 
       bool isAvailable();
-      int  available();
+      int available();
       char readChar();
       void back();
     };
@@ -151,7 +151,7 @@ inline int JSON::Parser::Position::available()
 }
 
 OZ_HIDDEN
-inline char JSON::Parser::Position::readChar()
+char JSON::Parser::Position::readChar()
 {
   if( !istream->isAvailable() ) {
     const Position& pos = *this;

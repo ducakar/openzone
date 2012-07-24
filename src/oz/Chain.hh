@@ -129,7 +129,7 @@ class Chain
          */
         OZ_ALWAYS_INLINE
         explicit Iterator( const Chain& c ) :
-          CIteratorBase<Elem>( c.firstElem )
+          IteratorBase<Elem>( c.firstElem )
         {}
 
       public:
@@ -360,7 +360,7 @@ class Chain
     }
 
     /**
-     * Remove an element from the chain.
+     * Remove the given element from the chain.
      *
      * Because this chain is not a double-linked, one have to provide pointer to the preceding
      * element.

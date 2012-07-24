@@ -339,7 +339,7 @@ int Sound::musicDecode()
 
         if( result < 0 ) {
           throw Exception( "Error during Ogg Vorbis decoding of '%s'",
-                           library.musics[streamedTrack].path.cstr() );
+                           library.musicTracks[streamedTrack].path.cstr() );
         }
       }
       while( result > 0 && bytesRead < MUSIC_BUFFER_SIZE );
@@ -395,7 +395,7 @@ int Sound::musicDecode()
           }
           else if( !MAD_RECOVERABLE( madStream.error ) ) {
             throw Exception( "Unrecoverable error during MP3 decoding of '%s'",
-                             library.musics[streamedTrack].path.cstr() );
+                             library.musicTracks[streamedTrack].path.cstr() );
           }
         }
 
@@ -475,7 +475,7 @@ void Sound::musicRun()
       streamedTrack = currentTrack;
 
       if( streamedTrack >= 0 ) {
-        musicOpen( library.musics[streamedTrack].path );
+        musicOpen( library.musicTracks[streamedTrack].path );
       }
     }
 

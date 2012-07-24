@@ -38,7 +38,7 @@ namespace oz
  *
  * This is not a real container but merely a way of binding existing elements into a linked list.
  *
- * It can only be applied on classes that have <tt>next[]</tt> and <tt>prev[]</tt> members.
+ * It can only be applied on classes that have <tt>prev[]</tt> and <tt>next[]</tt> members.
  * Example:
  * @code
  * struct C

@@ -1,14 +1,24 @@
+0.3.1
+
+- fix Win32 port
+- ui
+    * mission screen scrolling
+    * credits screen
+- client
+    * MD2 animation++
+
 0.4
 
-- new löök
 - matrix
-    * Vehicle: turret, wheeled, tracked, mech warrior
-    * improve Vehicle rotation
+    * Vehicle: turret, wheeled, tracked, mech warrior, orca
+    * smooth/limited Vehicle rotation
+- nirvana
+    * AI tasks
 - ui
-    * credits screen
     * tutorial tips
     * options menu
     * advanced HUD for mechanic units and vehicles
+    * RTS interface
 - client
     * editor
     * layout files
@@ -17,25 +27,17 @@
     * decals
     * particle model (smoke, fire ...)
     * animated textures
-    * video to texture
-    * better sky
-    * weather
-- unittest
-    * write missing tests
+    * better sky, weather
 - missions
     * new tutorial missions
+    * RTS mission
 - homepage
-- documentation
 
 0.5
 
-- networking
-- plug-ins
-
-0.6
-
-- RTS interface
-- commanding units
-- AI tasks
-- improve AI
-- building
+- client
+    * networking
+    * video to texture
+- unittest
+    * write missing tests
+- documentation

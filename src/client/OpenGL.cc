@@ -110,7 +110,7 @@ PFNGLBINDVERTEXARRAYPROC         glBindVertexArray;
 
 #ifndef NDEBUG
 
-void glCheckError( const char* file, int line, const char* function )
+void glCheckError( const char* function, const char* file, int line )
 {
   const char* message;
   GLenum result = glGetError();

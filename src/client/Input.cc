@@ -511,7 +511,7 @@ void Input::init()
   JSON inputConfig;
   configExists = inputConfig.load( &configFile );
 
-  if( !String::equals( inputConfig["_version"].get( "" ), OZ_APPLICATION_VERSION ) ) {
+  if( !String::equals( inputConfig["_version"].get( "" ), OZ_VERSION ) ) {
     configExists = false;
     inputConfig.setNull();
   }
@@ -592,7 +592,7 @@ void Input::free()
   JSON inputConfig;
   inputConfig.setObject();
 
-  inputConfig.add( "_version", OZ_APPLICATION_VERSION );
+  inputConfig.add( "_version", OZ_VERSION );
   inputConfig.add( "_backend", BACKEND );
 
   JSON& mouseConfig    = inputConfig.addObject( "mouse" );

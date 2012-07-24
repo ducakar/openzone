@@ -46,20 +46,7 @@ function onCreate()
 
 --   ozOrbisAddStr( OZ_FORCE, "testCastle", 2000, -2000, 100, OZ_NORTH )
 
---   ozCameraSetState( OZ_CAMERA_CINEMATIC )
---   ozCameraAddMove( 131, -12, 85, 0, 90, 1 )
---   ozCameraAddMove( 131, -12, 85, 0, 0, 1 )
---   ozCameraAddMove( 141, -12, 85, 0, 90, 1 )
---   ozCameraAddMove( 141, -12, 85, 0, 0, 1 )
---   ozCameraAddStateSwitch( OZ_CAMERA_STRATEGIC )
-
---   ozCameraBaseColour( 0.5, 0.3, 0.3, 0.0,
---                       0.3, 0.5, 0.3, 0.0,
---                       0.3, 0.3, 0.5, 0.0,
---                       0.0, 0.0, 0.0, 1.0 )
-
 --   ozCameraWarpTo( 141.0, -12.0, 84.75, 0.0, 35.0 )
---   ozCameraExecuteSequence( "intro" )
 
   init_sample()
 
@@ -76,10 +63,12 @@ function init_sample()
                           "essentials.\n\n        -- Hubert Kirrman" )
   ozNirvanaAddMemo( lord, "Buahahahaha" )
 
-  ozOrbisAddObj( OZ_FORCE, "droid.OOM-9", 140, -11, 73, OZ_WEST )
+  local droid  = ozOrbisAddObj( OZ_FORCE, "droid.OOM-9", 140, -11, 73, OZ_WEST )
   local cyborg = ozOrbisAddObj( OZ_FORCE, "cyborg", 140, -13, 73, OZ_WEST )
   ozBotSetMind( "" )
+
   ozCameraAddSwitchableUnit( cyborg )
+  ozCameraAddSwitchableUnit( droid )
 
 --   ozOrbisAddObj( "reaper", 145, -15, 73 )
 

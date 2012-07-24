@@ -21,8 +21,3 @@ msgstr "Test"
 msgid "Test of various engine capabilities."
 msgstr "Test of various engine capabilities."
 
-#: data/openzone_missions/mission/test/intro.sequence.json:step
-#: #3
-msgid "Intro dasd das d ad ad asdsa dadsad as d as d as da s d dsadasdada   das d as d dasd dad  dsa d asd as dsad  asdada d asd as d as ds ad dsadasdadasdasd  das das dsa das d asd asda s das d asd a d asdasd as d as d sa dasdadasdas d as d as dsa ds d a d asd asdsa d sa d sa dasdas"
-msgstr "Intro dasd das d ad ad asdsa dadsad as d as d as da s d dsadasdada   das d as d dasd dad  dsa d asd as dsad  asdada d asd as d as ds ad dsadasdadasdasd  das das dsa das d asd asda s das d asd a d asdasd as d as d sa dasdadasdas d as d as dsa ds d a d asd asdsa d sa d sa dasdas"
-

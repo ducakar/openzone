@@ -55,7 +55,7 @@ void Profile::init()
     const char* userName = SDL_getenv( "USER" );
 
     if( userName == null || String::isEmpty( userName ) ) {
-      name = "Player";
+      name = OZ_GETTEXT( "Player" );
     }
     else {
       wchar_t wcUserName[64];

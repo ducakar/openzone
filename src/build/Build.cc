@@ -66,7 +66,7 @@ void Build::printUsage( const char* invocationName )
     "  <src_dir>  Path to directory that includes data to be built. Name of this\n"
     "             directory name is used as package name.\n"
     "  <out_dir>  Directory where output directory and archive will be created.\n"
-    "             Defaults to './share/" OZ_APPLICATION_NAME "'.\n"
+    "             Defaults to './share/openzone'.\n"
     "  -v         More verbose log output.\n"
     "  -l         Build translations.\n"
     "  -u         Build UI.\n"
@@ -900,11 +900,11 @@ int Build::main( int argc, char** argv )
 
 #ifdef _WIN32
   String srcDir = String::replace( argv[optind], '\\', '/' );
-  String outDir = optind == argc - 1 ? "share/" OZ_APPLICATION_NAME :
+  String outDir = optind == argc - 1 ? "share/openzone" :
                                        String::replace( argv[optind + 1], '\\', '/' );
 #else
   String srcDir = argv[optind];
-  String outDir = optind == argc - 1 ? "share/" OZ_APPLICATION_NAME : argv[optind + 1];
+  String outDir = optind == argc - 1 ? "share/openzone" : argv[optind + 1];
 #endif
 
   while( !srcDir.isEmpty() && srcDir.last() == '/' ) {
@@ -923,7 +923,7 @@ int Build::main( int argc, char** argv )
     outDir = File::cwd() + "/" + outDir + "/" + pkgName;
   }
 
-  Log::print( OZ_APPLICATION_TITLE " Build started on " );
+  Log::print( "OpenZone Build started on " );
   Log::printTime( Time::local() );
   Log::printEnd();
 
@@ -1079,7 +1079,7 @@ int Build::main( int argc, char** argv )
 
   Alloc::printSummary();
 
-  Log::print( OZ_APPLICATION_TITLE " Build finished on " );
+  Log::print( "OpenZone Build finished on " );
   Log::printTime( Time::local() );
   Log::printEnd();
 

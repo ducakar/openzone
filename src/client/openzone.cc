@@ -52,7 +52,7 @@ void MainInstance::mainThreadMain( void* )
   NaCl::post( "init:" );
 
   try {
-    char  argv0[] = OZ_APPLICATION_NAME;
+    char  argv0[] = "openzone";
     char* argv[]  = { argv0 };
 
     exitCode = client::client.init( 1, argv );

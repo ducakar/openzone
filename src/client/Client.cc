@@ -71,7 +71,7 @@ void Client::printUsage( const char* invocationName )
     "                use 42 as the random seed. Useful for benchmarking.\n"
     "  -L <lang>     Use language <lang>. Should match a subdirectory of 'lingua/'\n"
     "                directory in game data.\n"
-    "  -p <prefix>   Sets data directory to '<prefix>/share/" OZ_APPLICATION_NAME "'.\n"
+    "  -p <prefix>   Sets data directory to '<prefix>/share/openzone'.\n"
     "                Defaults to '%s'.\n"
     "\n",
     invocationName,
@@ -162,8 +162,8 @@ int Client::init( int argc, char** argv )
 //     throw Exception( "Failed to obtain MYMUSIC directory" );
 //   }
 
-  String configDir = String::str( "%s\\" OZ_APPLICATION_NAME, configRoot );
-  String localDir  = String::str( "%s\\" OZ_APPLICATION_NAME, localRoot );
+  String configDir = String::str( "%s\\openzone", configRoot );
+  String localDir  = String::str( "%s\\openzone", localRoot );
 //   String musicDir  = musicRoot;
   String musicDir = "";
 
@@ -179,12 +179,12 @@ int Client::init( int argc, char** argv )
   }
 
   String configDir = configRoot == null ?
-                     String::str( "%s/.config/" OZ_APPLICATION_NAME, home ) :
-                     String::str( "%s/" OZ_APPLICATION_NAME, configRoot );
+                     String::str( "%s/.config/openzone", home ) :
+                     String::str( "%s/openzone", configRoot );
 
   String localDir = localRoot == null ?
-                    String::str( "%s/.local/share/" OZ_APPLICATION_NAME, home ) :
-                    String::str( "%s/" OZ_APPLICATION_NAME, localRoot );
+                    String::str( "%s/.local/share/openzone", home ) :
+                    String::str( "%s/openzone", localRoot );
 
 //   String musicDir = musicRoot == null ? String::str( "%s/Music", home ) : String( musicRoot );
   String musicDir = "";
@@ -211,7 +211,7 @@ int Client::init( int argc, char** argv )
     Log::println( "Log file '%s'", Log::logFile() );
   }
 
-  Log::print( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " started on " );
+  Log::print( "OpenZone " OZ_VERSION " started on " );
   Log::printTime( Time::local() );
   Log::printEnd();
 
@@ -248,7 +248,7 @@ int Client::init( int argc, char** argv )
   if( config.load( &configFile ) ) {
     Log::printEnd( "Configuration read from '%s'", configFile.path().cstr() );
 
-    if( String::equals( config["_version"].get( "" ), OZ_APPLICATION_VERSION ) ) {
+    if( String::equals( config["_version"].get( "" ), OZ_VERSION ) ) {
       initFlags |= INIT_CONFIG;
     }
     else {
@@ -257,7 +257,7 @@ int Client::init( int argc, char** argv )
 
       config.clear();
       config.setObject();
-      config.add( "_version", OZ_APPLICATION_VERSION );
+      config.add( "_version", OZ_VERSION );
       config["_version"];
     }
   }
@@ -266,7 +266,7 @@ int Client::init( int argc, char** argv )
                   " exit" );
 
     config.setObject();
-    config.add( "_version", OZ_APPLICATION_VERSION );
+    config.add( "_version", OZ_VERSION );
     config["_version"];
   }
 
@@ -292,7 +292,7 @@ int Client::init( int argc, char** argv )
     prefix = config.include( "dir.prefix", OZ_INSTALL_PREFIX ).asString();
   }
 
-  String dataDir = prefix + "/share/" OZ_APPLICATION_NAME;
+  String dataDir = prefix + "/share/openzone";
 
 #ifdef __native_client__
 
@@ -535,7 +535,7 @@ void Client::shutdown()
   if( initFlags & INIT_MAIN_LOOP ) {
     Alloc::printSummary();
 
-    Log::print( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " finished on " );
+    Log::print( "OpenZone " OZ_VERSION " finished on " );
     Log::printTime( Time::local() );
     Log::printEnd();
   }

@@ -730,11 +730,7 @@ void Lua::init()
   IMPORT_FUNC( ozCameraClearSwitchableUnits );
   IMPORT_FUNC( ozCameraSwitchTo );
   IMPORT_FUNC( ozCameraAllowReincarnation );
-
   IMPORT_FUNC( ozCameraSetState );
-  IMPORT_FUNC( ozCameraBaseColour );
-  IMPORT_FUNC( ozCameraNVColour );
-
   IMPORT_FUNC( ozCameraExecuteSequence );
 
   /*

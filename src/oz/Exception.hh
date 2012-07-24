@@ -43,8 +43,8 @@ class Exception : public std::exception
   public:
 
     char        message[256]; ///< Message.
-    const char* file;         ///< %File.
     const char* function;     ///< Function name.
+    const char* file;         ///< %File.
     int         line;         ///< Source file line.
     StackTrace  stackTrace;   ///< Stack trace.
 
@@ -57,7 +57,7 @@ class Exception : public std::exception
      * It generates SIGTRAP to signal debugger on exception.
      */
     OZ_PRINTF_FORMAT( 5, 6 )
-    explicit Exception( const char* file, int line, const char* function,
+    explicit Exception( const char* function, const char* file, int line,
                         const char* message, ... ) noexcept;
 
     /**
@@ -74,6 +74,6 @@ class Exception : public std::exception
  * @ingroup oz
  */
 #define Exception( ... ) \
-  oz::Exception( __BASE_FILE__, __LINE__, __PRETTY_FUNCTION__, __VA_ARGS__ )
+  oz::Exception( __PRETTY_FUNCTION__, __FILE__, __LINE__, __VA_ARGS__ )
 
 }

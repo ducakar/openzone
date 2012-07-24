@@ -65,7 +65,7 @@ class Library
     HashString<int, 256> modelIndices;
 
     HashString<int, 16>  nameListIndices;
-    HashString<int, 64>  musicIndices;
+    HashString<int, 64>  musicTrackIndices;
 
     HashString<int, 8>   deviceIndices;
     HashString<int, 16>  imagoIndices;
@@ -73,14 +73,14 @@ class Library
 
   public:
 
-    List<Resource> shaders;
-    List<Resource> textures;
-    List<Resource> sounds;
-    List<Resource> caela;
-    List<Resource> terrae;
-    List<Resource> models;
-    List<Resource> nameLists;
-    List<Resource> musics;
+    DArray<Resource> shaders;
+    DArray<Resource> textures;
+    DArray<Resource> sounds;
+    DArray<Resource> caela;
+    DArray<Resource> terrae;
+    DArray<Resource> models;
+    DArray<Resource> nameLists;
+    DArray<Resource> musicTracks;
 
     int nBSPs;
     int nFragPools;
@@ -99,8 +99,8 @@ class Library
     int terraIndex( const char* name ) const;
     int modelIndex( const char* name ) const;
 
-    int musicIndex( const char* name ) const;
     int nameListIndex( const char* name ) const;
+    int musicTrackIndex( const char* name ) const;
 
     int deviceIndex( const char* name ) const;
     int imagoIndex( const char* name ) const;
@@ -117,9 +117,9 @@ class Library
     void initTerrae();
     void initBSPs();
     void initModels();
-    void initMusicRecurse( const char* path );
-    void initMusic( const char* userMusicPath );
     void initNameLists();
+    void initMusicRecurse( const char* path, List<Resource>* musicTracksList );
+    void initMusic( const char* userMusicPath );
     void initFragPools();
     void initClasses();
 

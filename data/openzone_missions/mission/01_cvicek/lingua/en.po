@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenZone\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-07-20 17:41+0100\n"
+"PO-Revision-Date: 2012-07-23 18:09+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: \n"
@@ -39,9 +39,36 @@ msgstr "No more thirst!"
 msgid "Escape"
 msgstr "Escape"
 
+#: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
+#: #10
+msgid ""
+"... those will be scrapped soon.\n"
+"\n"
+"That would be a shame, no true beast would allow so much precious liquid to be thrown away."
+msgstr ""
+"... those will be scrapped soon.\n"
+"\n"
+"That would be a shame, no true beast would allow so much precious liquid to be thrown away."
+
 #: data/openzone_missions/mission/01_cvicek/main.lua:433
 msgid "The Farm"
 msgstr "The Farm"
+
+#: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
+#: #14
+msgid "He will need to do some clever tricks to escape and finish his mission ..."
+msgstr "He will need to do some clever tricks to escape and finish his mission ..."
+
+#: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
+#: #2
+msgid ""
+"Beast Lair. You home village.\n"
+"\n"
+"Its inhabitants suffer critical shortage of their favourite drink, cviček."
+msgstr ""
+"Beast Lair. You home village.\n"
+"\n"
+"Its inhabitants suffer critical shortage of their favourite drink, cviček."
 
 #: data/openzone_missions/mission/01_cvicek/main.lua:83
 msgid "Good job!"
@@ -60,16 +87,6 @@ msgstr ""
 "You have been caught by a Colonial patrol and they currently hold you in that Colonial outpost. Tomorrow you are being transferred to a Colonial detention camp for terrorist suspects. If you don't find a way to escape, say goodbye to freedom till the end of your life.\n"
 "\n"
 "It would be extremely helpful if you can get a Galileo gadget, it will will show you destinations of your tasks and help you with navigation a lot."
-
-#: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
-#: #4
-msgid "A našel se je junak, ki je odšel na dolgo in nevarno misijo, da bi svoji vasi priskrbel zalogo cvička."
-msgstr ""
-
-#: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
-#: #8
-msgid "Junaška beštija se je namreč odločila oropati kar vojaško bazo visoko v gorah, kjer hranijo zasežene zaloge cvička ..."
-msgstr ""
 
 #: data/openzone_missions/mission/01_cvicek/main.lua:423
 msgid ""
@@ -94,24 +111,24 @@ msgid "Good riddance! Finally some decent TV programme."
 msgstr "Good riddance! Finally some decent TV programme."
 
 #: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
-#: #2
-msgid ""
-"Beštji Brlog. Tvoja domača vas.\n"
-"\n"
-"Trenutno njegovi prebivalci trpijo hudo pomanjkanje svoje najljubše pijače, cvička."
-msgstr ""
-
-#: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
-#: #10
-msgid ""
-"... te pa bodo kmalu odposlane na uničenje.\n"
-"\n"
-"To bi bila velika škoda, nobena prava beštija ne bi dopustila, da bi šlo v nič toliko žlahtnih kapljic."
-msgstr ""
+#: #4
+msgid "But there was a hero who went on a long and dangerous mission to bring cviček to his home village."
+msgstr "But there was a hero who went on a long and dangerous mission to bring cviček to his home village."
 
 #: data/openzone_missions/mission/01_cvicek/main.lua:440
 msgid "Beast Lair"
 msgstr "Beast Lair"
+
+#: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
+#: #13
+msgid ""
+"But not everything went according to plan.\n"
+"\n"
+"The hero has been captured by a Colonial patrol and is now imprisoned in an outpost, waiting for deportation to a secret prison for terrorism suspects."
+msgstr ""
+"But not everything went according to plan.\n"
+"\n"
+"The hero has been captured by a Colonial patrol and is now imprisoned in an outpost, waiting for deportation to a secret prison for terrorism suspects."
 
 #: data/openzone_missions/mission/01_cvicek/main.lua:403
 msgid "Cviček, cviček, cviček ... Where is cviček?"
@@ -144,12 +161,9 @@ msgid "Steal cviček"
 msgstr "Steal cviček"
 
 #: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
-#: #13
-msgid ""
-"A ni šlo vse po načrtu.\n"
-"\n"
-"Junaka je zajela kolonialna patrulja in sedaj zaprt v postojanki čaka na deportacijo v skrivni zapor za teroristične osumljence."
-msgstr ""
+#: #8
+msgid "The beast hero decided to rob a military base in mountains, where vast quantities of confiscated cviček are stored ..."
+msgstr "The beast hero decided to rob a military base in mountains, where vast quantities of confiscated cviček are stored ..."
 
 #: data/openzone_missions/mission/01_cvicek/description.json
 msgid "Mission 1: Cviček"
@@ -158,9 +172,4 @@ msgstr "Mission 1: Cviček"
 #: data/openzone_missions/mission/01_cvicek/main.lua:87
 msgid "Yeeha! Cviček!"
 msgstr "Yeeha! Cviček!"
-
-#: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
-#: #14
-msgid "Za pobeg in dokončanje naloge bo potreboval nekaj iznajdljivosti ..."
-msgstr ""
 

@@ -13,7 +13,7 @@
   "mass":               50,
   "lift":               1.2,
 
-  "nItems":             12,
+  "nItems":             8,
 
   "fragPool":           "wood",
   "nFrags":             6,

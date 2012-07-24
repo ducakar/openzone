@@ -122,7 +122,7 @@ void MainMenu::onDraw()
 MainMenu::MainMenu() :
   Area( camera.width, camera.height ),
   copyright( 20, 10, 360, 3, Font::SMALL, Area::ALIGN_NONE ),
-  title( -120, -20, ALIGN_HCENTRE | ALIGN_VCENTRE, Font::LARGE, "OpenZone " OZ_APPLICATION_VERSION )
+  title( -120, -20, ALIGN_HCENTRE | ALIGN_VCENTRE, Font::LARGE, "OpenZone " OZ_VERSION )
 {
   onReposition();
 

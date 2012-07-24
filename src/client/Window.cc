@@ -300,12 +300,11 @@ void Window::init()
 
   descriptor = SDL_SetVideoMode( width, height, 0, flags );
 
-  SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION,
-                     OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION );
+  SDL_WM_SetCaption( "OpenZone " OZ_VERSION, "OpenZone " OZ_VERSION );
 
 #else
 
-  descriptor = SDL_CreateWindow( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION,
+  descriptor = SDL_CreateWindow( "OpenZone " OZ_VERSION,
                                  SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                  width, height, flags );
 

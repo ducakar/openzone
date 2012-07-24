@@ -244,28 +244,6 @@ static int ozCameraSetState( lua_State* l )
   return 0;
 }
 
-static int ozCameraBaseColour( lua_State* l )
-{
-  ARG( 16 );
-
-  camera.baseColour = Mat44( l_tofloat(  1 ), l_tofloat(  5 ), l_tofloat(  9 ), l_tofloat( 13 ),
-                             l_tofloat(  2 ), l_tofloat(  6 ), l_tofloat( 10 ), l_tofloat( 14 ),
-                             l_tofloat(  3 ), l_tofloat(  7 ), l_tofloat( 11 ), l_tofloat( 15 ),
-                             l_tofloat(  4 ), l_tofloat(  8 ), l_tofloat( 12 ), l_tofloat( 16 ) );
-  return 0;
-}
-
-static int ozCameraNVColour( lua_State* l )
-{
-  ARG( 16 );
-
-  camera.nvColour = Mat44( l_tofloat(  1 ), l_tofloat(  5 ), l_tofloat(  9 ), l_tofloat( 13 ),
-                           l_tofloat(  2 ), l_tofloat(  6 ), l_tofloat( 10 ), l_tofloat( 14 ),
-                           l_tofloat(  3 ), l_tofloat(  7 ), l_tofloat( 11 ), l_tofloat( 15 ),
-                           l_tofloat(  4 ), l_tofloat(  8 ), l_tofloat( 12 ), l_tofloat( 16 ) );
-  return 0;
-}
-
 static int ozCameraExecuteSequence( lua_State* l )
 {
   ARG( 1 );
@@ -273,7 +251,7 @@ static int ozCameraExecuteSequence( lua_State* l )
   String file = String::str( "mission/%s/%s.sequence.json", cs.mission.cstr(), l_tostring( 1 ) );
 
   camera.setState( Camera::CINEMATIC );
-  camera.cinematic.executeSequence( file, &lingua );
+  camera.cinematic.executeSequence( file, &cs.missionLingua );
   return 0;
 }
 

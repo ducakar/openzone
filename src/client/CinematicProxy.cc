@@ -58,7 +58,7 @@ void CinematicProxy::addTransform( const Quat& rot, const Point& p, const Mat44&
   steps.add( step );
 }
 
-void CinematicProxy::executeSequence( const char* path, const Lingua* lingua )
+void CinematicProxy::executeSequence( const char* path, const Lingua* missionLingua )
 {
   JSON sequence;
   PFile file( path );
@@ -133,7 +133,7 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* lingua )
       step.track = -2;
     }
     else {
-      step.track = library.musicIndex( trackConfig.asString() );
+      step.track = library.musicTrackIndex( trackConfig.asString() );
     }
 
     const JSON& titleConfig = stepConfig["title"];
@@ -144,7 +144,7 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* lingua )
       step.title = " ";
     }
     else {
-      step.title = lingua->get( titleConfig.asString() );
+      step.title = missionLingua->get( titleConfig.asString() );
     }
 
     step.time = stepConfig["time"].get( 0.0f );

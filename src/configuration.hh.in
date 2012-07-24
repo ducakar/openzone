@@ -23,17 +23,11 @@
  * Configuration variables
  */
 
-// Short application name (for internal use).
-#define OZ_APPLICATION_NAME     "@OZ_APPLICATION_NAME@"
-
-// Application version.
-#define OZ_APPLICATION_VERSION  "@OZ_VERSION@"
+// Version.
+#define OZ_VERSION              "@OZ_VERSION@"
 
 // System type.
 #define OZ_SYSTEM_NAME          "@OZ_SYSTEM_NAME@"
-
-// Full application name.
-#define OZ_APPLICATION_TITLE    "@OZ_APPLICATION_TITLE@"
 
 // Default data directory.
 #define OZ_INSTALL_PREFIX       "@CMAKE_INSTALL_PREFIX@"

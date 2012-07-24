@@ -39,9 +39,9 @@
 namespace oz
 {
 
-Exception::Exception( const char* file_, int line_, const char* function_,
+Exception::Exception( const char* function_, const char* file_, int line_,
                       const char* message_, ... ) noexcept :
-  file( file_ ), function( function_ ), line( line_ ), stackTrace( StackTrace::current( 1 ) )
+  function( function_ ), file( file_ ), line( line_ ), stackTrace( StackTrace::current( 1 ) )
 {
   va_list ap;
   va_start( ap, message_ );

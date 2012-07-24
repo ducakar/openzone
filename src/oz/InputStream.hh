@@ -384,18 +384,21 @@ class InputStream
     /**
      * Read string.
      */
-    OZ_ALWAYS_INLINE
     String readString()
     {
-      int length = 0;
-      while( pos + length < end && pos[length] != '\0' ) {
-        ++length;
+      const char* begin = pos;
+
+      while( pos < end && *pos != '\0' ) {
+        ++pos;
       }
-      if( pos + length == end ) {
+      if( pos == end ) {
         throw Exception( "End of buffer reached while looking for the end of a string." );
       }
 
-      return String( length, forward( length + 1 ) );
+      int length = int( pos - begin );
+
+      ++pos;
+      return String( length, begin );
     }
 
     /**
@@ -548,6 +551,25 @@ class InputStream
                       Math::fromBits( Endian::bswap32( data[14] ) ),
                       Math::fromBits( Endian::bswap32( data[15] ) ) );
       }
+    }
+
+    /**
+     * Read line from a text file.
+     *
+     * Line delimiting character is not part of returned string.
+     */
+    String readLine()
+    {
+      const char* begin = pos;
+
+      while( pos < end && *pos != '\n' && *pos != '\r' ) {
+        ++pos;
+      }
+
+      int length = int( pos - begin );
+
+      pos += 1 + ( pos < end - 1 && pos[0] == '\r' && pos[1] == '\n' );
+      return String( length, begin );
     }
 
 };

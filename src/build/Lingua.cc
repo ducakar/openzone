@@ -37,52 +37,49 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
   PFile srcFile( String::str( "%s/%s.po", directory, catalogue ) );
   File outFile( String::str( "%s/%s.ozCat", directory, catalogue ) );
 
-  String realSrcPath = srcFile.realDir() + "/" + srcFile.path();
-
-  FILE* fs = fopen( realSrcPath, "r" );
-  if( fs == null ) {
-    throw Exception( "Cannot read catalogue source '%s'", srcFile.path().cstr() );
+  if( !srcFile.map() ) {
+    throw Exception( "Cannot map catalogue source file '%s'", srcFile.path().cstr() );
   }
+
+  InputStream is = srcFile.inputStream();
 
   List<String> messages;
 
   String lastOriginal;
   String lastTranslation;
 
-  char line[1024];
-  int  lineNum = 0;
-
   int mode = 0; // 1 for original, 2 for translation
+  int lineNum = 0;
 
-  while( fgets( line, 1024, fs ) != null ) {
+  while( is.isAvailable() ) {
     ++lineNum;
 
+    String line = is.readLine();
+
     // replace "\n" with the real newline
-    for( int i = 1; i < 1024; ++i ) {
+    for( int i = 1; i < line.length(); ++i ) {
       if( line[i] == '\0' ) {
         break;
       }
       if( line[i - 1] == '\\' ) {
         switch( line[i] ) {
           case '\\': {
-            line[i - 1] = '\\';
+            line = line.substring( 0, i - 1 ) + line.substring( i );
             break;
           }
           case 'n': {
-            line[i - 1] = '\n';
+            line = line.substring( 0, i - 1 ) + "\n" + line.substring( i + 1 );
             break;
           }
           default: {
-            fclose( fs );
             throw Exception( "%s:%d: invalid escape sequence '\\%c'",
                              srcFile.path().cstr(), lineNum, line[i] );
           }
         }
-        memmove( line + i, line + i + 1, size_t( 1024 - i - 1 ) );
       }
     }
 
-    if( line[0] == '\n' || line[0] == '#' ) {
+    if( line.isEmpty() || line[0] == '\n' || line[0] == '#' ) {
       continue;
     }
 
@@ -98,7 +95,6 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
       char* end = strrchr( line, '"' );
 
       if( begin == null || end == null || begin >= end ) {
-        fclose( fs );
         throw Exception( "%s:%d: syntax error", srcFile.path().cstr(), lineNum );
       }
 
@@ -116,7 +112,6 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
       char* end = strrchr( line, '"' );
 
       if( begin == null || end == null || begin >= end ) {
-        fclose( fs );
         throw Exception( "%s:%d: syntax error", srcFile.path().cstr(), lineNum );
       }
 
@@ -131,7 +126,6 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
       char* end = strrchr( line, '"' );
 
       if( begin == null || end == null || begin >= end ) {
-        fclose( fs );
         throw Exception( "%s:%d: syntax error", srcFile.path().cstr(), lineNum );
       }
 
@@ -145,18 +139,17 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
         lastTranslation = lastTranslation + begin;
       }
       else {
-        fclose( fs );
         throw Exception( "%s:%d: loose string", srcFile.path().cstr(), lineNum );
       }
     }
   }
 
+  srcFile.unmap();
+
   if( !lastOriginal.isEmpty() && !lastOriginal.equals( lastTranslation ) ) {
     messages.add( lastOriginal );
     messages.add( lastTranslation );
   }
-
-  fclose( fs );
 
   BufferStream ostream;
 

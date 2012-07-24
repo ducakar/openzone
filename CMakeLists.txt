@@ -45,9 +45,6 @@ if( NACL )
   set( OZ_GL_ES ON )
 endif()
 
-set( OZ_APPLICATION_NAME "openzone" )
-set( OZ_APPLICATION_TITLE "OpenZone" )
-
 if( NOT OZ_SYSTEM_PROCESSOR )
   set( OZ_SYSTEM_PROCESSOR "${CMAKE_SYSTEM_PROCESSOR}" )
 endif()
@@ -64,8 +61,6 @@ if( "${OZ_SYSTEM_PROCESSOR}" STREQUAL "x86_64" )
 endif()
 
 mark_as_advanced( OZ_VERSION )
-mark_as_advanced( OZ_APPLICATION_NAME )
-mark_as_advanced( OZ_APPLICATION_TITLE )
 mark_as_advanced( OZ_SYSTEM_PROCESSOR )
 mark_as_advanced( OZ_SYSTEM_NAME )
 
@@ -331,16 +326,16 @@ set( CPACK_PACKAGE_VERSION "${OZ_VERSION}" )
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "A simple cross-platform FPS/RTS game engine" )
 set( CPACK_PACKAGE_VENDOR "Davorin Učakar" )
 set( CPACK_PACKAGE_CONTACT "Davorin Učakar <davorin.ucakar@gmail.com>" )
-set( CPACK_TOPLEVEL_TAG "${OZ_APPLICATION_NAME}" )
+set( CPACK_TOPLEVEL_TAG "openzone" )
 set( CPACK_SYSTEM_NAME "${OZ_SYSTEM_NAME}" )
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING" )
 set( CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/doc/README.html" )
 set( CPACK_PACKAGE_EXECUTABLES "bin/openzone" "OpenZone" ) # start menu entry
 set( CPACK_STRIP_FILES "bin/openzone;bin/ozBuild" )
-set( CPACK_PACKAGE_INSTALL_DIRECTORY "${OZ_APPLICATION_NAME}" )
-set( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "${OZ_APPLICATION_NAME}" )
+set( CPACK_PACKAGE_INSTALL_DIRECTORY "openzone" )
+set( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "openzone" )
 
-set( CPACK_NSIS_DISPLAY_NAME "${OZ_APPLICATION_TITLE}" )
+set( CPACK_NSIS_DISPLAY_NAME "OpenZone" )
 set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "WriteRegStr HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\"
      "Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\" \\\"0\\\"" )
 set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS};"

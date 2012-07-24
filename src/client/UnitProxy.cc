@@ -83,7 +83,7 @@ void UnitProxy::begin()
 
 void UnitProxy::end()
 {
-  camera.colour = camera.baseColour;
+  camera.setBot( null );
 
   ui::mouse.doShow = true;
 
@@ -103,7 +103,6 @@ void UnitProxy::prepare()
 
   if( input.keys[Input::KEY_SWITCH_TO_UNIT] && !input.oldKeys[Input::KEY_SWITCH_TO_UNIT] ) {
     if( camera.allowReincarnation ) {
-      camera.setBot( null );
       camera.setState( Camera::STRATEGIC );
       return;
     }

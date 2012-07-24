@@ -32,7 +32,7 @@ namespace client
 
 #ifndef NDEBUG
 
-void alCheckError( const char* file, int line, const char* function )
+void alCheckError( const char* function, const char* file, int line )
 {
   const char* message;
   ALenum result = alGetError();

@@ -311,8 +311,8 @@ void Class::fillDynamic( const char* className )
   mass = config["mass"].get( 0.0f );
   lift = config["lift"].get( -1.0f );
 
-  if( mass < 0.01f ) {
-    throw Exception( "%s: Invalid object mass. Should be >= 0.01.", className );
+  if( mass < 1.0f ) {
+    throw Exception( "%s: Invalid object mass. Should be >= 1 kg.", className );
   }
   if( lift < 0.0f ) {
     throw Exception( "%s: Invalid object lift. Should be >= 0.", className );
