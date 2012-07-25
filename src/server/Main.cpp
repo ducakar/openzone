@@ -1,7 +1,7 @@
 /*
  *  Main.cpp
  *
- *  [description]
+ *  Server initialization and main loop
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
@@ -10,9 +10,15 @@
 
 #include "Main.h"
 
-#ifndef WIN32
-#include <unistd.h>
-#include <sys/stat.h>
+#include "Game.h"
+
+#ifdef WIN32
+# include <direct.h>
+# include <sys/types.h>
+# include <sys/stat.h>
+#else
+# include <unistd.h>
+# include <sys/stat.h>
 #endif
 
 namespace oz
@@ -22,48 +28,61 @@ namespace server
 
   Main main;
 
-  void Main::defaultConfig()
-  {
-    config.add( "data",                               "/usr/share/dark/data" );
-    config.add( "tick",                               "20" );
-  }
-
   void Main::shutdown()
   {
+    logFile.println( "Shutdown {" );
+    logFile.indent();
+
+    if( initFlags & INIT_GAME_START ) {
+      logFile.println( "Stopping Game {" );
+      logFile.indent();
+      game.stop();
+      logFile.unindent();
+      logFile.println( "}" );
+    }
+    if( initFlags & INIT_GAME_INIT ) {
+      logFile.println( "Shutting down Game {" );
+      logFile.indent();
+      game.free();
+      logFile.unindent();
+      logFile.println( "}" );
+    }
     if( initFlags & INIT_SDL ) {
       logFile.print( "Shutting down SDL ..." );
+      SDL_ShowCursor( true );
+      SDLNet_Quit();
       SDL_Quit();
       logFile.printEnd( " OK" );
     }
-    logFile.printlnETD( "%s finished on", OZ_APP_NAME );
+
+    logFile.unindent();
+    logFile.println( "}" );
+    logFile.printlnETD( OZ_APP_NAME " finished at" );
+
+    config.clear();
   }
 
   void Main::main()
   {
     const char *homeVar = getenv( "HOME" );
-    String home( homeVar == null ? "./" OZ_RC_DIR : homeVar + String( "/" OZ_RC_DIR ) );
+    String home = String( homeVar == null ? OZ_RC_DIR "/" : homeVar + String( "/" OZ_RC_DIR "/" ) );
 
-#ifdef WIN32
-#else
     struct stat homeDirStat;
     if( stat( home.cstr(), &homeDirStat ) ) {
       printf( "No resource dir found, creating '%s' ...", home.cstr() );
 
       if( mkdir( home.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) ) {
         printf( " Failed\n" );
-        shutdown();
         return;
       }
       printf( " OK\n" );
     }
-#endif
 
 #ifdef OZ_LOG_FILE
     String logPath = home + OZ_LOG_FILE;
 
     if( !logFile.init( logPath, true, "  " ) ) {
       printf( "Can't create/open log file '%s' for writing\n", logPath.cstr() );
-      shutdown();
       return;
     }
     logFile.println( "Log file '%s'", logPath.cstr() );
@@ -73,93 +92,107 @@ namespace server
     logFile.println( "Log stream stdout ... OK" );
 #endif
 
-    logFile.printlnETD( "%s started on", OZ_APP_NAME );
+    logFile.printlnETD( OZ_APP_NAME " started at" );
 
     logFile.print( "Initializing SDL ..." );
-    if( SDL_Init( 0 ) ) {
+    if( SDL_Init( 0 ) || SDLNet_Init() ) {
       logFile.printEnd( " Failed" );
-      shutdown();
       return;
     }
     logFile.printEnd( " OK" );
 
     initFlags |= INIT_SDL;
 
-    logFile.print( "Loading default config ..." );
-    defaultConfig();
-    logFile.printEnd( " OK" );
-
-    const char *configPath = ( home + OZ_CONFIG_FILE ).cstr();
-
-    if( !config.load( configPath ) ) {
-      logFile.println( "Config not found, creating default {", configPath );
-      logFile.indent();
-
-      printf( "Config not found, creating default '%s' ...", configPath );
-
-      if( !config.save( configPath ) ) {
-        printf( " Failed\n" );
-        shutdown();
-        return;
-      }
-      printf( " OK\n" );
-
-      logFile.unindent();
-      logFile.println( "}" );
-    }
+    String configPath = home + OZ_CONFIG_FILE;
+    config.load( configPath );
 
     const char *data = config.get( "data", "/usr/share/openzone" );
 
-    logFile.print( "Going to working directory '%s' ...", (const char*) data );
+    logFile.print( "Going to working directory '%s' ...", data );
 
-#ifdef WIN32
-#else
     if( chdir( data ) != 0 ) {
-      logFile.printEnd(" Failed");
-      shutdown();
+      logFile.printEnd( " Failed" );
       return;
     }
     else {
-      logFile.printEnd(" OK");
+      logFile.printEnd( " OK" );
     }
-#endif
+
+    logFile.println( "Initializing Game {" );
+    logFile.indent();
+    if( !game.init() ) {
+      return;
+    }
+    logFile.unindent();
+    logFile.println( "}" );
+    initFlags |= INIT_GAME_INIT;
+
+    logFile.println( "Starting Game {" );
+    logFile.indent();
+    game.start();
+    logFile.unindent();
+    logFile.println( "}" );
+    initFlags |= INIT_GAME_START;
 
     logFile.println( "MAIN LOOP {" );
     logFile.indent();
 
-    bool isAlive = true;
+    logFile.println( "MAIN LOOP {" );
+    logFile.indent();
 
     Uint32 tick     = config.get( "tick", 20 );
+    // time passed form start of the frame
     Uint32 time;
     Uint32 timeZero = SDL_GetTicks();
+    // time at start of the frame
     Uint32 timeLast = timeZero;
 
-    // THE MAGNIFICAT MAIN LOOP
+    // THE MAGNIFICANT MAIN LOOP
     do {
       // update world
-//       isAlive &= client.update( tick );
+      game.update( tick );
 
-      // if there's still some time left, waste it
+      // render graphics, if we have enough time left
       time = SDL_GetTicks() - timeLast;
 
       if( time < tick ) {
         SDL_Delay( max( tick - time, 1u ) );
       }
+      else if( time > 10 * tick ) {
+        timeLast += time - tick;
+      }
       timeLast += tick;
     }
-    while( isAlive );
+    while( true );
 
     logFile.unindent();
     logFile.println( "}" );
 
-    shutdown();
+    logFile.println( "Printing config at exit {" );
+    logFile.print( "%s", config.toString( "  " ).cstr() );
+    logFile.println( "}" );
   }
 
 }
 }
 
-int main( int, char *[] )
+int main( int, char*[] )
 {
-  oz::server::main.main();
+  try {
+    oz::server::main.main();
+  }
+  catch( oz::Exception e ) {
+    oz::logFile.resetIndent();
+    oz::logFile.println();
+    oz::logFile.println( "*** EXCEPTION: %s line %d", e.file, e.line );
+    oz::logFile.println( "*** MESSAGE: %s", e.message );
+    oz::logFile.println();
+
+    if( oz::logFile.isFile() ) {
+      printf( "*** EXCEPTION: %s line %d\n*** MESSAGE: %s\n\n", e.file, e.line, e.message );
+    }
+  }
+  oz::server::main.shutdown();
+
   return 0;
 }

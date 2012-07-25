@@ -170,7 +170,7 @@ namespace oz
     soundIndices.clear();
 
     baseClasses.clear();
-    classes.clear();
+    classes.free();
   }
 
 }

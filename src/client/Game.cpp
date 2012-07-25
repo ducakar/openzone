@@ -8,12 +8,13 @@
 
 #include "precompiled.h"
 
-#include "Client.h"
+#include "Game.h"
 
 #include "matrix/Timer.h"
 #include "matrix/Bot.h"
 #include "matrix/Matrix.h"
 #include "nirvana/Nirvana.h"
+#include "Network.h"
 
 #include "Camera.h"
 
@@ -22,18 +23,28 @@ namespace oz
 namespace client
 {
 
-  Input input;
-  Client client;
+  Game game;
 
-  bool Client::init()
+  bool Game::init()
   {
-    settings.mouseXSens = config.get( "input.mouse.xSens", 0.2f );
-    settings.mouseYSens = config.get( "input.mouse.ySens", 0.2f );
-    settings.keyXSens   = config.get( "input.keys.xSens", 0.2f );
-    settings.keyYSens   = config.get( "input.keys.ySens", 0.2f );
+    mouseXSens = config.get( "input.mouse.xSens", 0.2f );
+    mouseYSens = config.get( "input.mouse.ySens", 0.2f );
+    keyXSens   = config.get( "input.keys.xSens", 0.2f );
+    keyYSens   = config.get( "input.keys.ySens", 0.2f );
 
+    network.connect();
+
+    logFile.println( "Loading Matrix {" );
+    logFile.indent();
     matrix.load();
+    logFile.unindent();
+    logFile.println( "}" );
+
+    logFile.println( "Loading Nirvana {" );
+    logFile.indent();
     nirvana.load();
+    logFile.unindent();
+    logFile.println( "}" );
 
     camera.player = (Bot*) world.objects[0];
     camera.oldP = camera.player->p;
@@ -41,31 +52,31 @@ namespace client
     return true;
   }
 
-  void Client::start()
+  void Game::start()
   {
     logFile.print( "Starting Nirvana thread ..." );
     nirvana.start();
     logFile.printEnd( " OK" );
   }
 
-  bool Client::update( int time )
+  bool Game::update( int time )
   {
     nirvana.requestSuspend = true;
 
-    camera.player->h -= input.mouse.x * settings.mouseXSens;
-    camera.player->v -= input.mouse.y * settings.mouseYSens;
+    camera.player->h -= input.mouse.x * mouseXSens;
+    camera.player->v -= input.mouse.y * mouseYSens;
 
     if( input.keys[SDLK_UP] ) {
-      camera.player->v += settings.keyXSens * time;
+      camera.player->v += keyXSens * time;
     }
     if( input.keys[SDLK_DOWN] ) {
-      camera.player->v -= settings.keyXSens * time;
+      camera.player->v -= keyXSens * time;
     }
     if( input.keys[SDLK_RIGHT] ) {
-      camera.player->h -= settings.keyYSens * time;
+      camera.player->h -= keyYSens * time;
     }
     if( input.keys[SDLK_LEFT] ) {
-      camera.player->h += settings.keyYSens * time;
+      camera.player->h += keyYSens * time;
     }
 
     if( input.keys[SDLK_w] ) {
@@ -115,6 +126,7 @@ namespace client
     SDL_SemWait( matrix.semaphore );
 
     timer.update( time );
+    network.update();
     matrix.update();
 
     SDL_SemPost( nirvana.semaphore );
@@ -124,15 +136,17 @@ namespace client
     return !input.keys[SDLK_ESCAPE];
   }
 
-  void Client::stop()
+  void Game::stop()
   {
     logFile.print( "Stopping Nirvana thread ..." );
     nirvana.stop();
     logFile.printEnd( " OK" );
   }
 
-  void Client::free()
+  void Game::free()
   {
+    network.disconnect();
+
     logFile.print( "Shutting down Nirvana ..." );
     logFile.indent();
 

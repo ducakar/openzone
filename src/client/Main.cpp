@@ -10,7 +10,7 @@
 
 #include "Main.h"
 
-#include "Client.h"
+#include "Game.h"
 #include "Audio.h"
 #include "Render.h"
 
@@ -35,10 +35,10 @@ namespace client
     logFile.println( "Shutdown {" );
     logFile.indent();
 
-    if( initFlags & INIT_CLIENT_START ) {
+    if( initFlags & INIT_GAME_START ) {
       logFile.println( "Stopping Game {" );
       logFile.indent();
-      client.stop();
+      game.stop();
       logFile.unindent();
       logFile.println( "}" );
     }
@@ -56,16 +56,17 @@ namespace client
       logFile.unindent();
       logFile.printEnd( " OK" );
     }
-    if( initFlags & INIT_CLIENT_INIT ) {
+    if( initFlags & INIT_GAME_INIT ) {
       logFile.println( "Shutting down Game {" );
       logFile.indent();
-      client.free();
+      game.free();
       logFile.unindent();
       logFile.println( "}" );
     }
     if( initFlags & INIT_SDL ) {
       logFile.print( "Shutting down SDL ..." );
       SDL_ShowCursor( true );
+      SDLNet_Quit();
       SDL_Quit();
       logFile.printEnd( " OK" );
     }
@@ -89,7 +90,6 @@ namespace client
 
       if( _mkdir( home.cstr() ) ) {
         printf( " Failed\n" );
-        shutdown();
         return;
       }
       printf( " OK\n" );
@@ -105,7 +105,6 @@ namespace client
 
       if( mkdir( home.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) ) {
         printf( " Failed\n" );
-        shutdown();
         return;
       }
       printf( " OK\n" );
@@ -117,7 +116,6 @@ namespace client
 
     if( !logFile.init( logPath, true, "  " ) ) {
       printf( "Can't create/open log file '%s' for writing\n", logPath.cstr() );
-      shutdown();
       return;
     }
     logFile.println( "Log file '%s'", logPath.cstr() );
@@ -130,22 +128,29 @@ namespace client
     logFile.printlnETD( OZ_APP_NAME " started at" );
 
     logFile.print( "Initializing SDL ..." );
-    if( SDL_Init( SDL_INIT_VIDEO ) ) {
+
+    // Don't mess with screensaver. In X11 it only makes effect for windowed mode, in fullscreen
+    // mode screensaver never starts anyway. Turning off screensaver has a side effect: if the game
+    // crashes or exits forcibly, it remains turned off. Besides that, in X11 several programs
+    // (e.g. IM clients like Pidgin, Kopete, Psi) detect user's inactivity based on screensaver's
+    // counter, so they don't detect that you are away if the screensaver is screwed.
+    if( config.get( "screen.leaveScreensaver", true ) ) {
+      SDL_putenv( (char*) "SDL_VIDEO_ALLOW_SCREENSAVER=1" );
+    }
+    if( config.get( "screen.nvVSync", true ) ) {
+      SDL_putenv( (char*) "__GL_SYNC_TO_VBLANK=1" );
+    }
+    if( SDL_Init( SDL_INIT_VIDEO ) || SDLNet_Init() ) {
       logFile.printEnd( " Failed" );
-      shutdown();
       return;
     }
-    input.currKeys = SDL_GetKeyState( null );
+    game.input.currKeys = SDL_GetKeyState( null );
     logFile.printEnd( " OK" );
 
     initFlags |= INIT_SDL;
 
-    const char *configPath = ( home + OZ_CONFIG_FILE ).cstr();
+    String configPath = home + OZ_CONFIG_FILE;
     config.load( configPath );
-
-    logFile.println( "Printing loaded config {" );
-    logFile.print( "%s", config.toString( "  " ).cstr() );
-    logFile.println( "}" );
 
     const char *data = config.get( "data", "/usr/share/openzone" );
 
@@ -154,7 +159,6 @@ namespace client
 #ifdef WIN32
     if( _chdir( data ) != 0 ) {
       logFile.printEnd( " Failed" );
-      shutdown();
       return;
     }
     else {
@@ -163,7 +167,6 @@ namespace client
 #else
     if( chdir( data ) != 0 ) {
       logFile.printEnd( " Failed" );
-      shutdown();
       return;
     }
     else {
@@ -182,24 +185,16 @@ namespace client
     logFile.print( "Setting OpenGL surface %dx%d %dbpp %s ...",
                    screenX, screenY, screenBpp, screenFull ? "fullscreen" : "windowed" );
 
-#ifndef WIN32
-    if( config.get( "screen.nvVSync", true ) ) {
-      putenv( const_cast<char*>( "__GL_SYNC_TO_VBLANK=1" ) );
-    }
-#endif
     SDL_WM_SetCaption( OZ_WM_TITLE, null );
     SDL_ShowCursor( false );
 
     int modeResult = SDL_VideoModeOK( screenX, screenY, screenBpp, SDL_OPENGL | screenFull );
-
     if( modeResult == 0 ) {
       logFile.printEnd( " Mode not supported" );
-      shutdown();
       return;
     }
     if( SDL_SetVideoMode( screenX, screenY, screenBpp, SDL_OPENGL | screenFull ) == null ) {
       logFile.printEnd( " Failed" );
-      shutdown();
       return;
     }
 
@@ -235,13 +230,12 @@ namespace client
 
     logFile.println( "Initializing Game {" );
     logFile.indent();
-    if( !client.init() ) {
-      shutdown();
+    if( !game.init() ) {
       return;
     }
     logFile.unindent();
     logFile.println( "}" );
-    initFlags |= INIT_CLIENT_INIT;
+    initFlags |= INIT_GAME_INIT;
 
     logFile.println( "Loading Graphics {" );
     logFile.indent();
@@ -252,10 +246,10 @@ namespace client
 
     logFile.println( "Starting Game {" );
     logFile.indent();
-    client.start();
+    game.start();
     logFile.unindent();
     logFile.println( "}" );
-    initFlags |= INIT_CLIENT_START;
+    initFlags |= INIT_GAME_START;
 
     logFile.println( "MAIN LOOP {" );
     logFile.indent();
@@ -282,22 +276,22 @@ namespace client
     // THE MAGNIFICANT MAIN LOOP
     do {
       // read input & events
-      input.mouse.x = 0;
-      input.mouse.y = 0;
-      input.mouse.b = 0;
-      aCopy( input.keys, input.currKeys, SDLK_LAST );
+      game.input.mouse.x = 0;
+      game.input.mouse.y = 0;
+      game.input.mouse.b = 0;
+      aCopy( game.input.keys, game.input.currKeys, SDLK_LAST );
 
       while( SDL_PollEvent( &event ) ) {
         switch( event.type ) {
           case SDL_MOUSEMOTION: {
-            input.mouse.x = -event.motion.xrel;
-            input.mouse.y = -event.motion.yrel;
+            game.input.mouse.x = -event.motion.xrel;
+            game.input.mouse.y = -event.motion.yrel;
 
             SDL_WarpMouse( screenCenterX, screenCenterY );
             break;
           }
           case SDL_KEYDOWN: {
-            input.keys[event.key.keysym.sym] |= SDL_PRESSED;
+            game.input.keys[event.key.keysym.sym] |= SDL_PRESSED;
 
             if( event.key.keysym.sym == SDLK_F12 ) {
               SDL_WM_IconifyWindow();
@@ -306,7 +300,7 @@ namespace client
             break;
           }
           case SDL_MOUSEBUTTONDOWN: {
-            input.mouse.b |= (char) event.button.button;
+            game.input.mouse.b |= (char) event.button.button;
             break;
           }
           case SDL_ACTIVEEVENT: {
@@ -335,7 +329,7 @@ namespace client
       }
 
       // update world
-      isAlive &= client.update( tick );
+      isAlive &= game.update( tick );
       audio.update();
 
       // render graphics, if we have enough time left
@@ -369,7 +363,6 @@ namespace client
     logFile.println( "Printing config at exit {" );
     logFile.print( "%s", config.toString( "  " ).cstr() );
     logFile.println( "}" );
-    config.save( configPath );
   }
 
 }

@@ -42,11 +42,11 @@ namespace client
   }
 
   uint Terrain::makeQuad( int minX,
-                               int minY,
-                               int maxX,
-                               int maxY,
-                               float *minHeight,
-                               float *maxHeight )
+                          int minY,
+                          int maxX,
+                          int maxY,
+                          float *minHeight,
+                          float *maxHeight )
   {
     assert( 0 <= minX && minX <= oz::Terrain::MAX );
     assert( 0 <= minY && minY <= oz::Terrain::MAX );
@@ -97,19 +97,19 @@ namespace client
         n0 = ( n0 / 6.0f ).norm();
         n1 = ( n1 / 6.0f ).norm();
 
-        glMultiTexCoord2i( GL_TEXTURE0_ARB,
+        glMultiTexCoord2i( GL_TEXTURE0,
                            x * TERRA_DETAILTEX_SCALE,
                            ( y + 1 ) * TERRA_DETAILTEX_SCALE );
-        glMultiTexCoord2f( GL_TEXTURE1_ARB,
+        glMultiTexCoord2f( GL_TEXTURE1,
                            (float) x / oz::Terrain::MAX,
                            (float) ( y + 1 ) / oz::Terrain::MAX );
         glNormal3fv( n0 );
         glVertex3fv( v0 );
 
-        glMultiTexCoord2i( GL_TEXTURE0_ARB,
+        glMultiTexCoord2i( GL_TEXTURE0,
                            x * TERRA_DETAILTEX_SCALE,
                            y * TERRA_DETAILTEX_SCALE );
-        glMultiTexCoord2f( GL_TEXTURE1_ARB,
+        glMultiTexCoord2f( GL_TEXTURE1,
                            (float) x / oz::Terrain::MAX,
                            (float) y / oz::Terrain::MAX );
         glNormal3fv( n1 );
@@ -243,14 +243,14 @@ namespace client
   void Terrain::draw()
   {
     glBindTexture( GL_TEXTURE_2D, tTerraDetail );
-    glActiveTexture( GL_TEXTURE1_ARB );
+    glActiveTexture( GL_TEXTURE1 );
     glEnable( GL_TEXTURE_2D );
     glBindTexture( GL_TEXTURE_2D, tTerraMap );
 
     drawQuadtree( qTerra );
 
     glDisable( GL_TEXTURE_2D );
-    glActiveTexture( GL_TEXTURE0_ARB );
+    glActiveTexture( GL_TEXTURE0 );
   }
 
   void Terrain::free() {

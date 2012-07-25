@@ -10,14 +10,22 @@
 
 namespace oz
 {
-namespace client
+namespace server
 {
 
   class Network
   {
     private:
 
-      TCPsocket socket;
+      struct Client
+      {
+        String    name;
+        TCPsocket socket;
+        Client    *next[1];
+      };
+
+      TCPsocket serverSocket;
+      List<Client, 0> clients;
 
     public:
 

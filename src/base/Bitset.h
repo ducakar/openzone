@@ -30,7 +30,7 @@ namespace oz
       ulong *data;
 
       // Size of data array (in units, not in bits).
-      int  size;
+      int    size;
 
     public:
 
@@ -44,7 +44,7 @@ namespace oz
        * Copy construstor.
        * @param b the original Bitset
        */
-      Bitset( const Bitset &b ) : data( new ulong[size] ), size( b.size )
+      Bitset( const Bitset &b ) : data( new ulong[b.size] ), size( b.size )
       {
         aCopy( data, b.data, size );
       }

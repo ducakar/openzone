@@ -1,5 +1,5 @@
 /*
- *  bv.cpp
+ *  Net.cpp
  *
  *  [description]
  *
@@ -8,11 +8,14 @@
 
 #include "precompiled.h"
 
-#include "bv.h"
+#include "Net.h"
 
 namespace oz
 {
 
-//   const float EPSILON = 0.0009765625;
+  Net net;
+
+  Net::Net() : isClient( false )
+  {}
 
 }

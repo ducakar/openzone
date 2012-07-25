@@ -324,6 +324,13 @@ namespace client
       alSourceQueueBuffers( musicSource, 1, &buffer );
       processed--;
     }
+
+    ALint value;
+    alGetSourcei( musicSource, AL_SOURCE_STATE, &value );
+
+    if( value != AL_PLAYING ) {
+      alSourcePlay( musicSource );
+    }
   }
 
   void Audio::setVolume( float volume )

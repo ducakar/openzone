@@ -22,32 +22,33 @@ namespace oz
     effects.free();
   }
 
-  void Object::load( FILE *stream )
+  void Object::readUpdate( Net::Packet *packet )
   {
-    fread( &p, sizeof( p ), 1, stream );
-    fread( &dim, sizeof( dim ), 1, stream );
-    fread( &index, sizeof( index ), 1, stream );
-    fread( &flags, sizeof( flags ), 1, stream );
-    fread( &rotZ, sizeof( rotZ ), 1, stream );
 
-    index = SDL_SwapBE32( index );
-    flags = SDL_SwapBE32( flags );
+//     fread( &p, sizeof( p ), 1, stream );
+//     fread( &dim, sizeof( dim ), 1, stream );
+//     fread( &index, sizeof( index ), 1, stream );
+//     fread( &flags, sizeof( flags ), 1, stream );
+//     fread( &rotZ, sizeof( rotZ ), 1, stream );
+//
+//     index = SDL_SwapBE32( index );
+//     flags = SDL_SwapBE32( flags );
   }
 
-  void Object::save( FILE *stream )
+  void Object::writeUpdate( Net::Packet *packet )
   {
-    index = SDL_SwapBE32( index );
-    flags = SDL_SwapBE32( flags );
-
-    fwrite( &p, sizeof( p ), 1, stream );
-    fwrite( &dim, sizeof( dim ), 1, stream );
-    fwrite( &index, sizeof( index ), 1, stream );
-    fwrite( &flags, sizeof( flags ), 1, stream );
-    fwrite( &type, sizeof( type ), 1, stream );
-    fwrite( &rotZ, sizeof( rotZ ), 1, stream );
-
-    index = SDL_SwapBE32( index );
-    flags = SDL_SwapBE32( flags );
+//     index = SDL_SwapBE32( index );
+//     flags = SDL_SwapBE32( flags );
+//
+//     fwrite( &p, sizeof( p ), 1, stream );
+//     fwrite( &dim, sizeof( dim ), 1, stream );
+//     fwrite( &index, sizeof( index ), 1, stream );
+//     fwrite( &flags, sizeof( flags ), 1, stream );
+//     fwrite( &type, sizeof( type ), 1, stream );
+//     fwrite( &rotZ, sizeof( rotZ ), 1, stream );
+//
+//     index = SDL_SwapBE32( index );
+//     flags = SDL_SwapBE32( flags );
   }
 
 }

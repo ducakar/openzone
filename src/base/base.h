@@ -28,8 +28,8 @@
  * Basic definitons and template functions
  */
 #include "common.h"
-#include "arrays.h"
 #include "iterable.h"
+#include "array.h"
 
 /*
  * Containers 1
@@ -81,5 +81,6 @@
 /*
  * Utilities
  */
+#include "Exception.h"
 #include "LogFile.h"
 #include "Config.h"

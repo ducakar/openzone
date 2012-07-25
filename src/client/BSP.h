@@ -21,7 +21,16 @@ namespace client
   {
     private:
 
-      oz::BSP  *bsp;
+      static const float WATER_TEX_STRETCH;
+      static const float WATER_TEX_BIAS;
+      static const float WATER_ALPHA;
+
+      // water
+      static float waterPhi;
+      static float waterAlpha1;
+      static float waterAlpha2;
+
+      oz::BSP *bsp;
 
       uint baseList;
       uint *textures;

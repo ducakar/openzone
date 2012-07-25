@@ -20,6 +20,7 @@ namespace oz
       static const int   MAX_TRACE_SPLITS = 3;
       static const float CLIP_BACKOFF;
       static const float STICK_VELOCITY;
+      static const float SLICK_STICK_VELOCITY;
       static const float HIT_VELOCITY;
 
       static const float AIR_FRICTION;

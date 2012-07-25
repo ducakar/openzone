@@ -63,7 +63,7 @@ namespace oz
   float Config::get( const char *name, float defVal ) const
   {
     if( vars.contains( name ) ) {
-      return strtof( vars.cachedValue(), null );
+      return atof( vars.cachedValue() );
     }
     else {
       return defVal;
@@ -110,8 +110,8 @@ namespace oz
 
         // FIXME VC++ has problems with this WTF???
 #ifndef WIN32
-        ::free( key );
-        ::free( value );
+        free( key );
+        free( value );
 #endif
       }
       error = xmlTextReaderRead( reader );

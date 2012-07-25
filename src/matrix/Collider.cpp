@@ -149,7 +149,9 @@ namespace oz
         }
 
         foreach( sObj, sector.objects.iterator() ) {
-          if( ( sObj->flags & Object::CLIP_BIT ) && sObj->includes( point, EPSILON ) ) {
+          if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
+              sObj->includes( point, EPSILON ) )
+          {
             return false;
           }
         }
@@ -170,7 +172,9 @@ namespace oz
         const Sector &sector = world.sectors[x][y];
 
         foreach( sObj, sector.objects.iterator() ) {
-          if( ( sObj->flags & Object::CLIP_BIT ) && sObj->includes( point, EPSILON ) ) {
+          if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
+              sObj->includes( point, EPSILON ) )
+          {
             return false;
           }
         }
@@ -209,7 +213,9 @@ namespace oz
         }
 
         foreach( sObj, sector.objects.iterator() ) {
-          if( ( sObj->flags & Object::CLIP_BIT ) && sObj->includes( point, EPSILON ) ) {
+          if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
+              sObj->includes( point, EPSILON ) )
+          {
             return false;
           }
         }
@@ -561,7 +567,9 @@ namespace oz
         }
 
         foreach( sObj, sector.objects.iterator() ) {
-          if( ( sObj->flags & Object::CLIP_BIT ) && sObj->overlaps( trace, EPSILON ) ) {
+          if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
+              sObj->overlaps( trace, EPSILON ) )
+          {
             trimPointObj( &*sObj );
           }
         }
@@ -908,7 +916,7 @@ namespace oz
           Math::abs( plane.normal.y * aabb.dim.y ) +
           Math::abs( plane.normal.z * aabb.dim.z );
 
-      float dist = leafEndPos * plane.normal - plane.distance - offset;
+      float dist = leafStartPos * plane.normal - plane.distance - offset;
 
       if( dist > 0.0f ) {
         return;
@@ -939,9 +947,9 @@ namespace oz
         else if( brush.content & BSP::WATER_BIT ) {
           trimAABBWater( &brush );
         }
-        else if( obj != null && ( obj->flags & Object::CLIMBER_BIT ) ) {
-          assert( brush.content & BSP::LADDER_BIT );
-
+        else if( ( brush.content & BSP::LADDER_BIT ) &&
+                 obj != null && ( obj->flags & Object::CLIMBER_BIT ) )
+        {
           trimAABBLadder( &brush );
         }
       }

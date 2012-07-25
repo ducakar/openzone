@@ -46,13 +46,13 @@ namespace oz
 
     struct Leaf : Bounds
     {
-      int   cluster;
+      int cluster;
 
-      int   firstFace;
-      int   nFaces;
+      int firstFace;
+      int nFaces;
 
-      int   firstBrush;
-      int   nBrushes;
+      int firstBrush;
+      int nBrushes;
     };
 
     struct Brush
@@ -72,16 +72,16 @@ namespace oz
     struct Face
     {
       int  texture;
+      int  lightmap;
+      int  content;
+
+      Vec3 normal;
 
       int  firstVertex;
       int  nVertices;
 
       int  firstIndex;
       int  nIndices;
-
-      int  lightmap;
-
-      Vec3 normal;
     };
 
     struct Lightmap
@@ -106,30 +106,30 @@ namespace oz
       }
     };
 
-    float         maxDim;
+    float      maxDim;
 
-    int           nTextures;
-    int           nLeafs;
-    int           nFaces;
-    int           nLightmaps;
+    int        nTextures;
+    int        nLeafs;
+    int        nFaces;
+    int        nLightmaps;
 
-    int           *textures;
-    Plane         *planes;
+    int        *textures;
+    Plane      *planes;
 
-    Node          *nodes;
-    Leaf          *leafs;
-    int           *leafFaces;
-    int           *leafBrushes;
+    Node       *nodes;
+    Leaf       *leafs;
+    int        *leafFaces;
+    int        *leafBrushes;
 
-    Brush         *brushes;
-    int           *brushSides;
+    Brush      *brushes;
+    int        *brushSides;
 
-    Vertex        *vertices;
-    int           *indices;
-    Face          *faces;
-    Lightmap      *lightmaps;
+    Vertex     *vertices;
+    int        *indices;
+    Face       *faces;
+    Lightmap   *lightmaps;
 
-    VisualData    visual;
+    VisualData visual;
 
     explicit BSP();
     ~BSP();
