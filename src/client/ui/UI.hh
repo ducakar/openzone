@@ -41,7 +41,7 @@ class StrategicArea;
 class QuestFrame;
 class GalileoFrame;
 class MusicPlayer;
-class InventoryMenu;
+class Inventory;
 class InfoFrame;
 class BuildMenu;
 class DebugFrame;
@@ -71,7 +71,7 @@ class UI
     QuestFrame*    questFrame;
     GalileoFrame*  galileoFrame;
     MusicPlayer*   musicPlayer;
-    InventoryMenu* inventory;
+    Inventory*     inventory;
     InfoFrame*     infoFrame;
     BuildMenu*     buildMenu;
     DebugFrame*    debugFrame;

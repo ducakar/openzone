@@ -18,6 +18,7 @@
 /data/*/baseq3/maps/*
 !/data/*/baseq3/maps/*.json
 !/data/*/class
+!/data/*/credits
 !/data/*/frag
 !/data/*/glsl
 !/data/*/lingua

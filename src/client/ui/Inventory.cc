@@ -18,12 +18,12 @@
  */
 
 /**
- * @file client/ui/InventoryMenu.cc
+ * @file client/ui/Inventory.cc
  */
 
 #include "stable.hh"
 
-#include "client/ui/InventoryMenu.hh"
+#include "client/ui/Inventory.hh"
 
 #include "client/Shape.hh"
 #include "client/Camera.hh"
@@ -38,7 +38,7 @@ namespace client
 namespace ui
 {
 
-void InventoryMenu::updateReferences()
+void Inventory::updateReferences()
 {
   owner = camera.botObj;
   other = null;
@@ -51,7 +51,7 @@ void InventoryMenu::updateReferences()
   }
 }
 
-void InventoryMenu::handleComponent( int height, const Object* container, int* tagged, int* scroll )
+void Inventory::handleComponent( int height, const Object* container, int* tagged, int* scroll )
 {
   Bot* bot = camera.botObj;
 
@@ -122,7 +122,7 @@ void InventoryMenu::handleComponent( int height, const Object* container, int* t
   }
 }
 
-void InventoryMenu::drawComponent( int height, const Object* container, int tagged, int scroll )
+void Inventory::drawComponent( int height, const Object* container, int tagged, int scroll )
 {
   const ObjectClass* containerClazz = container->clazz;
 
@@ -263,7 +263,7 @@ noIcon:
   itemDesc.draw( this, false );
 }
 
-void InventoryMenu::onVisibilityChange( bool )
+void Inventory::onVisibilityChange( bool )
 {
   cachedContainerIndex  = -1;
   cachedTaggedItemIndex = -1;
@@ -274,7 +274,7 @@ void InventoryMenu::onVisibilityChange( bool )
   scrollOther = 0;
 }
 
-void InventoryMenu::onUpdate()
+void Inventory::onUpdate()
 {
   const Bot* bot = camera.botObj;
 
@@ -312,7 +312,7 @@ void InventoryMenu::onUpdate()
   }
 }
 
-bool InventoryMenu::onMouseEvent()
+bool Inventory::onMouseEvent()
 {
   Frame::onMouseEvent();
 
@@ -333,7 +333,7 @@ bool InventoryMenu::onMouseEvent()
   return true;
 }
 
-void InventoryMenu::onDraw()
+void Inventory::onDraw()
 {
   updateReferences();
 
@@ -366,7 +366,7 @@ void InventoryMenu::onDraw()
   }
 }
 
-InventoryMenu::InventoryMenu() :
+Inventory::Inventory() :
   Frame( COLS*SLOT_SIZE, ROWS*SLOT_SIZE + FOOTER_SIZE, " " ),
   owner( null ), other( null ),
   itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " " ),
@@ -389,7 +389,7 @@ InventoryMenu::InventoryMenu() :
   Log::verboseMode = false;
 }
 
-InventoryMenu::~InventoryMenu()
+Inventory::~Inventory()
 {
   glDeleteTextures( 1, &scrollUpTexId );
   glDeleteTextures( 1, &scrollDownTexId );

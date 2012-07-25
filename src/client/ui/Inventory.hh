@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/ui/InventoryMenu.hh
+ * @file client/ui/Inventory.hh
  */
 
 #pragma once
@@ -32,7 +32,7 @@ namespace client
 namespace ui
 {
 
-class InventoryMenu : public Frame
+class Inventory : public Frame
 {
   private:
 
@@ -81,8 +81,8 @@ class InventoryMenu : public Frame
 
   public:
 
-    InventoryMenu();
-    ~InventoryMenu() override;
+    Inventory();
+    ~Inventory() override;
 
 };
 

@@ -47,12 +47,14 @@ Label::Label() :
   glGenTextures( 2, texIds );
 
   glBindTexture( GL_TEXTURE_2D, texIds[0] );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 
   glBindTexture( GL_TEXTURE_2D, texIds[1] );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 }
 
 Label::~Label()
@@ -66,12 +68,14 @@ Label::Label( int x, int y, int align, Font::Type font, const char* s, ... ) :
   glGenTextures( 2, texIds );
 
   glBindTexture( GL_TEXTURE_2D, texIds[0] );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 
   glBindTexture( GL_TEXTURE_2D, texIds[1] );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
   va_list ap;
   va_start( ap, s );
@@ -83,44 +87,39 @@ void Label::vset( int x_, int y_, int align_, Font::Type font_, const char* s, v
 {
   hard_assert( s != null );
 
-  x     = x_;
-  y     = y_;
-  align = align_;
-  font  = font_;
+  x          = x_;
+  y          = y_;
+  align      = align_;
+  font       = font_;
+  hasChanged = true;
 
   char buffer[1024];
   vsnprintf( buffer, 1024, s, ap );
   buffer[1023] = '\0';
 
   if( buffer[0] == '\0' || ( buffer[0] == ' ' && buffer[1] == '\0' ) ) {
-    offsetX     = 0;
-    offsetY     = 0;
-    width       = 0;
-    height      = 0;
-
-    activeTexId = 0;
-    hasChanged  = false;
-    return;
+    newWidth  = 0;
+    newHeight = 0;
   }
+  else {
+    SDL_Surface* text = null;
+    uint texId = 0;
 
-  static SDL_Surface* text = null;
-  static uint texId = 0;
+    text  = TTF_RenderUTF8_Blended( ui::font.fonts[font], buffer, Font::SDL_COLOUR_WHITE );
+    texId = activeTexId == texIds[0] ? texIds[1] : texIds[0];
 
-  text  = TTF_RenderUTF8_Blended( ui::font.fonts[font], buffer, Font::SDL_COLOUR_WHITE );
-  texId = activeTexId == texIds[0] ? texIds[1] : texIds[0];
+    OZ_MAIN_CALL( this, {
+      glBindTexture( GL_TEXTURE_2D, texId );
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                    text->pixels );
+      glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+    } )
 
-  OZ_MAIN_CALL( this, {
-    glBindTexture( GL_TEXTURE_2D, texId );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                  text->pixels );
-    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-  } )
+    newWidth  = text->w;
+    newHeight = text->h;
 
-  newWidth   = text->w;
-  newHeight  = text->h;
-  hasChanged = true;
-
-  SDL_FreeSurface( text );
+    SDL_FreeSurface( text );
+  }
 }
 
 void Label::set( int x, int y, int align, Font::Type font, const char* s, ... )
@@ -188,7 +187,7 @@ void Label::draw( const Area* area, bool allowChanged )
 
   if( hasChanged ) {
     hasChanged  = false;
-    activeTexId = activeTexId == texIds[0] ? texIds[1] : texIds[0];
+    activeTexId = newWidth == 0 ? 0 : activeTexId == texIds[0] ? texIds[1] : texIds[0];
 
     offsetX = x;
     offsetY = y;

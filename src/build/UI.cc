@@ -91,7 +91,7 @@ void UI::buildCursors()
     fclose( fs );
 
     uint texId = context.loadLayer( String::str( "ui/cur/%s", imgPath ), false,
-                                    GL_LINEAR, GL_LINEAR );
+                                    GL_NEAREST, GL_NEAREST );
 
     BufferStream os;
 
@@ -130,7 +130,7 @@ void UI::buildIcons()
     String srcPath  = String::str( "ui/icon/%s.png", *name );
     String destPath = String::str( "ui/icon/%s.ozIcon", *name );
 
-    uint id = context.loadLayer( srcPath, false, GL_LINEAR, GL_LINEAR );
+    uint id = context.loadLayer( srcPath, false, GL_NEAREST, GL_NEAREST );
     hard_assert( id != 0 );
 
     BufferStream os;

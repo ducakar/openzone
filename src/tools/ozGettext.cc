@@ -226,6 +226,22 @@ static void readLua( File* file )
   }
 }
 
+static void readCredits( File* file )
+{
+  if( !file->map() ) {
+    throw Exception( "Failed to map '%s'", file->path().cstr() );
+  }
+
+  String contents;
+  InputStream is = file->inputStream();
+
+  while( is.isAvailable() ) {
+    contents += is.readLine() + "\n";
+  }
+
+  titles.include( contents, file->path() );
+}
+
 static void readSequence( File* file )
 {
   JSON sequence;
@@ -271,26 +287,31 @@ static void writePOT( const HashString<String>* hs, const char* filePath )
     }
     isFirst = false;
 
-    s = "#: " + i.value();
+    bs.writeLine( "#: " + i.value() );
 
-    bs.writeChars( s, s.length() );
-    bs.writeChar( '\n' );
+    // Escape backslashes and quotes.
+    s = i.key();
+    for( int i = 0; i < s.length(); ++i ) {
+      if( s[i] == '\\' || s[i] == '"' ) {
+        s = s.substring( 0, i ) + "\\" + s.substring( i );
+        ++i;
+      }
+    }
 
-    if( i.key().index( '\n' ) < 0 ) {
-      s = String::str( "msgid \"%s\"", i.key().cstr() );
-
-      bs.writeChars( s, s.length() );
-      bs.writeChar( '\n' );
+    // If multi-line, put each line into a new line in .pot file and escape newlines.
+    if( s.index( '\n' ) < 0 ) {
+      bs.writeLine( String::str( "msgid \"%s\"", s.cstr() ) );
     }
     else {
-      DArray<String> stringLines = i.key().split( '\n' );
+      DArray<String> stringLines = s.split( '\n' );
 
-      s = "msgid \"\"";
-
-      bs.writeChars( s, s.length() );
-      bs.writeChar( '\n' );
+      bs.writeLine( "msgid \"\"" );
 
       foreach( l, stringLines.citer() ) {
+        if( &*l == &stringLines.last() && l->isEmpty() ) {
+          break;
+        }
+
         if( l == &stringLines.last() ) {
           s = String::str( "\"%s\"", l->cstr() );
         }
@@ -298,15 +319,11 @@ static void writePOT( const HashString<String>* hs, const char* filePath )
           s = String::str( "\"%s\\n\"", l->cstr() );
         }
 
-        bs.writeChars( s, s.length() );
-        bs.writeChar( '\n' );
+        bs.writeLine( s );
       }
     }
 
-    s = "msgstr \"\"";
-
-    bs.writeChars( s, s.length() );
-    bs.writeChar( '\n' );
+    bs.writeLine( "msgstr \"\"" );
   }
 
   File outFile( filePath );
@@ -365,6 +382,9 @@ static int main( int argc, char** argv )
 
     readClass( file );
   }
+
+  File creditsFile( pkgDir + "/credits/" + pkgName + ".txt" );
+  readCredits( &creditsFile );
 
   if( !titles.isEmpty() ) {
     String mainPOT = String::str( "%s/lingua/%s.pot", pkgDir.cstr(), pkgName.cstr() );

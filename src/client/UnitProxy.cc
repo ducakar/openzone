@@ -29,7 +29,7 @@
 #include "client/Input.hh"
 
 #include "client/ui/HudArea.hh"
-#include "client/ui/InventoryMenu.hh"
+#include "client/ui/Inventory.hh"
 #include "client/ui/InfoFrame.hh"
 #include "client/ui/GalileoFrame.hh"
 #include "client/ui/MusicPlayer.hh"

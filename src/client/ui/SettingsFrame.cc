@@ -72,7 +72,7 @@ SettingsFrame::SettingsFrame() :
                ( configDirPath + "/input.json" ).cstr(),
                ( configDirPath + "/profile.json" ).cstr() );
 
-  add( new Button( OZ_GETTEXT( "Close" ), closeFrame, 60, 26 ), -4, 4 );
+  add( new Button( OZ_GETTEXT( "Close" ), closeFrame, 80, 25 ), -4, 4 );
 }
 
 }

@@ -36,7 +36,7 @@
 #include "client/ui/QuestFrame.hh"
 #include "client/ui/GalileoFrame.hh"
 #include "client/ui/MusicPlayer.hh"
-#include "client/ui/InventoryMenu.hh"
+#include "client/ui/Inventory.hh"
 #include "client/ui/InfoFrame.hh"
 #include "client/ui/BuildMenu.hh"
 #include "client/ui/DebugFrame.hh"
@@ -133,7 +133,7 @@ void UI::load()
   questFrame    = new QuestFrame();
   galileoFrame  = new GalileoFrame();
   musicPlayer   = new MusicPlayer();
-  inventory     = new InventoryMenu();
+  inventory     = new Inventory();
   infoFrame     = new InfoFrame();
   buildMenu     = showBuild ? new BuildMenu() : null;
   debugFrame    = showDebug ? new DebugFrame() : null;

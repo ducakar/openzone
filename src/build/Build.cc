@@ -103,13 +103,17 @@ void Build::copyFiles( const char* srcDir, const char* destDir, const char* ext,
     return;
   }
 
-  Log::println( "Copying '%s/*.%s' -> '%s' {", srcDir, ext, destDir );
+  if( !sSrcDir.isEmpty() ) {
+    sSrcDir = sSrcDir + "/";
+  }
+  if( !sDestDir.isEmpty() ) {
+    sDestDir = sDestDir + "/";
+  }
+
+  Log::println( "Copying '%s*.%s' -> '%s' {", sSrcDir.cstr(), ext, sDestDir.cstr() );
   Log::indent();
 
   File::mkdir( destDir );
-
-  sSrcDir  = sSrcDir + "/";
-  sDestDir = sDestDir + "/";
 
   foreach( file, dirList.iter() ) {
     String fileName = file->name();
@@ -127,14 +131,14 @@ void Build::copyFiles( const char* srcDir, const char* destDir, const char* ext,
       Log::print( "Copying '%s' ...", fileName.cstr() );
 
       if( !file->map() ) {
-        throw Exception( "Failed to copy '%s'", file->path().cstr() );
+        throw Exception( "Failed to map '%s'", file->path().cstr() );
       }
 
       InputStream is = file->inputStream();
-      File destFile( String::str( "%s/%s", destDir, fileName.cstr() ) );
+      File destFile( sDestDir + fileName );
 
       if( !destFile.write( is.begin(), is.capacity() ) ) {
-        throw Exception( "Failed to copy '%s'", file->path().cstr() );
+        throw Exception( "Failed to write '%s'", file->path().cstr() );
       }
 
       file->unmap();
@@ -974,33 +978,9 @@ int Build::main( int argc, char** argv )
 
   uint startTime = Time::clock();
 
-  // copy package README
-  DArray<PFile> dirList = PFile( "/" ).ls();
-
-  foreach( file, dirList.iter() ) {
-    String fileName = file->name();
-
-    if( fileName.beginsWith( "README" ) || fileName.beginsWith( "COPYING" ) ) {
-      Log::print( "Copying '%s' ...", fileName.cstr() );
-
-      if( !file->map() ) {
-        throw Exception( "Failed to copy '%s'", file->path().cstr() );
-      }
-
-      InputStream is = file->inputStream();
-      File destFile( fileName );
-
-      if( !destFile.write( is.begin(), is.capacity() ) ) {
-        throw Exception( "Failed to copy '%s'", file->path().cstr() );
-      }
-
-      file->unmap();
-
-      Log::printEnd( " OK" );
-    }
-  }
-
-  dirList.dealloc();
+  // copy package README/COPYING and credits
+  copyFiles( "", "", "txt", false );
+  copyFiles( "credits", "credits", "txt", false );
 
   if( doCat ) {
     lingua.build();

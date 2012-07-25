@@ -5,6 +5,15 @@ if [[ ! -d data/ozbase ]]; then
   exit
 fi
 
-rm -rf data/ozbase/lingua/ozbase.pot
-xgettext --omit-header -C -s -kOZ_GETTEXT -o data/ozbase/lingua/ozbase.pot \
+outFile="data/ozbase/lingua/ozbase.pot"
+
+rm -rf "$outFile"
+xgettext --omit-header -C -s -kOZ_GETTEXT -o "$outFile" \
          src/*/*.{hh,cc} src/*/*/*.{hh,cc}
+
+cat << EOF >> "$outFile"
+
+msgid ""
+`cat data/ozbase/credits/ozbase.txt | sed 's/^\(.*\)$/"\1\\\\n"/'`
+msgstr ""
+EOF

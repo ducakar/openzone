@@ -326,21 +326,26 @@ void HudArea::drawVehicleStatus()
 
 void HudArea::onReposition()
 {
-  width       = camera.width;
-  height      = camera.height;
+  width        = camera.width;
+  height       = camera.height;
 
-  crossIconX  = ( width - ICON_SIZE ) / 2;
-  crossIconY  = ( height - ICON_SIZE ) / 2;
-  leftIconX   = crossIconX - ICON_SIZE;
-  leftIconY   = crossIconY;
-  rightIconX  = crossIconX + ICON_SIZE;
-  rightIconY  = crossIconY;
-  bottomIconX = crossIconX;
-  bottomIconY = crossIconY - ICON_SIZE;
-  healthBarX  = crossIconX - 8;
-  healthBarY  = crossIconY + ICON_SIZE;
-  descTextX   = width / 2;
-  descTextY   = crossIconY + ICON_SIZE + 36;
+  crossIconX   = ( width - ICON_SIZE ) / 2;
+  crossIconY   = ( height - ICON_SIZE ) / 2;
+  leftIconX    = crossIconX - ICON_SIZE;
+  leftIconY    = crossIconY;
+  rightIconX   = crossIconX + ICON_SIZE;
+  rightIconY   = crossIconY;
+  bottomIconX  = crossIconX;
+  bottomIconY  = crossIconY - ICON_SIZE;
+  healthBarX   = crossIconX - 8;
+  healthBarY   = crossIconY + ICON_SIZE;
+  descTextX    = width / 2;
+  descTextY    = crossIconY + ICON_SIZE + 36;
+
+  lastObjectId = -1;
+  lastEntityId = -1;
+
+  title.set( descTextX, descTextY, ALIGN_CENTRE, Font::LARGE, " " );
 }
 
 void HudArea::onVisibilityChange( bool )
@@ -423,10 +428,6 @@ HudArea::HudArea() :
   unlockedTexId = context.loadTextureLayer( "ui/icon/unlocked.ozIcon" );
 
   Log::verboseMode = false;
-
-  onReposition();
-
-  title.set( descTextX, descTextY, ALIGN_CENTRE, Font::LARGE, " " );
 }
 
 HudArea::~HudArea()

@@ -424,7 +424,7 @@ class List
     }
 
     /**
-     * Add elements from the array to the end.
+     * Add (copy) elements from the given array to the end.
      */
     void addAll( const Elem* array, int arrayCount )
     {
@@ -433,6 +433,19 @@ class List
       ensureCapacity( newCount );
 
       aCopy<Elem>( data + count, array, arrayCount );
+      count = newCount;
+    }
+
+    /**
+     * Add (move) elements from the given array to the end.
+     */
+    void takeAll( Elem* array, int arrayCount )
+    {
+      int newCount = count + arrayCount;
+
+      ensureCapacity( newCount );
+
+      aMove<Elem>( data + count, array, arrayCount );
       count = newCount;
     }
 

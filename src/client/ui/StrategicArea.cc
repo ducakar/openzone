@@ -394,19 +394,6 @@ StrategicArea::StrategicArea() :
   hoverStr( -1 ), hoverEnt( -1 ), hoverObj( -1 )
 {
   flags = UPDATE_BIT | PINNED_BIT;
-
-  glGenTextures( 1, &titleTexId );
-  glBindTexture( GL_TEXTURE_2D, titleTexId );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-
-  onReposition();
-}
-
-StrategicArea::~StrategicArea()
-{
-  glDeleteTextures( 1, &titleTexId );
 }
 
 }

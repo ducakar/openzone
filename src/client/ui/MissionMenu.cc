@@ -82,16 +82,16 @@ void MissionMenu::loadMission( Button* sender )
 void MissionMenu::onReposition()
 {
   width       = camera.width;
-  height      = camera.height - 40;
+  height      = camera.height;
 
   nSelections = min( ( height - 150 ) / 40, missions.length() );
   selection   = -1;
   scroll      = 0;
 
-  imageX      = 40;
+  imageX      = 20;
   imageY      = 100 + 8 * Font::INFOS[Font::SANS].height;
-  imageWidth  = width - 320;
-  imageHeight = height - imageY;
+  imageWidth  = width - 280;
+  imageHeight = height - 20 - imageY;
 
   description.resize( width - 320 );
 
@@ -116,7 +116,7 @@ void MissionMenu::onReposition()
     for( int i = 0; i < _this->nSelections; ++i ) {
       Button* missionButton = new MissionButton( _this->missions[i].title, loadMission, _this, i,
                                                  200, 30 );
-      _this->add( missionButton, -20, -( i + 1 ) * 40 );
+      _this->add( missionButton, -20, -( i + 2 ) * 40 );
     }
   } )
 }
@@ -138,13 +138,14 @@ bool MissionMenu::onMouseEvent()
     }
   }
 
-  return passMouseEvents();
+  passMouseEvents();
+  return true;
 }
 
 void MissionMenu::onDraw()
 {
   shape.colour( 0.0f, 0.0f, 0.0f, 1.0f );
-  shape.fill( width - 240, 0, 240, height );
+  shape.fill( width - 240, 0, 240, height - 40 );
 
   shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
 
@@ -175,7 +176,7 @@ MissionMenu::MissionMenu() :
   imageId( 0 )
 {
   Button* backButton = new Button( OZ_GETTEXT( "Back" ), back, 200, 30 );
-  add( backButton, -20, 30 );
+  add( backButton, -20, 20 );
 
   PFile missionRootDir( "mission" );
   DArray<PFile> missionDirs = missionRootDir.ls();
@@ -211,8 +212,6 @@ MissionMenu::MissionMenu() :
 
   scrollUpTexId   = context.loadTextureLayer( "ui/icon/scrollUp.ozIcon" );
   scrollDownTexId = context.loadTextureLayer( "ui/icon/scrollDown.ozIcon" );
-
-  onReposition();
 }
 
 MissionMenu::~MissionMenu()

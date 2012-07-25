@@ -63,7 +63,8 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
       }
       if( line[i - 1] == '\\' ) {
         switch( line[i] ) {
-          case '\\': {
+          case '\\':
+          case '"': {
             line = line.substring( 0, i - 1 ) + line.substring( i );
             break;
           }

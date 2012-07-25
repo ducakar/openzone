@@ -1,0 +1,50 @@
+> textures <
+
+Egyptian & Tech1 texture packs
+Sock
+
+> sounds <
+
+AwesundFX1
+Awesund
+
+bdroid
+Eric von Rothkirch
+
+footsteps
+carrigsound
+
+grunts
+bennychico11
+
+> BSP structures <
+Davorin Učakar
+
+> models <
+
+barrel, cbbox, tree2, tree3
+Dietmar Pier
+
+barrel2, crate4
+Psionic
+
+bauul, ratamahatta
+Brian "EvilBastard" Collins
+
+debris01, debris02, debris03, debris03
+Markus "makkE" Bekel
+
+droid
+III_Demon
+
+goblin
+Conrad, Rodrigo
+
+hobgoblin
+Hunter, Burnt Kona, Fafner, Deranged
+
+pknight
+James Green, Ryan "MrRogers" Butts, NPherno
+
+> scripts <
+Davorin Učakar

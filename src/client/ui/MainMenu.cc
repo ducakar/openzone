@@ -35,6 +35,7 @@
 
 #include "client/ui/MissionMenu.hh"
 #include "client/ui/SettingsFrame.hh"
+#include "client/ui/CreditsMenu.hh"
 #include "client/ui/UI.hh"
 
 namespace oz
@@ -68,13 +69,23 @@ static void openMissions( Button* sender )
   } )
 }
 
-static void settings( Button* sender )
+static void openSettings( Button* sender )
 {
   OZ_MAIN_CALL( sender, {
     Button*   sender   = static_cast<Button*>( _this );
     MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
 
     mainMenu->add( new SettingsFrame(), Area::CENTRE, Area::CENTRE );
+  } )
+}
+
+static void openCredits( Button* sender )
+{
+  OZ_MAIN_CALL( sender, {
+    Button*   sender   = static_cast<Button*>( _this );
+    MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
+
+    mainMenu->add( new CreditsMenu(), 0, 0 );
   } )
 }
 
@@ -89,11 +100,11 @@ void MainMenu::onReposition()
   height = camera.height;
 
   copyright.resize( width - 280 );
-  copyright.set( "OpenZone Engine © 2012 Davorin Učakar. %s",
-                 OZ_GETTEXT( "Licensed under GNU GPL 3.0. Data files and libraries distributed with"
-                             " OpenZone are work of various authors and use separate licences."
-                             " See doc/README.html and/or respective README.txt and COPYING.txt"
-                             " files in game data archives for details." ) );
+  copyright.set( "OpenZone © 2012 Davorin Učakar. %s",
+                 OZ_GETTEXT( "Licensed under GNU GPL 3.0. Game data archives and libraries"
+                             " distributed with OpenZone are work of various authors and use"
+                             " separate licences. For more details see doc/README.html and files"
+                             " named README.txt and COPYING.txt inside game data archives." ) );
 
   foreach( child, children.iter() ) {
     child->reposition();
@@ -124,19 +135,19 @@ MainMenu::MainMenu() :
   copyright( 20, 10, 360, 3, Font::SMALL, Area::ALIGN_NONE ),
   title( -120, -20, ALIGN_HCENTRE | ALIGN_VCENTRE, Font::LARGE, "OpenZone " OZ_VERSION )
 {
-  onReposition();
-
   Button* continueButton  = new Button( OZ_GETTEXT( "Continue" ),  continueAutosaved,  200, 30 );
   Button* quickLoadButton = new Button( OZ_GETTEXT( "Quickload" ), continueQuicksaved, 200, 30 );
   Button* missionsButton  = new Button( OZ_GETTEXT( "Missions" ),  openMissions,       200, 30 );
-  Button* settingsButton  = new Button( OZ_GETTEXT( "Settings" ),  settings,           200, 30 );
+  Button* settingsButton  = new Button( OZ_GETTEXT( "Settings" ),  openSettings,       200, 30 );
+  Button* creditsButton   = new Button( OZ_GETTEXT( "Credits" ),   openCredits,        200, 30 );
   Button* quitButton      = new Button( OZ_GETTEXT( "Exit" ),      quit,               200, 30 );
 
-  add( continueButton,  -20, 270 );
-  add( quickLoadButton, -20, 230 );
-  add( missionsButton,  -20, 170 );
-  add( settingsButton,  -20, 110 );
-  add( quitButton,      -20,  70 );
+  add( continueButton,  -20, 320 );
+  add( quickLoadButton, -20, 280 );
+  add( missionsButton,  -20, 220 );
+  add( settingsButton,  -20, 160 );
+  add( creditsButton,   -20, 120 );
+  add( quitButton,      -20,  60 );
 }
 
 }

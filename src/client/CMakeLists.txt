@@ -53,13 +53,14 @@ add_library( client STATIC
   ui/BuildMenu.cc
   ui/Button.cc
   ui/CinematicText.cc
+  ui/CreditsMenu.cc
   ui/DebugFrame.cc
   ui/Font.cc
   ui/Frame.cc
   ui/GalileoFrame.cc
   ui/HudArea.cc
   ui/InfoFrame.cc
-  ui/InventoryMenu.cc
+  ui/Inventory.cc
   ui/Label.cc
   ui/LoadingArea.cc
   ui/MainMenu.cc

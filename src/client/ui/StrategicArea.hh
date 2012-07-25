@@ -50,7 +50,6 @@ class StrategicArea : public Area
     int   cachedEntityIndex;
     int   cachedObjectIndex;
 
-    uint  titleTexId;
     float pixelStep;
     float stepPixel;
 
@@ -84,7 +83,6 @@ class StrategicArea : public Area
   public:
 
     StrategicArea();
-    ~StrategicArea() override;
 
 };
 

@@ -79,6 +79,8 @@ class InputStream
     OZ_ALWAYS_INLINE
     int length() const
     {
+      hard_assert( pos <= end );
+
       return int( pos - start );
     }
 
@@ -88,6 +90,8 @@ class InputStream
     OZ_ALWAYS_INLINE
     int capacity() const
     {
+      hard_assert( pos <= end );
+
       return int( end - start );
     }
 
@@ -97,6 +101,8 @@ class InputStream
     OZ_ALWAYS_INLINE
     int available() const
     {
+      hard_assert( pos <= end );
+
       return int( end - pos );
     }
 
@@ -106,6 +112,8 @@ class InputStream
     OZ_ALWAYS_INLINE
     bool isAvailable() const
     {
+      hard_assert( pos <= end );
+
       return pos != end;
     }
 
@@ -556,7 +564,7 @@ class InputStream
     /**
      * Read line from a text file.
      *
-     * Line delimiting character is not part of returned string.
+     * Line delimiting character is not part of the returned string.
      */
     String readLine()
     {
@@ -568,7 +576,7 @@ class InputStream
 
       int length = int( pos - begin );
 
-      pos += 1 + ( pos < end - 1 && pos[0] == '\r' && pos[1] == '\n' );
+      pos += ( pos < end ) + ( pos < end - 1 && pos[0] == '\r' && pos[1] == '\n' );
       return String( length, begin );
     }
 
