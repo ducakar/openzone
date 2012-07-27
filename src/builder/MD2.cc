@@ -18,23 +18,23 @@
  */
 
 /**
- * @file build/MD2.cc
+ * @file builder/MD2.cc
  */
 
 #include "stable.hh"
 
-#include "build/MD2.hh"
+#include "builder/MD2.hh"
 
 #include "client/MD2.hh"
 #include "client/Context.hh"
 
-#include "build/Compiler.hh"
+#include "builder/Compiler.hh"
 
 #include "client/OpenGL.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 const Vec3 MD2::NORMALS[] =

@@ -106,17 +106,9 @@ Context::Context() :
   smms( null ), md2s( null ), md3s( null )
 {}
 
-uint Context::readTextureLayer( InputStream* stream_, const char* path_ )
+uint Context::readTextureLayer( InputStream* stream )
 {
-  static InputStream* stream;
-  static const char*  path;
-  static uint         texId;
-
-  stream = stream_;
-  path   = path_;
-
-  OZ_GL_CHECK_ERROR();
-
+  uint texId;
   glGenTextures( 1, &texId );
   glBindTexture( GL_TEXTURE_2D, texId );
 
@@ -166,7 +158,7 @@ uint Context::loadTextureLayer( const char* path )
 
   InputStream is = file.inputStream();
 
-  uint id = readTextureLayer( &is, path );
+  uint id = readTextureLayer( &is );
 
   file.unmap();
   return id;
@@ -185,9 +177,11 @@ Texture Context::loadTexture( const char* path )
 
   int textureFlags = is.readInt();
 
-  texture.diffuse = textureFlags & Mesh::DIFFUSE_BIT ? readTextureLayer( &is, path ) : 0;
-  texture.masks   = textureFlags & Mesh::MASKS_BIT   ? readTextureLayer( &is, path ) : shader.defaultMasks;
-  texture.normals = textureFlags & Mesh::NORMALS_BIT ? readTextureLayer( &is, path ) : shader.defaultNormals;
+  texture.diffuse = textureFlags & Mesh::DIFFUSE_BIT ? readTextureLayer( &is ) : 0;
+  texture.masks   = textureFlags & Mesh::MASKS_BIT   ? readTextureLayer( &is ) :
+                                                       shader.defaultMasks;
+  texture.normals = textureFlags & Mesh::NORMALS_BIT ? readTextureLayer( &is ) :
+                                                       shader.defaultNormals;
 
   file.unmap();
   return texture;

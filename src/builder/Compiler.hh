@@ -18,18 +18,18 @@
  */
 
 /**
- * @file build/Compiler.hh
+ * @file builder/Compiler.hh
  */
 
 #pragma once
 
-#include "build/common.hh"
+#include "builder/common.hh"
 
 #include "client/Mesh.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 struct Vertex
@@ -53,7 +53,7 @@ class Compiler
       TRIANGLE_FAN,
       TRIANGLES,
       QUADS,
-      POLYGON,
+      POLYGON
     };
 
     enum Capability

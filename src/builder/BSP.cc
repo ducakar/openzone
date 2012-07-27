@@ -18,18 +18,18 @@
  */
 
 /**
- * @file build/BSP.cc
+ * @file builder/BSP.cc
  */
 
 #include "stable.hh"
 
-#include "build/BSP.hh"
+#include "builder/BSP.hh"
 
-#include "build/Context.hh"
+#include "builder/Context.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 const float BSP::DEFAULT_SCALE      = 0.01f;

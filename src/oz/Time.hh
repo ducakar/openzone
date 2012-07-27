@@ -43,15 +43,6 @@ namespace oz
  */
 class Time
 {
-#ifdef _WIN32
-
-  private:
-
-    /// Internal helper struct used for static initialisation of WIN32 performance counter.
-    struct PerformanceTimer;
-
-#endif
-
   public:
 
     long64 epoch;  ///< Seconds since platform-dependent epoch.
@@ -72,16 +63,16 @@ class Time
     static uint clock();
 
     /**
-     * Sleep for given number of milliseconds.
-     */
-    static void sleep( uint milliseconds );
-
-    /**
      * Monotonic clock from an unspecified point in time, with microsecond resolution.
      *
      * This clock wraps around in about 72 min.
      */
     static uint uclock();
+
+    /**
+     * Sleep for given number of milliseconds.
+     */
+    static void sleep( uint milliseconds );
 
     /**
      * Sleep for given number of microseconds.

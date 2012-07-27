@@ -18,21 +18,21 @@
  */
 
 /**
- * @file build/MD3.cc
+ * @file builder/MD3.cc
  */
 
 #include "stable.hh"
 
-#include "build/MD3.hh"
+#include "builder/MD3.hh"
 
 #include "client/Context.hh"
 #include "client/OpenGL.hh"
 
-#include "build/Compiler.hh"
+#include "builder/Compiler.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 void MD3::readAnimData()

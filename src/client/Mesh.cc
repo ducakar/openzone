@@ -262,7 +262,7 @@ void Mesh::upload( const Vertex* vertices, int nVertices, uint usage ) const
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 }
 
-void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
+void Mesh::load( oz::InputStream* istream, oz::uint usage )
 {
   flags = 0;
 
@@ -356,10 +356,10 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage, const char* path )
     for( int i = 1; i < nTextures; ++i ) {
       int flags = istream->readInt();
 
-      textures[i].diffuse = flags & DIFFUSE_BIT ? context.readTextureLayer( istream, path ) : 0;
-      textures[i].masks   = flags & MASKS_BIT   ? context.readTextureLayer( istream, path ) :
+      textures[i].diffuse = flags & DIFFUSE_BIT ? context.readTextureLayer( istream ) : 0;
+      textures[i].masks   = flags & MASKS_BIT   ? context.readTextureLayer( istream ) :
                                                   shader.defaultMasks;
-      textures[i].normals = flags & NORMALS_BIT ? context.readTextureLayer( istream, path ) :
+      textures[i].normals = flags & NORMALS_BIT ? context.readTextureLayer( istream ) :
                                                   shader.defaultNormals;
 
       texIds[i*3 + 0] = int( textures[i].diffuse );

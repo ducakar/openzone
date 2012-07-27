@@ -18,28 +18,42 @@
  */
 
 /**
- * @file build/Mouse.hh
+ * @file builder/Terra.hh
  */
 
 #pragma once
 
-#include "build/common.hh"
+#include "builder/common.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
-class UI
+class Terra
 {
   private:
 
-    static const char* const ICON_NAMES[];
+    matrix::Terra::Quad quads[matrix::Terra::VERTS][matrix::Terra::VERTS];
+
+    String name;
+
+    int    liquid;
+    Vec4   liquidColour;
+
+    String liquidTexture;
+    String detailTexture;
+    String mapTexture;
+
+    void load();
+    void saveMatrix();
+    void saveClient();
+
+    explicit Terra( const char* name );
 
   public:
 
-    static void buildCursors();
-    static void buildIcons();
+    static void build( const char* name );
 
 };
 

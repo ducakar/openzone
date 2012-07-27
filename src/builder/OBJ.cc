@@ -18,21 +18,21 @@
  */
 
 /**
- * @file build/OBJ.cc
+ * @file builder/OBJ.cc
  */
 
 #include "stable.hh"
 
-#include "build/OBJ.hh"
+#include "builder/OBJ.hh"
 
 #include "client/Context.hh"
 #include "client/OpenGL.hh"
 
-#include "build/Compiler.hh"
+#include "builder/Compiler.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 char* OBJ::skipSpaces( char* pos )

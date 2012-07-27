@@ -332,6 +332,12 @@ bool File::stat()
       if( handle != null ) {
         fileSize = int( GetFileSize( handle, null ) );
 
+        if( fileSize == int( INVALID_FILE_SIZE ) ) {
+          fileType = MISSING;
+          fileSize = -1;
+          fileTime = 0;
+        }
+
         CloseHandle( handle );
       }
     }
@@ -514,13 +520,18 @@ bool File::map()
     return false;
   }
 
+  int size = int( GetFileSize( file, null ) );
+  if( size == int( INVALID_FILE_SIZE ) ) {
+    CloseHandle( file );
+    return false;
+  }
+
   HANDLE mapping = CreateFileMapping( file, null, PAGE_READONLY, 0, 0, null );
   if( mapping == null ) {
     CloseHandle( file );
     return false;
   }
 
-  int size = int( GetFileSize( mapping, null ) );
   data = static_cast<char*>( MapViewOfFile( mapping, FILE_MAP_READ, 0, 0, 0 ) );
 
   CloseHandle( mapping );
@@ -665,6 +676,10 @@ Buffer File::read()
   }
 
   int size = int( GetFileSize( file, null ) );
+  if( size <= 0 || size == int( INVALID_FILE_SIZE ) ) {
+    return buffer;
+  }
+
   buffer.alloc( size );
 
   DWORD read;

@@ -154,7 +154,7 @@ class Mesh
     void upload( const Vertex* vertices, int nVertices, uint usage ) const;
     void draw( int mask ) const;
 
-    void load( InputStream* istream, uint usage, const char* path );
+    void load( InputStream* istream, uint usage );
     void unload();
 
 };

@@ -18,16 +18,16 @@
  */
 
 /**
- * @file build/Class.cc
+ * @file builder/Class.cc
  */
 
-#include "build/Class.hh"
+#include "builder/Class.hh"
 
 #include "matrix/Vehicle.hh"
 
 #include "client/Camera.hh"
 
-#include "build/Context.hh"
+#include "builder/Context.hh"
 
 #define SET_ATTRIB( attribBit, varName, defValue ) \
   if( config[varName].get( defValue ) ) { \
@@ -46,7 +46,7 @@
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 Class clazz;

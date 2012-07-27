@@ -18,20 +18,20 @@
  */
 
 /**
- * @file build/Mouse.cc
+ * @file builder/Mouse.cc
  */
 
 #include "stable.hh"
 
-#include "build/UI.hh"
+#include "builder/UI.hh"
 
 #include "client/ui/Mouse.hh"
 
-#include "build/Context.hh"
+#include "builder/Context.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 const char* const UI::ICON_NAMES[] = {

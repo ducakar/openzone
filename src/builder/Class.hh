@@ -18,18 +18,18 @@
  */
 
 /**
- * @file build/Class.hh
+ * @file builder/Class.hh
  */
 
 #pragma once
 
-#include "build/common.hh"
+#include "builder/common.hh"
 
 #include "matrix/VehicleClass.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 class Class

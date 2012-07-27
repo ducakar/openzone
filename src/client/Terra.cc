@@ -171,9 +171,9 @@ void Terra::load()
 
   InputStream is = file.inputStream();
 
-  waterTexId  = context.readTextureLayer( &is, path );
-  detailTexId = context.readTextureLayer( &is, path );
-  mapTexId    = context.readTextureLayer( &is, path );
+  waterTexId  = context.readTextureLayer( &is );
+  detailTexId = context.readTextureLayer( &is );
+  mapTexId    = context.readTextureLayer( &is );
 
   glGenBuffers( TILES * TILES, &vbos[0][0] );
   glGenBuffers( 1, &ibo );

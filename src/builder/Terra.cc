@@ -18,22 +18,22 @@
  */
 
 /**
- * @file build/Terra.cc
+ * @file builder/Terra.cc
  */
 
 #include "stable.hh"
 
-#include "build/Terra.hh"
+#include "builder/Terra.hh"
 
 #include "client/Terra.hh"
 
-#include "build/Context.hh"
+#include "builder/Context.hh"
 
 #include <FreeImage.h>
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 void Terra::load()

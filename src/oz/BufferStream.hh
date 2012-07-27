@@ -726,7 +726,7 @@ class BufferStream
     /**
      * Read string.
      */
-    String readString()
+    const char* readString()
     {
       const char* begin = pos;
 
@@ -737,10 +737,8 @@ class BufferStream
         throw Exception( "End of buffer reached while looking for the end of a string." );
       }
 
-      int length = int( pos - begin );
-
       ++pos;
-      return String( length, begin );
+      return begin;
     }
 
     /**

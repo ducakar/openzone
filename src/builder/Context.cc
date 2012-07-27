@@ -18,12 +18,12 @@
  */
 
 /**
- * @file build/Context.cc
+ * @file builder/Context.cc
  */
 
 #include "stable.hh"
 
-#include "build/Context.hh"
+#include "builder/Context.hh"
 
 #include "client/SMMImago.hh"
 #include "client/SMMVehicleImago.hh"
@@ -41,7 +41,7 @@
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 Context context;

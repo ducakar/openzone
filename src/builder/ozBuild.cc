@@ -18,44 +18,36 @@
  */
 
 /**
- * @file build/Terra.hh
+ * @file builder/ozBuild.cc
+ *
+ * Data builder launcher.
  */
 
-#pragma once
+#include "stable.hh"
 
-#include "build/common.hh"
+#include "builder/Builder.hh"
 
-namespace oz
+using namespace oz;
+
+int main( int argc, char** argv )
 {
-namespace build
-{
+  System::init();
 
-class Terra
-{
-  private:
+  int exitCode = EXIT_FAILURE;
 
-    matrix::Terra::Quad quads[matrix::Terra::VERTS][matrix::Terra::VERTS];
+  Log::printRaw( "OpenZone  Copyright © 2002-2012 Davorin Učakar\n"
+                 "This program comes with ABSOLUTELY NO WARRANTY.\n"
+                 "This is free software, and you are welcome to redistribute it\n"
+                 "under certain conditions; See COPYING file for details.\n\n" );
 
-    String name;
+  try {
+    exitCode = builder::builder.main( argc, argv );
+  }
+  catch( const std::exception& e ) {
+    System::error( e );
+  }
 
-    int    liquid;
-    Vec4   liquidColour;
+//   Alloc::printLeaks();
 
-    String liquidTexture;
-    String detailTexture;
-    String mapTexture;
-
-    void load();
-    void saveMatrix();
-    void saveClient();
-
-    explicit Terra( const char* name );
-
-  public:
-
-    static void build( const char* name );
-
-};
-
-}
+  return exitCode;
 }

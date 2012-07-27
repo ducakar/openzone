@@ -18,32 +18,30 @@
  */
 
 /**
- * @file build/Build.cc
- *
- * Data builder.
+ * @file builder/Builder.cc
  */
 
 #include "stable.hh"
 
-#include "build/Build.hh"
+#include "builder/Builder.hh"
 
 #include "BuildInfo.hh"
 
 #include "client/Window.hh"
 #include "client/Render.hh"
 
-#include "build/Lingua.hh"
-#include "build/Context.hh"
-#include "build/Compiler.hh"
-#include "build/UI.hh"
-#include "build/Caelum.hh"
-#include "build/Terra.hh"
-#include "build/BSP.hh"
-#include "build/Class.hh"
-#include "build/FragPool.hh"
-#include "build/OBJ.hh"
-#include "build/MD2.hh"
-#include "build/MD3.hh"
+#include "builder/Lingua.hh"
+#include "builder/Context.hh"
+#include "builder/Compiler.hh"
+#include "builder/UI.hh"
+#include "builder/Caelum.hh"
+#include "builder/Terra.hh"
+#include "builder/BSP.hh"
+#include "builder/Class.hh"
+#include "builder/FragPool.hh"
+#include "builder/OBJ.hh"
+#include "builder/MD2.hh"
+#include "builder/MD3.hh"
 
 #include <unistd.h>
 
@@ -52,12 +50,12 @@
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
-Build build;
+Builder builder;
 
-void Build::printUsage( const char* invocationName )
+void Builder::printUsage( const char* invocationName )
 {
   Log::printRaw(
     "Usage:\n"
@@ -92,7 +90,7 @@ void Build::printUsage( const char* invocationName )
     invocationName );
 }
 
-void Build::copyFiles( const char* srcDir, const char* destDir, const char* ext, bool recurse )
+void Builder::copyFiles( const char* srcDir, const char* destDir, const char* ext, bool recurse )
 {
   String sSrcDir = srcDir;
   String sDestDir = destDir;
@@ -152,7 +150,7 @@ void Build::copyFiles( const char* srcDir, const char* destDir, const char* ext,
   Log::println( "}" );
 }
 
-void Build::buildCaela()
+void Builder::buildCaela()
 {
   Log::println( "Building Caela {" );
   Log::indent();
@@ -178,7 +176,7 @@ void Build::buildCaela()
   Log::println( "}" );
 }
 
-void Build::buildTerrae()
+void Builder::buildTerrae()
 {
   Log::println( "Building Terrae {" );
   Log::indent();
@@ -202,7 +200,7 @@ void Build::buildTerrae()
   Log::println( "}" );
 }
 
-void Build::buildBSPs()
+void Builder::buildBSPs()
 {
   Log::println( "Building BSPs {" );
   Log::indent();
@@ -228,7 +226,7 @@ void Build::buildBSPs()
   Log::println( "}" );
 }
 
-void Build::buildBSPTextures()
+void Builder::buildBSPTextures()
 {
   if( context.usedTextures.isEmpty() ) {
     return;
@@ -363,7 +361,7 @@ void Build::buildBSPTextures()
   Log::println( "}" );
 }
 
-void Build::buildClasses( const String& pkgName )
+void Builder::buildClasses( const String& pkgName )
 {
   Log::println( "Building object classes {" );
   Log::indent();
@@ -437,7 +435,7 @@ void Build::buildClasses( const String& pkgName )
   Log::println( "}" );
 }
 
-void Build::buildFragPools( const String& pkgName )
+void Builder::buildFragPools( const String& pkgName )
 {
   Log::println( "Building fragment pools {" );
   Log::indent();
@@ -481,7 +479,7 @@ void Build::buildFragPools( const String& pkgName )
   Log::println( "}" );
 }
 
-void Build::buildModels()
+void Builder::buildModels()
 {
   if( context.usedModels.isEmpty() ) {
     return;
@@ -543,7 +541,7 @@ void Build::buildModels()
   Log::println( "}" );
 }
 
-void Build::copySounds()
+void Builder::copySounds()
 {
   if( context.usedSounds.isEmpty() ) {
     return;
@@ -647,7 +645,7 @@ void Build::copySounds()
   Log::println( "}" );
 }
 
-void Build::buildModules()
+void Builder::buildModules()
 {
   Log::println( "Building Modules {" );
   Log::indent();
@@ -656,7 +654,7 @@ void Build::buildModules()
   Log::println( "}" );
 }
 
-void Build::checkLua( const char* path )
+void Builder::checkLua( const char* path )
 {
   Log::println( "Checking Lua scripts '%s' {", path );
   Log::indent();
@@ -684,7 +682,7 @@ void Build::checkLua( const char* path )
   Log::println( "}" );
 }
 
-void Build::buildMissions()
+void Builder::buildMissions()
 {
   Log::println( "Building missions {" );
   Log::indent();
@@ -727,7 +725,7 @@ void Build::buildMissions()
   Log::println( "}" );
 }
 
-void Build::packArchive( const char* name, bool useCompression, bool use7zip )
+void Builder::packArchive( const char* name, bool useCompression, bool use7zip )
 {
   Log::println( "Packing archive {" );
   Log::indent();
@@ -763,7 +761,7 @@ void Build::packArchive( const char* name, bool useCompression, bool use7zip )
   Log::println( "}" );
 }
 
-int Build::main( int argc, char** argv )
+int Builder::main( int argc, char** argv )
 {
   String invocationName = File( argv[0] ).baseName();
 

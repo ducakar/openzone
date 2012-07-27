@@ -386,7 +386,7 @@ void Loader::makeScreenshot()
   }
 
   snprintf( screenshotInfo.path, 256, "%s/screenshots/OpenZone %s.bmp",
-            config["dir.config"].get( "" ), Time::local().toString().cstr() );
+            config["dir.config"].asString().cstr(), Time::local().toString().cstr() );
 
   Log::println( "Screenshot to '%s' scheduled in background thread", screenshotInfo.path );
 

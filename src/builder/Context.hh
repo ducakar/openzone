@@ -18,18 +18,18 @@
  */
 
 /**
- * @file build/Context.hh
+ * @file builder/Context.hh
  */
 
 #pragma once
 
-#include "build/common.hh"
+#include "builder/common.hh"
 
 #include "client/OpenGL.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 class Context

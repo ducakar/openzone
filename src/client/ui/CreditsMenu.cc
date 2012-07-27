@@ -57,7 +57,7 @@ void CreditsMenu::onReposition()
   height = camera.height;
 
   int step    = Font::INFOS[Font::SANS].height;
-  int nLabels = min( ( height - 160 ) / step, lines.length() );
+  int nLabels = ( height - 160 ) / step;
 
   labels.dealloc();
   labels.alloc( nLabels );

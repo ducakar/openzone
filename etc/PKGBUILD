@@ -10,8 +10,8 @@ license=('GPL3')
 arch=('i686' 'x86_64')
 makedepends=('cmake' 'doxygen' 'faad2' 'freeimage' 'gcc' 'git' 'graphviz'
              'libmad' 'libvorbis' 'lua' 'openal' 'physfs' 'sdl_ttf')
-source=("openzone-src-${pkgver}.tar.xz"
-        "openzone-data-${pkgver}.tar.xz")
+source=("https://github.com/ducakar/openzone/tarball/v${pkgver}"
+        "https://openzone.googlecode.com/files/openzone-data-${pkgver}.tar.xz")
 sha1sums=()
 
 build()
@@ -76,7 +76,7 @@ package_openzone()
   cd ${srcdir}/openzone
 
   install -dm755 ${pkgdir}/usr/share/doc/openzone
-  install -m644 AUTHORS *.md doc/*.html ${pkgdir}/usr/share/doc/openzone
+  install -m644 AUTHORS README.md ChangeLog.md BUGS.md doc/*.html ${pkgdir}/usr/share/doc/openzone
 }
 
 package_openzone-data()

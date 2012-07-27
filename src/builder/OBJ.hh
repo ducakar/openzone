@@ -18,17 +18,17 @@
  */
 
 /**
- * @file build/OBJ.hh
+ * @file builder/OBJ.hh
  */
 
 #pragma once
 
-#include "build/common.hh"
+#include "builder/common.hh"
 #include "client/Mesh.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 struct Face;

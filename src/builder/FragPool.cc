@@ -18,12 +18,12 @@
  */
 
 /**
- * @file build/FragPool.cc
+ * @file builder/FragPool.cc
  */
 
-#include "build/FragPool.hh"
+#include "builder/FragPool.hh"
 
-#include "build/Context.hh"
+#include "builder/Context.hh"
 
 #define SET_FLAG( flagBit, varName, defValue ) \
   if( config[varName].get( defValue ) ) { \
@@ -32,7 +32,7 @@
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 FragPool fragPool;

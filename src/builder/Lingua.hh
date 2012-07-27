@@ -18,27 +18,31 @@
  */
 
 /**
- * @file build/FragPool.hh
+ * @file builder/Lingua.hh
  */
 
 #pragma once
 
-#include "build/common.hh"
+#include "builder/common.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
-class FragPool
+class Lingua
 {
+  private:
+
+    void buildCatalogue( const char* directory, const char* catalogue );
+
   public:
 
-    void build( BufferStream* os, const char* className );
-
+    void build();
+    void buildMissions();
 };
 
-extern FragPool fragPool;
+extern Lingua lingua;
 
 }
 }

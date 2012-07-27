@@ -242,7 +242,7 @@ void MD2::load()
 
   weaponTransf = is.readMat44();
 
-  mesh.load( &is, shader.hasVertexTexture ? GL_STATIC_DRAW : GL_STREAM_DRAW, file.path() );
+  mesh.load( &is, shader.hasVertexTexture ? GL_STATIC_DRAW : GL_STREAM_DRAW );
 
   hard_assert( !is.isAvailable() );
 

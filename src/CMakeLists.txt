@@ -21,7 +21,7 @@ add_subdirectory( modules )
 add_subdirectory( client )
 
 if( NOT NACL AND NOT ANDROID )
-  add_subdirectory( build )
+  add_subdirectory( builder )
   add_subdirectory( tools )
 endif()
 

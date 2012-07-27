@@ -19,11 +19,11 @@
 
 #include "stable.hh"
 
-#include "build/Lingua.hh"
+#include "builder/Lingua.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 Lingua lingua;
@@ -92,52 +92,43 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
         messages.add( lastTranslation );
       }
 
-      char* begin = strchr( line, '"' );
-      char* end = strrchr( line, '"' );
+      int begin = line.index( '"' );
+      int end   = line.lastIndex( '"' );
 
-      if( begin == null || end == null || begin >= end ) {
+      if( begin < 0 || end < 0 || begin >= end ) {
         throw Exception( "%s:%d: syntax error", srcFile.path().cstr(), lineNum );
       }
 
-      ++begin;
-      *end = '\0';
-
-      lastOriginal = begin;
+      lastOriginal = line.substring( begin + 1, end );
       lastTranslation = "";
     }
 
     if( String::beginsWith( line, "msgstr" ) ) {
       mode = 2;
 
-      char* begin = strchr( line, '"' );
-      char* end = strrchr( line, '"' );
+      int begin = line.index( '"' );
+      int end   = line.lastIndex( '"' );
 
-      if( begin == null || end == null || begin >= end ) {
+      if( begin < 0 || end < 0 || begin >= end ) {
         throw Exception( "%s:%d: syntax error", srcFile.path().cstr(), lineNum );
       }
 
-      ++begin;
-      *end = '\0';
-
-      lastTranslation = begin;
+      lastTranslation = line.substring( begin + 1, end );
     }
 
     if( line[0] == '"' ) {
-      char* begin = strchr( line, '"' );
-      char* end = strrchr( line, '"' );
+      int begin = line.index( '"' );
+      int end   = line.lastIndex( '"' );
 
-      if( begin == null || end == null || begin >= end ) {
+      if( begin < 0 || end < 0 || begin >= end ) {
         throw Exception( "%s:%d: syntax error", srcFile.path().cstr(), lineNum );
       }
 
-      ++begin;
-      *end = '\0';
-
       if( mode == 1 ) {
-        lastOriginal = lastOriginal + begin;
+        lastOriginal = lastOriginal + line.substring( begin + 1, end );
       }
       else if( mode == 2 ) {
-        lastTranslation = lastTranslation + begin;
+        lastTranslation = lastTranslation + line.substring( begin + 1, end );
       }
       else {
         throw Exception( "%s:%d: loose string", srcFile.path().cstr(), lineNum );

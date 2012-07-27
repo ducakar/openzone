@@ -190,8 +190,8 @@ void Caelum::load()
   glBufferData( GL_ELEMENT_ARRAY_BUFFER, iboSize, is.forward( iboSize ), GL_STATIC_DRAW );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
-  sunTexId  = context.readTextureLayer( &is, path );
-  moonTexId = context.readTextureLayer( &is, path );
+  sunTexId  = context.readTextureLayer( &is );
+  moonTexId = context.readTextureLayer( &is );
 
   starShaderId      = library.shaderIndex( "stars" );
   celestialShaderId = library.shaderIndex( "celestial" );

@@ -18,23 +18,29 @@
  */
 
 /**
- * @file build/common.hh
+ * @file builder/Caelum.hh
  */
 
 #pragma once
 
-#include "client/common.hh"
-
-// We need OpenGL-specific stuff for building textures.
-#undef OZ_GL_ES
+#include "builder/common.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
-using namespace oz::matrix;
-using namespace oz::client;
+class Caelum
+{
+  private:
+
+    static const float STAR_DIM;
+
+  public:
+
+    static void build( const char* name );
+
+};
 
 }
 }

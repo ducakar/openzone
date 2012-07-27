@@ -18,18 +18,18 @@
  */
 
 /**
- * @file build/BSP.hh
+ * @file builder/BSP.hh
  */
 
 #pragma once
 
 #include "matrix/BSP.hh"
 
-#include "build/Compiler.hh"
+#include "builder/Compiler.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 /**

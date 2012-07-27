@@ -18,20 +18,20 @@
  */
 
 /**
- * @file build/Compiler.cc
+ * @file builder/Compiler.cc
  */
 
 #include "stable.hh"
 
-#include "build/Compiler.hh"
+#include "builder/Compiler.hh"
 
 #include "client/OpenGL.hh"
 
-#include "build/Context.hh"
+#include "builder/Context.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 Compiler compiler;

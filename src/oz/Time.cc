@@ -36,7 +36,6 @@
 #elif defined( _WIN32 )
 # include "windefs.h"
 # include <windows.h>
-# include <mmsystem.h>
 # include <cstdio>
 #else
 # include <cstdio>
@@ -50,32 +49,27 @@ namespace oz
 #ifdef _WIN32
 
 // The following struct is used to initialise and Windows high-resolution timer.
-struct Time::PerformanceTimer
+struct PerformanceTimer
 {
-  static PerformanceTimer performanceTimer;
-
-  ulong64 resolution;
-  ulong64 uresolution;
+  double resolution;  // = 0.0
+  double uresolution; // = 0.0
 
   PerformanceTimer();
 };
 
 OZ_HIDDEN
-Time::PerformanceTimer Time::PerformanceTimer::performanceTimer;
-
-OZ_HIDDEN
-Time::PerformanceTimer::PerformanceTimer()
+PerformanceTimer::PerformanceTimer()
 {
-  timeBeginPeriod( 1 );
-
   LARGE_INTEGER frequency;
-  if( QueryPerformanceFrequency( &frequency ) == 0 || frequency.QuadPart == 0 ) {
+  if( QueryPerformanceFrequency( &frequency ) == 0 ) {
     System::error( 0, "High-performance timer initialisation failed" );
   }
 
-  resolution = ( 1000 + frequency.QuadPart / 2 ) / frequency.QuadPart;
-  uresolution = ( 1000000 + frequency.QuadPart / 2 ) / frequency.QuadPart;
+  resolution  = 1.0e3 / double( frequency.QuadPart );
+  uresolution = 1.0e6 / double( frequency.QuadPart );
 }
+
+static PerformanceTimer performanceTimer;
 
 #endif
 
@@ -94,7 +88,7 @@ uint Time::clock()
   LARGE_INTEGER now;
   QueryPerformanceCounter( &now );
 
-  return uint( now.QuadPart * PerformanceTimer::performanceTimer.resolution );
+  return uint( double( now.QuadPart ) * performanceTimer.resolution );
 
 #else
 
@@ -104,19 +98,6 @@ uint Time::clock()
   // This wraps around together with uint since (time_t range) * 1000 is a multiple of uint range.
   return uint( now.tv_sec * 1000 + now.tv_nsec / 1000000 );
 
-#endif
-}
-
-void Time::sleep( uint milliseconds )
-{
-#ifdef _WIN32
-  Sleep( milliseconds );
-#else
-  struct timespec ts = {
-    time_t( milliseconds / 1000 ),
-    long( ( milliseconds % 1000 ) * 1000000 )
-  };
-  nanosleep( &ts, null );
 #endif
 }
 
@@ -135,7 +116,7 @@ uint Time::uclock()
   LARGE_INTEGER now;
   QueryPerformanceCounter( &now );
 
-  return uint( now.QuadPart * PerformanceTimer::performanceTimer.uresolution );
+  return uint( double( now.QuadPart ) * performanceTimer.uresolution );
 
 #else
 
@@ -148,10 +129,25 @@ uint Time::uclock()
 #endif
 }
 
+void Time::sleep( uint milliseconds )
+{
+#ifdef _WIN32
+  Sleep( milliseconds );
+#else
+  struct timespec ts = {
+    time_t( milliseconds / 1000 ),
+    long( ( milliseconds % 1000 ) * 1000000 )
+  };
+  nanosleep( &ts, null );
+#endif
+}
+
 void Time::usleep( uint microseconds )
 {
 #ifdef _WIN32
-  Sleep( max<uint>( ( microseconds + 500 ) / 1000, 1 ) );
+  // Adding a millisecond rather rounding to the nearest millisecond value gives the most accurate
+  // sleep periods for the given microsecond value. This conclusion is based on tests on Windows 7.
+  Sleep( microseconds / 1000 + 1 );
 #else
   struct timespec ts = {
     time_t( microseconds / 1000000 ),

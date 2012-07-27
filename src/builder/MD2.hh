@@ -18,17 +18,17 @@
  */
 
 /**
- * @file build/MD2.hh
+ * @file builder/MD2.hh
  */
 
 #pragma once
 
-#include "build/common.hh"
+#include "builder/common.hh"
 #include "client/Mesh.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 class MD2

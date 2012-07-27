@@ -128,14 +128,14 @@ install -m644 *.zip $RPM_BUILD_ROOT/%{_datadir}/openzone
 %{_bindir}/openzone
 %{_datadir}/applications
 %{_datadir}/pixmaps
-%doc AUTHORS COPYING ChangeLog.md BUGS.md TODO.md doc/*.html
+%doc AUTHORS COPYING README.md ChangeLog.md BUGS.md doc/*.html
 
 %files tools
 %defattr(-, root, root)
 %{_bindir}/ozBuild
 %{_bindir}/ozGettext
 %{_bindir}/ozManifest
-%doc AUTHORS COPYING
+%doc AUTHORS COPYING README.md ChangeLog.md BUGS.md
 
 %files data
 %defattr(-, root, root)

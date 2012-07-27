@@ -8,7 +8,7 @@
 #
 
 version="0.3.0"
-components="oz common matrix nirvana modules client build unittest"
+components="oz common matrix nirvana modules client builder unittest"
 
 # Generate CMakeLists.txt files.
 for component in $components; do

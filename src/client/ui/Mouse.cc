@@ -111,7 +111,7 @@ void Mouse::init()
     cursors[i].size     = is.readInt();
     cursors[i].hotspotX = is.readInt();
     cursors[i].hotspotY = is.readInt();
-    cursors[i].texId    = context.readTextureLayer( &is, file.path() );
+    cursors[i].texId    = context.readTextureLayer( &is );
 
     file.unmap();
   }

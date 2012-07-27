@@ -619,15 +619,16 @@ int Client::main()
           if( event.active.state & SDL_APPACTIVE ) {
             if( event.active.gain ) {
               window.warpMouse();
-              input.reset();
 
+              input.reset();
               sound.resume();
+
               isActive = true;
             }
             else {
               sound.suspend();
-
               input.reset();
+
               isActive = false;
             }
           }
@@ -701,8 +702,6 @@ int Client::main()
 
 #endif
 
-    input.update();
-
     // Waste time when iconified.
     if( !isActive ) {
       Time::usleep( Timer::TICK_MICROS );
@@ -712,6 +711,8 @@ int Client::main()
 
       continue;
     }
+
+    input.update();
 
     timer.tick();
 

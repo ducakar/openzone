@@ -18,46 +18,30 @@
  */
 
 /**
- * @file build/Build.hh
- *
- * Data builder.
+ * @file builder/Mouse.hh
  */
+
+#pragma once
+
+#include "builder/common.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
-class Build
+class UI
 {
   private:
 
-    void printUsage( const char* invocationName );
-
-    void copyFiles( const char* srcDir, const char* destDir, const char* ext, bool recurse );
-    void buildTextures( const char* srcDir, const char* destDir, bool wrap,
-                        int magFilter, int minFilter );
-
-    void buildCaela();
-    void buildTerrae();
-    void buildBSPs();
-    void buildBSPTextures();
-    void buildClasses( const String& pkgName );
-    void buildFragPools( const String& pkgName );
-    void buildModels();
-    void copySounds();
-    void buildModules();
-    void checkLua( const char* path );
-    void buildMissions();
-    void packArchive( const char* name, bool useCompresion, bool use7zip );
+    static const char* const ICON_NAMES[];
 
   public:
 
-    int main( int argc, char** argv );
+    static void buildCursors();
+    static void buildIcons();
 
 };
-
-extern Build build;
 
 }
 }

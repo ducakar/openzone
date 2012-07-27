@@ -97,7 +97,7 @@
         + a user-specified directory can be searched for music
     * resizable main window
     * new main menu, mission selection menu
-- build
+- builder
     * prebuilding entirely split from the runtime part of the engine
     * SDL_image replaced by FreeImage, wider range of image formats supported as prebuilding source
     * 16-bit colour components for terrain heightmap

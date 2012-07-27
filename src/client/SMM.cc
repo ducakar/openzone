@@ -56,7 +56,7 @@ void SMM::load()
 {
   InputStream is = file.inputStream();
 
-  mesh.load( &is, GL_STATIC_DRAW, file.path() );
+  mesh.load( &is, GL_STATIC_DRAW );
 
   hard_assert( !is.isAvailable() );
 

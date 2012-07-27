@@ -18,18 +18,18 @@
  */
 
 /**
- * @file build/MD3.hh
+ * @file builder/MD3.hh
  */
 
 #pragma once
 
 #include "client/MD3.hh"
 
-#include "build/common.hh"
+#include "builder/common.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 struct MD3Tag;

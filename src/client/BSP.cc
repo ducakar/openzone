@@ -62,7 +62,7 @@ void BSP::load()
   waterFogColour = istream.readVec4();
   lavaFogColour = istream.readVec4();
 
-  mesh.load( &istream, GL_STATIC_DRAW, file.path() );
+  mesh.load( &istream, GL_STATIC_DRAW );
 
   hard_assert( !istream.isAvailable() );
 

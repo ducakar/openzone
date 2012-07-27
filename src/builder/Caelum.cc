@@ -18,20 +18,20 @@
  */
 
 /**
- * @file build/Caelum.cc
+ * @file builder/Caelum.cc
  */
 
 #include "stable.hh"
 
-#include "build/Caelum.hh"
+#include "builder/Caelum.hh"
 
 #include "client/Caelum.hh"
 
-#include "build/Context.hh"
+#include "builder/Context.hh"
 
 namespace oz
 {
-namespace build
+namespace builder
 {
 
 const float Caelum::STAR_DIM = 0.10f;
