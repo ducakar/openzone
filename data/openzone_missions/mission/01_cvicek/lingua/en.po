@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenZone\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-07-23 18:09+0100\n"
+"PO-Revision-Date: 2012-07-29 18:17+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: \n"
@@ -13,11 +13,11 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Country: UNITED KINGDOM\n"
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:400
+#: data/openzone_missions/mission/01_cvicek/main.lua:411
 msgid "I'm sooo thirsty. I've been drinking only water for the past week."
 msgstr "I'm sooo thirsty. I've been drinking only water for the past week."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:440
+#: data/openzone_missions/mission/01_cvicek/main.lua:451
 msgid ""
 "Beast Lair is your home base, hidden on an island, still safe from Colonial Army.\n"
 "\n"
@@ -35,7 +35,7 @@ msgstr ""
 msgid "No more thirst!"
 msgstr "No more thirst!"
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:413
+#: data/openzone_missions/mission/01_cvicek/main.lua:424
 msgid "Escape"
 msgstr "Escape"
 
@@ -50,7 +50,7 @@ msgstr ""
 "\n"
 "That would be a shame, no true beast would allow so much precious liquid to be thrown away."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:433
+#: data/openzone_missions/mission/01_cvicek/main.lua:444
 msgid "The Farm"
 msgstr "The Farm"
 
@@ -74,11 +74,11 @@ msgstr ""
 msgid "Good job!"
 msgstr "Good job!"
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:408
+#: data/openzone_missions/mission/01_cvicek/main.lua:419
 msgid "Is the Farm still standing? Please destroy it, maybe then there might be something better on TV."
 msgstr "Is the Farm still standing? Please destroy it, maybe then there might be something better on TV."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:413
+#: data/openzone_missions/mission/01_cvicek/main.lua:424
 msgid ""
 "You have been caught by a Colonial patrol and they currently hold you in that Colonial outpost. Tomorrow you are being transferred to a Colonial detention camp for terrorist suspects. If you don't find a way to escape, say goodbye to freedom till the end of your life.\n"
 "\n"
@@ -88,23 +88,10 @@ msgstr ""
 "\n"
 "It would be extremely helpful if you can get a Galileo gadget, it will will show you destinations of your tasks and help you with navigation a lot."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:423
-msgid ""
-"Steal at least 20 bottles of cviček from Colonial military base and transport them back to Beast Lair.\n"
-"\n"
-"The base is heavily defended so you will need some heavy armour to attack it.\n"
-"\n"
-"Beware not to use explosives there, cviček bottles are very fragile and there is a explosives storage in that base.\n"
-"\n"
-"Quest will be complete one you unload 20 bottles of cviček in the Lair."
-msgstr ""
-"Steal at least 20 bottles of cviček from Colonial military base and transport them back to Beast Lair.\n"
-"\n"
-"The base is heavily defended so you will need some heavy armour to attack it.\n"
-"\n"
-"Beware not to use explosives there, cviček bottles are very fragile and there is a explosives storage in that base.\n"
-"\n"
-"Quest will be complete one you unload 20 bottles of cviček in the Lair."
+#: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
+#: #8
+msgid "The beast hero decided to rob a military base in mountains, where large quantities of confiscated cviček are stored ..."
+msgstr "The beast hero decided to rob a military base in mountains, where large quantities of confiscated cviček are stored ..."
 
 #: data/openzone_missions/mission/01_cvicek/main.lua:110
 msgid "Good riddance! Finally some decent TV programme."
@@ -115,9 +102,27 @@ msgstr "Good riddance! Finally some decent TV programme."
 msgid "But there was a hero who went on a long and dangerous mission to bring cviček to his home village."
 msgstr "But there was a hero who went on a long and dangerous mission to bring cviček to his home village."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:440
+#: data/openzone_missions/mission/01_cvicek/main.lua:451
 msgid "Beast Lair"
 msgstr "Beast Lair"
+
+#: data/openzone_missions/mission/01_cvicek/main.lua:434
+msgid ""
+"Steal at least 20 bottles of cviček from Colonial military base and transport them back to Beast Lair.\n"
+"\n"
+"The base is heavily defended so you will need some heavy armour to attack it.\n"
+"\n"
+"Beware not to use explosives there, cviček bottles are very fragile and there is a explosives storage in that base.\n"
+"\n"
+"Quest will be complete one you unload 20 bottles of cviček in the Lair (bottles inside an inventory, a box or a vehicle don't count)."
+msgstr ""
+"Steal at least 20 bottles of cviček from Colonial military base and transport them back to Beast Lair.\n"
+"\n"
+"The base is heavily defended so you will need some heavy armour to attack it.\n"
+"\n"
+"Beware not to use explosives there, cviček bottles are very fragile and there is a explosives storage in that base.\n"
+"\n"
+"Quest will be complete one you unload 20 bottles of cviček in the Lair (bottles inside an inventory, a box or a vehicle don't count)."
 
 #: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
 #: #13
@@ -130,11 +135,11 @@ msgstr ""
 "\n"
 "The hero has been captured by a Colonial patrol and is now imprisoned in an outpost, waiting for deportation to a secret prison for terrorism suspects."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:403
+#: data/openzone_missions/mission/01_cvicek/main.lua:414
 msgid "Cviček, cviček, cviček ... Where is cviček?"
 msgstr "Cviček, cviček, cviček ... Where is cviček?"
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:433
+#: data/openzone_missions/mission/01_cvicek/main.lua:444
 msgid ""
 "That farm is a stage of an annoying reality show called 'The Farm'. It wouldn't do much harm to blow it up.\n"
 "\n"
@@ -144,11 +149,11 @@ msgstr ""
 "\n"
 "The farmhouses are not very robust, so a few bombs or a heavier weapon should do the trick. And don't expect any welcome from participants of the show."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:398
+#: data/openzone_missions/mission/01_cvicek/main.lua:409
 msgid "Well, is cviček coming anytime soon?"
 msgstr "Well, is cviček coming anytime soon?"
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:405
+#: data/openzone_missions/mission/01_cvicek/main.lua:416
 msgid "How's your mission going? I can't imagine how we will live without cviček."
 msgstr "How's your mission going? I can't imagine how we will live without cviček."
 
@@ -156,14 +161,9 @@ msgstr "How's your mission going? I can't imagine how we will live without cvič
 msgid "You have to escape from a Colonial outpost after a failed mission of stealing wine and try it again."
 msgstr "You have to escape from a Colonial outpost after a failed mission of stealing wine and try it again."
 
-#: data/openzone_missions/mission/01_cvicek/main.lua:423
+#: data/openzone_missions/mission/01_cvicek/main.lua:434
 msgid "Steal cviček"
 msgstr "Steal cviček"
-
-#: data/openzone_missions/mission/01_cvicek/intro.sequence.json:step
-#: #8
-msgid "The beast hero decided to rob a military base in mountains, where vast quantities of confiscated cviček are stored ..."
-msgstr "The beast hero decided to rob a military base in mountains, where vast quantities of confiscated cviček are stored ..."
 
 #: data/openzone_missions/mission/01_cvicek/description.json
 msgid "Mission 1: Cviček"

@@ -63,8 +63,6 @@ class Area
 
   protected:
 
-    static List<Area*> updateAreas;
-
     Area* prev[1];
     Area* next[1];
 
@@ -86,6 +84,7 @@ class Area
     int defaultX;
     int defaultY;
 
+    void updateChildren();
     // return true if event has been caught
     bool passMouseEvents();
     void drawChildren();
@@ -96,8 +95,6 @@ class Area
     // return true if event has been caught
     virtual bool onMouseEvent();
     virtual void onDraw();
-
-    static void update();
 
   public:
 

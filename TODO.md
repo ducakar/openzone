@@ -1,11 +1,6 @@
 0.3.1
 
-- fix Win32 port
-- ui
-    * mission screen scrolling
-    * credits screen
-- client
-    * MD2 animation++
+- homepage
 
 0.4
 
@@ -15,15 +10,16 @@
 - nirvana
     * AI tasks
 - ui
-    * tutorial tips
     * options menu
+    * tutorial tips
     * advanced HUD for mechanic units and vehicles
     * RTS interface
+    * more advanced build menu for editor
 - client
     * editor
     * layout files
+    * MD3 animation, MD2 animation++
     * BSP rendering per partes
-    * MD3 animation
     * decals
     * particle model (smoke, fire ...)
     * animated textures
@@ -31,7 +27,6 @@
 - missions
     * new tutorial missions
     * RTS mission
-- homepage
 
 0.5
 

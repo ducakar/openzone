@@ -3,15 +3,15 @@
 pkgbase=openzone
 # pkgname=('liboz' 'openzone' 'openzone-data' 'openzone-doc')
 pkgname=('openzone' 'openzone-data')
-pkgver=0.3.0
+pkgver=0.3.1
 pkgrel=1
-url="http://github.com/ducakar/openzone/"
+url="http://ducakar.github.com/openzone/"
 license=('GPL3')
 arch=('i686' 'x86_64')
 makedepends=('cmake' 'doxygen' 'faad2' 'freeimage' 'gcc' 'git' 'graphviz'
              'libmad' 'libvorbis' 'lua' 'openal' 'physfs' 'sdl_ttf')
-source=("https://github.com/ducakar/openzone/tarball/v${pkgver}"
-        "https://openzone.googlecode.com/files/openzone-data-${pkgver}.tar.xz")
+source=("https://github.com/downloads/ducakar/openzone/openzone-src-${pkgver}.tar.xz"
+        "https://github.com/downloads/ducakar/openzone/openzone-data-${pkgver}.tar.xz")
 sha1sums=()
 
 build()
@@ -56,7 +56,7 @@ build()
 
 package_openzone()
 {
-  pkgdesc='Simple cross-platform FPS/RTS game'
+  pkgdesc='Simple cross-platform FPS/RTS game engine'
 #   depends=('freeimage' 'libgl' 'liboz' 'libvorbis' 'lua' 'openal' 'sdl_ttf')
 #   optdepends=('openzone-data: game data'
 #               'zip: for building ZIP game data archives'
@@ -82,11 +82,11 @@ package_openzone()
 package_openzone-data()
 {
   pkgdesc='OpenZone game data'
-  license=('CCPL:by-nc-sa')
+  license=('custom')
   arch=('any')
 
   install -dm755 ${pkgdir}/usr/share/openzone
-  install -m644 ${srcdir}/openzone/*.zip ${pkgdir}/usr/share/openzone
+  install -m644 ${srcdir}/openzone/share/openzone/*.zip ${pkgdir}/usr/share/openzone
 }
 
 # package_openzone-doc()

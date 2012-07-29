@@ -129,13 +129,17 @@ function onCreate()
   ozOrbisAddObj( OZ_FORCE, "firstAid", oX - 4.5, oY - 2.5, oZ - 1.5 )
   ozOrbisAddObj( OZ_FORCE, "cvicek", oX - 4.5, oY - 2, oZ - 1.5 )
   ozOrbisAddObj( OZ_FORCE, "metalCrate", oX + 4.5, oY - 3, oZ - 1.5 )
-  ozObjAddItem( "nvGoggles" )
-  ozObjAddItem( "binoculars" )
+  ozObjAddItem( "firstAid" )
+  ozObjAddItem( "galileo" )
+  ozObjAddItem( "cvicek" )
+  ozObjAddItem( "cvicek" )
   ozOrbisAddObj( OZ_FORCE, "firstAid", oX - 4.5, oY + 2, oZ - 1.5 )
   ozOrbisAddObj( OZ_FORCE, "firstAid", oX - 4.5, oY + 2, oZ - 1.1 )
   ozOrbisAddObj( OZ_FORCE, "cvicek", oX - 4.5, oY + 2, oZ - 0.5 )
-  ozOrbisAddObj( OZ_FORCE, "musicPlayer", oX - 4.5, oY + 2.8, oZ - 0.5 )
-  ozOrbisAddObj( OZ_FORCE, "galileo", oX - 4.5, oY + 3.5, oZ - 0.5 )
+  ozOrbisAddObj( OZ_FORCE, "musicPlayer", oX - 4.9, oY + 2.8, oZ - 0.5 )
+  ozOrbisAddObj( OZ_FORCE, "galileo", oX - 4.9, oY + 3.5, oZ - 0.5 )
+  ozOrbisAddObj( OZ_FORCE, "nvGoggles", oX - 4.3, oY + 2.8, oZ - 0.5 )
+  ozOrbisAddObj( OZ_FORCE, "binoculars", oX - 4.3, oY + 3.5, oZ - 0.5 )
 
   local infoUI = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 1, oY - 4, oZ - 1 )
   local infoItem = ozOrbisAddObj( OZ_FORCE, "datacube", oX - 4, oY - 1, oZ - 1 )
@@ -186,9 +190,11 @@ function onCreate()
 
   ozNirvanaAddMemo( infoSpecial, ozGettext(
     "13. SPECIAL ITEMS\n\n" ..
-    "There are also some items that give you special abilities when in your inventory. Music " ..
-    "player and Galileo satellite navigation are such examples. When you poses them a music " ..
-    "player interface and a minimap windows will be shown." ) )
+    "There are also some items that give you special abilities when in your inventory. Galileo " ..
+    "enables a minimap (press M while in UI mode to maximise it), music player enables a Music " ..
+    "Player window while in UI mode, while night vision goggles and binoculars can be activated " ..
+    "by pressing N and B keys respectively.\n\n" ..
+    "Note that some types of bots and vehicles already have some of those features built-in." ) )
 
   ozNirvanaAddMemo( infoSaving, ozGettext(
     "14. SAVING AND CAMERA\n\n" ..

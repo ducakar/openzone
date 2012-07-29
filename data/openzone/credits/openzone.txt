@@ -8,14 +8,8 @@ Sock
 AwesundFX1
 Awesund
 
-bdroid
-Eric von Rothkirch
-
-footsteps
-carrigsound
-
-grunts
-bennychico11
+droid-sounds
+Kevin Good
 
 > BSP structures <
 Davorin Učakar

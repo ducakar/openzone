@@ -192,8 +192,6 @@ function onCreate()
   ozObjAddItem( "firstAid" )
 
   ozOrbisAddObj( OZ_FORCE, "metalCrate", 810.04, 991.14, 124.51 )
-  ozObjAddItem( "droid_weapon.hyperblaster" )
-  ozObjAddItem( "droid_weapon.hyperblaster" )
   ozObjAddItem( "binoculars" )
   ozObjAddItem( "bomb" )
   ozObjAddItem( "bomb" )
@@ -208,8 +206,21 @@ function onCreate()
   ozOrbisAddStr( OZ_FORCE, "bunker", -20.0, -915.0, 138.5, OZ_NORTH )
 
   ozOrbisAddObj( OZ_FORCE, "bigCrate", -33.32, -942.53, 137.93 )
+  ozObjAddItem( "droid_weapon.chaingun" )
+  ozObjAddItem( "droid_weapon.chaingun" )
+  ozObjAddItem( "droid_weapon.chaingun" )
+  ozObjAddItem( "droid_weapon.grenadeLauncher" )
+  ozObjAddItem( "droid_weapon.grenadeLauncher" )
+
   ozOrbisAddObj( OZ_FORCE, "bigCrate", -34.59, -942.09, 137.93 )
+  ozObjAddItem( "droid_weapon.blaster" )
+  ozObjAddItem( "droid_weapon.chaingun" )
+  ozObjAddItem( "droid_weapon.chaingun" )
+
   ozOrbisAddObj( OZ_FORCE, "bigCrate", -34.14, -942.32, 139.14 )
+  ozObjAddItem( "droid_weapon.hyperblaster" )
+  ozObjAddItem( "droid_weapon.hyperblaster" )
+
   ozOrbisAddObj( OZ_FORCE, "smallCrate", -33.20, -942.65, 138.84 )
   ozOrbisAddObj( OZ_FORCE, "smallCrate", -32.26, -937.67, 137.63 )
 
@@ -426,7 +437,7 @@ function onCreate()
     "The base is heavily defended so you will need some heavy armour to attack it.\n\n" ..
     "Beware not to use explosives there, cviček bottles are very fragile and there is a " ..
     "explosives storage in that base.\n\nQuest will be complete one you unload 20 bottles of " ..
-    "cviček in the Lair." ),
+    "cviček in the Lair (bottles inside an inventory, a box or a vehicle don't count)." ),
     20, -940, 140,
     OZ_QUEST_PENDING )
 

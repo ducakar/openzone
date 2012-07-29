@@ -1,7 +1,7 @@
 #!/bin/sh
 
 eval `grep '^version=' ./autogen.sh`
-rel_files=`git ls-files`
+rel_files=`git ls-files | grep -v '^data/'`
 topdir=`pwd`
 topdir_name=`basename $topdir`
 
@@ -16,7 +16,8 @@ files="$files $topdir_name/share/pixmaps"
 echo "Packing openzone-src-$version.tar.xz"
 tar Jcf "$topdir/openzone-src-$version.tar.xz" $files
 
-cd "$topdir/share"
-
 echo "Packing openzone-data-$version.tar.xz"
-tar Jcf "$topdir/openzone-data-$version.tar.xz" openzone/*.zip
+tar Jcf "$topdir/openzone-data-$version.tar.xz" openzone/share/openzone/*.zip
+
+echo "Packing openzone-data-src-$version.tar.xz"
+tar Jcf "$topdir/openzone-data-src-$version.tar.xz" --exclude=DISABLED openzone/data

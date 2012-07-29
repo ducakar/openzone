@@ -179,6 +179,7 @@ static void construct()
   }
 
   void* library = dlopen( "libpulse-simple.so.0", RTLD_NOW );
+
   if( library != null ) {
     *( void** )( &pa_simple_new )   = dlsym( library, "pa_simple_new" );
     *( void** )( &pa_simple_free )  = dlsym( library, "pa_simple_free" );

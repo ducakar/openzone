@@ -5,13 +5,28 @@ Building
 
 Building is currently only supported on Linux.
 
-You can use generic steps for building CMake projects. Basic build instructions when you are in the
-root directory of the source tree are:
+First, make sure you have all the dependencies installed. You need to install development packages
+for the following libraries:
 
-        mkdir build
-        cd build
-        cmake ..
-        make
+* libpulse (PulseAudio)
+* physfs
+* lua
+* sdl
+* sdl_ttf
+* mesa (OpenGL headers)
+* alsoft (OpenAL)
+* libvorbis
+* libmad
+* faad
+* freeimage
+
+You can then use generic steps for building CMake projects. Basic build instructions when you are in
+the root directory of the source tree are:
+
+    mkdir build
+    cd build
+    cmake ..
+    make
 
 For building all supported configurations you can use `configure-all.sh` and `build-all.sh` scripts.
 For this step you will need a 64-bit Linux distro and all dependencies installed (including 32-bit
@@ -165,11 +180,11 @@ Documentation
 
 To generate documentation from source code with Doxygen, run
 
-        doxygen doc/Doxyfile
+    doxygen doc/Doxyfile
 
 or, if you want to generate documentation for liboz only, run
 
-        doxygen doc/Doxyfile.liboz
+    doxygen doc/Doxyfile.liboz
 
 from source tree root. Open `doc/doxygen/html/index.html` or `doc/doxygen.liboz/html/index.html` to
 see documentation once it is generated.
@@ -180,10 +195,11 @@ Currently only liboz documentation is complete.
 Legal
 -----
 
-OpenZone engine is written by Davorin Učakar and licensed under GNU GPL 3.0.
+OpenZone engine is licensed under GNU General Public License version 3 or (at your option) any later
+version. liboz library is a part of OpenZone engine but can also be distributed or modified under
+ZLIB licence.
 
-Game data archives and libraries distributed with OpenZone are work of various authors and use
-separate licences. For more details see `doc/README.html` for library licences and files named
-`README.txt` and `COPYING.txt` inside game data archives for game data licences.
+Game data are obtained from various sources and covered by many different licences. See individual
+README.txt and COPYING.txt files inside game data archives for details.
 
 This program comes with ABSOLUTELY NO WARRANTY.

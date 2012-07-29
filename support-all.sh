@@ -23,14 +23,7 @@ if (( $Linux_x86_64 )); then
      "$prefix/libfreeimage.so.3" \
      "$outDir"
 
-  if [[ -e "$prefix/libmad.so.0" ]]; then
-    cp "$prefix/libmad.so.0" \
-       "$outDir"
-  fi
-  if [[ -e "$prefix/libfaad.so.2" ]]; then
-    cp "$prefix/libfaad.so.2" \
-       "$outDir"
-  fi
+  chmod +x "$outDir/"*
 fi
 
 if (( $Linux_i686 )); then
@@ -53,14 +46,7 @@ if (( $Linux_i686 )); then
      "$prefix/libfreeimage.so.3" \
      "$outDir"
 
-  if [[ -e "$prefix/libmad.so.0" ]]; then
-    cp "$prefix/libmad.so.0" \
-       "$outDir"
-  fi
-  if [[ -e "$prefix/libfaad.so.2" ]]; then
-    cp "$prefix/libfaad.so.2" \
-       "$outDir"
-  fi
+  chmod +x "$outDir/"*
 fi
 
 if (( $Windows_i686 )); then
@@ -83,4 +69,6 @@ if (( $Windows_i686 )); then
      "$prefix/libvorbisfile-3.dll" \
      "$prefix/FreeImage.dll" \
      "$outDir"
+
+  chmod +x "$outDir/"*
 fi

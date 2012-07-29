@@ -74,7 +74,7 @@ void UI::update()
     }
   }
 
-  Area::update();
+  root->updateChildren();
 
   if( !isFreelook ) {
     root->passMouseEvents();
@@ -231,9 +231,6 @@ void UI::free()
 
   root     = null;
   fpsLabel = null;
-
-  Area::updateAreas.clear();
-  Area::updateAreas.dealloc();
 
   mouse.free();
   font.free();

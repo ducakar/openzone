@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenZone\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-07-20 17:40+0100\n"
+"PO-Revision-Date: 2012-07-29 15:22+0100\n"
 "Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
 "Language: \n"
@@ -13,7 +13,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Country: SLOVENIA\n"
 
-#: data/openzone_missions/mission/00_tutorial/main.lua:167
+#: data/openzone_missions/mission/00_tutorial/main.lua:171
 msgid ""
 "11. TRANSFER BETWEEN INVENTORIES\n"
 "\n"
@@ -30,6 +30,20 @@ msgstr ""
 "Če zavrtiš miškin kolešček navzdol, bosta prikazana oba inventarja. med njima prenašaš z levim klikom.\n"
 "\n"
 "Včasih je inventar prevelik, da bi bili prikazani vsi prostorčki. V tem primeru se lahko pomikaš med vrsticami z vrtenjem miškinega koleščka nad oknom inventarja. Na levi strani sta prikazani puščici navzgor in/ali navzdol, ki kažeta v katero smer so še skrite vrstice v inventarju."
+
+#: data/openzone_missions/mission/00_tutorial/main.lua:191
+msgid ""
+"13. SPECIAL ITEMS\n"
+"\n"
+"There are also some items that give you special abilities when in your inventory. Galileo enables a minimap (press M while in UI mode to maximise it), music player enables a Music Player window while in UI mode, while night vision goggles and binoculars can be activated by pressing N and B keys respectively.\n"
+"\n"
+"Note that some types of bots and vehicles already have some of those features built-in."
+msgstr ""
+"13. POSEBNI PREDMETI\n"
+"\n"
+"Nekateri predmeti ti podelijo posebne zmožnosti, če jih poseduješ. Galileo ti da mini zemljevid (kadar si v načinu uporabniškega vmesnika, pritisni M za povečanje), predvajalnik glasbe omogoči istoimensko okno v načinu uporabniškega vmesnika, očala za nočno gledanje ter daljnogled pa lahko omogočiš s tipkama N in B.\n"
+"\n"
+"Nekateri tipi botov in vozil utegnejo imeti te funkcije že vgrajene."
 
 #: data/openzone_missions/mission/00_tutorial/main.lua:104
 msgid ""
@@ -91,16 +105,6 @@ msgstr ""
 "\n"
 "Podobno kot predmete potiskaš vstran, jih lahko v vodi potiskaš tudi navzgor ali navzdol."
 
-#: data/openzone_missions/mission/00_tutorial/main.lua:187
-msgid ""
-"13. SPECIAL ITEMS\n"
-"\n"
-"There are also some items that give you special abilities when in your inventory. Music player and Galileo satellite navigation are such examples. When you poses them a music player interface and a minimap windows will be shown."
-msgstr ""
-"13. POSEBNI PREDMETI\n"
-"\n"
-"Nekateri predmeti ti podelijo posebne zmožnosti, če jih poseduješ. Če imaš v inventarju predvajalnik glasbe ali satelitsko navigacijo Galileo, bosta prikazani okni predvajalnika glasbe oziroma mini zemljevid."
-
 #: data/openzone_missions/mission/00_tutorial/main.lua:71
 msgid ""
 "4. SWIMMING\n"
@@ -155,7 +159,7 @@ msgstr ""
 "\n"
 "Po lestvi ni mogoče plezati, kadar v rokah prenašaš kakšen predmet."
 
-#: data/openzone_missions/mission/00_tutorial/main.lua:241
+#: data/openzone_missions/mission/00_tutorial/main.lua:247
 msgid ""
 "17. CORPSES\n"
 "\n"
@@ -177,7 +181,7 @@ msgstr "Ta misija je namenjena seznanjenju z osnovami igre OpenZone."
 msgid "Tutorial"
 msgstr "Vpeljava"
 
-#: data/openzone_missions/mission/00_tutorial/main.lua:254
+#: data/openzone_missions/mission/00_tutorial/main.lua:260
 msgid ""
 "18. VEHICLES\n"
 "\n"
@@ -195,7 +199,7 @@ msgstr ""
 "\n"
 "Za izhod iz vozila pritisni X, za izskok pa ALT + X. Nekatera vozila te od uničenju samodejno izvržejo."
 
-#: data/openzone_missions/mission/00_tutorial/main.lua:230
+#: data/openzone_missions/mission/00_tutorial/main.lua:236
 msgid ""
 "16. WEAPONS\n"
 "\n"
@@ -221,7 +225,7 @@ msgstr ""
 "\n"
 "Preizkusi plazemsko puško na predmetih pred seboj in na dveh droidih."
 
-#: data/openzone_missions/mission/00_tutorial/main.lua:296
+#: data/openzone_missions/mission/00_tutorial/main.lua:302
 msgid ""
 "22. OBJECTIVES\n"
 "\n"
@@ -235,7 +239,7 @@ msgstr ""
 "\n"
 "Če poseduješ Galileo, je položaj trenutne naloge prikazan na mini zemljevidu."
 
-#: data/openzone_missions/mission/00_tutorial/main.lua:193
+#: data/openzone_missions/mission/00_tutorial/main.lua:199
 msgid ""
 "14. SAVING AND CAMERA\n"
 "\n"
@@ -253,7 +257,7 @@ msgstr ""
 "\n"
 "Za preklop med tretjeosebnim pogledom uporabi NUMPAD ENTER in za preklop proste rotacije kamere NUMPAD *."
 
-#: data/openzone_missions/mission/00_tutorial/main.lua:147
+#: data/openzone_missions/mission/00_tutorial/main.lua:151
 msgid ""
 "9. USER INTERFACE\n"
 "\n"
@@ -271,7 +275,7 @@ msgstr ""
 "\n"
 "Okna lahko premikaš s tiščanjem tipke ALT in vleko z levim miškinim gumbom."
 
-#: data/openzone_missions/mission/00_tutorial/main.lua:267
+#: data/openzone_missions/mission/00_tutorial/main.lua:273
 msgid ""
 "20. SERVICE STATION\n"
 "\n"
@@ -285,7 +289,7 @@ msgstr ""
 "\n"
 "Servisna postaja bo tudi naložila vsa orožja v tvojem inventarju z novim strelivom, mehanske enote pa bo tudi pozdravila (popravila) in obnovila njihovo kondicijo."
 
-#: data/openzone_missions/mission/00_tutorial/main.lua:206
+#: data/openzone_missions/mission/00_tutorial/main.lua:212
 msgid ""
 "15. BOMBS\n"
 "\n"
@@ -295,7 +299,7 @@ msgstr ""
 "\n"
 "nekateri predmeti, kot so bombe, so nevarni. Če se uniči ali pa 5 s po aktivaciji eksplodira (v tem času jo lahko deaktiviraš, tako da jo ponovno klikneš z desnim gumbom)."
 
-#: data/openzone_missions/mission/00_tutorial/main.lua:177
+#: data/openzone_missions/mission/00_tutorial/main.lua:181
 msgid ""
 "12. HEALTH\n"
 "\n"
@@ -313,7 +317,7 @@ msgstr ""
 "\n"
 "Tvoje zdravje je prikazano kot zelen trak nad kondicijo (postaja rdeče, ko ga je manj). Če si težje ranjen, ne moreš več teči."
 
-#: data/openzone_missions/mission/00_tutorial/main.lua:154
+#: data/openzone_missions/mission/00_tutorial/main.lua:158
 msgid ""
 "10. INVENTORY\n"
 "\n"
@@ -335,7 +339,7 @@ msgstr ""
 "\n"
 "Tudi preko vmesnika inventarja lahko predmete uporabiš (v tem primeru vidiš modro ikono za uporabo v kotu okna z inventarjem)."
 
-#: data/openzone_missions/mission/00_tutorial/main.lua:284
+#: data/openzone_missions/mission/00_tutorial/main.lua:290
 msgid ""
 "21. STRATEGIC MODE\n"
 "\n"
@@ -357,7 +361,7 @@ msgstr ""
 "\n"
 "Reinkarnacija in strateški način nista vedno na voljo. Odvisno od posamezne misije je reinkarnacija lahko omejena na določene bote ali pa popolnoma onemogočena (vključno s strateškim načinom)."
 
-#: data/openzone_missions/mission/00_tutorial/main.lua:261
+#: data/openzone_missions/mission/00_tutorial/main.lua:267
 msgid ""
 "19. TRUNK\n"
 "\n"
@@ -369,7 +373,7 @@ msgstr ""
 "\n"
 "Ta raptor ima zelo velik prtljažnik. Z vrtenjem miškinega koleščka nad vmesnikom se lahko pomikaš gor/dol."
 
-#: data/openzone_missions/mission/00_tutorial/main.lua:313
+#: data/openzone_missions/mission/00_tutorial/main.lua:319
 msgid "Get familiar with all aspects of OpenZone game."
 msgstr "Seznani se z vsemi vidiki igre OpenZone."
 

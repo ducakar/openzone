@@ -66,11 +66,18 @@ void UnitProxy::begin()
   ui::ui.infoFrame->enable( true );
   ui::ui.musicPlayer->show( false );
 
-  baseRot     = camera.rot;
-  headRot     = Quat::ID;
+  baseRot = camera.rot;
+  headRot = Quat::ID;
 
-  headH       = 0.0f;
-  headV       = 0.0f;
+  const Bot* bot = camera.botObj;
+  if( bot != null && !( bot->state & Bot::DEAD_BIT ) && isExternal && isFreelook ) {
+    headH = bot->h;
+    headV = bot->v;
+  }
+  else {
+    headH = 0.0f;
+    headV = 0.0f;
+  }
 
   botEye      = camera.p;
   bobTheta    = 0.0f;
@@ -79,6 +86,8 @@ void UnitProxy::begin()
   injuryRatio = 0.0f;
 
   oldBot      = -1;
+
+  isFreelook  = false;
 }
 
 void UnitProxy::end()
@@ -586,33 +595,20 @@ void UnitProxy::reset()
 
   injuryRatio = 0.0f;
 
+  oldBot      = -1;
+
   isExternal  = false;
   isFreelook  = false;
 }
 
 void UnitProxy::read( InputStream* istream )
 {
-  baseRot     = Quat::ID;
-  headRot     = Quat::ID;
-  headH       = 0.0f;
-  headV       = 0.0f;
-
-  botEye      = istream->readPoint();
-  bobTheta    = 0.0f;
-  bobBias     = 0.0f;
-
-  injuryRatio = 0.0f;
-
-  isExternal  = istream->readBool();
-  isFreelook  = istream->readBool();
+  isExternal = istream->readBool();
 }
 
 void UnitProxy::write( BufferStream* ostream ) const
 {
-  ostream->writePoint( botEye );
-
   ostream->writeBool( isExternal );
-  ostream->writeBool( isFreelook );
 }
 
 }

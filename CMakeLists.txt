@@ -6,7 +6,7 @@ project( openzone C CXX )
 # Configuration
 #
 
-set( OZ_VERSION "0.3.0" CACHE STRING "" FORCE )
+set( OZ_VERSION "0.3.1" CACHE STRING "" FORCE )
 
 if( NOT NACL )
   option( OZ_SHARED_LIBOZ "Build liboz as a shared library." OFF )
@@ -293,16 +293,20 @@ if( OZ_STANDALONE )
   install( FILES ${dataFiles} DESTINATION share/openzone )
 
   if( WIN32 )
-    install( DIRECTORY support/${OZ_SYSTEM_NAME}/ DESTINATION bin/${OZ_SYSTEM_NAME} )
-    install( FILES support/oalinst.exe DESTINATION . )
+    install( DIRECTORY support/${OZ_SYSTEM_NAME}/ DESTINATION bin/${OZ_SYSTEM_NAME}
+             USE_SOURCE_PERMISSIONS )
+    install( PROGRAMS support/oalinst.exe DESTINATION . )
   else()
-    install( DIRECTORY support/${OZ_SYSTEM_NAME}/ DESTINATION lib/${OZ_SYSTEM_NAME} )
+    install( DIRECTORY support/${OZ_SYSTEM_NAME}/ DESTINATION lib/${OZ_SYSTEM_NAME}
+             USE_SOURCE_PERMISSIONS )
   endif()
 
   if( WIN32 )
-    install( FILES etc/launchers/openzone.bat DESTINATION . )
+    file( GLOB launchers "etc/launchers/*.bat" )
+
+    install( PROGRAMS ${launchers} DESTINATION . )
   else()
-    install( FILES etc/launchers/openzone.sh DESTINATION . )
+    install( PROGRAMS etc/launchers/openzone.sh DESTINATION . )
   endif()
 endif()
 

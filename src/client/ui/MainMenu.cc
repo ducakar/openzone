@@ -45,14 +45,14 @@ namespace client
 namespace ui
 {
 
-static void continueAutosaved( Button* )
+static void loadAutosaved( Button* )
 {
   Stage::nextStage = &gameStage;
   gameStage.stateFile = GameStage::AUTOSAVE_FILE;
   gameStage.mission = "";
 }
 
-static void continueQuicksaved( Button* )
+static void loadQuicksaved( Button* )
 {
   Stage::nextStage = &gameStage;
   gameStage.stateFile = GameStage::QUICKSAVE_FILE;
@@ -111,6 +111,28 @@ void MainMenu::onReposition()
   }
 }
 
+void MainMenu::onUpdate()
+{
+  File autosaveFile( GameStage::AUTOSAVE_FILE );
+  File quicksaveFile( GameStage::QUICKSAVE_FILE );
+
+  if( autosaveFile.stat() ) {
+    OZ_MAIN_CALL( this, {
+      Button* continueButton  = new Button( OZ_GETTEXT( "Continue" ), loadAutosaved,  200, 30 );
+      _this->add( continueButton, -20, 320 );
+    } )
+  }
+
+  if( quicksaveFile.stat() ) {
+    OZ_MAIN_CALL( this, {
+      Button* quickLoadButton = new Button( OZ_GETTEXT( "Quickload" ), loadQuicksaved, 200, 30 );
+      _this->add( quickLoadButton, -20, 280 );
+    } )
+  }
+
+  flags &= ~UPDATE_BIT;
+}
+
 bool MainMenu::onMouseEvent()
 {
   return passMouseEvents();
@@ -135,15 +157,13 @@ MainMenu::MainMenu() :
   copyright( 20, 10, 360, 3, Font::SMALL, Area::ALIGN_NONE ),
   title( -120, -20, ALIGN_HCENTRE | ALIGN_VCENTRE, Font::LARGE, "OpenZone " OZ_VERSION )
 {
-  Button* continueButton  = new Button( OZ_GETTEXT( "Continue" ),  continueAutosaved,  200, 30 );
-  Button* quickLoadButton = new Button( OZ_GETTEXT( "Quickload" ), continueQuicksaved, 200, 30 );
+  flags = UPDATE_BIT;
+
   Button* missionsButton  = new Button( OZ_GETTEXT( "Missions" ),  openMissions,       200, 30 );
   Button* settingsButton  = new Button( OZ_GETTEXT( "Settings" ),  openSettings,       200, 30 );
   Button* creditsButton   = new Button( OZ_GETTEXT( "Credits" ),   openCredits,        200, 30 );
   Button* quitButton      = new Button( OZ_GETTEXT( "Exit" ),      quit,               200, 30 );
 
-  add( continueButton,  -20, 320 );
-  add( quickLoadButton, -20, 280 );
   add( missionsButton,  -20, 220 );
   add( settingsButton,  -20, 160 );
   add( creditsButton,   -20, 120 );

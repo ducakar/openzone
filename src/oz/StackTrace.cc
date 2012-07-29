@@ -121,10 +121,9 @@ char** StackTrace::symbols() const
     else {
       // Demangle name.
       char*  demangled;
-      size_t size = SYMBOL_BUFFER_SIZE;
       int    status = 0;
 
-      demangled = abi::__cxa_demangle( func, null, &size, &status );
+      demangled = abi::__cxa_demangle( func, null, null, &status );
       func      = demangled == null ? func : demangled;
 
       size_t funcLen = strlen( func );

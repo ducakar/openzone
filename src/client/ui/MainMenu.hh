@@ -44,6 +44,7 @@ class MainMenu : public Area
   protected:
 
     void onReposition() override;
+    void onUpdate() override;
     bool onMouseEvent() override;
     void onDraw() override;
 

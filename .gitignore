@@ -5,11 +5,10 @@
 /.cproject
 /.settings
 
-/*.patch
-/*.trace
-/stats
-
 /doc/doxygen*
+/share
+/support
+/build
 
 /data/*/*
 !/data/radiant/*
@@ -31,6 +30,7 @@ DISABLED
 *.png
 *.bmp
 
-/share
-/support
-/build
+/*.patch
+/*.trace
+/stats
+/*.tar.xz

@@ -43,7 +43,7 @@ class StackTrace
   public:
 
     /// Maximum number of stack frames.
-    static const int MAX_FRAMES = 16;
+    static const int MAX_FRAMES = 32;
 
     int   nFrames;            ///< Number of stack frames.
     void* frames[MAX_FRAMES]; ///< Pointers to stack frames.

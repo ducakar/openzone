@@ -42,7 +42,7 @@ table.args th {
   font-family: monospace;
 }
 table.settings th {
-  font-family:- monospace;
+  font-family: monospace;
 }
 table.settings td {
   padding-left: 20pt;
@@ -53,12 +53,9 @@ table.settings td {
 <body>
 
 <h1 class="centre">OpenZone</h1>
-<p class="centre"><b>version 0.3.0</b></p>
+<p class="centre"><b>version <!--OZ_VERSION-->0.3.1</b></p>
 <div class="centre">
-  <a href="http://github.com/ducakar/openzone/">http://github.com/ducakar/openzone/</a>
-</div>
-<div class="centre">
-  <a href="http://code.google.com/p/openzone/">http://code.google.com/p/openzone/</a>
+  <a href="http://ducakar.github.com/openzone/">http://ducakar.github.com/openzone/</a>
 </div>
 
 <h2><a name="content" href="#">Contents</a></h2>
@@ -408,7 +405,7 @@ table.settings td {
 <h4>Configuration variables</h4>
 <table class="settings">
   <tr>
-    <th>_version [string] "0.3.0"</th>
+    <th>_version [string] "<!--OZ_VERSION-->0.3.1"</th>
   </tr>
   <tr>
     <td>
@@ -804,14 +801,14 @@ table.settings td {
 </p>
 
 <p>
-  liboz library is a part of OpenZone engine but it can also be distributed separately or modified
-  under <a href="licences/COPYING.liboz.txt">ZLIB licence</a>.
+  liboz library is a part of OpenZone engine but can also be distributed or modified under
+  <a href="licences/COPYING.liboz.txt">ZLIB licence</a>.
 </p>
 
 <h3>Game Data</h3>
 <p>
   Game data are obtained from various sources and covered by many different licences. See individual
-  README* and COPYING* files in game data directories and archives for more information.
+  README.txt and COPYING.txt files in game data archives for details.
 </p>
 
 <h3>Third-party Libraries</h3>
@@ -820,7 +817,7 @@ table.settings td {
   following 3rd party libraries:
 </p>
 
-<h4>PhysFS</h4>
+<h4>PhysicsFS</h4>
 <table>
   <tr>
     <td>Web page:</td>

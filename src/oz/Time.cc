@@ -36,12 +36,15 @@
 #elif defined( _WIN32 )
 # include "windefs.h"
 # include <windows.h>
+# include <mmsystem.h>
 # include <cstdio>
 #else
 # include <cstdio>
 # include <ctime>
 # include <unistd.h>
 #endif
+
+// #define OZ_USE_PERFORMANCE_TIMER
 
 namespace oz
 {
@@ -51,8 +54,10 @@ namespace oz
 // The following struct is used to initialise and Windows high-resolution timer.
 struct PerformanceTimer
 {
+#ifdef OZ_USE_PERFORMANCE_TIMER
   double resolution;  // = 0.0
   double uresolution; // = 0.0
+#endif
 
   PerformanceTimer();
 };
@@ -60,6 +65,8 @@ struct PerformanceTimer
 OZ_HIDDEN
 PerformanceTimer::PerformanceTimer()
 {
+#ifdef OZ_USE_PERFORMANCE_TIMER
+
   LARGE_INTEGER frequency;
   if( QueryPerformanceFrequency( &frequency ) == 0 ) {
     System::error( 0, "High-performance timer initialisation failed" );
@@ -67,6 +74,12 @@ PerformanceTimer::PerformanceTimer()
 
   resolution  = 1.0e3 / double( frequency.QuadPart );
   uresolution = 1.0e6 / double( frequency.QuadPart );
+
+#else
+
+  timeBeginPeriod( 1 );
+
+#endif
 }
 
 static PerformanceTimer performanceTimer;
@@ -84,12 +97,18 @@ uint Time::clock()
   return uint( now.tv_sec * 1000 + now.tv_usec / 1000 );
 
 #elif defined( _WIN32 )
+# ifdef OZ_USE_PERFORMANCE_TIMER
 
   LARGE_INTEGER now;
   QueryPerformanceCounter( &now );
 
   return uint( double( now.QuadPart ) * performanceTimer.resolution );
 
+# else
+
+  return timeGetTime();
+
+# endif
 #else
 
   struct timespec now;
@@ -112,12 +131,18 @@ uint Time::uclock()
   return uint( now.tv_sec * 1000000 + now.tv_usec );
 
 #elif defined( _WIN32 )
+# ifdef OZ_USE_PERFORMANCE_TIMER
 
   LARGE_INTEGER now;
   QueryPerformanceCounter( &now );
 
   return uint( double( now.QuadPart ) * performanceTimer.uresolution );
 
+# else
+
+  return timeGetTime() * 1000;
+
+# endif
 #else
 
   struct timespec now;

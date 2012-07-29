@@ -38,8 +38,6 @@ namespace client
 namespace ui
 {
 
-List<Area*> Area::updateAreas;
-
 Area::Area( int width_, int height_ ) :
   flags( 0 ), parent( null ), x( 0 ), y( 0 ), width( width_ ), height( height_ ),
   defaultX( 0 ), defaultY( 0 )
@@ -84,6 +82,17 @@ void Area::move( int moveX, int moveY )
   }
 }
 
+void Area::updateChildren()
+{
+  foreach( child, children.iter() ) {
+    if( ( child->flags & ( UPDATE_BIT | DISABLED_BIT ) ) == UPDATE_BIT ) {
+      child->onUpdate();
+    }
+
+    child->updateChildren();
+  }
+}
+
 bool Area::passMouseEvents()
 {
   foreach( child, children.iter() ) {
@@ -112,15 +121,6 @@ void Area::drawChildren()
   for( Area* child = children.last(); child != null; child = child->prev[0] ) {
     if( !( child->flags & ( HIDDEN_BIT | DISABLED_BIT ) ) ) {
       child->onDraw();
-    }
-  }
-}
-
-void Area::update()
-{
-  for( int i = 0; i < updateAreas.length(); ++i ) {
-    if( ( updateAreas[i]->flags & ( UPDATE_BIT | DISABLED_BIT ) ) == UPDATE_BIT ) {
-      updateAreas[i]->onUpdate();
     }
   }
 }
@@ -192,19 +192,11 @@ void Area::add( Area* area, int localX, int localY )
   area->reposition();
 
   children.pushFirst( area );
-
-  if( area->flags & UPDATE_BIT ) {
-    updateAreas.add( area );
-  }
 }
 
 void Area::remove( Area* area )
 {
   hard_assert( children.has( area ) );
-
-  if( area->flags & UPDATE_BIT ) {
-    updateAreas.exclude( area );
-  }
 
   children.remove( area );
   delete area;

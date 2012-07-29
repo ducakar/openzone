@@ -40,6 +40,8 @@ namespace client
 namespace ui
 {
 
+static SDL_Surface* text;
+
 Label::Label() :
   x( 0 ), y( 0 ), align( Area::ALIGN_NONE ), font( Font::MONO ), offsetX( 0 ), offsetY( 0 ),
   width( 0 ), height( 0 ), activeTexId( 0 ), hasChanged( false )
@@ -102,13 +104,11 @@ void Label::vset( int x_, int y_, int align_, Font::Type font_, const char* s, v
     newHeight = 0;
   }
   else {
-    SDL_Surface* text = null;
-    uint texId = 0;
-
-    text  = TTF_RenderUTF8_Blended( ui::font.fonts[font], buffer, Font::SDL_COLOUR_WHITE );
-    texId = activeTexId == texIds[0] ? texIds[1] : texIds[0];
+    text = TTF_RenderUTF8_Blended( ui::font.fonts[font], buffer, Font::SDL_COLOUR_WHITE );
 
     OZ_MAIN_CALL( this, {
+      uint texId = _this->activeTexId == _this->texIds[0] ? _this->texIds[1] : _this->texIds[0];
+
       glBindTexture( GL_TEXTURE_2D, texId );
       glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                     text->pixels );

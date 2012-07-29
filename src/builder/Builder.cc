@@ -925,7 +925,7 @@ int Builder::main( int argc, char** argv )
     outDir = File::cwd() + "/" + outDir + "/" + pkgName;
   }
 
-  Log::print( "OpenZone Build started on " );
+  Log::print( "OpenZone Builder " OZ_VERSION " started on " );
   Log::printTime( Time::local() );
   Log::printEnd();
 
@@ -1057,7 +1057,7 @@ int Builder::main( int argc, char** argv )
 
   Alloc::printSummary();
 
-  Log::print( "OpenZone Build finished on " );
+  Log::print( "OpenZone Builder " OZ_VERSION " finished on " );
   Log::printTime( Time::local() );
   Log::printEnd();
 

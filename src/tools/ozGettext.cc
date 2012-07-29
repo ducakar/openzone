@@ -134,8 +134,7 @@ static void readLua( File* file )
   int            lineNum        = 1;
   int            gettextLineNum = 1;
   char           last[4]        = { '\0', '\0', '\0', '\0' };
-  char           charString[2]  = { '\0', '\0' };
-  String         lastString     = "";
+  List<char>     lastString;
   bool           restartString  = true;
   bool           inGettext      = false;
 
@@ -157,8 +156,12 @@ static void readLua( File* file )
           if( inGettext ) {
             inGettext = false;
 
+            lastString.add( '\0' );
+
             String locationInfo = String::str( "%s:%d", file->path().cstr(), gettextLineNum );
-            messages.include( lastString, locationInfo );
+            String message      = &lastString[0];
+
+            messages.include( message, locationInfo );
           }
         }
         else if( last[1] == '.' && last[0] == '.' ) {
@@ -168,7 +171,7 @@ static void readLua( File* file )
           state = last[0] == '"' ? STRING1 : STRING2;
 
           if( restartString ) {
-            lastString = "";
+            lastString.clear();
           }
         }
         else if( last[1] == '-' && last[0] == '-' ) {
@@ -183,16 +186,14 @@ static void readLua( File* file )
       case STRING2: {
         if( last[1] == '\\' ) {
           if( last[0] == 'n' ) {
-            charString[0] = '\n';
+            lastString.add( '\n' );
           }
           else if( last[0] == 't' ) {
-            charString[0] = '\t';
+            lastString.add( '\t' );
           }
           else {
-            charString[0] = last[0];
+            lastString.add( last[0] );
           }
-
-          lastString += charString;
         }
         else if( ( state == STRING1 && last[0] == '"' ) ||
                  ( state == STRING2 && last[0] == '\'' ) )
@@ -201,8 +202,7 @@ static void readLua( File* file )
           restartString = true;
         }
         else if( last[0] != '\\' ) {
-          charString[0] = last[0];
-          lastString += charString;
+          lastString.add( last[0] );
         }
         break;
       }

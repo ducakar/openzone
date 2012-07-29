@@ -1,8 +1,8 @@
 Name:           openzone
-Version:        0.3.0
+Version:        0.3.1
 Release:        1
-Summary:        Simple cross-platform FPS/RTS game (meta package)
-URL:            https://github.com/ducakar/openzone/
+Summary:        Simple cross-platform FPS/RTS game engine (meta package)
+URL:            http://ducakar.github.com/openzone/
 License:        GPLv3+
 Group:          Amusements/Games
 Packager:       Davorin Učakar <davorin.ucakar@gmail.com>
@@ -47,8 +47,7 @@ RTS and RPG genres. It is strictly divided into several layers. Back-end runs
 a complete simulation of a world (physics, object handlers, controllers, AI)
 and front-end that renders it and enables the player to manipulate with the
 simulated world.
-This package only includes engine and essential data needed for engine to run.
-Game data and missions packages must be installed separately.
+This is a meta package that installs engine and game data.
 
 %description -n liboz
 Library provides facilities like container templates, array utilities,
@@ -68,15 +67,15 @@ RTS and RPG genres. It is strictly divided into several layers. Back-end runs
 a complete simulation of a world (physics, object handlers, controllers, AI)
 and front-end that renders it and enables the player to manipulate with the
 simulated world.
-This package only includes engine and essential data needed for engine to run.
-Game data and missions packages must be installed separately.
+This package only includes engine. Game data packages must be installed
+separately.
 
 %description tools
 ozBase tool for building game data packages for OpenZone engine and some other
 miscellaneous tools.
 
 %description data
-Game data for OpenZone. Includes tutorials, testing world and cviček mission.
+Game data for OpenZone. Includes tutorial, testing world and cviček missions.
 
 %description doc
 Doxygen-generated documentation for OpenZone engine and PDF articles describing
@@ -107,7 +106,7 @@ make install DESTDIR=$RPM_BUILD_ROOT
 cd ..
 
 install -dm755 $RPM_BUILD_ROOT/%{_datadir}/openzone
-install -m644 *.zip $RPM_BUILD_ROOT/%{_datadir}/openzone
+install -m644 share/openzone/*.zip $RPM_BUILD_ROOT/%{_datadir}/openzone
 
 %files
 %defattr(-, root, root)

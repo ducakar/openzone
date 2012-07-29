@@ -237,7 +237,6 @@ void StrategicProxy::read( InputStream* istream )
 {
   h          = istream->readFloat();
   v          = istream->readFloat();
-  desiredPos = istream->readPoint();
   height     = istream->readFloat();
 
   isFree     = istream->readBool();
@@ -249,7 +248,6 @@ void StrategicProxy::write( BufferStream* ostream ) const
 {
   ostream->writeFloat( h );
   ostream->writeFloat( v );
-  ostream->writePoint( desiredPos );
   ostream->writeFloat( height );
 
   ostream->writeBool( isFree );
