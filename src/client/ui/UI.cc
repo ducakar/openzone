@@ -30,6 +30,7 @@
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"
 
+#include "client/ui/Scheme.hh"
 #include "client/ui/LoadingArea.hh"
 #include "client/ui/StrategicArea.hh"
 #include "client/ui/HudArea.hh"
@@ -211,6 +212,7 @@ void UI::init()
 
   fps = 1.0f / Timer::TICK_TIME;
 
+  scheme.init();
   font.init();
   mouse.init();
 
@@ -234,6 +236,7 @@ void UI::free()
 
   mouse.free();
   font.free();
+  scheme.free();
 }
 
 }

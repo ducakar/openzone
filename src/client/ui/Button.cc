@@ -29,6 +29,8 @@
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"
 
+#include "client/ui/Scheme.hh"
+
 namespace oz
 {
 namespace client
@@ -61,13 +63,13 @@ bool Button::onMouseEvent()
 void Button::onDraw()
 {
   if( isClicked ) {
-    shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
+    shape.colour( scheme.buttonClicked );
   }
   else if( isHighlighted ) {
-    shape.colour( 0.6f, 0.6f, 0.6f, 0.4f );
+    shape.colour( scheme.buttonHover );
   }
   else {
-    shape.colour( 0.2f, 0.2f, 0.2f, 0.4f );
+    shape.colour( scheme.button );
   }
 
   shape.fill( x, y, width, height );

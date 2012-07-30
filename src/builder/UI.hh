@@ -40,6 +40,7 @@ class UI
 
     static void buildCursors();
     static void buildIcons();
+    static void copyScheme();
 
 };
 

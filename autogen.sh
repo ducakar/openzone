@@ -8,7 +8,7 @@
 # Additionally this scripts also updates version numbers in various files.
 #
 
-version="0.3.1"
+version="0.3.80"
 components="oz common matrix nirvana modules client builder unittest"
 
 # Generate CMakeLists.txt files.

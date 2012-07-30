@@ -276,12 +276,20 @@ bool GameStage::update()
     write( QUICKSAVE_FILE );
   }
   if( input.keys[Input::KEY_QUICKLOAD] && !input.oldKeys[Input::KEY_QUICKLOAD] ) {
-    stateFile = QUICKSAVE_FILE;
-    reload();
+    File quicksaveFile( QUICKSAVE_FILE );
+
+    if( quicksaveFile.stat() ) {
+      stateFile = QUICKSAVE_FILE;
+      reload();
+    }
   }
   if( input.keys[Input::KEY_AUTOLOAD] && !input.oldKeys[Input::KEY_AUTOLOAD] ) {
-    stateFile = AUTOSAVE_FILE;
-    reload();
+    File autosaveFile( AUTOSAVE_FILE );
+
+    if( autosaveFile.stat() ) {
+      stateFile = AUTOSAVE_FILE;
+      reload();
+    }
   }
   if( input.keys[Input::KEY_QUIT] ) {
     Stage::nextStage = &menuStage;

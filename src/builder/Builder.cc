@@ -695,7 +695,7 @@ void Builder::buildMissions()
     copyFiles( mission->path(), mission->path(), "json", false );
 
     PFile srcFile( mission->path() + "/description.png" );
-    File outFile( mission->path() + "/description.ozThumbnail" );
+    File outFile( mission->path() + "/description.ozImage" );
 
     if( !srcFile.stat() ) {
       continue;
@@ -986,6 +986,8 @@ int Builder::main( int argc, char** argv )
   if( doUI ) {
     UI::buildCursors();
     UI::buildIcons();
+    UI::copyScheme();
+
     copyFiles( "ui/font", "ui/font", "ttf", false );
     copyFiles( "ui/icon", "ui/icon", "", true );
   }

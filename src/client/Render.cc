@@ -237,25 +237,9 @@ void Render::drawGeometry()
   glClearColor( shader.fogColour.x, shader.fogColour.y, shader.fogColour.z, shader.fogColour.w );
   glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
-  currentMicros = Time::uclock();
-  swapMicros += currentMicros - beginMicros;
-  beginMicros = currentMicros;
-
-  tf.camera = camera.rotTMat;
-
-  if( !( shader.medium & Medium::LIQUID_MASK ) && camera.p.z >= 0.0f ) {
-    tf.projection();
-
-    caelum.draw();
-  }
-
-  glEnable( GL_DEPTH_TEST );
-
-  currentMicros = Time::uclock();
-  caelumMicros += currentMicros - beginMicros;
-
   // camera transformation
   tf.projection();
+  tf.camera = camera.rotTMat;
   tf.camera.translate( Point::ORIGIN - camera.p );
 
   shader.setAmbientLight( Caelum::GLOBAL_AMBIENT_COLOUR + caelum.ambientColour );
@@ -275,6 +259,23 @@ void Render::drawGeometry()
   }
 
   currentMicros = Time::uclock();
+  swapMicros += currentMicros - beginMicros;
+  beginMicros = currentMicros;
+
+  if( !( shader.medium & Medium::LIQUID_MASK ) && camera.p.z >= 0.0f ) {
+    tf.camera = camera.rotTMat;
+
+    caelum.draw();
+
+    tf.camera.translate( Point::ORIGIN - camera.p );
+    tf.applyCamera();
+  }
+
+  glEnable( GL_DEPTH_TEST );
+
+  currentMicros = Time::uclock();
+  caelumMicros += currentMicros - beginMicros;
+  beginMicros = currentMicros;
 
   terra.draw();
 

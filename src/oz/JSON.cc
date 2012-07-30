@@ -679,14 +679,17 @@ JSON& JSON::operator = ( JSON&& v )
 int JSON::length() const
 {
   switch( valueType ) {
+    case NIL:
+    case BOOLEAN:
+    case NUMBER:
+    case STRING: {
+      return -1;
+    }
     case ARRAY: {
       return static_cast<const ArrayData*>( data )->list.length();
     }
     case OBJECT: {
       return static_cast<const ObjectData*>( data )->table.length();
-    }
-    default: {
-      return -1;
     }
   }
 }
@@ -1163,7 +1166,6 @@ void JSON::clear( bool unusedWarnings )
 String JSON::toString() const
 {
   switch( valueType ) {
-    default:
     case NIL: {
       return "null";
     }

@@ -68,6 +68,7 @@ add_library( client STATIC
   ui/Mouse.cc
   ui/MusicPlayer.cc
   ui/QuestFrame.cc
+  ui/Scheme.cc
   ui/SettingsFrame.cc
   ui/StrategicArea.cc
   ui/Text.cc

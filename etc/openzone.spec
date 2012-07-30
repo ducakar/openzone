@@ -1,5 +1,5 @@
 Name:           openzone
-Version:        0.3.1
+Version:        0.3.80
 Release:        1
 Summary:        Simple cross-platform FPS/RTS game engine (meta package)
 URL:            http://ducakar.github.com/openzone/
@@ -59,7 +59,7 @@ Library is primarily intended for use in OpenZone game engine.
 
 %description -n liboz-devel
 This package contains doxygen-generated documentation, header files and
-pkg-config configuration needed for develipment using liboz.
+pkg-config configuration needed for development using liboz.
 
 %description client
 OpenZone is a relatively simple cross-platform game engine, suitable for FPS,
@@ -98,15 +98,18 @@ make %{?_smp_mflags} doc
 make %{?_smp_mflags}
 
 %install
-rm -rf $RPM_BUILD_ROOT
+rm -rf "$RPM_BUILD_ROOT"
+
+install -dm755 "$RPM_BUILD_ROOT"%{_datadir}/openzone
+install -m644 share/openzone/*.zip "$RPM_BUILD_ROOT"%{_datadir}/openzone
+
 cd build
 
-make install DESTDIR=$RPM_BUILD_ROOT
+make install DESTDIR="$RPM_BUILD_ROOT"
 
-cd ..
-
-install -dm755 $RPM_BUILD_ROOT/%{_datadir}/openzone
-install -m644 share/openzone/*.zip $RPM_BUILD_ROOT/%{_datadir}/openzone
+if [[ /usr/lib != %{_libdir} ]]; then
+  mv "$RPM_BUILD_ROOT"/usr/lib "$RPM_BUILD_ROOT"%{_libdir}
+fi
 
 %files
 %defattr(-, root, root)

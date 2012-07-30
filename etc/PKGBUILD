@@ -1,9 +1,8 @@
 # Maintainer: Davorin Učakar <davorin.ucakar@gmail.com>
 
 pkgbase=openzone
-# pkgname=('liboz' 'openzone' 'openzone-data' 'openzone-doc')
-pkgname=('openzone' 'openzone-data')
-pkgver=0.3.1
+pkgname=('liboz' 'openzone' 'openzone-data' 'openzone-doc')
+pkgver=0.3.80
 pkgrel=1
 url="http://ducakar.github.com/openzone/"
 license=('GPL3')
@@ -21,7 +20,7 @@ build()
    cmake \
      -D CMAKE_BUILD_TYPE=Release \
      -D CMAKE_INSTALL_PREFIX=/usr \
-     -D OZ_SHARED_LIBOZ=0 \
+     -D OZ_SHARED_LIBOZ=1 \
      -D OZ_NONFREE=1 \
      ../openzone
 
@@ -29,41 +28,31 @@ build()
   make
 }
 
-# package_liboz()
-# {
-#   pkgdesc='OpenZone core library'
-#   license=('ZLIB')
-#   depends=('physfs')
-#   optdepends=('pulseaudio: warning bell')
-#
-#   cd ${srcdir}/build
-#
-#   make install DESTDIR=${pkgdir}
-#
-#   rm -rf ${pkgdir}/usr/bin
-#   rm -rf ${pkgdir}/usr/share/{applications,pixmaps}
-#
-#   if [[ "$CARCH" == "x86_64" ]]; then
-#     mv ${pkgdir}/usr/lib64 ${pkgdir}/usr/lib
-#     sed 's|/usr/lib64|/usr/lib|g' -i ${pkgdir}/usr/lib/pkgconfig/liboz.pc
-#   fi
-#
-#   mkdir -p ${pkgdir}/usr/share/doc/liboz
-#   cp -r ../openzone/doc/doxygen.liboz/html ${pkgdir}/usr/share/doc/liboz/doxygen
-#
-#   install -Dm644 ../openzone/src/oz/COPYING ${pkgdir}/usr/share/licenses/liboz/COPYING
-# }
+package_liboz()
+{
+  pkgdesc='OpenZone core library'
+  license=('ZLIB')
+  depends=('gcc-libs' 'physfs')
+  optdepends=('pulseaudio: warning bell')
+
+  cd ${srcdir}/build
+
+  make install DESTDIR=${pkgdir}
+
+  rm -rf ${pkgdir}/usr/bin
+  rm -rf ${pkgdir}/usr/share/{applications,pixmaps}
+
+  mkdir -p ${pkgdir}/usr/share/doc/liboz
+  cp -r ../openzone/doc/doxygen.liboz/html ${pkgdir}/usr/share/doc/liboz/doxygen
+
+  install -Dm644 ../openzone/src/oz/COPYING ${pkgdir}/usr/share/licenses/liboz/COPYING
+}
 
 package_openzone()
 {
   pkgdesc='Simple cross-platform FPS/RTS game engine'
-#   depends=('freeimage' 'libgl' 'liboz' 'libvorbis' 'lua' 'openal' 'sdl_ttf')
-#   optdepends=('openzone-data: game data'
-#               'zip: for building ZIP game data archives'
-#               'p7zip: for building 7zip game data archives')
-  depends=('freeimage' 'libgl' 'libvorbis' 'lua' 'openal' 'physfs' 'sdl_ttf')
-  optdepends=('pulseaudio: warning bell for liboz'
-              'openzone-data: game data'
+  depends=('freeimage' 'libgl' 'liboz' 'libvorbis' 'lua' 'openal' 'sdl_ttf')
+  optdepends=('openzone-data: game data'
               'zip: for building ZIP game data archives'
               'p7zip: for building 7zip game data archives')
 
@@ -89,11 +78,11 @@ package_openzone-data()
   install -m644 ${srcdir}/openzone/share/openzone/*.zip ${pkgdir}/usr/share/openzone
 }
 
-# package_openzone-doc()
-# {
-#   pkgdesc='OpenZone engine documentation'
-#   arch=('any')
-#
-#   install -dm755 ${pkgdir}/usr/share/doc/openzone
-#   cp -r ${srcdir}/openzone/doc/doxygen/html ${pkgdir}/usr/share/doc/openzone/doxygen
-# }
+package_openzone-doc()
+{
+  pkgdesc='OpenZone engine documentation'
+  arch=('any')
+
+  install -dm755 ${pkgdir}/usr/share/doc/openzone
+  cp -r ${srcdir}/openzone/doc/doxygen/html ${pkgdir}/usr/share/doc/openzone/doxygen
+}

@@ -75,11 +75,11 @@ set_target_properties( oz PROPERTIES VERSION "${OZ_VERSION}" SOVERSION "0" )
 target_link_libraries( oz ${libs_oz} )
 
 if( NOT OZ_STANDALONE )
-  install( FILES "${CMAKE_CURRENT_BINARY_DIR}/liboz.pc" DESTINATION lib${libSuffix}/pkgconfig )
+  install( FILES "${CMAKE_CURRENT_BINARY_DIR}/liboz.pc" DESTINATION lib/pkgconfig )
   install( FILES "${CMAKE_CURRENT_BINARY_DIR}/ozconfig.hh" DESTINATION include/oz )
   install( TARGETS oz
-          RUNTIME DESTINATION bin
-          LIBRARY DESTINATION lib${libSuffix}
-          ARCHIVE DESTINATION lib${libSuffix}
-          PUBLIC_HEADER DESTINATION include/oz )
+           RUNTIME DESTINATION bin
+           LIBRARY DESTINATION lib
+           ARCHIVE DESTINATION lib
+           PUBLIC_HEADER DESTINATION include/oz )
 endif()

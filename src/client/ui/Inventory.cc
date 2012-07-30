@@ -31,6 +31,8 @@
 #include "client/Input.hh"
 #include "client/OpenGL.hh"
 
+#include "client/ui/Scheme.hh"
+
 namespace oz
 {
 namespace client
@@ -132,10 +134,10 @@ void Inventory::drawComponent( int height, const Object* container, int tagged, 
 
       if( index < containerClazz->nItems ) {
         if( index == tagged ) {
-          shape.colour( 0.6f, 0.6f, 0.6f, 0.6f );
+          shape.colour( scheme.tileHover );
         }
         else {
-          shape.colour( 0.4f, 0.4f, 0.4f, 0.6f );
+          shape.colour( scheme.tile );
         }
 
         shape.fill( x + j * SLOT_SIZE + PADDING_SIZE,

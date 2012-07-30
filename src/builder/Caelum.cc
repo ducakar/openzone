@@ -34,7 +34,7 @@ namespace oz
 namespace builder
 {
 
-const float Caelum::STAR_DIM = 0.10f;
+const float Caelum::STAR_DIM = 0.008f;
 
 void Caelum::build( const char* name )
 {
@@ -50,10 +50,10 @@ void Caelum::build( const char* name )
     float norm;
 
     do {
-      p = 100.0f * Vec3( Math::centralRand(), Math::centralRand(), Math::centralRand() );
+      p = 10.0f * Vec3( Math::centralRand(), Math::centralRand(), Math::centralRand() );
       norm = p.sqN();
     }
-    while( Math::isnan( norm ) || norm < 2500.0f || norm > 10000.0f );
+    while( Math::isnan( norm ) || norm < 25.0f || norm > 100.0f );
 
     Vec3 z = ~p;
     Vec3 x = ~Vec3( z.z, 0.0f, -z.x );
@@ -88,10 +88,10 @@ void Caelum::build( const char* name )
   for( int i = 0; i < client::Caelum::MAX_STARS; ++i ) {
     os.writeUShort( ushort( i * 4 + 0 ) );
     os.writeUShort( ushort( i * 4 + 0 ) );
+    os.writeUShort( ushort( i * 4 + 3 ) );
     os.writeUShort( ushort( i * 4 + 1 ) );
     os.writeUShort( ushort( i * 4 + 2 ) );
-    os.writeUShort( ushort( i * 4 + 3 ) );
-    os.writeUShort( ushort( i * 4 + 3 ) );
+    os.writeUShort( ushort( i * 4 + 2 ) );
   }
 
   uint texId = context.loadLayer( "caelum/sun.png", false );

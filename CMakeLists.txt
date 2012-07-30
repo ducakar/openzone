@@ -6,7 +6,7 @@ project( openzone C CXX )
 # Configuration
 #
 
-set( OZ_VERSION "0.3.1" CACHE STRING "" FORCE )
+set( OZ_VERSION "0.3.80" CACHE STRING "" FORCE )
 
 if( NOT NACL )
   option( OZ_SHARED_LIBOZ "Build liboz as a shared library." OFF )
@@ -56,13 +56,28 @@ if( OZ_SHARED_LIBOZ )
   set( BUILD_SHARED_LIBS ON )
 endif()
 
-if( "${OZ_SYSTEM_PROCESSOR}" STREQUAL "x86_64" )
-  set( libSuffix "64" )
-endif()
-
 mark_as_advanced( OZ_VERSION )
 mark_as_advanced( OZ_SYSTEM_PROCESSOR )
 mark_as_advanced( OZ_SYSTEM_NAME )
+
+check_cxx_source_compiles( "
+#ifdef __clang__
+int main( int, char** ) { return 0; }
+#else
+# error Not LLVM/Clang
+#endif
+" isClang )
+
+check_cxx_source_compiles( "
+#if defined( __GNUC__ ) && __GNUC__ == 4 && __GNUC_MINOR__ <= 4
+int main( int, char** ) { return 0; }
+#else
+# error GCC >= 4.5
+#endif
+" isLegacyGCC )
+
+check_cxx_compiler_flag( "-Ofast" hasOfast )
+check_cxx_compiler_flag( "-flto" hasLTO )
 
 #
 # Libraries
@@ -154,6 +169,10 @@ elseif( WIN32 )
   set( libs_oz "${PTHREAD_LIBRARY};${WINMM_LIBRARY};${PHYSFS_LIBRARY}" )
 else()
   set( libs_oz "${PTHREAD_LIBRARY};${DL_LIBRARY};${RT_LIBRARY};${PHYSFS_LIBRARY}" )
+
+  if( isClang )
+    set( libs_oz "c++abi;${libs_oz}" )
+  endif()
 endif()
 
 if( NACL )
@@ -182,9 +201,16 @@ endif()
 # Compiler flags
 #
 
-set( flags "-pipe -std=c++0x -pedantic -fstrict-enums -fvisibility-inlines-hidden -ffast-math" )
-set( flags "${flags} -msse3 -mfpmath=sse" )
-set( warnings "-Wall -Wextra -Winvalid-pch -Wconversion " )
+if( isClang )
+  set( flags "-Qunused-arguments -pipe -pedantic -std=c++11 -stdlib=libc++" )
+elseif( isLegacyGCC )
+  set( flags "-pipe -std=gnu++0x -fexceptions -msse3" )
+else()
+  set( flags "-pipe -pedantic -std=c++0x -fstrict-enums" )
+endif()
+
+set( flags "${flags} -fvisibility-inlines-hidden -ffast-math -msse3 -mfpmath=sse" )
+set( warnings "-Wall -Wextra -Winvalid-pch -Wconversion" )
 
 # Additional warnings, enabled only once in a while to check code quality (GCC specific).
 # set( warnings "${warnings} -Wmissing-declarations -Wmissing-format-attribute" )
@@ -198,49 +224,23 @@ set( warnings "-Wall -Wextra -Winvalid-pch -Wconversion " )
 # set( warnings "${warnings} -Wno-disabled-macro-expansion -Wno-exit-time-destructors" )
 # set( warnings "${warnings} -Wno-float-equal -Wno-global-constructors -Wno-padded -Wno-shadow " )
 
-check_cxx_source_compiles( "
-#ifdef __clang__
-int main( int, char** ) { return 0; }
-#else
-# error Not LLVM/Clang
-#endif
-" isClang )
-
-check_cxx_source_compiles( "
-#if defined( __GNUC__ ) && __GNUC__ == 4 && __GNUC_MINOR__ <= 4
-int main( int, char** ) { return 0; }
-#else
-# error GCC >= 4.5
-#endif
-" isLegacyGCC )
-
-if( isClang )
-  set( flags "-Qunused-arguments ${flags}" )
-
-  # libc++
-  set( flags "${flags} -stdlib=libc++" )
-  set( libs_oz "${libs_oz};c++abi" )
-  # libstdc++
-  # set( flags "${flags} -stdlib=libstdc++" )
-elseif( isLegacyGCC )
-  set( flags "-pipe -std=gnu++0x -msse3 -ffast-math" )
-endif()
-if( ANDROID )
-  set( flags "${flags} -fexceptions" )
+if( hasOfast )
+  set( optFlags "-Ofast" )
+else()
+  set( optFlags "-O3" )
 endif()
 
-check_cxx_compiler_flag( "-flto" hasLTO )
 if( hasLTO AND NOT WIN32 )
   # On Win32+LTO glCompileShaders() sets shaderFiles.data to null in loop at Shader.cc:394. WTF???
-  set( ltoFlag "-flto" )
+  set( optFlags "${optFlags} -flto" )
 endif()
 
 set( CMAKE_CXX_FLAGS "${flags} ${warnings} ${CMAKE_CXX_FLAGS}" )
-set( CMAKE_CXX_FLAGS_DEBUG "-g3 -O0" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-D_FORTIFY_SOURCE=2 -g3 -O3" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 ${ltoFlag}" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELGENPROF "-DNDEBUG -O3 ${ltoFlag} -fprofile-generate" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELUSEPROF "-DNDEBUG -O3 ${ltoFlag} -fprofile-use" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-D_FORTIFY_SOURCE=2 -g3 ${optFlags}" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${optFlags}" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELGENPROF "-DNDEBUG ${optFlags} -fprofile-generate" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELUSEPROF "-DNDEBUG ${optFlags} -fprofile-use" CACHE STRING "" FORCE )
 
 mark_as_advanced( CMAKE_CXX_FLAGS_RELGENPROF )
 mark_as_advanced( CMAKE_CXX_FLAGS_RELUSEPROF )

@@ -33,6 +33,8 @@
 #include "client/OpenGL.hh"
 #include "client/NaCl.hh"
 
+#include "client/ui/Scheme.hh"
+
 namespace oz
 {
 namespace client
@@ -144,7 +146,7 @@ bool MissionMenu::onMouseEvent()
 
 void MissionMenu::onDraw()
 {
-  shape.colour( 0.0f, 0.0f, 0.0f, 1.0f );
+  shape.colour( scheme.menuStrip );
   shape.fill( width - 240, 0, 240, height - 40 );
 
   shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
@@ -197,7 +199,7 @@ MissionMenu::MissionMenu() :
     const char* title       = lingua.get( descriptionConfig["title"].get( missionName ) );
     const char* description = lingua.get( descriptionConfig["description"].get( "" ) );
 
-    PFile image( missionDir->path() + "/description.ozThumbnail" );
+    PFile image( missionDir->path() + "/description.ozImage" );
 
     uint imageId = 0;
     if( image.stat() ) {

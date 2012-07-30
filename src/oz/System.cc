@@ -465,6 +465,7 @@ void System::bell()
   if( instance == null || core == null || pthread_mutex_trylock( &bellLock ) != 0 ) {
     return;
   }
+
   if( isBellPlaying ) {
     pthread_mutex_unlock( &bellLock );
   }
@@ -502,6 +503,7 @@ void System::bell()
   if( pa_simple_new == null || pthread_spin_trylock( &bellLock ) != 0 ) {
     return;
   }
+
   if( isBellPlaying ) {
     pthread_spin_unlock( &bellLock );
   }

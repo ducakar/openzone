@@ -172,16 +172,18 @@ void Compiler::begin( PolyMode mode_ )
   part.component = componentId;
 
   switch( mode ) {
+    case TRIANGLE_STRIP:
+    case TRIANGLE_FAN:
+    case TRIANGLES: {
+      part.mode = mode;
+      break;
+    }
     case QUADS: {
       part.mode = TRIANGLE_STRIP;
       break;
     }
     case POLYGON: {
       part.mode = TRIANGLES;
-      break;
-    }
-    default: {
-      part.mode = mode;
       break;
     }
   }
@@ -503,7 +505,8 @@ void Compiler::writeMesh( BufferStream* os, bool embedTextures )
         mode = GL_TRIANGLES;
         break;
       }
-      default: {
+      case QUADS:
+      case POLYGON: {
         hard_assert( false );
         break;
       }

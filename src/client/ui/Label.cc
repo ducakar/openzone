@@ -30,6 +30,7 @@
 #include "client/OpenGL.hh"
 
 #include "client/ui/Area.hh"
+#include "client/ui/Scheme.hh"
 
 #include <SDL_ttf.h>
 
@@ -177,9 +178,9 @@ void Label::draw( const Area* area, bool allowChanged )
     int posX = area->x + ( x < 0 ? area->width  + offsetX : offsetX );
     int posY = area->y + ( y < 0 ? area->height + offsetY : offsetY );
 
-    shape.colour( 0.0f, 0.0f, 0.0f, 1.0f );
+    shape.colour( scheme.textBackground );
     shape.fillInv( posX + 1, posY - 1, width, height );
-    shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
+    shape.colour( scheme.text );
     shape.fillInv( posX, posY, width, height );
 
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );

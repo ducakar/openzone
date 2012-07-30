@@ -32,6 +32,8 @@
 #include "client/Context.hh"
 #include "client/OpenGL.hh"
 
+#include "client/ui/Scheme.hh"
+
 namespace oz
 {
 namespace client
@@ -216,7 +218,7 @@ void HudArea::drawBotStatus()
   if( bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
     const Weapon* weaponObj = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
-    shape.colour( 0.0f, 0.0f, 0.0f, 0.3f );
+    shape.colour( scheme.frame );
     shape.fill( 8, 52, 200, Font::INFOS[Font::LARGE].height + 8 );
 
     if( lastWeaponId != bot->weapon ) {
@@ -301,7 +303,7 @@ void HudArea::drawVehicleStatus()
     if( i == vehicle->weapon ) {
       int step = font.INFOS[Font::LARGE].height + 8;
 
-      shape.colour( 0.0f, 0.0f, 0.0f, 0.3f );
+      shape.colour( scheme.frame );
       shape.fill( width - 208, 52 + ( vehClazz->nWeapons - 1 - i ) * step,
                   200, Font::INFOS[Font::LARGE].height + 8 );
     }

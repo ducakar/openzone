@@ -33,6 +33,7 @@
 #include "client/MenuStage.hh"
 #include "client/OpenGL.hh"
 
+#include "client/ui/Scheme.hh"
 #include "client/ui/MissionMenu.hh"
 #include "client/ui/SettingsFrame.hh"
 #include "client/ui/CreditsMenu.hh"
@@ -140,10 +141,10 @@ bool MainMenu::onMouseEvent()
 
 void MainMenu::onDraw()
 {
-  shape.colour( 0.05f, 0.05f, 0.05f, 1.0f );
+  shape.colour( scheme.background );
   shape.fill( 0, 0, camera.width, camera.height );
 
-  shape.colour( 0.0f, 0.0f, 0.0f, 1.0f );
+  shape.colour( scheme.menuStrip );
   shape.fill( camera.width - 240, 0, 240, camera.height );
 
   copyright.draw( this, true );

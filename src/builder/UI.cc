@@ -151,5 +151,22 @@ void UI::buildIcons()
   Log::println( "}" );
 }
 
+void UI::copyScheme()
+{
+  PFile srcFile( "ui/scheme.json" );
+  File outFile( "ui/scheme.json" );
+
+  Buffer buffer = srcFile.read();
+  if( buffer.isEmpty() ) {
+    return;
+  }
+
+  Log::print( "Copying UI colour scheme '%s' ...", srcFile.path().cstr() );
+
+  outFile.write( buffer.begin(), buffer.length() );
+
+  Log::printEnd( " OK" );
+}
+
 }
 }

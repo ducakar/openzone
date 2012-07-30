@@ -17,19 +17,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * stars.frag
+/**
+ * @file client/ui/Scheme.hh
  */
 
-uniform vec4  oz_StarsColour;
+#pragma once
 
-varying vec3  exPosition;
-varying float exAzimuth;
+#include "client/common.hh"
 
-void main()
+namespace oz
 {
-  float dist     = ( length( exPosition ) - 5.0 ) / 5.0;
-  vec4  colour   = oz_StarsColour + vec4( sin( 256.0 * exPosition ) * 0.15, 0.0 );
+namespace client
+{
+namespace ui
+{
 
-  gl_FragData[0] = oz_ColourTransform * mix( colour, oz_Fog.colour, dist );
+class Scheme
+{
+  public:
+
+    Vec4   text;
+    Vec4   textBackground;
+
+    Vec4   button;
+    Vec4   buttonHover;
+    Vec4   buttonClicked;
+
+    Vec4   tile;
+    Vec4   tileHover;
+
+    Vec4   frame;
+    Vec4   background;
+
+    Vec4   menuStrip;
+
+  public:
+
+    void init();
+    void free();
+
+};
+
+extern Scheme scheme;
+
+}
+}
 }
