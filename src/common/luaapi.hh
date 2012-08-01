@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include "common/lua.hh"
+#include "common/luabase.hh"
 
 namespace oz
 {
@@ -72,7 +72,7 @@ static int ozException( lua_State* l )
  *
  * @code void ozPrintln( string text ) @endcode
  *
- * Message is printed in form <tt>Lua:matrix> text</tt> (if called from matrix Lua).
+ * Message is printed to Log like <tt>Lua:matrix> text</tt> (if called from matrix::Lua).
  */
 static int ozPrintln( lua_State* l )
 {

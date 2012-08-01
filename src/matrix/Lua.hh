@@ -25,6 +25,8 @@
 
 #pragma once
 
+#include "common/Lua.hh"
+
 #include "matrix/Object.hh"
 
 namespace oz
@@ -32,23 +34,11 @@ namespace oz
 namespace matrix
 {
 
-class Struct;
 class Bot;
-class Frag;
-class Module;
 
-class Lua
+class Lua : public oz::Lua
 {
-  private:
-
-    lua_State* l;
-
-    bool readVariable( InputStream* istream );
-    void writeVariable( BufferStream* stream );
-
   public:
-
-    Lua();
 
     bool objectCall( const char* functionName, Object* self, Bot* user = null );
 
@@ -57,12 +47,6 @@ class Lua
 
     void read( InputStream* istream );
     void write( BufferStream* ostream );
-
-    void registerFunction( const char* name, LuaAPI func );
-    void registerConstant( const char* name, bool value );
-    void registerConstant( const char* name, int value );
-    void registerConstant( const char* name, float value );
-    void registerConstant( const char* name, const char* value );
 
     void init();
     void free();

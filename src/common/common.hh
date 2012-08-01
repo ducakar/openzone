@@ -60,9 +60,6 @@
 
 #endif // OZ_DOXYGEN
 
-// Forward declaration needed for Lua API declarations, to prevent pollution from Lua headers.
-struct lua_State;
-
 namespace oz
 {
 
@@ -92,17 +89,12 @@ const int MAX_WORLD_COORD = 2048;
 const float EPSILON = 2048.0f * 4.0f * Math::FLOAT_EPS;
 
 /**
- * Lua C API.
- *
- * @ingroup common
- */
-typedef int LuaAPI( lua_State* );
-
-/**
  * Wrap angle to interval \f$ [0, \tau) \f$.
  *
  * This adjustment should be made after each angle addition/subtraction. It assumes the input angle
  * lies on interval \f$ [-\tau, \infty) \f$.
+ *
+ * @ingroup common
  */
 OZ_ALWAYS_INLINE
 inline float angleWrap( float x )
@@ -114,6 +106,8 @@ inline float angleWrap( float x )
  * Difference between two angles, maps to interval \f$ [-\frac{\tau}{2}, +\frac{\tau}{2}) \f$.
  *
  * This function assumes that both angles lie on interval \f$ [0, \tau) \f$.
+ *
+ * @ingroup common
  */
 OZ_ALWAYS_INLINE
 inline float angleDiff( float x, float y )

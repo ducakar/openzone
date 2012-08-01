@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/ui/StrategicArea.hh
+ * @file client/ui/SelectionArea.hh
  *
  * Real-time strategy interface layer for HUD.
  * Provides unit selection and commanding.
@@ -36,7 +36,7 @@ namespace client
 namespace ui
 {
 
-class StrategicArea : public Area
+class SelectionArea : public Area
 {
   private:
 
@@ -82,7 +82,7 @@ class StrategicArea : public Area
 
   public:
 
-    StrategicArea();
+    SelectionArea();
 
 };
 

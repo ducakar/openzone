@@ -21,7 +21,7 @@
  * @file client/luaapi.cc
  */
 
-#include "common/lua.hh"
+#include "common/luabase.hh"
 
 #include "client/QuestList.hh"
 #include "client/Camera.hh"

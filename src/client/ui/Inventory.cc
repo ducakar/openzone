@@ -318,7 +318,7 @@ bool Inventory::onMouseEvent()
 {
   Frame::onMouseEvent();
 
-  if( input.keys[Input::KEY_UI_DRAG] ) {
+  if( input.keys[Input::KEY_UI_ALT] ) {
     return true;
   }
 

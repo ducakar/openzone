@@ -178,19 +178,19 @@ class Chain
     {
       Chain clone;
 
-      Elem* prev = null;
-      Elem* elem = firstElem;
+      Elem* original = firstElem;
+      Elem* prevCopy = null;
 
-      while( elem != null ) {
-        Elem* last = new Elem( *elem );
+      while( original != null ) {
+        Elem* copy = new Elem( *original );
 
-        if( prev == null ) {
-          clone.firstElem = last;
+        if( prevCopy == null ) {
+          clone.firstElem = copy;
         }
         else {
-          prev->next[INDEX] = last;
+          prevCopy->next[INDEX] = copy;
         }
-        prev = last;
+        prevCopy = copy;
       }
 
       return clone;

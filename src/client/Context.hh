@@ -96,43 +96,43 @@ class Context
       {}
     };
 
-    Imago::CreateFunc**        imagoClasses;
-    Audio::CreateFunc**        audioClasses;
+    Imago::CreateFunc**      imagoClasses;
+    Audio::CreateFunc**      audioClasses;
 
-    Resource<Texture>*         textures;
-    Resource<uint>*            sounds;
+    Resource<Texture>*       textures;
+    Resource<uint>*          sounds;
 
-    Chain<Source>              sources;     // non-looping sources
-    HashIndex<ContSource, 128> contSources; // looping sources
+    Chain<Source>            sources;     // non-looping sources
+    HashIndex<ContSource>    contSources; // looping sources
 
-    Resource<BSP*>*            bsps;
-    Resource<BSPAudio*>*       bspAudios;
+    Resource<BSP*>*          bsps;
+    Resource<BSPAudio*>*     bspAudios;
 
-    Resource<SMM*>*            smms;
-    Resource<MD2*>*            md2s;
-    Resource<MD3*>*            md3s;
+    Resource<SMM*>*          smms;
+    Resource<MD2*>*          md2s;
+    Resource<MD3*>*          md3s;
 
-    HashIndex<Imago*, 10223>   imagines;  // currently loaded graphics models
-    HashIndex<Audio*, 6143>    audios;    // currently loaded audio models
-    FragPool**                 fragPools; // frag pool representations
+    HashIndex<Imago*, 10223> imagines;  // currently loaded graphics models
+    HashIndex<Audio*, 6143>  audios;    // currently loaded audio models
+    FragPool**               fragPools; // frag pool representations
 
-    int                        maxImagines;
-    int                        maxAudios;
-    int                        maxSources;
-    int                        maxContSources;
+    int                      maxImagines;
+    int                      maxAudios;
+    int                      maxSources;
+    int                      maxContSources;
 
-    int                        maxSMMImagines;
-    int                        maxSMMVehicleImagines;
-    int                        maxExplosionImagines;
-    int                        maxMD2Imagines;
-    int                        maxMD2WeaponImagines;
-    int                        maxMD3Imagines;
+    int                      maxSMMImagines;
+    int                      maxSMMVehicleImagines;
+    int                      maxExplosionImagines;
+    int                      maxMD2Imagines;
+    int                      maxMD2WeaponImagines;
+    int                      maxMD3Imagines;
 
-    int                        maxBasicAudios;
-    int                        maxBotAudios;
-    int                        maxVehicleAudios;
+    int                      maxBasicAudios;
+    int                      maxBotAudios;
+    int                      maxVehicleAudios;
 
-    int                        maxFragPools;
+    int                      maxFragPools;
 
     void addSource( uint srcId, int sound );
     void removeSource( Source* source, Source* prev );

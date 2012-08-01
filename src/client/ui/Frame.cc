@@ -44,7 +44,7 @@ bool Frame::onMouseEvent()
     raise();
   }
 
-  if( input.keys[Input::KEY_UI_DRAG] ) {
+  if( input.keys[Input::KEY_UI_ALT] ) {
     mouse.icon = Mouse::OPENHAND;
 
     if( input.buttons & Input::LEFT_BUTTON ) {
@@ -60,9 +60,10 @@ bool Frame::onMouseEvent()
       flags &= ~GRAB_BIT;
     }
   }
-  if( !( flags & GRAB_BIT ) && passMouseEvents() ) {
-    return true;
+  else {
+    passMouseEvents();
   }
+
   return true;
 }
 

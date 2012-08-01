@@ -18,7 +18,7 @@
  */
 
 /**
- * @file lua.hh
+ * @file common/luabase.hh
  *
  * Handy macros and methods for %Lua API implementation.
  *
@@ -45,26 +45,6 @@
 
 /// @addtogroup common
 /// @{
-
-/**
- * @def IMPORT_LIBS
- * Loads standard table, string and math libraries.
- */
-#if LUA_VERSION_NUM < 502
-# define IMPORT_LIBS() \
-    lua_pushcfunction( l, luaopen_table ); \
-    lua_pushcfunction( l, luaopen_string ); \
-    lua_pushcfunction( l, luaopen_math ); \
-    lua_pcall( l, 0, 0, 0 ); \
-    lua_pcall( l, 0, 0, 0 ); \
-    lua_pcall( l, 0, 0, 0 );
-#else
-# define IMPORT_LIBS() \
-    luaL_requiref( l, LUA_TABLIBNAME,  luaopen_table,  true ); \
-    luaL_requiref( l, LUA_STRLIBNAME,  luaopen_string, true ); \
-    luaL_requiref( l, LUA_MATHLIBNAME, luaopen_math,   true ); \
-    lua_settop( l, 0 );
-#endif
 
 /**
  * @def IMPORT_FUNC

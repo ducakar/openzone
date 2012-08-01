@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include "common/Lua.hh"
+
 #include "modules/Module.hh"
 
 namespace oz

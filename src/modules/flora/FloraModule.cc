@@ -30,7 +30,7 @@
 
 #include "client/Lua.hh"
 
-#include "common/lua.hh"
+#include "common/luabase.hh"
 
 using namespace oz::client;
 

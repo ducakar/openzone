@@ -38,7 +38,7 @@ Input input;
 const char* const Input::KEY_NAMES[] = {
   "None",
 
-  "Drag UI windows",
+  "Alternate UI action",
   "Toggle UI",
 
   "Look left down",
@@ -107,8 +107,8 @@ void Input::loadDefaultKeyMap()
   modifier0                         = SDLK_LALT;
   modifier1                         = SDLK_RALT;
 
-  keyMap[KEY_UI_DRAG][0]            = MOD_MASK    | SDLK_LALT;
-  keyMap[KEY_UI_DRAG][1]            = MOD_MASK    | SDLK_RALT;
+  keyMap[KEY_UI_ALT][0]             = MOD_MASK    | SDLK_LALT;
+  keyMap[KEY_UI_ALT][1]             = MOD_MASK    | SDLK_RALT;
   keyMap[KEY_UI_TOGGLE][0]          = MOD_MASK    | SDLK_TAB;
 
   keyMap[KEY_DIR_1][0]              = MOD_MASK    | SDLK_KP1;
@@ -177,8 +177,8 @@ void Input::loadDefaultKeyMap()
   modifier0                         = SDL_SCANCODE_LALT;
   modifier1                         = SDL_SCANCODE_RALT;
 
-  keyMap[KEY_UI_DRAG][0]            = MOD_MASK    | SDL_SCANCODE_LALT;
-  keyMap[KEY_UI_DRAG][1]            = MOD_MASK    | SDL_SCANCODE_RALT;
+  keyMap[KEY_UI_ALT][0]             = MOD_MASK    | SDL_SCANCODE_LALT;
+  keyMap[KEY_UI_ALT][1]             = MOD_MASK    | SDL_SCANCODE_RALT;
   keyMap[KEY_UI_TOGGLE][0]          = MOD_MASK    | SDL_SCANCODE_TAB;
 
   keyMap[KEY_DIR_1][0]              = MOD_MASK    | SDL_SCANCODE_KP_1;

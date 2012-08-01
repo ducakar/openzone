@@ -38,100 +38,6 @@ namespace client
 
 Lua lua;
 
-bool Lua::readVariable( InputStream* istream )
-{
-  char ch = istream->readChar();
-
-  switch( ch ) {
-    case 'N': {
-      l_pushnil();
-      return true;
-    }
-    case 'b': {
-      l_pushbool( istream->readBool() );
-      return true;
-    }
-    case 'n': {
-      l_pushdouble( istream->readDouble() );
-      return true;
-    }
-    case 's': {
-      l_pushstring( istream->readString() );
-      return true;
-    }
-    case '[': {
-      l_newtable();
-
-      while( readVariable( istream ) ) { // key
-        readVariable( istream ); // value
-
-        l_rawset( -3 );
-      }
-      return true;
-    }
-    case ']': {
-      return false;
-    }
-    default: {
-      throw Exception( "Invalid type char '%c' in serialised Lua data", ch );
-    }
-  }
-}
-
-void Lua::writeVariable( BufferStream* ostream )
-{
-  int type = l_type( -1 );
-
-  switch( type ) {
-    case LUA_TNIL: {
-      ostream->writeChar( 'N' );
-      break;
-    }
-    case LUA_TBOOLEAN: {
-      ostream->writeChar( 'b' );
-      ostream->writeBool( l_tobool( -1 ) != 0 );
-      break;
-    }
-    case LUA_TNUMBER: {
-      ostream->writeChar( 'n' );
-      ostream->writeDouble( l_todouble( -1 ) );
-      break;
-    }
-    case LUA_TSTRING: {
-      ostream->writeChar( 's' );
-      ostream->writeString( l_tostring( -1 ) );
-      break;
-    }
-    case LUA_TTABLE: {
-      ostream->writeChar( '[' );
-
-      l_pushnil();
-      while( l_next( -2 ) != 0 ) {
-        // key
-        l_pushvalue( -2 );
-        writeVariable( ostream );
-        l_pop( 1 );
-
-        // value
-        writeVariable( ostream );
-
-        l_pop( 1 );
-      }
-
-      ostream->writeChar( ']' );
-      break;
-    }
-    default: {
-      throw Exception( "Serialisation is only supported for LUA_TNIL, LUA_TBOOLEAN, LUA_TNUMBER,"
-                       " LUA_TSTRING and LUA_TTABLE data types" );
-    }
-  }
-}
-
-Lua::Lua() :
-  l( null )
-{}
-
 void Lua::staticCall( const char* functionName )
 {
   ms.obj      = null;
@@ -251,17 +157,14 @@ void Lua::read( InputStream* istream )
     file->unmap();
   }
 
-  char ch = istream->readChar();
+  const char* name = istream->readString();
 
-  while( ch != '\0' ) {
-    hard_assert( ch == 's' );
-
-    String name = istream->readString();
+  while( !String::isEmpty( name ) ) {
     readVariable( istream );
 
     l_setglobal( name );
 
-    ch = istream->readChar();
+    name = istream->readString();
   }
 
   Log::printEnd( " OK" );
@@ -276,7 +179,6 @@ void Lua::write( BufferStream* ostream )
 #if LUA_VERSION_NUM >= 502
   l_pushglobaltable();
 #endif
-
   l_pushnil();
 #if LUA_VERSION_NUM >= 502
   while( l_next( -2 ) != 0 ) {
@@ -287,69 +189,26 @@ void Lua::write( BufferStream* ostream )
 
     const char* name = l_tostring( -2 );
     if( name[0] == 'o' && name[1] == 'z' && name[2] == '_' ) {
-      ostream->writeChar( 's' );
-      ostream->writeString( l_tostring( -2 ) );
+      ostream->writeString( name );
 
       writeVariable( ostream );
     }
 
     l_pop( 1 );
   }
-
 #if LUA_VERSION_NUM >= 502
   l_pop( 1 );
 #endif
 
-  ostream->writeChar( '\0' );
-}
-
-void Lua::registerFunction( const char* name, LuaAPI func )
-{
-  l_register( name, func );
-}
-
-void Lua::registerConstant( const char* name, bool value )
-{
-  l_pushbool( value );
-  l_setglobal( name );
-}
-
-void Lua::registerConstant( const char* name, int value )
-{
-  l_pushint( value );
-  l_setglobal( name );
-}
-
-void Lua::registerConstant( const char* name, float value )
-{
-  l_pushfloat( value );
-  l_setglobal( name );
-}
-
-void Lua::registerConstant( const char* name, const char* value )
-{
-  l_pushstring( value );
-  l_setglobal( name );
+  ostream->writeString( "" );
 }
 
 void Lua::init()
 {
   Log::print( "Initialising Client Lua ..." );
 
-  l = luaL_newstate();
-  if( l == null ) {
-    throw Exception( "Failed to create Lua state" );
-  }
+  initCommon( "client" );
 
-  hard_assert( l_gettop() == 0 );
-
-  IMPORT_LIBS();
-
-  if( l_gettop() != 0 ) {
-    throw Exception( "Failed to initialise Lua libraries" );
-  }
-
-  ls.envName = "client";
   ms.structs.alloc( 32 );
   ms.objects.alloc( 512 );
 
@@ -771,8 +630,7 @@ void Lua::free()
   cs.mission = "";
   cs.missionLingua.free();
 
-  lua_close( l );
-  l = null;
+  freeCommon();
 
   Log::printEnd( " OK" );
 }

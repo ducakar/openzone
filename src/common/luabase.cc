@@ -18,10 +18,10 @@
  */
 
 /**
- * @file common/lua.cc
+ * @file common/luabase.cc
  */
 
-#include "common/lua.hh"
+#include "common/luabase.hh"
 
 namespace oz
 {

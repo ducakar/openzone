@@ -36,100 +36,6 @@ namespace matrix
 
 Lua lua;
 
-bool Lua::readVariable( InputStream* istream )
-{
-  char ch = istream->readChar();
-
-  switch( ch ) {
-    case 'N': {
-      l_pushnil();
-      return true;
-    }
-    case 'b': {
-      l_pushbool( istream->readBool() );
-      return true;
-    }
-    case 'n': {
-      l_pushdouble( istream->readDouble() );
-      return true;
-    }
-    case 's': {
-      l_pushstring( istream->readString() );
-      return true;
-    }
-    case '[': {
-      l_newtable();
-
-      while( readVariable( istream ) ) { // key
-        readVariable( istream ); // value
-
-        l_rawset( -3 );
-      }
-      return true;
-    }
-    case ']': {
-      return false;
-    }
-    default: {
-      throw Exception( "Invalid type char '%c' in serialised Lua data", ch );
-    }
-  }
-}
-
-void Lua::writeVariable( BufferStream* ostream )
-{
-  int type = l_type( -1 );
-
-  switch( type ) {
-    case LUA_TNIL: {
-      ostream->writeChar( 'N' );
-      break;
-    }
-    case LUA_TBOOLEAN: {
-      ostream->writeChar( 'b' );
-      ostream->writeBool( l_tobool( -1 ) != 0 );
-      break;
-    }
-    case LUA_TNUMBER: {
-      ostream->writeChar( 'n' );
-      ostream->writeDouble( l_todouble( -1 ) );
-      break;
-    }
-    case LUA_TSTRING: {
-      ostream->writeChar( 's' );
-      ostream->writeString( l_tostring( -1 ) );
-      break;
-    }
-    case LUA_TTABLE: {
-      ostream->writeChar( '[' );
-
-      l_pushnil();
-      while( l_next( -2 ) != 0 ) {
-        // key
-        l_pushvalue( -2 );
-        writeVariable( ostream );
-        l_pop( 1 );
-
-        // value
-        writeVariable( ostream );
-
-        l_pop( 1 );
-      }
-
-      ostream->writeChar( ']' );
-      break;
-    }
-    default: {
-      throw Exception( "Serialisation is only supported for LUA_TNIL, LUA_TBOOLEAN, LUA_TNUMBER,"
-                       " LUA_TSTRING and LUA_TTABLE data types" );
-    }
-  }
-}
-
-Lua::Lua() :
-  l( null )
-{}
-
 bool Lua::objectCall( const char* functionName, Object* self_, Bot* user_ )
 {
   ms.self         = self_;
@@ -181,18 +87,17 @@ void Lua::unregisterObject( int index )
 void Lua::read( InputStream* istream )
 {
   hard_assert( l_gettop() == 1 );
+  hard_assert( ( l_pushnil(), true ) );
+  hard_assert( !l_next( 1 ) );
 
-  char ch = istream->readChar();
+  int index = istream->readInt();
 
-  while( ch != '\0' ) {
-    hard_assert( ch == 'i' );
-
-    int index = istream->readInt();
+  while( index >= 0 ) {
     readVariable( istream );
 
     l_rawseti( 1, index );
 
-    ch = istream->readChar();
+    index = istream->readInt();
   }
 }
 
@@ -201,67 +106,25 @@ void Lua::write( BufferStream* ostream )
   hard_assert( l_gettop() == 1 );
 
   l_pushnil();
-  while( l_next( 1 ) != 0 ) {
+  while( l_next( 1 ) ) {
     hard_assert( l_type( -2 ) == LUA_TNUMBER );
     hard_assert( l_type( -1 ) == LUA_TTABLE );
 
-    ostream->writeChar( 'i' );
     ostream->writeInt( l_toint( -2 ) );
     writeVariable( ostream );
 
     l_pop( 1 );
   }
 
-  ostream->writeChar( '\0' );
-}
-
-void Lua::registerFunction( const char* name, LuaAPI func )
-{
-  l_register( name, func );
-}
-
-void Lua::registerConstant( const char* name, bool value )
-{
-  l_pushbool( value );
-  l_setglobal( name );
-}
-
-void Lua::registerConstant( const char* name, int value )
-{
-  l_pushint( value );
-  l_setglobal( name );
-}
-
-void Lua::registerConstant( const char* name, float value )
-{
-  l_pushfloat( value );
-  l_setglobal( name );
-}
-
-void Lua::registerConstant( const char* name, const char* value )
-{
-  l_pushstring( value );
-  l_setglobal( name );
+  ostream->writeInt( -1 );
 }
 
 void Lua::init()
 {
   Log::print( "Initialising Matrix Lua ..." );
 
-  l = luaL_newstate();
-  if( l == null ) {
-    throw Exception( "Failed to create Lua state" );
-  }
+  initCommon( "matrix" );
 
-  hard_assert( l_gettop() == 0 );
-
-  IMPORT_LIBS();
-
-  if( l_gettop() != 0 ) {
-    throw Exception( "Failed to initialise Lua libraries" );
-  }
-
-  ls.envName = "matrix";
   ms.structs.alloc( 32 );
   ms.objects.alloc( 512 );
 
@@ -599,8 +462,11 @@ void Lua::free()
   ms.objects.clear();
   ms.objects.dealloc();
 
-  lua_close( l );
-  l = null;
+  hard_assert( l_gettop() == 1 );
+  hard_assert( ( l_pushnil(), true ) );
+  hard_assert( !l_next( 1 ) );
+
+  freeCommon();
 
   Log::printEnd( " OK" );
 }

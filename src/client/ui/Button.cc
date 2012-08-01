@@ -46,7 +46,7 @@ void Button::onVisibilityChange( bool )
 
 bool Button::onMouseEvent()
 {
-  if( !input.keys[Input::KEY_UI_DRAG] ) {
+  if( !input.keys[Input::KEY_UI_ALT] ) {
     isHighlighted = true;
 
     if( input.leftClick ) {

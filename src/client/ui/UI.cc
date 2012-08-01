@@ -32,7 +32,7 @@
 
 #include "client/ui/Scheme.hh"
 #include "client/ui/LoadingArea.hh"
-#include "client/ui/StrategicArea.hh"
+#include "client/ui/SelectionArea.hh"
 #include "client/ui/HudArea.hh"
 #include "client/ui/QuestFrame.hh"
 #include "client/ui/GalileoFrame.hh"
@@ -52,7 +52,7 @@ namespace ui
 UI ui;
 
 UI::UI() :
-  fpsLabel( null ), root( null ), loadingScreen( null ), strategicArea( null ), hudArea( null ),
+  fpsLabel( null ), root( null ), loadingScreen( null ), hudArea( null ), selectionArea( null ),
   questFrame( null ), galileoFrame( null ), musicPlayer( null ), inventory( null ),
   buildMenu( null ), debugFrame( null )
 {}
@@ -129,8 +129,8 @@ void UI::load()
 {
   isFreelook = false;
 
-  strategicArea = new StrategicArea();
   hudArea       = new HudArea();
+  selectionArea = new SelectionArea();
   questFrame    = new QuestFrame();
   galileoFrame  = new GalileoFrame();
   musicPlayer   = new MusicPlayer();
@@ -139,8 +139,8 @@ void UI::load()
   buildMenu     = showBuild ? new BuildMenu() : null;
   debugFrame    = showDebug ? new DebugFrame() : null;
 
-  root->add( strategicArea, 0, 0 );
   root->add( hudArea, 0, 0 );
+  root->add( selectionArea, 0, 0 );
   root->add( questFrame, Area::CENTRE, -8 );
   root->add( galileoFrame, 8, -8 );
   root->add( musicPlayer, 8, -16 - galileoFrame->height );
@@ -154,8 +154,8 @@ void UI::load()
     root->add( debugFrame, Area::CENTRE, -16 - questFrame->height );
   }
 
-  strategicArea->enable( false );
   hudArea->enable( false );
+  selectionArea->enable( false );
   inventory->enable( false );
   infoFrame->enable( false );
 
@@ -192,13 +192,13 @@ void UI::unload()
     root->remove( questFrame );
     questFrame = null;
   }
+  if( selectionArea != null ) {
+    root->remove( selectionArea );
+    selectionArea = null;
+  }
   if( hudArea != null ) {
     root->remove( hudArea );
     hudArea = null;
-  }
-  if( strategicArea != null ) {
-    root->remove( strategicArea );
-    strategicArea = null;
   }
 }
 

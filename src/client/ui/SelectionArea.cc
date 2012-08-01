@@ -18,20 +18,17 @@
  */
 
 /**
- * @file client/ui/StrategicArea.cc
+ * @file client/ui/SelectionArea.cc
  */
 
 #include "stable.hh"
 
-#include "client/ui/StrategicArea.hh"
+#include "client/ui/SelectionArea.hh"
 
 #include "client/Shader.hh"
 #include "client/Shape.hh"
 #include "client/Camera.hh"
 #include "client/Input.hh"
-#include "client/OpenGL.hh"
-
-#include <SDL_ttf.h>
 
 namespace oz
 {
@@ -40,14 +37,14 @@ namespace client
 namespace ui
 {
 
-const float StrategicArea::TAG_CLIP_DIST      = 0.1f;
-const float StrategicArea::TAG_CLAMP_LIMIT    = 1e6f;
+const float SelectionArea::TAG_CLIP_DIST      = 0.1f;
+const float SelectionArea::TAG_CLAMP_LIMIT    = 1e6f;
 // size in pixels
-const float StrategicArea::TAG_MIN_PIXEL_SIZE = 4.0f;
+const float SelectionArea::TAG_MIN_PIXEL_SIZE = 4.0f;
 // size in coefficient
-const float StrategicArea::TAG_MAX_COEFF_SIZE = 4.0f;
+const float SelectionArea::TAG_MAX_COEFF_SIZE = 4.0f;
 
-bool StrategicArea::projectBounds( Span* span, const AABB& bb ) const
+bool SelectionArea::projectBounds( Span* span, const AABB& bb ) const
 {
   Vec3 p = bb.p - camera.p;
   Vec3 corners[8] = {
@@ -93,7 +90,7 @@ bool StrategicArea::projectBounds( Span* span, const AABB& bb ) const
   return true;
 }
 
-void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const Entity* ent,
+void SelectionArea::drawHoveredRect( const Span& span, const Struct* str, const Entity* ent,
                                      const Object* obj )
 {
   float minX = float( span.minX );
@@ -187,7 +184,7 @@ void StrategicArea::drawHoveredRect( const Span& span, const Struct* str, const 
   }
 }
 
-void StrategicArea::drawTaggedRect( const Span& span, const Struct* str, const Object* obj,
+void SelectionArea::drawTaggedRect( const Span& span, const Struct* str, const Object* obj,
                                     bool isHovered )
 {
   float minX = float( span.minX );
@@ -233,7 +230,7 @@ void StrategicArea::drawTaggedRect( const Span& span, const Struct* str, const O
   }
 }
 
-void StrategicArea::onVisibilityChange( bool )
+void SelectionArea::onVisibilityChange( bool )
 {
   taggedStrs.clear();
   taggedObjs.clear();
@@ -246,7 +243,7 @@ void StrategicArea::onVisibilityChange( bool )
   cachedObjectIndex = -1;
 }
 
-void StrategicArea::onReposition()
+void SelectionArea::onReposition()
 {
   width     = camera.width;
   height    = camera.height;
@@ -255,7 +252,7 @@ void StrategicArea::onReposition()
   stepPixel = 1.0f / pixelStep;
 }
 
-void StrategicArea::onUpdate()
+void SelectionArea::onUpdate()
 {
   for( int i = 0; i < taggedStrs.length(); ) {
     const Struct* str = orbis.structs[ taggedStrs[i] ];
@@ -280,7 +277,7 @@ void StrategicArea::onUpdate()
   }
 }
 
-bool StrategicArea::onMouseEvent()
+bool SelectionArea::onMouseEvent()
 {
   Vec3 at = Vec3( float( mouse.x - camera.centreX ) * pixelStep * 100.0f,
                   float( mouse.y - camera.centreY ) * pixelStep * 100.0f,
@@ -295,6 +292,11 @@ bool StrategicArea::onMouseEvent()
   const Entity* ent = collider.hit.entity;
   const Object* obj = collider.hit.obj;
 
+  if( input.leftClick && !input.keys[Input::KEY_UI_ALT] ) {
+    taggedStrs.clear();
+    taggedObjs.clear();
+  }
+
   if( str != null ) {
     hoverStr = str->index;
 
@@ -303,30 +305,34 @@ bool StrategicArea::onMouseEvent()
     }
 
     if( input.leftClick ) {
-      taggedStrs.clear();
-      taggedObjs.clear();
-      taggedStrs.add( hoverStr );
+      int index = taggedStrs.index( hoverStr );
+
+      if( index >= 0 ) {
+        taggedStrs.removeUO( index );
+      }
+      else {
+        taggedStrs.add( hoverStr );
+      }
     }
   }
   else if( obj != null ) {
     hoverObj = obj->index;
 
     if( input.leftClick ) {
-      taggedStrs.clear();
-      taggedObjs.clear();
-      taggedObjs.add( hoverObj );
-    }
-  }
-  else {
-    if( input.leftClick ) {
-      taggedStrs.clear();
-      taggedObjs.clear();
+      int index = taggedObjs.index( hoverObj );
+
+      if( index >= 0 ) {
+        taggedObjs.removeUO( index );
+      }
+      else {
+        taggedObjs.add( hoverObj );
+      }
     }
   }
   return true;
 }
 
-void StrategicArea::onDraw()
+void SelectionArea::onDraw()
 {
   const Struct* str = hoverStr < 0 ? null : orbis.structs[hoverStr];
   const Entity* ent = hoverEnt < 0 ? null : &orbis.structs[hoverEnt / Struct::MAX_ENTITIES]->
@@ -387,7 +393,7 @@ void StrategicArea::onDraw()
   hoverObj = -1;
 }
 
-StrategicArea::StrategicArea() :
+SelectionArea::SelectionArea() :
   Area( camera.width, camera.height ),
   unitName( 0, 0, ALIGN_HCENTRE, Font::SANS, " " ),
   cachedStructIndex( -1 ), cachedEntityIndex( -1 ), cachedObjectIndex( -1 ),

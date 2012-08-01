@@ -101,6 +101,7 @@ bool Area::passMouseEvents()
       return true;
     }
   }
+
   foreach( child, children.iter() ) {
     if( child->x <= mouse.x && mouse.x < child->x + child->width &&
         child->y <= mouse.y && mouse.y < child->y + child->height )
@@ -112,6 +113,7 @@ bool Area::passMouseEvents()
       }
     }
   }
+
   return false;
 }
 

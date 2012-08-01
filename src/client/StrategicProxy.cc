@@ -28,7 +28,7 @@
 #include "client/Camera.hh"
 #include "client/Input.hh"
 
-#include "client/ui/StrategicArea.hh"
+#include "client/ui/SelectionArea.hh"
 #include "client/ui/GalileoFrame.hh"
 #include "client/ui/UI.hh"
 
@@ -61,7 +61,7 @@ void StrategicProxy::begin()
 
   ui::mouse.doShow = true;
 
-  ui::ui.strategicArea->enable( true );
+  ui::ui.selectionArea->enable( true );
 
   desiredPos = camera.p;
 }
@@ -72,7 +72,7 @@ void StrategicProxy::end()
 
   ui::mouse.doShow = true;
 
-  ui::ui.strategicArea->enable( false );
+  ui::ui.selectionArea->enable( false );
 }
 
 void StrategicProxy::prepare()
@@ -86,8 +86,8 @@ void StrategicProxy::prepare()
   if( input.keys[Input::KEY_SWITCH_TO_UNIT] && !input.oldKeys[Input::KEY_SWITCH_TO_UNIT] &&
       camera.allowReincarnation )
   {
-    if( ui::ui.strategicArea->taggedObjs.length() == 1 ) {
-      const Object* tagged = orbis.objects[ ui::ui.strategicArea->taggedObjs.first() ];
+    if( ui::ui.selectionArea->taggedObjs.length() == 1 ) {
+      const Object* tagged = orbis.objects[ ui::ui.selectionArea->taggedObjs.first() ];
       const Bot*    me     = null;
 
       if( tagged != null ) {

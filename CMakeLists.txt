@@ -202,14 +202,14 @@ endif()
 #
 
 if( isClang )
-  set( flags "-Qunused-arguments -pipe -pedantic -std=c++11 -stdlib=libc++" )
+  set( flags "-pipe -std=c++11 -pedantic -stdlib=libc++" )
 elseif( isLegacyGCC )
-  set( flags "-pipe -std=gnu++0x -fexceptions -msse3" )
+  set( flags "-pipe -std=gnu++0x" )
 else()
-  set( flags "-pipe -pedantic -std=c++0x -fstrict-enums" )
+  set( flags "-pipe -std=c++0x -pedantic -fstrict-enums" )
 endif()
 
-set( flags "${flags} -fvisibility-inlines-hidden -ffast-math -msse3 -mfpmath=sse" )
+set( flags "${flags} -fvisibility-inlines-hidden -ffast-math" )
 set( warnings "-Wall -Wextra -Winvalid-pch -Wconversion" )
 
 # Additional warnings, enabled only once in a while to check code quality (GCC specific).

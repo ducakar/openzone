@@ -46,7 +46,7 @@ class Input
     {
       KEY_NONE,
 
-      KEY_UI_DRAG,
+      KEY_UI_ALT,
       KEY_UI_TOGGLE,
 
       KEY_DIR_1,

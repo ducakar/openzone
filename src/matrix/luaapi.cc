@@ -21,7 +21,7 @@
  * @file matrix/luaapi.cc
  */
 
-#include "common/lua.hh"
+#include "common/luabase.hh"
 
 #include "matrix/Orbis.hh"
 #include "matrix/Vehicle.hh"
