@@ -977,7 +977,6 @@ DArray<File> File::ls()
 #endif
 
   array.sort();
-
   return array;
 }
 

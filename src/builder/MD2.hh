@@ -89,9 +89,11 @@ class MD2
 
   public:
 
-    static void build( const char* path );
+    void build( const char* path );
 
 };
+
+extern MD2 md2;
 
 }
 }

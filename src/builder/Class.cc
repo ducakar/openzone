@@ -49,8 +49,6 @@ namespace oz
 namespace builder
 {
 
-Class clazz;
-
 const Mat44 Class::INJURY_COLOUR = Mat44( 0.60f, 0.20f, 0.20f, 0.00f,
                                           0.60f, 0.20f, 0.20f, 0.00f,
                                           0.60f, 0.20f, 0.20f, 0.00f,
@@ -915,6 +913,8 @@ void Class::free()
   audios.clear();
   audios.dealloc();
 }
+
+Class clazz;
 
 }
 }

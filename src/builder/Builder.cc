@@ -169,7 +169,7 @@ void Builder::buildCaela()
     String name = file->baseName();
 
     File::mkdir( "caelum" );
-    Caelum::build( name );
+    caelum.build( name );
   }
 
   Log::unindent();
@@ -193,7 +193,7 @@ void Builder::buildTerrae()
     }
 
     File::mkdir( "terra" );
-    Terra::build( file->baseName() );
+    terra.build( file->baseName() );
   }
 
   Log::unindent();
@@ -219,7 +219,7 @@ void Builder::buildBSPs()
     }
 
     File::mkdir( "bsp" );
-    BSP::build( file->baseName() );
+    bsp.build( file->baseName() );
   }
 
   Log::unindent();
@@ -527,13 +527,13 @@ void Builder::buildModels()
     }
 
     if( PFile( path + "/data.obj" ).stat() ) {
-      OBJ::build( path );
+      obj.build( path );
     }
     else if( PFile( path + "/tris.md2" ).stat() ) {
-      MD2::build( path );
+      md2.build( path );
     }
     else {
-      MD3::build( path );
+      md3.build( path );
     }
   }
 
@@ -928,20 +928,6 @@ int Builder::main( int argc, char** argv )
   Log::print( "OpenZone Builder " OZ_VERSION " started on " );
   Log::printTime( Time::local() );
   Log::printEnd();
-
-  Log::println( "Build details {" );
-  Log::indent();
-
-  Log::println( "Date:            %s", BuildInfo::TIME );
-  Log::println( "Host system:     %s", BuildInfo::HOST_SYSTEM );
-  Log::println( "Target system:   %s", BuildInfo::TARGET_SYSTEM );
-  Log::println( "Build type:      %s", BuildInfo::BUILD_TYPE );
-  Log::println( "Compiler:        %s", BuildInfo::COMPILER );
-  Log::println( "Compiler flags:  %s", BuildInfo::CXX_FLAGS );
-  Log::println( "Linker flags:    %s", BuildInfo::EXE_LINKER_FLAGS );
-
-  Log::unindent();
-  Log::println( "}" );
 
   SDL_Init( SDL_INIT_VIDEO );
   PFile::init();

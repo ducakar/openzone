@@ -114,13 +114,12 @@ void BSP::load()
     lumps[i].length = is.readInt();
   }
 
-  nTextures = lumps[QBSPLump::TEXTURES].length / int( sizeof( QBSPTexture ) );
-  textures = new Texture[nTextures];
+  textures.resize( lumps[QBSPLump::TEXTURES].length / int( sizeof( QBSPTexture ) ) );
 
   is.reset();
   is.forward( lumps[QBSPLump::TEXTURES].offset );
 
-  for( int i = 0; i < nTextures; ++i ) {
+  for( int i = 0; i < textures.length(); ++i ) {
     textures[i].name  = is.forward( 64 );
     textures[i].flags = is.readInt();
     textures[i].type  = is.readInt();
@@ -145,26 +144,24 @@ void BSP::load()
                   textures[i].type );
   }
 
-  nPlanes = lumps[QBSPLump::PLANES].length / int( sizeof( QBSPPlane ) );
-  planes = new Plane[nPlanes];
+  planes.resize( lumps[QBSPLump::PLANES].length / int( sizeof( QBSPPlane ) ) );
 
   is.reset();
   is.forward( lumps[QBSPLump::PLANES].offset );
 
-  for( int i = 0; i < nPlanes; ++i ) {
+  for( int i = 0; i < planes.length(); ++i ) {
     planes[i].n.x = is.readFloat();
     planes[i].n.y = is.readFloat();
     planes[i].n.z = is.readFloat();
     planes[i].d   = is.readFloat() * scale;
   }
 
-  nNodes = lumps[QBSPLump::NODES].length / int( sizeof( QBSPNode ) );
-  nodes = new matrix::BSP::Node[nNodes];
+  nodes.resize( lumps[QBSPLump::NODES].length / int( sizeof( QBSPNode ) ) );
 
   is.reset();
   is.forward( lumps[QBSPLump::NODES].offset );
 
-  for( int i = 0; i < nNodes; ++i ) {
+  for( int i = 0; i < nodes.length(); ++i ) {
     nodes[i].plane = is.readInt();
     nodes[i].front = is.readInt();
     nodes[i].back  = is.readInt();
@@ -178,13 +175,12 @@ void BSP::load()
     is.readInt();
   }
 
-  nLeaves = lumps[QBSPLump::LEAFS].length / int( sizeof( QBSPLeaf ) );
-  leaves = new matrix::BSP::Leaf[nLeaves];
+  leaves.resize( lumps[QBSPLump::LEAFS].length / int( sizeof( QBSPLeaf ) ) );
 
   is.reset();
   is.forward( lumps[QBSPLump::LEAFS].offset );
 
-  for( int i = 0; i < nLeaves; ++i ) {
+  for( int i = 0; i < leaves.length(); ++i ) {
     // int cluster
     is.readInt();
     // int area
@@ -205,23 +201,19 @@ void BSP::load()
     leaves[i].nBrushes   = is.readInt();
   }
 
-  nLeafBrushes = lumps[QBSPLump::LEAFBRUSHES].length / int( sizeof( int ) );
-  leafBrushes = new int[nLeafBrushes];
+  leafBrushes.resize( lumps[QBSPLump::LEAFBRUSHES].length / int( sizeof( int ) ) );
 
   is.reset();
   is.forward( lumps[QBSPLump::LEAFBRUSHES].offset );
 
-  for( int i = 0; i < nLeafBrushes; ++i ) {
+  for( int i = 0; i < leafBrushes.length(); ++i ) {
     leafBrushes[i] = is.readInt();
   }
 
-  nModels = lumps[QBSPLump::MODELS].length / int( sizeof( QBSPModel ) ) - 1;
-  models = null;
-  modelFaces = new ModelFaces[nModels + 1];
+  models.resize( lumps[QBSPLump::MODELS].length / int( sizeof( QBSPModel ) ) - 1 );
+  modelFaces.resize( models.length() + 1 );
 
-  if( nModels != 0 ) {
-    models = new Model[nModels];
-
+  if( !models.isEmpty() ) {
     is.reset();
     is.forward( lumps[QBSPLump::MODELS].offset );
 
@@ -234,7 +226,7 @@ void BSP::load()
     // skip model 0 (whole BSP)
     is.forward( int( sizeof( QBSPModel ) ) );
 
-    for( int i = 0; i < nModels; ++i ) {
+    for( int i = 0; i < models.length(); ++i ) {
       const JSON& modelConfig = modelsConfig[i];
 
       models[i].mins.x = is.readFloat() * scale - 4.0f * EPSILON;
@@ -307,7 +299,7 @@ void BSP::load()
   is.reset();
   is.forward( lumps[QBSPLump::MODELS].offset );
 
-  for( int i = 0; i < nModels + 1; ++i ) {
+  for( int i = 0; i < models.length() + 1; ++i ) {
     // float bb[2][3]
     is.readFloat();
     is.readFloat();
@@ -325,30 +317,29 @@ void BSP::load()
     is.readInt();
   }
 
-  nBrushSides = lumps[QBSPLump::BRUSHSIDES].length / int( sizeof( QBSPBrushSide ) );
-  brushSides = new int[nBrushSides];
+  brushSides.resize( lumps[QBSPLump::BRUSHSIDES].length / int( sizeof( QBSPBrushSide ) ) );
 
   is.reset();
   is.forward( lumps[QBSPLump::BRUSHSIDES].offset );
 
-  for( int i = 0; i < nBrushSides; ++i ) {
+  for( int i = 0; i < brushSides.length(); ++i ) {
     brushSides[i] = is.readInt();
 
     // int texture
     is.readInt();
   }
 
-  nBrushes = lumps[QBSPLump::BRUSHES].length / int( sizeof( QBSPBrush ) );
-  brushes = new matrix::BSP::Brush[nBrushes];
+  brushes.resize( lumps[QBSPLump::BRUSHES].length / int( sizeof( QBSPBrush ) ) );
 
-  if( nBrushes > matrix::BSP::MAX_BRUSHES ) {
-    throw Exception( "Too many brushes %d, can be at most %d", nBrushes, matrix::BSP::MAX_BRUSHES );
+  if( brushes.length() > matrix::BSP::MAX_BRUSHES ) {
+    throw Exception( "Too many brushes %d, can be at most %d", brushes.length(),
+                     matrix::BSP::MAX_BRUSHES );
   }
 
   is.reset();
   is.forward( lumps[QBSPLump::BRUSHES].offset );
 
-  for( int i = 0; i < nBrushes; ++i ) {
+  for( int i = 0; i < brushes.length(); ++i ) {
     brushes[i].firstSide = is.readInt();
     brushes[i].nSides    = is.readInt();
     brushes[i].flags     = 0;
@@ -381,13 +372,12 @@ void BSP::load()
     }
   }
 
-  nVertices = lumps[QBSPLump::VERTICES].length / int( sizeof( QBSPVertex ) );
-  vertices = new Vertex[nVertices];
+  vertices.resize( lumps[QBSPLump::VERTICES].length / int( sizeof( QBSPVertex ) ) );
 
   is.reset();
   is.forward( lumps[QBSPLump::VERTICES].offset );
 
-  for( int i = 0; i < nVertices; ++i ) {
+  for( int i = 0; i < vertices.length(); ++i ) {
     vertices[i].pos[0]      = is.readFloat() * scale;
     vertices[i].pos[1]      = is.readFloat() * scale;
     vertices[i].pos[2]      = is.readFloat() * scale;
@@ -410,24 +400,22 @@ void BSP::load()
     is.readChar();
   }
 
-  nIndices = lumps[QBSPLump::INDICES].length / int( sizeof( int ) );
-  indices = new int[nIndices];
+  indices.resize( lumps[QBSPLump::INDICES].length / int( sizeof( int ) ) );
 
   is.reset();
   is.forward( lumps[QBSPLump::INDICES].offset );
 
-  for( int i = 0; i < nIndices; ++i ) {
+  for( int i = 0; i < indices.length(); ++i ) {
     indices[i] = is.readInt();
   }
 
-  nFaces = lumps[QBSPLump::FACES].length / int( sizeof( QBSPFace ) );
-  faces = new Face[nFaces];
+  faces.resize( lumps[QBSPLump::FACES].length / int( sizeof( QBSPFace ) ) );
 
   is.reset();
   is.forward( lumps[QBSPLump::FACES].offset );
 
-  for( int i = 0; i < nFaces; ++i ) {
-    faces[i].texture = is.readInt();
+  for( int i = 0; i < faces.length(); ++i ) {
+    faces[i].texture     = is.readInt();
 
     // int effect
     is.readInt();
@@ -518,7 +506,7 @@ void BSP::optimise()
   Log::indent();
 
   // remove brushes that lay out of boundaries
-  for( int i = 0; i < nBrushes; ) {
+  for( int i = 0; i < brushes.length(); ) {
     hard_assert( brushes[i].nSides >= 0 );
 
     if( brushes[i].nSides != 0 ) {
@@ -526,12 +514,11 @@ void BSP::optimise()
       continue;
     }
 
-    aRemove( brushes, i, nBrushes );
-    --nBrushes;
+    brushes.remove( i );
     Log::print( "outside brush removed " );
 
     // adjust brush references (for leaves)
-    for( int j = 0; j < nLeafBrushes; ) {
+    for( int j = 0; j < leafBrushes.length(); ) {
       if( leafBrushes[j] < i ) {
         ++j;
       }
@@ -540,11 +527,10 @@ void BSP::optimise()
         ++j;
       }
       else {
-        aRemove( leafBrushes, j, nLeafBrushes );
-        --nLeafBrushes;
+        leafBrushes.remove( j );
         Log::printRaw( "." );
 
-        for( int k = 0; k < nLeaves; ++k ) {
+        for( int k = 0; k < leaves.length(); ++k ) {
           if( j < leaves[k].firstBrush ) {
             --leaves[k].firstBrush;
           }
@@ -557,7 +543,7 @@ void BSP::optimise()
       }
     }
     // adjust brush references (for models)
-    for( int j = 0; j < nModels; ++j ) {
+    for( int j = 0; j < models.length(); ++j ) {
       if( i < models[j].firstBrush ) {
         --models[j].firstBrush;
       }
@@ -573,22 +559,21 @@ void BSP::optimise()
   // remove model brushes from the static tree (WTF Quake BSP puts them there?)
   Log::print( "removing model brush references " );
 
-  for( int i = 0; i < nModels; ++i ) {
+  for( int i = 0; i < models.length(); ++i ) {
     for( int j = 0; j < models[i].nBrushes; ++j ) {
       int brush = models[i].firstBrush + j;
 
-      for( int k = 0; k < nLeafBrushes; ) {
+      for( int k = 0; k < leafBrushes.length(); ) {
         if( leafBrushes[k] != brush ) {
           ++k;
           continue;
         }
 
-        aRemove( leafBrushes, k, nLeafBrushes );
-        --nLeafBrushes;
+        leafBrushes.remove( k );
         Log::printRaw( "." );
 
         // adjust leaf references
-        for( int l = 0; l < nLeaves; ++l ) {
+        for( int l = 0; l < leaves.length(); ++l ) {
           if( k < leaves[l].firstBrush ) {
             --leaves[l].firstBrush;
           }
@@ -607,10 +592,10 @@ void BSP::optimise()
   // remove unreferenced leaves
   Log::print( "removing unreferenced and empty leaves " );
 
-  for( int i = 0; i < nLeaves; ) {
+  for( int i = 0; i < leaves.length(); ) {
     bool isReferenced = false;
 
-    for( int j = 0; j < nNodes; ++j ) {
+    for( int j = 0; j < nodes.length(); ++j ) {
       if( nodes[j].front == ~i || nodes[j].back == ~i ) {
         isReferenced = true;
         break;
@@ -622,13 +607,12 @@ void BSP::optimise()
       continue;
     }
 
-    aRemove( leaves, i, nLeaves );
-    --nLeaves;
+    leaves.remove( i );
     Log::printRaw( "." );
 
     // update references and tag unnecessary nodes, will be removed in the next pass (index 0 is
     // invalid as the root cannot be referenced)
-    for( int j = 0; j < nNodes; ++j ) {
+    for( int j = 0; j < nodes.length(); ++j ) {
       if( ~nodes[j].front == i ) {
         nodes[j].front = 0;
       }
@@ -654,7 +638,7 @@ void BSP::optimise()
   do {
     hasCollapsed = false;
 
-    for( int i = 0; i < nNodes; ) {
+    for( int i = 0; i < nodes.length(); ) {
       if( nodes[i].front != 0 && nodes[i].back != 0 ) {
         ++i;
         continue;
@@ -678,7 +662,7 @@ void BSP::optimise()
       else {
         // find parent
         int* parentsRef = null;
-        for( int j = 0; j < nNodes; ++j ) {
+        for( int j = 0; j < nodes.length(); ++j ) {
           if( nodes[j].front == i ) {
             hard_assert( parentsRef == null );
 
@@ -703,16 +687,15 @@ void BSP::optimise()
         }
       }
 
-      aRemove( nodes, i, nNodes );
-      --nNodes;
+      nodes.remove( i );
 
-      for( int j = 0; j < nNodes; ++j ) {
+      for( int j = 0; j < nodes.length(); ++j ) {
         hard_assert( nodes[j].front != i );
         hard_assert( nodes[j].back != i );
       }
 
       // shift nodes' references
-      for( int j = 0; j < nNodes; ++j ) {
+      for( int j = 0; j < nodes.length(); ++j ) {
         if( nodes[j].front > i ) {
           --nodes[j].front;
         }
@@ -732,27 +715,27 @@ void BSP::optimise()
   // remove unused brush sides
   Log::print( "removing unused brush sides " );
 
-  bool* usedBrushSides = new bool[nBrushSides];
-  aSet( usedBrushSides, false, nBrushSides );
+  List<bool> usedBrushSides;
+  usedBrushSides.resize( brushSides.length() );
+  aSet<bool>( usedBrushSides, false, usedBrushSides.length() );
 
-  for( int i = 0; i < nBrushes; ++i ) {
+  for( int i = 0; i < brushes.length(); ++i ) {
     for( int j = 0; j < brushes[i].nSides; ++j ) {
       usedBrushSides[ brushes[i].firstSide + j ] = true;
     }
   }
 
-  for( int i = 0; i < nBrushSides; ) {
+  for( int i = 0; i < brushSides.length(); ) {
     if( usedBrushSides[i] ) {
       ++i;
       continue;
     }
 
-    aRemove( brushSides, i, nBrushSides );
-    aRemove( usedBrushSides, i, nBrushSides );
-    --nBrushSides;
+    brushSides.remove( i );
+    usedBrushSides.remove( i );
     Log::printRaw( "." );
 
-    for( int j = 0; j < nBrushes; ++j ) {
+    for( int j = 0; j < brushes.length(); ++j ) {
       if( i < brushes[j].firstSide ) {
         --brushes[j].firstSide;
       }
@@ -763,43 +746,44 @@ void BSP::optimise()
     }
   }
 
-  delete[] usedBrushSides;
+  usedBrushSides.clear();
+  usedBrushSides.dealloc();
 
   Log::printEnd( " OK" );
 
   // remove unused planes
   Log::print( "removing unused planes " );
 
-  bool* usedPlanes = new bool[nPlanes];
-  aSet( usedPlanes, false, nPlanes );
+  List<bool> usedPlanes;
+  usedPlanes.resize( planes.length() );
+  aSet<bool>( usedPlanes, false, planes.length() );
 
-  for( int i = 0; i < nNodes; ++i ) {
+  for( int i = 0; i < nodes.length(); ++i ) {
     usedPlanes[ nodes[i].plane ] = true;
   }
-  for( int i = 0; i < nBrushSides; ++i ) {
+  for( int i = 0; i < brushSides.length(); ++i ) {
     usedPlanes[ brushSides[i] ] = true;
   }
 
-  for( int i = 0; i < nPlanes; ) {
+  for( int i = 0; i < planes.length(); ) {
     if( usedPlanes[i] ) {
       ++i;
       continue;
     }
 
-    aRemove( planes, i, nPlanes );
-    aRemove( usedPlanes, i, nPlanes );
-    --nPlanes;
+    planes.remove( i );
+    usedPlanes.remove( i );
     Log::printRaw( "." );
 
     // adjust plane references
-    for( int j = 0; j < nNodes; ++j ) {
+    for( int j = 0; j < nodes.length(); ++j ) {
       hard_assert( nodes[j].plane != i );
 
       if( nodes[j].plane > i ) {
         --nodes[j].plane;
       }
     }
-    for( int j = 0; j < nBrushSides; ++j ) {
+    for( int j = 0; j < brushSides.length(); ++j ) {
       hard_assert( brushSides[j] != i );
 
       if( brushSides[j] > i ) {
@@ -808,7 +792,8 @@ void BSP::optimise()
     }
   }
 
-  delete[] usedPlanes;
+  usedPlanes.clear();
+  usedPlanes.dealloc();
 
   Log::printEnd( " OK" );
 
@@ -818,7 +803,7 @@ void BSP::optimise()
   mins = Point( +Math::INF, +Math::INF, +Math::INF );
   maxs = Point( -Math::INF, -Math::INF, -Math::INF );
 
-  for( int i = 0; i < nBrushSides; ++i ) {
+  for( int i = 0; i < brushSides.length(); ++i ) {
     Plane& plane = planes[ brushSides[i] ];
 
     if( plane.n.x == -1.0f ) {
@@ -852,7 +837,7 @@ void BSP::optimise()
   Log::indent();
 
   // remove faces that lay out of boundaries
-  for( int i = 0; i < nFaces; ) {
+  for( int i = 0; i < faces.length(); ) {
     hard_assert( faces[i].nVertices > 0 && faces[i].nIndices >= 0 );
 
     if( faces[i].nIndices != 0 ) {
@@ -860,12 +845,11 @@ void BSP::optimise()
       continue;
     }
 
-    aRemove( faces, i, nFaces );
-    --nFaces;
+    faces.remove( i );
     Log::println( "outside face removed" );
 
     // adjust face references
-    for( int j = 0; j < nModels + 1; ++j ) {
+    for( int j = 0; j < models.length() + 1; ++j ) {
       if( i < modelFaces[j].firstFace ) {
         --modelFaces[j].firstFace;
       }
@@ -885,15 +869,15 @@ void BSP::check() const
 {
   Log::print( "Integrity check ..." );
 
-  Bitset usedNodes( nNodes );
-  Bitset usedLeaves( nLeaves );
-  Bitset usedBrushes( nBrushes );
+  Bitset usedNodes( nodes.length() );
+  Bitset usedLeaves( leaves.length() );
+  Bitset usedBrushes( brushes.length() );
 
   usedNodes.clearAll();
   usedLeaves.clearAll();
   usedBrushes.clearAll();
 
-  for( int i = 0; i < nNodes; ++i ) {
+  for( int i = 0; i < nodes.length(); ++i ) {
     if( nodes[i].front < 0 ) {
       if( usedLeaves.get( ~nodes[i].front ) ) {
         throw Exception( "BSP leaf %d referenced twice", ~nodes[i].front );
@@ -927,7 +911,7 @@ void BSP::check() const
     }
   }
 
-  for( int i = 0; i < nModels; ++i ) {
+  for( int i = 0; i < models.length(); ++i ) {
     for( int j = 0; j < models[i].nBrushes; ++j ) {
       int index = models[i].firstBrush + j;
 
@@ -939,14 +923,14 @@ void BSP::check() const
   }
 
   usedBrushes.clearAll();
-  for( int i = 0; i < nLeaves; ++i ) {
+  for( int i = 0; i < leaves.length(); ++i ) {
     for( int j = 0; j < leaves[i].nBrushes; ++j ) {
       int index = leafBrushes[ leaves[i].firstBrush + j ];
 
       usedBrushes.set( index );
     }
   }
-  for( int i = 0; i < nModels; ++i ) {
+  for( int i = 0; i < models.length(); ++i ) {
     for( int j = 0; j < models[i].nBrushes; ++j ) {
       int index = models[i].firstBrush + j;
 
@@ -960,23 +944,23 @@ void BSP::check() const
   if( usedNodes.get( 0 ) ) {
     throw Exception( "BSP root node referenced" );
   }
-  for( int i = 1; i < nNodes; ++i ) {
+  for( int i = 1; i < nodes.length(); ++i ) {
     if( !usedNodes.get( i ) ) {
       throw Exception( "BSP node %d not referenced", i );
     }
   }
-  for( int i = 0; i < nLeaves; ++i ) {
+  for( int i = 0; i < leaves.length(); ++i ) {
     if( !usedLeaves.get( i ) ) {
       throw Exception( "BSP leaf %d not referenced", i );
     }
   }
-  for( int i = 0; i < nBrushes; ++i ) {
+  for( int i = 0; i < brushes.length(); ++i ) {
     if( !usedBrushes.get( i ) ) {
       throw Exception( "BSP brush %d not referenced", i );
     }
   }
 
-  for( int i = 0; i < nPlanes; ++i ) {
+  for( int i = 0; i < planes.length(); ++i ) {
     if( !Math::isfinite( planes[i].d ) ) {
       throw Exception( "BSP has invalid plane %d", i );
     }
@@ -986,14 +970,14 @@ void BSP::check() const
 
   Log::println( "Statistics {" );
   Log::indent();
-  Log::println( "%4d  models",      nModels );
-  Log::println( "%4d  nodes",       nNodes );
-  Log::println( "%4d  leaves",      nLeaves );
-  Log::println( "%4d  brushes",     nBrushes );
-  Log::println( "%4d  brush sides", nBrushSides );
-  Log::println( "%4d  planes",      nPlanes );
-  Log::println( "%4d  faces",       nFaces );
-  Log::println( "%4d  textures",    nTextures );
+  Log::println( "%4d  models",      models.length() );
+  Log::println( "%4d  nodes",       nodes.length() );
+  Log::println( "%4d  leaves",      leaves.length() );
+  Log::println( "%4d  brushes",     brushes.length() );
+  Log::println( "%4d  brush sides", brushSides.length() );
+  Log::println( "%4d  planes",      planes.length() );
+  Log::println( "%4d  faces",       faces.length() );
+  Log::println( "%4d  textures",    textures.length() );
   Log::unindent();
   Log::println( "}" );
 }
@@ -1009,15 +993,15 @@ void BSP::saveMatrix()
   if( !demolishSound.isEmpty() ) {
     sounds.add( demolishSound );
   }
-  for( int i = 0; i < nModels; ++i ) {
-    if( !models[i].openSound.isEmpty() ) {
-      sounds.include( models[i].openSound );
+  foreach( model, models.citer() ) {
+    if( !model->openSound.isEmpty() ) {
+      sounds.include( model->openSound );
     }
-    if( !models[i].closeSound.isEmpty() ) {
-      sounds.include( models[i].closeSound );
+    if( !model->closeSound.isEmpty() ) {
+      sounds.include( model->closeSound );
     }
-    if( !models[i].frictSound.isEmpty() ) {
-      sounds.include( models[i].frictSound );
+    if( !model->frictSound.isEmpty() ) {
+      sounds.include( model->frictSound );
     }
   }
   sounds.sort();
@@ -1031,8 +1015,8 @@ void BSP::saveMatrix()
   os.writeString( description );
 
   os.writeInt( sounds.length() );
-  for( int i = 0; i < sounds.length(); ++i ) {
-    os.writeString( sounds[i] );
+  foreach( sound, sounds.citer() ) {
+    os.writeString( *sound );
   }
 
   sounds.clear();
@@ -1041,75 +1025,75 @@ void BSP::saveMatrix()
   os.writeFloat( life );
   os.writeFloat( resistance );
 
-  os.writeInt( nPlanes );
-  os.writeInt( nNodes );
-  os.writeInt( nLeaves );
-  os.writeInt( nLeafBrushes );
-  os.writeInt( nBrushes );
-  os.writeInt( nBrushSides );
-  os.writeInt( nModels );
+  os.writeInt( planes.length() );
+  os.writeInt( nodes.length() );
+  os.writeInt( leaves.length() );
+  os.writeInt( leafBrushes.length() );
+  os.writeInt( brushes.length() );
+  os.writeInt( brushSides.length() );
+  os.writeInt( models.length() );
   os.writeInt( boundObjects.length() );
 
-  for( int i = 0; i < nPlanes; ++i ) {
-    os.writePlane( planes[i] );
+  foreach( plane, planes.citer() ) {
+    os.writePlane( *plane );
   }
 
-  for( int i = 0; i < nNodes; ++i ) {
-    os.writeInt( nodes[i].plane );
-    os.writeInt( nodes[i].front );
-    os.writeInt( nodes[i].back );
+  foreach( node, nodes.citer() ) {
+    os.writeInt( node->plane );
+    os.writeInt( node->front );
+    os.writeInt( node->back );
   }
 
-  for( int i = 0; i < nLeaves; ++i ) {
-    os.writeInt( leaves[i].firstBrush );
-    os.writeInt( leaves[i].nBrushes );
+  foreach( leaf, leaves.citer() ) {
+    os.writeInt( leaf->firstBrush );
+    os.writeInt( leaf->nBrushes );
   }
 
-  for( int i = 0; i < nLeafBrushes; ++i ) {
-    os.writeInt( leafBrushes[i] );
+  foreach( leafBrush, leafBrushes.citer() ) {
+    os.writeInt( *leafBrush );
   }
 
-  for( int i = 0; i < nBrushes; ++i ) {
-    os.writeInt( brushes[i].firstSide );
-    os.writeInt( brushes[i].nSides );
-    os.writeInt( brushes[i].flags );
+  foreach( brush, brushes.citer() ) {
+    os.writeInt( brush->firstSide );
+    os.writeInt( brush->nSides );
+    os.writeInt( brush->flags );
   }
 
-  for( int i = 0; i < nBrushSides; ++i ) {
-    os.writeInt( brushSides[i] );
+  foreach( brushSide, brushSides.citer() ) {
+    os.writeInt( *brushSide );
   }
 
-  for( int i = 0; i < nModels; ++i ) {
-    os.writePoint( models[i].mins );
-    os.writePoint( models[i].maxs );
+  foreach( model, models.citer() ) {
+    os.writePoint( model->mins );
+    os.writePoint( model->maxs );
 
-    os.writeString( models[i].title );
-    os.writeVec3( models[i].move );
+    os.writeString( model->title );
+    os.writeVec3( model->move );
 
-    os.writeInt( models[i].firstBrush );
-    os.writeInt( models[i].nBrushes );
+    os.writeInt( model->firstBrush );
+    os.writeInt( model->nBrushes );
 
-    os.writeInt( int( models[i].type ) );
-    os.writeFloat( models[i].margin );
-    os.writeFloat( models[i].timeout );
-    os.writeFloat( models[i].ratioInc );
+    os.writeInt( int( model->type ) );
+    os.writeFloat( model->margin );
+    os.writeFloat( model->timeout );
+    os.writeFloat( model->ratioInc );
 
-    os.writeInt( models[i].target );
-    os.writeInt( models[i].key );
+    os.writeInt( model->target );
+    os.writeInt( model->key );
 
-    context.usedSounds.include( models[i].openSound );
-    context.usedSounds.include( models[i].closeSound );
-    context.usedSounds.include( models[i].frictSound );
+    context.usedSounds.include( model->openSound );
+    context.usedSounds.include( model->closeSound );
+    context.usedSounds.include( model->frictSound );
 
-    os.writeString( models[i].openSound );
-    os.writeString( models[i].closeSound );
-    os.writeString( models[i].frictSound );
+    os.writeString( model->openSound );
+    os.writeString( model->closeSound );
+    os.writeString( model->frictSound );
   }
 
-  for( int i = 0; i < boundObjects.length(); ++i ) {
-    os.writeString( boundObjects[i].clazz );
-    os.writePoint( boundObjects[i].pos );
-    os.writeInt( boundObjects[i].heading );
+  foreach( boundObject, boundObjects.citer() ) {
+    os.writeString( boundObject->clazz );
+    os.writePoint( boundObject->pos );
+    os.writeInt( boundObject->heading );
   }
 
   os.writeString( fragPool );
@@ -1133,7 +1117,7 @@ void BSP::saveClient()
   compiler.enable( Compiler::UNIQUE );
   compiler.enable( Compiler::CLOCKWISE );
 
-  for( int i = 0; i < nModels + 1; ++i ) {
+  for( int i = 0; i < models.length() + 1; ++i ) {
     compiler.component( i );
 
     for( int j = 0; j < modelFaces[i].nFaces; ++j ) {
@@ -1196,71 +1180,52 @@ void BSP::saveClient()
   Log::printEnd( " OK" );
 }
 
-BSP::BSP( const char* name_ ) :
-  name( name_ )
-{}
-
-BSP::~BSP()
+void BSP::build( const char* name_ )
 {
-  Log::print( "Freeing BSP '%s' ...", name.cstr() );
-
-  delete[] textures;
-  delete[] planes;
-  delete[] nodes;
-  delete[] leaves;
-  delete[] leafBrushes;
-  delete[] models;
-  delete[] brushes;
-  delete[] brushSides;
-  delete[] modelFaces;
-  delete[] vertices;
-  delete[] indices;
-  delete[] faces;
-
-  textures    = null;
-  planes      = null;
-  nodes       = null;
-  leaves      = null;
-  leafBrushes = null;
-  models      = null;
-  brushes     = null;
-  brushSides  = null;
-  modelFaces  = null;
-  vertices    = null;
-  indices     = null;
-  faces       = null;
-
-  nTextures    = 0;
-  nPlanes      = 0;
-  nNodes       = 0;
-  nLeaves      = 0;
-  nLeafBrushes = 0;
-  nModels      = 0;
-  nBrushes     = 0;
-  nBrushSides  = 0;
-  nVertices    = 0;
-  nIndices     = 0;
-  nFaces       = 0;
-
-  Log::printEnd( " OK" );
-}
-
-void BSP::build( const char* name )
-{
-  Log::println( "Prebuilding BSP '%s' {", name );
+  Log::println( "Prebuilding BSP '%s' {", name_ );
   Log::indent();
 
-  BSP* bsp = new BSP( name );
-  bsp->load();
-  bsp->optimise();
-  bsp->check();
-  bsp->saveMatrix();
-  bsp->saveClient();
-  delete bsp;
+  name = name_;
+
+  load();
+  optimise();
+  check();
+  saveMatrix();
+  saveClient();
+
+  name          = "";
+  title         = "";
+  description   = "";
+  fragPool      = "";
+  demolishSound = "";
+
+  textures.clear();
+  planes.clear();
+  planes.dealloc();
+  nodes.clear();
+  nodes.dealloc();
+  leaves.clear();
+  leaves.dealloc();
+  leafBrushes.clear();
+  leafBrushes.dealloc();
+  models.clear();
+  brushes.clear();
+  brushes.dealloc();
+  brushSides.clear();
+  brushSides.dealloc();
+  modelFaces.clear();
+  vertices.clear();
+  indices.clear();
+  faces.clear();
+  faces.dealloc();
+  boundObjects.clear();
+  boundObjects.dealloc();
 
   Log::unindent();
   Log::println( "}" );
 }
+
+BSP bsp;
 
 }
 }

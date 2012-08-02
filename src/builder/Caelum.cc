@@ -116,5 +116,7 @@ void Caelum::build( const char* name )
   Log::println( "}" );
 }
 
+Caelum caelum;
+
 }
 }

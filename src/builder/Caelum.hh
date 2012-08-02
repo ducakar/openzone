@@ -38,9 +38,11 @@ class Caelum
 
   public:
 
-    static void build( const char* name );
+    void build( const char* name );
 
 };
+
+extern Caelum caelum;
 
 }
 }

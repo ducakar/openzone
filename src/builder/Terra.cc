@@ -284,18 +284,21 @@ void Terra::saveClient()
   context.useS3TC = useS3TC;
 }
 
-Terra::Terra( const char* name_ ) :
-  name( name_ )
-{}
-
-void Terra::build( const char* name )
+void Terra::build( const char* name_ )
 {
-  Terra* terra = new Terra( name );
-  terra->load();
-  terra->saveMatrix();
-  terra->saveClient();
-  delete terra;
+  name = name_;
+
+  load();
+  saveMatrix();
+  saveClient();
+
+  name          = "";
+  liquidTexture = "";
+  detailTexture = "";
+  mapTexture    = "";
 }
+
+Terra terra;
 
 }
 }

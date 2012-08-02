@@ -447,50 +447,6 @@ inline Elem* aRealloc( Elem* aSrc, int count, int newCount )
 }
 
 /**
- * Insert an element at the given index.
- *
- * The remaining elements are shifted to make a gap. The last element is lost.
- *
- * @param aDest array.
- * @param value value of to be inserted.
- * @param index position where the element is to be inserted.
- * @param count number of elements in the array.
- *
- * @ingroup oz
- */
-template <typename Elem, typename Value = Elem>
-inline void aInsert( Elem* aDest, Value&& value, int index, int count )
-{
-  hard_assert( uint( index ) < uint( count ) );
-
-  for( int i = count - 1; i > index; --i ) {
-    aDest[i] = static_cast<Elem&&>( aDest[i - 1] );
-  }
-  aDest[index] = static_cast<Value&&>( value );
-}
-
-/**
- * Remove the element at the given index.
- *
- * The remaining elements are shifted to fill the gap.
- *
- * @param aDest array.
- * @param index position of the element to be removed.
- * @param count number of elements in the array.
- *
- * @ingroup oz
- */
-template <typename Elem>
-inline void aRemove( Elem* aDest, int index, int count )
-{
-  hard_assert( uint( index ) < uint( count ) );
-
-  for( int i = index + 1; i < count; ++i ) {
-    aDest[i - 1] = static_cast<Elem&&>( aDest[i] );
-  }
-}
-
-/**
  * Reverse the order of array elements.
  *
  * @ingroup oz

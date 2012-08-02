@@ -35,8 +35,6 @@ namespace oz
 namespace builder
 {
 
-FragPool fragPool;
-
 void FragPool::build( BufferStream* os, const char* className )
 {
   PFile configFile( String::str( "frag/%s.json", className ) );
@@ -110,6 +108,8 @@ void FragPool::build( BufferStream* os, const char* className )
 
   config.clear( true );
 }
+
+FragPool fragPool;
 
 }
 }

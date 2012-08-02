@@ -93,13 +93,13 @@ class OBJ
     void load();
     void save();
 
-    explicit OBJ( const char* path );
-
   public:
 
-    static void build( const char* path );
+    void build( const char* path );
 
 };
+
+extern OBJ obj;
 
 }
 }

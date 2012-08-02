@@ -32,6 +32,35 @@ namespace oz
 namespace builder
 {
 
+class TextureLayer
+{
+  private:
+
+    struct Level
+    {
+      char* data;
+      int   width;
+      int   height;
+      int   format;
+      int   size;
+    };
+
+    List<Level> levels;
+    int         magFilter;
+    int         minFilter;
+    bool        wrap;
+
+  public:
+
+    ~TextureLayer();
+
+    explicit TextureLayer( const char* data, int width, int height, int format, bool wrap,
+                           int magFilter, int minFilter );
+
+    void write( BufferStream* os );
+
+};
+
 class Context
 {
   private:
@@ -54,8 +83,8 @@ class Context
 
   private:
 
-    uint buildTexture( const void* data, int width, int height, int format, bool wrap,
-                       int magFilter, int minFilter );
+    uint buildLayer( const void* data, int width, int height, int format, bool wrap,
+                     int magFilter, int minFilter );
 
     Image loadImage( const char* path, int forceFormat = 0 );
 

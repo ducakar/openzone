@@ -49,13 +49,13 @@ class Terra
     void saveMatrix();
     void saveClient();
 
-    explicit Terra( const char* name );
-
   public:
 
-    static void build( const char* name );
+    void build( const char* name );
 
 };
+
+extern Terra terra;
 
 }
 }

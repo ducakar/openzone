@@ -116,24 +116,6 @@ void test_arrays()
   OZ_CHECK( aLastIndex( a, 3, 4 ) == 2 );
   OZ_CHECK( aLastIndex( a, 3, 0 ) == -1 );
 
-  aRemove( a, 3, 4 );
-  aRemove( a, 1, 3 );
-  aRemove( b, 0, 4 );
-  aRemove( b, 0, 3 );
-  aRemove( b, 0, 1 );
-
-  OZ_CHECK_CONTENTS( a, 1, 3, -1, 2 );
-  OZ_CHECK_CONTENTS( b, 3, 2, -1, -1 );
-
-  aInsert( a, 2, 1, 3 );
-  aInsert( a, 2, 3, 4 );
-  aInsert( b, 2, 0, 3 );
-  aInsert( b, 1, 0, 4 );
-  aInsert( b, 2, 3, 4 );
-
-  OZ_CHECK_CONTENTS( a, 1, 2, 3, 2 );
-  OZ_CHECK_CONTENTS( b, 1, 2, 3, 2 );
-
   Foo** c = new Foo*[5];
   foreach( i, iter( c, 5 ) ) {
     *i = new Foo();

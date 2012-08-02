@@ -428,5 +428,7 @@ void MD2::build( const char* path )
   Log::println( "}" );
 }
 
+MD2 md2;
+
 }
 }

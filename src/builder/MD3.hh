@@ -150,13 +150,13 @@ class MD3
     void load();
     void save();
 
-    explicit MD3( const char* path );
-
   public:
 
-    static void build( const char* path );
+    void build( const char* path );
 
 };
+
+extern MD3 md3;
 
 }
 }

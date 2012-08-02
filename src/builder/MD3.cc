@@ -393,25 +393,27 @@ void MD3::save()
   }
 }
 
-MD3::MD3( const char* path ) :
-  sPath( path )
-{}
-
 void MD3::build( const char* path )
 {
   Log::println( "Prebuilding MD3 model '%s' {", path );
   Log::indent();
 
-  MD3* md3 = new MD3( path );
+  sPath = path;
 
-  md3->load();
-  md3->save();
+  load();
+  save();
 
-  delete md3;
+  sPath      = "";
+  skin       = "";
+  masks      = "";
+  model      = "";
+  shaderName = "";
 
   Log::unindent();
   Log::println( "}" );
 }
+
+MD3 md3;
 
 }
 }

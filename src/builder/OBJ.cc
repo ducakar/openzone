@@ -395,23 +395,35 @@ void OBJ::save()
   Log::printEnd( " OK" );
 }
 
-OBJ::OBJ( const char* path_ ) :
-  path( path_ )
-{}
-
-void OBJ::build( const char* path )
+void OBJ::build( const char* path_ )
 {
-  Log::println( "Prebuilding OBJ model '%s' {", path );
+  Log::println( "Prebuilding OBJ model '%s' {", path_ );
   Log::indent();
 
-  OBJ* obj = new OBJ( path );
-  obj->load();
-  obj->save();
-  delete obj;
+  path = path_;
+
+  load();
+  save();
+
+  path   = "";
+  shader = "";
+
+  positions.clear();
+  positions.dealloc();
+  normals.clear();
+  normals.dealloc();
+  texCoords.clear();
+  texCoords.dealloc();
+  parts.clear();
+  parts.dealloc();
+  materialIndices.clear();
+  materialIndices.dealloc();
 
   Log::unindent();
   Log::println( "}" );
 }
+
+OBJ obj;
 
 }
 }

@@ -520,6 +520,14 @@ class SList
     }
 
     /**
+     * Reverse elements.
+     */
+    void reverse()
+    {
+      aReverse<Elem>( data, count );
+    }
+
+    /**
      * Sort elements with quicksort.
      */
     void sort()

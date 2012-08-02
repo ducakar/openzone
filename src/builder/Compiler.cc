@@ -34,8 +34,6 @@ namespace oz
 namespace builder
 {
 
-Compiler compiler;
-
 bool Vertex::operator == ( const Vertex& v ) const
 {
   return pos == v.pos && texCoord == v.texCoord && normal == v.normal;
@@ -192,7 +190,7 @@ void Compiler::end()
   flags &= ~PART_BIT;
 
   if( caps & CLOCKWISE ) {
-    aReverse<ushort>( part.indices, part.indices.length() );
+    part.indices.reverse();
   }
 
   switch( mode ) {
@@ -536,6 +534,8 @@ void Compiler::free()
   positions.clear();
   normals.clear();
 }
+
+Compiler compiler;
 
 }
 }

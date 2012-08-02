@@ -262,47 +262,35 @@ class BSP : public Bounds
       Heading heading;
     };
 
-    String              name;
-    String              title;
-    String              description;
+    String                   name;
+    String                   title;
+    String                   description;
 
-    float               life;
-    float               resistance;
+    float                    life;
+    float                    resistance;
 
-    int                 nTextures;
-    int                 nPlanes;
-    int                 nNodes;
-    int                 nLeaves;
-    int                 nLeafBrushes;
-    int                 nModels;
-    int                 nBrushes;
-    int                 nBrushSides;
-    int                 nVertices;
-    int                 nIndices;
-    int                 nFaces;
+    DArray<Texture>          textures;
+    List<Plane>              planes;
+    List<matrix::BSP::Node>  nodes;
+    List<matrix::BSP::Leaf>  leaves;
+    List<int>                leafBrushes;
+    DArray<Model>            models;
+    List<matrix::BSP::Brush> brushes;
+    List<int>                brushSides;
+    DArray<ModelFaces>       modelFaces;
+    DArray<Vertex>           vertices;
+    DArray<int>              indices;
+    List<Face>               faces;
 
-    Texture*            textures;
-    Plane*              planes;
-    matrix::BSP::Node*  nodes;
-    matrix::BSP::Leaf*  leaves;
-    int*                leafBrushes;
-    Model*              models;
-    matrix::BSP::Brush* brushes;
-    int*                brushSides;
-    ModelFaces*         modelFaces;
-    Vertex*             vertices;
-    int*                indices;
-    Face*               faces;
+    String                   fragPool;
+    int                      nFrags;
 
-    String              fragPool;
-    int                 nFrags;
+    String                   demolishSound;
 
-    String              demolishSound;
+    List<BoundObject>        boundObjects;
 
-    List<BoundObject>   boundObjects;
-
-    Vec4                waterFogColour;
-    Vec4                lavaFogColour;
+    Vec4                     waterFogColour;
+    Vec4                     lavaFogColour;
 
     void load();
     void optimise();
@@ -310,15 +298,14 @@ class BSP : public Bounds
     void saveMatrix();
     void saveClient();
 
-    explicit BSP( const char* name );
-    ~BSP();
-
   public:
 
     // create ozBSP from a Quake 3 QBSP and optimise it
-    static void build( const char* name );
+    void build( const char* name );
 
 };
+
+extern BSP bsp;
 
 }
 }

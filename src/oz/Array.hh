@@ -281,6 +281,14 @@ class Array
     }
 
     /**
+     * Reverse elements.
+     */
+    void reverse()
+    {
+      aReverse<Elem>( data, COUNT );
+    }
+
+    /**
      * Sort elements with quicksort.
      */
     void sort()

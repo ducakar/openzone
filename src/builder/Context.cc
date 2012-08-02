@@ -44,7 +44,36 @@ namespace oz
 namespace builder
 {
 
-Context context;
+TextureLayer::~TextureLayer()
+{
+  for( int i = 0; i < levels.length(); ++i ) {
+    delete[] levels[i].data;
+  }
+}
+
+TextureLayer::TextureLayer( const char* data, int width, int height, int format, bool wrap,
+                            int magFilter, int minFilter )
+{
+
+}
+
+void TextureLayer::write( BufferStream* os )
+{
+  os->writeBool( wrap );
+  os->writeInt( magFilter );
+  os->writeInt( minFilter );
+
+  for( int i = 0; i < levels.length(); ++i ) {
+    const Level& level = levels[i];
+
+    os->writeInt( level.width );
+    os->writeInt( level.height );
+    os->writeInt( level.format );
+    os->writeInt( level.size );
+
+    os->writeChars( level.data, level.size );
+  }
+}
 
 const char* const Context::IMAGE_EXTENSIONS[] = {
   ".png",
@@ -63,14 +92,11 @@ struct Context::Image
   int       format;
 };
 
-uint Context::buildTexture( const void* data, int width, int height, int format, bool wrap,
-                            int magFilter, int minFilter )
+uint Context::buildLayer( const void* data, int width, int height, int format, bool wrap,
+                          int magFilter, int minFilter )
 {
-  bool largeEnoughForS3TC = width > 8 && height > 8;
-
-  if( useS3TC && largeEnoughForS3TC && ( width % 8 != 0 || height % 8 != 0 ) ) {
-    throw Exception( "Texture dimensions must be multiples of 8 to use S3 texture compression." );
-  }
+  bool suitableForS3TC = width > 8 && height > 8 && width % 8 == 0 && height % 8 == 0;
+  bool compress = useS3TC && suitableForS3TC;
 
   bool generateMipmaps = false;
   int internalFormat = -1;
@@ -78,17 +104,16 @@ uint Context::buildTexture( const void* data, int width, int height, int format,
   switch( format ) {
     case GL_BGR:
     case GL_RGB: {
-      internalFormat = useS3TC && largeEnoughForS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_RGB;
+      internalFormat = compress ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_RGB;
       break;
     }
     case GL_BGRA:
     case GL_RGBA: {
-      internalFormat = useS3TC && largeEnoughForS3TC ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_RGBA;
+      internalFormat = compress ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_RGBA;
       break;
     }
     case GL_LUMINANCE: {
-      internalFormat = useS3TC && largeEnoughForS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT :
-                                                       GL_LUMINANCE;
+      internalFormat = compress ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_LUMINANCE;
       break;
     }
     default: {
@@ -267,8 +292,8 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
 uint Context::loadLayer( const char* path, bool wrap, int magFilter, int minFilter )
 {
   Image image = loadImage( path );
-  uint  id    = buildTexture( image.pixels, image.width, image.height, image.format,
-                              wrap, magFilter, minFilter );
+  uint  id    = buildLayer( image.pixels, image.width, image.height, image.format,
+                            wrap, magFilter, minFilter );
   FreeImage_Unload( image.dib );
 
   return id;
@@ -346,8 +371,8 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
     throw Exception( "Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.cstr() );
   }
 
-  *diffuseId = buildTexture( image.pixels, image.width, image.height, image.format,
-                             wrap, magFilter, minFilter );
+  *diffuseId = buildLayer( image.pixels, image.width, image.height, image.format, wrap,
+                           magFilter, minFilter );
   FreeImage_Unload( image.dib );
 
   image.dib         = null;
@@ -373,14 +398,14 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
   }
 
   if( image.dib != null ) {
-    *masksId = buildTexture( image.pixels, image.width, image.height, image.format,
-                             wrap, magFilter, minFilter );
+    *masksId = buildLayer( image.pixels, image.width, image.height, image.format, wrap,
+                           magFilter, minFilter );
     FreeImage_Unload( image.dib );
   }
   else if( specImage.dib != null ) {
     if( emissionImage.dib != null ) {
       if( specImage.width != emissionImage.width || specImage.height != emissionImage.height ) {
-        throw Exception( "Specular and emission texture masks must have same size." );
+        throw Exception( "Specular and emission texture masks must have the same size." );
       }
     }
 
@@ -394,8 +419,8 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
       b = 0;
     }
 
-    *masksId = buildTexture( specImage.pixels, specImage.width, specImage.height, specImage.format,
-                             wrap, magFilter, minFilter );
+    *masksId = buildLayer( specImage.pixels, specImage.width, specImage.height, specImage.format,
+                           wrap, magFilter, minFilter );
 
     FreeImage_Unload( specImage.dib );
     if( emissionImage.dib != null ) {
@@ -426,8 +451,8 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
     }
 
     if( image.dib != null ) {
-      *normalsId = buildTexture( image.pixels, image.width, image.height, GL_BGR,
-                                 wrap, magFilter, minFilter );
+      *normalsId = buildLayer( image.pixels, image.width, image.height, GL_BGR, wrap,
+                               magFilter, minFilter );
       FreeImage_Unload( image.dib );
     }
     else {
@@ -507,6 +532,8 @@ void Context::free()
   usedModels.clear();
   usedModels.dealloc();
 }
+
+Context context;
 
 }
 }
