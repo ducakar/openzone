@@ -1,7 +1,3 @@
-0.3.1
-
-- homepage
-
 0.4
 
 - matrix

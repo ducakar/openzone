@@ -654,7 +654,7 @@ class HashString
     }
 
     /**
-     * Empty the hashtable.
+     * Clear the hashtable.
      */
     void clear()
     {
@@ -665,7 +665,7 @@ class HashString
     }
 
     /**
-     * Delete all objects referenced by element values and empty the hashtable.
+     * Delete all objects referenced by element values and clear the hashtable.
      */
     void free()
     {

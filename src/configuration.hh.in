@@ -26,9 +26,6 @@
 // Version.
 #define OZ_VERSION              "@OZ_VERSION@"
 
-// System type.
-#define OZ_SYSTEM_NAME          "@OZ_SYSTEM_NAME@"
-
 // Default data directory.
 #define OZ_INSTALL_PREFIX       "@CMAKE_INSTALL_PREFIX@"
 

@@ -432,10 +432,14 @@ inline int aLength( const Elem ( & )[SIZE] )
 template <typename Elem>
 inline Elem* aRealloc( Elem* aSrc, int count, int newCount )
 {
-  Elem* aNew = new Elem[newCount];
+  Elem* aNew = null;
 
-  for( int i = 0; i < count; ++i ) {
-    aNew[i] = static_cast<Elem&&>( aSrc[i] );
+  if( newCount != 0 ) {
+    aNew = new Elem[newCount];
+
+    for( int i = 0; i < count; ++i ) {
+      aNew[i] = static_cast<Elem&&>( aSrc[i] );
+    }
   }
   delete[] aSrc;
 

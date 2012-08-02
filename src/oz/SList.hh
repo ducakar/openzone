@@ -528,7 +528,26 @@ class SList
     }
 
     /**
-     * Empty the list.
+     * Resize the list.
+     */
+    void resize( int newCount )
+    {
+      if( newCount > count ) {
+        hard_assert( newCount <= SIZE );
+      }
+      else if( newCount < count ) {
+        // Ensure destruction of removed elements.
+        for( int i = newCount; i < count; ++i ) {
+          data[i].~Elem();
+          new( data + i ) Elem;
+        }
+      }
+
+      count = newCount;
+    }
+
+    /**
+     * Clear the list.
      */
     void clear()
     {
@@ -542,7 +561,7 @@ class SList
     }
 
     /**
-     * Delete all objects referenced by elements and empty the list.
+     * Delete all objects referenced by elements and clear the list.
      */
     void free()
     {

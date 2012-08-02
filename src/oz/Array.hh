@@ -40,10 +40,10 @@ namespace oz
  *
  * @ingroup oz
  */
-template <typename Elem, int SIZE>
+template <typename Elem, int COUNT>
 class Array
 {
-  static_assert( SIZE > 0, "Array size must be at least 1" );
+  static_assert( COUNT > 0, "Array size must be at least 1" );
 
   public:
 
@@ -63,7 +63,7 @@ class Array
          */
         OZ_ALWAYS_INLINE
         explicit CIterator( const Array& a ) :
-          oz::CIterator<Elem>( a.data, a.data + SIZE )
+          oz::CIterator<Elem>( a.data, a.data + COUNT )
         {}
 
       public:
@@ -94,7 +94,7 @@ class Array
          */
         OZ_ALWAYS_INLINE
         explicit Iterator( Array& a ) :
-          oz::Iterator<Elem>( a.data, a.data + SIZE )
+          oz::Iterator<Elem>( a.data, a.data + COUNT )
         {}
 
       public:
@@ -111,7 +111,7 @@ class Array
 
   private:
 
-    Elem data[SIZE]; ///< %Array of elements.
+    Elem data[COUNT]; ///< %Array of elements.
 
   public:
 
@@ -125,7 +125,7 @@ class Array
      */
     explicit Array( const Elem* array )
     {
-      aCopy<Elem>( data, array, SIZE );
+      aCopy<Elem>( data, array, COUNT );
     }
 
     /**
@@ -133,7 +133,7 @@ class Array
      */
     bool operator == ( const Array& a ) const
     {
-      return aEquals<Elem>( data, a.data, SIZE );
+      return aEquals<Elem>( data, a.data, COUNT );
     }
 
     /**
@@ -141,7 +141,7 @@ class Array
      */
     bool operator != ( const Array& a ) const
     {
-      return !aEquals<Elem>( data, a.data, SIZE );
+      return !aEquals<Elem>( data, a.data, COUNT );
     }
 
     /**
@@ -186,7 +186,7 @@ class Array
     OZ_ALWAYS_INLINE
     int length() const
     {
-      return SIZE;
+      return COUNT;
     }
 
     /**
@@ -204,7 +204,7 @@ class Array
     OZ_ALWAYS_INLINE
     const Elem& operator [] ( int i ) const
     {
-      hard_assert( uint( i ) < uint( SIZE ) );
+      hard_assert( uint( i ) < uint( COUNT ) );
 
       return data[i];
     }
@@ -215,7 +215,7 @@ class Array
     OZ_ALWAYS_INLINE
     Elem& operator [] ( int i )
     {
-      hard_assert( uint( i ) < uint( SIZE ) );
+      hard_assert( uint( i ) < uint( COUNT ) );
 
       return data[i];
     }
@@ -244,7 +244,7 @@ class Array
     OZ_ALWAYS_INLINE
     const Elem& last() const
     {
-      return data[SIZE - 1];
+      return data[COUNT - 1];
     }
 
     /**
@@ -253,7 +253,7 @@ class Array
     OZ_ALWAYS_INLINE
     Elem& last()
     {
-      return data[SIZE - 1];
+      return data[COUNT - 1];
     }
 
     /**
@@ -261,7 +261,7 @@ class Array
      */
     bool contains( const Elem& e ) const
     {
-      return aContains<Elem, Elem>( data, e, SIZE );
+      return aContains<Elem, Elem>( data, e, COUNT );
     }
 
     /**
@@ -269,7 +269,7 @@ class Array
      */
     int index( const Elem& e ) const
     {
-      return aIndex<Elem, Elem>( data, e, SIZE );
+      return aIndex<Elem, Elem>( data, e, COUNT );
     }
 
     /**
@@ -277,7 +277,7 @@ class Array
      */
     int lastIndex( const Elem& e ) const
     {
-      return aLastIndex<Elem, Elem>( data, e, SIZE );
+      return aLastIndex<Elem, Elem>( data, e, COUNT );
     }
 
     /**
@@ -285,7 +285,7 @@ class Array
      */
     void sort()
     {
-      aSort<Elem>( data, SIZE );
+      aSort<Elem>( data, COUNT );
     }
 
     /**
@@ -293,7 +293,7 @@ class Array
      */
     void free()
     {
-      aFree<Elem>( data, SIZE );
+      aFree<Elem>( data, COUNT );
     }
 
 };

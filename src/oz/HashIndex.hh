@@ -638,7 +638,7 @@ class HashIndex
     }
 
     /**
-     * Empty the hashtable.
+     * Clear the hashtable.
      */
     void clear()
     {
@@ -649,7 +649,7 @@ class HashIndex
     }
 
     /**
-     * Delete all objects referenced by element values and empty the hashtable.
+     * Delete all objects referenced by element values and clear the hashtable.
      */
     void free()
     {

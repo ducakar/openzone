@@ -352,7 +352,7 @@ void Shader::init()
     throw Exception( "Shaders missing" );
   }
 
-  programs.alloc( library.shaders.length() );
+  programs.resize( library.shaders.length() );
 
   for( int i = 0; i < library.shaders.length(); ++i ) {
     programs[i].program    = 0;
@@ -431,7 +431,7 @@ void Shader::free()
     }
   }
 
-  programs.dealloc();
+  programs.clear();
 
   foreach( vertShader, vertShaders.citer() ) {
     glDeleteShader( vertShader.value() );

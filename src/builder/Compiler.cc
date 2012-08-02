@@ -72,8 +72,8 @@ void Compiler::beginMesh()
 
   parts.clear();
   vertices.clear();
-  positions.dealloc();
-  normals.dealloc();
+  positions.clear();
+  normals.clear();
 
   part.component  = 0;
   part.material   = Mesh::SOLID_BIT;
@@ -114,13 +114,8 @@ void Compiler::anim( int nFrames_, int nFramePositions_ )
   nFrames         = nFrames_;
   nFramePositions = nFramePositions_;
 
-  positions.dealloc();
-  normals.dealloc();
-
-  if( nFrames != 0 ) {
-    positions.alloc( nFrames * nFramePositions );
-    normals.alloc( nFrames * nFramePositions );
-  }
+  positions.resize( nFrames * nFramePositions );
+  normals.resize( nFrames * nFramePositions );
 }
 
 void Compiler::component( int id )
@@ -538,8 +533,8 @@ void Compiler::free()
   vertices.clear();
   vertices.dealloc();
 
-  positions.dealloc();
-  normals.dealloc();
+  positions.clear();
+  normals.clear();
 }
 
 }

@@ -385,10 +385,10 @@ void MD2::build( const char* path )
   compiler.end();
   compiler.endMesh();
 
-  texCoords.dealloc();
-  triangles.dealloc();
-  normals.dealloc();
-  positions.dealloc();
+  texCoords.clear();
+  triangles.clear();
+  normals.clear();
+  positions.clear();
 
   BufferStream os;
 

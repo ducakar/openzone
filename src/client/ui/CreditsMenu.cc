@@ -59,8 +59,7 @@ void CreditsMenu::onReposition()
   int step    = Font::INFOS[Font::SANS].height;
   int nLabels = ( height - 160 ) / step;
 
-  labels.dealloc();
-  labels.alloc( nLabels );
+  labels.resize( nLabels );
 
   for( int i = 0; i < nLabels; ++i ) {
     int x    = ( width - 240 ) / 2;

@@ -903,7 +903,8 @@ DArray<File> File::ls()
   if( dir == null ) {
     return array;
   }
-  array.alloc( count );
+
+  array.init( count );
 
   int i = 0;
 
@@ -915,7 +916,7 @@ DArray<File> File::ls()
   while( i < count ) {
     if( FindNextFile( dir, &entity ) == 0 ) {
       CloseHandle( dir );
-      array.dealloc();
+      array.clear();
       return array;
     }
 
@@ -952,7 +953,7 @@ DArray<File> File::ls()
 
   rewinddir( directory );
 
-  array.alloc( count );
+  array.resize( count );
 
   String prefix = filePath.isEmpty() || filePath.equals( "/" ) ? "" : filePath + "/";
 
@@ -961,7 +962,7 @@ DArray<File> File::ls()
 
     if( entity == null ) {
       closedir( directory );
-      array.dealloc();
+      array.clear();
       return array;
     }
 

@@ -62,7 +62,7 @@ class DArray
          */
         OZ_ALWAYS_INLINE
         explicit CIterator( const DArray& a ) :
-          oz::CIterator<Elem>( a.data, a.data + a.size )
+          oz::CIterator<Elem>( a.data, a.data + a.count )
         {}
 
       public:
@@ -93,7 +93,7 @@ class DArray
          */
         OZ_ALWAYS_INLINE
         explicit Iterator( const DArray& a ) :
-          oz::Iterator<Elem>( a.data, a.data + a.size )
+          oz::Iterator<Elem>( a.data, a.data + a.count )
         {}
 
       public:
@@ -110,8 +110,8 @@ class DArray
 
   private:
 
-    Elem* data; ///< %Array of elements.
-    int   size; ///< Number of elements.
+    Elem* data;  ///< %Array of elements.
+    int   count; ///< Number of elements.
 
   public:
 
@@ -119,7 +119,7 @@ class DArray
      * Create an empty array.
      */
     DArray() :
-      data( null ), size( 0 )
+      data( null ), count( 0 )
     {}
 
     /**
@@ -134,19 +134,19 @@ class DArray
      * Copy constructor, copies elements.
      */
     DArray( const DArray& a ) :
-      data( a.size == 0 ? null : new Elem[a.size] ), size( a.size )
+      data( a.count == 0 ? null : new Elem[a.count] ), count( a.count )
     {
-      aCopy<Elem>( data, a.data, a.size );
+      aCopy<Elem>( data, a.count, a.count );
     }
 
     /**
      * Move constructor, moves element storage.
      */
     DArray( DArray&& a ) :
-      data( a.data ), size( a.size )
+      data( a.data ), count( a.count )
     {
-      a.data = null;
-      a.size = 0;
+      a.data  = null;
+      a.count = 0;
     }
 
     /**
@@ -160,14 +160,14 @@ class DArray
         return *this;
       }
 
-      if( size != a.size ) {
+      if( count != a.count ) {
         delete[] data;
 
-        data = a.size == 0 ? null : new Elem[a.size];
-        size = a.size;
+        data  = a.count == 0 ? null : new Elem[a.count];
+        count = a.count;
       }
 
-      aCopy<Elem>( data, a.data, a.size );
+      aCopy<Elem>( data, a.count, a.count );
 
       return *this;
     }
@@ -183,11 +183,11 @@ class DArray
 
       delete[] data;
 
-      data = a.data;
-      size = a.size;
+      data  = a.data;
+      count = a.count;
 
-      a.data = null;
-      a.size = 0;
+      a.data  = null;
+      a.count = 0;
 
       return *this;
     }
@@ -195,17 +195,17 @@ class DArray
     /**
      * Create an array with the given size.
      */
-    explicit DArray( int size_ ) :
-      data( size_ == 0 ? null : new Elem[size_] ), size( size_ )
+    explicit DArray( int count_ ) :
+      data( count_ == 0 ? null : new Elem[count_] ), count( count_ )
     {}
 
     /**
      * Initialise from a C++ array.
      */
-    explicit DArray( const Elem* array, int size_ ) :
-      data( size_ == 0 ? null : new Elem[size_] ), size( size_ )
+    explicit DArray( const Elem* array, int count_ ) :
+      data( count_ == 0 ? null : new Elem[count_] ), count( count_ )
     {
-      aCopy<Elem>( data, array, size );
+      aCopy<Elem>( data, array, count );
     }
 
     /**
@@ -213,7 +213,7 @@ class DArray
      */
     bool operator == ( const DArray& a ) const
     {
-      return size == a.size && aEquals<Elem>( data, a.data, size );
+      return count == a.count && aEquals<Elem>( data, a.data, count );
     }
 
     /**
@@ -221,7 +221,7 @@ class DArray
      */
     bool operator != ( const DArray& a ) const
     {
-      return size != a.size || !aEquals<Elem>( data, a.data, size );
+      return count != a.count || !aEquals<Elem>( data, a.data, count );
     }
 
     /**
@@ -248,7 +248,7 @@ class DArray
     OZ_ALWAYS_INLINE
     operator const Elem* () const
     {
-      hard_assert( size > 0 );
+      hard_assert( count > 0 );
 
       return data;
     }
@@ -259,7 +259,7 @@ class DArray
     OZ_ALWAYS_INLINE
     operator Elem* ()
     {
-      hard_assert( size > 0 );
+      hard_assert( count > 0 );
 
       return data;
     }
@@ -270,7 +270,7 @@ class DArray
     OZ_ALWAYS_INLINE
     int length() const
     {
-      return size;
+      return count;
     }
 
     /**
@@ -279,7 +279,7 @@ class DArray
     OZ_ALWAYS_INLINE
     bool isEmpty() const
     {
-      return size == 0;
+      return count == 0;
     }
 
     /**
@@ -288,7 +288,7 @@ class DArray
     OZ_ALWAYS_INLINE
     const Elem& operator [] ( int i ) const
     {
-      hard_assert( uint( i ) < uint( size ) );
+      hard_assert( uint( i ) < uint( count ) );
 
       return data[i];
     }
@@ -299,7 +299,7 @@ class DArray
     OZ_ALWAYS_INLINE
     Elem& operator [] ( int i )
     {
-      hard_assert( uint( i ) < uint( size ) );
+      hard_assert( uint( i ) < uint( count ) );
 
       return data[i];
     }
@@ -310,7 +310,7 @@ class DArray
     OZ_ALWAYS_INLINE
     const Elem& first() const
     {
-      hard_assert( size > 0 );
+      hard_assert( count > 0 );
 
       return data[0];
     }
@@ -321,7 +321,7 @@ class DArray
     OZ_ALWAYS_INLINE
     Elem& first()
     {
-      hard_assert( size > 0 );
+      hard_assert( count > 0 );
 
       return data[0];
     }
@@ -332,9 +332,9 @@ class DArray
     OZ_ALWAYS_INLINE
     const Elem& last() const
     {
-      hard_assert( size > 0 );
+      hard_assert( count > 0 );
 
-      return data[size - 1];
+      return data[count - 1];
     }
 
     /**
@@ -343,9 +343,9 @@ class DArray
     OZ_ALWAYS_INLINE
     Elem& last()
     {
-      hard_assert( size > 0 );
+      hard_assert( count > 0 );
 
-      return data[size - 1];
+      return data[count - 1];
     }
 
     /**
@@ -353,9 +353,9 @@ class DArray
      */
     bool contains( const Elem& e ) const
     {
-      hard_assert( size > 0 );
+      hard_assert( count > 0 );
 
-      return aContains<Elem, Elem>( data, e, size );
+      return aContains<Elem, Elem>( data, e, count );
     }
 
     /**
@@ -363,9 +363,9 @@ class DArray
      */
     int index( const Elem& e ) const
     {
-      hard_assert( size > 0 );
+      hard_assert( count > 0 );
 
-      return aIndex<Elem, Elem>( data, e, size );
+      return aIndex<Elem, Elem>( data, e, count );
     }
 
     /**
@@ -373,9 +373,9 @@ class DArray
      */
     int lastIndex( const Elem& e ) const
     {
-      hard_assert( size > 0 );
+      hard_assert( count > 0 );
 
-      return aLastIndex<Elem, Elem>( data, e, size );
+      return aLastIndex<Elem, Elem>( data, e, count );
     }
 
     /**
@@ -383,37 +383,38 @@ class DArray
      */
     void sort()
     {
-      aSort<Elem>( data, size );
+      aSort<Elem>( data, count );
     }
 
     /**
-     * Delete objects referenced by elements and set all elements to <tt>null</tt>.
+     * Resize the array.
      */
-    void free()
+    void resize( int newCount )
     {
-      aFree<Elem>( data, size );
+      if( newCount != count ) {
+        data  = aRealloc( data, count, newCount );
+        count = newCount;
+      }
     }
 
     /**
-     * For an empty array, allocate <tt>size_</tt> elements.
+     * Clear the array.
      */
-    void alloc( int size_ )
-    {
-      hard_assert( size == 0 && size_ > 0 );
-
-      data = new Elem[size_];
-      size = size_;
-    }
-
-    /**
-     * Deallocate data.
-     */
-    void dealloc()
+    void clear()
     {
       delete[] data;
 
-      data = null;
-      size = 0;
+      data  = null;
+      count = 0;
+    }
+
+    /**
+     * Delete objects referenced by elements and clear the array.
+     */
+    void free()
+    {
+      aFree<Elem>( data, count );
+      clear();
     }
 
 };

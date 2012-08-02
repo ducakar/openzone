@@ -695,7 +695,7 @@ Struct::Struct( const BSP* bsp_, int index_, const Point& p_, Heading heading_ )
   maxs        = bb.maxs;
 
   if( bsp->nModels != 0 ) {
-    entities.alloc( bsp->nModels );
+    entities.resize( bsp->nModels );
 
     for( int i = 0; i < entities.length(); ++i ) {
       Entity& entity = entities[i];
@@ -731,7 +731,7 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
   demolishing = istream->readFloat();
 
   if( bsp->nModels != 0 ) {
-    entities.alloc( bsp->nModels );
+    entities.resize( bsp->nModels );
 
     for( int i = 0; i < entities.length(); ++i ) {
       Entity& entity = entities[i];

@@ -72,6 +72,7 @@ class NaCl
     static bool      hasFocus; ///< True iff fullscreen and mouse captured.
 
     NaCl() = delete;
+    NaCl( const NaCl& ) = delete;
 
     /*
      * Main thread call.

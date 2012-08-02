@@ -64,9 +64,14 @@ class Alloc
   public:
 
     /**
-     * Singleton.
+     * Forbid instances.
      */
     Alloc() = delete;
+
+    /**
+     * Forbid instances.
+     */
+    Alloc( const Alloc& ) = delete;
 
     /**
      * Align to the previous boundary.

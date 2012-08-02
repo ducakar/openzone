@@ -59,9 +59,14 @@ class Endian
   public:
 
     /**
-     * Singleton.
+     * Forbid instances.
      */
     Endian() = delete;
+
+    /**
+     * Forbid instances.
+     */
+    Endian( const Endian& ) = delete;
 
     /**
      * Swap byte order.

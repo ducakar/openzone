@@ -277,6 +277,18 @@ class Map
       }
     }
 
+    /**
+     * Enlarge capacity to the smallest multiple of GRANULARITY able to hold the requested number of
+     * elements.
+     */
+    void ensureCapacity( int desiredSize )
+    {
+      if( size < desiredSize ) {
+        size = ( ( desiredSize - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
+        data = aRealloc<Elem>( data, count, size );
+      }
+    }
+
   public:
 
     /**
@@ -611,7 +623,26 @@ class Map
     }
 
     /**
-     * Empty the map.
+     * Resize the map.
+     */
+    void resize( int newCount )
+    {
+      if( newCount > count ) {
+        ensureCapacity( newCount );
+      }
+      else if( newCount < count ) {
+        // Ensure destruction of removed elements.
+        for( int i = newCount; i < count; ++i ) {
+          data[i].~Elem();
+          new( data + i ) Elem;
+        }
+      }
+
+      count = newCount;
+    }
+
+    /**
+     * Clear the map.
      */
     void clear()
     {
@@ -625,7 +656,7 @@ class Map
     }
 
     /**
-     * Delete all objects referenced by elements and empty the map.
+     * Delete all objects referenced by elements and clear the map.
      */
     void free()
     {
@@ -658,8 +689,7 @@ class Map
     }
 
     /**
-     * Trim map capacity to the least multiple of <tt>GRANULARITY</tt> that can hold the
-     * elements.
+     * Trim map capacity to the least multiple of <tt>GRANULARITY</tt> that can hold all elements.
      */
     void trim()
     {

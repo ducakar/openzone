@@ -72,9 +72,14 @@ class Math
   public:
 
     /**
-     * Singleton.
+     * Forbid instances.
      */
     Math() = delete;
+
+    /**
+     * Forbid instances.
+     */
+    Math( const Math& ) = delete;
 
     /**
      * Absolute value.

@@ -407,7 +407,7 @@ DArray<PFile> PFile::ls()
     return array;
   }
 
-  array.alloc( count );
+  array.resize( count );
 
   String prefix = filePath.isEmpty() || filePath.equals( "/" ) ? "" : filePath + "/";
 

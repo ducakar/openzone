@@ -340,8 +340,9 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage )
 
   if( nTextures < 0 ) {
     nTextures = ~nTextures;
-    textures.alloc( nTextures );
-    texIds.alloc( nTextures * 3 );
+
+    textures.resize( nTextures );
+    texIds.resize( nTextures * 3 );
 
     flags |= EMBEDED_TEX_BIT;
 
@@ -368,8 +369,8 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage )
     }
   }
   else {
-    textures.alloc( nTextures );
-    texIds.alloc( nTextures );
+    textures.resize( nTextures );
+    texIds.resize( nTextures );
 
     for( int i = 0; i < nTextures; ++i ) {
       const String& name = istream->readString();
@@ -394,10 +395,10 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage )
   }
 
   int nComponents = istream->readInt();
-  componentIndices.alloc( nComponents + 1 );
+  componentIndices.resize( nComponents + 1 );
 
   int nParts = istream->readInt();
-  parts.alloc( nParts );
+  parts.resize( nParts );
 
   int lastComponent = 0;
   if( nComponents != 0 ) {
@@ -426,7 +427,7 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage )
 
   hard_assert( nComponents == 0 || lastComponent == nComponents - 1 );
 
-  textures.dealloc();
+  textures.clear();
 
   loadedMeshes.add( this );
 
@@ -439,8 +440,8 @@ void Mesh::unload()
     return;
   }
 
-  componentIndices.dealloc();
-  parts.dealloc();
+  componentIndices.clear();
+  parts.clear();
 
   if( flags & EMBEDED_TEX_BIT ) {
     foreach( texId, texIds.citer() ) {
@@ -459,7 +460,7 @@ void Mesh::unload()
     }
   }
 
-  texIds.dealloc();
+  texIds.clear();
 
   if( shader.hasVertexTexture ) {
     glDeleteTextures( 1, &normalsTexId );

@@ -206,7 +206,7 @@ void Library::initShaders()
     shadersList.add( Resource( name, "" ) );
   }
 
-  shaders.alloc( shadersList.length() );
+  shaders.resize( shadersList.length() );
   aMove<Resource>( shaders, shadersList, shadersList.length() );
 
   Log::unindent();
@@ -247,7 +247,7 @@ void Library::initTextures()
     }
   }
 
-  textures.alloc( texturesList.length() );
+  textures.resize( texturesList.length() );
   aMove<Resource>( textures, texturesList, texturesList.length() );
 
   Log::unindent();
@@ -288,7 +288,7 @@ void Library::initSounds()
     }
   }
 
-  sounds.alloc( soundsList.length() );
+  sounds.resize( soundsList.length() );
   aMove<Resource>( sounds, soundsList, soundsList.length() );
 
   Log::unindent();
@@ -318,7 +318,7 @@ void Library::initCaela()
     caelaList.add( Resource( name, file->path() ) );
   }
 
-  caela.alloc( caelaList.length() );
+  caela.resize( caelaList.length() );
   aMove<Resource>( caela, caelaList, caelaList.length() );
 
   Log::unindent();
@@ -348,7 +348,7 @@ void Library::initTerrae()
     terraeList.add( Resource( name, file->path() ) );
   }
 
-  terrae.alloc( terraeList.length() );
+  terrae.resize( terraeList.length() );
   aMove<Resource>( terrae, terraeList, terraeList.length() );
 
   Log::unindent();
@@ -425,7 +425,7 @@ void Library::initModels()
     modelsList.add( Resource( name, path ) );
   }
 
-  models.alloc( modelsList.length() );
+  models.resize( modelsList.length() );
   aMove<Resource>( models, modelsList, modelsList.length() );
 
   Log::unindent();
@@ -455,7 +455,7 @@ void Library::initNameLists()
     nameListsList.add( Resource( name, file->path() ) );
   }
 
-  nameLists.alloc( nameListsList.length() );
+  nameLists.resize( nameListsList.length() );
   aMove<Resource>( nameLists, nameListsList, nameListsList.length() );
 
   Log::unindent();
@@ -517,7 +517,7 @@ void Library::initMusic( const char* userMusicPath )
 
   initMusicRecurse( "userMusic", &musicTracksList );
 
-  musicTracks.alloc( musicTracksList.length() );
+  musicTracks.resize( musicTracksList.length() );
   aMove<Resource>( musicTracks, musicTracksList, musicTracksList.length() );
 
   Log::unindent();
@@ -782,14 +782,14 @@ void Library::init( const char* userMusicPath )
 
 void Library::free()
 {
-  shaders.dealloc();
-  textures.dealloc();
-  sounds.dealloc();
-  caela.dealloc();
-  terrae.dealloc();
-  models.dealloc();
-  nameLists.dealloc();
-  musicTracks.dealloc();
+  shaders.clear();
+  textures.clear();
+  sounds.clear();
+  caela.clear();
+  terrae.clear();
+  models.clear();
+  nameLists.clear();
+  musicTracks.clear();
 
   shaderIndices.clear();
   shaderIndices.dealloc();

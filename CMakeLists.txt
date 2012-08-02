@@ -6,7 +6,7 @@ project( openzone C CXX )
 # Configuration
 #
 
-set( OZ_VERSION "0.3.80" CACHE STRING "" FORCE )
+set( OZ_VERSION "0.3.80" )
 
 if( NOT NACL )
   option( OZ_SHARED_LIBOZ "Build liboz as a shared library." OFF )
@@ -45,20 +45,11 @@ if( NACL )
   set( OZ_GL_ES ON )
 endif()
 
-if( NOT OZ_SYSTEM_PROCESSOR )
-  set( OZ_SYSTEM_PROCESSOR "${CMAKE_SYSTEM_PROCESSOR}" )
-endif()
-set( OZ_SYSTEM_PROCESSOR "${OZ_SYSTEM_PROCESSOR}" CACHE STRING "" FORCE )
-
-set( OZ_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${OZ_SYSTEM_PROCESSOR}" CACHE STRING "" FORCE )
-
 if( OZ_SHARED_LIBOZ )
   set( BUILD_SHARED_LIBS ON )
 endif()
 
-mark_as_advanced( OZ_VERSION )
-mark_as_advanced( OZ_SYSTEM_PROCESSOR )
-mark_as_advanced( OZ_SYSTEM_NAME )
+set( OZ_PLATFORM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_PROCESSOR}" )
 
 check_cxx_source_compiles( "
 #ifdef __clang__
@@ -293,11 +284,11 @@ if( OZ_STANDALONE )
   install( FILES ${dataFiles} DESTINATION share/openzone )
 
   if( WIN32 )
-    install( DIRECTORY support/${OZ_SYSTEM_NAME}/ DESTINATION bin/${OZ_SYSTEM_NAME}
+    install( DIRECTORY support/${OZ_PLATFORM_NAME}/ DESTINATION bin/${OZ_PLATFORM_NAME}
              USE_SOURCE_PERMISSIONS )
     install( PROGRAMS support/oalinst.exe DESTINATION . )
   else()
-    install( DIRECTORY support/${OZ_SYSTEM_NAME}/ DESTINATION lib/${OZ_SYSTEM_NAME}
+    install( DIRECTORY support/${OZ_PLATFORM_NAME}/ DESTINATION lib/${OZ_PLATFORM_NAME}
              USE_SOURCE_PERMISSIONS )
   endif()
 
@@ -321,7 +312,7 @@ set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "A simple cross-platform FPS/RTS game eng
 set( CPACK_PACKAGE_VENDOR "Davorin Učakar" )
 set( CPACK_PACKAGE_CONTACT "Davorin Učakar <davorin.ucakar@gmail.com>" )
 set( CPACK_TOPLEVEL_TAG "openzone" )
-set( CPACK_SYSTEM_NAME "${OZ_SYSTEM_NAME}" )
+set( CPACK_SYSTEM_NAME "${OZ_PLATFORM_NAME}" )
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING" )
 set( CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/doc/README.html" )
 set( CPACK_PACKAGE_EXECUTABLES "bin/openzone" "OpenZone" ) # start menu entry
