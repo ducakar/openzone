@@ -76,7 +76,7 @@ void Physics::handleFragHit()
   Vec3  fragVelocity = frag->velocity;
   float velocity2    = frag->velocity.sqN();
 
-  frag->velocity *= frag->restitution;
+  frag->velocity *= frag->elasticity;
   frag->velocity -= ( 2.0f * ( frag->velocity * collider.hit.normal ) ) * collider.hit.normal;
 
   if( velocity2 > FRAG_HIT_VELOCITY2 ) {

@@ -94,13 +94,11 @@ void Caelum::build( const char* name )
     os.writeUShort( ushort( i * 4 + 2 ) );
   }
 
-  uint texId = context.loadLayer( "caelum/sun.png", false );
-  context.writeLayer( texId, &os );
-  glDeleteTextures( 1, &texId );
+  Context::Texture texture = context.loadTexture( "caelum/sun.png", false );
+  texture.write( &os );
 
-  texId = context.loadLayer( "caelum/moon.png", false );
-  context.writeLayer( texId, &os );
-  glDeleteTextures( 1, &texId );
+  texture = context.loadTexture( "caelum/moon.png", false );
+  texture.write( &os );
 
   Log::print( "Dumping into '%s' ...", destFile.path().cstr() );
 
@@ -109,8 +107,6 @@ void Caelum::build( const char* name )
   }
 
   Log::printEnd( " OK" );
-
-  OZ_GL_CHECK_ERROR();
 
   Log::unindent();
   Log::println( "}" );

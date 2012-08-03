@@ -19,6 +19,7 @@ for the following libraries:
 * libmad
 * faad
 * freeimage
+* libsquish
 
 You can then use generic steps for building CMake projects. Basic build instructions when you are in
 the root directory of the source tree are:
@@ -45,8 +46,8 @@ You may also want to set several options when configuring CMake build system:
 * `OZ_GL_ES`: Use OpenGL ES 2.0 API. Always enabled in NaCl platform, on other platforms it will
   merely use GL ES headers and functions set, it will still initialise OpenGL.
 
-* `OZ_NONFREE`: Enable support for decoding MP3 and AAC formats. Required libraries (libmad and
-  faad2) are loaded in run-time if found on system or library search path.
+* `OZ_NONFREE`: Enable support for decoding MP3 and AAC formats and building textures using S3
+  texture compression.
 
 * `OZ_STANDALONE`: This only affects behaviour of "`make install`". It also installs dependencies
   from support directory, game data archives found in `share/openzone`, info files etc. This is

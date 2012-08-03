@@ -36,28 +36,28 @@ Pool<Frag, 2048> Frag::mpool;
 
 Frag::Frag( const FragPool* pool_, int index_, const Point& p_, const Vec3& velocity_ )
 {
-  cell        = null;
-  index       = index_;
-  poolId      = pool_->id;
-  pool        = pool_;
-  p           = p_;
-  velocity    = velocity_;
-  life        = pool->life;
-  mass        = pool->mass;
-  restitution = pool->restitution;
+  cell       = null;
+  index      = index_;
+  poolId     = pool_->id;
+  pool       = pool_;
+  p          = p_;
+  velocity   = velocity_;
+  life       = pool->life;
+  mass       = pool->mass;
+  elasticity = pool->elasticity;
 }
 
 Frag::Frag( const FragPool* pool_, InputStream* istream )
 {
-  cell        = null;
-  index       = istream->readInt();
-  poolId      = pool_->id;
-  pool        = pool_;
-  p           = istream->readPoint();
-  velocity    = istream->readVec3();
-  life        = istream->readFloat();
-  mass        = pool->mass;
-  restitution = pool->restitution;
+  cell       = null;
+  index      = istream->readInt();
+  poolId     = pool_->id;
+  pool       = pool_;
+  p          = istream->readPoint();
+  velocity   = istream->readVec3();
+  life       = istream->readFloat();
+  mass       = pool->mass;
+  elasticity = pool->elasticity;
 }
 
 void Frag::write( BufferStream* ostream )

@@ -13,7 +13,7 @@ if( NOT NACL )
   option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory leaks." OFF )
 
   option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." OFF )
-  option( OZ_NONFREE "Enable support for MP3 and AAC." OFF )
+  option( OZ_NONFREE "Enable support for decoding MP3s and AACs and building S3TC textures." OFF )
 
   option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
 endif()
@@ -105,6 +105,7 @@ elseif( WIN32 )
   find_library( VORBISFILE_LIBRARY vorbisfile )
 
   find_library( FREEIMAGE_LIBRARY freeimage )
+  find_library( SQUISH_LIBRARY squish )
 else()
   find_library( PTHREAD_LIBRARY pthread )
   find_library( DL_LIBRARY dl )
@@ -120,6 +121,7 @@ else()
   find_library( VORBISFILE_LIBRARY vorbisfile )
 
   find_library( FREEIMAGE_LIBRARY freeimage )
+  find_library( SQUISH_LIBRARY squish )
 endif()
 
 mark_as_advanced( PTHREAD_LIBRARY )
@@ -145,6 +147,7 @@ mark_as_advanced( VORBIS_LIBRARY )
 mark_as_advanced( VORBISFILE_LIBRARY )
 
 mark_as_advanced( FREEIMAGE_LIBRARY )
+mark_as_advanced( SQUISH_LIBRARY )
 
 if( WIN32 )
   include_directories( ./include )
@@ -160,10 +163,6 @@ elseif( WIN32 )
   set( libs_oz "${PTHREAD_LIBRARY};${WINMM_LIBRARY};${PHYSFS_LIBRARY}" )
 else()
   set( libs_oz "${PTHREAD_LIBRARY};${DL_LIBRARY};${RT_LIBRARY};${PHYSFS_LIBRARY}" )
-
-  if( isClang )
-    set( libs_oz "c++abi;${libs_oz}" )
-  endif()
 endif()
 
 if( NACL )
@@ -186,6 +185,9 @@ else()
   set( libs_client "${libs_client};${VORBISFILE_LIBRARY}" )
 
   set( libs_tools "${libs_client};${FREEIMAGE_LIBRARY}" )
+  if( OZ_NONFREE )
+    set( libs_tools "${libs_tools};${SQUISH_LIBRARY}" )
+  endif()
 endif()
 
 #
@@ -193,7 +195,9 @@ endif()
 #
 
 if( isClang )
-  set( flags "-pipe -std=c++11 -pedantic -stdlib=libc++" )
+  set( flags "-pipe -std=c++11 -pedantic -stdlib=libstdc++" )
+#   set( flags "-pipe -std=c++11 -pedantic -stdlib=libc++" )
+#   set( libs_oz "c++abi;${libs_oz}" )
 elseif( isLegacyGCC )
   set( flags "-pipe -std=gnu++0x" )
 else()

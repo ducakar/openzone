@@ -30,8 +30,6 @@
 
 #include "builder/Compiler.hh"
 
-#include "client/OpenGL.hh"
-
 namespace oz
 {
 namespace builder

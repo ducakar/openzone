@@ -25,8 +25,6 @@
 
 #include "builder/Compiler.hh"
 
-#include "client/OpenGL.hh"
-
 #include "builder/Context.hh"
 
 namespace oz
@@ -439,34 +437,31 @@ void Compiler::writeMesh( BufferStream* os, bool embedTextures )
     os->writeInt( ~textures.length() );
 
     for( int i = 1; i < textures.length(); ++i ) {
-      uint diffuseId, masksId, normalsId;
-      context.loadTexture( &diffuseId, &masksId, &normalsId, textures[i] );
+      Context::Texture diffuseTex, masksTex, normalsTex;
+      context.loadTextures( &diffuseTex, &masksTex, &normalsTex, textures[i] );
 
       int textureFlags = 0;
 
-      if( diffuseId != 0 ) {
+      if( !diffuseTex.isEmpty() ) {
         textureFlags |= Mesh::DIFFUSE_BIT;
       }
-      if( masksId != 0 ) {
+      if( !masksTex.isEmpty() ) {
         textureFlags |= Mesh::MASKS_BIT;
       }
-      if( normalsId != 0 ) {
+      if( !normalsTex.isEmpty() ) {
         textureFlags |= Mesh::NORMALS_BIT;
       }
 
       os->writeInt( textureFlags );
 
-      if( diffuseId != 0 ) {
-        context.writeLayer( diffuseId, os );
-        glDeleteTextures( 1, &diffuseId );
+      if( !diffuseTex.isEmpty() != 0 ) {
+        diffuseTex.write( os );
       }
-      if( masksId != 0 ) {
-        context.writeLayer( masksId, os );
-        glDeleteTextures( 1, &masksId );
+      if( !masksTex.isEmpty() ) {
+        masksTex.write( os );
       }
-      if( normalsId != 0 ) {
-        context.writeLayer( normalsId, os );
-        glDeleteTextures( 1, &normalsId );
+      if( !normalsTex.isEmpty() ) {
+        normalsTex.write( os );
       }
     }
   }

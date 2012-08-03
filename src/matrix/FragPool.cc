@@ -44,7 +44,7 @@ FragPool::FragPool( InputStream* is, const char* name_, int id_ ) :
   lifeSpread     = is->readFloat();
 
   mass           = is->readFloat();
-  restitution    = is->readFloat();
+  elasticity     = is->readFloat();
 
   int nModels    = is->readInt();
   models.alloc( nModels );

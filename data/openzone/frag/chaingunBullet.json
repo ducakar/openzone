@@ -1,8 +1,10 @@
 {
   "flag.fadeout":       false,
+
   "life":               5.0,
   "mass":               0.065,
-  "restitution":        0.9,
+  "elasticity":         0.9,
+
   "models":
   [
                         "chaingunBullet"

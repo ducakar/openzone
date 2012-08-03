@@ -1,3 +1,8 @@
+0.3.80
+
+- builder
+    * Context can generate mipmaps and S3TC textures (via libsquish) without OpenGL
+
 0.3.1
 
 - client
@@ -101,6 +106,8 @@
     * prebuilding entirely split from the runtime part of the engine
     * SDL_image replaced by FreeImage, wider range of image formats supported as prebuilding source
     * 16-bit colour components for terrain heightmap
+    * no more encapsulating a BSP with a box
+    * fragment pools and object classes are compiled
 - tools
     * ozGettext tool for extracting structure, entity, object names and strings from mission scripts
       for translation

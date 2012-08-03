@@ -53,7 +53,7 @@ class FragPool
     float     lifeSpread;
 
     float     mass;
-    float     restitution;
+    float     elasticity;
 
     List<int> models;
 

@@ -3,6 +3,7 @@ add_executable( ozBuild
   Builder.cc
   Caelum.cc
   Class.cc
+  common.cc
   Compiler.cc
   Context.cc
   FragPool.cc

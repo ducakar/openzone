@@ -548,7 +548,7 @@ void Render::unload()
   Log::printEnd( " OK" );
 }
 
-void Render::init( bool isBuild )
+void Render::init()
 {
 #ifdef __native_client__
   hard_assert( NaCl::isMainThread() );
@@ -638,14 +638,6 @@ void Render::init( bool isBuild )
 
   glInit();
 
-  if( isBuild ) {
-    Log::unindent();
-    Log::println( "}" );
-
-    OZ_GL_CHECK_ERROR();
-    return;
-  }
-
   String sScaleFilter;
 
   doPostprocess   = config.include( "render.postprocess", false ).asBool();
@@ -683,15 +675,11 @@ void Render::init( bool isBuild )
   Log::println( "}" );
 }
 
-void Render::free( bool isBuild )
+void Render::free()
 {
 #ifdef __native_client__
   hard_assert( NaCl::isMainThread() );
 #endif
-
-  if( isBuild ) {
-    return;
-  }
 
   Log::println( "Freeing Render {" );
   Log::indent();

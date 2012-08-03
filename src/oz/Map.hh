@@ -598,7 +598,7 @@ class Map
 
       if( i == count ) {
         // When removing the last element, no shift is performed, so its resources are not
-        // implicitly destroyed by move operation.
+        // implicitly destroyed by a move operation.
         data[count].~Elem();
         new( data + count ) Elem;
       }

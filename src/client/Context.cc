@@ -133,8 +133,7 @@ uint Context::readTextureLayer( InputStream* stream )
     int format = stream->readInt();
     int size   = stream->readInt();
 
-    if( format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT || format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT )
-    {
+    if( format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT || format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT ) {
       glCompressedTexImage2D( GL_TEXTURE_2D, level, uint( format ), width, height, 0,
                               size, stream->forward( size ) );
     }

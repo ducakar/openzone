@@ -61,7 +61,7 @@ class Frag
 
     float           life;
     float           mass;
-    float           restitution;
+    float           elasticity;
 
     // no copying
     Frag( const Frag& ) = delete;

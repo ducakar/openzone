@@ -90,17 +90,15 @@ void UI::buildCursors()
 
     fclose( fs );
 
-    uint texId = context.loadLayer( String::str( "ui/cur/%s", imgPath ), false,
-                                    GL_NEAREST, GL_NEAREST );
+    Context::Texture tex = context.loadTexture( String::str( "ui/cur/%s", imgPath ), false,
+                                                GL_NEAREST, GL_NEAREST );
 
     BufferStream os;
 
     os.writeInt( size );
     os.writeInt( hotspotX );
     os.writeInt( hotspotY );
-    context.writeLayer( texId, &os );
-
-    glDeleteTextures( 1, &texId );
+    tex.write( &os );
 
     destFile.write( os.begin(), os.length() );
   }
@@ -130,15 +128,13 @@ void UI::buildIcons()
     String srcPath  = String::str( "ui/icon/%s.png", *name );
     String destPath = String::str( "ui/icon/%s.ozIcon", *name );
 
-    uint id = context.loadLayer( srcPath, false, GL_NEAREST, GL_NEAREST );
-    hard_assert( id != 0 );
+    Context::Texture tex = context.loadTexture( srcPath, false, GL_NEAREST, GL_NEAREST );
+    hard_assert( !tex.isEmpty() );
 
     BufferStream os;
 
     Log::println( "Compiling '%s'", destPath.cstr() );
-    context.writeLayer( id, &os );
-
-    glDeleteTextures( 1, &id );
+    tex.write( &os );
 
     if( !File( destPath ).write( os.begin(), os.length() ) ) {
       throw Exception( "Texture writing failed" );

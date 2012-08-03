@@ -36,44 +36,13 @@
 #include "client/BotAudio.hh"
 #include "client/VehicleAudio.hh"
 
-#include <GL/gl.h>
 #include <FreeImage.h>
+#include <squish.h>
 
 namespace oz
 {
 namespace builder
 {
-
-TextureLayer::~TextureLayer()
-{
-  for( int i = 0; i < levels.length(); ++i ) {
-    delete[] levels[i].data;
-  }
-}
-
-TextureLayer::TextureLayer( const char* data, int width, int height, int format, bool wrap,
-                            int magFilter, int minFilter )
-{
-
-}
-
-void TextureLayer::write( BufferStream* os )
-{
-  os->writeBool( wrap );
-  os->writeInt( magFilter );
-  os->writeInt( minFilter );
-
-  for( int i = 0; i < levels.length(); ++i ) {
-    const Level& level = levels[i];
-
-    os->writeInt( level.width );
-    os->writeInt( level.height );
-    os->writeInt( level.format );
-    os->writeInt( level.size );
-
-    os->writeChars( level.data, level.size );
-  }
-}
 
 const char* const Context::IMAGE_EXTENSIONS[] = {
   ".png",
@@ -92,93 +61,244 @@ struct Context::Image
   int       format;
 };
 
-uint Context::buildLayer( const void* data, int width, int height, int format, bool wrap,
-                          int magFilter, int minFilter )
+Context::Texture::Level::Level() :
+  data( null )
+{}
+
+Context::Texture::Level::~Level()
 {
-  bool suitableForS3TC = width > 8 && height > 8 && width % 8 == 0 && height % 8 == 0;
-  bool compress = useS3TC && suitableForS3TC;
+  delete[] data;
+}
 
-  bool generateMipmaps = false;
-  int internalFormat = -1;
+Context::Texture::Level::Level( Level&& l ) :
+  data( l.data ), width( l.width ), height( l.height ), format( l.format ), size( l.size )
+{
+  l.data = null;
+}
 
-  switch( format ) {
-    case GL_BGR:
-    case GL_RGB: {
-      internalFormat = compress ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_RGB;
-      break;
-    }
-    case GL_BGRA:
-    case GL_RGBA: {
-      internalFormat = compress ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_RGBA;
-      break;
-    }
-    case GL_LUMINANCE: {
-      internalFormat = compress ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_LUMINANCE;
-      break;
-    }
-    default: {
-      hard_assert( false );
-      break;
-    }
+Context::Texture::Level& Context::Texture::Level::operator = ( Level&& l )
+{
+  if( &l == this ) {
+    return *this;
   }
 
-  uint texId;
-  glGenTextures( 1, &texId );
-  glBindTexture( GL_TEXTURE_2D, texId );
+  data   = l.data;
+  width  = l.width;
+  height = l.height;
+  format = l.format;
+  size   = l.size;
 
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
+  l.data = null;
 
-  switch( magFilter ) {
-    case GL_NEAREST:
-    case GL_LINEAR: {
-      break;
-    }
-    default: {
-      throw Exception( "Invalid texture magnification filter" );
-    }
+  return *this;
+}
+
+Context::Texture::Texture( Image* image, bool wrap_, int magFilter_, int minFilter_ )
+{
+  hard_assert( image->format == GL_LUMINANCE ||
+               image->format == GL_BGR ||
+               image->format == GL_BGRA );
+
+  magFilter = magFilter_;
+  minFilter = minFilter_;
+  wrap      = wrap_ ? GL_REPEAT : GL_CLAMP_TO_EDGE;
+
+  int  width      = image->width;
+  int  height     = image->height;
+  bool genMipmaps = minFilter == GL_NEAREST_MIPMAP_NEAREST ||
+                    minFilter == GL_LINEAR_MIPMAP_NEAREST ||
+                    minFilter == GL_NEAREST_MIPMAP_LINEAR ||
+                    minFilter == GL_LINEAR_MIPMAP_LINEAR;
+
+  if( genMipmaps && ( !Math::isPow2( width ) || !Math::isPow2( height ) ) ) {
+    throw Exception( "Image has dimensions %dx%d but both dimensions must be powers of two to"
+                     " generate mipmaps.", width, height );
   }
 
-  switch( minFilter ) {
-    case GL_NEAREST:
-    case GL_LINEAR: {
-      break;
-    }
-    case GL_NEAREST_MIPMAP_NEAREST:
-    case GL_NEAREST_MIPMAP_LINEAR:
-    case GL_LINEAR_MIPMAP_NEAREST:
-    case GL_LINEAR_MIPMAP_LINEAR: {
-      generateMipmaps = true;
-      break;
-    }
-    default: {
-      throw Exception( "Invalid texture minification filter" );
-    }
-  }
+  do {
+    levels.add();
+    Level& level = levels.last();
 
-  if( !wrap ) {
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-  }
+    level.width  = width;
+    level.height = height;
 
-  glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, width, height, 0, uint( format ),
-                GL_UNSIGNED_BYTE, data );
+    FIBITMAP* levelDib = image->dib;
+    if( levels.length() > 1 ) {
+      levelDib = FreeImage_Rescale( image->dib, width, height, FILTER_LANCZOS3 );
+    }
 
-  if( generateMipmaps ) {
-#ifdef _WIN32
-    client::glGenerateMipmap( GL_TEXTURE_2D );
-#else
-    glGenerateMipmap( GL_TEXTURE_2D );
+    switch( image->format ) {
+      case GL_LUMINANCE: {
+        if( context.useS3TC ) {
+#ifdef OZ_NONFREE
+          // Collapse data (pitch = width * pixelSize) and convert LUMINANCE -> RGBA.
+          ubyte* data = new ubyte[height * width * 4];
+
+          for( int y = 0; y < height; ++y ) {
+            ubyte* srcLine = FreeImage_GetScanLine( levelDib, y );
+            ubyte* dstLine = &data[y * width*4];
+
+            for( int x = 0; x < width; ++x ) {
+              dstLine[x*4 + 0] = srcLine[x];
+              dstLine[x*4 + 1] = srcLine[x];
+              dstLine[x*4 + 2] = srcLine[x];
+              dstLine[x*4 + 3] = UCHAR_MAX;
+            }
+          }
+
+          level.format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+          level.size   = squish::GetStorageRequirements( width, height, squish::kDxt1 );
+          level.data   = new ubyte[level.size];
+
+          squish::CompressImage( data, width, height, level.data,
+                                 squish::kDxt1 | squish::kColourIterativeClusterFit );
+          delete[] data;
 #endif
+        }
+        else {
+          level.format = GL_LUMINANCE;
+          level.size   = width * height;
+          level.data   = new ubyte[level.size];
+
+          for( int y = 0; y < height; ++y ) {
+            memcpy( level.data + y*width, FreeImage_GetScanLine( levelDib, y ), size_t( width ) );
+          }
+        }
+        break;
+      }
+      case GL_BGR: {
+        if( context.useS3TC ) {
+#ifdef OZ_NONFREE
+          // Collapse data (pitch = width * pixelSize) and convert BGR -> RGBA.
+          ubyte* data = new ubyte[height * width * 4];
+
+          for( int y = 0; y < height; ++y ) {
+            ubyte* srcLine = FreeImage_GetScanLine( levelDib, y );
+            ubyte* dstLine = &data[y * width*4];
+
+            for( int x = 0; x < width; ++x ) {
+              dstLine[x*4 + 0] = srcLine[x*3 + 2];
+              dstLine[x*4 + 1] = srcLine[x*3 + 1];
+              dstLine[x*4 + 2] = srcLine[x*3 + 0];
+              dstLine[x*4 + 3] = UCHAR_MAX;
+            }
+          }
+
+          level.format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+          level.size   = squish::GetStorageRequirements( width, height, squish::kDxt1 );
+          level.data   = new ubyte[level.size];
+
+          squish::CompressImage( data, width, height, level.data,
+                                 squish::kDxt1 | squish::kColourIterativeClusterFit );
+          delete[] data;
+#endif
+        }
+        else {
+          ubyte* data  = FreeImage_GetBits( levelDib );
+          int    pitch = int( FreeImage_GetPitch( levelDib ) );
+
+          level.format = GL_RGB;
+          level.size   = height * pitch;
+          level.data   = new ubyte[level.size];
+
+          for( int y = 0; y < level.height; ++y ) {
+            ubyte* srcLine = &data[y * pitch];
+            ubyte* dstLine = &level.data[y * pitch];
+
+            for( int x = 0; x + 2 < pitch; x += 3 ) {
+              dstLine[x + 0] = srcLine[x + 2];
+              dstLine[x + 1] = srcLine[x + 1];
+              dstLine[x + 2] = srcLine[x + 0];
+            }
+          }
+        }
+        break;
+      }
+      case GL_BGRA: {
+        if( context.useS3TC ) {
+#ifdef OZ_NONFREE
+          // Collapse data (pitch = width * pixelSize) and convert BGRA -> RGBA.
+          ubyte* data = new ubyte[height * width * 4];
+
+          for( int y = 0; y < height; ++y ) {
+            ubyte* srcLine = FreeImage_GetScanLine( levelDib, y );
+            ubyte* dstLine = &data[y * width*4];
+
+            for( int x = 0; x < width; ++x ) {
+              dstLine[x*4 + 0] = srcLine[x*4 + 2];
+              dstLine[x*4 + 1] = srcLine[x*4 + 1];
+              dstLine[x*4 + 2] = srcLine[x*4 + 0];
+              dstLine[x*4 + 3] = srcLine[x*4 + 3];
+            }
+          }
+
+          level.format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+          level.size   = squish::GetStorageRequirements( width, height, squish::kDxt5 );
+          level.data   = new ubyte[level.size];
+
+          squish::CompressImage( data, width, height, level.data,
+                                 squish::kDxt5 | squish::kColourIterativeClusterFit |
+                                 squish::kWeightColourByAlpha );
+          delete[] data;
+#endif
+        }
+        else {
+          ubyte* data  = FreeImage_GetBits( levelDib );
+          int    pitch = int( FreeImage_GetPitch( levelDib ) );
+
+          level.format = GL_RGBA;
+          level.size   = height * pitch;
+          level.data   = new ubyte[level.size];
+
+          for( int y = 0; y < level.height; ++y ) {
+            ubyte* srcLine = &data[y * pitch];
+            ubyte* dstLine = &level.data[y * pitch];
+
+            for( int x = 0; x + 3 < pitch; x += 4 ) {
+              dstLine[x + 0] = srcLine[x + 2];
+              dstLine[x + 1] = srcLine[x + 1];
+              dstLine[x + 2] = srcLine[x + 0];
+              dstLine[x + 3] = srcLine[x + 3];
+            }
+          }
+        }
+        break;
+      }
+    }
+
+    if( levelDib != image->dib ) {
+      FreeImage_Unload( levelDib );
+    }
+
+    width  = max( width / 2, 1 );
+    height = max( height / 2, 1 );
+  }
+  while( genMipmaps && ( levels.last().width > 1 || levels.last().height > 1 ) );
+}
+
+bool Context::Texture::isEmpty() const
+{
+  return levels.isEmpty();
+}
+
+void Context::Texture::write( BufferStream* os )
+{
+  os->writeInt( wrap );
+  os->writeInt( magFilter );
+  os->writeInt( minFilter );
+
+  for( int i = 0; i < levels.length(); ++i ) {
+    const Level& level = levels[i];
+
+    os->writeInt( level.width );
+    os->writeInt( level.height );
+    os->writeInt( level.format );
+    os->writeInt( level.size );
+
+    os->writeChars( reinterpret_cast<char*>( level.data ), level.size );
   }
 
-  glBindTexture( GL_TEXTURE_2D, 0 );
-
-  if( glGetError() != GL_NO_ERROR || !glIsTexture( texId ) ) {
-    throw Exception( "Texture building failed" );
-  }
-
-  return texId;
+  os->writeInt( 0 );
 }
 
 Context::Image Context::loadImage( const char* path, int forceFormat )
@@ -289,18 +409,17 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
   return { dib, pixels, width, height, bpp, format };
 }
 
-uint Context::loadLayer( const char* path, bool wrap, int magFilter, int minFilter )
+Context::Texture Context::loadTexture( const char* path, bool wrap, int magFilter, int minFilter )
 {
-  Image image = loadImage( path );
-  uint  id    = buildLayer( image.pixels, image.width, image.height, image.format,
-                            wrap, magFilter, minFilter );
+  Image   image = loadImage( path );
+  Texture texture( &image, wrap, magFilter, minFilter );
   FreeImage_Unload( image.dib );
 
-  return id;
+  return texture;
 }
 
-void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, const char* basePath_,
-                           bool wrap, int magFilter, int minFilter )
+void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* normalsTex,
+                            const char* basePath_, bool wrap, int magFilter, int minFilter )
 {
   String basePath          = basePath_;
   String diffuseBasePath   = basePath;
@@ -335,9 +454,6 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
     if( !masks.stat() ) {
       masks.setPath( masksBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( !normals.stat() ) {
-      normals.setPath( normalsBasePath + IMAGE_EXTENSIONS[i] );
-    }
     if( !specular.stat() ) {
       specular.setPath( specularBasePath + IMAGE_EXTENSIONS[i] );
     }
@@ -346,6 +462,9 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
     }
     if( !emission.stat() ) {
       emission.setPath( emissionBasePath + IMAGE_EXTENSIONS[i] );
+    }
+    if( !normals.stat() ) {
+      normals.setPath( normalsBasePath + IMAGE_EXTENSIONS[i] );
     }
     if( !normals1.stat() ) {
       normals1.setPath( normals1BasePath + IMAGE_EXTENSIONS[i] );
@@ -371,8 +490,7 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
     throw Exception( "Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.cstr() );
   }
 
-  *diffuseId = buildLayer( image.pixels, image.width, image.height, image.format, wrap,
-                           magFilter, minFilter );
+  *diffuseTex = Texture( &image, wrap, magFilter, minFilter );
   FreeImage_Unload( image.dib );
 
   image.dib         = null;
@@ -398,8 +516,7 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
   }
 
   if( image.dib != null ) {
-    *masksId = buildLayer( image.pixels, image.width, image.height, image.format, wrap,
-                           magFilter, minFilter );
+    *masksTex = Texture( &image, wrap, magFilter, minFilter );
     FreeImage_Unload( image.dib );
   }
   else if( specImage.dib != null ) {
@@ -419,22 +536,15 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
       b = 0;
     }
 
-    *masksId = buildLayer( specImage.pixels, specImage.width, specImage.height, specImage.format,
-                           wrap, magFilter, minFilter );
+    *masksTex = Texture( &specImage, wrap, magFilter, minFilter );
 
     FreeImage_Unload( specImage.dib );
     if( emissionImage.dib != null ) {
       FreeImage_Unload( emissionImage.dib );
     }
   }
-  else {
-    *masksId = 0;
-  }
 
-  if( !bumpmap ) {
-    *normalsId = 0;
-  }
-  else {
+  if( bumpmap ) {
     image.dib = null;
 
     if( normals.stat() ) {
@@ -451,73 +561,10 @@ void Context::loadTexture( uint* diffuseId, uint* masksId, uint* normalsId, cons
     }
 
     if( image.dib != null ) {
-      *normalsId = buildLayer( image.pixels, image.width, image.height, GL_BGR, wrap,
-                               magFilter, minFilter );
+      *normalsTex = Texture( &image, wrap, magFilter, minFilter );
       FreeImage_Unload( image.dib );
     }
-    else {
-      *normalsId = 0;
-    }
   }
-}
-
-void Context::writeLayer( uint id, BufferStream* stream )
-{
-  glBindTexture( GL_TEXTURE_2D, id );
-
-  int wrap, magFilter, minFilter;
-
-  glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, &wrap );
-  glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, &magFilter );
-  glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, &minFilter );
-
-  stream->writeInt( wrap );
-  stream->writeInt( magFilter );
-  stream->writeInt( minFilter );
-
-  for( int level = 0; ; ++level ) {
-    int width, height, format, size;
-
-    glGetTexLevelParameteriv( GL_TEXTURE_2D, level, GL_TEXTURE_WIDTH, &width );
-    glGetTexLevelParameteriv( GL_TEXTURE_2D, level, GL_TEXTURE_HEIGHT, &height );
-    glGetTexLevelParameteriv( GL_TEXTURE_2D, level, GL_TEXTURE_INTERNAL_FORMAT, &format );
-
-    if( width == 0 ) {
-      break;
-    }
-
-    stream->writeInt( width );
-    stream->writeInt( height );
-    stream->writeInt( format );
-
-    if( format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT || format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT ) {
-      glGetTexLevelParameteriv( GL_TEXTURE_2D, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &size );
-
-      stream->writeInt( size );
-
-#ifdef _WIN32
-      client::glGetCompressedTexImage( GL_TEXTURE_2D, level, stream->forward( size ) );
-#else
-      glGetCompressedTexImage( GL_TEXTURE_2D, level, stream->forward( size ) );
-#endif
-    }
-    else {
-      hard_assert( format == GL_RGB || format == GL_RGBA || format == GL_LUMINANCE );
-
-      int sampleSize = format == GL_RGB ? 3 : format == GL_RGBA ? 4 : 1;
-      int lineSize = ( ( width * sampleSize - 1 ) / 4 + 1 ) * 4;
-
-      size = height * lineSize;
-
-      stream->writeInt( size );
-      glGetTexImage( GL_TEXTURE_2D, level, uint( format ),
-                     GL_UNSIGNED_BYTE, stream->forward( size ) );
-    }
-  }
-
-  stream->writeInt( 0 );
-
-  OZ_GL_CHECK_ERROR();
 }
 
 void Context::init()

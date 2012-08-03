@@ -18,22 +18,19 @@
  */
 
 /**
- * @file builder/common.hh
+ * @file builder/common.cc
  */
 
-#pragma once
+#include "stable.hh"
 
-#include "client/common.hh"
+#include "builder/common.hh"
 
 namespace oz
 {
 namespace builder
 {
 
-using namespace oz::matrix;
-using namespace oz::client;
-
-extern JSON config;
+JSON config;
 
 }
 }

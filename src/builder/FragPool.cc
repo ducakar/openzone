@@ -54,10 +54,10 @@ void FragPool::build( BufferStream* os, const char* className )
     throw Exception( "%s: Frag velocitySpread must be >= 0.0", className );
   }
 
-  float life        = config["life"].get( 4.0f );
-  float lifeSpread  = config["lifeSpread"].get( 1.0f );
-  float mass        = config["mass"].get( 0.0f );
-  float restitution = config["restitution"].get( 0.5f );
+  float life       = config["life"].get( 4.0f );
+  float lifeSpread = config["lifeSpread"].get( 1.0f );
+  float mass       = config["mass"].get( 0.0f );
+  float elasticity = config["elasticity"].get( 0.5f );
 
   if( life <= 0.0f ) {
     throw Exception( "%s: Frag life must be > 0.0", className );
@@ -68,8 +68,8 @@ void FragPool::build( BufferStream* os, const char* className )
   if( mass < 0.0f ) {
     throw Exception( "%s: Frag mass must be >= 0.0", className );
   }
-  if( restitution < 0.0f || 1.0f < restitution ) {
-    throw Exception( "%s: Frag restitution must lie on interval [0, 1]", className );
+  if( elasticity < 0.0f || 1.0f < elasticity ) {
+    throw Exception( "%s: Frag elasticity must lie on interval [0, 1]", className );
   }
 
   const JSON& modelsConfig = config["models"];
@@ -99,7 +99,7 @@ void FragPool::build( BufferStream* os, const char* className )
   os->writeFloat( lifeSpread );
 
   os->writeFloat( mass );
-  os->writeFloat( restitution );
+  os->writeFloat( elasticity );
 
   os->writeInt( models.length() );
   foreach( i, models.citer() ) {

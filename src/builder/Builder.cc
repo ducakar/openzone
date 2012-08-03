@@ -27,9 +27,6 @@
 
 #include "BuildInfo.hh"
 
-#include "client/Window.hh"
-#include "client/Render.hh"
-
 #include "builder/Lingua.hh"
 #include "builder/Context.hh"
 #include "builder/Compiler.hh"
@@ -284,8 +281,8 @@ void Builder::buildBSPTextures()
 
       File destFile( String::str( "tex/%s.ozcTex", name.cstr() ) );
 
-      uint diffuseId, masksId, normalsId;
-      context.loadTexture( &diffuseId, &masksId, &normalsId, path );
+      Context::Texture diffuseTex, masksTex, normalsTex;
+      context.loadTextures( &diffuseTex, &masksTex, &normalsTex, path );
 
       BufferStream os;
 
@@ -293,25 +290,22 @@ void Builder::buildBSPTextures()
 
       int textureFlags = Mesh::DIFFUSE_BIT;
 
-      if( masksId != 0 ) {
+      if( !masksTex.isEmpty() ) {
         textureFlags |= Mesh::MASKS_BIT;
       }
-      if( normalsId != 0 ) {
+      if( !normalsTex.isEmpty() ) {
         textureFlags |= Mesh::NORMALS_BIT;
       }
 
       os.writeInt( textureFlags );
 
-      context.writeLayer( diffuseId, &os );
-      glDeleteTextures( 1, &diffuseId );
+      diffuseTex.write( &os );
 
-      if( masksId != 0 ) {
-        context.writeLayer( masksId, &os );
-        glDeleteTextures( 1, &masksId );
+      if( !masksTex.isEmpty() ) {
+        masksTex.write( &os );
       }
-      if( normalsId != 0 ) {
-        context.writeLayer( normalsId, &os );
-        glDeleteTextures( 1, &normalsId );
+      if( !normalsTex.isEmpty() != 0 ) {
+        normalsTex.write( &os );
       }
 
       if( !destFile.write( os.begin(), os.length() ) ) {
@@ -704,12 +698,10 @@ void Builder::buildMissions()
     Log::println( "Building thumbnail {" );
     Log::indent();
 
-    uint imageId = context.loadLayer( srcFile.path(), false, GL_LINEAR, GL_LINEAR );
+    Context::Texture imageTex = context.loadTexture( srcFile.path(), false, GL_LINEAR, GL_LINEAR );
 
     BufferStream os;
-    context.writeLayer( imageId, &os );
-
-    glDeleteTextures( 1, &imageId );
+    imageTex.write( &os );
 
     if( !outFile.write( os.begin(), os.length() ) ) {
       throw Exception( "Failed to write '%s'", outFile.path().cstr() );
@@ -949,13 +941,11 @@ int Builder::main( int argc, char** argv )
   config.add( "window.height", 40 );
   config.add( "window.fullscreen", false );
 
-  window.init();
-
-  client::render.init( true );
-
-  if( !client::shader.hasS3TC && context.useS3TC ) {
+#ifndef OZ_NONFREE
+  if( context.useS3TC ) {
     throw Exception( "S3 texture compression enabled but not supported" );
   }
+#endif
 
   context.init();
   compiler.init();
@@ -1035,8 +1025,6 @@ int Builder::main( int argc, char** argv )
 
   compiler.free();
   context.free();
-  client::render.free( true );
-  window.free();
   config.clear();
 
   FreeImage_DeInitialise();

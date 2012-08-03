@@ -26,7 +26,6 @@
 #include "builder/OBJ.hh"
 
 #include "client/Context.hh"
-#include "client/OpenGL.hh"
 
 #include "builder/Compiler.hh"
 

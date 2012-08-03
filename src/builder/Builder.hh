@@ -23,6 +23,8 @@
  * Data builder.
  */
 
+#include "builder/common.hh"
+
 namespace oz
 {
 namespace builder

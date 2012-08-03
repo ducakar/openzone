@@ -27,39 +27,12 @@
 
 #include "client/OpenGL.hh"
 
+struct FIBITMAP;
+
 namespace oz
 {
 namespace builder
 {
-
-class TextureLayer
-{
-  private:
-
-    struct Level
-    {
-      char* data;
-      int   width;
-      int   height;
-      int   format;
-      int   size;
-    };
-
-    List<Level> levels;
-    int         magFilter;
-    int         minFilter;
-    bool        wrap;
-
-  public:
-
-    ~TextureLayer();
-
-    explicit TextureLayer( const char* data, int width, int height, int format, bool wrap,
-                           int magFilter, int minFilter );
-
-    void write( BufferStream* os );
-
-};
 
 class Context
 {
@@ -74,6 +47,45 @@ class Context
 
   public:
 
+    class Texture
+    {
+      private:
+
+        struct Level
+        {
+          ubyte* data;
+          int    width;
+          int    height;
+          int    format;
+          int    size;
+
+          Level();
+          ~Level();
+
+          Level( const Level& ) = delete;
+          Level( Level&& l );
+
+          Level& operator = ( const Level& ) = delete;
+          Level& operator = ( Level&& l );
+        };
+
+        List<Level> levels;
+        int         wrap;
+        int         magFilter;
+        int         minFilter;
+
+      public:
+
+        Texture() = default;
+
+        explicit Texture( Image* image, bool wrap, int magFilter, int minFilter );
+
+        bool isEmpty() const;
+
+        void write( BufferStream* os );
+
+    };
+
     HashString<> usedTextures;
     HashString<> usedSounds;
     HashString<> usedModels;
@@ -83,21 +95,16 @@ class Context
 
   private:
 
-    uint buildLayer( const void* data, int width, int height, int format, bool wrap,
-                     int magFilter, int minFilter );
-
     Image loadImage( const char* path, int forceFormat = 0 );
 
   public:
 
-    uint loadLayer( const char* path, bool wrap = true,
-                    int magFilter = DEFAULT_MAG_FILTER, int minFilter = DEFAULT_MIN_FILTER );
+    Texture loadTexture( const char* path, bool wrap = true,
+                         int magFilter = DEFAULT_MAG_FILTER, int minFilter = DEFAULT_MIN_FILTER );
 
-    void loadTexture( uint* diffuseId, uint* masksId, uint* normalsId,
-                      const char* basePath, bool wrap = true,
-                      int magFilter = DEFAULT_MAG_FILTER, int minFilter = DEFAULT_MIN_FILTER );
-
-    void writeLayer( uint id, BufferStream* stream );
+    void loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* normalsTex,
+                       const char* basePath, bool wrap = true,
+                       int magFilter = DEFAULT_MAG_FILTER, int minFilter = DEFAULT_MIN_FILTER );
 
     void init();
     void free();
