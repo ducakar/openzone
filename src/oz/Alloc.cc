@@ -46,10 +46,10 @@ namespace oz
 static_assert( ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
                "Alloc::ALIGNMENT should be power of two" );
 
-#ifdef OZ_TRACK_LEAKS
+#ifdef OZ_TRACK_ALLOCS
 
 // Holds info about a memory allocation, used to track memory leaks and new/delete mismatches.
-// If we deallocate from two different threads at once with OZ_TRACK_LEAKS, changing the list of
+// If we deallocate from two different threads at once with OZ_TRACK_ALLOCS, changing the list of
 // allocated blocks while iterating it in another thread can result in a SIGSEGV, so list operations
 // must be protected my a spin lock.
 struct TraceEntry
@@ -101,7 +101,7 @@ void Alloc::printSummary()
   Log::println( "}" );
 }
 
-#ifndef OZ_TRACK_LEAKS
+#ifndef OZ_TRACK_ALLOCS
 
 bool Alloc::printLeaks()
 {
@@ -194,7 +194,7 @@ static void aligned_free( void* ptr )
 
 static void* allocateObject( void* ptr, size_t size )
 {
-#ifdef OZ_TRACK_LEAKS
+#ifdef OZ_TRACK_ALLOCS
 
   if( !isConstructed ) {
 # if defined( __native_client__ )
@@ -256,7 +256,7 @@ static void* allocateObject( void* ptr, size_t size )
 
 static void* allocateArray( void* ptr, size_t size )
 {
-#ifdef OZ_TRACK_LEAKS
+#ifdef OZ_TRACK_ALLOCS
 
   if( !isConstructed ) {
 # if defined( __native_client__ )
@@ -321,7 +321,7 @@ static void deallocateObject( void* ptr )
   size_t size = static_cast<size_t*>( ptr )[-1];
   ptr = static_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size ) );
 
-#ifdef OZ_TRACK_LEAKS
+#ifdef OZ_TRACK_ALLOCS
 
 # if defined( __native_client__ )
   pthread_mutex_lock( &traceEntryListLock );
@@ -406,7 +406,7 @@ static void deallocateArray( void* ptr )
   size_t size = static_cast<size_t*>( ptr )[-1];
   ptr = static_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size ) );
 
-#ifdef OZ_TRACK_LEAKS
+#ifdef OZ_TRACK_ALLOCS
 
 # if defined( __native_client__ )
   pthread_mutex_lock( &traceEntryListLock );

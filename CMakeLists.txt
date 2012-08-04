@@ -10,7 +10,7 @@ set( OZ_VERSION "0.3.80" )
 
 if( NOT NACL )
   option( OZ_SHARED_LIBOZ "Build liboz as a shared library." OFF )
-  option( OZ_TRACK_LEAKS "Save stack trace on operator new calls to track memory leaks." OFF )
+  option( OZ_TRACK_ALLOCS "Track memory allocations to detect new/delete mismatches and memory leaks." OFF )
 
   option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." OFF )
   option( OZ_NONFREE "Enable support for decoding MP3s and AACs and building S3TC textures." OFF )

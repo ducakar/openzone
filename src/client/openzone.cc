@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/openzone/openzone.cc
+ * @file client/openzone.cc
  */
 
 #include "stable.hh"

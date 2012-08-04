@@ -18,7 +18,7 @@
  */
 
 /**
- * @file client/openozne.hh
+ * @file client/openzone.hh
  *
  * Platform-specific main function implementation.
  */

@@ -18,7 +18,7 @@
  */
 
 /**
- * @file builder/Mouse.cc
+ * @file builder/UI.cc
  */
 
 #include "stable.hh"

@@ -18,31 +18,35 @@
  */
 
 /**
- * @file builder/UI.hh
+ * @file txc_dxtn/txc_dxtn.c
  */
 
-#pragma once
+#include "txc_dxtn.h"
 
-#include "builder/common.hh"
+#include <stdlib.h>
 
-namespace oz
+void fetch_2d_texel_rgb_dxt1( GLint stride, const GLubyte* data, GLint x, GLint y, GLvoid* texel )
 {
-namespace builder
-{
-
-class UI
-{
-  private:
-
-    static const char* const ICON_NAMES[];
-
-  public:
-
-    static void buildCursors();
-    static void buildIcons();
-    static void copyScheme();
-
-};
-
+  abort();
 }
+
+void fetch_2d_texel_rgba_dxt1( GLint stride, const GLubyte* data, GLint x, GLint y, GLvoid* texel )
+{
+  abort();
+}
+
+void fetch_2d_texel_rgba_dxt3( GLint stride, const GLubyte* data, GLint x, GLint y, GLvoid* texel )
+{
+  abort();
+}
+
+void fetch_2d_texel_rgba_dxt5( GLint stride, const GLubyte* data, GLint x, GLint y, GLvoid* texel )
+{
+  abort();
+}
+
+void tx_compress_dxtn( GLint components, GLint width, GLint height, const GLubyte* data,
+                       GLenum destFormat, GLubyte* destData, GLint destStride )
+{
+  abort();
 }

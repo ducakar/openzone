@@ -37,7 +37,9 @@
 #include "client/VehicleAudio.hh"
 
 #include <FreeImage.h>
-#include <squish.h>
+#ifdef OZ_NONFREE
+# include <squish.h>
+#endif
 
 namespace oz
 {
@@ -96,8 +98,8 @@ Context::Texture::Level& Context::Texture::Level::operator = ( Level&& l )
 Context::Texture::Texture( Image* image, bool wrap_, int magFilter_, int minFilter_ )
 {
   hard_assert( image->format == GL_LUMINANCE ||
-               image->format == GL_BGR ||
-               image->format == GL_BGRA );
+               image->format == GL_RGB ||
+               image->format == GL_RGBA );
 
   magFilter = magFilter_;
   minFilter = minFilter_;
@@ -124,7 +126,7 @@ Context::Texture::Texture( Image* image, bool wrap_, int magFilter_, int minFilt
 
     FIBITMAP* levelDib = image->dib;
     if( levels.length() > 1 ) {
-      levelDib = FreeImage_Rescale( image->dib, width, height, FILTER_LANCZOS3 );
+      levelDib = FreeImage_Rescale( image->dib, width, height, FILTER_CATMULLROM );
     }
 
     switch( image->format ) {
@@ -166,7 +168,7 @@ Context::Texture::Texture( Image* image, bool wrap_, int magFilter_, int minFilt
         }
         break;
       }
-      case GL_BGR: {
+      case GL_RGB: {
         if( context.useS3TC ) {
 #ifdef OZ_NONFREE
           // Collapse data (pitch = width * pixelSize) and convert BGR -> RGBA.
@@ -214,7 +216,7 @@ Context::Texture::Texture( Image* image, bool wrap_, int magFilter_, int minFilt
         }
         break;
       }
-      case GL_BGRA: {
+      case GL_RGBA: {
         if( context.useS3TC ) {
 #ifdef OZ_NONFREE
           // Collapse data (pitch = width * pixelSize) and convert BGRA -> RGBA.
@@ -343,10 +345,10 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
 
   if( forceFormat == 0 ) {
     if( isPalettised ) {
-      forceFormat = isOpaque ? GL_BGR : GL_BGRA;
+      forceFormat = isOpaque ? GL_RGB : GL_RGBA;
     }
     else {
-      forceFormat = bpp == 8 ? GL_LUMINANCE : bpp == 24 ? GL_BGR : GL_BGRA;
+      forceFormat = bpp == 8 ? GL_LUMINANCE : bpp == 24 ? GL_RGB : GL_RGBA;
     }
   }
 
@@ -365,9 +367,9 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
 
       break;
     }
-    case GL_BGR: {
+    case GL_RGB: {
       bpp    = 24;
-      format = GL_BGR;
+      format = GL_RGB;
 
       FIBITMAP* newImage = FreeImage_ConvertTo24Bits( dib );
       if( newImage == null ) {
@@ -379,9 +381,9 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
 
       break;
     }
-    case GL_BGRA: {
+    case GL_RGBA: {
       bpp    = 32;
-      format = GL_BGRA;
+      format = GL_RGBA;
 
       FIBITMAP* newDIB = FreeImage_ConvertTo32Bits( dib );
       if( newDIB == null ) {
@@ -498,17 +500,17 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
   emissionImage.dib = null;
 
   if( masks.stat() ) {
-    image = loadImage( masks.path(), GL_BGR );
+    image = loadImage( masks.path(), GL_RGB );
   }
   else if( specular.stat() ) {
-    specImage = loadImage( specular.path(), GL_BGR );
+    specImage = loadImage( specular.path(), GL_RGB );
 
     if( emission.stat() ) {
       emissionImage = loadImage( emission.path(), GL_LUMINANCE );
     }
   }
   else if( specular1.stat() ) {
-    specImage = loadImage( specular1.path(), GL_BGR );
+    specImage = loadImage( specular1.path(), GL_RGB );
 
     if( emission.stat() ) {
       emissionImage = loadImage( emission.path(), GL_LUMINANCE );
@@ -551,13 +553,13 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
       image = loadImage( normals.path() );
     }
     else if( normals1.stat() ) {
-      image = loadImage( normals1.path(), GL_BGR );
+      image = loadImage( normals1.path(), GL_RGB );
     }
     else if( normals2.stat() ) {
-      image = loadImage( normals2.path(), GL_BGR );
+      image = loadImage( normals2.path(), GL_RGB );
     }
     else if( normals3.stat() ) {
-      image = loadImage( normals3.path(), GL_BGR );
+      image = loadImage( normals3.path(), GL_RGB );
     }
 
     if( image.dib != null ) {

@@ -904,7 +904,7 @@ DArray<File> File::ls()
     return array;
   }
 
-  array.init( count );
+  array.resize( count );
 
   int i = 0;
 

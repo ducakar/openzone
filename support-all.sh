@@ -21,7 +21,9 @@ if (( $Linux_x86_64 )); then
      "$prefix/libvorbis.so.0" \
      "$prefix/libvorbisfile.so.3" \
      "$prefix/libfreeimage.so.3" \
-     "$prefix/libtxc_dxtn.so" \
+     "$outDir"
+
+  cp "build/Linux-x86_64/src/txc_dxtn/libtxc_dxtn.so" \
      "$outDir"
 
   chmod +x "$outDir/"*
@@ -45,7 +47,9 @@ if (( $Linux_i686 )); then
      "$prefix/libvorbis.so.0" \
      "$prefix/libvorbisfile.so.3" \
      "$prefix/libfreeimage.so.3" \
-     "$prefix/libtxc_dxtn.so" \
+     "$outDir"
+
+  cp "build/Linux-i686/src/txc_dxtn/libtxc_dxtn.so" \
      "$outDir"
 
   chmod +x "$outDir/"*

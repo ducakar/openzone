@@ -316,7 +316,7 @@ int Client::init( int argc, char** argv )
     }
   }
 
-  packages.dealloc();
+  packages.clear();
 
 #else
 

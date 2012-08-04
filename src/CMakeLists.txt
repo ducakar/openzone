@@ -23,6 +23,7 @@ add_subdirectory( client )
 if( NOT NACL AND NOT ANDROID )
   add_subdirectory( builder )
   add_subdirectory( tools )
+  add_subdirectory( txc_dxtn )
 endif()
 
 add_subdirectory( tests )

@@ -122,7 +122,7 @@ inline float angleDiff( float x, float y )
  */
 
 /**
- * @mainpage OpenZone
+ * @page OpenZone
  *
  * @li @subpage CommonLayer
  * @li @subpage MatrixLayer

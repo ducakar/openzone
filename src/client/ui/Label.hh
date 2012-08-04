@@ -60,10 +60,9 @@ class Label
     ~Label();
 
     Label( const Label& ) = delete;
-    Label( Label&& label ) = default;
-
     Label& operator = ( const Label& ) = delete;
-    Label& operator = ( Label&& label ) = default;
+
+    // FIXME add move ctor = default, move op = default once GCC 4.4 becomes obsolete.
 
     OZ_PRINTF_FORMAT( 6, 7 )
     explicit Label( int x, int y, int align, Font::Type font, const char* s, ... );

@@ -58,7 +58,7 @@ DArray<NaClUpdater::Package> NaClUpdater::readManifest( InputStream* is ) const
     return packages;
   }
 
-  packages.alloc( nPackages );
+  packages.resize( nPackages );
 
   for( int i = 0; i < nPackages; ++i ) {
     packages[i].name = is->readString();
@@ -94,8 +94,8 @@ bool NaClUpdater::checkUpdates()
 {
   Log::print( "Checking for updates ..." );
 
-  localPackages.dealloc();
-  remotePackages.dealloc();
+  localPackages.clear();
+  remotePackages.clear();
 
   File localManifest( LOCAL_MANIFEST );
 
@@ -240,15 +240,15 @@ DArray<String> NaClUpdater::update()
   if( checkUpdates() ) {
     downloadUpdates();
 
-    packages.alloc( remotePackages.length() );
+    packages.resize( remotePackages.length() );
 
     for( int i = 0; i < packages.length(); ++i ) {
       packages[i] = static_cast<String&&>( remotePackages[i].name );
     }
   }
 
-  localPackages.dealloc();
-  remotePackages.dealloc();
+  localPackages.clear();
+  remotePackages.clear();
 
   NaCl::post( "none:" );
 

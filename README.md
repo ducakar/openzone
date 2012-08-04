@@ -1,3 +1,10 @@
+OpenZone
+========
+
+Simple cross-platform FPS/RTS game engine.
+
+http://ducakar.github.com/openzone/
+
 This README file is intended for developers only. See `doc/README.html` if you are an end-user.
 
 Building
@@ -16,10 +23,10 @@ for the following libraries:
 * mesa (OpenGL headers)
 * alsoft (OpenAL)
 * libvorbis
-* libmad
-* faad
+* libmad (optional)
+* faad (optional)
 * freeimage
-* libsquish
+* libsquish (optional)
 
 You can then use generic steps for building CMake projects. Basic build instructions when you are in
 the root directory of the source tree are:
@@ -37,17 +44,17 @@ default, you can change it in ``cmake/MinGW32.Toolchain.cmake`).
 You may also want to set several options when configuring CMake build system:
 
 * `OZ_SHARED_LIBOZ`: Build liboz (OpenZone core library) as a shared library. This is useful if one
-  wants to put liboz into a separate Linux package to use it by other projects.
+  wants to put liboz into a separate Linux package to use it by other programs.
 
-* `OZ_TRACE_LEAKS`: whether to enable tracking of allocated memory chunks (including stack trace
-  from where allocations were performed. This can provide nice diagnostics for new/delete mismatches
-  and memory leaks). Off by default.
+* `OZ_TRACK_ALLOCS`: Enable tracking of allocated memory chunks in liboz. Stack trace for every
+  memory allocation performed via new operator is saved for later diagnostics. It detects new/delete
+  mismatches and one can check for currently allocated memory chunks (and hence memory leaks).
 
 * `OZ_GL_ES`: Use OpenGL ES 2.0 API. Always enabled in NaCl platform, on other platforms it will
   merely use GL ES headers and functions set, it will still initialise OpenGL.
 
 * `OZ_NONFREE`: Enable support for decoding MP3 and AAC formats and building textures using S3
-  texture compression.
+  texture compression. Requires libmad, faad and libsquish libraries.
 
 * `OZ_STANDALONE`: This only affects behaviour of "`make install`". It also installs dependencies
   from support directory, game data archives found in `share/openzone`, info files etc. This is

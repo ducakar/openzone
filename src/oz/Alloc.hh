@@ -37,7 +37,7 @@ namespace oz
  * Memory allocator.
  *
  * This class implements <tt>new</tt>/<tt>delete</tt> operators that provide memory allocation
- * statistics, specific alignment and optionally track memory leaks (if <tt>OZ_TRACK_LEAKS</tt>
+ * statistics, specific alignment and optionally track allocated chunks (if <tt>OZ_TRACK_ALLOCS</tt>
  * configuration option is turned on).
  *
  * Unless <tt>NDEBUG</tt> macro was defined when building liboz, all freed memory is rewritten with
@@ -129,7 +129,7 @@ class Alloc
  * Operator new overload with memory statistics and (optionally) memory leak checking.
  *
  * Apart from standard new operator this one counts memory allocation and amount of memory allocated
- * (<tt>Alloc::count</tt>, <tt>Alloc::amount</tt> etc.). If compiled with <tt>OZ_TRACK_LEAKS</tt>
+ * (<tt>Alloc::count</tt>, <tt>Alloc::amount</tt> etc.). If compiled with <tt>OZ_TRACK_ALLOCS</tt>
  * is also tracks all allocated chunks, so it catches new/delete mismatches and
  * <tt>Alloc::printLeaks()</tt> can be called at any time to print currently allocated chunks.
  *
@@ -145,7 +145,7 @@ extern void* operator new ( size_t size );
  * Operator new[] overload with memory statistics and (optionally) memory leak checking.
  *
  * Apart from standard new operator this one counts memory allocation and amount of memory allocated
- * (<tt>Alloc::count</tt>, <tt>Alloc::amount</tt> etc.). If compiled with <tt>OZ_TRACK_LEAKS</tt>
+ * (<tt>Alloc::count</tt>, <tt>Alloc::amount</tt> etc.). If compiled with <tt>OZ_TRACK_ALLOCS</tt>
  * is also tracks all allocated chunks, so it catches new/delete mismatches and
  * <tt>Alloc::printLeaks()</tt> can be called at any time to print currently allocated chunks.
  *

@@ -59,7 +59,8 @@ void CreditsMenu::onReposition()
   int step    = Font::INFOS[Font::SANS].height;
   int nLabels = ( height - 160 ) / step;
 
-  labels.resize( nLabels );
+  // FIXME change to resize and add move semantics to ui::Label once GCC 4.4 becomes obsolete.
+  labels = DArray<Label>( nLabels );
 
   for( int i = 0; i < nLabels; ++i ) {
     int x    = ( width - 240 ) / 2;
