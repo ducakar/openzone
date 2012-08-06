@@ -1,7 +1,7 @@
 0.3.80
 
 - builder
-    * Context can generate mipmaps and S3TC textures (via libsquish) without OpenGL
+    * Context generates mipmaps and S3TC textures (using libsquish) without OpenGL
 
 0.3.1
 

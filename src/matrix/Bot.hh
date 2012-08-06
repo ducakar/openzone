@@ -182,7 +182,7 @@ class Bot : public Dynamic
 
     bool canReach( const Entity* ent ) const;
     bool canReach( const Object* obj ) const;
-    bool canEquip( const Weapon* weapon ) const;
+    bool canEquip( const Weapon* weaponObj ) const;
 
     bool trigger( const Entity* entity );
     bool lock( const Entity* entity );

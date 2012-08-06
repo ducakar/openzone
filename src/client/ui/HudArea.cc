@@ -99,7 +99,6 @@ void HudArea::drawBotCrosshair()
       }
     }
     else {
-      float life;
       if( obj->flags & Object::BOT_BIT ) {
         life = max( 2.0f * obj->life / clazz->life - 1.0f, 0.0f );
       }

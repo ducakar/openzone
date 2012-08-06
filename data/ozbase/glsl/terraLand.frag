@@ -23,7 +23,7 @@
  * Terrain (land) shader.
  */
 
-const float TERRA_DETAIL_SCALE = 512.0;
+const float TERRA_DETAIL_SCALE = 768.0;
 
 varying vec3 exPosition;
 varying vec2 exTexCoord;

@@ -18,35 +18,34 @@
  */
 
 /**
- * @file txc_dxtn/txc_dxtn.c
+ * @file txc_dxtn/txc_dxtn.cc
  */
 
-#include "txc_dxtn.h"
+#include "txc_dxtn.hh"
 
 #include <stdlib.h>
 
-void fetch_2d_texel_rgb_dxt1( GLint stride, const GLubyte* data, GLint x, GLint y, GLvoid* texel )
+void fetch_2d_texel_rgb_dxt1( GLint, const GLubyte*, GLint, GLint, GLvoid* )
 {
   abort();
 }
 
-void fetch_2d_texel_rgba_dxt1( GLint stride, const GLubyte* data, GLint x, GLint y, GLvoid* texel )
+void fetch_2d_texel_rgba_dxt1( GLint, const GLubyte*, GLint, GLint, GLvoid* )
 {
   abort();
 }
 
-void fetch_2d_texel_rgba_dxt3( GLint stride, const GLubyte* data, GLint x, GLint y, GLvoid* texel )
+void fetch_2d_texel_rgba_dxt3( GLint, const GLubyte*, GLint, GLint, GLvoid* )
 {
   abort();
 }
 
-void fetch_2d_texel_rgba_dxt5( GLint stride, const GLubyte* data, GLint x, GLint y, GLvoid* texel )
+void fetch_2d_texel_rgba_dxt5( GLint, const GLubyte*, GLint, GLint, GLvoid* )
 {
   abort();
 }
 
-void tx_compress_dxtn( GLint components, GLint width, GLint height, const GLubyte* data,
-                       GLenum destFormat, GLubyte* destData, GLint destStride )
+void tx_compress_dxtn( GLint, GLint, GLint, const GLubyte*, GLenum, GLubyte*, GLint )
 {
   abort();
 }

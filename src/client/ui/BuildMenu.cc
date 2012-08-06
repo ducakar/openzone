@@ -39,9 +39,9 @@ namespace client
 namespace ui
 {
 
-BuildButton::BuildButton( const char* className, Callback* callback, int width, int height ) :
-  Button( lingua.get( library.objClass( className )->title ), callback, width, height ),
-  className( className )
+BuildButton::BuildButton( const char* className_, Callback* callback, int width, int height ) :
+  Button( lingua.get( library.objClass( className_ )->title ), callback, width, height ),
+  className( className_ )
 {}
 
 BuildButton::~BuildButton()

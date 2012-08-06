@@ -86,20 +86,20 @@ void Entity::trigger()
   int strIndex = model->target / Struct::MAX_ENTITIES;
   int entIndex = model->target % Struct::MAX_ENTITIES;
 
-  Struct* str = orbis.structs[strIndex];
+  Struct* targetStr = orbis.structs[strIndex];
 
-  if( str != null ) {
-    Entity& entity = str->entities[entIndex];
+  if( targetStr != null ) {
+    Entity& target = targetStr->entities[entIndex];
 
-    if( entity.state == OPENED || entity.state == OPENING ) {
-      entity.state = CLOSING;
-      entity.time = 0.0f;
-      entity.velocity = -entity.model->move * entity.model->ratioInc / Timer::TICK_TIME;
+    if( target.state == OPENED || target.state == OPENING ) {
+      target.state = CLOSING;
+      target.time = 0.0f;
+      target.velocity = -target.model->move * target.model->ratioInc / Timer::TICK_TIME;
     }
     else {
-      entity.state = OPENING;
-      entity.time = 0.0f;
-      entity.velocity = entity.model->move * entity.model->ratioInc / Timer::TICK_TIME;
+      target.state = OPENING;
+      target.time = 0.0f;
+      target.velocity = target.model->move * target.model->ratioInc / Timer::TICK_TIME;
     }
   }
 }

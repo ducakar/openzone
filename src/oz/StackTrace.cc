@@ -156,7 +156,7 @@ char** StackTrace::symbols() const
   memcpy( &niceSymbols[nWrittenFrames], outputBuffer, bodySize );
 
   char* entry = reinterpret_cast<char*>( &niceSymbols[nWrittenFrames] );
-  for( int i = 0; i < nWrittenFrames; ++i ) {
+  for( i = 0; i < nWrittenFrames; ++i ) {
     niceSymbols[i] = entry;
     entry += strlen( entry ) + 1;
   }

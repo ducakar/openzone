@@ -52,9 +52,9 @@ class Audio
 
     // obj: source object of the effect, parent: object at which the effect is played
     // obj != parent: e.g. an object obj in the inventory of bot parent plays a sound
-    void playSound( int sound, float volume, const Object* obj, const Object* parent ) const;
-    void playContSound( int sound, float volume, const Object* obj, const Object* parent ) const;
-    void playEngineSound( int sound, float volume, float pitch, const Vehicle* veh ) const;
+    void playSound( int sound, float volume, const Object* parent ) const;
+    void playContSound( int sound, float volume, const Object* parent ) const;
+    void playEngineSound( int sound, float volume, float pitch ) const;
 
     explicit Audio( const Object* obj );
 

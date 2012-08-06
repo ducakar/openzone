@@ -49,9 +49,9 @@ namespace oz
 namespace builder
 {
 
-const Mat44 Class::INJURY_COLOUR = Mat44( 0.60f, 0.20f, 0.20f, 0.00f,
-                                          0.60f, 0.20f, 0.20f, 0.00f,
-                                          0.60f, 0.20f, 0.20f, 0.00f,
+const Mat44 Class::INJURY_COLOUR = Mat44( 1.00f, 0.00f, 0.00f, 0.00f,
+                                          1.00f, 0.00f, 0.00f, 0.00f,
+                                          1.00f, 0.00f, 0.00f, 0.00f,
                                           0.20f, 0.05f, 0.05f, 1.00f );
 
 void Class::fillObject( const char* className )
@@ -85,9 +85,9 @@ void Class::fillObject( const char* className )
    * dim
    */
 
-  dim.x = config["dim.x"].get( 0.50f );
-  dim.y = config["dim.y"].get( 0.50f );
-  dim.z = config["dim.z"].get( 0.50f );
+  dim.x = config["dim.x"].get( -1.0f );
+  dim.y = config["dim.y"].get( -1.0f );
+  dim.z = config["dim.z"].get( -1.0f );
 
   if( dim.x < 0.0f || dim.x > Object::REAL_MAX_DIM ||
       dim.y < 0.0f || dim.y > Object::REAL_MAX_DIM ||
@@ -420,7 +420,7 @@ void Class::fillBot( const char* className )
   stairRateSupp     = config["stairRateSupp"].get( 0.80f );
 
   climbInc          = config["climbInc"].get( 0.25f );
-  climbMax          = config["climbMax"].get( 2.0f );
+  climbMax          = config["climbMax"].get( 2.25f );
   climbMomentum     = config["climbMomentum"].get( 2.0f );
 
   stamina           = config["stamina"].get( 100.0f );

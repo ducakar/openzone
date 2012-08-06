@@ -18,7 +18,7 @@
  */
 
 /**
- * @file txc_dxtn/txc_dxtn.h
+ * @file txc_dxtn/txc_dxtn.hh
  *
  * Dummy txc_dxtn library.
  *
@@ -26,9 +26,9 @@
  * Linux disables all S3TC-related stuff without txc_dxtn, even those that could work without
  * that library.
  *
- * This dummy txc_dxtn library should be put into LD_LIBRARY_PATH when starting OpenZone on a Linux
- * system with open-source (Mesa) OpenGL implementation when there's no txc_dxtn library present.
- * It should fool Mesa not to disable S3TC functionality that could work without txc_dxtn.
+ * This dummy txc_dxtn library should be put into <tt>LD_LIBRARY_PATH</tt> when starting OpenZone on
+ * a Linux system with open-source (Mesa) OpenGL implementation when there's no txc_dxtn library
+ * present. It should fool Mesa not to disable S3TC functionality that could work without txc_dxtn.
  *
  * If the program tries to use any S3TC-related functionality that would require txc_dxtn, any of
  * these functions will crash the program with <tt>abort()</tt>.
@@ -38,10 +38,18 @@
 
 #include <GL/gl.h>
 
+extern "C" __attribute__(( noreturn ))
 void fetch_2d_texel_rgb_dxt1( GLint stride, const GLubyte* data, GLint x, GLint y, GLvoid* texel );
+
+extern "C" __attribute__(( noreturn ))
 void fetch_2d_texel_rgba_dxt1( GLint stride, const GLubyte* data, GLint x, GLint y, GLvoid* texel );
+
+extern "C" __attribute__(( noreturn ))
 void fetch_2d_texel_rgba_dxt3( GLint stride, const GLubyte* data, GLint x, GLint y, GLvoid* texel );
+
+extern "C" __attribute__(( noreturn ))
 void fetch_2d_texel_rgba_dxt5( GLint stride, const GLubyte* data, GLint x, GLint y, GLvoid* texel );
 
+extern "C" __attribute__(( noreturn ))
 void tx_compress_dxtn( GLint components, GLint width, GLint height, const GLubyte* data,
                        GLenum destFormat, GLubyte* destData, GLint destStride );

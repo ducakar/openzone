@@ -40,11 +40,6 @@ namespace oz
 namespace client
 {
 
-CinematicProxy::CinematicProxy()
-{
-  reset();
-}
-
 void CinematicProxy::addStateSwitch( int endState )
 {
   Step step = { Quat::ID, Point::ORIGIN, Mat44::ID, -1, null, 0.0f, endState };

@@ -32,7 +32,6 @@ namespace client
 {
 
 class CinematicProxy : public Proxy
-
 {
   private:
 
@@ -72,8 +71,6 @@ class CinematicProxy : public Proxy
     ui::CinematicText* cinematicText;
 
   public:
-
-    CinematicProxy();
 
     void addStateSwitch( int endState );
     void addTransform( const Quat& rot, const Point& p, const Mat44& colour, int track,

@@ -65,7 +65,7 @@ Label::~Label()
   glDeleteTextures( 2, texIds );
 }
 
-Label::Label( int x, int y, int align, Font::Type font, const char* s, ... ) :
+Label::Label( int x_, int y_, int align_, Font::Type font_, const char* s, ... ) :
   offsetX( 0 ), offsetY( 0 ), activeTexId( 0 ), hasChanged( false )
 {
   glGenTextures( 2, texIds );
@@ -82,7 +82,7 @@ Label::Label( int x, int y, int align, Font::Type font, const char* s, ... ) :
 
   va_list ap;
   va_start( ap, s );
-  vset( x, y, align, font, s, ap );
+  vset( x_, y_, align_, font_, s, ap );
   va_end( ap );
 }
 
@@ -123,19 +123,19 @@ void Label::vset( int x_, int y_, int align_, Font::Type font_, const char* s, v
   }
 }
 
-void Label::set( int x, int y, int align, Font::Type font, const char* s, ... )
+void Label::set( int x_, int y_, int align_, Font::Type font_, const char* s, ... )
 {
   va_list ap;
   va_start( ap, s );
-  vset( x, y, align, font, s, ap );
+  vset( x_, y_, align_, font_, s, ap );
   va_end( ap );
 }
 
-void Label::set( int x, int y, const char* s, ... )
+void Label::set( int x_, int y_, const char* s, ... )
 {
   va_list ap;
   va_start( ap, s );
-  vset( x, y, align, font, s, ap );
+  vset( x_, y_, align, font, s, ap );
   va_end( ap );
 }
 

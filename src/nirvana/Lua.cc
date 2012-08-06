@@ -490,7 +490,7 @@ void Lua::init()
 
       InputStream istream = file->inputStream();
 
-      if( IMPORT_BUFFER( istream.begin(), istream.capacity(), file->path() ) != 0 ) {
+      if( l_dobuffer( istream.begin(), istream.capacity(), file->path() ) != 0 ) {
         throw Exception( "Nirvana Lua script error" );
       }
 

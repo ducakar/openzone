@@ -68,13 +68,6 @@
   lua.registerConstant( name, value )
 
 /**
- * @def IMPORT_BUFFER
- * Loads (executes) %Lua code from the given buffer.
- */
-#define IMPORT_BUFFER( begin, length, name ) \
-  ( luaL_loadbuffer( l, begin, size_t( length ), name ) || lua_pcall( l, 0, LUA_MULTRET, 0 ) )
-
-/**
  * @def ERROR
  * Exits %Lua API function call with the giver error message.
  */
@@ -485,6 +478,20 @@
  */
 #define l_pcall( nArg, nRet ) \
   lua_pcall( l, nArg, nRet, 0 )
+
+/**
+ * @def l_dobuffer
+ * Loads (executes) %Lua code from the given buffer.
+ */
+#define l_dobuffer( begin, length, name ) \
+  ( luaL_loadbuffer( l, begin, size_t( length ), name ) || lua_pcall( l, 0, LUA_MULTRET, 0 ) )
+
+/**
+ * @def l_dostring
+ * Loads (executes) %Lua code from the given null-terminated string.
+ */
+#define l_dostring( code ) \
+  luaL_dostring( l, code )
 
 /// @}
 

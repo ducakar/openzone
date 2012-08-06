@@ -124,9 +124,9 @@ class Camera
     State         state;
     State         newState;
 
-    void setState( State state )
+    void setState( State state_ )
     {
-      newState = state;
+      newState = state_;
     }
 
     void setTaggedObj( const Object* obj )

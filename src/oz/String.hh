@@ -920,9 +920,9 @@ class String
     String replace( char whatChar, char withChar ) const;
 
     /**
-     * Returns array of substrings between occurrences of the given character token.
+     * Returns array of substrings between occurrences of the given character delimiter.
      */
-    DArray<String> split( char ch ) const;
+    DArray<String> split( char delimiter ) const;
 
 };
 

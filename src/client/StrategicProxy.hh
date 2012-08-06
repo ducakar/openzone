@@ -57,8 +57,6 @@ class StrategicProxy : public Proxy
 
   public:
 
-    StrategicProxy();
-
     void begin() override;
     void end() override;
 

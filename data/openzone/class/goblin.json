@@ -15,8 +15,8 @@
   "camZ":               0.54,
   "crouchCamZ":         0.39,
 
-  "walkMomentum":       1.0,
-  "runMomentum":        2.0,
+  "walkMomentum":       0.8,
+  "runMomentum":        1.5,
 
   "stamina":            100,
   "staminaGain":        2.5,
@@ -27,6 +27,8 @@
   "staminaThrowDrain":  12,
 
   "regeneration":       0,
+
+  "climbMax":           1.5,
 
   "reachDist":          2,
   "grabWeight":         500,

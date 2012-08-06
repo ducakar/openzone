@@ -47,14 +47,17 @@ class Lua
      */
     typedef int APIFunc( lua_State* );
 
+    static int  randomSeed;       ///< Random seed for %Lua environments.
+    static bool isRandomSeedTime; ///< True iff current time (<tt>Time::time()</tt>) should be seed.
+
   protected:
 
-    lua_State* l; ///< %Lua state descriptor.
+    lua_State* l;                 ///< %Lua state descriptor.
 
   protected:
 
     /**
-     * Default constructor, sets l to null.
+     * Default constructor, clears <tt>l</tt> to null.
      */
     Lua();
 

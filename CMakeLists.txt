@@ -27,15 +27,6 @@ include( CheckCXXSourceCompiles )
 include( CheckCXXCompilerFlag )
 include( CheckLibraryExists )
 
-if( NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND
-    NOT CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" AND
-    NOT CMAKE_BUILD_TYPE STREQUAL "Release" AND
-    NOT CMAKE_BUILD_TYPE STREQUAL "RelGenProf" AND
-    NOT CMAKE_BUILD_TYPE STREQUAL "RelUseProf" )
-  message( FATAL_ERROR "CMAKE_BUILT_TYPE must be either Debug, RelWithDebInfo, Release, RelGenProf"
-                       " or RelUseProf." )
-endif()
-
 if( WIN32 )
   set( OZ_STANDALONE ON )
 endif()
@@ -60,14 +51,13 @@ int main( int, char** ) { return 0; }
 " isClang )
 
 check_cxx_source_compiles( "
-#if defined( __GNUC__ ) && __GNUC__ == 4 && __GNUC_MINOR__ <= 4
+#if !defined( __clang__ ) && defined( __GNUC__ ) && __GNUC__ == 4 && __GNUC_MINOR__ <= 4
 int main( int, char** ) { return 0; }
 #else
 # error GCC >= 4.5
 #endif
 " isLegacyGCC )
 
-check_cxx_compiler_flag( "-Ofast" hasOfast )
 check_cxx_compiler_flag( "-flto" hasLTO )
 
 #
@@ -195,9 +185,12 @@ endif()
 #
 
 if( isClang )
-  set( flags "-pipe -std=c++11 -pedantic -stdlib=libstdc++" )
-#   set( flags "-pipe -std=c++11 -pedantic -stdlib=libc++" )
-#   set( libs_oz "c++abi;${libs_oz}" )
+  set( flags "-std=c++11 -pedantic" )
+  # GNU C++ library
+  # set( flags "${flags} -stdlib=libstdc++" )
+  # LLVM C++ library
+  set( flags "${flags} -stdlib=libc++" )
+  set( libs_oz "c++abi;${libs_oz}" )
 elseif( isLegacyGCC )
   set( flags "-pipe -std=gnu++0x" )
 else()
@@ -216,29 +209,15 @@ set( warnings "-Wall -Wextra -Winvalid-pch -Wconversion" )
 
 # Additional warnings (Clang specific).
 # set( warnings "${warnings} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic" )
-# set( warnings "${warnings} -Wno-disabled-macro-expansion -Wno-exit-time-destructors" )
-# set( warnings "${warnings} -Wno-float-equal -Wno-global-constructors -Wno-padded -Wno-shadow " )
+# set( warnings "${warnings} -Wno-disabled-macro-expansion -Wno-float-equal -Wno-padded -Wno-shadow" )
+# set( warnings "${warnings} -Wno-global-constructors -Wno-exit-time-destructors" )
 
-if( hasOfast )
-  set( optFlags "-Ofast" )
-else()
-  set( optFlags "-O3" )
-endif()
+set( CMAKE_CXX_FLAGS "${flags} ${warnings} ${CMAKE_CXX_FLAGS}" )
 
 if( hasLTO AND NOT WIN32 )
   # On Win32+LTO glCompileShaders() sets shaderFiles.data to null in loop at Shader.cc:394. WTF???
-  set( optFlags "${optFlags} -flto" )
+  set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -flto" )
 endif()
-
-set( CMAKE_CXX_FLAGS "${flags} ${warnings} ${CMAKE_CXX_FLAGS}" )
-set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-D_FORTIFY_SOURCE=2 -g3 ${optFlags}" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${optFlags}" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELGENPROF "-DNDEBUG ${optFlags} -fprofile-generate" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELUSEPROF "-DNDEBUG ${optFlags} -fprofile-use" CACHE STRING "" FORCE )
-
-mark_as_advanced( CMAKE_CXX_FLAGS_RELGENPROF )
-mark_as_advanced( CMAKE_CXX_FLAGS_RELUSEPROF )
 
 # construct flags strings for BuildInfo
 string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" OZ_CXX_FLAGS )

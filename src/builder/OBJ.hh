@@ -88,7 +88,7 @@ class OBJ
 
     void readVertexData( char* pos );
     void readFace( char* pos, int part );
-    void loadMaterials( const String& path );
+    void loadMaterials( const char* filePath );
 
     void load();
     void save();

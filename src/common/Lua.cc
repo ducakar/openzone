@@ -28,6 +28,9 @@
 namespace oz
 {
 
+int  Lua::randomSeed       = 0;
+bool Lua::isRandomSeedTime = true;
+
 Lua::Lua() :
   l( null )
 {}
@@ -124,6 +127,8 @@ void Lua::writeVariable( BufferStream* ostream )
 
 void Lua::initCommon( const char* componentName )
 {
+  ls.envName = componentName;
+
   l = luaL_newstate();
   if( l == null ) {
     throw Exception( "Failed to create Lua state" );
@@ -147,7 +152,8 @@ void Lua::initCommon( const char* componentName )
     throw Exception( "Failed to initialise Lua libraries" );
   }
 
-  ls.envName = componentName;
+  int seed = isRandomSeedTime ? int( Time::time() ) : randomSeed;
+  l_dostring( String::str( "math.random( %d )", seed ) );
 
   IGNORE_FUNC( ozException );
   IGNORE_FUNC( ozPrintln );

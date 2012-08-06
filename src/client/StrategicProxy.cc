@@ -47,11 +47,6 @@ const float StrategicProxy::RTS_LOW_SPEED   = 15.0f;
 const float StrategicProxy::RTS_HIGH_SPEED  = 45.0f;
 const float StrategicProxy::ZOOM_FACTOR     = 0.10f;
 
-StrategicProxy::StrategicProxy()
-{
-  reset();
-}
-
 void StrategicProxy::begin()
 {
   camera.setTaggedObj( null );

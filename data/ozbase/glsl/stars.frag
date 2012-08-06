@@ -28,8 +28,10 @@ varying float exAzimuth;
 
 void main()
 {
-  float dist     = ( length( exPosition ) - 5.0 ) / 5.0;
-  vec4  colour   = oz_StarsColour + vec4( sin( 256.0 * exPosition ) * 0.15, 0.0 );
+  float dist        = ( length( exPosition ) - 5.0 ) / 5.0;
+  vec4  diff        = oz_StarsColour - oz_Fog.colour;
+  vec4  disturbance = vec4( sin( 256.0 * exPosition ) * 0.10, 0.0 ) * dot( diff, diff );
+  vec4  colour      = oz_StarsColour + disturbance;
 
-  gl_FragData[0] = oz_ColourTransform * mix( colour, oz_Fog.colour, dist );
+  gl_FragData[0]    = oz_ColourTransform * mix( colour, oz_Fog.colour, dist );
 }

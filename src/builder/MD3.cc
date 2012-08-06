@@ -195,10 +195,10 @@ void MD3::buildMesh( const char* name, int frame )
     is.reset();
     is.forward( surfaceStart + surface.offTriangles );
 
-    for( int i = 0; i < surfaceTriangles.length(); ++i ) {
-      surfaceTriangles[i].vertices[0] = is.readInt();
-      surfaceTriangles[i].vertices[1] = is.readInt();
-      surfaceTriangles[i].vertices[2] = is.readInt();
+    for( int j = 0; j < surfaceTriangles.length(); ++j ) {
+      surfaceTriangles[j].vertices[0] = is.readInt();
+      surfaceTriangles[j].vertices[1] = is.readInt();
+      surfaceTriangles[j].vertices[2] = is.readInt();
     }
 
     is.reset();
@@ -221,26 +221,26 @@ void MD3::buildMesh( const char* name, int frame )
     is.reset();
     is.forward( surfaceStart + surface.offTexCoords );
 
-    for( int i = 0; i < surfaceTexCoords.length(); ++i ) {
-      surfaceTexCoords[i].u = is.readFloat();
-      surfaceTexCoords[i].v = 1.0f - is.readFloat();
+    for( int j = 0; j < surfaceTexCoords.length(); ++j ) {
+      surfaceTexCoords[j].u = is.readFloat();
+      surfaceTexCoords[j].v = 1.0f - is.readFloat();
     }
 
     is.reset();
     is.forward( surfaceStart + surface.offVertices );
 
-    for( int i = 0; i < surfaceVertices.length(); ++i ) {
-      vertices[i].y = float( +is.readShort() ) / 64.0f * scale;
-      vertices[i].x = float( -is.readShort() ) / 64.0f * scale;
-      vertices[i].z = float( +is.readShort() ) / 64.0f * scale;
+    for( int j = 0; j < surfaceVertices.length(); ++j ) {
+      vertices[j].y = float( +is.readShort() ) / 64.0f * scale;
+      vertices[j].x = float( -is.readShort() ) / 64.0f * scale;
+      vertices[j].z = float( +is.readShort() ) / 64.0f * scale;
 
       float h  = float( is.readChar() ) / 255.0f * Math::TAU;
       float v  = float( is.readChar() ) / 255.0f * Math::TAU;
       float xy = Math::sin( v );
 
-      normals[i].y = +Math::cos( h ) * xy;
-      normals[i].x = -Math::sin( h ) * xy;
-      normals[i].z = +Math::cos( v );
+      normals[j].y = +Math::cos( h ) * xy;
+      normals[j].x = -Math::sin( h ) * xy;
+      normals[j].z = +Math::cos( v );
     }
 
     is.reset();
@@ -250,14 +250,14 @@ void MD3::buildMesh( const char* name, int frame )
 
     compiler.begin( Compiler::TRIANGLES );
 
-    for( int i = 0; i < surfaceTriangles.length(); ++i ) {
-      for( int j = 0; j < 3; ++j ) {
-        int k = surfaceTriangles[i].vertices[j];
-        int l = frame < 0 ? k : frame * surface.nVertices + k;
+    for( int j = 0; j < surfaceTriangles.length(); ++j ) {
+      for( int k = 0; k < 3; ++k ) {
+        int l = surfaceTriangles[j].vertices[k];
+        int m = frame < 0 ? l : frame * surface.nVertices + l;
 
-        compiler.texCoord( surfaceTexCoords[k] );
-        compiler.normal( meshTransf * normals[l] );
-        compiler.vertex( meshTransf * vertices[l] );
+        compiler.texCoord( surfaceTexCoords[l] );
+        compiler.normal( meshTransf * normals[m] );
+        compiler.vertex( meshTransf * vertices[m] );
       }
     }
 

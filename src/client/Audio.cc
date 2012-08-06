@@ -38,7 +38,7 @@ const float Audio::REFERENCE_DISTANCE   = 2.0f;
 const float Audio::COCKPIT_GAIN_FACTOR  = 0.35f;
 const float Audio::COCKPIT_PITCH_FACTOR = 0.95f;
 
-void Audio::playSound( int sound, float volume, const Object* obj, const Object* parent ) const
+void Audio::playSound( int sound, float volume, const Object* parent ) const
 {
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 
@@ -83,7 +83,7 @@ void Audio::playSound( int sound, float volume, const Object* obj, const Object*
   OZ_AL_CHECK_ERROR();
 }
 
-void Audio::playContSound( int sound, float volume, const Object* obj, const Object* parent ) const
+void Audio::playContSound( int sound, float volume, const Object* parent ) const
 {
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 
@@ -130,9 +130,12 @@ void Audio::playContSound( int sound, float volume, const Object* obj, const Obj
   OZ_AL_CHECK_ERROR();
 }
 
-void Audio::playEngineSound( int sound, float volume, float pitch, const Vehicle* veh ) const
+void Audio::playEngineSound( int sound, float volume, float pitch ) const
 {
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
+  hard_assert( obj->flags & Object::VEHICLE_BIT );
+
+  const Vehicle* veh = static_cast<const Vehicle*>( obj );
 
   if( !camera.isExternal && veh->pilot >= 0 && veh->pilot == camera.bot ) {
     volume *= COCKPIT_GAIN_FACTOR;

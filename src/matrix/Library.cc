@@ -223,22 +223,21 @@ void Library::initTextures()
   PFile dir( "tex" );
   DArray<PFile> dirList = dir.ls();
 
-  foreach( file, dirList.iter() ) {
-    file->stat();
+  foreach( subDir, dirList.iter() ) {
+    subDir->stat();
 
-    if( file->type() != File::DIRECTORY ) {
+    if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
 
-    PFile subDir( file->path() );
-    DArray<PFile> subDirList = subDir.ls();
+    DArray<PFile> subDirList = subDir->ls();
 
     foreach( file, subDirList.citer() ) {
       if( !file->hasExtension( "ozcTex" ) ) {
         continue;
       }
 
-      String name = subDir.name() + "/" + file->baseName();
+      String name = subDir->name() + "/" + file->baseName();
 
       Log::println( "%s", name.cstr() );
 
@@ -264,22 +263,21 @@ void Library::initSounds()
   PFile dir( "snd" );
   DArray<PFile> dirList = dir.ls();
 
-  foreach( file, dirList.iter() ) {
-    file->stat();
+  foreach( subDir, dirList.iter() ) {
+    subDir->stat();
 
-    if( file->type() != File::DIRECTORY ) {
+    if( subDir->type() != File::DIRECTORY ) {
       continue;
     }
 
-    PFile subDir( file->path() );
-    DArray<PFile> subDirList = subDir.ls();
+    DArray<PFile> subDirList = subDir->ls();
 
     foreach( file, subDirList.citer() ) {
       if( !file->hasExtension( "wav" ) ) {
         continue;
       }
 
-      String name = subDir.name() + "/" + file->baseName();
+      String name = subDir->name() + "/" + file->baseName();
 
       Log::println( "%s", name.cstr() );
 

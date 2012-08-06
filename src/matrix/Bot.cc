@@ -101,11 +101,11 @@ bool Bot::canReach( const Object* obj ) const
   return AABB( eye, reach ).overlaps( *obj );
 }
 
-bool Bot::canEquip( const Weapon* weapon ) const
+bool Bot::canEquip( const Weapon* weaponObj ) const
 {
-  hard_assert( weapon->flags & WEAPON_BIT );
+  hard_assert( weaponObj->flags & WEAPON_BIT );
 
-  const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weapon->clazz );
+  const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weaponObj->clazz );
 
   return clazz->name.beginsWith( weaponClazz->userBase );
 }
@@ -661,13 +661,14 @@ void Bot::onUpdate()
 
             collider.translate( this, desiredMove );
 
-            Vec3 move = desiredMove * collider.hit.ratio;
-            float endDist = startDist + Vec3( move.x, move.y, move.z + raise ) * normal;
+            Vec3  possibleMove = desiredMove * collider.hit.ratio;
+            Vec3  testMove     = possibleMove + Vec3( 0.0f, 0.0f, raise );
+            float endDist      = startDist + testMove * normal;
 
             if( endDist < 0.0f ) {
-              // check if ledge has a normal.z >= FLOOR_NORMAL_Z
+              // check if ledge has normal.z >= FLOOR_NORMAL_Z
               Point raisedPos = p;
-              p += move;
+              p += possibleMove;
 
               collider.translate( this, Vec3( 0.0f, 0.0f, -raise ) );
 
@@ -731,9 +732,8 @@ void Bot::onUpdate()
             p.z += clazz->stairInc;
             collider.translate( this, desiredMove );
 
-            Vec3 move = desiredMove * collider.hit.ratio;
-            move.z += raise;
-            float endDist = startDist + move * normal;
+            Vec3  testMove = desiredMove * collider.hit.ratio + Vec3( 0.0f, 0.0f, raise );
+            float endDist  = startDist + testMove * normal;
 
             if( endDist < 0.0f ) {
               momentum.z = max( momentum.z, 0.0f );

@@ -29,6 +29,8 @@
 
 #include "BuildInfo.hh"
 
+#include "common/Lua.hh"
+
 #include "client/Camera.hh"
 #include "client/MenuStage.hh"
 #include "client/GameStage.hh"
@@ -362,6 +364,7 @@ int Client::init( int argc, char** argv )
   Log::println( "}" );
 
   config.include( "seed", "TIME" );
+
   int seed;
 
   if( config["seed"].type() == JSON::STRING ) {
@@ -373,13 +376,17 @@ int Client::init( int argc, char** argv )
   }
   else {
     seed = config["seed"].asInt();
+    oz::Lua::isRandomSeedTime = false;
   }
 
   if( isBenchmark ) {
     seed = 42;
+    oz::Lua::isRandomSeedTime = false;
   }
 
   Math::seed( seed );
+  oz::Lua::randomSeed = seed;
+
   Log::println( "Random generator seed set to: %d", seed );
 
 #ifdef __native_client__

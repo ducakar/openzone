@@ -42,8 +42,8 @@ namespace ui
 static void closeFrame( Button* sender )
 {
   OZ_MAIN_CALL( sender, {
-    Button*        sender   = static_cast<Button*>( _this );
-    SettingsFrame* settings = static_cast<SettingsFrame*>( sender->parent );
+    Button*        _sender  = static_cast<Button*>( _this );
+    SettingsFrame* settings = static_cast<SettingsFrame*>( _sender->parent );
 
     settings->parent->remove( settings );
   } )

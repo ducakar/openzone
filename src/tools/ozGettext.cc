@@ -291,10 +291,10 @@ static void writePOT( const HashString<String>* hs, const char* filePath )
 
     // Escape backslashes and quotes.
     s = i.key();
-    for( int i = 0; i < s.length(); ++i ) {
-      if( s[i] == '\\' || s[i] == '"' ) {
-        s = s.substring( 0, i ) + "\\" + s.substring( i );
-        ++i;
+    for( int j = 0; j < s.length(); ++j ) {
+      if( s[j] == '\\' || s[j] == '"' ) {
+        s = s.substring( 0, j ) + "\\" + s.substring( j );
+        ++j;
       }
     }
 

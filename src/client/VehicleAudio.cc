@@ -46,16 +46,16 @@ void VehicleAudio::play( const Audio* parent )
 {
   flags |= UPDATED_BIT;
 
-  const Vehicle* vehicle = static_cast<const Vehicle*>( obj );
-  const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
-  const int ( &sounds )[ObjectClass::MAX_SOUNDS] = obj->clazz->audioSounds;
+  const Vehicle*      vehicle = static_cast<const Vehicle*>( obj );
+  const VehicleClass* clazz   = static_cast<const VehicleClass*>( this->clazz );
+  const auto&         sounds  = obj->clazz->audioSounds;
 
   // engine sound
   if( ( vehicle->pilot >= 0 ) && sounds[Vehicle::EVENT_ENGINE] >= 0 ) {
     float pitch = clazz->enginePitchBias + min( vehicle->momentum.sqN() * clazz->enginePitchRatio,
                                                 clazz->enginePitchLimit );
 
-    playEngineSound( sounds[Vehicle::EVENT_ENGINE], 1.0f, pitch, vehicle );
+    playEngineSound( sounds[Vehicle::EVENT_ENGINE], 1.0f, pitch );
   }
 
   // events
@@ -65,7 +65,7 @@ void VehicleAudio::play( const Audio* parent )
     if( event->id >= 0 && sounds[event->id] >= 0 ) {
       hard_assert( 0.0f <= event->intensity );
 
-      playSound( sounds[event->id], event->intensity, obj, parent == null ? obj : parent->obj );
+      playSound( sounds[event->id], event->intensity, parent == null ? obj : parent->obj );
     }
   }
 

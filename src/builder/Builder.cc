@@ -491,8 +491,7 @@ void Builder::buildModels()
       continue;
     }
 
-    String path = dir->path();
-    File::mkdir( path );
+    File::mkdir( dir->path() );
     DArray<PFile> fileList = dir->ls();
 
     foreach( file, fileList.iter() ) {
@@ -520,14 +519,14 @@ void Builder::buildModels()
       }
     }
 
-    if( PFile( path + "/data.obj" ).stat() ) {
-      obj.build( path );
+    if( PFile( dir->path() + "/data.obj" ).stat() ) {
+      obj.build( dir->path() );
     }
-    else if( PFile( path + "/tris.md2" ).stat() ) {
-      md2.build( path );
+    else if( PFile( dir->path() + "/tris.md2" ).stat() ) {
+      md2.build( dir->path() );
     }
     else {
-      md3.build( path );
+      md3.build( dir->path() );
     }
   }
 
@@ -943,7 +942,7 @@ int Builder::main( int argc, char** argv )
 
 #ifndef OZ_NONFREE
   if( context.useS3TC ) {
-    throw Exception( "S3 texture compression enabled but not supported" );
+    throw Exception( "S3 texture compression requested but compiled without OZ_NONFREE option" );
   }
 #endif
 

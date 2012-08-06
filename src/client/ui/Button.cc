@@ -79,10 +79,10 @@ void Button::onDraw()
   isClicked = false;
 }
 
-Button::Button( const char* text, Callback* callback, int width, int height ) :
+Button::Button( const char* text, Callback* callback_, int width, int height ) :
   Area( width, height ),
   label( width / 2, height / 2, ALIGN_CENTRE, Font::SANS, "%s", text ),
-  callback( callback ), isHighlighted( false ), isClicked( false )
+  callback( callback_ ), isHighlighted( false ), isClicked( false )
 {}
 
 void Button::setLabel( const char* text )

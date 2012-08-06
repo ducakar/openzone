@@ -57,13 +57,13 @@ void Mind::update()
   hard_assert( orbis.objects[bot] != null );
   hard_assert( orbis.objects[bot]->flags & Object::BOT_BIT );
 
-  Bot* bot = static_cast<Bot*>( orbis.objects[this->bot] );
+  Bot* botObj = static_cast<Bot*>( orbis.objects[bot] );
 
-  if( !bot->mindFunc.isEmpty() && !( bot->state & Bot::DEAD_BIT ) ) {
+  if( !botObj->mindFunc.isEmpty() && !( botObj->state & Bot::DEAD_BIT ) ) {
     flags &= ~FORCE_UPDATE_BIT;
-    bot->actions = 0;
+    botObj->actions = 0;
 
-    if( lua.mindCall( bot->mindFunc, bot ) ) {
+    if( lua.mindCall( botObj->mindFunc, botObj ) ) {
       flags |= FORCE_UPDATE_BIT;
     }
   }

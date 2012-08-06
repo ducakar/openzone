@@ -182,11 +182,11 @@ void OBJ::readFace( char* pos, int part )
   }
 }
 
-void OBJ::loadMaterials( const String& path )
+void OBJ::loadMaterials( const char* filePath )
 {
   char buffer[LINE_BUFFER_SIZE];
 
-  FILE* fs = fopen( path + "/data.mtl", "r" );
+  FILE* fs = fopen( filePath, "r" );
   if( fs == null ) {
     throw Exception( "OBJ model must have a corresponding 'data.mtl' file." );
   }
@@ -283,7 +283,7 @@ void OBJ::load()
 
   String realPath = modelFile.realDir() + "/" + path;
 
-  loadMaterials( realPath );
+  loadMaterials( realPath + "/data.mtl" );
 
   FILE* fs = fopen( realPath + "/data.obj" , "r" );
   if( fs == null ) {

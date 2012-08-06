@@ -598,13 +598,13 @@ void JSON::Formatter::writeObject( const JSON& value )
       ostream->writeChars( "  ", 2 );
     }
 
-    const String& key   = sortedEntries[i];
-    const JSON*   value = sortedEntries.value( i );
+    const String& entryKey   = sortedEntries[i];
+    const JSON*   entryValue = sortedEntries.value( i );
 
-    int keyLength = writeString( key );
+    int keyLength = writeString( entryKey );
     ostream->writeChar( ':' );
 
-    if( value->valueType == ARRAY || value->valueType == OBJECT ) {
+    if( entryValue->valueType == ARRAY || entryValue->valueType == OBJECT ) {
       ostream->writeChars( lineEnd, lineEndLength );
 
       for( int j = 0; j < indentLevel; ++j ) {
@@ -615,12 +615,12 @@ void JSON::Formatter::writeObject( const JSON& value )
       int column = indentLevel * 2 + keyLength + 1;
 
       // Align to 24-th column.
-      for( int i = column; i < ALIGNMENT_COLUMN; ++i ) {
+      for( int j = column; j < ALIGNMENT_COLUMN; ++j ) {
         ostream->writeChar( ' ' );
       }
     }
 
-    writeValue( *value );
+    writeValue( *entryValue );
   }
 
   sortedEntries.clear();
@@ -1163,7 +1163,10 @@ void JSON::clear( bool unusedWarnings )
 String JSON::toString() const
 {
   switch( valueType ) {
-    default: {
+#ifdef OZ_GCC
+    default: // HACK Make GCC happy.
+#endif
+    case NIL: {
       return "null";
     }
     case BOOLEAN: {

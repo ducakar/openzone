@@ -52,8 +52,8 @@ void BotAudio::play( const Audio* parent )
 {
   flags |= UPDATED_BIT;
 
-  const Bot* bot = static_cast<const Bot*>( obj );
-  const int ( &sounds )[ObjectClass::MAX_SOUNDS] = obj->clazz->audioSounds;
+  const Bot*  bot    = static_cast<const Bot*>( obj );
+  const auto& sounds = obj->clazz->audioSounds;
 
   for( int i = 0; i < ObjectClass::MAX_SOUNDS; ++i ) {
     recent[i] = max( recent[i] - 1, 0 );
@@ -69,7 +69,7 @@ void BotAudio::play( const Audio* parent )
       recent[event->id] = RECENT_TICKS;
 
       if( !( bot->state & Bot::DEAD_BIT ) || event->id == Bot::EVENT_DEATH ) {
-        playSound( sounds[event->id], event->intensity, obj, parent == null ? obj : parent->obj );
+        playSound( sounds[event->id], event->intensity, parent == null ? obj : parent->obj );
       }
     }
   }
@@ -94,7 +94,7 @@ void BotAudio::play( const Audio* parent )
     if( currStep != prevStep ) {
       if( bot->state & Bot::SWIMMING_BIT ) {
         if( !( bot->state & Bot::SUBMERGED_BIT ) && sounds[Bot::EVENT_SWIM] >= 0 ) {
-          playSound( sounds[Bot::EVENT_SWIM], 1.0f, bot, bot );
+          playSound( sounds[Bot::EVENT_SWIM], 1.0f, bot );
         }
       }
       else if( recent[Object::EVENT_FRICTING] != 0 ) {
@@ -102,12 +102,12 @@ void BotAudio::play( const Audio* parent )
 
         if( bot->depth != 0.0f ) {
           if( sounds[Bot::EVENT_WATERSTEP] >= 0 ) {
-            playSound( sounds[Bot::EVENT_WATERSTEP], 1.0f, bot, bot );
+            playSound( sounds[Bot::EVENT_WATERSTEP], 1.0f, bot );
           }
         }
         else {
           if( sounds[Bot::EVENT_STEP] >= 0 ) {
-            playSound( sounds[Bot::EVENT_STEP], 1.0f, bot, bot );
+            playSound( sounds[Bot::EVENT_STEP], 1.0f, bot );
           }
         }
       }

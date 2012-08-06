@@ -43,45 +43,45 @@ Lingua::~Lingua()
 
 String Lingua::detectLanguage( const char* language_ )
 {
-  String language = language_;
+  String lang = language_;
 
-  if( !language.isEmpty() ) {
-    if( !PFile( "lingua/" + language ).stat() ) {
-      language = "";
+  if( !lang.isEmpty() ) {
+    if( !PFile( "lingua/" + lang ).stat() ) {
+      lang = "";
     }
-    return language;
+    return lang;
   }
 
-  language = SDL_getenv( "LANGUAGE" );
+  lang = SDL_getenv( "LANGUAGE" );
 
-  if( !language.isEmpty() && PFile( "lingua/" + language ).stat() ) {
-    return language;
+  if( !lang.isEmpty() && PFile( "lingua/" + lang ).stat() ) {
+    return lang;
   }
 
-  language = SDL_getenv( "LC_MESSAGES" );
+  lang = SDL_getenv( "LC_MESSAGES" );
 
-  int underscore = language.index( '_' );
+  int underscore = lang.index( '_' );
   if( underscore >= 2 ) {
-    language = language.substring( 0, underscore );
+    lang = lang.substring( 0, underscore );
 
-    if( PFile( "lingua/" + language ).stat() ) {
-      return language;
+    if( PFile( "lingua/" + lang ).stat() ) {
+      return lang;
     }
   }
 
-  language = SDL_getenv( "LANG" );
+  lang = SDL_getenv( "LANG" );
 
-  underscore = language.index( '_' );
+  underscore = lang.index( '_' );
   if( underscore >= 2 ) {
-    language = language.substring( 0, underscore );
+    lang = lang.substring( 0, underscore );
 
-    if( PFile( "lingua/" + language ).stat() ) {
-      return language;
+    if( PFile( "lingua/" + lang ).stat() ) {
+      return lang;
     }
   }
 
-  language = "";
-  return language;
+  lang = "";
+  return lang;
 }
 
 const char* Lingua::get( const char* message ) const

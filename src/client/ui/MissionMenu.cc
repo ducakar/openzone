@@ -45,8 +45,8 @@ namespace ui
 static void back( Button* sender )
 {
   OZ_MAIN_CALL( sender, {
-    Button*      sender      = static_cast<Button*>( _this );
-    MissionMenu* missionMenu = static_cast<MissionMenu*>( sender->parent );
+    Button*      _sender     = static_cast<Button*>( _this );
+    MissionMenu* missionMenu = static_cast<MissionMenu*>( _sender->parent );
 
     missionMenu->parent->remove( missionMenu );
   } )

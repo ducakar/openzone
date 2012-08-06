@@ -100,7 +100,7 @@ void Lua::create( const char* mission_ )
 
     InputStream is = file->inputStream();
 
-    if( IMPORT_BUFFER( is.begin(), is.capacity(), file->path() ) != 0 ) {
+    if( l_dobuffer( is.begin(), is.capacity(), file->path() ) != 0 ) {
       throw Exception( "Client Lua script error in %s", file->path().cstr() );
     }
 
@@ -150,7 +150,7 @@ void Lua::read( InputStream* istream )
 
     InputStream is = file->inputStream();
 
-    if( IMPORT_BUFFER( is.begin(), is.capacity(), file->path() ) != 0 ) {
+    if( l_dobuffer( is.begin(), is.capacity(), file->path() ) != 0 ) {
       throw Exception( "Client Lua script error in %s", file->path().cstr() );
     }
 

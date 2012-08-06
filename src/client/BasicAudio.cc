@@ -63,7 +63,7 @@ void BasicAudio::play( const Audio* parent )
       hard_assert( 0.0f <= event->intensity );
 
       recent[event->id] = RECENT_TICKS;
-      playSound( sounds[event->id], event->intensity, obj, parent == null ? obj : parent->obj );
+      playSound( sounds[event->id], event->intensity, parent == null ? obj : parent->obj );
     }
   }
 
@@ -92,7 +92,7 @@ void BasicAudio::play( const Audio* parent )
         }
       }
 
-      playContSound( sounds[Object::EVENT_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), dyn, dyn );
+      playContSound( sounds[Object::EVENT_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), dyn );
     }
   }
 

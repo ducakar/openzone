@@ -63,8 +63,8 @@ static void loadQuicksaved( Button* )
 static void openMissions( Button* sender )
 {
   OZ_MAIN_CALL( sender, {
-    Button*   sender   = static_cast<Button*>( _this );
-    MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
+    Button*   _sender  = static_cast<Button*>( _this );
+    MainMenu* mainMenu = static_cast<MainMenu*>( _sender->parent );
 
     mainMenu->add( new MissionMenu(), 0, 0 );
   } )
@@ -73,8 +73,8 @@ static void openMissions( Button* sender )
 static void openSettings( Button* sender )
 {
   OZ_MAIN_CALL( sender, {
-    Button*   sender   = static_cast<Button*>( _this );
-    MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
+    Button*   _sender  = static_cast<Button*>( _this );
+    MainMenu* mainMenu = static_cast<MainMenu*>( _sender->parent );
 
     mainMenu->add( new SettingsFrame(), Area::CENTRE, Area::CENTRE );
   } )
@@ -83,8 +83,8 @@ static void openSettings( Button* sender )
 static void openCredits( Button* sender )
 {
   OZ_MAIN_CALL( sender, {
-    Button*   sender   = static_cast<Button*>( _this );
-    MainMenu* mainMenu = static_cast<MainMenu*>( sender->parent );
+    Button*   _sender  = static_cast<Button*>( _this );
+    MainMenu* mainMenu = static_cast<MainMenu*>( _sender->parent );
 
     mainMenu->add( new CreditsMenu(), 0, 0 );
   } )

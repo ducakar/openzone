@@ -82,18 +82,18 @@ class Map
        * Equality operator for bisection algorithms.
        */
       OZ_ALWAYS_INLINE
-      friend bool operator == ( const Key& key, const Elem& e )
+      friend bool operator == ( const Key& key_, const Elem& e )
       {
-        return key == e.key;
+        return key_ == e.key;
       }
 
       /**
        * Less than operator for bisection algorithms.
        */
       OZ_ALWAYS_INLINE
-      friend bool operator < ( const Key& key, const Elem& e )
+      friend bool operator < ( const Key& key_, const Elem& e )
       {
-        return key < e.key;
+        return key_ < e.key;
       }
     };
 

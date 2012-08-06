@@ -596,9 +596,9 @@ String String::trim() const
 
 String String::trim( const char* s )
 {
-  int count = length( s );
+  int sCount = length( s );
   const char* start = s;
-  const char* end = s + count;
+  const char* end = s + sCount;
 
   while( start < end && isBlank( *start ) ) {
     ++start;
@@ -621,32 +621,33 @@ String String::replace( char whatChar, char withChar ) const
   return r;
 }
 
-DArray<String> String::split( char ch ) const
+DArray<String> String::split( char delimiter ) const
 {
-  int p0    = 0;
-  int p1    = index( ch );
-  int i     = 0;
-  int count = 1;
+  int firstDelimiter = index( delimiter );
+  int begin          = 0;
+  int end            = firstDelimiter;
+  int nPartitions    = 1;
 
   // Count substrings first.
-  while( p1 >= 0 ) {
-    p0 = p1 + 1;
-    p1 = index( ch, p0 );
-    ++count;
+  while( end >= 0 ) {
+    begin = end + 1;
+    end   = index( delimiter, begin );
+
+    ++nPartitions;
   }
 
-  DArray<String> array( count );
+  DArray<String> array( nPartitions );
 
-  p0 = 0;
-  p1 = index( ch );
+  begin = 0;
+  end   = firstDelimiter;
 
-  while( p1 >= 0 ) {
-    array[i] = substring( p0, p1 );
-    p0 = p1 + 1;
-    p1 = index( ch, p0 );
-    ++i;
+  for( int i = 0; end >= 0; ++i ) {
+    array[i] = substring( begin, end );
+
+    begin = end + 1;
+    end   = index( delimiter, begin );
   }
-  array[i] = substring( p0 );
+  array[nPartitions - 1] = substring( begin );
 
   return array;
 }

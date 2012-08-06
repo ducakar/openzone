@@ -324,16 +324,12 @@ void UnitProxy::prepare()
 
   if( input.keys[Input::KEY_CAMERA_TOGGLE] && !input.oldKeys[Input::KEY_CAMERA_TOGGLE] ) {
     isExternal = !isExternal;
-    camera.isExternal = isExternal;
+    isFreelook = false;
 
-    if( isExternal && isFreelook ) {
-      headH = bot->h;
-      headV = bot->v;
-    }
-    else {
-      headH = 0.0f;
-      headV = 0.0f;
-    }
+    headH = 0.0f;
+    headV = 0.0f;
+
+    camera.isExternal = isExternal;
   }
   if( input.keys[Input::KEY_FREELOOK_TOGGLE] && !input.oldKeys[Input::KEY_FREELOOK_TOGGLE] ) {
     isFreelook = !isFreelook;
@@ -341,10 +337,6 @@ void UnitProxy::prepare()
     if( isExternal && isFreelook ) {
       headH = bot->h;
       headV = bot->v;
-    }
-    else {
-      headH = 0.0f;
-      headV = 0.0f;
     }
   }
 
@@ -488,8 +480,8 @@ void UnitProxy::update()
         headV = clamp( headV + camera.relV, vehClazz->lookVMin, vehClazz->lookVMax );
       }
       else {
-        headH = 0.0f;
-        headV = 0.0f;
+        headH *= Camera::ROT_SMOOTHING_COEF;
+        headV *= Camera::ROT_SMOOTHING_COEF;;
       }
 
       bobTheta = 0.0f;
