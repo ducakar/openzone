@@ -29,6 +29,7 @@
 #include "client/Camera.hh"
 #include "client/OpenGL.hh"
 
+#include "client/ui/Style.hh"
 #include "client/ui/MainMenu.hh"
 #include "client/ui/UI.hh"
 
@@ -57,7 +58,7 @@ void SettingsFrame::onDraw()
 }
 
 SettingsFrame::SettingsFrame() :
-  Frame( 400, 40 + 8 * font.INFOS[Font::SANS].height, OZ_GETTEXT( "Settings" ) ),
+  Frame( 400, 40 + 8 * style.fonts[Font::SANS].height, OZ_GETTEXT( "Settings" ) ),
   message( 4, 24, 392, 8, Font::SANS, Area::ALIGN_NONE )
 {
   x = ( camera.width  - width ) / 2;

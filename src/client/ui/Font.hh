@@ -25,9 +25,6 @@
 
 #include "client/common.hh"
 
-struct _TTF_Font;
-typedef _TTF_Font TTF_Font;
-
 namespace oz
 {
 namespace client
@@ -49,29 +46,22 @@ class Font
       MAX
     };
 
-    struct Info
-    {
-      const char* file;
-      int height;
-    };
-
-    static const SDL_Colour SDL_COLOUR_WHITE;
-    static const Info INFOS[MAX];
+    int  height;
 
   private:
 
-    PFile fontFile[MAX];
+    PFile file;
+    void* handle;
 
   public:
 
-    TTF_Font* fonts[MAX];
+    int size( const char* s ) const;
+    void draw( const char* s, uint texId, int* width, int* height ) const;
 
-    void init();
+    void init( const char* name, int height );
     void free();
 
 };
-
-extern Font font;
 
 }
 }

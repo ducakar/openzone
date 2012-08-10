@@ -32,7 +32,7 @@
 #include "client/Context.hh"
 #include "client/OpenGL.hh"
 
-#include "client/ui/Scheme.hh"
+#include "client/ui/Style.hh"
 
 namespace oz
 {
@@ -84,6 +84,8 @@ void HudArea::drawBotCrosshair()
 
       title.draw( this, false );
 
+      shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
+
       if( model->target >= 0 && ent->key >= 0 ) {
         glBindTexture( GL_TEXTURE_2D, useTexId );
         shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
@@ -127,6 +129,8 @@ void HudArea::drawBotCrosshair()
       }
 
       title.draw( this, false );
+
+      shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
 
       if( obj->flags & Object::BROWSABLE_BIT ) {
         glBindTexture( GL_TEXTURE_2D, browseTexId );
@@ -217,8 +221,8 @@ void HudArea::drawBotStatus()
   if( bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
     const Weapon* weaponObj = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
-    shape.colour( scheme.frame );
-    shape.fill( 8, 52, 200, Font::INFOS[Font::LARGE].height + 8 );
+    shape.colour( style.colours.frame );
+    shape.fill( 8, 52, 200, style.fonts[Font::LARGE].height + 8 );
 
     if( lastWeaponId != bot->weapon ) {
       lastWeaponId = bot->weapon;
@@ -249,7 +253,7 @@ void HudArea::drawVehicleStatus()
   float size = vehicle->dim.fastN();
   float scale = VEHICLE_DIM / size;
   int x = camera.width - 208 + VEHICLE_SIZE / 2;
-  int y = 52 + vehClazz->nWeapons * ( Font::INFOS[Font::LARGE].height + 8 ) + VEHICLE_SIZE / 2;
+  int y = 52 + vehClazz->nWeapons * ( style.fonts[Font::LARGE].height + 8 ) + VEHICLE_SIZE / 2;
 
   tf.model = Mat44::translation( Vec3( float( x ), float( y ), 0.0f ) );
   tf.model.scale( Vec3( scale, scale, scale ) );
@@ -300,11 +304,11 @@ void HudArea::drawVehicleStatus()
 
   for( int i = 0; i < vehClazz->nWeapons; ++i ) {
     if( i == vehicle->weapon ) {
-      int step = font.INFOS[Font::LARGE].height + 8;
+      int step = style.fonts[Font::LARGE].height + 8;
 
-      shape.colour( scheme.frame );
+      shape.colour( style.colours.frame );
       shape.fill( width - 208, 52 + ( vehClazz->nWeapons - 1 - i ) * step,
-                  200, Font::INFOS[Font::LARGE].height + 8 );
+                  200, style.fonts[Font::LARGE].height + 8 );
     }
 
     int labelIndex = vehClazz->nWeapons - i - 1;
@@ -406,7 +410,7 @@ HudArea::HudArea() :
 {
   flags = UPDATE_BIT | IGNORE_BIT | PINNED_BIT;
 
-  int step = font.INFOS[Font::LARGE].height + 8;
+  int step = style.fonts[Font::LARGE].height + 8;
   for( int i = 0; i < Vehicle::MAX_WEAPONS; ++i ) {
     lastVehicleWeaponRounds[i] = -1;
 

@@ -149,8 +149,8 @@ void UI::buildIcons()
 
 void UI::copyScheme()
 {
-  PFile srcFile( "ui/scheme.json" );
-  File outFile( "ui/scheme.json" );
+  PFile srcFile( "ui/style.json" );
+  File outFile( "ui/style.json" );
 
   Buffer buffer = srcFile.read();
   if( buffer.isEmpty() ) {

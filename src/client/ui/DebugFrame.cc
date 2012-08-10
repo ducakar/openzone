@@ -29,6 +29,8 @@
 
 #include "client/Camera.hh"
 
+#include "client/ui/Style.hh"
+
 namespace oz
 {
 namespace client
@@ -98,13 +100,13 @@ void DebugFrame::onDraw()
 }
 
 DebugFrame::DebugFrame() :
-  Frame( 560, 10 + 7 * ( Font::INFOS[Font::MONO].height + 2 ), OZ_GETTEXT( "Debug" ) )
+  Frame( 560, 10 + 7 * ( style.fonts[Font::MONO].height + 2 ), OZ_GETTEXT( "Debug" ) )
 {
   flags = PINNED_BIT;
 
   x = ( camera.width - width ) / 2;
 
-  int height = Font::INFOS[Font::MONO].height + 2;
+  int height = style.fonts[Font::MONO].height + 2;
 
   camPosRot.set( 5, 5 + height * 6, ALIGN_NONE, Font::MONO, " " );
 

@@ -25,6 +25,7 @@
 
 #include "client/ui/Font.hh"
 
+#include "client/Shader.hh"
 #include "client/OpenGL.hh"
 
 #include <SDL_ttf.h>
@@ -36,63 +37,58 @@ namespace client
 namespace ui
 {
 
-Font font;
+static const SDL_Colour SDL_COLOUR_WHITE = { 0xff, 0xff, 0xff, 0xff };
 
-const SDL_Colour Font::SDL_COLOUR_WHITE = { 0xff, 0xff, 0xff, 0xff };
+static SDL_Surface* textSurface;
+static uint         texId;
 
-const Font::Info Font::INFOS[MAX] = {
-  { "ui/font/DroidSansMono.ttf", 13 },
-  { "ui/font/DroidSans.ttf",     13 },
-  { "ui/font/DroidSans.ttf",     11 },
-  { "ui/font/DroidSans.ttf",     14 },
-  { "ui/font/DroidSans.ttf",     18 },
-};
-
-void Font::init()
+int Font::size( const char* s ) const
 {
-  Log::print( "Initialising Font ..." );
+  int width;
+  TTF_SizeUTF8( static_cast<TTF_Font*>( handle ), s, &width, null );
+  return width;
+}
 
-  if( TTF_Init() < 0 ) {
-    throw Exception( "Failed to initialise SDL_TTF" );
-  }
+void Font::draw( const char* s, uint texId_, int* width, int* height ) const
+{
+  textSurface = TTF_RenderUTF8_Blended( static_cast<TTF_Font*>( handle ), s, SDL_COLOUR_WHITE );
+  texId       = texId_;
 
-  for( int i = 0; i < MAX; ++i ) {
-    fontFile[i].setPath( INFOS[i].file );
+  OZ_MAIN_CALL( this, {
+    glBindTexture( GL_TEXTURE_2D, texId );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textSurface->w, textSurface->h, 0, GL_RGBA,
+                  GL_UNSIGNED_BYTE, textSurface->pixels );
+    glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+  } )
 
-    if( !fontFile[i].map() ) {
-      throw Exception( "Failed to read font file '%s'", fontFile[i].path().cstr() );
-    }
+  *width  = textSurface->w;
+  *height = textSurface->h;
 
-    InputStream istream = fontFile[i].inputStream();
-
-    fonts[i] = TTF_OpenFontRW( SDL_RWFromConstMem( istream.begin(), istream.capacity() ), true,
-                               INFOS[i].height );
-    if( fonts[i] == null ) {
-      throw Exception( "%s", TTF_GetError() );
-    }
-
-  }
-
-  Log::printEnd( " OK" );
+  SDL_FreeSurface( textSurface );
 }
 
 void Font::free()
 {
-  Log::print( "Freeing Font ..." );
+  if( handle != null ) {
+    TTF_CloseFont( static_cast<TTF_Font*>( handle ) );
+  }
+}
 
-  for( int i = 0; i < MAX; ++i ) {
-    if( fonts[i] != null ) {
-      TTF_CloseFont( fonts[i] );
-      fonts[i] = null;
+void Font::init( const char* name, int height_ )
+{
+  height = height_;
+  file.setPath( String::str( "ui/font/%s.ttf", name ) );
 
-      fontFile[i].unmap();
-      fontFile[i].setPath( "" );
-    }
+  if( !file.map() ) {
+    throw Exception( "Failed to read font file '%s'", file.path().cstr() );
   }
 
-  TTF_Quit();
+  InputStream istream = file.inputStream();
 
-  Log::printEnd( " OK" );
+  handle = TTF_OpenFontRW( SDL_RWFromConstMem( istream.begin(), istream.capacity() ), true, height );
+  if( handle == null ) {
+    throw Exception( "%s", TTF_GetError() );
+  }
 }
 
 }

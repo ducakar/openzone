@@ -500,7 +500,7 @@ class Map
      */
     bool contains( const Key& key ) const
     {
-      return aBisectFind<Elem>( data, key, count ) >= 0;
+      return aBisectFind<Elem, Key>( data, key, count ) >= 0;
     }
 
     /**
@@ -508,7 +508,7 @@ class Map
      */
     int index( const Key& key ) const
     {
-      return aBisectFind<Elem>( data, key, count );
+      return aBisectFind<Elem, Key>( data, key, count );
     }
 
     /**
@@ -516,7 +516,7 @@ class Map
      */
     const Value* find( const Key& key ) const
     {
-      int i = aBisectFind<Elem>( data, key, count );
+      int i = aBisectFind<Elem, Key>( data, key, count );
       return i < 0 ? null : &data[i].value;
     }
 
@@ -525,7 +525,7 @@ class Map
      */
     Value* find( const Key& key )
     {
-      int i = aBisectFind<Elem>( data, key, count );
+      int i = aBisectFind<Elem, Key>( data, key, count );
       return i < 0 ? null : &data[i].value;
     }
 
@@ -537,13 +537,13 @@ class Map
     template <typename Key_ = Key, typename Value_ = Value>
     int add( Key_&& key, Value_&& value = Value() )
     {
-      int i = aBisectPosition<Elem>( data, key, count );
+      int i = aBisectPosition<Elem, Key_>( data, key, count );
 
       if( i != 0 && data[i - 1].key == key ) {
         data[i - 1].value = static_cast<Value_&&>( value );
       }
       else {
-        insert( i, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
+        insert<Key_, Value_>( i, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
       }
       return i;
     }
@@ -556,10 +556,10 @@ class Map
     template <typename Key_ = Key, typename Value_ = Value>
     int include( Key_&& key, Value_&& value = Value() )
     {
-      int i = aBisectPosition<Elem>( data, key, count );
+      int i = aBisectPosition<Elem, Key_>( data, key, count );
 
       if( i == 0 || !( data[i - 1].key == key ) ) {
-        insert( i, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
+        insert<Key_, Value_>( i, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
       }
       return i;
     }
@@ -599,8 +599,7 @@ class Map
       if( i == count ) {
         // When removing the last element, no shift is performed, so its resources are not
         // implicitly destroyed by a move operation.
-        data[count].~Elem();
-        new( data + count ) Elem;
+        data[count] = Elem();
       }
       else {
         aMove<Elem>( data + i, data + i + 1, count - i );
@@ -614,7 +613,7 @@ class Map
      */
     int exclude( const Key& key )
     {
-      int i = aBisectFind<Elem>( data, key, count );
+      int i = aBisectFind<Elem, Key>( data, key, count );
 
       if( i >= 0 ) {
         remove( i );
@@ -633,8 +632,7 @@ class Map
       else if( newCount < count ) {
         // Ensure destruction of removed elements.
         for( int i = newCount; i < count; ++i ) {
-          data[i].~Elem();
-          new( data + i ) Elem;
+          data[i] = Elem();
         }
       }
 
@@ -648,8 +646,7 @@ class Map
     {
       // Ensure destruction of all elements.
       for( int i = 0; i < count; ++i ) {
-        data[i].~Elem();
-        new( data + i ) Elem;
+        data[i] = Elem();
       }
 
       count = 0;

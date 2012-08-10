@@ -32,63 +32,86 @@
 #include <cstring>
 #include <cwchar>
 
+#include <vector>
+
 using namespace oz;
 using namespace std;
 
 class Foo
 {
-  private:
-
-    int p;
-
   public:
 
-    struct Bar
-    {
-      void bar( Foo f )
-      {
-        printf( "%d\n", f.p );
-      }
-    };
+    int value;
 
-    const char* s = "";
-
-    explicit Foo( const char* s_ ) :
-      s( s_ )
-    {
-      Log::out << "Foo(" << s << ")\n";
-    }
-
-    Foo()
+    Foo() :
+      value( 0 )
     {
       Log::out << "Foo()\n";
     }
 
     ~Foo()
     {
-      Log::out << "~Foo(" << s << ")\n";
+      Log::out << "~Foo()\n";
     }
 
-    Foo( const Foo& )
+    Foo( const Foo& f ) :
+      value( f.value )
     {
       Log::out << "Foo( const Foo& )\n";
     }
 
-    Foo( Foo&& )
+    Foo( Foo&& f ) :
+      value( f.value )
     {
       Log::out << "Foo( Foo&& )\n";
+
+      f.value = 0;
     }
 
-    Foo& operator = ( const Foo& )
+    explicit Foo( int value_ ) :
+      value( value_ )
+    {
+      Log::out << "Foo( " << value_ << " )\n";
+    }
+
+    Foo& operator = ( const Foo& f )
     {
       Log::out << "Foo& operator = ( const Foo& )\n";
+
+      if( &f == this ) {
+        return *this;
+      }
+
+      value = f.value;
       return *this;
     }
 
-    Foo& operator = ( Foo&& )
+    Foo& operator = ( Foo&& f )
     {
       Log::out << "Foo& operator = ( Foo&& )\n";
+
+      if( &f == this ) {
+        return *this;
+      }
+
+      value = f.value;
+      f.value = 0;
       return *this;
+    }
+
+    bool operator == ( const Foo& f ) const
+    {
+      return value == f.value;
+    }
+
+    bool operator != ( const Foo& f ) const
+    {
+      return value != f.value;
+    }
+
+    bool operator < ( const Foo& f ) const
+    {
+      return value < f.value;
     }
 
 };
@@ -97,19 +120,18 @@ int main()
 {
   System::init();
 
-  wchar_t wcs[20];
-  mbstowcs( wcs, "ångštröm", 20 );
+  List<int> m;
+  m.resize( 8 );
 
-  wprintf( L"%ls\n", wcs );
-  wprintf( L"\n" );
+  std::vector<int> v;
+  v.resize( 8, 1 );
 
-  wprintf( L"----------\n" );
-
-  char mbs[25];
-  wcstombs( mbs, wcs, 25 );
-  wprintf( L"%s\n", mbs );
-
-  printf( "dsadada\n" );
+  foreach( i, m.citer() ) {
+    printf( "l: %d\n", *i );
+  }
+  for( auto& i : v ) {
+    printf( "v: %d\n", i );
+  }
 
   return 0;
 }

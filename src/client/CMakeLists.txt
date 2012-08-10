@@ -68,9 +68,9 @@ add_library( client STATIC
   ui/Mouse.cc
   ui/MusicPlayer.cc
   ui/QuestFrame.cc
-  ui/Scheme.cc
   ui/SelectionArea.cc
   ui/SettingsFrame.cc
+  ui/Style.cc
   ui/Text.cc
   ui/UI.cc )
 add_dependencies( client pch )

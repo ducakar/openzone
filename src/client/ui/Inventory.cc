@@ -31,7 +31,7 @@
 #include "client/Input.hh"
 #include "client/OpenGL.hh"
 
-#include "client/ui/Scheme.hh"
+#include "client/ui/Style.hh"
 
 namespace oz
 {
@@ -134,10 +134,10 @@ void Inventory::drawComponent( int height, const Object* container, int tagged, 
 
       if( index < containerClazz->nItems ) {
         if( index == tagged ) {
-          shape.colour( scheme.tileHover );
+          shape.colour( style.colours.tileHover );
         }
         else {
-          shape.colour( scheme.tile );
+          shape.colour( style.colours.tile );
         }
 
         shape.fill( x + j * SLOT_SIZE + PADDING_SIZE,

@@ -36,12 +36,13 @@ class Client
 {
   private:
 
-    static const int INIT_SDL        = 0x00000001;
-    static const int INIT_PHYSFS     = 0x00000002;
-    static const int INIT_CONFIG     = 0x00000004;
-    static const int INIT_WINDOW     = 0x00000010;
-    static const int INIT_INPUT      = 0x00000020;
-    static const int INIT_NETWORK    = 0x00000040;
+    static const int INIT_PHYSFS     = 0x00000001;
+    static const int INIT_SDL        = 0x00000002;
+    static const int INIT_SDL_TTF    = 0x00000004;
+    static const int INIT_CONFIG     = 0x00000010;
+    static const int INIT_WINDOW     = 0x00000020;
+    static const int INIT_INPUT      = 0x00000040;
+    static const int INIT_NETWORK    = 0x00000080;
     static const int INIT_LINGUA     = 0x00000100;
     static const int INIT_LIBRARY    = 0x00000200;
     static const int INIT_CONTEXT    = 0x00001000;

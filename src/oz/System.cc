@@ -381,6 +381,26 @@ static void* bellThread( void* )
 
 #endif
 
+static void waitBell()
+{
+// Delay termination until bell finishes.
+#if defined( __native_client__ )
+  if( core->IsMainThread() ) {
+    return;
+  }
+#endif
+
+#ifdef _WIN32
+  while( isBellPlaying ) {
+    Sleep( 10 );
+  }
+#else
+  while( isBellPlaying ) {
+    nanosleep( &TIMESPEC_10MS, null );
+  }
+#endif
+}
+
 #ifdef __native_client__
 pp::Module*   System::module;   // = null
 pp::Instance* System::instance; // = null
@@ -401,22 +421,7 @@ System::System()
 OZ_HIDDEN
 System::~System()
 {
-  // Delay termination until bell finishes.
-#if defined( __native_client__ )
-  if( core->IsMainThread() ) {
-    return;
-  }
-#endif
-
-#ifdef _WIN32
-  while( isBellPlaying ) {
-    Sleep( 10 );
-  }
-#else
-  while( isBellPlaying ) {
-    nanosleep( &TIMESPEC_10MS, null );
-  }
-#endif
+  waitBell();
 }
 
 void System::abort( bool preventHalt )
@@ -435,7 +440,7 @@ void System::abort( bool preventHalt )
 #endif
   }
 
-  system.~System();
+  waitBell();
   ::abort();
 }
 

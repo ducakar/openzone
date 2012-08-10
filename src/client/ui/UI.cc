@@ -30,7 +30,7 @@
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"
 
-#include "client/ui/Scheme.hh"
+#include "client/ui/Style.hh"
 #include "client/ui/LoadingArea.hh"
 #include "client/ui/SelectionArea.hh"
 #include "client/ui/HudArea.hh"
@@ -212,8 +212,7 @@ void UI::init()
 
   fps = 1.0f / Timer::TICK_TIME;
 
-  scheme.init();
-  font.init();
+  style.init();
   mouse.init();
 
   root = new Area( camera.width, camera.height );
@@ -235,8 +234,7 @@ void UI::free()
   fpsLabel = null;
 
   mouse.free();
-  font.free();
-  scheme.free();
+  style.free();
 }
 
 }

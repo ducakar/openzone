@@ -28,6 +28,8 @@
 #include "client/Camera.hh"
 #include "client/Sound.hh"
 
+#include "client/ui/Style.hh"
+
 namespace oz
 {
 namespace client
@@ -180,7 +182,7 @@ void MusicPlayer::onDraw()
 }
 
 MusicPlayer::MusicPlayer() :
-  Frame( 240, 36 + Font::INFOS[Font::SMALL].height, OZ_GETTEXT( "Music Player" ) ),
+  Frame( 240, 36 + style.fonts[Font::SMALL].height, OZ_GETTEXT( "Music Player" ) ),
   title( width / 2, 32, ALIGN_HCENTRE, Font::SMALL, " " ),
   trackLabel( 39, 14, ALIGN_CENTRE, Font::SMALL, "0" ),
   volumeLabel( 201, 14, ALIGN_CENTRE, Font::SMALL, " " ),
@@ -193,7 +195,7 @@ MusicPlayer::MusicPlayer() :
   }
   volumeLabel.set( "%.1f", float( volume ) / 10.0f );
 
-  add( new Button( "−", volumeDown, 20, 20 ), 4, 4 );
+  add( new Button( "-", volumeDown, 20, 20 ), 4, 4 );
   add( new Button( "<<", prevTrack, 30, 20 ), 54, 4 );
   add( new Button( ">", playTrack, 30, 20 ), 88, 4 );
   add( new Button( "x", stopTrack, 30, 20 ), 122, 4 );

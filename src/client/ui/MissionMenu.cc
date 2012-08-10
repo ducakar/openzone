@@ -33,7 +33,7 @@
 #include "client/OpenGL.hh"
 #include "client/NaCl.hh"
 
-#include "client/ui/Scheme.hh"
+#include "client/ui/Style.hh"
 
 namespace oz
 {
@@ -91,7 +91,7 @@ void MissionMenu::onReposition()
   scroll      = 0;
 
   imageX      = 20;
-  imageY      = 100 + 8 * Font::INFOS[Font::SANS].height;
+  imageY      = 100 + 8 * style.fonts[Font::SANS].height;
   imageWidth  = width - 280;
   imageHeight = height - 20 - imageY;
 
@@ -146,7 +146,7 @@ bool MissionMenu::onMouseEvent()
 
 void MissionMenu::onDraw()
 {
-  shape.colour( scheme.menuStrip );
+  shape.colour( style.colours.menuStrip );
   shape.fill( width - 240, 0, 240, height - 40 );
 
   shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );

@@ -30,6 +30,8 @@
 
 #include "client/Camera.hh"
 
+#include "client/ui/Style.hh"
+
 namespace oz
 {
 namespace client
@@ -89,7 +91,7 @@ void InfoFrame::onDraw()
 }
 
 InfoFrame::InfoFrame() :
-  Frame( 360, 12 + 24 * Font::INFOS[Font::SANS].height, "" ),
+  Frame( 360, 12 + 24 * style.fonts[Font::SANS].height, "" ),
   text( 6, 4, 348, 24, Font::SANS, Area::ALIGN_NONE ), lastId( -1 )
 {
   flags = PINNED_BIT;

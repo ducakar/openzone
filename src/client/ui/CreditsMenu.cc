@@ -32,6 +32,7 @@
 #include "client/OpenGL.hh"
 #include "client/NaCl.hh"
 
+#include "client/ui/Style.hh"
 #include "client/ui/Button.hh"
 
 namespace oz
@@ -56,7 +57,7 @@ void CreditsMenu::onReposition()
   width  = camera.width;
   height = camera.height;
 
-  int step    = Font::INFOS[Font::SANS].height;
+  int step    = style.fonts[Font::SANS].height;
   int nLabels = ( height - 160 ) / step;
 
   // FIXME change to resize and add move semantics to ui::Label once GCC 4.4 becomes obsolete.
@@ -139,7 +140,7 @@ void CreditsMenu::onDraw()
 
   int x  = ( width - 240 ) / 2 - 8;
   int y0 = height - 52;
-  int y1 = height - 82 - labels.length() * Font::INFOS[Font::SANS].height;
+  int y1 = height - 82 - labels.length() * style.fonts[Font::SANS].height;
 
   glBindTexture( GL_TEXTURE_2D, scrollUpTexId );
   shape.fill( x, y0, 16, 16 );

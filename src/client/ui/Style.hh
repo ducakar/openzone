@@ -18,12 +18,12 @@
  */
 
 /**
- * @file client/ui/Scheme.hh
+ * @file client/ui/Style.hh
  */
 
 #pragma once
 
-#include "client/common.hh"
+#include "client/ui/Font.hh"
 
 namespace oz
 {
@@ -32,24 +32,30 @@ namespace client
 namespace ui
 {
 
-class Scheme
+class Style
 {
   public:
 
-    Vec4   text;
-    Vec4   textBackground;
+    struct Colours
+    {
+      Vec4 text;
+      Vec4 textBackground;
 
-    Vec4   button;
-    Vec4   buttonHover;
-    Vec4   buttonClicked;
+      Vec4 button;
+      Vec4 buttonHover;
+      Vec4 buttonClicked;
 
-    Vec4   tile;
-    Vec4   tileHover;
+      Vec4 tile;
+      Vec4 tileHover;
 
-    Vec4   frame;
-    Vec4   background;
+      Vec4 frame;
+      Vec4 background;
 
-    Vec4   menuStrip;
+      Vec4 menuStrip;
+    };
+
+    Font    fonts[Font::MAX];
+    Colours colours;
 
   public:
 
@@ -58,7 +64,7 @@ class Scheme
 
 };
 
-extern Scheme scheme;
+extern Style style;
 
 }
 }

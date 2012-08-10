@@ -44,6 +44,7 @@
 #include "client/Network.hh"
 
 #include <unistd.h>
+#include <SDL_ttf.h>
 
 #if defined( __native_client__ )
 # include <ppapi/cpp/completion_callback.h>
@@ -231,6 +232,9 @@ int Client::init( int argc, char** argv )
   Log::println( "}" );
   Log::verboseMode = false;
 
+  PFile::init( File::TEMPORARY, 32*1024*1024 );
+  initFlags |= INIT_PHYSFS;
+
   OZ_MAIN_CALL( this, {
     if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) == 0 ) {
       _this->initFlags |= INIT_SDL;
@@ -240,8 +244,10 @@ int Client::init( int argc, char** argv )
     throw Exception( "Failed to initialise SDL: %s", SDL_GetError() );
   }
 
-  PFile::init( File::TEMPORARY, 32*1024*1024 );
-  initFlags |= INIT_PHYSFS;
+  if( TTF_Init() < 0 ) {
+    throw Exception( "Failed to initialise SDL_ttf" );
+  }
+  initFlags |= INIT_SDL_TTF;
 
   // Clean up after previous versions.
   File::rm( configDir + "/client.rc" );
@@ -529,15 +535,17 @@ void Client::shutdown()
 
   config.clear( initFlags & INIT_CONFIG );
 
-  if( initFlags & INIT_PHYSFS ) {
-    PFile::free();
+  if( initFlags & INIT_SDL_TTF ) {
+    TTF_Quit();
   }
-
 #ifndef __native_client__
   if( initFlags & INIT_SDL ) {
     SDL_Quit();
   }
 #endif
+  if( initFlags & INIT_PHYSFS ) {
+    PFile::free();
+  }
 
   if( initFlags & INIT_MAIN_LOOP ) {
     Alloc::printSummary();

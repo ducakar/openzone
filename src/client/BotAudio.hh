@@ -36,7 +36,7 @@ class BotAudio : public BasicAudio
 
     static const float FOOTSTEP_DISTANCE_SQ;
 
-    int prevStep; ///< Used only for player's bot to play footstep sounds.
+    int prevStep;
 
   protected:
 

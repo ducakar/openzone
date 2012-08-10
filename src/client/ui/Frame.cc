@@ -29,7 +29,7 @@
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"
 
-#include "client/ui/Scheme.hh"
+#include "client/ui/Style.hh"
 
 namespace oz
 {
@@ -69,7 +69,7 @@ bool Frame::onMouseEvent()
 
 void Frame::onDraw()
 {
-  shape.colour( scheme.frame );
+  shape.colour( style.colours.frame );
   shape.fill( x, y, width, height );
 
   title.draw( this, false );

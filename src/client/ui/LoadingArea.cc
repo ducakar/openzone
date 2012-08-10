@@ -28,7 +28,7 @@
 #include "client/Shape.hh"
 #include "client/Camera.hh"
 
-#include "client/ui/Scheme.hh"
+#include "client/ui/Style.hh"
 
 namespace oz
 {
@@ -47,7 +47,7 @@ void LoadingArea::onReposition()
 
 void LoadingArea::onDraw()
 {
-  shape.colour( scheme.background );
+  shape.colour( style.colours.background );
   shape.fill( 0, 0, width, height );
 
   status.draw( this, false );

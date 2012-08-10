@@ -30,9 +30,7 @@
 #include "client/OpenGL.hh"
 
 #include "client/ui/Area.hh"
-#include "client/ui/Scheme.hh"
-
-#include <SDL_ttf.h>
+#include "client/ui/Style.hh"
 
 namespace oz
 {
@@ -40,8 +38,6 @@ namespace client
 {
 namespace ui
 {
-
-static SDL_Surface* text;
 
 Label::Label() :
   x( 0 ), y( 0 ), align( Area::ALIGN_NONE ), font( Font::MONO ), offsetX( 0 ), offsetY( 0 ),
@@ -105,21 +101,9 @@ void Label::vset( int x_, int y_, int align_, Font::Type font_, const char* s, v
     newHeight = 0;
   }
   else {
-    text = TTF_RenderUTF8_Blended( ui::font.fonts[font], buffer, Font::SDL_COLOUR_WHITE );
+    uint texId = activeTexId == texIds[0] ? texIds[1] : texIds[0];
 
-    OZ_MAIN_CALL( this, {
-      uint texId = _this->activeTexId == _this->texIds[0] ? _this->texIds[1] : _this->texIds[0];
-
-      glBindTexture( GL_TEXTURE_2D, texId );
-      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                    text->pixels );
-      glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-    } )
-
-    newWidth  = text->w;
-    newHeight = text->h;
-
-    SDL_FreeSurface( text );
+    style.fonts[font].draw( buffer, texId, &newWidth, &newHeight );
   }
 }
 
@@ -178,9 +162,9 @@ void Label::draw( const Area* area, bool allowChanged )
     int posX = area->x + ( x < 0 ? area->width  + offsetX : offsetX );
     int posY = area->y + ( y < 0 ? area->height + offsetY : offsetY );
 
-    shape.colour( scheme.textBackground );
+    shape.colour( style.colours.textBackground );
     shape.fillInv( posX + 1, posY - 1, width, height );
-    shape.colour( scheme.text );
+    shape.colour( style.colours.text );
     shape.fillInv( posX, posY, width, height );
 
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );

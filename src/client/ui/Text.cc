@@ -29,9 +29,8 @@
 #include "client/Shape.hh"
 #include "client/OpenGL.hh"
 
+#include "client/ui/Style.hh"
 #include "client/ui/Area.hh"
-
-#include <SDL_ttf.h>
 
 #ifdef _WIN32
 static char* strchrnul( const char* s, int c )
@@ -53,12 +52,12 @@ namespace ui
 char Text::buffer[2048];
 
 Text::Text( int x_, int y_, int width_, int nLines_, Font::Type font_, int alignment ) :
-  x( x_ ), y( y_ ), width( width_ ), nLines( nLines_ ), font( ui::font.fonts[font_] )
+  x( x_ ), y( y_ ), width( width_ ), nLines( nLines_ ), font( &style.fonts[font_] )
 {
   labels = new Label[nLines];
 
   for( int i = 0; i < nLines; ++i ) {
-    labels[i].set( x, y + ( nLines - i - 1 ) * Font::INFOS[font_].height, alignment, font_, " " );
+    labels[i].set( x, y + ( nLines - i - 1 ) * font->height, alignment, font_, " " );
   }
 }
 
@@ -93,8 +92,7 @@ void Text::set( const char* s, ... )
       char ch = *next;
       *next = '\0';
 
-      int w;
-      TTF_SizeUTF8( font, pos, &w, null );
+      int w = font->size( pos );
 
       *next = ch;
 

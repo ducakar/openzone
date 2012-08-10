@@ -36,13 +36,13 @@ class Text
 {
   private:
 
-    int         x;
-    int         y;
-    int         width;
-    int         nLines;
+    int    x;
+    int    y;
+    int    width;
+    int    nLines;
 
-    TTF_Font*   font;
-    Label*      labels;
+    Font*  font;
+    Label* labels;
 
     static char buffer[2048];
 

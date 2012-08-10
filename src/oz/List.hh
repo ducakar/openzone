@@ -405,22 +405,12 @@ class List
     }
 
     /**
-     * Create slot for a new element at the end.
-     */
-    void add()
-    {
-      ensureCapacity();
-
-      ++count;
-    }
-
-    /**
      * Add an element to the end.
      */
     template <typename Elem_ = Elem>
-    void add( Elem_&& e )
+    void add( Elem_&& e = Elem() )
     {
-      pushLast( static_cast<Elem_&&>( e ) );
+      pushLast<Elem_>( static_cast<Elem_&&>( e ) );
     }
 
     /**
@@ -508,8 +498,7 @@ class List
       if( i == count ) {
         // When removing the last element, no shift is performed, so its resources are not
         // implicitly destroyed by move operation.
-        data[count].~Elem();
-        new( data + count ) Elem;
+        data[count] = Elem();
       }
       else {
         aMove<Elem>( data + i, data + i + 1, count - i );
@@ -539,17 +528,7 @@ class List
       int i = aIndex<Elem, Elem>( data, e, count );
 
       if( i >= 0 ) {
-        --count;
-
-        if( i == count ) {
-          // When removing the last element, no shift is performed, so its resources are not
-          // implicitly destroyed by move operation.
-          data[count].~Elem();
-          new( data + count ) Elem;
-        }
-        else {
-          aMove<Elem>( data + i, data + i + 1, count - i );
-        }
+        remove( i );
       }
       return i;
     }
@@ -566,8 +545,7 @@ class List
       int i = aIndex<Elem, Elem>( data, e, count );
 
       if( i >= 0 ) {
-        --count;
-        data[i] = static_cast<Elem&&>( data[count] );
+        removeUO( i );
       }
       return i;
     }
@@ -657,8 +635,7 @@ class List
       else if( newCount < count ) {
         // Ensure destruction of removed elements.
         for( int i = newCount; i < count; ++i ) {
-          data[i].~Elem();
-          new( data + i ) Elem;
+          data[i] = Elem();
         }
       }
 
@@ -672,8 +649,7 @@ class List
     {
       // Ensure destruction of all elements.
       for( int i = 0; i < count; ++i ) {
-        data[i].~Elem();
-        new( data + i ) Elem;
+        data[i] = Elem();
       }
 
       count = 0;

@@ -308,8 +308,8 @@ void Window::init()
                                  SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                  width, height, flags );
 
-  SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,            0 );
-  SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE,          0 );
+  SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,   0 );
+  SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 0 );
 
   SDL_GL_SetSwapInterval( 1 );
 

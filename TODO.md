@@ -1,11 +1,13 @@
 0.4
 
+- new löök
 - matrix
     * Vehicle: turret, wheeled, tracked, mech warrior, orca
     * smooth/limited Vehicle rotation
 - nirvana
     * AI tasks
 - ui
+    * settings for icon sizes, bar colours, bar line widths, text filter & texture magnification
     * options menu
     * tutorial tips
     * advanced HUD for mechanic units and vehicles
