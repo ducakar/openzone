@@ -51,11 +51,46 @@ class Style
       Vec4 frame;
       Vec4 background;
 
+      Vec4 barBorder;
+      Vec4 healthMin;
+      Vec4 healthMax;
+      Vec4 staminaMin;
+      Vec4 staminaMax;
+      Vec4 hullMin;
+      Vec4 hullMax;
+      Vec4 fuelMin;
+      Vec4 fuelMax;
+
+      Vec4 galileoNormal;
+      Vec4 galileoMaximised;
+
       Vec4 menuStrip;
+    };
+
+    struct Bar
+    {
+      int x;
+      int y;
+      int w;
+      int h;
+    };
+
+    struct Layout
+    {
+      int iconSize;
+
+      Bar botHealth;
+      Bar botStamina;
+      Bar botWeapon;
+
+      Bar vehicleHull;
+      Bar vehicleFuel;
+      Bar vehicleWeapon[4];
     };
 
     Font    fonts[Font::MAX];
     Colours colours;
+    Layout  layout;
 
   public:
 

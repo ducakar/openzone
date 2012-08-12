@@ -25,12 +25,12 @@
 
 #include "matrix/Collider.hh"
 
+using namespace oz::matrix;
+
 namespace oz
 {
 namespace client
 {
-
-using namespace oz::matrix;
 
 struct TexCoord
 {

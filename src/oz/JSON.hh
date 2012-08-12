@@ -140,21 +140,21 @@ class JSON
     /**
      * Return boolean value.
      *
-     * If value is not a boolean <tt>Exception</tt> is thrown.
+     * If value is not a boolean an <tt>Exception</tt> is thrown.
      */
     bool asBool() const;
 
     /**
      * Return number value cast to integer.
      *
-     * If value is not a number <tt>Exception</tt> is thrown.
+     * If value is not a number an <tt>Exception</tt> is thrown.
      */
     int asInt() const;
 
     /**
      * Return number value.
      *
-     * If value is not a number <tt>Exception</tt> is thrown.
+     * If value is not a number an <tt>Exception</tt> is thrown.
      */
     float asFloat() const;
 
@@ -164,6 +164,41 @@ class JSON
      * If value is not a string <tt>Exception</tt> is thrown.
      */
     const String& asString() const;
+
+    /**
+     * Write array values into the given array.
+     *
+     * If value is not an array of the specified length an <tt>Exception</tt> is thrown.
+     */
+    void asBoolArray( bool* array, int count ) const;
+
+    /**
+     * Write array values into the given array.
+     *
+     * If value is not an array of the specified length an <tt>Exception</tt> is thrown.
+     */
+    void asIntArray( int* array, int count ) const;
+
+    /**
+     * Write array values into the given array.
+     *
+     * If value is not an array of the specified length an <tt>Exception</tt> is thrown.
+     */
+    void asFloatArray( float* array, int count ) const;
+
+    /**
+     * Write array values into the given array.
+     *
+     * If value is not an array of the specified length an <tt>Exception</tt> is thrown.
+     */
+    void asStringArray( String* array, int count ) const;
+
+    /**
+     * Write array values into the given array.
+     *
+     * If value is not an array of the specified length an <tt>Exception</tt> is thrown.
+     */
+    void asStringArray( const char** array, int count ) const;
 
     /**
      * Returns value at position <tt>i</tt> in an array.
@@ -184,37 +219,77 @@ class JSON
     /**
      * Return boolean value or <tt>defaultValue</tt> if null.
      *
-     * If value is not either a boolean or a null <tt>Exception</tt> is thrown.
+     * If value is not either a boolean or a null an <tt>Exception</tt> is thrown.
      */
     bool get( bool defaultValue ) const;
 
     /**
      * Return integer value or <tt>defaultValue</tt> if null.
      *
-     * If value is not either a number or a null <tt>Exception</tt> is thrown.
+     * If value is not either a number or a null an <tt>Exception</tt> is thrown.
      */
     int get( int defaultValue ) const;
 
     /**
      * Return number value or <tt>defaultValue</tt> if null.
      *
-     * If value is not either a number or a null <tt>Exception</tt> is thrown.
+     * If value is not either a number or a null an <tt>Exception</tt> is thrown.
      */
     float get( float defaultValue ) const;
 
     /**
      * Return string value or <tt>defaultValue</tt> if null.
      *
-     * If value is not either a string or a null <tt>Exception</tt> is thrown.
+     * If value is not either a string or a null an <tt>Exception</tt> is thrown.
      */
     const String& get( const String& defaultValue ) const;
 
     /**
      * Return string value or <tt>defaultValue</tt> if null.
      *
-     * If value is not either a string or a null <tt>Exception</tt> is thrown.
+     * If value is not either a string or a null an <tt>Exception</tt> is thrown.
      */
     const char* get( const char* defaultValue ) const;
+
+    /**
+     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     *
+     * If value is not either an array of the specified length or a null an <tt>Exception</tt> is
+     * thrown.
+     */
+    void get( bool* array, int count ) const;
+
+    /**
+     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     *
+     * If value is not either an array of the specified length or a null an <tt>Exception</tt> is
+     * thrown.
+     */
+    void get( int* array, int count ) const;
+
+    /**
+     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     *
+     * If value is not either an array of the specified length or a null an <tt>Exception</tt> is
+     * thrown.
+     */
+    void get( float* array, int count ) const;
+
+    /**
+     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     *
+     * If value is not either an array of the specified length or a null an <tt>Exception</tt> is
+     * thrown.
+     */
+    void get( String* array, int count ) const;
+
+    /**
+     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     *
+     * If value is not either an array of the specified length or a null an <tt>Exception</tt> is
+     * thrown.
+     */
+    void get( const char** array, int count ) const;
 
     /**
      * Clear existing value and set to null.

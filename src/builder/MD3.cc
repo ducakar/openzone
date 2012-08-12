@@ -287,17 +287,16 @@ void MD3::load()
   upperFrame = config["upperFrame"].get( -1 );
   shaderName = config["shader"].get( frame < 0 ? "md3" : "mesh" );
 
-  Vec3 weaponTransl = Vec3( config["weaponTranslate.x"].get( 0.00f ),
-                            config["weaponTranslate.y"].get( 0.00f ),
-                            config["weaponTranslate.z"].get( 0.00f ) );
-  Vec3 weaponRot    = Vec3( config["weaponRotate.x"].get( 0.00f ),
-                            config["weaponRotate.y"].get( 0.00f ),
-                            config["weaponRotate.z"].get( 0.00f ) );
+  Vec3 weaponTranslation = Vec3::ZERO;
+  Vec3 weaponRotation    = Vec3::ZERO;
 
-  Mat44 weaponTransf = Mat44::translation( weaponTransl );
-  weaponTransf.rotateX( Math::rad( weaponRot.x ) );
-  weaponTransf.rotateZ( Math::rad( weaponRot.z ) );
-  weaponTransf.rotateY( Math::rad( weaponRot.y ) );
+  config["weaponTranslate"].get( weaponTranslation, 3 );
+  config["weaponRotate"].get( weaponRotation, 3 );
+
+  Mat44 weaponTransf = Mat44::translation( weaponTranslation );
+  weaponTransf.rotateX( Math::rad( weaponRotation.x ) );
+  weaponTransf.rotateZ( Math::rad( weaponRotation.z ) );
+  weaponTransf.rotateY( Math::rad( weaponRotation.y ) );
 
   config.clear( true );
 }

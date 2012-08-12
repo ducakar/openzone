@@ -4,9 +4,7 @@
   "flag.onUpdate":      false,
   "flag.item":          true,
 
-  "dim.x":              0.34,
-  "dim.y":              0.34,
-  "dim.z":              0.34,
+  "dim":                [ 0.34, 0.34, 0.34 ],
 
   "life":               20,
   "resistance":         40,

@@ -198,7 +198,7 @@ inline Iterator<Elem> iter( Elem* array, int count )
  */
 template <typename Elem, size_t SIZE>
 OZ_ALWAYS_INLINE
-inline CIterator<Elem> citer( const Elem ( &array )[SIZE] )
+inline CIterator<Elem> citer( const Elem ( & array )[SIZE] )
 {
   return citer<Elem>( array, SIZE );
 }
@@ -210,7 +210,7 @@ inline CIterator<Elem> citer( const Elem ( &array )[SIZE] )
  */
 template <typename Elem, size_t SIZE>
 OZ_ALWAYS_INLINE
-inline Iterator<Elem> iter( Elem ( &array )[SIZE] )
+inline Iterator<Elem> iter( Elem ( & array )[SIZE] )
 {
   return iter<Elem>( array, SIZE );
 }

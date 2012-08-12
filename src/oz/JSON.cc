@@ -693,58 +693,154 @@ int JSON::length() const
 
 bool JSON::asBool() const
 {
-  if( valueType == BOOLEAN ) {
-    wasAccessed = true;
-    return static_cast<BooleanData*>( data )->value;
-  }
-  else {
+  wasAccessed = true;
+
+  if( valueType != BOOLEAN ) {
     throw Exception( "JSON value accessed as a boolean: %s", toString().cstr() );
   }
+  return static_cast<BooleanData*>( data )->value;
 }
 
 int JSON::asInt() const
 {
-  if( valueType == NUMBER ) {
-    wasAccessed = true;
-    return static_cast<NumberData*>( data )->intValue;
+  wasAccessed = true;
+
+  if( valueType != NUMBER ) {
+    throw Exception( "JSON value accessed as an integer: %s", toString().cstr() );
   }
-  else {
-    throw Exception( "JSON value accessed as a number: %s", toString().cstr() );
-  }
+  return static_cast<NumberData*>( data )->intValue;
 }
 
 float JSON::asFloat() const
 {
-  if( valueType == NUMBER ) {
-    wasAccessed = true;
-    return static_cast<NumberData*>( data )->value;
+  wasAccessed = true;
+
+  if( valueType != NUMBER ) {
+    throw Exception( "JSON value accessed as a float: %s", toString().cstr() );
   }
-  else {
-    throw Exception( "JSON value accessed as a number: %s", toString().cstr() );
-  }
+  return static_cast<NumberData*>( data )->value;
 }
 
 const String& JSON::asString() const
 {
-  if( valueType == STRING ) {
-    wasAccessed = true;
-    return static_cast<StringData*>( data )->value;
-  }
-  else {
+  wasAccessed = true;
+
+  if( valueType != STRING ) {
     throw Exception( "JSON value accessed as a string: %s", toString().cstr() );
+  }
+  return static_cast<StringData*>( data )->value;
+}
+
+void JSON::asBoolArray( bool* array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType != ARRAY ) {
+    throw Exception( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    throw Exception( "JSON array has %d elements but %d expected: %s",
+                     list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asBool();
+  }
+}
+
+void JSON::asIntArray( int* array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType != ARRAY ) {
+    throw Exception( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    throw Exception( "JSON array has %d elements but %d expected: %s",
+                     list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asInt();
+  }
+}
+
+void JSON::asFloatArray( float* array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType != ARRAY ) {
+    throw Exception( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    throw Exception( "JSON array has %d elements but %d expected: %s",
+                     list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asFloat();
+  }
+}
+
+void JSON::asStringArray( String* array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType != ARRAY ) {
+    throw Exception( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    throw Exception( "JSON array has %d elements but %d expected: %s",
+                     list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asString();
+  }
+}
+
+void JSON::asStringArray( const char** array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType != ARRAY ) {
+    throw Exception( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    throw Exception( "JSON array has %d elements but %d expected: %s",
+                     list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asString();
   }
 }
 
 const JSON& JSON::operator [] ( int i ) const
 {
-  if( valueType != ARRAY ) {
-    if( valueType == NIL ) {
-      return nil;
-    }
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return nil;
+  }
+  else if( valueType != ARRAY ) {
     throw Exception( "JSON value accessed as an array: %s", toString().cstr() );
   }
-
-  wasAccessed = true;
 
   const List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
@@ -758,14 +854,14 @@ const JSON& JSON::operator [] ( int i ) const
 
 const JSON& JSON::operator [] ( const char* key ) const
 {
-  if( valueType != OBJECT ) {
-    if( valueType == NIL ) {
-      return nil;
-    }
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return nil;
+  }
+  else if( valueType != OBJECT ) {
     throw Exception( "JSON value accessed as an object: %s", toString().cstr() );
   }
-
-  wasAccessed = true;
 
   const HashString<JSON>& table = static_cast<ObjectData*>( data )->table;
   const JSON* value = table.find( key );
@@ -780,71 +876,186 @@ const JSON& JSON::operator [] ( const char* key ) const
 
 bool JSON::get( bool defaultValue ) const
 {
-  if( valueType == BOOLEAN ) {
-    wasAccessed = true;
-    return static_cast<BooleanData*>( data )->value;
-  }
-  else if( valueType == NIL ) {
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
     return defaultValue;
   }
-  else {
+  else if( valueType != BOOLEAN ) {
     throw Exception( "JSON value accessed as a boolean: %s", toString().cstr() );
   }
+
+  return static_cast<BooleanData*>( data )->value;
 }
 
 int JSON::get( int defaultValue ) const
 {
-  if( valueType == NUMBER ) {
-    wasAccessed = true;
-    return static_cast<NumberData*>( data )->intValue;
-  }
-  else if( valueType == NIL ) {
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
     return defaultValue;
   }
-  else {
-    throw Exception( "JSON value accessed as a number: %s", toString().cstr() );
+  else if( valueType != NUMBER ) {
+    throw Exception( "JSON value accessed as an integer: %s", toString().cstr() );
   }
+
+  return static_cast<NumberData*>( data )->intValue;
 }
 
 float JSON::get( float defaultValue ) const
 {
-  if( valueType == NUMBER ) {
-    wasAccessed = true;
-    return static_cast<NumberData*>( data )->value;
-  }
-  else if( valueType == NIL ) {
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
     return defaultValue;
   }
-  else {
-    throw Exception( "JSON value accessed as a number: %s", toString().cstr() );
+  else if( valueType != NUMBER ) {
+    throw Exception( "JSON value accessed as a float: %s", toString().cstr() );
   }
+
+  return static_cast<NumberData*>( data )->value;
 }
 
 const String& JSON::get( const String& defaultValue ) const
 {
-  if( valueType == STRING ) {
-    wasAccessed = true;
-    return static_cast<StringData*>( data )->value;
-  }
-  else if( valueType == NIL ) {
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
     return defaultValue;
   }
-  else {
+  else if( valueType != STRING ) {
     throw Exception( "JSON value accessed as a string: %s", toString().cstr() );
   }
+
+  return static_cast<StringData*>( data )->value;
 }
 
 const char* JSON::get( const char* defaultValue ) const
 {
-  if( valueType == STRING ) {
-    wasAccessed = true;
-    return static_cast<StringData*>( data )->value;
-  }
-  else if( valueType == NIL ) {
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
     return defaultValue;
   }
-  else {
+  else if( valueType != STRING ) {
     throw Exception( "JSON value accessed as a string: %s", toString().cstr() );
+  }
+
+  return static_cast<StringData*>( data )->value;
+}
+
+void JSON::get( bool* array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return;
+  }
+  else if( valueType != ARRAY ) {
+    throw Exception( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    throw Exception( "JSON array has %d elements but %d expected: %s",
+                     list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asBool();
+  }
+}
+
+void JSON::get( int* array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return;
+  }
+  else if( valueType != ARRAY ) {
+    throw Exception( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    throw Exception( "JSON array has %d elements but %d expected: %s",
+                     list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asInt();
+  }
+}
+
+void JSON::get( float* array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return;
+  }
+  else if( valueType != ARRAY ) {
+    throw Exception( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    throw Exception( "JSON array has %d elements but %d expected: %s",
+                     list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asFloat();
+  }
+}
+
+void JSON::get( String* array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return;
+  }
+  else if( valueType != ARRAY ) {
+    throw Exception( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    throw Exception( "JSON array has %d elements but %d expected: %s",
+                     list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asString();
+  }
+}
+
+void JSON::get( const char** array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return;
+  }
+  else if( valueType != ARRAY ) {
+    throw Exception( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    throw Exception( "JSON array has %d elements but %d expected: %s",
+                     list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asString();
   }
 }
 

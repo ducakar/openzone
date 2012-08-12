@@ -3,11 +3,8 @@
 
   "title":              "droid OOM-9",
 
-  "dim.x":              0.3,
-  "dim.y":              0.3,
-  "dim.z":              1.1,
-
-  "crouchDim.z":        0.75,
+  "dim":                [ 0.3, 0.3, 1.1 ],
+  "crouchDimZ":         0.75,
 
   "life":               200,
 

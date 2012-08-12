@@ -25,6 +25,24 @@
 
 #include "client/ui/Style.hh"
 
+#define OZ_READ_COLOUR( var, r, g, b, a ) \
+  ( \
+    colours.var.x = r, \
+    colours.var.y = g, \
+    colours.var.z = b, \
+    colours.var.w = a, \
+    coloursConfig[#var].get( colours.var, 4 ) \
+  )
+
+#define OZ_READ_BAR( var, x_, y_, w_, h_ ) \
+  ( \
+    layout.var.x = x_, \
+    layout.var.y = y_, \
+    layout.var.w = w_, \
+    layout.var.h = h_, \
+    layoutConfig[#var].get( &layout.var.x, 4 ) \
+  )
+
 namespace oz
 {
 namespace client
@@ -56,68 +74,6 @@ void Style::init()
   JSON config;
   config.load( &configFile );
 
-  const JSON& coloursConfig       = config["colours"];
-
-  const JSON& textArray           = coloursConfig["text"];
-  const JSON& textBackgroundArray = coloursConfig["textBackground"];
-
-  const JSON& buttonArray         = coloursConfig["button"];
-  const JSON& buttonHoverArray    = coloursConfig["buttonHover"];
-  const JSON& buttonClickedArray  = coloursConfig["buttonClicked"];
-
-  const JSON& tileArray           = coloursConfig["tile"];
-  const JSON& tileHoverArray      = coloursConfig["tileHover"];
-
-  const JSON& frameArray          = coloursConfig["frame"];
-  const JSON& backgroundArray     = coloursConfig["background"];
-
-  const JSON& menuStripArray      = coloursConfig["menuStrip"];
-
-  colours.text           = Vec4( textArray[0].get( 1.00f ),
-                                 textArray[1].get( 1.00f ),
-                                 textArray[2].get( 1.00f ),
-                                 textArray[3].get( 1.00f ) );
-  colours.textBackground = Vec4( textBackgroundArray[0].get( 0.00f ),
-                                 textBackgroundArray[1].get( 0.00f ),
-                                 textBackgroundArray[2].get( 0.00f ),
-                                 textBackgroundArray[3].get( 1.00f ) );
-
-  colours.button         = Vec4( buttonArray[0].get( 0.20f ),
-                                 buttonArray[1].get( 0.20f ),
-                                 buttonArray[2].get( 0.20f ),
-                                 buttonArray[3].get( 0.40f ) );
-  colours.buttonHover    = Vec4( buttonHoverArray[0].get( 0.60f ),
-                                 buttonHoverArray[1].get( 0.60f ),
-                                 buttonHoverArray[2].get( 0.60f ),
-                                 buttonHoverArray[3].get( 0.40f ) );
-  colours.buttonClicked  = Vec4( buttonClickedArray[0].get( 1.00f ),
-                                 buttonClickedArray[1].get( 1.00f ),
-                                 buttonClickedArray[2].get( 1.00f ),
-                                 buttonClickedArray[3].get( 0.40f ) );
-
-  colours.tile           = Vec4( tileArray[0].get( 0.40f ),
-                                 tileArray[1].get( 0.40f ),
-                                 tileArray[2].get( 0.40f ),
-                                 tileArray[3].get( 0.60f ) );
-  colours.tileHover      = Vec4( tileHoverArray[0].get( 0.60f ),
-                                 tileHoverArray[1].get( 0.60f ),
-                                 tileHoverArray[2].get( 0.60f ),
-                                 tileHoverArray[3].get( 0.60f ) );
-
-  colours.frame          = Vec4( frameArray[0].get( 0.00f ),
-                                 frameArray[1].get( 0.00f ),
-                                 frameArray[2].get( 0.00f ),
-                                 frameArray[3].get( 0.30f ) );
-  colours.background     = Vec4( backgroundArray[0].get( 0.05f ),
-                                 backgroundArray[1].get( 0.05f ),
-                                 backgroundArray[2].get( 0.05f ),
-                                 backgroundArray[3].get( 1.00f ) );
-
-  colours.menuStrip      = Vec4( menuStripArray[0].get( 0.00f ),
-                                 menuStripArray[1].get( 0.00f ),
-                                 menuStripArray[2].get( 0.00f ),
-                                 menuStripArray[3].get( 1.00f ) );
-
   const JSON& fontsConfig = config["fonts"];
 
   for( int i = 0; i < Font::MAX; ++i ) {
@@ -128,6 +84,43 @@ void Style::init()
 
     fonts[i].init( name, height );
   }
+
+  const JSON& coloursConfig = config["colours"];
+
+  OZ_READ_COLOUR( text,             1.00f, 1.00f, 1.00f, 1.00f );
+  OZ_READ_COLOUR( textBackground,   0.00f, 0.00f, 0.00f, 1.00f );
+
+  OZ_READ_COLOUR( button,           0.20f, 0.20f, 0.20f, 1.40f );
+  OZ_READ_COLOUR( buttonHover,      0.60f, 0.60f, 0.60f, 0.40f );
+  OZ_READ_COLOUR( buttonClicked,    1.00f, 1.00f, 1.00f, 0.40f );
+
+  OZ_READ_COLOUR( tile,             0.40f, 0.40f, 0.40f, 0.60f );
+  OZ_READ_COLOUR( tileHover,        0.60f, 0.60f, 0.60f, 0.60f );
+
+  OZ_READ_COLOUR( frame,            0.00f, 0.00f, 0.00f, 0.30f );
+  OZ_READ_COLOUR( background,       0.05f, 0.05f, 0.05f, 1.00f );
+
+  OZ_READ_COLOUR( barBorder,        1.00f, 1.00f, 1.00f, 0.50f );
+
+  OZ_READ_COLOUR( galileoNormal,    1.00f, 1.00f, 1.00f, 0.60f );
+  OZ_READ_COLOUR( galileoMaximised, 1.00f, 1.00f, 1.00f, 0.80f );
+
+  OZ_READ_COLOUR( menuStrip,        0.00f, 0.00f, 0.00f, 1.00f );
+
+  const JSON& layoutConfig = config["layout"];
+
+  OZ_READ_BAR( botStamina,        8,  8, 200, 14 );
+  OZ_READ_BAR( botHealth,         8, 30, 200, 14 );
+  OZ_READ_BAR( botWeapon,         8, 52, 200, fonts[Font::LARGE].height + 8 );
+
+  OZ_READ_BAR( vehicleFuel,      -8,  8, 200, 14 );
+  OZ_READ_BAR( vehicleHull,      -8, 30, 200, 14 );
+  OZ_READ_BAR( vehicleWeapon[0], -8, 52, 200, fonts[Font::LARGE].height + 8 );
+  OZ_READ_BAR( vehicleWeapon[1], -8, 52, 200, fonts[Font::LARGE].height + 8 );
+  OZ_READ_BAR( vehicleWeapon[2], -8, 52, 200, fonts[Font::LARGE].height + 8 );
+  OZ_READ_BAR( vehicleWeapon[3], -8, 52, 200, fonts[Font::LARGE].height + 8 );
+
+  config.clear( true );
 
   Log::printEnd( " OK" );
 }

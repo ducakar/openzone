@@ -3,9 +3,7 @@
 
   "title":              "barrel",
 
-  "dim.x":              0.37,
-  "dim.y":              0.37,
-  "dim.z":              0.52,
+  "dim":                [ 0.37, 0.37, 0.52 ],
 
   "life":               100,
   "resistance":         100,

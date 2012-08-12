@@ -5,9 +5,7 @@
 
   "flag.cylinder":      false,
 
-  "dim.x":              0.15,
-  "dim.y":              0.5,
-  "dim.z":              0.12,
+  "dim":                [ 0.15, 0.5, 0.12 ],
 
   "life":               100,
   "resistance":         40,

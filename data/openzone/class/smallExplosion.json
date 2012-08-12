@@ -6,9 +6,7 @@
   "flag.solid":         false,
   "flag.wideCull":      true,
 
-  "dim.x":              1.6,
-  "dim.y":              1.6,
-  "dim.z":              1.6,
+  "dim":                [ 1.6, 1.6, 1.6 ],
 
   "life":               1,
   "resistance":         inf,

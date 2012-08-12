@@ -60,15 +60,11 @@ void BSP::load()
   life = config["life"].get( DEFAULT_LIFE );
   resistance = config["resistance"].get( DEFAULT_RESISTANCE );
 
-  waterFogColour.x = config["waterFogColour.r"].get( 0.00f );
-  waterFogColour.y = config["waterFogColour.g"].get( 0.05f );
-  waterFogColour.z = config["waterFogColour.b"].get( 0.20f );
-  waterFogColour.w = 1.0f;
+  waterFogColour = Vec4( 0.00f, 0.05f, 0.20f, 1.00f );
+  config["waterFogColour"].get( waterFogColour, 3 );
 
-  lavaFogColour.x = config["lavaFogColour.r"].get( 0.30f );
-  lavaFogColour.y = config["lavaFogColour.g"].get( 0.20f );
-  lavaFogColour.z = config["lavaFogColour.b"].get( 0.00f );
-  lavaFogColour.w = 1.0f;
+  lavaFogColour = Vec4( 0.30f, 0.20f, 0.00f, 1.00f );
+  config["lavaFogColour"].get( lavaFogColour, 3 );
 
   if( life <= 0.0f || !Math::isnormal( life ) ) {
     throw Exception( "%s: Invalid life value. Should be > 0 and finite. If you want infinite life"
@@ -247,9 +243,8 @@ void BSP::load()
 
       models[i].title = modelConfig["title"].get( "" );
 
-      models[i].move.x = modelConfig["move.x"].get( 0.0f );
-      models[i].move.y = modelConfig["move.y"].get( 0.0f );
-      models[i].move.z = modelConfig["move.z"].get( 0.0f );
+      models[i].move = Vec3::ZERO;
+      modelConfig["move"].get( models[i].move, 3 );
 
       String sType = modelConfig["type"].get( "" );
 
@@ -467,10 +462,10 @@ void BSP::load()
     if( !clazz.isEmpty() ) {
       BoundObject object;
 
-      object.clazz   = clazz;
-      object.pos.x   = objectConfig["pos.x"].get( 0.0f );
-      object.pos.y   = objectConfig["pos.y"].get( 0.0f );
-      object.pos.z   = objectConfig["pos.z"].get( 0.0f );
+      object.clazz = clazz;
+
+      object.pos = Point::ORIGIN;
+      objectConfig["pos"].get( object.pos, 3 );
 
       String sHeading = objectConfig["heading"].get( "" );
       if( sHeading.equals( "NORTH" ) ) {

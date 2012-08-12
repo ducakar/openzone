@@ -214,15 +214,18 @@ void HudArea::drawBotStatus()
   shape.fill( 9 + lifeWidth, 31, 198 - lifeWidth, 12 );
   shape.fill( 9 + staminaWidth, 9, 198 - staminaWidth, 12 );
 
-  shape.colour( 1.0f, 1.0f, 1.0f, 0.5f );
-  shape.rect( 8, 30, 200, 14 );
-  shape.rect( 8, 8, 200, 14 );
+  shape.colour( style.colours.barBorder );
+  shape.rect( style.layout.botHealth.x, style.layout.botHealth.y,
+              style.layout.botHealth.w, style.layout.botHealth.h );
+  shape.rect( style.layout.botStamina.x, style.layout.botStamina.y,
+              style.layout.botStamina.w, style.layout.botStamina.h );
 
   if( bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
     const Weapon* weaponObj = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
     shape.colour( style.colours.frame );
-    shape.fill( 8, 52, 200, style.fonts[Font::LARGE].height + 8 );
+    shape.fill( style.layout.botWeapon.x, style.layout.botWeapon.y,
+                style.layout.botWeapon.w, style.layout.botWeapon.h );
 
     if( lastWeaponId != bot->weapon ) {
       lastWeaponId = bot->weapon;
@@ -288,9 +291,11 @@ void HudArea::drawVehicleStatus()
   shape.fill( width - 207 + lifeWidth, 31, 198 - lifeWidth, 12 );
   shape.fill( width - 207 + fuelWidth, 9, 198 - fuelWidth, 12 );
 
-  shape.colour( 1.0f, 1.0f, 1.0f, 0.5f );
-  shape.rect( width - 208, 30, 200, 14 );
-  shape.rect( width - 208, 8, 200, 14 );
+  shape.colour( style.colours.barBorder );
+  shape.rect( style.layout.vehicleFuel.x, style.layout.vehicleFuel.y,
+              style.layout.vehicleFuel.w, style.layout.vehicleFuel.h );
+  shape.rect( style.layout.vehicleFuel.x, style.layout.vehicleFuel.y,
+              style.layout.vehicleFuel.w, style.layout.vehicleFuel.h );
 
   if( lastVehicleId != bot->parent ) {
     lastVehicleId = bot->parent;

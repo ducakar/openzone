@@ -4,9 +4,7 @@
   "flag.cylinder":      false,
   "flag.wideCull":      true,
 
-  "dim.x":              0.9,
-  "dim.y":              1,
-  "dim.z":              0.9,
+  "dim":                [ 0.9, 1, 0.9 ],
 
   "life":               200,
   "resistance":         150,

@@ -39,11 +39,10 @@ class CreditsMenu : public Area
 
     List<String>  lines;
     DArray<Label> labels;
-
+    const int     stride;
     int           scroll;
-
-    uint          scrollUpTexId;
-    uint          scrollDownTexId;
+    int           bias;
+    bool          isPaused;
 
   protected:
 
@@ -55,7 +54,6 @@ class CreditsMenu : public Area
   public:
 
     CreditsMenu();
-    ~CreditsMenu() override;
 
 };
 

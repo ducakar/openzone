@@ -5,9 +5,7 @@
 
   "flag.item":          true,
 
-  "dim.x":              0.1,
-  "dim.y":              0.1,
-  "dim.z":              0.25,
+  "dim":                [ 0.1, 0.1, 0.25 ],
 
   "life":               20,
   "resistance":         10,

@@ -165,8 +165,8 @@ void Window::setFullscreen( bool fullscreen )
 #elif SDL_MAJOR_VERSION < 2
 # ifndef _WIN32
 
-    width   = isFull ? desiredWidth  : desktopWidth;
-    height  = isFull ? desiredHeight : desktopHeight;
+    width   = isFull ? desiredWidth  : screenWidth;
+    height  = isFull ? desiredHeight : screenHeight;
     flags  ^= SDL_FULLSCREEN;
     isFull  = !isFull;
 
@@ -190,8 +190,8 @@ void Window::setFullscreen( bool fullscreen )
       SDL_SetWindowSize( descriptor, width, height );
     }
     else {
-      width   = desktopWidth;
-      height  = desktopHeight;
+      width   = screenWidth;
+      height  = screenHeight;
       flags  |= SDL_WINDOW_FULLSCREEN;
       isFull  = true;
 
@@ -244,45 +244,51 @@ void Window::init()
   SDL_EnableScreenSaver();
 #endif
 
-  display          = config.include( "window.display",    0    ).asInt();
-  desiredWidth     = config.include( "window.width",      0    ).asInt();
-  desiredHeight    = config.include( "window.height",     0    ).asInt();
-  isFull           = config.include( "window.fullscreen", true ).asBool();
+  display       = config.include( "window.display",       0    ).asInt();
+  isFull        = config.include( "window.fullscreen",    true ).asBool();
+  desiredWidth  = config.include( "window.desiredWidth",  1280 ).asInt();
+  desiredHeight = config.include( "window.desiredHeight", 720  ).asInt();
+  screenWidth   = config.include( "window.screenWidth",   0    ).asInt();
+  screenHeight  = config.include( "window.screenHeight",  0    ).asInt();
 
 #if SDL_MAJOR_VERSION < 2
 
   flags = SDL_OPENGL | ( isFull ? SDL_FULLSCREEN : 0 );
 
-  const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
+  if( screenWidth == 0 || screenHeight == 0 ) {
+    const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
 
-  Log::verboseMode = true;
-  Log::println( "Desktop video mode: %dx%d-%d", videoInfo->current_w, videoInfo->current_h,
-                videoInfo->vfmt->BitsPerPixel );
-  Log::verboseMode = false;
+    Log::verboseMode = true;
+    Log::println( "Desktop video mode: %dx%d-%d", videoInfo->current_w, videoInfo->current_h,
+                  videoInfo->vfmt->BitsPerPixel );
+    Log::verboseMode = false;
 
-  desktopWidth  = videoInfo->current_w;
-  desktopHeight = videoInfo->current_h;
+    screenWidth  = videoInfo->current_w;
+    screenHeight = videoInfo->current_h;
+  }
 
 #else
 
   flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | ( isFull ? SDL_WINDOW_FULLSCREEN : 0 );
 
-  SDL_DisplayMode mode;
-  SDL_GetDesktopDisplayMode( display, &mode );
+  if( screenWidth == 0 || screenHeight == 0 ) {
+    SDL_DisplayMode mode;
+    SDL_GetDesktopDisplayMode( display, &mode );
 
-  desktopWidth  = mode.w;
-  desktopHeight = mode.h;
+    screenWidth  = mode.w;
+    screenHeight = mode.h;
+  }
 
 #endif
 
   if( desiredWidth == 0 || desiredHeight == 0 ) {
-    desiredWidth  = desktopWidth;
-    desiredHeight = desktopHeight;
+    desiredWidth  = screenWidth;
+    desiredHeight = screenHeight;
   }
 
   if( isFull ) {
-    width  = desktopWidth;
-    height = desktopHeight;
+    width  = screenWidth;
+    height = screenHeight;
   }
   else {
     width  = desiredWidth;

@@ -272,10 +272,10 @@ void OBJ::load()
   JSON config;
   config.load( &configFile );
 
-  float  scaling     = config["scale"].get( 1.0f );
-  Vec3   translation = Vec3( config["translate.x"].get( 0.0f ),
-                             config["translate.y"].get( 0.0f ),
-                             config["translate.z"].get( 0.0f ) );
+  float scale = config["scale"].get( 1.0f );
+
+  Vec3 translation = Vec3::ZERO;
+  config["translate"].get( translation, 3 );
 
   shader = config["shader"].get( "mesh" );
 
@@ -342,7 +342,7 @@ void OBJ::load()
     throw Exception( "No vertices" );
   }
   for( int i = 0; i < positions.length(); ++i ) {
-    positions[i] = Point::ORIGIN + translation + scaling * ( positions[i] - Point::ORIGIN );
+    positions[i] = Point::ORIGIN + translation + scale * ( positions[i] - Point::ORIGIN );
   }
 
   Log::printEnd( " OK" );

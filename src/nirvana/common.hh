@@ -25,12 +25,12 @@
 
 #include "matrix/Collider.hh"
 
+using namespace oz::matrix;
+
 namespace oz
 {
 namespace nirvana
 {
-
-using namespace oz::matrix;
 
 extern Collider collider;
 

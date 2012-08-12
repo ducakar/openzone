@@ -3,9 +3,7 @@
 
   "flag.wideCull":      true,
 
-  "dim.x":              0.7,
-  "dim.y":              0.7,
-  "dim.z":              3.8,
+  "dim":                [ 0.7, 0.7, 3.8 ],
 
   "life":               500,
 

@@ -7,17 +7,13 @@
 
   "demolishSound":      "free/explode",
 
-  "waterFogColour.r":   0.15,
-  "waterFogColour.g":   0.00,
-  "waterFogColour.b":   0.15,
+  "waterFogColour":     [ 0.15, 0.00, 0.15 ],
 
   "boundObjects":
   [
     {
       "class":          "bauul",
-      "pos.x":          0.0,
-      "pos.y":          0.0,
-      "pos.z":          10.0,
+      "pos":            [ 0, 0, 10 ],
       "heading":        "NORTH"
     }
   ],
@@ -26,9 +22,7 @@
     {
       "title":          "crusher",
       "type":           "CRUSHING_BLOCK",
-      "move.x":         0.0,
-      "move.y":         7.68,
-      "move.z":         0.0,
+      "move":           [ 0, 7.68, 0 ],
       "slideTime":      2.0,
       "timeout":        3.0,
       "openSound":      "free/rumble",
@@ -38,9 +32,7 @@
     {
       "title":          "ignorant",
       "type":           "IGNORING_BLOCK",
-      "move.x":         0.0,
-      "move.y":         7.68,
-      "move.z":         0.0,
+      "move":           [ 0, 7.68, 0 ],
       "slideTime":      2.0,
       "timeout":        4.0,
       "openSound":      "free/rumble",
@@ -50,9 +42,7 @@
     {
       "title":          "auto door",
       "type":           "AUTO_DOOR",
-      "move.x":         2.55,
-      "move.y":         0.0,
-      "move.z":         0.0,
+      "move":           [ 2.55, 0, 0 ],
       "slideTime":      2.0,
       "timeout":        2.0,
       "openSound":      "free/itemback",
@@ -63,9 +53,7 @@
     {
       "title":          "manual door",
       "type":           "MANUAL_DOOR",
-      "move.x":         5.0,
-      "move.y":         0.0,
-      "move.z":         0.0,
+      "move":           [ 5, 0, 0 ],
       "slideTime":      2.0,
       "openSound":      "free/itemback",
       "closeSound":     "free/itemback",
@@ -76,7 +64,7 @@
     {
       "title":          "elevator",
       "type":           "ELEVATOR",
-      "move.z":         3.0,
+      "move":           [ 0, 0, 3 ],
       "slideTime":      2.5,
       "openSound":      "",
       "closeSound":     "",

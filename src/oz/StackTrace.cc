@@ -55,9 +55,6 @@ char** StackTrace::symbols() const
 // Size of output buffer where stack trace output string is generated.
 static const int TRACE_BUFFER_SIZE = 4096;
 
-// Maximum size for buffer where function names are demangled.
-static const int SYMBOL_BUFFER_SIZE = 256;
-
 StackTrace StackTrace::current( int nSkippedFrames )
 {
   hard_assert( nSkippedFrames >= -1 );

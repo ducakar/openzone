@@ -61,6 +61,72 @@ Label::~Label()
   glDeleteTextures( 2, texIds );
 }
 
+Label::Label( Label&& l ) :
+  x( l.x ), y( l.y ), align( l.align ), font( l.font ), offsetX( l.offsetX ), offsetY( l.offsetY ),
+  width( l.width ), height( l.height ), newWidth( l.newWidth ), newHeight( l.newHeight ),
+  activeTexId( l.activeTexId ), hasChanged( l.hasChanged )
+{
+  texIds[0] = l.texIds[0];
+  texIds[1] = l.texIds[1];
+
+  l.x           = 0;
+  l.y           = 0;
+  l.align       = Area::ALIGN_NONE;
+  l.font        = Font::MONO;
+  l.offsetX     = 0;
+  l.offsetY     = 0;
+  l.width       = 0;
+  l.height      = 0;
+  l.activeTexId = 0;
+  l.hasChanged  = false;
+
+  glGenTextures( 2, l.texIds );
+
+  glBindTexture( GL_TEXTURE_2D, l.texIds[0] );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
+  glBindTexture( GL_TEXTURE_2D, l.texIds[1] );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+}
+
+Label& Label::operator = ( Label&& l )
+{
+  if( &l == this ) {
+    return *this;
+  }
+
+  x           = l.x;
+  y           = l.y;
+  align       = l.align;
+  font        = l.font;
+  offsetX     = l.offsetX;
+  offsetY     = l.offsetY;
+  width       = l.width;
+  height      = l.height;
+  activeTexId = l.activeTexId;
+  hasChanged  = l.hasChanged;
+
+  swap( texIds[0], l.texIds[0] );
+  swap( texIds[1], l.texIds[1] );
+
+  l.x           = 0;
+  l.y           = 0;
+  l.align       = Area::ALIGN_NONE;
+  l.font        = Font::MONO;
+  l.offsetX     = 0;
+  l.offsetY     = 0;
+  l.width       = 0;
+  l.height      = 0;
+  l.activeTexId = 0;
+  l.hasChanged  = false;
+
+  return *this;
+}
+
 Label::Label( int x_, int y_, int align_, Font::Type font_, const char* s, ... ) :
   offsetX( 0 ), offsetY( 0 ), activeTexId( 0 ), hasChanged( false )
 {
@@ -129,8 +195,6 @@ void Label::set( int x_, int y_ )
   y       = y_;
   offsetX = x_;
   offsetY = y_;
-  width   = newWidth;
-  height  = newHeight;
 
   if( align & Area::ALIGN_RIGHT ) {
     offsetX -= width;

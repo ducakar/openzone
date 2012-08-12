@@ -46,11 +46,15 @@ class GalileoFrame : public Frame
     int  normalY;
     int  normalWidth;
     int  normalHeight;
+    Vec4 normalColour;
 
     int  maximisedX;
     int  maximisedY;
     int  maximisedWidth;
     int  maximisedHeight;
+    Vec4 maximisedColour;
+
+    Vec4 colour;
 
   public:
 

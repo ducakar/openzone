@@ -77,47 +77,28 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* missionLin
     const JSON& rotArray = stepConfig["rot"];
 
     if( !rotArray.isNull() ) {
-      float h = Math::rad( rotArray[0].get( 0.0f ) );
-      float v = Math::rad( rotArray[1].get( 0.0f ) );
-      float w = Math::rad( rotArray[2].get( 0.0f ) );
+      float rot[3] = { 0.0f, 0.0f, 0.0f };
 
-      step.rot = Quat::rotationZXZ( h, v, w );
+      rotArray.get( rot, 3 );
+      step.rot = Quat::rotationZXZ( Math::rad( rot[0] ), Math::rad( rot[1] ), Math::rad( rot[2] ) );
     }
 
     const JSON& posArray = stepConfig["pos"];
 
     if( !posArray.isNull() ) {
-      float x = posArray[0].get( 0.0f );
-      float y = posArray[1].get( 0.0f );
-      float z = posArray[2].get( 0.0f );
+      Point p = Point( 0.0f, 0.0f, 0.0f );
 
-      step.p = Point( x, y, z );
+      posArray.get( p, 3 );
+      step.p = p;
     }
 
     const JSON& colourArray = stepConfig["colour"];
 
     if( !colourArray.isNull() ) {
-      float m11 = colourArray[ 0].get( 1.0f );
-      float m12 = colourArray[ 1].get( 0.0f );
-      float m13 = colourArray[ 2].get( 0.0f );
-      float m14 = colourArray[ 3].get( 0.0f );
-      float m21 = colourArray[ 4].get( 0.0f );
-      float m22 = colourArray[ 5].get( 1.0f );
-      float m23 = colourArray[ 6].get( 0.0f );
-      float m24 = colourArray[ 7].get( 0.0f );
-      float m31 = colourArray[ 8].get( 0.0f );
-      float m32 = colourArray[ 9].get( 0.0f );
-      float m33 = colourArray[10].get( 1.0f );
-      float m34 = colourArray[11].get( 0.0f );
-      float m41 = colourArray[12].get( 0.0f );
-      float m42 = colourArray[13].get( 0.0f );
-      float m43 = colourArray[14].get( 0.0f );
-      float m44 = colourArray[15].get( 1.0f );
+      Mat44 m;
 
-      step.colour = Mat44( m11, m21, m31, m41,
-                           m12, m22, m32, m42,
-                           m13, m23, m33, m43,
-                           m14, m24, m34, m44 );
+      colourArray.get( m, 16 );
+      step.colour = m;
     }
 
     const JSON& trackConfig = stepConfig["track"];
@@ -169,6 +150,8 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* missionLin
 
     steps.add( step );
   }
+
+  sequence.clear( true );
 }
 
 void CinematicProxy::begin()
@@ -234,6 +217,13 @@ void CinematicProxy::update()
 
   if( nTitleChars < title.length() ) {
     nTitleChars = min( nTitleChars + int( timer.frameTicks ), title.length() );
+
+    // Take all bytes of UTF-8 characters.
+    while( nTitleChars > 0 && nTitleChars < title.length() &&
+           ( title[nTitleChars - 1] & title[nTitleChars] & 0x80 ) )
+    {
+      ++nTitleChars;
+    }
 
     cinematicText->set( title.substring( 0, nTitleChars ) );
   }

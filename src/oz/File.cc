@@ -345,7 +345,7 @@ bool File::stat()
 
 #else
 
-  struct ::stat info;
+  struct stat info;
 
   if( ::stat( filePath, &info ) != 0 ) {
     fileType = MISSING;

@@ -5,9 +5,7 @@
 
   "state.crewVisible":  true,
 
-  "dim.x":              2.99,
-  "dim.y":              2.99,
-  "dim.z":              1.99,
+  "dim":                [ 2.99, 2.99, 1.99 ],
 
   "life":               2000,
   "resistance":         150,
@@ -17,9 +15,7 @@
 
   "type":               "AIR",
 
-  "pilotPos.x":         0,
-  "pilotPos.y":         2.4,
-  "pilotPos.z":         0.1,
+  "pilotPos":           [ 0, 2.4, 0.1 ],
 
   "rotVelLimit":        60,
 

@@ -1,5 +1,7 @@
 0.3.80
 
+- ui
+    * UI colours, fonts and layouts can be configured in `ui/style.json`
 - builder
     * Context generates mipmaps and S3TC textures (using libsquish) without OpenGL
 
@@ -112,7 +114,7 @@
     * ozGettext tool for extracting structure, entity, object names and strings from mission scripts
       for translation
     * ozManifest for generating package manifests for NaCl port
-    * ozSineSample for generating src/oz/bellSample.inc file
+    * ozSineSample for generating `src/oz/bellSample.inc`
 - general
     * PhysicsFS used for accessing game data, so they can be loaded directly from archives
     * game data can be modularised into packages

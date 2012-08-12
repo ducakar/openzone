@@ -1,11 +1,8 @@
 {
   "base":               "Bot",
 
-  "dim.x":              0.45,
-  "dim.y":              0.45,
-  "dim.z":              1,
-
-  "crouchDim.z":        0.80,
+  "dim":                [ 0.45, 0.45, 1 ],
+  "crouchDimZ":         0.80,
 
   "life":               150,
 

@@ -85,9 +85,8 @@ void Class::fillObject( const char* className )
    * dim
    */
 
-  dim.x = config["dim.x"].get( -1.0f );
-  dim.y = config["dim.y"].get( -1.0f );
-  dim.z = config["dim.z"].get( -1.0f );
+  dim = Vec3( -1.0f, -1.0f, -1.0f );
+  config["dim"].get( dim, 3 );
 
   if( dim.x < 0.0f || dim.x > Object::REAL_MAX_DIM ||
       dim.y < 0.0f || dim.y > Object::REAL_MAX_DIM ||
@@ -385,7 +384,7 @@ void Class::fillBot( const char* className )
 
   crouchDim.x = dim.x;
   crouchDim.y = dim.y;
-  crouchDim.z = config["crouchDim.z"].get( 0.80f );
+  crouchDim.z = config["crouchDimZ"].get( -1.0f );
 
   if( crouchDim.z < 0.0f ) {
     throw Exception( "%s: Invalid bot crouch dimensions. Should be >= 0.", className );
@@ -399,8 +398,8 @@ void Class::fillBot( const char* className )
     throw Exception( "%s: Invalid bot corpse dimensions. Should be >= 0.", className );
   }
 
-  camZ              = config["camZ"].get( 0.79f );
-  crouchCamZ        = config["crouchCamZ"].get( 0.69f );
+  camZ              = config["camZ"].get( 0.0f );
+  crouchCamZ        = config["crouchCamZ"].get( 0.0f );
 
   walkMomentum      = config["walkMomentum"].get( 1.0f );
   runMomentum       = config["runMomentum"].get( 2.0f );
@@ -461,76 +460,21 @@ void Class::fillBot( const char* className )
   nvColour          = Camera::NV_COLOUR;
   injuryColour      = INJURY_COLOUR;
 
-  if( !baseColourConfig.isNull() ) {
-    float m11 = baseColourConfig[ 0].asFloat();
-    float m12 = baseColourConfig[ 1].asFloat();
-    float m13 = baseColourConfig[ 2].asFloat();
-    float m14 = baseColourConfig[ 3].asFloat();
-    float m21 = baseColourConfig[ 4].asFloat();
-    float m22 = baseColourConfig[ 5].asFloat();
-    float m23 = baseColourConfig[ 6].asFloat();
-    float m24 = baseColourConfig[ 7].asFloat();
-    float m31 = baseColourConfig[ 8].asFloat();
-    float m32 = baseColourConfig[ 9].asFloat();
-    float m33 = baseColourConfig[10].asFloat();
-    float m34 = baseColourConfig[11].asFloat();
-    float m41 = baseColourConfig[12].asFloat();
-    float m42 = baseColourConfig[13].asFloat();
-    float m43 = baseColourConfig[14].asFloat();
-    float m44 = baseColourConfig[15].asFloat();
+  Mat44 m;
 
-    baseColour = Mat44( m11, m21, m31, m41,
-                        m12, m22, m32, m42,
-                        m13, m23, m33, m43,
-                        m14, m24, m34, m44 );
+  if( !baseColourConfig.isNull() ) {
+    baseColourConfig.get( m, 16 );
+    baseColour = m;
   }
 
   if( !nvColourConfig.isNull() ) {
-    float m11 = nvColourConfig[ 0].asFloat();
-    float m12 = nvColourConfig[ 1].asFloat();
-    float m13 = nvColourConfig[ 2].asFloat();
-    float m14 = nvColourConfig[ 3].asFloat();
-    float m21 = nvColourConfig[ 4].asFloat();
-    float m22 = nvColourConfig[ 5].asFloat();
-    float m23 = nvColourConfig[ 6].asFloat();
-    float m24 = nvColourConfig[ 7].asFloat();
-    float m31 = nvColourConfig[ 8].asFloat();
-    float m32 = nvColourConfig[ 9].asFloat();
-    float m33 = nvColourConfig[10].asFloat();
-    float m34 = nvColourConfig[11].asFloat();
-    float m41 = nvColourConfig[12].asFloat();
-    float m42 = nvColourConfig[13].asFloat();
-    float m43 = nvColourConfig[14].asFloat();
-    float m44 = nvColourConfig[15].asFloat();
-
-    nvColour = Mat44( m11, m21, m31, m41,
-                      m12, m22, m32, m42,
-                      m13, m23, m33, m43,
-                      m14, m24, m34, m44 );
+    nvColourConfig.get( m, 16 );
+    nvColour = m;
   }
 
   if( !injuryColourConfig.isNull() ) {
-    float m11 = injuryColourConfig[ 0].asFloat();
-    float m12 = injuryColourConfig[ 1].asFloat();
-    float m13 = injuryColourConfig[ 2].asFloat();
-    float m14 = injuryColourConfig[ 3].asFloat();
-    float m21 = injuryColourConfig[ 4].asFloat();
-    float m22 = injuryColourConfig[ 5].asFloat();
-    float m23 = injuryColourConfig[ 6].asFloat();
-    float m24 = injuryColourConfig[ 7].asFloat();
-    float m31 = injuryColourConfig[ 8].asFloat();
-    float m32 = injuryColourConfig[ 9].asFloat();
-    float m33 = injuryColourConfig[10].asFloat();
-    float m34 = injuryColourConfig[11].asFloat();
-    float m41 = injuryColourConfig[12].asFloat();
-    float m42 = injuryColourConfig[13].asFloat();
-    float m43 = injuryColourConfig[14].asFloat();
-    float m44 = injuryColourConfig[15].asFloat();
-
-    injuryColour = Mat44( m11, m21, m31, m41,
-                          m12, m22, m32, m42,
-                          m13, m23, m33, m43,
-                          m14, m24, m34, m44 );
+    injuryColourConfig.get( m, 16 );
+    injuryColour = m;
   }
 }
 
@@ -594,9 +538,8 @@ void Class::fillVehicle( const char* className )
                      "HOVER or AIR", className );
   }
 
-  pilotPos = Vec3( config["pilotPos.x"].get( 0.0f ),
-                   config["pilotPos.y"].get( 0.0f ),
-                   config["pilotPos.z"].get( 0.0f ) );
+  pilotPos = Vec3::ZERO;
+  config["pilotPos"].get( pilotPos, 3 );
 
   lookHMin = config["lookHMin"].get( -120.0f );
   lookHMax = config["lookHMax"].get( +120.0f );

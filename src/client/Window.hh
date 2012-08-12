@@ -60,8 +60,8 @@ class Window
 
 #endif
 
-    int  desktopWidth;
-    int  desktopHeight;
+    int  screenWidth;
+    int  screenHeight;
     int  desiredWidth;
     int  desiredHeight;
 

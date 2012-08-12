@@ -7,7 +7,7 @@
 - nirvana
     * AI tasks
 - ui
-    * settings for icon sizes, bar colours, bar line widths, text filter & texture magnification
+    * settings for icon sizes, bar colours, bar line widths
     * options menu
     * tutorial tips
     * advanced HUD for mechanic units and vehicles

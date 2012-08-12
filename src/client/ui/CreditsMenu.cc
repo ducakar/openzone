@@ -57,41 +57,42 @@ void CreditsMenu::onReposition()
   width  = camera.width;
   height = camera.height;
 
-  int step    = style.fonts[Font::SANS].height;
-  int nLabels = ( height - 160 ) / step;
-
-  // FIXME change to resize and add move semantics to ui::Label once GCC 4.4 becomes obsolete.
-  labels = DArray<Label>( nLabels );
+  int nLabels = ( height - 140 ) / stride;
+  labels.resize( nLabels );
 
   for( int i = 0; i < nLabels; ++i ) {
-    int x    = ( width - 240 ) / 2;
-    int y    = height - 60 - ( i + 1 )*step;
     int line = scroll + i;
 
-    if( line < nLabels || line >= nLabels + lines.length() ) {
-      labels[i].set( x, y, ALIGN_HCENTRE, Font::SANS, " " );
+    if( line < nLabels ) {
+      labels[i].set( 0, 0, ALIGN_HCENTRE, Font::SANS, " " );
     }
     else {
-      labels[i].set( x, y, ALIGN_HCENTRE, Font::SANS, "%s", lines[line - nLabels].cstr() );
+      labels[i].set( 0, 0, ALIGN_HCENTRE, Font::SANS, "%s", lines[line - nLabels].cstr() );
     }
   }
 }
 
 void CreditsMenu::onUpdate()
 {
-  if( timer.ticks % ( Timer::TICKS_PER_SEC / 2 ) == 0 ) {
-    int nEntries = labels.length() + lines.length();
+  int nEntries = ( labels.length() + lines.length() );
 
+  if( !isPaused || bias == stride - 1 ) {
+    ++bias;
+  }
+
+  if( bias == stride ) {
     scroll = ( scroll + 1 ) % nEntries;
-
+    bias   = 0;
+  }
+  else if( bias == stride - 1 ) {
     for( int i = 0; i < labels.length(); ++i ) {
-      int line = scroll + i;
+      int line = ( scroll + 1 + i ) % nEntries;
 
-      if( line < labels.length() || line >= labels.length() + lines.length() ) {
+      if( line < labels.length() ) {
         labels[i].set( " " );
       }
       else {
-        labels[i].set( "%s", lines[line - labels.length()].cstr() );
+        labels[i].set( "%s", lines[ line - labels.length() ].cstr() );
       }
     }
   }
@@ -99,28 +100,13 @@ void CreditsMenu::onUpdate()
 
 bool CreditsMenu::onMouseEvent()
 {
-  if( mouse.x < width - 240 && input.mouseW != 0 ) {
-    int nEntries = labels.length() + lines.length();
-
-    if( input.mouseW < 0 ) {
-      scroll = ( scroll + 1 ) % nEntries;
+  if( mouse.x < width - 240 ) {
+    if( input.leftClick ) {
+      isPaused = !isPaused;
     }
-    else {
-      scroll = ( scroll - 1 + nEntries ) % nEntries;
+    else if( input.mouseW != 0 ) {
+      isPaused = input.mouseW >= 0;
     }
-
-    for( int i = 0; i < labels.length(); ++i ) {
-      int line = scroll + i;
-
-      if( line < labels.length() || line >= labels.length() + lines.length() ) {
-        labels[i].set( " " );
-      }
-      else {
-        labels[i].set( "%s", lines[line - labels.length()].cstr() );
-      }
-    }
-
-    flags &= ~UPDATE_BIT;
   }
 
   passMouseEvents();
@@ -132,29 +118,20 @@ void CreditsMenu::onDraw()
   shape.colour( 0.0f, 0.0f, 0.0f, 1.0f );
   shape.fill( width - 240, 0, 240, height - 40 );
 
-  shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
+  for( int i = 0; i < labels.length(); ++i ) {
+    int x = ( width - 240 ) / 2;
+    int y = height - 60 - ( i + 1 )*stride + bias;
 
-  foreach( label, labels.iter() ) {
-    label->draw( this, true );
+    labels[i].set( x, y );
+    labels[i].draw( this, true );
   }
-
-  int x  = ( width - 240 ) / 2 - 8;
-  int y0 = height - 52;
-  int y1 = height - 82 - labels.length() * style.fonts[Font::SANS].height;
-
-  glBindTexture( GL_TEXTURE_2D, scrollUpTexId );
-  shape.fill( x, y0, 16, 16 );
-
-  glBindTexture( GL_TEXTURE_2D, scrollDownTexId );
-  shape.fill( x, y1, 16, 16 );
-
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
   drawChildren();
 }
 
 CreditsMenu::CreditsMenu() :
-  Area( camera.width, camera.height ), scroll( 0 )
+  Area( camera.width, camera.height ),
+  stride( style.fonts[Font::SANS].height ), scroll( 0 ), bias( 0 ), isPaused( false )
 {
   flags = UPDATE_BIT;
 
@@ -199,15 +176,6 @@ CreditsMenu::CreditsMenu() :
       lines.popLast();
     }
   }
-
-  scrollUpTexId   = context.loadTextureLayer( "ui/icon/scrollUp.ozIcon" );
-  scrollDownTexId = context.loadTextureLayer( "ui/icon/scrollDown.ozIcon" );
-}
-
-CreditsMenu::~CreditsMenu()
-{
-  glDeleteTextures( 1, &scrollDownTexId );
-  glDeleteTextures( 1, &scrollUpTexId );
 }
 
 }

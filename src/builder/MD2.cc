@@ -273,25 +273,22 @@ void MD2::build( const char* path )
   String shaderName   = config["shader"].get( header.nFrames == 1 ? "mesh" : "dmesh" );
   float  scale        = config["scale"].get( 0.04f );
 
-  Vec3   translation  = Vec3( config["translate.x"].get( +0.00f ),
-                              config["translate.y"].get( +0.00f ),
-                              config["translate.z"].get( -0.04f ) );
-  Vec3   jumpTransl   = Vec3( config["jumpTranslate.x"].get( 0.00f ),
-                              config["jumpTranslate.y"].get( 0.00f ),
-                              config["jumpTranslate.z"].get( 0.00f ) );
-  Vec3   weaponTransl = Vec3( config["weaponTranslate.x"].get( 0.00f ),
-                              config["weaponTranslate.y"].get( 0.00f ),
-                              config["weaponTranslate.z"].get( 0.00f ) );
-  Vec3   weaponRot    = Vec3( config["weaponRotate.x"].get( 0.00f ),
-                              config["weaponRotate.y"].get( 0.00f ),
-                              config["weaponRotate.z"].get( 0.00f ) );
+  Vec3 translation       = Vec3::ZERO;
+  Vec3 jumpTranslation   = Vec3::ZERO;
+  Vec3 weaponTranslation = Vec3::ZERO;
+  Vec3 weaponRotation    = Vec3::ZERO;
+
+  config["translate"].get( translation, 3 );
+  config["jumpTranslate"].get( jumpTranslation, 3 );
+  config["weaponTranslate"].get( weaponTranslation, 3 );
+  config["weaponRotate"].get( weaponRotation, 3 );
 
   config.clear( true );
 
-  Mat44 weaponTransf = Mat44::translation( weaponTransl );
-  weaponTransf.rotateY( Math::rad( weaponRot.y ) );
-  weaponTransf.rotateX( Math::rad( weaponRot.x ) );
-  weaponTransf.rotateZ( Math::rad( weaponRot.z ) );
+  Mat44 weaponTransf = Mat44::translation( weaponTranslation );
+  weaponTransf.rotateY( Math::rad( weaponRotation.y ) );
+  weaponTransf.rotateX( Math::rad( weaponRotation.x ) );
+  weaponTransf.rotateZ( Math::rad( weaponRotation.z ) );
 
   DArray<TexCoord>    texCoords( header.nTexCoords );
   DArray<MD2Triangle> triangles( header.nTriangles );
@@ -323,7 +320,7 @@ void MD2::build( const char* path )
       if( client::MD2::ANIM_LIST[client::MD2::ANIM_JUMP].firstFrame <= i &&
           i <= client::MD2::ANIM_LIST[client::MD2::ANIM_JUMP].lastFrame )
       {
-        position += jumpTransl;
+        position += jumpTranslation;
       }
     }
   }

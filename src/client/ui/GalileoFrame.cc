@@ -31,6 +31,8 @@
 #include "client/QuestList.hh"
 #include "client/OpenGL.hh"
 
+#include "client/ui/Style.hh"
+
 namespace oz
 {
 namespace client
@@ -98,7 +100,7 @@ void GalileoFrame::onDraw()
   float pY = camera.p.y;
   float h  = camera.botObj == null ? camera.strategic.h : camera.botObj->h;
 
-  shape.colour( 1.0f, 1.0f, 1.0f, isMaximised ? 0.8f : 0.6f );
+  shape.colour( colour );
   glBindTexture( GL_TEXTURE_2D, mapTexId );
   shape.fill( x, y, width, height );
   shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
@@ -142,7 +144,8 @@ void GalileoFrame::onDraw()
 
 GalileoFrame::GalileoFrame() :
   Frame( 240, 232 - HEADER_SIZE, "" ),
-  mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ), isMaximised( false )
+  mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ), colour( style.colours.galileoNormal ),
+  isMaximised( false )
 {
   flags = PINNED_BIT | UPDATE_BIT;
 
@@ -175,6 +178,7 @@ void GalileoFrame::setMaximised( bool doMaximise )
     y      = maximisedY;
     width  = maximisedWidth;
     height = maximisedHeight;
+    colour = style.colours.galileoMaximised;
 
     raise();
   }
@@ -183,6 +187,7 @@ void GalileoFrame::setMaximised( bool doMaximise )
     y      = normalY;
     width  = normalWidth;
     height = normalHeight;
+    colour = style.colours.galileoNormal;
   }
 }
 

@@ -49,7 +49,7 @@ void BasicAudio::play( const Audio* parent )
 {
   flags |= UPDATED_BIT;
 
-  const int ( &sounds )[ObjectClass::MAX_SOUNDS] = obj->clazz->audioSounds;
+  const int ( & sounds )[ObjectClass::MAX_SOUNDS] = obj->clazz->audioSounds;
 
   for( int i = 0; i < ObjectClass::MAX_SOUNDS; ++i ) {
     recent[i] = max( recent[i] - 1, 0 );

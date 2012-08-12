@@ -1,9 +1,7 @@
 {
   "base":               "Dynamic",
 
-  "dim.x":              0.05,
-  "dim.y":              0.05,
-  "dim.z":              0.05,
+  "dim":                [ 0.05, 0.05, 0.05 ],
 
   "life":               1,
   "resistance":         0,
