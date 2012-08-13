@@ -32,9 +32,9 @@
 #include "windefs.h"
 #include <cstdlib>
 #include <cstring>
+#include <malloc.h>
 
 #ifdef _WIN32
-# include <malloc.h>
 # include <windows.h>
 #else
 # include <pthread.h>
@@ -45,6 +45,12 @@ namespace oz
 
 static_assert( ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
                "Alloc::ALIGNMENT should be power of two" );
+
+enum AllocMode
+{
+  OBJECT,
+  ARRAY
+};
 
 #ifdef OZ_TRACK_ALLOCS
 
@@ -60,9 +66,8 @@ struct TraceEntry
   StackTrace  stackTrace;
 };
 
-static bool                 isConstructed;         // = false
-static TraceEntry* volatile firstObjectTraceEntry; // = null
-static TraceEntry* volatile firstArrayTraceEntry;  // = null
+static bool                 isConstructed;      // = false
+static TraceEntry* volatile firstTraceEntry[2]; // = { null, null }
 # if defined( __native_client__ )
 static pthread_mutex_t      traceEntryListLock;
 # elif defined( _WIN32 )
@@ -71,7 +76,179 @@ static CRITICAL_SECTION     traceEntryListLock;
 static pthread_spinlock_t   traceEntryListLock;
 # endif
 
+static void addTraceEntry( AllocMode mode, void* ptr, size_t size )
+{
+  if( !isConstructed ) {
+# if defined( __native_client__ )
+    pthread_mutex_init( &traceEntryListLock, null );
+# elif defined( _WIN32 )
+    InitializeCriticalSection( &traceEntryListLock );
+# else
+    pthread_spin_init( &traceEntryListLock, PTHREAD_PROCESS_PRIVATE );
+# endif
+    isConstructed = true;
+  }
+
+  void* stPtr = malloc( sizeof( TraceEntry ) );
+  if( stPtr == null ) {
+    OZ_ERROR( "TraceEntry allocation failed" );
+  }
+
+  TraceEntry* st = new( stPtr ) TraceEntry();
+
+  st->address    = ptr;
+  st->size       = size;
+  st->stackTrace = StackTrace::current( 1 );
+
+# if defined( __native_client__ )
+  pthread_mutex_lock( &traceEntryListLock );
+# elif defined( _WIN32 )
+  EnterCriticalSection( &traceEntryListLock );
+# else
+  pthread_spin_lock( &traceEntryListLock );
+# endif
+
+  st->next = firstTraceEntry[mode];
+  firstTraceEntry[mode] = st;
+
+# if defined( __native_client__ )
+  pthread_mutex_unlock( &traceEntryListLock );
+# elif defined( _WIN32 )
+  LeaveCriticalSection( &traceEntryListLock );
+# else
+  pthread_spin_unlock( &traceEntryListLock );
+# endif
+}
+
+static void removeTraceEntry( AllocMode mode, void* ptr )
+{
+# if defined( __native_client__ )
+  pthread_mutex_lock( &traceEntryListLock );
+# elif defined( _WIN32 )
+  EnterCriticalSection( &traceEntryListLock );
+# else
+  pthread_spin_lock( &traceEntryListLock );
+# endif
+
+  TraceEntry* st   = firstTraceEntry[mode];
+  TraceEntry* prev = null;
+
+  while( st != null ) {
+    if( st->address == ptr ) {
+      if( prev == null ) {
+        firstTraceEntry[mode] = st->next;
+      }
+      else {
+        prev->next = st->next;
+      }
+
+# if defined( __native_client__ )
+      pthread_mutex_unlock( &traceEntryListLock );
+# elif defined( _WIN32 )
+      LeaveCriticalSection( &traceEntryListLock );
+# else
+      pthread_spin_unlock( &traceEntryListLock );
+# endif
+
+      goto backtraceFound;
+    }
+    prev = st;
+    st = st->next;
+  }
+
+# if defined( __native_client__ )
+  pthread_mutex_unlock( &traceEntryListLock );
+# elif defined( _WIN32 )
+  LeaveCriticalSection( &traceEntryListLock );
+# else
+  pthread_spin_unlock( &traceEntryListLock );
+# endif
+
+  // Check if allocated as a different kind (object/array)
+  st = firstTraceEntry[!mode];
+
+  while( st != null ) {
+    if( st->address == ptr ) {
+      break;
+    }
+    st = st->next;
+  }
+
+  if( st == null ) {
+    OZ_ERROR( mode == OBJECT ? "ALLOC: Freeing object at %p that has not been allocated" :
+                               "ALLOC: Freeing array at %p that has not been allocated", ptr );
+  }
+  else {
+    OZ_ERROR( mode == OBJECT ? "ALLOC: new[] -> delete mismatch for block at %p" :
+                               "ALLOC: new -> delete[] mismatch for block at %p", ptr );
+  }
+
+backtraceFound:
+
+  st->~TraceEntry();
+  free( st );
+}
+
 #endif
+
+static void* allocate( AllocMode mode, size_t size )
+{
+  static_cast<void>( mode );
+
+  size += Alloc::alignUp( sizeof( size ) );
+
+#ifdef _WIN32
+  void* ptr = _aligned_malloc( size, Alloc::ALIGNMENT );
+#else
+  void* ptr = memalign( Alloc::ALIGNMENT, size );
+#endif
+  if( ptr == null ) {
+    OZ_ERROR( "Out of memory" );
+  }
+
+  ++Alloc::count;
+  Alloc::amount += size;
+
+  ++Alloc::sumCount;
+  Alloc::sumAmount += size;
+
+  Alloc::maxCount = max<int>( Alloc::count, Alloc::maxCount );
+  Alloc::maxAmount = max<size_t>( Alloc::amount, Alloc::maxAmount );
+
+  ptr = static_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size ) );
+  static_cast<size_t*>( ptr )[-1] = size;
+
+#ifdef OZ_TRACK_ALLOCS
+  addTraceEntry( mode, ptr, size );
+#endif
+
+  return ptr;
+}
+
+static void deallocate( AllocMode mode, void* ptr )
+{
+  static_cast<void>( mode );
+
+#ifdef OZ_TRACK_ALLOCS
+  removeTraceEntry( mode, ptr );
+#endif
+
+  size_t size = static_cast<size_t*>( ptr )[-1];
+  ptr = static_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size ) );
+
+  --Alloc::count;
+  Alloc::amount -= size;
+
+#ifndef NDEBUG
+  memset( ptr, 0xee, size );
+#endif
+
+#ifdef _WIN32
+  _aligned_free( ptr );
+#else
+  free( ptr );
+#endif
+}
 
 int    Alloc::count;     // = 0
 size_t Alloc::amount;    // = 0
@@ -116,7 +293,7 @@ bool Alloc::printLeaks()
 
   const TraceEntry* bt;
 
-  bt = firstObjectTraceEntry;
+  bt = firstTraceEntry[OBJECT];
   while( bt != null ) {
     Log::println( "Leaked object at %p of size %lu B allocated", bt->address, ulong( bt->size ) );
     Log::indent();
@@ -127,7 +304,7 @@ bool Alloc::printLeaks()
     hasOutput = true;
   }
 
-  bt = firstArrayTraceEntry;
+  bt = firstTraceEntry[ARRAY];
   while( bt != null ) {
     Log::println( "Leaked array at %p of size %lu B allocated", bt->address, ulong( bt->size ) );
     Log::indent();
@@ -143,375 +320,18 @@ bool Alloc::printLeaks()
 
 #endif
 
-static void* aligned_malloc( size_t size )
-{
-#if defined( __native_client__ ) || defined( __ANDROID__ )
-
-  size += Alloc::alignUp( sizeof( void* ) );
-
-  void* ptr = malloc( size );
-  if( ptr == null ) {
-    return null;
-  }
-
-  void* begin = Alloc::alignUp<char>( static_cast<char*>( ptr ) + sizeof( ptr ) );
-  static_cast<void**>( begin )[-1] = ptr;
-
-  return begin;
-
-#elif defined( _WIN32 )
-
-  return _aligned_malloc( size, Alloc::ALIGNMENT );
-
-#else
-
-  void* ptr;
-  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) != 0 ) {
-    return null;
-  }
-  return ptr;
-
-#endif
-}
-
-static void aligned_free( void* ptr )
-{
-#if defined( __native_client__ ) || defined( __ANDROID__ )
-
-  ptr = static_cast<void**>( ptr )[-1];
-  free( ptr );
-
-#elif defined( _WIN32 )
-
-  _aligned_free( ptr );
-
-#else
-
-  free( ptr );
-
-#endif
-}
-
-static void* allocateObject( void* ptr, size_t size )
-{
-#ifdef OZ_TRACK_ALLOCS
-
-  if( !isConstructed ) {
-# if defined( __native_client__ )
-    pthread_mutex_init( &traceEntryListLock, null );
-# elif defined( _WIN32 )
-    InitializeCriticalSectionAndSpinCount( &traceEntryListLock, 1000 );
-# else
-    pthread_spin_init( &traceEntryListLock, PTHREAD_PROCESS_PRIVATE );
-# endif
-    isConstructed = true;
-  }
-
-  void* stPtr = malloc( sizeof( TraceEntry ) );
-  if( stPtr == null ) {
-    System::error( 1, "TraceEntry allocation failed" );
-  }
-
-  TraceEntry* st = new( stPtr ) TraceEntry();
-
-  st->address    = ptr;
-  st->size       = size;
-  st->stackTrace = StackTrace::current( 1 );
-
-# if defined( __native_client__ )
-  pthread_mutex_lock( &traceEntryListLock );
-# elif defined( _WIN32 )
-  EnterCriticalSection( &traceEntryListLock );
-# else
-  pthread_spin_lock( &traceEntryListLock );
-# endif
-
-  st->next = firstObjectTraceEntry;
-  firstObjectTraceEntry = st;
-
-# if defined( __native_client__ )
-  pthread_mutex_unlock( &traceEntryListLock );
-# elif defined( _WIN32 )
-  LeaveCriticalSection( &traceEntryListLock );
-# else
-  pthread_spin_unlock( &traceEntryListLock );
-# endif
-
-#endif
-
-  ++Alloc::count;
-  Alloc::amount += size;
-
-  ++Alloc::sumCount;
-  Alloc::sumAmount += size;
-
-  Alloc::maxCount = max<int>( Alloc::count, Alloc::maxCount );
-  Alloc::maxAmount = max<size_t>( Alloc::amount, Alloc::maxAmount );
-
-  ptr = static_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size ) );
-  static_cast<size_t*>( ptr )[-1] = size;
-
-  return ptr;
-}
-
-static void* allocateArray( void* ptr, size_t size )
-{
-#ifdef OZ_TRACK_ALLOCS
-
-  if( !isConstructed ) {
-# if defined( __native_client__ )
-    pthread_mutex_init( &traceEntryListLock, null );
-# elif defined( _WIN32 )
-    InitializeCriticalSectionAndSpinCount( &traceEntryListLock, 1000 );
-# else
-    pthread_spin_init( &traceEntryListLock, PTHREAD_PROCESS_PRIVATE );
-# endif
-    isConstructed = true;
-  }
-
-  void* stPtr = malloc( sizeof( TraceEntry ) );
-  if( stPtr == null ) {
-    System::error( 1, "TraceEntry allocation failed" );
-  }
-
-  TraceEntry* st = new( stPtr ) TraceEntry();
-
-  st->address    = ptr;
-  st->size       = size;
-  st->stackTrace = StackTrace::current( 1 );
-
-# if defined( __native_client__ )
-  pthread_mutex_lock( &traceEntryListLock );
-# elif defined( _WIN32 )
-  EnterCriticalSection( &traceEntryListLock );
-# else
-  pthread_spin_lock( &traceEntryListLock );
-# endif
-
-  st->next = firstArrayTraceEntry;
-  firstArrayTraceEntry = st;
-
-# if defined( __native_client__ )
-  pthread_mutex_unlock( &traceEntryListLock );
-# elif defined( _WIN32 )
-  LeaveCriticalSection( &traceEntryListLock );
-# else
-  pthread_spin_unlock( &traceEntryListLock );
-# endif
-
-#endif
-
-  ++Alloc::count;
-  Alloc::amount += size;
-
-  ++Alloc::sumCount;
-  Alloc::sumAmount += size;
-
-  Alloc::maxCount = max<int>( Alloc::count, Alloc::maxCount );
-  Alloc::maxAmount = max<size_t>( Alloc::amount, Alloc::maxAmount );
-
-  ptr = static_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size ) );
-  static_cast<size_t*>( ptr )[-1] = size;
-
-  return ptr;
-}
-
-static void deallocateObject( void* ptr )
-{
-  size_t size = static_cast<size_t*>( ptr )[-1];
-  ptr = static_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size ) );
-
-#ifdef OZ_TRACK_ALLOCS
-
-# if defined( __native_client__ )
-  pthread_mutex_lock( &traceEntryListLock );
-# elif defined( _WIN32 )
-  EnterCriticalSection( &traceEntryListLock );
-# else
-  pthread_spin_lock( &traceEntryListLock );
-# endif
-
-  TraceEntry* st   = firstObjectTraceEntry;
-  TraceEntry* prev = null;
-
-  while( st != null ) {
-    if( st->address == ptr ) {
-      hard_assert( st->size == size );
-
-      if( prev == null ) {
-        firstObjectTraceEntry = st->next;
-      }
-      else {
-        prev->next = st->next;
-      }
-
-# if defined( __native_client__ )
-      pthread_mutex_unlock( &traceEntryListLock );
-# elif defined( _WIN32 )
-      LeaveCriticalSection( &traceEntryListLock );
-# else
-      pthread_spin_unlock( &traceEntryListLock );
-# endif
-
-      goto backtraceFound;
-    }
-    prev = st;
-    st = st->next;
-  }
-
-# if defined( __native_client__ )
-  pthread_mutex_unlock( &traceEntryListLock );
-# elif defined( _WIN32 )
-  LeaveCriticalSection( &traceEntryListLock );
-# else
-  pthread_spin_unlock( &traceEntryListLock );
-# endif
-
-  // Check if allocated as an array.
-  st = firstArrayTraceEntry;
-
-  while( st != null ) {
-    if( st->address == ptr ) {
-      break;
-    }
-    st = st->next;
-  }
-
-  if( st == null ) {
-    System::error( "ALLOC: Trying to free object at %p that has not been allocated", ptr );
-  }
-  else {
-    System::error( "ALLOC: new[] -> delete mismatch for block at %p", ptr );
-  }
-
-backtraceFound:
-
-  st->~TraceEntry();
-  free( st );
-
-#endif
-
-  --Alloc::count;
-  Alloc::amount -= size;
-
-#ifndef NDEBUG
-  memset( ptr, 0xee, size );
-#endif
-
-  aligned_free( ptr );
-}
-
-static void deallocateArray( void* ptr )
-{
-  size_t size = static_cast<size_t*>( ptr )[-1];
-  ptr = static_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size ) );
-
-#ifdef OZ_TRACK_ALLOCS
-
-# if defined( __native_client__ )
-  pthread_mutex_lock( &traceEntryListLock );
-# elif defined( _WIN32 )
-  EnterCriticalSection( &traceEntryListLock );
-# else
-  pthread_spin_lock( &traceEntryListLock );
-# endif
-
-  TraceEntry* st   = firstArrayTraceEntry;
-  TraceEntry* prev = null;
-
-  while( st != null ) {
-    if( st->address == ptr ) {
-      hard_assert( st->size == size );
-
-      if( prev == null ) {
-        firstArrayTraceEntry = st->next;
-      }
-      else {
-        prev->next = st->next;
-      }
-
-# if defined( __native_client__ )
-      pthread_mutex_unlock( &traceEntryListLock );
-# elif defined( _WIN32 )
-      LeaveCriticalSection( &traceEntryListLock );
-# else
-      pthread_spin_unlock( &traceEntryListLock );
-# endif
-
-      goto backtraceFound;
-    }
-    prev = st;
-    st = st->next;
-  }
-
-# if defined( __native_client__ )
-  pthread_mutex_unlock( &traceEntryListLock );
-# elif defined( _WIN32 )
-  LeaveCriticalSection( &traceEntryListLock );
-# else
-  pthread_spin_unlock( &traceEntryListLock );
-# endif
-
-  // Check if allocated as an object.
-  st = firstObjectTraceEntry;
-
-  while( st != null ) {
-    if( st->address == ptr ) {
-      break;
-    }
-    st = st->next;
-  }
-
-  if( st == null ) {
-    System::error( "ALLOC: Trying to free array at %p that has not been allocated", ptr );
-  }
-  else {
-    System::error( "ALLOC: new -> delete[] mismatch for block at %p", ptr );
-  }
-
-backtraceFound:
-
-  st->~TraceEntry();
-  free( st );
-
-#endif
-
-  --Alloc::count;
-  Alloc::amount -= size;
-
-#ifndef NDEBUG
-  memset( ptr, 0xee, size );
-#endif
-
-  aligned_free( ptr );
-}
-
 }
 
 using namespace oz;
 
-extern void* operator new ( size_t size )
+void* operator new ( size_t size )
 {
-  size += Alloc::alignUp( sizeof( size ) );
-
-  void* ptr = aligned_malloc( size );
-
-  if( ptr == null ) {
-    OZ_ERROR( "Out of memory" );
-  }
-  return allocateObject( ptr, size );
+  return allocate( OBJECT, size );
 }
 
-extern void* operator new[] ( size_t size )
+void* operator new[] ( size_t size )
 {
-  size += Alloc::alignUp( sizeof( size ) );
-
-  void* ptr = aligned_malloc( size );
-
-  if( ptr == null ) {
-    OZ_ERROR( "Out of memory" );
-  }
-  return allocateArray( ptr, size );
+  return allocate( ARRAY, size );
 }
 
 void operator delete ( void* ptr ) noexcept
@@ -519,7 +339,7 @@ void operator delete ( void* ptr ) noexcept
   if( ptr == null ) {
     return;
   }
-  deallocateObject( ptr );
+  deallocate( OBJECT, ptr );
 }
 
 void operator delete[] ( void* ptr ) noexcept
@@ -527,33 +347,17 @@ void operator delete[] ( void* ptr ) noexcept
   if( ptr == null ) {
     return;
   }
-  deallocateArray( ptr );
+  deallocate( ARRAY, ptr );
 }
 
 void* operator new ( size_t size, const std::nothrow_t& ) noexcept
 {
-  size += Alloc::alignUp( sizeof( size ) );
-
-  void* ptr = aligned_malloc( size );
-
-  if( ptr == null ) {
-    System::trap();
-    return null;
-  }
-  return allocateObject( ptr, size );
+  return allocate( OBJECT, size );
 }
 
 void* operator new[] ( size_t size, const std::nothrow_t& ) noexcept
 {
-  size += Alloc::alignUp( sizeof( size ) );
-
-  void* ptr = aligned_malloc( size );
-
-  if( ptr == null ) {
-    System::trap();
-    return null;
-  }
-  return allocateArray( ptr, size );
+  return allocate( ARRAY, size );
 }
 
 void operator delete ( void* ptr, const std::nothrow_t& ) noexcept
@@ -561,7 +365,7 @@ void operator delete ( void* ptr, const std::nothrow_t& ) noexcept
   if( ptr == null ) {
     return;
   }
-  deallocateObject( ptr );
+  deallocate( OBJECT, ptr );
 }
 
 void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept
@@ -569,5 +373,5 @@ void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept
   if( ptr == null ) {
     return;
   }
-  deallocateArray( ptr );
+  deallocate( ARRAY, ptr );
 }
