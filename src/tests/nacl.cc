@@ -67,24 +67,16 @@ int main( int, char** )
   System::init();
   Log::print( "[" ); Log::printTime( Time::local() ); Log::printEnd( "] START" );
 
-  try {
-    File::init( File::PERSISTENT, 1024 );
+  File::init( File::PERSISTENT, 1024 );
 
-//     char content[] = "Drek na palci";
+//   char content[] = "Drek na palci";
 
-//     File( "/drek.txt" ).write( content, sizeof( content ) );
-    Buffer b = File( "/drek.txt" ).read();
+//   File( "/drek.txt" ).write( content, sizeof( content ) );
+  Buffer b = File( "/drek.txt" ).read();
 
-    Log::println( "%s", b.begin() );
+  Log::println( "%s", b.begin() );
 
-    File::free();
-  }
-  catch( const Exception& e ) {
-    System::error( e );
-  }
-  catch( const std::exception& e ) {
-    System::error( e );
-  }
+  File::free();
 
   Log::print( "[" ); Log::printTime( Time::local() ); Log::printEnd( "] END" );
   return 0;

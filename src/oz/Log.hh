@@ -29,7 +29,7 @@
 #pragma once
 
 #include "Time.hh"
-#include "Exception.hh"
+#include "StackTrace.hh"
 
 namespace oz
 {
@@ -135,16 +135,6 @@ class Log
      * Print stack trace.
      */
     static void printTrace( const StackTrace& st );
-
-    /**
-     * Print exception description.
-     */
-    static void printException( const std::exception& e );
-
-    /**
-     * Print exception description including location and stack trace.
-     */
-    static void printException( const Exception& e );
 
     /**
      * Print 'Caught signal ...' and signal description.

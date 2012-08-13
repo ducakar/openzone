@@ -113,8 +113,8 @@ Context::Texture::Texture( Image* image, bool wrap_, int magFilter_, int minFilt
                     minFilter == GL_LINEAR_MIPMAP_LINEAR;
 
   if( genMipmaps && ( !Math::isPow2( width ) || !Math::isPow2( height ) ) ) {
-    throw Exception( "Image has dimensions %dx%d but both dimensions must be powers of two to"
-                     " generate mipmaps.", width, height );
+    OZ_ERROR( "Image has dimensions %dx%d but both dimensions must be powers of two to generate"
+              " mipmaps.", width, height );
   }
 
   do {
@@ -311,17 +311,17 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
   String realPath = file.realDir() + "/" + file.path();
 
   if( !file.stat() ) {
-    throw Exception( "File '%s' does not exits", realPath.cstr() );
+    OZ_ERROR( "File '%s' does not exits", realPath.cstr() );
   }
 
   FREE_IMAGE_FORMAT type = FreeImage_GetFileType( realPath );
   if( type == FIF_UNKNOWN ) {
-    throw Exception( "Invalid image file type '%s'", realPath.cstr() );
+    OZ_ERROR( "Invalid image file type '%s'", realPath.cstr() );
   }
 
   FIBITMAP* dib = FreeImage_Load( type, realPath );
   if( dib == null ) {
-    throw Exception( "Texture '%s' loading failed", realPath.cstr() );
+    OZ_ERROR( "Texture '%s' loading failed", realPath.cstr() );
   }
 
   int width  = int( FreeImage_GetWidth( dib ) );
@@ -331,13 +331,13 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
   Log::printRaw( " %d x %d %d BPP ...", width, height, bpp );
 
   if( height != 1 && ( width * bpp ) % 32 != 0 ) {
-    throw Exception( "Image scan line (width * bytesPerPixel) should be a multiple of 4." );
+    OZ_ERROR( "Image scan line (width * bytesPerPixel) should be a multiple of 4." );
   }
 
   int format = int( FreeImage_GetImageType( dib ) );
 
   if( format != FIT_BITMAP ) {
-    throw Exception( "Invalid image colour format" );
+    OZ_ERROR( "Invalid image colour format" );
   }
 
   bool isPalettised = FreeImage_GetColorsUsed( dib ) != 0;
@@ -359,7 +359,7 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
 
       FIBITMAP* newImage = FreeImage_ConvertToGreyscale( dib );
       if( newImage == null ) {
-        throw Exception( "Conversion from palettised to grayscale image failed" );
+        OZ_ERROR( "Conversion from palettised to grayscale image failed" );
       }
 
       FreeImage_Unload( dib );
@@ -373,7 +373,7 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
 
       FIBITMAP* newImage = FreeImage_ConvertTo24Bits( dib );
       if( newImage == null ) {
-        throw Exception( "Conversion from palettised to RGB image failed" );
+        OZ_ERROR( "Conversion from palettised to RGB image failed" );
       }
 
       FreeImage_Unload( dib );
@@ -387,7 +387,7 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
 
       FIBITMAP* newDIB = FreeImage_ConvertTo32Bits( dib );
       if( newDIB == null ) {
-        throw Exception( "Conversion from palettised to RGBA image failed" );
+        OZ_ERROR( "Conversion from palettised to RGBA image failed" );
       }
 
       FreeImage_Unload( dib );
@@ -403,7 +403,7 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
 
   ubyte* pixels = FreeImage_GetBits( dib );
   if( pixels == null ) {
-    throw Exception( "Failed to access image data" );
+    OZ_ERROR( "Failed to access image data" );
   }
 
   Log::printEnd( " OK" );
@@ -489,7 +489,7 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
     image = loadImage( diffuse1.path() );
   }
   else {
-    throw Exception( "Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.cstr() );
+    OZ_ERROR( "Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.cstr() );
   }
 
   *diffuseTex = Texture( &image, wrap, magFilter, minFilter );
@@ -524,7 +524,7 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
   else if( specImage.dib != null ) {
     if( emissionImage.dib != null ) {
       if( specImage.width != emissionImage.width || specImage.height != emissionImage.height ) {
-        throw Exception( "Specular and emission texture masks must have the same size." );
+        OZ_ERROR( "Specular and emission texture masks must have the same size." );
       }
     }
 

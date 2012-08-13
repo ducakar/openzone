@@ -60,7 +60,7 @@ void OBJ::readVertexData( char* pos )
 
     float x, y, z;
     if( sscanf( pos, "%17f %17f %17f", &x, &y, &z ) != 3 ) {
-      throw Exception( "Invalid OBJ vertex position specification" );
+      OZ_ERROR( "Invalid OBJ vertex position specification" );
     }
 
     positions.add( Point( x, y, z ) );
@@ -71,7 +71,7 @@ void OBJ::readVertexData( char* pos )
 
     float x, y, z;
     if( sscanf( pos, "%17f %17f %17f", &x, &y, &z ) != 3 ) {
-      throw Exception( "Invalid OBJ vertex normal specification" );
+      OZ_ERROR( "Invalid OBJ vertex normal specification" );
     }
 
     normals.add( Vec3( x, y, z ) );
@@ -82,13 +82,13 @@ void OBJ::readVertexData( char* pos )
 
     float u, v;
     if( sscanf( pos, "%17f %17f", &u, &v ) != 2 ) {
-      throw Exception( "Invalid OBJ vertex texture coordinate specification" );
+      OZ_ERROR( "Invalid OBJ vertex texture coordinate specification" );
     }
 
     texCoords.add( TexCoord( u, v ) );
   }
   else {
-    throw Exception( "Invalid OBJ vertex specification" );
+    OZ_ERROR( "Invalid OBJ vertex specification" );
   }
 }
 
@@ -103,7 +103,7 @@ void OBJ::readFace( char* pos, int part )
 
   int wordLength = int( end - pos );
   if( wordLength <= 0 ) {
-    throw Exception( "Invalid OBJ face specification" );
+    OZ_ERROR( "Invalid OBJ face specification" );
   }
 
   int firstSlash = -1;
@@ -128,7 +128,7 @@ void OBJ::readFace( char* pos, int part )
   if( firstSlash < 0 ) {
     do {
       if( sscanf( pos, "%5d", &vertIndex ) != 1 ) {
-        throw Exception( "Invalid OBJ face specification ('v')" );
+        OZ_ERROR( "Invalid OBJ face specification ('v')" );
       }
       face.vertices.add( FaceVertex( vertIndex - 1, -1, -1 ) );
 
@@ -141,7 +141,7 @@ void OBJ::readFace( char* pos, int part )
   else if( lastSlash < 0 ) {
     do {
       if( sscanf( pos, "%5d/%5d", &vertIndex, &texCoordIndex ) != 2 ) {
-        throw Exception( "Invalid OBJ face specification ('v/t')" );
+        OZ_ERROR( "Invalid OBJ face specification ('v/t')" );
       }
       face.vertices.add( FaceVertex( vertIndex - 1, -1, texCoordIndex - 1 ) );
 
@@ -154,7 +154,7 @@ void OBJ::readFace( char* pos, int part )
   else if( firstSlash + 1 == lastSlash ) {
     do {
       if( sscanf( pos, "%5d//%5d", &vertIndex, &normalIndex ) != 2 ) {
-        throw Exception( "Invalid OBJ face specification ('v//n')" );
+        OZ_ERROR( "Invalid OBJ face specification ('v//n')" );
       }
       face.vertices.add( FaceVertex( vertIndex - 1, normalIndex - 1, -1 ) );
 
@@ -167,7 +167,7 @@ void OBJ::readFace( char* pos, int part )
   else {
     do {
       if( sscanf( pos, "%5d/%5d/%5d", &vertIndex, &texCoordIndex, &normalIndex ) != 3 ) {
-        throw Exception( "Invalid OBJ face specification ('v/t/n')" );
+        OZ_ERROR( "Invalid OBJ face specification ('v/t/n')" );
       }
       face.vertices.add( FaceVertex( vertIndex - 1, normalIndex - 1, texCoordIndex - 1 ) );
 
@@ -178,7 +178,7 @@ void OBJ::readFace( char* pos, int part )
   }
 
   if( face.vertices.length() < 3 ) {
-    throw Exception( "Invalid OBJ face, must have at least 3 vertices" );
+    OZ_ERROR( "Invalid OBJ face, must have at least 3 vertices" );
   }
 }
 
@@ -188,7 +188,7 @@ void OBJ::loadMaterials( const char* filePath )
 
   FILE* fs = fopen( filePath, "r" );
   if( fs == null ) {
-    throw Exception( "OBJ model must have a corresponding 'data.mtl' file." );
+    OZ_ERROR( "OBJ model must have a corresponding 'data.mtl' file." );
   }
 
   String mtlName;
@@ -287,7 +287,7 @@ void OBJ::load()
 
   FILE* fs = fopen( realPath + "/data.obj" , "r" );
   if( fs == null ) {
-    throw Exception( "Cannot open OBJ data.obj file" );
+    OZ_ERROR( "Cannot open OBJ data.obj file" );
   }
 
   DArray<char> buffer( LINE_BUFFER_SIZE );
@@ -323,7 +323,7 @@ void OBJ::load()
           }
           else {
             fclose( fs );
-            throw Exception( "Invalid OBJ material requested: %s", &buffer[0] );
+            OZ_ERROR( "Invalid OBJ material requested: %s", &buffer[0] );
           }
         }
         break;
@@ -339,7 +339,7 @@ void OBJ::load()
   fclose( fs );
 
   if( positions.isEmpty() ) {
-    throw Exception( "No vertices" );
+    OZ_ERROR( "No vertices" );
   }
   for( int i = 0; i < positions.length(); ++i ) {
     positions[i] = Point::ORIGIN + translation + scale * ( positions[i] - Point::ORIGIN );
@@ -388,7 +388,7 @@ void OBJ::save()
   Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
   if( !destFile.write( os.begin(), os.length() ) ) {
-    throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+    OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
   }
 
   Log::printEnd( " OK" );

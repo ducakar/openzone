@@ -51,24 +51,16 @@ void MainInstance::mainThreadMain( void* )
 
   NaCl::post( "init:" );
 
-  try {
-    char  argv0[] = "openzone";
-    char* argv[]  = { argv0 };
+  char  argv0[] = "openzone";
+  char* argv[]  = { argv0 };
 
-    exitCode = client::client.init( 1, argv );
+  exitCode = client::client.init( 1, argv );
 
-    if( exitCode == EXIT_SUCCESS ) {
-      exitCode = client::client.main();
-    }
+  if( exitCode == EXIT_SUCCESS ) {
+    exitCode = client::client.main();
+  }
 
-    client::client.shutdown();
-  }
-  catch( const Exception& e ) {
-    System::error( e );
-  }
-  catch( const std::exception& e ) {
-    System::error( e );
-  }
+  client::client.shutdown();
 
   Alloc::printLeaks();
 
@@ -231,21 +223,13 @@ int main( int argc, char** argv )
           "This is free software, and you are welcome to redistribute it\n"
           "under certain conditions; See COPYING file for details.\n\n" );
 
-  try {
-    exitCode = client::client.init( argc, argv );
+  exitCode = client::client.init( argc, argv );
 
-    if( exitCode == EXIT_SUCCESS ) {
-      exitCode = client::client.main();
-    }
+  if( exitCode == EXIT_SUCCESS ) {
+    exitCode = client::client.main();
+  }
 
-    client::client.shutdown();
-  }
-  catch( const Exception& e ) {
-    System::error( e );
-  }
-  catch( const std::exception& e ) {
-    System::error( e );
-  }
+  client::client.shutdown();
 
   if( Alloc::count != 0 ) {
     Log::verboseMode = true;

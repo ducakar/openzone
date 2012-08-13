@@ -275,15 +275,14 @@ void Input::loadKeyMap( const JSON& keyConfig )
 
     int nBindings = keyBindings.length();
     if( nBindings > 2 ) {
-      throw Exception( "Key '%s' has %d bindings but at most 2 supported",
-                       KEY_NAMES[i], nBindings );
+      OZ_ERROR( "Key '%s' has %d bindings but at most 2 supported", KEY_NAMES[i], nBindings );
     }
 
     for( int j = 0; j < nBindings; ++j ) {
       const String& keyDesc = keyBindings[j].asString();
 
       if( keyDesc.isEmpty() ) {
-        throw Exception( "Empty key description string for '%s'", KEY_NAMES[i] );
+        OZ_ERROR( "Empty key description string for '%s'", KEY_NAMES[i] );
       }
 
       int mod = keyDesc[0] == '_' ? int( MOD_OFF_BIT ) :
@@ -293,7 +292,7 @@ void Input::loadKeyMap( const JSON& keyConfig )
 
       const SDLKey* sdlKey = sdlKeyNames.find( &keyDesc[1] );
       if( sdlKey == null ) {
-        throw Exception( "Cannot resolve SDL key name '%s'", &keyDesc[1] );
+        OZ_ERROR( "Cannot resolve SDL key name '%s'", &keyDesc[1] );
       }
 
       keyMap[i][j] = mod | *sdlKey;
@@ -612,7 +611,7 @@ void Input::free()
   keyMapConfig = keyMapToJSON();
 
   if( !inputConfig.save( &configFile ) ) {
-    throw Exception( "Failed to write '%s'", configFile.path().cstr() );
+    OZ_ERROR( "Failed to write '%s'", configFile.path().cstr() );
   }
 
   Log::printEnd( " OK" );

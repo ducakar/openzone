@@ -31,7 +31,7 @@
 #include "String.hh"
 #include "Plane.hh"
 #include "Mat44.hh"
-#include "Exception.hh"
+#include "System.hh"
 #include "Endian.hh"
 
 namespace oz
@@ -198,7 +198,7 @@ class InputStream
       pos += count;
 
       if( pos > end ) {
-        throw Exception( "Buffer overrun for %d B during a read of %d B", int( pos - end ), count );
+        OZ_ERROR( "Buffer overrun for %d B during a read of %d B", int( pos - end ), count );
       }
       return oldPos;
     }
@@ -400,7 +400,7 @@ class InputStream
         ++pos;
       }
       if( pos == end ) {
-        throw Exception( "End of buffer reached while looking for the end of a string." );
+        OZ_ERROR( "End of buffer reached while looking for the end of a string." );
       }
 
       ++pos;

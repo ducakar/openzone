@@ -76,7 +76,7 @@ void UI::buildCursors()
 
     FILE* fs = fopen( realPath, "r" );
     if( fs == null ) {
-      throw Exception( "Failed to open cursor description '%s'", realPath.cstr() );
+      OZ_ERROR( "Failed to open cursor description '%s'", realPath.cstr() );
     }
 
     int size, hotspotX, hotspotY;
@@ -85,7 +85,7 @@ void UI::buildCursors()
     int nMatches = fscanf( fs, "%3d %3d %3d %31s", &size, &hotspotX, &hotspotY, imgPath );
     if( nMatches != 4 ) {
       fclose( fs );
-      throw Exception( "Invalid xcursor line" );
+      OZ_ERROR( "Invalid xcursor line" );
     }
 
     fclose( fs );
@@ -137,7 +137,7 @@ void UI::buildIcons()
     tex.write( &os );
 
     if( !File( destPath ).write( os.begin(), os.length() ) ) {
-      throw Exception( "Texture writing failed" );
+      OZ_ERROR( "Texture writing failed" );
     }
   }
 

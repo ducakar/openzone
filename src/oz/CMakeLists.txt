@@ -16,7 +16,6 @@ set( ozHeaders
   DArray.hh
   DChain.hh
   Endian.hh
-  Exception.hh
   File.hh
   HashIndex.hh
   HashString.hh
@@ -52,7 +51,6 @@ add_library( oz
   Alloc.cc
   Buffer.cc
   common.cc
-  Exception.cc
   File.cc
   JSON.cc
   Log.cc

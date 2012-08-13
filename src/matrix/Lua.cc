@@ -132,7 +132,7 @@ void Lua::init()
    * General functions
    */
 
-  IMPORT_FUNC( ozException );
+  IMPORT_FUNC( ozError );
   IMPORT_FUNC( ozPrintln );
 
   IMPORT_FUNC( ozUseFailed );
@@ -430,13 +430,13 @@ void Lua::init()
   foreach( file, luaFiles.iter() ) {
     if( file->hasExtension( "lua" ) ) {
       if( !file->map() ) {
-        throw Exception( "Failed to read Lua script '%s'", file->path().cstr() );
+        OZ_ERROR( "Failed to read Lua script '%s'", file->path().cstr() );
       }
 
       InputStream istream = file->inputStream();
 
       if( l_dobuffer( istream.begin(), istream.capacity(), file->path() ) != 0 ) {
-        throw Exception( "Matrix Lua script error" );
+        OZ_ERROR( "Matrix Lua script error" );
       }
 
       file->unmap();

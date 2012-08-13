@@ -734,7 +734,7 @@ class BufferStream
         ++pos;
       }
       if( pos == end ) {
-        throw Exception( "End of buffer reached while looking for the end of a string." );
+        OZ_ERROR( "End of buffer reached while looking for the end of a string." );
       }
 
       ++pos;

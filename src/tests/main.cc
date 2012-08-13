@@ -86,7 +86,7 @@ void MainInstance::DidChangeView( const pp::View& )
 //   window.height = height;
 //
 //   if( !glInitializePPAPI( System::module->get_browser_interface() ) ) {
-//     throw Exception( "Failed to initialize PPAPI GLES2" );
+//     OZ_ERROR( "Failed to initialize PPAPI GLES2" );
 //   }
 //
 //   int attribs[] = {
@@ -104,7 +104,7 @@ void MainInstance::DidChangeView( const pp::View& )
 //
 //   context = pp::Graphics3D( System::instance, pp::Graphics3D(), attribs );
 //   if( context.is_null() ) {
-//     throw Exception( "Graphics3D surface creation failed" );
+//     OZ_ERROR( "Graphics3D surface creation failed" );
 //   }
 //   isContextBound = BindGraphics( context );
 //

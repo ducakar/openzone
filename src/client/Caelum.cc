@@ -172,7 +172,7 @@ void Caelum::load()
 
   PFile file( path );
   if( !file.map() ) {
-    throw Exception( "Caelum file '%s' mmap failed", path.cstr() );
+    OZ_ERROR( "Caelum file '%s' mmap failed", path.cstr() );
   }
 
   InputStream is = file.inputStream();

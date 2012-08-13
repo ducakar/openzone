@@ -39,7 +39,7 @@
 # define OZ_DLLOAD( l, name ) \
   *( void** )( &name ) = SDL_LoadFunction( l, #name ); \
   if( name == null ) { \
-    throw Exception( "Failed loading " #name " from libmad" ); \
+    OZ_ERROR( "Failed loading " #name " from libmad" ); \
   }
 #endif
 
@@ -98,28 +98,12 @@ inline short madFixedToShort( mad_fixed_t f )
 
 void Sound::musicMain( void* )
 {
-  try {
-    sound.musicRun();
-  }
-  catch( const Exception& e ) {
-    System::error( e );
-  }
-  catch( const std::exception& e ) {
-    System::error( e );
-  }
+  sound.musicRun();
 }
 
 void Sound::soundMain( void* )
 {
-  try {
-    sound.soundRun();
-  }
-  catch( const Exception& e ) {
-    System::error( e );
-  }
-  catch( const std::exception& e ) {
-    System::error( e );
-  }
+  sound.soundRun();
 }
 
 void Sound::musicOpen( const char* path )
@@ -148,7 +132,7 @@ void Sound::musicOpen( const char* path )
   }
 #endif
   else {
-    throw Exception( "Unknown extension for file '%s'", path );
+    OZ_ERROR( "Unknown extension for file '%s'", path );
   }
 
   switch( musicStreamType ) {
@@ -158,16 +142,16 @@ void Sound::musicOpen( const char* path )
     case OGG: {
       musicFile = PHYSFS_openRead( path );
       if( musicFile == null ) {
-        throw Exception( "Failed to open file '%s'", path );
+        OZ_ERROR( "Failed to open file '%s'", path );
       }
 
       if( ov_open_callbacks( musicFile, &oggStream, null, 0, VORBIS_CALLBACKS ) < 0 ) {
-        throw Exception( "Failed to open Ogg stream in '%s'", path );
+        OZ_ERROR( "Failed to open Ogg stream in '%s'", path );
       }
 
       vorbis_info* vorbisInfo = ov_info( &oggStream, -1 );
       if( vorbisInfo == null ) {
-        throw Exception( "Corrupted Vorbis header in '%s'", path );
+        OZ_ERROR( "Corrupted Vorbis header in '%s'", path );
       }
 
       musicRate = int( vorbisInfo->rate );
@@ -180,7 +164,7 @@ void Sound::musicOpen( const char* path )
         musicFormat = AL_FORMAT_STEREO16;
       }
       else {
-        throw Exception( "Invalid number of channels in '%s', should be 1 or 2", path );
+        OZ_ERROR( "Invalid number of channels in '%s', should be 1 or 2", path );
       }
 
       break;
@@ -189,7 +173,7 @@ void Sound::musicOpen( const char* path )
     case MP3: {
       musicFile = PHYSFS_openRead( path );
       if( musicFile == null ) {
-        throw Exception( "Failed to open file '%s'", path );
+        OZ_ERROR( "Failed to open file '%s'", path );
       }
 
       mad_stream_init( &madStream );
@@ -199,14 +183,14 @@ void Sound::musicOpen( const char* path )
       size_t readSize = size_t( PHYSFS_readBytes( musicFile, musicInputBuffer,
                                                   ulong64( MUSIC_INPUT_BUFFER_SIZE ) ) );
       if( readSize != size_t( MUSIC_INPUT_BUFFER_SIZE ) ) {
-        throw Exception( "Failed to read MP3 stream in '%s'", path );
+        OZ_ERROR( "Failed to read MP3 stream in '%s'", path );
       }
 
       mad_stream_buffer( &madStream, musicInputBuffer, MUSIC_INPUT_BUFFER_SIZE );
 
       while( mad_frame_decode( &madFrame, &madStream ) != 0 ) {
         if( !MAD_RECOVERABLE( madStream.error ) ) {
-          throw Exception( "Corrupted MP3 header in '%s'", path );
+          OZ_ERROR( "Corrupted MP3 header in '%s'", path );
         }
       }
 
@@ -225,7 +209,7 @@ void Sound::musicOpen( const char* path )
         musicFormat = AL_FORMAT_STEREO16;
       }
       else {
-        throw Exception( "Invalid number of channels in '%s', should be 1 or 2", path );
+        OZ_ERROR( "Invalid number of channels in '%s', should be 1 or 2", path );
       }
 
       break;
@@ -233,7 +217,7 @@ void Sound::musicOpen( const char* path )
     case AAC: {
       musicFile = PHYSFS_openRead( path );
       if( musicFile == null ) {
-        throw Exception( "Failed to open file '%s'", path );
+        OZ_ERROR( "Failed to open file '%s'", path );
       }
 
       aacDecoder = NeAACDecOpen();
@@ -241,7 +225,7 @@ void Sound::musicOpen( const char* path )
       size_t readSize = size_t( PHYSFS_readBytes( musicFile, musicInputBuffer,
                                                   ulong64( MUSIC_INPUT_BUFFER_SIZE ) ) );
       if( readSize != size_t( MUSIC_INPUT_BUFFER_SIZE ) ) {
-        throw Exception( "Failed to read AAC stream in '%s'", path );
+        OZ_ERROR( "Failed to read AAC stream in '%s'", path );
       }
 
       ulong aacRate;
@@ -250,7 +234,7 @@ void Sound::musicOpen( const char* path )
       long skipBytes = NeAACDecInit( aacDecoder, musicInputBuffer, MUSIC_INPUT_BUFFER_SIZE,
                                      &aacRate, &aacChannels );
       if( skipBytes < 0 ) {
-        throw Exception( "Corrupted AAC header in '%s'", path );
+        OZ_ERROR( "Corrupted AAC header in '%s'", path );
       }
 
       memmove( musicInputBuffer, musicInputBuffer + skipBytes, size_t( skipBytes ) );
@@ -260,7 +244,7 @@ void Sound::musicOpen( const char* path )
                                            ulong64( skipBytes ) ) );
 
       if( readSize != size_t( skipBytes ) ) {
-        throw Exception( "Failed to read AAC stream in '%s'", path );
+        OZ_ERROR( "Failed to read AAC stream in '%s'", path );
       }
 
       aacBufferBytes  = 0;
@@ -277,7 +261,7 @@ void Sound::musicOpen( const char* path )
         musicFormat = AL_FORMAT_STEREO16;
       }
       else {
-        throw Exception( "Invalid number of channels in '%s', should be 1 or 2", path );
+        OZ_ERROR( "Invalid number of channels in '%s', should be 1 or 2", path );
       }
 
       break;
@@ -344,8 +328,8 @@ int Sound::musicDecode()
         bytesRead += result;
 
         if( result < 0 ) {
-          throw Exception( "Error during Ogg Vorbis decoding of '%s'",
-                           library.musicTracks[streamedTrack].path.cstr() );
+          OZ_ERROR( "Error during Ogg Vorbis decoding of '%s'",
+                    library.musicTracks[streamedTrack].path.cstr() );
         }
       }
       while( result > 0 && bytesRead < MUSIC_BUFFER_SIZE );
@@ -400,8 +384,8 @@ int Sound::musicDecode()
             mad_stream_buffer( &madStream, musicInputBuffer, bytesLeft + bytesRead );
           }
           else if( !MAD_RECOVERABLE( madStream.error ) ) {
-            throw Exception( "Unrecoverable error during MP3 decoding of '%s'",
-                             library.musicTracks[streamedTrack].path.cstr() );
+            OZ_ERROR( "Unrecoverable error during MP3 decoding of '%s'",
+                      library.musicTracks[streamedTrack].path.cstr() );
           }
         }
 
@@ -716,7 +700,7 @@ void Sound::init()
 
   soundDevice = alcOpenDevice( deviceName );
   if( soundDevice == null ) {
-    throw Exception( "Failed to open OpenAL device" );
+    OZ_ERROR( "Failed to open OpenAL device" );
   }
 
   int defaultAttributes[] = {
@@ -728,11 +712,11 @@ void Sound::init()
 
   soundContext = alcCreateContext( soundDevice, defaultAttributes );
   if( soundContext == null ) {
-    throw Exception( "Failed to create OpenAL context" );
+    OZ_ERROR( "Failed to create OpenAL context" );
   }
 
   if( alcMakeContextCurrent( soundContext ) != ALC_TRUE ) {
-    throw Exception( "Failed to select OpenAL context" );
+    OZ_ERROR( "Failed to select OpenAL context" );
   }
 
   Log::printEnd( " OK" );

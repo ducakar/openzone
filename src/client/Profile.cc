@@ -95,7 +95,7 @@ void Profile::init()
   int nItems = itemsConfig.length();
 
   if( nItems > clazz->nItems ) {
-    throw Exception( "Too many items for player class '%s' in profile", clazz->name.cstr() );
+    OZ_ERROR( "Too many items for player class '%s' in profile", clazz->name.cstr() );
   }
 
   items.clear();
@@ -108,7 +108,7 @@ void Profile::init()
     if( ( itemClazz->flags & ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) ) !=
         ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) )
     {
-      throw Exception( "Invalid item '%s' in profile", sItem );
+      OZ_ERROR( "Invalid item '%s' in profile", sItem );
     }
 
     items.add( static_cast<const DynamicClass*>( itemClazz ) );
@@ -118,14 +118,14 @@ void Profile::init()
 
   if( weaponItem >= 0 ) {
     if( uint( weaponItem ) >= uint( items.length() ) ) {
-      throw Exception( "Invalid weaponItem #%d in profile", weaponItem );
+      OZ_ERROR( "Invalid weaponItem #%d in profile", weaponItem );
     }
 
     const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( items[weaponItem] );
 
     if( !clazz->name.beginsWith( weaponClazz->userBase ) ) {
-      throw Exception( "Invalid weapon class '%s' for player class '%s' in profile",
-                       weaponClazz->name.cstr(), clazz->name.cstr() );
+      OZ_ERROR( "Invalid weapon class '%s' for player class '%s' in profile",
+                weaponClazz->name.cstr(), clazz->name.cstr() );
     }
   }
 

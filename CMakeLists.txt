@@ -197,7 +197,7 @@ else()
   set( flags "-pipe -std=c++0x -pedantic -fstrict-enums" )
 endif()
 
-set( flags "${flags} -fno-rtti -fvisibility-inlines-hidden -ffast-math" )
+set( flags "${flags} -fno-rtti -fno-exceptions -fvisibility-inlines-hidden -ffast-math" )
 set( warnings "-Wall -Wextra -Winvalid-pch -Wconversion" )
 
 # Additional warnings, enabled only once in a while to check code quality (GCC specific).

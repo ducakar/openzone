@@ -236,8 +236,8 @@ class OutputStream
       pos += count;
 
       if( pos > end ) {
-        throw Exception( "Buffer overrun for %d B during a read or write of %d B",
-                         int( pos - end ), count );
+        OZ_ERROR( "Buffer overrun for %d B during a read or write of %d B",
+                  int( pos - end ), count );
       }
       return oldPos;
     }
@@ -624,7 +624,7 @@ class OutputStream
         ++pos;
       }
       if( pos == end ) {
-        throw Exception( "End of buffer reached while looking for the end of a string." );
+        OZ_ERROR( "End of buffer reached while looking for the end of a string." );
       }
 
       ++pos;

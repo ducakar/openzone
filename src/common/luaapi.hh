@@ -53,18 +53,18 @@ static LuaState ls;
 /// @{
 
 /**
- * Throw <tt>oz::Exception</tt>.
+ * Call <tt>System::error()</tt>.
  *
- * @code void ozException( string description ) @endcode
+ * @code void ozError( string description ) @endcode
  *
- * An instance of <tt>oz::Exception</tt> is thrown with the given description.
+ * Engine is aborted with the given error.
  */
-static int ozException( lua_State* l )
+static int ozError( lua_State* l )
 {
   ARG( 1 );
 
   const char* message = l_tostring( 1 );
-  throw Exception( "%s", message );
+  OZ_ERROR( "%s", message );
 }
 
 /**

@@ -43,7 +43,7 @@ void Terra::load()
 
   JSON config;
   if( !config.load( &configFile ) ) {
-    throw Exception( "Failed to loa terra configuration '%s'", configFile.path().cstr() );
+    OZ_ERROR( "Failed to loa terra configuration '%s'", configFile.path().cstr() );
   }
 
   float minHeight = config["minHeight"].get( -1000.0f );
@@ -58,7 +58,7 @@ void Terra::load()
     liquid = Medium::LAVA_BIT | Medium::SEA_BIT;
   }
   else {
-    throw Exception( "Liquid should be either WATER or LAVA" );
+    OZ_ERROR( "Liquid should be either WATER or LAVA" );
   }
 
   liquidColour.x = config["liquidFogColour.r"].get( 0.00f );
@@ -78,7 +78,7 @@ void Terra::load()
 
   FIBITMAP* image = FreeImage_Load( FIF_PNG, realPath );
   if( image == null ) {
-    throw Exception( "Failed to load heightmap '%s'", realPath.cstr() );
+    OZ_ERROR( "Failed to load heightmap '%s'", realPath.cstr() );
   }
 
   int width  = int( FreeImage_GetWidth( image ) );
@@ -89,9 +89,9 @@ void Terra::load()
   if( width != matrix::Terra::VERTS || height != matrix::Terra::VERTS || bpp != 48 ||
       type != FIT_RGB16 )
   {
-    throw Exception( "Invalid terrain heightmap format %d x %d %d bpp, "
-                     "should be %d x %d 48 bpp RGB (red channel as greyscale)",
-                     width, height, bpp, matrix::Terra::VERTS, matrix::Terra::VERTS );
+    OZ_ERROR( "Invalid terrain heightmap format %d x %d %d bpp, should be %d x %d 48 bpp RGB"
+              " (red channel as greyscale)",
+              width, height, bpp, matrix::Terra::VERTS, matrix::Terra::VERTS );
   }
 
   Log::print( "Calculating triangles ..." );
@@ -165,7 +165,7 @@ void Terra::saveMatrix()
   os.writeInt( liquid );
 
   if( !destFile.write( os.begin(), os.length() ) ) {
-    throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+    OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
   }
 
   Log::printEnd( " OK" );
@@ -254,7 +254,7 @@ void Terra::saveClient()
   os.writeVec4( liquidColour );
 
   if( !destFile.write( os.begin(), os.length() ) ) {
-    throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+    OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
   }
 
   Log::unindent();
@@ -271,7 +271,7 @@ void Terra::saveClient()
   mapTex.write( &os );
 
   if( !minimapFile.write( os.begin(), os.length() ) ) {
-    throw Exception( "Minimap texture '%s' writing failed", minimapFile.path().cstr() );
+    OZ_ERROR( "Minimap texture '%s' writing failed", minimapFile.path().cstr() );
   }
 
   Log::printEnd( " OK" );

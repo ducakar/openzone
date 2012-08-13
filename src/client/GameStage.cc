@@ -61,15 +61,7 @@ String GameStage::QUICKSAVE_FILE;
 
 void GameStage::auxMain( void* )
 {
-  try {
-    gameStage.auxRun();
-  }
-  catch( const Exception& e ) {
-    System::error( e );
-  }
-  catch( const std::exception& e ) {
-    System::error( e );
-  }
+  gameStage.auxRun();
 }
 
 bool GameStage::read( const char* path )
@@ -188,7 +180,7 @@ void GameStage::reload()
     lua.create( mission );
   }
   else if( !read( stateFile ) ) {
-    throw Exception( "Reading saved state '%s' failed", stateFile.cstr() );
+    OZ_ERROR( "Reading saved state '%s' failed", stateFile.cstr() );
   }
 
   nirvana.sync();
@@ -432,7 +424,7 @@ void GameStage::load()
     Log::println( "}" );
   }
   else if( !read( stateFile ) ) {
-    throw Exception( "Reading saved state '%s' failed", stateFile.cstr() );
+    OZ_ERROR( "Reading saved state '%s' failed", stateFile.cstr() );
   }
 
   nirvana.sync();

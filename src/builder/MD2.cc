@@ -216,7 +216,7 @@ void MD2::build( const char* path )
   config.load( &configFile );
 
   if( !modelFile.map() ) {
-    throw Exception( "MD2 reading failed" );
+    OZ_ERROR( "MD2 reading failed" );
   }
 
   InputStream is = modelFile.inputStream( Endian::LITTLE );
@@ -232,7 +232,7 @@ void MD2::build( const char* path )
   if( header.id[0] != 'I' || header.id[1] != 'D' || header.id[2] != 'P' || header.id[3] != '2' ||
       header.version != 8 )
   {
-    throw Exception( "Wrong Quake 2 MD2 format" );
+    OZ_ERROR( "Wrong Quake 2 MD2 format" );
   }
 
   header.skinWidth  = is.readInt();
@@ -264,7 +264,7 @@ void MD2::build( const char* path )
   is.readInt();
 
   if( header.nFrames <= 0 || header.nFramePositions <= 0 ) {
-    throw Exception( "MD2 model loading error" );
+    OZ_ERROR( "MD2 model loading error" );
   }
 
   if( config["forceStatic"].get( false ) ) {
@@ -402,7 +402,7 @@ void MD2::build( const char* path )
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
     if( !destFile.write( os.begin(), os.length() ) ) {
-      throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+      OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
     }
 
     Log::printEnd( " OK" );
@@ -413,7 +413,7 @@ void MD2::build( const char* path )
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
     if( !destFile.write( os.begin(), os.length() ) ) {
-      throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+      OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
     }
 
     Log::printEnd( " OK" );

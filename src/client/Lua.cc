@@ -83,10 +83,10 @@ void Lua::create( const char* mission_ )
   DArray<PFile> files = missionDir.ls();
 
   if( missionDir.type() != File::DIRECTORY ) {
-    throw Exception( "Mission directory '%s' does not exist", missionDir.path().cstr() );
+    OZ_ERROR( "Mission directory '%s' does not exist", missionDir.path().cstr() );
   }
   if( files.isEmpty() ) {
-    throw Exception( "Mission directory '%s' contains no Lua scripts", missionDir.path().cstr() );
+    OZ_ERROR( "Mission directory '%s' contains no Lua scripts", missionDir.path().cstr() );
   }
 
   foreach( file, files.iter() ) {
@@ -95,13 +95,13 @@ void Lua::create( const char* mission_ )
     }
 
     if( !file->map() ) {
-      throw Exception( "Failed to read mission script '%s'", file->path().cstr() );
+      OZ_ERROR( "Failed to read mission script '%s'", file->path().cstr() );
     }
 
     InputStream is = file->inputStream();
 
     if( l_dobuffer( is.begin(), is.capacity(), file->path() ) != 0 ) {
-      throw Exception( "Client Lua script error in %s", file->path().cstr() );
+      OZ_ERROR( "Client Lua script error in %s", file->path().cstr() );
     }
 
     file->unmap();
@@ -133,10 +133,10 @@ void Lua::read( InputStream* istream )
   DArray<PFile> files = missionDir.ls();
 
   if( missionDir.type() != File::DIRECTORY ) {
-    throw Exception( "Mission directory '%s' does not exist", missionDir.path().cstr() );
+    OZ_ERROR( "Mission directory '%s' does not exist", missionDir.path().cstr() );
   }
   if( files.isEmpty() ) {
-    throw Exception( "Mission directory '%s' contains no Lua scripts", missionDir.path().cstr() );
+    OZ_ERROR( "Mission directory '%s' contains no Lua scripts", missionDir.path().cstr() );
   }
 
   foreach( file, files.iter() ) {
@@ -145,13 +145,13 @@ void Lua::read( InputStream* istream )
     }
 
     if( !file->map() ) {
-      throw Exception( "Failed to read mission script '%s'", file->path().cstr() );
+      OZ_ERROR( "Failed to read mission script '%s'", file->path().cstr() );
     }
 
     InputStream is = file->inputStream();
 
     if( l_dobuffer( is.begin(), is.capacity(), file->path() ) != 0 ) {
-      throw Exception( "Client Lua script error in %s", file->path().cstr() );
+      OZ_ERROR( "Client Lua script error in %s", file->path().cstr() );
     }
 
     file->unmap();
@@ -216,7 +216,7 @@ void Lua::init()
    * General functions
    */
 
-  IMPORT_FUNC( ozException );
+  IMPORT_FUNC( ozError );
   IMPORT_FUNC( ozPrintln );
 
   IMPORT_FUNC( ozGettext );

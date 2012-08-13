@@ -140,63 +140,63 @@ class JSON
     /**
      * Return boolean value.
      *
-     * If value is not a boolean an <tt>Exception</tt> is thrown.
+     * If value is not a boolean, <tt>System::error()</tt> is invoked.
      */
     bool asBool() const;
 
     /**
      * Return number value cast to integer.
      *
-     * If value is not a number an <tt>Exception</tt> is thrown.
+     * If value is not a number, <tt>System::error()</tt> is invoked.
      */
     int asInt() const;
 
     /**
      * Return number value.
      *
-     * If value is not a number an <tt>Exception</tt> is thrown.
+     * If value is not a number, <tt>System::error()</tt> is invoked.
      */
     float asFloat() const;
 
     /**
      * Return string value.
      *
-     * If value is not a string <tt>Exception</tt> is thrown.
+     * If value is not a string, <tt>System::error()</tt> is invoked.
      */
     const String& asString() const;
 
     /**
      * Write array values into the given array.
      *
-     * If value is not an array of the specified length an <tt>Exception</tt> is thrown.
+     * If value is not an array of the specified length, <tt>System::error()</tt> is invoked.
      */
     void asBoolArray( bool* array, int count ) const;
 
     /**
      * Write array values into the given array.
      *
-     * If value is not an array of the specified length an <tt>Exception</tt> is thrown.
+     * If value is not an array of the specified length, <tt>System::error()</tt> is invoked.
      */
     void asIntArray( int* array, int count ) const;
 
     /**
      * Write array values into the given array.
      *
-     * If value is not an array of the specified length an <tt>Exception</tt> is thrown.
+     * If value is not an array of the specified length, <tt>System::error()</tt> is invoked.
      */
     void asFloatArray( float* array, int count ) const;
 
     /**
      * Write array values into the given array.
      *
-     * If value is not an array of the specified length an <tt>Exception</tt> is thrown.
+     * If value is not an array of the specified length, <tt>System::error()</tt> is invoked.
      */
     void asStringArray( String* array, int count ) const;
 
     /**
      * Write array values into the given array.
      *
-     * If value is not an array of the specified length an <tt>Exception</tt> is thrown.
+     * If value is not an array of the specified length, <tt>System::error()</tt> is invoked.
      */
     void asStringArray( const char** array, int count ) const;
 
@@ -204,7 +204,7 @@ class JSON
      * Returns value at position <tt>i</tt> in an array.
      *
      * If the index is out of bounds or the value is null, a null value is returned.
-     * If the value is not either an array or a null, <tt>Exception</tt> is thrown.
+     * If the value is not either an array or a null, <tt>System::error()</tt> is invoked.
      */
     const JSON& operator [] ( int i ) const;
 
@@ -212,82 +212,82 @@ class JSON
      * Returns value for <tt>key</tt> in an object.
      *
      * If the key does not exist or the value is null, a null value is returned.
-     * If value is not either an object or a null, <tt>Exception</tt> is thrown.
+     * If value is not either an object or a null, <tt>System::error()</tt> is invoked.
      */
     const JSON& operator [] ( const char* key ) const;
 
     /**
      * Return boolean value or <tt>defaultValue</tt> if null.
      *
-     * If value is not either a boolean or a null an <tt>Exception</tt> is thrown.
+     * If value is not either a boolean or a null, <tt>System::error()</tt> is invoked.
      */
     bool get( bool defaultValue ) const;
 
     /**
      * Return integer value or <tt>defaultValue</tt> if null.
      *
-     * If value is not either a number or a null an <tt>Exception</tt> is thrown.
+     * If value is not either a number or a null, <tt>System::error()</tt> is invoked.
      */
     int get( int defaultValue ) const;
 
     /**
      * Return number value or <tt>defaultValue</tt> if null.
      *
-     * If value is not either a number or a null an <tt>Exception</tt> is thrown.
+     * If value is not either a number or a null, <tt>System::error()</tt> is invoked.
      */
     float get( float defaultValue ) const;
 
     /**
      * Return string value or <tt>defaultValue</tt> if null.
      *
-     * If value is not either a string or a null an <tt>Exception</tt> is thrown.
+     * If value is not either a string or a null, <tt>System::error()</tt> is invoked.
      */
     const String& get( const String& defaultValue ) const;
 
     /**
      * Return string value or <tt>defaultValue</tt> if null.
      *
-     * If value is not either a string or a null an <tt>Exception</tt> is thrown.
+     * If value is not either a string or a null, <tt>System::error()</tt> is invoked.
      */
     const char* get( const char* defaultValue ) const;
 
     /**
      * Write array values into the given array (it is left unchanged if %JSON value is null).
      *
-     * If value is not either an array of the specified length or a null an <tt>Exception</tt> is
-     * thrown.
+     * If value is not either an array of the specified length or a null, <tt>System::error()</tt>
+     * is invoked.
      */
     void get( bool* array, int count ) const;
 
     /**
      * Write array values into the given array (it is left unchanged if %JSON value is null).
      *
-     * If value is not either an array of the specified length or a null an <tt>Exception</tt> is
-     * thrown.
+     * If value is not either an array of the specified length or a null, <tt>System::error()</tt>
+     * is invoked.
      */
     void get( int* array, int count ) const;
 
     /**
      * Write array values into the given array (it is left unchanged if %JSON value is null).
      *
-     * If value is not either an array of the specified length or a null an <tt>Exception</tt> is
-     * thrown.
+     * If value is not either an array of the specified length or a null, <tt>System::error()</tt>
+     * is invoked.
      */
     void get( float* array, int count ) const;
 
     /**
      * Write array values into the given array (it is left unchanged if %JSON value is null).
      *
-     * If value is not either an array of the specified length or a null an <tt>Exception</tt> is
-     * thrown.
+     * If value is not either an array of the specified length or a null, <tt>System::error()</tt>
+     * is invoked.
      */
     void get( String* array, int count ) const;
 
     /**
      * Write array values into the given array (it is left unchanged if %JSON value is null).
      *
-     * If value is not either an array of the specified length or a null an <tt>Exception</tt> is
-     * thrown.
+     * If value is not either an array of the specified length or a null, <tt>System::error()</tt>
+     * is invoked.
      */
     void get( const char** array, int count ) const;
 
@@ -334,14 +334,14 @@ class JSON
     /**
      * Add a null value to array.
      *
-     * If current value is not an array, <tt>Exception</tt> is thrown.
+     * If current value is not an array, <tt>System::error()</tt> is invoked.
      */
     JSON& addNull();
 
     /**
      * Add a boolean value to array.
      *
-     * If current value is not an array, <tt>Exception</tt> is thrown.
+     * If current value is not an array, <tt>System::error()</tt> is invoked.
      */
     JSON& add( bool value )
     {
@@ -354,7 +354,7 @@ class JSON
     /**
      * Add a number value to array.
      *
-     * If current value is not an array, <tt>Exception</tt> is thrown.
+     * If current value is not an array, <tt>System::error()</tt> is invoked.
      */
     JSON& add( int value )
     {
@@ -367,7 +367,7 @@ class JSON
     /**
      * Add a number value to array.
      *
-     * If current value is not an array, <tt>Exception</tt> is thrown.
+     * If current value is not an array, <tt>System::error()</tt> is invoked.
      */
     JSON& add( float value )
     {
@@ -380,7 +380,7 @@ class JSON
     /**
      * Add a string value to array.
      *
-     * If current value is not an array, <tt>Exception</tt> is thrown.
+     * If current value is not an array, <tt>System::error()</tt> is invoked.
      */
     JSON& add( const String& value )
     {
@@ -393,7 +393,7 @@ class JSON
     /**
      * Add a string value to array.
      *
-     * If current value is not an array, <tt>Exception</tt> is thrown.
+     * If current value is not an array, <tt>System::error()</tt> is invoked.
      */
     JSON& add( const char* value )
     {
@@ -406,7 +406,7 @@ class JSON
     /**
      * Add an empty array value to array.
      *
-     * If current value is not an array, <tt>Exception</tt> is thrown.
+     * If current value is not an array, <tt>System::error()</tt> is invoked.
      */
     JSON& addArray()
     {
@@ -419,7 +419,7 @@ class JSON
     /**
      * Add an empty object value to array.
      *
-     * If current value is not an array, <tt>Exception</tt> is thrown.
+     * If current value is not an array, <tt>System::error()</tt> is invoked.
      */
     JSON& addObject()
     {
@@ -433,7 +433,7 @@ class JSON
      * Add a null value with the given key to the object, overwriting any existing entry with that
      * key.
      *
-     * If current value is not an object, <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>System::error()</tt> is invoked.
      */
     JSON& addNull( const char* key );
 
@@ -441,7 +441,7 @@ class JSON
      * Add a boolean value with the given key to the object, overwriting any existing entry with
      * that key.
      *
-     * If current value is not an object, <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>System::error()</tt> is invoked.
      */
     JSON& add( const char* key, bool value )
     {
@@ -455,7 +455,7 @@ class JSON
      * Add a number value with the given key to the object, overwriting any existing entry with that
      * key.
      *
-     * If current value is not an object, <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>System::error()</tt> is invoked.
      */
     JSON& add( const char* key, int value )
     {
@@ -469,7 +469,7 @@ class JSON
      * Add a number value with the given key to the object, overwriting any existing entry with that
      * key.
      *
-     * If current value is not an object, <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>System::error()</tt> is invoked.
      */
     JSON& add( const char* key, float value )
     {
@@ -483,7 +483,7 @@ class JSON
      * Add a string value with the given key to the object, overwriting any existing entry with that
      * key.
      *
-     * If current value is not an object, <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>System::error()</tt> is invoked.
      */
     JSON& add( const char* key, const String& value )
     {
@@ -497,7 +497,7 @@ class JSON
      * Add a string value with the given key to the object, overwriting any existing entry with that
      * key.
      *
-     * If current value is not an object, <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>System::error()</tt> is invoked.
      */
     JSON& add( const char* key, const char* value )
     {
@@ -511,7 +511,7 @@ class JSON
      * Add an empty array value with the given key to the object, overwriting any existing entry
      * with that key.
      *
-     * If current value is not an object, <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>System::error()</tt> is invoked.
      */
     JSON& addArray( const char* key )
     {
@@ -525,7 +525,7 @@ class JSON
      * Add an empty object value with the given key to the object, overwriting any existing entry
      * with that key.
      *
-     * If current value is not an object, <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>System::error()</tt> is invoked.
      */
     JSON& addObject( const char* key )
     {
@@ -538,42 +538,42 @@ class JSON
     /**
      * Add a null value with the given key to the object if the key does not exist in the object.
      *
-     * If current value is not an object, <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>System::error()</tt> is invoked.
      */
     JSON& includeNull( const char* key );
 
     /**
      * Add a boolean value with the given key to the object if the key does not exist in the object.
      *
-     * If current value is not an object, <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>System::error()</tt> is invoked.
      */
     JSON& include( const char* key, bool value );
 
     /**
      * Add a number value with the given key to the object if the key does not exist in the object.
      *
-     * If current value is not an object, <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>System::error()</tt> is invoked.
      */
     JSON& include( const char* key, int value );
 
     /**
      * Add a number value with the given key to the object if the key does not exist in the object.
      *
-     * If current value is not an object, <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>System::error()</tt> is invoked.
      */
     JSON& include( const char* key, float value );
 
     /**
      * Add a string value with the given key to the object if the key does not exist in the object.
      *
-     * If current value is not an object, <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>System::error()</tt> is invoked.
      */
     JSON& include( const char* key, const String& value );
 
     /**
      * Add a string value with the given key to the object if the key does not exist in the object.
      *
-     * If current value is not an object, <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>System::error()</tt> is invoked.
      */
     JSON& include( const char* key, const char* value );
 
@@ -581,7 +581,7 @@ class JSON
      * Add an empty array value with the given key to the object if the key does not exist in the
      * object.
      *
-     * If current value is not an object, <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>System::error()</tt> is invoked.
      */
     JSON& includeArray( const char* key );
 
@@ -589,14 +589,14 @@ class JSON
      * Add an empty object value with the given key to the object if the key does not exist in the
      * object.
      *
-     * If current value is not an object, <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>System::error()</tt> is invoked.
      */
     JSON& includeObject( const char* key );
 
     /**
      * Remove element at the given index from an array.
      *
-     * If current value is not an array, <tt>Exception</tt> is thrown.
+     * If current value is not an array, <tt>System::error()</tt> is invoked.
      *
      * @return false iff an invalid index was given.
      */
@@ -605,7 +605,7 @@ class JSON
     /**
      * Remove element with the given key from an object.
      *
-     * If current value is not an object, <tt>Exception</tt> is thrown.
+     * If current value is not an object, <tt>System::error()</tt> is invoked.
      *
      * @return true iff key was found (and removed).
      */

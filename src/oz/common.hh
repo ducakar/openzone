@@ -53,11 +53,6 @@
 #include <cstdarg>
 
 /*
- * Standard exception definitions.
- */
-#include <exception>
-
-/*
  * Standard declarations of new/delete & overloads.
  */
 #include <new>

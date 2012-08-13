@@ -28,7 +28,6 @@
 
 #include "arrays.hh"
 #include "Time.hh"
-#include "Exception.hh"
 
 #include "windefs.h"
 #include <cstdio>
@@ -307,40 +306,6 @@ void Log::printTrace( const StackTrace& st )
   if( file != null ) {
     fflush( file );
   }
-}
-
-void Log::printException( const std::exception& e )
-{
-  char buffer[OUT_BUFFER_SIZE];
-
-  snprintf( buffer, OUT_BUFFER_SIZE, "\n\nException: %s\n", e.what() );
-
-  if( !verboseMode || showVerbose || file == null ) {
-    fputs( buffer, stdout );
-  }
-
-  if( file != null ) {
-    fputs( buffer, file );
-    fflush( file );
-  }
-}
-
-void Log::printException( const Exception& e )
-{
-  char buffer[OUT_BUFFER_SIZE];
-
-  snprintf( buffer, OUT_BUFFER_SIZE, "\n\nException: %s\n  in %s\n  at %s:%d\n",
-            e.message, e.function, e.file, e.line );
-
-  if( !verboseMode || showVerbose || file == null ) {
-    fputs( buffer, stdout );
-  }
-
-  if( file != null ) {
-    fputs( buffer, file );
-  }
-
-  printTrace( e.stackTrace );
 }
 
 void Log::printSignal( int sigNum )

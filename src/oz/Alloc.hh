@@ -135,11 +135,7 @@ class Alloc
  *
  * @ingroup oz
  */
-#if defined( OZ_GCC ) && OZ_GCC < 407
-extern void* operator new ( size_t size ) throw( std::bad_alloc );
-#else
 extern void* operator new ( size_t size );
-#endif
 
 /**
  * Operator new[] overload with memory statistics and (optionally) memory leak checking.
@@ -151,11 +147,7 @@ extern void* operator new ( size_t size );
  *
  * @ingroup oz
  */
-#if defined( OZ_GCC ) && OZ_GCC < 407
-extern void* operator new[] ( size_t size ) throw( std::bad_alloc );
-#else
 extern void* operator new[] ( size_t size );
-#endif
 
 /**
  * Operator delete overload with memory statistics and (optionally) memory leak checking.

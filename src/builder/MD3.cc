@@ -42,7 +42,7 @@ void MD3::readAnimData()
 
   FILE* fs = fopen( realPath, "r" );
   if( fs == null ) {
-    throw Exception( "Reading animation data failed" );
+    OZ_ERROR( "Reading animation data failed" );
   }
 
   char line[1024];
@@ -60,7 +60,7 @@ void MD3::buildMesh( const char* name, int frame )
 
   PFile file( String::str( "%s/%s.md3", sPath.cstr(), name ) );
   if( !file.map() ) {
-    throw Exception( "Cannot mmap MD3 model part file '%s'", file.path().cstr() );
+    OZ_ERROR( "Cannot mmap MD3 model part file '%s'", file.path().cstr() );
   }
 
   InputStream is = file.inputStream( Endian::LITTLE );
@@ -74,7 +74,7 @@ void MD3::buildMesh( const char* name, int frame )
   header.version = is.readInt();
 
   if( header.id[0] != 'I' || header.id[1] != 'D' || header.id[2] != 'P' || header.id[3] != '3' ) {
-    throw Exception( "MD3 model part file has an invalid format" );
+    OZ_ERROR( "MD3 model part file has an invalid format" );
   }
 
   // header.fileName
@@ -91,7 +91,7 @@ void MD3::buildMesh( const char* name, int frame )
   header.offEnd      = is.readInt();
 
   if( header.nFrames == 0 || header.nSurfaces == 0 ) {
-    throw Exception( "Invalid MD3 header counts" );
+    OZ_ERROR( "Invalid MD3 header counts" );
   }
 
   if( String::equals( name, "lower" ) ) {
@@ -176,11 +176,11 @@ void MD3::buildMesh( const char* name, int frame )
     if( surface.nFrames == 0 || surface.nTriangles == 0 || surface.nShaders == 0 ||
         surface.nVertices == 0 )
     {
-      throw Exception( "Invalid MD3 surface counts" );
+      OZ_ERROR( "Invalid MD3 surface counts" );
     }
 
     if( surface.nFrames != header.nFrames ) {
-      throw Exception( "Invalid MD3 surface # of frames" );
+      OZ_ERROR( "Invalid MD3 surface # of frames" );
     }
 
     String texture;
@@ -313,7 +313,7 @@ void MD3::save()
 
   if( !String::isEmpty( model ) ) {
     if( frame < 0 ) {
-      throw Exception( "Custom models can only be static. Must specify frame" );
+      OZ_ERROR( "Custom models can only be static. Must specify frame" );
     }
 
     meshTransf = Mat44::ID;
@@ -373,7 +373,7 @@ void MD3::save()
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
     if( !destFile.write( os.begin(), os.length() ) ) {
-      throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+      OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
     }
 
     Log::printEnd( " OK" );
@@ -384,7 +384,7 @@ void MD3::save()
     Log::print( "Writing to '%s' ...", destFile.path().cstr() );
 
     if( !destFile.write( os.begin(), os.length() ) ) {
-      throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+      OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
     }
 
     Log::printEnd( " OK" );

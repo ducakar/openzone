@@ -1089,8 +1089,8 @@ void File::init( FilesystemType type, int size )
 #ifdef __native_client__
 
   if( System::instance == null ) {
-    throw Exception( "NaClModule::instance must be set to NaCl module pointer in order to "
-                     "initialise NaCl filesystem" );
+    OZ_ERROR( "NaClModule::instance must be set to NaCl module pointer in order to initialise NaCl"
+              " filesystem" );
   }
 
   free();
@@ -1127,7 +1127,7 @@ void File::init( FilesystemType type, int size )
   SEMAPHORE_WAIT();
 
   if( filesystem == null ) {
-    throw Exception( "Local filesystem open failed" );
+    OZ_ERROR( "Local filesystem open failed" );
   }
 
 #else

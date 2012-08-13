@@ -46,7 +46,7 @@ void SMM::preload()
   file.setPath( library.models[id].path );
 
   if( !file.map() ) {
-    throw Exception( "SMM file '%s' mmap failed", file.path().cstr() );
+    OZ_ERROR( "SMM file '%s' mmap failed", file.path().cstr() );
   }
 
   isPreloaded = true;

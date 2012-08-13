@@ -76,7 +76,7 @@ void BSP::load()
 
   PFile file( sPath );
   if( !file.map() ) {
-    throw Exception( "BSP file mmap failed" );
+    OZ_ERROR( "BSP file mmap failed" );
   }
 
   InputStream is = file.inputStream();
@@ -283,7 +283,7 @@ void BSP::init()
 
   PFile file( sPath );
   if( !file.map() ) {
-    throw Exception( "BSP file mmap failed" );
+    OZ_ERROR( "BSP file mmap failed" );
   }
 
   InputStream is = file.inputStream();

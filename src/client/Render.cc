@@ -492,7 +492,7 @@ void Render::resize()
   glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourBuffer, 0 );
 
   if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE ) {
-    throw Exception( "Main framebuffer creation failed" );
+    OZ_ERROR( "Main framebuffer creation failed" );
   }
 
   glBindFramebuffer( GL_FRAMEBUFFER, 0 );
@@ -627,7 +627,7 @@ void Render::init()
     config.include( "shader.vertexTexture", false );
   }
   if( !hasFBO ) {
-    throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
+    OZ_ERROR( "GL_ARB_framebuffer_object not supported by OpenGL" );
   }
   if( !hasFloatTex ) {
     config.include( "shader.vertexTexture", false );
@@ -653,9 +653,15 @@ void Render::init()
   isOffscreen     = doPostprocess || scale != 1.0f;
   windPhi         = 0.0f;
 
-  scaleFilter     = sScaleFilter.equals( "NEAREST" ) ? GL_NEAREST :
-                    sScaleFilter.equals( "LINEAR" ) ? GL_LINEAR :
-                    throw Exception( "render.scaleFilter should be either NEAREST or LINEAR." );
+  if( sScaleFilter.equals( "NEAREST" ) ) {
+    scaleFilter = GL_NEAREST;
+  }
+  else if( sScaleFilter.equals( "LINEAR" ) ) {
+    scaleFilter = GL_LINEAR;
+  }
+  else {
+    OZ_ERROR( "render.scaleFilter should be either NEAREST or LINEAR." );
+  }
 
   mainFrame = 0;
   resize();

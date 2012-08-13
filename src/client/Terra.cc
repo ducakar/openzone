@@ -166,7 +166,7 @@ void Terra::load()
 
   PFile file( path );
   if( !file.map() ) {
-    throw Exception( "Terra file mmap failed" );
+    OZ_ERROR( "Terra file mmap failed" );
   }
 
   InputStream is = file.inputStream();

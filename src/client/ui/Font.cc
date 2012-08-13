@@ -54,7 +54,7 @@ void Font::draw( const char* s, uint texId_, int* width, int* height ) const
   textSurface = TTF_RenderUTF8_Blended( static_cast<TTF_Font*>( handle ), s, SDL_COLOUR_WHITE );
   texId       = texId_;
 
-  OZ_MAIN_CALL( this, {
+  OZ_MAIN_CALL( const_cast<Font*>( this ), {
     glBindTexture( GL_TEXTURE_2D, texId );
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textSurface->w, textSurface->h, 0, GL_RGBA,
                   GL_UNSIGNED_BYTE, textSurface->pixels );
@@ -80,14 +80,14 @@ void Font::init( const char* name, int height_ )
   file.setPath( String::str( "ui/font/%s.ttf", name ) );
 
   if( !file.map() ) {
-    throw Exception( "Failed to read font file '%s'", file.path().cstr() );
+    OZ_ERROR( "Failed to read font file '%s'", file.path().cstr() );
   }
 
   InputStream istream = file.inputStream();
 
   handle = TTF_OpenFontRW( SDL_RWFromConstMem( istream.begin(), istream.capacity() ), true, height );
   if( handle == null ) {
-    throw Exception( "%s", TTF_GetError() );
+    OZ_ERROR( "%s", TTF_GetError() );
   }
 }
 

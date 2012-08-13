@@ -48,7 +48,7 @@ const BSP* Library::bsp( const char* name ) const
   const BSP* value = bsps.find( name );
 
   if( value == null ) {
-    throw Exception( "Invalid BSP requested '%s'", name );
+    OZ_ERROR( "Invalid BSP requested '%s'", name );
   }
   return value;
 }
@@ -58,7 +58,7 @@ const ObjectClass* Library::objClass( const char* name ) const
   const ObjectClass* const* value = objClasses.find( name );
 
   if( value == null ) {
-    throw Exception( "Invalid object class requested '%s'", name );
+    OZ_ERROR( "Invalid object class requested '%s'", name );
   }
   return *value;
 }
@@ -68,7 +68,7 @@ const FragPool* Library::fragPool( const char* name ) const
   const FragPool* value = fragPools.find( name );
 
   if( value == null ) {
-    throw Exception( "Invalid fragment pool requested '%s'", name );
+    OZ_ERROR( "Invalid fragment pool requested '%s'", name );
   }
   return value;
 }
@@ -78,7 +78,7 @@ int Library::shaderIndex( const char* name ) const
   const int* value = shaderIndices.find( name );
 
   if( value == null ) {
-    throw Exception( "Invalid shader requested '%s'", name );
+    OZ_ERROR( "Invalid shader requested '%s'", name );
   }
   return *value;
 }
@@ -88,7 +88,7 @@ int Library::textureIndex( const char* name ) const
   const int* value = textureIndices.find( name );
 
   if( value == null ) {
-    throw Exception( "Invalid texture requested '%s'", name );
+    OZ_ERROR( "Invalid texture requested '%s'", name );
   }
   return *value;
 }
@@ -98,7 +98,7 @@ int Library::soundIndex( const char* name ) const
   const int* value = soundIndices.find( name );
 
   if( value == null ) {
-    throw Exception( "Invalid sound requested '%s'", name );
+    OZ_ERROR( "Invalid sound requested '%s'", name );
   }
   return *value;
 }
@@ -108,7 +108,7 @@ int Library::terraIndex( const char* name ) const
   const int* value = terraIndices.find( name );
 
   if( value == null ) {
-    throw Exception( "Invalid terra index requested '%s'", name );
+    OZ_ERROR( "Invalid terra index requested '%s'", name );
   }
   return *value;
 }
@@ -118,7 +118,7 @@ int Library::caelumIndex( const char* name ) const
   const int* value = caelumIndices.find( name );
 
   if( value == null ) {
-    throw Exception( "Invalid caelum index requested '%s'", name );
+    OZ_ERROR( "Invalid caelum index requested '%s'", name );
   }
   return *value;
 }
@@ -128,7 +128,7 @@ int Library::modelIndex( const char* name ) const
   const int* value = modelIndices.find( name );
 
   if( value == null ) {
-    throw Exception( "Invalid model index requested '%s'", name );
+    OZ_ERROR( "Invalid model index requested '%s'", name );
   }
   return *value;
 }
@@ -138,7 +138,7 @@ int Library::nameListIndex( const char* name ) const
   const int* value = nameListIndices.find( name );
 
   if( value == null ) {
-    throw Exception( "Invalid name list index requested '%s'", name );
+    OZ_ERROR( "Invalid name list index requested '%s'", name );
   }
   return *value;
 }
@@ -148,7 +148,7 @@ int Library::musicTrackIndex( const char* name ) const
   const int* value = musicTrackIndices.find( name );
 
   if( value == null ) {
-    throw Exception( "Invalid music track index requested '%s'", name );
+    OZ_ERROR( "Invalid music track index requested '%s'", name );
   }
   return *value;
 }
@@ -410,13 +410,13 @@ void Library::initModels()
       path = file->path() + "/data.ozcMD3";
     }
     else {
-      throw Exception( "Invalid model '%s'", name.cstr() );
+      OZ_ERROR( "Invalid model '%s'", name.cstr() );
     }
 
     Log::println( "%s", name.cstr() );
 
     if( modelIndices.contains( name ) ) {
-      throw Exception( "Duplicated model '%s'", name.cstr() );
+      OZ_ERROR( "Duplicated model '%s'", name.cstr() );
     }
 
     modelIndices.add( name, modelsList.length() );
@@ -536,7 +536,7 @@ void Library::initFragPools()
     }
 
     if( !file->map() ) {
-      throw Exception( "Failed to map '%s'", file->path().cstr() );
+      OZ_ERROR( "Failed to map '%s'", file->path().cstr() );
     }
 
     InputStream is = file->inputStream();
@@ -578,7 +578,7 @@ void Library::initClasses()
     }
 
     if( !file->map() ) {
-      throw Exception( "Failed to map '%s'", file->path().cstr() );
+      OZ_ERROR( "Failed to map '%s'", file->path().cstr() );
     }
 
     InputStream is = file->inputStream();
@@ -593,16 +593,16 @@ void Library::initClasses()
       const char* base = is.readString();
 
       if( objClasses.contains( name ) ) {
-        throw Exception( "Duplicated class '%s'", name );
+        OZ_ERROR( "Duplicated class '%s'", name );
       }
 
       if( String::isEmpty( base ) ) {
-        throw Exception( "%s: 'base' missing in class description", name );
+        OZ_ERROR( "%s: 'base' missing in class description", name );
       }
 
       ObjectClass::CreateFunc* const* createFunc = baseClasses.find( base );
       if( createFunc == null ) {
-        throw Exception( "%s: Invalid class base '%s'", name, base );
+        OZ_ERROR( "%s: Invalid class base '%s'", name, base );
       }
 
       // First we only add class instances, we don't initialise them as each class may have
@@ -649,7 +649,7 @@ void Library::initClasses()
     }
 
     if( !file->map() ) {
-      throw Exception( "Failed to map '%s'", file->path().cstr() );
+      OZ_ERROR( "Failed to map '%s'", file->path().cstr() );
     }
 
     InputStream is = file->inputStream();
@@ -673,8 +673,8 @@ void Library::initClasses()
 
       ObjectClass* const* clazz = objClasses.find( name );
       if( clazz == null ) {
-        throw Exception( "Class '%s' body missing in corrupted class file '%s'",
-                         name, file->path().cstr() );
+        OZ_ERROR( "Class '%s' body missing in corrupted class file '%s'",
+                  name, file->path().cstr() );
       }
 
       ( *clazz )->init( &is, name );
@@ -693,8 +693,8 @@ void Library::initClasses()
       if( ( itemClazz->flags & ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) ) !=
           ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) )
       {
-        throw Exception( "Invalid item class '%s' in '%s', must be dynamic and have item flag",
-                         itemClazz->name.cstr(), objClazz->name.cstr() );
+        OZ_ERROR( "Invalid item class '%s' in '%s', must be dynamic and have item flag",
+                  itemClazz->name.cstr(), objClazz->name.cstr() );
       }
     }
 
@@ -704,22 +704,21 @@ void Library::initClasses()
 
       if( botClazz->weaponItem >= 0 ) {
         if( uint( botClazz->weaponItem ) >= uint( botClazz->defaultItems.length() ) ) {
-          throw Exception( "Invalid weaponItem index for '%s'", botClazz->name.cstr() );
+          OZ_ERROR( "Invalid weaponItem index for '%s'", botClazz->name.cstr() );
         }
 
         // we already checked it the previous loop it's non-null and a valid item
         const ObjectClass* itemClazz = botClazz->defaultItems[botClazz->weaponItem];
 
         if( !( itemClazz->flags & Object::WEAPON_BIT ) ) {
-          throw Exception( "Default weapon of '%s' is of a non-weapon class",
-                           botClazz->name.cstr() );
+          OZ_ERROR( "Default weapon of '%s' is of a non-weapon class", botClazz->name.cstr() );
         }
 
         const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( itemClazz );
 
         if( !botClazz->name.beginsWith( weaponClazz->userBase ) ) {
-          throw Exception( "Default weapon of '%s' is not allowed for this bot class",
-                           botClazz->name.cstr() );
+          OZ_ERROR( "Default weapon of '%s' is not allowed for this bot class",
+                    botClazz->name.cstr() );
         }
       }
     }

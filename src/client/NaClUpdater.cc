@@ -84,7 +84,7 @@ void NaClUpdater::writeLocalManifest() const
   File localManifest( LOCAL_MANIFEST );
 
   if( !localManifest.write( bs.begin(), bs.length() ) ) {
-    throw Exception( "Failed to write local manifest" );
+    OZ_ERROR( "Failed to write local manifest" );
   }
 
   Log::printEnd( " OK" );
@@ -194,7 +194,7 @@ void NaClUpdater::downloadUpdates()
     }
 
     if( !pkgFile.write( bs.begin(), bs.length() ) ) {
-      throw Exception( "Cannot write to local storage" );
+      OZ_ERROR( "Cannot write to local storage" );
     }
 
     ++packageNum;

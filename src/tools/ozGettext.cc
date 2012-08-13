@@ -58,7 +58,7 @@ static void readBSP( File* file )
   JSON config;
 
   if( !config.load( file ) ) {
-    throw Exception( "Failed to load '%s'", file->path().cstr() );
+    OZ_ERROR( "Failed to load '%s'", file->path().cstr() );
   }
 
   const char* title = config["title"].get( "" );
@@ -76,7 +76,7 @@ static void readBSP( File* file )
   int nModels = models.length();
 
   if( !models.isNull() && models.type() != JSON::ARRAY ) {
-    throw Exception( "'models' entry in '%s' is not an array", file->path().cstr() );
+    OZ_ERROR( "'models' entry in '%s' is not an array", file->path().cstr() );
   }
 
   for( int i = 0; i < nModels; ++i ) {
@@ -95,7 +95,7 @@ static void readClass( File* file )
   JSON config;
 
   if( !config.load( file ) ) {
-    throw Exception( "Failed to read '%s'", file->path().cstr() );
+    OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
   }
 
   const char* title = config["title"].get( "" );
@@ -125,7 +125,7 @@ static void readClass( File* file )
 static void readLua( File* file )
 {
   if( !file->map() ) {
-    throw Exception( "Failed to read '%s'", file->path().cstr() );
+    OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
   }
 
   InputStream is = file->inputStream();
@@ -229,7 +229,7 @@ static void readLua( File* file )
 static void readCredits( File* file )
 {
   if( !file->map() ) {
-    throw Exception( "Failed to map '%s'", file->path().cstr() );
+    OZ_ERROR( "Failed to map '%s'", file->path().cstr() );
   }
 
   String contents;
@@ -329,7 +329,7 @@ static void writePOT( const HashString<String>* hs, const char* filePath )
   File outFile( filePath );
 
   if( !outFile.write( bs.begin(), bs.length() ) ) {
-    throw Exception( "Failed to write '%s'", outFile.path().cstr() );
+    OZ_ERROR( "Failed to write '%s'", outFile.path().cstr() );
   }
 }
 
@@ -354,7 +354,7 @@ static int main( int argc, char** argv )
     pkgDir = pkgDir.substring( 0, pkgDir.length() - 1 );
   }
   if( pkgDir.isEmpty() ) {
-    throw Exception( "Package directory cannot be root ('/')" );
+    OZ_ERROR( "Package directory cannot be root ('/')" );
   }
 
   String pkgName = pkgDir.substring( pkgDir.lastIndex( '/' ) + 1 );
@@ -447,14 +447,5 @@ static int main( int argc, char** argv )
 
 int main( int argc, char** argv )
 {
-  try {
-    return oz::main( argc, argv );
-  }
-  catch( const oz::Exception& e ) {
-    oz::System::error( e );
-  }
-  catch( const std::exception& e ) {
-    oz::System::error( e );
-  }
-  return EXIT_FAILURE;
+  return oz::main( argc, argv );
 }

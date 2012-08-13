@@ -25,9 +25,9 @@
  *
  * This header clears liboz macros that might interfere with other libraries.
  *
- * It undefines <tt>soft_assert()</tt>, <tt>hard_assert()</tt>, <tt>foreach()</tt> and
- * <tt>Exception()</tt> macros. It is not included by \<oz/oz.hh\>, one should include it manually
- * before headers that conflict with liboz.
+ * It undefines <tt>soft_assert()</tt>, <tt>hard_assert()</tt> and <tt>foreach()</tt> macros. It is
+ * not included by \<oz/oz.hh\>, one should include it manually before headers that conflict with
+ * liboz.
  */
 
 #pragma once
@@ -35,4 +35,3 @@
 #undef soft_assert
 #undef hard_assert
 #undef foreach
-#undef Exception

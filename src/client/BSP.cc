@@ -49,7 +49,7 @@ void BSP::preload()
   file.setPath( "bsp/" + bsp->name + ".ozcBSP" );
 
   if( !file.map() ) {
-    throw Exception( "BSP file '%s' mmap failed", file.path().cstr() );
+    OZ_ERROR( "BSP file '%s' mmap failed", file.path().cstr() );
   }
 
   isPreloaded = true;

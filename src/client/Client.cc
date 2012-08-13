@@ -110,10 +110,10 @@ int Client::init( int argc, char** argv )
         break;
       }
       case 't': {
-        try {
-          benchmarkTime = String::parseFloat( optarg );
-        }
-        catch( const String::ParseException& ) {
+        bool isError;
+        benchmarkTime = String::parseFloat( optarg, &isError );
+
+        if( isError ) {
           printUsage( invocationName );
           return EXIT_FAILURE;
         }
@@ -156,13 +156,13 @@ int Client::init( int argc, char** argv )
 //   char musicRoot[MAX_PATH];
 
   if( !SHGetSpecialFolderPath( null, configRoot, CSIDL_APPDATA, false ) ) {
-    throw Exception( "Failed to obtain APPDATA directory" );
+    OZ_ERROR( "Failed to obtain APPDATA directory" );
   }
   if( !SHGetSpecialFolderPath( null, localRoot, CSIDL_LOCAL_APPDATA, false ) ) {
-    throw Exception( "Failed to obtain LOCAL_APPDATA directory" );
+    OZ_ERROR( "Failed to obtain LOCAL_APPDATA directory" );
   }
 //   if( !SHGetSpecialFolderPath( null, musicRoot, CSIDL_MYMUSIC, false ) ) {
-//     throw Exception( "Failed to obtain MYMUSIC directory" );
+//     OZ_ERROR( "Failed to obtain MYMUSIC directory" );
 //   }
 
   String configDir = String::str( "%s\\openzone", configRoot );
@@ -178,7 +178,7 @@ int Client::init( int argc, char** argv )
 //   const char* musicRoot  = SDL_getenv( "XDG_MUSIC_DIR" );
 
   if( home == null ) {
-    throw Exception( "Cannot determine user home directory from environment" );
+    OZ_ERROR( "Cannot determine user home directory from environment" );
   }
 
   String configDir = configRoot == null ?
@@ -241,11 +241,11 @@ int Client::init( int argc, char** argv )
     }
   } )
   if( !( initFlags & INIT_SDL ) ) {
-    throw Exception( "Failed to initialise SDL: %s", SDL_GetError() );
+    OZ_ERROR( "Failed to initialise SDL: %s", SDL_GetError() );
   }
 
   if( TTF_Init() < 0 ) {
-    throw Exception( "Failed to initialise SDL_ttf" );
+    OZ_ERROR( "Failed to initialise SDL_ttf" );
   }
   initFlags |= INIT_SDL_TTF;
 
@@ -320,7 +320,7 @@ int Client::init( int argc, char** argv )
       Log::println( "%s", pkgFile.path().cstr() );
     }
     else {
-      throw Exception( "Failed to mount '%s' on / in PhysicsFS", pkgFile.path().cstr() );
+      OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS", pkgFile.path().cstr() );
     }
   }
 
@@ -342,7 +342,7 @@ int Client::init( int argc, char** argv )
     foreach( file, list.citer() ) {
       if( file->hasExtension( "7z" ) || file->hasExtension( "zip" ) ) {
         if( !PFile::mount( file->path(), null, true ) ) {
-          throw Exception( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
+          OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
         Log::println( "%s", file->path().cstr() );
       }
@@ -357,7 +357,7 @@ int Client::init( int argc, char** argv )
     foreach( file, list.citer() ) {
       if( file->hasExtension( "7z" ) || file->hasExtension( "zip" ) ) {
         if( !PFile::mount( file->path(), null, true ) ) {
-          throw Exception( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
+          OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
         Log::println( "%s", file->path().cstr() );
       }
@@ -375,7 +375,7 @@ int Client::init( int argc, char** argv )
 
   if( config["seed"].type() == JSON::STRING ) {
     if( !config["seed"].asString().equals( "TIME" ) ) {
-      throw Exception( "Configuration variable 'sees' must be either \"TIME\" or an integer" );
+      OZ_ERROR( "Configuration variable 'sees' must be either \"TIME\" or an integer" );
     }
 
     seed = int( Time::time() );

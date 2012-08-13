@@ -38,11 +38,6 @@ namespace oz
 
 static const int LOCAL_BUFFER_SIZE = 4096;
 
-const char* String::ParseException::what() const noexcept
-{
-  return "oz::String::ParseException";
-}
-
 OZ_HIDDEN
 String::String( int count_, int ) :
   count( count_ )
@@ -84,61 +79,58 @@ bool String::endsWith( const char* s, const char* sub )
   return subEnd < sub;
 }
 
-bool String::parseBool( const char* s )
+bool String::parseBool( const char* s, bool* isError )
 {
-  if( s[0] == 'f' && s[1] == 'a' && s[2] == 'l' && s[3] == 's' && s[4] == 'e' && s[5] == '\0' ) {
-    return false;
+  bool value = strcmp( s, "true" ) == 0;
+
+  if( isError != null ) {
+    *isError = !value && strcmp( s, "false" ) != 0;
   }
-  else if( s[0] == 't' && s[1] == 'r' && s[2] == 'u' && s[3] == 'e' && s[4] == '\0' ) {
-    return true;
-  }
-  else {
-    throw ParseException();
-  }
+  return value;
 }
 
-int String::parseInt( const char* s )
+int String::parseInt( const char* s, bool* isError )
 {
   char* end;
-  int i = int( strtol( s, &end, 0 ) );
+  int   value = int( strtol( s, &end, 0 ) );
 
-  if( *end != '\0' || s[0] == '\0' ) {
-    throw ParseException();
+  if( isError != null ) {
+    *isError = *end != '\0' || s[0] == '\0';
   }
-  return i;
+  return value;
 }
 
-long String::parseLong( const char* s )
+long String::parseLong( const char* s, bool* isError )
 {
   char* end;
-  long l = strtol( s, &end, 0 );
+  long  value = strtol( s, &end, 0 );
 
-  if( *end != '\0' || s[0] == '\0' ) {
-    throw ParseException();
+  if( isError != null ) {
+    *isError = *end != '\0' || s[0] == '\0';
   }
-  return l;
+  return value;
 }
 
-float String::parseFloat( const char* s )
+float String::parseFloat( const char* s, bool* isError )
 {
   char* end;
-  float f = strtof( s, &end );
+  float value = strtof( s, &end );
 
-  if( *end != '\0' || s[0] == '\0' ) {
-    throw ParseException();
+  if( isError != null ) {
+    *isError = *end != '\0' || s[0] == '\0';
   }
-  return f;
+  return value;
 }
 
-double String::parseDouble( const char* s )
+double String::parseDouble( const char* s, bool* isError )
 {
-  char* end;
-  double d = strtod( s, &end );
+  char*  end;
+  double value = strtod( s, &end );
 
-  if( *end != '\0' || s[0] == '\0' ) {
-    throw ParseException();
+  if( isError != null ) {
+    *isError = *end != '\0' || s[0] == '\0';
   }
-  return d;
+  return value;
 }
 
 String::~String()

@@ -40,15 +40,7 @@ int main( int argc, char** argv )
                  "This is free software, and you are welcome to redistribute it\n"
                  "under certain conditions; See COPYING file for details.\n\n" );
 
-  try {
-    exitCode = builder::builder.main( argc, argv );
-  }
-  catch( const Exception& e ) {
-    System::error( e );
-  }
-  catch( const std::exception& e ) {
-    System::error( e );
-  }
+  exitCode = builder::builder.main( argc, argv );
 
 //   Alloc::printLeaks();
 

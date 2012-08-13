@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Exception.hh"
+#include "common.hh"
 
 /**
  * @def OZ_WARNING
@@ -170,22 +170,6 @@ class System
     OZ_PRINTF_FORMAT( 5, 6 )
     static void error( const char* function, const char* file, int line, int nSkippedFrames,
                        const char* msg, ... );
-
-    /**
-     * Print exception message and halt the program.
-     *
-     * No file location or stack trace is printed with this version.
-     */
-    OZ_NORETURN
-    static void error( const std::exception& e );
-
-    /**
-     * Print exception message and halt the program.
-     *
-     * File location and stack trace of exception is printed.
-     */
-    OZ_NORETURN
-    static void error( const Exception& e );
 
     /**
      * Initialise <tt>System</tt> features.

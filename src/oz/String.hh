@@ -46,22 +46,6 @@ namespace oz
  */
 class String
 {
-  public:
-
-    /**
-     * Thrown by parse functions if parsing fails or completes only partially.
-     */
-    class ParseException : public std::exception
-    {
-      public:
-
-        /**
-         * Exception description ("oz::String::ParseException").
-         */
-        const char* what() const noexcept override;
-
-    };
-
   private:
 
     /// Size of static buffer.
@@ -324,38 +308,28 @@ class String
 
     /**
      * Parse boolean value (must exactly match either "true" or "false").
-     *
-     * If parsing fails, a ParseException is thrown.
      */
-    static bool parseBool( const char* s );
+    static bool parseBool( const char* s, bool* isError = null );
 
     /**
      * Parse integer value.
-     *
-     * If parsing fails, a ParseException is thrown.
      */
-    static int parseInt( const char* s );
+    static int parseInt( const char* s, bool* isError = null );
 
     /**
      * Parse long integer value.
-     *
-     * If parsing fails, a ParseException is thrown.
      */
-    static long parseLong( const char* s );
+    static long parseLong( const char* s, bool* isError = null );
 
     /**
      * Parse float value.
-     *
-     * If parsing fails, a ParseException is thrown.
      */
-    static float parseFloat( const char* s );
+    static float parseFloat( const char* s, bool* isError = null );
 
     /**
      * Parse double value.
-     *
-     * If parsing fails, a ParseException is thrown.
      */
-    static double parseDouble( const char* s );
+    static double parseDouble( const char* s, bool* isError = null );
 
     /*
      * Functions that operate on a String object.
@@ -821,52 +795,42 @@ class String
 
     /**
      * Parse boolean value (must exactly match either "true" or "false").
-     *
-     * If parsing fails, a ParseException is thrown.
      */
-    bool parseBool() const
+    bool parseBool( bool* isError = null ) const
     {
-      return parseBool( buffer );
+      return parseBool( buffer, isError );
     }
 
     /**
      * Parse integer value.
-     *
-     * If parsing fails, a ParseException is thrown.
      */
-    int parseInt() const
+    int parseInt( bool* isError = null ) const
     {
-      return parseInt( buffer );
+      return parseInt( buffer, isError );
     }
 
     /**
      * Parse long integer value.
-     *
-     * If parsing fails, a ParseException is thrown.
      */
-    long parseLong() const
+    long parseLong( bool* isError = null ) const
     {
-      return parseLong( buffer );
+      return parseLong( buffer, isError );
     }
 
     /**
      * Parse float value.
-     *
-     * If parsing fails, a ParseException is thrown.
      */
-    float parseFloat() const
+    float parseFloat( bool* isError = null ) const
     {
-      return parseFloat( buffer );
+      return parseFloat( buffer, isError );
     }
 
     /**
      * Parse double value.
-     *
-     * If parsing fails, a ParseException is thrown.
      */
-    double parseDouble() const
+    double parseDouble( bool* isError = null ) const
     {
-      return parseDouble( buffer );
+      return parseDouble( buffer, isError );
     }
 
     /**

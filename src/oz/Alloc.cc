@@ -490,36 +490,26 @@ backtraceFound:
 
 using namespace oz;
 
-#if defined( OZ_GCC ) && OZ_GCC < 407
-extern void* operator new ( size_t size ) throw( std::bad_alloc )
-#else
 extern void* operator new ( size_t size )
-#endif
 {
   size += Alloc::alignUp( sizeof( size ) );
 
   void* ptr = aligned_malloc( size );
 
   if( ptr == null ) {
-    System::trap();
-    throw std::bad_alloc();
+    OZ_ERROR( "Out of memory" );
   }
   return allocateObject( ptr, size );
 }
 
-#if defined( OZ_GCC ) && OZ_GCC < 407
-extern void* operator new[] ( size_t size ) throw( std::bad_alloc )
-#else
 extern void* operator new[] ( size_t size )
-#endif
 {
   size += Alloc::alignUp( sizeof( size ) );
 
   void* ptr = aligned_malloc( size );
 
   if( ptr == null ) {
-    System::trap();
-    throw std::bad_alloc();
+    OZ_ERROR( "Out of memory" );
   }
   return allocateArray( ptr, size );
 }

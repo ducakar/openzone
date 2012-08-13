@@ -58,14 +58,14 @@ void Terra::load( int id_ )
 
     PFile file( path );
     if( !file.map() ) {
-      throw Exception( "Cannot map terra file" );
+      OZ_ERROR( "Cannot map terra file" );
     }
 
     InputStream is = file.inputStream();
 
     int max = is.readInt();
     if( max != VERTS ) {
-      throw Exception( "Invalid dimension %d, should be %d", max, VERTS );
+      OZ_ERROR( "Invalid dimension %d, should be %d", max, VERTS );
     }
 
     for( int x = 0; x < VERTS; ++x ) {

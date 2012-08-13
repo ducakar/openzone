@@ -65,7 +65,7 @@ void Class::fillObject( const char* className )
   description = config["description"].get( "" );
 
   if( name.isEmpty() ) {
-    throw Exception( "Empty class name" );
+    OZ_ERROR( "Empty class name" );
   }
 
   /*
@@ -92,11 +92,11 @@ void Class::fillObject( const char* className )
       dim.y < 0.0f || dim.y > Object::REAL_MAX_DIM ||
       dim.z < 0.0f )
   {
-    throw Exception( "%s: Invalid dimensions. Should be >= 0 and <= 3.99.", className );
+    OZ_ERROR( "%s: Invalid dimensions. Should be >= 0 and <= 3.99.", className );
   }
 
   if( ( flags & Object::CYLINDER_BIT ) && dim.x != dim.y ) {
-    throw Exception( "%s: Cylindrical object must have dim.x == dim.y", className );
+    OZ_ERROR( "%s: Cylindrical object must have dim.x == dim.y", className );
   }
 
   /*
@@ -107,11 +107,11 @@ void Class::fillObject( const char* className )
   resistance = config["resistance"].get( 100.0f );
 
   if( life <= 0.0f || !Math::isnormal( life ) ) {
-    throw Exception( "%s: Invalid life value. Should be > 0 and finite. If you want infinite life"
-                     " rather set resistance to infinity (\"inf\" or \"INF\").", className );
+    OZ_ERROR( "%s: Invalid life value. Should be > 0 and finite. If you want infinite life rather"
+              " set resistance to infinity (\"inf\" or \"INF\").", className );
   }
   if( resistance < 0.0f ) {
-    throw Exception( "%s: Invalid resistance. Should be >= 0.", className );
+    OZ_ERROR( "%s: Invalid resistance. Should be >= 0.", className );
   }
 
   /*
@@ -151,10 +151,10 @@ void Class::fillObject( const char* className )
   }
 
   if( nItems < 0 ) {
-    throw Exception( "%s: Inventory size must be a non-negative integer", className );
+    OZ_ERROR( "%s: Inventory size must be a non-negative integer", className );
   }
   if( ( flags & Object::ITEM_BIT ) && nItems != 0 ) {
-    throw Exception( "%s: Item cannot have an inventory", className );
+    OZ_ERROR( "%s: Item cannot have an inventory", className );
   }
 
   // default inventory
@@ -166,14 +166,14 @@ void Class::fillObject( const char* className )
       const char* itemName = defaultItemsConfig[i].get( "" );
 
       if( String::isEmpty( itemName ) ) {
-        throw Exception( "%s: Empty name for default item #%d", className, i );
+        OZ_ERROR( "%s: Empty name for default item #%d", className, i );
       }
 
       defaultItems.add( itemName );
     }
 
     if( defaultItems.length() > nItems ) {
-      throw Exception( "%s: Too many items in the default inventory", className );
+      OZ_ERROR( "%s: Too many items in the default inventory", className );
     }
   }
 
@@ -185,7 +185,7 @@ void Class::fillObject( const char* className )
 
   if( !deviceType.isEmpty() ) {
     if( flags & Object::USE_FUNC_BIT ) {
-      throw Exception( "%s: Device cannot have onUse handler", className );
+      OZ_ERROR( "%s: Device cannot have onUse handler", className );
     }
 
     devices.include( deviceType );
@@ -309,10 +309,10 @@ void Class::fillDynamic( const char* className )
   lift = config["lift"].get( -1.0f );
 
   if( mass < 1.0f ) {
-    throw Exception( "%s: Invalid object mass. Should be >= 1 kg.", className );
+    OZ_ERROR( "%s: Invalid object mass. Should be >= 1 kg.", className );
   }
   if( lift < 0.0f ) {
-    throw Exception( "%s: Invalid object lift. Should be >= 0.", className );
+    OZ_ERROR( "%s: Invalid object lift. Should be >= 0.", className );
   }
 }
 
@@ -334,8 +334,7 @@ void Class::fillWeapon( const char* className )
 
   int underscore = name.index( '_' );
   if( underscore < 0 ) {
-    throw Exception( "%s: Weapon name should be of the form botName_weapon.weaponName",
-                     className );
+    OZ_ERROR( "%s: Weapon name should be of the form botName_weapon.weaponName", className );
   }
 
   userBase     = name.substring( 0, underscore );
@@ -387,7 +386,7 @@ void Class::fillBot( const char* className )
   crouchDim.z = config["crouchDimZ"].get( -1.0f );
 
   if( crouchDim.z < 0.0f ) {
-    throw Exception( "%s: Invalid bot crouch dimensions. Should be >= 0.", className );
+    OZ_ERROR( "%s: Invalid bot crouch dimensions. Should be >= 0.", className );
   }
 
   corpseDim.x = config["corpseDim.x"].get( 2.0f * dim.x );
@@ -395,7 +394,7 @@ void Class::fillBot( const char* className )
   corpseDim.z = config["corpseDim.z"].get( 0.20f );
 
   if( corpseDim.x < 0.0f || corpseDim.y < 0.0f || corpseDim.z < 0.0f ) {
-    throw Exception( "%s: Invalid bot corpse dimensions. Should be >= 0.", className );
+    OZ_ERROR( "%s: Invalid bot corpse dimensions. Should be >= 0.", className );
   }
 
   camZ              = config["camZ"].get( 0.0f );
@@ -425,8 +424,8 @@ void Class::fillBot( const char* className )
   stamina           = config["stamina"].get( 100.0f );
 
   if( stamina <= 0.0f || !Math::isnormal( stamina ) ) {
-    throw Exception( "%s: Invalid stamina value. Should be > 0 and finite. If you want infinite "
-                     " stamina rather set stamina*Drain variables to zero.", className );
+    OZ_ERROR( "%s: Invalid stamina value. Should be > 0 and finite. If you want infinite stamina"
+              " rather set stamina*Drain variables to zero.", className );
   }
 
   staminaGain       = config["staminaGain"].get( 2.5f ) * Timer::TICK_TIME;
@@ -511,7 +510,7 @@ void Class::fillVehicle( const char* className )
   SET_STATE( Vehicle::AUTO_EJECT_BIT,   "state.autoEject",   false );
 
   if( ( state & Vehicle::AUTO_EJECT_BIT ) && !( state & Vehicle::HAS_EJECT_BIT ) ) {
-    throw Exception( "%s: Vehicle has state.autoEject but not state.hasEject.", className );
+    OZ_ERROR( "%s: Vehicle has state.autoEject but not state.hasEject.", className );
   }
 
   const char* sType = config["type"].get( "" );
@@ -534,8 +533,8 @@ void Class::fillVehicle( const char* className )
     type = VehicleClass::AIR;
   }
   else {
-    throw Exception( "%s: Invalid vehicle type, should be either STATIC, WHEELED, TRACKED, MECH, "
-                     "HOVER or AIR", className );
+    OZ_ERROR( "%s: Invalid vehicle type, should be either STATIC, WHEELED, TRACKED, MECH, HOVER or"
+              " AIR", className );
   }
 
   pilotPos = Vec3::ZERO;
@@ -547,18 +546,18 @@ void Class::fillVehicle( const char* className )
   lookVMax = config["lookVMax"].get( +60.0f );
 
   if( lookHMin < -180.0f || lookHMin > 0.0f ) {
-    throw Exception( "%s: lookHMin must lie on interval [-180.0, 0.0]", className );
+    OZ_ERROR( "%s: lookHMin must lie on interval [-180.0, 0.0]", className );
   }
   if( lookHMax < 0.0f || lookHMax > 180.0f ) {
-    throw Exception( "%s: lookHMax must lie on interval [0.0, 180.0]", className );
+    OZ_ERROR( "%s: lookHMax must lie on interval [0.0, 180.0]", className );
   }
   if( lookVMin < -90.0f || lookVMin > 90.0f || lookVMin > lookVMax ) {
-    throw Exception( "%s: lookVMin must lie on interval [-90.0, 90.0] and must not be greater than "
-                     "lookVMax", className );
+    OZ_ERROR( "%s: lookVMin must lie on interval [-90.0, 90.0] and must not be greater than"
+              " lookVMax", className );
   }
   if( lookVMax < -90.0f || lookVMax > 90.0f ) {
-    throw Exception( "%s: lookVMax must lie on interval [-90.0, 90.0] and must not be less than "
-                     "lookVMin", className );
+    OZ_ERROR( "%s: lookVMax must lie on interval [-90.0, 90.0] and must not be less than lookVMin",
+              className );
   }
 
   lookHMin = Math::rad( lookHMin );
@@ -582,16 +581,16 @@ void Class::fillVehicle( const char* className )
   fuelConsumption        = config["fuelConsumption"].get( 0.0f ) * Timer::TICK_TIME;
 
   if( fuel <= 0.0f || !Math::isnormal( fuel ) ) {
-    throw Exception( "%s: Invalid fuel value. Should be > 0 and finite. If you want infinite fuel"
-                     " rather set fuelConsumption to zero.", className );
+    OZ_ERROR( "%s: Invalid fuel value. Should be > 0 and finite. If you want infinite fuel rather"
+              " set fuelConsumption to zero.", className );
   }
 
   const JSON& weaponsConfig = config["weapons"];
   nWeapons = max( weaponsConfig.length(), 0 );
 
   if( nWeapons > VehicleClass::MAX_WEAPONS ) {
-    throw Exception( "%s: Vehicle must have between 0 and %d weapons.", className,
-                     VehicleClass::MAX_WEAPONS );
+    OZ_ERROR( "%s: Vehicle must have between 0 and %d weapons.",
+              className, VehicleClass::MAX_WEAPONS );
   }
 
   for( int i = 0; i < VehicleClass::MAX_WEAPONS; ++i ) {
@@ -608,10 +607,10 @@ void Class::fillVehicle( const char* className )
     weaponShotIntervals[i] = weaponsConfig[i]["shotInterval"].get( 0.5f );
 
     if( weaponTitles[i].isEmpty() ) {
-      throw Exception( "%s: Missing weapon #%d title.", className, i );
+      OZ_ERROR( "%s: Missing weapon #%d title.", className, i );
     }
     if( onWeaponShot[i].isEmpty() ) {
-      throw Exception( "%s: Missing weapon #%d handler function.", className, i );
+      OZ_ERROR( "%s: Missing weapon #%d handler function.", className, i );
     }
 
     flags |= Object::LUA_BIT;
@@ -781,7 +780,7 @@ void Class::build( BufferStream* os, const char* className )
   PFile configFile( String::str( "class/%s.json", className ) );
 
   if( !config.load( &configFile ) ) {
-    throw Exception( "Failed to load '%s'", configFile.path().cstr() );
+    OZ_ERROR( "Failed to load '%s'", configFile.path().cstr() );
   }
 
   const String& baseClass = config["base"].asString();

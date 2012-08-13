@@ -49,7 +49,7 @@ void BSP::load()
 
   JSON config;
   if( !config.load( &configFile ) ) {
-    throw Exception( "BSP config loading failed" );
+    OZ_ERROR( "BSP config loading failed" );
   }
 
   title = config["title"].get( name );
@@ -67,11 +67,11 @@ void BSP::load()
   config["lavaFogColour"].get( lavaFogColour, 3 );
 
   if( life <= 0.0f || !Math::isnormal( life ) ) {
-    throw Exception( "%s: Invalid life value. Should be > 0 and finite. If you want infinite life"
-                     " rather set resistance to infinity (\"inf\" or \"INF\").", name.cstr() );
+    OZ_ERROR( "%s: Invalid life value. Should be > 0 and finite. If you want infinite life rather"
+              " set resistance to infinity (\"inf\" or \"INF\").", name.cstr() );
   }
   if( resistance < 0.0f ) {
-    throw Exception( "%s: Invalid resistance. Should be >= 0.", name.cstr() );
+    OZ_ERROR( "%s: Invalid resistance. Should be >= 0.", name.cstr() );
   }
 
   fragPool = config["fragPool"].get( "" );
@@ -83,11 +83,11 @@ void BSP::load()
   maxs = Point( +Math::INF, +Math::INF, +Math::INF );
 
   if( Math::isnan( scale ) ) {
-    throw Exception( "Invalid BSP config" );
+    OZ_ERROR( "Invalid BSP config" );
   }
 
   if( !bspFile.map() ) {
-    throw Exception( "BSP reading failed" );
+    OZ_ERROR( "BSP reading failed" );
   }
 
   InputStream is = bspFile.inputStream( Endian::LITTLE );
@@ -101,7 +101,7 @@ void BSP::load()
   int version = is.readInt();
 
   if( id[0] != 'I' || id[1] != 'B' || id[2] != 'S' || id[3] != 'P' || version != 46 ) {
-    throw Exception( "Wrong Quake 3 BSP format" );
+    OZ_ERROR( "Wrong Quake 3 BSP format" );
   }
 
   DArray<QBSPLump> lumps( QBSPLump::MAX );
@@ -124,7 +124,7 @@ void BSP::load()
       textures[i].name = "";
     }
     else if( textures[i].name.length() <= 9 ) {
-      throw Exception( "Invalid texture name '%s'", textures[i].name.cstr() );
+      OZ_ERROR( "Invalid texture name '%s'", textures[i].name.cstr() );
     }
     else {
       textures[i].name = textures[i].name.substring( 9 );
@@ -216,7 +216,7 @@ void BSP::load()
     const JSON& modelsConfig = config["models"];
 
     if( !modelsConfig.isNull() && modelsConfig.type() != JSON::ARRAY ) {
-      throw Exception( "'models' entry in '%s' is not an array", configFile.path().cstr() );
+      OZ_ERROR( "'models' entry in '%s' is not an array", configFile.path().cstr() );
     }
 
     // skip model 0 (whole BSP)
@@ -267,15 +267,15 @@ void BSP::load()
         models[i].type = matrix::Model::ELEVATOR;
       }
       else {
-        throw Exception( "Invalid BSP model type, must be either STATIC, MANUAL_DOOR, AUTO_DOOR, "
-                         "IGNORING_BLOCK, CRUSHING_BLOCK or ELEVATOR." );
+        OZ_ERROR( "Invalid BSP model type, must be either STATIC, MANUAL_DOOR, AUTO_DOOR,"
+                  " IGNORING_BLOCK, CRUSHING_BLOCK or ELEVATOR." );
       }
 
       if( models[i].type == matrix::Model::ELEVATOR &&
           ( models[i].move.x != 0.0f || models[i].move.y != 0.0f ) )
       {
-        throw Exception( "Elevator can only move vertically, but model%02d.move = (%g %g %g)",
-                         i, models[i].move.x, models[i].move.y, models[i].move.z );
+        OZ_ERROR( "Elevator can only move vertically, but model%02d.move = (%g %g %g)",
+                  i, models[i].move.x, models[i].move.y, models[i].move.z );
       }
 
       models[i].margin     = modelConfig["margin"].get( DEFAULT_MARGIN );
@@ -327,8 +327,7 @@ void BSP::load()
   brushes.resize( lumps[QBSPLump::BRUSHES].length / int( sizeof( QBSPBrush ) ) );
 
   if( brushes.length() > matrix::BSP::MAX_BRUSHES ) {
-    throw Exception( "Too many brushes %d, can be at most %d", brushes.length(),
-                     matrix::BSP::MAX_BRUSHES );
+    OZ_ERROR( "Too many brushes %d, maximum is %d", brushes.length(), matrix::BSP::MAX_BRUSHES );
   }
 
   is.reset();
@@ -481,10 +480,10 @@ void BSP::load()
         object.heading = EAST;
       }
       else if( sHeading.isEmpty() ) {
-        throw Exception( "Missing heading for a BSP bound object" );
+        OZ_ERROR( "Missing heading for a BSP bound object" );
       }
       else {
-        throw Exception( "Invalid object heading '%s'", sHeading.cstr() );
+        OZ_ERROR( "Invalid object heading '%s'", sHeading.cstr() );
       }
 
       boundObjects.add( object );
@@ -875,34 +874,34 @@ void BSP::check() const
   for( int i = 0; i < nodes.length(); ++i ) {
     if( nodes[i].front < 0 ) {
       if( usedLeaves.get( ~nodes[i].front ) ) {
-        throw Exception( "BSP leaf %d referenced twice", ~nodes[i].front );
+        OZ_ERROR( "BSP leaf %d referenced twice", ~nodes[i].front );
       }
       usedLeaves.set( ~nodes[i].front );
     }
     else if( nodes[i].front != 0 ) {
       if( usedNodes.get( nodes[i].front ) ) {
-        throw Exception( "BSP node %d referenced twice", nodes[i].front );
+        OZ_ERROR( "BSP node %d referenced twice", nodes[i].front );
       }
       usedNodes.set( nodes[i].front );
     }
     else {
-      throw Exception( "BSP root node referenced" );
+      OZ_ERROR( "BSP root node referenced" );
     }
 
     if( nodes[i].back < 0 ) {
       if( usedLeaves.get( ~nodes[i].back ) ) {
-        throw Exception( "BSP leaf %d referenced twice", ~nodes[i].back );
+        OZ_ERROR( "BSP leaf %d referenced twice", ~nodes[i].back );
       }
       usedLeaves.set( ~nodes[i].back );
     }
     else if( nodes[i].back != 0 ) {
       if( usedNodes.get( nodes[i].back ) ) {
-        throw Exception( "BSP node %d referenced twice", nodes[i].back );
+        OZ_ERROR( "BSP node %d referenced twice", nodes[i].back );
       }
       usedNodes.set( nodes[i].back );
     }
     else {
-      throw Exception( "BSP root node referenced" );
+      OZ_ERROR( "BSP root node referenced" );
     }
   }
 
@@ -911,7 +910,7 @@ void BSP::check() const
       int index = models[i].firstBrush + j;
 
       if( usedBrushes.get( index ) ) {
-        throw Exception( "BSP brush %d referenced by two models", index );
+        OZ_ERROR( "BSP brush %d referenced by two models", index );
       }
       usedBrushes.set( index );
     }
@@ -930,34 +929,34 @@ void BSP::check() const
       int index = models[i].firstBrush + j;
 
       if( usedBrushes.get( index ) ) {
-        throw Exception( "BSP model brush %d referenced by static tree", index );
+        OZ_ERROR( "BSP model brush %d referenced by static tree", index );
       }
       usedBrushes.set( index );
     }
   }
 
   if( usedNodes.get( 0 ) ) {
-    throw Exception( "BSP root node referenced" );
+    OZ_ERROR( "BSP root node referenced" );
   }
   for( int i = 1; i < nodes.length(); ++i ) {
     if( !usedNodes.get( i ) ) {
-      throw Exception( "BSP node %d not referenced", i );
+      OZ_ERROR( "BSP node %d not referenced", i );
     }
   }
   for( int i = 0; i < leaves.length(); ++i ) {
     if( !usedLeaves.get( i ) ) {
-      throw Exception( "BSP leaf %d not referenced", i );
+      OZ_ERROR( "BSP leaf %d not referenced", i );
     }
   }
   for( int i = 0; i < brushes.length(); ++i ) {
     if( !usedBrushes.get( i ) ) {
-      throw Exception( "BSP brush %d not referenced", i );
+      OZ_ERROR( "BSP brush %d not referenced", i );
     }
   }
 
   for( int i = 0; i < planes.length(); ++i ) {
     if( !Math::isfinite( planes[i].d ) ) {
-      throw Exception( "BSP has invalid plane %d", i );
+      OZ_ERROR( "BSP has invalid plane %d", i );
     }
   }
 
@@ -1097,7 +1096,7 @@ void BSP::saveMatrix()
   os.writeString( demolishSound );
 
   if( !destFile.write( os.begin(), os.length() ) ) {
-    throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+    OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
   }
 
   Log::printEnd( " OK" );
@@ -1120,7 +1119,7 @@ void BSP::saveClient()
       const Texture& tex  = textures[face.texture];
 
       if( tex.name.isEmpty() ) {
-        throw Exception( "BSP has a visible face without texture" );
+        OZ_ERROR( "BSP has a visible face without texture" );
       }
 
       if( tex.type & QBSP_ALPHA_TYPE_BIT ) {
@@ -1169,7 +1168,7 @@ void BSP::saveClient()
   Log::print( "Dumping BSP model to '%s' ...", destFile.path().cstr() );
 
   if( !destFile.write( os.begin(), os.length() ) ) {
-    throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+    OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
   }
 
   Log::printEnd( " OK" );

@@ -44,7 +44,7 @@ uint GalileoFrame::loadTexture( const char* path ) const
 {
   PFile file( path );
   if( !file.map() ) {
-    throw Exception( "Failed reading galileo texture '%s'", path );
+    OZ_ERROR( "Failed reading galileo texture '%s'", path );
   }
 
   InputStream istream = file.inputStream();

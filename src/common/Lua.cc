@@ -70,7 +70,7 @@ bool Lua::readVariable( InputStream* istream )
       return false;
     }
     default: {
-      throw Exception( "Invalid type char '%c' in serialised Lua data", ch );
+      OZ_ERROR( "Invalid type char '%c' in serialised Lua data", ch );
     }
   }
 }
@@ -119,8 +119,8 @@ void Lua::writeVariable( BufferStream* ostream )
       break;
     }
     default: {
-      throw Exception( "Serialisation is only supported for LUA_TNIL, LUA_TBOOLEAN, LUA_TNUMBER,"
-                       " LUA_TSTRING and LUA_TTABLE data types" );
+      OZ_ERROR( "Serialisation is only supported for LUA_TNIL, LUA_TBOOLEAN, LUA_TNUMBER,"
+                " LUA_TSTRING and LUA_TTABLE data types" );
     }
   }
 }
@@ -131,7 +131,7 @@ void Lua::initCommon( const char* componentName )
 
   l = luaL_newstate();
   if( l == null ) {
-    throw Exception( "Failed to create Lua state" );
+    OZ_ERROR( "Failed to create Lua state" );
   }
 
 #if LUA_VERSION_NUM < 502
@@ -149,13 +149,13 @@ void Lua::initCommon( const char* componentName )
 #endif
 
   if( l_gettop() != 0 ) {
-    throw Exception( "Failed to initialise Lua libraries" );
+    OZ_ERROR( "Failed to initialise Lua libraries" );
   }
 
   int seed = isRandomSeedTime ? int( Time::time() ) : randomSeed;
   l_dostring( String::str( "math.random( %d )", seed ) );
 
-  IGNORE_FUNC( ozException );
+  IGNORE_FUNC( ozError );
   IGNORE_FUNC( ozPrintln );
 }
 

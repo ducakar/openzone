@@ -103,7 +103,7 @@ void Mouse::init()
   for( int i = 0; i < CURSORS_MAX; ++i ) {
     PFile file( String::str( "ui/cur/%s.ozCur", NAMES[i] ) );
     if( !file.map() ) {
-      throw Exception( "Cursor loading failed" );
+      OZ_ERROR( "Cursor loading failed" );
     }
 
     InputStream is = file.inputStream();

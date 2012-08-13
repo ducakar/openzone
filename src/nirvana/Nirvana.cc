@@ -105,7 +105,7 @@ void Nirvana::read( InputStream* istream )
     Device::CreateFunc* const* func = deviceClasses.find( type );
 
     if( func == null ) {
-      throw Exception( "Invalid device type '%s'", type.cstr() );
+      OZ_ERROR( "Invalid device type '%s'", type.cstr() );
     }
 
     devices.add( index, ( *func )( index, istream ) );

@@ -126,14 +126,14 @@ void Builder::copyFiles( const char* srcDir, const char* destDir, const char* ex
       Log::print( "Copying '%s' ...", fileName.cstr() );
 
       if( !file->map() ) {
-        throw Exception( "Failed to map '%s'", file->path().cstr() );
+        OZ_ERROR( "Failed to map '%s'", file->path().cstr() );
       }
 
       InputStream is = file->inputStream();
       File destFile( sDestDir + fileName );
 
       if( !destFile.write( is.begin(), is.capacity() ) ) {
-        throw Exception( "Failed to write '%s'", file->path().cstr() );
+        OZ_ERROR( "Failed to write '%s'", file->path().cstr() );
       }
 
       file->unmap();
@@ -309,7 +309,7 @@ void Builder::buildBSPTextures()
       }
 
       if( !destFile.write( os.begin(), os.length() ) ) {
-        throw Exception( "Failed to write texture '%s'", destFile.path().cstr() );
+        OZ_ERROR( "Failed to write texture '%s'", destFile.path().cstr() );
       }
 
       Log::unindent();
@@ -330,7 +330,7 @@ void Builder::buildBSPTextures()
         Log::print( "Copying '%s' ...", path.cstr() );
 
         if( !file->map() ) {
-          throw Exception( "Failed to read '%s'", file->path().cstr() );
+          OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
         }
 
         InputStream is = file->inputStream();
@@ -340,7 +340,7 @@ void Builder::buildBSPTextures()
         File::mkdir( "tex/" + subDir.name() );
 
         if( !destFile.write( is.begin(), is.capacity() ) ) {
-          throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+          OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
 
         file->unmap();
@@ -417,7 +417,7 @@ void Builder::buildClasses( const String& pkgName )
     Log::print( "Writing to '%s' ...", outFile.path().cstr() );
 
     if( !outFile.write( os.begin(), os.length() ) ) {
-      throw Exception( "Failed to write object class file '%s'", outFile.path().cstr() );
+      OZ_ERROR( "Failed to write object class file '%s'", outFile.path().cstr() );
     }
 
     Log::printEnd( " OK" );
@@ -461,7 +461,7 @@ void Builder::buildFragPools( const String& pkgName )
     Log::print( "Writing to '%s' ...", outFile.path().cstr() );
 
     if( !outFile.write( os.begin(), os.length() ) ) {
-      throw Exception( "Failed to write fragment pool file '%s'", outFile.path().cstr() );
+      OZ_ERROR( "Failed to write fragment pool file '%s'", outFile.path().cstr() );
     }
 
     Log::printEnd( " OK" );
@@ -502,14 +502,14 @@ void Builder::buildModels()
         Log::print( "Copying '%s' ...", path.cstr() );
 
         if( !file->map() ) {
-          throw Exception( "Failed to read '%s'", file->path().cstr() );
+          OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
         }
 
         InputStream is = file->inputStream();
         File destFile( path );
 
         if( !destFile.write( is.begin(), is.length() ) ) {
-          throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+          OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
 
         file->unmap();
@@ -584,7 +584,7 @@ void Builder::copySounds()
       File::mkdir( "snd/" + subDir->name() );
 
       if( !file->map() ) {
-        throw Exception( "Failed to copy '%s'", file->path().cstr() );
+        OZ_ERROR( "Failed to copy '%s'", file->path().cstr() );
       }
 
       InputStream is = file->inputStream();
@@ -592,7 +592,7 @@ void Builder::copySounds()
       File destFile( file->path() );
 
       if( !destFile.write( is.begin(), is.capacity() ) ) {
-        throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+        OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
       }
 
       file->unmap();
@@ -613,7 +613,7 @@ void Builder::copySounds()
         Log::print( "Copying '%s' ...", path.cstr() );
 
         if( !file->map() ) {
-          throw Exception( "Failed to read '%s'", file->path().cstr() );
+          OZ_ERROR( "Failed to read '%s'", file->path().cstr() );
         }
 
         InputStream is = file->inputStream();
@@ -623,7 +623,7 @@ void Builder::copySounds()
         File::mkdir( "snd/" + subDir.name() );
 
         if( !destFile.write( is.begin(), is.capacity() ) ) {
-          throw Exception( "Failed to write '%s'", destFile.path().cstr() );
+          OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );
         }
 
         file->unmap();
@@ -667,7 +667,7 @@ void Builder::checkLua( const char* path )
 
     Log::println( "%s", cmdLine.cstr() );
     if( system( cmdLine ) != 0 ) {
-      throw Exception( "Lua syntax check failed" );
+      OZ_ERROR( "Lua syntax check failed" );
     }
   }
 
@@ -703,7 +703,7 @@ void Builder::buildMissions()
     imageTex.write( &os );
 
     if( !outFile.write( os.begin(), os.length() ) ) {
-      throw Exception( "Failed to write '%s'", outFile.path().cstr() );
+      OZ_ERROR( "Failed to write '%s'", outFile.path().cstr() );
     }
 
     Log::unindent();
@@ -735,7 +735,7 @@ void Builder::packArchive( const char* name, bool useCompression, bool use7zip )
   Log::println();
 
   if( system( cmdLine ) != 0 ) {
-    throw Exception( use7zip ? "Packing 7zip archive failed" : "Packing ZIP archive failed" );
+    OZ_ERROR( use7zip ? "Packing 7zip archive failed" : "Packing ZIP archive failed" );
   }
 
   archive.stat();
@@ -904,7 +904,7 @@ int Builder::main( int argc, char** argv )
     srcDir = srcDir.substring( 0, srcDir.length() - 1 );
   }
   if( srcDir.isEmpty() ) {
-    throw Exception( "Source directory cannot be root ('/')" );
+    OZ_ERROR( "Source directory cannot be root ('/')" );
   }
 
   String pkgName = srcDir.substring( srcDir.lastIndex( '/' ) + 1 );
@@ -928,12 +928,12 @@ int Builder::main( int argc, char** argv )
 
   Log::println( "Chdir to output directory '%s'", outDir.cstr() );
   if( !File::chdir( outDir ) ) {
-    throw Exception( "Failed to set working directory '%s'", outDir.cstr() );
+    OZ_ERROR( "Failed to set working directory '%s'", outDir.cstr() );
   }
 
   Log::println( "Adding source directory '%s' to search path", srcDir.cstr() );
   if( !PFile::mount( srcDir, null, true ) ) {
-    throw Exception( "Failed to add directory '%s' to search path", srcDir.cstr() );
+    OZ_ERROR( "Failed to add directory '%s' to search path", srcDir.cstr() );
   }
 
   config.add( "window.width", 400 );
@@ -942,7 +942,7 @@ int Builder::main( int argc, char** argv )
 
 #ifndef OZ_NONFREE
   if( context.useS3TC ) {
-    throw Exception( "S3 texture compression requested but compiled without OZ_NONFREE option" );
+    OZ_ERROR( "S3 texture compression requested but compiled without OZ_NONFREE option" );
   }
 #endif
 

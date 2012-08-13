@@ -147,8 +147,7 @@ bool Lingua::init( const char* language_ )
 
   PFile dir( "lingua/" + language );
   if( !dir.stat() ) {
-    throw Exception( "Invalid locale '%s', does not match any subdirectory in lingua/",
-                     language.cstr() );
+    OZ_ERROR( "Invalid locale '%s', does not match any subdirectory in lingua/", language.cstr() );
   }
 
   DArray<PFile> files = dir.ls();
@@ -159,7 +158,7 @@ bool Lingua::init( const char* language_ )
     }
 
     if( !file->map() ) {
-      throw Exception( "Cannot read catalogue '%s'", file->path().cstr() );
+      OZ_ERROR( "Cannot read catalogue '%s'", file->path().cstr() );
     }
 
     InputStream is = file->inputStream();
@@ -183,7 +182,7 @@ bool Lingua::init( const char* language_ )
     }
 
     if( !file->map() ) {
-      throw Exception( "Cannot read catalogue '%s'", file->path().cstr() );
+      OZ_ERROR( "Cannot read catalogue '%s'", file->path().cstr() );
     }
 
     InputStream is = file->inputStream();

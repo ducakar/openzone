@@ -59,7 +59,7 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* missionLin
   PFile file( path );
 
   if( !sequence.load( &file ) ) {
-    throw Exception( "Failed to load sequence from '%s'", file.path().cstr() );
+    OZ_ERROR( "Failed to load sequence from '%s'", file.path().cstr() );
   }
 
   int nSteps = sequence.length();
@@ -143,8 +143,8 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* missionLin
         step.endState = Camera::UNIT;
       }
       else {
-        throw Exception( "Invalid state '%s' for sequence step; should be either CINEMATIC,"
-                         " STRATEGIC or UNIT.", sEndState );
+        OZ_ERROR( "Invalid state '%s' for sequence step; should be either CINEMATIC, STRATEGIC or"
+                  " UNIT.", sEndState );
       }
     }
 

@@ -43,19 +43,11 @@ int main()
 
   System::init();
 
-  try {
-    test_common();
-    test_iterables();
-    test_arrays();
+  test_common();
+  test_iterables();
+  test_arrays();
 
-    test_Alloc();
-  }
-  catch( const Exception& e ) {
-    System::error( e );
-  }
-  catch( const std::exception& e ) {
-    System::error( e );
-  }
+  test_Alloc();
 
   Log::out << ( hasPassed ? "Unittest PASSED\n" : "Unittest FAILED\n" );
   return EXIT_SUCCESS;

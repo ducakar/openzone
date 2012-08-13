@@ -152,7 +152,7 @@ uint Context::loadTextureLayer( const char* path )
 {
   PFile file( path );
   if( !file.map() ) {
-    throw Exception( "Texture file '%s' mmap failed", path );
+    OZ_ERROR( "Texture file '%s' mmap failed", path );
   }
 
   InputStream is = file.inputStream();
@@ -169,7 +169,7 @@ Texture Context::loadTexture( const char* path )
 
   PFile file( path );
   if( !file.map() ) {
-    throw Exception( "Texture file '%s' mmap failed", path );
+    OZ_ERROR( "Texture file '%s' mmap failed", path );
   }
 
   InputStream is = file.inputStream();
@@ -235,7 +235,7 @@ uint Context::requestSound( int id )
 
   PFile file( path );
   if( !file.map() ) {
-    throw Exception( "Sound file '%s' mmap failed", path.cstr() );
+    OZ_ERROR( "Sound file '%s' mmap failed", path.cstr() );
   }
 
   InputStream is = file.inputStream();
@@ -252,13 +252,13 @@ uint Context::requestSound( int id )
 
   SDL_RWops* rwOps = SDL_RWFromConstMem( is.begin(), is.capacity() );
   if( SDL_LoadWAV_RW( rwOps, 1, &audioSpec, &data, &length ) == null ) {
-    throw Exception( "Failed to load WAVE sound '%s'", name.cstr() );
+    OZ_ERROR( "Failed to load WAVE sound '%s'", name.cstr() );
   }
 
   if( audioSpec.channels != 1 ||
       ( audioSpec.format != AUDIO_U8 && audioSpec.format != AUDIO_S16 ) )
   {
-    throw Exception( "Invalid sound '%s' format, should be U8 mono or S16LE mono", name.cstr() );
+    OZ_ERROR( "Invalid sound '%s' format, should be U8 mono or S16LE mono", name.cstr() );
   }
 
   ALenum format = audioSpec.format == AUDIO_U8 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16;
@@ -272,7 +272,7 @@ uint Context::requestSound( int id )
   OZ_AL_CHECK_ERROR();
 
   if( resource.id == 0 ) {
-    throw Exception( "Sound '%s' loading failed", name.cstr() );
+    OZ_ERROR( "Sound '%s' loading failed", name.cstr() );
   }
 
   return resource.id;

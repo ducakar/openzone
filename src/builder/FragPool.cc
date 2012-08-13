@@ -41,7 +41,7 @@ void FragPool::build( BufferStream* os, const char* className )
 
   JSON config;
   if( !config.load( &configFile ) ) {
-    throw Exception( "Failed to load '%s'", configFile.path().cstr() );
+    OZ_ERROR( "Failed to load '%s'", configFile.path().cstr() );
   }
 
   int flags = 0;
@@ -51,7 +51,7 @@ void FragPool::build( BufferStream* os, const char* className )
   float velocitySpread = config["velocitySpread"].get( 4.0f );
 
   if( velocitySpread < 0.0f ) {
-    throw Exception( "%s: Frag velocitySpread must be >= 0.0", className );
+    OZ_ERROR( "%s: Frag velocitySpread must be >= 0.0", className );
   }
 
   float life       = config["life"].get( 4.0f );
@@ -60,16 +60,16 @@ void FragPool::build( BufferStream* os, const char* className )
   float elasticity = config["elasticity"].get( 0.5f );
 
   if( life <= 0.0f ) {
-    throw Exception( "%s: Frag life must be > 0.0", className );
+    OZ_ERROR( "%s: Frag life must be > 0.0", className );
   }
   if( lifeSpread < 0.0f ) {
-    throw Exception( "%s: Frag lifeSpread must be >= 0.0", className );
+    OZ_ERROR( "%s: Frag lifeSpread must be >= 0.0", className );
   }
   if( mass < 0.0f ) {
-    throw Exception( "%s: Frag mass must be >= 0.0", className );
+    OZ_ERROR( "%s: Frag mass must be >= 0.0", className );
   }
   if( elasticity < 0.0f || 1.0f < elasticity ) {
-    throw Exception( "%s: Frag elasticity must lie on interval [0, 1]", className );
+    OZ_ERROR( "%s: Frag elasticity must lie on interval [0, 1]", className );
   }
 
   const JSON& modelsConfig = config["models"];
@@ -81,7 +81,7 @@ void FragPool::build( BufferStream* os, const char* className )
     const char* modelName = modelsConfig[i].get( "" );
 
     if( String::isEmpty( modelName ) ) {
-      throw Exception( "%s: Empty name for model #%d", className, i );
+      OZ_ERROR( "%s: Empty name for model #%d", className, i );
     }
 
     models.add( modelName );

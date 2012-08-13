@@ -60,7 +60,7 @@ void NamePool::init()
     PFile file( library.nameLists[i].path );
 
     if( !file.map() ) {
-      throw Exception( "Reading '%s' failed", library.nameLists[i].path.cstr() );
+      OZ_ERROR( "Reading '%s' failed", library.nameLists[i].path.cstr() );
     }
 
     InputStream is = file.inputStream();

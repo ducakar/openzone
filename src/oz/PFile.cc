@@ -26,8 +26,10 @@
 
 #include "PFile.hh"
 
+#include "System.hh"
+
 #ifdef __native_client__
-# include "System.hh"
+
 #endif
 
 #include "windefs.h"
@@ -462,7 +464,7 @@ void PFile::init( File::FilesystemType type, int size )
 #if defined( __native_client__ )
 
   if( System::instance == null ) {
-    throw Exception( "System::instance must be set to initialise PhysicsFS" );
+    OZ_ERROR( "System::instance must be set to initialise PhysicsFS" );
   }
 
   struct InstanceInfo
@@ -493,7 +495,7 @@ void PFile::init( File::FilesystemType type, int size )
 #endif
 
   if( PHYSFS_init( arg0 ) == 0 ) {
-    throw Exception( "PhysicsFS initialisation failed: %s", PHYSFS_getLastError() );
+    OZ_ERROR( "PhysicsFS initialisation failed: %s", PHYSFS_getLastError() );
   }
 }
 

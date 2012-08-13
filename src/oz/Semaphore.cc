@@ -152,7 +152,7 @@ void Semaphore::init( int counter )
 
   descriptor->semaphore = CreateSemaphore( null, counter, 0x7fffffff, null );
   if( descriptor->semaphore == null ) {
-    System::error( "Semaphore semaphore creation failed" );
+    OZ_ERROR( "Semaphore semaphore creation failed" );
   }
 
 #else

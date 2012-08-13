@@ -120,7 +120,7 @@ void Compiler::component( int id )
   hard_assert( !( flags & PART_BIT ) );
 
   if( id != componentId && id != componentId + 1 ) {
-    throw Exception( "Non-consecutive components %d and %d\n", componentId, id );
+    OZ_ERROR( "Non-consecutive components %d and %d\n", componentId, id );
   }
 
   componentId = id;
@@ -396,7 +396,7 @@ void Compiler::writeMesh( BufferStream* os, bool embedTextures )
   }
 
   if( nComponents == 0 ) {
-    throw Exception( "Model should have at least one component" );
+    OZ_ERROR( "Model should have at least one component" );
   }
 
   os->writeInt( vertices.length() );

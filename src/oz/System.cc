@@ -161,7 +161,7 @@ static void construct()
 #if defined( __native_client__ )
 
   if( pthread_mutex_init( &bellLock, null ) != 0 ) {
-    System::error( "Bell mutex creation failed" );
+    OZ_ERROR( "Bell mutex creation failed" );
   }
 
 #elif defined( __ANDROID__ )
@@ -305,7 +305,7 @@ static void bellInitCallback( void* info_, int )
 
   void* audioPtr = malloc( sizeof( pp::Audio ) );
   if( audioPtr == null ) {
-    System::error( 0, "pp::Audio object allocation failed" );
+    OZ_ERROR( "pp::Audio object allocation failed" );
   }
 
   info->nFrameSamples = int( nFrameSamples );
@@ -327,7 +327,7 @@ static void* bellThread( void* )
 {
   void* infoPtr = malloc( sizeof( SampleInfo ) );
   if( infoPtr == null ) {
-    System::error( 0, "Sound sample descriptor allocation failed" );
+    OZ_ERROR( "Sound sample descriptor allocation failed" );
   }
 
   SampleInfo* info = new( infoPtr ) SampleInfo();
@@ -383,9 +383,9 @@ static void* bellThread( void* )
 
 static void waitBell()
 {
-// Delay termination until bell finishes.
+  // Delay termination until bell finishes.
 #if defined( __native_client__ )
-  if( core->IsMainThread() ) {
+  if( System::core->IsMainThread() ) {
     return;
   }
 #endif
@@ -480,7 +480,7 @@ void System::bell()
 
     pthread_t thread;
     if( pthread_create( &thread, null, bellThread, null ) != 0 ) {
-      System::error( 0, "Bell thread creation failed" );
+      OZ_ERROR( "Bell thread creation failed" );
     }
   }
 
@@ -498,7 +498,7 @@ void System::bell()
 
     HANDLE thread = CreateThread( null, 0, bellThread, null, 0, null );
     if( thread == null ) {
-      System::error( 0, "Bell thread creation failed" );
+      OZ_ERROR( "Bell thread creation failed" );
     }
     CloseHandle( thread );
   }
@@ -568,30 +568,6 @@ void System::error( const char* function, const char* file, int line, int nSkipp
 
   StackTrace st = StackTrace::current( nSkippedFrames + 1 );
   Log::printTrace( st );
-  Log::println();
-
-  bell();
-  abort();
-}
-
-void System::error( const std::exception& e )
-{
-  trap();
-
-  Log::verboseMode = false;
-  Log::printException( e );
-  Log::println();
-
-  bell();
-  abort();
-}
-
-void System::error( const Exception& e )
-{
-  trap();
-
-  Log::verboseMode = false;
-  Log::printException( e );
   Log::println();
 
   bell();

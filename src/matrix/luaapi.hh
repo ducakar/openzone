@@ -110,13 +110,7 @@ static int ozOrbisAddStr( lua_State* l )
 {
   VARG( 5, 7 );
 
-  const BSP* bsp = null;
-  try {
-    bsp = library.bsp( l_tostring( 2 ) );
-  }
-  catch( const Exception& e ) {
-    ERROR( e.what() );
-  }
+  const BSP* bsp = library.bsp( l_tostring( 2 ) );
 
   AddMode mode    = AddMode( l_toint( 1 ) );
   Point   p       = Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
@@ -153,13 +147,7 @@ static int ozOrbisAddObj( lua_State* l )
 {
   VARG( 5, 7 );
 
-  const ObjectClass* clazz = null;
-  try {
-    clazz = library.objClass( l_tostring( 2 ) );
-  }
-  catch( const Exception& e ) {
-    ERROR( e.what() );
-  }
+  const ObjectClass* clazz = library.objClass( l_tostring( 2 ) );
 
   AddMode mode    = AddMode( l_toint( 1 ) );
   Point   p       = Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
@@ -199,13 +187,7 @@ static int ozOrbisAddFrag( lua_State* l )
 {
   ARG( 8 );
 
-  const FragPool* pool = null;
-  try {
-    pool = library.fragPool( l_tostring( 2 ) );
-  }
-  catch( const Exception& e ) {
-    ERROR( e.what() );
-  }
+  const FragPool* pool = library.fragPool( l_tostring( 2 ) );
 
   AddMode mode     = AddMode( l_toint( 1 ) );
   Point   p        = Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
@@ -228,13 +210,7 @@ static int ozOrbisGenFrags( lua_State* l )
 {
   ARG( 11 );
 
-  const FragPool* pool = null;
-  try {
-    pool = library.fragPool( l_tostring( 1 ) );
-  }
-  catch( const Exception& e ) {
-    ERROR( e.what() );
-  }
+  const FragPool* pool = library.fragPool( l_tostring( 1 ) );
 
   int    nFrags   = l_toint( 2 );
   Bounds bb       = Bounds( Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) ),

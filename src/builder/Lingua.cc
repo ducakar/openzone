@@ -38,7 +38,7 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
   File outFile( String::str( "%s/%s.ozCat", directory, catalogue ) );
 
   if( !srcFile.map() ) {
-    throw Exception( "Cannot map catalogue source file '%s'", srcFile.path().cstr() );
+    OZ_ERROR( "Cannot map catalogue source file '%s'", srcFile.path().cstr() );
   }
 
   InputStream is = srcFile.inputStream();
@@ -73,8 +73,8 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
             break;
           }
           default: {
-            throw Exception( "%s:%d: invalid escape sequence '\\%c'",
-                             srcFile.path().cstr(), lineNum, line[i] );
+            OZ_ERROR( "%s:%d: invalid escape sequence '\\%c'",
+                      srcFile.path().cstr(), lineNum, line[i] );
           }
         }
       }
@@ -96,7 +96,7 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
       int end   = line.lastIndex( '"' );
 
       if( begin < 0 || end < 0 || begin >= end ) {
-        throw Exception( "%s:%d: syntax error", srcFile.path().cstr(), lineNum );
+        OZ_ERROR( "%s:%d: syntax error", srcFile.path().cstr(), lineNum );
       }
 
       lastOriginal = line.substring( begin + 1, end );
@@ -110,7 +110,7 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
       int end   = line.lastIndex( '"' );
 
       if( begin < 0 || end < 0 || begin >= end ) {
-        throw Exception( "%s:%d: syntax error", srcFile.path().cstr(), lineNum );
+        OZ_ERROR( "%s:%d: syntax error", srcFile.path().cstr(), lineNum );
       }
 
       lastTranslation = line.substring( begin + 1, end );
@@ -121,7 +121,7 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
       int end   = line.lastIndex( '"' );
 
       if( begin < 0 || end < 0 || begin >= end ) {
-        throw Exception( "%s:%d: syntax error", srcFile.path().cstr(), lineNum );
+        OZ_ERROR( "%s:%d: syntax error", srcFile.path().cstr(), lineNum );
       }
 
       if( mode == 1 ) {
@@ -131,7 +131,7 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
         lastTranslation = lastTranslation + line.substring( begin + 1, end );
       }
       else {
-        throw Exception( "%s:%d: loose string", srcFile.path().cstr(), lineNum );
+        OZ_ERROR( "%s:%d: loose string", srcFile.path().cstr(), lineNum );
       }
     }
   }
@@ -154,7 +154,7 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
   }
 
   if( !outFile.write( ostream.begin(), ostream.length() ) ) {
-    throw Exception( "Catalogue write failed" );
+    OZ_ERROR( "Catalogue write failed" );
   }
 
   Log::printEnd( " OK" );

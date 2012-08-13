@@ -160,7 +160,7 @@ int FloraModule::ozFloraSetSpacing( lua_State* l )
 
   float spacing = l_tofloat( 1 );
   if( spacing < 0 ) {
-    throw Exception( "Lua::ozFloraGetSpacing: spacing must be >= 0.0" );
+    OZ_ERROR( "Lua::ozFloraGetSpacing: spacing must be >= 0.0" );
   }
 
   floraModule.spacing = spacing;

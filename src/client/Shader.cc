@@ -128,7 +128,7 @@ void Shader::compileShader( uint id, const char* path, const char** sources, int
 {
   PFile file( path );
   if( !file.map() ) {
-    throw Exception( "Shader source '%s' mmap failed", path );
+    OZ_ERROR( "Shader source '%s' mmap failed", path );
   }
 
   InputStream is = file.inputStream();
@@ -158,7 +158,7 @@ void Shader::compileShader( uint id, const char* path, const char** sources, int
   }
 
   if( result != GL_TRUE ) {
-    throw Exception( "Shader '%s' compile failed", path );
+    OZ_ERROR( "Shader '%s' compile failed", path );
   }
 
   OZ_GL_CHECK_ERROR();
@@ -172,7 +172,7 @@ void Shader::loadProgram( int id )
   JSON programConfig;
 
   if( !programConfig.load( &configFile ) ) {
-    throw Exception( "Failed to read shader program configuration '%s'", configFile.path().cstr() );
+    OZ_ERROR( "Failed to read shader program configuration '%s'", configFile.path().cstr() );
   }
 
   const char* vertName = programConfig[0].asString();
@@ -182,12 +182,12 @@ void Shader::loadProgram( int id )
   const uint* fragId = fragShaders.find( fragName );
 
   if( vertId == null ) {
-    throw Exception( "Invalid vertex shader '%s' requested for shader program '%s'",
-                     vertName, name.cstr() );
+    OZ_ERROR( "Invalid vertex shader '%s' requested for shader program '%s'",
+              vertName, name.cstr() );
   }
   if( fragId == null ) {
-    throw Exception( "Invalid fragment shader '%s' requested for shader program '%s'",
-                     fragName, name.cstr() );
+    OZ_ERROR( "Invalid fragment shader '%s' requested for shader program '%s'",
+              fragName, name.cstr() );
   }
 
   programs[id].vertShader = *vertId;
@@ -220,7 +220,7 @@ void Shader::loadProgram( int id )
   }
 
   if( result != GL_TRUE ) {
-    throw Exception( "Shader program '%s' linking failed", name.cstr() );
+    OZ_ERROR( "Shader program '%s' linking failed", name.cstr() );
   }
 
   glUseProgram( programs[id].program );
@@ -349,7 +349,7 @@ void Shader::init()
   }
 
   if( library.shaders.length() == 0 ) {
-    throw Exception( "Shaders missing" );
+    OZ_ERROR( "Shaders missing" );
   }
 
   programs.resize( library.shaders.length() );
@@ -381,7 +381,7 @@ void Shader::init()
 
   Buffer buffer = PFile( "glsl/header.glsl" ).read();
   if( buffer.isEmpty() ) {
-    throw Exception( "header.glsl reading failed" );
+    OZ_ERROR( "header.glsl reading failed" );
   }
 
   sources[1] = buffer.begin();

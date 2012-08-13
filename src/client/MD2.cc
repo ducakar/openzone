@@ -230,7 +230,7 @@ void MD2::preload()
   file.setPath( library.models[id].path );
 
   if( !file.map() ) {
-    throw Exception( "MD2 model file '%s' mmap failed", file.path().cstr() );
+    OZ_ERROR( "MD2 model file '%s' mmap failed", file.path().cstr() );
   }
 
   isPreloaded = true;

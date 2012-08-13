@@ -60,7 +60,7 @@ int main( int argc, char** argv )
     outDirPath = outDirPath.substring( 0, outDirPath.length() - 1 );
   }
   if( outDirPath.isEmpty() ) {
-    throw Exception( "Package directory cannot be root ('/')" );
+    OZ_ERROR( "Package directory cannot be root ('/')" );
   }
 
   Log::println( "Package manifest {" );
@@ -88,7 +88,7 @@ int main( int argc, char** argv )
     File& file = pkg.value();
 
     if( !file.stat() ) {
-      throw Exception( "Failed to stat '%s'", file.path().cstr() );
+      OZ_ERROR( "Failed to stat '%s'", file.path().cstr() );
     }
 
     String name = file.name().cstr();
@@ -108,7 +108,7 @@ int main( int argc, char** argv )
   Log::print( "Writing manifest to '%s' ...", manifest.path().cstr() );
 
   if( !manifest.write( bs.begin(), bs.length() ) ) {
-    throw Exception( "Failed to write manifest file" );
+    OZ_ERROR( "Failed to write manifest file" );
   }
 
   Log::printEnd( " OK" );

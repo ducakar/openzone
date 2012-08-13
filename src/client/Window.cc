@@ -64,11 +64,11 @@ void Window::createContext()
 
   context = new pp::Graphics3D( System::instance, pp::Graphics3D(), attribs );
   if( context->is_null() ) {
-    throw Exception( "Failed to create OpenGL context" );
+    OZ_ERROR( "Failed to create OpenGL context" );
   }
 
   if( !System::instance->BindGraphics( *context ) ) {
-    throw Exception( "Failed to bind Graphics3D" );
+    OZ_ERROR( "Failed to bind Graphics3D" );
   }
 }
 
@@ -174,7 +174,7 @@ void Window::setFullscreen( bool fullscreen )
     descriptor = SDL_SetVideoMode( width, height, 0, flags );
 
     if( descriptor == null ) {
-      throw Exception( "Fullscreen mode switch failed" );
+      OZ_ERROR( "Fullscreen mode switch failed" );
     }
 
 # endif

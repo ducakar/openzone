@@ -148,7 +148,7 @@ CreditsMenu::CreditsMenu() :
 
   foreach( creditsFile, creditsFiles.iter() ) {
     if( !creditsFile->map() ) {
-      throw Exception( "Failed to map '%s'", creditsFile->path().cstr() );
+      OZ_ERROR( "Failed to map '%s'", creditsFile->path().cstr() );
     }
 
     lines.add( "" );
