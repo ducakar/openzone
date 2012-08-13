@@ -68,7 +68,7 @@ namespace oz
  *
  * @ingroup common
  */
-const int MAX_WORLD_COORD = 2048;
+const int MAX_WORLD_COORD = 4096;
 
 /**
  * Margin for collision detection.
@@ -86,7 +86,7 @@ const int MAX_WORLD_COORD = 2048;
  *
  * @ingroup common
  */
-const float EPSILON = 2048.0f * 4.0f * Math::FLOAT_EPS;
+const float EPSILON = float( MAX_WORLD_COORD ) * 4.0f * Math::FLOAT_EPS;
 
 /**
  * Wrap angle to interval \f$ [0, \tau) \f$.

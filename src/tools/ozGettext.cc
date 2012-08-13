@@ -450,6 +450,9 @@ int main( int argc, char** argv )
   try {
     return oz::main( argc, argv );
   }
+  catch( const oz::Exception& e ) {
+    oz::System::error( e );
+  }
   catch( const std::exception& e ) {
     oz::System::error( e );
   }

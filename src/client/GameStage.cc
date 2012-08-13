@@ -64,6 +64,9 @@ void GameStage::auxMain( void* )
   try {
     gameStage.auxRun();
   }
+  catch( const Exception& e ) {
+    System::error( e );
+  }
   catch( const std::exception& e ) {
     System::error( e );
   }

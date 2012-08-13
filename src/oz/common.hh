@@ -95,11 +95,11 @@ namespace oz
 
 # define soft_assert( cond ) \
   ( ( cond ) ? \
-    void( 0 ) : oz::_softAssertHelper( #cond, __PRETTY_FUNCTION__, __FILE__, __LINE__ ) )
+    void( 0 ) : oz::_softAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
 
 # define hard_assert( cond ) \
   ( ( cond ) ? \
-    void( 0 ) : oz::_hardAssertHelper( #cond, __PRETTY_FUNCTION__, __FILE__, __LINE__ ) )
+    void( 0 ) : oz::_hardAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
 
 #endif
 
@@ -108,7 +108,7 @@ namespace oz
  *
  * @ingroup oz
  */
-void _softAssertHelper( const char* message, const char* function, const char* file, int line );
+void _softAssertHelper( const char* function, const char* file, int line, const char* message );
 
 /**
  * Helper method for <tt>hard_assert</tt> macro.
@@ -116,7 +116,7 @@ void _softAssertHelper( const char* message, const char* function, const char* f
  * @ingroup oz
  */
 OZ_NORETURN
-void _hardAssertHelper( const char* message, const char* function, const char* file, int line );
+void _hardAssertHelper( const char* function, const char* file, int line, const char* message );
 
 //***********************************
 //*             TYPES               *

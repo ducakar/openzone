@@ -63,6 +63,9 @@ void MainInstance::mainThreadMain( void* )
 
     client::client.shutdown();
   }
+  catch( const Exception& e ) {
+    System::error( e );
+  }
   catch( const std::exception& e ) {
     System::error( e );
   }
@@ -236,6 +239,9 @@ int main( int argc, char** argv )
     }
 
     client::client.shutdown();
+  }
+  catch( const Exception& e ) {
+    System::error( e );
   }
   catch( const std::exception& e ) {
     System::error( e );

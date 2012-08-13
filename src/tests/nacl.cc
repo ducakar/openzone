@@ -79,6 +79,9 @@ int main( int, char** )
 
     File::free();
   }
+  catch( const Exception& e ) {
+    System::error( e );
+  }
   catch( const std::exception& e ) {
     System::error( e );
   }

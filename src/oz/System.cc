@@ -161,7 +161,7 @@ static void construct()
 #if defined( __native_client__ )
 
   if( pthread_mutex_init( &bellLock, null ) != 0 ) {
-    System::error( 0, "Bell mutex creation failed" );
+    System::error( "Bell mutex creation failed" );
   }
 
 #elif defined( __ANDROID__ )
@@ -175,7 +175,7 @@ static void construct()
   signal( SIGTRAP, SIG_IGN );
 
   if( pthread_spin_init( &bellLock, PTHREAD_PROCESS_PRIVATE ) != 0 ) {
-    System::error( 0, "Bell spin lock creation failed" );
+    OZ_ERROR( "Bell spin lock creation failed" );
   }
 
   void* library = dlopen( "libpulse-simple.so.0", RTLD_NOW );
@@ -224,7 +224,7 @@ static void signalHandler( int sigNum )
   Log::verboseMode = false;
   Log::printSignal( sigNum );
 
-  StackTrace st = StackTrace::current( 1 );
+  StackTrace st = StackTrace::current( 0 );
   Log::printTrace( st );
   Log::println();
 
@@ -244,13 +244,13 @@ static void catchSignals()
 OZ_NORETURN
 static void terminate()
 {
-  System::error( 0, "EXCEPTION HANDLING ABORTED" );
+  OZ_ERROR( "EXCEPTION HANDLING ABORTED" );
 }
 
 OZ_NORETURN
 static void unexpected()
 {
-  System::error( 0, "EXCEPTION SPECIFICATION VIOLATION" );
+  OZ_ERROR( "EXCEPTION SPECIFICATION VIOLATION" );
 }
 
 #if defined( __native_client__ )
@@ -518,14 +518,15 @@ void System::bell()
 
     pthread_t thread;
     if( pthread_create( &thread, null, bellThread, null ) != 0 ) {
-      System::error( 0, "Bell thread creation failed" );
+      OZ_ERROR( "Bell thread creation failed" );
     }
   }
 
 #endif
 }
 
-void System::warning( int nSkippedFrames, const char* msg, ... )
+void System::warning( const char* function, const char* file, int line, int nSkippedFrames,
+                      const char* msg, ... )
 {
   trap();
 
@@ -537,20 +538,21 @@ void System::warning( int nSkippedFrames, const char* msg, ... )
   Log::verboseMode = false;
   Log::putsRaw( "\n\n" );
   Log::vprintRaw( msg, ap );
-  Log::putsRaw( "\n" );
+  Log::printRaw( "\n  in %s\n  at %s:%d\n", function, file, line );
 
   Log::verboseMode = verboseMode;
 
   va_end( ap );
 
-  StackTrace st = StackTrace::current( 1 + nSkippedFrames );
+  StackTrace st = StackTrace::current( nSkippedFrames + 1 );
   Log::printTrace( st );
   Log::println();
 
   bell();
 }
 
-void System::error( int nSkippedFrames, const char* msg, ... )
+void System::error( const char* function, const char* file, int line, int nSkippedFrames,
+                    const char* msg, ... )
 {
   trap();
 
@@ -560,11 +562,11 @@ void System::error( int nSkippedFrames, const char* msg, ... )
   Log::verboseMode = false;
   Log::putsRaw( "\n\n" );
   Log::vprintRaw( msg, ap );
-  Log::putsRaw( "\n" );
+  Log::printRaw( "\n  in %s\n  at %s:%d\n", function, file, line );
 
   va_end( ap );
 
-  StackTrace st = StackTrace::current( 1 + nSkippedFrames );
+  StackTrace st = StackTrace::current( nSkippedFrames + 1 );
   Log::printTrace( st );
   Log::println();
 
@@ -573,6 +575,18 @@ void System::error( int nSkippedFrames, const char* msg, ... )
 }
 
 void System::error( const std::exception& e )
+{
+  trap();
+
+  Log::verboseMode = false;
+  Log::printException( e );
+  Log::println();
+
+  bell();
+  abort();
+}
+
+void System::error( const Exception& e )
 {
   trap();
 

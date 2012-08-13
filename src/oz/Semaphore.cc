@@ -142,7 +142,7 @@ void Semaphore::init( int counter )
 
   void* descriptorPtr = malloc( sizeof( Descriptor ) );
   if( descriptorPtr == null ) {
-    System::error( 0, "Semaphore resource allocation failed" );
+    OZ_ERROR( "Semaphore resource allocation failed" );
   }
 
   descriptor = new( descriptorPtr ) Descriptor();
@@ -152,16 +152,16 @@ void Semaphore::init( int counter )
 
   descriptor->semaphore = CreateSemaphore( null, counter, 0x7fffffff, null );
   if( descriptor->semaphore == null ) {
-    System::error( 0, "Semaphore semaphore creation failed" );
+    System::error( "Semaphore semaphore creation failed" );
   }
 
 #else
 
   if( pthread_mutex_init( &descriptor->mutex, null ) != 0 ) {
-    System::error( 0, "Semaphore mutex creation failed" );
+    OZ_ERROR( "Semaphore mutex creation failed" );
   }
   if( pthread_cond_init( &descriptor->cond, null ) != 0 ) {
-    System::error( 0, "Semaphore condition variable creation failed" );
+    OZ_ERROR( "Semaphore condition variable creation failed" );
   }
 
 #endif

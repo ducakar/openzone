@@ -28,7 +28,29 @@
 
 #pragma once
 
-#include "common.hh"
+#include "Exception.hh"
+
+/**
+ * @def OZ_WARNING
+ *
+ * Wrapper for calling <tt>oz::System::warning()</tt> method, filling in current function, file and
+ * line parameters.
+ *
+ * @ingroup oz
+ */
+#define OZ_WARNING( ... ) \
+  oz::System::warning( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
+
+/**
+ * @def OZ_ERROR
+ *
+ * Wrapper for calling <tt>oz::System::error()</tt> method, filling in current function, file and
+ * line parameters.
+ *
+ * @ingroup oz
+ */
+#define OZ_ERROR( ... ) \
+  oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
 
 #ifdef __native_client__
 
@@ -125,26 +147,45 @@ class System
     /**
      * Print warning message.
      *
-     * This function first triggers breakpoint with <tt>trap()</tt>, prints error message and stack
-     * trace to global log instance and plays a bell.
+     * This function first triggers breakpoint with <tt>trap()</tt>, prints error message, file
+     * location and stack trace (skipping <tt>nSkippedFrames</tt> stack frames relative to the
+     * caller) to log and plays a bell.
+     *
+     * You will probably want to use <tt>OZ_WARNING</tt> macro instead to fill in the current
+     * function, file and line for you.
      */
-    OZ_PRINTF_FORMAT( 2, 3 )
-    static void warning( int nSkippedFrames, const char* msg, ... );
+    OZ_PRINTF_FORMAT( 5, 6 )
+    static void warning( const char* function, const char* file, int line, int nSkippedFrames,
+                         const char* msg, ... );
 
     /**
      * Print error message and halt the program.
      *
-     * Same as <tt>warning()</tt> but also aborts the program.
+     * Same as <tt>System::warning()</tt> but also aborts the program.
+     *
+     * You will probably want to use <tt>OZ_ERROR</tt> macro instead to fill in the current
+     * function, file and line for you.
      */
     OZ_NORETURN
-    OZ_PRINTF_FORMAT( 2, 3 )
-    static void error( int nSkippedFrames, const char* msg, ... );
+    OZ_PRINTF_FORMAT( 5, 6 )
+    static void error( const char* function, const char* file, int line, int nSkippedFrames,
+                       const char* msg, ... );
 
     /**
-     * Similar to previous <tt>error()</tt>, exception description is printed as error message.
+     * Print exception message and halt the program.
+     *
+     * No file location or stack trace is printed with this version.
      */
     OZ_NORETURN
     static void error( const std::exception& e );
+
+    /**
+     * Print exception message and halt the program.
+     *
+     * File location and stack trace of exception is printed.
+     */
+    OZ_NORETURN
+    static void error( const Exception& e );
 
     /**
      * Initialise <tt>System</tt> features.

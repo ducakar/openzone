@@ -90,14 +90,14 @@ void Thread::start( Main* main, void* data )
 
   void* descriptorPtr = malloc( sizeof( Descriptor ) );
   if( descriptorPtr == null ) {
-    System::error( 0, "Thread resource allocation failed" );
+    OZ_ERROR( "Thread resource allocation failed" );
   }
 
   descriptor = new( descriptorPtr ) Descriptor();
 
   void* threadDataPtr = malloc( sizeof( ThreadMainData ) );
   if( threadDataPtr == null ) {
-    System::error( 0, "Thread resource allocation failed" );
+    OZ_ERROR( "Thread resource allocation failed" );
   }
 
   ThreadMainData* threadData = new( threadDataPtr ) ThreadMainData();
@@ -109,13 +109,13 @@ void Thread::start( Main* main, void* data )
 
   descriptor->thread = CreateThread( null, 0, winMain, threadData, 0, null );
   if( descriptor->thread == null ) {
-    System::error( 0, "Thread creation failed" );
+    OZ_ERROR( "Thread creation failed" );
   }
 
 #else
 
   if( pthread_create( &descriptor->thread, null, pthreadMain, threadData ) != 0 ) {
-    System::error( 0, "Thread creation failed" );
+    OZ_ERROR( "Thread creation failed" );
   }
 
 #endif
@@ -133,7 +133,7 @@ void Thread::join()
 #else
 
   if( pthread_join( descriptor->thread, null ) != 0 ) {
-    System::error( 0, "Thread join failed" );
+    OZ_ERROR( "Thread join failed" );
   }
 
 #endif

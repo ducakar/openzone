@@ -70,7 +70,7 @@ void Terra::load( int id_ )
 
     for( int x = 0; x < VERTS; ++x ) {
       for( int y = 0; y < VERTS; ++y ) {
-        quads[x][y].vertex.z = is.readFloat();
+        quads[x][y].vertex.z = is.readFloat() * 2.0f;
       }
     }
 

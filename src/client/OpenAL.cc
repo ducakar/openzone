@@ -67,7 +67,7 @@ void alCheckError( const char* function, const char* file, int line )
     }
   }
 
-  System::error( 1, "AL error `%s' at %s:%d: %s", message, file, line, function );
+  System::error( function, file, line, 1, "AL error '%s'", message );
 }
 
 #endif

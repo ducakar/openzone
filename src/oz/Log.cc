@@ -313,34 +313,34 @@ void Log::printException( const std::exception& e )
 {
   char buffer[OUT_BUFFER_SIZE];
 
-  const Exception* oe = dynamic_cast<const Exception*>( &e );
+  snprintf( buffer, OUT_BUFFER_SIZE, "\n\nException: %s\n", e.what() );
 
-  if( oe == null ) {
-    snprintf( buffer, OUT_BUFFER_SIZE, "\n\nException: %s\n", e.what() );
-
-    if( !verboseMode || showVerbose || file == null ) {
-      fputs( buffer, stdout );
-    }
-
-    if( file != null ) {
-      fputs( buffer, file );
-      fflush( file );
-    }
+  if( !verboseMode || showVerbose || file == null ) {
+    fputs( buffer, stdout );
   }
-  else {
-    snprintf( buffer, OUT_BUFFER_SIZE, "\n\nException: %s\n  in %s\n  at %s:%d\n",
-              oe->message, oe->function, oe->file, oe->line );
 
-    if( !verboseMode || showVerbose || file == null ) {
-      fputs( buffer, stdout );
-    }
-
-    if( file != null ) {
-      fputs( buffer, file );
-    }
-
-    printTrace( oe->stackTrace );
+  if( file != null ) {
+    fputs( buffer, file );
+    fflush( file );
   }
+}
+
+void Log::printException( const Exception& e )
+{
+  char buffer[OUT_BUFFER_SIZE];
+
+  snprintf( buffer, OUT_BUFFER_SIZE, "\n\nException: %s\n  in %s\n  at %s:%d\n",
+            e.message, e.function, e.file, e.line );
+
+  if( !verboseMode || showVerbose || file == null ) {
+    fputs( buffer, stdout );
+  }
+
+  if( file != null ) {
+    fputs( buffer, file );
+  }
+
+  printTrace( e.stackTrace );
 }
 
 void Log::printSignal( int sigNum )

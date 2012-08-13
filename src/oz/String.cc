@@ -60,7 +60,7 @@ void String::ensureCapacity()
     buffer = static_cast<char*>( malloc( size_t( count + 1 ) ) );
 
     if( buffer == null ) {
-      System::error( 0, "String allocation failed" );
+      OZ_ERROR( "String allocation failed" );
     }
   }
 }

@@ -120,17 +120,8 @@ int main()
 {
   System::init();
 
-  List<int> m;
-  m.resize( 8 );
-
-  std::vector<int> v;
-  v.resize( 8, 1 );
-
-  foreach( i, m.citer() ) {
-    printf( "l: %d\n", *i );
-  }
-  for( auto& i : v ) {
-    printf( "v: %d\n", i );
+  if( int i = 1 ) {
+    printf( "%d\n", i );
   }
 
   return 0;

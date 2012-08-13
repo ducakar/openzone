@@ -378,10 +378,10 @@ static void deallocateObject( void* ptr )
   }
 
   if( st == null ) {
-    System::error( 1, "ALLOC: Trying to free object at %p that has not been allocated", ptr );
+    System::error( "ALLOC: Trying to free object at %p that has not been allocated", ptr );
   }
   else {
-    System::error( 1, "ALLOC: new[] -> delete mismatch for block at %p", ptr );
+    System::error( "ALLOC: new[] -> delete mismatch for block at %p", ptr );
   }
 
 backtraceFound:
@@ -463,10 +463,10 @@ static void deallocateArray( void* ptr )
   }
 
   if( st == null ) {
-    System::error( 1, "ALLOC: Trying to free array at %p that has not been allocated", ptr );
+    System::error( "ALLOC: Trying to free array at %p that has not been allocated", ptr );
   }
   else {
-    System::error( 1, "ALLOC: new -> delete[] mismatch for block at %p", ptr );
+    System::error( "ALLOC: new -> delete[] mismatch for block at %p", ptr );
   }
 
 backtraceFound:

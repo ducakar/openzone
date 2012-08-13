@@ -95,16 +95,16 @@
 #include "Bounds.hh"
 
 /*
- * System.
- */
-#include "System.hh"
-#include "Time.hh"
-
-/*
  * Error handling.
  */
 #include "StackTrace.hh"
 #include "Exception.hh"
+
+/*
+ * System.
+ */
+#include "System.hh"
+#include "Time.hh"
 
 /*
  * Threading.

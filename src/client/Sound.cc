@@ -101,6 +101,9 @@ void Sound::musicMain( void* )
   try {
     sound.musicRun();
   }
+  catch( const Exception& e ) {
+    System::error( e );
+  }
   catch( const std::exception& e ) {
     System::error( e );
   }
@@ -110,6 +113,9 @@ void Sound::soundMain( void* )
 {
   try {
     sound.soundRun();
+  }
+  catch( const Exception& e ) {
+    System::error( e );
   }
   catch( const std::exception& e ) {
     System::error( e );

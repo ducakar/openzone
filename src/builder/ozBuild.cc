@@ -43,6 +43,9 @@ int main( int argc, char** argv )
   try {
     exitCode = builder::builder.main( argc, argv );
   }
+  catch( const Exception& e ) {
+    System::error( e );
+  }
   catch( const std::exception& e ) {
     System::error( e );
   }

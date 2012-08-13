@@ -95,7 +95,7 @@ void Mutex::init()
 
   void* descriptorPtr = malloc( sizeof( Descriptor ) );
   if( descriptorPtr == null ) {
-    System::error( 0, "Mutex resource allocation failed" );
+    OZ_ERROR( "Mutex resource allocation failed" );
   }
 
   descriptor = new( descriptorPtr ) Descriptor();
@@ -104,13 +104,13 @@ void Mutex::init()
 
   descriptor->mutex = CreateMutex( null, false, null );
   if( descriptor->mutex == null ) {
-    System::error( 0, "Mutex initialisation failed" );
+    OZ_ERROR( "Mutex initialisation failed" );
   }
 
 #else
 
   if( pthread_mutex_init( &descriptor->mutex, null ) != 0 ) {
-    System::error( 0, "Mutex initialisation failed" );
+    OZ_ERROR( "Mutex initialisation failed" );
   }
 
 #endif
