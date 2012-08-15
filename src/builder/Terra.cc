@@ -61,10 +61,8 @@ void Terra::load()
     OZ_ERROR( "Liquid should be either WATER or LAVA" );
   }
 
-  liquidColour.x = config["liquidFogColour.r"].get( 0.00f );
-  liquidColour.y = config["liquidFogColour.g"].get( 0.05f );
-  liquidColour.z = config["liquidFogColour.b"].get( 0.20f );
-  liquidColour.w = 1.0f;
+  liquidColour = Vec4( 0.00f, 0.05f, 0.20f, 1.00f );
+  config["liquidFogColour"].get( liquidColour, 4 );
 
   liquidTexture  = config["liquidTexture"].get( "" );
   detailTexture  = config["detailTexture"].get( "" );
@@ -81,32 +79,42 @@ void Terra::load()
     OZ_ERROR( "Failed to load heightmap '%s'", realPath.cstr() );
   }
 
-  int width  = int( FreeImage_GetWidth( image ) );
-  int height = int( FreeImage_GetHeight( image ) );
-  int bpp    = int( FreeImage_GetBPP( image ) );
-  int type   = int( FreeImage_GetImageType( image ) );
+  width    = int( FreeImage_GetWidth( image ) );
+  height   = int( FreeImage_GetHeight( image ) );
+  int bpp  = int( FreeImage_GetBPP( image ) );
+  int type = int( FreeImage_GetImageType( image ) );
 
-  if( width != matrix::Terra::VERTS || height != matrix::Terra::VERTS || bpp != 48 ||
-      type != FIT_RGB16 )
+  if( type != FIT_RGB16 || bpp != 48 || width <= 0 || height <= 0 ||
+      width > matrix::Terra::VERTS || width > matrix::Terra::VERTS )
   {
-    OZ_ERROR( "Invalid terrain heightmap format %d x %d %d bpp, should be %d x %d 48 bpp RGB"
-              " (red channel as greyscale)",
+    OZ_ERROR( "Invalid terrain heightmap format %d x %d %d bpp, should be at most %d x %d and"
+              " 48 bpp RGB (red channel is used as height, green and blue are ignored)",
               width, height, bpp, matrix::Terra::VERTS, matrix::Terra::VERTS );
   }
 
+  Log::printEnd( " OK" );
   Log::print( "Calculating triangles ..." );
 
   for( int y = matrix::Terra::VERTS - 1; y >= 0; --y ) {
-    const ushort* pixel = reinterpret_cast<const ushort*>( FreeImage_GetScanLine( image, y ) );
-
     for( int x = 0; x < matrix::Terra::VERTS; ++x ) {
-      float value = float( *pixel ) / float( USHRT_MAX );
-
       quads[x][y].vertex.x     = float( x * matrix::Terra::Quad::SIZE - matrix::Terra::DIM );
       quads[x][y].vertex.y     = float( y * matrix::Terra::Quad::SIZE - matrix::Terra::DIM );
-      quads[x][y].vertex.z     = Math::mix( minHeight, maxHeight, value );
+      quads[x][y].vertex.z     = 0.0f;
       quads[x][y].triNormal[0] = Vec3::ZERO;
       quads[x][y].triNormal[1] = Vec3::ZERO;
+    }
+  }
+
+  int minVertX = ( matrix::Terra::VERTS - width ) / 2;
+  int minVertY = ( matrix::Terra::VERTS - height ) / 2;
+
+  for( int y = height - 1; y >= 0; --y ) {
+    const ushort* pixel = reinterpret_cast<const ushort*>( FreeImage_GetScanLine( image, y ) );
+
+    for( int x = 0; x < width; ++x ) {
+      float value = float( *pixel ) / float( USHRT_MAX );
+
+      quads[minVertX + x][minVertY + y].vertex.z = Math::mix( minHeight, maxHeight, value );
 
       pixel += 3;
     }
@@ -209,6 +217,9 @@ void Terra::saveClient()
   Bitset waterTiles( client::Terra::TILES * client::Terra::TILES );
   waterTiles.clearAll();
 
+  int minVertX = ( matrix::Terra::VERTS - width ) / 2;
+  int minVertY = ( matrix::Terra::VERTS - height ) / 2;
+
   for( int i = 0; i < client::Terra::TILES; ++i ) {
     for( int j = 0; j < client::Terra::TILES; ++j ) {
       // tile
@@ -235,7 +246,10 @@ void Terra::saveClient()
           }
           normal = ~normal;
 
-          if( quads[x][y].vertex.z < 0.0f ) {
+          if( minVertX <= x && x < minVertX + width && minVertY < y && y < minVertY + height &&
+              ( quads[x][y].vertex.z < 0.0f || quads[x + 1][y].vertex.z < 0.0f ||
+                quads[x][y + 1].vertex.z < 0.0f || quads[x + 1][y + 1].vertex.z < 0.0f ) )
+          {
             waterTiles.set( i * client::Terra::TILES + j );
           }
 

@@ -70,7 +70,7 @@ void Terra::load( int id_ )
 
     for( int x = 0; x < VERTS; ++x ) {
       for( int y = 0; y < VERTS; ++y ) {
-        quads[x][y].vertex.z = is.readFloat() * 2.0f;
+        quads[x][y].vertex.z = is.readFloat();
       }
     }
 
@@ -100,8 +100,8 @@ void Terra::init()
 {
   for( int x = 0; x < VERTS; ++x ) {
     for( int y = 0; y < VERTS; ++y ) {
-      quads[x][y].vertex.x     = float( x * Quad::SIZE - DIM );
-      quads[x][y].vertex.y     = float( y * Quad::SIZE - DIM );
+      quads[x][y].vertex.x = float( x * Quad::SIZE - DIM );
+      quads[x][y].vertex.y = float( y * Quad::SIZE - DIM );
     }
   }
 }

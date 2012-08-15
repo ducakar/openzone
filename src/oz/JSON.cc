@@ -121,6 +121,10 @@ class JSON::Parser
 
     Position pos;
 
+  private:
+
+    static void setAccessed( JSON* value );
+
     Parser( InputStream* istream, const char* path );
 
     char skipBlanks();
@@ -175,6 +179,34 @@ inline void JSON::Parser::Position::back()
   hard_assert( istream->length() > 0 );
 
   istream->setPos( istream->getPos() - 1 );
+}
+
+OZ_HIDDEN
+void JSON::Parser::setAccessed( JSON* value )
+{
+  value->wasAccessed = true;
+
+  switch( value->valueType ) {
+    default: {
+      break;
+    }
+    case ARRAY: {
+      const List<JSON>& list = static_cast<const ArrayData*>( value->data )->list;
+
+      foreach( i, list.iter() ) {
+        setAccessed( i );
+      }
+      break;
+    }
+    case OBJECT: {
+      const HashString<JSON>& table = static_cast<const ObjectData*>( value->data )->table;
+
+      foreach( i, table.iter() ) {
+        setAccessed( &i.value() );
+      }
+      break;
+    }
+  }
 }
 
 OZ_HIDDEN
@@ -373,7 +405,7 @@ JSON JSON::Parser::parseObject()
     JSON value = parseValue();
 
     if( key.beginsWith( "//" ) ) {
-      value.wasAccessed = true;
+      setAccessed( &value );
     }
 
     table.add( static_cast<String&&>( key ), static_cast<JSON&&>( value ) );

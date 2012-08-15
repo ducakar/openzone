@@ -199,7 +199,8 @@ bool Physics::handleObjFriction()
           deltaVelX -= entity.velocity.x;
           deltaVelY -= entity.velocity.y;
 
-          if( !( dyn->flags & Object::IN_LIQUID_BIT ) ) {
+          // Push a little into entity if e.g. on an elevator going down.
+          if( entity.velocity.z < 0.0f && !( dyn->flags & Object::IN_LIQUID_BIT ) ) {
             systemMom += ENTITY_BOND_G_RATIO * gravity;
           }
         }
@@ -231,6 +232,9 @@ bool Physics::handleObjFriction()
       dyn->momentum.x -= deltaVelX * friction;
       dyn->momentum.y -= deltaVelY * friction;
       dyn->momentum.z *= 1.0f - friction;
+
+      // Push into floor just enough that collision occurs continuously each tick.
+      dyn->momentum.z -= EPSILON / Timer::TICK_TIME;
 
       if( deltaVel2 > stickVel ) {
         dyn->flags |= Object::FRICTING_BIT;

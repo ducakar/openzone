@@ -36,7 +36,7 @@ namespace matrix
 
 struct Cell
 {
-  static const int SIZE = 8;
+  static const int SIZE = 16;
 
   SList<short, 6> structs;
   Chain<Object>   objects;
@@ -57,7 +57,7 @@ class Orbis : public Bounds
 
     static const int MAX_STRUCTS = 1 << 14;
     static const int MAX_OBJECTS = 1 << 16;
-    static const int MAX_FRAGS   = 1 << 15;
+    static const int MAX_FRAGS   = 1 << 14;
 
   public:
 
@@ -65,14 +65,12 @@ class Orbis : public Bounds
     static const int DIM   = MAX_WORLD_COORD;
     static const int CELLS = 2 * DIM / Cell::SIZE;
 
-    Caelum caelum;
-    Terra  terra;
-
+    Caelum                      caelum;
+    Terra                       terra;
     SList<Struct*, MAX_STRUCTS> structs;
     SList<Object*, MAX_OBJECTS> objects;
     SList<Frag*,   MAX_FRAGS>   frags;
-
-    Cell cells[Orbis::CELLS][Orbis::CELLS];
+    Cell                        cells[CELLS][CELLS];
 
   private:
 

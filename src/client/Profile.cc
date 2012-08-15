@@ -132,6 +132,8 @@ void Profile::init()
   if( !configExists ) {
     profileConfig.save( &profileFile );
   }
+
+  profileConfig.clear( true );
 }
 
 void Profile::free()

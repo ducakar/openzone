@@ -575,6 +575,8 @@ void Input::init()
   SDL_SetRelativeMouseMode( SDL_TRUE );
 #endif
 
+  inputConfig.clear( true );
+
   Log::printEnd( " OK" );
 }
 

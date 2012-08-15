@@ -7,7 +7,7 @@
 
   "demolishSound":      "free/explode",
 
-  "waterFogColour":     [ 0.15, 0.00, 0.15 ],
+  "waterFogColour":     [ 0.15, 0.00, 0.15, 1.00 ],
 
   "boundObjects":
   [

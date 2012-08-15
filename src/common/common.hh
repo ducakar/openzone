@@ -68,7 +68,7 @@ namespace oz
  *
  * @ingroup common
  */
-const int MAX_WORLD_COORD = 4096;
+const int MAX_WORLD_COORD = 2048;
 
 /**
  * Margin for collision detection.
@@ -81,8 +81,7 @@ const int MAX_WORLD_COORD = 4096;
  * When we translate an object additional errors are introduces.
  * <tt>position += collider.hit.ratio * move</tt> can introduce at most
  * \f$ 2 \cdot |maxWorldCoord| \cdot \varepsilon \sqrt 3 \f$ error.
- * Sum of all those errors should be less than <tt>|maxWorldCoord| * 3.0f * Math::FLOAT_EPS</tt> or,
- * just in case, a little more.
+ * Sum of all those errors should be less than <tt>|maxWorldCoord| * 3 * Math::FLOAT_EPS</tt>.
  *
  * @ingroup common
  */

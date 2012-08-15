@@ -539,12 +539,7 @@ class Map
     {
       int i = aBisectPosition<Elem, Key_>( data, key, count );
 
-      if( i != 0 && data[i - 1].key == key ) {
-        data[i - 1].value = static_cast<Value_&&>( value );
-      }
-      else {
-        insert<Key_, Value_>( i, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
-      }
+      insert<Key_, Value_>( i, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
       return i;
     }
 

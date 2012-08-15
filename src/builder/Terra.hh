@@ -38,6 +38,9 @@ class Terra
 
     String name;
 
+    int    width;
+    int    height;
+
     int    liquid;
     Vec4   liquidColour;
 
