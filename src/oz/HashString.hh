@@ -41,7 +41,7 @@ namespace oz
  *
  * @ingroup oz
  */
-template <typename Value = nullptr_t, int SIZE = 256>
+template <typename Value = nil_t, int SIZE = 256>
 class HashString
 {
   static_assert( SIZE > 0, "HashString size must be at least 1" );
@@ -525,14 +525,14 @@ class HashString
     bool contains( const char* key ) const
     {
       uint  i = uint( String::hash( key ) ) % uint( SIZE );
-      Elem* p = data[i];
+      Elem* e = data[i];
 
-      while( p != null ) {
-        if( p->key.equals( key ) ) {
+      while( e != null ) {
+        if( e->key.equals( key ) ) {
           return true;
         }
 
-        p = p->next;
+        e = e->next;
       }
       return false;
     }
@@ -543,14 +543,14 @@ class HashString
     const Value* find( const char* key ) const
     {
       uint  i = uint( String::hash( key ) ) % uint( SIZE );
-      Elem* p = data[i];
+      Elem* e = data[i];
 
-      while( p != null ) {
-        if( p->key.equals( key ) ) {
-          return &p->value;
+      while( e != null ) {
+        if( e->key.equals( key ) ) {
+          return &e->value;
         }
 
-        p = p->next;
+        e = e->next;
       }
       return null;
     }
@@ -561,14 +561,14 @@ class HashString
     Value* find( const char* key )
     {
       uint  i = uint( String::hash( key ) ) % uint( SIZE );
-      Elem* p = data[i];
+      Elem* e = data[i];
 
-      while( p != null ) {
-        if( p->key.equals( key ) ) {
-          return &p->value;
+      while( e != null ) {
+        if( e->key.equals( key ) ) {
+          return &e->value;
         }
 
-        p = p->next;
+        e = e->next;
       }
       return null;
     }
@@ -582,15 +582,15 @@ class HashString
     Value* add( const char* key, Value_&& value = Value() )
     {
       uint  i = uint( String::hash( key ) ) % uint( SIZE );
-      Elem* p = data[i];
+      Elem* e = data[i];
 
-      while( p != null ) {
-        if( p->key.equals( key ) ) {
-          p->value = static_cast<Value_&&>( value );
-          return &p->value;
+      while( e != null ) {
+        if( e->key.equals( key ) ) {
+          e->value = static_cast<Value_&&>( value );
+          return &e->value;
         }
 
-        p = p->next;
+        e = e->next;
       }
 
       data[i] = new( pool ) Elem( data[i], key, static_cast<Value_&&>( value ) );
@@ -609,14 +609,14 @@ class HashString
     Value* include( const char* key, Value_&& value = Value() )
     {
       uint  i = uint( String::hash( key ) ) % uint( SIZE );
-      Elem* p = data[i];
+      Elem* e = data[i];
 
-      while( p != null ) {
-        if( p->key.equals( key ) ) {
-          return &p->value;
+      while( e != null ) {
+        if( e->key.equals( key ) ) {
+          return &e->value;
         }
 
-        p = p->next;
+        e = e->next;
       }
 
       data[i] = new( pool ) Elem( data[i], key, static_cast<Value_&&>( value ) );
@@ -634,21 +634,21 @@ class HashString
     bool exclude( const char* key )
     {
       uint   i    = uint( String::hash( key ) ) % uint( SIZE );
-      Elem*  p    = data[i];
+      Elem*  e    = data[i];
       Elem** prev = &data[i];
 
-      while( p != null ) {
-        if( p->key.equals( key ) ) {
-          *prev = p->next;
+      while( e != null ) {
+        if( e->key.equals( key ) ) {
+          *prev = e->next;
 
-          p->~Elem();
-          pool.dealloc( p );
+          e->~Elem();
+          pool.dealloc( e );
 
           return true;
         }
 
-        prev = &p->next;
-        p = p->next;
+        prev = &e->next;
+        e = e->next;
       }
       return false;
     }

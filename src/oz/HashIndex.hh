@@ -43,7 +43,7 @@ namespace oz
  *
  * @ingroup oz
  */
-template <typename Value = nullptr_t, int SIZE = 253>
+template <typename Value = nil_t, int SIZE = 253>
 class HashIndex
 {
   static_assert( SIZE > 0, "HashIndex size must be at least 1" );
@@ -509,14 +509,14 @@ class HashIndex
     bool contains( int key ) const
     {
       uint  i = uint( key ) % uint( SIZE );
-      Elem* p = data[i];
+      Elem* e = data[i];
 
-      while( p != null ) {
-        if( p->key == key ) {
+      while( e != null ) {
+        if( e->key == key ) {
           return true;
         }
 
-        p = p->next;
+        e = e->next;
       }
       return false;
     }
@@ -527,14 +527,14 @@ class HashIndex
     const Value* find( int key ) const
     {
       uint  i = uint( key ) % uint( SIZE );
-      Elem* p = data[i];
+      Elem* e = data[i];
 
-      while( p != null ) {
-        if( p->key == key ) {
-          return &p->value;
+      while( e != null ) {
+        if( e->key == key ) {
+          return &e->value;
         }
 
-        p = p->next;
+        e = e->next;
       }
       return null;
     }
@@ -545,14 +545,14 @@ class HashIndex
     Value* find( int key )
     {
       uint  i = uint( key ) % uint( SIZE );
-      Elem* p = data[i];
+      Elem* e = data[i];
 
-      while( p != null ) {
-        if( p->key == key ) {
-          return &p->value;
+      while( e != null ) {
+        if( e->key == key ) {
+          return &e->value;
         }
 
-        p = p->next;
+        e = e->next;
       }
       return null;
     }
@@ -566,15 +566,15 @@ class HashIndex
     Value* add( int key, Value_&& value = Value() )
     {
       uint  i = uint( key ) % uint( SIZE );
-      Elem* p = data[i];
+      Elem* e = data[i];
 
-      while( p != null ) {
-        if( p->key == key ) {
-          p->value = static_cast<Value_&&>( value );
-          return &p->value;
+      while( e != null ) {
+        if( e->key == key ) {
+          e->value = static_cast<Value_&&>( value );
+          return &e->value;
         }
 
-        p = p->next;
+        e = e->next;
       }
 
       data[i] = new( pool ) Elem( data[i], key, static_cast<Value_&&>( value ) );
@@ -593,14 +593,14 @@ class HashIndex
     Value* include( int key, Value_&& value = Value() )
     {
       uint  i = uint( key ) % uint( SIZE );
-      Elem* p = data[i];
+      Elem* e = data[i];
 
-      while( p != null ) {
-        if( p->key == key ) {
-          return &p->value;
+      while( e != null ) {
+        if( e->key == key ) {
+          return &e->value;
         }
 
-        p = p->next;
+        e = e->next;
       }
 
       data[i] = new( pool ) Elem( data[i], key, static_cast<Value_&&>( value ) );
@@ -618,21 +618,21 @@ class HashIndex
     bool exclude( int key )
     {
       uint   i    = uint( key ) % uint( SIZE );
-      Elem*  p    = data[i];
+      Elem*  e    = data[i];
       Elem** prev = &data[i];
 
-      while( p != null ) {
-        if( p->key == key ) {
-          *prev = p->next;
+      while( e != null ) {
+        if( e->key == key ) {
+          *prev = e->next;
 
-          p->~Elem();
-          pool.dealloc( p );
+          e->~Elem();
+          pool.dealloc( e );
 
           return true;
         }
 
-        prev = &p->next;
-        p = p->next;
+        prev = &e->next;
+        e = e->next;
       }
       return false;
     }

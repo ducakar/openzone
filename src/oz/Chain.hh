@@ -170,9 +170,32 @@ class Chain
     {}
 
     /**
-     * Clone the chain.
-     *
-     * Create a new chain from copies of all elements of the original chain.
+     * Move constructor, rebinds elements to the new chain.
+     */
+    Chain( Chain&& c ) :
+      firstElem( c.firstElem )
+    {
+      c.firstElem = null;
+    }
+
+    /**
+     * Move operator, rebinds elements to the destination chain.
+     */
+    Chain& operator = ( Chain&& c )
+    {
+      if( &c == this ) {
+        return *this;
+      }
+
+      firstElem = c.firstElem;
+
+      c.firstElem = null;
+
+      return *this;
+    }
+
+    /**
+     * Create a copy of the chain and all its elements.
      */
     Chain clone() const
     {
@@ -327,7 +350,7 @@ class Chain
     }
 
     /**
-     * Add an element to the beginning of the chain.
+     * Bind an element to the beginning of the chain.
      *
      * For efficiency reasons, elements are added to the beginning of a chain in contrast with array
      * lists.
@@ -338,7 +361,7 @@ class Chain
     }
 
     /**
-     * Insert an element after some given element in the chain.
+     * Bind an element after some given element in the chain.
      */
     void insertAfter( Elem* e, Elem* p )
     {
@@ -349,7 +372,7 @@ class Chain
     }
 
     /**
-     * Remove the first element from the chain.
+     * Unbind the first element from the chain.
      *
      * To keep LIFO behaviour for <tt>add()</tt> and <tt>remove()</tt> methods like in array lists,
      * the first element is removed instead of the last one.
@@ -360,7 +383,7 @@ class Chain
     }
 
     /**
-     * Remove the given element from the chain.
+     * Unbind the given element from the chain.
      *
      * Because this chain is not a double-linked, one have to provide pointer to the preceding
      * element.
@@ -378,7 +401,7 @@ class Chain
     }
 
     /**
-     * Add an element to the beginning of the chain.
+     * Bind an element to the beginning of the chain.
      */
     void pushFirst( Elem* e )
     {
@@ -389,7 +412,7 @@ class Chain
     }
 
     /**
-     * Pop the first element from the chain.
+     * Unbind the first element from the chain.
      */
     Elem* popFirst()
     {

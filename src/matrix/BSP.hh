@@ -123,14 +123,6 @@ class BSP : public Bounds
       Heading            heading;
     };
 
-    String          name;        ///< Name.
-    String          title;       ///< Title.
-    String          description; ///< Description.
-    List<int>       sounds;      ///< Set of used sound samples.
-
-    float           life;
-    float           resistance;
-
     int             nPlanes;
     int             nNodes;
     int             nLeaves;
@@ -149,16 +141,21 @@ class BSP : public Bounds
     int*            brushSides;
     BoundObject*    boundObjects;
 
+    String          name;          ///< Name.
+    String          title;         ///< Title.
+    String          description;   ///< Description.
+
+    float           life;
+    float           resistance;
+
     const FragPool* fragPool;
     int             nFrags;
 
+    DArray<int>     sounds;        ///< Set of used sound samples.
     int             demolishSound;
 
     int             id;            ///< Used for indexing BSPs in Context.
     int             nUsers;
-
-    explicit BSP( const char* name, int id );
-    ~BSP();
 
     void request();
     void release();
@@ -166,7 +163,7 @@ class BSP : public Bounds
     void load();
     void unload();
 
-    void init();
+    void init( const char* name, int id );
 
 };
 

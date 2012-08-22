@@ -48,7 +48,7 @@ namespace oz
  *
  * @ingroup oz
  */
-template <typename Key, typename Value = nullptr_t>
+template <typename Key, typename Value = nil_t>
 class Map
 {
   private:
@@ -263,8 +263,8 @@ class Map
   private:
 
     Elem* data;  ///< Element storage.
-    int   size;  ///< Capacity, number of elements in storage.
     int   count; ///< Number of elements.
+    int   size;  ///< Capacity, number of elements in storage.
 
     /**
      * Double capacity if there is not enough space to add another element.
@@ -295,7 +295,7 @@ class Map
      * Create an empty map.
      */
     Map() :
-      data( null ), size( 0 ), count( 0 )
+      data( null ), count( 0 ), size( 0 )
     {}
 
     /**
@@ -310,7 +310,7 @@ class Map
      * Copy constructor, copies elements.
      */
     Map( const Map& m ) :
-      data( m.size == 0 ? null : new Elem[m.size] ), size( m.size ), count( m.count )
+      data( m.size == 0 ? null : new Elem[m.size] ), count( m.count ), size( m.size )
     {
       aCopy<Elem>( data, m.data, m.count );
     }
@@ -319,11 +319,11 @@ class Map
      * Move constructor, moves element storage.
      */
     Map( Map&& m ) :
-      data( m.data ), size( m.size ), count( m.count )
+      data( m.data ), count( m.count ), size( m.size )
     {
       m.data  = null;
-      m.size  = 0;
       m.count = 0;
+      m.size  = 0;
     }
 
     /**
@@ -362,12 +362,12 @@ class Map
       delete[] data;
 
       data  = m.data;
-      size  = m.size;
       count = m.count;
+      size  = m.size;
 
       m.data  = null;
-      m.size  = 0;
       m.count = 0;
+      m.size  = 0;
 
       return *this;
     }
@@ -376,7 +376,7 @@ class Map
      * Create an empty map with the given initial capacity.
      */
     explicit Map( int size_ ) :
-      data( new Elem[size_] ), size( size_ ), count( 0 )
+      data( new Elem[size_] ), count( 0 ), size( size_ )
     {}
 
     /**
@@ -445,6 +445,17 @@ class Map
      */
     OZ_ALWAYS_INLINE
     const Key& operator [] ( int i ) const
+    {
+      hard_assert( uint( i ) < uint( count ) );
+
+      return data[i].key;
+    }
+
+    /**
+     * Reference to the i-th element's key.
+     */
+    OZ_ALWAYS_INLINE
+    Key& operator [] ( int i )
     {
       hard_assert( uint( i ) < uint( count ) );
 

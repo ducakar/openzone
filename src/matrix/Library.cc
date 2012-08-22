@@ -370,8 +370,8 @@ void Library::initBSPs()
 
     Log::println( "%s", name.cstr() );
 
-    BSP* bsp = bsps.add( name, BSP( name, bsps.length() ) );
-    bsp->init();
+    BSP* bsp = bsps.add( name );
+    bsp->init( name, bsps.length() );
   }
 
   nBSPs = bsps.length();
@@ -743,12 +743,12 @@ void Library::init( const char* userMusicPath )
   initSounds();
   initCaela();
   initTerrae();
-  initBSPs();
   initModels();
-  initMusic( userMusicPath );
   initNameLists();
   initFragPools();
   initClasses();
+  initBSPs();
+  initMusic( userMusicPath );
 
   Log::unindent();
   Log::println( "}" );

@@ -1008,16 +1008,20 @@ void BSP::saveMatrix()
   os.writeString( title );
   os.writeString( description );
 
+  os.writeFloat( life );
+  os.writeFloat( resistance );
+
+  os.writeString( fragPool );
+  os.writeInt( nFrags );
+
   os.writeInt( sounds.length() );
   foreach( sound, sounds.citer() ) {
     os.writeString( *sound );
   }
-
   sounds.clear();
   sounds.dealloc();
 
-  os.writeFloat( life );
-  os.writeFloat( resistance );
+  os.writeString( demolishSound );
 
   os.writeInt( planes.length() );
   os.writeInt( nodes.length() );
@@ -1089,11 +1093,6 @@ void BSP::saveMatrix()
     os.writePoint( boundObject->pos );
     os.writeInt( boundObject->heading );
   }
-
-  os.writeString( fragPool );
-  os.writeInt( nFrags );
-
-  os.writeString( demolishSound );
 
   if( !destFile.write( os.begin(), os.length() ) ) {
     OZ_ERROR( "Failed to write '%s'", destFile.path().cstr() );

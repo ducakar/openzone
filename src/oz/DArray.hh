@@ -136,7 +136,7 @@ class DArray
     DArray( const DArray& a ) :
       data( a.count == 0 ? null : new Elem[a.count] ), count( a.count )
     {
-      aCopy<Elem>( data, a.count, a.count );
+      aCopy<Elem>( data, a.data, a.count );
     }
 
     /**
@@ -167,7 +167,7 @@ class DArray
         count = a.count;
       }
 
-      aCopy<Elem>( data, a.count, a.count );
+      aCopy<Elem>( data, a.data, a.count );
 
       return *this;
     }

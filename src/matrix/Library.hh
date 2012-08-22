@@ -115,13 +115,13 @@ class Library
     void initSounds();
     void initCaela();
     void initTerrae();
-    void initBSPs();
     void initModels();
     void initNameLists();
-    void initMusicRecurse( const char* path, List<Resource>* musicTracksList );
-    void initMusic( const char* userMusicPath );
     void initFragPools();
     void initClasses();
+    void initBSPs();
+    void initMusicRecurse( const char* path, List<Resource>* musicTracksList );
+    void initMusic( const char* userMusicPath );
 
   public:
 

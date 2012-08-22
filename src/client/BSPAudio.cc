@@ -128,15 +128,15 @@ void BSPAudio::playContSound( const Entity* entity, int sound ) const
 BSPAudio::BSPAudio( const matrix::BSP* bsp_ ) :
   bsp( bsp_ )
 {
-  for( int i = 0; i < bsp->sounds.length(); ++i ) {
-    context.requestSound( bsp->sounds[i] );
+  foreach( i, bsp->sounds.citer() ) {
+    context.requestSound( *i );
   }
 }
 
 BSPAudio::~BSPAudio()
 {
-  for( int i = 0; i < bsp->sounds.length(); ++i ) {
-    context.releaseSound( bsp->sounds[i] );
+  foreach( i, bsp->sounds.citer() ) {
+    context.releaseSound( *i );
   }
 }
 

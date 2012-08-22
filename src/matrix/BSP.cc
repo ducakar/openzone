@@ -33,41 +33,6 @@ namespace oz
 namespace matrix
 {
 
-BSP::BSP( const char* name_, int id_ ) :
-  name( name_ ), id( id_ )
-{
-  life          = 0.0f;
-  resistance    = 0.0f;
-
-  nPlanes       = 0;
-  nNodes        = 0;
-  nLeaves       = 0;
-  nLeafBrushes  = 0;
-  nBrushes      = 0;
-  nBrushSides   = 0;
-  nModels       = 0;
-
-  planes        = null;
-  nodes         = null;
-  leaves        = null;
-  leafBrushes   = null;
-  brushes       = null;
-  brushSides    = null;
-  models        = null;
-
-  fragPool      = null;
-  nFrags        = 0;
-
-  demolishSound = -1;
-
-  nUsers        = 0;
-}
-
-BSP::~BSP()
-{
-  hard_assert( planes == null );
-}
-
 void BSP::load()
 {
   Log::print( "Loading BSP structure '%s' ...", name.cstr() );
@@ -90,14 +55,23 @@ void BSP::load()
   // description
   is.readString();
 
-  // sound samples
+  // life
+  is.readFloat();
+  // resistance
+  is.readFloat();
+
+  // fragPool
+  is.readString();
+  // nFrags
   is.readInt();
-  for( int i = 0; i < sounds.length(); ++i ) {
+
+  // sound samples
+  int nSounds = is.readInt();
+  for( int i = 0; i < nSounds; ++i ) {
     is.readString();
   }
-
-  life          = is.readFloat();
-  resistance    = is.readFloat();
+  // demolishSound
+  is.readString();
 
   nPlanes       = is.readInt();
   nNodes        = is.readInt();
@@ -226,15 +200,6 @@ void BSP::load()
     boundObjects[i].heading = Heading( is.readInt() );
   }
 
-  String sFragPool = is.readString();
-
-  fragPool = sFragPool.isEmpty() ? null : library.fragPool( sFragPool );
-  nFrags   = is.readInt();
-
-  String sDemolishSound = is.readString();
-
-  demolishSound = sDemolishSound.isEmpty() ? -1 : library.soundIndex( sDemolishSound );
-
   hard_assert( !is.isAvailable() );
 
   file.unmap();
@@ -244,13 +209,10 @@ void BSP::load()
 
 void BSP::unload()
 {
-  Log::print( "Unloading BSP structure '%s' ...", name.cstr() );
-
   if( planes != null ) {
-    delete[] reinterpret_cast<char*>( planes );
+    Log::print( "Unloading BSP structure '%s' ...", name.cstr() );
 
-    life         = 0.0f;
-    resistance   = 0.0f;
+    delete[] reinterpret_cast<char*>( planes );
 
     nPlanes      = 0;
     nNodes       = 0;
@@ -268,40 +230,59 @@ void BSP::unload()
     brushSides   = null;
     models       = null;
 
-    fragPool     = null;
-    nFrags       = 0;
-
-    nUsers       = 0;
+    Log::printEnd( " OK" );
   }
-
-  Log::printEnd( " OK" );
 }
 
-void BSP::init()
+void BSP::init( const char* name_, int id_ )
 {
-  String sPath = "bsp/" + name + ".ozBSP";
-
-  PFile file( sPath );
+  PFile file( String::str( "bsp/%s.ozBSP", name_ ) );
   if( !file.map() ) {
     OZ_ERROR( "BSP file mmap failed" );
   }
 
   InputStream is = file.inputStream();
 
-  mins        = is.readPoint();
-  maxs        = is.readPoint();
+  mins          = is.readPoint();
+  maxs          = is.readPoint();
 
-  title       = lingua.get( is.readString() );
-  description = lingua.get( is.readString() );
+  nPlanes       = 0;
+  nNodes        = 0;
+  nLeaves       = 0;
+  nLeafBrushes  = 0;
+  nBrushes      = 0;
+  nBrushSides   = 0;
+  nModels       = 0;
 
-  int nSounds = is.readInt();
-  if( nSounds != 0 ) {
-    sounds.alloc( nSounds );
+  planes        = null;
+  nodes         = null;
+  leaves        = null;
+  leafBrushes   = null;
+  brushes       = null;
+  brushSides    = null;
+  models        = null;
 
-    for( int i = 0; i < nSounds; ++i ) {
-      sounds.add( library.soundIndex( is.readString() ) );
-    }
+  name          = name_;
+  title         = lingua.get( is.readString() );
+  description   = lingua.get( is.readString() );
+
+  life          = is.readFloat();
+  resistance    = is.readFloat();
+
+  String sFragPool = is.readString();
+  fragPool = sFragPool.isEmpty() ? null : library.fragPool( sFragPool );
+  nFrags   = is.readInt();
+
+  sounds.resize( is.readInt() );
+  for( int i = 0; i < sounds.length(); ++i ) {
+    sounds[i] = library.soundIndex( is.readString() );
   }
+
+  String sDemolishSound = is.readString();
+  demolishSound = sDemolishSound.isEmpty() ? -1 : library.soundIndex( sDemolishSound );
+
+  id     = id_;
+  nUsers = 0;
 
   file.unmap();
 }

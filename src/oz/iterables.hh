@@ -243,40 +243,38 @@ inline typename Container::Iterator iter( Container& container )
 }
 
 /**
- * Copy elements.
+ * Copy all elements from <tt>iSrc</tt> to <tt>iDest</tt>.
  *
  * @ingroup oz
  */
 template <class IteratorA, class CIteratorB>
 inline void iCopy( IteratorA iDest, CIteratorB iSrc )
 {
-  hard_assert( static_cast<void*>( &iDest ) != static_cast<void*>( &iSrc ) );
-
-  while( iDest.isValid() ) {
-    hard_assert( iSrc.isValid() );
+  while( iSrc.isValid() ) {
+    hard_assert( iDest.isValid() );
 
     *iDest = *iSrc;
+
     ++iDest;
     ++iSrc;
   }
 }
 
 /**
- * Move elements.
+ * Move all elements from <tt>iSrc</tt> to <tt>iDest</tt>.
  *
  * @ingroup oz
  */
 template <class IteratorA, class IteratorB>
 inline void iMove( IteratorA iDest, IteratorB iSrc )
 {
-  hard_assert( static_cast<void*>( &iDest ) != static_cast<void*>( &iSrc ) );
-
   typedef typename IteratorB::ElemType ElemB;
 
-  while( iDest.isValid() ) {
-    hard_assert( iSrc.isValid() );
+  while( iSrc.isValid() ) {
+    hard_assert( iDest.isValid() );
 
     *iDest = static_cast<ElemB&&>( *iSrc );
+
     ++iDest;
     ++iSrc;
   }
@@ -292,8 +290,34 @@ inline void iSet( Iterator iDest, const Value& value )
 {
   while( iDest.isValid() ) {
     *iDest = value;
+
     ++iDest;
   }
+}
+
+/**
+ * Swap element of two same-length containers.
+ *
+ * @ingroup oz
+ */
+template <class IteratorA, class IteratorB>
+inline void iSwap( IteratorA iDestA, IteratorB iDestB )
+{
+  typedef typename IteratorA::ElemType ElemA;
+  typedef typename IteratorB::ElemType ElemB;
+
+  while( iDestA.isValid() ) {
+    hard_assert( iDestB.isValid() );
+
+    ElemA t = static_cast<ElemA&&>( *iDestA );
+    *iDestA = static_cast<ElemB&&>( *iDestB );
+    *iDestB = static_cast<ElemA&&>( t );
+
+    ++iDestA;
+    ++iDestB;
+  }
+
+  hard_assert( !iDestB.isValid() );
 }
 
 /**
@@ -356,6 +380,7 @@ inline Iterator iFindLast( Iterator iSrc, const Value& value )
     if( *iSrc == value ) {
       lastOccurence = iSrc;
     }
+
     ++iSrc;
   }
   return lastOccurence;
@@ -393,6 +418,7 @@ inline int iLastIndex( CIterator iSrc, const Value& value )
     if( *iSrc == value ) {
       lastIndex = index;
     }
+
     ++iSrc;
     ++index;
   }

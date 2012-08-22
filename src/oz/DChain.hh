@@ -174,9 +174,35 @@ class DChain
     {}
 
     /**
-     * Clone the chain.
-     *
-     * Create a new chain from copies of all elements of the original chain.
+     * Move constructor, rebinds elements to the new chain.
+     */
+    DChain( DChain&& c ) :
+      firstElem( c.firstElem ), lastElem( c.lastElem )
+    {
+      c.firstElem = null;
+      c.lastElem  = null;
+    }
+
+    /**
+     * Move operator, rebinds elements to the destination chain.
+     */
+    DChain& operator = ( DChain&& c )
+    {
+      if( &c == this ) {
+        return *this;
+      }
+
+      firstElem = c.firstElem;
+      lastElem  = c.lastElem;
+
+      c.firstElem = null;
+      c.lastElem  = null;
+
+      return *this;
+    }
+
+    /**
+     * Create a copy of the chain and all its elements.
      */
     DChain clone() const
     {
@@ -314,7 +340,7 @@ class DChain
     }
 
     /**
-     * Add an element to the beginning of the chain.
+     * Bind an element to the beginning of the chain.
      *
      * For efficiency reasons, elements are added to the beginning of a chain in contrast with array
      * chain.
@@ -325,7 +351,7 @@ class DChain
     }
 
     /**
-     * Insert an element after some given element in the chain.
+     * Bind an element after some given element in the chain.
      */
     void insertAfter( Elem* e, Elem* p )
     {
@@ -346,7 +372,7 @@ class DChain
     }
 
     /**
-     * Insert an element before some given element in the chain.
+     * Bind an element before some given element in the chain.
      */
     void insertBefore( Elem* e, Elem* p )
     {
@@ -367,7 +393,7 @@ class DChain
     }
 
     /**
-     * Remove the first element from the chain.
+     * Unbind the first element from the chain.
      *
      * To keep LIFO behaviour for <tt>add()</tt> and <tt>remove()</tt> methods like in array lists,
      * the first element is removed instead of the last one.
@@ -378,7 +404,7 @@ class DChain
     }
 
     /**
-     * Remove the given element from the chain.
+     * Unbind the given element from the chain.
      */
     void remove( Elem* e )
     {
@@ -397,7 +423,7 @@ class DChain
     }
 
     /**
-     * Add an element to the beginning of the chain.
+     * Bind an element to the beginning of the chain.
      */
     void pushFirst( Elem* e )
     {
@@ -417,7 +443,7 @@ class DChain
     }
 
     /**
-     * Add an element to the end of the chain.
+     * Bind an element to the end of the chain.
      */
     void pushLast( Elem* e )
     {

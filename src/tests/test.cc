@@ -32,8 +32,6 @@
 #include <cstring>
 #include <cwchar>
 
-#include <vector>
-
 using namespace oz;
 using namespace std;
 
@@ -120,9 +118,21 @@ int main()
 {
   System::init();
 
-  if( int i = 1 ) {
-    printf( "%d\n", i );
-  }
+  int a[] = { 1, 2 };
+  int b[] = { 3, 4 };
 
+  iSwap( iter( a ), iter( b ) );
+  aSwap( a, b );
+  aSwap( a, b, 2 );
+
+  for( auto& i : a ) {
+    Log::out << i << " :: ";
+  }
+  Log::out << "\n";
+
+  for( auto& i : b ) {
+    Log::out << i << " :: ";
+  }
+  Log::out << "\n";
   return 0;
 }

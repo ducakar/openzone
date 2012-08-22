@@ -23,7 +23,7 @@
 /**
  * @file oz/common.hh
  *
- * Essential macros, types and templates.
+ * Essential includes, macros, types and templates.
  *
  * You may want to add <tt>null</tt>, <tt>foreach</tt>, <tt>soft_assert</tt>, <tt>hard_assert</tt>,
  * <tt>byte</tt>, <tt>ubyte</tt>, <tt>ushort</tt>, <tt>ulong</tt>, <tt>long64</tt> and
@@ -36,6 +36,10 @@
  */
 
 #pragma once
+
+/*
+ * INCLUDES
+ */
 
 /*
  * Configuration.
@@ -63,9 +67,9 @@
 namespace oz
 {
 
-//***********************************
-//*           ASSERTIONS            *
-//***********************************
+/*
+ * ASSERTIONS
+ */
 
 /**
  * @def soft_assert
@@ -113,14 +117,47 @@ void _softAssertHelper( const char* function, const char* file, int line, const 
 OZ_NORETURN
 void _hardAssertHelper( const char* function, const char* file, int line, const char* message );
 
-//***********************************
-//*             TYPES               *
-//***********************************
+/*
+ * TYPES
+ */
 
 // Import core C++ types from <cstddef>.
 using std::nullptr_t;
 using std::ptrdiff_t;
 using std::size_t;
+
+/**
+ * Unit type.
+ *
+ * @ingroup oz
+ */
+struct nil_t
+{
+  /**
+   * Equality, always true for unit.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator == ( const nil_t& ) const
+  {
+    return true;
+  }
+
+  /**
+   * Inequality, always false for unit.
+   */
+  OZ_ALWAYS_INLINE
+  bool operator != ( const nil_t& ) const
+  {
+    return false;
+  }
+};
+
+/**
+ * Unit constant.
+ *
+ * @ingroup oz
+ */
+const nil_t nil = {};
 
 /**
  * Null pointer constant.
@@ -186,9 +223,9 @@ static_assert( sizeof( long64 ) == 8, "sizeof( long64 ) should be 8" );
 static_assert( sizeof( float  ) == 4, "sizeof( float ) should be 4" );
 static_assert( sizeof( double ) == 8, "sizeof( double ) should be 8" );
 
-//***********************************
-//*         BASIC TEMPLATES         *
-//***********************************
+/*
+ * BASIC TEMPLATES
+ */
 
 /**
  * Swap values of variables.

@@ -119,8 +119,8 @@ class List
   private:
 
     Elem* data;  ///< Element storage.
-    int   size;  ///< Capacity, number of elements in storage.
     int   count; ///< Number of elements.
+    int   size;  ///< Capacity, number of elements in storage.
 
     /**
      * Double capacity if there is not enough space to add another element.
@@ -151,7 +151,7 @@ class List
      * Create an empty list.
      */
     List() :
-      data( null ), size( 0 ), count( 0 )
+      data( null ), count( 0 ), size( 0 )
     {}
 
     /**
@@ -166,7 +166,7 @@ class List
      * Copy constructor, copies elements.
      */
     List( const List& l ) :
-      data( l.size == 0 ? null : new Elem[l.size] ), size( l.size ), count( l.count )
+      data( l.size == 0 ? null : new Elem[l.size] ), count( l.count ), size( l.size )
     {
       aCopy<Elem>( data, l.data, l.count );
     }
@@ -175,11 +175,11 @@ class List
      * Move constructor, moves element storage.
      */
     List( List&& l ) :
-      data( l.data ), size( l.size ), count( l.count )
+      data( l.data ), count( l.count ), size( l.size )
     {
       l.data  = null;
-      l.size  = 0;
       l.count = 0;
+      l.size  = 0;
     }
 
     /**
@@ -218,12 +218,12 @@ class List
       delete[] data;
 
       data  = l.data;
-      size  = l.size;
       count = l.count;
+      size  = l.size;
 
       l.data  = null;
-      l.size  = 0;
       l.count = 0;
+      l.size  = 0;
 
       return *this;
     }
@@ -232,7 +232,7 @@ class List
      * Create an empty list with the given initial capacity.
      */
     explicit List( int size_ ) :
-      data( new Elem[size_] ), size( size_ ), count( 0 )
+      data( new Elem[size_] ), count( 0 ), size( size_ )
     {}
 
     /**

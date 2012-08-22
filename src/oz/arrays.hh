@@ -281,6 +281,47 @@ inline void aSet( Elem* aDest, const Value& value, int count )
 }
 
 /**
+ * Swap array elements.
+ *
+ * @ingroup oz
+ */
+template <typename Elem>
+inline void aSwap( Elem* aDestA, Elem* aDestB, int count )
+{
+  for( int i = 0; i < count; ++i ) {
+    Elem t = static_cast<Elem&&>( aDestA[i] );
+    aDestA[i] = static_cast<Elem&&>( aDestB[i] );
+    aDestB[i] = static_cast<Elem&&>( t );
+  }
+}
+
+/**
+ * Swap elements of two same-size static arrays.
+ *
+ * @ingroup oz
+ */
+template <typename Elem, int COUNT>
+inline void aSwap( Elem ( & aDestA )[COUNT], Elem ( & aDestB )[COUNT] )
+{
+  for( int i = 0; i < COUNT; ++i ) {
+    Elem t = static_cast<Elem&&>( aDestA[i] );
+    aDestA[i] = static_cast<Elem&&>( aDestB[i] );
+    aDestB[i] = static_cast<Elem&&>( t );
+  }
+}
+
+/**
+ * Length of a static array.
+ *
+ * @ingroup oz
+ */
+template <typename Elem, int COUNT>
+inline int aLength( const Elem ( & )[COUNT] )
+{
+  return COUNT;
+}
+
+/**
  * True iff respective elements are equal.
  *
  * @ingroup oz
@@ -288,13 +329,10 @@ inline void aSet( Elem* aDest, const Value& value, int count )
 template <typename Elem>
 inline bool aEquals( const Elem* aSrcA, const Elem* aSrcB, int count )
 {
-  int i = 0;
-
-  while( i < count ) {
+  for( int i = 0; i < count; ++i ) {
     if( !( aSrcA[i] == aSrcB[i] ) ) {
       return false;
     }
-    ++i;
   }
   return true;
 }
@@ -307,13 +345,10 @@ inline bool aEquals( const Elem* aSrcA, const Elem* aSrcB, int count )
 template <typename Elem, typename Value = Elem>
 inline bool aContains( const Elem* aSrc, const Value& value, int count )
 {
-  int i = 0;
-
-  while( i < count ) {
+  for( int i = 0; i < count; ++i ) {
     if( aSrc[i] == value ) {
       return true;
     }
-    ++i;
   }
   return false;
 }
@@ -326,13 +361,10 @@ inline bool aContains( const Elem* aSrc, const Value& value, int count )
 template <typename Elem, typename Value = Elem>
 inline Elem* aFind( Elem* aSrc, const Value& value, int count )
 {
-  int i = 0;
-
-  while( i < count ) {
+  for( int i = 0; i < count; ++i ) {
     if( aSrc[i] == value ) {
       return &aSrc[i];
     }
-    ++i;
   }
   return null;
 }
@@ -345,13 +377,10 @@ inline Elem* aFind( Elem* aSrc, const Value& value, int count )
 template <typename Elem, typename Value = Elem>
 inline Elem* aFindLast( Elem* aSrc, const Value& value, int count )
 {
-  int i = count - 1;
-
-  while( i >= 0 ) {
+  for( int i = count - 1; i >= 0; --i ) {
     if( aSrc[i] == value ) {
       return &aSrc[i];
     }
-    --i;
   }
   return null;
 }
@@ -364,13 +393,10 @@ inline Elem* aFindLast( Elem* aSrc, const Value& value, int count )
 template <typename Elem, typename Value = Elem>
 inline int aIndex( const Elem* aSrc, const Value& value, int count )
 {
-  int i = 0;
-
-  while( i < count ) {
+  for( int i = 0; i < count; ++i ) {
     if( aSrc[i] == value ) {
       return i;
     }
-    ++i;
   }
   return -1;
 }
@@ -383,13 +409,10 @@ inline int aIndex( const Elem* aSrc, const Value& value, int count )
 template <typename Elem, typename Value = Elem>
 inline int aLastIndex( const Elem* aSrc, const Value& value, int count )
 {
-  int i = count - 1;
-
-  while( i >= 0 ) {
+  for( int i = count - 1; i >= 0; --i ) {
     if( aSrc[i] == value ) {
       return i;
     }
-    --i;
   }
   return -1;
 }
@@ -406,17 +429,6 @@ inline void aFree( Elem* aDest, int count )
     delete aDest[i];
     aDest[i] = null;
   }
-}
-
-/**
- * Length of a static array.
- *
- * @ingroup oz
- */
-template <typename Elem, int SIZE>
-inline int aLength( const Elem ( & )[SIZE] )
-{
-  return SIZE;
 }
 
 /**
