@@ -38,6 +38,113 @@ static_assert( Orbis::CELLS * Cell::SIZE == Terra::QUADS * Terra::Quad::SIZE,
 
 Orbis orbis;
 
+void Orbis::addEndPoints( Cell* cell, const Object* obj )
+{
+  for( int i = 0; i < 2; ++i ) {
+    Endpoint min = { obj->p[i] - obj->dim[i], Endpoint::LOWER, obj->flags, obj->index };
+    Endpoint max = { obj->p[i] + obj->dim[i], Endpoint::UPPER, obj->flags, obj->index };
+
+    int minIndex = cell->endPoints[i].add( min );
+    int maxIndex = cell->endPoints[i].add( max );
+
+    // Update endpoint indices and stabbing numbers.
+    for( int j = minIndex; j < cell->endPoints[i].length(); ++j ) {
+      Endpoint& ep = cell->endPoints[i][j];
+
+      ep.stab = j < maxIndex ? ep.stab + 1 : ep.stab;
+
+      endPointIndices[ep.index * 4 + i * 2 + ep.type] = j;
+    }
+  }
+}
+
+void Orbis::removeEndPoints( Cell* cell, const Object* obj )
+{
+  for( int i = 0; i < 2; ++i ) {
+    int baseIndex = obj->index * 4 + i * 2;
+    int minIndex  = endPointIndices[baseIndex + 0];
+    int maxIndex  = endPointIndices[baseIndex + 1];
+
+    cell->endPoints[i].remove( maxIndex );
+    cell->endPoints[i].remove( minIndex );
+
+    // Update endpoint indices and stabbing numbers.
+    for( int j = minIndex; j < cell->endPoints[i].length(); ++j ) {
+      Endpoint& ep = cell->endPoints[i][j];
+
+      ep.stab = j < maxIndex - 1 ? ep.stab - 1 : ep.stab;
+
+      endPointIndices[ep.index * 4 + i * 2 + ep.type] = j;
+    }
+  }
+}
+
+void Orbis::updateEndPoints( Cell* cell, const Object* obj )
+{
+  for( int i = 0; i < 2; ++i ) {
+    int   baseIndex = obj->index * 4 + i * 2;
+    int   minIndex  = endPointIndices[baseIndex + 0];
+    int   maxIndex  = endPointIndices[baseIndex + 1];
+    auto& endpoints = cell->endPoints[i];
+
+    if( obj->p[i] - obj->dim[i] < endpoints[minIndex].value ) {
+      int stabInc[] = { -1, +1 };
+
+      while( minIndex > 0 && endpoints[minIndex] < endpoints[minIndex - 1] ) {
+        Endpoint& ep    = endpoints[minIndex];
+        Endpoint& other = endpoints[minIndex - 1];
+
+        ep.stab    += stabInc[other.type];
+        other.stab -= stabInc[ep.type];
+
+        endPointIndices[other.index * 4 + i * 2 + other.type] = minIndex;
+        swap( endpoints[minIndex], endpoints[--minIndex] );
+      }
+      while( endpoints[maxIndex] < endpoints[maxIndex - 1] ) {
+        Endpoint& ep    = endpoints[maxIndex];
+        Endpoint& other = endpoints[maxIndex - 1];
+
+        ep.stab    += stabInc[other.type];
+        other.stab -= stabInc[ep.type];
+
+        endPointIndices[other.index * 4 + i * 2 + other.type] = maxIndex;
+        swap( endpoints[maxIndex], endpoints[--maxIndex] );
+      }
+
+      endPointIndices[baseIndex + 0] = minIndex;
+      endPointIndices[baseIndex + 1] = maxIndex;
+    }
+    else {
+      int stabInc[] = { +1, -1 };
+      int lastIndex = endpoints.length() - 1;
+
+      while( endpoints[minIndex + 1] < endpoints[minIndex] ) {
+        Endpoint& ep    = endpoints[minIndex];
+        Endpoint& other = endpoints[minIndex + 1];
+
+        ep.stab    += stabInc[other.type];
+        other.stab -= stabInc[ep.type];
+
+        endPointIndices[other.index * 4 + i * 2 + other.type] = minIndex;
+        swap( endpoints[minIndex], endpoints[++minIndex] );
+      }
+      while( maxIndex < lastIndex && endpoints[maxIndex + 1] < endpoints[maxIndex] ) {
+        Endpoint& ep    = endpoints[maxIndex];
+        Endpoint& other = endpoints[maxIndex + 1];
+
+        ep.stab    += stabInc[other.type];
+        other.stab -= stabInc[ep.type];
+
+        endPointIndices[other.index * 4 + i * 2 + other.type] = maxIndex;
+        swap( endpoints[maxIndex], endpoints[++maxIndex] );
+      }
+
+      endPointIndices[baseIndex + 0] = minIndex;
+      endPointIndices[baseIndex + 1] = maxIndex;
+    }
+  }
+}
+
 bool Orbis::position( Struct* str )
 {
   Span span = getInters( *str, EPSILON );
@@ -79,15 +186,15 @@ void Orbis::position( Object* obj )
   hard_assert( obj->cell == nullptr );
 
   Cell* cell = getCell( obj->p );
-
   obj->cell = cell;
-  obj->prev[0] = nullptr;
 
   if( !cell->objects.isEmpty() ) {
     cell->objects.first()->prev[0] = obj;
   }
+  obj->prev[0] = nullptr;
 
   cell->objects.add( obj );
+  addEndPoints( cell, obj );
 }
 
 void Orbis::unposition( Object* obj )
@@ -95,7 +202,6 @@ void Orbis::unposition( Object* obj )
   hard_assert( obj->cell != nullptr );
 
   Cell* cell = obj->cell;
-
   obj->cell = nullptr;
 
   if( obj->next[0] != nullptr ) {
@@ -103,6 +209,7 @@ void Orbis::unposition( Object* obj )
   }
 
   cell->objects.erase( obj, obj->prev[0] );
+  removeEndPoints( cell, obj );
 }
 
 void Orbis::position( Frag* frag )
@@ -110,13 +217,12 @@ void Orbis::position( Frag* frag )
   hard_assert( frag->cell == nullptr );
 
   Cell* cell = getCell( frag->p );
-
   frag->cell = cell;
-  frag->prev[0] = nullptr;
 
   if( !cell->frags.isEmpty() ) {
     cell->frags.first()->prev[0] = frag;
   }
+  frag->prev[0] = nullptr;
 
   cell->frags.add( frag );
 }
@@ -126,7 +232,6 @@ void Orbis::unposition( Frag* frag )
   hard_assert( frag->cell != nullptr );
 
   Cell* cell = frag->cell;
-
   frag->cell = nullptr;
 
   if( frag->next[0] != nullptr ) {
@@ -258,21 +363,26 @@ void Orbis::reposition( Object* obj )
   Cell* oldCell = obj->cell;
   Cell* newCell = getCell( obj->p );
 
-  if( newCell != oldCell ) {
+  if( newCell == oldCell ) {
+    updateEndPoints( oldCell, obj );
+  }
+  else {
     if( obj->next[0] != nullptr ) {
       obj->next[0]->prev[0] = obj->prev[0];
     }
 
     oldCell->objects.erase( obj, obj->prev[0] );
+    removeEndPoints( oldCell, obj );
 
     obj->cell = newCell;
-    obj->prev[0] = nullptr;
 
     if( !newCell->objects.isEmpty() ) {
       newCell->objects.first()->prev[0] = obj;
     }
+    obj->prev[0] = nullptr;
 
     newCell->objects.add( obj );
+    addEndPoints( newCell, obj );
   }
 }
 
@@ -291,11 +401,11 @@ void Orbis::reposition( Frag* frag )
     oldCell->frags.erase( frag, frag->prev[0] );
 
     frag->cell = newCell;
-    frag->prev[0] = nullptr;
 
     if( !newCell->frags.isEmpty() ) {
       newCell->frags.first()->prev[0] = frag;
     }
+    frag->prev[0] = nullptr;
 
     newCell->frags.add( frag );
   }

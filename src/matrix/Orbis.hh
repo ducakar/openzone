@@ -34,13 +34,38 @@ namespace oz
 namespace matrix
 {
 
+struct Endpoint
+{
+  enum Type
+  {
+    LOWER,
+    UPPER
+  };
+
+  float value;
+  Type  type;
+  int   stab;
+  int   index;
+
+  bool operator == ( const Endpoint& ep ) const
+  {
+    return value == ep.value && type == ep.type;
+  }
+
+  bool operator < ( const Endpoint& ep ) const
+  {
+    return value < ep.value || ( value == ep.value && type < ep.type );
+  }
+};
+
 struct Cell
 {
-  static const int SIZE = 16;
+  static const int SIZE = 64;
 
   SList<short, 6> structs;
   Chain<Object>   objects;
   Chain<Frag>     frags;
+  Set<Endpoint>   endPoints[2];
 };
 
 /**
@@ -69,6 +94,7 @@ class Orbis : public Bounds
     SList<Object*, MAX_OBJECTS> objects;
     SList<Frag*,   MAX_FRAGS>   frags;
     Cell                        cells[CELLS][CELLS];
+    int                         endPointIndices[MAX_OBJECTS * 4];
 
   private:
 
@@ -102,6 +128,10 @@ class Orbis : public Bounds
     List<int> fragAvailableIndices;
 
   private:
+
+    void addEndPoints( Cell* cell, const Object* obj );
+    void removeEndPoints( Cell* cell, const Object* obj );
+    void updateEndPoints( Cell* cell, const Object* obj );
 
     bool position( Struct* str );
     void unposition( Struct* str );
