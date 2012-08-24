@@ -30,6 +30,8 @@
 
 #include "common.hh"
 
+// FIXME Add a space after elipsis in variadic macros once KDevelop gets that bug fixed.
+
 /**
  * @def OZ_WARNING
  *
@@ -38,7 +40,7 @@
  *
  * @ingroup oz
  */
-#define OZ_WARNING( ... ) \
+#define OZ_WARNING( ...) \
   oz::System::warning( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
 
 /**
@@ -49,7 +51,7 @@
  *
  * @ingroup oz
  */
-#define OZ_ERROR( ... ) \
+#define OZ_ERROR( ...) \
   oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
 
 #ifdef __native_client__

@@ -388,7 +388,7 @@ void GameStage::load()
   isAuxAlive = true;
   mainSemaphore.init( 1 );
   auxSemaphore.init( 0 );
-  auxThread.start( auxMain );
+  auxThread.start( auxMain, null );
 
   Log::printEnd( " OK" );
 

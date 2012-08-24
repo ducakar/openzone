@@ -111,7 +111,7 @@ void MainInstance::DidChangeView( const pp::View& view )
     SDL_NACL_SetInstance( pp_instance(), NaCl::width, NaCl::height );
     alSetPpapiInfo( pp_instance(), System::module->get_browser_interface() );
 
-    mainThread.start( mainThreadMain );
+    mainThread.start( mainThreadMain, this );
   }
 }
 
@@ -145,9 +145,6 @@ bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
       break;
     }
     case PP_INPUTEVENT_TYPE_MOUSEDOWN: {
-      if( !fullscreen.IsFullscreen() ) {
-        fullscreen.SetFullscreen( true );
-      }
       if( !NaCl::hasFocus ) {
         LockMouse( pp::CompletionCallback( &onMouseLocked, this ) );
         return true;
@@ -160,13 +157,8 @@ bool MainInstance::HandleInputEvent( const pp::InputEvent& event )
       if( ( keyEvent.GetKeyCode() == 122 || keyEvent.GetKeyCode() == 13 ) &&
           event.GetModifiers() == 0 )
       {
-        if( !fullscreen.IsFullscreen() ) {
-          fullscreen.SetFullscreen( true );
-        }
-        if( !NaCl::hasFocus ) {
-          LockMouse( pp::CompletionCallback( &onMouseLocked, this ) );
-          return true;
-        }
+        fullscreen.SetFullscreen( !fullscreen.IsFullscreen() );
+        return true;
       }
       break;
     }

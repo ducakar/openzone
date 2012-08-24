@@ -95,7 +95,7 @@ class Thread
      * @param main pointer to thread's main function.
      * @param data pointer to user data, passed to thread's main function.
      */
-    void start( Main* main, void* data = null );
+    void start( Main* main, void* data );
 
     /**
      * Wait for thread to finish execution.

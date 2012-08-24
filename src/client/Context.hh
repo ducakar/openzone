@@ -144,8 +144,9 @@ class Context
 
     Context();
 
-    static uint readTextureLayer( InputStream* stream );
+    static uint readTextureLayer( InputStream* istream );
     static uint loadTextureLayer( const char* path );
+    static Texture readTexture( InputStream* istream );
     static Texture loadTexture( const char* path );
 
     Texture requestTexture( int id );

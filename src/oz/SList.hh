@@ -479,7 +479,6 @@ class SList
 
       --count;
       aMove<Elem>( data, data + 1, count );
-
       return e;
     }
 
@@ -493,7 +492,6 @@ class SList
       hard_assert( count != 0 );
 
       --count;
-
       return static_cast<Elem&&>( data[count] );
     }
 
@@ -527,7 +525,6 @@ class SList
           data[i] = Elem();
         }
       }
-
       count = newCount;
     }
 
@@ -540,7 +537,6 @@ class SList
       for( int i = 0; i < count; ++i ) {
         data[i] = Elem();
       }
-
       count = 0;
     }
 

@@ -303,14 +303,14 @@ class Bitset
     {
       hard_assert( uint( start ) <= uint( end ) && uint( end ) <= uint( size * ULONG_BITSIZE ) );
 
-      int startUnit   = start / ULONG_BITSIZE;
-      int startOffset = start % ULONG_BITSIZE;
+      int   startUnit   = start / ULONG_BITSIZE;
+      int   startOffset = start % ULONG_BITSIZE;
 
-      int endUnit     = end / ULONG_BITSIZE;
-      int endOffset   = end % ULONG_BITSIZE;
+      int   endUnit     = end / ULONG_BITSIZE;
+      int   endOffset   = end % ULONG_BITSIZE;
 
-      ulong startMask = ~0ul << startOffset;
-      ulong endMask   = ~( ~0ul << endOffset );
+      ulong startMask   = ~0ul << startOffset;
+      ulong endMask     = ~( ~0ul << endOffset );
 
       if( startUnit == endUnit ) {
         data[startUnit] |= startMask & endMask;
@@ -332,14 +332,14 @@ class Bitset
     {
       hard_assert( uint( start ) <= uint( end ) && uint( end ) <= uint( size * ULONG_BITSIZE ) );
 
-      int startUnit   = start / ULONG_BITSIZE;
-      int startOffset = start % ULONG_BITSIZE;
+      int   startUnit   = start / ULONG_BITSIZE;
+      int   startOffset = start % ULONG_BITSIZE;
 
-      int endUnit     = end / ULONG_BITSIZE;
-      int endOffset   = end % ULONG_BITSIZE;
+      int   endUnit     = end / ULONG_BITSIZE;
+      int   endOffset   = end % ULONG_BITSIZE;
 
-      ulong startMask = ~( ~0ul << startOffset );
-      ulong endMask   = ~0ul << endOffset;
+      ulong startMask   = ~( ~0ul << startOffset );
+      ulong endMask     = ~0ul << endOffset;
 
       if( startUnit == endUnit ) {
         data[startUnit] &= startMask | endMask;

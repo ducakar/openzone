@@ -117,8 +117,8 @@ char** StackTrace::symbols() const
     }
     else {
       // Demangle name.
-      char*  demangled;
-      int    status = 0;
+      char* demangled;
+      int   status = 0;
 
       demangled = abi::__cxa_demangle( func, null, null, &status );
       func      = demangled == null ? func : demangled;

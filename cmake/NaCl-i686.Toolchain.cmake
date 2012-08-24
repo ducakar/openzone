@@ -1,7 +1,7 @@
 set( NACL ON )
 
 set( PLATFORM_TRIPLET           "i686-nacl" )
-set( PLATFORM_PREFIX            "/home/davorin/Projects/nacl_sdk/pepper_20/toolchain/linux_x86_newlib" )
+set( PLATFORM_PREFIX            "/home/davorin/Projects/nacl_sdk/pepper_21/toolchain/linux_x86_newlib" )
 
 set( CMAKE_SYSTEM_NAME          "Linux" CACHE STRING "Target system." )
 set( CMAKE_SYSTEM_PROCESSOR     "i686" CACHE STRING "Target processor." )

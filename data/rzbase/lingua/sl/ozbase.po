@@ -1,0 +1,136 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenZone\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2012-07-29 15:20+0100\n"
+"Last-Translator: Davorin Učakar <davorin.ucakar@gmail.com>\n"
+"Language-Team: Davorin Učakar <davorin.ucakar@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Slovenian\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Country: SLOVENIA\n"
+
+#: src/client/ui/CreditsMenu.cc:160
+#: src/client/ui/MissionMenu.cc:178
+msgid "Back"
+msgstr "Nazaj"
+
+#: src/client/ui/SettingsFrame.cc:75
+msgid "Close"
+msgstr "Zapri"
+
+#: src/client/ui/MainMenu.cc:138
+msgid "Continue"
+msgstr "Nadaljevanje"
+
+#: src/client/ui/BuildMenu.cc:64
+msgid "Create"
+msgstr "Umesti"
+
+#: src/client/ui/MainMenu.cc:142
+msgid "Credits"
+msgstr "Zasluge"
+
+#: src/client/ui/DebugFrame.cc:101
+msgid "Debug"
+msgstr "Razhroščevanje"
+
+#: src/client/ui/MainMenu.cc:143
+msgid "Exit"
+msgstr "Izhod"
+
+#: src/client/ui/MainMenu.cc:104
+msgid "Licensed under GNU GPL 3.0. Game data archives and libraries distributed with OpenZone are work of various authors and use separate licences. For more details see doc/README.html and files named README.txt and COPYING.txt inside game data archives."
+msgstr "Pogon OpenZone je pod licenco GNU GPL 3.0. Podatkovni arhivi in knjižnice distribuirane skupaj z OpenZone so delo različnih avtorjev in so pod drugačnimi licencami. Za podrobnosti glej doc/PREBERI.html ter datoteke z imeni COPYING.txt in README.txt v podatkovnih arhivih."
+
+#: src/client/GameStage.cc:141
+#: src/client/GameStage.cc:366
+msgid "Loading ..."
+msgstr "Nalagam ..."
+
+#: src/client/ui/MainMenu.cc:140
+msgid "Missions"
+msgstr "Misije"
+
+#: src/client/ui/MusicPlayer.cc:183
+msgid "Music Player"
+msgstr "Predvajalnik"
+
+#: src/client/ui/SettingsFrame.cc:69
+msgid ""
+"NOT IMPLEMENTED.\n"
+"You can change your settings by manually editing the following files:"
+msgstr ""
+"NI IMPLEMENTIRANO\n"
+"Nastavitve lahko spreminjaš v naslednjih datotekah:"
+
+#: src/client/ui/QuestFrame.cc:40
+#: src/client/ui/QuestFrame.cc:134
+msgid "No quest"
+msgstr "Ni naloge"
+
+#: src/client/Profile.cc:58
+msgid "Player"
+msgstr "Jaz"
+
+#: src/client/ui/MainMenu.cc:139
+msgid "Quickload"
+msgstr "Zadnje shranjeno"
+
+#: src/client/ui/MainMenu.cc:141
+#: src/client/ui/SettingsFrame.cc:60
+msgid "Settings"
+msgstr "Nastavitve"
+
+#: src/client/GameStage.cc:464
+msgid "Shutting down ..."
+msgstr "Zaustavljam ..."
+
+#: src/client/ui/CreditsMenu.cc:168
+msgid "engine developer"
+msgstr "avtor pogona"
+
+#: src/client/ui/QuestFrame.cc:62
+msgid "failed"
+msgstr "spodletelo"
+
+#: src/client/ui/QuestFrame.cc:56
+msgid "in progress"
+msgstr "v teku"
+
+#: src/client/ui/CreditsMenu.cc:181
+msgid "package"
+msgstr "paket"
+
+#: src/client/ui/QuestFrame.cc:59
+msgid "successful"
+msgstr "zaključeno"
+
+msgid ""
+"shaders\n"
+"Davorin Učakar\n"
+"\n"
+"OpenZone mouse cursors\n"
+"Davorin Učakar\n"
+"\n"
+"Droid fonts\n"
+"The Android Open Source Project\n"
+"\n"
+"UI icons\n"
+"Davorin Učakar\n"
+msgstr ""
+"senčilniki\n"
+"Davorin Učakar\n"
+"\n"
+"miškini kazalci OpenZone\n"
+"Davorin Učakar\n"
+"\n"
+"pisave Droid\n"
+"The Android Open Source Project\n"
+"\n"
+"ikone uporabniškega vmesnika\n"
+"Davorin Učakar\n"
+

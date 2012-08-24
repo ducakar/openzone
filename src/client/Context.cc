@@ -106,15 +106,15 @@ Context::Context() :
   smms( null ), md2s( null ), md3s( null )
 {}
 
-uint Context::readTextureLayer( InputStream* stream )
+uint Context::readTextureLayer( InputStream* istream )
 {
   uint texId;
   glGenTextures( 1, &texId );
   glBindTexture( GL_TEXTURE_2D, texId );
 
-  int wrap      = stream->readInt();
-  int magFilter = stream->readInt();
-  int minFilter = stream->readInt();
+  int wrap      = istream->readInt();
+  int magFilter = istream->readInt();
+  int minFilter = istream->readInt();
 
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap );
@@ -123,23 +123,23 @@ uint Context::readTextureLayer( InputStream* stream )
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
 
   for( int level = 0; ; ++level ) {
-    int width = stream->readInt();
+    int width = istream->readInt();
 
     if( width == 0 ) {
       break;
     }
 
-    int height = stream->readInt();
-    int format = stream->readInt();
-    int size   = stream->readInt();
+    int height = istream->readInt();
+    int format = istream->readInt();
+    int size   = istream->readInt();
 
     if( format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT || format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT ) {
       glCompressedTexImage2D( GL_TEXTURE_2D, level, uint( format ), width, height, 0,
-                              size, stream->forward( size ) );
+                              size, istream->forward( size ) );
     }
     else {
       glTexImage2D( GL_TEXTURE_2D, level, format, width, height, 0, uint( format ),
-                    GL_UNSIGNED_BYTE, stream->forward( size ) );
+                    GL_UNSIGNED_BYTE, istream->forward( size ) );
     }
   }
 
@@ -156,34 +156,32 @@ uint Context::loadTextureLayer( const char* path )
   }
 
   InputStream is = file.inputStream();
+  return readTextureLayer( &is );
+}
 
-  uint id = readTextureLayer( &is );
+Texture Context::readTexture( InputStream* istream )
+{
+  Texture texture;
 
-  file.unmap();
-  return id;
+  int textureFlags = istream->readInt();
+
+  texture.diffuse = textureFlags & Mesh::DIFFUSE_BIT ? readTextureLayer( istream ) : 0;
+  texture.masks   = textureFlags & Mesh::MASKS_BIT   ? readTextureLayer( istream ) :
+                                                       shader.defaultMasks;
+  texture.normals = textureFlags & Mesh::NORMALS_BIT ? readTextureLayer( istream ) :
+                                                       shader.defaultNormals;
+  return texture;
 }
 
 Texture Context::loadTexture( const char* path )
 {
-  Texture texture;
-
   PFile file( path );
   if( !file.map() ) {
     OZ_ERROR( "Texture file '%s' mmap failed", path );
   }
 
   InputStream is = file.inputStream();
-
-  int textureFlags = is.readInt();
-
-  texture.diffuse = textureFlags & Mesh::DIFFUSE_BIT ? readTextureLayer( &is ) : 0;
-  texture.masks   = textureFlags & Mesh::MASKS_BIT   ? readTextureLayer( &is ) :
-                                                       shader.defaultMasks;
-  texture.normals = textureFlags & Mesh::NORMALS_BIT ? readTextureLayer( &is ) :
-                                                       shader.defaultNormals;
-
-  file.unmap();
-  return texture;
+  return readTexture( &is );
 }
 
 Texture Context::requestTexture( int id )

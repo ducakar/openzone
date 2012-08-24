@@ -355,14 +355,7 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage )
     texIds[2] = 0;
 
     for( int i = 1; i < nTextures; ++i ) {
-      int flags = istream->readInt();
-
-      textures[i].diffuse = flags & DIFFUSE_BIT ? context.readTextureLayer( istream ) : 0;
-      textures[i].masks   = flags & MASKS_BIT   ? context.readTextureLayer( istream ) :
-                                                  shader.defaultMasks;
-      textures[i].normals = flags & NORMALS_BIT ? context.readTextureLayer( istream ) :
-                                                  shader.defaultNormals;
-
+      textures[i]     = context.readTexture( istream );
       texIds[i*3 + 0] = int( textures[i].diffuse );
       texIds[i*3 + 1] = int( textures[i].masks );
       texIds[i*3 + 2] = int( textures[i].normals );

@@ -29,6 +29,9 @@ using namespace oz::matrix;
 
 namespace oz
 {
+
+using namespace matrix;
+
 namespace client
 {
 

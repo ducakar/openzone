@@ -590,7 +590,6 @@ class List
 
       --count;
       aMove<Elem>( data, data + 1, count );
-
       return e;
     }
 
@@ -604,7 +603,6 @@ class List
       hard_assert( count != 0 );
 
       --count;
-
       return static_cast<Elem&&>( data[count] );
     }
 
@@ -638,7 +636,6 @@ class List
           data[i] = Elem();
         }
       }
-
       count = newCount;
     }
 
@@ -651,7 +648,6 @@ class List
       for( int i = 0; i < count; ++i ) {
         data[i] = Elem();
       }
-
       count = 0;
     }
 

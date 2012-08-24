@@ -58,7 +58,7 @@ typedef float float4 __attribute__(( vector_size( 16 ) ));
  *
  * @ingroup oz
  */
-typedef uint uint4 __attribute__(( vector_size( 16 ) )) ;
+typedef uint uint4 __attribute__(( vector_size( 16 ) ));
 
 /**
  * @def uint4

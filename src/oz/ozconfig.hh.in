@@ -63,27 +63,45 @@
 # define OZ_BIG_ENDIAN_ARCH
 #endif
 
-#define OZ_ALWAYS_INLINE             __attribute__(( always_inline ))
-#define OZ_HIDDEN                    __attribute__(( visibility( "hidden" ) ))
-#define OZ_NORETURN                  __attribute__(( noreturn ))
-#define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
-
-#ifdef _WIN32
-# undef OZ_HIDDEN
+#if defined( OZ_MSVC )
+# define OZ_ALWAYS_INLINE             __forceinline
 # define OZ_HIDDEN
+# define OZ_NORETURN
+# define OZ_PRINTF_FORMAT( s, first )
+#elif defined( _WIN32 )
+# define OZ_ALWAYS_INLINE             __attribute__(( always_inline ))
+# define OZ_HIDDEN
+# define OZ_NORETURN                  __attribute__(( noreturn ))
+# define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
+#else
+# define OZ_ALWAYS_INLINE             __attribute__(( always_inline ))
+# define OZ_HIDDEN                    __attribute__(( visibility( "hidden" ) ))
+# define OZ_NORETURN                  __attribute__(( noreturn ))
+# define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
 #endif
 
-#if ( defined( OZ_GCC ) && OZ_GCC < 406 )
+#if defined( OZ_GCC ) && OZ_GCC < 406
 # define constexpr const
 # define noexcept  throw()
 # define nullptr   0
   namespace std { typedef decltype( nullptr ) nullptr_t; }
 #endif
-#if ( defined( OZ_GCC ) && OZ_GCC < 407 )
+#if defined( OZ_GCC ) && OZ_GCC < 407
 # define override
 #endif
 
 #ifdef OZ_ECLIPSE
+
+// One should have same colour for highlighting macros and reserved words and those identifiers
+// should look as reserved words.
+# define null     null
+# define byte     byte
+# define ubyte    ubyte
+# define ushort   ushort
+# define uint     uint
+# define ulong    ulong
+# define long64   long64
+# define ulong64  ulong64
 
 # define noexcept throw()
 # define override
@@ -98,7 +116,9 @@ float __builtin_isnormal( float );
 
 namespace std
 {
+
 typedef decltype( nullptr ) nullptr_t;
+
 }
 
 #endif

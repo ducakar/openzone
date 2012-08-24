@@ -47,6 +47,7 @@
 # include <windows.h>
 # include <mmsystem.h>
 #else
+# include <ctime>
 # include <dlfcn.h>
 # include <pthread.h>
 # include <pulse/simple.h>
@@ -138,7 +139,6 @@ static const timespec       BELL_TIMESPEC = {
 static decltype( ::pa_simple_new )*   pa_simple_new;   // = null
 static decltype( ::pa_simple_free )*  pa_simple_free;  // = null
 static decltype( ::pa_simple_write )* pa_simple_write; // = null
-static decltype( ::pa_simple_drain )* pa_simple_drain; // = null
 
 #endif
 
@@ -153,6 +153,60 @@ static CRITICAL_SECTION   bellLock;
 #else
 static pthread_spinlock_t bellLock;
 #endif
+
+OZ_NORETURN
+static void signalHandler( int signum );
+static void construct();
+
+OZ_NORETURN
+static void terminate()
+{
+  OZ_ERROR( "Exception handling aborted" );
+}
+
+OZ_NORETURN
+static void unexpected()
+{
+  OZ_ERROR( "Exception specification violation" );
+}
+
+static void resetSignals()
+{
+  signal( SIGINT,  SIG_DFL );
+  signal( SIGILL,  SIG_DFL );
+  signal( SIGABRT, SIG_DFL );
+  signal( SIGFPE,  SIG_DFL );
+  signal( SIGSEGV, SIG_DFL );
+}
+
+static void catchSignals()
+{
+  signal( SIGINT,  signalHandler );
+  signal( SIGILL,  signalHandler );
+  signal( SIGABRT, signalHandler );
+  signal( SIGFPE,  signalHandler );
+  signal( SIGSEGV, signalHandler );
+}
+
+OZ_NORETURN
+static void signalHandler( int sigNum )
+{
+  if( !isConstructed ) {
+    construct();
+  }
+
+  resetSignals();
+
+  Log::verboseMode = false;
+  Log::printSignal( sigNum );
+
+  StackTrace st = StackTrace::current( 0 );
+  Log::printTrace( st );
+  Log::println();
+
+  System::bell();
+  System::abort( sigNum == SIGINT );
+}
 
 static void construct()
 {
@@ -184,15 +238,11 @@ static void construct()
     *( void** )( &pa_simple_new )   = dlsym( library, "pa_simple_new" );
     *( void** )( &pa_simple_free )  = dlsym( library, "pa_simple_free" );
     *( void** )( &pa_simple_write ) = dlsym( library, "pa_simple_write" );
-    *( void** )( &pa_simple_drain ) = dlsym( library, "pa_simple_drain" );
 
-    if( pa_simple_new == null || pa_simple_free == null || pa_simple_write == null ||
-        pa_simple_drain == null )
-    {
+    if( pa_simple_new == null || pa_simple_free == null || pa_simple_write == null ) {
       pa_simple_new   = null;
       pa_simple_free  = null;
       pa_simple_write = null;
-      pa_simple_drain = null;
 
       dlclose( library );
     }
@@ -201,56 +251,6 @@ static void construct()
 #endif
 
   isConstructed = true;
-}
-
-static void resetSignals()
-{
-  signal( SIGINT,  SIG_DFL );
-  signal( SIGILL,  SIG_DFL );
-  signal( SIGABRT, SIG_DFL );
-  signal( SIGFPE,  SIG_DFL );
-  signal( SIGSEGV, SIG_DFL );
-}
-
-OZ_NORETURN
-static void signalHandler( int sigNum )
-{
-  if( !isConstructed ) {
-    construct();
-  }
-
-  resetSignals();
-
-  Log::verboseMode = false;
-  Log::printSignal( sigNum );
-
-  StackTrace st = StackTrace::current( 0 );
-  Log::printTrace( st );
-  Log::println();
-
-  System::bell();
-  System::abort( sigNum == SIGINT );
-}
-
-static void catchSignals()
-{
-  signal( SIGINT,  signalHandler );
-  signal( SIGILL,  signalHandler );
-  signal( SIGABRT, signalHandler );
-  signal( SIGFPE,  signalHandler );
-  signal( SIGSEGV, signalHandler );
-}
-
-OZ_NORETURN
-static void terminate()
-{
-  OZ_ERROR( "EXCEPTION HANDLING ABORTED" );
-}
-
-OZ_NORETURN
-static void unexpected()
-{
-  OZ_ERROR( "EXCEPTION SPECIFICATION VIOLATION" );
 }
 
 #if defined( __native_client__ )
@@ -290,7 +290,7 @@ static void bellPlayCallback( void* buffer, uint size, void* info_ )
 
     samples[0] = sample;
     samples[1] = sample;
-    samples += 2;
+    samples   += 2;
   }
 }
 
@@ -303,16 +303,16 @@ static void bellInitCallback( void* info_, int )
 
   pp::AudioConfig config( System::instance, rate, nFrameSamples );
 
-  void* audioPtr = malloc( sizeof( pp::Audio ) );
-  if( audioPtr == null ) {
-    OZ_ERROR( "pp::Audio object allocation failed" );
-  }
-
   info->nFrameSamples = int( nFrameSamples );
   info->nSamples      = int( SAMPLE_LENGTH * float( rate ) + 0.5f );
   info->quotient      = SAMPLE_FREQUENCY * Math::TAU / float( rate );
   info->end           = info->nSamples + int( SAMPLE_GUARD * float( rate ) + 0.5f );
   info->offset        = 0;
+
+  void* audioPtr = malloc( sizeof( pp::Audio ) );
+  if( audioPtr == null ) {
+    OZ_ERROR( "pp::Audio object allocation failed" );
+  }
 
   info->audio = new( audioPtr ) pp::Audio( System::instance, config, bellPlayCallback, info );
   if( info->audio->StartPlayback() == PP_FALSE ) {
@@ -325,21 +325,12 @@ static void bellInitCallback( void* info_, int )
 
 static void* bellThread( void* )
 {
-  void* infoPtr = malloc( sizeof( SampleInfo ) );
-  if( infoPtr == null ) {
-    OZ_ERROR( "Sound sample descriptor allocation failed" );
-  }
-
-  SampleInfo* info = new( infoPtr ) SampleInfo();
-  System::core->CallOnMainThread( 0, pp::CompletionCallback( bellInitCallback, info ) );
+  SampleInfo info;
+  System::core->CallOnMainThread( 0, pp::CompletionCallback( bellInitCallback, &info ) );
 
   while( isBellPlaying ) {
     nanosleep( &TIMESPEC_10MS, null );
   }
-
-  info->~SampleInfo();
-  free( info );
-
   return null;
 }
 
@@ -358,24 +349,18 @@ static DWORD WINAPI bellThread( LPVOID )
 
 static void* bellThread( void* )
 {
-  pa_simple* pa = pa_simple_new( null, "liboz", PA_STREAM_PLAYBACK, null, "bell", &BELL_SPEC,
-                                 null, null, null );
+  pa_simple* pa = pa_simple_new( null, "liboz", PA_STREAM_PLAYBACK, null, "bell", &BELL_SPEC, null,
+                                 null, null );
   if( pa != null ) {
     pa_simple_write( pa, BELL_SAMPLE, sizeof( BELL_SAMPLE ), null );
 
     // pa_simple_drain() takes much longer (~ 1-2 s) than the sample is actually playing, so we use
-    // this sleep to ensure the sample has finished playing, message that it has finished and only
-    // then flush and close PulseAudio connection.
+    // this sleep to ensure the sample has finished playing.
     nanosleep( &BELL_TIMESPEC, null );
-  }
-
-  isBellPlaying = false;
-
-  if( pa != null ) {
-    pa_simple_drain( pa, null );
     pa_simple_free( pa );
   }
 
+  isBellPlaying = false;
   return null;
 }
 
@@ -383,22 +368,20 @@ static void* bellThread( void* )
 
 static void waitBell()
 {
-  // Delay termination until bell finishes.
 #if defined( __native_client__ )
   if( System::core->IsMainThread() ) {
     return;
   }
 #endif
 
+  // Delay termination until bell finishes.
+  while( isBellPlaying ) {
 #ifdef _WIN32
-  while( isBellPlaying ) {
     Sleep( 10 );
-  }
 #else
-  while( isBellPlaying ) {
     nanosleep( &TIMESPEC_10MS, null );
-  }
 #endif
+  }
 }
 
 #ifdef __native_client__

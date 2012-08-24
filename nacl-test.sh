@@ -32,4 +32,4 @@ if [[ "$1" == "strip" ]]; then
     "$nacl64Root/bin/i686-nacl-strip" "build/NaCl-test/openzone.i686.nexe"
 fi
 
-chromium "http://localhost:8000/openzone.sl.html"
+chromium --user-data-dir="$HOME/.config/chromium-test" "http://localhost:8000/openzone.sl.html"

@@ -641,7 +641,6 @@ class Map
           data[i] = Elem();
         }
       }
-
       count = newCount;
     }
 
@@ -654,7 +653,6 @@ class Map
       for( int i = 0; i < count; ++i ) {
         data[i] = Elem();
       }
-
       count = 0;
     }
 
