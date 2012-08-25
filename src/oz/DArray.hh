@@ -38,8 +38,6 @@ namespace oz
  *
  * The advantage over C++ arrays is it has bounds checking, iterator and it frees allocated memory
  * when destructed.
- *
- * @ingroup oz
  */
 template <typename Elem>
 class DArray

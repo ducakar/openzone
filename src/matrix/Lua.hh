@@ -36,7 +36,7 @@ namespace matrix
 
 class Bot;
 
-class Lua : public oz::Lua
+class Lua : public common::Lua
 {
   public:
 

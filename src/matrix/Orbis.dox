@@ -1,0 +1,10 @@
+/**
+ * @page Orbis World (Orbis) Structure
+ *
+ * @section Orbis_Structure Structure
+ *
+ * World can contain three types of entities: structures (`Struct` class), objects (`Object` class)
+ * and fragments (`Frag` class).
+ *
+ * @section Orbis_Manipulation Manipulation
+ */

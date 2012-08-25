@@ -35,8 +35,6 @@ namespace oz
 
 /**
  * Quaternion.
- *
- * @ingroup oz
  */
 class Quat
 {
@@ -458,7 +456,7 @@ class Quat
     }
 
     /**
-     * <tt>rotationZ( heading ) * rotationX( pitch ) * rotationZ( roll )</tt>.
+     * `rotationZ( heading ) * rotationX( pitch ) * rotationZ( roll )`.
      */
     static Quat rotationZXZ( float heading, float pitch, float roll )
     {

@@ -34,7 +34,6 @@
 # include <sys/time.h>
 # include <unistd.h>
 #elif defined( _WIN32 )
-# include "windefs.h"
 # include <windows.h>
 # include <mmsystem.h>
 # include <cstdio>

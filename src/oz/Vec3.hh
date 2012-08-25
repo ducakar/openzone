@@ -35,8 +35,6 @@ namespace oz
 
 /**
  * 3D vector.
- *
- * @ingroup oz
  */
 class Vec3
 {

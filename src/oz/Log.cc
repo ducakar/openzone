@@ -29,7 +29,6 @@
 #include "arrays.hh"
 #include "Time.hh"
 
-#include "windefs.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>

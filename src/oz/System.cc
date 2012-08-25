@@ -30,7 +30,6 @@
 #include "Math.hh"
 #include "Log.hh"
 
-#include "windefs.h"
 #include <clocale>
 #include <csignal>
 #include <cstdlib>
@@ -56,6 +55,8 @@
 
 #if defined( __native_client__ ) && !defined( __GLIBC__ )
 
+using namespace oz;
+
 // Fake implementations for signal() and raise() functions missing in newlib library. signal() is
 // referenced by SDL hence must be present if we link with it. Those fake implementations also spare
 // us several #ifdefs in this file.
@@ -63,7 +64,7 @@
 extern "C"
 void ( * signal( int, void ( * )( int ) ) )( int )
 {
-  return oz::null;
+  return null;
 }
 
 extern "C"

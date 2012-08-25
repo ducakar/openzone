@@ -36,13 +36,11 @@ namespace oz
 /**
  * Immutable string.
  *
- * Class has static storage of <tt>BUFFER_SIZE</tt> bytes, if string is larger it is stored in a
- * dynamically allocated storage. For storage allocation <tt>std::malloc()</tt> is used, so it
- * bypasses <tt>Alloc</tt> memory manager.
+ * Class has static storage of `BUFFER_SIZE` bytes, if string is larger it is stored in a
+ * dynamically allocated storage. For storage allocation `std::malloc()` is used, so it bypasses
+ * `Alloc` memory manager.
  *
  * To deallocate storage just assign an empty string.
- *
- * @ingroup oz
  */
 class String
 {
@@ -80,7 +78,7 @@ class String
     }
 
     /**
-     * Compare two C strings per-byte (same as <tt>strcmp()</tt>).
+     * Compare two C strings per-byte (same as `strcmp()`).
      */
     static int compare( const char* a, const char* b )
     {
@@ -472,7 +470,7 @@ class String
     static String create( int length, char** buffer );
 
     /**
-     * Create a copy that has all instances of <tt>whatChar</tt> replaced by <tt>withChar</tt>.
+     * Create a copy that has all instances of `whatChar` replaced by `withChar`.
      */
     static String replace( const char* s, char whatChar, char withChar );
 
@@ -859,12 +857,12 @@ class String
     String& operator += ( const char* s );
 
     /**
-     * Substring from <tt>start</tt> character (inclusively).
+     * Substring from `start` character (inclusively).
      */
     String substring( int start ) const;
 
     /**
-     * Substring between <tt>start</tt> (inclusively) and <tt>end</tt> (not inclusively) character.
+     * Substring between `start` (inclusively) and `end` (not inclusively) character.
      */
     String substring( int start, int end ) const;
 
@@ -879,7 +877,7 @@ class String
     String trim( const char* s );
 
     /**
-     * Create a copy that has all instances of <tt>whatChar</tt> replaced by <tt>withChar</tt>.
+     * Create a copy that has all instances of `whatChar` replaced by `withChar`.
      */
     String replace( char whatChar, char withChar ) const;
 

@@ -29,11 +29,11 @@
 
 namespace oz
 {
+namespace common
+{
 
 /**
  * Class that keeps track of the current game time, time passed from the last rendered frame etc.
- *
- * @ingroup common
  */
 class Timer
 {
@@ -96,9 +96,8 @@ class Timer
 
 /**
  * Global Timer instance.
- *
- * @ingroup common
  */
 extern Timer timer;
 
+}
 }

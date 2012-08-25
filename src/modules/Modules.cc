@@ -32,6 +32,8 @@
 
 namespace oz
 {
+namespace module
+{
 
 Modules modules;
 
@@ -96,4 +98,5 @@ void Modules::free()
   modules.dealloc();
 }
 
+}
 }

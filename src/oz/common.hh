@@ -25,14 +25,13 @@
  *
  * Essential includes, macros, types and templates.
  *
- * You may want to add <tt>null</tt>, <tt>foreach</tt>, <tt>soft_assert</tt>, <tt>hard_assert</tt>,
- * <tt>byte</tt>, <tt>ubyte</tt>, <tt>ushort</tt>, <tt>ulong</tt>, <tt>long64</tt> and
- * <tt>ulong64</tt> to your <tt>~/.kde/share/apps/katepart/syntax/cpp.xml</tt> or global file
- * <tt>/usr/share/apps/katepart/syntax/cpp.xml</tt> to look like reserved words in KatePart
+ * You may want to add `null`, foreach, `soft_assert`, `hard_assert`, `byte`, `ubyte`, `ushort`,
+ * `ulong`, `long64` and `ulong64` to your `~/.kde/share/apps/katepart/syntax/cpp.xml` or global
+ * file `/usr/share/apps/katepart/syntax/cpp.xml` to look like reserved words in KatePart
  * (KWrite/Kate/KDevelop).
  *
  * For Eclipse I use the same syntax highlighting for macro invocations and reserved words.
- * Import etc/eclipse-defines.xml file to define custom reserved words as macros.
+ * Import `etc/eclipse-defines.xml` file to define custom reserved words as macros.
  */
 
 #pragma once
@@ -61,6 +60,47 @@
  */
 #include <new>
 
+/*
+ * MACROS
+ */
+
+/**
+ * @def OZ_ALWAYS_INLINE
+ * Compiler-specific attribute that suggests function inlining even in debug mode.
+ */
+#define OZ_ALWAYS_INLINE __attribute__(( always_inline ))
+
+/**
+ * @def OZ_HIDDEN
+ * Compiler-specific attribute that hides a symbol when building a shared library.
+ */
+#ifdef _WIN32
+# define OZ_HIDDEN
+#else
+# define OZ_HIDDEN __attribute__(( visibility( "hidden" ) ))
+#endif
+
+/**
+ * @def OZ_NORETURN
+ * Compiler-specific attribute that marks a function as no-return.
+ */
+#define OZ_NORETURN __attribute__(( noreturn ))
+
+/**
+ * @def OZ_PRINTF_FORMAT
+ * Compiler-specific attribute specifying printf-like arguments checking.
+ */
+#define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
+
+// C++11 workarounds for older GCC versions.
+#if defined( OZ_GCC ) && OZ_GCC < 406
+# define constexpr const
+# define noexcept  throw()
+#endif
+#if defined( OZ_GCC ) && OZ_GCC < 407
+# define override
+#endif
+
 /**
  * Top-level OpenZone namespace.
  */
@@ -74,15 +114,11 @@ namespace oz
 /**
  * @def soft_assert
  * If condition fails, raise SIGTRAP and print error using global log.
- *
- * @ingroup oz
  */
 
 /**
  * @def hard_assert
  * If condition fails, raise SIGTRAP, print error using global log and abort program.
- *
- * @ingroup oz
  */
 
 #ifdef NDEBUG
@@ -103,16 +139,12 @@ namespace oz
 #endif
 
 /**
- * Helper method for <tt>soft_assert</tt> macro.
- *
- * @ingroup oz
+ * Helper method for `soft_assert` macro.
  */
 void _softAssertHelper( const char* function, const char* file, int line, const char* message );
 
 /**
- * Helper method for <tt>hard_assert</tt> macro.
- *
- * @ingroup oz
+ * Helper method for `hard_assert` macro.
  */
 OZ_NORETURN
 void _hardAssertHelper( const char* function, const char* file, int line, const char* message );
@@ -122,14 +154,16 @@ void _hardAssertHelper( const char* function, const char* file, int line, const 
  */
 
 // Import core C++ types from <cstddef>.
+#if defined( OZ_GCC ) && OZ_GCC < 406
+typedef std::ptrdiff_t nullptr_t;
+#else
 using std::nullptr_t;
+#endif
 using std::ptrdiff_t;
 using std::size_t;
 
 /**
  * Unit type.
- *
- * @ingroup oz
  */
 struct nil_t
 {
@@ -154,64 +188,50 @@ struct nil_t
 
 /**
  * Unit constant.
- *
- * @ingroup oz
  */
 const nil_t nil = {};
 
 /**
  * Null pointer constant.
- *
- * @ingroup oz
  */
+#if defined( OZ_GCC ) && OZ_GCC < 406
+# define null __null
+#else
 const nullptr_t null = nullptr;
+#endif
 
 /**
  * Signed byte.
- *
- * @ingroup oz
  */
 typedef signed char byte;
 
 /**
  * Unsigned byte.
- *
- * @ingroup oz
  */
 typedef unsigned char ubyte;
 
 /**
  * Unsigned short integer.
- *
- * @ingroup oz
  */
 typedef unsigned short ushort;
 
 /**
  * Unsigned integer.
- *
- * @ingroup oz
  */
 typedef unsigned int uint;
 
 /**
  * Unsigned long integer.
- *
- * @ingroup oz
  */
 typedef unsigned long ulong;
 
 /**
  * Signed 64-bit integer.
- *
- * @ingroup oz
  */
 typedef long long long64;
 
 /**
  * Unsigned 64-bit integer.
- *
- * @ingroup oz
  */
 typedef unsigned long long ulong64;
 
@@ -229,8 +249,6 @@ static_assert( sizeof( double ) == 8, "sizeof( double ) should be 8" );
 
 /**
  * Swap values of variables.
- *
- * @ingroup oz
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
@@ -243,8 +261,6 @@ inline void swap( Value& a, Value& b )
 
 /**
  * Absolute value.
- *
- * @ingroup oz
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
@@ -254,9 +270,7 @@ inline Value abs( const Value& a )
 }
 
 /**
- * <tt>a</tt> if <tt>a <= b</tt>, <tt>b</tt> otherwise.
- *
- * @ingroup oz
+ * `a` if `a <= b`, `b` otherwise.
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
@@ -266,9 +280,7 @@ inline const Value& min( const Value& a, const Value& b )
 }
 
 /**
- * <tt>a</tt> if <tt>a >= b</tt>, <tt>b</tt> otherwise.
- *
- * @ingroup oz
+ * `a` if `a >= b`, `b` otherwise.
  */
 template <typename Value>
 OZ_ALWAYS_INLINE
@@ -278,9 +290,7 @@ inline const Value& max( const Value& a, const Value& b )
 }
 
 /**
- * <tt>c</tt> if <tt>a <= c <= b</tt>, respective boundary otherwise.
- *
- * @ingroup oz
+ * `c` if `a <= c <= b`, respective boundary otherwise.
  */
 template <typename Value>
 OZ_ALWAYS_INLINE

@@ -41,23 +41,21 @@ namespace oz
  * so no data is lost on a crash.
  *
  * Two spaces are used for indentation.
- *
- * @ingroup oz
  */
 class Log
 {
   public:
 
     /// Size of the buffer where final string is written to after printf pattern replacement is
-    /// performed. If it results in a string longer than <tt>OUTPUT_BUFFER_SIZE</tt> bytes, the rest
+    /// performed. If it results in a string longer than `OUTPUT_BUFFER_SIZE` bytes, the rest
     /// is dropped.
     static const int OUT_BUFFER_SIZE = 4096;
 
     static bool showVerbose; ///< Do not suppress verbose messages on stdout. Off by default.
-    static bool verboseMode; ///< While <tt>verboseMode</tt> is on log output is only written to
-                             ///< log file unless <tt>isVerbose</tt> is also on. Off by default.
+    static bool verboseMode; ///< While `verboseMode` is on log output is only written to log file
+                             ///< unless `isVerbose` is also on. Off by default.
 
-    static Log  out;         ///< Similar to <tt>std::cout</tt>, for use with <tt>operator <<</tt>.
+    static Log  out;         ///< Similar to `std::cout`, for use with `operator <<`.
 
   public:
 
@@ -153,8 +151,8 @@ class Log
     static void printHalt();
 
     /**
-     * First parameter is file path (if <tt>null</tt> or "", it only writes to terminal), the other
-     * tells us if we want to clear its content if the file already exists.
+     * First parameter is file path (if `null` or "", it only writes to terminal), the other tells
+     * us if we want to clear its content if the file already exists.
      */
     static bool init( const char* filePath = null, bool clearFile = true );
 
@@ -164,87 +162,87 @@ class Log
     static void free();
 
     /**
-     * Same as <tt>putsRaw( b ? "true" : "false" )</tt>.
+     * Same as `putsRaw( b ? "true" : "false" )`.
      */
     const Log& operator << ( bool b ) const;
 
     /**
-     * Same as <tt>printRaw( "%c", c )</tt>.
+     * Same as `printRaw( "%c", c )`.
      */
     const Log& operator << ( char c ) const;
 
     /**
-     * Same as <tt>printRaw( "%d", b )</tt>.
+     * Same as `printRaw( "%d", b )`.
      */
     const Log& operator << ( byte b ) const;
 
     /**
-     * Same as <tt>printRaw( "%ud", b )</tt>.
+     * Same as `printRaw( "%ud", b )`.
      */
     const Log& operator << ( ubyte b ) const;
 
     /**
-     * Same as <tt>printRaw( "%d", s )</tt>.
+     * Same as `printRaw( "%d", s )`.
      */
     const Log& operator << ( short s ) const;
 
     /**
-     * Same as <tt>printRaw( "%ud", s )</tt>.
+     * Same as `printRaw( "%ud", s )`.
      */
     const Log& operator << ( ushort s ) const;
 
     /**
-     * Same as <tt>printRaw( "%d", i )</tt>.
+     * Same as `printRaw( "%d", i )`.
      */
     const Log& operator << ( int i ) const;
 
     /**
-     * Same as <tt>printRaw( "%ud", i )</tt>.
+     * Same as `printRaw( "%ud", i )`.
      */
     const Log& operator << ( uint i ) const;
 
     /**
-     * Same as <tt>printRaw( "%ld", l )</tt>.
+     * Same as `printRaw( "%ld", l )`.
      */
     const Log& operator << ( long l ) const;
 
     /**
-     * Same as <tt>printRaw( "%lud", l )</tt>.
+     * Same as `printRaw( "%lud", l )`.
      */
     const Log& operator << ( ulong l ) const;
 
     /**
-     * Same as <tt>printRaw( "%lld", l )</tt>.
+     * Same as `printRaw( "%lld", l )`.
      */
     const Log& operator << ( long64 l ) const;
 
     /**
-     * Same as <tt>printRaw( "%llud", l )</tt>.
+     * Same as `printRaw( "%llud", l )`.
      */
     const Log& operator << ( ulong64 l ) const;
 
     /**
-     * Same as <tt>printRaw( "%g", f )</tt>.
+     * Same as `printRaw( "%g", f )`.
      */
     const Log& operator << ( float f ) const;
 
     /**
-     * Same as <tt>printRaw( "%g", d )</tt>.
+     * Same as `printRaw( "%g", d )`.
      */
     const Log& operator << ( double d ) const;
 
     /**
-     * Same as <tt>putsRaw( s )</tt>.
+     * Same as `putsRaw( s )`.
      */
     const Log& operator << ( const String& s ) const;
 
     /**
-     * Same as <tt>putsRaw( s )</tt>.
+     * Same as `putsRaw( s )`.
      */
     const Log& operator << ( const char* s ) const;
 
     /**
-     * Same as <tt>printfRaw( "%p", p )</tt>.
+     * Same as `printfRaw( "%p", p )`.
      */
     const Log& operator << ( volatile const void* p ) const;
 

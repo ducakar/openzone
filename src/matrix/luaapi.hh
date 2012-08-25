@@ -1408,8 +1408,8 @@ static int ozObjEnableUpdate( lua_State* l )
  *
  * @code void ozObjDamage( float damage ) @endcode
  *
- * If <tt>damage</tt> is greater than object's resistance, object receives that difference of damage
- * and <tt>EVENT_DAMAGE</tt> is generated.
+ * If `damage` is greater than object's resistance, object receives that difference of damage and
+ * `EVENT_DAMAGE` is generated.
  */
 static int ozObjDamage( lua_State* l )
 {
@@ -1425,8 +1425,8 @@ static int ozObjDamage( lua_State* l )
  *
  * @code void ozObjDestroy( bool quiet = false ) @endcode
  *
- * %Object will be removed on the beginning of the next update. If <tt>quiet</tt> is true,
- * <tt>onDestroy</tt> handler will not be called nor <tt>EVENT_DESTROY</tt> will be generated.
+ * %Object will be removed on the beginning of the next update. If `quiet` is true, `onDestroy`
+ * handler call and `EVENT_DESTROY` will be suppressed.
  */
 static int ozObjDestroy( lua_State* l )
 {
@@ -2737,8 +2737,6 @@ static int ozFragIsVisibleFromSelfEye( lua_State* l )
 
 /**
  * Register matrix-specific %Lua constants with the given %Lua VM.
- *
- * @ingroup matrix
  */
 void importMatrixConstants( lua_State* l );
 

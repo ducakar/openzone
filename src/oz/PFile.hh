@@ -34,17 +34,15 @@ namespace oz
 {
 
 /**
- * PhysicsFS wrapper, similar to <tt>File</tt> class.
- *
- * @ingroup oz
+ * PhysicsFS wrapper, similar to `File` class.
  */
 class PFile
 {
   private:
 
     String     filePath; ///< %File path.
-    File::Type fileType; ///< %File type (initially <tt>MISSING</tt>).
-    int        fileSize; ///< %File size (>= 0 if <tt>fileType == REGULAR</tt>, -1 otherwise).
+    File::Type fileType; ///< %File type (initially `MISSING`).
+    int        fileSize; ///< %File size (>= 0 if `fileType == REGULAR`, -1 otherwise).
     long64     fileTime; ///< Modification or creation time, what is newer.
     char*      data;     ///< Mapped memory.
 
@@ -104,8 +102,8 @@ class PFile
     /**
      * %File type.
      *
-     * <tt>stat()</tt> function must be called first to fill type and size properties. Initial
-     * values are <tt>MISSING</tt> and -1 respectively.
+     * `stat()` function must be called first to fill type and size properties. Initial values are
+     * `MISSING` and -1 respectively.
      */
     File::Type type() const;
 
@@ -119,8 +117,8 @@ class PFile
     /**
      * %File size in bytes if regular file, -1 otherwise.
      *
-     * <tt>stat()</tt> function must be called first to fill type and size properties. Initial
-     * values are <tt>MISSING</tt> and -1 respectively.
+     * `stat()` function must be called first to fill type and size properties. Initial values are
+     * `MISSING` and -1 respectively.
      */
     int size() const;
 
@@ -169,7 +167,7 @@ class PFile
     /**
      * %Map file into memory for reading.
      *
-     * It also sets file type on <tt>REGULAR</tt> and updates file size if map succeeds.
+     * It also sets file type on `REGULAR` and updates file size if map succeeds.
      */
     bool map();
 
@@ -179,7 +177,7 @@ class PFile
     void unmap();
 
     /**
-     * Get <tt>InputStream</tt> for currently mapped file.
+     * Get `InputStream` for currently mapped file.
      */
     InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
 
@@ -191,7 +189,7 @@ class PFile
     /**
      * Write buffer contents to the file.
      *
-     * It also sets file type on <tt>REGULAR</tt> and updates file size if it succeeds.
+     * It also sets file type on `REGULAR` and updates file size if it succeeds.
      * Write operation is not possible while file is mapped.
      */
     bool write( const char* buffer, int size );
@@ -199,7 +197,7 @@ class PFile
     /**
      * Write buffer contents into a file.
      *
-     * It also sets file type on <tt>REGULAR</tt> and updates file size if it succeeds.
+     * It also sets file type on `REGULAR` and updates file size if it succeeds.
      * Write operation is not possible while file is mapped.
      */
     bool write( const Buffer* buffer );
@@ -232,7 +230,7 @@ class PFile
      * Mount read-only directoy or archive to VFS.
      *
      * @param path archive or directory in real file system directory to mount.
-     * @param mountPoint mount point in VFS, "" or <tt>null</tt> equals root of VFS.
+     * @param mountPoint mount point in VFS, "" or `null` equals root of VFS.
      * @param append true to add to the end instead to the beginning of the search path.
      */
     static bool mount( const char* path, const char* mountPoint, bool append );
@@ -249,7 +247,7 @@ class PFile
     /**
      * Initialise PhysicsFS.
      *
-     * On NaCl <tt>System::instance</tt> must be set prior to initialisation of PhysicsFS.
+     * On NaCl `System::instance` must be set prior to initialisation of PhysicsFS.
      */
     static void init( File::FilesystemType type = File::TEMPORARY, int size = 0 );
 

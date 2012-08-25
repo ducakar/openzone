@@ -34,16 +34,12 @@ namespace oz
 
 /**
  * SIMD vector of four floats.
- *
- * @ingroup oz
  */
 typedef float float4 __attribute__(( vector_size( 16 ) ));
 
 /**
  * @def float4
- * "Constructor" for <tt>float4</tt> type.
- *
- * @ingroup oz
+ * "Constructor" for `float4` type.
  */
 #ifndef __LINE__
 # define float4( x, y, z, w ) float4( { x, y, z, w } )
@@ -55,16 +51,12 @@ typedef float float4 __attribute__(( vector_size( 16 ) ));
 
 /**
  * SIMD vector of four unsigned integers.
- *
- * @ingroup oz
  */
 typedef uint uint4 __attribute__(( vector_size( 16 ) ));
 
 /**
  * @def uint4
- * "Constructor" for <tt>uint4</tt> type.
- *
- * @ingroup oz
+ * "Constructor" for `uint4` type.
  */
 #ifndef __LINE__
 # define uint4( x, y, z, w ) uint4( { x, y, z, w } )
@@ -76,8 +68,6 @@ typedef uint uint4 __attribute__(( vector_size( 16 ) ));
 
 /**
  * SIMD register representation.
- *
- * @ingroup oz
  */
 class Simd
 {
@@ -132,7 +122,7 @@ class Simd
     {}
 
     /**
-     * Create from <tt>Vec3</tt>.
+     * Create from `Vec3`.
      */
     OZ_ALWAYS_INLINE
     Simd( const Vec3& v ) :
@@ -140,7 +130,7 @@ class Simd
     {}
 
     /**
-     * Create from <tt>Point</tt>.
+     * Create from `Point`.
      */
     OZ_ALWAYS_INLINE
     Simd( const Point& p ) :
@@ -148,7 +138,7 @@ class Simd
     {}
 
     /**
-     * Create from <tt>Plane</tt>.
+     * Create from `Plane`.
      */
     OZ_ALWAYS_INLINE
     Simd( const Plane& p ) :
@@ -156,7 +146,7 @@ class Simd
     {}
 
     /**
-     * Create from <tt>Vec4</tt>.
+     * Create from `Vec4`.
      */
     OZ_ALWAYS_INLINE
     Simd( const Vec4& v ) :
@@ -164,7 +154,7 @@ class Simd
     {}
 
     /**
-     * Create from <tt>Quat</tt>.
+     * Create from `Quat`.
      */
     OZ_ALWAYS_INLINE
     Simd( const Quat& q ) :
@@ -199,7 +189,7 @@ class Simd
     }
 
     /**
-     * Construct <tt>Vec3</tt> from SIMD components.
+     * Construct `Vec3` from SIMD components.
      */
     OZ_ALWAYS_INLINE
     Vec3 vec3() const
@@ -208,7 +198,7 @@ class Simd
     }
 
     /**
-     * Construct <tt>Point</tt> from SIMD components.
+     * Construct `Point` from SIMD components.
      */
     OZ_ALWAYS_INLINE
     Point point() const
@@ -217,7 +207,7 @@ class Simd
     }
 
     /**
-     * Construct <tt>Plane</tt> from SIMD components.
+     * Construct `Plane` from SIMD components.
      */
     OZ_ALWAYS_INLINE
     Plane plane() const
@@ -226,7 +216,7 @@ class Simd
     }
 
     /**
-     * Construct <tt>Vec4</tt> from SIMD components.
+     * Construct `Vec4` from SIMD components.
      */
     OZ_ALWAYS_INLINE
     Vec4 vec4() const
@@ -235,7 +225,7 @@ class Simd
     }
 
     /**
-     * Construct <tt>Quat</tt> from SIMD components.
+     * Construct `Quat` from SIMD components.
      */
     OZ_ALWAYS_INLINE
     Quat quat() const

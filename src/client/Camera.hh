@@ -213,8 +213,7 @@ class Camera
     void updateReferences();
 
     /**
-     * Re-calculate rotation quaternion, matrices and <tt>at</tt>, <tt>up</tt>, <tt>left</tt>
-     * vectors.
+     * Re-calculate rotation quaternion, matrices and `at`, `up`, `left` vectors.
      */
     void align();
 

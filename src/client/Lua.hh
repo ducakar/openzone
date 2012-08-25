@@ -34,7 +34,7 @@ namespace oz
 namespace client
 {
 
-class Lua : public oz::Lua
+class Lua : public common::Lua
 {
   public:
 

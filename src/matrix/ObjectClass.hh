@@ -92,7 +92,3 @@ class ObjectClass
 
 }
 }
-
-/**
- * @page ObjectClass Static Objects
- */

@@ -37,8 +37,6 @@ namespace oz
  * Static array.
  *
  * The advantage over C++ arrays is it that is has bounds checking and iterator.
- *
- * @ingroup oz
  */
 template <typename Elem, int COUNT>
 class Array
@@ -297,7 +295,7 @@ class Array
     }
 
     /**
-     * Delete objects referenced by elements and set all elements to <tt>null</tt>.
+     * Delete objects referenced by elements and set all elements to `null`.
      */
     void free()
     {

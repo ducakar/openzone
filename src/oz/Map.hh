@@ -42,18 +42,16 @@ namespace oz
  * It can also be used as a set if one omits values.
  *
  * Like in List all allocated elements are constructed all the time and a removed element's
- * destruction is guaranteed (either explicitly or via move operation).
+ * destruction is guaranteed.
  *
  * Memory is allocated when the first element is added.
- *
- * @ingroup oz
  */
 template <typename Key, typename Value = nil_t>
 class Map
 {
   private:
 
-    /// Granularity for automatic storage allocations and <tt>trim()</tt>.
+    /// Granularity for automatic storage allocations and `trim()`.
     static const int GRANULARITY = 8;
 
     /**
@@ -523,7 +521,7 @@ class Map
     }
 
     /**
-     * Constant pointer to the given key's value or <tt>null</tt> if not found.
+     * Constant pointer to the given key's value or `null` if not found.
      */
     const Value* find( const Key& key ) const
     {
@@ -532,7 +530,7 @@ class Map
     }
 
     /**
-     * Pointer to the given key's value or <tt>null</tt> if not found.
+     * Pointer to the given key's value or `null` if not found.
      */
     Value* find( const Key& key )
     {
@@ -666,7 +664,7 @@ class Map
     }
 
     /**
-     * For an empty map with no allocated storage, allocate capacity for <tt>size_</tt> elements.
+     * For an empty map with no allocated storage, allocate capacity for `size_` elements.
      */
     void alloc( int size_ )
     {
@@ -690,7 +688,7 @@ class Map
     }
 
     /**
-     * Trim map capacity to the least multiple of <tt>GRANULARITY</tt> that can hold all elements.
+     * Trim map capacity to the least multiple of `GRANULARITY` that can hold all elements.
      */
     void trim()
     {

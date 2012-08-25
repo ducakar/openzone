@@ -31,11 +31,11 @@
 
 namespace oz
 {
+namespace common
+{
 
 /**
  * %Lua state structure for common layer %Lua API.
- *
- * @ingroup common
  */
 struct LuaState
 {
@@ -44,8 +44,6 @@ struct LuaState
 
 /**
  * %Lua state for common layer %Lua API.
- *
- * @ingroup common
  */
 static LuaState ls;
 
@@ -53,7 +51,7 @@ static LuaState ls;
 /// @{
 
 /**
- * Call <tt>System::error()</tt>.
+ * Call `System::error()`.
  *
  * @code void ozError( string description ) @endcode
  *
@@ -72,7 +70,7 @@ static int ozError( lua_State* l )
  *
  * @code void ozPrintln( string text ) @endcode
  *
- * Message is printed to Log like <tt>Lua:matrix> text</tt> (if called from matrix::Lua).
+ * Message is printed to Log like `Lua:matrix> text` (if called from `matrix::Lua`).
  */
 static int ozPrintln( lua_State* l )
 {
@@ -87,4 +85,5 @@ static int ozPrintln( lua_State* l )
 
 /// @}
 
+}
 }

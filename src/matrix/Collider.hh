@@ -135,11 +135,8 @@ class Collider
 
   public:
 
-    /// Only objects whose <tt>Object::flags</tt> matches that mask are collided against.
-    int mask;
-
-    /// Collision feedback data.
-    Hit hit;
+    int mask; /// Only objects whose `Object::flags` matches that mask are collided against.
+    Hit hit;  /// Collision feedback data.
 
     Collider();
 
@@ -170,11 +167,3 @@ extern Collider collider;
 
 }
 }
-
-/**
- * @page Collision Collision Detection
- *
- * @section Collision_Algorithm AABB-Convex Polyhedra Collision Detection
- * @section Collision_Epsilon Handling Rounding Errors
- * @section Collision_Broadphase Broadphase
- */

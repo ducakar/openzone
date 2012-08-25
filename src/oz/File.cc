@@ -38,7 +38,6 @@
 # include <ppapi/cpp/file_system.h>
 # include <cstring>
 #elif defined( _WIN32 )
-# include "windefs.h"
 # include <windows.h>
 # include <cstring>
 #else

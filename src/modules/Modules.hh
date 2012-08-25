@@ -27,6 +27,8 @@
 
 namespace oz
 {
+namespace module
+{
 
 class Modules
 {
@@ -53,4 +55,5 @@ class Modules
 
 extern Modules modules;
 
+}
 }

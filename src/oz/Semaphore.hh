@@ -37,8 +37,6 @@ namespace oz
  * Semaphore.
  *
  * It is implemented as a wrapper for condition variable as it should yield better performance.
- *
- * @ingroup oz
  */
 class Semaphore
 {

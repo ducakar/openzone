@@ -306,8 +306,6 @@ static int ozUIShowBuild( lua_State* l )
 
 /**
  * Register client-specific %Lua constants with the given %Lua VM.
- *
- * @ingroup client
  */
 void importClientConstants( lua_State* l );
 

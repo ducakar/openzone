@@ -24,16 +24,18 @@
 #pragma once
 
 #include "matrix/Collider.hh"
-
-using namespace oz::matrix;
+#include "nirvana/common.hh"
+#include "modules/common.hh"
 
 namespace oz
 {
-
-using namespace matrix;
-
 namespace client
 {
+
+using namespace common;
+using namespace matrix;
+using namespace nirvana;
+using namespace module;
 
 struct TexCoord
 {

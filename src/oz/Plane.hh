@@ -35,8 +35,6 @@ namespace oz
 
 /**
  * 3D plane.
- *
- * @ingroup oz
  */
 class Plane
 {

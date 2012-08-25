@@ -35,8 +35,6 @@ namespace oz
 
 /**
  * Stack trace entry.
- *
- * @ingroup oz
  */
 class StackTrace
 {
@@ -51,7 +49,7 @@ class StackTrace
   public:
 
     /**
-     * Generates array of frame pointers and return it in <tt>StackTrace</tt> struct.
+     * Generates array of frame pointers and return it in `StackTrace` struct.
      *
      * @param nSkippedFrames number of stack frames to skip beside the stack frame of this call.
      * Must be >= -1 (if -1 stack frame of this call is also included).
@@ -62,8 +60,8 @@ class StackTrace
      * Return string table for stack frames.
      *
      * Beginning of the returned table contains pointers to string entries in stack trace, same as
-     * with <tt>backtrace_symbols()</tt> call from glibc. The table must be freed by caller with
-     * <tt>std::free()</tt>.
+     * with `backtrace_symbols()` call from glibc. The table must be freed by caller with
+     * `std::free()`.
      */
     char** symbols() const;
 

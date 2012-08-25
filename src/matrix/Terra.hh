@@ -66,8 +66,8 @@ class Terra
     static const int DIM   = QUADS * Quad::DIM;
 
     Quad quads[VERTS][VERTS];
-    int  liquid;              ///< Either <tt>matrix::Medium::GLOBAL_WATER_BIT</tt> or
-                              ///< <tt>matrix::Medium::GLOBAL_LAVA_BIT</tt>
+    int  liquid;              ///< Either `matrix::Medium::GLOBAL_WATER_BIT` or
+                              ///< `matrix::Medium::GLOBAL_LAVA_BIT`
     int  id;
 
     Span getInters( float minX, float minY, float maxX, float maxY, float epsilon = 0.0f ) const;

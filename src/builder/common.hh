@@ -25,13 +25,16 @@
 
 #include "client/common.hh"
 
-using namespace oz::matrix;
-using namespace oz::client;
-
 namespace oz
 {
 namespace builder
 {
+
+using namespace common;
+using namespace matrix;
+using namespace nirvana;
+using namespace module;
+using namespace client;
 
 extern JSON config;
 

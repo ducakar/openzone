@@ -36,8 +36,6 @@ namespace oz
 
 /**
  * Column-major 4x4 matrix.
- *
- * @ingroup oz
  */
 class Mat44
 {
@@ -70,8 +68,7 @@ class Mat44
     {}
 
     /**
-     * Create matrix for base vector images <tt>a</tt>, <tt>b</tt>, <tt>c</tt> and translation
-     * <tt>d</tt>.
+     * Create matrix for base vector images `a`, `b`, `c` and translation `d`.
      */
     OZ_ALWAYS_INLINE
     explicit Mat44( const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d ) :
@@ -609,7 +606,7 @@ class Mat44
     }
 
     /**
-     * <tt>rotationZ( heading ) * rotationX( pitch ) * rotationZ( roll )</tt>.
+     * `rotationZ( heading ) * rotationX( pitch ) * rotationZ( roll )`.
      */
     OZ_ALWAYS_INLINE
     static Mat44 rotationZXZ( float heading, float pitch, float roll )

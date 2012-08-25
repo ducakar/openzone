@@ -46,8 +46,8 @@ class FragPool
 
     int       flags;
 
-    float     velocitySpread; ///< Used when generating multiple frags in <tt>Object::onDestroy()</tt>
-                              ///< or <tt>Struct::destroy()</tt>.
+    float     velocitySpread; ///< Used when generating multiple frags in `Object::onDestroy()` or
+                              ///< `Struct::destroy()`.
 
     float     life;
     float     lifeSpread;
@@ -68,7 +68,3 @@ class FragPool
 
 }
 }
-
-/**
- * @page FragPool Fragment Pools
- */

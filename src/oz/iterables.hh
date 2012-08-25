@@ -40,10 +40,8 @@ namespace oz
  * Base class for iterators with constant access to container elements.
  *
  * It should only be used as a base class. Following functions need to be implemented:
- * @li <tt>bool isValid() const</tt> (if necessary)
- * @li <tt>CIterator& operator ++ ()</tt>.
- *
- * @ingroup oz
+ * @li `bool isValid() const` (if necessary)
+ * @li `CIterator& operator ++ ()`.
  */
 template <typename Elem>
 class CIteratorBase
@@ -116,10 +114,8 @@ class CIteratorBase
  * Base class for iterators with non-constant access to container elements.
  *
  * It should only be used as a base class. Following functions need to be implemented:
- * @li <tt>bool isValid() const</tt> (if necessary)
- * @li <tt>Iterator& operator ++ ()</tt>.
- *
- * @ingroup oz
+ * @li `bool isValid() const` (if necessary)
+ * @li `Iterator& operator ++ ()`.
  */
 template <typename Elem>
 class IteratorBase
@@ -220,9 +216,7 @@ class IteratorBase
 };
 
 /**
- * Iterator with constant element access for a container (same as <tt>container.citer()</tt>).
- *
- * @ingroup oz
+ * Iterator with constant element access for a container (same as `container.citer()`).
  */
 template <class Container>
 OZ_ALWAYS_INLINE
@@ -232,9 +226,7 @@ inline typename Container::CIterator citer( const Container& container )
 }
 
 /**
- * Iterator with non-constant element access for a container (same as <tt>container.iter()</tt>).
- *
- * @ingroup oz
+ * Iterator with non-constant element access for a container (same as `container.iter()`).
  */
 template <class Container>
 inline typename Container::Iterator iter( Container& container )
@@ -243,9 +235,7 @@ inline typename Container::Iterator iter( Container& container )
 }
 
 /**
- * Copy all elements from <tt>iSrc</tt> to <tt>iDest</tt>.
- *
- * @ingroup oz
+ * Copy all elements from `iSrc` to `iDest`.
  */
 template <class IteratorA, class CIteratorB>
 inline void iCopy( IteratorA iDest, CIteratorB iSrc )
@@ -261,9 +251,7 @@ inline void iCopy( IteratorA iDest, CIteratorB iSrc )
 }
 
 /**
- * Move all elements from <tt>iSrc</tt> to <tt>iDest</tt>.
- *
- * @ingroup oz
+ * Move all elements from `iSrc` to `iDest`.
  */
 template <class IteratorA, class IteratorB>
 inline void iMove( IteratorA iDest, IteratorB iSrc )
@@ -282,8 +270,6 @@ inline void iMove( IteratorA iDest, IteratorB iSrc )
 
 /**
  * Set elements to the given value.
- *
- * @ingroup oz
  */
 template <class Iterator, typename Value = typename Iterator::ElemType>
 inline void iSet( Iterator iDest, const Value& value )
@@ -297,8 +283,6 @@ inline void iSet( Iterator iDest, const Value& value )
 
 /**
  * Swap element of two same-length containers.
- *
- * @ingroup oz
  */
 template <class IteratorA, class IteratorB>
 inline void iSwap( IteratorA iDestA, IteratorB iDestB )
@@ -322,8 +306,6 @@ inline void iSwap( IteratorA iDestA, IteratorB iDestB )
 
 /**
  * True iff same length and respective elements are equal.
- *
- * @ingroup oz
  */
 template <class CIteratorA, class CIteratorB>
 inline bool iEquals( CIteratorA iSrcA, CIteratorB iSrcB )
@@ -339,8 +321,6 @@ inline bool iEquals( CIteratorA iSrcA, CIteratorB iSrcB )
 
 /**
  * True iff the given value is found in the container.
- *
- * @ingroup oz
  */
 template <class CIterator, typename Value = typename CIterator::ElemType>
 inline bool iContains( CIterator iSrc, const Value& value )
@@ -353,8 +333,6 @@ inline bool iContains( CIterator iSrc, const Value& value )
 
 /**
  * %Iterator for the first occurrence or an invalid iterator if not found.
- *
- * @ingroup oz
  */
 template <class Iterator, typename Value = typename Iterator::ElemType>
 inline Iterator iFind( Iterator iSrc, const Value& value )
@@ -367,8 +345,6 @@ inline Iterator iFind( Iterator iSrc, const Value& value )
 
 /**
  * %Iterator for the last occurrence or an invalid iterator if not found.
- *
- * @ingroup oz
  */
 template <class Iterator, typename Value = typename Iterator::ElemType>
 inline Iterator iFindLast( Iterator iSrc, const Value& value )
@@ -388,8 +364,6 @@ inline Iterator iFindLast( Iterator iSrc, const Value& value )
 
 /**
  * Index of the first occurrence of the value or -1 if not found.
- *
- * @ingroup oz
  */
 template <class CIterator, typename Value = typename CIterator::ElemType>
 inline int iIndex( CIterator iSrc, const Value& value )
@@ -405,8 +379,6 @@ inline int iIndex( CIterator iSrc, const Value& value )
 
 /**
  * Index of the last occurrence of the value or -1 if not found.
- *
- * @ingroup oz
  */
 template <class CIterator, typename Value = typename CIterator::ElemType>
 inline int iLastIndex( CIterator iSrc, const Value& value )
@@ -426,9 +398,7 @@ inline int iLastIndex( CIterator iSrc, const Value& value )
 }
 
 /**
- * Delete objects referenced by elements and set all elements to <tt>null</tt>.
- *
- * @ingroup oz
+ * Delete objects referenced by elements and set all elements to `null`.
  */
 template <class Iterator>
 inline void iFree( Iterator iDest )
@@ -462,8 +432,6 @@ inline void iFree( Iterator iDest )
  *   printf( "%d ", *i );
  * }
  * @endcode
- *
- * @ingroup oz
  */
 #define foreach( i, iterator ) \
   for( auto i = iterator; i.isValid(); ++i )

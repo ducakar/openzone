@@ -29,7 +29,6 @@
 #include "System.hh"
 
 #ifdef _WIN32
-# include "windefs.h"
 # include <cstdlib>
 # include <windows.h>
 #else

@@ -29,11 +29,11 @@
 
 namespace oz
 {
+namespace common
+{
 
 /**
  * 2D integer span.
- *
- * @ingroup common
  */
 struct Span
 {
@@ -43,4 +43,5 @@ struct Span
   int maxY; ///< Maximum Y.
 };
 
+}
 }

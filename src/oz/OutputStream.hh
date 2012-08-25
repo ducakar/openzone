@@ -35,8 +35,6 @@ namespace oz
 
 /**
  * Fixed-size read/write stream.
- *
- * @ingroup oz
  */
 class OutputStream
 {
@@ -69,7 +67,7 @@ class OutputStream
     {}
 
     /**
-     * Create <tt>InputStream</tt> for reading this stream (position is not reset).
+     * Create `InputStream` for reading this stream (position is not reset).
      */
     OZ_ALWAYS_INLINE
     InputStream inputStream() const
@@ -225,7 +223,7 @@ class OutputStream
     }
 
     /**
-     * Move position pointer for <tt>count</tt> bytes forward.
+     * Move position pointer for `count` bytes forward.
      *
      * @return Pointer to the beginning of the skipped bytes.
      */

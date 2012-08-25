@@ -36,11 +36,9 @@ namespace oz
 /**
  * %Array list with static storage (fixed capacity).
  *
- * In contrast with <tt>std::vector</tt> all allocated elements are constructed all the time. This
- * yields slightly better performance and simplifies implementation. However, on element removal its
- * destruction is guaranteed (either explicitly or by via move operation).
- *
- * @ingroup oz
+ * In contrast with `std::vector` all allocated elements are constructed all the time. This yields
+ * slightly better performance and simplifies implementation. However, on element removal its
+ * destruction is guaranteed.
  */
 template <typename Elem, int SIZE>
 class SList

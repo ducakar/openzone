@@ -36,8 +36,6 @@ namespace oz
 
 /**
  * Class for basic file and directory operations.
- *
- * @ingroup oz
  */
 class File
 {
@@ -70,8 +68,8 @@ class File
   private:
 
     String      filePath;   ///< %File path.
-    Type        fileType;   ///< %File type (initially <tt>MISSING</tt>).
-    int         fileSize;   ///< %File size (>= 0 if <tt>fileType == REGULAR</tt>, -1 otherwise).
+    Type        fileType;   ///< %File type (initially `MISSING`).
+    int         fileSize;   ///< %File size (>= 0 if `fileType == REGULAR`, -1 otherwise).
     long64      fileTime;   ///< Modification or creation time, what is newer.
     char*       data;       ///< Mapped memory.
 #ifdef __native_client__
@@ -134,8 +132,8 @@ class File
     /**
      * %File type.
      *
-     * <tt>stat()</tt> function must be called first to fill type and size properties. Initial
-     * values are <tt>MISSING</tt> and -1 respectively.
+     * `stat()` function must be called first to fill type and size properties. Initial values are
+     * `MISSING` and -1 respectively.
      */
     Type type() const;
 
@@ -149,8 +147,8 @@ class File
     /**
      * %File size in bytes if regular file, -1 otherwise.
      *
-     * <tt>stat()</tt> function must be called first to fill type and size properties. Initial
-     * values are <tt>MISSING</tt> and -1 respectively.
+     * `stat()` function must be called first to fill type and size properties. Initial values are
+     * `MISSING` and -1 respectively.
      */
     int size() const;
 
@@ -189,7 +187,7 @@ class File
     /**
      * %Map file into memory for reading.
      *
-     * It also sets file type on <tt>REGULAR</tt> and updates file size if map succeeds.
+     * It also sets file type on `REGULAR` and updates file size if map succeeds.
      */
     bool map();
 
@@ -199,7 +197,7 @@ class File
     void unmap();
 
     /**
-     * Get <tt>InputStream</tt> for currently mapped file.
+     * Get `InputStream` for currently mapped file.
      */
     InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
 
@@ -211,7 +209,7 @@ class File
     /**
      * Write buffer contents to the file.
      *
-     * It also sets file type on <tt>REGULAR</tt> and updates file size if it succeeds.
+     * It also sets file type on `REGULAR` and updates file size if it succeeds.
      * Write operation is not possible while file is mapped.
      */
     bool write( const char* buffer, int size );
@@ -219,7 +217,7 @@ class File
     /**
      * Write buffer contents into a file.
      *
-     * It also sets file type on <tt>REGULAR</tt> and updates file size if it succeeds.
+     * It also sets file type on `REGULAR` and updates file size if it succeeds.
      * Write operation is not possible while file is mapped.
      */
     bool write( const Buffer* buffer );
@@ -268,7 +266,7 @@ class File
      * This method makes effect on NaCl platform only. Persistent filesystem must be initialised
      * from JavaScript before NaCl module is loaded.
      *
-     * @param type local filesystem type, either <tt>TEMPORARY</tt> or <tt>PERSISTENT</tt>.
+     * @param type local filesystem type, either `TEMPORARY` or `PERSISTENT`.
      * @param size local filesystem size.
      */
     static void init( FilesystemType type, int size );

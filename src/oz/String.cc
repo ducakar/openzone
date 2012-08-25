@@ -28,7 +28,6 @@
 
 #include "System.hh"
 
-#include "windefs.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>

@@ -102,7 +102,3 @@ class BotClass : public DynamicClass
 
 }
 }
-
-/**
- * @page BotClass Bot Objects
- */

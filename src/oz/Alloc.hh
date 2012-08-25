@@ -36,20 +36,18 @@ namespace oz
 /**
  * Memory allocator.
  *
- * This class implements <tt>new</tt>/<tt>delete</tt> operators that provide memory allocation
- * statistics, specific alignment and optionally track allocated chunks (if <tt>OZ_TRACK_ALLOCS</tt>
- * configuration option is turned on).
+ * This class implements `new`/`delete` operators that provide memory allocation statistics,
+ * specific alignment and optionally track allocated chunks (if `OZ_TRACK_ALLOCS` configuration
+ * option is turned on).
  *
- * Unless <tt>NDEBUG</tt> macro was defined when building liboz, all freed memory is rewritten with
- * 0xee byte values.
- *
- * @ingroup oz
+ * Unless `NDEBUG` macro was defined when building liboz, all freed memory is rewritten with 0xee
+ * byte values.
  */
 class Alloc
 {
   public:
 
-    /// Alignment of allocated storage returned by <tt>operator new</tt>.
+    /// Alignment of allocated storage returned by `operator new`.
     static const size_t ALIGNMENT = 16;
 
     static int    count;     ///< Current number of allocated memory chunks.
@@ -129,11 +127,9 @@ class Alloc
  * Operator new overload with memory statistics and (optionally) memory leak checking.
  *
  * Apart from standard new operator this one counts memory allocation and amount of memory allocated
- * (<tt>Alloc::count</tt>, <tt>Alloc::amount</tt> etc.). If compiled with <tt>OZ_TRACK_ALLOCS</tt>
- * is also tracks all allocated chunks, so it catches new/delete mismatches and
- * <tt>Alloc::printLeaks()</tt> can be called at any time to print currently allocated chunks.
- *
- * @ingroup oz
+ * (`Alloc::count`, `Alloc::amount` etc.). If compiled with `OZ_TRACK_ALLOCS` is also tracks all
+ * allocated chunks, so it catches new/delete mismatches and `Alloc::printLeaks()` can be called at
+ * any time to print currently allocated chunks.
  */
 extern void* operator new ( size_t size );
 
@@ -141,29 +137,23 @@ extern void* operator new ( size_t size );
  * Operator new[] overload with memory statistics and (optionally) memory leak checking.
  *
  * Apart from standard new operator this one counts memory allocation and amount of memory allocated
- * (<tt>Alloc::count</tt>, <tt>Alloc::amount</tt> etc.). If compiled with <tt>OZ_TRACK_ALLOCS</tt>
- * is also tracks all allocated chunks, so it catches new/delete mismatches and
- * <tt>Alloc::printLeaks()</tt> can be called at any time to print currently allocated chunks.
- *
- * @ingroup oz
+ * (`Alloc::count`, `Alloc::amount` etc.). If compiled with `OZ_TRACK_ALLOCS` is also tracks all
+ * allocated chunks, so it catches new/delete mismatches and `Alloc::printLeaks()` can be called at
+ * any time to print currently allocated chunks.
  */
 extern void* operator new[] ( size_t size );
 
 /**
  * Operator delete overload with memory statistics and (optionally) memory leak checking.
  *
- * If compiled without <tt>NDEBUG</tt> it overwrites deallocated chunks of memory with 0xee bytes.
- *
- * @ingroup oz
+ * If compiled without `NDEBUG` it overwrites deallocated chunks of memory with 0xee bytes.
  */
 extern void operator delete ( void* ptr ) noexcept;
 
 /**
  * Operator delete[] overload with memory statistics and (optionally) memory leak checking.
  *
- * If compiled without <tt>NDEBUG</tt> it overwrites deallocated chunks of memory with 0xee bytes.
- *
- * @ingroup oz
+ * If compiled without `NDEBUG` it overwrites deallocated chunks of memory with 0xee bytes.
  */
 extern void operator delete[] ( void* ptr ) noexcept;
 
@@ -171,8 +161,6 @@ extern void operator delete[] ( void* ptr ) noexcept;
  * Operator new overload with memory statistics and (optionally) memory leak checking.
  *
  * nothrow version.
- *
- * @ingroup oz
  */
 extern void* operator new ( size_t size, const std::nothrow_t& ) noexcept;
 
@@ -180,8 +168,6 @@ extern void* operator new ( size_t size, const std::nothrow_t& ) noexcept;
  * Operator new[] overload with memory statistics and (optionally) memory leak checking.
  *
  * nothrow version.
- *
- * @ingroup oz
  */
 extern void* operator new[] ( size_t size, const std::nothrow_t& ) noexcept;
 
@@ -189,8 +175,6 @@ extern void* operator new[] ( size_t size, const std::nothrow_t& ) noexcept;
  * Operator delete overload with memory statistics and (optionally) memory leak checking.
  *
  * nothrow version.
- *
- * @ingroup oz
  */
 extern void operator delete ( void* ptr, const std::nothrow_t& ) noexcept;
 
@@ -198,7 +182,5 @@ extern void operator delete ( void* ptr, const std::nothrow_t& ) noexcept;
  * Operator delete[] overload with memory statistics and (optionally) memory leak checking.
  *
  * nothrow version.
- *
- * @ingroup oz
  */
 extern void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept;

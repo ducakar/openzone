@@ -40,8 +40,6 @@ namespace oz
  * A prime number is recommended as size unless key distribution is truly "random".
  *
  * Memory is allocated when the first element is added.
- *
- * @ingroup oz
  */
 template <typename Value = nil_t, int SIZE = 253>
 class HashIndex
@@ -522,7 +520,7 @@ class HashIndex
     }
 
     /**
-     * If the key exists, return constant pointer to its value, otherwise return <tt>null</tt>.
+     * If the key exists, return constant pointer to its value, otherwise return `null`.
      */
     const Value* find( int key ) const
     {
@@ -540,7 +538,7 @@ class HashIndex
     }
 
     /**
-     * If the key exists, return pointer to its value, otherwise return <tt>null</tt>.
+     * If the key exists, return pointer to its value, otherwise return `null`.
      */
     Value* find( int key )
     {

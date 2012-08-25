@@ -38,8 +38,6 @@ namespace oz
  * Memory buffer.
  *
  * It can be used as a generic memory buffer or to store contents read from a file.
- *
- * @ingroup oz
  */
 class Buffer
 {
@@ -83,7 +81,7 @@ class Buffer
     Buffer& operator = ( Buffer&& b );
 
     /**
-     * Create a buffer of size <tt>size</tt>.
+     * Create a buffer of size `size`.
      */
     explicit Buffer( int size );
 
@@ -164,7 +162,7 @@ class Buffer
     }
 
     /**
-     * For an empty buffer, allocate new storage of <tt>size</tt> bytes.
+     * For an empty buffer, allocate new storage of `size` bytes.
      */
     void alloc( int size );
 
@@ -174,12 +172,12 @@ class Buffer
     void dealloc();
 
     /**
-     * Create an <tt>InputStream</tt> object for reading binary data from the buffer.
+     * Create an `InputStream` object for reading binary data from the buffer.
      */
     InputStream inputStream( Endian::Order order = Endian::NATIVE ) const;
 
     /**
-     * Create an <tt>OutputStream</tt> object for writing binary data into the buffer.
+     * Create an `OutputStream` object for writing binary data into the buffer.
      */
     OutputStream outputStream( Endian::Order order = Endian::NATIVE ) const;
 

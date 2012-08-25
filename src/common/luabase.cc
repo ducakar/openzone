@@ -25,6 +25,8 @@
 
 namespace oz
 {
+namespace common
+{
 
 void registerLuaConstant( lua_State* l, const char* name, bool value )
 {
@@ -50,4 +52,5 @@ void registerLuaConstant( lua_State* l, const char* name, const char* value )
   l_setglobal( name );
 }
 
+}
 }

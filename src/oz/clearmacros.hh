@@ -25,9 +25,9 @@
  *
  * This header clears liboz macros that might interfere with other libraries.
  *
- * It undefines <tt>soft_assert()</tt>, <tt>hard_assert()</tt> and <tt>foreach()</tt> macros. It is
- * not included by \<oz/oz.hh\>, one should include it manually before headers that conflict with
- * liboz.
+ * It undefines `soft_assert()`, `hard_assert()` and `foreach()` and macros that might be defined
+ * for older GCC versions only to ensure for C++11 compatibility. It is not included by
+ * `\<oz/oz.hh\>`, one should include it manually before headers that conflict with liboz.
  */
 
 #pragma once
@@ -35,3 +35,9 @@
 #undef soft_assert
 #undef hard_assert
 #undef foreach
+
+// Defined only for older GCC versions for C++11 compatibility.
+#undef constexpr
+#undef noexcept
+#undef override
+#undef null

@@ -43,9 +43,6 @@
 
 #include <lua.hpp>
 
-/// @addtogroup common
-/// @{
-
 /**
  * @def IMPORT_FUNC
  * Registers %Lua API function with the Lua class in the current namespace.
@@ -76,7 +73,7 @@
 
 /**
  * @def ARG( n )
- * Exits %Lua API function call with an error if number of parameters is not <tt>n</tt>.
+ * Exits %Lua API function call with an error if number of parameters is not `n`.
  */
 #define ARG( n ) \
   if( lua_gettop( l ) != ( n ) ) { \
@@ -85,8 +82,8 @@
 
 /**
  * @def VARG( min, max )
- * Exits %Lua API function call with an error if number of parameters is not between <tt>min</tt>
- * and <tt>max</tt>.
+ * Exits %Lua API function call with an error if number of parameters is not between `min` and
+ * `max`.
  */
 #define VARG( min, max ) \
   { \
@@ -98,7 +95,7 @@
 
 /**
  * @def ARG_VAR( n )
- * Exits %Lua API function call with an error if number of parameters is less than <tt>n</tt>.
+ * Exits %Lua API function call with an error if number of parameters is less than `n`.
  */
 #define ARG_VAR( n ) \
   if( lua_gettop( l ) < ( n ) ) { \
@@ -116,8 +113,8 @@
 
 /**
  * @def STR_INDEX
- * Initialises variable <tt>str</tt> to structure with the given index or returns with error for
- * invalid indices.
+ * Initialises variable `str` to structure with the given index or returns with error for invalid
+ * indices.
  */
 #define STR_INDEX( index ) \
   if( uint( index ) >= uint( orbis.structs.length() ) ) { \
@@ -139,7 +136,7 @@
 
 /**
  * @def ENT_INDEX
- * Initialises variable <tt>ent</tt> to structure entity with the given index (i.e.
+ * Initialises variable `ent` to structure entity with the given index (i.e.
  * structureIndex * 128 + entityIndex)or returns with error for invalid indices.
  */
 #define ENT_INDEX( index ) \
@@ -179,8 +176,8 @@
 
 /**
  * @def OBJ_INDEX
- * Initialises variable <tt>obj</tt> to object with the given index or returns with error for
- * invalid indices.
+ * Initialises variable `obj` to object with the given index or returns with error for invalid
+ * indices.
  */
 #define OBJ_INDEX( index ) \
   if( uint( index ) >= uint( orbis.objects.length() ) ) { \
@@ -193,7 +190,7 @@
 
 /**
  * @def ITEM_INDEX
- * Initialises variable <tt>item</tt> to item with the given index or returns with error for invalid
+ * Initialises variable `item` to item with the given index or returns with error for invalid
  * indices or objects that are not items.
  */
 #define ITEM_INDEX( index ) \
@@ -210,8 +207,8 @@
 
 /**
  * @def BOT_INDEX
- * Initialises variable <tt>bot</tt> to bot with the given index or returns with error for invalid
- * indices or objects that are not bots.
+ * Initialises variable `bot` to bot with the given index or returns with error for invalid indices
+ * or objects that are not bots.
  */
 #define BOT_INDEX( index ) \
   if( uint( index ) >= uint( orbis.objects.length() ) ) { \
@@ -493,17 +490,15 @@
 #define l_dostring( code ) \
   luaL_dostring( l, code )
 
-/// @}
-
 namespace oz
+{
+namespace common
 {
 
 /**
  * Overload for registering boolean %Lua constant.
  *
  * This method is only intended for use inside methods that register %Lua constants.
- *
- * @ingroup common
  */
 void registerLuaConstant( lua_State* l, const char* name, bool value );
 
@@ -511,8 +506,6 @@ void registerLuaConstant( lua_State* l, const char* name, bool value );
  * Overload for registering integer %Lua constant.
  *
  * This method is only intended for use inside methods that register %Lua constants.
- *
- * @ingroup common
  */
 void registerLuaConstant( lua_State* l, const char* name, int value );
 
@@ -520,8 +513,6 @@ void registerLuaConstant( lua_State* l, const char* name, int value );
  * Overload for registering number %Lua constant.
  *
  * This method is only intended for use inside methods that register %Lua constants.
- *
- * @ingroup common
  */
 void registerLuaConstant( lua_State* l, const char* name, float value );
 
@@ -529,9 +520,8 @@ void registerLuaConstant( lua_State* l, const char* name, float value );
  * Overload for registering string %Lua constant.
  *
  * This method is only intended for use inside methods that register %Lua constants.
- *
- * @ingroup common
  */
 void registerLuaConstant( lua_State* l, const char* name, const char* value );
 
+}
 }

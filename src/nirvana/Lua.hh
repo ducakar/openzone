@@ -34,7 +34,7 @@ namespace oz
 namespace nirvana
 {
 
-class Lua : public oz::Lua
+class Lua : public common::Lua
 {
   public:
 

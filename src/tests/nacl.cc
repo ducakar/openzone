@@ -22,7 +22,6 @@
  */
 
 #include "oz/oz.hh"
-#include "oz/windefs.h"
 #include "main.hh"
 
 #include <ppapi/cpp/fullscreen.h>

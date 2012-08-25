@@ -36,10 +36,8 @@ namespace oz
 /**
  * Packed array of bits with dynamically allocated storage.
  *
- * Bits are stored in an array of <tt>ulong</tt>s, so the its length in bits is always a multiple of
- * <tt>sizeof( ulong ) * 8</tt>.
- *
- * @ingroup oz
+ * Bits are stored in an array of `ulong`s, so the its length in bits is always a multiple of
+ * `sizeof( ulong ) * 8`.
  */
 class Bitset
 {
@@ -131,10 +129,10 @@ class Bitset
     }
 
     /**
-     * Allocate a new bitset that holds at least <tt>nBits</tt> bits.
+     * Allocate a new bitset that holds at least `nBits` bits.
      *
-     * The size of <tt>data</tt> array is adjusted to the smallest unit number that can hold
-     * the requested number of bits.
+     * The size of `data` array is adjusted to the smallest unit number that can hold the requested
+     * number of bits.
      */
     explicit Bitset( int nBits )
     {
@@ -171,7 +169,7 @@ class Bitset
     }
 
     /**
-     * Get constant pointer to <tt>data</tt> array.
+     * Get constant pointer to `data` array.
      */
     OZ_ALWAYS_INLINE
     operator const ulong* () const
@@ -180,7 +178,7 @@ class Bitset
     }
 
     /**
-     * Get pointer to <tt>data</tt> array.
+     * Get pointer to `data` array.
      */
     OZ_ALWAYS_INLINE
     operator ulong* ()
@@ -462,7 +460,7 @@ class Bitset
     }
 
     /**
-     * For an empty bitset, allocate storage for <tt>nBits</tt> bits.
+     * For an empty bitset, allocate storage for `nBits` bits.
      */
     void alloc( int nBits )
     {

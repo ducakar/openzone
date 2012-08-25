@@ -35,8 +35,6 @@ namespace oz
 
 /**
  * %Mutex.
- *
- * @ingroup oz
  */
 class Mutex
 {

@@ -382,16 +382,16 @@ int Client::init( int argc, char** argv )
   }
   else {
     seed = config["seed"].asInt();
-    oz::Lua::isRandomSeedTime = false;
+    common::Lua::isRandomSeedTime = false;
   }
 
   if( isBenchmark ) {
     seed = 42;
-    oz::Lua::isRandomSeedTime = false;
+    common::Lua::isRandomSeedTime = false;
   }
 
   Math::seed( seed );
-  oz::Lua::randomSeed = seed;
+  common::Lua::randomSeed = seed;
 
   Log::println( "Random generator seed set to: %d", seed );
 

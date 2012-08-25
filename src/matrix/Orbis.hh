@@ -46,8 +46,6 @@ struct Cell
 /**
  * Matrix data structure for world (terrain, all structures and objects in the world).
  * The world should not be manipulated directly; use Synapse instead.
- *
- * @ingroup matrix
  */
 class Orbis : public Bounds
 {
@@ -223,14 +221,3 @@ inline Span Orbis::getInters( const Bounds& bounds, float epsilon ) const
 
 }
 }
-
-/**
- * @page Orbis World (Orbis) Structure
- *
- * @section Orbis_Structure Structure
- *
- * World can contain three types of entities: structures (<tt>Struct</tt> class), objects
- * (<tt>Object</tt> class) and fragments (<tt>Frag</tt> class).
- *
- * @section Orbis_Manipulation Manipulation
- */

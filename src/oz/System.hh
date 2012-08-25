@@ -35,10 +35,8 @@
 /**
  * @def OZ_WARNING
  *
- * Wrapper for calling <tt>oz::System::warning()</tt> method, filling in current function, file and
- * line parameters.
- *
- * @ingroup oz
+ * Wrapper for calling `oz::System::warning()` method, filling in current function, file and line
+ * parameters.
  */
 #define OZ_WARNING( ...) \
   oz::System::warning( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
@@ -46,10 +44,8 @@
 /**
  * @def OZ_ERROR
  *
- * Wrapper for calling <tt>oz::System::error()</tt> method, filling in current function, file and
- * line parameters.
- *
- * @ingroup oz
+ * Wrapper for calling `oz::System::error()` method, filling in current function, file and line
+ * parameters.
  */
 #define OZ_ERROR( ...) \
   oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
@@ -73,24 +69,21 @@ namespace oz
 
 /**
  * Class for generating stack trace for the current function call.
- *
- * @ingroup oz
  */
 class System
 {
   public:
 
-    /// Wait for CTRL-C (or other fatal signal) in <tt>abort()</tt>, so one has time to attach a
-    /// debugger.
+    /// Wait for CTRL-C (or other fatal signal) in `abort()`, so one has time to attach a debugger.
     static const int HALT_BIT = 0x01;
 
     /// Catch fatal signals (SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon which print diagnostics and
-    /// abort the program (similar to <tt>error()</tt> call).
+    /// abort the program (similar to `error()` call).
     static const int SIGNAL_HANDLER_BIT = 0x10;
 
-    /// Override handlers for exception violations (<tt>std::terminate()</tt> and
-    /// <tt>std::unexpected()</tt>) with handlers that print diagnostics and abort the program via
-    /// <tt>error()</tt> call.
+    /// Override handlers for exception violations (`std::terminate()` and
+    /// `std::unexpected()`) with handlers that print diagnostics and abort the program via
+    /// `error()` call.
     static const int EXCEPTION_HANDLERS_BIT = 0x20;
 
     /// Handlers bitmask.
@@ -109,8 +102,8 @@ class System
     static System system; ///< Private instance, takes care for static (de)initialisation.
 
     /**
-     * Sets up bell and disables <tt>SIGTRAP</tt> handler on Linux, since the default handler would
-     * crash the application on <tt>trap()</tt> call.
+     * Sets up bell and disables `SIGTRAP` handler on Linux, since the default handler would crash
+     * the application on `trap()` call.
      */
     System();
 
@@ -124,9 +117,8 @@ class System
     /**
      * Abort program.
      *
-     * If <tt>HALT_BIT</tt> was passed in on initialisation and <tt>preventHalt</tt> is false,
-     * program is halted and waits for a fatal signal before it is aborted, so a debugger can be
-     * attached.
+     * If `HALT_BIT` was passed in on initialisation and `preventHalt` is false, program is halted
+     * and waits for a fatal signal before it is aborted, so a debugger can be attached.
      */
     OZ_NORETURN
     static void abort( bool preventHalt = false );
@@ -134,27 +126,27 @@ class System
     /**
      * Trigger a breakpoint.
      *
-     * It raises <tt>SIGTRAP</tt> on Linux or calls <tt>DebugBreak()</tt> on Windows.
+     * It raises `SIGTRAP` on Linux or calls `DebugBreak()` on Windows.
      */
     static void trap();
 
     /**
      * Play a sound alert.
      *
-     * Sine wave from <tt>oz/bellSample.inc</tt> is played asynchronously through PulseAudio on
-     * Linux or Win32 API on Windows.
+     * Sine wave from `oz/bellSample.inc` is played asynchronously through PulseAudio on Linux or
+     * Win32 API on Windows.
      */
     static void bell();
 
     /**
      * Print warning message.
      *
-     * This function first triggers breakpoint with <tt>trap()</tt>, prints error message, file
-     * location and stack trace (skipping <tt>nSkippedFrames</tt> stack frames relative to the
-     * caller) to log and plays a bell.
+     * This function first triggers breakpoint with `trap()`, prints error message, file location
+     * and stack trace (skipping `nSkippedFrames` stack frames relative to the caller) to log and
+     * plays a bell.
      *
-     * You will probably want to use <tt>OZ_WARNING</tt> macro instead to fill in the current
-     * function, file and line for you.
+     * You will probably want to use `OZ_WARNING` macro instead to fill in the current function,
+     * file and line for you.
      */
     OZ_PRINTF_FORMAT( 5, 6 )
     static void warning( const char* function, const char* file, int line, int nSkippedFrames,
@@ -163,10 +155,10 @@ class System
     /**
      * Print error message and halt the program.
      *
-     * Same as <tt>System::warning()</tt> but also aborts the program.
+     * Same as `System::warning()` but also aborts the program.
      *
-     * You will probably want to use <tt>OZ_ERROR</tt> macro instead to fill in the current
-     * function, file and line for you.
+     * You will probably want to use `OZ_ERROR` macro instead to fill in the current function, file
+     * and line for you.
      */
     OZ_NORETURN
     OZ_PRINTF_FORMAT( 5, 6 )
@@ -174,10 +166,10 @@ class System
                        const char* msg, ... );
 
     /**
-     * Initialise <tt>System</tt> features.
+     * Initialise `System` features.
      *
-     * Set-up crash handlers for cases specified in <tt>flags</tt>. If <tt>HALT_BIT</tt> is also
-     * given, crash handlers wait for CTRL-C before exit.
+     * Set-up crash handlers for cases specified in `flags`. If `HALT_BIT` is also given, crash
+     * handlers wait for CTRL-C before exit.
      */
 #if defined( NDEBUG ) || defined( __native_client__ )
     static void init( int flags = HANDLERS_MASK );
@@ -186,10 +178,9 @@ class System
 #endif
 
     /**
-     * Deinitialise <tt>System</tt>.
+     * Deinitialise `System`.
      *
-     * It resets signal handlers, <tt>std::terminate()</tt> and <tt>std::unexpected()</tt> to
-     * defaults.
+     * It resets signal handlers, `std::terminate()` and `std::unexpected()` to defaults.
      */
     static void free();
 

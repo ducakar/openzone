@@ -32,7 +32,6 @@
 
 #endif
 
-#include "windefs.h"
 #include <cerrno>
 #include <cstring>
 #include <physfs.h>

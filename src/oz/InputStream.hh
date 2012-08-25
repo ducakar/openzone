@@ -39,8 +39,6 @@ namespace oz
 
 /**
  * Fixed-size read-only stream.
- *
- * @ingroup oz
  */
 class InputStream
 {
@@ -187,7 +185,7 @@ class InputStream
     }
 
     /**
-     * Skip <tt>count</tt> bytes.
+     * Skip `count` bytes.
      *
      * @return Constant pointer to the beginning of the skipped bytes.
      */

@@ -35,8 +35,6 @@ namespace oz
 
 /**
  * Axis-aligned bounding box, represented with central point and extents.
- *
- * @ingroup oz
  */
 class AABB
 {
@@ -53,7 +51,7 @@ class AABB
     AABB() = default;
 
     /**
-     * Create <tt>AABB</tt> with the given centre and extents.
+     * Create `AABB` with the given centre and extents.
      */
     OZ_ALWAYS_INLINE
     explicit AABB( const Point& p_, const Vec3& dim_ ) :
@@ -61,7 +59,7 @@ class AABB
     {}
 
     /**
-     * Create <tt>AABB</tt> enlarged for margin <tt>eps</tt> (can also be negative).
+     * Create `AABB` enlarged for margin `eps` (can also be negative).
      */
     OZ_ALWAYS_INLINE
     explicit AABB( const AABB& a, float eps ) :
@@ -69,7 +67,7 @@ class AABB
     {}
 
     /**
-     * Translated <tt>AABB</tt>.
+     * Translated `AABB`.
      */
     OZ_ALWAYS_INLINE
     AABB operator + ( const Vec3& v ) const
@@ -78,7 +76,7 @@ class AABB
     }
 
     /**
-     * Translated <tt>AABB</tt>.
+     * Translated `AABB`.
      */
     OZ_ALWAYS_INLINE
     AABB operator - ( const Vec3& v ) const
@@ -87,7 +85,7 @@ class AABB
     }
 
     /**
-     * Translate <tt>AABB</tt>.
+     * Translate `AABB`.
      */
     OZ_ALWAYS_INLINE
     AABB& operator += ( const Vec3& v )
@@ -97,7 +95,7 @@ class AABB
     }
 
     /**
-     * Translate <tt>AABB</tt>.
+     * Translate `AABB`.
      */
     OZ_ALWAYS_INLINE
     AABB& operator -= ( const Vec3& v )
@@ -107,10 +105,10 @@ class AABB
     }
 
     /**
-     * True iff the given point is inside this <tt>AABB</tt>.
+     * True iff the given point is inside this `AABB`.
      *
      * @param point
-     * @param eps margin for which this <tt>AABB</tt> is enlarged (can also be negative).
+     * @param eps margin for which this `AABB` is enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
     bool includes( const Point& point, float eps = 0.0f ) const
@@ -122,10 +120,10 @@ class AABB
     }
 
     /**
-     * True iff the given <tt>AABB</tt> is inside this <tt>AABB</tt>.
+     * True iff the given `AABB` is inside this `AABB`.
      *
      * @param a
-     * @param eps margin for which this <tt>AABB</tt> is enlarged (can also be negative).
+     * @param eps margin for which this `AABB` is enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
     bool includes( const AABB& a, float eps = 0.0f ) const
@@ -137,10 +135,10 @@ class AABB
     }
 
     /**
-     * True iff the given <tt>AABB</tt> overlaps with this <tt>AABB</tt>.
+     * True iff the given `AABB` overlaps with this `AABB`.
      *
      * @param a
-     * @param eps margin for which this <tt>AABB</tt> is enlarged (can also be negative).
+     * @param eps margin for which this `AABB` is enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
     bool overlaps( const AABB& a, float eps = 0.0f ) const

@@ -38,8 +38,6 @@ namespace oz
  * Chaining hashtable implementation with String key type.
  *
  * Memory is allocated when the first element is added.
- *
- * @ingroup oz
  */
 template <typename Value = nil_t, int SIZE = 256>
 class HashString
@@ -538,7 +536,7 @@ class HashString
     }
 
     /**
-     * If the key exists, return constant pointer to its value, otherwise return <tt>null</tt>.
+     * If the key exists, return constant pointer to its value, otherwise return `null`.
      */
     const Value* find( const char* key ) const
     {
@@ -556,7 +554,7 @@ class HashString
     }
 
     /**
-     * If the key exists, return pointer to its value, otherwise return <tt>null</tt>.
+     * If the key exists, return pointer to its value, otherwise return `null`.
      */
     Value* find( const char* key )
     {

@@ -27,6 +27,8 @@
 
 namespace oz
 {
+namespace common
+{
 
 int  Lua::randomSeed       = 0;
 bool Lua::isRandomSeedTime = true;
@@ -194,4 +196,5 @@ void Lua::registerConstant( const char* name, const char* value )
   l_setglobal( name );
 }
 
+}
 }

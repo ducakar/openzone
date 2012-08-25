@@ -23,7 +23,6 @@
 
 #include "oz/oz.hh"
 
-#include "oz/windefs.h"
 #include <fcntl.h>
 
 #include <clocale>

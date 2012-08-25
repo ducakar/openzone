@@ -33,13 +33,11 @@
 /**
  * @def OZ_STATIC_POOL_ALLOC( pool )
  *
- * Define overloaded <tt>new</code> and <tt>delete</tt> for a class that use the given pool.
+ * Define overloaded `new` and `delete` for a class that use the given pool.
  *
- * As <tt>new</tt>/<tt>delete</tt> are static functions so has to be the given pool.
- * The derived classes also need to have overloaded <tt>new</tt>/<tt>delete</tt> defined the
- * same way otherwise the ones from the base class will be used, which will not end good.
- *
- * @ingroup oz
+ * As `new`/`delete` are static functions so has to be the given pool. The derived classes also need
+ * to have overloaded `new`/`delete` defined the same way otherwise the ones from the base class
+ * will be used, which will not end good.
  */
 #define OZ_STATIC_POOL_ALLOC( pool ) \
   void* operator new ( size_t ) { return pool.alloc(); } \
@@ -50,13 +48,11 @@
 /**
  * @def OZ_PLACEMENT_POOL_ALLOC( Type, SIZE )
  *
- * Define placement <tt>new</tt> for allocation from a pool and disable non-placement
- * <tt>new</tt> and <tt>delete</tt> for the class.
+ * Define placement `new` for allocation from a pool and disable non-placement `new` and `delete`
+ * for the class.
  *
  * The pool is given to new operator as an additional parameter. As delete cannot be provided,
- * object should be manually destructed and deallocated via <tt>pool.dealloc( object )</tt>.
- *
- * @ingroup oz
+ * object should be manually destructed and deallocated via `pool.dealloc( object )`.
  */
 #define OZ_PLACEMENT_POOL_ALLOC( Type, SIZE ) \
   void* operator new ( size_t ) = delete; \
@@ -75,9 +71,7 @@ namespace oz
  * Memory pool consists of a linked list of memory blocks, each an array of uninitialised elements
  * of the specified data type.
  *
- * Unless <tt>NDEBUG</tt> macro is defined, all freed memory is rewritten with 0xee byte values.
- *
- * @ingroup oz
+ * Unless `NDEBUG` macro is defined, all freed memory is rewritten with 0xee byte values.
  */
 template <class Type, int BLOCK_SIZE = 256>
 class Pool
@@ -98,9 +92,9 @@ class Pool
     /**
      * Memory block.
      *
-     * <tt>Block</tt> is an array that can hold up to <tt>BLOCK_SIZE</tt> elements. When we run out
-     * of space we simply allocate another block. Once a block is allocated it cannot be freed any
-     * more unless Pool is empty. That would be rarely possible due to fragmentation anyway.
+     * `Block` is an array that can hold up to `BLOCK_SIZE` elements. When we run out of space we
+     * simply allocate another block. Once a block is allocated it cannot be freed any more unless
+     * Pool is empty. That would be rarely possible due to fragmentation anyway.
      */
     struct Block
     {

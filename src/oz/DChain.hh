@@ -38,7 +38,7 @@ namespace oz
  *
  * This is not a real container but merely a way of binding existing elements into a linked list.
  *
- * It can only be applied on classes that have <tt>prev[]</tt> and <tt>next[]</tt> members.
+ * It can only be applied on classes that have `prev[]` and `next[]` members.
  * Example:
  * @code
  * struct C
@@ -53,20 +53,16 @@ namespace oz
  * @endcode
  *
  * That way the objects of the same class can be in two separate chains at once;
- * <tt>prev[0]</tt> and <tt>next[0]</tt> point to previous and next element respectively
- * in <tt>chain1</tt> and
- * <tt>prev[1]</tt> and <tt>next[1]</tt> point to previous and next element respectively
- * in <tt>chain2</tt>.
+ * `prev[0]` and `next[0]` point to previous and next element respectively in `chain1` and
+ * `prev[1]` and `next[1]` point to previous and next element respectively in `chain2`.
  *
  * Notes:
  * \li Copy operations do not copy elements, to make a copy of a chain including its elements, use
- * <tt>clone()</tt> instead.
- * \li Removal operations (except for <tt>free()</tt> do not actually remove elements but only
- * decouples them from the chain.
- * \li <tt>prev[INDEX]</tt> and <tt>next[INDEX]</tt> pointers are not cleared when an element is
- * removed from the chain, they may still point to elements in the chain or to invalid locations.
- *
- * @ingroup oz
+ * `clone()` instead.
+ * \li Removal operations (except for `free()` do not actually remove elements but only decouples
+ * them from the chain.
+ * \li `prev[INDEX]` and `next[INDEX]` pointers are not cleared when an element is removed from the
+ * chain, they may still point to elements in the chain or to invalid locations.
  */
 template <class Elem, int INDEX = 0>
 class DChain
@@ -231,8 +227,8 @@ class DChain
     /**
      * True iff same size and respective elements are equal.
      *
-     * <tt>Elem</tt> type should implement <tt>operator ==</tt>, otherwise comparison doesn't make
-     * sense as two copies always differ in <tt>prev[INDEX]</tt> and <tt>next[INDEX]</tt> members.
+     * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
+     * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
      */
     bool equals( const DChain& c ) const
     {
@@ -324,8 +320,8 @@ class DChain
     /**
      * True iff an element equal to the given one is in the chain.
      *
-     * <tt>Elem</tt> type should implement <tt>operator ==</tt>, otherwise comparison doesn't make
-     * sense as two copies always differ in <tt>prev[INDEX]</tt> and <tt>next[INDEX]</tt> members.
+     * `Elem` type should implement `operator ==`, otherwise comparison doesn't make sense as two
+     * copies always differ in `prev[INDEX]` and `next[INDEX]` members.
      */
     bool contains( const Elem* e ) const
     {
@@ -395,8 +391,8 @@ class DChain
     /**
      * Unbind the first element from the chain.
      *
-     * To keep LIFO behaviour for <tt>add()</tt> and <tt>remove()</tt> methods like in array lists,
-     * the first element is removed instead of the last one.
+     * To keep LIFO behaviour for `add()` and `remove()` methods like in array lists, the first
+     * element is removed instead of the last one.
      */
     void remove()
     {

@@ -1,0 +1,7 @@
+/**
+ * @page Collision Collision Detection
+ *
+ * @section Collision_Algorithm AABB-Convex Polyhedra Collision Detection
+ * @section Collision_Epsilon Handling Rounding Errors
+ * @section Collision_Broadphase Broadphase
+ */

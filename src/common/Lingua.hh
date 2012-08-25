@@ -30,24 +30,22 @@
 /**
  * @def OZ_GETTEXT
  *
- * Wrapper macro for <tt>lingua.get()</tt>.
+ * Wrapper macro for `lingua.get()`.
  *
- * This macro is needed so that standard <tt>xgettext</tt> command can be used to extract strings
- * for translation from source. Unfortunately <tt>xgettext</tt> is not capable of recognising C++
- * constructs like <tt>oz::lingua.get()</tt>, that's why we need this macro.
- *
- * @ingroup common
+ * This macro is needed so that standard `xgettext` command can be used to extract strings for
+ * translation from source. Unfortunately `xgettext` is not capable of recognising C++ constructs
+ * like `oz::lingua.get()`, that's why we need this macro.
  */
 #define OZ_GETTEXT( s ) \
-  oz::lingua.get( s )
+  oz::common::lingua.get( s )
 
 namespace oz
+{
+namespace common
 {
 
 /**
  * Translation catalogue database.
- *
- * @ingroup common
  */
 class Lingua
 {
@@ -62,7 +60,7 @@ class Lingua
       String   translation; ///< Translated message from the catalogue.
       Message* next;        ///< Next entry in the hashtable linked list.
 
-      OZ_PLACEMENT_POOL_ALLOC( Message, 256 );
+      OZ_PLACEMENT_POOL_ALLOC( Message, 256 )
     };
 
     static String language;  ///< Language code (should match subdirectory in lingua).
@@ -76,11 +74,11 @@ class Lingua
     /**
      * Check given language or, if null/empty string, try to detect it.
      *
-     * If given <tt>language</tt> is a non-empty string, check if translations exist for that
-     * language, i.e. it checks for PhysicsFS directory <tt>lingua/\<language\>/</tt>. If
-     * translations exist <tt>language</tt> is returned, if don't, an empty string is returned.
+     * If given `language` is a non-empty string, check if translations exist for that language,
+     * i.e. it checks for PhysicsFS directory `lingua/\<language\>/`. If translations exist
+     * `language` is returned, if don't, an empty string is returned.
      *
-     * If <tt>language</tt> is null or en empty string, it tries to derive language from environment
+     * If `language` is null or en empty string, it tries to derive language from environment
      * variables (currently this only test Linux-specific variables LANGUAGE, LC_MESSAGES and LANG
      * in that order). The first derived language code for which translations exist is returned.
      * If none is valid, an empty string is returned.
@@ -115,17 +113,16 @@ class Lingua
     /**
      * Initialise per-mission Lingua instance.
      *
-     * This function loads catalogue from <tt>mission/\<mission\>/lingua/\<language\>.ozCat</tt>
-     * that contains translations of strings that appear inside mission scripts.
+     * This function loads catalogue from `mission/\<mission\>/lingua/\<language\>.ozCat` that
+     * contains translations of strings that appear inside mission scripts.
      */
     bool initMission( const char* mission );
 
     /**
      * Initialise global Lingua instance.
      *
-     * The global instance must be initialised first so that <tt>language</tt> member is set
-     * properly. This function loads all catalogues from <tt>lingua/\<language\>/</tt>
-     * directory.
+     * The global instance must be initialised first so that `language` member is set properly. This
+     * function loads all catalogues from `lingua/\<language\>/` directory.
      *
      * The global Lingua instance contains translations for strings that appear in the engine (UI)
      * and titles and descriptions of objects and structures from game data.*
@@ -141,9 +138,8 @@ class Lingua
 
 /**
  * Global instance, used for non-mission-specific translations.
- *
- * @ingroup common
  */
 extern Lingua lingua;
 
+}
 }

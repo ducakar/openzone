@@ -25,6 +25,8 @@
 
 namespace oz
 {
+namespace common
+{
 
 const float Timer::TICK_TIME = 1.0f / float( TICKS_PER_SEC );
 
@@ -75,4 +77,5 @@ void Timer::drop( uint micros_ )
   runMicros += micros_;
 }
 
+}
 }

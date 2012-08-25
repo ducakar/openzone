@@ -35,8 +35,6 @@ namespace oz
 
 /**
  * 3D point.
- *
- * @ingroup oz
  */
 class Point
 {
@@ -131,7 +129,7 @@ class Point
     }
 
     /**
-     * Point translated for <tt>v</tt>.
+     * Point translated for `v`.
      */
     OZ_ALWAYS_INLINE
     Point operator + ( const Vec3& v ) const
@@ -140,7 +138,7 @@ class Point
     }
 
     /**
-     * Point translated for <tt>-v</tt>.
+     * Point translated for `-v`.
      */
     OZ_ALWAYS_INLINE
     Point operator - ( const Vec3& v ) const
@@ -158,7 +156,7 @@ class Point
     }
 
     /**
-     * Translate for <tt>v</tt>.
+     * Translate for `v`.
      */
     OZ_ALWAYS_INLINE
     Point& operator += ( const Vec3& v )
@@ -170,7 +168,7 @@ class Point
     }
 
     /**
-     * Translate for <tt>-v</tt>.
+     * Translate for `-v`.
      */
     OZ_ALWAYS_INLINE
     Point& operator -= ( const Vec3& v )

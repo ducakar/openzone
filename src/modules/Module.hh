@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "stable.hh"
+#include "modules/common.hh"
 
 namespace oz
 {

@@ -35,8 +35,6 @@ namespace oz
 
 /**
  * %Thread.
- *
- * @ingroup oz
  */
 class Thread
 {

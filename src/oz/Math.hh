@@ -34,9 +34,7 @@ namespace oz
 {
 
 /**
- * Replacement for <tt>\<cmath\></tt> plus some other utility functions.
- *
- * @ingroup oz
+ * Replacement for `\<cmath\>` plus some other utility functions.
  */
 class Math
 {
@@ -430,7 +428,7 @@ class Math
     static void seed( int n );
 
     /**
-     * Random integer between from [0, <tt>max</tt>).
+     * Random integer between from [0, `max`).
      */
     static int rand( int max );
 
@@ -448,7 +446,7 @@ class Math
      * Random number from [-1, 1], numbers close to zero are more likely.
      *
      * It tries to generate something "relatively" close to Gaussian distribution.
-     * It actually returns \f$ x^3 \f$, for an \f$ x \in [-1, +1] \f$ returned by <tt>rand()</tt>.
+     * It actually returns \f$ x^3 \f$, for an \f$ x \in [-1, +1] \f$ returned by `rand()`.
      */
     static float normalRand();
 

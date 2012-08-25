@@ -42,14 +42,14 @@ class Area
 
     static const int CENTRE          = 0x10000000; ///< Special value for x and y.
 
-    static const int UPDATE_BIT      = 0x01;       ///< If <tt>onUpdate()</tt> should be called.
+    static const int UPDATE_BIT      = 0x01;       ///< If `onUpdate()` should be called.
     static const int IGNORE_BIT      = 0x02;       ///< Ignore when passing events.
     static const int GRAB_BIT        = 0x04;       ///< A child with GRAB_BIT get exclusive focus
                                                    ///< for events
     static const int HIDDEN_BIT      = 0x08;       ///< Do not draw.
     static const int PINNED_BIT      = 0x10;       ///< Show in both freelook and interface mode.
-    static const int DISABLED_BIT    = 0x20;       ///< Hide and disable both <tt>onUpdate()</tt>
-                                                   ///< and <tt>show()</tt> methods.
+    static const int DISABLED_BIT    = 0x20;       ///< Hide and disable both `onUpdate()` and
+                                                   ///< `show()` methods.
 
     // text alignment
     static const int ALIGN_LEFT      = 0x00;

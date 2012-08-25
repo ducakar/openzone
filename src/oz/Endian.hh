@@ -35,8 +35,6 @@ namespace oz
 
 /**
  * %Endian conversion.
- *
- * @ingroup oz
  */
 class Endian
 {

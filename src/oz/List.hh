@@ -36,20 +36,18 @@ namespace oz
 /**
  * %Array list.
  *
- * In contrast with <tt>std::vector</tt> all allocated elements are constructed all the time. This
- * yields slightly better performance and simplifies implementation. However, on element removal its
- * destruction is guaranteed (either explicitly or by via move operation).
+ * In contrast with `std::vector` all allocated elements are constructed all the time. This yields
+ * slightly better performance and simplifies implementation. However, on element removal its
+ * destruction is guaranteed.
  *
  * Memory is allocated when the first element is added.
- *
- * @ingroup oz
  */
 template <typename Elem>
 class List
 {
   private:
 
-    /// Granularity for automatic storage allocations and <tt>trim()</tt>.
+    /// Granularity for automatic storage allocations and `trim()`.
     static const int GRANULARITY = 8;
 
   public:
@@ -661,7 +659,7 @@ class List
     }
 
     /**
-     * For an empty list with no allocated storage, allocate capacity for <tt>size_</tt> elements.
+     * For an empty list with no allocated storage, allocate capacity for `size_` elements.
      */
     void alloc( int size_ )
     {
@@ -685,7 +683,7 @@ class List
     }
 
     /**
-     * Trim list capacity to the least multiple of <tt>GRANULARITY</tt> that can hold all elements.
+     * Trim list capacity to the least multiple of `GRANULARITY` that can hold all elements.
      */
     void trim()
     {

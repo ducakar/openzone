@@ -35,8 +35,6 @@ namespace oz
 
 /**
  * Generic four-component vector.
- *
- * @ingroup oz
  */
 class Vec4
 {

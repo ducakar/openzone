@@ -20,7 +20,7 @@
 /**
  * @file tools/ozSineSample.cc
  *
- * Generate sine wave sample, used for <tt>src/oz/bellSample.hh</tt>.
+ * Generate sine wave sample, used for `src/oz/bellSample.hh`.
  */
 
 #include "oz/oz.hh"

@@ -51,45 +51,20 @@
 # error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
 #endif
 
-#if !defined( __LP64__ ) && !defined( __LLP64__ ) && !defined( _WIN64 )
-# define OZ_POINTER_32
+#ifdef _WIN32
+// At least Visual Studio 2005 run-time libraries required.
+# define __MSVCRT_VERSION__ 0x0800
+// At least Windows XP/2003 required.
+# define WINVER 0x0501
+// At least Internet Explorer 6.0 libraries required.
+# define _WIN32_IE 0x0600
+// Don't import all crap from Windows headers.
+# define WIN32_LEAN_AND_MEAN
+// Don't define min and max macros as they interfere with oz::min and oz::max.
+# define NOMINMAX
 #endif
 
-#if !defined( __LP64__ )
-# define OZ_LONG_32
-#endif
-
-#if defined( __BIG_ENDIAN__ )
-# define OZ_BIG_ENDIAN_ARCH
-#endif
-
-#if defined( OZ_MSVC )
-# define OZ_ALWAYS_INLINE             __forceinline
-# define OZ_HIDDEN
-# define OZ_NORETURN
-# define OZ_PRINTF_FORMAT( s, first )
-#elif defined( _WIN32 )
-# define OZ_ALWAYS_INLINE             __attribute__(( always_inline ))
-# define OZ_HIDDEN
-# define OZ_NORETURN                  __attribute__(( noreturn ))
-# define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
-#else
-# define OZ_ALWAYS_INLINE             __attribute__(( always_inline ))
-# define OZ_HIDDEN                    __attribute__(( visibility( "hidden" ) ))
-# define OZ_NORETURN                  __attribute__(( noreturn ))
-# define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
-#endif
-
-#if defined( OZ_GCC ) && OZ_GCC < 406
-# define constexpr const
-# define noexcept  throw()
-# define nullptr   0
-  namespace std { typedef decltype( nullptr ) nullptr_t; }
-#endif
-#if defined( OZ_GCC ) && OZ_GCC < 407
-# define override
-#endif
-
+// Define OZ_ECLIPSE macro in project configurations when using Eclipse CDT.
 #ifdef OZ_ECLIPSE
 
 // One should have same colour for highlighting macros and reserved words and those identifiers

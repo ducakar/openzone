@@ -33,28 +33,20 @@
 namespace oz
 {
 
-template <typename Elem>
-class CIterator;
-
-template <typename Elem>
-CIterator<Elem> citer( const Elem* array, int count );
-
 /**
  * %Array iterator with constant access to elements.
- *
- * @ingroup oz
  */
 template <typename Elem>
 class CIterator : public CIteratorBase<Elem>
 {
-  friend CIterator citer<Elem>( const Elem* array, int count );
-
   protected:
 
     using CIteratorBase<Elem>::elem;
 
     /// Successor of the last element, used to determine when the iterator becomes invalid.
     const Elem* past;
+
+  public:
 
     /**
      * %Iterator for an array.
@@ -66,8 +58,6 @@ class CIterator : public CIteratorBase<Elem>
     explicit CIterator( const Elem* start, const Elem* past_ ) :
       CIteratorBase<Elem>( start ), past( past_ )
     {}
-
-  public:
 
     /**
      * Default constructor, creates an invalid iterator.
@@ -100,28 +90,20 @@ class CIterator : public CIteratorBase<Elem>
 
 };
 
-template <typename Elem>
-class Iterator;
-
-template <typename Elem>
-Iterator<Elem> iter( Elem* array, int count );
-
 /**
  * %Array iterator with non-constant access to elements.
- *
- * @ingroup oz
  */
 template <typename Elem>
 class Iterator : public IteratorBase<Elem>
 {
-  friend Iterator iter<Elem>( Elem* array, int count );
-
   protected:
 
     using IteratorBase<Elem>::elem;
 
     /// Successor of the last element, used to determine when the iterator becomes invalid.
     const Elem* past;
+
+  public:
 
     /**
      * %Iterator for an array.
@@ -133,8 +115,6 @@ class Iterator : public IteratorBase<Elem>
     explicit Iterator( Elem* start, const Elem* past_ ) :
       IteratorBase<Elem>( start ), past( past_ )
     {}
-
-  public:
 
     /**
      * Default constructor, creates an invalid iterator.
@@ -169,8 +149,6 @@ class Iterator : public IteratorBase<Elem>
 
 /**
  * Create array iterator with constant element access.
- *
- * @ingroup oz
  */
 template <typename Elem>
 OZ_ALWAYS_INLINE
@@ -181,8 +159,6 @@ inline CIterator<Elem> citer( const Elem* array, int count )
 
 /**
  * Create array iterator with non-constant element access.
- *
- * @ingroup oz
  */
 template <typename Elem>
 OZ_ALWAYS_INLINE
@@ -193,8 +169,6 @@ inline Iterator<Elem> iter( Elem* array, int count )
 
 /**
  * Create static array iterator with element constant access.
- *
- * @ingroup oz
  */
 template <typename Elem, size_t SIZE>
 OZ_ALWAYS_INLINE
@@ -205,8 +179,6 @@ inline CIterator<Elem> citer( const Elem ( & array )[SIZE] )
 
 /**
  * Create static array iterator with non-constant element access.
- *
- * @ingroup oz
  */
 template <typename Elem, size_t SIZE>
 OZ_ALWAYS_INLINE
@@ -217,8 +189,6 @@ inline Iterator<Elem> iter( Elem ( & array )[SIZE] )
 
 /**
  * Copy array elements from the first to the last.
- *
- * @ingroup oz
  */
 template <typename Elem>
 inline void aCopy( Elem* aDest, const Elem* aSrc, int count )
@@ -230,8 +200,6 @@ inline void aCopy( Elem* aDest, const Elem* aSrc, int count )
 
 /**
  * Move array elements from the last to the first.
- *
- * @ingroup oz
  */
 template <typename Elem>
 inline void aReverseCopy( Elem* aDest, const Elem* aSrc, int count )
@@ -243,8 +211,6 @@ inline void aReverseCopy( Elem* aDest, const Elem* aSrc, int count )
 
 /**
  * Move array elements from the first to the last.
- *
- * @ingroup oz
  */
 template <typename Elem>
 inline void aMove( Elem* aDest, Elem* aSrc, int count )
@@ -256,8 +222,6 @@ inline void aMove( Elem* aDest, Elem* aSrc, int count )
 
 /**
  * Move array elements from the last to the first.
- *
- * @ingroup oz
  */
 template <typename Elem>
 inline void aReverseMove( Elem* aDest, Elem* aSrc, int count )
@@ -269,8 +233,6 @@ inline void aReverseMove( Elem* aDest, Elem* aSrc, int count )
 
 /**
  * Set array elements to the given value.
- *
- * @ingroup oz
  */
 template <typename Elem, typename Value = Elem>
 inline void aSet( Elem* aDest, const Value& value, int count )
@@ -282,8 +244,6 @@ inline void aSet( Elem* aDest, const Value& value, int count )
 
 /**
  * Swap array elements.
- *
- * @ingroup oz
  */
 template <typename Elem>
 inline void aSwap( Elem* aDestA, Elem* aDestB, int count )
@@ -297,8 +257,6 @@ inline void aSwap( Elem* aDestA, Elem* aDestB, int count )
 
 /**
  * Swap elements of two same-size static arrays.
- *
- * @ingroup oz
  */
 template <typename Elem, int COUNT>
 inline void aSwap( Elem ( & aDestA )[COUNT], Elem ( & aDestB )[COUNT] )
@@ -312,8 +270,6 @@ inline void aSwap( Elem ( & aDestA )[COUNT], Elem ( & aDestB )[COUNT] )
 
 /**
  * Length of a static array.
- *
- * @ingroup oz
  */
 template <typename Elem, int COUNT>
 inline int aLength( const Elem ( & )[COUNT] )
@@ -323,8 +279,6 @@ inline int aLength( const Elem ( & )[COUNT] )
 
 /**
  * True iff respective elements are equal.
- *
- * @ingroup oz
  */
 template <typename Elem>
 inline bool aEquals( const Elem* aSrcA, const Elem* aSrcB, int count )
@@ -339,8 +293,6 @@ inline bool aEquals( const Elem* aSrcA, const Elem* aSrcB, int count )
 
 /**
  * True iff the given value is found in the array.
- *
- * @ingroup oz
  */
 template <typename Elem, typename Value = Elem>
 inline bool aContains( const Elem* aSrc, const Value& value, int count )
@@ -355,8 +307,6 @@ inline bool aContains( const Elem* aSrc, const Value& value, int count )
 
 /**
  * Pointer to the first occurrence or null pointer if not found.
- *
- * @ingroup oz
  */
 template <typename Elem, typename Value = Elem>
 inline Elem* aFind( Elem* aSrc, const Value& value, int count )
@@ -371,8 +321,6 @@ inline Elem* aFind( Elem* aSrc, const Value& value, int count )
 
 /**
  * Pointer to the last occurrence or null pointer if not found.
- *
- * @ingroup oz
  */
 template <typename Elem, typename Value = Elem>
 inline Elem* aFindLast( Elem* aSrc, const Value& value, int count )
@@ -387,8 +335,6 @@ inline Elem* aFindLast( Elem* aSrc, const Value& value, int count )
 
 /**
  * Index of the first occurrence of the value or -1 if not found.
- *
- * @ingroup oz
  */
 template <typename Elem, typename Value = Elem>
 inline int aIndex( const Elem* aSrc, const Value& value, int count )
@@ -403,8 +349,6 @@ inline int aIndex( const Elem* aSrc, const Value& value, int count )
 
 /**
  * Index of the last occurrence of the value or -1 if not found.
- *
- * @ingroup oz
  */
 template <typename Elem, typename Value = Elem>
 inline int aLastIndex( const Elem* aSrc, const Value& value, int count )
@@ -419,8 +363,6 @@ inline int aLastIndex( const Elem* aSrc, const Value& value, int count )
 
 /**
  * Delete objects referenced by elements and set all elements to null pointer.
- *
- * @ingroup oz
  */
 template <typename Elem>
 inline void aFree( Elem* aDest, int count )
@@ -434,12 +376,10 @@ inline void aFree( Elem* aDest, int count )
 /**
  * Reallocate array.
  *
- * Allocate new array of <tt>newCount</tt> elements, copy first <tt>count</tt> elements
- * of the source array <tt>aSrc</tt>to the newly created one and delete the source array.
+ * Allocate new array of `newCount` elements, copy first `count` elements of the source array
+ * `aSrc`to the newly created one and delete the source array.
  *
  * @return Newly allocated array.
- *
- * @ingroup oz
  */
 template <typename Elem>
 inline Elem* aRealloc( Elem* aSrc, int count, int newCount )
@@ -460,8 +400,6 @@ inline Elem* aRealloc( Elem* aSrc, int count, int newCount )
 
 /**
  * Reverse the order of array elements.
- *
- * @ingroup oz
  */
 template <typename Elem>
 inline void aReverse( Elem* aDest, int count )
@@ -479,15 +417,13 @@ inline void aReverse( Elem* aDest, int count )
 /**
  * Utility function for aSort.
  *
- * <tt>Elem</tt> type must have <tt>operator \< ( const Elem\& )</tt> defined.
+ * `Elem` type must have `operator \< ( const Elem\& )` defined.
  * Quicksort algorithm is used which takes last element in a partition as a pivot so sorting a
  * sorted or nearly sorted array will take O(n^2) time instead of O(n log n) as in average case.
  * When a partition has at most 10 elements, selection sort is used.
  *
  * @param first pointer to first element in the array to be sorted.
  * @param last pointer to last element in the array.
- *
- * @ingroup oz
  */
 template <typename Elem>
 static void quicksort( Elem* first, Elem* last )
@@ -540,8 +476,6 @@ static void quicksort( Elem* first, Elem* last )
 
 /**
  * Sort array (uses quicksort algorithm).
- *
- * @ingroup oz
  */
 template <typename Elem>
 inline void aSort( Elem* aSrc, int count )
@@ -556,15 +490,13 @@ inline void aSort( Elem* aSrc, int count )
 /**
  * Find an element using bisection.
  *
- * <tt>Elem</tt> type must have defined <tt>operator == ( const Key\&, const Elem\& )</tt> and
- * <tt>operator \< ( const Key\&, const Elem\& )</tt>.
+ * `Elem` type must have defined `operator == ( const Key\&, const Elem\& )` and
+ * `operator \< ( const Key\&, const Elem\& )`.
  *
  * @param aSrc array.
  * @param key the key we are looking for.
  * @param count number of elements.
  * @return Index of the requested element or -1 if not found.
- *
- * @ingroup oz
  */
 template <typename Elem, typename Key = Elem>
 inline int aBisectFind( Elem* aSrc, const Key& key, int count )
@@ -600,15 +532,13 @@ inline int aBisectFind( Elem* aSrc, const Key& key, int count )
  * @code
  *   aSrc[index - 1] <= key && key < aSrc[index]
  * @endcode
- * If all elements are lesser, return <tt>count</tt> and if all elements are greater, return 0.
- * <tt>Elem</tt> type must have defined <tt>operator \< ( const Key\&, const Elem\& )</tt>.
+ * If all elements are lesser, return `count` and if all elements are greater, return 0.
+ * `Elem` type must have defined `operator \< ( const Key\&, const Elem\& )`.
  *
  * @param aSrc array.
  * @param key the key we are looking for.
  * @param count number of elements.
  * @return Index of least element greater than the key, or count if there's no such element.
- *
- * @ingroup oz
  */
 template <typename Elem, typename Key = Elem>
 inline int aBisectPosition( Elem* aSrc, const Key& key, int count )

@@ -37,8 +37,6 @@ namespace oz
  * %Pair container.
  *
  * It holds two elements, not necessarily of the same type.
- *
- * @ingroup oz
  */
 template <typename ValueX, typename ValueY = ValueX>
 class Pair

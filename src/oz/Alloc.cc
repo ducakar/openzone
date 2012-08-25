@@ -29,7 +29,6 @@
 #include "System.hh"
 #include "Log.hh"
 
-#include "windefs.h"
 #include <cstdlib>
 #include <cstring>
 #include <malloc.h>

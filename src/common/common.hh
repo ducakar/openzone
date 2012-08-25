@@ -20,21 +20,31 @@
 /**
  * @file common/common.hh
  *
- * Main include file for the engine. Included via precompiled header <tt>stable.hh</tt>.
- *
- * @defgroup common Common layer
+ * Main include file for the engine. Included via precompiled header `stable.hh`.
  */
 
 #pragma once
 
 #include "oz/oz.hh"
-#include "oz/windefs.h"
 
 #include "configuration.hh"
 
 #include "common/Span.hh"
 #include "common/Timer.hh"
 #include "common/Lingua.hh"
+
+#ifdef _WIN32
+# include <windows.h>
+
+// Doxygen should skip those macros when generating documentation.
+# ifndef OZ_DOXYGEN
+// Fix M$ crap from Windows headers.
+#  undef ERROR
+#  undef PLANES
+#  undef near
+#  undef far
+# endif
+#endif
 
 // We want to use C++ wrapped C headers, not pure C ones that are included via SDL.
 #include <cctype>
@@ -44,29 +54,18 @@
 #include <cstdlib>
 #include <cstring>
 
-// Doxygen should skip those macros when generating documentation.
-#ifndef OZ_DOXYGEN
-
-#ifdef _WIN32
-# include <windows.h>
-// Fix M$ crap from Windows headers.
-# undef ERROR
-# undef PLANES
-# undef near
-# undef far
-#endif
-
 #include <SDL.h>
 
-#endif // OZ_DOXYGEN
-
 namespace oz
+{
+/**
+ * Common layer.
+ */
+namespace common
 {
 
 /**
  * Maximum allowed value for world coordinates.
- *
- * @ingroup common
  */
 const int MAX_WORLD_COORD = 2048;
 
@@ -75,15 +74,13 @@ const int MAX_WORLD_COORD = 2048;
  *
  * The maximum relative error for transition from world coordinates to relative coordinates is
  * \f$ |maxWorldCoord| \cdot \varepsilon \sqrt 3 \f$, where \f$ \varepsilon \f$ is maximum relative
- * rounding error (half of <tt>Math::FLOAT_EPS</tt>).
+ * rounding error (half of `Math::FLOAT_EPS`).
  * Rounding errors made during collision query should only represent a small fraction of that since
  * calculations are performed in relative coordinates on hundreds of times smaller scale.
  * When we translate an object additional errors are introduces.
- * <tt>position += collider.hit.ratio * move</tt> can introduce at most
+ * `position += collider.hit.ratio * move` can introduce at most
  * \f$ 2 \cdot |maxWorldCoord| \cdot \varepsilon \sqrt 3 \f$ error.
- * Sum of all those errors should be less than <tt>|maxWorldCoord| * 3 * Math::FLOAT_EPS</tt>.
- *
- * @ingroup common
+ * Sum of all those errors should be less than `|maxWorldCoord| * 3 * Math::FLOAT_EPS`.
  */
 const float EPSILON = float( MAX_WORLD_COORD ) * 4.0f * Math::FLOAT_EPS;
 
@@ -92,8 +89,6 @@ const float EPSILON = float( MAX_WORLD_COORD ) * 4.0f * Math::FLOAT_EPS;
  *
  * This adjustment should be made after each angle addition/subtraction. It assumes the input angle
  * lies on interval \f$ [-\tau, \infty) \f$.
- *
- * @ingroup common
  */
 OZ_ALWAYS_INLINE
 inline float angleWrap( float x )
@@ -105,8 +100,6 @@ inline float angleWrap( float x )
  * Difference between two angles, maps to interval \f$ [-\frac{\tau}{2}, +\frac{\tau}{2}) \f$.
  *
  * This function assumes that both angles lie on interval \f$ [0, \tau) \f$.
- *
- * @ingroup common
  */
 OZ_ALWAYS_INLINE
 inline float angleDiff( float x, float y )
@@ -115,15 +108,4 @@ inline float angleDiff( float x, float y )
 }
 
 }
-
-/**
- * @page CommonLayer Common Layer
- */
-
-/**
- * @page OpenZone
- *
- * @li @subpage CommonLayer
- * @li @subpage MatrixLayer
- *
- */
+}

@@ -27,6 +27,8 @@
 
 namespace oz
 {
+namespace common
+{
 
 Lingua lingua;
 
@@ -229,4 +231,5 @@ void Lingua::free()
   nMessages = 0;
 }
 
+}
 }

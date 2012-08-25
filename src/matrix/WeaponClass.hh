@@ -51,7 +51,3 @@ class WeaponClass : public DynamicClass
 
 }
 }
-
-/**
- * @page WeaponClass Weapon Objects
- */

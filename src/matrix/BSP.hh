@@ -34,8 +34,6 @@ class BSP;
 
 /**
  * %BSP model (doors, lifts etc.).
- *
- * @ingroup matrix
  */
 struct Model : Bounds
 {
@@ -56,7 +54,7 @@ struct Model : Bounds
 
   BSP*   bsp;        ///< Pointer to the parent %BSP.
 
-  int    firstBrush; ///< Index of the first brush in <tt>brushes</tt> array.
+  int    firstBrush; ///< Index of the first brush in `brushes` array.
   int    nBrushes;   ///< Number of brushes.
 
   Type   type;       ///< Model type.
@@ -75,8 +73,6 @@ struct Model : Bounds
 
 /**
  * %BSP structure.
- *
- * @ingroup matrix
  */
 class BSP : public Bounds
 {
@@ -89,7 +85,7 @@ class BSP : public Bounds
      */
     struct Node
     {
-      int plane; ///< Separating plane index in <tt>planes</tt> array.
+      int plane; ///< Separating plane index in `planes` array.
 
       int front; ///< Index of node on the positive side of the separating plane.
       int back;  ///< Index of node on the negative side of the separating plane.
@@ -100,7 +96,7 @@ class BSP : public Bounds
      */
     struct Leaf
     {
-      int firstBrush; ///< Index of the first brush index in <tt>leafBrushes</tt> array.
+      int firstBrush; ///< Index of the first brush index in `leafBrushes` array.
       int nBrushes;   ///< Number of brush indices.
     };
 
@@ -109,11 +105,10 @@ class BSP : public Bounds
      */
     struct Brush
     {
-      int firstSide; ///< Index of the first plane index in <tt>bushSides</tt> array.
+      int firstSide; ///< Index of the first plane index in `bushSides` array.
       int nSides;    ///< Number of plane indices.
 
-      int flags;     ///< %Material and medium bits (look <tt>matrix::Material</tt> and
-                     ///< <tt>matrix::Medium</tt>).
+      int flags;     ///< %Material and medium bits (look `matrix::Material` and `matrix::Medium`).
     };
 
     struct BoundObject
@@ -191,9 +186,3 @@ inline void BSP::release()
 
 }
 }
-
-/**
- * @page BSP Structures (BSPs)
- *
- * @section BSPModel Structure Entities (BSP Models)
- */

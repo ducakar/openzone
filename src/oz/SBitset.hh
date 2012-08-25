@@ -36,10 +36,8 @@ namespace oz
 /**
  * Packed array of bits with static storage.
  *
- * Bits are stored in an array of <tt>ulong</tt>s, so the its length in bits is always a
- * multiple of <tt>sizeof( ulong ) * 8</tt>.
- *
- * @ingroup oz
+ * Bits are stored in an array of `ulong`s, so the its length in bits is always a multiple of
+ * `sizeof( ulong ) * 8`.
  */
 template <int BITSIZE>
 class SBitset
@@ -75,7 +73,7 @@ class SBitset
     }
 
     /**
-     * Get constant pointer to <tt>data</tt> array.
+     * Get constant pointer to `data` array.
      */
     OZ_ALWAYS_INLINE
     operator const ulong* () const
@@ -84,7 +82,7 @@ class SBitset
     }
 
     /**
-     * Get pointer to <tt>data</tt> array.
+     * Get pointer to `data` array.
      */
     OZ_ALWAYS_INLINE
     operator ulong* ()

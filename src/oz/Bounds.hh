@@ -35,8 +35,6 @@ namespace oz
 
 /**
  * Axis-aligned bounding box, represented with minimal and maximal point.
- *
- * @ingroup oz
  */
 class Bounds
 {
@@ -61,7 +59,7 @@ class Bounds
     {}
 
     /**
-     * Create <tt>Bounds</tt> enlarged for the given margin <tt>eps</tt>.
+     * Create `Bounds` enlarged for the given margin `eps`.
      */
     OZ_ALWAYS_INLINE
     explicit Bounds( const Bounds& b, float eps ) :
@@ -69,7 +67,7 @@ class Bounds
     {}
 
     /**
-     * Create <tt>Bounds</tt> that describes the same set as the given <tt>AABB</tt>.
+     * Create `Bounds` that describes the same set as the given `AABB`.
      */
     OZ_ALWAYS_INLINE
     explicit Bounds( const AABB& a, float eps = 0.0f )
@@ -81,7 +79,7 @@ class Bounds
     }
 
     /**
-     * Create <tt>Bounds</tt> that cover the trace described by the given point move.
+     * Create `Bounds` that cover the trace described by the given point move.
      */
     OZ_ALWAYS_INLINE
     explicit Bounds( const Point& p, const Vec3& move, float eps = 0.0f )
@@ -112,7 +110,7 @@ class Bounds
     }
 
     /**
-     * Create <tt>Bounds</tt> that cover the trace described by the given <tt>AABB</tt> move.
+     * Create `Bounds` that cover the trace described by the given `AABB` move.
      */
     OZ_ALWAYS_INLINE
     explicit Bounds( const AABB& a, const Vec3& move, float eps = 0.0f )
@@ -153,7 +151,7 @@ class Bounds
     }
 
     /**
-     * Compute extents from centre (same as <tt>dim</tt> member in <tt>AABB</tt>).
+     * Compute extents from centre (same as `dim` member in `AABB`).
      */
     Vec3 dim( float eps = 0.0f ) const
     {
@@ -163,7 +161,7 @@ class Bounds
     }
 
     /**
-     * Create <tt>AABB</tt> that describes the same set as this <tt>Bounds</tt>.
+     * Create `AABB` that describes the same set as this `Bounds`.
      */
     OZ_ALWAYS_INLINE
     AABB toAABB( float eps = 0.0f ) const
@@ -172,7 +170,7 @@ class Bounds
     }
 
     /**
-     * Translated <tt>Bounds</tt>.
+     * Translated `Bounds`.
      */
     OZ_ALWAYS_INLINE
     Bounds operator + ( const Vec3& v ) const
@@ -181,7 +179,7 @@ class Bounds
     }
 
     /**
-     * Translated <tt>Bounds</tt>.
+     * Translated `Bounds`.
      */
     OZ_ALWAYS_INLINE
     Bounds operator - ( const Vec3& v ) const
@@ -190,7 +188,7 @@ class Bounds
     }
 
     /**
-     * Translate <tt>Bounds</tt>.
+     * Translate `Bounds`.
      */
     OZ_ALWAYS_INLINE
     Bounds& operator += ( const Vec3& v )
@@ -201,7 +199,7 @@ class Bounds
     }
 
     /**
-     * Translate <tt>Bounds</tt>.
+     * Translate `Bounds`.
      */
     OZ_ALWAYS_INLINE
     Bounds& operator -= ( const Vec3& v )
@@ -212,10 +210,10 @@ class Bounds
     }
 
     /**
-     * True iff the given point is inside this <tt>Bounds</tt>.
+     * True iff the given point is inside this `Bounds`.
      *
      * @param p
-     * @param eps margin for which this <tt>Bounds</tt> are enlarged (can also be negative).
+     * @param eps margin for which this `Bounds` are enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
     bool includes( const Point& p, float eps = 0.0f ) const
@@ -226,10 +224,10 @@ class Bounds
     }
 
     /**
-     * True iff the given <tt>AABB</tt> is inside this <tt>Bounds</tt>.
+     * True iff the given `AABB` is inside this `Bounds`.
      *
      * @param a
-     * @param eps margin for which this <tt>Bounds</tt> are enlarged (can also be negative).
+     * @param eps margin for which this `Bounds` are enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
     bool includes( const AABB& a, float eps = 0.0f ) const
@@ -242,10 +240,10 @@ class Bounds
     }
 
     /**
-     * True iff the given <tt>AABB</tt> overlaps with this <tt>Bounds</tt>.
+     * True iff the given `AABB` overlaps with this `Bounds`.
      *
      * @param a
-     * @param eps margin for which this <tt>Bounds</tt> are enlarged (can also be negative).
+     * @param eps margin for which this `Bounds` are enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
     bool overlaps( const AABB& a, float eps = 0.0f ) const
@@ -258,10 +256,10 @@ class Bounds
     }
 
     /**
-     * True iff the given <tt>Bounds</tt> is inside this <tt>Bounds</tt>.
+     * True iff the given `Bounds` is inside this `Bounds`.
      *
      * @param b
-     * @param eps margin for which this <tt>Bounds</tt> are enlarged (can also be negative).
+     * @param eps margin for which this `Bounds` are enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
     bool includes( const Bounds& b, float eps = 0.0f ) const
@@ -272,10 +270,10 @@ class Bounds
     }
 
     /**
-     * True iff the given <tt>Bounds</tt> overlaps with this <tt>Bounds</tt>.
+     * True iff the given `Bounds` overlaps with this `Bounds`.
      *
      * @param b
-     * @param eps margin for which this <tt>Bounds</tt> are enlarged (can also be negative).
+     * @param eps margin for which this `Bounds` are enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
     bool overlaps( const Bounds& b, float eps = 0.0f ) const

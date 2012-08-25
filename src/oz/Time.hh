@@ -38,8 +38,6 @@ namespace oz
  *
  * Keep in mind that epoch may differ between platforms (it is 1970-01-01 0:00:00 on POSIX systems
  * and 1601-01-01 0:00:00 on Windows).
- *
- * @ingroup oz
  */
 class Time
 {
@@ -85,7 +83,7 @@ class Time
     static long64 time();
 
     /**
-     * Return <tt>Time</tt> structure filled with the current local time.
+     * Return `Time` structure filled with the current local time.
      */
     static Time local();
 

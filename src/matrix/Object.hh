@@ -37,8 +37,6 @@ class  Bot;
 
 /**
  * Static object class and base class for other object classes.
- *
- * @ingroup matrix
  */
 class Object : public AABB
 {

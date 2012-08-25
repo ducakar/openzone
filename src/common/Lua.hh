@@ -30,13 +30,13 @@ struct lua_State;
 
 namespace oz
 {
+namespace common
+{
 
 /**
  * %Lua base class.
  *
  * It provides common functions for derived %Lua classes in matrix, nirvana and client layers.
- *
- * @ingroup common
  */
 class Lua
 {
@@ -48,7 +48,7 @@ class Lua
     typedef int APIFunc( lua_State* );
 
     static int  randomSeed;       ///< Random seed for %Lua environments.
-    static bool isRandomSeedTime; ///< True iff current time (<tt>Time::time()</tt>) should be seed.
+    static bool isRandomSeedTime; ///< True iff current time (`Time::time()`) should be seed.
 
   protected:
 
@@ -57,7 +57,7 @@ class Lua
   protected:
 
     /**
-     * Default constructor, clears <tt>l</tt> to null.
+     * Default constructor, clears `l` to `null`.
      */
     Lua();
 
@@ -110,4 +110,5 @@ class Lua
 
 };
 
+}
 }

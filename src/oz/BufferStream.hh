@@ -37,14 +37,12 @@ namespace oz
  * Buffered read/write stream.
  *
  * Stream uses an underlying buffer that is dynamically growing.
- *
- * @ingroup oz
  */
 class BufferStream
 {
   private:
 
-    /// Capacity is always a multiple of <tt>GRANULARITY</tt>.
+    /// Capacity is always a multiple of `GRANULARITY`.
     static const int GRANULARITY = 4096;
 
     char*         pos;   ///< Current position.
@@ -157,7 +155,7 @@ class BufferStream
     {}
 
     /**
-     * Create <tt>InputStream</tt> for reading this stream (position is not reset).
+     * Create `InputStream` for reading this stream (position is not reset).
      */
     OZ_ALWAYS_INLINE
     InputStream inputStream() const
@@ -169,7 +167,7 @@ class BufferStream
     }
 
     /**
-     * Create <tt>OutputStream</tt> for reading/writing to this stream (position is not reset).
+     * Create `OutputStream` for reading/writing to this stream (position is not reset).
      */
     OZ_ALWAYS_INLINE
     OutputStream outputStream()
@@ -325,7 +323,7 @@ class BufferStream
     }
 
     /**
-     * Move position pointer for <tt>count</tt> bytes forward.
+     * Move position pointer for `count` bytes forward.
      *
      * @return Pointer to the beginning of the skipped bytes.
      */
