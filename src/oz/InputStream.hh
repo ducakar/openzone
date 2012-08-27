@@ -116,7 +116,7 @@ class InputStream
     }
 
     /**
-     * Constant reference to the i-th byte from the beginning of the stream.
+     * Constant reference to the `i`-th byte from the beginning of the stream.
      */
     OZ_ALWAYS_INLINE
     const char& operator [] ( int i ) const

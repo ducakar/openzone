@@ -44,41 +44,48 @@ class HashString
 {
   static_assert( SIZE > 0, "HashString size must be at least 1" );
 
-  private:
+  public:
 
     /**
      * Internal class for key/value elements.
      */
-    struct Elem
-    {
-      Elem*        next;  ///< Next element in a slot.
-      const String key;   ///< Key.
-      Value        value; ///< Value.
-
-      /**
-       * Initialise a new element.
-       */
-      template <typename Key_, typename Value_ = Value>
-      OZ_ALWAYS_INLINE
-      explicit Elem( Elem* next_, Key_&& key_, Value_&& value_ ) :
-        next( next_ ), key( static_cast<Key_&&>( key_ ) ), value( static_cast<Value_&&>( value_ ) )
-      {}
-
-      OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
-    };
-
-  public:
-
-    /**
-     * %Iterator with constant access to container elements.
-     */
-    class CIterator : public CIteratorBase<Elem>
+    class Elem
     {
       friend class HashString;
 
       private:
 
-        using CIteratorBase<Elem>::elem;
+        Elem*        next;  ///< Next element in a slot.
+
+      public:
+
+        const String key;   ///< Key.
+        Value        value; ///< Value.
+
+      private:
+
+        /**
+         * Initialise a new element.
+         */
+        template <typename Key_, typename Value_ = Value>
+        OZ_ALWAYS_INLINE
+        explicit Elem( Elem* next_, Key_&& key_, Value_&& value_ ) :
+          next( next_ ), key( static_cast<Key_&&>( key_ ) ), value( static_cast<Value_&&>( value_ ) )
+        {}
+
+        OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
+    };
+
+    /**
+     * %Iterator with constant access to container elements.
+     */
+    class CIterator : public IteratorBase<const Elem>
+    {
+      friend class HashString;
+
+      private:
+
+        using IteratorBase<const Elem>::elem;
 
         const Elem* const* data;  ///< Pointer to hashtable slots.
         int                index; ///< Index of the current slot.
@@ -87,7 +94,7 @@ class HashString
          * %Iterator for the given container, points to its first element.
          */
         explicit CIterator( const HashString& t ) :
-          CIteratorBase<Elem>( t.data[0] ), data( t.data ), index( 0 )
+          IteratorBase<const Elem>( t.data[0] ), data( t.data ), index( 0 )
         {
           while( elem == null && index < SIZE - 1 ) {
             ++index;
@@ -102,53 +109,8 @@ class HashString
          */
         OZ_ALWAYS_INLINE
         CIterator() :
-          CIteratorBase<Elem>( null ), data( null ), index( 0 )
+          IteratorBase<const Elem>( null ), data( null ), index( 0 )
         {}
-
-        /**
-         * Constant pointer to the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        operator const String* () const
-        {
-          return &elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        const String& operator * () const
-        {
-          return elem->key;
-        }
-
-        /**
-         * Constant access to a member of the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        const String* operator -> () const
-        {
-          return &elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        const String& key() const
-        {
-          return elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's value.
-         */
-        OZ_ALWAYS_INLINE
-        const Value& value() const
-        {
-          return elem->value;
-        }
 
         /**
          * Advance to the next element.
@@ -210,60 +172,6 @@ class HashString
         Iterator() :
           IteratorBase<Elem>( null ), data( null ), index( 0 )
         {}
-
-        /**
-         * Constant pointer to the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        operator const String* () const
-        {
-          return &elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        const String& operator * () const
-        {
-          return elem->key;
-        }
-
-        /**
-         * Constant access to a member of the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        const String* operator -> () const
-        {
-          return &elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        const String& key() const
-        {
-          return elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's value.
-         */
-        OZ_ALWAYS_INLINE
-        const Value& value() const
-        {
-          return elem->value;
-        }
-
-        /**
-         * Reference to the current element's value.
-         */
-        OZ_ALWAYS_INLINE
-        Value& value()
-        {
-          return elem->value;
-        }
 
         /**
          * Advance to the next element.

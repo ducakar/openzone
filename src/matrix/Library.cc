@@ -177,8 +177,8 @@ int Library::audioIndex( const char* name ) const
 void Library::freeBSPs()
 {
   foreach( bsp, bsps.iter() ) {
-    if( bsp.value().nUsers != 0 ) {
-      bsp.value().unload();
+    if( bsp->value.nUsers != 0 ) {
+      bsp->value.unload();
     }
   }
 }
@@ -684,7 +684,7 @@ void Library::initClasses()
   }
 
   foreach( classIter, objClasses.citer() ) {
-    ObjectClass* objClazz = classIter.value();
+    ObjectClass* objClazz = classIter->value;
 
     // check that all items are valid
     for( int i = 0; i < objClazz->defaultItems.length(); ++i ) {

@@ -85,7 +85,7 @@ int main( int argc, char** argv )
   bs.writeInt( packages.length() );
 
   foreach( pkg, packages.iter() ) {
-    File& file = pkg.value();
+    File& file = pkg->value;
 
     if( !file.stat() ) {
       OZ_ERROR( "Failed to stat '%s'", file.path().cstr() );

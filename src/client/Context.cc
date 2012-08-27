@@ -602,8 +602,8 @@ void Context::unload()
     auto src = i;
     ++i;
 
-    alDeleteSources( 1, &src.value().id );
-    removeContSource( &src.value(), src.key() );
+    alDeleteSources( 1, &src->value.id );
+    removeContSource( &src->value, src->key );
     OZ_AL_CHECK_ERROR();
   }
 

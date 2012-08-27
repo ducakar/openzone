@@ -214,7 +214,7 @@ class Bitset
     }
 
     /**
-     * Get the i-th bit.
+     * Get the `i`-th bit.
      */
     OZ_ALWAYS_INLINE
     bool get( int i ) const
@@ -225,7 +225,7 @@ class Bitset
     }
 
     /**
-     * Set the i-th bit to true.
+     * Set the `i`-th bit to true.
      */
     OZ_ALWAYS_INLINE
     void set( int i )
@@ -236,7 +236,7 @@ class Bitset
     }
 
     /**
-     * Set the i-th bit to false.
+     * Set the `i`-th bit to false.
      */
     OZ_ALWAYS_INLINE
     void clear( int i )

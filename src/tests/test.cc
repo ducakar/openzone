@@ -34,11 +34,42 @@
 using namespace oz;
 using namespace std;
 
+namespace oz
+{
+
+template <class Container>
+inline typename Container::CIterator begin( const Container& c )
+{
+  return c.citer();
+}
+
+template <class Container>
+inline typename Container::Iterator begin( Container& c )
+{
+  return c.iter();
+}
+
+template <class Container>
+inline typename Container::CIterator end( const Container& )
+{
+  return typename Container::CIterator();
+}
+
+template <class Container>
+inline typename Container::Iterator end( Container& )
+{
+  return typename Container::Iterator();
+}
+
+}
+
 class Foo
 {
   public:
 
     int value;
+    Foo* next[1];
+    Foo* prev[1];
 
     Foo() :
       value( 0 )
@@ -111,27 +142,19 @@ class Foo
       return value < f.value;
     }
 
+    void foo() const
+    {}
+
 };
 
 int main()
 {
   System::init();
 
-  int a[] = { 1, 2 };
-  int b[] = { 3, 4 };
+  HashString<> c;
 
-  iSwap( iter( a ), iter( b ) );
-  aSwap( a, b );
-  aSwap( a, b, 2 );
-
-  for( auto& i : a ) {
-    Log::out << i << " :: ";
+  for( auto& i : c ) {
+    Log::out << i.key << "\n";
   }
-  Log::out << "\n";
-
-  for( auto& i : b ) {
-    Log::out << i << " :: ";
-  }
-  Log::out << "\n";
   return 0;
 }

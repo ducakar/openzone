@@ -72,7 +72,7 @@ void Nirvana::update()
 {
   int count = 0;
   foreach( i, minds.iter() ) {
-    Mind* mind = i.value();
+    Mind* mind = i->value;
 
     const Bot* bot = static_cast<const Bot*>( orbis.objects[mind->bot] );
     hard_assert( bot != null && ( bot->flags & Object::BOT_BIT ) );
@@ -129,14 +129,14 @@ void Nirvana::write( BufferStream* ostream ) const
   ostream->writeInt( minds.length() );
 
   foreach( device, devices.citer() ) {
-    ostream->writeInt( device.key() );
-    ostream->writeString( device.value()->type() );
+    ostream->writeInt( device->key );
+    ostream->writeString( device->value->type() );
 
-    device.value()->write( ostream );
+    device->value->write( ostream );
   }
   foreach( mind, minds.citer() ) {
-    ostream->writeInt( mind.value()->bot );
-    mind.value()->write( ostream );
+    ostream->writeInt( mind->value->bot );
+    mind->value->write( ostream );
   }
 
   Log::printEnd( " OK" );

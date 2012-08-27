@@ -32,7 +32,6 @@
 
 /**
  * @def OZ_STATIC_POOL_ALLOC( pool )
- *
  * Define overloaded `new` and `delete` for a class that use the given pool.
  *
  * As `new`/`delete` are static functions so has to be the given pool. The derived classes also need
@@ -47,7 +46,6 @@
 
 /**
  * @def OZ_PLACEMENT_POOL_ALLOC( Type, SIZE )
- *
  * Define placement `new` for allocation from a pool and disable non-placement `new` and `delete`
  * for the class.
  *
@@ -102,7 +100,7 @@ class Pool
       Block* next;             ///< Pointer to the next block.
 
       /**
-       * Create a new block.
+       * Create a new block and bind its slots into a linked list.
        */
       explicit Block( Block* next_ ) :
         next( next_ )

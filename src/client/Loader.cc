@@ -91,9 +91,9 @@ void Loader::cleanupRender()
     // We can afford to do this as orbis.objects[key] will remain null at least one whole tick
     // after the object has been removed (because matrix also needs to clear references to this
     // object).
-    if( orbis.objects[ imago.key() ] == null ) {
-      delete imago.value();
-      context.imagines.exclude( imago.key() );
+    if( orbis.objects[imago->key] == null ) {
+      delete imago->value;
+      context.imagines.exclude( imago->key );
     }
   }
 
@@ -103,12 +103,12 @@ void Loader::cleanupRender()
       auto imago = i;
       ++i;
 
-      if( imago.value()->flags & Imago::UPDATED_BIT ) {
-        imago.value()->flags &= ~Imago::UPDATED_BIT;
+      if( imago->value->flags & Imago::UPDATED_BIT ) {
+        imago->value->flags &= ~Imago::UPDATED_BIT;
       }
       else {
-        delete imago.value();
-        context.imagines.exclude( imago.key() );
+        delete imago->value;
+        context.imagines.exclude( imago->key );
       }
     }
   }
@@ -190,9 +190,9 @@ void Loader::cleanupSound()
 
     // We can afford to do this as orbis.objects[key] will remain null at least one whole tick after
     // the object has been removed (because matrix also needs to clear references to this object).
-    if( orbis.objects[ audio.key() ] == null ) {
-      delete audio.value();
-      context.audios.exclude( audio.key() );
+    if( orbis.objects[audio->key] == null ) {
+      delete audio->value;
+      context.audios.exclude( audio->key );
     }
   }
 
@@ -201,12 +201,12 @@ void Loader::cleanupSound()
     auto src = i;
     ++i;
 
-    if( src.value().isUpdated ) {
-      src.value().isUpdated = false;
+    if( src->value.isUpdated ) {
+      src->value.isUpdated = false;
     }
     else {
-      alDeleteSources( 1, &src.value().id );
-      context.removeContSource( &src.value(), src.key() );
+      alDeleteSources( 1, &src->value.id );
+      context.removeContSource( &src->value, src->key );
     }
   }
 
@@ -248,12 +248,12 @@ void Loader::cleanupSound()
       auto audio = i;
       ++i;
 
-      if( audio.value()->flags & Audio::UPDATED_BIT ) {
-        audio.value()->flags &= ~Audio::UPDATED_BIT ;
+      if( audio->value->flags & Audio::UPDATED_BIT ) {
+        audio->value->flags &= ~Audio::UPDATED_BIT ;
       }
       else {
-        delete audio.value();
-        context.audios.exclude( audio.key() );
+        delete audio->value;
+        context.audios.exclude( audio->key );
       }
     }
   }

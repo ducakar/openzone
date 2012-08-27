@@ -37,81 +37,7 @@ namespace oz
 {
 
 /**
- * Base class for iterators with constant access to container elements.
- *
- * It should only be used as a base class. Following functions need to be implemented:
- * @li `bool isValid() const` (if necessary)
- * @li `CIterator& operator ++ ()`.
- */
-template <typename Elem>
-class CIteratorBase
-{
-  public:
-
-    /// Element type.
-    typedef Elem ElemType;
-
-  protected:
-
-    /// Pointer to the element iterator is currently pointing at.
-    const Elem* elem;
-
-    /**
-     * Create an iterator that points to the given element.
-     */
-    OZ_ALWAYS_INLINE
-    explicit CIteratorBase( const Elem* start ) :
-      elem( start )
-    {}
-
-  public:
-
-    /**
-     * True while iterator has not passed all elements.
-     */
-    OZ_ALWAYS_INLINE
-    bool isValid() const
-    {
-      return elem != null;
-    }
-
-    /**
-     * Constant pointer to the current element.
-     */
-    OZ_ALWAYS_INLINE
-    operator const Elem* () const
-    {
-      return elem;
-    }
-
-    /**
-     * Constant reference to the current element.
-     */
-    OZ_ALWAYS_INLINE
-    const Elem& operator * () const
-    {
-      return *elem;
-    }
-
-    /**
-     * Constant access to a current element's member.
-     */
-    OZ_ALWAYS_INLINE
-    const Elem* operator -> () const
-    {
-      return elem;
-    }
-
-    /**
-     * Advance to the next element, should be implemented in derived classes.
-     */
-    OZ_ALWAYS_INLINE
-    CIteratorBase& operator ++ () = delete;
-
-};
-
-/**
- * Base class for iterators with non-constant access to container elements.
+ * Base class for iterators.
  *
  * It should only be used as a base class. Following functions need to be implemented:
  * @li `bool isValid() const` (if necessary)
@@ -135,14 +61,30 @@ class IteratorBase
     Elem* elem;
 
     /**
-     * Create an iterator that points to the given element.
+     * Create an iterator pointing to the given element.
      */
     OZ_ALWAYS_INLINE
-    explicit IteratorBase( Elem* start ) :
-      elem( start )
+    explicit IteratorBase( Elem* first ) :
+      elem( first )
     {}
 
   public:
+
+    /**
+     * True iff iterators point to the same element.
+     */
+    bool operator == ( const IteratorBase& i ) const
+    {
+      return elem == i.elem;
+    }
+
+    /**
+     * False iff iterators point to the same element.
+     */
+    bool operator != ( const IteratorBase& i ) const
+    {
+      return elem != i.elem;
+    }
 
     /**
      * True while iterator has not passed all elements.
@@ -154,55 +96,28 @@ class IteratorBase
     }
 
     /**
-     * Constant pointer to the current element.
-     */
-    OZ_ALWAYS_INLINE
-    operator const Elem* () const
-    {
-      return elem;
-    }
-
-    /**
      * Pointer to the current element.
      */
     OZ_ALWAYS_INLINE
-    operator Elem* ()
+    operator Elem* () const
     {
       return elem;
-    }
-
-    /**
-     * Constant reference to the current element.
-     */
-    OZ_ALWAYS_INLINE
-    const Elem& operator * () const
-    {
-      return *elem;
     }
 
     /**
      * Reference to the current element.
      */
     OZ_ALWAYS_INLINE
-    Elem& operator * ()
+    Elem& operator * () const
     {
       return *elem;
     }
 
     /**
-     * Constant access to a current element's member.
+     * Access to the current element's member.
      */
     OZ_ALWAYS_INLINE
-    const Elem* operator -> () const
-    {
-      return elem;
-    }
-
-    /**
-     * Access to a current element's member.
-     */
-    OZ_ALWAYS_INLINE
-    Elem* operator -> ()
+    Elem* operator -> () const
     {
       return elem;
     }

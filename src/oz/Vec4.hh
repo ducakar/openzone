@@ -138,7 +138,7 @@ class Vec4
     }
 
     /**
-     * Constant reference to the i-th member.
+     * Constant reference to the `i`-th member.
      */
     OZ_ALWAYS_INLINE
     const float& operator [] ( int i ) const
@@ -149,7 +149,7 @@ class Vec4
     }
 
     /**
-     * Reference to the i-th member.
+     * Reference to the `i`-th member.
      */
     OZ_ALWAYS_INLINE
     float& operator [] ( int i )

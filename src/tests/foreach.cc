@@ -158,17 +158,17 @@ int main()
   printf( "\n" );
 
   foreach( i, m.citer() ) {
-    printf( "%d ", i.key() );
+    printf( "%d ", i->key );
   }
   printf( "\n" );
 
   foreach( i, hi.citer() ) {
-    printf( "%d ", *i );
+    printf( "%d ", i->key );
   }
   printf( "\n" );
 
   foreach( i, hs.citer() ) {
-    printf( "%d ", i.value() );
+    printf( "%d ", i->value );
   }
   printf( "\n" );
 

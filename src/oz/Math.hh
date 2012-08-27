@@ -282,8 +282,8 @@ class Math
     OZ_ALWAYS_INLINE
     static bool isinf( float x )
     {
-      // GCC's isinf() is broken with -ffast-math since it implies -ffinite-math-only. Furthermore,
-      // this expression is faster than isinf().
+      // GCC's isinf() is broken with -ffast-math since it implies -ffinite-math-only.
+      // Furthermore, this expression is faster than isinf().
       return x + 1.0f == x && x * 0.0f != x;
     }
 

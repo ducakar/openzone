@@ -70,20 +70,20 @@ class Chain
     /**
      * %Iterator with constant access to container elements.
      */
-    class CIterator : public CIteratorBase<Elem>
+    class CIterator : public IteratorBase<const Elem>
     {
       friend class Chain;
 
       private:
 
-        using CIteratorBase<Elem>::elem;
+        using IteratorBase<const Elem>::elem;
 
         /**
          * %Iterator for the given container, points to the first element.
          */
         OZ_ALWAYS_INLINE
         explicit CIterator( const Chain& c ) :
-          CIteratorBase<Elem>( c.firstElem )
+          IteratorBase<const Elem>( c.firstElem )
         {}
 
       public:
@@ -93,7 +93,7 @@ class Chain
          */
         OZ_ALWAYS_INLINE
         CIterator() :
-          CIteratorBase<Elem>( null )
+          IteratorBase<const Elem>( null )
         {}
 
         /**

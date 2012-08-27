@@ -168,7 +168,7 @@ void Mesh::draw( const Instance* instance, int mask )
 void Mesh::drawScheduled( int mask )
 {
   foreach( i, loadedMeshes.iter() ) {
-    Mesh* mesh = *i;
+    Mesh* mesh = i->key;
 
     glBindBuffer( GL_ARRAY_BUFFER, mesh->vbo );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, mesh->ibo );
@@ -202,7 +202,7 @@ void Mesh::drawScheduled( int mask )
 void Mesh::clearScheduled()
 {
   foreach( i, loadedMeshes.iter() ) {
-    Mesh* mesh = *i;
+    Mesh* mesh = i->key;
 
     mesh->instances.clear();
   }

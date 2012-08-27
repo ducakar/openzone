@@ -34,18 +34,14 @@
 
 /**
  * @def OZ_WARNING
- *
- * Wrapper for calling `oz::System::warning()` method, filling in current function, file and line
- * parameters.
+ * Wrapper for `oz::System::warning()`, filling in the current function, file and line parameters.
  */
 #define OZ_WARNING( ...) \
   oz::System::warning( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
 
 /**
  * @def OZ_ERROR
- *
- * Wrapper for calling `oz::System::error()` method, filling in current function, file and line
- * parameters.
+ * Wrapper for `oz::System::error()`, filling in the current function, file and line parameters.
  */
 #define OZ_ERROR( ...) \
   oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )

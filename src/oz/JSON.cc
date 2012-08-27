@@ -202,7 +202,7 @@ void JSON::Parser::setAccessed( JSON* value )
       const HashString<JSON>& table = static_cast<const ObjectData*>( value->data )->table;
 
       foreach( i, table.iter() ) {
-        setAccessed( &i.value() );
+        setAccessed( &i->value );
       }
       break;
     }
@@ -616,7 +616,7 @@ void JSON::Formatter::writeObject( const JSON& value )
   Map<String, const JSON*> sortedEntries;
 
   foreach( entry, table.citer() ) {
-    sortedEntries.add( entry.key(), &entry.value() );
+    sortedEntries.add( entry->key, &entry->value );
   }
 
   for( int i = 0; i < sortedEntries.length(); ++i ) {
@@ -629,8 +629,8 @@ void JSON::Formatter::writeObject( const JSON& value )
       ostream->writeChars( "  ", 2 );
     }
 
-    const String& entryKey   = sortedEntries[i];
-    const JSON*   entryValue = sortedEntries.value( i );
+    const String& entryKey   = sortedEntries[i].key;
+    const JSON*   entryValue = sortedEntries[i].value;
 
     int keyLength = writeString( entryKey );
     ostream->writeChar( ':' );
@@ -1387,7 +1387,7 @@ void JSON::clear( bool unusedWarnings )
 
       if( unusedWarnings ) {
         foreach( i, objectData->table.iter() ) {
-          i.value().clear( true );
+          i->value.clear( true );
         }
       }
 
@@ -1450,7 +1450,7 @@ String JSON::toString() const
       bool isFirst = true;
       foreach( i, table.citer() ) {
         s += String::str( isFirst ? "\"%s\": %s" : ", \"%s\": %s",
-                          i.key().cstr(), i.value().toString().cstr() );
+                          i->key.cstr(), i->value.toString().cstr() );
         isFirst = false;
       }
 

@@ -49,7 +49,7 @@ class StackTrace
   public:
 
     /**
-     * Generates array of frame pointers and return it in `StackTrace` struct.
+     * Generates array of frame pointers and return it in `StackTrace` class.
      *
      * @param nSkippedFrames number of stack frames to skip beside the stack frame of this call.
      * Must be >= -1 (if -1 stack frame of this call is also included).

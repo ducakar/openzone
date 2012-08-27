@@ -50,64 +50,12 @@ class SList
     /**
      * %Iterator with constant access to container elements.
      */
-    class CIterator : public oz::CIterator<Elem>
-    {
-      friend class SList;
-
-      private:
-
-        using oz::CIterator<Elem>::elem;
-
-        /**
-         * %Iterator for the given container, points to its first element.
-         */
-        OZ_ALWAYS_INLINE
-        explicit CIterator( const SList& l ) :
-          oz::CIterator<Elem>( l.data, l.data + l.count )
-        {}
-
-      public:
-
-        /**
-         * Default constructor, creates an invalid iterator.
-         */
-        OZ_ALWAYS_INLINE
-        CIterator() :
-          oz::CIterator<Elem>( null, null )
-        {}
-
-    };
+    typedef oz::Iterator<const Elem> CIterator;
 
     /**
      * %Iterator with non-constant access to container elements.
      */
-    class Iterator : public oz::Iterator<Elem>
-    {
-      friend class SList;
-
-      private:
-
-        using oz::Iterator<Elem>::elem;
-
-        /**
-         * %Iterator for the given container, points to its first element.
-         */
-        OZ_ALWAYS_INLINE
-        explicit Iterator( SList& l ) :
-          oz::Iterator<Elem>( l.data, l.data + l.count )
-        {}
-
-      public:
-
-        /**
-         * Default constructor, creates an invalid iterator.
-         */
-        OZ_ALWAYS_INLINE
-        Iterator() :
-          oz::Iterator<Elem>( null, null )
-        {}
-
-    };
+    typedef oz::Iterator<Elem> Iterator;
 
   private:
 
@@ -145,7 +93,7 @@ class SList
     OZ_ALWAYS_INLINE
     CIterator citer() const
     {
-      return CIterator( *this );
+      return CIterator( data, data + count );
     }
 
     /**
@@ -154,25 +102,7 @@ class SList
     OZ_ALWAYS_INLINE
     Iterator iter()
     {
-      return Iterator( *this );
-    }
-
-    /**
-     * Constant pointer to the first element.
-     */
-    OZ_ALWAYS_INLINE
-    operator const Elem* () const
-    {
-      return data;
-    }
-
-    /**
-     * Pointer to the first element.
-     */
-    OZ_ALWAYS_INLINE
-    operator Elem* ()
-    {
-      return data;
+      return Iterator( data, data + count );
     }
 
     /**
@@ -203,7 +133,25 @@ class SList
     }
 
     /**
-     * Constant reference to the i-th element.
+     * Constant pointer to the first element.
+     */
+    OZ_ALWAYS_INLINE
+    operator const Elem* () const
+    {
+      return data;
+    }
+
+    /**
+     * Pointer to the first element.
+     */
+    OZ_ALWAYS_INLINE
+    operator Elem* ()
+    {
+      return data;
+    }
+
+    /**
+     * Constant reference to the `i`-th element.
      */
     OZ_ALWAYS_INLINE
     const Elem& operator [] ( int i ) const
@@ -214,7 +162,7 @@ class SList
     }
 
     /**
-     * Reference to the i-th element.
+     * Reference to the `i`-th element.
      */
     OZ_ALWAYS_INLINE
     Elem& operator [] ( int i )

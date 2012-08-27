@@ -434,10 +434,10 @@ void Shader::free()
   programs.clear();
 
   foreach( vertShader, vertShaders.citer() ) {
-    glDeleteShader( vertShader.value() );
+    glDeleteShader( vertShader->value );
   }
   foreach( fragShader, fragShaders.citer() ) {
-    glDeleteShader( fragShader.value() );
+    glDeleteShader( fragShader->value );
   }
 
   fragShaders.clear();

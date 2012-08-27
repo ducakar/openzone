@@ -134,7 +134,7 @@ class Mat44
     }
 
     /**
-     * Constant reference to the i-th element.
+     * Constant reference to the `i`-th element.
      */
     OZ_ALWAYS_INLINE
     const float& operator [] ( int i ) const
@@ -145,7 +145,7 @@ class Mat44
     }
 
     /**
-     * Reference to the i-th element.
+     * Reference to the `i`-th element.
      */
     OZ_ALWAYS_INLINE
     float& operator [] ( int i )

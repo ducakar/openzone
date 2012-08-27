@@ -223,7 +223,7 @@ class BufferStream
     }
 
     /**
-     * Constant reference to the i-th byte from the beginning of the stream.
+     * Constant reference to the `i`-th byte from the beginning of the stream.
      */
     OZ_ALWAYS_INLINE
     const char& operator [] ( int i ) const
@@ -234,7 +234,7 @@ class BufferStream
     }
 
     /**
-     * Reference to the i-th byte from the beginning of the stream.
+     * Reference to the `i`-th byte from the beginning of the stream.
      */
     OZ_ALWAYS_INLINE
     char& operator [] ( int i )

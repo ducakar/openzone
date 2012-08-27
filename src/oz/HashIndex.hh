@@ -46,41 +46,48 @@ class HashIndex
 {
   static_assert( SIZE > 0, "HashIndex size must be at least 1" );
 
-  private:
+  public:
 
     /**
      * Internal class for key/value elements.
      */
-    struct Elem
-    {
-      Elem*     next;  ///< Next element in a slot.
-      const int key;   ///< Key.
-      Value     value; ///< Value.
-
-      /**
-       * Initialise a new element.
-       */
-      template <typename Value_ = Value>
-      OZ_ALWAYS_INLINE
-      explicit Elem( Elem* next_, int key_, Value_&& value_ ) :
-        next( next_ ), key( key_ ), value( static_cast<Value_&&>( value_ ) )
-      {}
-
-      OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
-    };
-
-  public:
-
-    /**
-     * %Iterator with constant access to container elements.
-     */
-    class CIterator : public CIteratorBase<Elem>
+    class Elem
     {
       friend class HashIndex;
 
       private:
 
-        using CIteratorBase<Elem>::elem;
+        Elem*     next;  ///< Next element in a slot.
+
+      public:
+
+        const int key;   ///< Key.
+        Value     value; ///< Value.
+
+      private:
+
+        /**
+         * Initialise a new element.
+         */
+        template <typename Value_ = Value>
+        OZ_ALWAYS_INLINE
+        explicit Elem( Elem* next_, int key_, Value_&& value_ ) :
+          next( next_ ), key( key_ ), value( static_cast<Value_&&>( value_ ) )
+        {}
+
+        OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
+    };
+
+    /**
+     * %Iterator with constant access to container elements.
+     */
+    class CIterator : public IteratorBase<const Elem>
+    {
+      friend class HashIndex;
+
+      private:
+
+        using IteratorBase<const Elem>::elem;
 
         const Elem* const* data;  ///< Pointer to hashtable slots.
         int                index; ///< Index of the current slot.
@@ -89,7 +96,7 @@ class HashIndex
          * %Iterator for the given container, points to its first element.
          */
         explicit CIterator( const HashIndex& t ) :
-          CIteratorBase<Elem>( t.data[0] ), data( t.data ), index( 0 )
+          IteratorBase<const Elem>( t.data[0] ), data( t.data ), index( 0 )
         {
           while( elem == null && index < SIZE - 1 ) {
             ++index;
@@ -104,44 +111,8 @@ class HashIndex
          */
         OZ_ALWAYS_INLINE
         CIterator() :
-          CIteratorBase<Elem>( null ), data( null ), index( 0 )
+          IteratorBase<const Elem>( null ), data( null ), index( 0 )
         {}
-
-        /**
-         * Constant pointer to the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        operator const int* () const
-        {
-          return &elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        const int& operator * () const
-        {
-          return elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        const int& key() const
-        {
-          return elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's value.
-         */
-        OZ_ALWAYS_INLINE
-        const Value& value() const
-        {
-          return elem->value;
-        }
 
         /**
          * Advance to the next element.
@@ -203,51 +174,6 @@ class HashIndex
         Iterator() :
           IteratorBase<Elem>( null ), data( null ), index( 0 )
         {}
-
-        /**
-         * Constant pointer to the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        operator const int* () const
-        {
-          return &elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        const int& operator * () const
-        {
-          return elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        const int& key() const
-        {
-          return elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's value.
-         */
-        OZ_ALWAYS_INLINE
-        const Value& value() const
-        {
-          return elem->value;
-        }
-
-        /**
-         * Reference to the current element's value.
-         */
-        OZ_ALWAYS_INLINE
-        Value& value()
-        {
-          return elem->value;
-        }
 
         /**
          * Advance to the next element.

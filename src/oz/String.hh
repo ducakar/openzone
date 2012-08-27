@@ -694,7 +694,7 @@ class String
     }
 
     /**
-     * Constant refernece to the i-th byte.
+     * Constant refernece to the `i`-th byte.
      */
     OZ_ALWAYS_INLINE
     const char& operator [] ( int i ) const

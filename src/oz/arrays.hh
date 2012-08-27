@@ -34,64 +34,7 @@ namespace oz
 {
 
 /**
- * %Array iterator with constant access to elements.
- */
-template <typename Elem>
-class CIterator : public CIteratorBase<Elem>
-{
-  protected:
-
-    using CIteratorBase<Elem>::elem;
-
-    /// Successor of the last element, used to determine when the iterator becomes invalid.
-    const Elem* past;
-
-  public:
-
-    /**
-     * %Iterator for an array.
-     *
-     * @param start first array element.
-     * @param past_ successor of the last element.
-     */
-    OZ_ALWAYS_INLINE
-    explicit CIterator( const Elem* start, const Elem* past_ ) :
-      CIteratorBase<Elem>( start ), past( past_ )
-    {}
-
-    /**
-     * Default constructor, creates an invalid iterator.
-     */
-    OZ_ALWAYS_INLINE
-    CIterator() :
-      CIteratorBase<Elem>( null ), past( null )
-    {}
-
-    /**
-     * True while iterator has not passed all array elements.
-     */
-    OZ_ALWAYS_INLINE
-    bool isValid() const
-    {
-      return elem != past;
-    }
-
-    /**
-     * Advance to the next element.
-     */
-    OZ_ALWAYS_INLINE
-    CIterator& operator ++ ()
-    {
-      hard_assert( elem != past );
-
-      ++elem;
-      return *this;
-    }
-
-};
-
-/**
- * %Array iterator with non-constant access to elements.
+ * %Array iterator.
  */
 template <typename Elem>
 class Iterator : public IteratorBase<Elem>
@@ -106,22 +49,22 @@ class Iterator : public IteratorBase<Elem>
   public:
 
     /**
-     * %Iterator for an array.
-     *
-     * @param start first array element.
-     * @param past_ successor of the last element.
-     */
-    OZ_ALWAYS_INLINE
-    explicit Iterator( Elem* start, const Elem* past_ ) :
-      IteratorBase<Elem>( start ), past( past_ )
-    {}
-
-    /**
      * Default constructor, creates an invalid iterator.
      */
     OZ_ALWAYS_INLINE
     Iterator() :
       IteratorBase<Elem>( null ), past( null )
+    {}
+
+    /**
+     * %Iterator for an array.
+     *
+     * @param first first array element.
+     * @param past_ successor of the last element.
+     */
+    OZ_ALWAYS_INLINE
+    explicit Iterator( Elem* first, const Elem* past_ ) :
+      IteratorBase<Elem>( first ), past( past_ )
     {}
 
     /**
@@ -148,6 +91,12 @@ class Iterator : public IteratorBase<Elem>
 };
 
 /**
+ * %Array iterator with constant access to elements.
+ */
+template <typename Elem>
+using CIterator = Iterator<const Elem>;
+
+/**
  * Create array iterator with constant element access.
  */
 template <typename Elem>
@@ -170,21 +119,21 @@ inline Iterator<Elem> iter( Elem* array, int count )
 /**
  * Create static array iterator with element constant access.
  */
-template <typename Elem, size_t SIZE>
+template <typename Elem, int COUNT>
 OZ_ALWAYS_INLINE
-inline CIterator<Elem> citer( const Elem ( & array )[SIZE] )
+inline CIterator<Elem> citer( const Elem ( & array )[COUNT] )
 {
-  return citer<Elem>( array, SIZE );
+  return CIterator<Elem>( array, array + COUNT );
 }
 
 /**
  * Create static array iterator with non-constant element access.
  */
-template <typename Elem, size_t SIZE>
+template <typename Elem, int COUNT>
 OZ_ALWAYS_INLINE
-inline Iterator<Elem> iter( Elem ( & array )[SIZE] )
+inline Iterator<Elem> iter( Elem ( & array )[COUNT] )
 {
-  return iter<Elem>( array, SIZE );
+  return Iterator<Elem>( array, array + COUNT );
 }
 
 /**

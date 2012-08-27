@@ -287,10 +287,10 @@ static void writePOT( const HashString<String>* hs, const char* filePath )
     }
     isFirst = false;
 
-    bs.writeLine( "#: " + i.value() );
+    bs.writeLine( "#: " + i->value );
 
     // Escape backslashes and quotes.
-    s = i.key();
+    s = i->key;
     for( int j = 0; j < s.length(); ++j ) {
       if( s[j] == '\\' || s[j] == '"' ) {
         s = s.substring( 0, j ) + "\\" + s.substring( j );

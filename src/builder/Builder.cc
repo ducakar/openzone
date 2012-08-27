@@ -318,7 +318,7 @@ void Builder::buildBSPTextures()
   }
 
   foreach( subDirPath, usedDirs.citer() ) {
-    PFile subDir( *subDirPath );
+    PFile subDir( subDirPath->key );
 
     DArray<PFile> texList = subDir.ls();
 
@@ -602,7 +602,7 @@ void Builder::copySounds()
   }
 
   foreach( subDirPath, usedDirs.citer() ) {
-    PFile subDir( *subDirPath );
+    PFile subDir( subDirPath->key );
     DArray<PFile> texList = subDir.ls();
 
     foreach( file, texList.iter() ) {

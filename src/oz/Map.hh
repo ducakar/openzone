@@ -54,209 +54,49 @@ class Map
     /// Granularity for automatic storage allocations and `trim()`.
     static const int GRANULARITY = 8;
 
+  public:
+
     /**
      * Internal class for key/value elements.
      */
-    struct Elem
+    class Elem
     {
-      Key   key;   ///< Key.
-      Value value; ///< Value.
+      public:
 
-      /**
-       * Create an uninitialised instance.
-       */
-      Elem() = default;
+        Key   key;   ///< Key.
+        Value value; ///< Value.
 
-      /**
-       * Initialise a new element.
-       */
-      template <typename Key_ = Key, typename Value_ = Value>
-      OZ_ALWAYS_INLINE
-      explicit Elem( Key_&& key_, Value_&& value_ ) :
-        key( static_cast<Key_&&>( key_ ) ), value( static_cast<Value_&&>( value_ ) )
-      {}
+      public:
 
-      /**
-       * Equality operator for bisection algorithms.
-       */
-      OZ_ALWAYS_INLINE
-      friend bool operator == ( const Key& key_, const Elem& e )
-      {
-        return key_ == e.key;
-      }
+        /**
+         * Equality operator for bisection algorithms.
+         */
+        OZ_ALWAYS_INLINE
+        friend bool operator == ( const Key& key, const Elem& e )
+        {
+          return key == e.key;
+        }
 
-      /**
-       * Less than operator for bisection algorithms.
-       */
-      OZ_ALWAYS_INLINE
-      friend bool operator < ( const Key& key_, const Elem& e )
-      {
-        return key_ < e.key;
-      }
+        /**
+         * Less than operator for bisection algorithms.
+         */
+        OZ_ALWAYS_INLINE
+        friend bool operator < ( const Key& key, const Elem& e )
+        {
+          return key < e.key;
+        }
+
     };
-
-  public:
 
     /**
      * %Iterator with constant access to container elements.
      */
-    class CIterator : public oz::CIterator<Elem>
-    {
-      friend class Map;
-
-      private:
-
-        using oz::CIterator<Elem>::elem;
-
-        /**
-         * %Iterator for the given container, points to its first element.
-         */
-        OZ_ALWAYS_INLINE
-        explicit CIterator( const Map& m ) :
-          oz::CIterator<Elem>( m.data, m.data + m.count )
-        {}
-
-      public:
-
-        /**
-         * Default constructor, creates an invalid iterator.
-         */
-        OZ_ALWAYS_INLINE
-        CIterator() :
-          oz::CIterator<Elem>( null, null )
-        {}
-
-        /**
-         * Constant pointer to the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        operator const Key* () const
-        {
-          return &elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        const Key& operator * () const
-        {
-          return elem->key;
-        }
-
-        /**
-         * Constant access to a member of the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        const Key* operator -> () const
-        {
-          return &elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        const Key& key() const
-        {
-          return elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's value.
-         */
-        OZ_ALWAYS_INLINE
-        const Value& value() const
-        {
-          return elem->value;
-        }
-
-    };
+    typedef oz::Iterator<const Elem> CIterator;
 
     /**
      * %Iterator with non-constant access to container elements.
      */
-    class Iterator : public oz::Iterator<Elem>
-    {
-      friend class Map;
-
-      private:
-
-        using oz::Iterator<Elem>::elem;
-
-        /**
-         * %Iterator for the given container, points to its first element.
-         */
-        OZ_ALWAYS_INLINE
-        explicit Iterator( const Map& m ) :
-          oz::Iterator<Elem>( m.data, m.data + m.count )
-        {}
-
-      public:
-
-        /**
-         * Default constructor, creates an invalid iterator.
-         */
-        OZ_ALWAYS_INLINE
-        Iterator() :
-          oz::Iterator<Elem>( null, null )
-        {}
-
-        /**
-         * Constant pointer to the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        operator const Key* () const
-        {
-          return &elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's value.
-         */
-        OZ_ALWAYS_INLINE
-        const Key& operator * () const
-        {
-          return elem->key;
-        }
-
-        /**
-         * Constant access to a member of the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        const Key* operator -> () const
-        {
-          return &elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's key.
-         */
-        OZ_ALWAYS_INLINE
-        const Key& key() const
-        {
-          return elem->key;
-        }
-
-        /**
-         * Constant reference to the current element's value.
-         */
-        OZ_ALWAYS_INLINE
-        const Value& value() const
-        {
-          return elem->value;
-        }
-
-        /**
-         * Reference to the current element's value.
-         */
-        OZ_ALWAYS_INLINE
-        Value& value()
-        {
-          return elem->value;
-        }
-
-    };
+    typedef oz::Iterator<Elem> Iterator;
 
   private:
 
@@ -399,7 +239,7 @@ class Map
     OZ_ALWAYS_INLINE
     CIterator citer() const
     {
-      return CIterator( *this );
+      return CIterator( data, data + count );
     }
 
     /**
@@ -408,7 +248,7 @@ class Map
     OZ_ALWAYS_INLINE
     Iterator iter() const
     {
-      return Iterator( *this );
+      return Iterator( data, data + count );
     }
 
     /**
@@ -439,69 +279,87 @@ class Map
     }
 
     /**
-     * Constant reference to the i-th element's key.
+     * Constant pointer to the first element.
      */
     OZ_ALWAYS_INLINE
-    const Key& operator [] ( int i ) const
+    operator const Elem* () const
     {
-      hard_assert( uint( i ) < uint( count ) );
-
-      return data[i].key;
+      return data;
     }
 
     /**
-     * Reference to the i-th element's key.
+     * Pointer to the first element.
      */
     OZ_ALWAYS_INLINE
-    Key& operator [] ( int i )
+    operator Elem* ()
     {
-      hard_assert( uint( i ) < uint( count ) );
-
-      return data[i].key;
+      return data;
     }
 
     /**
-     * Constant reference to the i-th element's value.
+     * Constant reference to the `i`-th element.
      */
     OZ_ALWAYS_INLINE
-    const Value& value( int i ) const
+    const Elem& operator [] ( int i ) const
     {
       hard_assert( uint( i ) < uint( count ) );
 
-      return data[i].value;
+      return data[i];
     }
 
     /**
-     * Reference to the i-th element's value.
+     * Reference to the `i`-th element.
      */
     OZ_ALWAYS_INLINE
-    Value& value( int i )
+    Elem& operator [] ( int i )
     {
       hard_assert( uint( i ) < uint( count ) );
 
-      return data[i].value;
+      return data[i];
     }
 
     /**
-     * Constant reference to the first element's key.
+     * Constant reference to the first element.
      */
     OZ_ALWAYS_INLINE
-    const Key& first() const
+    const Elem& first() const
     {
       hard_assert( count != 0 );
 
-      return data[0].key;
+      return data[0];
     }
 
     /**
-     * Constant reference to the last element's key.
+     * Reference to the first element.
      */
     OZ_ALWAYS_INLINE
-    const Key& last() const
+    Elem& first()
     {
       hard_assert( count != 0 );
 
-      return data[count - 1].key;
+      return data[0];
+    }
+
+    /**
+     * Constant reference to the last element.
+     */
+    OZ_ALWAYS_INLINE
+    const Elem& last() const
+    {
+      hard_assert( count != 0 );
+
+      return data[count - 1];
+    }
+
+    /**
+     * Reference to the last element.
+     */
+    OZ_ALWAYS_INLINE
+    Elem& last()
+    {
+      hard_assert( count != 0 );
+
+      return data[count - 1];
     }
 
     /**
