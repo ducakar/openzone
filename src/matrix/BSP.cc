@@ -214,21 +214,23 @@ void BSP::unload()
 
     delete[] reinterpret_cast<char*>( planes );
 
-    nPlanes      = 0;
-    nNodes       = 0;
-    nLeaves      = 0;
-    nLeafBrushes = 0;
-    nBrushes     = 0;
-    nBrushSides  = 0;
-    nModels      = 0;
+    nPlanes       = 0;
+    nNodes        = 0;
+    nLeaves       = 0;
+    nLeafBrushes  = 0;
+    nBrushes      = 0;
+    nBrushSides   = 0;
+    nModels       = 0;
+    nBoundObjects = 0;
 
-    planes       = null;
-    nodes        = null;
-    leaves       = null;
-    leafBrushes  = null;
-    brushes      = null;
-    brushSides   = null;
-    models       = null;
+    planes        = null;
+    nodes         = null;
+    leaves        = null;
+    leafBrushes   = null;
+    brushes       = null;
+    brushSides    = null;
+    models        = null;
+    boundObjects  = null;
 
     Log::printEnd( " OK" );
   }
@@ -253,6 +255,7 @@ void BSP::init( const char* name_, int id_ )
   nBrushes      = 0;
   nBrushSides   = 0;
   nModels       = 0;
+  nBoundObjects = 0;
 
   planes        = null;
   nodes         = null;
@@ -261,6 +264,7 @@ void BSP::init( const char* name_, int id_ )
   brushes       = null;
   brushSides    = null;
   models        = null;
+  boundObjects  = null;
 
   name          = name_;
   title         = lingua.get( is.readString() );

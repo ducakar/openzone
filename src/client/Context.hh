@@ -53,8 +53,9 @@ class Context
   private:
 
     // default audio format
-    static const int DEFAULT_AUDIO_FREQ   = 44100;
-    static const int DEFAULT_AUDIO_FORMAT = AUDIO_S16LSB;
+    static const int  DEFAULT_AUDIO_FREQ   = 44100;
+    static const int  DEFAULT_AUDIO_FORMAT = AUDIO_S16LSB;
+    static const uint INVALID_SOURCE       = ~0u;
 
     template <typename Type>
     struct Resource
@@ -96,14 +97,32 @@ class Context
       {}
     };
 
+    struct SpeakSource
+    {
+      static const int BUFFER_SIZE = 22050;
+
+      uint          id;
+      uint          bufferIds[2];
+      int           nQueuedBuffers;
+      int           nSamples;
+
+      volatile int  owner;
+      volatile bool isAlive;                  ///< Set to false to terminate source prematurely.
+      Mutex         mutex;
+      Thread        thread;
+
+      String        text;
+      short         samples[2 * BUFFER_SIZE];
+    };
+
     Imago::CreateFunc**      imagoClasses;
     Audio::CreateFunc**      audioClasses;
 
     Resource<Texture>*       textures;
     Resource<uint>*          sounds;
 
-    Chain<Source>            sources;     // non-looping sources
-    HashIndex<ContSource>    contSources; // looping sources
+    Chain<Source>            sources;         // non-looping sources
+    HashIndex<ContSource>    contSources;     // looping sources
 
     Resource<BSP*>*          bsps;
     Resource<BSPAudio*>*     bspAudios;
@@ -112,9 +131,9 @@ class Context
     Resource<MD2*>*          md2s;
     Resource<MD3*>*          md3s;
 
-    HashIndex<Imago*, 10223> imagines;  // currently loaded graphics models
-    HashIndex<Audio*, 6143>  audios;    // currently loaded audio models
-    FragPool**               fragPools; // frag pool representations
+    HashIndex<Imago*, 10223> imagines;        // currently loaded graphics models
+    HashIndex<Audio*, 6143>  audios;          // currently loaded audio models
+    FragPool**               fragPools;       // frag pool representations
 
     int                      maxImagines;
     int                      maxAudios;
@@ -134,11 +153,20 @@ class Context
 
     int                      maxFragPools;
 
-    void addSource( uint srcId, int sound );
+    static int               speakSampleRate; // Set from Sound class.
+    static SpeakSource       speakSource;
+
+    static int speakCallback( short int* samples, int nSamples, void* );
+    static void speakMain( void* );
+
+    uint addSource( int sound );
     void removeSource( Source* source, Source* prev );
 
-    void addContSource( uint srcId, int sound, int key );
+    uint addContSource( int sound, int key );
     void removeContSource( ContSource* contSource, int key );
+
+    uint requestSpeakSource( const char* text, int owner );
+    void releaseSpeakSource();
 
   public:
 

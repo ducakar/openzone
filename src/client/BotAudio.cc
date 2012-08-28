@@ -118,6 +118,10 @@ void BotAudio::play( const Audio* parent )
   else {
     prevStep = 0;
   }
+
+  if( bot->clazz->name.equals( "bauul" ) && timer.ticks % 300 == obj->index ) {
+    playSpeak( "All your base is belong to me, I own you, you motherfucker!", 1.0f, bot );
+  }
 }
 
 }

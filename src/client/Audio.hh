@@ -54,6 +54,7 @@ class Audio
     // obj != parent: e.g. an object obj in the inventory of bot parent plays a sound
     void playSound( int sound, float volume, const Object* parent ) const;
     void playContSound( int sound, float volume, const Object* parent ) const;
+    bool playSpeak( const char* text, float volume, const Object* parent ) const;
     void playEngineSound( int sound, float volume, float pitch ) const;
 
     explicit Audio( const Object* obj );

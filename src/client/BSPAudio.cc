@@ -37,11 +37,8 @@ void BSPAudio::playDemolish( const Struct* str, int sound ) const
 {
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 
-  uint srcId;
-
-  alGenSources( 1, &srcId );
-  if( alGetError() != AL_NO_ERROR ) {
-    Log::println( "AL: Too many sources" );
+  uint srcId = context.addSource( sound );
+  if( srcId == Context::INVALID_SOURCE ) {
     return;
   }
 
@@ -51,8 +48,6 @@ void BSPAudio::playDemolish( const Struct* str, int sound ) const
   alSourcefv( srcId, AL_POSITION, str->p );
 
   alSourcePlay( srcId );
-
-  context.addSource( srcId, sound );
 
   OZ_AL_CHECK_ERROR();
 }
@@ -65,11 +60,8 @@ void BSPAudio::playSound( const Entity* entity, int sound ) const
   Point         p        = str->toAbsoluteCS( entity->model->p() + entity->offset );
   Vec3          velocity = str->toAbsoluteCS( entity->velocity );
 
-  uint srcId;
-
-  alGenSources( 1, &srcId );
-  if( alGetError() != AL_NO_ERROR ) {
-    Log::println( "AL: Too many sources" );
+  uint srcId = context.addSource( sound );
+  if( srcId == Context::INVALID_SOURCE ) {
     return;
   }
 
@@ -80,8 +72,6 @@ void BSPAudio::playSound( const Entity* entity, int sound ) const
   alSourcefv( srcId, AL_VELOCITY, velocity );
 
   alSourcePlay( srcId );
-
-  context.addSource( srcId, sound );
 
   OZ_AL_CHECK_ERROR();
 }
@@ -98,11 +88,8 @@ void BSPAudio::playContSound( const Entity* entity, int sound ) const
   Context::ContSource* contSource = context.contSources.find( key );
 
   if( contSource == null ) {
-    uint srcId;
-
-    alGenSources( 1, &srcId );
-    if( alGetError() != AL_NO_ERROR ) {
-      Log::println( "AL: Too many sources" );
+    uint srcId = context.addContSource( sound, key );
+    if( srcId == Context::INVALID_SOURCE ) {
       return;
     }
 
@@ -113,8 +100,6 @@ void BSPAudio::playContSound( const Entity* entity, int sound ) const
     alSourcefv( srcId, AL_POSITION, p );
     alSourcefv( srcId, AL_VELOCITY, velocity );
     alSourcePlay( srcId );
-
-    context.addContSource( srcId, sound, key );
   }
   else {
     alSourcefv( contSource->id, AL_POSITION, p );

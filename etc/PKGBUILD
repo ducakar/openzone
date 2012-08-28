@@ -60,12 +60,12 @@ package_openzone()
 
   make install DESTDIR=${pkgdir}
 
-  rm -rf ${pkgdir}/usr/{include,lib,lib64}
+  rm -rf ${pkgdir}/usr/{include,lib}
 
   cd ${srcdir}/openzone
 
   install -dm755 ${pkgdir}/usr/share/doc/openzone
-  install -m644 AUTHORS README.md ChangeLog.md BUGS.md doc/*.html ${pkgdir}/usr/share/doc/openzone
+  install -m644 AUTHORS README.md ChangeLog.md doc/*.html ${pkgdir}/usr/share/doc/openzone
 }
 
 package_openzone-data()

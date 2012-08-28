@@ -28,6 +28,8 @@
 #include "client/Camera.hh"
 #include "client/NaCl.hh"
 
+#include <espeak/speak_lib.h>
+
 #if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
 # define PHYSFS_readBytes( handle, buffer, len ) PHYSFS_read( handle, buffer, 1, uint( len ) )
 #endif
@@ -47,8 +49,6 @@ namespace oz
 {
 namespace client
 {
-
-Sound sound;
 
 const float Sound::MAX_DISTANCE = 192.0f;
 
@@ -657,12 +657,14 @@ void Sound::suspend() const
 
 void Sound::play()
 {
+  context.speakSource.mutex.lock();
   soundAuxSemaphore.post();
 }
 
 void Sound::sync()
 {
   soundMainSemaphore.wait();
+  context.speakSource.mutex.unlock();
 }
 
 void Sound::init()
@@ -723,7 +725,7 @@ void Sound::init()
 
   OZ_AL_CHECK_ERROR();
 
-  Log::println( "OpenAL device: %s", alcGetString( soundDevice, ALC_DEVICE_SPECIFIER ) );
+  Log::println( "OpenAL context device: %s", alcGetString( soundDevice, ALC_DEVICE_SPECIFIER ) );
 
   int nAttributes;
   alcGetIntegerv( soundDevice, ALC_ATTRIBUTES_SIZE, 1, &nAttributes );
@@ -810,7 +812,12 @@ void Sound::init()
   libfaad = SDL_LoadObject( "libfaad.so.2" );
 # endif
 
-  if( libmad != null ) {
+  Log::print( "MAD library ..." );
+
+  if( libmad == null ) {
+    Log::printEnd( " Not found, MP3 decoding support disabled" );
+  }
+  else {
     OZ_DLLOAD( libmad, mad_stream_init   );
     OZ_DLLOAD( libmad, mad_stream_finish );
     OZ_DLLOAD( libmad, mad_stream_buffer );
@@ -819,16 +826,29 @@ void Sound::init()
     OZ_DLLOAD( libmad, mad_frame_decode  );
     OZ_DLLOAD( libmad, mad_synth_init    );
     OZ_DLLOAD( libmad, mad_synth_frame   );
+
+    Log::printEnd( " Found, MP3 decoding supported" );
   }
 
-  if( libfaad != null ) {
+  Log::print( "FAAD library ..." );
+
+  if( libfaad == null ) {
+    Log::printEnd( " Not found, AAC decoding support disabled" );
+  }
+  else {
     OZ_DLLOAD( libfaad, NeAACDecInit   );
     OZ_DLLOAD( libfaad, NeAACDecOpen   );
     OZ_DLLOAD( libfaad, NeAACDecClose  );
     OZ_DLLOAD( libfaad, NeAACDecDecode );
+
+    Log::printEnd( " Found, AAC decoding supported" );
   }
 
 #endif
+
+  context.speakSampleRate = espeak_Initialize( AUDIO_OUTPUT_SYNCHRONOUS, 500, null, 0 );
+  espeak_SetParameter( espeakRATE, 150, 0 );
+  espeak_SetSynthCallback( reinterpret_cast<t_espeak_callback*>( &Context::speakCallback ) );
 
   isMusicAlive = true;
   isSoundAlive = true;
@@ -854,6 +874,8 @@ void Sound::free()
 #endif
 
   Log::print( "Freeing Sound ..." );
+
+  espeak_Terminate();
 
   selectedTrack = -1;
   currentTrack  = -1;
@@ -899,6 +921,8 @@ void Sound::free()
 
   Log::printEnd( " OK" );
 }
+
+Sound sound;
 
 }
 }

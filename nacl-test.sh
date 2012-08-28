@@ -27,9 +27,9 @@ done
 # Strip binaries if "strip" parameter given.
 if [[ "$1" == "strip" ]]; then
   [[ -e "build/NaCl-test/openzone.x86_64.nexe" ]] && \
-    "$nacl64Root/bin/x86_64-nacl-strip" "build/NaCl-test/openzone.x86_64.nexe"
+     "$nacl64Root/bin/x86_64-nacl-strip" "build/NaCl-test/openzone.x86_64.nexe"
   [[ -e "build/NaCl-test/openzone.i686.nexe" ]] && \
-    "$nacl64Root/bin/i686-nacl-strip" "build/NaCl-test/openzone.i686.nexe"
+     "$nacl64Root/bin/i686-nacl-strip" "build/NaCl-test/openzone.i686.nexe"
 fi
 
 chromium --user-data-dir="$HOME/.config/chromium-test" "http://localhost:8000/openzone.sl.html"

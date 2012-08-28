@@ -38,6 +38,7 @@
 
 #include "client/OpenGL.hh"
 #include "client/OpenAL.hh"
+#include <espeak/speak_lib.h>
 
 #define OZ_REGISTER_IMAGOCLASS( name ) \
   { \
@@ -60,16 +61,122 @@ namespace oz
 namespace client
 {
 
-Context context;
-
 Pool<Context::Source> Context::Source::pool;
+int                   Context::speakSampleRate;
+Context::SpeakSource  Context::speakSource;
 
-void Context::addSource( uint srcId, int sound )
+int Context::speakCallback( short int* samples, int nSamples, void* )
+{
+  if( nSamples != 0 ) {
+    int maxSamples = 2 * SpeakSource::BUFFER_SIZE - speakSource.nSamples;
+    if( nSamples > maxSamples ) {
+      nSamples = maxSamples;
+      Log::printRaw( "AL: Speak buffer overrun\n" );
+    }
+
+    memcpy( speakSource.samples + speakSource.nSamples, samples,
+            size_t( nSamples ) * sizeof( short ) );
+    speakSource.nSamples += nSamples;
+
+    if( speakSource.nQueuedBuffers != 2 ) {
+      int i = speakSource.nQueuedBuffers;
+
+      speakSource.mutex.lock();
+
+      alBufferData( speakSource.bufferIds[i], AL_FORMAT_MONO16, speakSource.samples,
+                    speakSource.nSamples * int( sizeof( short ) ), speakSampleRate );
+      alSourceQueueBuffers( speakSource.id, 1, &speakSource.bufferIds[i] );
+      alSourcePlay( speakSource.id );
+
+      speakSource.mutex.unlock();
+
+      ++speakSource.nQueuedBuffers;
+      speakSource.nSamples = 0;
+      return 0;
+    }
+  }
+
+  do {
+    if( speakSource.nQueuedBuffers == 0 ) {
+      return 1;
+    }
+
+    int nProcessed;
+    do {
+      Time::sleep( 20 );
+
+      speakSource.mutex.lock();
+      alGetSourcei( speakSource.id, AL_BUFFERS_PROCESSED, &nProcessed );
+      speakSource.mutex.unlock();
+    }
+    while( nProcessed == 0 && speakSource.isAlive );
+
+    if( !speakSource.isAlive ) {
+      return 1;
+    }
+
+    speakSource.mutex.lock();
+
+    ALuint buffer;
+    alSourceUnqueueBuffers( speakSource.id, 1, &buffer );
+    --speakSource.nQueuedBuffers;
+
+    if( speakSource.nSamples != 0 ) {
+      alBufferData( buffer, AL_FORMAT_MONO16, speakSource.samples,
+                    speakSource.nSamples * int( sizeof( short ) ), speakSampleRate );
+      alSourceQueueBuffers( speakSource.id, 1, &buffer );
+
+      ++speakSource.nQueuedBuffers;
+      speakSource.nSamples = 0;
+    }
+
+    speakSource.mutex.unlock();
+  }
+  while( nSamples == 0 );
+
+  return 0;
+}
+
+void Context::speakMain( void* )
+{
+  espeak_Synth( speakSource.text, size_t( speakSource.text + 1 ), 0, POS_CHARACTER, 0,
+                espeakCHARS_UTF8, null, null );
+
+  int value = AL_PLAYING;
+  while( speakSource.isAlive && value != AL_STOPPED ) {
+    Time::sleep( 1 );
+
+    speakSource.mutex.lock();
+    alGetSourcei( speakSource.id, AL_SOURCE_STATE, &value );
+    speakSource.mutex.unlock();
+  }
+
+  speakSource.owner   = -1;
+  speakSource.isAlive = false;
+}
+
+uint Context::addSource( int sound )
 {
   hard_assert( sounds[sound].nUsers > 0 );
 
+  uint srcId;
+  alGenSources( 1, &srcId );
+
+  // Can this ever happen?
+  if( srcId == INVALID_SOURCE ) {
+    soft_assert( false );
+
+    alDeleteSources( 1, &srcId );
+    return INVALID_SOURCE;
+  }
+  if( alGetError() != AL_NO_ERROR ) {
+    Log::printRaw( "AL: Too many sources\n" );
+    return INVALID_SOURCE;
+  }
+
   ++sounds[sound].nUsers;
   sources.add( new Source( srcId, sound ) );
+  return srcId;
 }
 
 void Context::removeSource( Source* source, Source* prev )
@@ -78,17 +185,35 @@ void Context::removeSource( Source* source, Source* prev )
 
   hard_assert( sounds[sound].nUsers > 0 );
 
+  alDeleteSources( 1, &source->id );
+
   --sounds[sound].nUsers;
   sources.remove( source, prev );
   delete source;
 }
 
-void Context::addContSource( uint srcId, int sound, int key )
+uint Context::addContSource( int sound, int key )
 {
   hard_assert( sounds[sound].nUsers > 0 );
 
+  uint srcId;
+  alGenSources( 1, &srcId );
+
+  // Can this ever happen?
+  if( srcId == INVALID_SOURCE ) {
+    soft_assert( false );
+
+    alDeleteSources( 1, &srcId );
+    return INVALID_SOURCE;
+  }
+  if( alGetError() != AL_NO_ERROR ) {
+    Log::printRaw( "AL: Too many sources\n" );
+    return INVALID_SOURCE;
+  }
+
   ++sounds[sound].nUsers;
   contSources.add( key, ContSource( srcId, sound ) );
+  return srcId;
 }
 
 void Context::removeContSource( ContSource* contSource, int key )
@@ -97,8 +222,34 @@ void Context::removeContSource( ContSource* contSource, int key )
 
   hard_assert( sounds[sound].nUsers > 0 );
 
+  alDeleteSources( 1, &contSource->id );
+
   --sounds[sound].nUsers;
   contSources.exclude( key );
+}
+
+uint Context::requestSpeakSource( const char* text, int owner )
+{
+  if( speakSource.thread.isValid() ) {
+    return INVALID_SOURCE;
+  }
+
+  speakSource.nQueuedBuffers = 0;
+  speakSource.nSamples       = 0;
+  speakSource.owner          = owner;
+  speakSource.isAlive        = true;
+  speakSource.text           = text;
+
+  speakSource.thread.start( speakMain, null );
+  return speakSource.id;
+}
+
+void Context::releaseSpeakSource()
+{
+  hard_assert( speakSource.thread.isValid() );
+
+  speakSource.isAlive = false;
+  speakSource.thread.join();
 }
 
 Context::Context() :
@@ -480,6 +631,28 @@ void Context::updateLoad()
 
 void Context::load()
 {
+  for( int i = 0; i < library.textures.length(); ++i ) {
+    hard_assert( textures[i].nUsers == -1 );
+  }
+  for( int i = 0; i < library.sounds.length(); ++i ) {
+    hard_assert( sounds[i].nUsers == -1 );
+  }
+  for( int i = 0; i < library.nBSPs; ++i ) {
+    hard_assert( bsps[i].nUsers == -1 );
+  }
+  for( int i = 0; i < library.models.length(); ++i ) {
+    hard_assert( smms[i].nUsers == -1 );
+    hard_assert( md2s[i].nUsers == -1 );
+    hard_assert( md3s[i].nUsers == -1 );
+  }
+
+  speakSource.owner = -1;
+  alGenBuffers( 2, speakSource.bufferIds );
+  alGenSources( 1, &speakSource.id );
+  if( alGetError() != AL_NO_ERROR ) {
+    OZ_ERROR( "Failed to create speak source" );
+  }
+
   maxImagines           = 0;
   maxAudios             = 0;
   maxSources            = 0;
@@ -497,21 +670,6 @@ void Context::load()
   maxVehicleAudios      = 0;
 
   maxFragPools          = 0;
-
-  for( int i = 0; i < library.textures.length(); ++i ) {
-    hard_assert( textures[i].nUsers == -1 );
-  }
-  for( int i = 0; i < library.sounds.length(); ++i ) {
-    hard_assert( sounds[i].nUsers == -1 );
-  }
-  for( int i = 0; i < library.nBSPs; ++i ) {
-    hard_assert( bsps[i].nUsers == -1 );
-  }
-  for( int i = 0; i < library.models.length(); ++i ) {
-    hard_assert( smms[i].nUsers == -1 );
-    hard_assert( md2s[i].nUsers == -1 );
-    hard_assert( md3s[i].nUsers == -1 );
-  }
 }
 
 void Context::unload()
@@ -541,6 +699,16 @@ void Context::unload()
   Log::println( "%6d  fragment pools",         maxFragPools );
   Log::unindent();
   Log::println( "}" );
+
+  // Speak source must be destroyed before anything else using OpenAL since it calls OpenAL
+  // functions from its own thread.
+  if( speakSource.thread.isValid() ) {
+    releaseSpeakSource();
+  }
+  OZ_AL_CHECK_ERROR();
+
+  alDeleteSources( 1, &speakSource.id );
+  alDeleteBuffers( 2, speakSource.bufferIds );
 
   imagines.free();
   imagines.dealloc();
@@ -594,7 +762,6 @@ void Context::unload()
   Mesh::dealloc();
 
   while( !sources.isEmpty() ) {
-    alDeleteSources( 1, &sources.first()->id );
     removeSource( sources.first(), null );
     OZ_AL_CHECK_ERROR();
   }
@@ -602,7 +769,6 @@ void Context::unload()
     auto src = i;
     ++i;
 
-    alDeleteSources( 1, &src->value.id );
     removeContSource( &src->value, src->key );
     OZ_AL_CHECK_ERROR();
   }
@@ -689,12 +855,16 @@ void Context::init()
     md3s[i].nUsers = -1;
   }
 
+  speakSource.mutex.init();
+
   Log::printEnd( " OK" );
 }
 
 void Context::free()
 {
   Log::print( "Freeing Context ..." );
+
+  speakSource.mutex.destroy();
 
   delete[] imagoClasses;
   delete[] audioClasses;
@@ -726,6 +896,8 @@ void Context::free()
 
   Log::printEnd( " OK" );
 }
+
+Context context;
 
 }
 }

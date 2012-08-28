@@ -205,9 +205,18 @@ void Loader::cleanupSound()
       src->value.isUpdated = false;
     }
     else {
-      alDeleteSources( 1, &src->value.id );
       context.removeContSource( &src->value, src->key );
     }
+  }
+
+  int speaker = context.speakSource.owner;
+  if( speaker < 0 ) {
+    if( context.speakSource.thread.isValid() ) {
+      context.releaseSpeakSource();
+    }
+  }
+  else if( orbis.objects[speaker] == null ) {
+    context.speakSource.isAlive = false;
   }
 
   if( tick % SOUND_CLEAR_INTERVAL == SOUND_CLEAR_LAG ) {
@@ -232,7 +241,6 @@ void Loader::cleanupSound()
       alGetSourcei( src->id, AL_SOURCE_STATE, &value );
 
       if( value != AL_PLAYING ) {
-        alDeleteSources( 1, &src->id );
         context.removeSource( src, prev );
       }
       else {

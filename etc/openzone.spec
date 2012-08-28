@@ -107,7 +107,7 @@ cd build
 
 make install DESTDIR="$RPM_BUILD_ROOT"
 
-if [[ /usr/lib != %{_libdir} ]]; then
+if [[ %{_libdir} != /usr/lib ]]; then
   mv "$RPM_BUILD_ROOT"/usr/lib "$RPM_BUILD_ROOT"%{_libdir}
 fi
 
@@ -130,14 +130,14 @@ fi
 %{_bindir}/openzone
 %{_datadir}/applications
 %{_datadir}/pixmaps
-%doc AUTHORS COPYING README.md ChangeLog.md BUGS.md doc/*.html
+%doc AUTHORS COPYING README.md ChangeLog.md doc/*.html
 
 %files tools
 %defattr(-, root, root)
 %{_bindir}/ozBuild
 %{_bindir}/ozGettext
 %{_bindir}/ozManifest
-%doc AUTHORS COPYING README.md ChangeLog.md BUGS.md
+%doc AUTHORS COPYING README.md ChangeLog.md
 
 %files data
 %defattr(-, root, root)

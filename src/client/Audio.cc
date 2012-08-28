@@ -44,11 +44,8 @@ void Audio::playSound( int sound, float volume, const Object* parent ) const
 
   const Dynamic* dynParent = static_cast<const Dynamic*>( parent );
 
-  uint srcId;
-
-  alGenSources( 1, &srcId );
-  if( alGetError() != AL_NO_ERROR ) {
-    Log::println( "OpenAL: Too many sound sources" );
+  uint srcId = context.addSource( sound );
+  if( srcId == Context::INVALID_SOURCE ) {
     return;
   }
 
@@ -78,8 +75,6 @@ void Audio::playSound( int sound, float volume, const Object* parent ) const
 
   alSourcePlay( srcId );
 
-  context.addSource( srcId, sound );
-
   OZ_AL_CHECK_ERROR();
 }
 
@@ -87,17 +82,14 @@ void Audio::playContSound( int sound, float volume, const Object* parent ) const
 {
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
 
-  int key = ~( obj->index * ObjectClass::MAX_SOUNDS + sound );
+  int key = obj->index * ObjectClass::MAX_SOUNDS + sound;
 
   Context::ContSource* contSource = context.contSources.find( key );
   const Dynamic*       dynParent  = static_cast<const Dynamic*>( parent );
 
   if( contSource == null ) {
-    uint srcId;
-
-    alGenSources( 1, &srcId );
-    if( alGetError() != AL_NO_ERROR ) {
-      Log::println( "AL: Too many sources" );
+    uint srcId = context.addContSource( sound, key );
+    if( srcId == Context::INVALID_SOURCE ) {
       return;
     }
 
@@ -112,8 +104,6 @@ void Audio::playContSound( int sound, float volume, const Object* parent ) const
     }
 
     alSourcePlay( srcId );
-
-    context.addContSource( srcId, sound, key );
   }
   else {
     uint srcId = contSource->id;
@@ -130,6 +120,40 @@ void Audio::playContSound( int sound, float volume, const Object* parent ) const
   OZ_AL_CHECK_ERROR();
 }
 
+bool Audio::playSpeak( const char* text, float volume, const Object* parent ) const
+{
+  const Dynamic* dynParent = static_cast<const Dynamic*>( parent );
+
+  if( context.speakSource.owner < 0 ) {
+    if( text == null ) {
+      return false;
+    }
+
+    uint srcId = context.requestSpeakSource( text, obj->index );
+
+    alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
+
+    alSourcef( srcId, AL_GAIN, volume );
+    alSourcefv( srcId, AL_POSITION, parent->p );
+    if( parent->flags & Object::DYNAMIC_BIT ) {
+      alSourcefv( srcId, AL_VELOCITY, dynParent->velocity );
+    }
+  }
+  else if( context.speakSource.owner == obj->index ) {
+    uint srcId = context.speakSource.id;
+
+    alSourcef( srcId, AL_GAIN, volume );
+    alSourcefv( srcId, AL_POSITION, parent->p );
+    if( parent->flags & Object::DYNAMIC_BIT ) {
+      alSourcefv( srcId, AL_VELOCITY, dynParent->velocity );
+    }
+  }
+
+  OZ_AL_CHECK_ERROR();
+
+  return true;
+}
+
 void Audio::playEngineSound( int sound, float volume, float pitch ) const
 {
   hard_assert( uint( sound ) < uint( library.sounds.length() ) );
@@ -142,16 +166,13 @@ void Audio::playEngineSound( int sound, float volume, float pitch ) const
     pitch  *= COCKPIT_PITCH_FACTOR;
   }
 
-  int key = ~( veh->index * ObjectClass::MAX_SOUNDS + sound );
+  int key = veh->index * ObjectClass::MAX_SOUNDS + sound;
 
   Context::ContSource* contSource = context.contSources.find( key );
 
   if( contSource == null ) {
-    uint srcId;
-
-    alGenSources( 1, &srcId );
-    if( alGetError() != AL_NO_ERROR ) {
-      Log::println( "AL: Too many sources" );
+    uint srcId = context.addContSource( sound, key );
+    if( srcId == Context::INVALID_SOURCE ) {
       return;
     }
 
@@ -165,8 +186,6 @@ void Audio::playEngineSound( int sound, float volume, float pitch ) const
     alSourcefv( srcId, AL_VELOCITY, veh->velocity );
 
     alSourcePlay( srcId );
-
-    context.addContSource( srcId, sound, key );
   }
   else {
     uint srcId = contSource->id;

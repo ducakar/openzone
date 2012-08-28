@@ -90,7 +90,7 @@ void Style::init()
   OZ_READ_COLOUR( text,             1.00f, 1.00f, 1.00f, 1.00f );
   OZ_READ_COLOUR( textBackground,   0.00f, 0.00f, 0.00f, 1.00f );
 
-  OZ_READ_COLOUR( button,           0.20f, 0.20f, 0.20f, 1.40f );
+  OZ_READ_COLOUR( button,           0.40f, 0.40f, 0.40f, 0.40f );
   OZ_READ_COLOUR( buttonHover,      0.60f, 0.60f, 0.60f, 0.40f );
   OZ_READ_COLOUR( buttonClicked,    1.00f, 1.00f, 1.00f, 0.40f );
 

@@ -179,6 +179,7 @@ void Library::freeBSPs()
   foreach( bsp, bsps.iter() ) {
     if( bsp->value.nUsers != 0 ) {
       bsp->value.unload();
+      bsp->value.nUsers = 0;
     }
   }
 }

@@ -30,7 +30,6 @@
 #include "Math.hh"
 #include "Log.hh"
 
-#include <clocale>
 #include <csignal>
 #include <cstdlib>
 
@@ -211,8 +210,6 @@ static void signalHandler( int sigNum )
 
 static void construct()
 {
-  setlocale( LC_CTYPE, "" );
-
 #if defined( __native_client__ )
 
   if( pthread_mutex_init( &bellLock, null ) != 0 ) {

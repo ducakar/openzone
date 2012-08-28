@@ -29,7 +29,6 @@
 
 /**
  * @def OZ_GETTEXT
- *
  * Wrapper macro for `lingua.get()`.
  *
  * This macro is needed so that standard `xgettext` command can be used to extract strings for
