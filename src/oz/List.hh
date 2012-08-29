@@ -55,12 +55,12 @@ class List
     /**
      * %Iterator with constant access to container elements.
      */
-    typedef oz::Iterator<const Elem> CIterator;
+    typedef ArrayIterator<const Elem> CIterator;
 
     /**
      * %Iterator with non-constant access to container elements.
      */
-    typedef oz::Iterator<Elem> Iterator;
+    typedef ArrayIterator<Elem> Iterator;
 
   private:
 

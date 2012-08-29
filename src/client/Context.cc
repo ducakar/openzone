@@ -88,6 +88,7 @@ int Context::speakCallback( short int* samples, int nSamples, void* )
       alSourceQueueBuffers( speakSource.id, 1, &speakSource.bufferIds[i] );
       alSourcePlay( speakSource.id );
 
+      OZ_AL_CHECK_ERROR();
       speakSource.mutex.unlock();
 
       ++speakSource.nQueuedBuffers;
@@ -103,10 +104,18 @@ int Context::speakCallback( short int* samples, int nSamples, void* )
 
     int nProcessed;
     do {
-      Time::sleep( 20 );
+      Time::sleep( 100 );
 
       speakSource.mutex.lock();
+
+      int state;
+      alGetSourcei( speakSource.id, AL_SOURCE_STATE, &state );
       alGetSourcei( speakSource.id, AL_BUFFERS_PROCESSED, &nProcessed );
+
+      if( nProcessed == 0 && state == AL_STOPPED ) {
+        alSourcePlay( speakSource.id );
+      }
+
       speakSource.mutex.unlock();
     }
     while( nProcessed == 0 && speakSource.isAlive );
@@ -130,6 +139,7 @@ int Context::speakCallback( short int* samples, int nSamples, void* )
       speakSource.nSamples = 0;
     }
 
+    OZ_AL_CHECK_ERROR();
     speakSource.mutex.unlock();
   }
   while( nSamples == 0 );
@@ -144,10 +154,11 @@ void Context::speakMain( void* )
 
   int value = AL_PLAYING;
   while( speakSource.isAlive && value != AL_STOPPED ) {
-    Time::sleep( 1 );
+    Time::sleep( 100 );
 
     speakSource.mutex.lock();
     alGetSourcei( speakSource.id, AL_SOURCE_STATE, &value );
+    OZ_AL_CHECK_ERROR();
     speakSource.mutex.unlock();
   }
 

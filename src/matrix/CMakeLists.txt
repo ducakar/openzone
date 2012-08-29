@@ -1,4 +1,30 @@
 add_library( matrix STATIC
+  BotClass.hh
+  Bot.hh
+  BSP.hh
+  Caelum.hh
+  Collider.hh
+  common.hh
+  DynamicClass.hh
+  Dynamic.hh
+  Frag.hh
+  FragPool.hh
+  Library.hh
+  luaapi.hh
+  Lua.hh
+  Matrix.hh
+  NamePool.hh
+  ObjectClass.hh
+  Object.hh
+  Orbis.hh
+  Physics.hh
+  Struct.hh
+  Synapse.hh
+  Terra.hh
+  VehicleClass.hh
+  Vehicle.hh
+  WeaponClass.hh
+  Weapon.hh
   Bot.cc
   BotClass.cc
   BSP.cc

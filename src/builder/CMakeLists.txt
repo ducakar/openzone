@@ -1,4 +1,18 @@
 add_executable( ozBuild
+  BSP.hh
+  Builder.hh
+  Caelum.hh
+  Class.hh
+  common.hh
+  Compiler.hh
+  Context.hh
+  FragPool.hh
+  Lingua.hh
+  MD2.hh
+  MD3.hh
+  OBJ.hh
+  Terra.hh
+  UI.hh
   BSP.cc
   Builder.cc
   Caelum.cc

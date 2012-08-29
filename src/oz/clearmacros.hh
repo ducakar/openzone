@@ -36,7 +36,7 @@
 #undef hard_assert
 #undef foreach
 
-// Defined only for older GCC versions for C++11 compatibility.
+// May be defined for C++11 compatibility when using older GCC versions.
 #undef constexpr
 #undef noexcept
 #undef override

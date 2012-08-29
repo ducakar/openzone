@@ -6,7 +6,7 @@ if( NACL )
     COMMAND "${CMAKE_COMMAND}" -E copy "${CMAKE_SOURCE_DIR}/etc/nacl/nacl.html" nacl.html )
   add_custom_target( nacl_files DEPENDS nacl.nmf nacl.html )
 
-  add_executable( nacl nacl.cc main.cc )
+  add_executable( nacl nacl.cc main.hh main.cc )
   add_dependencies( nacl nacl_files )
   target_link_libraries( nacl oz "${PEPPER_GLES2_LIBRARY}" )
   set_target_properties( nacl PROPERTIES OUTPUT_NAME "nacl.${CMAKE_SYSTEM_PROCESSOR}.nexe" )

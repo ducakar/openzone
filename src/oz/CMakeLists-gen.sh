@@ -7,7 +7,7 @@ configure_file( ozconfig.hh.in ozconfig.hh )
 set( ozHeaders
   `echo *.hh | sed 's/ /\n  /g'` )
 add_library( oz
-  `echo *.cc | sed 's/ /\n  /g'` )
+  `echo *.{hh,cc} | sed 's/ /\n  /g'` )
 set_target_properties( oz PROPERTIES PUBLIC_HEADER "\${ozHeaders}" )
 set_target_properties( oz PROPERTIES VERSION "\${OZ_VERSION}" SOVERSION "0" )
 target_link_libraries( oz \${libs_oz} )

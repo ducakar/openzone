@@ -130,6 +130,9 @@ bool Audio::playSpeak( const char* text, float volume, const Object* parent ) co
     }
 
     uint srcId = context.requestSpeakSource( text, obj->index );
+    if( srcId == Context::INVALID_SOURCE ) {
+      return false;
+    }
 
     alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
 

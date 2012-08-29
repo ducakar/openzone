@@ -306,7 +306,6 @@ bool GameStage::update()
   beginMicros = Time::uclock();
 
   context.updateLoad();
-
   loader.update();
 
   loaderMicros += Time::uclock() - beginMicros;

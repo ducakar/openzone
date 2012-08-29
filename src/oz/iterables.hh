@@ -49,7 +49,7 @@ class IteratorBase
   public:
 
     /**
-     * Element type
+     * Element type.
      */
     typedef Elem ElemType;
 
@@ -59,6 +59,8 @@ class IteratorBase
      * Element which iterator is currently positioned at.
      */
     Elem* elem;
+
+  protected:
 
     /**
      * Create an iterator pointing to the given element.

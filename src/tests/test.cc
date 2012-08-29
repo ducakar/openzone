@@ -34,35 +34,6 @@
 using namespace oz;
 using namespace std;
 
-namespace oz
-{
-
-template <class Container>
-inline typename Container::CIterator begin( const Container& c )
-{
-  return c.citer();
-}
-
-template <class Container>
-inline typename Container::Iterator begin( Container& c )
-{
-  return c.iter();
-}
-
-template <class Container>
-inline typename Container::CIterator end( const Container& )
-{
-  return typename Container::CIterator();
-}
-
-template <class Container>
-inline typename Container::Iterator end( Container& )
-{
-  return typename Container::Iterator();
-}
-
-}
-
 class Foo
 {
   public:
@@ -96,7 +67,7 @@ class Foo
       f.value = 0;
     }
 
-    explicit Foo( int value_ ) :
+    Foo( int value_ ) :
       value( value_ )
     {
       Log::out << "Foo( " << value_ << " )\n";
@@ -142,19 +113,34 @@ class Foo
       return value < f.value;
     }
 
-    void foo() const
-    {}
+    void foo() const;
 
 };
+
+#undef foreach
+/*
+#define foreach( decl, container ) \
+  for( auto _iter = container.begin(), _endIter = container.end(); _iter != _endIter; ++_iter ) \
+    for( decl = *_iter; ; __extension__ ({ break; }) )
+*/
+#define foreach( decl, iterator ) \
+  for( auto _iter = iterator; _iter.isValid(); ++_iter ) \
+    for( decl = *_iter; ; __extension__ ({ break; }) )
 
 int main()
 {
   System::init();
 
-  HashString<> c;
+  List<Foo> c;
+  c.add( 1 );
+  c.add( 2 );
+  c.add( 0 );
 
-  for( auto& i : c ) {
-    Log::out << i.key << "\n";
+  foreach( const Foo& i, c.citer() ) {
+    Log::out << i.value << "\n";
   }
+//  foreach( const Foo& i, c ) {
+//    Log::out << i.value << "\n";
+//  }
   return 0;
 }

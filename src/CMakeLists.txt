@@ -28,4 +28,4 @@ endif()
 
 add_subdirectory( tests )
 
-add_library( build_info STATIC "${CMAKE_BINARY_DIR}/src/BuildInfo.cc" )
+add_library( build_info STATIC BuildInfo.hh "${CMAKE_BINARY_DIR}/src/BuildInfo.cc" )

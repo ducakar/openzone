@@ -2,5 +2,5 @@
 
 cat << EOF > CMakeLists.txt
 add_library( common STATIC
-  `echo *.cc | sed 's/ /\n  /g'` )
+  `echo *.{hh,cc} | sed 's/ /\n  /g'` )
 EOF

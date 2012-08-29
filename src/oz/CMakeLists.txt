@@ -48,6 +48,51 @@ set( ozHeaders
   Vec3.hh
   Vec4.hh )
 add_library( oz
+  AABB.hh
+  Alloc.hh
+  Array.hh
+  arrays.hh
+  Bitset.hh
+  Bounds.hh
+  Buffer.hh
+  BufferStream.hh
+  Chain.hh
+  clearmacros.hh
+  common.hh
+  DArray.hh
+  DChain.hh
+  Endian.hh
+  File.hh
+  HashIndex.hh
+  HashString.hh
+  InputStream.hh
+  iterables.hh
+  JSON.hh
+  List.hh
+  Log.hh
+  Map.hh
+  Mat44.hh
+  Math.hh
+  Mutex.hh
+  OutputStream.hh
+  oz.hh
+  Pair.hh
+  PFile.hh
+  Plane.hh
+  Point.hh
+  Pool.hh
+  Quat.hh
+  SBitset.hh
+  Semaphore.hh
+  Simd.hh
+  SList.hh
+  StackTrace.hh
+  String.hh
+  System.hh
+  Thread.hh
+  Time.hh
+  Vec3.hh
+  Vec4.hh
   Alloc.cc
   Buffer.cc
   common.cc

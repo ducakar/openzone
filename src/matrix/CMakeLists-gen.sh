@@ -2,6 +2,6 @@
 
 cat << EOF > CMakeLists.txt
 add_library( matrix STATIC
-  `echo *.cc | sed 's/ /\n  /g'` )
+  `echo *.{hh,cc} | sed 's/ /\n  /g'` )
 add_dependencies( matrix pch )
 EOF

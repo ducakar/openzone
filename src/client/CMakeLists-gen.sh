@@ -2,7 +2,7 @@
 
 cat << EOF > CMakeLists.txt
 add_library( client STATIC
-  `echo *.cc ui/*.cc | sed 's/ /\n  /g' | grep -v 'openzone\.cc'` )
+  `echo *.{hh,cc} ui/*.{hh,cc} | sed 's/ /\n  /g' | grep -v 'openzone\.cc'` )
 add_dependencies( client pch )
 
 add_executable( openzone openzone.cc )

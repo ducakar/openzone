@@ -1,4 +1,55 @@
 add_library( client STATIC
+  Audio.hh
+  BasicAudio.hh
+  BotAudio.hh
+  BSPAudio.hh
+  BSP.hh
+  Caelum.hh
+  Camera.hh
+  CinematicProxy.hh
+  Client.hh
+  common.hh
+  Context.hh
+  ExplosionImago.hh
+  FragPool.hh
+  Frustum.hh
+  GameStage.hh
+  Imago.hh
+  Input.hh
+  Loader.hh
+  luaapi.hh
+  Lua.hh
+  MD2.hh
+  MD2Imago.hh
+  MD2WeaponImago.hh
+  MD3.hh
+  MD3Imago.hh
+  MenuStage.hh
+  Mesh.hh
+  NaClDownloader.hh
+  NaCl.hh
+  NaClUpdater.hh
+  Network.hh
+  OpenAL.hh
+  OpenGL.hh
+  openzone.hh
+  Profile.hh
+  Proxy.hh
+  QuestList.hh
+  Render.hh
+  Shader.hh
+  Shape.hh
+  SMM.hh
+  SMMImago.hh
+  SMMVehicleImago.hh
+  Sound.hh
+  SparkModel.hh
+  Stage.hh
+  StrategicProxy.hh
+  Terra.hh
+  UnitProxy.hh
+  VehicleAudio.hh
+  Window.hh
   Audio.cc
   BasicAudio.cc
   BotAudio.cc
@@ -49,6 +100,30 @@ add_library( client STATIC
   UnitProxy.cc
   VehicleAudio.cc
   Window.cc
+  ui/Area.hh
+  ui/BuildMenu.hh
+  ui/Button.hh
+  ui/CinematicText.hh
+  ui/CreditsMenu.hh
+  ui/DebugFrame.hh
+  ui/Font.hh
+  ui/Frame.hh
+  ui/GalileoFrame.hh
+  ui/HudArea.hh
+  ui/InfoFrame.hh
+  ui/Inventory.hh
+  ui/Label.hh
+  ui/LoadingArea.hh
+  ui/MainMenu.hh
+  ui/MissionMenu.hh
+  ui/Mouse.hh
+  ui/MusicPlayer.hh
+  ui/QuestFrame.hh
+  ui/SelectionArea.hh
+  ui/SettingsFrame.hh
+  ui/Style.hh
+  ui/Text.hh
+  ui/UI.hh
   ui/Area.cc
   ui/BuildMenu.cc
   ui/Button.cc

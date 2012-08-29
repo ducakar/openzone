@@ -76,25 +76,28 @@ class HashString
         OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
     };
 
+  private:
+
     /**
-     * %Iterator with constant access to container elements.
+     * Container-specific iterator.
      */
-    class CIterator : public IteratorBase<const Elem>
+    template <typename IterElem>
+    class HashIterator : public IteratorBase<IterElem>
     {
       friend class HashString;
 
       private:
 
-        using IteratorBase<const Elem>::elem;
+        using IteratorBase<IterElem>::elem;
 
-        const Elem* const* data;  ///< Pointer to hashtable slots.
-        int                index; ///< Index of the current slot.
+        IterElem* const* data;  ///< Pointer to hashtable slots.
+        int              index; ///< Index of the current slot.
 
         /**
          * %Iterator for the given container, points to its first element.
          */
-        explicit CIterator( const HashString& t ) :
-          IteratorBase<const Elem>( t.data[0] ), data( t.data ), index( 0 )
+        explicit HashIterator( IterElem* const* data_ ) :
+          IteratorBase<IterElem>( data_[0] ), data( data_ ), index( 0 )
         {
           while( elem == null && index < SIZE - 1 ) {
             ++index;
@@ -108,14 +111,14 @@ class HashString
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        CIterator() :
-          IteratorBase<const Elem>( null ), data( null ), index( 0 )
+        HashIterator() :
+          IteratorBase<IterElem>( null ), data( null ), index( 0 )
         {}
 
         /**
          * Advance to the next element.
          */
-        CIterator& operator ++ ()
+        HashIterator& operator ++ ()
         {
           hard_assert( elem != null );
 
@@ -136,67 +139,18 @@ class HashString
         }
 
     };
+
+  public:
+
+    /**
+     * %Iterator with constant access to container elements.
+     */
+    typedef HashIterator<const Elem> CIterator;
 
     /**
      * %Iterator with non-constant access to container elements.
      */
-    class Iterator : public IteratorBase<Elem>
-    {
-      friend class HashString;
-
-      private:
-
-        using IteratorBase<Elem>::elem;
-
-        Elem* const* data;  ///< Pointer to hashtable slots.
-        int          index; ///< Index of the current slot.
-
-        /**
-         * %Iterator for the given container, points to its first element.
-         */
-        explicit Iterator( const HashString& t ) :
-          IteratorBase<Elem>( t.data[0] ), data( t.data ), index( 0 )
-        {
-          while( elem == null && index < SIZE - 1 ) {
-            ++index;
-            elem = data[index];
-          }
-        }
-
-      public:
-
-        /**
-         * Default constructor, creates an invalid iterator.
-         */
-        OZ_ALWAYS_INLINE
-        Iterator() :
-          IteratorBase<Elem>( null ), data( null ), index( 0 )
-        {}
-
-        /**
-         * Advance to the next element.
-         */
-        Iterator& operator ++ ()
-        {
-          hard_assert( elem != null );
-
-          if( elem->next != null ) {
-            elem = elem->next;
-          }
-          else if( index == SIZE - 1 ) {
-            elem = null;
-          }
-          else {
-            do {
-              ++index;
-              elem = data[index];
-            }
-            while( elem == null && index < SIZE - 1 );
-          }
-          return *this;
-        }
-
-    };
+    typedef HashIterator<Elem> Iterator;
 
   private:
 
@@ -378,7 +332,7 @@ class HashString
     OZ_ALWAYS_INLINE
     CIterator citer() const
     {
-      return CIterator( *this );
+      return CIterator( data );
     }
 
     /**
@@ -387,7 +341,7 @@ class HashString
     OZ_ALWAYS_INLINE
     Iterator iter() const
     {
-      return Iterator( *this );
+      return Iterator( data );
     }
 
     /**

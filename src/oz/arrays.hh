@@ -35,9 +35,11 @@ namespace oz
 
 /**
  * %Array iterator.
+ *
+ * It should not be used directly but appropriate iterator types should be typedef'd to it.
  */
 template <typename Elem>
-class Iterator : public IteratorBase<Elem>
+class ArrayIterator : public IteratorBase<Elem>
 {
   protected:
 
@@ -52,7 +54,7 @@ class Iterator : public IteratorBase<Elem>
      * Default constructor, creates an invalid iterator.
      */
     OZ_ALWAYS_INLINE
-    Iterator() :
+    ArrayIterator() :
       IteratorBase<Elem>( null ), past( null )
     {}
 
@@ -63,7 +65,7 @@ class Iterator : public IteratorBase<Elem>
      * @param past_ successor of the last element.
      */
     OZ_ALWAYS_INLINE
-    explicit Iterator( Elem* first, const Elem* past_ ) :
+    explicit ArrayIterator( Elem* first, const Elem* past_ ) :
       IteratorBase<Elem>( first ), past( past_ )
     {}
 
@@ -80,7 +82,7 @@ class Iterator : public IteratorBase<Elem>
      * Advance to the next element.
      */
     OZ_ALWAYS_INLINE
-    Iterator& operator ++ ()
+    ArrayIterator& operator ++ ()
     {
       hard_assert( elem != past );
 
@@ -90,11 +92,51 @@ class Iterator : public IteratorBase<Elem>
 
 };
 
+#if defined( OZ_GCC ) && OZ_GCC < 407
+
+template <typename Elem>
+class CIterator : public ArrayIterator<const Elem>
+{
+  public:
+
+    CIterator() = default;
+
+    OZ_ALWAYS_INLINE
+    explicit CIterator( const Elem* first, const Elem* past ) :
+      ArrayIterator<const Elem>( first, past )
+    {}
+
+};
+
+template <typename Elem>
+class Iterator : public ArrayIterator<Elem>
+{
+  public:
+
+    Iterator() = default;
+
+    OZ_ALWAYS_INLINE
+    explicit Iterator( Elem* first, const Elem* past ) :
+      ArrayIterator<Elem>( first, past )
+    {}
+
+};
+
+#else
+
 /**
  * %Array iterator with constant access to elements.
  */
 template <typename Elem>
-using CIterator = Iterator<const Elem>;
+using CIterator = ArrayIterator<const Elem>;
+
+/**
+ * %Array iterator with non-constant access to elements.
+ */
+template <typename Elem>
+using Iterator = ArrayIterator<Elem>;
+
+#endif
 
 /**
  * Create array iterator with constant element access.

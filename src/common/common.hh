@@ -35,15 +35,11 @@
 
 #ifdef _WIN32
 # include <windows.h>
-
-// Doxygen should skip those macros when generating documentation.
-# ifndef OZ_DOXYGEN
 // Fix M$ crap from Windows headers.
-#  undef ERROR
-#  undef PLANES
-#  undef near
-#  undef far
-# endif
+# undef ERROR
+# undef PLANES
+# undef near
+# undef far
 #endif
 
 // We want to use C++ wrapped C headers, not pure C ones that are included via SDL.

@@ -36,7 +36,7 @@ namespace oz
 /**
  * Double-linked list.
  *
- * This is not a real container but merely a way of binding existing elements into a linked list.
+ * This is not a real container but a way of binding existing elements into a linked list.
  *
  * It can only be applied on classes that have `prev[]` and `next[]` members.
  * Example:
@@ -67,93 +67,63 @@ namespace oz
 template <class Elem, int INDEX = 0>
 class DChain
 {
+  private:
+
+    /**
+     * Container-specific iterator.
+     */
+    template <typename IterElem>
+    class ChainIterator : public IteratorBase<IterElem>
+    {
+      friend class DChain;
+
+      private:
+
+        using IteratorBase<IterElem>::elem;
+
+        /**
+         * %Iterator for the given container, points to the first element.
+         */
+        OZ_ALWAYS_INLINE
+        explicit ChainIterator( IterElem* first ) :
+          IteratorBase<IterElem>( first )
+        {}
+
+      public:
+
+        /**
+         * Default constructor, creates an invalid iterator.
+         */
+        OZ_ALWAYS_INLINE
+        ChainIterator() :
+          IteratorBase<IterElem>( null )
+        {}
+
+        /**
+         * Advance to the next element.
+         */
+        OZ_ALWAYS_INLINE
+        ChainIterator& operator ++ ()
+        {
+          hard_assert( elem != null );
+
+          elem = elem->next[INDEX];
+          return *this;
+        }
+
+    };
+
   public:
 
     /**
      * %Iterator with constant access to container elements.
      */
-    class CIterator : public IteratorBase<const Elem>
-    {
-      friend class DChain;
-
-      private:
-
-        using IteratorBase<const Elem>::elem;
-
-        /**
-         * %Iterator for the given container, points to the first element.
-         */
-        OZ_ALWAYS_INLINE
-        explicit CIterator( const DChain& c ) :
-          IteratorBase<const Elem>( c.firstElem )
-        {}
-
-      public:
-
-        /**
-         * Default constructor, creates an invalid iterator.
-         */
-        OZ_ALWAYS_INLINE
-        CIterator() :
-          IteratorBase<const Elem>( null )
-        {}
-
-        /**
-         * Advance to the next element.
-         */
-        OZ_ALWAYS_INLINE
-        CIterator& operator ++ ()
-        {
-          hard_assert( elem != null );
-
-          elem = elem->next[INDEX];
-          return *this;
-        }
-
-    };
+    typedef ChainIterator<const Elem> CIterator;
 
     /**
      * %Iterator with non-constant access to container elements.
      */
-    class Iterator : public IteratorBase<Elem>
-    {
-      friend class DChain;
-
-      private:
-
-        using IteratorBase<Elem>::elem;
-
-        /**
-         * %Iterator for the given container, points to the first element.
-         */
-        OZ_ALWAYS_INLINE
-        explicit Iterator( const DChain& c ) :
-          IteratorBase<Elem>( c.firstElem )
-        {}
-
-      public:
-
-        /**
-         * Default constructor, creates an invalid iterator.
-         */
-        OZ_ALWAYS_INLINE
-        Iterator() :
-          IteratorBase<Elem>( null )
-        {}
-
-        /**
-         * Advance to the next element.
-         */
-        OZ_ALWAYS_INLINE
-        Iterator& operator ++ ()
-        {
-          hard_assert( elem != null );
-
-          elem = elem->next[INDEX];
-          return *this;
-        }
-
-    };
+    typedef ChainIterator<Elem> Iterator;
 
   private:
 
@@ -248,7 +218,7 @@ class DChain
     OZ_ALWAYS_INLINE
     CIterator citer() const
     {
-      return CIterator( *this );
+      return CIterator( firstElem );
     }
 
     /**
@@ -257,7 +227,7 @@ class DChain
     OZ_ALWAYS_INLINE
     Iterator iter() const
     {
-      return Iterator( *this );
+      return Iterator( firstElem );
     }
 
     /**

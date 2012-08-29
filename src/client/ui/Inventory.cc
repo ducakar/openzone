@@ -278,22 +278,13 @@ void Inventory::onVisibilityChange( bool )
 
 void Inventory::onUpdate()
 {
-  const Bot* bot = camera.botObj;
-
-  if( camera.state != Camera::UNIT || !mouse.doShow || bot == null ||
-      ( bot->state & Bot::DEAD_BIT ) )
-  {
-    if( !( flags & HIDDEN_BIT ) ) {
-      show( false );
-    }
-    return;
-  }
-
   updateReferences();
 
   height = HEADER_SIZE + ( other == null ? SINGLE_HEIGHT : 2 * SINGLE_HEIGHT );
 
-  if( owner == null ) {
+  if( camera.state != Camera::UNIT || !mouse.doShow || owner == null ||
+      ( owner->state & Bot::DEAD_BIT ) )
+  {
     if( !( flags & HIDDEN_BIT ) ) {
       show( false );
     }
@@ -338,6 +329,10 @@ bool Inventory::onMouseEvent()
 void Inventory::onDraw()
 {
   updateReferences();
+
+  if( owner == null ) {
+    return;
+  }
 
   const Object*      container      = other == null ? owner : other;
   const ObjectClass* containerClazz = container->clazz;

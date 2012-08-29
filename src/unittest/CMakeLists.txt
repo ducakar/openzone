@@ -3,6 +3,7 @@ add_executable( unittest
   arrays.cc
   common.cc
   iterables.cc
+  unittest.hh
   unittest.cc )
 target_link_libraries( unittest oz ${libs_oz} )
 

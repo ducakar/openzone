@@ -45,7 +45,7 @@ class Inventory : public Frame
     static const int SLOT_OBJ_DIM  = ( SLOT_SIZE - 2*PADDING_SIZE ) / 2;
     static const int SINGLE_HEIGHT = FOOTER_SIZE + ROWS * SLOT_SIZE;
 
-    const Object* owner;
+    const Bot*    owner;
     const Object* other;
 
     uint  scrollUpTexId;

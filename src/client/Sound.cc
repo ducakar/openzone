@@ -490,6 +490,8 @@ void Sound::playCell( int cellX, int cellY )
     }
   }
 
+  OZ_AL_CHECK_ERROR();
+
   foreach( obj, cell.objects.citer() ) {
     if( obj->flags & Object::AUDIO_BIT ) {
       context.playAudio( obj, null );
@@ -583,6 +585,8 @@ void Sound::soundRun()
       camera.at.x, camera.at.y, camera.at.z,
       camera.up.x, camera.up.y, camera.up.z
     };
+
+    OZ_AL_CHECK_ERROR();
 
     // add new sounds
     alListenerfv( AL_ORIENTATION, orientation );
@@ -848,6 +852,7 @@ void Sound::init()
 
   context.speakSampleRate = espeak_Initialize( AUDIO_OUTPUT_SYNCHRONOUS, 500, null, 0 );
   espeak_SetParameter( espeakRATE, 150, 0 );
+  espeak_SetVoiceByName( config.include( "sound.speaker", "en" ).asString() );
   espeak_SetSynthCallback( reinterpret_cast<t_espeak_callback*>( &Context::speakCallback ) );
 
   isMusicAlive = true;
