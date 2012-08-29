@@ -24,7 +24,7 @@
  * translations.
  */
 
-#include "oz/oz.hh"
+#include <oz/oz.hh>
 
 #include <cstdlib>
 

@@ -21,13 +21,12 @@
  * @file matrix/Object.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <matrix/Object.hh>
 
-#include "matrix/Object.hh"
-
-#include "matrix/Lua.hh"
-#include "matrix/Synapse.hh"
-#include "matrix/Bot.hh"
+#include <matrix/Lua.hh>
+#include <matrix/Synapse.hh>
+#include <matrix/Bot.hh>
 
 namespace oz
 {

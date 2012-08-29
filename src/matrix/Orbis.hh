@@ -23,11 +23,11 @@
 
 #pragma once
 
-#include "matrix/Caelum.hh"
-#include "matrix/Terra.hh"
-#include "matrix/Struct.hh"
-#include "matrix/Dynamic.hh"
-#include "matrix/Frag.hh"
+#include <matrix/Caelum.hh>
+#include <matrix/Terra.hh>
+#include <matrix/Struct.hh>
+#include <matrix/Dynamic.hh>
+#include <matrix/Frag.hh>
 
 namespace oz
 {

@@ -21,13 +21,13 @@
  * @file client/Terra.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/Terra.hh>
 
-#include "client/Terra.hh"
-
-#include "client/Frustum.hh"
-#include "client/Context.hh"
-#include "client/OpenGL.hh"
+#include <common/Timer.hh>
+#include <client/Frustum.hh>
+#include <client/Context.hh>
+#include <client/OpenGL.hh>
 
 namespace oz
 {

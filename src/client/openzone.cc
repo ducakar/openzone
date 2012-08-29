@@ -21,16 +21,17 @@
  * @file client/openzone.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/openzone.hh>
 
-#include "client/openzone.hh"
-
-#include "client/Client.hh"
-#include "client/NaCl.hh"
+#include <client/Client.hh>
+#include <client/NaCl.hh>
 
 #ifdef __native_client__
 
 #include <SDL/SDL_nacl.h>
+
+using namespace oz;
 
 extern "C"
 void alSetPpapiInfo( PP_Instance, PPB_GetInterface );

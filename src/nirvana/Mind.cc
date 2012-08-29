@@ -21,12 +21,11 @@
  * @file nirvana/Mind.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <nirvana/Mind.hh>
 
-#include "nirvana/Mind.hh"
-
-#include "nirvana/Lua.hh"
-#include "matrix/Bot.hh"
+#include <nirvana/Lua.hh>
+#include <matrix/Bot.hh>
 
 namespace oz
 {

@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "matrix/Orbis.hh"
+#include <matrix/Orbis.hh>
 
 namespace oz
 {

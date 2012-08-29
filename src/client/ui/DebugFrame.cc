@@ -21,15 +21,14 @@
  * @file client/ui/DebugFrame.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/DebugFrame.hh>
 
-#include "client/ui/DebugFrame.hh"
+#include <matrix/Collider.hh>
 
-#include "matrix/Collider.hh"
+#include <client/Camera.hh>
 
-#include "client/Camera.hh"
-
-#include "client/ui/Style.hh"
+#include <client/ui/Style.hh>
 
 namespace oz
 {

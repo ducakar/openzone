@@ -21,11 +21,10 @@
  * @file client/SMMImago.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/SMMImago.hh>
 
-#include "client/SMMImago.hh"
-
-#include "client/Context.hh"
+#include <client/Context.hh>
 
 namespace oz
 {

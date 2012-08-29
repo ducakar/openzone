@@ -23,11 +23,10 @@
  * Map of all resources, object types, scripts etc.
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <matrix/Library.hh>
 
-#include "matrix/Library.hh"
-
-#include "matrix/Vehicle.hh"
+#include <matrix/Vehicle.hh>
 
 #define OZ_REGISTER_BASECLASS( name ) \
   baseClasses.include( #name, name##Class::createClass )

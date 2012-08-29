@@ -25,15 +25,15 @@
 
 #pragma once
 
-#include "nirvana/luaapi.hh"
+#include <nirvana/luaapi.hh>
 
-#include "client/QuestList.hh"
-#include "client/Camera.hh"
-#include "client/Profile.hh"
-#include "client/NaCl.hh"
+#include <client/QuestList.hh>
+#include <client/Camera.hh>
+#include <client/Profile.hh>
+#include <client/NaCl.hh>
 
-#include "client/ui/BuildMenu.hh"
-#include "client/ui/UI.hh"
+#include <client/ui/BuildMenu.hh>
+#include <client/ui/UI.hh>
 
 namespace oz
 {

@@ -21,12 +21,11 @@
  * @file client/Sound.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/Sound.hh>
 
-#include "client/Sound.hh"
-
-#include "client/Camera.hh"
-#include "client/NaCl.hh"
+#include <client/Camera.hh>
+#include <client/NaCl.hh>
 
 #include <espeak/speak_lib.h>
 

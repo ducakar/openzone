@@ -21,13 +21,13 @@
  * @file client/Profile.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/Profile.hh>
 
-#include "client/Profile.hh"
-
-#include "matrix/Library.hh"
-#include "matrix/BotClass.hh"
-#include "matrix/WeaponClass.hh"
+#include <common/Lingua.hh>
+#include <matrix/Library.hh>
+#include <matrix/BotClass.hh>
+#include <matrix/WeaponClass.hh>
 
 #include <cwctype>
 

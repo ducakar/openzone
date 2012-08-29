@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "client/common.hh"
+#include <client/common.hh>
 
 namespace oz
 {
@@ -33,7 +33,7 @@ namespace builder
 using namespace common;
 using namespace matrix;
 using namespace nirvana;
-using namespace module;
+using namespace modules;
 using namespace client;
 
 extern JSON config;

@@ -21,7 +21,8 @@
  * @file common/Lingua.cc
  */
 
-#include "common/Lingua.hh"
+#include <stable.hh>
+#include <common/Lingua.hh>
 
 #include <SDL.h>
 

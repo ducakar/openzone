@@ -23,11 +23,10 @@
  * Lua scripting engine for Matrix
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <matrix/Lua.hh>
 
-#include "matrix/Lua.hh"
-
-#include "matrix/luaapi.hh"
+#include <matrix/luaapi.hh>
 
 namespace oz
 {

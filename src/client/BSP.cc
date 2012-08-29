@@ -21,21 +21,16 @@
  * @file client/BSP.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/BSP.hh>
 
-#include "client/BSP.hh"
-
-#include "client/Context.hh"
-#include "client/OpenGL.hh"
+#include <client/Context.hh>
+#include <client/OpenGL.hh>
 
 namespace oz
 {
 namespace client
 {
-
-BSP::BSP( const matrix::BSP* bsp_ ) :
-  bsp( bsp_ ), isPreloaded( false ), isLoaded( false )
-{}
 
 BSP::~BSP()
 {
@@ -43,6 +38,10 @@ BSP::~BSP()
     mesh.unload();
   }
 }
+
+BSP::BSP( const matrix::BSP* bsp_ ) :
+  bsp( bsp_ ), isPreloaded( false ), isLoaded( false )
+{}
 
 void BSP::preload()
 {

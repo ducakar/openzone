@@ -4,9 +4,9 @@ add_library( common STATIC
   luaapi.hh
   luabase.hh
   Lua.hh
-  Span.hh
   Timer.hh
   Lingua.cc
   luabase.cc
   Lua.cc
   Timer.cc )
+add_dependencies( common pch )

@@ -21,12 +21,11 @@
  * @file client/SMMVehicleImago.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/SMMVehicleImago.hh>
 
-#include "client/SMMVehicleImago.hh"
-
-#include "client/Context.hh"
-#include "client/Camera.hh"
+#include <client/Context.hh>
+#include <client/Camera.hh>
 
 namespace oz
 {

@@ -21,12 +21,11 @@
  * @file matrix/Dynamic.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <matrix/Dynamic.hh>
 
-#include "matrix/Dynamic.hh"
-
-#include "matrix/Lua.hh"
-#include "matrix/Synapse.hh"
+#include <matrix/Lua.hh>
+#include <matrix/Synapse.hh>
 
 namespace oz
 {

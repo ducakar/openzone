@@ -23,8 +23,8 @@
 
 #pragma once
 
-#include "client/ui/Frame.hh"
-#include "client/ui/Button.hh"
+#include <client/ui/Frame.hh>
+#include <client/ui/Button.hh>
 
 namespace oz
 {

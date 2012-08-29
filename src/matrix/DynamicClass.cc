@@ -21,11 +21,10 @@
  * @file matrix/DynamicClass.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <matrix/DynamicClass.hh>
 
-#include "matrix/DynamicClass.hh"
-
-#include "matrix/Dynamic.hh"
+#include <matrix/Dynamic.hh>
 
 namespace oz
 {

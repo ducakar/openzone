@@ -21,16 +21,15 @@
  * @file client/ui/BuildMenu.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/BuildMenu.hh>
 
-#include "client/ui/BuildMenu.hh"
+#include <matrix/Library.hh>
+#include <matrix/Synapse.hh>
 
-#include "matrix/Library.hh"
-#include "matrix/Synapse.hh"
+#include <nirvana/Nirvana.hh>
 
-#include "nirvana/Nirvana.hh"
-
-#include "client/Camera.hh"
+#include <client/Camera.hh>
 
 namespace oz
 {

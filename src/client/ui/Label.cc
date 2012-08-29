@@ -21,16 +21,15 @@
  * @file client/ui/Label.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/Label.hh>
 
-#include "client/ui/Label.hh"
+#include <client/Shader.hh>
+#include <client/Shape.hh>
+#include <client/OpenGL.hh>
 
-#include "client/Shader.hh"
-#include "client/Shape.hh"
-#include "client/OpenGL.hh"
-
-#include "client/ui/Area.hh"
-#include "client/ui/Style.hh"
+#include <client/ui/Area.hh>
+#include <client/ui/Style.hh>
 
 namespace oz
 {

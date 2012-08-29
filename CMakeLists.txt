@@ -215,8 +215,8 @@ set( warnings "-Wall -Wextra -Winvalid-pch -Wconversion" )
 
 # Additional warnings (Clang specific).
 # set( warnings "${warnings} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic" )
-# set( warnings "${warnings} -Wno-disabled-macro-expansion -Wno-float-equal -Wno-padded -Wno-shadow" )
-# set( warnings "${warnings} -Wno-global-constructors -Wno-exit-time-destructors" )
+# set( warnings "${warnings} -Wno-disabled-macro-expansion -Wno-padded -Wno-shadow" )
+# set( warnings "${warnings} -Wno-global-constructors -Wno-exit-time-destructors -Wno-float-equal" )
 
 set( CMAKE_CXX_FLAGS "${flags} ${warnings} ${CMAKE_CXX_FLAGS}" )
 

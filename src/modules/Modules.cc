@@ -21,18 +21,17 @@
  * @file modules/Modules.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <modules/Modules.hh>
 
-#include "modules/Modules.hh"
-
-#include "modules/flora/FloraModule.hh"
+#include <modules/flora/FloraModule.hh>
 
 #define OZ_REGISTER_MODULE( moduleName ) \
-  modules.add( &module::moduleName##Module )
+  modules.add( &moduleName##Module )
 
 namespace oz
 {
-namespace module
+namespace modules
 {
 
 Modules modules;

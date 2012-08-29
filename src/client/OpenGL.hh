@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "client/common.hh"
+#include <client/common.hh>
 
 #define GL_VERSION_1_1_DEPRECATED
 #define GL_VERSION_1_2_DEPRECATED
@@ -40,7 +40,7 @@
 # define GL_GLEXT_PROTOTYPES
 #endif
 
-#include "NaCl.hh"
+#include <client/NaCl.hh>
 
 #ifdef OZ_GL_ES
 # include <GLES2/gl2.h>

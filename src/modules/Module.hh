@@ -23,11 +23,11 @@
 
 #pragma once
 
-#include "modules/common.hh"
+#include <modules/common.hh>
 
 namespace oz
 {
-namespace module
+namespace modules
 {
 
 class Module

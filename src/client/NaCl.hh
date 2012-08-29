@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "client/common.hh"
+#include <client/common.hh>
 
 #ifdef __native_client__
 

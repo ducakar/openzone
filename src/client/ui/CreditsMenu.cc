@@ -21,19 +21,18 @@
  * @file client/ui/CreditsMenu.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/CreditsMenu.hh>
 
-#include "client/ui/CreditsMenu.hh"
+#include <client/Shape.hh>
+#include <client/Camera.hh>
+#include <client/Context.hh>
+#include <client/Input.hh>
+#include <client/OpenGL.hh>
+#include <client/NaCl.hh>
 
-#include "client/Shape.hh"
-#include "client/Camera.hh"
-#include "client/Context.hh"
-#include "client/Input.hh"
-#include "client/OpenGL.hh"
-#include "client/NaCl.hh"
-
-#include "client/ui/Style.hh"
-#include "client/ui/Button.hh"
+#include <client/ui/Style.hh>
+#include <client/ui/Button.hh>
 
 namespace oz
 {

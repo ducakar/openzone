@@ -21,14 +21,13 @@
  * @file client/ui/SelectionArea.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/SelectionArea.hh>
 
-#include "client/ui/SelectionArea.hh"
-
-#include "client/Shader.hh"
-#include "client/Shape.hh"
-#include "client/Camera.hh"
-#include "client/Input.hh"
+#include <client/Shader.hh>
+#include <client/Shape.hh>
+#include <client/Camera.hh>
+#include <client/Input.hh>
 
 namespace oz
 {

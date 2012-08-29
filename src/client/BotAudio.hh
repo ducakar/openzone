@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "client/BasicAudio.hh"
+#include <client/BasicAudio.hh>
 
 namespace oz
 {

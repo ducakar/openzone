@@ -21,12 +21,11 @@
  * @file client/Input.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/Input.hh>
 
-#include "client/Input.hh"
-
-#include "client/Window.hh"
-#include "client/NaCl.hh"
+#include <client/Window.hh>
+#include <client/NaCl.hh>
 
 namespace oz
 {

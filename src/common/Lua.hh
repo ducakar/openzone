@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "common/common.hh"
+#include <common/common.hh>
 
 // Forward declaration needed for Lua API declarations, to prevent pollution from Lua headers.
 struct lua_State;

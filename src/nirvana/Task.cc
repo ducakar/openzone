@@ -21,9 +21,8 @@
  * @file nirvana/Task.cc
  */
 
-#include "stable.hh"
-
-#include "nirvana/Task.hh"
+#include <stable.hh>
+#include <nirvana/Task.hh>
 
 namespace oz
 {

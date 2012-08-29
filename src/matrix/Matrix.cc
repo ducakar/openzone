@@ -21,15 +21,15 @@
  * @file matrix/Matrix.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <matrix/Matrix.hh>
 
-#include "matrix/Matrix.hh"
-
-#include "matrix/Lua.hh"
-#include "matrix/NamePool.hh"
-#include "matrix/Physics.hh"
-#include "matrix/Synapse.hh"
-#include "matrix/Vehicle.hh"
+#include <common/Timer.hh>
+#include <matrix/Lua.hh>
+#include <matrix/NamePool.hh>
+#include <matrix/Physics.hh>
+#include <matrix/Synapse.hh>
+#include <matrix/Vehicle.hh>
 
 namespace oz
 {

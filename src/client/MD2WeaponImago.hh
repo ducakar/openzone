@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "client/MD2Imago.hh"
+#include <client/MD2Imago.hh>
 
 namespace oz
 {

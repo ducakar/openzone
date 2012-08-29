@@ -21,13 +21,12 @@
  * @file matrix/Synapse.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <matrix/Synapse.hh>
 
-#include "matrix/Synapse.hh"
-
-#include "matrix/Library.hh"
-#include "matrix/Collider.hh"
-#include "matrix/Bot.hh"
+#include <matrix/Library.hh>
+#include <matrix/Collider.hh>
+#include <matrix/Bot.hh>
 
 namespace oz
 {

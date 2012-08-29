@@ -21,14 +21,13 @@
  * @file client/ui/MusicPlayer.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/MusicPlayer.hh>
 
-#include "client/ui/MusicPlayer.hh"
+#include <client/Camera.hh>
+#include <client/Sound.hh>
 
-#include "client/Camera.hh"
-#include "client/Sound.hh"
-
-#include "client/ui/Style.hh"
+#include <client/ui/Style.hh>
 
 namespace oz
 {
@@ -143,14 +142,15 @@ void MusicPlayer::onUpdate()
     }
   }
 
-  if( sound.getCurrentTrack() != currentTrack ) {
-    int soundTrack = sound.getCurrentTrack();
-
+  int soundTrack = sound.getCurrentTrack();
+  if( soundTrack != currentTrack ) {
     if( soundTrack == -1 ) {
+      isPlaying = false;
+
       title.set( " " );
     }
     else {
-      currentTrack = sound.getCurrentTrack();
+      currentTrack = soundTrack;
 
       title.set( "%s", library.musicTracks[currentTrack].name.cstr() );
       trackLabel.set( "%d", currentTrack + 1 );
@@ -176,7 +176,7 @@ void MusicPlayer::onDraw()
 {
   Frame::onDraw();
 
-  title.draw( this, false );
+  title.draw( this, true );
   trackLabel.draw( this, true );
   volumeLabel.draw( this, true );
 }

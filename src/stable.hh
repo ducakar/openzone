@@ -25,4 +25,4 @@
  * It should be directly included by all '.cc' source files in the project.
  */
 
-#include "common/common.hh"
+#include <common/common.hh>

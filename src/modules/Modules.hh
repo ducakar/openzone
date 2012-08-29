@@ -23,18 +23,18 @@
 
 #pragma once
 
-#include "modules/Module.hh"
+#include <modules/Module.hh>
 
 namespace oz
 {
-namespace module
+namespace modules
 {
 
 class Modules
 {
   private:
 
-    List<module::Module*> modules;
+    List<Module*> modules;
 
   public:
 

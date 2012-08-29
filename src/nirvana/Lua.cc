@@ -23,11 +23,10 @@
  * Lua scripting engine for Nirvana
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <nirvana/Lua.hh>
 
-#include "nirvana/Lua.hh"
-
-#include "nirvana/luaapi.hh"
+#include <nirvana/luaapi.hh>
 
 namespace oz
 {

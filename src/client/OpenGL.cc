@@ -21,9 +21,8 @@
  * @file client/OpenGL.cc
  */
 
-#include "stable.hh"
-
-#include "client/OpenGL.hh"
+#include <stable.hh>
+#include <client/OpenGL.hh>
 
 #ifdef _WIN32
 # define OZ_REGISTER_GLFUNC( func ) \

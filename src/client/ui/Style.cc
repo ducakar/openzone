@@ -21,9 +21,8 @@
  * @file client/ui/Style.cc
  */
 
-#include "stable.hh"
-
-#include "client/ui/Style.hh"
+#include <stable.hh>
+#include <client/ui/Style.hh>
 
 #define OZ_READ_COLOUR( var, r, g, b, a ) \
   ( \

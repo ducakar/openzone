@@ -21,12 +21,12 @@
  * @file matrix/Vehicle.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <matrix/Vehicle.hh>
 
-#include "matrix/Vehicle.hh"
-
-#include "matrix/Physics.hh"
-#include "matrix/Lua.hh"
+#include <common/Timer.hh>
+#include <matrix/Physics.hh>
+#include <matrix/Lua.hh>
 
 namespace oz
 {

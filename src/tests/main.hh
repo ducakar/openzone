@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "oz/oz.hh"
+#include <oz/oz.hh>
 
 #ifdef __native_client__
 

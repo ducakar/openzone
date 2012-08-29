@@ -21,12 +21,11 @@
  * @file client/BSPAudio.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/BSPAudio.hh>
 
-#include "client/BSPAudio.hh"
-
-#include "client/Context.hh"
-#include "client/OpenAL.hh"
+#include <client/Context.hh>
+#include <client/OpenAL.hh>
 
 namespace oz
 {

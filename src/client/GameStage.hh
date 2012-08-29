@@ -23,8 +23,8 @@
 
 #pragma once
 
-#include "client/Stage.hh"
-#include "client/Proxy.hh"
+#include <client/Stage.hh>
+#include <client/Proxy.hh>
 
 namespace oz
 {

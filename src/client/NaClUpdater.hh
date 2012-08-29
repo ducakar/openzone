@@ -25,7 +25,7 @@
 
 #ifdef __native_client__
 
-#include "client/common.hh"
+#include <client/common.hh>
 
 namespace oz
 {

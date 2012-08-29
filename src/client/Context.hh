@@ -23,14 +23,14 @@
 
 #pragma once
 
-#include "matrix/Library.hh"
+#include <matrix/Library.hh>
 
-#include "client/Shader.hh"
-#include "client/BSP.hh"
-#include "client/BSPAudio.hh"
-#include "client/Imago.hh"
-#include "client/Audio.hh"
-#include "client/FragPool.hh"
+#include <client/Shader.hh>
+#include <client/BSP.hh>
+#include <client/BSPAudio.hh>
+#include <client/Imago.hh>
+#include <client/Audio.hh>
+#include <client/FragPool.hh>
 
 namespace oz
 {

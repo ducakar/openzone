@@ -21,9 +21,10 @@
  * @file common/Lua.cc
  */
 
-#include "common/Lua.hh"
+#include <stable.hh>
+#include <common/Lua.hh>
 
-#include "common/luaapi.hh"
+#include <common/luaapi.hh>
 
 namespace oz
 {

@@ -21,19 +21,17 @@
  * @file client/CinematicProxy.hh
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/CinematicProxy.hh>
 
-#include "client/CinematicProxy.hh"
-
-#include "matrix/Library.hh"
-
-#include "client/Camera.hh"
-#include "client/Sound.hh"
-#include "client/NaCl.hh"
-
-#include "client/ui/GalileoFrame.hh"
-#include "client/ui/MusicPlayer.hh"
-#include "client/ui/UI.hh"
+#include <common/Timer.hh>
+#include <matrix/Library.hh>
+#include <client/Camera.hh>
+#include <client/Sound.hh>
+#include <client/NaCl.hh>
+#include <client/ui/GalileoFrame.hh>
+#include <client/ui/MusicPlayer.hh>
+#include <client/ui/UI.hh>
 
 namespace oz
 {

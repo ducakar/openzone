@@ -21,9 +21,10 @@
  * @file matrix/Caelum.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <matrix/Caelum.hh>
 
-#include "matrix/Caelum.hh"
+#include <common/Timer.hh>
 
 namespace oz
 {

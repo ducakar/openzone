@@ -21,14 +21,13 @@
  * @file builder/MD2.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <builder/MD2.hh>
 
-#include "builder/MD2.hh"
+#include <client/MD2.hh>
+#include <client/Context.hh>
 
-#include "client/MD2.hh"
-#include "client/Context.hh"
-
-#include "builder/Compiler.hh"
+#include <builder/Compiler.hh>
 
 namespace oz
 {

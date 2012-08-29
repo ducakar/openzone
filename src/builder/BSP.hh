@@ -23,9 +23,9 @@
 
 #pragma once
 
-#include "matrix/BSP.hh"
+#include <matrix/BSP.hh>
 
-#include "builder/Compiler.hh"
+#include <builder/Compiler.hh>
 
 namespace oz
 {

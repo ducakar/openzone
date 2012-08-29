@@ -21,15 +21,14 @@
  * @file client/ui/Frame.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/Frame.hh>
 
-#include "client/ui/Frame.hh"
+#include <client/Input.hh>
+#include <client/Shape.hh>
+#include <client/OpenGL.hh>
 
-#include "client/Input.hh"
-#include "client/Shape.hh"
-#include "client/OpenGL.hh"
-
-#include "client/ui/Style.hh"
+#include <client/ui/Style.hh>
 
 namespace oz
 {

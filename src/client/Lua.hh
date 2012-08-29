@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include "common/Lua.hh"
+#include <common/Lua.hh>
 
-#include "client/common.hh"
+#include <client/common.hh>
 
 namespace oz
 {

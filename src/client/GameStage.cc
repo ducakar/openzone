@@ -21,38 +21,34 @@
  * @file client/GameStage.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/GameStage.hh>
 
-#include "client/GameStage.hh"
-
-#include "matrix/Synapse.hh"
-#include "matrix/Matrix.hh"
-
-#include "nirvana/Nirvana.hh"
-
-#include "modules/Modules.hh"
-
-#include "client/Loader.hh"
-#include "client/Render.hh"
-#include "client/Sound.hh"
-#include "client/Network.hh"
-#include "client/Camera.hh"
-#include "client/Lua.hh"
-#include "client/Profile.hh"
-#include "client/QuestList.hh"
-#include "client/MenuStage.hh"
-#include "client/Input.hh"
-#include "client/NaCl.hh"
-
-#include "client/ui/LoadingArea.hh"
+#include <matrix/Synapse.hh>
+#include <matrix/Matrix.hh>
+#include <nirvana/Nirvana.hh>
+#include <modules/Modules.hh>
+#include <client/Loader.hh>
+#include <client/Render.hh>
+#include <client/Sound.hh>
+#include <client/Network.hh>
+#include <client/Camera.hh>
+#include <client/Lua.hh>
+#include <client/Profile.hh>
+#include <client/QuestList.hh>
+#include <client/MenuStage.hh>
+#include <client/Input.hh>
+#include <client/NaCl.hh>
+#include <client/ui/LoadingArea.hh>
 
 namespace oz
 {
 namespace client
 {
 
-using oz::matrix::matrix;
-using oz::nirvana::nirvana;
+using matrix::matrix;
+using nirvana::nirvana;
+using modules::modules;
 
 GameStage gameStage;
 

@@ -21,12 +21,11 @@
  * @file client/Window.cc
  */
 
-#include "stable.hh"
-
-#include "client/Window.hh"
-#include "client/Input.hh"
-#include "client/OpenGL.hh"
-#include "client/NaCl.hh"
+#include <stable.hh>
+#include <client/Window.hh>
+#include <client/Input.hh>
+#include <client/OpenGL.hh>
+#include <client/NaCl.hh>
 
 #ifdef __native_client__
 # include <ppapi/cpp/completion_callback.h>

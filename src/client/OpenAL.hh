@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "client/common.hh"
+#include <client/common.hh>
 
 #include <AL/al.h>
 

@@ -21,16 +21,14 @@
  * @file client/ui/InfoFrame.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/InfoFrame.hh>
 
-#include "client/ui/InfoFrame.hh"
-
-#include "nirvana/Memo.hh"
-#include "nirvana/Nirvana.hh"
-
-#include "client/Camera.hh"
-
-#include "client/ui/Style.hh"
+#include <common/Timer.hh>
+#include <nirvana/Memo.hh>
+#include <nirvana/Nirvana.hh>
+#include <client/Camera.hh>
+#include <client/ui/Style.hh>
 
 namespace oz
 {
@@ -39,8 +37,7 @@ namespace client
 namespace ui
 {
 
-using namespace oz::nirvana;
-using oz::nirvana::nirvana;
+using nirvana::nirvana;
 
 void InfoFrame::onVisibilityChange( bool )
 {

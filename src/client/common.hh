@@ -23,9 +23,9 @@
 
 #pragma once
 
-#include "matrix/Collider.hh"
-#include "nirvana/common.hh"
-#include "modules/common.hh"
+#include <matrix/Collider.hh>
+#include <nirvana/common.hh>
+#include <modules/common.hh>
 
 namespace oz
 {
@@ -35,7 +35,7 @@ namespace client
 using namespace common;
 using namespace matrix;
 using namespace nirvana;
-using namespace module;
+using namespace modules;
 
 struct TexCoord
 {

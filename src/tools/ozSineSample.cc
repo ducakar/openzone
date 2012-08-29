@@ -23,7 +23,7 @@
  * Generate sine wave sample, used for `src/oz/bellSample.hh`.
  */
 
-#include "oz/oz.hh"
+#include <oz/oz.hh>
 
 #include <climits>
 #include <cstdlib>

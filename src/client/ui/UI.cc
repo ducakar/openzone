@@ -21,26 +21,25 @@
  * @file client/ui/UI.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/UI.hh>
 
-#include "client/ui/UI.hh"
-
-#include "client/Camera.hh"
-#include "client/Context.hh"
-#include "client/Shape.hh"
-#include "client/OpenGL.hh"
-
-#include "client/ui/Style.hh"
-#include "client/ui/LoadingArea.hh"
-#include "client/ui/SelectionArea.hh"
-#include "client/ui/HudArea.hh"
-#include "client/ui/QuestFrame.hh"
-#include "client/ui/GalileoFrame.hh"
-#include "client/ui/MusicPlayer.hh"
-#include "client/ui/Inventory.hh"
-#include "client/ui/InfoFrame.hh"
-#include "client/ui/BuildMenu.hh"
-#include "client/ui/DebugFrame.hh"
+#include <common/Timer.hh>
+#include <client/Camera.hh>
+#include <client/Context.hh>
+#include <client/Shape.hh>
+#include <client/OpenGL.hh>
+#include <client/ui/Style.hh>
+#include <client/ui/LoadingArea.hh>
+#include <client/ui/SelectionArea.hh>
+#include <client/ui/HudArea.hh>
+#include <client/ui/QuestFrame.hh>
+#include <client/ui/GalileoFrame.hh>
+#include <client/ui/MusicPlayer.hh>
+#include <client/ui/Inventory.hh>
+#include <client/ui/InfoFrame.hh>
+#include <client/ui/BuildMenu.hh>
+#include <client/ui/DebugFrame.hh>
 
 namespace oz
 {

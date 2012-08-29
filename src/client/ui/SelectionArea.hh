@@ -26,8 +26,8 @@
 
 #pragma once
 
-#include "client/ui/Area.hh"
-#include "client/ui/Label.hh"
+#include <client/ui/Area.hh>
+#include <client/ui/Label.hh>
 
 namespace oz
 {

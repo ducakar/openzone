@@ -21,12 +21,11 @@
  * @file matrix/BotClass.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <matrix/BotClass.hh>
 
-#include "matrix/BotClass.hh"
-
-#include "matrix/Library.hh"
-#include "matrix/Bot.hh"
+#include <matrix/Library.hh>
+#include <matrix/Bot.hh>
 
 namespace oz
 {

@@ -21,13 +21,12 @@
  * @file client/MD2WeaponImago.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/MD2WeaponImago.hh>
 
-#include "client/MD2WeaponImago.hh"
-
-#include "client/Camera.hh"
-#include "client/Context.hh"
-#include "client/OpenGL.hh"
+#include <client/Camera.hh>
+#include <client/Context.hh>
+#include <client/OpenGL.hh>
 
 namespace oz
 {

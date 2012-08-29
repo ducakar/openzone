@@ -23,14 +23,13 @@
  * Shader utilities.
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/Shader.hh>
 
-#include "client/Shader.hh"
+#include <matrix/Library.hh>
 
-#include "matrix/Library.hh"
-
-#include "client/Camera.hh"
-#include "client/OpenGL.hh"
+#include <client/Camera.hh>
+#include <client/OpenGL.hh>
 
 #define OZ_REGISTER_PARAMETER( paramVar, uniformName ) \
   programs[id].param.paramVar = glGetUniformLocation( programs[id].program, uniformName )

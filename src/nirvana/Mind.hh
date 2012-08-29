@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "nirvana/common.hh"
+#include <nirvana/common.hh>
 
 namespace oz
 {

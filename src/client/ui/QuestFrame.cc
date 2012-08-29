@@ -21,13 +21,12 @@
  * @file client/ui/QuestFrame.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/QuestFrame.hh>
 
-#include "client/ui/QuestFrame.hh"
+#include <client/Camera.hh>
 
-#include "client/Camera.hh"
-
-#include "client/ui/Style.hh"
+#include <client/ui/Style.hh>
 
 namespace oz
 {

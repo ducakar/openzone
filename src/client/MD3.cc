@@ -21,12 +21,11 @@
  * @file client/MD3.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/MD3.hh>
 
-#include "client/MD3.hh"
-
-#include "client/Context.hh"
-#include "client/OpenGL.hh"
+#include <client/Context.hh>
+#include <client/OpenGL.hh>
 
 namespace oz
 {

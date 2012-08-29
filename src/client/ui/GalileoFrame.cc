@@ -21,17 +21,16 @@
  * @file client/ui/GalileoFrame.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/GalileoFrame.hh>
 
-#include "client/ui/GalileoFrame.hh"
+#include <client/Shape.hh>
+#include <client/Camera.hh>
+#include <client/Context.hh>
+#include <client/QuestList.hh>
+#include <client/OpenGL.hh>
 
-#include "client/Shape.hh"
-#include "client/Camera.hh"
-#include "client/Context.hh"
-#include "client/QuestList.hh"
-#include "client/OpenGL.hh"
-
-#include "client/ui/Style.hh"
+#include <client/ui/Style.hh>
 
 namespace oz
 {

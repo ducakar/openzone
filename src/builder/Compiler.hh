@@ -23,9 +23,9 @@
 
 #pragma once
 
-#include "builder/common.hh"
+#include <builder/common.hh>
 
-#include "client/Mesh.hh"
+#include <client/Mesh.hh>
 
 namespace oz
 {

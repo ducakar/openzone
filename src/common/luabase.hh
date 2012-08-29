@@ -39,7 +39,7 @@
 
 #pragma once
 
-#include "common/common.hh"
+#include <common/common.hh>
 
 #include <lua.hpp>
 

@@ -21,16 +21,15 @@
  * @file client/StrategicProxy.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/StrategicProxy.hh>
 
-#include "client/StrategicProxy.hh"
-
-#include "client/Camera.hh"
-#include "client/Input.hh"
-
-#include "client/ui/SelectionArea.hh"
-#include "client/ui/GalileoFrame.hh"
-#include "client/ui/UI.hh"
+#include <common/Timer.hh>
+#include <client/Camera.hh>
+#include <client/Input.hh>
+#include <client/ui/SelectionArea.hh>
+#include <client/ui/GalileoFrame.hh>
+#include <client/ui/UI.hh>
 
 namespace oz
 {

@@ -21,22 +21,21 @@
  * @file modules/flora/FloraModule.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <modules/flora/FloraModule.hh>
 
-#include "modules/flora/FloraModule.hh"
+#include <matrix/Library.hh>
+#include <matrix/Synapse.hh>
 
-#include "matrix/Library.hh"
-#include "matrix/Synapse.hh"
+#include <client/Lua.hh>
 
-#include "client/Lua.hh"
-
-#include "common/luabase.hh"
+#include <common/luabase.hh>
 
 using namespace oz::client;
 
 namespace oz
 {
-namespace module
+namespace modules
 {
 
 // plants/m2

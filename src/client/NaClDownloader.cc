@@ -23,11 +23,10 @@
 
 #ifdef __native_client__
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/NaClDownloader.hh>
 
-#include "client/NaClDownloader.hh"
-
-#include "client/NaCl.hh"
+#include <client/NaCl.hh>
 
 #include <ppapi/cpp/completion_callback.h>
 #include <ppapi/cpp/url_request_info.h>

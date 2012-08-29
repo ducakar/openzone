@@ -21,13 +21,12 @@
  * @file builder/UI.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <builder/UI.hh>
 
-#include "builder/UI.hh"
+#include <client/ui/Mouse.hh>
 
-#include "client/ui/Mouse.hh"
-
-#include "builder/Context.hh"
+#include <builder/Context.hh>
 
 namespace oz
 {

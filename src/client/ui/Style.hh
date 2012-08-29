@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "client/ui/Font.hh"
+#include <client/ui/Font.hh>
 
 namespace oz
 {

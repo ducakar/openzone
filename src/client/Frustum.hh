@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "client/Camera.hh"
+#include <client/Camera.hh>
 
 namespace oz
 {

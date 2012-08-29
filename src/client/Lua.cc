@@ -23,13 +23,10 @@
  * Lua scripting engine for client
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/Lua.hh>
 
-#include "client/Lua.hh"
-
-#include "client/luaapi.hh"
-
-using namespace oz::nirvana;
+#include <client/luaapi.hh>
 
 namespace oz
 {

@@ -23,8 +23,8 @@
 
 #pragma once
 
-#include "matrix/Object.hh"
-#include "matrix/DynamicClass.hh"
+#include <matrix/Object.hh>
+#include <matrix/DynamicClass.hh>
 
 namespace oz
 {

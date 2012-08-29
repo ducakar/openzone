@@ -26,11 +26,11 @@
  * Platform-specific main function implementation.
  */
 
-#include "main.hh"
+#include <main.hh>
 
 #ifdef __native_client__
 
-#include "client/Window.hh"
+#include <client/Window.hh>
 
 #include <ppapi/gles2/gl2ext_ppapi.h>
 #include <GLES2/gl2.h>

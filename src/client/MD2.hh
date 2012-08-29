@@ -23,9 +23,9 @@
 
 #pragma once
 
-#include "matrix/Bot.hh"
+#include <matrix/Bot.hh>
 
-#include "client/Mesh.hh"
+#include <client/Mesh.hh>
 
 namespace oz
 {

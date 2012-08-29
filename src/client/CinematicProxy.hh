@@ -23,8 +23,9 @@
 
 #pragma once
 
-#include "client/Proxy.hh"
-#include "client/ui/CinematicText.hh"
+#include <common/Lingua.hh>
+#include <client/Proxy.hh>
+#include <client/ui/CinematicText.hh>
 
 namespace oz
 {

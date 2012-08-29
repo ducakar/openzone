@@ -25,9 +25,8 @@
 
 #pragma once
 
-#include "common/Lua.hh"
-
-#include "nirvana/common.hh"
+#include <common/Lua.hh>
+#include <nirvana/common.hh>
 
 namespace oz
 {

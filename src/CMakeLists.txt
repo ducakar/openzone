@@ -11,9 +11,8 @@ include_directories( . )
 add_subdirectory( oz )
 add_subdirectory( unittest )
 
-add_subdirectory( common )
-
 add_pch( pch stable.hh stable.cc )
+add_subdirectory( common )
 
 add_subdirectory( matrix )
 add_subdirectory( nirvana )

@@ -32,7 +32,7 @@
 
 #include <stdlib.h>
 
-#define PARSE_EXCEPTION( charBias, message ) \
+#define OZ_PARSE_ERROR( charBias, message ) \
   OZ_ERROR( "JSON: " message " at %s:%d:%d", pos.path, pos.line, pos.column + ( charBias ) );
 
 namespace oz
@@ -158,7 +158,7 @@ char JSON::Parser::Position::readChar()
 {
   if( !istream->isAvailable() ) {
     const Position& pos = *this;
-    PARSE_EXCEPTION( 0, "Unexpected end of file" );
+    OZ_PARSE_ERROR( 0, "Unexpected end of file" );
   }
 
   char ch = istream->readChar();
@@ -187,7 +187,13 @@ void JSON::Parser::setAccessed( JSON* value )
   value->wasAccessed = true;
 
   switch( value->valueType ) {
-    default: {
+#ifdef OZ_GCC
+    default: // HACK Make GCC happy.
+#endif
+    case NIL:
+    case BOOLEAN:
+    case NUMBER:
+    case STRING: {
       break;
     }
     case ARRAY: {
@@ -277,7 +283,7 @@ String JSON::Parser::parseString()
   while( pos.isAvailable() );
 
   if( ch != '"' ) {
-    PARSE_EXCEPTION( 0, "End of file while looking for end of string (Is ending \" missing?)" );
+    OZ_PARSE_ERROR( 0, "End of file while looking for end of string (Is ending \" missing?)" );
   }
   chars.add( '\0' );
 
@@ -294,7 +300,7 @@ JSON JSON::Parser::parseValue()
       if( pos.available() < 3 || pos.readChar() != 'u' || pos.readChar() != 'l' ||
           pos.readChar() != 'l' )
       {
-        PARSE_EXCEPTION( -3, "Unknown value type" );
+        OZ_PARSE_ERROR( -3, "Unknown value type" );
       }
 
       return JSON( null, NIL );
@@ -303,7 +309,7 @@ JSON JSON::Parser::parseValue()
       if( pos.available() < 4 || pos.readChar() != 'a' || pos.readChar() != 'l' ||
           pos.readChar() != 's' || pos.readChar() != 'e' )
       {
-        PARSE_EXCEPTION( -4, "Unknown value type" );
+        OZ_PARSE_ERROR( -4, "Unknown value type" );
       }
 
       return JSON( new BooleanData( false ), BOOLEAN );
@@ -312,7 +318,7 @@ JSON JSON::Parser::parseValue()
       if( pos.available() < 4 || pos.readChar() != 'r' || pos.readChar() != 'u' ||
           pos.readChar() != 'e' )
       {
-        PARSE_EXCEPTION( -3, "Unknown value type" );
+        OZ_PARSE_ERROR( -3, "Unknown value type" );
       }
 
       return JSON( new BooleanData( true ), BOOLEAN );
@@ -336,7 +342,7 @@ JSON JSON::Parser::parseValue()
       double number = strtod( chars, &end );
 
       if( end != &chars.last() ) {
-        PARSE_EXCEPTION( -chars.length(), "Unknown value type" );
+        OZ_PARSE_ERROR( -chars.length(), "Unknown value type" );
       }
 
       return JSON( new NumberData( number ), NUMBER );
@@ -371,7 +377,7 @@ JSON JSON::Parser::parseArray()
     ch = skipBlanks();
 
     if( ch != ',' && ch != ']' ) {
-      PARSE_EXCEPTION( 0, "Expected ',' or ']' while parsing array (Is ',' is missing?)" );
+      OZ_PARSE_ERROR( 0, "Expected ',' or ']' while parsing array (Is ',' is missing?)" );
     }
   }
 
@@ -392,14 +398,14 @@ JSON JSON::Parser::parseObject()
   while( ch != '}' ) {
     ch = skipBlanks();
     if( ch != '"' ) {
-      PARSE_EXCEPTION( 0, "Expected key while parsing object (Is there ',' after last entry?)" );
+      OZ_PARSE_ERROR( 0, "Expected key while parsing object (Is there ',' after last entry?)" );
     }
 
     String key = parseString();
 
     ch = skipBlanks();
     if( ch != ':' ) {
-      PARSE_EXCEPTION( 0, "Expected ':' after key in object entry" );
+      OZ_PARSE_ERROR( 0, "Expected ':' after key in object entry" );
     }
 
     JSON value = parseValue();
@@ -413,7 +419,7 @@ JSON JSON::Parser::parseObject()
     ch = skipBlanks();
 
     if( ch != ',' && ch != '}' ) {
-      PARSE_EXCEPTION( 0, "Expected ',' or '}' while parsing object entry" );
+      OZ_PARSE_ERROR( 0, "Expected ',' or '}' while parsing object entry" );
     }
   }
 
@@ -427,7 +433,7 @@ void JSON::Parser::finish()
     char ch = pos.readChar();
 
     if( !String::isBlank( ch ) ) {
-      PARSE_EXCEPTION( 0, "End of file expected but some content found after" );
+      OZ_PARSE_ERROR( 0, "End of file expected but some content found after" );
     }
   }
 }
@@ -710,7 +716,13 @@ JSON& JSON::operator = ( JSON&& v )
 int JSON::length() const
 {
   switch( valueType ) {
-    default: {
+#ifdef OZ_GCC
+    default: // HACK Make GCC happy.
+#endif
+    case NIL:
+    case BOOLEAN:
+    case NUMBER:
+    case STRING: {
       return -1;
     }
     case ARRAY: {

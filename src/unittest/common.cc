@@ -24,7 +24,7 @@
  * @file unittest/common.cc
  */
 
-#include "unittest/unittest.hh"
+#include <unittest/unittest.hh>
 
 using namespace oz;
 

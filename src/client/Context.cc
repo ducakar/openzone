@@ -21,23 +21,22 @@
  * @file client/Context.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/Context.hh>
 
-#include "client/Context.hh"
+#include <client/SMMImago.hh>
+#include <client/SMMVehicleImago.hh>
+#include <client/ExplosionImago.hh>
+#include <client/MD2Imago.hh>
+#include <client/MD2WeaponImago.hh>
+#include <client/MD3Imago.hh>
 
-#include "client/SMMImago.hh"
-#include "client/SMMVehicleImago.hh"
-#include "client/ExplosionImago.hh"
-#include "client/MD2Imago.hh"
-#include "client/MD2WeaponImago.hh"
-#include "client/MD3Imago.hh"
+#include <client/BasicAudio.hh>
+#include <client/BotAudio.hh>
+#include <client/VehicleAudio.hh>
 
-#include "client/BasicAudio.hh"
-#include "client/BotAudio.hh"
-#include "client/VehicleAudio.hh"
-
-#include "client/OpenGL.hh"
-#include "client/OpenAL.hh"
+#include <client/OpenGL.hh>
+#include <client/OpenAL.hh>
 #include <espeak/speak_lib.h>
 
 #define OZ_REGISTER_IMAGOCLASS( name ) \

@@ -23,9 +23,9 @@
 
 #pragma once
 
-#include "client/Stage.hh"
+#include <client/Stage.hh>
 
-#include "client/ui/MainMenu.hh"
+#include <client/ui/MainMenu.hh>
 
 namespace oz
 {

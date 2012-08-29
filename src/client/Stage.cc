@@ -21,9 +21,8 @@
  * @file client/Stage.cc
  */
 
-#include "stable.hh"
-
-#include "client/Stage.hh"
+#include <stable.hh>
+#include <client/Stage.hh>
 
 namespace oz
 {

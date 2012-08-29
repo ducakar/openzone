@@ -25,12 +25,11 @@
  * Common model format that all simple models are compiled to.
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/SMM.hh>
 
-#include "client/SMM.hh"
-
-#include "client/Context.hh"
-#include "client/OpenGL.hh"
+#include <client/Context.hh>
+#include <client/OpenGL.hh>
 
 namespace oz
 {

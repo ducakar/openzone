@@ -21,16 +21,15 @@
  * @file client/MenuStage.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/MenuStage.hh>
 
-#include "client/MenuStage.hh"
-
-#include "client/Camera.hh"
-#include "client/Render.hh"
-#include "client/Sound.hh"
-#include "client/GameStage.hh"
-#include "client/Input.hh"
-#include "client/NaCl.hh"
+#include <client/Camera.hh>
+#include <client/Render.hh>
+#include <client/Sound.hh>
+#include <client/GameStage.hh>
+#include <client/Input.hh>
+#include <client/NaCl.hh>
 
 namespace oz
 {

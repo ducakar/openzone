@@ -21,14 +21,13 @@
  * @file client/FragPool.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/FragPool.hh>
 
-#include "client/FragPool.hh"
-
-#include "client/Shader.hh"
-#include "client/Context.hh"
-#include "client/SMM.hh"
-#include "client/OpenGL.hh"
+#include <client/Shader.hh>
+#include <client/Context.hh>
+#include <client/SMM.hh>
+#include <client/OpenGL.hh>
 
 namespace oz
 {

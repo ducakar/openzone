@@ -23,12 +23,11 @@
 
 #ifdef __native_client__
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/NaClUpdater.hh>
 
-#include "client/NaClUpdater.hh"
-
-#include "client/NaCl.hh"
-#include "client/NaClDownloader.hh"
+#include <client/NaCl.hh>
+#include <client/NaClDownloader.hh>
 
 namespace oz
 {

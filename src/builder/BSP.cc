@@ -21,11 +21,11 @@
  * @file builder/BSP.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <builder/BSP.hh>
 
-#include "builder/BSP.hh"
-
-#include "builder/Context.hh"
+#include <common/Timer.hh>
+#include <builder/Context.hh>
 
 namespace oz
 {

@@ -25,9 +25,8 @@
 
 #pragma once
 
-#include "common/Lua.hh"
-
-#include "matrix/Object.hh"
+#include <common/Lua.hh>
+#include <matrix/Object.hh>
 
 namespace oz
 {

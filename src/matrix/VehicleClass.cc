@@ -21,11 +21,11 @@
  * @file matrix/VehicleClass.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <matrix/VehicleClass.hh>
 
-#include "matrix/VehicleClass.hh"
-
-#include "matrix/Vehicle.hh"
+#include <common/Lingua.hh>
+#include <matrix/Vehicle.hh>
 
 namespace oz
 {

@@ -21,18 +21,17 @@
  * @file client/ui/Mouse.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/Mouse.hh>
 
-#include "client/ui/Mouse.hh"
+#include <client/Shape.hh>
+#include <client/Camera.hh>
+#include <client/Context.hh>
+#include <client/Window.hh>
+#include <client/Input.hh>
+#include <client/OpenGL.hh>
 
-#include "client/Shape.hh"
-#include "client/Camera.hh"
-#include "client/Context.hh"
-#include "client/Window.hh"
-#include "client/Input.hh"
-#include "client/OpenGL.hh"
-
-#include "client/ui/Area.hh"
+#include <client/ui/Area.hh>
 
 namespace oz
 {

@@ -21,12 +21,11 @@
  * @file client/ui/Font.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/Font.hh>
 
-#include "client/ui/Font.hh"
-
-#include "client/Shader.hh"
-#include "client/OpenGL.hh"
+#include <client/Shader.hh>
+#include <client/OpenGL.hh>
 
 #include <SDL_ttf.h>
 

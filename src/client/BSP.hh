@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "client/Mesh.hh"
+#include <client/Mesh.hh>
 
 namespace oz
 {
@@ -50,8 +50,9 @@ class BSP
 
   public:
 
-    explicit BSP( const matrix::BSP* bsp );
     ~BSP();
+
+    explicit BSP( const matrix::BSP* bsp );
 
     void preload();
     void load();

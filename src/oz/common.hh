@@ -266,7 +266,7 @@ template <typename Value>
 OZ_ALWAYS_INLINE
 inline Value abs( const Value& a )
 {
-  return a < 0 ? -a : +a;
+  return a < 0 ? -a : a;
 }
 
 /**

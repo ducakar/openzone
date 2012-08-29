@@ -23,8 +23,8 @@
 
 #pragma once
 
-#include "client/ui/Area.hh"
-#include "client/ui/Text.hh"
+#include <client/ui/Area.hh>
+#include <client/ui/Text.hh>
 
 namespace oz
 {

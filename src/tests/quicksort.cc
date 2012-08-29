@@ -21,7 +21,7 @@
  * @file tests/quicksort.cc
  */
 
-#include "oz/oz.hh"
+#include <oz/oz.hh>
 
 #include <cstdlib>
 #include <cstdio>

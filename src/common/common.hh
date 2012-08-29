@@ -25,13 +25,9 @@
 
 #pragma once
 
-#include "oz/oz.hh"
+#include <oz/oz.hh>
 
-#include "configuration.hh"
-
-#include "common/Span.hh"
-#include "common/Timer.hh"
-#include "common/Lingua.hh"
+#include <configuration.hh>
 
 #ifdef _WIN32
 # include <windows.h>
@@ -102,6 +98,17 @@ inline float angleDiff( float x, float y )
 {
   return Math::fmod( x - y + 1.5f*Math::TAU, Math::TAU ) - 0.5f*Math::TAU;
 }
+
+/**
+ * 2D integer span.
+ */
+struct Span
+{
+  int minX; ///< Minimum X.
+  int minY; ///< Minimum Y.
+  int maxX; ///< Maximum X.
+  int maxY; ///< Maximum Y.
+};
 
 }
 }

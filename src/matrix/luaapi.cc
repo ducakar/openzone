@@ -21,10 +21,11 @@
  * @file matrix/luaapi.cc
  */
 
-#include "common/luabase.hh"
+#include <stable.hh>
 
-#include "matrix/Orbis.hh"
-#include "matrix/Vehicle.hh"
+#include <common/luabase.hh>
+#include <matrix/Orbis.hh>
+#include <matrix/Vehicle.hh>
 
 namespace oz
 {

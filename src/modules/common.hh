@@ -23,11 +23,16 @@
 
 #pragma once
 
-#include "common/common.hh"
+#include <nirvana/common.hh>
 
 namespace oz
 {
-namespace module
+namespace modules
 {
+
+using namespace common;
+using namespace matrix;
+using namespace nirvana;
+
 }
 }

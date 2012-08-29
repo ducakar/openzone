@@ -23,8 +23,8 @@
 
 #pragma once
 
-#include "matrix/Bot.hh"
-#include "matrix/VehicleClass.hh"
+#include <matrix/Bot.hh>
+#include <matrix/VehicleClass.hh>
 
 namespace oz
 {

@@ -21,11 +21,10 @@
  * @file client/QuestList.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/QuestList.hh>
 
-#include "client/QuestList.hh"
-
-#include "client/ui/UI.hh"
+#include <client/ui/UI.hh>
 
 namespace oz
 {

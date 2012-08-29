@@ -23,25 +23,24 @@
  * Game initialisation and main loop.
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/Client.hh>
 
-#include "client/Client.hh"
+#include <BuildInfo.hh>
 
-#include "BuildInfo.hh"
-
-#include "common/Lua.hh"
-
-#include "client/Camera.hh"
-#include "client/MenuStage.hh"
-#include "client/GameStage.hh"
-#include "client/Sound.hh"
-#include "client/Render.hh"
-#include "client/Loader.hh"
-#include "client/NaCl.hh"
-#include "client/NaClUpdater.hh"
-#include "client/Window.hh"
-#include "client/Input.hh"
-#include "client/Network.hh"
+#include <common/Timer.hh>
+#include <common/Lua.hh>
+#include <client/Camera.hh>
+#include <client/MenuStage.hh>
+#include <client/GameStage.hh>
+#include <client/Sound.hh>
+#include <client/Render.hh>
+#include <client/Loader.hh>
+#include <client/NaCl.hh>
+#include <client/NaClUpdater.hh>
+#include <client/Window.hh>
+#include <client/Input.hh>
+#include <client/Network.hh>
 
 #include <clocale>
 #include <unistd.h>

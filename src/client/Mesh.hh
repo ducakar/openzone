@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "client/Shader.hh"
+#include <client/Shader.hh>
 
 namespace oz
 {

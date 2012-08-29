@@ -21,8 +21,8 @@
  * @file tests/nacl.cc
  */
 
-#include "oz/oz.hh"
-#include "main.hh"
+#include <oz/oz.hh>
+#include <main.hh>
 
 #include <ppapi/cpp/fullscreen.h>
 #include <ppapi/cpp/input_event.h>

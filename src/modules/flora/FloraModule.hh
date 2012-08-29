@@ -23,13 +23,13 @@
 
 #pragma once
 
-#include "common/Lua.hh"
+#include <common/Lua.hh>
 
-#include "modules/Module.hh"
+#include <modules/Module.hh>
 
 namespace oz
 {
-namespace module
+namespace modules
 {
 
 class FloraModule : public Module

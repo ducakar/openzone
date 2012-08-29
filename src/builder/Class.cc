@@ -21,13 +21,13 @@
  * @file builder/Class.cc
  */
 
-#include "builder/Class.hh"
+#include <stable.hh>
+#include <builder/Class.hh>
 
-#include "matrix/Vehicle.hh"
-
-#include "client/Camera.hh"
-
-#include "builder/Context.hh"
+#include <common/Timer.hh>
+#include <matrix/Vehicle.hh>
+#include <client/Camera.hh>
+#include <builder/Context.hh>
 
 #define SET_ATTRIB( attribBit, varName, defValue ) \
   if( config[varName].get( defValue ) ) { \

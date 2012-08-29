@@ -21,20 +21,19 @@
  * @file builder/Context.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <builder/Context.hh>
 
-#include "builder/Context.hh"
+#include <client/SMMImago.hh>
+#include <client/SMMVehicleImago.hh>
+#include <client/ExplosionImago.hh>
+#include <client/MD2Imago.hh>
+#include <client/MD2WeaponImago.hh>
+#include <client/MD3Imago.hh>
 
-#include "client/SMMImago.hh"
-#include "client/SMMVehicleImago.hh"
-#include "client/ExplosionImago.hh"
-#include "client/MD2Imago.hh"
-#include "client/MD2WeaponImago.hh"
-#include "client/MD3Imago.hh"
-
-#include "client/BasicAudio.hh"
-#include "client/BotAudio.hh"
-#include "client/VehicleAudio.hh"
+#include <client/BasicAudio.hh>
+#include <client/BotAudio.hh>
+#include <client/VehicleAudio.hh>
 
 #include <FreeImage.h>
 #ifdef OZ_NONFREE

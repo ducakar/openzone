@@ -21,12 +21,11 @@
  * @file matrix/FragPool.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <matrix/FragPool.hh>
 
-#include "matrix/FragPool.hh"
-
-#include "matrix/Frag.hh"
-#include "matrix/Library.hh"
+#include <matrix/Frag.hh>
+#include <matrix/Library.hh>
 
 namespace oz
 {

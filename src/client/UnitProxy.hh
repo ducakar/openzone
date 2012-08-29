@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "client/Proxy.hh"
+#include <client/Proxy.hh>
 
 namespace oz
 {

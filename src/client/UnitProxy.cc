@@ -21,19 +21,18 @@
  * @file client/UnitProxy.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/UnitProxy.hh>
 
-#include "client/UnitProxy.hh"
-
-#include "client/Camera.hh"
-#include "client/Input.hh"
-
-#include "client/ui/HudArea.hh"
-#include "client/ui/Inventory.hh"
-#include "client/ui/InfoFrame.hh"
-#include "client/ui/GalileoFrame.hh"
-#include "client/ui/MusicPlayer.hh"
-#include "client/ui/UI.hh"
+#include <common/Timer.hh>
+#include <client/Camera.hh>
+#include <client/Input.hh>
+#include <client/ui/HudArea.hh>
+#include <client/ui/Inventory.hh>
+#include <client/ui/InfoFrame.hh>
+#include <client/ui/GalileoFrame.hh>
+#include <client/ui/MusicPlayer.hh>
+#include <client/ui/UI.hh>
 
 namespace oz
 {

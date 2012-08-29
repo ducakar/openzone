@@ -21,14 +21,13 @@
  * @file client/ui/LoadingArea.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/LoadingArea.hh>
 
-#include "client/ui/LoadingArea.hh"
+#include <client/Shape.hh>
+#include <client/Camera.hh>
 
-#include "client/Shape.hh"
-#include "client/Camera.hh"
-
-#include "client/ui/Style.hh"
+#include <client/ui/Style.hh>
 
 namespace oz
 {

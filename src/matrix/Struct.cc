@@ -21,13 +21,13 @@
  * @file matrix/Struct.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <matrix/Struct.hh>
 
-#include "matrix/Struct.hh"
-
-#include "matrix/Collider.hh"
-#include "matrix/Synapse.hh"
-#include "matrix/Bot.hh"
+#include <common/Timer.hh>
+#include <matrix/Collider.hh>
+#include <matrix/Synapse.hh>
+#include <matrix/Bot.hh>
 
 namespace oz
 {

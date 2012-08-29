@@ -21,18 +21,17 @@
  * @file client/ui/HudArea.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/HudArea.hh>
 
-#include "client/ui/HudArea.hh"
+#include <matrix/Physics.hh>
 
-#include "matrix/Physics.hh"
+#include <client/Shape.hh>
+#include <client/Camera.hh>
+#include <client/Context.hh>
+#include <client/OpenGL.hh>
 
-#include "client/Shape.hh"
-#include "client/Camera.hh"
-#include "client/Context.hh"
-#include "client/OpenGL.hh"
-
-#include "client/ui/Style.hh"
+#include <client/ui/Style.hh>
 
 namespace oz
 {

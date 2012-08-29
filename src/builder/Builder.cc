@@ -21,24 +21,23 @@
  * @file builder/Builder.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <builder/Builder.hh>
 
-#include "builder/Builder.hh"
+#include <BuildInfo.hh>
 
-#include "BuildInfo.hh"
-
-#include "builder/Lingua.hh"
-#include "builder/Context.hh"
-#include "builder/Compiler.hh"
-#include "builder/UI.hh"
-#include "builder/Caelum.hh"
-#include "builder/Terra.hh"
-#include "builder/BSP.hh"
-#include "builder/Class.hh"
-#include "builder/FragPool.hh"
-#include "builder/OBJ.hh"
-#include "builder/MD2.hh"
-#include "builder/MD3.hh"
+#include <builder/Lingua.hh>
+#include <builder/Context.hh>
+#include <builder/Compiler.hh>
+#include <builder/UI.hh>
+#include <builder/Caelum.hh>
+#include <builder/Terra.hh>
+#include <builder/BSP.hh>
+#include <builder/Class.hh>
+#include <builder/FragPool.hh>
+#include <builder/OBJ.hh>
+#include <builder/MD2.hh>
+#include <builder/MD3.hh>
 
 #include <unistd.h>
 

@@ -23,9 +23,9 @@
 
 #pragma once
 
-#include "client/Imago.hh"
+#include <client/Imago.hh>
 
-#include "client/ui/UI.hh"
+#include <client/ui/UI.hh>
 
 namespace oz
 {

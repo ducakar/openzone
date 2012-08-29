@@ -21,9 +21,10 @@
  * @file builder/FragPool.cc
  */
 
-#include "builder/FragPool.hh"
+#include <stable.hh>
+#include <builder/FragPool.hh>
 
-#include "builder/Context.hh"
+#include <builder/Context.hh>
 
 #define SET_FLAG( flagBit, varName, defValue ) \
   if( config[varName].get( defValue ) ) { \

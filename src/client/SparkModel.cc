@@ -21,11 +21,10 @@
  * @file client/SparkModel.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/SparkModel.hh>
 
-#include "client/SparkModel.hh"
-
-#include "client/Frustum.hh"
+#include <client/Frustum.hh>
 
 namespace oz
 {

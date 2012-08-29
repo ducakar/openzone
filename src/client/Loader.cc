@@ -21,20 +21,19 @@
  * @file client/Loader.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/Loader.hh>
 
-#include "client/Loader.hh"
+#include <client/Camera.hh>
+#include <client/Context.hh>
+#include <client/Terra.hh>
+#include <client/Caelum.hh>
+#include <client/SMM.hh>
+#include <client/MD2.hh>
+#include <client/MD3.hh>
 
-#include "client/Camera.hh"
-#include "client/Context.hh"
-#include "client/Terra.hh"
-#include "client/Caelum.hh"
-#include "client/SMM.hh"
-#include "client/MD2.hh"
-#include "client/MD3.hh"
-
-#include "client/OpenGL.hh"
-#include "client/OpenAL.hh"
+#include <client/OpenGL.hh>
+#include <client/OpenAL.hh>
 
 namespace oz
 {

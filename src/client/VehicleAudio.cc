@@ -21,12 +21,11 @@
  * @file client/VehicleAudio.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/VehicleAudio.hh>
 
-#include "client/VehicleAudio.hh"
-
-#include "client/Camera.hh"
-#include "client/Context.hh"
+#include <client/Camera.hh>
+#include <client/Context.hh>
 
 namespace oz
 {

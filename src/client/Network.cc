@@ -21,9 +21,8 @@
  * @file client/Network.cc
  */
 
-#include "stable.hh"
-
-#include "client/Network.hh"
+#include <stable.hh>
+#include <client/Network.hh>
 
 #if 0
 # include <SDL_net.h>

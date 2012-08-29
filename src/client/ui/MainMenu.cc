@@ -21,23 +21,22 @@
  * @file client/ui/MainMenu.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/MainMenu.hh>
 
-#include "client/ui/MainMenu.hh"
+#include <BuildInfo.hh>
 
-#include "BuildInfo.hh"
+#include <client/Camera.hh>
+#include <client/Shape.hh>
+#include <client/GameStage.hh>
+#include <client/MenuStage.hh>
+#include <client/OpenGL.hh>
 
-#include "client/Camera.hh"
-#include "client/Shape.hh"
-#include "client/GameStage.hh"
-#include "client/MenuStage.hh"
-#include "client/OpenGL.hh"
-
-#include "client/ui/Style.hh"
-#include "client/ui/MissionMenu.hh"
-#include "client/ui/SettingsFrame.hh"
-#include "client/ui/CreditsMenu.hh"
-#include "client/ui/UI.hh"
+#include <client/ui/Style.hh>
+#include <client/ui/MissionMenu.hh>
+#include <client/ui/SettingsFrame.hh>
+#include <client/ui/CreditsMenu.hh>
+#include <client/ui/UI.hh>
 
 namespace oz
 {

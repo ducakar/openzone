@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "matrix/BSP.hh"
+#include <matrix/BSP.hh>
 
 namespace oz
 {

@@ -21,15 +21,14 @@
  * @file client/Camera.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/Camera.hh>
 
-#include "client/Camera.hh"
-
-#include "client/Window.hh"
-#include "client/Input.hh"
-
-#include "client/ui/Area.hh"
-#include "client/ui/UI.hh"
+#include <common/Timer.hh>
+#include <client/Window.hh>
+#include <client/Input.hh>
+#include <client/ui/Area.hh>
+#include <client/ui/UI.hh>
 
 namespace oz
 {

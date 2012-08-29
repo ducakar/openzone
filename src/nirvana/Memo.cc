@@ -21,9 +21,8 @@
  * @file nirvana/Memo.cc
  */
 
-#include "stable.hh"
-
-#include "nirvana/Memo.hh"
+#include <stable.hh>
+#include <nirvana/Memo.hh>
 
 namespace oz
 {

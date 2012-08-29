@@ -25,10 +25,10 @@
 
 #pragma once
 
-#include "matrix/luaapi.hh"
+#include <matrix/luaapi.hh>
 
-#include "nirvana/Memo.hh"
-#include "nirvana/Nirvana.hh"
+#include <nirvana/Memo.hh>
+#include <nirvana/Nirvana.hh>
 
 namespace oz
 {

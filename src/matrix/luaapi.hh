@@ -25,12 +25,11 @@
 
 #pragma once
 
-#include "common/luaapi.hh"
-
-#include "matrix/Library.hh"
-#include "matrix/Vehicle.hh"
-#include "matrix/Physics.hh"
-#include "matrix/Synapse.hh"
+#include <common/luaapi.hh>
+#include <matrix/Library.hh>
+#include <matrix/Vehicle.hh>
+#include <matrix/Physics.hh>
+#include <matrix/Synapse.hh>
 
 namespace oz
 {

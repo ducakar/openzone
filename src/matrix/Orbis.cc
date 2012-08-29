@@ -21,13 +21,12 @@
  * @file matrix/Orbis.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <matrix/Orbis.hh>
 
-#include "matrix/Orbis.hh"
-
-#include "matrix/Library.hh"
-#include "matrix/Lua.hh"
-#include "matrix/Vehicle.hh"
+#include <matrix/Library.hh>
+#include <matrix/Lua.hh>
+#include <matrix/Vehicle.hh>
 
 namespace oz
 {

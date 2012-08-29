@@ -21,11 +21,10 @@
  * @file matrix/NamePool.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <matrix/NamePool.hh>
 
-#include "matrix/NamePool.hh"
-
-#include "matrix/Library.hh"
+#include <matrix/Library.hh>
 
 namespace oz
 {

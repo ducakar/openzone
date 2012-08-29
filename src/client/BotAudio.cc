@@ -21,12 +21,11 @@
  * @file client/BotAudio.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/BotAudio.hh>
 
-#include "client/BotAudio.hh"
-
-#include "client/Context.hh"
-#include "client/Camera.hh"
+#include <client/Context.hh>
+#include <client/Camera.hh>
 
 namespace oz
 {
@@ -84,7 +83,9 @@ void BotAudio::play( const Audio* parent )
   }
 
   // footsteps
-  if( ( bot->state & Bot::MOVING_BIT ) && ( bot->p - camera.p ).sqN() < FOOTSTEP_DISTANCE_SQ ) {
+  if( ( bot->state & ( Bot::MOVING_BIT | Bot::CROUCHING_BIT ) ) == Bot::MOVING_BIT &&
+      ( bot->p - camera.p ).sqN() < FOOTSTEP_DISTANCE_SQ )
+  {
     if( bot->flags & Object::FRICTING_BIT ) {
       recent[Object::EVENT_FRICTING] = RECENT_TICKS;
     }

@@ -23,9 +23,9 @@
 
 #pragma once
 
-#include "matrix/Struct.hh"
-#include "matrix/Weapon.hh"
-#include "matrix/BotClass.hh"
+#include <matrix/Struct.hh>
+#include <matrix/Weapon.hh>
+#include <matrix/BotClass.hh>
 
 namespace oz
 {

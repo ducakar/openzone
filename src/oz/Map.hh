@@ -45,7 +45,7 @@ namespace oz
  *
  * Memory is allocated when the first element is added.
  */
-template <typename Key, typename Value>
+template <typename Key, typename Value = nil_t>
 class Map
 {
   private:

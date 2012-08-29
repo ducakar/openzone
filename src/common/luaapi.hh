@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include "common/luabase.hh"
+#include <common/luabase.hh>
 
 namespace oz
 {

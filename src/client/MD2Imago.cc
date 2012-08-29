@@ -21,13 +21,12 @@
  * @file client/MD2Imago.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/MD2Imago.hh>
 
-#include "client/MD2Imago.hh"
-
-#include "client/Context.hh"
-#include "client/Camera.hh"
-#include "client/OpenGL.hh"
+#include <client/Context.hh>
+#include <client/Camera.hh>
+#include <client/OpenGL.hh>
 
 namespace oz
 {

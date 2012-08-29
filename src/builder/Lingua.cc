@@ -17,9 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "stable.hh"
-
-#include "builder/Lingua.hh"
+#include <stable.hh>
+#include <builder/Lingua.hh>
 
 namespace oz
 {

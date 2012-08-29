@@ -21,19 +21,18 @@
  * @file client/ui/MissionMenu.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/MissionMenu.hh>
 
-#include "client/ui/MissionMenu.hh"
+#include <client/Camera.hh>
+#include <client/Shape.hh>
+#include <client/Context.hh>
+#include <client/GameStage.hh>
+#include <client/Input.hh>
+#include <client/OpenGL.hh>
+#include <client/NaCl.hh>
 
-#include "client/Camera.hh"
-#include "client/Shape.hh"
-#include "client/Context.hh"
-#include "client/GameStage.hh"
-#include "client/Input.hh"
-#include "client/OpenGL.hh"
-#include "client/NaCl.hh"
-
-#include "client/ui/Style.hh"
+#include <client/ui/Style.hh>
 
 namespace oz
 {

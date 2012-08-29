@@ -21,23 +21,22 @@
  * @file client/Render.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/Render.hh>
 
-#include "client/Render.hh"
+#include <client/Shape.hh>
+#include <client/Frustum.hh>
+#include <client/Caelum.hh>
+#include <client/Terra.hh>
+#include <client/Context.hh>
+#include <client/Window.hh>
 
-#include "client/Shape.hh"
-#include "client/Frustum.hh"
-#include "client/Caelum.hh"
-#include "client/Terra.hh"
-#include "client/Context.hh"
-#include "client/Window.hh"
+#include <client/SMMImago.hh>
+#include <client/SMMVehicleImago.hh>
+#include <client/ExplosionImago.hh>
+#include <client/MD2WeaponImago.hh>
 
-#include "client/SMMImago.hh"
-#include "client/SMMVehicleImago.hh"
-#include "client/ExplosionImago.hh"
-#include "client/MD2WeaponImago.hh"
-
-#include "client/OpenGL.hh"
+#include <client/OpenGL.hh>
 
 namespace oz
 {

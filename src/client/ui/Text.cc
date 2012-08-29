@@ -21,16 +21,15 @@
  * @file client/ui/Text.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/Text.hh>
 
-#include "client/ui/Text.hh"
+#include <client/Shader.hh>
+#include <client/Shape.hh>
+#include <client/OpenGL.hh>
 
-#include "client/Shader.hh"
-#include "client/Shape.hh"
-#include "client/OpenGL.hh"
-
-#include "client/ui/Style.hh"
-#include "client/ui/Area.hh"
+#include <client/ui/Style.hh>
+#include <client/ui/Area.hh>
 
 #ifdef _WIN32
 static char* strchrnul( const char* s, int c )

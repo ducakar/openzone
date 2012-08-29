@@ -23,9 +23,8 @@
 
 #ifdef __native_client__
 
-#include "stable.hh"
-
-#include "client/NaCl.hh"
+#include <stable.hh>
+#include <client/NaCl.hh>
 
 #include <ppapi/cpp/completion_callback.h>
 #include <ppapi/cpp/instance.h>

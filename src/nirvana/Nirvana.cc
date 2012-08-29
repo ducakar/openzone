@@ -21,16 +21,14 @@
  * @file nirvana/Nirvana.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <nirvana/Nirvana.hh>
 
-#include "nirvana/Nirvana.hh"
-
-#include "matrix/Synapse.hh"
-#include "matrix/Matrix.hh"
-#include "matrix/Bot.hh"
-
-#include "nirvana/Lua.hh"
-#include "nirvana/Memo.hh"
+#include <matrix/Synapse.hh>
+#include <matrix/Matrix.hh>
+#include <matrix/Bot.hh>
+#include <nirvana/Lua.hh>
+#include <nirvana/Memo.hh>
 
 #define OZ_REGISTER_DEVICE( name ) \
   deviceClasses.add( #name, &name::create )

@@ -21,15 +21,14 @@
  * @file client/ui/Button.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/ui/Button.hh>
 
-#include "client/ui/Button.hh"
+#include <client/Input.hh>
+#include <client/Shape.hh>
+#include <client/OpenGL.hh>
 
-#include "client/Input.hh"
-#include "client/Shape.hh"
-#include "client/OpenGL.hh"
-
-#include "client/ui/Style.hh"
+#include <client/ui/Style.hh>
 
 namespace oz
 {

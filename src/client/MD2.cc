@@ -21,12 +21,12 @@
  * @file client/MD2.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/MD2.hh>
 
-#include "client/MD2.hh"
-
-#include "client/Context.hh"
-#include "client/OpenGL.hh"
+#include <common/Timer.hh>
+#include <client/Context.hh>
+#include <client/OpenGL.hh>
 
 namespace oz
 {

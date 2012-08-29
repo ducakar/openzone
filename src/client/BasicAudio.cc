@@ -21,11 +21,10 @@
  * @file client/BasicAudio.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <client/BasicAudio.hh>
 
-#include "client/BasicAudio.hh"
-
-#include "client/Context.hh"
+#include <client/Context.hh>
 
 namespace oz
 {

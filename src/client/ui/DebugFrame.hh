@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "client/ui/Frame.hh"
+#include <client/ui/Frame.hh>
 
 namespace oz
 {

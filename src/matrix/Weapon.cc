@@ -21,13 +21,13 @@
  * @file matrix/Weapon.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <matrix/Weapon.hh>
 
-#include "matrix/Weapon.hh"
-
-#include "matrix/Bot.hh"
-#include "matrix/Lua.hh"
-#include "matrix/Synapse.hh"
+#include <common/Timer.hh>
+#include <matrix/Bot.hh>
+#include <matrix/Lua.hh>
+#include <matrix/Synapse.hh>
 
 namespace oz
 {

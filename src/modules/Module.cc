@@ -21,13 +21,12 @@
  * @file modules/Module.cc
  */
 
-#include "stable.hh"
-
-#include "modules/Module.hh"
+#include <stable.hh>
+#include <modules/Module.hh>
 
 namespace oz
 {
-namespace module
+namespace modules
 {
 
 Module::~Module()

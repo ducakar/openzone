@@ -21,12 +21,12 @@
  * @file matrix/BSP.cc
  */
 
-#include "stable.hh"
+#include <stable.hh>
+#include <matrix/BSP.hh>
 
-#include "matrix/BSP.hh"
-
-#include "matrix/Library.hh"
-#include "matrix/Collider.hh"
+#include <common/Lingua.hh>
+#include <matrix/Library.hh>
+#include <matrix/Collider.hh>
 
 namespace oz
 {

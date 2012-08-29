@@ -21,10 +21,11 @@
  * @file client/luaapi.cc
  */
 
-#include "common/luabase.hh"
+#include <stable.hh>
+#include <common/luabase.hh>
 
-#include "client/QuestList.hh"
-#include "client/Camera.hh"
+#include <client/QuestList.hh>
+#include <client/Camera.hh>
 
 namespace oz
 {

@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "matrix/common.hh"
+#include <matrix/common.hh>
 
 namespace oz
 {

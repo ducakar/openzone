@@ -23,8 +23,8 @@
 
 #pragma once
 
-#include "client/Imago.hh"
-#include "client/SMM.hh"
+#include <client/Imago.hh>
+#include <client/SMM.hh>
 
 namespace oz
 {

@@ -21,9 +21,8 @@
  * @file client/OpenAL.cc
  */
 
-#include "stable.hh"
-
-#include "client/OpenAL.hh"
+#include <stable.hh>
+#include <client/OpenAL.hh>
 
 namespace oz
 {
