@@ -46,7 +46,8 @@ int main()
   Array<int, 5> a;
   List<int> v;
   SList<int, 5> sv;
-  Map<int> m;
+  Set<int> s;
+  Map<int, nil_t> m;
   HashIndex<int, 7> hi;
   HashString<int, 7> hs;
 
@@ -55,7 +56,8 @@ int main()
   Array<int, 5> a1;
   List<int> v1;
   SList<int, 5> sv1;
-  Map<int> m1;
+  Set<int> s1;
+  Map<int, nil_t> m1;
   HashIndex<int, 7> hi1;
   HashString<int, 7> hs1;
 
@@ -65,6 +67,7 @@ int main()
   a[0] = 1;
   v.add( 1 );
   sv.add( 1 );
+  s.include( 1 );
   m.include( 1 );
   hi.add( 101, 1 );
   hs.add( "101", 1 );
@@ -75,6 +78,7 @@ int main()
   a[1] = 2;
   v.add( 2 );
   sv.add( 2 );
+  s.include( 2 );
   m.include( 2 );
   hi.add( 102, 2 );
   hs.add( "102", 2 );
@@ -85,6 +89,7 @@ int main()
   a[2] = 4;
   v.add( 4 );
   sv.add( 4 );
+  s.include( 4 );
   m.include( 4 );
   hi.add( 104, 4 );
   hs.add( "104", 4 );
@@ -95,6 +100,7 @@ int main()
   a[3] = 3;
   v.add( 3 );
   sv.add( 3 );
+  s.include( 3 );
   m.include( 3 );
   hi.add( 103, 3 );
   hs.add( "103", 3 );
@@ -105,6 +111,7 @@ int main()
   a[4] = 5;
   v.add( 5 );
   sv.add( 5 );
+  s.include( 5 );
   m.include( 5 );
   hi.add( 105, 5 );
   hs.add( "105", 5 );
@@ -114,6 +121,7 @@ int main()
   swap( a, a1 );
   swap( v, v1 );
   swap( sv, sv1 );
+  swap( s, s1 );
   swap( m, m1 );
   swap( hi, hi1 );
   swap( hs, hs1 );
@@ -123,11 +131,13 @@ int main()
   swap( a, a1 );
   swap( v, v1 );
   swap( sv, sv1 );
+  swap( s, s1 );
   swap( m, m1 );
   swap( hi, hi1 );
   swap( hs, hs1 );
 
   v1.dealloc();
+  s1.dealloc();
   m1.dealloc();
   hi1.dealloc();
   hs1.dealloc();
@@ -157,6 +167,10 @@ int main()
   }
   printf( "\n" );
 
+  foreach( i, s.citer() ) {
+    printf( "%d ", *i );
+  }
+  printf( "\n" );
   foreach( i, m.citer() ) {
     printf( "%d ", i->key );
   }
@@ -176,6 +190,8 @@ int main()
   dl.free();
   v.clear();
   v.dealloc();
+  s.clear();
+  s.dealloc();
   m.clear();
   m.dealloc();
   hi.clear();

@@ -129,7 +129,7 @@ class SBitset
     }
 
     /**
-     * Set the `i`-th bit to true.
+     * %Set the `i`-th bit to true.
      */
     OZ_ALWAYS_INLINE
     void set( int i )
@@ -140,7 +140,7 @@ class SBitset
     }
 
     /**
-     * Set the `i`-th bit to false.
+     * %Set the `i`-th bit to false.
      */
     OZ_ALWAYS_INLINE
     void clear( int i )
@@ -195,7 +195,7 @@ class SBitset
     }
 
     /**
-     * Set bits from inclusively start to non-inclusively end to true.
+     * %Set bits from inclusively start to non-inclusively end to true.
      */
     void set( int start, int end )
     {
@@ -224,7 +224,7 @@ class SBitset
     }
 
     /**
-     * Set bits from inclusively start to non-inclusively end to false.
+     * %Set bits from inclusively start to non-inclusively end to false.
      */
     void clear( int start, int end )
     {
@@ -253,7 +253,7 @@ class SBitset
     }
 
     /**
-     * Set all bits to true.
+     * %Set all bits to true.
      */
     void setAll()
     {
@@ -261,7 +261,7 @@ class SBitset
     }
 
     /**
-     * Set all bits to false.
+     * %Set all bits to false.
      */
     void clearAll()
     {

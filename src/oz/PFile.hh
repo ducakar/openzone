@@ -88,7 +88,7 @@ class PFile
     explicit PFile( const char* path );
 
     /**
-     * Set a new file path.
+     * %Set a new file path.
      */
     void setPath( const char* path );
 

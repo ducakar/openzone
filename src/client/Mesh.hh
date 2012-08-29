@@ -95,7 +95,7 @@ class Mesh
       {}
     };
 
-    static Map<Mesh*> loadedMeshes;
+    static Set<Mesh*> loadedMeshes;
 
     static Vertex*    vertexAnimBuffer;
     static int        vertexAnimBufferLength;

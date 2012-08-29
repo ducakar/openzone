@@ -65,7 +65,7 @@ void Texture::free()
   }
 }
 
-Map<Mesh*> Mesh::loadedMeshes;
+Set<Mesh*> Mesh::loadedMeshes;
 Vertex*    Mesh::vertexAnimBuffer       = null;
 int        Mesh::vertexAnimBufferLength = 0;
 
@@ -168,7 +168,7 @@ void Mesh::draw( const Instance* instance, int mask )
 void Mesh::drawScheduled( int mask )
 {
   foreach( i, loadedMeshes.iter() ) {
-    Mesh* mesh = i->key;
+    Mesh* mesh = *i;
 
     glBindBuffer( GL_ARRAY_BUFFER, mesh->vbo );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, mesh->ibo );
@@ -202,7 +202,7 @@ void Mesh::drawScheduled( int mask )
 void Mesh::clearScheduled()
 {
   foreach( i, loadedMeshes.iter() ) {
-    Mesh* mesh = i->key;
+    Mesh* mesh = *i;
 
     mesh->instances.clear();
   }

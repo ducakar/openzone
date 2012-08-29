@@ -55,6 +55,7 @@
 #include "DArray.hh"
 #include "List.hh"
 #include "SList.hh"
+#include "Set.hh"
 #include "Map.hh"
 
 /*

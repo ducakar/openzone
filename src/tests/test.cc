@@ -30,6 +30,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cwchar>
+#include <vector>
 
 using namespace oz;
 using namespace std;
@@ -125,19 +126,21 @@ class Foo
 */
 #define foreach( decl, iterator ) \
   for( auto _iter = iterator; _iter.isValid(); ++_iter ) \
-    for( decl = *_iter; ; __extension__ ({ break; }) )
+    for( decl = *_iter; ; __extension__({ break; }) )
 
 int main()
 {
   System::init();
 
-  List<Foo> c;
+  Map<Foo, nil_t> c;
   c.add( 1 );
   c.add( 2 );
   c.add( 0 );
 
-  foreach( const Foo& i, c.citer() ) {
-    Log::out << i.value << "\n";
+  std::vector<Foo> v;
+
+  foreach( auto& j, c.citer() ) {
+    Log::out << j.key.value << "\n";
   }
 //  foreach( const Foo& i, c ) {
 //    Log::out << i.value << "\n";

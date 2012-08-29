@@ -186,7 +186,7 @@ inline void iMove( IteratorA iDest, IteratorB iSrc )
 }
 
 /**
- * Set elements to the given value.
+ * %Set elements to the given value.
  */
 template <class Iterator, typename Value = typename Iterator::ElemType>
 inline void iSet( Iterator iDest, const Value& value )

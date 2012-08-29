@@ -285,7 +285,7 @@ class BufferStream
     }
 
     /**
-     * Set the current position.
+     * %Set the current position.
      */
     OZ_ALWAYS_INLINE
     void setPos( char* newPos )
@@ -314,7 +314,7 @@ class BufferStream
     }
 
     /**
-     * Set byte order.
+     * %Set byte order.
      */
     OZ_ALWAYS_INLINE
     void setEndian( Endian::Order order_ )

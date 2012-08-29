@@ -1,7 +1,13 @@
 0.3.80
 
+- oz
+    * simplified iterators: CIteratorBase ~> IteratorBase &co., ArrayIterator typedefs replace all
+      array-like iterators
+    * new Set template class
 - ui
     * UI colours, fonts and layouts can be configured in `ui/style.json`
+- client
+    * text-to-speech using eSpeak library
 - builder
     * Context generates mipmaps and S3TC textures (using libsquish) without OpenGL
 

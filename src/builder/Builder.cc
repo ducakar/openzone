@@ -232,7 +232,7 @@ void Builder::buildBSPTextures()
   Log::println( "Building used BSP textures {" );
   Log::indent();
 
-  Map<String> usedDirs;
+  Set<String> usedDirs;
 
   PFile dir( "baseq3/textures" );
   DArray<PFile> dirList = dir.ls();
@@ -318,7 +318,7 @@ void Builder::buildBSPTextures()
   }
 
   foreach( subDirPath, usedDirs.citer() ) {
-    PFile subDir( subDirPath->key );
+    PFile subDir( *subDirPath );
 
     DArray<PFile> texList = subDir.ls();
 
@@ -543,7 +543,7 @@ void Builder::copySounds()
   Log::println( "Copying used sounds {" );
   Log::indent();
 
-  Map<String> usedDirs;
+  Set<String> usedDirs;
 
   PFile dir( "snd" );
   DArray<PFile> dirList = dir.ls();
@@ -602,7 +602,7 @@ void Builder::copySounds()
   }
 
   foreach( subDirPath, usedDirs.citer() ) {
-    PFile subDir( subDirPath->key );
+    PFile subDir( *subDirPath );
     DArray<PFile> texList = subDir.ls();
 
     foreach( file, texList.iter() ) {

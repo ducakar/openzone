@@ -21,9 +21,9 @@
  */
 
 /**
- * @file oz/Map.hh
+ * @file oz/Set.hh
  *
- * Map template class.
+ * Set template class.
  */
 
 #pragma once
@@ -34,19 +34,19 @@ namespace oz
 {
 
 /**
- * Sorted array list of key-value pairs.
+ * Sorted array list.
  *
- * %Map is implemented as a sorted array list that supports binding values to its elements (keys).
- * Better worst case performance than a hashtable and it can use an arbitrary type as a key.
- * For large maps HashIndex/HashString is preferred as it is much faster on average.
+ * %Set is implemented as a sorted array list.
+ * Better worst case performance than a hashtable and it can use an arbitrary type as an element.
+ * For large sets HashIndex/HashString is preferred as it is much faster on average.
  *
  * Like in List all allocated elements are constructed all the time and a removed element's
  * destruction is guaranteed.
  *
  * Memory is allocated when the first element is added.
  */
-template <typename Key, typename Value>
-class Map
+template <typename Elem>
+class Set
 {
   private:
 
@@ -54,38 +54,6 @@ class Map
     static const int GRANULARITY = 8;
 
   public:
-
-    /**
-     * Internal class for key/value elements.
-     */
-    class Elem
-    {
-      public:
-
-        Key   key;   ///< Key.
-        Value value; ///< Value.
-
-      public:
-
-        /**
-         * Equality operator for bisection algorithms.
-         */
-        OZ_ALWAYS_INLINE
-        friend bool operator == ( const Key& key, const Elem& e )
-        {
-          return key == e.key;
-        }
-
-        /**
-         * Less than operator for bisection algorithms.
-         */
-        OZ_ALWAYS_INLINE
-        friend bool operator < ( const Key& key, const Elem& e )
-        {
-          return key < e.key;
-        }
-
-    };
 
     /**
      * %Iterator with constant access to container elements.
@@ -129,16 +97,16 @@ class Map
   public:
 
     /**
-     * Create an empty map.
+     * Create an empty set.
      */
-    Map() :
+    Set() :
       data( null ), count( 0 ), size( 0 )
     {}
 
     /**
      * Destructor.
      */
-    ~Map()
+    ~Set()
     {
       delete[] data;
     }
@@ -146,21 +114,21 @@ class Map
     /**
      * Copy constructor, copies elements.
      */
-    Map( const Map& m ) :
-      data( m.size == 0 ? null : new Elem[m.size] ), count( m.count ), size( m.size )
+    Set( const Set& s ) :
+      data( s.size == 0 ? null : new Elem[s.size] ), count( s.count ), size( s.size )
     {
-      aCopy<Elem>( data, m.data, m.count );
+      aCopy<Elem>( data, s.data, s.count );
     }
 
     /**
      * Move constructor, moves element storage.
      */
-    Map( Map&& m ) :
-      data( m.data ), count( m.count ), size( m.size )
+    Set( Set&& s ) :
+      data( s.data ), count( s.count ), size( s.size )
     {
-      m.data  = null;
-      m.count = 0;
-      m.size  = 0;
+      s.data  = null;
+      s.count = 0;
+      s.size  = 0;
     }
 
     /**
@@ -168,21 +136,21 @@ class Map
      *
      * Reuse existing storage if it suffices.
      */
-    Map& operator = ( const Map& m )
+    Set& operator = ( const Set& s )
     {
-      if( &m == this ) {
+      if( &s == this ) {
         return *this;
       }
 
-      if( size < m.count ) {
+      if( size < s.count ) {
         delete[] data;
 
-        data = new Elem[m.size];
-        size = m.size;
+        data = new Elem[s.size];
+        size = s.size;
       }
 
-      aCopy<Elem>( data, m.data, m.count );
-      count = m.count;
+      aCopy<Elem>( data, s.data, s.count );
+      count = s.count;
 
       return *this;
     }
@@ -190,46 +158,46 @@ class Map
     /**
      * Move operator, moves element storage.
      */
-    Map& operator = ( Map&& m )
+    Set& operator = ( Set&& s )
     {
-      if( &m == this ) {
+      if( &s == this ) {
         return *this;
       }
 
       delete[] data;
 
-      data  = m.data;
-      count = m.count;
-      size  = m.size;
+      data  = s.data;
+      count = s.count;
+      size  = s.size;
 
-      m.data  = null;
-      m.count = 0;
-      m.size  = 0;
+      s.data  = null;
+      s.count = 0;
+      s.size  = 0;
 
       return *this;
     }
 
     /**
-     * Create an empty map with the given initial capacity.
+     * Create an empty set with the given initial capacity.
      */
-    explicit Map( int size_ ) :
+    explicit Set( int size_ ) :
       data( new Elem[size_] ), count( 0 ), size( size_ )
     {}
 
     /**
      * True iff respective elements are equal.
      */
-    bool operator == ( const Map& m ) const
+    bool operator == ( const Set& s ) const
     {
-      return count == m.count && aEquals<Elem>( data, m.data, count );
+      return count == s.count && aEquals<Elem>( data, s.data, count );
     }
 
     /**
      * False iff respective elements are equal.
      */
-    bool operator != ( const Map& m ) const
+    bool operator != ( const Set& s ) const
     {
-      return count != m.count || !aEquals<Elem>( data, m.data, count );
+      return count != s.count || !aEquals<Elem>( data, s.data, count );
     }
 
     /**
@@ -362,65 +330,47 @@ class Map
     }
 
     /**
-     * True iff the given key is found in the map.
+     * True iff the given key is found in the set.
      */
-    bool contains( const Key& key ) const
+    bool contains( const Elem& elem ) const
     {
-      return aBisectFind<Elem, Key>( data, key, count ) >= 0;
+      return aBisectFind<Elem, Elem>( data, elem, count ) >= 0;
     }
 
     /**
      * Index of the element with the given value or -1 if not found.
      */
-    int index( const Key& key ) const
+    int index( const Elem& elem ) const
     {
-      return aBisectFind<Elem, Key>( data, key, count );
+      return aBisectFind<Elem, Elem>( data, elem, count );
     }
 
     /**
-     * Constant pointer to the given key's value or `null` if not found.
-     */
-    const Value* find( const Key& key ) const
-    {
-      int i = aBisectFind<Elem, Key>( data, key, count );
-      return i < 0 ? null : &data[i].value;
-    }
-
-    /**
-     * Pointer to the given key's value or `null` if not found.
-     */
-    Value* find( const Key& key )
-    {
-      int i = aBisectFind<Elem, Key>( data, key, count );
-      return i < 0 ? null : &data[i].value;
-    }
-
-    /**
-     * Add an element or override value if an element with the same key exists.
+     * Add an element overriding any existing equal element.
      *
      * @return Position of the inserted or the existing element.
      */
-    template <typename Key_ = Key, typename Value_ = Value>
-    int add( Key_&& key, Value_&& value = Value() )
+    template <typename Elem_ = Elem>
+    int add( Elem_&& elem )
     {
-      int i = aBisectPosition<Elem, Key>( data, key, count );
+      int i = aBisectPosition<Elem, Elem>( data, elem, count );
 
-      insert<Key_, Value_>( i, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
+      insert<Elem_>( i, static_cast<Elem_&&>( elem ) );
       return i;
     }
 
     /**
-     * Add an element if the key does not exist in the map.
+     * Add an element if if there is no equal element in the set.
      *
      * @return Position of the inserted or the existing element.
      */
-    template <typename Key_ = Key, typename Value_ = Value>
-    int include( Key_&& key, Value_&& value = Value() )
+    template <typename Elem_ = Elem>
+    int include( Elem_&& elem )
     {
-      int i = aBisectPosition<Elem, Key>( data, key, count );
+      int i = aBisectPosition<Elem, Elem>( data, elem, count );
 
-      if( i == 0 || !( data[i - 1].key == key ) ) {
-        insert<Key_, Value_>( i, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
+      if( i == 0 || !( data[i - 1] == elem ) ) {
+        insert<Elem_>( i, static_cast<Elem_&&>( elem ) );
       }
       return i;
     }
@@ -432,16 +382,15 @@ class Map
      * Use only when you are sure you are inserting at the right position to preserve order of the
      * element.
      */
-    template <typename Key_ = Key, typename Value_ = Value>
-    void insert( int i, Key_&& key, Value_&& value = Value() )
+    template <typename Elem_ = Elem>
+    void insert( int i, Elem_&& elem )
     {
       hard_assert( uint( i ) <= uint( count ) );
 
       ensureCapacity();
 
       aReverseMove<Elem>( data + i + 1, data + i, count - i );
-      data[i].key   = static_cast<Key_&&>( key );
-      data[i].value = static_cast<Value_&&>( value );
+      data[i] = static_cast<Elem_&&>( elem );
 
       ++count;
     }
@@ -468,13 +417,13 @@ class Map
     }
 
     /**
-     * Find and remove the element with the given key.
+     * Find and remove the element with the given value.
      *
      * @return Index of the removed element or -1 if not found.
      */
-    int exclude( const Key& key )
+    int exclude( const Elem& elem )
     {
-      int i = aBisectFind<Elem, Key>( data, key, count );
+      int i = aBisectFind<Elem, Elem>( data, elem, count );
 
       if( i >= 0 ) {
         remove( i );
@@ -483,7 +432,7 @@ class Map
     }
 
     /**
-     * Resize the map.
+     * Resize the set.
      */
     void resize( int newCount )
     {
@@ -500,7 +449,7 @@ class Map
     }
 
     /**
-     * Clear the map.
+     * Clear the set.
      */
     void clear()
     {
@@ -512,7 +461,7 @@ class Map
     }
 
     /**
-     * Delete all objects referenced by elements and clear the map.
+     * Delete all objects referenced by elements and clear the set.
      */
     void free()
     {
@@ -521,7 +470,7 @@ class Map
     }
 
     /**
-     * For an empty map with no allocated storage, allocate capacity for `size_` elements.
+     * For an empty set with no allocated storage, allocate capacity for `size_` elements.
      */
     void alloc( int size_ )
     {
@@ -532,7 +481,7 @@ class Map
     }
 
     /**
-     * Deallocate storage of an empty map.
+     * Deallocate storage of an empty set.
      */
     void dealloc()
     {
@@ -545,7 +494,7 @@ class Map
     }
 
     /**
-     * Trim map capacity to the least multiple of `GRANULARITY` that can hold all elements.
+     * Trim set capacity to the least multiple of `GRANULARITY` that can hold all elements.
      */
     void trim()
     {

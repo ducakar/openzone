@@ -65,7 +65,7 @@ class Log
     static const char* logFile();
 
     /**
-     * Set indent to zero.
+     * %Set indent to zero.
      */
     static void resetIndent();
 

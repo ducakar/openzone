@@ -423,7 +423,7 @@ class Math
     }
 
     /**
-     * Set seed for random generator.
+     * %Set seed for random generator.
      */
     static void seed( int n );
 

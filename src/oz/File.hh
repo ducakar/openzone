@@ -118,7 +118,7 @@ class File
     explicit File( const char* path );
 
     /**
-     * Set a new file path.
+     * %Set a new file path.
      */
     void setPath( const char* path );
 

@@ -147,7 +147,7 @@ class InputStream
     }
 
     /**
-     * Set the curent position.
+     * %Set the curent position.
      */
     OZ_ALWAYS_INLINE
     void setPos( const char* newPos )
@@ -176,7 +176,7 @@ class InputStream
     }
 
     /**
-     * Set byte order.
+     * %Set byte order.
      */
     OZ_ALWAYS_INLINE
     void setEndian( Endian::Order order_ )

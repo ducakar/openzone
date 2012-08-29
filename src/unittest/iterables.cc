@@ -44,8 +44,10 @@ void test_iterables()
   List<Foo>::Iterator        iv;
   SList<Foo, 1>::CIterator   icsv;
   SList<Foo, 1>::Iterator    isv;
-  Map<Foo>::CIterator        icm;
-  Map<Foo>::Iterator         im;
+  Set<Foo>::CIterator        ics;
+  Set<Foo>::Iterator         is;
+  Map<Foo, Foo>::CIterator   icm;
+  Map<Foo, Foo>::Iterator    im;
   HashIndex<Foo>::CIterator  ichi;
   HashIndex<Foo>::Iterator   ihi;
   HashString<Foo>::CIterator ichs;
