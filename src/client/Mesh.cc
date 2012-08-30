@@ -37,15 +37,15 @@ void Vertex::setFormat()
 {
   glEnableVertexAttribArray( Attrib::POSITION );
   glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         static_cast<char*>( null ) + offsetof( Vertex, pos ) );
+                         static_cast<char*>( nullptr ) + offsetof( Vertex, pos ) );
 
   glEnableVertexAttribArray( Attrib::TEXCOORD );
   glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         static_cast<char*>( null ) + offsetof( Vertex, texCoord ) );
+                         static_cast<char*>( nullptr ) + offsetof( Vertex, texCoord ) );
 
   glEnableVertexAttribArray( Attrib::NORMAL );
   glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         static_cast<char*>( null ) + offsetof( Vertex, normal ) );
+                         static_cast<char*>( nullptr ) + offsetof( Vertex, normal ) );
 }
 
 void Texture::free()
@@ -65,7 +65,7 @@ void Texture::free()
 }
 
 Set<Mesh*> Mesh::loadedMeshes;
-Vertex*    Mesh::vertexAnimBuffer       = null;
+Vertex*    Mesh::vertexAnimBuffer       = nullptr;
 int        Mesh::vertexAnimBufferLength = 0;
 
 void Mesh::animate( const Instance* instance )
@@ -159,7 +159,7 @@ void Mesh::draw( const Instance* instance, int mask )
       glBindTexture( GL_TEXTURE_2D, part.texture.normals );
 
       glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
-                      static_cast<ushort*>( null ) + part.firstIndex );
+                      static_cast<ushort*>( nullptr ) + part.firstIndex );
     }
   }
 }
@@ -212,13 +212,13 @@ void Mesh::dealloc()
   loadedMeshes.dealloc();
 
   delete[] vertexAnimBuffer;
-  vertexAnimBuffer = null;
+  vertexAnimBuffer = nullptr;
   vertexAnimBufferLength = 0;
 }
 
 Mesh::Mesh() :
   vbo( 0 ), ibo( 0 ), positionsTexId( 0 ), normalsTexId( 0 ),
-  vertices( null ), positions( null ), normals( null ),
+  vertices( nullptr ), positions( nullptr ), normals( nullptr ),
   instances( 8 )
 {}
 
@@ -249,7 +249,7 @@ void Mesh::draw( int mask ) const
       glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, tf.colour );
 
       glDrawElements( part.mode, part.nIndices, GL_UNSIGNED_SHORT,
-                      static_cast<ushort*>( null ) + part.firstIndex );
+                      static_cast<ushort*>( nullptr ) + part.firstIndex );
     }
   }
 }

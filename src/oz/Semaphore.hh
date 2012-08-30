@@ -54,7 +54,7 @@ class Semaphore
      * Create uninitialised instance.
      */
     Semaphore() :
-      descriptor( null )
+      descriptor( nullptr )
     {}
 
     /**
@@ -62,7 +62,7 @@ class Semaphore
      */
     ~Semaphore()
     {
-      if( descriptor != null ) {
+      if( descriptor != nullptr ) {
         destroy();
       }
     }
@@ -73,7 +73,7 @@ class Semaphore
     Semaphore( Semaphore&& b ) :
       descriptor( b.descriptor )
     {
-      b.descriptor = null;
+      b.descriptor = nullptr;
     }
 
     /**
@@ -82,7 +82,7 @@ class Semaphore
     Semaphore& operator = ( Semaphore&& b )
     {
       descriptor   = b.descriptor;
-      b.descriptor = null;
+      b.descriptor = nullptr;
       return *this;
     }
 
@@ -91,7 +91,7 @@ class Semaphore
      */
     bool isValid() const
     {
-      return descriptor != null;
+      return descriptor != nullptr;
     }
 
     /**

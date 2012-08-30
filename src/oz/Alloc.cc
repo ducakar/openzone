@@ -66,7 +66,7 @@ struct TraceEntry
 };
 
 static bool                 isConstructed;      // = false
-static TraceEntry* volatile firstTraceEntry[2]; // = { null, null }
+static TraceEntry* volatile firstTraceEntry[2]; // = { nullptr, nullptr }
 # if defined( __native_client__ )
 static pthread_mutex_t      traceEntryListLock;
 # elif defined( _WIN32 )
@@ -79,7 +79,7 @@ static void addTraceEntry( AllocMode mode, void* ptr, size_t size )
 {
   if( !isConstructed ) {
 # if defined( __native_client__ )
-    pthread_mutex_init( &traceEntryListLock, null );
+    pthread_mutex_init( &traceEntryListLock, nullptr );
 # elif defined( _WIN32 )
     InitializeCriticalSection( &traceEntryListLock );
 # else
@@ -89,7 +89,7 @@ static void addTraceEntry( AllocMode mode, void* ptr, size_t size )
   }
 
   void* stPtr = malloc( sizeof( TraceEntry ) );
-  if( stPtr == null ) {
+  if( stPtr == nullptr ) {
     OZ_ERROR( "TraceEntry allocation failed" );
   }
 
@@ -130,11 +130,11 @@ static void removeTraceEntry( AllocMode mode, void* ptr )
 # endif
 
   TraceEntry* st   = firstTraceEntry[mode];
-  TraceEntry* prev = null;
+  TraceEntry* prev = nullptr;
 
-  while( st != null ) {
+  while( st != nullptr ) {
     if( st->address == ptr ) {
-      if( prev == null ) {
+      if( prev == nullptr ) {
         firstTraceEntry[mode] = st->next;
       }
       else {
@@ -166,14 +166,14 @@ static void removeTraceEntry( AllocMode mode, void* ptr )
   // Check if allocated as a different kind (object/array)
   st = firstTraceEntry[!mode];
 
-  while( st != null ) {
+  while( st != nullptr ) {
     if( st->address == ptr ) {
       break;
     }
     st = st->next;
   }
 
-  if( st == null ) {
+  if( st == nullptr ) {
     OZ_ERROR( mode == OBJECT ? "ALLOC: Freeing object at %p that has not been allocated" :
                                "ALLOC: Freeing array at %p that has not been allocated", ptr );
   }
@@ -201,7 +201,7 @@ static void* allocate( AllocMode mode, size_t size )
 #else
   void* ptr = memalign( Alloc::ALIGNMENT, size );
 #endif
-  if( ptr == null ) {
+  if( ptr == nullptr ) {
     OZ_ERROR( "Out of memory" );
   }
 
@@ -293,7 +293,7 @@ bool Alloc::printLeaks()
   const TraceEntry* bt;
 
   bt = firstTraceEntry[OBJECT];
-  while( bt != null ) {
+  while( bt != nullptr ) {
     Log::println( "Leaked object at %p of size %lu B allocated", bt->address, ulong( bt->size ) );
     Log::indent();
     Log::printTrace( bt->stackTrace );
@@ -304,7 +304,7 @@ bool Alloc::printLeaks()
   }
 
   bt = firstTraceEntry[ARRAY];
-  while( bt != null ) {
+  while( bt != nullptr ) {
     Log::println( "Leaked array at %p of size %lu B allocated", bt->address, ulong( bt->size ) );
     Log::indent();
     Log::printTrace( bt->stackTrace );
@@ -335,7 +335,7 @@ void* operator new[] ( size_t size )
 
 void operator delete ( void* ptr ) noexcept
 {
-  if( ptr == null ) {
+  if( ptr == nullptr ) {
     return;
   }
   deallocate( OBJECT, ptr );
@@ -343,7 +343,7 @@ void operator delete ( void* ptr ) noexcept
 
 void operator delete[] ( void* ptr ) noexcept
 {
-  if( ptr == null ) {
+  if( ptr == nullptr ) {
     return;
   }
   deallocate( ARRAY, ptr );
@@ -361,7 +361,7 @@ void* operator new[] ( size_t size, const std::nothrow_t& ) noexcept
 
 void operator delete ( void* ptr, const std::nothrow_t& ) noexcept
 {
-  if( ptr == null ) {
+  if( ptr == nullptr ) {
     return;
   }
   deallocate( OBJECT, ptr );
@@ -369,7 +369,7 @@ void operator delete ( void* ptr, const std::nothrow_t& ) noexcept
 
 void operator delete[] ( void* ptr, const std::nothrow_t& ) noexcept
 {
-  if( ptr == null ) {
+  if( ptr == nullptr ) {
     return;
   }
   deallocate( ARRAY, ptr );

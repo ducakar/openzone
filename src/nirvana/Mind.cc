@@ -53,7 +53,7 @@ Mind::~Mind()
 
 void Mind::update()
 {
-  hard_assert( orbis.objects[bot] != null );
+  hard_assert( orbis.objects[bot] != nullptr );
   hard_assert( orbis.objects[bot]->flags & Object::BOT_BIT );
 
   Bot* botObj = static_cast<Bot*>( orbis.objects[bot] );

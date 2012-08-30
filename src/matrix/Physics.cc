@@ -82,7 +82,7 @@ void Physics::handleFragHit()
 
   if( velocity2 > FRAG_HIT_VELOCITY2 ) {
     if( frag->mass != 0.0f ) {
-      if( collider.hit.str != null ) {
+      if( collider.hit.str != nullptr ) {
         Struct* str = collider.hit.str;
         float damage = FRAG_DAMAGE_COEF * velocity2 * frag->mass;
 
@@ -91,7 +91,7 @@ void Physics::handleFragHit()
           str->damage( damage );
         }
       }
-      else if( collider.hit.obj != null ) {
+      else if( collider.hit.obj != nullptr ) {
         Object* obj = collider.hit.obj;
         float damage = FRAG_DAMAGE_COEF * velocity2 * frag->mass;
 
@@ -278,7 +278,7 @@ void Physics::handleObjHit()
 {
   const Hit& hit = collider.hit;
 
-  if( hit.obj != null && ( hit.obj->flags & Object::DYNAMIC_BIT ) ) {
+  if( hit.obj != nullptr && ( hit.obj->flags & Object::DYNAMIC_BIT ) ) {
     Dynamic* sDyn = static_cast<Dynamic*>( hit.obj );
 
     float massSum     = dyn->mass + sDyn->mass;
@@ -373,11 +373,11 @@ void Physics::handleObjHit()
       dyn->addEvent( Object::EVENT_HIT + hasLanded, intensity );
       dyn->damage( damage );
 
-      if( hit.obj != null ) {
+      if( hit.obj != nullptr ) {
         hit.obj->addEvent( Object::EVENT_HIT, intensity );
         hit.obj->damage( damage );
       }
-      else if( hit.str != null ) {
+      else if( hit.str != nullptr ) {
         hit.str->damage( damage );
       }
     }
@@ -389,7 +389,7 @@ void Physics::handleObjHit()
       dyn->flags |= hit.material & Material::SLICK_BIT ? Object::ON_SLICK_BIT : 0;
       dyn->floor  = hit.normal;
 
-      if( hit.entity == null ) {
+      if( hit.entity == nullptr ) {
         dyn->lower = -1;
       }
       else {
@@ -501,7 +501,7 @@ void Physics::updateFrag( Frag* frag_ )
 {
   frag = frag_;
 
-  hard_assert( frag->cell != null );
+  hard_assert( frag->cell != nullptr );
 
   frag->velocity.z += gravity * Timer::TICK_TIME;
 
@@ -512,7 +512,7 @@ void Physics::updateObj( Dynamic* dyn_ )
 {
   dyn = dyn_;
 
-  hard_assert( dyn->cell != null );
+  hard_assert( dyn->cell != nullptr );
 
   dyn->flags &= ~Object::TICK_CLEAR_MASK;
 
@@ -523,7 +523,7 @@ void Physics::updateObj( Dynamic* dyn_ )
 
       const Struct* str = orbis.structs[structIndex];
 
-      if( str == null ) {
+      if( str == nullptr ) {
         dyn->flags &= ~Object::DISABLED_BIT;
         dyn->lower  = -1;
       }
@@ -539,7 +539,7 @@ void Physics::updateObj( Dynamic* dyn_ )
       const Object* sObj = orbis.objects[dyn->lower];
 
       // clear the lower object if it doesn't exist any more
-      if( sObj == null || sObj->cell == null ) {
+      if( sObj == nullptr || sObj->cell == nullptr ) {
         dyn->flags &= ~Object::DISABLED_BIT;
         dyn->lower  = -1;
       }

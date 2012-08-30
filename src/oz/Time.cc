@@ -69,7 +69,7 @@ uint Time::clock()
 #if defined( __native_client__ )
 
   struct timeval now;
-  gettimeofday( &now, null );
+  gettimeofday( &now, nullptr );
 
   // This wraps around together with uint since (time_t range) * 1000 is a multiple of uint range.
   return uint( now.tv_sec * 1000 + now.tv_usec / 1000 );
@@ -94,7 +94,7 @@ uint Time::uclock()
 #if defined( __native_client__ )
 
   struct timeval now;
-  gettimeofday( &now, null );
+  gettimeofday( &now, nullptr );
 
   // This wraps around together with uint since (time_t range) * 1000 is a multiple of uint range.
   return uint( now.tv_sec * 1000000 + now.tv_usec );
@@ -126,7 +126,7 @@ void Time::sleep( uint milliseconds )
     time_t( milliseconds / 1000 ),
     long( ( milliseconds % 1000 ) * 1000000 )
   };
-  nanosleep( &ts, null );
+  nanosleep( &ts, nullptr );
 
 #endif
 }
@@ -145,7 +145,7 @@ void Time::usleep( uint microseconds )
     time_t( microseconds / 1000000 ),
     long( ( microseconds % 1000000 ) * 1000 )
   };
-  nanosleep( &ts, null );
+  nanosleep( &ts, nullptr );
 
 #endif
 }
@@ -168,7 +168,7 @@ long64 Time::time()
 
 #else
 
-  return ::time( null );
+  return ::time( nullptr );
 
 #endif
 }
@@ -195,7 +195,7 @@ Time Time::local()
 
 #else
 
-  time_t currentTime = ::time( null );
+  time_t currentTime = ::time( nullptr );
   struct tm timeStruct;
   localtime_r( &currentTime, &timeStruct );
 

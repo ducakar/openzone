@@ -107,7 +107,7 @@
  * Exits %Lua API function call with an error if there is no structure bound.
  */
 #define STR() \
-  if( ms.str == null ) { \
+  if( ms.str == nullptr ) { \
     ERROR( "No structure bound" ); \
   }
 
@@ -121,7 +121,7 @@
     ERROR( "Invalid structure index (out of range)" ); \
   } \
   Struct* str = orbis.structs[index]; \
-  if( str == null ) { \
+  if( str == nullptr ) { \
     ERROR( "Invalid structures index (null)" ); \
   }
 
@@ -130,7 +130,7 @@
  * Exits %Lua API function call with an error if there is no structure entity bound.
  */
 #define ENT() \
-  if( ms.ent == null ) { \
+  if( ms.ent == nullptr ) { \
     ERROR( "No structure entity bound" ); \
   }
 
@@ -150,7 +150,7 @@
  * Exits %Lua API function call with an error if there is no object bound.
  */
 #define OBJ() \
-  if( ms.obj == null ) { \
+  if( ms.obj == nullptr ) { \
     ERROR( "No object bound" ); \
   }
 
@@ -159,7 +159,7 @@
  * Exits %Lua API function call with an error if self object is null.
  */
 #define SELF() \
-  if( ms.self == null ) { \
+  if( ms.self == nullptr ) { \
     ERROR( "Self object is null" ); \
   }
 
@@ -184,7 +184,7 @@
     ERROR( "Invalid object index (out of range)" ); \
   } \
   Object* obj = orbis.objects[index]; \
-  if( obj == null ) { \
+  if( obj == nullptr ) { \
     ERROR( "Invalid object index (null)" ); \
   }
 
@@ -198,7 +198,7 @@
     ERROR( "Invalid item index (out of range)" ); \
   } \
   Dynamic* item = static_cast<Dynamic*>( orbis.objects[index] ); \
-  if( item == null ) { \
+  if( item == nullptr ) { \
     ERROR( "Invalid item index (null)" ); \
   } \
   if( !( item->flags & Object::ITEM_BIT ) ) { \
@@ -215,7 +215,7 @@
     ERROR( "Invalid bot index (out of range)" ); \
   } \
   Bot* bot = static_cast<Bot*>( orbis.objects[index] ); \
-  if( bot == null ) { \
+  if( bot == nullptr ) { \
     ERROR( "Invalid bot index (null)" ); \
   } \
   if( !( bot->flags & Object::BOT_BIT ) ) { \
@@ -276,7 +276,7 @@
  * Exits %Lua API function call with an error if there is no fragment bound.
  */
 #define FRAG() \
-  if( ms.frag == null ) { \
+  if( ms.frag == nullptr ) { \
     ERROR( "No fragment bound" ); \
   }
 
@@ -341,7 +341,7 @@
  * Shorthand for lua_tostring
  */
 #define l_tostring( i ) \
-  lua_tolstring( l, i, null )
+  lua_tolstring( l, i, nullptr )
 
 /**
  * @def l_tolstring

@@ -57,7 +57,7 @@ struct Mutex::Descriptor
 
 void Mutex::lock() const
 {
-  hard_assert( descriptor != null );
+  hard_assert( descriptor != nullptr );
 
 #ifdef _WIN32
   WaitForSingleObject( descriptor->mutex, INFINITE );
@@ -68,7 +68,7 @@ void Mutex::lock() const
 
 bool Mutex::tryLock() const
 {
-  hard_assert( descriptor != null );
+  hard_assert( descriptor != nullptr );
 
 #ifdef _WIN32
   return WaitForSingleObject( descriptor->mutex, 0 ) == WAIT_OBJECT_0;
@@ -79,7 +79,7 @@ bool Mutex::tryLock() const
 
 void Mutex::unlock() const
 {
-  hard_assert( descriptor != null );
+  hard_assert( descriptor != nullptr );
 
 #ifdef _WIN32
   ReleaseMutex( descriptor->mutex );
@@ -90,10 +90,10 @@ void Mutex::unlock() const
 
 void Mutex::init()
 {
-  hard_assert( descriptor == null );
+  hard_assert( descriptor == nullptr );
 
   void* descriptorPtr = malloc( sizeof( Descriptor ) );
-  if( descriptorPtr == null ) {
+  if( descriptorPtr == nullptr ) {
     OZ_ERROR( "Mutex resource allocation failed" );
   }
 
@@ -101,14 +101,14 @@ void Mutex::init()
 
 #ifdef _WIN32
 
-  descriptor->mutex = CreateMutex( null, false, null );
-  if( descriptor->mutex == null ) {
+  descriptor->mutex = CreateMutex( nullptr, false, nullptr );
+  if( descriptor->mutex == nullptr ) {
     OZ_ERROR( "Mutex initialisation failed" );
   }
 
 #else
 
-  if( pthread_mutex_init( &descriptor->mutex, null ) != 0 ) {
+  if( pthread_mutex_init( &descriptor->mutex, nullptr ) != 0 ) {
     OZ_ERROR( "Mutex initialisation failed" );
   }
 
@@ -117,7 +117,7 @@ void Mutex::init()
 
 void Mutex::destroy()
 {
-  hard_assert( descriptor != null );
+  hard_assert( descriptor != nullptr );
 
 #ifdef _WIN32
   CloseHandle( descriptor->mutex );
@@ -127,7 +127,7 @@ void Mutex::destroy()
 
   descriptor->~Descriptor();
   free( descriptor );
-  descriptor = null;
+  descriptor = nullptr;
 }
 
 }

@@ -38,7 +38,7 @@ namespace ui
 {
 
 Area::Area( int width_, int height_ ) :
-  flags( 0 ), parent( null ), x( 0 ), y( 0 ), width( width_ ), height( height_ ),
+  flags( 0 ), parent( nullptr ), x( 0 ), y( 0 ), width( width_ ), height( height_ ),
   defaultX( 0 ), defaultY( 0 )
 {}
 
@@ -49,7 +49,7 @@ Area::~Area()
 
 void Area::reposition()
 {
-  if( parent != null ) {
+  if( parent != nullptr ) {
     x = defaultX == CENTRE ? parent->x + ( parent->width - width ) / 2 :
         defaultX < 0 ? parent->x + parent->width - width + defaultX : parent->x + defaultX;
 
@@ -66,7 +66,7 @@ void Area::reposition()
 
 void Area::move( int moveX, int moveY )
 {
-  if( parent == null ) {
+  if( parent == nullptr ) {
     return;
   }
 
@@ -119,7 +119,7 @@ bool Area::passMouseEvents()
 void Area::drawChildren()
 {
   // Render in opposite order; last added child (the first one in the list) should be rendered last.
-  for( Area* child = children.last(); child != null; child = child->prev[0] ) {
+  for( Area* child = children.last(); child != nullptr; child = child->prev[0] ) {
     if( !( child->flags & ( HIDDEN_BIT | DISABLED_BIT ) ) ) {
       child->onDraw();
     }
@@ -205,7 +205,7 @@ void Area::remove( Area* area )
 
 void Area::raise()
 {
-  if( parent != null && parent->children.first() != this ) {
+  if( parent != nullptr && parent->children.first() != this ) {
     parent->children.remove( this );
     parent->children.pushFirst( this );
   }
@@ -213,7 +213,7 @@ void Area::raise()
 
 void Area::sink()
 {
-  if( parent != null && parent->children.last() != this ) {
+  if( parent != nullptr && parent->children.last() != this ) {
     parent->children.remove( this );
     parent->children.pushLast( this );
   }

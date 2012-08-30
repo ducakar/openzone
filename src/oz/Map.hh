@@ -132,7 +132,7 @@ class Map
      * Create an empty map.
      */
     Map() :
-      data( null ), count( 0 ), size( 0 )
+      data( nullptr ), count( 0 ), size( 0 )
     {}
 
     /**
@@ -147,7 +147,7 @@ class Map
      * Copy constructor, copies elements.
      */
     Map( const Map& m ) :
-      data( m.size == 0 ? null : new Elem[m.size] ), count( m.count ), size( m.size )
+      data( m.size == 0 ? nullptr : new Elem[m.size] ), count( m.count ), size( m.size )
     {
       aCopy<Elem>( data, m.data, m.count );
     }
@@ -158,7 +158,7 @@ class Map
     Map( Map&& m ) :
       data( m.data ), count( m.count ), size( m.size )
     {
-      m.data  = null;
+      m.data  = nullptr;
       m.count = 0;
       m.size  = 0;
     }
@@ -202,7 +202,7 @@ class Map
       count = m.count;
       size  = m.size;
 
-      m.data  = null;
+      m.data  = nullptr;
       m.count = 0;
       m.size  = 0;
 
@@ -383,7 +383,7 @@ class Map
     const Value* find( const Key& key ) const
     {
       int i = aBisectFind<Elem, Key>( data, key, count );
-      return i < 0 ? null : &data[i].value;
+      return i < 0 ? nullptr : &data[i].value;
     }
 
     /**
@@ -392,7 +392,7 @@ class Map
     Value* find( const Key& key )
     {
       int i = aBisectFind<Elem, Key>( data, key, count );
-      return i < 0 ? null : &data[i].value;
+      return i < 0 ? nullptr : &data[i].value;
     }
 
     /**
@@ -540,7 +540,7 @@ class Map
 
       delete[] data;
 
-      data = null;
+      data = nullptr;
       size = 0;
     }
 

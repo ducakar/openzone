@@ -46,7 +46,7 @@ const BSP* Library::bsp( const char* name ) const
 {
   const BSP* value = bsps.find( name );
 
-  if( value == null ) {
+  if( value == nullptr ) {
     OZ_ERROR( "Invalid BSP requested '%s'", name );
   }
   return value;
@@ -56,7 +56,7 @@ const ObjectClass* Library::objClass( const char* name ) const
 {
   const ObjectClass* const* value = objClasses.find( name );
 
-  if( value == null ) {
+  if( value == nullptr ) {
     OZ_ERROR( "Invalid object class requested '%s'", name );
   }
   return *value;
@@ -66,7 +66,7 @@ const FragPool* Library::fragPool( const char* name ) const
 {
   const FragPool* value = fragPools.find( name );
 
-  if( value == null ) {
+  if( value == nullptr ) {
     OZ_ERROR( "Invalid fragment pool requested '%s'", name );
   }
   return value;
@@ -76,7 +76,7 @@ int Library::shaderIndex( const char* name ) const
 {
   const int* value = shaderIndices.find( name );
 
-  if( value == null ) {
+  if( value == nullptr ) {
     OZ_ERROR( "Invalid shader requested '%s'", name );
   }
   return *value;
@@ -86,7 +86,7 @@ int Library::textureIndex( const char* name ) const
 {
   const int* value = textureIndices.find( name );
 
-  if( value == null ) {
+  if( value == nullptr ) {
     OZ_ERROR( "Invalid texture requested '%s'", name );
   }
   return *value;
@@ -96,7 +96,7 @@ int Library::soundIndex( const char* name ) const
 {
   const int* value = soundIndices.find( name );
 
-  if( value == null ) {
+  if( value == nullptr ) {
     OZ_ERROR( "Invalid sound requested '%s'", name );
   }
   return *value;
@@ -106,7 +106,7 @@ int Library::terraIndex( const char* name ) const
 {
   const int* value = terraIndices.find( name );
 
-  if( value == null ) {
+  if( value == nullptr ) {
     OZ_ERROR( "Invalid terra index requested '%s'", name );
   }
   return *value;
@@ -116,7 +116,7 @@ int Library::caelumIndex( const char* name ) const
 {
   const int* value = caelumIndices.find( name );
 
-  if( value == null ) {
+  if( value == nullptr ) {
     OZ_ERROR( "Invalid caelum index requested '%s'", name );
   }
   return *value;
@@ -126,7 +126,7 @@ int Library::modelIndex( const char* name ) const
 {
   const int* value = modelIndices.find( name );
 
-  if( value == null ) {
+  if( value == nullptr ) {
     OZ_ERROR( "Invalid model index requested '%s'", name );
   }
   return *value;
@@ -136,7 +136,7 @@ int Library::nameListIndex( const char* name ) const
 {
   const int* value = nameListIndices.find( name );
 
-  if( value == null ) {
+  if( value == nullptr ) {
     OZ_ERROR( "Invalid name list index requested '%s'", name );
   }
   return *value;
@@ -146,7 +146,7 @@ int Library::musicTrackIndex( const char* name ) const
 {
   const int* value = musicTrackIndices.find( name );
 
-  if( value == null ) {
+  if( value == nullptr ) {
     OZ_ERROR( "Invalid music track index requested '%s'", name );
   }
   return *value;
@@ -156,21 +156,21 @@ int Library::deviceIndex( const char* name ) const
 {
   const int* value = deviceIndices.find( name );
 
-  return value == null ? -1 : *value;
+  return value == nullptr ? -1 : *value;
 }
 
 int Library::imagoIndex( const char* name ) const
 {
   const int* value = imagoIndices.find( name );
 
-  return value == null ? -1 : *value;
+  return value == nullptr ? -1 : *value;
 }
 
 int Library::audioIndex( const char* name ) const
 {
   const int* value = audioIndices.find( name );
 
-  return value == null ? -1 : *value;
+  return value == nullptr ? -1 : *value;
 }
 
 void Library::freeBSPs()
@@ -489,7 +489,7 @@ void Library::initMusicRecurse( const char* path, List<Resource>* musicTracksLis
 
 void Library::initMusic( const char* userMusicPath )
 {
-  if( userMusicPath == null || String::isEmpty( userMusicPath ) ) {
+  if( userMusicPath == nullptr || String::isEmpty( userMusicPath ) ) {
 #ifdef OZ_NONFREE
     Log::println( "Music (*.oga, *.ogg, *.mp3, *.aac in 'music') {" );
 #else
@@ -601,7 +601,7 @@ void Library::initClasses()
       }
 
       ObjectClass::CreateFunc* const* createFunc = baseClasses.find( base );
-      if( createFunc == null ) {
+      if( createFunc == nullptr ) {
         OZ_ERROR( "%s: Invalid class base '%s'", name, base );
       }
 
@@ -672,7 +672,7 @@ void Library::initClasses()
       Log::println( "%s", name );
 
       ObjectClass* const* clazz = objClasses.find( name );
-      if( clazz == null ) {
+      if( clazz == nullptr ) {
         OZ_ERROR( "Class '%s' body missing in corrupted class file '%s'",
                   name, file->path().cstr() );
       }

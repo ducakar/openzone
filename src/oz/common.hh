@@ -96,6 +96,7 @@
 #if defined( OZ_GCC ) && OZ_GCC < 406
 # define constexpr const
 # define noexcept  throw()
+# define nullptr   __null
 #endif
 #if defined( OZ_GCC ) && OZ_GCC < 407
 # define override
@@ -190,15 +191,6 @@ struct nil_t
  * Unit constant.
  */
 const nil_t nil = {};
-
-/**
- * Null pointer constant.
- */
-#if defined( OZ_GCC ) && OZ_GCC < 406
-# define null __null
-#else
-const nullptr_t null = nullptr;
-#endif
 
 /**
  * Signed byte.

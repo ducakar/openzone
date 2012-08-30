@@ -53,7 +53,7 @@
 #define MAIN_CALL( code ) \
   { \
     DEFINE_CALLBACK( Main, code mainSemaphore.post(); ) \
-    System::core->CallOnMainThread( 0, CALLBACK_OBJECT( Main, null ) ); \
+    System::core->CallOnMainThread( 0, CALLBACK_OBJECT( Main, nullptr ) ); \
     mainSemaphore.wait(); \
   }
 

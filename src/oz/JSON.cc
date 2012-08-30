@@ -303,7 +303,7 @@ JSON JSON::Parser::parseValue()
         OZ_PARSE_ERROR( -3, "Unknown value type" );
       }
 
-      return JSON( null, NIL );
+      return JSON( nullptr, NIL );
     }
     case 'f': {
       if( pos.available() < 4 || pos.readChar() != 'a' || pos.readChar() != 'l' ||
@@ -682,7 +682,7 @@ inline JSON::JSON( Data* data_, Type valueType_ ) :
 {}
 
 JSON::JSON() :
-  data( null ), valueType( NIL ), wasAccessed( true )
+  data( nullptr ), valueType( NIL ), wasAccessed( true )
 {}
 
 JSON::~JSON()
@@ -693,7 +693,7 @@ JSON::~JSON()
 JSON::JSON( JSON&& v ) :
   data( v.data ), valueType( v.valueType ), wasAccessed( v.wasAccessed )
 {
-  v.data        = null;
+  v.data        = nullptr;
   v.valueType   = NIL;
   v.wasAccessed = true;
 }
@@ -706,7 +706,7 @@ JSON& JSON::operator = ( JSON&& v )
   valueType   = v.valueType;
   wasAccessed = v.wasAccessed;
 
-  v.data        = null;
+  v.data        = nullptr;
   v.valueType   = NIL;
   v.wasAccessed = true;
 
@@ -909,7 +909,7 @@ const JSON& JSON::operator [] ( const char* key ) const
   const HashString<JSON>& table = static_cast<ObjectData*>( data )->table;
   const JSON* value = table.find( key );
 
-  if( value == null ) {
+  if( value == nullptr ) {
     return nil;
   }
 
@@ -1171,7 +1171,7 @@ JSON& JSON::addNull()
 
   ArrayData* array = static_cast<ArrayData*>( data );
 
-  array->list.add( JSON( null, NIL ) );
+  array->list.add( JSON( nullptr, NIL ) );
   return array->list.last();
 }
 
@@ -1184,7 +1184,7 @@ JSON& JSON::addNull( const char* key )
 
   ObjectData* table = static_cast<ObjectData*>( data );
 
-  return *table->table.add( key, JSON( null, NIL ) );
+  return *table->table.add( key, JSON( nullptr, NIL ) );
 }
 
 JSON& JSON::includeNull( const char* key )
@@ -1198,8 +1198,8 @@ JSON& JSON::includeNull( const char* key )
 
   JSON* entry = table->table.find( key );
 
-  if( entry == null ) {
-    entry = table->table.add( key, JSON( null, NIL ) );
+  if( entry == nullptr ) {
+    entry = table->table.add( key, JSON( nullptr, NIL ) );
   }
 
   return *entry;
@@ -1216,7 +1216,7 @@ JSON& JSON::include( const char* key, bool value )
 
   JSON* entry = table->table.find( key );
 
-  if( entry == null ) {
+  if( entry == nullptr ) {
     entry = table->table.add( key, JSON( new BooleanData( value ), BOOLEAN ) );
   }
 
@@ -1234,7 +1234,7 @@ JSON& JSON::include( const char* key, int value )
 
   JSON* entry = table->table.find( key );
 
-  if( entry == null ) {
+  if( entry == nullptr ) {
     entry = table->table.add( key, JSON( new NumberData( value ), NUMBER ) );
   }
 
@@ -1252,7 +1252,7 @@ JSON& JSON::include( const char* key, float value )
 
   JSON* entry = table->table.find( key );
 
-  if( entry == null ) {
+  if( entry == nullptr ) {
     entry = table->table.add( key, JSON( new NumberData( value ), NUMBER ) );
   }
 
@@ -1270,7 +1270,7 @@ JSON& JSON::include( const char* key, const String& value )
 
   JSON* entry = table->table.find( key );
 
-  if( entry == null ) {
+  if( entry == nullptr ) {
     entry = table->table.add( key, JSON( new StringData( value ), STRING ) );
   }
 
@@ -1288,7 +1288,7 @@ JSON& JSON::include( const char* key, const char* value )
 
   JSON* entry = table->table.find( key );
 
-  if( entry == null ) {
+  if( entry == nullptr ) {
     entry = table->table.add( key, JSON( new StringData( value ), STRING ) );
   }
 
@@ -1306,7 +1306,7 @@ JSON& JSON::includeArray( const char* key )
 
   JSON* entry = table->table.find( key );
 
-  if( entry == null ) {
+  if( entry == nullptr ) {
     entry = table->table.add( key, JSON( new ArrayData(), STRING ) );
   }
 
@@ -1324,7 +1324,7 @@ JSON& JSON::includeObject( const char* key )
 
   JSON* entry = table->table.find( key );
 
-  if( entry == null ) {
+  if( entry == nullptr ) {
     entry = table->table.add( key, JSON( new ObjectData(), STRING ) );
   }
 
@@ -1367,7 +1367,7 @@ void JSON::clear( bool unusedWarnings )
 
   switch( valueType ) {
     case NIL: {
-      hard_assert( data == null );
+      hard_assert( data == nullptr );
       break;
     }
     case BOOLEAN: {
@@ -1408,7 +1408,7 @@ void JSON::clear( bool unusedWarnings )
     }
   }
 
-  data        = null;
+  data        = nullptr;
   valueType   = NIL;
   wasAccessed = true;
 }

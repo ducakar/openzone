@@ -88,7 +88,7 @@ void Entity::trigger()
 
   Struct* targetStr = orbis.structs[strIndex];
 
-  if( targetStr != null ) {
+  if( targetStr != nullptr ) {
     Entity& target = targetStr->entities[entIndex];
 
     if( target.state == OPENED || target.state == OPENING ) {
@@ -528,7 +528,7 @@ void Struct::onDemolish()
   overlappingObjs.clear();
 
   collider.mask = ~0;
-  collider.getOverlaps( toAABB(), null, &overlappingObjs, 4.0f * EPSILON );
+  collider.getOverlaps( toAABB(), nullptr, &overlappingObjs, 4.0f * EPSILON );
   collider.mask = Object::SOLID_BIT;
 
   for( int i = 0; i < overlappingObjs.length(); ++i ) {
@@ -562,7 +562,7 @@ void Struct::onDemolish()
 void Struct::onUpdate()
 {
   for( int i = 0; i < boundObjects.length(); ) {
-    if( orbis.objects[ boundObjects[i] ] == null ) {
+    if( orbis.objects[ boundObjects[i] ] == nullptr ) {
       boundObjects.removeUO( i );
     }
     else {
@@ -657,14 +657,14 @@ void Struct::destroy()
   for( int i = 0; i < boundObjects.length(); ++i ) {
     Object* obj = orbis.objects[ boundObjects[i] ];
 
-    if( obj != null ) {
+    if( obj != nullptr ) {
       obj->destroy();
     }
   }
 
   onDemolish();
 
-  if( bsp->fragPool != null ) {
+  if( bsp->fragPool != nullptr ) {
     synapse.gen( bsp->fragPool,
                  bsp->nFrags,
                  Bounds( Point( mins.x, mins.y, 0.5f * ( mins.z + maxs.z ) ), maxs ),

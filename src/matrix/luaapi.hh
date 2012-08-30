@@ -131,14 +131,14 @@ static int ozOrbisAddStr( lua_State* l )
     bounds = Struct::rotate( bounds, heading ) + ( p - Point::ORIGIN );
 
     if( collider.overlaps( bounds.toAABB() ) ) {
-      ms.str = null;
+      ms.str = nullptr;
       l_pushint( -1 );
       return 1;
     }
   }
 
   ms.str = synapse.add( bsp, p, heading, empty );
-  l_pushint( ms.str == null ? -1 : ms.str->index );
+  l_pushint( ms.str == nullptr ? -1 : ms.str->index );
   return 1;
 }
 
@@ -171,14 +171,14 @@ static int ozOrbisAddObj( lua_State* l )
     }
 
     if( collider.overlaps( aabb ) ) {
-      ms.obj = null;
+      ms.obj = nullptr;
       l_pushint( -1 );
       return 1;
     }
   }
 
   ms.obj = synapse.add( clazz, p, heading, empty );
-  l_pushint( ms.obj == null ? -1 : ms.obj->index );
+  l_pushint( ms.obj == nullptr ? -1 : ms.obj->index );
   return 1;
 }
 
@@ -194,14 +194,14 @@ static int ozOrbisAddFrag( lua_State* l )
 
   if( mode != ADD_FORCE ) {
     if( collider.overlaps( p ) ) {
-      ms.frag = null;
+      ms.frag = nullptr;
       l_pushint( -1 );
       return 1;
     }
   }
 
   ms.frag = synapse.add( pool, p, velocity );
-  l_pushint( ms.frag == null ? -1 : ms.frag->index );
+  l_pushint( ms.frag == nullptr ? -1 : ms.frag->index );
   return 1;
 }
 
@@ -217,7 +217,7 @@ static int ozOrbisGenFrags( lua_State* l )
   Vec3   velocity = Vec3( l_tofloat( 9 ), l_tofloat( 10 ), l_tofloat( 11 ) );
 
   synapse.gen( pool, nFrags, bb, velocity );
-  ms.frag = null;
+  ms.frag = nullptr;
   return 0;
 }
 
@@ -229,7 +229,7 @@ static int ozOrbisOverlaps( lua_State* l )
   AABB aabb  = AABB( Point( l_tofloat( 2 ), l_tofloat( 3 ), l_tofloat( 4 ) ),
                      Vec3( l_tofloat( 5 ), l_tofloat( 6 ), l_tofloat( 7 ) ) );
 
-  const Object* exclObj = null;
+  const Object* exclObj = nullptr;
   if( l_gettop() == 8 ) {
     int index = l_toint( 8 );
 
@@ -265,8 +265,8 @@ static int ozOrbisBindOverlaps( lua_State* l )
     ERROR( "At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
   }
 
-  List<Struct*>* structs = null;
-  List<Object*>* objects = null;
+  List<Struct*>* structs = nullptr;
+  List<Object*>* objects = nullptr;
 
   hard_assert( collider.mask == Object::SOLID_BIT );
 
@@ -411,13 +411,13 @@ static int ozBindStr( lua_State* l )
 
   int index = l_toint( 1 );
   if( uint( index ) >= uint( orbis.structs.length() ) ) {
-    ms.str = null;
+    ms.str = nullptr;
   }
   else {
     ms.str = orbis.structs[index];
   }
 
-  l_pushbool( ms.str != null );
+  l_pushbool( ms.str != nullptr );
   return 1;
 }
 
@@ -425,14 +425,14 @@ static int ozBindNextStr( lua_State* l )
 {
   ARG( 0 );
 
-  ms.str = null;
+  ms.str = nullptr;
 
-  while( ms.str == null && ms.strIndex < ms.structs.length() ) {
+  while( ms.str == nullptr && ms.strIndex < ms.structs.length() ) {
     ms.str = ms.structs[ms.strIndex];
     ++ms.strIndex;
   }
 
-  l_pushbool( ms.str != null );
+  l_pushbool( ms.str != nullptr );
   return 1;
 }
 
@@ -440,7 +440,7 @@ static int ozStrIsNull( lua_State* l )
 {
   ARG( 0 );
 
-  l_pushbool( ms.str == null );
+  l_pushbool( ms.str == nullptr );
   return 1;
 }
 
@@ -448,7 +448,7 @@ static int ozStrGetIndex( lua_State* l )
 {
   ARG( 0 );
 
-  l_pushint( ms.str == null ? -1 : ms.str->index );
+  l_pushint( ms.str == nullptr ? -1 : ms.str->index );
   return 1;
 }
 
@@ -582,7 +582,7 @@ static int ozStrRemove( lua_State* l )
   STR();
 
   synapse.remove( ms.str );
-  ms.str = null;
+  ms.str = nullptr;
   return 0;
 }
 
@@ -606,7 +606,7 @@ static int ozStrBindBoundObj( lua_State* l )
   }
 
   ms.obj = orbis.objects[ ms.str->boundObjects[index] ];
-  l_pushbool( ms.obj != null );
+  l_pushbool( ms.obj != nullptr );
   return 1;
 }
 
@@ -626,7 +626,7 @@ static int ozStrBindEnt( lua_State* l )
   ENT_INDEX( l_toint( 1 ) );
 
   ms.ent = ent;
-  l_pushbool( ms.ent != null );
+  l_pushbool( ms.ent != nullptr );
   return 1;
 }
 
@@ -663,8 +663,8 @@ static int ozStrBindOverlaps( lua_State* l )
     ERROR( "At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
   }
 
-  List<Struct*>* structs = null;
-  List<Object*>* objects = null;
+  List<Struct*>* structs = nullptr;
+  List<Object*>* objects = nullptr;
 
   hard_assert( collider.mask == Object::SOLID_BIT );
 
@@ -941,7 +941,7 @@ static int ozEntBindOverlaps( lua_State* l )
     ERROR( "At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
   }
 
-  List<Object*>* objects = null;
+  List<Object*>* objects = nullptr;
 
   hard_assert( collider.mask == Object::SOLID_BIT );
 
@@ -1146,13 +1146,13 @@ static int ozBindObj( lua_State* l )
 
   int index = l_toint( 1 );
   if( uint( index ) >= uint( orbis.objects.length() ) ) {
-    ms.obj = null;
+    ms.obj = nullptr;
   }
   else {
     ms.obj = orbis.objects[index];
   }
 
-  l_pushbool( ms.obj != null );
+  l_pushbool( ms.obj != nullptr );
   return 1;
 }
 
@@ -1162,7 +1162,7 @@ static int ozBindSelf( lua_State* l )
 
   ms.obj = ms.self;
 
-  l_pushbool( ms.obj != null );
+  l_pushbool( ms.obj != nullptr );
   return 1;
 }
 
@@ -1172,7 +1172,7 @@ static int ozBindUser( lua_State* l )
 
   ms.obj = ms.user;
 
-  l_pushbool( ms.obj != null );
+  l_pushbool( ms.obj != nullptr );
   return 1;
 }
 
@@ -1180,14 +1180,14 @@ static int ozBindNextObj( lua_State* l )
 {
   ARG( 0 );
 
-  ms.obj = null;
+  ms.obj = nullptr;
 
-  while( ms.obj == null && ms.objIndex < ms.objects.length() ) {
+  while( ms.obj == nullptr && ms.objIndex < ms.objects.length() ) {
     ms.obj = ms.objects[ms.objIndex];
     ++ms.objIndex;
   }
 
-  l_pushbool( ms.obj != null );
+  l_pushbool( ms.obj != nullptr );
   return 1;
 }
 
@@ -1195,7 +1195,7 @@ static int ozObjIsNull( lua_State* l )
 {
   ARG( 0 );
 
-  l_pushbool( ms.obj == null );
+  l_pushbool( ms.obj == nullptr );
   return 1;
 }
 
@@ -1219,7 +1219,7 @@ static int ozObjIsCut( lua_State* l )
 {
   ARG( 0 );
 
-  l_pushbool( ms.obj != null && ms.obj->cell == null );
+  l_pushbool( ms.obj != nullptr && ms.obj->cell == nullptr );
   return 1;
 }
 
@@ -1227,7 +1227,7 @@ static int ozObjGetIndex( lua_State* l )
 {
   ARG( 0 );
 
-  l_pushint( ms.obj == null ? -1 : ms.obj->index );
+  l_pushint( ms.obj == nullptr ? -1 : ms.obj->index );
   return 1;
 }
 
@@ -1236,7 +1236,7 @@ static int ozObjGetPos( lua_State* l )
   ARG( 0 );
   OBJ();
 
-  if( ms.obj->cell == null ) {
+  if( ms.obj->cell == nullptr ) {
     hard_assert( ms.obj->flags & Object::DYNAMIC_BIT );
 
     const Dynamic* dyn = static_cast<const Dynamic*>( ms.obj );
@@ -1244,7 +1244,7 @@ static int ozObjGetPos( lua_State* l )
     if( dyn->parent >= 0 ) {
       Object* parent = orbis.objects[dyn->parent];
 
-      if( parent != null ) {
+      if( parent != nullptr ) {
         l_pushfloat( parent->p.x );
         l_pushfloat( parent->p.y );
         l_pushfloat( parent->p.z );
@@ -1287,7 +1287,7 @@ static int ozObjHasFlag( lua_State* l )
 {
   ARG( 1 );
 
-  l_pushbool( ms.obj != null && ( ms.obj->flags & l_toint( 1 ) ) );
+  l_pushbool( ms.obj != nullptr && ( ms.obj->flags & l_toint( 1 ) ) );
   return 1;
 }
 
@@ -1468,7 +1468,7 @@ static int ozObjBindItem( lua_State* l )
   }
 
   ms.obj = orbis.objects[ ms.obj->items[index] ];
-  l_pushbool( ms.obj != null );
+  l_pushbool( ms.obj != nullptr );
   return 1;
 }
 
@@ -1487,11 +1487,11 @@ static int ozObjAddItem( lua_State* l )
   if( l_type( 1 ) == LUA_TNUMBER ) {
     ITEM_INDEX( l_toint( 1 ) );
 
-    if( item->cell == null ) {
+    if( item->cell == nullptr ) {
       hard_assert( item->parent >= 0 );
 
       Object* container = orbis.objects[item->parent];
-      if( container != null ) {
+      if( container != nullptr ) {
         container->items.exclude( item->index );
       }
     }
@@ -1502,7 +1502,7 @@ static int ozObjAddItem( lua_State* l )
     const char* sClazz = l_tostring( 1 );
 
     Object* obj = synapse.addObject( sClazz, Point::ORIGIN, Heading( Math::rand( 4 ) ), false );
-    if( obj == null ) {
+    if( obj == nullptr ) {
       l_pushbool( false );
       return 1;
     }
@@ -1517,7 +1517,7 @@ static int ozObjAddItem( lua_State* l )
   newItem->parent = ms.obj->index;
   ms.obj->items.add( newItem->index );
 
-  if( newItem->cell != null ) {
+  if( newItem->cell != nullptr ) {
     synapse.cut( newItem );
   }
 
@@ -1584,8 +1584,8 @@ static int ozObjBindOverlaps( lua_State* l )
     ERROR( "At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
   }
 
-  List<Struct*>* structs = null;
-  List<Object*>* objects = null;
+  List<Struct*>* structs = nullptr;
+  List<Object*>* objects = nullptr;
 
   hard_assert( collider.mask == Object::SOLID_BIT );
 
@@ -1773,7 +1773,7 @@ static int ozDynGetParent( lua_State* l )
   OBJ();
   OBJ_DYNAMIC();
 
-  l_pushint( dyn->parent >= 0 && orbis.objects[dyn->parent] == null ? -1 : dyn->parent );
+  l_pushint( dyn->parent >= 0 && orbis.objects[dyn->parent] == nullptr ? -1 : dyn->parent );
   return 1;
 }
 
@@ -2103,7 +2103,7 @@ static int ozBotGetCargo( lua_State* l )
   OBJ();
   OBJ_BOT();
 
-  l_pushint( bot->cargo >= 0 && orbis.objects[bot->cargo] == null ? -1 : bot->cargo );
+  l_pushint( bot->cargo >= 0 && orbis.objects[bot->cargo] == nullptr ? -1 : bot->cargo );
   return 1;
 }
 
@@ -2113,7 +2113,7 @@ static int ozBotGetWeapon( lua_State* l )
   OBJ();
   OBJ_BOT();
 
-  l_pushint( bot->weapon >= 0 && orbis.objects[bot->weapon] == null ? -1 : bot->weapon );
+  l_pushint( bot->weapon >= 0 && orbis.objects[bot->weapon] == nullptr ? -1 : bot->weapon );
   return 1;
 }
 
@@ -2135,7 +2135,7 @@ static int ozBotSetWeaponItem( lua_State* l )
     int index = bot->items[item];
     Weapon* weapon = static_cast<Weapon*>( orbis.objects[index] );
 
-    if( weapon == null ) {
+    if( weapon == nullptr ) {
       l_pushbool( false );
       return 1;
     }
@@ -2242,7 +2242,7 @@ static int ozVehicleGetPilot( lua_State* l )
   OBJ();
   OBJ_VEHICLE();
 
-  l_pushint( veh->pilot >= 0 && orbis.objects[veh->pilot] == null ? -1 : veh->pilot );
+  l_pushint( veh->pilot >= 0 && orbis.objects[veh->pilot] == nullptr ? -1 : veh->pilot );
   return 1;
 }
 
@@ -2352,7 +2352,7 @@ static int ozVehicleEmbarkBot( lua_State* l )
 
   BOT_INDEX( l_toint( 1 ) );
 
-  if( bot->cell == null ) {
+  if( bot->cell == nullptr ) {
     ERROR( "Bot is already in some vehicle" );
   }
 
@@ -2372,7 +2372,7 @@ static int ozVehicleDisembarkBot( lua_State* l )
   }
 
   Bot* pilot = static_cast<Bot*>( orbis.objects[veh->pilot] );
-  if( pilot == null ) {
+  if( pilot == nullptr ) {
     return 0;
   }
 
@@ -2400,13 +2400,13 @@ static int ozFragBindIndex( lua_State* l )
 
   int index = l_toint( 1 );
   if( uint( index ) >= uint( orbis.frags.length() ) ) {
-    ms.frag = null;
+    ms.frag = nullptr;
   }
   else {
     ms.frag = orbis.frags[index];
   }
 
-  l_pushbool( ms.frag != null );
+  l_pushbool( ms.frag != nullptr );
   return 1;
 }
 
@@ -2414,7 +2414,7 @@ static int ozFragIsNull( lua_State* l )
 {
   ARG( 0 );
 
-  l_pushbool( ms.frag == null );
+  l_pushbool( ms.frag == nullptr );
   return 1;
 }
 
@@ -2422,7 +2422,7 @@ static int ozFragGetIndex( lua_State* l )
 {
   ARG( 0 );
 
-  l_pushint( ms.frag == null ? -1 : ms.frag->index );
+  l_pushint( ms.frag == nullptr ? -1 : ms.frag->index );
   return 1;
 }
 
@@ -2514,7 +2514,7 @@ static int ozFragRemove( lua_State* l )
   FRAG();
 
   synapse.remove( ms.frag );
-  ms.frag = null;
+  ms.frag = nullptr;
   return 0;
 }
 
@@ -2553,8 +2553,8 @@ static int ozFragBindOverlaps( lua_State* l )
     ERROR( "At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
   }
 
-  List<Struct*>* structs = null;
-  List<Object*>* objects = null;
+  List<Struct*>* structs = nullptr;
+  List<Object*>* objects = nullptr;
 
   hard_assert( collider.mask == Object::SOLID_BIT );
 

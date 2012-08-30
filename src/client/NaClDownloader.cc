@@ -126,7 +126,7 @@ void NaClDownloader::begin( const char* url_ )
     request.SetRecordDownloadProgress( true );
 
     _this->loader = new pp::URLLoader( System::instance );
-    if( _this->loader == null ) {
+    if( _this->loader == nullptr ) {
       _this->semaphore.post();
       return;
     }

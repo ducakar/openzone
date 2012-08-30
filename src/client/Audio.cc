@@ -61,7 +61,7 @@ void Audio::playSound( int sound, float volume, const Object* parent ) const
   // if the sound source doesn't move with the player. That's why we position such sounds
   // at the origin of the coordinate system relative to player.
   if( parent == camera.botObj || obj == camera.botObj ||
-      ( camera.botObj != null && parent->index == camera.botObj->parent ) )
+      ( camera.botObj != nullptr && parent->index == camera.botObj->parent ) )
   {
     alSourcei( srcId, AL_SOURCE_RELATIVE, AL_TRUE );
   }
@@ -86,7 +86,7 @@ void Audio::playContSound( int sound, float volume, const Object* parent ) const
   Context::ContSource* contSource = context.contSources.find( key );
   const Dynamic*       dynParent  = static_cast<const Dynamic*>( parent );
 
-  if( contSource == null ) {
+  if( contSource == nullptr ) {
     uint srcId = context.addContSource( sound, key );
     if( srcId == Context::INVALID_SOURCE ) {
       return;
@@ -124,7 +124,7 @@ bool Audio::playSpeak( const char* text, float volume, const Object* parent ) co
   const Dynamic* dynParent = static_cast<const Dynamic*>( parent );
 
   if( context.speakSource.owner < 0 ) {
-    if( text == null ) {
+    if( text == nullptr ) {
       return false;
     }
 
@@ -172,7 +172,7 @@ void Audio::playEngineSound( int sound, float volume, float pitch ) const
 
   Context::ContSource* contSource = context.contSources.find( key );
 
-  if( contSource == null ) {
+  if( contSource == nullptr ) {
     uint srcId = context.addContSource( sound, key );
     if( srcId == Context::INVALID_SOURCE ) {
       return;

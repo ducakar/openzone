@@ -57,7 +57,7 @@ class Thread
      * Create instance.
      */
     Thread() :
-      descriptor( null )
+      descriptor( nullptr )
     {}
 
     /**
@@ -66,7 +66,7 @@ class Thread
     Thread( Thread&& t ) :
       descriptor( t.descriptor )
     {
-      t.descriptor = null;
+      t.descriptor = nullptr;
     }
 
     /**
@@ -75,7 +75,7 @@ class Thread
     Thread& operator = ( Thread&& t )
     {
       descriptor   = t.descriptor;
-      t.descriptor = null;
+      t.descriptor = nullptr;
       return *this;
     }
 
@@ -84,7 +84,7 @@ class Thread
      */
     bool isValid() const
     {
-      return descriptor != null;
+      return descriptor != nullptr;
     }
 
     /**

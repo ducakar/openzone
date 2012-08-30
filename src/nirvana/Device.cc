@@ -40,7 +40,7 @@ Device::~Device()
 
 const char* Device::getMemo() const
 {
-  return null;
+  return nullptr;
 }
 
 void Device::write( BufferStream* ) const

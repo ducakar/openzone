@@ -188,7 +188,7 @@ class Bot : public Dynamic
     bool lock( const Entity* entity );
     bool use( const Object* object );
     bool take( const Dynamic* item );
-    bool grab( const Dynamic* dynamic = null );
+    bool grab( const Dynamic* dynamic = nullptr );
     bool rotateCargo();
     bool throwCargo();
     bool invUse( const Dynamic* item, const Object* source );

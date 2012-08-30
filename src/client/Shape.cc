@@ -169,15 +169,15 @@ void Shape::bind() const
 
   glEnableVertexAttribArray( Attrib::POSITION );
   glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         static_cast<char*>( null ) + offsetof( Vertex, pos ) );
+                         static_cast<char*>( nullptr ) + offsetof( Vertex, pos ) );
 
   glEnableVertexAttribArray( Attrib::TEXCOORD );
   glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         static_cast<char*>( null ) + offsetof( Vertex, texCoord ) );
+                         static_cast<char*>( nullptr ) + offsetof( Vertex, texCoord ) );
 
   glEnableVertexAttribArray( Attrib::NORMAL );
   glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                         static_cast<char*>( null ) + offsetof( Vertex, normal ) );
+                         static_cast<char*>( nullptr ) + offsetof( Vertex, normal ) );
 
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 }
@@ -284,7 +284,7 @@ void Shape::box( const AABB& bb )
   tf.model.scale( bb.dim );
   tf.apply();
 
-  glDrawElements( GL_TRIANGLE_STRIP, 22, GL_UNSIGNED_SHORT, static_cast<ushort*>( null ) + 0 );
+  glDrawElements( GL_TRIANGLE_STRIP, 22, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 0 );
 }
 
 void Shape::wireBox( const AABB& bb )
@@ -293,7 +293,7 @@ void Shape::wireBox( const AABB& bb )
   tf.model.scale( bb.dim );
   tf.apply();
 
-  glDrawElements( GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<ushort*>( null ) + 22 );
+  glDrawElements( GL_LINES, 24, GL_UNSIGNED_SHORT, static_cast<ushort*>( nullptr ) + 22 );
 }
 
 void Shape::init()

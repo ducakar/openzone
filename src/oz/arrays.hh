@@ -55,7 +55,7 @@ class ArrayIterator : public IteratorBase<Elem>
      */
     OZ_ALWAYS_INLINE
     ArrayIterator() :
-      IteratorBase<Elem>( null ), past( null )
+      IteratorBase<Elem>( nullptr ), past( nullptr )
     {}
 
     /**
@@ -88,6 +88,24 @@ class ArrayIterator : public IteratorBase<Elem>
 
       ++elem;
       return *this;
+    }
+
+    /**
+     * STL-compatible begin iterator.
+     */
+    OZ_ALWAYS_INLINE
+    Elem* begin() const
+    {
+      return elem;
+    }
+
+    /**
+     * STL-compatible end iterator.
+     */
+    OZ_ALWAYS_INLINE
+    Elem* end() const
+    {
+      return past;
     }
 
 };
@@ -307,7 +325,7 @@ inline Elem* aFind( Elem* aSrc, const Value& value, int count )
       return &aSrc[i];
     }
   }
-  return null;
+  return nullptr;
 }
 
 /**
@@ -321,7 +339,7 @@ inline Elem* aFindLast( Elem* aSrc, const Value& value, int count )
       return &aSrc[i];
     }
   }
-  return null;
+  return nullptr;
 }
 
 /**
@@ -360,7 +378,7 @@ inline void aFree( Elem* aDest, int count )
 {
   for( int i = 0; i < count; ++i ) {
     delete aDest[i];
-    aDest[i] = null;
+    aDest[i] = nullptr;
   }
 }
 
@@ -375,7 +393,7 @@ inline void aFree( Elem* aDest, int count )
 template <typename Elem>
 inline Elem* aRealloc( Elem* aSrc, int count, int newCount )
 {
-  Elem* aNew = null;
+  Elem* aNew = nullptr;
 
   if( newCount != 0 ) {
     aNew = new Elem[newCount];
@@ -408,7 +426,7 @@ inline void aReverse( Elem* aDest, int count )
 /**
  * Utility function for aSort.
  *
- * `Elem` type must have `operator \< ( const Elem\& )` defined.
+ * `Elem` type must have `operator < ( const Elem\& )` defined.
  * Quicksort algorithm is used which takes last element in a partition as a pivot so sorting a
  * sorted or nearly sorted array will take O(n^2) time instead of O(n log n) as in average case.
  * When a partition has at most 10 elements, selection sort is used.
@@ -482,7 +500,7 @@ inline void aSort( Elem* aSrc, int count )
  * Find an element using bisection.
  *
  * `Elem` type must have defined `operator == ( const Key\&, const Elem\& )` and
- * `operator \< ( const Key\&, const Elem\& )`.
+ * `operator < ( const Key\&, const Elem\& )`.
  *
  * @param aSrc array.
  * @param key the key we are looking for.
@@ -524,7 +542,7 @@ inline int aBisectFind( Elem* aSrc, const Key& key, int count )
  *   aSrc[index - 1] <= key && key < aSrc[index]
  * @endcode
  * If all elements are lesser, return `count` and if all elements are greater, return 0.
- * `Elem` type must have defined `operator \< ( const Key\&, const Elem\& )`.
+ * `Elem` type must have defined `operator < ( const Key\&, const Elem\& )`.
  *
  * @param aSrc array.
  * @param key the key we are looking for.

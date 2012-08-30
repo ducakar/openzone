@@ -58,13 +58,13 @@ void VehicleAudio::play( const Audio* parent )
   }
 
   // events
-  for( const Object::Event* event = obj->events.first(); event != null; event = event->next[0] ) {
+  for( const Object::Event* event = obj->events.first(); event != nullptr; event = event->next[0] ) {
     hard_assert( event->id < ObjectClass::MAX_SOUNDS );
 
     if( event->id >= 0 && sounds[event->id] >= 0 ) {
       hard_assert( 0.0f <= event->intensity );
 
-      playSound( sounds[event->id], event->intensity, parent == null ? obj : parent->obj );
+      playSound( sounds[event->id], event->intensity, parent == nullptr ? obj : parent->obj );
     }
   }
 
@@ -72,8 +72,8 @@ void VehicleAudio::play( const Audio* parent )
   for( int i = 0; i < obj->items.length(); ++i ) {
     const Object* item = orbis.objects[ obj->items[i] ];
 
-    if( item != null && ( item->flags & Object::AUDIO_BIT ) ) {
-      context.playAudio( item, parent == null ? this : parent );
+    if( item != nullptr && ( item->flags & Object::AUDIO_BIT ) ) {
+      context.playAudio( item, parent == nullptr ? this : parent );
     }
   }
 
@@ -83,8 +83,8 @@ void VehicleAudio::play( const Audio* parent )
 
     hard_assert( bot->flags & Object::BOT_BIT );
 
-    if( bot != null && ( bot->flags & Object::AUDIO_BIT ) ) {
-      context.playAudio( bot, parent == null ? this : parent );
+    if( bot != nullptr && ( bot->flags & Object::AUDIO_BIT ) ) {
+      context.playAudio( bot, parent == nullptr ? this : parent );
     }
   }
 }

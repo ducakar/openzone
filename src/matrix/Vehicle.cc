@@ -57,7 +57,7 @@ void Vehicle::exit()
   if( pilot >= 0 ) {
     Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
 
-    if( bot != null ) {
+    if( bot != nullptr ) {
       float hsc[2];
       Math::sincos( h, &hsc[0], &hsc[1] );
 
@@ -81,7 +81,7 @@ void Vehicle::eject()
   if( pilot >= 0 ) {
     Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
 
-    if( bot != null ) {
+    if( bot != nullptr ) {
       bot->p    = p + rot * clazz->pilotPos;
       bot->p.z += bot->dim.z + dim.z + EJECT_EPSILON;
 
@@ -227,7 +227,7 @@ void Vehicle::onDestroy()
   if( pilot >= 0 ) {
     Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
 
-    if( bot != null ) {
+    if( bot != nullptr ) {
       if( state & AUTO_EJECT_BIT ) {
         eject();
       }
@@ -250,7 +250,7 @@ void Vehicle::onUpdate()
   if( pilot >= 0 ) {
     Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
 
-    if( bot == null || bot->parent < 0 ) {
+    if( bot == nullptr || bot->parent < 0 ) {
       pilot = -1;
     }
     else if( bot->state & Bot::DEAD_BIT ) {
@@ -261,7 +261,7 @@ void Vehicle::onUpdate()
 
   actions = 0;
 
-  Bot* bot = null;
+  Bot* bot = nullptr;
 
   if( pilot >= 0 ) {
     bot = static_cast<Bot*>( orbis.objects[pilot] );
@@ -359,7 +359,7 @@ void Vehicle::onUpdate()
     }
   }
 
-  if( bot != null ) {
+  if( bot != nullptr ) {
     bot->p = p + rot * clazz->pilotPos + momentum * Timer::TICK_TIME;
     bot->momentum = velocity;
     bot->velocity = velocity;

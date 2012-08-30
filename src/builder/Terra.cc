@@ -74,7 +74,7 @@ void Terra::load()
   String realPath = imageFile.realDir() + "/" + imageFile.path();
 
   FIBITMAP* image = FreeImage_Load( FIF_PNG, realPath );
-  if( image == null ) {
+  if( image == nullptr ) {
     OZ_ERROR( "Failed to load heightmap '%s'", realPath.cstr() );
   }
 

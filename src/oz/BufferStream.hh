@@ -56,7 +56,7 @@ class BufferStream
      * Create an empty stream.
      */
     BufferStream( Endian::Order order_ = Endian::NATIVE ) :
-      pos( null ), start( null ), end( null ), order( order_ )
+      pos( nullptr ), start( nullptr ), end( nullptr ), order( order_ )
     {}
 
     /**
@@ -75,7 +75,7 @@ class BufferStream
       int length = int( s.pos - s.start );
       int size   = int( s.end - s.start );
 
-      start = size == 0 ? null : new char[size];
+      start = size == 0 ? nullptr : new char[size];
       end   = start + size;
       pos   = start + length;
       order = s.order;
@@ -89,9 +89,9 @@ class BufferStream
     BufferStream( BufferStream&& s ) :
       pos( s.pos ), start( s.start ), end( s.end ), order( s.order )
     {
-      s.pos   = null;
-      s.start = null;
-      s.end   = null;
+      s.pos   = nullptr;
+      s.start = nullptr;
+      s.end   = nullptr;
       s.order = Endian::NATIVE;
     }
 
@@ -139,9 +139,9 @@ class BufferStream
       end   = s.end;
       order = s.order;
 
-      s.pos   = null;
-      s.start = null;
-      s.end   = null;
+      s.pos   = nullptr;
+      s.start = nullptr;
+      s.end   = nullptr;
       s.order = Endian::NATIVE;
 
       return *this;
@@ -1121,9 +1121,9 @@ class BufferStream
     {
       delete[] start;
 
-      pos   = null;
-      start = null;
-      end   = null;
+      pos   = nullptr;
+      start = nullptr;
+      end   = nullptr;
     }
 
 };

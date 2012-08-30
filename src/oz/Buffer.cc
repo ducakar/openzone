@@ -32,7 +32,7 @@ namespace oz
 {
 
 Buffer::Buffer() :
-  data( null ), size( 0 )
+  data( nullptr ), size( 0 )
 {}
 
 Buffer::~Buffer()
@@ -41,7 +41,7 @@ Buffer::~Buffer()
 }
 
 Buffer::Buffer( const Buffer& b ) :
-  data( null ), size( b.size )
+  data( nullptr ), size( b.size )
 {
   if( b.size != 0 ) {
     data = new char[size];
@@ -52,7 +52,7 @@ Buffer::Buffer( const Buffer& b ) :
 Buffer::Buffer( Buffer&& b ) :
   data( b.data ), size( b.size )
 {
-  b.data = null;
+  b.data = nullptr;
   b.size = 0;
 }
 
@@ -82,7 +82,7 @@ Buffer& Buffer::operator = ( Buffer&& b )
   data = b.data;
   size = b.size;
 
-  b.data = null;
+  b.data = nullptr;
   b.size = 0;
 
   return *this;
@@ -104,20 +104,20 @@ void Buffer::dealloc()
 {
   delete[] data;
 
-  data = null;
+  data = nullptr;
   size = 0;
 }
 
 InputStream Buffer::inputStream( Endian::Order order ) const
 {
-  hard_assert( data != null );
+  hard_assert( data != nullptr );
 
   return InputStream( data, data + size, order );
 }
 
 OutputStream Buffer::outputStream( Endian::Order order ) const
 {
-  hard_assert( data != null );
+  hard_assert( data != nullptr );
 
   return OutputStream( data, data + size, order );
 }

@@ -55,7 +55,7 @@ void Matrix::update()
   for( int i = 0; i < orbis.objects.length(); ++i ) {
     Object* obj = orbis.objects[i];
 
-    if( obj != null ) {
+    if( obj != nullptr ) {
       // If this is cleared on the object's update, we may also remove effects that were added
       // by other objects, updated before it.
       obj->events.free();
@@ -71,7 +71,7 @@ void Matrix::update()
   for( int i = 0; i < orbis.structs.length(); ++i ) {
     Struct* str = orbis.structs[i];
 
-    if( str == null ) {
+    if( str == nullptr ) {
       continue;
     }
 
@@ -89,7 +89,7 @@ void Matrix::update()
   for( int i = 0; i < orbis.objects.length(); ++i ) {
     Object* obj = orbis.objects[i];
 
-    if( obj == null ) {
+    if( obj == nullptr ) {
       continue;
     }
 
@@ -100,7 +100,7 @@ void Matrix::update()
       // clear inventory of invalid references
       if( !obj->items.isEmpty() ) {
         for( int j = 0; j < obj->items.length(); ) {
-          if( orbis.objects[ obj->items[j] ] == null ) {
+          if( orbis.objects[ obj->items[j] ] == nullptr ) {
             obj->items.remove( j );
           }
           else {
@@ -112,15 +112,15 @@ void Matrix::update()
       obj->update();
 
       // objects should not remove themselves within onUpdate()
-      hard_assert( orbis.objects[i] != null );
+      hard_assert( orbis.objects[i] != nullptr );
 
       if( obj->flags & Object::DYNAMIC_BIT ) {
         Dynamic* dyn = static_cast<Dynamic*>( obj );
 
-        hard_assert( ( dyn->parent >= 0 ) == ( dyn->cell == null ) );
-        hard_assert( dyn->parent == -1 || orbis.objects[dyn->parent] != null );
+        hard_assert( ( dyn->parent >= 0 ) == ( dyn->cell == nullptr ) );
+        hard_assert( dyn->parent == -1 || orbis.objects[dyn->parent] != nullptr );
 
-        if( dyn->cell != null ) {
+        if( dyn->cell != nullptr ) {
           physics.updateObj( dyn );
 
           // remove on velocity overflow
@@ -135,7 +135,7 @@ void Matrix::update()
   for( int i = 0; i < orbis.frags.length(); ++i ) {
     Frag* frag = orbis.frags[i];
 
-    if( frag == null ) {
+    if( frag == nullptr ) {
       continue;
     }
 

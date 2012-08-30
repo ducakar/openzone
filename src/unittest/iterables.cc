@@ -79,7 +79,7 @@ void test_iterables()
   OZ_CHECK( iEquals( citer( l ), citer( l ) ) );
 
   iSet( l.iter(), 0 );
-  iSet( invalid, static_cast<Foo*>( null ) );
+  iSet( invalid, static_cast<Foo*>( nullptr ) );
   foreach( i, l.citer() ) {
     OZ_CHECK( *i == 0 );
   }
@@ -105,11 +105,11 @@ void test_iterables()
   OZ_CHECK( iContains( v.citer(), 2 ) );
   OZ_CHECK( iContains( l.citer(), 3 ) );
   OZ_CHECK( iContains( v.citer(), 3 ) );
-  OZ_CHECK( !iContains( invalid, static_cast<Foo*>( null ) ) );
+  OZ_CHECK( !iContains( invalid, static_cast<Foo*>( nullptr ) ) );
 
   OZ_CHECK( !iFind( l.citer(), 0 ).isValid() );
   OZ_CHECK( !iFind( v.citer(), 0 ).isValid() );
-  OZ_CHECK( !iFind( invalid, static_cast<Foo*>( null ) ).isValid() );
+  OZ_CHECK( !iFind( invalid, static_cast<Foo*>( nullptr ) ).isValid() );
 
   auto li = l.citer();
   auto vi = v.citer();
@@ -128,7 +128,7 @@ void test_iterables()
 
   OZ_CHECK( !iFindLast( l.citer(), 0 ).isValid() );
   OZ_CHECK( !iFindLast( v.citer(), 0 ).isValid() );
-  OZ_CHECK( !iFindLast( invalid, static_cast<Foo*>( null ) ).isValid() );
+  OZ_CHECK( !iFindLast( invalid, static_cast<Foo*>( nullptr ) ).isValid() );
 
   li = l.citer();
   vi = v.citer();
@@ -155,7 +155,7 @@ void test_iterables()
   OZ_CHECK( iIndex( v.citer(), 2 ) == 1 );
   OZ_CHECK( iIndex( l.citer(), 3 ) == 2 );
   OZ_CHECK( iIndex( v.citer(), 3 ) == 2 );
-  OZ_CHECK( iIndex( invalid, static_cast<Foo*>( null ) ) == -1 );
+  OZ_CHECK( iIndex( invalid, static_cast<Foo*>( nullptr ) ) == -1 );
 
   OZ_CHECK( iLastIndex( l.citer(), 0 ) == -1 );
   OZ_CHECK( iLastIndex( v.citer(), 0 ) == -1 );
@@ -165,7 +165,7 @@ void test_iterables()
   OZ_CHECK( iLastIndex( v.citer(), 2 ) == 3 );
   OZ_CHECK( iLastIndex( l.citer(), 3 ) == 2 );
   OZ_CHECK( iLastIndex( v.citer(), 3 ) == 2 );
-  OZ_CHECK( iLastIndex( invalid, static_cast<Foo*>( null ) ) == -1 );
+  OZ_CHECK( iLastIndex( invalid, static_cast<Foo*>( nullptr ) ) == -1 );
 
   List<Foo*> pv;
   pv.add( new Foo( 1 ) );
@@ -173,7 +173,7 @@ void test_iterables()
 
   iFree( pv.iter() );
   iFree( invalid );
-  OZ_CHECK_CONTENTS( pv, null, null );
+  OZ_CHECK_CONTENTS( pv, nullptr, nullptr );
 
   l.free();
 

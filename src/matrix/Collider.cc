@@ -182,7 +182,7 @@ bool Collider::overlapsAABBOrbis()
     return true;
   }
 
-  const Struct* oldStr = null;
+  SList<int, 24> visitedStructs;
 
   for( int x = span.minX; x <= span.maxX; ++x ) {
     for( int y = span.minY; y <= span.maxY; ++y ) {
@@ -191,22 +191,23 @@ bool Collider::overlapsAABBOrbis()
       for( int i = 0; i < cell.structs.length(); ++i ) {
         str = orbis.structs[ cell.structs[i] ];
 
-        if( str != oldStr && str->overlaps( trace ) ) {
-          visitedBrushes.clearAll();
+        if( !trace.overlaps( *str ) || visitedStructs.contains( cell.structs[i] ) ) {
+          continue;
+        }
 
-          startPos = str->toStructCS( aabb.p );
-          localDim = str->swapDimCS( aabb.dim );
-          bsp      = str->bsp;
+        visitedStructs.add( cell.structs[i] );
+        visitedBrushes.clearAll();
 
-          if( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) {
-            return true;
-          }
+        startPos = str->toStructCS( aabb.p );
+        localDim = str->swapDimCS( aabb.dim );
+        bsp      = str->bsp;
 
-          oldStr = str;
+        if( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) {
+          return true;
         }
       }
 
-      for( const Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
+      for( const Object* sObj = cell.objects.first(); sObj != nullptr; sObj = sObj->next[0] ) {
         if( sObj != exclObj && ( sObj->flags & mask ) && overlapsAABBObj( sObj ) ) {
           return true;
         }
@@ -226,7 +227,7 @@ bool Collider::overlapsEntityOrbis()
     for( int y = span.minY; y <= span.maxY; ++y ) {
       const Cell& cell = orbis.cells[x][y];
 
-      for( const Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
+      for( const Object* sObj = cell.objects.first(); sObj != nullptr; sObj = sObj->next[0] ) {
         if( trace.overlaps( *sObj ) ) {
           startPos = str->toStructCS( sObj->p ) - entity->offset;
           localDim = str->swapDimCS( sObj->dim + Vec3( margin, margin, margin ) );
@@ -266,9 +267,9 @@ void Collider::trimAABBVoid()
       if( ratio < hit.ratio ) {
         hit.ratio    = max( 0.0f, ratio );
         hit.normal   = normal;
-        hit.obj      = null;
-        hit.str      = null;
-        hit.entity   = null;
+        hit.obj      = nullptr;
+        hit.str      = nullptr;
+        hit.entity   = nullptr;
         hit.material = Material::VOID_BIT;
       }
     }
@@ -399,8 +400,8 @@ void Collider::trimAABBObj( const Object* sObj )
     hit.ratio    = max( 0.0f, minRatio );
     hit.normal   = lastNormal;
     hit.obj      = const_cast<Object*>( sObj );
-    hit.str      = null;
-    hit.entity   = null;
+    hit.str      = nullptr;
+    hit.entity   = nullptr;
     hit.material = Material::OBJECT_BIT;
   }
 }
@@ -439,7 +440,7 @@ void Collider::trimAABBBrush( const BSP::Brush* brush )
   if( minRatio != -1.0f && minRatio <= maxRatio && minRatio < hit.ratio ) {
     hit.ratio    = max( 0.0f, minRatio );
     hit.normal   = str->toAbsoluteCS( lastNormal );
-    hit.obj      = null;
+    hit.obj      = nullptr;
     hit.str      = const_cast<Struct*>( str );
     hit.entity   = const_cast<Entity*>( entity );
     hit.material = brush->flags & Material::MASK;
@@ -592,9 +593,9 @@ void Collider::trimAABBTerraQuad( int x, int y )
     {
       hit.ratio    = ratio;
       hit.normal   = quad.triNormal[0];
-      hit.obj      = null;
-      hit.str      = null;
-      hit.entity   = null;
+      hit.obj      = nullptr;
+      hit.str      = nullptr;
+      hit.entity   = nullptr;
       hit.material = Material::TERRAIN_BIT;
 
       return;
@@ -617,9 +618,9 @@ void Collider::trimAABBTerraQuad( int x, int y )
     {
       hit.ratio    = ratio;
       hit.normal   = quad.triNormal[1];
-      hit.obj      = null;
-      hit.str      = null;
-      hit.entity   = null;
+      hit.obj      = nullptr;
+      hit.str      = nullptr;
+      hit.entity   = nullptr;
       hit.material = Material::TERRAIN_BIT;
 
       return;
@@ -650,10 +651,10 @@ void Collider::trimAABBTerra()
 
 void Collider::trimAABBOrbis()
 {
-  hit.obj       = null;
-  hit.str       = null;
-  hit.entity    = null;
-  hit.mediumStr = null;
+  hit.obj       = nullptr;
+  hit.str       = nullptr;
+  hit.entity    = nullptr;
+  hit.mediumStr = nullptr;
   hit.ratio     = 1.0f;
   hit.material  = 0;
   hit.medium    = 0;
@@ -669,7 +670,7 @@ void Collider::trimAABBOrbis()
     trimAABBVoid();
   }
 
-  const Struct* oldStr = null;
+  SList<int, 24> visitedStructs;
 
   for( int x = span.minX; x <= span.maxX; ++x ) {
     for( int y = span.minY; y <= span.maxY; ++y ) {
@@ -678,27 +679,27 @@ void Collider::trimAABBOrbis()
       for( int i = 0; i < cell.structs.length(); ++i ) {
         str = orbis.structs[ cell.structs[i] ];
 
-        // to prevent some of duplicated structure tests
-        if( str != oldStr && str->overlaps( trace ) ) {
-          visitedBrushes.clearAll();
-
-          startPos = str->toStructCS( originalStartPos );
-          endPos   = str->toStructCS( originalEndPos );
-          localDim = str->swapDimCS( aabb.dim );
-          bsp      = str->bsp;
-          entity   = null;
-
-          trimAABBNode( 0 );
-          trimAABBEntities();
-
-          oldStr = str;
+        if( !trace.overlaps( *str ) || visitedStructs.contains( cell.structs[i] ) ) {
+          continue;
         }
+
+        visitedStructs.add( cell.structs[i] );
+        visitedBrushes.clearAll();
+
+        startPos = str->toStructCS( originalStartPos );
+        endPos   = str->toStructCS( originalEndPos );
+        localDim = str->swapDimCS( aabb.dim );
+        bsp      = str->bsp;
+        entity   = nullptr;
+
+        trimAABBNode( 0 );
+        trimAABBEntities();
       }
 
       startPos = originalStartPos;
       endPos   = originalEndPos;
 
-      for( const Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
+      for( const Object* sObj = cell.objects.first(); sObj != nullptr; sObj = sObj->next[0] ) {
         if( sObj != exclObj && ( sObj->flags & mask ) && trace.overlaps( *sObj ) ) {
           trimAABBObj( sObj );
         }
@@ -712,7 +713,7 @@ void Collider::trimAABBOrbis()
   trimAABBTerra();
 
   hard_assert( 0.0f <= hit.ratio && hit.ratio <= 1.0f );
-  hard_assert( ( ( hit.material & Material::OBJECT_BIT ) != 0 ) == ( hit.obj != null ) );
+  hard_assert( ( ( hit.material & Material::OBJECT_BIT ) != 0 ) == ( hit.obj != nullptr ) );
   hard_assert( hit.depth >= 0.0f );
 }
 
@@ -722,19 +723,17 @@ void Collider::trimAABBOrbis()
 
 void Collider::getOrbisOverlaps( List<Struct*>* structs, List<Object*>* objects )
 {
-  hard_assert( structs != null || objects != null );
-
-  const Struct* oldStr = null;
+  hard_assert( structs != nullptr || objects != nullptr );
 
   for( int x = span.minX; x <= span.maxX; ++x ) {
     for( int y = span.minY; y <= span.maxY; ++y ) {
       const Cell& cell = orbis.cells[x][y];
 
-      if( structs != null ) {
+      if( structs != nullptr ) {
         for( int i = 0; i < cell.structs.length(); ++i ) {
-          Struct* str = orbis.structs[ cell.structs[i] ];
+          str = orbis.structs[ cell.structs[i] ];
 
-          if( str != oldStr && str->overlaps( trace ) && !structs->contains( str ) ) {
+          if( trace.overlaps( *str ) && !structs->contains( const_cast<Struct*>( str ) ) ) {
             visitedBrushes.clearAll();
 
             startPos = str->toStructCS( aabb.p );
@@ -742,16 +741,14 @@ void Collider::getOrbisOverlaps( List<Struct*>* structs, List<Object*>* objects 
             bsp      = str->bsp;
 
             if( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) {
-              structs->add( str );
+              structs->add( const_cast<Struct*>( str ) );
             }
           }
-
-          oldStr = str;
         }
       }
 
-      if( objects != null ) {
-        for( Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
+      if( objects != nullptr ) {
+        for( Object* sObj = cell.objects.first(); sObj != nullptr; sObj = sObj->next[0] ) {
           if( ( sObj->flags & mask ) && trace.overlaps( *sObj ) ) {
             objects->add( sObj );
           }
@@ -763,13 +760,13 @@ void Collider::getOrbisOverlaps( List<Struct*>* structs, List<Object*>* objects 
 
 void Collider::getOrbisIncludes( List<Object*>* objects ) const
 {
-  hard_assert( objects != null );
+  hard_assert( objects != nullptr );
 
   for( int x = span.minX; x <= span.maxX; ++x ) {
     for( int y = span.minY; y <= span.maxY; ++y ) {
       const Cell& cell = orbis.cells[x][y];
 
-      for( Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
+      for( Object* sObj = cell.objects.first(); sObj != nullptr; sObj = sObj->next[0] ) {
         if( ( sObj->flags & mask ) && trace.includes( *sObj ) ) {
           objects->add( sObj );
         }
@@ -784,7 +781,7 @@ void Collider::touchOrbisOverlaps() const
     for( int y = span.minY; y <= span.maxY; ++y ) {
       const Cell& cell = orbis.cells[x][y];
 
-      for( Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
+      for( Object* sObj = cell.objects.first(); sObj != nullptr; sObj = sObj->next[0] ) {
         if( ( sObj->flags & Object::DYNAMIC_BIT ) && trace.overlaps( *sObj ) ) {
           Dynamic* sDyn = static_cast<Dynamic*>( sObj );
 
@@ -798,13 +795,13 @@ void Collider::touchOrbisOverlaps() const
 
 void Collider::getEntityOverlaps( List<Object*>* objects )
 {
-  hard_assert( objects != null );
+  hard_assert( objects != nullptr );
 
   for( int x = span.minX; x <= span.maxX; ++x ) {
     for( int y = span.minY; y <= span.maxY; ++y ) {
       const Cell& cell = orbis.cells[x][y];
 
-      for( Object* sObj = cell.objects.first(); sObj != null; sObj = sObj->next[0] ) {
+      for( Object* sObj = cell.objects.first(); sObj != nullptr; sObj = sObj->next[0] ) {
         if( ( sObj->flags & mask ) && trace.overlaps( *sObj ) ) {
           startPos = str->toStructCS( sObj->p ) - entity->offset;
           localDim = str->swapDimCS( sObj->dim + Vec3( margin, margin, margin ) );
@@ -893,7 +890,7 @@ void Collider::getOverlaps( const AABB& aabb_, List<Struct*>* structs, List<Obje
                             float eps )
 {
   aabb   = aabb_;
-  exclObj = null;
+  exclObj = nullptr;
 
   trace = Bounds( aabb, eps );
   span = orbis.getInters( trace, Object::MAX_DIM );
@@ -904,7 +901,7 @@ void Collider::getOverlaps( const AABB& aabb_, List<Struct*>* structs, List<Obje
 void Collider::getIncludes( const AABB& aabb_, List<Object*>* objects, float eps )
 {
   aabb    = aabb_;
-  exclObj = null;
+  exclObj = nullptr;
 
   trace = Bounds( aabb, eps );
   span = orbis.getInters( trace, Object::MAX_DIM );
@@ -915,7 +912,7 @@ void Collider::getIncludes( const AABB& aabb_, List<Object*>* objects, float eps
 void Collider::touchOverlaps( const AABB& aabb_, float eps )
 {
   aabb    = aabb_;
-  exclObj = null;
+  exclObj = nullptr;
 
   trace = Bounds( aabb, eps );
   span = orbis.getInters( trace, Object::MAX_DIM );
@@ -952,7 +949,7 @@ void Collider::translate( const Point& point, const Vec3& move_, const Object* e
 
 void Collider::translate( const AABB& aabb_, const Vec3& move_, const Object* exclObj_ )
 {
-  obj     = null;
+  obj     = nullptr;
   aabb    = aabb_;
   move    = move_;
   exclObj = exclObj_;
@@ -966,13 +963,13 @@ void Collider::translate( const AABB& aabb_, const Vec3& move_, const Object* ex
 
 void Collider::translate( const Dynamic* obj_, const Vec3& move_ )
 {
-  hard_assert( obj_->cell != null );
+  hard_assert( obj_->cell != nullptr );
 
-  obj    = obj_;
-  aabb   = *obj_;
+  obj     = obj_;
+  aabb    = *obj_;
   move    = move_;
   exclObj = obj_;
-  flags  = obj_->flags;
+  flags   = obj_->flags;
 
   trace = Bounds( aabb, move, 4.0f * EPSILON );
   span = orbis.getInters( trace, Object::MAX_DIM );

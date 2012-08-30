@@ -63,7 +63,7 @@ const float MD2::AnimState::MIN_SHOT_INTERVAL_SYNC = 0.2f;
 MD2::AnimType MD2::AnimState::extractAnim()
 {
   const Weapon* weapon = bot->weapon < 0 ?
-                         null : static_cast<const Weapon*>( orbis.objects[bot->weapon] );
+                         nullptr : static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
   if( bot->state & Bot::DEAD_BIT ) {
     if( ANIM_DEATH_FALLBACK <= currType && nextType <= ANIM_DEATH_FALLBACKSLOW ) {
@@ -73,7 +73,7 @@ MD2::AnimType MD2::AnimState::extractAnim()
       return AnimType( ANIM_DEATH_FALLBACK + Math::rand( 3 ) );
     }
   }
-  else if( bot->cell == null ) {
+  else if( bot->cell == nullptr ) {
     return ANIM_CROUCH_STAND;
   }
   else if( ( bot->actions & Bot::ACTION_JUMP ) &&
@@ -90,7 +90,7 @@ MD2::AnimType MD2::AnimState::extractAnim()
     }
   }
   else if( bot->cargo < 0 ) {
-    if( weapon != null && ( prevAttack || weapon->shotTime != 0.0f ) ) {
+    if( weapon != nullptr && ( prevAttack || weapon->shotTime != 0.0f ) ) {
       prevAttack = weapon->shotTime != 0.0f;
 
       return bot->state & Bot::CROUCHING_BIT ? ANIM_CROUCH_ATTACK : ANIM_ATTACK;
@@ -173,7 +173,7 @@ void MD2::AnimState::advance()
   {
     const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
-    if( weapon != null ) {
+    if( weapon != nullptr ) {
       const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
 
       if( clazz->shotInterval >= MIN_SHOT_INTERVAL_SYNC ) {

@@ -90,7 +90,7 @@ void Loader::cleanupRender()
     // We can afford to do this as orbis.objects[key] will remain null at least one whole tick
     // after the object has been removed (because matrix also needs to clear references to this
     // object).
-    if( orbis.objects[imago->key] == null ) {
+    if( orbis.objects[imago->key] == nullptr ) {
       delete imago->value;
       context.imagines.exclude( imago->key );
     }
@@ -117,7 +117,7 @@ void Loader::cleanupRender()
     for( int i = 0; i < library.nFragPools; ++i ) {
       FragPool* pool = context.fragPools[i];
 
-      if( pool == null ) {
+      if( pool == nullptr ) {
         continue;
       }
 
@@ -126,7 +126,7 @@ void Loader::cleanupRender()
       }
       else {
         delete pool;
-        context.fragPools[i] = null;
+        context.fragPools[i] = nullptr;
       }
     }
   }
@@ -140,19 +140,19 @@ void Loader::cleanupRender()
       if( smm.nUsers == 0 ) {
         delete smm.object;
 
-        smm.object = null;
+        smm.object = nullptr;
         smm.nUsers = -1;
       }
       if( md2.nUsers == 0 ) {
         delete md2.object;
 
-        md2.object = null;
+        md2.object = nullptr;
         md2.nUsers = -1;
       }
       if( md3.nUsers == 0 ) {
         delete md3.object;
 
-        md3.object = null;
+        md3.object = nullptr;
         md3.nUsers = -1;
       }
     }
@@ -169,7 +169,7 @@ void Loader::cleanupRender()
       else {
         delete bsp.object;
 
-        bsp.object = null;
+        bsp.object = nullptr;
         bsp.nUsers = -1;
       }
     }
@@ -189,7 +189,7 @@ void Loader::cleanupSound()
 
     // We can afford to do this as orbis.objects[key] will remain null at least one whole tick after
     // the object has been removed (because matrix also needs to clear references to this object).
-    if( orbis.objects[audio->key] == null ) {
+    if( orbis.objects[audio->key] == nullptr ) {
       delete audio->value;
       context.audios.exclude( audio->key );
     }
@@ -214,7 +214,7 @@ void Loader::cleanupSound()
       context.releaseSpeakSource();
     }
   }
-  else if( orbis.objects[speaker] == null ) {
+  else if( orbis.objects[speaker] == nullptr ) {
     context.speakSource.isAlive = false;
   }
 
@@ -230,10 +230,10 @@ void Loader::cleanupSound()
 
   if( tick % SOURCE_CLEAR_INTERVAL == SOURCE_CLEAR_LAG ) {
     // remove stopped sources of non-continous sounds
-    Context::Source* prev = null;
+    Context::Source* prev = nullptr;
     Context::Source* src  = context.sources.first();
 
-    while( src != null ) {
+    while( src != nullptr ) {
       Context::Source* next = src->next[0];
 
       ALint value;
@@ -276,7 +276,7 @@ void Loader::cleanupSound()
       else {
         delete bspAudio.object;
 
-        bspAudio.object = null;
+        bspAudio.object = nullptr;
         bspAudio.nUsers = -1;
       }
     }
@@ -290,7 +290,7 @@ void Loader::preloadRender()
   for( int i = 0; i < library.nBSPs; ++i ) {
     BSP* bsp = context.bsps[i].object;
 
-    if( bsp != null && !bsp->isPreloaded ) {
+    if( bsp != nullptr && !bsp->isPreloaded ) {
       bsp->preload();
     }
   }
@@ -298,7 +298,7 @@ void Loader::preloadRender()
   for( int i = 0; i < library.models.length(); ++i ) {
     SMM* smm = context.smms[i].object;
 
-    if( smm != null && !smm->isPreloaded ) {
+    if( smm != nullptr && !smm->isPreloaded ) {
       smm->preload();
     }
   }
@@ -306,7 +306,7 @@ void Loader::preloadRender()
   for( int i = 0; i < library.models.length(); ++i ) {
     MD2* md2 = context.md2s[i].object;
 
-    if( md2 != null && !md2->isPreloaded ) {
+    if( md2 != nullptr && !md2->isPreloaded ) {
       md2->preload();
     }
   }
@@ -314,7 +314,7 @@ void Loader::preloadRender()
   for( int i = 0; i < library.models.length(); ++i ) {
     MD3* md3 = context.md3s[i].object;
 
-    if( md3 != null && !md3->isPreloaded ) {
+    if( md3 != nullptr && !md3->isPreloaded ) {
       md3->preload();
     }
   }
@@ -335,7 +335,7 @@ void Loader::uploadRender()
   for( int i = 0; i < library.nBSPs; ++i ) {
     BSP* bsp = context.bsps[i].object;
 
-    if( bsp != null && !bsp->isLoaded && bsp->isPreloaded ) {
+    if( bsp != nullptr && !bsp->isLoaded && bsp->isPreloaded ) {
       bsp->load();
       return;
     }
@@ -344,7 +344,7 @@ void Loader::uploadRender()
   for( int i = 0; i < library.models.length(); ++i ) {
     SMM* smm = context.smms[i].object;
 
-    if( smm != null && !smm->isLoaded && smm->isPreloaded ) {
+    if( smm != nullptr && !smm->isLoaded && smm->isPreloaded ) {
       smm->load();
       return;
     }
@@ -353,7 +353,7 @@ void Loader::uploadRender()
   for( int i = 0; i < library.models.length(); ++i ) {
     MD2* md2 = context.md2s[i].object;
 
-    if( md2 != null && !md2->isLoaded && md2->isPreloaded ) {
+    if( md2 != nullptr && !md2->isLoaded && md2->isPreloaded ) {
       md2->load();
       return;
     }
@@ -362,7 +362,7 @@ void Loader::uploadRender()
   for( int i = 0; i < library.models.length(); ++i ) {
     MD3* md3 = context.md3s[i].object;
 
-    if( md3 != null && !md3->isLoaded && md3->isPreloaded ) {
+    if( md3 != nullptr && !md3->isLoaded && md3->isPreloaded ) {
       md3->load();
       return;
     }
@@ -398,7 +398,7 @@ void Loader::makeScreenshot()
 
   glReadPixels( 0, 0, camera.width, camera.height, GL_RGB, GL_UNSIGNED_BYTE, screenshotInfo.pixels );
 
-  screenshotThread.start( screenshotMain, null );
+  screenshotThread.start( screenshotMain, nullptr );
 }
 
 void Loader::syncUpdate()
@@ -458,7 +458,7 @@ void Loader::init()
   preloadMainSemaphore.init();
   preloadAuxSemaphore.init();
 
-  preloadThread.start( preloadMain, null );
+  preloadThread.start( preloadMain, nullptr );
 }
 
 void Loader::free()

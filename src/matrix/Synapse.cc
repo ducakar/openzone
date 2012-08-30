@@ -56,7 +56,7 @@ void Synapse::lock( Bot* user, Entity* target )
 
 void Synapse::put( Dynamic* obj )
 {
-  hard_assert( obj->index >= 0 && obj->cell == null && obj->parent == -1 );
+  hard_assert( obj->index >= 0 && obj->cell == nullptr && obj->parent == -1 );
 
   orbis.position( obj );
 
@@ -65,7 +65,7 @@ void Synapse::put( Dynamic* obj )
 
 void Synapse::cut( Dynamic* obj )
 {
-  hard_assert( obj->index >= 0 && obj->cell != null && obj->parent >= 0 );
+  hard_assert( obj->index >= 0 && obj->cell != nullptr && obj->parent >= 0 );
 
   obj->flags   &= ~( Object::TICK_CLEAR_MASK | Object::MOVE_CLEAR_MASK );
   obj->lower    = -1;
@@ -80,14 +80,14 @@ void Synapse::cut( Dynamic* obj )
 Struct* Synapse::add( const BSP* bsp, const Point& p, Heading heading, bool empty )
 {
   Struct* str = orbis.add( bsp, p, heading );
-  if( str == null ) {
-    return null;
+  if( str == nullptr ) {
+    return nullptr;
   }
 
   if( !orbis.position( str ) ) {
     orbis.remove( str );
     delete str;
-    return null;
+    return nullptr;
   }
 
   addedStructs.add( str->index );
@@ -102,7 +102,7 @@ Struct* Synapse::add( const BSP* bsp, const Point& p, Heading heading, bool empt
       Heading heading = Heading( ( str->heading + boundObj.heading ) % 4 );
 
       Object* obj = orbis.add( boundObj.clazz, pos, heading );
-      if( obj == null ) {
+      if( obj == nullptr ) {
         continue;
       }
 
@@ -119,8 +119,8 @@ Struct* Synapse::add( const BSP* bsp, const Point& p, Heading heading, bool empt
 Object* Synapse::add( const ObjectClass* clazz, const Point& p, Heading heading, bool empty )
 {
   Object* obj = orbis.add( clazz, p, heading );
-  if( obj == null ) {
-    return null;
+  if( obj == nullptr ) {
+    return nullptr;
   }
 
   orbis.position( obj );
@@ -134,7 +134,7 @@ Object* Synapse::add( const ObjectClass* clazz, const Point& p, Heading heading,
       Heading heading = Heading( Math::rand( 4 ) );
       Dynamic* item = static_cast<Dynamic*>( orbis.add( defaultItems[i], Point::ORIGIN, heading ) );
 
-      if( item == null ) {
+      if( item == nullptr ) {
         continue;
       }
 
@@ -160,8 +160,8 @@ Object* Synapse::add( const ObjectClass* clazz, const Point& p, Heading heading,
 Frag* Synapse::add( const FragPool* pool, const Point& p, const Vec3& velocity )
 {
   Frag* frag = orbis.add( pool, p, velocity );
-  if( frag == null ) {
-    return null;
+  if( frag == nullptr ) {
+    return nullptr;
   }
 
   orbis.position( frag );
@@ -179,7 +179,7 @@ void Synapse::gen( const FragPool* pool, int nFrags, const Bounds& bb, const Vec
                            bb.mins.z + Math::rand() * ( bb.maxs.z - bb.mins.z ) );
 
     Frag*  frag = add( pool, fragPos, velocity );
-    if( frag == null ) {
+    if( frag == nullptr ) {
       continue;
     }
 
@@ -218,7 +218,7 @@ void Synapse::remove( Struct* str )
   for( int i = 0; i < str->boundObjects.length(); ++i ) {
     Object* boundObj = orbis.objects[ str->boundObjects[i] ];
 
-    if( boundObj != null ) {
+    if( boundObj != nullptr ) {
       remove( boundObj );
     }
   }
@@ -237,7 +237,7 @@ void Synapse::remove( Object* obj )
   for( int i = 0; i < obj->items.length(); ++i ) {
     Object* item = orbis.objects[ obj->items[i] ];
 
-    if( item != null ) {
+    if( item != nullptr ) {
       remove( item );
     }
   }
@@ -245,7 +245,7 @@ void Synapse::remove( Object* obj )
   removedObjects.add( obj->index );
 
   if( obj->flags & Object::DYNAMIC_BIT ) {
-    if( obj->cell != null ) {
+    if( obj->cell != nullptr ) {
       orbis.unposition( obj );
     }
   }
@@ -272,7 +272,7 @@ void Synapse::removeStruct( int index )
 
   Struct* str = orbis.structs[index];
 
-  if( str != null ) {
+  if( str != nullptr ) {
     remove( str );
   }
 }
@@ -283,7 +283,7 @@ void Synapse::removeObject( int index )
 
   Object* obj = orbis.objects[index];
 
-  if( obj != null ) {
+  if( obj != nullptr ) {
     remove( obj );
   }
 }
@@ -294,7 +294,7 @@ void Synapse::removeFrag( int index )
 
   Frag* frag = orbis.frags[index];
 
-  if( frag != null ) {
+  if( frag != nullptr ) {
     remove( frag );
   }
 }

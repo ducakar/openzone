@@ -65,7 +65,7 @@ class DArray
      * Create an empty array.
      */
     DArray() :
-      data( null ), count( 0 )
+      data( nullptr ), count( 0 )
     {}
 
     /**
@@ -80,7 +80,7 @@ class DArray
      * Copy constructor, copies elements.
      */
     DArray( const DArray& a ) :
-      data( a.count == 0 ? null : new Elem[a.count] ), count( a.count )
+      data( a.count == 0 ? nullptr : new Elem[a.count] ), count( a.count )
     {
       aCopy<Elem>( data, a.data, a.count );
     }
@@ -91,7 +91,7 @@ class DArray
     DArray( DArray&& a ) :
       data( a.data ), count( a.count )
     {
-      a.data  = null;
+      a.data  = nullptr;
       a.count = 0;
     }
 
@@ -109,7 +109,7 @@ class DArray
       if( count != a.count ) {
         delete[] data;
 
-        data  = a.count == 0 ? null : new Elem[a.count];
+        data  = a.count == 0 ? nullptr : new Elem[a.count];
         count = a.count;
       }
 
@@ -132,7 +132,7 @@ class DArray
       data  = a.data;
       count = a.count;
 
-      a.data  = null;
+      a.data  = nullptr;
       a.count = 0;
 
       return *this;
@@ -142,14 +142,14 @@ class DArray
      * Create an array with the given size.
      */
     explicit DArray( int count_ ) :
-      data( count_ == 0 ? null : new Elem[count_] ), count( count_ )
+      data( count_ == 0 ? nullptr : new Elem[count_] ), count( count_ )
     {}
 
     /**
      * Initialise from a C++ array.
      */
     explicit DArray( const Elem* array, int count_ ) :
-      data( count_ == 0 ? null : new Elem[count_] ), count( count_ )
+      data( count_ == 0 ? nullptr : new Elem[count_] ), count( count_ )
     {
       aCopy<Elem>( data, array, count );
     }
@@ -354,7 +354,7 @@ class DArray
     {
       delete[] data;
 
-      data  = null;
+      data  = nullptr;
       count = 0;
     }
 

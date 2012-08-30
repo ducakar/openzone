@@ -29,7 +29,7 @@ namespace oz
 namespace client
 {
 
-Stage* Stage::nextStage = null;
+Stage* Stage::nextStage = nullptr;
 
 Stage::~Stage()
 {}

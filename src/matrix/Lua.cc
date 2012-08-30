@@ -40,13 +40,13 @@ bool Lua::objectCall( const char* functionName, Object* self_, Bot* user_ )
   ms.self         = self_;
   ms.user         = user_;
   ms.obj          = self_;
-  ms.str          = null;
-  ms.frag         = null;
+  ms.str          = nullptr;
+  ms.frag         = nullptr;
   ms.objIndex     = 0;
   ms.strIndex     = 0;
   ms.hasUseFailed = false;
 
-  hard_assert( l_gettop() == 1 && ms.self != null );
+  hard_assert( l_gettop() == 1 && ms.self != nullptr );
 
   l_getglobal( functionName );
   l_rawgeti( 1, ms.self->index );
@@ -54,7 +54,7 @@ bool Lua::objectCall( const char* functionName, Object* self_, Bot* user_ )
 
   if( l_gettop() != 1 ) {
     Log::println( "Lua[M] in %s(self = %d, user = %d): %s", functionName, ms.self->index,
-                  ms.user == null ? -1 : ms.user->index, l_tostring( -1 ) );
+                  ms.user == nullptr ? -1 : ms.user->index, l_tostring( -1 ) );
     System::bell();
 
     l_pop( 1 );
@@ -449,7 +449,7 @@ void Lua::init()
 
 void Lua::free()
 {
-  if( l == null ) {
+  if( l == nullptr ) {
     return;
   }
 

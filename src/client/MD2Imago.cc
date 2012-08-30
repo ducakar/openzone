@@ -70,7 +70,7 @@ void MD2Imago::draw( const Imago* parent )
   anim.advance();
 
   if( bot->state & Bot::DEAD_BIT ) {
-    if( shader.mode == Shader::SCENE && parent == null ) {
+    if( shader.mode == Shader::SCENE && parent == nullptr ) {
       Vec3 t = Vec3( obj->p.x, obj->p.y, obj->p.z + clazz->dim.z - clazz->corpseDim.z );
 
       tf.model = Mat44::translation( t );
@@ -82,14 +82,14 @@ void MD2Imago::draw( const Imago* parent )
     md2->scheduleAnim( &anim );
 
     // HACK Enable when no buggy models are used (no mismatched death animation for weapons).
-//     if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
+//     if( parent == nullptr && bot->weapon >= 0 && orbis.objects[bot->weapon] != nullptr ) {
 //       context.drawImago( orbis.objects[bot->weapon], this, Mesh::SOLID_BIT );
 //     }
   }
   else if( bot->index == camera.bot && !camera.isExternal ) {
     h = bot->h;
 
-    if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
+    if( parent == nullptr && bot->weapon >= 0 && orbis.objects[bot->weapon] != nullptr ) {
       tf.model = Mat44::translation( obj->p - Point::ORIGIN );
       tf.model.rotateZ( bot->h );
 
@@ -105,7 +105,7 @@ void MD2Imago::draw( const Imago* parent )
     }
   }
   else {
-    if( shader.mode == Shader::SCENE && parent == null ) {
+    if( shader.mode == Shader::SCENE && parent == nullptr ) {
       h = angleWrap( h + TURN_SMOOTHING_COEF * angleDiff( bot->h, h ) );
 
       tf.model = Mat44::translation( obj->p - Point::ORIGIN );
@@ -118,7 +118,7 @@ void MD2Imago::draw( const Imago* parent )
 
     md2->scheduleAnim( &anim );
 
-    if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
+    if( parent == nullptr && bot->weapon >= 0 && orbis.objects[bot->weapon] != nullptr ) {
       context.drawImago( orbis.objects[bot->weapon], this );
     }
   }

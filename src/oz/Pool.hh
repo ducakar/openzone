@@ -40,7 +40,7 @@
  */
 #define OZ_STATIC_POOL_ALLOC( pool ) \
   void* operator new ( size_t ) { return pool.alloc(); } \
-  void  operator delete ( void* ptr ) noexcept { if( ptr != null ) pool.dealloc( ptr ); } \
+  void  operator delete ( void* ptr ) noexcept { if( ptr != nullptr ) pool.dealloc( ptr ); } \
   void* operator new ( size_t, const std::nothrow_t& ) noexcept = delete; \
   void  operator delete ( void*, std::nothrow_t& ) noexcept = delete;
 
@@ -71,7 +71,7 @@ namespace oz
  *
  * Unless `NDEBUG` macro is defined, all freed memory is rewritten with 0xee byte values.
  */
-template <class Type, int BLOCK_SIZE = 256>
+template <class Elem, int BLOCK_SIZE = 256>
 class Pool
 {
   static_assert( BLOCK_SIZE >= 2, "Pool block size must be at least 2" );
@@ -83,7 +83,7 @@ class Pool
      */
     union Slot
     {
-      char  content[ sizeof( Type ) ]; ///< Uninitialised memory for an object.
+      char  content[ sizeof( Elem ) ]; ///< Uninitialised memory for an object.
       Slot* nextSlot;                  ///< For an empty slot, a pointer to the next empty slot.
     };
 
@@ -108,7 +108,7 @@ class Pool
         for( int i = 0; i < BLOCK_SIZE - 1; ++i ) {
           data[i].nextSlot = &data[i + 1];
         }
-        data[BLOCK_SIZE - 1].nextSlot = null;
+        data[BLOCK_SIZE - 1].nextSlot = nullptr;
       }
     };
 
@@ -123,7 +123,7 @@ class Pool
      * Create an empty pool, storage is allocated when the first allocation is made.
      */
     Pool() :
-      firstBlock( null ), freeSlot( null ), size( 0 ), count( 0 )
+      firstBlock( nullptr ), freeSlot( nullptr ), size( 0 ), count( 0 )
     {}
 
     /**
@@ -140,8 +140,8 @@ class Pool
     Pool( Pool&& p ) :
       firstBlock( p.firstBlock ), freeSlot( p.freeSlot ), size( p.size ), count( p.count )
     {
-      p.firstBlock = null;
-      p.freeSlot   = null;
+      p.firstBlock = nullptr;
+      p.freeSlot   = nullptr;
       p.size       = 0;
       p.count      = 0;
     }
@@ -164,8 +164,8 @@ class Pool
       size       = p.size;
       count      = p.count;
 
-      p.firstBlock = null;
-      p.freeSlot   = null;
+      p.firstBlock = nullptr;
+      p.freeSlot   = nullptr;
       p.size       = 0;
       p.count      = 0;
 
@@ -179,7 +179,7 @@ class Pool
     {
       ++count;
 
-      if( freeSlot == null ) {
+      if( freeSlot == nullptr ) {
         firstBlock = new Block( firstBlock );
         freeSlot = &firstBlock->data[1];
         size += BLOCK_SIZE;
@@ -246,7 +246,7 @@ class Pool
      */
     void free()
     {
-      if( firstBlock == null ) {
+      if( firstBlock == nullptr ) {
         return;
       }
 
@@ -255,7 +255,7 @@ class Pool
       if( count == 0 ) {
         Block* block = firstBlock;
 
-        while( block != null ) {
+        while( block != nullptr ) {
           Block* next = block->next;
           delete block;
 
@@ -263,8 +263,8 @@ class Pool
         }
       }
 
-      firstBlock = null;
-      freeSlot   = null;
+      firstBlock = nullptr;
+      freeSlot   = nullptr;
       size       = 0;
       count      = 0;
     }

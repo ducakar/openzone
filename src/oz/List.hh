@@ -97,7 +97,7 @@ class List
      * Create an empty list.
      */
     List() :
-      data( null ), count( 0 ), size( 0 )
+      data( nullptr ), count( 0 ), size( 0 )
     {}
 
     /**
@@ -112,7 +112,7 @@ class List
      * Copy constructor, copies elements.
      */
     List( const List& l ) :
-      data( l.size == 0 ? null : new Elem[l.size] ), count( l.count ), size( l.size )
+      data( l.size == 0 ? nullptr : new Elem[l.size] ), count( l.count ), size( l.size )
     {
       aCopy<Elem>( data, l.data, l.count );
     }
@@ -123,7 +123,7 @@ class List
     List( List&& l ) :
       data( l.data ), count( l.count ), size( l.size )
     {
-      l.data  = null;
+      l.data  = nullptr;
       l.count = 0;
       l.size  = 0;
     }
@@ -167,7 +167,7 @@ class List
       count = l.count;
       size  = l.size;
 
-      l.data  = null;
+      l.data  = nullptr;
       l.count = 0;
       l.size  = 0;
 
@@ -626,7 +626,7 @@ class List
 
       delete[] data;
 
-      data = null;
+      data = nullptr;
       size = 0;
     }
 

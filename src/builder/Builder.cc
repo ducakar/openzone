@@ -931,7 +931,7 @@ int Builder::main( int argc, char** argv )
   }
 
   Log::println( "Adding source directory '%s' to search path", srcDir.cstr() );
-  if( !PFile::mount( srcDir, null, true ) ) {
+  if( !PFile::mount( srcDir, nullptr, true ) ) {
     OZ_ERROR( "Failed to add directory '%s' to search path", srcDir.cstr() );
   }
 

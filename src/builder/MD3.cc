@@ -40,13 +40,13 @@ void MD3::readAnimData()
   String realPath = animFile.realDir() + "/" + animFile.path();
 
   FILE* fs = fopen( realPath, "r" );
-  if( fs == null ) {
+  if( fs == nullptr ) {
     OZ_ERROR( "Reading animation data failed" );
   }
 
   char line[1024];
 
-  while( fgets( line, 1024, fs ) != null ) {
+  while( fgets( line, 1024, fs ) != nullptr ) {
 
   }
 

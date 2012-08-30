@@ -35,7 +35,7 @@ Pool<Frag, 2048> Frag::mpool;
 
 Frag::Frag( const FragPool* pool_, int index_, const Point& p_, const Vec3& velocity_ )
 {
-  cell       = null;
+  cell       = nullptr;
   index      = index_;
   poolId     = pool_->id;
   pool       = pool_;
@@ -48,7 +48,7 @@ Frag::Frag( const FragPool* pool_, int index_, const Point& p_, const Vec3& velo
 
 Frag::Frag( const FragPool* pool_, InputStream* istream )
 {
-  cell       = null;
+  cell       = nullptr;
   index      = istream->readInt();
   poolId     = pool_->id;
   pool       = pool_;

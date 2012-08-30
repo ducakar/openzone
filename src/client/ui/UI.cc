@@ -51,9 +51,9 @@ namespace ui
 UI ui;
 
 UI::UI() :
-  fpsLabel( null ), root( null ), loadingScreen( null ), hudArea( null ), selectionArea( null ),
-  questFrame( null ), galileoFrame( null ), musicPlayer( null ), inventory( null ),
-  buildMenu( null ), debugFrame( null )
+  fpsLabel( nullptr ), root( nullptr ), loadingScreen( nullptr ), hudArea( nullptr ),
+  selectionArea( nullptr ), questFrame( nullptr ), galileoFrame( nullptr ), musicPlayer( nullptr ),
+  inventory( nullptr ), buildMenu( nullptr ), debugFrame( nullptr )
 {}
 
 void UI::showLoadingScreen( bool doShow )
@@ -135,8 +135,8 @@ void UI::load()
   musicPlayer   = new MusicPlayer();
   inventory     = new Inventory();
   infoFrame     = new InfoFrame();
-  buildMenu     = showBuild ? new BuildMenu() : null;
-  debugFrame    = showDebug ? new DebugFrame() : null;
+  buildMenu     = showBuild ? new BuildMenu() : nullptr;
+  debugFrame    = showDebug ? new DebugFrame() : nullptr;
 
   root->add( hudArea, 0, 0 );
   root->add( selectionArea, 0, 0 );
@@ -163,41 +163,41 @@ void UI::load()
 
 void UI::unload()
 {
-  if( debugFrame != null ) {
+  if( debugFrame != nullptr ) {
     root->remove( debugFrame );
-    debugFrame = null;
+    debugFrame = nullptr;
   }
-  if( buildMenu != null ) {
+  if( buildMenu != nullptr ) {
     root->remove( buildMenu );
-    buildMenu = null;
+    buildMenu = nullptr;
   }
-  if( infoFrame != null ) {
+  if( infoFrame != nullptr ) {
     root->remove( infoFrame );
-    infoFrame = null;
+    infoFrame = nullptr;
   }
-  if( inventory != null ) {
+  if( inventory != nullptr ) {
     root->remove( inventory );
-    inventory = null;
+    inventory = nullptr;
   }
-  if( musicPlayer != null ) {
+  if( musicPlayer != nullptr ) {
     root->remove( musicPlayer );
-    musicPlayer = null;
+    musicPlayer = nullptr;
   }
-  if( galileoFrame != null ) {
+  if( galileoFrame != nullptr ) {
     root->remove( galileoFrame );
-    galileoFrame = null;
+    galileoFrame = nullptr;
   }
-  if( questFrame != null ) {
+  if( questFrame != nullptr ) {
     root->remove( questFrame );
-    questFrame = null;
+    questFrame = nullptr;
   }
-  if( selectionArea != null ) {
+  if( selectionArea != nullptr ) {
     root->remove( selectionArea );
-    selectionArea = null;
+    selectionArea = nullptr;
   }
-  if( hudArea != null ) {
+  if( hudArea != nullptr ) {
     root->remove( hudArea );
-    hudArea = null;
+    hudArea = nullptr;
   }
 }
 
@@ -229,8 +229,8 @@ void UI::free()
   delete fpsLabel;
   delete root;
 
-  root     = null;
-  fpsLabel = null;
+  root     = nullptr;
+  fpsLabel = nullptr;
 
   mouse.free();
   style.free();

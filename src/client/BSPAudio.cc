@@ -86,7 +86,7 @@ void BSPAudio::playContSound( const Entity* entity, int sound ) const
 
   Context::ContSource* contSource = context.contSources.find( key );
 
-  if( contSource == null ) {
+  if( contSource == nullptr ) {
     uint srcId = context.addContSource( sound, key );
     if( srcId == Context::INVALID_SOURCE ) {
       return;

@@ -42,7 +42,7 @@ namespace oz
 
 void* MainInstance::mainThreadMain( void* )
 {
-  ozMain( 0, null );
+  ozMain( 0, nullptr );
   return null;
 }
 
@@ -60,8 +60,8 @@ MainInstance::MainInstance( PP_Instance instance_ ) :
 MainInstance::~MainInstance()
 {
   if( mainThread != 0 ) {
-    pthread_join( mainThread, null );
-    mainThread = null;
+    pthread_join( mainThread, nullptr );
+    mainThread = nullptr;
   }
 }
 
@@ -121,12 +121,12 @@ void MainInstance::DidChangeView( const pp::View& )
 //
 //   Log::println( "dd\n" );
 //
-//   context.SwapBuffers( pp::CompletionCallback( &flushCallback, null ) );
+//   context.SwapBuffers( pp::CompletionCallback( &flushCallback, nullptr ) );
 //
 //   Log::println( "ee\n" );
 
   if( mainThread == 0 ) {
-    pthread_create( &mainThread, null, mainThreadMain, this );
+    pthread_create( &mainThread, nullptr, mainThreadMain, this );
   }
 }
 

@@ -35,7 +35,7 @@ int  Lua::randomSeed       = 0;
 bool Lua::isRandomSeedTime = true;
 
 Lua::Lua() :
-  l( null )
+  l( nullptr )
 {}
 
 bool Lua::readVariable( InputStream* istream )
@@ -133,7 +133,7 @@ void Lua::initCommon( const char* componentName )
   ls.envName = componentName;
 
   l = luaL_newstate();
-  if( l == null ) {
+  if( l == nullptr ) {
     OZ_ERROR( "Failed to create Lua state" );
   }
 
@@ -165,7 +165,7 @@ void Lua::initCommon( const char* componentName )
 void Lua::freeCommon()
 {
   lua_close( l );
-  l = null;
+  l = nullptr;
 }
 
 void Lua::registerFunction( const char* name, APIFunc func )

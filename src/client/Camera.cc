@@ -47,7 +47,7 @@ const Mat44  Camera::NV_COLOUR          = Mat44( 0.25f, 2.00f, 0.25f, 0.00f,
                                                  0.00f, 0.00f, 0.00f, 1.00f );
 
 Proxy* const Camera::PROXIES[] = {
-  null,
+  nullptr,
   &strategic,
   &unit,
   &cinematic
@@ -60,15 +60,15 @@ CinematicProxy Camera::cinematic;
 void Camera::updateReferences()
 {
   if( object < 0 ) {
-    objectObj = null;
+    objectObj = nullptr;
   }
   else {
     objectObj = orbis.objects[object];
-    object = objectObj == null ? -1 : object;
+    object = objectObj == nullptr ? -1 : object;
   }
 
   if( entity < 0 ) {
-    entityObj = null;
+    entityObj = nullptr;
   }
   else {
     int strIndex = entity / Struct::MAX_ENTITIES;
@@ -76,9 +76,9 @@ void Camera::updateReferences()
 
     const Struct* str = orbis.structs[strIndex];
 
-    if( str == null ) {
+    if( str == nullptr ) {
       entity    = -1;
-      entityObj = null;
+      entityObj = nullptr;
     }
     else {
       entityObj = &str->entities[entIndex];
@@ -86,35 +86,35 @@ void Camera::updateReferences()
   }
 
   if( bot < 0 ) {
-    botObj = null;
+    botObj = nullptr;
   }
   else {
     botObj = static_cast<Bot*>( orbis.objects[bot] );
 
-    if( botObj == null ) {
+    if( botObj == nullptr ) {
       bot    = -1;
-      botObj = null;
+      botObj = nullptr;
     }
   }
 
-  if( botObj == null || botObj->parent < 0 ) {
+  if( botObj == nullptr || botObj->parent < 0 ) {
     vehicle    = -1;
-    vehicleObj = null;
+    vehicleObj = nullptr;
   }
   else {
     vehicle    = botObj->parent;
     vehicleObj = static_cast<Vehicle*>( orbis.objects[vehicle] );
 
-    if( vehicleObj == null ) {
+    if( vehicleObj == nullptr ) {
       vehicle    = -1;
-      vehicleObj = null;
+      vehicleObj = nullptr;
     }
   }
 
   for( int i = 0; i < switchableUnits.length(); ) {
     const Bot* unit = static_cast<const Bot*>( orbis.objects[ switchableUnits[i] ] );
 
-    if( unit == null ) {
+    if( unit == nullptr ) {
       switchableUnits.remove( i );
     }
     else {
@@ -165,30 +165,30 @@ void Camera::prepare()
   }
 
   if( newState != state ) {
-    if( proxy != null ) {
+    if( proxy != nullptr ) {
       proxy->end();
     }
 
     proxy = PROXIES[newState];
 
-    if( proxy != null ) {
+    if( proxy != nullptr ) {
       proxy->begin();
     }
     else {
       bot       = -1;
-      botObj    = null;
+      botObj    = nullptr;
 
       object    = -1;
-      objectObj = null;
+      objectObj = nullptr;
 
       entity    = -1;
-      entityObj = null;
+      entityObj = nullptr;
     }
 
     state = newState;
   }
 
-  if( proxy != null ) {
+  if( proxy != nullptr ) {
     proxy->prepare();
   }
 
@@ -213,7 +213,7 @@ void Camera::update()
 {
   updateReferences();
 
-  if( proxy != null ) {
+  if( proxy != nullptr ) {
     proxy->update();
   }
 
@@ -248,13 +248,13 @@ void Camera::reset()
   at         = -rotMat.z.vec3();
 
   object     = -1;
-  objectObj  = null;
+  objectObj  = nullptr;
   entity     = -1;
-  entityObj  = null;
+  entityObj  = nullptr;
   bot        = -1;
-  botObj     = null;
+  botObj     = nullptr;
   vehicle    = -1;
-  vehicleObj = null;
+  vehicleObj = nullptr;
 
   switchableUnits.clear();
   switchableUnits.dealloc();
@@ -270,9 +270,9 @@ void Camera::reset()
   unit.reset();
   cinematic.reset();
 
-  if( proxy != null ) {
+  if( proxy != nullptr ) {
     proxy->end();
-    proxy = null;
+    proxy = nullptr;
   }
 }
 
@@ -303,13 +303,13 @@ void Camera::read( InputStream* istream )
   at         = -rotMat.z.vec3();
 
   object     = -1;
-  objectObj  = null;
+  objectObj  = nullptr;
   entity     = -1;
-  entityObj  = null;
+  entityObj  = nullptr;
   bot        =  istream->readInt();
-  botObj     = bot < 0 ? null : static_cast<Bot*>( orbis.objects[bot] );
+  botObj     = bot < 0 ? nullptr : static_cast<Bot*>( orbis.objects[bot] );
   vehicle    = istream->readInt();
-  vehicleObj = vehicle < 0 ? null : static_cast<Vehicle*>( orbis.objects[vehicle] );
+  vehicleObj = vehicle < 0 ? nullptr : static_cast<Vehicle*>( orbis.objects[vehicle] );
 
   hard_assert( switchableUnits.isEmpty() );
 
@@ -331,7 +331,7 @@ void Camera::read( InputStream* istream )
 
   proxy = PROXIES[newState];
 
-  if( proxy != null ) {
+  if( proxy != nullptr ) {
     proxy->begin();
   }
 

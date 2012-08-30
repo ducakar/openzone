@@ -655,20 +655,20 @@ void BSP::optimise()
       }
       else {
         // find parent
-        int* parentsRef = null;
+        int* parentsRef = nullptr;
         for( int j = 0; j < nodes.length(); ++j ) {
           if( nodes[j].front == i ) {
-            hard_assert( parentsRef == null );
+            hard_assert( parentsRef == nullptr );
 
             parentsRef = &nodes[j].front;
           }
           if( nodes[j].back == i ) {
-            hard_assert( parentsRef == null );
+            hard_assert( parentsRef == nullptr );
 
             parentsRef = &nodes[j].back;
           }
         }
-        hard_assert( parentsRef != null );
+        hard_assert( parentsRef != nullptr );
 
         if( nodes[i].front == 0 ) {
           *parentsRef = nodes[i].back;

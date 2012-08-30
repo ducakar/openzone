@@ -40,7 +40,7 @@ namespace client
 
 void CinematicProxy::addStateSwitch( int endState )
 {
-  Step step = { Quat::ID, Point::ORIGIN, Mat44::ID, -1, null, 0.0f, endState };
+  Step step = { Quat::ID, Point::ORIGIN, Mat44::ID, -1, nullptr, 0.0f, endState };
   steps.add( step );
 }
 
@@ -65,7 +65,7 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* missionLin
     return;
   }
 
-  Step step = { camera.rot, camera.p, camera.colour, -1, null, 0.0f, Camera::CINEMATIC };
+  Step step = { camera.rot, camera.p, camera.colour, -1, nullptr, 0.0f, Camera::CINEMATIC };
 
   steps.alloc( nSteps );
 

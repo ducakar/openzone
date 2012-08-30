@@ -204,7 +204,7 @@ else()
 endif()
 
 set( flags "${flags} -fno-rtti -fno-exceptions -fvisibility-inlines-hidden -ffast-math" )
-set( warnings "-Wall -Wextra -Winvalid-pch -Wconversion" )
+set( warnings "-Wall -Wextra -Wconversion -Winvalid-pch" )
 
 # Additional warnings, enabled only once in a while to check code quality (GCC specific).
 # set( warnings "${warnings} -Wmissing-declarations -Wmissing-format-attribute" )

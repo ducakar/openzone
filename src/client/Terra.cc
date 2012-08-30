@@ -86,7 +86,7 @@ void Terra::draw()
 
       Vertex::setFormat();
 
-      glDrawElements( GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, null );
+      glDrawElements( GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, nullptr );
     }
   }
 
@@ -137,7 +137,7 @@ void Terra::drawWater()
 
         Vertex::setFormat();
 
-        glDrawElements( GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, null );
+        glDrawElements( GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, nullptr );
       }
     }
   }

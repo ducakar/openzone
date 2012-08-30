@@ -60,19 +60,19 @@ struct Semaphore::Descriptor
 
 int Semaphore::counter() const
 {
-  hard_assert( descriptor != null );
+  hard_assert( descriptor != nullptr );
 
   return descriptor->counter;
 }
 
 void Semaphore::post() const
 {
-  hard_assert( descriptor != null );
+  hard_assert( descriptor != nullptr );
 
 #ifdef _WIN32
 
   InterlockedIncrement( &descriptor->counter );
-  ReleaseSemaphore( descriptor->semaphore, 1, null );
+  ReleaseSemaphore( descriptor->semaphore, 1, nullptr );
 
 #else
 
@@ -86,7 +86,7 @@ void Semaphore::post() const
 
 void Semaphore::wait() const
 {
-  hard_assert( descriptor != null );
+  hard_assert( descriptor != nullptr );
 
 #ifdef _WIN32
 
@@ -107,7 +107,7 @@ void Semaphore::wait() const
 
 bool Semaphore::tryWait() const
 {
-  hard_assert( descriptor != null );
+  hard_assert( descriptor != nullptr );
 
 #ifdef _WIN32
 
@@ -137,10 +137,10 @@ bool Semaphore::tryWait() const
 
 void Semaphore::init( int counter )
 {
-  hard_assert( descriptor == null && counter >= 0 );
+  hard_assert( descriptor == nullptr && counter >= 0 );
 
   void* descriptorPtr = malloc( sizeof( Descriptor ) );
-  if( descriptorPtr == null ) {
+  if( descriptorPtr == nullptr ) {
     OZ_ERROR( "Semaphore resource allocation failed" );
   }
 
@@ -149,17 +149,17 @@ void Semaphore::init( int counter )
 
 #ifdef _WIN32
 
-  descriptor->semaphore = CreateSemaphore( null, counter, 0x7fffffff, null );
-  if( descriptor->semaphore == null ) {
+  descriptor->semaphore = CreateSemaphore( nullptr, counter, 0x7fffffff, nullptr );
+  if( descriptor->semaphore == nullptr ) {
     OZ_ERROR( "Semaphore semaphore creation failed" );
   }
 
 #else
 
-  if( pthread_mutex_init( &descriptor->mutex, null ) != 0 ) {
+  if( pthread_mutex_init( &descriptor->mutex, nullptr ) != 0 ) {
     OZ_ERROR( "Semaphore mutex creation failed" );
   }
-  if( pthread_cond_init( &descriptor->cond, null ) != 0 ) {
+  if( pthread_cond_init( &descriptor->cond, nullptr ) != 0 ) {
     OZ_ERROR( "Semaphore condition variable creation failed" );
   }
 
@@ -168,7 +168,7 @@ void Semaphore::init( int counter )
 
 void Semaphore::destroy()
 {
-  hard_assert( descriptor != null );
+  hard_assert( descriptor != nullptr );
 
 #ifdef _WIN32
   CloseHandle( &descriptor->semaphore );
@@ -179,7 +179,7 @@ void Semaphore::destroy()
 
   descriptor->~Descriptor();
   free( descriptor );
-  descriptor = null;
+  descriptor = nullptr;
 }
 
 }

@@ -55,7 +55,7 @@ class Bitset
      * Create a new bitset without allocating any space.
      */
     Bitset() :
-      data( null ), size( 0 )
+      data( nullptr ), size( 0 )
     {}
 
     /**
@@ -70,7 +70,7 @@ class Bitset
      * Copy constructor, copies storage.
      */
     Bitset( const Bitset& b ) :
-      data( b.size == 0 ? null : new ulong[b.size] ), size( b.size )
+      data( b.size == 0 ? nullptr : new ulong[b.size] ), size( b.size )
     {
       aCopy<ulong>( data, b.data, b.size );
     }
@@ -81,7 +81,7 @@ class Bitset
     Bitset( Bitset&& b ) :
       data( b.data ), size( b.size )
     {
-      b.data = null;
+      b.data = nullptr;
       b.size = 0;
     }
 
@@ -99,7 +99,7 @@ class Bitset
       if( size != b.size ) {
         delete[] data;
 
-        data = b.size == 0 ? null : new ulong[b.size];
+        data = b.size == 0 ? nullptr : new ulong[b.size];
         size = b.size;
       }
 
@@ -122,7 +122,7 @@ class Bitset
       data = b.data;
       size = b.size;
 
-      b.data = null;
+      b.data = nullptr;
       b.size = 0;
 
       return *this;
@@ -137,7 +137,7 @@ class Bitset
     explicit Bitset( int nBits )
     {
       if( nBits == 0 ) {
-        data = null;
+        data = nullptr;
         size = 0;
       }
       else {
@@ -479,7 +479,7 @@ class Bitset
     {
       delete[] data;
 
-      data = null;
+      data = nullptr;
       size = 0;
     }
 

@@ -60,7 +60,7 @@ bool Network::connect()
   SDLNet_ResolveHost( &ip, host, port );
   socket = SDLNet_TCP_Open( &ip );
 
-  if( socket == null ) {
+  if( socket == nullptr ) {
     Log::printEnd( " Failed" );
     return false;
   }
@@ -72,7 +72,7 @@ bool Network::connect()
 void Network::disconnect()
 {
   SDLNet_TCP_Close( socket );
-  socket = null;
+  socket = nullptr;
 }
 
 void Network::update()

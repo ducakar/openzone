@@ -73,8 +73,8 @@ char** StackTrace::symbols() const
   char outputBuffer[TRACE_BUFFER_SIZE];
 
   char** symbols = backtrace_symbols( frames, nFrames );
-  if( symbols == null ) {
-    return null;
+  if( symbols == nullptr ) {
+    return nullptr;
   }
 
   const char* const outEnd = outputBuffer + TRACE_BUFFER_SIZE;
@@ -89,14 +89,14 @@ char** StackTrace::symbols() const
 
     // Mangled function name.
     char* func = strrchr( symbols[i], '(' );
-    char* end  = null;
+    char* end  = nullptr;
 
-    if( func != null ) {
+    if( func != nullptr ) {
       *func++ = '\0';
 
       end = strrchr( func, '+' );
 
-      if( end != null ) {
+      if( end != nullptr ) {
         *end = '\0';
       }
     }
@@ -112,7 +112,7 @@ char** StackTrace::symbols() const
     *out++ = ':';
     *out++ = ' ';
 
-    if( func == null || func >= end ) {
+    if( func == nullptr || func >= end ) {
       *out++ = '?';
     }
     else {
@@ -120,8 +120,8 @@ char** StackTrace::symbols() const
       char* demangled;
       int   status = 0;
 
-      demangled = abi::__cxa_demangle( func, null, null, &status );
-      func      = demangled == null ? func : demangled;
+      demangled = abi::__cxa_demangle( func, nullptr, nullptr, &status );
+      func      = demangled == nullptr ? func : demangled;
 
       size_t funcLen = strlen( func );
 
@@ -145,9 +145,9 @@ char** StackTrace::symbols() const
   size_t bodySize    = size_t( out - outputBuffer );
   char** niceSymbols = static_cast<char**>( realloc( symbols, headerSize + bodySize ) );
 
-  if( niceSymbols == null ) {
+  if( niceSymbols == nullptr ) {
     free( symbols );
-    return null;
+    return nullptr;
   }
 
   memcpy( &niceSymbols[nWrittenFrames], outputBuffer, bodySize );

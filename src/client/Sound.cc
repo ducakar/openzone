@@ -35,11 +35,11 @@
 
 #ifdef OZ_NONFREE
 # define OZ_DLDECL( name ) \
-  static decltype( ::name )* name = null
+  static decltype( ::name )* name = nullptr
 
 # define OZ_DLLOAD( l, name ) \
   *( void** )( &name ) = SDL_LoadFunction( l, #name ); \
-  if( name == null ) { \
+  if( name == nullptr ) { \
     OZ_ERROR( "Failed loading " #name " from libmad" ); \
   }
 #endif
@@ -70,7 +70,7 @@ OZ_DLDECL( NeAACDecDecode    );
 #endif
 
 static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle );
-static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, null, null, null };
+static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, nullptr, nullptr, nullptr };
 
 static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle )
 {
@@ -114,7 +114,7 @@ void Sound::musicOpen( const char* path )
   }
 #ifdef OZ_NONFREE
   else if( file.hasExtension( "mp3" ) ) {
-    if( libmad != null ) {
+    if( libmad != nullptr ) {
       musicStreamType = MP3;
     }
     else {
@@ -122,7 +122,7 @@ void Sound::musicOpen( const char* path )
     }
   }
   else if( file.hasExtension( "aac" ) ) {
-    if( libfaad != null ) {
+    if( libfaad != nullptr ) {
       musicStreamType = AAC;
     }
     else {
@@ -140,16 +140,16 @@ void Sound::musicOpen( const char* path )
     }
     case OGG: {
       musicFile = PHYSFS_openRead( path );
-      if( musicFile == null ) {
+      if( musicFile == nullptr ) {
         OZ_ERROR( "Failed to open file '%s'", path );
       }
 
-      if( ov_open_callbacks( musicFile, &oggStream, null, 0, VORBIS_CALLBACKS ) < 0 ) {
+      if( ov_open_callbacks( musicFile, &oggStream, nullptr, 0, VORBIS_CALLBACKS ) < 0 ) {
         OZ_ERROR( "Failed to open Ogg stream in '%s'", path );
       }
 
       vorbis_info* vorbisInfo = ov_info( &oggStream, -1 );
-      if( vorbisInfo == null ) {
+      if( vorbisInfo == nullptr ) {
         OZ_ERROR( "Corrupted Vorbis header in '%s'", path );
       }
 
@@ -171,7 +171,7 @@ void Sound::musicOpen( const char* path )
 #ifdef OZ_NONFREE
     case MP3: {
       musicFile = PHYSFS_openRead( path );
-      if( musicFile == null ) {
+      if( musicFile == nullptr ) {
         OZ_ERROR( "Failed to open file '%s'", path );
       }
 
@@ -215,7 +215,7 @@ void Sound::musicOpen( const char* path )
     }
     case AAC: {
       musicFile = PHYSFS_openRead( path );
-      if( musicFile == null ) {
+      if( musicFile == nullptr ) {
         OZ_ERROR( "Failed to open file '%s'", path );
       }
 
@@ -361,7 +361,7 @@ int Sound::musicDecode()
           if( madStream.error == MAD_ERROR_BUFLEN ) {
             size_t bytesLeft;
 
-            if( madStream.next_frame == null ) {
+            if( madStream.next_frame == nullptr ) {
               bytesLeft = 0;
             }
             else {
@@ -421,7 +421,7 @@ int Sound::musicDecode()
         aacOutputBuffer = static_cast<char*>
                           ( NeAACDecDecode( aacDecoder, &frameInfo, musicInputBuffer, aacInputBytes ) );
 
-        if( aacOutputBuffer == null ) {
+        if( aacOutputBuffer == nullptr ) {
           return int( musicOutput - musicBuffer );
         }
 
@@ -493,7 +493,7 @@ void Sound::playCell( int cellX, int cellY )
 
   foreach( obj, cell.objects.citer() ) {
     if( obj->flags & Object::AUDIO_BIT ) {
-      context.playAudio( obj, null );
+      context.playAudio( obj, nullptr );
     }
   }
 
@@ -679,7 +679,7 @@ void Sound::init()
   Log::println( "Initialising Sound {" );
   Log::indent();
 
-  const char* deviceSpec = alcGetString( null, ALC_DEVICE_SPECIFIER );
+  const char* deviceSpec = alcGetString( nullptr, ALC_DEVICE_SPECIFIER );
 
   Log::verboseMode = true;
   Log::println( "Available OpenAL devices {" );
@@ -696,7 +696,7 @@ void Sound::init()
   const char* deviceName = config.include( "sound.device", "" ).asString();
 
   if( String::isEmpty( deviceName ) ) {
-    deviceName = null;
+    deviceName = nullptr;
     Log::print( "Initialising default device ..." );
   }
   else {
@@ -704,7 +704,7 @@ void Sound::init()
   }
 
   soundDevice = alcOpenDevice( deviceName );
-  if( soundDevice == null ) {
+  if( soundDevice == nullptr ) {
     OZ_ERROR( "Failed to open OpenAL device" );
   }
 
@@ -716,7 +716,7 @@ void Sound::init()
   };
 
   soundContext = alcCreateContext( soundDevice, defaultAttributes );
-  if( soundContext == null ) {
+  if( soundContext == nullptr ) {
     OZ_ERROR( "Failed to create OpenAL context" );
   }
 
@@ -817,7 +817,7 @@ void Sound::init()
 
   Log::print( "MAD library ..." );
 
-  if( libmad == null ) {
+  if( libmad == nullptr ) {
     Log::printEnd( " Not found, MP3 decoding support disabled" );
   }
   else {
@@ -835,7 +835,7 @@ void Sound::init()
 
   Log::print( "FAAD library ..." );
 
-  if( libfaad == null ) {
+  if( libfaad == nullptr ) {
     Log::printEnd( " Not found, AAC decoding support disabled" );
   }
   else {
@@ -849,7 +849,7 @@ void Sound::init()
 
 #endif
 
-  context.speakSampleRate = espeak_Initialize( AUDIO_OUTPUT_SYNCHRONOUS, 500, null, 0 );
+  context.speakSampleRate = espeak_Initialize( AUDIO_OUTPUT_SYNCHRONOUS, 500, nullptr, 0 );
   espeak_SetParameter( espeakRATE, 150, 0 );
   espeak_SetVoiceByName( config.include( "sound.speaker", "en" ).asString() );
   espeak_SetSynthCallback( reinterpret_cast<t_espeak_callback*>( &Context::speakCallback ) );
@@ -862,8 +862,8 @@ void Sound::init()
   soundMainSemaphore.init();
   soundAuxSemaphore.init();
 
-  musicThread.start( musicMain, null );
-  soundThread.start( soundMain, null );
+  musicThread.start( musicMain, nullptr );
+  soundThread.start( soundMain, nullptr );
 
   Log::unindent();
   Log::println( "}" );
@@ -899,15 +899,15 @@ void Sound::free()
   musicMainSemaphore.destroy();
 
 #ifdef OZ_NONFREE
-  if( libfaad != null ) {
+  if( libfaad != nullptr ) {
     SDL_UnloadObject( libfaad );
   }
-  if( libmad != null ) {
+  if( libmad != nullptr ) {
     SDL_UnloadObject( libmad );
   }
 #endif
 
-  if( soundContext != null ) {
+  if( soundContext != nullptr ) {
     playedStructs.dealloc();
 
     alSourceStop( musicSource );
@@ -917,10 +917,10 @@ void Sound::free()
     OZ_AL_CHECK_ERROR();
 
     alcDestroyContext( soundContext );
-    soundContext = null;
+    soundContext = nullptr;
 
     alcCloseDevice( soundDevice );
-    soundDevice = null;
+    soundDevice = nullptr;
   }
 
   Log::printEnd( " OK" );

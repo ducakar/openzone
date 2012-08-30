@@ -209,7 +209,7 @@ void BSP::load()
 
 void BSP::unload()
 {
-  if( planes != null ) {
+  if( planes != nullptr ) {
     Log::print( "Unloading BSP structure '%s' ...", name.cstr() );
 
     delete[] reinterpret_cast<char*>( planes );
@@ -223,14 +223,14 @@ void BSP::unload()
     nModels       = 0;
     nBoundObjects = 0;
 
-    planes        = null;
-    nodes         = null;
-    leaves        = null;
-    leafBrushes   = null;
-    brushes       = null;
-    brushSides    = null;
-    models        = null;
-    boundObjects  = null;
+    planes        = nullptr;
+    nodes         = nullptr;
+    leaves        = nullptr;
+    leafBrushes   = nullptr;
+    brushes       = nullptr;
+    brushSides    = nullptr;
+    models        = nullptr;
+    boundObjects  = nullptr;
 
     Log::printEnd( " OK" );
   }
@@ -257,14 +257,14 @@ void BSP::init( const char* name_, int id_ )
   nModels       = 0;
   nBoundObjects = 0;
 
-  planes        = null;
-  nodes         = null;
-  leaves        = null;
-  leafBrushes   = null;
-  brushes       = null;
-  brushSides    = null;
-  models        = null;
-  boundObjects  = null;
+  planes        = nullptr;
+  nodes         = nullptr;
+  leaves        = nullptr;
+  leafBrushes   = nullptr;
+  brushes       = nullptr;
+  brushSides    = nullptr;
+  models        = nullptr;
+  boundObjects  = nullptr;
 
   name          = name_;
   title         = lingua.get( is.readString() );
@@ -274,7 +274,7 @@ void BSP::init( const char* name_, int id_ )
   resistance    = is.readFloat();
 
   String sFragPool = is.readString();
-  fragPool = sFragPool.isEmpty() ? null : library.fragPool( sFragPool );
+  fragPool = sFragPool.isEmpty() ? nullptr : library.fragPool( sFragPool );
   nFrags   = is.readInt();
 
   sounds.resize( is.readInt() );

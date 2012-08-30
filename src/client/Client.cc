@@ -155,13 +155,13 @@ int Client::init( int argc, char** argv )
   char localRoot[MAX_PATH];
 //   char musicRoot[MAX_PATH];
 
-  if( !SHGetSpecialFolderPath( null, configRoot, CSIDL_APPDATA, false ) ) {
+  if( !SHGetSpecialFolderPath( nullptr, configRoot, CSIDL_APPDATA, false ) ) {
     OZ_ERROR( "Failed to obtain APPDATA directory" );
   }
-  if( !SHGetSpecialFolderPath( null, localRoot, CSIDL_LOCAL_APPDATA, false ) ) {
+  if( !SHGetSpecialFolderPath( nullptr, localRoot, CSIDL_LOCAL_APPDATA, false ) ) {
     OZ_ERROR( "Failed to obtain LOCAL_APPDATA directory" );
   }
-//   if( !SHGetSpecialFolderPath( null, musicRoot, CSIDL_MYMUSIC, false ) ) {
+//   if( !SHGetSpecialFolderPath( nullptr, musicRoot, CSIDL_MYMUSIC, false ) ) {
 //     OZ_ERROR( "Failed to obtain MYMUSIC directory" );
 //   }
 
@@ -177,19 +177,19 @@ int Client::init( int argc, char** argv )
   const char* localRoot  = SDL_getenv( "XDG_LOCAL_HOME" );
 //   const char* musicRoot  = SDL_getenv( "XDG_MUSIC_DIR" );
 
-  if( home == null ) {
+  if( home == nullptr ) {
     OZ_ERROR( "Cannot determine user home directory from environment" );
   }
 
-  String configDir = configRoot == null ?
+  String configDir = configRoot == nullptr ?
                      String::str( "%s/.config/openzone", home ) :
                      String::str( "%s/openzone", configRoot );
 
-  String localDir = localRoot == null ?
+  String localDir = localRoot == nullptr ?
                     String::str( "%s/.local/share/openzone", home ) :
                     String::str( "%s/openzone", localRoot );
 
-//   String musicDir = musicRoot == null ? String::str( "%s/Music", home ) : String( musicRoot );
+//   String musicDir = musicRoot == nullptr ? String::str( "%s/Music", home ) : String( musicRoot );
   String musicDir = "";
 
 #endif
@@ -316,7 +316,7 @@ int Client::init( int argc, char** argv )
   foreach( pkg, packages.citer() ) {
     File pkgFile( localDir + "/" + *pkg );
 
-    if( PFile::mount( pkgFile.path(), null, true ) ) {
+    if( PFile::mount( pkgFile.path(), nullptr, true ) ) {
       Log::println( "%s", pkgFile.path().cstr() );
     }
     else {
@@ -334,14 +334,14 @@ int Client::init( int argc, char** argv )
     Log::println( "%s [mounted on /userMusic]", userMusicPath );
   }
 
-  if( PFile::mount( localDir, null, true ) ) {
+  if( PFile::mount( localDir, nullptr, true ) ) {
     Log::println( "%s", localDir.cstr() );
 
     DArray<File> list = File( localDir ).ls();
 
     foreach( file, list.citer() ) {
       if( file->hasExtension( "7z" ) || file->hasExtension( "zip" ) ) {
-        if( !PFile::mount( file->path(), null, true ) ) {
+        if( !PFile::mount( file->path(), nullptr, true ) ) {
           OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
         Log::println( "%s", file->path().cstr() );
@@ -349,14 +349,14 @@ int Client::init( int argc, char** argv )
     }
   }
 
-  if( PFile::mount( dataDir, null, true ) ) {
+  if( PFile::mount( dataDir, nullptr, true ) ) {
     Log::println( "%s", dataDir.cstr() );
 
     DArray<File> list = File( dataDir ).ls();
 
     foreach( file, list.citer() ) {
       if( file->hasExtension( "7z" ) || file->hasExtension( "zip" ) ) {
-        if( !PFile::mount( file->path(), null, true ) ) {
+        if( !PFile::mount( file->path(), nullptr, true ) ) {
           OZ_ERROR( "Failed to mount '%s' on / in PhysicsFS", file->path().cstr() );
         }
         Log::println( "%s", file->path().cstr() );
@@ -467,7 +467,7 @@ int Client::init( int argc, char** argv )
   NaCl::post( "none:" );
 #endif
 
-  Stage::nextStage = null;
+  Stage::nextStage = nullptr;
 
   if( !mission.isEmpty() ) {
     gameStage.mission = mission;
@@ -737,11 +737,11 @@ int Client::main()
     isAlive &= !isBenchmark || timer.time < benchmarkTime;
     isAlive &= stage->update();
 
-    if( Stage::nextStage != null ) {
+    if( Stage::nextStage != nullptr ) {
       stage->unload();
 
       stage = Stage::nextStage;
-      Stage::nextStage = null;
+      Stage::nextStage = nullptr;
 
       input.prepare();
       input.update();

@@ -83,7 +83,7 @@ bool Weapon::onUse( Bot* user )
 
 void Weapon::trigger( Bot* user )
 {
-  hard_assert( user != null );
+  hard_assert( user != nullptr );
 
   const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
 

@@ -59,7 +59,7 @@ class InputStream
      */
     OZ_ALWAYS_INLINE
     InputStream() :
-      pos( null ), start( null ), end( null ), order( Endian::NATIVE )
+      pos( nullptr ), start( nullptr ), end( nullptr ), order( Endian::NATIVE )
     {}
 
     /**

@@ -44,7 +44,7 @@ Pool<Object, 16384>      Object::pool;
 
 void Object::onDestroy()
 {
-  hard_assert( cell != null );
+  hard_assert( cell != nullptr );
 
   if( !clazz->onDestroy.isEmpty() ) {
     lua.objectCall( clazz->onDestroy, this );
@@ -53,12 +53,12 @@ void Object::onDestroy()
   foreach( i, items.citer() ) {
     Object* item = orbis.objects[*i];
 
-    if( item != null ) {
+    if( item != nullptr ) {
       item->destroy();
     }
   }
 
-  if( clazz->fragPool != null ) {
+  if( clazz->fragPool != nullptr ) {
     synapse.gen( clazz->fragPool,
                  clazz->nFrags,
                  Bounds( Point( p.x - dim.x, p.y - dim.y, p.z ),
@@ -93,7 +93,7 @@ Object::Object( const ObjectClass* clazz_, int index_, const Point& p_, Heading 
 {
   p          = p_;
   dim        = clazz_->dim;
-  cell       = null;
+  cell       = nullptr;
   index      = index_;
   flags      = clazz_->flags | heading;
   life       = clazz_->life;
@@ -113,7 +113,7 @@ Object::Object( const ObjectClass* clazz_, InputStream* istream )
 {
   p          = istream->readPoint();
   dim        = clazz_->dim;
-  cell       = null;
+  cell       = nullptr;
   index      = istream->readInt();
   flags      = istream->readInt();
   life       = istream->readFloat();

@@ -48,8 +48,8 @@ const float StrategicProxy::ZOOM_FACTOR     = 0.10f;
 
 void StrategicProxy::begin()
 {
-  camera.setTaggedObj( null );
-  camera.setTaggedEnt( null );
+  camera.setTaggedObj( nullptr );
+  camera.setTaggedEnt( nullptr );
   camera.smoothMagnify( 1.0f );
   camera.isExternal = true;
 
@@ -82,22 +82,22 @@ void StrategicProxy::prepare()
   {
     if( ui::ui.selectionArea->taggedObjs.length() == 1 ) {
       const Object* tagged = orbis.objects[ ui::ui.selectionArea->taggedObjs.first() ];
-      const Bot*    me     = null;
+      const Bot*    me     = nullptr;
 
-      if( tagged != null ) {
+      if( tagged != nullptr ) {
         if( tagged->flags & Object::BOT_BIT ) {
           me = static_cast<const Bot*>( tagged );
         }
         else if( tagged->flags & Object::VEHICLE_BIT ) {
           const Vehicle* veh = static_cast<const Vehicle*>( tagged );
 
-          if( veh->pilot >= 0 && orbis.objects[veh->pilot] != null ) {
+          if( veh->pilot >= 0 && orbis.objects[veh->pilot] != nullptr ) {
             me = static_cast<const Bot*>( orbis.objects[veh->pilot] );
           }
         }
       }
 
-      if( me != null ) {
+      if( me != nullptr ) {
         camera.setBot( const_cast<Bot*>( me ) );
         camera.setState( Camera::UNIT );
       }

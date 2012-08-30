@@ -73,7 +73,7 @@ static const char* const SIGNALS[][2] =
 };
 
 static char  filePath[256]; // = ""
-static FILE* file;          // = null
+static FILE* file;          // = nullptr
 static int   tabs;          // = 0
 
 bool Log::showVerbose; // = false
@@ -104,11 +104,11 @@ void Log::unindent()
 
 void Log::putsRaw( const char* s )
 {
-  if( !verboseMode || showVerbose || file == null ) {
+  if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( s, stdout );
   }
 
-  if( file != null ) {
+  if( file != nullptr ) {
     fputs( s, file );
     fflush( file );
   }
@@ -120,11 +120,11 @@ void Log::vprintRaw( const char* s, va_list ap )
 
   vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
 
-  if( !verboseMode || showVerbose || file == null ) {
+  if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( buffer, stdout );
   }
 
-  if( file != null ) {
+  if( file != nullptr ) {
     fputs( buffer, file );
     fflush( file );
   }
@@ -139,11 +139,11 @@ void Log::printRaw( const char* s, ... )
   vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
   va_end( ap );
 
-  if( !verboseMode || showVerbose || file == null ) {
+  if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( buffer, stdout );
   }
 
-  if( file != null ) {
+  if( file != nullptr ) {
     fputs( buffer, file );
     fflush( file );
   }
@@ -158,14 +158,14 @@ void Log::print( const char* s, ... )
   vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
   va_end( ap );
 
-  if( !verboseMode || showVerbose || file == null ) {
+  if( !verboseMode || showVerbose || file == nullptr ) {
     for( int i = 0; i < tabs; ++i ) {
       fputs( "  ", stdout );
     }
     fputs( buffer, stdout );
   }
 
-  if( file != null ) {
+  if( file != nullptr ) {
     for( int i = 0; i < tabs; ++i ) {
       fputs( "  ", file );
     }
@@ -183,12 +183,12 @@ void Log::printEnd( const char* s, ... )
   vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
   va_end( ap );
 
-  if( !verboseMode || showVerbose || file == null ) {
+  if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( buffer, stdout );
     fputc( '\n', stdout );
   }
 
-  if( file != null ) {
+  if( file != nullptr ) {
     fputs( buffer, file );
     fputc( '\n', file );
     fflush( file );
@@ -197,11 +197,11 @@ void Log::printEnd( const char* s, ... )
 
 void Log::printEnd()
 {
-  if( !verboseMode || showVerbose || file == null ) {
+  if( !verboseMode || showVerbose || file == nullptr ) {
     fputc( '\n', stdout );
   }
 
-  if( file != null ) {
+  if( file != nullptr ) {
     fputc( '\n', file );
     fflush( file );
   }
@@ -216,7 +216,7 @@ void Log::println( const char* s, ... )
   vsnprintf( buffer, OUT_BUFFER_SIZE, s, ap );
   va_end( ap );
 
-  if( !verboseMode || showVerbose || file == null ) {
+  if( !verboseMode || showVerbose || file == nullptr ) {
     for( int i = 0; i < tabs; ++i ) {
       fputs( "  ", stdout );
     }
@@ -224,7 +224,7 @@ void Log::println( const char* s, ... )
     fputc( '\n', stdout );
   }
 
-  if( file != null ) {
+  if( file != nullptr ) {
     for( int i = 0; i < tabs; ++i ) {
       fputs( "  ", file );
     }
@@ -236,11 +236,11 @@ void Log::println( const char* s, ... )
 
 void Log::println()
 {
-  if( !verboseMode || showVerbose || file == null ) {
+  if( !verboseMode || showVerbose || file == nullptr ) {
     fputc( '\n', stdout );
   }
 
-  if( file != null ) {
+  if( file != nullptr ) {
     fputc( '\n', file );
     fflush( file );
   }
@@ -253,11 +253,11 @@ void Log::printTime( const Time& time )
   snprintf( buffer, OUT_BUFFER_SIZE, "%04d-%02d-%02d %02d:%02d:%02d",
             time.year, time.month, time.day, time.hour, time.minute, time.second );
 
-  if( !verboseMode || showVerbose || file == null ) {
+  if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( buffer, stdout );
   }
 
-  if( file != null ) {
+  if( file != nullptr ) {
     fputs( buffer, file );
     fflush( file );
   }
@@ -266,33 +266,33 @@ void Log::printTime( const Time& time )
 void Log::printTrace( const StackTrace& st )
 {
   if( st.nFrames == 0 ) {
-    if( !verboseMode || showVerbose || file == null ) {
+    if( !verboseMode || showVerbose || file == nullptr ) {
       fputs( "  stack trace:\n    [no stack trace]\n", stdout );
     }
 
-    if( file != null ) {
+    if( file != nullptr ) {
       fputs( "  stack trace:\n    [no stack trace]\n", file );
     }
   }
   else {
     char** entries = st.symbols();
 
-    if( !verboseMode || showVerbose || file == null ) {
+    if( !verboseMode || showVerbose || file == nullptr ) {
       fputs( "  stack trace:\n", stdout );
     }
 
-    if( file != null ) {
+    if( file != nullptr ) {
       fputs( "  stack trace:\n", file );
     }
 
     for( int i = 0; i < st.nFrames; ++i ) {
-      if( !verboseMode || showVerbose || file == null ) {
+      if( !verboseMode || showVerbose || file == nullptr ) {
         fputs( "    ", stdout );
         fputs( entries[i], stdout );
         fputc( '\n', stdout );
       }
 
-      if( file != null ) {
+      if( file != nullptr ) {
         fputs( "    ", file );
         fputs( entries[i], file );
         fputc( '\n', file );
@@ -302,7 +302,7 @@ void Log::printTrace( const StackTrace& st )
     ::free( entries );
   }
 
-  if( file != null ) {
+  if( file != nullptr ) {
     fflush( file );
   }
 }
@@ -316,11 +316,11 @@ void Log::printSignal( int sigNum )
   snprintf( buffer, OUT_BUFFER_SIZE, "\n\nSignal %d %s (%s)\n",
             sigNum, SIGNALS[index][0], SIGNALS[index][1] );
 
-  if( !verboseMode || showVerbose || file == null ) {
+  if( !verboseMode || showVerbose || file == nullptr ) {
     fputs( buffer, stdout );
   }
 
-  if( file != null ) {
+  if( file != nullptr ) {
     fputs( buffer, file );
     fflush( file );
   }
@@ -336,7 +336,7 @@ void Log::printHalt()
 
   fputs( message, stdout );
 
-  if( file != null ) {
+  if( file != nullptr ) {
     fputs( message, file );
     fflush( file );
   }
@@ -355,7 +355,7 @@ bool Log::init( const char* filePath_, bool clearFile )
 
 #else
 
-  if( filePath_ == null ) {
+  if( filePath_ == nullptr ) {
     filePath[0] = '\0';
   }
   else {
@@ -363,24 +363,24 @@ bool Log::init( const char* filePath_, bool clearFile )
     filePath[255] = '\0';
   }
 
-  if( file != null ) {
+  if( file != nullptr ) {
     fclose( file );
-    file = null;
+    file = nullptr;
   }
   if( filePath[0] != '\0' ) {
     file = fopen( filePath, clearFile ? "w" : "a" );
   }
 
-  return file != null;
+  return file != nullptr;
 
 #endif
 }
 
 void Log::free()
 {
-  if( file != null ) {
+  if( file != nullptr ) {
     fclose( file );
-    file = null;
+    file = nullptr;
   }
 }
 

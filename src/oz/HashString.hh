@@ -81,7 +81,7 @@ class HashString
     /**
      * Container-specific iterator.
      */
-    template <typename IterElem>
+    template <class IterElem>
     class HashIterator : public IteratorBase<IterElem>
     {
       friend class HashString;
@@ -99,7 +99,7 @@ class HashString
         explicit HashIterator( IterElem* const* data_ ) :
           IteratorBase<IterElem>( data_[0] ), data( data_ ), index( 0 )
         {
-          while( elem == null && index < SIZE - 1 ) {
+          while( elem == nullptr && index < SIZE - 1 ) {
             ++index;
             elem = data[index];
           }
@@ -112,7 +112,7 @@ class HashString
          */
         OZ_ALWAYS_INLINE
         HashIterator() :
-          IteratorBase<IterElem>( null ), data( null ), index( 0 )
+          IteratorBase<IterElem>( nullptr ), data( nullptr ), index( 0 )
         {}
 
         /**
@@ -120,22 +120,40 @@ class HashString
          */
         HashIterator& operator ++ ()
         {
-          hard_assert( elem != null );
+          hard_assert( elem != nullptr );
 
-          if( elem->next != null ) {
+          if( elem->next != nullptr ) {
             elem = elem->next;
           }
           else if( index == SIZE - 1 ) {
-            elem = null;
+            elem = nullptr;
           }
           else {
             do {
               ++index;
               elem = data[index];
             }
-            while( elem == null && index < SIZE - 1 );
+            while( elem == nullptr && index < SIZE - 1 );
           }
           return *this;
+        }
+
+        /**
+         * STL-compatible begin iterator.
+         */
+        OZ_ALWAYS_INLINE
+        HashIterator begin() const
+        {
+          return *this;
+        }
+
+        /**
+         * STL-compatible end iterator.
+         */
+        OZ_ALWAYS_INLINE
+        HashIterator end() const
+        {
+          return HashIterator();
         }
 
     };
@@ -162,7 +180,7 @@ class HashString
      */
     static bool areChainsEqual( const Elem* chainA, const Elem* chainB )
     {
-      while( chainA != null && chainB != null ) {
+      while( chainA != nullptr && chainB != nullptr ) {
         if( chainA->key != chainB->key || chainA->value != chainB->value ) {
           return false;
         }
@@ -179,9 +197,9 @@ class HashString
      */
     Elem* cloneChain( const Elem* chain )
     {
-      Elem* newChain = null;
+      Elem* newChain = nullptr;
 
-      while( chain != null ) {
+      while( chain != nullptr ) {
         newChain = new( pool ) Elem( newChain, chain->key, chain->value );
         chain = chain->next;
       }
@@ -193,7 +211,7 @@ class HashString
      */
     void clearChain( Elem* chain )
     {
-      while( chain != null ) {
+      while( chain != nullptr ) {
         Elem* next = chain->next;
 
         chain->~Elem();
@@ -208,7 +226,7 @@ class HashString
      */
     void freeChain( Elem* chain )
     {
-      while( chain != null ) {
+      while( chain != nullptr ) {
         Elem* next = chain->next;
 
         delete chain->value;
@@ -226,7 +244,7 @@ class HashString
      */
     HashString()
     {
-      aSet<Elem*, Elem*>( data, null, SIZE );
+      aSet<Elem*, Elem*>( data, nullptr, SIZE );
     }
 
     /**
@@ -255,7 +273,7 @@ class HashString
       pool( static_cast< Pool<Elem, SIZE>&& >( t.pool ) )
     {
       aCopy<Elem*>( data, t.data, SIZE );
-      aSet<Elem*, Elem*>( t.data, null, SIZE );
+      aSet<Elem*, Elem*>( t.data, nullptr, SIZE );
     }
 
     /**
@@ -288,7 +306,7 @@ class HashString
       aCopy<Elem*>( data, t.data, SIZE );
       pool = static_cast< Pool<Elem, SIZE>&& >( t.pool );
 
-      aSet<Elem*, Elem*>( t.data, null, SIZE );
+      aSet<Elem*, Elem*>( t.data, nullptr, SIZE );
       return *this;
     }
 
@@ -387,7 +405,7 @@ class HashString
       uint  i = uint( String::hash( key ) ) % uint( SIZE );
       Elem* e = data[i];
 
-      while( e != null ) {
+      while( e != nullptr ) {
         if( e->key.equals( key ) ) {
           return true;
         }
@@ -405,14 +423,14 @@ class HashString
       uint  i = uint( String::hash( key ) ) % uint( SIZE );
       Elem* e = data[i];
 
-      while( e != null ) {
+      while( e != nullptr ) {
         if( e->key.equals( key ) ) {
           return &e->value;
         }
 
         e = e->next;
       }
-      return null;
+      return nullptr;
     }
 
     /**
@@ -423,14 +441,14 @@ class HashString
       uint  i = uint( String::hash( key ) ) % uint( SIZE );
       Elem* e = data[i];
 
-      while( e != null ) {
+      while( e != nullptr ) {
         if( e->key.equals( key ) ) {
           return &e->value;
         }
 
         e = e->next;
       }
-      return null;
+      return nullptr;
     }
 
     /**
@@ -444,7 +462,7 @@ class HashString
       uint  i = uint( String::hash( key ) ) % uint( SIZE );
       Elem* e = data[i];
 
-      while( e != null ) {
+      while( e != nullptr ) {
         if( e->key.equals( key ) ) {
           e->value = static_cast<Value_&&>( value );
           return &e->value;
@@ -471,7 +489,7 @@ class HashString
       uint  i = uint( String::hash( key ) ) % uint( SIZE );
       Elem* e = data[i];
 
-      while( e != null ) {
+      while( e != nullptr ) {
         if( e->key.equals( key ) ) {
           return &e->value;
         }
@@ -497,7 +515,7 @@ class HashString
       Elem*  e    = data[i];
       Elem** prev = &data[i];
 
-      while( e != null ) {
+      while( e != nullptr ) {
         if( e->key.equals( key ) ) {
           *prev = e->next;
 
@@ -520,7 +538,7 @@ class HashString
     {
       for( int i = 0; i < SIZE; ++i ) {
         clearChain( data[i] );
-        data[i] = null;
+        data[i] = nullptr;
       }
     }
 
@@ -531,7 +549,7 @@ class HashString
     {
       for( int i = 0; i < SIZE; ++i ) {
         freeChain( data[i] );
-        data[i] = null;
+        data[i] = nullptr;
       }
     }
 

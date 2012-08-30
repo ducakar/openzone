@@ -54,7 +54,7 @@ void Profile::init()
   if( name.isEmpty() ) {
     const char* userName = SDL_getenv( "USER" );
 
-    if( userName == null || String::isEmpty( userName ) ) {
+    if( userName == nullptr || String::isEmpty( userName ) ) {
       name = OZ_GETTEXT( "Player" );
     }
     else {

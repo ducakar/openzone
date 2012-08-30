@@ -67,7 +67,7 @@ static int ozSelfIsCut( lua_State* l )
 {
   ARG( 0 );
 
-  l_pushbool( ns.self->cell == null );
+  l_pushbool( ns.self->cell == nullptr );
   return 1;
 }
 
@@ -83,11 +83,11 @@ static int ozSelfGetPos( lua_State* l )
 {
   ARG( 0 );
 
-  if( ns.self->cell == null ) {
+  if( ns.self->cell == nullptr ) {
     if( ns.self->parent >= 0 ) {
       Object* parent = orbis.objects[ns.self->parent];
 
-      if( parent != null ) {
+      if( parent != nullptr ) {
         l_pushfloat( parent->p.x );
         l_pushfloat( parent->p.y );
         l_pushfloat( parent->p.z );
@@ -173,7 +173,7 @@ static int ozSelfGetParent( lua_State* l )
   ARG( 0 );
 
   int parent = ns.self->parent;
-  l_pushint( parent >= 0 && orbis.objects[parent] == null ? -1 : parent );
+  l_pushint( parent >= 0 && orbis.objects[parent] == nullptr ? -1 : parent );
   return 1;
 }
 
@@ -342,7 +342,7 @@ static int ozSelfGetCargo( lua_State* l )
   ARG( 0 );
 
   int cargo = ns.self->cargo;
-  l_pushint( cargo >= 0 && orbis.objects[cargo] == null ? -1 : cargo );
+  l_pushint( cargo >= 0 && orbis.objects[cargo] == nullptr ? -1 : cargo );
   return 1;
 }
 
@@ -351,7 +351,7 @@ static int ozSelfGetWeapon( lua_State* l )
   ARG( 0 );
 
   int weapon = ns.self->weapon;
-  l_pushint( weapon >= 0 && orbis.objects[weapon] == null ? -1 : weapon );
+  l_pushint( weapon >= 0 && orbis.objects[weapon] == nullptr ? -1 : weapon );
   return 1;
 }
 
@@ -371,7 +371,7 @@ static int ozSelfSetWeaponItem( lua_State* l )
     int index = ns.self->items[item];
     Weapon* weapon = static_cast<Weapon*>( orbis.objects[index] );
 
-    if( weapon == null ) {
+    if( weapon == nullptr ) {
       l_pushbool( false );
       return 1;
     }
@@ -455,7 +455,7 @@ static int ozSelfBindItem( lua_State* l )
   }
 
   ms.obj = orbis.objects[ ns.self->items[index] ];
-  l_pushbool( ms.obj != null );
+  l_pushbool( ms.obj != nullptr );
   return 1;
 }
 
@@ -490,8 +490,8 @@ static int ozSelfBindOverlaps( lua_State* l )
     ERROR( "At least one of OZ_STRUCTS_BIT, OZ_OBJECTS_BIT or OZ_ALL_OBJECTS_BIT must be given" );
   }
 
-  List<Struct*>* structs = null;
-  List<Object*>* objects = null;
+  List<Struct*>* structs = nullptr;
+  List<Object*>* objects = nullptr;
 
   hard_assert( collider.mask == Object::SOLID_BIT );
 
@@ -528,7 +528,7 @@ static int ozNirvanaRemoveDevice( lua_State* l )
   int index = l_toint( 1 );
   const nirvana::Device* const* device = nirvana::nirvana.devices.find( index );
 
-  if( device == null ) {
+  if( device == nullptr ) {
     l_pushbool( false );
   }
   else {
@@ -547,7 +547,7 @@ static int ozNirvanaAddMemo( lua_State* l )
   if( uint( index ) >= uint( orbis.objects.length() ) ) {
     ERROR( "invalid object index" );
   }
-  if( orbis.objects[index] == null ) {
+  if( orbis.objects[index] == nullptr ) {
     ERROR( "object is null" );
   }
 

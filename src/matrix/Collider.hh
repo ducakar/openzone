@@ -123,7 +123,7 @@ class Collider
     void trimAABBArea( const BSP::Brush* brush );
     void trimAABBNode( int nodeIndex );
     void trimAABBEntities();
-    // terrain collision is penetration-safe
+
     void trimAABBTerraQuad( int x, int y );
     void trimAABBTerra();
     void trimAABBOrbis();
@@ -140,9 +140,9 @@ class Collider
 
     Collider();
 
-    bool overlaps( const Point& point, const Object* exclObj = null );
-    bool overlaps( const AABB& aabb, const Object* exclObj = null );
-    bool overlaps( const Object* obj, const Object* exclObj = null );
+    bool overlaps( const Point& point, const Object* exclObj = nullptr );
+    bool overlaps( const AABB& aabb, const Object* exclObj = nullptr );
+    bool overlaps( const Object* obj, const Object* exclObj = nullptr );
     bool overlaps( const Entity* entity, float margin = 0.0f );
     bool overlapsEntity( const AABB& aabb, const Entity* entity, float margin = 0.0f );
 
@@ -157,8 +157,8 @@ class Collider
 
     void getOverlaps( const Entity* entity, List<Object*>* objects, float margin = 0.0f );
 
-    void translate( const Point& point, const Vec3& move, const Object* exclObj = null );
-    void translate( const AABB& aabb, const Vec3& move, const Object* exclObj = null );
+    void translate( const Point& point, const Vec3& move, const Object* exclObj = nullptr );
+    void translate( const AABB& aabb, const Vec3& move, const Object* exclObj = nullptr );
     void translate( const Dynamic* obj, const Vec3& move );
 
 };

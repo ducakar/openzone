@@ -46,7 +46,7 @@ void InfoFrame::onVisibilityChange( bool )
 
 bool InfoFrame::onMouseEvent()
 {
-  if( camera.state != Camera::UNIT || camera.botObj == null || camera.object < 0 ||
+  if( camera.state != Camera::UNIT || camera.botObj == nullptr || camera.object < 0 ||
       !nirvana.devices.contains( camera.object ) )
   {
     return false;
@@ -56,13 +56,13 @@ bool InfoFrame::onMouseEvent()
 
 void InfoFrame::onDraw()
 {
-  if( camera.state != Camera::UNIT || camera.botObj == null || camera.object < 0 ) {
+  if( camera.state != Camera::UNIT || camera.botObj == nullptr || camera.object < 0 ) {
     lastId = -1;
     return;
   }
 
   const Device* const* device = nirvana.devices.find( camera.object );
-  if( device == null ) {
+  if( device == nullptr ) {
     lastId = -1;
     return;
   }

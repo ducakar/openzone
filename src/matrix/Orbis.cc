@@ -76,12 +76,12 @@ void Orbis::unposition( Struct* str )
 
 void Orbis::position( Object* obj )
 {
-  hard_assert( obj->cell == null );
+  hard_assert( obj->cell == nullptr );
 
   Cell* cell = getCell( obj->p );
 
   obj->cell = cell;
-  obj->prev[0] = null;
+  obj->prev[0] = nullptr;
 
   if( !cell->objects.isEmpty() ) {
     cell->objects.first()->prev[0] = obj;
@@ -92,13 +92,13 @@ void Orbis::position( Object* obj )
 
 void Orbis::unposition( Object* obj )
 {
-  hard_assert( obj->cell != null );
+  hard_assert( obj->cell != nullptr );
 
   Cell* cell = obj->cell;
 
-  obj->cell = null;
+  obj->cell = nullptr;
 
-  if( obj->next[0] != null ) {
+  if( obj->next[0] != nullptr ) {
     obj->next[0]->prev[0] = obj->prev[0];
   }
 
@@ -107,12 +107,12 @@ void Orbis::unposition( Object* obj )
 
 void Orbis::position( Frag* frag )
 {
-  hard_assert( frag->cell == null );
+  hard_assert( frag->cell == nullptr );
 
   Cell* cell = getCell( frag->p );
 
   frag->cell = cell;
-  frag->prev[0] = null;
+  frag->prev[0] = nullptr;
 
   if( !cell->frags.isEmpty() ) {
     cell->frags.first()->prev[0] = frag;
@@ -123,13 +123,13 @@ void Orbis::position( Frag* frag )
 
 void Orbis::unposition( Frag* frag )
 {
-  hard_assert( frag->cell != null );
+  hard_assert( frag->cell != nullptr );
 
   Cell* cell = frag->cell;
 
-  frag->cell = null;
+  frag->cell = nullptr;
 
-  if( frag->next[0] != null ) {
+  if( frag->next[0] != nullptr ) {
     frag->next[0]->prev[0] = frag->prev[0];
   }
 
@@ -146,7 +146,7 @@ Struct* Orbis::add( const BSP* bsp, const Point& p, Heading heading )
     int index = structs.length();
 
     if( index == MAX_STRUCTS ) {
-      return null;
+      return nullptr;
     }
 
     str = new Struct( bsp, index, p, heading );
@@ -170,7 +170,7 @@ Object* Orbis::add( const ObjectClass* clazz, const Point& p, Heading heading )
     int index = objects.length();
 
     if( index == MAX_OBJECTS ) {
-      return null;
+      return nullptr;
     }
 
     obj = clazz->create( index, p, heading );
@@ -198,7 +198,7 @@ Frag* Orbis::add( const FragPool* pool, const Point& p, const Vec3& velocity )
     int index = frags.length();
 
     if( index == MAX_FRAGS ) {
-      return null;
+      return nullptr;
     }
 
     frag = new Frag( pool, index, p, velocity );
@@ -219,7 +219,7 @@ void Orbis::remove( Struct* str )
   hard_assert( str->index >= 0 );
 
   strFreedIndices[freeing].add( str->index );
-  structs[str->index] = null;
+  structs[str->index] = nullptr;
 
   const_cast<BSP*>( str->bsp )->release();
 
@@ -229,13 +229,13 @@ void Orbis::remove( Struct* str )
 void Orbis::remove( Object* obj )
 {
   hard_assert( obj->index >= 0 );
-  hard_assert( obj->cell == null );
+  hard_assert( obj->cell == nullptr );
 
   if( obj->flags & Object::LUA_BIT ) {
     lua.unregisterObject( obj->index );
   }
   objFreedIndices[freeing].add( obj->index );
-  objects[obj->index] = null;
+  objects[obj->index] = nullptr;
 
   delete obj;
 }
@@ -243,30 +243,30 @@ void Orbis::remove( Object* obj )
 void Orbis::remove( Frag* frag )
 {
   hard_assert( frag->index >= 0 );
-  hard_assert( frag->cell == null );
+  hard_assert( frag->cell == nullptr );
 
   fragFreedIndices[freeing].add( frag->index );
-  frags[frag->index] = null;
+  frags[frag->index] = nullptr;
 
   delete frag;
 }
 
 void Orbis::reposition( Object* obj )
 {
-  hard_assert( obj->cell != null );
+  hard_assert( obj->cell != nullptr );
 
   Cell* oldCell = obj->cell;
   Cell* newCell = getCell( obj->p );
 
   if( newCell != oldCell ) {
-    if( obj->next[0] != null ) {
+    if( obj->next[0] != nullptr ) {
       obj->next[0]->prev[0] = obj->prev[0];
     }
 
     oldCell->objects.remove( obj, obj->prev[0] );
 
     obj->cell = newCell;
-    obj->prev[0] = null;
+    obj->prev[0] = nullptr;
 
     if( !newCell->objects.isEmpty() ) {
       newCell->objects.first()->prev[0] = obj;
@@ -278,20 +278,20 @@ void Orbis::reposition( Object* obj )
 
 void Orbis::reposition( Frag* frag )
 {
-  hard_assert( frag->cell != null );
+  hard_assert( frag->cell != nullptr );
 
   Cell* oldCell = frag->cell;
   Cell* newCell = getCell( frag->p );
 
   if( newCell != oldCell ) {
-    if( frag->next[0] != null ) {
+    if( frag->next[0] != nullptr ) {
       frag->next[0]->prev[0] = frag->prev[0];
     }
 
     oldCell->frags.remove( frag, frag->prev[0] );
 
     frag->cell = newCell;
-    frag->prev[0] = null;
+    frag->prev[0] = nullptr;
 
     if( !newCell->frags.isEmpty() ) {
       newCell->frags.first()->prev[0] = frag;
@@ -338,7 +338,7 @@ void Orbis::read( InputStream* istream )
   for( int i = 0; i < nStructs; ++i ) {
     bspName = istream->readString();
 
-    Struct* str = null;
+    Struct* str = nullptr;
 
     if( !bspName.isEmpty() ) {
       const BSP* bsp = library.bsp( bspName );
@@ -353,7 +353,7 @@ void Orbis::read( InputStream* istream )
   for( int i = 0; i < nObjects; ++i ) {
     className = istream->readString();
 
-    Object* obj = null;
+    Object* obj = nullptr;
 
     if( !className.isEmpty() ) {
       const ObjectClass* clazz = library.objClass( className );
@@ -372,7 +372,7 @@ void Orbis::read( InputStream* istream )
   for( int i = 0; i < nFrags; ++i ) {
     poolName = istream->readString();
 
-    Frag* frag = null;
+    Frag* frag = nullptr;
 
     if( !poolName.isEmpty() ) {
       const FragPool* pool = library.fragPool( poolName );
@@ -443,7 +443,7 @@ void Orbis::write( BufferStream* ostream ) const
   for( int i = 0; i < structs.length(); ++i ) {
     str = structs[i];
 
-    if( str == null ) {
+    if( str == nullptr ) {
       ostream->writeString( "" );
     }
     else {
@@ -454,19 +454,19 @@ void Orbis::write( BufferStream* ostream ) const
   for( int i = 0; i < objects.length(); ++i ) {
     obj = objects[i];
 
-    if( obj == null ) {
+    if( obj == nullptr ) {
       ostream->writeString( "" );
     }
     else {
       ostream->writeString( obj->clazz->name );
       obj->write( ostream );
-      ostream->writeBool( obj->cell == null );
+      ostream->writeBool( obj->cell == nullptr );
     }
   }
   for( int i = 0; i < frags.length(); ++i ) {
     frag = frags[i];
 
-    if( frag == null ) {
+    if( frag == nullptr ) {
       ostream->writeString( "" );
     }
     else {
@@ -532,7 +532,7 @@ void Orbis::load()
 void Orbis::unload()
 {
   for( int i = 0; i < objects.length(); ++i ) {
-    if( objects[i] != null && ( objects[i]->flags & Object::LUA_BIT ) ) {
+    if( objects[i] != nullptr && ( objects[i]->flags & Object::LUA_BIT ) ) {
       lua.unregisterObject( i );
     }
   }

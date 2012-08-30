@@ -91,7 +91,7 @@ void Window::warpMouse()
 #elif SDL_MAJOR_VERSION < 2
   SDL_WarpMouse( ushort( width / 2 ), ushort( height / 2 ) );
   SDL_PumpEvents();
-  SDL_GetRelativeMouseState( null, null );
+  SDL_GetRelativeMouseState( nullptr, nullptr );
 #else
   SDL_WarpMouseInWindow( descriptor, width / 2, height / 2 );
 #endif
@@ -172,7 +172,7 @@ void Window::setFullscreen( bool fullscreen )
     SDL_FreeSurface( descriptor );
     descriptor = SDL_SetVideoMode( width, height, 0, flags );
 
-    if( descriptor == null ) {
+    if( descriptor == nullptr ) {
       OZ_ERROR( "Fullscreen mode switch failed" );
     }
 
@@ -354,14 +354,14 @@ void Window::free()
 
   SDL_FreeSurface( descriptor );
 
-  descriptor = null;
+  descriptor = nullptr;
 
 #else
 
   SDL_GL_DeleteContext( context );
   SDL_DestroyWindow( descriptor );
 
-  descriptor = null;
+  descriptor = nullptr;
 
 #endif
 }

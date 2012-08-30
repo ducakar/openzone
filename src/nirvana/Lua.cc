@@ -39,13 +39,13 @@ bool Lua::mindCall( const char* functionName, Bot* self_ )
 {
   ms.self        = self_;
   ms.obj         = self_;
-  ms.str         = null;
+  ms.str         = nullptr;
   ms.objIndex    = 0;
   ms.strIndex    = 0;
   ns.self        = self_;
   ns.forceUpdate = false;
 
-  hard_assert( l_gettop() == 1 && ms.self != null );
+  hard_assert( l_gettop() == 1 && ms.self != nullptr );
 
   l_getglobal( functionName );
   l_rawgeti( 1, ms.self->index );
@@ -504,7 +504,7 @@ void Lua::init()
 
 void Lua::free()
 {
-  if( l == null ) {
+  if( l == nullptr ) {
     return;
   }
 

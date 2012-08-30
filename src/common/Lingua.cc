@@ -36,7 +36,7 @@ Lingua lingua;
 String Lingua::language;
 
 Lingua::Lingua() :
-  messages( null ), nMessages( 0 )
+  messages( nullptr ), nMessages( 0 )
 {}
 
 Lingua::~Lingua()
@@ -96,7 +96,7 @@ const char* Lingua::get( const char* message ) const
   uint index = uint( String::hash( message ) ) % uint( nMessages );
   Message* m = messages[index];
 
-  while( m != null ) {
+  while( m != nullptr ) {
     if( m->original.equals( message ) ) {
       return m->translation;
     }
@@ -109,7 +109,7 @@ const char* Lingua::get( const char* message ) const
 
 bool Lingua::initMission( const char* mission )
 {
-  hard_assert( messages == null );
+  hard_assert( messages == nullptr );
 
   PFile file( String::str( "mission/%s/lingua/%s.ozCat", mission, language.cstr() ) );
 
@@ -123,7 +123,7 @@ bool Lingua::initMission( const char* mission )
 
   nMessages = ( 4 * length ) / 3;
   messages = new Message*[nMessages];
-  aSet<Message*, Message*>( messages, null, nMessages );
+  aSet<Message*, Message*>( messages, nullptr, nMessages );
 
   for( int i = 0; i < length; ++i ) {
     uint index = uint( is.readInt() ) % uint( nMessages );
@@ -144,7 +144,7 @@ bool Lingua::initMission( const char* mission )
 
 bool Lingua::init( const char* language_ )
 {
-  hard_assert( messages == null );
+  hard_assert( messages == nullptr );
 
   language = language_;
 
@@ -177,7 +177,7 @@ bool Lingua::init( const char* language_ )
 
   nMessages = ( 4 * nMessages ) / 3;
   messages = new Message*[nMessages];
-  aSet<Message*, Message*>( messages, null, nMessages );
+  aSet<Message*, Message*>( messages, nullptr, nMessages );
 
   foreach( file, files.iter() ) {
     if( !file->hasExtension( "ozCat" ) ) {
@@ -215,7 +215,7 @@ void Lingua::free()
   for( int i = 0; i < nMessages; ++i ) {
     Message* chain = messages[i];
 
-    while( chain != null ) {
+    while( chain != nullptr ) {
       Message* next = chain->next;
 
       chain->~Message();
@@ -228,7 +228,7 @@ void Lingua::free()
   delete[] messages;
   msgPool.free();
 
-  messages  = null;
+  messages  = nullptr;
   nMessages = 0;
 }
 

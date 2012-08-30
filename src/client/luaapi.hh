@@ -94,16 +94,16 @@ static int ozOrbisAddPlayer( lua_State* l )
     }
 
     if( collider.overlaps( aabb ) ) {
-      ms.obj = null;
+      ms.obj = nullptr;
       l_pushint( -1 );
       return 1;
     }
   }
 
   ms.obj = synapse.add( profile.clazz, p, heading, true );
-  l_pushint( ms.obj == null ? -1 : ms.obj->index );
+  l_pushint( ms.obj == nullptr ? -1 : ms.obj->index );
 
-  if( ms.obj != null ) {
+  if( ms.obj != nullptr ) {
     Bot* player = static_cast<Bot*>( ms.obj );
 
     player->name = profile.name;
@@ -285,18 +285,18 @@ static int ozUIShowBuild( lua_State* l )
 
   bool doShow = l_tobool( 1 );
 
-  if( doShow && ui::ui.buildMenu == null ) {
-    OZ_MAIN_CALL( static_cast<void*>( null ), {
+  if( doShow && ui::ui.buildMenu == nullptr ) {
+    OZ_MAIN_CALL( static_cast<void*>( nullptr ), {
       ui::ui.buildMenu = new ui::BuildMenu();
     } )
 
     ui::ui.buildMenu->show( ui::mouse.doShow );
     ui::ui.root->add( ui::ui.buildMenu, 8, -24 - 210 - 47 - 22 - 22 );
   }
-  else if( !doShow && ui::ui.buildMenu != null ) {
-    OZ_MAIN_CALL( static_cast<void*>( null ), {
+  else if( !doShow && ui::ui.buildMenu != nullptr ) {
+    OZ_MAIN_CALL( static_cast<void*>( nullptr ), {
       ui::ui.root->remove( ui::ui.buildMenu );
-      ui::ui.buildMenu = null;
+      ui::ui.buildMenu = nullptr;
     } )
   }
   return 0;

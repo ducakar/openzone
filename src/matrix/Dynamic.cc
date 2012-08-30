@@ -43,12 +43,12 @@ void Dynamic::onDestroy()
   foreach( i, items.citer() ) {
     Dynamic* item = static_cast<Dynamic*>( orbis.objects[*i] );
 
-    if( item != null ) {
+    if( item != nullptr ) {
       item->destroy();
     }
   }
 
-  if( cell != null && clazz->fragPool != null ) {
+  if( cell != nullptr && clazz->fragPool != nullptr ) {
     synapse.gen( clazz->fragPool,
                  clazz->nFrags,
                  Bounds( Point( p.x - dim.x, p.y - dim.y, p.z ),

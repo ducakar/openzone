@@ -54,8 +54,8 @@ const float UnitProxy::DEATH_CAM_DIST           = 4.00f;
 
 void UnitProxy::begin()
 {
-  camera.setTaggedObj( null );
-  camera.setTaggedEnt( null );
+  camera.setTaggedObj( nullptr );
+  camera.setTaggedEnt( nullptr );
   camera.isExternal = isExternal;
 
   ui::mouse.doShow = false;
@@ -69,7 +69,7 @@ void UnitProxy::begin()
   headRot = Quat::ID;
 
   const Bot* bot = camera.botObj;
-  if( bot != null && !( bot->state & Bot::DEAD_BIT ) && isExternal && isFreelook ) {
+  if( bot != nullptr && !( bot->state & Bot::DEAD_BIT ) && isExternal && isFreelook ) {
     headH = bot->h;
     headV = bot->v;
   }
@@ -91,7 +91,7 @@ void UnitProxy::begin()
 
 void UnitProxy::end()
 {
-  camera.setBot( null );
+  camera.setBot( nullptr );
 
   ui::mouse.doShow = true;
 
@@ -105,7 +105,7 @@ void UnitProxy::prepare()
   Bot*     bot = camera.botObj;
   Vehicle* veh = camera.vehicleObj;
 
-  if( bot != null ) {
+  if( bot != nullptr ) {
     bot->actions = 0;
   }
 
@@ -142,7 +142,7 @@ void UnitProxy::prepare()
     }
   }
 
-  if( bot == null || ( bot->state & Bot::DEAD_BIT ) ) {
+  if( bot == nullptr || ( bot->state & Bot::DEAD_BIT ) ) {
     return;
   }
 
@@ -150,7 +150,7 @@ void UnitProxy::prepare()
    * Camera
    */
 
-  if( !isFreelook || ( veh == null && !isExternal ) ) {
+  if( !isFreelook || ( veh == nullptr && !isExternal ) ) {
     bot->h += camera.relH;
     bot->v += camera.relV;
   }
@@ -183,10 +183,10 @@ void UnitProxy::prepare()
       if( bot->parent >= 0 ) {
         bot->actions |= Bot::ACTION_VEH_NEXT_WEAPON;
       }
-      else if( camera.entityObj != null ) {
+      else if( camera.entityObj != nullptr ) {
         bot->trigger( camera.entityObj );
       }
-      else if( camera.objectObj != null ) {
+      else if( camera.objectObj != nullptr ) {
         bot->use( camera.objectObj );
       }
     }
@@ -206,7 +206,7 @@ void UnitProxy::prepare()
       }
     }
     else if( input.wheelDown ) {
-      if( camera.objectObj != null ) {
+      if( camera.objectObj != nullptr ) {
         if( camera.objectObj->flags & Object::BROWSABLE_BIT ) {
           ui::mouse.doShow = true;
         }
@@ -353,7 +353,7 @@ void UnitProxy::prepare()
 
 void UnitProxy::update()
 {
-  if( camera.botObj == null || ( camera.botObj->state & Bot::DEAD_BIT ) ) {
+  if( camera.botObj == nullptr || ( camera.botObj->state & Bot::DEAD_BIT ) ) {
     ui::ui.galileoFrame->setMaximised( false );
 
     camera.rotateTo( Quat::ID );
@@ -361,7 +361,7 @@ void UnitProxy::update()
     camera.nightVision = false;
     camera.align();
 
-    if( camera.botObj != null ) {
+    if( camera.botObj != nullptr ) {
       botEye    = camera.botObj->p;
       botEye.z += camera.botObj->camZ;
     }
@@ -394,9 +394,9 @@ void UnitProxy::update()
   const Bot*          bot      = camera.botObj;
   const BotClass*     botClazz = static_cast<const BotClass*>( bot->clazz );
   const Vehicle*      veh      = camera.vehicleObj;
-  const VehicleClass* vehClazz = null;
+  const VehicleClass* vehClazz = nullptr;
 
-  if( veh != null ) {
+  if( veh != nullptr ) {
     vehClazz = static_cast<const VehicleClass*>( veh->clazz );
 
     Mat44 rotMat = veh->rot;
@@ -449,7 +449,7 @@ void UnitProxy::update()
 
     Vec3 offset;
 
-    if( veh != null ) {
+    if( veh != nullptr ) {
       float dist = veh->dim.fastN() * EXTERNAL_CAM_DIST;
       offset = camera.rotMat * Vec3( 0.0f, VEHICLE_CAM_UP_FACTOR * dist, dist );
     }
@@ -473,7 +473,7 @@ void UnitProxy::update()
   }
   else {
     // internal, vehicle
-    if( veh != null ) {
+    if( veh != nullptr ) {
       if( isFreelook ) {
         headH = clamp( headH + camera.relH, vehClazz->lookHMin, vehClazz->lookHMax );
         headV = clamp( headV + camera.relV, vehClazz->lookVMin, vehClazz->lookVMax );
@@ -527,7 +527,7 @@ void UnitProxy::update()
   }
 
   if( bot->parent >= 0 ) {
-    camera.setTaggedObj( null );
+    camera.setTaggedObj( nullptr );
   }
   else if( bot->cargo >= 0 ) {
     camera.setTaggedObj( orbis.objects[bot->cargo] );

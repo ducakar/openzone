@@ -85,7 +85,7 @@ class Struct : public Bounds
 {
   public:
 
-    static const int   MAX_ENTITIES = 128;
+    static const int MAX_ENTITIES = 128;
 
   private:
 

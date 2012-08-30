@@ -82,7 +82,7 @@ class String
      */
     static int compare( const char* a, const char* b )
     {
-      hard_assert( a != null && b != null );
+      hard_assert( a != nullptr && b != nullptr );
 
       int diff;
 
@@ -112,7 +112,7 @@ class String
     OZ_ALWAYS_INLINE
     static bool isEmpty( const char* s )
     {
-      hard_assert( s != null );
+      hard_assert( s != nullptr );
 
       return s[0] == '\0';
     }
@@ -168,7 +168,7 @@ class String
           return p;
         }
       }
-      return null;
+      return nullptr;
     }
 
     /**
@@ -181,7 +181,7 @@ class String
           return p;
         }
       }
-      return null;
+      return nullptr;
     }
 
     /**
@@ -189,7 +189,7 @@ class String
      */
     static const char* findLast( const char* s, char ch )
     {
-      const char* last = null;
+      const char* last = nullptr;
 
       for( const char* p = s; *p != '\0'; ++p ) {
         if( *p == ch ) {
@@ -307,27 +307,27 @@ class String
     /**
      * Parse boolean value (must exactly match either "true" or "false").
      */
-    static bool parseBool( const char* s, bool* isError = null );
+    static bool parseBool( const char* s, bool* isError = nullptr );
 
     /**
      * Parse integer value.
      */
-    static int parseInt( const char* s, bool* isError = null );
+    static int parseInt( const char* s, bool* isError = nullptr );
 
     /**
      * Parse long integer value.
      */
-    static long parseLong( const char* s, bool* isError = null );
+    static long parseLong( const char* s, bool* isError = nullptr );
 
     /**
      * Parse float value.
      */
-    static float parseFloat( const char* s, bool* isError = null );
+    static float parseFloat( const char* s, bool* isError = nullptr );
 
     /**
      * Parse double value.
      */
-    static double parseDouble( const char* s, bool* isError = null );
+    static double parseDouble( const char* s, bool* isError = nullptr );
 
     /*
      * Functions that operate on a String object.
@@ -794,7 +794,7 @@ class String
     /**
      * Parse boolean value (must exactly match either "true" or "false").
      */
-    bool parseBool( bool* isError = null ) const
+    bool parseBool( bool* isError = nullptr ) const
     {
       return parseBool( buffer, isError );
     }
@@ -802,7 +802,7 @@ class String
     /**
      * Parse integer value.
      */
-    int parseInt( bool* isError = null ) const
+    int parseInt( bool* isError = nullptr ) const
     {
       return parseInt( buffer, isError );
     }
@@ -810,7 +810,7 @@ class String
     /**
      * Parse long integer value.
      */
-    long parseLong( bool* isError = null ) const
+    long parseLong( bool* isError = nullptr ) const
     {
       return parseLong( buffer, isError );
     }
@@ -818,7 +818,7 @@ class String
     /**
      * Parse float value.
      */
-    float parseFloat( bool* isError = null ) const
+    float parseFloat( bool* isError = nullptr ) const
     {
       return parseFloat( buffer, isError );
     }
@@ -826,7 +826,7 @@ class String
     /**
      * Parse double value.
      */
-    double parseDouble( bool* isError = null ) const
+    double parseDouble( bool* isError = nullptr ) const
     {
       return parseDouble( buffer, isError );
     }

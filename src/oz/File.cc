@@ -107,8 +107,8 @@ struct File::Descriptor
   explicit Descriptor( File* file_ ) :
     file( file_ )
   {
-    pthread_mutex_init( &semaphore.mutex, null );
-    pthread_cond_init( &semaphore.cond, null );
+    pthread_mutex_init( &semaphore.mutex, nullptr );
+    pthread_cond_init( &semaphore.cond, nullptr );
     semaphore.counter = 0;
   }
 
@@ -120,9 +120,9 @@ struct File::Descriptor
 };
 
 // Some Descriptor members are also useful for static functions.
-static File::Descriptor staticDesc( null );
+static File::Descriptor staticDesc( nullptr );
 
-static pp::FileSystem* filesystem = null;
+static pp::FileSystem* filesystem = nullptr;
 
 #endif // __native_client__
 
@@ -132,7 +132,7 @@ inline bool operator < ( const File& a, const File& b )
 }
 
 File::File() :
-  fileType( MISSING ), fileSize( -1 ), fileTime( 0 ), data( null )
+  fileType( MISSING ), fileSize( -1 ), fileTime( 0 ), data( nullptr )
 {
 #ifdef __native_client__
   descriptor = new Descriptor( this );
@@ -150,7 +150,7 @@ File::~File()
 
 File::File( const File& file ) :
   filePath( file.filePath ), fileType( file.fileType ), fileSize( file.fileSize ),
-  fileTime( file.fileTime ), data( null )
+  fileTime( file.fileTime ), data( nullptr )
 {
 #ifdef __native_client__
   descriptor = new Descriptor( this );
@@ -169,7 +169,7 @@ File::File( File&& file ) :
   file.fileType = MISSING;
   file.fileSize = -1;
   file.fileTime = 0;
-  file.data     = null;
+  file.data     = nullptr;
 }
 
 File& File::operator = ( const File& file )
@@ -184,7 +184,7 @@ File& File::operator = ( const File& file )
   fileType = file.fileType;
   fileSize = file.fileSize;
   fileTime = file.fileTime;
-  data     = null;
+  data     = nullptr;
 
   return *this;
 }
@@ -207,13 +207,13 @@ File& File::operator = ( File&& file )
   file.fileType = MISSING;
   file.fileSize = -1;
   file.fileTime = 0;
-  file.data     = null;
+  file.data     = nullptr;
 
   return *this;
 }
 
 File::File( const char* path ) :
-  filePath( path ), fileType( MISSING ), fileSize( -1 ), fileTime( 0 ), data( null )
+  filePath( path ), fileType( MISSING ), fileSize( -1 ), fileTime( 0 ), data( nullptr )
 {
 #ifdef __native_client__
   descriptor = new Descriptor( this );
@@ -234,7 +234,7 @@ bool File::stat()
 {
   // If file is mapped it had to be successfuly stat'd before. Futhermore fileSize must not change
   // while file is mapped as it is needed by read() function if mapped and unmap() on POSIX systems.
-  if( data != null ) {
+  if( data != nullptr ) {
     return true;
   }
 
@@ -325,11 +325,11 @@ bool File::stat()
     else {
       fileType = REGULAR;
 
-      HANDLE handle = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, null, OPEN_EXISTING,
-                                  FILE_ATTRIBUTE_NORMAL, null );
+      HANDLE handle = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+                                  FILE_ATTRIBUTE_NORMAL, nullptr );
 
-      if( handle != null ) {
-        fileSize = int( GetFileSize( handle, null ) );
+      if( handle != nullptr ) {
+        fileSize = int( GetFileSize( handle, nullptr ) );
 
         if( fileSize == int( INVALID_FILE_SIZE ) ) {
           fileType = MISSING;
@@ -436,12 +436,12 @@ bool File::hasExtension( const char* ext ) const
 
 bool File::isMapped() const
 {
-  return data != null;
+  return data != nullptr;
 }
 
 bool File::map()
 {
-  if( data != null ) {
+  if( data != nullptr ) {
     return true;
   }
 
@@ -505,7 +505,7 @@ bool File::map()
 
   if( descriptor->offset < fileSize ) {
     delete[] data;
-    data = null;
+    data = nullptr;
     return false;
   }
 
@@ -513,20 +513,20 @@ bool File::map()
 
 #elif defined( _WIN32 )
 
-  HANDLE file = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, null, OPEN_EXISTING,
-                            FILE_ATTRIBUTE_NORMAL, null );
-  if( file == null ) {
+  HANDLE file = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+                            FILE_ATTRIBUTE_NORMAL, nullptr );
+  if( file == nullptr ) {
     return false;
   }
 
-  int size = int( GetFileSize( file, null ) );
+  int size = int( GetFileSize( file, nullptr ) );
   if( size == int( INVALID_FILE_SIZE ) ) {
     CloseHandle( file );
     return false;
   }
 
-  HANDLE mapping = CreateFileMapping( file, null, PAGE_READONLY, 0, 0, null );
-  if( mapping == null ) {
+  HANDLE mapping = CreateFileMapping( file, nullptr, PAGE_READONLY, 0, 0, nullptr );
+  if( mapping == nullptr ) {
     CloseHandle( file );
     return false;
   }
@@ -536,7 +536,7 @@ bool File::map()
   CloseHandle( mapping );
   CloseHandle( file );
 
-  if( data == null ) {
+  if( data == nullptr ) {
     return false;
   }
 
@@ -554,12 +554,12 @@ bool File::map()
   }
 
   int size = int( statInfo.st_size );
-  data = static_cast<char*>( mmap( null, size_t( statInfo.st_size ),
+  data = static_cast<char*>( mmap( nullptr, size_t( statInfo.st_size ),
                                    PROT_READ, MAP_SHARED, fd, 0 ) );
   close( fd );
 
   if( data == MAP_FAILED ) {
-    data = null;
+    data = nullptr;
     return false;
   }
 
@@ -572,7 +572,7 @@ bool File::map()
 
 void File::unmap()
 {
-  if( data != null ) {
+  if( data != nullptr ) {
 #if defined( __native_client__ )
     delete[] data;
 #elif defined( _WIN32 )
@@ -580,13 +580,13 @@ void File::unmap()
 #else
     munmap( data, size_t( fileSize ) );
 #endif
-    data = null;
+    data = nullptr;
   }
 }
 
 InputStream File::inputStream( Endian::Order order ) const
 {
-  hard_assert( data != null );
+  hard_assert( data != nullptr );
 
   return InputStream( data, data + fileSize, order );
 }
@@ -595,7 +595,7 @@ Buffer File::read()
 {
   Buffer buffer;
 
-  if( data != null ) {
+  if( data != nullptr ) {
     buffer.alloc( fileSize );
     memcpy( buffer.begin(), data, size_t( fileSize ) );
     return buffer;
@@ -668,13 +668,13 @@ Buffer File::read()
 
 #elif defined( _WIN32 )
 
-  HANDLE file = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, null, OPEN_EXISTING,
-                            FILE_ATTRIBUTE_NORMAL, null );
-  if( file == null ) {
+  HANDLE file = CreateFile( filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+                            FILE_ATTRIBUTE_NORMAL, nullptr );
+  if( file == nullptr ) {
     return buffer;
   }
 
-  int size = int( GetFileSize( file, null ) );
+  int size = int( GetFileSize( file, nullptr ) );
   if( size <= 0 || size == int( INVALID_FILE_SIZE ) ) {
     return buffer;
   }
@@ -682,7 +682,7 @@ Buffer File::read()
   buffer.alloc( size );
 
   DWORD read;
-  BOOL result = ReadFile( file, buffer.begin(), DWORD( size ), &read, null );
+  BOOL result = ReadFile( file, buffer.begin(), DWORD( size ), &read, nullptr );
   CloseHandle( file );
 
   if( result == 0 || int( read ) != size ) {
@@ -723,7 +723,7 @@ Buffer File::read()
 
 bool File::write( const char* buffer, int size )
 {
-  if( data != null ) {
+  if( data != nullptr ) {
     return false;
   }
 
@@ -783,14 +783,14 @@ bool File::write( const char* buffer, int size )
 
 #elif defined( _WIN32 )
 
-  HANDLE file = CreateFile( filePath, GENERIC_WRITE, 0, null, CREATE_ALWAYS,
-                            FILE_ATTRIBUTE_NORMAL, null );
-  if( file == null ) {
+  HANDLE file = CreateFile( filePath, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                            FILE_ATTRIBUTE_NORMAL, nullptr );
+  if( file == nullptr ) {
     return false;
   }
 
   DWORD written;
-  BOOL result = WriteFile( file, buffer, DWORD( size ), &written, null );
+  BOOL result = WriteFile( file, buffer, DWORD( size ), &written, nullptr );
   CloseHandle( file );
 
   if( result == 0 || int( written ) != size ) {
@@ -838,7 +838,7 @@ String File::cwd()
 #else
 
   char buffer[256];
-  bool hasFailed = getcwd( buffer, 256 ) == null;
+  bool hasFailed = getcwd( buffer, 256 ) == nullptr;
   return hasFailed ? "." : buffer;
 
 #endif
@@ -880,7 +880,7 @@ DArray<File> File::ls()
   WIN32_FIND_DATA entity;
 
   HANDLE dir = FindFirstFile( filePath + "\\*.*", &entity );
-  if( dir == null ) {
+  if( dir == nullptr ) {
     return array;
   }
 
@@ -899,7 +899,7 @@ DArray<File> File::ls()
   }
 
   dir = FindFirstFile( filePath + "\\*.*", &entity );
-  if( dir == null ) {
+  if( dir == nullptr ) {
     return array;
   }
 
@@ -930,7 +930,7 @@ DArray<File> File::ls()
 #else
 
   DIR* directory = opendir( filePath );
-  if( directory == null ) {
+  if( directory == nullptr ) {
     return array;
   }
 
@@ -938,7 +938,7 @@ DArray<File> File::ls()
 
   // Count entries first.
   int count = 0;
-  while( entity != null ) {
+  while( entity != nullptr ) {
     if( entity->d_name[0] != '.' ) {
       ++count;
     }
@@ -959,7 +959,7 @@ DArray<File> File::ls()
   for( int i = 0; i < count; ) {
     entity = readdir( directory );
 
-    if( entity == null ) {
+    if( entity == nullptr ) {
       closedir( directory );
       array.clear();
       return array;
@@ -983,7 +983,7 @@ bool File::mkdir( const char* path )
 {
 #if defined( __native_client__ )
 
-  Descriptor localDescriptor( null );
+  Descriptor localDescriptor( nullptr );
   Descriptor* descriptor = &localDescriptor;
 
   // Abuse buffer for file path and size for result.
@@ -1017,7 +1017,7 @@ bool File::mkdir( const char* path )
 
 #elif defined( _WIN32 )
 
-  return CreateDirectory( path, null ) != 0;
+  return CreateDirectory( path, nullptr ) != 0;
 
 #else
 
@@ -1030,7 +1030,7 @@ bool File::rm( const char* path )
 {
 #if defined( __native_client__ )
 
-  Descriptor localDescriptor( null );
+  Descriptor localDescriptor( nullptr );
   Descriptor* descriptor = &localDescriptor;
 
   // Abuse buffer for file path and size for result.
@@ -1087,7 +1087,7 @@ void File::init( FilesystemType type, int size )
 {
 #ifdef __native_client__
 
-  if( System::instance == null ) {
+  if( System::instance == nullptr ) {
     OZ_ERROR( "NaClModule::instance must be set to NaCl module pointer in order to initialise NaCl"
               " filesystem" );
   }
@@ -1105,7 +1105,7 @@ void File::init( FilesystemType type, int size )
   DEFINE_CALLBACK( initResult, {
     if( _result != PP_OK ) {
       delete filesystem;
-      filesystem = null;
+      filesystem = nullptr;
     }
     SEMAPHORE_POST();
   } );
@@ -1118,14 +1118,14 @@ void File::init( FilesystemType type, int size )
     }
 
     delete filesystem;
-    filesystem = null;
+    filesystem = nullptr;
     SEMAPHORE_POST();
   } );
 
   MAIN_CALL( init );
   SEMAPHORE_WAIT();
 
-  if( filesystem == null ) {
+  if( filesystem == nullptr ) {
     OZ_ERROR( "Local filesystem open failed" );
   }
 
@@ -1141,12 +1141,12 @@ void File::free()
 {
 #ifdef __native_client__
 
-  if( filesystem != null ) {
+  if( filesystem != nullptr ) {
     Descriptor* descriptor = &staticDesc;
 
     DEFINE_CALLBACK( free, {
       delete filesystem;
-      filesystem = null;
+      filesystem = nullptr;
 
       SEMAPHORE_POST();
     } );

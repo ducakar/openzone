@@ -131,7 +131,7 @@ class Camera
 
     void setTaggedObj( const Object* obj )
     {
-      object    = obj == null ? -1 : obj->index;
+      object    = obj == nullptr ? -1 : obj->index;
       objectObj = obj;
     }
 
@@ -139,7 +139,7 @@ class Camera
     {
       entityObj = ent;
 
-      if( ent == null ) {
+      if( ent == nullptr ) {
         entity = -1;
       }
       else {
@@ -152,13 +152,13 @@ class Camera
 
     void setBot( Bot* botObj_ )
     {
-      if( botObj != null ) {
+      if( botObj != nullptr ) {
         botObj->state &= ~Bot::PLAYER_BIT;
       }
 
-      if( botObj_ == null ) {
+      if( botObj_ == nullptr ) {
         bot    = -1;
-        botObj = null;
+        botObj = nullptr;
       }
       else {
         bot    = botObj_->index;
@@ -167,7 +167,7 @@ class Camera
         botObj_->state |= Bot::PLAYER_BIT;
       }
 
-      hard_assert( botObj == null || ( botObj->flags & Object::BOT_BIT ) );
+      hard_assert( botObj == nullptr || ( botObj->flags & Object::BOT_BIT ) );
     }
 
     void rotateTo( const Quat& q )

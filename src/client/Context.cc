@@ -149,7 +149,7 @@ int Context::speakCallback( short int* samples, int nSamples, void* )
 void Context::speakMain( void* )
 {
   espeak_Synth( speakSource.text, size_t( speakSource.text + 1 ), 0, POS_CHARACTER, 0,
-                espeakCHARS_UTF8, null, null );
+                espeakCHARS_UTF8, nullptr, nullptr );
 
   int value = AL_PLAYING;
   while( speakSource.isAlive && value != AL_STOPPED ) {
@@ -250,7 +250,7 @@ uint Context::requestSpeakSource( const char* text, int owner )
   speakSource.isAlive        = true;
   speakSource.text           = text;
 
-  speakSource.thread.start( speakMain, null );
+  speakSource.thread.start( speakMain, nullptr );
   return speakSource.id;
 }
 
@@ -263,8 +263,8 @@ void Context::releaseSpeakSource()
 }
 
 Context::Context() :
-  imagoClasses( null ), audioClasses( null ), textures( null ), sounds( null ), bsps( null ),
-  smms( null ), md2s( null ), md3s( null )
+  imagoClasses( nullptr ), audioClasses( nullptr ), textures( nullptr ), sounds( nullptr ),
+  bsps( nullptr ), smms( nullptr ), md2s( nullptr ), md3s( nullptr )
 {}
 
 uint Context::readTextureLayer( InputStream* istream )
@@ -410,7 +410,7 @@ uint Context::requestSound( int id )
   audioSpec.samples  = 0;
 
   SDL_RWops* rwOps = SDL_RWFromConstMem( is.begin(), is.capacity() );
-  if( SDL_LoadWAV_RW( rwOps, 1, &audioSpec, &data, &length ) == null ) {
+  if( SDL_LoadWAV_RW( rwOps, 1, &audioSpec, &data, &length ) == nullptr ) {
     OZ_ERROR( "Failed to load WAVE sound '%s'", name.cstr() );
   }
 
@@ -475,7 +475,7 @@ void Context::releaseSMM( int id )
 {
   Resource<SMM*>& resource = smms[id];
 
-  hard_assert( resource.object != null && resource.nUsers > 0 );
+  hard_assert( resource.object != nullptr && resource.nUsers > 0 );
 
   --resource.nUsers;
 }
@@ -497,7 +497,7 @@ void Context::releaseMD2( int id )
 {
   Resource<MD2*>& resource = md2s[id];
 
-  hard_assert( resource.object != null && resource.nUsers > 0 );
+  hard_assert( resource.object != nullptr && resource.nUsers > 0 );
 
   --resource.nUsers;
 }
@@ -519,7 +519,7 @@ void Context::releaseMD3( int id )
 {
   Resource<MD3*>& resource = md3s[id];
 
-  hard_assert( resource.object != null && resource.nUsers > 0 );
+  hard_assert( resource.object != nullptr && resource.nUsers > 0 );
 
   --resource.nUsers;
 }
@@ -528,7 +528,7 @@ BSP* Context::getBSP( const Struct* str )
 {
   Resource<BSP*>& resource = bsps[str->bsp->id];
 
-  return resource.object != null && resource.object->isLoaded ? resource.object : null;
+  return resource.object != nullptr && resource.object->isLoaded ? resource.object : nullptr;
 }
 
 void Context::drawBSP( const Struct* str )
@@ -538,7 +538,7 @@ void Context::drawBSP( const Struct* str )
   // we don't count users, just to show there is at least one
   resource.nUsers = 1;
 
-  if( resource.object == null ) {
+  if( resource.object == nullptr ) {
     resource.object = new BSP( str->bsp );
   }
   else if( resource.object->isLoaded ) {
@@ -553,7 +553,7 @@ void Context::playBSP( const Struct* str )
   // we don't count users, just to show there is at least one
   resource.nUsers = 1;
 
-  if( resource.object == null ) {
+  if( resource.object == nullptr ) {
     resource.object = new BSPAudio( str->bsp );
   }
 
@@ -566,7 +566,7 @@ void Context::drawImago( const Object* obj, const Imago* parent )
 
   Imago* const* value = imagines.find( obj->index );
 
-  if( value == null ) {
+  if( value == nullptr ) {
     Imago::CreateFunc* createFunc = imagoClasses[obj->clazz->imagoType];
 
     value = imagines.add( obj->index, createFunc( obj ) );
@@ -585,7 +585,7 @@ void Context::playAudio( const Object* obj, const Audio* parent )
 
   Audio* const* value = audios.find( obj->index );
 
-  if( value == null ) {
+  if( value == nullptr ) {
     Audio::CreateFunc* createFunc = audioClasses[obj->clazz->audioType];
 
     value = audios.add( obj->index, createFunc( obj ) );
@@ -602,7 +602,7 @@ void Context::drawFrag( const Frag* frag )
 {
   FragPool* pool = fragPools[frag->poolId];
 
-  if( pool == null ) {
+  if( pool == nullptr ) {
     pool = new FragPool( frag->pool );
 
     fragPools[frag->poolId] = pool;
@@ -617,7 +617,7 @@ void Context::updateLoad()
 {
   int nFragPools = 0;
   for( int i = 0; i < library.nFragPools; ++i ) {
-    nFragPools += fragPools[i] != null;
+    nFragPools += fragPools[i] != nullptr;
   }
 
   maxImagines           = max( maxImagines,           imagines.length() );
@@ -726,7 +726,7 @@ void Context::unload()
   audios.dealloc();
 
   aFree( fragPools, library.nFragPools );
-  aSet<FragPool*, FragPool*>( fragPools, null, library.nFragPools );
+  aSet<FragPool*, FragPool*>( fragPools, nullptr, library.nFragPools );
 
   BasicAudio::pool.free();
   BotAudio::pool.free();
@@ -737,28 +737,28 @@ void Context::unload()
   for( int i = 0; i < library.nBSPs; ++i ) {
     delete bsps[i].object;
 
-    bsps[i].object = null;
+    bsps[i].object = nullptr;
     bsps[i].nUsers = -1;
 
     delete bspAudios[i].object;
 
-    bspAudios[i].object = null;
+    bspAudios[i].object = nullptr;
     bspAudios[i].nUsers = -1;
   }
   for( int i = 0; i < library.models.length(); ++i ) {
     delete smms[i].object;
 
-    smms[i].object = null;
+    smms[i].object = nullptr;
     smms[i].nUsers = -1;
 
     delete md2s[i].object;
 
-    md2s[i].object = null;
+    md2s[i].object = nullptr;
     md2s[i].nUsers = -1;
 
     delete md3s[i].object;
 
-    md3s[i].object = null;
+    md3s[i].object = nullptr;
     md3s[i].nUsers = -1;
   }
 
@@ -772,7 +772,7 @@ void Context::unload()
   Mesh::dealloc();
 
   while( !sources.isEmpty() ) {
-    removeSource( sources.first(), null );
+    removeSource( sources.first(), nullptr );
     OZ_AL_CHECK_ERROR();
   }
   for( auto i = contSources.iter(); i.isValid(); ) {
@@ -809,9 +809,9 @@ void Context::init()
 {
   Log::print( "Initialising Context ..." );
 
-  imagoClasses = library.nImagoClasses == 0 ? null : new Imago::CreateFunc*[library.nImagoClasses];
-  audioClasses = library.nAudioClasses == 0 ? null : new Audio::CreateFunc*[library.nAudioClasses];
-  fragPools    = library.nFragPools    == 0 ? null : new FragPool*[library.nFragPools];
+  imagoClasses = library.nImagoClasses == 0 ? nullptr : new Imago::CreateFunc*[library.nImagoClasses];
+  audioClasses = library.nAudioClasses == 0 ? nullptr : new Audio::CreateFunc*[library.nAudioClasses];
+  fragPools    = library.nFragPools    == 0 ? nullptr : new FragPool*[library.nFragPools];
 
   OZ_REGISTER_IMAGOCLASS( SMM );
   OZ_REGISTER_IMAGOCLASS( SMMVehicle );
@@ -824,22 +824,22 @@ void Context::init()
   OZ_REGISTER_AUDIOCLASS( Bot );
   OZ_REGISTER_AUDIOCLASS( Vehicle );
 
-  aSet<FragPool*, FragPool*>( fragPools, null, library.nFragPools );
+  aSet<FragPool*, FragPool*>( fragPools, nullptr, library.nFragPools );
 
   int nTextures = library.textures.length();
   int nSounds   = library.sounds.length();
   int nBSPs     = library.nBSPs;
   int nModels   = library.models.length();
 
-  textures  = nTextures == 0 ? null : new Resource<Texture>[nTextures];
-  sounds    = nSounds   == 0 ? null : new Resource<uint>[nSounds];
+  textures  = nTextures == 0 ? nullptr : new Resource<Texture>[nTextures];
+  sounds    = nSounds   == 0 ? nullptr : new Resource<uint>[nSounds];
 
-  bsps      = nBSPs     == 0 ? null : new Resource<BSP*>[nBSPs];
-  bspAudios = nBSPs     == 0 ? null : new Resource<BSPAudio*>[nBSPs];
+  bsps      = nBSPs     == 0 ? nullptr : new Resource<BSP*>[nBSPs];
+  bspAudios = nBSPs     == 0 ? nullptr : new Resource<BSPAudio*>[nBSPs];
 
-  smms      = nModels   == 0 ? null : new Resource<SMM*>[nModels];
-  md2s      = nModels   == 0 ? null : new Resource<MD2*>[nModels];
-  md3s      = nModels   == 0 ? null : new Resource<MD3*>[nModels];
+  smms      = nModels   == 0 ? nullptr : new Resource<SMM*>[nModels];
+  md2s      = nModels   == 0 ? nullptr : new Resource<MD2*>[nModels];
+  md3s      = nModels   == 0 ? nullptr : new Resource<MD3*>[nModels];
 
   for( int i = 0; i < nTextures; ++i ) {
     textures[i].nUsers = -1;
@@ -848,20 +848,20 @@ void Context::init()
     sounds[i].nUsers = -1;
   }
   for( int i = 0; i < nBSPs; ++i ) {
-    bsps[i].object = null;
+    bsps[i].object = nullptr;
     bsps[i].nUsers = -1;
 
-    bspAudios[i].object = null;
+    bspAudios[i].object = nullptr;
     bspAudios[i].nUsers = -1;
   }
   for( int i = 0; i < nModels; ++i ) {
-    smms[i].object = null;
+    smms[i].object = nullptr;
     smms[i].nUsers = -1;
 
-    md2s[i].object = null;
+    md2s[i].object = nullptr;
     md2s[i].nUsers = -1;
 
-    md3s[i].object = null;
+    md3s[i].object = nullptr;
     md3s[i].nUsers = -1;
   }
 
@@ -890,19 +890,19 @@ void Context::free()
   delete[] md2s;
   delete[] md3s;
 
-  imagoClasses = null;
-  audioClasses = null;
-  fragPools    = null;
+  imagoClasses = nullptr;
+  audioClasses = nullptr;
+  fragPools    = nullptr;
 
-  textures     = null;
-  sounds       = null;
+  textures     = nullptr;
+  sounds       = nullptr;
 
-  bsps         = null;
-  bspAudios    = null;
+  bsps         = nullptr;
+  bspAudios    = nullptr;
 
-  smms         = null;
-  md2s         = null;
-  md3s         = null;
+  smms         = nullptr;
+  md2s         = nullptr;
+  md3s         = nullptr;
 
   Log::printEnd( " OK" );
 }

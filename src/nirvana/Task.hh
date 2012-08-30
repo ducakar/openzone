@@ -73,10 +73,10 @@ class Task
     void update()
     {
       if( onUpdate() ) {
-        while( children.first() != null && !( children.first()->flags & ACTIVE_BIT ) ) {
+        while( children.first() != nullptr && !( children.first()->flags & ACTIVE_BIT ) ) {
           delete children.popFirst();
         }
-        if( children.first() != null ) {
+        if( children.first() != nullptr ) {
           children.first()->update();
         }
       }

@@ -186,7 +186,7 @@ void OBJ::loadMaterials( const char* filePath )
   char buffer[LINE_BUFFER_SIZE];
 
   FILE* fs = fopen( filePath, "r" );
-  if( fs == null ) {
+  if( fs == nullptr ) {
     OZ_ERROR( "OBJ model must have a corresponding 'data.mtl' file." );
   }
 
@@ -201,7 +201,7 @@ void OBJ::loadMaterials( const char* filePath )
   char* end;
 
   // until EOF reached
-  while( pos != null ) {
+  while( pos != nullptr ) {
     pos = skipSpaces( pos );
 
     switch( pos[0] ) {
@@ -285,7 +285,7 @@ void OBJ::load()
   loadMaterials( realPath + "/data.mtl" );
 
   FILE* fs = fopen( realPath + "/data.obj" , "r" );
-  if( fs == null ) {
+  if( fs == nullptr ) {
     OZ_ERROR( "Cannot open OBJ data.obj file" );
   }
 
@@ -295,7 +295,7 @@ void OBJ::load()
   char* end;
 
   // until EOF reached
-  while( pos != null ) {
+  while( pos != nullptr ) {
     pos = skipSpaces( pos );
 
     switch( *pos ) {
@@ -317,7 +317,7 @@ void OBJ::load()
           *end = '\0';
 
           const int* value = materialIndices.find( pos );
-          if( value != null ) {
+          if( value != nullptr ) {
             currentMaterial = *value;
           }
           else {

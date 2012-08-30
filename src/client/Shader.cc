@@ -180,11 +180,11 @@ void Shader::loadProgram( int id )
   const uint* vertId = vertShaders.find( vertName );
   const uint* fragId = fragShaders.find( fragName );
 
-  if( vertId == null ) {
+  if( vertId == nullptr ) {
     OZ_ERROR( "Invalid vertex shader '%s' requested for shader program '%s'",
               vertName, name.cstr() );
   }
-  if( fragId == null ) {
+  if( fragId == nullptr ) {
     OZ_ERROR( "Invalid fragment shader '%s' requested for shader program '%s'",
               fragName, name.cstr() );
   }

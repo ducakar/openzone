@@ -259,8 +259,8 @@ void Input::loadKeyMap( const JSON& keyConfig )
   const SDLKey* pModifier0 = sdlKeyNames.find( keyConfig["modifier0"].get( "" ) );
   const SDLKey* pModifier1 = sdlKeyNames.find( keyConfig["modifier1"].get( "" ) );
 
-  modifier0 = pModifier0 == null ? SDLK_UNKNOWN : *pModifier0;
-  modifier1 = pModifier1 == null ? SDLK_UNKNOWN : *pModifier1;
+  modifier0 = pModifier0 == nullptr ? SDLK_UNKNOWN : *pModifier0;
+  modifier1 = pModifier1 == nullptr ? SDLK_UNKNOWN : *pModifier1;
 
 #else
 
@@ -290,7 +290,7 @@ void Input::loadKeyMap( const JSON& keyConfig )
 #if SDL_MAJOR_VERSION < 2
 
       const SDLKey* sdlKey = sdlKeyNames.find( &keyDesc[1] );
-      if( sdlKey == null ) {
+      if( sdlKey == nullptr ) {
         OZ_ERROR( "Cannot resolve SDL key name '%s'", &keyDesc[1] );
       }
 
@@ -400,7 +400,7 @@ void Input::reset()
   window.warpMouse();
 
   SDL_PumpEvents();
-  SDL_GetRelativeMouseState( null, null );
+  SDL_GetRelativeMouseState( nullptr, nullptr );
 
   mouseX      = 0;
   mouseY      = 0;

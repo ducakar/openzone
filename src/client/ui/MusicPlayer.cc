@@ -123,7 +123,7 @@ void MusicPlayer::onUpdate()
 {
   const Bot* bot = camera.botObj;
 
-  if( camera.state == Camera::UNIT && ( bot == null || ( bot->state & Bot::DEAD_BIT ) ||
+  if( camera.state == Camera::UNIT && ( bot == nullptr || ( bot->state & Bot::DEAD_BIT ) ||
         !bot->hasAttribute( ObjectClass::MUSIC_PLAYER_BIT ) ) )
   {
     if( isPlaying ) {

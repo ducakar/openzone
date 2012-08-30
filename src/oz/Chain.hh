@@ -55,11 +55,11 @@ namespace oz
  * `next[0]` points to next element in `chain1` and `next[1]` points to next element in `chain2`.
  *
  * Notes:
- * \li Copy operations do not copy elements, to make a copy of a chain including its elements, use
+ * @li Copy operations do not copy elements, to make a copy of a chain including its elements, use
  * `clone()` instead.
- * \li Removal operations (except for `free()` do not actually remove elements but only decouples
+ * @li Removal operations (except for `free()` do not actually remove elements but only decouples
  * them from the chain.
- * \li `next[INDEX]` pointer is not cleared when an element is removed from the chain, it may still
+ * @li `next[INDEX]` pointer is not cleared when an element is removed from the chain, it may still
  * point to elements in the chain or to invalid locations.
  */
 template <class Elem, int INDEX = 0>
@@ -70,7 +70,7 @@ class Chain
     /**
      * Container-specific iterator.
      */
-    template <typename IterElem>
+    template <class IterElem>
     class ChainIterator : public IteratorBase<IterElem>
     {
       friend class Chain;
@@ -94,7 +94,7 @@ class Chain
          */
         OZ_ALWAYS_INLINE
         ChainIterator() :
-          IteratorBase<IterElem>( null )
+          IteratorBase<IterElem>( nullptr )
         {}
 
         /**
@@ -103,10 +103,28 @@ class Chain
         OZ_ALWAYS_INLINE
         ChainIterator& operator ++ ()
         {
-          hard_assert( elem != null );
+          hard_assert( elem != nullptr );
 
           elem = elem->next[INDEX];
           return *this;
+        }
+
+        /**
+         * STL-compatible begin iterator.
+         */
+        OZ_ALWAYS_INLINE
+        ChainIterator begin() const
+        {
+          return *this;
+        }
+
+        /**
+         * STL-compatible end iterator.
+         */
+        OZ_ALWAYS_INLINE
+        ChainIterator end() const
+        {
+          return ChainIterator();
         }
 
     };
@@ -133,7 +151,7 @@ class Chain
      * Create an empty chain.
      */
     Chain() :
-      firstElem( null )
+      firstElem( nullptr )
     {}
 
     /**
@@ -142,7 +160,7 @@ class Chain
     Chain( Chain&& c ) :
       firstElem( c.firstElem )
     {
-      c.firstElem = null;
+      c.firstElem = nullptr;
     }
 
     /**
@@ -156,7 +174,7 @@ class Chain
 
       firstElem = c.firstElem;
 
-      c.firstElem = null;
+      c.firstElem = nullptr;
 
       return *this;
     }
@@ -169,12 +187,12 @@ class Chain
       Chain clone;
 
       Elem* original = firstElem;
-      Elem* prevCopy = null;
+      Elem* prevCopy = nullptr;
 
-      while( original != null ) {
+      while( original != nullptr ) {
         Elem* copy = new Elem( *original );
 
-        if( prevCopy == null ) {
+        if( prevCopy == nullptr ) {
           clone.firstElem = copy;
         }
         else {
@@ -197,7 +215,7 @@ class Chain
       Elem* e1 = firstElem;
       Elem* e2 = c.firstElem;
 
-      while( e1 != null && e2 != null && *e1 == *e2 ) {
+      while( e1 != nullptr && e2 != nullptr && *e1 == *e2 ) {
         e1 = e1->next[INDEX];
         e2 = e2->next[INDEX];
       }
@@ -230,7 +248,7 @@ class Chain
       int i = 0;
       Elem* p = firstElem;
 
-      while( p != null ) {
+      while( p != nullptr ) {
         p = p->next[INDEX];
         ++i;
       }
@@ -243,7 +261,7 @@ class Chain
     OZ_ALWAYS_INLINE
     bool isEmpty() const
     {
-      return firstElem == null;
+      return firstElem == nullptr;
     }
 
     /**
@@ -262,7 +280,7 @@ class Chain
     {
       Elem* last = firstElem;
 
-      while( last != null ) {
+      while( last != nullptr ) {
         last = last->next[INDEX];
       }
       return last;
@@ -274,7 +292,7 @@ class Chain
     Elem* before( const Elem* e ) const
     {
       Elem* current = firstElem;
-      Elem* before = null;
+      Elem* before = nullptr;
 
       while( current != e ) {
         before = current;
@@ -288,14 +306,14 @@ class Chain
      */
     bool has( const Elem* e ) const
     {
-      hard_assert( e != null );
+      hard_assert( e != nullptr );
 
       Elem* p = firstElem;
 
-      while( p != null && p != e ) {
+      while( p != nullptr && p != e ) {
         p = p->next[INDEX];
       }
-      return p != null;
+      return p != nullptr;
     }
 
     /**
@@ -306,14 +324,14 @@ class Chain
      */
     bool contains( const Elem* e ) const
     {
-      hard_assert( e != null );
+      hard_assert( e != nullptr );
 
       Elem* p = firstElem;
 
-      while( p != null && !( *p == *e ) ) {
+      while( p != nullptr && !( *p == *e ) ) {
         p = p->next[INDEX];
       }
-      return p != null;
+      return p != nullptr;
     }
 
     /**
@@ -332,7 +350,7 @@ class Chain
      */
     void insertAfter( Elem* e, Elem* p )
     {
-      hard_assert( e != null && p != null );
+      hard_assert( e != nullptr && p != nullptr );
 
       e->next[INDEX] = p->next[INDEX];
       p->next[INDEX] = e;
@@ -357,9 +375,9 @@ class Chain
      */
     void remove( Elem* e, Elem* prev )
     {
-      hard_assert( prev == null || prev->next[INDEX] == e );
+      hard_assert( prev == nullptr || prev->next[INDEX] == e );
 
-      if( prev == null ) {
+      if( prev == nullptr ) {
         firstElem = e->next[INDEX];
       }
       else {
@@ -372,7 +390,7 @@ class Chain
      */
     void pushFirst( Elem* e )
     {
-      hard_assert( e != null );
+      hard_assert( e != nullptr );
 
       e->next[INDEX] = firstElem;
       firstElem = e;
@@ -383,7 +401,7 @@ class Chain
      */
     Elem* popFirst()
     {
-      hard_assert( firstElem != null );
+      hard_assert( firstElem != nullptr );
 
       Elem* e = firstElem;
 
@@ -396,7 +414,7 @@ class Chain
      */
     void clear()
     {
-      firstElem = null;
+      firstElem = nullptr;
     }
 
     /**
@@ -406,14 +424,14 @@ class Chain
     {
       Elem* p = firstElem;
 
-      while( p != null ) {
+      while( p != nullptr ) {
         Elem* next = p->next[INDEX];
 
         delete p;
         p = next;
       }
 
-      firstElem = null;
+      firstElem = nullptr;
     }
 
 };

@@ -68,7 +68,7 @@ void BotAudio::play( const Audio* parent )
       recent[event->id] = RECENT_TICKS;
 
       if( !( bot->state & Bot::DEAD_BIT ) || event->id == Bot::EVENT_DEATH ) {
-        playSound( sounds[event->id], event->intensity, parent == null ? obj : parent->obj );
+        playSound( sounds[event->id], event->intensity, parent == nullptr ? obj : parent->obj );
       }
     }
   }
@@ -77,8 +77,8 @@ void BotAudio::play( const Audio* parent )
   for( int i = 0; i < obj->items.length(); ++i ) {
     const Object* item = orbis.objects[ obj->items[i] ];
 
-    if( item != null && ( item->flags & Object::AUDIO_BIT ) ) {
-      context.playAudio( item, parent == null ? this : parent );
+    if( item != nullptr && ( item->flags & Object::AUDIO_BIT ) ) {
+      context.playAudio( item, parent == nullptr ? this : parent );
     }
   }
 

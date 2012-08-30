@@ -150,10 +150,10 @@ void Render::prepareDraw()
     visibility = visibilityRange;
   }
 
-  if( collider.hit.mediumStr != null && ( shader.medium & Medium::LIQUID_MASK ) ) {
+  if( collider.hit.mediumStr != nullptr && ( shader.medium & Medium::LIQUID_MASK ) ) {
     const BSP* bsp = context.getBSP( collider.hit.mediumStr );
 
-    if( bsp != null ) {
+    if( bsp != nullptr ) {
       if( shader.medium & Medium::SEA_BIT ) {
         shader.fogColour = terra.liquidFogColour;
         visibility = orbis.terra.liquid & Medium::WATER_BIT ? WATER_VISIBILITY : LAVA_VISIBILITY;
@@ -218,7 +218,7 @@ void Render::prepareDraw()
 
   objects.sort();
   for( int i = 0; i < objects.length(); ++i ) {
-    context.drawImago( objects[i].obj, null );
+    context.drawImago( objects[i].obj, nullptr );
   }
 
   currentMicros = Time::uclock();
@@ -480,7 +480,7 @@ void Render::resize()
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, frameWidth, frameHeight, 0, GL_RGB,
-                GL_UNSIGNED_BYTE, null );
+                GL_UNSIGNED_BYTE, nullptr );
 
   glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
@@ -586,10 +586,10 @@ void Render::init()
   hasFBO = true;
 #endif
 
-  if( strstr( version, "Mesa 7" ) != null ) {
+  if( strstr( version, "Mesa 7" ) != nullptr ) {
     isMesa7 = true;
   }
-  if( strstr( vendor, "ATI" ) != null ) {
+  if( strstr( vendor, "ATI" ) != nullptr ) {
     isCatalyst = true;
   }
   foreach( extension, extensions.citer() ) {

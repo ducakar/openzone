@@ -39,7 +39,7 @@ class Lua : public common::Lua
 {
   public:
 
-    bool objectCall( const char* functionName, Object* self, Bot* user = null );
+    bool objectCall( const char* functionName, Object* self, Bot* user = nullptr );
 
     void registerObject( int index );
     void unregisterObject( int index );

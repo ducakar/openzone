@@ -170,7 +170,7 @@ class Object : public AABB
     static const int MOVE_CLEAR_MASK    = DISABLED_BIT | ON_FLOOR_BIT | IN_LIQUID_BIT |
                                           IN_LAVA_BIT | ON_LADDER_BIT | ON_SLICK_BIT;
 
-    static const int   MAX_DIM          = 4;
+    static const int   MAX_DIM          = 3;
     static const float REAL_MAX_DIM;
 
   protected:
@@ -226,7 +226,7 @@ class Object : public AABB
     Object*            prev[1];    // the previous object in cell.objects and list
     Object*            next[1];    // the next object in cell.objects and list
 
-    Cell*              cell;       // parent cell, null if not positioned in the world
+    Cell*              cell;       // parent cell, nullptr if not positioned in the world
     int                index;      // position in world.objects vector
 
     int                flags;

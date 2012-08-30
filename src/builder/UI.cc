@@ -74,7 +74,7 @@ void UI::buildCursors()
     String realPath = inFile.realDir() + "/" + inFile.path();
 
     FILE* fs = fopen( realPath, "r" );
-    if( fs == null ) {
+    if( fs == nullptr ) {
       OZ_ERROR( "Failed to open cursor description '%s'", realPath.cstr() );
     }
 

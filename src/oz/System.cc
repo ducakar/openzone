@@ -136,9 +136,9 @@ static const timespec       BELL_TIMESPEC = {
   0, long( float( sizeof( BELL_SAMPLE ) ) / float( BELL_SPEC.rate ) * 1e9f )
 };
 
-static decltype( ::pa_simple_new )*   pa_simple_new;   // = null
-static decltype( ::pa_simple_free )*  pa_simple_free;  // = null
-static decltype( ::pa_simple_write )* pa_simple_write; // = null
+static decltype( ::pa_simple_new )*   pa_simple_new;   // = nullptr
+static decltype( ::pa_simple_free )*  pa_simple_free;  // = nullptr
+static decltype( ::pa_simple_write )* pa_simple_write; // = nullptr
 
 #endif
 
@@ -212,7 +212,7 @@ static void construct()
 {
 #if defined( __native_client__ )
 
-  if( pthread_mutex_init( &bellLock, null ) != 0 ) {
+  if( pthread_mutex_init( &bellLock, nullptr ) != 0 ) {
     OZ_ERROR( "Bell mutex creation failed" );
   }
 
@@ -232,15 +232,15 @@ static void construct()
 
   void* library = dlopen( "libpulse-simple.so.0", RTLD_NOW );
 
-  if( library != null ) {
+  if( library != nullptr ) {
     *( void** )( &pa_simple_new )   = dlsym( library, "pa_simple_new" );
     *( void** )( &pa_simple_free )  = dlsym( library, "pa_simple_free" );
     *( void** )( &pa_simple_write ) = dlsym( library, "pa_simple_write" );
 
-    if( pa_simple_new == null || pa_simple_free == null || pa_simple_write == null ) {
-      pa_simple_new   = null;
-      pa_simple_free  = null;
-      pa_simple_write = null;
+    if( pa_simple_new == nullptr || pa_simple_free == nullptr || pa_simple_write == nullptr ) {
+      pa_simple_new   = nullptr;
+      pa_simple_free  = nullptr;
+      pa_simple_write = nullptr;
 
       dlclose( library );
     }
@@ -308,7 +308,7 @@ static void bellInitCallback( void* info_, int )
   info->offset        = 0;
 
   void* audioPtr = malloc( sizeof( pp::Audio ) );
-  if( audioPtr == null ) {
+  if( audioPtr == nullptr ) {
     OZ_ERROR( "pp::Audio object allocation failed" );
   }
 
@@ -327,7 +327,7 @@ static void* bellThread( void* )
   System::core->CallOnMainThread( 0, pp::CompletionCallback( bellInitCallback, &info ) );
 
   while( isBellPlaying ) {
-    nanosleep( &TIMESPEC_10MS, null );
+    nanosleep( &TIMESPEC_10MS, nullptr );
   }
   return null;
 }
@@ -337,7 +337,7 @@ static void* bellThread( void* )
 
 static DWORD WINAPI bellThread( LPVOID )
 {
-  PlaySound( reinterpret_cast<LPCSTR>( &WAVE_SAMPLE ), null, SND_MEMORY | SND_SYNC );
+  PlaySound( reinterpret_cast<LPCSTR>( &WAVE_SAMPLE ), nullptr, SND_MEMORY | SND_SYNC );
 
   isBellPlaying = false;
   return 0;
@@ -347,19 +347,19 @@ static DWORD WINAPI bellThread( LPVOID )
 
 static void* bellThread( void* )
 {
-  pa_simple* pa = pa_simple_new( null, "liboz", PA_STREAM_PLAYBACK, null, "bell", &BELL_SPEC, null,
-                                 null, null );
-  if( pa != null ) {
-    pa_simple_write( pa, BELL_SAMPLE, sizeof( BELL_SAMPLE ), null );
+  pa_simple* pa = pa_simple_new( nullptr, "liboz", PA_STREAM_PLAYBACK, nullptr, "bell", &BELL_SPEC,
+                                 nullptr, nullptr, nullptr );
+  if( pa != nullptr ) {
+    pa_simple_write( pa, BELL_SAMPLE, sizeof( BELL_SAMPLE ), nullptr );
 
     // pa_simple_drain() takes much longer (~ 1-2 s) than the sample is actually playing, so we use
     // this sleep to ensure the sample has finished playing.
-    nanosleep( &BELL_TIMESPEC, null );
+    nanosleep( &BELL_TIMESPEC, nullptr );
     pa_simple_free( pa );
   }
 
   isBellPlaying = false;
-  return null;
+  return nullptr;
 }
 
 #endif
@@ -377,15 +377,15 @@ static void waitBell()
 #ifdef _WIN32
     Sleep( 10 );
 #else
-    nanosleep( &TIMESPEC_10MS, null );
+    nanosleep( &TIMESPEC_10MS, nullptr );
 #endif
   }
 }
 
 #ifdef __native_client__
-pp::Module*   System::module;   // = null
-pp::Instance* System::instance; // = null
-pp::Core*     System::core;     // = null
+pp::Module*   System::module;   // = nullptr
+pp::Instance* System::instance; // = nullptr
+pp::Core*     System::core;     // = nullptr
 #endif
 
 OZ_HIDDEN
@@ -417,7 +417,7 @@ void System::abort( bool preventHalt )
       Sleep( 10 );
     }
 #else
-    while( nanosleep( &TIMESPEC_10MS, null ) == 0 );
+    while( nanosleep( &TIMESPEC_10MS, nullptr ) == 0 );
 #endif
   }
 
@@ -448,7 +448,7 @@ void System::bell()
 
 #if defined( __native_client__ )
 
-  if( instance == null || core == null || pthread_mutex_trylock( &bellLock ) != 0 ) {
+  if( instance == nullptr || core == nullptr || pthread_mutex_trylock( &bellLock ) != 0 ) {
     return;
   }
 
@@ -460,7 +460,7 @@ void System::bell()
     pthread_mutex_unlock( &bellLock );
 
     pthread_t thread;
-    if( pthread_create( &thread, null, bellThread, null ) != 0 ) {
+    if( pthread_create( &thread, nullptr, bellThread, nullptr ) != 0 ) {
       OZ_ERROR( "Bell thread creation failed" );
     }
   }
@@ -477,8 +477,8 @@ void System::bell()
     isBellPlaying = true;
     LeaveCriticalSection( &bellLock );
 
-    HANDLE thread = CreateThread( null, 0, bellThread, null, 0, null );
-    if( thread == null ) {
+    HANDLE thread = CreateThread( nullptr, 0, bellThread, nullptr, 0, nullptr );
+    if( thread == nullptr ) {
       OZ_ERROR( "Bell thread creation failed" );
     }
     CloseHandle( thread );
@@ -486,7 +486,7 @@ void System::bell()
 
 #else
 
-  if( pa_simple_new == null || pthread_spin_trylock( &bellLock ) != 0 ) {
+  if( pa_simple_new == nullptr || pthread_spin_trylock( &bellLock ) != 0 ) {
     return;
   }
 
@@ -498,7 +498,7 @@ void System::bell()
     pthread_spin_unlock( &bellLock );
 
     pthread_t thread;
-    if( pthread_create( &thread, null, bellThread, null ) != 0 ) {
+    if( pthread_create( &thread, nullptr, bellThread, nullptr ) != 0 ) {
       OZ_ERROR( "Bell thread creation failed" );
     }
   }

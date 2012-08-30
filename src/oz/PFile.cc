@@ -58,7 +58,7 @@ inline bool operator < ( const PFile& a, const PFile& b )
 }
 
 PFile::PFile() :
-  fileType( File::MISSING ), fileSize( -1 ), fileTime( 0 ), data( null )
+  fileType( File::MISSING ), fileSize( -1 ), fileTime( 0 ), data( nullptr )
 {}
 
 PFile::~PFile()
@@ -68,7 +68,7 @@ PFile::~PFile()
 
 PFile::PFile( const PFile& file ) :
   filePath( file.filePath ), fileType( file.fileType ), fileSize( file.fileSize ),
-  fileTime( file.fileTime ), data( null )
+  fileTime( file.fileTime ), data( nullptr )
 {}
 
 PFile::PFile( PFile&& file ) :
@@ -79,7 +79,7 @@ PFile::PFile( PFile&& file ) :
   file.fileType = File::DIRECTORY;
   file.fileSize = -1;
   file.fileTime = 0;
-  file.data     = null;
+  file.data     = nullptr;
 }
 
 PFile& PFile::operator = ( const PFile& file )
@@ -92,7 +92,7 @@ PFile& PFile::operator = ( const PFile& file )
   fileType = file.fileType;
   fileSize = file.fileSize;
   fileTime = file.fileTime;
-  data     = null;
+  data     = nullptr;
 
   return *this;
 }
@@ -115,13 +115,13 @@ PFile& PFile::operator = ( PFile&& file )
   file.fileType = File::MISSING;
   file.fileSize = -1;
   file.fileTime = 0;
-  file.data     = null;
+  file.data     = nullptr;
 
   return *this;
 }
 
 PFile::PFile( const char* path ) :
-  filePath( path ), fileType( File::MISSING ), fileSize( -1 ), fileTime( 0 ), data( null )
+  filePath( path ), fileType( File::MISSING ), fileSize( -1 ), fileTime( 0 ), data( nullptr )
 {}
 
 void PFile::setPath( const char* path )
@@ -132,7 +132,7 @@ void PFile::setPath( const char* path )
   fileType = File::MISSING;
   fileSize = -1;
   fileTime = 0;
-  data     = null;
+  data     = nullptr;
 }
 
 bool PFile::stat()
@@ -154,7 +154,7 @@ bool PFile::stat()
   else {
     PHYSFS_File* file = PHYSFS_openRead( filePath );
 
-    if( file == null ) {
+    if( file == nullptr ) {
       fileType = File::MISSING;
       fileSize = -1;
       fileTime = 0;
@@ -221,13 +221,13 @@ const String& PFile::path() const
 String PFile::realDir() const
 {
   const char* realDir = PHYSFS_getRealDir( filePath );
-  return realDir == null ? "" : realDir;
+  return realDir == nullptr ? "" : realDir;
 }
 
 String PFile::mountPoint() const
 {
   const char* mountPoint = PHYSFS_getMountPoint( filePath );
-  return mountPoint == null ? "" : mountPoint;
+  return mountPoint == nullptr ? "" : mountPoint;
 }
 
 String PFile::name() const
@@ -273,17 +273,17 @@ bool PFile::hasExtension( const char* ext ) const
 
 bool PFile::isMapped() const
 {
-  return data != null;
+  return data != nullptr;
 }
 
 bool PFile::map()
 {
-  if( data != null ) {
+  if( data != nullptr ) {
     return true;
   }
 
   PHYSFS_File* file = PHYSFS_openRead( filePath );
-  if( file == null ) {
+  if( file == nullptr ) {
     return false;
   }
 
@@ -295,7 +295,7 @@ bool PFile::map()
 
   if( result != size ) {
     delete[] data;
-    data = null;
+    data = nullptr;
     return false;
   }
 
@@ -306,15 +306,15 @@ bool PFile::map()
 
 void PFile::unmap()
 {
-  if( data != null ) {
+  if( data != nullptr ) {
     delete[] data;
-    data = null;
+    data = nullptr;
   }
 }
 
 InputStream PFile::inputStream( Endian::Order order ) const
 {
-  hard_assert( data != null );
+  hard_assert( data != nullptr );
 
   return InputStream( data, data + fileSize, order );
 }
@@ -323,14 +323,14 @@ Buffer PFile::read()
 {
   Buffer buffer;
 
-  if( data != null ) {
+  if( data != nullptr ) {
     buffer.alloc( fileSize );
     memcpy( buffer.begin(), data, size_t( fileSize ) );
     return buffer;
   }
 
   PHYSFS_File* file = PHYSFS_openRead( filePath );
-  if( file == null ) {
+  if( file == nullptr ) {
     return buffer;
   }
 
@@ -352,12 +352,12 @@ Buffer PFile::read()
 
 bool PFile::write( const char* buffer, int size )
 {
-  if( data != null ) {
+  if( data != nullptr ) {
     return false;
   }
 
   PHYSFS_File* file = PHYSFS_openWrite( filePath );
-  if( file == null ) {
+  if( file == nullptr ) {
     return buffer;
   }
 
@@ -389,14 +389,14 @@ DArray<PFile> PFile::ls()
   }
 
   char** list = PHYSFS_enumerateFiles( filePath );
-  if( list == null ) {
+  if( list == nullptr ) {
     return array;
   }
 
   // Count entries first.
   int count = 0;
   char** entity = list;
-  while( *entity != null ) {
+  while( *entity != nullptr ) {
     if( ( *entity )[0] != '.' ) {
       ++count;
     }
@@ -446,8 +446,8 @@ bool PFile::mountLocal( const char* path )
   if( PHYSFS_setWriteDir( path ) == 0 ) {
     return false;
   }
-  if( PHYSFS_mount( path, null, false ) == 0 ) {
-    PHYSFS_setWriteDir( null );
+  if( PHYSFS_mount( path, nullptr, false ) == 0 ) {
+    PHYSFS_setWriteDir( nullptr );
     return false;
   }
   return true;
@@ -462,7 +462,7 @@ void PFile::init( File::FilesystemType type, int size )
 
 #if defined( __native_client__ )
 
-  if( System::instance == null ) {
+  if( System::instance == nullptr ) {
     OZ_ERROR( "System::instance must be set to initialise PhysicsFS" );
   }
 
@@ -485,7 +485,7 @@ void PFile::init( File::FilesystemType type, int size )
 
 #elif defined( __ANDROID__ ) || defined( _WIN32 )
 
-  arg0 = null;
+  arg0 = nullptr;
 
 #else
 

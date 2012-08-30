@@ -98,11 +98,11 @@ void SelectionArea::drawHoveredRect( const Span& span, const Struct* str, const 
 
   float life = 1.0f;
 
-  if( str != null ) {
+  if( str != nullptr ) {
     int labelX = ( span.minX + span.maxX ) / 2;
     int labelY = span.maxY + 12;
 
-    if( ent != null ) {
+    if( ent != nullptr ) {
       int entIndex = str->index * Struct::MAX_ENTITIES + int( ent - str->entities );
 
       if( entIndex != cachedEntityIndex ) {
@@ -167,7 +167,7 @@ void SelectionArea::drawHoveredRect( const Span& span, const Struct* str, const 
     unitName.draw( this, false );
   }
 
-  if( ent == null ) {
+  if( ent == nullptr ) {
     float barWidth = maxX - minX + 2.0f;
     float lifeWidth = life * barWidth;
     float lifeWidthLeft = barWidth - lifeWidth;
@@ -198,7 +198,7 @@ void SelectionArea::drawTaggedRect( const Span& span, const Struct* str, const O
   else {
     float life = 1.0f;
 
-    if( str != null ) {
+    if( str != nullptr ) {
       float maxLife = str->bsp->life;
 
       life = str->life / maxLife;
@@ -256,7 +256,7 @@ void SelectionArea::onUpdate()
   for( int i = 0; i < taggedStrs.length(); ) {
     const Struct* str = orbis.structs[ taggedStrs[i] ];
 
-    if( str == null ) {
+    if( str == nullptr ) {
       taggedStrs.removeUO( i );
     }
     else {
@@ -267,7 +267,7 @@ void SelectionArea::onUpdate()
   for( int i = 0; i < taggedObjs.length(); ) {
     const Object* obj = orbis.objects[ taggedObjs[i] ];
 
-    if( obj == null || obj->cell == null ) {
+    if( obj == nullptr || obj->cell == nullptr ) {
       taggedObjs.removeUO( i );
     }
     else {
@@ -296,10 +296,10 @@ bool SelectionArea::onMouseEvent()
     taggedObjs.clear();
   }
 
-  if( str != null ) {
+  if( str != nullptr ) {
     hoverStr = str->index;
 
-    if( ent != null ) {
+    if( ent != nullptr ) {
       hoverEnt = str->index * Struct::MAX_ENTITIES + int( ent - str->entities );
     }
 
@@ -314,7 +314,7 @@ bool SelectionArea::onMouseEvent()
       }
     }
   }
-  else if( obj != null ) {
+  else if( obj != nullptr ) {
     hoverObj = obj->index;
 
     if( input.leftClick ) {
@@ -333,28 +333,28 @@ bool SelectionArea::onMouseEvent()
 
 void SelectionArea::onDraw()
 {
-  const Struct* str = hoverStr < 0 ? null : orbis.structs[hoverStr];
-  const Entity* ent = hoverEnt < 0 ? null : &orbis.structs[hoverEnt / Struct::MAX_ENTITIES]->
+  const Struct* str = hoverStr < 0 ? nullptr : orbis.structs[hoverStr];
+  const Entity* ent = hoverEnt < 0 ? nullptr : &orbis.structs[hoverEnt / Struct::MAX_ENTITIES]->
                       entities[hoverEnt % Struct::MAX_ENTITIES];
-  const Object* obj = hoverObj < 0 ? null : orbis.objects[hoverObj];
+  const Object* obj = hoverObj < 0 ? nullptr : orbis.objects[hoverObj];
 
   Span span;
 
-  if( obj != null ) {
+  if( obj != nullptr ) {
     if( projectBounds( &span, *obj ) ) {
-      drawHoveredRect( span, null, null, obj );
+      drawHoveredRect( span, nullptr, nullptr, obj );
     }
   }
-  else if( ent != null ) {
+  else if( ent != nullptr ) {
     str = ent->str;
 
     if( projectBounds( &span, str->toAbsoluteCS( *ent->model + ent->offset ).toAABB() ) ) {
-      drawHoveredRect( span, str, ent, null );
+      drawHoveredRect( span, str, ent, nullptr );
     }
   }
-  else if( str != null ) {
+  else if( str != nullptr ) {
     if( projectBounds( &span, str->toAABB() ) ) {
-      drawHoveredRect( span, str, null, null );
+      drawHoveredRect( span, str, nullptr, nullptr );
     }
   }
   else {
@@ -366,10 +366,10 @@ void SelectionArea::onDraw()
   for( int i = 0; i < taggedStrs.length(); ++i ) {
     const Struct* str = orbis.structs[ taggedStrs[i] ];
 
-    if( str != null ) {
+    if( str != nullptr ) {
       if( ( str->p - camera.p ) * camera.at >= TAG_CLIP_DIST ) {
         if( projectBounds( &span, str->toAABB() ) ) {
-          drawTaggedRect( span, str, null, taggedStrs[i] == hoverStr );
+          drawTaggedRect( span, str, nullptr, taggedStrs[i] == hoverStr );
         }
       }
     }
@@ -378,10 +378,10 @@ void SelectionArea::onDraw()
   for( int i = 0; i < taggedObjs.length(); ++i ) {
     const Object* obj = orbis.objects[ taggedObjs[i] ];
 
-    if( obj != null ) {
+    if( obj != nullptr ) {
       if( ( obj->p - camera.p ) * camera.at >= TAG_CLIP_DIST ) {
         if( projectBounds( &span, *obj ) ) {
-          drawTaggedRect( span, null, obj, taggedObjs[i] == hoverObj );
+          drawTaggedRect( span, nullptr, obj, taggedObjs[i] == hoverObj );
         }
       }
     }

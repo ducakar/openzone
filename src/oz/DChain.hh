@@ -57,11 +57,11 @@ namespace oz
  * `prev[1]` and `next[1]` point to previous and next element respectively in `chain2`.
  *
  * Notes:
- * \li Copy operations do not copy elements, to make a copy of a chain including its elements, use
+ * @li Copy operations do not copy elements, to make a copy of a chain including its elements, use
  * `clone()` instead.
- * \li Removal operations (except for `free()` do not actually remove elements but only decouples
+ * @li Removal operations (except for `free()` do not actually remove elements but only decouples
  * them from the chain.
- * \li `prev[INDEX]` and `next[INDEX]` pointers are not cleared when an element is removed from the
+ * @li `prev[INDEX]` and `next[INDEX]` pointers are not cleared when an element is removed from the
  * chain, they may still point to elements in the chain or to invalid locations.
  */
 template <class Elem, int INDEX = 0>
@@ -72,7 +72,7 @@ class DChain
     /**
      * Container-specific iterator.
      */
-    template <typename IterElem>
+    template <class IterElem>
     class ChainIterator : public IteratorBase<IterElem>
     {
       friend class DChain;
@@ -96,7 +96,7 @@ class DChain
          */
         OZ_ALWAYS_INLINE
         ChainIterator() :
-          IteratorBase<IterElem>( null )
+          IteratorBase<IterElem>( nullptr )
         {}
 
         /**
@@ -105,10 +105,28 @@ class DChain
         OZ_ALWAYS_INLINE
         ChainIterator& operator ++ ()
         {
-          hard_assert( elem != null );
+          hard_assert( elem != nullptr );
 
           elem = elem->next[INDEX];
           return *this;
+        }
+
+        /**
+         * STL-compatible begin iterator.
+         */
+        OZ_ALWAYS_INLINE
+        ChainIterator begin() const
+        {
+          return *this;
+        }
+
+        /**
+         * STL-compatible end iterator.
+         */
+        OZ_ALWAYS_INLINE
+        ChainIterator end() const
+        {
+          return ChainIterator();
         }
 
     };
@@ -136,7 +154,7 @@ class DChain
      * Create an empty chain.
      */
     DChain() :
-      firstElem( null ), lastElem( null )
+      firstElem( nullptr ), lastElem( nullptr )
     {}
 
     /**
@@ -145,8 +163,8 @@ class DChain
     DChain( DChain&& c ) :
       firstElem( c.firstElem ), lastElem( c.lastElem )
     {
-      c.firstElem = null;
-      c.lastElem  = null;
+      c.firstElem = nullptr;
+      c.lastElem  = nullptr;
     }
 
     /**
@@ -161,8 +179,8 @@ class DChain
       firstElem = c.firstElem;
       lastElem  = c.lastElem;
 
-      c.firstElem = null;
-      c.lastElem  = null;
+      c.firstElem = nullptr;
+      c.lastElem  = nullptr;
 
       return *this;
     }
@@ -175,13 +193,13 @@ class DChain
       DChain clone;
 
       Elem* original = firstElem;
-      Elem* prevCopy = null;
+      Elem* prevCopy = nullptr;
 
-      while( original != null ) {
+      while( original != nullptr ) {
         Elem* copy = new Elem( *original );
         copy->prev[INDEX] = prevCopy;
 
-        if( prevCopy == null ) {
+        if( prevCopy == nullptr ) {
           clone.firstElem = copy;
         }
         else {
@@ -205,7 +223,7 @@ class DChain
       Elem* e1 = firstElem;
       Elem* e2 = c.firstElem;
 
-      while( e1 != null && e2 != null && *e1 == *e2 ) {
+      while( e1 != nullptr && e2 != nullptr && *e1 == *e2 ) {
         e1 = e1->next[INDEX];
         e2 = e2->next[INDEX];
       }
@@ -238,7 +256,7 @@ class DChain
       int i = 0;
       Elem* p = firstElem;
 
-      while( p != null ) {
+      while( p != nullptr ) {
         p = p->next[INDEX];
         ++i;
       }
@@ -251,7 +269,7 @@ class DChain
     OZ_ALWAYS_INLINE
     bool isEmpty() const
     {
-      return firstElem == null;
+      return firstElem == nullptr;
     }
 
     /**
@@ -277,14 +295,14 @@ class DChain
      */
     bool has( const Elem* e ) const
     {
-      hard_assert( e != null );
+      hard_assert( e != nullptr );
 
       Elem* p = firstElem;
 
-      while( p != null && p != e ) {
+      while( p != nullptr && p != e ) {
         p = p->next[INDEX];
       }
-      return p != null;
+      return p != nullptr;
     }
 
     /**
@@ -295,14 +313,14 @@ class DChain
      */
     bool contains( const Elem* e ) const
     {
-      hard_assert( e != null );
+      hard_assert( e != nullptr );
 
       Elem* p = firstElem;
 
-      while( p != null && !( *p == *e ) ) {
+      while( p != nullptr && !( *p == *e ) ) {
         p = p->next[INDEX];
       }
-      return p != null;
+      return p != nullptr;
     }
 
     /**
@@ -321,7 +339,7 @@ class DChain
      */
     void insertAfter( Elem* e, Elem* p )
     {
-      hard_assert( e != null && p != null );
+      hard_assert( e != nullptr && p != nullptr );
 
       Elem* next = p->next[INDEX];
 
@@ -329,7 +347,7 @@ class DChain
       e->next[INDEX] = p->next[INDEX];
       p->next[INDEX] = e;
 
-      if( next == null ) {
+      if( next == nullptr ) {
         lastElem = e;
       }
       else {
@@ -342,7 +360,7 @@ class DChain
      */
     void insertBefore( Elem* e, Elem* p )
     {
-      hard_assert( e != null && p != null );
+      hard_assert( e != nullptr && p != nullptr );
 
       Elem* prev = p->prev[INDEX];
 
@@ -350,7 +368,7 @@ class DChain
       e->prev[INDEX] = prev;
       p->prev[INDEX] = e;
 
-      if( prev == null ) {
+      if( prev == nullptr ) {
         firstElem = e;
       }
       else {
@@ -374,13 +392,13 @@ class DChain
      */
     void remove( Elem* e )
     {
-      if( e->prev[INDEX] == null ) {
+      if( e->prev[INDEX] == nullptr ) {
         firstElem = e->next[INDEX];
       }
       else {
         e->prev[INDEX]->next[INDEX] = e->next[INDEX];
       }
-      if( e->next[INDEX] == null ) {
+      if( e->next[INDEX] == nullptr ) {
         lastElem = e->prev[INDEX];
       }
       else {
@@ -393,12 +411,12 @@ class DChain
      */
     void pushFirst( Elem* e )
     {
-      hard_assert( e != null );
+      hard_assert( e != nullptr );
 
-      e->prev[INDEX] = null;
+      e->prev[INDEX] = nullptr;
       e->next[INDEX] = firstElem;
 
-      if( firstElem == null ) {
+      if( firstElem == nullptr ) {
         firstElem = e;
         lastElem = e;
       }
@@ -413,12 +431,12 @@ class DChain
      */
     void pushLast( Elem* e )
     {
-      hard_assert( e != null );
+      hard_assert( e != nullptr );
 
       e->prev[INDEX] = lastElem;
-      e->next[INDEX] = null;
+      e->next[INDEX] = nullptr;
 
-      if( lastElem == null ) {
+      if( lastElem == nullptr ) {
         firstElem = e;
         lastElem = e;
       }
@@ -433,17 +451,17 @@ class DChain
      */
     Elem* popFirst()
     {
-      hard_assert( firstElem != null );
+      hard_assert( firstElem != nullptr );
 
       Elem* e = firstElem;
 
       firstElem = firstElem->next[INDEX];
 
-      if( firstElem == null ) {
-        lastElem = null;
+      if( firstElem == nullptr ) {
+        lastElem = nullptr;
       }
       else {
-        firstElem->prev[INDEX] = null;
+        firstElem->prev[INDEX] = nullptr;
       }
       return e;
     }
@@ -453,17 +471,17 @@ class DChain
      */
     Elem* popLast()
     {
-      hard_assert( lastElem != null );
+      hard_assert( lastElem != nullptr );
 
       Elem* e = lastElem;
 
       lastElem = lastElem->prev[INDEX];
 
-      if( lastElem == null ) {
-        firstElem = null;
+      if( lastElem == nullptr ) {
+        firstElem = nullptr;
       }
       else {
-        lastElem->next[INDEX] = null;
+        lastElem->next[INDEX] = nullptr;
       }
       return e;
     }
@@ -473,8 +491,8 @@ class DChain
      */
     void clear()
     {
-      firstElem = null;
-      lastElem = null;
+      firstElem = nullptr;
+      lastElem = nullptr;
     }
 
     /**
@@ -484,15 +502,15 @@ class DChain
     {
       Elem* p = firstElem;
 
-      while( p != null ) {
+      while( p != nullptr ) {
         Elem* next = p->next[INDEX];
 
         delete p;
         p = next;
       }
 
-      firstElem = null;
-      lastElem = null;
+      firstElem = nullptr;
+      lastElem = nullptr;
     }
 
 };

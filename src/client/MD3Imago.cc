@@ -77,7 +77,7 @@ MD3Imago::~MD3Imago()
 //       const Bot*    bot    = static_cast<const Bot*>( obj );
 //       const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 //
-//       if( weapon != null ) {
+//       if( weapon != nullptr ) {
 //         const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
 //
 //         anim.fps       = MD2::ANIM_LIST[type].fps * 0.5f / clazz->shotInterval;
@@ -107,7 +107,7 @@ void MD3Imago::draw( const Imago* parent )
 //       setAnim( bot->anim );
 //     }
 
-  if( parent == null ) {
+  if( parent == nullptr ) {
     if( !camera.isExternal ) {
       h = bot->h;
     }
@@ -144,11 +144,11 @@ void MD3Imago::draw( const Imago* parent )
 //       md3->draw( &anim );
     md3->drawFrame( 0 );
 
-    if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
+    if( parent == nullptr && bot->weapon >= 0 && orbis.objects[bot->weapon] != nullptr ) {
       context.drawImago( orbis.objects[bot->weapon], this );
     }
   }
-  else if( parent == null && bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
+  else if( parent == nullptr && bot->weapon >= 0 && orbis.objects[bot->weapon] != nullptr ) {
     tf.model.translate( Vec3( 0.0f, 0.0f,  bot->camZ ) );
     tf.model.rotateX( bot->v - Math::TAU / 4.0f );
     tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );

@@ -63,7 +63,7 @@ struct Context::Image
 };
 
 Context::Texture::Level::Level() :
-  data( null )
+  data( nullptr )
 {}
 
 Context::Texture::Level::~Level()
@@ -74,7 +74,7 @@ Context::Texture::Level::~Level()
 Context::Texture::Level::Level( Level&& l ) :
   data( l.data ), width( l.width ), height( l.height ), format( l.format ), size( l.size )
 {
-  l.data = null;
+  l.data = nullptr;
 }
 
 Context::Texture::Level& Context::Texture::Level::operator = ( Level&& l )
@@ -89,7 +89,7 @@ Context::Texture::Level& Context::Texture::Level::operator = ( Level&& l )
   format = l.format;
   size   = l.size;
 
-  l.data = null;
+  l.data = nullptr;
 
   return *this;
 }
@@ -319,7 +319,7 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
   }
 
   FIBITMAP* dib = FreeImage_Load( type, realPath );
-  if( dib == null ) {
+  if( dib == nullptr ) {
     OZ_ERROR( "Texture '%s' loading failed", realPath.cstr() );
   }
 
@@ -357,7 +357,7 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
       format = GL_LUMINANCE;
 
       FIBITMAP* newImage = FreeImage_ConvertToGreyscale( dib );
-      if( newImage == null ) {
+      if( newImage == nullptr ) {
         OZ_ERROR( "Conversion from palettised to grayscale image failed" );
       }
 
@@ -371,7 +371,7 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
       format = GL_RGB;
 
       FIBITMAP* newImage = FreeImage_ConvertTo24Bits( dib );
-      if( newImage == null ) {
+      if( newImage == nullptr ) {
         OZ_ERROR( "Conversion from palettised to RGB image failed" );
       }
 
@@ -385,7 +385,7 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
       format = GL_RGBA;
 
       FIBITMAP* newDIB = FreeImage_ConvertTo32Bits( dib );
-      if( newDIB == null ) {
+      if( newDIB == nullptr ) {
         OZ_ERROR( "Conversion from palettised to RGBA image failed" );
       }
 
@@ -401,7 +401,7 @@ Context::Image Context::loadImage( const char* path, int forceFormat )
   }
 
   ubyte* pixels = FreeImage_GetBits( dib );
-  if( pixels == null ) {
+  if( pixels == nullptr ) {
     OZ_ERROR( "Failed to access image data" );
   }
 
@@ -479,7 +479,7 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
   }
 
   Image image, specImage, emissionImage;
-  image.dib = null;
+  image.dib = nullptr;
 
   if( diffuse.stat() ) {
     image = loadImage( diffuse.path() );
@@ -494,9 +494,9 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
   *diffuseTex = Texture( &image, wrap, magFilter, minFilter );
   FreeImage_Unload( image.dib );
 
-  image.dib         = null;
-  specImage.dib     = null;
-  emissionImage.dib = null;
+  image.dib         = nullptr;
+  specImage.dib     = nullptr;
+  emissionImage.dib = nullptr;
 
   if( masks.stat() ) {
     image = loadImage( masks.path(), GL_RGB );
@@ -516,12 +516,12 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
     }
   }
 
-  if( image.dib != null ) {
+  if( image.dib != nullptr ) {
     *masksTex = Texture( &image, wrap, magFilter, minFilter );
     FreeImage_Unload( image.dib );
   }
-  else if( specImage.dib != null ) {
-    if( emissionImage.dib != null ) {
+  else if( specImage.dib != nullptr ) {
+    if( emissionImage.dib != nullptr ) {
       if( specImage.width != emissionImage.width || specImage.height != emissionImage.height ) {
         OZ_ERROR( "Specular and emission texture masks must have the same size." );
       }
@@ -533,20 +533,20 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
       ubyte& r = specImage.pixels[i*3 + 2];
 
       r = ubyte( ( b + g + r ) / 3 );
-      g = ubyte( emissionImage.dib == null ? 0 : emissionImage.pixels[i] );
+      g = ubyte( emissionImage.dib == nullptr ? 0 : emissionImage.pixels[i] );
       b = 0;
     }
 
     *masksTex = Texture( &specImage, wrap, magFilter, minFilter );
 
     FreeImage_Unload( specImage.dib );
-    if( emissionImage.dib != null ) {
+    if( emissionImage.dib != nullptr ) {
       FreeImage_Unload( emissionImage.dib );
     }
   }
 
   if( bumpmap ) {
-    image.dib = null;
+    image.dib = nullptr;
 
     if( normals.stat() ) {
       image = loadImage( normals.path() );
@@ -561,7 +561,7 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
       image = loadImage( normals3.path(), GL_RGB );
     }
 
-    if( image.dib != null ) {
+    if( image.dib != nullptr ) {
       *normalsTex = Texture( &image, wrap, magFilter, minFilter );
       FreeImage_Unload( image.dib );
     }

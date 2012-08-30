@@ -78,24 +78,24 @@ static void* pthreadMain( void* data )
 
   threadData->~ThreadMainData();
   free( threadData );
-  return null;
+  return nullptr;
 }
 
 #endif
 
 void Thread::start( Main* main, void* data )
 {
-  hard_assert( descriptor == null );
+  hard_assert( descriptor == nullptr );
 
   void* descriptorPtr = malloc( sizeof( Descriptor ) );
-  if( descriptorPtr == null ) {
+  if( descriptorPtr == nullptr ) {
     OZ_ERROR( "Thread resource allocation failed" );
   }
 
   descriptor = new( descriptorPtr ) Descriptor();
 
   void* threadDataPtr = malloc( sizeof( ThreadMainData ) );
-  if( threadDataPtr == null ) {
+  if( threadDataPtr == nullptr ) {
     OZ_ERROR( "Thread resource allocation failed" );
   }
 
@@ -106,14 +106,14 @@ void Thread::start( Main* main, void* data )
 
 #ifdef _WIN32
 
-  descriptor->thread = CreateThread( null, 0, winMain, threadData, 0, null );
-  if( descriptor->thread == null ) {
+  descriptor->thread = CreateThread( nullptr, 0, winMain, threadData, 0, nullptr );
+  if( descriptor->thread == nullptr ) {
     OZ_ERROR( "Thread creation failed" );
   }
 
 #else
 
-  if( pthread_create( &descriptor->thread, null, pthreadMain, threadData ) != 0 ) {
+  if( pthread_create( &descriptor->thread, nullptr, pthreadMain, threadData ) != 0 ) {
     OZ_ERROR( "Thread creation failed" );
   }
 
@@ -122,7 +122,7 @@ void Thread::start( Main* main, void* data )
 
 void Thread::join()
 {
-  hard_assert( descriptor != null );
+  hard_assert( descriptor != nullptr );
 
 #ifdef _WIN32
 
@@ -131,7 +131,7 @@ void Thread::join()
 
 #else
 
-  if( pthread_join( descriptor->thread, null ) != 0 ) {
+  if( pthread_join( descriptor->thread, nullptr ) != 0 ) {
     OZ_ERROR( "Thread join failed" );
   }
 
@@ -139,7 +139,7 @@ void Thread::join()
 
   descriptor->~Descriptor();
   free( descriptor );
-  descriptor = null;
+  descriptor = nullptr;
 }
 
 }

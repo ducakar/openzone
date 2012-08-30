@@ -74,7 +74,7 @@ void GalileoFrame::onUpdate()
 {
   const Bot* bot = camera.botObj;
 
-  if( orbis.terra.id < 0 || ( camera.state == Camera::UNIT && ( bot == null ||
+  if( orbis.terra.id < 0 || ( camera.state == Camera::UNIT && ( bot == nullptr ||
         ( bot->state & Bot::DEAD_BIT ) || !bot->hasAttribute( ObjectClass::GALILEO_BIT ) ) ) )
   {
     if( !( flags & HIDDEN_BIT ) ) {
@@ -97,7 +97,7 @@ void GalileoFrame::onDraw()
 
   float pX = camera.p.x;
   float pY = camera.p.y;
-  float h  = camera.botObj == null ? camera.strategic.h : camera.botObj->h;
+  float h  = camera.botObj == nullptr ? camera.strategic.h : camera.botObj->h;
 
   shape.colour( colour );
   glBindTexture( GL_TEXTURE_2D, mapTexId );

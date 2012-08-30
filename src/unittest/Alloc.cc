@@ -65,7 +65,7 @@ void test_Alloc()
   OZ_CHECK( Alloc::alignUp( Alloc::ALIGNMENT - 1 ) == Alloc::ALIGNMENT );
   OZ_CHECK( Alloc::alignUp( Alloc::ALIGNMENT ) == Alloc::ALIGNMENT );
 
-  char* zeroptr = null;
+  char* zeroptr = nullptr;
   char* oneptr  = zeroptr + Alloc::ALIGNMENT;
 
   OZ_CHECK( Alloc::alignDown( zeroptr ) == zeroptr );

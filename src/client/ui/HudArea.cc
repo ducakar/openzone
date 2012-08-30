@@ -62,11 +62,11 @@ void HudArea::drawBotCrosshair()
 
   if( me->parent < 0 && ( camera.object >= 0 || camera.entity >= 0 ) ) {
     const Object*      obj   = camera.objectObj;
-    const ObjectClass* clazz = obj == null ? null : obj->clazz;
+    const ObjectClass* clazz = obj == nullptr ? nullptr : obj->clazz;
     const Dynamic*     dyn   = static_cast<const Dynamic*>( obj );
     const Bot*         bot   = static_cast<const Bot*>( obj );
     const Entity*      ent   = camera.entityObj;
-    const Model*       model = ent == null ? null : ent->model;
+    const Model*       model = ent == nullptr ? nullptr : ent->model;
 
     // it might happen that bot itself is tagged object for a frame when switching from freecam
     // into a bot
@@ -74,7 +74,7 @@ void HudArea::drawBotCrosshair()
       return;
     }
 
-    if( ent != null ) {
+    if( ent != nullptr ) {
       if( lastEntityId != camera.entity ) {
         lastEntityId = camera.entity;
 
@@ -219,7 +219,7 @@ void HudArea::drawBotStatus()
   shape.rect( style.layout.botStamina.x, style.layout.botStamina.y,
               style.layout.botStamina.w, style.layout.botStamina.h );
 
-  if( bot->weapon >= 0 && orbis.objects[bot->weapon] != null ) {
+  if( bot->weapon >= 0 && orbis.objects[bot->weapon] != nullptr ) {
     const Weapon* weaponObj = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
     shape.colour( style.colours.frame );
@@ -262,7 +262,7 @@ void HudArea::drawVehicleStatus()
   tf.model.rotateX( Math::rad( -45.0f ) );
   tf.model.rotateZ( Math::rad( +160.0f ) );
 
-  context.drawImago( vehicle, null );
+  context.drawImago( vehicle, nullptr );
 
   shape.unbind();
 
@@ -380,14 +380,14 @@ void HudArea::onUpdate()
   if( camera.state != Camera::UNIT || camera.bot < 0 ) {
     lastWeaponId = -1;
   }
-  else if( bot->parent < 0 || orbis.objects[bot->parent] == null ) {
+  else if( bot->parent < 0 || orbis.objects[bot->parent] == nullptr ) {
     lastVehicleId = -1;
   }
 }
 
 void HudArea::onDraw()
 {
-  if( camera.botObj == null || ( camera.botObj->state & Bot::DEAD_BIT ) ) {
+  if( camera.botObj == nullptr || ( camera.botObj->state & Bot::DEAD_BIT ) ) {
     return;
   }
 
@@ -395,7 +395,7 @@ void HudArea::onDraw()
   drawBotStatus();
 
   int parent = camera.botObj->parent;
-  if( parent >= 0 && orbis.objects[parent] != null ) {
+  if( parent >= 0 && orbis.objects[parent] != nullptr ) {
     drawVehicleStatus();
   }
 

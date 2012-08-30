@@ -52,7 +52,7 @@ class Mutex
      * Create uninitialised instance.
      */
     Mutex() :
-      descriptor( null )
+      descriptor( nullptr )
     {}
 
     /**
@@ -60,7 +60,7 @@ class Mutex
      */
     ~Mutex()
     {
-      if( descriptor != null ) {
+      if( descriptor != nullptr ) {
         destroy();
       }
     }
@@ -71,7 +71,7 @@ class Mutex
     Mutex( Mutex&& m ) :
       descriptor( m.descriptor )
     {
-      m.descriptor = null;
+      m.descriptor = nullptr;
     }
 
     /**
@@ -80,7 +80,7 @@ class Mutex
     Mutex& operator = ( Mutex&& m )
     {
       descriptor   = m.descriptor;
-      m.descriptor = null;
+      m.descriptor = nullptr;
       return *this;
     }
 
@@ -89,7 +89,7 @@ class Mutex
      */
     bool isValid() const
     {
-      return descriptor != null;
+      return descriptor != nullptr;
     }
 
     /**

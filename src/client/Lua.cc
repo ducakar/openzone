@@ -37,9 +37,9 @@ Lua lua;
 
 void Lua::staticCall( const char* functionName )
 {
-  ms.obj      = null;
-  ms.str      = null;
-  ms.frag     = null;
+  ms.obj      = nullptr;
+  ms.str      = nullptr;
+  ms.frag     = nullptr;
   ms.objIndex = 0;
   ms.strIndex = 0;
 
@@ -612,7 +612,7 @@ void Lua::init()
 
 void Lua::free()
 {
-  if( l == null ) {
+  if( l == nullptr ) {
     return;
   }
 

@@ -40,8 +40,10 @@ namespace oz
  * Base class for iterators.
  *
  * It should only be used as a base class. Following functions need to be implemented:
- * @li `bool isValid() const` (if necessary)
- * @li `Iterator& operator ++ ()`.
+ * @li `bool isValid() const` (if necessary),
+ * @li `Iterator& operator ++ ()`,
+ * @li `Iterator begin() const` and
+ * @li `Iterator end() const`.
  */
 template <typename Elem>
 class IteratorBase
@@ -94,7 +96,7 @@ class IteratorBase
     OZ_ALWAYS_INLINE
     bool isValid() const
     {
-      return elem != null;
+      return elem != nullptr;
     }
 
     /**
@@ -127,8 +129,17 @@ class IteratorBase
     /**
      * Advance to the next element, should be implemented in derived classes.
      */
-    OZ_ALWAYS_INLINE
     IteratorBase& operator ++ () = delete;
+
+    /**
+     * STL-compatible begin iterator.
+     */
+    IteratorBase begin() const = delete;
+
+    /**
+     * STL-compatible end iterator.
+     */
+    IteratorBase end() const = delete;
 
 };
 
@@ -327,7 +338,7 @@ inline void iFree( Iterator iDest )
     ++iDest;
 
     delete elem;
-    elem = null;
+    elem = nullptr;
   }
 }
 

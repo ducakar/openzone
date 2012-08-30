@@ -54,7 +54,7 @@ class OutputStream
      */
     OZ_ALWAYS_INLINE
     OutputStream() :
-      pos( null ), start( null ), end( null ), order( Endian::NATIVE )
+      pos( nullptr ), start( nullptr ), end( nullptr ), order( Endian::NATIVE )
     {}
 
     /**

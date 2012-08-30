@@ -54,7 +54,7 @@ void ObjectClass::init( InputStream* is, const char* name_ )
 
   const char* sFragPool = is->readString();
 
-  fragPool    = String::isEmpty( sFragPool ) ? null : library.fragPool( sFragPool );
+  fragPool    = String::isEmpty( sFragPool ) ? nullptr : library.fragPool( sFragPool );
   nFrags      = is->readInt();
 
   attributes  = is->readInt();

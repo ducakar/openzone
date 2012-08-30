@@ -42,12 +42,12 @@ namespace ui
 void Inventory::updateReferences()
 {
   owner = camera.botObj;
-  other = null;
+  other = nullptr;
 
-  if( camera.botObj != null && camera.botObj->parent >= 0 ) {
+  if( camera.botObj != nullptr && camera.botObj->parent >= 0 ) {
     other = orbis.objects[camera.botObj->parent];
   }
-  else if( camera.objectObj != null && ( camera.objectObj->flags & Object::BROWSABLE_BIT ) ) {
+  else if( camera.objectObj != nullptr && ( camera.objectObj->flags & Object::BROWSABLE_BIT ) ) {
     other = camera.objectObj;
   }
 }
@@ -86,11 +86,11 @@ void Inventory::handleComponent( int height, const Object* container, int* tagge
         if( uint( *tagged ) < uint( container->items.length() ) ) {
           item = static_cast<const Dynamic*>( orbis.objects[ container->items[*tagged] ] );
 
-          if( item != null ) {
+          if( item != nullptr ) {
             if( container == other ) {
               bot->invTake( item, other );
             }
-            else if( other != null ) {
+            else if( other != nullptr ) {
               bot->invGive( item, other );
             }
             else if( bot->cargo < 0 ) {
@@ -103,7 +103,7 @@ void Inventory::handleComponent( int height, const Object* container, int* tagge
         if( uint( *tagged ) < uint( container->items.length() ) ) {
           item = static_cast<const Dynamic*>( orbis.objects[ container->items[*tagged] ] );
 
-          if( item != null ) {
+          if( item != nullptr ) {
             bot->invUse( item, container );
           }
         }
@@ -112,7 +112,7 @@ void Inventory::handleComponent( int height, const Object* container, int* tagge
         if( uint( *tagged ) < uint( bot->items.length() ) ) {
           item = static_cast<const Dynamic*>( orbis.objects[ bot->items[*tagged] ] );
 
-          if( item != null && container == owner && bot->cargo < 0 ) {
+          if( item != nullptr && container == owner && bot->cargo < 0 ) {
             ui::mouse.doShow = false;
 
             bot->invGrab( item );
@@ -174,12 +174,12 @@ slotsRendered:
 
   int minIndex = scroll * COLS;
   int maxIndex = min( minIndex + COLS * ROWS, items.length() );
-  const Dynamic* taggedItem = null;
+  const Dynamic* taggedItem = nullptr;
 
   for( int i = minIndex; i < maxIndex; ++i ) {
     const Dynamic* item = static_cast<const Dynamic*>( orbis.objects[ items[i] ] );
 
-    if( item == null ) {
+    if( item == nullptr ) {
       continue;
     }
     if( i == tagged ) {
@@ -197,7 +197,7 @@ slotsRendered:
     tf.model.rotateX( Math::rad( -45.0f ) );
     tf.model.rotateZ( Math::rad( +70.0f ) );
 
-    context.drawImago( item, null );
+    context.drawImago( item, nullptr );
 
     tf.pop();
 
@@ -219,7 +219,7 @@ slotsRendered:
   shape.bind();
   shader.program( shader.plain );
 
-  if( taggedItem == null ) {
+  if( taggedItem == nullptr ) {
     return;
   }
 
@@ -279,9 +279,9 @@ void Inventory::onUpdate()
 {
   updateReferences();
 
-  height = HEADER_SIZE + ( other == null ? SINGLE_HEIGHT : 2 * SINGLE_HEIGHT );
+  height = HEADER_SIZE + ( other == nullptr ? SINGLE_HEIGHT : 2 * SINGLE_HEIGHT );
 
-  if( camera.state != Camera::UNIT || !mouse.doShow || owner == null ||
+  if( camera.state != Camera::UNIT || !mouse.doShow || owner == nullptr ||
       ( owner->state & Bot::DEAD_BIT ) )
   {
     if( !( flags & HIDDEN_BIT ) ) {
@@ -292,7 +292,7 @@ void Inventory::onUpdate()
     show( true );
   }
   else {
-    if( other == null ) {
+    if( other == nullptr ) {
       taggedOther = -1;
       scrollOther = 0;
     }
@@ -318,7 +318,7 @@ bool Inventory::onMouseEvent()
 
   handleComponent( FOOTER_SIZE, owner, &taggedOwner, &scrollOwner );
 
-  if( other != null ) {
+  if( other != nullptr ) {
     handleComponent( FOOTER_SIZE + SINGLE_HEIGHT, other, &taggedOther, &scrollOther );
   }
 
@@ -329,11 +329,11 @@ void Inventory::onDraw()
 {
   updateReferences();
 
-  if( owner == null ) {
+  if( owner == nullptr ) {
     return;
   }
 
-  const Object*      container      = other == null ? owner : other;
+  const Object*      container      = other == nullptr ? owner : other;
   const ObjectClass* containerClazz = container->clazz;
 
   if( container->index != cachedContainerIndex ) {
@@ -353,7 +353,7 @@ void Inventory::onDraw()
 
   drawComponent( FOOTER_SIZE, owner, taggedOwner, scrollOwner );
 
-  if( other != null ) {
+  if( other != nullptr ) {
     drawComponent( FOOTER_SIZE + SINGLE_HEIGHT, other, taggedOther, scrollOther );
   }
 
@@ -364,7 +364,7 @@ void Inventory::onDraw()
 
 Inventory::Inventory() :
   Frame( COLS*SLOT_SIZE, ROWS*SLOT_SIZE + FOOTER_SIZE, " " ),
-  owner( null ), other( null ),
+  owner( nullptr ), other( nullptr ),
   itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, " " ),
   cachedContainerIndex( -1 ),
   cachedTaggedItemIndex( -1 ),

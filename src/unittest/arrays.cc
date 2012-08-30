@@ -87,22 +87,22 @@ void test_arrays()
   OZ_CHECK( aContains( b, 3, 4 ) );
   OZ_CHECK( !aContains( b, 3, 0 ) );
 
-  OZ_CHECK( aFind( a, 0, 4 ) == null );
+  OZ_CHECK( aFind( a, 0, 4 ) == nullptr );
   OZ_CHECK( aFind( a, 1, 4 ) == &a[0] );
   OZ_CHECK( aFind( a, 2, 4 ) == &a[1] );
   OZ_CHECK( aFind( a, 3, 4 ) == &a[2] );
-  OZ_CHECK( aFind( a, 3, 0 ) == null );
+  OZ_CHECK( aFind( a, 3, 0 ) == nullptr );
 
-  OZ_CHECK( aFindLast( a, 0, 4 ) == null );
+  OZ_CHECK( aFindLast( a, 0, 4 ) == nullptr );
   OZ_CHECK( aFindLast( a, 1, 4 ) == &a[0] );
   OZ_CHECK( aFindLast( a, 2, 4 ) == &a[3] );
   OZ_CHECK( aFindLast( a, 3, 4 ) == &a[2] );
-  OZ_CHECK( aFindLast( a, 3, 0 ) == null );
+  OZ_CHECK( aFindLast( a, 3, 0 ) == nullptr );
 
   const Foo ( & ca )[4] = a;
-  OZ_CHECK( aFind( ca, 0, 4 ) == null );
-  OZ_CHECK( aFindLast( ca, 0, 4 ) == null );
-  OZ_CHECK( aFindLast( ca, 3, 0 ) == null );
+  OZ_CHECK( aFind( ca, 0, 4 ) == nullptr );
+  OZ_CHECK( aFindLast( ca, 0, 4 ) == nullptr );
+  OZ_CHECK( aFindLast( ca, 3, 0 ) == nullptr );
 
   OZ_CHECK( aIndex( a, 0, 4 ) == -1 );
   OZ_CHECK( aIndex( a, 1, 4 ) == 0 );

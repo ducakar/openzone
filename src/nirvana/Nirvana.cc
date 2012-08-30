@@ -47,11 +47,11 @@ void Nirvana::sync()
     const Device* const* device = devices.find( *i );
     const Mind* const* mind = minds.find( *i );
 
-    if( device != null ) {
+    if( device != nullptr ) {
       delete *device;
       devices.exclude( *i );
     }
-    if( mind != null ) {
+    if( mind != nullptr ) {
       delete *mind;
       minds.exclude( *i );
     }
@@ -60,7 +60,7 @@ void Nirvana::sync()
   foreach( i, synapse.addedObjects.citer() ) {
     const Object* obj = orbis.objects[*i];
 
-    if( obj != null && ( obj->flags & Object::BOT_BIT ) ) {
+    if( obj != nullptr && ( obj->flags & Object::BOT_BIT ) ) {
       minds.add( obj->index, new Mind( obj->index ) );
     }
   }
@@ -73,7 +73,7 @@ void Nirvana::update()
     Mind* mind = i->value;
 
     const Bot* bot = static_cast<const Bot*>( orbis.objects[mind->bot] );
-    hard_assert( bot != null && ( bot->flags & Object::BOT_BIT ) );
+    hard_assert( bot != nullptr && ( bot->flags & Object::BOT_BIT ) );
 
     if( !( bot->state & Bot::PLAYER_BIT ) &&
         ( ( mind->flags & Mind::FORCE_UPDATE_BIT ) || count % UPDATE_INTERVAL == updateModulo ) )
@@ -102,7 +102,7 @@ void Nirvana::read( InputStream* istream )
 
     Device::CreateFunc* const* func = deviceClasses.find( type );
 
-    if( func == null ) {
+    if( func == nullptr ) {
       OZ_ERROR( "Invalid device type '%s'", type.cstr() );
     }
 

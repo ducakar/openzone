@@ -44,7 +44,7 @@ static uint         texId;
 int Font::size( const char* s ) const
 {
   int width;
-  TTF_SizeUTF8( static_cast<TTF_Font*>( handle ), s, &width, null );
+  TTF_SizeUTF8( static_cast<TTF_Font*>( handle ), s, &width, nullptr );
   return width;
 }
 
@@ -68,7 +68,7 @@ void Font::draw( const char* s, uint texId_, int* width, int* height ) const
 
 void Font::free()
 {
-  if( handle != null ) {
+  if( handle != nullptr ) {
     TTF_CloseFont( static_cast<TTF_Font*>( handle ) );
   }
 }
@@ -85,7 +85,7 @@ void Font::init( const char* name, int height_ )
   InputStream istream = file.inputStream();
 
   handle = TTF_OpenFontRW( SDL_RWFromConstMem( istream.begin(), istream.capacity() ), true, height );
-  if( handle == null ) {
+  if( handle == nullptr ) {
     OZ_ERROR( "%s", TTF_GetError() );
   }
 }

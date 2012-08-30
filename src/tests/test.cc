@@ -118,16 +118,6 @@ class Foo
 
 };
 
-#undef foreach
-/*
-#define foreach( decl, container ) \
-  for( auto _iter = container.begin(), _endIter = container.end(); _iter != _endIter; ++_iter ) \
-    for( decl = *_iter; ; __extension__ ({ break; }) )
-*/
-#define foreach( decl, iterator ) \
-  for( auto _iter = iterator; _iter.isValid(); ++_iter ) \
-    for( decl = *_iter; ; __extension__ ({ break; }) )
-
 int main()
 {
   System::init();
@@ -137,7 +127,7 @@ int main()
   c.add( 2 );
   c.add( 0 );
 
-  foreach( auto& j, c.citer() ) {
+  for( auto& j : c.citer() ) {
     Log::out << j.key.value << "\n";
   }
 //  foreach( const Foo& i, c ) {

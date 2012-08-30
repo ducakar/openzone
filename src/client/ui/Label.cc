@@ -149,7 +149,7 @@ Label::Label( int x_, int y_, int align_, Font::Type font_, const char* s, ... )
 
 void Label::vset( int x_, int y_, int align_, Font::Type font_, const char* s, va_list ap )
 {
-  hard_assert( s != null );
+  hard_assert( s != nullptr );
 
   x          = x_;
   y          = y_;

@@ -51,7 +51,7 @@ bool Button::onMouseEvent()
     if( input.leftClick ) {
       isClicked = true;
 
-      if( callback != null ) {
+      if( callback != nullptr ) {
         callback( this );
       }
     }

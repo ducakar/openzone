@@ -53,7 +53,7 @@ void String::ensureCapacity()
   else {
     buffer = static_cast<char*>( malloc( size_t( count + 1 ) ) );
 
-    if( buffer == null ) {
+    if( buffer == nullptr ) {
       OZ_ERROR( "String allocation failed" );
     }
   }
@@ -82,7 +82,7 @@ bool String::parseBool( const char* s, bool* isError )
 {
   bool value = strcmp( s, "true" ) == 0;
 
-  if( isError != null ) {
+  if( isError != nullptr ) {
     *isError = !value && strcmp( s, "false" ) != 0;
   }
   return value;
@@ -93,7 +93,7 @@ int String::parseInt( const char* s, bool* isError )
   char* end;
   int   value = int( strtol( s, &end, 0 ) );
 
-  if( isError != null ) {
+  if( isError != nullptr ) {
     *isError = *end != '\0' || s[0] == '\0';
   }
   return value;
@@ -104,7 +104,7 @@ long String::parseLong( const char* s, bool* isError )
   char* end;
   long  value = strtol( s, &end, 0 );
 
-  if( isError != null ) {
+  if( isError != nullptr ) {
     *isError = *end != '\0' || s[0] == '\0';
   }
   return value;
@@ -115,7 +115,7 @@ float String::parseFloat( const char* s, bool* isError )
   char* end;
   float value = strtof( s, &end );
 
-  if( isError != null ) {
+  if( isError != nullptr ) {
     *isError = *end != '\0' || s[0] == '\0';
   }
   return value;
@@ -126,7 +126,7 @@ double String::parseDouble( const char* s, bool* isError )
   char*  end;
   double value = strtod( s, &end );
 
-  if( isError != null ) {
+  if( isError != nullptr ) {
     *isError = *end != '\0' || s[0] == '\0';
   }
   return value;
@@ -218,7 +218,7 @@ String::String( int count_, const char* s ) :
 
 String::String( const char* s )
 {
-  count = s == null ? 0 : length( s );
+  count = s == nullptr ? 0 : length( s );
   ensureCapacity();
 
   memcpy( buffer, s, size_t( count ) );
@@ -439,7 +439,7 @@ String& String::operator = ( const char* s )
     return *this;
   }
 
-  count = s == null ? 0 : length( s );
+  count = s == nullptr ? 0 : length( s );
 
   if( buffer != baseBuffer ) {
     free( buffer );

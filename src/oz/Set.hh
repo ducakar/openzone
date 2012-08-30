@@ -100,7 +100,7 @@ class Set
      * Create an empty set.
      */
     Set() :
-      data( null ), count( 0 ), size( 0 )
+      data( nullptr ), count( 0 ), size( 0 )
     {}
 
     /**
@@ -115,7 +115,7 @@ class Set
      * Copy constructor, copies elements.
      */
     Set( const Set& s ) :
-      data( s.size == 0 ? null : new Elem[s.size] ), count( s.count ), size( s.size )
+      data( s.size == 0 ? nullptr : new Elem[s.size] ), count( s.count ), size( s.size )
     {
       aCopy<Elem>( data, s.data, s.count );
     }
@@ -126,7 +126,7 @@ class Set
     Set( Set&& s ) :
       data( s.data ), count( s.count ), size( s.size )
     {
-      s.data  = null;
+      s.data  = nullptr;
       s.count = 0;
       s.size  = 0;
     }
@@ -170,7 +170,7 @@ class Set
       count = s.count;
       size  = s.size;
 
-      s.data  = null;
+      s.data  = nullptr;
       s.count = 0;
       s.size  = 0;
 
@@ -489,7 +489,7 @@ class Set
 
       delete[] data;
 
-      data = null;
+      data = nullptr;
       size = 0;
     }
 
