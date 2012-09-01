@@ -30,11 +30,6 @@
 // leaks and new/delete mismatches.
 #cmakedefine OZ_TRACK_ALLOCS
 
-// Use versions of linear math structures that match SIMD registers and explicitly use SIMD
-// operations. However, due to larger size and if code is not written with SIMD in mind, those may
-// yield worse performance than generic linear math structures.
-#cmakedefine OZ_SIMD_MATH
-
 /*
  * Compiler and platform-specific macros
  */
@@ -59,6 +54,18 @@
 # define OZ_GCC ( __GNUC__ * 100 + __GNUC_MINOR__ )
 #else
 # error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
+#endif
+
+// C++11 workarounds for older GCC versions.
+#if defined( OZ_GCC ) && OZ_GCC < 406
+# define constexpr const
+# define noexcept  throw()
+# define nullptr   __null
+namespace std { typedef ptrdiff_t nullptr_t; }
+#endif
+#if defined( OZ_GCC ) && OZ_GCC < 407
+# define override
+# define final
 #endif
 
 #ifdef _WIN32

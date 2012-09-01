@@ -145,18 +145,26 @@ class Plane
      * Projection of a vector to the plane's normal.
      */
     OZ_ALWAYS_INLINE
-    friend float operator * ( const Vec3& v, const Plane& plane )
+    friend scalar operator * ( const Vec3& v, const Plane& plane )
     {
+#ifdef OZ_SIMD_MATH
+      return vDot( v.f4, plane.n.f4 );
+#else
       return v.x*plane.n.x + v.y*plane.n.y + v.z*plane.n.z;
+#endif
     }
 
     /**
      * Distance between a point and the plane.
      */
     OZ_ALWAYS_INLINE
-    friend float operator * ( const Point& p, const Plane& plane )
+    friend scalar operator * ( const Point& p, const Plane& plane )
     {
+#ifdef OZ_SIMD_MATH
+      return vDot( p.f4, plane.n.f4 ) - float4( plane.d, plane.d, plane.d, plane.d );
+#else
       return p.x*plane.n.x + p.y*plane.n.y + p.z*plane.n.z - plane.d;
+#endif
     }
 
 };

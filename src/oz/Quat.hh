@@ -47,7 +47,7 @@ class Quat
     static const Quat ID;
 
 #ifdef OZ_SIMD_MATH
-    union
+    union OZ_ALIGNED( 16 )
     {
       float4 f4;
       uint4  u4;
@@ -79,7 +79,7 @@ class Quat
      * Create from a float SIMD vector.
      */
     OZ_ALWAYS_INLINE
-    explicit Quat( const float4& f4_ ) :
+    explicit Quat( float4 f4_ ) :
       f4( f4_ )
     {}
 
@@ -87,7 +87,7 @@ class Quat
      * Create from an uint SIMD vector.
      */
     OZ_ALWAYS_INLINE
-    explicit Quat( const uint4& u4_ ) :
+    explicit Quat( uint4 u4_ ) :
       u4( u4_ )
     {}
 
@@ -219,7 +219,7 @@ class Quat
     Quat operator * () const
     {
 #ifdef OZ_SIMD_MATH
-      return Quat( u4 ^ uint4( 0x80000000, 0x80000000, 0x80000000, 0 ) );
+      return Quat( u4 & uint4( 0x80000000, 0x80000000, 0x80000000, 0 ) );
 #else
       return Quat( -x, -y, -z, w );
 #endif
@@ -229,17 +229,14 @@ class Quat
      * Norm.
      */
     OZ_ALWAYS_INLINE
+    scalar operator ! () const
+    {
 #ifdef OZ_SIMD_MATH
-    Scalar operator ! () const
-    {
-      return Scalar( vDot4( f4, f4 ) );
-    }
+      return vDot( f4, f4 );
 #else
-    float operator ! () const
-    {
       return x*x + y*y + z*z + w*w;
-    }
 #endif
+    }
 
     /**
      * Unit quaternion.
@@ -248,7 +245,7 @@ class Quat
     Quat operator ~ () const
     {
 #ifdef OZ_SIMD_MATH
-      Scalar s = 1.0f / Math::sqrt( Scalar( vDot4( f4, f4 ) ) );
+      scalar s = 1.0f / Math::sqrt( vsDot( f4, f4 ) );
       return Quat( f4 * s.f4 );
 #else
       hard_assert( x*x + y*y + z*z + w*w > 0.0f );
@@ -265,7 +262,7 @@ class Quat
     Quat fastUnit() const
     {
 #ifdef OZ_SIMD_MATH
-      Scalar s = Math::fastInvSqrt( Scalar( vDot4( f4, f4 ) ) );
+      scalar s = Math::fastInvSqrt( vsDot( f4, f4 ) );
       return Quat( f4 * s.f4 );
 #else
       hard_assert( x*x + y*y + z*z + w*w > 0.0f );
@@ -327,33 +324,27 @@ class Quat
      * Product.
      */
     OZ_ALWAYS_INLINE
+    Quat operator * ( scalar s ) const
+    {
 #ifdef OZ_SIMD_MATH
-    Quat operator * ( const Scalar& s ) const
-    {
       return Quat( f4 * s.f4 );
-    }
 #else
-    Quat operator * ( float k ) const
-    {
-      return Quat( x * k, y * k, z * k, w * k );
-    }
+      return Quat( x * s, y * s, z * s, w * s );
 #endif
+    }
 
     /**
      * Product.
      */
     OZ_ALWAYS_INLINE
+    friend Quat operator * ( scalar s, const Quat& q )
+    {
 #ifdef OZ_SIMD_MATH
-    friend Quat operator * ( const Scalar& s, const Quat& q )
-    {
       return Quat( s.f4 * q.f4 );
-    }
 #else
-    friend Quat operator * ( float k, const Quat& q )
-    {
-      return Quat( k * q.x, k * q.y, k * q.z, k * q.w );
-    }
+      return Quat( s * q.x, s * q.y, s * q.z, s * q.w );
 #endif
+    }
 
     /**
      * Quaternion product.
@@ -389,42 +380,36 @@ class Quat
      * Quotient.
      */
     OZ_ALWAYS_INLINE
+    Quat operator / ( scalar s ) const
+    {
 #ifdef OZ_SIMD_MATH
-    Quat operator / ( const Scalar& s ) const
-    {
       return Quat( f4 / s.f4 );
-    }
 #else
-    Quat operator / ( float k ) const
-    {
-      hard_assert( k != 0.0f );
+      hard_assert( s != 0.0f );
 
-      k = 1.0f / k;
-      return Quat( x * k, y * k, z * k, w * k );
-    }
+      s = 1.0f / s;
+      return Quat( x * s, y * s, z * s, w * s );
 #endif
+    }
 
     /**
      * Quotient.
      */
     OZ_ALWAYS_INLINE
+    friend Quat operator / ( scalar s, const Quat& q )
+    {
 #ifdef OZ_SIMD_MATH
-    friend Quat operator / ( const Scalar& s, const Quat& q )
-    {
-      float4 k = s.f4 / vDot4( q.f4, q.f4 );
-      k = OZ_SHUFFLE_VECTOR( k, -k, 0, 0, 0, 0 );
-      k = OZ_SHUFFLE_VECTOR( k, k, 2, 0, 0, 0 );
+      s.f4 = s.f4 / vDot( q.f4, q.f4 );
+      s.f4 = OZ_SIMD_SHUFFLE( s.f4, -s.f4, 0, 0, 0, 0 );
+      s.f4 = OZ_SIMD_SHUFFLE( s.f4, s.f4, 2, 0, 0, 0 );
 
-      return Quat( q.f4 * k );
-    }
+      return Quat( q.f4 * s.f4 );
 #else
-    friend Quat operator / ( float k, const Quat& q )
-    {
-      k = k / ( q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w );
-      float nk = -k;
-      return Quat( q.x * nk, q.y * nk, q.z * nk, q.w * k );
-    }
+      s = s / ( q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w );
+      float ns = -s;
+      return Quat( q.x * ns, q.y * ns, q.z * ns, q.w * s );
 #endif
+    }
 
     /**
      * Quaternion quotient.
@@ -486,22 +471,18 @@ class Quat
      * Multiplication.
      */
     OZ_ALWAYS_INLINE
+    Quat& operator *= ( scalar s )
+    {
 #ifdef OZ_SIMD_MATH
-    Quat& operator *= ( const Scalar& s )
-    {
       f4 *= s.f4;
-      return *this;
-    }
 #else
-    Quat& operator *= ( float k )
-    {
-      x *= k;
-      y *= k;
-      z *= k;
-      w *= k;
+      x *= s;
+      y *= s;
+      z *= s;
+      w *= s;
+#endif
       return *this;
     }
-#endif
 
     /**
      * Quaternion multiplication.
@@ -532,25 +513,21 @@ class Quat
      * Division.
      */
     OZ_ALWAYS_INLINE
+    Quat& operator /= ( scalar s )
+    {
 #ifdef OZ_SIMD_MATH
-    Quat& operator /= ( const Scalar& s )
-    {
       f4 /= s.f4;
-      return *this;
-    }
 #else
-    Quat& operator /= ( float k )
-    {
-      hard_assert( k != 0.0f );
+      hard_assert( s != 0.0f );
 
-      k  = 1.0f / k;
-      x *= k;
-      y *= k;
-      z *= k;
-      w *= k;
+      s  = 1.0f / s;
+      x *= s;
+      y *= s;
+      z *= s;
+      w *= s;
+#endif
       return *this;
     }
-#endif
 
     /**
      * Quaternion division.
@@ -559,6 +536,7 @@ class Quat
     Quat& operator /= ( const Quat& q )
     {
 #ifdef OZ_SIMD_MATH
+      // TODO SIMD
       float k = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
       Quat  t = Quat( k * ( x*q.w - w*q.x + z*q.y - y*q.z ),
                       k * ( y*q.w - w*q.y + x*q.z - z*q.x ),

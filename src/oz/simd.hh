@@ -30,20 +30,46 @@
 
 #include "common.hh"
 
-namespace oz
-{
-
 /**
- * @def OZ_SHUFFLE_VECTOR
- * Compiler-dependent built-in function for SIMD register shuffle.
+ * @def OZ_SIMD_SHUFFLE
+ * Compiler-dependent built-in function for SIMD vector shuffle.
  */
 #if defined( OZ_CLANG )
-# define OZ_SHUFFLE_VECTOR( v1, v2, i, j, k, l ) \
-  __builtin_shufflevector( v1, v2, i, j, k, l )
+# define OZ_SIMD_SHUFFLE( a, b, i, j, k, l ) \
+  __builtin_shufflevector( a, b, i, j, k, l )
 #else
-# define OZ_SHUFFLE_VECTOR( v1, v2, i, j, k, l ) \
-  __builtin_ia32_shufps( v1, v2, ( i << 6 ) | ( j << 4 ) | ( k << 2 ) | l )
+# define OZ_SIMD_SHUFFLE( a, b, i, j, k, l ) \
+  __builtin_ia32_shufps( a, b, ( i << 6 ) | ( j << 4 ) | ( k << 2 ) | l )
 #endif
+
+/**
+ * @def OZ_SIMD_FIRST
+ * Compiler-dependent built-in function for extraction first float from a SIMD vector.
+ */
+#if defined( OZ_CLANG )
+# define OZ_SIMD_FIRST( a ) \
+  ( a[0] )
+#else
+# define OZ_SIMD_FIRST( a ) \
+  __builtin_ia32_vec_ext_v4sf( a, 0 )
+#endif
+
+/**
+ * @def OZ_SIMD_HADD
+ * Compiler-dependent built-in function for SSE3 horizontal addition.
+ */
+#define OZ_SIMD_HADD( a, b ) \
+  __builtin_ia32_haddps( a, b )
+
+/**
+ * @def OZ_SIMD_HSUB
+ * Compiler-dependent built-in function for SSE3 horizontal subtraction.
+ */
+#define OZ_SIMD_HSUB( a, b ) \
+  __builtin_ia32_hsubps( a, b )
+
+namespace oz
+{
 
 /**
  * SIMD vector of four floats.
@@ -79,26 +105,36 @@ typedef uint __attribute__(( vector_size( 16 ) )) uint4;
 # define uint4( x, y, z, w ) uint4{ x, y, z, w }
 #endif
 
+/**
+ * Absolute value of a float SIMD vector.
+ */
 OZ_ALWAYS_INLINE
-inline uint4 vAbs( const uint4& a )
+inline uint4 vAbs( uint4 a )
 {
   return a & uint4( 0x7fffffff, 0x7fffffff, 0x7fffffff, 0x7fffffff );
 }
 
+/**
+ * Scalar product for float SIMD vectors (returns float SIMD vector).
+ */
 OZ_ALWAYS_INLINE
-inline float4 vDot3( const float4& a, const float4& b )
+inline float4 vDot( float4 a, float4 b )
 {
   float4 p = a * b;
-  return OZ_SHUFFLE_VECTOR( p, p, 0, 0, 0, 0 ) + OZ_SHUFFLE_VECTOR( p, p, 1, 1, 1, 1 ) +
-         OZ_SHUFFLE_VECTOR( p, p, 2, 2, 2, 2 );
+  float4 s = OZ_SIMD_HADD( p, p );
+  return OZ_SIMD_HADD( s, s );
 }
 
+/**
+ * Scalar product for float SIMD vectors (returns float value).
+ */
 OZ_ALWAYS_INLINE
-inline float4 vDot4( const float4& a, const float4& b )
+inline float vsDot( float4 a, float4 b )
 {
   float4 p = a * b;
-  return OZ_SHUFFLE_VECTOR( p, p, 0, 0, 0, 0 ) + OZ_SHUFFLE_VECTOR( p, p, 1, 1, 1, 1 ) +
-         OZ_SHUFFLE_VECTOR( p, p, 2, 2, 2, 2 ) + OZ_SHUFFLE_VECTOR( p, p, 3, 3, 3, 3 );
+  float4 s = OZ_SIMD_HADD( p, p );
+  float4 t = OZ_SIMD_HADD( s, s );
+  return OZ_SIMD_FIRST( t );
 }
 
 }

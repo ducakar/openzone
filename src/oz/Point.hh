@@ -44,7 +44,7 @@ class Point
     static const Point ORIGIN;
 
 #ifdef OZ_SIMD_MATH
-    union
+    union OZ_ALIGNED( 16 )
     {
       float4 f4;
       uint4  u4;
@@ -75,15 +75,15 @@ class Point
      * Create form a float SIMD vector.
      */
     OZ_ALWAYS_INLINE
-    explicit Point( const float4& f4_ ) :
+    explicit Point( float4 f4_ ) :
       f4( f4_ )
     {}
 
     /**
-     * Create form an uint SIMD vector.
+     * Create from an uint SIMD vector.
      */
     OZ_ALWAYS_INLINE
-    explicit Point( const uint4& u4_ ) :
+    explicit Point( uint4 u4_ ) :
       u4( u4_ )
     {}
 
@@ -247,9 +247,9 @@ class Point
      */
     OZ_ALWAYS_INLINE
 #ifdef OZ_SIMD_MATH
-    Scalar operator * ( const Vec3& v ) const
+    scalar operator * ( const Vec3& v ) const
     {
-      return Scalar( vDot3( f4, v.f4 ) );
+      return vDot( f4, v.f4 );
     }
 #else
     float operator * ( const Vec3& v ) const

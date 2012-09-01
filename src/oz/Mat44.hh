@@ -257,18 +257,18 @@ class Mat44
      * Product.
      */
     OZ_ALWAYS_INLINE
-    Mat44 operator * ( float k ) const
+    Mat44 operator * ( scalar s ) const
     {
-      return Mat44( x * k, y * k, z * k, w * k );
+      return Mat44( x * s, y * s, z * s, w * s );
     }
 
     /**
      * Product.
      */
     OZ_ALWAYS_INLINE
-    friend Mat44 operator * ( float k, const Mat44& m )
+    friend Mat44 operator * ( scalar s, const Mat44& m )
     {
-      return Mat44( k * m.x, k * m.y, k * m.z, k * m.w );
+      return Mat44( s * m.x, s * m.y, s * m.z, s * m.w );
     }
 
     /**
@@ -337,12 +337,16 @@ class Mat44
      * Product.
      */
     OZ_ALWAYS_INLINE
-    Mat44 operator / ( float k ) const
+    Mat44 operator / ( scalar s ) const
     {
-      hard_assert( k != 0.0f );
+#ifdef OZ_SIMD_MATH
+      return Mat44( x / s, y / s, z / s, w / s );
+#else
+      hard_assert( s != 0.0f );
 
-      k = 1.0f / k;
-      return Mat44( x * k, y * k, z * k, w * k );
+      s = 1.0f / s;
+      return Mat44( x * s, y * s, z * s, w * s );
+#endif
     }
 
     /**
@@ -375,12 +379,12 @@ class Mat44
      * Multiplication.
      */
     OZ_ALWAYS_INLINE
-    Mat44& operator *= ( float k )
+    Mat44& operator *= ( scalar s )
     {
-      x *= k;
-      y *= k;
-      z *= k;
-      w *= k;
+      x *= s;
+      y *= s;
+      z *= s;
+      w *= s;
       return *this;
     }
 
@@ -388,15 +392,22 @@ class Mat44
      * Division.
      */
     OZ_ALWAYS_INLINE
-    Mat44& operator /= ( float k )
+    Mat44& operator /= ( float s )
     {
-      hard_assert( k != 0.0f );
+#ifdef OZ_SIMD_MATH
+      x /= s;
+      y /= s;
+      z /= s;
+      w /= s;
+#else
+      hard_assert( s != 0.0f );
 
-      k  = 1.0f / k;
-      x *= k;
-      y *= k;
-      z *= k;
-      w *= k;
+      s  = 1.0f / s;
+      x *= s;
+      y *= s;
+      z *= s;
+      w *= s;
+#endif
       return *this;
     }
 

@@ -80,7 +80,7 @@
  */
 #include "simd.hh"
 #include "Math.hh"
-#include "Scalar.hh"
+#include "scalar.hh"
 #include "Vec3.hh"
 #include "Point.hh"
 #include "Plane.hh"

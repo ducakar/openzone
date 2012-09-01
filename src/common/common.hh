@@ -25,9 +25,8 @@
 
 #pragma once
 
-#include <oz/oz.hh>
-
 #include <configuration.hh>
+#include <oz/oz.hh>
 
 #ifdef _WIN32
 # include <windows.h>

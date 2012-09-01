@@ -278,9 +278,9 @@ void Collider::trimAABBVoid()
 
 void Collider::trimAABBObj( const Object* sObj )
 {
-  float minRatio   = -1.0f;
-  float maxRatio   = +1.0f;
-  Vec3  lastNormal = Vec3::ZERO;
+  float minRatio    = -1.0f;
+  float maxRatio    = +1.0f;
+  Vec3  lastNormal  = Vec3::ZERO;
 
   Vec3  relStartPos = startPos - sObj->p;
   Vec3  relEndPos   = endPos   - sObj->p;

@@ -52,13 +52,13 @@ void FloraModule::addTree( float x, float y )
 
   const char* type;
 
-  if( pos.z > 150.0f ) {
+  if( pos.z > 110.0f ) {
     return;
   }
-  else if( pos.z > 100.0f ) {
+  else if( pos.z > 70.0f ) {
     type = "pine";
   }
-  else if( pos.z > 50.0f ) {
+  else if( pos.z > 30.0f ) {
     type = "tree";
   }
   else if( pos.z > 2.0f ) {

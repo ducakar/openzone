@@ -62,6 +62,12 @@
  */
 
 /**
+ * @def OZ_ALIGNED
+ * Compiler-specific attribute for data type alignment.
+ */
+#define OZ_ALIGNED( n ) __attribute__(( aligned( n ) ))
+
+/**
  * @def OZ_ALWAYS_INLINE
  * Compiler-specific attribute that suggests function inlining even in debug mode.
  */
@@ -89,18 +95,6 @@
  */
 #define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
 
-// C++11 workarounds for older GCC versions.
-#if defined( OZ_GCC ) && OZ_GCC < 406
-# define constexpr const
-# define noexcept  throw()
-# define nullptr   __null
-namespace std { typedef ptrdiff_t nullptr_t; }
-#endif
-#if defined( OZ_GCC ) && OZ_GCC < 407
-# define override
-# define final
-#endif
-
 /**
  * Top-level OpenZone namespace.
  */
@@ -115,27 +109,24 @@ namespace oz
  * @def soft_assert
  * If condition fails, raise SIGTRAP and print error using global log.
  */
+#ifdef NDEBUG
+# define soft_assert( cond ) void( 0 )
+#else
+# define soft_assert( cond ) \
+  ( ( cond ) ? \
+    void( 0 ) : oz::_softAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
+#endif
 
 /**
  * @def hard_assert
  * If condition fails, raise SIGTRAP, print error using global log and abort program.
  */
-
 #ifdef NDEBUG
-
-# define soft_assert( cond ) void( 0 )
 # define hard_assert( cond ) void( 0 )
-
 #else
-
-# define soft_assert( cond ) \
-  ( ( cond ) ? \
-    void( 0 ) : oz::_softAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
-
 # define hard_assert( cond ) \
   ( ( cond ) ? \
     void( 0 ) : oz::_hardAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
-
 #endif
 
 /**

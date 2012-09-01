@@ -24,6 +24,7 @@
  * @file oz/Vec3.cc
  */
 
+#define OZ_SIMD_MATH
 #include "Vec3.hh"
 
 namespace oz

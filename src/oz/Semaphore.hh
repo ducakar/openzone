@@ -34,7 +34,7 @@ namespace oz
 {
 
 /**
- * Semaphore.
+ * %Semaphore.
  *
  * It is implemented as a wrapper for condition variable as it should yield better performance.
  */

@@ -21,9 +21,9 @@
  */
 
 /**
- * @file oz/Scalar.hh
+ * @file oz/scalar.hh
  *
- * Scalar class.
+ * scalar class.
  */
 
 #pragma once
@@ -33,39 +33,42 @@
 namespace oz
 {
 
+#ifndef OZ_SIMD_MATH
+
+typedef float scalar;
+
+#else
+
 /**
  * SIMD vector containing 4 equal values.
  *
  * For many operations like multiplication of a vector and scalar, dot product, normalisation etc.
  * we need to convert between float scalars and a SIMD vectors which is an expensive operation. In
- * order to minimise such conversions we introduce Scalar class that represents a SIMD register
+ * order to minimise such conversions we introduce scalar class that represents a SIMD register
  * holding 4 identical values. It is used to replace float temporary values.
  */
-union Scalar
+class scalar
 {
-  float4 f4; ///< Float SIMD vector.
-  uint4  u4; ///< Unsigned integer SIMD vector.
+  public:
 
-  struct
-  {
-    float x; ///< X vector component.
-    float y; ///< Y vector component.
-    float z; ///< Z vector component.
-    float w; ///< W vector component.
-  };
+    union OZ_ALIGNED( 16 )
+    {
+      float4 f4; ///< Float SIMD vector.
+      uint4  u4; ///< Unsigned integer SIMD vector.
+    };
 
   public:
 
     /**
      * Create an uninitialised instance.
      */
-    Scalar() = default;
+    scalar() = default;
 
     /**
      * Create from a float SIMD vector.
      */
     OZ_ALWAYS_INLINE
-    explicit Scalar( const float4& f4_ ) :
+    scalar( float4 f4_ ) :
       f4( f4_ )
     {}
 
@@ -73,7 +76,7 @@ union Scalar
      * Create from an uint SIMD vector.
      */
     OZ_ALWAYS_INLINE
-    explicit Scalar( const uint4& u4_ ) :
+    scalar( uint4 u4_ ) :
       u4( u4_ )
     {}
 
@@ -81,14 +84,14 @@ union Scalar
      * Create from a float value.
      */
     OZ_ALWAYS_INLINE
-    Scalar( float f ) :
+    scalar( float f ) :
       f4( float4( f, f, f, f ) )
     {}
 
     /**
-     * Set to the given float value.
+     * %Set to the given float value.
      */
-    Scalar& operator = ( float f )
+    scalar& operator = ( float f )
     {
       f4 = float4( f, f, f, f );
       return *this;
@@ -100,23 +103,23 @@ union Scalar
     OZ_ALWAYS_INLINE
     operator float () const
     {
-      return x;
+      return OZ_SIMD_FIRST( f4 );
     }
 
     /**
      * Absolute value.
      */
     OZ_ALWAYS_INLINE
-    Scalar abs() const
+    scalar abs() const
     {
-      return Scalar( vAbs( u4 ) );
+      return vAbs( u4 );
     }
 
     /**
      * Original value.
      */
     OZ_ALWAYS_INLINE
-    Scalar operator + () const
+    scalar operator + () const
     {
       return *this;
     }
@@ -125,124 +128,124 @@ union Scalar
      * Opposite value.
      */
     OZ_ALWAYS_INLINE
-    Scalar operator - () const
+    scalar operator - () const
     {
-      return Scalar( -f4 );
+      return -f4;
     }
 
     /**
      * Sum.
      */
     OZ_ALWAYS_INLINE
-    Scalar operator + ( const Scalar& s ) const
+    scalar operator + ( scalar s ) const
     {
-      return Scalar( f4 + s.f4 );
+      return f4 + s.f4;
     }
 
     /**
      * Sum.
      */
     OZ_ALWAYS_INLINE
-    Scalar operator + ( float f ) const
+    scalar operator + ( float f ) const
     {
-      return Scalar( f4 + float4( f, f, f, f ) );
+      return f4 + float4( f, f, f, f );
     }
 
     /**
      * Sum.
      */
     OZ_ALWAYS_INLINE
-    friend Scalar operator + ( float f, const Scalar& s )
+    friend scalar operator + ( float f, scalar s )
     {
-      return Scalar( float4( f, f, f, f ) + s.f4 );
+      return float4( f, f, f, f ) + s.f4;
     }
 
     /**
      * Difference.
      */
     OZ_ALWAYS_INLINE
-    Scalar operator - ( const Scalar& s ) const
+    scalar operator - ( scalar s ) const
     {
-      return Scalar( f4 - s.f4 );
+      return f4 - s.f4;
     }
 
     /**
      * Difference.
      */
     OZ_ALWAYS_INLINE
-    Scalar operator - ( float f ) const
+    scalar operator - ( float f ) const
     {
-      return Scalar( f4 - float4( f, f, f, f ) );
+      return f4 - float4( f, f, f, f );
     }
 
     /**
      * Difference.
      */
     OZ_ALWAYS_INLINE
-    friend Scalar operator - ( float f, const Scalar& s )
+    friend scalar operator - ( float f, scalar s )
     {
-      return Scalar( float4( f, f, f, f ) - s.f4 );
+      return float4( f, f, f, f ) - s.f4;
     }
 
     /**
      * Product.
      */
     OZ_ALWAYS_INLINE
-    Scalar operator * ( const Scalar& s ) const
+    scalar operator * ( scalar s ) const
     {
-      return Scalar( f4 * s.f4 );
+      return f4 * s.f4;
     }
 
     /**
      * Product.
      */
     OZ_ALWAYS_INLINE
-    Scalar operator * ( float f ) const
+    scalar operator * ( float f ) const
     {
-      return Scalar( f4 * float4( f, f, f, f ) );
+      return f4 * float4( f, f, f, f );
     }
 
     /**
      * Product.
      */
     OZ_ALWAYS_INLINE
-    friend Scalar operator * ( float f, const Scalar& s )
+    friend scalar operator * ( float f, scalar s )
     {
-      return Scalar( float4( f, f, f, f ) * s.f4 );
+      return float4( f, f, f, f ) * s.f4;
     }
 
     /**
      * Quotient.
      */
     OZ_ALWAYS_INLINE
-    Scalar operator / ( const Scalar& s ) const
+    scalar operator / ( scalar s ) const
     {
-      return Scalar( f4 / s.f4 );
+      return f4 / s.f4;
     }
 
     /**
      * Quotient.
      */
     OZ_ALWAYS_INLINE
-    Scalar operator / ( float f ) const
+    scalar operator / ( float f ) const
     {
-      return Scalar( f4 / float4( f, f, f, f ) );
+      return f4 / float4( f, f, f, f );
     }
 
     /**
      * Quotient.
      */
     OZ_ALWAYS_INLINE
-    friend Scalar operator / ( float f, const Scalar& s )
+    friend scalar operator / ( float f, scalar s )
     {
-      return Scalar( float4( f, f, f, f ) / s.f4 );
+      return float4( f, f, f, f ) / s.f4;
     }
 
     /**
      * Addition.
      */
     OZ_ALWAYS_INLINE
-    Scalar& operator += ( const Scalar& s )
+    scalar& operator += ( scalar s )
     {
       f4 += s.f4;
       return *this;
@@ -252,7 +255,7 @@ union Scalar
      * Addition.
      */
     OZ_ALWAYS_INLINE
-    Scalar& operator += ( float f )
+    scalar& operator += ( float f )
     {
       f4 += float4( f, f, f, f );
       return *this;
@@ -262,9 +265,9 @@ union Scalar
      * Addition.
      */
     OZ_ALWAYS_INLINE
-    friend float& operator += ( float& f, const Scalar& s )
+    friend float& operator += ( float& f, scalar s )
     {
-      f += s.x;
+      f += OZ_SIMD_FIRST( s.f4 );
       return f;
     }
 
@@ -272,7 +275,7 @@ union Scalar
      * Subtraction.
      */
     OZ_ALWAYS_INLINE
-    Scalar& operator -= ( const Scalar& s )
+    scalar& operator -= ( scalar s )
     {
       f4 -= s.f4;
       return *this;
@@ -282,7 +285,7 @@ union Scalar
      * Subtraction.
      */
     OZ_ALWAYS_INLINE
-    Scalar& operator -= ( float f )
+    scalar& operator -= ( float f )
     {
       f4 -= float4( f, f, f, f );
       return *this;
@@ -292,9 +295,9 @@ union Scalar
      * Subtraction.
      */
     OZ_ALWAYS_INLINE
-    friend float& operator -= ( float& f, const Scalar& s )
+    friend float& operator -= ( float& f, scalar s )
     {
-      f -= s.x;
+      f -= OZ_SIMD_FIRST( s.f4 );
       return f;
     }
 
@@ -302,7 +305,7 @@ union Scalar
      * Multiplication.
      */
     OZ_ALWAYS_INLINE
-    Scalar& operator *= ( const Scalar& s )
+    scalar& operator *= ( scalar s )
     {
       f4 *= s.f4;
       return *this;
@@ -312,7 +315,7 @@ union Scalar
      * Multiplication.
      */
     OZ_ALWAYS_INLINE
-    Scalar& operator *= ( float f )
+    scalar& operator *= ( float f )
     {
       f4 *= float4( f, f, f, f );
       return *this;
@@ -322,9 +325,9 @@ union Scalar
      * Multiplication.
      */
     OZ_ALWAYS_INLINE
-    friend float& operator *= ( float& f, const Scalar& s )
+    friend float& operator *= ( float& f, scalar s )
     {
-      f *= s.x;
+      f *= OZ_SIMD_FIRST( s.f4 );
       return f;
     }
 
@@ -332,7 +335,7 @@ union Scalar
      * Division.
      */
     OZ_ALWAYS_INLINE
-    Scalar& operator /= ( const Scalar& s )
+    scalar& operator /= ( scalar s )
     {
       f4 /= s.f4;
       return *this;
@@ -342,7 +345,7 @@ union Scalar
      * Division.
      */
     OZ_ALWAYS_INLINE
-    Scalar& operator /= ( float f )
+    scalar& operator /= ( float f )
     {
       f4 /= float4( f, f, f, f );
       return *this;
@@ -352,12 +355,14 @@ union Scalar
      * Division.
      */
     OZ_ALWAYS_INLINE
-    friend float& operator /= ( float& f, const Scalar& s )
+    friend float& operator /= ( float& f, scalar s )
     {
-      f /= s.x;
+      f /= OZ_SIMD_FIRST( s.f4 );
       return f;
     }
 
 };
+
+#endif
 
 }

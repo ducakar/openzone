@@ -24,6 +24,7 @@
  * @file oz/Point.cc
  */
 
+#define OZ_SIMD_MATH
 #include "Point.hh"
 
 namespace oz
