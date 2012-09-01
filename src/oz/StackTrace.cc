@@ -47,7 +47,7 @@ StackTrace StackTrace::current( int )
 
 char** StackTrace::symbols() const
 {
-  return null;
+  return nullptr;
 }
 
 #else

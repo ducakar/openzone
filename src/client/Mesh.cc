@@ -290,8 +290,8 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage )
     nFrameVertices  = istream->readInt();
 
     if( shader.hasVertexTexture ) {
-      int vertexBufferSize = nFramePositions * nFrames * int( sizeof( Point ) );
-      int normalBufferSize = nFramePositions * nFrames * int( sizeof( Vec3 ) );
+      int vertexBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
+      int normalBufferSize = nFramePositions * nFrames * int( sizeof( float[3] ) );
 
       glGenTextures( 1, &positionsTexId );
       glBindTexture( GL_TEXTURE_2D, positionsTexId );

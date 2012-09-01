@@ -92,8 +92,6 @@ MD3Imago::~MD3Imago()
 
 void MD3Imago::draw( const Imago* parent )
 {
-  flags |= UPDATED_BIT;
-
   if( !md3->isLoaded ) {
     return;
   }

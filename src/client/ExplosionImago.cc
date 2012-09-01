@@ -56,8 +56,6 @@ ExplosionImago::~ExplosionImago()
 
 void ExplosionImago::draw( const Imago* )
 {
-  flags |= UPDATED_BIT;
-
   if( !smm->isLoaded ) {
     return;
   }

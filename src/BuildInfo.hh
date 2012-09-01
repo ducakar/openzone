@@ -23,6 +23,8 @@
  * The .cc file is auto-generated on each build and provides information about the current build.
  */
 
+#pragma once
+
 namespace oz
 {
 

@@ -49,8 +49,6 @@ SMMImago::~SMMImago()
 
 void SMMImago::draw( const Imago* )
 {
-  flags |= UPDATED_BIT;
-
   if( !smm->isLoaded ) {
     return;
   }

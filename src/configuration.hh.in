@@ -34,3 +34,6 @@
 
 // Enable MP3 and AAC.
 #cmakedefine OZ_NONFREE
+
+// Enable eSpeak text-to-speech library.
+#cmakedefine OZ_ESPEAK

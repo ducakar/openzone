@@ -116,16 +116,24 @@ void Vehicle::service()
 }
 
 void Vehicle::staticHandler()
-{}
+{
+  // TODO
+}
 
 void Vehicle::wheeledHandler()
-{}
+{
+  // TODO
+}
 
 void Vehicle::trackedHandler()
-{}
+{
+  // TODO
+}
 
 void Vehicle::mechHandler()
-{}
+{
+  // TODO
+}
 
 void Vehicle::hoverHandler()
 {
@@ -179,7 +187,7 @@ void Vehicle::hoverHandler()
 
   // hover momentum
   if( ratio_1 != 0.0f ) {
-    float groundMomentum = min( velocity * floor, 0.0f );
+    float groundMomentum = min<float>( velocity * floor, 0.0f );
     float tickRatio = ratio_1*ratio_1 * Timer::TICK_TIME;
 
     momentum.z += clazz->hoverHeightStiffness * tickRatio;

@@ -49,8 +49,6 @@ Audio* BotAudio::create( const Object* obj )
 
 void BotAudio::play( const Audio* parent )
 {
-  flags |= UPDATED_BIT;
-
   const Bot*  bot    = static_cast<const Bot*>( obj );
   const auto& sounds = obj->clazz->audioSounds;
 

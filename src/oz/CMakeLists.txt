@@ -37,9 +37,10 @@ set( ozHeaders
   Pool.hh
   Quat.hh
   SBitset.hh
+  Scalar.hh
   Semaphore.hh
   Set.hh
-  Simd.hh
+  simd.hh
   SList.hh
   StackTrace.hh
   String.hh
@@ -84,9 +85,10 @@ add_library( oz
   Pool.hh
   Quat.hh
   SBitset.hh
+  Scalar.hh
   Semaphore.hh
   Set.hh
-  Simd.hh
+  simd.hh
   SList.hh
   StackTrace.hh
   String.hh

@@ -72,7 +72,7 @@ class Mat44
      */
     OZ_ALWAYS_INLINE
     explicit Mat44( const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d ) :
-      x( a, 0.0f ), y( b, 0.0f ), z( c, 0.0f ), w( d, 1.0f )
+      x( a ), y( b ), z( c ), w( d.x, d.y, d.z, 1.0f )
     {}
 
     /**

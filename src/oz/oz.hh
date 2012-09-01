@@ -78,8 +78,9 @@
 /*
  * Math.
  */
+#include "simd.hh"
 #include "Math.hh"
-#include "Simd.hh"
+#include "Scalar.hh"
 #include "Vec3.hh"
 #include "Point.hh"
 #include "Plane.hh"

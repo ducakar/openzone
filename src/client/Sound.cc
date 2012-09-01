@@ -27,7 +27,9 @@
 #include <client/Camera.hh>
 #include <client/NaCl.hh>
 
-#include <espeak/speak_lib.h>
+#ifdef OZ_ESPEAK
+# include <espeak/speak_lib.h>
+#endif
 
 #if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
 # define PHYSFS_readBytes( handle, buffer, len ) PHYSFS_read( handle, buffer, 1, uint( len ) )
@@ -849,10 +851,12 @@ void Sound::init()
 
 #endif
 
+#ifdef OZ_ESPEAK
   context.speakSampleRate = espeak_Initialize( AUDIO_OUTPUT_SYNCHRONOUS, 500, nullptr, 0 );
   espeak_SetParameter( espeakRATE, 150, 0 );
   espeak_SetVoiceByName( config.include( "sound.speaker", "en" ).asString() );
   espeak_SetSynthCallback( reinterpret_cast<t_espeak_callback*>( &Context::speakCallback ) );
+#endif
 
   isMusicAlive = true;
   isSoundAlive = true;
@@ -879,7 +883,9 @@ void Sound::free()
 
   Log::print( "Freeing Sound ..." );
 
+#ifdef OZ_ESPEAK
   espeak_Terminate();
+#endif
 
   selectedTrack = -1;
   currentTrack  = -1;

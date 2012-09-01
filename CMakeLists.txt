@@ -8,15 +8,15 @@ project( openzone C CXX )
 
 set( OZ_VERSION "0.3.80" )
 
-if( NOT NACL )
-  option( OZ_SHARED_LIBOZ "Build liboz as a shared library." OFF )
-  option( OZ_TRACK_ALLOCS "Track memory allocations to detect new/delete mismatches and memory leaks." OFF )
+option( OZ_SHARED_LIBOZ "Build liboz as a shared library." OFF )
+option( OZ_TRACK_ALLOCS "Track memory allocations to detect new/delete mismatches and memory leaks." OFF )
+option( OZ_SIMD_MATH "Use SIMD implementation of linear algebra classes." OFF )
 
-  option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." OFF )
-  option( OZ_NONFREE "Enable support for decoding MP3s and AACs and building S3TC textures." OFF )
+option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." OFF )
+option( OZ_NONFREE "Enable support for decoding MP3s and AACs and building S3TC textures." OFF )
+option( OZ_ESPEAK "Enable text-to-speech." OFF )
 
-  option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
-endif()
+option( OZ_STANDALONE "Install layout appropriate for launching from its own folder" OFF )
 
 #
 # Internal configuration
@@ -27,20 +27,20 @@ include( CheckCXXSourceCompiles )
 include( CheckCXXCompilerFlag )
 include( CheckLibraryExists )
 
+if( NACL )
+  set( CMAKE_SYSTEM_NAME "NaCl" )
+  set( OZ_SHARED_LIBOZ OFF )
+  set( OZ_GL_ES ON )
+  set( OZ_NONFREE OFF )
+  set( OZ_STANDALONE OFF )
+endif()
 if( WIN32 )
   set( OZ_STANDALONE ON )
 endif()
 
-if( NACL )
-  set( CMAKE_SYSTEM_NAME "NaCl" )
-  set( OZ_GL_ES ON )
-endif()
-
-if( OZ_SHARED_LIBOZ )
-  set( BUILD_SHARED_LIBS ON )
-endif()
-
 set( OZ_PLATFORM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_PROCESSOR}" )
+
+set( BUILD_SHARED_LIBS ${OZ_SHARED_LIBOZ} )
 
 check_cxx_source_compiles( "
 #ifdef __clang__
@@ -89,7 +89,6 @@ elseif( WIN32 )
 
   find_package( Lua51 REQUIRED )
   find_package( SDL REQUIRED )
-#   find_package( SDL_net REQUIRED )
   find_package( SDL_ttf REQUIRED )
   find_package( OpenGL REQUIRED )
   find_package( OpenAL REQUIRED )
@@ -106,7 +105,6 @@ else()
 
   find_package( Lua51 REQUIRED )
   find_package( SDL REQUIRED )
-#   find_package( SDL_net REQUIRED )
   find_package( SDL_ttf REQUIRED )
   find_package( OpenGL REQUIRED )
   find_package( OpenAL REQUIRED )
@@ -170,7 +168,9 @@ if( NACL )
   set( libs_client "${libs_client};${VORBISFILE_LIBRARY}" )
   set( libs_client "${libs_client};${VORBIS_LIBRARY}" )
   set( libs_client "${libs_client};${OGG_LIBRARY}" )
-#   set( libs_client "${libs_client};${ESPEAK_LIBRARY}" )
+  if( OZ_ESPEAK )
+    set( libs_client "${libs_client};${ESPEAK_LIBRARY}" )
+  endif()
 else()
   set( libs_client "${LUA_LIBRARY}" )
   set( libs_client "${libs_client};${SDL_LIBRARY}" )
@@ -178,7 +178,9 @@ else()
   set( libs_client "${libs_client};${OPENGL_gl_LIBRARY}" )
   set( libs_client "${libs_client};${OPENAL_LIBRARY}" )
   set( libs_client "${libs_client};${VORBISFILE_LIBRARY}" )
-  set( libs_client "${libs_client};${ESPEAK_LIBRARY}" )
+  if( OZ_ESPEAK )
+    set( libs_client "${libs_client};${ESPEAK_LIBRARY}" )
+  endif()
 
   set( libs_tools "${libs_client};${FREEIMAGE_LIBRARY}" )
   if( OZ_NONFREE )
@@ -191,7 +193,7 @@ endif()
 #
 
 if( isClang )
-  set( flags "-std=c++11 -pedantic" )
+  set( flags "-std=c++11" )
   # GNU C++ library
   # set( flags "${flags} -stdlib=libstdc++" )
   # LLVM C++ library
@@ -200,7 +202,7 @@ if( isClang )
 elseif( isLegacyGCC )
   set( flags "-pipe -std=gnu++0x" )
 else()
-  set( flags "-pipe -std=c++0x -pedantic -fstrict-enums" )
+  set( flags "-pipe -std=c++0x -fstrict-enums" )
 endif()
 
 set( flags "${flags} -fno-rtti -fno-exceptions -fvisibility-inlines-hidden -ffast-math" )

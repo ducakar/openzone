@@ -92,7 +92,7 @@ void Class::fillObject( const char* className )
       dim.y < 0.0f || dim.y > Object::REAL_MAX_DIM ||
       dim.z < 0.0f )
   {
-    OZ_ERROR( "%s: Invalid dimensions. Should be >= 0 and <= 3.99.", className );
+    OZ_ERROR( "%s: Invalid dimensions. Should be >= 0 and <= %g.", className, Object::REAL_MAX_DIM );
   }
 
   if( ( flags & Object::CYLINDER_BIT ) && dim.x != dim.y ) {

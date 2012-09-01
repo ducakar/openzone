@@ -52,8 +52,6 @@ SMMVehicleImago::~SMMVehicleImago()
 
 void SMMVehicleImago::draw( const Imago* )
 {
-  flags |= UPDATED_BIT;
-
   if( !smm->isLoaded ) {
     return;
   }

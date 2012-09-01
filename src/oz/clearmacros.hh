@@ -35,9 +35,12 @@
 #undef soft_assert
 #undef hard_assert
 #undef foreach
+#undef float4
+#undef uint4
 
 // May be defined for C++11 compatibility when using older GCC versions.
 #undef constexpr
 #undef noexcept
 #undef override
-#undef null
+#undef final
+#undef nullptr

@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Math.hh"
+#include "Scalar.hh"
 
 namespace oz
 {
@@ -43,12 +44,27 @@ class Vec3
     /// Zero vector, [0, 0, 0].
     static const Vec3 ZERO;
 
-    /// %Vector of ones, [1, 1, 1].
+    /// Vector of ones, [1, 1, 1].
     static const Vec3 ONE;
 
+#ifdef OZ_SIMD_MATH
+    union
+    {
+      float4 f4;
+      uint4  u4;
+      struct
+      {
+        float x; ///< X component.
+        float y; ///< Y component.
+        float z; ///< Z component.
+        float w; ///< W component, should be always 0.
+      };
+    };
+#else
     float x; ///< X component.
     float y; ///< Y component.
     float z; ///< Z component.
+#endif
 
   public:
 
@@ -57,12 +73,36 @@ class Vec3
      */
     Vec3() = default;
 
+#ifdef OZ_SIMD_MATH
+
+    /**
+     * Create from a float SIMD vector.
+     */
+    OZ_ALWAYS_INLINE
+    explicit Vec3( const float4& f4_ ) :
+      f4( f4_ )
+    {}
+
+    /**
+     * Create from an uint SIMD vector.
+     */
+    OZ_ALWAYS_INLINE
+    explicit Vec3( const uint4& u4_ ) :
+      u4( u4_ )
+    {}
+
+#endif
+
     /**
      * Create a vector with the given components.
      */
     OZ_ALWAYS_INLINE
     explicit Vec3( float x_, float y_, float z_ ) :
+#ifdef OZ_SIMD_MATH
+      f4( float4( x_, y_, z_, 0.0f ) )
+#else
       x( x_ ), y( y_ ), z( z_ )
+#endif
     {}
 
     /**
@@ -70,7 +110,11 @@ class Vec3
      */
     OZ_ALWAYS_INLINE
     explicit Vec3( const float* v ) :
+#ifdef OZ_SIMD_MATH
+      f4( float4( v[0], v[1], v[2], 0.0f ) )
+#else
       x( v[0] ), y( v[1] ), z( v[2] )
+#endif
     {}
 
     /**
@@ -132,12 +176,16 @@ class Vec3
     }
 
     /**
-     * %Vector with absolute components.
+     * Vector with absolute components.
      */
     OZ_ALWAYS_INLINE
     Vec3 abs() const
     {
+#ifdef OZ_SIMD_MATH
+      return Vec3( vAbs( u4 ) );
+#else
       return Vec3( Math::fabs( x ), Math::fabs( y ), Math::fabs( z ) );
+#endif
     }
 
     /**
@@ -146,7 +194,11 @@ class Vec3
     OZ_ALWAYS_INLINE
     float operator ! () const
     {
+#ifdef OZ_SIMD_MATH
+      return Math::sqrt( Scalar( vDot3( f4, f4 ) ) );
+#else
       return Math::sqrt( x*x + y*y + z*z );
+#endif
     }
 
     /**
@@ -155,17 +207,28 @@ class Vec3
     OZ_ALWAYS_INLINE
     float fastN() const
     {
+#ifdef OZ_SIMD_MATH
+      return Math::fastSqrt( Scalar( vDot3( f4, f4 ) ) );
+#else
       return Math::fastSqrt( x*x + y*y + z*z );
+#endif
     }
 
     /**
      * Squared norm.
      */
     OZ_ALWAYS_INLINE
+#ifdef OZ_SIMD_MATH
+    Scalar sqN() const
+    {
+      return Scalar( vDot3( f4, f4 ) );
+    }
+#else
     float sqN() const
     {
       return x*x + y*y + z*z;
     }
+#endif
 
     /**
      * Unit vector.
@@ -173,10 +236,15 @@ class Vec3
     OZ_ALWAYS_INLINE
     Vec3 operator ~ () const
     {
+#ifdef OZ_SIMD_MATH
+      Scalar s = 1.0f / Math::sqrt( Scalar( vDot3( f4, f4 ) ) );
+      return Vec3( f4 * s.f4 );
+#else
       hard_assert( x*x + y*y + z*z > 0.0f );
 
       float k = 1.0f / Math::sqrt( x*x + y*y + z*z );
       return Vec3( x * k, y * k, z * k );
+#endif
     }
 
     /**
@@ -185,10 +253,15 @@ class Vec3
     OZ_ALWAYS_INLINE
     Vec3 fastUnit() const
     {
+#ifdef OZ_SIMD_MATH
+      Scalar s = Math::fastInvSqrt( Scalar( vDot3( f4, f4 ) ) );
+      return Vec3( f4 * s.f4 );
+#else
       hard_assert( x*x + y*y + z*z > 0.0f );
 
       float k = Math::fastInvSqrt( x*x + y*y + z*z );
       return Vec3( x * k, y * k, z * k );
+#endif
     }
 
     /**
@@ -206,7 +279,11 @@ class Vec3
     OZ_ALWAYS_INLINE
     Vec3 operator - () const
     {
+#ifdef OZ_SIMD_MATH
+      return Vec3( -f4 );
+#else
       return Vec3( -x, -y, -z );
+#endif
     }
 
     /**
@@ -215,7 +292,11 @@ class Vec3
     OZ_ALWAYS_INLINE
     Vec3 operator + ( const Vec3& v ) const
     {
+#ifdef OZ_SIMD_MATH
+      return Vec3( f4 + v.f4 );
+#else
       return Vec3( x + v.x, y + v.y, z + v.z );
+#endif
     }
 
     /**
@@ -224,31 +305,55 @@ class Vec3
     OZ_ALWAYS_INLINE
     Vec3 operator - ( const Vec3& v ) const
     {
+#ifdef OZ_SIMD_MATH
+      return Vec3( f4 - v.f4 );
+#else
       return Vec3( x - v.x, y - v.y, z - v.z );
+#endif
     }
 
     /**
-     * %Vector multiplied by a scalar.
+     * Vector multiplied by a scalar.
      */
     OZ_ALWAYS_INLINE
+#ifdef OZ_SIMD_MATH
+    Vec3 operator * ( const Scalar& s ) const
+    {
+      return Vec3( f4 * s.f4 );
+    }
+#else
     Vec3 operator * ( float k ) const
     {
       return Vec3( x * k, y * k, z * k );
     }
+#endif
 
     /**
-     * %Vector multiplied by a scalar.
+     * Vector multiplied by a scalar.
      */
     OZ_ALWAYS_INLINE
+#ifdef OZ_SIMD_MATH
+    friend Vec3 operator * ( const Scalar& s, const Vec3& v )
+    {
+      return Vec3( s.f4 * v.f4 );
+    }
+#else
     friend Vec3 operator * ( float k, const Vec3& v )
     {
       return Vec3( k * v.x, k * v.y, k * v.z );
     }
+#endif
 
     /**
-     * %Vector divided by a scalar.
+     * Vector divided by a scalar.
      */
     OZ_ALWAYS_INLINE
+#ifdef OZ_SIMD_MATH
+    Vec3 operator / ( const Scalar& s ) const
+    {
+      return Vec3( f4 / s.f4 );
+    }
+#else
     Vec3 operator / ( float k ) const
     {
       hard_assert( k != 0.0f );
@@ -256,6 +361,7 @@ class Vec3
       k = 1.0f / k;
       return Vec3( x * k, y * k, z * k );
     }
+#endif
 
     /**
      * Addition.
@@ -263,9 +369,13 @@ class Vec3
     OZ_ALWAYS_INLINE
     Vec3& operator += ( const Vec3& v )
     {
+#ifdef OZ_SIMD_MATH
+      f4 += v.f4;
+#else
       x += v.x;
       y += v.y;
       z += v.z;
+#endif
       return *this;
     }
 
@@ -275,9 +385,13 @@ class Vec3
     OZ_ALWAYS_INLINE
     Vec3& operator -= ( const Vec3& v )
     {
+#ifdef OZ_SIMD_MATH
+      f4 -= v.f4;
+#else
       x -= v.x;
       y -= v.y;
       z -= v.z;
+#endif
       return *this;
     }
 
@@ -285,6 +399,13 @@ class Vec3
      * Multiplication by a scalar.
      */
     OZ_ALWAYS_INLINE
+#ifdef OZ_SIMD_MATH
+    Vec3& operator *= ( const Scalar& s )
+    {
+      f4 *= s.f4;
+      return *this;
+    }
+#else
     Vec3& operator *= ( float k )
     {
       x *= k;
@@ -292,11 +413,19 @@ class Vec3
       z *= k;
       return *this;
     }
+#endif
 
     /**
      * Division by a scalar.
      */
     OZ_ALWAYS_INLINE
+#ifdef OZ_SIMD_MATH
+    Vec3& operator /= ( const Scalar& s )
+    {
+      f4 /= s.f4;
+      return *this;
+    }
+#else
     Vec3& operator /= ( float k )
     {
       hard_assert( k != 0.0f );
@@ -307,18 +436,26 @@ class Vec3
       z *= k;
       return *this;
     }
+#endif
 
     /**
      * Scalar product.
      */
     OZ_ALWAYS_INLINE
+#ifdef OZ_SIMD_MATH
+    Scalar operator * ( const Vec3& v ) const
+    {
+      return Scalar( vDot3( f4, v.f4 ) );
+    }
+#else
     float operator * ( const Vec3& v ) const
     {
       return x*v.x + y*v.y + z*v.z;
     }
+#endif
 
     /**
-     * %Vector product.
+     * Vector product.
      */
     OZ_ALWAYS_INLINE
     Vec3 operator ^ ( const Vec3& v ) const

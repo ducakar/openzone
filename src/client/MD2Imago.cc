@@ -58,8 +58,6 @@ Imago* MD2Imago::create( const Object* obj )
 
 void MD2Imago::draw( const Imago* parent )
 {
-  flags |= UPDATED_BIT;
-
   if( !md2->isLoaded ) {
     return;
   }

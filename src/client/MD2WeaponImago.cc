@@ -54,8 +54,6 @@ Imago* MD2WeaponImago::create( const Object* obj )
 
 void MD2WeaponImago::draw( const Imago* parent )
 {
-  flags |= UPDATED_BIT;
-
   if( !md2->isLoaded ) {
     return;
   }

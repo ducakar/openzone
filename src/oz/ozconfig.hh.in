@@ -30,13 +30,23 @@
 // leaks and new/delete mismatches.
 #cmakedefine OZ_TRACK_ALLOCS
 
+// Use versions of linear math structures that match SIMD registers and explicitly use SIMD
+// operations. However, due to larger size and if code is not written with SIMD in mind, those may
+// yield worse performance than generic linear math structures.
+#cmakedefine OZ_SIMD_MATH
+
 /*
  * Compiler and platform-specific macros
  */
 
 #if defined( _MSC_VER )
+# error Microsoft Compiler cannot compile OpenZone due to lack of C++11 support.
 # error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
 # define OZ_MSVC _MSC_VER
+#elif defined( __OPENCC__ )
+# error Open64 cannot compile OpenZone due to lack of C++11 support.
+# error GCC >= 4.4 and LLVM/Clang >= 3.0 are the only supported compilers.
+# define OZ_OPEN64 ( __OPENCC__ * 100 + __OPENCC_MINOR__ )
 #elif defined( __clang__ )
 # if __clang_major__ < 3
 #  error Only LLVM/Clang >= 3.0 is supported.
@@ -69,7 +79,6 @@
 
 // One should have same colour for highlighting macros and reserved words and those identifiers
 // should look as reserved words.
-# define null     null
 # define byte     byte
 # define ubyte    ubyte
 # define ushort   ushort
@@ -80,6 +89,7 @@
 
 # define noexcept throw()
 # define override
+# define final
 
 unsigned int __builtin_bswap32( unsigned int );
 unsigned long long __builtin_bswap64( unsigned long long );

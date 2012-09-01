@@ -1,15 +1,17 @@
 0.3.80
 
 - oz
-    * simplified iterators: CIteratorBase ~> IteratorBase &co., ArrayIterator typedefs replace all
-      array-like iterators
-    * new Set template class
+    * null removed, replaced by nullptr keyword
+    * new nil_t class, used for dummy value in key-value pairs
+    * improved iterator classes: much less code duplication, range-based for-loop support
+    * new Set template class, similar to Map but with single values instead of key-value pairs
+    * SIMD support in linear algebra classes, Simd class removed
 - ui
     * UI colours, fonts and layouts can be configured in `ui/style.json`
 - client
     * text-to-speech using eSpeak library
 - builder
-    * Context generates mipmaps and S3TC textures (using libsquish) without OpenGL
+    * Context generates mipmaps and S3TC textures (using libsquish) without initialising OpenGL
 
 0.3.1
 
@@ -62,6 +64,7 @@
       have a graphic model assigned, etc.
     * keys: object can have assigned a key value, so it can lock/unlock matching structure entities
     * lava: can be used both in structures and terrain instead of sea
+    * objects can be rotated around z axis in 90° steps
     * physics
         + object tracks lower entity: when an entity moves horizontally it also moves objects on top
         + sliding damage

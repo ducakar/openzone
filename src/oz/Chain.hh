@@ -68,24 +68,14 @@ class Chain
   private:
 
     /**
-     * Container-specific iterator.
+     * %Chain iterator.
      */
     template <class IterElem>
     class ChainIterator : public IteratorBase<IterElem>
     {
-      friend class Chain;
-
       private:
 
         using IteratorBase<IterElem>::elem;
-
-        /**
-         * %Iterator for the given container, points to the first element.
-         */
-        OZ_ALWAYS_INLINE
-        explicit ChainIterator( IterElem* first ) :
-          IteratorBase<IterElem>( first )
-        {}
 
       public:
 
@@ -95,6 +85,14 @@ class Chain
         OZ_ALWAYS_INLINE
         ChainIterator() :
           IteratorBase<IterElem>( nullptr )
+        {}
+
+        /**
+         * Create chain iterator, initially pointing to the given element.
+         */
+        OZ_ALWAYS_INLINE
+        explicit ChainIterator( IterElem* first ) :
+          IteratorBase<IterElem>( first )
         {}
 
         /**

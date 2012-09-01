@@ -26,7 +26,7 @@
  * Platform-specific main function implementation.
  */
 
-#include <main.hh>
+#include "main.hh"
 
 #ifdef __native_client__
 
@@ -43,7 +43,7 @@ namespace oz
 void* MainInstance::mainThreadMain( void* )
 {
   ozMain( 0, nullptr );
-  return null;
+  return nullptr;
 }
 
 MainInstance::MainInstance( PP_Instance instance_ ) :

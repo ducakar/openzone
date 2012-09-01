@@ -91,7 +91,7 @@ class IteratorBase
     }
 
     /**
-     * True while iterator has not passed all elements.
+     * True as long as iterator has not passed all elements.
      */
     OZ_ALWAYS_INLINE
     bool isValid() const

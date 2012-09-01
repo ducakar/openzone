@@ -63,7 +63,7 @@ using namespace oz;
 extern "C"
 void ( * signal( int, void ( * )( int ) ) )( int )
 {
-  return null;
+  return nullptr;
 }
 
 extern "C"
@@ -329,7 +329,7 @@ static void* bellThread( void* )
   while( isBellPlaying ) {
     nanosleep( &TIMESPEC_10MS, nullptr );
   }
-  return null;
+  return nullptr;
 }
 
 #elif defined( __ANDROID__ )

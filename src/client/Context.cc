@@ -37,7 +37,10 @@
 
 #include <client/OpenGL.hh>
 #include <client/OpenAL.hh>
-#include <espeak/speak_lib.h>
+
+#ifdef OZ_ESPEAK
+# include <espeak/speak_lib.h>
+#endif
 
 #define OZ_REGISTER_IMAGOCLASS( name ) \
   { \
@@ -63,6 +66,8 @@ namespace client
 Pool<Context::Source> Context::Source::pool;
 int                   Context::speakSampleRate;
 Context::SpeakSource  Context::speakSource;
+
+#ifdef OZ_ESPEAK
 
 int Context::speakCallback( short int* samples, int nSamples, void* )
 {
@@ -165,6 +170,8 @@ void Context::speakMain( void* )
   speakSource.isAlive = false;
 }
 
+#endif
+
 uint Context::addSource( int sound )
 {
   hard_assert( sounds[sound].nUsers > 0 );
@@ -240,6 +247,8 @@ void Context::removeContSource( ContSource* contSource, int key )
 
 uint Context::requestSpeakSource( const char* text, int owner )
 {
+#ifdef OZ_ESPEAK
+
   if( speakSource.thread.isValid() ) {
     return INVALID_SOURCE;
   }
@@ -252,14 +261,27 @@ uint Context::requestSpeakSource( const char* text, int owner )
 
   speakSource.thread.start( speakMain, nullptr );
   return speakSource.id;
+
+#else
+
+  static_cast<void>( text );
+  static_cast<void>( owner );
+
+  return INVALID_SOURCE;
+
+#endif
 }
 
 void Context::releaseSpeakSource()
 {
+#ifdef OZ_ESPEAK
+
   hard_assert( speakSource.thread.isValid() );
 
   speakSource.isAlive = false;
   speakSource.thread.join();
+
+#endif
 }
 
 Context::Context() :
@@ -568,15 +590,12 @@ void Context::drawImago( const Object* obj, const Imago* parent )
 
   if( value == nullptr ) {
     Imago::CreateFunc* createFunc = imagoClasses[obj->clazz->imagoType];
-
     value = imagines.add( obj->index, createFunc( obj ) );
   }
 
   Imago* imago = *value;
-
+  imago->flags |= Imago::UPDATED_BIT;
   imago->draw( parent );
-
-  hard_assert( imago->flags & Imago::UPDATED_BIT );
 }
 
 void Context::playAudio( const Object* obj, const Audio* parent )
@@ -587,15 +606,12 @@ void Context::playAudio( const Object* obj, const Audio* parent )
 
   if( value == nullptr ) {
     Audio::CreateFunc* createFunc = audioClasses[obj->clazz->audioType];
-
     value = audios.add( obj->index, createFunc( obj ) );
   }
 
   Audio* audio = *value;
-
+  audio->flags |= Audio::UPDATED_BIT;
   audio->play( parent );
-
-  hard_assert( audio->flags & Audio::UPDATED_BIT );
 }
 
 void Context::drawFrag( const Frag* frag )
@@ -604,13 +620,11 @@ void Context::drawFrag( const Frag* frag )
 
   if( pool == nullptr ) {
     pool = new FragPool( frag->pool );
-
     fragPools[frag->poolId] = pool;
   }
 
+  pool->flags |= FragPool::UPDATED_BIT;
   pool->draw( frag );
-
-  hard_assert( pool->flags & FragPool::UPDATED_BIT );
 }
 
 void Context::updateLoad()

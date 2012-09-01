@@ -81,31 +81,17 @@ class HashIndex
   private:
 
     /**
-     * Container-specific iterator.
+     * Hashtable iterator.
      */
     template <class IterElem>
     class HashIterator : public IteratorBase<IterElem>
     {
-      friend class HashIndex;
-
       private:
 
         using IteratorBase<IterElem>::elem;
 
         IterElem* const* data;  ///< Pointer to hashtable slots.
         int              index; ///< Index of the current slot.
-
-        /**
-         * %Iterator for the given container, points to its first element.
-         */
-        explicit HashIterator( IterElem* const* data_ ) :
-          IteratorBase<IterElem>( data_[0] ), data( data_ ), index( 0 )
-        {
-          while( elem == nullptr && index < SIZE - 1 ) {
-            ++index;
-            elem = data[index];
-          }
-        }
 
       public:
 
@@ -116,6 +102,20 @@ class HashIndex
         HashIterator() :
           IteratorBase<IterElem>( nullptr ), data( nullptr ), index( 0 )
         {}
+
+        /**
+         * Create hashtable iterator, initially pointing to the first hashtable element.
+         *
+         * @param data_ internal array of linked lists of a hastable.
+         */
+        explicit HashIterator( IterElem* const* data_ ) :
+          IteratorBase<IterElem>( data_[0] ), data( data_ ), index( 0 )
+        {
+          while( elem == nullptr && index < SIZE - 1 ) {
+            ++index;
+            elem = data[index];
+          }
+        }
 
         /**
          * Advance to the next element.

@@ -403,9 +403,7 @@ void Compiler::writeMesh( BufferStream* os, bool embedTextures )
 
   foreach( vertex, vertices.iter() ) {
     if( nFrames != 0 ) {
-      vertex->pos[0] = ( vertex->pos[0] + 0.5f ) / float( nFramePositions );
-      vertex->pos[1] = 0.0f;
-      vertex->pos[2] = 0.0f;
+      vertex->pos = Point( ( vertex->pos[0] + 0.5f ) / float( nFramePositions ), 0.0f, 0.0f );
     }
     vertex->write( os );
   }

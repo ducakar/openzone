@@ -43,9 +43,24 @@ class Point
     /// Origin, [0, 0, 0].
     static const Point ORIGIN;
 
+#ifdef OZ_SIMD_MATH
+    union
+    {
+      float4 f4;
+      uint4  u4;
+      struct
+      {
+        float x; ///< X component.
+        float y; ///< Y component.
+        float z; ///< Z component.
+        float w; ///< W component, should be always 1.
+      };
+    };
+#else
     float x; ///< X component.
     float y; ///< Y component.
     float z; ///< Z component.
+#endif
 
   public:
 
@@ -54,12 +69,36 @@ class Point
      */
     Point() = default;
 
+#ifdef OZ_SIMD_MATH
+
+    /**
+     * Create form a float SIMD vector.
+     */
+    OZ_ALWAYS_INLINE
+    explicit Point( const float4& f4_ ) :
+      f4( f4_ )
+    {}
+
+    /**
+     * Create form an uint SIMD vector.
+     */
+    OZ_ALWAYS_INLINE
+    explicit Point( const uint4& u4_ ) :
+      u4( u4_ )
+    {}
+
+#endif
+
     /**
      * Create a point with the given coordinates.
      */
     OZ_ALWAYS_INLINE
     explicit Point( float x_, float y_, float z_ ) :
+#ifdef OZ_SIMD_MATH
+      f4( float4( x_, y_, z_, 1.0f ) )
+#else
       x( x_ ), y( y_ ), z( z_ )
+#endif
     {}
 
     /**
@@ -67,7 +106,11 @@ class Point
      */
     OZ_ALWAYS_INLINE
     explicit Point( const float* v ) :
+#ifdef OZ_SIMD_MATH
+      f4( float4( v[0], v[1], v[2], 1.0f ) )
+#else
       x( v[0] ), y( v[1] ), z( v[2] )
+#endif
     {}
 
     /**
@@ -134,7 +177,11 @@ class Point
     OZ_ALWAYS_INLINE
     Point operator + ( const Vec3& v ) const
     {
+#ifdef OZ_SIMD_MATH
+      return Point( f4 + v.f4 );
+#else
       return Point( x + v.x, y + v.y, z + v.z );
+#endif
     }
 
     /**
@@ -143,7 +190,11 @@ class Point
     OZ_ALWAYS_INLINE
     Point operator - ( const Vec3& v ) const
     {
+#ifdef OZ_SIMD_MATH
+      return Point( f4 - v.f4 );
+#else
       return Point( x - v.x, y - v.y, z - v.z );
+#endif
     }
 
     /**
@@ -152,7 +203,11 @@ class Point
     OZ_ALWAYS_INLINE
     Vec3 operator - ( const Point& p ) const
     {
+#ifdef OZ_SIMD_MATH
+      return Vec3( f4 - p.f4 );
+#else
       return Vec3( x - p.x, y - p.y, z - p.z );
+#endif
     }
 
     /**
@@ -161,9 +216,13 @@ class Point
     OZ_ALWAYS_INLINE
     Point& operator += ( const Vec3& v )
     {
+#ifdef OZ_SIMD_MATH
+      f4 += v.f4;
+#else
       x += v.x;
       y += v.y;
       z += v.z;
+#endif
       return *this;
     }
 
@@ -173,9 +232,13 @@ class Point
     OZ_ALWAYS_INLINE
     Point& operator -= ( const Vec3& v )
     {
+#ifdef OZ_SIMD_MATH
+      f4 -= v.f4;
+#else
       x -= v.x;
       y -= v.y;
       z -= v.z;
+#endif
       return *this;
     }
 
@@ -183,10 +246,17 @@ class Point
      * Projection of the point to the given vector.
      */
     OZ_ALWAYS_INLINE
+#ifdef OZ_SIMD_MATH
+    Scalar operator * ( const Vec3& v ) const
+    {
+      return Scalar( vDot3( f4, v.f4 ) );
+    }
+#else
     float operator * ( const Vec3& v ) const
     {
       return x*v.x + y*v.y + z*v.z;
     }
+#endif
 
 };
 

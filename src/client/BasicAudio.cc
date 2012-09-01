@@ -46,8 +46,6 @@ Audio* BasicAudio::create( const Object* obj )
 
 void BasicAudio::play( const Audio* parent )
 {
-  flags |= UPDATED_BIT;
-
   const int ( & sounds )[ObjectClass::MAX_SOUNDS] = obj->clazz->audioSounds;
 
   for( int i = 0; i < ObjectClass::MAX_SOUNDS; ++i ) {

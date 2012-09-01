@@ -55,8 +55,6 @@ FragPool::~FragPool()
 
 void FragPool::draw( const Frag* frag )
 {
-  flags |= UPDATED_BIT;
-
   int  index = frag->index % models.length();
   SMM* model = models[index];
 

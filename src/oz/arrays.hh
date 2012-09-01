@@ -59,7 +59,7 @@ class ArrayIterator : public IteratorBase<Elem>
     {}
 
     /**
-     * %Iterator for an array.
+     * %Array iterator.
      *
      * @param first first array element.
      * @param past_ successor of the last element.
@@ -70,7 +70,7 @@ class ArrayIterator : public IteratorBase<Elem>
     {}
 
     /**
-     * True while iterator has not passed all array elements.
+     * True as long as iterator has not passed all array elements.
      */
     OZ_ALWAYS_INLINE
     bool isValid() const

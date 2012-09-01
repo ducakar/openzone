@@ -438,7 +438,7 @@ void Physics::handleObjMove()
 
     // In obtuse corners (> 90°) we prevent oscillations by preventing move in the opposite
     // direction form the original one.
-    move -= min( move * originalDir + MOVE_BOUNCE, 0.0f ) * originalDir;
+    move -= min<float>( move * originalDir + MOVE_BOUNCE, 0.0f ) * originalDir;
 
     // In acute (< 90°) corners we move the object a little out of it to prevent it getting stuck.
     if( traceSplits == 1 ) {

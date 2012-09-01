@@ -25,13 +25,10 @@
  *
  * Essential includes, macros, types and templates.
  *
- * You may want to add `null`, foreach, `soft_assert`, `hard_assert`, `byte`, `ubyte`, `ushort`,
- * `ulong`, `long64` and `ulong64` to your `~/.kde/share/apps/katepart/syntax/cpp.xml` or global
- * file `/usr/share/apps/katepart/syntax/cpp.xml` to look like reserved words in KatePart
+ * You may want to add `soft_assert`, `hard_assert`, `byte`, `ubyte`, `ushort`, `ulong`, `long64`,
+ * `ulong64`, `foreach`, `float4` and `uint4` to your `~/.kde/share/apps/katepart/syntax/cpp.xml` or
+ * global `/usr/share/apps/katepart/syntax/cpp.xml` to look like reserved words in KatePart
  * (KWrite/Kate/KDevelop).
- *
- * For Eclipse I use the same syntax highlighting for macro invocations and reserved words.
- * Import `etc/eclipse-defines.xml` file to define custom reserved words as macros.
  */
 
 #pragma once
@@ -97,9 +94,11 @@
 # define constexpr const
 # define noexcept  throw()
 # define nullptr   __null
+namespace std { typedef ptrdiff_t nullptr_t; }
 #endif
 #if defined( OZ_GCC ) && OZ_GCC < 407
 # define override
+# define final
 #endif
 
 /**
@@ -155,11 +154,7 @@ void _hardAssertHelper( const char* function, const char* file, int line, const 
  */
 
 // Import core C++ types from <cstddef>.
-#if defined( OZ_GCC ) && OZ_GCC < 406
-typedef std::ptrdiff_t nullptr_t;
-#else
 using std::nullptr_t;
-#endif
 using std::ptrdiff_t;
 using std::size_t;
 

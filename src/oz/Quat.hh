@@ -46,10 +46,25 @@ class Quat
     /// Quaternion representing rotation identity.
     static const Quat ID;
 
+#ifdef OZ_SIMD_MATH
+    union
+    {
+      float4 f4;
+      uint4  u4;
+      struct
+      {
+        float x; ///< X component.
+        float y; ///< Y component.
+        float z; ///< Z component.
+        float w; ///< W component.
+      };
+    };
+#else
     float x; ///< X component.
     float y; ///< Y component.
     float z; ///< Z component.
     float w; ///< W component.
+#endif
 
   public:
 
@@ -58,12 +73,36 @@ class Quat
      */
     Quat() = default;
 
+#ifdef OZ_SIMD_MATH
+
+    /**
+     * Create from a float SIMD vector.
+     */
+    OZ_ALWAYS_INLINE
+    explicit Quat( const float4& f4_ ) :
+      f4( f4_ )
+    {}
+
+    /**
+     * Create from an uint SIMD vector.
+     */
+    OZ_ALWAYS_INLINE
+    explicit Quat( const uint4& u4_ ) :
+      u4( u4_ )
+    {}
+
+#endif
+
     /**
      * Create a quaternion with the given components.
      */
     OZ_ALWAYS_INLINE
     explicit Quat( float x_, float y_, float z_, float w_ ) :
+#ifdef OZ_SIMD_MATH
+      f4( float4( x_, y_, z_, w_ ) )
+#else
       x( x_ ), y( y_ ), z( z_ ), w( w_ )
+#endif
     {}
 
     /**
@@ -71,15 +110,23 @@ class Quat
      */
     OZ_ALWAYS_INLINE
     explicit Quat( const float* q ) :
+#ifdef OZ_SIMD_MATH
+      f4( float4( q[0], q[1], q[2], q[3] ) )
+#else
       x( q[0] ), y( q[1] ), z( q[2] ), w( q[3] )
+#endif
     {}
 
     /**
      * Create quaternion from a four-component vector.
      */
     OZ_ALWAYS_INLINE
-    explicit Quat( const Vec4& v ) :
+    Quat( const Vec4& v ) :
+#ifdef OZ_SIMD_MATH
+      f4( v.f4 )
+#else
       x( v.x ), y( v.y ), z( v.z ), w( v.w )
+#endif
     {}
 
     /**
@@ -105,7 +152,11 @@ class Quat
      */
     operator Vec4 () const
     {
+#ifdef OZ_SIMD_MATH
+      return Vec4( f4 );
+#else
       return Vec4( x, y, z, w );
+#endif
     }
 
     /**
@@ -154,7 +205,11 @@ class Quat
     OZ_ALWAYS_INLINE
     Quat abs() const
     {
+#ifdef OZ_SIMD_MATH
+      return Quat( vAbs( u4 ) );
+#else
       return Quat( Math::fabs( x ), Math::fabs( y ), Math::fabs( z ), Math::fabs( w ) );
+#endif
     }
 
     /**
@@ -163,17 +218,28 @@ class Quat
     OZ_ALWAYS_INLINE
     Quat operator * () const
     {
+#ifdef OZ_SIMD_MATH
+      return Quat( u4 ^ uint4( 0x80000000, 0x80000000, 0x80000000, 0 ) );
+#else
       return Quat( -x, -y, -z, w );
+#endif
     }
 
     /**
      * Norm.
      */
     OZ_ALWAYS_INLINE
+#ifdef OZ_SIMD_MATH
+    Scalar operator ! () const
+    {
+      return Scalar( vDot4( f4, f4 ) );
+    }
+#else
     float operator ! () const
     {
       return x*x + y*y + z*z + w*w;
     }
+#endif
 
     /**
      * Unit quaternion.
@@ -181,10 +247,15 @@ class Quat
     OZ_ALWAYS_INLINE
     Quat operator ~ () const
     {
+#ifdef OZ_SIMD_MATH
+      Scalar s = 1.0f / Math::sqrt( Scalar( vDot4( f4, f4 ) ) );
+      return Quat( f4 * s.f4 );
+#else
       hard_assert( x*x + y*y + z*z + w*w > 0.0f );
 
       float k = 1.0f / Math::sqrt( x*x + y*y + z*z + w*w );
       return Quat( x * k, y * k, z * k, w * k );
+#endif
     }
 
     /**
@@ -193,10 +264,15 @@ class Quat
     OZ_ALWAYS_INLINE
     Quat fastUnit() const
     {
+#ifdef OZ_SIMD_MATH
+      Scalar s = Math::fastInvSqrt( Scalar( vDot4( f4, f4 ) ) );
+      return Quat( f4 * s.f4 );
+#else
       hard_assert( x*x + y*y + z*z + w*w > 0.0f );
 
       float k = Math::fastInvSqrt( x*x + y*y + z*z + w*w );
       return Quat( x * k, y * k, z * k, w * k );
+#endif
     }
 
     /**
@@ -214,7 +290,11 @@ class Quat
     OZ_ALWAYS_INLINE
     Quat operator - () const
     {
+#ifdef OZ_SIMD_MATH
+      return Quat( -f4 );
+#else
       return Quat( -x, -y, -z, -w );
+#endif
     }
 
     /**
@@ -223,7 +303,11 @@ class Quat
     OZ_ALWAYS_INLINE
     Quat operator + ( const Quat& q ) const
     {
+#ifdef OZ_SIMD_MATH
+      return Quat( f4 + q.f4 );
+#else
       return Quat( x + q.x, y + q.y, z + q.z, w + q.w );
+#endif
     }
 
     /**
@@ -232,26 +316,44 @@ class Quat
     OZ_ALWAYS_INLINE
     Quat operator - ( const Quat& q ) const
     {
+#ifdef OZ_SIMD_MATH
+      return Quat( f4 - q.f4 );
+#else
       return Quat( x - q.x, y - q.y, z - q.z, w - q.w );
+#endif
     }
 
     /**
      * Product.
      */
     OZ_ALWAYS_INLINE
+#ifdef OZ_SIMD_MATH
+    Quat operator * ( const Scalar& s ) const
+    {
+      return Quat( f4 * s.f4 );
+    }
+#else
     Quat operator * ( float k ) const
     {
       return Quat( x * k, y * k, z * k, w * k );
     }
+#endif
 
     /**
      * Product.
      */
     OZ_ALWAYS_INLINE
+#ifdef OZ_SIMD_MATH
+    friend Quat operator * ( const Scalar& s, const Quat& q )
+    {
+      return Quat( s.f4 * q.f4 );
+    }
+#else
     friend Quat operator * ( float k, const Quat& q )
     {
       return Quat( k * q.x, k * q.y, k * q.z, k * q.w );
     }
+#endif
 
     /**
      * Quaternion product.
@@ -259,10 +361,227 @@ class Quat
     OZ_ALWAYS_INLINE
     Quat operator * ( const Quat& q ) const
     {
+#ifdef OZ_SIMD_MATH
+//       float4 k0 = OZ_SHUFFLE_VECTOR( f4, f4, 3, 3, 3, 3 );
+//       float4 k1 = OZ_SHUFFLE_VECTOR( f4, f4, 0, 3, 1, 0 );
+//       float4 k2 = OZ_SHUFFLE_VECTOR( f4, f4, 1, 0, 2, 1 );
+//       float4 k3 = OZ_SHUFFLE_VECTOR( f4, f4, 3, 1, 0, 3 );
+//
+//       float4 q0 = OZ_SHUFFLE_VECTOR( q.f4, q.f4, 3, 2, 1, 0 );
+//       float4 q1 = OZ_SHUFFLE_VECTOR( q.f4, q.f4, 0, 3, 3, 3 );
+//       float4 q2 = OZ_SHUFFLE_VECTOR( q.f4, q.f4, 1, 1, 0, 2 );
+//       float4 q3 = OZ_SHUFFLE_VECTOR( q.f4, q.f4, 2, 0, 2, 1 );
+
+      // TODO SIMD
       return Quat( w*q.x + x*q.w + y*q.z - z*q.y,
                    w*q.y + y*q.w + z*q.x - x*q.z,
                    w*q.z + z*q.w + x*q.y - y*q.x,
                    w*q.w - x*q.x - y*q.y - z*q.z );
+#else
+      return Quat( w*q.x + x*q.w + y*q.z - z*q.y,
+                   w*q.y + y*q.w + z*q.x - x*q.z,
+                   w*q.z + z*q.w + x*q.y - y*q.x,
+                   w*q.w - x*q.x - y*q.y - z*q.z );
+#endif
+    }
+
+    /**
+     * Quotient.
+     */
+    OZ_ALWAYS_INLINE
+#ifdef OZ_SIMD_MATH
+    Quat operator / ( const Scalar& s ) const
+    {
+      return Quat( f4 / s.f4 );
+    }
+#else
+    Quat operator / ( float k ) const
+    {
+      hard_assert( k != 0.0f );
+
+      k = 1.0f / k;
+      return Quat( x * k, y * k, z * k, w * k );
+    }
+#endif
+
+    /**
+     * Quotient.
+     */
+    OZ_ALWAYS_INLINE
+#ifdef OZ_SIMD_MATH
+    friend Quat operator / ( const Scalar& s, const Quat& q )
+    {
+      float4 k = s.f4 / vDot4( q.f4, q.f4 );
+      k = OZ_SHUFFLE_VECTOR( k, -k, 0, 0, 0, 0 );
+      k = OZ_SHUFFLE_VECTOR( k, k, 2, 0, 0, 0 );
+
+      return Quat( q.f4 * k );
+    }
+#else
+    friend Quat operator / ( float k, const Quat& q )
+    {
+      k = k / ( q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w );
+      float nk = -k;
+      return Quat( q.x * nk, q.y * nk, q.z * nk, q.w * k );
+    }
+#endif
+
+    /**
+     * Quaternion quotient.
+     */
+    OZ_ALWAYS_INLINE
+    Quat operator / ( const Quat& q ) const
+    {
+#ifdef OZ_SIMD_MATH
+      // TODO SIMD
+      float k = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
+      return Quat( k * ( x*q.w - w*q.x + z*q.y - y*q.z ),
+                   k * ( y*q.w - w*q.y + x*q.z - z*q.x ),
+                   k * ( z*q.w - w*q.z + y*q.x - x*q.y ),
+                   k * ( w*q.w + x*q.x + y*q.y + z*q.z ) );
+#else
+      float k = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
+      return Quat( k * ( x*q.w - w*q.x + z*q.y - y*q.z ),
+                   k * ( y*q.w - w*q.y + x*q.z - z*q.x ),
+                   k * ( z*q.w - w*q.z + y*q.x - x*q.y ),
+                   k * ( w*q.w + x*q.x + y*q.y + z*q.z ) );
+#endif
+    }
+
+    /**
+     * Addition.
+     */
+    OZ_ALWAYS_INLINE
+    Quat& operator += ( const Quat& q )
+    {
+#ifdef OZ_SIMD_MATH
+      f4 += q.f4;
+#else
+      x += q.x;
+      y += q.y;
+      z += q.z;
+      w += q.w;
+#endif
+      return *this;
+    }
+
+    /**
+     * Subtraction.
+     */
+    OZ_ALWAYS_INLINE
+    Quat& operator -= ( const Quat& q )
+    {
+#ifdef OZ_SIMD_MATH
+      f4 -= q.f4;
+#else
+      x -= q.x;
+      y -= q.y;
+      z -= q.z;
+      w -= q.w;
+#endif
+      return *this;
+    }
+
+    /**
+     * Multiplication.
+     */
+    OZ_ALWAYS_INLINE
+#ifdef OZ_SIMD_MATH
+    Quat& operator *= ( const Scalar& s )
+    {
+      f4 *= s.f4;
+      return *this;
+    }
+#else
+    Quat& operator *= ( float k )
+    {
+      x *= k;
+      y *= k;
+      z *= k;
+      w *= k;
+      return *this;
+    }
+#endif
+
+    /**
+     * Quaternion multiplication.
+     */
+    OZ_ALWAYS_INLINE
+    Quat& operator *= ( const Quat& q )
+    {
+#ifdef OZ_SIMD_MATH
+      // TODO SIMD
+      float tx = x, ty = y, tz = z;
+
+      x = w*q.x + tx*q.w + ty*q.z - tz*q.y;
+      y = w*q.y + ty*q.w + tz*q.x - tx*q.z;
+      z = w*q.z + tz*q.w + tx*q.y - ty*q.x;
+      w = w*q.w - tx*q.x - ty*q.y - tz*q.z;
+#else
+      float tx = x, ty = y, tz = z;
+
+      x = w*q.x + tx*q.w + ty*q.z - tz*q.y;
+      y = w*q.y + ty*q.w + tz*q.x - tx*q.z;
+      z = w*q.z + tz*q.w + tx*q.y - ty*q.x;
+      w = w*q.w - tx*q.x - ty*q.y - tz*q.z;
+#endif
+      return *this;
+    }
+
+    /**
+     * Division.
+     */
+    OZ_ALWAYS_INLINE
+#ifdef OZ_SIMD_MATH
+    Quat& operator /= ( const Scalar& s )
+    {
+      f4 /= s.f4;
+      return *this;
+    }
+#else
+    Quat& operator /= ( float k )
+    {
+      hard_assert( k != 0.0f );
+
+      k  = 1.0f / k;
+      x *= k;
+      y *= k;
+      z *= k;
+      w *= k;
+      return *this;
+    }
+#endif
+
+    /**
+     * Quaternion division.
+     */
+    OZ_ALWAYS_INLINE
+    Quat& operator /= ( const Quat& q )
+    {
+#ifdef OZ_SIMD_MATH
+      float k = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
+      Quat  t = Quat( k * ( x*q.w - w*q.x + z*q.y - y*q.z ),
+                      k * ( y*q.w - w*q.y + x*q.z - z*q.x ),
+                      k * ( z*q.w - w*q.z + y*q.x - x*q.y ),
+                      k * ( w*q.w + x*q.x + y*q.y + z*q.z ) );
+
+      x = t.x;
+      y = t.y;
+      z = t.z;
+      w = t.w;
+#else
+      float k = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
+      Quat  t = Quat( k * ( x*q.w - w*q.x + z*q.y - y*q.z ),
+                      k * ( y*q.w - w*q.y + x*q.z - z*q.x ),
+                      k * ( z*q.w - w*q.z + y*q.x - x*q.y ),
+                      k * ( w*q.w + x*q.x + y*q.y + z*q.z ) );
+
+      x = t.x;
+      y = t.y;
+      z = t.z;
+      w = t.w;
+#endif
+      return *this;
     }
 
     /**
@@ -288,131 +607,6 @@ class Quat
       return Vec3( ( yy1 - zz2 ) * v.x + ( xy2 - zw2 ) * v.y + ( xz2 + yw2 ) * v.z,
                    ( xy2 + zw2 ) * v.x + ( xx1 - zz2 ) * v.y + ( yz2 - xw2 ) * v.z,
                    ( xz2 - yw2 ) * v.x + ( yz2 + xw2 ) * v.y + ( xx1 - yy2 ) * v.z );
-    }
-
-    /**
-     * Quotient.
-     */
-    OZ_ALWAYS_INLINE
-    Quat operator / ( float k ) const
-    {
-      hard_assert( k != 0.0f );
-
-      k = 1.0f / k;
-      return Quat( x * k, y * k, z * k, w * k );
-    }
-
-    /**
-     * Quotient.
-     */
-    OZ_ALWAYS_INLINE
-    friend Quat operator / ( float k, const Quat& q )
-    {
-      k = k / ( q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w );
-      float nk = -k;
-      return Quat( q.x * nk, q.y * nk, q.z * nk, q.w * k );
-    }
-
-    /**
-     * Quaternion quotient.
-     */
-    OZ_ALWAYS_INLINE
-    Quat operator / ( const Quat& q ) const
-    {
-      float k = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
-      return Quat( k * ( x*q.w - w*q.x + z*q.y - y*q.z ),
-                   k * ( y*q.w - w*q.y + x*q.z - z*q.x ),
-                   k * ( z*q.w - w*q.z + y*q.x - x*q.y ),
-                   k * ( w*q.w + x*q.x + y*q.y + z*q.z ) );
-    }
-
-    /**
-     * Addition.
-     */
-    OZ_ALWAYS_INLINE
-    Quat& operator += ( const Quat& q )
-    {
-      x += q.x;
-      y += q.y;
-      z += q.z;
-      w += q.w;
-      return *this;
-    }
-
-    /**
-     * Subtraction.
-     */
-    OZ_ALWAYS_INLINE
-    Quat& operator -= ( const Quat& q )
-    {
-      x -= q.x;
-      y -= q.y;
-      z -= q.z;
-      w -= q.w;
-      return *this;
-    }
-
-    /**
-     * Multiplication.
-     */
-    OZ_ALWAYS_INLINE
-    Quat& operator *= ( float k )
-    {
-      x *= k;
-      y *= k;
-      z *= k;
-      w *= k;
-      return *this;
-    }
-
-    /**
-     * Quaternion multiplication.
-     */
-    OZ_ALWAYS_INLINE
-    Quat& operator *= ( const Quat& q )
-    {
-      float tx = x, ty = y, tz = z;
-
-      x = w*q.x + tx*q.w + ty*q.z - tz*q.y;
-      y = w*q.y + ty*q.w + tz*q.x - tx*q.z;
-      z = w*q.z + tz*q.w + tx*q.y - ty*q.x;
-      w = w*q.w - tx*q.x - ty*q.y - tz*q.z;
-      return *this;
-    }
-
-    /**
-     * Division.
-     */
-    OZ_ALWAYS_INLINE
-    Quat& operator /= ( float k )
-    {
-      hard_assert( k != 0.0f );
-
-      k  = 1.0f / k;
-      x *= k;
-      y *= k;
-      z *= k;
-      w *= k;
-      return *this;
-    }
-
-    /**
-     * Quaternion division.
-     */
-    OZ_ALWAYS_INLINE
-    Quat& operator /= ( const Quat& q )
-    {
-      float k = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
-      Quat  t = Quat( k * ( x*q.w - w*q.x + z*q.y - y*q.z ),
-                      k * ( y*q.w - w*q.y + x*q.z - z*q.x ),
-                      k * ( z*q.w - w*q.z + y*q.x - x*q.y ),
-                      k * ( w*q.w + x*q.x + y*q.y + z*q.z ) );
-
-      x = t.x;
-      y = t.y;
-      z = t.z;
-      w = t.w;
-      return *this;
     }
 
     /**
