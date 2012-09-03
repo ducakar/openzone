@@ -37,7 +37,6 @@ set( ozHeaders
   Pool.hh
   Quat.hh
   SBitset.hh
-  scalar.hh
   Semaphore.hh
   Set.hh
   simd.hh
@@ -85,7 +84,6 @@ add_library( oz
   Pool.hh
   Quat.hh
   SBitset.hh
-  scalar.hh
   Semaphore.hh
   Set.hh
   simd.hh

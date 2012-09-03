@@ -147,7 +147,7 @@ class Collider
     bool overlapsEntity( const AABB& aabb, const Entity* entity, float margin = 0.0f );
 
     // fill given vectors with objects and structures overlapping with the AABB
-    // if either vector is null the respective test is not performed
+    // if either vector is nullptr the respective test is not performed
     void getOverlaps( const AABB& aabb, List<Struct*>* structs, List<Object*>* objects,
                       float eps = EPSILON );
     // fill given vector with objects included in the AABB

@@ -28,11 +28,11 @@
 
 #include "System.hh"
 
+#include <cstdlib>
+
 #ifdef _WIN32
-# include <cstdlib>
 # include <windows.h>
 #else
-# include <cstdlib>
 # include <pthread.h>
 #endif
 

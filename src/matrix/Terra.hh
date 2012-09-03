@@ -71,7 +71,6 @@ class Terra
     int  id;
 
     Span getInters( float minX, float minY, float maxX, float maxY, float epsilon = 0.0f ) const;
-    // indices of TerraQuad
     Pair<int> getIndices( float x, float y ) const;
     float height( float x, float y ) const;
 

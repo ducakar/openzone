@@ -30,6 +30,11 @@
 // leaks and new/delete mismatches.
 #cmakedefine OZ_TRACK_ALLOCS
 
+// Use versions of linear math structures that match SIMD registers and explicitly use SIMD
+// operations. However, due to larger size and if code is not written with SIMD in mind, those may
+// yield worse performance than generic linear math structures.
+#cmakedefine OZ_SIMD_MATH
+
 /*
  * Compiler and platform-specific macros
  */
@@ -61,11 +66,16 @@
 # define constexpr const
 # define noexcept  throw()
 # define nullptr   __null
-namespace std { typedef ptrdiff_t nullptr_t; }
+namespace std { typedef __PTRDIFF_TYPE__ nullptr_t; }
 #endif
 #if defined( OZ_GCC ) && OZ_GCC < 407
 # define override
 # define final
+#endif
+
+// For now, SSE3 is mandatory for OZ_SIMD_MATH.
+#if defined( OZ_SIMD_MATH ) && !defined( __SSE3__ )
+# error SSE3 must be enabled for OZ_SIMD_MATH. Compile with -msse3.
 #endif
 
 #ifdef _WIN32

@@ -33,33 +33,11 @@
 
 #pragma once
 
-/*
- * INCLUDES
- */
-
-/*
- * Configuration.
- */
 #include "ozconfig.hh"
 
-/*
- * The most essential C/C++ definitions (std::nullptr_t, size_t, ptrdiff_t and offsetof).
- */
 #include <cstddef>
-
-/*
- * Platform-independent argument reading for variable-argument functions.
- */
 #include <cstdarg>
-
-/*
- * Standard declarations of new/delete & overloads.
- */
 #include <new>
-
-/*
- * MACROS
- */
 
 /**
  * @def OZ_ALIGNED
@@ -96,55 +74,17 @@
 #define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
 
 /**
+ * @def OZ_THREAD_LOCAL
+ * Compiler-specific attribute specifying thread-local storage.
+ */
+#define OZ_THREAD_LOCAL __thread
+
+/**
  * Top-level OpenZone namespace.
  */
 namespace oz
 {
 
-/*
- * ASSERTIONS
- */
-
-/**
- * @def soft_assert
- * If condition fails, raise SIGTRAP and print error using global log.
- */
-#ifdef NDEBUG
-# define soft_assert( cond ) void( 0 )
-#else
-# define soft_assert( cond ) \
-  ( ( cond ) ? \
-    void( 0 ) : oz::_softAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
-#endif
-
-/**
- * @def hard_assert
- * If condition fails, raise SIGTRAP, print error using global log and abort program.
- */
-#ifdef NDEBUG
-# define hard_assert( cond ) void( 0 )
-#else
-# define hard_assert( cond ) \
-  ( ( cond ) ? \
-    void( 0 ) : oz::_hardAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
-#endif
-
-/**
- * Helper method for `soft_assert` macro.
- */
-void _softAssertHelper( const char* function, const char* file, int line, const char* message );
-
-/**
- * Helper method for `hard_assert` macro.
- */
-OZ_NORETURN
-void _hardAssertHelper( const char* function, const char* file, int line, const char* message );
-
-/*
- * TYPES
- */
-
-// Import core C++ types from <cstddef>.
 using std::nullptr_t;
 using std::ptrdiff_t;
 using std::size_t;
@@ -221,9 +161,40 @@ static_assert( sizeof( long64 ) == 8, "sizeof( long64 ) should be 8" );
 static_assert( sizeof( float  ) == 4, "sizeof( float ) should be 4" );
 static_assert( sizeof( double ) == 8, "sizeof( double ) should be 8" );
 
-/*
- * BASIC TEMPLATES
+/**
+ * @def soft_assert
+ * If condition fails, raise SIGTRAP and print error using global log.
  */
+#ifdef NDEBUG
+# define soft_assert( cond ) void( 0 )
+#else
+# define soft_assert( cond ) \
+  ( ( cond ) ? \
+    void( 0 ) : oz::_softAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
+#endif
+
+/**
+ * @def hard_assert
+ * If condition fails, raise SIGTRAP, print error using global log and abort program.
+ */
+#ifdef NDEBUG
+# define hard_assert( cond ) void( 0 )
+#else
+# define hard_assert( cond ) \
+  ( ( cond ) ? \
+    void( 0 ) : oz::_hardAssertHelper( __PRETTY_FUNCTION__, __FILE__, __LINE__, #cond ) )
+#endif
+
+/**
+ * Helper method for `soft_assert` macro.
+ */
+void _softAssertHelper( const char* function, const char* file, int line, const char* message );
+
+/**
+ * Helper method for `hard_assert` macro.
+ */
+OZ_NORETURN
+void _hardAssertHelper( const char* function, const char* file, int line, const char* message );
 
 /**
  * Swap values of variables.

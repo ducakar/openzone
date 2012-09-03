@@ -156,7 +156,7 @@
 
 /**
  * @def SELF
- * Exits %Lua API function call with an error if self object is null.
+ * Exits %Lua API function call with an error if self object is `nullptr`.
  */
 #define SELF() \
   if( ms.self == nullptr ) { \
@@ -165,7 +165,7 @@
 
 /**
  * @def SELF_BOT
- * Exits %Lua API function call with an error if self object is null or not a bot.
+ * Exits %Lua API function call with an error if self object is `nullptr` or not a bot.
  */
 #define SELF_BOT() \
   SELF(); \

@@ -26,8 +26,6 @@
 
 #include "StackTrace.hh"
 
-#include "arrays.hh"
-
 #if defined( __GLIBC__ ) || defined( _LIBCPP_VERSION )
 # include <cstdlib>
 # include <cstring>
@@ -64,7 +62,7 @@ StackTrace StackTrace::current( int nSkippedFrames )
 
   StackTrace st;
   st.nFrames = min<int>( nFrames - 1 - nSkippedFrames, int( MAX_FRAMES ) );
-  aCopy( st.frames, framesBuffer + 1 + nSkippedFrames, st.nFrames );
+  memcpy( st.frames, framesBuffer + 1 + nSkippedFrames, size_t( st.nFrames ) * sizeof( void* ) );
   return st;
 }
 

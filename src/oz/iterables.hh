@@ -326,7 +326,7 @@ inline int iLastIndex( CIterator iSrc, const Value& value )
 }
 
 /**
- * Delete objects referenced by elements and set all elements to `null`.
+ * Delete objects referenced by elements and set all elements to `nullptr`.
  */
 template <class Iterator>
 inline void iFree( Iterator iDest )

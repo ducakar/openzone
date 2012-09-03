@@ -188,7 +188,7 @@ class HashString
         chainA = chainA->next;
         chainB = chainB->next;
       }
-      // At least one is null.
+      // At least one is nullptr.
       return chainA == chainB;
     }
 
@@ -416,7 +416,7 @@ class HashString
     }
 
     /**
-     * If the key exists, return constant pointer to its value, otherwise return `null`.
+     * If the key exists, return constant pointer to its value, otherwise return `nullptr`.
      */
     const Value* find( const char* key ) const
     {
@@ -434,7 +434,7 @@ class HashString
     }
 
     /**
-     * If the key exists, return pointer to its value, otherwise return `null`.
+     * If the key exists, return pointer to its value, otherwise return `nullptr`.
      */
     Value* find( const char* key )
     {

@@ -87,7 +87,7 @@ void Loader::cleanupRender()
     auto imago = i;
     ++i;
 
-    // We can afford to do this as orbis.objects[key] will remain null at least one whole tick
+    // We can afford to do this as orbis.objects[key] will remain nullptr at least one whole tick
     // after the object has been removed (because matrix also needs to clear references to this
     // object).
     if( orbis.objects[imago->key] == nullptr ) {
@@ -187,7 +187,7 @@ void Loader::cleanupSound()
     auto audio = i;
     ++i;
 
-    // We can afford to do this as orbis.objects[key] will remain null at least one whole tick after
+    // We can afford to do this as orbis.objects[key] will remain nullptr at least one whole tick after
     // the object has been removed (because matrix also needs to clear references to this object).
     if( orbis.objects[audio->key] == nullptr ) {
       delete audio->value;

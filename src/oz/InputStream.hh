@@ -29,7 +29,6 @@
 #pragma once
 
 #include "String.hh"
-#include "Plane.hh"
 #include "Mat44.hh"
 #include "System.hh"
 #include "Endian.hh"

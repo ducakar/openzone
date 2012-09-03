@@ -334,7 +334,8 @@ class Set
      */
     bool contains( const Elem& elem ) const
     {
-      return aBisectFind<Elem, Elem>( data, elem, count ) >= 0;
+      int i = aBisect<Elem, Elem>( data, elem, count );
+      return i >= 0 && data[i] == elem;
     }
 
     /**
@@ -342,7 +343,8 @@ class Set
      */
     int index( const Elem& elem ) const
     {
-      return aBisectFind<Elem, Elem>( data, elem, count );
+      int i = aBisect<Elem, Elem>( data, elem, count );
+      return i >= 0 && data[i] == elem ? i : -1;
     }
 
     /**
@@ -353,10 +355,16 @@ class Set
     template <typename Elem_ = Elem>
     int add( Elem_&& elem )
     {
-      int i = aBisectPosition<Elem, Elem>( data, elem, count );
+      int i = aBisect<Elem, Elem>( data, elem, count );
 
-      insert<Elem_>( i, static_cast<Elem_&&>( elem ) );
-      return i;
+      if( i >= 0 && data[i] == elem ) {
+        data[i] = static_cast<Elem_&&>( elem );
+        return i;
+      }
+      else {
+        insert<Elem_>( i + 1, static_cast<Elem_&&>( elem ) );
+        return i + 1;
+      }
     }
 
     /**
@@ -367,12 +375,15 @@ class Set
     template <typename Elem_ = Elem>
     int include( Elem_&& elem )
     {
-      int i = aBisectPosition<Elem, Elem>( data, elem, count );
+      int i = aBisect<Elem, Elem>( data, elem, count );
 
-      if( i == 0 || !( data[i - 1] == elem ) ) {
-        insert<Elem_>( i, static_cast<Elem_&&>( elem ) );
+      if( i >= 0 && data[i] == elem ) {
+        return i;
       }
-      return i;
+      else {
+        insert<Elem_>( i + 1, static_cast<Elem_&&>( elem ) );
+        return i + 1;
+      }
     }
 
     /**
@@ -423,12 +434,13 @@ class Set
      */
     int exclude( const Elem& elem )
     {
-      int i = aBisectFind<Elem, Elem>( data, elem, count );
+      int i = aBisect<Elem, Elem>( data, elem, count );
 
-      if( i >= 0 ) {
+      if( i >= 0 && data[i] == elem ) {
         remove( i );
+        return i;
       }
-      return i;
+      return -1;
     }
 
     /**

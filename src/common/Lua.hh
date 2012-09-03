@@ -57,7 +57,7 @@ class Lua
   protected:
 
     /**
-     * Default constructor, clears `l` to `null`.
+     * Default constructor, clears `l` to `nullptr`.
      */
     Lua();
 

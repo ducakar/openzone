@@ -26,9 +26,6 @@
 
 #include "Log.hh"
 
-#include "arrays.hh"
-#include "Time.hh"
-
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>

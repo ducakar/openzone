@@ -139,17 +139,15 @@ void test_arrays()
     aSort( r, 1000 );
 
     for( int i = -1; i <= 1000; ++i ) {
-      int findIndex = aBisectFind( r, i, 1000 );
-      int positionIndex = aBisectPosition( r, i, 1000 );
+      int index = aBisect( r, i, 1000 );
 
       if( 1 <= i && i < 1000 ) {
         OZ_CHECK( r[i - 1] <= r[i] );
       }
 
-      OZ_CHECK( findIndex == -1 || r[findIndex] == i );
-      OZ_CHECK( ( positionIndex == 0 && r[0] > i ) ||
-                ( positionIndex == 1000 && r[999] <= i ) ||
-                ( r[positionIndex - 1] <= i && r[positionIndex] > i ) );
+      OZ_CHECK( ( index == -1 && r[0] > i ) ||
+                ( index == 999 && r[999] <= i ) ||
+                ( r[index] <= i && r[index + 1] > i ) );
     }
   }
 }

@@ -230,7 +230,7 @@ class PFile
      * Mount read-only directoy or archive to VFS.
      *
      * @param path archive or directory in real file system directory to mount.
-     * @param mountPoint mount point in VFS, "" or `null` equals root of VFS.
+     * @param mountPoint mount point in VFS, `nullptr` or "" equals root of VFS.
      * @param append true to add to the end instead to the beginning of the search path.
      */
     static bool mount( const char* path, const char* mountPoint, bool append );

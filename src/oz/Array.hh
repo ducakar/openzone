@@ -243,7 +243,7 @@ class Array
     }
 
     /**
-     * Delete objects referenced by elements and set all elements to `null`.
+     * Delete objects referenced by elements and set all elements to `nullptr`.
      */
     void free()
     {

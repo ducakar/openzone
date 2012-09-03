@@ -277,10 +277,21 @@ class Mat44
     OZ_ALWAYS_INLINE
     Mat44 operator * ( const Mat44& m ) const
     {
+#ifdef OZ_SIMD_MATH
+      return Mat44( Vec4( x.f4 * vFill( m.x.x ) + y.f4 * vFill( m.x.y ) +
+                          z.f4 * vFill( m.x.z ) + w.f4 * vFill( m.x.w ) ),
+                    Vec4( x.f4 * vFill( m.y.x ) + y.f4 * vFill( m.y.y ) +
+                          z.f4 * vFill( m.y.z ) + w.f4 * vFill( m.y.w ) ),
+                    Vec4( x.f4 * vFill( m.z.x ) + y.f4 * vFill( m.z.y ) +
+                          z.f4 * vFill( m.z.z ) + w.f4 * vFill( m.z.w ) ),
+                    Vec4( x.f4 * vFill( m.w.x ) + y.f4 * vFill( m.w.y ) +
+                          z.f4 * vFill( m.w.z ) + w.f4 * vFill( m.w.w ) ) );
+#else
       return Mat44( x * m.x.x + y * m.x.y + z * m.x.z + w * m.x.w,
                     x * m.y.x + y * m.y.y + z * m.y.z + w * m.y.w,
                     x * m.z.x + y * m.z.y + z * m.z.z + w * m.z.w,
                     x * m.w.x + y * m.w.y + z * m.w.z + w * m.w.w );
+#endif
     }
 
     /**
@@ -289,9 +300,13 @@ class Mat44
     OZ_ALWAYS_INLINE
     Vec3 operator * ( const Vec3& v ) const
     {
+#ifdef OZ_SIMD_MATH
+      return Vec3( x.f4 * vFill( v.x ) + y.f4 * vFill( v.y ) + z.f4 * vFill( v.z ) );
+#else
       return Vec3( x.x * v.x + y.x * v.y + z.x * v.z,
                    x.y * v.x + y.y * v.y + z.y * v.z,
                    x.z * v.x + y.z * v.y + z.z * v.z );
+#endif
     }
 
     /**
@@ -300,9 +315,13 @@ class Mat44
     OZ_ALWAYS_INLINE
     Point operator * ( const Point& p ) const
     {
+#ifdef OZ_SIMD_MATH
+      return Point( x.f4 * vFill( p.x ) + y.f4 * vFill( p.y ) + z.f4 * vFill( p.z ) + w.f4 );
+#else
       return Point( x.x * p.x + y.x * p.y + z.x * p.z + w.x,
                     x.y * p.x + y.y * p.y + z.y * p.z + w.y,
                     x.z * p.x + y.z * p.y + z.z * p.z + w.z );
+#endif
     }
 
     /**
@@ -313,10 +332,15 @@ class Mat44
     {
       Plane tp;
 
+#ifdef OZ_SIMD_MATH
+      tp.n = Vec3( x.f4 * vFill( p.n.x ) + y.f4 * vFill( p.n.y ) + z.f4 * vFill( p.n.z ) );
+      tp.d = p.d + vFirst( vDot( tp.n.f4, w.f4 ) );
+#else
       tp.n = Vec3( x.x * p.n.x + y.x * p.n.y + z.x * p.n.z,
                    x.y * p.n.x + y.y * p.n.y + z.y * p.n.z,
                    x.z * p.n.x + y.z * p.n.y + z.z * p.n.z );
       tp.d = p.d + tp.n.x * w.x + tp.n.y * w.y + tp.n.z * w.z;
+#endif
 
       return tp;
     }
@@ -327,10 +351,15 @@ class Mat44
     OZ_ALWAYS_INLINE
     Vec4 operator * ( const Vec4& v ) const
     {
+#ifdef OZ_SIMD_MATH
+      return Vec4( x.f4 * vFill( v.x ) + y.f4 * vFill( v.y ) +
+                   z.f4 * vFill( v.z ) + w.f4 * vFill( v.w ) );
+#else
       return Vec4( x.x * v.x + y.x * v.y + z.x * v.z + w.x * v.w,
                    x.y * v.x + y.y * v.y + z.y * v.z + w.y * v.w,
                    x.z * v.x + y.z * v.y + z.z * v.z + w.z * v.w,
                    x.w * v.x + y.w * v.y + z.w * v.z + w.w * v.w );
+#endif
     }
 
     /**
@@ -340,13 +369,13 @@ class Mat44
     Mat44 operator / ( scalar s ) const
     {
 #ifdef OZ_SIMD_MATH
-      return Mat44( x / s, y / s, z / s, w / s );
+      s = vFill( 1.0f ) / s.f4;
 #else
       hard_assert( s != 0.0f );
 
       s = 1.0f / s;
-      return Mat44( x * s, y * s, z * s, w * s );
 #endif
+      return Mat44( x * s, y * s, z * s, w * s );
     }
 
     /**
@@ -392,22 +421,19 @@ class Mat44
      * Division.
      */
     OZ_ALWAYS_INLINE
-    Mat44& operator /= ( float s )
+    Mat44& operator /= ( scalar s )
     {
 #ifdef OZ_SIMD_MATH
-      x /= s;
-      y /= s;
-      z /= s;
-      w /= s;
+      s  = vFill( 1.0f ) / s.f4;
 #else
       hard_assert( s != 0.0f );
 
       s  = 1.0f / s;
+#endif
       x *= s;
       y *= s;
       z *= s;
       w *= s;
-#endif
       return *this;
     }
 
@@ -417,9 +443,13 @@ class Mat44
     OZ_ALWAYS_INLINE
     void translate( const Vec3& v )
     {
+#ifdef OZ_SIMD_MATH
+      w.f4 = x.f4 * vFill( v.x ) + y.f4 * vFill( v.y ) + z.f4 * vFill( v.z ) + w.f4;
+#else
       w.x = x.x * v.x + y.x * v.y + z.x * v.z + w.x;
       w.y = x.y * v.x + y.y * v.y + z.y * v.z + w.y;
       w.z = x.z * v.x + y.z * v.y + z.z * v.z + w.z;
+#endif
     }
 
     /**
@@ -485,17 +515,9 @@ class Mat44
     OZ_ALWAYS_INLINE
     void scale( const Vec3& v )
     {
-      x.x *= v.x;
-      x.y *= v.x;
-      x.z *= v.x;
-
-      y.x *= v.y;
-      y.y *= v.y;
-      y.z *= v.y;
-
-      z.x *= v.z;
-      z.y *= v.z;
-      z.z *= v.z;
+      x *= v.x;
+      y *= v.y;
+      z *= v.z;
     }
 
     /**
@@ -504,25 +526,10 @@ class Mat44
     OZ_ALWAYS_INLINE
     void scale( const Vec4& v )
     {
-      x.x *= v.x;
-      x.y *= v.x;
-      x.z *= v.x;
-      x.w *= v.x;
-
-      y.x *= v.y;
-      y.y *= v.y;
-      y.z *= v.y;
-      y.w *= v.y;
-
-      z.x *= v.z;
-      z.y *= v.z;
-      z.z *= v.z;
-      z.w *= v.z;
-
-      w.x *= v.w;
-      w.y *= v.w;
-      w.z *= v.w;
-      w.w *= v.w;
+      x *= v.x;
+      y *= v.y;
+      z *= v.z;
+      w *= v.w;
     }
 
     /**

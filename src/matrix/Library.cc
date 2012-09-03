@@ -707,7 +707,7 @@ void Library::initClasses()
           OZ_ERROR( "Invalid weaponItem index for '%s'", botClazz->name.cstr() );
         }
 
-        // we already checked it the previous loop it's non-null and a valid item
+        // we already checked it in the previous loop it's non-nullptr and a valid item
         const ObjectClass* itemClazz = botClazz->defaultItems[botClazz->weaponItem];
 
         if( !( itemClazz->flags & Object::WEAPON_BIT ) ) {

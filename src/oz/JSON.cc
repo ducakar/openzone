@@ -26,11 +26,13 @@
 
 #include "JSON.hh"
 
+#include "List.hh"
 #include "Map.hh"
+#include "HashString.hh"
 #include "System.hh"
 #include "Log.hh"
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #define OZ_PARSE_ERROR( charBias, message ) \
   OZ_ERROR( "JSON: " message " at %s:%d:%d", pos.path, pos.line, pos.column + ( charBias ) );

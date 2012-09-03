@@ -71,13 +71,13 @@ class Lingua
   public:
 
     /**
-     * Check given language or, if null/empty string, try to detect it.
+     * Check given language or, if `nullptr`/empty string, try to detect it.
      *
      * If given `language` is a non-empty string, check if translations exist for that language,
      * i.e. it checks for PhysicsFS directory `lingua/\<language\>/`. If translations exist
      * `language` is returned, if don't, an empty string is returned.
      *
-     * If `language` is null or en empty string, it tries to derive language from environment
+     * If `language` is `nullptr` or en empty string, it tries to derive language from environment
      * variables (currently this only test Linux-specific variables LANGUAGE, LC_MESSAGES and LANG
      * in that order). The first derived language code for which translations exist is returned.
      * If none is valid, an empty string is returned.

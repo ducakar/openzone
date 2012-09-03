@@ -315,7 +315,7 @@ inline bool aContains( const Elem* aSrc, const Value& value, int count )
 }
 
 /**
- * Pointer to the first occurrence or null pointer if not found.
+ * Pointer to the first occurrence or `nullptr` if not found.
  */
 template <typename Elem, typename Value = Elem>
 inline Elem* aFind( Elem* aSrc, const Value& value, int count )
@@ -329,7 +329,7 @@ inline Elem* aFind( Elem* aSrc, const Value& value, int count )
 }
 
 /**
- * Pointer to the last occurrence or null pointer if not found.
+ * Pointer to the last occurrence or `nullptr` if not found.
  */
 template <typename Elem, typename Value = Elem>
 inline Elem* aFindLast( Elem* aSrc, const Value& value, int count )
@@ -371,7 +371,7 @@ inline int aLastIndex( const Elem* aSrc, const Value& value, int count )
 }
 
 /**
- * Delete objects referenced by elements and set all elements to null pointer.
+ * Delete objects referenced by elements and set all elements to `nullptr`.
  */
 template <typename Elem>
 inline void aFree( Elem* aDest, int count )
@@ -426,7 +426,7 @@ inline void aReverse( Elem* aDest, int count )
 /**
  * Utility function for aSort.
  *
- * `Elem` type must have `operator < ( const Elem\& )` defined.
+ * `Elem` type must have `operator < ( const Elem& )` defined.
  * Quicksort algorithm is used which takes last element in a partition as a pivot so sorting a
  * sorted or nearly sorted array will take O(n^2) time instead of O(n log n) as in average case.
  * When a partition has at most 10 elements, selection sort is used.
@@ -497,67 +497,25 @@ inline void aSort( Elem* aSrc, int count )
 }
 
 /**
- * Find an element using bisection.
+ * Find index such that `aSrc[index] <= key && key < aSrc[index + 1]`.
  *
- * `Elem` type must have defined `operator == ( const Key\&, const Elem\& )` and
- * `operator < ( const Key\&, const Elem\& )`.
- *
- * @param aSrc array.
- * @param key the key we are looking for.
- * @param count number of elements.
- * @return Index of the requested element or -1 if not found.
- */
-template <typename Elem, typename Key = Elem>
-inline int aBisectFind( Elem* aSrc, const Key& key, int count )
-{
-  hard_assert( count >= 0 );
-
-  if( count == 0 ) {
-    return -1;
-  }
-
-  int a = 0;
-  int b = count;
-
-  // The algorithm ensures that ( a == 0 or data[a] <= key ) and ( b == count or key < data[b] ),
-  // so the key may only lie on position a or nowhere.
-  while( b - a > 1 ) {
-    int c = ( a + b ) / 2;
-
-    if( key < aSrc[c] ) {
-      b = c;
-    }
-    else {
-      a = c;
-    }
-  }
-  return key == aSrc[a] ? a : -1;
-}
-
-/**
- * Find insert position for an element to be added using bisection.
- *
- * Returns an index such that
- * @code
- *   aSrc[index - 1] <= key && key < aSrc[index]
- * @endcode
- * If all elements are lesser, return `count` and if all elements are greater, return 0.
- * `Elem` type must have defined `operator < ( const Key\&, const Elem\& )`.
+ * If all elements are lesser return `count - 1` and if all elements are greater return -1.
+ * `Elem` type must have defined `bool operator < ( const Key&, const Elem& ) const`.
  *
  * @param aSrc array.
  * @param key the key we are looking for.
  * @param count number of elements.
- * @return Index of least element greater than the key, or count if there's no such element.
+ * @return Index such that `aSrc[index] <= key && key < aSrc[index + 1]`.
  */
 template <typename Elem, typename Key = Elem>
-inline int aBisectPosition( Elem* aSrc, const Key& key, int count )
+inline int aBisect( Elem* aSrc, const Key& key, int count )
 {
   hard_assert( count >= 0 );
 
   int a = -1;
   int b = count;
 
-  // The algorithm ensures that ( a == -1 or data[a] <= key ) and ( b == count or key < data[b] ),
+  // The algorithm ensures that (a == -1 or aSrc[a] <= key) and (b == count or key < aSrc[b]),
   // so the key may only lie on position a or nowhere.
   while( b - a > 1 ) {
     int c = ( a + b ) / 2;
@@ -569,7 +527,7 @@ inline int aBisectPosition( Elem* aSrc, const Key& key, int count )
       a = c;
     }
   }
-  return a + 1;
+  return a;
 }
 
 }

@@ -26,7 +26,6 @@
 
 #include "System.hh"
 
-#include "arrays.hh"
 #include "Math.hh"
 #include "Log.hh"
 
@@ -39,8 +38,6 @@
 # include <ppapi/cpp/completion_callback.h>
 # include <ppapi/cpp/core.h>
 # include <pthread.h>
-# include <unistd.h>
-#elif defined( __ANDROID__ )
 #elif defined( _WIN32 )
 # include <windows.h>
 # include <mmsystem.h>
@@ -49,7 +46,6 @@
 # include <dlfcn.h>
 # include <pthread.h>
 # include <pulse/simple.h>
-# include <unistd.h>
 #endif
 
 #if defined( __native_client__ ) && !defined( __GLIBC__ )

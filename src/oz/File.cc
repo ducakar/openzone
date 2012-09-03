@@ -26,7 +26,7 @@
 
 #include "File.hh"
 
-#include "System.hh"
+#include <cstring>
 
 #if defined( __native_client__ )
 # include <ppapi/c/pp_file_info.h>
@@ -36,12 +36,9 @@
 # include <ppapi/cpp/file_io.h>
 # include <ppapi/cpp/file_ref.h>
 # include <ppapi/cpp/file_system.h>
-# include <cstring>
 #elif defined( _WIN32 )
 # include <windows.h>
-# include <cstring>
 #else
-# include <cstring>
 # include <dirent.h>
 # include <fcntl.h>
 # include <sys/mman.h>

@@ -170,7 +170,7 @@ class Object : public AABB
     static const int MOVE_CLEAR_MASK    = DISABLED_BIT | ON_FLOOR_BIT | IN_LIQUID_BIT |
                                           IN_LAVA_BIT | ON_LADDER_BIT | ON_SLICK_BIT;
 
-    static const int   MAX_DIM          = 3;
+    static const int   MAX_DIM          = 5;
     static const float REAL_MAX_DIM;
 
   protected:

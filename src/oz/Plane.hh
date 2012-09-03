@@ -138,7 +138,7 @@ class Plane
     OZ_ALWAYS_INLINE
     Plane abs() const
     {
-      return Plane( Math::fabs( n.x ), Math::fabs( n.y ), Math::fabs( n.z ), d );
+      return Plane( n.abs(), d );
     }
 
     /**
@@ -161,7 +161,7 @@ class Plane
     friend scalar operator * ( const Point& p, const Plane& plane )
     {
 #ifdef OZ_SIMD_MATH
-      return vDot( p.f4, plane.n.f4 ) - float4( plane.d, plane.d, plane.d, plane.d );
+      return vDot( p.f4, plane.n.f4 ) - vFill( plane.d, plane.d, plane.d, plane.d );
 #else
       return p.x*plane.n.x + p.y*plane.n.y + p.z*plane.n.z - plane.d;
 #endif

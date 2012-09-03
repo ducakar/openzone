@@ -28,8 +28,7 @@
 
 #pragma once
 
-#include "List.hh"
-#include "HashString.hh"
+#include "BufferStream.hh"
 #include "PFile.hh"
 
 namespace oz

@@ -88,10 +88,12 @@ concepts and algorithms used in the engine.
 mkdir -p build && cd build
 
 cmake \
-  -D CMAKE_BUILD_TYPE=Release \
-  -D CMAKE_INSTALL_PREFIX=/usr \
-  -D OZ_SHARED_LIBOZ=1 \
-  -D OZ_NONFREE=1 \
+  -D CMAKE_BUILD_TYPE="Release" \
+  -D CMAKE_INSTALL_PREFIX="/usr" \
+  -D CMAKE_CXX_COMPILER="/usr/bin/clang++" \
+  -D CMAKE_CXX_FLAGS="-msse3" \
+  -D OZ_SHARED_LIBOZ="1" \
+  -D OZ_NONFREE="1" \
   ..
 
 make %{?_smp_mflags} doc

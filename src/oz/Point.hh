@@ -36,31 +36,12 @@ namespace oz
 /**
  * 3D point.
  */
-class Point
+class Point : public VectorBase3
 {
   public:
 
     /// Origin, [0, 0, 0].
     static const Point ORIGIN;
-
-#ifdef OZ_SIMD_MATH
-    union OZ_ALIGNED( 16 )
-    {
-      float4 f4;
-      uint4  u4;
-      struct
-      {
-        float x; ///< X component.
-        float y; ///< Y component.
-        float z; ///< Z component.
-        float w; ///< W component, should be always 1.
-      };
-    };
-#else
-    float x; ///< X component.
-    float y; ///< Y component.
-    float z; ///< Z component.
-#endif
 
   public:
 
@@ -75,16 +56,16 @@ class Point
      * Create form a float SIMD vector.
      */
     OZ_ALWAYS_INLINE
-    explicit Point( float4 f4_ ) :
-      f4( f4_ )
+    explicit Point( float4 f4 ) :
+      VectorBase3( f4 )
     {}
 
     /**
      * Create from an uint SIMD vector.
      */
     OZ_ALWAYS_INLINE
-    explicit Point( uint4 u4_ ) :
-      u4( u4_ )
+    explicit Point( uint4 u4 ) :
+      VectorBase3( u4 )
     {}
 
 #endif
@@ -93,12 +74,8 @@ class Point
      * Create a point with the given coordinates.
      */
     OZ_ALWAYS_INLINE
-    explicit Point( float x_, float y_, float z_ ) :
-#ifdef OZ_SIMD_MATH
-      f4( float4( x_, y_, z_, 1.0f ) )
-#else
-      x( x_ ), y( y_ ), z( z_ )
-#endif
+    explicit Point( float x, float y, float z ) :
+      VectorBase3( x, y, z, 1.0f )
     {}
 
     /**
@@ -106,11 +83,7 @@ class Point
      */
     OZ_ALWAYS_INLINE
     explicit Point( const float* v ) :
-#ifdef OZ_SIMD_MATH
-      f4( float4( v[0], v[1], v[2], 1.0f ) )
-#else
-      x( v[0] ), y( v[1] ), z( v[2] )
-#endif
+      VectorBase3( v[0], v[1], v[2], 1.0f )
     {}
 
     /**

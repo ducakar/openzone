@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "BufferStream.hh"
 #include "Buffer.hh"
 
 namespace oz

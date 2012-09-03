@@ -26,21 +26,16 @@
 
 #include "Time.hh"
 
-#include "System.hh"
+#include <cstdio>
 
 #if defined( __native_client__ )
-# include <cstdio>
 # include <ctime>
 # include <sys/time.h>
-# include <unistd.h>
 #elif defined( _WIN32 )
 # include <windows.h>
 # include <mmsystem.h>
-# include <cstdio>
 #else
-# include <cstdio>
 # include <ctime>
-# include <unistd.h>
 #endif
 
 namespace oz

@@ -36,7 +36,7 @@ namespace oz
 /**
  * Generic four-component vector.
  */
-class Vec4
+class Vec4 : public VectorBase4
 {
   public:
 
@@ -48,26 +48,6 @@ class Vec4
 
     /// Equivalent to origin point or identity quaternion, [0, 0, 0, 1].
     static const Vec4 ID;
-
-#ifdef OZ_SIMD_MATH
-    union OZ_ALIGNED( 16 )
-    {
-      float4 f4;
-      uint4  u4;
-      struct
-      {
-        float x; ///< X component.
-        float y; ///< Y component.
-        float z; ///< Z component.
-        float w; ///< W component.
-      };
-    };
-#else
-    float x; ///< X component.
-    float y; ///< Y component.
-    float z; ///< Z component.
-    float w; ///< W component.
-#endif
 
   public:
 
@@ -82,16 +62,16 @@ class Vec4
      * Create from a float SIMD vector.
      */
     OZ_ALWAYS_INLINE
-    explicit Vec4( float4 f4_ ) :
-      f4( f4_ )
+    explicit Vec4( float4 f4 ) :
+      VectorBase4( f4 )
     {}
 
     /**
      * Create from an uint SIMD vector.
      */
     OZ_ALWAYS_INLINE
-    explicit Vec4( uint4 u4_ ) :
-      u4( u4_ )
+    explicit Vec4( uint4 u4 ) :
+      VectorBase4( u4 )
     {}
 
 #endif
@@ -100,12 +80,8 @@ class Vec4
      * Create a vector with the given components.
      */
     OZ_ALWAYS_INLINE
-    explicit Vec4( float x_, float y_, float z_, float w_ ) :
-#ifdef OZ_SIMD_MATH
-      f4( float4( x_, y_, z_, w_ ) )
-#else
-      x( x_ ), y( y_ ), z( z_ ), w( w_ )
-#endif
+    explicit Vec4( float x, float y, float z, float w ) :
+      VectorBase4( x, y, z, w )
     {}
 
     /**
@@ -113,11 +89,7 @@ class Vec4
      */
     OZ_ALWAYS_INLINE
     explicit Vec4( const float* v ) :
-#ifdef OZ_SIMD_MATH
-      f4( float4( v[0], v[1], v[2], v[3] ) )
-#else
-      x( v[0] ), y( v[1] ), z( v[2] ), w( v[3] )
-#endif
+      VectorBase4( v[0], v[1], v[2], v[3] )
     {}
 
     /**
@@ -126,9 +98,9 @@ class Vec4
     OZ_ALWAYS_INLINE
     explicit Vec4( const Vec3& v ) :
 #ifdef OZ_SIMD_MATH
-      f4( v.f4 )
+      VectorBase4( v.f4 )
 #else
-      x( v.x ), y( v.y ), z( v.z ), w( 0.0f )
+      VectorBase4( v.x, v.y, v.z, 0.0f )
 #endif
     {}
 
@@ -138,9 +110,9 @@ class Vec4
     OZ_ALWAYS_INLINE
     explicit Vec4( const Point& p ) :
 #ifdef OZ_SIMD_MATH
-      f4( p.f4 )
+      VectorBase4( p.f4 )
 #else
-      x( p.x ), y( p.y ), z( p.z ), w( 1.0f )
+      VectorBase4( p.x, p.y, p.z, 1.0f )
 #endif
     {}
 
@@ -250,7 +222,7 @@ class Vec4
     float operator ! () const
     {
 #ifdef OZ_SIMD_MATH
-      return Math::sqrt( vsDot( f4, f4 ) );
+      return Math::sqrt( vFirst( vDot( f4, f4 ) ) );
 #else
       return Math::sqrt( x*x + y*y + z*z + w*w );
 #endif
@@ -263,7 +235,7 @@ class Vec4
     float fastN() const
     {
 #ifdef OZ_SIMD_MATH
-      return Math::fastSqrt( vsDot( f4, f4 ) );
+      return Math::fastSqrt( vFirst( vDot( f4, f4 ) ) );
 #else
       return Math::fastSqrt( x*x + y*y + z*z + w*w );
 #endif
@@ -289,7 +261,7 @@ class Vec4
     Vec4 operator ~ () const
     {
 #ifdef OZ_SIMD_MATH
-      scalar s = 1.0f / Math::sqrt( vsDot( f4, f4 ) );
+      scalar s = 1.0f / Math::sqrt( vFirst( vDot( f4, f4 ) ) );
       return Vec4( f4 * s.f4 );
 #else
       hard_assert( x*x + y*y + z*z + w*w > 0.0f );
@@ -306,7 +278,7 @@ class Vec4
     Vec4 fastUnit() const
     {
 #ifdef OZ_SIMD_MATH
-      scalar s = Math::fastInvSqrt( vsDot( f4, f4 ) );
+      scalar s = Math::fastInvSqrt( vFirst( vDot( f4, f4 ) ) );
       return Vec4( f4 * s.f4 );
 #else
       hard_assert( x*x + y*y + z*z + w*w > 0.0f );

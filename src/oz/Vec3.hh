@@ -28,8 +28,8 @@
 
 #pragma once
 
+#include "simd.hh"
 #include "Math.hh"
-#include "scalar.hh"
 
 namespace oz
 {
@@ -37,7 +37,7 @@ namespace oz
 /**
  * 3D vector.
  */
-class Vec3
+class Vec3 : public VectorBase3
 {
   public:
 
@@ -46,25 +46,6 @@ class Vec3
 
     /// Vector of ones, [1, 1, 1].
     static const Vec3 ONE;
-
-#ifdef OZ_SIMD_MATH
-    union OZ_ALIGNED( 16 )
-    {
-      float4 f4;
-      uint4  u4;
-      struct
-      {
-        float x; ///< X component.
-        float y; ///< Y component.
-        float z; ///< Z component.
-        float w; ///< W component, should be always 0.
-      };
-    };
-#else
-    float x; ///< X component.
-    float y; ///< Y component.
-    float z; ///< Z component.
-#endif
 
   public:
 
@@ -79,16 +60,16 @@ class Vec3
      * Create from a float SIMD vector.
      */
     OZ_ALWAYS_INLINE
-    explicit Vec3( float4 f4_ ) :
-      f4( f4_ )
+    explicit Vec3( float4 f4 ) :
+      VectorBase3( f4 )
     {}
 
     /**
      * Create from an uint SIMD vector.
      */
     OZ_ALWAYS_INLINE
-    explicit Vec3( uint4 u4_ ) :
-      u4( u4_ )
+    explicit Vec3( uint4 u4 ) :
+      VectorBase3( u4 )
     {}
 
 #endif
@@ -97,12 +78,8 @@ class Vec3
      * Create a vector with the given components.
      */
     OZ_ALWAYS_INLINE
-    explicit Vec3( float x_, float y_, float z_ ) :
-#ifdef OZ_SIMD_MATH
-      f4( float4( x_, y_, z_, 0.0f ) )
-#else
-      x( x_ ), y( y_ ), z( z_ )
-#endif
+    explicit Vec3( float x, float y, float z ) :
+      VectorBase3( x, y, z, 0.0f )
     {}
 
     /**
@@ -110,11 +87,7 @@ class Vec3
      */
     OZ_ALWAYS_INLINE
     explicit Vec3( const float* v ) :
-#ifdef OZ_SIMD_MATH
-      f4( float4( v[0], v[1], v[2], 0.0f ) )
-#else
-      x( v[0] ), y( v[1] ), z( v[2] )
-#endif
+      VectorBase3( v[0], v[1], v[2], 0.0f )
     {}
 
     /**
@@ -195,7 +168,7 @@ class Vec3
     float operator ! () const
     {
 #ifdef OZ_SIMD_MATH
-      return Math::sqrt( vsDot( f4, f4 ) );
+      return Math::sqrt( vFirst( vDot( f4, f4 ) ) );
 #else
       return Math::sqrt( x*x + y*y + z*z );
 #endif
@@ -208,7 +181,7 @@ class Vec3
     float fastN() const
     {
 #ifdef OZ_SIMD_MATH
-      return Math::fastSqrt( vsDot( f4, f4 ) );
+      return Math::fastSqrt( vFirst( vDot( f4, f4 ) ) );
 #else
       return Math::fastSqrt( x*x + y*y + z*z );
 #endif
@@ -234,7 +207,7 @@ class Vec3
     Vec3 operator ~ () const
     {
 #ifdef OZ_SIMD_MATH
-      scalar s = 1.0f / Math::sqrt( vsDot( f4, f4 ) );
+      scalar s = 1.0f / Math::sqrt( vFirst( vDot( f4, f4 ) ) );
       return Vec3( f4 * s.f4 );
 #else
       hard_assert( x*x + y*y + z*z > 0.0f );
@@ -251,7 +224,7 @@ class Vec3
     Vec3 fastUnit() const
     {
 #ifdef OZ_SIMD_MATH
-      scalar s = Math::fastInvSqrt( vsDot( f4, f4 ) );
+      scalar s = Math::fastInvSqrt( vFirst( vDot( f4, f4 ) ) );
       return Vec3( f4 * s.f4 );
 #else
       hard_assert( x*x + y*y + z*z > 0.0f );
@@ -437,7 +410,16 @@ class Vec3
     OZ_ALWAYS_INLINE
     Vec3 operator ^ ( const Vec3& v ) const
     {
+#ifdef OZ_SIMD_MATH
+      float4 a  = vShuffle( f4, f4, 1, 2, 0, 3 );
+      float4 b  = vShuffle( f4, f4, 2, 0, 1, 3 );
+      float4 va = vShuffle( v.f4, v.f4, 2, 0, 1, 3 );
+      float4 vb = vShuffle( v.f4, v.f4, 1, 2, 0, 3 );
+
+      return Vec3( a*va - b*vb );
+#else
       return Vec3( y*v.z - z*v.y, z*v.x - x*v.z, x*v.y - y*v.x );
+#endif
     }
 
     /**
@@ -446,7 +428,11 @@ class Vec3
     OZ_ALWAYS_INLINE
     static Vec3 slerp( const Vec3& a, const Vec3& b, float t )
     {
+#ifdef OZ_SIMD_MATH
+      float angle = Math::acos( vFirst( vDot( a.f4, b.f4 ) ) );
+#else
       float angle = Math::acos( a.x*b.x + a.y*b.y + a.z*b.z );
+#endif
       float sine  = Math::sin( angle );
 
       if( sine == 0.0f ) {

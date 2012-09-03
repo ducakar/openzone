@@ -71,18 +71,18 @@ class Map
          * Equality operator for bisection algorithms.
          */
         OZ_ALWAYS_INLINE
-        friend bool operator == ( const Key& key, const Elem& e )
+        friend bool operator == ( const Key& key_, const Elem& e )
         {
-          return key == e.key;
+          return key_ == e.key;
         }
 
         /**
          * Less than operator for bisection algorithms.
          */
         OZ_ALWAYS_INLINE
-        friend bool operator < ( const Key& key, const Elem& e )
+        friend bool operator < ( const Key& key_, const Elem& e )
         {
-          return key < e.key;
+          return key_ < e.key;
         }
 
     };
@@ -366,7 +366,8 @@ class Map
      */
     bool contains( const Key& key ) const
     {
-      return aBisectFind<Elem, Key>( data, key, count ) >= 0;
+      int i = aBisect<Elem, Key>( data, key, count );
+      return i >= 0 && data[i].key == key;
     }
 
     /**
@@ -374,25 +375,26 @@ class Map
      */
     int index( const Key& key ) const
     {
-      return aBisectFind<Elem, Key>( data, key, count );
+      int i = aBisect<Elem, Key>( data, key, count );
+      return i >= 0 && data[i].key == key ? i : -1;
     }
 
     /**
-     * Constant pointer to the given key's value or `null` if not found.
+     * Constant pointer to the given key's value or `nullptr` if not found.
      */
     const Value* find( const Key& key ) const
     {
-      int i = aBisectFind<Elem, Key>( data, key, count );
-      return i < 0 ? nullptr : &data[i].value;
+      int i = aBisect<Elem, Key>( data, key, count );
+      return i >= 0 && data[i].key == key ? &data[i].value : nullptr;
     }
 
     /**
-     * Pointer to the given key's value or `null` if not found.
+     * Pointer to the given key's value or `nullptr` if not found.
      */
     Value* find( const Key& key )
     {
-      int i = aBisectFind<Elem, Key>( data, key, count );
-      return i < 0 ? nullptr : &data[i].value;
+      int i = aBisect<Elem, Key>( data, key, count );
+      return i >= 0 && data[i].key == key ? &data[i].value : nullptr;
     }
 
     /**
@@ -403,10 +405,17 @@ class Map
     template <typename Key_ = Key, typename Value_ = Value>
     int add( Key_&& key, Value_&& value = Value() )
     {
-      int i = aBisectPosition<Elem, Key>( data, key, count );
+      int i = aBisect<Elem, Key>( data, key, count );
 
-      insert<Key_, Value_>( i, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
-      return i;
+      if( i >= 0 && data[i].key == key ) {
+        data[i].key   = static_cast<Key_&&>( key );
+        data[i].value = static_cast<Value_&&>( value );
+        return i;
+      }
+      else {
+        insert<Key_, Value_>( i + 1, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
+        return i + 1;
+      }
     }
 
     /**
@@ -417,12 +426,15 @@ class Map
     template <typename Key_ = Key, typename Value_ = Value>
     int include( Key_&& key, Value_&& value = Value() )
     {
-      int i = aBisectPosition<Elem, Key>( data, key, count );
+      int i = aBisect<Elem, Key>( data, key, count );
 
-      if( i == 0 || !( data[i - 1].key == key ) ) {
-        insert<Key_, Value_>( i, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
+      if( i >= 0 && data[i].key == key ) {
+        return i;
       }
-      return i;
+      else {
+        insert<Key_, Value_>( i + 1, static_cast<Key_&&>( key ), static_cast<Value_&&>( value ) );
+        return i + 1;
+      }
     }
 
     /**
@@ -474,12 +486,13 @@ class Map
      */
     int exclude( const Key& key )
     {
-      int i = aBisectFind<Elem, Key>( data, key, count );
+      int i = aBisect<Elem, Key>( data, key, count );
 
-      if( i >= 0 ) {
+      if( i >= 0 && data[i].key == key ) {
         remove( i );
+        return i;
       }
-      return i;
+      return -1;
     }
 
     /**

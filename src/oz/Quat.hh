@@ -36,7 +36,7 @@ namespace oz
 /**
  * Quaternion.
  */
-class Quat
+class Quat : public VectorBase4
 {
   public:
 
@@ -45,26 +45,6 @@ class Quat
 
     /// Quaternion representing rotation identity.
     static const Quat ID;
-
-#ifdef OZ_SIMD_MATH
-    union OZ_ALIGNED( 16 )
-    {
-      float4 f4;
-      uint4  u4;
-      struct
-      {
-        float x; ///< X component.
-        float y; ///< Y component.
-        float z; ///< Z component.
-        float w; ///< W component.
-      };
-    };
-#else
-    float x; ///< X component.
-    float y; ///< Y component.
-    float z; ///< Z component.
-    float w; ///< W component.
-#endif
 
   public:
 
@@ -79,16 +59,16 @@ class Quat
      * Create from a float SIMD vector.
      */
     OZ_ALWAYS_INLINE
-    explicit Quat( float4 f4_ ) :
-      f4( f4_ )
+    explicit Quat( float4 f4 ) :
+      VectorBase4( f4 )
     {}
 
     /**
      * Create from an uint SIMD vector.
      */
     OZ_ALWAYS_INLINE
-    explicit Quat( uint4 u4_ ) :
-      u4( u4_ )
+    explicit Quat( uint4 u4 ) :
+      VectorBase4( u4 )
     {}
 
 #endif
@@ -97,12 +77,8 @@ class Quat
      * Create a quaternion with the given components.
      */
     OZ_ALWAYS_INLINE
-    explicit Quat( float x_, float y_, float z_, float w_ ) :
-#ifdef OZ_SIMD_MATH
-      f4( float4( x_, y_, z_, w_ ) )
-#else
-      x( x_ ), y( y_ ), z( z_ ), w( w_ )
-#endif
+    explicit Quat( float x, float y, float z, float w ) :
+      VectorBase4( x, y, z, w )
     {}
 
     /**
@@ -110,23 +86,7 @@ class Quat
      */
     OZ_ALWAYS_INLINE
     explicit Quat( const float* q ) :
-#ifdef OZ_SIMD_MATH
-      f4( float4( q[0], q[1], q[2], q[3] ) )
-#else
-      x( q[0] ), y( q[1] ), z( q[2] ), w( q[3] )
-#endif
-    {}
-
-    /**
-     * Create quaternion from a four-component vector.
-     */
-    OZ_ALWAYS_INLINE
-    Quat( const Vec4& v ) :
-#ifdef OZ_SIMD_MATH
-      f4( v.f4 )
-#else
-      x( v.x ), y( v.y ), z( v.z ), w( v.w )
-#endif
+      VectorBase4( q[0], q[1], q[2], q[3] )
     {}
 
     /**
@@ -213,13 +173,13 @@ class Quat
     }
 
     /**
-     * Conjugate quaternion.
+     * Conjugated quaternion.
      */
     OZ_ALWAYS_INLINE
     Quat operator * () const
     {
 #ifdef OZ_SIMD_MATH
-      return Quat( u4 & uint4( 0x80000000, 0x80000000, 0x80000000, 0 ) );
+      return Quat( u4 ^ vFill( 0x80000000u, 0x80000000u, 0x80000000u, 0u ) );
 #else
       return Quat( -x, -y, -z, w );
 #endif
@@ -245,7 +205,7 @@ class Quat
     Quat operator ~ () const
     {
 #ifdef OZ_SIMD_MATH
-      scalar s = 1.0f / Math::sqrt( vsDot( f4, f4 ) );
+      scalar s = 1.0f / Math::sqrt( vFirst( vDot( f4, f4 ) ) );
       return Quat( f4 * s.f4 );
 #else
       hard_assert( x*x + y*y + z*z + w*w > 0.0f );
@@ -262,7 +222,7 @@ class Quat
     Quat fastUnit() const
     {
 #ifdef OZ_SIMD_MATH
-      scalar s = Math::fastInvSqrt( vsDot( f4, f4 ) );
+      scalar s = Math::fastInvSqrt( vFirst( vDot( f4, f4 ) ) );
       return Quat( f4 * s.f4 );
 #else
       hard_assert( x*x + y*y + z*z + w*w > 0.0f );
@@ -353,21 +313,20 @@ class Quat
     Quat operator * ( const Quat& q ) const
     {
 #ifdef OZ_SIMD_MATH
-//       float4 k0 = OZ_SHUFFLE_VECTOR( f4, f4, 3, 3, 3, 3 );
-//       float4 k1 = OZ_SHUFFLE_VECTOR( f4, f4, 0, 3, 1, 0 );
-//       float4 k2 = OZ_SHUFFLE_VECTOR( f4, f4, 1, 0, 2, 1 );
-//       float4 k3 = OZ_SHUFFLE_VECTOR( f4, f4, 3, 1, 0, 3 );
-//
-//       float4 q0 = OZ_SHUFFLE_VECTOR( q.f4, q.f4, 3, 2, 1, 0 );
-//       float4 q1 = OZ_SHUFFLE_VECTOR( q.f4, q.f4, 0, 3, 3, 3 );
-//       float4 q2 = OZ_SHUFFLE_VECTOR( q.f4, q.f4, 1, 1, 0, 2 );
-//       float4 q3 = OZ_SHUFFLE_VECTOR( q.f4, q.f4, 2, 0, 2, 1 );
+      float4 k0 = vFill( w );
+      float4 k1 = f4;
+      float4 k2 = vShuffle( f4, f4, 1, 2, 0, 3 );
+      float4 k3 = vShuffle( f4, f4, 2, 0, 1, 3 );
 
-      // TODO SIMD
-      return Quat( w*q.x + x*q.w + y*q.z - z*q.y,
-                   w*q.y + y*q.w + z*q.x - x*q.z,
-                   w*q.z + z*q.w + x*q.y - y*q.x,
-                   w*q.w - x*q.x - y*q.y - z*q.z );
+      float4 q0 = q.f4;
+      float4 q1 = vFill( q.w );
+      float4 q2 = vShuffle( q.f4, q.f4, 2, 0, 1, 3 );
+      float4 q3 = vShuffle( q.f4, q.f4, 1, 2, 0, 3 );
+
+      Quat tq = Quat( k0*q0 + k1*q1 + k2*q2 - k3*q3 );
+      tq.w   -= vFirst( vDot( k1, q.f4 ) );
+
+      return tq;
 #else
       return Quat( w*q.x + x*q.w + y*q.z - z*q.y,
                    w*q.y + y*q.w + z*q.x - x*q.z,
@@ -400,8 +359,8 @@ class Quat
     {
 #ifdef OZ_SIMD_MATH
       s.f4 = s.f4 / vDot( q.f4, q.f4 );
-      s.f4 = OZ_SIMD_SHUFFLE( s.f4, -s.f4, 0, 0, 0, 0 );
-      s.f4 = OZ_SIMD_SHUFFLE( s.f4, s.f4, 2, 0, 0, 0 );
+      s.f4 = vShuffle( s.f4, -s.f4, 0, 0, 0, 0 );
+      s.f4 = vShuffle( s.f4, s.f4, 0, 0, 0, 2 );
 
       return Quat( q.f4 * s.f4 );
 #else
@@ -418,12 +377,21 @@ class Quat
     Quat operator / ( const Quat& q ) const
     {
 #ifdef OZ_SIMD_MATH
-      // TODO SIMD
-      float k = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
-      return Quat( k * ( x*q.w - w*q.x + z*q.y - y*q.z ),
-                   k * ( y*q.w - w*q.y + x*q.z - z*q.x ),
-                   k * ( z*q.w - w*q.z + y*q.x - x*q.y ),
-                   k * ( w*q.w + x*q.x + y*q.y + z*q.z ) );
+      float4 k0 = f4;
+      float4 k1 = vFill( w );
+      float4 k2 = vShuffle( f4, f4, 2, 0, 1, 3 );
+      float4 k3 = vShuffle( f4, f4, 1, 2, 0, 3 );
+
+      float4 q0 = vFill( q.w );
+      float4 q1 = q.f4;
+      float4 q2 = vShuffle( q.f4, q.f4, 1, 2, 0, 3 );
+      float4 q3 = vShuffle( q.f4, q.f4, 2, 0, 1, 3 );
+
+      Quat tq = Quat( k0*q0 - k1*q1 + k2*q2 - k3*q3 );
+      tq.w    = vFirst( vDot( k0, q.f4 ) );
+      tq.f4  *= vDot( q.f4, q.f4 );
+
+      return tq;
 #else
       float k = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
       return Quat( k * ( x*q.w - w*q.x + z*q.y - y*q.z ),
@@ -491,13 +459,18 @@ class Quat
     Quat& operator *= ( const Quat& q )
     {
 #ifdef OZ_SIMD_MATH
-      // TODO SIMD
-      float tx = x, ty = y, tz = z;
+      float4 k0 = vFill( w );
+      float4 k1 = f4;
+      float4 k2 = vShuffle( f4, f4, 1, 2, 0, 3 );
+      float4 k3 = vShuffle( f4, f4, 2, 0, 1, 3 );
 
-      x = w*q.x + tx*q.w + ty*q.z - tz*q.y;
-      y = w*q.y + ty*q.w + tz*q.x - tx*q.z;
-      z = w*q.z + tz*q.w + tx*q.y - ty*q.x;
-      w = w*q.w - tx*q.x - ty*q.y - tz*q.z;
+      float4 q0 = q.f4;
+      float4 q1 = vFill( q.w );
+      float4 q2 = vShuffle( q.f4, q.f4, 2, 0, 1, 3 );
+      float4 q3 = vShuffle( q.f4, q.f4, 1, 2, 0, 3 );
+
+      f4 = k0*q0 + k1*q1 + k2*q2 - k3*q3;
+      w -= vFirst( vDot( k1, q0 ) );
 #else
       float tx = x, ty = y, tz = z;
 
@@ -536,28 +509,30 @@ class Quat
     Quat& operator /= ( const Quat& q )
     {
 #ifdef OZ_SIMD_MATH
-      // TODO SIMD
-      float k = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
-      Quat  t = Quat( k * ( x*q.w - w*q.x + z*q.y - y*q.z ),
-                      k * ( y*q.w - w*q.y + x*q.z - z*q.x ),
-                      k * ( z*q.w - w*q.z + y*q.x - x*q.y ),
-                      k * ( w*q.w + x*q.x + y*q.y + z*q.z ) );
+      float4 k0 = f4;
+      float4 k1 = vFill( w );
+      float4 k2 = vShuffle( f4, f4, 2, 0, 1, 3 );
+      float4 k3 = vShuffle( f4, f4, 1, 2, 0, 3 );
 
-      x = t.x;
-      y = t.y;
-      z = t.z;
-      w = t.w;
+      float4 q0 = vFill( q.w );
+      float4 q1 = q.f4;
+      float4 q2 = vShuffle( q.f4, q.f4, 1, 2, 0, 3 );
+      float4 q3 = vShuffle( q.f4, q.f4, 2, 0, 1, 3 );
+
+      f4  = k0*q0 - k1*q1 + k2*q2 - k3*q3;
+      w   = vFirst( vDot( k0, q.f4 ) );
+      f4 *= vDot( q.f4, q.f4 );
 #else
       float k = q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
-      Quat  t = Quat( k * ( x*q.w - w*q.x + z*q.y - y*q.z ),
-                      k * ( y*q.w - w*q.y + x*q.z - z*q.x ),
-                      k * ( z*q.w - w*q.z + y*q.x - x*q.y ),
-                      k * ( w*q.w + x*q.x + y*q.y + z*q.z ) );
+      Quat  t = Quat( x*q.w - w*q.x + z*q.y - y*q.z,
+                      y*q.w - w*q.y + x*q.z - z*q.x,
+                      z*q.w - w*q.z + y*q.x - x*q.y,
+                      w*q.w + x*q.x + y*q.y + z*q.z );
 
-      x = t.x;
-      y = t.y;
-      z = t.z;
-      w = t.w;
+      x = k * t.x;
+      y = k * t.y;
+      z = k * t.z;
+      w = k * t.w;
 #endif
       return *this;
     }

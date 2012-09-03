@@ -26,15 +26,10 @@
 
 #include "PFile.hh"
 
-#include "System.hh"
-
-#ifdef __native_client__
-
-#endif
-
 #include <cerrno>
 #include <cstring>
 #include <physfs.h>
+
 #ifdef __native_client__
 # include <ppapi/c/ppb.h>
 # include <ppapi/cpp/file_system.h>

@@ -151,8 +151,8 @@ class Log
     static void printHalt();
 
     /**
-     * First parameter is file path (if `null` or "", it only writes to terminal), the other tells
-     * us if we want to clear its content if the file already exists.
+     * First parameter is file path (if `nullptr` or "", it only writes to terminal), the other
+     * tells whether to clear its content if the file already exists.
      */
     static bool init( const char* filePath = nullptr, bool clearFile = true );
 
