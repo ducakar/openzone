@@ -162,7 +162,7 @@ void Caelum::load()
 {
   id = orbis.caelum.id;
 
-  const String& path = library.caela[id].path;
+  const String& path = liber.caela[id].path;
 
   axis = Vec3( -Math::sin( orbis.caelum.heading ), Math::cos( orbis.caelum.heading ), 0.0f );
   originalLightDir = Vec3( Math::cos( orbis.caelum.heading ),
@@ -192,8 +192,8 @@ void Caelum::load()
   sunTexId  = context.readTextureLayer( &is );
   moonTexId = context.readTextureLayer( &is );
 
-  starShaderId      = library.shaderIndex( "stars" );
-  celestialShaderId = library.shaderIndex( "celestial" );
+  starShaderId      = liber.shaderIndex( "stars" );
+  celestialShaderId = liber.shaderIndex( "celestial" );
 
   nightColour = Vec4( NIGHT_COLOUR );
   nightLuminance = ( nightColour.x + nightColour.y + nightColour.z ) / 3.0f;

@@ -38,18 +38,18 @@
 
 #include <GL/gl.h>
 
-extern "C" __attribute__(( noreturn ))
+extern "C"
 void fetch_2d_texel_rgb_dxt1( GLint stride, const GLubyte* data, GLint x, GLint y, GLvoid* texel );
 
-extern "C" __attribute__(( noreturn ))
+extern "C"
 void fetch_2d_texel_rgba_dxt1( GLint stride, const GLubyte* data, GLint x, GLint y, GLvoid* texel );
 
-extern "C" __attribute__(( noreturn ))
+extern "C"
 void fetch_2d_texel_rgba_dxt3( GLint stride, const GLubyte* data, GLint x, GLint y, GLvoid* texel );
 
-extern "C" __attribute__(( noreturn ))
+extern "C"
 void fetch_2d_texel_rgba_dxt5( GLint stride, const GLubyte* data, GLint x, GLint y, GLvoid* texel );
 
-extern "C" __attribute__(( noreturn ))
+extern "C"
 void tx_compress_dxtn( GLint components, GLint width, GLint height, const GLubyte* data,
                        GLenum destFormat, GLubyte* destData, GLint destStride );

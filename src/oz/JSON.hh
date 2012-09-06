@@ -80,7 +80,7 @@ class JSON
     /// Class that wraps internal formatter functions.
     class Formatter;
 
-    static const JSON nil;         ///< A null value, required by `operator []`.
+    static const JSON NIL_VALUE;   ///< A null value instance, required by `operator []`.
 
     Data*             data;        ///< Pointer to internal data struct.
     Type              valueType;   ///< Value type, `JSON::Type`.

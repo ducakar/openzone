@@ -25,26 +25,31 @@
 
 #include <stdlib.h>
 
+__attribute__(( noreturn ))
 void fetch_2d_texel_rgb_dxt1( GLint, const GLubyte*, GLint, GLint, GLvoid* )
 {
   abort();
 }
 
+__attribute__(( noreturn ))
 void fetch_2d_texel_rgba_dxt1( GLint, const GLubyte*, GLint, GLint, GLvoid* )
 {
   abort();
 }
 
+__attribute__(( noreturn ))
 void fetch_2d_texel_rgba_dxt3( GLint, const GLubyte*, GLint, GLint, GLvoid* )
 {
   abort();
 }
 
+__attribute__(( noreturn ))
 void fetch_2d_texel_rgba_dxt5( GLint, const GLubyte*, GLint, GLint, GLvoid* )
 {
   abort();
 }
 
+__attribute__(( noreturn ))
 void tx_compress_dxtn( GLint, GLint, GLint, const GLubyte*, GLenum, GLubyte*, GLint )
 {
   abort();

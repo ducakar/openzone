@@ -161,7 +161,7 @@ void Terra::load()
 {
   id = orbis.terra.id;
 
-  const String& name = library.terrae[id].name;
+  const String& name = liber.terrae[id].name;
   String path = "terra/" + name + ".ozcTerra";
 
   PFile file( path );
@@ -224,8 +224,8 @@ void Terra::load()
     }
   }
 
-  landShaderId = library.shaderIndex( "terraLand" );
-  waterShaderId = library.shaderIndex( "terraWater" );
+  landShaderId = liber.shaderIndex( "terraLand" );
+  waterShaderId = liber.shaderIndex( "terraWater" );
 
   liquidFogColour = is.readVec4();
 

@@ -26,7 +26,7 @@
 #include <stable.hh>
 #include <client/Shader.hh>
 
-#include <matrix/Library.hh>
+#include <matrix/Liber.hh>
 
 #include <client/Camera.hh>
 #include <client/OpenGL.hh>
@@ -102,7 +102,7 @@ void Transform::applyColour() const
   setColour( colour );
 }
 
-inline void Transform::setColour( const Mat44& colour_ ) const
+void Transform::setColour( const Mat44& colour_ ) const
 {
   glUniformMatrix4fv( param.oz_ColourTransform, 1, GL_FALSE, colour_ );
 }
@@ -165,7 +165,7 @@ void Shader::compileShader( uint id, const char* path, const char** sources, int
 
 void Shader::loadProgram( int id )
 {
-  const String& name = library.shaders[id].name;
+  const String& name = liber.shaders[id].name;
 
   PFile configFile( "glsl/" + name + ".json" );
   JSON programConfig;
@@ -347,13 +347,13 @@ void Shader::init()
     glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
   }
 
-  if( library.shaders.length() == 0 ) {
+  if( liber.shaders.length() == 0 ) {
     OZ_ERROR( "Shaders missing" );
   }
 
-  programs.resize( library.shaders.length() );
+  programs.resize( liber.shaders.length() );
 
-  for( int i = 0; i < library.shaders.length(); ++i ) {
+  for( int i = 0; i < liber.shaders.length(); ++i ) {
     programs[i].program    = 0;
     programs[i].vertShader = 0;
     programs[i].fragShader = 0;
@@ -386,9 +386,9 @@ void Shader::init()
   sources[1] = buffer.begin();
   lengths[1] = buffer.length();
 
-  plain       = library.shaderIndex( "plain" );
-  mesh        = library.shaderIndex( "mesh" );
-  postprocess = library.shaderIndex( "postprocess" );
+  plain       = liber.shaderIndex( "plain" );
+  mesh        = liber.shaderIndex( "mesh" );
+  postprocess = liber.shaderIndex( "postprocess" );
 
   medium = 0;
 
@@ -410,7 +410,7 @@ void Shader::init()
     }
   }
 
-  for( int i = 0; i < library.shaders.length(); ++i ) {
+  for( int i = 0; i < liber.shaders.length(); ++i ) {
     loadProgram( i );
   }
 
@@ -421,7 +421,7 @@ void Shader::free()
 {
   Log::print( "Freeing Shader ..." );
 
-  for( int i = 0; i < library.shaders.length(); ++i ) {
+  for( int i = 0; i < liber.shaders.length(); ++i ) {
     if( programs[i].program != 0 ) {
       glDetachShader( programs[i].program, programs[i].vertShader );
       glDetachShader( programs[i].program, programs[i].fragShader );

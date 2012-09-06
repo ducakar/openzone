@@ -227,7 +227,7 @@ MD2::MD2( int id_ ) :
 
 void MD2::preload()
 {
-  file.setPath( library.models[id].path );
+  file.setPath( liber.models[id].path );
 
   if( !file.map() ) {
     OZ_ERROR( "MD2 model file '%s' mmap failed", file.path().cstr() );

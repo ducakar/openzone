@@ -2,10 +2,10 @@
 
 - oz
     * null removed, replaced by nullptr keyword
-    * new nil_t class, used for dummy value in key-value pairs
     * improved iterator classes: much less code duplication, range-based for-loop support
     * new Set template class, similar to Map but with single values instead of key-value pairs
-    * SIMD support in linear algebra classes, Simd class removed
+    * SIMD support in linear algebra classes
+    * ALSA fallback for System::bell()
 - ui
     * UI colours, fonts and layouts can be configured in `ui/style.json`
 - client

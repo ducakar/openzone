@@ -114,7 +114,7 @@ void Loader::cleanupRender()
 
   if( tick % FRAG_CLEAR_INTERVAL == FRAG_CLEAR_LAG ) {
     // remove unused frag pools
-    for( int i = 0; i < library.nFragPools; ++i ) {
+    for( int i = 0; i < liber.nFragPools; ++i ) {
       FragPool* pool = context.fragPools[i];
 
       if( pool == nullptr ) {
@@ -132,7 +132,7 @@ void Loader::cleanupRender()
   }
 
   if( tick % IMAGOCLASS_CLEAR_INTERVAL == IMAGOCLASS_CLEAR_LAG ) {
-    for( int i = 0; i < library.models.length(); ++i ) {
+    for( int i = 0; i < liber.models.length(); ++i ) {
       Context::Resource<SMM*>& smm = context.smms[i];
       Context::Resource<MD2*>& md2 = context.md2s[i];
       Context::Resource<MD3*>& md3 = context.md3s[i];
@@ -160,7 +160,7 @@ void Loader::cleanupRender()
 
   if( tick % BSP_CLEAR_INTERVAL == BSP_CLEAR_LAG ) {
     // remove unused BSPs
-    for( int i = 0; i < library.nBSPs; ++i ) {
+    for( int i = 0; i < liber.nBSPs; ++i ) {
       Context::Resource<BSP*>& bsp = context.bsps[i];
 
       if( bsp.nUsers != 0 ) {
@@ -219,7 +219,7 @@ void Loader::cleanupSound()
   }
 
   if( tick % SOUND_CLEAR_INTERVAL == SOUND_CLEAR_LAG ) {
-    for( int i = 0; i < library.sounds.length(); ++i ) {
+    for( int i = 0; i < liber.sounds.length(); ++i ) {
       Context::Resource<uint>& sound = context.sounds[i];
 
       if( sound.nUsers == 0 ) {
@@ -267,7 +267,7 @@ void Loader::cleanupSound()
 
   if( tick % BSPAUDIO_CLEAR_INTERVAL == BSPAUDIO_CLEAR_LAG ) {
     // remove unused BSPAudios
-    for( int i = 0; i < library.nBSPs; ++i ) {
+    for( int i = 0; i < liber.nBSPs; ++i ) {
       Context::Resource<BSPAudio*>& bspAudio = context.bspAudios[i];
 
       if( bspAudio.nUsers != 0 ) {
@@ -287,7 +287,7 @@ void Loader::cleanupSound()
 
 void Loader::preloadRender()
 {
-  for( int i = 0; i < library.nBSPs; ++i ) {
+  for( int i = 0; i < liber.nBSPs; ++i ) {
     BSP* bsp = context.bsps[i].object;
 
     if( bsp != nullptr && !bsp->isPreloaded ) {
@@ -295,7 +295,7 @@ void Loader::preloadRender()
     }
   }
 
-  for( int i = 0; i < library.models.length(); ++i ) {
+  for( int i = 0; i < liber.models.length(); ++i ) {
     SMM* smm = context.smms[i].object;
 
     if( smm != nullptr && !smm->isPreloaded ) {
@@ -303,7 +303,7 @@ void Loader::preloadRender()
     }
   }
 
-  for( int i = 0; i < library.models.length(); ++i ) {
+  for( int i = 0; i < liber.models.length(); ++i ) {
     MD2* md2 = context.md2s[i].object;
 
     if( md2 != nullptr && !md2->isPreloaded ) {
@@ -311,7 +311,7 @@ void Loader::preloadRender()
     }
   }
 
-  for( int i = 0; i < library.models.length(); ++i ) {
+  for( int i = 0; i < liber.models.length(); ++i ) {
     MD3* md3 = context.md3s[i].object;
 
     if( md3 != nullptr && !md3->isPreloaded ) {
@@ -332,7 +332,7 @@ void Loader::uploadRender()
     terra.load();
   }
 
-  for( int i = 0; i < library.nBSPs; ++i ) {
+  for( int i = 0; i < liber.nBSPs; ++i ) {
     BSP* bsp = context.bsps[i].object;
 
     if( bsp != nullptr && !bsp->isLoaded && bsp->isPreloaded ) {
@@ -341,7 +341,7 @@ void Loader::uploadRender()
     }
   }
 
-  for( int i = 0; i < library.models.length(); ++i ) {
+  for( int i = 0; i < liber.models.length(); ++i ) {
     SMM* smm = context.smms[i].object;
 
     if( smm != nullptr && !smm->isLoaded && smm->isPreloaded ) {
@@ -350,7 +350,7 @@ void Loader::uploadRender()
     }
   }
 
-  for( int i = 0; i < library.models.length(); ++i ) {
+  for( int i = 0; i < liber.models.length(); ++i ) {
     MD2* md2 = context.md2s[i].object;
 
     if( md2 != nullptr && !md2->isLoaded && md2->isPreloaded ) {
@@ -359,7 +359,7 @@ void Loader::uploadRender()
     }
   }
 
-  for( int i = 0; i < library.models.length(); ++i ) {
+  for( int i = 0; i < liber.models.length(); ++i ) {
     MD3* md3 = context.md3s[i].object;
 
     if( md3 != nullptr && !md3->isLoaded && md3->isPreloaded ) {

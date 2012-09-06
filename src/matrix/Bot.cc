@@ -25,7 +25,7 @@
 #include <matrix/Bot.hh>
 
 #include <common/Timer.hh>
-#include <matrix/Library.hh>
+#include <matrix/Liber.hh>
 #include <matrix/NamePool.hh>
 #include <matrix/Physics.hh>
 #include <matrix/Synapse.hh>

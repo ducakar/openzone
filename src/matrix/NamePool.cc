@@ -24,7 +24,7 @@
 #include <stable.hh>
 #include <matrix/NamePool.hh>
 
-#include <matrix/Library.hh>
+#include <matrix/Liber.hh>
 
 namespace oz
 {
@@ -55,11 +55,11 @@ void NamePool::init()
   names.add( "" );
   listPositions.add( names.length() );
 
-  for( int i = 0; i < library.nameLists.length(); ++i ) {
-    PFile file( library.nameLists[i].path );
+  for( int i = 0; i < liber.nameLists.length(); ++i ) {
+    PFile file( liber.nameLists[i].path );
 
     if( !file.map() ) {
-      OZ_ERROR( "Reading '%s' failed", library.nameLists[i].path.cstr() );
+      OZ_ERROR( "Reading '%s' failed", liber.nameLists[i].path.cstr() );
     }
 
     InputStream is = file.inputStream();
@@ -86,7 +86,7 @@ void NamePool::init()
     listPositions.add( names.length() );
   }
 
-  hard_assert( listPositions.length() == library.nameLists.length() + 1 );
+  hard_assert( listPositions.length() == liber.nameLists.length() + 1 );
 
   Log::printEnd( " OK" );
 }

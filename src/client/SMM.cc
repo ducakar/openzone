@@ -42,7 +42,7 @@ SMM::SMM( int id_ ) :
 
 void SMM::preload()
 {
-  file.setPath( library.models[id].path );
+  file.setPath( liber.models[id].path );
 
   if( !file.map() ) {
     OZ_ERROR( "SMM file '%s' mmap failed", file.path().cstr() );

@@ -24,7 +24,7 @@
 #include <stable.hh>
 #include <matrix/Terra.hh>
 
-#include <matrix/Library.hh>
+#include <matrix/Liber.hh>
 
 namespace oz
 {
@@ -50,8 +50,8 @@ void Terra::load( int id_ )
     }
   }
   else {
-    const String& name = library.terrae[id].name;
-    const String& path = library.terrae[id].path;
+    const String& name = liber.terrae[id].name;
+    const String& path = liber.terrae[id].path;
 
     Log::print( "Loading terrain '%s' ...", name.cstr() );
 
@@ -108,14 +108,14 @@ void Terra::init()
 void Terra::read( InputStream* istream )
 {
   const char* name = istream->readString();
-  int id = String::isEmpty( name ) ? -1 : library.terraIndex( name );
+  int id = String::isEmpty( name ) ? -1 : liber.terraIndex( name );
 
   load( id );
 }
 
 void Terra::write( BufferStream* ostream ) const
 {
-  const char* name = id < 0 ? "" : library.terrae[id].name.cstr();
+  const char* name = id < 0 ? "" : liber.terrae[id].name.cstr();
 
   ostream->writeString( name );
 }

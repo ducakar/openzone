@@ -24,7 +24,7 @@
 #include <stable.hh>
 #include <client/ui/BuildMenu.hh>
 
-#include <matrix/Library.hh>
+#include <matrix/Liber.hh>
 #include <matrix/Synapse.hh>
 
 #include <nirvana/Nirvana.hh>
@@ -39,7 +39,7 @@ namespace ui
 {
 
 BuildButton::BuildButton( const char* className_, Callback* callback, int width, int height ) :
-  Button( lingua.get( library.objClass( className_ )->title ), callback, width, height ),
+  Button( lingua.get( liber.objClass( className_ )->title ), callback, width, height ),
   className( className_ )
 {}
 
@@ -49,7 +49,7 @@ BuildButton::~BuildButton()
 void BuildMenu::createObject( Button* button_ )
 {
   const BuildButton* button = static_cast<const BuildButton*>( button_ );
-  const ObjectClass* clazz = library.objClass( button->className );
+  const ObjectClass* clazz = liber.objClass( button->className );
 
   Point p  = camera.p + ( 2.0f + clazz->dim.fastN() ) * camera.at;
   AABB  bb = AABB( p, clazz->dim );

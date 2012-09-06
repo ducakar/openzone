@@ -24,7 +24,7 @@
 #include <stable.hh>
 #include <modules/flora/FloraModule.hh>
 
-#include <matrix/Library.hh>
+#include <matrix/Liber.hh>
 #include <matrix/Synapse.hh>
 
 #include <client/Lua.hh>
@@ -68,7 +68,7 @@ void FloraModule::addTree( float x, float y )
     return;
   }
 
-  const ObjectClass* clazz = library.objClass( type );
+  const ObjectClass* clazz = liber.objClass( type );
 
   pos.z += clazz->dim.z + 2.0f * EPSILON;
   AABB bounds = AABB( pos, Vec3( clazz->dim.x * SPACING, clazz->dim.y * SPACING, clazz->dim.z ) );
@@ -82,7 +82,7 @@ void FloraModule::addTree( float x, float y )
 
 void FloraModule::addPlant( const char* type, float x, float y )
 {
-  const ObjectClass* clazz = library.objClass( type );
+  const ObjectClass* clazz = liber.objClass( type );
 
   Point pos    = Point( x, y, orbis.terra.height( x, y ) + clazz->dim.z + 2.0f * EPSILON );
   AABB  bounds = AABB( pos, clazz->dim );

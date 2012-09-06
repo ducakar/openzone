@@ -24,7 +24,7 @@
 #include <stable.hh>
 #include <matrix/Synapse.hh>
 
-#include <matrix/Library.hh>
+#include <matrix/Liber.hh>
 #include <matrix/Collider.hh>
 #include <matrix/Bot.hh>
 
@@ -193,22 +193,22 @@ void Synapse::gen( const FragPool* pool, int nFrags, const Bounds& bb, const Vec
 
 Struct* Synapse::addStruct( const char* bspName, const Point& p, Heading heading, bool empty )
 {
-  return add( library.bsp( bspName ), p, heading, empty );
+  return add( liber.bsp( bspName ), p, heading, empty );
 }
 
 Object* Synapse::addObject( const char* className, const Point& p, Heading heading, bool empty )
 {
-  return add( library.objClass( className ), p, heading, empty );
+  return add( liber.objClass( className ), p, heading, empty );
 }
 
 Frag* Synapse::addFrag( const char* poolName, const Point& p, const Vec3& velocity )
 {
-  return add( library.fragPool( poolName ), p, velocity );
+  return add( liber.fragPool( poolName ), p, velocity );
 }
 
 void Synapse::genFrags( const char* poolName, int nFrags, const Bounds& bb, const Vec3& velocity )
 {
-  gen( library.fragPool( poolName ), nFrags, bb, velocity );
+  gen( liber.fragPool( poolName ), nFrags, bb, velocity );
 }
 
 void Synapse::remove( Struct* str )

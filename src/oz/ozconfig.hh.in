@@ -30,11 +30,6 @@
 // leaks and new/delete mismatches.
 #cmakedefine OZ_TRACK_ALLOCS
 
-// Use versions of linear math structures that match SIMD registers and explicitly use SIMD
-// operations. However, due to larger size and if code is not written with SIMD in mind, those may
-// yield worse performance than generic linear math structures.
-#cmakedefine OZ_SIMD_MATH
-
 /*
  * Compiler and platform-specific macros
  */

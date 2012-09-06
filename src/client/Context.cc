@@ -44,7 +44,7 @@
 
 #define OZ_REGISTER_IMAGOCLASS( name ) \
   { \
-    int id = library.imagoIndex( #name ); \
+    int id = liber.imagoIndex( #name ); \
     if( id >= 0 ) { \
       imagoClasses[id] = name##Imago::create; \
     } \
@@ -52,7 +52,7 @@
 
 #define OZ_REGISTER_AUDIOCLASS( name ) \
   { \
-    int id = library.audioIndex( #name ); \
+    int id = liber.audioIndex( #name ); \
     if( id >= 0 ) { \
       audioClasses[id] = name##Audio::create; \
     } \
@@ -377,7 +377,7 @@ Texture Context::requestTexture( int id )
   }
 
   resource.nUsers = 1;
-  resource.id = loadTexture( library.textures[id].path );
+  resource.id = loadTexture( liber.textures[id].path );
 
   return resource.id;
 }
@@ -411,8 +411,8 @@ uint Context::requestSound( int id )
 
   OZ_AL_CHECK_ERROR();
 
-  const String& name = library.sounds[id].name;
-  const String& path = library.sounds[id].path;
+  const String& name = liber.sounds[id].name;
+  const String& path = liber.sounds[id].path;
 
   PFile file( path );
   if( !file.map() ) {
@@ -630,7 +630,7 @@ void Context::drawFrag( const Frag* frag )
 void Context::updateLoad()
 {
   int nFragPools = 0;
-  for( int i = 0; i < library.nFragPools; ++i ) {
+  for( int i = 0; i < liber.nFragPools; ++i ) {
     nFragPools += fragPools[i] != nullptr;
   }
 
@@ -655,16 +655,16 @@ void Context::updateLoad()
 
 void Context::load()
 {
-  for( int i = 0; i < library.textures.length(); ++i ) {
+  for( int i = 0; i < liber.textures.length(); ++i ) {
     hard_assert( textures[i].nUsers == -1 );
   }
-  for( int i = 0; i < library.sounds.length(); ++i ) {
+  for( int i = 0; i < liber.sounds.length(); ++i ) {
     hard_assert( sounds[i].nUsers == -1 );
   }
-  for( int i = 0; i < library.nBSPs; ++i ) {
+  for( int i = 0; i < liber.nBSPs; ++i ) {
     hard_assert( bsps[i].nUsers == -1 );
   }
-  for( int i = 0; i < library.models.length(); ++i ) {
+  for( int i = 0; i < liber.models.length(); ++i ) {
     hard_assert( smms[i].nUsers == -1 );
     hard_assert( md2s[i].nUsers == -1 );
     hard_assert( md3s[i].nUsers == -1 );
@@ -739,8 +739,8 @@ void Context::unload()
   audios.free();
   audios.dealloc();
 
-  aFree( fragPools, library.nFragPools );
-  aSet<FragPool*, FragPool*>( fragPools, nullptr, library.nFragPools );
+  aFree( fragPools, liber.nFragPools );
+  aSet<FragPool*, FragPool*>( fragPools, nullptr, liber.nFragPools );
 
   BasicAudio::pool.free();
   BotAudio::pool.free();
@@ -748,7 +748,7 @@ void Context::unload()
 
   OZ_AL_CHECK_ERROR();
 
-  for( int i = 0; i < library.nBSPs; ++i ) {
+  for( int i = 0; i < liber.nBSPs; ++i ) {
     delete bsps[i].object;
 
     bsps[i].object = nullptr;
@@ -759,7 +759,7 @@ void Context::unload()
     bspAudios[i].object = nullptr;
     bspAudios[i].nUsers = -1;
   }
-  for( int i = 0; i < library.models.length(); ++i ) {
+  for( int i = 0; i < liber.models.length(); ++i ) {
     delete smms[i].object;
 
     smms[i].object = nullptr;
@@ -802,11 +802,11 @@ void Context::unload()
   contSources.clear();
   contSources.dealloc();
 
-  for( int i = 0; i < library.textures.length(); ++i ) {
+  for( int i = 0; i < liber.textures.length(); ++i ) {
     hard_assert( textures[i].nUsers == -1 );
   }
 
-  for( int i = 0; i < library.sounds.length(); ++i ) {
+  for( int i = 0; i < liber.sounds.length(); ++i ) {
     if( sounds[i].nUsers == 0 ) {
       freeSound( i );
     }
@@ -823,9 +823,9 @@ void Context::init()
 {
   Log::print( "Initialising Context ..." );
 
-  imagoClasses = library.nImagoClasses == 0 ? nullptr : new Imago::CreateFunc*[library.nImagoClasses];
-  audioClasses = library.nAudioClasses == 0 ? nullptr : new Audio::CreateFunc*[library.nAudioClasses];
-  fragPools    = library.nFragPools    == 0 ? nullptr : new FragPool*[library.nFragPools];
+  imagoClasses = liber.nImagoClasses == 0 ? nullptr : new Imago::CreateFunc*[liber.nImagoClasses];
+  audioClasses = liber.nAudioClasses == 0 ? nullptr : new Audio::CreateFunc*[liber.nAudioClasses];
+  fragPools    = liber.nFragPools    == 0 ? nullptr : new FragPool*[liber.nFragPools];
 
   OZ_REGISTER_IMAGOCLASS( SMM );
   OZ_REGISTER_IMAGOCLASS( SMMVehicle );
@@ -838,12 +838,12 @@ void Context::init()
   OZ_REGISTER_AUDIOCLASS( Bot );
   OZ_REGISTER_AUDIOCLASS( Vehicle );
 
-  aSet<FragPool*, FragPool*>( fragPools, nullptr, library.nFragPools );
+  aSet<FragPool*, FragPool*>( fragPools, nullptr, liber.nFragPools );
 
-  int nTextures = library.textures.length();
-  int nSounds   = library.sounds.length();
-  int nBSPs     = library.nBSPs;
-  int nModels   = library.models.length();
+  int nTextures = liber.textures.length();
+  int nSounds   = liber.sounds.length();
+  int nBSPs     = liber.nBSPs;
+  int nModels   = liber.models.length();
 
   textures  = nTextures == 0 ? nullptr : new Resource<Texture>[nTextures];
   sounds    = nSounds   == 0 ? nullptr : new Resource<uint>[nSounds];

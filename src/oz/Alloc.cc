@@ -88,12 +88,10 @@ static void addTraceEntry( AllocMode mode, void* ptr, size_t size )
     isConstructed = true;
   }
 
-  void* stPtr = malloc( sizeof( TraceEntry ) );
-  if( stPtr == nullptr ) {
+  TraceEntry* st = static_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
+  if( st == nullptr ) {
     OZ_ERROR( "TraceEntry allocation failed" );
   }
-
-  TraceEntry* st = new( stPtr ) TraceEntry();
 
   st->address    = ptr;
   st->size       = size;
@@ -184,7 +182,6 @@ static void removeTraceEntry( AllocMode mode, void* ptr )
 
 backtraceFound:
 
-  st->~TraceEntry();
   free( st );
 }
 

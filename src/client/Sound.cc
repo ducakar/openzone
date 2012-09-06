@@ -82,7 +82,8 @@ static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle )
 
 #ifdef OZ_NONFREE
 
-inline short madFixedToShort( mad_fixed_t f )
+OZ_ALWAYS_INLINE
+static short madFixedToShort( mad_fixed_t f )
 {
   if( f < -MAD_F_ONE ) {
     return SHRT_MIN;
@@ -330,7 +331,7 @@ int Sound::musicDecode()
 
         if( result < 0 ) {
           OZ_ERROR( "Error during Ogg Vorbis decoding of '%s'",
-                    library.musicTracks[streamedTrack].path.cstr() );
+                    liber.musicTracks[streamedTrack].path.cstr() );
         }
       }
       while( result > 0 && bytesRead < MUSIC_BUFFER_SIZE );
@@ -386,7 +387,7 @@ int Sound::musicDecode()
           }
           else if( !MAD_RECOVERABLE( madStream.error ) ) {
             OZ_ERROR( "Unrecoverable error during MP3 decoding of '%s'",
-                      library.musicTracks[streamedTrack].path.cstr() );
+                      liber.musicTracks[streamedTrack].path.cstr() );
           }
         }
 
@@ -466,7 +467,7 @@ void Sound::musicRun()
       streamedTrack = currentTrack;
 
       if( streamedTrack >= 0 ) {
-        musicOpen( library.musicTracks[streamedTrack].path );
+        musicOpen( liber.musicTracks[streamedTrack].path );
       }
     }
 

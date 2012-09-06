@@ -92,12 +92,10 @@ void Mutex::init()
 {
   hard_assert( descriptor == nullptr );
 
-  void* descriptorPtr = malloc( sizeof( Descriptor ) );
-  if( descriptorPtr == nullptr ) {
+  descriptor = static_cast<Descriptor*>( malloc( sizeof( Descriptor ) ) );
+  if( descriptor == nullptr ) {
     OZ_ERROR( "Mutex resource allocation failed" );
   }
-
-  descriptor = new( descriptorPtr ) Descriptor();
 
 #ifdef _WIN32
 
@@ -125,7 +123,6 @@ void Mutex::destroy()
   pthread_mutex_destroy( &descriptor->mutex );
 #endif
 
-  descriptor->~Descriptor();
   free( descriptor );
   descriptor = nullptr;
 }

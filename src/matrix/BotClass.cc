@@ -24,7 +24,7 @@
 #include <stable.hh>
 #include <matrix/BotClass.hh>
 
-#include <matrix/Library.hh>
+#include <matrix/Liber.hh>
 #include <matrix/Bot.hh>
 
 namespace oz
@@ -87,7 +87,7 @@ void BotClass::init( InputStream* is, const char* name )
   weaponItem        = is->readInt();
 
   const char* sNameList = is->readString();
-  nameList = String::isEmpty( sNameList ) ? -1 : library.nameListIndex( sNameList );
+  nameList = String::isEmpty( sNameList ) ? -1 : liber.nameListIndex( sNameList );
 
   mindFunc          = is->readString();
 

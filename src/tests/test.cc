@@ -121,17 +121,5 @@ class Foo
 int main()
 {
   System::init();
-
-  Map<Foo> c;
-  c.add( 1 );
-  c.add( 2 );
-  c.add( 0 );
-
-  for( auto& j : c.citer() ) {
-    Log::out << j.key.value << "\n";
-  }
-//  foreach( const Foo& i, c ) {
-//    Log::out << i.value << "\n";
-//  }
   return 0;
 }

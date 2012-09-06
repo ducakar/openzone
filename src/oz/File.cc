@@ -118,12 +118,11 @@ struct File::Descriptor
 
 // Some Descriptor members are also useful for static functions.
 static File::Descriptor staticDesc( nullptr );
-
-static pp::FileSystem* filesystem = nullptr;
+static pp::FileSystem*  filesystem = nullptr;
 
 #endif // __native_client__
 
-inline bool operator < ( const File& a, const File& b )
+static bool operator < ( const File& a, const File& b )
 {
   return String::compare( a.path(), b.path() ) < 0;
 }

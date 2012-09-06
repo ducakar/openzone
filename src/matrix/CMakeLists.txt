@@ -9,7 +9,7 @@ add_library( matrix STATIC
   Dynamic.hh
   Frag.hh
   FragPool.hh
-  Library.hh
+  Liber.hh
   luaapi.hh
   Lua.hh
   Matrix.hh
@@ -34,7 +34,7 @@ add_library( matrix STATIC
   DynamicClass.cc
   Frag.cc
   FragPool.cc
-  Library.cc
+  Liber.cc
   luaapi.cc
   Lua.cc
   Matrix.cc

@@ -26,7 +26,7 @@
 
 #include <common/Lingua.hh>
 #include <matrix/Object.hh>
-#include <matrix/Library.hh>
+#include <matrix/Liber.hh>
 
 namespace oz
 {
@@ -54,7 +54,7 @@ void ObjectClass::init( InputStream* is, const char* name_ )
 
   const char* sFragPool = is->readString();
 
-  fragPool    = String::isEmpty( sFragPool ) ? nullptr : library.fragPool( sFragPool );
+  fragPool    = String::isEmpty( sFragPool ) ? nullptr : liber.fragPool( sFragPool );
   nFrags      = is->readInt();
 
   attributes  = is->readInt();
@@ -69,25 +69,24 @@ void ObjectClass::init( InputStream* is, const char* name_ )
     for( int i = 0; i < nDefaultItems; ++i ) {
       const char* sItemClass = is->readString();
 
-      defaultItems.add( library.objClass( sItemClass ) );
+      defaultItems.add( liber.objClass( sItemClass ) );
     }
   }
 
   const char* sDeviceType = is->readString();
-  deviceType = String::isEmpty( sDeviceType ) ? -1 : library.deviceIndex( sDeviceType );
-
   const char* sImagoType  = is->readString();
   const char* sImagoModel = is->readString();
-  imagoType  = String::isEmpty( sImagoType ) ? -1 : library.imagoIndex( sImagoType );
-  imagoModel = String::isEmpty( sImagoModel ) ? -1 : library.modelIndex( sImagoModel );
-
   const char* sAudioType = is->readString();
-  audioType = String::isEmpty( sAudioType ) ? -1 : library.audioIndex( sAudioType );
+
+  deviceType = String::isEmpty( sDeviceType ) ? -1 : liber.deviceIndex( sDeviceType );
+  imagoType  = String::isEmpty( sImagoType )  ? -1 : liber.imagoIndex( sImagoType );
+  imagoModel = String::isEmpty( sImagoModel ) ? -1 : liber.modelIndex( sImagoModel );
+  audioType  = String::isEmpty( sAudioType )  ? -1 : liber.audioIndex( sAudioType );
 
   for( int i = 0; i < MAX_SOUNDS; ++i ) {
     const char* sSound = is->readString();
 
-    audioSounds[i] = String::isEmpty( sSound ) ? -1 : library.soundIndex( sSound );
+    audioSounds[i] = String::isEmpty( sSound ) ? -1 : liber.soundIndex( sSound );
   }
 
   onDestroy = is->readString();

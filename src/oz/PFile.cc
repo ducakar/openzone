@@ -47,7 +47,7 @@
 namespace oz
 {
 
-inline bool operator < ( const PFile& a, const PFile& b )
+static bool operator < ( const PFile& a, const PFile& b )
 {
   return String::compare( a.path(), b.path() ) < 0;
 }

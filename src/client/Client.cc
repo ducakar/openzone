@@ -443,7 +443,7 @@ int Client::init( int argc, char** argv )
   }
 
   initFlags |= INIT_LIBRARY;
-  library.init( config["dir.music"].get( "" ) );
+  liber.init( config["dir.music"].get( "" ) );
 
   initFlags |= INIT_CONTEXT;
   context.init();
@@ -508,7 +508,7 @@ void Client::shutdown()
     context.free();
   }
   if( initFlags & INIT_LIBRARY ) {
-    library.free();
+    liber.free();
   }
   if( initFlags & INIT_LINGUA ) {
     lingua.free();

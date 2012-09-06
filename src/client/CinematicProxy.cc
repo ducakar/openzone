@@ -25,7 +25,6 @@
 #include <client/CinematicProxy.hh>
 
 #include <common/Timer.hh>
-#include <matrix/Library.hh>
 #include <client/Camera.hh>
 #include <client/Sound.hh>
 #include <client/NaCl.hh>
@@ -107,7 +106,7 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* missionLin
       step.track = -2;
     }
     else {
-      step.track = library.musicTrackIndex( trackConfig.asString() );
+      step.track = liber.musicTrackIndex( trackConfig.asString() );
     }
 
     const JSON& titleConfig = stepConfig["title"];

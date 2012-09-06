@@ -34,7 +34,7 @@ namespace client
 
 void BSPAudio::playDemolish( const Struct* str, int sound ) const
 {
-  hard_assert( uint( sound ) < uint( library.sounds.length() ) );
+  hard_assert( uint( sound ) < uint( liber.sounds.length() ) );
 
   uint srcId = context.addSource( sound );
   if( srcId == Context::INVALID_SOURCE ) {
@@ -53,7 +53,7 @@ void BSPAudio::playDemolish( const Struct* str, int sound ) const
 
 void BSPAudio::playSound( const Entity* entity, int sound ) const
 {
-  hard_assert( uint( sound ) < uint( library.sounds.length() ) );
+  hard_assert( uint( sound ) < uint( liber.sounds.length() ) );
 
   const Struct* str      = entity->str;
   Point         p        = str->toAbsoluteCS( entity->model->p() + entity->offset );
@@ -77,7 +77,7 @@ void BSPAudio::playSound( const Entity* entity, int sound ) const
 
 void BSPAudio::playContSound( const Entity* entity, int sound ) const
 {
-  hard_assert( uint( sound ) < uint( library.sounds.length() ) );
+  hard_assert( uint( sound ) < uint( liber.sounds.length() ) );
 
   const Struct* str      = entity->str;
   int           key      = str->index * Struct::MAX_ENTITIES + int( entity - str->entities );

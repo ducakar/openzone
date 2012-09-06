@@ -39,27 +39,23 @@
 namespace oz
 {
 
-struct ThreadMainData
-{
-  Thread::Main* main;
-  void*         data;
-};
-
 #ifdef _WIN32
 
 struct Thread::Descriptor
 {
-  HANDLE thread;
+  HANDLE        thread;
+  Thread::Main* main;
+  void*         data;
+
+  static DWORD WINAPI threadMain( void* data );
 };
 
-static DWORD WINAPI winMain( void* data )
+OZ_HIDDEN
+DWORD WINAPI Thread::Descriptor::threadMain( void* data )
 {
-  ThreadMainData* threadData = static_cast<ThreadMainData*>( data );
+  Descriptor* descriptor = static_cast<Descriptor*>( data );
 
-  threadData->main( threadData->data );
-
-  threadData->~ThreadMainData();
-  free( threadData );
+  descriptor->main( descriptor->data );
   return 0;
 }
 
@@ -67,17 +63,19 @@ static DWORD WINAPI winMain( void* data )
 
 struct Thread::Descriptor
 {
-  pthread_t thread;
+  pthread_t     thread;
+  Thread::Main* main;
+  void*         data;
+
+  static void* threadMain( void* data );
 };
 
-static void* pthreadMain( void* data )
+OZ_HIDDEN
+void* Thread::Descriptor::threadMain( void* data )
 {
-  ThreadMainData* threadData = static_cast<ThreadMainData*>( data );
+  Descriptor* descriptor = static_cast<Descriptor*>( data );
 
-  threadData->main( threadData->data );
-
-  threadData->~ThreadMainData();
-  free( threadData );
+  descriptor->main( descriptor->data );
   return nullptr;
 }
 
@@ -87,33 +85,24 @@ void Thread::start( Main* main, void* data )
 {
   hard_assert( descriptor == nullptr );
 
-  void* descriptorPtr = malloc( sizeof( Descriptor ) );
-  if( descriptorPtr == nullptr ) {
+  descriptor = static_cast<Descriptor*>( malloc( sizeof( Descriptor ) ) );
+  if( descriptor == nullptr ) {
     OZ_ERROR( "Thread resource allocation failed" );
   }
 
-  descriptor = new( descriptorPtr ) Descriptor();
-
-  void* threadDataPtr = malloc( sizeof( ThreadMainData ) );
-  if( threadDataPtr == nullptr ) {
-    OZ_ERROR( "Thread resource allocation failed" );
-  }
-
-  ThreadMainData* threadData = new( threadDataPtr ) ThreadMainData();
-
-  threadData->main = main;
-  threadData->data = data;
+  descriptor->main = main;
+  descriptor->data = data;
 
 #ifdef _WIN32
 
-  descriptor->thread = CreateThread( nullptr, 0, winMain, threadData, 0, nullptr );
+  descriptor->thread = CreateThread( nullptr, 0, Descriptor::threadMain, descriptor, 0, nullptr );
   if( descriptor->thread == nullptr ) {
     OZ_ERROR( "Thread creation failed" );
   }
 
 #else
 
-  if( pthread_create( &descriptor->thread, nullptr, pthreadMain, threadData ) != 0 ) {
+  if( pthread_create( &descriptor->thread, nullptr, Descriptor::threadMain, descriptor ) != 0 ) {
     OZ_ERROR( "Thread creation failed" );
   }
 
@@ -137,7 +126,6 @@ void Thread::join()
 
 #endif
 
-  descriptor->~Descriptor();
   free( descriptor );
   descriptor = nullptr;
 }

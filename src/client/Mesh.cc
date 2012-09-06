@@ -332,7 +332,7 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage )
     }
   }
 
-  shaderId = library.shaderIndex( istream->readString() );
+  shaderId = liber.shaderIndex( istream->readString() );
 
   DArray<Texture> textures;
   int nTextures = istream->readInt();
@@ -380,7 +380,7 @@ void Mesh::load( oz::InputStream* istream, oz::uint usage )
         textures[i].normals = shader.defaultNormals;
       }
       else {
-        texIds[i]   = library.textureIndex( name );
+        texIds[i]   = liber.textureIndex( name );
         textures[i] = context.requestTexture( texIds[i] );
       }
     }

@@ -30,7 +30,7 @@
 
 #include "common.hh"
 
-// FIXME Add a space after elipsis in variadic macros once KDevelop gets that bug fixed.
+// FIXME Add a space after ellipsis in variadic macros once KDevelop gets that bug fixed.
 
 /**
  * @def OZ_WARNING
@@ -64,7 +64,7 @@ namespace oz
 {
 
 /**
- * Class for generating stack trace for the current function call.
+ * Various utilities for issuing warnings, errors, intercepting fatal signals etc.
  */
 class System
 {
@@ -77,9 +77,8 @@ class System
     /// abort the program (similar to `error()` call).
     static const int SIGNAL_HANDLER_BIT = 0x10;
 
-    /// Override handlers for exception violations (`std::terminate()` and
-    /// `std::unexpected()`) with handlers that print diagnostics and abort the program via
-    /// `error()` call.
+    /// Override handlers for exception violations (`std::terminate()` and `std::unexpected()`) with
+    /// handlers that print diagnostics and abort the program via `error()` call.
     static const int EXCEPTION_HANDLERS_BIT = 0x20;
 
     /// Handlers bitmask.
@@ -89,7 +88,7 @@ class System
 
     static pp::Module*   module;   ///< NaCl module.
     static pp::Instance* instance; ///< NaCl instance.
-    static pp::Core*     core;     ///< NaCl pp::Core interface.
+    static pp::Core*     core;     ///< NaCl `pp::Core` interface.
 
 #endif
 
@@ -129,8 +128,11 @@ class System
     /**
      * Play a sound alert.
      *
-     * Sine wave from `oz/bellSample.inc` is played asynchronously through PulseAudio on Linux or
-     * Win32 API on Windows.
+     * Sine wave from `oz/bellSample.inc` is played asynchronously through platform's native sound
+     * system.
+     *
+     * On Linux, PulseAudio is first choice, ALSA is used as fallback.
+     * On Windows, `PlaySound` system call is used.
      */
     static void bell();
 

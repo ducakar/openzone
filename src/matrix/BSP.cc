@@ -25,7 +25,7 @@
 #include <matrix/BSP.hh>
 
 #include <common/Lingua.hh>
-#include <matrix/Library.hh>
+#include <matrix/Liber.hh>
 #include <matrix/Collider.hh>
 
 namespace oz
@@ -185,9 +185,9 @@ void BSP::load()
     String sCloseSound    = is.readString();
     String sFrictSound    = is.readString();
 
-    models[i].openSound   = sOpenSound.isEmpty()  ? -1 : library.soundIndex( sOpenSound );
-    models[i].closeSound  = sCloseSound.isEmpty() ? -1 : library.soundIndex( sCloseSound );
-    models[i].frictSound  = sFrictSound.isEmpty() ? -1 : library.soundIndex( sFrictSound );
+    models[i].openSound   = sOpenSound.isEmpty()  ? -1 : liber.soundIndex( sOpenSound );
+    models[i].closeSound  = sCloseSound.isEmpty() ? -1 : liber.soundIndex( sCloseSound );
+    models[i].frictSound  = sFrictSound.isEmpty() ? -1 : liber.soundIndex( sFrictSound );
   }
   data += nModels * int( sizeof( models[0] ) );
 
@@ -195,7 +195,7 @@ void BSP::load()
 
   boundObjects = new( data ) BoundObject[nBoundObjects];
   for( int i = 0; i < nBoundObjects; ++i ) {
-    boundObjects[i].clazz   = library.objClass( is.readString() );
+    boundObjects[i].clazz   = liber.objClass( is.readString() );
     boundObjects[i].pos     = is.readPoint();
     boundObjects[i].heading = Heading( is.readInt() );
   }
@@ -274,16 +274,16 @@ void BSP::init( const char* name_, int id_ )
   resistance    = is.readFloat();
 
   String sFragPool = is.readString();
-  fragPool = sFragPool.isEmpty() ? nullptr : library.fragPool( sFragPool );
+  fragPool = sFragPool.isEmpty() ? nullptr : liber.fragPool( sFragPool );
   nFrags   = is.readInt();
 
   sounds.resize( is.readInt() );
   for( int i = 0; i < sounds.length(); ++i ) {
-    sounds[i] = library.soundIndex( is.readString() );
+    sounds[i] = liber.soundIndex( is.readString() );
   }
 
   String sDemolishSound = is.readString();
-  demolishSound = sDemolishSound.isEmpty() ? -1 : library.soundIndex( sDemolishSound );
+  demolishSound = sDemolishSound.isEmpty() ? -1 : liber.soundIndex( sDemolishSound );
 
   id     = id_;
   nUsers = 0;

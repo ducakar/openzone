@@ -139,12 +139,11 @@ void Semaphore::init( int counter )
 {
   hard_assert( descriptor == nullptr && counter >= 0 );
 
-  void* descriptorPtr = malloc( sizeof( Descriptor ) );
-  if( descriptorPtr == nullptr ) {
+  descriptor = static_cast<Descriptor*>( malloc( sizeof( Descriptor ) ) );
+  if( descriptor == nullptr ) {
     OZ_ERROR( "Semaphore resource allocation failed" );
   }
 
-  descriptor = new( descriptorPtr ) Descriptor();
   descriptor->counter = counter;
 
 #ifdef _WIN32
@@ -177,7 +176,6 @@ void Semaphore::destroy()
   pthread_mutex_destroy( &descriptor->mutex );
 #endif
 
-  descriptor->~Descriptor();
   free( descriptor );
   descriptor = nullptr;
 }

@@ -25,7 +25,7 @@
 #include <client/Profile.hh>
 
 #include <common/Lingua.hh>
-#include <matrix/Library.hh>
+#include <matrix/Liber.hh>
 #include <matrix/BotClass.hh>
 #include <matrix/WeaponClass.hh>
 
@@ -87,7 +87,7 @@ void Profile::init()
   }
 
   const char*        sClazz   = profileConfig["class"].asString();
-  const ObjectClass* objClazz = library.objClass( sClazz );
+  const ObjectClass* objClazz = liber.objClass( sClazz );
 
   clazz = static_cast<const BotClass*>( objClazz );
 
@@ -104,7 +104,7 @@ void Profile::init()
   for( int i = 0; i < nItems; ++i ) {
     const char* sItem = itemsConfig[i].asString();
 
-    const ObjectClass* itemClazz = library.objClass( sItem );
+    const ObjectClass* itemClazz = liber.objClass( sItem );
     if( ( itemClazz->flags & ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) ) !=
         ( Object::DYNAMIC_BIT | Object::ITEM_BIT ) )
     {

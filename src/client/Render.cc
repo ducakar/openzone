@@ -245,7 +245,7 @@ void Render::drawGeometry()
   shader.setCaelumLight( caelum.lightDir, caelum.diffuseColour );
 
   // set shaders
-  for( int i = 0; i < library.shaders.length(); ++i ) {
+  for( int i = 0; i < liber.shaders.length(); ++i ) {
     shader.program( i );
 
     tf.applyCamera();

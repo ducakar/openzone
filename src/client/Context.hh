@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <matrix/Library.hh>
+#include <matrix/Liber.hh>
 
 #include <client/Shader.hh>
 #include <client/BSP.hh>

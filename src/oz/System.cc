@@ -46,7 +46,14 @@
 # include <dlfcn.h>
 # include <pthread.h>
 # include <pulse/simple.h>
+# include <alsa/asoundlib.h>
 #endif
+
+#define OZ_DLDECL( function ) \
+  static decltype( ::function )* function
+
+#define OZ_DLSYM( library, function ) \
+  *( void** )( &function ) = dlsym( library, #function )
 
 #if defined( __native_client__ ) && !defined( __GLIBC__ )
 
@@ -132,9 +139,22 @@ static const timespec       BELL_TIMESPEC = {
   0, long( float( sizeof( BELL_SAMPLE ) ) / float( BELL_SPEC.rate ) * 1e9f )
 };
 
-static decltype( ::pa_simple_new )*   pa_simple_new;   // = nullptr
-static decltype( ::pa_simple_free )*  pa_simple_free;  // = nullptr
-static decltype( ::pa_simple_write )* pa_simple_write; // = nullptr
+OZ_DLDECL( pa_simple_new                  );
+OZ_DLDECL( pa_simple_free                 );
+OZ_DLDECL( pa_simple_write                );
+
+OZ_DLDECL( snd_pcm_open                   );
+OZ_DLDECL( snd_pcm_close                  );
+OZ_DLDECL( snd_pcm_hw_params_malloc       );
+OZ_DLDECL( snd_pcm_hw_params_free         );
+OZ_DLDECL( snd_pcm_hw_params_any          );
+OZ_DLDECL( snd_pcm_hw_params_set_access   );
+OZ_DLDECL( snd_pcm_hw_params_set_format   );
+OZ_DLDECL( snd_pcm_hw_params_set_rate     );
+OZ_DLDECL( snd_pcm_hw_params_set_channels );
+OZ_DLDECL( snd_pcm_hw_params              );
+OZ_DLDECL( snd_pcm_prepare                );
+OZ_DLDECL( snd_pcm_writei                 );
 
 #endif
 
@@ -229,15 +249,40 @@ static void construct()
   void* library = dlopen( "libpulse-simple.so.0", RTLD_NOW );
 
   if( library != nullptr ) {
-    *( void** )( &pa_simple_new )   = dlsym( library, "pa_simple_new" );
-    *( void** )( &pa_simple_free )  = dlsym( library, "pa_simple_free" );
-    *( void** )( &pa_simple_write ) = dlsym( library, "pa_simple_write" );
+    OZ_DLSYM( library, pa_simple_new );
+    OZ_DLSYM( library, pa_simple_free );
+    OZ_DLSYM( library, pa_simple_write );
 
     if( pa_simple_new == nullptr || pa_simple_free == nullptr || pa_simple_write == nullptr ) {
-      pa_simple_new   = nullptr;
-      pa_simple_free  = nullptr;
-      pa_simple_write = nullptr;
+      pa_simple_new = nullptr;
+      dlclose( library );
+    }
+  }
 
+  library = dlopen( "libasound.so.2", RTLD_NOW );
+
+  if( library != nullptr ) {
+    OZ_DLSYM( library, snd_pcm_open );
+    OZ_DLSYM( library, snd_pcm_close );
+    OZ_DLSYM( library, snd_pcm_hw_params_malloc );
+    OZ_DLSYM( library, snd_pcm_hw_params_free );
+    OZ_DLSYM( library, snd_pcm_hw_params_any );
+    OZ_DLSYM( library, snd_pcm_hw_params_set_access );
+    OZ_DLSYM( library, snd_pcm_hw_params_set_format );
+    OZ_DLSYM( library, snd_pcm_hw_params_set_rate );
+    OZ_DLSYM( library, snd_pcm_hw_params_set_channels );
+    OZ_DLSYM( library, snd_pcm_hw_params );
+    OZ_DLSYM( library, snd_pcm_prepare );
+    OZ_DLSYM( library, snd_pcm_writei );
+
+    if( snd_pcm_open == nullptr || snd_pcm_close == nullptr ||
+        snd_pcm_hw_params_malloc == nullptr || snd_pcm_hw_params_free == nullptr ||
+        snd_pcm_hw_params_any == nullptr || snd_pcm_hw_params_set_access == nullptr ||
+        snd_pcm_hw_params_set_format == nullptr || snd_pcm_hw_params_set_rate == nullptr ||
+        snd_pcm_hw_params_set_channels == nullptr || snd_pcm_hw_params == nullptr ||
+        snd_pcm_prepare == nullptr || snd_pcm_writei == nullptr )
+    {
+      snd_pcm_open = nullptr;
       dlclose( library );
     }
   }
@@ -343,15 +388,52 @@ static DWORD WINAPI bellThread( LPVOID )
 
 static void* bellThread( void* )
 {
-  pa_simple* pa = pa_simple_new( nullptr, "liboz", PA_STREAM_PLAYBACK, nullptr, "bell", &BELL_SPEC,
-                                 nullptr, nullptr, nullptr );
-  if( pa != nullptr ) {
-    pa_simple_write( pa, BELL_SAMPLE, sizeof( BELL_SAMPLE ), nullptr );
+  if( pa_simple_new != nullptr ) {
+    pa_simple* pa = pa_simple_new( nullptr, "liboz", PA_STREAM_PLAYBACK, nullptr, "bell",
+                                   &BELL_SPEC, nullptr, nullptr, nullptr );
+    if( pa != nullptr ) {
+      pa_simple_write( pa, BELL_SAMPLE, sizeof( BELL_SAMPLE ), nullptr );
 
-    // pa_simple_drain() takes much longer (~ 1-2 s) than the sample is actually playing, so we use
-    // this sleep to ensure the sample has finished playing.
-    nanosleep( &BELL_TIMESPEC, nullptr );
-    pa_simple_free( pa );
+      // pa_simple_drain() takes much longer (~ 1-2 s) than the sample is actually playing, so we
+      // use this sleep to ensure the sample has finished playing.
+      nanosleep( &BELL_TIMESPEC, nullptr );
+      pa_simple_free( pa );
+
+      isBellPlaying = false;
+      return nullptr;
+    }
+  }
+
+  if( snd_pcm_open != nullptr ) {
+    snd_pcm_t*           alsa;
+    snd_pcm_hw_params_t* params;
+
+    if( snd_pcm_hw_params_malloc( &params ) < 0 ) {
+      isBellPlaying = false;
+      return nullptr;
+    }
+
+    if( snd_pcm_open( &alsa, "default", SND_PCM_STREAM_PLAYBACK, 0 ) < 0 ) {
+      snd_pcm_hw_params_free( params );
+
+      isBellPlaying = false;
+      return nullptr;
+    }
+
+    snd_pcm_hw_params_any( alsa, params );
+    snd_pcm_hw_params_set_access( alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED );
+    snd_pcm_hw_params_set_format( alsa, params, SND_PCM_FORMAT_U8 );
+    snd_pcm_hw_params_set_rate( alsa, params, 11025, 0 );
+    snd_pcm_hw_params_set_channels( alsa, params, 1 );
+    snd_pcm_hw_params( alsa, params );
+
+    if( snd_pcm_prepare( alsa ) >= 0 ) {
+      snd_pcm_writei( alsa, BELL_SAMPLE, sizeof( BELL_SAMPLE ) );
+      nanosleep( &BELL_TIMESPEC, nullptr );
+    }
+
+    snd_pcm_close( alsa );
+    snd_pcm_hw_params_free( params );
   }
 
   isBellPlaying = false;
@@ -482,7 +564,9 @@ void System::bell()
 
 #else
 
-  if( pa_simple_new == nullptr || pthread_spin_trylock( &bellLock ) != 0 ) {
+  if( ( pa_simple_new == nullptr && snd_pcm_open == nullptr ) ||
+      pthread_spin_trylock( &bellLock ) != 0 )
+  {
     return;
   }
 

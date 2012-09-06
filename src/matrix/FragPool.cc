@@ -25,7 +25,7 @@
 #include <matrix/FragPool.hh>
 
 #include <matrix/Frag.hh>
-#include <matrix/Library.hh>
+#include <matrix/Liber.hh>
 
 namespace oz
 {
@@ -51,7 +51,7 @@ FragPool::FragPool( InputStream* is, const char* name_, int id_ ) :
   for( int i = 0; i < nModels; ++i ) {
     const char* sModel = is->readString();
 
-    models.add( library.modelIndex( sModel ) );
+    models.add( liber.modelIndex( sModel ) );
   }
 }
 

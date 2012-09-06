@@ -144,13 +144,13 @@ class JSON::Parser
 };
 
 OZ_HIDDEN
-inline bool JSON::Parser::Position::isAvailable()
+bool JSON::Parser::Position::isAvailable()
 {
   return istream->isAvailable();
 }
 
 OZ_HIDDEN
-inline int JSON::Parser::Position::available()
+int JSON::Parser::Position::available()
 {
   return istream->available();
 }
@@ -176,7 +176,7 @@ char JSON::Parser::Position::readChar()
 }
 
 OZ_HIDDEN
-inline void JSON::Parser::Position::back()
+void JSON::Parser::Position::back()
 {
   hard_assert( istream->length() > 0 );
 
@@ -570,6 +570,7 @@ void JSON::Formatter::writeValue( const JSON& value )
   }
 }
 
+OZ_HIDDEN
 void JSON::Formatter::writeArray( const JSON& value )
 {
   const List<JSON>& list = static_cast<const ArrayData*>( value.data )->list;
@@ -607,6 +608,7 @@ void JSON::Formatter::writeArray( const JSON& value )
   ostream->writeChar( ']' );
 }
 
+OZ_HIDDEN
 void JSON::Formatter::writeObject( const JSON& value )
 {
   const HashString<JSON>& table = static_cast<const ObjectData*>( value.data )->table;
@@ -676,10 +678,10 @@ void JSON::Formatter::writeObject( const JSON& value )
 }
 
 OZ_HIDDEN
-const JSON JSON::nil;
+const JSON JSON::NIL_VALUE;
 
 OZ_HIDDEN
-inline JSON::JSON( Data* data_, Type valueType_ ) :
+JSON::JSON( Data* data_, Type valueType_ ) :
   data( data_ ), valueType( valueType_ ), wasAccessed( false )
 {}
 
@@ -881,7 +883,7 @@ const JSON& JSON::operator [] ( int i ) const
   wasAccessed = true;
 
   if( valueType == NIL ) {
-    return nil;
+    return NIL_VALUE;
   }
   else if( valueType != ARRAY ) {
     OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
@@ -890,7 +892,7 @@ const JSON& JSON::operator [] ( int i ) const
   const List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
   if( uint( i ) >= uint( list.length() ) ) {
-    return nil;
+    return NIL_VALUE;
   }
 
   list[i].wasAccessed = true;
@@ -902,7 +904,7 @@ const JSON& JSON::operator [] ( const char* key ) const
   wasAccessed = true;
 
   if( valueType == NIL ) {
-    return nil;
+    return NIL_VALUE;
   }
   else if( valueType != OBJECT ) {
     OZ_ERROR( "JSON value accessed as an object: %s", toString().cstr() );
@@ -912,7 +914,7 @@ const JSON& JSON::operator [] ( const char* key ) const
   const JSON* value = table.find( key );
 
   if( value == nullptr ) {
-    return nil;
+    return NIL_VALUE;
   }
 
   value->wasAccessed = true;

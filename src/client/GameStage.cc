@@ -247,7 +247,6 @@ void GameStage::auxRun()
     /*
      * PHASE 1
      */
-
   }
 }
 

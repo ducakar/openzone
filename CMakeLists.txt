@@ -211,7 +211,7 @@ set( warnings "-Wall -Wextra -Wconversion -Winvalid-pch" )
 # Additional warnings, enabled only once in a while to check code quality (GCC specific).
 # set( warnings "${warnings} -Wmissing-declarations -Wmissing-format-attribute" )
 # set( warnings "${warnings} -Wnon-virtual-dtor -Woverloaded-virtual -Wcast-align -Wundef" )
-# set( warnings "${warnings} -Winit-self -Wformat=2 -Wlogical-op" )
+# set( warnings "${warnings} -Winit-self -Wformat=2 -Wlogical-op -Wsuggest-attribute=noreturn" )
 # GCC >= 4.7
 # set( warnings "${warnings} -Wzero-as-null-pointer-constant" )
 

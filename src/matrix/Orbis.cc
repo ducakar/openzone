@@ -24,7 +24,7 @@
 #include <stable.hh>
 #include <matrix/Orbis.hh>
 
-#include <matrix/Library.hh>
+#include <matrix/Liber.hh>
 #include <matrix/Lua.hh>
 #include <matrix/Vehicle.hh>
 
@@ -341,7 +341,7 @@ void Orbis::read( InputStream* istream )
     Struct* str = nullptr;
 
     if( !bspName.isEmpty() ) {
-      const BSP* bsp = library.bsp( bspName );
+      const BSP* bsp = liber.bsp( bspName );
       const_cast<BSP*>( bsp )->request();
 
       str = new Struct( bsp, istream );
@@ -356,7 +356,7 @@ void Orbis::read( InputStream* istream )
     Object* obj = nullptr;
 
     if( !className.isEmpty() ) {
-      const ObjectClass* clazz = library.objClass( className );
+      const ObjectClass* clazz = liber.objClass( className );
 
       obj = clazz->create( istream );
 
@@ -375,7 +375,7 @@ void Orbis::read( InputStream* istream )
     Frag* frag = nullptr;
 
     if( !poolName.isEmpty() ) {
-      const FragPool* pool = library.fragPool( poolName );
+      const FragPool* pool = liber.fragPool( poolName );
 
       frag = new Frag( pool, istream );
       position( frag );
@@ -565,7 +565,7 @@ void Orbis::unload()
   Struct::overlappingObjs.clear();
   Struct::overlappingObjs.dealloc();
 
-  library.freeBSPs();
+  liber.freeBSPs();
 
   fragFreedIndices[0].clear();
   fragFreedIndices[0].dealloc();

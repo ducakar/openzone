@@ -92,7 +92,7 @@ void GalileoFrame::onUpdate()
 void GalileoFrame::onDraw()
 {
   if( mapTexId == 0 ) {
-    mapTexId = loadTexture( "terra/" + library.terrae[orbis.terra.id].name + ".ozcTex" );
+    mapTexId = loadTexture( "terra/" + liber.terrae[orbis.terra.id].name + ".ozcTex" );
   }
 
   float pX = camera.p.x;

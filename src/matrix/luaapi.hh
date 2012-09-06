@@ -26,7 +26,7 @@
 #pragma once
 
 #include <common/luaapi.hh>
-#include <matrix/Library.hh>
+#include <matrix/Liber.hh>
 #include <matrix/Vehicle.hh>
 #include <matrix/Physics.hh>
 #include <matrix/Synapse.hh>
@@ -109,7 +109,7 @@ static int ozOrbisAddStr( lua_State* l )
 {
   VARG( 5, 7 );
 
-  const BSP* bsp = library.bsp( l_tostring( 2 ) );
+  const BSP* bsp = liber.bsp( l_tostring( 2 ) );
 
   AddMode mode    = AddMode( l_toint( 1 ) );
   Point   p       = Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
@@ -146,7 +146,7 @@ static int ozOrbisAddObj( lua_State* l )
 {
   VARG( 5, 7 );
 
-  const ObjectClass* clazz = library.objClass( l_tostring( 2 ) );
+  const ObjectClass* clazz = liber.objClass( l_tostring( 2 ) );
 
   AddMode mode    = AddMode( l_toint( 1 ) );
   Point   p       = Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
@@ -186,7 +186,7 @@ static int ozOrbisAddFrag( lua_State* l )
 {
   ARG( 8 );
 
-  const FragPool* pool = library.fragPool( l_tostring( 2 ) );
+  const FragPool* pool = liber.fragPool( l_tostring( 2 ) );
 
   AddMode mode     = AddMode( l_toint( 1 ) );
   Point   p        = Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) );
@@ -209,7 +209,7 @@ static int ozOrbisGenFrags( lua_State* l )
 {
   ARG( 11 );
 
-  const FragPool* pool = library.fragPool( l_tostring( 1 ) );
+  const FragPool* pool = liber.fragPool( l_tostring( 1 ) );
 
   int    nFrags   = l_toint( 2 );
   Bounds bb       = Bounds( Point( l_tofloat( 3 ), l_tofloat( 4 ), l_tofloat( 5 ) ),
@@ -300,7 +300,7 @@ static int ozCaelumLoad( lua_State* l )
   ARG( 1 );
 
   const char* name = l_tostring( 1 );
-  int id = String::isEmpty( name ) ? -1 : library.caelumIndex( name );
+  int id = String::isEmpty( name ) ? -1 : liber.caelumIndex( name );
 
   orbis.caelum.id = id;
   return 0;
@@ -384,7 +384,7 @@ static int ozTerraLoad( lua_State* l )
   ARG( 1 );
 
   const char* name = l_tostring( 1 );
-  int id = String::isEmpty( name ) ? -1 : library.terraIndex( name );
+  int id = String::isEmpty( name ) ? -1 : liber.terraIndex( name );
 
   orbis.terra.load( id );
   return 0;
