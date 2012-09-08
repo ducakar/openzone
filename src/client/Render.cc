@@ -73,16 +73,20 @@ struct Render::DrawEntry
     const Object* obj;
   };
 
+  OZ_ALWAYS_INLINE
   DrawEntry() = default;
 
+  OZ_ALWAYS_INLINE
   explicit DrawEntry( float distance_, const Struct* str_ ) :
     distance( distance_ ), str( str_ )
   {}
 
+  OZ_ALWAYS_INLINE
   explicit DrawEntry( float distance_, const Object* obj_ ) :
     distance( distance_ ), obj( obj_ )
   {}
 
+  OZ_ALWAYS_INLINE
   bool operator < ( const DrawEntry& de )
   {
     return distance < de.distance;

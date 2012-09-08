@@ -109,6 +109,13 @@ void Thread::start( Main* main, void* data )
 #endif
 }
 
+void Thread::detach()
+{
+  hard_assert( descriptor != nullptr );
+
+  descriptor = nullptr;
+}
+
 void Thread::join()
 {
   hard_assert( descriptor != nullptr );

@@ -42,18 +42,12 @@
 # include <windows.h>
 # include <mmsystem.h>
 #else
+# include <alsa/asoundlib.h>
 # include <ctime>
 # include <dlfcn.h>
 # include <pthread.h>
 # include <pulse/simple.h>
-# include <alsa/asoundlib.h>
 #endif
-
-#define OZ_DLDECL( function ) \
-  static decltype( ::function )* function
-
-#define OZ_DLSYM( library, function ) \
-  *( void** )( &function ) = dlsym( library, #function )
 
 #if defined( __native_client__ ) && !defined( __GLIBC__ )
 
@@ -97,7 +91,6 @@ struct SampleInfo
   int        offset;
 };
 
-#elif defined( __ANDROID__ )
 #elif defined( _WIN32 )
 
 struct Wave
@@ -120,7 +113,7 @@ struct Wave
   ubyte data[4410];
 };
 
-static const Wave WAVE_SAMPLE = {
+static const Wave BELL_SAMPLE = {
   { 'R', 'I', 'F', 'F' }, 36 + 3087, { 'W', 'A', 'V', 'E' },
   { 'f', 'm', 't', ' ' }, 16, 1, 1, 11025, 11025, 1, 8,
   { 'd', 'a', 't', 'a' }, 3087, {
@@ -130,7 +123,6 @@ static const Wave WAVE_SAMPLE = {
 
 #else
 
-static const timespec       TIMESPEC_10MS = { 0, 10 * 1000000 };
 static const pa_sample_spec BELL_SPEC     = { PA_SAMPLE_U8, 11025, 1 };
 static const ubyte          BELL_SAMPLE[] = {
 # include "bellSample.inc"
@@ -139,22 +131,22 @@ static const timespec       BELL_TIMESPEC = {
   0, long( float( sizeof( BELL_SAMPLE ) ) / float( BELL_SPEC.rate ) * 1e9f )
 };
 
-OZ_DLDECL( pa_simple_new                  );
-OZ_DLDECL( pa_simple_free                 );
-OZ_DLDECL( pa_simple_write                );
+static decltype( ::pa_simple_new                  )* pa_simple_new;                  // = nullptr
+static decltype( ::pa_simple_free                 )* pa_simple_free;                 // = nullptr
+static decltype( ::pa_simple_write                )* pa_simple_write;                // = nullptr
 
-OZ_DLDECL( snd_pcm_open                   );
-OZ_DLDECL( snd_pcm_close                  );
-OZ_DLDECL( snd_pcm_hw_params_malloc       );
-OZ_DLDECL( snd_pcm_hw_params_free         );
-OZ_DLDECL( snd_pcm_hw_params_any          );
-OZ_DLDECL( snd_pcm_hw_params_set_access   );
-OZ_DLDECL( snd_pcm_hw_params_set_format   );
-OZ_DLDECL( snd_pcm_hw_params_set_rate     );
-OZ_DLDECL( snd_pcm_hw_params_set_channels );
-OZ_DLDECL( snd_pcm_hw_params              );
-OZ_DLDECL( snd_pcm_prepare                );
-OZ_DLDECL( snd_pcm_writei                 );
+static decltype( ::snd_pcm_open                   )* snd_pcm_open;                   // = nullptr
+static decltype( ::snd_pcm_close                  )* snd_pcm_close;                  // = nullptr
+static decltype( ::snd_pcm_hw_params_malloc       )* snd_pcm_hw_params_malloc;       // = nullptr
+static decltype( ::snd_pcm_hw_params_free         )* snd_pcm_hw_params_free;         // = nullptr
+static decltype( ::snd_pcm_hw_params_any          )* snd_pcm_hw_params_any;          // = nullptr
+static decltype( ::snd_pcm_hw_params_set_access   )* snd_pcm_hw_params_set_access;   // = nullptr
+static decltype( ::snd_pcm_hw_params_set_format   )* snd_pcm_hw_params_set_format;   // = nullptr
+static decltype( ::snd_pcm_hw_params_set_rate     )* snd_pcm_hw_params_set_rate;     // = nullptr
+static decltype( ::snd_pcm_hw_params_set_channels )* snd_pcm_hw_params_set_channels; // = nullptr
+static decltype( ::snd_pcm_hw_params              )* snd_pcm_hw_params;              // = nullptr
+static decltype( ::snd_pcm_prepare                )* snd_pcm_prepare;                // = nullptr
+static decltype( ::snd_pcm_writei                 )* snd_pcm_writei;                 // = nullptr
 
 #endif
 
@@ -163,12 +155,13 @@ static volatile bool      isBellPlaying; // = false
 static int                initFlags;     // = 0
 #if defined( __native_client__ )
 static pthread_mutex_t    bellLock;
-#elif defined( __ANDROID__ )
 #elif defined( _WIN32 )
 static CRITICAL_SECTION   bellLock;
 #else
 static pthread_spinlock_t bellLock;
 #endif
+// Used to determine whether static initialisation is complete for the preceding variables.
+static bool               isStaticInitComplete = true;
 
 OZ_NORETURN
 static void signalHandler( int signum );
@@ -232,7 +225,6 @@ static void construct()
     OZ_ERROR( "Bell mutex creation failed" );
   }
 
-#elif defined( __ANDROID__ )
 #elif defined( _WIN32 )
 
   InitializeCriticalSection( &bellLock );
@@ -246,34 +238,36 @@ static void construct()
     OZ_ERROR( "Bell spin lock creation failed" );
   }
 
-  void* library = dlopen( "libpulse-simple.so.0", RTLD_NOW );
+  // Link PulseAudio client library.
+  void* pulseLib = dlopen( "libpulse-simple.so.0", RTLD_NOW );
 
-  if( library != nullptr ) {
-    OZ_DLSYM( library, pa_simple_new );
-    OZ_DLSYM( library, pa_simple_free );
-    OZ_DLSYM( library, pa_simple_write );
+  if( pulseLib != nullptr ) {
+    *( void** ) &pa_simple_new   = dlsym( pulseLib, "pa_simple_new" );
+    *( void** ) &pa_simple_free  = dlsym( pulseLib, "pa_simple_free" );
+    *( void** ) &pa_simple_write = dlsym( pulseLib, "pa_simple_write" );
 
     if( pa_simple_new == nullptr || pa_simple_free == nullptr || pa_simple_write == nullptr ) {
       pa_simple_new = nullptr;
-      dlclose( library );
+      dlclose( pulseLib );
     }
   }
 
-  library = dlopen( "libasound.so.2", RTLD_NOW );
+  // Link ALSA library.
+  void* alsaLib = dlopen( "libasound.so.2", RTLD_NOW );
 
-  if( library != nullptr ) {
-    OZ_DLSYM( library, snd_pcm_open );
-    OZ_DLSYM( library, snd_pcm_close );
-    OZ_DLSYM( library, snd_pcm_hw_params_malloc );
-    OZ_DLSYM( library, snd_pcm_hw_params_free );
-    OZ_DLSYM( library, snd_pcm_hw_params_any );
-    OZ_DLSYM( library, snd_pcm_hw_params_set_access );
-    OZ_DLSYM( library, snd_pcm_hw_params_set_format );
-    OZ_DLSYM( library, snd_pcm_hw_params_set_rate );
-    OZ_DLSYM( library, snd_pcm_hw_params_set_channels );
-    OZ_DLSYM( library, snd_pcm_hw_params );
-    OZ_DLSYM( library, snd_pcm_prepare );
-    OZ_DLSYM( library, snd_pcm_writei );
+  if( alsaLib != nullptr ) {
+    *( void** ) &snd_pcm_open                   = dlsym( alsaLib, "snd_pcm_open" );
+    *( void** ) &snd_pcm_close                  = dlsym( alsaLib, "snd_pcm_close" );
+    *( void** ) &snd_pcm_hw_params_malloc       = dlsym( alsaLib, "snd_pcm_hw_params_malloc" );
+    *( void** ) &snd_pcm_hw_params_free         = dlsym( alsaLib, "snd_pcm_hw_params_free" );
+    *( void** ) &snd_pcm_hw_params_any          = dlsym( alsaLib, "snd_pcm_hw_params_any" );
+    *( void** ) &snd_pcm_hw_params_set_access   = dlsym( alsaLib, "snd_pcm_hw_params_set_access" );
+    *( void** ) &snd_pcm_hw_params_set_format   = dlsym( alsaLib, "snd_pcm_hw_params_set_format" );
+    *( void** ) &snd_pcm_hw_params_set_rate     = dlsym( alsaLib, "snd_pcm_hw_params_set_rate" );
+    *( void** ) &snd_pcm_hw_params_set_channels = dlsym( alsaLib, "snd_pcm_hw_params_set_channels" );
+    *( void** ) &snd_pcm_hw_params              = dlsym( alsaLib, "snd_pcm_hw_params" );
+    *( void** ) &snd_pcm_prepare                = dlsym( alsaLib, "snd_pcm_prepare" );
+    *( void** ) &snd_pcm_writei                 = dlsym( alsaLib, "snd_pcm_writei" );
 
     if( snd_pcm_open == nullptr || snd_pcm_close == nullptr ||
         snd_pcm_hw_params_malloc == nullptr || snd_pcm_hw_params_free == nullptr ||
@@ -283,7 +277,7 @@ static void construct()
         snd_pcm_prepare == nullptr || snd_pcm_writei == nullptr )
     {
       snd_pcm_open = nullptr;
-      dlclose( library );
+      dlclose( alsaLib );
     }
   }
 
@@ -373,12 +367,11 @@ static void* bellThread( void* )
   return nullptr;
 }
 
-#elif defined( __ANDROID__ )
 #elif defined( _WIN32 )
 
 static DWORD WINAPI bellThread( LPVOID )
 {
-  PlaySound( reinterpret_cast<LPCSTR>( &WAVE_SAMPLE ), nullptr, SND_MEMORY | SND_SYNC );
+  PlaySound( reinterpret_cast<LPCSTR>( &BELL_SAMPLE ), nullptr, SND_MEMORY | SND_SYNC );
 
   isBellPlaying = false;
   return 0;
@@ -429,6 +422,7 @@ static void* bellThread( void* )
 
     if( snd_pcm_prepare( alsa ) >= 0 ) {
       snd_pcm_writei( alsa, BELL_SAMPLE, sizeof( BELL_SAMPLE ) );
+      // Ensure the sample has finished playing.
       nanosleep( &BELL_TIMESPEC, nullptr );
     }
 
@@ -445,7 +439,7 @@ static void* bellThread( void* )
 static void waitBell()
 {
 #if defined( __native_client__ )
-  if( System::core->IsMainThread() ) {
+  if( System::core == nullptr || System::core->IsMainThread() ) {
     return;
   }
 #endif
@@ -455,6 +449,7 @@ static void waitBell()
 #ifdef _WIN32
     Sleep( 10 );
 #else
+    const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
     nanosleep( &TIMESPEC_10MS, nullptr );
 #endif
   }
@@ -495,6 +490,7 @@ void System::abort( bool preventHalt )
       Sleep( 10 );
     }
 #else
+    const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
     while( nanosleep( &TIMESPEC_10MS, nullptr ) == 0 );
 #endif
   }
@@ -523,6 +519,10 @@ void System::bell()
   if( !isConstructed ) {
     construct();
   }
+  // Ensure that static initialisation already set BELL_SAMPLE etc.
+  if( !isStaticInitComplete ) {
+    return;
+  }
 
 #if defined( __native_client__ )
 
@@ -543,7 +543,6 @@ void System::bell()
     }
   }
 
-#elif defined( __ANDROID__ )
 #elif defined( _WIN32 )
 
   EnterCriticalSection( &bellLock );

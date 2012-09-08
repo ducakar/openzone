@@ -33,8 +33,6 @@ namespace oz
 namespace client
 {
 
-Network network;
-
 #if 1
 
 bool Network::connect()
@@ -88,6 +86,8 @@ void Network::init()
 
 void Network::free()
 {}
+
+Network network;
 
 }
 }

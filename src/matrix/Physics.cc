@@ -52,7 +52,7 @@ const float Physics::SLIDE_DAMAGE_COEF       = -2.5f;
 
 const float Physics::STICK_VELOCITY          =  0.03f;
 const float Physics::SLICK_STICK_VELOCITY    =  0.003f;
-const float Physics::FLOAT_STICK_VELOCITY    =  0.0005f;
+const float Physics::FLOATING_STICK_VELOCITY =  0.0005f;
 const float Physics::WATER_FRICTION          =  0.09f;
 const float Physics::LADDER_FRICTION         =  0.15f;
 const float Physics::FLOOR_FRICTION_COEF     =  0.30f;
@@ -261,8 +261,8 @@ bool Physics::handleObjFriction()
     else {
       dyn->momentum.z += systemMom;
 
-      if( Math::fabs( systemMom ) <= FLOAT_STICK_VELOCITY &&
-          dyn->momentum.sqN() <= FLOAT_STICK_VELOCITY )
+      if( abs( systemMom ) <= FLOATING_STICK_VELOCITY &&
+          dyn->momentum.sqN() <= FLOATING_STICK_VELOCITY )
       {
         dyn->momentum = Vec3::ZERO;
 

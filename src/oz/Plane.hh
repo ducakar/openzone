@@ -48,6 +48,7 @@ class Plane
     /**
      * Create an uninitialised instance.
      */
+    OZ_ALWAYS_INLINE
     Plane() = default;
 
     /**

@@ -10,8 +10,8 @@ set( CMAKE_C_COMPILER           "${PLATFORM_PREFIX}/bin/${PLATFORM_TRIPLET}-gcc"
 set( CMAKE_CXX_COMPILER         "${PLATFORM_PREFIX}/bin/${PLATFORM_TRIPLET}-g++" )
 set( CMAKE_STRIP                "${PLATFORM_PREFIX}/bin/${PLATFORM_TRIPLET}-strip" )
 
-set( CMAKE_C_FLAGS              "-m32 -march=i686 -mtune=generic -msse3 -mfpmath=sse" CACHE STRING "" )
-set( CMAKE_CXX_FLAGS            "-m32 -march=i686 -mtune=generic -msse3 -mfpmath=sse" CACHE STRING "" )
+set( CMAKE_C_FLAGS              "-m32 -march=i686 -msse3 -mfpmath=sse" CACHE STRING "" )
+set( CMAKE_CXX_FLAGS            "-m32 -march=i686 -msse3 -mfpmath=sse" CACHE STRING "" )
 
 # CMake only looks into lib but not lib32.
 set( PEPPER_LIBRARY             "${PLATFORM_PREFIX}/x86_64-nacl/lib32/libppapi.a" CACHE PATH "" )

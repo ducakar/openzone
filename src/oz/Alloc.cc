@@ -42,9 +42,6 @@
 namespace oz
 {
 
-static_assert( ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
-               "Alloc::ALIGNMENT should be power of two" );
-
 enum AllocMode
 {
   OBJECT,
@@ -245,6 +242,9 @@ static void deallocate( AllocMode mode, void* ptr )
   free( ptr );
 #endif
 }
+
+static_assert( ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
+               "Alloc::ALIGNMENT must be a power of two" );
 
 int    Alloc::count;     // = 0
 size_t Alloc::amount;    // = 0

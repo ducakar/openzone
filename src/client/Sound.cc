@@ -51,8 +51,6 @@ namespace oz
 namespace client
 {
 
-const float Sound::MAX_DISTANCE = 192.0f;
-
 #ifdef OZ_NONFREE
 
 OZ_DLDECL( mad_stream_init   );
@@ -97,6 +95,8 @@ static short madFixedToShort( mad_fixed_t f )
 }
 
 #endif
+
+const float Sound::MAX_DISTANCE = 192.0f;
 
 void Sound::musicMain( void* )
 {

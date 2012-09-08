@@ -75,10 +75,10 @@ class JSON
     struct ObjectData;
 
     /// Class that wraps internal parser functions.
-    class Parser;
+    struct Parser;
 
     /// Class that wraps internal formatter functions.
-    class Formatter;
+    struct Formatter;
 
     static const JSON NIL_VALUE;   ///< A null value instance, required by `operator []`.
 
@@ -89,7 +89,7 @@ class JSON
     /**
      * Internal constructor.
      */
-    JSON( Data* data, Type valueType );
+    explicit JSON( Data* data, Type valueType );
 
   public:
 

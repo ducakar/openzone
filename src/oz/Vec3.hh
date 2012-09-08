@@ -52,6 +52,7 @@ class Vec3 : public VectorBase3
     /**
      * Create an uninitialised instance.
      */
+    OZ_ALWAYS_INLINE
     Vec3() = default;
 
 #ifdef OZ_SIMD_MATH
@@ -157,7 +158,7 @@ class Vec3 : public VectorBase3
 #ifdef OZ_SIMD_MATH
       return Vec3( vAbs( u4 ) );
 #else
-      return Vec3( Math::fabs( x ), Math::fabs( y ), Math::fabs( z ) );
+      return Vec3( oz::abs( x ), oz::abs( y ), oz::abs( z ) );
 #endif
     }
 

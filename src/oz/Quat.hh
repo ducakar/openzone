@@ -51,6 +51,7 @@ class Quat : public VectorBase4
     /**
      * Create an uninitialised instance.
      */
+    OZ_ALWAYS_INLINE
     Quat() = default;
 
 #ifdef OZ_SIMD_MATH
@@ -168,7 +169,7 @@ class Quat : public VectorBase4
 #ifdef OZ_SIMD_MATH
       return Quat( vAbs( u4 ) );
 #else
-      return Quat( Math::fabs( x ), Math::fabs( y ), Math::fabs( z ), Math::fabs( w ) );
+      return Quat( oz::abs( x ), oz::abs( y ), oz::abs( z ), oz::abs( w ) );
 #endif
     }
 

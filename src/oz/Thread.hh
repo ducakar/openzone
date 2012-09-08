@@ -54,11 +54,19 @@ class Thread
   public:
 
     /**
-     * Create instance.
+     * Create uninitialised instance.
      */
     Thread() :
       descriptor( nullptr )
     {}
+
+    /**
+     * Destructor, thread must be either uninitialised, joined or detached.
+     */
+    ~Thread()
+    {
+      hard_assert( descriptor == nullptr );
+    }
 
     /**
      * Move constructor, transfers ownership.
@@ -88,7 +96,7 @@ class Thread
     }
 
     /**
-     * Run thread.
+     * Create a new thread and run it. Thread must be in uninitialised state.
      *
      * @param main pointer to thread's main function.
      * @param data pointer to user data, passed to thread's main function.
@@ -96,7 +104,12 @@ class Thread
     void start( Main* main, void* data );
 
     /**
-     * Wait for thread to finish execution.
+     * Detach a started thread and return Thread object into uninitialised state.
+     */
+    void detach();
+
+    /**
+     * Wait for a thread to finish execution and return Thread object into uninitialised state.
      */
     void join();
 

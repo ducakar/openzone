@@ -54,6 +54,7 @@ class Vec4 : public VectorBase4
     /**
      * Create an uninitialised instance.
      */
+    OZ_ALWAYS_INLINE
     Vec4() = default;
 
 #ifdef OZ_SIMD_MATH
@@ -211,7 +212,7 @@ class Vec4 : public VectorBase4
 #ifdef OZ_SIMD_MATH
       return Vec4( vAbs( u4 ) );
 #else
-      return Vec4( Math::fabs( x ), Math::fabs( y ), Math::fabs( z ), Math::fabs( w ) );
+      return Vec4( oz::abs( x ), oz::abs( y ), oz::abs( z ), oz::abs( w ) );
 #endif
     }
 

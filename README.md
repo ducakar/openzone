@@ -16,6 +16,7 @@ First, make sure you have all the dependencies installed. You need to install de
 for the following libraries:
 
 * libpulse (PulseAudio)
+* alsa
 * physfs
 * lua
 * sdl

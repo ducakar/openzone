@@ -101,6 +101,7 @@ struct File::Descriptor
   int          size;
   int          offset;
 
+  OZ_HIDDEN
   explicit Descriptor( File* file_ ) :
     file( file_ )
   {
@@ -109,6 +110,7 @@ struct File::Descriptor
     semaphore.counter = 0;
   }
 
+  OZ_HIDDEN
   ~Descriptor()
   {
     pthread_cond_destroy( &semaphore.cond );

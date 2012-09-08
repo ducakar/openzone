@@ -10,5 +10,5 @@ set( CMAKE_C_COMPILER           "${PLATFORM_PREFIX}/bin/${PLATFORM_TRIPLET}-gcc"
 set( CMAKE_CXX_COMPILER         "${PLATFORM_PREFIX}/bin/${PLATFORM_TRIPLET}-g++" )
 set( CMAKE_STRIP                "${PLATFORM_PREFIX}/bin/${PLATFORM_TRIPLET}-strip" )
 
-set( CMAKE_C_FLAGS              "-m64 -msse3 -mfpmath=sse" CACHE STRING "" )
-set( CMAKE_CXX_FLAGS            "-m64 -msse3 -mfpmath=sse" CACHE STRING "" )
+set( CMAKE_C_FLAGS              "-m64 -march=x86-64 -msse3" CACHE STRING "" )
+set( CMAKE_CXX_FLAGS            "-m64 -march=x86-64 -msse3" CACHE STRING "" )

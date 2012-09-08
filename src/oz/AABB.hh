@@ -48,6 +48,7 @@ class AABB
     /**
      * Create uninitialised instance.
      */
+    OZ_ALWAYS_INLINE
     AABB() = default;
 
     /**

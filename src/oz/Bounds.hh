@@ -48,6 +48,7 @@ class Bounds
     /**
      * Create uninitialised instance.
      */
+    OZ_ALWAYS_INLINE
     Bounds() = default;
 
     /**

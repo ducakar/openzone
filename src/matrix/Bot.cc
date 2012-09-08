@@ -1030,7 +1030,7 @@ stepSucceeded:
         else {
           Bot* dyn = static_cast<Bot*>( orbis.objects[instrument] );
 
-          if( dyn != nullptr && Math::fabs( dyn->mass * physics.gravity ) <= clazz->grabWeight &&
+          if( dyn != nullptr && abs( dyn->mass * physics.gravity ) <= clazz->grabWeight &&
               !( ( dyn->flags & BOT_BIT ) && dyn->cargo >= 0 ) && canReach( dyn ) )
           {
             hard_assert( dyn->flags & DYNAMIC_BIT );

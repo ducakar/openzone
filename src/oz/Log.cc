@@ -325,11 +325,7 @@ void Log::printSignal( int sigNum )
 
 void Log::printHalt()
 {
-#if defined( __native_client__ ) || defined( __ANDROID__ )
-  const char* message = "Program halted, debugger can be attached ...\n";
-#else
-  const char* message = "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n";
-#endif
+  const char* message = "Halted. Attach a debugger or send a fatal signal (e.g. CTRL-C) ...\n";
 
   fputs( message, stdout );
 

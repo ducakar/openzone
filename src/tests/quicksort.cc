@@ -26,7 +26,6 @@
 #include <cstdlib>
 #include <cstdio>
 
-using namespace std;
 using namespace oz;
 
 template <typename Type, int STACK_SIZE>

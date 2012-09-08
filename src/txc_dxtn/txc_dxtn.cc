@@ -23,7 +23,7 @@
 
 #include "txc_dxtn.hh"
 
-#include <stdlib.h>
+#include <cstdlib>
 
 __attribute__(( noreturn ))
 void fetch_2d_texel_rgb_dxt1( GLint, const GLubyte*, GLint, GLint, GLvoid* )

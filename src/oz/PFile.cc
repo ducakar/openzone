@@ -478,7 +478,7 @@ void PFile::init( File::FilesystemType type, int size )
 
   arg0 = reinterpret_cast<const char*>( &instanceInfo );
 
-#elif defined( __ANDROID__ ) || defined( _WIN32 )
+#elif defined( _WIN32 )
 
   arg0 = nullptr;
 

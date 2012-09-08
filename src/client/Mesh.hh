@@ -82,12 +82,15 @@ class Mesh
       int   secondFrame;
       float interpolation;
 
+      OZ_ALWAYS_INLINE
       Instance() = default;
 
+      OZ_ALWAYS_INLINE
       explicit Instance( const Mat44& transform_, float alpha_, int component_ ) :
         transform( transform_ ), alpha( alpha_ ), component( component_ )
       {}
 
+      OZ_ALWAYS_INLINE
       explicit Instance( const Mat44& transform_, float alpha_, int component_,
                          int firstFrame_, int secondFrame_, float interpolation_ ) :
         transform( transform_ ), alpha( alpha_ ), component( component_ ),

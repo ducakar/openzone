@@ -90,8 +90,7 @@ mkdir -p build && cd build
 cmake \
   -D CMAKE_BUILD_TYPE="Release" \
   -D CMAKE_INSTALL_PREFIX="/usr" \
-  -D CMAKE_CXX_COMPILER="/usr/bin/clang++" \
-  -D CMAKE_CXX_FLAGS="-msse3" \
+  -D CMAKE_CXX_FLAGS="-msse3 -mfpmath=sse" \
   -D OZ_SHARED_LIBOZ="1" \
   -D OZ_NONFREE="1" \
   ..

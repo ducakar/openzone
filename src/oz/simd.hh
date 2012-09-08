@@ -155,18 +155,22 @@ class VectorBase3
     /**
      * Default constructor, creates uninitialised instance.
      */
+    OZ_ALWAYS_INLINE
     VectorBase3() = default;
 
 #ifdef OZ_SIMD_MATH
 
+    OZ_ALWAYS_INLINE
     explicit VectorBase3( float4 f4_ ) :
       f4( f4_ )
     {}
 
+    OZ_ALWAYS_INLINE
     explicit VectorBase3( uint4 u4_ ) :
       u4( u4_ )
     {}
 
+    OZ_ALWAYS_INLINE
     explicit VectorBase3( float x_, float y_, float z_, float w_ ) :
       f4( vFill( x_, y_, z_, w_ ) )
     {}
@@ -176,6 +180,7 @@ class VectorBase3
     /**
      * Create a vector with the given components.
      */
+    OZ_ALWAYS_INLINE
     explicit VectorBase3( float x_, float y_, float z_, float ) :
       x( x_ ), y( y_ ), z( z_ )
     {}
@@ -216,18 +221,22 @@ class VectorBase4
     /**
      * Default constructor, creates uninitialised instance.
      */
+    OZ_ALWAYS_INLINE
     VectorBase4() = default;
 
 #ifdef OZ_SIMD_MATH
 
+    OZ_ALWAYS_INLINE
     explicit VectorBase4( float4 f4_ ) :
       f4( f4_ )
     {}
 
+    OZ_ALWAYS_INLINE
     explicit VectorBase4( uint4 u4_ ) :
       u4( u4_ )
     {}
 
+    OZ_ALWAYS_INLINE
     explicit VectorBase4( float x_, float y_, float z_, float w_ ) :
       f4( vFill( x_, y_, z_, w_ ) )
     {}
@@ -237,6 +246,7 @@ class VectorBase4
     /**
      * Create a vector with the given components.
      */
+    OZ_ALWAYS_INLINE
     explicit VectorBase4( float x_, float y_, float z_, float w_ ) :
       x( x_ ), y( y_ ), z( z_ ), w( w_ )
     {}
@@ -270,6 +280,7 @@ class scalar
     /**
      * Create an uninitialised instance.
      */
+    OZ_ALWAYS_INLINE
     scalar() = default;
 
     /**

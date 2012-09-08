@@ -39,7 +39,8 @@
     ::hasPassed = false; \
   }
 
-#define OZ_CHECK_CONTENTS( container, ... ) \
+// FIXME Add a space after ellipsis once KDevelop gets that fixed.
+#define OZ_CHECK_CONTENTS( container, ...) \
   { \
     auto i = citer( container ); \
     typedef decltype( i ) CIterator; \

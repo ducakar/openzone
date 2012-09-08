@@ -46,14 +46,12 @@ namespace oz
 // This struct is used to initialise and Windows multimedia timer.
 struct MediaTimer
 {
-  MediaTimer();
+  OZ_HIDDEN
+  MediaTimer()
+  {
+    timeBeginPeriod( 1 );
+  }
 };
-
-OZ_HIDDEN
-MediaTimer::MediaTimer()
-{
-  timeBeginPeriod( 1 );
-}
 
 static MediaTimer mediaTimer;
 

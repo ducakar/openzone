@@ -104,56 +104,34 @@ struct JSON::ObjectData : JSON::Data
   HashString<JSON> table;
 };
 
-class JSON::Parser
+struct JSON::Parser
 {
-  private:
+  struct Position
+  {
+    InputStream* istream;
+    const char*  path;
+    int          line;
+    int          column;
 
-    struct Position
-    {
-      InputStream* istream;
-      const char*  path;
-      int          line;
-      int          column;
+    char readChar();
+    void back();
+  };
 
-      bool isAvailable();
-      int available();
-      char readChar();
-      void back();
-    };
+  Position pos;
 
-    Position pos;
+  static void setAccessed( JSON* value );
+  static JSON parse( InputStream* istream, const char* path );
 
-  private:
+  explicit Parser( InputStream* istream, const char* path );
 
-    static void setAccessed( JSON* value );
-
-    Parser( InputStream* istream, const char* path );
-
-    char skipBlanks();
-    String parseString();
-    JSON parseValue();
-    JSON parseArray();
-    JSON parseObject();
-
-  public:
-
-    void finish();
-
-    static JSON parse( InputStream* istream, const char* path );
+  char skipBlanks();
+  String parseString();
+  JSON parseValue();
+  JSON parseArray();
+  JSON parseObject();
+  void finish();
 
 };
-
-OZ_HIDDEN
-bool JSON::Parser::Position::isAvailable()
-{
-  return istream->isAvailable();
-}
-
-OZ_HIDDEN
-int JSON::Parser::Position::available()
-{
-  return istream->available();
-}
 
 OZ_HIDDEN
 char JSON::Parser::Position::readChar()
@@ -215,6 +193,17 @@ void JSON::Parser::setAccessed( JSON* value )
       break;
     }
   }
+}
+
+OZ_HIDDEN
+JSON JSON::Parser::parse( InputStream* istream, const char* path )
+{
+  Parser parser( istream, path );
+
+  JSON root = parser.parseValue();
+
+  parser.finish();
+  return root;
 }
 
 OZ_HIDDEN
@@ -282,7 +271,7 @@ String JSON::Parser::parseString()
 
     chars.add( ch );
   }
-  while( pos.isAvailable() );
+  while( pos.istream->isAvailable() );
 
   if( ch != '"' ) {
     OZ_PARSE_ERROR( 0, "End of file while looking for end of string (Is ending \" missing?)" );
@@ -299,7 +288,7 @@ JSON JSON::Parser::parseValue()
 
   switch( ch ) {
     case 'n': {
-      if( pos.available() < 3 || pos.readChar() != 'u' || pos.readChar() != 'l' ||
+      if( pos.istream->available() < 3 || pos.readChar() != 'u' || pos.readChar() != 'l' ||
           pos.readChar() != 'l' )
       {
         OZ_PARSE_ERROR( -3, "Unknown value type" );
@@ -308,7 +297,7 @@ JSON JSON::Parser::parseValue()
       return JSON( nullptr, NIL );
     }
     case 'f': {
-      if( pos.available() < 4 || pos.readChar() != 'a' || pos.readChar() != 'l' ||
+      if( pos.istream->available() < 4 || pos.readChar() != 'a' || pos.readChar() != 'l' ||
           pos.readChar() != 's' || pos.readChar() != 'e' )
       {
         OZ_PARSE_ERROR( -4, "Unknown value type" );
@@ -317,7 +306,7 @@ JSON JSON::Parser::parseValue()
       return JSON( new BooleanData( false ), BOOLEAN );
     }
     case 't': {
-      if( pos.available() < 4 || pos.readChar() != 'r' || pos.readChar() != 'u' ||
+      if( pos.istream->available() < 4 || pos.readChar() != 'r' || pos.readChar() != 'u' ||
           pos.readChar() != 'e' )
       {
         OZ_PARSE_ERROR( -3, "Unknown value type" );
@@ -329,7 +318,7 @@ JSON JSON::Parser::parseValue()
       List<char> chars;
       chars.add( ch );
 
-      while( pos.isAvailable() ) {
+      while( pos.istream->isAvailable() ) {
         ch = pos.readChar();
 
         if( String::isBlank( ch ) || ch == ',' || ch == '}' || ch == ']' ) {
@@ -431,7 +420,7 @@ JSON JSON::Parser::parseObject()
 OZ_HIDDEN
 void JSON::Parser::finish()
 {
-  while( pos.isAvailable() ) {
+  while( pos.istream->isAvailable() ) {
     char ch = pos.readChar();
 
     if( !String::isBlank( ch ) ) {
@@ -440,33 +429,19 @@ void JSON::Parser::finish()
   }
 }
 
-OZ_HIDDEN
-JSON JSON::Parser::parse( InputStream* istream, const char* path )
+struct JSON::Formatter
 {
-  Parser parser( istream, path );
+  static const int ALIGNMENT_COLUMN = 32;
 
-  JSON root = parser.parseValue();
+  BufferStream* ostream;
+  const char*   lineEnd;
+  int           lineEndLength;
+  int           indentLevel;
 
-  parser.finish();
-  return root;
-}
-
-class JSON::Formatter
-{
-  public:
-
-    static const int ALIGNMENT_COLUMN = 32;
-
-    BufferStream* ostream;
-    const char*   lineEnd;
-    int           lineEndLength;
-    int           indentLevel;
-
-    int writeString( const String& string );
-    void writeValue( const JSON& value );
-    void writeArray( const JSON& value );
-    void writeObject( const JSON& value );
-
+  int writeString( const String& string );
+  void writeValue( const JSON& value );
+  void writeArray( const JSON& value );
+  void writeObject( const JSON& value );
 };
 
 OZ_HIDDEN

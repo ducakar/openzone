@@ -77,6 +77,7 @@ class IteratorBase
     /**
      * True iff iterators point to the same element.
      */
+    OZ_ALWAYS_INLINE
     bool operator == ( const IteratorBase& i ) const
     {
       return elem == i.elem;
@@ -85,6 +86,7 @@ class IteratorBase
     /**
      * False iff iterators point to the same element.
      */
+    OZ_ALWAYS_INLINE
     bool operator != ( const IteratorBase& i ) const
     {
       return elem != i.elem;

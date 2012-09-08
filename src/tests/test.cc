@@ -33,7 +33,6 @@
 #include <vector>
 
 using namespace oz;
-using namespace std;
 
 class Foo
 {
@@ -46,6 +45,7 @@ class Foo
     Foo() :
       value( 0 )
     {
+      hard_assert( false );
       Log::out << "Foo()\n";
     }
 

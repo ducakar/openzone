@@ -129,10 +129,10 @@ class System
      * Play a sound alert.
      *
      * Sine wave from `oz/bellSample.inc` is played asynchronously through platform's native sound
-     * system.
+     * system (PulseAudio and ALSA on Linux, `PlaySound` system call on Windows).
      *
-     * On Linux, PulseAudio is first choice, ALSA is used as fallback.
-     * On Windows, `PlaySound` system call is used.
+     * Bell depends upon several statically initialised structures. If it is called inside static
+     * initialisation before those are initialised, it won't play.
      */
     static void bell();
 

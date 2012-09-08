@@ -40,8 +40,8 @@ enum LuaSyntaxState
   MULTILINE_COMMENT
 };
 
-HashString<String> titles;
-HashString<String> messages;
+static HashString<String> titles;
+static HashString<String> messages;
 
 static void printUsage( const char* invocationName )
 {

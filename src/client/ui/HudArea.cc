@@ -48,7 +48,7 @@ void HudArea::drawBotCrosshair()
   const Bot*      me      = camera.botObj;
   const BotClass* myClazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
-  float delta  = max( 1.0f - Math::fabs( camera.unit.headRot.w ), 0.0f );
+  float delta  = max( 1.0f - abs( camera.unit.headRot.w ), 0.0f );
   float alpha  = 1.0f - CROSS_FADE_COEFF * Math::sqrt( delta );
   float life   = max( 2.0f * me->life / myClazz->life - 1.0f, 0.0f );
   Vec4  colour = Math::mix( Vec4( 1.00f, 0.50f, 0.25f, alpha ),
@@ -170,7 +170,7 @@ void HudArea::drawBotCrosshair()
 
       if( me->cargo < 0 && me->weapon < 0 &&
         ( obj->flags & Object::DYNAMIC_BIT ) &&
-          Math::fabs( dyn->mass * physics.gravity ) <= myClazz->grabWeight &&
+          abs( dyn->mass * physics.gravity ) <= myClazz->grabWeight &&
           // not swimming or on ladder
           !( me->state & ( Bot::SWIMMING_BIT | Bot::LADDER_BIT | Bot::LEDGE_BIT ) ) &&
           // if it is not a bot that is holding something

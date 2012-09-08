@@ -117,6 +117,7 @@ class CIterator : public ArrayIterator<const Elem>
 {
   public:
 
+    OZ_ALWAYS_INLINE
     CIterator() = default;
 
     OZ_ALWAYS_INLINE
@@ -131,6 +132,7 @@ class Iterator : public ArrayIterator<Elem>
 {
   public:
 
+    OZ_ALWAYS_INLINE
     Iterator() = default;
 
     OZ_ALWAYS_INLINE
@@ -194,6 +196,16 @@ OZ_ALWAYS_INLINE
 inline Iterator<Elem> iter( Elem ( & array )[COUNT] )
 {
   return Iterator<Elem>( array, array + COUNT );
+}
+
+/**
+ * Length of a static array.
+ */
+template <typename Elem, int COUNT>
+OZ_ALWAYS_INLINE
+inline int aLength( const Elem ( & )[COUNT] )
+{
+  return COUNT;
 }
 
 /**
@@ -275,15 +287,6 @@ inline void aSwap( Elem ( & aDestA )[COUNT], Elem ( & aDestB )[COUNT] )
     aDestA[i] = static_cast<Elem&&>( aDestB[i] );
     aDestB[i] = static_cast<Elem&&>( t );
   }
-}
-
-/**
- * Length of a static array.
- */
-template <typename Elem, int COUNT>
-inline int aLength( const Elem ( & )[COUNT] )
-{
-  return COUNT;
 }
 
 /**

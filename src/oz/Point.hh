@@ -48,6 +48,7 @@ class Point : public VectorBase3
     /**
      * Create an uninitialised instance.
      */
+    OZ_ALWAYS_INLINE
     Point() = default;
 
 #ifdef OZ_SIMD_MATH
