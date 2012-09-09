@@ -23,8 +23,6 @@
 
 #include <oz/oz.hh>
 
-#include <fcntl.h>
-
 #include <clocale>
 #include <cstdio>
 #include <cstdlib>

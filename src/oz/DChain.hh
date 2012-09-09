@@ -47,12 +47,15 @@ namespace oz
  *   C*  next[2];
  *   int value;
  * };
- * ...
+ *
  * DChain<C, 0> chain1;
  * DChain<C, 1> chain2;
- * @endcode
  *
- * That way the objects of the same class can be in two separate chains at once;
+ * C* c = new C();
+ * chain1.add( c );
+ * chain2.add( c );
+ * @endcode
+ * That way an objects can be in two separate chains at once;
  * `prev[0]` and `next[0]` point to previous and next element respectively in `chain1` and
  * `prev[1]` and `next[1]` point to previous and next element respectively in `chain2`.
  *

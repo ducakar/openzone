@@ -34,6 +34,44 @@ namespace oz
 {
 
 /**
+ * Absolute value, "specialisation" for float type.
+ */
+OZ_ALWAYS_INLINE
+inline float abs( float a )
+{
+  return __builtin_fabsf( a );
+}
+
+/**
+ * Minimum value, "specialisation" for float type.
+ */
+OZ_ALWAYS_INLINE
+inline float min( float a, float b )
+{
+  return __builtin_fminf( a, b );
+}
+
+/**
+ * Maximum value, "specialisation" for float type.
+ */
+OZ_ALWAYS_INLINE
+inline float max( float a, float b )
+{
+  return __builtin_fmaxf( a, b );
+}
+
+/**
+ * Clamped value, "specialisation" for float type.
+ */
+OZ_ALWAYS_INLINE
+inline float clamp( float c, float a, float b )
+{
+  hard_assert( !( b < a ) );
+
+  return __builtin_fmaxf( a, __builtin_fminf( b, c ) );
+}
+
+/**
  * Replacement for `\<cmath\>` plus some other utility functions.
  */
 class Math
@@ -442,43 +480,5 @@ class Math
     static float normalRand();
 
 };
-
-/**
- * Absolute value, "specialisation" for float type.
- */
-OZ_ALWAYS_INLINE
-inline float abs( float a )
-{
-  return __builtin_fabsf( a );
-}
-
-/**
- * Minimum value, "specialisation" for float type.
- */
-OZ_ALWAYS_INLINE
-inline float min( float a, float b )
-{
-  return __builtin_fminf( a, b );
-}
-
-/**
- * Maximum value, "specialisation" for float type.
- */
-OZ_ALWAYS_INLINE
-inline float max( float a, float b )
-{
-  return __builtin_fmaxf( a, b );
-}
-
-/**
- * Clamped value, "specialisation" for float type.
- */
-OZ_ALWAYS_INLINE
-inline float clamp( float c, float a, float b )
-{
-  hard_assert( !( b < a ) );
-
-  return __builtin_fmaxf( a, __builtin_fminf( b, c ) );
-}
 
 }

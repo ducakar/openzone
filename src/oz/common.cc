@@ -25,7 +25,6 @@
  */
 
 #include "common.hh"
-
 #include "System.hh"
 
 namespace oz

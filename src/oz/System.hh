@@ -46,19 +46,18 @@
 #define OZ_ERROR( ...) \
   oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
 
-#ifdef __native_client__
+// Forward declaration for JNI.
+struct JavaVM_;
 
+// Forward declarations for NaCl.
 namespace pp
 {
 
-// Forward declarations for NaCl classes.
 class Module;
 class Instance;
 class Core;
 
 }
-
-#endif
 
 namespace oz
 {
@@ -84,13 +83,11 @@ class System
     /// Handlers bitmask.
     static const int HANDLERS_MASK = 0xf0;
 
-#ifdef __native_client__
+    static JavaVM_*      javaVM;   ///< JavaVM JNI interface.
 
     static pp::Module*   module;   ///< NaCl module.
     static pp::Instance* instance; ///< NaCl instance.
     static pp::Core*     core;     ///< NaCl `pp::Core` interface.
-
-#endif
 
   private:
 
@@ -110,15 +107,6 @@ class System
   public:
 
     /**
-     * Abort program.
-     *
-     * If `HALT_BIT` was passed in on initialisation and `preventHalt` is false, program is halted
-     * and waits for a fatal signal before it is aborted, so a debugger can be attached.
-     */
-    OZ_NORETURN
-    static void abort( bool preventHalt = false );
-
-    /**
      * Trigger a breakpoint.
      *
      * It raises `SIGTRAP` on Linux or calls `DebugBreak()` on Windows.
@@ -133,6 +121,8 @@ class System
      *
      * Bell depends upon several statically initialised structures. If it is called inside static
      * initialisation before those are initialised, it won't play.
+     *
+     * On NaCl, `System::instance` and `System::core` must be set properly for bell to work.
      */
     static void bell();
 
@@ -169,7 +159,7 @@ class System
      * Set-up crash handlers for cases specified in `flags`. If `HALT_BIT` is also given, crash
      * handlers wait for CTRL-C before exit.
      */
-#if defined( NDEBUG ) || defined( __native_client__ )
+#if defined( NDEBUG )
     static void init( int flags = HANDLERS_MASK );
 #else
     static void init( int flags = HANDLERS_MASK | HALT_BIT );

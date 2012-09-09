@@ -26,6 +26,8 @@
 
 #include "StackTrace.hh"
 
+#include "Thread.hh"
+
 #if defined( __GLIBC__ ) || defined( _LIBCPP_VERSION )
 # include <cstdlib>
 # include <cstring>
@@ -40,7 +42,7 @@ namespace oz
 
 StackTrace StackTrace::current( int )
 {
-  return { 0, {} };
+  return { Thread::name(), 0, {} };
 }
 
 char** StackTrace::symbols() const
@@ -61,7 +63,9 @@ StackTrace StackTrace::current( int nSkippedFrames )
   int nFrames = backtrace( framesBuffer, MAX_FRAMES + 4 );
 
   StackTrace st;
-  st.nFrames = min<int>( nFrames - 1 - nSkippedFrames, int( MAX_FRAMES ) );
+  st.threadName = Thread::name();
+  st.nFrames    = min<int>( nFrames - 1 - nSkippedFrames, int( MAX_FRAMES ) );
+
   memcpy( st.frames, framesBuffer + 1 + nSkippedFrames, size_t( st.nFrames ) * sizeof( void* ) );
   return st;
 }

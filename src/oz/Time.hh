@@ -36,8 +36,8 @@ namespace oz
 /**
  * %Time structure.
  *
- * Keep in mind that epoch may differ between platforms (it is 1970-01-01 0:00:00 on POSIX systems
- * and 1601-01-01 0:00:00 on Windows).
+ * Keep in mind that epoch may differ between platforms (1970-01-01 0:00:00 on POSIX systems and
+ * 1601-01-01 0:00:00 on Windows).
  */
 class Time
 {
@@ -63,7 +63,7 @@ class Time
     /**
      * Monotonic clock from an unspecified point in time, with microsecond resolution.
      *
-     * This clock wraps around in about 72 min.
+     * This clock wraps around in about 71.6 min.
      */
     static uint uclock();
 
@@ -93,12 +93,12 @@ class Time
     static Time local( long64 epoch );
 
     /**
-     * Get seconds from epoch for the given year, month ... etc. fields in local time zone.
+     * Get seconds from epoch for the given year, month ... fields in local time zone.
      */
     long64 toEpoch() const;
 
     /**
-     * Convert to ISO date/time string (yyyy-mm-dd hh:mm:ss).
+     * Convert to ISO date/time string "yyyy-mm-dd hh:mm:ss".
      */
     String toString() const;
 

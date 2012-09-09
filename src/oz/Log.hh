@@ -130,7 +130,7 @@ class Log
     static void printTime( const Time& time );
 
     /**
-     * Print stack trace.
+     * Print current thread's name and stack trace.
      */
     static void printTrace( const StackTrace& st );
 

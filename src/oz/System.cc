@@ -49,6 +49,10 @@
 # include <pulse/simple.h>
 #endif
 
+#if !defined( OZ_JNI ) && !defined( __native_client__ )
+# define OZ_HAS_SIGNALS
+#endif
+
 #if defined( __native_client__ ) && !defined( __GLIBC__ )
 
 using namespace oz;
@@ -150,39 +154,37 @@ static decltype( ::snd_pcm_writei                 )* snd_pcm_writei;            
 
 #endif
 
-static bool               isConstructed; // = false
-static volatile bool      isBellPlaying; // = false
-static int                initFlags;     // = 0
+static bool                        isBellInitialised;    // = false
+static volatile bool               isBellPlaying;        // = false
 #if defined( __native_client__ )
-static pthread_mutex_t    bellLock;
+static pthread_mutex_t             bellLock;
+static pthread_key_t               nameKey;
+static pthread_once_t              nameOnce;
 #elif defined( _WIN32 )
-static CRITICAL_SECTION   bellLock;
+static CRITICAL_SECTION            bellLock;
+static OZ_THREAD_LOCAL const char* localName            = nullptr;
 #else
-static pthread_spinlock_t bellLock;
+static pthread_spinlock_t          bellLock;
+static pthread_key_t               nameKey;
+static pthread_once_t              nameOnce;
 #endif
+static int                         initFlags;            // = 0
 // Used to determine whether static initialisation is complete for the preceding variables.
-static bool               isStaticInitComplete = true;
+static bool                        isStaticInitComplete = true;
+
+OZ_NORETURN
+static void abort( bool doHalt );
+
+#ifdef OZ_HAS_SIGNALS
 
 OZ_NORETURN
 static void signalHandler( int signum );
-static void construct();
-
-OZ_NORETURN
-static void terminate()
-{
-  OZ_ERROR( "Exception handling aborted" );
-}
-
-OZ_NORETURN
-static void unexpected()
-{
-  OZ_ERROR( "Exception specification violation" );
-}
 
 static void resetSignals()
 {
   signal( SIGINT,  SIG_DFL );
   signal( SIGILL,  SIG_DFL );
+  signal( SIGTRAP, SIG_DFL );
   signal( SIGABRT, SIG_DFL );
   signal( SIGFPE,  SIG_DFL );
   signal( SIGSEGV, SIG_DFL );
@@ -192,6 +194,7 @@ static void catchSignals()
 {
   signal( SIGINT,  signalHandler );
   signal( SIGILL,  signalHandler );
+  signal( SIGTRAP, SIG_IGN       ); // Disable default SIGTRAP handler that terminates the process.
   signal( SIGABRT, signalHandler );
   signal( SIGFPE,  signalHandler );
   signal( SIGSEGV, signalHandler );
@@ -200,91 +203,48 @@ static void catchSignals()
 OZ_NORETURN
 static void signalHandler( int sigNum )
 {
-  if( !isConstructed ) {
-    construct();
-  }
-
   resetSignals();
 
   Log::verboseMode = false;
   Log::printSignal( sigNum );
-
-  StackTrace st = StackTrace::current( 0 );
-  Log::printTrace( st );
+  Log::printTrace( StackTrace::current( 0 ) );
   Log::println();
 
   System::bell();
-  System::abort( sigNum == SIGINT );
+  abort( ( initFlags & System::HALT_BIT ) && sigNum != SIGINT );
 }
 
-static void construct()
+OZ_NORETURN
+static void terminate()
 {
-#if defined( __native_client__ )
+  System::trap();
+  resetSignals();
 
-  if( pthread_mutex_init( &bellLock, nullptr ) != 0 ) {
-    OZ_ERROR( "Bell mutex creation failed" );
-  }
+  Log::verboseMode = false;
+  Log::putsRaw( "\n\nException handling aborted\n" );
+  Log::printTrace( StackTrace::current( 0 ) );
+  Log::println();
 
-#elif defined( _WIN32 )
+  System::bell();
+  abort( initFlags & System::HALT_BIT );
+}
 
-  InitializeCriticalSection( &bellLock );
+OZ_NORETURN
+static void unexpected()
+{
+  System::trap();
+  resetSignals();
 
-#else
+  Log::verboseMode = false;
+  Log::putsRaw( "\n\nException specification violation\n" );
+  Log::printTrace( StackTrace::current( 0 ) );
+  Log::println();
 
-  // Disable default handler for TRAP signal that crashes the process.
-  signal( SIGTRAP, SIG_IGN );
-
-  if( pthread_spin_init( &bellLock, PTHREAD_PROCESS_PRIVATE ) != 0 ) {
-    OZ_ERROR( "Bell spin lock creation failed" );
-  }
-
-  // Link PulseAudio client library.
-  void* pulseLib = dlopen( "libpulse-simple.so.0", RTLD_NOW );
-
-  if( pulseLib != nullptr ) {
-    *( void** ) &pa_simple_new   = dlsym( pulseLib, "pa_simple_new" );
-    *( void** ) &pa_simple_free  = dlsym( pulseLib, "pa_simple_free" );
-    *( void** ) &pa_simple_write = dlsym( pulseLib, "pa_simple_write" );
-
-    if( pa_simple_new == nullptr || pa_simple_free == nullptr || pa_simple_write == nullptr ) {
-      pa_simple_new = nullptr;
-      dlclose( pulseLib );
-    }
-  }
-
-  // Link ALSA library.
-  void* alsaLib = dlopen( "libasound.so.2", RTLD_NOW );
-
-  if( alsaLib != nullptr ) {
-    *( void** ) &snd_pcm_open                   = dlsym( alsaLib, "snd_pcm_open" );
-    *( void** ) &snd_pcm_close                  = dlsym( alsaLib, "snd_pcm_close" );
-    *( void** ) &snd_pcm_hw_params_malloc       = dlsym( alsaLib, "snd_pcm_hw_params_malloc" );
-    *( void** ) &snd_pcm_hw_params_free         = dlsym( alsaLib, "snd_pcm_hw_params_free" );
-    *( void** ) &snd_pcm_hw_params_any          = dlsym( alsaLib, "snd_pcm_hw_params_any" );
-    *( void** ) &snd_pcm_hw_params_set_access   = dlsym( alsaLib, "snd_pcm_hw_params_set_access" );
-    *( void** ) &snd_pcm_hw_params_set_format   = dlsym( alsaLib, "snd_pcm_hw_params_set_format" );
-    *( void** ) &snd_pcm_hw_params_set_rate     = dlsym( alsaLib, "snd_pcm_hw_params_set_rate" );
-    *( void** ) &snd_pcm_hw_params_set_channels = dlsym( alsaLib, "snd_pcm_hw_params_set_channels" );
-    *( void** ) &snd_pcm_hw_params              = dlsym( alsaLib, "snd_pcm_hw_params" );
-    *( void** ) &snd_pcm_prepare                = dlsym( alsaLib, "snd_pcm_prepare" );
-    *( void** ) &snd_pcm_writei                 = dlsym( alsaLib, "snd_pcm_writei" );
-
-    if( snd_pcm_open == nullptr || snd_pcm_close == nullptr ||
-        snd_pcm_hw_params_malloc == nullptr || snd_pcm_hw_params_free == nullptr ||
-        snd_pcm_hw_params_any == nullptr || snd_pcm_hw_params_set_access == nullptr ||
-        snd_pcm_hw_params_set_format == nullptr || snd_pcm_hw_params_set_rate == nullptr ||
-        snd_pcm_hw_params_set_channels == nullptr || snd_pcm_hw_params == nullptr ||
-        snd_pcm_prepare == nullptr || snd_pcm_writei == nullptr )
-    {
-      snd_pcm_open = nullptr;
-      dlclose( alsaLib );
-    }
-  }
+  System::bell();
+  abort( initFlags & System::HALT_BIT );
+}
 
 #endif
-
-  isConstructed = true;
-}
 
 #if defined( __native_client__ )
 
@@ -455,34 +415,10 @@ static void waitBell()
   }
 }
 
-#ifdef __native_client__
-pp::Module*   System::module;   // = nullptr
-pp::Instance* System::instance; // = nullptr
-pp::Core*     System::core;     // = nullptr
-#endif
-
-OZ_HIDDEN
-System System::system;
-
-OZ_HIDDEN
-System::System()
+OZ_NORETURN
+static void abort( bool doHalt )
 {
-  if( !isConstructed ) {
-    construct();
-  }
-}
-
-OZ_HIDDEN
-System::~System()
-{
-  waitBell();
-}
-
-void System::abort( bool preventHalt )
-{
-  resetSignals();
-
-  if( !preventHalt && ( initFlags & HALT_BIT ) ) {
+  if( doHalt ) {
     Log::printHalt();
 
 #ifdef _WIN32
@@ -499,12 +435,138 @@ void System::abort( bool preventHalt )
   ::abort();
 }
 
-void System::trap()
+static void initBell()
 {
-  if( !isConstructed ) {
-    construct();
+#if defined( __native_client__ )
+
+  if( pthread_mutex_init( &bellLock, nullptr ) != 0 ) {
+    OZ_ERROR( "Bell mutex creation failed" );
   }
 
+#elif defined( _WIN32 )
+
+  InitializeCriticalSection( &bellLock );
+
+#else
+
+  if( pthread_spin_init( &bellLock, PTHREAD_PROCESS_PRIVATE ) != 0 ) {
+    OZ_ERROR( "Bell spin lock creation failed" );
+  }
+
+  // Link PulseAudio client library.
+  void* pulseLib = dlopen( "libpulse-simple.so.0", RTLD_NOW );
+
+  if( pulseLib != nullptr ) {
+    *( void** ) &pa_simple_new   = dlsym( pulseLib, "pa_simple_new" );
+    *( void** ) &pa_simple_free  = dlsym( pulseLib, "pa_simple_free" );
+    *( void** ) &pa_simple_write = dlsym( pulseLib, "pa_simple_write" );
+
+    if( pa_simple_new == nullptr || pa_simple_free == nullptr || pa_simple_write == nullptr ) {
+      pa_simple_new = nullptr;
+      dlclose( pulseLib );
+    }
+  }
+
+  // Link ALSA library.
+  void* alsaLib = dlopen( "libasound.so.2", RTLD_NOW );
+
+  if( alsaLib != nullptr ) {
+    *( void** ) &snd_pcm_open                   = dlsym( alsaLib, "snd_pcm_open" );
+    *( void** ) &snd_pcm_close                  = dlsym( alsaLib, "snd_pcm_close" );
+    *( void** ) &snd_pcm_hw_params_malloc       = dlsym( alsaLib, "snd_pcm_hw_params_malloc" );
+    *( void** ) &snd_pcm_hw_params_free         = dlsym( alsaLib, "snd_pcm_hw_params_free" );
+    *( void** ) &snd_pcm_hw_params_any          = dlsym( alsaLib, "snd_pcm_hw_params_any" );
+    *( void** ) &snd_pcm_hw_params_set_access   = dlsym( alsaLib, "snd_pcm_hw_params_set_access" );
+    *( void** ) &snd_pcm_hw_params_set_format   = dlsym( alsaLib, "snd_pcm_hw_params_set_format" );
+    *( void** ) &snd_pcm_hw_params_set_rate     = dlsym( alsaLib, "snd_pcm_hw_params_set_rate" );
+    *( void** ) &snd_pcm_hw_params_set_channels = dlsym( alsaLib, "snd_pcm_hw_params_set_channels" );
+    *( void** ) &snd_pcm_hw_params              = dlsym( alsaLib, "snd_pcm_hw_params" );
+    *( void** ) &snd_pcm_prepare                = dlsym( alsaLib, "snd_pcm_prepare" );
+    *( void** ) &snd_pcm_writei                 = dlsym( alsaLib, "snd_pcm_writei" );
+
+    if( snd_pcm_open == nullptr || snd_pcm_close == nullptr ||
+        snd_pcm_hw_params_malloc == nullptr || snd_pcm_hw_params_free == nullptr ||
+        snd_pcm_hw_params_any == nullptr || snd_pcm_hw_params_set_access == nullptr ||
+        snd_pcm_hw_params_set_format == nullptr || snd_pcm_hw_params_set_rate == nullptr ||
+        snd_pcm_hw_params_set_channels == nullptr || snd_pcm_hw_params == nullptr ||
+        snd_pcm_prepare == nullptr || snd_pcm_writei == nullptr )
+    {
+      snd_pcm_open = nullptr;
+      dlclose( alsaLib );
+    }
+  }
+
+#endif
+
+  isBellInitialised = true;
+}
+
+#ifndef _WIN32
+
+static void initNameKey()
+{
+  if( pthread_key_create( &nameKey, nullptr ) != 0 ) {
+    OZ_ERROR( "Thread name key creation failed" );
+  }
+}
+
+#endif
+
+OZ_HIDDEN
+const char* threadName()
+{
+#ifdef _WIN32
+  return localName;
+#else
+  pthread_once( &nameOnce, &initNameKey );
+
+  void* data = pthread_getspecific( nameKey );
+  return static_cast<const char*>( data );
+#endif
+}
+
+OZ_HIDDEN
+void threadInit( const char* name )
+{
+#ifdef _WIN32
+  localName = name;
+#else
+  pthread_once( &nameOnce, &initNameKey );
+  pthread_setspecific( nameKey, name );
+#endif
+
+#ifdef OZ_HAS_SIGNALS
+  if( initFlags & System::SIGNAL_HANDLER_BIT ) {
+    catchSignals();
+  }
+#endif
+}
+
+JavaVM_*      System::javaVM;   // = nullptr
+
+pp::Module*   System::module;   // = nullptr
+pp::Instance* System::instance; // = nullptr
+pp::Core*     System::core;     // = nullptr
+
+OZ_HIDDEN
+System System::system;
+
+OZ_HIDDEN
+System::System()
+{
+  if( !isBellInitialised ) {
+    initBell();
+  }
+}
+
+OZ_HIDDEN
+System::~System()
+{
+  waitBell();
+}
+
+void System::trap()
+{
 #ifdef _WIN32
   if( IsDebuggerPresent() ) {
     DebugBreak();
@@ -516,12 +578,13 @@ void System::trap()
 
 void System::bell()
 {
-  if( !isConstructed ) {
-    construct();
-  }
   // Ensure that static initialisation already set BELL_SAMPLE etc.
   if( !isStaticInitComplete ) {
     return;
+  }
+  // Ensure System class is initialised.
+  if( !isBellInitialised ) {
+    initBell();
   }
 
 #if defined( __native_client__ )
@@ -599,7 +662,6 @@ void System::warning( const char* function, const char* file, int line, int nSki
   Log::putsRaw( "\n\n" );
   Log::vprintRaw( msg, ap );
   Log::printRaw( "\n  in %s\n  at %s:%d\n", function, file, line );
-
   Log::verboseMode = verboseMode;
 
   va_end( ap );
@@ -631,7 +693,10 @@ void System::error( const char* function, const char* file, int line, int nSkipp
   Log::println();
 
   bell();
-  abort();
+#ifdef OZ_HAS_SIGNALS
+  resetSignals();
+#endif
+  abort( initFlags & HALT_BIT );
 }
 
 void System::init( int flags )
@@ -639,36 +704,36 @@ void System::init( int flags )
 #ifdef __native_client__
   flags &= ~HALT_BIT;
 #endif
-
-  if( !isConstructed ) {
-    construct();
-  }
-
-  if( initFlags & SIGNAL_HANDLER_BIT ) {
-    resetSignals();
-  }
-  if( initFlags & EXCEPTION_HANDLERS_BIT ) {
-    std::set_unexpected( std::unexpected );
-    std::set_terminate( std::terminate );
-  }
-
   initFlags = flags;
 
-  if( initFlags & SIGNAL_HANDLER_BIT ) {
-    catchSignals();
+  if( !isBellInitialised ) {
+    initBell();
   }
+
+#ifdef OZ_HAS_SIGNALS
   if( initFlags & EXCEPTION_HANDLERS_BIT ) {
     std::set_terminate( terminate );
     std::set_unexpected( unexpected );
   }
+  else {
+    std::set_unexpected( std::unexpected );
+    std::set_terminate( std::terminate );
+  }
+
+  resetSignals();
+#endif
+
+  threadInit( "main" );
 }
 
 void System::free()
 {
+#ifdef OZ_HAS_SIGNALS
   std::set_unexpected( std::unexpected );
   std::set_terminate( std::terminate );
 
   resetSignals();
+#endif
 
   initFlags = 0;
 }

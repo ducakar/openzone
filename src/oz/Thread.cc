@@ -35,9 +35,16 @@
 #else
 # include <pthread.h>
 #endif
+#ifdef OZ_JNI
+# include <jni.h>
+#endif
 
 namespace oz
 {
+
+// Defined in System.cc.
+const char* threadName();
+void threadInit( const char* name );
 
 #ifdef _WIN32
 
@@ -46,6 +53,7 @@ struct Thread::Descriptor
   HANDLE        thread;
   Thread::Main* main;
   void*         data;
+  const char*   name;
 
   static DWORD WINAPI threadMain( void* data );
 };
@@ -55,7 +63,18 @@ DWORD WINAPI Thread::Descriptor::threadMain( void* data )
 {
   Descriptor* descriptor = static_cast<Descriptor*>( data );
 
+  threadInit( descriptor->name );
+
+#ifdef OZ_JNI
+  void* jniEnv;
+  System::javaVM->AttachCurrentThread( &jniEnv, nullptr );
+#endif
+
   descriptor->main( descriptor->data );
+
+#ifdef OZ_JNI
+  System::javaVM->DetachCurrentThread();
+#endif
   return 0;
 }
 
@@ -66,6 +85,7 @@ struct Thread::Descriptor
   pthread_t     thread;
   Thread::Main* main;
   void*         data;
+  const char*   name;
 
   static void* threadMain( void* data );
 };
@@ -75,13 +95,29 @@ void* Thread::Descriptor::threadMain( void* data )
 {
   Descriptor* descriptor = static_cast<Descriptor*>( data );
 
+  threadInit( descriptor->name );
+
+#ifdef OZ_JNI
+  void* jniEnv;
+  System::javaVM->AttachCurrentThread( &jniEnv, nullptr );
+#endif
+
   descriptor->main( descriptor->data );
+
+#ifdef OZ_JNI
+  System::javaVM->DetachCurrentThread();
+#endif
   return nullptr;
 }
 
 #endif
 
-void Thread::start( Main* main, void* data )
+const char* Thread::name()
+{
+  return threadName();
+}
+
+void Thread::start( const char* name, Main* main, void* data )
 {
   hard_assert( descriptor == nullptr );
 
@@ -92,6 +128,7 @@ void Thread::start( Main* main, void* data )
 
   descriptor->main = main;
   descriptor->data = data;
+  descriptor->name = name;
 
 #ifdef _WIN32
 
@@ -113,6 +150,16 @@ void Thread::detach()
 {
   hard_assert( descriptor != nullptr );
 
+#ifdef _WIN32
+#else
+
+  if( pthread_detach( descriptor->thread ) != 0 ) {
+    OZ_ERROR( "Thread detach failed" );
+  }
+
+#endif
+
+  free( descriptor );
   descriptor = nullptr;
 }
 

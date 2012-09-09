@@ -112,7 +112,7 @@ void MainInstance::DidChangeView( const pp::View& view )
     SDL_NACL_SetInstance( pp_instance(), NaCl::width, NaCl::height );
     alSetPpapiInfo( pp_instance(), System::module->get_browser_interface() );
 
-    mainThread.start( mainThreadMain, this );
+    mainThread.start( "main", mainThreadMain, this );
   }
 }
 

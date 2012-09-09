@@ -867,8 +867,8 @@ void Sound::init()
   soundMainSemaphore.init();
   soundAuxSemaphore.init();
 
-  musicThread.start( musicMain, nullptr );
-  soundThread.start( soundMain, nullptr );
+  musicThread.start( "music", musicMain, nullptr );
+  soundThread.start( "sound", soundMain, nullptr );
 
   Log::unindent();
   Log::println( "}" );

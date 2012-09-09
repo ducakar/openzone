@@ -46,12 +46,15 @@ namespace oz
  *   C*  next[2];
  *   int value;
  * };
- * ...
+ *
  * Chain<C, 0> chain1;
  * Chain<C, 1> chain2;
- * @endcode
  *
- * That way the objects of the same class can be in two separate chains at once;
+ * C* c = new C();
+ * chain1.add( c );
+ * chain2.add( c );
+ * @endcode
+ * That way an objects can be in two separate chains at once;
  * `next[0]` points to next element in `chain1` and `next[1]` points to next element in `chain2`.
  *
  * Notes:

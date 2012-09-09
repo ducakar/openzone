@@ -54,6 +54,13 @@ class Thread
   public:
 
     /**
+     * Get current thread's name.
+     *
+     * If thread was not started via start() method, `nullptr` is returned.
+     */
+    static const char* name();
+
+    /**
      * Create uninitialised instance.
      */
     Thread() :
@@ -98,10 +105,12 @@ class Thread
     /**
      * Create a new thread and run it. Thread must be in uninitialised state.
      *
+     * On Android/JNI, `System::javaVM` must be set prior to calling this function.
+     *
      * @param main pointer to thread's main function.
      * @param data pointer to user data, passed to thread's main function.
      */
-    void start( Main* main, void* data );
+    void start( const char* name, Main* main, void* data );
 
     /**
      * Detach a started thread and return Thread object into uninitialised state.

@@ -43,8 +43,9 @@ class StackTrace
     /// Maximum number of stack frames.
     static const int MAX_FRAMES = 32;
 
-    int   nFrames;            ///< Number of stack frames.
-    void* frames[MAX_FRAMES]; ///< Pointers to stack frames.
+    const char* threadName;         ///< Current thread name (if started via Thread::start()).
+    int         nFrames;            ///< Number of stack frames.
+    void*       frames[MAX_FRAMES]; ///< Pointers to stack frames.
 
   public:
 

@@ -38,7 +38,7 @@ namespace oz
  *
  * %Map is implemented as a sorted array list that supports binding values to its elements (keys).
  * Better worst case performance than a hashtable and it can use an arbitrary type as a key.
- * For large maps HashIndex/HashString is preferred as it is much faster on average.
+ * For large maps HashIndex/HashString is preferred as it is asymptotically faster in average case.
  *
  * Like in List all allocated elements are constructed all the time and a removed element's
  * destruction is guaranteed.

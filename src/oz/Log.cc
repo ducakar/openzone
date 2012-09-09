@@ -264,22 +264,22 @@ void Log::printTrace( const StackTrace& st )
 {
   if( st.nFrames == 0 ) {
     if( !verboseMode || showVerbose || file == nullptr ) {
-      fputs( "  stack trace:\n    [no stack trace]\n", stdout );
+      fprintf( stdout, "  thread: %s\n  stack trace:\n    [no stack trace]\n", st.threadName );
     }
 
     if( file != nullptr ) {
-      fputs( "  stack trace:\n    [no stack trace]\n", file );
+      fprintf( file, "  thread: %s\n  stack trace:\n    [no stack trace]\n", st.threadName );
     }
   }
   else {
     char** entries = st.symbols();
 
     if( !verboseMode || showVerbose || file == nullptr ) {
-      fputs( "  stack trace:\n", stdout );
+      fprintf( stdout, "  thread: %s\n  stack trace:\n", st.threadName );
     }
 
     if( file != nullptr ) {
-      fputs( "  stack trace:\n", file );
+      fprintf( file, "  thread: %s\n  stack trace:\n", st.threadName );
     }
 
     for( int i = 0; i < st.nFrames; ++i ) {
