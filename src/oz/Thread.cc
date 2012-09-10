@@ -29,6 +29,7 @@
 #include "System.hh"
 
 #include <cstdlib>
+#include <cstring>
 
 #ifdef _WIN32
 # include <windows.h>
@@ -42,60 +43,82 @@
 namespace oz
 {
 
-// Defined in System.cc.
-const char* threadName();
-void threadInit( const char* name );
+static const int NAME_LENGTH = 15;
 
 #ifdef _WIN32
-
-struct Thread::Descriptor
-{
-  HANDLE        thread;
-  Thread::Main* main;
-  void*         data;
-  const char*   name;
-
-  static DWORD WINAPI threadMain( void* data );
-};
-
-OZ_HIDDEN
-DWORD WINAPI Thread::Descriptor::threadMain( void* data )
-{
-  Descriptor* descriptor = static_cast<Descriptor*>( data );
-
-  threadInit( descriptor->name );
-
-#ifdef OZ_JNI
-  void* jniEnv;
-  System::javaVM->AttachCurrentThread( &jniEnv, nullptr );
-#endif
-
-  descriptor->main( descriptor->data );
-
-#ifdef OZ_JNI
-  System::javaVM->DetachCurrentThread();
-#endif
-  return 0;
-}
-
+static DWORD         nameKey;
 #else
+static pthread_key_t nameKey;
+#endif
+static bool          isNameKeyInitialised = false;
+
+static void initNameKey()
+{
+#ifdef _WIN32
+  nameKey = TlsAlloc();
+  if( nameKey == TLS_OUT_OF_INDEXES ) {
+    OZ_ERROR( "Thread name key creation failed" );
+  }
+
+  // This method is always invoked in static initialisation and hence in the main thread.
+  TlsSetValue( nameKey, const_cast<char*>( "main" ) );
+#else
+  if( pthread_key_create( &nameKey, nullptr ) != 0 ) {
+    OZ_ERROR( "Thread name key creation failed" );
+  }
+
+  // This method is always invoked in static initialisation and hence in the main thread.
+  pthread_setspecific( nameKey, "main" );
+#endif
+
+  isNameKeyInitialised = true;
+}
+
+// Ensure that initNameKey is invoked during static initialisation.
+static struct NameKeyInitialiser
+{
+  OZ_HIDDEN
+  NameKeyInitialiser()
+  {
+    initNameKey();
+  }
+}
+nameKeyInitialiser;
 
 struct Thread::Descriptor
 {
+#ifdef _WIN32
+  HANDLE        thread;
+#else
   pthread_t     thread;
+#endif
   Thread::Main* main;
   void*         data;
-  const char*   name;
+  char          name[NAME_LENGTH + 1];
 
+#ifdef _WIN32
+  static DWORD WINAPI threadMain( void* data );
+#else
   static void* threadMain( void* data );
+#endif
 };
 
 OZ_HIDDEN
+#ifdef _WIN32
+DWORD WINAPI Thread::Descriptor::threadMain( void* data )
+#else
 void* Thread::Descriptor::threadMain( void* data )
+#endif
 {
   Descriptor* descriptor = static_cast<Descriptor*>( data );
 
-  threadInit( descriptor->name );
+#ifdef _WIN32
+  TlsSetValue( nameKey, descriptor->name );
+#else
+  pthread_setspecific( nameKey, descriptor->name );
+#endif
+
+  System::threadInit();
 
 #ifdef OZ_JNI
   void* jniEnv;
@@ -107,19 +130,31 @@ void* Thread::Descriptor::threadMain( void* data )
 #ifdef OZ_JNI
   System::javaVM->DetachCurrentThread();
 #endif
-  return nullptr;
-}
 
+#ifdef _WIN32
+  return 0;
+#else
+  return nullptr;
 #endif
+}
 
 const char* Thread::name()
 {
-  return threadName();
+#ifdef _WIN32
+  void* data = TlsGetValue( nameKey );
+#else
+  void* data = pthread_getspecific( nameKey );
+#endif
+  return static_cast<const char*>( data );
 }
 
 void Thread::start( const char* name, Main* main, void* data )
 {
   hard_assert( descriptor == nullptr );
+
+  if( !isNameKeyInitialised ) {
+    initNameKey();
+  }
 
   descriptor = static_cast<Descriptor*>( malloc( sizeof( Descriptor ) ) );
   if( descriptor == nullptr ) {
@@ -128,7 +163,9 @@ void Thread::start( const char* name, Main* main, void* data )
 
   descriptor->main = main;
   descriptor->data = data;
-  descriptor->name = name;
+
+  strncpy( descriptor->name, name, NAME_LENGTH );
+  descriptor->name[NAME_LENGTH] = '\0';
 
 #ifdef _WIN32
 

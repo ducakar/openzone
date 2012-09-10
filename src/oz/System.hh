@@ -94,13 +94,12 @@ class System
     static System system; ///< Private instance, takes care for static (de)initialisation.
 
     /**
-     * Sets up bell and disables `SIGTRAP` handler on Linux, since the default handler would crash
-     * the application on `trap()` call.
+     * Initialise bell.
      */
     System();
 
     /**
-     * Destructor delays normal process termination until the bell finishes playing.
+     * Delay normal process termination until the bell finishes playing.
      */
     ~System();
 
@@ -152,6 +151,15 @@ class System
     OZ_PRINTF_FORMAT( 5, 6 )
     static void error( const char* function, const char* file, int line, int nSkippedFrames,
                        const char* msg, ... );
+
+    /**
+     * Initialise current thread's signal handlers according to `flags` passed to `init()`.
+     *
+     * Signal handlers must be set-up for each thread in a process separately. `init()` method sets
+     * them up for the caller thread only, for other threads this method should be used unless
+     * created with `Thread::start()`, which implicitly calls this method.
+     */
+    static void threadInit();
 
     /**
      * Initialise `System` features.

@@ -69,12 +69,12 @@ static const char* const SIGNALS[][2] =
   { "SIGSYS",    "Bad system call"            }  // 31
 };
 
-static char  filePath[256]; // = ""
-static FILE* file;          // = nullptr
-static int   tabs;          // = 0
+static char  filePath[256] = "";
+static FILE* file          = nullptr;
+static int   tabs          = 0;
 
-bool Log::showVerbose; // = false
-bool Log::verboseMode; // = false
+bool Log::showVerbose      = false;
+bool Log::verboseMode      = false;
 Log  Log::out;
 
 const char* Log::logFile()

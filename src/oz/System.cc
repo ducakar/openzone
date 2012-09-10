@@ -49,10 +49,6 @@
 # include <pulse/simple.h>
 #endif
 
-#if !defined( OZ_JNI ) && !defined( __native_client__ )
-# define OZ_HAS_SIGNALS
-#endif
-
 #if defined( __native_client__ ) && !defined( __GLIBC__ )
 
 using namespace oz;
@@ -127,77 +123,76 @@ static const Wave BELL_SAMPLE = {
 
 #else
 
+static const timespec       TIMESPEC_10MS = { 0, 10 * 1000000 };
+static const timespec       BELL_TIMESPEC = { 0, 280 * 1000000 };
 static const pa_sample_spec BELL_SPEC     = { PA_SAMPLE_U8, 11025, 1 };
 static const ubyte          BELL_SAMPLE[] = {
 # include "bellSample.inc"
 };
-static const timespec       BELL_TIMESPEC = {
-  0, long( float( sizeof( BELL_SAMPLE ) ) / float( BELL_SPEC.rate ) * 1e9f )
-};
 
-static decltype( ::pa_simple_new                  )* pa_simple_new;                  // = nullptr
-static decltype( ::pa_simple_free                 )* pa_simple_free;                 // = nullptr
-static decltype( ::pa_simple_write                )* pa_simple_write;                // = nullptr
+static decltype( ::pa_simple_new                  )* pa_simple_new                  = nullptr;
+static decltype( ::pa_simple_free                 )* pa_simple_free                 = nullptr;
+static decltype( ::pa_simple_write                )* pa_simple_write                = nullptr;
 
-static decltype( ::snd_pcm_open                   )* snd_pcm_open;                   // = nullptr
-static decltype( ::snd_pcm_close                  )* snd_pcm_close;                  // = nullptr
-static decltype( ::snd_pcm_hw_params_malloc       )* snd_pcm_hw_params_malloc;       // = nullptr
-static decltype( ::snd_pcm_hw_params_free         )* snd_pcm_hw_params_free;         // = nullptr
-static decltype( ::snd_pcm_hw_params_any          )* snd_pcm_hw_params_any;          // = nullptr
-static decltype( ::snd_pcm_hw_params_set_access   )* snd_pcm_hw_params_set_access;   // = nullptr
-static decltype( ::snd_pcm_hw_params_set_format   )* snd_pcm_hw_params_set_format;   // = nullptr
-static decltype( ::snd_pcm_hw_params_set_rate     )* snd_pcm_hw_params_set_rate;     // = nullptr
-static decltype( ::snd_pcm_hw_params_set_channels )* snd_pcm_hw_params_set_channels; // = nullptr
-static decltype( ::snd_pcm_hw_params              )* snd_pcm_hw_params;              // = nullptr
-static decltype( ::snd_pcm_prepare                )* snd_pcm_prepare;                // = nullptr
-static decltype( ::snd_pcm_writei                 )* snd_pcm_writei;                 // = nullptr
+static decltype( ::snd_pcm_open                   )* snd_pcm_open                   = nullptr;
+static decltype( ::snd_pcm_close                  )* snd_pcm_close                  = nullptr;
+static decltype( ::snd_pcm_hw_params_malloc       )* snd_pcm_hw_params_malloc       = nullptr;
+static decltype( ::snd_pcm_hw_params_free         )* snd_pcm_hw_params_free         = nullptr;
+static decltype( ::snd_pcm_hw_params_any          )* snd_pcm_hw_params_any          = nullptr;
+static decltype( ::snd_pcm_hw_params_set_access   )* snd_pcm_hw_params_set_access   = nullptr;
+static decltype( ::snd_pcm_hw_params_set_format   )* snd_pcm_hw_params_set_format   = nullptr;
+static decltype( ::snd_pcm_hw_params_set_rate     )* snd_pcm_hw_params_set_rate     = nullptr;
+static decltype( ::snd_pcm_hw_params_set_channels )* snd_pcm_hw_params_set_channels = nullptr;
+static decltype( ::snd_pcm_hw_params              )* snd_pcm_hw_params              = nullptr;
+static decltype( ::snd_pcm_prepare                )* snd_pcm_prepare                = nullptr;
+static decltype( ::snd_pcm_writei                 )* snd_pcm_writei                 = nullptr;
 
 #endif
 
-static bool                        isBellInitialised;    // = false
-static volatile bool               isBellPlaying;        // = false
 #if defined( __native_client__ )
-static pthread_mutex_t             bellLock;
-static pthread_key_t               nameKey;
-static pthread_once_t              nameOnce;
+static pthread_mutex_t    bellLock;
 #elif defined( _WIN32 )
-static CRITICAL_SECTION            bellLock;
-static OZ_THREAD_LOCAL const char* localName            = nullptr;
+static CRITICAL_SECTION   bellLock;
 #else
-static pthread_spinlock_t          bellLock;
-static pthread_key_t               nameKey;
-static pthread_once_t              nameOnce;
+static pthread_spinlock_t bellLock;
 #endif
-static int                         initFlags;            // = 0
-// Used to determine whether static initialisation is complete for the preceding variables.
-static bool                        isStaticInitComplete = true;
+static volatile bool      isBellPlaying     = false;
+static bool               isBellInitialised = false;
+static int                initFlags         = 0;
 
 OZ_NORETURN
 static void abort( bool doHalt );
-
-#ifdef OZ_HAS_SIGNALS
 
 OZ_NORETURN
 static void signalHandler( int signum );
 
 static void resetSignals()
 {
+#if !defined( OZ_JNI ) && !defined( __native_client__ )
   signal( SIGINT,  SIG_DFL );
   signal( SIGILL,  SIG_DFL );
-  signal( SIGTRAP, SIG_DFL );
   signal( SIGABRT, SIG_DFL );
   signal( SIGFPE,  SIG_DFL );
   signal( SIGSEGV, SIG_DFL );
+# ifndef _WIN32
+  signal( SIGTRAP, SIG_DFL );
+# endif
+#endif
 }
 
 static void catchSignals()
 {
+#if !defined( OZ_JNI ) && !defined( __native_client__ )
   signal( SIGINT,  signalHandler );
   signal( SIGILL,  signalHandler );
-  signal( SIGTRAP, SIG_IGN       ); // Disable default SIGTRAP handler that terminates the process.
   signal( SIGABRT, signalHandler );
   signal( SIGFPE,  signalHandler );
   signal( SIGSEGV, signalHandler );
+# ifndef _WIN32
+  // Disable default handler for SIGTRAP that terminates a process.
+  signal( SIGTRAP, SIG_IGN );
+# endif
+#endif
 }
 
 OZ_NORETURN
@@ -243,8 +238,6 @@ static void unexpected()
   System::bell();
   abort( initFlags & System::HALT_BIT );
 }
-
-#endif
 
 #if defined( __native_client__ )
 
@@ -316,7 +309,7 @@ static void bellInitCallback( void* info_, int )
   }
 }
 
-static void* bellThread( void* )
+static void* bellMain( void* )
 {
   SampleInfo info;
   System::core->CallOnMainThread( 0, pp::CompletionCallback( bellInitCallback, &info ) );
@@ -329,7 +322,7 @@ static void* bellThread( void* )
 
 #elif defined( _WIN32 )
 
-static DWORD WINAPI bellThread( LPVOID )
+static DWORD WINAPI bellMain( LPVOID )
 {
   PlaySound( reinterpret_cast<LPCSTR>( &BELL_SAMPLE ), nullptr, SND_MEMORY | SND_SYNC );
 
@@ -339,7 +332,7 @@ static DWORD WINAPI bellThread( LPVOID )
 
 #else
 
-static void* bellThread( void* )
+static void* bellMain( void* )
 {
   if( pa_simple_new != nullptr ) {
     pa_simple* pa = pa_simple_new( nullptr, "liboz", PA_STREAM_PLAYBACK, nullptr, "bell",
@@ -409,30 +402,9 @@ static void waitBell()
 #ifdef _WIN32
     Sleep( 10 );
 #else
-    const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
     nanosleep( &TIMESPEC_10MS, nullptr );
 #endif
   }
-}
-
-OZ_NORETURN
-static void abort( bool doHalt )
-{
-  if( doHalt ) {
-    Log::printHalt();
-
-#ifdef _WIN32
-    while( true ) {
-      Sleep( 10 );
-    }
-#else
-    const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
-    while( nanosleep( &TIMESPEC_10MS, nullptr ) == 0 );
-#endif
-  }
-
-  waitBell();
-  ::abort();
 }
 
 static void initBell()
@@ -446,6 +418,7 @@ static void initBell()
 #elif defined( _WIN32 )
 
   InitializeCriticalSection( &bellLock );
+  isBellInitialised = true;
 
 #else
 
@@ -497,56 +470,32 @@ static void initBell()
   }
 
 #endif
-
-  isBellInitialised = true;
 }
 
-#ifndef _WIN32
-
-static void initNameKey()
+OZ_NORETURN
+static void abort( bool doHalt )
 {
-  if( pthread_key_create( &nameKey, nullptr ) != 0 ) {
-    OZ_ERROR( "Thread name key creation failed" );
-  }
-}
+  if( doHalt ) {
+    Log::printHalt();
 
-#endif
-
-OZ_HIDDEN
-const char* threadName()
-{
 #ifdef _WIN32
-  return localName;
+    while( true ) {
+      Sleep( 10 );
+    }
 #else
-  pthread_once( &nameOnce, &initNameKey );
-
-  void* data = pthread_getspecific( nameKey );
-  return static_cast<const char*>( data );
+    while( nanosleep( &TIMESPEC_10MS, nullptr ) == 0 );
 #endif
-}
-
-OZ_HIDDEN
-void threadInit( const char* name )
-{
-#ifdef _WIN32
-  localName = name;
-#else
-  pthread_once( &nameOnce, &initNameKey );
-  pthread_setspecific( nameKey, name );
-#endif
-
-#ifdef OZ_HAS_SIGNALS
-  if( initFlags & System::SIGNAL_HANDLER_BIT ) {
-    catchSignals();
   }
-#endif
+
+  waitBell();
+  ::abort();
 }
 
-JavaVM_*      System::javaVM;   // = nullptr
+JavaVM_*      System::javaVM   = nullptr;
 
-pp::Module*   System::module;   // = nullptr
-pp::Instance* System::instance; // = nullptr
-pp::Core*     System::core;     // = nullptr
+pp::Module*   System::module   = nullptr;
+pp::Instance* System::instance = nullptr;
+pp::Core*     System::core     = nullptr;
 
 OZ_HIDDEN
 System System::system;
@@ -578,11 +527,6 @@ void System::trap()
 
 void System::bell()
 {
-  // Ensure that static initialisation already set BELL_SAMPLE etc.
-  if( !isStaticInitComplete ) {
-    return;
-  }
-  // Ensure System class is initialised.
   if( !isBellInitialised ) {
     initBell();
   }
@@ -600,10 +544,11 @@ void System::bell()
     isBellPlaying = true;
     pthread_mutex_unlock( &bellLock );
 
-    pthread_t thread;
-    if( pthread_create( &thread, nullptr, bellThread, nullptr ) != 0 ) {
+    pthread_t bellThread;
+    if( pthread_create( &bellThread, nullptr, bellMain, nullptr ) != 0 ) {
       OZ_ERROR( "Bell thread creation failed" );
     }
+    pthread_detach( bellThread );
   }
 
 #elif defined( _WIN32 )
@@ -617,11 +562,11 @@ void System::bell()
     isBellPlaying = true;
     LeaveCriticalSection( &bellLock );
 
-    HANDLE thread = CreateThread( nullptr, 0, bellThread, nullptr, 0, nullptr );
-    if( thread == nullptr ) {
+    HANDLE bellThread = CreateThread( nullptr, 0, bellMain, nullptr, 0, nullptr );
+    if( bellThread == nullptr ) {
       OZ_ERROR( "Bell thread creation failed" );
     }
-    CloseHandle( thread );
+    CloseHandle( bellThread );
   }
 
 #else
@@ -639,10 +584,11 @@ void System::bell()
     isBellPlaying = true;
     pthread_spin_unlock( &bellLock );
 
-    pthread_t thread;
-    if( pthread_create( &thread, nullptr, bellThread, nullptr ) != 0 ) {
+    pthread_t bellThread;
+    if( pthread_create( &bellThread, nullptr, bellMain, nullptr ) != 0 ) {
       OZ_ERROR( "Bell thread creation failed" );
     }
+    pthread_detach( bellThread );
   }
 
 #endif
@@ -693,10 +639,15 @@ void System::error( const char* function, const char* file, int line, int nSkipp
   Log::println();
 
   bell();
-#ifdef OZ_HAS_SIGNALS
   resetSignals();
-#endif
   abort( initFlags & HALT_BIT );
+}
+
+void System::threadInit()
+{
+  if( initFlags & SIGNAL_HANDLER_BIT ) {
+    catchSignals();
+  }
 }
 
 void System::init( int flags )
@@ -706,11 +657,16 @@ void System::init( int flags )
 #endif
   initFlags = flags;
 
-  if( !isBellInitialised ) {
-    initBell();
+  // TODO
+//   Thread::setMainThreadName();
+
+  if( initFlags & SIGNAL_HANDLER_BIT ) {
+    catchSignals();
+  }
+  else {
+    resetSignals();
   }
 
-#ifdef OZ_HAS_SIGNALS
   if( initFlags & EXCEPTION_HANDLERS_BIT ) {
     std::set_terminate( terminate );
     std::set_unexpected( unexpected );
@@ -719,21 +675,14 @@ void System::init( int flags )
     std::set_unexpected( std::unexpected );
     std::set_terminate( std::terminate );
   }
-
-  resetSignals();
-#endif
-
-  threadInit( "main" );
 }
 
 void System::free()
 {
-#ifdef OZ_HAS_SIGNALS
   std::set_unexpected( std::unexpected );
   std::set_terminate( std::terminate );
 
   resetSignals();
-#endif
 
   initFlags = 0;
 }

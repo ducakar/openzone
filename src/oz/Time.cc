@@ -43,17 +43,16 @@ namespace oz
 
 #ifdef _WIN32
 
-// This struct is used to initialise and Windows multimedia timer.
-struct MediaTimer
+// Ensure that multimedia timer is set to 1 ms resolution during static initialisation.
+static struct MediaTimerInitialiser
 {
   OZ_HIDDEN
-  MediaTimer()
+  MediaTimerInitialiser()
   {
     timeBeginPeriod( 1 );
   }
-};
-
-static MediaTimer mediaTimer;
+}
+mediaTimerInitialiser;
 
 #endif
 

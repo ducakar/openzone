@@ -62,29 +62,41 @@ struct TraceEntry
   StackTrace  stackTrace;
 };
 
-static bool                 isConstructed;      // = false
-static TraceEntry* volatile firstTraceEntry[2]; // = { nullptr, nullptr }
+static TraceEntry* volatile firstTraceEntry[2]     = { nullptr, nullptr };
 # if defined( __native_client__ )
-static pthread_mutex_t      traceEntryListLock;
+static pthread_mutex_t      traceLock;
 # elif defined( _WIN32 )
-static CRITICAL_SECTION     traceEntryListLock;
+static CRITICAL_SECTION     traceLock;
 # else
-static pthread_spinlock_t   traceEntryListLock;
+static pthread_spinlock_t   traceLock;
 # endif
+static bool                 isTraceLockInitialised = false;
+
+static void initTraceLock()
+{
+#if defined( __native_client__ )
+  pthread_mutex_init( &traceLock, nullptr );
+#elif defined( _WIN32 )
+  InitializeCriticalSection( &traceLock );
+#else
+  pthread_spin_init( &traceLock, PTHREAD_PROCESS_PRIVATE );
+#endif
+  isTraceLockInitialised = true;
+}
+
+// Ensure that initTraceLock is invoked during static initialisation.
+static struct TraceLockInitialiser
+{
+  OZ_HIDDEN
+  TraceLockInitialiser()
+  {
+    initTraceLock();
+  }
+}
+traceLockInitialiser;
 
 static void addTraceEntry( AllocMode mode, void* ptr, size_t size )
 {
-  if( !isConstructed ) {
-# if defined( __native_client__ )
-    pthread_mutex_init( &traceEntryListLock, nullptr );
-# elif defined( _WIN32 )
-    InitializeCriticalSection( &traceEntryListLock );
-# else
-    pthread_spin_init( &traceEntryListLock, PTHREAD_PROCESS_PRIVATE );
-# endif
-    isConstructed = true;
-  }
-
   TraceEntry* st = static_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
   if( st == nullptr ) {
     OZ_ERROR( "TraceEntry allocation failed" );
@@ -94,34 +106,42 @@ static void addTraceEntry( AllocMode mode, void* ptr, size_t size )
   st->size       = size;
   st->stackTrace = StackTrace::current( 1 );
 
+  if( !isTraceLockInitialised ) {
+    initTraceLock();
+  }
+
 # if defined( __native_client__ )
-  pthread_mutex_lock( &traceEntryListLock );
+  pthread_mutex_lock( &traceLock );
 # elif defined( _WIN32 )
-  EnterCriticalSection( &traceEntryListLock );
+  EnterCriticalSection( &traceLock );
 # else
-  pthread_spin_lock( &traceEntryListLock );
+  pthread_spin_lock( &traceLock );
 # endif
 
   st->next = firstTraceEntry[mode];
   firstTraceEntry[mode] = st;
 
 # if defined( __native_client__ )
-  pthread_mutex_unlock( &traceEntryListLock );
+  pthread_mutex_unlock( &traceLock );
 # elif defined( _WIN32 )
-  LeaveCriticalSection( &traceEntryListLock );
+  LeaveCriticalSection( &traceLock );
 # else
-  pthread_spin_unlock( &traceEntryListLock );
+  pthread_spin_unlock( &traceLock );
 # endif
 }
 
 static void removeTraceEntry( AllocMode mode, void* ptr )
 {
+  if( !isTraceLockInitialised ) {
+    initTraceLock();
+  }
+
 # if defined( __native_client__ )
-  pthread_mutex_lock( &traceEntryListLock );
+  pthread_mutex_lock( &traceLock );
 # elif defined( _WIN32 )
-  EnterCriticalSection( &traceEntryListLock );
+  EnterCriticalSection( &traceLock );
 # else
-  pthread_spin_lock( &traceEntryListLock );
+  pthread_spin_lock( &traceLock );
 # endif
 
   TraceEntry* st   = firstTraceEntry[mode];
@@ -137,11 +157,11 @@ static void removeTraceEntry( AllocMode mode, void* ptr )
       }
 
 # if defined( __native_client__ )
-      pthread_mutex_unlock( &traceEntryListLock );
+      pthread_mutex_unlock( &traceLock );
 # elif defined( _WIN32 )
-      LeaveCriticalSection( &traceEntryListLock );
+      LeaveCriticalSection( &traceLock );
 # else
-      pthread_spin_unlock( &traceEntryListLock );
+      pthread_spin_unlock( &traceLock );
 # endif
 
       goto backtraceFound;
@@ -151,11 +171,11 @@ static void removeTraceEntry( AllocMode mode, void* ptr )
   }
 
 # if defined( __native_client__ )
-  pthread_mutex_unlock( &traceEntryListLock );
+  pthread_mutex_unlock( &traceLock );
 # elif defined( _WIN32 )
-  LeaveCriticalSection( &traceEntryListLock );
+  LeaveCriticalSection( &traceLock );
 # else
-  pthread_spin_unlock( &traceEntryListLock );
+  pthread_spin_unlock( &traceLock );
 # endif
 
   // Check if allocated as a different kind (object/array)
@@ -246,14 +266,14 @@ static void deallocate( AllocMode mode, void* ptr )
 static_assert( ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
                "Alloc::ALIGNMENT must be a power of two" );
 
-int    Alloc::count;     // = 0
-size_t Alloc::amount;    // = 0
+int    Alloc::count     = 0;
+size_t Alloc::amount    = 0;
 
-int    Alloc::sumCount;  // = 0
-size_t Alloc::sumAmount; // = 0
+int    Alloc::sumCount  = 0;
+size_t Alloc::sumAmount = 0;
 
-int    Alloc::maxCount;  // = 0
-size_t Alloc::maxAmount; // = 0
+int    Alloc::maxCount  = 0;
+size_t Alloc::maxAmount = 0;
 
 void Alloc::printSummary()
 {
