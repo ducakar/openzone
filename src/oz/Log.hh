@@ -46,11 +46,6 @@ class Log
 {
   public:
 
-    /// Size of the buffer where final string is written to after printf pattern replacement is
-    /// performed. If it results in a string longer than `OUTPUT_BUFFER_SIZE` bytes, the rest
-    /// is dropped.
-    static const int OUT_BUFFER_SIZE = 4096;
-
     static bool showVerbose; ///< Do not suppress verbose messages on stdout. Off by default.
     static bool verboseMode; ///< While `verboseMode` is on log output is only written to log file
                              ///< unless `isVerbose` is also on. Off by default.

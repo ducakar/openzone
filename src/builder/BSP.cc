@@ -213,7 +213,7 @@ void BSP::load()
     is.reset();
     is.forward( lumps[QBSPLump::MODELS].offset );
 
-    const JSON& modelsConfig = config["models"];
+    const JSON& modelsConfig = config["entities"];
 
     if( !modelsConfig.isNull() && modelsConfig.type() != JSON::ARRAY ) {
       OZ_ERROR( "'models' entry in '%s' is not an array", configFile.path().cstr() );
@@ -223,7 +223,7 @@ void BSP::load()
     is.forward( int( sizeof( QBSPModel ) ) );
 
     for( int i = 0; i < models.length(); ++i ) {
-      const JSON& modelConfig = modelsConfig[i];
+      const JSON& entityConfig = modelsConfig[i];
 
       models[i].mins.x = is.readFloat() * scale - 4.0f * EPSILON;
       models[i].mins.y = is.readFloat() * scale - 4.0f * EPSILON;
@@ -241,53 +241,73 @@ void BSP::load()
       models[i].firstBrush = is.readInt();
       models[i].nBrushes   = is.readInt();
 
-      models[i].title = modelConfig["title"].get( "" );
+      models[i].title = entityConfig["title"].get( "" );
 
       models[i].move = Vec3::ZERO;
-      modelConfig["move"].get( models[i].move, 3 );
+      entityConfig["move"].get( models[i].move, 3 );
 
-      String sType = modelConfig["type"].get( "" );
+      String sType = entityConfig["type"].get( "" );
 
       if( sType.equals( "STATIC" ) ) {
-        models[i].type = matrix::Model::STATIC;
+        models[i].type = EntityClass::STATIC;
       }
       else if( sType.equals( "MANUAL_DOOR" ) ) {
-        models[i].type = matrix::Model::MANUAL_DOOR;
+        models[i].type = EntityClass::MANUAL_DOOR;
       }
       else if( sType.equals( "AUTO_DOOR" ) ) {
-        models[i].type = matrix::Model::AUTO_DOOR;
+        models[i].type = EntityClass::AUTO_DOOR;
       }
       else if( sType.equals( "IGNORING_BLOCK" ) ) {
-        models[i].type = matrix::Model::IGNORING_BLOCK;
+        models[i].type = EntityClass::IGNORING_BLOCK;
       }
       else if( sType.equals( "CRUSHING_BLOCK" ) ) {
-        models[i].type = matrix::Model::CRUSHING_BLOCK;
+        models[i].type = EntityClass::CRUSHING_BLOCK;
       }
       else if( sType.equals( "ELEVATOR" ) ) {
-        models[i].type = matrix::Model::ELEVATOR;
+        models[i].type = EntityClass::ELEVATOR;
       }
       else {
         OZ_ERROR( "Invalid BSP model type, must be either STATIC, MANUAL_DOOR, AUTO_DOOR,"
                   " IGNORING_BLOCK, CRUSHING_BLOCK or ELEVATOR." );
       }
 
-      if( models[i].type == matrix::Model::ELEVATOR &&
+      if( models[i].type == EntityClass::ELEVATOR &&
           ( models[i].move.x != 0.0f || models[i].move.y != 0.0f ) )
       {
-        OZ_ERROR( "Elevator can only move vertically, but model%02d.move = (%g %g %g)",
+        OZ_ERROR( "Elevator can only move vertically, but model[%d].move = (%g %g %g)",
                   i, models[i].move.x, models[i].move.y, models[i].move.z );
       }
 
-      models[i].margin     = modelConfig["margin"].get( DEFAULT_MARGIN );
-      models[i].timeout    = modelConfig["timeout"].get( 6.0f );
-      models[i].ratioInc   = Timer::TICK_TIME / modelConfig["slideTime"].get( 1.0f );
+      models[i].margin     = entityConfig["margin"].get( DEFAULT_MARGIN );
+      models[i].timeout    = entityConfig["timeout"].get( 6.0f );
+      models[i].ratioInc   = Timer::TICK_TIME / entityConfig["slideTime"].get( 1.0f );
 
-      models[i].target     = modelConfig["target"].get( -1 );
-      models[i].key        = modelConfig["key"].get( 0 );
+      models[i].target     = entityConfig["target"].get( -1 );
+      models[i].key        = entityConfig["key"].get( 0 );
 
-      models[i].openSound  = modelConfig["openSound"].get( "" );
-      models[i].closeSound = modelConfig["closeSound"].get( "" );
-      models[i].frictSound = modelConfig["frictSound"].get( "" );
+      models[i].openSound  = entityConfig["openSound"].get( "" );
+      models[i].closeSound = entityConfig["closeSound"].get( "" );
+      models[i].frictSound = entityConfig["frictSound"].get( "" );
+
+      const JSON& modelConfig = entityConfig["model"];
+
+      if( !modelConfig.isNull() ) {
+        models[i].modelName = modelConfig["name"].get( "" );
+        if( models[i].modelName.isEmpty() ) {
+          OZ_ERROR( "model[%d].name is empty", i );
+        }
+
+        Vec3 translation;
+        modelConfig["translation"].get( translation, 3 );
+
+        Vec3 rotation;
+        modelConfig["rotation"].get( rotation, 3 );
+
+        models[i].modelTransf = Mat44::translation( translation );
+        models[i].modelTransf.rotateY( Math::rad( rotation.y ) );
+        models[i].modelTransf.rotateX( Math::rad( rotation.x ) );
+        models[i].modelTransf.rotateZ( Math::rad( rotation.z ) );
+      }
     }
   }
 
@@ -982,23 +1002,26 @@ void BSP::saveMatrix()
 
   Log::print( "Dumping BSP structure to '%s' ...", destFile.path().cstr() );
 
-  List<String> sounds;
+  Set<String> usedModels;
+  Set<String> usedSounds;
 
-  if( !demolishSound.isEmpty() ) {
-    sounds.add( demolishSound );
-  }
   foreach( model, models.citer() ) {
+    if( !model->modelName.isEmpty() ) {
+      usedModels.include( model->modelName );
+    }
     if( !model->openSound.isEmpty() ) {
-      sounds.include( model->openSound );
+      usedSounds.include( model->openSound );
     }
     if( !model->closeSound.isEmpty() ) {
-      sounds.include( model->closeSound );
+      usedSounds.include( model->closeSound );
     }
     if( !model->frictSound.isEmpty() ) {
-      sounds.include( model->frictSound );
+      usedSounds.include( model->frictSound );
     }
   }
-  sounds.sort();
+  if( !demolishSound.isEmpty() ) {
+    usedSounds.include( demolishSound );
+  }
 
   BufferStream os;
 
@@ -1014,12 +1037,19 @@ void BSP::saveMatrix()
   os.writeString( fragPool );
   os.writeInt( nFrags );
 
-  os.writeInt( sounds.length() );
-  foreach( sound, sounds.citer() ) {
+  os.writeInt( usedModels.length() );
+  foreach( model, usedModels.citer() ) {
+    os.writeString( *model );
+  }
+  usedModels.clear();
+  usedModels.dealloc();
+
+  os.writeInt( usedSounds.length() );
+  foreach( sound, usedSounds.citer() ) {
     os.writeString( *sound );
   }
-  sounds.clear();
-  sounds.dealloc();
+  usedSounds.clear();
+  usedSounds.dealloc();
 
   os.writeString( demolishSound );
 
@@ -1086,6 +1116,11 @@ void BSP::saveMatrix()
     os.writeString( model->openSound );
     os.writeString( model->closeSound );
     os.writeString( model->frictSound );
+
+    context.usedModels.include( model->modelName );
+
+    os.writeString( model->modelName );
+    os.writeMat44( model->modelTransf );
   }
 
   foreach( boundObject, boundObjects.citer() ) {

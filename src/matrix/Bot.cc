@@ -114,7 +114,7 @@ bool Bot::trigger( const Entity* entity )
 {
   hard_assert( entity != nullptr );
 
-  if( entity->key >= 0 && entity->model->target >= 0 && canReach( entity ) ) {
+  if( entity->key >= 0 && entity->clazz->target >= 0 && canReach( entity ) ) {
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_TRIGGER;
     instrument = entity->str->index * Struct::MAX_ENTITIES + int( entity - entity->str->entities );

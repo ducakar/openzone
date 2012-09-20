@@ -198,7 +198,6 @@ class DChain
 
       while( original != nullptr ) {
         Elem* copy = new Elem( *original );
-        copy->prev[INDEX] = prevCopy;
 
         if( prevCopy == nullptr ) {
           clone.firstElem = copy;
@@ -206,6 +205,9 @@ class DChain
         else {
           prevCopy->next[INDEX] = copy;
         }
+        copy->prev[INDEX] = prevCopy;
+
+        original = original->next[INDEX];
         prevCopy = copy;
       }
       clone.lastElem = prevCopy;

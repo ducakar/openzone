@@ -4,7 +4,7 @@
 
   "demolishSound":      "free/explode",
 
-  "models":
+  "entities":
   [
     {
       "type":           "AUTO_DOOR",

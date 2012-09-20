@@ -75,16 +75,16 @@ Pool<Struct>  Struct::pool;
 
 void Entity::trigger()
 {
-  if( model->target < 0 || key < 0 ) {
+  if( clazz->target < 0 || key < 0 ) {
     return;
   }
 
-  if( model->type == Model::STATIC ) {
+  if( clazz->type == EntityClass::STATIC ) {
     state = OPENING;
   }
 
-  int strIndex = model->target / Struct::MAX_ENTITIES;
-  int entIndex = model->target % Struct::MAX_ENTITIES;
+  int strIndex = clazz->target / Struct::MAX_ENTITIES;
+  int entIndex = clazz->target % Struct::MAX_ENTITIES;
 
   Struct* targetStr = orbis.structs[strIndex];
 
@@ -94,12 +94,12 @@ void Entity::trigger()
     if( target.state == OPENED || target.state == OPENING ) {
       target.state = CLOSING;
       target.time = 0.0f;
-      target.velocity = -target.model->move * target.model->ratioInc / Timer::TICK_TIME;
+      target.velocity = -target.clazz->move * target.clazz->ratioInc / Timer::TICK_TIME;
     }
     else {
       target.state = OPENING;
       target.time = 0.0f;
-      target.velocity = target.model->move * target.model->ratioInc / Timer::TICK_TIME;
+      target.velocity = target.clazz->move * target.clazz->ratioInc / Timer::TICK_TIME;
     }
   }
 }
@@ -139,8 +139,8 @@ void Entity::manualDoorHandler()
       return;
     }
     case OPENING: {
-      ratio = min( ratio + model->ratioInc, 1.0f );
-      offset = ratio * model->move;
+      ratio  = min( ratio + clazz->ratioInc, 1.0f );
+      offset = ratio * clazz->move;
 
       if( ratio == 1.0f ) {
         state = OPENED;
@@ -156,7 +156,7 @@ void Entity::manualDoorHandler()
       offset = Vec3::ZERO;
 
       if( collider.overlaps( this ) ) {
-        offset = ratio * model->move;
+        offset = ratio * clazz->move;
 
         if( ratio == 1.0f ) {
           state = OPENED;
@@ -165,13 +165,13 @@ void Entity::manualDoorHandler()
         else {
           state = OPENING;
           time = 0.0f;
-          velocity = model->move * model->ratioInc / Timer::TICK_TIME;
+          velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
         }
         return;
       }
 
-      ratio = max( ratio - model->ratioInc, 0.0f );
-      offset = ratio * model->move;
+      ratio  = max( ratio - clazz->ratioInc, 0.0f );
+      offset = ratio * clazz->move;
 
       if( ratio == 0.0f ) {
         state = CLOSED;
@@ -193,16 +193,16 @@ void Entity::autoDoorHandler()
         return;
       }
 
-      if( collider.overlaps( this, model->margin ) ) {
+      if( collider.overlaps( this, clazz->margin ) ) {
         state = OPENING;
         time = 0.0f;
-        velocity = model->move * model->ratioInc / Timer::TICK_TIME;
+        velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
       }
       return;
     }
     case OPENING: {
-      ratio = min( ratio + model->ratioInc, 1.0f );
-      offset = ratio * model->move;
+      ratio  = min( ratio + clazz->ratioInc, 1.0f );
+      offset = ratio * clazz->move;
 
       if( ratio == 1.0f ) {
         state = OPENED;
@@ -212,25 +212,25 @@ void Entity::autoDoorHandler()
       return;
     }
     case OPENED: {
-      if( time >= model->timeout ) {
+      if( time >= clazz->timeout ) {
         time = 0.0f;
 
         offset = Vec3::ZERO;
 
-        if( !collider.overlaps( this, model->margin ) ) {
+        if( !collider.overlaps( this, clazz->margin ) ) {
           state = CLOSING;
-          velocity = -model->move * model->ratioInc / Timer::TICK_TIME;
+          velocity = -clazz->move * clazz->ratioInc / Timer::TICK_TIME;
         }
 
-        offset = model->move;
+        offset = clazz->move;
       }
       return;
     }
     case CLOSING: {
       offset = Vec3::ZERO;
 
-      if( collider.overlaps( this, model->margin ) ) {
-        offset = ratio * model->move;
+      if( collider.overlaps( this, clazz->margin ) ) {
+        offset = ratio * clazz->move;
 
         if( ratio == 1.0f ) {
           state = OPENED;
@@ -239,13 +239,13 @@ void Entity::autoDoorHandler()
         else {
           state = OPENING;
           time = 0.0f;
-          velocity = model->move * model->ratioInc / Timer::TICK_TIME;
+          velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
         }
         return;
       }
 
-      ratio = max( ratio - model->ratioInc, 0.0f );
-      offset = ratio * model->move;
+      ratio  = max( ratio - clazz->ratioInc, 0.0f );
+      offset = ratio * clazz->move;
 
       if( ratio == 0.0f ) {
         state = CLOSED;
@@ -263,16 +263,16 @@ void Entity::ignoringBlockHandler()
 
   switch( state ) {
     case CLOSED: {
-      if( time >= model->timeout ) {
+      if( time >= clazz->timeout ) {
         state = OPENING;
         time = 0.0f;
-        velocity = model->move * model->ratioInc / Timer::TICK_TIME;
+        velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
       }
       return;
     }
     case OPENING: {
-      ratio = min( ratio + model->ratioInc, 1.0f );
-      offset = ratio * model->move;
+      ratio  = min( ratio + clazz->ratioInc, 1.0f );
+      offset = ratio * clazz->move;
 
       if( ratio == 1.0f ) {
         state = OPENED;
@@ -282,16 +282,16 @@ void Entity::ignoringBlockHandler()
       return;
     }
     case OPENED: {
-      if( time >= model->timeout ) {
+      if( time >= clazz->timeout ) {
         state = CLOSING;
         time = 0.0f;
-        velocity = -model->move * model->ratioInc / Timer::TICK_TIME;
+        velocity = -clazz->move * clazz->ratioInc / Timer::TICK_TIME;
       }
       return;
     }
     case CLOSING: {
-      ratio = max( ratio - model->ratioInc, 0.0f );
-      offset = ratio * model->move;
+      ratio  = max( ratio - clazz->ratioInc, 0.0f );
+      offset = ratio * clazz->move;
 
       if( ratio == 0.0f ) {
         state = CLOSED;
@@ -309,24 +309,24 @@ void Entity::crushingBlockHandler()
 
   switch( state ) {
     case CLOSED: {
-      if( time >= model->timeout ) {
+      if( time >= clazz->timeout ) {
         state = OPENING;
         time = 0.0f;
-        velocity = model->move * model->ratioInc / Timer::TICK_TIME;
+        velocity = clazz->move * clazz->ratioInc / Timer::TICK_TIME;
       }
       return;
     }
     case OPENING: {
       Vec3 move = offset;
 
-      ratio = min( ratio + model->ratioInc, 1.0f );
-      offset = ratio * model->move;
+      ratio  = min( ratio + clazz->ratioInc, 1.0f );
+      offset = ratio * clazz->move;
 
       Struct::overlappingObjs.clear();
       collider.getOverlaps( this, &Struct::overlappingObjs );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
-        move = offset - move + 4.0f*EPSILON * ~model->move;
+        move = offset - move + 4.0f*EPSILON * ~clazz->move;
         move = str->toAbsoluteCS( move );
 
         for( int i = 0; i < Struct::overlappingObjs.length(); ++i ) {
@@ -362,24 +362,24 @@ void Entity::crushingBlockHandler()
       return;
     }
     case OPENED: {
-      if( time >= model->timeout ) {
+      if( time >= clazz->timeout ) {
         state = CLOSING;
         time = 0.0f;
-        velocity = -model->move * model->ratioInc / Timer::TICK_TIME;
+        velocity = -clazz->move * clazz->ratioInc / Timer::TICK_TIME;
       }
       return;
     }
     case CLOSING: {
       Vec3 move = offset;
 
-      ratio = max( ratio - model->ratioInc, 0.0f );
-      offset = ratio * model->move;
+      ratio  = max( ratio - clazz->ratioInc, 0.0f );
+      offset = ratio * clazz->move;
 
       Struct::overlappingObjs.clear();
       collider.getOverlaps( this, &Struct::overlappingObjs );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
-        move = offset - move - 4.0f*EPSILON * ~model->move;
+        move = offset - move - 4.0f*EPSILON * ~clazz->move;
         move = str->toAbsoluteCS( move );
 
         for( int i = 0; i < Struct::overlappingObjs.length(); ++i ) {
@@ -431,14 +431,14 @@ void Entity::elevatorHandler()
 
       Vec3 move = offset;
 
-      ratio = min( ratio + model->ratioInc, 1.0f );
-      offset = ratio * model->move;
+      ratio  = min( ratio + clazz->ratioInc, 1.0f );
+      offset = ratio * clazz->move;
 
       Struct::overlappingObjs.clear();
       collider.getOverlaps( this, &Struct::overlappingObjs );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
-        move = offset - move + EPSILON * ~model->move;
+        move = offset - move + EPSILON * ~clazz->move;
         move = str->toAbsoluteCS( move );
 
         for( int i = 0; i < Struct::overlappingObjs.length(); ++i ) {
@@ -480,14 +480,14 @@ void Entity::elevatorHandler()
 
       Vec3 move = offset;
 
-      ratio = max( ratio - model->ratioInc, 0.0f );
-      offset = ratio * model->move;
+      ratio  = max( ratio - clazz->ratioInc, 0.0f );
+      offset = ratio * clazz->move;
 
       Struct::overlappingObjs.clear();
       collider.getOverlaps( this, &Struct::overlappingObjs );
 
       if( !Struct::overlappingObjs.isEmpty() ) {
-        move = offset - move - EPSILON * ~model->move;
+        move = offset - move - EPSILON * ~clazz->move;
         move = str->toAbsoluteCS( move );
 
         for( int i = 0; i < Struct::overlappingObjs.length(); ++i ) {
@@ -579,7 +579,7 @@ void Struct::onUpdate()
 
       hard_assert( 0.0f <= entity.ratio && entity.ratio <= 1.0f );
 
-      ( entity.*Entity::HANDLERS[entity.model->type] )();
+      ( entity.*Entity::HANDLERS[entity.clazz->type] )();
     }
   }
 }
@@ -694,16 +694,16 @@ Struct::Struct( const BSP* bsp_, int index_, const Point& p_, Heading heading_ )
   mins        = bb.mins;
   maxs        = bb.maxs;
 
-  if( bsp->nModels != 0 ) {
-    entities.resize( bsp->nModels );
+  if( bsp->nEntities != 0 ) {
+    entities.resize( bsp->nEntities );
 
     for( int i = 0; i < entities.length(); ++i ) {
       Entity& entity = entities[i];
 
-      entity.model    = &bsp->models[i];
+      entity.clazz    = &bsp->entities[i];
       entity.str      = this;
       entity.offset   = Vec3::ZERO;
-      entity.key      = bsp->models[i].key;
+      entity.key      = bsp->entities[i].key;
       entity.state    = Entity::CLOSED;
       entity.ratio    = 0.0f;
       entity.time     = 0.0f;
@@ -730,14 +730,14 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
   resistance  = bsp->resistance;
   demolishing = istream->readFloat();
 
-  if( bsp->nModels != 0 ) {
-    entities.resize( bsp->nModels );
+  if( bsp->nEntities != 0 ) {
+    entities.resize( bsp->nEntities );
 
     for( int i = 0; i < entities.length(); ++i ) {
       Entity& entity = entities[i];
 
       entity.offset = istream->readVec3();
-      entity.model  = &bsp->models[i];
+      entity.clazz  = &bsp->entities[i];
       entity.str    = this;
       entity.key    = istream->readInt();
       entity.state  = Entity::State( istream->readInt() );
@@ -745,10 +745,10 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
       entity.time   = istream->readFloat();
 
       if( entity.state == Entity::OPENING ) {
-        entity.velocity = +entity.model->move * entity.model->ratioInc / Timer::TICK_TIME;
+        entity.velocity = +entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
       }
       else if( entity.state == Entity::CLOSING ) {
-        entity.velocity = -entity.model->move * entity.model->ratioInc / Timer::TICK_TIME;
+        entity.velocity = -entity.clazz->move * entity.clazz->ratioInc / Timer::TICK_TIME;
       }
       else {
         entity.velocity = Vec3::ZERO;

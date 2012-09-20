@@ -871,7 +871,7 @@ static int ozEntSetState( lua_State* l )
     ms.ent->ratio  = 0.0f;
   }
   else if( state == Entity::OPENED ) {
-    ms.ent->offset = ms.ent->model->move;
+    ms.ent->offset = ms.ent->clazz->move;
     ms.ent->state  = Entity::OPENED;
     ms.ent->ratio  = 1.0f;
   }
@@ -967,7 +967,7 @@ static int ozEntVectorFromSelf( lua_State* l )
   ENT();
   SELF();
 
-  Point p   = ms.str->toAbsoluteCS( ms.ent->model->p() + ms.ent->offset );
+  Point p   = ms.str->toAbsoluteCS( ms.ent->clazz->p() + ms.ent->offset );
   Vec3  vec = p - ms.self->p;
 
   l_pushfloat( vec.x );
@@ -983,7 +983,7 @@ static int ozEntVectorFromSelfEye( lua_State* l )
   ENT();
   SELF_BOT();
 
-  Point p   = ms.str->toAbsoluteCS( ms.ent->model->p() + ms.ent->offset );
+  Point p   = ms.str->toAbsoluteCS( ms.ent->clazz->p() + ms.ent->offset );
   Point eye = Point( self->p.x, self->p.y, self->p.z + self->camZ );
   Vec3  vec = p - eye;
 
@@ -1000,7 +1000,7 @@ static int ozEntDirFromSelf( lua_State* l )
   ENT();
   SELF();
 
-  Point p   = ms.str->toAbsoluteCS( ms.ent->model->p() + ms.ent->offset );
+  Point p   = ms.str->toAbsoluteCS( ms.ent->clazz->p() + ms.ent->offset );
   Vec3  dir = ~( p - ms.self->p );
 
   l_pushfloat( dir.x );
@@ -1016,7 +1016,7 @@ static int ozEntDirFromSelfEye( lua_State* l )
   ENT();
   SELF_BOT();
 
-  Point p   = ms.str->toAbsoluteCS( ms.ent->model->p() + ms.ent->offset );
+  Point p   = ms.str->toAbsoluteCS( ms.ent->clazz->p() + ms.ent->offset );
   Point eye = Point( self->p.x, self->p.y, self->p.z + self->camZ );
   Vec3  dir = ~( p - eye );
 
@@ -1033,7 +1033,7 @@ static int ozEntDistFromSelf( lua_State* l )
   ENT();
   SELF();
 
-  Point p = ms.str->toAbsoluteCS( ms.ent->model->p() + ms.ent->offset );
+  Point p = ms.str->toAbsoluteCS( ms.ent->clazz->p() + ms.ent->offset );
 
   l_pushfloat( !( p - ms.self->p ) );
   return 1;
@@ -1046,7 +1046,7 @@ static int ozEntDistFromSelfEye( lua_State* l )
   ENT();
   SELF_BOT();
 
-  Point p   = ms.str->toAbsoluteCS( ms.ent->model->p() + ms.ent->offset );
+  Point p   = ms.str->toAbsoluteCS( ms.ent->clazz->p() + ms.ent->offset );
   Point eye = Point( self->p.x, self->p.y, self->p.z + self->camZ );
 
   l_pushfloat( !( p - eye ) );
@@ -1060,7 +1060,7 @@ static int ozEntHeadingFromSelfEye( lua_State* l )
   ENT();
   SELF_BOT();
 
-  Point p     = ms.str->toAbsoluteCS( ms.ent->model->p() + ms.ent->offset );
+  Point p     = ms.str->toAbsoluteCS( ms.ent->clazz->p() + ms.ent->offset );
   float dx    = p.x - self->p.x;
   float dy    = p.y - self->p.y;
   float angle = Math::deg( angleWrap( Math::atan2( -dx, dy ) ) );
@@ -1076,7 +1076,7 @@ static int ozEntRelHeadingFromSelfEye( lua_State* l )
   ENT();
   SELF_BOT();
 
-  Point p     = ms.str->toAbsoluteCS( ms.ent->model->p() + ms.ent->offset );
+  Point p     = ms.str->toAbsoluteCS( ms.ent->clazz->p() + ms.ent->offset );
   float dx    = p.x - self->p.x;
   float dy    = p.y - self->p.y;
   float angle = Math::deg( angleDiff( Math::atan2( -dx, dy ), self->h ) );
@@ -1092,7 +1092,7 @@ static int ozEntPitchFromSelfEye( lua_State* l )
   ENT();
   SELF_BOT();
 
-  Point p     = ms.str->toAbsoluteCS( ms.ent->model->p() + ms.ent->offset );
+  Point p     = ms.str->toAbsoluteCS( ms.ent->clazz->p() + ms.ent->offset );
   Point eye   = Point( self->p.x, self->p.y, self->p.z + self->camZ );
   float dx    = p.x - eye.x;
   float dy    = p.y - eye.y;
@@ -1110,7 +1110,7 @@ static int ozEntIsVisibleFromSelf( lua_State* l )
   ENT();
   SELF();
 
-  Point p   = ms.str->toAbsoluteCS( ms.ent->model->p() + ms.ent->offset );
+  Point p   = ms.str->toAbsoluteCS( ms.ent->clazz->p() + ms.ent->offset );
   Vec3  vec = p - ms.self->p;
 
   collider.translate( ms.self->p, vec, ms.self );
@@ -1126,7 +1126,7 @@ static int ozEntIsVisibleFromSelfEye( lua_State* l )
   ENT();
   SELF_BOT();
 
-  Point p   = ms.str->toAbsoluteCS( ms.ent->model->p() + ms.ent->offset );
+  Point p   = ms.str->toAbsoluteCS( ms.ent->clazz->p() + ms.ent->offset );
   Point eye = Point( self->p.x, self->p.y, self->p.z + self->camZ );
   Vec3  vec = p - eye;
 

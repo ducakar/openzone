@@ -106,7 +106,7 @@ void SelectionArea::drawHoveredRect( const Span& span, const Struct* str, const 
       int entIndex = str->index * Struct::MAX_ENTITIES + int( ent - str->entities );
 
       if( entIndex != cachedEntityIndex ) {
-        const String& title = ent->model->title;
+        const String& title = ent->clazz->title;
 
         cachedStructIndex = -1;
         cachedEntityIndex = entIndex;
@@ -348,7 +348,7 @@ void SelectionArea::onDraw()
   else if( ent != nullptr ) {
     str = ent->str;
 
-    if( projectBounds( &span, str->toAbsoluteCS( *ent->model + ent->offset ).toAABB() ) ) {
+    if( projectBounds( &span, str->toAbsoluteCS( *ent->clazz + ent->offset ).toAABB() ) ) {
       drawHoveredRect( span, str, ent, nullptr );
     }
   }

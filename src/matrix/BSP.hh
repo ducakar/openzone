@@ -35,7 +35,7 @@ class BSP;
 /**
  * %BSP model (doors, lifts etc.).
  */
-struct Model : Bounds
+struct EntityClass : Bounds
 {
   enum Type
   {
@@ -47,28 +47,31 @@ struct Model : Bounds
     ELEVATOR
   };
 
-  String title;      ///< Model title.
+  String title;       ///< %Entity itle.
 
-  Vec3   move;       ///< Move vector (destination - original position), in %BSP
-                     ///< coordinate system.
+  Vec3   move;        ///< Move vector (destination - original position), in %BSP
+                      ///< coordinate system.
 
-  BSP*   bsp;        ///< Pointer to the parent %BSP.
+  BSP*   bsp;         ///< Pointer to the parent %BSP.
 
-  int    firstBrush; ///< Index of the first brush in `brushes` array.
-  int    nBrushes;   ///< Number of brushes.
+  int    firstBrush;  ///< Index of the first brush in `brushes` array.
+  int    nBrushes;    ///< Number of brushes.
 
-  Type   type;       ///< Model type.
-  float  margin;     ///< Margin around entity inside which triggers door opening.
-  float  timeout;    ///< Timeout after which entity starts opening/closing.
-  float  ratioInc;   ///< Step in ratio for each frame.
+  Type   type;        ///< %Entity type.
+  float  margin;      ///< Margin around entity inside which triggers door opening.
+  float  timeout;     ///< Timeout after which entity starts opening/closing.
+  float  ratioInc;    ///< Step in ratio for each frame.
 
-  int    target;     ///< Target model index for triggers, -1 otherwise.
-  int    key;        ///< Default key code or 0 if door is unlocked by default.
+  int    target;      ///< Target model index for triggers, -1 otherwise.
+  int    key;         ///< Default key code or 0 if door is unlocked by default.
 
-  int    openSound;  ///< Open sound sample, played when an entity starts moving or - for static
-                     ///< entities - when activated (as a trigger not as a target).
-  int    closeSound; ///< Close sound sample, played when an entity stops moving.
-  int    frictSound; ///< Friction sound sample, played while the entity is moving.
+  int    openSound;   ///< Open sound sample, played when an entity starts moving or - for static
+                      ///< entities - when activated (as a trigger not as a target).
+  int    closeSound;  ///< Close sound sample, played when an entity stops moving.
+  int    frictSound;  ///< Friction sound sample, played while the entity is moving.
+
+  int    model;       ///< SMM model index, -1 if none.
+  Mat44  modelTransf; ///< Model transformation.
 };
 
 /**
@@ -122,7 +125,7 @@ class BSP : public Bounds
     int             nNodes;
     int             nLeaves;
     int             nLeafBrushes;
-    int             nModels;
+    int             nEntities;
     int             nBrushes;
     int             nBrushSides;
     int             nBoundObjects;
@@ -131,7 +134,7 @@ class BSP : public Bounds
     Node*           nodes;
     Leaf*           leaves;
     int*            leafBrushes;
-    Model*          models;
+    EntityClass*    entities;
     Brush*          brushes;
     int*            brushSides;
     BoundObject*    boundObjects;
@@ -146,6 +149,7 @@ class BSP : public Bounds
     const FragPool* fragPool;
     int             nFrags;
 
+    DArray<int>     models;        ///< Set of used entity models.
     DArray<int>     sounds;        ///< Set of used sound samples.
     int             demolishSound;
 

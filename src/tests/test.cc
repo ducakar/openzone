@@ -23,27 +23,19 @@
 
 #include <oz/oz.hh>
 
-#include <clocale>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <cwchar>
-#include <vector>
-
 using namespace oz;
 
 class Foo
 {
   public:
 
-    int value;
+    int  value;
     Foo* next[1];
     Foo* prev[1];
 
     Foo() :
       value( 0 )
     {
-      hard_assert( false );
       Log::out << "Foo()\n";
     }
 
@@ -116,8 +108,65 @@ class Foo
 
 };
 
+struct Elem
+{
+  int   value;
+  Elem* next[1];
+};
+
+Elem* copy( Elem* list )
+{
+  if( list == nullptr ) {
+    return nullptr;
+  }
+  else {
+    return new Elem{ list->value, { copy( list->next[0] ) } };
+  }
+}
+
+Elem* reverse( Elem* list, Elem* reversed = nullptr )
+{
+  if( list == nullptr ) {
+    return reversed;
+  }
+  else {
+    return reverse( list->next[0], { new Elem{ list->value, { reversed } } } );
+  }
+}
+
+// template <class Container>
+// inline auto begin( const Container& c ) -> decltype( c.citer().begin() )
+// {
+//   return c.citer().begin();
+// }
+//
+// template <class Container>
+// inline auto begin( Container& c ) -> decltype( c.iter().begin() )
+// {
+//   return c.iter().begin();
+// }
+//
+// template <class Container>
+// inline auto end( const Container& c ) -> decltype( c.citer().end() )
+// {
+//   return c.citer().end();
+// }
+//
+// template <class Container>
+// inline auto end( Container& c ) -> decltype( c.iter().end() )
+// {
+//   return c.iter().end();
+// }
+
 int main()
 {
   System::init();
+
+  Map<int> m;
+  m.add( 1 );
+  m.add( 2 );
+
+  1 < m[1];
+
   return 0;
 }

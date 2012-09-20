@@ -17,7 +17,7 @@
       "heading":        "NORTH"
     }
   ],
-  "models":
+  "entities":
   [
     {
       "title":          "crusher",
@@ -37,7 +37,13 @@
       "timeout":        4.0,
       "openSound":      "free/rumble",
       "closeSound":     "free/rumble",
-      "frictSound":     "kaiser_fx/hum6"
+      "frictSound":     "kaiser_fx/hum6",
+      "model":
+      {
+        "name":         "biotank",
+        "translation":  [ 0, 0, 0 ],
+        "rotation":     [ 0, 0, 0 ]
+      }
     },
     {
       "title":          "auto door",

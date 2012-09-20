@@ -4,8 +4,8 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = liboz
-PROJECT_NUMBER         = 0.3.80
+PROJECT_NAME           = "liboz"
+PROJECT_NUMBER         = "0.3.80"
 PROJECT_BRIEF          = "OpenZone core library"
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = doc/doxygen.liboz

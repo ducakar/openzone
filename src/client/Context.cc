@@ -655,21 +655,6 @@ void Context::updateLoad()
 
 void Context::load()
 {
-  for( int i = 0; i < liber.textures.length(); ++i ) {
-    hard_assert( textures[i].nUsers == -1 );
-  }
-  for( int i = 0; i < liber.sounds.length(); ++i ) {
-    hard_assert( sounds[i].nUsers == -1 );
-  }
-  for( int i = 0; i < liber.nBSPs; ++i ) {
-    hard_assert( bsps[i].nUsers == -1 );
-  }
-  for( int i = 0; i < liber.models.length(); ++i ) {
-    hard_assert( smms[i].nUsers == -1 );
-    hard_assert( md2s[i].nUsers == -1 );
-    hard_assert( md3s[i].nUsers == -1 );
-  }
-
   speakSource.owner = -1;
   alGenBuffers( 2, speakSource.bufferIds );
   alGenSources( 1, &speakSource.id );
@@ -761,17 +746,14 @@ void Context::unload()
   }
   for( int i = 0; i < liber.models.length(); ++i ) {
     delete smms[i].object;
-
     smms[i].object = nullptr;
     smms[i].nUsers = -1;
 
     delete md2s[i].object;
-
     md2s[i].object = nullptr;
     md2s[i].nUsers = -1;
 
     delete md3s[i].object;
-
     md3s[i].object = nullptr;
     md3s[i].nUsers = -1;
   }

@@ -65,6 +65,12 @@ void BSP::load()
   // nFrags
   is.readInt();
 
+  // models
+  int nModels = is.readInt();
+  for( int i = 0; i < nModels; ++i ) {
+    is.readString();
+  }
+
   // sound samples
   int nSounds = is.readInt();
   for( int i = 0; i < nSounds; ++i ) {
@@ -79,7 +85,7 @@ void BSP::load()
   nLeafBrushes  = is.readInt();
   nBrushes      = is.readInt();
   nBrushSides   = is.readInt();
-  nModels       = is.readInt();
+  nEntities     = is.readInt();
   nBoundObjects = is.readInt();
 
   size_t size = 0;
@@ -96,7 +102,7 @@ void BSP::load()
   size  = Alloc::alignUp( size );
   size += size_t( nBrushSides )   * sizeof( brushSides[0] );
   size  = Alloc::alignUp( size );
-  size += size_t( nModels )       * sizeof( models[0] );
+  size += size_t( nEntities )     * sizeof( entities[0] );
   size  = Alloc::alignUp( size );
   size += size_t( nBoundObjects ) * sizeof( boundObjects[0] );
 
@@ -161,35 +167,40 @@ void BSP::load()
 
   data = Alloc::alignUp( data );
 
-  models = new( data ) Model[nModels];
-  for( int i = 0; i < nModels; ++i ) {
-    models[i].mins        = is.readPoint();
-    models[i].maxs        = is.readPoint();
+  entities = new( data ) EntityClass[nEntities];
+  for( int i = 0; i < nEntities; ++i ) {
+    entities[i].mins        = is.readPoint();
+    entities[i].maxs        = is.readPoint();
 
-    models[i].title       = lingua.get( is.readString() );
-    models[i].bsp         = this;
-    models[i].move        = is.readVec3();
+    entities[i].title       = lingua.get( is.readString() );
+    entities[i].bsp         = this;
+    entities[i].move        = is.readVec3();
 
-    models[i].firstBrush  = is.readInt();
-    models[i].nBrushes    = is.readInt();
+    entities[i].firstBrush  = is.readInt();
+    entities[i].nBrushes    = is.readInt();
 
-    models[i].type        = Model::Type( is.readInt() );
-    models[i].margin      = is.readFloat();
-    models[i].timeout     = is.readFloat();
-    models[i].ratioInc    = is.readFloat();
+    entities[i].type        = EntityClass::Type( is.readInt() );
+    entities[i].margin      = is.readFloat();
+    entities[i].timeout     = is.readFloat();
+    entities[i].ratioInc    = is.readFloat();
 
-    models[i].target      = is.readInt();
-    models[i].key         = is.readInt();
+    entities[i].target      = is.readInt();
+    entities[i].key         = is.readInt();
 
-    String sOpenSound     = is.readString();
-    String sCloseSound    = is.readString();
-    String sFrictSound    = is.readString();
+    String sOpenSound       = is.readString();
+    String sCloseSound      = is.readString();
+    String sFrictSound      = is.readString();
 
-    models[i].openSound   = sOpenSound.isEmpty()  ? -1 : liber.soundIndex( sOpenSound );
-    models[i].closeSound  = sCloseSound.isEmpty() ? -1 : liber.soundIndex( sCloseSound );
-    models[i].frictSound  = sFrictSound.isEmpty() ? -1 : liber.soundIndex( sFrictSound );
+    entities[i].openSound   = sOpenSound.isEmpty()  ? -1 : liber.soundIndex( sOpenSound );
+    entities[i].closeSound  = sCloseSound.isEmpty() ? -1 : liber.soundIndex( sCloseSound );
+    entities[i].frictSound  = sFrictSound.isEmpty() ? -1 : liber.soundIndex( sFrictSound );
+
+    String sModel           = is.readString();
+
+    entities[i].model       = sModel.isEmpty() ? -1 : liber.modelIndex( sModel );
+    entities[i].modelTransf = is.readMat44();
   }
-  data += nModels * int( sizeof( models[0] ) );
+  data += nEntities * int( sizeof( entities[0] ) );
 
   data = Alloc::alignUp( data );
 
@@ -220,7 +231,7 @@ void BSP::unload()
     nLeafBrushes  = 0;
     nBrushes      = 0;
     nBrushSides   = 0;
-    nModels       = 0;
+    nEntities     = 0;
     nBoundObjects = 0;
 
     planes        = nullptr;
@@ -229,7 +240,7 @@ void BSP::unload()
     leafBrushes   = nullptr;
     brushes       = nullptr;
     brushSides    = nullptr;
-    models        = nullptr;
+    entities      = nullptr;
     boundObjects  = nullptr;
 
     Log::printEnd( " OK" );
@@ -254,7 +265,7 @@ void BSP::init( const char* name_, int id_ )
   nLeafBrushes  = 0;
   nBrushes      = 0;
   nBrushSides   = 0;
-  nModels       = 0;
+  nEntities     = 0;
   nBoundObjects = 0;
 
   planes        = nullptr;
@@ -263,7 +274,7 @@ void BSP::init( const char* name_, int id_ )
   leafBrushes   = nullptr;
   brushes       = nullptr;
   brushSides    = nullptr;
-  models        = nullptr;
+  entities      = nullptr;
   boundObjects  = nullptr;
 
   name          = name_;
@@ -276,6 +287,11 @@ void BSP::init( const char* name_, int id_ )
   String sFragPool = is.readString();
   fragPool = sFragPool.isEmpty() ? nullptr : liber.fragPool( sFragPool );
   nFrags   = is.readInt();
+
+  models.resize( is.readInt() );
+  for( int i = 0; i < models.length(); ++i ) {
+    models[i] = liber.modelIndex( is.readString() );
+  }
 
   sounds.resize( is.readInt() );
   for( int i = 0; i < sounds.length(); ++i ) {

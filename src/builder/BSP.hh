@@ -52,7 +52,7 @@ class BSP : public Bounds
     static const float GLASS_ALPHA;
     static const float GLASS_SPECULAR;
 
-    /// Quake
+    // Quake
     static const int   QBSP_SLICK_FLAG_BIT    = 0x00000002;
     static const int   QBSP_LADDER_FLAG_BIT   = 0x00000008;
     static const int   QBSP_NONSOLID_FLAG_BIT = 0x00004000;
@@ -67,7 +67,7 @@ class BSP : public Bounds
     static const int   QBSP_LIGHTMAP_SIZE     = QBSP_LIGHTMAP_DIM * QBSP_LIGHTMAP_DIM *
                                                 QBSP_LIGHTMAP_BPP;
 
-    /// Data structure for Quake 3 BSP lump entry.
+    // Data structure for Quake 3 BSP lump entry.
     struct QBSPLump
     {
       enum Lumps
@@ -96,7 +96,7 @@ class BSP : public Bounds
       int length;
     };
 
-    /// Data structure for Quake 3 BSP texture entry.
+    // Data structure for Quake 3 BSP texture entry.
     struct QBSPTexture
     {
       char name[64];
@@ -104,14 +104,14 @@ class BSP : public Bounds
       int  type;
     };
 
-    /// Data structure for Quake 3 BSP plane entry.
+    // Data structure for Quake 3 BSP plane entry.
     struct QBSPPlane
     {
       float normal[3];
       float distance;
     };
 
-    /// Data structure for Quake 3 BSP node entry.
+    // Data structure for Quake 3 BSP node entry.
     struct QBSPNode
     {
       int plane;
@@ -122,7 +122,7 @@ class BSP : public Bounds
       int bb[2][3];
     };
 
-    /// Data structure for Quake 3 BSP leaf (node) entry.
+    // Data structure for Quake 3 BSP leaf (node) entry.
     struct QBSPLeaf
     {
       int cluster;
@@ -137,19 +137,19 @@ class BSP : public Bounds
       int nBrushes;
     };
 
-    /// Data structure for Quake 3 BSP model entry.
+    // Data structure for Quake 3 BSP model entry.
     struct QBSPModel
     {
       float bb[2][3];
 
-      int firstFace;
-      int nFaces;
+      int   firstFace;
+      int   nFaces;
 
-      int firstBrush;
-      int nBrushes;
+      int   firstBrush;
+      int   nBrushes;
     };
 
-    /// Data structure for Quake 3 BSP brush entry.
+    // Data structure for Quake 3 BSP brush entry.
     struct QBSPBrush
     {
       int firstSide;
@@ -157,14 +157,14 @@ class BSP : public Bounds
       int texture;
     };
 
-    /// Data structure for Quake 3 BSP bush side entry.
+    // Data structure for Quake 3 BSP bush side entry.
     struct QBSPBrushSide
     {
       int plane;
       int texture;
     };
 
-    /// Vertex in Quake 3 BSP.
+    // Vertex in Quake 3 BSP.
     struct QBSPVertex
     {
       float p[3];
@@ -174,7 +174,7 @@ class BSP : public Bounds
       char  colour[4];
     };
 
-    /// Face in Quake 3 BSP.
+    // Face in Quake 3 BSP.
     struct QBSPFace
     {
       int   texture;
@@ -199,7 +199,7 @@ class BSP : public Bounds
       int   size[2];
     };
 
-    /// Temporary structure for textures.
+    // Temporary structure for textures.
     struct Texture
     {
       String name;
@@ -207,14 +207,14 @@ class BSP : public Bounds
       int    type;
     };
 
-    /// Temporary structure to hold per-model face indices.
+    // Temporary structure to hold per-model face indices.
     struct ModelFaces
     {
       int firstFace;
       int nFaces;
     };
 
-    /// Temporary structure for face.
+    // Temporary structure for face.
     struct Face
     {
       int  texture;
@@ -228,33 +228,36 @@ class BSP : public Bounds
       Vec3 normal;
     };
 
-    /// Temporary structure for model.
+    // Temporary structure for BSP entity (EntityClass).
     struct Model : Bounds
     {
-      String title;
+      String            title;
 
-      Vec3   move;
+      Vec3              move;
 
-      BSP*   bsp;
+      BSP*              bsp;
 
-      int    firstBrush;
-      int    nBrushes;
+      int               firstBrush;
+      int               nBrushes;
 
-      matrix::Model::Type type;
+      EntityClass::Type type;
 
-      float  margin;
-      float  timeout;
-      float  ratioInc;
+      float             margin;
+      float             timeout;
+      float             ratioInc;
 
-      int    target;
-      int    key;
+      int               target;
+      int               key;
 
-      String openSound;
-      String closeSound;
-      String frictSound;
+      String            openSound;
+      String            closeSound;
+      String            frictSound;
+
+      String            modelName;
+      Mat44             modelTransf;
     };
 
-    /// Temporary structure for bound objects.
+    // Temporary structure for bound objects.
     struct BoundObject
     {
       String  clazz;

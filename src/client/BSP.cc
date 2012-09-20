@@ -26,6 +26,7 @@
 
 #include <client/Context.hh>
 #include <client/OpenGL.hh>
+#include "SMM.hh"
 
 namespace oz
 {
@@ -37,11 +38,19 @@ BSP::~BSP()
   if( isLoaded ) {
     mesh.unload();
   }
+
+  foreach( model, bsp->models.citer() ) {
+    context.releaseSMM( *model );
+  }
 }
 
 BSP::BSP( const matrix::BSP* bsp_ ) :
   bsp( bsp_ ), isPreloaded( false ), isLoaded( false )
-{}
+{
+  foreach( model, bsp->models.citer() ) {
+    context.requestSMM( *model );
+  }
+}
 
 void BSP::preload()
 {
@@ -78,10 +87,22 @@ void BSP::draw( const Struct* str )
   mesh.schedule( 0 );
 
   for( int i = 0; i < str->entities.length(); ++i ) {
+    const Entity& entity = str->entities[i];
+
     tf.push();
-    tf.model.translate( str->entities[i].offset );
+    tf.model.translate( entity.offset );
 
     mesh.schedule( i + 1 );
+
+    if( entity.clazz->model != -1 ) {
+      SMM* smm = context.smms[entity.clazz->model].object;
+
+      if( smm != nullptr && smm->isLoaded ) {
+        tf.model = tf.model * entity.clazz->modelTransf;
+
+        smm->schedule( 0 );
+      }
+    }
 
     tf.pop();
   }

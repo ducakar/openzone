@@ -330,7 +330,7 @@ void Render::drawGeometry()
       shape.colour( ENTITY_AABB );
 
       foreach( entity, str->entities.citer() ) {
-        Bounds bb = str->toAbsoluteCS( *entity->model + entity->offset );
+        Bounds bb = str->toAbsoluteCS( *entity->clazz + entity->offset );
         shape.wireBox( bb.toAABB() );
       }
 

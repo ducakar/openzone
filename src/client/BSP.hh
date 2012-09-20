@@ -35,10 +35,8 @@ class BSP
   private:
 
     const matrix::BSP* bsp;
-
-    Mesh  mesh;
-
-    PFile file;
+    Mesh               mesh;
+    PFile              file;
 
   public:
 

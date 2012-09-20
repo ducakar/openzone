@@ -199,6 +199,8 @@ class Chain
         else {
           prevCopy->next[INDEX] = copy;
         }
+
+        original = original->next[INDEX];
         prevCopy = copy;
       }
 

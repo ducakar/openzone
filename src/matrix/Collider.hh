@@ -94,10 +94,9 @@ class Collider
 
     const Dynamic* obj;
     const Object*  exclObj;
-    const Struct*  str;
     const Entity*  entity;
+    const Struct*  str;
     const BSP*     bsp;
-    const Model*   model;
 
     int            flags;
     float          margin;

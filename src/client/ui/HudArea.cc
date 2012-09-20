@@ -61,12 +61,12 @@ void HudArea::drawBotCrosshair()
   glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 
   if( me->parent < 0 && ( camera.object >= 0 || camera.entity >= 0 ) ) {
-    const Object*      obj   = camera.objectObj;
-    const ObjectClass* clazz = obj == nullptr ? nullptr : obj->clazz;
-    const Dynamic*     dyn   = static_cast<const Dynamic*>( obj );
-    const Bot*         bot   = static_cast<const Bot*>( obj );
-    const Entity*      ent   = camera.entityObj;
-    const Model*       model = ent == nullptr ? nullptr : ent->model;
+    const Object*      obj      = camera.objectObj;
+    const ObjectClass* objClazz = obj == nullptr ? nullptr : obj->clazz;
+    const Dynamic*     dyn      = static_cast<const Dynamic*>( obj );
+    const Bot*         bot      = static_cast<const Bot*>( obj );
+    const Entity*      ent      = camera.entityObj;
+    const EntityClass* entClazz = ent == nullptr ? nullptr : ent->clazz;
 
     // it might happen that bot itself is tagged object for a frame when switching from freecam
     // into a bot
@@ -78,14 +78,14 @@ void HudArea::drawBotCrosshair()
       if( lastEntityId != camera.entity ) {
         lastEntityId = camera.entity;
 
-        title.set( descTextX, descTextY, ALIGN_CENTRE, Font::LARGE, "%s", model->title.cstr() );
+        title.set( descTextX, descTextY, ALIGN_CENTRE, Font::LARGE, "%s", entClazz->title.cstr() );
       }
 
       title.draw( this, false );
 
       shape.colour( 1.0f, 1.0f, 1.0f, 1.0f );
 
-      if( model->target >= 0 && ent->key >= 0 ) {
+      if( entClazz->target >= 0 && ent->key >= 0 ) {
         glBindTexture( GL_TEXTURE_2D, useTexId );
         shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
       }
@@ -101,10 +101,10 @@ void HudArea::drawBotCrosshair()
     }
     else {
       if( obj->flags & Object::BOT_BIT ) {
-        life = max( 2.0f * obj->life / clazz->life - 1.0f, 0.0f );
+        life = max( 2.0f * obj->life / objClazz->life - 1.0f, 0.0f );
       }
       else {
-        life = obj->life / clazz->life;
+        life = obj->life / objClazz->life;
       }
 
       int lifeWidth = int( life * float( ICON_SIZE + 14 ) );
@@ -122,7 +122,7 @@ void HudArea::drawBotCrosshair()
         lastObjectId = camera.object;
 
         String sTitle = ( obj->flags & Object::BOT_BIT ) && !bot->name.isEmpty() ?
-                        bot->name + " (" + clazz->title + ")" : clazz->title;
+                        bot->name + " (" + objClazz->title + ")" : objClazz->title;
 
         title.set( descTextX, descTextY, ALIGN_CENTRE, Font::LARGE, "%s", sTitle.cstr() );
       }

@@ -46,7 +46,7 @@ class ArrayIterator : public IteratorBase<Elem>
     using IteratorBase<Elem>::elem;
 
     /// Successor of the last element, used to determine when the iterator becomes invalid.
-    const Elem* past;
+    Elem* past;
 
   public:
 
@@ -65,7 +65,7 @@ class ArrayIterator : public IteratorBase<Elem>
      * @param past_ successor of the last element.
      */
     OZ_ALWAYS_INLINE
-    explicit ArrayIterator( Elem* first, const Elem* past_ ) :
+    explicit ArrayIterator( Elem* first, Elem* past_ ) :
       IteratorBase<Elem>( first ), past( past_ )
     {}
 
@@ -110,7 +110,7 @@ class ArrayIterator : public IteratorBase<Elem>
 
 };
 
-#if defined( OZ_GCC ) && OZ_GCC < 407
+#if defined( OZ_ECLIPSE ) || ( defined( OZ_GCC ) && OZ_GCC < 407 )
 
 template <typename Elem>
 class CIterator : public ArrayIterator<const Elem>
@@ -136,7 +136,7 @@ class Iterator : public ArrayIterator<Elem>
     Iterator() = default;
 
     OZ_ALWAYS_INLINE
-    explicit Iterator( Elem* first, const Elem* past ) :
+    explicit Iterator( Elem* first, Elem* past ) :
       ArrayIterator<Elem>( first, past )
     {}
 

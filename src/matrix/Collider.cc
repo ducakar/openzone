@@ -96,9 +96,9 @@ bool Collider::overlapsAABBEntity()
 
   Bounds localTrace = str->toStructCS( trace );
 
-  if( localTrace.overlaps( *model + entity->offset ) ) {
-    for( int j = 0; j < model->nBrushes; ++j ) {
-      int index = model->firstBrush + j;
+  if( localTrace.overlaps( *entity->clazz + entity->offset ) ) {
+    for( int j = 0; j < entity->clazz->nBrushes; ++j ) {
+      int index = entity->clazz->firstBrush + j;
       const BSP::Brush& brush = bsp->brushes[index];
 
       if( ( brush.flags & Material::STRUCT_BIT ) && overlapsAABBBrush( &brush ) ) {
@@ -152,11 +152,10 @@ bool Collider::overlapsAABBEntities()
 
   for( int i = 0; i < str->entities.length(); ++i ) {
     entity = &str->entities[i];
-    model  = entity->model;
 
-    if( localTrace.overlaps( *model + entity->offset ) ) {
-      for( int j = 0; j < model->nBrushes; ++j ) {
-        int index = model->firstBrush + j;
+    if( localTrace.overlaps( *entity->clazz + entity->offset ) ) {
+      for( int j = 0; j < entity->clazz->nBrushes; ++j ) {
+        int index = entity->clazz->firstBrush + j;
         const BSP::Brush& brush = bsp->brushes[index];
 
         hard_assert( !visitBrush( index ) );
@@ -232,8 +231,8 @@ bool Collider::overlapsEntityOrbis()
           startPos = str->toStructCS( sObj->p ) - entity->offset;
           localDim = str->swapDimCS( sObj->dim + Vec3( margin, margin, margin ) );
 
-          for( int i = 0; i < model->nBrushes; ++i ) {
-            const BSP::Brush& brush = bsp->brushes[model->firstBrush + i];
+          for( int i = 0; i < entity->clazz->nBrushes; ++i ) {
+            const BSP::Brush& brush = bsp->brushes[entity->clazz->firstBrush + i];
 
             if( ( sObj->flags & mask ) && ( brush.flags & Material::STRUCT_BIT ) &&
                 overlapsAABBBrush( &brush ) )
@@ -548,11 +547,10 @@ void Collider::trimAABBEntities()
 
   for( int i = 0; i < str->entities.length(); ++i ) {
     entity = &str->entities[i];
-    model  = entity->model;
 
-    if( localTrace.overlaps( *model + entity->offset ) ) {
-      for( int j = 0; j < model->nBrushes; ++j ) {
-        int index = model->firstBrush + j;
+    if( localTrace.overlaps( *entity->clazz + entity->offset ) ) {
+      for( int j = 0; j < entity->clazz->nBrushes; ++j ) {
+        int index = entity->clazz->firstBrush + j;
         const BSP::Brush& brush = bsp->brushes[index];
 
         hard_assert( !visitBrush( index ) );
@@ -806,8 +804,8 @@ void Collider::getEntityOverlaps( List<Object*>* objects )
           startPos = str->toStructCS( sObj->p ) - entity->offset;
           localDim = str->swapDimCS( sObj->dim + Vec3( margin, margin, margin ) );
 
-          for( int i = 0; i < model->nBrushes; ++i ) {
-            const BSP::Brush& brush = bsp->brushes[model->firstBrush + i];
+          for( int i = 0; i < entity->clazz->nBrushes; ++i ) {
+            const BSP::Brush& brush = bsp->brushes[entity->clazz->firstBrush + i];
 
             if( overlapsAABBBrush( &brush ) ) {
               objects->add( sObj );
@@ -862,11 +860,10 @@ bool Collider::overlaps( const Entity* entity_, float margin_ )
 {
   str    = entity_->str;
   entity = entity_;
-  bsp    = entity_->model->bsp;
-  model  = entity_->model;
+  bsp    = entity_->clazz->bsp;
   margin = margin_;
 
-  trace = Bounds( str->toAbsoluteCS( *model + entity->offset ), 4.0f * EPSILON + margin );
+  trace = Bounds( str->toAbsoluteCS( *entity->clazz + entity->offset ), 4.0f * EPSILON + margin );
   span = orbis.getInters( trace, Object::MAX_DIM );
 
   return overlapsEntityOrbis();
@@ -877,8 +874,7 @@ bool Collider::overlapsEntity( const AABB& aabb_, const Entity* entity_, float m
   aabb   = aabb_;
   str    = entity_->str;
   entity = entity_;
-  bsp    = entity_->model->bsp;
-  model  = entity_->model;
+  bsp    = entity_->clazz->bsp;
 
   trace = Bounds( aabb, 4.0f * EPSILON + margin_ );
   span = orbis.getInters( trace );
@@ -924,11 +920,10 @@ void Collider::getOverlaps( const Entity* entity_, List<Object*>* objects, float
 {
   str    = entity_->str;
   entity = entity_;
-  bsp    = entity_->model->bsp;
-  model  = entity_->model;
+  bsp    = entity_->clazz->bsp;
   margin = margin_;
 
-  trace = Bounds( str->toAbsoluteCS( *model + entity->offset ), 4.0f * EPSILON + margin );
+  trace = Bounds( str->toAbsoluteCS( *entity->clazz + entity->offset ), 4.0f * EPSILON + margin );
   span = orbis.getInters( trace, Object::MAX_DIM );
 
   getEntityOverlaps( objects );

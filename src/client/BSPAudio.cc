@@ -56,7 +56,7 @@ void BSPAudio::playSound( const Entity* entity, int sound ) const
   hard_assert( uint( sound ) < uint( liber.sounds.length() ) );
 
   const Struct* str      = entity->str;
-  Point         p        = str->toAbsoluteCS( entity->model->p() + entity->offset );
+  Point         p        = str->toAbsoluteCS( entity->clazz->p() + entity->offset );
   Vec3          velocity = str->toAbsoluteCS( entity->velocity );
 
   uint srcId = context.addSource( sound );
@@ -81,7 +81,7 @@ void BSPAudio::playContSound( const Entity* entity, int sound ) const
 
   const Struct* str      = entity->str;
   int           key      = str->index * Struct::MAX_ENTITIES + int( entity - str->entities );
-  Point         p        = str->toAbsoluteCS( entity->model->p() + entity->offset );
+  Point         p        = str->toAbsoluteCS( entity->clazz->p() + entity->offset );
   Vec3          velocity = str->toAbsoluteCS( entity->velocity );
 
   Context::ContSource* contSource = context.contSources.find( key );
@@ -136,19 +136,19 @@ void BSPAudio::play( const Struct* str ) const
 
   foreach( entity, str->entities.citer() ) {
     if( entity->state == Entity::OPENING ) {
-      if( entity->time == 0.0f && entity->model->openSound >= 0 ) {
-        playSound( entity, entity->model->openSound );
+      if( entity->time == 0.0f && entity->clazz->openSound >= 0 ) {
+        playSound( entity, entity->clazz->openSound );
       }
-      if( entity->model->frictSound >= 0 ) {
-        playContSound( entity, entity->model->frictSound );
+      if( entity->clazz->frictSound >= 0 ) {
+        playContSound( entity, entity->clazz->frictSound );
       }
     }
     else if( entity->state == Entity::CLOSING ) {
-      if( entity->time == 0.0f && entity->model->closeSound >= 0 ) {
-        playSound( entity, entity->model->closeSound );
+      if( entity->time == 0.0f && entity->clazz->closeSound >= 0 ) {
+        playSound( entity, entity->clazz->closeSound );
       }
-      if( entity->model->frictSound >= 0 ) {
-        playContSound( entity, entity->model->frictSound );
+      if( entity->clazz->frictSound >= 0 ) {
+        playContSound( entity, entity->clazz->frictSound );
       }
     }
   }

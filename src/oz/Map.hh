@@ -56,7 +56,7 @@ class Map
   public:
 
     /**
-     * Internal class for key/value elements.
+     * Key-value pair.
      */
     class Elem
     {

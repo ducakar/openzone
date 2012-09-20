@@ -109,16 +109,17 @@ namespace std { typedef __PTRDIFF_TYPE__ nullptr_t; }
 unsigned int __builtin_bswap32( unsigned int );
 unsigned long long __builtin_bswap64( unsigned long long );
 
+float __builtin_fminf( float, float );
+float __builtin_fmaxf( float, float );
 float __builtin_roundf( float );
 float __builtin_truncf( float );
 float __builtin_powf( float, float );
 float __builtin_isnormal( float );
+float __builtin_ia32_vec_ext_v4sf( float, int );
+float __builtin_ia32_shufps( float, float, int );
+float __builtin_ia32_haddps( float, float );
+float __builtin_ia32_hsubps( float, float );
 
-namespace std
-{
-
-typedef decltype( nullptr ) nullptr_t;
-
-}
+namespace std { typedef decltype( nullptr ) nullptr_t; }
 
 #endif

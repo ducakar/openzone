@@ -33,6 +33,8 @@
 namespace oz
 {
 
+static const int OUT_BUFFER_SIZE = 4096;
+
 static const char* const SIGNALS[][2] =
 {
   { "SIG???",    "[invalid signal number]"    },
