@@ -325,18 +325,6 @@ void Log::printSignal( int sigNum )
   }
 }
 
-void Log::printHalt()
-{
-  const char* message = "Halted. Attach a debugger or send a fatal signal (e.g. CTRL-C) ...\n";
-
-  fputs( message, stdout );
-
-  if( file != nullptr ) {
-    fputs( message, file );
-    fflush( file );
-  }
-}
-
 bool Log::init( const char* filePath_, bool clearFile )
 {
   tabs = 0;

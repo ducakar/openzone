@@ -22,7 +22,7 @@ echo "Updating version in CMakeLists.txt"
 sed 's/^\(set( OZ_VERSION "\)[^"]*\(".*\)$/\1'"$version"'\2/' -i CMakeLists.txt
 
 echo "Updating version in doc/Doxyfiles.liboz and doc/Doxyfile"
-sed 's/^\(PROJECT_NUMBER *= \).*$/\1'"$version"'/' -i doc/Doxyfile.liboz doc/Doxyfile
+sed 's/^\(PROJECT_NUMBER *= \).*$/\1"'"$version"'"/' -i doc/Doxyfile.liboz doc/Doxyfile
 
 echo "Updating HTML READMEs doc/*.html"
 sed 's/<!--OZ_VERSION-->[^<"]*\([<"]\)/<!--OZ_VERSION-->'"$version"'\1/' -i doc/*.html

@@ -382,10 +382,10 @@ class DChain
     /**
      * Unbind the first element from the chain.
      *
-     * To keep LIFO behaviour for `add()` and `remove()` methods like in array lists, the first
+     * To keep LIFO behaviour for `add()` and `erase()` methods like in array lists, the first
      * element is removed instead of the last one.
      */
-    void remove()
+    void erase()
     {
       popFirst();
     }
@@ -393,7 +393,7 @@ class DChain
     /**
      * Unbind the given element from the chain.
      */
-    void remove( Elem* e )
+    void erase( Elem* e )
     {
       if( e->prev[INDEX] == nullptr ) {
         firstElem = e->next[INDEX];

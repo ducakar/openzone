@@ -246,7 +246,7 @@ class HashIndex
      */
     HashIndex()
     {
-      aSet<Elem*, Elem*>( data, nullptr, SIZE );
+      aFill<Elem*, Elem*>( data, nullptr, SIZE );
     }
 
     /**
@@ -275,7 +275,7 @@ class HashIndex
       pool( static_cast< Pool<Elem, SIZE>&& >( t.pool ) )
     {
       aCopy<Elem*>( data, t.data, SIZE );
-      aSet<Elem*, Elem*>( t.data, nullptr, SIZE );
+      aFill<Elem*, Elem*>( t.data, nullptr, SIZE );
     }
 
     /**
@@ -308,7 +308,7 @@ class HashIndex
       aCopy<Elem*>( data, t.data, SIZE );
       pool = static_cast< Pool<Elem, SIZE>&& >( t.pool );
 
-      aSet<Elem*, Elem*>( t.data, nullptr, SIZE );
+      aFill<Elem*, Elem*>( t.data, nullptr, SIZE );
       return *this;
     }
 

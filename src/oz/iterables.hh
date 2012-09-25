@@ -159,6 +159,7 @@ inline typename Container::CIterator citer( const Container& container )
  * Iterator with non-constant element access for a container (same as `container.iter()`).
  */
 template <class Container>
+OZ_ALWAYS_INLINE
 inline typename Container::Iterator iter( Container& container )
 {
   return container.iter();
@@ -202,7 +203,7 @@ inline void iMove( IteratorA iDest, IteratorB iSrc )
  * %Set elements to the given value.
  */
 template <class Iterator, typename Value = typename Iterator::ElemType>
-inline void iSet( Iterator iDest, const Value& value )
+inline void iFill( Iterator iDest, const Value& value )
 {
   while( iDest.isValid() ) {
     *iDest = value;

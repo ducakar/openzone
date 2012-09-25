@@ -30,6 +30,7 @@
 #include "Log.hh"
 
 #include <csignal>
+#include <cstdio>
 #include <cstdlib>
 
 #if defined( __native_client__ )
@@ -40,6 +41,7 @@
 # include <pthread.h>
 #elif defined( _WIN32 )
 # include <windows.h>
+# include <io.h>
 # include <mmsystem.h>
 #else
 # include <alsa/asoundlib.h>
@@ -47,6 +49,7 @@
 # include <dlfcn.h>
 # include <pthread.h>
 # include <pulse/simple.h>
+# include <unistd.h>
 #endif
 
 #if defined( __native_client__ ) && !defined( __GLIBC__ )
@@ -164,17 +167,26 @@ OZ_NORETURN
 static void abort( bool doHalt );
 
 OZ_NORETURN
-static void signalHandler( int signum );
+static void signalHandler( int sigNum )
+{
+  Log::verboseMode = false;
+  Log::printSignal( sigNum );
+  Log::printTrace( StackTrace::current( 0 ) );
+  Log::println();
+
+  System::bell();
+  abort( ( initFlags & System::HALT_BIT ) && sigNum != SIGINT );
+}
 
 static void resetSignals()
 {
 #if !defined( OZ_JNI ) && !defined( __native_client__ )
-  signal( SIGINT,  SIG_DFL );
   signal( SIGILL,  SIG_DFL );
   signal( SIGABRT, SIG_DFL );
   signal( SIGFPE,  SIG_DFL );
   signal( SIGSEGV, SIG_DFL );
 # ifndef _WIN32
+  signal( SIGQUIT, SIG_DFL );
   signal( SIGTRAP, SIG_DFL );
 # endif
 #endif
@@ -183,30 +195,16 @@ static void resetSignals()
 static void catchSignals()
 {
 #if !defined( OZ_JNI ) && !defined( __native_client__ )
-  signal( SIGINT,  signalHandler );
   signal( SIGILL,  signalHandler );
   signal( SIGABRT, signalHandler );
   signal( SIGFPE,  signalHandler );
   signal( SIGSEGV, signalHandler );
 # ifndef _WIN32
+  signal( SIGQUIT, signalHandler );
   // Disable default handler for SIGTRAP that terminates a process.
   signal( SIGTRAP, SIG_IGN );
 # endif
 #endif
-}
-
-OZ_NORETURN
-static void signalHandler( int sigNum )
-{
-  resetSignals();
-
-  Log::verboseMode = false;
-  Log::printSignal( sigNum );
-  Log::printTrace( StackTrace::current( 0 ) );
-  Log::println();
-
-  System::bell();
-  abort( ( initFlags & System::HALT_BIT ) && sigNum != SIGINT );
 }
 
 OZ_NORETURN
@@ -475,16 +473,16 @@ static void initBell()
 OZ_NORETURN
 static void abort( bool doHalt )
 {
-  if( doHalt ) {
-    Log::printHalt();
+  resetSignals();
 
 #ifdef _WIN32
-    while( true ) {
-      Sleep( 10 );
-    }
+  if( doHalt && _isatty( STDIN_FILENO ) && _isatty( STDOUT_FILENO ) ) {
 #else
-    while( nanosleep( &TIMESPEC_10MS, nullptr ) == 0 );
+  if( doHalt && isatty( STDIN_FILENO ) && isatty( STDOUT_FILENO ) ) {
 #endif
+    fputs( "Halted. Attach a debugger or press Enter to quit ...\n", stderr );
+    fflush( stderr );
+    fgetc( stdin );
   }
 
   waitBell();
@@ -639,7 +637,6 @@ void System::error( const char* function, const char* file, int line, int nSkipp
   Log::println();
 
   bell();
-  resetSignals();
   abort( initFlags & HALT_BIT );
 }
 
@@ -656,9 +653,6 @@ void System::init( int flags )
   flags &= ~HALT_BIT;
 #endif
   initFlags = flags;
-
-  // TODO
-//   Thread::setMainThreadName();
 
   if( initFlags & SIGNAL_HANDLER_BIT ) {
     catchSignals();

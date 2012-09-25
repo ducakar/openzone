@@ -101,7 +101,7 @@ void Matrix::update()
       if( !obj->items.isEmpty() ) {
         for( int j = 0; j < obj->items.length(); ) {
           if( orbis.objects[ obj->items[j] ] == nullptr ) {
-            obj->items.remove( j );
+            obj->items.erase( j );
           }
           else {
             ++j;

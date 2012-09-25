@@ -45,7 +45,8 @@ void MainInstance::mainThreadMain( void* )
 {
   int exitCode = EXIT_FAILURE;
 
-  Log::printRaw( "OpenZone  Copyright © 2002-2012 Davorin Učakar\n"
+  Log::printRaw( "OpenZone " OZ_VERSION "\n"
+                 "Copyright © 2002-2012 Davorin Učakar\n"
                  "This program comes with ABSOLUTELY NO WARRANTY.\n"
                  "This is free software, and you are welcome to redistribute it\n"
                  "under certain conditions; See COPYING file for details.\n\n" );
@@ -211,10 +212,11 @@ int main( int argc, char** argv )
 
   int exitCode = EXIT_FAILURE;
 
-  printf( "OpenZone  Copyright © 2002-2012 Davorin Učakar\n"
-          "This program comes with ABSOLUTELY NO WARRANTY.\n"
-          "This is free software, and you are welcome to redistribute it\n"
-          "under certain conditions; See COPYING file for details.\n\n" );
+  Log::printRaw( "OpenZone " OZ_VERSION "\n"
+                 "Copyright © 2002-2012 Davorin Učakar\n"
+                 "This program comes with ABSOLUTELY NO WARRANTY.\n"
+                 "This is free software, and you are welcome to redistribute it\n"
+                 "under certain conditions; See COPYING file for details.\n\n" );
 
   exitCode = client::client.init( argc, argv );
 

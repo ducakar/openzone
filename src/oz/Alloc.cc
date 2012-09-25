@@ -130,7 +130,7 @@ static void addTraceEntry( AllocMode mode, void* ptr, size_t size )
 # endif
 }
 
-static void removeTraceEntry( AllocMode mode, void* ptr )
+static void eraseTraceEntry( AllocMode mode, void* ptr )
 {
   if( !isTraceLockInitialised ) {
     initTraceLock();
@@ -243,7 +243,7 @@ static void deallocate( AllocMode mode, void* ptr )
   static_cast<void>( mode );
 
 #ifdef OZ_TRACK_ALLOCS
-  removeTraceEntry( mode, ptr );
+  eraseTraceEntry( mode, ptr );
 #endif
 
   size_t size = static_cast<size_t*>( ptr )[-1];

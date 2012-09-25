@@ -303,7 +303,7 @@ void BSP::load()
         Vec3 rotation;
         modelConfig["rotation"].get( rotation, 3 );
 
-        models[i].modelTransf = Mat44::translation( translation );
+        models[i].modelTransf = Mat44::translation( models[i].p() + translation - Point::ORIGIN );
         models[i].modelTransf.rotateY( Math::rad( rotation.y ) );
         models[i].modelTransf.rotateX( Math::rad( rotation.x ) );
         models[i].modelTransf.rotateZ( Math::rad( rotation.z ) );
@@ -528,7 +528,7 @@ void BSP::optimise()
       continue;
     }
 
-    brushes.remove( i );
+    brushes.erase( i );
     Log::print( "outside brush removed " );
 
     // adjust brush references (for leaves)
@@ -541,7 +541,7 @@ void BSP::optimise()
         ++j;
       }
       else {
-        leafBrushes.remove( j );
+        leafBrushes.erase( j );
         Log::printRaw( "." );
 
         for( int k = 0; k < leaves.length(); ++k ) {
@@ -583,7 +583,7 @@ void BSP::optimise()
           continue;
         }
 
-        leafBrushes.remove( k );
+        leafBrushes.erase( k );
         Log::printRaw( "." );
 
         // adjust leaf references
@@ -621,7 +621,7 @@ void BSP::optimise()
       continue;
     }
 
-    leaves.remove( i );
+    leaves.erase( i );
     Log::printRaw( "." );
 
     // update references and tag unnecessary nodes, will be removed in the next pass (index 0 is
@@ -701,7 +701,7 @@ void BSP::optimise()
         }
       }
 
-      nodes.remove( i );
+      nodes.erase( i );
 
       for( int j = 0; j < nodes.length(); ++j ) {
         hard_assert( nodes[j].front != i );
@@ -731,7 +731,7 @@ void BSP::optimise()
 
   List<bool> usedBrushSides;
   usedBrushSides.resize( brushSides.length() );
-  aSet<bool>( usedBrushSides, false, usedBrushSides.length() );
+  aFill<bool>( usedBrushSides, false, usedBrushSides.length() );
 
   for( int i = 0; i < brushes.length(); ++i ) {
     for( int j = 0; j < brushes[i].nSides; ++j ) {
@@ -745,8 +745,8 @@ void BSP::optimise()
       continue;
     }
 
-    brushSides.remove( i );
-    usedBrushSides.remove( i );
+    brushSides.erase( i );
+    usedBrushSides.erase( i );
     Log::printRaw( "." );
 
     for( int j = 0; j < brushes.length(); ++j ) {
@@ -770,7 +770,7 @@ void BSP::optimise()
 
   List<bool> usedPlanes;
   usedPlanes.resize( planes.length() );
-  aSet<bool>( usedPlanes, false, planes.length() );
+  aFill<bool>( usedPlanes, false, planes.length() );
 
   for( int i = 0; i < nodes.length(); ++i ) {
     usedPlanes[ nodes[i].plane ] = true;
@@ -785,8 +785,8 @@ void BSP::optimise()
       continue;
     }
 
-    planes.remove( i );
-    usedPlanes.remove( i );
+    planes.erase( i );
+    usedPlanes.erase( i );
     Log::printRaw( "." );
 
     // adjust plane references
@@ -859,7 +859,7 @@ void BSP::optimise()
       continue;
     }
 
-    faces.remove( i );
+    faces.erase( i );
     Log::println( "outside face removed" );
 
     // adjust face references

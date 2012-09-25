@@ -77,6 +77,8 @@ class Caelum
 
     int   id;
 
+  public:
+
     Caelum();
 
     void update();

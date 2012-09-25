@@ -13,7 +13,7 @@
   basegamename="OpenZone"
   shaderpath="scripts"
   archivetypes="pk3"
-  texturetypes="png jpg tga"
+  texturetypes="tga png jpg"
   modeltypes="md3 md2 obj"
   maptypes="mapq3"
   shaders="quake3"

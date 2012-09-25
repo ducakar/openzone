@@ -472,7 +472,7 @@ void Collider::trimAABBLiquid( const BSP::Brush* brush )
     }
   }
 
-  hard_assert( depth > 0.0f );
+  hard_assert( 0.0f < depth && depth < Math::INF );
 
   hit.mediumStr = const_cast<Struct*>( str );
   hit.medium   |= brush->flags & Medium::MASK;

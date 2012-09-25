@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
+<game
+  name="OpenZone"
+  enginepath="/usr/bin/openzone"
+  gametools_linux="openzone.game"
+  gametools_win32="openzone.game"
+  basegame="radiant"
+  engine="openzone"
+  gamename="openzone"
+  shaderpath="scripts"
+/>

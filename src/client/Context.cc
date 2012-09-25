@@ -205,7 +205,7 @@ void Context::removeSource( Source* source, Source* prev )
   alDeleteSources( 1, &source->id );
 
   --sounds[sound].nUsers;
-  sources.remove( source, prev );
+  sources.erase( source, prev );
   delete source;
 }
 
@@ -259,7 +259,7 @@ uint Context::requestSpeakSource( const char* text, int owner )
   speakSource.isAlive        = true;
   speakSource.text           = text;
 
-  speakSource.thread.start( speakMain, nullptr );
+  speakSource.thread.start( "speak", speakMain, nullptr );
   return speakSource.id;
 
 #else
@@ -725,7 +725,7 @@ void Context::unload()
   audios.dealloc();
 
   aFree( fragPools, liber.nFragPools );
-  aSet<FragPool*, FragPool*>( fragPools, nullptr, liber.nFragPools );
+  aFill<FragPool*, FragPool*>( fragPools, nullptr, liber.nFragPools );
 
   BasicAudio::pool.free();
   BotAudio::pool.free();
@@ -820,7 +820,7 @@ void Context::init()
   OZ_REGISTER_AUDIOCLASS( Bot );
   OZ_REGISTER_AUDIOCLASS( Vehicle );
 
-  aSet<FragPool*, FragPool*>( fragPools, nullptr, liber.nFragPools );
+  aFill<FragPool*, FragPool*>( fragPools, nullptr, liber.nFragPools );
 
   int nTextures = liber.textures.length();
   int nSounds   = liber.sounds.length();

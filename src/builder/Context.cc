@@ -125,8 +125,15 @@ Context::Texture::Texture( Image* image, bool wrap_, int magFilter_, int minFilt
 
     FIBITMAP* levelDib = image->dib;
     if( levels.length() > 1 ) {
-      levelDib = FreeImage_Rescale( image->dib, width, height, FILTER_CATMULLROM );
+      levelDib = FreeImage_Rescale( image->dib, width, height,
+                                    context.isHighQuality ? FILTER_CATMULLROM : FILTER_BOX );
     }
+
+#ifdef OZ_NONFREE
+    int squishFlags = context.isHighQuality ?
+                      squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha :
+                      squish::kColourRangeFit;
+#endif
 
     switch( image->format ) {
       case GL_LUMINANCE: {
@@ -151,8 +158,7 @@ Context::Texture::Texture( Image* image, bool wrap_, int magFilter_, int minFilt
           level.size   = squish::GetStorageRequirements( width, height, squish::kDxt1 );
           level.data   = new ubyte[level.size];
 
-          squish::CompressImage( data, width, height, level.data,
-                                 squish::kDxt1 | squish::kColourIterativeClusterFit );
+          squish::CompressImage( data, width, height, level.data, squish::kDxt1 | squishFlags );
           delete[] data;
 #endif
         }
@@ -189,8 +195,7 @@ Context::Texture::Texture( Image* image, bool wrap_, int magFilter_, int minFilt
           level.size   = squish::GetStorageRequirements( width, height, squish::kDxt1 );
           level.data   = new ubyte[level.size];
 
-          squish::CompressImage( data, width, height, level.data,
-                                 squish::kDxt1 | squish::kColourIterativeClusterFit );
+          squish::CompressImage( data, width, height, level.data, squish::kDxt1 | squishFlags );
           delete[] data;
 #endif
         }
@@ -237,9 +242,7 @@ Context::Texture::Texture( Image* image, bool wrap_, int magFilter_, int minFilt
           level.size   = squish::GetStorageRequirements( width, height, squish::kDxt5 );
           level.data   = new ubyte[level.size];
 
-          squish::CompressImage( data, width, height, level.data,
-                                 squish::kDxt5 | squish::kColourIterativeClusterFit |
-                                 squish::kWeightColourByAlpha );
+          squish::CompressImage( data, width, height, level.data, squish::kDxt5 | squishFlags );
           delete[] data;
 #endif
         }
@@ -434,137 +437,139 @@ void Context::loadTextures( Texture* diffuseTex, Texture* masksTex, Texture* nor
   String normals2BasePath  = basePath + "_normal";
   String normals3BasePath  = basePath + "_local";
 
-  PFile diffuse( diffuseBasePath + IMAGE_EXTENSIONS[0] );
-  PFile diffuse1( diffuseBasePath + IMAGE_EXTENSIONS[0] );
-  PFile masks( masksBasePath + IMAGE_EXTENSIONS[0] );
-  PFile specular( specularBasePath + IMAGE_EXTENSIONS[0] );
-  PFile specular1( specularBasePath + IMAGE_EXTENSIONS[0] );
-  PFile emission( emissionBasePath + IMAGE_EXTENSIONS[0] );
-  PFile normals( normalsBasePath + IMAGE_EXTENSIONS[0] );
-  PFile normals1( normals1BasePath + IMAGE_EXTENSIONS[0] );
-  PFile normals2( normals2BasePath + IMAGE_EXTENSIONS[0] );
-  PFile normals3( normals3BasePath + IMAGE_EXTENSIONS[0] );
+  PFile diffuse, masks, specular, emission, normals;
 
-  for( int i = 1; i < aLength( IMAGE_EXTENSIONS ); ++i ) {
-    if( !diffuse.stat() ) {
+  for( int i = 0; i < aLength( IMAGE_EXTENSIONS ); ++i ) {
+    if( diffuse.path().isEmpty() || !diffuse.stat() ) {
       diffuse.setPath( diffuseBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( !diffuse1.stat() ) {
-      diffuse1.setPath( diffuse1BasePath + IMAGE_EXTENSIONS[i] );
+    if( !diffuse.stat() ) {
+      diffuse.setPath( diffuse1BasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( !masks.stat() ) {
+
+    if( masks.path().isEmpty() || !masks.stat() ) {
       masks.setPath( masksBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( !specular.stat() ) {
+
+    if( specular.path().isEmpty() || !specular.stat() ) {
       specular.setPath( specularBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( !specular1.stat() ) {
-      specular1.setPath( specular1BasePath + IMAGE_EXTENSIONS[i] );
+    if( !specular.stat() ) {
+      specular.setPath( specular1BasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( !emission.stat() ) {
+
+    if( emission.path().isEmpty() || !emission.stat() ) {
       emission.setPath( emissionBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( !normals.stat() ) {
+
+    if( normals.path().isEmpty() || !normals.stat() ) {
       normals.setPath( normalsBasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( !normals1.stat() ) {
-      normals1.setPath( normals1BasePath + IMAGE_EXTENSIONS[i] );
+    if( !normals.stat() ) {
+      normals.setPath( normals1BasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( !normals2.stat() ) {
-      normals2.setPath( normals2BasePath + IMAGE_EXTENSIONS[i] );
+    if( !normals.stat() ) {
+      normals.setPath( normals2BasePath + IMAGE_EXTENSIONS[i] );
     }
-    if( !normals3.stat() ) {
-      normals3.setPath( normals3BasePath + IMAGE_EXTENSIONS[i] );
+    if( !normals.stat() ) {
+      normals.setPath( normals3BasePath + IMAGE_EXTENSIONS[i] );
     }
   }
-
-  Image image, specImage, emissionImage;
-  image.dib = nullptr;
 
   if( diffuse.stat() ) {
-    image = loadImage( diffuse.path() );
-  }
-  else if( diffuse1.stat() ) {
-    image = loadImage( diffuse1.path() );
+    Image diffuseImage = loadImage( diffuse.path() );
+
+    *diffuseTex = Texture( &diffuseImage, wrap, magFilter, minFilter );
+    FreeImage_Unload( diffuseImage.dib );
   }
   else {
     OZ_ERROR( "Missing texture '%s' (.png, .jpeg, .jpg and .tga checked)", basePath.cstr() );
   }
 
-  *diffuseTex = Texture( &image, wrap, magFilter, minFilter );
-  FreeImage_Unload( image.dib );
-
-  image.dib         = nullptr;
-  specImage.dib     = nullptr;
-  emissionImage.dib = nullptr;
-
   if( masks.stat() ) {
-    image = loadImage( masks.path(), GL_RGB );
-  }
-  else if( specular.stat() ) {
-    specImage = loadImage( specular.path(), GL_RGB );
+    Image masksImage = loadImage( masks.path(), GL_RGB );
 
+    *masksTex = Texture( &masksImage, wrap, magFilter, minFilter );
+    FreeImage_Unload( masksImage.dib );
+  }
+  else {
+    Image specularImage, emissionImage;
+    specularImage.dib = nullptr;
+    emissionImage.dib = nullptr;
+
+    if( specular.stat() ) {
+      specularImage = loadImage( specular.path(), GL_RGB );
+    }
     if( emission.stat() ) {
       emissionImage = loadImage( emission.path(), GL_LUMINANCE );
     }
-  }
-  else if( specular1.stat() ) {
-    specImage = loadImage( specular1.path(), GL_RGB );
 
-    if( emission.stat() ) {
-      emissionImage = loadImage( emission.path(), GL_LUMINANCE );
+    if( specularImage.dib == nullptr && emissionImage.dib == nullptr ) {
+      // Drop through.
     }
-  }
+    else if( specularImage.dib == nullptr ) {
+      for( int i = 0; i < emissionImage.width * emissionImage.height; ++i ) {
+        ubyte& b = emissionImage.pixels[i*3 + 0];
+        ubyte& g = emissionImage.pixels[i*3 + 1];
+        ubyte& r = emissionImage.pixels[i*3 + 2];
 
-  if( image.dib != nullptr ) {
-    *masksTex = Texture( &image, wrap, magFilter, minFilter );
-    FreeImage_Unload( image.dib );
-  }
-  else if( specImage.dib != nullptr ) {
-    if( emissionImage.dib != nullptr ) {
-      if( specImage.width != emissionImage.width || specImage.height != emissionImage.height ) {
+        r = 0;
+        g = ubyte( ( b + g + r ) / 3 );
+        b = 0;
+      }
+
+      *masksTex = Texture( &emissionImage, wrap, magFilter, minFilter );
+    }
+    else if( emissionImage.dib == nullptr ) {
+      for( int i = 0; i < specularImage.width * specularImage.height; ++i ) {
+        ubyte& b = specularImage.pixels[i*3 + 0];
+        ubyte& g = specularImage.pixels[i*3 + 1];
+        ubyte& r = specularImage.pixels[i*3 + 2];
+
+        r = ubyte( ( b + g + r ) / 3 );
+        g = 0;
+        b = 0;
+      }
+
+      *masksTex = Texture( &specularImage, wrap, magFilter, minFilter );
+    }
+    else {
+      if( specularImage.width != emissionImage.width ||
+          specularImage.height != emissionImage.height )
+      {
         OZ_ERROR( "Specular and emission texture masks must have the same size." );
       }
+
+      for( int i = 0; i < specularImage.width * specularImage.height; ++i ) {
+        ubyte& b = specularImage.pixels[i*3 + 0];
+        ubyte& g = specularImage.pixels[i*3 + 1];
+        ubyte& r = specularImage.pixels[i*3 + 2];
+
+        ubyte& eb = emissionImage.pixels[i*3 + 0];
+        ubyte& eg = emissionImage.pixels[i*3 + 1];
+        ubyte& er = emissionImage.pixels[i*3 + 2];
+
+        r = ubyte( ( b + g + r ) / 3 );
+        g = ubyte( ( eb + eg + er ) / 3 );
+        b = 0;
+      }
+
+      *masksTex = Texture( &specularImage, wrap, magFilter, minFilter );
     }
 
-    for( int i = 0; i < specImage.width * specImage.height; ++i ) {
-      ubyte& b = specImage.pixels[i*3 + 0];
-      ubyte& g = specImage.pixels[i*3 + 1];
-      ubyte& r = specImage.pixels[i*3 + 2];
-
-      r = ubyte( ( b + g + r ) / 3 );
-      g = ubyte( emissionImage.dib == nullptr ? 0 : emissionImage.pixels[i] );
-      b = 0;
+    if( specularImage.dib != nullptr ) {
+      FreeImage_Unload( specularImage.dib );
     }
-
-    *masksTex = Texture( &specImage, wrap, magFilter, minFilter );
-
-    FreeImage_Unload( specImage.dib );
     if( emissionImage.dib != nullptr ) {
       FreeImage_Unload( emissionImage.dib );
     }
   }
 
-  if( bumpmap ) {
-    image.dib = nullptr;
+  if( bumpmap && normals.stat() ) {
+    Image normalsImage = loadImage( normals.path() );
 
-    if( normals.stat() ) {
-      image = loadImage( normals.path() );
-    }
-    else if( normals1.stat() ) {
-      image = loadImage( normals1.path(), GL_RGB );
-    }
-    else if( normals2.stat() ) {
-      image = loadImage( normals2.path(), GL_RGB );
-    }
-    else if( normals3.stat() ) {
-      image = loadImage( normals3.path(), GL_RGB );
-    }
-
-    if( image.dib != nullptr ) {
-      *normalsTex = Texture( &image, wrap, magFilter, minFilter );
-      FreeImage_Unload( image.dib );
-    }
+    *normalsTex = Texture( &normalsImage, wrap, magFilter, minFilter );
+    FreeImage_Unload( normalsImage.dib );
   }
 }
 

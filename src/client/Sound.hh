@@ -106,9 +106,11 @@ class Sound
     size_t         aacInputBytes;
 #endif
 
-    // music track id to switch to, -1 to do nothing, -2 stop playing
+    // Music track id to switch to, -1 to do nothing, -2 stop playing.
     int            selectedTrack;
-    // music track id, -1 for not playing
+    // Automatically advance to the next track when one finishes.
+    bool           advanceTrack;
+    // Music track id, -1 for not playing.
     volatile int   currentTrack;
 
     int            streamedTrack;
@@ -124,6 +126,8 @@ class Sound
 
     volatile bool  isMusicAlive;
     volatile bool  isSoundAlive;
+
+  private:
 
     static void musicMain( void* );
     static void soundMain( void* );
@@ -145,7 +149,7 @@ class Sound
     bool isMusicPlaying() const;
     int  getCurrentTrack() const;
 
-    void playMusic( int track );
+    void playMusic( int track, bool advanceTrack );
     void stopMusic();
 
     void resume() const;

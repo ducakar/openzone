@@ -123,7 +123,7 @@ bool Lingua::initMission( const char* mission )
 
   nMessages = ( 4 * length ) / 3;
   messages = new Message*[nMessages];
-  aSet<Message*, Message*>( messages, nullptr, nMessages );
+  aFill<Message*, Message*>( messages, nullptr, nMessages );
 
   for( int i = 0; i < length; ++i ) {
     uint index = uint( is.readInt() ) % uint( nMessages );
@@ -177,7 +177,7 @@ bool Lingua::init( const char* language_ )
 
   nMessages = ( 4 * nMessages ) / 3;
   messages = new Message*[nMessages];
-  aSet<Message*, Message*>( messages, nullptr, nMessages );
+  aFill<Message*, Message*>( messages, nullptr, nMessages );
 
   foreach( file, files.iter() ) {
     if( !file->hasExtension( "ozCat" ) ) {

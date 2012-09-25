@@ -5,7 +5,7 @@ build commands
 [EnginePath]: path to the engine .. C:\quake3\ C:\Program Files\Quake III Arena\ /usr/local/games/quake3/
 -->
 <project version="2.0">
-<var name="q3map2">"[RadiantPath]q3map2.[ExecutableType]" -v<cond value="[MonitorAddress]"> -connect [MonitorAddress]</cond> -fs_basepath "[EnginePath]" -fs_homepath "[UserEnginePath]"</var>
+<var name="q3map2">"[RadiantPath]q3map2.[ExecutableType]" -v<cond value="[MonitorAddress]"> -connect [MonitorAddress]</cond> -game xonotic -fs_basepath "[EnginePath]" -fs_homepath "[UserEnginePath]"<cond value="[GameName]"> -fs_game [GameName]</cond></var>
 <build name="Build BSP">
 <command>[q3map2] -v "[MapFile]"</command>
 </build>

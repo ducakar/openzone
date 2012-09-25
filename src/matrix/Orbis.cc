@@ -102,7 +102,7 @@ void Orbis::unposition( Object* obj )
     obj->next[0]->prev[0] = obj->prev[0];
   }
 
-  cell->objects.remove( obj, obj->prev[0] );
+  cell->objects.erase( obj, obj->prev[0] );
 }
 
 void Orbis::position( Frag* frag )
@@ -133,7 +133,7 @@ void Orbis::unposition( Frag* frag )
     frag->next[0]->prev[0] = frag->prev[0];
   }
 
-  cell->frags.remove( frag, frag->prev[0] );
+  cell->frags.erase( frag, frag->prev[0] );
 }
 
 Struct* Orbis::add( const BSP* bsp, const Point& p, Heading heading )
@@ -263,7 +263,7 @@ void Orbis::reposition( Object* obj )
       obj->next[0]->prev[0] = obj->prev[0];
     }
 
-    oldCell->objects.remove( obj, obj->prev[0] );
+    oldCell->objects.erase( obj, obj->prev[0] );
 
     obj->cell = newCell;
     obj->prev[0] = nullptr;
@@ -288,7 +288,7 @@ void Orbis::reposition( Frag* frag )
       frag->next[0]->prev[0] = frag->prev[0];
     }
 
-    oldCell->frags.remove( frag, frag->prev[0] );
+    oldCell->frags.erase( frag, frag->prev[0] );
 
     frag->cell = newCell;
     frag->prev[0] = nullptr;

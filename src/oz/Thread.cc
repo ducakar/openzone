@@ -118,9 +118,11 @@ void* Thread::Descriptor::threadMain( void* data )
   pthread_setspecific( nameKey, descriptor->name );
 #endif
 
+  // Set up signal handlers (if enabled).
   System::threadInit();
 
 #ifdef OZ_JNI
+  // It's nice to register new threads with JVM.
   void* jniEnv;
   System::javaVM->AttachCurrentThread( &jniEnv, nullptr );
 #endif

@@ -69,11 +69,11 @@ class System
 {
   public:
 
-    /// Wait for CTRL-C (or other fatal signal) in `abort()`, so one has time to attach a debugger.
+    /// If running from a terminal, halt in `abort()`, so one has time to attach a debugger.
     static const int HALT_BIT = 0x01;
 
-    /// Catch fatal signals (SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon which print diagnostics and
-    /// abort the program (similar to `error()` call).
+    /// Catch fatal signals (SIGQUIT, SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon which print
+    /// diagnostics and abort the program (similar to `error()` call).
     static const int SIGNAL_HANDLER_BIT = 0x10;
 
     /// Override handlers for exception violations (`std::terminate()` and `std::unexpected()`) with
@@ -142,7 +142,9 @@ class System
     /**
      * Print error message and halt the program.
      *
-     * Same as `System::warning()` but also aborts the program.
+     * Same as `System::warning()` but also aborts the program. If running from a terminal and
+     * `HALT_BIT` was passed to `init()` initialisation, it halts before aborting so one can attach
+     * a debugger.
      *
      * You will probably want to use `OZ_ERROR` macro instead to fill in the current function, file
      * and line for you.

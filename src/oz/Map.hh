@@ -454,7 +454,7 @@ class Map
      *
      * All later elements are shifted to fill the gap.
      */
-    void remove( int i )
+    void erase( int i )
     {
       hard_assert( uint( i ) < uint( count ) );
 
@@ -480,7 +480,7 @@ class Map
       int i = aBisect<Elem, Key>( data, key, count );
 
       if( i >= 0 && data[i].key == key ) {
-        remove( i );
+        erase( i );
         return i;
       }
       return -1;

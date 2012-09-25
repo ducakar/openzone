@@ -257,7 +257,7 @@ class SBitset
      */
     void setAll()
     {
-      aSet<ulong, ulong>( data, ~0ul, SIZE );
+      aFill<ulong, ulong>( data, ~0ul, SIZE );
     }
 
     /**
@@ -265,7 +265,7 @@ class SBitset
      */
     void clearAll()
     {
-      aSet<ulong, ulong>( data, 0ul, SIZE );
+      aFill<ulong, ulong>( data, 0ul, SIZE );
     }
 
     /**

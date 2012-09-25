@@ -314,7 +314,7 @@ class SList
     /**
      * Remove the last element.
      */
-    void remove()
+    void erase()
     {
       popLast();
     }
@@ -324,7 +324,7 @@ class SList
      *
      * All later elements are shifted to fill the gap.
      */
-    void remove( int i )
+    void erase( int i )
     {
       hard_assert( uint( i ) < uint( count ) );
 
@@ -345,12 +345,18 @@ class SList
      *
      * The last element is moved to its place.
      */
-    void removeUO( int i )
+    void eraseUO( int i )
     {
       hard_assert( uint( i ) < uint( count ) );
 
-      --count;
-      data[i] = static_cast<Elem&&>( data[count] );
+      if( i == count ) {
+        // When removing the last element, move is probably a no-op, so its resources are not
+        // implicitly destroyed by move operation.
+        data[count] = Elem();
+      }
+      else {
+        data[i] = static_cast<Elem&&>( data[count] );
+      }
     }
 
     /**
@@ -363,7 +369,7 @@ class SList
       int i = aIndex<Elem, Elem>( data, e, count );
 
       if( i >= 0 ) {
-        remove( i );
+        erase( i );
       }
       return i;
     }
@@ -380,7 +386,7 @@ class SList
       int i = aIndex<Elem, Elem>( data, e, count );
 
       if( i >= 0 ) {
-        removeUO( i );
+        eraseUO( i );
       }
       return i;
     }

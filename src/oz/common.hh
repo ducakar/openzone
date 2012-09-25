@@ -25,10 +25,10 @@
  *
  * Essential includes, macros, types and templates.
  *
- * You may want to add `soft_assert`, `hard_assert`, `byte`, `ubyte`, `ushort`, `ulong`, `long64`,
- * `ulong64`, `foreach`, `float4` and `uint4` to your `~/.kde/share/apps/katepart/syntax/cpp.xml` or
- * global `/usr/share/apps/katepart/syntax/cpp.xml` to look like reserved words in KatePart
- * (KWrite/Kate/KDevelop).
+ * You may want to add `soft_assert`, `hard_assert`, `nil_t`, `nil`, `byte`, `ubyte`, `ushort`,
+ * `ulong`, `long64`, `ulong64`, `foreach`, `float4` and `uint4` to your
+ * `~/.kde/share/apps/katepart/syntax/cpp.xml` or global `/usr/share/apps/katepart/syntax/cpp.xml`
+ * to look like reserved words in KatePart (KWrite/Kate/KDevelop).
  */
 
 #pragma once
@@ -53,7 +53,7 @@
 
 /**
  * @def OZ_HIDDEN
- * Compiler-specific attribute that hides a symbol when building a shared library.
+ * Compiler-specific attribute that prevents symbol exporting when building a shared library.
  */
 #ifdef _WIN32
 # define OZ_HIDDEN
@@ -69,7 +69,7 @@
 
 /**
  * @def OZ_PRINTF_FORMAT
- * Compiler-specific attribute specifying printf-like arguments checking.
+ * Compiler-specific attribute that specifies checking of printf-like arguments.
  */
 #define OZ_PRINTF_FORMAT( s, first ) __attribute__(( format( printf, s, first ) ))
 
@@ -92,26 +92,7 @@ using std::size_t;
 /**
  * Unit type.
  */
-struct nil_t
-{
-  /**
-   * Equality, always true for unit.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator == ( const nil_t& ) const
-  {
-    return true;
-  }
-
-  /**
-   * Inequality, always false for unit.
-   */
-  OZ_ALWAYS_INLINE
-  bool operator != ( const nil_t& ) const
-  {
-    return false;
-  }
-};
+struct nil_t {};
 
 /**
  * Unit constant.

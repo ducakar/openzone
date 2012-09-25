@@ -597,7 +597,7 @@ class JSON
      *
      * @return false iff an invalid index was given.
      */
-    bool remove( int index );
+    bool erase( int index );
 
     /**
      * Remove element with the given key from an object.

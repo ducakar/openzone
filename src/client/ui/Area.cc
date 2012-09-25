@@ -199,14 +199,14 @@ void Area::remove( Area* area )
 {
   hard_assert( children.has( area ) );
 
-  children.remove( area );
+  children.erase( area );
   delete area;
 }
 
 void Area::raise()
 {
   if( parent != nullptr && parent->children.first() != this ) {
-    parent->children.remove( this );
+    parent->children.erase( this );
     parent->children.pushFirst( this );
   }
 }
@@ -214,7 +214,7 @@ void Area::raise()
 void Area::sink()
 {
   if( parent != nullptr && parent->children.last() != this ) {
-    parent->children.remove( this );
+    parent->children.erase( this );
     parent->children.pushLast( this );
   }
 }

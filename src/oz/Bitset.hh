@@ -357,7 +357,7 @@ class Bitset
      */
     void setAll()
     {
-      aSet<ulong, ulong>( data, ~0ul, size );
+      aFill<ulong, ulong>( data, ~0ul, size );
     }
 
     /**
@@ -365,7 +365,7 @@ class Bitset
      */
     void clearAll()
     {
-      aSet<ulong, ulong>( data, 0ul, size );
+      aFill<ulong, ulong>( data, 0ul, size );
     }
 
     /**

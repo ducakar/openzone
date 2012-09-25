@@ -81,7 +81,7 @@ static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle )
 #ifdef OZ_NONFREE
 
 OZ_ALWAYS_INLINE
-static short madFixedToShort( mad_fixed_t f )
+static inline short madFixedToShort( mad_fixed_t f )
 {
   if( f < -MAD_F_ONE ) {
     return SHRT_MIN;
@@ -637,11 +637,12 @@ int Sound::getCurrentTrack() const
   return currentTrack;
 }
 
-void Sound::playMusic( int track )
+void Sound::playMusic( int track, bool advanceTrack_ )
 {
   hard_assert( track >= 0 );
 
   selectedTrack = track;
+  advanceTrack  = advanceTrack_;
 }
 
 void Sound::stopMusic()

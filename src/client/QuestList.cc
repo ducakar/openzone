@@ -46,7 +46,7 @@ void QuestList::add( const char* title, const char* description, const Point& pl
 
 void QuestList::remove( int index )
 {
-  quests.remove( index );
+  quests.erase( index );
 
   if( index < activeQuest ) {
     --activeQuest;

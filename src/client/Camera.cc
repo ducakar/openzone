@@ -115,7 +115,7 @@ void Camera::updateReferences()
     const Bot* unit = static_cast<const Bot*>( orbis.objects[ switchableUnits[i] ] );
 
     if( unit == nullptr ) {
-      switchableUnits.remove( i );
+      switchableUnits.erase( i );
     }
     else {
       ++i;

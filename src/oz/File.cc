@@ -305,14 +305,18 @@ bool File::stat()
     fileTime = 0;
   }
   else {
-    ULARGE_INTEGER creationTime = { {
-      info.ftCreationTime.dwLowDateTime,
-      info.ftCreationTime.dwHighDateTime
-    } };
-    ULARGE_INTEGER modificationTime = { {
-      info.ftLastWriteTime.dwLowDateTime,
-      info.ftLastWriteTime.dwHighDateTime
-    } };
+    ULARGE_INTEGER creationTime = {
+      {
+        info.ftCreationTime.dwLowDateTime,
+        info.ftCreationTime.dwHighDateTime
+      }
+    };
+    ULARGE_INTEGER modificationTime = {
+      {
+        info.ftLastWriteTime.dwLowDateTime,
+        info.ftLastWriteTime.dwHighDateTime
+      }
+    };
 
     fileTime = max( creationTime.QuadPart, modificationTime.QuadPart ) / 10000;
     fileSize = -1;

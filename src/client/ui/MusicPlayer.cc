@@ -26,7 +26,6 @@
 
 #include <client/Camera.hh>
 #include <client/Sound.hh>
-
 #include <client/ui/Style.hh>
 
 namespace oz
@@ -46,7 +45,7 @@ void MusicPlayer::prevTrack( Button* sender )
 
     sound.stopMusic();
     sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
-    sound.playMusic( musicPlayer->currentTrack );
+    sound.playMusic( musicPlayer->currentTrack, true );
 
     musicPlayer->title.set( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
     musicPlayer->trackLabel.set( "%d", musicPlayer->currentTrack + 1 );
@@ -64,7 +63,7 @@ void MusicPlayer::nextTrack( Button* sender )
 
     sound.stopMusic();
     sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
-    sound.playMusic( musicPlayer->currentTrack );
+    sound.playMusic( musicPlayer->currentTrack, true );
 
     musicPlayer->title.set( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
     musicPlayer->trackLabel.set( "%d", musicPlayer->currentTrack + 1 );
@@ -80,7 +79,7 @@ void MusicPlayer::playTrack( Button* sender )
   if( nTracks != 0 ) {
     sound.stopMusic();
     sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
-    sound.playMusic( musicPlayer->currentTrack );
+    sound.playMusic( musicPlayer->currentTrack, true );
 
     musicPlayer->title.set( "%s", liber.musicTracks[musicPlayer->currentTrack].name.cstr() );
     musicPlayer->trackLabel.set( "%d", musicPlayer->currentTrack + 1 );
@@ -136,38 +135,30 @@ void MusicPlayer::onUpdate()
     }
     return;
   }
-  else {
-    if( mouse.doShow && ( flags & HIDDEN_BIT ) ) {
-      show( true );
-    }
+  else if( mouse.doShow && ( flags & HIDDEN_BIT ) ) {
+    show( true );
   }
 
   int soundTrack = sound.getCurrentTrack();
-  if( soundTrack != currentTrack ) {
+  if( isPlaying && soundTrack != currentTrack ) {
     if( soundTrack == -1 ) {
-      isPlaying = false;
+      // Go to next track.
+      int nTracks = liber.musicTracks.length();
 
-      title.set( " " );
+      if( nTracks > 0 ) {
+        currentTrack = ( currentTrack + 1 ) % nTracks;
+
+        sound.stopMusic();
+        sound.playMusic( currentTrack, true );
+
+        title.set( "%s", liber.musicTracks[currentTrack].name.cstr() );
+        trackLabel.set( "%d", currentTrack + 1 );
+      }
     }
     else {
-      currentTrack = soundTrack;
-
-      title.set( "%s", liber.musicTracks[currentTrack].name.cstr() );
-      trackLabel.set( "%d", currentTrack + 1 );
-    }
-  }
-
-  if( isPlaying && !sound.isMusicPlaying() ) {
-    int nTracks = liber.musicTracks.length();
-
-    if( nTracks > 0 ) {
-      currentTrack = ( currentTrack + 1 ) % nTracks;
-
-      sound.stopMusic();
-      sound.playMusic( currentTrack );
-
-      title.set( "%s", liber.musicTracks[currentTrack].name.cstr() );
-      trackLabel.set( "%d", currentTrack + 1 );
+      // Probably a cinematic sequence scheduled a new track.
+      isPlaying = false;
+      title.set( " " );
     }
   }
 }

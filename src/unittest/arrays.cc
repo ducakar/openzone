@@ -55,12 +55,18 @@ void test_arrays()
   OZ_CHECK( !aEquals( a, b, 4 ) );
   OZ_CHECK( aEquals( a, b, 0 ) );
 
-  aSet( a, 0, 4 );
-  aSet( a, -1, 0 );
+  aFill( a, 0, 4 );
+  aFill( a, -1, 0 );
   OZ_CHECK_CONTENTS( a, 0, 0, 0, 0 );
 
-  iSet( iter( a ), 1 );
+  iFill( iter( a ), 1 );
   OZ_CHECK_CONTENTS( a, 1, 1, 1, 1 );
+
+  aSwap( a, b, 4 );
+  OZ_CHECK_CONTENTS( a, 1, 2, 3, 2 );
+  OZ_CHECK_CONTENTS( b, 1, 1, 1, 1 );
+  aSwap( a + 1, b + 1, 3 );
+  aSwap( a, b, 1 );
 
   aCopy( a, b, 4 );
   aCopy( a, b, 0 );

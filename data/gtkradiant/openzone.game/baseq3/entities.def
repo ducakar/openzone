@@ -1,0 +1,7 @@
+/*QUAKED entity (1 0 1) ?
+BSP structure entity. It must be configured in a corresponding .json file.
+-------- KEYS --------
+openSound: sound sample played when opened.
+closeSound: sound sample played when closed.
+frictSound: sound sample looping when opening/closing.
+*/

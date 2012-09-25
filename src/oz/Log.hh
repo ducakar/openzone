@@ -138,14 +138,6 @@ class Log
     static void printSignal( int sigNum );
 
     /**
-     * Print notice to attach debugger.
-     *
-     * This method is only required by signal handler since it has issues with functions that take
-     * variable arguments.
-     */
-    static void printHalt();
-
-    /**
      * First parameter is file path (if `nullptr` or "", it only writes to terminal), the other
      * tells whether to clear its content if the file already exists.
      */

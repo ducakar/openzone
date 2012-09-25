@@ -11,7 +11,8 @@
 /build
 
 /data/*/*
-!/data/radiant/*
+!/data/netradiant/*
+!/data/gtkradiant/*
 !/data/*/baseq3
 /data/*/baseq3/*
 !/data/*/baseq3/maps

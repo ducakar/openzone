@@ -107,6 +107,7 @@ class Thread
      *
      * On Android/JNI, `System::javaVM` must be set prior to calling this function.
      *
+     * @param name thread name (string is copied to an internal buffer).
      * @param main pointer to thread's main function.
      * @param data pointer to user data, passed to thread's main function.
      */

@@ -563,7 +563,7 @@ void Struct::onUpdate()
 {
   for( int i = 0; i < boundObjects.length(); ) {
     if( orbis.objects[ boundObjects[i] ] == nullptr ) {
-      boundObjects.removeUO( i );
+      boundObjects.eraseUO( i );
     }
     else {
       ++i;

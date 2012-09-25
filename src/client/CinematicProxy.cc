@@ -241,7 +241,7 @@ void CinematicProxy::update()
       sound.stopMusic();
     }
     else if( step.track != -1 ) {
-      sound.playMusic( step.track );
+      sound.playMusic( step.track, false );
     }
 
     if( !step.title.isEmpty() ) {

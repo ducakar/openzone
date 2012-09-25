@@ -1310,10 +1310,10 @@ JSON& JSON::includeObject( const char* key )
   return *entry;
 }
 
-bool JSON::remove( int index )
+bool JSON::erase( int index )
 {
   if( valueType != ARRAY ) {
-    OZ_ERROR( "Tried to remove a value from a non-array JSON value: %s", toString().cstr() );
+    OZ_ERROR( "Tried to erase a value from a non-array JSON value: %s", toString().cstr() );
   }
 
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
@@ -1322,7 +1322,7 @@ bool JSON::remove( int index )
     return false;
   }
 
-  list.remove( index );
+  list.erase( index );
   return true;
 }
 

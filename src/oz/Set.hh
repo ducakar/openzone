@@ -411,7 +411,7 @@ class Set
      *
      * All later elements are shifted to fill the gap.
      */
-    void remove( int i )
+    void erase( int i )
     {
       hard_assert( uint( i ) < uint( count ) );
 
@@ -437,7 +437,7 @@ class Set
       int i = aBisect<Elem, Elem>( data, elem, count );
 
       if( i >= 0 && data[i] == elem ) {
-        remove( i );
+        erase( i );
         return i;
       }
       return -1;

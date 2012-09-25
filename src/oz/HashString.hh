@@ -70,7 +70,8 @@ class HashString
         template <typename Key_, typename Value_ = Value>
         OZ_ALWAYS_INLINE
         explicit Elem( Elem* next_, Key_&& key_, Value_&& value_ ) :
-          next( next_ ), key( static_cast<Key_&&>( key_ ) ), value( static_cast<Value_&&>( value_ ) )
+          next( next_ ), key( static_cast<Key_&&>( key_ ) ),
+          value( static_cast<Value_&&>( value_ ) )
         {}
 
         OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
@@ -244,7 +245,7 @@ class HashString
      */
     HashString()
     {
-      aSet<Elem*, Elem*>( data, nullptr, SIZE );
+      aFill<Elem*, Elem*>( data, nullptr, SIZE );
     }
 
     /**
@@ -273,7 +274,7 @@ class HashString
       pool( static_cast< Pool<Elem, SIZE>&& >( t.pool ) )
     {
       aCopy<Elem*>( data, t.data, SIZE );
-      aSet<Elem*, Elem*>( t.data, nullptr, SIZE );
+      aFill<Elem*, Elem*>( t.data, nullptr, SIZE );
     }
 
     /**
@@ -306,7 +307,7 @@ class HashString
       aCopy<Elem*>( data, t.data, SIZE );
       pool = static_cast< Pool<Elem, SIZE>&& >( t.pool );
 
-      aSet<Elem*, Elem*>( t.data, nullptr, SIZE );
+      aFill<Elem*, Elem*>( t.data, nullptr, SIZE );
       return *this;
     }
 

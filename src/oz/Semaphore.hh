@@ -36,7 +36,8 @@ namespace oz
 /**
  * %Semaphore.
  *
- * It is implemented as a wrapper for condition variable as it should yield better performance.
+ * It is implemented as a wrapper for condition variable if a platform supports it since it should
+ * yield a better performance.
  */
 class Semaphore
 {

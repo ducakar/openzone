@@ -36,7 +36,8 @@ function onCreate()
 
   ozCaelumLoad( "earth" )
   ozCaelumSetHeading( math.pi / 8 )
-  ozCaelumSetPeriod( 1440 )
+  ozCaelumSetPeriod( 3600 )
+  ozCaelumSetTime( 0 )
 --   ozCaelumSetRealTime()
 
   local me = ozOrbisAddPlayer( OZ_FORCE, 137, -6, 73, OZ_SOUTH )

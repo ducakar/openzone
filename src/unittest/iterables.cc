@@ -78,11 +78,14 @@ void test_iterables()
   OZ_CHECK( !iEquals( l.citer(), v.citer() ) );
   OZ_CHECK( iEquals( citer( l ), citer( l ) ) );
 
-  iSet( l.iter(), 0 );
-  iSet( invalid, static_cast<Foo*>( nullptr ) );
-  foreach( i, l.citer() ) {
-    OZ_CHECK( *i == 0 );
-  }
+  iFill( l.iter(), 0 );
+  iFill( invalid, static_cast<Foo*>( nullptr ) );
+  OZ_CHECK_CONTENTS( l, 0, 0, 0, 0 );
+
+  iSwap( l.iter(), v.iter() );
+  OZ_CHECK_CONTENTS( l, 1, 2, 3, 2 );
+  OZ_CHECK_CONTENTS( v, 0, 0, 0, 0 );
+  iSwap( v.iter(), l.iter() );
 
   iCopy( l.iter(), v.citer() );
   iCopy( invalid, invalid );
@@ -94,7 +97,7 @@ void test_iterables()
   v.add();
   OZ_CHECK( !iEquals( l.citer(), citer( v ) ) );
 
-  v.remove();
+  v.erase();
   OZ_CHECK( iEquals( citer( l ), citer( v ) ) );
 
   OZ_CHECK( !iContains( l.citer(), 0 ) );
@@ -185,7 +188,7 @@ void test_iterables()
 
   iCopy( l.iter(), v.citer() );
   iMove( l.iter(), v.iter() );
-  iSet( l.iter(), 0 );
+  iFill( l.iter(), 0 );
 
   OZ_CHECK( iEquals( l.citer(), v.citer() ) );
   OZ_CHECK( !iContains( l.citer(), 0 ) );

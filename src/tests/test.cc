@@ -114,49 +114,29 @@ struct Elem
   Elem* next[1];
 };
 
-Elem* copy( Elem* list )
+template <typename IteratorA, typename IteratorB = IteratorA>
+inline IteratorB copy( IteratorA first, IteratorA past, IteratorB dest )
 {
-  if( list == nullptr ) {
-    return nullptr;
-  }
-  else {
-    return new Elem{ list->value, { copy( list->next[0] ) } };
+  for( ; first != past; ++first, ++dest ) {
+    *dest = *first;
   }
 }
 
-Elem* reverse( Elem* list, Elem* reversed = nullptr )
+template <typename IteratorA, typename IteratorB = IteratorA>
+inline IteratorB move( IteratorA first, IteratorA past, IteratorB dest )
 {
-  if( list == nullptr ) {
-    return reversed;
-  }
-  else {
-    return reverse( list->next[0], { new Elem{ list->value, { reversed } } } );
+  for( ; first != past; ++first, ++dest ) {
+    *dest = static_cast<typename IteratorA::ElemType&&>( *first );
   }
 }
 
-// template <class Container>
-// inline auto begin( const Container& c ) -> decltype( c.citer().begin() )
-// {
-//   return c.citer().begin();
-// }
-//
-// template <class Container>
-// inline auto begin( Container& c ) -> decltype( c.iter().begin() )
-// {
-//   return c.iter().begin();
-// }
-//
-// template <class Container>
-// inline auto end( const Container& c ) -> decltype( c.citer().end() )
-// {
-//   return c.citer().end();
-// }
-//
-// template <class Container>
-// inline auto end( Container& c ) -> decltype( c.iter().end() )
-// {
-//   return c.iter().end();
-// }
+template <typename ElemA, typename ElemB = ElemA>
+inline ElemB* move( ElemA* first, ElemA* past, ElemB* dest )
+{
+  for( ; first != past; ++first, ++dest ) {
+    *dest = static_cast<ElemB&&>( *first );
+  }
+}
 
 int main()
 {
@@ -166,7 +146,8 @@ int main()
   m.add( 1 );
   m.add( 2 );
 
-  1 < m[1];
+  Time::sleep( 3000 );
+  m.dealloc();
 
   return 0;
 }

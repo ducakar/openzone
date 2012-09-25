@@ -76,12 +76,12 @@ void Builder::printUsage( const char* invocationName )
     "  -x         Check and copy Lua scripts.\n"
     "  -o         Build modules.\n"
     "  -r         Copy music tracks.\n"
-    "  -p         Pack built files into ZIP archive.\n"
     "  -A         Everything above.\n"
     "  -B         Build with bumpmap vertex format.\n"
     "  -C         Use S3 texture compression.\n"
-    "  -0         Use no compression for ZIP archive.\n"
-    "  -7         Create non-solid LZMA-compressed 7zip archive instead of ZIP.\n"
+    "  -Q         Use highest quality for texture mipmaps and compression.\n"
+    "  -Z         Compress created ZIP archive (highest compression level).\n"
+    "  -7         Create non-solid LZMA-compressed 7zip archive.\n"
     "\n",
     invocationName );
 }
@@ -722,13 +722,9 @@ void Builder::packArchive( const char* name, bool useCompression, bool use7zip )
 
   File archive( String::str( "../%s.%s", name, use7zip ? "7z" : "zip" ) );
 
-  String cmdLine = use7zip ?
-                   String::str( "7z u -ms=off %s '%s' *",
-                                useCompression ? "-mx=9" : "-m0=copy",
-                                archive.path().cstr() ) :
-                   String::str( "zip -ur %s '%s' *",
-                                useCompression ? "-9" : "-Z store",
-                                archive.path().cstr() );
+  String cmdLine = use7zip ? String::str( "7z u -ms=off -mx=9 '%s' *", archive.path().cstr() ) :
+                             String::str( "zip -ur %s '%s' *",
+                                          useCompression ? "-9" : "-0", archive.path().cstr() );
 
   Log::println( "%s", cmdLine.cstr() );
   Log::println();
@@ -772,16 +768,16 @@ int Builder::main( int argc, char** argv )
   bool doModules      = false;
   bool doMusic        = false;
   bool doMissions     = false;
-  bool doPack         = false;
-  bool useCompression = true;
+  bool useCompression = false;
   bool use7zip        = false;
 
-  context.bumpmap = false;
-  context.useS3TC = false;
+  context.bumpmap       = false;
+  context.useS3TC       = false;
+  context.isHighQuality = false;
 
   optind = 1;
   int opt;
-  while( ( opt = getopt( argc, argv, "lugctbmsafnxoripAC07h?" ) ) >= 0 ) {
+  while( ( opt = getopt( argc, argv, "lugctbmsafnxoriACQZ7h?" ) ) >= 0 ) {
     switch( opt ) {
       case 'l': {
         doCat = true;
@@ -843,10 +839,6 @@ int Builder::main( int argc, char** argv )
         doMissions = true;
         break;
       }
-      case 'p': {
-        doPack = true;
-        break;
-      }
       case 'A': {
         doCat      = true;
         doUI       = true;
@@ -863,15 +855,18 @@ int Builder::main( int argc, char** argv )
         doModules  = true;
         doMusic    = true;
         doMissions = true;
-        doPack     = true;
         break;
       }
       case 'C': {
         context.useS3TC = true;
         break;
       }
-      case '0': {
-        useCompression = false;
+      case 'Q': {
+        context.isHighQuality = true;
+        break;
+      }
+      case 'Z': {
+        useCompression = true;
         break;
       }
       case '7': {
@@ -914,10 +909,6 @@ int Builder::main( int argc, char** argv )
   if( outDir[0] != '/' ) {
     outDir = File::cwd() + "/" + outDir + "/" + pkgName;
   }
-
-  Log::print( "OpenZone Builder " OZ_VERSION " started on " );
-  Log::printTime( Time::local() );
-  Log::printEnd();
 
   SDL_Init( SDL_INIT_VIDEO );
   PFile::init();
@@ -1014,9 +1005,8 @@ int Builder::main( int argc, char** argv )
     copyFiles( "music", "music", "oga", true );
     copyFiles( "music", "music", "ogg", true );
   }
-  if( doPack ) {
-    packArchive( pkgName, useCompression, use7zip );
-  }
+
+  packArchive( pkgName, useCompression, use7zip );
 
   uint endTime = Time::clock();
   Log::println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
@@ -1028,12 +1018,6 @@ int Builder::main( int argc, char** argv )
   FreeImage_DeInitialise();
   PFile::free();
   SDL_Quit();
-
-  Alloc::printSummary();
-
-  Log::print( "OpenZone Builder " OZ_VERSION " finished on " );
-  Log::printTime( Time::local() );
-  Log::printEnd();
 
   return EXIT_SUCCESS;
 }

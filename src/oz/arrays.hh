@@ -256,7 +256,7 @@ inline void aReverseMove( Elem* aDest, Elem* aSrc, int count )
  * %Set array elements to the given value.
  */
 template <typename Elem, typename Value = Elem>
-inline void aSet( Elem* aDest, const Value& value, int count )
+inline void aFill( Elem* aDest, const Value& value, int count )
 {
   for( int i = 0; i < count; ++i ) {
     aDest[i] = value;
