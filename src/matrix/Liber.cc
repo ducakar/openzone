@@ -368,8 +368,8 @@ void Liber::initBSPs()
 
     Log::println( "%s", name.cstr() );
 
-    BSP* bsp = bsps.add( name );
-    bsp->init( name, bsps.length() );
+    BSP& bsp = bsps.add( name );
+    bsp.init( name, bsps.length() );
   }
 
   nBSPs = bsps.length();

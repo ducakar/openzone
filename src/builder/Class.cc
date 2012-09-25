@@ -85,8 +85,7 @@ void Class::fillObject( const char* className )
    * dim
    */
 
-  dim = Vec3( -1.0f, -1.0f, -1.0f );
-  config["dim"].get( dim, 3 );
+  dim = config["dim"].get( Vec3( -1.0f, -1.0f, -1.0f ) );
 
   if( dim.x < 0.0f || dim.x > Object::REAL_MAX_DIM ||
       dim.y < 0.0f || dim.y > Object::REAL_MAX_DIM ||
@@ -455,33 +454,17 @@ void Class::fillBot( const char* className )
   const JSON& nvColourConfig     = config["nvColour"];
   const JSON& injuryColourConfig = config["injuryColour"];
 
-  baseColour        = Mat44::ID;
-  nvColour          = Camera::NV_COLOUR;
-  injuryColour      = INJURY_COLOUR;
-
-  Mat44 m;
-
-  if( !baseColourConfig.isNull() ) {
-    baseColourConfig.get( m, 16 );
-    baseColour = m;
-  }
-
-  if( !nvColourConfig.isNull() ) {
-    nvColourConfig.get( m, 16 );
-    nvColour = m;
-  }
-
-  if( !injuryColourConfig.isNull() ) {
-    injuryColourConfig.get( m, 16 );
-    injuryColour = m;
-  }
+  baseColour   = baseColourConfig.get( Mat44::ID );
+  nvColour     = nvColourConfig.get( Camera::NV_COLOUR );
+  injuryColour = injuryColourConfig.get( INJURY_COLOUR );
 }
 
 void Class::fillVehicle( const char* className )
 {
   fillDynamic( className );
 
-  flags |= Object::VEHICLE_BIT | Object::CYLINDER_BIT | Object::UPDATE_FUNC_BIT | Object::USE_FUNC_BIT;
+  flags |= Object::VEHICLE_BIT | Object::CYLINDER_BIT | Object::UPDATE_FUNC_BIT |
+           Object::USE_FUNC_BIT;
 
   if( !audioType.isEmpty() ) {
     const JSON& soundsConfig = config["audioSounds"];
@@ -537,9 +520,7 @@ void Class::fillVehicle( const char* className )
               " AIR", className );
   }
 
-  pilotPos = Vec3::ZERO;
-  config["pilotPos"].get( pilotPos, 3 );
-
+  pilotPos = config["pilotPos"].get( Vec3::ZERO );
   lookHMin = config["lookHMin"].get( -120.0f );
   lookHMax = config["lookHMax"].get( +120.0f );
   lookVMin = config["lookVMin"].get( -60.0f );

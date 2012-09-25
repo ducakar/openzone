@@ -60,11 +60,8 @@ void BSP::load()
   life = config["life"].get( DEFAULT_LIFE );
   resistance = config["resistance"].get( DEFAULT_RESISTANCE );
 
-  waterFogColour = Vec4( 0.00f, 0.05f, 0.20f, 1.00f );
-  config["waterFogColour"].get( waterFogColour, 4 );
-
-  lavaFogColour = Vec4( 0.30f, 0.20f, 0.00f, 1.00f );
-  config["lavaFogColour"].get( lavaFogColour, 4 );
+  waterFogColour = config["waterFogColour"].get( Vec4( 0.00f, 0.05f, 0.20f, 1.00f ) );
+  lavaFogColour  = config["lavaFogColour"].get( Vec4( 0.30f, 0.20f, 0.00f, 1.00f ) );
 
   if( life <= 0.0f || !Math::isnormal( life ) ) {
     OZ_ERROR( "%s: Invalid life value. Should be > 0 and finite. If you want infinite life rather"
@@ -240,11 +237,8 @@ void BSP::load()
 
       models[i].firstBrush = is.readInt();
       models[i].nBrushes   = is.readInt();
-
-      models[i].title = entityConfig["title"].get( "" );
-
-      models[i].move = Vec3::ZERO;
-      entityConfig["move"].get( models[i].move, 3 );
+      models[i].title      = entityConfig["title"].get( "" );
+      models[i].move       = entityConfig["move"].get( Vec3::ZERO );
 
       String sType = entityConfig["type"].get( "" );
 
@@ -297,11 +291,8 @@ void BSP::load()
           OZ_ERROR( "model[%d].name is empty", i );
         }
 
-        Vec3 translation;
-        modelConfig["translation"].get( translation, 3 );
-
-        Vec3 rotation;
-        modelConfig["rotation"].get( rotation, 3 );
+        Vec3 translation = modelConfig["translation"].get( Vec3::ZERO );
+        Vec3 rotation    = modelConfig["rotation"].get( Vec3::ZERO );
 
         models[i].modelTransf = Mat44::translation( models[i].p() + translation - Point::ORIGIN );
         models[i].modelTransf.rotateY( Math::rad( rotation.y ) );
@@ -482,9 +473,7 @@ void BSP::load()
       BoundObject object;
 
       object.clazz = clazz;
-
-      object.pos = Point::ORIGIN;
-      objectConfig["pos"].get( object.pos, 3 );
+      object.pos   = objectConfig["pos"].get( Point::ORIGIN );
 
       String sHeading = objectConfig["heading"].get( "" );
       if( sHeading.equals( "NORTH" ) ) {

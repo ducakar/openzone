@@ -74,28 +74,20 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* missionLin
     const JSON& rotArray = stepConfig["rot"];
 
     if( !rotArray.isNull() ) {
-      float rot[3] = { 0.0f, 0.0f, 0.0f };
-
-      rotArray.get( rot, 3 );
-      step.rot = Quat::rotationZXZ( Math::rad( rot[0] ), Math::rad( rot[1] ), Math::rad( rot[2] ) );
+      Vec3 rot = rotArray.asVec3();
+      step.rot = Quat::rotationZXZ( Math::rad( rot.x ), Math::rad( rot.y ), Math::rad( rot.z ) );
     }
 
     const JSON& posArray = stepConfig["pos"];
 
     if( !posArray.isNull() ) {
-      Point p = Point( 0.0f, 0.0f, 0.0f );
-
-      posArray.get( p, 3 );
-      step.p = p;
+      step.p = posArray.asPoint();
     }
 
     const JSON& colourArray = stepConfig["colour"];
 
     if( !colourArray.isNull() ) {
-      Mat44 m;
-
-      colourArray.get( m, 16 );
-      step.colour = m;
+      step.colour = colourArray.asMat44();
     }
 
     const JSON& trackConfig = stepConfig["track"];

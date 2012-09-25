@@ -9,6 +9,7 @@
 /share
 /support
 /build
+/core
 
 /data/*/*
 !/data/netradiant/*

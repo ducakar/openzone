@@ -456,10 +456,10 @@ class HashIndex
     /**
      * Add a new element, if the key already exists in the hashtable overwrite existing element.
      *
-     * @return Pointer to the value of the inserted element.
+     * @return Reference to the value of the inserted element.
      */
     template <typename Value_ = Value>
-    Value* add( int key, Value_&& value = Value() )
+    Value& add( int key, Value_&& value = Value() )
     {
       uint  i = uint( key ) % uint( SIZE );
       Elem* e = data[i];
@@ -467,43 +467,41 @@ class HashIndex
       while( e != nullptr ) {
         if( e->key == key ) {
           e->value = static_cast<Value_&&>( value );
-          return &e->value;
+          return e->value;
         }
 
         e = e->next;
       }
 
       data[i] = new( pool ) Elem( data[i], key, static_cast<Value_&&>( value ) );
-
       soft_assert( loadFactor() < 0.75f );
 
-      return &data[i]->value;
+      return data[i]->value;
     }
 
     /**
      * Add a new element if the key does not exist in the hashtable.
      *
-     * @return Pointer to the value of the inserted or the existing element with the same key.
+     * @return Reference to the value of the inserted or the existing element with the same key.
      */
     template <typename Value_ = Value>
-    Value* include( int key, Value_&& value = Value() )
+    Value& include( int key, Value_&& value = Value() )
     {
       uint  i = uint( key ) % uint( SIZE );
       Elem* e = data[i];
 
       while( e != nullptr ) {
         if( e->key == key ) {
-          return &e->value;
+          return e->value;
         }
 
         e = e->next;
       }
 
       data[i] = new( pool ) Elem( data[i], key, static_cast<Value_&&>( value ) );
-
       soft_assert( loadFactor() < 0.75f );
 
-      return &data[i]->value;
+      return data[i]->value;
     }
 
     /**

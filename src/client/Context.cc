@@ -590,7 +590,7 @@ void Context::drawImago( const Object* obj, const Imago* parent )
 
   if( value == nullptr ) {
     Imago::CreateFunc* createFunc = imagoClasses[obj->clazz->imagoType];
-    value = imagines.add( obj->index, createFunc( obj ) );
+    value = &imagines.add( obj->index, createFunc( obj ) );
   }
 
   Imago* imago = *value;
@@ -606,7 +606,7 @@ void Context::playAudio( const Object* obj, const Audio* parent )
 
   if( value == nullptr ) {
     Audio::CreateFunc* createFunc = audioClasses[obj->clazz->audioType];
-    value = audios.add( obj->index, createFunc( obj ) );
+    value = &audios.add( obj->index, createFunc( obj ) );
   }
 
   Audio* audio = *value;

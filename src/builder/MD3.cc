@@ -286,11 +286,8 @@ void MD3::load()
   upperFrame = config["upperFrame"].get( -1 );
   shaderName = config["shader"].get( frame < 0 ? "md3" : "mesh" );
 
-  Vec3 weaponTranslation = Vec3::ZERO;
-  Vec3 weaponRotation    = Vec3::ZERO;
-
-  config["weaponTranslate"].get( weaponTranslation, 3 );
-  config["weaponRotate"].get( weaponRotation, 3 );
+  Vec3 weaponTranslation = config["weaponTranslate"].get( Vec3::ZERO );
+  Vec3 weaponRotation    = config["weaponRotate"].get( Vec3::ZERO );
 
   Mat44 weaponTransf = Mat44::translation( weaponTranslation );
   weaponTransf.rotateX( Math::rad( weaponRotation.x ) );

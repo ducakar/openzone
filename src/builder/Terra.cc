@@ -60,9 +60,7 @@ void Terra::load()
     OZ_ERROR( "Liquid should be either WATER or LAVA" );
   }
 
-  liquidColour = Vec4( 0.00f, 0.05f, 0.20f, 1.00f );
-  config["liquidFogColour"].get( liquidColour, 4 );
-
+  liquidColour   = config["liquidFogColour"].get( Vec4( 0.00f, 0.05f, 0.20f, 1.00f ) );
   liquidTexture  = config["liquidTexture"].get( "" );
   detailTexture  = config["detailTexture"].get( "" );
   mapTexture     = config["mapTexture"].get( "" );

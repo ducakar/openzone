@@ -272,15 +272,10 @@ void MD2::build( const char* path )
   String shaderName   = config["shader"].get( header.nFrames == 1 ? "mesh" : "dmesh" );
   float  scale        = config["scale"].get( 0.04f );
 
-  Vec3 translation       = Vec3::ZERO;
-  Vec3 jumpTranslation   = Vec3::ZERO;
-  Vec3 weaponTranslation = Vec3::ZERO;
-  Vec3 weaponRotation    = Vec3::ZERO;
-
-  config["translate"].get( translation, 3 );
-  config["jumpTranslate"].get( jumpTranslation, 3 );
-  config["weaponTranslate"].get( weaponTranslation, 3 );
-  config["weaponRotate"].get( weaponRotation, 3 );
+  Vec3 translation       = config["translate"].get( Vec3::ZERO );
+  Vec3 jumpTranslation   = config["jumpTranslate"].get( Vec3::ZERO );
+  Vec3 weaponTranslation = config["weaponTranslate"].get( Vec3::ZERO );
+  Vec3 weaponRotation    = config["weaponRotate"].get( Vec3::ZERO );
 
   config.clear( true );
 

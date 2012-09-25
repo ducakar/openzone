@@ -25,13 +25,7 @@
 #include <client/ui/Style.hh>
 
 #define OZ_READ_COLOUR( var, r, g, b, a ) \
-  ( \
-    colours.var.x = r, \
-    colours.var.y = g, \
-    colours.var.z = b, \
-    colours.var.w = a, \
-    coloursConfig[#var].get( colours.var, 4 ) \
-  )
+  colours.var = coloursConfig[#var].get( Vec4( r, g, b, a ) )
 
 #define OZ_READ_BAR( var, x_, y_, w_, h_ ) \
   ( \

@@ -271,10 +271,8 @@ void OBJ::load()
   JSON config;
   config.load( &configFile );
 
-  float scale = config["scale"].get( 1.0f );
-
-  Vec3 translation = Vec3::ZERO;
-  config["translate"].get( translation, 3 );
+  float scale       = config["scale"].get( 1.0f );
+  Vec3  translation = config["translate"].get( Vec3::ZERO );
 
   shader = config["shader"].get( "mesh" );
 
