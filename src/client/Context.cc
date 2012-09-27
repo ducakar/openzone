@@ -720,9 +720,9 @@ void Context::unload()
   alDeleteBuffers( 2, speakSource.bufferIds );
 
   imagines.free();
-  imagines.dealloc();
+  imagines.deallocate();
   audios.free();
-  audios.dealloc();
+  audios.deallocate();
 
   aFree( fragPools, liber.nFragPools );
   aFill<FragPool*, FragPool*>( fragPools, nullptr, liber.nFragPools );
@@ -765,7 +765,7 @@ void Context::unload()
   MD2WeaponImago::pool.free();
   MD3Imago::pool.free();
 
-  Mesh::dealloc();
+  Mesh::deallocate();
 
   while( !sources.isEmpty() ) {
     removeSource( sources.first(), nullptr );
@@ -782,7 +782,7 @@ void Context::unload()
   sources.free();
   Source::pool.free();
   contSources.clear();
-  contSources.dealloc();
+  contSources.deallocate();
 
   for( int i = 0; i < liber.textures.length(); ++i ) {
     hard_assert( textures[i].nUsers == -1 );

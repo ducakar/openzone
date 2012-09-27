@@ -46,9 +46,6 @@
 #define OZ_ERROR( ...) \
   oz::System::error( __PRETTY_FUNCTION__, __FILE__, __LINE__, 0, __VA_ARGS__ )
 
-// Forward declaration for JNI.
-struct JavaVM_;
-
 // Forward declarations for NaCl.
 namespace pp
 {
@@ -79,11 +76,6 @@ class System
     /// Override handlers for exception violations (`std::terminate()` and `std::unexpected()`) with
     /// handlers that print diagnostics and abort the program via `error()` call.
     static const int EXCEPTION_HANDLERS_BIT = 0x20;
-
-    /// Handlers bitmask.
-    static const int HANDLERS_MASK = 0xf0;
-
-    static JavaVM_*      javaVM;   ///< JavaVM JNI interface.
 
     static pp::Module*   module;   ///< NaCl module.
     static pp::Instance* instance; ///< NaCl instance.
@@ -169,10 +161,10 @@ class System
      * Set-up crash handlers for cases specified in `flags`. If `HALT_BIT` is also given, crash
      * handlers wait for CTRL-C before exit.
      */
-#if defined( NDEBUG )
-    static void init( int flags = HANDLERS_MASK );
+#ifndef NDEBUG
+    static void init( int flags = EXCEPTION_HANDLERS_BIT | SIGNAL_HANDLER_BIT );
 #else
-    static void init( int flags = HANDLERS_MASK | HALT_BIT );
+    static void init( int flags = EXCEPTION_HANDLERS_BIT | SIGNAL_HANDLER_BIT | HALT_BIT );
 #endif
 
     /**

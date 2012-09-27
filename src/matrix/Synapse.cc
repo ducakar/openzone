@@ -93,7 +93,7 @@ Struct* Synapse::add( const BSP* bsp, const Point& p, Heading heading, bool empt
   addedStructs.add( str->index );
 
   if( !empty && str->bsp->nBoundObjects != 0 ) {
-    str->boundObjects.alloc( bsp->nBoundObjects );
+    str->boundObjects.allocate( bsp->nBoundObjects );
 
     for( int i = 0; i < str->bsp->nBoundObjects; ++i ) {
       const BSP::BoundObject& boundObj = str->bsp->boundObjects[i];
@@ -315,38 +315,38 @@ void Synapse::update()
 
 void Synapse::load()
 {
-  putObjects.alloc( 32 );
-  cutObjects.alloc( 32 );
+  putObjects.allocate( 32 );
+  cutObjects.allocate( 32 );
 
-  addedStructs.alloc( 4 * 16 );
-  addedObjects.alloc( 64 * 16 );
-  addedFrags.alloc( 128 * 8 );
+  addedStructs.allocate( 4 * 16 );
+  addedObjects.allocate( 64 * 16 );
+  addedFrags.allocate( 128 * 8 );
 
-  removedStructs.alloc( 4 );
-  removedObjects.alloc( 64 );
-  removedFrags.alloc( 128 );
+  removedStructs.allocate( 4 );
+  removedObjects.allocate( 64 );
+  removedFrags.allocate( 128 );
 }
 
 void Synapse::unload()
 {
   putObjects.clear();
-  putObjects.dealloc();
+  putObjects.deallocate();
   cutObjects.clear();
-  cutObjects.dealloc();
+  cutObjects.deallocate();
 
   addedStructs.clear();
-  addedStructs.dealloc();
+  addedStructs.deallocate();
   addedObjects.clear();
-  addedObjects.dealloc();
+  addedObjects.deallocate();
   addedFrags.clear();
-  addedFrags.dealloc();
+  addedFrags.deallocate();
 
   removedStructs.clear();
-  removedStructs.dealloc();
+  removedStructs.deallocate();
   removedObjects.clear();
-  removedObjects.dealloc();
+  removedObjects.deallocate();
   removedFrags.clear();
-  removedFrags.dealloc();
+  removedFrags.deallocate();
 }
 
 }

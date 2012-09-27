@@ -36,9 +36,6 @@
 #else
 # include <pthread.h>
 #endif
-#ifdef OZ_JNI
-# include <jni.h>
-#endif
 
 namespace oz
 {
@@ -121,17 +118,7 @@ void* Thread::Descriptor::threadMain( void* data )
   // Set up signal handlers (if enabled).
   System::threadInit();
 
-#ifdef OZ_JNI
-  // It's nice to register new threads with JVM.
-  void* jniEnv;
-  System::javaVM->AttachCurrentThread( &jniEnv, nullptr );
-#endif
-
   descriptor->main( descriptor->data );
-
-#ifdef OZ_JNI
-  System::javaVM->DetachCurrentThread();
-#endif
 
 #ifdef _WIN32
   return 0;

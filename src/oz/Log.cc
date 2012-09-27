@@ -77,7 +77,6 @@ static int   tabs          = 0;
 
 bool Log::showVerbose      = false;
 bool Log::verboseMode      = false;
-Log  Log::out;
 
 const char* Log::logFile()
 {

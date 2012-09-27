@@ -151,10 +151,10 @@ void Nirvana::unload()
   Log::print( "Unloading Nirvana ..." );
 
   devices.free();
-  devices.dealloc();
+  devices.deallocate();
 
   minds.free();
-  minds.dealloc();
+  minds.deallocate();
 
   Memo::pool.free();
   Mind::pool.free();
@@ -185,7 +185,7 @@ void Nirvana::free()
   lua.free();
 
   deviceClasses.clear();
-  deviceClasses.dealloc();
+  deviceClasses.deallocate();
 
   Log::unindent();
   Log::println( "}" );

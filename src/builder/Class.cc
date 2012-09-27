@@ -802,7 +802,7 @@ void Class::free()
   fragPool    = "";
 
   defaultItems.clear();
-  defaultItems.dealloc();
+  defaultItems.deallocate();
 
   deviceType = "";
 
@@ -826,15 +826,15 @@ void Class::free()
   }
 
   names.clear();
-  names.dealloc();
+  names.deallocate();
   bases.clear();
-  bases.dealloc();
+  bases.deallocate();
   devices.clear();
-  devices.dealloc();
+  devices.deallocate();
   imagines.clear();
-  imagines.dealloc();
+  imagines.deallocate();
   audios.clear();
-  audios.dealloc();
+  audios.deallocate();
 }
 
 Class clazz;

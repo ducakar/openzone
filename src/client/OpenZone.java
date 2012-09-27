@@ -17,31 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
-
-/*
- * Configuration variables
+/**
+ * @file client/OpenZone.java
  */
 
-// Version.
-#define OZ_VERSION              "@OZ_VERSION@"
+public class OpenZone
+{
+  public static native void main( String[] args );
 
-// Default data directory.
-#define OZ_INSTALL_PREFIX       "@CMAKE_INSTALL_PREFIX@"
-
-// Use versions of linear math structures that match SIMD registers and explicitly use SIMD
-// operations. However, due to larger size and if code is not written with SIMD in mind, those may
-// yield worse performance than generic linear algebra structures.
-#cmakedefine OZ_SIMD_MATH
-
-// Build for use in Java Native Interface (JNI).
-#cmakedefine OZ_JNI
-
-// Enable compatibility with GLES2 and Mesa < 8.0.
-#cmakedefine OZ_GL_ES
-
-// Enable MP3 and AAC.
-#cmakedefine OZ_NONFREE
-
-// Enable eSpeak text-to-speech library.
-#cmakedefine OZ_ESPEAK
+  static
+  {
+    System.loadLibrary( "openzone" );
+  }
+}

@@ -212,7 +212,7 @@ static int ozCameraClearSwitchableUnits( lua_State* l )
   BOT_INDEX( l_toint( 1 ) );
 
   camera.switchableUnits.clear();
-  camera.switchableUnits.dealloc();
+  camera.switchableUnits.deallocate();
   return 0;
 }
 

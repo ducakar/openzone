@@ -166,6 +166,8 @@ static int                initFlags         = 0;
 OZ_NORETURN
 static void abort( bool doHalt );
 
+#if !defined( __native_client__ )
+
 OZ_NORETURN
 static void signalHandler( int sigNum )
 {
@@ -178,9 +180,11 @@ static void signalHandler( int sigNum )
   abort( ( initFlags & System::HALT_BIT ) && sigNum != SIGINT );
 }
 
+#endif
+
 static void resetSignals()
 {
-#if !defined( OZ_JNI ) && !defined( __native_client__ )
+#if !defined( __native_client__ )
   signal( SIGILL,  SIG_DFL );
   signal( SIGABRT, SIG_DFL );
   signal( SIGFPE,  SIG_DFL );
@@ -194,7 +198,7 @@ static void resetSignals()
 
 static void catchSignals()
 {
-#if !defined( OZ_JNI ) && !defined( __native_client__ )
+#if !defined( __native_client__ )
   signal( SIGILL,  signalHandler );
   signal( SIGABRT, signalHandler );
   signal( SIGFPE,  signalHandler );
@@ -488,8 +492,6 @@ static void abort( bool doHalt )
   waitBell();
   ::abort();
 }
-
-JavaVM_*      System::javaVM   = nullptr;
 
 pp::Module*   System::module   = nullptr;
 pp::Instance* System::instance = nullptr;

@@ -113,11 +113,6 @@ class Math
     Math() = delete;
 
     /**
-     * Forbid instances.
-     */
-    Math( const Math& ) = delete;
-
-    /**
      * Round to the closest integer towards negative infinity.
      */
     OZ_ALWAYS_INLINE

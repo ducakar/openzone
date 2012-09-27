@@ -9,10 +9,10 @@ project( openzone C CXX )
 set( OZ_VERSION "0.3.80" )
 
 option( OZ_SHARED_LIBOZ "Build liboz as a shared library." OFF )
-option( OZ_JNI "Build for use in Java Native Interface (JNI)." OFF )
 option( OZ_TRACK_ALLOCS "Track memory allocations to detect new/delete mismatches and memory leaks." OFF )
 
 option( OZ_SIMD_MATH "Use SIMD implementation of linear algebra classes." OFF )
+option( OZ_JNI "Build for use in Java Native Interface (JNI)." OFF )
 option( OZ_GL_ES "Disable features incompatible with OpenGL ES 2.0 and Mesa < 8.0." OFF )
 option( OZ_NONFREE "Enable support for decoding MP3s and AACs and building S3TC textures." OFF )
 option( OZ_ESPEAK "Enable text-to-speech." OFF )
@@ -211,6 +211,10 @@ elseif( isLegacyGCC )
   set( flags "-pipe -std=gnu++0x" )
 else()
   set( flags "-pipe -std=c++0x -fstrict-enums" )
+endif()
+
+if( OZ_JNI )
+  set( flags "${flags} -fPIC" )
 endif()
 
 set( flags "${flags} -fno-rtti -fno-exceptions -fvisibility-inlines-hidden -ffast-math" )

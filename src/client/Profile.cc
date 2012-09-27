@@ -99,7 +99,7 @@ void Profile::init()
   }
 
   items.clear();
-  items.dealloc();
+  items.deallocate();
 
   for( int i = 0; i < nItems; ++i ) {
     const char* sItem = itemsConfig[i].asString();
@@ -139,7 +139,7 @@ void Profile::init()
 void Profile::free()
 {
   items.clear();
-  items.dealloc();
+  items.deallocate();
 }
 
 }

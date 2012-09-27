@@ -124,8 +124,8 @@ void Lua::init()
 
   initCommon( "matrix" );
 
-  ms.structs.alloc( 32 );
-  ms.objects.alloc( 512 );
+  ms.structs.allocate( 32 );
+  ms.objects.allocate( 512 );
 
   /*
    * General functions
@@ -456,10 +456,10 @@ void Lua::free()
   Log::print( "Freeing Matrix Lua ..." );
 
   ms.structs.clear();
-  ms.structs.dealloc();
+  ms.structs.deallocate();
 
   ms.objects.clear();
-  ms.objects.dealloc();
+  ms.objects.deallocate();
 
   hard_assert( l_gettop() == 1 );
   hard_assert( ( l_pushnil(), true ) );

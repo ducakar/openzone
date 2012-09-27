@@ -257,7 +257,7 @@ void Camera::reset()
   vehicleObj = nullptr;
 
   switchableUnits.clear();
-  switchableUnits.dealloc();
+  switchableUnits.deallocate();
 
   allowReincarnation = true;
   nightVision        = false;

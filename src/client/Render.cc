@@ -197,8 +197,8 @@ void Render::prepareDraw()
 
   // drawnStructs
   if( drawnStructs.length() < orbis.structs.length() ) {
-    drawnStructs.dealloc();
-    drawnStructs.alloc( orbis.structs.length() );
+    drawnStructs.deallocate();
+    drawnStructs.allocate( orbis.structs.length() );
   }
   drawnStructs.clearAll();
 
@@ -511,8 +511,8 @@ void Render::load()
 
   ui::ui.load();
 
-  structs.alloc( 64 );
-  objects.alloc( 8192 );
+  structs.allocate( 64 );
+  objects.allocate( 8192 );
 
   prepareMicros     = 0;
   caelumMicros      = 0;
@@ -538,13 +538,13 @@ void Render::unload()
   caelum.unload();
   terra.unload();
 
-  drawnStructs.dealloc();
+  drawnStructs.deallocate();
 
   structs.clear();
-  structs.dealloc();
+  structs.deallocate();
 
   objects.clear();
-  objects.dealloc();
+  objects.deallocate();
 
   ui::ui.unload();
 

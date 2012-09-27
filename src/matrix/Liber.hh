@@ -50,24 +50,24 @@ class Liber
 
   private:
 
-    HashString<BSP, 64>                     bsps;
-    HashString<ObjectClass::CreateFunc*, 8> baseClasses;
-    HashString<ObjectClass*, 128>           objClasses;
-    HashString<FragPool, 32>                fragPools;
+    Hashtable<String, BSP, 64>                     bsps;
+    Hashtable<String, ObjectClass::CreateFunc*, 8> baseClasses;
+    Hashtable<String, ObjectClass*, 128>           objClasses;
+    Hashtable<String, FragPool, 32>                fragPools;
 
-    HashString<int, 64>  shaderIndices;
-    HashString<int, 256> textureIndices;
-    HashString<int, 256> soundIndices;
-    HashString<int, 16>  caelumIndices;
-    HashString<int, 16>  terraIndices;
-    HashString<int, 256> modelIndices;
+    Hashtable<String, int, 64>  shaderIndices;
+    Hashtable<String, int, 256> textureIndices;
+    Hashtable<String, int, 256> soundIndices;
+    Hashtable<String, int, 16>  caelumIndices;
+    Hashtable<String, int, 16>  terraIndices;
+    Hashtable<String, int, 256> modelIndices;
 
-    HashString<int, 16>  nameListIndices;
-    HashString<int, 64>  musicTrackIndices;
+    Hashtable<String, int, 16>  nameListIndices;
+    Hashtable<String, int, 64>  musicTrackIndices;
 
-    HashString<int, 8>   deviceIndices;
-    HashString<int, 16>  imagoIndices;
-    HashString<int, 8>   audioIndices;
+    Hashtable<String, int, 8>   deviceIndices;
+    Hashtable<String, int, 16>  imagoIndices;
+    Hashtable<String, int, 8>   audioIndices;
 
   public:
 

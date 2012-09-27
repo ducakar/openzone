@@ -231,4 +231,26 @@ inline const Value& clamp( const Value& c, const Value& a, const Value& b )
   return c < a ? a : ( b < c ? b : c );
 }
 
+/**
+ * Hash function for integers, identity.
+ */
+inline int hash( int value )
+{
+  return value;
+}
+
+/**
+ * Hash function for strings, implements Bernstein's hash.
+ */
+inline int hash( const char* s )
+{
+  int value = 5381;
+
+  while( *s != '\0' ) {
+    value = value * 33 + *s;
+    ++s;
+  }
+  return value;
+}
+
 }

@@ -64,7 +64,7 @@ void ObjectClass::init( InputStream* is, const char* name_ )
 
   int nDefaultItems = is->readInt();
   if( nDefaultItems != 0 ) {
-    defaultItems.alloc( nDefaultItems );
+    defaultItems.allocate( nDefaultItems );
 
     for( int i = 0; i < nDefaultItems; ++i ) {
       const char* sItemClass = is->readString();

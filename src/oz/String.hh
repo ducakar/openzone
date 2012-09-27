@@ -217,22 +217,6 @@ class String
     static bool endsWith( const char* s, const char* sub );
 
     /**
-     * Bernstein's hash function.
-     *
-     * @return Absolute value of hash.
-     */
-    static int hash( const char* s )
-    {
-      uint hash = 5381;
-
-      while( *s != '\0' ) {
-        hash = hash * 33 + uint( *s );
-        ++s;
-      }
-      return int( hash );
-    }
-
-    /**
      * True iff character is an ASCII digit.
      */
     OZ_ALWAYS_INLINE
@@ -782,16 +766,6 @@ class String
     bool endsWith( const char* sub ) const;
 
     /**
-     * Bernstein's hash function.
-     *
-     * @return Absolute value of hash.
-     */
-    int hash() const
-    {
-      return hash( buffer );
-    }
-
-    /**
      * Parse boolean value (must exactly match either "true" or "false").
      */
     bool parseBool( bool* isError = nullptr ) const
@@ -887,5 +861,14 @@ class String
     DArray<String> split( char delimiter ) const;
 
 };
+
+/**
+ * Hash function for `String`, implements Bernstein's hash.
+ */
+OZ_ALWAYS_INLINE
+inline int hash( const String& s )
+{
+  return hash( s.cstr() );
+}
 
 }

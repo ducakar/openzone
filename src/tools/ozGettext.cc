@@ -40,8 +40,8 @@ enum LuaSyntaxState
   MULTILINE_COMMENT
 };
 
-static HashString<String> titles;
-static HashString<String> messages;
+static Hashtable<String, String> titles;
+static Hashtable<String, String> messages;
 
 static void printUsage( const char* invocationName )
 {
@@ -275,7 +275,7 @@ static void readDescription( File* file )
   }
 }
 
-static void writePOT( const HashString<String>* hs, const char* filePath )
+static void writePOT( const Hashtable<String, String>* hs, const char* filePath )
 {
   BufferStream bs;
   String s;
@@ -395,7 +395,7 @@ static int main( int argc, char** argv )
     writePOT( &titles, mainPOT );
 
     titles.clear();
-    titles.dealloc();
+    titles.deallocate();
 
     Log::printEnd( " OK" );
   }
@@ -434,7 +434,7 @@ static int main( int argc, char** argv )
       writePOT( &messages, mission->path() + "/lingua/messages.pot" );
 
       messages.clear();
-      messages.dealloc();
+      messages.deallocate();
 
       Log::printEnd( " OK" );
     }

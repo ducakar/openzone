@@ -207,9 +207,9 @@ void Mesh::clearScheduled()
   }
 }
 
-void Mesh::dealloc()
+void Mesh::deallocate()
 {
-  loadedMeshes.dealloc();
+  loadedMeshes.deallocate();
 
   delete[] vertexAnimBuffer;
   vertexAnimBuffer = nullptr;

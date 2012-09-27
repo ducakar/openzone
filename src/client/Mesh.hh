@@ -133,7 +133,7 @@ class Mesh
     static void drawScheduled( int mask );
     static void clearScheduled();
 
-    static void dealloc();
+    static void deallocate();
 
     Mesh();
     ~Mesh();

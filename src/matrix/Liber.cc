@@ -787,37 +787,37 @@ void Liber::free()
   musicTracks.clear();
 
   shaderIndices.clear();
-  shaderIndices.dealloc();
+  shaderIndices.deallocate();
   textureIndices.clear();
-  textureIndices.dealloc();
+  textureIndices.deallocate();
   soundIndices.clear();
-  soundIndices.dealloc();
+  soundIndices.deallocate();
   caelumIndices.clear();
-  caelumIndices.dealloc();
+  caelumIndices.deallocate();
   terraIndices.clear();
-  terraIndices.dealloc();
+  terraIndices.deallocate();
   modelIndices.clear();
-  modelIndices.dealloc();
+  modelIndices.deallocate();
   nameListIndices.clear();
-  nameListIndices.dealloc();
+  nameListIndices.deallocate();
   musicTrackIndices.clear();
-  musicTrackIndices.dealloc();
+  musicTrackIndices.deallocate();
 
   deviceIndices.clear();
-  deviceIndices.dealloc();
+  deviceIndices.deallocate();
   imagoIndices.clear();
-  imagoIndices.dealloc();
+  imagoIndices.deallocate();
   audioIndices.clear();
-  audioIndices.dealloc();
+  audioIndices.deallocate();
 
   bsps.clear();
-  bsps.dealloc();
+  bsps.deallocate();
   baseClasses.clear();
-  baseClasses.dealloc();
+  baseClasses.deallocate();
   objClasses.free();
-  objClasses.dealloc();
+  objClasses.deallocate();
   fragPools.clear();
-  fragPools.dealloc();
+  fragPools.deallocate();
 }
 
 Liber liber;

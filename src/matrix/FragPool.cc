@@ -46,7 +46,7 @@ FragPool::FragPool( InputStream* is, const char* name_, int id_ ) :
   elasticity     = is->readFloat();
 
   int nModels    = is->readInt();
-  models.alloc( nModels );
+  models.allocate( nModels );
 
   for( int i = 0; i < nModels; ++i ) {
     const char* sModel = is->readString();

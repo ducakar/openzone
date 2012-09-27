@@ -342,7 +342,7 @@ class DArray
     void resize( int newCount )
     {
       if( newCount != count ) {
-        data  = aRealloc( data, count, newCount );
+        data  = aReallocate<Elem>( data, count, newCount );
         count = newCount;
       }
     }

@@ -306,7 +306,7 @@ class SList
       hard_assert( uint( i ) <= uint( count ) );
       hard_assert( uint( count ) < uint( SIZE ) );
 
-      aReverseMove<Elem>( data + i + 1, data + i, count - i );
+      aMoveBackward<Elem>( data + i + 1, data + i, count - i );
       data[i] = static_cast<Elem_&&>( e );
       ++count;
     }
@@ -345,7 +345,7 @@ class SList
      *
      * The last element is moved to its place.
      */
-    void eraseUO( int i )
+    void eraseUnordered( int i )
     {
       hard_assert( uint( i ) < uint( count ) );
 
@@ -381,12 +381,12 @@ class SList
      *
      * @return Index of the removed element or -1 if not found.
      */
-    int excludeUO( const Elem& e )
+    int excludeUnordered( const Elem& e )
     {
       int i = aIndex<Elem, Elem>( data, e, count );
 
       if( i >= 0 ) {
-        eraseUO( i );
+        eraseUnordered( i );
       }
       return i;
     }
@@ -401,7 +401,7 @@ class SList
     {
       hard_assert( uint( count ) < uint( SIZE ) );
 
-      aReverseMove<Elem>( data + 1, data, count );
+      aMoveBackward<Elem>( data + 1, data, count );
       data[0] = static_cast<Elem_&&>( e );
       ++count;
     }

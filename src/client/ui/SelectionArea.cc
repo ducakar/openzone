@@ -257,7 +257,7 @@ void SelectionArea::onUpdate()
     const Struct* str = orbis.structs[ taggedStrs[i] ];
 
     if( str == nullptr ) {
-      taggedStrs.eraseUO( i );
+      taggedStrs.eraseUnordered( i );
     }
     else {
       ++i;
@@ -268,7 +268,7 @@ void SelectionArea::onUpdate()
     const Object* obj = orbis.objects[ taggedObjs[i] ];
 
     if( obj == nullptr || obj->cell == nullptr ) {
-      taggedObjs.eraseUO( i );
+      taggedObjs.eraseUnordered( i );
     }
     else {
       ++i;
@@ -307,7 +307,7 @@ bool SelectionArea::onMouseEvent()
       int index = taggedStrs.index( hoverStr );
 
       if( index >= 0 ) {
-        taggedStrs.eraseUO( index );
+        taggedStrs.eraseUnordered( index );
       }
       else {
         taggedStrs.add( hoverStr );
@@ -321,7 +321,7 @@ bool SelectionArea::onMouseEvent()
       int index = taggedObjs.index( hoverObj );
 
       if( index >= 0 ) {
-        taggedObjs.eraseUO( index );
+        taggedObjs.eraseUnordered( index );
       }
       else {
         taggedObjs.add( hoverObj );

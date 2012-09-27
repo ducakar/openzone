@@ -36,24 +36,24 @@ class Foo
     Foo() :
       value( 0 )
     {
-      Log::out << "Foo()\n";
+      Log() << "Foo()\n";
     }
 
     ~Foo()
     {
-      Log::out << "~Foo()\n";
+      Log() << "~Foo()\n";
     }
 
     Foo( const Foo& f ) :
       value( f.value )
     {
-      Log::out << "Foo( const Foo& )\n";
+      Log() << "Foo( const Foo& )\n";
     }
 
     Foo( Foo&& f ) :
       value( f.value )
     {
-      Log::out << "Foo( Foo&& )\n";
+      Log() << "Foo( Foo&& )\n";
 
       f.value = 0;
     }
@@ -61,12 +61,12 @@ class Foo
     Foo( int value_ ) :
       value( value_ )
     {
-      Log::out << "Foo( " << value_ << " )\n";
+      Log() << "Foo( " << value_ << " )\n";
     }
 
     Foo& operator = ( const Foo& f )
     {
-      Log::out << "Foo& operator = ( const Foo& )\n";
+      Log() << "Foo& operator = ( const Foo& )\n";
 
       if( &f == this ) {
         return *this;
@@ -78,7 +78,7 @@ class Foo
 
     Foo& operator = ( Foo&& f )
     {
-      Log::out << "Foo& operator = ( Foo&& )\n";
+      Log() << "Foo& operator = ( Foo&& )\n";
 
       if( &f == this ) {
         return *this;
@@ -108,46 +108,7 @@ class Foo
 
 };
 
-struct Elem
-{
-  int   value;
-  Elem* next[1];
-};
-
-template <typename IteratorA, typename IteratorB = IteratorA>
-inline IteratorB copy( IteratorA first, IteratorA past, IteratorB dest )
-{
-  for( ; first != past; ++first, ++dest ) {
-    *dest = *first;
-  }
-}
-
-template <typename IteratorA, typename IteratorB = IteratorA>
-inline IteratorB move( IteratorA first, IteratorA past, IteratorB dest )
-{
-  for( ; first != past; ++first, ++dest ) {
-    *dest = static_cast<typename IteratorA::ElemType&&>( *first );
-  }
-}
-
-template <typename ElemA, typename ElemB = ElemA>
-inline ElemB* move( ElemA* first, ElemA* past, ElemB* dest )
-{
-  for( ; first != past; ++first, ++dest ) {
-    *dest = static_cast<ElemB&&>( *first );
-  }
-}
-
 int main()
 {
-  System::init();
-
-  Map<int> m;
-  m.add( 1 );
-  m.add( 2 );
-
-  Time::sleep( 3000 );
-  m.dealloc();
-
   return 0;
 }

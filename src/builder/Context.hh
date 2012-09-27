@@ -86,9 +86,9 @@ class Context
 
     };
 
-    HashString<> usedTextures;
-    HashString<> usedSounds;
-    HashString<> usedModels;
+    Hashtable<String> usedTextures;
+    Hashtable<String> usedSounds;
+    Hashtable<String> usedModels;
 
     bool bumpmap;
     bool useS3TC;

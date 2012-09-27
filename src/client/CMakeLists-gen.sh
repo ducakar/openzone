@@ -5,7 +5,11 @@ add_library( client STATIC
   `echo *.{hh,cc} ui/*.{hh,cc} | sed 's/ /\n  /g' | grep -v 'openzone\.cc'` )
 add_dependencies( client pch )
 
-add_executable( openzone openzone.cc )
+if( OZ_JNI )
+  add_library( openzone SHARED openzone.cc )
+else()
+  add_executable( openzone openzone.cc )
+endif()
 add_dependencies( openzone pch )
 target_link_libraries( openzone client modules nirvana matrix common build_info oz \${libs_client} )
 
@@ -14,8 +18,8 @@ if( NACL )
 endif()
 
 if( OZ_STANDALONE )
-  install( TARGETS openzone RUNTIME DESTINATION bin/\${OZ_SYSTEM_NAME} )
+  install( TARGETS openzone RUNTIME DESTINATION bin/\${OZ_SYSTEM_NAME} LIBRARY )
 else()
-  install( TARGETS openzone RUNTIME DESTINATION bin )
+  install( TARGETS openzone RUNTIME DESTINATION bin LIBRARY DESTINATION lib )
 endif()
 EOF

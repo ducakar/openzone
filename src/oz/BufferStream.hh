@@ -342,7 +342,7 @@ class BufferStream
           newSize = ( ( length + count - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
         }
 
-        start  = aRealloc<char>( start, size, newSize );
+        start  = aReallocate<char>( start, size, newSize );
         end    = start + newSize;
         pos    = start + length;
         oldPos = pos - count;
@@ -1117,7 +1117,7 @@ class BufferStream
     /**
      * Deallocate allocated buffer.
      */
-    void dealloc()
+    void deallocate()
     {
       delete[] start;
 

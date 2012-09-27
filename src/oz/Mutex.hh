@@ -40,7 +40,6 @@ class Mutex
 {
   private:
 
-    /// Internal structure for platform-dependent mutex description.
     struct Descriptor;
 
     /// %Mutex descriptor.

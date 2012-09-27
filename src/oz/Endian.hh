@@ -62,11 +62,6 @@ class Endian
     Endian() = delete;
 
     /**
-     * Forbid instances.
-     */
-    Endian( const Endian& ) = delete;
-
-    /**
      * Swap byte order.
      */
     OZ_ALWAYS_INLINE

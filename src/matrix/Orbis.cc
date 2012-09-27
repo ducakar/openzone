@@ -69,7 +69,7 @@ void Orbis::unposition( Struct* str )
     for( int y = span.minY; y <= span.maxY; ++y ) {
       hard_assert( cells[x][y].structs.contains( short( str->index ) ) );
 
-      cells[x][y].structs.excludeUO( short( str->index ) );
+      cells[x][y].structs.excludeUnordered( short( str->index ) );
     }
   }
 }
@@ -517,16 +517,16 @@ void Orbis::write( BufferStream* ostream ) const
 
 void Orbis::load()
 {
-  strFreedIndices[0].alloc( 4 );
-  strFreedIndices[1].alloc( 4 );
-  objFreedIndices[0].alloc( 64 );
-  objFreedIndices[1].alloc( 64 );
-  fragFreedIndices[0].alloc( 128 );
-  fragFreedIndices[1].alloc( 128 );
+  strFreedIndices[0].allocate( 4 );
+  strFreedIndices[1].allocate( 4 );
+  objFreedIndices[0].allocate( 64 );
+  objFreedIndices[1].allocate( 64 );
+  fragFreedIndices[0].allocate( 128 );
+  fragFreedIndices[1].allocate( 128 );
 
-  strAvailableIndices.alloc( 16 );
-  objAvailableIndices.alloc( 256 );
-  fragAvailableIndices.alloc( 512 );
+  strAvailableIndices.allocate( 16 );
+  objAvailableIndices.allocate( 256 );
+  fragAvailableIndices.allocate( 512 );
 }
 
 void Orbis::unload()
@@ -563,29 +563,29 @@ void Orbis::unload()
 
   Struct::pool.free();
   Struct::overlappingObjs.clear();
-  Struct::overlappingObjs.dealloc();
+  Struct::overlappingObjs.deallocate();
 
   liber.freeBSPs();
 
   fragFreedIndices[0].clear();
-  fragFreedIndices[0].dealloc();
+  fragFreedIndices[0].deallocate();
   fragFreedIndices[1].clear();
-  fragFreedIndices[1].dealloc();
+  fragFreedIndices[1].deallocate();
   objFreedIndices[0].clear();
-  objFreedIndices[0].dealloc();
+  objFreedIndices[0].deallocate();
   objFreedIndices[1].clear();
-  objFreedIndices[1].dealloc();
+  objFreedIndices[1].deallocate();
   strFreedIndices[0].clear();
-  strFreedIndices[0].dealloc();
+  strFreedIndices[0].deallocate();
   strFreedIndices[1].clear();
-  strFreedIndices[1].dealloc();
+  strFreedIndices[1].deallocate();
 
   fragAvailableIndices.clear();
-  fragAvailableIndices.dealloc();
+  fragAvailableIndices.deallocate();
   objAvailableIndices.clear();
-  objAvailableIndices.dealloc();
+  objAvailableIndices.deallocate();
   strAvailableIndices.clear();
-  strAvailableIndices.dealloc();
+  strAvailableIndices.deallocate();
 }
 
 void Orbis::init()

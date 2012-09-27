@@ -75,19 +75,19 @@ class List
     {
       if( size == count ) {
         size = size == 0 ? GRANULARITY : 2 * size;
-        data = aRealloc<Elem>( data, count, size );
+        data = aReallocate<Elem>( data, count, size );
       }
     }
 
     /**
-     * Enlarge capacity to the smallest multiple of GRANULARITY able to hold the requested number of
-     * elements.
+     * Enlarge capacity to the smallest multiple of `GRANULARITY` able to hold the requested number
+     * of elements.
      */
     void ensureCapacity( int desiredSize )
     {
       if( size < desiredSize ) {
         size = ( ( desiredSize - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
-        data = aRealloc<Elem>( data, count, size );
+        data = aReallocate<Elem>( data, count, size );
       }
     }
 
@@ -417,7 +417,7 @@ class List
 
       ensureCapacity();
 
-      aReverseMove<Elem>( data + i + 1, data + i, count - i );
+      aMoveBackward<Elem>( data + i + 1, data + i, count - i );
       data[i] = static_cast<Elem_&&>( e );
       ++count;
     }
@@ -456,7 +456,7 @@ class List
      *
      * The last element is moved to its place.
      */
-    void eraseUO( int i )
+    void eraseUnordered( int i )
     {
       hard_assert( uint( i ) < uint( count ) );
 
@@ -494,12 +494,12 @@ class List
      *
      * @return Index of the removed element or -1 if not found.
      */
-    int excludeUO( const Elem& e )
+    int excludeUnordered( const Elem& e )
     {
       int i = aIndex<Elem, Elem>( data, e, count );
 
       if( i >= 0 ) {
-        eraseUO( i );
+        eraseUnordered( i );
       }
       return i;
     }
@@ -514,7 +514,7 @@ class List
     {
       ensureCapacity();
 
-      aReverseMove<Elem>( data + 1, data, count );
+      aMoveBackward<Elem>( data + 1, data, count );
       data[0] = static_cast<Elem_&&>( e );
       ++count;
     }
@@ -617,7 +617,7 @@ class List
     /**
      * For an empty list with no allocated storage, allocate capacity for `size_` elements.
      */
-    void alloc( int size_ )
+    void allocate( int size_ )
     {
       hard_assert( size == 0 && size_ > 0 );
 
@@ -628,7 +628,7 @@ class List
     /**
      * Deallocate storage of an empty list.
      */
-    void dealloc()
+    void deallocate()
     {
       hard_assert( count == 0 );
 
@@ -647,7 +647,7 @@ class List
 
       if( newSize < size ) {
         size = newSize;
-        data = aRealloc<Elem>( data, count, size );
+        data = aReallocate<Elem>( data, count, size );
       }
     }
 

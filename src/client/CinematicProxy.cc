@@ -66,7 +66,7 @@ void CinematicProxy::executeSequence( const char* path, const Lingua* missionLin
 
   Step step = { camera.rot, camera.p, camera.colour, -1, nullptr, 0.0f, Camera::CINEMATIC };
 
-  steps.alloc( nSteps );
+  steps.allocate( nSteps );
 
   for( int i = 0; i < nSteps; ++i ) {
     const JSON& stepConfig = sequence[i];
@@ -177,7 +177,7 @@ void CinematicProxy::end()
   nTitleChars = 0;
 
   steps.clear();
-  steps.dealloc();
+  steps.deallocate();
 }
 
 void CinematicProxy::prepare()
@@ -259,7 +259,7 @@ void CinematicProxy::reset()
   camera.colour = camera.baseColour;
 
   steps.clear();
-  steps.dealloc();
+  steps.deallocate();
 }
 
 void CinematicProxy::read( InputStream* istream )

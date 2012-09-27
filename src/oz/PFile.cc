@@ -319,7 +319,7 @@ Buffer PFile::read()
   Buffer buffer;
 
   if( data != nullptr ) {
-    buffer.alloc( fileSize );
+    buffer.allocate( fileSize );
     memcpy( buffer.begin(), data, size_t( fileSize ) );
     return buffer;
   }
@@ -330,13 +330,13 @@ Buffer PFile::read()
   }
 
   int size = int( PHYSFS_fileLength( file ) );
-  buffer.alloc( size );
+  buffer.allocate( size );
 
   int result = int( PHYSFS_readBytes( file, buffer.begin(), ulong64( size ) ) );
   PHYSFS_close( file );
 
   if( result != size ) {
-    buffer.dealloc();
+    buffer.deallocate();
     return buffer;
   }
 

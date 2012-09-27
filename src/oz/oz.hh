@@ -57,23 +57,18 @@
 #include "SList.hh"
 #include "Set.hh"
 #include "Map.hh"
-
-/*
- * String.
- */
-#include "String.hh"
-
-/*
- * Hashtable containers.
- */
-#include "HashIndex.hh"
-#include "HashString.hh"
+#include "Hashtable.hh"
 
 /*
  * Bitset.
  */
 #include "Bitset.hh"
 #include "SBitset.hh"
+
+/*
+ * String.
+ */
+#include "String.hh"
 
 /*
  * Math.

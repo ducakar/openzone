@@ -206,8 +206,8 @@ void Lua::init()
 
   initCommon( "client" );
 
-  ms.structs.alloc( 32 );
-  ms.objects.alloc( 512 );
+  ms.structs.allocate( 32 );
+  ms.objects.allocate( 512 );
 
   /*
    * General functions
@@ -619,10 +619,10 @@ void Lua::free()
   Log::print( "Freeing Client Lua ..." );
 
   ms.structs.clear();
-  ms.structs.dealloc();
+  ms.structs.deallocate();
 
   ms.objects.clear();
-  ms.objects.dealloc();
+  ms.objects.deallocate();
 
   cs.mission = "";
   cs.missionLingua.free();

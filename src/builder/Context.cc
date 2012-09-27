@@ -579,11 +579,11 @@ void Context::init()
 void Context::free()
 {
   usedTextures.clear();
-  usedTextures.dealloc();
+  usedTextures.deallocate();
   usedSounds.clear();
-  usedSounds.dealloc();
+  usedSounds.deallocate();
   usedModels.clear();
-  usedModels.dealloc();
+  usedModels.deallocate();
 }
 
 Context context;

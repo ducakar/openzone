@@ -45,7 +45,6 @@ class Thread
 
   private:
 
-    /// Internal structure for platform-dependent thread description.
     struct Descriptor;
 
     /// %Thread descriptor.
@@ -104,8 +103,6 @@ class Thread
 
     /**
      * Create a new thread and run it. Thread must be in uninitialised state.
-     *
-     * On Android/JNI, `System::javaVM` must be set prior to calling this function.
      *
      * @param name thread name (string is copied to an internal buffer).
      * @param main pointer to thread's main function.

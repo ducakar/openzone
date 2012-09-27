@@ -26,9 +26,6 @@
  * Configuration variables
  */
 
-// Build for use in Java Native Interface (JNI).
-#cmakedefine OZ_JNI
-
 // Make new and delete operators save stack traces to track memory allocations to detect memory
 // leaks and new/delete mismatches.
 #cmakedefine OZ_TRACK_ALLOCS

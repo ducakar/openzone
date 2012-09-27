@@ -147,7 +147,7 @@ void Lingua::buildCatalogue( const char* directory, const char* catalogue )
   ostream.writeInt( messages.length() / 2 );
 
   for( int i = 0; i < messages.length(); i += 2 ) {
-    ostream.writeInt( messages[i].hash() );
+    ostream.writeInt( hash( messages[i] ) );
     ostream.writeString( messages[i] );
     ostream.writeString( messages[i + 1] );
   }

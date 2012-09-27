@@ -42,7 +42,7 @@ void NaClDownloader::readCallback( void* data, int result )
   NaClDownloader* downloader = static_cast<NaClDownloader*>( data );
 
   if( result < 0 ) {
-    downloader->buffer.dealloc();
+    downloader->buffer.deallocate();
   }
   else {
     int length = downloader->buffer.length() - 4096 + result;
@@ -91,7 +91,7 @@ void NaClDownloader::beginCallback( void* data, int result )
 
   delete downloader->loader;
 
-  downloader->buffer.dealloc();
+  downloader->buffer.deallocate();
   downloader->semaphore.post();
 }
 

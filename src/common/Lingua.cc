@@ -93,7 +93,7 @@ const char* Lingua::get( const char* message ) const
     return message;
   }
 
-  uint index = uint( String::hash( message ) ) % uint( nMessages );
+  uint index = uint( hash( message ) ) % uint( nMessages );
   Message* m = messages[index];
 
   while( m != nullptr ) {
@@ -219,7 +219,7 @@ void Lingua::free()
       Message* next = chain->next;
 
       chain->~Message();
-      msgPool.dealloc( chain );
+      msgPool.deallocate( chain );
 
       chain = next;
     }

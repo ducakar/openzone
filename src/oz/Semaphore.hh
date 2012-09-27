@@ -43,7 +43,6 @@ class Semaphore
 {
   private:
 
-    /// Internal structure for platform-dependent semaphore description.
     struct Descriptor;
 
     /// %Semaphore descriptor.

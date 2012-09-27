@@ -37,10 +37,10 @@ namespace oz
  * Sorted array list.
  *
  * %Set is implemented as a sorted array list.
- * Better worst case performance than a hashtable and it can use an arbitrary type as an element.
- * For large sets HashIndex/HashString is preferred as it is much faster on average.
+ * Better worst case performance than a hashtable; however, for large sets `Hashtable` is preferred
+ * as it is much faster on average.
  *
- * Like in List all allocated elements are constructed all the time and a removed element's
+ * Like in `List` all allocated elements are constructed all the time and a removed element's
  * destruction is guaranteed.
  *
  * Memory is allocated when the first element is added.
@@ -78,7 +78,7 @@ class Set
     {
       if( size == count ) {
         size = size == 0 ? GRANULARITY : 2 * size;
-        data = aRealloc<Elem>( data, count, size );
+        data = aReallocate<Elem>( data, count, size );
       }
     }
 
@@ -90,7 +90,7 @@ class Set
     {
       if( size < desiredSize ) {
         size = ( ( desiredSize - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
-        data = aRealloc<Elem>( data, count, size );
+        data = aReallocate<Elem>( data, count, size );
       }
     }
 
@@ -334,7 +334,7 @@ class Set
      */
     bool contains( const Elem& elem ) const
     {
-      int i = aBisect<Elem, Elem>( data, elem, count );
+      int i = aBisection<Elem, Elem>( data, elem, count );
       return i >= 0 && data[i] == elem;
     }
 
@@ -343,7 +343,7 @@ class Set
      */
     int index( const Elem& elem ) const
     {
-      int i = aBisect<Elem, Elem>( data, elem, count );
+      int i = aBisection<Elem, Elem>( data, elem, count );
       return i >= 0 && data[i] == elem ? i : -1;
     }
 
@@ -355,7 +355,7 @@ class Set
     template <typename Elem_ = Elem>
     int add( Elem_&& elem )
     {
-      int i = aBisect<Elem, Elem>( data, elem, count );
+      int i = aBisection<Elem, Elem>( data, elem, count );
 
       if( i >= 0 && data[i] == elem ) {
         data[i] = static_cast<Elem_&&>( elem );
@@ -375,7 +375,7 @@ class Set
     template <typename Elem_ = Elem>
     int include( Elem_&& elem )
     {
-      int i = aBisect<Elem, Elem>( data, elem, count );
+      int i = aBisection<Elem, Elem>( data, elem, count );
 
       if( i >= 0 && data[i] == elem ) {
         return i;
@@ -400,7 +400,7 @@ class Set
 
       ensureCapacity();
 
-      aReverseMove<Elem>( data + i + 1, data + i, count - i );
+      aMoveBackward<Elem>( data + i + 1, data + i, count - i );
       data[i] = static_cast<Elem_&&>( elem );
 
       ++count;
@@ -434,7 +434,7 @@ class Set
      */
     int exclude( const Elem& elem )
     {
-      int i = aBisect<Elem, Elem>( data, elem, count );
+      int i = aBisection<Elem, Elem>( data, elem, count );
 
       if( i >= 0 && data[i] == elem ) {
         erase( i );
@@ -484,7 +484,7 @@ class Set
     /**
      * For an empty set with no allocated storage, allocate capacity for `size_` elements.
      */
-    void alloc( int size_ )
+    void allocate( int size_ )
     {
       hard_assert( size == 0 && size_ > 0 );
 
@@ -495,7 +495,7 @@ class Set
     /**
      * Deallocate storage of an empty set.
      */
-    void dealloc()
+    void deallocate()
     {
       hard_assert( count == 0 );
 
@@ -514,7 +514,7 @@ class Set
 
       if( newSize < size ) {
         size = newSize;
-        data = aRealloc<Elem>( data, count, size );
+        data = aReallocate<Elem>( data, count, size );
       }
     }
 

@@ -50,8 +50,6 @@ class Log
     static bool verboseMode; ///< While `verboseMode` is on log output is only written to log file
                              ///< unless `isVerbose` is also on. Off by default.
 
-    static Log  out;         ///< Similar to `std::cout`, for use with `operator <<`.
-
   public:
 
     /**

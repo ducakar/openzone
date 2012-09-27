@@ -2,6 +2,7 @@ configure_file( liboz.pc.in liboz.pc )
 configure_file( ozconfig.hh.in ozconfig.hh )
 
 set( ozHeaders
+  "${CMAKE_CURRENT_BINARY_DIR}/ozconfig.hh"
   AABB.hh
   Alloc.hh
   Array.hh
@@ -17,8 +18,7 @@ set( ozHeaders
   DChain.hh
   Endian.hh
   File.hh
-  HashIndex.hh
-  HashString.hh
+  Hashtable.hh
   InputStream.hh
   iterables.hh
   JSON.hh
@@ -64,8 +64,7 @@ add_library( oz
   DChain.hh
   Endian.hh
   File.hh
-  HashIndex.hh
-  HashString.hh
+  Hashtable.hh
   InputStream.hh
   iterables.hh
   JSON.hh
@@ -115,14 +114,17 @@ add_library( oz
   Time.cc
   Vec3.cc
   Vec4.cc )
-set_target_properties( oz PROPERTIES PUBLIC_HEADER "${ozHeaders}" )
-set_target_properties( oz PROPERTIES VERSION "${OZ_VERSION}" SOVERSION "0" )
+set_target_properties( oz PROPERTIES
+  PUBLIC_HEADER "${ozHeaders}"
+  RESOURCE "${CMAKE_CURRENT_BINARY_DIR}/liboz.pc"
+  POSITION_INDEPENDENT_CODE ON
+  VERSION "${OZ_VERSION}"
+  SOVERSION "0" )
 target_link_libraries( oz ${libs_oz} )
 
-install( FILES "${CMAKE_CURRENT_BINARY_DIR}/liboz.pc" DESTINATION lib/pkgconfig )
-install( FILES "${CMAKE_CURRENT_BINARY_DIR}/ozconfig.hh" DESTINATION include/oz )
 install( TARGETS oz
          RUNTIME DESTINATION bin
          LIBRARY DESTINATION lib
          ARCHIVE DESTINATION lib
-         PUBLIC_HEADER DESTINATION include/oz )
+         PUBLIC_HEADER DESTINATION include/oz
+         RESOURCE DESTINATION lib/pkgconfig )

@@ -27,7 +27,60 @@
 #include <client/Client.hh>
 #include <client/NaCl.hh>
 
-#ifdef __native_client__
+#if defined( OZ_JNI )
+
+#include <clocale>
+#include <jni.h>
+
+using namespace oz;
+
+extern "C" JNIEXPORT
+void JNICALL Java_OpenZone_main( JNIEnv* env, jclass, jobjectArray args )
+{
+  setlocale( LC_ALL, "C" );
+  System::init( System::EXCEPTION_HANDLERS_BIT | System::SIGNAL_HANDLER_BIT | System::HALT_BIT );
+
+  int exitCode = EXIT_FAILURE;
+
+  Log::printRaw( "OpenZone " OZ_VERSION "\n"
+                 "Copyright © 2002-2012 Davorin Učakar\n"
+                 "This program comes with ABSOLUTELY NO WARRANTY.\n"
+                 "This is free software, and you are welcome to redistribute it\n"
+                 "under certain conditions; See COPYING file for details.\n\n" );
+
+  int   argc = min( env->GetArrayLength( args ), 255 );
+  char* argv[256];
+
+  argv[0] = const_cast<char*>( "OpenZone" );
+
+  for( int i = 0; i < argc; ++i ) {
+    jobject     obj = (jstring) env->GetObjectArrayElement( args, i );
+    const char* s   = env->GetStringUTFChars( static_cast<jstring>( obj ), nullptr );
+
+    argv[i + 1] = const_cast<char*>( s );
+
+  }
+
+  exitCode = client::client.init( 1 + argc, argv );
+
+  if( exitCode == EXIT_SUCCESS ) {
+    exitCode = client::client.main();
+  }
+
+  client::client.shutdown();
+
+  if( Alloc::count != 0 ) {
+    Log::verboseMode = true;
+    bool isOutput = Alloc::printLeaks();
+    Log::verboseMode = false;
+
+    if( isOutput ) {
+      Log::println( "There are some memory leaks. See '%s' for details.", Log::logFile() );
+    }
+  }
+}
+
+#elif defined( __native_client__ )
 
 #include <SDL/SDL_nacl.h>
 
@@ -202,7 +255,7 @@ pp::Module* CreateModule()
 
 }
 
-#else // __native_client__
+#else
 
 using namespace oz;
 
@@ -239,4 +292,4 @@ int main( int argc, char** argv )
   return exitCode;
 }
 
-#endif // __native_client__
+#endif

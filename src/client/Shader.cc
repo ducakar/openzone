@@ -440,9 +440,9 @@ void Shader::free()
   }
 
   fragShaders.clear();
-  fragShaders.dealloc();
+  fragShaders.deallocate();
   vertShaders.clear();
-  vertShaders.dealloc();
+  vertShaders.deallocate();
 
   if( defaultNormals != 0 ) {
     glDeleteTextures( 1, &defaultNormals );

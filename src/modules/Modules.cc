@@ -94,7 +94,7 @@ void Modules::free()
   }
 
   modules.clear();
-  modules.dealloc();
+  modules.deallocate();
 }
 
 }

@@ -96,9 +96,9 @@ void NamePool::free()
   Log::print( "Freeing NamePool ..." );
 
   names.clear();
-  names.dealloc();
+  names.deallocate();
   listPositions.clear();
-  listPositions.dealloc();
+  listPositions.deallocate();
 
   Log::printEnd( " OK" );
 }

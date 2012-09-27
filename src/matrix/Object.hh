@@ -197,22 +197,27 @@ class Object : public AABB
     static const int EVENT_USE        = 7;
     static const int EVENT_USE_FAILED = 8;
 
-    struct Event
+    class Event
     {
-      static Pool<Event, 256> pool;
+      public:
 
-      int    id;
-      float  intensity;
-      Event* next[1];
+        static Pool<Event, 256> pool;
 
-      OZ_ALWAYS_INLINE
-      explicit Event( int id_, float intensity_ ) :
-        id( id_ ), intensity( intensity_ )
-      {
-        hard_assert( intensity >= 0.0f );
-      }
+        int    id;
+        float  intensity;
+        Event* next[1];
 
-      OZ_STATIC_POOL_ALLOC( pool )
+      public:
+
+        OZ_ALWAYS_INLINE
+        explicit Event( int id_, float intensity_ ) :
+          id( id_ ), intensity( intensity_ )
+        {
+          hard_assert( intensity >= 0.0f );
+        }
+
+        OZ_STATIC_POOL_ALLOC( pool )
+
     };
 
   public:

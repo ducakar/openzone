@@ -105,7 +105,7 @@ Object::Object( const ObjectClass* clazz_, int index_, const Point& p_, Heading 
   }
 
   if( clazz->nItems != 0 ) {
-    items.alloc( clazz->nItems );
+    items.allocate( clazz->nItems );
   }
 }
 
@@ -133,7 +133,7 @@ Object::Object( const ObjectClass* clazz_, InputStream* istream )
   }
 
   if( clazz->nItems != 0 ) {
-    items.alloc( clazz->nItems );
+    items.allocate( clazz->nItems );
 
     int nItems = istream->readInt();
     for( int i = 0; i < nItems; ++i ) {

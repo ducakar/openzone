@@ -37,10 +37,10 @@ namespace oz
  * Sorted array list of key-value pairs.
  *
  * %Map is implemented as a sorted array list that supports binding values to its elements (keys).
- * Better worst case performance than a hashtable and it can use an arbitrary type as a key.
- * For large maps HashIndex/HashString is preferred as it is asymptotically faster in average case.
+ * Better worst case performance than a hashtable; however, for large maps `Hashtable` is preferred
+ * as it is asymptotically faster in average case.
  *
- * Like in List all allocated elements are constructed all the time and a removed element's
+ * Like in `List` all allocated elements are constructed all the time and a removed element's
  * destruction is guaranteed.
  *
  * Memory is allocated when the first element is added.
@@ -68,7 +68,7 @@ class Map
       public:
 
         /**
-         * Less-than operator required for `aBisect`.
+         * Less-than operator required for `aBisection`.
          */
         OZ_ALWAYS_INLINE
         friend bool operator < ( const Key& key, const Elem& e )
@@ -101,19 +101,19 @@ class Map
     {
       if( size == count ) {
         size = size == 0 ? GRANULARITY : 2 * size;
-        data = aRealloc<Elem>( data, count, size );
+        data = aReallocate<Elem>( data, count, size );
       }
     }
 
     /**
-     * Enlarge capacity to the smallest multiple of GRANULARITY able to hold the requested number of
-     * elements.
+     * Enlarge capacity to the smallest multiple of `GRANULARITY` able to hold the requested number
+     * of elements.
      */
     void ensureCapacity( int desiredSize )
     {
       if( size < desiredSize ) {
         size = ( ( desiredSize - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
-        data = aRealloc<Elem>( data, count, size );
+        data = aReallocate<Elem>( data, count, size );
       }
     }
 
@@ -357,7 +357,7 @@ class Map
      */
     bool contains( const Key& key ) const
     {
-      int i = aBisect<Elem, Key>( data, key, count );
+      int i = aBisection<Elem, Key>( data, key, count );
       return i >= 0 && data[i].key == key;
     }
 
@@ -366,7 +366,7 @@ class Map
      */
     int index( const Key& key ) const
     {
-      int i = aBisect<Elem, Key>( data, key, count );
+      int i = aBisection<Elem, Key>( data, key, count );
       return i >= 0 && data[i].key == key ? i : -1;
     }
 
@@ -375,7 +375,7 @@ class Map
      */
     const Value* find( const Key& key ) const
     {
-      int i = aBisect<Elem, Key>( data, key, count );
+      int i = aBisection<Elem, Key>( data, key, count );
       return i >= 0 && data[i].key == key ? &data[i].value : nullptr;
     }
 
@@ -384,7 +384,7 @@ class Map
      */
     Value* find( const Key& key )
     {
-      int i = aBisect<Elem, Key>( data, key, count );
+      int i = aBisection<Elem, Key>( data, key, count );
       return i >= 0 && data[i].key == key ? &data[i].value : nullptr;
     }
 
@@ -396,7 +396,7 @@ class Map
     template <typename Key_ = Key, typename Value_ = Value>
     int add( Key_&& key, Value_&& value = Value() )
     {
-      int i = aBisect<Elem, Key>( data, key, count );
+      int i = aBisection<Elem, Key>( data, key, count );
 
       if( i >= 0 && data[i].key == key ) {
         data[i].key   = static_cast<Key_&&>( key );
@@ -417,7 +417,7 @@ class Map
     template <typename Key_ = Key, typename Value_ = Value>
     int include( Key_&& key, Value_&& value = Value() )
     {
-      int i = aBisect<Elem, Key>( data, key, count );
+      int i = aBisection<Elem, Key>( data, key, count );
 
       if( i >= 0 && data[i].key == key ) {
         return i;
@@ -442,7 +442,7 @@ class Map
 
       ensureCapacity();
 
-      aReverseMove<Elem>( data + i + 1, data + i, count - i );
+      aMoveBackward<Elem>( data + i + 1, data + i, count - i );
       data[i].key   = static_cast<Key_&&>( key );
       data[i].value = static_cast<Value_&&>( value );
 
@@ -477,7 +477,7 @@ class Map
      */
     int exclude( const Key& key )
     {
-      int i = aBisect<Elem, Key>( data, key, count );
+      int i = aBisection<Elem, Key>( data, key, count );
 
       if( i >= 0 && data[i].key == key ) {
         erase( i );
@@ -527,7 +527,7 @@ class Map
     /**
      * For an empty map with no allocated storage, allocate capacity for `size_` elements.
      */
-    void alloc( int size_ )
+    void allocate( int size_ )
     {
       hard_assert( size == 0 && size_ > 0 );
 
@@ -538,7 +538,7 @@ class Map
     /**
      * Deallocate storage of an empty map.
      */
-    void dealloc()
+    void deallocate()
     {
       hard_assert( count == 0 );
 
@@ -557,7 +557,7 @@ class Map
 
       if( newSize < size ) {
         size = newSize;
-        data = aRealloc<Elem>( data, count, size );
+        data = aReallocate<Elem>( data, count, size );
       }
     }
 

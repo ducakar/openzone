@@ -67,11 +67,6 @@ class Alloc
     Alloc() = delete;
 
     /**
-     * Forbid instances.
-     */
-    Alloc( const Alloc& ) = delete;
-
-    /**
      * Align to the previous boundary.
      */
     OZ_ALWAYS_INLINE
@@ -131,7 +126,11 @@ class Alloc
  * allocated chunks, so it catches new/delete mismatches and `Alloc::printLeaks()` can be called at
  * any time to print currently allocated chunks.
  */
+// #if defined( OZ_GCC ) && OZ_GCC < 407
+// extern void* operator new ( size_t size ) _GLIBCXX_THROW( std::bad_alloc );
+// #else
 extern void* operator new ( size_t size );
+// #endif
 
 /**
  * Operator new[] overload with memory statistics and (optionally) memory leak checking.
@@ -141,7 +140,11 @@ extern void* operator new ( size_t size );
  * allocated chunks, so it catches new/delete mismatches and `Alloc::printLeaks()` can be called at
  * any time to print currently allocated chunks.
  */
+// #if defined( OZ_GCC ) && OZ_GCC < 407
+// extern void* operator new[] ( size_t size ) _GLIBCXX_THROW( std::bad_alloc );
+// #else
 extern void* operator new[] ( size_t size );
+// #endif
 
 /**
  * Operator delete overload with memory statistics and (optionally) memory leak checking.

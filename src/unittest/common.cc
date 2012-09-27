@@ -30,7 +30,7 @@ using namespace oz;
 
 void test_common()
 {
-  Log::out << "+ common\n";
+  Log() << "+ common\n";
 
   Foo a = 1;
   Foo b = 2;

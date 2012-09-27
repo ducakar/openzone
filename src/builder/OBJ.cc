@@ -405,15 +405,15 @@ void OBJ::build( const char* path_ )
   shader = "";
 
   positions.clear();
-  positions.dealloc();
+  positions.deallocate();
   normals.clear();
-  normals.dealloc();
+  normals.deallocate();
   texCoords.clear();
-  texCoords.dealloc();
+  texCoords.deallocate();
   parts.clear();
-  parts.dealloc();
+  parts.deallocate();
   materialIndices.clear();
-  materialIndices.dealloc();
+  materialIndices.deallocate();
 
   Log::unindent();
   Log::println( "}" );

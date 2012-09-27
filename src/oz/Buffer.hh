@@ -164,12 +164,12 @@ class Buffer
     /**
      * For an empty buffer, allocate new storage of `size` bytes.
      */
-    void alloc( int size );
+    void allocate( int size );
 
     /**
      * Deallocate storage.
      */
-    void dealloc();
+    void deallocate();
 
     /**
      * Create an `InputStream` object for reading binary data from the buffer.

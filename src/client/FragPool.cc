@@ -39,7 +39,7 @@ const float FragPool::FRAG_RADIUS = 1.0f;
 FragPool::FragPool( const matrix::FragPool* pool_ ) :
   pool( pool_ ), flags( pool_->flags )
 {
-  models.alloc( pool->models.length() );
+  models.allocate( pool->models.length() );
 
   for( int i = 0; i < pool->models.length(); ++i ) {
     models.add( context.requestSMM( pool->models[i] ) );

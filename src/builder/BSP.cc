@@ -750,7 +750,7 @@ void BSP::optimise()
   }
 
   usedBrushSides.clear();
-  usedBrushSides.dealloc();
+  usedBrushSides.deallocate();
 
   Log::printEnd( " OK" );
 
@@ -796,7 +796,7 @@ void BSP::optimise()
   }
 
   usedPlanes.clear();
-  usedPlanes.dealloc();
+  usedPlanes.deallocate();
 
   Log::printEnd( " OK" );
 
@@ -1031,14 +1031,14 @@ void BSP::saveMatrix()
     os.writeString( *model );
   }
   usedModels.clear();
-  usedModels.dealloc();
+  usedModels.deallocate();
 
   os.writeInt( usedSounds.length() );
   foreach( sound, usedSounds.citer() ) {
     os.writeString( *sound );
   }
   usedSounds.clear();
-  usedSounds.dealloc();
+  usedSounds.deallocate();
 
   os.writeString( demolishSound );
 
@@ -1218,25 +1218,25 @@ void BSP::build( const char* name_ )
 
   textures.clear();
   planes.clear();
-  planes.dealloc();
+  planes.deallocate();
   nodes.clear();
-  nodes.dealloc();
+  nodes.deallocate();
   leaves.clear();
-  leaves.dealloc();
+  leaves.deallocate();
   leafBrushes.clear();
-  leafBrushes.dealloc();
+  leafBrushes.deallocate();
   models.clear();
   brushes.clear();
-  brushes.dealloc();
+  brushes.deallocate();
   brushSides.clear();
-  brushSides.dealloc();
+  brushSides.deallocate();
   modelFaces.clear();
   vertices.clear();
   indices.clear();
   faces.clear();
-  faces.dealloc();
+  faces.deallocate();
   boundObjects.clear();
-  boundObjects.dealloc();
+  boundObjects.deallocate();
 
   Log::unindent();
   Log::println( "}" );

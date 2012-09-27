@@ -48,8 +48,8 @@ int main()
   SList<int, 5> sv;
   Set<int> s;
   Map<int, nil_t> m;
-  HashIndex<int, 7> hi;
-  HashString<int, 7> hs;
+  Hashtable<int, int, 7> hi;
+  Hashtable<String, int, 7> hs;
 
   Chain<Elem, 0> l1;
   DChain<Elem, 0> dl1;
@@ -58,8 +58,8 @@ int main()
   SList<int, 5> sv1;
   Set<int> s1;
   Map<int, nil_t> m1;
-  HashIndex<int, 7> hi1;
-  HashString<int, 7> hs1;
+  Hashtable<int, int, 7> hi1;
+  Hashtable<String, int, 7> hs1;
 
   // 1
   l.add( new Elem( 1 ) );
@@ -136,11 +136,11 @@ int main()
   swap( hi, hi1 );
   swap( hs, hs1 );
 
-  v1.dealloc();
-  s1.dealloc();
-  m1.dealloc();
-  hi1.dealloc();
-  hs1.dealloc();
+  v1.deallocate();
+  s1.deallocate();
+  m1.deallocate();
+  hi1.deallocate();
+  hs1.deallocate();
 
   foreach( i, l.citer() ) {
     printf( "%d ", i->value );
@@ -189,15 +189,15 @@ int main()
   l.free();
   dl.free();
   v.clear();
-  v.dealloc();
+  v.deallocate();
   s.clear();
-  s.dealloc();
+  s.deallocate();
   m.clear();
-  m.dealloc();
+  m.deallocate();
   hi.clear();
-  hi.dealloc();
+  hi.deallocate();
   hs.clear();
-  hs.dealloc();
+  hs.deallocate();
 
   Alloc::printLeaks();
   return 0;

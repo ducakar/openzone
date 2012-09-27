@@ -514,14 +514,14 @@ void Compiler::init()
 void Compiler::free()
 {
   parts.clear();
-  parts.dealloc();
+  parts.deallocate();
 
   part.texture = "";
   part.indices.clear();
-  part.indices.dealloc();
+  part.indices.deallocate();
 
   vertices.clear();
-  vertices.dealloc();
+  vertices.deallocate();
 
   positions.clear();
   normals.clear();

@@ -56,28 +56,13 @@ class JSON
 
   private:
 
-    /// Internal base struct for value data representation.
     struct Data;
-
-    /// Internal struct for boolean representation.
     struct BooleanData;
-
-    /// Internal struct for number representation.
     struct NumberData;
-
-    /// Internal struct for string representation.
     struct StringData;
-
-    /// Internal struct for array representation.
     struct ArrayData;
-
-    /// Internal struct for Object representation.
     struct ObjectData;
-
-    /// Class that wraps internal parser functions.
     struct Parser;
-
-    /// Class that wraps internal formatter functions.
     struct Formatter;
 
     static const JSON NIL_VALUE;   ///< A null value instance, required by `operator []`.

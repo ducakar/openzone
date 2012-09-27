@@ -598,7 +598,7 @@ Buffer File::read()
   Buffer buffer;
 
   if( data != nullptr ) {
-    buffer.alloc( fileSize );
+    buffer.allocate( fileSize );
     memcpy( buffer.begin(), data, size_t( fileSize ) );
     return buffer;
   }
@@ -612,7 +612,7 @@ Buffer File::read()
     return buffer;
   }
 
-  buffer.alloc( fileSize );
+  buffer.allocate( fileSize );
 
   descriptor->buffer = buffer.begin();
   descriptor->size   = fileSize;
@@ -662,7 +662,7 @@ Buffer File::read()
   SEMAPHORE_WAIT();
 
   if( descriptor->offset < fileSize ) {
-    buffer.dealloc();
+    buffer.deallocate();
     return buffer;
   }
 
@@ -681,14 +681,14 @@ Buffer File::read()
     return buffer;
   }
 
-  buffer.alloc( size );
+  buffer.allocate( size );
 
   DWORD read;
   BOOL result = ReadFile( file, buffer.begin(), DWORD( size ), &read, nullptr );
   CloseHandle( file );
 
   if( result == 0 || int( read ) != size ) {
-    buffer.dealloc();
+    buffer.deallocate();
     return buffer;
   }
 
@@ -706,13 +706,13 @@ Buffer File::read()
   }
 
   int size = int( statInfo.st_size );
-  buffer.alloc( size );
+  buffer.allocate( size );
 
   int result = int( ::read( fd, buffer.begin(), size_t( size ) ) );
   close( fd );
 
   if( result != size ) {
-    buffer.dealloc();
+    buffer.deallocate();
     return buffer;
   }
 

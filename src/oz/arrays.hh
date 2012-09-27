@@ -223,7 +223,7 @@ inline void aCopy( Elem* aDest, const Elem* aSrc, int count )
  * Move array elements from the last to the first.
  */
 template <typename Elem>
-inline void aReverseCopy( Elem* aDest, const Elem* aSrc, int count )
+inline void aCopyBackward( Elem* aDest, const Elem* aSrc, int count )
 {
   for( int i = count - 1; i >= 0; --i ) {
     aDest[i] = aSrc[i];
@@ -245,7 +245,7 @@ inline void aMove( Elem* aDest, Elem* aSrc, int count )
  * Move array elements from the last to the first.
  */
 template <typename Elem>
-inline void aReverseMove( Elem* aDest, Elem* aSrc, int count )
+inline void aMoveBackward( Elem* aDest, Elem* aSrc, int count )
 {
   for( int i = count - 1; i >= 0; --i ) {
     aDest[i] = static_cast<Elem&&>( aSrc[i] );
@@ -394,7 +394,7 @@ inline void aFree( Elem* aDest, int count )
  * @return Newly allocated array.
  */
 template <typename Elem>
-inline Elem* aRealloc( Elem* aSrc, int count, int newCount )
+inline Elem* aReallocate( Elem* aSrc, int count, int newCount )
 {
   Elem* aNew = nullptr;
 
@@ -500,7 +500,7 @@ inline void aSort( Elem* aSrc, int count )
 }
 
 /**
- * Find index such that `aSrc[index] <= key && key < aSrc[index + 1]`.
+ * Find index in a sorted array such that `array[index] <= key && key < array[index + 1]`.
  *
  * If all elements are lesser return `count - 1` and if all elements are greater return -1.
  * `Elem` type must have defined `bool operator < ( const Key&, const Elem& ) const`.
@@ -508,13 +508,11 @@ inline void aSort( Elem* aSrc, int count )
  * @param aSrc array.
  * @param key the key we are looking for.
  * @param count number of elements.
- * @return Index such that `aSrc[index] <= key && key < aSrc[index + 1]`.
+ * @return Index of the last element not greater than `key`, -1 otherwise.
  */
 template <typename Elem, typename Key = Elem>
-inline int aBisect( Elem* aSrc, const Key& key, int count )
+inline int aBisection( Elem* aSrc, const Key& key, int count )
 {
-  hard_assert( count >= 0 );
-
   int a = -1;
   int b = count;
 

@@ -39,8 +39,8 @@
  * will be used, which will not end good.
  */
 #define OZ_STATIC_POOL_ALLOC( pool ) \
-  void* operator new ( size_t ) { return pool.alloc(); } \
-  void  operator delete ( void* ptr ) noexcept { if( ptr != nullptr ) pool.dealloc( ptr ); } \
+  void* operator new ( size_t ) { return pool.allocate(); } \
+  void  operator delete ( void* ptr ) noexcept { if( ptr != nullptr ) pool.deallocate( ptr ); } \
   void* operator new ( size_t, const std::nothrow_t& ) noexcept = delete; \
   void  operator delete ( void*, std::nothrow_t& ) noexcept = delete;
 
@@ -50,15 +50,15 @@
  * for the class.
  *
  * The pool is given to new operator as an additional parameter. As delete cannot be provided,
- * object should be manually destructed and deallocated via `pool.dealloc( object )`.
+ * object should be manually destructed and deallocated via `pool.deallocate( object )`.
  */
 #define OZ_PLACEMENT_POOL_ALLOC( Type, SIZE ) \
   void* operator new ( size_t ) = delete; \
   void  operator delete ( void* ) noexcept = delete; \
   void* operator new ( size_t, const std::nothrow_t& ) noexcept = delete; \
   void  operator delete ( void*, const std::nothrow_t& ) noexcept = delete; \
-  void* operator new ( size_t, oz::Pool<Type, SIZE>& pool ) { return pool.alloc(); } \
-  void  operator delete ( void* ptr, oz::Pool<Type, SIZE>& pool ) noexcept { pool.dealloc( ptr ); }
+  void* operator new ( size_t, oz::Pool<Type, SIZE>& p ) { return p.allocate(); } \
+  void  operator delete ( void* ptr, oz::Pool<Type, SIZE>& p ) noexcept { p.deallocate( ptr ); }
 
 namespace oz
 {
@@ -175,7 +175,7 @@ class Pool
     /**
      * Allocate a new object.
      */
-    void* alloc()
+    void* allocate()
     {
       ++count;
 
@@ -195,7 +195,7 @@ class Pool
     /**
      * Free the given object.
      */
-    void dealloc( void* ptr )
+    void deallocate( void* ptr )
     {
       hard_assert( count != 0 );
 

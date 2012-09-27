@@ -408,7 +408,7 @@ void Builder::buildClasses( const String& pkgName )
     memmove( os.begin() + headerSize, os.begin(), size_t( bodySize ) );
     memcpy( os.begin(), headerStream.begin(), size_t( headerSize ) );
 
-    headerStream.dealloc();
+    headerStream.deallocate();
 
     File::mkdir( "class" );
     File outFile( "class/" + pkgName + ".ozClasses" );

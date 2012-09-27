@@ -596,8 +596,8 @@ void Sound::soundRun()
     alListenerfv( AL_VELOCITY, camera.velocity );
 
     if( playedStructs.length() < orbis.structs.length() ) {
-      playedStructs.dealloc();
-      playedStructs.alloc( orbis.structs.length() );
+      playedStructs.deallocate();
+      playedStructs.allocate( orbis.structs.length() );
     }
     playedStructs.clearAll();
 
@@ -916,7 +916,7 @@ void Sound::free()
 #endif
 
   if( soundContext != nullptr ) {
-    playedStructs.dealloc();
+    playedStructs.deallocate();
 
     alSourceStop( musicSource );
     alDeleteSources( 1, &musicSource );

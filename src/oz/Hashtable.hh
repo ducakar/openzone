@@ -21,30 +21,28 @@
  */
 
 /**
- * @file oz/HashIndex.hh
+ * @file oz/Hashtable.hh
  *
- * HashIndex template class.
+ * Hashtable template class.
  */
 
 #pragma once
 
-#include "arrays.hh"
 #include "Pool.hh"
+#include "arrays.hh"
 
 namespace oz
 {
 
 /**
- * Chaining hashtable implementation with integer key.
- *
- * A prime number is recommended as size unless key distribution is truly "random".
+ * Chaining hashtable implementation.
  *
  * Memory is allocated when the first element is added.
  */
-template <typename Value = nil_t, int SIZE = 253>
-class HashIndex
+template <typename Key, typename Value = nil_t, int SIZE = 256>
+class Hashtable
 {
-  static_assert( SIZE > 0, "HashIndex size must be at least 1" );
+  static_assert( SIZE > 0, "Hashtable size must be at least 1" );
 
   public:
 
@@ -53,7 +51,7 @@ class HashIndex
      */
     class Elem
     {
-      friend class HashIndex;
+      friend class Hashtable;
 
       private:
 
@@ -61,7 +59,7 @@ class HashIndex
 
       public:
 
-        const int key;   ///< Key.
+        const Key key;   ///< Key.
         Value     value; ///< Value.
 
       private:
@@ -69,10 +67,11 @@ class HashIndex
         /**
          * Initialise a new element.
          */
-        template <typename Value_ = Value>
+        template <typename Key_ = Key, typename Value_ = Value>
         OZ_ALWAYS_INLINE
-        explicit Elem( Elem* next_, int key_, Value_&& value_ ) :
-          next( next_ ), key( key_ ), value( static_cast<Value_&&>( value_ ) )
+        explicit Elem( Elem* next_, Key_&& key_, Value_&& value_ ) :
+          next( next_ ), key( static_cast<Key_&&>( key_ ) ),
+          value( static_cast<Value_&&>( value_ ) )
         {}
 
         OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
@@ -217,7 +216,7 @@ class HashIndex
         Elem* next = chain->next;
 
         chain->~Elem();
-        pool.dealloc( chain );
+        pool.deallocate( chain );
 
         chain = next;
       }
@@ -233,7 +232,7 @@ class HashIndex
 
         delete chain->value;
         chain->~Elem();
-        pool.dealloc( chain );
+        pool.deallocate( chain );
 
         chain = next;
       }
@@ -244,7 +243,7 @@ class HashIndex
     /**
      * Create an empty hashtable.
      */
-    HashIndex()
+    Hashtable()
     {
       aFill<Elem*, Elem*>( data, nullptr, SIZE );
     }
@@ -252,16 +251,16 @@ class HashIndex
     /**
      * Destructor.
      */
-    ~HashIndex()
+    ~Hashtable()
     {
       clear();
-      dealloc();
+      deallocate();
     }
 
     /**
      * Copy constructor, copies elements and storage.
      */
-    HashIndex( const HashIndex& t )
+    Hashtable( const Hashtable& t )
     {
       for( int i = 0; i < SIZE; ++i ) {
         data[i] = cloneChain( t.data[i] );
@@ -271,7 +270,7 @@ class HashIndex
     /**
      * Move constructor, moves storage.
      */
-    HashIndex( HashIndex&& t ) :
+    Hashtable( Hashtable&& t ) :
       pool( static_cast< Pool<Elem, SIZE>&& >( t.pool ) )
     {
       aCopy<Elem*>( data, t.data, SIZE );
@@ -281,7 +280,7 @@ class HashIndex
     /**
      * Copy operator, copies elements and storage.
      */
-    HashIndex& operator = ( const HashIndex& t )
+    Hashtable& operator = ( const Hashtable& t )
     {
       if( &t == this ) {
         return *this;
@@ -297,7 +296,7 @@ class HashIndex
     /**
      * Move operator, moves storage.
      */
-    HashIndex& operator = ( HashIndex&& t )
+    Hashtable& operator = ( Hashtable&& t )
     {
       if( &t == this ) {
         return *this;
@@ -315,7 +314,7 @@ class HashIndex
     /**
      * True iff respective elements are equal (including chain order).
      */
-    bool operator == ( const HashIndex& t ) const
+    bool operator == ( const Hashtable& t ) const
     {
       if( pool.length() != t.pool.length() ) {
         return false;
@@ -332,7 +331,7 @@ class HashIndex
     /**
      * False iff respective elements are equal (including chain order!).
      */
-    bool operator != ( const HashIndex& t ) const
+    bool operator != ( const Hashtable& t ) const
     {
       if( pool.length() != t.pool.length() ) {
         return true;
@@ -402,9 +401,9 @@ class HashIndex
     /**
      * True iff the given key is found in the hashtable.
      */
-    bool contains( int key ) const
+    bool contains( const Key& key ) const
     {
-      uint  i = uint( key ) % uint( SIZE );
+      uint  i = uint( hash( key ) ) % uint( SIZE );
       Elem* e = data[i];
 
       while( e != nullptr ) {
@@ -420,9 +419,9 @@ class HashIndex
     /**
      * If the key exists, return constant pointer to its value, otherwise return `nullptr`.
      */
-    const Value* find( int key ) const
+    const Value* find( const Key& key ) const
     {
-      uint  i = uint( key ) % uint( SIZE );
+      uint  i = uint( hash( key ) ) % uint( SIZE );
       Elem* e = data[i];
 
       while( e != nullptr ) {
@@ -438,9 +437,9 @@ class HashIndex
     /**
      * If the key exists, return pointer to its value, otherwise return `nullptr`.
      */
-    Value* find( int key )
+    Value* find( const Key& key )
     {
-      uint  i = uint( key ) % uint( SIZE );
+      uint  i = uint( hash( key ) ) % uint( SIZE );
       Elem* e = data[i];
 
       while( e != nullptr ) {
@@ -458,10 +457,10 @@ class HashIndex
      *
      * @return Reference to the value of the inserted element.
      */
-    template <typename Value_ = Value>
-    Value& add( int key, Value_&& value = Value() )
+    template <typename Key_ = Key, typename Value_ = Value>
+    Value& add( Key_&& key, Value_&& value = Value() )
     {
-      uint  i = uint( key ) % uint( SIZE );
+      uint  i = uint( hash( key ) ) % uint( SIZE );
       Elem* e = data[i];
 
       while( e != nullptr ) {
@@ -473,7 +472,8 @@ class HashIndex
         e = e->next;
       }
 
-      data[i] = new( pool ) Elem( data[i], key, static_cast<Value_&&>( value ) );
+      data[i] = new( pool ) Elem( data[i], static_cast<Key_&&>( key ),
+                                  static_cast<Value_&&>( value ) );
       soft_assert( loadFactor() < 0.75f );
 
       return data[i]->value;
@@ -484,10 +484,10 @@ class HashIndex
      *
      * @return Reference to the value of the inserted or the existing element with the same key.
      */
-    template <typename Value_ = Value>
-    Value& include( int key, Value_&& value = Value() )
+    template <typename Key_ = Key, typename Value_ = Value>
+    Value& include( Key_&& key, Value_&& value = Value() )
     {
-      uint  i = uint( key ) % uint( SIZE );
+      uint  i = uint( hash( key ) ) % uint( SIZE );
       Elem* e = data[i];
 
       while( e != nullptr ) {
@@ -498,7 +498,8 @@ class HashIndex
         e = e->next;
       }
 
-      data[i] = new( pool ) Elem( data[i], key, static_cast<Value_&&>( value ) );
+      data[i] = new( pool ) Elem( data[i], static_cast<Key_&&>( key ),
+                                  static_cast<Value_&&>( value ) );
       soft_assert( loadFactor() < 0.75f );
 
       return data[i]->value;
@@ -509,9 +510,9 @@ class HashIndex
      *
      * @return True iff the key was found (and removed).
      */
-    bool exclude( int key )
+    bool exclude( const Key& key )
     {
-      uint   i    = uint( key ) % uint( SIZE );
+      uint   i    = uint( hash( key ) ) % uint( SIZE );
       Elem*  e    = data[i];
       Elem** prev = &data[i];
 
@@ -520,7 +521,7 @@ class HashIndex
           *prev = e->next;
 
           e->~Elem();
-          pool.dealloc( e );
+          pool.deallocate( e );
 
           return true;
         }
@@ -554,9 +555,9 @@ class HashIndex
     }
 
     /**
-     * Deallocate pool memory of an empty hastable.
+     * Deallocate pool memory of an empty hashtable.
      */
-    void dealloc()
+    void deallocate()
     {
       hard_assert( pool.isEmpty() );
 

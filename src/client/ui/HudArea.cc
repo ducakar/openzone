@@ -201,17 +201,21 @@ void HudArea::drawBotStatus()
 
   float life         = 2.0f * bot->life / botClazz->life - 1.0f;
   float stamina      = bot->stamina / botClazz->stamina;
-  int   lifeWidth    = max( int( life * 198.0f ), 0 );
-  int   staminaWidth = max( int( stamina * 198.0f ), 0 );
+  int   lifeWidth    = max( int( life * float( style.layout.botHealth.w - 2 ) ), 0 );
+  int   staminaWidth = max( int( stamina * float( style.layout.botStamina.w - 2 ) ), 0 );
 
   shape.colour( 1.0f - life, life, 0.0f, 0.5f );
-  shape.fill( 9, 31, lifeWidth, 12 );
+  shape.fill( style.layout.botHealth.x + 1, style.layout.botHealth.y + 1,
+              lifeWidth, style.layout.botHealth.h - 2 );
   shape.colour( 0.7f - 0.7f * stamina, 0.3f, 0.5f + 0.5f * stamina, 0.5f );
-  shape.fill( 9, 9, staminaWidth, 12 );
+  shape.fill( style.layout.botStamina.x + 1, style.layout.botStamina.y + 1,
+              staminaWidth, style.layout.botStamina.h - 2 );
 
   shape.colour( 0.0f, 0.0f, 0.0f, 0.1f );
-  shape.fill( 9 + lifeWidth, 31, 198 - lifeWidth, 12 );
-  shape.fill( 9 + staminaWidth, 9, 198 - staminaWidth, 12 );
+  shape.fill( style.layout.botHealth.x + 1 + lifeWidth, style.layout.botHealth.y + 1,
+              style.layout.botHealth.w - 2 - lifeWidth, style.layout.botHealth.h - 2 );
+  shape.fill( style.layout.botHealth.x + 1 + staminaWidth, style.layout.botHealth.x + 1,
+              style.layout.botHealth.w - 2 - staminaWidth, style.layout.botHealth.h - 2 );
 
   shape.colour( style.colours.barBorder );
   shape.rect( style.layout.botHealth.x, style.layout.botHealth.y,

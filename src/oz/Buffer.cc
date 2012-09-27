@@ -37,7 +37,7 @@ Buffer::Buffer() :
 
 Buffer::~Buffer()
 {
-  dealloc();
+  deallocate();
 }
 
 Buffer::Buffer( const Buffer& b ) :
@@ -63,8 +63,8 @@ Buffer& Buffer::operator = ( const Buffer& b )
   }
 
   if( size < b.size ) {
-    dealloc();
-    alloc( b.size );
+    deallocate();
+    allocate( b.size );
   }
 
   memcpy( data, b.data, size_t( b.size ) );
@@ -92,7 +92,7 @@ Buffer::Buffer( int size_ ) :
   data( new char[size_] ), size( size_ )
 {}
 
-void Buffer::alloc( int size_ )
+void Buffer::allocate( int size_ )
 {
   hard_assert( size == 0 && size_ > 0 );
 
@@ -100,7 +100,7 @@ void Buffer::alloc( int size_ )
   size = size_;
 }
 
-void Buffer::dealloc()
+void Buffer::deallocate()
 {
   delete[] data;
 

@@ -44,10 +44,10 @@ class Nirvana
 
   public:
 
-    HashString<Device::CreateFunc*, 32> deviceClasses;
+    Hashtable<String, Device::CreateFunc*, 32> deviceClasses;
 
-    HashIndex<Device*, 8191> devices;
-    HashIndex<Mind*, 12281>  minds;
+    Hashtable<int, Device*, 8191> devices;
+    Hashtable<int, Mind*, 12281>  minds;
 
     void sync();
     void update();

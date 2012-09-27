@@ -60,7 +60,6 @@ class File
     };
 
 #ifdef __native_client__
-    /// Internal structure for NaCl file description that is passed to callbacks.
     struct Descriptor;
 #endif
 

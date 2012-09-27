@@ -39,7 +39,7 @@ bool Foo::allowLessOp   = true;
 
 int main()
 {
-  Log::out << "Unittest began\n";
+  Log() << "Unittest began\n";
 
   System::init();
 
@@ -49,7 +49,7 @@ int main()
 
   test_Alloc();
 
-  Log::out << ( hasPassed ? "Unittest PASSED\n" : "Unittest FAILED\n" );
+  Log() << ( hasPassed ? "Unittest PASSED\n" : "Unittest FAILED\n" );
   return EXIT_SUCCESS;
 }
 

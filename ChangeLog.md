@@ -4,6 +4,7 @@
     * null removed, replaced by nullptr keyword
     * improved iterator classes: much less code duplication, range-based for-loop support
     * new Set template class, similar to Map but with single values instead of key-value pairs
+    * HashIndex and HashString merged into new Hashtable template class
     * SIMD support in linear algebra classes
     * ALSA support for System::bell()
 - ui

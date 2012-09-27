@@ -462,7 +462,7 @@ class Bitset
     /**
      * For an empty bitset, allocate storage for `nBits` bits.
      */
-    void alloc( int nBits )
+    void allocate( int nBits )
     {
       hard_assert( size == 0 && nBits > 0 );
 
@@ -475,7 +475,7 @@ class Bitset
     /**
      * Deallocate data.
      */
-    void dealloc()
+    void deallocate()
     {
       delete[] data;
 

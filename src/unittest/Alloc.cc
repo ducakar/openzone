@@ -30,7 +30,7 @@ using namespace oz;
 
 void test_Alloc()
 {
-  Log::out << "+ Alloc\n";
+  Log() << "+ Alloc\n";
 
   static const size_t STAT_META_SIZE = Alloc::ALIGNMENT;
 
@@ -43,7 +43,7 @@ void test_Alloc()
   OZ_CHECK( Alloc::count == oCount + 1 );
   OZ_CHECK( Alloc::sumCount == oSumCount + 1 );
 
-  array = aRealloc( array, 5, 8 );
+  array = aReallocate( array, 5, 8 );
   OZ_CHECK( Alloc::amount >= 8 * sizeof( Foo ) + STAT_META_SIZE );
   OZ_CHECK( Alloc::sumAmount >= 18 * sizeof( Foo ) + 2 * STAT_META_SIZE );
   OZ_CHECK( Alloc::count == oCount + 1 );

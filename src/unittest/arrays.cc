@@ -30,7 +30,7 @@ using namespace oz;
 
 void test_arrays()
 {
-  Log::out << "+ arrays\n";
+  Log() << "+ arrays\n";
 
   CIterator<Foo> ici;
   Iterator<Foo>  ii;
@@ -46,9 +46,9 @@ void test_arrays()
   OZ_CHECK( !aEquals( a, b, 4 ) );
   OZ_CHECK( aEquals( a, b, 0 ) );
 
-  aReverseMove( a, b, 4 );
-  aReverseMove( a, a, 4 );
-  aReverseMove( a, b, 0 );
+  aMoveBackward( a, b, 4 );
+  aMoveBackward( a, a, 4 );
+  aMoveBackward( a, b, 0 );
   aMove( b, a, 4 );
   OZ_CHECK_CONTENTS( a, -1, -1, -1, -1 );
   OZ_CHECK_CONTENTS( b, 1, 2, 3, 2 );
@@ -73,14 +73,14 @@ void test_arrays()
   OZ_CHECK( aEquals( a, b, 4 ) );
   OZ_CHECK( iEquals( citer( a ), citer( b ) ) );
 
-  aReverseCopy( b, a, 4 );
-  aReverseCopy( b, a, 0 );
+  aCopyBackward( b, a, 4 );
+  aCopyBackward( b, a, 0 );
   OZ_CHECK( aEquals( a, b, 4 ) );
 
   aCopy( a, a, 4 );
   OZ_CHECK( aEquals( a, b, 4 ) );
 
-  aReverseCopy( a, a, 4 );
+  aCopyBackward( a, a, 4 );
   OZ_CHECK( aEquals( a, b, 4 ) );
 
   OZ_CHECK( !aContains( a, 0, 4 ) );
@@ -122,6 +122,9 @@ void test_arrays()
   OZ_CHECK( aLastIndex( a, 3, 4 ) == 2 );
   OZ_CHECK( aLastIndex( a, 3, 0 ) == -1 );
 
+  aReverse( a, 4 );
+  OZ_CHECK_CONTENTS( a, 2, 3, 2, 1 );
+
   Foo** c = new Foo*[5];
   foreach( i, iter( c, 5 ) ) {
     *i = new Foo();
@@ -133,7 +136,7 @@ void test_arrays()
 
   Foo* d = new Foo[4];
   aCopy( d, b, 4 );
-  d = aRealloc( d, 4, 10 );
+  d = aReallocate( d, 4, 10 );
   OZ_CHECK( aEquals( b, d, 4 ) );
   delete[] d;
 
@@ -145,7 +148,7 @@ void test_arrays()
     aSort( r, 1000 );
 
     for( int i = -1; i <= 1000; ++i ) {
-      int index = aBisect( r, i, 1000 );
+      int index = aBisection( r, i, 1000 );
 
       if( 1 <= i && i < 1000 ) {
         OZ_CHECK( r[i - 1] <= r[i] );

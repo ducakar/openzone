@@ -563,7 +563,7 @@ void Struct::onUpdate()
 {
   for( int i = 0; i < boundObjects.length(); ) {
     if( orbis.objects[ boundObjects[i] ] == nullptr ) {
-      boundObjects.eraseUO( i );
+      boundObjects.eraseUnordered( i );
     }
     else {
       ++i;
@@ -760,7 +760,7 @@ Struct::Struct( const BSP* bsp_, InputStream* istream )
   hard_assert( nBoundObjects <= bsp->nBoundObjects );
 
   if( bsp->nBoundObjects != 0 ) {
-    boundObjects.alloc( bsp->nBoundObjects );
+    boundObjects.allocate( bsp->nBoundObjects );
 
     for( int i = 0; i < nBoundObjects; ++i ) {
       boundObjects.add( istream->readInt() );
