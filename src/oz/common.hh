@@ -25,10 +25,9 @@
  *
  * Essential includes, macros, types and templates.
  *
- * You may want to add `soft_assert`, `hard_assert`, `nil_t`, `nil`, `byte`, `ubyte`, `ushort`,
- * `ulong`, `long64`, `ulong64`, `foreach`, `float4` and `uint4` to your
- * `~/.kde/share/apps/katepart/syntax/cpp.xml` or global `/usr/share/apps/katepart/syntax/cpp.xml`
- * to look like reserved words in KatePart (KWrite/Kate/KDevelop).
+ * You may want to add `soft_assert`, `hard_assert`, `byte`, `ubyte`, `ushort`, `ulong`, `long64`,
+ * `ulong64`, `foreach`, `float4` and `uint4` to your `~/.kde/share/apps/katepart/syntax/cpp.xml` or
+ * global `/usr/share/apps/katepart/syntax/cpp.xml` to look like reserved words in KatePart editors.
  */
 
 #pragma once
@@ -88,16 +87,6 @@ namespace oz
 using std::nullptr_t;
 using std::ptrdiff_t;
 using std::size_t;
-
-/**
- * Unit type.
- */
-struct nil_t {};
-
-/**
- * Unit constant.
- */
-const nil_t nil = {};
 
 /**
  * Signed byte.

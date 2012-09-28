@@ -57,7 +57,8 @@
 #include "SList.hh"
 #include "Set.hh"
 #include "Map.hh"
-#include "Hashtable.hh"
+#include "HashSet.hh"
+#include "HashMap.hh"
 
 /*
  * Bitset.

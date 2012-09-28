@@ -40,8 +40,8 @@ enum LuaSyntaxState
   MULTILINE_COMMENT
 };
 
-static Hashtable<String, String> titles;
-static Hashtable<String, String> messages;
+static HashMap<String, String> titles;
+static HashMap<String, String> messages;
 
 static void printUsage( const char* invocationName )
 {
@@ -275,7 +275,7 @@ static void readDescription( File* file )
   }
 }
 
-static void writePOT( const Hashtable<String, String>* hs, const char* filePath )
+static void writePOT( const HashMap<String, String>* hs, const char* filePath )
 {
   BufferStream bs;
   String s;

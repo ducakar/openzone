@@ -75,13 +75,13 @@ class OBJ
       float      alpha;
     };
 
-    String                 path;
-    String                 shader;
-    List<Point>            positions;
-    List<Vec3>             normals;
-    List<TexCoord>         texCoords;
-    List<Part>             parts;
-    Hashtable<String, int> materialIndices;
+    String               path;
+    String               shader;
+    List<Point>          positions;
+    List<Vec3>           normals;
+    List<TexCoord>       texCoords;
+    List<Part>           parts;
+    HashMap<String, int> materialIndices;
 
     static char* skipSpaces( char* pos );
     static char* readWord( char* pos );

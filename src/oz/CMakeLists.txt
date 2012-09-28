@@ -18,7 +18,8 @@ set( ozHeaders
   DChain.hh
   Endian.hh
   File.hh
-  Hashtable.hh
+  HashMap.hh
+  HashSet.hh
   InputStream.hh
   iterables.hh
   JSON.hh
@@ -64,7 +65,8 @@ add_library( oz
   DChain.hh
   Endian.hh
   File.hh
-  Hashtable.hh
+  HashMap.hh
+  HashSet.hh
   InputStream.hh
   iterables.hh
   JSON.hh

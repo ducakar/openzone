@@ -50,24 +50,24 @@ class Liber
 
   private:
 
-    Hashtable<String, BSP, 64>                     bsps;
-    Hashtable<String, ObjectClass::CreateFunc*, 8> baseClasses;
-    Hashtable<String, ObjectClass*, 128>           objClasses;
-    Hashtable<String, FragPool, 32>                fragPools;
+    HashMap<String, BSP, 64>                     bsps;
+    HashMap<String, ObjectClass::CreateFunc*, 8> baseClasses;
+    HashMap<String, ObjectClass*, 128>           objClasses;
+    HashMap<String, FragPool, 32>                fragPools;
 
-    Hashtable<String, int, 64>  shaderIndices;
-    Hashtable<String, int, 256> textureIndices;
-    Hashtable<String, int, 256> soundIndices;
-    Hashtable<String, int, 16>  caelumIndices;
-    Hashtable<String, int, 16>  terraIndices;
-    Hashtable<String, int, 256> modelIndices;
+    HashMap<String, int, 64>  shaderIndices;
+    HashMap<String, int, 256> textureIndices;
+    HashMap<String, int, 256> soundIndices;
+    HashMap<String, int, 16>  caelumIndices;
+    HashMap<String, int, 16>  terraIndices;
+    HashMap<String, int, 256> modelIndices;
 
-    Hashtable<String, int, 16>  nameListIndices;
-    Hashtable<String, int, 64>  musicTrackIndices;
+    HashMap<String, int, 16>  nameListIndices;
+    HashMap<String, int, 64>  musicTrackIndices;
 
-    Hashtable<String, int, 8>   deviceIndices;
-    Hashtable<String, int, 16>  imagoIndices;
-    Hashtable<String, int, 8>   audioIndices;
+    HashMap<String, int, 8>   deviceIndices;
+    HashMap<String, int, 16>  imagoIndices;
+    HashMap<String, int, 8>   audioIndices;
 
   public:
 

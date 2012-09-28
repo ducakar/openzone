@@ -28,7 +28,7 @@
 
 #include "List.hh"
 #include "Map.hh"
-#include "Hashtable.hh"
+#include "HashMap.hh"
 #include "System.hh"
 #include "Log.hh"
 
@@ -101,7 +101,7 @@ struct JSON::ArrayData : JSON::Data
 
 struct JSON::ObjectData : JSON::Data
 {
-  Hashtable<String, JSON> table;
+  HashMap<String, JSON> table;
 };
 
 struct JSON::Parser
@@ -185,7 +185,7 @@ void JSON::Parser::setAccessed( JSON* value )
       break;
     }
     case OBJECT: {
-      const Hashtable<String, JSON>& table = static_cast<const ObjectData*>( value->data )->table;
+      const HashMap<String, JSON>& table = static_cast<const ObjectData*>( value->data )->table;
 
       foreach( i, table.iter() ) {
         setAccessed( &i->value );
@@ -379,7 +379,7 @@ OZ_HIDDEN
 JSON JSON::Parser::parseObject()
 {
   JSON objectValue( new ObjectData(), OBJECT );
-  Hashtable<String, JSON>& table = static_cast<ObjectData*>( objectValue.data )->table;
+  HashMap<String, JSON>& table = static_cast<ObjectData*>( objectValue.data )->table;
 
   char ch = skipBlanks();
   if( ch != '}' ) {
@@ -586,7 +586,7 @@ void JSON::Formatter::writeArray( const JSON& value )
 OZ_HIDDEN
 void JSON::Formatter::writeObject( const JSON& value )
 {
-  const Hashtable<String, JSON>& table = static_cast<const ObjectData*>( value.data )->table;
+  const HashMap<String, JSON>& table = static_cast<const ObjectData*>( value.data )->table;
 
   if( table.isEmpty() ) {
     ostream->writeChars( "{}", 2 );
@@ -907,7 +907,7 @@ const JSON& JSON::operator [] ( const char* key ) const
     OZ_ERROR( "JSON value accessed as an object: %s", toString().cstr() );
   }
 
-  const Hashtable<String, JSON>& table = static_cast<const ObjectData*>( data )->table;
+  const HashMap<String, JSON>& table = static_cast<const ObjectData*>( data )->table;
   const JSON* value = table.find( key );
 
   if( value == nullptr ) {
@@ -1448,7 +1448,7 @@ JSON& JSON::addNull( const char* key )
               key, toString().cstr() );
   }
 
-  Hashtable<String, JSON>& table = static_cast<ObjectData*>( data )->table;
+  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
   return table.add( key, JSON( nullptr, NIL ) );
 }
 
@@ -1515,7 +1515,7 @@ JSON& JSON::add( const char* key, const Vec3& v )
               key, toString().cstr() );
   }
 
-  Hashtable<String, JSON>& table = static_cast<ObjectData*>( data )->table;
+  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
   JSON& elem = table.add( key, JSON( new ArrayData(), ARRAY ) );
 
   List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
@@ -1533,7 +1533,7 @@ JSON& JSON::add( const char* key, const Vec4& v )
               key, toString().cstr() );
   }
 
-  Hashtable<String, JSON>& table = static_cast<ObjectData*>( data )->table;
+  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
   JSON& elem = table.add( key, JSON( new ArrayData(), ARRAY ) );
 
   List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
@@ -1551,7 +1551,7 @@ JSON& JSON::add( const char* key, const Point& p )
               key, toString().cstr() );
   }
 
-  Hashtable<String, JSON>& table = static_cast<ObjectData*>( data )->table;
+  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
   JSON& elem = table.add( key, JSON( new ArrayData(), ARRAY ) );
 
   List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
@@ -1569,7 +1569,7 @@ JSON& JSON::add( const char* key, const Plane& p )
               key, toString().cstr() );
   }
 
-  Hashtable<String, JSON>& table = static_cast<ObjectData*>( data )->table;
+  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
   JSON& elem = table.add( key, JSON( new ArrayData(), ARRAY ) );
 
   List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
@@ -1587,7 +1587,7 @@ JSON& JSON::add( const char* key, const Quat& q )
               key, toString().cstr() );
   }
 
-  Hashtable<String, JSON>& table = static_cast<ObjectData*>( data )->table;
+  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
   JSON& elem = table.add( key, JSON( new ArrayData(), ARRAY ) );
 
   List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
@@ -1605,7 +1605,7 @@ JSON& JSON::add( const char* key, const Mat44& m )
               key, toString().cstr() );
   }
 
-  Hashtable<String, JSON>& table = static_cast<ObjectData*>( data )->table;
+  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
   JSON& elem = table.add( key, JSON( new ArrayData(), ARRAY ) );
 
   List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
@@ -1898,7 +1898,7 @@ bool JSON::exclude( const char* key )
     OZ_ERROR( "Tried to exclude and entry form a non-object JSON value: %s", toString().cstr() );
   }
 
-  Hashtable<String, JSON>& table = static_cast<ObjectData*>( data )->table;
+  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
 
   return table.exclude( key );
 }
@@ -1996,7 +1996,7 @@ String JSON::toString() const
       return s + " ]";
     }
     case OBJECT: {
-      const Hashtable<String, JSON>& table = static_cast<const ObjectData*>( data )->table;
+      const HashMap<String, JSON>& table = static_cast<const ObjectData*>( data )->table;
 
       if( table.isEmpty() ) {
         return "{}";

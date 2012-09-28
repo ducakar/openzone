@@ -37,8 +37,8 @@ namespace oz
  * Sorted array list.
  *
  * %Set is implemented as a sorted array list.
- * Better worst case performance than a hashtable; however, for large sets `Hashtable` is preferred
- * as it is much faster on average.
+ * Better worst case performance than a hashtable; however, for large sets `HashSet` is preferred as
+ * it is asymptotically faster in average case.
  *
  * Like in `List` all allocated elements are constructed all the time and a removed element's
  * destruction is guaranteed.
@@ -83,8 +83,8 @@ class Set
     }
 
     /**
-     * Enlarge capacity to the smallest multiple of GRANULARITY able to hold the requested number of
-     * elements.
+     * Enlarge capacity to the smallest multiple of `GRANULARITY` able to hold the requested number
+     * of elements.
      */
     void ensureCapacity( int desiredSize )
     {

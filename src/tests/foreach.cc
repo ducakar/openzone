@@ -47,9 +47,9 @@ int main()
   List<int> v;
   SList<int, 5> sv;
   Set<int> s;
-  Map<int, nil_t> m;
-  Hashtable<int, int, 7> hi;
-  Hashtable<String, int, 7> hs;
+  Map<int, int> m;
+  HashMap<int, int, 7> hi;
+  HashMap<String, int, 7> hs;
 
   Chain<Elem, 0> l1;
   DChain<Elem, 0> dl1;
@@ -57,9 +57,9 @@ int main()
   List<int> v1;
   SList<int, 5> sv1;
   Set<int> s1;
-  Map<int, nil_t> m1;
-  Hashtable<int, int, 7> hi1;
-  Hashtable<String, int, 7> hs1;
+  Map<int, int> m1;
+  HashMap<int, int, 7> hi1;
+  HashMap<String, int, 7> hs1;
 
   // 1
   l.add( new Elem( 1 ) );
@@ -68,7 +68,7 @@ int main()
   v.add( 1 );
   sv.add( 1 );
   s.include( 1 );
-  m.include( 1 );
+  m.include( 1, 1 );
   hi.add( 101, 1 );
   hs.add( "101", 1 );
 
@@ -79,7 +79,7 @@ int main()
   v.add( 2 );
   sv.add( 2 );
   s.include( 2 );
-  m.include( 2 );
+  m.include( 2, 2 );
   hi.add( 102, 2 );
   hs.add( "102", 2 );
 
@@ -90,7 +90,7 @@ int main()
   v.add( 4 );
   sv.add( 4 );
   s.include( 4 );
-  m.include( 4 );
+  m.include( 4, 4 );
   hi.add( 104, 4 );
   hs.add( "104", 4 );
 
@@ -101,7 +101,7 @@ int main()
   v.add( 3 );
   sv.add( 3 );
   s.include( 3 );
-  m.include( 3 );
+  m.include( 3, 3 );
   hi.add( 103, 3 );
   hs.add( "103", 3 );
 
@@ -112,7 +112,7 @@ int main()
   v.add( 5 );
   sv.add( 5 );
   s.include( 5 );
-  m.include( 5 );
+  m.include( 5, 5 );
   hi.add( 105, 5 );
   hs.add( "105", 5 );
 

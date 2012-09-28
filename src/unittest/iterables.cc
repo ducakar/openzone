@@ -32,26 +32,28 @@ void test_iterables()
 {
   Log() << "+ iterables\n";
 
-  Chain<Foo>::CIterator          icl;
-  Chain<Foo>::Iterator           il;
-  DChain<Foo>::CIterator         icdl;
-  DChain<Foo>::Iterator          idl;
-  Array<Foo, 1>::CIterator       ica;
-  Array<Foo, 1>::Iterator        ia;
-  DArray<Foo>::CIterator         icda;
-  DArray<Foo>::Iterator          ida;
-  List<Foo>::CIterator           icv;
-  List<Foo>::Iterator            iv;
-  SList<Foo, 1>::CIterator       icsv;
-  SList<Foo, 1>::Iterator        isv;
-  Set<Foo>::CIterator            ics;
-  Set<Foo>::Iterator             is;
-  Map<Foo, Foo>::CIterator       icm;
-  Map<Foo, Foo>::Iterator        im;
-  Hashtable<Foo, Foo>::CIterator icht;
-  Hashtable<Foo, Foo>::Iterator  iht;
+  Chain<Foo>::CIterator        icl;
+  Chain<Foo>::Iterator         il;
+  DChain<Foo>::CIterator       icdl;
+  DChain<Foo>::Iterator        idl;
+  Array<Foo, 1>::CIterator     ica;
+  Array<Foo, 1>::Iterator      ia;
+  DArray<Foo>::CIterator       icda;
+  DArray<Foo>::Iterator        ida;
+  List<Foo>::CIterator         icv;
+  List<Foo>::Iterator          iv;
+  SList<Foo, 1>::CIterator     icsv;
+  SList<Foo, 1>::Iterator      isv;
+  Set<Foo>::CIterator          ics;
+  Set<Foo>::Iterator           is;
+  Map<Foo, Foo>::CIterator     icm;
+  Map<Foo, Foo>::Iterator      im;
+  HashSet<Foo>::CIterator      ichs;
+  HashSet<Foo>::Iterator       ihs;
+  HashMap<Foo, Foo>::CIterator ichm;
+  HashMap<Foo, Foo>::Iterator  ihtm;
 
-  List<Foo*>::Iterator           invalid;
+  List<Foo*>::Iterator         invalid;
 
   DChain<Foo> l;
   List<Foo> v;

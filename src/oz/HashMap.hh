@@ -39,28 +39,28 @@ namespace oz
  *
  * Memory is allocated when the first element is added.
  */
-template <typename Key, typename Value = nil_t, int SIZE = 256>
-class Hashtable
+template <typename Key, typename Value, int SIZE = 256>
+class HashMap
 {
-  static_assert( SIZE > 0, "Hashtable size must be at least 1" );
+  static_assert( SIZE > 0, "HashMap size must be at least 1" );
 
   public:
 
     /**
-     * Key-value pair.
+     * Key-value element entry.
      */
     class Elem
     {
-      friend class Hashtable;
+      friend class HashMap;
 
       private:
 
-        Elem*     next;  ///< Next element in a slot.
+        Elem* next;  ///< Next element in a slot.
 
       public:
 
-        const Key key;   ///< Key.
-        Value     value; ///< Value.
+        Key   key;   ///< Key.
+        Value value; ///< Value.
 
       private:
 
@@ -243,7 +243,7 @@ class Hashtable
     /**
      * Create an empty hashtable.
      */
-    Hashtable()
+    HashMap()
     {
       aFill<Elem*, Elem*>( data, nullptr, SIZE );
     }
@@ -251,7 +251,7 @@ class Hashtable
     /**
      * Destructor.
      */
-    ~Hashtable()
+    ~HashMap()
     {
       clear();
       deallocate();
@@ -260,35 +260,35 @@ class Hashtable
     /**
      * Copy constructor, copies elements and storage.
      */
-    Hashtable( const Hashtable& t )
+    HashMap( const HashMap& hm )
     {
       for( int i = 0; i < SIZE; ++i ) {
-        data[i] = cloneChain( t.data[i] );
+        data[i] = cloneChain( hm.data[i] );
       }
     }
 
     /**
      * Move constructor, moves storage.
      */
-    Hashtable( Hashtable&& t ) :
-      pool( static_cast< Pool<Elem, SIZE>&& >( t.pool ) )
+    HashMap( HashMap&& hm ) :
+      pool( static_cast< Pool<Elem, SIZE>&& >( hm.pool ) )
     {
-      aCopy<Elem*>( data, t.data, SIZE );
-      aFill<Elem*, Elem*>( t.data, nullptr, SIZE );
+      aCopy<Elem*>( data, hm.data, SIZE );
+      aFill<Elem*, Elem*>( hm.data, nullptr, SIZE );
     }
 
     /**
      * Copy operator, copies elements and storage.
      */
-    Hashtable& operator = ( const Hashtable& t )
+    HashMap& operator = ( const HashMap& hm )
     {
-      if( &t == this ) {
+      if( &hm == this ) {
         return *this;
       }
 
       for( int i = 0; i < SIZE; ++i ) {
         clearChain( data[i] );
-        data[i] = cloneChain( t.data[i] );
+        data[i] = cloneChain( hm.data[i] );
       }
       return *this;
     }
@@ -296,32 +296,32 @@ class Hashtable
     /**
      * Move operator, moves storage.
      */
-    Hashtable& operator = ( Hashtable&& t )
+    HashMap& operator = ( HashMap&& hm )
     {
-      if( &t == this ) {
+      if( &hm == this ) {
         return *this;
       }
 
       clear();
 
-      aCopy<Elem*>( data, t.data, SIZE );
-      pool = static_cast< Pool<Elem, SIZE>&& >( t.pool );
+      aCopy<Elem*>( data, hm.data, SIZE );
+      pool = static_cast< Pool<Elem, SIZE>&& >( hm.pool );
 
-      aFill<Elem*, Elem*>( t.data, nullptr, SIZE );
+      aFill<Elem*, Elem*>( hm.data, nullptr, SIZE );
       return *this;
     }
 
     /**
      * True iff respective elements are equal (including chain order).
      */
-    bool operator == ( const Hashtable& t ) const
+    bool operator == ( const HashMap& hs ) const
     {
-      if( pool.length() != t.pool.length() ) {
+      if( pool.length() != hs.pool.length() ) {
         return false;
       }
 
       for( int i = 0; i < SIZE; ++i ) {
-        if( !areChainsEqual( data[i], t.data[i] ) ) {
+        if( !areChainsEqual( data[i], hs.data[i] ) ) {
           return false;
         }
       }
@@ -331,14 +331,14 @@ class Hashtable
     /**
      * False iff respective elements are equal (including chain order!).
      */
-    bool operator != ( const Hashtable& t ) const
+    bool operator != ( const HashMap& hm ) const
     {
-      if( pool.length() != t.pool.length() ) {
+      if( pool.length() != hm.pool.length() ) {
         return true;
       }
 
       for( int i = 0; i < SIZE; ++i ) {
-        if( !areChainsEqual( data[i], t.data[i] ) ) {
+        if( !areChainsEqual( data[i], hm.data[i] ) ) {
           return true;
         }
       }
@@ -458,13 +458,14 @@ class Hashtable
      * @return Reference to the value of the inserted element.
      */
     template <typename Key_ = Key, typename Value_ = Value>
-    Value& add( Key_&& key, Value_&& value = Value() )
+    Value& add( Key_&& key, Value_&& value )
     {
       uint  i = uint( hash( key ) ) % uint( SIZE );
       Elem* e = data[i];
 
       while( e != nullptr ) {
         if( e->key == key ) {
+          e->key   = static_cast<Key_&&>( key );
           e->value = static_cast<Value_&&>( value );
           return e->value;
         }
@@ -485,7 +486,7 @@ class Hashtable
      * @return Reference to the value of the inserted or the existing element with the same key.
      */
     template <typename Key_ = Key, typename Value_ = Value>
-    Value& include( Key_&& key, Value_&& value = Value() )
+    Value& include( Key_&& key, Value_&& value )
     {
       uint  i = uint( hash( key ) ) % uint( SIZE );
       Elem* e = data[i];

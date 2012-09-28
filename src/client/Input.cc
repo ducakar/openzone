@@ -248,7 +248,7 @@ void Input::loadKeyMap( const JSON& keyConfig )
 {
 #if SDL_MAJOR_VERSION < 2
 
-  Hashtable<String, SDLKey, 512> sdlKeyNames;
+  HashMap<String, SDLKey, 512> sdlKeyNames;
 
   for( int i = 0; i < SDLK_LAST; ++i ) {
     const char* name = SDL_GetKeyName( SDLKey( i ) );

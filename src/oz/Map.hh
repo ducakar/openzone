@@ -36,16 +36,16 @@ namespace oz
 /**
  * Sorted array list of key-value pairs.
  *
- * %Map is implemented as a sorted array list that supports binding values to its elements (keys).
- * Better worst case performance than a hashtable; however, for large maps `Hashtable` is preferred
- * as it is asymptotically faster in average case.
+ * %Map is implemented as a sorted array list of key-value pairs.
+ * Better worst case performance than a hashtable; however, for large maps `HashMap` is preferred as
+ * it is asymptotically faster in average case.
  *
  * Like in `List` all allocated elements are constructed all the time and a removed element's
  * destruction is guaranteed.
  *
  * Memory is allocated when the first element is added.
  */
-template <typename Key, typename Value = nil_t>
+template <typename Key, typename Value>
 class Map
 {
   private:
@@ -394,7 +394,7 @@ class Map
      * @return Position of the inserted or the existing element.
      */
     template <typename Key_ = Key, typename Value_ = Value>
-    int add( Key_&& key, Value_&& value = Value() )
+    int add( Key_&& key, Value_&& value )
     {
       int i = aBisection<Elem, Key>( data, key, count );
 
@@ -415,7 +415,7 @@ class Map
      * @return Position of the inserted or the existing element.
      */
     template <typename Key_ = Key, typename Value_ = Value>
-    int include( Key_&& key, Value_&& value = Value() )
+    int include( Key_&& key, Value_&& value )
     {
       int i = aBisection<Elem, Key>( data, key, count );
 
