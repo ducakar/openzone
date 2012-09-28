@@ -119,7 +119,21 @@ void BotAudio::play( const Audio* parent )
   }
 
   if( bot->clazz->name.equals( "bauul" ) ) {
-    playSpeak( "Kiss my shiny metal ass!", 1.0f, bot );
+    playSpeak( "Gil-galad was an Elven-king.\n"
+               "Of him the harpers sadly sing:\n"
+               "the last whose realm was fair and free\n"
+               "between the Mountains and the Sea.\n"
+               "\n"
+               "His sword was long, his lance was keen,\n"
+               "his shining helm afar was seen;\n"
+               "the countless stars of heaven's field\n"
+               "were mirrored in his silver shield.\n"
+               "\n"
+               "But long ago he rode away,\n"
+               "and where he dwelleth none can say;\n"
+               "for into darkness fell his star\n"
+               "in Mordor where the shadows are.\n",
+               1.0f, bot );
   }
 }
 

@@ -478,13 +478,9 @@ void PFile::init( File::FilesystemType type, int size )
 
   arg0 = reinterpret_cast<const char*>( &instanceInfo );
 
-#elif defined( _WIN32 )
-
-  arg0 = nullptr;
-
 #else
 
-  arg0 = program_invocation_name;
+  arg0 = nullptr;
 
 #endif
 

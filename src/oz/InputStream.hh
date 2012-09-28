@@ -572,7 +572,7 @@ class InputStream
       int length = int( pos - begin );
 
       pos += ( pos < end ) + ( pos < end - 1 && pos[0] == '\r' && pos[1] == '\n' );
-      return String( length, begin );
+      return String( begin, length );
     }
 
 };

@@ -43,6 +43,7 @@
 #include <client/Network.hh>
 
 #include <clocale>
+#include <sstream>
 #include <unistd.h>
 #include <SDL_ttf.h>
 
@@ -110,10 +111,10 @@ int Client::init( int argc, char** argv )
         break;
       }
       case 't': {
-        bool isError;
-        benchmarkTime = String::parseFloat( optarg, &isError );
+        std::istringstream strs( optarg );
+        strs >> benchmarkTime;
 
-        if( isError ) {
+        if( !strs.eof() ) {
           printUsage( invocationName );
           return EXIT_FAILURE;
         }
@@ -394,9 +395,6 @@ int Client::init( int argc, char** argv )
   common::Lua::randomSeed = seed;
 
   Log::println( "Random generator seed set to: %d", seed );
-
-  // We need this for wide character functions to work properly.
-  setlocale( LC_CTYPE, "" );
 
 #ifdef __native_client__
 

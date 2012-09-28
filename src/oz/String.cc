@@ -38,7 +38,7 @@ namespace oz
 static const int LOCAL_BUFFER_SIZE = 4096;
 
 OZ_HIDDEN
-String::String( int count_, int ) :
+String::String( int count_ ) :
   count( count_ )
 {
   ensureCapacity();
@@ -76,60 +76,6 @@ bool String::endsWith( const char* s, const char* sub )
     --end;
   }
   return subEnd < sub;
-}
-
-bool String::parseBool( const char* s, bool* isError )
-{
-  bool value = strcmp( s, "true" ) == 0;
-
-  if( isError != nullptr ) {
-    *isError = !value && strcmp( s, "false" ) != 0;
-  }
-  return value;
-}
-
-int String::parseInt( const char* s, bool* isError )
-{
-  char* end;
-  int   value = int( strtol( s, &end, 0 ) );
-
-  if( isError != nullptr ) {
-    *isError = *end != '\0' || s[0] == '\0';
-  }
-  return value;
-}
-
-long String::parseLong( const char* s, bool* isError )
-{
-  char* end;
-  long  value = strtol( s, &end, 0 );
-
-  if( isError != nullptr ) {
-    *isError = *end != '\0' || s[0] == '\0';
-  }
-  return value;
-}
-
-float String::parseFloat( const char* s, bool* isError )
-{
-  char* end;
-  float value = strtof( s, &end );
-
-  if( isError != nullptr ) {
-    *isError = *end != '\0' || s[0] == '\0';
-  }
-  return value;
-}
-
-double String::parseDouble( const char* s, bool* isError )
-{
-  char*  end;
-  double value = strtod( s, &end );
-
-  if( isError != nullptr ) {
-    *isError = *end != '\0' || s[0] == '\0';
-  }
-  return value;
 }
 
 String::~String()
@@ -208,7 +154,7 @@ String& String::operator = ( String&& s )
   return *this;
 }
 
-String::String( int count_, const char* s ) :
+String::String( const char* s, int count_ ) :
   count( count_ )
 {
   ensureCapacity();
@@ -223,175 +169,6 @@ String::String( const char* s )
 
   memcpy( buffer, s, size_t( count ) );
   buffer[count] = '\0';
-}
-
-String::String( bool b ) :
-  buffer( baseBuffer )
-{
-  static_assert( BUFFER_SIZE >= 6, "String::BUFFER_SIZE too small for bool representation" );
-
-  if( b ) {
-    count = 4;
-
-    baseBuffer[0] = 't';
-    baseBuffer[1] = 'r';
-    baseBuffer[2] = 'u';
-    baseBuffer[3] = 'e';
-    baseBuffer[4] = '\0';
-  }
-  else {
-    count = 5;
-
-    baseBuffer[0] = 'f';
-    baseBuffer[1] = 'a';
-    baseBuffer[2] = 'l';
-    baseBuffer[3] = 's';
-    baseBuffer[4] = 'e';
-    baseBuffer[5] = '\0';
-  }
-}
-
-String::String( char c ) :
-  buffer( baseBuffer ), count( 1 )
-{
-  baseBuffer[0] = c;
-  baseBuffer[1] = '\0';
-}
-
-String::String( byte b ) :
-  buffer( baseBuffer )
-{
-  // That should assure enough space as log10( 2^( 8*sizeof( byte ) ) ) <= 3*sizeof( byte ),
-  // +2 for sign and terminating null char.
-  static_assert( BUFFER_SIZE >= 3 * int( sizeof( byte ) ) + 2,
-                 "String::BUFFER_SIZE too small for 'byte' representation" );
-
-  count = snprintf( baseBuffer, BUFFER_SIZE, "%d", b );
-}
-
-String::String( ubyte b ) :
-  buffer( baseBuffer )
-{
-  // That should assure enough space as log10( 2^( 8*sizeof( ubyte ) ) ) <= 3*sizeof( ubyte ),
-  // +2 for sign and terminating null char.
-  static_assert( BUFFER_SIZE >= 3 * int( sizeof( ubyte ) ) + 2,
-                 "String::BUFFER_SIZE too small for 'ubyte' representation" );
-
-  count = snprintf( baseBuffer, BUFFER_SIZE, "%u", b );
-}
-
-String::String( short s ) :
-  buffer( baseBuffer )
-{
-  // That should assure enough space as log10( 2^( 8*sizeof( short ) ) ) <= 3*sizeof( short ),
-  // +2 for sign and terminating null char.
-  static_assert( BUFFER_SIZE >= 3 * int( sizeof( short ) ) + 2,
-                 "String::BUFFER_SIZE too small for 'short' representation" );
-
-  count = snprintf( baseBuffer, BUFFER_SIZE, "%hd", s );
-}
-
-String::String( ushort s ) :
-  buffer( baseBuffer )
-{
-  // That should assure enough space as log10( 2^( 8*sizeof( ushort ) ) ) <= 3*sizeof( ushort ),
-  // +2 for sign and terminating null char.
-  static_assert( BUFFER_SIZE >= 3 * int( sizeof( ushort ) ) + 2,
-                 "String::BUFFER_SIZE too small for 'ushort' representation" );
-
-  count = snprintf( baseBuffer, BUFFER_SIZE, "%hu", s );
-}
-
-String::String( int i ) :
-  buffer( baseBuffer )
-{
-  // That should assure enough space as log10( 2^( 8*sizeof( int ) ) ) <= 3*sizeof( int ),
-  // +2 for sign and terminating null char.
-  static_assert( BUFFER_SIZE >= 3 * int( sizeof( int ) ) + 2,
-                 "String::BUFFER_SIZE too small for 'int' representation" );
-
-  count = snprintf( baseBuffer, BUFFER_SIZE, "%d", i );
-}
-
-String::String( uint i ) :
-  buffer( baseBuffer )
-{
-  // That should assure enough space as log10( 2^( 8*sizeof( uint ) ) ) <= 3*sizeof( uint ),
-  // +2 for sign and terminating null char.
-  static_assert( BUFFER_SIZE >= 3 * int( sizeof( uint ) ) + 2,
-                 "String::BUFFER_SIZE too small for 'uint' representation" );
-
-  count = snprintf( baseBuffer, BUFFER_SIZE, "%u", i );
-}
-
-String::String( long l ) :
-  buffer( baseBuffer )
-{
-  // That should assure enough space as log10( 2^( 8*sizeof( long ) ) ) <= 3*sizeof( long ),
-  // +2 for sign and terminating null char.
-  static_assert( BUFFER_SIZE >= 3 * int( sizeof( long ) ) + 2,
-                 "String::BUFFER_SIZE too small for 'long' representation" );
-
-  count = snprintf( baseBuffer, BUFFER_SIZE, "%ld", l );
-}
-
-String::String( ulong l ) :
-  buffer( baseBuffer )
-{
-  // That should assure enough space as log10( 2^( 8*sizeof( ulong ) ) ) <= 3*sizeof( ulong ),
-  // +2 for sign and terminating null char.
-  static_assert( BUFFER_SIZE >= 3 * int( sizeof( ulong ) ) + 2,
-                 "String::BUFFER_SIZE too small for 'ulong' representation" );
-
-  count = snprintf( baseBuffer, BUFFER_SIZE, "%lu", l );
-}
-
-String::String( long64 l ) :
-  buffer( baseBuffer )
-{
-  // That should assure enough space as log10( 2^( 8*sizeof( long64 ) ) ) <= 3*sizeof( long64 ),
-  // +2 for sign and terminating null char.
-  static_assert( BUFFER_SIZE >= 3 * int( sizeof( long64 ) ) + 2,
-                 "String::BUFFER_SIZE too small for 'long64' representation" );
-
-#ifdef _WIN32
-  count = snprintf( baseBuffer, BUFFER_SIZE, "%ld", long( l ) );
-#else
-  count = snprintf( baseBuffer, BUFFER_SIZE, "%lld", l );
-#endif
-}
-
-String::String( ulong64 l ) :
-  buffer( baseBuffer )
-{
-  // That should assure enough space as log10( 2^( 8*sizeof( ulong64 ) ) ) <= 3*sizeof( ulong64 ),
-  // +2 for sign and terminating null char.
-  static_assert( BUFFER_SIZE >= 3 * int( sizeof( ulong64 ) ) + 2,
-                 "String::BUFFER_SIZE too small for 'ulong64' representation" );
-
-#ifdef _WIN32
-  count = snprintf( baseBuffer, BUFFER_SIZE, "%lu", ulong( l ) );
-#else
-  count = snprintf( baseBuffer, BUFFER_SIZE, "%llu", l );
-#endif
-}
-
-String::String( float f ) :
-  buffer( baseBuffer )
-{
-  // Worst case: sign + "0.000" + 8 digits + exponent (at most e-xx) + '\0'.
-  static_assert( BUFFER_SIZE >= 19, "String::BUFFER_SIZE is too small for float representation." );
-
-  count = snprintf( baseBuffer, BUFFER_SIZE, "%.8g", f );
-}
-
-String::String( double d ) :
-  buffer( baseBuffer )
-{
-  // Worst case: sign + "0.000" + 16 digits + exponent (at most e-xxx) + '\0'.
-  static_assert( BUFFER_SIZE >= 28, "String::BUFFER_SIZE is too small for double representation." );
-
-  count = snprintf( baseBuffer, BUFFER_SIZE, "%.16g", d );
 }
 
 String String::str( const char* s, ... )
@@ -414,7 +191,7 @@ String String::str( const char* s, ... )
 
 String String::create( int length, char** buffer_ )
 {
-  String r( length, 0 );
+  String r( length );
 
   *buffer_ = r.buffer;
   return r;
@@ -423,7 +200,7 @@ String String::create( int length, char** buffer_ )
 String String::replace( const char* s, char whatChar, char withChar )
 {
   int    count = length( s );
-  String r     = String( count, 0 );
+  String r     = String( count );
 
   for( int i = 0; i < count; ++i ) {
     r.buffer[i] = s[i] == whatChar ? withChar : s[i];
@@ -473,7 +250,7 @@ bool String::endsWith( const char* sub ) const
 String String::operator + ( const String& s ) const
 {
   int    rCount = count + s.count;
-  String r      = String( rCount, 0 );
+  String r      = String( rCount );
 
   memcpy( r.buffer, buffer, size_t( count ) );
   memcpy( r.buffer + count, s.buffer, size_t( s.count + 1 ) );
@@ -485,7 +262,7 @@ String String::operator + ( const char* s ) const
 {
   int    sLength = length( s );
   int    rCount  = count + sLength;
-  String r       = String( rCount, 0 );
+  String r       = String( rCount );
 
   memcpy( r.buffer, buffer, size_t( count ) );
   memcpy( r.buffer + count, s, size_t( sLength + 1 ) );
@@ -497,7 +274,7 @@ String operator + ( const char* s, const String& t )
 {
   int    sLength = String::length( s );
   int    rCount  = t.count + sLength;
-  String r       = String( rCount, 0 );
+  String r       = String( rCount );
 
   memcpy( r.buffer, s, size_t( sLength ) );
   memcpy( r.buffer + sLength, t.buffer, size_t( t.count + 1 ) );
@@ -551,7 +328,7 @@ String String::substring( int start ) const
   hard_assert( 0 <= start && start <= count );
 
   int    rCount = count - start;
-  String r      = String( rCount, 0 );
+  String r      = String( rCount );
 
   memcpy( r.buffer, buffer + start, size_t( rCount + 1 ) );
 
@@ -563,7 +340,7 @@ String String::substring( int start, int end ) const
   hard_assert( 0 <= start && start <= count && start <= end && end <= count );
 
   int    rCount = end - start;
-  String r      = String( rCount, 0 );
+  String r      = String( rCount );
 
   memcpy( r.buffer, buffer + start, size_t( rCount ) );
   r.buffer[rCount] = '\0';
@@ -582,7 +359,7 @@ String String::trim() const
   while( start < end && isBlank( *( end - 1 ) ) ) {
     --end;
   }
-  return String( int( end - start ), start );
+  return String( start, int( end - start ) );
 }
 
 String String::trim( const char* s )
@@ -597,12 +374,12 @@ String String::trim( const char* s )
   while( start < end && isBlank( *( end - 1 ) ) ) {
     --end;
   }
-  return String( int( end - start ), start );
+  return String( start, int( end - start ) );
 }
 
 String String::replace( char whatChar, char withChar ) const
 {
-  String r = String( count, 0 );
+  String r = String( count );
 
   for( int i = 0; i < count; ++i ) {
     r.buffer[i] = buffer[i] == whatChar ? withChar : buffer[i];

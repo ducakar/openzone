@@ -33,6 +33,7 @@
 #include "Log.hh"
 
 #include <cstdlib>
+#include <sstream>
 
 #define OZ_PARSE_ERROR( charBias, message ) \
   OZ_ERROR( "JSON: " message " at %s:%d:%d", pos.path, pos.line, pos.column + ( charBias ) );
@@ -278,7 +279,7 @@ String JSON::Parser::parseString()
   }
   chars.add( '\0' );
 
-  return String( chars.length() - 1, chars );
+  return String( chars, chars.length() - 1 );
 }
 
 OZ_HIDDEN
@@ -315,8 +316,8 @@ JSON JSON::Parser::parseValue()
       return JSON( new BooleanData( true ), BOOLEAN );
     }
     default: { // number
-      List<char> chars;
-      chars.add( ch );
+      std::stringstream strs;
+      strs.put( ch );
 
       while( pos.istream->isAvailable() ) {
         ch = pos.readChar();
@@ -325,15 +326,14 @@ JSON JSON::Parser::parseValue()
           pos.back();
           break;
         }
-        chars.add( ch );
+        strs.put( ch );
       }
-      chars.add( '\0' );
 
-      char* end;
-      double number = strtod( chars, &end );
+      double number;
+      strs >> number;
 
-      if( end != &chars.last() ) {
-        OZ_PARSE_ERROR( -chars.length(), "Unknown value type" );
+      if( !strs.eof() ) {
+        OZ_PARSE_ERROR( -int( strs.tellp() ), "Unknown value type" );
       }
 
       return JSON( new NumberData( number ), NUMBER );
@@ -524,8 +524,11 @@ void JSON::Formatter::writeValue( const JSON& value )
     case NUMBER: {
       const NumberData* numberData = static_cast<const NumberData*>( value.data );
 
-      String sNumber = String( numberData->value );
-      ostream->writeChars( sNumber, sNumber.length() );
+      std::ostringstream strs;
+      strs << numberData->value;
+      std::string s = strs.str();
+
+      ostream->writeChars( s.c_str(), int( s.length() ) );
       break;
     }
     case STRING: {
@@ -1968,13 +1971,20 @@ String JSON::toString() const
       return "null";
     }
     case BOOLEAN: {
-      return String( static_cast<const BooleanData*>( data )->value );
+      return static_cast<const BooleanData*>( data )->value ? "true" : "false";
     }
     case NUMBER: {
-      return String( static_cast<const NumberData*>( data )->value );
+      std::stringstream strs;
+      strs << static_cast<const NumberData*>( data )->value;
+
+      char* buffer;
+      String r = String::create( int( strs.tellp() ), &buffer );
+      strs.read( buffer, strs.tellp() );
+
+      return r;
     }
     case STRING: {
-      return String::str( "\"%s\"", static_cast<const StringData*>( data )->value.cstr() );
+      return "\"" + static_cast<const StringData*>( data )->value + "\"";
     }
     case ARRAY: {
       const List<JSON>& list = static_cast<const ArrayData*>( data )->list;

@@ -237,7 +237,7 @@ void OBJ::loadMaterials( const char* filePath )
           *end = '\0';
 
           int dot = String::index( pos, '.' );
-          String name = dot < 0 ? pos : String( dot, pos );
+          String name = dot < 0 ? String( pos ) : String( pos, dot );
 
           part.texture = name;
         }

@@ -855,7 +855,7 @@ void Sound::init()
 
 #ifdef OZ_ESPEAK
   context.speakSampleRate = espeak_Initialize( AUDIO_OUTPUT_SYNCHRONOUS, 500, nullptr, 0 );
-  espeak_SetParameter( espeakRATE, 150, 0 );
+  espeak_SetParameter( espeakRATE, 160, 0 );
   espeak_SetVoiceByName( config.include( "sound.speaker", "en" ).asString() );
   espeak_SetSynthCallback( reinterpret_cast<t_espeak_callback*>( &Context::speakCallback ) );
 #endif

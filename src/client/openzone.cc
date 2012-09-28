@@ -29,7 +29,6 @@
 
 #if defined( OZ_JNI )
 
-#include <clocale>
 #include <jni.h>
 
 using namespace oz;
@@ -37,8 +36,7 @@ using namespace oz;
 extern "C" JNIEXPORT
 void JNICALL Java_OpenZone_main( JNIEnv* env, jclass, jobjectArray args )
 {
-  setlocale( LC_ALL, "C" );
-  System::init( System::EXCEPTION_HANDLERS_BIT | System::SIGNAL_HANDLER_BIT | System::HALT_BIT );
+  System::init( System::EXCEPTIONS_BIT );
 
   int exitCode = EXIT_FAILURE;
 

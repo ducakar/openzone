@@ -29,6 +29,7 @@
 #include "Math.hh"
 #include "Log.hh"
 
+#include <clocale>
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
@@ -480,11 +481,11 @@ static void abort( bool doHalt )
   resetSignals();
 
 #ifdef _WIN32
-  if( doHalt && _isatty( STDIN_FILENO ) && _isatty( STDOUT_FILENO ) ) {
+  if( doHalt && _isatty( STDIN_FILENO ) && _isatty( STDERR_FILENO ) ) {
 #else
-  if( doHalt && isatty( STDIN_FILENO ) && isatty( STDOUT_FILENO ) ) {
+  if( doHalt && isatty( STDIN_FILENO ) && isatty( STDERR_FILENO ) ) {
 #endif
-    fputs( "Halted. Attach a debugger or press Enter to quit ...\n", stderr );
+    fputs( "Halted. Attach a debugger or press Enter to quit ... ", stderr );
     fflush( stderr );
     fgetc( stdin );
   }
@@ -644,7 +645,7 @@ void System::error( const char* function, const char* file, int line, int nSkipp
 
 void System::threadInit()
 {
-  if( initFlags & SIGNAL_HANDLER_BIT ) {
+  if( initFlags & SIGNALS_BIT ) {
     catchSignals();
   }
 }
@@ -656,20 +657,24 @@ void System::init( int flags )
 #endif
   initFlags = flags;
 
-  if( initFlags & SIGNAL_HANDLER_BIT ) {
+  if( initFlags & SIGNALS_BIT ) {
     catchSignals();
   }
   else {
     resetSignals();
   }
 
-  if( initFlags & EXCEPTION_HANDLERS_BIT ) {
+  if( initFlags & EXCEPTIONS_BIT ) {
     std::set_terminate( terminate );
     std::set_unexpected( unexpected );
   }
   else {
     std::set_unexpected( std::unexpected );
     std::set_terminate( std::terminate );
+  }
+
+  if( initFlags & LOCALE_BIT ) {
+    setlocale( LC_ALL, "" );
   }
 }
 

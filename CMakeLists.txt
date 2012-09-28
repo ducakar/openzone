@@ -217,7 +217,7 @@ if( OZ_JNI )
   set( flags "${flags} -fPIC" )
 endif()
 
-set( flags "${flags} -fno-rtti -fno-exceptions -fvisibility-inlines-hidden -ffast-math" )
+set( flags "${flags} -fno-exceptions -fno-rtti -fvisibility-inlines-hidden -ffast-math" )
 set( warnings "-Wall -Wextra -Wconversion -Winvalid-pch" )
 
 # Additional warnings, enabled only once in a while to check code quality (GCC specific).

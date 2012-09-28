@@ -56,7 +56,7 @@ class String
     /**
      * Only allocate storage, do not initialise string.
      */
-    explicit String( int count_, int );
+    explicit String( int count );
 
     /**
      * If existing storage is too small, allocate a new one.
@@ -288,31 +288,6 @@ class String
       return reinterpret_cast<const ubyte*>( s );
     }
 
-    /**
-     * Parse boolean value (must exactly match either "true" or "false").
-     */
-    static bool parseBool( const char* s, bool* isError = nullptr );
-
-    /**
-     * Parse integer value.
-     */
-    static int parseInt( const char* s, bool* isError = nullptr );
-
-    /**
-     * Parse long integer value.
-     */
-    static long parseLong( const char* s, bool* isError = nullptr );
-
-    /**
-     * Parse float value.
-     */
-    static float parseFloat( const char* s, bool* isError = nullptr );
-
-    /**
-     * Parse double value.
-     */
-    static double parseDouble( const char* s, bool* isError = nullptr );
-
     /*
      * Functions that operate on a String object.
      */
@@ -359,82 +334,12 @@ class String
      * @param s
      * @param count_ length in bytes without the terminating null character.
      */
-    explicit String( int count_, const char* s );
+    String( const char* s, int count );
 
     /**
      * Create string form the given C string.
      */
     String( const char* s );
-
-    /**
-     * Create string form a boolean value, yields "true" or "false".
-     */
-    explicit String( bool b );
-
-    /**
-     * Create string that contain a single character.
-     */
-    explicit String( char c );
-
-    /**
-     * Create string from a byte value.
-     */
-    explicit String( byte b );
-
-    /**
-     * Create string from an unsigned byte value.
-     */
-    explicit String( ubyte b );
-
-    /**
-     * Create string from a short integer value.
-     */
-    explicit String( short s );
-
-    /**
-     * Create string from an unsigned short integer value.
-     */
-    explicit String( ushort s );
-
-    /**
-     * Create string from an integer value.
-     */
-    explicit String( int i );
-
-    /**
-     * Create string from an unsigned integer value.
-     */
-    explicit String( uint i );
-
-    /**
-     * Create string from a long integer value.
-     */
-    explicit String( long l );
-
-    /**
-     * Create string from an unsigned long integer value.
-     */
-    explicit String( ulong l );
-
-    /**
-     * Create string from a 64-bit integer value.
-     */
-    explicit String( long64 l );
-
-    /**
-     * Create string from an unsigned 64-bit integer value.
-     */
-    explicit String( ulong64 l );
-
-    /**
-     * Create string from a float value.
-     */
-    explicit String( float f );
-
-    /**
-     * Create string from a double value.
-     */
-    explicit String( double d );
 
     /**
      * Create a string in sprintf-like way.
@@ -766,46 +671,6 @@ class String
     bool endsWith( const char* sub ) const;
 
     /**
-     * Parse boolean value (must exactly match either "true" or "false").
-     */
-    bool parseBool( bool* isError = nullptr ) const
-    {
-      return parseBool( buffer, isError );
-    }
-
-    /**
-     * Parse integer value.
-     */
-    int parseInt( bool* isError = nullptr ) const
-    {
-      return parseInt( buffer, isError );
-    }
-
-    /**
-     * Parse long integer value.
-     */
-    long parseLong( bool* isError = nullptr ) const
-    {
-      return parseLong( buffer, isError );
-    }
-
-    /**
-     * Parse float value.
-     */
-    float parseFloat( bool* isError = nullptr ) const
-    {
-      return parseFloat( buffer, isError );
-    }
-
-    /**
-     * Parse double value.
-     */
-    double parseDouble( bool* isError = nullptr ) const
-    {
-      return parseDouble( buffer, isError );
-    }
-
-    /**
      * Create concatenated string.
      */
     String operator + ( const String& s ) const;
@@ -861,14 +726,5 @@ class String
     DArray<String> split( char delimiter ) const;
 
 };
-
-/**
- * Hash function for `String`, implements Bernstein's hash.
- */
-OZ_ALWAYS_INLINE
-inline int hash( const String& s )
-{
-  return hash( s.cstr() );
-}
 
 }

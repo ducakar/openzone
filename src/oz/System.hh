@@ -66,16 +66,19 @@ class System
 {
   public:
 
-    /// If running from a terminal, halt in `abort()`, so one has time to attach a debugger.
-    static const int HALT_BIT = 0x01;
-
     /// Catch fatal signals (SIGQUIT, SIGILL, SIGABRT, SIGFPE and SIGSEGV), upon which print
     /// diagnostics and abort the program (similar to `error()` call).
-    static const int SIGNAL_HANDLER_BIT = 0x10;
+    static const int SIGNALS_BIT = 0x01;
 
     /// Override handlers for exception violations (`std::terminate()` and `std::unexpected()`) with
     /// handlers that print diagnostics and abort the program via `error()` call.
-    static const int EXCEPTION_HANDLERS_BIT = 0x20;
+    static const int EXCEPTIONS_BIT = 0x02;
+
+    /// If running from a terminal, halt in `abort()`, so one has time to attach a debugger.
+    static const int HALT_BIT = 0x04;
+
+    /// Set system locale for the application (`setlocale( LC_ALL, "" )`).
+    static const int LOCALE_BIT = 0x08;
 
     static pp::Module*   module;   ///< NaCl module.
     static pp::Instance* instance; ///< NaCl instance.
@@ -158,13 +161,13 @@ class System
     /**
      * Initialise `System` features.
      *
-     * Set-up crash handlers for cases specified in `flags`. If `HALT_BIT` is also given, crash
+     * Set-up locale and crash handlers depending on `flags`. If `HALT_BIT` is also given, crash
      * handlers wait for CTRL-C before exit.
      */
-#ifndef NDEBUG
-    static void init( int flags = EXCEPTION_HANDLERS_BIT | SIGNAL_HANDLER_BIT );
+#if !defined( NDEBUG )
+    static void init( int flags = SIGNALS_BIT | EXCEPTIONS_BIT | HALT_BIT | LOCALE_BIT );
 #else
-    static void init( int flags = EXCEPTION_HANDLERS_BIT | SIGNAL_HANDLER_BIT | HALT_BIT );
+    static void init( int flags = SIGNALS_BIT | EXCEPTIONS_BIT | LOCALE_BIT );
 #endif
 
     /**

@@ -70,7 +70,7 @@ void NamePool::init()
       char ch = is.readChar();
 
       if( ch == '\n' ) {
-        String name( int( is.getPos() - wordBegin ), wordBegin );
+        String name( wordBegin, int( is.getPos() - wordBegin ) );
         name = name.trim();
 
         if( !name.isEmpty() ) {
