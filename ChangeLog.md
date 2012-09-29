@@ -2,9 +2,10 @@
 
 - oz
     * null removed, replaced by nullptr keyword
-    * improved iterator classes: much less code duplication, range-based for-loop support
+    * improved iterator classes: much less code duplication, compatible with range-based for-loop
     * new Set template class, similar to Map but with single values instead of key-value pairs
-    * HashIndex and HashString merged into new Hashtable template class
+    * HashIndex and HashString merged into new HashMap template class with an arbitrary key type
+    * new HashSet template class for key-only hashtables
     * SIMD support in linear algebra classes
     * ALSA support for System::bell()
 - ui

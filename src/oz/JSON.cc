@@ -524,11 +524,11 @@ void JSON::Formatter::writeValue( const JSON& value )
     case NUMBER: {
       const NumberData* numberData = static_cast<const NumberData*>( value.data );
 
-      std::ostringstream strs;
+      std::stringstream strs;
       strs << numberData->value;
-      std::string s = strs.str();
 
-      ostream->writeChars( s.c_str(), int( s.length() ) );
+      int nChars = int( strs.tellp() );
+      strs.read( ostream->forward( nChars ), nChars );
       break;
     }
     case STRING: {
@@ -1977,9 +1977,10 @@ String JSON::toString() const
       std::stringstream strs;
       strs << static_cast<const NumberData*>( data )->value;
 
+      int nChars = int( strs.tellp() );
       char* buffer;
-      String r = String::create( int( strs.tellp() ), &buffer );
-      strs.read( buffer, strs.tellp() );
+      String r = String::create( nChars, &buffer );
+      strs.read( buffer, nChars );
 
       return r;
     }

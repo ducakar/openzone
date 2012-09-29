@@ -9,17 +9,17 @@
 
 # Extract path to NaCl SDK from CMake toolchain files.
 nacl64Root=`grep '^set( PLATFORM_PREFIX' cmake/NaCl-x86_64.Toolchain.cmake | \
-	    sed 's/^set( PLATFORM_PREFIX *"\(.*\)\" )/\1/'`
+            sed 's/^set( PLATFORM_PREFIX *"\(.*\)\" )/\1/'`
 nacl32Root=`grep '^set( PLATFORM_PREFIX' cmake/NaCl-i686.Toolchain.cmake | \
-	    sed 's/^set( PLATFORM_PREFIX *"\(.*\)\" )/\1/'`
+            sed 's/^set( PLATFORM_PREFIX *"\(.*\)\" )/\1/'`
 prefix=`pwd`
 
 mkdir -p build/NaCl-test
 
 # Just create symlinks instead of copying.
 for i in share/openzone/*.{7z,zip} share/openzone/packages.ozManifest \
-	 build/NaCl-*/src/client/openzone.*.nexe etc/nacl/openzone.nmf \
-	 etc/nacl/openzone.??.html doc
+         build/NaCl-*/src/client/openzone.*.nexe etc/nacl/openzone.nmf \
+         etc/nacl/openzone.??.html doc
 do
   [[ -e "$prefix/$i" ]] && ln -sf "$prefix/$i" build/NaCl-test
 done

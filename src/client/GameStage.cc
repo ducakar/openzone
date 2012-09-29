@@ -123,9 +123,7 @@ void GameStage::write( const char* path ) const
 
 void GameStage::reload()
 {
-  Log::print( "[" );
-  Log::printTime( Time::local() );
-  Log::printEnd( "] Reloading GameStage {" );
+  Log::println( "[%s] Reloading GameStage {", Time::local().toString().cstr() );
   Log::indent();
 
   ui::mouse.doShow = false;
@@ -352,9 +350,7 @@ void GameStage::wait( uint micros )
 
 void GameStage::load()
 {
-  Log::print( "[" );
-  Log::printTime( Time::local() );
-  Log::printEnd( "] Loading GameStage {" );
+  Log::println( "[%s] Loading GameStage {", Time::local().toString().cstr() );
   Log::indent();
 
   loadingMicros = Time::uclock();
@@ -452,9 +448,7 @@ void GameStage::load()
 
 void GameStage::unload()
 {
-  Log::print( "[" );
-  Log::printTime( Time::local() );
-  Log::printEnd( "] Unloading GameStage {" );
+  Log::println( "[%s] Unloading GameStage {", Time::local().toString().cstr() );
   Log::indent();
 
   ui::mouse.doShow = false;

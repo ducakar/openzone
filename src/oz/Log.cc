@@ -244,23 +244,6 @@ void Log::println()
   }
 }
 
-void Log::printTime( const Time& time )
-{
-  char buffer[OUT_BUFFER_SIZE];
-
-  snprintf( buffer, OUT_BUFFER_SIZE, "%04d-%02d-%02d %02d:%02d:%02d",
-            time.year, time.month, time.day, time.hour, time.minute, time.second );
-
-  if( !verboseMode || showVerbose || file == nullptr ) {
-    fputs( buffer, stdout );
-  }
-
-  if( file != nullptr ) {
-    fputs( buffer, file );
-    fflush( file );
-  }
-}
-
 void Log::printTrace( const StackTrace& st )
 {
   if( st.nFrames == 0 ) {

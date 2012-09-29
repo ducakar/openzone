@@ -118,11 +118,6 @@ class Log
     static void println();
 
     /**
-     * Print current date and time, without indentation or newline.
-     */
-    static void printTime( const Time& time );
-
-    /**
      * Print current thread's name and stack trace.
      */
     static void printTrace( const StackTrace& st );

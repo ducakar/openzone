@@ -15,6 +15,3 @@ if( OZ_STANDALONE )
 else()
   install( TARGETS ozManifest RUNTIME DESTINATION bin )
 endif()
-
-add_executable( ozSineSample ozSineSample.cc )
-target_link_libraries( ozSineSample oz )

@@ -6,9 +6,9 @@
 #
 
 files=`git ls-files | \
-      grep -v '^include/\|^doc/licences\|\.patch$\|\.po$' | \
-      grep -v 'README' | \
-      grep -v 'header\.glsl'`
+       grep -v '^include/\|^doc/licences\|\.patch$\|\.po$' | \
+       grep -v 'README' | \
+       grep -v 'header\.glsl'`
 
 for file in $files; do
   # Remove duplicated empty lines.

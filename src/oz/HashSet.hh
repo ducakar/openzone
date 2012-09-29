@@ -21,7 +21,7 @@
  */
 
 /**
- * @file oz/Hashtable.hh
+ * @file oz/HashSet.hh
  *
  * Hashtable template class.
  */

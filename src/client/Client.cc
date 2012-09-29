@@ -215,9 +215,7 @@ int Client::init( int argc, char** argv )
     Log::println( "Log file '%s'", Log::logFile() );
   }
 
-  Log::print( "OpenZone " OZ_VERSION " started on " );
-  Log::printTime( Time::local() );
-  Log::printEnd();
+  Log::println( "OpenZone " OZ_VERSION " started on %s", Time::local().toString().cstr() );
 
   Log::verboseMode = true;
   Log::println( "Build details {" );
@@ -551,9 +549,7 @@ void Client::shutdown()
   if( initFlags & INIT_MAIN_LOOP ) {
     Alloc::printSummary();
 
-    Log::print( "OpenZone " OZ_VERSION " finished on " );
-    Log::printTime( Time::local() );
-    Log::printEnd();
+    Log::println( "OpenZone " OZ_VERSION " finished on %s", Time::local().toString().cstr() );
   }
 }
 

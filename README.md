@@ -15,8 +15,8 @@ Building is currently only supported on Linux.
 First, make sure you have all the dependencies installed. You need to install development packages
 for the following libraries:
 
+* libasound (ALSA)
 * libpulse (PulseAudio)
-* alsa
 * physfs
 * lua
 * sdl

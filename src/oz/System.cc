@@ -29,13 +29,13 @@
 #include "Math.hh"
 #include "Log.hh"
 
+#include <climits>
 #include <clocale>
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
 
 #if defined( __native_client__ )
-# include <climits>
 # include <ppapi/cpp/audio.h>
 # include <ppapi/cpp/completion_callback.h>
 # include <ppapi/cpp/core.h>
@@ -78,12 +78,12 @@ int raise( int )
 namespace oz
 {
 
+static const float BELL_TIME      = 0.30f;
+static const float BELL_FREQUENCY = 800.0f;
+
 #if defined( __native_client__ )
 
-static const timespec TIMESPEC_10MS    = { 0, 10 * 1000000 };
-static const float    SAMPLE_LENGTH    = 0.28f;
-static const float    SAMPLE_GUARD     = 0.28f;
-static const float    SAMPLE_FREQUENCY = 800.0f;
+static const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
 
 struct SampleInfo
 {
@@ -95,7 +95,11 @@ struct SampleInfo
   int        offset;
 };
 
+static pthread_mutex_t bellLock;
+
 #elif defined( _WIN32 )
+
+static const int BELL_WAVE_RATE = 44100;
 
 struct Wave
 {
@@ -114,55 +118,29 @@ struct Wave
 
   char  subchunk2Id[4];
   int   subchunk2Size;
-  ubyte data[4410];
+  short samples[ int( BELL_TIME * BELL_WAVE_RATE ) ];
 };
 
-static const Wave BELL_SAMPLE = {
-  { 'R', 'I', 'F', 'F' }, 36 + 3087, { 'W', 'A', 'V', 'E' },
-  { 'f', 'm', 't', ' ' }, 16, 1, 1, 11025, 11025, 1, 8,
-  { 'd', 'a', 't', 'a' }, 3087, {
-# include "bellSample.inc"
-  }
-};
+static CRITICAL_SECTION bellLock;
 
 #else
 
-static const timespec       TIMESPEC_10MS = { 0, 10 * 1000000 };
-static const timespec       BELL_TIMESPEC = { 0, 280 * 1000000 };
-static const pa_sample_spec BELL_SPEC     = { PA_SAMPLE_U8, 11025, 1 };
-static const ubyte          BELL_SAMPLE[] = {
-# include "bellSample.inc"
-};
+static const int                      BELL_ALSA_RATE  = 48000;
+static const pa_sample_spec           BELL_PA_SPEC    = { PA_SAMPLE_S16NE, 44100, 1 };
+static const timespec                 TIMESPEC_10MS   = { 0, 10 * 1000000 };
 
-static decltype( ::pa_simple_new                  )* pa_simple_new                  = nullptr;
-static decltype( ::pa_simple_free                 )* pa_simple_free                 = nullptr;
-static decltype( ::pa_simple_write                )* pa_simple_write                = nullptr;
+static pthread_spinlock_t             bellLock;
 
-static decltype( ::snd_pcm_open                   )* snd_pcm_open                   = nullptr;
-static decltype( ::snd_pcm_close                  )* snd_pcm_close                  = nullptr;
-static decltype( ::snd_pcm_hw_params_malloc       )* snd_pcm_hw_params_malloc       = nullptr;
-static decltype( ::snd_pcm_hw_params_free         )* snd_pcm_hw_params_free         = nullptr;
-static decltype( ::snd_pcm_hw_params_any          )* snd_pcm_hw_params_any          = nullptr;
-static decltype( ::snd_pcm_hw_params_set_access   )* snd_pcm_hw_params_set_access   = nullptr;
-static decltype( ::snd_pcm_hw_params_set_format   )* snd_pcm_hw_params_set_format   = nullptr;
-static decltype( ::snd_pcm_hw_params_set_rate     )* snd_pcm_hw_params_set_rate     = nullptr;
-static decltype( ::snd_pcm_hw_params_set_channels )* snd_pcm_hw_params_set_channels = nullptr;
-static decltype( ::snd_pcm_hw_params              )* snd_pcm_hw_params              = nullptr;
-static decltype( ::snd_pcm_prepare                )* snd_pcm_prepare                = nullptr;
-static decltype( ::snd_pcm_writei                 )* snd_pcm_writei                 = nullptr;
+static decltype( ::pa_simple_new   )* pa_simple_new   = nullptr;
+static decltype( ::pa_simple_free  )* pa_simple_free  = nullptr;
+static decltype( ::pa_simple_write )* pa_simple_write = nullptr;
+static decltype( ::pa_simple_drain )* pa_simple_drain = nullptr;
 
 #endif
 
-#if defined( __native_client__ )
-static pthread_mutex_t    bellLock;
-#elif defined( _WIN32 )
-static CRITICAL_SECTION   bellLock;
-#else
-static pthread_spinlock_t bellLock;
-#endif
-static volatile bool      isBellPlaying     = false;
-static bool               isBellInitialised = false;
-static int                initFlags         = 0;
+static volatile bool isBellPlaying     = false;
+static bool          isBellInitialised = false;
+static int           initFlags         = 0;
 
 OZ_NORETURN
 static void abort( bool doHalt );
@@ -272,10 +250,11 @@ static void bellPlayCallback( void* buffer, uint size, void* info_ )
   info->offset += info->nFrameSamples;
 
   for( int i = begin; i < info->offset; ++i ) {
-    float position  = float( info->nSamples - 1 - i ) / float( info->nSamples - 1 );
+    float position  = float( info->nSamples - i ) / float( info->nSamples );
     float amplitude = Math::fastSqrt( max( position, 0.0f ) );
-    float value     = amplitude * Math::sin( float( i ) * info->quotient );
-    short sample    = short( float( SHRT_MAX ) * value );
+    float theta     = float( i ) * info->quotient;
+    float value     = amplitude * Math::sin( theta );
+    short sample    = short( SHRT_MAX * value + 0.5f );
 
     samples[0] = sample;
     samples[1] = sample;
@@ -293,9 +272,9 @@ static void bellInitCallback( void* info_, int )
   pp::AudioConfig config( System::instance, rate, nFrameSamples );
 
   info->nFrameSamples = int( nFrameSamples );
-  info->nSamples      = int( SAMPLE_LENGTH * float( rate ) + 0.5f );
-  info->quotient      = SAMPLE_FREQUENCY * Math::TAU / float( rate );
-  info->end           = info->nSamples + int( SAMPLE_GUARD * float( rate ) + 0.5f );
+  info->nSamples      = int( BELL_TIME * float( rate ) + 0.5f );
+  info->quotient      = BELL_FREQUENCY * Math::TAU / float( rate );
+  info->end           = info->nSamples + int( BELL_TIME * float( rate ) + 0.5f );
   info->offset        = 0;
 
   void* audioPtr = malloc( sizeof( pp::Audio ) );
@@ -327,7 +306,47 @@ static void* bellMain( void* )
 
 static DWORD WINAPI bellMain( LPVOID )
 {
-  PlaySound( reinterpret_cast<LPCSTR>( &BELL_SAMPLE ), nullptr, SND_MEMORY | SND_SYNC );
+  size_t nSamples = int( BELL_TIME * BELL_WAVE_RATE );
+  Wave*  wave     = static_cast<Wave*>( malloc( sizeof( Wave ) ) );
+
+  wave->chunkId[0]     = 'R';
+  wave->chunkId[1]     = 'I';
+  wave->chunkId[2]     = 'F';
+  wave->chunkId[3]     = 'F';
+  wave->chunkSize      = 36 + sizeof( wave->samples );
+  wave->format[0]      = 'W';
+  wave->format[1]      = 'A';
+  wave->format[2]      = 'V';
+  wave->format[3]      = 'E';
+
+  wave->subchunk1Id[0] = 'f';
+  wave->subchunk1Id[1] = 'm';
+  wave->subchunk1Id[2] = 't';
+  wave->subchunk1Id[3] = ' ';
+  wave->subchunk1Size  = 16;
+  wave->audioFormat    = 1;
+  wave->nChannels      = 1;
+  wave->sampleRate     = BELL_WAVE_RATE;
+  wave->byteRate       = BELL_WAVE_RATE * sizeof( short );
+  wave->blockAlign     = sizeof( short );
+  wave->bitsPerSample  = sizeof( short ) * 8;
+
+  wave->subchunk2Id[0] = 'd';
+  wave->subchunk2Id[1] = 'a';
+  wave->subchunk2Id[2] = 't';
+  wave->subchunk2Id[3] = 'a';
+  wave->subchunk2Size  = sizeof( wave->samples );
+
+  for( size_t i = 0; i < nSamples; ++i ) {
+    float amplitude = Math::fastSqrt( float( nSamples - i ) / float( nSamples ) );
+    float theta     = float( i ) / float( BELL_WAVE_RATE ) * BELL_FREQUENCY * Math::TAU;
+    float value     = amplitude * Math::sin( theta );
+
+    wave->samples[i] = short( SHRT_MAX * value + 0.5f );
+  }
+
+  PlaySound( reinterpret_cast<LPCSTR>( wave ), nullptr, SND_MEMORY | SND_SYNC );
+  free( wave );
 
   isBellPlaying = false;
   return 0;
@@ -339,52 +358,72 @@ static void* bellMain( void* )
 {
   if( pa_simple_new != nullptr ) {
     pa_simple* pa = pa_simple_new( nullptr, "liboz", PA_STREAM_PLAYBACK, nullptr, "bell",
-                                   &BELL_SPEC, nullptr, nullptr, nullptr );
-    if( pa != nullptr ) {
-      pa_simple_write( pa, BELL_SAMPLE, sizeof( BELL_SAMPLE ), nullptr );
+                                   &BELL_PA_SPEC, nullptr, nullptr, nullptr );
 
-      // pa_simple_drain() takes much longer (~ 1-2 s) than the sample is actually playing, so we
-      // use this sleep to ensure the sample has finished playing.
-      nanosleep( &BELL_TIMESPEC, nullptr );
+    if( pa != nullptr ) {
+      size_t nSamples = size_t( BELL_TIME * float( BELL_PA_SPEC.rate ) );
+      short* samples  = static_cast<short*>( malloc( nSamples * sizeof( short ) ) );
+
+      for( size_t i = 0; i < nSamples; ++i ) {
+        float amplitude = Math::fastSqrt( float( nSamples - i ) / float( nSamples ) );
+        float theta     = float( i ) / float( BELL_PA_SPEC.rate ) * BELL_FREQUENCY * Math::TAU;
+        float value     = amplitude * Math::sin( theta );
+
+        samples[i] = short( SHRT_MAX * value + 0.5f );
+      }
+
+      pa_simple_write( pa, samples, size_t( nSamples ) * sizeof( short ), nullptr );
+      pa_simple_drain( pa, nullptr );
       pa_simple_free( pa );
 
+      free( samples );
+
       isBellPlaying = false;
       return nullptr;
     }
   }
 
-  if( snd_pcm_open != nullptr ) {
-    snd_pcm_t*           alsa;
-    snd_pcm_hw_params_t* params;
+  snd_pcm_hw_params_t* params;
+  if( snd_pcm_hw_params_malloc( &params ) < 0 ) {
+    isBellPlaying = false;
+    return nullptr;
+  }
 
-    if( snd_pcm_hw_params_malloc( &params ) < 0 ) {
-      isBellPlaying = false;
-      return nullptr;
-    }
-
-    if( snd_pcm_open( &alsa, "default", SND_PCM_STREAM_PLAYBACK, 0 ) < 0 ) {
-      snd_pcm_hw_params_free( params );
-
-      isBellPlaying = false;
-      return nullptr;
-    }
-
-    snd_pcm_hw_params_any( alsa, params );
-    snd_pcm_hw_params_set_access( alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED );
-    snd_pcm_hw_params_set_format( alsa, params, SND_PCM_FORMAT_U8 );
-    snd_pcm_hw_params_set_rate( alsa, params, 11025, 0 );
-    snd_pcm_hw_params_set_channels( alsa, params, 1 );
-    snd_pcm_hw_params( alsa, params );
-
-    if( snd_pcm_prepare( alsa ) >= 0 ) {
-      snd_pcm_writei( alsa, BELL_SAMPLE, sizeof( BELL_SAMPLE ) );
-      // Ensure the sample has finished playing.
-      nanosleep( &BELL_TIMESPEC, nullptr );
-    }
-
-    snd_pcm_close( alsa );
+  snd_pcm_t* alsa;
+  if( snd_pcm_open( &alsa, "default", SND_PCM_STREAM_PLAYBACK, 0 ) < 0 ) {
     snd_pcm_hw_params_free( params );
+
+    isBellPlaying = false;
+    return nullptr;
   }
+
+  snd_pcm_hw_params_any( alsa, params );
+  snd_pcm_hw_params_set_access( alsa, params, SND_PCM_ACCESS_RW_INTERLEAVED );
+  snd_pcm_hw_params_set_format( alsa, params, SND_PCM_FORMAT_S16 );
+  snd_pcm_hw_params_set_channels( alsa, params, 1 );
+  snd_pcm_hw_params_set_rate( alsa, params, BELL_ALSA_RATE, 0 );
+  snd_pcm_hw_params( alsa, params );
+
+  if( snd_pcm_prepare( alsa ) >= 0 ) {
+    size_t nSamples = size_t( BELL_TIME * float( BELL_ALSA_RATE ) );
+    short* samples  = static_cast<short*>( malloc( nSamples * sizeof( short ) ) );
+
+    for( size_t i = 0; i < nSamples; ++i ) {
+      float amplitude = Math::fastSqrt( float( nSamples - i ) / float( nSamples ) );
+      float theta     = float( i ) / float( BELL_ALSA_RATE ) * BELL_FREQUENCY * Math::TAU;
+      float value     = amplitude * Math::sin( theta );
+
+      samples[i] = short( SHRT_MAX * value + 0.5f );
+    }
+
+    snd_pcm_writei( alsa, samples, nSamples );
+    snd_pcm_drain( alsa );
+
+    free( samples );
+  }
+
+  snd_pcm_close( alsa );
+  snd_pcm_hw_params_free( params );
 
   isBellPlaying = false;
   return nullptr;
@@ -421,7 +460,6 @@ static void initBell()
 #elif defined( _WIN32 )
 
   InitializeCriticalSection( &bellLock );
-  isBellInitialised = true;
 
 #else
 
@@ -436,43 +474,23 @@ static void initBell()
     *( void** ) &pa_simple_new   = dlsym( pulseLib, "pa_simple_new" );
     *( void** ) &pa_simple_free  = dlsym( pulseLib, "pa_simple_free" );
     *( void** ) &pa_simple_write = dlsym( pulseLib, "pa_simple_write" );
+    *( void** ) &pa_simple_drain = dlsym( pulseLib, "pa_simple_drain" );
 
-    if( pa_simple_new == nullptr || pa_simple_free == nullptr || pa_simple_write == nullptr ) {
-      pa_simple_new = nullptr;
+    if( pa_simple_new == nullptr || pa_simple_free == nullptr || pa_simple_write == nullptr ||
+        pa_simple_drain == nullptr )
+    {
+      pa_simple_new   = nullptr;
+      pa_simple_free  = nullptr;
+      pa_simple_write = nullptr;
+      pa_simple_drain = nullptr;
+
       dlclose( pulseLib );
     }
   }
 
-  // Link ALSA library.
-  void* alsaLib = dlopen( "libasound.so.2", RTLD_NOW );
-
-  if( alsaLib != nullptr ) {
-    *( void** ) &snd_pcm_open                   = dlsym( alsaLib, "snd_pcm_open" );
-    *( void** ) &snd_pcm_close                  = dlsym( alsaLib, "snd_pcm_close" );
-    *( void** ) &snd_pcm_hw_params_malloc       = dlsym( alsaLib, "snd_pcm_hw_params_malloc" );
-    *( void** ) &snd_pcm_hw_params_free         = dlsym( alsaLib, "snd_pcm_hw_params_free" );
-    *( void** ) &snd_pcm_hw_params_any          = dlsym( alsaLib, "snd_pcm_hw_params_any" );
-    *( void** ) &snd_pcm_hw_params_set_access   = dlsym( alsaLib, "snd_pcm_hw_params_set_access" );
-    *( void** ) &snd_pcm_hw_params_set_format   = dlsym( alsaLib, "snd_pcm_hw_params_set_format" );
-    *( void** ) &snd_pcm_hw_params_set_rate     = dlsym( alsaLib, "snd_pcm_hw_params_set_rate" );
-    *( void** ) &snd_pcm_hw_params_set_channels = dlsym( alsaLib, "snd_pcm_hw_params_set_channels" );
-    *( void** ) &snd_pcm_hw_params              = dlsym( alsaLib, "snd_pcm_hw_params" );
-    *( void** ) &snd_pcm_prepare                = dlsym( alsaLib, "snd_pcm_prepare" );
-    *( void** ) &snd_pcm_writei                 = dlsym( alsaLib, "snd_pcm_writei" );
-
-    if( snd_pcm_open == nullptr || snd_pcm_close == nullptr ||
-        snd_pcm_hw_params_malloc == nullptr || snd_pcm_hw_params_free == nullptr ||
-        snd_pcm_hw_params_any == nullptr || snd_pcm_hw_params_set_access == nullptr ||
-        snd_pcm_hw_params_set_format == nullptr || snd_pcm_hw_params_set_rate == nullptr ||
-        snd_pcm_hw_params_set_channels == nullptr || snd_pcm_hw_params == nullptr ||
-        snd_pcm_prepare == nullptr || snd_pcm_writei == nullptr )
-    {
-      snd_pcm_open = nullptr;
-      dlclose( alsaLib );
-    }
-  }
-
 #endif
+
+  isBellInitialised = true;
 }
 
 OZ_NORETURN
@@ -572,9 +590,7 @@ void System::bell()
 
 #else
 
-  if( ( pa_simple_new == nullptr && snd_pcm_open == nullptr ) ||
-      pthread_spin_trylock( &bellLock ) != 0 )
-  {
+  if( pthread_spin_trylock( &bellLock ) != 0 ) {
     return;
   }
 

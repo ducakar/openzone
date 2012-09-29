@@ -33,7 +33,7 @@ package_liboz()
 {
   pkgdesc='OpenZone core library'
   license=('ZLIB')
-  depends=('gcc-libs' 'physfs')
+  depends=('alsa-lib' 'gcc-libs' 'physfs')
 
   cd "${srcdir}/build"
 

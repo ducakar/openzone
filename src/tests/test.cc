@@ -113,5 +113,6 @@ class Foo
 
 int main()
 {
+  System::init();
   return 0;
 }

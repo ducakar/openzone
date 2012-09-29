@@ -332,7 +332,7 @@ class String
      * Create string form the given C string with a known length.
      *
      * @param s
-     * @param count_ length in bytes without the terminating null character.
+     * @param count length in bytes without the terminating null character.
      */
     String( const char* s, int count );
 
@@ -383,7 +383,7 @@ class String
      */
     bool operator == ( const char* s ) const
     {
-      return equals( buffer, s );
+      return compare( buffer, s ) == 0;
     }
 
     /**
@@ -391,7 +391,7 @@ class String
      */
     friend bool operator == ( const char* a, const String& b )
     {
-      return equals( a, b.buffer );
+      return compare( a, b.buffer ) == 0;
     }
 
     /**
@@ -399,7 +399,7 @@ class String
      */
     bool operator != ( const String& s ) const
     {
-      return !equals( buffer, s.buffer );
+      return compare( buffer, s.buffer ) != 0;
     }
 
     /**
@@ -407,7 +407,7 @@ class String
      */
     bool operator != ( const char* s ) const
     {
-      return !equals( buffer, s );
+      return compare( buffer, s ) != 0;
     }
 
     /**
@@ -415,7 +415,7 @@ class String
      */
     friend bool operator != ( const char* a, const String& b )
     {
-      return !equals( a, b.buffer );
+      return compare( a, b.buffer ) != 0;
     }
 
     /**
@@ -519,7 +519,7 @@ class String
      */
     bool equals( const String& s ) const
     {
-      return equals( buffer, s.buffer );
+      return compare( buffer, s.buffer ) == 0;
     }
 
     /**
@@ -527,7 +527,7 @@ class String
      */
     bool equals( const char* s ) const
     {
-      return equals( buffer, s );
+      return compare( buffer, s ) == 0;
     }
 
     /**

@@ -721,7 +721,7 @@ table.settings td {
   odvisnost. Naslednje knjižnice so neposredne odvisnosti, potrebne za poganjanje:
 </p>
 <ul>
-  <li>libpulse (neobvezno, za opozorilni ton na Linuxu)</li>
+  <li>ALSA</li>
   <li>PhysicsFS 2.0</li>
   <li>SDL 1.2 (ali 2.0, odvisno od builda)</li>
   <li>Lua 5.1 (ali 5.2, odvisno od builda)</li>
@@ -737,13 +737,6 @@ table.settings td {
 <ul>
   <li>
     Prepričaj se, da imaš <b>NAJNOVEJŠE</b> gonilnike za grafično kartico.
-  </li>
-  <li>
-    Izklop namiznih učinkov ali preklop v celozaslonski način utegne precej pohitriti grafiko.
-  </li>
-  <li>
-    V primeru, da uporabljaš prilagajanje frekvence procesorja, to izklopi in nastavi navišjo možno
-    frekvenco. To utegne opazno izboljšati gladkost izrisovanja.
   </li>
   <li>
     Potrebuješ vsaj grafično kartico in gonilnik s podporo za OpenGL 2.1 in naslednjimi
@@ -773,6 +766,26 @@ table.settings td {
     Če imaš staro grafično kartico ali gonilnike AMD/ATI Catalyst in manjkajo
     modeli MD2, nastavi <span class="config">shader.vertexTexture</span> na "false" v datoteki
     <a href="#dirs">&lt;config&gt;</a>/client.json, sicer pa na "true" za hitrejše izrisovanje.
+  </li>
+</ul>
+
+<h2><a name="performance" href="#">Nasveti za boljše delovanje</a></h2>
+<ul>
+  <li>
+    V primeru, da uporabljaš prilagajanje frekvence procesorja, to izklopi in nastavi navišjo možno
+    frekvenco. To utegne opazno izboljšati gladkost izrisovanja.
+  </li>
+  <li>
+    Izklop namiznih učinkov ali preklop v celozaslonski način utegne precej pohitriti grafiko.
+  </li>
+  <li>
+    Če uporabljaš PulseAudio na Linuxu, utegneš s preklopom na zgolj ALSO malenkost zmanjšati
+    zakasnitev pri predvajanu zvoka in obremenitev procesorja, še posebej pri privzetih nastavitvah
+    za oba sistema.<br/>
+    Najzanejslivejši način za izklop PulseAudia je odinštalacija paketa serverja PulseAudio (ter
+    morda še nekaterih pripadajočih paketov), uboj procesa `pulseaudio` in ponovna prijava. Ne
+    pozabi tudi obnoviti ALSA-inih nastavitev v `/etc/asound.conf` (za to na večini distribucij
+    sicer poskrbi že odinštalacija serverja PulseAudio).
   </li>
 </ul>
 
