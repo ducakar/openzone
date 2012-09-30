@@ -148,14 +148,14 @@ add_library( client STATIC
   ui/Style.cc
   ui/Text.cc
   ui/UI.cc )
-add_dependencies( client pch )
+use_pch( client pch )
 
 if( OZ_JNI )
   add_library( openzone SHARED openzone.cc )
 else()
   add_executable( openzone openzone.cc )
 endif()
-add_dependencies( openzone pch )
+use_pch( openzone pch )
 target_link_libraries( openzone client modules nirvana matrix common build_info oz ${libs_client} )
 
 if( NACL )

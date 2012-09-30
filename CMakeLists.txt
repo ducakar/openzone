@@ -23,7 +23,7 @@ option( OZ_STANDALONE "Install layout appropriate for launching from its own fol
 # Internal configuration
 #
 
-include( cmake/pch.cmake )
+include( cmake/PCH.cmake )
 include( CheckCXXSourceCompiles )
 include( CheckCXXCompilerFlag )
 include( CheckLibraryExists )

@@ -420,4 +420,47 @@ DArray<String> String::split( char delimiter ) const
   return array;
 }
 
+String String::fileName() const
+{
+  int slash = lastIndex( '/' );
+
+  return slash < 0 ? *this : substring( slash + 1 );
+}
+
+String String::fileBaseName() const
+{
+  int slash = lastIndex( '/' );
+  int dot   = lastIndex( '.' );
+
+  if( slash < dot ) {
+    return substring( slash + 1, dot );
+  }
+  else {
+    return substring( slash + 1 );
+  }
+}
+
+String String::fileExtension() const
+{
+  int slash = lastIndex( '/' );
+  int dot   = lastIndex( '.' );
+
+  return slash < dot ? substring( dot + 1 ) : String();
+}
+
+bool String::hasFileExtension( const char* ext ) const
+{
+  hard_assert( ext != nullptr );
+
+  const char* slash = findLast( '/' );
+  const char* dot   = findLast( '.' );
+
+  if( slash < dot ) {
+    return compare( dot + 1, ext ) == 0;
+  }
+  else {
+    return isEmpty( ext );
+  }
+}
+
 }

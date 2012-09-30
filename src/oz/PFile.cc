@@ -227,43 +227,22 @@ String PFile::mountPoint() const
 
 String PFile::name() const
 {
-  int slash = filePath.lastIndex( '/' );
-
-  return slash < 0 ? filePath : filePath.substring( slash + 1 );
-}
-
-String PFile::extension() const
-{
-  int slash = filePath.lastIndex( '/' );
-  int dot   = filePath.lastIndex( '.' );
-
-  return slash < dot ? filePath.substring( dot + 1 ) : String();
+  return filePath.fileName();
 }
 
 String PFile::baseName() const
 {
-  int slash = filePath.lastIndex( '/' );
-  int dot   = filePath.lastIndex( '.' );
+  return filePath.fileBaseName();
+}
 
-  if( slash < dot ) {
-    return filePath.substring( slash + 1, dot );
-  }
-  else {
-    return filePath.substring( slash + 1 );
-  }
+String PFile::extension() const
+{
+  return filePath.fileExtension();
 }
 
 bool PFile::hasExtension( const char* ext ) const
 {
-  const char* slash = filePath.findLast( '/' );
-  const char* dot   = filePath.findLast( '.' );
-
-  if( slash < dot ) {
-    return String::equals( dot + 1, ext );
-  }
-  else {
-    return String::isEmpty( ext );
-  }
+  return filePath.hasFileExtension( ext );
 }
 
 bool PFile::isMapped() const

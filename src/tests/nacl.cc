@@ -64,7 +64,7 @@ static Semaphore mainSemaphore;
 int main( int, char** )
 {
   System::init();
-  Log::print( "[" ); Log::printTime( Time::local() ); Log::printEnd( "] START" );
+  Log() << "[" << Time::local().toString() << "] START\n";
 
   File::init( File::PERSISTENT, 1024 );
 
@@ -77,6 +77,6 @@ int main( int, char** )
 
   File::free();
 
-  Log::print( "[" ); Log::printTime( Time::local() ); Log::printEnd( "] END" );
+  Log() << "[" << Time::local().toString() << "] END\n";
   return 0;
 }

@@ -397,43 +397,22 @@ const String& File::path() const
 
 String File::name() const
 {
-  int slash = filePath.lastIndex( '/' );
-
-  return slash < 0 ? filePath : filePath.substring( slash + 1 );
-}
-
-String File::extension() const
-{
-  int slash = filePath.lastIndex( '/' );
-  int dot   = filePath.lastIndex( '.' );
-
-  return slash < dot ? filePath.substring( dot + 1 ) : String();
+  return filePath.fileName();
 }
 
 String File::baseName() const
 {
-  int slash = filePath.lastIndex( '/' );
-  int dot   = filePath.lastIndex( '.' );
+  return filePath.fileBaseName();
+}
 
-  if( slash < dot ) {
-    return filePath.substring( slash + 1, dot );
-  }
-  else {
-    return filePath.substring( slash + 1 );
-  }
+String File::extension() const
+{
+  return filePath.fileExtension();
 }
 
 bool File::hasExtension( const char* ext ) const
 {
-  const char* slash = filePath.findLast( '/' );
-  const char* dot   = filePath.findLast( '.' );
-
-  if( slash < dot ) {
-    return String::equals( dot + 1, ext );
-  }
-  else {
-    return String::isEmpty( ext );
-  }
+  return filePath.hasFileExtension( ext );
 }
 
 bool File::isMapped() const

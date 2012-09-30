@@ -3,5 +3,5 @@
 cat << EOF > CMakeLists.txt
 add_library( nirvana STATIC
   `echo *.{hh,cc} | sed 's/ /\n  /g'` )
-add_dependencies( nirvana pch )
+use_pch( nirvana pch )
 EOF

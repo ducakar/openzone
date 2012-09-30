@@ -6,4 +6,4 @@ add_library( modules STATIC
   Modules.cc
   flora/FloraModule.hh
   flora/FloraModule.cc )
-add_dependencies( modules pch )
+use_pch( modules pch )

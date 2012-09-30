@@ -453,6 +453,46 @@ const Log& Log::operator << ( const char* s ) const
   return *this;
 }
 
+const Log& Log::operator << ( const Vec3& v ) const
+{
+  printRaw( "(%g %g %g)", v.x, v.y, v.z );
+  return *this;
+}
+
+const Log& Log::operator << ( const Vec4& v ) const
+{
+  printRaw( "(%g %g %g %g)", v.x, v.y, v.z, v.w );
+  return *this;
+}
+
+const Log& Log::operator << ( const Point& p ) const
+{
+  printRaw( "[%g %g %g]", p.x, p.y, p.z );
+  return *this;
+}
+
+const Log& Log::operator << ( const Plane& p ) const
+{
+  printRaw( "(%g %g %g; %g)", p.n.x, p.n.y, p.n.z, p.d );
+  return *this;
+}
+
+const Log& Log::operator << ( const Quat& q ) const
+{
+  printRaw( "[%g %g %g %g]", q.x, q.y, q.z, q.w );
+  return *this;
+}
+
+const Log& Log::operator << ( const Mat44& m ) const
+{
+  printRaw( "[%g %g %g %g; %g %g %g %g; %g %g %g %g; %g %g %g %g]",
+            m.x.x, m.y.x, m.z.x, m.w.x,
+            m.x.y, m.y.y, m.z.y, m.w.y,
+            m.x.z, m.y.z, m.z.z, m.w.z,
+            m.x.w, m.y.w, m.z.w, m.w.w );
+  return *this;
+}
+
 const Log& Log::operator << ( volatile const void* p ) const
 {
   printRaw( "%p", p );

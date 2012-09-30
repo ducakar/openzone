@@ -143,14 +143,14 @@ class PFile
     String name() const;
 
     /**
-     * Extension (part of base name after the last dot) or "" if no dot in base name.
-     */
-    String extension() const;
-
-    /**
      * Name without the extension (and the dot).
      */
     String baseName() const;
+
+    /**
+     * Extension (part of base name after the last dot) or "" if no dot in base name.
+     */
+    String extension() const;
 
     /**
      * True iff the extension (without dot) is equal to the given string.

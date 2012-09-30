@@ -120,11 +120,32 @@ class JSON
     int length() const;
 
     /**
+     * If an array or an object, true iff empty, always true otherwise.
+     */
+    int isEmpty() const;
+
+    /**
      * True iff value is an object and contains the given key.
      *
      * If value is not either null or an object, `System::error()` is invoked.
      */
     bool contains( const char* key );
+
+    /**
+     * Returns value at position `i` in an array.
+     *
+     * If the index is out of bounds or the value is null, a null value is returned.
+     * If the value is not either an array or a null, `System::error()` is invoked.
+     */
+    const JSON& operator [] ( int i ) const;
+
+    /**
+     * Returns value for `key` in an object.
+     *
+     * If the key does not exist or the value is null, a null value is returned.
+     * If value is not either an object or a null, `System::error()` is invoked.
+     */
+    const JSON& operator [] ( const char* key ) const;
 
     /**
      * Get boolean value.
@@ -153,38 +174,6 @@ class JSON
      * If value is not a string, `System::error()` is invoked.
      */
     const String& asString() const;
-
-    /**
-     * Write array values into the given array.
-     *
-     * If value is not an array of the specified length or if not all array elements are booleans,
-     * `System::error()` is invoked.
-     */
-    void asArray( bool* array, int count ) const;
-
-    /**
-     * Write array values into the given array.
-     *
-     * If value is not an array of the specified length or if not all array elements are numbers,
-     * `System::error()` is invoked.
-     */
-    void asArray( int* array, int count ) const;
-
-    /**
-     * Write array values into the given array.
-     *
-     * If value is not an array of the specified length or if not all array elements are numbers,
-     * `System::error()` is invoked.
-     */
-    void asArray( float* array, int count ) const;
-
-    /**
-     * Write array values into the given array.
-     *
-     * If value is not an array of the specified length or if not all array elements are strings,
-     * `System::error()` is invoked.
-     */
-    void asArray( String* array, int count ) const;
 
     /**
      * Get a number array as a `Vec3`.
@@ -229,20 +218,84 @@ class JSON
     Mat44 asMat44() const;
 
     /**
-     * Returns value at position `i` in an array.
+     * Write array values into the given array.
      *
-     * If the index is out of bounds or the value is null, a null value is returned.
-     * If the value is not either an array or a null, `System::error()` is invoked.
+     * If value is not an array of the specified length or if not all array elements are booleans,
+     * `System::error()` is invoked.
      */
-    const JSON& operator [] ( int i ) const;
+    void asArray( bool* array, int count ) const;
 
     /**
-     * Returns value for `key` in an object.
+     * Write array values into the given array.
      *
-     * If the key does not exist or the value is null, a null value is returned.
-     * If value is not either an object or a null, `System::error()` is invoked.
+     * If value is not an array of the specified length or if not all array elements are numbers,
+     * `System::error()` is invoked.
      */
-    const JSON& operator [] ( const char* key ) const;
+    void asArray( int* array, int count ) const;
+
+    /**
+     * Write array values into the given array.
+     *
+     * If value is not an array of the specified length or if not all array elements are numbers,
+     * `System::error()` is invoked.
+     */
+    void asArray( float* array, int count ) const;
+
+    /**
+     * Write array values into the given array.
+     *
+     * If value is not an array of the specified length or if not all array elements are strings,
+     * `System::error()` is invoked.
+     */
+    void asArray( String* array, int count ) const;
+
+    /**
+     * Write array values into the given array.
+     *
+     * If value is not an array of the specified length or if not all array elements are arrays of
+     * 3 numbers, `System::error()` is invoked.
+     */
+    void asArray( Vec3* array, int count ) const;
+
+    /**
+     * Write array values into the given array.
+     *
+     * If value is not an array of the specified length or if not all array elements are arrays of
+     * 4 numbers, `System::error()` is invoked.
+     */
+    void asArray( Vec4* array, int count ) const;
+
+    /**
+     * Write array values into the given array.
+     *
+     * If value is not an array of the specified length or if not all array elements are arrays of
+     * 3 numbers, `System::error()` is invoked.
+     */
+    void asArray( Point* array, int count ) const;
+
+    /**
+     * Write array values into the given array.
+     *
+     * If value is not an array of the specified length or if not all array elements are arrays of
+     * 4 numbers, `System::error()` is invoked.
+     */
+    void asArray( Plane* array, int count ) const;
+
+    /**
+     * Write array values into the given array.
+     *
+     * If value is not an array of the specified length or if not all array elements are arrays of
+     * 4 numbers, `System::error()` is invoked.
+     */
+    void asArray( Quat* array, int count ) const;
+
+    /**
+     * Write array values into the given array.
+     *
+     * If value is not an array of the specified length or if not all array elements are arrays of
+     * 16 numbers, `System::error()` is invoked.
+     */
+    void asArray( Mat44* array, int count ) const;
 
     /**
      * Return boolean value or `defaultValue` if null.
@@ -278,46 +331,6 @@ class JSON
      * If value is not either null or a string, `System::error()` is invoked.
      */
     const char* get( const char* defaultValue ) const;
-
-    /**
-     * Write array values into the given array (it is left unchanged if %JSON value is null).
-     *
-     * If value is not either null or an array of the specified length with boolean elements,
-     * `System::error()` is invoked.
-     *
-     * @return true if destination array has been filled, false if %JSON array is null.
-     */
-    bool get( bool* array, int count ) const;
-
-    /**
-     * Write array values into the given array (it is left unchanged if %JSON value is null).
-     *
-     * If value is not either null or an array of the specified length with number elements,
-     * `System::error()` is invoked.
-     *
-     * @return true if destination array has been filled, false if %JSON array is null.
-     */
-    bool get( int* array, int count ) const;
-
-    /**
-     * Write array values into the given array (it is left unchanged if %JSON value is null).
-     *
-     * If value is not either null or an array of the specified length with number elements,
-     * `System::error()` is invoked.
-     *
-     * @return true if destination array has been filled, false if %JSON array is null.
-     */
-    bool get( float* array, int count ) const;
-
-    /**
-     * Write array values into the given array (it is left unchanged if %JSON value is null).
-     *
-     * If value is not either null or an array of the specified length with string elements,
-     * `System::error()` is invoked.
-     *
-     * @return true if destination array has been filled, false if %JSON array is null.
-     */
-    bool get( String* array, int count ) const;
 
     /**
      * Return number array as a `Vec3` or `defaultValue` if null.
@@ -362,6 +375,106 @@ class JSON
     Mat44 get( const Mat44& defaultValue ) const;
 
     /**
+     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     *
+     * If value is not either null or an array of the specified length with boolean elements,
+     * `System::error()` is invoked.
+     *
+     * @return true if destination array has been filled, false if %JSON array is null.
+     */
+    bool get( bool* array, int count ) const;
+
+    /**
+     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     *
+     * If value is not either null or an array of the specified length with number elements,
+     * `System::error()` is invoked.
+     *
+     * @return true if destination array has been filled, false if %JSON array is null.
+     */
+    bool get( int* array, int count ) const;
+
+    /**
+     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     *
+     * If value is not either null or an array of the specified length with number elements,
+     * `System::error()` is invoked.
+     *
+     * @return true if destination array has been filled, false if %JSON array is null.
+     */
+    bool get( float* array, int count ) const;
+
+    /**
+     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     *
+     * If value is not either null or an array of the specified length with string elements,
+     * `System::error()` is invoked.
+     *
+     * @return true if destination array has been filled, false if %JSON array is null.
+     */
+    bool get( String* array, int count ) const;
+
+    /**
+     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     *
+     * If value is not either null or an array of the specified length with arrays of 3 numbers as
+     * elements, `System::error()` is invoked.
+     *
+     * @return true if destination array has been filled, false if %JSON array is null.
+     */
+    bool get( Vec3* array, int count ) const;
+
+    /**
+     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     *
+     * If value is not either null or an array of the specified length with arrays of 4 numbers as
+     * elements, `System::error()` is invoked.
+     *
+     * @return true if destination array has been filled, false if %JSON array is null.
+     */
+    bool get( Vec4* array, int count ) const;
+
+    /**
+     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     *
+     * If value is not either null or an array of the specified length with arrays of 3 numbers as
+     * elements, `System::error()` is invoked.
+     *
+     * @return true if destination array has been filled, false if %JSON array is null.
+     */
+    bool get( Point* array, int count ) const;
+
+    /**
+     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     *
+     * If value is not either null or an array of the specified length with arrays of 4 numbers as
+     * elements, `System::error()` is invoked.
+     *
+     * @return true if destination array has been filled, false if %JSON array is null.
+     */
+    bool get( Plane* array, int count ) const;
+
+    /**
+     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     *
+     * If value is not either null or an array of the specified length with arrays of 4 numbers as
+     * elements, `System::error()` is invoked.
+     *
+     * @return true if destination array has been filled, false if %JSON array is null.
+     */
+    bool get( Quat* array, int count ) const;
+
+    /**
+     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     *
+     * If value is not either null or an array of the specified length with arrays of 16 numbers as
+     * elements, `System::error()` is invoked.
+     *
+     * @return true if destination array has been filled, false if %JSON array is null.
+     */
+    bool get( Mat44* array, int count ) const;
+
+    /**
      * Clear existing value and set to null.
      */
     void setNull();
@@ -392,16 +505,6 @@ class JSON
     void set( const char* value );
 
     /**
-     * Clear existing value and set to an empty array.
-     */
-    void setArray();
-
-    /**
-     * Clear existing value and set to an empty object.
-     */
-    void setObject();
-
-    /**
      * Clear existing value and set to an array of 3 numbers representing `Vec3` components.
      */
     void set( const Vec3& v );
@@ -430,6 +533,16 @@ class JSON
      * Clear existing value and set to an array of 16 numbers representing `Mat44` components.
      */
     void set( const Mat44& m );
+
+    /**
+     * Clear existing value and set to an empty array.
+     */
+    void setArray();
+
+    /**
+     * Clear existing value and set to an empty object.
+     */
+    void setObject();
 
     /**
      * Add a null value to array.
@@ -474,20 +587,6 @@ class JSON
     JSON& add( const char* value );
 
     /**
-     * Add an empty array value to array.
-     *
-     * If current value is not an array, `System::error()` is invoked.
-     */
-    JSON& addArray();
-
-    /**
-     * Add an empty object value to array.
-     *
-     * If current value is not an array, `System::error()` is invoked.
-     */
-    JSON& addObject();
-
-    /**
      * Add a `Vec3` to array as a new array of 3 numbers.
      *
      * If current value is not an array, `System::error()` is invoked.
@@ -528,6 +627,20 @@ class JSON
      * If current value is not an array, `System::error()` is invoked.
      */
     JSON& add( const Mat44& m );
+
+    /**
+     * Add an empty array value to array.
+     *
+     * If current value is not an array, `System::error()` is invoked.
+     */
+    JSON& addArray();
+
+    /**
+     * Add an empty object value to array.
+     *
+     * If current value is not an array, `System::error()` is invoked.
+     */
+    JSON& addObject();
 
     /**
      * Add a null value with the given key to the object, overwriting any existing entry with that
@@ -578,22 +691,6 @@ class JSON
     JSON& add( const char* key, const char* value );
 
     /**
-     * Add an empty array value with the given key to the object, overwriting any existing entry
-     * with that key.
-     *
-     * If current value is not an object, `System::error()` is invoked.
-     */
-    JSON& addArray( const char* key );
-
-    /**
-     * Add an empty object value with the given key to the object, overwriting any existing entry
-     * with that key.
-     *
-     * If current value is not an object, `System::error()` is invoked.
-     */
-    JSON& addObject( const char* key );
-
-    /**
      * Add a `Vec3` with the given key to the object as a new array of 3 numbers, overwriting any
      * existing entry with that key.
      *
@@ -642,6 +739,22 @@ class JSON
     JSON& add( const char* key, const Mat44& m );
 
     /**
+     * Add an empty array value with the given key to the object, overwriting any existing entry
+     * with that key.
+     *
+     * If current value is not an object, `System::error()` is invoked.
+     */
+    JSON& addArray( const char* key );
+
+    /**
+     * Add an empty object value with the given key to the object, overwriting any existing entry
+     * with that key.
+     *
+     * If current value is not an object, `System::error()` is invoked.
+     */
+    JSON& addObject( const char* key );
+
+    /**
      * Add a null value with the given key to the object, if the key does not exist in the object.
      *
      * If current value is not an object, `System::error()` is invoked.
@@ -683,22 +796,6 @@ class JSON
      * If current value is not an object, `System::error()` is invoked.
      */
     JSON& include( const char* key, const char* value );
-
-    /**
-     * Add an empty array value with the given key to the object, if the key does not exist in the
-     * object.
-     *
-     * If current value is not an object, `System::error()` is invoked.
-     */
-    JSON& includeArray( const char* key );
-
-    /**
-     * Add an empty object value with the given key to the object, if the key does not exist in the
-     * object.
-     *
-     * If current value is not an object, `System::error()` is invoked.
-     */
-    JSON& includeObject( const char* key );
 
     /**
      * Add a `Vec3` with the given key to the object as a new array of 3 numbers, if the key does
@@ -747,6 +844,22 @@ class JSON
      * If current value is not an array, `System::error()` is invoked.
      */
     JSON& include( const char* key, const Mat44& m );
+
+    /**
+     * Add an empty array value with the given key to the object, if the key does not exist in the
+     * object.
+     *
+     * If current value is not an object, `System::error()` is invoked.
+     */
+    JSON& includeArray( const char* key );
+
+    /**
+     * Add an empty object value with the given key to the object, if the key does not exist in the
+     * object.
+     *
+     * If current value is not an object, `System::error()` is invoked.
+     */
+    JSON& includeObject( const char* key );
 
     /**
      * Remove element at the given index from an array.

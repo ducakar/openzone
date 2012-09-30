@@ -749,7 +749,7 @@ void Builder::packArchive( const char* name, bool useCompression, bool use7zip )
 
 int Builder::main( int argc, char** argv )
 {
-  String invocationName = File( argv[0] ).baseName();
+  String invocationName = String( argv[0] ).fileBaseName();
 
   config.setObject();
 

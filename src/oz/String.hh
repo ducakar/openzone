@@ -725,6 +725,28 @@ class String
      */
     DArray<String> split( char delimiter ) const;
 
+    /**
+     * Extract file name from a path (substring after the last `/`).
+     */
+    String fileName() const;
+
+    /**
+     * Extract base file name from a path (substring after the last `/` till the last following
+     * dot).
+     */
+    String fileBaseName() const;
+
+    /**
+     * Extract file extension from a path (substring after the last dot in file name extracted form
+     * the path).
+     */
+    String fileExtension() const;
+
+    /**
+     * True iff file name extracted from a path has the given extension.
+     */
+    bool hasFileExtension( const char* ext ) const;
+
 };
 
 }

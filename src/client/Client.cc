@@ -88,7 +88,7 @@ int Client::init( int argc, char** argv )
   isBenchmark   = false;
   benchmarkTime = 0.0f;
 
-  String invocationName = File( argv[0] ).baseName();
+  String invocationName = String( argv[0] ).fileBaseName();
   String prefix;
   String language;
   String mission;

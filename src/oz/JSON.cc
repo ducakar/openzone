@@ -716,6 +716,92 @@ int JSON::length() const
   }
 }
 
+int JSON::isEmpty() const
+{
+  switch( valueType ) {
+#ifdef OZ_GCC
+    default: // HACK Make GCC happy.
+#endif
+    case NIL:
+    case BOOLEAN:
+    case NUMBER:
+    case STRING: {
+      return true;
+    }
+    case ARRAY: {
+      return static_cast<const ArrayData*>( data )->list.isEmpty();
+    }
+    case OBJECT: {
+      return static_cast<const ObjectData*>( data )->table.isEmpty();
+    }
+  }
+}
+
+bool JSON::contains( const char* key )
+{
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return false;
+  }
+  else if( valueType != OBJECT ) {
+    OZ_ERROR( "JSON value accessed as an object: %s", toString().cstr() );
+  }
+
+  const HashMap<String, JSON>& table = static_cast<const ObjectData*>( data )->table;
+  const JSON* value = table.find( key );
+
+  if( value == nullptr ) {
+    return false;
+  }
+
+  value->wasAccessed = true;
+  return true;
+}
+
+const JSON& JSON::operator [] ( int i ) const
+{
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return NIL_VALUE;
+  }
+  else if( valueType != ARRAY ) {
+    OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
+
+  if( uint( i ) >= uint( list.length() ) ) {
+    return NIL_VALUE;
+  }
+
+  list[i].wasAccessed = true;
+  return list[i];
+}
+
+const JSON& JSON::operator [] ( const char* key ) const
+{
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return NIL_VALUE;
+  }
+  else if( valueType != OBJECT ) {
+    OZ_ERROR( "JSON value accessed as an object: %s", toString().cstr() );
+  }
+
+  const HashMap<String, JSON>& table = static_cast<const ObjectData*>( data )->table;
+  const JSON* value = table.find( key );
+
+  if( value == nullptr ) {
+    return NIL_VALUE;
+  }
+
+  value->wasAccessed = true;
+  return *value;
+}
+
 bool JSON::asBool() const
 {
   wasAccessed = true;
@@ -754,6 +840,48 @@ const String& JSON::asString() const
     OZ_ERROR( "JSON value accessed as a string: %s", toString().cstr() );
   }
   return static_cast<const StringData*>( data )->value;
+}
+
+Vec3 JSON::asVec3() const
+{
+  Vec3 v;
+  asArray( v, 3 );
+  return v;
+}
+
+Vec4 JSON::asVec4() const
+{
+  Vec4 v;
+  asArray( v, 4 );
+  return v;
+}
+
+Point JSON::asPoint() const
+{
+  Point p;
+  asArray( p, 3 );
+  return p;
+}
+
+Plane JSON::asPlane() const
+{
+  Plane p;
+  asArray( p, 4 );
+  return p;
+}
+
+Quat JSON::asQuat() const
+{
+  Quat q;
+  asArray( q, 4 );
+  return q;
+}
+
+Mat44 JSON::asMat44() const
+{
+  Mat44 m;
+  asArray( m, 16 );
+  return m;
 }
 
 void JSON::asArray( bool* array, int count ) const
@@ -836,89 +964,124 @@ void JSON::asArray( String* array, int count ) const
   }
 }
 
-Vec3 JSON::asVec3() const
-{
-  Vec3 v;
-  asArray( v, 3 );
-  return v;
-}
-
-Vec4 JSON::asVec4() const
-{
-  Vec4 v;
-  asArray( v, 4 );
-  return v;
-}
-
-Point JSON::asPoint() const
-{
-  Point p;
-  asArray( p, 3 );
-  return p;
-}
-
-Plane JSON::asPlane() const
-{
-  Plane p;
-  asArray( p, 4 );
-  return p;
-}
-
-Quat JSON::asQuat() const
-{
-  Quat q;
-  asArray( q, 4 );
-  return q;
-}
-
-Mat44 JSON::asMat44() const
-{
-  Mat44 m;
-  asArray( m, 16 );
-  return m;
-}
-
-const JSON& JSON::operator [] ( int i ) const
+void JSON::asArray( Vec3* array, int count ) const
 {
   wasAccessed = true;
 
-  if( valueType == NIL ) {
-    return NIL_VALUE;
-  }
-  else if( valueType != ARRAY ) {
+  if( valueType != ARRAY ) {
     OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
   }
 
   const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
 
-  if( uint( i ) >= uint( list.length() ) ) {
-    return NIL_VALUE;
+  if( list.length() != count ) {
+    OZ_ERROR( "JSON array has %d elements but %d expected: %s",
+              list.length(), count, toString().cstr() );
   }
 
-  list[i].wasAccessed = true;
-  return list[i];
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asVec3();
+  }
 }
 
-const JSON& JSON::operator [] ( const char* key ) const
+void JSON::asArray( Vec4* array, int count ) const
 {
   wasAccessed = true;
 
-  if( valueType == NIL ) {
-    return NIL_VALUE;
-  }
-  else if( valueType != OBJECT ) {
-    OZ_ERROR( "JSON value accessed as an object: %s", toString().cstr() );
+  if( valueType != ARRAY ) {
+    OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
   }
 
-  const HashMap<String, JSON>& table = static_cast<const ObjectData*>( data )->table;
-  const JSON* value = table.find( key );
+  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
 
-  if( value == nullptr ) {
-    return NIL_VALUE;
+  if( list.length() != count ) {
+    OZ_ERROR( "JSON array has %d elements but %d expected: %s",
+              list.length(), count, toString().cstr() );
   }
 
-  value->wasAccessed = true;
-  return *value;
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asVec4();
+  }
+}
+
+void JSON::asArray( Point* array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType != ARRAY ) {
+    OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    OZ_ERROR( "JSON array has %d elements but %d expected: %s",
+              list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asPoint();
+  }
+}
+
+void JSON::asArray( Plane* array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType != ARRAY ) {
+    OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    OZ_ERROR( "JSON array has %d elements but %d expected: %s",
+              list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asPlane();
+  }
+}
+
+void JSON::asArray( Quat* array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType != ARRAY ) {
+    OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    OZ_ERROR( "JSON array has %d elements but %d expected: %s",
+              list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asQuat();
+  }
+}
+
+void JSON::asArray( Mat44* array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType != ARRAY ) {
+    OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    OZ_ERROR( "JSON array has %d elements but %d expected: %s",
+              list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asMat44();
+  }
 }
 
 bool JSON::get( bool defaultValue ) const
@@ -989,6 +1152,42 @@ const char* JSON::get( const char* defaultValue ) const
   }
 
   return static_cast<const StringData*>( data )->value;
+}
+
+Vec3 JSON::get( const Vec3& defaultValue ) const
+{
+  Vec3 v;
+  return get( v, 3 ) ? v : defaultValue;
+}
+
+Vec4 JSON::get( const Vec4& defaultValue ) const
+{
+  Vec4 v;
+  return get( v, 4 ) ? v : defaultValue;
+}
+
+Point JSON::get( const Point& defaultValue ) const
+{
+  Point p;
+  return get( p, 3 ) ? p : defaultValue;
+}
+
+Plane JSON::get( const Plane& defaultValue ) const
+{
+  Plane p;
+  return get( p, 4 ) ? p : defaultValue;
+}
+
+Quat JSON::get( const Quat& defaultValue ) const
+{
+  Quat q;
+  return get( q, 4 ) ? q : defaultValue;
+}
+
+Mat44 JSON::get( const Mat44& defaultValue ) const
+{
+  Mat44 m;
+  return get( m, 16 ) ? m : defaultValue;
 }
 
 bool JSON::get( bool* array, int count ) const
@@ -1087,40 +1286,148 @@ bool JSON::get( String* array, int count ) const
   return true;
 }
 
-Vec3 JSON::get( const Vec3& defaultValue ) const
+bool JSON::get( Vec3* array, int count ) const
 {
-  Vec3 v;
-  return get( v, 3 ) ? v : defaultValue;
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return false;
+  }
+  else if( valueType != ARRAY ) {
+    OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    OZ_ERROR( "JSON array has %d elements but %d expected: %s",
+              list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asVec3();
+  }
+  return true;
 }
 
-Vec4 JSON::get( const Vec4& defaultValue ) const
+bool JSON::get( Vec4* array, int count ) const
 {
-  Vec4 v;
-  return get( v, 4 ) ? v : defaultValue;
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return false;
+  }
+  else if( valueType != ARRAY ) {
+    OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    OZ_ERROR( "JSON array has %d elements but %d expected: %s",
+              list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asVec4();
+  }
+  return true;
 }
 
-Point JSON::get( const Point& defaultValue ) const
+bool JSON::get( Point* array, int count ) const
 {
-  Point p;
-  return get( p, 3 ) ? p : defaultValue;
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return false;
+  }
+  else if( valueType != ARRAY ) {
+    OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    OZ_ERROR( "JSON array has %d elements but %d expected: %s",
+              list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asPoint();
+  }
+  return true;
 }
 
-Plane JSON::get( const Plane& defaultValue ) const
+bool JSON::get( Plane* array, int count ) const
 {
-  Plane p;
-  return get( p, 4 ) ? p : defaultValue;
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return false;
+  }
+  else if( valueType != ARRAY ) {
+    OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    OZ_ERROR( "JSON array has %d elements but %d expected: %s",
+              list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asPlane();
+  }
+  return true;
 }
 
-Quat JSON::get( const Quat& defaultValue ) const
+bool JSON::get( Quat* array, int count ) const
 {
-  Quat q;
-  return get( q, 4 ) ? q : defaultValue;
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return false;
+  }
+  else if( valueType != ARRAY ) {
+    OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    OZ_ERROR( "JSON array has %d elements but %d expected: %s",
+              list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asQuat();
+  }
+  return true;
 }
 
-Mat44 JSON::get( const Mat44& defaultValue ) const
+bool JSON::get( Mat44* array, int count ) const
 {
-  Mat44 m;
-  return get( m, 16 ) ? m : defaultValue;
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return false;
+  }
+  else if( valueType != ARRAY ) {
+    OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    OZ_ERROR( "JSON array has %d elements but %d expected: %s",
+              list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asMat44();
+  }
+  return true;
 }
 
 void JSON::setNull()
@@ -1166,22 +1473,6 @@ void JSON::set( const char* value )
 
   data      = new StringData( value );
   valueType = STRING;
-}
-
-void JSON::setArray()
-{
-  clear();
-
-  data      = new ArrayData();
-  valueType = ARRAY;
-}
-
-void JSON::setObject()
-{
-  clear();
-
-  data      = new ObjectData();
-  valueType = OBJECT;
 }
 
 void JSON::set( const Vec3& v )
@@ -1268,6 +1559,22 @@ void JSON::set( const Mat44& m )
   }
 }
 
+void JSON::setArray()
+{
+  clear();
+
+  data      = new ArrayData();
+  valueType = ARRAY;
+}
+
+void JSON::setObject()
+{
+  clear();
+
+  data      = new ObjectData();
+  valueType = OBJECT;
+}
+
 JSON& JSON::addNull()
 {
   if( valueType != ARRAY ) {
@@ -1317,22 +1624,6 @@ JSON& JSON::add( const char* value )
   JSON& elem = addNull();
 
   elem.set( value );
-  return elem;
-}
-
-JSON& JSON::addArray()
-{
-  JSON& elem = addNull();
-
-  elem.setArray();
-  return elem;
-}
-
-JSON& JSON::addObject()
-{
-  JSON& elem = addNull();
-
-  elem.setObject();
   return elem;
 }
 
@@ -1444,6 +1735,22 @@ JSON& JSON::add( const Mat44& m )
   return elem;
 }
 
+JSON& JSON::addArray()
+{
+  JSON& elem = addNull();
+
+  elem.setArray();
+  return elem;
+}
+
+JSON& JSON::addObject()
+{
+  JSON& elem = addNull();
+
+  elem.setObject();
+  return elem;
+}
+
 JSON& JSON::addNull( const char* key )
 {
   if( valueType != OBJECT ) {
@@ -1492,22 +1799,6 @@ JSON& JSON::add( const char* key, const char* value )
   JSON& elem = addNull( key );
 
   elem.set( value );
-  return elem;
-}
-
-JSON& JSON::addArray( const char* key )
-{
-  JSON& elem = addNull( key );
-
-  elem.setArray();
-  return elem;
-}
-
-JSON& JSON::addObject( const char* key )
-{
-  JSON& elem = addNull( key );
-
-  elem.setObject();
   return elem;
 }
 
@@ -1619,6 +1910,22 @@ JSON& JSON::add( const char* key, const Mat44& m )
   return elem;
 }
 
+JSON& JSON::addArray( const char* key )
+{
+  JSON& elem = addNull( key );
+
+  elem.setArray();
+  return elem;
+}
+
+JSON& JSON::addObject( const char* key )
+{
+  JSON& elem = addNull( key );
+
+  elem.setObject();
+  return elem;
+}
+
 JSON& JSON::includeNull( const char* key )
 {
   if( valueType != OBJECT ) {
@@ -1711,38 +2018,6 @@ JSON& JSON::include( const char* key, const char* value )
 
   if( entry == nullptr ) {
     entry = &table->table.add( key, JSON( new StringData( value ), STRING ) );
-  }
-  return *entry;
-}
-
-JSON& JSON::includeArray( const char* key )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  ObjectData* table = static_cast<ObjectData*>( data );
-  JSON* entry = table->table.find( key );
-
-  if( entry == nullptr ) {
-    entry = &table->table.add( key, JSON( new ArrayData(), STRING ) );
-  }
-  return *entry;
-}
-
-JSON& JSON::includeObject( const char* key )
-{
-  if( valueType != OBJECT ) {
-    OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
-              key, toString().cstr() );
-  }
-
-  ObjectData* table = static_cast<ObjectData*>( data );
-  JSON* entry = table->table.find( key );
-
-  if( entry == nullptr ) {
-    entry = &table->table.add( key, JSON( new ObjectData(), STRING ) );
   }
   return *entry;
 }
@@ -1875,6 +2150,38 @@ JSON& JSON::include( const char* key, const Mat44& m )
     for( int i = 0; i < 16; ++i ) {
       list.add( JSON( new NumberData( m[i] ), NUMBER ) );
     }
+  }
+  return *entry;
+}
+
+JSON& JSON::includeArray( const char* key )
+{
+  if( valueType != OBJECT ) {
+    OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
+              key, toString().cstr() );
+  }
+
+  ObjectData* table = static_cast<ObjectData*>( data );
+  JSON* entry = table->table.find( key );
+
+  if( entry == nullptr ) {
+    entry = &table->table.add( key, JSON( new ArrayData(), STRING ) );
+  }
+  return *entry;
+}
+
+JSON& JSON::includeObject( const char* key )
+{
+  if( valueType != OBJECT ) {
+    OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
+              key, toString().cstr() );
+  }
+
+  ObjectData* table = static_cast<ObjectData*>( data );
+  JSON* entry = table->table.find( key );
+
+  if( entry == nullptr ) {
+    entry = &table->table.add( key, JSON( new ObjectData(), STRING ) );
   }
   return *entry;
 }

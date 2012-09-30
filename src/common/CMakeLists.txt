@@ -9,4 +9,4 @@ add_library( common STATIC
   luabase.cc
   Lua.cc
   Timer.cc )
-add_dependencies( common pch )
+use_pch( common pch )

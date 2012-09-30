@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "Mat44.hh"
 #include "Time.hh"
 #include "StackTrace.hh"
 
@@ -220,6 +221,37 @@ class Log
      * Same as `putsRaw( s )`.
      */
     const Log& operator << ( const char* s ) const;
+
+    /**
+     * Same as `printRaw( "(%g %g %g)", v.x, v.y, v.z )`.
+     */
+    const Log& operator << ( const Vec3& v ) const;
+
+    /**
+     * Same as `printRaw( "(%g %g %g %g)", v.x, v.y, v.z, v.z )`.
+     */
+    const Log& operator << ( const Vec4& v ) const;
+
+    /**
+     * Same as `printRaw( "[%g %g %g]", p.x, p.y, p.z )`.
+     */
+    const Log& operator << ( const Point& p ) const;
+
+    /**
+     * Same as `printRaw( "(%g %g %g; %g)", p.n.x, p.n.y, p.n.z, p.d )`.
+     */
+    const Log& operator << ( const Plane& p ) const;
+
+    /**
+     * Same as `printRaw( "[%g %g %g %g]", q.x, q.y, q.z, q.w )`.
+     */
+    const Log& operator << ( const Quat& q ) const;
+
+    /**
+     * Print 4x4 matrix as `printRaw( "[%g %g %g %g; %g %g %g %g; %g %g %g %g; %g %g %g %g]", ... )`
+     * in row-major format.
+     */
+    const Log& operator << ( const Mat44& m ) const;
 
     /**
      * Same as `printfRaw( "%p", p )`.

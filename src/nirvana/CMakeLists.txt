@@ -14,4 +14,4 @@ add_library( nirvana STATIC
   Mind.cc
   Nirvana.cc
   Task.cc )
-add_dependencies( nirvana pch )
+use_pch( nirvana pch )

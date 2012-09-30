@@ -50,4 +50,4 @@ add_library( matrix STATIC
   VehicleClass.cc
   Weapon.cc
   WeaponClass.cc )
-add_dependencies( matrix pch )
+use_pch( matrix pch )

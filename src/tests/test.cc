@@ -23,9 +23,6 @@
 
 #include <oz/oz.hh>
 
-#include <sstream>
-#include <iostream>
-
 using namespace oz;
 
 class Foo
