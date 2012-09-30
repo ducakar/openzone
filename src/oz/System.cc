@@ -468,13 +468,13 @@ static void initBell()
   }
 
   // Link PulseAudio client library.
-  void* pulseLib = dlopen( "libpulse-simple.so.0", RTLD_NOW );
+  void* libPulse = dlopen( "libpulse-simple.so.0", RTLD_NOW );
 
-  if( pulseLib != nullptr ) {
-    *( void** ) &pa_simple_new   = dlsym( pulseLib, "pa_simple_new" );
-    *( void** ) &pa_simple_free  = dlsym( pulseLib, "pa_simple_free" );
-    *( void** ) &pa_simple_write = dlsym( pulseLib, "pa_simple_write" );
-    *( void** ) &pa_simple_drain = dlsym( pulseLib, "pa_simple_drain" );
+  if( libPulse != nullptr ) {
+    *( void** ) &pa_simple_new   = dlsym( libPulse, "pa_simple_new" );
+    *( void** ) &pa_simple_free  = dlsym( libPulse, "pa_simple_free" );
+    *( void** ) &pa_simple_write = dlsym( libPulse, "pa_simple_write" );
+    *( void** ) &pa_simple_drain = dlsym( libPulse, "pa_simple_drain" );
 
     if( pa_simple_new == nullptr || pa_simple_free == nullptr || pa_simple_write == nullptr ||
         pa_simple_drain == nullptr )
@@ -484,7 +484,7 @@ static void initBell()
       pa_simple_write = nullptr;
       pa_simple_drain = nullptr;
 
-      dlclose( pulseLib );
+      dlclose( libPulse );
     }
   }
 

@@ -29,6 +29,7 @@ for the following libraries:
 * espeak (optional)
 * freeimage
 * libsquish (optional)
+* JDK (optional)
 
 You can then use generic steps for building CMake projects. Basic build instructions when you are in
 the root directory of the source tree are:
@@ -57,6 +58,8 @@ You may also want to set several options when configuring CMake build system:
   Vec3 and Point classes are a bit larger (4 floats v. 3 floats) and there are lots of conversions
   between a single float and a SIMD register required in OpenZone code.
 
+* `OZ_JNI`: Build as a JNI library, so it can be started from a Java virtual machine.
+
 * `OZ_GL_ES`: Use OpenGL ES 2.0 API. Always enabled in NaCl platform, on other platforms it will
   merely use GL ES headers and functions set, it will still initialise OpenGL.
 
@@ -74,12 +77,6 @@ You may also want to set several options when configuring CMake build system:
 
 Tools
 -----
-
-### `ozSineSample` ###
-
-Simple tool that I use to generate sound sample that goes into `oz/src/bellSample.inc` file. It
-takes no arguments (everything must be changed in `src/tools/ozSineSample.cc`) and writes array of
-samples to stdout.
 
 ### `ozGettext <pkgSrc>` ###
 
@@ -121,7 +118,7 @@ temporary directory and put into newly build package. So, it is advisable to rem
 directories ("`rm -rf share/openzone/*`" on Linux) after removing something from game data or before
 doing final builds.
 
-### ozManifest ###
+### `ozManifest` ###
 
 This tool creates package manifest file required by NaCl port for updating game data packages. It
 searches for all game data packages (`*.7z` and `*.zip`) in `share/openzone` directory (first
@@ -145,6 +142,11 @@ wouldn't be easy.
 
 Runs compilation of all build configurations. See `configure-all.sh` for details.
 
+### `capture.sh` ###
+
+Run OpenZone with glc tool to capture video. Audio is captured from PulseAudio server and saved
+into `openzone-pa.wav` file.
+
 ### `check.sh` ###
 
 Runs cppcheck tool for static code analysis.
@@ -153,6 +155,11 @@ Runs cppcheck tool for static code analysis.
 
 Cleans up trailing blanks, duplicated empty lines and missing newlines at the end of file for most
 files in the source tree.
+
+### `clean-data.sh` ###
+
+Cleans up temporary and backup files from source game data directories in `data/` created by various
+programs during editing those files.
 
 ### `configure-all.sh` ###
 
@@ -176,10 +183,15 @@ pages ...) for web-based, NaCl port, and launches chromium browser at `localhost
 one has already a simple web server running at port 8000, serving `build/NaCl-test` directory (e.g.
 go to `build/NaCl-test` and run "`python -m http.server`").
 
-### `pack-src.sh` ###
+### `package.sh [src | data]` ###
 
 Pack source tree into `openzone-src-<version>.tar.xz` and pack compiled game data archives from
 `share/*.zip` into `openzone-data-<version>.tar.xz`.
+
+### `q3map2.sh <map_file>` ###
+
+Proxy script for invoking `q3map2` BSP compiler from GtkRadiant in `/usr/share/gtkradiant/` with
+appropriate parameters to compile BSP structures for OpenZone.
 
 ### `support-all.sh` ###
 

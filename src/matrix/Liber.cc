@@ -469,37 +469,25 @@ void Liber::initMusicRecurse( const char* path, List<Resource>* musicTracksList 
     if( file->type() == File::DIRECTORY ) {
       initMusicRecurse( file->path(), musicTracksList );
     }
-#ifdef OZ_NONFREE
-    if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) &&
-        !file->hasExtension( "mp3" ) && !file->hasExtension( "aac" ) )
-#else
-    if( !file->hasExtension( "oga" ) && !file->hasExtension( "ogg" ) )
-#endif
+    if( file->hasExtension( "oga" ) || file->hasExtension( "ogg" ) ||
+        ( mapMP3s && file->hasExtension( "mp3" ) ) || ( mapAACs && file->hasExtension( "aac" ) ) )
     {
-      continue;
+      Log::println( "%s", file->path().cstr() );
+
+      musicTracksList->add( Resource( file->baseName(), file->path() ) );
     }
-
-    Log::println( "%s", file->path().cstr() );
-
-    musicTracksList->add( Resource( file->baseName(), file->path() ) );
   }
 }
 
 void Liber::initMusic( const char* userMusicPath )
 {
   if( userMusicPath == nullptr || String::isEmpty( userMusicPath ) ) {
-#ifdef OZ_NONFREE
-    Log::println( "Music (*.oga, *.ogg, *.mp3, *.aac in 'music') {" );
-#else
-    Log::println( "Music (*.oga, *.ogg in 'music') {" );
-#endif
+    Log::println( "Music (*.oga, *.ogg%s%s in 'music') {",
+                  mapMP3s ? ", *.mp3" : "", mapAACs ? "*.aac" : "" );
   }
   else {
-#ifdef OZ_NONFREE
-    Log::println( "Music (*.oga, *.ogg, *.mp3, *.aac in 'music' and '%s') {", userMusicPath );
-#else
-    Log::println( "Music (*.oga, *.ogg in 'music' and '%s') {", userMusicPath );
-#endif
+    Log::println( "Music (*.oga, *.ogg%s%s in 'music' and '%s') {",
+                  mapMP3s ? ", *.mp3" : "", mapAACs ? ", *.aac" : "", userMusicPath );
   }
   Log::indent();
 

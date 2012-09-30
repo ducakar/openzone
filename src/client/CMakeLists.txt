@@ -10,6 +10,7 @@ add_library( client STATIC
   Client.hh
   common.hh
   Context.hh
+  eSpeak.hh
   ExplosionImago.hh
   FragPool.hh
   Frustum.hh
@@ -61,6 +62,7 @@ add_library( client STATIC
   Client.cc
   common.cc
   Context.cc
+  eSpeak.cc
   ExplosionImago.cc
   FragPool.cc
   Frustum.cc

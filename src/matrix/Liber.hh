@@ -80,11 +80,14 @@ class Liber
     DArray<Resource> nameLists;
     DArray<Resource> musicTracks;
 
-    int nBSPs;
-    int nFragPools;
-    int nDeviceClasses;
-    int nImagoClasses;
-    int nAudioClasses;
+    int              nBSPs;
+    int              nFragPools;
+    int              nDeviceClasses;
+    int              nImagoClasses;
+    int              nAudioClasses;
+
+    bool             mapMP3s;
+    bool             mapAACs;
 
     const BSP*         bsp( const char* name ) const;
     const ObjectClass* objClass( const char* name ) const;

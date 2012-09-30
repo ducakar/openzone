@@ -25,49 +25,37 @@
 #include <client/Sound.hh>
 
 #include <client/Camera.hh>
+#include <client/eSpeak.hh>
 #include <client/NaCl.hh>
-
-#ifdef OZ_ESPEAK
-# include <espeak/speak_lib.h>
-#endif
 
 #if PHYSFS_VER_MAJOR == 2 && PHYSFS_VER_MINOR == 0
 # define PHYSFS_readBytes( handle, buffer, len ) PHYSFS_read( handle, buffer, 1, uint( len ) )
 #endif
 
-#ifdef OZ_NONFREE
-# define OZ_DLDECL( name ) \
-  static decltype( ::name )* name = nullptr
-
-# define OZ_DLLOAD( l, name ) \
+#define OZ_DLLOAD( l, name ) \
   *( void** )( &name ) = SDL_LoadFunction( l, #name ); \
   if( name == nullptr ) { \
-    OZ_ERROR( "Failed loading " #name " from libmad" ); \
+    OZ_ERROR( "Failed loading " #name " from library" ); \
   }
-#endif
 
 namespace oz
 {
 namespace client
 {
 
-#ifdef OZ_NONFREE
+static decltype( ::mad_stream_init   )* mad_stream_init   = nullptr;
+static decltype( ::mad_stream_finish )* mad_stream_finish = nullptr;
+static decltype( ::mad_stream_buffer )* mad_stream_buffer = nullptr;
+static decltype( ::mad_frame_init    )* mad_frame_init    = nullptr;
+static decltype( ::mad_frame_finish  )* mad_frame_finish  = nullptr;
+static decltype( ::mad_frame_decode  )* mad_frame_decode  = nullptr;
+static decltype( ::mad_synth_init    )* mad_synth_init    = nullptr;
+static decltype( ::mad_synth_frame   )* mad_synth_frame   = nullptr;
 
-OZ_DLDECL( mad_stream_init   );
-OZ_DLDECL( mad_stream_finish );
-OZ_DLDECL( mad_stream_buffer );
-OZ_DLDECL( mad_frame_init    );
-OZ_DLDECL( mad_frame_finish  );
-OZ_DLDECL( mad_frame_decode  );
-OZ_DLDECL( mad_synth_init    );
-OZ_DLDECL( mad_synth_frame   );
-
-OZ_DLDECL( NeAACDecInit      );
-OZ_DLDECL( NeAACDecOpen      );
-OZ_DLDECL( NeAACDecClose     );
-OZ_DLDECL( NeAACDecDecode    );
-
-#endif
+static decltype( ::NeAACDecInit      )* NeAACDecInit      = nullptr;
+static decltype( ::NeAACDecOpen      )* NeAACDecOpen      = nullptr;
+static decltype( ::NeAACDecClose     )* NeAACDecClose     = nullptr;
+static decltype( ::NeAACDecDecode    )* NeAACDecDecode    = nullptr;
 
 static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle );
 static ov_callbacks VORBIS_CALLBACKS = { vorbisRead, nullptr, nullptr, nullptr };
@@ -77,8 +65,6 @@ static size_t vorbisRead( void* buffer, size_t size, size_t n, void* handle )
   return size_t( PHYSFS_readBytes( static_cast<PHYSFS_File*>( handle ), buffer,
                                    ulong64( size * n ) ) );
 }
-
-#ifdef OZ_NONFREE
 
 OZ_ALWAYS_INLINE
 static inline short madFixedToShort( mad_fixed_t f )
@@ -93,8 +79,6 @@ static inline short madFixedToShort( mad_fixed_t f )
     return short( f >> ( MAD_F_FRACBITS - 15 ) );
   }
 }
-
-#endif
 
 const float Sound::MAX_DISTANCE = 192.0f;
 
@@ -115,9 +99,8 @@ void Sound::musicOpen( const char* path )
   if( file.hasExtension( "oga" ) || file.hasExtension( "ogg" ) ) {
     musicStreamType = OGG;
   }
-#ifdef OZ_NONFREE
   else if( file.hasExtension( "mp3" ) ) {
-    if( libmad != nullptr ) {
+    if( libMad != nullptr ) {
       musicStreamType = MP3;
     }
     else {
@@ -125,14 +108,13 @@ void Sound::musicOpen( const char* path )
     }
   }
   else if( file.hasExtension( "aac" ) ) {
-    if( libfaad != nullptr ) {
+    if( libFaad != nullptr ) {
       musicStreamType = AAC;
     }
     else {
       musicStreamType = NONE;
     }
   }
-#endif
   else {
     OZ_ERROR( "Unknown extension for file '%s'", path );
   }
@@ -171,7 +153,6 @@ void Sound::musicOpen( const char* path )
 
       break;
     }
-#ifdef OZ_NONFREE
     case MP3: {
       musicFile = PHYSFS_openRead( path );
       if( musicFile == nullptr ) {
@@ -268,12 +249,6 @@ void Sound::musicOpen( const char* path )
 
       break;
     }
-#else
-    case MP3:
-    case AAC: {
-      break;
-    }
-#endif
   }
 }
 
@@ -289,7 +264,6 @@ void Sound::musicClear()
       PHYSFS_close( musicFile );
       break;
     }
-#ifdef OZ_NONFREE
     case MP3: {
       mad_synth_finish( &madSynth );
       mad_frame_finish( &madFrame );
@@ -304,12 +278,6 @@ void Sound::musicClear()
       PHYSFS_close( musicFile );
       break;
     }
-#else
-    case MP3:
-    case AAC: {
-      break;
-    }
-#endif
   }
 }
 
@@ -338,7 +306,6 @@ int Sound::musicDecode()
 
       return bytesRead;
     }
-#ifdef OZ_NONFREE
     case MP3: {
       short* musicOutput    = reinterpret_cast<short*>( musicBuffer );
       short* musicOutputEnd = reinterpret_cast<short*>( musicBuffer + MUSIC_BUFFER_SIZE );
@@ -442,12 +409,6 @@ int Sound::musicDecode()
       }
       while( true );
     }
-#else
-    case MP3:
-    case AAC: {
-      return 0;
-    }
-#endif
   }
 }
 
@@ -809,56 +770,14 @@ void Sound::init()
   setVolume( config.include( "sound.volume", 1.0f ).asFloat() );
   setMusicVolume( 0.5f );
 
-#ifdef OZ_NONFREE
+  const String& speaker = config.include( "sound.speaker", "en" ).asString();
 
-# ifdef _WIN32
-  libmad  = SDL_LoadObject( "libmad.dll" );
-  libfaad = SDL_LoadObject( "libfaad2.dll" );
-# else
-  libmad  = SDL_LoadObject( "libmad.so.0" );
-  libfaad = SDL_LoadObject( "libfaad.so.2" );
-# endif
-
-  Log::print( "MAD library ..." );
-
-  if( libmad == nullptr ) {
-    Log::printEnd( " Not found, MP3 decoding support disabled" );
+  if( espeak_Initialize != nullptr ) {
+    context.speakSampleRate = espeak_Initialize( AUDIO_OUTPUT_SYNCHRONOUS, 500, nullptr, 0 );
+    espeak_SetParameter( espeakRATE, 160, 0 );
+    espeak_SetVoiceByName( speaker );
+    espeak_SetSynthCallback( reinterpret_cast<t_espeak_callback*>( &Context::speakCallback ) );
   }
-  else {
-    OZ_DLLOAD( libmad, mad_stream_init   );
-    OZ_DLLOAD( libmad, mad_stream_finish );
-    OZ_DLLOAD( libmad, mad_stream_buffer );
-    OZ_DLLOAD( libmad, mad_frame_init    );
-    OZ_DLLOAD( libmad, mad_frame_finish  );
-    OZ_DLLOAD( libmad, mad_frame_decode  );
-    OZ_DLLOAD( libmad, mad_synth_init    );
-    OZ_DLLOAD( libmad, mad_synth_frame   );
-
-    Log::printEnd( " Found, MP3 decoding supported" );
-  }
-
-  Log::print( "FAAD library ..." );
-
-  if( libfaad == nullptr ) {
-    Log::printEnd( " Not found, AAC decoding support disabled" );
-  }
-  else {
-    OZ_DLLOAD( libfaad, NeAACDecInit   );
-    OZ_DLLOAD( libfaad, NeAACDecOpen   );
-    OZ_DLLOAD( libfaad, NeAACDecClose  );
-    OZ_DLLOAD( libfaad, NeAACDecDecode );
-
-    Log::printEnd( " Found, AAC decoding supported" );
-  }
-
-#endif
-
-#ifdef OZ_ESPEAK
-  context.speakSampleRate = espeak_Initialize( AUDIO_OUTPUT_SYNCHRONOUS, 500, nullptr, 0 );
-  espeak_SetParameter( espeakRATE, 160, 0 );
-  espeak_SetVoiceByName( config.include( "sound.speaker", "en" ).asString() );
-  espeak_SetSynthCallback( reinterpret_cast<t_espeak_callback*>( &Context::speakCallback ) );
-#endif
 
   isMusicAlive = true;
   isSoundAlive = true;
@@ -885,9 +804,9 @@ void Sound::free()
 
   Log::print( "Freeing Sound ..." );
 
-#ifdef OZ_ESPEAK
-  espeak_Terminate();
-#endif
+  if( espeak_Terminate != nullptr ) {
+    espeak_Terminate();
+  }
 
   selectedTrack = -1;
   currentTrack  = -1;
@@ -906,15 +825,6 @@ void Sound::free()
   musicAuxSemaphore.destroy();
   musicMainSemaphore.destroy();
 
-#ifdef OZ_NONFREE
-  if( libfaad != nullptr ) {
-    SDL_UnloadObject( libfaad );
-  }
-  if( libmad != nullptr ) {
-    SDL_UnloadObject( libmad );
-  }
-#endif
-
   if( soundContext != nullptr ) {
     playedStructs.deallocate();
 
@@ -931,7 +841,92 @@ void Sound::free()
     soundDevice = nullptr;
   }
 
+  if( libFaad != nullptr ) {
+    SDL_UnloadObject( libFaad );
+  }
+  if( libMad != nullptr ) {
+    SDL_UnloadObject( libMad );
+  }
+  if( libeSpeak != nullptr ) {
+    SDL_UnloadObject( libeSpeak );
+  }
+
   Log::printEnd( " OK" );
+}
+
+void Sound::initLibs()
+{
+  #ifdef _WIN32
+  const char* libeSpeakName = "libespeak.dll";
+  const char* libMadName    = "libmad.dll";
+  const char* libFaadName   = "libfaad2.dll";
+#else
+  const char* libeSpeakName = "libespeak.so.1";
+  const char* libMadName    = "libmad.so.0";
+  const char* libFaadName   = "libfaad.so.2";
+#endif
+
+  Log::print( "Linking eSpeak library [%s] ...", libeSpeakName );
+
+  libeSpeak = SDL_LoadObject( libeSpeakName );
+
+  if( libeSpeak == nullptr ) {
+    Log::printEnd( " Not found, speech synthesis not supported" );
+  }
+  else {
+    OZ_DLLOAD( libeSpeak, espeak_Initialize );
+    OZ_DLLOAD( libeSpeak, espeak_Terminate );
+    OZ_DLLOAD( libeSpeak, espeak_SetParameter );
+    OZ_DLLOAD( libeSpeak, espeak_SetVoiceByName );
+    OZ_DLLOAD( libeSpeak, espeak_SetSynthCallback );
+    OZ_DLLOAD( libeSpeak, espeak_Synth );
+
+    Log::printEnd( " OK, speech synthesis supported" );
+  }
+
+  Log::print( "Linking MAD library [%s] ...", libMadName );
+
+  libMad = SDL_LoadObject( libMadName );
+
+  if( libMad == nullptr ) {
+    liber.mapMP3s = false;
+
+    Log::printEnd( " Not found, MP3 not supported" );
+  }
+  else {
+    OZ_DLLOAD( libMad, mad_stream_init   );
+    OZ_DLLOAD( libMad, mad_stream_finish );
+    OZ_DLLOAD( libMad, mad_stream_buffer );
+    OZ_DLLOAD( libMad, mad_frame_init    );
+    OZ_DLLOAD( libMad, mad_frame_finish  );
+    OZ_DLLOAD( libMad, mad_frame_decode  );
+    OZ_DLLOAD( libMad, mad_synth_init    );
+    OZ_DLLOAD( libMad, mad_synth_frame   );
+
+    liber.mapMP3s = true;
+
+    Log::printEnd( " OK, MP3 supported" );
+  }
+
+  Log::print( "Linking FAAD library [%s] ...", libFaadName );
+
+  libFaad = SDL_LoadObject( libFaadName );
+
+  if( libFaad == nullptr ) {
+    liber.mapAACs = false;
+
+    Log::printEnd( " Not found, AAC not supported" );
+  }
+  else {
+    OZ_DLLOAD( libFaad, NeAACDecInit   );
+    OZ_DLLOAD( libFaad, NeAACDecOpen   );
+    OZ_DLLOAD( libFaad, NeAACDecClose  );
+    OZ_DLLOAD( libFaad, NeAACDecDecode );
+
+    liber.mapAACs = true;
+
+    Log::printEnd( " OK, AAC supported" );
+  }
 }
 
 Sound sound;

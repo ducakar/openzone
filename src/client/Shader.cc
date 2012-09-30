@@ -312,6 +312,8 @@ void Shader::init()
   doPostprocess    = config["render.postprocess"].asBool();
   isLowDetail      = config["render.lowDetail"].asBool();
 
+  medium           = 0;
+
   // bind white texture to id 0 to emulate fixed functionality (in fixed functionality sampler
   // always returns white colour when texture 0 is bound)
   ubyte whitePixel[] = { 0xff, 0xff, 0xff, 0xff };
@@ -351,13 +353,11 @@ void Shader::init()
     OZ_ERROR( "Shaders missing" );
   }
 
-  programs.resize( liber.shaders.length() );
+  plain       = liber.shaderIndex( "plain" );
+  mesh        = liber.shaderIndex( "mesh" );
+  postprocess = liber.shaderIndex( "postprocess" );
 
-  for( int i = 0; i < liber.shaders.length(); ++i ) {
-    programs[i].program    = 0;
-    programs[i].vertShader = 0;
-    programs[i].fragShader = 0;
-  }
+  programs.resize( liber.shaders.length() );
 
   const char* sources[3];
   int         lengths[3];
@@ -385,12 +385,6 @@ void Shader::init()
 
   sources[1] = buffer.begin();
   lengths[1] = buffer.length();
-
-  plain       = liber.shaderIndex( "plain" );
-  mesh        = liber.shaderIndex( "mesh" );
-  postprocess = liber.shaderIndex( "postprocess" );
-
-  medium = 0;
 
   PFile dir( "glsl" );
   DArray<PFile> shaderFiles = dir.ls();
@@ -429,9 +423,6 @@ void Shader::free()
       programs[i].program = 0;
     }
   }
-
-  programs.clear();
-
   foreach( vertShader, vertShaders.citer() ) {
     glDeleteShader( vertShader->value );
   }
@@ -443,6 +434,7 @@ void Shader::free()
   fragShaders.deallocate();
   vertShaders.clear();
   vertShaders.deallocate();
+  programs.clear();
 
   if( defaultNormals != 0 ) {
     glDeleteTextures( 1, &defaultNormals );

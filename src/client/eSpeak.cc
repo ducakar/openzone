@@ -17,28 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
-
-/*
- * Configuration variables
+/**
+ * @file client/eSpeak.hh
  */
 
-// Version.
-#define OZ_VERSION              "@OZ_VERSION@"
+#include <stable.hh>
+#include <client/eSpeak.hh>
 
-// Default data directory.
-#define OZ_INSTALL_PREFIX       "@CMAKE_INSTALL_PREFIX@"
+namespace oz
+{
+namespace client
+{
 
-// Use versions of linear math structures that match SIMD registers and explicitly use SIMD
-// operations. However, due to larger size and if code is not written with SIMD in mind, those may
-// yield worse performance than generic linear algebra structures.
-#cmakedefine OZ_SIMD_MATH
+decltype( ::espeak_Initialize       )* espeak_Initialize       = nullptr;
+decltype( ::espeak_Terminate        )* espeak_Terminate        = nullptr;
+decltype( ::espeak_SetParameter     )* espeak_SetParameter     = nullptr;
+decltype( ::espeak_SetVoiceByName   )* espeak_SetVoiceByName   = nullptr;
+decltype( ::espeak_SetSynthCallback )* espeak_SetSynthCallback = nullptr;
+decltype( ::espeak_Synth            )* espeak_Synth            = nullptr;
 
-// Build for use in Java Native Interface (JNI).
-#cmakedefine OZ_JNI
-
-// Enable compatibility with GLES2 and Mesa < 8.0.
-#cmakedefine OZ_GL_ES
-
-// Enable squish S3TC library.
-#cmakedefine OZ_NONFREE
+}
+}

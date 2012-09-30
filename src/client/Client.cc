@@ -438,6 +438,8 @@ int Client::init( int argc, char** argv )
     Log::printEnd( " Failed" );
   }
 
+  sound.initLibs();
+
   initFlags |= INIT_LIBRARY;
   liber.init( config["dir.music"].get( "" ) );
 

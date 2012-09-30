@@ -37,10 +37,7 @@
 
 #include <client/OpenGL.hh>
 #include <client/OpenAL.hh>
-
-#ifdef OZ_ESPEAK
-# include <espeak/speak_lib.h>
-#endif
+#include <client/eSpeak.hh>
 
 #define OZ_REGISTER_IMAGOCLASS( name ) \
   { \
@@ -66,8 +63,6 @@ namespace client
 Pool<Context::Source> Context::Source::pool;
 int                   Context::speakSampleRate;
 Context::SpeakSource  Context::speakSource;
-
-#ifdef OZ_ESPEAK
 
 int Context::speakCallback( short int* samples, int nSamples, void* )
 {
@@ -170,8 +165,6 @@ void Context::speakMain( void* )
   speakSource.isAlive = false;
 }
 
-#endif
-
 uint Context::addSource( int sound )
 {
   hard_assert( sounds[sound].nUsers > 0 );
@@ -247,9 +240,7 @@ void Context::removeContSource( ContSource* contSource, int key )
 
 uint Context::requestSpeakSource( const char* text, int owner )
 {
-#ifdef OZ_ESPEAK
-
-  if( speakSource.thread.isValid() ) {
+  if( espeak_Synth == nullptr || speakSource.thread.isValid() ) {
     return INVALID_SOURCE;
   }
 
@@ -261,27 +252,14 @@ uint Context::requestSpeakSource( const char* text, int owner )
 
   speakSource.thread.start( "speak", speakMain, nullptr );
   return speakSource.id;
-
-#else
-
-  static_cast<void>( text );
-  static_cast<void>( owner );
-
-  return INVALID_SOURCE;
-
-#endif
 }
 
 void Context::releaseSpeakSource()
 {
-#ifdef OZ_ESPEAK
-
   hard_assert( speakSource.thread.isValid() );
 
   speakSource.isAlive = false;
   speakSource.thread.join();
-
-#endif
 }
 
 Context::Context() :
