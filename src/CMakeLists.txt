@@ -19,7 +19,7 @@ add_subdirectory( nirvana )
 add_subdirectory( modules )
 add_subdirectory( client )
 
-if( NOT NACL AND NOT ANDROID )
+if( NOT ANDROID AND NOT NACL )
   add_subdirectory( builder )
   add_subdirectory( tools )
   add_subdirectory( txc_dxtn )

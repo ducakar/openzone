@@ -46,10 +46,10 @@ class InputStream
 
   private:
 
-    const char*   pos;   ///< Current position.
-    const char*   start; ///< Beginning.
-    const char*   end;   ///< End.
-    Endian::Order order; ///< Stream byte order.
+    const char*   streamPos;   ///< Current position.
+    const char*   streamBegin; ///< Beginning.
+    const char*   streamEnd;   ///< End.
+    Endian::Order order;       ///< Stream byte order.
 
   public:
 
@@ -58,7 +58,7 @@ class InputStream
      */
     OZ_ALWAYS_INLINE
     InputStream() :
-      pos( nullptr ), start( nullptr ), end( nullptr ), order( Endian::NATIVE )
+      streamPos( nullptr ), streamBegin( nullptr ), streamEnd( nullptr ), order( Endian::NATIVE )
     {}
 
     /**
@@ -67,7 +67,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     explicit InputStream( const char* start_, const char* end_,
                           Endian::Order order_ = Endian::NATIVE ) :
-      pos( start_ ), start( start_ ), end( end_ ), order( order_ )
+      streamPos( start_ ), streamBegin( start_ ), streamEnd( end_ ), order( order_ )
     {}
 
     /**
@@ -76,9 +76,9 @@ class InputStream
     OZ_ALWAYS_INLINE
     int length() const
     {
-      hard_assert( pos <= end );
+      hard_assert( streamPos <= streamEnd );
 
-      return int( pos - start );
+      return int( streamPos - streamBegin );
     }
 
     /**
@@ -87,9 +87,9 @@ class InputStream
     OZ_ALWAYS_INLINE
     int capacity() const
     {
-      hard_assert( pos <= end );
+      hard_assert( streamPos <= streamEnd );
 
-      return int( end - start );
+      return int( streamEnd - streamBegin );
     }
 
     /**
@@ -98,9 +98,9 @@ class InputStream
     OZ_ALWAYS_INLINE
     int available() const
     {
-      hard_assert( pos <= end );
+      hard_assert( streamPos <= streamEnd );
 
-      return int( end - pos );
+      return int( streamEnd - streamPos );
     }
 
     /**
@@ -109,40 +109,38 @@ class InputStream
     OZ_ALWAYS_INLINE
     bool isAvailable() const
     {
-      hard_assert( pos <= end );
+      hard_assert( streamPos <= streamEnd );
 
-      return pos != end;
+      return streamPos != streamEnd;
     }
 
     /**
-     * Constant reference to the `i`-th byte from the beginning of the stream.
-     */
-    OZ_ALWAYS_INLINE
-    const char& operator [] ( int i ) const
-    {
-      hard_assert( uint( i ) < uint( end - start ) );
-
-      return start[i];
-    }
-
-    /**
-     * Pointer to the beginning of the stream.
+     * Constant pointer to the beginning of the stream.
      */
     OZ_ALWAYS_INLINE
     const char* begin() const
     {
-      return start;
+      return streamBegin;
+    }
+
+    /**
+     * Constant pointer to the eng of the stream.
+     */
+    OZ_ALWAYS_INLINE
+    const char* end() const
+    {
+      return streamEnd;
     }
 
     /**
      * Pointer to the current position.
      */
     OZ_ALWAYS_INLINE
-    const char* getPos() const
+    const char* pos() const
     {
-      hard_assert( start <= pos && pos <= end );
+      hard_assert( streamBegin <= streamPos && streamPos <= streamEnd );
 
-      return pos;
+      return streamPos;
     }
 
     /**
@@ -151,9 +149,9 @@ class InputStream
     OZ_ALWAYS_INLINE
     void setPos( const char* newPos )
     {
-      hard_assert( start <= newPos && newPos <= end );
+      hard_assert( streamBegin <= newPos && newPos <= streamEnd );
 
-      pos = newPos;
+      streamPos = newPos;
     }
 
     /**
@@ -162,7 +160,7 @@ class InputStream
     OZ_ALWAYS_INLINE
     void reset()
     {
-      pos = start;
+      streamPos = streamBegin;
     }
 
     /**
@@ -184,6 +182,17 @@ class InputStream
     }
 
     /**
+     * Constant reference to the `i`-th byte from the beginning of the stream.
+     */
+    OZ_ALWAYS_INLINE
+    const char& operator [] ( int i ) const
+    {
+      hard_assert( uint( i ) < uint( streamEnd - streamBegin ) );
+
+      return streamBegin[i];
+    }
+
+    /**
      * Skip `count` bytes.
      *
      * @return Constant pointer to the beginning of the skipped bytes.
@@ -191,11 +200,12 @@ class InputStream
     OZ_ALWAYS_INLINE
     const char* forward( int count )
     {
-      const char* oldPos = pos;
-      pos += count;
+      const char* oldPos = streamPos;
+      streamPos += count;
 
-      if( pos > end ) {
-        OZ_ERROR( "Buffer overrun for %d B during a read of %d B", int( pos - end ), count );
+      if( streamPos > streamEnd ) {
+        OZ_ERROR( "Buffer overrun for %d B during a read of %d B",
+                  int( streamPos - streamEnd ), count );
       }
       return oldPos;
     }
@@ -391,16 +401,16 @@ class InputStream
      */
     const char* readString()
     {
-      const char* begin = pos;
+      const char* begin = streamPos;
 
-      while( pos < end && *pos != '\0' ) {
-        ++pos;
+      while( streamPos < streamEnd && *streamPos != '\0' ) {
+        ++streamPos;
       }
-      if( pos == end ) {
+      if( streamPos == streamEnd ) {
         OZ_ERROR( "End of buffer reached while looking for the end of a string." );
       }
 
-      ++pos;
+      ++streamPos;
       return begin;
     }
 
@@ -563,15 +573,16 @@ class InputStream
      */
     String readLine()
     {
-      const char* begin = pos;
+      const char* begin = streamPos;
 
-      while( pos < end && *pos != '\n' && *pos != '\r' ) {
-        ++pos;
+      while( streamPos < streamEnd && *streamPos != '\n' && *streamPos != '\r' ) {
+        ++streamPos;
       }
 
-      int length = int( pos - begin );
+      int length = int( streamPos - begin );
 
-      pos += ( pos < end ) + ( pos < end - 1 && pos[0] == '\r' && pos[1] == '\n' );
+      streamPos += ( streamPos < streamEnd ) +
+                   ( streamPos < streamEnd - 1 && streamPos[0] == '\r' && streamPos[1] == '\n' );
       return String( begin, length );
     }
 

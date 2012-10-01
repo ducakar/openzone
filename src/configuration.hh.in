@@ -34,9 +34,6 @@
 // yield worse performance than generic linear algebra structures.
 #cmakedefine OZ_SIMD_MATH
 
-// Build for use in Java Native Interface (JNI).
-#cmakedefine OZ_JNI
-
 // Enable compatibility with GLES2 and Mesa < 8.0.
 #cmakedefine OZ_GL_ES
 

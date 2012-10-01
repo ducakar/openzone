@@ -64,20 +64,20 @@ void NamePool::init()
 
     InputStream is = file.inputStream();
 
-    const char* wordBegin = is.getPos();
+    const char* wordBegin = is.pos();
 
     while( is.isAvailable() ) {
       char ch = is.readChar();
 
       if( ch == '\n' ) {
-        String name( wordBegin, int( is.getPos() - wordBegin ) );
+        String name( wordBegin, int( is.pos() - wordBegin ) );
         name = name.trim();
 
         if( !name.isEmpty() ) {
           names.add( name );
         }
 
-        wordBegin = is.getPos();
+        wordBegin = is.pos();
       }
     }
 

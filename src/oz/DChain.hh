@@ -61,11 +61,11 @@ namespace oz
  *
  * Notes:
  * @li Copy operations do not copy elements, to make a copy of a chain including its elements, use
- * `clone()` instead.
+ * `   clone()` instead.
  * @li Removal operations (except for `free()` do not actually remove elements but only decouples
- * them from the chain.
+ *     them from the chain.
  * @li `prev[INDEX]` and `next[INDEX]` pointers are not cleared when an element is removed from the
- * chain, they may still point to elements in the chain or to invalid locations.
+ *     chain, they may still point to elements in the chain or to invalid locations.
  */
 template <class Elem, int INDEX = 0>
 class DChain
@@ -110,24 +110,6 @@ class DChain
 
           elem = elem->next[INDEX];
           return *this;
-        }
-
-        /**
-         * STL-compatible begin iterator.
-         */
-        OZ_ALWAYS_INLINE
-        ChainIterator begin() const
-        {
-          return *this;
-        }
-
-        /**
-         * STL-compatible end iterator.
-         */
-        OZ_ALWAYS_INLINE
-        ChainIterator end() const
-        {
-          return ChainIterator();
         }
 
     };
@@ -249,6 +231,42 @@ class DChain
     Iterator iter() const
     {
       return Iterator( firstElem );
+    }
+
+    /**
+     * STL-compatible constant begin iterator.
+     */
+    OZ_ALWAYS_INLINE
+    CIterator begin() const
+    {
+      return CIterator( firstElem );
+    }
+
+    /**
+     * STL-compatible begin iterator.
+     */
+    OZ_ALWAYS_INLINE
+    Iterator begin()
+    {
+      return Iterator( firstElem );
+    }
+
+    /**
+     * STL-compatible constant end iterator.
+     */
+    OZ_ALWAYS_INLINE
+    CIterator end() const
+    {
+      return CIterator();
+    }
+
+    /**
+     * STL-compatible end iterator.
+     */
+    OZ_ALWAYS_INLINE
+    Iterator end()
+    {
+      return Iterator();
     }
 
     /**

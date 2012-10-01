@@ -45,10 +45,10 @@ class BufferStream
     /// Capacity is always a multiple of `GRANULARITY`.
     static const int GRANULARITY = 4096;
 
-    char*         pos;   ///< Current position.
-    char*         start; ///< Beginning, also pointer to the buffer.
-    const char*   end;   ///< End.
-    Endian::Order order; ///< Stream byte order.
+    char*         streamPos;   ///< Current position.
+    char*         streamBegin; ///< Beginning, also pointer to the buffer.
+    const char*   streamEnd;   ///< End.
+    Endian::Order order;       ///< Stream byte order.
 
   public:
 
@@ -56,7 +56,7 @@ class BufferStream
      * Create an empty stream.
      */
     BufferStream( Endian::Order order_ = Endian::NATIVE ) :
-      pos( nullptr ), start( nullptr ), end( nullptr ), order( order_ )
+      streamPos( nullptr ), streamBegin( nullptr ), streamEnd( nullptr ), order( order_ )
     {}
 
     /**
@@ -64,7 +64,7 @@ class BufferStream
      */
     ~BufferStream()
     {
-      delete[] start;
+      delete[] streamBegin;
     }
 
     /**
@@ -72,26 +72,26 @@ class BufferStream
      */
     BufferStream( const BufferStream& s )
     {
-      int length = int( s.pos - s.start );
-      int size   = int( s.end - s.start );
+      int length = int( s.streamPos - s.streamBegin );
+      int size   = int( s.streamEnd - s.streamBegin );
 
-      start = size == 0 ? nullptr : new char[size];
-      end   = start + size;
-      pos   = start + length;
+      streamBegin = size == 0 ? nullptr : new char[size];
+      streamEnd   = streamBegin + size;
+      streamPos   = streamBegin + length;
       order = s.order;
 
-      aCopy<char>( start, s.start, size );
+      aCopy<char>( streamBegin, s.streamBegin, size );
     }
 
     /**
      * Move constructor, moves buffer.
      */
     BufferStream( BufferStream&& s ) :
-      pos( s.pos ), start( s.start ), end( s.end ), order( s.order )
+      streamPos( s.streamPos ), streamBegin( s.streamBegin ), streamEnd( s.streamEnd ), order( s.order )
     {
-      s.pos   = nullptr;
-      s.start = nullptr;
-      s.end   = nullptr;
+      s.streamPos   = nullptr;
+      s.streamBegin = nullptr;
+      s.streamEnd   = nullptr;
       s.order = Endian::NATIVE;
     }
 
@@ -106,19 +106,19 @@ class BufferStream
         return *this;
       }
 
-      int length = int( s.pos - s.start );
-      int size   = int( s.end - s.start );
+      int length = int( s.streamPos - s.streamBegin );
+      int size   = int( s.streamEnd - s.streamBegin );
 
-      if( int( end - start ) < size ) {
-        delete[] start;
+      if( int( streamEnd - streamBegin ) < size ) {
+        delete[] streamBegin;
 
-        start = new char[size];
-        end   = start + size;
+        streamBegin = new char[size];
+        streamEnd   = streamBegin + size;
       }
 
-      pos = start + length;
+      streamPos = streamBegin + length;
       order = s.order;
-      aCopy<char>( start, s.start, size );
+      aCopy<char>( streamBegin, s.streamBegin, size );
 
       return *this;
     }
@@ -132,16 +132,16 @@ class BufferStream
         return *this;
       }
 
-      delete[] start;
+      delete[] streamBegin;
 
-      pos   = s.pos;
-      start = s.start;
-      end   = s.end;
+      streamPos   = s.streamPos;
+      streamBegin = s.streamBegin;
+      streamEnd   = s.streamEnd;
       order = s.order;
 
-      s.pos   = nullptr;
-      s.start = nullptr;
-      s.end   = nullptr;
+      s.streamPos   = nullptr;
+      s.streamBegin = nullptr;
+      s.streamEnd   = nullptr;
       s.order = Endian::NATIVE;
 
       return *this;
@@ -151,7 +151,7 @@ class BufferStream
      * Create a stream with the given size of the buffer.
      */
     explicit BufferStream( int size ) :
-      pos( new char[size] ), start( pos ), end( start + size ), order( Endian::NATIVE )
+      streamPos( new char[size] ), streamBegin( streamPos ), streamEnd( streamBegin + size ), order( Endian::NATIVE )
     {}
 
     /**
@@ -160,9 +160,9 @@ class BufferStream
     OZ_ALWAYS_INLINE
     InputStream inputStream() const
     {
-      InputStream is( start, end, order );
+      InputStream is( streamBegin, streamEnd, order );
 
-      is.pos = pos;
+      is.streamPos = streamPos;
       return is;
     }
 
@@ -172,9 +172,9 @@ class BufferStream
     OZ_ALWAYS_INLINE
     OutputStream outputStream()
     {
-      OutputStream os( start, end, order );
+      OutputStream os( streamBegin, streamEnd, order );
 
-      os.pos = pos;
+      os.streamPos = streamPos;
       return os;
     }
 
@@ -184,9 +184,9 @@ class BufferStream
     OZ_ALWAYS_INLINE
     int length() const
     {
-      hard_assert( pos <= end );
+      hard_assert( streamPos <= streamEnd );
 
-      return int( pos - start );
+      return int( streamPos - streamBegin );
     }
 
     /**
@@ -195,9 +195,9 @@ class BufferStream
     OZ_ALWAYS_INLINE
     int capacity() const
     {
-      hard_assert( pos <= end );
+      hard_assert( streamPos <= streamEnd );
 
-      return int( end - start );
+      return int( streamEnd - streamBegin );
     }
 
     /**
@@ -206,9 +206,9 @@ class BufferStream
     OZ_ALWAYS_INLINE
     int available() const
     {
-      hard_assert( pos <= end );
+      hard_assert( streamPos <= streamEnd );
 
-      return int( end - pos );
+      return int( streamEnd - streamPos );
     }
 
     /**
@@ -217,40 +217,18 @@ class BufferStream
     OZ_ALWAYS_INLINE
     bool isAvailable() const
     {
-      hard_assert( pos <= end );
+      hard_assert( streamPos <= streamEnd );
 
-      return pos != end;
+      return streamPos != streamEnd;
     }
 
     /**
-     * Constant reference to the `i`-th byte from the beginning of the stream.
-     */
-    OZ_ALWAYS_INLINE
-    const char& operator [] ( int i ) const
-    {
-      hard_assert( uint( i ) < uint( end - start ) );
-
-      return start[i];
-    }
-
-    /**
-     * Reference to the `i`-th byte from the beginning of the stream.
-     */
-    OZ_ALWAYS_INLINE
-    char& operator [] ( int i )
-    {
-      hard_assert( uint( i ) < uint( end - start ) );
-
-      return start[i];
-    }
-
-    /**
-     * Constant Pointer to the beginning of the stream.
+     * Constant pointer to the beginning of the stream.
      */
     OZ_ALWAYS_INLINE
     const char* begin() const
     {
-      return start;
+      return streamBegin;
     }
 
     /**
@@ -259,29 +237,38 @@ class BufferStream
     OZ_ALWAYS_INLINE
     char* begin()
     {
-      return start;
+      return streamBegin;
+    }
+
+    /**
+     * Constant pointer to the beginning of the stream.
+     */
+    OZ_ALWAYS_INLINE
+    const char* end() const
+    {
+      return streamEnd;
     }
 
     /**
      * Pointer to the current position.
      */
     OZ_ALWAYS_INLINE
-    const char* getPos() const
+    const char* pos() const
     {
-      hard_assert( start <= pos && pos <= end );
+      hard_assert( streamBegin <= streamPos && streamPos <= streamEnd );
 
-      return pos;
+      return streamPos;
     }
 
     /**
      * Pointer to the current position.
      */
     OZ_ALWAYS_INLINE
-    char* getPos()
+    char* pos()
     {
-      hard_assert( start <= pos && pos <= end );
+      hard_assert( streamBegin <= streamPos && streamPos <= streamEnd );
 
-      return pos;
+      return streamPos;
     }
 
     /**
@@ -290,9 +277,9 @@ class BufferStream
     OZ_ALWAYS_INLINE
     void setPos( char* newPos )
     {
-      hard_assert( start <= newPos && newPos <= end );
+      hard_assert( streamBegin <= newPos && newPos <= streamEnd );
 
-      pos = newPos;
+      streamPos = newPos;
     }
 
     /**
@@ -301,7 +288,7 @@ class BufferStream
     OZ_ALWAYS_INLINE
     void reset()
     {
-      pos = start;
+      streamPos = streamBegin;
     }
 
     /**
@@ -323,6 +310,28 @@ class BufferStream
     }
 
     /**
+     * Constant reference to the `i`-th byte from the beginning of the stream.
+     */
+    OZ_ALWAYS_INLINE
+    const char& operator [] ( int i ) const
+    {
+      hard_assert( uint( i ) < uint( streamEnd - streamBegin ) );
+
+      return streamBegin[i];
+    }
+
+    /**
+     * Reference to the `i`-th byte from the beginning of the stream.
+     */
+    OZ_ALWAYS_INLINE
+    char& operator [] ( int i )
+    {
+      hard_assert( uint( i ) < uint( streamEnd - streamBegin ) );
+
+      return streamBegin[i];
+    }
+
+    /**
      * Move position pointer for `count` bytes forward.
      *
      * @return Pointer to the beginning of the skipped bytes.
@@ -330,22 +339,22 @@ class BufferStream
     OZ_ALWAYS_INLINE
     char* forward( int count )
     {
-      char* oldPos = pos;
-      pos += count;
+      char* oldPos = streamPos;
+      streamPos += count;
 
-      if( pos > end ) {
-        int length  = int( pos - start );
-        int size    = int( end - start );
+      if( streamPos > streamEnd ) {
+        int length  = int( streamPos - streamBegin );
+        int size    = int( streamEnd - streamBegin );
         int newSize = size == 0 ? GRANULARITY : 2 * size;
 
         if( newSize < length + count ) {
           newSize = ( ( length + count - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
         }
 
-        start  = aReallocate<char>( start, size, newSize );
-        end    = start + newSize;
-        pos    = start + length;
-        oldPos = pos - count;
+        streamBegin  = aReallocate<char>( streamBegin, size, newSize );
+        streamEnd    = streamBegin + newSize;
+        streamPos    = streamBegin + length;
+        oldPos = streamPos - count;
       }
       return oldPos;
     }
@@ -726,16 +735,16 @@ class BufferStream
      */
     const char* readString()
     {
-      const char* begin = pos;
+      const char* begin = streamPos;
 
-      while( pos < end && *pos != '\0' ) {
-        ++pos;
+      while( streamPos < streamEnd && *streamPos != '\0' ) {
+        ++streamPos;
       }
-      if( pos == end ) {
+      if( streamPos == streamEnd ) {
         OZ_ERROR( "End of buffer reached while looking for the end of a string." );
       }
 
-      ++pos;
+      ++streamPos;
       return begin;
     }
 
@@ -1072,15 +1081,16 @@ class BufferStream
      */
     String readLine()
     {
-      const char* begin = pos;
+      const char* begin = streamPos;
 
-      while( pos < end && *pos != '\n' && *pos != '\r' ) {
-        ++pos;
+      while( streamPos < streamEnd && *streamPos != '\n' && *streamPos != '\r' ) {
+        ++streamPos;
       }
 
-      int length = int( pos - begin );
+      int length = int( streamPos - begin );
 
-      pos += ( pos < end ) + ( pos < end - 1 && pos[0] == '\r' && pos[1] == '\n' );
+      streamPos += ( streamPos < streamEnd ) +
+                   ( streamPos < streamEnd - 1 && streamPos[0] == '\r' && streamPos[1] == '\n' );
       return String( begin, length );
     }
 
@@ -1119,11 +1129,11 @@ class BufferStream
      */
     void deallocate()
     {
-      delete[] start;
+      delete[] streamBegin;
 
-      pos   = nullptr;
-      start = nullptr;
-      end   = nullptr;
+      streamPos   = nullptr;
+      streamBegin = nullptr;
+      streamEnd   = nullptr;
     }
 
 };

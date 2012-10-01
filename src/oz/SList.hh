@@ -106,6 +106,42 @@ class SList
     }
 
     /**
+     * STL-compatible constant begin iterator.
+     */
+    OZ_ALWAYS_INLINE
+    const Elem* begin() const
+    {
+      return data;
+    }
+
+    /**
+     * STL-compatible begin iterator.
+     */
+    OZ_ALWAYS_INLINE
+    Elem* begin()
+    {
+      return data;
+    }
+
+    /**
+     * STL-compatible constant end iterator.
+     */
+    OZ_ALWAYS_INLINE
+    const Elem* end() const
+    {
+      return data + count;
+    }
+
+    /**
+     * STL-compatible end iterator.
+     */
+    OZ_ALWAYS_INLINE
+    Elem* end()
+    {
+      return data + count;
+    }
+
+    /**
      * Number of elements.
      */
     OZ_ALWAYS_INLINE

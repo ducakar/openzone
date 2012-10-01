@@ -59,11 +59,11 @@ namespace oz
  *
  * Notes:
  * @li Copy operations do not copy elements, to make a copy of a chain including its elements, use
- * `clone()` instead.
+ *     `clone()` instead.
  * @li Removal operations (except for `free()` do not actually remove elements but only decouples
- * them from the chain.
+ *     them from the chain.
  * @li `next[INDEX]` pointer is not cleared when an element is removed from the chain, it may still
- * point to elements in the chain or to invalid locations.
+ *     point to elements in the chain or to invalid locations.
  */
 template <class Elem, int INDEX = 0>
 class Chain
@@ -108,24 +108,6 @@ class Chain
 
           elem = elem->next[INDEX];
           return *this;
-        }
-
-        /**
-         * STL-compatible begin iterator.
-         */
-        OZ_ALWAYS_INLINE
-        ChainIterator begin() const
-        {
-          return *this;
-        }
-
-        /**
-         * STL-compatible end iterator.
-         */
-        OZ_ALWAYS_INLINE
-        ChainIterator end() const
-        {
-          return ChainIterator();
         }
 
     };
@@ -241,6 +223,42 @@ class Chain
     Iterator iter() const
     {
       return Iterator( firstElem );
+    }
+
+    /**
+     * STL-compatible constant begin iterator.
+     */
+    OZ_ALWAYS_INLINE
+    CIterator begin() const
+    {
+      return CIterator( firstElem );
+    }
+
+    /**
+     * STL-compatible begin iterator.
+     */
+    OZ_ALWAYS_INLINE
+    Iterator begin()
+    {
+      return Iterator( firstElem );
+    }
+
+    /**
+     * STL-compatible constant end iterator.
+     */
+    OZ_ALWAYS_INLINE
+    CIterator end() const
+    {
+      return CIterator();
+    }
+
+    /**
+     * STL-compatible end iterator.
+     */
+    OZ_ALWAYS_INLINE
+    Iterator end()
+    {
+      return Iterator();
     }
 
     /**

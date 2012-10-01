@@ -90,24 +90,6 @@ class ArrayIterator : public IteratorBase<Elem>
       return *this;
     }
 
-    /**
-     * STL-compatible begin iterator.
-     */
-    OZ_ALWAYS_INLINE
-    Elem* begin() const
-    {
-      return elem;
-    }
-
-    /**
-     * STL-compatible end iterator.
-     */
-    OZ_ALWAYS_INLINE
-    Elem* end() const
-    {
-      return past;
-    }
-
 };
 
 #if defined( OZ_ECLIPSE ) || ( defined( OZ_GCC ) && OZ_GCC < 407 )

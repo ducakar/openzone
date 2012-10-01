@@ -58,15 +58,11 @@ You may also want to set several options when configuring CMake build system:
   Vec3 and Point classes are a bit larger (4 floats v. 3 floats) and there are lots of conversions
   between a single float and a SIMD register required in OpenZone code.
 
-* `OZ_JNI`: Build as a JNI library, so it can be started from a Java virtual machine.
-
 * `OZ_GL_ES`: Use OpenGL ES 2.0 API. Always enabled in NaCl platform, on other platforms it will
   merely use GL ES headers and functions set, it will still initialise OpenGL.
 
 * `OZ_NONFREE`: Enable support for decoding MP3 and AAC formats and building textures using S3
   texture compression. Requires libmad, faad and libsquish libraries.
-
-* `OZ_ESPEAK`: Enable text-to-speech. Requires eSpeak library.
 
 * `OZ_STANDALONE`: This only affects behaviour of "`make install`". It also installs dependencies
   from support directory, game data archives found in `share/openzone`, info files etc. This is

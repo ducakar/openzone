@@ -137,24 +137,6 @@ class HashSet
           return *this;
         }
 
-        /**
-         * STL-compatible begin iterator.
-         */
-        OZ_ALWAYS_INLINE
-        HashIterator begin() const
-        {
-          return *this;
-        }
-
-        /**
-         * STL-compatible end iterator.
-         */
-        OZ_ALWAYS_INLINE
-        HashIterator end() const
-        {
-          return HashIterator();
-        }
-
     };
 
   public:
@@ -359,6 +341,42 @@ class HashSet
     Iterator iter() const
     {
       return Iterator( data );
+    }
+
+    /**
+     * STL-compatible constant begin iterator.
+     */
+    OZ_ALWAYS_INLINE
+    CIterator begin() const
+    {
+      return CIterator( data );
+    }
+
+    /**
+     * STL-compatible begin iterator.
+     */
+    OZ_ALWAYS_INLINE
+    Iterator begin()
+    {
+      return Iterator( data );
+    }
+
+    /**
+     * STL-compatible constant end iterator.
+     */
+    OZ_ALWAYS_INLINE
+    CIterator end() const
+    {
+      return CIterator();
+    }
+
+    /**
+     * STL-compatible end iterator.
+     */
+    OZ_ALWAYS_INLINE
+    Iterator end()
+    {
+      return Iterator();
     }
 
     /**

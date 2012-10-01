@@ -50,7 +50,7 @@ class Map
 {
   private:
 
-    /// Granularity for automatic storage allocations and `trim()`.
+    /// Granularity for automatic storage allocations.
     static const int GRANULARITY = 8;
 
   public:
@@ -239,6 +239,42 @@ class Map
     Iterator iter() const
     {
       return Iterator( data, data + count );
+    }
+
+    /**
+     * STL-compatible constant begin iterator.
+     */
+    OZ_ALWAYS_INLINE
+    const Elem* begin() const
+    {
+      return data;
+    }
+
+    /**
+     * STL-compatible begin iterator.
+     */
+    OZ_ALWAYS_INLINE
+    Elem* begin()
+    {
+      return data;
+    }
+
+    /**
+     * STL-compatible constant end iterator.
+     */
+    OZ_ALWAYS_INLINE
+    const Elem* end() const
+    {
+      return data + count;
+    }
+
+    /**
+     * STL-compatible end iterator.
+     */
+    OZ_ALWAYS_INLINE
+    Elem* end()
+    {
+      return data + count;
     }
 
     /**
@@ -504,6 +540,17 @@ class Map
     }
 
     /**
+     * Trim capacity to the current number of elements.
+     */
+    void trim()
+    {
+      if( count < size ) {
+        size = count;
+        data = aReallocate<Elem>( data, count, size );
+      }
+    }
+
+    /**
      * Clear the map.
      */
     void clear()
@@ -546,19 +593,6 @@ class Map
 
       data = nullptr;
       size = 0;
-    }
-
-    /**
-     * Trim map capacity to the least multiple of `GRANULARITY` that can hold all elements.
-     */
-    void trim()
-    {
-      int newSize = ( ( count - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
-
-      if( newSize < size ) {
-        size = newSize;
-        data = aReallocate<Elem>( data, count, size );
-      }
     }
 
 };

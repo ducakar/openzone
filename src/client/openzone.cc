@@ -27,7 +27,7 @@
 #include <client/Client.hh>
 #include <client/NaCl.hh>
 
-#if defined( OZ_JNI )
+#if defined( __ANDROID__ )
 
 #include <jni.h>
 

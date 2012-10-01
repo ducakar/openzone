@@ -24,7 +24,6 @@
  * @file oz/Quat.cc
  */
 
-#define OZ_SIMD_MATH
 #include "Quat.hh"
 
 namespace oz

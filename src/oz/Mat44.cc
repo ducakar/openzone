@@ -24,7 +24,6 @@
  * @file oz/Mat44.cc
  */
 
-#define OZ_SIMD_MATH
 #include "Mat44.hh"
 
 namespace oz

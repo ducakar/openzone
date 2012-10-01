@@ -31,7 +31,7 @@
 #include "common.hh"
 
 /**
- * @def OZ_STATIC_POOL_ALLOC( pool )
+ * @def OZ_STATIC_POOL_ALLOC
  * Define overloaded `new` and `delete` for a class that use the given pool.
  *
  * As `new`/`delete` are static functions so has to be the given pool. The derived classes also need
@@ -45,7 +45,7 @@
   void  operator delete ( void*, std::nothrow_t& ) noexcept = delete;
 
 /**
- * @def OZ_PLACEMENT_POOL_ALLOC( Type, SIZE )
+ * @def OZ_PLACEMENT_POOL_ALLOC
  * Define placement `new` for allocation from a pool and disable non-placement `new` and `delete`
  * for the class.
  *

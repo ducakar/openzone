@@ -5,7 +5,7 @@ add_library( client STATIC
   `echo *.{hh,cc} ui/*.{hh,cc} | sed 's/ /\n  /g' | grep -v 'openzone\.cc'` )
 use_pch( client pch )
 
-if( OZ_JNI )
+if( ANDROID )
   add_library( openzone SHARED openzone.cc )
 else()
   add_executable( openzone openzone.cc )

@@ -147,7 +147,7 @@ static void readLua( File* file )
     switch( state ) {
       case NORMAL: {
         if( last[0] == '(' ) {
-          if( is.length() >= 10 && aEquals( is.getPos() - 10, "ozGettext", 9 ) ) {
+          if( is.length() >= 10 && aEquals( is.pos() - 10, "ozGettext", 9 ) ) {
             inGettext = true;
             gettextLineNum = lineNum;
           }

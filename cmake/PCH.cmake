@@ -27,8 +27,8 @@ int main( int, char** ) { return 0; }
 
 macro( add_pch _pchTarget _inputHeader _inputModule )
   # Extract CMAKE_CXX_FLAGS and CMAKE_CXX_FLAGS_XXX for the current configuration XXX.
-  string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" _build_type_flags_var )
-  set( _flags "${CMAKE_CXX_FLAGS} ${${_build_type_flags_var}}" )
+  string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" _buildTypeFlagsVar )
+  set( _flags "${CMAKE_CXX_FLAGS} ${${_buildTypeFlagsVar}}" )
 
   # Convert string of space separated flags into a list.
   separate_arguments( _flags )

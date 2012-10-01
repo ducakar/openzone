@@ -159,7 +159,7 @@ void JSON::Parser::Position::back()
 {
   hard_assert( istream->length() > 0 );
 
-  istream->setPos( istream->getPos() - 1 );
+  istream->setPos( istream->pos() - 1 );
 }
 
 OZ_HIDDEN

@@ -24,12 +24,22 @@
  * @file oz/Point.cc
  */
 
-#define OZ_SIMD_MATH
-#include "Point.hh"
+#include "common.hh"
 
 namespace oz
 {
 
-const Point Point::ORIGIN = Point( 0.0f, 0.0f, 0.0f );
+// Declare dummy class binary compatible with both SIMD and non-SIMD versions of Point class.
+struct OZ_ALIGNED( 16 ) Point
+{
+  float x;
+  float y;
+  float z;
+  float w;
+
+  static const Point ORIGIN;
+};
+
+const Point Point::ORIGIN = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 }
