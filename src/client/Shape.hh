@@ -49,7 +49,7 @@ class Shape
 
   public:
 
-    Shape();
+    explicit Shape();
 
     void bind() const;
     void unbind() const;

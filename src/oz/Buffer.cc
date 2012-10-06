@@ -31,8 +31,8 @@
 namespace oz
 {
 
-Buffer::Buffer() :
-  data( nullptr ), size( 0 )
+Buffer::Buffer( int size_ ) :
+  data( size_ == 0 ? nullptr : new char[size_] ), size( size_ )
 {}
 
 Buffer::~Buffer()
@@ -87,10 +87,6 @@ Buffer& Buffer::operator = ( Buffer&& b )
 
   return *this;
 }
-
-Buffer::Buffer( int size_ ) :
-  data( new char[size_] ), size( size_ )
-{}
 
 void Buffer::allocate( int size_ )
 {

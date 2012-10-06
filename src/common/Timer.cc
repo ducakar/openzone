@@ -31,8 +31,6 @@ namespace common
 
 const float Timer::TICK_TIME = 1.0f / float( TICKS_PER_SEC );
 
-Timer timer;
-
 Timer::Timer()
 {
   reset();
@@ -77,6 +75,8 @@ void Timer::drop( uint micros_ )
 {
   runMicros += micros_;
 }
+
+Timer timer;
 
 }
 }

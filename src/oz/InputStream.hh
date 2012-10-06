@@ -54,20 +54,11 @@ class InputStream
   public:
 
     /**
-     * Create uninitialised instance.
-     */
-    OZ_ALWAYS_INLINE
-    InputStream() :
-      streamPos( nullptr ), streamBegin( nullptr ), streamEnd( nullptr ), order( Endian::NATIVE )
-    {}
-
-    /**
      * Create a stream with the given beginning and the end.
      */
-    OZ_ALWAYS_INLINE
-    explicit InputStream( const char* start_, const char* end_,
+    explicit InputStream( const char* start = nullptr, const char* end = nullptr,
                           Endian::Order order_ = Endian::NATIVE ) :
-      streamPos( start_ ), streamBegin( start_ ), streamEnd( end_ ), order( order_ )
+      streamPos( start ), streamBegin( start ), streamEnd( end ), order( order_ )
     {}
 
     /**

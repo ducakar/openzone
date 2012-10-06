@@ -44,8 +44,6 @@ const float FloraModule::DENSITY    = 0.04f;
 const float FloraModule::SPACING    = 16.0f;
 const float FloraModule::TREE_DEPTH = 0.75f;
 
-FloraModule floraModule;
-
 void FloraModule::addTree( float x, float y )
 {
   Point pos = Point( x, y, orbis.terra.height( x, y ) );
@@ -181,6 +179,8 @@ int FloraModule::ozFloraSeed( lua_State* l )
   floraModule.seed();
   return 0;
 }
+
+FloraModule floraModule;
 
 }
 }

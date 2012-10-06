@@ -32,8 +32,6 @@ namespace oz
 namespace client
 {
 
-Input input;
-
 const char* const Input::KEY_NAMES[] = {
   "None",
 
@@ -617,6 +615,8 @@ void Input::free()
 
   Log::printEnd( " OK" );
 }
+
+Input input;
 
 }
 }

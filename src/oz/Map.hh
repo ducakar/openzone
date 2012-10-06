@@ -120,10 +120,10 @@ class Map
   public:
 
     /**
-     * Create an empty map.
+     * Create an empty map with the given initial capacity.
      */
-    Map() :
-      data( nullptr ), count( 0 ), size( 0 )
+    explicit Map( int size_ = 0 ) :
+      data( size_ == 0 ? nullptr : new Elem[size_] ), count( 0 ), size( size_ )
     {}
 
     /**
@@ -199,13 +199,6 @@ class Map
 
       return *this;
     }
-
-    /**
-     * Create an empty map with the given initial capacity.
-     */
-    explicit Map( int size_ ) :
-      data( new Elem[size_] ), count( 0 ), size( size_ )
-    {}
 
     /**
      * True iff respective elements are equal.

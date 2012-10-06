@@ -98,7 +98,7 @@ class HudArea : public Area
 
   public:
 
-    HudArea();
+    explicit HudArea();
     ~HudArea() override;
 
 };

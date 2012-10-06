@@ -61,7 +61,7 @@ class Synapse
 
     Mode mode;
 
-    Synapse();
+    explicit Synapse();
 
     void use( Bot* user, Object* target );
     void trigger( Entity* target );

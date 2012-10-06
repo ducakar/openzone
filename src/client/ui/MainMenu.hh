@@ -50,7 +50,7 @@ class MainMenu : public Area
 
   public:
 
-    MainMenu();
+    explicit MainMenu();
 
 };
 

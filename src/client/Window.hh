@@ -76,7 +76,7 @@ class Window
     bool hasFocus;
     bool hasGrab;
 
-    Window();
+    explicit Window();
 
     void warpMouse();
     void swapBuffers();

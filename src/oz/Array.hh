@@ -64,7 +64,7 @@ class Array
     /**
      * Create uninitialised array.
      */
-    Array() = default;
+    explicit Array() = default;
 
     /**
      * Initialise form a C++ array.

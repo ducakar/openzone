@@ -31,8 +31,6 @@ namespace oz
 namespace client
 {
 
-QuestList questList;
-
 void QuestList::add( const char* title, const char* description, const Point& place,
                      Quest::State state )
 {
@@ -98,6 +96,8 @@ void QuestList::unload()
   quests.clear();
   quests.deallocate();
 }
+
+QuestList questList;
 
 }
 }

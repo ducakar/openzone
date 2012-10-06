@@ -53,7 +53,7 @@ class CreditsMenu : public Area
 
   public:
 
-    CreditsMenu();
+    explicit CreditsMenu();
 
 };
 

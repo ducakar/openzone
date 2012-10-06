@@ -94,10 +94,10 @@ class List
   public:
 
     /**
-     * Create an empty list.
+     * Create an empty list with the given initial capacity.
      */
-    List() :
-      data( nullptr ), count( 0 ), size( 0 )
+    explicit List( int size_ = 0 ) :
+      data( size_ == 0 ? nullptr : new Elem[size_] ), count( 0 ), size( size_ )
     {}
 
     /**
@@ -173,13 +173,6 @@ class List
 
       return *this;
     }
-
-    /**
-     * Create an empty list with the given initial capacity.
-     */
-    explicit List( int size_ ) :
-      data( new Elem[size_] ), count( 0 ), size( size_ )
-    {}
 
     /**
      * True iff respective elements are equal.

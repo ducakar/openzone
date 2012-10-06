@@ -302,6 +302,19 @@ class String
     }
 
     /**
+     * Create string form the given C string with a known length.
+     *
+     * @param s
+     * @param count length in bytes without the terminating null character.
+     */
+    String( const char* s, int count );
+
+    /**
+     * Create string form the given C string.
+     */
+    String( const char* s );
+
+    /**
      * Destructor.
      */
     ~String();
@@ -327,19 +340,6 @@ class String
      * Move operator.
      */
     String& operator = ( String&& s );
-
-    /**
-     * Create string form the given C string with a known length.
-     *
-     * @param s
-     * @param count length in bytes without the terminating null character.
-     */
-    String( const char* s, int count );
-
-    /**
-     * Create string form the given C string.
-     */
-    String( const char* s );
 
     /**
      * Create a string in sprintf-like way.
@@ -596,6 +596,7 @@ class String
     /**
      * First character or null character if empty string.
      */
+    OZ_ALWAYS_INLINE
     char first() const
     {
       return buffer[0];
@@ -604,6 +605,7 @@ class String
     /**
      * Last character or null character if empty string.
      */
+    OZ_ALWAYS_INLINE
     char last() const
     {
       return count == 0 ? '\0' : buffer[count - 1];

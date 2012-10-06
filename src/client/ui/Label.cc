@@ -55,6 +55,27 @@ Label::Label() :
   glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
 }
 
+Label::Label( int x_, int y_, int align_, Font::Type font_, const char* s, ... ) :
+  offsetX( 0 ), offsetY( 0 ), activeTexId( 0 ), hasChanged( false )
+{
+  glGenTextures( 2, texIds );
+
+  glBindTexture( GL_TEXTURE_2D, texIds[0] );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
+  glBindTexture( GL_TEXTURE_2D, texIds[1] );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
+  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
+
+  va_list ap;
+  va_start( ap, s );
+  vset( x_, y_, align_, font_, s, ap );
+  va_end( ap );
+}
+
 Label::~Label()
 {
   glDeleteTextures( 2, texIds );
@@ -124,27 +145,6 @@ Label& Label::operator = ( Label&& l )
   l.hasChanged  = false;
 
   return *this;
-}
-
-Label::Label( int x_, int y_, int align_, Font::Type font_, const char* s, ... ) :
-  offsetX( 0 ), offsetY( 0 ), activeTexId( 0 ), hasChanged( false )
-{
-  glGenTextures( 2, texIds );
-
-  glBindTexture( GL_TEXTURE_2D, texIds[0] );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-  glBindTexture( GL_TEXTURE_2D, texIds[1] );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-  glBindTexture( GL_TEXTURE_2D, shader.defaultTexture );
-
-  va_list ap;
-  va_start( ap, s );
-  vset( x_, y_, align_, font_, s, ap );
-  va_end( ap );
 }
 
 void Label::vset( int x_, int y_, int align_, Font::Type font_, const char* s, va_list ap )

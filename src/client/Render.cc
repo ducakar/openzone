@@ -43,8 +43,6 @@ namespace oz
 namespace client
 {
 
-Render render;
-
 const float Render::WIDE_CULL_FACTOR       = 6.0f;
 const float Render::OBJECT_VISIBILITY_COEF = 0.004f;
 const float Render::FRAG_VISIBILITY_RANGE2 = 150.0f*150.0f;
@@ -74,7 +72,7 @@ struct Render::DrawEntry
   };
 
   OZ_ALWAYS_INLINE
-  DrawEntry() = default;
+  explicit DrawEntry() = default;
 
   OZ_ALWAYS_INLINE
   explicit DrawEntry( float distance_, const Struct* str_ ) :
@@ -710,6 +708,8 @@ void Render::free()
   Log::unindent();
   Log::println( "}" );
 }
+
+Render render;
 
 }
 }

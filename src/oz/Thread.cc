@@ -75,7 +75,7 @@ static void initNameKey()
 static struct NameKeyInitialiser
 {
   OZ_HIDDEN
-  NameKeyInitialiser()
+  explicit NameKeyInitialiser()
   {
     initNameKey();
   }

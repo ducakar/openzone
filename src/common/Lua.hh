@@ -59,7 +59,7 @@ class Lua
     /**
      * Default constructor, clears `l` to `nullptr`.
      */
-    Lua();
+    explicit Lua();
 
     /**
      * Read serialised %Lua variable and push it on global stack (recursively for tables).

@@ -50,7 +50,7 @@ class DebugFrame : public Frame
 
   public:
 
-    DebugFrame();
+    explicit DebugFrame();
 
 };
 

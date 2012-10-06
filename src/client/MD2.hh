@@ -96,7 +96,7 @@ class MD2
 
       public:
 
-        AnimState( const Bot* bot );
+        explicit AnimState( const Bot* bot );
 
         void advance();
     };

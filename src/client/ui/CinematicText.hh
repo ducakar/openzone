@@ -46,7 +46,7 @@ class CinematicText : public Area
 
   public:
 
-    CinematicText();
+    explicit CinematicText();
 
     void set( const char* title );
 

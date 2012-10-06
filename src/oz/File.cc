@@ -129,8 +129,8 @@ static bool operator < ( const File& a, const File& b )
   return String::compare( a.path(), b.path() ) < 0;
 }
 
-File::File() :
-  fileType( MISSING ), fileSize( -1 ), fileTime( 0 ), data( nullptr )
+File::File( const char* path ) :
+  filePath( path ), fileType( MISSING ), fileSize( -1 ), fileTime( 0 ), data( nullptr )
 {
 #ifdef __native_client__
   descriptor = new Descriptor( this );
@@ -208,14 +208,6 @@ File& File::operator = ( File&& file )
   file.data     = nullptr;
 
   return *this;
-}
-
-File::File( const char* path ) :
-  filePath( path ), fileType( MISSING ), fileSize( -1 ), fileTime( 0 ), data( nullptr )
-{
-#ifdef __native_client__
-  descriptor = new Descriptor( this );
-#endif
 }
 
 void File::setPath( const char* path )

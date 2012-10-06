@@ -53,7 +53,7 @@ class Semaphore
     /**
      * Create uninitialised instance.
      */
-    Semaphore() :
+    explicit Semaphore() :
       descriptor( nullptr )
     {}
 

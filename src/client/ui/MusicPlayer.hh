@@ -58,7 +58,7 @@ class MusicPlayer : public Frame
 
   public:
 
-    MusicPlayer();
+    explicit MusicPlayer();
     ~MusicPlayer() override;
 
 };

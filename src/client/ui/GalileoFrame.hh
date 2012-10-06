@@ -72,7 +72,7 @@ class GalileoFrame : public Frame
 
   public:
 
-    GalileoFrame();
+    explicit GalileoFrame();
     ~GalileoFrame() override;
 
     void setMaximised( bool doMaximise );

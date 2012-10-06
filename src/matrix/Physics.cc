@@ -31,8 +31,6 @@ namespace oz
 namespace matrix
 {
 
-Physics physics;
-
 const float Physics::FLOOR_NORMAL_Z          =  0.60f;
 const float Physics::MOVE_BOUNCE             =  EPSILON;
 const float Physics::ENTITY_BOND_G_RATIO     =  0.10f;
@@ -600,6 +598,8 @@ void Physics::updateObj( Dynamic* dyn_ )
     }
   }
 }
+
+Physics physics;
 
 }
 }

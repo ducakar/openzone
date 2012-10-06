@@ -33,8 +33,6 @@ namespace oz
 namespace client
 {
 
-Lua lua;
-
 void Lua::staticCall( const char* functionName )
 {
   ms.obj      = nullptr;
@@ -631,6 +629,8 @@ void Lua::free()
 
   Log::printEnd( " OK" );
 }
+
+Lua lua;
 
 }
 }

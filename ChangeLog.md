@@ -2,7 +2,8 @@
 
 - oz
     * null replaced by nullptr keyword
-    * improved iterator classes: much less code duplication, compatible with range-based for-loop
+    * improved iterator classes: much less code duplication
+    * STL-like begin() and end() members on containers
     * new Set template class: Map with arbitrary elements instead of key-value pairs
     * HashIndex and HashString merged into new HashMap template class with an arbitrary key type
     * new HashSet template class: hashtable of key-only elements instead of key-value pairs

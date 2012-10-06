@@ -74,7 +74,7 @@ namespace oz
 template <class Elem, int BLOCK_SIZE = 256>
 class Pool
 {
-  static_assert( BLOCK_SIZE >= 2, "Pool block size must be at least 2" );
+  static_assert( BLOCK_SIZE > 0, "Pool block size must be at least 1" );
 
   private:
 
@@ -122,7 +122,7 @@ class Pool
     /**
      * Create an empty pool, storage is allocated when the first allocation is made.
      */
-    Pool() :
+    explicit Pool() :
       firstBlock( nullptr ), freeSlot( nullptr ), size( 0 ), count( 0 )
     {}
 

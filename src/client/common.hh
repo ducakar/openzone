@@ -45,7 +45,7 @@ struct TexCoord
   float v;
 
   OZ_ALWAYS_INLINE
-  TexCoord() = default;
+  explicit TexCoord() = default;
 
   OZ_ALWAYS_INLINE
   explicit TexCoord( float u_, float v_ ) :

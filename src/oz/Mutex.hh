@@ -50,7 +50,7 @@ class Mutex
     /**
      * Create uninitialised instance.
      */
-    Mutex() :
+    explicit Mutex() :
       descriptor( nullptr )
     {}
 

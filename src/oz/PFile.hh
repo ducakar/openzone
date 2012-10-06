@@ -49,9 +49,9 @@ class PFile
   public:
 
     /**
-     * Create an empty instance (path is set to "").
+     * Create an instance for the given path.
      */
-    PFile();
+    explicit PFile( const char* path = nullptr );
 
     /**
      * Destructor.
@@ -81,11 +81,6 @@ class PFile
      * Move operator, transfers mapped memory.
      */
     PFile& operator = ( PFile&& file );
-
-    /**
-     * Create an instance for the given path.
-     */
-    explicit PFile( const char* path );
 
     /**
      * %Set a new file path.

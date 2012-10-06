@@ -88,7 +88,7 @@ class DChain
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        ChainIterator() :
+        explicit ChainIterator() :
           IteratorBase<IterElem>( nullptr )
         {}
 
@@ -136,7 +136,7 @@ class DChain
     /**
      * Create an empty chain.
      */
-    DChain() :
+    explicit DChain() :
       firstElem( nullptr ), lastElem( nullptr )
     {}
 

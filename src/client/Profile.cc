@@ -36,8 +36,6 @@ namespace oz
 namespace client
 {
 
-Profile profile;
-
 void Profile::init()
 {
   File profileFile( config["dir.config"].asString() + "/profile.json" );
@@ -141,6 +139,8 @@ void Profile::free()
   items.clear();
   items.deallocate();
 }
+
+Profile profile;
 
 }
 }

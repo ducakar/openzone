@@ -46,7 +46,7 @@ class LoadingArea : public Area
 
     Label status;
 
-    LoadingArea();
+    explicit LoadingArea();
 
 };
 

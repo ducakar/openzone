@@ -62,7 +62,7 @@ class QuestFrame : public Frame
 
   public:
 
-    QuestFrame();
+    explicit QuestFrame();
 
     void clear();
 

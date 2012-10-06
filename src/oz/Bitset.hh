@@ -52,11 +52,22 @@ class Bitset
   public:
 
     /**
-     * Create a new bitset without allocating any space.
+     * Allocate a new bitset that holds at least `nBits` bits.
+     *
+     * The size of `data` array is adjusted to the smallest unit number that can hold the requested
+     * number of bits. No memory is allocated if `nBits == 0`.
      */
-    Bitset() :
-      data( nullptr ), size( 0 )
-    {}
+    explicit Bitset( int nBits = 0 )
+    {
+      if( nBits == 0 ) {
+        data = nullptr;
+        size = 0;
+      }
+      else {
+        size = ( nBits - 1 ) / ULONG_BITSIZE + 1;
+        data = new ulong[size];
+      }
+    }
 
     /**
      * Destructor.
@@ -126,24 +137,6 @@ class Bitset
       b.size = 0;
 
       return *this;
-    }
-
-    /**
-     * Allocate a new bitset that holds at least `nBits` bits.
-     *
-     * The size of `data` array is adjusted to the smallest unit number that can hold the requested
-     * number of bits.
-     */
-    explicit Bitset( int nBits )
-    {
-      if( nBits == 0 ) {
-        data = nullptr;
-        size = 0;
-      }
-      else {
-        size = ( nBits - 1 ) / ULONG_BITSIZE + 1;
-        data = new ulong[size];
-      }
     }
 
     /**

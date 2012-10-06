@@ -62,11 +62,20 @@ class DArray
   public:
 
     /**
-     * Create an empty array.
+     * Create an array with the given size.
      */
-    DArray() :
-      data( nullptr ), count( 0 )
+    explicit DArray( int count_ = 0 ) :
+      data( count_ == 0 ? nullptr : new Elem[count_] ), count( count_ )
     {}
+
+    /**
+     * Initialise from a C++ array.
+     */
+    explicit DArray( const Elem* array, int count_ ) :
+      data( count_ == 0 ? nullptr : new Elem[count_] ), count( count_ )
+    {
+      aCopy<Elem>( data, array, count );
+    }
 
     /**
      * Destructor.
@@ -136,22 +145,6 @@ class DArray
       a.count = 0;
 
       return *this;
-    }
-
-    /**
-     * Create an array with the given size.
-     */
-    explicit DArray( int count_ ) :
-      data( count_ == 0 ? nullptr : new Elem[count_] ), count( count_ )
-    {}
-
-    /**
-     * Initialise from a C++ array.
-     */
-    explicit DArray( const Elem* array, int count_ ) :
-      data( count_ == 0 ? nullptr : new Elem[count_] ), count( count_ )
-    {
-      aCopy<Elem>( data, array, count );
     }
 
     /**

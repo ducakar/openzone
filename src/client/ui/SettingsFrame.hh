@@ -47,7 +47,7 @@ class SettingsFrame : public Frame
 
   public:
 
-    SettingsFrame();
+    explicit SettingsFrame();
 
 };
 

@@ -51,7 +51,7 @@ class InfoFrame : public Frame
 
   public:
 
-    InfoFrame();
+    explicit InfoFrame();
 
 };
 

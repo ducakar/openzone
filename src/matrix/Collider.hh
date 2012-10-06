@@ -137,7 +137,7 @@ class Collider
     int mask; /// Only objects whose `Object::flags` matches that mask are collided against.
     Hit hit;  /// Collision feedback data.
 
-    Collider();
+    explicit Collider();
 
     bool overlaps( const Point& point, const Object* exclObj = nullptr );
     bool overlaps( const AABB& aabb, const Object* exclObj = nullptr );

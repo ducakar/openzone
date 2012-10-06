@@ -39,8 +39,6 @@ namespace oz
 namespace client
 {
 
-Window window;
-
 #ifdef __native_client__
 
 void Window::flushCompleteCallback( void* data, int )
@@ -365,6 +363,8 @@ void Window::free()
 
 #endif
 }
+
+Window window;
 
 }
 }

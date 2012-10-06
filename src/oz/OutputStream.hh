@@ -50,26 +50,16 @@ class OutputStream
   public:
 
     /**
-     * Create uninitialised instance.
-     */
-    OZ_ALWAYS_INLINE
-    OutputStream() :
-      streamPos( nullptr ), streamBegin( nullptr ), streamEnd( nullptr ), order( Endian::NATIVE )
-    {}
-
-    /**
      * Create a stream with the given beginning and the end.
      */
-    OZ_ALWAYS_INLINE
-    explicit OutputStream( char* start_, const char* end_,
+    explicit OutputStream( char* start = nullptr, const char* end = nullptr,
                            Endian::Order order_ = Endian::NATIVE ) :
-      streamPos( start_ ), streamBegin( start_ ), streamEnd( end_ ), order( order_ )
+      streamPos( start ), streamBegin( start ), streamEnd( end ), order( order_ )
     {}
 
     /**
      * Create `InputStream` for reading this stream (position is not reset).
      */
-    OZ_ALWAYS_INLINE
     InputStream inputStream() const
     {
       InputStream is( streamBegin, streamEnd, order );

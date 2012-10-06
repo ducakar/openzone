@@ -36,8 +36,6 @@ namespace oz
 namespace matrix
 {
 
-Matrix matrix;
-
 // default 10000.0f: 100 m/s
 const float Matrix::MAX_VELOCITY2 = 1000000.0f;
 
@@ -247,6 +245,8 @@ void Matrix::free()
   Log::unindent();
   Log::println( "}" );
 }
+
+Matrix matrix;
 
 }
 }

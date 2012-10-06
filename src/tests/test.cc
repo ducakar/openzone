@@ -33,7 +33,7 @@ class Foo
     Foo* next[1];
     Foo* prev[1];
 
-    Foo() :
+    explicit Foo() :
       value( 0 )
     {
       Log() << "Foo()\n";

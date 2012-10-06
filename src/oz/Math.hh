@@ -110,7 +110,7 @@ class Math
     /**
      * Forbid instances.
      */
-    Math() = delete;
+    explicit Math() = delete;
 
     /**
      * Round to the closest integer towards negative infinity.

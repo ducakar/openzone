@@ -82,7 +82,7 @@ class SelectionArea : public Area
 
   public:
 
-    SelectionArea();
+    explicit SelectionArea();
 
 };
 

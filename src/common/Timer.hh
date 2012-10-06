@@ -65,7 +65,7 @@ class Timer
     /**
      * Default constructors, resets timer.
      */
-    Timer();
+    explicit Timer();
 
     /**
      * Reset all timer counters to zero.

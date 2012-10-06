@@ -62,7 +62,7 @@ class Thread
     /**
      * Create uninitialised instance.
      */
-    Thread() :
+    explicit Thread() :
       descriptor( nullptr )
     {}
 

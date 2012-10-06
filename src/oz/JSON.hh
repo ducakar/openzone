@@ -65,11 +65,12 @@ class JSON
     struct Parser;
     struct Formatter;
 
-    static const JSON NIL_VALUE;   ///< A null value instance, required by `operator []`.
+    /// A null value instance, required by `operator []`.
+    static const JSON NIL_VALUE;
 
-    Data*             data;        ///< Pointer to internal data struct.
-    Type              valueType;   ///< Value type, `JSON::Type`.
-    mutable bool      wasAccessed; ///< For warnings about unused variables.
+    Data*        data;        ///< Pointer to internal data struct.
+    Type         valueType;   ///< Value type, `JSON::Type`.
+    mutable bool wasAccessed; ///< For warnings about unused variables.
 
     /**
      * Internal constructor.
@@ -81,7 +82,7 @@ class JSON
     /**
      * Create a null instance.
      */
-    JSON();
+    explicit JSON();
 
     /**
      * Destructor.

@@ -33,8 +33,6 @@ namespace oz
 namespace matrix
 {
 
-Synapse synapse;
-
 Synapse::Synapse() :
   mode( SINGLE )
 {}
@@ -348,6 +346,8 @@ void Synapse::unload()
   removedFrags.clear();
   removedFrags.deallocate();
 }
+
+Synapse synapse;
 
 }
 }

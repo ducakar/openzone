@@ -81,7 +81,7 @@ class Inventory : public Frame
 
   public:
 
-    Inventory();
+    explicit Inventory();
     ~Inventory() override;
 
 };

@@ -54,7 +54,7 @@ class ArrayIterator : public IteratorBase<Elem>
      * Default constructor, creates an invalid iterator.
      */
     OZ_ALWAYS_INLINE
-    ArrayIterator() :
+    explicit ArrayIterator() :
       IteratorBase<Elem>( nullptr ), past( nullptr )
     {}
 
@@ -100,7 +100,7 @@ class CIterator : public ArrayIterator<const Elem>
   public:
 
     OZ_ALWAYS_INLINE
-    CIterator() = default;
+    explicit CIterator() = default;
 
     OZ_ALWAYS_INLINE
     explicit CIterator( const Elem* first, const Elem* past ) :
@@ -115,7 +115,7 @@ class Iterator : public ArrayIterator<Elem>
   public:
 
     OZ_ALWAYS_INLINE
-    Iterator() = default;
+    explicit Iterator() = default;
 
     OZ_ALWAYS_INLINE
     explicit Iterator( Elem* first, Elem* past ) :

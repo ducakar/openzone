@@ -62,7 +62,7 @@ struct Foo
   Foo* prev[1];
   Foo* next[1];
 
-  Foo() :
+  explicit Foo() :
     value( -1 )
   {}
 

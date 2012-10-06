@@ -136,8 +136,6 @@ class Shader
 
     struct CaelumLight
     {
-      static const CaelumLight NONE;
-
       Vec3 dir;
       Vec4 diffuse;
       Vec4 ambient;
@@ -145,13 +143,10 @@ class Shader
 
     struct Light
     {
-      static const Light NONE;
-
       Point pos;
       Vec4  diffuse;
 
-      Light() = default;
-
+      explicit Light() = default;
       explicit Light( const Point& pos, const Vec4& diffuse );
     };
 
@@ -196,7 +191,7 @@ class Shader
     bool  doPostprocess;
     bool  isLowDetail;
 
-    Shader();
+    explicit Shader();
 
     void program( int id );
 

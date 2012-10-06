@@ -78,6 +78,23 @@ bool String::endsWith( const char* s, const char* sub )
   return subEnd < sub;
 }
 
+String::String( const char* s, int count_ ) :
+  count( count_ )
+{
+  ensureCapacity();
+  memcpy( buffer, s, size_t( count ) );
+  buffer[count] = '\0';
+}
+
+String::String( const char* s )
+{
+  count = s == nullptr ? 0 : length( s );
+  ensureCapacity();
+
+  memcpy( buffer, s, size_t( count ) );
+  buffer[count] = '\0';
+}
+
 String::~String()
 {
   if( buffer != baseBuffer ) {
@@ -152,23 +169,6 @@ String& String::operator = ( String&& s )
   s.baseBuffer[0] = '\0';
 
   return *this;
-}
-
-String::String( const char* s, int count_ ) :
-  count( count_ )
-{
-  ensureCapacity();
-  memcpy( buffer, s, size_t( count ) );
-  buffer[count] = '\0';
-}
-
-String::String( const char* s )
-{
-  count = s == nullptr ? 0 : length( s );
-  ensureCapacity();
-
-  memcpy( buffer, s, size_t( count ) );
-  buffer[count] = '\0';
 }
 
 String String::str( const char* s, ... )

@@ -36,8 +36,6 @@ namespace oz
 namespace client
 {
 
-MenuStage menuStage;
-
 bool MenuStage::update()
 {
   camera.prepare();
@@ -106,6 +104,8 @@ void MenuStage::init()
 
 void MenuStage::free()
 {}
+
+MenuStage menuStage;
 
 }
 }

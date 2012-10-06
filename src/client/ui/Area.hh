@@ -66,11 +66,11 @@ class Area
     Area* prev[1];
     Area* next[1];
 
-    int flags;
+    int   flags;
 
   public:
 
-    Area* parent;
+    Area*        parent;
     DChain<Area> children;
 
     // absolute x and y, not relative to parent

@@ -35,8 +35,6 @@ namespace oz
 namespace client
 {
 
-Camera camera;
-
 const float  Camera::ROT_LIMIT          = Math::TAU / 2.0f;
 const float  Camera::MIN_DISTANCE       = 0.10f;
 const float  Camera::SMOOTHING_COEF     = 0.35f;
@@ -388,6 +386,8 @@ void Camera::init()
 
   reset();
 }
+
+Camera camera;
 
 }
 }

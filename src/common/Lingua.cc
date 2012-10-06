@@ -31,8 +31,6 @@ namespace oz
 namespace common
 {
 
-Lingua lingua;
-
 String Lingua::language;
 
 Lingua::Lingua() :
@@ -231,6 +229,8 @@ void Lingua::free()
   messages  = nullptr;
   nMessages = 0;
 }
+
+Lingua lingua;
 
 }
 }

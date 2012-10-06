@@ -59,7 +59,7 @@ class Endian
     /**
      * Forbid instances.
      */
-    Endian() = delete;
+    explicit Endian() = delete;
 
     /**
      * Swap byte order.

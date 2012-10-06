@@ -53,7 +53,7 @@ class Vec3 : public VectorBase3
      * Create an uninitialised instance.
      */
     OZ_ALWAYS_INLINE
-    Vec3() = default;
+    explicit Vec3() = default;
 
 #ifdef OZ_SIMD_MATH
 

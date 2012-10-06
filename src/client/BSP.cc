@@ -33,6 +33,14 @@ namespace oz
 namespace client
 {
 
+BSP::BSP( const matrix::BSP* bsp_ ) :
+  bsp( bsp_ ), isPreloaded( false ), isLoaded( false )
+{
+  foreach( model, bsp->models.citer() ) {
+    context.requestSMM( *model );
+  }
+}
+
 BSP::~BSP()
 {
   if( isLoaded ) {
@@ -41,14 +49,6 @@ BSP::~BSP()
 
   foreach( model, bsp->models.citer() ) {
     context.releaseSMM( *model );
-  }
-}
-
-BSP::BSP( const matrix::BSP* bsp_ ) :
-  bsp( bsp_ ), isPreloaded( false ), isLoaded( false )
-{
-  foreach( model, bsp->models.citer() ) {
-    context.requestSMM( *model );
   }
 }
 

@@ -48,8 +48,6 @@ namespace client
 namespace ui
 {
 
-UI ui;
-
 UI::UI() :
   fpsLabel( nullptr ), root( nullptr ), loadingScreen( nullptr ), hudArea( nullptr ),
   selectionArea( nullptr ), questFrame( nullptr ), galileoFrame( nullptr ), musicPlayer( nullptr ),
@@ -235,6 +233,8 @@ void UI::free()
   mouse.free();
   style.free();
 }
+
+UI ui;
 
 }
 }

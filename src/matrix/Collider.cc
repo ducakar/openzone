@@ -29,8 +29,6 @@ namespace oz
 namespace matrix
 {
 
-Collider collider;
-
 const Vec3 Collider::NORMALS[] =
 {
   Vec3( +1.0f,  0.0f,  0.0f ),
@@ -971,6 +969,8 @@ void Collider::translate( const Dynamic* obj_, const Vec3& move_ )
 
   trimAABBOrbis();
 }
+
+Collider collider;
 
 }
 }

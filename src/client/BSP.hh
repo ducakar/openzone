@@ -48,9 +48,8 @@ class BSP
 
   public:
 
-    ~BSP();
-
     explicit BSP( const matrix::BSP* bsp );
+    ~BSP();
 
     void preload();
     void load();

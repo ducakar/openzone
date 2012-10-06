@@ -42,13 +42,7 @@ namespace oz
 namespace client
 {
 
-Param     param;
-Transform tf;
-Shader    shader;
-
-const int Shader::SAMPLER_MAP[] = { 0, 1, 2, 3, 4, 5 };
-char      Shader::logBuffer[LOG_BUFFER_SIZE];
-String    Shader::defines;
+Param param;
 
 void Transform::ortho( int width, int height )
 {
@@ -117,7 +111,11 @@ void Transform::setColour( float r, float g, float b, float a ) const
   setColour( Mat44::scaling( Vec4( r, g, b, a ) ) );
 }
 
-const Shader::Light Shader::Light::NONE = Light( Point::ORIGIN, Vec4::ZERO );
+Transform tf;
+
+const int Shader::SAMPLER_MAP[] = { 0, 1, 2, 3, 4, 5 };
+char      Shader::logBuffer[LOG_BUFFER_SIZE];
+String    Shader::defines;
 
 Shader::Light::Light( const Point& pos_, const Vec4& diffuse_ ) :
   pos( pos_ ), diffuse( diffuse_ )
@@ -456,6 +454,8 @@ void Shader::free()
 
   Log::printEnd( " OK" );
 }
+
+Shader shader;
 
 }
 }

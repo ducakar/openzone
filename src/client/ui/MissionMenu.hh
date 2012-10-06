@@ -96,7 +96,7 @@ class MissionMenu : public Area
 
   public:
 
-    MissionMenu();
+    explicit MissionMenu();
     ~MissionMenu() override;
 
 };

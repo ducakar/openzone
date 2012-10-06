@@ -97,10 +97,10 @@ class Set
   public:
 
     /**
-     * Create an empty set.
+     * Create an empty set with the given initial capacity.
      */
-    Set() :
-      data( nullptr ), count( 0 ), size( 0 )
+    explicit Set( int size_ = 0 ) :
+      data( size_ == 0 ? nullptr : new Elem[size_] ), count( 0 ), size( size_ )
     {}
 
     /**
@@ -176,13 +176,6 @@ class Set
 
       return *this;
     }
-
-    /**
-     * Create an empty set with the given initial capacity.
-     */
-    explicit Set( int size_ ) :
-      data( new Elem[size_] ), count( 0 ), size( size_ )
-    {}
 
     /**
      * True iff respective elements are equal.

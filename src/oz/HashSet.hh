@@ -96,7 +96,7 @@ class HashSet
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        HashIterator() :
+        explicit HashIterator() :
           IteratorBase<IterElem>( nullptr ), data( nullptr ), index( 0 )
         {}
 
@@ -223,7 +223,7 @@ class HashSet
     /**
      * Create an empty hashtable.
      */
-    HashSet()
+    explicit HashSet()
     {
       aFill<Elem*, Elem*>( data, nullptr, SIZE );
     }

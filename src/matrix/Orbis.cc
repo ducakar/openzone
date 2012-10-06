@@ -36,8 +36,6 @@ namespace matrix
 static_assert( Orbis::CELLS * Cell::SIZE == Terra::QUADS * Terra::Quad::SIZE,
                "Orbis and terrain size mismatch" );
 
-Orbis orbis;
-
 bool Orbis::position( Struct* str )
 {
   Span span = getInters( *str, EPSILON );
@@ -609,6 +607,8 @@ void Orbis::free()
 {
   Log::println( "Freeing Orbis ... OK" );
 }
+
+Orbis orbis;
 
 }
 }

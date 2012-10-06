@@ -31,8 +31,6 @@ namespace oz
 namespace matrix
 {
 
-NamePool namePool;
-
 char NamePool::buffer[LINE_LENGTH];
 
 const String& NamePool::genName( int list ) const
@@ -102,6 +100,8 @@ void NamePool::free()
 
   Log::printEnd( " OK" );
 }
+
+NamePool namePool;
 
 }
 }

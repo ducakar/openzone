@@ -40,8 +40,6 @@ namespace client
 namespace ui
 {
 
-Mouse mouse;
-
 const char* const Mouse::NAMES[] = {
   "left_ptr",
   "ibeam",
@@ -129,6 +127,8 @@ void Mouse::free()
 
   Log::printEnd( " OK" );
 }
+
+Mouse mouse;
 
 }
 }

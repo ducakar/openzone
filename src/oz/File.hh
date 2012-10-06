@@ -77,9 +77,9 @@ class File
   public:
 
     /**
-     * Create an empty instance (path is set to "" ).
+     * Create an instance for the given path.
      */
-    File();
+    explicit File( const char* path = nullptr );
 
     /**
      * Destructor.
@@ -109,11 +109,6 @@ class File
      * Move operator, transfers mapped memory.
      */
     File& operator = ( File&& file );
-
-    /**
-     * Create an instance for the given path.
-     */
-    explicit File( const char* path );
 
     /**
      * %Set a new file path.

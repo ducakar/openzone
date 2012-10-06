@@ -66,7 +66,7 @@ class Terra
 
     Vec4 liquidFogColour;
 
-    Terra();
+    explicit Terra();
 
     void draw();
     void drawWater();

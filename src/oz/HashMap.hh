@@ -98,7 +98,7 @@ class HashMap
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        HashIterator() :
+        explicit HashIterator() :
           IteratorBase<IterElem>( nullptr ), data( nullptr ), index( 0 )
         {}
 
@@ -225,7 +225,7 @@ class HashMap
     /**
      * Create an empty hashtable.
      */
-    HashMap()
+    explicit HashMap()
     {
       aFill<Elem*, Elem*>( data, nullptr, SIZE );
     }

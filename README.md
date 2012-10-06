@@ -3,7 +3,7 @@ OpenZone
 
 Simple cross-platform FPS/RTS game engine.
 
-http://ducakar.github.com/openzone/
+    http://ducakar.github.com/openzone/
 
 This README file is intended for developers only. See `doc/README.html` if you are an end-user.
 
@@ -15,21 +15,20 @@ Building is currently only supported on Linux.
 First, make sure you have all the dependencies installed. You need to install development packages
 for the following libraries:
 
-* libasound (ALSA)
-* libpulse (PulseAudio)
-* physfs
-* lua
-* sdl
-* sdl_ttf
-* mesa (OpenGL headers)
-* alsoft (OpenAL)
+* ALSA
+* PulseAudio client library (libpulse)
+* PhysicsFS 2.0 or 2.1
+* Lua 5.1 or 5.2
+* SDL 1.2 or 2.0
+* SDL_ttf
+* OpenGL 2.1+ (Mesa headers) or OpenGL ES 2.0
+* OpenAL 1.1
 * libvorbis
 * libmad (optional)
 * faad (optional)
-* espeak (optional)
-* freeimage
+* eSpeak (optional)
+* FreeImage
 * libsquish (optional)
-* JDK (optional)
 
 You can then use generic steps for building CMake projects. Basic build instructions when you are in
 the root directory of the source tree are:

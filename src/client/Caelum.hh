@@ -79,7 +79,7 @@ class Caelum
 
   public:
 
-    Caelum();
+    explicit Caelum();
 
     void update();
     void draw();

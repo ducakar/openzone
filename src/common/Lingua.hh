@@ -87,7 +87,7 @@ class Lingua
     /**
      * Default constructor, creates uninitialised instance.
      */
-    Lingua();
+    explicit Lingua();
 
     /**
      * Destructor.

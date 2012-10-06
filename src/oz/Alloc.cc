@@ -88,7 +88,7 @@ static void initTraceLock()
 static struct TraceLockInitialiser
 {
   OZ_HIDDEN
-  TraceLockInitialiser()
+  explicit TraceLockInitialiser()
   {
     initTraceLock();
   }
@@ -263,8 +263,9 @@ static void deallocate( AllocMode mode, void* ptr )
 #endif
 }
 
-static_assert( ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
-               "Alloc::ALIGNMENT must be a power of two" );
+static_assert( Alloc::ALIGNMENT >= sizeof( void* ) &&
+               ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
+               "Alloc::ALIGNMENT must be at least size of a pointer and a power of two" );
 
 int    Alloc::count     = 0;
 size_t Alloc::amount    = 0;

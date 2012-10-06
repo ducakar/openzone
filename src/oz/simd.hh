@@ -156,7 +156,7 @@ class VectorBase3
      * Default constructor, creates uninitialised instance.
      */
     OZ_ALWAYS_INLINE
-    VectorBase3() = default;
+    explicit VectorBase3() = default;
 
 #ifdef OZ_SIMD_MATH
 
@@ -222,7 +222,7 @@ class VectorBase4
      * Default constructor, creates uninitialised instance.
      */
     OZ_ALWAYS_INLINE
-    VectorBase4() = default;
+    explicit VectorBase4() = default;
 
 #ifdef OZ_SIMD_MATH
 

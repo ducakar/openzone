@@ -49,9 +49,9 @@ class Buffer
   public:
 
     /**
-     * Create an empty buffer.
+     * Create a buffer of size `size`.
      */
-    Buffer();
+    explicit Buffer( int size = 0 );
 
     /**
      * Destructor.
@@ -79,11 +79,6 @@ class Buffer
      * Move operator, moves data storage.
      */
     Buffer& operator = ( Buffer&& b );
-
-    /**
-     * Create a buffer of size `size`.
-     */
-    explicit Buffer( int size );
 
     /**
      * Constant reference to `i`-th byte.

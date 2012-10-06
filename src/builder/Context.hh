@@ -59,7 +59,7 @@ class Context
           int    format;
           int    size;
 
-          Level();
+          explicit Level();
           ~Level();
 
           Level( const Level& ) = delete;
@@ -76,8 +76,7 @@ class Context
 
       public:
 
-        Texture() = default;
-
+        explicit Texture() = default;
         explicit Texture( Image* image, bool wrap, int magFilter, int minFilter );
 
         bool isEmpty() const;

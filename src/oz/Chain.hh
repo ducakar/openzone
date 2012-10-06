@@ -86,7 +86,7 @@ class Chain
          * Default constructor, creates an invalid iterator.
          */
         OZ_ALWAYS_INLINE
-        ChainIterator() :
+        explicit ChainIterator() :
           IteratorBase<IterElem>( nullptr )
         {}
 
@@ -133,7 +133,7 @@ class Chain
     /**
      * Create an empty chain.
      */
-    Chain() :
+    explicit Chain() :
       firstElem( nullptr )
     {}
 

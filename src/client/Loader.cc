@@ -40,8 +40,6 @@ namespace oz
 namespace client
 {
 
-Loader loader;
-
 Loader::ScreenshotInfo Loader::screenshotInfo;
 
 void Loader::screenshotMain( void* )
@@ -475,6 +473,8 @@ void Loader::free()
     screenshotThread.join();
   }
 }
+
+Loader loader;
 
 }
 }

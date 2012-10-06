@@ -52,7 +52,7 @@ class BuildMenu : public Frame
 
   public:
 
-    BuildMenu();
+    explicit BuildMenu();
     ~BuildMenu() override;
 
 };

@@ -34,8 +34,6 @@ namespace oz
 namespace modules
 {
 
-Modules modules;
-
 void Modules::update()
 {
   for( int i = 0; i < modules.length(); ++i ) {
@@ -96,6 +94,8 @@ void Modules::free()
   modules.clear();
   modules.deallocate();
 }
+
+Modules modules;
 
 }
 }

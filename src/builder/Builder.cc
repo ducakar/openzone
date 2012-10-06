@@ -49,8 +49,6 @@ namespace oz
 namespace builder
 {
 
-Builder builder;
-
 void Builder::printUsage( const char* invocationName )
 {
   Log::printRaw(
@@ -1021,6 +1019,8 @@ int Builder::main( int argc, char** argv )
 
   return EXIT_SUCCESS;
 }
+
+Builder builder;
 
 }
 }

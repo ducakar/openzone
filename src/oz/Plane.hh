@@ -49,7 +49,7 @@ class Plane
      * Create an uninitialised instance.
      */
     OZ_ALWAYS_INLINE
-    Plane() = default;
+    explicit Plane() = default;
 
     /**
      * Create form a pair of normal and distance from the origin.

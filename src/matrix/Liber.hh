@@ -43,8 +43,7 @@ class Liber
       String name;
       String path;
 
-      Resource() = default;
-
+      explicit Resource() = default;
       explicit Resource( const String& name, const String& path );
     };
 

@@ -38,8 +38,6 @@ namespace oz
 namespace nirvana
 {
 
-Nirvana nirvana;
-
 void Nirvana::sync()
 {
   // remove devices and minds of removed objects
@@ -190,6 +188,8 @@ void Nirvana::free()
   Log::unindent();
   Log::println( "}" );
 }
+
+Nirvana nirvana;
 
 }
 }

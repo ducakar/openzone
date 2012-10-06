@@ -50,8 +50,6 @@ using matrix::matrix;
 using nirvana::nirvana;
 using modules::modules;
 
-GameStage gameStage;
-
 String GameStage::AUTOSAVE_FILE;
 String GameStage::QUICKSAVE_FILE;
 
@@ -597,6 +595,8 @@ void GameStage::free()
   Log::unindent();
   Log::println( "}" );
 }
+
+GameStage gameStage;
 
 }
 }

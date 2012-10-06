@@ -67,7 +67,7 @@ class SList
     /**
      * Create an empty list with capacity SIZE.
      */
-    SList() :
+    explicit SList() :
       count( 0 )
     {}
 

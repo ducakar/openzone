@@ -170,7 +170,7 @@ class Context
 
   public:
 
-    Context();
+    explicit Context();
 
     static uint readTextureLayer( InputStream* istream );
     static uint loadTextureLayer( const char* path );

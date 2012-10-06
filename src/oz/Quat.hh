@@ -52,7 +52,7 @@ class Quat : public VectorBase4
      * Create an uninitialised instance.
      */
     OZ_ALWAYS_INLINE
-    Quat() = default;
+    explicit Quat() = default;
 
 #ifdef OZ_SIMD_MATH
 

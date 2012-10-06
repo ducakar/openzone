@@ -76,7 +76,7 @@ class UI
     BuildMenu*     buildMenu;
     DebugFrame*    debugFrame;
 
-    UI();
+    explicit UI();
 
     void showLoadingScreen( bool doShow );
 

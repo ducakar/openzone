@@ -49,7 +49,7 @@ class AABB
      * Create uninitialised instance.
      */
     OZ_ALWAYS_INLINE
-    AABB() = default;
+    explicit AABB() = default;
 
     /**
      * Create `AABB` with the given centre and extents.

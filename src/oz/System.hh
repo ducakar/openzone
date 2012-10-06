@@ -91,7 +91,7 @@ class System
     /**
      * Initialise bell.
      */
-    System();
+    explicit System();
 
     /**
      * Delay normal process termination until the bell finishes playing.

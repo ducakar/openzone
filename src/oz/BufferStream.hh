@@ -53,10 +53,11 @@ class BufferStream
   public:
 
     /**
-     * Create an empty stream.
+     * Create a stream with the given size of the buffer.
      */
-    BufferStream( Endian::Order order_ = Endian::NATIVE ) :
-      streamPos( nullptr ), streamBegin( nullptr ), streamEnd( nullptr ), order( order_ )
+    explicit BufferStream( int size = 0, Endian::Order order_ = Endian::NATIVE ) :
+      streamPos( size == 0 ? nullptr : new char[size] ), streamBegin( streamPos ),
+      streamEnd( streamBegin + size ), order( order_ )
     {}
 
     /**
@@ -148,16 +149,8 @@ class BufferStream
     }
 
     /**
-     * Create a stream with the given size of the buffer.
-     */
-    explicit BufferStream( int size ) :
-      streamPos( new char[size] ), streamBegin( streamPos ), streamEnd( streamBegin + size ), order( Endian::NATIVE )
-    {}
-
-    /**
      * Create `InputStream` for reading this stream (position is not reset).
      */
-    OZ_ALWAYS_INLINE
     InputStream inputStream() const
     {
       InputStream is( streamBegin, streamEnd, order );
@@ -169,7 +162,6 @@ class BufferStream
     /**
      * Create `OutputStream` for reading/writing to this stream (position is not reset).
      */
-    OZ_ALWAYS_INLINE
     OutputStream outputStream()
     {
       OutputStream os( streamBegin, streamEnd, order );

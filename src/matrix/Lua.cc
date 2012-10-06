@@ -33,8 +33,6 @@ namespace oz
 namespace matrix
 {
 
-Lua lua;
-
 bool Lua::objectCall( const char* functionName, Object* self_, Bot* user_ )
 {
   ms.self         = self_;
@@ -469,6 +467,8 @@ void Lua::free()
 
   Log::printEnd( " OK" );
 }
+
+Lua lua;
 
 }
 }

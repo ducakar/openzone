@@ -33,8 +33,6 @@ namespace oz
 namespace nirvana
 {
 
-Lua lua;
-
 bool Lua::mindCall( const char* functionName, Bot* self_ )
 {
   ms.self        = self_;
@@ -524,6 +522,8 @@ void Lua::free()
 
   Log::printEnd( " OK" );
 }
+
+Lua lua;
 
 }
 }

@@ -56,14 +56,19 @@ macro( add_pch _pchTarget _inputHeader _inputModule )
     COMMAND "${CMAKE_CXX_COMPILER}" ${_flags} -o "${_inputHeader}.gch" "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" )
   add_custom_target( ${_pchTarget} DEPENDS "${_inputHeader}.gch" )
 
-  set( ${_pchTarget}_outputPCH "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}.gch" )
+  if( CLANG )
+    set( ${_pchTarget}_outputPCH "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}.gch" )
+  else()
+    set( ${_pchTarget}_outputPCH "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}" )
+  endif()
 endmacro()
 
 macro( use_pch _target _pchTarget )
   add_dependencies( ${_target} ${_pchTarget} )
 
-  # Additional parameters for LLVM/Clang.
   if( CLANG )
     set_target_properties( ${_target} PROPERTIES COMPILE_FLAGS "-include-pch ${${_pchTarget}_outputPCH}" )
+  else()
+    set_target_properties( ${_target} PROPERTIES COMPILE_FLAGS "-include ${${_pchTarget}_outputPCH}" )
   endif()
 endmacro()

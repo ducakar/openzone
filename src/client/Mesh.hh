@@ -83,7 +83,7 @@ class Mesh
       float interpolation;
 
       OZ_ALWAYS_INLINE
-      Instance() = default;
+      explicit Instance() = default;
 
       OZ_ALWAYS_INLINE
       explicit Instance( const Mat44& transform_, float alpha_, int component_ ) :
@@ -135,7 +135,7 @@ class Mesh
 
     static void deallocate();
 
-    Mesh();
+    explicit Mesh();
     ~Mesh();
 
     void schedule( int component )

@@ -49,7 +49,7 @@ class Bounds
      * Create uninitialised instance.
      */
     OZ_ALWAYS_INLINE
-    Bounds() = default;
+    explicit Bounds() = default;
 
     /**
      * Create from the given minimal and maximal point.

@@ -64,7 +64,7 @@ class Alloc
     /**
      * Forbid instances.
      */
-    Alloc() = delete;
+    explicit Alloc() = delete;
 
     /**
      * Align to the previous boundary.

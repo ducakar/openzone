@@ -52,8 +52,8 @@ static bool operator < ( const PFile& a, const PFile& b )
   return String::compare( a.path(), b.path() ) < 0;
 }
 
-PFile::PFile() :
-  fileType( File::MISSING ), fileSize( -1 ), fileTime( 0 ), data( nullptr )
+PFile::PFile( const char* path ) :
+  filePath( path ), fileType( File::MISSING ), fileSize( -1 ), fileTime( 0 ), data( nullptr )
 {}
 
 PFile::~PFile()
@@ -114,10 +114,6 @@ PFile& PFile::operator = ( PFile&& file )
 
   return *this;
 }
-
-PFile::PFile( const char* path ) :
-  filePath( path ), fileType( File::MISSING ), fileSize( -1 ), fileTime( 0 ), data( nullptr )
-{}
 
 void PFile::setPath( const char* path )
 {

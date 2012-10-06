@@ -25,8 +25,6 @@ namespace oz
 namespace builder
 {
 
-Lingua lingua;
-
 void Lingua::buildCatalogue( const char* directory, const char* catalogue )
 {
   Log::print( "%s/%s ...", directory, catalogue );
@@ -245,6 +243,8 @@ void Lingua::buildMissions()
   Log::unindent();
   Log::println( "}" );
 }
+
+Lingua lingua;
 
 }
 }

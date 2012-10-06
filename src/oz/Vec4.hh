@@ -55,7 +55,7 @@ class Vec4 : public VectorBase4
      * Create an uninitialised instance.
      */
     OZ_ALWAYS_INLINE
-    Vec4() = default;
+    explicit Vec4() = default;
 
 #ifdef OZ_SIMD_MATH
 

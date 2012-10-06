@@ -28,10 +28,7 @@
 
 #include <cstdio>
 
-#if defined( __native_client__ )
-# include <ctime>
-# include <sys/time.h>
-#elif defined( _WIN32 )
+#if defined( _WIN32 )
 # include <windows.h>
 # include <mmsystem.h>
 #else
@@ -47,7 +44,7 @@ namespace oz
 static struct MediaTimerInitialiser
 {
   OZ_HIDDEN
-  MediaTimerInitialiser()
+  explicit MediaTimerInitialiser()
   {
     timeBeginPeriod( 1 );
   }
@@ -58,15 +55,7 @@ mediaTimerInitialiser;
 
 uint Time::clock()
 {
-#if defined( __native_client__ )
-
-  struct timeval now;
-  gettimeofday( &now, nullptr );
-
-  // This wraps around together with uint since (time_t range) * 1000 is a multiple of uint range.
-  return uint( now.tv_sec * 1000 + now.tv_usec / 1000 );
-
-#elif defined( _WIN32 )
+#if defined( _WIN32 )
 
   return timeGetTime();
 
@@ -83,15 +72,7 @@ uint Time::clock()
 
 uint Time::uclock()
 {
-#if defined( __native_client__ )
-
-  struct timeval now;
-  gettimeofday( &now, nullptr );
-
-  // This wraps around together with uint since (time_t range) * 1000 is a multiple of uint range.
-  return uint( now.tv_sec * 1000000 + now.tv_usec );
-
-#elif defined( _WIN32 )
+#if defined( _WIN32 )
 
   return timeGetTime() * 1000;
 
@@ -127,8 +108,8 @@ void Time::usleep( uint microseconds )
 {
 #ifdef _WIN32
 
-  // Adding a millisecond rather rounding to the nearest millisecond value gives the most accurate
-  // sleep periods for the given microsecond value. This conclusion is based on tests on Windows 7.
+  // Based on observations performed on Windows 7, adding a millisecond rather rounding to the
+  // nearest millisecond value gives the most accurate sleep periods for a given microsecond value.
   Sleep( microseconds / 1000 + 1 );
 
 #else

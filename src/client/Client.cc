@@ -60,8 +60,6 @@ namespace oz
 namespace client
 {
 
-Client client;
-
 void Client::printUsage( const char* invocationName )
 {
   Log::printRaw(
@@ -785,6 +783,8 @@ int Client::main()
 
   return EXIT_SUCCESS;
 }
+
+Client client;
 
 }
 }

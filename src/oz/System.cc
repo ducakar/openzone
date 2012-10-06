@@ -439,7 +439,6 @@ static void waitBell()
   }
 #endif
 
-  // Delay termination until bell finishes.
   while( isBellPlaying ) {
 #ifdef _WIN32
     Sleep( 10 );
@@ -503,6 +502,7 @@ static void abort( bool doHalt )
 #else
   if( doHalt && isatty( STDIN_FILENO ) && isatty( STDERR_FILENO ) ) {
 #endif
+    fflush( stdout );
     fputs( "Halted. Attach a debugger or press Enter to quit ... ", stderr );
     fflush( stderr );
     fgetc( stdin );

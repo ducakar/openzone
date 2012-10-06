@@ -33,8 +33,6 @@ namespace oz
 namespace client
 {
 
-Shape shape;
-
 const Shape::Vertex Shape::VERTICES[40] = {
   // filled rectangle
   { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
@@ -319,6 +317,8 @@ void Shape::free()
     vbo = 0;
   }
 }
+
+Shape shape;
 
 }
 }

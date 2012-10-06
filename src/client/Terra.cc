@@ -36,8 +36,6 @@ namespace client
 
 const float Terra::WAVE_BIAS_INC = 2.0f;
 
-Terra terra;
-
 Terra::Terra() :
   ibo( 0 ), id( -1 ), waterTexId( 0 ), detailTexId( 0 ), mapTexId( 0 )
 {
@@ -258,6 +256,8 @@ void Terra::unload()
     id = -1;
   }
 }
+
+Terra terra;
 
 }
 }
