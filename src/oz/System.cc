@@ -1,5 +1,5 @@
 /*
- * liboz - OpenZone core library.
+ * liboz - OpenZone Core Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -35,7 +35,10 @@
 #include <cstdio>
 #include <cstdlib>
 
-#if defined( __native_client__ )
+#if defined( __ANDROID__ )
+# include <ctime>
+#elif defined( __native_client__ )
+# include <ctime>
 # include <ppapi/cpp/audio.h>
 # include <ppapi/cpp/completion_callback.h>
 # include <ppapi/cpp/core.h>
@@ -81,7 +84,11 @@ namespace oz
 static const float BELL_TIME      = 0.30f;
 static const float BELL_FREQUENCY = 800.0f;
 
-#if defined( __native_client__ )
+#if defined( __ANDROID__ )
+
+static const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
+
+#elif defined( __native_client__ )
 
 static const timespec TIMESPEC_10MS = { 0, 10 * 1000000 };
 
@@ -145,7 +152,7 @@ static int           initFlags         = 0;
 OZ_NORETURN
 static void abort( bool doHalt );
 
-#if !defined( __native_client__ )
+#if !defined( __ANDROID__ ) && !defined( __native_client__ )
 
 OZ_NORETURN
 static void signalHandler( int sigNum )
@@ -159,34 +166,28 @@ static void signalHandler( int sigNum )
   abort( ( initFlags & System::HALT_BIT ) && sigNum != SIGINT );
 }
 
-#endif
-
 static void resetSignals()
 {
-#if !defined( __native_client__ )
   signal( SIGILL,  SIG_DFL );
   signal( SIGABRT, SIG_DFL );
   signal( SIGFPE,  SIG_DFL );
   signal( SIGSEGV, SIG_DFL );
-# ifndef _WIN32
+#ifndef _WIN32
   signal( SIGQUIT, SIG_DFL );
   signal( SIGTRAP, SIG_DFL );
-# endif
 #endif
 }
 
 static void catchSignals()
 {
-#if !defined( __native_client__ )
   signal( SIGILL,  signalHandler );
   signal( SIGABRT, signalHandler );
   signal( SIGFPE,  signalHandler );
   signal( SIGSEGV, signalHandler );
-# ifndef _WIN32
+#ifndef _WIN32
   signal( SIGQUIT, signalHandler );
   // Disable default handler for SIGTRAP that terminates a process.
   signal( SIGTRAP, SIG_IGN );
-# endif
 #endif
 }
 
@@ -220,7 +221,10 @@ static void unexpected()
   abort( initFlags & System::HALT_BIT );
 }
 
-#if defined( __native_client__ )
+#endif
+
+#if defined( __ANDROID__ )
+#elif defined( __native_client__ )
 
 static void stopBellCallback( void* info_, int )
 {
@@ -450,7 +454,8 @@ static void waitBell()
 
 static void initBell()
 {
-#if defined( __native_client__ )
+#if defined( __ANDROID__ )
+#elif defined( __native_client__ )
 
   if( pthread_mutex_init( &bellLock, nullptr ) != 0 ) {
     OZ_ERROR( "Bell mutex creation failed" );
@@ -495,9 +500,13 @@ static void initBell()
 OZ_NORETURN
 static void abort( bool doHalt )
 {
+#if !defined( __ANDROID__ ) && !defined( __native_client__ )
   resetSignals();
+#endif
 
-#ifdef _WIN32
+#if defined( __ANDROID__ ) || defined( __native_client__ )
+  if( doHalt ) {
+#elif defined( _WIN32 )
   if( doHalt && _isatty( STDIN_FILENO ) && _isatty( STDERR_FILENO ) ) {
 #else
   if( doHalt && isatty( STDIN_FILENO ) && isatty( STDERR_FILENO ) ) {
@@ -550,7 +559,8 @@ void System::bell()
     initBell();
   }
 
-#if defined( __native_client__ )
+#if defined( __ANDROID__ )
+#elif defined( __native_client__ )
 
   if( instance == nullptr || core == nullptr || pthread_mutex_trylock( &bellLock ) != 0 ) {
     return;
@@ -661,9 +671,11 @@ void System::error( const char* function, const char* file, int line, int nSkipp
 
 void System::threadInit()
 {
+#if !defined( __ANDROID__ ) && !defined( __native_client__ )
   if( initFlags & SIGNALS_BIT ) {
     catchSignals();
   }
+#endif
 }
 
 void System::init( int flags )
@@ -673,6 +685,7 @@ void System::init( int flags )
 #endif
   initFlags = flags;
 
+#if !defined( __ANDROID__ ) && !defined( __native_client__ )
   if( initFlags & SIGNALS_BIT ) {
     catchSignals();
   }
@@ -688,6 +701,7 @@ void System::init( int flags )
     std::set_unexpected( std::unexpected );
     std::set_terminate( std::terminate );
   }
+#endif
 
   if( initFlags & LOCALE_BIT ) {
     setlocale( LC_ALL, "" );
@@ -696,10 +710,12 @@ void System::init( int flags )
 
 void System::free()
 {
+#if !defined( __ANDROID__ ) && !defined( __native_client__ )
   std::set_unexpected( std::unexpected );
   std::set_terminate( std::terminate );
 
   resetSignals();
+#endif
 
   initFlags = 0;
 }

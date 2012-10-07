@@ -8,7 +8,7 @@ project( openzone C CXX )
 
 set( OZ_VERSION "0.3.80" )
 
-option( OZ_SHARED_LIBOZ "Build liboz as a shared library." OFF )
+option( OZ_SHARED_LIBS "Build liboz and libozdyn as shared libraries." OFF )
 option( OZ_TRACK_ALLOCS "Track memory allocations to detect new/delete mismatches and memory leaks." OFF )
 
 option( OZ_SIMD_MATH "Use SIMD implementation of linear algebra classes." OFF )
@@ -32,7 +32,7 @@ if( ANDROID )
   set( OZ_STANDALONE OFF )
 elseif( NACL )
   set( CMAKE_SYSTEM_NAME "NaCl" )
-  set( OZ_SHARED_LIBOZ OFF )
+  set( OZ_SHARED_LIBS OFF )
   set( OZ_GL_ES ON )
   set( OZ_STANDALONE OFF )
 elseif( WIN32 )
@@ -41,7 +41,7 @@ endif()
 
 set( OZ_PLATFORM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_PROCESSOR}" )
 
-set( BUILD_SHARED_LIBS ${OZ_SHARED_LIBOZ} )
+set( BUILD_SHARED_LIBS ${OZ_SHARED_LIBS} )
 
 check_cxx_source_compiles( "
 #ifdef __clang__
@@ -66,20 +66,7 @@ check_cxx_compiler_flag( "-flto" hasLTO )
 #
 
 if( ANDROID )
-  find_library( PTHREAD_LIBRARY pthread )
-  find_library( RT_LIBRARY rt )
-  find_library( DL_LIBRARY dl )
-  find_package( ALSA )
-  find_package( PhysFS REQUIRED )
-
-  find_package( Lua51 REQUIRED )
-  find_package( SDL REQUIRED )
-  find_package( SDL_ttf REQUIRED )
-  find_package( OpenGL REQUIRED )
-  find_package( OpenAL REQUIRED )
-  find_library( VORBISFILE_LIBRARY vorbisfile )
-
-  find_package( JNI )
+#   find_package( JNI )
 elseif( NACL )
   find_library( PTHREAD_LIBRARY pthread )
   find_library( PEPPER_LIBRARY ppapi )
@@ -157,12 +144,12 @@ if( NACL OR WIN32 )
   include_directories( "./include" )
 endif()
 if( ANDROID )
-  include_directories( "${JAVA_INCLUDE_PATH}" )
-  include_directories( "${JAVA_INCLUDE_PATH2}" )
+#   include_directories( "${JAVA_INCLUDE_PATH}" )
+#   include_directories( "${JAVA_INCLUDE_PATH2}" )
 endif()
 
 if( ANDROID )
-  set( libs_oz "${PTHREAD_LIBRARY};${RT_LIBRARY};${DL_LIBRARY};${ALSA_LIBRARY};${PHYSFS_LIBRARY}" )
+  set( libs_oz "" )
 elseif( NACL )
   set( libs_oz "${PTHREAD_LIBRARY};${PEPPER_CXX_LIBRARY};${PEPPER_LIBRARY};${PHYSFS_LIBRARY}" )
 elseif( WIN32 )

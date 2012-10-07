@@ -45,8 +45,9 @@ default, you can change it in ``cmake/MinGW32.Toolchain.cmake`).
 
 You may also want to set several options when configuring CMake build system:
 
-* `OZ_SHARED_LIBOZ`: Build liboz (OpenZone core library) as a shared library. This is useful if one
-  wants to put liboz into a separate Linux package to use it by other programs.
+* `OZ_SHARED_LIBS`: Build liboz (OpenZone Core Library) and libozdyn (OpenZone Dynamics Library) as
+  shared libraries. This is useful if one wants to put liboz and libozdyn into separate Linux
+  packages so other programs can use them too.
 
 * `OZ_TRACK_ALLOCS`: Enable tracking of allocated memory chunks in liboz. Stack trace for every
   memory allocation performed via new operator is saved for later diagnostics. It detects new/delete
@@ -54,8 +55,8 @@ You may also want to set several options when configuring CMake build system:
 
 * `OZ_SIMD_MATH`: Enable SIMD-specific implementation of linear algebra classes (Vec3, Vec4, Point,
   Plane, Quat, Mat44). Currently it yields ~15% worse performance than generic implementations since
-  Vec3 and Point classes are a bit larger (4 floats v. 3 floats) and there are lots of conversions
-  between a single float and a SIMD register required in OpenZone code.
+  Vec3 and Point classes are a bit larger (4 floats v. 3 floats) and there are lots of accesses to
+  vector components in OpenZone code.
 
 * `OZ_GL_ES`: Use OpenGL ES 2.0 API. Always enabled in NaCl platform, on other platforms it will
   merely use GL ES headers and functions set, it will still initialise OpenGL.

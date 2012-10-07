@@ -1,5 +1,5 @@
 /*
- * liboz - OpenZone core library.
+ * liboz - OpenZone Core Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -24,24 +24,12 @@
  * @file oz/Vec3.cc
  */
 
-#include "common.hh"
+#include "Vec3.hh"
 
 namespace oz
 {
 
-// Declare dummy class binary compatible with both SIMD and non-SIMD versions of Point class.
-struct OZ_ALIGNED( 16 ) Vec3
-{
-  float x;
-  float y;
-  float z;
-  float w;
-
-  static const Vec3 ZERO;
-  static const Vec3 ONE;
-};
-
-const Vec3 Vec3::ZERO = { 0.0f, 0.0f, 0.0f, 0.0f };
-const Vec3 Vec3::ONE  = { 1.0f, 1.0f, 1.0f, 0.0f };
+const Vec3 Vec3::ZERO = Vec3( 0.0f, 0.0f, 0.0f );
+const Vec3 Vec3::ONE  = Vec3( 1.0f, 1.0f, 1.0f );
 
 }

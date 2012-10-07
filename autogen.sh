@@ -9,7 +9,7 @@
 #
 
 version="0.3.80"
-components="oz common matrix nirvana modules client builder unittest"
+components="oz ozdyn common matrix nirvana modules client builder unittest"
 
 # Generate CMakeLists.txt files.
 for component in $components; do
@@ -21,8 +21,8 @@ done
 echo "Updating version in CMakeLists.txt"
 sed 's/^\(set( OZ_VERSION "\)[^"]*\(".*\)$/\1'"$version"'\2/' -i CMakeLists.txt
 
-echo "Updating version in doc/Doxyfiles.liboz and doc/Doxyfile"
-sed 's/^\(PROJECT_NUMBER *= \).*$/\1"'"$version"'"/' -i doc/Doxyfile.liboz doc/Doxyfile
+echo "Updating version in doc/Doxyfiles.{liboz,libozdyn} and doc/Doxyfile"
+sed 's/^\(PROJECT_NUMBER *= \).*$/\1"'"$version"'"/' -i doc/Doxyfile.{liboz,libozdyn} doc/Doxyfile
 
 echo "Updating HTML READMEs doc/*.html"
 sed 's/<!--OZ_VERSION-->[^<"]*\([<"]\)/<!--OZ_VERSION-->'"$version"'\1/' -i doc/*.html

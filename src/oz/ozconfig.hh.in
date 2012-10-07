@@ -1,5 +1,5 @@
 /*
- * liboz - OpenZone core library.
+ * liboz - OpenZone Core Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -26,9 +26,16 @@
  * Configuration variables
  */
 
-// Make new and delete operators save stack traces to track memory allocations to detect memory
-// leaks and new/delete mismatches.
+// Enable tracking of allocated memory chunks in liboz. Stack trace for every memory allocation
+// performed via new operator is saved for later diagnostics. It detects new/delete mismatches and
+// one can check for currently allocated memory chunks (and hence memory leaks).
 #cmakedefine OZ_TRACK_ALLOCS
+
+// Enable SIMD-specific implementation of linear algebra classes (Vec3, Vec4, Point, Plane, Quat,
+// Mat44). Currently it yields ~15% worse performance than generic implementations since Vec3 and
+// Point classes are a bit larger (4 floats v. 3 floats) and there are lots of accesses to vector
+// components in OpenZone code.
+#cmakedefine OZ_SIMD_MATH
 
 /*
  * Compiler and platform-specific macros

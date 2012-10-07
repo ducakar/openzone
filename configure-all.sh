@@ -9,8 +9,8 @@ Linux_i686_Clang=1
 Windows_i686=1
 NaCl_x86_64=1
 NaCl_i686=1
-Android_i686=0
-Android_ARMv7a=0
+Android9_i686=0
+Android9_ARM=0
 
 (( $isBuild )) && return
 
@@ -156,41 +156,41 @@ if (( $NaCl_i686 )); then
   echo
 fi
 
-if (( $Android_i686 )); then
+if (( $Android9_i686 )); then
   echo ================================================================
   echo
-  echo                           Android-i686
+  echo                           Android9-i686
   echo
   echo ----------------------------------------------------------------
 
-  mkdir -p build/Android-i686
-  ( cd build/Android-i686 && cmake ../.. \
+  mkdir -p build/Android9-i686
+  ( cd build/Android9-i686 && cmake ../.. \
     -DCMAKE_BUILD_TYPE=$buildType \
-    -DCMAKE_TOOLCHAIN_FILE=../../cmake/Android-i686.Toolchain.cmake )
+    -DCMAKE_TOOLCHAIN_FILE=../../cmake/Android9-i686.Toolchain.cmake )
 
   echo ----------------------------------------------------------------
   echo
-  echo                           Android-i686
+  echo                           Android9-i686
   echo
   echo ================================================================
   echo
 fi
 
-if (( $Android_ARMv7a )); then
+if (( $Android9_ARM )); then
   echo ================================================================
   echo
-  echo                          Android-ARMv7a
+  echo                           Android9-ARM
   echo
   echo ----------------------------------------------------------------
 
-  mkdir -p build/Android-ARMv7a
-  ( cd build/Android-ARMv7a && cmake ../.. \
+  mkdir -p build/Android9-ARM
+  ( cd build/Android9-ARM && cmake ../.. \
     -DCMAKE_BUILD_TYPE=$buildType \
-    -DCMAKE_TOOLCHAIN_FILE=../../cmake/Android-ARMv7a.Toolchain.cmake )
+    -DCMAKE_TOOLCHAIN_FILE=../../cmake/Android9-ARM.Toolchain.cmake )
 
   echo ----------------------------------------------------------------
   echo
-  echo                          Android-ARMv7a
+  echo                           Android9-ARM
   echo
   echo ================================================================
   echo

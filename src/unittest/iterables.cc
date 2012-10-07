@@ -1,5 +1,5 @@
 /*
- * liboz - OpenZone core library.
+ * liboz - OpenZone Core Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *

@@ -14,7 +14,7 @@ Requires:       %{name}-client = %{version}
 Requires:       %{name}-data = %{version}
 
 %package -n liboz
-Summary:        OpenZone core library
+Summary:        OpenZone Core Library
 License:        zlib
 Group:          System Environment/Libraries
 
@@ -23,6 +23,18 @@ Summary:        Headers and documentation for OpenZone core library
 License:        zlib
 Group:          Development/Libraries
 Requires:       liboz = %{version}
+
+%package -n libozdyn
+Summary:        OpenZone Dynamics Engine
+License:        zlib
+Group:          System Environment/Libraries
+Requires:       liboz = %{version}
+
+%package -n libozdyn-devel
+Summary:        Headers and documentation for OpenZone dynamics engine
+License:        zlib
+Group:          Development/Libraries
+Requires:       libozde = %{version}, liboz-devel = %{version}
 
 %package client
 Summary:        Simple cross-platform FPS/RTS game engine
@@ -61,6 +73,13 @@ Library is primarily intended for use in OpenZone game engine.
 This package contains doxygen-generated documentation, header files and
 pkg-config configuration needed for development using liboz.
 
+%description -n libozdyn
+OpenZone Dynamics Engine.
+
+%description -n libozdyn-devel
+This package contains doxygen-generated documentation, header files and
+pkg-config configuration needed for development using OpenZone Dynamics Engine.
+
 %description client
 OpenZone is a relatively simple cross-platform game engine, suitable for FPS,
 RTS and RPG genres. It is strictly divided into several layers. Back-end runs
@@ -91,7 +110,7 @@ cmake \
   -D CMAKE_BUILD_TYPE="Release" \
   -D CMAKE_INSTALL_PREFIX="/usr" \
   -D CMAKE_CXX_FLAGS="-msse3 -mfpmath=sse" \
-  -D OZ_SHARED_LIBOZ="1" \
+  -D OZ_SHARED_LIBS="1" \
   -D OZ_NONFREE="1" \
   ..
 
@@ -108,6 +127,8 @@ cd build
 
 make install DESTDIR="$RPM_BUILD_ROOT"
 
+sed -i 's|^libdir=.*|libdir='%{_libdir}'|' "$RPM_BUILD_ROOT"/usr/lib/pkgconfig/*.pc
+
 if [[ %{_libdir} != /usr/lib ]]; then
   mv "$RPM_BUILD_ROOT"/usr/lib "$RPM_BUILD_ROOT"%{_libdir}
 fi
@@ -123,8 +144,19 @@ fi
 %files -n liboz-devel
 %defattr(-, root, root)
 %{_includedir}/oz
-%{_libdir}/pkgconfig
+%{_libdir}/pkgconfig/liboz.pc
 %doc AUTHORS src/oz/COPYING doc/doxygen.liboz/html
+
+%files -n libozdyn
+%defattr(-, root, root)
+%{_libdir}/libozdyn.so*
+%doc AUTHORS src/ozdyn/COPYING
+
+%files -n libozdyn-devel
+%defattr(-, root, root)
+%{_includedir}/ozdyn
+%{_libdir}/pkgconfig/libozdyn.pc
+%doc AUTHORS src/ozdyn/COPYING doc/doxygen.libozdyn/html
 
 %files client
 %defattr(-, root, root)

@@ -1,10 +1,10 @@
 prefix=/usr
 exec_prefix=${prefix}
-libdir=${exec_prefix}/lib@OZ_LIB_SUFFIX@
+libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 
 Name: liboz
-Description: OpenZone core library
+Description: OpenZone Core Library
 Version: @OZ_VERSION@
 Requires:
 Conflicts:

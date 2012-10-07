@@ -1,7 +1,7 @@
 # Maintainer: Davorin Učakar <davorin.ucakar@gmail.com>
 
 pkgbase=openzone
-pkgname=('liboz' 'liboz-doc' 'openzone' 'openzone-data' 'openzone-doc')
+pkgname=('liboz' 'liboz-doc' 'libozdyn' 'libozdyn-doc' 'openzone' 'openzone-data' 'openzone-doc')
 pkgver=0.3.80
 pkgrel=1
 url="http://ducakar.github.com/openzone/"
@@ -21,7 +21,7 @@ build()
     -D CMAKE_BUILD_TYPE="Release" \
     -D CMAKE_INSTALL_PREFIX="/usr" \
     -D CMAKE_CXX_FLAGS="$CXXFLAGS -msse3 -mfpmath=sse" \
-    -D OZ_SHARED_LIBOZ="1" \
+    -D OZ_SHARED_LIBS="1" \
     -D OZ_NONFREE="1" \
     ../openzone
 
@@ -31,7 +31,7 @@ build()
 
 package_liboz()
 {
-  pkgdesc='OpenZone core library'
+  pkgdesc='OpenZone Core Library'
   license=('ZLIB')
   depends=('alsa-lib' 'gcc-libs' 'physfs')
 
@@ -40,13 +40,16 @@ package_liboz()
   make install DESTDIR="${pkgdir}"
 
   rm -rf "${pkgdir}/usr/"{bin,share}
+  rm -rf "${pkgdir}/usr/include/ozdyn"
+  rm -rf "${pkgdir}/usr/lib/libozdyn.so"*
+  rm -rf "${pkgdir}/usr/lib/pkgconfig/libozdyn.pc"
 
   install -Dm644 "../openzone/src/oz/COPYING" "${pkgdir}/usr/share/licenses/${pkgname}/COPYING"
 }
 
 package_liboz-doc()
 {
-  pkgdesc='OpenZone core library documentation'
+  pkgdesc='OpenZone Core Library documentation'
   license=('ZLIB')
   arch=('any')
   depends=('liboz')
@@ -55,8 +58,37 @@ package_liboz-doc()
 
   mkdir -p "${pkgdir}/usr/share/doc/liboz"
   cp -r "doc/doxygen.liboz/html" "${pkgdir}/usr/share/doc/liboz/doxygen"
+}
 
-  install -Dm644 "../openzone/src/oz/COPYING" "${pkgdir}/usr/share/licenses/${pkgname}/COPYING"
+package_libozdyn()
+{
+  pkgdesc='OpenZone Dynamics Library'
+  license=('ZLIB')
+  depends=('liboz')
+
+  cd "${srcdir}/build"
+
+  make install DESTDIR="${pkgdir}"
+
+  rm -rf "${pkgdir}/usr/"{bin,share}
+  rm -rf "${pkgdir}/usr/include/oz"
+  rm -rf "${pkgdir}/usr/lib/liboz.so"*
+  rm -rf "${pkgdir}/usr/lib/pkgconfig/liboz.pc"
+
+  install -Dm644 "../openzone/src/ozdyn/COPYING" "${pkgdir}/usr/share/licenses/${pkgname}/COPYING"
+}
+
+package_libozdyn-doc()
+{
+  pkgdesc='OpenZone Dynamics Library documentation'
+  license=('ZLIB')
+  arch=('any')
+  depends=('libozdyn')
+
+  cd "${srcdir}/openzone"
+
+  mkdir -p "${pkgdir}/usr/share/doc/libozdyn"
+  cp -r "doc/doxygen.libozdyn/html" "${pkgdir}/usr/share/doc/libozdyn/doxygen"
 }
 
 package_openzone()

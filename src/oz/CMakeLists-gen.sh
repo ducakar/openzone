@@ -4,15 +4,14 @@ cat << EOF > CMakeLists.txt
 configure_file( liboz.pc.in liboz.pc )
 configure_file( ozconfig.hh.in ozconfig.hh )
 
-set( ozHeaders
+set( headers
   "\${CMAKE_CURRENT_BINARY_DIR}/ozconfig.hh"
   `echo *.hh | sed 's/ /\n  /g'` )
 add_library( oz
   `echo *.{hh,cc} | sed 's/ /\n  /g'` )
 set_target_properties( oz PROPERTIES
-  PUBLIC_HEADER "\${ozHeaders}"
+  PUBLIC_HEADER "\${headers}"
   RESOURCE "\${CMAKE_CURRENT_BINARY_DIR}/liboz.pc"
-  POSITION_INDEPENDENT_CODE ON
   VERSION "\${OZ_VERSION}"
   SOVERSION "0" )
 target_link_libraries( oz \${libs_oz} )

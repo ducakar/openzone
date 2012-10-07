@@ -1,5 +1,5 @@
 /*
- * liboz - OpenZone core library.
+ * liboz - OpenZone Core Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -24,22 +24,11 @@
  * @file oz/Point.cc
  */
 
-#include "common.hh"
+#include "Point.hh"
 
 namespace oz
 {
 
-// Declare dummy class binary compatible with both SIMD and non-SIMD versions of Point class.
-struct OZ_ALIGNED( 16 ) Point
-{
-  float x;
-  float y;
-  float z;
-  float w;
-
-  static const Point ORIGIN;
-};
-
-const Point Point::ORIGIN = { 0.0f, 0.0f, 0.0f, 1.0f };
+const Point Point::ORIGIN = Point( 0.0f, 0.0f, 0.0f );
 
 }
