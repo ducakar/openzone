@@ -31,21 +31,26 @@
 namespace oz
 {
 
+/**
+ * Capsule, represents a radius-region around a line segment.
+ */
 class Capsule : public Shape
 {
   public:
 
-    float ext;
-    float radius;
-    Vec3  off;
-    Quat  rot;
-    Mat44 tf;
+    float ext;    ///< Line segment length.
+    float radius; ///< Distance from line segment representing capsule surface.
 
   public:
 
     OZ_ALWAYS_INLINE
     explicit Capsule() :
       Shape( Shape::CAPSULE )
+    {}
+
+    OZ_ALWAYS_INLINE
+    explicit Capsule( float ext_, float radius_ ) :
+      Shape( Shape::CAPSULE ), ext( ext_ ), radius( radius_ )
     {}
 
 };

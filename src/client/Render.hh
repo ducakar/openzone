@@ -24,7 +24,6 @@
 #pragma once
 
 #include <client/Imago.hh>
-
 #include <client/ui/UI.hh>
 
 namespace oz
@@ -90,8 +89,6 @@ class Render
     uint            mainFrame;
     uint            depthBuffer;
     uint            colourBuffer;
-    uint            normalBuffer;
-    uint            specularBuffer;
 
   public:
 

@@ -612,6 +612,8 @@ int Client::main()
             }
           }
 #endif
+          input.readEvent( &event );
+          break;
         }
         case SDL_KEYUP:
 #if SDL_MAJOR_VERSION >= 2

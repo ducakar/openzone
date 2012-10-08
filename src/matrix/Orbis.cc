@@ -301,13 +301,14 @@ void Orbis::reposition( Frag* frag )
 
 void Orbis::update()
 {
-  strAvailableIndices.addAll( strFreedIndices[waiting], strFreedIndices[waiting].length() );
+  strAvailableIndices.addAll( strFreedIndices[waiting].begin(), strFreedIndices[waiting].length() );
   strFreedIndices[waiting].clear();
 
-  objAvailableIndices.addAll( objFreedIndices[waiting], objFreedIndices[waiting].length() );
+  objAvailableIndices.addAll( objFreedIndices[waiting].begin(), objFreedIndices[waiting].length() );
   objFreedIndices[waiting].clear();
 
-  fragAvailableIndices.addAll( fragFreedIndices[waiting], fragFreedIndices[waiting].length() );
+  fragAvailableIndices.addAll( fragFreedIndices[waiting].begin(),
+                               fragFreedIndices[waiting].length() );
   fragFreedIndices[waiting].clear();
 
   freeing = !freeing;

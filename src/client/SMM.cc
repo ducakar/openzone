@@ -36,14 +36,12 @@ namespace oz
 namespace client
 {
 
-SMM::SMM( int id_ ) :
-  id( id_ ), isPreloaded( false ), isLoaded( false )
+SMM::SMM( int id ) :
+  file( liber.models[id].path ), isPreloaded( false ), isLoaded( false )
 {}
 
 void SMM::preload()
 {
-  file.setPath( liber.models[id].path );
-
   if( !file.map() ) {
     OZ_ERROR( "SMM file '%s' mmap failed", file.path().cstr() );
   }

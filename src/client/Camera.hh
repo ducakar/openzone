@@ -144,7 +144,7 @@ class Camera
       }
       else {
         int strIndex = ent->str->index;
-        int entIndex = int( ent - ent->str->entities );
+        int entIndex = int( ent - ent->str->entities.begin() );
 
         entity = strIndex * Struct::MAX_ENTITIES + entIndex;
       }
@@ -191,7 +191,7 @@ class Camera
     {
       mag        = mag_;
       desiredMag = mag_;
-    };
+    }
 
     void smoothMagnify( float mag_ )
     {

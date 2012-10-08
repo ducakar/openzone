@@ -279,7 +279,7 @@ String JSON::Parser::parseString()
   }
   chars.add( '\0' );
 
-  return String( chars, chars.length() - 1 );
+  return String( chars.begin(), chars.length() - 1 );
 }
 
 OZ_HIDDEN
@@ -877,6 +877,13 @@ Quat JSON::asQuat() const
   return q;
 }
 
+Mat33 JSON::asMat33() const
+{
+  Mat33 m;
+  asArray( m, 9 );
+  return m;
+}
+
 Mat44 JSON::asMat44() const
 {
   Mat44 m;
@@ -1064,6 +1071,26 @@ void JSON::asArray( Quat* array, int count ) const
   }
 }
 
+void JSON::asArray( Mat33* array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType != ARRAY ) {
+    OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    OZ_ERROR( "JSON array has %d elements but %d expected: %s",
+              list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asMat33();
+  }
+}
+
 void JSON::asArray( Mat44* array, int count ) const
 {
   wasAccessed = true;
@@ -1182,6 +1209,12 @@ Quat JSON::get( const Quat& defaultValue ) const
 {
   Quat q;
   return get( q, 4 ) ? q : defaultValue;
+}
+
+Mat33 JSON::get( const Mat33& defaultValue ) const
+{
+  Mat33 m;
+  return get( m, 9 ) ? m : defaultValue;
 }
 
 Mat44 JSON::get( const Mat44& defaultValue ) const
@@ -1406,6 +1439,30 @@ bool JSON::get( Quat* array, int count ) const
   return true;
 }
 
+bool JSON::get( Mat33* array, int count ) const
+{
+  wasAccessed = true;
+
+  if( valueType == NIL ) {
+    return false;
+  }
+  else if( valueType != ARRAY ) {
+    OZ_ERROR( "JSON value accessed as an array: %s", toString().cstr() );
+  }
+
+  const List<JSON>& list = static_cast<const ArrayData*>( data )->list;
+
+  if( list.length() != count ) {
+    OZ_ERROR( "JSON array has %d elements but %d expected: %s",
+              list.length(), count, toString().cstr() );
+  }
+
+  for( int i = 0; i < count; ++i ) {
+    array[i] = list[i].asMat33();
+  }
+  return true;
+}
+
 bool JSON::get( Mat44* array, int count ) const
 {
   wasAccessed = true;
@@ -1545,6 +1602,22 @@ void JSON::set( const Quat& q )
   }
 }
 
+void JSON::set( const Mat33& m )
+{
+  clear();
+
+  data      = new ArrayData();
+  valueType = ARRAY;
+
+  List<JSON>& list = static_cast<ArrayData*>( data )->list;
+
+  for( int i = 0; i < 3; ++i ) {
+    for( int j = 0; j < 3; ++j ) {
+      list.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
+    }
+  }
+}
+
 void JSON::set( const Mat44& m )
 {
   clear();
@@ -1554,8 +1627,10 @@ void JSON::set( const Mat44& m )
 
   List<JSON>& list = static_cast<ArrayData*>( data )->list;
 
-  for( int i = 0; i < 16; ++i ) {
-    list.add( JSON( new NumberData( m[i] ), NUMBER ) );
+  for( int i = 0; i < 4; ++i ) {
+    for( int j = 0; j < 4; ++j ) {
+      list.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
+    }
   }
 }
 
@@ -1717,6 +1792,26 @@ JSON& JSON::add( const Quat& q )
   return elem;
 }
 
+JSON& JSON::add( const Mat33& m )
+{
+  if( valueType != ARRAY ) {
+    OZ_ERROR( "Tried to add a value to a non-array JSON value: %s", toString().cstr() );
+  }
+
+  List<JSON>& list = static_cast<ArrayData*>( data )->list;
+  list.add( JSON( new ArrayData(), ARRAY ) );
+
+  JSON& elem = list.last();
+  List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
+
+  for( int i = 0; i < 3; ++i ) {
+    for( int j = 0; j < 3; ++j ) {
+      elemList.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
+    }
+  }
+  return elem;
+}
+
 JSON& JSON::add( const Mat44& m )
 {
   if( valueType != ARRAY ) {
@@ -1729,8 +1824,10 @@ JSON& JSON::add( const Mat44& m )
   JSON& elem = list.last();
   List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
 
-  for( int i = 0; i < 16; ++i ) {
-    elemList.add( JSON( new NumberData( m[16] ), NUMBER ) );
+  for( int i = 0; i < 4; ++i ) {
+    for( int j = 0; j < 4; ++j ) {
+      elemList.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
+    }
   }
   return elem;
 }
@@ -1892,6 +1989,26 @@ JSON& JSON::add( const char* key, const Quat& q )
   return elem;
 }
 
+JSON& JSON::add( const char* key, const Mat33& m )
+{
+  if( valueType != OBJECT ) {
+    OZ_ERROR( "Tried to add a key-value pair '%s' to a non-object JSON value: %s",
+              key, toString().cstr() );
+  }
+
+  HashMap<String, JSON>& table = static_cast<ObjectData*>( data )->table;
+  JSON& elem = table.add( key, JSON( new ArrayData(), ARRAY ) );
+
+  List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
+
+  for( int i = 0; i < 3; ++i ) {
+    for( int j = 0; j < 3; ++j ) {
+      elemList.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
+    }
+  }
+  return elem;
+}
+
 JSON& JSON::add( const char* key, const Mat44& m )
 {
   if( valueType != OBJECT ) {
@@ -1904,8 +2021,10 @@ JSON& JSON::add( const char* key, const Mat44& m )
 
   List<JSON>& elemList = static_cast<ArrayData*>( elem.data )->list;
 
-  for( int i = 0; i < 16; ++i ) {
-    elemList.add( JSON( new NumberData( m[i] ), NUMBER ) );
+  for( int i = 0; i < 4; ++i ) {
+    for( int j = 0; j < 4; ++j ) {
+      elemList.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
+    }
   }
   return elem;
 }
@@ -2132,6 +2251,30 @@ JSON& JSON::include( const char* key, const Quat& q )
   return *entry;
 }
 
+JSON& JSON::include( const char* key, const Mat33& m )
+{
+  if( valueType != OBJECT ) {
+    OZ_ERROR( "Tried to include a key-value pair '%s' in a non-object JSON value: %s",
+              key, toString().cstr() );
+  }
+
+  ObjectData* table = static_cast<ObjectData*>( data );
+  JSON* entry = table->table.find( key );
+
+  if( entry == nullptr ) {
+    entry = &table->table.add( key, JSON( new ArrayData(), ARRAY ) );
+
+    List<JSON>& list = static_cast<ArrayData*>( entry->data )->list;
+
+    for( int i = 0; i < 3; ++i ) {
+      for( int j = 0; j < 3; ++j ) {
+        list.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
+      }
+    }
+  }
+  return *entry;
+}
+
 JSON& JSON::include( const char* key, const Mat44& m )
 {
   if( valueType != OBJECT ) {
@@ -2147,8 +2290,10 @@ JSON& JSON::include( const char* key, const Mat44& m )
 
     List<JSON>& list = static_cast<ArrayData*>( entry->data )->list;
 
-    for( int i = 0; i < 16; ++i ) {
-      list.add( JSON( new NumberData( m[i] ), NUMBER ) );
+    for( int i = 0; i < 4; ++i ) {
+      for( int j = 0; j < 4; ++j ) {
+        list.add( JSON( new NumberData( m[i][j] ), NUMBER ) );
+      }
     }
   }
   return *entry;

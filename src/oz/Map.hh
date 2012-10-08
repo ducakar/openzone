@@ -298,24 +298,6 @@ class Map
     }
 
     /**
-     * Constant pointer to the first element.
-     */
-    OZ_ALWAYS_INLINE
-    operator const Elem* () const
-    {
-      return data;
-    }
-
-    /**
-     * Pointer to the first element.
-     */
-    OZ_ALWAYS_INLINE
-    operator Elem* ()
-    {
-      return data;
-    }
-
-    /**
      * Constant reference to the `i`-th element.
      */
     OZ_ALWAYS_INLINE
@@ -523,7 +505,7 @@ class Map
       if( newCount > count ) {
         ensureCapacity( newCount );
       }
-      else if( newCount < count ) {
+      else {
         // Ensure destruction of removed elements.
         for( int i = newCount; i < count; ++i ) {
           data[i] = Elem();

@@ -159,8 +159,6 @@ class Vec4 : public VectorBase4
     OZ_ALWAYS_INLINE
     const float& operator [] ( int i ) const
     {
-      hard_assert( 0 <= i && i < 4 );
-
       return ( &x )[i];
     }
 
@@ -170,8 +168,6 @@ class Vec4 : public VectorBase4
     OZ_ALWAYS_INLINE
     float& operator [] ( int i )
     {
-      hard_assert( 0 <= i && i < 4 );
-
       return ( &x )[i];
     }
 

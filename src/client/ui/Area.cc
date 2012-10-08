@@ -133,9 +133,7 @@ void Area::onReposition()
 {}
 
 void Area::onUpdate()
-{
-  hard_assert( false );
-}
+{}
 
 bool Area::onMouseEvent()
 {

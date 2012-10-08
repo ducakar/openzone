@@ -304,7 +304,7 @@ class String
     /**
      * Create string form the given C string with a known length.
      *
-     * @param s
+     * @param s C string.
      * @param count length in bytes without the terminating null character.
      */
     String( const char* s, int count );
@@ -342,6 +342,13 @@ class String
     String& operator = ( String&& s );
 
     /**
+     * Replace current string with the giver C string.
+     *
+     * Reuse existing storage only if it the size matches.
+     */
+    String& operator = ( const char* s );
+
+    /**
      * Create a string in sprintf-like way.
      */
     OZ_PRINTF_FORMAT( 1, 2 )
@@ -362,13 +369,6 @@ class String
      * Create a copy that has all instances of `whatChar` replaced by `withChar`.
      */
     static String replace( const char* s, char whatChar, char withChar );
-
-    /**
-     * Replace current string with the giver C string.
-     *
-     * Reuse existing storage only if it the size matches.
-     */
-    String& operator = ( const char* s );
 
     /**
      * Equality.

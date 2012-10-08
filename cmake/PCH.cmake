@@ -14,16 +14,9 @@
 #        - Compiler flags are retrieved from `CMAKE_CXX_FLAGS`, `CMAKE_CXX_FLAGS_<BUILDTYPE>`,
 #          included directories added via `include_directories()` and defines added via
 #          `add_definitions()`.
-
-include( CheckCXXSourceCompiles )
-
-check_cxx_source_compiles( "
-#ifdef __clang__
-int main( int, char** ) { return 0; }
-#else
-# error Not LLVM/Clang
-#endif
-" CLANG )
+#        - If a target using PCH has some target-specific compiler flags (`COMPILER_FLAGS property),
+#          those are overridden by `use_pch()` macro. Otherwise PCH would be unusable for
+#          such targets anyway as PCH must be compiled with exactly the same flags as the target.
 
 macro( add_pch _pchTarget _inputHeader _inputModule )
   # Extract CMAKE_CXX_FLAGS and CMAKE_CXX_FLAGS_XXX for the current configuration XXX.
@@ -48,7 +41,7 @@ macro( add_pch _pchTarget _inputHeader _inputModule )
   # Helper target that properly triggers recompilation of precompiled header.
   add_library( ${_pchTarget}_trigger STATIC "${_inputModule}" )
 
-  # Build precompiled header and copy original header to the build folder - GCC wants it there.
+  # Build PCH and copy original header to the build folder since we include PCH indirectly.
   add_custom_command( OUTPUT "${_inputHeader}.gch"
     DEPENDS ${_pchTarget}_trigger
     COMMAND "${CMAKE_COMMAND}" -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" "${_inputHeader}"
@@ -56,19 +49,11 @@ macro( add_pch _pchTarget _inputHeader _inputModule )
     COMMAND "${CMAKE_CXX_COMPILER}" ${_flags} -o "${_inputHeader}.gch" "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" )
   add_custom_target( ${_pchTarget} DEPENDS "${_inputHeader}.gch" )
 
-  if( CLANG )
-    set( ${_pchTarget}_outputPCH "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}.gch" )
-  else()
-    set( ${_pchTarget}_outputPCH "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}" )
-  endif()
+  # Cache header location for later `use_pch()` macros.
+  set( ${_pchTarget}_outputPCH "${CMAKE_CURRENT_BINARY_DIR}/${_inputHeader}" )
 endmacro()
 
 macro( use_pch _target _pchTarget )
   add_dependencies( ${_target} ${_pchTarget} )
-
-  if( CLANG )
-    set_target_properties( ${_target} PROPERTIES COMPILE_FLAGS "-include-pch ${${_pchTarget}_outputPCH}" )
-  else()
-    set_target_properties( ${_target} PROPERTIES COMPILE_FLAGS "-include ${${_pchTarget}_outputPCH}" )
-  endif()
+  set_target_properties( ${_target} PROPERTIES COMPILE_FLAGS "-include ${${_pchTarget}_outputPCH}" )
 endmacro()

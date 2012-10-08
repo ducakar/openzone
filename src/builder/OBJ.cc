@@ -289,7 +289,7 @@ void OBJ::load()
 
   DArray<char> buffer( LINE_BUFFER_SIZE );
 
-  char* pos = fgets( buffer, LINE_BUFFER_SIZE, fs );
+  char* pos = fgets( buffer.begin(), LINE_BUFFER_SIZE, fs );
   char* end;
 
   // until EOF reached
@@ -330,7 +330,7 @@ void OBJ::load()
       }
     }
     // next line
-    pos = fgets( buffer, LINE_BUFFER_SIZE, fs );
+    pos = fgets( buffer.begin(), LINE_BUFFER_SIZE, fs );
   }
 
   fclose( fs );

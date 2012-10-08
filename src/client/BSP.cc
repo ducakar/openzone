@@ -34,7 +34,7 @@ namespace client
 {
 
 BSP::BSP( const matrix::BSP* bsp_ ) :
-  bsp( bsp_ ), isPreloaded( false ), isLoaded( false )
+  bsp( bsp_ ), file( "bsp/" + bsp->name + ".ozcBSP" ), isPreloaded( false ), isLoaded( false )
 {
   foreach( model, bsp->models.citer() ) {
     context.requestSMM( *model );
@@ -54,8 +54,6 @@ BSP::~BSP()
 
 void BSP::preload()
 {
-  file.setPath( "bsp/" + bsp->name + ".ozcBSP" );
-
   if( !file.map() ) {
     OZ_ERROR( "BSP file '%s' mmap failed", file.path().cstr() );
   }
@@ -84,8 +82,6 @@ void BSP::draw( const Struct* str )
   tf.model = Mat44::translation( str->p - Point::ORIGIN );
   tf.model.rotateZ( float( str->heading ) * Math::TAU / 4.0f );
 
-  mesh.schedule( 0 );
-
   for( int i = 0; i < str->entities.length(); ++i ) {
     const Entity& entity = str->entities[i];
 
@@ -106,6 +102,8 @@ void BSP::draw( const Struct* str )
 
     tf.pop();
   }
+
+  mesh.schedule( 0 );
 }
 
 }

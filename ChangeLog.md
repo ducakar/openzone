@@ -2,13 +2,22 @@
 
 - oz
     * null replaced by nullptr keyword
-    * improved iterator classes: much less code duplication
-    * STL-like begin() and end() members on containers
-    * new Set template class: Map with arbitrary elements instead of key-value pairs
-    * HashIndex and HashString merged into new HashMap template class with an arbitrary key type
-    * new HashSet template class: hashtable of key-only elements instead of key-value pairs
+    * container improvements
+        + improved iterators: much less code duplication, no more key() and value() members
+        + STL-like begin() and end() members on containers
+        + new Set template class: Map with arbitrary elements instead of key-value pairs
+        + HashIndex and HashString merged into new HashMap template class with an arbitrary key type
+        + new HashSet template class: hashtable of key-only elements instead of key-value pairs
+    * new Mat33 class for 3x3 matrixes
     * SIMD support in linear algebra classes
     * ALSA support for System::bell()
+- ozdyn
+    * rigid body physics
+    * collision
+      + primitives: Box (OBB), Capsule, Dot (point) and Mesh (arbitrary triangle mesh)
+      + all but Dot-Dot and Mesh-Mesh collisions supported
+    * physics
+      + only contact joints supported
 - ui
     * UI colours, fonts and layouts can be configured in `ui/style.json`
 - client

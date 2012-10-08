@@ -1,5 +1,5 @@
 /*
- * libozdyn - OpenZone Dynamics Library.
+ * liboz - OpenZone Core Library.
  *
  * Copyright © 2002-2012 Davorin Učakar
  *
@@ -21,42 +21,20 @@
  */
 
 /**
- * @file ozdyn/collision/Shape.hh
+ * @file oz/Mat33.cc
  */
 
-#pragma once
-
-#include <oz/oz.hh>
+#include "Mat33.hh"
 
 namespace oz
 {
 
-class Shape
-{
-  public:
+const Mat33 Mat33::ZERO = Mat33( 0.0f, 0.0f, 0.0f,
+                                 0.0f, 0.0f, 0.0f,
+                                 0.0f, 0.0f, 0.0f );
 
-    /**
-     * Shape types.
-     */
-    enum Type
-    {
-      COMPOUND,
-      BOX,
-      CAPSULE,
-      MAX
-    };
-
-  public:
-
-    Type type; ///< Shape type.
-
-  public:
-
-    OZ_ALWAYS_INLINE
-    explicit Shape( Type type_ ) :
-      type( type_ )
-    {}
-
-};
+const Mat33 Mat33::ID   = Mat33( 1.0f, 0.0f, 0.0f,
+                                 0.0f, 1.0f, 0.0f,
+                                 0.0f, 0.0f, 1.0f );
 
 }

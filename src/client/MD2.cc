@@ -221,14 +221,12 @@ void MD2::AnimState::advance()
   hard_assert( 0.0f <= frameRatio && frameRatio < 1.0f );
 }
 
-MD2::MD2( int id_ ) :
-  id( id_ ), isPreloaded( false ), isLoaded( false )
+MD2::MD2( int id ) :
+  file( liber.models[id].path ), isPreloaded( false ), isLoaded( false )
 {}
 
 void MD2::preload()
 {
-  file.setPath( liber.models[id].path );
-
   if( !file.map() ) {
     OZ_ERROR( "MD2 model file '%s' mmap failed", file.path().cstr() );
   }

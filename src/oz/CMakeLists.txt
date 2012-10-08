@@ -26,6 +26,7 @@ set( headers
   List.hh
   Log.hh
   Map.hh
+  Mat33.hh
   Mat44.hh
   Math.hh
   Mutex.hh
@@ -73,6 +74,7 @@ add_library( oz
   List.hh
   Log.hh
   Map.hh
+  Mat33.hh
   Mat44.hh
   Math.hh
   Mutex.hh
@@ -102,6 +104,7 @@ add_library( oz
   File.cc
   JSON.cc
   Log.cc
+  Mat33.cc
   Mat44.cc
   Math.cc
   Mutex.cc

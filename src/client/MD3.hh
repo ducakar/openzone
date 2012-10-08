@@ -123,11 +123,11 @@ class MD3
 
   private:
 
-    AnimInfo legsAnimList[LEGS_ANIM_MAX];
-    AnimInfo torsoAnimList[TORSO_ANIM_MAX];
-    Joint    joints[MAX_FRAMES][JOINTS_MAX];
+//     AnimInfo legsAnimList[LEGS_ANIM_MAX];
+//     AnimInfo torsoAnimList[TORSO_ANIM_MAX];
+//     Joint    joints[MAX_FRAMES][JOINTS_MAX];
 
-    int id;
+    PFile file;
 
   public:
 

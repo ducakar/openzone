@@ -248,6 +248,11 @@ class Log
     const Log& operator << ( const Quat& q ) const;
 
     /**
+     * Print 3x3 matrix as `printRaw( "[%g %g %g; %g %g %g; %g %g %g]", ... )` in row-major format.
+     */
+    const Log& operator << ( const Mat33& m ) const;
+
+    /**
      * Print 4x4 matrix as `printRaw( "[%g %g %g %g; %g %g %g %g; %g %g %g %g; %g %g %g %g]", ... )`
      * in row-major format.
      */

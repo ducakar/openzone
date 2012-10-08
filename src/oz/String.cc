@@ -79,20 +79,27 @@ bool String::endsWith( const char* s, const char* sub )
 }
 
 String::String( const char* s, int count_ ) :
-  count( count_ )
+  buffer( baseBuffer ), count( count_ )
 {
-  ensureCapacity();
-  memcpy( buffer, s, size_t( count ) );
+  if( count != 0 ) {
+    ensureCapacity();
+    memcpy( buffer, s, size_t( count ) );
+  }
   buffer[count] = '\0';
 }
 
 String::String( const char* s )
 {
-  count = s == nullptr ? 0 : length( s );
-  ensureCapacity();
-
-  memcpy( buffer, s, size_t( count ) );
-  buffer[count] = '\0';
+  if( s == nullptr ) {
+    buffer    = baseBuffer;
+    count     = 0;
+    buffer[0] = '\0';
+  }
+  else {
+    count = length( s );
+    ensureCapacity();
+    memcpy( buffer, s, size_t( count + 1 ) );
+  }
 }
 
 String::~String()
@@ -113,7 +120,7 @@ String::String( String&& s ) :
   count( s.count )
 {
   if( s.buffer != s.baseBuffer ) {
-    buffer = s.buffer;
+    buffer   = s.buffer;
     s.buffer = s.baseBuffer;
   }
   else {
@@ -121,7 +128,7 @@ String::String( String&& s ) :
     memcpy( baseBuffer, s.baseBuffer, size_t( count + 1 ) );
   }
 
-  s.count = 0;
+  s.count         = 0;
   s.baseBuffer[0] = '\0';
 }
 
@@ -131,12 +138,11 @@ String& String::operator = ( const String& s )
     return *this;
   }
 
-  count = s.count;
-
   if( buffer != baseBuffer ) {
     free( buffer );
   }
 
+  count = s.count;
   ensureCapacity();
   memcpy( buffer, s.buffer, size_t( count + 1 ) );
 
@@ -149,24 +155,47 @@ String& String::operator = ( String&& s )
     return *this;
   }
 
-  count = s.count;
-
   if( buffer != baseBuffer ) {
     free( buffer );
   }
 
-  if( s.buffer != s.baseBuffer ) {
-    buffer = s.buffer;
-    s.buffer = s.baseBuffer;
+  count = s.count;
 
+  if( s.buffer != s.baseBuffer ) {
+    buffer   = s.buffer;
+    s.buffer = s.baseBuffer;
   }
   else {
     buffer = baseBuffer;
     memcpy( baseBuffer, s.baseBuffer, size_t( count + 1 ) );
   }
 
-  s.count = 0;
+  s.count         = 0;
   s.baseBuffer[0] = '\0';
+
+  return *this;
+}
+
+String& String::operator = ( const char* s )
+{
+  if( s == buffer ) {
+    return *this;
+  }
+
+  if( buffer != baseBuffer ) {
+    free( buffer );
+  }
+
+  if( s == nullptr ) {
+    buffer    = baseBuffer;
+    count     = 0;
+    buffer[0] = '\0';
+  }
+  else {
+    count = length( s );
+    ensureCapacity();
+    memcpy( buffer, s, size_t( count + 1 ) );
+  }
 
   return *this;
 }
@@ -208,25 +237,6 @@ String String::replace( const char* s, char whatChar, char withChar )
   r.buffer[count] = '\0';
 
   return r;
-}
-
-String& String::operator = ( const char* s )
-{
-  if( s == buffer ) {
-    return *this;
-  }
-
-  count = s == nullptr ? 0 : length( s );
-
-  if( buffer != baseBuffer ) {
-    free( buffer );
-  }
-  ensureCapacity();
-
-  memcpy( buffer, s, size_t( count ) );
-  buffer[count] = '\0';
-
-  return *this;
 }
 
 bool String::endsWith( const char* sub ) const

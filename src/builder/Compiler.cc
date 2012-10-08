@@ -252,7 +252,7 @@ void Compiler::end()
       parts[partIndex].indices.add( parts[partIndex].indices.last() );
       parts[partIndex].indices.add( part.indices.first() );
     }
-    parts[partIndex].indices.addAll( part.indices, part.indices.length() );
+    parts[partIndex].indices.addAll( part.indices.begin(), part.indices.length() );
   }
 
   part.indices.clear();
@@ -388,7 +388,7 @@ void Compiler::writeMesh( BufferStream* os, bool embedTextures )
     parts[i].nIndices   = parts[i].indices.length();
     parts[i].firstIndex = nIndices;
 
-    indices.addAll( parts[i].indices, parts[i].indices.length() );
+    indices.addAll( parts[i].indices.begin(), parts[i].indices.length() );
     nIndices += parts[i].indices.length();
 
     nComponents = max( nComponents, parts[i].component + 1 );

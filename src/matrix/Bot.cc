@@ -117,7 +117,8 @@ bool Bot::trigger( const Entity* entity )
   if( entity->key >= 0 && entity->clazz->target >= 0 && canReach( entity ) ) {
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_TRIGGER;
-    instrument = entity->str->index * Struct::MAX_ENTITIES + int( entity - entity->str->entities );
+    instrument = entity->str->index * Struct::MAX_ENTITIES +
+                 int( entity - entity->str->entities.begin() );
     container  = -1;
 
     return true;
@@ -132,7 +133,8 @@ bool Bot::lock( const Entity* entity )
   if( entity->key != 0 && canReach( entity ) ) {
     actions   &= ~INSTRUMENT_ACTIONS;
     actions   |= ACTION_LOCK;
-    instrument = entity->str->index * Struct::MAX_ENTITIES + int( entity - entity->str->entities );
+    instrument = entity->str->index * Struct::MAX_ENTITIES +
+                 int( entity - entity->str->entities.begin() );
     container  = -1;
 
     return true;

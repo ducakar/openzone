@@ -31,13 +31,14 @@
 namespace oz
 {
 
+/**
+ * (Oriented) box.
+ */
 class Box : public Shape
 {
   public:
 
-    Vec3  ext; ///< Extents.
-    Vec3  off; ///< Offset relative to body.
-    Quat  rot; ///< Rotation relative to body.
+    Vec3 ext; ///< Extents.
 
   public:
 
@@ -47,11 +48,9 @@ class Box : public Shape
     {}
 
     OZ_ALWAYS_INLINE
-    explicit Box( const Vec3& ext_, const Vec3& off_ = Vec3::ZERO, const Quat& rot_ = Quat::ID ) :
-      Shape( Shape::BOX ), ext( ext_ ), off( off_ ), rot( rot_ )
+    explicit Box( const Vec3& ext_ ) :
+      Shape( Shape::BOX ), ext( ext_ )
     {}
-
-    bool overlaps( const Box& b ) const;
 
 };
 

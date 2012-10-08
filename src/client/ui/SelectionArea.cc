@@ -103,7 +103,7 @@ void SelectionArea::drawHoveredRect( const Span& span, const Struct* str, const 
     int labelY = span.maxY + 12;
 
     if( ent != nullptr ) {
-      int entIndex = str->index * Struct::MAX_ENTITIES + int( ent - str->entities );
+      int entIndex = str->index * Struct::MAX_ENTITIES + int( ent - str->entities.begin() );
 
       if( entIndex != cachedEntityIndex ) {
         const String& title = ent->clazz->title;
@@ -300,7 +300,7 @@ bool SelectionArea::onMouseEvent()
     hoverStr = str->index;
 
     if( ent != nullptr ) {
-      hoverEnt = str->index * Struct::MAX_ENTITIES + int( ent - str->entities );
+      hoverEnt = str->index * Struct::MAX_ENTITIES + int( ent - str->entities.begin() );
     }
 
     if( input.leftClick ) {

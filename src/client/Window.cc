@@ -302,6 +302,9 @@ void Window::init()
   SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, 1 );
 
   descriptor = SDL_SetVideoMode( width, height, 0, flags );
+  if( descriptor == nullptr ) {
+    OZ_ERROR( "SDL window creation failed" );
+  }
 
   SDL_WM_SetCaption( "OpenZone " OZ_VERSION, "OpenZone " OZ_VERSION );
 
@@ -310,6 +313,9 @@ void Window::init()
   descriptor = SDL_CreateWindow( "OpenZone " OZ_VERSION,
                                  SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                  width, height, flags );
+  if( descriptor == nullptr ) {
+    OZ_ERROR( "SDL window creation failed" );
+  }
 
   SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,   0 );
   SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 0 );

@@ -81,6 +81,7 @@
 #include "Plane.hh"
 #include "Vec4.hh"
 #include "Quat.hh"
+#include "Mat33.hh"
 #include "Mat44.hh"
 
 /*

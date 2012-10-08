@@ -108,7 +108,7 @@ class AABB
     /**
      * True iff the given point is inside this `AABB`.
      *
-     * @param point
+     * @param point point.
      * @param eps margin for which this `AABB` is enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
@@ -123,7 +123,7 @@ class AABB
     /**
      * True iff the given `AABB` is inside this `AABB`.
      *
-     * @param a
+     * @param a other AABB.
      * @param eps margin for which this `AABB` is enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
@@ -138,7 +138,7 @@ class AABB
     /**
      * True iff the given `AABB` overlaps with this `AABB`.
      *
-     * @param a
+     * @param a other AABB.
      * @param eps margin for which this `AABB` is enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE

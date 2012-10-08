@@ -7,7 +7,6 @@ set( headers
   collision/Collider.hh
   collision/Compound.hh
   collision/Shape.hh
-  collision/Transf.hh
   physics/Body.hh )
 add_library( ozdyn
   ozdyn.hh
@@ -16,7 +15,6 @@ add_library( ozdyn
   collision/Collider.hh
   collision/Compound.hh
   collision/Shape.hh
-  collision/Transf.hh
   physics/Body.hh
   collision/Box.cc
   collision/Capsule.cc

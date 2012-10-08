@@ -32,12 +32,16 @@ namespace oz
 namespace client
 {
 
-MD3::MD3( int id_ ) :
-  id( id_ ), isPreloaded( false ), isLoaded( false )
+MD3::MD3( int id ) :
+  file( liber.models[id].path ), isPreloaded( false ), isLoaded( false )
 {}
 
 void MD3::preload()
 {
+  if( !file.map() ) {
+    OZ_ERROR( "MD3 model file '%s' mmap failed", file.path().cstr() );
+  }
+
   isPreloaded = true;
 }
 

@@ -512,6 +512,38 @@ class InputStream
     }
 
     /**
+     * Read 3x3 matrix.
+     */
+    OZ_ALWAYS_INLINE
+    Mat33 readMat33()
+    {
+      const int* data = reinterpret_cast<const int*>( forward( sizeof( float[9] ) ) );
+
+      if( order == Endian::NATIVE ) {
+        return Mat33( Math::fromBits( data[0] ),
+                      Math::fromBits( data[1] ),
+                      Math::fromBits( data[2] ),
+                      Math::fromBits( data[3] ),
+                      Math::fromBits( data[4] ),
+                      Math::fromBits( data[5] ),
+                      Math::fromBits( data[6] ),
+                      Math::fromBits( data[7] ),
+                      Math::fromBits( data[8] ) );
+      }
+      else {
+        return Mat33( Math::fromBits( Endian::bswap32( data[0] ) ),
+                      Math::fromBits( Endian::bswap32( data[1] ) ),
+                      Math::fromBits( Endian::bswap32( data[2] ) ),
+                      Math::fromBits( Endian::bswap32( data[3] ) ),
+                      Math::fromBits( Endian::bswap32( data[4] ) ),
+                      Math::fromBits( Endian::bswap32( data[5] ) ),
+                      Math::fromBits( Endian::bswap32( data[6] ) ),
+                      Math::fromBits( Endian::bswap32( data[7] ) ),
+                      Math::fromBits( Endian::bswap32( data[8] ) ) );
+      }
+    }
+
+    /**
      * Read 4x4 matrix.
      */
     OZ_ALWAYS_INLINE

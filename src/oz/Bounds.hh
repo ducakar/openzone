@@ -213,7 +213,7 @@ class Bounds
     /**
      * True iff the given point is inside this `Bounds`.
      *
-     * @param p
+     * @param p point.
      * @param eps margin for which this `Bounds` are enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
@@ -227,7 +227,7 @@ class Bounds
     /**
      * True iff the given `AABB` is inside this `Bounds`.
      *
-     * @param a
+     * @param a AABB.
      * @param eps margin for which this `Bounds` are enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
@@ -243,7 +243,7 @@ class Bounds
     /**
      * True iff the given `AABB` overlaps with this `Bounds`.
      *
-     * @param a
+     * @param a AABB.
      * @param eps margin for which this `Bounds` are enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
@@ -259,7 +259,7 @@ class Bounds
     /**
      * True iff the given `Bounds` is inside this `Bounds`.
      *
-     * @param b
+     * @param b other `Bounds`.
      * @param eps margin for which this `Bounds` are enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE
@@ -273,7 +273,7 @@ class Bounds
     /**
      * True iff the given `Bounds` overlaps with this `Bounds`.
      *
-     * @param b
+     * @param b other `Bounds`.
      * @param eps margin for which this `Bounds` are enlarged (can also be negative).
      */
     OZ_ALWAYS_INLINE

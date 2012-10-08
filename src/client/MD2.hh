@@ -24,7 +24,6 @@
 #pragma once
 
 #include <matrix/Bot.hh>
-
 #include <client/Mesh.hh>
 
 namespace oz
@@ -106,9 +105,7 @@ class MD2
   private:
 
     Mesh  mesh;
-
     PFile file;
-    int   id;
 
   public:
 

@@ -117,8 +117,6 @@ class Plane
     OZ_ALWAYS_INLINE
     const float& operator [] ( int i ) const
     {
-      hard_assert( 0 <= i && i < 4 );
-
       return ( &n.x )[i];
     }
 
@@ -128,8 +126,6 @@ class Plane
     OZ_ALWAYS_INLINE
     float& operator [] ( int i )
     {
-      hard_assert( 0 <= i && i < 4 );
-
       return ( &n.x )[i];
     }
 

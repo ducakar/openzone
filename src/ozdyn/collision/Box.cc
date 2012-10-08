@@ -29,10 +29,4 @@
 namespace oz
 {
 
-bool Box::overlaps( const Box& b ) const
-{
-  static_cast<void>( b );
-  return false;
-}
-
 }

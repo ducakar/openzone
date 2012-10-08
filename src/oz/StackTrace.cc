@@ -143,8 +143,14 @@ char** StackTrace::symbols() const
 
   int nWrittenFrames = i;
 
-  size_t headerSize  = size_t( nWrittenFrames ) * sizeof( char* );
-  size_t bodySize    = size_t( out - outputBuffer );
+  size_t headerSize = size_t( nWrittenFrames ) * sizeof( char* );
+  size_t bodySize   = size_t( out - outputBuffer );
+
+  if( headerSize + bodySize == 0 ) {
+    free( symbols );
+    return nullptr;
+  }
+
   char** niceSymbols = static_cast<char**>( realloc( symbols, headerSize + bodySize ) );
 
   if( niceSymbols == nullptr ) {

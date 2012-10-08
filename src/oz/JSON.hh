@@ -212,6 +212,13 @@ class JSON
     Quat asQuat() const;
 
     /**
+     * Get a number array as a `Mat33`.
+     *
+     * If value is not an array of 9 numbers, `System::error()` is invoked.
+     */
+    Mat33 asMat33() const;
+
+    /**
      * Get a number array as a `Mat44`.
      *
      * If value is not an array of 16 numbers, `System::error()` is invoked.
@@ -294,6 +301,14 @@ class JSON
      * Write array values into the given array.
      *
      * If value is not an array of the specified length or if not all array elements are arrays of
+     * 9 numbers, `System::error()` is invoked.
+     */
+    void asArray( Mat33* array, int count ) const;
+
+    /**
+     * Write array values into the given array.
+     *
+     * If value is not an array of the specified length or if not all array elements are arrays of
      * 16 numbers, `System::error()` is invoked.
      */
     void asArray( Mat44* array, int count ) const;
@@ -367,6 +382,13 @@ class JSON
      * If value is not either null or an array of 4 numbers, `System::error()` is invoked.
      */
     Quat get( const Quat& defaultValue ) const;
+
+    /**
+     * Return number array as a `Mat33` or `defaultValue` if null.
+     *
+     * If value is not either null or an array of 9 numbers, `System::error()` is invoked.
+     */
+    Mat33 get( const Mat33& defaultValue ) const;
 
     /**
      * Return number array as a `Mat44` or `defaultValue` if null.
@@ -468,6 +490,16 @@ class JSON
     /**
      * Write array values into the given array (it is left unchanged if %JSON value is null).
      *
+     * If value is not either null or an array of the specified length with arrays of 9 numbers as
+     * elements, `System::error()` is invoked.
+     *
+     * @return true if destination array has been filled, false if %JSON array is null.
+     */
+    bool get( Mat33* array, int count ) const;
+
+    /**
+     * Write array values into the given array (it is left unchanged if %JSON value is null).
+     *
      * If value is not either null or an array of the specified length with arrays of 16 numbers as
      * elements, `System::error()` is invoked.
      *
@@ -529,6 +561,11 @@ class JSON
      * Clear existing value and set to an array of 4 numbers representing `Quat` components.
      */
     void set( const Quat& q );
+
+    /**
+     * Clear existing value and set to an array of 9 numbers representing `Mat33` components.
+     */
+    void set( const Mat33& m );
 
     /**
      * Clear existing value and set to an array of 16 numbers representing `Mat44` components.
@@ -621,6 +658,13 @@ class JSON
      * If current value is not an array, `System::error()` is invoked.
      */
     JSON& add( const Quat& q );
+
+    /**
+     * Add a `Mat33` to array as a new array of 9 numbers.
+     *
+     * If current value is not an array, `System::error()` is invoked.
+     */
+    JSON& add( const Mat33& m );
 
     /**
      * Add a `Mat44` to array as a new array of 16 numbers.
@@ -740,6 +784,14 @@ class JSON
     JSON& add( const char* key, const Mat44& m );
 
     /**
+     * Add a `Mat33` with the given key to the object as a new array of 9 numbers, overwriting any
+     * existing entry with that key.
+     *
+     * If current value is not an array, `System::error()` is invoked.
+     */
+    JSON& add( const char* key, const Mat33& m );
+
+    /**
      * Add an empty array value with the given key to the object, overwriting any existing entry
      * with that key.
      *
@@ -837,6 +889,14 @@ class JSON
      * If current value is not an array, `System::error()` is invoked.
      */
     JSON& include( const char* key, const Quat& q );
+
+    /**
+     * Add a `Mat33` with the given key to the object as a new array of 9 numbers, if the key does
+     * not exist in the object.
+     *
+     * If current value is not an array, `System::error()` is invoked.
+     */
+    JSON& include( const char* key, const Mat33& m );
 
     /**
      * Add a `Mat44` with the given key to the object as a new array of 16 numbers, if the key does

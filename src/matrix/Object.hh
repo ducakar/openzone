@@ -267,9 +267,6 @@ class Object : public AABB
 
     /**
      * Add an event to the object. Events can be used for reporting collisions, sounds etc.
-     *
-     * @param id
-     * @param intensity
      */
     OZ_ALWAYS_INLINE
     void addEvent( int id, float intensity )
@@ -293,8 +290,6 @@ class Object : public AABB
 
     /**
      * Inflict damage to the object.
-     *
-     * @param damage
      */
     OZ_ALWAYS_INLINE
     void damage( float damage )

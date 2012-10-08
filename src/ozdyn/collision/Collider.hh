@@ -31,9 +31,19 @@
 namespace oz
 {
 
+class Box;
+
 class Collider
 {
   public:
+
+    struct Result
+    {
+      Vec3  axis;
+      float depth;
+    };
+
+  private:
 
     typedef bool ( OverlapFunc )( const Mat44& tf0, const Shape* shape0,
                                   const Mat44& tf1, const Shape* shape2 );
@@ -41,6 +51,10 @@ class Collider
   private:
 
     static OverlapFunc* const dispatcher[Shape::MAX][Shape::MAX];
+
+    static bool overlapsBoxBox( const Vec3& ext0, const Mat33& rot0,
+                                const Vec3& ext1, const Mat33& rot1,
+                                const Vec3& relPos, Result* result );
 
 };
 

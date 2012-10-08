@@ -205,7 +205,7 @@ void Liber::initShaders()
   }
 
   shaders.resize( shadersList.length() );
-  aMove<Resource>( shaders, shadersList, shadersList.length() );
+  aMove<Resource>( shaders.begin(), shadersList.begin(), shadersList.length() );
 
   Log::unindent();
   Log::println( "}" );
@@ -245,7 +245,7 @@ void Liber::initTextures()
   }
 
   textures.resize( texturesList.length() );
-  aMove<Resource>( textures, texturesList, texturesList.length() );
+  aMove<Resource>( textures.begin(), texturesList.begin(), texturesList.length() );
 
   Log::unindent();
   Log::println( "}" );
@@ -285,7 +285,7 @@ void Liber::initSounds()
   }
 
   sounds.resize( soundsList.length() );
-  aMove<Resource>( sounds, soundsList, soundsList.length() );
+  aMove<Resource>( sounds.begin(), soundsList.begin(), soundsList.length() );
 
   Log::unindent();
   Log::println( "}" );
@@ -315,7 +315,7 @@ void Liber::initCaela()
   }
 
   caela.resize( caelaList.length() );
-  aMove<Resource>( caela, caelaList, caelaList.length() );
+  aMove<Resource>( caela.begin(), caelaList.begin(), caelaList.length() );
 
   Log::unindent();
   Log::println( "}" );
@@ -345,7 +345,7 @@ void Liber::initTerrae()
   }
 
   terrae.resize( terraeList.length() );
-  aMove<Resource>( terrae, terraeList, terraeList.length() );
+  aMove<Resource>( terrae.begin(), terraeList.begin(), terraeList.length() );
 
   Log::unindent();
   Log::println( "}" );
@@ -422,7 +422,7 @@ void Liber::initModels()
   }
 
   models.resize( modelsList.length() );
-  aMove<Resource>( models, modelsList, modelsList.length() );
+  aMove<Resource>( models.begin(), modelsList.begin(), modelsList.length() );
 
   Log::unindent();
   Log::println( "}" );
@@ -452,7 +452,7 @@ void Liber::initNameLists()
   }
 
   nameLists.resize( nameListsList.length() );
-  aMove<Resource>( nameLists, nameListsList, nameListsList.length() );
+  aMove<Resource>( nameLists.begin(), nameListsList.begin(), nameListsList.length() );
 
   Log::unindent();
   Log::println( "}" );
@@ -502,7 +502,7 @@ void Liber::initMusic( const char* userMusicPath )
   initMusicRecurse( "userMusic", &musicTracksList );
 
   musicTracks.resize( musicTracksList.length() );
-  aMove<Resource>( musicTracks, musicTracksList, musicTracksList.length() );
+  aMove<Resource>( musicTracks.begin(), musicTracksList.begin(), musicTracksList.length() );
 
   Log::unindent();
   Log::println( "}" );

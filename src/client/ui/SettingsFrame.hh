@@ -38,8 +38,7 @@ class SettingsFrame : public Frame
 {
   private:
 
-    Text    message;
-    Button* close;
+    Text message;
 
   protected:
 

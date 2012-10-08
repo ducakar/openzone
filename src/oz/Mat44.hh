@@ -28,8 +28,7 @@
 
 #pragma once
 
-#include "Plane.hh"
-#include "Quat.hh"
+#include "Mat33.hh"
 
 namespace oz
 {
@@ -99,6 +98,14 @@ class Mat44
     {}
 
     /**
+     * Create from a 3x3 matrix.
+     */
+    OZ_ALWAYS_INLINE
+    explicit Mat44( const Mat33& m ) :
+      x( m.x ), y( m.y ), z( m.z ), w( 0.0f, 0.0f, 0.0f, 1.0f )
+    {}
+
+    /**
      * Equality.
      */
     OZ_ALWAYS_INLINE
@@ -135,25 +142,41 @@ class Mat44
     }
 
     /**
-     * Constant reference to the `i`-th element.
+     * Constant reference to the `i`-th column.
      */
     OZ_ALWAYS_INLINE
-    const float& operator [] ( int i ) const
+    const Vec4& operator [] ( int i ) const
     {
-      hard_assert( 0 <= i && i < 16 );
-
-      return ( &x.x )[i];
+      return ( &x )[i];
     }
 
     /**
-     * Reference to the `i`-th element.
+     * Reference to the `i`-th column.
      */
     OZ_ALWAYS_INLINE
-    float& operator [] ( int i )
+    Vec4& operator [] ( int i )
     {
-      hard_assert( 0 <= i && i < 16 );
+      return ( &x )[i];
+    }
 
-      return ( &x.x )[i];
+    /**
+     * `i`-th row.
+     */
+    OZ_ALWAYS_INLINE
+    Vec4 row( int i ) const
+    {
+      return Vec4( x[i], y[i], z[i], w[i] );
+    }
+
+    /**
+     * First 3x3 submatrix.
+     */
+    OZ_ALWAYS_INLINE
+    Mat33 mat33() const
+    {
+      return Mat33( x.x, x.y, x.z,
+                    y.x, y.y, y.z,
+                    z.x, z.y, z.z );
     }
 
     /**
@@ -364,7 +387,7 @@ class Mat44
     }
 
     /**
-     * Product.
+     * Quotient.
      */
     OZ_ALWAYS_INLINE
     Mat44 operator / ( scalar s ) const

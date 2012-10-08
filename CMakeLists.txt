@@ -217,14 +217,14 @@ set( warnings "-Wall -Wextra -Wconversion" )
 # Additional warnings, enabled only once in a while to check code quality (GCC specific).
 # set( warnings "${warnings} -Winvalid-pch -Wmissing-declarations -Wmissing-format-attribute" )
 # set( warnings "${warnings} -Wnon-virtual-dtor -Woverloaded-virtual -Wcast-align -Wundef" )
-# set( warnings "${warnings} -Winit-self -Wformat=2 -Wlogical-op -Wsuggest-attribute=noreturn" )
+# set( warnings "${warnings} -Winit-self -Wformat=2 -Wlogical-op -Wabi" )
 # GCC >= 4.7
-# set( warnings "${warnings} -Wzero-as-null-pointer-constant" )
+# set( warnings "${warnings} -Wsuggest-attribute=noreturn -Wzero-as-null-pointer-constant" )
 
 # Additional warnings (Clang specific).
 # set( warnings "${warnings} -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-gnu" )
-# set( warnings "${warnings} -Wno-disabled-macro-expansion -Wno-float-equal -Wno-padded -Wno-shadow" )
-# set( warnings "${warnings} -Wno-global-constructors -Wno-exit-time-destructors" )
+# set( warnings "${warnings} -Wno-disabled-macro-expansion -Wno-float-equal -Wno-padded" )
+# set( warnings "${warnings} -Wno-global-constructors -Wno-exit-time-destructors -Wno-shadow" )
 
 set( CMAKE_CXX_FLAGS "${flags} ${warnings} ${CMAKE_CXX_FLAGS}" )
 

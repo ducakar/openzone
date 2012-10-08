@@ -35,14 +35,23 @@ class Compound : public Shape
 {
   public:
 
-    Shape* shapes[16];
+    struct Child
+    {
+      Shape* shape;
+      Vec3   off;
+      Mat44  rot;
+    };
+
+    Child c[16];
 
   public:
 
     OZ_ALWAYS_INLINE
     explicit Compound() :
-      Shape( Shape::COMPOUND ), shapes()
-    {}
+      Shape( Shape::COMPOUND )
+    {
+      c[0].shape = nullptr;
+    }
 
 };
 

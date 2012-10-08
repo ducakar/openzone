@@ -39,9 +39,7 @@ class SMM
   private:
 
     Mesh  mesh;
-
     PFile file;
-    int   id;
 
   public:
 

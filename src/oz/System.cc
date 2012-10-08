@@ -135,13 +135,13 @@ static CRITICAL_SECTION bellLock;
 static const int                      BELL_ALSA_RATE  = 48000;
 static const pa_sample_spec           BELL_PA_SPEC    = { PA_SAMPLE_S16NE, 44100, 1 };
 static const timespec                 TIMESPEC_10MS   = { 0, 10 * 1000000 };
+static const timespec                 TIMESPEC_BELL   = { 0, long( BELL_TIME * 1e9f ) };
 
 static pthread_spinlock_t             bellLock;
 
 static decltype( ::pa_simple_new   )* pa_simple_new   = nullptr;
 static decltype( ::pa_simple_free  )* pa_simple_free  = nullptr;
 static decltype( ::pa_simple_write )* pa_simple_write = nullptr;
-static decltype( ::pa_simple_drain )* pa_simple_drain = nullptr;
 
 #endif
 
@@ -377,7 +377,10 @@ static void* bellMain( void* )
       }
 
       pa_simple_write( pa, samples, size_t( nSamples ) * sizeof( short ), nullptr );
-      pa_simple_drain( pa, nullptr );
+
+      // `pa_simple_drain` blocks for ~2 s longer than a sound sample lasts, so `nanosleep` is a
+      // better solution.
+      nanosleep( &TIMESPEC_BELL, nullptr );
       pa_simple_free( pa );
 
       free( samples );
@@ -478,15 +481,11 @@ static void initBell()
     *( void** ) &pa_simple_new   = dlsym( libPulse, "pa_simple_new" );
     *( void** ) &pa_simple_free  = dlsym( libPulse, "pa_simple_free" );
     *( void** ) &pa_simple_write = dlsym( libPulse, "pa_simple_write" );
-    *( void** ) &pa_simple_drain = dlsym( libPulse, "pa_simple_drain" );
 
-    if( pa_simple_new == nullptr || pa_simple_free == nullptr || pa_simple_write == nullptr ||
-        pa_simple_drain == nullptr )
-    {
+    if( pa_simple_new == nullptr || pa_simple_free == nullptr || pa_simple_write == nullptr ) {
       pa_simple_new   = nullptr;
       pa_simple_free  = nullptr;
       pa_simple_write = nullptr;
-      pa_simple_drain = nullptr;
 
       dlclose( libPulse );
     }

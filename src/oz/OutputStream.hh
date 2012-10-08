@@ -863,6 +863,70 @@ class OutputStream
     }
 
     /**
+     * Read 3x3 matrix.
+     */
+    OZ_ALWAYS_INLINE
+    Mat33 readMat33()
+    {
+      const int* data = reinterpret_cast<const int*>( forward( sizeof( float[9] ) ) );
+
+      if( order == Endian::NATIVE ) {
+        return Mat33( Math::fromBits( data[0] ),
+                      Math::fromBits( data[1] ),
+                      Math::fromBits( data[2] ),
+                      Math::fromBits( data[3] ),
+                      Math::fromBits( data[4] ),
+                      Math::fromBits( data[5] ),
+                      Math::fromBits( data[6] ),
+                      Math::fromBits( data[7] ),
+                      Math::fromBits( data[8] ) );
+      }
+      else {
+        return Mat33( Math::fromBits( Endian::bswap32( data[0] ) ),
+                      Math::fromBits( Endian::bswap32( data[1] ) ),
+                      Math::fromBits( Endian::bswap32( data[2] ) ),
+                      Math::fromBits( Endian::bswap32( data[3] ) ),
+                      Math::fromBits( Endian::bswap32( data[4] ) ),
+                      Math::fromBits( Endian::bswap32( data[5] ) ),
+                      Math::fromBits( Endian::bswap32( data[6] ) ),
+                      Math::fromBits( Endian::bswap32( data[7] ) ),
+                      Math::fromBits( Endian::bswap32( data[8] ) ) );
+      }
+    }
+
+    /**
+     * Write 3x3 matrix.
+     */
+    OZ_ALWAYS_INLINE
+    void writeMat33( const Mat44& m )
+    {
+      int* data = reinterpret_cast<int*>( forward( sizeof( float[9] ) ) );
+
+      if( order == Endian::NATIVE ) {
+        data[0] = Math::toBits( m.x.x );
+        data[1] = Math::toBits( m.x.y );
+        data[2] = Math::toBits( m.x.z );
+        data[3] = Math::toBits( m.y.x );
+        data[4] = Math::toBits( m.y.y );
+        data[5] = Math::toBits( m.y.z );
+        data[6] = Math::toBits( m.z.x );
+        data[7] = Math::toBits( m.z.y );
+        data[8] = Math::toBits( m.z.z );
+      }
+      else {
+        data[0] = Endian::bswap32( Math::toBits( m.x.x ) );
+        data[1] = Endian::bswap32( Math::toBits( m.x.y ) );
+        data[2] = Endian::bswap32( Math::toBits( m.x.z ) );
+        data[3] = Endian::bswap32( Math::toBits( m.y.x ) );
+        data[4] = Endian::bswap32( Math::toBits( m.y.y ) );
+        data[5] = Endian::bswap32( Math::toBits( m.y.z ) );
+        data[6] = Endian::bswap32( Math::toBits( m.z.x ) );
+        data[7] = Endian::bswap32( Math::toBits( m.z.y ) );
+        data[8] = Endian::bswap32( Math::toBits( m.z.z ) );
+      }
+    }
+
+    /**
      * Read 4x4 matrix.
      */
     OZ_ALWAYS_INLINE

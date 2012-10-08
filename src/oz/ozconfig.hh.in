@@ -75,6 +75,10 @@ namespace std { typedef __PTRDIFF_TYPE__ nullptr_t; }
 # define final
 #endif
 
+#if defined( OZ_CLANG ) && OZ_CLANG == 302
+# define __extern_always_inline extern __always_inline __attribute__(( __gnu_inline__ ))
+#endif
+
 // For now, SSE3 is mandatory for OZ_SIMD_MATH.
 #if defined( OZ_SIMD_MATH ) && !defined( __SSE3__ )
 # error SSE3 must be enabled for OZ_SIMD_MATH. Compile with -msse3.

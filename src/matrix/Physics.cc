@@ -392,7 +392,7 @@ void Physics::handleObjHit()
       }
       else {
         int structIndex = hit.str->index;
-        int entityIndex = int( hit.entity - hit.str->entities );
+        int entityIndex = int( hit.entity - hit.str->entities.begin() );
 
         hard_assert( uint( entityIndex ) < uint( Struct::MAX_ENTITIES ) );
 

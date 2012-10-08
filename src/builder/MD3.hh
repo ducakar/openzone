@@ -125,8 +125,8 @@ class MD3
       HEAD
     };
 
-    client::MD3::AnimInfo legsAnimList[client::MD3::LEGS_ANIM_MAX];
-    client::MD3::AnimInfo torsoAnimList[client::MD3::TORSO_ANIM_MAX];
+//     client::MD3::AnimInfo legsAnimList[client::MD3::LEGS_ANIM_MAX];
+//     client::MD3::AnimInfo torsoAnimList[client::MD3::TORSO_ANIM_MAX];
     client::MD3::Joint    joints[client::MD3::MAX_FRAMES][client::MD3::JOINTS_MAX];
 
     String   sPath;

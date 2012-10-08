@@ -169,7 +169,7 @@ CreditsMenu::CreditsMenu() :
     contents = lingua.get( contents );
 
     DArray<String> fileLines = contents.split( '\n' );
-    lines.takeAll( fileLines, fileLines.length() );
+    lines.takeAll( fileLines.begin(), fileLines.length() );
 
     if( !lines.isEmpty() && lines.last().isEmpty() ) {
       lines.popLast();
