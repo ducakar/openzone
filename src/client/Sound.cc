@@ -866,7 +866,7 @@ void Sound::initLibs()
   const char* libFaadName   = "libfaad.so.2";
 #endif
 
-  Log::print( "Linking eSpeak library [%s] ...", libeSpeakName );
+  Log::print( "Linking eSpeak library '%s' ...", libeSpeakName );
 
   libeSpeak = SDL_LoadObject( libeSpeakName );
 
@@ -884,7 +884,7 @@ void Sound::initLibs()
     Log::printEnd( " OK, speech synthesis supported" );
   }
 
-  Log::print( "Linking MAD library [%s] ...", libMadName );
+  Log::print( "Linking MAD library '%s' ...", libMadName );
 
   libMad = SDL_LoadObject( libMadName );
 
@@ -908,7 +908,7 @@ void Sound::initLibs()
     Log::printEnd( " OK, MP3 supported" );
   }
 
-  Log::print( "Linking FAAD library [%s] ...", libFaadName );
+  Log::print( "Linking FAAD library '%s' ...", libFaadName );
 
   libFaad = SDL_LoadObject( libFaadName );
 

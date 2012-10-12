@@ -44,9 +44,11 @@ macro( add_pch _pchTarget _inputHeader _inputModule )
   # Build PCH and copy original header to the build folder since we include PCH indirectly.
   add_custom_command( OUTPUT "${_inputHeader}.gch"
     DEPENDS ${_pchTarget}_trigger
-    COMMAND "${CMAKE_COMMAND}" -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" "${_inputHeader}"
+    COMMAND "${CMAKE_COMMAND}" -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}"
+            "${_inputHeader}"
     COMMAND "${CMAKE_COMMAND}" -E remove -f "${_inputHeader}.gch"
-    COMMAND "${CMAKE_CXX_COMPILER}" ${_flags} -o "${_inputHeader}.gch" "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" )
+    COMMAND "${CMAKE_CXX_COMPILER}" ${_flags} -o "${_inputHeader}.gch"
+            "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" )
   add_custom_target( ${_pchTarget} DEPENDS "${_inputHeader}.gch" )
 
   # Cache header location for later `use_pch()` macros.

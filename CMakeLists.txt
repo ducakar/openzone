@@ -233,7 +233,7 @@ if( hasLTO AND NOT WIN32 )
   # set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -flto" )
 endif()
 
-# construct flags strings for BuildInfo
+# construct strings for BuildInfo
 string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" OZ_CXX_FLAGS )
 string( TOUPPER "CMAKE_EXE_LINKER_FLAGS_${CMAKE_BUILD_TYPE}" OZ_EXE_LINKER_FLAGS )
 
@@ -247,6 +247,17 @@ set( OZ_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${${OZ_EXE_LINKER_FLAGS}} ${
 
 string( STRIP "${OZ_CXX_FLAGS}" OZ_CXX_FLAGS )
 string( STRIP "${OZ_EXE_LINKER_FLAGS}" OZ_EXE_LINKER_FLAGS )
+
+site_name( OZ_HOSTNAME )
+
+#
+# Android project
+#
+
+add_custom_command( OUTPUT "../Android"
+                    COMMAND "${CMAKE_COMMAND}" -E copy_directory
+                            "${CMAKE_SOURCE_DIR}/etc/android-project" "../Android" )
+add_custom_target( android ALL DEPENDS "../Android" )
 
 #
 # Sources

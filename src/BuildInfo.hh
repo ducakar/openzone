@@ -36,10 +36,13 @@ class BuildInfo
     static const char* const TIME;
 
     /// Host system.
-    static const char* const HOST_SYSTEM;
+    static const char* const HOST;
 
-    /// Target system.
-    static const char* const TARGET_SYSTEM;
+    /// Target architecture.
+    static const char* const HOST_ARCH;
+
+    /// Target architecture.
+    static const char* const TARGET_ARCH;
 
     /// Build configuration.
     static const char* const BUILD_TYPE;

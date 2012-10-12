@@ -12,8 +12,8 @@ set( CMAKE_CXX_COMPILER         "${PLATFORM_TRIPLET}-g++" )
 set( CMAKE_RC_COMPILER          "${PLATFORM_TRIPLET}-windres" )
 set( CMAKE_STRIP                "${PLATFORM_TRIPLET}-strip" )
 
-set( CMAKE_C_FLAGS              "-m32 -march=i686 -msse3 -mfpmath=sse" CACHE STRING "" )
-set( CMAKE_CXX_FLAGS            "-m32 -march=i686 -msse3 -mfpmath=sse" CACHE STRING "" )
+set( CMAKE_C_FLAGS              "-march=i686 -msse3 -mfpmath=sse" CACHE STRING "" )
+set( CMAKE_CXX_FLAGS            "-march=i686 -msse3 -mfpmath=sse" CACHE STRING "" )
 
 # CMake doesn't detect those correctly.
 set( SDL_INCLUDE_DIR            "${CMAKE_FIND_ROOT_PATH}/include/SDL" CACHE PATH "" )

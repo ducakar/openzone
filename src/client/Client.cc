@@ -219,8 +219,9 @@ int Client::init( int argc, char** argv )
   Log::println( "Build details {" );
   Log::indent();
   Log::println( "Date:            %s", BuildInfo::TIME );
-  Log::println( "Host system:     %s", BuildInfo::HOST_SYSTEM );
-  Log::println( "Target system:   %s", BuildInfo::TARGET_SYSTEM );
+  Log::println( "Host:            %s", BuildInfo::HOST );
+  Log::println( "Host arch:       %s", BuildInfo::HOST_ARCH );
+  Log::println( "Target arch:     %s", BuildInfo::TARGET_ARCH );
   Log::println( "Build type:      %s", BuildInfo::BUILD_TYPE );
   Log::println( "Compiler:        %s", BuildInfo::COMPILER );
   Log::println( "Compiler flags:  %s", BuildInfo::CXX_FLAGS );
@@ -366,32 +367,6 @@ int Client::init( int argc, char** argv )
   Log::unindent();
   Log::println( "}" );
 
-  config.include( "seed", "TIME" );
-
-  int seed;
-
-  if( config["seed"].type() == JSON::STRING ) {
-    if( !config["seed"].asString().equals( "TIME" ) ) {
-      OZ_ERROR( "Configuration variable 'sees' must be either \"TIME\" or an integer" );
-    }
-
-    seed = int( Time::time() );
-  }
-  else {
-    seed = config["seed"].asInt();
-    common::Lua::isRandomSeedTime = false;
-  }
-
-  if( isBenchmark ) {
-    seed = 42;
-    common::Lua::isRandomSeedTime = false;
-  }
-
-  Math::seed( seed );
-  common::Lua::randomSeed = seed;
-
-  Log::println( "Random generator seed set to: %d", seed );
-
 #ifdef __native_client__
 
   NaCl::post( "lang:" );
@@ -435,6 +410,32 @@ int Client::init( int argc, char** argv )
   else {
     Log::printEnd( " Failed" );
   }
+
+  config.include( "seed", "TIME" );
+
+  int seed;
+
+  if( config["seed"].type() == JSON::STRING ) {
+    if( !config["seed"].asString().equals( "TIME" ) ) {
+      OZ_ERROR( "Configuration variable 'sees' must be either \"TIME\" or an integer" );
+    }
+
+    seed = int( Time::time() );
+  }
+  else {
+    seed = config["seed"].asInt();
+    common::Lua::isRandomSeedTime = false;
+  }
+
+  if( isBenchmark ) {
+    seed = 42;
+    common::Lua::isRandomSeedTime = false;
+  }
+
+  Math::seed( seed );
+  common::Lua::randomSeed = seed;
+
+  Log::println( "Random generator seed set to: %d", seed );
 
   sound.initLibs();
 
